@@ -1,0 +1,18 @@
+                          GENERAL PARK INFORMATION
+
+PARK ID [  ]      PARK NAME [                                           ]
+
+PARK CAPACITY  [       ]
+
+PARK DIMENSIONS:
+
+                 LF     LCF      CF       RCF       RF
+
+DISTANCES      [   ]   [   ]    [   ]    [   ]    [   ]
+
+
+WIND FACTOR ADJUSTMENT X 10  [    ]
+
+NOTE: THE WIND FACTOR IS TYPICALLY ZERO FOR MOST PARKS. THE FACTOR IS TO BE USED
+      FOR PARKS SUCH AS WRIGLEY, CANDLESTICK, ETC., WHERE WIND DRASTICALLY CAN
+      AFFECT THE FLIGHT OF A BALL AT HIGH WIND SPEEDS.

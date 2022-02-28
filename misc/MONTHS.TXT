@@ -1,0 +1,23 @@
+                                MONTHLY PARK AFFECTS
+                    APRIL    MAY    JUNE     JULY    AUGUST   SEPT
+AVG TEMP            [   ]   [   ]   [   ]   [   ]    [   ]    [   ]
+RANGE               [   ]   [   ]   [   ]   [   ]    [   ]    [   ]
+
+WIND DIRECTION
+R->L                [   ]   [   ]   [   ]   [   ]    [   ]    [   ]
+L->R                [   ]   [   ]   [   ]   [   ]    [   ]    [   ]
+IN FROM LF          [   ]   [   ]   [   ]   [   ]    [   ]    [   ]
+IN FROM CF          [   ]   [   ]   [   ]   [   ]    [   ]    [   ]
+IN FROM RF          [   ]   [   ]   [   ]   [   ]    [   ]    [   ]
+OUT TO LF           [   ]   [   ]   [   ]   [   ]    [   ]    [   ]
+OUT TO CF           [   ]   [   ]   [   ]   [   ]    [   ]    [   ]
+OUT TO RF           [   ]   [   ]   [   ]   [   ]    [   ]    [   ]
+
+WIND SPEED
+ 0 -  9 MPH         [   ]   [   ]   [   ]   [   ]    [   ]    [   ]
+10 - 14 MPH         [   ]   [   ]   [   ]   [   ]    [   ]    [   ]
+15 - 19 MPH         [   ]   [   ]   [   ]   [   ]    [   ]    [   ]
+  20 +  MPH         [   ]   [   ]   [   ]   [   ]    [   ]    [   ]
+
+CHANCE OF           [   ]   [   ]   [   ]   [   ]    [   ]    [   ]
+PRECIPITATION                                         

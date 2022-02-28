@@ -1,0 +1,33 @@
+DIM G$(22)
+KILL "BATTERS"
+KILL "PITCHERS"
+ON ERROR GOTO 20
+OPEN "C:\ALPHA4V2\SGL.ASC" FOR INPUT AS #1
+10 INPUT #1,G$(1)
+   IF G$(1)="" THEN FOR I=2 TO 11:INPUT #1,G$(I):NEXT:GOTO 10
+   FOR I=2 TO 22
+INPUT #1,G$(I)
+NEXT
+IF G$(1)<>"HOU" THEN 10
+OPEN "BATTERS" FOR APPEND AS #2
+PRINT G$(1)
+PRINT #2,G$(1)","G$(2)","G$(3)","G$(4)","G$(5)","G$(6)","G$(7)","G$(8)","G$(9)","G$(10)","G$(11)","G$(16)","G$(17)","G$(18)","G$(19)","G$(20)","G$(21)","G$(22)
+CLOSE 2
+GOTO 10
+20 CLOSE 1:RESUME 25
+25 ON ERROR GOTO 40
+OPEN "C:\ALPHA4V2\SGL1.ASC" FOR INPUT AS #1
+30 INPUT #1, G$(1)
+   IF G$(1)="" THEN FOR I=2 TO 11:INPUT #1, G$(I):NEXT:GOTO 30
+   FOR I=2 TO 22
+   INPUT #1,G$(I)
+   NEXT
+IF G$(1)<>"HOU" THEN 30
+OPEN "PITCHERS" FOR APPEND AS #2
+PRINT G$(1)
+PRINT #2,G$(1)","G$(2)","G$(3)","G$(4)","G$(5)","G$(6)","G$(7)","G$(8)","G$(9)","G$(10)","G$(11)","G$(16)","G$(17)","G$(18)","G$(19)","G$(20)","G$(21)","G$(22)
+CLOSE 2
+GOTO 30
+
+40 END
+

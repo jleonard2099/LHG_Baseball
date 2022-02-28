@@ -1,0 +1,426 @@
+DEFINT A-Z
+DECLARE SUB TITLE ()
+DECLARE SUB GETKEY ()
+DECLARE FUNCTION EXIST (FILENAME$)
+DECLARE FUNCTION GetDrive% ()
+DECLARE FUNCTION QPRTrim$ (Work$)
+DECLARE SUB ReadFile (BYVAL Address%)
+DECLARE FUNCTION FCount% (FSpec$)
+DECLARE SUB MMenuVert (BYVAL Address%, Choice%, Start%, SCANCODE%, NormClr%, HiLite%, NumRows%, Row%, Column%)
+DECLARE SUB Box0 (ULRow%, ULCol%, LRRow%, LRCol%, Char%, Colr%)
+DECLARE SUB SortStr (BYVAL Address%, Size%, Direction%)
+DECLARE SUB MAMenu (BYVAL Address%, SELECTION%, Start%, Count%, ExitCode%, FileColr%, HiLiteColr%, Rows%, Columns%, Spacing%, Row%, Column%)
+DECLARE SUB CSMsgBox (Message$, Wdth, Cnf AS ANY)
+DECLARE SUB MQPrint (X$, Colr)
+DECLARE SUB MPaintBox (ULRow, ULCol, LRRow, LRCol, Colr)
+DECLARE SUB MScrnSave (ULRow, ULCol, LRRow, LRCol, SEG Address)
+DECLARE SUB MScrnRest (ULRow, ULCol, LRRow, LRCol, SEG Address)
+  '$INCLUDE: 'DEFCNF.BI'
+  '$INCLUDE: 'SetCnf.BI'          'queries the system info for MsgBox
+   DRIVE = GetDrive%
+  DIM B$(100), P$(80), P1%(80), B1%(100), B0%(100, 18), P0%(80, 17), T(14)
+  DIM T1(15), D$(3)
+  DIM BR$(100), PR$(80), PR1%(80), BR1%(100), BR0%(100, 18), PR0%(80, 17)
+  DIM TR(14), TR1(15), TT(100), I2 AS SINGLE, I3 AS SINGLE, I4 AS SINGLE
+  REDIM BRS%(15, 100, 17), PRS%(15, 80, 16)
+  CLS : TMR = 2700
+  OPEN "DEV.BAS" FOR INPUT AS #1
+   FOR I = 0 TO 3
+   INPUT #1, D$(I)
+   NEXT
+   CLOSE #1
+30 Spec$ = D$(1) + "*.CAR"
+    Count = FCount%(Spec$)
+   IF Count = 0 THEN 4500
+   REDIM F$(0 TO Count)
+   FOR X = 1 TO Count
+       F$(X) = SPACE$(12)
+   NEXT
+   F$(0) = Spec$
+   CALL ReadFile(VARPTR(F$(0)))
+   CALL SortStr(VARPTR(F$(1)), Count, 0)
+
+1310 CLS
+    COLOR , 1
+    CLS
+    LOCATE , 28
+    COLOR 14
+    PRINT "SELECT CAREER FILE TO EDIT": COLOR 15
+     SELECTION% = 1
+     Start% = 1
+     FileColr% = 31
+     HiLiteColr% = 112
+     Rows% = 20
+     Columns% = 4
+     Spacing% = 6
+     Row% = 4
+     Column% = 1
+    LOCATE 25, 1
+    COLOR 14
+    PRINT "ENTER"; : COLOR 15
+    PRINT "-SELECTS TEAM";
+CALL SHOWCURSOR
+MAMenu VARPTR(F$(1)), SELECTION%, Start%, Count%, ExitCode%, FileColr%, HiLiteColr%, Rows%, Columns%, Spacing%, Row%, Column%
+CALL HIDECURSOR
+     IF ExitCode% = 27 THEN 5017
+     F$ = F$(SELECTION%)
+   LOCATE 2, 33: PRINT F$: LOCATE , 33: PRINT "ANY CHANGE (YN)";
+     COLOR 15, 0
+3913 I$ = INKEY$: IF I$ = "" THEN 3913
+    IF UCASE$(I$) = "Y" THEN 1310
+3911 Z$ = QPRTrim$(F$)
+50 GOSUB 7750
+60 COLOR 15: LOCATE 12, 10: PRINT "LOADING CAREER FILE . . . . PLEASE WAIT"
+70 OPEN D$(1) + Z$ FOR INPUT AS #2
+71 INPUT #2, NB, NP
+73 FOR I = 0 TO 99: INPUT #2, B$(I): NEXT
+74 FOR I = 0 TO 79: INPUT #2, P$(I): NEXT
+75 FOR J = 1 TO 15: FOR I = 0 TO 99: FOR I1 = O TO 17: INPUT #2, BRS%(J, I, I1): NEXT I1: LOCATE 12, 55: COLOR 3: TMR = TMR - 1: PRINT USING "####"; TMR: NEXT I: NEXT J
+76 FOR J = 1 TO 15: FOR I = 0 TO 79: FOR I1 = 0 TO 16: INPUT #2, PRS%(J, I, I1): NEXT I1: LOCATE 12, 55: COLOR 3: TMR = TMR - 1: PRINT USING "####"; TMR: NEXT I: NEXT J
+77 CLOSE #2
+2000 CLS
+     COLOR 7: PRINT "EDIT ";
+     COLOR 12: PRINT "B";
+     COLOR 7: PRINT "ATTERS, ";
+     COLOR 12: PRINT "P";
+     COLOR 7: PRINT "ITCHERS, ";
+     COLOR 12: PRINT "U"; : COLOR 7
+     PRINT "PDATE FILE, OR "; : COLOR 12
+     PRINT "E"; : COLOR 7: PRINT "XIT WITHOUT UPDATING"
+2001 I$ = INKEY$: IF I$ = "" THEN 2001
+2002 IF UCASE$(I$) = "B" THEN 2010
+2003 IF UCASE$(I$) = "P" THEN 2210
+2004 IF UCASE$(I$) = "E" THEN 5017
+2005 IF UCASE$(I$) = "U" THEN 5000
+2006 GOTO 2001
+2010 CLS : COLOR 12: PRINT Z$
+2011 FOR I = 0 TO 19
+     COLOR 11: LOCATE I + 2, 1: PRINT USING "##"; I; : PRINT " "; : COLOR 7: PRINT LEFT$(B$(I), 12): NEXT
+     FOR I = 20 TO 39
+     COLOR 11: LOCATE I - 18, 16: PRINT USING "##"; I; : PRINT " "; : COLOR 7: PRINT LEFT$(B$(I), 12): NEXT
+     FOR I = 40 TO 59
+     COLOR 11: LOCATE I - 38, 32: PRINT USING "##"; I; : PRINT " "; : COLOR 7: PRINT LEFT$(B$(I), 12): NEXT
+     FOR I = 60 TO 79
+     COLOR 11: LOCATE I - 58, 48: PRINT USING "##"; I; : PRINT " "; : COLOR 7: PRINT LEFT$(B$(I), 12): NEXT
+     FOR I = 80 TO 99
+     COLOR 11: LOCATE I - 78, 64: PRINT USING "##"; I; : PRINT " "; : COLOR 7: PRINT LEFT$(B$(I), 12): NEXT
+2031 PRINT
+2032 COLOR 15: INPUT "ENTER NUMBER OF PLAYER TO DELETE (100 TO EXIT)"; B9
+2100 IF B9 = 100 THEN 2000
+2101 IF B9 = 99 THEN 2107
+2102 GOSUB 6000: CLS : LOCATE 5, 15: PRINT "CHANGING BATTER'S FILES . . . . . PLEASE WAIT"
+2104 FOR I = B9 TO 98: B$(I) = B$(I + 1): NEXT
+2105 UPP = (99 - B9) * 15
+2106 I = B9: FOR J = 1 TO 15: FOR I = B9 TO 98: FOR I1 = O TO 17: BRS%(J, I, I1) = BRS%(J, I + 1, I1): NEXT: LOCATE 7, 36: COLOR 12: UPP = UPP - 1: PRINT USING "####"; UPP: NEXT: NEXT
+2107 B$(99) = "": FOR J = 1 TO 15: FOR I1 = 0 TO 17: BRS%(J, 99, I1) = 0: NEXT: NEXT: GOTO 2191
+2108 GOSUB 6000: B$(99) = "": FOR J = 1 TO 15: FOR I1 = 0 TO 17: BRS%(J, 99, I1) = 0: NEXT: NEXT
+2191 GOTO 2000
+2210 CLS : COLOR 12: PRINT Z$
+     FOR I = 0 TO 19
+     COLOR 11: LOCATE I + 2, 1: PRINT USING "##"; I; : PRINT " "; : COLOR 7: PRINT LEFT$(P$(I), 15): NEXT
+     FOR I = 20 TO 39
+     COLOR 11: LOCATE I - 18, 21: PRINT USING "##"; I; : PRINT " "; : COLOR 7: PRINT LEFT$(P$(I), 15): NEXT
+     FOR I = 40 TO 59
+     COLOR 11: LOCATE I - 38, 41: PRINT USING "##"; I; : PRINT " "; : COLOR 7: PRINT LEFT$(P$(I), 15): NEXT
+     FOR I = 60 TO 79
+     COLOR 11: LOCATE I - 58, 61: PRINT USING "##"; I; : PRINT " "; : COLOR 7: PRINT LEFT$(P$(I), 15): NEXT
+2231 PRINT
+2232 COLOR 15: INPUT "ENTER NUMBER OF PLAYER TO DELETE (100 TO EXIT)"; B9
+2300 IF B9 = 100 THEN 2000
+2301 IF B9 = 79 THEN 2307
+2302 GOSUB 7000: CLS : LOCATE 5, 15: PRINT "CHANGING PITCHER'S FILES . . . . . PLEASE WAIT"
+2304 FOR I = B9 TO 78: P$(I) = P$(I + 1): NEXT
+2305 UPP = (79 - B9) * 15
+2306 I = B9: FOR J = 1 TO 15: FOR I = B9 TO 78: FOR I1 = O TO 16: PRS%(J, I, I1) = PRS%(J, I + 1, I1): NEXT: LOCATE 7, 36: COLOR 12: UPP = UPP - 1: PRINT USING "####"; UPP: NEXT: NEXT
+2307 P$(79) = "": FOR J = 1 TO 15: FOR I1 = 0 TO 16: PRS%(J, 79, I1) = 0: NEXT: NEXT: GOTO 2391
+2308 GOSUB 7000: P$(79) = "": FOR J = 1 TO 15: FOR I1 = 0 TO 16: PRS%(J, 79, I1) = 0: NEXT: NEXT
+2391 GOTO 2000
+5000 GOSUB 7750
+5001 CLS : COLOR 15: LOCATE 12, 6: PRINT "SAVING UPDATED CAREER FILE . . . PLEASE WAIT"
+5002 TMR = 2700
+5010 OPEN D$(1) + Z$ FOR OUTPUT AS #3
+5011 WRITE #3, NB, NP
+5012 FOR I = 0 TO 99: WRITE #3, B$(I): NEXT
+5013 FOR I = 0 TO 79: WRITE #3, P$(I): NEXT
+5014 FOR J = 1 TO 15: FOR I = 0 TO 99: FOR I1 = O TO 17: WRITE #3, BRS%(J, I, I1): NEXT I1: LOCATE 12, 55: COLOR 3: TMR = TMR - 1: PRINT USING "####"; TMR: NEXT I: NEXT J
+5015 FOR J = 1 TO 15: FOR I = 0 TO 79: FOR I1 = 0 TO 16: WRITE #3, PRS%(J, I, I1): NEXT I1: LOCATE 12, 55: COLOR 3: TMR = TMR - 1: PRINT USING "####"; TMR: NEXT I: NEXT J
+5016 CLOSE #3
+5017 GOSUB 200
+     RUN "CAREER.EXE"
+200 IF DRIVE >= 67 THEN RETURN
+    CLS
+    PRINT "MAKE SURE PROGRAM DISK #6 IS IN DRIVE"
+    CALL GETKEY
+    RETURN
+6000 CLS : LOCATE 5, 20: COLOR 15: PRINT "PRINT CAREER STATS OF "; : COLOR 12: PRINT B$(B9); : COLOR 15: PRINT " BEFORE "
+6001 LOCATE , 20: PRINT "DELETING THEM? (Y/N)"
+6002 COLOR 14: PRINT : LOCATE , 20: PRINT "IF YOU DO NOT WISH TO PRINT/DELETE THE STATS"
+6003 LOCATE , 20: PRINT "OF "; : COLOR 12: PRINT B$(B9); : COLOR 14: PRINT " HIT 'E'"
+6004 I$ = INKEY$: IF I$ = "" THEN 6004
+6005 IF UCASE$(I$) = "Y" THEN 6100
+6006 IF UCASE$(I$) = "N" THEN 6300
+6007 IF UCASE$(I$) = "E" THEN 2000
+6008 IF UCASE$(I$) <> "Y" OR UCASE$(I$) <> "N" OR UCASE$(I$) <> "E" THEN 6004
+6100 LPRINT CHR$(15)
+6103 WIDTH "LPT1:1", 130
+6104 LPRINT Z$
+6105 LPRINT "BATTER     YEAR      G      AB      R      H    2B    3B    HR    RBI     BB     SO     SB    CS     E     AVG     SLG      OB"
+6110 VV = BRS%(1, B9, 16) + BRS%(2, B9, 16) + BRS%(3, B9, 16) + BRS%(4, B9, 16) + BRS%(5, B9, 16) + BRS%(6, B9, 16) + BRS%(7, B9, 16) + BRS%(8, B9, 16) + BRS%(9, B9, 16) + BRS%(10, B9, 16) + BRS%(11, B9, 16) + BRS%(12, B9, 16) + BRS%(13, B9, 16) +  _
+BRS%(14, B9, 16) + BRS%(15, B9, 16)
+6112 LPRINT LEFT$(B$(B9), 10);
+6113 FOR V = 1 TO VV
+6115 LPRINT TAB(11); BRS%(V, B9, 17);
+6116 LPRINT TAB(20); USING "###"; BRS%(V, B9, 14);
+6117 LPRINT TAB(28); USING "###"; BRS%(V, B9, 0);
+6118 LPRINT TAB(35); USING "###"; BRS%(V, B9, 2);
+6119 LPRINT TAB(42); USING "###"; BRS%(V, B9, 1);
+6120 LPRINT TAB(49); USING "##"; BRS%(V, B9, 4);
+6121 LPRINT TAB(55); USING "##"; BRS%(V, B9, 5);
+6122 LPRINT TAB(61); USING "##"; BRS%(V, B9, 6);
+6123 LPRINT TAB(67); USING "###"; BRS%(V, B9, 3);
+6124 LPRINT TAB(74); USING "###"; BRS%(V, B9, 7);
+6125 LPRINT TAB(81); USING "###"; BRS%(V, B9, 8);
+6126 LPRINT TAB(88); USING "###"; BRS%(V, B9, 9);
+6127 LPRINT TAB(95); USING "##"; BRS%(V, B9, 10);
+6128 LPRINT TAB(101); USING "##"; BRS%(V, B9, 11);
+6210 I2 = 0: I3 = 0: I4 = 0
+IF BRS%(V, B9, 0) > 0 THEN I2 = INT((BRS%(V, B9, 1) / BRS%(V, B9, 0) + .0005) * 1000): I3 = INT(((BRS%(V, B9, 1) + BRS%(V, B9, 4) + 2 * BRS%(V, B9, 5) + 3 * BRS%(V, B9, 6)) / BRS%(V, B9, 0) + .0005) * 1000): I4 = INT(((BRS%(V, B9, 1) + BRS%(V, B9, 7 _
+)) / (BRS%(V, B9, 7) + BRS%(V, B9, 0)) + .0005) * 1000)
+6211 IF BRS%(V, B9, 0) = 0 OR I2 = 0 THEN LPRINT TAB(107); ".000";
+6212 IF I2 > 0 AND I2 < 100 THEN LPRINT TAB(107); ".0"; : LPRINT USING "##"; I2;
+6213 IF I2 >= 100 THEN LPRINT TAB(107); "."; : LPRINT USING "###"; I2;
+6215 IF BRS%(V, B9, 0) = 0 OR I3 = 0 THEN LPRINT TAB(115); ".000";
+6216 IF I3 > 0 AND I3 < 100 THEN LPRINT TAB(115); ".0"; : LPRINT USING "##"; I3;
+6217 IF I3 >= 100 THEN LPRINT TAB(115); "."; : LPRINT USING "###"; I3;
+6219 IF BRS%(V, B9, 0) = 0 OR I4 = 0 THEN LPRINT TAB(123); ".000"
+6220 IF I4 > 0 AND I4 < 100 THEN LPRINT TAB(123); "."; : LPRINT USING "###"; I4
+6221 IF I4 >= 100 THEN LPRINT TAB(123); "."; : LPRINT USING "###"; I4
+6228 NEXT V
+6231 FOR V = 0 TO VV
+6232 TT1 = TT1 + BRS%(V, B9, 14)
+6233 TT3 = TT3 + BRS%(V, B9, 2)
+6234 TT5 = TT5 + BRS%(V, B9, 4)
+6235 TT7 = TT7 + BRS%(V, B9, 6)
+6236 TT9 = TT9 + BRS%(V, B9, 7)
+6237 TT11 = TT11 + BRS%(V, B9, 9)
+6238 TT13 = TT13 + BRS%(V, B9, 11)
+6239 TT2 = TT2 + BRS%(V, B9, 0)
+6240 TT4 = TT4 + BRS%(V, B9, 1)
+6241 TT6 = TT6 + BRS%(V, B9, 5)
+6242 TT8 = TT8 + BRS%(V, B9, 3)
+6243 TT10 = TT10 + BRS%(V, B9, 8)
+6244 TT12 = TT12 + BRS%(V, B9, 10)
+6250 NEXT V
+6260 LPRINT "   Totals";
+6261 LPRINT TAB(14); USING "##"; VV;
+6262 LPRINT TAB(19); USING "####"; TT1;
+6263 LPRINT TAB(27); USING "####"; TT2;
+6264 LPRINT TAB(34); USING "####"; TT3;
+6265 LPRINT TAB(41); USING "####"; TT4;
+6266 LPRINT TAB(48); USING "###"; TT5;
+6267 LPRINT TAB(54); USING "###"; TT6;
+6268 LPRINT TAB(59); USING "####"; TT7;
+6269 LPRINT TAB(66); USING "####"; TT8;
+6270 LPRINT TAB(73); USING "####"; TT9;
+6271 LPRINT TAB(80); USING "####"; TT10;
+6272 LPRINT TAB(87); USING "####"; TT11;
+6273 LPRINT TAB(94); USING "###"; TT12;
+6274 LPRINT TAB(100); USING "###"; TT13;
+6275 I2 = 0: IF TT2 > 0 THEN I2 = INT((TT4 / TT2 + .0005) * 1000)
+6276 IF TT2 = 0 OR I2 = 0 THEN LPRINT TAB(107); ".000";
+6277 IF I2 > 0 AND I2 < 100 THEN LPRINT TAB(107); ".0"; : LPRINT USING "##"; I2;
+6278 IF I2 >= 100 THEN LPRINT TAB(107); "."; : LPRINT USING "###"; I2;
+6279 I3 = 0: I3 = INT(TT4 + TT5 + (2 * TT6) + (3 * TT7)) / ((TT2) + .0005) * 1000
+6280 IF TT2 = 0 OR I3 = 0 THEN LPRINT TAB(115); ".000";
+6281 IF I3 > 0 AND I3 < 100 THEN LPRINT TAB(115); ".0"; : LPRINT USING "##"; I3;
+6282 IF I3 >= 100 THEN LPRINT TAB(115); "."; : LPRINT USING "###"; I3;
+6284 I4 = 0: IF TT9 + TT2 > 0 THEN I4 = INT(((TT4 + TT9) / (TT9 + TT2) + .0005) * 1000)
+6285 IF TT2 = 0 OR I4 = 0 THEN LPRINT TAB(123); ".000"
+6286 IF I4 > 0 AND I4 < 100 THEN LPRINT TAB(123); "."; : LPRINT USING "###"; I4
+6287 IF I4 >= 100 THEN LPRINT TAB(123); "."; : LPRINT USING "###"; I4
+6290 TT1 = 0: TT2 = 0: TT3 = 0: TT4 = 0: TT5 = 0: TT6 = 0: TT7 = 0: TT8 = 0: TT9 = 0: TT10 = 0: TT11 = 0: TT12 = 0: TT13 = 0
+6291 LPRINT
+6292 LPRINT CHR$(18)
+6293 WIDTH "LPT1:1", 80
+6300 RETURN
+7000 CLS : LOCATE 5, 20: COLOR 15: PRINT "PRINT CAREER STATS OF "; : COLOR 12: PRINT P$(B9); : COLOR 15: PRINT " BEFORE "
+7001 LOCATE , 20: PRINT "DELETING THEM? (Y/N)"
+7002 COLOR 14: PRINT : LOCATE , 20: PRINT "IF YOU DO NOT WISH TO PRINT/DELETE THE STATS"
+7003 LOCATE , 20: PRINT "OF "; : COLOR 12: PRINT P$(B9); : COLOR 14: PRINT " HIT 'E'"
+7004 I$ = INKEY$: IF I$ = "" THEN 7004
+7005 IF UCASE$(I$) = "Y" THEN 7300
+7006 IF UCASE$(I$) = "N" THEN 7600
+7007 IF UCASE$(I$) = "E" THEN 2000
+7008 IF UCASE$(I$) <> "Y" OR UCASE$(I$) <> "N" OR UCASE$(I$) <> "E" THEN 7004
+7300 LPRINT CHR$(15)
+7303 WIDTH "LPT1:1", 130
+7304 LPRINT Z$
+7305 LPRINT "PITCHER    YEAR     W     L     S      IP        H     BB     SO     ERA     G    GS    CG    RUN     ER    SHO    HR    DP"
+7310 VV = PRS%(1, B9, 15) + PRS%(2, B9, 15) + PRS%(3, B9, 15) + PRS%(4, B9, 15) + PRS%(5, B9, 15) + PRS%(6, B9, 15) + PRS%(7, B9, 15) + PRS%(8, B9, 15) + PRS%(9, B9, 15) + PRS%(10, B9, 15) + PRS%(11, B9, 15) + PRS%(12, B9, 15) + PRS%(13, B9, 15) +  _
+PRS%(14, B9, 15) + PRS%(15, B9, 15)
+7312 LPRINT LEFT$(P$(B9), 10);
+7313 FOR V = 1 TO VV
+7315 LPRINT TAB(11); PRS%(V, B9, 16);
+7317 LPRINT TAB(20); USING "##"; PRS%(V, B9, 6);
+7318 LPRINT TAB(26); USING "##"; PRS%(V, B9, 7);
+7319 LPRINT TAB(32); USING "##"; PRS%(V, B9, 12);
+7320 LPRINT TAB(39); : LPRINT USING "###"; INT(PRS%(V, B9, 0) / 3);
+7321 IF PRS%(V, B9, 0) - (INT(PRS%(V, B9, 0) / 3) * 3) > 0 THEN LPRINT "."; : LPRINT USING "#"; PRS%(V, B9, 0) - (INT(PRS%(V, B9, 0) / 3) * 3);
+7328 LPRINT TAB(48); USING "###"; PRS%(V, B9, 1);
+7329 LPRINT TAB(55); USING "###"; PRS%(V, B9, 4);
+7330 LPRINT TAB(62); USING "###"; PRS%(V, B9, 5);
+7331 I2 = 0: IF PRS%(V, B9, 0) > 0 THEN I2 = INT((((PRS%(V, B9, 3) * 9) / (PRS%(V, B9, 0) / 3)) + .0005) * 100)
+7332 I3 = INT(I2 / 100): I4 = I2 - (I3 * 100)
+7333 IF PRS%(V, B9, 0) = 0 OR I2 = 0 THEN LPRINT TAB(68); " 0.00";
+7334 IF PRS%(V, B9, 0) > 0 AND I2 > 0 AND I2 <= 999 THEN LPRINT TAB(68); USING "##"; I3; : LPRINT ".";
+7335 IF PRS%(V, B9, 0) > 0 AND I2 >= 1000 THEN LPRINT TAB(68); USING "##"; I3; : LPRINT ".";
+7336 IF PRS%(V, B9, 0) > 0 AND I4 = 0 AND I2 > 0 THEN LPRINT "00";
+7337 IF PRS%(V, B9, 0) > 0 AND I4 > 0 AND I4 < 10 AND I2 > 0 THEN LPRINT "0"; : LPRINT USING "#"; I4;
+7338 IF PRS%(V, B9, 0) > 0 AND I4 >= 10 AND I2 > 0 THEN LPRINT USING "##"; I4;
+7339 LPRINT TAB(77); USING "##"; PRS%(V, B9, 8);
+7340 LPRINT TAB(83); USING "##"; PRS%(V, B9, 9);
+7341 LPRINT TAB(89); USING "##"; PRS%(V, B9, 10);
+7348 LPRINT TAB(95); USING "###"; PRS%(V, B9, 2);
+7349 LPRINT TAB(102); USING "###"; PRS%(V, B9, 3);
+7350 LPRINT TAB(110); USING "##"; PRS%(V, B9, 11);
+7351 LPRINT TAB(116); USING "##"; PRS%(V, B9, 14);
+7352 LPRINT TAB(121); USING "###"; PRS%(V, B9, 13)
+7353 NEXT V
+7355 TT13 = 0: TT14 = 0: TT15 = 0: TT16 = 0: TT17 = 0: TT18 = 0: TT19 = 0: TT20 = 0: TT21 = 0: TT22 = 0: TT23 = 0: TT24 = 0: TT25 = 0: TT26 = 0: TT27 = 0: TT28 = 0
+7400 VV = PRS%(1, B9, 15) + PRS%(2, B9, 15) + PRS%(3, B9, 15) + PRS%(4, B9, 15) + PRS%(5, B9, 15) + PRS%(6, B9, 15) + PRS%(7, B9, 15) + PRS%(8, B9, 15) + PRS%(9, B9, 15) + PRS%(10, B9, 15) + PRS%(11, B9, 15) + PRS%(12, B9, 15) + PRS%(13, B9, 15) +  _
+PRS%(14, B9, 15) + PRS%(15, B9, 15)
+7401 FOR V = 0 TO VV
+7402 TT13 = TT13 + PRS%(V, B9, 6)
+7403 TT15 = TT15 + PRS%(V, B9, 12)
+7404 TT17 = TT17 + PRS%(V, B9, 1)
+7405 TT19 = TT19 + PRS%(V, B9, 5)
+7406 TT21 = TT21 + PRS%(V, B9, 8)
+7407 TT23 = TT23 + PRS%(V, B9, 10)
+7408 TT25 = TT25 + PRS%(V, B9, 3)
+7409 TT27 = TT27 + PRS%(V, B9, 14)
+7410 TT14 = TT14 + PRS%(V, B9, 7)
+7411 TT16 = TT16 + PRS%(V, B9, 0)
+7415 TT18 = TT18 + PRS%(V, B9, 4)
+7416 TT20 = TT20
+7427 TT22 = TT22 + PRS%(V, B9, 9)
+7428 TT24 = TT24 + PRS%(V, B9, 2)
+7429 TT26 = TT26 + PRS%(V, B9, 11)
+7430 TT28 = TT28 + PRS%(V, B9, 13)
+7440 NEXT V
+7470 LPRINT "   Totals";
+7471 LPRINT TAB(13); USING "###"; VV;
+7472 LPRINT TAB(19); USING "###"; TT13;
+7473 LPRINT TAB(25); USING "###"; TT14;
+7474 LPRINT TAB(31); USING "###"; TT15;
+7475 LPRINT TAB(39); USING "###"; INT(TT16 / 3);
+7476 IF TT16 - (INT(TT16 / 3) * 3) > 0 THEN LPRINT "."; : LPRINT USING "#"; TT16 - (INT(TT16 / 3) * 3);
+7477 LPRINT TAB(47); USING "####"; TT17;
+7478 LPRINT TAB(55); USING "###"; TT18;
+7479 LPRINT TAB(61); USING "####"; TT19;
+7480 I2 = 0: IF TT16 > 0 THEN I2 = INT((((TT25 * 9) / (TT16 / 3)) + .0005) * 100)
+7481 I3 = INT(I2 / 100): I4 = I2 - (I3 * 100)
+7482 IF TT16 = 0 OR I2 = 0 THEN LPRINT TAB(68); " 0.00";
+7483 IF TT16 > 0 AND I2 > 0 AND I2 <= 999 THEN LPRINT TAB(68); USING "##"; I3; : LPRINT ".";
+7484 IF TT16 > 0 AND I2 >= 1000 THEN LPRINT TAB(68); USING "##"; I3; : LPRINT ".";
+7485 IF TT16 > 0 AND I4 = 0 AND I2 > 0 THEN LPRINT "00";
+7486 IF TT16 > 0 AND I4 > 0 AND I4 < 10 AND I2 > 0 THEN LPRINT "0"; : LPRINT USING "#"; I4;
+7487 IF TT16 > 0 AND I4 >= 10 AND I2 > 0 THEN LPRINT USING "##"; I4;
+7488 LPRINT TAB(76); USING "###"; TT21;
+7489 LPRINT TAB(81); USING "####"; TT22;
+7490 LPRINT TAB(88); USING "###"; TT23;
+7491 LPRINT TAB(95); USING "###"; TT24;
+7492 LPRINT TAB(101); USING "####"; TT25;
+7493 LPRINT TAB(108); USING "####"; TT26;
+7494 LPRINT TAB(114); USING "####"; TT27;
+7495 LPRINT TAB(121); USING "###"; TT28
+7496 LPRINT
+7497 LPRINT CHR$(18)
+7498 WIDTH "LPT1:1", 80
+7600 RETURN
+7750 CLS
+     IF UCASE$(LEFT$(D$(1), 1)) <> "A" AND UCASE$(LEFT$(D$(1), 1)) <> "B" THEN 7753
+     COLOR 15
+     PRINT "MAKE SURE DISK WITH CAREER FILE IS IN DRIVE ";
+     COLOR 14: PRINT D$(1)
+7751 COLOR 15
+     CALL GETKEY
+7753 RETURN
+4500 LOCATE 10, 8
+     CALL CSMsgBox("NO CAREER FILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Cnf)
+3805 I$ = INKEY$: IF I$ = "" THEN 3805
+     CALL CSMsgBox("", 0, Cnf)
+     GOTO 5017
+
+STATIC SUB CSMsgBox (Message$, Wdth, Cnf AS Config)
+    IF LEN(Message$) THEN
+       Row = CSRLIN                             'Get the Row Position
+       REDIM Temp$(23)                          'Make a temporary array to
+                                                '  hold the parsed up lines
+       MesLen = LEN(Message$)                   'Get the total length of the
+                                                '  help message
+       LN = 0                                   'Line number
+       Strt = 1                                 'Starting parse position
+       '*** Parse the message into lines
+       DO
+           WHILE MID$(Message$, Strt, 1) = " "  'Skip over blanks
+              Strt = Strt + 1
+           WEND
+           ND = Strt + Wdth                     'Guess at the end of line
+                                                'Loop backwards to find
+           WHILE MID$(Message$, ND, 1) <> " " AND ND <= MesLen AND ND > Strt
+               ND = ND - 1                      '  blank space
+           WEND
+           LN = LN + 1                          'Increment the Line number
+                                                'Pull out the new line
+           Temp$(LN) = MID$(Message$, Strt, ND - Strt)
+           Strt = ND + 1                        'Reset starting posit. for
+                                                '  next line
+       LOOP UNTIL ND >= MesLen                  'Get more unless @ end of mes
+       BotRow = Row + LN + 1                    'Find the bottom row #
+       IF BotRow > 24 THEN BotRow = 24          'No farther than line 24
+       ArraySize = 80 * (BotRow - Row + 2)      'Find the array size to use
+       REDIM ScrBuf(ArraySize)                  '  for the background screen
+       MScrnSave Row, 1, BotRow + 1, 80, ScrBuf(0)
+       BoxWdth = Wdth + 4                       'Find the outer box width
+       ColPos = 40 - (BoxWdth \ 2)              'Starting posit for centered
+                                                '  box
+       LOCATE Row, ColPos                       'Print the top of box
+       MQPrint "É" + STRING$(Wdth + 2, "Í") + "»", Cnf.MenBox
+       Box$ = "º" + SPACE$(Wdth + 2) + "º"      'Make the box sides
+       FOR N = 1 TO LN                          'Print message lines
+           LOCATE N + Row, ColPos
+           MQPrint Box$, Cnf.MenBox
+           LOCATE , ColPos + 2
+           MQPrint Temp$(N), Cnf.ActivCh
+       NEXT
+       LOCATE N + Row, ColPos                   'Print the bottom of box
+       MQPrint "È" + STRING$(Wdth + 2, "Í") + "¼", Cnf.MenBox
+       MPaintBox Row + 1, ColPos + BoxWdth, N + Row, ColPos + BoxWdth + 1, 8
+       MPaintBox N + Row + 1, ColPos + 2, N + Row + 1, ColPos + BoxWdth + 1, 8
+       Pass = 1                                 'Set flag say we've been here
+       ERASE Temp$                              'Don't need this anymore
+    ELSEIF Pass = 1 THEN                        'If we've been here before,
+                                                '  restore the screen
+       MScrnRest Row, 1, BotRow + 1, 80, SEG ScrBuf(0)
+       ERASE ScrBuf                             'Clean up memory
+       Pass = 0                                 'Reset flag for next call
+    END IF
+END SUB
+
+SUB GETKEY ()
+    LOCATE 24, 1: PRINT "PRESS ANY KEY TO CONTINUE";
+1240 I$ = INKEY$: IF I$ = "" THEN 1240
+END SUB
+
+SUB TITLE ()
+COLOR , 0: KEY OFF: CLS
+   COLOR , 1: LOCATE 1, 1: PRINT TAB(80); : LOCATE , 30: COLOR 12
+   PRINT "FULL COUNT BASEBALL 6.0"
+   LOCATE 24, 1: PRINT TAB(80); : LOCATE , 1
+   PRINT "(C) LANCE HAFFNER/SHANNON LYNN 1987-1994"; TAB(70); LEFT$(TIME$, 5);
+   LOCATE 3, 1: COLOR 2, 0
+   COLOR 15: PRINT "        PROGRAMMED AND DEVELOPED BY LANCE HAFFNER AND SHANNON LYNN"
+             PRINT "              FOR TECHNICAL SUPPORT, CALL (615) 366-8088"
+   COLOR 10
+END SUB
+

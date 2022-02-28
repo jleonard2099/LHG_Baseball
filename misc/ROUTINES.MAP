@@ -1,0 +1,168 @@
+
+ Start  Stop   Length Name                   Class
+ 00000H 0F866H 0F867H SOURCE_CODE            BC_CODE
+ 0F870H 0FFF7H 00788H _TEXT                  CODE
+ 0FFF8H 10873H 0087CH LOADRTM                CODE
+ 10874H 10874H 00000H C_ETEXT                ENDCODE
+ 10880H 10880H 00000H FDATA                  FAR_DATA
+ 10880H 120DFH 01860H FSL_CONST              FAR_DATA
+ 120E0H 138DFH 01800H BR_DATA                BLANK
+ 138E0H 138E0H 00000H BR_SKYS                BLANK
+ 138E0H 1C1FDH 0891EH COMMON                 BLANK
+ 1C1FEH 1C5BFH 003C2H BC_DATA                BC_DATA
+ 1C5C0H 1C5C1H 00002H NMALLOC                BC_VARS
+ 1C5C2H 1C5C3H 00002H ENMALLOC               BC_VARS
+ 1C5C4H 1C5C4H 00000H BC_FT                  BC_SEGS
+ 1C5D0H 1CC41H 00672H BC_CN                  BC_SEGS
+ 1CC50H 1CC52H 00003H BC_DS                  BC_SEGS
+ 1CC54H 1CC54H 00000H BC_SAB                 BC_SEGS
+ 1CC54H 1CC57H 00004H BC_SA                  BC_SEGS
+ 1CC58H 1CC5BH 00004H BC_SAE                 BC_SEGS
+ 1CC5CH 1CC5CH 00000H _DATA                  DATA
+ 1CC5CH 1CC69H 0000EH CDATA                  DATA
+ 1CC6AH 1CC6BH 00002H XIQC                   DATA
+ 1CC6CH 1CC6CH 00000H XIFB                   DATA
+ 1CC6CH 1CC6CH 00000H XIF                    DATA
+ 1CC6CH 1CC6CH 00000H XIFE                   DATA
+ 1CC6CH 1CC6CH 00000H XIFCB                  DATA
+ 1CC6CH 1CC6CH 00000H XIFCE                  DATA
+ 1CC6CH 1CC6CH 00000H XIB                    DATA
+ 1CC6CH 1CC6CH 00000H XI                     DATA
+ 1CC6CH 1CC6CH 00000H XIE                    DATA
+ 1CC6CH 1CC6CH 00000H XPB                    DATA
+ 1CC6CH 1CC6CH 00000H XP                     DATA
+ 1CC6CH 1CC6CH 00000H XPE                    DATA
+ 1CC6CH 1CC6CH 00000H XCB                    DATA
+ 1CC6CH 1CC6FH 00004H XC                     DATA
+ 1CC70H 1CC70H 00000H XCE                    DATA
+ 1CC70H 1CC70H 00000H XCFB                   DATA
+ 1CC70H 1CC70H 00000H XCFCRT                 DATA
+ 1CC70H 1CC70H 00000H XCF                    DATA
+ 1CC70H 1CC70H 00000H XCFE                   DATA
+ 1CC70H 1CC70H 00000H XECIB                  DATA
+ 1CC70H 1CC70H 00000H XECI                   DATA
+ 1CC70H 1CC70H 00000H XECIE                  DATA
+ 1CC70H 1CC7DH 0000EH DBDATA                 DATA
+ 1CC7EH 1CC7EH 00000H XOB                    BSS
+ 1CC7EH 1CC7EH 00000H XO                     BSS
+ 1CC7EH 1CC7EH 00000H XOE                    BSS
+ 1CC80H 1DC7FH 01000H STACK                  STACK
+
+ Origin   Group
+ 120E:0   DGROUP
+
+Program entry point at 0FFF:0119
+
+SOURCE.obj(SOURCE.BAS) : error L2029: 'SQUEEZECHOICE' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'TIRING' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'TRYFOREXTRABASE' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'SETPALTRIPLEVGA' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'GPRINT1VE' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'SCOREBOARD' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'HITS2GAP' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'MAINSCREEN' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'DISPPCXV256' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'DISPPCXC' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'GETDRIVE' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'DISPPCXH' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'PINCHRUNNER' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'SINGLEROUTINE' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'PICKEDOFF' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'DELAY' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'SECOND2FIRST' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'STRIKEOUTCS' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'FUSING' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'GMOVE2VE' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'STRIPRPBP' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'INCBATDF' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'FLDDISP' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'GMOVE4VE' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'VIEWTEAM' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'MULTMONITOR' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'THROW2FIRST' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'PITCHOUT' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'ADDSTTS' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'HOLDSTATUS' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'WALLDOUBLE' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'INCBATOFF' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'HERCTHERE' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'DPPBP' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'HITBYPITCH' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'DRAWBOX' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'RANDNUM' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'LET2NUM' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'RAREPLAYS' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'GETRPBP' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'INCPITOFF' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'OUTFLDNAME' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'RELIEVERS' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'SCREEN0' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'TRIPLEPLAY' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'BATDISP' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'SETPALETTEEGA' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'PITSTAM' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'SETUP' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'POPUP' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'BASEONBALLS' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'SCREEN1' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'GROUNDERS' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'INCREMENTHIT' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'OPENPCXFILE' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'GROUNDERPBP' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'CREDITPUTOUT' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'DISPFLDG' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'SCREEN2' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'INNDISP' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'PUTOUT' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'SCREEN3' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'ADDPIT' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'ADVANCEMENT' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'PITSWAP' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'CAUGHTFLY' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'PITCHERNAME' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'GETINFIELDER' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'CHANGELINEUP' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'GETAKEY' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'DPRELAY' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'SCREEN12' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'SCREEN13' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'PITDISP' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'OUTATFIRST' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'SPA' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'FLDERR' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'GETOUTFIELDER' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'LONGFLY' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'WILDPITCH' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'DELIVERY' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'SCREEN9' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'FOULBALL' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'OFFPIT' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'DPPIVOT' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'BATOFF' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'NEWLINES' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'CREDITREGPO' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'INITMOUSE' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'PITSTRAT' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'GETFIELDNAME' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'CREDITASSIST' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'OPTIONS' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'STEAL3RD' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'STEALCHANCE' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'CHECKSAVE' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'OUTFLDLOCATION' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'DPSAFE' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'LDRIVE' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'HITTINGLINES' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'REPLACEMENTS' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'DISPPCXVE' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'CLEARVE' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'PBP' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'PLAYERNAME' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'WHICHRUNNER' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'STRIKEOUT' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'WHOSON1ST' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'POPUPSTATS' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'GPRINT0VE' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'NOJUMP' : unresolved external
+SOURCE.obj(SOURCE.BAS) : error L2029: 'PITOFF' : unresolved external
+

@@ -1,0 +1,12 @@
+   DIM G$(8)
+   OPEN "1960SKED.CSV" FOR INPUT AS #1
+10 FOR I = 1 TO 8: INPUT #1, G$(I): NEXT
+
+   IF G$(8) = "L2" THEN OPEN "NL1960" FOR APPEND AS #2:GOTO 15
+   IF G$(8) = "L1" THEN OPEN "AL1960" FOR APPEND AS #2:GOTO 15
+   GOTO 10
+15 PRINT #2, G$(1); ","; G$(3); ","; G$(4); ","; G$(5)
+   CLOSE 2
+   GOTO 10
+
+
