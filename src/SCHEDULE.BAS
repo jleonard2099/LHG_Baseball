@@ -37,7 +37,7 @@ DECLARE SUB QEdit (array$(), Ky$, Action, Ed AS EditInfo)
     F3$ = CHR$(0) + CHR$(61)
 
    '$INCLUDE: 'DEFCNF.BI'
-   '$INCLUDE: 'SetCnf.BI'          'queries the system info for MsgBox
+   '$INCLUDE: 'SETCNF.BI'          'queries the system info for MsgBox
    DATA HH,C1,C2,CC: FOR X = 0 TO 3: READ MO$(X): NEXT
    DATA 15,0,15,1,19,4,4,6,3,1,2,3,14
    FOR X = 1 TO 13: READ E%(X): NEXT

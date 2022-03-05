@@ -16,7 +16,7 @@ DECLARE SUB MPaintBox (ULRow, ULCol, LRRow, LRCol, Colr)
 DECLARE SUB MScrnSave (ULRow, ULCol, LRRow, LRCol, SEG Address)
 DECLARE SUB MScrnRest (ULRow, ULCol, LRRow, LRCol, SEG Address)
   '$INCLUDE: 'DEFCNF.BI'
-  '$INCLUDE: 'SetCnf.BI'          'queries the system info for MsgBox
+  '$INCLUDE: 'SETCNF.BI'          'queries the system info for MsgBox
    DRIVE = GetDrive%
   DIM B$(100), P$(80), P1%(80), B1%(100), B0%(100, 18), P0%(80, 17), T(14)
   DIM T1(15), D$(3)

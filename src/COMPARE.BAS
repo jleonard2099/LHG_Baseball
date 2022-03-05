@@ -24,7 +24,7 @@ DECLARE SUB MScrnRest (ULRow, ULCol, LRRow, LRCol, SEG Address)
   DIM Y AS LONG
   DIM I2 AS SINGLE, I3 AS SINGLE, I4 AS SINGLE, I5 AS SINGLE, ERX AS SINGLE
    '$INCLUDE: 'DEFCNF.BI'
-   '$INCLUDE: 'SetCnf.BI'          'queries the system info for MsgBox
+   '$INCLUDE: 'SETCNF.BI'          'queries the system info for MsgBox
    DRIVE = GetDrive%
    OPEN "DEV.BAS" FOR INPUT AS #2
    FOR I = 0 TO 3: INPUT #2, D$(I)

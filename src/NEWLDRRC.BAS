@@ -28,7 +28,7 @@ DECLARE SUB Box0 (ULRow%, ULCol%, LRRow%, LRCol%, Char%, Colr%)
   REDIM TPP(920) AS STRING * 15
   REDIM TYP(920)
   '$INCLUDE: 'DEFCNF.BI'
-  '$INCLUDE: 'SetCnf.BI'          'queries the system info for MsgBox
+  '$INCLUDE: 'SETCNF.BI'          'queries the system info for MsgBox
    DRIVE = GetDrive%
    OPEN "DEV.BAS" FOR INPUT AS #2
    FOR I = 0 TO 2

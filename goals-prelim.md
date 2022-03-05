@@ -14,17 +14,21 @@
 		found / renamed SCH.BAS, which appears to serve this functionality
 		compared to compiled game to confirm
 	
-	[ ] LOOKY.BAS
+	[-] LOOKY.BAS
 		used to VIEW COMPILED STATS (Option 7)
 		referenced by HELLO.BAS, installed by game
 		similar file exists for each game but is unique to game
 		essentially, this file loads and outputs stats
 		therefore it requires intimate knowledge of this data / output
 
+		+ template file created which should be a navigatable menu
+		+ it will not, however, be very functional
 
 ** GOAL: COMPILE FULL GAMES FROM SOURCES
 *** From WWW - "FULL COUNT BASEBALL 6.53"
 *** From Code - "FULL COUNT BASEBALL 6.51"
+
+[ ] Re-create all library code natively in BASIC
 
 
 [ ] Attempt first compilation of each game

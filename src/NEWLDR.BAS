@@ -9,7 +9,7 @@ DECLARE FUNCTION EXIST% (FILENAME$)
 DECLARE SUB MMenuVert (BYVAL Address%, Choice%, Start%, SCANCODE%, NormClr%, HiLite%, NumRows%, Row%, Column%)
 DECLARE SUB Box0 (ULRow%, ULCol%, LRRow%, LRCol%, Char%, Colr%)
   '$INCLUDE: 'DEFCNF.BI'
-  '$INCLUDE: 'SetCnf.BI'          'queries the system info for MsgBox
+  '$INCLUDE: 'SETCNF.BI'          'queries the system info for MsgBox
   DRIVE = GetDrive%
   DIM B$(23), B%(23), P$(22), P%(22), B0%(23, 22), P0%(22, 42), T(22)
   DIM T1(23), TT(40, 22) AS SINGLE, TT1(40, 23) AS SINGLE, TM$(40, 22), TT2$(40, 23)

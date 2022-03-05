@@ -16,7 +16,7 @@ DECLARE SUB ReadFile (BYVAL Address%)
 DECLARE SUB ISortI (SEG Element%, SEG IndexElement%, NumElements%, Direction%)
 DECLARE SUB SortStr (BYVAL Address%, Size%, Direction%)
   '$INCLUDE: 'DEFCNF.BI'
-  '$INCLUDE: 'SetCnf.BI'          'queries the system info for MsgBox
+  '$INCLUDE: 'SETCNF.BI'          'queries the system info for MsgBox
   DRIVE = GetDrive%
         DIM H(4), DC(3), SC%(3400, 1), SC$(3400, 1), SCE(3400), X%(40, 1), GAME(3400)
         DIM DX(10000)

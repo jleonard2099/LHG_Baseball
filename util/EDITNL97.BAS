@@ -42,7 +42,7 @@
    COMMON SHARED YN$, T$, NN$, S$, M$, T, N$, INJ%(), DYS%()
    DEF FnExt$ (X$, Length) = X$ + SPACE$(Length - LEN(X$))  'for display only
    '$INCLUDE: 'DEFCNF.BI'
-   '$INCLUDE: 'SetCnf.BI'          'queries the system info for MsgBox
+   '$INCLUDE: 'SETCNF.BI'          'queries the system info for MsgBox
    DRIVE = GetDrive%
    FOR I = 0 TO 3
    READ BP$(I)

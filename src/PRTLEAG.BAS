@@ -19,7 +19,7 @@ DECLARE FUNCTION EXIST (FILENAME$)
 2 DIM LD$(50, 3), LD(50, 2), NM$(10, 6, 3), NM%(10, 6), Z2$(298), Z3$(298), Z(298) AS SINGLE, Z1(298) AS SINGLE
   DIM LF$(70), RT$(70)
   '$INCLUDE: 'DEFCNF.BI'
-  '$INCLUDE: 'SetCnf.BI'          'queries the system info for MsgBox
+  '$INCLUDE: 'SETCNF.BI'          'queries the system info for MsgBox
   DRIVE = GetDrive%
    OPEN "DEV.BAS" FOR INPUT AS #2
    FOR I = 0 TO 2

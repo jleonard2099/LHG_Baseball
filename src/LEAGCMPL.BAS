@@ -19,7 +19,7 @@ DECLARE FUNCTION EXIST (FILENAME$)
   DIM BAT(24), PIT(23)
   DIM J AS SINGLE
   '$INCLUDE: 'DEFCNF.BI'
-  '$INCLUDE: 'SetCnf.BI'          'queries the system info for MsgBox
+  '$INCLUDE: 'SETCNF.BI'          'queries the system info for MsgBox
   DRIVE = GetDrive%
 4 OPEN "DEV.BAS" FOR INPUT AS #2
   FOR I = 0 TO 2

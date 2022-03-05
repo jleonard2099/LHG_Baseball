@@ -32,7 +32,7 @@ DECLARE FUNCTION GetDrive% ()
    COMMON SHARED MG%(), D$(), T, Q$(), YN$(), R$(), YN$,B$(),P$()
    DIM Y AS LONG
    DIM FRAC AS SINGLE
-   '$INCLUDE: 'SetCnf.BI'          'queries the system info for MsgBox
+   '$INCLUDE: 'SETCNF.BI'          'queries the system info for MsgBox
    CALL InitMouse(There)
    YN$(0) = "Y": YN$(1) = "N"
    DATA A,B,C,D,E,F,G,H,I,J,K,L,M
