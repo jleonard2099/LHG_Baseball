@@ -1,98 +1,113 @@
+'$INCLUDE: 'KeyInput.BI'
+
 10 KEY OFF: COLOR 0, 7: CLS : PN$ = "BASEBALL"
+
 20 LOCATE 1, 1: COLOR , 1: COLOR 15, 1
-   PRINT STRING$(80, 32);
-   U$ = "HARD DISK INSTALLATION PROGRAM"
-   LOCATE 1, (80 - LEN(U$)) / 2
-   COLOR 15, 1: PRINT U$
-   JJ = 7
-   LOCATE 6, 8: COLOR 15, 1
-   PRINT " "; CHR$(201); STRING$(61, 205); CHR$(187); " ";
-   FOR II = 1 TO JJ: LOCATE 6 + II, 8
-   PRINT " º"; STRING$(61, 32); "º "; : NEXT
-   LOCATE 7 + JJ, 8
-   PRINT " "; CHR$(200); STRING$(61, 205); CHR$(188); " "; : LOCATE 8, 32
-   LOCATE , 12: PRINT "ENTER LETTER OF DRIVE YOU WISH TO INSTALL FROM: ";
-26 I$ = INKEY$: IF I$ = "" THEN 26
-   S$ = I$: PRINT S$ + ":"
-   LOCATE , 12: PRINT "ENTER HARD DRIVE LETTER TO INSTALL TO: ";
-31 I$ = INKEY$: IF I$ = "" THEN 31
-   D$ = I$: PRINT D$ + ":"
-   LOCATE , 12: INPUT "SUBDIRECTORY NAME TO INSTALL TO: "; NN$
-   IF NN$ = "" THEN NN$ = PN$
-   LOCATE , 12: PRINT "FILES WILL BE COPIED TO "; D$ + ":\" + NN$
-   LOCATE , 12: PRINT "ANY CHANGE (YN) "
-22 I$ = INKEY$: IF I$ = "" THEN 22
-   IF UCASE$(I$) = "Y" THEN 20
+	PRINT STRING$(80, 32);
+	U$ = "HARD DISK INSTALLATION PROGRAM"
+	LOCATE 1, (80 - LEN(U$)) / 2
+	COLOR 15, 1: PRINT U$
+	JJ = 7
+	LOCATE 6, 8: COLOR 15, 1
+	PRINT " "; CHR$(201); STRING$(61, 205); CHR$(187); " ";
+	FOR II = 1 TO JJ: LOCATE 6 + II, 8
+	PRINT " º"; STRING$(61, 32); "º "; : NEXT
+	LOCATE 7 + JJ, 8
+	PRINT " "; CHR$(200); STRING$(61, 205); CHR$(188); " "; : LOCATE 8, 32
+	LOCATE , 12: PRINT "ENTER LETTER OF DRIVE YOU WISH TO INSTALL FROM: ";
+26 I$ = GetKeyPress$
+	S$ = I$: PRINT S$ + ":"
+	LOCATE , 12: PRINT "ENTER HARD DRIVE LETTER TO INSTALL TO: ";
+31 I$ = GetKeyPress$
+	D$ = I$: PRINT D$ + ":"
+	LOCATE , 12: INPUT "SUBDIRECTORY NAME TO INSTALL TO: "; NN$
+	IF NN$ = "" THEN NN$ = PN$
+	LOCATE , 12: PRINT "FILES WILL BE COPIED TO "; D$ + ":\" + NN$
+	LOCATE , 12: PRINT "ANY CHANGE (YN) "
+22 I$ = GetKeyPress$
+	IF UCASE$(I$) = "Y" THEN 20
 
 45 ON ERROR GOTO 1005
-   CHDIR D$ + ":\" + NN$
-   ON ERROR GOTO 0
-   GOTO 51
-51 GOSUB 2000
-   LOCATE , 12
-   U$ = "COPYING FILES TO " + D$ + ":\" + NN$
-   LOCATE , (80 - LEN(U$)) / 2
-   PRINT U$
-   COLOR 0, 7
-   CLS
-   SHELL "ECHO OFF"
-   SHELL "COPY " + S$ + ":BAS.EXE " + D$ + ":\" + NN$: REM: + " >NUL:"
-   CHDRIVE D$
-   CHDIR "\" + NN$
-   SHELL "BAS.EXE -O"
-100 ON ERROR GOTO 0
-    GOTO 80
-66 COLOR 0, 7: CLS
-   GOSUB 2000
-   SHELL "COPY " + S$ + ":BAS.EXE " + D$ + ":\" + NN$: REM: + " >NUL:"
-   CHDRIVE D$
-   CHDIR "\" + NN$
-   SHELL "BAS.EXE -O"
-   OPEN D$ + ":\" + NN$ + "\DEV.BAS" FOR OUTPUT AS #2
-   PRINT #2, D$ + ":\" + NN$ + "\"
-   PRINT #2, D$ + ":\" + NN$ + "\"
-   PRINT #2, D$ + ":\" + NN$ + "\"
-   PRINT #2, D$ + ":\" + NN$ + "\"
-   CLOSE 2
-80 COLOR 0, 7: CLS
-   GOSUB 2000
-   LOCATE 17, 12
-   U$ = "INSTALL ANOTHER DISK (YN)"
-   LOCATE , (80 - LEN(U$)) / 2
-   PRINT U$
-   GOSUB 4091
-82 IF UCASE$(I$) <> "Y" THEN 90
-   GOSUB 2000
-   LOCATE 17, 12
-   U$ = "INSERT DISK AND HIT ANY KEY"
-   LOCATE , (80 - LEN(U$)) / 2
-   PRINT U$
-   GOSUB 4091
-   GOTO 66
-90 COLOR 0, 7: CLS
-   GOSUB 2000
-   LOCATE 17, 12
-   U$ = "INSTALLATION IS COMPLETE! TO START PROGRAM, TYPE HELLO"
-   LOCATE , (80 - LEN(U$)) / 2
-   PRINT U$
-   LOCATE 20, 1
-   SHELL "ECHO ON"
-105 END
-1005 MKDIR D$ + ":\" + NN$
-     CHDIR D$ + ":\" + NN$
-     RESUME 51
-2000 JJ = 1
-   LOCATE 16, 8: COLOR 15, 4
-   PRINT " "; CHR$(201); STRING$(61, 205); CHR$(187); " ";
-   FOR II = 1 TO JJ: LOCATE 16 + II, 8
-   PRINT " º"; STRING$(61, 32); "º "; : NEXT
-   LOCATE 17 + JJ, 8
-   PRINT " "; CHR$(200); STRING$(61, 205); CHR$(188); " "; : LOCATE 17
-   RETURN
-   COLOR 15, 1
-4091 I$ = INKEY$: IF I$ = "" THEN 4091
-4092 RETURN
-5000 CLOSE 1
-     CHDIR D$ + ":\" + NN$
-     RESUME 100
+	CHDIR D$ + ":\" + NN$
+	ON ERROR GOTO 0
+	GOTO 51
 
+51 GOSUB 2000
+	LOCATE , 12
+	U$ = "COPYING FILES TO " + D$ + ":\" + NN$
+	LOCATE , (80 - LEN(U$)) / 2
+	PRINT U$
+	COLOR 0, 7
+	CLS
+	SHELL "ECHO OFF"
+	SHELL "COPY " + S$ + ":BAS.EXE " + D$ + ":\" + NN$: ' + " >NUL:"
+	CHDRIVE D$
+	CHDIR "\" + NN$
+	SHELL "BAS.EXE -O"
+
+100 ON ERROR GOTO 0
+	GOTO 80
+
+66 COLOR 0, 7: CLS
+	GOSUB 2000
+	SHELL "COPY " + S$ + ":BAS.EXE " + D$ + ":\" + NN$: ' + " >NUL:"
+	CHDRIVE D$
+	CHDIR "\" + NN$
+	SHELL "BAS.EXE -O"
+OPEN D$ + ":\" + NN$ + "\DEV.BAS" FOR OUTPUT AS #2
+	PRINT #2, D$ + ":\" + NN$ + "\"
+	PRINT #2, D$ + ":\" + NN$ + "\"
+	PRINT #2, D$ + ":\" + NN$ + "\"
+	PRINT #2, D$ + ":\" + NN$ + "\"
+CLOSE 2
+
+80 COLOR 0, 7: CLS
+	GOSUB 2000
+	LOCATE 17, 12
+	U$ = "INSTALL ANOTHER DISK (YN)"
+	LOCATE , (80 - LEN(U$)) / 2
+	PRINT U$
+	GOSUB 4091
+
+82 IF UCASE$(I$) <> "Y" THEN 90
+	GOSUB 2000
+	LOCATE 17, 12
+	U$ = "INSERT DISK AND HIT ANY KEY"
+	LOCATE , (80 - LEN(U$)) / 2
+	PRINT U$
+	GOSUB 4091
+	GOTO 66
+
+90 COLOR 0, 7: CLS
+	GOSUB 2000
+	LOCATE 17, 12
+	U$ = "INSTALLATION IS COMPLETE! TO START PROGRAM, TYPE HELLO"
+	LOCATE , (80 - LEN(U$)) / 2
+	PRINT U$
+	LOCATE 20, 1
+	SHELL "ECHO ON"
+
+105 END
+
+1005 MKDIR D$ + ":\" + NN$
+	CHDIR D$ + ":\" + NN$
+	RESUME 51
+
+2000 JJ = 1
+	LOCATE 16, 8: COLOR 15, 4
+	PRINT " "; CHR$(201); STRING$(61, 205); CHR$(187); " ";
+	FOR II = 1 TO JJ: LOCATE 16 + II, 8
+	PRINT " º"; STRING$(61, 32); "º "; : NEXT
+	LOCATE 17 + JJ, 8
+	PRINT " "; CHR$(200); STRING$(61, 205); CHR$(188); " "; : LOCATE 17
+	RETURN
+	COLOR 15, 1
+4091 I$ = GetKeyPress$
+
+4092 RETURN
+
+5000 CLOSE 1
+	CHDIR D$ + ":\" + NN$
+	RESUME 100
+
+'$INCLUDE: 'KeyInput.BM'

@@ -27,7 +27,8 @@ X$=Q$
 open "test.bas" for append as #2
 write #2, x$
 close 2
+
 15 IF RIGHT$(X$,1)=" " THEN X$=LEFT$(X$,LEN(X$)-1):GOTO 15
 PRINT X$
 close 1
-next
+next

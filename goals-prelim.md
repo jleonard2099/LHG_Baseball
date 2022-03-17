@@ -1,20 +1,22 @@
 
-* PRELIMINARY WORK
+* PHASE 1 - PRELIMINARY WORK
 
-** GOAL: REVIEW GFX ROUTINES / FILES
-[ ] ???
+** GOAL: ADDRESS GFX ROUTINES / FILES
+
+[X] Inventory routines used for graphics
+[ ] Determine equivalent functions or re-create as needed
 
 
 ** GOAL: ADDRESS MISSING / EXTRANEOUS SOURCE FILES
 
-[ ] Baseball - recreate missing source files
+[X] Baseball - recreate missing source files
 	[X] SCHEDULE.BAS
 		used for AUTO-SCHEDULER (Option 4)
 		was not in /src, but referenced by in menus
 		found / renamed SCH.BAS, which appears to serve this functionality
 		compared to compiled game to confirm
 	
-	[-] LOOKY.BAS
+	[X] LOOKY.BAS
 		used to VIEW COMPILED STATS (Option 7)
 		referenced by HELLO.BAS, installed by game
 		similar file exists for each game but is unique to game
@@ -25,22 +27,26 @@
 		+ it will not, however, be very functional
 
 ** GOAL: COMPILE FULL GAMES FROM SOURCES
-*** From WWW - "FULL COUNT BASEBALL 6.53"
-*** From Code - "FULL COUNT BASEBALL 6.51"
 
-[ ] Re-create dependent functions with no QB64 equivalent in native BASIC
+[X] Re-create dependent functions with no QB64 equivalent in native BASIC
 	[X] ClearEOL
 	[X] FCopy
 	[X] MAMenu
 	[X] MMenuVert
-	[ ] MPaintBox
+	[X] MScrnSave/MScrnRest
 	[X] QPrint/MQPrint	
 	[X] ReadFile + FCount
 	[X] Text In
 	[X] YesNoB
 	
-[ ] Replace dependent functions with QB64 equivalents
+[X] Replace dependent functions with QB64 equivalents
 
-[ ] Make code compatible with QB64
-	[ ] Remove unused DECLARE / DIM
-	[ ] Replace RND(1) with RND
+[X] Remove obsolete code
+	Make sure there are no more disk prompts
+	References to SortStr are not needed
+		They are all used on file lists
+		My function sorts the list in shell
+
+[X] Make code compatible with QB64
+
+[ ] Attempt first compilation of each file

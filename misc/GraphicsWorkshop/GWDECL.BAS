@@ -5,34 +5,33 @@
 
 'Standard TYPE definitions for Graphics Workshop
 TYPE Coord0
-    XPos AS INTEGER
-    YPos AS INTEGER
+	XPos AS INTEGER
+	YPos AS INTEGER
 END TYPE
 
 TYPE Coord1
-    Col0 AS INTEGER
-    Line0 AS INTEGER
+	Col0 AS INTEGER
+	Line0 AS INTEGER
 END TYPE
 
 TYPE Coord2
-    XPos AS INTEGER
-    YPos AS INTEGER
+	XPos AS INTEGER
+	YPos AS INTEGER
 END TYPE
 
 TYPE Window1
-    x1 AS INTEGER
-    y1 AS INTEGER
-    x2 AS INTEGER
-    y2 AS INTEGER
+	x1 AS INTEGER
+	y1 AS INTEGER
+	x2 AS INTEGER
+	y2 AS INTEGER
 END TYPE
 
 TYPE Window2
-    Col1 AS INTEGER
-    Line1 AS INTEGER
-    Col2 AS INTEGER
-    Line2 AS INTEGER
+	Col1 AS INTEGER
+	Line1 AS INTEGER
+	Col2 AS INTEGER
+	Line2 AS INTEGER
 END TYPE
-
 
 '***************************************************************************
 
@@ -207,5 +206,3 @@ DECLARE SUB VertMenuG (Item$(), Choice%, MaxLen%, BoxBot%, Ky$, Action%)
 
 DECLARE SUB FillPoly (a%, b%, c%, d%, e%, f%, g%, h%, Colr%)
 DECLARE SUB DrawCursor (X%, Y%, CursorWidth%, CursorLength%, CursorIs%, CursorTime%)
-
-
