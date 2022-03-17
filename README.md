@@ -1,5 +1,4 @@
-#Name
-## LH Games Full Count Baseball
+# LH Games Full Count Baseball
 
 # Game Description
 29-man rosters * Ball park effects * Stats compiler automatically keeps all player and team stats as well as past schedule results * Complete boxscore to screen and/or printer after each game * One-player vs. computer-manager, two-player, and auto-play options. * Input your own teams, draft or trade players from teams already included * You choose the starting lineups, batting order, relief pitchers, plus game decisions like when to hit away, bunt for a hit, sacrifice, steal, hit & run, bring in the corners or the entire infield, take an extra base, DH option and more!
