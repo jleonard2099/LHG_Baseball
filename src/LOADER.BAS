@@ -1,8 +1,7 @@
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'
-''$INCLUDE: 'QEditype.BI'
 
-DEFINT A-Z
+DefInt A-Z
 DECLARE SUB SHOWFIELD (P9%)
 DECLARE SUB SHOWSPLIT (P9%)
 DECLARE SUB GETAKEY ()
@@ -17,59 +16,61 @@ DECLARE SUB LINSWAP (P9)
 DECLARE SUB SHOWBATTERS (P9)
 DECLARE SUB LETTER (I$)
 DECLARE SUB COLCHK (P9, I)
+
 'DECLARE SUB QEdit (array$(), Ky$, Action, Ed AS EditInfo)
 
-TYPE PBP
-	YY AS STRING * 30
-END TYPE
+Type PBP
+    YY As String * 30
+End Type
 
-DIM K9(1) AS SINGLE
-DIM A$(1), L%(1, 13), T1(1), B%(1, 22, 80), P%(1, 21, 89), B$(1, 22), P$(1, 21), H$(4)
-DIM PT$(1), PARK$(83), TS%(1, 11), SA%(1, 24)
-DIM SHARED Q3$(100), MON(5, 14)
-DIM SHARED ATTEN AS LONG
-DIM INJ%(1, 22), DYS%(1, 21), PU$(8), WD$(9)
-DIM P6%(1), P1%(1), S8%(1, 1), B1!(9), B0%(3, 2), B1%(3, 1), S1%(1), B9%(1, 10), NN$(1)
-DIM S%(1, 26), B3%(1, 9), B7%(1, 9), O%(1), S6%(1, 2), B1$(4), B4%(1, 7, 9), X$(12), C$(11), F$(10)
-DIM VV(1), VV1(1), D3%(1), P2%(1), A5%(4), U$(4), DP%(1), EJ$(20), IJ$(20)
-DIM X0%(1, 2, 23), D0%(1), TP%(11, 2), L0%(1), T3%(22), AP%(2)
-DIM P5%(1, 21, 41), B5%(1, 22, 21), P8%(1, 21, 41), B8%(1, 22, 21)
-DIM T%(22), P4%(22), B2%(1, 22), P3%(1, 21)
-DIM NG%(18), YN$(1), Q$(23), H0$(1), TM$(4), SC$(4), PC$(4), N$(1), D$(3), M$(1)
-DIM BT%(1, 9, 9), CF%(9, 2), LB%(9, 1), SO%(5, 2), UM%(1, 9, 4), MF%(1)
-DIM PR%(24), GK%(1)
-DIM CSS%(1, 22, 6)
-DIM MG%(1, 999), GS%(21, 1), PS%(23, 1)
-DIM U%(50)
-DIM V$(200), S$(1), SP%(1), U6$(2), LGT$(2), DH$(1), UMP$(50), WE$(1), MN$(10), NB%(1, 4)
-DIM UV%(200), VI$(1), DL$(1), DN$(1), F(9), M%(9), BB%(9), BP(9)
+Dim K9(1) As Single
+Dim A$(1), L%(1, 13), T1(1), B%(1, 22, 80), P%(1, 21, 89), B$(1, 22), P$(1, 21), H$(4)
+Dim PT$(1), PARK$(83), TS%(1, 11), SA%(1, 24)
+Dim Shared Q3$(100), MON(5, 14)
+Dim Shared ATTEN As Long
+Dim INJ%(1, 22), DYS%(1, 21), PU$(8), WD$(9)
+Dim P6%(1), P1%(1), S8%(1, 1), B1!(9), B0%(3, 2), B1%(3, 1), S1%(1), B9%(1, 10), NN$(1)
+Dim S%(1, 26), B3%(1, 9), B7%(1, 9), O%(1), S6%(1, 2), B1$(4), B4%(1, 7, 9), X$(12), C$(11), F$(10)
+Dim VV(1), VV1(1), D3%(1), P2%(1), A5%(4), U$(4), DP%(1), EJ$(20), IJ$(20)
+Dim X0%(1, 2, 23), D0%(1), TP%(11, 2), L0%(1), T3%(22), AP%(2)
+Dim P5%(1, 21, 41), B5%(1, 22, 21), P8%(1, 21, 41), B8%(1, 22, 21)
+Dim T%(22), P4%(22), B2%(1, 22), P3%(1, 21)
+Dim NG%(18), YN$(1), Q$(23), H0$(1), TM$(4), SC$(4), PC$(4), N$(1), D$(3), M$(1)
+Dim BT%(1, 9, 9), CF%(9, 2), LB%(9, 1), SO%(5, 2), UM%(1, 9, 4), MF%(1)
+Dim PR%(24), GK%(1)
+Dim CSS%(1, 22, 6)
+Dim MG%(1, 999), GS%(21, 1), PS%(23, 1)
+Dim U%(50)
+Dim V$(200), S$(1), SP%(1), U6$(2), LGT$(2), DH$(1), UMP$(50), WE$(1), MN$(10), NB%(1, 4)
+Dim UV%(200), VI$(1), DL$(1), DN$(1), F(9), M%(9), BB%(9), BP(9)
+
 ' DIM Ed AS EditInfo              'create the editor's data structure
 
-COMMON SHARED TS%(), SA%(), P8%(), B8%(), P%(), P$(), B$(), P5%(), B5%(), X0%(), B%(), AP%(), A$()
-COMMON SHARED C$(), T3%(), P6%(), P2%(), L0%(), DP%(), U$(), IJ$(), EJ$(), SC$(), PC$()
-COMMON SHARED S%(), P1%(), S1%(), D$(), S6%(), L%(), D3%(), NG%(), A5%(), B1!(), B1%(), B7%()
-COMMON SHARED B0%(), B3%(), B9%(), Q$(), PR%(), W%, GK%(), B1$(), X$(), S8%(), NN$(), N$(), O%()
-COMMON SHARED VV(), VV1(), B4%(), K9() AS SINGLE, H0$(), H$(), D0%(), M$(), LB%()
-COMMON SHARED F$(), TM$(), T1%(), YN$(), TP%(), SO%(), CF%(), BT%()
-COMMON SHARED S$, P, U6, DH%, U9, G4 AS SINGLE, RE, RD
-COMMON SHARED TA%, SC%, WF AS SINGLE, PC%, TP%, WS%, WI$, DRIVE, AP%, INNING%, BUCK  AS PBP
-COMMON SHARED MG%(), CSS%(), D, IJ%, DR%, CGERA%
-REDIM Q2$(2056)
+Common Shared TS%(), SA%(), P8%(), B8%(), P%(), P$(), B$(), P5%(), B5%(), X0%(), B%(), AP%(), A$()
+Common Shared C$(), T3%(), P6%(), P2%(), L0%(), DP%(), U$(), IJ$(), EJ$(), SC$(), PC$()
+Common Shared S%(), P1%(), S1%(), D$(), S6%(), L%(), D3%(), NG%(), A5%(), B1!(), B1%(), B7%()
+Common Shared B0%(), B3%(), B9%(), Q$(), PR%(), W%, GK%(), B1$(), X$(), S8%(), NN$(), N$(), O%()
+Common Shared VV(), VV1(), B4%(), K9() As Single, H0$(), H$(), D0%(), M$(), LB%()
+Common Shared F$(), TM$(), T1%(), YN$(), TP%(), SO%(), CF%(), BT%()
+Common Shared S$, P, U6, DH%, U9, G4 As Single, RE, RD
+Common Shared TA%, SC%, WF As Single, PC%, TP%, WS%, WI$, DRIVE, AP%, INNING%, BUCK As PBP
+Common Shared MG%(), CSS%(), D, IJ%, DR%, CGERA%
+ReDim Q2$(2056)
 
-DIM E AS SINGLE
-DIM SE AS SINGLE
-DIM Q1 AS SINGLE
-DIM QQ AS SINGLE
-DIM R AS SINGLE
-DIM Y AS LONG
-DIM JJ AS SINGLE
+Dim E As Single
+Dim SE As Single
+Dim Q1 As Single
+Dim QQ As Single
+Dim R As Single
+Dim Y As Long
+Dim JJ As Single
 
 'commenting out here as it is mostly irrelevant
 'CALL InitMouse(There)
 
-RANDOMIZE TIMER
+Randomize Timer
 
-CLS
+Cls
 
 BK$ = "                         "
 VI$(0) = "VISITING TEAM"
@@ -91,790 +92,793 @@ PC$(1) = "THUNDERSTORMS": PC$(2) = "RAIN": PC$(3) = "SPRINKLES": PC$(4) = "NONE"
 51 SP%(0) = -1: SP%(1) = -1
 
 56 U6$(0) = "HUMAN OPPONENT      "
-	U6$(1) = "COMPUTER OPPONENT   "
-	U6$(2) = "COMPUTER VS COMPUTER"
-	PU$(0) = "1980 - PRESENT"
-	PU$(1) = "1973 - 1979   "
-	PU$(2) = "1955 - 1972   "
-	PU$(3) = "1946 - 1954   "
-	PU$(4) = "1933 - 1945   "
-	PU$(5) = "1919 - 1932   "
-	PU$(6) = "1909 - 1918   "
-	PU$(7) = "1894 - 1908   "
-	PU$(8) = "1876 - 1893   "
+U6$(1) = "COMPUTER OPPONENT   "
+U6$(2) = "COMPUTER VS COMPUTER"
+PU$(0) = "1980 - PRESENT"
+PU$(1) = "1973 - 1979   "
+PU$(2) = "1955 - 1972   "
+PU$(3) = "1946 - 1954   "
+PU$(4) = "1933 - 1945   "
+PU$(5) = "1919 - 1932   "
+PU$(6) = "1909 - 1918   "
+PU$(7) = "1894 - 1908   "
+PU$(8) = "1876 - 1893   "
 
 57 LGT$(0) = "AL GAME         "
-	LGT$(1) = "NL GAME         "
-	LGT$(2) = "INTERLEAGUE GAME"
+LGT$(1) = "NL GAME         "
+LGT$(2) = "INTERLEAGUE GAME"
 
 58 DH$(0) = "NO DH "
-	DH$(1) = "USE DH"
-	UMP$(0) = "AL"
-	UMP$(1) = "NL"
-	UMP$(2) = "NL"
-	WE$(0) = "YES"
-	WE$(1) = "NO "
+DH$(1) = "USE DH"
+UMP$(0) = "AL"
+UMP$(1) = "NL"
+UMP$(2) = "NL"
+WE$(0) = "YES"
+WE$(1) = "NO "
 
 59 DL$(0) = "LEAGUE GAME    "
-	DL$(1) = "EXHIBITION GAME"
-	IF NOT _FILEEXISTS("DEFERA") THEN OPEN "DEFERA" FOR OUTPUT AS #1: FOR I = 1 TO 14: PRINT #1, 0: NEXT: CLOSE 1
-OPEN "DEFERA" FOR INPUT AS #1: INPUT #1, U6: INPUT #1, LGT: INPUT #1, DH%
-	INPUT #1, DL: INPUT #1, MO%: INPUT #1, DN%: INPUT #1, WE%
-	INPUT #1, IJ%: INPUT #1, LR%: INPUT #1, DR%: INPUT #1, MP%
-	INPUT #1, G4: INPUT #1, VG%: INPUT #1, CGERA%
-CLOSE 1
+DL$(1) = "EXHIBITION GAME"
+If Not _FileExists("DEFERA") Then Open "DEFERA" For Output As #1: For I = 1 To 14: Print #1, 0: Next: Close 1
+Open "DEFERA" For Input As #1: Input #1, U6: Input #1, LGT: Input #1, DH%
+Input #1, DL: Input #1, MO%: Input #1, DN%: Input #1, WE%
+Input #1, IJ%: Input #1, LR%: Input #1, DR%: Input #1, MP%
+Input #1, G4: Input #1, VG%: Input #1, CGERA%
+Close 1
 
-60 OPEN "DEV.BAS" FOR INPUT AS #1
+60 Open "DEV.BAS" For Input As #1
 
-70 FOR I = 0 TO 3: INPUT #1, D$(I): NEXT I
+70 For I = 0 To 3: Input #1, D$(I): Next I
 
-80 CLOSE #1
+80 Close #1
 
 85 MN$(4) = "APRIL"
-	MN$(5) = "MAY"
-	MN$(6) = "JUNE"
-	MN$(7) = "JULY"
-	MN$(8) = "AUGUST"
-	MN$(9) = "SEPTEMBER"
-	MN$(10) = "OCTOBER"
+MN$(5) = "MAY"
+MN$(6) = "JUNE"
+MN$(7) = "JULY"
+MN$(8) = "AUGUST"
+MN$(9) = "SEPTEMBER"
+MN$(10) = "OCTOBER"
 
 86 DN$(0) = "AFTERNOON"
-	DN$(1) = "NIGHT"
-	B1$(0) = "LP"
-	B1$(1) = "L"
-	B1$(2) = "S"
-	B1$(3) = "R"
-	B1$(4) = "RP"
+DN$(1) = "NIGHT"
+B1$(0) = "LP"
+B1$(1) = "L"
+B1$(2) = "S"
+B1$(3) = "R"
+B1$(4) = "RP"
 
-90 DATA  A,B,C,D,E,F,G,H,I,J,K,L,M,dh,p,"c ",1b,2b,3b,ss,lf,cf,rf,ph,pr
+90 Data A,B,C,D,E,F,G,H,I,J,K,L,M,dh,p,"c ",1b,2b,3b,ss,lf,cf,rf,ph,pr
 
-100 CLS : FOR RA = 1 TO 60: RANDOMIZE TIMER: NEXT: P = 1
+100 Cls: For RA = 1 To 60: Randomize Timer: Next: P = 1
 
-110 FOR I = 0 TO 12: READ X$(I): NEXT I
+110 For I = 0 To 12: Read X$(I): Next I
 
-120 FOR I = 0 TO 11: READ C$(I): NEXT I
+120 For I = 0 To 11: Read C$(I): Next I
 
 140 H$(1) = "1b": H$(2) = "2b": H$(3) = "3b": H$(4) = "home"
 
-144 FOR I = 0 TO 1: FOR I1 = 0 TO 4: NB%(I, I1) = -1: NEXT: NEXT
-	FOR I = 0 TO 1: P1%(I) = -1: P6%(I) = -1
-	NEXT
-	SP%(0) = -1: SP%(1) = -1
-	 FOR I = 0 TO 1: FOR J = 0 TO 9: M%(J) = 0: B7%(I, J) = -1: B3%(I, J) = -1: NEXT: NEXT
-	CALL INITVARI
-	 IF NOT _FILEEXISTS("GAME82") THEN 6
-OPEN "GAME82" FOR INPUT AS #2
-INPUT #2, FF$
-FOR I = 0 TO 2: INPUT #2, AP%(I): NEXT
-CLOSE 2
-OPEN D$(0) + FF$ FOR RANDOM AS #1 LEN = 48
-	FOR X = 0 TO 18
-	FIELD #1, X * 2 AS X$, 2 AS Q2$(X + 1), 48 - 2 - 2 * X AS X$
-	NEXT
-	FIELD #1, 38 AS X$, 2 AS Q2$(22), 2 AS Q2$(23), 3 AS Q2$(20), 3 AS Q2$(21)
-	GET #1, AP%(0) + AP%(2)
-	FOR X = 0 TO 18: NG%(X) = CVI(Q2$(X + 1))
-	NEXT
-	FOR X = 0 TO 1: YN$(X) = Q2$(20 + X)
-	NEXT
-	VS% = CVI(Q2$(22)): HS% = CVI(Q2$(23))
-CLOSE 1
-	AP% = 1
+144 For I = 0 To 1: For I1 = 0 To 4: NB%(I, I1) = -1: Next: Next
+For I = 0 To 1: P1%(I) = -1: P6%(I) = -1
+Next
+SP%(0) = -1: SP%(1) = -1
+For I = 0 To 1: For J = 0 To 9: M%(J) = 0: B7%(I, J) = -1: B3%(I, J) = -1: Next: Next
+Call INITVARI
+If Not _FileExists("GAME82") Then 6
+Open "GAME82" For Input As #2
+Input #2, FF$
+For I = 0 To 2: Input #2, AP%(I): Next
+Close 2
+Open D$(0) + FF$ For Random As #1 Len = 48
+For X = 0 To 18
+    Field #1, X * 2 As X$, 2 As Q2$(X + 1), 48 - 2 - 2 * X As X$
+Next
+Field #1, 38 As X$, 2 As Q2$(22), 2 As Q2$(23), 3 As Q2$(20), 3 As Q2$(21)
+Get #1, AP%(0) + AP%(2)
+For X = 0 To 18: NG%(X) = CVI(Q2$(X + 1))
+Next
+For X = 0 To 1: YN$(X) = Q2$(20 + X)
+Next
+VS% = CVI(Q2$(22)): HS% = CVI(Q2$(23))
+Close 1
+AP% = 1
 
-6 IF AP% <> 1 THEN 170
-	U6 = NG%(8)
-	DH% = NG%(3)
-	G4 = NG%(4) / 10
-	MO% = NG%(17)
-	WE% = NG%(5)
-	VG% = NG%(11)
-	IJ% = NG%(6)
-	LR% = NG%(7)
-	DR% = NG%(9)
-	MP% = NG%(10)
-	CGERA% = NG%(14)
-	DN% = 1
-	IF NG%(15) < 1600 THEN DN% = 0
-	IF U6 = 0 THEN 160
-	IF U6 = 3 THEN U6 = 2: GOTO 160
-	IF U6 = 1 THEN U9 = 0: GOTO 160
-	U9 = 1: U6 = 1
+6 If AP% <> 1 Then 170
+U6 = NG%(8)
+DH% = NG%(3)
+G4 = NG%(4) / 10
+MO% = NG%(17)
+WE% = NG%(5)
+VG% = NG%(11)
+IJ% = NG%(6)
+LR% = NG%(7)
+DR% = NG%(9)
+MP% = NG%(10)
+CGERA% = NG%(14)
+DN% = 1
+If NG%(15) < 1600 Then DN% = 0
+If U6 = 0 Then 160
+If U6 = 3 Then U6 = 2: GoTo 160
+If U6 = 1 Then U9 = 0: GoTo 160
+U9 = 1: U6 = 1
 
-160 GOTO 260
+160 GoTo 260
 
-170 CALL INFO
+170 Call INFO
 
-171 COLOR , 0: LOCATE 3, 1
-	COLOR 14: PRINT "(1) "; : COLOR 15: PRINT U6$(U6)
+171 Color , 0: Locate 3, 1
+Color 14: Print "(1) ";: Color 15: Print U6$(U6)
 
-172 COLOR 14: PRINT "(2) "; : COLOR 15: PRINT LGT$(LGT)
+172 Color 14: Print "(2) ";: Color 15: Print LGT$(LGT)
 
-173 COLOR 14: PRINT "(3) "; : COLOR 15: PRINT DH$(DH%)
+173 Color 14: Print "(3) ";: Color 15: Print DH$(DH%)
 
-174 COLOR 14: PRINT "(4) "; : COLOR 15: PRINT DL$(DL)
+174 Color 14: Print "(4) ";: Color 15: Print DL$(DL)
 
-175 COLOR 14: PRINT "(5) "; : COLOR 15: PRINT MN$(MO%)
+175 Color 14: Print "(5) ";: Color 15: Print MN$(MO%)
 
-177 COLOR 14: PRINT "(6) "; : COLOR 15: PRINT DN$(DN%)
+177 Color 14: Print "(6) ";: Color 15: Print DN$(DN%)
 
-179 COLOR 14: PRINT "(7) "; : COLOR 15: PRINT "PROCEED TO TEAM SELECTION"
+179 Color 14: Print "(7) ";: Color 15: Print "PROCEED TO TEAM SELECTION"
 
-180 COLOR 14: PRINT "(8) "; : COLOR 15: PRINT "USE CLIMATE/WIND/TEMP DATA "; WE$(WE%)
-	COLOR 14: PRINT "(9) "; : COLOR 15: PRINT "USE INJURIES "; WE$(IJ%)
+180 Color 14: Print "(8) ";: Color 15: Print "USE CLIMATE/WIND/TEMP DATA "; WE$(WE%)
+Color 14: Print "(9) ";: Color 15: Print "USE INJURIES "; WE$(IJ%)
 
-181 COLOR 14: PRINT "(0) "; : COLOR 15: PRINT "SAVE SETTINGS AS DEFAULT"
-	COLOR 14: PRINT "(A) "; : COLOR 15: PRINT "USE LEFT/RIGHT SPLIT STATS "; WE$(LR%)
-	COLOR 14: PRINT "(B) "; : COLOR 15: PRINT "USE DAYS REST DATA FOR PITCHERS "; WE$(DR%)
-	COLOR 14: PRINT "(C) "; : COLOR 15: PRINT "USE MANAGER PROFILE, IF AVAILABLE "; WE$(MP%)
-	COLOR 14: PRINT "(D) "; : COLOR 15: PRINT USING "DISPLAY INTERVAL: #.# "; G4
-	COLOR 14: PRINT "(E) "; : COLOR 15: PRINT "USE VGA SCREENS, IF ABLE: "; WE$(VG%)
-	COLOR 14: PRINT "(F) "; : COLOR 15: PRINT "PITCHER USAGE ERA: "; PU$(CGERA%)
+181 Color 14: Print "(0) ";: Color 15: Print "SAVE SETTINGS AS DEFAULT"
+Color 14: Print "(A) ";: Color 15: Print "USE LEFT/RIGHT SPLIT STATS "; WE$(LR%)
+Color 14: Print "(B) ";: Color 15: Print "USE DAYS REST DATA FOR PITCHERS "; WE$(DR%)
+Color 14: Print "(C) ";: Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE "; WE$(MP%)
+Color 14: Print "(D) ";: Color 15: Print Using "DISPLAY INTERVAL: #.# "; G4
+Color 14: Print "(E) ";: Color 15: Print "USE VGA SCREENS, IF ABLE: "; WE$(VG%)
+Color 14: Print "(F) ";: Color 15: Print "PITCHER USAGE ERA: "; PU$(CGERA%)
 
-183 COLOR 7, 0: I$=GetKeyPress$
-	IF I$ = CHR$(27) THEN RUN "HELLO.EXE"
-	CALL LETTER(I$)
+183 Color 7, 0: I$ = GetKeyPress$
+If I$ = Chr$(27) Then Run "HELLO.EXE"
+Call LETTER(I$)
 
-185 I = VAL(I$): IF I < 0 OR I > 16 THEN 183
+185 I = Val(I$): If I < 0 Or I > 16 Then 183
 
-190 ON I + 1 GOTO 205, 191, 193, 195, 197, 199, 201, 260, 204, 206, 207, 208, 209, 210, 211, 212
+190 On I + 1 GOTO 205, 191, 193, 195, 197, 199, 201, 260, 204, 206, 207, 208, 209, 210, 211, 212
 
-191 U6 = U6 + 1: IF U6 > 2 THEN U6 = 0
-	GOTO 171
+191 U6 = U6 + 1: If U6 > 2 Then U6 = 0
+GoTo 171
 
-211 VG% = 1 - VG%: GOTO 171
+211 VG% = 1 - VG%: GoTo 171
 
-206 IJ% = 1 - IJ%: GOTO 171
+206 IJ% = 1 - IJ%: GoTo 171
 
-207 LR% = 1 - LR%: GOTO 171
+207 LR% = 1 - LR%: GoTo 171
 
-208 DR% = 1 - DR%: GOTO 171
+208 DR% = 1 - DR%: GoTo 171
 
-193 LGT = LGT + 1: IF LGT > 2 THEN LGT = 0
-	GOTO 171
+193 LGT = LGT + 1: If LGT > 2 Then LGT = 0
+GoTo 171
 
-195 DH% = 1 - DH%: GOTO 171
+195 DH% = 1 - DH%: GoTo 171
 
-197 DL = 1 - DL: GOTO 171
+197 DL = 1 - DL: GoTo 171
 
-209 MP% = 1 - MP%: GOTO 171
+209 MP% = 1 - MP%: GoTo 171
 
-199 MO% = MO% + 1: IF MO% > 10 THEN MO% = 4
-	LOCATE 7, 4: PRINT BK$: GOTO 171
+199 MO% = MO% + 1: If MO% > 10 Then MO% = 4
+Locate 7, 4: Print BK$: GoTo 171
 
 201 DN% = 1 - DN%
-	LOCATE 8, 4
-	PRINT BK$
-	GOTO 171
+Locate 8, 4
+Print BK$
+GoTo 171
 
 212 CGERA% = CGERA% + 1
-	IF CGERA% > 8 THEN CGERA% = 0
-	GOTO 171
+If CGERA% > 8 Then CGERA% = 0
+GoTo 171
 
-204 WE% = 1 - WE%: GOTO 171
+204 WE% = 1 - WE%: GoTo 171
 
-210 LOCATE 16, 22: INPUT G4: GOTO 171
+210 Locate 16, 22: Input G4: GoTo 171
 
-205 OPEN "DEFERA" FOR OUTPUT AS #1: PRINT #1, U6: PRINT #1, LGT: PRINT #1, DH%
-	PRINT #1, DL: PRINT #1, MO%: PRINT #1, DN%: PRINT #1, WE%
-	PRINT #1, IJ%: PRINT #1, LR%: PRINT #1, DR%: PRINT #1, MP%
-	PRINT #1, G4: PRINT #1, VG%: PRINT #1, CGERA%
-CLOSE 1
-	GOTO 171
+205 Open "DEFERA" For Output As #1: Print #1, U6: Print #1, LGT: Print #1, DH%
+Print #1, DL: Print #1, MO%: Print #1, DN%: Print #1, WE%
+Print #1, IJ%: Print #1, LR%: Print #1, DR%: Print #1, MP%
+Print #1, G4: Print #1, VG%: Print #1, CGERA%
+Close 1
+GoTo 171
 
 260 YV = 1: YM = 0
 
-261 IF NOT _FILEEXISTS(D$(0) + "UMPIRES." + UMP$(LGT)) THEN 265
-	YU = 0
-OPEN D$(0) + "UMPIRES." + UMP$(LGT) FOR INPUT AS #1
-	FOR I1 = 1 TO 50
-	INPUT #1, UMP$(I1)
-	INPUT #1, U%(I1)
-	NEXT
-CLOSE #1
-	FOR I1 = 1 TO 50
-	IF UMP$(I1) <> "" THEN YU = YU + 1
-	NEXT
-	IF YU < 4 THEN 265
+261 If Not _FileExists(D$(0) + "UMPIRES." + UMP$(LGT)) Then 265
+YU = 0
+Open D$(0) + "UMPIRES." + UMP$(LGT) For Input As #1
+For I1 = 1 To 50
+    Input #1, UMP$(I1)
+    Input #1, U%(I1)
+Next
+Close #1
+For I1 = 1 To 50
+    If UMP$(I1) <> "" Then YU = YU + 1
+Next
+If YU < 4 Then 265
 
-262 YU = INT(RND(1) * 50) + 1: IF UMP$(YU) = "" OR YU = YM THEN 262
+262 YU = Int(Rnd(1) * 50) + 1: If UMP$(YU) = "" Or YU = YM Then 262
 
-263 U$(YV) = UMP$(YU): YM = YU: YV = YV + 1: IF YV < 5 THEN 262
+263 U$(YV) = UMP$(YU): YM = YU: YV = YV + 1: If YV < 5 Then 262
 
-264 GOTO 270
+264 GoTo 270
 
 265 U$(1) = "RHODES": U$(2) = "WINBERRY": U$(3) = "TIPPETT": U$(4) = "MILLER"
 
-270 FOR I = 0 TO 1
-	IF AP% = 1 THEN T1(I) = NG%(I): YN$ = YN$(I): GOSUB 300: GOTO 2860
+270 For I = 0 To 1
+    If AP% = 1 Then T1(I) = NG%(I): YN$ = YN$(I): GoSub 300: GoTo 2860
 
-280 CALL INFO
+    280 Call INFO
 
-2800 COLOR 15, 0: CLS
-	JJ = 10
-	LOCATE 6, 8: COLOR 15, 4
-	PRINT " Ö"; STRING$(61, 196); "· "; : FOR II = 1 TO JJ: LOCATE 6 + II, 8
-	PRINT " º"; STRING$(61, 32); "º "; : NEXT
-	LOCATE 7 + JJ, 8
-	PRINT " Ó"; STRING$(61, 196); "½ "; : LOCATE 7, 32
-	LOCATE , 12: PRINT VI$(I)
-	LOCATE , 12: PRINT "ENTER DISK ID: ": PRINT
-	LOCATE , 12: PRINT "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
-	LOCATE , 12: PRINT "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
-	PRINT
-	LOCATE , 12: PRINT "MAKE SURE NUM LOCK KEY IS OFF TO USE ARROW KEYS"
-	LOCATE , 12: PRINT "AND PG UP/PG DN KEYS"
-	PRINT
-	LOCATE , 12: PRINT "(JUST HIT ENTER TO USE PREVIOUS ID, IF SAME)"
-	LOCATE 8, 27: INPUT NY$
-	COLOR 15, 0
-	IF NY$ = "" THEN GOSUB 8102: GOTO 2856
-	YN$ = NY$
-	FOR I1 = 1 TO 200: V$(I1) = "": NEXT
+    2800 Color 15, 0: Cls
+    JJ = 10
+    Locate 6, 8: Color 15, 4
+    Print " Ö"; String$(61, 196); "· ";: For II = 1 To JJ: Locate 6 + II, 8
+    Print " º"; String$(61, 32); "º ";: Next
+    Locate 7 + JJ, 8
+    Print " Ó"; String$(61, 196); "½ ";: Locate 7, 32
+    Locate , 12: Print VI$(I)
+    Locate , 12: Print "ENTER DISK ID: ": Print
+    Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
+    Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
+    Print
+    Locate , 12: Print "MAKE SURE NUM LOCK KEY IS OFF TO USE ARROW KEYS"
+    Locate , 12: Print "AND PG UP/PG DN KEYS"
+    Print
+    Locate , 12: Print "(JUST HIT ENTER TO USE PREVIOUS ID, IF SAME)"
+    Locate 8, 27: Input NY$
+    Color 15, 0
+    If NY$ = "" Then GoSub 8102: GoTo 2856
+    YN$ = NY$
+    For I1 = 1 To 200: V$(I1) = "": Next
 
-2857 GOSUB 8100
+    2857 GoSub 8100
 
-2856 IF BO% = 1 THEN BO% = 0: GOTO 2800
+    2856 If BO% = 1 Then BO% = 0: GoTo 2800
 
-2858 LOCATE 2, 33: COLOR L%(I, 11), L%(I, 12): PRINT A$(I): COLOR 15, 4: LOCATE , 33: PRINT "ANY CHANGE (YN)";
-	I$=GetKeyPress$
+    2858 Locate 2, 33: Color L%(I, 11), L%(I, 12): Print A$(I): Color 15, 4: Locate , 33: Print "ANY CHANGE (YN)";
+    I$ = GetKeyPress$
 
-2859 IF UCASE$(I$) = "Y" THEN 2800
+    2859 If UCase$(I$) = "Y" Then 2800
 
-2860 YN$(I) = YN$
-	COLOR 15, 0
-A$(I) = RTrim$(A$(I))
+    2860 YN$(I) = YN$
+    Color 15, 0
+    A$(I) = RTrim$(A$(I))
 
-430 NEXT I
+430 Next I
 
 431 N = 1
 
-440 IF U6 = 1 AND AP% <> 1 THEN GOSUB 2430
+440 If U6 = 1 And AP% <> 1 Then GoSub 2430
 
-450 FOR P9 = 0 TO 1
-	GOSUB 4500
-	GOSUB 2040
-	GOSUB 1590
+450 For P9 = 0 To 1
+    GoSub 4500
+    GoSub 2040
+    GoSub 1590
 
-460 GOSUB 1060
-	NEXT P9
+    460 GoSub 1060
+Next P9
 
-470 FOR P9 = 0 TO 1
+470 For P9 = 0 To 1
 
-480 CLS : CALL INFO
-	LOCATE 3, 1
-	COLOR L%(P9, 11), L%(P9, 12): PRINT A$(P9): COLOR 7, 0: PRINT
-	COLOR 14: PRINT "(0) "; : COLOR 15: PRINT "INPUT A LINEUP MANUALLY": PRINT
-	COLOR 14: PRINT "(1) "; : COLOR 15: PRINT "SELECT A LINEUP FROM MANAGER PROFILE": PRINT
-	COLOR 14: PRINT "(2) "; : COLOR 15: PRINT "COMPUTER DETERMINE LINEUP RANDOMLY": PRINT
-	COLOR 14: PRINT "(3) "; : COLOR 15: PRINT "COMPUTER DETERMINE LINEUP FROM MANAGER PROFILE"
-	 IF AP% = 1 AND NLF% = 1 THEN NLF% = 0: I$ = "2": GOTO 491
-	IF AP% = 1 AND MP% = 0 AND (U6 = 2 OR U6 = 1 AND U9 = P9) THEN I$ = "1": GOTO 491
-	IF AP% = 1 AND (U6 = 2 OR U6 = 1 AND U9 = P9) THEN I$ = "2": GOTO 491
-490 I$ = GetKeyPress$
-	IF I$ = CHR$(27) THEN 170
+    480 Cls: Call INFO
+    Locate 3, 1
+    Color L%(P9, 11), L%(P9, 12): Print A$(P9): Color 7, 0: Print
+    Color 14: Print "(0) ";: Color 15: Print "INPUT A LINEUP MANUALLY": Print
+    Color 14: Print "(1) ";: Color 15: Print "SELECT A LINEUP FROM MANAGER PROFILE": Print
+    Color 14: Print "(2) ";: Color 15: Print "COMPUTER DETERMINE LINEUP RANDOMLY": Print
+    Color 14: Print "(3) ";: Color 15: Print "COMPUTER DETERMINE LINEUP FROM MANAGER PROFILE"
+    If AP% = 1 And NLF% = 1 Then NLF% = 0: I$ = "2": GoTo 491
+    If AP% = 1 And MP% = 0 And (U6 = 2 Or U6 = 1 And U9 = P9) Then I$ = "1": GoTo 491
+    If AP% = 1 And (U6 = 2 Or U6 = 1 And U9 = P9) Then I$ = "2": GoTo 491
+    490 I$ = GetKeyPress$
+    If I$ = Chr$(27) Then 170
 
-491 I1 = VAL(I$): IF I1 < 0 OR I1 > 3 THEN 490
-	IF I$ = "2" THEN GOSUB 5000: IF LE = 0 THEN 520
+    491 I1 = Val(I$): If I1 < 0 Or I1 > 3 Then 490
+    If I$ = "2" Then GoSub 5000: If LE = 0 Then 520
 
-496 IF LE = 1 THEN LE = 0: GOTO 480
+    496 If LE = 1 Then LE = 0: GoTo 480
 
-500 IF I$ <> "1" AND I$ <> "3" THEN GOSUB 2160: GOSUB 2310: GOSUB 540
+    500 If I$ <> "1" And I$ <> "3" Then GoSub 2160: GoSub 2310: GoSub 540
 
-510 IF I$ = "1" OR I$ = "3" THEN GOSUB 1830
+    510 If I$ = "1" Or I$ = "3" Then GoSub 1830
 
-520 COLOR 15, 0: LOCATE 5, 59: PRINT "OPPOSING PITCHER"
-	LOCATE , 59: PRINT P$(1 - P9, P1%(1 - P9)); " "; B1$(P%(1 - P9, P1%(1 - P9), 0) + 2)
-	IF RP = 1 THEN RP = 0: GOTO 480
+    520 Color 15, 0: Locate 5, 59: Print "OPPOSING PITCHER"
+    Locate , 59: Print P$(1 - P9, P1%(1 - P9)); " "; B1$(P%(1 - P9, P1%(1 - P9), 0) + 2)
+    If RP = 1 Then RP = 0: GoTo 480
 
-525 NEXT P9: GOSUB 2390
+525 Next P9: GoSub 2390
 
-530 W5 = 0: W6 = 1: VV(0) = 1: VV1(0) = 9: VV(1) = 1: VV1(1) = 9: GOTO 2320
+530 W5 = 0: W6 = 1: VV(0) = 1: VV1(0) = 9: VV(1) = 1: VV1(1) = 9: GoTo 2320
 
-540 FOR I = 0 TO 9: M%(I) = 0: NEXT I: GOSUB 1370
+540 For I = 0 To 9: M%(I) = 0: Next I: GoSub 1370
 
-550 FOR I = 1 TO 9
-	COLOR 15, 0: LOCATE 5, 59: PRINT "OPPOSING PITCHER": LOCATE , 59: PRINT P$(1 - P9, P1%(1 - P9)); " "; B1$(P%(1 - P9, P1%(1 - P9), 0) + 2)
+550 For I = 1 To 9
+    Color 15, 0: Locate 5, 59: Print "OPPOSING PITCHER": Locate , 59: Print P$(1 - P9, P1%(1 - P9)); " "; B1$(P%(1 - P9, P1%(1 - P9), 0) + 2)
 
-560 CALL POSITION(I): PRINT "                  "; : CALL POSITION(I)
-561 I$ = GetKeyPress$
+    560 Call POSITION(I): Print "                  ";: Call POSITION(I)
+    561 I$ = GetKeyPress$
 
-570 CALL LETTER(I$)
-	IF I$ = CHR$(27) THEN
-	  FOR J = 1 TO 9
-	  M%(J) = 0: B7%(P9, J) = -1: B3%(P9, J) = -1
-	  NEXT
-	  C1 = 0
-	  FOR J = 0 TO 22
-	  B%(P9, J, 21) = 0
-	  NEXT
-	  RP = 1
-	  FOR J = 0 TO 22
-	  IF B%(P9, J, 31) <> 0 THEN B%(P9, J, 21) = 99
-	  NEXT
-	  GOTO 480
-	END IF
+    570 Call LETTER(I$)
+    If I$ = Chr$(27) Then
+        For J = 1 To 9
+            M%(J) = 0: B7%(P9, J) = -1: B3%(P9, J) = -1
+        Next
+        C1 = 0
+        For J = 0 To 22
+            B%(P9, J, 21) = 0
+        Next
+        RP = 1
+        For J = 0 To 22
+            If B%(P9, J, 31) <> 0 Then B%(P9, J, 21) = 99
+        Next
+        GoTo 480
+    End If
 
-580 I1 = VAL(I$): IF UCASE$(I$) = "X" THEN 540
+    580 I1 = Val(I$): If UCase$(I$) = "X" Then 540
 
-590 FOR J = 1 TO 9: IF J = I OR B3%(P9, J) = I1 AND B7%(P9, J) = 1 THEN 610
+    590 For J = 1 To 9: If J = I Or B3%(P9, J) = I1 And B7%(P9, J) = 1 Then 610
 
-600 IF B3%(P9, J) = I1 AND UCASE$(I$) <> "P" THEN 560
+        600 If B3%(P9, J) = I1 And UCase$(I$) <> "P" Then 560
 
-610 NEXT J
+    610 Next J
 
-620 IF DH% = 1 AND UCASE$(I$) = "P" THEN 560
+    620 If DH% = 1 And UCase$(I$) = "P" Then 560
 
-630 IF B%(P9, I1, 21) <> 0 AND UCASE$(I$) <> "P" THEN 560
+    630 If B%(P9, I1, 21) <> 0 And UCase$(I$) <> "P" Then 560
 
-640 IF UCASE$(I$) = "P" THEN 760
+    640 If UCase$(I$) = "P" Then 760
 
-650 B3%(P9, I) = I1: PRINT USING "# "; I; : PRINT B$(P9, B3%(P9, I));
+    650 B3%(P9, I) = I1: Print Using "# "; I;: Print B$(P9, B3%(P9, I));
 
-660 LOCATE , 74
-680 I$ = GetKeyPress$
+    660 Locate , 74
+    680 I$ = GetKeyPress$
 
-690 IF VAL(I$) = 1 THEN 680
+    690 If Val(I$) = 1 Then 680
 
-700 FOR J = 1 TO 9: IF J = I THEN 720
+    700 For J = 1 To 9: If J = I Then 720
 
-710 IF VAL(I$) = B7%(P9, J) THEN 680
+        710 If Val(I$) = B7%(P9, J) Then 680
 
-720 NEXT J
+    720 Next J
 
-730 IF DH% = 0 AND VAL(I$) = 0 OR UCASE$(I$) = "X" THEN 560
+    730 If DH% = 0 And Val(I$) = 0 Or UCase$(I$) = "X" Then 560
 
-740 PRINT C$(VAL(I$)); : B7%(P9, I) = VAL(I$)
+    740 Print C$(Val(I$));: B7%(P9, I) = Val(I$)
 
-750 B9%(P9, B7%(P9, I)) = B3%(P9, I): M%(VAL(I$)) = 1
+    750 B9%(P9, B7%(P9, I)) = B3%(P9, I): M%(Val(I$)) = 1
 
-751 LOCATE I1 + 2, 2: PRINT "*"; : COLOR L%(P9, 11), L%(P9, 12): PRINT B$(P9, I1): COLOR 15, 0: GOSUB 1370: GOTO 830
+    751 Locate I1 + 2, 2: Print "*";: Color L%(P9, 11), L%(P9, 12): Print B$(P9, I1): Color 15, 0: GoSub 1370: GoTo 830
 
-760 FOR J = 1 TO 9: IF J = I THEN 780
+    760 For J = 1 To 9: If J = I Then 780
 
-770 IF B3%(P9, J) = P1%(P9) AND B7%(P9, J) = 1 THEN 560
+        770 If B3%(P9, J) = P1%(P9) And B7%(P9, J) = 1 Then 560
 
-780 NEXT J
+    780 Next J
 
-790 B3%(P9, I) = P1%(P9): PRINT P$(P9, P1%(P9)); : M%(VAL(I$)) = 1
+    790 B3%(P9, I) = P1%(P9): Print P$(P9, P1%(P9));: M%(Val(I$)) = 1
 
-800 LOCATE , 72
+    800 Locate , 72
 
-820 PRINT "P "; : B7%(P9, I) = 1: B9%(P9, 1) = P1%(P9): M%(1) = 1: GOSUB 1370
+    820 Print "P ";: B7%(P9, I) = 1: B9%(P9, 1) = P1%(P9): M%(1) = 1: GoSub 1370
 
-830 IF C1 = 1 THEN 850
+    830 If C1 = 1 Then 850
 
-840 NEXT I
+840 Next I
 
-850 C1 = 1: LOCATE 25, 1: COLOR 14: PRINT "(1-9) CHANGE 0-NONE (R)ESELECT LINEUP (P)OSITION SWAP (L)INEUP SWAP";
-	COLOR 15, 0
-	IF AP% = 1 AND (U6 = 2 OR U6 = 1 AND U9 = P9) THEN I$ = "0": GOTO 861
+850 C1 = 1: Locate 25, 1: Color 14: Print "(1-9) CHANGE 0-NONE (R)ESELECT LINEUP (P)OSITION SWAP (L)INEUP SWAP";
+Color 15, 0
+If AP% = 1 And (U6 = 2 Or U6 = 1 And U9 = P9) Then I$ = "0": GoTo 861
 860 I$ = GetKeyPress$
 
-861 IF UCASE$(I$) = "R" OR I$ = CHR$(27) THEN FOR J = 1 TO 9: M%(J) = 0: B7%(P9, J) = -1: B3%(P9, J) = -1: NEXT: C1 = 0: FOR J = 0 TO 22: B%(P9, J, 21) = 0: NEXT: RP = 1: GOTO 1001
-	IF UCASE$(I$) = "L" THEN CALL LINSWAP(P9): GOTO 850
-	IF UCASE$(I$) = "P" THEN CALL POSSWAP(P9): GOTO 850
+861 If UCase$(I$) = "R" Or I$ = Chr$(27) Then For J = 1 To 9: M%(J) = 0: B7%(P9, J) = -1: B3%(P9, J) = -1: Next: C1 = 0: For J = 0 To 22: B%(P9, J, 21) = 0: Next: RP = 1: GoTo 1001
+If UCase$(I$) = "L" Then Call LINSWAP(P9): GoTo 850
+If UCase$(I$) = "P" Then Call POSSWAP(P9): GoTo 850
 
-870 I = VAL(I$): IF I < 1 OR I > 9 THEN 890
+870 I = Val(I$): If I < 1 Or I > 9 Then 890
 
-880 LOCATE B3%(P9, I) + 2 - B4%, 2: PRINT " "; B$(P9, B3%(P9, I)): GOTO 560
+880 Locate B3%(P9, I) + 2 - B4%, 2: Print " "; B$(P9, B3%(P9, I)): GoTo 560
 
-890 IF I% = 0 THEN GOSUB 1710
+890 If I% = 0 Then GoSub 1710
 
-900 GOSUB 1200: C1 = 0
+900 GoSub 1200: C1 = 0
 
-910 RETURN
+910 Return
 
-1001 FOR J = 0 TO 22: IF B%(P9, J, 31) <> 0 THEN B%(P9, J, 21) = 99
-	NEXT
-	GOTO 910
+1001 For J = 0 To 22: If B%(P9, J, 31) <> 0 Then B%(P9, J, 21) = 99
+Next
+GoTo 910
 
-1060 S8%(P9, 0) = INT(((P%(P9, P1%(P9), 8) + P%(P9, P1%(P9), 7)) / P%(P9, P1%(P9), 4)) + .5)
+1060 S8%(P9, 0) = Int(((P%(P9, P1%(P9), 8) + P%(P9, P1%(P9), 7)) / P%(P9, P1%(P9), 4)) + .5)
 
 1070 S8%(P9, 1) = 3
-	'S8%(P9,1) = 4
+'S8%(P9,1) = 4
 
-1080 IF P6%(P9) > 1 THEN S8%(P9, 1) = 0
+1080 If P6%(P9) > 1 Then S8%(P9, 1) = 0
 
-1090 GOSUB 1250
-	RETURN
+1090 GoSub 1250
+Return
 
-1200 FOR I = 1 TO 9
+1200 For I = 1 To 9
 
-1210 IF B7%(P9, I) = 1 THEN 1230
+    1210 If B7%(P9, I) = 1 Then 1230
 
-1220 B%(P9, B3%(P9, I), 21) = 1
+    1220 B%(P9, B3%(P9, I), 21) = 1
 
-1230 M%(I) = 0: NEXT I
+1230 M%(I) = 0: Next I
 
-1240 M%(0) = 0: RETURN
+1240 M%(0) = 0: Return
 
-1250 IF I% <= 5 AND S6%(P9, 0) - S6%(1 - P9, 0) > 0 THEN P2%(P9) = P1%(P9)
+1250 If I% <= 5 And S6%(P9, 0) - S6%(1 - P9, 0) > 0 Then P2%(P9) = P1%(P9)
 
-1260 RETURN
+1260 Return
 
-1370 LOCATE 25, 1: FOR I1 = 0 TO 9: IF DH% = 0 AND I1 = 0 THEN 1410
+1370 Locate 25, 1: For I1 = 0 To 9: If DH% = 0 And I1 = 0 Then 1410
 
-1380 IF DH% = 1 AND I1 = 1 THEN 1410
+    1380 If DH% = 1 And I1 = 1 Then 1410
 
-1390 IF M%(I1) = 0 THEN PRINT I1; " ";
+    1390 If M%(I1) = 0 Then Print I1; " ";
 
-1400 IF M%(I1) = 1 THEN PRINT "  ";
+    1400 If M%(I1) = 1 Then Print "  ";
 
-1410 NEXT I1
+1410 Next I1
 
-1420 RETURN
+1420 Return
 
-1520 CLS : PRINT "#"; : COLOR L%(P9, 11), L%(P9, 12): PRINT A$(P9);
-	COLOR 14, 0: LOCATE , 16: PRINT "T  IP   H  G  GS DR  BB  SO   W- L   ERA"
+1520 Cls: Print "#";: Color L%(P9, 11), L%(P9, 12): Print A$(P9);
+Color 14, 0: Locate , 16: Print "T  IP   H  G  GS DR  BB  SO   W- L   ERA"
 
-1530 FOR I = 0 TO 21
+1530 For I = 0 To 21
 
-1531 IF P$(P9, I) = "XXX" OR LEFT$(P$(P9, I), 1) = " " OR P$(P9, I) = "" THEN P%(P9, I, 15) = 98
+    1531 If P$(P9, I) = "XXX" Or Left$(P$(P9, I), 1) = " " Or P$(P9, I) = "" Then P%(P9, I, 15) = 98
 
-1532 IF P%(P9, I, 15) = 1 OR P$(P9, I) = "XXX" THEN 1580
-	COLOR 2, 0
+    1532 If P%(P9, I, 15) = 1 Or P$(P9, I) = "XXX" Then 1580
+    Color 2, 0
 
-1540 IF I <= 9 THEN PRINT USING "#"; I; : COLOR 15, 0: GOSUB 2000
+    1540 If I <= 9 Then Print Using "#"; I;: Color 15, 0: GoSub 2000
 
-1550 IF I > 9 THEN PRINT X$(I - 10); : COLOR 15, 0: GOSUB 2000
+    1550 If I > 9 Then Print X$(I - 10);: Color 15, 0: GoSub 2000
 
-1560 LOCATE , 3: PRINT P$(P9, I);
-	COLOR 15, 0
+    1560 Locate , 3: Print P$(P9, I);
+    Color 15, 0
 
-1561 LOCATE , 16: PRINT B1$(P%(P9, I, 0) + 2);
-	LOCATE , 17: PRINT USING " ### ### ### ## ## ### ###"; P%(P9, I, 6); P%(P9, I, 7); P%(P9, I, 4); P%(P9, I, 5); P%(P9, I, 35); P%(P9, I, 8); P%(P9, I, 9);
-	LOCATE , 43: PRINT USING "  ##"; P%(P9, I, 1); : PRINT "-"; : PRINT USING "## ##.##"; P%(P9, I, 2); P%(P9, I, 10) / 100
+    1561 Locate , 16: Print B1$(P%(P9, I, 0) + 2);
+    Locate , 17: Print Using " ### ### ### ## ## ### ###"; P%(P9, I, 6); P%(P9, I, 7); P%(P9, I, 4); P%(P9, I, 5); P%(P9, I, 35); P%(P9, I, 8); P%(P9, I, 9);
+    Locate , 43: Print Using "  ##"; P%(P9, I, 1);: Print "-";: Print Using "## ##.##"; P%(P9, I, 2); P%(P9, I, 10) / 100
 
-1580 NEXT I
-	IF I% > 0 THEN 1681
+1580 Next I
+If I% > 0 Then 1681
 
-1590 LOCATE 19, 58: PRINT "SELECT STARTER"
+1590 Locate 19, 58: Print "SELECT STARTER"
 
-1595 IF SP%(P9) <> -1 THEN I1 = SP%(P9): GOTO 1640
+1595 If SP%(P9) <> -1 Then I1 = SP%(P9): GoTo 1640
 1600 I$ = GetKeyPress$
 
-1610 CALL LETTER(I$)
+1610 Call LETTER(I$)
 
-1630 I1 = VAL(I$): IF I1 > 21 OR P%(P9, I1, 15) > 0 THEN 1590
+1630 I1 = Val(I$): If I1 > 21 Or P%(P9, I1, 15) > 0 Then 1590
 
-1640 LOCATE , 58: PRINT P$(P9, I1); " "; B1$(P%(P9, I1, 0) + 2)
+1640 Locate , 58: Print P$(P9, I1); " "; B1$(P%(P9, I1, 0) + 2)
 
-1650 PRINT : LOCATE , 58: PRINT "ANY CHANGE (YN)"
-	IF AP% = 1 AND (U6 = 2 OR U6 = 1 AND U9 = P9) THEN 1680
+1650 Print: Locate , 58: Print "ANY CHANGE (YN)"
+If AP% = 1 And (U6 = 2 Or U6 = 1 And U9 = P9) Then 1680
 1660 I$ = GetKeyPress$
 
-1670 IF UCASE$(I$) = "Y" THEN LOCATE 20, 58: SP%(P9) = -1: PRINT "                ": GOTO 1590
+1670 If UCase$(I$) = "Y" Then Locate 20, 58: SP%(P9) = -1: Print "                ": GoTo 1590
 
-1680 P1%(P9) = I1: P6%(P9) = 1: P%(P9, I1, 15) = P6%(P9): GOSUB 1060
+1680 P1%(P9) = I1: P6%(P9) = 1: P%(P9, I1, 15) = P6%(P9): GoSub 1060
 
-1681 RETURN
+1681 Return
 
-1710 LOCATE 25, 1: PRINT "                                                                          ";
+1710 Locate 25, 1: Print "                                                                          ";
 
-1711 LOCATE 25, 1: PRINT "SAVE THIS LINE UP (YN) ";
-	IF AP% = 1 AND (U6 = 2 OR U6 = 1 AND U9 = P9) THEN I$ = "N": GOTO 1730
+1711 Locate 25, 1: Print "SAVE THIS LINE UP (YN) ";
+If AP% = 1 And (U6 = 2 Or U6 = 1 And U9 = P9) Then I$ = "N": GoTo 1730
 1720 I$ = GetKeyPress$
 
-1730 IF UCASE$(I$) <> "Y" THEN 1820
+1730 If UCase$(I$) <> "Y" Then 1820
 
-1790 CLS
-	IF P%(1 - P9, P1%(1 - P9), 0) = -1 THEN Q2% = 1
-	IF P%(1 - P9, P1%(1 - P9), 0) = 0 THEN Q2% = 0
-	FOR I = 0 TO 9
-	PRINT I; " ";
-	IF MG%(P9, 120 + (I + Q2% * 10) * 21) <> 999 THEN PRINT "AVAILABLE"
-	IF MG%(P9, 120 + (I + Q2% * 10) * 21) = 999 THEN PRINT "LINEUP ALREADY SAVED "; MG%(P9, 100 + (I + Q2% * 10) * 21); " % USAGE"
-	NEXT
-	INPUT "LINEUP # TO SAVE "; LN%
-	INPUT "% OF TIME TO USE "; LU%
-	IF MG%(P9, 120 + (LN% + Q2% * 10) * 21) <> 999 THEN MG%(P9, 120 + (LN% + Q2% * 10) * 21) = 999
-	IF Q2% = 1 THEN LN% = LN% + 10
-	MG%(P9, 101 + LN% * 21) = DH%
-	MG%(P9, 100 + LN% * 21) = LU%
-	FOR I = 1 TO 9
-	MG%(P9, 110 + I + LN% * 21) = B3%(P9, I)
-	MG%(P9, 101 + I + LN% * 21) = B7%(P9, I)
-	NEXT
-	GOSUB 4522
+1790 Cls
+If P%(1 - P9, P1%(1 - P9), 0) = -1 Then Q2% = 1
+If P%(1 - P9, P1%(1 - P9), 0) = 0 Then Q2% = 0
+For I = 0 To 9
+    Print I; " ";
+    If MG%(P9, 120 + (I + Q2% * 10) * 21) <> 999 Then Print "AVAILABLE"
+    If MG%(P9, 120 + (I + Q2% * 10) * 21) = 999 Then Print "LINEUP ALREADY SAVED "; MG%(P9, 100 + (I + Q2% * 10) * 21); " % USAGE"
+Next
+Input "LINEUP # TO SAVE "; LN%
+Input "% OF TIME TO USE "; LU%
+If MG%(P9, 120 + (LN% + Q2% * 10) * 21) <> 999 Then MG%(P9, 120 + (LN% + Q2% * 10) * 21) = 999
+If Q2% = 1 Then LN% = LN% + 10
+MG%(P9, 101 + LN% * 21) = DH%
+MG%(P9, 100 + LN% * 21) = LU%
+For I = 1 To 9
+    MG%(P9, 110 + I + LN% * 21) = B3%(P9, I)
+    MG%(P9, 101 + I + LN% * 21) = B7%(P9, I)
+Next
+GoSub 4522
 
-1820 RETURN
+1820 Return
 
-2500 CLS
-	IF P%(1 - P9, P1%(1 - P9), 0) = -1 THEN Q2% = 1
-	IF P%(1 - P9, P1%(1 - P9), 0) = 1 THEN Q2% = 0
-	PRINT TAB(30); "LINEUPS FOUND VS. "; PT$(Q2%)
-	PRINT " #0    "; MG%(P9, 100 + (0 + Q2% * 10) * 21); "%";
-	LOCATE , 17: PRINT " #1    "; MG%(P9, 100 + (1 + Q2% * 10) * 21); "%";
-	LOCATE , 33: PRINT " #2    "; MG%(P9, 100 + (2 + Q2% * 10) * 21); "%";
-	LOCATE , 49: PRINT " #3    "; MG%(P9, 100 + (3 + Q2% * 10) * 21); "%";
-	LOCATE , 65: PRINT " #4    "; MG%(P9, 100 + (4 + Q2% * 10) * 21); "%"
-	FOR I = 0 TO 4
-	FOR I1 = 1 TO 9
-	IF MG%(P9, 120 + (I + Q2% * 10) * 21) <> 999 AND I1 = 1 THEN LOCATE 3, 16 * I + 1: PRINT "NONE FOUND": GOTO 2510
-	IF MG%(P9, 120 + (I + Q2% * 10) * 21) <> 999 AND I1 <> 1 THEN LOCATE 2 + I1, 16 * I + 1: PRINT "         ": GOTO 2510
-	LOCATE 2 + I1, 16 * I + 1
-	IF MG%(P9, 101 + I1 + (I + Q2% * 10) * 21) = 1 THEN PRINT "PITCHER"; : GOTO 2512
-	PRINT LEFT$(B$(P9, MG%(P9, 110 + I1 + (I + Q2% * 10) * 21)), 10);
+2500 Cls
+If P%(1 - P9, P1%(1 - P9), 0) = -1 Then Q2% = 1
+If P%(1 - P9, P1%(1 - P9), 0) = 1 Then Q2% = 0
+Print Tab(30); "LINEUPS FOUND VS. "; PT$(Q2%)
+Print " #0    "; MG%(P9, 100 + (0 + Q2% * 10) * 21); "%";
+Locate , 17: Print " #1    "; MG%(P9, 100 + (1 + Q2% * 10) * 21); "%";
+Locate , 33: Print " #2    "; MG%(P9, 100 + (2 + Q2% * 10) * 21); "%";
+Locate , 49: Print " #3    "; MG%(P9, 100 + (3 + Q2% * 10) * 21); "%";
+Locate , 65: Print " #4    "; MG%(P9, 100 + (4 + Q2% * 10) * 21); "%"
+For I = 0 To 4
+    For I1 = 1 To 9
+        If MG%(P9, 120 + (I + Q2% * 10) * 21) <> 999 And I1 = 1 Then Locate 3, 16 * I + 1: Print "NONE FOUND": GoTo 2510
+        If MG%(P9, 120 + (I + Q2% * 10) * 21) <> 999 And I1 <> 1 Then Locate 2 + I1, 16 * I + 1: Print "         ": GoTo 2510
+        Locate 2 + I1, 16 * I + 1
+        If MG%(P9, 101 + I1 + (I + Q2% * 10) * 21) = 1 Then Print "PITCHER";: GoTo 2512
+        Print Left$(B$(P9, MG%(P9, 110 + I1 + (I + Q2% * 10) * 21)), 10);
 
-2512 LOCATE 2 + I1, 16 * I + 12: PRINT C$(MG%(P9, 101 + I1 + (I + Q2% * 10) * 21))
+        2512 Locate 2 + I1, 16 * I + 12: Print C$(MG%(P9, 101 + I1 + (I + Q2% * 10) * 21))
 
-2510 NEXT
-	NEXT
-	PRINT
-	PRINT " #5    "; MG%(P9, 100 + (5 + Q2% * 10) * 21); "%";
-	LOCATE , 17: PRINT " #6    "; MG%(P9, 100 + (6 + Q2% * 10) * 21); "%";
-	LOCATE , 33: PRINT " #7    "; MG%(P9, 100 + (7 + Q2% * 10) * 21); "%";
-	LOCATE , 49: PRINT " #8    "; MG%(P9, 100 + (8 + Q2% * 10) * 21); "%";
-	LOCATE , 65: PRINT " #9    "; MG%(P9, 100 + (9 + Q2% * 10) * 21); "%"
-	FOR I = 5 TO 9
-	FOR I1 = 1 TO 9
-	IF MG%(P9, 120 + (I + Q2% * 10) * 21) <> 999 AND I1 = 1 THEN LOCATE 14, 16 * (I - 5) + 1: PRINT "NONE FOUND": GOTO 2505
-	IF MG%(P9, 120 + (I + Q2% * 10) * 21) <> 999 AND I1 <> 1 THEN LOCATE 13 + I1, 16 * (I - 5) + 1: PRINT "         ": GOTO 2505
-	LOCATE 13 + I1, 16 * (I - 5) + 1
-	IF MG%(P9, 101 + I1 + (I + Q2% * 10) * 21) = 1 THEN PRINT "PITCHER"; : GOTO 2507
-	PRINT LEFT$(B$(P9, MG%(P9, 110 + I1 + (I + Q2% * 10) * 21)), 10);
+    2510 Next
+Next
+Print
+Print " #5    "; MG%(P9, 100 + (5 + Q2% * 10) * 21); "%";
+Locate , 17: Print " #6    "; MG%(P9, 100 + (6 + Q2% * 10) * 21); "%";
+Locate , 33: Print " #7    "; MG%(P9, 100 + (7 + Q2% * 10) * 21); "%";
+Locate , 49: Print " #8    "; MG%(P9, 100 + (8 + Q2% * 10) * 21); "%";
+Locate , 65: Print " #9    "; MG%(P9, 100 + (9 + Q2% * 10) * 21); "%"
+For I = 5 To 9
+    For I1 = 1 To 9
+        If MG%(P9, 120 + (I + Q2% * 10) * 21) <> 999 And I1 = 1 Then Locate 14, 16 * (I - 5) + 1: Print "NONE FOUND": GoTo 2505
+        If MG%(P9, 120 + (I + Q2% * 10) * 21) <> 999 And I1 <> 1 Then Locate 13 + I1, 16 * (I - 5) + 1: Print "         ": GoTo 2505
+        Locate 13 + I1, 16 * (I - 5) + 1
+        If MG%(P9, 101 + I1 + (I + Q2% * 10) * 21) = 1 Then Print "PITCHER";: GoTo 2507
+        Print Left$(B$(P9, MG%(P9, 110 + I1 + (I + Q2% * 10) * 21)), 10);
 
-2507 LOCATE 13 + I1, 16 * (I - 5) + 12: PRINT C$(MG%(P9, 101 + I1 + (I + Q2% * 10) * 21))
+        2507 Locate 13 + I1, 16 * (I - 5) + 12: Print C$(MG%(P9, 101 + I1 + (I + Q2% * 10) * 21))
 
-2505 NEXT
-	NEXT
-	RETURN
+    2505 Next
+Next
+Return
 
-2530 RN = INT(RND(1) * PCT%) + 1
-	PCT% = 0
-	FOR I = 0 TO 9
-	IF MG%(P9, 120 + (I + Q2% * 10) * 21) <> 999 THEN 2535
-	PCT% = PCT% + MG%(P9, 100 + (I + Q2% * 10) * 21)
-	IF RN <= PCT% THEN LN% = I: GOTO 2536
+2530 RN = Int(Rnd(1) * PCT%) + 1
+PCT% = 0
+For I = 0 To 9
+    If MG%(P9, 120 + (I + Q2% * 10) * 21) <> 999 Then 2535
+    PCT% = PCT% + MG%(P9, 100 + (I + Q2% * 10) * 21)
+    If RN <= PCT% Then LN% = I: GoTo 2536
 
-2535 NEXT
+2535 Next
 
-2536 RETURN
+2536 Return
 
-1830 GOSUB 2500
-	LF% = 0: PCT% = 0
-	FOR I = 0 TO 9
-	IF MG%(P9, 120 + (I + Q2% * 10) * 21) = 999 THEN LF% = LF% + 1: PCT% = PCT% + MG%(P9, 100 + (I + Q2% * 10) * 21)
-	NEXT
-	IF LF% = 0 THEN 3110
-	IF AP% = 1 AND MP% = 0 AND (U6 = 2 OR U6 = 1 AND U9 = P9) OR I$ = "3" THEN GOSUB 2530: GOTO 2516
+1830 GoSub 2500
+LF% = 0: PCT% = 0
+For I = 0 To 9
+    If MG%(P9, 120 + (I + Q2% * 10) * 21) = 999 Then LF% = LF% + 1: PCT% = PCT% + MG%(P9, 100 + (I + Q2% * 10) * 21)
+Next
+If LF% = 0 Then 3110
+If AP% = 1 And MP% = 0 And (U6 = 2 Or U6 = 1 And U9 = P9) Or I$ = "3" Then GoSub 2530: GoTo 2516
 
-2515 LOCATE 23, 1: INPUT "ENTER LINEUP NUMBER (0-9) "; LN%
+2515 Locate 23, 1: Input "ENTER LINEUP NUMBER (0-9) "; LN%
 
-2516 IF LN% < 0 OR LN% > 9 THEN 2515
-	IF MG%(P9, 120 + (LN% + Q2% * 10) * 21) <> 999 THEN 480
-	IF Q2% = 1 THEN LN% = LN% + 10
-	I1 = MG%(P9, 101 + LN% * 21)
-	IF DH% <> I1 THEN 480
-	FOR I = 1 TO 9
-	B3%(P9, I) = MG%(P9, 110 + I + LN% * 21)
-	B7%(P9, I) = MG%(P9, 101 + I + LN% * 21)
-	NEXT
-	LU% = 1
+2516 If LN% < 0 Or LN% > 9 Then 2515
+If MG%(P9, 120 + (LN% + Q2% * 10) * 21) <> 999 Then 480
+If Q2% = 1 Then LN% = LN% + 10
+I1 = MG%(P9, 101 + LN% * 21)
+If DH% <> I1 Then 480
+For I = 1 To 9
+    B3%(P9, I) = MG%(P9, 110 + I + LN% * 21)
+    B7%(P9, I) = MG%(P9, 101 + I + LN% * 21)
+Next
+LU% = 1
 
-1910 FOR I = 1 TO 9: B9%(P9, B7%(P9, I)) = B3%(P9, I)
-	IF B7%(P9, I) = 1 THEN B3%(P9, I) = P1%(P9): B9%(P9, 1) = P1%(P9): GOTO 2525
-	B%(P9, B3%(P9, I), 21) = 0
+1910 For I = 1 To 9: B9%(P9, B7%(P9, I)) = B3%(P9, I)
+    If B7%(P9, I) = 1 Then B3%(P9, I) = P1%(P9): B9%(P9, 1) = P1%(P9): GoTo 2525
+    B%(P9, B3%(P9, I), 21) = 0
 
-2525 NEXT I
+2525 Next I
 
-1930 IF LU% = 1 THEN LU% = 0: GOSUB 2160
-	GOSUB 2310: CALL NEWLINES(P9): GOSUB 1940: GOTO 850
+1930 If LU% = 1 Then LU% = 0: GoSub 2160
+GoSub 2310: Call NEWLINES(P9): GoSub 1940: GoTo 850
 
-1940 FOR I2 = 0 TO 22: LOCATE I2 + 2, 2: FOR I3 = 1 TO 9
+1940 For I2 = 0 To 22: Locate I2 + 2, 2: For I3 = 1 To 9
 
-1941 IF B3%(P9, I3) = I2 AND B7%(P9, I3) <> 1 THEN PRINT "*"; : COLOR L%(P9, 11), L%(P9, 12): PRINT B$(P9, I2): COLOR 15, 0
+    1941 If B3%(P9, I3) = I2 And B7%(P9, I3) <> 1 Then Print "*";: Color L%(P9, 11), L%(P9, 12): Print B$(P9, I2): Color 15, 0
 
-1950 NEXT I3: NEXT I2
+1950 Next I3: Next I2
 
-1960 FOR I3 = 0 TO 9: M%(I3) = 1: NEXT I3
+1960 For I3 = 0 To 9: M%(I3) = 1: Next I3
 
-1970 RETURN
+1970 Return
 
-2000 IF P%(P9, I, 15) >= 98 THEN COLOR 0, 7
+2000 If P%(P9, I, 15) >= 98 Then Color 0, 7
 
-2010 RETURN
+2010 Return
 
-2040 I% = 99: GOSUB 1520
-	LOCATE 15, 58: PRINT "DISABLE PITCHER (0-L)"
-	LOCATE , 58: PRINT "Y-GRANT DAY OFF"
-	LOCATE , 58: PRINT "Z-CONTINUE"
-	LOCATE , 58: PRINT "X-ACTIVATE ALL PITCHERS"
-	IF AP% = 1 AND (U6 = 2 OR U6 = 1 AND U9 = P9) THEN I$ = "Z": GOTO 2060
+2040 I% = 99: GoSub 1520
+Locate 15, 58: Print "DISABLE PITCHER (0-L)"
+Locate , 58: Print "Y-GRANT DAY OFF"
+Locate , 58: Print "Z-CONTINUE"
+Locate , 58: Print "X-ACTIVATE ALL PITCHERS"
+If AP% = 1 And (U6 = 2 Or U6 = 1 And U9 = P9) Then I$ = "Z": GoTo 2060
 2050 I$ = GetKeyPress$
-	IF I$ = CHR$(27) THEN 170
+If I$ = Chr$(27) Then 170
 
-2060 CALL LETTER(I$)
+2060 Call LETTER(I$)
 
-2080 IF UCASE$(I$) = "Z" THEN 2120
-	IF UCASE$(I$) = "Y" THEN GOSUB 2125: GOTO 2040
+2080 If UCase$(I$) = "Z" Then 2120
+If UCase$(I$) = "Y" Then GoSub 2125: GoTo 2040
 
-2090 IF UCASE$(I$) = "X" THEN GOSUB 2130: GOTO 2050
+2090 If UCase$(I$) = "X" Then GoSub 2130: GoTo 2050
 
-2100 I1 = VAL(I$): IF I1 > 21 THEN 2050
+2100 I1 = Val(I$): If I1 > 21 Then 2050
 
-2110 IF P%(P9, I1, 15) = 0 THEN P%(P9, I1, 15) = 99: LOCATE I1 + 2, 3: COLOR 0, 7: PRINT P$(P9, I1): COLOR 15, 0: GOTO 2112
-	IF P%(P9, I1, 15) <> 0 THEN P%(P9, I1, 15) = 0: LOCATE I1 + 2, 3: COLOR 15, 0: PRINT P$(P9, I1): COLOR 15, 0
+2110 If P%(P9, I1, 15) = 0 Then P%(P9, I1, 15) = 99: Locate I1 + 2, 3: Color 0, 7: Print P$(P9, I1): Color 15, 0: GoTo 2112
+If P%(P9, I1, 15) <> 0 Then P%(P9, I1, 15) = 0: Locate I1 + 2, 3: Color 15, 0: Print P$(P9, I1): Color 15, 0
 
-2112 GOTO 2050
+2112 GoTo 2050
 
-2120 I% = 0: RETURN
+2120 I% = 0: Return
 
 2125 'GRANT DAY OFF
-	IF DR% = 1 THEN 2126
-	FOR I1 = 0 TO 21
-	IF P%(P9, I1, 35) > 0 THEN P%(P9, I1, 35) = P%(P9, I1, 35) - 1
-	NEXT
+If DR% = 1 Then 2126
+For I1 = 0 To 21
+    If P%(P9, I1, 35) > 0 Then P%(P9, I1, 35) = P%(P9, I1, 35) - 1
+Next
 
-2126 RETURN
+2126 Return
 
-2130 FOR I3 = 0 TO 21: IF P%(P9, I3, 15) = 99 AND P%(P9, I3, 34) = 0 THEN P%(P9, I3, 15) = 0: LOCATE I3 + 2, 3: PRINT P$(P9, I3)
+2130 For I3 = 0 To 21: If P%(P9, I3, 15) = 99 And P%(P9, I3, 34) = 0 Then P%(P9, I3, 15) = 0: Locate I3 + 2, 3: Print P$(P9, I3)
 
-2140 NEXT I3
+2140 Next I3
 
-2150 RETURN
+2150 Return
 
-2160 I% = 99: CALL SHOWBATTERS(P9)
-	COLOR 15, 0: LOCATE 5, 59: PRINT "OPPOSING PITCHER"
-	LOCATE 6, 59: PRINT P$(1 - P9, P1%(1 - P9)); " "; B1$(P%(1 - P9, P1%(1 - P9), 0) + 2)
+2160 I% = 99: Call SHOWBATTERS(P9)
+Color 15, 0: Locate 5, 59: Print "OPPOSING PITCHER"
+Locate 6, 59: Print P$(1 - P9, P1%(1 - P9)); " "; B1$(P%(1 - P9, P1%(1 - P9), 0) + 2)
 
-2161 LOCATE 10, 59: PRINT "DISABLE BATTER (0-M)": LOCATE , 59: PRINT "Z-CONTINUE"
+2161 Locate 10, 59: Print "DISABLE BATTER (0-M)": Locate , 59: Print "Z-CONTINUE"
 
-2162 LOCATE , 59: PRINT "X-REACTIVATE ALL"
+2162 Locate , 59: Print "X-REACTIVATE ALL"
 
-2163 LOCATE , 59: PRINT "<TAB>-BAT/FIELD/SPLIT"
-	IF AP% = 1 AND (U6 = 2 OR U6 = 1 AND U9 = P9) THEN I$ = "Z": GOTO 2175
+2163 Locate , 59: Print "<TAB>-BAT/FIELD/SPLIT"
+If AP% = 1 And (U6 = 2 Or U6 = 1 And U9 = P9) Then I$ = "Z": GoTo 2175
 2170 I$ = GetKeyPress$
-	IF I$ = CHR$(27) THEN
-	  FOR J = 1 TO 9
-	  M%(J) = 0: B7%(P9, J) = -1: B3%(P9, J) = -1
-	  NEXT
-	  C1 = 0
-	  FOR J = 0 TO 22
-	  B%(P9, J, 21) = 0
-	  NEXT
-	  RP = 1
-	  FOR J = 0 TO 22
-	  IF B%(P9, J, 31) <> 0 THEN B%(P9, J, 21) = 99
-	  NEXT
-	  GOTO 480
-	END IF
+If I$ = Chr$(27) Then
+    For J = 1 To 9
+        M%(J) = 0: B7%(P9, J) = -1: B3%(P9, J) = -1
+    Next
+    C1 = 0
+    For J = 0 To 22
+        B%(P9, J, 21) = 0
+    Next
+    RP = 1
+    For J = 0 To 22
+        If B%(P9, J, 31) <> 0 Then B%(P9, J, 21) = 99
+    Next
+    GoTo 480
+End If
 
-2175 IF ASC(I$) = 9 THEN TG = TG + 1
-	  IF TG > 2 OR TG = 2 AND TS%(P9, 0) <> 999 THEN TG = 0
-	IF ASC(I$) = 9 AND TG = 1 THEN CALL SHOWFIELD(P9): GOTO 2170
+2175 If Asc(I$) = 9 Then TG = TG + 1
+If TG > 2 Or TG = 2 And TS%(P9, 0) <> 999 Then TG = 0
+If Asc(I$) = 9 And TG = 1 Then Call SHOWFIELD(P9): GoTo 2170
 
-2176 IF ASC(I$) = 9 AND TG = 0 THEN CALL SHOWBATTERS(P9): GOTO 2161
-	IF ASC(I$) = 9 AND TG = 2 THEN CALL SHOWSPLIT(P9): GOTO 2170
+2176 If Asc(I$) = 9 And TG = 0 Then Call SHOWBATTERS(P9): GoTo 2161
+If Asc(I$) = 9 And TG = 2 Then Call SHOWSPLIT(P9): GoTo 2170
 
-2180 CALL LETTER(I$)
+2180 Call LETTER(I$)
 
-2190 IF UCASE$(I$) = "Z" THEN TG = 0: CALL SHOWBATTERS(P9): GOTO 2230
+2190 If UCase$(I$) = "Z" Then TG = 0: Call SHOWBATTERS(P9): GoTo 2230
 
-2200 IF UCASE$(I$) = "X" THEN GOSUB 2240: GOTO 2170
+2200 If UCase$(I$) = "X" Then GoSub 2240: GoTo 2170
 
-2210 I1 = VAL(I$): IF I1 > 22 THEN 2170
+2210 I1 = Val(I$): If I1 > 22 Then 2170
 
-2220 B%(P9, I1, 21) = 99: LOCATE I1 + 2, 3: COLOR 0, 7: PRINT B$(P9, I1); : COLOR 15, 0: GOTO 2170
+2220 B%(P9, I1, 21) = 99: Locate I1 + 2, 3: Color 0, 7: Print B$(P9, I1);: Color 15, 0: GoTo 2170
 
-2230 COLOR 15, 0: LOCATE 5, 59: PRINT "OPPOSING PITCHER"
-	LOCATE 6, 59: PRINT P$(1 - P9, P1%(1 - P9)); " "; B1$(P%(1 - P9, P1%(1 - P9), 0) + 2)
-	I% = 0: RETURN
+2230 Color 15, 0: Locate 5, 59: Print "OPPOSING PITCHER"
+Locate 6, 59: Print P$(1 - P9, P1%(1 - P9)); " "; B1$(P%(1 - P9, P1%(1 - P9), 0) + 2)
+I% = 0: Return
 
-2240 FOR I3 = 0 TO 22: IF B%(P9, I3, 21) = 99 AND B%(P9, I3, 31) = 0 THEN B%(P9, I3, 21) = 0: LOCATE I3 + 2, 3: PRINT B$(P9, I3)
+2240 For I3 = 0 To 22: If B%(P9, I3, 21) = 99 And B%(P9, I3, 31) = 0 Then B%(P9, I3, 21) = 0: Locate I3 + 2, 3: Print B$(P9, I3)
 
-2250 NEXT I3: RETURN
+2250 Next I3: Return
 
-2310 FOR I = 10 TO 22
-	LOCATE I, 59: PRINT "                     ";
-	NEXT
-	RETURN
+2260 Locate 24, 1
+I$ = GetKeyPress$
 
-2320 CLS: GOSUB 2260
+2310 For I = 10 To 22
+    Locate I, 59: Print "                     ";
+Next
+Return
 
-2330 GOSUB 2470
+2320 Cls
 
-2340 IF AP% = 1 OR DRIVE >= 67 THEN 2345
-	
-	LOCATE 6: PRINT "LOADING GAME..."
+2330 GoSub 2470
 
-2345 I1 = VAL(LEFT$(A$(0), 2)): I2 = VAL(LEFT$(A$(1), 2))
-	if val(left$(a$(0),3)) = 211 then i1 = 201
-	IF VAL(LEFT$(A$(0),3)) = 200 THEN I1 = 200
-	IF VAL(LEFT$(A$(1),3)) = 200 THEN I2 = 200
-	IF VAL(LEFT$(A$(1),3)) = 211 THEN I2 = 201
-	  IF CGERA% > 2 THEN S8%(1, 1) = 4: S8%(0, 1) = 4
-	IF CGERA% > 3 THEN S8%(1, 1) = 5: S8%(0, 1) = 5
-	IF CGERA% = 7 THEN S8%(1, 1) = 7: S8%(0, 1) = 7
-	IF CGERA% >= 8 THEN S8%(1, 1) = 99: S8%(0, 1) = 99
-	IF (MON = 6 OR MON = 7) AND VG% = 0 THEN CHAIN "sourceg.exe"
-	CHAIN "SOURCE.EXE"
+2340 If AP% = 1 Or DRIVE >= 67 Then 2345
+    
+Locate 6: Print "LOADING GAME..."
 
-2390 FOR I = 0 TO 1: FOR I1 = 1 TO 9
-	X0%(I, 0, I1) = B3%(I, I1)
-	X0%(I, 1, I1) = B7%(I, I1)
-	X0%(I, 2, I1) = I1 * 10
-	NEXT I1
-	D0%(I) = 9
-	NEXT I
-	RETURN
+2345 I1 = Val(Left$(A$(0), 2)): I2 = Val(Left$(A$(1), 2))
+If Val(Left$(A$(0), 3)) = 211 Then I1 = 201
+If Val(Left$(A$(0), 3)) = 200 Then I1 = 200
+If Val(Left$(A$(1), 3)) = 200 Then I2 = 200
+If Val(Left$(A$(1), 3)) = 211 Then I2 = 201
+If CGERA% > 2 Then S8%(1, 1) = 4: S8%(0, 1) = 4
+If CGERA% > 3 Then S8%(1, 1) = 5: S8%(0, 1) = 5
+If CGERA% = 7 Then S8%(1, 1) = 7: S8%(0, 1) = 7
+If CGERA% >= 8 Then S8%(1, 1) = 99: S8%(0, 1) = 99
+If (MON = 6 Or MON = 7) And VG% = 0 Then Chain "sourceg.exe"
+Chain "SOURCE.EXE"
 
-2430 CALL INFO: COLOR 14: PRINT "WHICH TEAM DOES COMPUTER MANAGE ?": PRINT
+2390 For I = 0 To 1: For I1 = 1 To 9
+    X0%(I, 0, I1) = B3%(I, I1)
+    X0%(I, 1, I1) = B7%(I, I1)
+    X0%(I, 2, I1) = I1 * 10
+    Next I1
+    D0%(I) = 9
+Next I
+Return
 
-2431 COLOR 15: PRINT "(0) "; : COLOR L%(0, 11), L%(0, 12): PRINT A$(0): COLOR 7, 0: PRINT
-	COLOR 15: PRINT "(1) "; : COLOR L%(1, 11), L%(1, 12): PRINT A$(1): COLOR 7, 0
+2430 Call INFO: Color 14: Print "WHICH TEAM DOES COMPUTER MANAGE ?": Print
+
+2431 Color 15: Print "(0) ";: Color L%(0, 11), L%(0, 12): Print A$(0): Color 7, 0: Print
+Color 15: Print "(1) ";: Color L%(1, 11), L%(1, 12): Print A$(1): Color 7, 0
 2440 I$ = GetKeyPress$
 
-2450 U9 = VAL(I$): IF U9 <> 1 THEN U9 = 0
+2450 U9 = Val(I$): If U9 <> 1 Then U9 = 0
 
-2460 RETURN
+2460 Return
 
 2470 RD = 0
-	FOR I = 0 TO 1
-	FOR I1 = 1 TO 9
-	IF B7%(I, I1) < 2 OR B7%(I, I1) > 9 THEN 2475
-	IF B7%(I, I1) = B%(I, B3%(I, I1), 22) THEN B%(I, B3%(I, I1), 15) = B%(I, B3%(I, I1), 33): B%(I, B3%(I, I1), 17) = B%(I, B3%(I, I1), 34): B%(I, B3%(I, I1), 19) = B%(I, B3%(I, I1), 26): GOTO 2475
-	IF B7%(I, I1) = B%(I, B3%(I, I1), 23) THEN B%(I, B3%(I, I1), 15) = B%(I, B3%(I, I1), 35): B%(I, B3%(I, I1), 17) = B%(I, B3%(I, I1), 36): B%(I, B3%(I, I1), 19) = B%(I, B3%(I, I1), 27): GOTO 2475
-	IF B7%(I, I1) = B%(I, B3%(I, I1), 24) THEN B%(I, B3%(I, I1), 15) = B%(I, B3%(I, I1), 37): B%(I, B3%(I, I1), 17) = B%(I, B3%(I, I1), 38): B%(I, B3%(I, I1), 19) = B%(I, B3%(I, I1), 28): GOTO 2475
-	IF B7%(I, I1) = B%(I, B3%(I, I1), 25) THEN B%(I, B3%(I, I1), 15) = B%(I, B3%(I, I1), 39): B%(I, B3%(I, I1), 17) = B%(I, B3%(I, I1), 40): B%(I, B3%(I, I1), 19) = B%(I, B3%(I, I1), 29): GOTO 2475
-	IF B7%(I, I1) = 2 THEN B%(I, B3%(I, I1), 15) = 1: B%(I, B3%(I, I1), 17) = 0: B%(I, B3%(I, I1), 19) = 910 + INT(RND(1) * 10) + 1
-	IF B7%(I, I1) = 3 THEN B%(I, B3%(I, I1), 15) = 0: B%(I, B3%(I, I1), 17) = 3: B%(I, B3%(I, I1), 19) = 960 + INT(RND(1) * 10) + 1
-	IF B7%(I, I1) = 4 THEN B%(I, B3%(I, I1), 15) = 0: B%(I, B3%(I, I1), 17) = 3: B%(I, B3%(I, I1), 19) = 912 + INT(RND(1) * 10) + 1
-	IF B7%(I, I1) = 5 OR B7%(I, I1) = 6 THEN B%(I, B3%(I, I1), 15) = 0: B%(I, B3%(I, I1), 17) = 3: B%(I, B3%(I, I1), 19) = 902 + INT(RND(1) * 10) + 1
-	IF B7%(I, I1) >= 7 THEN B%(I, B3%(I, I1), 15) = 2: B%(I, B3%(I, I1), 17) = 2: B%(I, B3%(I, I1), 19) = 972 + INT(RND(1) * 10) + 1
+For I = 0 To 1
+    For I1 = 1 To 9
+        If B7%(I, I1) < 2 Or B7%(I, I1) > 9 Then 2475
+        If B7%(I, I1) = B%(I, B3%(I, I1), 22) Then B%(I, B3%(I, I1), 15) = B%(I, B3%(I, I1), 33): B%(I, B3%(I, I1), 17) = B%(I, B3%(I, I1), 34): B%(I, B3%(I, I1), 19) = B%(I, B3%(I, I1), 26): GoTo 2475
+        If B7%(I, I1) = B%(I, B3%(I, I1), 23) Then B%(I, B3%(I, I1), 15) = B%(I, B3%(I, I1), 35): B%(I, B3%(I, I1), 17) = B%(I, B3%(I, I1), 36): B%(I, B3%(I, I1), 19) = B%(I, B3%(I, I1), 27): GoTo 2475
+        If B7%(I, I1) = B%(I, B3%(I, I1), 24) Then B%(I, B3%(I, I1), 15) = B%(I, B3%(I, I1), 37): B%(I, B3%(I, I1), 17) = B%(I, B3%(I, I1), 38): B%(I, B3%(I, I1), 19) = B%(I, B3%(I, I1), 28): GoTo 2475
+        If B7%(I, I1) = B%(I, B3%(I, I1), 25) Then B%(I, B3%(I, I1), 15) = B%(I, B3%(I, I1), 39): B%(I, B3%(I, I1), 17) = B%(I, B3%(I, I1), 40): B%(I, B3%(I, I1), 19) = B%(I, B3%(I, I1), 29): GoTo 2475
+        If B7%(I, I1) = 2 Then B%(I, B3%(I, I1), 15) = 1: B%(I, B3%(I, I1), 17) = 0: B%(I, B3%(I, I1), 19) = 910 + Int(Rnd(1) * 10) + 1
+        If B7%(I, I1) = 3 Then B%(I, B3%(I, I1), 15) = 0: B%(I, B3%(I, I1), 17) = 3: B%(I, B3%(I, I1), 19) = 960 + Int(Rnd(1) * 10) + 1
+        If B7%(I, I1) = 4 Then B%(I, B3%(I, I1), 15) = 0: B%(I, B3%(I, I1), 17) = 3: B%(I, B3%(I, I1), 19) = 912 + Int(Rnd(1) * 10) + 1
+        If B7%(I, I1) = 5 Or B7%(I, I1) = 6 Then B%(I, B3%(I, I1), 15) = 0: B%(I, B3%(I, I1), 17) = 3: B%(I, B3%(I, I1), 19) = 902 + Int(Rnd(1) * 10) + 1
+        If B7%(I, I1) >= 7 Then B%(I, B3%(I, I1), 15) = 2: B%(I, B3%(I, I1), 17) = 2: B%(I, B3%(I, I1), 19) = 972 + Int(Rnd(1) * 10) + 1
 
-2475 NEXT: NEXT
+2475 Next: Next
 
-2476 GOSUB 3500
-	IF BO% = 1 THEN BO% = 0: GOTO 2476
-	CALL GETWEATHER(WD%, WS%, MO%, WF!, SC%, TP%, RD): CLS
-	CALL DRAWBOX
-	LOCATE , 11: PRINT "CONDITIONS AT "; S$(1)
-	IF L%(1, 9) = 1 THEN LOCATE , 11: PRINT "TEMPERATURE: 70": LOCATE , 11: PRINT "WEATHER: DOME": LOCATE , 11: PRINT "WIND: NONE": GOTO 2479
-	LOCATE , 11: PRINT "TEMPERATURE: "; TP%
-	LOCATE , 11: PRINT "SKY CONDITIONS: "; SC$(SC%)
-	LOCATE , 11: PRINT "WIND: "; WD$(WD%);
-	PRINT USING " ## MPH"; WS%
-	IF VG% = 1 THEN
-		WD$(2) = "L->R"
-		WD$(3) = "R->L"
-		WD$(4) = "<-LF"
-		WD$(5) = "<-CF"
-		WD$(6) = "<-RF"
-		WD$(7) = "->LF"
-		WD$(8) = "->CF"
-		WD$(9) = "->RF"
-	END IF
-	WI$ = WD$(WD%) + STR$(WS%) + " MPH"
-	LOCATE , 11: PRINT "PRECIPITATION: "; PC$(PC%)
+2476 GoSub 3500
+If BO% = 1 Then BO% = 0: GoTo 2476
+Call GETWEATHER(WD%, WS%, MO%, WF!, SC%, TP%, RD): Cls
+Call DRAWBOX
+Locate , 11: Print "CONDITIONS AT "; S$(1)
+If L%(1, 9) = 1 Then Locate , 11: Print "TEMPERATURE: 70": Locate , 11: Print "WEATHER: DOME": Locate , 11: Print "WIND: NONE": GoTo 2479
+Locate , 11: Print "TEMPERATURE: "; TP%
+Locate , 11: Print "SKY CONDITIONS: "; SC$(SC%)
+Locate , 11: Print "WIND: "; WD$(WD%);
+Print Using " ## MPH"; WS%
+If VG% = 1 Then
+    WD$(2) = "L->R"
+    WD$(3) = "R->L"
+    WD$(4) = "<-LF"
+    WD$(5) = "<-CF"
+    WD$(6) = "<-RF"
+    WD$(7) = "->LF"
+    WD$(8) = "->CF"
+    WD$(9) = "->RF"
+End If
+WI$ = WD$(WD%) + Str$(WS%) + " MPH"
+Locate , 11: Print "PRECIPITATION: "; PC$(PC%)
 
 2479 S$ = PARK$
-	RETURN
+Return
 
-3110 CLS : PRINT "ERROR:: NO LINEUPS  FOUND..."
-	IF AP% = 1 THEN NLF% = 1: GOTO 480
+3110 Cls: Print "ERROR:: NO LINEUPS  FOUND..."
+If AP% = 1 Then NLF% = 1: GoTo 480
 
-3111 CALL GETAKEY: GOTO 480
+3111 Call GETAKEY: GoTo 480
 
 3500 'SELECT A DIFFERENT STADIUM
 PARK$(1) = "ANAHEIM STADIUM             "
@@ -960,906 +964,940 @@ PARK$(80) = "                            "
 PARK$(81) = "PNC PARK                    "
 PARK$(82) = "MILLER PARK-MILWAUKEE       "
 PARK$(83) = "GENERIC                     "
-	CALL DRAWBOX
-	PARK$ = RIGHT$(STR$(L%(1, 13)), LEN(STR$(L%(1, 13))) - 1) + "."
-	IF DN% = 0 THEN PARK$ = PARK$ + "D" ELSE PARK$ = PARK$ + "N"
-	LOCATE , 11: PRINT "CURRENT PARK IS:"
-	LOCATE , 11: PRINT PARK$(L%(1, 13))
-	LOCATE , 11
-	IF _FILEEXISTS(PARK$) THEN PRINT "GRAPHIC EXISTS" ELSE PRINT "GRAPHIC NOT AVAILABLE": PARK$ = "99.N"
-	LOCATE , 11: PRINT "SELECT A DIFFERENT STADIUM (YN)"
-	COLOR 15, 0
-	IF AP% = 1 THEN RETURN
+Call DRAWBOX
+PARK$ = Right$(Str$(L%(1, 13)), Len(Str$(L%(1, 13))) - 1) + "."
+If DN% = 0 Then PARK$ = PARK$ + "D" Else PARK$ = PARK$ + "N"
+Locate , 11: Print "CURRENT PARK IS:"
+Locate , 11: Print PARK$(L%(1, 13))
+Locate , 11
+If _FileExists(PARK$) Then Print "GRAPHIC EXISTS" Else Print "GRAPHIC NOT AVAILABLE": PARK$ = "99.N"
+Locate , 11: Print "SELECT A DIFFERENT STADIUM (YN)"
+Color 15, 0
+If AP% = 1 Then Return
 3505 I$ = GetKeyPress$
-	IF UCASE$(I$) <> "Y" THEN RETURN
-	CLS
-	LOCATE 23, 10: PRINT "* - STADIUM GRAPHIC FILE NOT AVAILABLE"
-	Start% = 1       
+If UCase$(I$) <> "Y" Then Return
+Cls
+Locate 23, 10: Print "* - STADIUM GRAPHIC FILE NOT AVAILABLE"
+Start% = 1
 
 3510 SELECTION% = 1
-	Count% = 15
-	SCANCODE% = 83
-	FileFGColr% = 15:FileBGColr% = 1
-	HiLiteFGColr% = 0:HiLiteBGColr% = 7
-	Spacing% = 1
-	Row% = 5
-	Column% = 10
-CALL box0(4, 9, 20, 38, 2, 31)
-	
+Count% = 15
+SCANCODE% = 83
+FileFGColr% = 15: FileBGColr% = 1
+HiLiteFGColr% = 0: HiLiteBGColr% = 7
+Spacing% = 1
+Row% = 5
+Column% = 10
+Call box0(4, 9, 20, 38, 2, 31)
+    
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(PARK$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert PARK$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
-	COLOR , 0
-	IF SCANCODE% = 27 THEN BO% = 1: RETURN
-	PARK$ = RIGHT$(STR$(SELECTION%), LEN(STR$(SELECTION%)) - 1) + "."
-	IF DN% = 0 THEN PARK$ = PARK$ + "D" ELSE PARK$ = PARK$ + "N"
-	COLOR 15, 0
-	IF _FILEEXISTS(PARK$) THEN L%(1, 13) = SELECTION%: S$(1) = PARK$(SELECTION%): RETURN
-	LOCATE 10, 8
-	PRINT "STADIUM GRAPHIC NOT AVAILABLE"
-	LOCATE , 8: PRINT "USE SELECTED PARK RATINGS WITH"
-	LOCATE , 8: PRINT "GENERIC DISPLAY (YN)"
+Color , 0
+If SCANCODE% = 27 Then BO% = 1: Return
+PARK$ = Right$(Str$(SELECTION%), Len(Str$(SELECTION%)) - 1) + "."
+If DN% = 0 Then PARK$ = PARK$ + "D" Else PARK$ = PARK$ + "N"
+Color 15, 0
+If _FileExists(PARK$) Then L%(1, 13) = SELECTION%: S$(1) = PARK$(SELECTION%): Return
+Locate 10, 8
+Print "STADIUM GRAPHIC NOT AVAILABLE"
+Locate , 8: Print "USE SELECTED PARK RATINGS WITH"
+Locate , 8: Print "GENERIC DISPLAY (YN)"
 3515 I$ = GetKeyPress$
-	IF I$ <> "Y" THEN 3510
-	L%(1, 13) = SELECTION%: S$(1) = PARK$(SELECTION%)
-	IF DN% = 0 THEN PARK$ = "99.D" ELSE PARK$ = "99.N"
-	RETURN
+If I$ <> "Y" Then 3510
+L%(1, 13) = SELECTION%: S$(1) = PARK$(SELECTION%)
+If DN% = 0 Then PARK$ = "99.D" Else PARK$ = "99.N"
+Return
 
 4500 '*** PITCHING ROTATIONS ***
-	I% = 99: GOSUB 1520
-	LOCATE 15, 57: PRINT "0-MANUALLY PICK STARTER"
-	LOCATE 16, 57: PRINT "1-USE PRE-SET ROTATION"
-	LOCATE 17, 57: PRINT "2-ENTER A NEW ROTATION"
-	IF AP% = 1 AND (U6 = 2 OR U6 = 1 AND U9 = P9) THEN I = 1: GOTO 4508
+I% = 99: GoSub 1520
+Locate 15, 57: Print "0-MANUALLY PICK STARTER"
+Locate 16, 57: Print "1-USE PRE-SET ROTATION"
+Locate 17, 57: Print "2-ENTER A NEW ROTATION"
+If AP% = 1 And (U6 = 2 Or U6 = 1 And U9 = P9) Then I = 1: GoTo 4508
 4505 I$ = GetKeyPress$
-	IF I$ = CHR$(27) THEN 170
-	I = VAL(I$): IF I < 0 OR I > 2 THEN 4505
+If I$ = Chr$(27) Then 170
+I = Val(I$): If I < 0 Or I > 2 Then 4505
 
-4508 IF I = 0 THEN 4535
+4508 If I = 0 Then 4535
 
-4510 IF I = 1 THEN 4512
-	IF I = 2 THEN CLS : GOTO 4604
+4510 If I = 1 Then 4512
+If I = 2 Then Cls: GoTo 4604
 
-4512 CLS
+4512 Cls
 
-4515 IF MF%(P9) = -1 THEN 4600
-	IF MG%(P9, 99) <> 999 THEN 4600
+4515 If MF%(P9) = -1 Then 4600
+If MG%(P9, 99) <> 999 Then 4600
 
 4516 'AUTOMATIC DISABLE OF PITCHERS IN THE ROTATION
-	  GOTO 4517
-	  FOR I = 0 TO MG%(P9, 1) - 1
-	P%(P9, MG%(P9, 3 + I), 15) = 99
-	NEXT
+GoTo 4517
+For I = 0 To MG%(P9, 1) - 1
+    P%(P9, MG%(P9, 3 + I), 15) = 99
+Next
 
-4517 RN = INT(RND(1) * 100) + 1
-	P%(P9, MG%(P9, MG%(P9, 2) + 3), 15) = 0
-	IF RN <= MG%(P9, MG%(P9, 2) + 10 + 3) OR MG%(P9, MG%(P9, 2) + 10 + 3) = 0 THEN SP%(P9) = MG%(P9, MG%(P9, 2) + 3): GOTO 4520
-	RN = INT(RND(1) * 100) + 1
-	SP% = 0
-	FOR I = 21 TO 36
-	IF MG%(P9, I) = -1 OR MG%(P9, I) < 0 OR MG%(P9, I) > 21 THEN 4518
-	SP% = SP% + MG%(P9, I + 20)
-	IF RN <= SP% AND MG%(P9, I) <> -1 THEN P%(P9, MG%(P9, I), 15) = 0: SP%(P9) = MG%(P9, I): GOTO 4520
+4517 RN = Int(Rnd(1) * 100) + 1
+P%(P9, MG%(P9, MG%(P9, 2) + 3), 15) = 0
+If RN <= MG%(P9, MG%(P9, 2) + 10 + 3) Or MG%(P9, MG%(P9, 2) + 10 + 3) = 0 Then SP%(P9) = MG%(P9, MG%(P9, 2) + 3): GoTo 4520
+RN = Int(Rnd(1) * 100) + 1
+SP% = 0
+For I = 21 To 36
+    If MG%(P9, I) = -1 Or MG%(P9, I) < 0 Or MG%(P9, I) > 21 Then 4518
+    SP% = SP% + MG%(P9, I + 20)
+    If RN <= SP% And MG%(P9, I) <> -1 Then P%(P9, MG%(P9, I), 15) = 0: SP%(P9) = MG%(P9, I): GoTo 4520
 
-4518 NEXT
-	GOTO 4517
+4518 Next
+GoTo 4517
 
-4520 MG%(P9, 2) = MG%(P9, 2) + 1: IF MG%(P9, 2) = MG%(P9, 1) THEN MG%(P9, 2) = 0
+4520 MG%(P9, 2) = MG%(P9, 2) + 1: If MG%(P9, 2) = MG%(P9, 1) Then MG%(P9, 2) = 0
 
 4522 MG%(P9, 99) = 999
-	MG%(P9, 0) = 999
-	MF%(P9) = 0
-OPEN D$(3) + "MGR." + YN$(P9) FOR RANDOM AS #2 LEN = 2000
-	FOR I = 0 TO 999
-	FIELD #2, I * 2 AS Q$, 2 AS Q2$(I), 2000 - I * 2 - 2 AS Q$
-	NEXT
-	FOR I = 0 TO 999: LSET Q2$(I) = MKI$(MG%(P9, I)): NEXT
-	PUT #2, T1(P9): CLOSE 2
+MG%(P9, 0) = 999
+MF%(P9) = 0
+Open D$(3) + "MGR." + YN$(P9) For Random As #2 Len = 2000
+For I = 0 To 999
+    Field #2, I * 2 As Q$, 2 As Q2$(I), 2000 - I * 2 - 2 As Q$
+Next
+For I = 0 To 999: LSet Q2$(I) = MKI$(MG%(P9, I)): Next
+Put #2, T1(P9): Close 2
 
-4535 RETURN
+4535 Return
 
-4600 IF AP% = 1 AND (U6 = 2 OR U6 = 1 AND U9 = P9) THEN CR% = 1: GOTO 4610
-	CLS : PRINT "ERROR::: ROTATION NOT FOUND": PRINT
-	PRINT "ENTER A ROTATION (YN)"
+4600 If AP% = 1 And (U6 = 2 Or U6 = 1 And U9 = P9) Then CR% = 1: GoTo 4610
+Cls: Print "ERROR::: ROTATION NOT FOUND": Print
+Print "ENTER A ROTATION (YN)"
 4602 I$ = GetKeyPress$
 
-4603 IF UCASE$(I$) <> "Y" THEN 4535
+4603 If UCase$(I$) <> "Y" Then 4535
 
-4604 PRINT "COMPUTER SET ROTATION (YN) ";
+4604 Print "COMPUTER SET ROTATION (YN) ";
 4605 I$ = GetKeyPress$
-	IF UCASE$(I$) = "Y" THEN CR% = 1
+If UCase$(I$) = "Y" Then CR% = 1
 
-4610 CLS : CALL INFO
-	LOCATE 2, 1
-	FOR I = 1 TO 5
-	COLOR 14: PRINT "("; : PRINT USING "#"; I; : PRINT ") "; : COLOR 15: PRINT "MAN ROTATION"
-	NEXT
-	PRINT "YOU MAY CONSIDER THE FOLLOWING GUIDELINES:"
-	PRINT "MAX GAMES STARTED BY ANY PITCHER           ROTATION SIZE"
-	PRINT "          32                                    5"
-	PRINT "          41                                    4"
-	PRINT "          54                                    3"
-	PRINT "          75                                    2"
-	PRINT "         ALL                                    1"
-	PRINT
-	FOR I = 0 TO 6
-	LOCATE I + 15, 1
-	IF P$(P9, I) = "XXX" THEN 4607
-	PRINT P$(P9, I); TAB(18); P%(P9, I, 5);
+4610 Cls: Call INFO
+Locate 2, 1
+For I = 1 To 5
+    Color 14: Print "(";: Print Using "#"; I;: Print ") ";: Color 15: Print "MAN ROTATION"
+Next
+Print "YOU MAY CONSIDER THE FOLLOWING GUIDELINES:"
+Print "MAX GAMES STARTED BY ANY PITCHER           ROTATION SIZE"
+Print "          32                                    5"
+Print "          41                                    4"
+Print "          54                                    3"
+Print "          75                                    2"
+Print "         ALL                                    1"
+Print
+For I = 0 To 6
+    Locate I + 15, 1
+    If P$(P9, I) = "XXX" Then 4607
+    Print P$(P9, I); Tab(18); P%(P9, I, 5);
 
-4607 LOCATE , 25
-	IF P$(P9, I + 7) = "XXX" THEN 4608
-	PRINT P$(P9, I + 7); TAB(43); P%(P9, I + 7, 5);
+    4607 Locate , 25
+    If P$(P9, I + 7) = "XXX" Then 4608
+    Print P$(P9, I + 7); Tab(43); P%(P9, I + 7, 5);
 
-4608 LOCATE , 50
-	IF P$(P9, I + 14) = "XXX" THEN 4609
-	PRINT P$(P9, I + 14); TAB(68); P%(P9, I + 14, 5)
+    4608 Locate , 50
+    If P$(P9, I + 14) = "XXX" Then 4609
+    Print P$(P9, I + 14); Tab(68); P%(P9, I + 14, 5)
 
-4609 NEXT
-	IF AP% = 1 AND (U6 = 2 OR U6 = 1 AND U9 = P9) THEN GOSUB 4685: GOTO 4613
+4609 Next
+If AP% = 1 And (U6 = 2 Or U6 = 1 And U9 = P9) Then GoSub 4685: GoTo 4613
 4611 I$ = GetKeyPress$
 
-4612 I = VAL(I$)
+4612 I = Val(I$)
 
-4613 IF I < 1 OR I > 5 THEN 4611
+4613 If I < 1 Or I > 5 Then 4611
 
 4615 MG%(P9, 1) = I: MG%(P9, 2) = 0
-	FOR I = 3 TO 36
-	MG%(P9, I) = -1
-	NEXT
-	FOR I = 41 TO 56
-	MG%(P9, I) = 0
-	NEXT
-	MG%(P9, 0) = 999
+For I = 3 To 36
+    MG%(P9, I) = -1
+Next
+For I = 41 To 56
+    MG%(P9, I) = 0
+Next
+MG%(P9, 0) = 999
 
-4620 I% = 99: GOSUB 1520
-	IF CR% = 1 THEN 4690
+4620 I% = 99: GoSub 1520
+If CR% = 1 Then 4690
 
-4625 FOR I = 0 TO MG%(P9, 1) - 1
+4625 For I = 0 To MG%(P9, 1) - 1
 
-4626 LOCATE 15, 59: PRINT "STARTER "; I + 1
-4628 I$ = GetKeyPress$
+    4626 Locate 15, 59: Print "STARTER "; I + 1
+    4628 I$ = GetKeyPress$
 
-4629 CALL LETTER(I$)
+    4629 Call LETTER(I$)
 
-4632 I1 = VAL(I$): IF I1 > 21 OR MG%(P9, 3) = I1 OR MG%(P9, 4) = I1 OR MG%(P9, 5) = I1 OR MG%(P9, 6) = I1 OR MG%(P9, 7) = I1 THEN 4628
+    4632 I1 = Val(I$): If I1 > 21 Or MG%(P9, 3) = I1 Or MG%(P9, 4) = I1 Or MG%(P9, 5) = I1 Or MG%(P9, 6) = I1 Or MG%(P9, 7) = I1 Then 4628
 
-4635 LOCATE , 59: PRINT P$(P9, I1)
+    4635 Locate , 59: Print P$(P9, I1)
 
-4636 LOCATE , 59: PRINT "ANY CHANGE (YN)";
-4637 I$ = GetKeyPress$
+    4636 Locate , 59: Print "ANY CHANGE (YN)";
+    4637 I$ = GetKeyPress$
 
-4638 IF UCASE$(I$) = "Y" THEN FOR I2 = 15 TO 17: LOCATE I2, 59: PRINT "                 ": NEXT: GOTO 4626
+    4638 If UCase$(I$) = "Y" Then For I2 = 15 To 17: Locate I2, 59: Print "                 ": Next: GoTo 4626
 
-4640 MG%(P9, I + 3) = I1: FOR I2 = 15 TO 17: LOCATE I2, 59: PRINT "                  ": NEXT
-	NEXT
-	GOTO 4700
+    4640 MG%(P9, I + 3) = I1: For I2 = 15 To 17: Locate I2, 59: Print "                  ": Next
+Next
+GoTo 4700
 
-4680 CLS 
+4680 Cls
 
-4683 RETURN
+4683 Return
 
 4685 GS = 0
-	FOR I = 0 TO 21
-	IF P%(P9, I, 5) > GS THEN GS = P%(P9, I, 5)
-	NEXT
-	I = 1
-	IF GS <= 75 THEN I = 2
-	IF GS <= 54 THEN I = 3
-	IF GS <= 41 THEN I = 4
-	IF GS <= 32 THEN I = 5
-	RETURN
+For I = 0 To 21
+    If P%(P9, I, 5) > GS Then GS = P%(P9, I, 5)
+Next
+I = 1
+If GS <= 75 Then I = 2
+If GS <= 54 Then I = 3
+If GS <= 41 Then I = 4
+If GS <= 32 Then I = 5
+Return
 
 4690 'COMPUTER SET ROTATION
-	CR% = 0
-	FOR I = 0 TO 21
-	IF P$(P9, I) = "XXX" THEN GS%(I, 0) = 0: GS%(I, 1) = -1: GOTO 4691
-	GS%(I, 0) = P%(P9, I, 5): GS%(I, 1) = I
+CR% = 0
+For I = 0 To 21
+    If P$(P9, I) = "XXX" Then GS%(I, 0) = 0: GS%(I, 1) = -1: GoTo 4691
+    GS%(I, 0) = P%(P9, I, 5): GS%(I, 1) = I
 
-4691 NEXT
-	FOR Z = 0 TO 20: FOR Z1 = Z + 1 TO 21: IF GS%(Z, 0) >= GS%(Z1, 0) THEN 4695
-	SWAP GS%(Z, 0), GS%(Z1, 0): SWAP GS%(Z, 1), GS%(Z1, 1)
+4691 Next
+For Z = 0 To 20: For Z1 = Z + 1 To 21: If GS%(Z, 0) >= GS%(Z1, 0) Then 4695
+    Swap GS%(Z, 0), GS%(Z1, 0): Swap GS%(Z, 1), GS%(Z1, 1)
 
-4695 NEXT Z1: NEXT Z
-	FOR I = 0 TO MG%(P9, 1) - 1
-	MG%(P9, I + 3) = GS%(I, 1)
-	NEXT
-	I1 = 0
-	FOR I = MG%(P9, 1) TO 21
-	I1 = I1 + 1
-	IF GS%(I, 0) = 0 THEN 4700
-	MG%(P9, I1 + 20) = GS%(I, 1)
-	NEXT
+4695 Next Z1: Next Z
+For I = 0 To MG%(P9, 1) - 1
+    MG%(P9, I + 3) = GS%(I, 1)
+Next
+I1 = 0
+For I = MG%(P9, 1) To 21
+    I1 = I1 + 1
+    If GS%(I, 0) = 0 Then 4700
+    MG%(P9, I1 + 20) = GS%(I, 1)
+Next
 
-4700 I1 = I1 - 1: IF MG%(P9, 1) = 1 THEN MG%(P9, 13) = 100: GOTO 4516
-	IF MG%(P9, 1) = 2 THEN GS% = 75
-	IF MG%(P9, 1) = 3 THEN GS% = 54
-	IF MG%(P9, 1) = 4 THEN GS% = 41
-	IF MG%(P9, 1) = 5 THEN GS% = 32
-	FOR I = 1 TO MG%(P9, 1)
-	MG%(P9, I + 12) = INT(P%(P9, MG%(P9, I + 2), 5) * 100 / GS% + .5)
-	NEXT
-	SS% = 0
-	FOR I = 21 TO 36
-	IF MG%(P9, I) < 0 OR MG%(P9, I) > 21 THEN 4705
-	SS% = SS% + P%(P9, MG%(P9, I), 5)
+4700 I1 = I1 - 1: If MG%(P9, 1) = 1 Then MG%(P9, 13) = 100: GoTo 4516
+If MG%(P9, 1) = 2 Then GS% = 75
+If MG%(P9, 1) = 3 Then GS% = 54
+If MG%(P9, 1) = 4 Then GS% = 41
+If MG%(P9, 1) = 5 Then GS% = 32
+For I = 1 To MG%(P9, 1)
+    MG%(P9, I + 12) = Int(P%(P9, MG%(P9, I + 2), 5) * 100 / GS% + .5)
+Next
+SS% = 0
+For I = 21 To 36
+    If MG%(P9, I) < 0 Or MG%(P9, I) > 21 Then 4705
+    SS% = SS% + P%(P9, MG%(P9, I), 5)
 
-4705 NEXT
-	FOR I = 21 TO 36
-	IF MG%(P9, I) < 0 OR MG%(P9, I) > 21 THEN 4710
-	MG%(P9, I + 20) = INT(P%(P9, MG%(P9, I), 5) * 100 / SS% + .5)
+4705 Next
+For I = 21 To 36
+    If MG%(P9, I) < 0 Or MG%(P9, I) > 21 Then 4710
+    MG%(P9, I + 20) = Int(P%(P9, MG%(P9, I), 5) * 100 / SS% + .5)
 
-4710 NEXT
-	GOTO 4516
+4710 Next
+GoTo 4516
 
 5000 '*** COMPUTER DETERMINE LINEUPS ***
 
-5001 FOR I = 0 TO 22: IF B$(P9, I) = "XXX" THEN B%(P9, I, 21) = 98
+5001 For I = 0 To 22: If B$(P9, I) = "XXX" Then B%(P9, I, 21) = 98
 
-5002 NEXT
+5002 Next
 
-5003 GOSUB 2160: GOSUB 2310
+5003 GoSub 2160: GoSub 2310
 
-5105 FOR I = 1 TO 9: F(I) = 0: BP(I) = 0: BB%(I) = -1: NEXT
+5105 For I = 1 To 9: F(I) = 0: BP(I) = 0: BB%(I) = -1: Next
 
-5115 M = 0: FOR I = 9 TO 1 STEP -1: J = I: FOR I2 = 0 TO 22: PS%(I2, 0) = 0: PS%(I2, 1) = -1: NEXT: I2 = 0
-	IF I = 1 THEN 5120
-	FOR I1 = 0 TO 22: IF B%(P9, I1, 21) > 0 OR B$(P9, I1) = "XXX" THEN 5117
-	IF B%(P9, I1, 22) = I AND B%(P9, I1, 23) = -1 THEN PS%(I2, 0) = B%(P9, I1, 4): PS%(I2, 1) = I1: I2 = I2 + 1: GOTO 5117
-	IF B%(P9, I1, 22) = I AND B%(P9, I1, 24) = -1 THEN PS%(I2, 0) = INT(B%(P9, I1, 4) * .9 + .5): PS%(I2, 1) = I1: I2 = I2 + 1: GOTO 5117
-	IF B%(P9, I1, 22) = I AND B%(P9, I1, 25) = -1 THEN PS%(I2, 0) = INT(B%(P9, I1, 4) * .8 + .5): PS%(I2, 1) = I1: I2 = I2 + 1: GOTO 5117
-	IF B%(P9, I1, 22) = I THEN PS%(I2, 0) = INT(B%(P9, I1, 4) * .7 + .5): PS%(I2, 1) = I1: I2 = I2 + 1: GOTO 5117
-	IF B%(P9, I1, 23) = I AND B%(P9, I1, 24) = -1 THEN PS%(I2, 0) = INT(B%(P9, I1, 4) * .1 + .5): PS%(I2, 1) = I1: I2 = I2 + 1: GOTO 5117
-	IF B%(P9, I1, 23) = I AND B%(P9, I1, 25) = -1 THEN PS%(I2, 0) = INT(B%(P9, I1, 4) * .1 + .5): PS%(I2, 1) = I1: I2 = I2 + 1: GOTO 5117
-	IF B%(P9, I1, 23) = I THEN PS%(I2, 0) = INT(B%(P9, I1, 4) * .1 + .5): PS%(I2, 1) = I1: I2 = I2 + 1: GOTO 5117
-	IF B%(P9, I1, 24) = I AND B%(P9, I1, 25) = -1 THEN PS%(I2, 0) = INT(B%(P9, I1, 4) * .1 + .5): PS%(I2, 1) = I1: I2 = I2 + 1: GOTO 5117
-	IF B%(P9, I1, 24) = I THEN PS%(I2, 0) = INT(B%(P9, I1, 4) * .1 + .5): PS%(I2, 1) = I1: I2 = I2 + 1: GOTO 5117
-	IF B%(P9, I1, 25) = I THEN PS%(I2, 0) = INT(B%(P9, I1, 4) * .1 + .5): PS%(I2, 1) = I1: I2 = I2 + 1: GOTO 5117
+5115 M = 0: For I = 9 To 1 Step -1: J = I: For I2 = 0 To 22: PS%(I2, 0) = 0: PS%(I2, 1) = -1: Next: I2 = 0
+    If I = 1 Then 5120
+    For I1 = 0 To 22: If B%(P9, I1, 21) > 0 Or B$(P9, I1) = "XXX" Then 5117
+        If B%(P9, I1, 22) = I And B%(P9, I1, 23) = -1 Then PS%(I2, 0) = B%(P9, I1, 4): PS%(I2, 1) = I1: I2 = I2 + 1: GoTo 5117
+        If B%(P9, I1, 22) = I And B%(P9, I1, 24) = -1 Then PS%(I2, 0) = Int(B%(P9, I1, 4) * .9 + .5): PS%(I2, 1) = I1: I2 = I2 + 1: GoTo 5117
+        If B%(P9, I1, 22) = I And B%(P9, I1, 25) = -1 Then PS%(I2, 0) = Int(B%(P9, I1, 4) * .8 + .5): PS%(I2, 1) = I1: I2 = I2 + 1: GoTo 5117
+        If B%(P9, I1, 22) = I Then PS%(I2, 0) = Int(B%(P9, I1, 4) * .7 + .5): PS%(I2, 1) = I1: I2 = I2 + 1: GoTo 5117
+        If B%(P9, I1, 23) = I And B%(P9, I1, 24) = -1 Then PS%(I2, 0) = Int(B%(P9, I1, 4) * .1 + .5): PS%(I2, 1) = I1: I2 = I2 + 1: GoTo 5117
+        If B%(P9, I1, 23) = I And B%(P9, I1, 25) = -1 Then PS%(I2, 0) = Int(B%(P9, I1, 4) * .1 + .5): PS%(I2, 1) = I1: I2 = I2 + 1: GoTo 5117
+        If B%(P9, I1, 23) = I Then PS%(I2, 0) = Int(B%(P9, I1, 4) * .1 + .5): PS%(I2, 1) = I1: I2 = I2 + 1: GoTo 5117
+        If B%(P9, I1, 24) = I And B%(P9, I1, 25) = -1 Then PS%(I2, 0) = Int(B%(P9, I1, 4) * .1 + .5): PS%(I2, 1) = I1: I2 = I2 + 1: GoTo 5117
+        If B%(P9, I1, 24) = I Then PS%(I2, 0) = Int(B%(P9, I1, 4) * .1 + .5): PS%(I2, 1) = I1: I2 = I2 + 1: GoTo 5117
+        If B%(P9, I1, 25) = I Then PS%(I2, 0) = Int(B%(P9, I1, 4) * .1 + .5): PS%(I2, 1) = I1: I2 = I2 + 1: GoTo 5117
 
-5117 NEXT I1
+    5117 Next I1
 
-5118 I2 = I2 - 1
-	AB% = 0
-	FOR I1 = 0 TO I2
-	AB% = AB% + PS%(I1, 0)
-	NEXT
-	RN = INT(RND(1) * AB%) + 1
-	FOR I1 = 0 TO I2
-	IF RN <= PS%(I1, 0) THEN F(J) = PS%(I1, 1): B%(P9, PS%(I1, 1), 21) = 1: GOTO 5119
-	PS%(I1 + 1, 0) = PS%(I1 + 1, 0) + PS%(I1, 0)
-	NEXT I1
-	LOCATE 25, 1: PRINT "CANNOT MAKE A LINEUP!!..."; : LE = 1
-	FOR J = 1 TO 9: M%(J) = 0: B7%(P9, J) = -1: B3%(P9, J) = -1: NEXT: C1 = 0
-	FOR J = 0 TO 22
-	IF B%(P9, J, 21) <> 99 THEN B%(P9, J, 21) = 0
-	NEXT
-	IF AP% = 1 THEN 5163
-5162 I$ = GetKeyPress$
+    5118 I2 = I2 - 1
+    AB% = 0
+    For I1 = 0 To I2
+        AB% = AB% + PS%(I1, 0)
+    Next
+    RN = Int(Rnd(1) * AB%) + 1
+    For I1 = 0 To I2
+        If RN <= PS%(I1, 0) Then F(J) = PS%(I1, 1): B%(P9, PS%(I1, 1), 21) = 1: GoTo 5119
+        PS%(I1 + 1, 0) = PS%(I1 + 1, 0) + PS%(I1, 0)
+    Next I1
+    Locate 25, 1: Print "CANNOT MAKE A LINEUP!!...";: LE = 1
+    For J = 1 To 9: M%(J) = 0: B7%(P9, J) = -1: B3%(P9, J) = -1: Next: C1 = 0
+    For J = 0 To 22
+        If B%(P9, J, 21) <> 99 Then B%(P9, J, 21) = 0
+    Next
+    If AP% = 1 Then 5163
+    5162 I$ = GetKeyPress$
 
-5163 RETURN
+    5163 Return
 
-5119 NEXT I: GOTO 5230
+5119 Next I: GoTo 5230
 
-5120 IF DH% = 0 THEN BP(9) = 1: GOTO 5230
-	J = J - 1
-	I2 = 0: FOR I1 = 0 TO 22: IF B%(P9, I1, 21) > 0 OR B$(P9, I1) = "XXX" THEN 5122
-	IF B%(P9, I1, 22) = 0 THEN PS%(I2, 0) = B%(P9, I1, 4): PS%(I2, 1) = I1: GOTO 5121
-	IF B%(P9, I1, 23) = 0 THEN PS%(I2, 0) = B%(P9, I1, 4) * .5: PS%(I2, 1) = I1: GOTO 5121
-	IF B%(P9, I1, 24) = 0 THEN PS%(I2, 0) = B%(P9, I1, 4) * .3: PS%(I2, 1) = I1: GOTO 5121
-	IF B%(P9, I1, 25) = 0 THEN PS%(I2, 0) = B%(P9, I1, 4) * .2: PS%(I2, 1) = I1: GOTO 5121
-	PS%(I2, 0) = INT(B%(P9, I1, 4) * .05 + .5): PS%(I2, 1) = I1
+5120 If DH% = 0 Then BP(9) = 1: GoTo 5230
+J = J - 1
+I2 = 0: For I1 = 0 To 22: If B%(P9, I1, 21) > 0 Or B$(P9, I1) = "XXX" Then 5122
+    If B%(P9, I1, 22) = 0 Then PS%(I2, 0) = B%(P9, I1, 4): PS%(I2, 1) = I1: GoTo 5121
+    If B%(P9, I1, 23) = 0 Then PS%(I2, 0) = B%(P9, I1, 4) * .5: PS%(I2, 1) = I1: GoTo 5121
+    If B%(P9, I1, 24) = 0 Then PS%(I2, 0) = B%(P9, I1, 4) * .3: PS%(I2, 1) = I1: GoTo 5121
+    If B%(P9, I1, 25) = 0 Then PS%(I2, 0) = B%(P9, I1, 4) * .2: PS%(I2, 1) = I1: GoTo 5121
+    PS%(I2, 0) = Int(B%(P9, I1, 4) * .05 + .5): PS%(I2, 1) = I1
 
-5121 I2 = I2 + 1
+    5121 I2 = I2 + 1
 
-5122 NEXT I1
-	GOTO 5118
+5122 Next I1
+GoTo 5118
 
 5230 ' SORT HITTERS
 
 5240 C = 2
-	B = 1: GOSUB 5300
-	B = 2: GOSUB 5300
+B = 1: GoSub 5300
+B = 2: GoSub 5300
 
 5235 C = 1
-	B = 3: GOSUB 5300
-	B = 4: GOSUB 5300
-	C = 1
-	B = 5: GOSUB 5300
-	B = 6: GOSUB 5300
+B = 3: GoSub 5300
+B = 4: GoSub 5300
+C = 1
+B = 5: GoSub 5300
+B = 6: GoSub 5300
 
-5245 B = 7: GOSUB 5300
-	B = 8: GOSUB 5300
-	IF DH% = 1 THEN B = 9: GOSUB 5300
+5245 B = 7: GoSub 5300
+B = 8: GoSub 5300
+If DH% = 1 Then B = 9: GoSub 5300
 
-5250 FOR I = 1 TO 9
-	B3%(P9, I) = BB%(I)
-	B7%(P9, I) = BP(I)
-	NEXT
-	GOTO 1910
+5250 For I = 1 To 9
+    B3%(P9, I) = BB%(I)
+    B7%(P9, I) = BP(I)
+Next
+GoTo 1910
 
 5300 E = -100: U = -1: T = -1
-	FOR L = 0 TO 9
+For L = 0 To 9
 
-5305 IF DH% = 0 AND L = 0 THEN L = L + 2
+    5305 If DH% = 0 And L = 0 Then L = L + 2
 
-5310 IF DH% = 1 AND L = 1 THEN L = L + 1
+    5310 If DH% = 1 And L = 1 Then L = L + 1
 
-5315 J = F(L): X = 1
-	FOR Z = 1 TO 9
-	IF BB%(Z) = J THEN X = 0: Z = 9
+    5315 J = F(L): X = 1
+    For Z = 1 To 9
+        If BB%(Z) = J Then X = 0: Z = 9
 
-5320 NEXT Z
-	IF X = 0 THEN 5350
+    5320 Next Z
+    If X = 0 Then 5350
 
-5325 IF C = 1 THEN 5345
+    5325 If C = 1 Then 5345
 
-5330 JJ = J: GOSUB 5355: T1% = 100 * B%(P9, J, 6) / B%(P9, J, 4) - 27
-	IF T1% < 0 THEN T1% = 3 * T1%
+    5330 JJ = J: GoSub 5355: T1% = 100 * B%(P9, J, 6) / B%(P9, J, 4) - 27
+    If T1% < 0 Then T1% = 3 * T1%
 
-5335 JJ = 3 * R + T1%: IF JJ > E THEN E = JJ: T = J: U = L
+    5335 JJ = 3 * R + T1%: If JJ > E Then E = JJ: T = J: U = L
 
-5340 GOTO 5350
+    5340 GoTo 5350
 
-5345 SE = (B%(P9, J, 6) + B%(P9, J, 7) + B%(P9, J, 8) * 2 + B%(P9, J, 9) * 3) / B%(P9, J, 4)
-	IF SE >= E THEN E = SE: T = J: U = L
+    5345 SE = (B%(P9, J, 6) + B%(P9, J, 7) + B%(P9, J, 8) * 2 + B%(P9, J, 9) * 3) / B%(P9, J, 4)
+    If SE >= E Then E = SE: T = J: U = L
 
-5350 NEXT L
-	BB%(B) = T
-	BP(B) = U
-	RETURN
+5350 Next L
+BB%(B) = T
+BP(B) = U
+Return
 
 5355 'IF A PITCHER THEN 268
 
 5360 Q1 = (B%(P9, JJ, 6) - B%(P9, JJ, 8) - B%(P9, JJ, 9) + B%(P9, JJ, 11)) * .7
-	IF Q1 = 0 THEN Q1 = 1
+If Q1 = 0 Then Q1 = 1
 
-5365 Q1 = B%(P9, JJ, 13) / Q1: IF Q1 < .02 THEN 5375
+5365 Q1 = B%(P9, JJ, 13) / Q1: If Q1 < .02 Then 5375
 
-5370 QQ = Q1 + .18: R = INT(QQ * (18 + 2 * ABS((QQ < .34)))): GOTO 5380
+5370 QQ = Q1 + .18: R = Int(QQ * (18 + 2 * Abs((QQ < .34)))): GoTo 5380
 
-5375 R = 2 + INT(Q1 * 100): IF B%(P9, JJ, 1) = 2 THEN R = R - 1
+5375 R = 2 + Int(Q1 * 100): If B%(P9, JJ, 1) = 2 Then R = R - 1
 
-5380 IF (B%(P9, JJ, 1) = 6 OR B%(P9, JJ, 1) = 8) AND R < 7 THEN R = R + 1
+5380 If (B%(P9, JJ, 1) = 6 Or B%(P9, JJ, 1) = 8) And R < 7 Then R = R + 1
 
-5385 IF R > 9 THEN R = 9
+5385 If R > 9 Then R = 9
 
-5390 IF R < 0 THEN R = 1
+5390 If R < 0 Then R = 1
 
-5395 RETURN
+5395 Return
 
 8100 NT = 0
-OPEN D$(0) + "FCTEAMS." + YN$ FOR RANDOM AS #1 LEN = 4342
-	Y = LOF(1)
-	FIELD #1, 15 AS Q2$(0)
-	FOR I1 = 1 TO Y / 4342
-	GET #1, I1
-	FOR I2 = 1 TO 15
-	IF LEFT$(Q2$(0), 1) = " " OR ASC(MID$(Q2$(0), I2, 1)) < 32 OR ASC(MID$(Q2$(0), I2, 1)) > 123 OR UCASE$(LEFT$(Q2$(0), 3)) = "NOT" OR UCASE$(LEFT$(Q2$(0), 3)) = "UN" THEN 8105
-	NEXT I2
-	NT = NT + 1
-	V$(NT) = Q2$(0): UV%(NT) = I1
+Open D$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342
+Y = LOF(1)
+Field #1, 15 As Q2$(0)
+For I1 = 1 To Y / 4342
+    Get #1, I1
+    For I2 = 1 To 15
+        If Left$(Q2$(0), 1) = " " Or Asc(Mid$(Q2$(0), I2, 1)) < 32 Or Asc(Mid$(Q2$(0), I2, 1)) > 123 Or UCase$(Left$(Q2$(0), 3)) = "NOT" Or UCase$(Left$(Q2$(0), 3)) = "UN" Then 8105
+    Next I2
+    NT = NT + 1
+    V$(NT) = Q2$(0): UV%(NT) = I1
 
-8105 NEXT I1
-CLOSE 1
+8105 Next I1
+Close 1
 
 8102 SELECTION% = 1
-	Count% = NT
-	Start% = 1
-	FileFGColr% = 15:FileBGColr% = 4
-	HiLiteFGColr% = 0:HiLiteBGColr% = 7
-	Rows% = 20
-	Columns% = 4
-	Spacing% = 6
-	Row% = 4
-	Column% = 1
-COLOR , 4: CLS : LOCATE , 33: COLOR 14: PRINT "TEAM SELECTION": COLOR 15
-	LOCATE 25, 1: COLOR 14: PRINT "ESC"; : COLOR 15: PRINT "-SELECT NEW ID  PGDN  PGUP  "; : COLOR 14: PRINT "ENTER"; : COLOR 15: PRINT "-SELECTS TEAM";
+Count% = NT
+Start% = 1
+FileFGColr% = 15: FileBGColr% = 4
+HiLiteFGColr% = 0: HiLiteBGColr% = 7
+Rows% = 20
+Columns% = 4
+Spacing% = 6
+Row% = 4
+Column% = 1
+Color , 4: Cls: Locate , 33: Color 14: Print "TEAM SELECTION": Color 15
+Locate 25, 1: Color 14: Print "ESC";: Color 15: Print "-SELECT NEW ID  PGDN  PGUP  ";: Color 14: Print "ENTER";: Color 15: Print "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
 MAMenu V$(), SELECTION%, Start%, Count%, EXITCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
-	IF EXITCODE% = 27 THEN BO% = 1: RETURN
-	T1(I) = UV%(SELECTION%)
-	LOCATE 2, 33: COLOR 31: PRINT "LOADING..."
+If EXITCODE% = 27 Then BO% = 1: Return
+T1(I) = UV%(SELECTION%)
+Locate 2, 33: Color 31: Print "LOADING..."
 
-300  OPEN D$(0) + "FCTEAMS." + YN$ FOR RANDOM AS #1 LEN = 4342
-FIELD #1, 15 AS Q2$(0), 2 AS Q2$(1), 2 AS Q2$(2), 2 AS Q2$(3), 2 AS Q2$(4), 2 AS Q2$(5), 2 AS Q2$(6), 2 AS Q2$(7), 2 AS Q2$(8), 2 AS Q2$(9), 2 AS Q2$(10), 2 AS Q2$(11), 2 AS Q2$(12), 2 AS Q2$(13), 4 AS Q2$(14), 4297 AS X$
-FOR A = 0 TO 22
-FIELD #1, 45 + A * 99 AS X$, 15 AS Q2$(A * 43 + 15), 2 AS Q2$(A * 43 + 16), 2 AS Q2$(A * 43 + 17), 2 AS Q2$(A * 43 + 18), 2 AS Q2$(A * 43 + 19), 2 AS Q2$(A * 43 + 20), 2 AS Q2$(A * 43 + 21), 2 AS Q2$(A * 43 + 22), 2 AS Q2$(A * 43 + 23), 2 AS Q2$(A * _
-43 + 24), 2 AS Q2$(A * 43 + 25), 2 AS Q2$(A * 43 + 26), 4297 - 37 - A * 99 AS X$
-FIELD #1, 82 + A * 99 AS X$, 2 AS Q2$(A * 43 + 27), 2 AS Q2$(A * 43 + 28), 2 AS Q2$(A * 43 + 29), 2 AS Q2$(A * 43 + 30), 2 AS Q2$(A * 43 + 31), 2 AS Q2$(A * 43 + 32), 2 AS Q2$(A * 43 + 33), 2 AS Q2$(A * 43 + 34), 2 AS Q2$(A * 43 + 35), 2 AS Q2$(A *  _
+300 Open D$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342
 
-43 + 36), 2 AS Q2$(A * 43 + 37), 2 AS Q2$(A * 43 + 38), 4297 - 61 - A * 99 AS X$
-FIELD #1, 106 + A * 99 AS X$, 2 AS Q2$(A * 43 + 39), 2 AS Q2$(A * 43 + 40), 2 AS Q2$(A * 43 + 41), 2 AS Q2$(A * 43 + 42), 2 AS Q2$(A * 43 + 43), 2 AS Q2$(A * 43 + 44), 2 AS Q2$(A * 43 + 45), 2 AS Q2$(A * 43 + 46), 2 AS Q2$(A * 43 + 47), 2 AS Q2$(A * _
-43 + 48), 2 AS Q2$(A * 43 + 49), 2 AS Q2$(A * 43 + 50), 4297 - 85 - A * 99 AS X$
-FIELD #1, 130 + A * 99 AS X$, 2 AS Q2$(A * 43 + 51), 2 AS Q2$(A * 43 + 52), 2 AS Q2$(A * 43 + 53), 2 AS Q2$(A * 43 + 54), 2 AS Q2$(A * 43 + 55), 2 AS Q2$(A * 43 + 56), 2 AS Q2$(A * 43 + 57), 4297 - 99 - A * 99 AS X$
-NEXT
-FOR A = 0 TO 21
-FIELD #1, 2322 + A * 89 AS X$, 15 AS Q2$(A * 38 + 1004), 2 AS Q2$(A * 38 + 1005), 2 AS Q2$(A * 38 + 1006), 2 AS Q2$(A * 38 + 1007), 2 AS Q2$(A * 38 + 1008), 2 AS Q2$(A * 38 + 1009), 2 AS Q2$(A * 38 + 1010), 2 AS Q2$(A * 38 + 1011), 2 AS Q2$(A * 38 + _
-1012), 2 AS Q2$(A * 38 + 1013), 2 AS Q2$(A * 38 + 1014), 2 AS Q2$(A * 38 + 1015), 2020 - 37 - A * 89 AS X$
-FIELD #1, 2359 + A * 89 AS X$, 2 AS Q2$(A * 38 + 1016), 2 AS Q2$(A * 38 + 1017), 2 AS Q2$(A * 38 + 1018), 2 AS Q2$(A * 38 + 1019), 2 AS Q2$(A * 38 + 1020), 2 AS Q2$(A * 38 + 1021), 2 AS Q2$(A * 38 + 1022), 2 AS Q2$(A * 38 + 1023), 2 AS Q2$(A * 38 +  _
+Field #1, 15 As Q2$(0), 2 As Q2$(1), 2 As Q2$(2), 2 As Q2$(3), 2 As Q2$(4), 2 As Q2$(5), 2 As Q2$(6), 2 As Q2$(7), 2 As Q2$(8), 2 As Q2$(9), 2 As Q2$(10), 2 As Q2$(11), 2 As Q2$(12), 2 As Q2$(13), 4 As Q2$(14), 4297 As X$
 
-1024), 2 AS Q2$(A * 38 + 1025), 2 AS Q2$(A * 38 + 1026), 2 AS Q2$(A * 38 + 1027), 2020 - 61 - A * 89 AS X$
-FIELD #1, 2383 + A * 89 AS X$, 2 AS Q2$(A * 38 + 1028), 2 AS Q2$(A * 38 + 1029), 2 AS Q2$(A * 38 + 1030), 2 AS Q2$(A * 38 + 1031), 2 AS Q2$(A * 38 + 1032), 2 AS Q2$(A * 38 + 1033), 2 AS Q2$(A * 38 + 1034), 2 AS Q2$(A * 38 + 1035), 2 AS Q2$(A * 38 +  _
+For A = 0 To 22
 
-1036), 2 AS Q2$(A * 38 + 1037), 2 AS Q2$(A * 38 + 1038), 2 AS Q2$(A * 38 + 1039), 2020 - 85 - A * 89 AS X$
-FIELD #1, 2407 + A * 89 AS X$, 2 AS Q2$(A * 38 + 1040), 2 AS Q2$(A * 38 + 1041), 2020 - 89 - A * 89 AS X$
-NEXT
-FIELD #1, 4280 AS X$, 40 AS Q2$(1840), 15 AS Q2$(1841), 5 AS Q2$(1842), 2 AS Q2$(1843)
-GET #1, T1(I)
+    FIELD #1, 45 + A * 99 AS X$, 15 AS Q2$(A * 43 + 15), 2 AS Q2$(A * 43 + 16), 2 AS Q2$(A * 43 + 17), 2 AS Q2$(A * 43 + 18), 2 AS Q2$(A * 43 + 19), 2 AS Q2$(A * 43 + 20), 2 AS Q2$(A * 43 + 21), 2 AS Q2$(A * 43 + 22), 2 AS Q2$(A * 43 + 23), 2 AS Q2$(A * _
+    43 + 24), 2 AS Q2$(A * 43 + 25), 2 AS Q2$(A * 43 + 26), 4297 - 37 - A * 99 AS X$
+
+    FIELD #1, 82 + A * 99 AS X$, 2 AS Q2$(A * 43 + 27), 2 AS Q2$(A * 43 + 28), 2 AS Q2$(A * 43 + 29), 2 AS Q2$(A * 43 + 30), 2 AS Q2$(A * 43 + 31), 2 AS Q2$(A * 43 + 32), 2 AS Q2$(A * 43 + 33), 2 AS Q2$(A * 43 + 34), 2 AS Q2$(A * 43 + 35), 2 AS Q2$(A *  _
+    43 + 36), 2 AS Q2$(A * 43 + 37), 2 AS Q2$(A * 43 + 38), 4297 - 61 - A * 99 AS X$
+
+    FIELD #1, 106 + A * 99 AS X$, 2 AS Q2$(A * 43 + 39), 2 AS Q2$(A * 43 + 40), 2 AS Q2$(A * 43 + 41), 2 AS Q2$(A * 43 + 42), 2 AS Q2$(A * 43 + 43), 2 AS Q2$(A * 43 + 44), 2 AS Q2$(A * 43 + 45), 2 AS Q2$(A * 43 + 46), 2 AS Q2$(A * 43 + 47), 2 AS Q2$(A * _
+    43 + 48), 2 AS Q2$(A * 43 + 49), 2 AS Q2$(A * 43 + 50), 4297 - 85 - A * 99 AS X$
+
+    Field #1, 130 + A * 99 As X$, 2 As Q2$(A * 43 + 51), 2 As Q2$(A * 43 + 52), 2 As Q2$(A * 43 + 53), 2 As Q2$(A * 43 + 54), 2 As Q2$(A * 43 + 55), 2 As Q2$(A * 43 + 56), 2 As Q2$(A * 43 + 57), 4297 - 99 - A * 99 As X$
+
+Next
+
+For A = 0 To 21
+    FIELD #1, 2322 + A * 89 AS X$, 15 AS Q2$(A * 38 + 1004), 2 AS Q2$(A * 38 + 1005), 2 AS Q2$(A * 38 + 1006), 2 AS Q2$(A * 38 + 1007), 2 AS Q2$(A * 38 + 1008), 2 AS Q2$(A * 38 + 1009), 2 AS Q2$(A * 38 + 1010), 2 AS Q2$(A * 38 + 1011), 2 AS Q2$(A * 38 + _
+    1012), 2 AS Q2$(A * 38 + 1013), 2 AS Q2$(A * 38 + 1014), 2 AS Q2$(A * 38 + 1015), 2020 - 37 - A * 89 AS X$
+
+    FIELD #1, 2359 + A * 89 AS X$, 2 AS Q2$(A * 38 + 1016), 2 AS Q2$(A * 38 + 1017), 2 AS Q2$(A * 38 + 1018), 2 AS Q2$(A * 38 + 1019), 2 AS Q2$(A * 38 + 1020), 2 AS Q2$(A * 38 + 1021), 2 AS Q2$(A * 38 + 1022), 2 AS Q2$(A * 38 + 1023), 2 AS Q2$(A * 38 +  _
+    1024), 2 AS Q2$(A * 38 + 1025), 2 AS Q2$(A * 38 + 1026), 2 AS Q2$(A * 38 + 1027), 2020 - 61 - A * 89 AS X$
+
+    FIELD #1, 2383 + A * 89 AS X$, 2 AS Q2$(A * 38 + 1028), 2 AS Q2$(A * 38 + 1029), 2 AS Q2$(A * 38 + 1030), 2 AS Q2$(A * 38 + 1031), 2 AS Q2$(A * 38 + 1032), 2 AS Q2$(A * 38 + 1033), 2 AS Q2$(A * 38 + 1034), 2 AS Q2$(A * 38 + 1035), 2 AS Q2$(A * 38 +  _
+    1036), 2 AS Q2$(A * 38 + 1037), 2 AS Q2$(A * 38 + 1038), 2 AS Q2$(A * 38 + 1039), 2020 - 85 - A * 89 AS X$
+
+    Field #1, 2407 + A * 89 As X$, 2 As Q2$(A * 38 + 1040), 2 As Q2$(A * 38 + 1041), 2020 - 89 - A * 89 As X$
+Next
+
+Field #1, 4280 As X$, 40 As Q2$(1840), 15 As Q2$(1841), 5 As Q2$(1842), 2 As Q2$(1843)
+
+Get #1, T1(I)
 A$(I) = Q2$(0)
 A$(I) = RTrim$(A$(I))
-FOR I1 = 1 TO 13
-L%(I, I1) = CVI(Q2$(I1))
-NEXT
-IF (L%(I, 11) = 7 OR L%(I, 11) = 15) AND L%(I, 12) = 0 THEN L%(I, 11) = 0: L%(I, 12) = 7
+
+For I1 = 1 To 13
+    L%(I, I1) = CVI(Q2$(I1))
+Next
+
+If (L%(I, 11) = 7 Or L%(I, 11) = 15) And L%(I, 12) = 0 Then L%(I, 11) = 0: L%(I, 12) = 7
 K9(I) = CVS(Q2$(14))
-FOR I1 = 0 TO 22: B$(I, I1) = Q2$(I1 * 43 + 15)
-B$(I, I1) = RTrim$(B$(I, I1))
-FOR I2 = 0 TO 41
-	B%(I, I1, I2) = CVI(Q2$(I1 * 43 + I2 + 16))
-NEXT
-IF B%(I, I1, 31) <> 0 THEN B%(I, I1, 21) = 99
-NEXT
-FOR I1 = 0 TO 21: P$(I, I1) = Q2$(I1 * 38 + 1004)
-P$(I, I1) = RTrim$(P$(I, I1))
-FOR I2 = 0 TO 36: P%(I, I1, I2) = CVI(Q2$(I1 * 38 + I2 + 1005))
-NEXT
-IF P%(I, I1, 34) <> 0 THEN P%(I, I1, 15) = 99
-IF P%(I, I1, 0) = 0 THEN P%(I, I1, 0) = 1
-NEXT
+
+For I1 = 0 To 22: B$(I, I1) = Q2$(I1 * 43 + 15)
+    B$(I, I1) = RTrim$(B$(I, I1))
+    For I2 = 0 To 41
+        B%(I, I1, I2) = CVI(Q2$(I1 * 43 + I2 + 16))
+    Next
+    If B%(I, I1, 31) <> 0 Then B%(I, I1, 21) = 99
+Next
+
+For I1 = 0 To 21: P$(I, I1) = Q2$(I1 * 38 + 1004)
+    P$(I, I1) = RTrim$(P$(I, I1))
+    For I2 = 0 To 36: P%(I, I1, I2) = CVI(Q2$(I1 * 38 + I2 + 1005))
+    Next
+    If P%(I, I1, 34) <> 0 Then P%(I, I1, 15) = 99
+    If P%(I, I1, 0) = 0 Then P%(I, I1, 0) = 1
+Next
+
 S$(I) = Q2$(1840): M$(I) = Q2$(1841): NN$(I) = Q2$(1842): CK = CVI(Q2$(1843))
-CLOSE 1
-FOR I1 = 0 TO 22
+Close 1
 
-'check for 1934 season
+For I1 = 0 To 22
+    'check for 1934 season
+    '-- what does this do??? is it Babe Ruth related???
+    If Val(Left$(A$(I), 2)) < 54 And Mid$(A$(I), 3, 1) = " " Then B%(I, I1, 30) = B%(I, I1, 30) * .75
 
-IF VAL(LEFT$(A$(I), 2)) < 54 AND MID$(A$(I),3,1) = " " THEN B%(I, I1, 30) = B%(I, I1, 30) * .75
-FOR I2 = 22 TO 25
-IF B%(I, I1, I2) <> -1 AND B%(I, I1, I2) <> 0 AND B%(I, I1, I2 + 4) = 0 THEN B%(I, I1, I2 + 4) = 900
-NEXT
-NEXT
+    For I2 = 22 To 25
+        If B%(I, I1, I2) <> -1 And B%(I, I1, I2) <> 0 And B%(I, I1, I2 + 4) = 0 Then B%(I, I1, I2 + 4) = 900
+    Next
+Next
+
 M$(I) = RTrim$(M$(I))
 S$(I) = RTrim$(S$(I))
 NN$(I) = RTrim$(NN$(I))
-FOR X = 0 TO 22
-FOR X1 = 1 TO 14
-B%(I, X, X1 + 41) = 0
-NEXT: NEXT
-FOR X = 0 TO 21
-FOR X1 = 1 TO 28
-P%(I, X, X1 + 36) = 0
-NEXT: NEXT
-	IF LR% = 1 THEN TS%(I, 0) = -1: GOTO 316
-	IF NOT _FILEEXISTS(D$(0) + "LR." + YN$) THEN TS%(I, 0) = -1: GOTO 316
-OPEN D$(0) + "LR." + YN$ FOR RANDOM AS #1 LEN = 4108
-	FOR X = 0 TO 11
-	FIELD #1, X * 2 AS X$, 2 AS Q2$(X + 1), 4108 - 2 - 2 * X AS X$
-	NEXT
-	FOR X = 0 TO 22
-	FOR X1 = 1 TO 14
-	FIELD #1, 24 + (X1 - 1) * 2 + X * 14 * 2 AS X$, 2 AS Q2$(12 + X1 + X * 14), 4108 - 2 - (24 + (X1 - 1) * 2 + X * 14 * 2) AS X$
-	NEXT
-	NEXT
-	FOR X = 0 TO 21
-	FOR X1 = 1 TO 14
-	FIELD #1, 668 + (X1 - 1) * 2 + X * 14 * 2 AS X$, 2 AS Q2$(334 + X1 + X * 14), 4108 - 2 - (668 + (X1 - 1) * 2 + X * 14 * 2) AS X$
-	NEXT
-	NEXT
-	FOR X = 0 TO 21
-	FOR X1 = 1 TO 14
-	FIELD #1, 1284 + (X1 - 1) * 2 + X * 14 * 2 AS X$, 2 AS Q2$(642 + X1 + X * 14), 4108 - 2 - (1284 + (X1 - 1) * 2 + X * 14 * 2) AS X$
-	NEXT
-	NEXT
-	FOR X = 1 TO 24
-	FIELD #1, 1900 + (X - 1) * 2 AS X$, 2 AS Q2$(950 + X), 4108 - 2 - (X - 1) * 2 - 1900 AS X$
-	NEXT
-	FOR X = 0 TO 22
-	FOR X1 = 1 TO 24
-	FIELD #1, 1948 + (X1 - 1) * 2 + X * 24 * 2 AS X$, 2 AS Q2$(975 + X1 + X * 24), 4108 - 2 - (1948 + (X1 - 1) * 2 + X * 24 * 2) AS X$
-	NEXT
-	NEXT
-	FOR X = 0 TO 21
-	FOR X1 = 1 TO 24
-	FIELD #1, 3052 + (X1 - 1) * 2 + X * 24 * 2 AS X$, 2 AS Q2$(1528 + X1 + X * 24), 4108 - 2 - (3052 + (X1 - 1) * 2 + X * 24 * 2) AS X$
-	NEXT
-	NEXT
-	GET #1, T1(I)
-	FOR X = 0 TO 11
-	TS%(I, X) = CVI(Q2$(X + 1))
-	NEXT
-	FOR X = 0 TO 22
-	FOR X1 = 1 TO 14
-	B%(I, X, X1 + 41) = CVI(Q2$(12 + X1 + X * 14))
-	NEXT: NEXT
-	FOR X = 0 TO 21
-	FOR X1 = 1 TO 14
-	P%(I, X, X1 + 36) = CVI(Q2$(334 + X1 + X * 14))
-	NEXT: NEXT
-	FOR X = 0 TO 21
-	FOR X1 = 1 TO 14
-	P%(I, X, X1 + 50) = CVI(Q2$(642 + X1 + X * 14))
-	NEXT: NEXT
-	FOR X = 1 TO 24: SA%(I, X) = CVI(Q2$(X + 950)): NEXT
-	FOR X = 0 TO 22
-	FOR X1 = 1 TO 24
-	B%(I, X, X1 + 55) = CVI(Q2$(975 + X1 + X * 24))
-	NEXT: NEXT
-	FOR X = 0 TO 21
-	FOR X1 = 1 TO 24
-	P%(I, X, X1 + 64) = CVI(Q2$(1528 + X1 + X * 24))
-	NEXT: NEXT
-CLOSE 1
-	IF TS%(I, 0) <> 999 THEN TS%(I, 0) = -1
 
-316  FOR X = 0 TO 22
-	FOR X1 = 0 TO 14
-	B%(I, X, 80) = B%(I, X, 80) + B%(I, X, X1 + 41)
-	NEXT: NEXT
-	  FOR X = 0 TO 21
-	FOR X1 = 0 TO 14
-	P%(I, X, 89) = P%(I, X, 89) + P%(I, X, X1 + 50)
-	NEXT: NEXT
-	  IF NOT _FILEEXISTS(D$(3) + "MGR." + YN$) THEN MF%(I) = -1: GOTO 317
-OPEN D$(3) + "MGR." + YN$ FOR RANDOM AS #2 LEN = 2000
-	FOR X = 0 TO 999
-	FIELD #2, X * 2 AS Q2$, 2 AS Q2$(X), 2000 - X * 2 - 2 AS Q2$
-	NEXT
-	GET #2, T1(I)
-	FOR X = 0 TO 999: MG%(I, X) = CVI(Q2$(X)): NEXT
-CLOSE 2
+For X = 0 To 22
+    For X1 = 1 To 14
+        B%(I, X, X1 + 41) = 0
+    Next
+Next
 
-317  IF MG%(I, 0) <> 999 OR MF%(I) = -1 THEN MF%(I) = -1: FOR X = 0 TO 999: MG%(I, X) = -1: NEXT
-	  N$(I) = A$(I)
-	FOR xx = 4 TO 11
-	IF MID$(N$(I), xx, 1) = " " OR MID$(N$(I), xx, 1) = "." THEN MID$(N$(I), xx, 1) = "_"
-	NEXT xx
-	QQ = 8
-	FOR xx = 11 TO 4 STEP -1
-	IF MID$(N$(I), xx, 1) = "_" THEN QQ = xx - 4: GOTO 118
-	GOTO 119
+For X = 0 To 21
+    For X1 = 1 To 28
+        P%(I, X, X1 + 36) = 0
+Next: Next
+If LR% = 1 Then TS%(I, 0) = -1: GoTo 316
+If Not _FileExists(D$(0) + "LR." + YN$) Then TS%(I, 0) = -1: GoTo 316
+Open D$(0) + "LR." + YN$ For Random As #1 Len = 4108
+For X = 0 To 11
+    Field #1, X * 2 As X$, 2 As Q2$(X + 1), 4108 - 2 - 2 * X As X$
+Next
+For X = 0 To 22
+    For X1 = 1 To 14
+        Field #1, 24 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q2$(12 + X1 + X * 14), 4108 - 2 - (24 + (X1 - 1) * 2 + X * 14 * 2) As X$
+    Next
+Next
+For X = 0 To 21
+    For X1 = 1 To 14
+        Field #1, 668 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q2$(334 + X1 + X * 14), 4108 - 2 - (668 + (X1 - 1) * 2 + X * 14 * 2) As X$
+    Next
+Next
+For X = 0 To 21
+    For X1 = 1 To 14
+        Field #1, 1284 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q2$(642 + X1 + X * 14), 4108 - 2 - (1284 + (X1 - 1) * 2 + X * 14 * 2) As X$
+    Next
+Next
+For X = 1 To 24
+    Field #1, 1900 + (X - 1) * 2 As X$, 2 As Q2$(950 + X), 4108 - 2 - (X - 1) * 2 - 1900 As X$
+Next
+For X = 0 To 22
+    For X1 = 1 To 24
+        Field #1, 1948 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q2$(975 + X1 + X * 24), 4108 - 2 - (1948 + (X1 - 1) * 2 + X * 24 * 2) As X$
+    Next
+Next
+For X = 0 To 21
+    For X1 = 1 To 24
+        Field #1, 3052 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q2$(1528 + X1 + X * 24), 4108 - 2 - (3052 + (X1 - 1) * 2 + X * 24 * 2) As X$
+    Next
+Next
+Get #1, T1(I)
+For X = 0 To 11
+    TS%(I, X) = CVI(Q2$(X + 1))
+Next
+For X = 0 To 22
+    For X1 = 1 To 14
+        B%(I, X, X1 + 41) = CVI(Q2$(12 + X1 + X * 14))
+Next: Next
+For X = 0 To 21
+    For X1 = 1 To 14
+        P%(I, X, X1 + 36) = CVI(Q2$(334 + X1 + X * 14))
+Next: Next
+For X = 0 To 21
+    For X1 = 1 To 14
+        P%(I, X, X1 + 50) = CVI(Q2$(642 + X1 + X * 14))
+Next: Next
+For X = 1 To 24: SA%(I, X) = CVI(Q2$(X + 950)): Next
+For X = 0 To 22
+    For X1 = 1 To 24
+        B%(I, X, X1 + 55) = CVI(Q2$(975 + X1 + X * 24))
+Next: Next
+For X = 0 To 21
+    For X1 = 1 To 24
+        P%(I, X, X1 + 64) = CVI(Q2$(1528 + X1 + X * 24))
+Next: Next
+Close 1
+If TS%(I, 0) <> 999 Then TS%(I, 0) = -1
 
-118 NEXT xx
+316 For X = 0 To 22
+    For X1 = 0 To 14
+        B%(I, X, 80) = B%(I, X, 80) + B%(I, X, X1 + 41)
+Next: Next
+For X = 0 To 21
+    For X1 = 0 To 14
+        P%(I, X, 89) = P%(I, X, 89) + P%(I, X, X1 + 50)
+Next: Next
+If Not _FileExists(D$(3) + "MGR." + YN$) Then MF%(I) = -1: GoTo 317
+Open D$(3) + "MGR." + YN$ For Random As #2 Len = 2000
+For X = 0 To 999
+    Field #2, X * 2 As Q2$, 2 As Q2$(X), 2000 - X * 2 - 2 As Q2$
+Next
+Get #2, T1(I)
+For X = 0 To 999: MG%(I, X) = CVI(Q2$(X)): Next
+Close 2
+
+317 If MG%(I, 0) <> 999 Or MF%(I) = -1 Then MF%(I) = -1: For X = 0 To 999: MG%(I, X) = -1: Next
+N$(I) = A$(I)
+For xx = 4 To 11
+    If Mid$(N$(I), xx, 1) = " " Or Mid$(N$(I), xx, 1) = "." Then Mid$(N$(I), xx, 1) = "_"
+Next xx
+QQ = 8
+For xx = 11 To 4 Step -1
+    If Mid$(N$(I), xx, 1) = "_" Then QQ = xx - 4: GoTo 118
+    GoTo 119
+
+118 Next xx
 
 119 '
-	  F$ = MID$(N$(I), 4, QQ)
-	F$ = F$ + "." + LEFT$(N$(I), 2)
-	IF NOT _FILEEXISTS(D$(1) + F$ + "D") THEN 318
-	  OPEN D$(1) + F$ + "D" FOR INPUT AS #1
-	FOR I1 = 0 TO 22
-	INPUT #1, INJ%(I, I1)
-	NEXT
-	FOR I1 = 0 TO 21
-	INPUT #1, DYS%(I, I1)
-	NEXT
-CLOSE 1
-	IF IJ% = 1 THEN 318
-	FOR I1 = 0 TO 22
-	IF INJ%(I, I1) > 0 THEN B%(I, I1, 21) = 99
-	NEXT
-
-318 IF DR% = 1 THEN 319
-	FOR I1 = 0 TO 21
-	IF DYS%(I, I1) = 0 OR DYS%(I, I1) >= 90 THEN 320
-	P%(I, I1, 35) = DYS%(I, I1)
-
-320 NEXT
-
-319  RETURN
-
-SUB COLCHK (P9, I)
-	IF B%(P9, I, 21) >= 98 THEN COLOR 0, 7
-END SUB
-
-SUB DRAWBOX ()
-	JJ = 5
-	LOCATE 6, 8: COLOR L%(1, 11), L%(1, 12)
-	PRINT " "; CHR$(201); STRING$(61, 205); CHR$(187); " ";
-	FOR II = 1 TO JJ: LOCATE 6 + II, 8
-	PRINT " º"; STRING$(61, 32); "º "; : NEXT
-	LOCATE 7 + JJ, 8
-	PRINT " "; CHR$(200); STRING$(61, 205); CHR$(188); " "; : LOCATE 7
-END SUB
-
-SUB GETAKEY ()
-	LOCATE 24, 1: PRINT "PRESS ANY KEY TO CONTINUE";
-4001 I$ = GetKeyPress$
-END SUB
-
-SUB GETWEATHER (WD%, WS%, MO%, WF!, SC%, TP%, RD)
-
-IF L%(1, 13) > 82 THEN
-	ID = INT(RND(1) * 79) + 1
-ELSE
-	ID = L%(1, 13)
-END IF
-
-'LAYOUT OF THE PARKS FILE IS
-'NAME, CAPACITY, LF,LCF,CF,RCF,RF,GRASS,DOME,WINFAC
-'6 MONTHS OF DATA, TEMP, DELTA,RL,LR,INL,INC,INR,OUTL,OUTC,OUTR,WS09,WS1014,WS1519,WS20,PRECIP
-
-OPEN "PARKS.DBF" FOR RANDOM AS #1 LEN = 240
-FIELD #1, 40 AS Q3$(0), 4 AS Q3$(1), 2 AS Q3$(2), 2 AS Q3$(3), 2 AS Q3$(4), 2 AS Q3$(5), 2 AS Q3$(6), 2 AS Q3$(7), 2 AS Q3$(8), 2 AS Q3$(9)
-FOR I = 0 TO 5
-FOR I1 = 0 TO 14
-FIELD #1, 60 + I * 30 + I1 * 2 AS X$, 2 AS Q3$(10 + I1 + I * 15)
-NEXT: NEXT
-
-GET #1, ID
-ATTEN = CVL(Q3$(1))
-LF = CVI(Q3$(2)): LCF = CVI(Q3$(3))
-CF = CVI(Q3$(4)): RCF = CVI(Q3$(5)): RF = CVI(Q3$(6))
-TG = CVI(Q3$(7)): DOME = CVI(Q3$(8)): WINFAC = CVI(Q3$(9))
-FOR I = 0 TO 5: FOR I1 = 0 TO 14
-MON(I, I1) = CVI(Q3$(10 + I1 + I * 15))
-NEXT: NEXT
-CLOSE 1
-
-IF MO% < 4 THEN MO% = 4
-IF MO% > 9 THEN MO% = 9
-
-SM% = MO% - 4
-
-IF INT(RND(1) * 100) + 1 <= 50 THEN
-	TP% = MON(SM%, 0) + INT(RND(1) * MON(SM%, 1) + 1)
-ELSE
-	TP% = MON(SM%, 0) - INT(RND(1) * MON(SM%, 1) + 1)
-END IF
-
-SUM = 0
-FOR I = 2 TO 9
-SUM = SUM + MON(SM%, I)
-NEXT
-
-RN = INT(RND(1) * SUM) + 1
-
-SUM = 0
-FOR I = 2 TO 9
-	SUM = SUM + MON(SM%, I)
-	IF RN <= SUM THEN 6105
-NEXT
-
-6105 WD% = I
-
-SUM = 0
-FOR I = 10 TO 13
-SUM = SUM + MON(SM%, I)
-NEXT
+F$ = Mid$(N$(I), 4, QQ)
+F$ = F$ + "." + Left$(N$(I), 2)
+If Not _FileExists(D$(1) + F$ + "D") Then 318
+Open D$(1) + F$ + "D" For Input As #1
+For I1 = 0 To 22
+    Input #1, INJ%(I, I1)
+Next
+For I1 = 0 To 21
+    Input #1, DYS%(I, I1)
+Next
+Close 1
+If IJ% = 1 Then 318
+For I1 = 0 To 22
+    If INJ%(I, I1) > 0 Then B%(I, I1, 21) = 99
+Next
+
+318 If DR% = 1 Then 319
+For I1 = 0 To 21
+    If DYS%(I, I1) = 0 Or DYS%(I, I1) >= 90 Then 320
+    P%(I, I1, 35) = DYS%(I, I1)
+
+320 Next
+
+319 Return
+
+
+Sub COLCHK (P9, I)
+    If B%(P9, I, 21) >= 98 Then Color 0, 7
+End Sub
+
+
+Sub DRAWBOX ()
+    JJ = 5
+    Locate 6, 8: Color L%(1, 11), L%(1, 12)
+    Print " "; Chr$(201); String$(61, 205); Chr$(187); " ";
+    For II = 1 To JJ: Locate 6 + II, 8
+    Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
+    Locate 7 + JJ, 8
+    Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";: Locate 7
+End Sub
+
+
+Sub GETAKEY ()
+    Locate 24, 1: Print "PRESS ANY KEY TO CONTINUE";
+    4001 I$ = GetKeyPress$
+End Sub
+
+
+Sub GETWEATHER (WD%, WS%, MO%, WF!, SC%, TP%, RD)
+
+    If L%(1, 13) > 82 Then
+        ID = Int(Rnd(1) * 79) + 1
+    Else
+        ID = L%(1, 13)
+    End If
+
+    'LAYOUT OF THE PARKS FILE IS
+    'NAME, CAPACITY, LF,LCF,CF,RCF,RF,GRASS,DOME,WINFAC
+    '6 MONTHS OF DATA, TEMP, DELTA,RL,LR,INL,INC,INR,OUTL,OUTC,OUTR,WS09,WS1014,WS1519,WS20,PRECIP
+
+    Open "PARKS.DBF" For Random As #1 Len = 240
+    Field #1, 40 As Q3$(0), 4 As Q3$(1), 2 As Q3$(2), 2 As Q3$(3), 2 As Q3$(4), 2 As Q3$(5), 2 As Q3$(6), 2 As Q3$(7), 2 As Q3$(8), 2 As Q3$(9)
+    For I = 0 To 5
+        For I1 = 0 To 14
+            Field #1, 60 + I * 30 + I1 * 2 As X$, 2 As Q3$(10 + I1 + I * 15)
+    Next: Next
+
+    Get #1, ID
+    ATTEN = CVL(Q3$(1))
+    LF = CVI(Q3$(2)): LCF = CVI(Q3$(3))
+    CF = CVI(Q3$(4)): RCF = CVI(Q3$(5)): RF = CVI(Q3$(6))
+    TG = CVI(Q3$(7)): DOME = CVI(Q3$(8)): WINFAC = CVI(Q3$(9))
+    For I = 0 To 5: For I1 = 0 To 14
+        MON(I, I1) = CVI(Q3$(10 + I1 + I * 15))
+    Next: Next
+    Close 1
 
-RN = INT(RND(1) * SUM) + 1
+    If MO% < 4 Then MO% = 4
+    If MO% > 9 Then MO% = 9
 
-SUM = 0
-FOR I = 10 TO 13
-	SUM = SUM + MON(SM%, I)
-	IF RN <= SUM THEN 6106
-NEXT
+    SM% = MO% - 4
 
-6106 IF I = 10 THEN WS% = INT(RND(1) * 10)
-	IF I = 11 THEN WS% = INT(RND(1) * 5) + 10
-	IF I = 12 THEN WS% = INT(RND(1) * 5) + 15
-	IF I = 13 THEN WS% = INT(RND(1) * 10) + 20
+    If Int(Rnd(1) * 100) + 1 <= 50 Then
+        TP% = MON(SM%, 0) + Int(Rnd(1) * MON(SM%, 1) + 1)
+    Else
+        TP% = MON(SM%, 0) - Int(Rnd(1) * MON(SM%, 1) + 1)
+    End If
 
-WF! = 1
+    SUM = 0
+    For I = 2 To 9
+        SUM = SUM + MON(SM%, I)
+    Next
 
-IF WD% > 3 AND WD% < 7 AND WS% >= 15 THEN WF! = 1 - WINFAC / 100
-IF WD% > 6 AND WD% < 10 AND WS% >= 15 THEN WF! = 1 + WINFAC / 100
+    RN = Int(Rnd(1) * SUM) + 1
 
-PC% = 4
-SC% = INT(RND(1) * 2) + 1
+    SUM = 0
+    For I = 2 To 9
+        SUM = SUM + MON(SM%, I)
+        If RN <= SUM Then 6105
+    Next
 
-IF INT(RND(1) * 100) + 1 <= MON(SM%, 14) THEN
-	PC% = INT(RND(1) * 3) + 1
-	SC% = 3
-	RN = INT(RND(1) * 100) + 1
-	IF RN <= 5 THEN RD = 1: RE = INT(RND(1) * 3) + 6
-END IF
+    6105 WD% = I
 
-IF L%(1, 13) = 2 OR L%(1, 13) = 4 OR L%(1, 13) = 10 OR L%(1, 13) = 13 OR L%(1, 13) = 24 THEN PC% = 4: SC% = 4
+    SUM = 0
+    For I = 10 To 13
+        SUM = SUM + MON(SM%, I)
+    Next
 
-6200 END SUB
+    RN = Int(Rnd(1) * SUM) + 1
 
-SUB INFO ()
-	CLS
-	COLOR , 1: LOCATE 1, 1: PRINT TAB(80); : LOCATE , 33: COLOR 14
-	PRINT "GAME OPTIONS MENU"
-	LOCATE 24, 1: PRINT TAB(80); : LOCATE , 1
-	PRINT "(C) LANCE HAFFNER 1986-2000"; TAB(70); LEFT$(TIME$, 5);
-	LOCATE 3, 1: COLOR , 0
-END SUB
+    SUM = 0
+    For I = 10 To 13
+        SUM = SUM + MON(SM%, I)
+        If RN <= SUM Then 6106
+    Next
 
-SUB INITVARI ()
-	FOR P9 = 0 TO 1: FOR I3 = 0 TO 21: IF P%(P9, I3, 15) <> 99 THEN P%(P9, I3, 15) = 0
-	NEXT: NEXT
-	FOR I = 0 TO 1: FOR I1 = 0 TO 23: X0%(I, 0, I1) = -1: X0%(I, 2, I1) = 100: NEXT I1: NEXT I
-	FOR I = 0 TO 1: FOR I1 = 0 TO 22
-	IF B%(I, I1, 21) <> 99 THEN B%(I, I1, 21) = 0
-	NEXT: NEXT
-END SUB
+    6106 If I = 10 Then WS% = Int(Rnd(1) * 10)
+    If I = 11 Then WS% = Int(Rnd(1) * 5) + 10
+    If I = 12 Then WS% = Int(Rnd(1) * 5) + 15
+    If I = 13 Then WS% = Int(Rnd(1) * 10) + 20
 
-SUB LETTER (I$)
+    WF! = 1
 
-1290 IF UCASE$(I$) = "A" THEN I$ = "10"
+    If WD% > 3 And WD% < 7 And WS% >= 15 Then WF! = 1 - WINFAC / 100
+    If WD% > 6 And WD% < 10 And WS% >= 15 Then WF! = 1 + WINFAC / 100
 
-1300 IF UCASE$(I$) = "B" THEN I$ = "11"
+    PC% = 4
+    SC% = Int(Rnd(1) * 2) + 1
 
-1310 IF UCASE$(I$) = "C" THEN I$ = "12"
+    If Int(Rnd(1) * 100) + 1 <= MON(SM%, 14) Then
+        PC% = Int(Rnd(1) * 3) + 1
+        SC% = 3
+        RN = Int(Rnd(1) * 100) + 1
+        If RN <= 5 Then RD = 1: RE = Int(Rnd(1) * 3) + 6
+    End If
 
-1320 IF UCASE$(I$) = "D" THEN I$ = "13"
+    If L%(1, 13) = 2 Or L%(1, 13) = 4 Or L%(1, 13) = 10 Or L%(1, 13) = 13 Or L%(1, 13) = 24 Then PC% = 4: SC% = 4
 
-1330 IF UCASE$(I$) = "E" THEN I$ = "14"
+6200 End Sub
 
-1340 IF UCASE$(I$) = "F" THEN I$ = "15"
 
-1350 IF UCASE$(I$) = "G" THEN I$ = "16"
+Sub INFO ()
+    Cls
+    Color , 1: Locate 1, 1: Print Tab(80);: Locate , 33: Color 14
+    Print "GAME OPTIONS MENU"
+    Locate 24, 1: Print Tab(80);: Locate , 1
+    Print "(C) LANCE HAFFNER 1986-2000"; Tab(70); Left$(Time$, 5);
+    Locate 3, 1: Color , 0
+End Sub
 
-1351 IF UCASE$(I$) = "H" THEN I$ = "17"
 
-1352 IF UCASE$(I$) = "I" THEN I$ = "18"
+Sub INITVARI ()
+    For P9 = 0 To 1: For I3 = 0 To 21: If P%(P9, I3, 15) <> 99 Then P%(P9, I3, 15) = 0
+    Next: Next
+    For I = 0 To 1: For I1 = 0 To 23: X0%(I, 0, I1) = -1: X0%(I, 2, I1) = 100: Next I1: Next I
+    For I = 0 To 1: For I1 = 0 To 22
+        If B%(I, I1, 21) <> 99 Then B%(I, I1, 21) = 0
+    Next: Next
+End Sub
 
-1353 IF UCASE$(I$) = "J" THEN I$ = "19"
 
-1354 IF UCASE$(I$) = "K" THEN I$ = "20"
+Sub LETTER (I$)
 
-1355 IF UCASE$(I$) = "L" THEN I$ = "21"
+    1290 If UCase$(I$) = "A" Then I$ = "10"
 
-1356 IF UCASE$(I$) = "M" THEN I$ = "22"
-END SUB
+    1300 If UCase$(I$) = "B" Then I$ = "11"
 
-SUB LINSWAP (P9)
+    1310 If UCase$(I$) = "C" Then I$ = "12"
 
-1440 LOCATE 18, 59: PRINT "B.O. PLYR 1 (1-9)";
-1441 I$ = GetKeyPress$
-	K1 = VAL(I$): IF K1 < 1 OR K1 > 9 THEN 1441
-	IF B7%(P9, K1) = 1 THEN 1441
-	LOCATE 19, 59: PRINT "B.O. PLYR 2 (1-9)";
-1442 I$ = GetKeyPress$
-	K2 = VAL(I$): IF K2 < 1 OR K2 > 9 THEN 1442
-	IF B7%(P9, K2) = 1 THEN 1442
-	SWAP B7%(P9, K2), B7%(P9, K1)
-	SWAP B3%(P9, K1), B3%(P9, K2)
-	B9%(P9, B7%(P9, K1)) = B3%(P9, K1)
-	B9%(P9, B7%(P9, K2)) = B3%(P9, K2)
-	CALL NEWLINES(P9)
-	LOCATE 18, 59: PRINT "                 "
-	LOCATE 19, 59: PRINT "                 "
-END SUB
+    1320 If UCase$(I$) = "D" Then I$ = "13"
 
-SUB NEWLINES (P9)
+    1330 If UCase$(I$) = "E" Then I$ = "14"
 
-920 FOR I = 1 TO 9
-	CALL POSITION(I)
-	PRINT USING "# "; I;
+    1340 If UCase$(I$) = "F" Then I$ = "15"
 
-940 IF B7%(P9, I) = 1 AND I5 <> 66 THEN PRINT P$(P9, B3%(P9, I));
+    1350 If UCase$(I$) = "G" Then I$ = "16"
 
-950 IF B7%(P9, I) <> 1 THEN PRINT B$(P9, B3%(P9, I));
+    1351 If UCase$(I$) = "H" Then I$ = "17"
 
-960 PRINT TAB(74);
+    1352 If UCase$(I$) = "I" Then I$ = "18"
 
-980 PRINT C$(B7%(P9, I));
+    1353 If UCase$(I$) = "J" Then I$ = "19"
 
-990 NEXT I
+    1354 If UCase$(I$) = "K" Then I$ = "20"
 
-1000 I5 = 0
-END SUB
+    1355 If UCase$(I$) = "L" Then I$ = "21"
 
-SUB POSITION (I)
-	LOCATE I + 7, 59
-END SUB
+    1356 If UCase$(I$) = "M" Then I$ = "22"
+End Sub
 
-SUB POSSWAP (P9)
-	LOCATE 18, 59: PRINT "B.O. PLYR 1 (1-9)";
-1431 I$ = GetKeyPress$
-	K1 = VAL(I$): IF K1 < 1 OR K1 > 9 THEN 1431
-	IF B7%(P9, K1) = 1 THEN 1431
-	LOCATE 19, 59: PRINT "B.O. PLYR 2 (1-9)";
-1432 I$ = GetKeyPress$
-	K2 = VAL(I$): IF K2 < 1 OR K2 > 9 THEN 1432
-	IF B7%(P9, K2) = 1 THEN 1432
-	SWAP B7%(P9, K2), B7%(P9, K1)
-	B9%(P9, B7%(P9, K1)) = B3%(P9, K1)
-	B9%(P9, B7%(P9, K2)) = B3%(P9, K2)
-	CALL NEWLINES(P9)
-	LOCATE 18, 59: PRINT "                 "
-	LOCATE 19, 59: PRINT "                 "
-END SUB
 
-SUB SHOWBATTERS (P9)
-	CLS : COLOR 14: PRINT "#"; : COLOR L%(P9, 11), L%(P9, 12): PRINT A$(P9); : COLOR 14, 0
+Sub LINSWAP (P9)
 
-1101 LOCATE , 15: PRINT "B  POS  AB  2B 3B HR  BB  SO SRA SB G%  BA"
+    1440 Locate 18, 59: Print "B.O. PLYR 1 (1-9)";
+    1441 I$ = GetKeyPress$
+    K1 = Val(I$): If K1 < 1 Or K1 > 9 Then 1441
+    If B7%(P9, K1) = 1 Then 1441
+    Locate 19, 59: Print "B.O. PLYR 2 (1-9)";
+    1442 I$ = GetKeyPress$
+    K2 = Val(I$): If K2 < 1 Or K2 > 9 Then 1442
+    If B7%(P9, K2) = 1 Then 1442
+    Swap B7%(P9, K2), B7%(P9, K1)
+    Swap B3%(P9, K1), B3%(P9, K2)
+    B9%(P9, B7%(P9, K1)) = B3%(P9, K1)
+    B9%(P9, B7%(P9, K2)) = B3%(P9, K2)
+    Call NEWLINES(P9)
+    Locate 18, 59: Print "                 "
+    Locate 19, 59: Print "                 "
+End Sub
 
-1110 LOCATE 2
-	FOR I = 0 TO 22: LOCATE , 1
 
-1111 IF B$(P9, I) = "XXX" OR LEFT$(B$(P9, I), 1) = " " OR B$(P9, I) = "" THEN B%(P9, I, 21) = 98: GOTO 1191
-	COLOR 2, 0
+Sub NEWLINES (P9)
 
-1120 IF I < 10 THEN PRINT USING "#"; I;
+    920 For I = 1 To 9
+        Call POSITION(I)
+        Print Using "# "; I;
 
-1130 IF I > 9 THEN PRINT X$(I - 10);
-	COLOR 15, 0
-	CALL COLCHK(P9, I)
+        940 If B7%(P9, I) = 1 And I5 <> 66 Then Print P$(P9, B3%(P9, I));
 
-1140 LOCATE , 3: PRINT B$(P9, I);
-	COLOR 15, 0
-	LOCATE , 15: PRINT B1$(B%(P9, I, 0) + 2);
+        950 If B7%(P9, I) <> 1 Then Print B$(P9, B3%(P9, I));
 
-1141 LOCATE , 18: IF B%(P9, I, 22) <> -1 THEN PRINT USING "#"; B%(P9, I, 22);
+        960 Print Tab(74);
 
-1142 LOCATE , 19: IF B%(P9, I, 23) <> -1 THEN PRINT USING "#"; B%(P9, I, 23);
+        980 Print C$(B7%(P9, I));
 
-1143 LOCATE , 20: IF B%(P9, I, 24) <> -1 THEN PRINT USING "#"; B%(P9, I, 24);
+    990 Next I
 
-1144 LOCATE , 21: IF B%(P9, I, 25) <> -1 THEN PRINT USING "#"; B%(P9, I, 25);
+    1000 I5 = 0
+End Sub
 
-1160 LOCATE , 23
 
-1161 PRINT USING "### ## ## ## ### ###"; B%(P9, I, 4); B%(P9, I, 7); B%(P9, I, 8); B%(P9, I, 9); B%(P9, I, 11); B%(P9, I, 12);
+Sub POSITION (I)
+    Locate I + 7, 59
+End Sub
 
-1170 LOCATE , 44: PRINT USING "#"; B%(P9, I, 16); : PRINT USING "#"; B%(P9, I, 34); : PRINT USING "#"; B%(P9, I, 33);
 
-1180 LOCATE , 47
+Sub POSSWAP (P9)
+    Locate 18, 59: Print "B.O. PLYR 1 (1-9)";
+    1431 I$ = GetKeyPress$
+    K1 = Val(I$): If K1 < 1 Or K1 > 9 Then 1431
+    If B7%(P9, K1) = 1 Then 1431
+    Locate 19, 59: Print "B.O. PLYR 2 (1-9)";
+    1432 I$ = GetKeyPress$
+    K2 = Val(I$): If K2 < 1 Or K2 > 9 Then 1432
+    If B7%(P9, K2) = 1 Then 1432
+    Swap B7%(P9, K2), B7%(P9, K1)
+    B9%(P9, B7%(P9, K1)) = B3%(P9, K1)
+    B9%(P9, B7%(P9, K2)) = B3%(P9, K2)
+    Call NEWLINES(P9)
+    Locate 18, 59: Print "                 "
+    Locate 19, 59: Print "                 "
+End Sub
 
-1181 PRINT USING "### ##"; B%(P9, I, 13); B%(P9, I, 18);
 
-1182 IF B%(P9, I, 6) = B%(P9, I, 4) AND B%(P9, I, 6) <> 0 THEN PRINT "1.000"; : GOTO 1190
+Sub SHOWBATTERS (P9)
+    Cls: Color 14: Print "#";: Color L%(P9, 11), L%(P9, 12): Print A$(P9);: Color 14, 0
 
-1183 IF B%(P9, I, 4) = 0 THEN PRINT " .---"; : GOTO 1190
+    1101 Locate , 15: Print "B  POS  AB  2B 3B HR  BB  SO SRA SB G%  BA"
 
-1184 PRINT USING " .###"; B%(P9, I, 6) / B%(P9, I, 4);
+    1110 Locate 2
+    For I = 0 To 22: Locate , 1
 
-1190 IF I <> 22 THEN PRINT
+        1111 If B$(P9, I) = "XXX" Or Left$(B$(P9, I), 1) = " " Or B$(P9, I) = "" Then B%(P9, I, 21) = 98: GoTo 1191
+        Color 2, 0
 
-1191 NEXT I
-END SUB
+        1120 If I < 10 Then Print Using "#"; I;
 
-SUB SHOWFIELD (P9)
-	'DISPLAY FIELDING AVERAGES
-	LOCATE 1, 15
-	COLOR 14, 0
-	PRINT "P1 FAVG A R P2 FAVG A R P3 FAVG A R P4 FAVG A R                 "
-	COLOR 15, 0
-	LOCATE 2
-	FOR I = 0 TO 22
-	LOCATE , 15: PRINT "                                                                ";
-	IF B$(P9, I) = "XXX" OR LEFT$(B$(P9, I), 1) = " " OR B$(P9, I) = "" THEN 2807
-	LOCATE , 16: IF B%(P9, I, 22) <> -1 THEN PRINT USING "# #### # #"; B%(P9, I, 22); B%(P9, I, 26); B%(P9, I, 33); B%(P9, I, 34);
-	LOCATE , 28: IF B%(P9, I, 23) <> -1 THEN PRINT USING "# #### # #"; B%(P9, I, 23); B%(P9, I, 27); B%(P9, I, 35); B%(P9, I, 36);
-	LOCATE , 40: IF B%(P9, I, 24) <> -1 THEN PRINT USING "# #### # #"; B%(P9, I, 24); B%(P9, I, 28); B%(P9, I, 37); B%(P9, I, 38);
-	LOCATE , 52: IF B%(P9, I, 25) <> -1 THEN PRINT USING "# #### # #"; B%(P9, I, 25); B%(P9, I, 29); B%(P9, I, 39); B%(P9, I, 40);
-	IF I <> 22 THEN PRINT
+        1130 If I > 9 Then Print X$(I - 10);
+        Color 15, 0
+        Call COLCHK(P9, I)
 
-2807 NEXT I
-END SUB
+        1140 Locate , 3: Print B$(P9, I);
+        Color 15, 0
+        Locate , 15: Print B1$(B%(P9, I, 0) + 2);
 
-SUB SHOWSPLIT (P9)
-	'DISPLAY SPLIT STATS
-	LOCATE 1, 15
-	COLOR 14, 0
-	PRINT "VS L  AB 2B 3B HR  BB   K   AVG  VS R  AB 2B 3B HR  BB   K   AVG"
-	COLOR 15, 0
-	LOCATE 2
-	FOR I = 0 TO 22
-	LOCATE , 15: PRINT "                                                                ";
-	IF B$(P9, I) = "XXX" OR LEFT$(B$(P9, I), 1) = " " OR B$(P9, I) = "" THEN 2806
-	LOCATE , 20: PRINT USING "### ## ## ## ### ### "; B%(P9, I, 42); B%(P9, I, 44); B%(P9, I, 45); B%(P9, I, 46); B%(P9, I, 47); B%(P9, I, 48);
-	IF B%(P9, I, 42) = 0 OR B%(P9, I, 43) = 0 THEN PRINT " .000"; : GOTO 2802
-	IF B%(P9, I, 42) = B%(P9, I, 43) THEN PRINT "1.000"; : GOTO 2802
-	PRINT USING " .###"; B%(P9, I, 43) / B%(P9, I, 42);
+        1141 Locate , 18: If B%(P9, I, 22) <> -1 Then Print Using "#"; B%(P9, I, 22);
 
-2802 LOCATE , 53: PRINT USING "### ## ## ## ### ### "; B%(P9, I, 49); B%(P9, I, 51); B%(P9, I, 52); B%(P9, I, 53); B%(P9, I, 54); B%(P9, I, 55);
-	IF B%(P9, I, 49) = 0 OR B%(P9, I, 50) = 0 THEN PRINT " .000"; : GOTO 2805
-	IF B%(P9, I, 49) = B%(P9, I, 50) THEN PRINT "1.000"; : GOTO 2805
-	PRINT USING " .###"; B%(P9, I, 50) / B%(P9, I, 49);
+        1142 Locate , 19: If B%(P9, I, 23) <> -1 Then Print Using "#"; B%(P9, I, 23);
 
-2805 IF I <> 22 THEN PRINT
+        1143 Locate , 20: If B%(P9, I, 24) <> -1 Then Print Using "#"; B%(P9, I, 24);
 
-2806 NEXT I
-	
-END SUB
+        1144 Locate , 21: If B%(P9, I, 25) <> -1 Then Print Using "#"; B%(P9, I, 25);
+
+        1160 Locate , 23
+
+        1161 Print Using "### ## ## ## ### ###"; B%(P9, I, 4); B%(P9, I, 7); B%(P9, I, 8); B%(P9, I, 9); B%(P9, I, 11); B%(P9, I, 12);
+
+        1170 Locate , 44: Print Using "#"; B%(P9, I, 16);: Print Using "#"; B%(P9, I, 34);: Print Using "#"; B%(P9, I, 33);
+
+        1180 Locate , 47
+
+        1181 Print Using "### ##"; B%(P9, I, 13); B%(P9, I, 18);
+
+        1182 If B%(P9, I, 6) = B%(P9, I, 4) And B%(P9, I, 6) <> 0 Then Print "1.000";: GoTo 1190
+
+        1183 If B%(P9, I, 4) = 0 Then Print " .---";: GoTo 1190
+
+        1184 Print Using " .###"; B%(P9, I, 6) / B%(P9, I, 4);
+
+        1190 If I <> 22 Then Print
+
+    1191 Next I
+End Sub
+
+
+Sub SHOWFIELD (P9)
+    'DISPLAY FIELDING AVERAGES
+    Locate 1, 15
+    Color 14, 0
+    Print "P1 FAVG A R P2 FAVG A R P3 FAVG A R P4 FAVG A R                 "
+    Color 15, 0
+    Locate 2
+    For I = 0 To 22
+        Locate , 15: Print "                                                                ";
+        If B$(P9, I) = "XXX" Or Left$(B$(P9, I), 1) = " " Or B$(P9, I) = "" Then 2807
+        Locate , 16: If B%(P9, I, 22) <> -1 Then Print Using "# #### # #"; B%(P9, I, 22); B%(P9, I, 26); B%(P9, I, 33); B%(P9, I, 34);
+        Locate , 28: If B%(P9, I, 23) <> -1 Then Print Using "# #### # #"; B%(P9, I, 23); B%(P9, I, 27); B%(P9, I, 35); B%(P9, I, 36);
+        Locate , 40: If B%(P9, I, 24) <> -1 Then Print Using "# #### # #"; B%(P9, I, 24); B%(P9, I, 28); B%(P9, I, 37); B%(P9, I, 38);
+        Locate , 52: If B%(P9, I, 25) <> -1 Then Print Using "# #### # #"; B%(P9, I, 25); B%(P9, I, 29); B%(P9, I, 39); B%(P9, I, 40);
+        If I <> 22 Then Print
+
+    2807 Next I
+End Sub
+
+
+Sub SHOWSPLIT (P9)
+    'DISPLAY SPLIT STATS
+    Locate 1, 15
+    Color 14, 0
+    Print "VS L  AB 2B 3B HR  BB   K   AVG  VS R  AB 2B 3B HR  BB   K   AVG"
+    Color 15, 0
+    Locate 2
+    For I = 0 To 22
+        Locate , 15: Print "                                                                ";
+        If B$(P9, I) = "XXX" Or Left$(B$(P9, I), 1) = " " Or B$(P9, I) = "" Then 2806
+        Locate , 20: Print Using "### ## ## ## ### ### "; B%(P9, I, 42); B%(P9, I, 44); B%(P9, I, 45); B%(P9, I, 46); B%(P9, I, 47); B%(P9, I, 48);
+        If B%(P9, I, 42) = 0 Or B%(P9, I, 43) = 0 Then Print " .000";: GoTo 2802
+        If B%(P9, I, 42) = B%(P9, I, 43) Then Print "1.000";: GoTo 2802
+        Print Using " .###"; B%(P9, I, 43) / B%(P9, I, 42);
+
+        2802 Locate , 53: Print Using "### ## ## ## ### ### "; B%(P9, I, 49); B%(P9, I, 51); B%(P9, I, 52); B%(P9, I, 53); B%(P9, I, 54); B%(P9, I, 55);
+        If B%(P9, I, 49) = 0 Or B%(P9, I, 50) = 0 Then Print " .000";: GoTo 2805
+        If B%(P9, I, 49) = B%(P9, I, 50) Then Print "1.000";: GoTo 2805
+        Print Using " .###"; B%(P9, I, 50) / B%(P9, I, 49);
+
+        2805 If I <> 22 Then Print
+
+    2806 Next I
+    
+End Sub
 
 '$INCLUDE: 'KeyInput.BM'
 '$INCLUDE: 'QPProEqu.BM'
