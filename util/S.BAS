@@ -450,7 +450,7 @@ for i=3 to 6:read f$(i):next
 	FOR X=1 TO 9:COLOR 3,0:LOCATE X+4,22
 	GOSUB 380
 	LOCATE,22:IF B7%(P,X)<>1 THEN 358
-	PRINT B1$(P%(P,P1%(P),0)+2); TAB(25); LEFT$(P$(P,P1%(P)),10);" p" TAB(39);
+	PRINT B1$(P%(P,P1%(P),0)+2); TAB(25); LEFT$(P$(P,P1%(P)),10);" p"; TAB(39);
 	IF P%(P,P1%(P),11)<>999 THEN PRINT USING " .###";P%(P,P1%(P),11)/1000:GOTO 359
 	IF P%(P,P1%(P),20)=0 THEN PRINT " .000":GOTO 359
 	IF P%(P,P1%(P),20)=P%(P,P1%(P),22) THEN PRINT "1.000":GOTO 359
@@ -690,7 +690,7 @@ for i=3 to 6:read f$(i):next
 	GOSUB 845
 	LOCATE,11+J*26
 	IF B7%(J,X)<>1 THEN 841
-	PRINT B1$(P%(J,P1%(J),0)+2); TAB(14+J*26) LEFT$(P$(J,P1%(J)),10);" p" TAB(28+J*26);
+	PRINT B1$(P%(J,P1%(J),0)+2); TAB(14+J*26) LEFT$(P$(J,P1%(J)),10);" p"; TAB(28+J*26);
 	IF P%(J,P1%(J),11)<>999 THEN PRINT USING " .###";P%(J,P1%(J),11)/1000:GOTO 842
 	IF P%(J,P1%(J),20)=0 THEN PRINT " .000":GOTO 842
 	IF P%(J,P1%(J),20)=P%(J,P1%(J),22) THEN PRINT "1.000":GOTO 842
@@ -3918,7 +3918,7 @@ for i=3 to 6:read f$(i):next
 
 7134 NEXT:NEXT
 
-7135 PRINT #2, "TOTALS" TAB(17); T3%(0); TAB(22); T3%(1); TAB(27); T3%(4);
+7135 PRINT #2, "TOTALS"; TAB(17); T3%(0); TAB(22); T3%(1); TAB(27); T3%(4);
 
 7136 PRINT #2, TAB(32); T3%(6); TAB(36); T3%(7); TAB(42);
 
@@ -3958,7 +3958,7 @@ for i=3 to 6:read f$(i):next
 
 7154 NEXT I2
 
-7155 NEXT I1:PRINT #2, "TOTALS" TAB(29); STR$(INT(T3%(0)/3));
+7155 NEXT I1:PRINT #2, "TOTALS"; TAB(29); STR$(INT(T3%(0)/3));
 
 7156 IF T3%(0)-(INT(T3%(0)/3)*3)>0 THEN PRINT #2, ".";:PRINT #2, USING "#";T3%(0)-(INT(T3%(0)/3)*3);
 
