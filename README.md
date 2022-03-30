@@ -14,8 +14,8 @@ Since 1983 Lance Haffner Games has been publishing the finest quality text-based
 LH Games were some of the premier simulators of the 80's. They were a staple of of the mail order days and  served as one of the earliest computer sports simulation. Available for several platforms at the time thanks to their use of BASIC, they fast became known for their impressive accuracy and surprisingly quick speed. Not only that, they allowed very detailed and thorough team, conference and season management - yet somehow maintained an entertaining feel with gameplay that was never overly detailed. 
 
 ## Visuals
-![baseball box art](https://github.com/jleonard2099/LHG_FullCount/tree/main/blob/main/base-box.jpg)
-![baseball in action](https://github.com/jleonard2099/LHG_FullCount/tree/main/blob/main/base-action.jpg)
+![baseball box art](base-box.jpg)
+![baseball in action](base-action.jpg)
 	
 ## Installation
 No installation required. Pre-compiled binaries and required reference files are in /bin.
@@ -64,7 +64,7 @@ Contact me directly if interested in contributing. Only considering people who s
 - [Game icons created by Joseph Gan (Icon-Icons)](https://icon-icons.com/users/XHgnBHIfJk0ZlajSy0A0x/icon-sets/)
 
 # License
-GNU GPL v3
+Affero GNU GPL v3
 
 # Project Status
 Preliminary work has completed so that code can compile in a modern environment. Next stages will be cleaning up code and commenting it so we can later consolidate for purporses of going cross-platform.
