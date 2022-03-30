@@ -2,6 +2,11 @@
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'
 
+_Title "Full Count Baseball - Programmable Manager"
+''$ExeIcon:'./lhg_fcbase.ico'
+'_Icon	
+_AllowFullScreen
+
 DEFINT A-Z
 DECLARE SUB DRAWBOX ()
 DECLARE SUB PHBATTER ()
@@ -18,12 +23,12 @@ DECLARE SUB BASERUN ()
 
 15 DIM B%(22, 44), P%(21, 36), B$(23), P$(21), L%(13), BS$(22), PS$(21)
 DIM N$(22), NP$(21), MG%(1000), X$(12), CZ(23), BTR$(23), BPR(23)
-DIM VV$(500), V%(500), GS%(21, 1), C$(10), AB%(9), YN$(1)
+DIM teamItems$(500), V%(500), GS%(21, 1), C$(10), AB%(9), YN$(1)
 DIM PT$(1), B1$(4), B3%(9), B7%(9), V1%(1), M%(9), B9%(9)
-DIM ITEM$(14)
-COMMON SHARED MG%(), D$(), T, Q$(), YN$(), R$(), YN$,B$(),P$()
+DIM menuItems$(14)
 DIM Y AS LONG
 DIM FRAC AS SINGLE
+Dim Shared MG%(), D$(), T, Q$(), YN$(), R$(), YN$,B$(),P$()
 
 	YN$(0) = "Y": YN$(1) = "N"
 	DATA A,B,C,D,E,F,G,H,I,J,K,L,M
@@ -57,20 +62,20 @@ CLOSE #1
 	IF MG%(0) <> 999 THEN MG%(0) = 999: FOR I = 1 TO 999: MG%(I) = -1: NEXT
 
 45 COLOR , 1: CLS : PRINT : PRINT TAB(23); : COLOR 14, 4: PRINT "FULL COUNT PROGRAMMABLE MANAGER": PRINT
-	ITEM$(1) = "SELECT NEW TEAM TO EDIT                                  "
-	ITEM$(2) = "SELECT/CHANGE LINEUPS                                    "
-	ITEM$(3) = "SELECT/CHANGE ROTATIONS/RELIEVERS                        "
-	ITEM$(4) = "SELECT/CHANGE PINCH HITTERS                              "
-	ITEM$(5) = "SELECT/CHANGE DEFENSIVE REPLACEMENTS (8TH AND 9TH INNING)"
-	ITEM$(6) = "SELECT/CHANGE CLOSING STRATEGY                           "
-	ITEM$(7) = "SELECT/CHANGE HITTING STRATEGY                           "
-	ITEM$(8) = "SELECT/CHANGE DEFENSIVE STRATEGY                         "
-	ITEM$(9) = "SELECT/CHANGE PINCH RUNNING STRATEGY                     "
-ITEM$(10) = "SELECT/CHANGE BASE RUNNING STRATEGY                      "
-ITEM$(11) = "IMPORT MANAGERIAL PROFILE                                "
-ITEM$(12) = "EXPORT MANAGERIAL PROFILE                                "
-ITEM$(13) = "PRINT MANAGERIAL PROFILE                                 "
-ITEM$(14) = "RETURN TO GAME MENU                                      "
+	menuItems$(1) = "SELECT NEW TEAM TO EDIT                                  "
+	menuItems$(2) = "SELECT/CHANGE LINEUPS                                    "
+	menuItems$(3) = "SELECT/CHANGE ROTATIONS/RELIEVERS                        "
+	menuItems$(4) = "SELECT/CHANGE PINCH HITTERS                              "
+	menuItems$(5) = "SELECT/CHANGE DEFENSIVE REPLACEMENTS (8TH AND 9TH INNING)"
+	menuItems$(6) = "SELECT/CHANGE CLOSING STRATEGY                           "
+	menuItems$(7) = "SELECT/CHANGE HITTING STRATEGY                           "
+	menuItems$(8) = "SELECT/CHANGE DEFENSIVE STRATEGY                         "
+	menuItems$(9) = "SELECT/CHANGE PINCH RUNNING STRATEGY                     "
+menuItems$(10) = "SELECT/CHANGE BASE RUNNING STRATEGY                      "
+menuItems$(11) = "IMPORT MANAGERIAL PROFILE                                "
+menuItems$(12) = "EXPORT MANAGERIAL PROFILE                                "
+menuItems$(13) = "PRINT MANAGERIAL PROFILE                                 "
+menuItems$(14) = "RETURN TO GAME MENU                                      "
 	SELECTION% = 1
 	Count% = 14
 	Start% = 1
@@ -83,7 +88,7 @@ ITEM$(14) = "RETURN TO GAME MENU                                      "
 CALL box0(4, 9, 19, 70, 2, 31)
 	
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(ITEM$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -120,12 +125,12 @@ _MouseHide
 	END SELECT
 
 55 CLS : PRINT TAB(22); : COLOR 14, 4: PRINT "PITCHING ROTATION/RELIEVER MANAGEMENT": PRINT : PRINT : COLOR , 0
-	ITEM$(1) = "INPUT A NEW STARTING PITCHING ROTATION     "
-	ITEM$(2) = "EDIT AN EXISTING STARTING PITCHING ROTATION"
-	ITEM$(3) = "SELECT/EDIT MIDDLE RELIEVERS               "
-	ITEM$(4) = "SELECT/EDIT SET-UP MEN                     "
-	ITEM$(5) = "SELECT/EDIT CLOSERS                        "
-	ITEM$(6) = "RETURN TO MAIN MENU                        "
+	menuItems$(1) = "INPUT A NEW STARTING PITCHING ROTATION     "
+	menuItems$(2) = "EDIT AN EXISTING STARTING PITCHING ROTATION"
+	menuItems$(3) = "SELECT/EDIT MIDDLE RELIEVERS               "
+	menuItems$(4) = "SELECT/EDIT SET-UP MEN                     "
+	menuItems$(5) = "SELECT/EDIT CLOSERS                        "
+	menuItems$(6) = "RETURN TO MAIN MENU                        "
 	SELECTION% = 1
 	Count% = 6
 	Start% = 1
@@ -138,7 +143,7 @@ _MouseHide
 CALL box0(4, 18, 11, 62, 2, 31)
 	
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(ITEM$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -152,10 +157,10 @@ _MouseHide
 88 RUN "HELLO.EXE"
 
 100 CLS : PRINT TAB(26); : COLOR 14, 4: PRINT "LINEUP STRATEGY OPTIONS": PRINT : PRINT : COLOR , 0
-	ITEM$(1) = "SELECT/CHANGE/DISPLAY LINEUPS VS. RHP                  "
-	ITEM$(2) = "SELECT/CHANGE/DISPLAY LINEUPS VS. LHP                  "
-	ITEM$(3) = "ANALYZE PLAYER USAGE ACCORDING TO YOUR LINEUPS SELECTED"
-	ITEM$(4) = "RETURN TO TOP MENU                                     "
+	menuItems$(1) = "SELECT/CHANGE/DISPLAY LINEUPS VS. RHP                  "
+	menuItems$(2) = "SELECT/CHANGE/DISPLAY LINEUPS VS. LHP                  "
+	menuItems$(3) = "ANALYZE PLAYER USAGE ACCORDING TO YOUR LINEUPS SELECTED"
+	menuItems$(4) = "RETURN TO TOP MENU                                     "
 	SELECTION% = 1
 	Count% = 4
 	Start% = 1
@@ -168,7 +173,7 @@ _MouseHide
 CALL box0(4, 12, 9, 68, 2, 31)
 	
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(ITEM$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -380,10 +385,10 @@ _MouseHide
 480 CLS
 	LOCATE 3, 1
 	COLOR L%(11), L%(12): PRINT T$; : COLOR 15, 0: PRINT " LINEUPS VS "; PT$(Q2%): PRINT
-	 ITEM$(1) = "INPUT A NEW LINEUP            "
-	ITEM$(2) = "EDIT AN EXISTING LINEUP       "
-	ITEM$(3) = "DELETE AN EXISTING LINEUP     "
-	ITEM$(4) = "RETURN TO LINEUP STRATEGY MENU"
+	 menuItems$(1) = "INPUT A NEW LINEUP            "
+	menuItems$(2) = "EDIT AN EXISTING LINEUP       "
+	menuItems$(3) = "DELETE AN EXISTING LINEUP     "
+	menuItems$(4) = "RETURN TO LINEUP STRATEGY MENU"
 	SELECTION% = 1
 	Count% = 4
 	Start% = 1
@@ -396,7 +401,7 @@ _MouseHide
 CALL box0(4, 12, 9, 43, 2, 31)
 	
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(ITEM$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -733,7 +738,7 @@ OPEN D$(0) + "FCTEAMS." + YN$ FOR RANDOM AS #1 LEN = 4342
 	IF LEFT$(Q$(0),2) = "XX" OR LEFT$(Q$(0),1) = " " OR ASC(MID$(Q$(0), I2, 1)) < 32 OR ASC(MID$(Q$(0), I2, 1)) > 123 OR UCASE$(LEFT$(Q$(0), 3)) = "NOT" OR UCASE$(LEFT$(Q$(0), 3)) = "UN" THEN 1105
 	NEXT I2
 	NT = NT + 1
-	VV$(NT) = Q$(0): V%(NT) = I1
+	teamItems$(NT) = Q$(0): V%(NT) = I1
 
 1105 NEXT I1
 CLOSE 1
@@ -752,7 +757,7 @@ COLOR , 4: CLS : LOCATE , 33: COLOR 14: PRINT "TEAM SELECTION": COLOR 15
 	LOCATE 25, 1: COLOR 14: PRINT "ESC"; : COLOR 15: PRINT "-SELECT NEW ID  PGDN  PGUP  "; : COLOR 14: PRINT "ENTER"; : COLOR 15: PRINT "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-MAMenu VARPTR(VV$(1)), SELECTION%, Start%, Count%, EXITCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu teamItems$(), SELECTION%, Start%, Count%, EXITCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 	IF EXITCODE% = 27 THEN BO% = 1: RETURN
@@ -775,7 +780,7 @@ _MouseHide
 	LOCATE 7, 27: INPUT NY$
 	IF NY$ = "" THEN GOSUB 1102: GOTO 182
 	YN$ = NY$
-	FOR I = 1 TO 500: VV$(I) = "": V%(I) = 1: NEXT
+	FOR I = 1 TO 500: teamItems$(I) = "": V%(I) = 1: NEXT
 	GOSUB 2100
 
 182 IF BO% = 1 THEN BO% = 0: GOTO 1445
@@ -1697,12 +1702,12 @@ CLOSE 2
 3000 'HITTING STRATEGIES
 	CLS
 	PRINT TAB(28); : COLOR 14, 4: PRINT "HITTING STRATEGIES": COLOR 15, 0: PRINT
-	ITEM$(1) = "SITUATIONS TO PH FOR PITCHER                 "
-	ITEM$(2) = "SITUATIONS FOR PITCHER TO SAC BUNT IN        "
-	ITEM$(3) = "SITUATONS FOR POSITION PLAYERS TO SAC BUNT IN"
-	ITEM$(4) = "HIT AND RUN SCENARIOS                        "
-	ITEM$(5) = "SITUATIONS TO PH FOR POSITION PLAYERS        "
-	ITEM$(6) = "RETURN TO MAIN MENU                          "
+	menuItems$(1) = "SITUATIONS TO PH FOR PITCHER                 "
+	menuItems$(2) = "SITUATIONS FOR PITCHER TO SAC BUNT IN        "
+	menuItems$(3) = "SITUATONS FOR POSITION PLAYERS TO SAC BUNT IN"
+	menuItems$(4) = "HIT AND RUN SCENARIOS                        "
+	menuItems$(5) = "SITUATIONS TO PH FOR POSITION PLAYERS        "
+	menuItems$(6) = "RETURN TO MAIN MENU                          "
 	SELECTION% = 1
 	Count% = 6
 	Start% = 1
@@ -1715,7 +1720,7 @@ CLOSE 2
 CALL box0(4, 12, 11, 58, 2, 31)
 	
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(ITEM$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -1830,15 +1835,15 @@ _MouseHide
 3300 'DEFENSIVE STRATEGIES
 	CLS
 	PRINT TAB(31); : COLOR 14, 4: PRINT "DEFENSIVE STRATEGIES": COLOR 15, 0: PRINT
-	  ITEM$(1) = "INFIELD IN WITH 3RD BASE OCCUPIED            "
-	ITEM$(2) = "CORNERS IN VS HITTER WHO MIGHT BUNT FOR A HIT"
-	ITEM$(3) = "CORNERS IN VS HITTER IN SAC BUNT SITUATION   "
-	ITEM$(4) = "CORNERS IN VS PITCHER IN SAC BUNT SITUATION  "
-	ITEM$(5) = "CORNERS IN VS HITTER WHO MIGHT SQUEEZE BUNT  "
-	ITEM$(6) = "GUARD LINES IN LATE INNINGS                  "
-	ITEM$(7) = "PITCH AROUND THE HITTER                      "
-	ITEM$(8) = "NOT THROWING HOME WITH RUNNER TRYING TO SCORE"
-	ITEM$(9) = "RETURN TO MAIN MENU                          "
+	  menuItems$(1) = "INFIELD IN WITH 3RD BASE OCCUPIED            "
+	menuItems$(2) = "CORNERS IN VS HITTER WHO MIGHT BUNT FOR A HIT"
+	menuItems$(3) = "CORNERS IN VS HITTER IN SAC BUNT SITUATION   "
+	menuItems$(4) = "CORNERS IN VS PITCHER IN SAC BUNT SITUATION  "
+	menuItems$(5) = "CORNERS IN VS HITTER WHO MIGHT SQUEEZE BUNT  "
+	menuItems$(6) = "GUARD LINES IN LATE INNINGS                  "
+	menuItems$(7) = "PITCH AROUND THE HITTER                      "
+	menuItems$(8) = "NOT THROWING HOME WITH RUNNER TRYING TO SCORE"
+	menuItems$(9) = "RETURN TO MAIN MENU                          "
 	SELECTION% = 1
 	Count% = 9
 	Start% = 1
@@ -1851,7 +1856,7 @@ _MouseHide
 CALL box0(4, 17, 14, 63, 2, 31)
 	
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(ITEM$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -2010,10 +2015,10 @@ _MouseHide
 3501 'PINCH RUNNING STRATEGY
 	CLS
 	PRINT TAB(31); : COLOR 14, 2: PRINT "PINCH RUNNING STRATEGIES": COLOR 15, 0: PRINT
-	ITEM$(1) = "SELECT PINCH RUNNERS                                  "
-	ITEM$(2) = "SELECT PLAYERS TO PINCH RUN FOR AND THEIR REPLACEMENTS"
-	ITEM$(3) = "SITUATIONS TO PINCH RUN FOR THE PITCHER               "
-	ITEM$(4) = "RETURN TO MAIN MENU                                   "
+	menuItems$(1) = "SELECT PINCH RUNNERS                                  "
+	menuItems$(2) = "SELECT PLAYERS TO PINCH RUN FOR AND THEIR REPLACEMENTS"
+	menuItems$(3) = "SITUATIONS TO PINCH RUN FOR THE PITCHER               "
+	menuItems$(4) = "RETURN TO MAIN MENU                                   "
 	SELECTION% = 1
 	Count% = 4
 	Start% = 1
@@ -2026,7 +2031,7 @@ _MouseHide
 CALL box0(4, 12, 9, 67, 2, 31)
 	
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(ITEM$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -2186,9 +2191,9 @@ _MouseHide
 
 ' NO MANAGER FILE WAS FOUND, THUS UNABLE TO EXPORT ONE
 	LOCATE 10, 8
-	CALL CSMsgBox("NO MANAGER PROFILE EXISTS FOR THIS TEAM PRESS ANY KEY TO RETURN TO MAIN MENU", 40, Cnf)
+	CALL CSMsgBox("NO MANAGER PROFILE EXISTS FOR THIS TEAM PRESS ANY KEY TO RETURN TO MAIN MENU", 40, Pass)
 	I$ = GetKeyPress$
-	CALL CSMsgBox("", 0, Cnf)
+	CALL CSMsgBox("", 0, Pass)
 	GOTO 3895
 
 3820 IF PP% = 1 THEN PP% = 0: GOTO 3850
@@ -2265,6 +2270,11 @@ CLOSE 1
 
 3925 RETURN
 
+
+'------------------------------
+'   BASERUN Subroutine
+'------------------------------
+' ...explanation...
 SUB BASERUN ()
 
 3700 'BASE RUNNING STRATEGY
@@ -2307,6 +2317,11 @@ SUB BASERUN ()
 
 3815 END SUB
 
+
+'------------------------------
+'   DRAWBOX Subroutine
+'------------------------------
+' ...explanation...
 SUB DRAWBOX ()
 	JJ = 5
 	LOCATE 6, 8: COLOR 15, 1
@@ -2317,6 +2332,11 @@ SUB DRAWBOX ()
 	PRINT " "; CHR$(200); STRING$(61, 205); CHR$(188); " "; : LOCATE 7
 END SUB
 
+
+'------------------------------
+'   PHBATTER Subroutine
+'------------------------------
+' ...explanation...
 SUB PHBATTER ()
 
 3059 'PINCH HIT FOR THE PITCHER
@@ -2355,6 +2375,11 @@ SUB PHBATTER ()
 
 3058 END SUB
 
+
+'------------------------------
+'   PHPITCHER Subroutine
+'------------------------------
+' ...explanation...
 SUB PHPITCHER ()
 
 3050 'PINCH HIT FOR THE PITCHER
@@ -2393,6 +2418,11 @@ SUB PHPITCHER ()
 
 3056 END SUB
 
+
+'------------------------------
+'   PITCHAROUND Subroutine
+'------------------------------
+' ...explanation...
 SUB PITCHAROUND ()
 
 3480 'PITCH AROUND
@@ -2420,6 +2450,11 @@ SUB PITCHAROUND ()
 
 3486 END SUB
 
+
+'------------------------------
+'   PITSTRAT Subroutine
+'------------------------------
+' ...explanation...
 SUB PITSTRAT ()
 
 400 'PITCHING STRATEGY
@@ -2452,9 +2487,19 @@ SUB PITSTRAT ()
 
 415 END SUB
 
+
+'------------------------------
+'   PROFILEPRINT Subroutine
+'------------------------------
+' ...explanation...
 SUB PROFILEPRINT ()
 END SUB
 
+
+'------------------------------
+'   THROWHOME Subroutine
+'------------------------------
+' ...explanation...
 SUB THROWHOME ()
 
 3490 'THROW HOME UNDER
@@ -2479,6 +2524,11 @@ SUB THROWHOME ()
 
 3496 END SUB
 
+
+'------------------------------
+'   UPDATEFILE Subroutine
+'------------------------------
+' ...explanation...
 SUB UPDATEFILE ()
 	MG%(0) = 999
 OPEN D$(3) + "MGR." + YN$ FOR RANDOM AS #2 LEN = 2000

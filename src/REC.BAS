@@ -2,6 +2,11 @@
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'
 
+_Title "Full Count Baseball - Head-to-Head Stats"
+''$ExeIcon:'./lhg_fcbase.ico'
+'_Icon	
+_AllowFullScreen
+
 DEFINT A-Z
 DECLARE SUB TITLE ()
 
@@ -13,7 +18,7 @@ DIM HW(50), AW(50), HL(50), AL(50), R1(200), R2(200), R3(200), R4(200)
 
 7DIM B%(22, 41), P%(21, 36), B$(22), P$(21), L%(13), BS$(22), PS$(21), B0%(22, 40)
 DIM P0%(21, 41), BS%(22), PS%(32), T(22), T1(22), N$(22), NP$(21), Q$(15)
-DIM VV$(200), VV%(200), D$(3), ITEM$(10), K9(0) AS LONG
+DIM teamItems$(200), VV%(200), D$(3), menuItems$(10), K9(0) AS LONG
 DIM DV$(4), TR4(4), TR3(4), TR2(4), TR1(4), THW(4), THL(4), TAW(4), TAL(4)
 DIM Y AS LONG
 
@@ -24,10 +29,10 @@ OPEN "DEV.BAS" FOR INPUT AS #1
 CLOSE #1
 
 600 CALL TITLE
-	ITEM$(1) = "ANALYZE A TEAM'S RECORD                "
-	ITEM$(2) = "ANALYZE ANOTHER TEAM IN THE SAME LEAGUE"
-	ITEM$(3) = "SELECT A NEW TEAM AND LEAGUE           "
-	ITEM$(4) = "RETURN TO MAIN MENU                    "
+	menuItems$(1) = "ANALYZE A TEAM'S RECORD                "
+	menuItems$(2) = "ANALYZE ANOTHER TEAM IN THE SAME LEAGUE"
+	menuItems$(3) = "SELECT A NEW TEAM AND LEAGUE           "
+	menuItems$(4) = "RETURN TO MAIN MENU                    "
 	SELECTION% = 1
 	Count% = 4
 	Start% = 1
@@ -40,7 +45,7 @@ CLOSE #1
 CALL box0(5, 21, 10, 61, 2, 31)
 	
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(ITEM$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -69,7 +74,7 @@ _MouseHide
 	LOCATE 7, 27: INPUT NY$
 	IF NY$ = "" THEN GOSUB 1102: GOTO 182
 	YN$ = NY$
-	FOR I = 1 TO 200: VV$(I) = "": NEXT
+	FOR I = 1 TO 200: teamItems$(I) = "": NEXT
 
 1441 GOSUB 1100
 
@@ -93,7 +98,7 @@ OPEN D$(0) + "FCTEAMS." + YN$ FOR RANDOM AS #1 LEN = 4342
 	IF ASC(MID$(Q$(0), I2, 1)) < 32 OR ASC(MID$(Q$(0), I2, 1)) > 123 OR UCASE$(LEFT$(Q$(0), 3)) = "NOT" OR UCASE$(LEFT$(Q$(0), 3)) = "UN" THEN 1103
 	NEXT I2
 	NT = NT + 1
-	VV$(NT) = Q$(0): VV%(NT) = I1
+	teamItems$(NT) = Q$(0): VV%(NT) = I1
 
 1103 NEXT I1
 CLOSE 1
@@ -112,13 +117,13 @@ COLOR , 4: CLS : LOCATE , 33: COLOR 14: PRINT "TEAM SELECTION": COLOR 15
 	LOCATE 25, 1: COLOR 14: PRINT "ESC"; : COLOR 15: PRINT "-SELECT NEW ID  PGDN  PGUP  "; : COLOR 14: PRINT "ENTER"; : COLOR 15: PRINT "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-MAMenu VARPTR(VV$(1)), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu teamItems$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 	IF ExitCode% = 27 THEN BO% = 1: RETURN
 	T = VV%(SELECTION%)
 	LOCATE 2, 33: COLOR 31: PRINT "LOADING..."
-	IF NOT _FILEXIST(D$(0) + "FCTEAMS." + YN$) THEN BO% = 1: GOSUB 4500: RETURN
+	IF NOT _FILEEXISTS(D$(0) + "FCTEAMS." + YN$) THEN BO% = 1: GOSUB 4500: RETURN
 OPEN D$(0) + "FCTEAMS." + YN$ FOR RANDOM AS #1 LEN = 4342
 FIELD #1, 15 AS Q$(0), 2 AS Q$(1), 2 AS Q$(2), 2 AS Q$(3), 2 AS Q$(4), 2 AS Q$(5), 2 AS Q$(6), 2 AS Q$(7), 2 AS Q$(8), 2 AS Q$(9), 2 AS Q$(10), 2 AS Q$(11), 2 AS Q$(12), 2 AS Q$(13), 4 AS Q$(14), 4297 AS X$
 GET #1, T
@@ -130,7 +135,7 @@ CLOSE 1
 40 ER = 0
 
 119 B$ = T$
-	B$ = RTrim(B$)
+	B$ = RTRIM$(B$)
 	FOR XX = 4 TO 11
 	IF MID$(B$, XX, 1) = " " OR MID$(B$, XX, 1) = "." THEN MID$(B$, XX, 1) = "_"
 	NEXT XX
@@ -144,7 +149,7 @@ CLOSE 1
 6620 Z$ = MID$(B$, 4, QQ) + "." + LEFT$(B$, 2)
 	CLS
 
-111 IF NOT _FILEXIST(D$(1) + Z$ + "S") THEN GOSUB 4550: GOTO 600
+111 IF NOT _FILEEXISTS(D$(1) + Z$ + "S") THEN GOSUB 4550: GOTO 600
 OPEN D$(1) + Z$ + "S" FOR INPUT AS #1
 
 115 INPUT #1, Y
@@ -859,25 +864,29 @@ LOCATE , 33: PRINT "ANY CHANGE (YN)";
 1552 GOTO 600
 
 4500 LOCATE 10, 8
-	CALL CSMsgBox("NO TEAM FILES WERE FOUND MATCHING THIS ID.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Cnf)
+	CALL CSMsgBox("NO TEAM FILES WERE FOUND MATCHING THIS ID.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
 	I$ = GetKeyPress$
-	CALL CSMsgBox("", 0, Cnf)
+	CALL CSMsgBox("", 0, Pass)
 	RETURN
 
 4550 LOCATE 10, 8
-	CALL CSMsgBox("NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Cnf)
+	CALL CSMsgBox("NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
 	I$ = GetKeyPress$
-	CALL CSMsgBox("", 0, Cnf)
+	CALL CSMsgBox("", 0, Pass)
 	RETURN
 
 4575 LOCATE 10, 8
-	CALL CSMsgBox("NO LEAGUE FILES WERE FOUND.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Cnf)
+	CALL CSMsgBox("NO LEAGUE FILES WERE FOUND.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
 	I$ = GetKeyPress$
-	CALL CSMsgBox("", 0, Cnf)
+	CALL CSMsgBox("", 0, Pass)
 
 	RETURN
 
 
+'------------------------------
+'      TITLE Subroutine
+'------------------------------
+' Displays window title / game copyright
 SUB TITLE ()
 COLOR , 0: KEY OFF: CLS
 	COLOR , 1: LOCATE 1, 1: PRINT TAB(80); : LOCATE , 30: COLOR 12

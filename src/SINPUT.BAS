@@ -2,12 +2,17 @@
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'
 
+_Title "Full Count Baseball - Stats Input"
+''$ExeIcon:'./lhg_fcbase.ico'
+'_Icon	
+_AllowFullScreen
+
 DEFINT A-Z
 DECLARE SUB TITLE ()
 
 DIM B$(22), P$(21), B0%(22, 21), P0%(21, 41), T(21), T1(22), H%(162), H$(162)
 DIM V%(162), PL$(162), W$(162), L$(162), ING%(162)
-DIM D$(2), P%(21), B%(22), VV$(200), VV%(200), Q$(15), ITEM$(3)
+DIM D$(2), P%(21), B%(22), teamItems$(200), VV%(200), Q$(15), menuItems$(3)
 DIM Y AS LONG, L%(13)
 OPEN "DEV.BAS" FOR INPUT AS #1
 	FOR I = 0 TO 2
@@ -18,9 +23,9 @@ OPEN "DEV.BAS" FOR INPUT AS #1
 
 40 CLS
 CALL TITLE
-ITEM$(1) = "EDIT/CHANGE EXISTING REPLAY STAT FILE"
-ITEM$(2) = "ENTER SCHEDULE RESULTS               "
-ITEM$(3) = "RETURN TO MAIN MENU                  "
+menuItems$(1) = "EDIT/CHANGE EXISTING REPLAY STAT FILE"
+menuItems$(2) = "ENTER SCHEDULE RESULTS               "
+menuItems$(3) = "RETURN TO MAIN MENU                  "
 SELECTION% = 1
 Count% = 3
 Start% = 1
@@ -33,7 +38,7 @@ Column% = 23
 
 CALL box0(5, 22, 9, 60, 2, 31)	
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(ITEM$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 COLOR , 0
@@ -551,7 +556,7 @@ PRINT "TEAM BATTING STATS"
 	LOCATE 7, 27: INPUT NY$
 	IF NY$ = "" THEN GOSUB 1102: GOTO 182
 	YN$ = NY$
-	FOR I = 1 TO 200: VV$(I) = "": NEXT
+	FOR I = 1 TO 200: teamItems$(I) = "": NEXT
 
 1441 GOSUB 1101
 
@@ -576,7 +581,7 @@ OPEN D$(0) + "FCTEAMS." + YN$ FOR RANDOM AS #1 LEN = 4342
 	IF LEFT$(Q$(0),2) = "XX" OR LEFT$(Q$(0),1) = " " OR ASC(MID$(Q$(0), I2, 1)) < 32 OR ASC(MID$(Q$(0), I2, 1)) > 123 OR UCASE$(LEFT$(Q$(0), 3)) = "NOT" OR UCASE$(LEFT$(Q$(0), 3)) = "UN" THEN 1103
 	NEXT I2
 	NT = NT + 1
-	VV$(NT) = Q$(0): VV%(NT) = I1
+	teamItems$(NT) = Q$(0): VV%(NT) = I1
 
 1103 NEXT I1
 CLOSE 1
@@ -595,7 +600,7 @@ COLOR , 4: CLS : LOCATE , 33: COLOR 14: PRINT "TEAM SELECTION": COLOR 15
 	LOCATE 25, 1: COLOR 14: PRINT "ESC"; : COLOR 15: PRINT "-SELECT NEW ID  PGDN  PGUP  "; : COLOR 14: PRINT "ENTER"; : COLOR 15: PRINT "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-MAMenu VARPTR(VV$(1)), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu teamItems$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 	IF ExitCode% = 27 THEN BO% = 1: RETURN
@@ -605,7 +610,7 @@ _MouseHide
 OPEN D$(0) + "FCTEAMS." + YN$ FOR RANDOM AS #1 LEN = 4342
 FIELD #1, 15 AS Q$(0), 2 AS Q$(1), 2 AS Q$(2), 2 AS Q$(3), 2 AS Q$(4), 2 AS Q$(5), 2 AS Q$(6), 2 AS Q$(7), 2 AS Q$(8), 2 AS Q$(9), 2 AS Q$(10), 2 AS Q$(11), 2 AS Q$(12), 2 AS Q$(13), 4 AS Q$(14), 4297 AS X$
 GET #1, T
-T$ = RTrim(Q$(0))
+T$ = RTRIM$(Q$(0))
 FOR I = 1 TO 13
 L%(I) = CVI(Q$(I))
 NEXT
@@ -613,7 +618,7 @@ CLOSE 1
 	RETURN
 
 119 B$ = T$
-	B$ = RTrim(B$)
+	B$ = RTRIM$(B$)
 	FOR XX = 4 TO 11
 	IF MID$(B$, XX, 1) = " " OR MID$(B$, XX, 1) = "." THEN MID$(B$, XX, 1) = "_"
 	NEXT XX
@@ -731,18 +736,22 @@ OPEN D$(1) + Z$ FOR INPUT AS #1
 1290 GOTO 40
 
 4500 LOCATE 10, 8
-	CALL CSMsgBox("NO TEAM FILES WERE FOUND MATCHING THIS ID.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Cnf)
+	CALL CSMsgBox("NO TEAM FILES WERE FOUND MATCHING THIS ID.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
 	I$ = GetKeyPress$
-	CALL CSMsgBox("", 0, Cnf)
+	CALL CSMsgBox("", 0, Pass)
 	RETURN
 
 4550 LOCATE 10, 8
-	CALL CSMsgBox("NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Cnf)
+	CALL CSMsgBox("NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
 	I$ = GetKeyPress$
-	CALL CSMsgBox("", 0, Cnf)
+	CALL CSMsgBox("", 0, Pass)
 	RETURN
 
 
+'------------------------------
+'      TITLE Subroutine
+'------------------------------
+' Displays window title / game copyright
 SUB TITLE ()
 COLOR , 0: KEY OFF: CLS
 	COLOR , 1: LOCATE 1, 1: PRINT TAB(80); : LOCATE , 30: COLOR 12

@@ -2,6 +2,11 @@
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'
 
+_Title "Full Count Baseball - View League Results"
+''$ExeIcon:'./lhg_fcbase.ico'
+'_Icon	
+_AllowFullScreen
+
 DEFINT A-Z
 
 1 DIM T$(40), W(40), L(40), P$(298), S$(40), P(40), BA$(40), ER$(40), OFT(40, 20) AS SINGLE, DFT(40, 20) AS SINGLE
@@ -71,9 +76,9 @@ _MouseHide
 	GOTO 7
 
 4500 LOCATE 10, 8
-	CALL CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Cnf)
+	CALL CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
 	I$ = GetKeyPress$
-	CALL CSMsgBox("", 0, Cnf)
+	CALL CSMsgBox("", 0, Pass)
 
 	GOTO 2900
 

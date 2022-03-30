@@ -2,13 +2,18 @@
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'
 
+_Title "Full Count Baseball - Sort By Position"
+''$ExeIcon:'./lhg_fcbase.ico'
+'_Icon	
+_AllowFullScreen
+
 DEFINT A-Z
 DECLARE SUB TITLE ()
 
 DIM D$(4), Q$(1844), FS%(22, 4, 4), TM(40), A$(40), TYN$(40), BB$(23), PB$(22)
 DIM B%(22, 41), P%(21, 36), B$(22), P$(21), L%(13), BS$(22), PS$(21), B0%(22, 40)
 DIM P0%(21, 41), BS%(22), PS%(32), T(22), T1(22), N$(22), NP$(21)
-DIM I2 AS SINGLE, I3 AS SINGLE, I4 AS SINGLE, ITEM$(5)
+DIM I2 AS SINGLE, I3 AS SINGLE, I4 AS SINGLE, menuItems$(5)
 DIM K9(0) AS LONG
 OPEN "DEV.BAS" FOR INPUT AS #1
 FOR I = 0 TO 3
@@ -17,9 +22,9 @@ NEXT
 CLOSE #1
 
 6 CALL TITLE
-ITEM$(1) = "CREATE POSITION SEARCH FILE   "
-ITEM$(2) = "SEARCH FOR PLAYERS BY POSITION"
-ITEM$(3) = "RETURN TO MAIN MENU           "
+menuItems$(1) = "CREATE POSITION SEARCH FILE   "
+menuItems$(2) = "SEARCH FOR PLAYERS BY POSITION"
+menuItems$(3) = "RETURN TO MAIN MENU           "
 	SELECTION% = 1
 	Count% = 3
 	Start% = 1
@@ -32,7 +37,7 @@ ITEM$(3) = "RETURN TO MAIN MENU           "
 CALL box0(5, 21, 9, 52, 2, 31)
 	
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(ITEM$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -750,9 +755,9 @@ LOCATE , 33: PRINT "ANY CHANGE (YN)";
 4903 RETURN
 
 4500 LOCATE 10, 8
-	CALL CSMsgBox("NO LEAGUE POSITION FILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Cnf)
+	CALL CSMsgBox("NO LEAGUE POSITION FILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
 	I$ = GetKeyPress$
-	CALL CSMsgBox("", 0, Cnf)
+	CALL CSMsgBox("", 0, Pass)
 	GOTO 6
 
 5500 OPEN D$(0) + "FCTEAMS." + TYN$(J) FOR RANDOM AS #1 LEN = 4342
@@ -790,8 +795,12 @@ S$ = RTrim$(Q$(1840)): M$ = RTrim$(Q$(1841)): NN$ = RTrim$(Q$(1842)): CK = CVI(Q
 CLOSE 1
 RETURN
 
-SUB TITLE ()
 
+'------------------------------
+'      TITLE Subroutine
+'------------------------------
+' Displays window title / game copyright
+SUB TITLE ()
 COLOR , 0: KEY OFF: CLS
 	COLOR , 1: LOCATE 1, 1: PRINT TAB(80); : LOCATE , 30: COLOR 12
 	PRINT "FULL COUNT BASEBALL 6.0"

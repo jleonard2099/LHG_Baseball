@@ -2,12 +2,17 @@
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'
 
+_Title "Full Count Baseball - Season Records"
+''$ExeIcon:'./lhg_fcbase.ico'
+'_Icon	
+_AllowFullScreen
+
 DECLARE SUB TITLE ()
 
 DIM B$(23), B%(23), P$(22), P%(22), B0%(23, 22), P0%(22, 42), T(22)
 DIM T1(23), TT(40, 22), TT1(40, 23), TT$(40, 22), TT1$(40, 23)
 
-2 DIM WW(40), LL(40), ITEM$(10)
+2 DIM WW(40), LL(40), menuItems$(10)
 DIM Z1$(40), TYP2(920), D$(2)
 
 3 DIM TMB(920) AS STRING * 15, TP$(32)
@@ -63,9 +68,9 @@ DATA RUNNERS INHERITED SCORED,BLOWN SAVES,QUALITY STARTS,PER CENT OF RI SCORED,E
 FOR I = 0 TO 18: READ TP3$(I): NEXT
 
 2000 CALL TITLE
-	ITEM$(1) = "UPDATE SEASON RECORDS    "
-	ITEM$(2) = "VIEW/PRINT SEASON RECORDS"
-	ITEM$(3) = "RETURN TO MAIN MENU      "
+	menuItems$(1) = "UPDATE SEASON RECORDS    "
+	menuItems$(2) = "VIEW/PRINT SEASON RECORDS"
+	menuItems$(3) = "RETURN TO MAIN MENU      "
 	SELECTION% = 1
 	Count% = 3
 	Start% = 1
@@ -78,7 +83,7 @@ FOR I = 0 TO 18: READ TP3$(I): NEXT
 CALL box0(5, 29, 9, 55, 2, 31)
 	
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(ITEM$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -667,6 +672,11 @@ CLOSE #1
 	LPRINT CHR$(12)
 	GOTO 2000
 
+
+'------------------------------
+'      TITLE Subroutine
+'------------------------------
+' Displays window title / game copyright
 SUB TITLE ()
 COLOR , 0: KEY OFF: CLS
 	COLOR , 1: LOCATE 1, 1: PRINT TAB(80); : LOCATE , 30: COLOR 12

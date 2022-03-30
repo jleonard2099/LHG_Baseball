@@ -2,6 +2,11 @@
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'
 
+_Title "Full Count Baseball - Update League Stats"
+''$ExeIcon:'./lhg_fcbase.ico'
+'_Icon	
+_AllowFullScreen
+
 DEFINT A-Z
 
 DIM O1(40), TM$(40), JS(46, 42) AS SINGLE, ZM%(46), NM$(46)
@@ -70,9 +75,9 @@ _MouseHide
 	GOTO 7
 
 4500 LOCATE 10, 8
-	CALL CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Cnf)
+	CALL CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
 	I$ = GetKeyPress$
-	CALL CSMsgBox("", 0, Cnf)
+	CALL CSMsgBox("", 0, Pass)
 	GOTO 103
 
 7 LH$ = LEFT$(WE$, 8)
@@ -115,7 +120,7 @@ CLOSE 2
 
 700 WN = 0: LS = 0: IF H1$(XW) = CHR$(42) THEN RETURN
 
-800 IF NOT _FILEXIST(D$(1) + H1$(XW)) THEN 822
+800 IF NOT _FILEEXISTS(D$(1) + H1$(XW)) THEN 822
 
 801 PRINT "FINDING "; H1$(XW); " STATS"
 

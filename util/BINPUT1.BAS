@@ -1,20 +1,20 @@
 '$INCLUDE: 'QPProEqu.BI'
 
 DEFINT A-Z
-DECLARE FUNCTION FnExt$ (X$, Length)
+DECLARE FUNCTION PadRight$ (X$, Length)
 DECLARE SUB BATTEREDIT ()
 DECLARE SUB PITCHEREDIT ()
 DECLARE SUB TITLE ()
 DECLARE SUB PITCHINIT (i, Colr)
 DECLARE SUB PITCHINIT2 (i, Colr)
 
-DIM D$(3), ITEM$(15)
+DIM D$(3)
 DIM K9(1) AS LONG
 DIM Q$(2100), FS%(22, 4, 4)
 DIM b%(22, 79), p%(21, 88), b$(22), p$(21), L%(13)
 DIM BS$(22), PS$(21)
 DIM B0%(22, 40), P0%(21, 41), BS%(22), PS%(32), T(22), T1(22)
-DIM VV$(200), V%(200)
+DIM teamItems$(200), V%(200)
 DIM TB%(11), TP%(33),INJ%(22),DYS%(21)
 DIM SA%(24), TS%(11), BRS$(79)
 DIM Y AS LONG
@@ -77,13 +77,13 @@ COLOR 15, 1: CLS : LOCATE 1, 30: PRINT "EDIT AND INPUT BATTERS"
 ' INITIALIZE BATTER FIELDS
 	Colr = 112
 	COLOR 0,7
-	LOCATE 3, 7: QPrint FnExt$(b$(i), 15), FG, BG, -1
+	LOCATE 3, 7: QPrint PadRight$(b$(i), 15), FG, BG, -1
 	IF b%(i, 0) = 2 THEN BATS$ = "RP"
 	IF b%(i, 0) = -2 THEN BATS$ = "LP"
 	IF b%(i, 0) = 1 THEN BATS$ = "R"
 	IF b%(i, 0) = -1 THEN BATS$ = "L"
 	IF b%(i, 0) = 0 THEN BATS$ = "S"
-	LOCATE 3, 30: QPrint FnExt$(BATS$, 2), FG, BG, -1
+	LOCATE 3, 30: QPrint PadRight$(BATS$, 2), FG, BG, -1
 	ACT$ = "Y"
 	IF b%(i, 31) = 1 THEN ACT$ = "N"
 	LOCATE 3, 44: PRINT ACT$
@@ -763,18 +763,18 @@ bDone:
 	LOCATE 25, 1
 	PRINT "Is this okay? (Yes/No) ";
 	X$ = ""
-	CALL YesNoB(X$, XCode, Colr)
+	CALL YesNoB(X$, XCode, FG, BG)
 	LOCATE , 1
 	IF XCode = 1 GOTO bRRKO
 	IF X$ = "N" GOTO BName
 	IF X$ <> "Y" GOTO bDone               'insist on either Y or N or up-arrow
 	b%(i, 0) = 0
-	BATS$ = QPTrim$(BATS$)
+	BATS$ = _TRIM$(BATS$)
 	IF UCASE$(BATS$) = "L" THEN b%(i, 0) = -1
 	IF UCASE$(BATS$) = "R" THEN b%(i, 0) = 1
 	IF UCASE$(BATS$) = "LP" THEN b%(i, 0) = -2
 	IF UCASE$(BATS$) = "RP" THEN b%(i, 0) = 2
-	ACT$ = QPTrim$(ACT$)
+	ACT$ = _TRIM$(ACT$)
 	b%(i, 31) = 0
 	IF UCASE$(ACT$) = "N" THEN b%(i, 31) = 1
 	GOTO 200
@@ -859,7 +859,7 @@ COLOR 15, 1: CLS : LOCATE 1, 36: PRINT "TEAM DATA"
 	LOCATE 11, 70:PRINT USING "###";SA%(23)
 	LOCATE 11, 75:PRINT USING "###";SA%(24)
 	LOCATE 25, 1: PRINT "ESC-WILL END EDITING";
-	HR$ = QPTrim$(STR$(K9(0)))
+	HR$ = _TRIM$(STR$(K9(0)))
 TeamNum:
 	LOCATE 3, 14
 	Max = 3
@@ -1211,9 +1211,9 @@ Done:
 	LOCATE 25, 1
 	PRINT "Is this okay? (Y)es/(N)o/(A)bort ";
 	X$ = ""
-	CALL YesNoB(X$, XCode, Colr)
+	CALL YesNoB(X$, XCode, FG, BG)
 	LOCATE , 1
-	'ClearEOL 30
+	'ClearEOL 14, 1
 	IF XCode = 1 GOTO RRKO
 	IF X$ = "N" GOTO TeamNum
 	IF X$ = "A" THEN RUN "HELLO.EXE"
@@ -1275,13 +1275,13 @@ COLOR 15, 1: CLS
 
 ' INITIALIZE PITCHER FIELDS
 	Colr = 112
-	LOCATE 1, 7: QPrint FnExt$(p$(i), 15), FG, BG, -1
+	LOCATE 1, 7: QPrint PadRight$(p$(i), 15), FG, BG, -1
 	THROW$ = "R"
 	IF p%(i, 0) = -1 THEN THROW$ = "L"
-	LOCATE 1, 32: QPrint FnExt$(THROW$, 1), FG, BG, -1
+	LOCATE 1, 32: QPrint PadRight$(THROW$, 1), FG, BG, -1
 	ACT$ = "Y"
 	IF p%(i, 34) = 1 THEN ACT$ = "N"
-	LOCATE 1, 44: QPrint FnExt$(ACT$, 1), FG, BG, -1
+	LOCATE 1, 44: QPrint PadRight$(ACT$, 1), FG, BG, -1
 	CALL PITCHINIT(i, Colr)
 	CALL PITCHINIT2(i, Colr)
 
@@ -1997,16 +1997,16 @@ PDone:
 	LOCATE 25, 1
 	PRINT "Is this okay? (Yes/No) ";
 	X$ = ""
-	CALL YesNoB(X$, XCode, Colr)
+	CALL YesNoB(X$, XCode, FG, BG)
 	LOCATE , 1
-	'ClearEOL 30
+	'ClearEOL 14, 1
 	IF XCode = 1 GOTO PRRKO
 	IF X$ = "N" GOTO PName
 	IF X$ <> "Y" GOTO PDone               'insist on either Y or N or up-arrow
 	p%(i, 0) = 1
-	THROW$ = QPTrim$(THROW$)
+	THROW$ = _TRIM$(THROW$)
 	IF UCASE$(THROW$) = "L" THEN p%(i, 0) = -1
-	ACT$ = QPTrim$(ACT$)
+	ACT$ = _TRIM$(ACT$)
 	p%(i, 34) = 0
 	IF UCASE$(ACT$) = "N" THEN p%(i, 34) = 1
 	 GOTO 1150
@@ -2107,9 +2107,13 @@ SUB PITCHINIT2 (i, Colr)
 	LOCATE 25, 52: PRINT USING "###";p%(i, 88);
 END SUB
 
-FUNCTION FnExt$ (X$, Length) 
-'Essentially this pads space to the right of the string
-	X$ = X$ + SPACE$(Length - LEN(X$))  'for display only
-END FUNCTION
+
+'------------------------------
+'      PadRight Function
+'------------------------------
+' Pads string to the right with spaces
+Function PadRight$ (X$, Length)
+    PadRight$ = X$ + Space$(Length - Len(X$)) 'for display only
+End Function
 
 '$INCLUDE: 'QPProEqu.BM'

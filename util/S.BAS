@@ -3171,6 +3171,7 @@ for i=3 to 6:read f$(i):next
 
 5002 S4%=0:IF P=1 THEN I%=I%+1:CZ%(1)=0:CZ%(0)=0
 
+'FRE(0) = Available String Space; https://www.qbasic.net/en/reference/qb11/Function/FRE.htm
 5003 P=1-P:D=1-P:IF I%=5 AND P=1 THEN I=FRE(Y$)
 	IF I%=7 AND L%(1,13)=8 AND P=1 AND VAL(LEFT$(A$(1),2))>75 THEN GOSUB 4095:PRINT "ALL RIGHT...":GOSUB 6095:PRINT "LEMME HEAR YA...":GOSUB 6095:PRINT "A ONE, ";:GOSUB 6095:PRINT "A TWO...":GOSUB 6095
 	IF I%>8 AND P=0 AND S8%(1,1)=3 THEN S8%(1,1)=2

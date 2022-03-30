@@ -3,20 +3,20 @@
 '$INCLUDE: 'QPProEqu.BI'
 
 DEFINT A-Z
-DECLARE FUNCTION FnExt$ (X$, Length)
+DECLARE FUNCTION PadRight$ (X$, Length)
 DECLARE SUB BATTEREDIT ()
 DECLARE FUNCTION EXIST (FILENAME$)
 DECLARE SUB PITCHEREDIT ()
 DECLARE SUB TITLE ()
 DECLARE SUB EDITTEAM (YN$, T$, NN$, S$, M$, T)
 
-DIM D$(3), ITEM$(15)
+DIM D$(3), menuItems$(15)
 DIM K9(1) AS LONG
 DIM Q$(2100), FS%(22, 4, 4), BP$(3)
 DIM B%(22, 79), P%(21, 88), B$(22), P$(21), L%(13)
 DIM BS$(22), PS$(21)
 DIM B0%(22, 40), P0%(21, 41), BS%(22), PS%(32), T(22), T1(22)
-DIM VV$(200), V%(200), SS%(22, 6)
+DIM teamItems$(200), V%(200), SS%(22, 6)
 DIM TB%(15), TP%(33),INJ%(22),DYS%(21)
 DIM SA%(24), TS%(11), BRS$(79)
 DIM SLG2 AS SINGLE, OB AS SINGLE, R1 AS SINGLE, R2 AS SINGLE
@@ -39,15 +39,15 @@ OPEN "DEV.BAS" FOR INPUT AS #1
 CLOSE #1
 
 55 CALL TITLE
-	ITEM$(1) = "INPUT A NEW TEAM           "
-	ITEM$(2) = "EDIT AN EXISTING TEAM      "
-	ITEM$(3) = "PRINT ACTUAL TEAM STATS    "
-	ITEM$(4) = "ENTER/EDIT UMPIRES         "
-	ITEM$(5) = "SWAP SPOTS ON A TEAM ROSTER"
-	ITEM$(6) = "RETURN TO MAIN MENU        "
-	ITEM$(7) = "CALCULATE BUNT RATINGS     "
-	ITEM$(8) = "CALCULATE RUN RATINGS      "
-	ITEM$(9) = "VIEW TEAM ROSTERS/RATINGS  "
+	menuItems$(1) = "INPUT A NEW TEAM           "
+	menuItems$(2) = "EDIT AN EXISTING TEAM      "
+	menuItems$(3) = "PRINT ACTUAL TEAM STATS    "
+	menuItems$(4) = "ENTER/EDIT UMPIRES         "
+	menuItems$(5) = "SWAP SPOTS ON A TEAM ROSTER"
+	menuItems$(6) = "RETURN TO MAIN MENU        "
+	menuItems$(7) = "CALCULATE BUNT RATINGS     "
+	menuItems$(8) = "CALCULATE RUN RATINGS      "
+	menuItems$(9) = "VIEW TEAM ROSTERS/RATINGS  "
 	SELECTION% = 1
 	Count% = 9
 	Start% = 1
@@ -60,7 +60,7 @@ CLOSE #1
 
 CALL box0(5, 24, 15, 52, 2, 31)	
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(ITEM$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -156,7 +156,7 @@ _MouseHide
 	NEXT
 	LOCATE 10, 8
 	
-	CALL CSMsgBox("SAVING TEAM FILES", 20, Cnf)
+	CALL CSMsgBox("SAVING TEAM FILES", 20, Pass)
 
 OPEN D$(0) + "FCTEAMS." + YN$ FOR RANDOM AS #1 LEN = 4342
 FIELD #1, 15 AS Q$(0), 2 AS Q$(1), 2 AS Q$(2), 2 AS Q$(3), 2 AS Q$(4), 2 AS Q$(5), 2 AS Q$(6), 2 AS Q$(7), 2 AS Q$(8), 2 AS Q$(9), 2 AS Q$(10), 2 AS Q$(11), 2 AS Q$(12), 2 AS Q$(13), 4 AS Q$(14)
@@ -266,7 +266,7 @@ OPEN D$(0) + "LR." + YN$ FOR RANDOM AS #1 LEN = 4108
 	NEXT
 
 1388 CLOSE 1
-	CALL CSMsgBox("", 0, Cnf)
+	CALL CSMsgBox("", 0, Pass)
 	GOTO 55
 
 1100 NT = 0
@@ -280,7 +280,7 @@ OPEN D$(0) + "FCTEAMS." + YN$ FOR RANDOM AS #1 LEN = 4342
 	IF LEFT$(Q$(0),2) = "XX"OR LEFT$(Q$(0),1) = " " OR ASC(MID$(Q$(0), I2, 1)) < 32 OR ASC(MID$(Q$(0), I2, 1)) > 123 OR UCASE$(LEFT$(Q$(0), 3)) = "NOT" OR UCASE$(LEFT$(Q$(0), 3)) = "UN" THEN 1103
 	NEXT I2
 	NT = NT + 1
-	VV$(NT) = Q$(0): V%(NT) = I1
+	teamItems$(NT) = Q$(0): V%(NT) = I1
 
 1103 NEXT I1
 CLOSE 1
@@ -299,7 +299,7 @@ CLOSE 1
 	LOCATE 25, 1: COLOR 14: PRINT "ESC"; : COLOR 15: PRINT "-SELECT NEW ID  PGDN  PGUP  "; : COLOR 14: PRINT "ENTER"; : COLOR 15: PRINT "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-MAMenu VARPTR(VV$(1)), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu teamItems$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 	IF ExitCode% = 27 THEN BO% = 1: RETURN
@@ -460,7 +460,7 @@ RETURN
 	LOCATE 7, 27: INPUT NY$
 	IF NY$ = "" THEN GOSUB 1102: GOTO 182
 	YN$ = NY$
-	FOR I = 1 TO 200: VV$(I) = "": NEXT
+	FOR I = 1 TO 200: teamItems$(I) = "": NEXT
 
 1441 GOSUB 1100
 
@@ -788,7 +788,7 @@ RETURN
 4165 F$ = MID$(ST$, 4, QQ)
 	R$ = F$ + "." + LEFT$(ST$, 2)
 
-4170 IF NOT _FILEXIST(D$(1) + R$) THEN GOSUB 4550: TS = 0: GOTO 4210
+4170 IF NOT _FILEEXISTS(D$(1) + R$) THEN GOSUB 4550: TS = 0: GOTO 4210
 OPEN D$(1) + R$ FOR INPUT AS #1
 
 4171 INPUT #1, A$: INPUT #1, W2%: INPUT #1, L2%
@@ -805,7 +805,7 @@ OPEN D$(1) + R$ FOR INPUT AS #1
 	FOR I = 0 TO 21: INPUT #1, T(I): NEXT I
 	FOR I = 0 TO 22: INPUT #1, T1(I): NEXT I
 CLOSE #1
-	IF NOT _FILEXIST(D$(1) + R$ + "R") THEN SS = 0: GOTO 4210
+	IF NOT _FILEEXISTS(D$(1) + R$ + "R") THEN SS = 0: GOTO 4210
 	SS = 1
 OPEN D$(1) + R$ + "R" FOR INPUT AS #1
 	FOR I = 0 TO 22
@@ -1142,24 +1142,37 @@ CLOSE #1
 
 4500 LOCATE 10, 8
 
-	CALL CSMsgBox("NO TEAMS MATCHING ID WERE FOUND... PRESS ANY KEY TO SELECT ANOTHER ID", 26, Cnf)
+	CALL CSMsgBox("NO TEAMS MATCHING ID WERE FOUND... PRESS ANY KEY TO SELECT ANOTHER ID", 26, Pass)
 	I$ = GetKeyPress$
-	CALL CSMsgBox("", 0, Cnf)
+	CALL CSMsgBox("", 0, Pass)
 	RETURN
 
 4550 LOCATE 10, 8
 
-	CALL CSMsgBox("NO COMPILED STATS WERE FOUND... PRESS ANY KEY TO RETURN TO CONTINUE", 26, Cnf)
+	CALL CSMsgBox("NO COMPILED STATS WERE FOUND... PRESS ANY KEY TO RETURN TO CONTINUE", 26, Pass)
 	I$ = GetKeyPress$
-	CALL CSMsgBox("", 0, Cnf)
+	CALL CSMsgBox("", 0, Pass)
 	RETURN
 
 
-FUNCTION FnExt$ (X$, Length) 
+
+'------------------------------
+'      PadRight Function
+'------------------------------
+' Pads string to the right with spaces
+Function PadRight$ (X$, Length)
+    PadRight$ = X$ + Space$(Length - Len(X$)) 'for display only
+End Function
+FUNCTION PadRight$ (X$, Length) 
 'Essentially this pads space to the right of the string
-	X$ = X$ + SPACE$(Length - LEN(X$))  'for display only
+	PadRight$ = X$ + SPACE$(Length - LEN(X$))  'for display only
 END FUNCTION
 
+
+'------------------------------
+'      TITLE Subroutine
+'------------------------------
+' Displays window title / game copyright
 SUB TITLE ()
 	COLOR , 0: KEY OFF: CLS
 	COLOR , 1: LOCATE 1, 1: PRINT TAB(80); : LOCATE , 30: COLOR 12

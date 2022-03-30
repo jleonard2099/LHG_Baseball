@@ -1,11 +1,16 @@
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'
 
+_Title "Full Count Baseball - Menu"
+$ExeIcon:'./lhg_fcbase.ico'
+_Icon	
+_AllowFullScreen
+
 DEFINT A-Z
-DECLARE FUNCTION FnExt$ (X$, Length)
+DECLARE FUNCTION PadRight$ (X$, Length)
 DECLARE SUB TITLE ()
 
-DIM D$(3), ITEM$(15)
+DIM D$(3), menuItems$(15)
 
 'CALL INITMOUSE(X)
 _MouseShow "DEFAULT"
@@ -17,21 +22,21 @@ NEXT
 CLOSE 1
 
 1  CALL TITLE
-	ITEM$(1) = "PLAY A GAME                     "
-	ITEM$(2) = "ENTER NEW/CHANGE EXISTING TEAMS "
-	ITEM$(3) = "PROGRAMMABLE MANAGER            "
-	ITEM$(4) = "AUTO SCHEDULER/BOXSCORE OPTIONS "
-	ITEM$(5) = "DRAFT A TEAM                    "
-	ITEM$(6) = "TRADE PLAYERS                   "
-	ITEM$(7) = "VIEW/PRINT COMPILED STATS       "
-	ITEM$(8) = "MODIFY REPLAY STATS             "
-	ITEM$(9) = "LEAGUE LEADERS AND STANDINGS    "
-	ITEM$(10) = "LEAGUE UTILITIES                "
-	ITEM$(11) = "ACTIVATE/DEACTIVATE PLAYERS     "
-	ITEM$(12) = "GROUNDBALL/FLYOUT CALCS         "
-	ITEM$(13) = "HARD DRIVE INSTALLATION         "
-	ITEM$(14) = "CONFIGURE DRIVES FOR TEAMS,STATS"
-	ITEM$(15) = "EXIT TO DOS                     "
+	menuItems$(1) = "PLAY A GAME                     "
+	menuItems$(2) = "ENTER NEW/CHANGE EXISTING TEAMS "
+	menuItems$(3) = "PROGRAMMABLE MANAGER            "
+	menuItems$(4) = "AUTO SCHEDULER/BOXSCORE OPTIONS "
+	menuItems$(5) = "DRAFT A TEAM                    "
+	menuItems$(6) = "TRADE PLAYERS                   "
+	menuItems$(7) = "VIEW/PRINT COMPILED STATS       "
+	menuItems$(8) = "MODIFY REPLAY STATS             "
+	menuItems$(9) = "LEAGUE LEADERS AND STANDINGS    "
+	menuItems$(10) = "LEAGUE UTILITIES                "
+	menuItems$(11) = "ACTIVATE/DEACTIVATE PLAYERS     "
+	menuItems$(12) = "GROUNDBALL/FLYOUT CALCS         "
+	menuItems$(13) = "HARD DRIVE INSTALLATION         "
+	menuItems$(14) = "CONFIGURE DRIVES FOR TEAMS,STATS"
+	menuItems$(15) = "EXIT TO DOS                     "
 	SELECTION% = 1
 	Count% = 15
 	Start% = 1
@@ -44,7 +49,7 @@ CLOSE 1
 
 CALL box0(6, 24, 22, 57, 2, 31)
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(ITEM$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -61,7 +66,7 @@ _MouseHide
 	IF SELECTION% = 10 THEN 800
 	IF SELECTION% = 11 THEN RUN "ACTIVATE.EXE"
 	IF SELECTION% = 12 THEN RUN "GROUND.EXE"
-	IF SELECTION% = 13 THEN RUN "HDCOPY.EXE"
+	'IF SELECTION% = 13 THEN RUN "HDCOPY.EXE"
 	IF SELECTION% = 14 THEN 505
 	IF SELECTION% = 15 THEN CLS : END
 
@@ -82,13 +87,13 @@ _MouseHide
 
 520 LOCATE , 31: PRINT "C:\FULL\TEAMS"
 	LOCATE 7, 1: QPrint "Path for Teams ", 30, -1
-	LOCATE , 16: QPrint FnExt$(D$(0), 30), FG, BG, -1
+	LOCATE , 16: QPrint PadRight$(D$(0), 30), FG, BG, -1
 	LOCATE 9, 1: QPrint "Path for Stats ", 30, -1
-	LOCATE , 16: QPrint FnExt$(D$(1), 30), FG, BG, -1
+	LOCATE , 16: QPrint PadRight$(D$(1), 30), FG, BG, -1
 	LOCATE 11, 1: QPrint "Path for Leaders ", 30, -1
-	LOCATE , 18: QPrint FnExt$(D$(2), 30), FG, BG, -1
+	LOCATE , 18: QPrint PadRight$(D$(2), 30), FG, BG, -1
 	LOCATE 13, 1: QPrint "Path for Manager Profiles ", 30, -1
-	LOCATE , 27: QPrint FnExt$(D$(3), 30), FG, BG, -1
+	LOCATE , 27: QPrint PadRight$(D$(3), 30), FG, BG, -1
 
 GetDiv1:
 	LOCATE 7, 16                         'location of beginning of field
@@ -96,34 +101,34 @@ GetDiv1:
 	CALL TextIn(D$(0), Max, NumOnly, CapsOn, XCode, Colr)        'get input
 	IF XCode = 1 GOTO GetDiv1:           'can't back up any more, stay here
 	IF XCode = 2 GOTO Done               'all done entering data
-	D$(0) = QPTRIM$(D$(0))
+	D$(0) = _TRIM$(D$(0))
 GetDiv2:
 	LOCATE 9, 16                         'location of beginning of field
 	CapsOn = 0: NumOnly = 0: Max = 30    'specify field parameters
 	CALL TextIn(D$(1), Max, NumOnly, CapsOn, XCode, Colr)        'get input
 	IF XCode = 1 GOTO GetDiv1:           'can't back up any more, stay here
 	IF XCode = 2 GOTO Done               'all done entering data
-	D$(1) = QPTRIM$(D$(1))
+	D$(1) = _TRIM$(D$(1))
 GetDiv3:
 	LOCATE 11, 18                         'location of beginning of field
 	CapsOn = 0: NumOnly = 0: Max = 30    'specify field parameters
 	CALL TextIn(D$(2), Max, NumOnly, CapsOn, XCode, Colr)        'get input
 	IF XCode = 1 GOTO GetDiv2:           'can't back up any more, stay here
 	IF XCode = 2 GOTO Done               'all done entering data
-	D$(2) = QPTRIM$(D$(2))
+	D$(2) = _TRIM$(D$(2))
 GetDiv4:
 	LOCATE 13, 27                         'location of beginning of field
 	CapsOn = 0: NumOnly = 0: Max = 30     'specify field parameters
 	CALL TextIn(D$(3), Max, NumOnly, CapsOn, XCode, Colr)        'get input
 	IF XCode = 1 GOTO GetDiv3:           'can't back up any more, stay here
-	D$(3) = QPTRIM$(D$(3))
+	D$(3) = _TRIM$(D$(3))
 Done:
 	LOCATE 23, 1
 	PRINT "Is this okay? (Yes/No) ";
 	X$ = ""
-	CALL YesNoB(X$, XCode, Colr)
+	CALL YesNoB(X$, XCode, FG, BG)
 	LOCATE , 1
-	ClearEOL 30
+	ClearEOL 14, 1
 	IF XCode = 1 GOTO GetDiv4
 	IF X$ = "N" GOTO GetDiv1
 	IF X$ <> "Y" GOTO Done               'insist on either Y or N or up-arrow
@@ -143,14 +148,14 @@ Done:
 620 GOTO 1
 
 700 CALL TITLE
-	ITEM$(1) = "CREATE/EDIT A LEAGUE                 "
-	ITEM$(2) = "UPDATE STANDINGS/LEADERS FOR A LEAGUE"
-	ITEM$(3) = "EXPANDED LEADERS AND STANDINGS       "
-	ITEM$(4) = "VIEW RESULTS FOR A LEAGUE            "
-	ITEM$(5) = "PRINT RESULTS FOR A LEAGUE           "
-	ITEM$(6) = "DELETE ALL STATS FOR A LEAGUE        "
-	ITEM$(7) = "RETURN TO FULL COUNT MAIN MENU       "
-	ITEM$(8) = "EXIT TO DOS                          "
+	menuItems$(1) = "CREATE/EDIT A LEAGUE                 "
+	menuItems$(2) = "UPDATE STANDINGS/LEADERS FOR A LEAGUE"
+	menuItems$(3) = "EXPANDED LEADERS AND STANDINGS       "
+	menuItems$(4) = "VIEW RESULTS FOR A LEAGUE            "
+	menuItems$(5) = "PRINT RESULTS FOR A LEAGUE           "
+	menuItems$(6) = "DELETE ALL STATS FOR A LEAGUE        "
+	menuItems$(7) = "RETURN TO FULL COUNT MAIN MENU       "
+	menuItems$(8) = "EXIT TO DOS                          "
 	SELECTION% = 1
 	Count% = 8
 	Start% = 1
@@ -162,7 +167,7 @@ Done:
 	Column% = 23
 CALL box0(7, 22, 16, 60, 2, 31)
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(ITEM$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -177,12 +182,12 @@ _MouseHide
 	IF SELECTION% = 8 THEN CLS : END
 
 800 CALL TITLE
-	ITEM$(1) = "COMPARE COMPILED STATS VS. ACTUAL"
-	ITEM$(2) = "MERGE TWO STAT FILES             "
-	ITEM$(3) = "VIEW TEAM HEAD TO HEAD RESULTS   "
-	ITEM$(4) = "CAREER FILE OPTIONS              "
-	ITEM$(5) = "SORT PLAYERS BY POSITION         "
-	ITEM$(6) = "RETURN TO FULL COUNT MAIN MENU   "
+	menuItems$(1) = "COMPARE COMPILED STATS VS. ACTUAL"
+	menuItems$(2) = "MERGE TWO STAT FILES             "
+	menuItems$(3) = "VIEW TEAM HEAD TO HEAD RESULTS   "
+	menuItems$(4) = "CAREER FILE OPTIONS              "
+	menuItems$(5) = "SORT PLAYERS BY POSITION         "
+	menuItems$(6) = "RETURN TO FULL COUNT MAIN MENU   "
 	SELECTION% = 1
 	Count% = 6
 	Start% = 1
@@ -194,7 +199,7 @@ _MouseHide
 	Column% = 23
 CALL box0(7, 22, 14, 56, 2, 31)
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(ITEM$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -206,12 +211,20 @@ _MouseHide
 	IF SELECTION% = 5 THEN RUN "POS.EXE"
 	IF SELECTION% = 6 THEN 1
 
-FUNCTION FnExt$ (X$, Length) 
-'Essentially this pads space to the right of the string
-	X$ = X$ + SPACE$(Length - LEN(X$))  'for display only
-END FUNCTION
+
+'------------------------------
+'      PadRight Function
+'------------------------------
+' Pads string to the right with spaces
+Function PadRight$ (X$, Length)
+    PadRight$ = X$ + Space$(Length - Len(X$)) 'for display only
+End Function
 
 
+'------------------------------
+'      TITLE Subroutine
+'------------------------------
+' Displays window title / game copyright
 SUB TITLE ()
 	COLOR , 0: KEY OFF: CLS
 	COLOR , 1: LOCATE 1, 1: PRINT TAB(80); : LOCATE , 30: COLOR 12

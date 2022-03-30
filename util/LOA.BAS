@@ -410,7 +410,7 @@ A$(I) = RTrim$(A$(I))
 	Wdth = 54
 	CALL CSMsgBox(Message$, Wdth, Cnf)
 	I$=GetKeyPress$
-	CALL CSMsgBox("", 0, Cnf)
+	CALL CSMsgBox("", 0, Pass)
 
 	goto 2862
 		END IF
@@ -425,7 +425,7 @@ A$(I) = RTrim$(A$(I))
 	Wdth = 54
 	CALL CSMsgBox(Message$, Wdth, Cnf)
 	I$=GetKeyPress$
-	CALL CSMsgBox("", 0, Cnf)
+	CALL CSMsgBox("", 0, Pass)
 
 	goto 2862
 		END IF
@@ -473,7 +473,7 @@ A$(I) = RTrim$(A$(I))
 		Wdth = 54
 		CALL CSMsgBox(Message$, Wdth, Cnf)
 		I$=GetKeyPress$
-		CALL CSMsgBox("", 0, Cnf)
+		CALL CSMsgBox("", 0, Pass)
 
 		GOTO 2862
 	END IF
@@ -485,7 +485,7 @@ A$(I) = RTrim$(A$(I))
 		Wdth = 54
 		CALL CSMsgBox(Message$, Wdth, Cnf)
 		I$=GetKeyPress$
-		CALL CSMsgBox("", 0, Cnf)
+		CALL CSMsgBox("", 0, Pass)
 
 		GOTO 2862
 	END IF
@@ -1117,7 +1117,7 @@ PARK$(72) = "GENERIC                     "
 
 CALL box0(4, 9, 20, 38, 2, 31)
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(PARK$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert PARK$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -1179,7 +1179,7 @@ _MouseHide
 	Wdth = 54
 	CALL CSMsgBox(Message$, Wdth, Cnf)
 	I$=GetKeyPress$
-	CALL CSMsgBox("", 0, Cnf)
+	CALL CSMsgBox("", 0, Pass)
 
 	GOTO 4501
 		END IF
@@ -1220,7 +1220,7 @@ _MouseHide
 		Wdth = 54
 		CALL CSMsgBox(Message$, Wdth, Cnf)
 		I$=GetKeyPress$
-		CALL CSMsgBox("", 0, Cnf)
+		CALL CSMsgBox("", 0, Pass)
 
 		GOTO 4501
 	end if
@@ -1233,7 +1233,7 @@ _MouseHide
 		Wdth = 54
 		CALL CSMsgBox(Message$, Wdth, Cnf)
 		I$=GetKeyPress$
-		CALL CSMsgBox("", 0, Cnf)
+		CALL CSMsgBox("", 0, Pass)
 
 		GOTO 4501
 	end if
@@ -1244,7 +1244,7 @@ _MouseHide
 		Wdth = 54
 		CALL CSMsgBox(Message$, Wdth, Cnf)
 		I$=GetKeyPress$
-		CALL CSMsgBox("", 0, Cnf)
+		CALL CSMsgBox("", 0, Pass)
 
 		GOTO 4501
 	ELSE
@@ -1435,7 +1435,7 @@ OPEN D$(3) + "MGR." + YN$(P9) FOR RANDOM AS #2 LEN = 2000
 	IF AP% = 1 THEN 5163
 	
 	I$=GetKeyPress$
-5163 CALL CSMsgBox("", 0, Cnf)
+5163 CALL CSMsgBox("", 0, Pass)
 	RETURN
 
 5119 NEXT I
@@ -2082,7 +2082,7 @@ SUB SELECTLINEUP (P9, BAT$(), BAT%(), SELECTION%)
 	Column% = 61
 	
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(BAT$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert BAT$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -2129,7 +2129,7 @@ SUB SELECTPOS (P9, BAT$(), BAT%(), SELECTION%)
 	Column% = 59
 	
 _MouseShow "DEFAULT"
-MAMenu VARPTR(BAT$(1)), SELECTION%, Start%, Count%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu BAT$(), SELECTION%, Start%, Count%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -2140,7 +2140,7 @@ _MouseHide
 		Wdth = 54
 		CALL CSMsgBox(Message$, Wdth, Cnf)
 		I$ = GetKeyPress$
-		CALL CSMsgBox("", 0, Cnf)
+		CALL CSMsgBox("", 0, Pass)
 
 		GOTO 4514
 	END IF
@@ -2150,7 +2150,7 @@ _MouseHide
 		Wdth = 54
 		CALL CSMsgBox(Message$, Wdth, Cnf)
 		I$ = GetKeyPress$
-		CALL CSMsgBox("", 0, Cnf)
+		CALL CSMsgBox("", 0, Pass)
 
 		GOTO 4514
 	END IF
@@ -2165,7 +2165,7 @@ _MouseHide
 		Wdth = 54
 		CALL CSMsgBox(Message$, Wdth, Cnf)
 		I$ = GetKeyPress$
-		CALL CSMsgBox("", 0, Cnf)
+		CALL CSMsgBox("", 0, Pass)
 
 		GOTO 4514
 	END IF
@@ -2175,7 +2175,7 @@ _MouseHide
 		Wdth = 54
 		CALL CSMsgBox(Message$, Wdth, Cnf)
 		I$ = GetKeyPress$
-		CALL CSMsgBox("", 0, Cnf)
+		CALL CSMsgBox("", 0, Pass)
 
 		GOTO 4514
 	END IF
@@ -2213,7 +2213,7 @@ SUB SELECTBATTER (P9, BAT$(), BAT%(), SELECTION%)
 	Column% = 3
 	
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(BAT$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert BAT$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -2245,7 +2245,7 @@ SUB SELECTPITCHER (P$(),P9,P%(),PIT$(),PIT%(),NP,SELECTION%)
 	Column% = 3
 	
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(PIT$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert PIT$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0

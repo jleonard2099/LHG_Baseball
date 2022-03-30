@@ -2,6 +2,11 @@
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'
 
+_Title "Full Count Baseball - Career Files"
+''$ExeIcon:'./lhg_fcbase.ico'
+'_Icon	
+_AllowFullScreen
+
 DEFINT A-Z
 DECLARE SUB TITLE ()
 
@@ -9,7 +14,7 @@ DIM B$(100), P$(80), P1%(80), B1%(100), B0%(100, 23), P0%(80, 42)
 DIM T(22), T1(23), BR$(100), PR$(80), PR1%(80), BR1%(100)
 DIM BR0%(100, 17), PR0%(80, 16), TR(14), TR1(15)
 DIM BLYR(15), BL$(15), BLL(15) AS SINGLE, PLYR(15), PL$(15), PLL(15) AS SINGLE
-DIM D$(3), ITEM$(10), AVG AS SINGLE, SLG AS SINGLE, OBP AS SINGLE, EV AS SINGLE
+DIM D$(3), menuItems$(10), AVG AS SINGLE, SLG AS SINGLE, OBP AS SINGLE, EV AS SINGLE
 REDIM PRS%(15, 80, 17), BRS%(15, 100, 18)
 
 OPEN "DEV.BAS" FOR INPUT AS #1
@@ -21,13 +26,13 @@ CLOSE #1
 2 CLS : CH = 0: TMR = 4175: TMR1 = 6875: NB = -1: NP = -1: JX = 0: VV = 0
 
 3 CALL TITLE
-ITEM$(1) = "CREATE AND MERGE INITIAL CAREER STAT STATS"
-ITEM$(2) = "MERGE/UPDATE CAREER STATS                 "
-ITEM$(3) = "VIEW/PRINT CAREER STATS                   "
-ITEM$(4) = "EDIT CAREER STATS                         "
-ITEM$(5) = "VIEW/PRINT TEAM CAREER LEADERS (SEASON)   "
-ITEM$(6) = "UPDATE TEAM CAREER LEADERS (CAREER)       "
-ITEM$(7) = "RETURN TO MAIN MENU                       "
+menuItems$(1) = "CREATE AND MERGE INITIAL CAREER STAT STATS"
+menuItems$(2) = "MERGE/UPDATE CAREER STATS                 "
+menuItems$(3) = "VIEW/PRINT CAREER STATS                   "
+menuItems$(4) = "EDIT CAREER STATS                         "
+menuItems$(5) = "VIEW/PRINT TEAM CAREER LEADERS (SEASON)   "
+menuItems$(6) = "UPDATE TEAM CAREER LEADERS (CAREER)       "
+menuItems$(7) = "RETURN TO MAIN MENU                       "
 	SELECTION% = 1
 	Count% = 7
 	Start% = 1
@@ -40,7 +45,7 @@ ITEM$(7) = "RETURN TO MAIN MENU                       "
 CALL box0(5, 16, 13, 59, 2, 31)
 	
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(ITEM$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -93,7 +98,7 @@ IF I = 7 THEN GOSUB 993
 100 GOSUB 1000
 
 200 LOCATE 20, 5: COLOR 15: PRINT "MERGING CAREER STATS AND UPDATING CAREER LEADER FILE . . . . PLEASE WAIT"
-	IF NOT _FILEXIST(D$(1) + Z1$) THEN 900
+	IF NOT _FILEEXISTS(D$(1) + Z1$) THEN 900
 
 220 OPEN D$(1) + Z1$ FOR INPUT AS #1
 
@@ -848,12 +853,16 @@ CLOSE #1
 5006 RETURN
 
 4500 LOCATE 10, 8
-	CALL CSMsgBox("NO CAREER LEADER FILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Cnf)
+	CALL CSMsgBox("NO CAREER LEADER FILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
 	I$ = GetKeyPress$
-	CALL CSMsgBox("", 0, Cnf)
+	CALL CSMsgBox("", 0, Pass)
 	GOTO 2
 
 
+'------------------------------
+'      TITLE Subroutine
+'------------------------------
+' Displays window title / game copyright
 SUB TITLE ()
 COLOR , 0: KEY OFF: CLS
 	COLOR , 1: LOCATE 1, 1: PRINT TAB(80); : LOCATE , 30: COLOR 12

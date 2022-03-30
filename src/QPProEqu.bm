@@ -56,8 +56,8 @@ End Function
 '-----------------------------------
 ' FileSize Copycat Function
 '-----------------------------------
-Function FileSize& (FileName$)
-    Open file$ For Binary As #1
+Function FileSize& (sourceFile$)
+    Open sourceFile$ For Binary As #1
     FileSize& = LOF(1)
     Close #1
 End Function
@@ -216,21 +216,59 @@ Sub box0 (ULRow%, ULCol%, LRRow%, LRCol%, Char%, Colr%)
     '4 = single line horizontally, double line vertically
     'If Char% is assigned to any other value, that ASCII character will be used for the entire box.
 
+    Select Case Char%
+        Case 1:
+            ulCorner$ = Chr$(218)
+            horizontal$ = Chr$(196)
+            urCorner$ = Chr$(191)
+            vertical$ = Chr$(179)
+            llCorner$ = Chr$(192)
+            lrCorner$ = Chr$(217)
+        Case 2:
+            ulCorner$ = Chr$(201)
+            horizontal$ = Chr$(205)
+            urCorner$ = Chr$(187)
+            vertical$ = Chr$(186)
+            llCorner$ = Chr$(200)
+            lrCorner$ = Chr$(188)
+        Case 3:
+            ulCorner$ = Chr$(201)
+            horizontal$ = Chr$(205)
+            urCorner$ = Chr$(187)
+            vertical$ = Chr$(179)
+            llCorner$ = Chr$(200)
+            lrCorner$ = Chr$(188)
+        Case 4:
+            ulCorner$ = Chr$(218)
+            horizontal$ = Chr$(196)
+            urCorner$ = Chr$(191)
+            vertical$ = Chr$(186)
+            llCorner$ = Chr$(192)
+            lrCorner$ = Chr$(217)
+        Case Else:
+            ulCorner$ = Chr$(Char%)
+            horizontal$ = Chr$(Char%)
+            urCorner$ = Chr$(Char%)
+            vertical$ = Chr$(Char%)
+            llCorner$ = Chr$(Char%)
+            lrCorner$ = Chr$(Char%)
+    End Select
+
     Color 15, 1
 
     ' Prints the top of the box
     Locate ULRow%, ULCol%
-    Print Chr$(201) + String$(LRCol% - ULCol%, 205) + Chr$(187)
+    Print ulCorner$ + String$(LRCol% - ULCol%, Asc(horizontal$)) + urCorner$
 
     ' Print the sides of the box
     For currentRow = (ULRow% + 1) To (LRRow% - 1) Step 1
         Locate currentRow, ULCol%
-        Print Chr$(186) + Space$(LRCol% - ULCol%) + Chr$(186)
+        Print vertical$ + Space$(LRCol% - ULCol%) + vertical$
     Next
 
     'Print the bottom line of the box
     Locate LRRow%, ULCol%
-    Print Chr$(200) + String$(LRCol% - ULCol%, 205) + Chr$(188)
+    Print llCorner$ + String$(LRCol% - ULCol%, Asc(horizontal$)) + lrCorner$
 
     Color Colr%,
 
@@ -310,7 +348,7 @@ End Sub
 Sub Comline (NumArgs%, Args$(), MaxArgs%)
     Const TRUE = -1, FALSE = 0
 
-    NumArgs = 0: In = FALSE
+    NumArgs% = 0: In = FALSE
 
     ' Get the command line using the COMMAND$ function
     Cl$ = Command$
@@ -326,12 +364,12 @@ Sub Comline (NumArgs%, Args$(), MaxArgs%)
             If Not In Then
                 ' You've found the start of a new argument
                 ' Test for too many arguments
-                If NumArgs = MaxArgs Then Exit For
-                NumArgs = NumArgs + 1
+                If NumArgs% = MaxArgs% Then Exit For
+                NumArgs% = NumArgs% + 1
                 In = TRUE
             End If
             ' Add the character to the current argument
-            Args$(NumArgs) = Args$(NumArgs) + C$
+            Args$(NumArgs%) = Args$(NumArgs%) + C$
         Else
             ' Found a blank or a tab.
             ' Set "Not in an argument" flag to FALSE
@@ -479,7 +517,7 @@ End Sub
 '-----------------------------------
 ' Lts2Menu Subroutine
 '-----------------------------------
-Sub Lts2Menu (Item$(), Prompt$(), Choice, Colr%)
+Sub Lts2Menu (Item$(), Prompt$(), Choice%, Colr%)
     'Item$() and Prompt$() have oneDIMension
     'Choice% is the value returned, or zero if Escape is pressed
     'Colr% is the packed color to use for the display
@@ -1075,7 +1113,7 @@ End Sub
 '-----------------------------------
 ' MMenuVert Copycat Subroutine
 '-----------------------------------
-Sub MMenuVert (menuItems$(), Selected%, Start%, ScanCode%, ItemBGColor%, ItemFGColor%, HighlightFGColor%, HighlightBGColor%, NumRows%, Row%, Column%)
+Sub MMenuVert (menuItems$(), Selected%, Start%, ScanCode%, ItemFGColor%, ItemBGColor%, HighlightFGColor%, HighlightBGColor%, NumRows%, Row%, Column%)
     'Selected%
     ' which element to put at the top of the menu
 
@@ -1341,7 +1379,7 @@ End Sub
 '-----------------------------------
 ' Text Input Subroutine
 '-----------------------------------
-Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode, FGColor%, BGColor%)
+Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode%, FGColor%, BGColor%)
 
     TInitialize:
     Clr = 0 'Determine monitor type
@@ -1353,12 +1391,12 @@ Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode, FGColor%, BGColor%)
     '  X$ = QPTrim$(T$)     'Use this if incoming tring is fixed-length
 
     TC:
-    ExitCode = 0: Insrt = 0: CursorPos = 1 'Initialize flags
+    ExitCode% = 0: Insrt = 0: CursorPos = 1 'Initialize flags
 
     Length = Len(X$)
-    If Length > Max Then Exit Sub 'Too big to edit anymore!
+    If Length > Max% Then Exit Sub 'Too big to edit anymore!
 
-    X$ = X$ + Space$(Max - Length) 'Pad with trailing spaces
+    X$ = X$ + Space$(Max% - Length) 'Pad with trailing spaces
 
     Locate , , 1 'Toggle the cursor
     Call QPrint(X$, FGColor%, BGColor%, -1)
@@ -1372,7 +1410,7 @@ Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode, FGColor%, BGColor%)
 
     'Prevent INSERT if cursor is past the end
     If CursorPos > Length And Insrt <> 0 Then GoSub TInsertOff
-    If CursorPos > Max GoTo TEnter 'field is filled, handle as Enter key
+    If CursorPos > Max% GoTo TEnter 'field is filled, handle as Enter key
 
     A$ = InKey$
     If A$ = "" GoTo TGetKey
@@ -1384,7 +1422,7 @@ Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode, FGColor%, BGColor%)
 
 
     TShiftTab:
-    ExitCode = 1 'User wants to go to previous field
+    ExitCode% = 1 'User wants to go to previous field
     GoTo TEnter 'Behavior is similar to the Enter key
 
 
@@ -1402,7 +1440,7 @@ Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode, FGColor%, BGColor%)
 
 
     TUp:
-    ExitCode = 1 'user wants to go back a field
+    ExitCode% = 1 'user wants to go back a field
     GoTo TEnter 'handle as if it were the Enter key
 
 
@@ -1432,7 +1470,7 @@ Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode, FGColor%, BGColor%)
     End If
 
     If CursorPos > Length GoTo TGetKey 'ignore Ins if cursor is past the end
-    If Length = Max GoTo TGetKey 'also ignore if field is full
+    If Length = Max% GoTo TGetKey 'also ignore if field is full
 
     Insrt = 1 'set the insert flag
     If Clr Then 'set cursor size according to display
@@ -1522,11 +1560,11 @@ Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode, FGColor%, BGColor%)
         GoTo TGetKey 'none of the above
     End If
 
-    If CapsOn Then 'convert to upper case if requested
+    If CapsOn% Then 'convert to upper case if requested
         If A$ >= "a" And A$ <= "z" Then A$ = Chr$(Asc(A$) And 95)
     End If
 
-    If NumOnly Then 'disallow non-numeric if requested
+    If NumOnly% Then 'disallow non-numeric if requested
         If A$ < "0" Or A$ > "9" Then
             Play "L16O3EC"
             GoTo TGetKey
@@ -1545,7 +1583,7 @@ Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode, FGColor%, BGColor%)
     If CursorPos > Length + 1 Then Length = CursorPos - 1
 
     'field complete, handle as Enter key
-    If Length = Max And CursorPos > Length GoTo TEnter
+    If Length = Max% And CursorPos > Length GoTo TEnter
 
     GoTo TGetKey
 
@@ -1557,7 +1595,7 @@ Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode, FGColor%, BGColor%)
     Mid$(X$, CursorPos - 1, 1) = A$ 'assign the current character
     Call QPrint(Mid$(X$, CursorPos, Length - CursorPos + 1), FGColor%, BGColor%, -1) 're-print X$
 
-    If Length = Max GoTo TEnter 'field complete, handle as Enter key
+    If Length = Max% GoTo TEnter 'field complete, handle as Enter key
     GoTo TGetKey
 
     TBackspace:
@@ -1577,7 +1615,7 @@ Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode, FGColor%, BGColor%)
     Exit Sub
 
     TEscape:
-    ExitCode = 2 'show that the user pressed Escape
+    ExitCode% = 2 'show that the user pressed Escape
     GoTo TEnter 'handle as if it were the Enter Key
 
     TInsertOff:

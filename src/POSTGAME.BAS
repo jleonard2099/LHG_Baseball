@@ -1,6 +1,11 @@
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'
 
+_Title "Full Count Baseball - PostGame"
+''$ExeIcon:'./lhg_fcbase.ico'
+'_Icon	
+_AllowFullScreen
+
 DEFINT A-Z
 
 DECLARE SUB DRAWBOX (J)
@@ -26,15 +31,17 @@ DIM PR%(24), GK%(1)
 DIM DB$(20), TR$(20), HR$(20), E$(20), SB$(20), ING%(162), L$(162), PL$(162), V%(162)
 DIM SX%(1), Q$(23), YN$(1), SA$(1), B2%(1, 22), P3%(1, 21), B6%(22, 21)
 DIM P0%(21, 41), P4%(22), D1%(1), T%(22), H%(162),AP%(2)
-COMMON SHARED TS%(),SA%(),P8%(), B8%(), P%(), P$(), B$(), P5%(), B5%(), X0%(), B%(), AP%(), A$()
-COMMON SHARED C$(), T3%(), P6%(), P2%(), L0%(), DP%(), U$(), IJ$(), EJ$(), SC$(), PC$()
-COMMON SHARED S%(), P1%(), S1%(), D$(), S6%(), L%(), D3%(), NG%(), A5%(), B1!(), B1%(), B7%()
-COMMON SHARED B0%(), B3%(), B9%(), Q$(), PR%(), W%, GK%(), B1$(), X$(), S8%(), NN$(), N$(), O%()
-COMMON SHARED VV(), VV1(), B4%(), K9() AS SINGLE, H0$(), h$(), D0%(), M$(), LB%()
-COMMON SHARED F$(), TM$(), T1%(), YN$(), TP%(), SO%(), CF%(), BT%()
-COMMON SHARED S$, P, U6, DH%, U9, G4 AS SINGLE, RE, RD
-COMMON SHARED TA%, SC%, WF AS SINGLE, PC%, TP%, WS%, WI$, AP%,INNING%,buck as pbp
-COMMON SHARED MG%(),CSS%(),D,IJ%,DR%,CGERA%,IJL%,EJ%
+
+Dim Shared TS%(),SA%(),P8%(), B8%(), P%(), P$(), B$(), P5%(), B5%(), X0%(), B%(), AP%(), A$()
+Dim Shared C$(), T3%(), P6%(), P2%(), L0%(), DP%(), U$(), IJ$(), EJ$(), SC$(), PC$()
+Dim Shared S%(), P1%(), S1%(), D$(), S6%(), L%(), D3%(), NG%(), A5%(), B1!(), B1%(), B7%()
+Dim Shared B0%(), B3%(), B9%(), Q$(), PR%(), W%, GK%(), B1$(), X$(), S8%(), NN$(), N$(), O%()
+Dim Shared VV(), VV1(), B4%(), K9() AS SINGLE, H0$(), h$(), D0%(), M$(), LB%()
+Dim Shared F$(), TM$(), T1%(), YN$(), TP%(), SO%(), CF%(), BT%()
+Dim Shared S$, P, U6, DH%, U9, G4 AS SINGLE, RE, RD
+Dim Shared TA%, SC%, WF AS SINGLE, PC%, TP%, WS%, WI$, AP%,INNING%,buck as pbp
+Dim Shared MG%(),CSS%(),D,IJ%,DR%,CGERA%,IJL%,EJ%
+
 DEFLNG A
 
 SPECIAL = 0
@@ -1032,6 +1039,11 @@ CLOSE #1
 
 7872 RETURN
 
+
+'------------------------------
+'      DRAWBOX Subroutine
+'------------------------------
+' ...explanation...
 SUB DRAWBOX (J)
 	LOCATE 8, 8: COLOR l%(1, 11), l%(1, 12)
 	PRINT " Ö"; STRING$(61, 196); "· ";

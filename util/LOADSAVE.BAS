@@ -386,7 +386,7 @@ CALL box0(6, 58, 16, 80, 2, 31)
 CALL box0(18, 58, 25, 80, 2, 31)
 	
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(BM$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert BM$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -879,7 +879,7 @@ PARK$(72) = "GENERIC                     "
 CALL box0(4, 9, 20, 38, 2, 31)
 	
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(PARK$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert PARK$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -931,7 +931,7 @@ _MouseHide
 CALL box0(11, 56, 18, 80, 2, 31)
 	
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(PM$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert PM$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -950,7 +950,7 @@ _MouseHide
 	Message$ = "This pitcher has either been disabled or is the current starter. Press any key to continue"
 	CALL CSMsgBox(Message$, Wdth, Cnf)
 	I$=GetKeyPress$
-	CALL CSMsgBox("", 0, Cnf)
+	CALL CSMsgBox("", 0, Pass)
 
 	GOTO 4501
 		END IF
@@ -991,7 +991,7 @@ _MouseHide
 		Wdth = 54
 		CALL CSMsgBox(Message$, Wdth, Cnf)
 		I$=GetKeyPress$
-		CALL CSMsgBox("", 0, Cnf)
+		CALL CSMsgBox("", 0, Pass)
 		
 		GOTO 4501
 	end if
@@ -1004,7 +1004,7 @@ _MouseHide
 		Wdth = 54		
 		CALL CSMsgBox(Message$, Wdth, Cnf)
 		I$=GetKeyPress$
-		CALL CSMsgBox("", 0, Cnf)
+		CALL CSMsgBox("", 0, Pass)
 		
 		GOTO 4501
 	end if
@@ -1014,7 +1014,7 @@ _MouseHide
 		Wdth = 54		
 		CALL CSMsgBox(Message$, Wdth, Cnf)
 		I$=GetKeyPress$
-		CALL CSMsgBox("", 0, Cnf)
+		CALL CSMsgBox("", 0, Pass)
 		
 		GOTO 4501
 	ELSE
@@ -1775,7 +1775,7 @@ SUB SELECTPITCHER (P$(),P9,P%(),PIT$(),PIT%(),NP,SELECTION%)
 	Column% = 3
 	
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(PIT$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert PIT$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0

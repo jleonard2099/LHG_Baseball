@@ -2,6 +2,11 @@
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'
 
+_Title "Full Count Baseball - Routines"
+''$ExeIcon:'./lhg_ccb.ico'
+'_Icon
+_AllowFullScreen
+
 DEFINT A-Z
 DECLARE SUB INCBATDF (D, I5, I6)
 DECLARE SUB SOMESTATS (V, p, F%, D)
@@ -86,21 +91,36 @@ COMMON SHARED s%(), P1%(), S1%(), D$(), S6%(), l%(), D3%(), NG%(), A5%(), B1!(),
 COMMON SHARED B0%(), B3%(), B9%(), Q$(), PR%(), W%, GK%(), B1$(), X$(), S8%(), NN$(), N$(), O%()
 COMMON SHARED VV(), VV1(), B4%(), K9() AS SINGLE, H0$(), H$(), D0%(), M$(), LB%()
 COMMON SHARED F$(), TM$(), T1%(), YN$(), TP%(), SO%(), CF%(), BT%()
-COMMON SHARED s$, p, u6, DH%, u9, G4 AS SINGLE, RE, RD
+COMMON SHARED s$, p, u6, DH%, u9, displayPause AS SINGLE, RE, RD
 COMMON SHARED TA%, SC%, WF AS SINGLE, PC%, TP%, WS%, WI$, AP%, INNING%,BUCK AS PBP
 COMMON SHARED MG%(),CSS%(),D,IJ%,DR%,CGERA%,IJL%,EJ%
 
+
+'------------------------------
+'      ADDPIT Subroutine
+'------------------------------
+' ...explanation...
 SUB ADDPIT (D, I5, I6)
 	P8%(D, I5, I6) = P8%(D, I5, I6) + 1
 	P5%(D, I5, I6) = P5%(D, I5, I6) + 1
 END SUB
 
+
+'------------------------------
+'      ADDSTTS Subroutine
+'------------------------------
+' ...explanation...
 SUB ADDSTTS (p, D)
 	IF B7%(p, B1!(p)) <> 1 THEN I5 = B3%(p, B1!(p)): I6 = 0: CALL INCBATOFF (P, I5, I6)
 	IF B7%(p, B1!(p)) = 1 THEN I5 = P1%(p): I6 = 23: CALL INCPITOFF (P, I5, I6)
 	I5 = P1%(D): I6 = 0: CALL ADDPIT(D, I5, I6)
 END SUB
 
+
+'------------------------------
+'    ADJRUNNERS Subroutine
+'------------------------------
+' ...explanation...
 SUB ADJRUNNERS (S2%, p)
 	FOR i = 1 TO 3
 	IF S2% = 13 AND A5%(i) = 11 AND B1%(i, 0) = 0 THEN A5%(0) = 11
@@ -141,6 +161,11 @@ SUB ADJRUNNERS (S2%, p)
 6835 '
 END SUB
 
+
+'------------------------------
+'   ADV1BASE Subroutine
+'------------------------------
+' ...explanation...
 SUB ADV1BASE (i)
 	FOR I4 = 0 TO 2
 	B0%(i + 1, I4) = B0%(i, I4): B0%(i + 1, 2) = 0: B0%(i, I4) = 0
@@ -148,6 +173,11 @@ SUB ADV1BASE (i)
 	Q$(i + 1) = Q$(i): Q$(i) = ""
 END SUB
 
+
+'------------------------------
+'   ADV2BASES Subroutine
+'------------------------------
+' ...explanation...
 SUB ADV2BASES (i)
 	FOR I4 = 0 TO 2
 	B0%(i + 2, I4) = B0%(i, I4): B0%(i + 1, 2) = 0: B0%(i, I4) = 0
@@ -155,11 +185,20 @@ SUB ADV2BASES (i)
 	Q$(i + 2) = Q$(i): Q$(i) = ""
 END SUB
 
+
+'------------------------------
+'   ADV3BASES Subroutine
+'------------------------------
 SUB ADV3BASES (I3, p, D)
 	B0%(I3, 0) = B1!(p): B0%(I3, 1) = P1%(D): Q$(I3) = Q$(0): B0%(I3, 2) = 0
 	B0%(0, 0) = 0
 END SUB
 
+
+'------------------------------
+'   ADVANCEMENT Subroutine
+'------------------------------
+' ...explanation...
 SUB ADVANCEMENT (p, D, S2%, F%,I3)
 	IF B0%(3, 0) = 0 OR A5%(3) = 0 THEN 3805
 	i = 3
@@ -198,6 +237,11 @@ SUB ADVANCEMENT (p, D, S2%, F%,I3)
 	FOR i = 0 TO 3: A5%(i) = 0: NEXT i
 END SUB
 
+
+'------------------------------
+'   BATDISP Subroutine
+'------------------------------
+' ...explanation...
 SUB BATDISP (PG, P9)
 	LOCATE 1, 1
 	COLOR 14: PRINT "#"; : COLOR l%(P9, 11), l%(P9, 12): PRINT A$(P9); : COLOR 14, 0
@@ -225,6 +269,11 @@ SUB BATDISP (PG, P9)
 150 NEXT i
 END SUB
 
+
+'------------------------------
+'   BATOFF Subroutine
+'------------------------------
+' ...explanation...
 SUB BATOFF (p, I5, I6)
 	B8%(p, I5, I6) = B8%(p, I5, I6) - 1: B5%(p, I5, I6) = B5%(p, I5, I6) - 1
 	IF I6 > 8 OR I6 = 2 OR I6 = 3 THEN 100
@@ -234,26 +283,51 @@ SUB BATOFF (p, I5, I6)
 
 100 END SUB
 
+
+'------------------------------
+'   BATTER1 Subroutine
+'------------------------------
+' ...explanation...
 SUB BATTER1 (i)
 	FOR I4 = 0 TO 1
 	B1%(i + 1, I4) = B1%(i, I4): B1%(i, I4) = 0
 	NEXT I4
 END SUB
 
+
+'------------------------------
+'   BATTER2 Subroutine
+'------------------------------
+' ...explanation...
 SUB BATTER2 (i)
 	FOR I4 = 0 TO 1
 	B1%(i + 2, I4) = B1%(i, I4): B1%(i, I4) = 0
 	NEXT I4
 END SUB
 
+
+'------------------------------
+'   BATTER3 Subroutine
+'------------------------------
+' ...explanation...
 SUB BATTER3 (I3, p, D)
 	B1%(I3, 0) = B1!(p): B1%(I3, 1) = P1%(D)
 END SUB
 
+
+'------------------------------
+'   BLANKLINE Subroutine
+'------------------------------
+' ...explanation...
 SUB BLANKLINE ()
 	PRINT "                                            ";
 END SUB
 
+
+'------------------------------
+'   CAUGHTFLY Subroutine
+'------------------------------
+' ...explanation...
 SUB CAUGHTFLY (i, S2%, D)
 	CALL RANDNUM(rn)
 	IF rn <= 96 THEN i = 1
@@ -288,6 +362,11 @@ SUB CAUGHTFLY (i, S2%, D)
 4361 '
 END SUB
 
+
+'------------------------------
+'   CHANGELINEUP Subroutine
+'------------------------------
+' ...explanation...
 SUB CHANGELINEUP (P9, p)
 	LOCATE 14, 1: COLOR 2: PRINT " # LINEUP       PS  FA  OB"
 	COLOR 15
@@ -306,6 +385,11 @@ SUB CHANGELINEUP (P9, p)
 	NEXT i
 END SUB
 
+
+'------------------------------
+'   CHARGERUN Subroutine
+'------------------------------
+' ...explanation...
 SUB CHARGERUN (D,i)
 	IF O%(1) >= 3 THEN CALL CLEARBASE (i): GOTO 6841
 	I5 = B1%(i, 1): I6 = 3: CALL ADDPIT (D, I5, I6): CALL CLEARBASE (i)
@@ -313,6 +397,11 @@ SUB CHARGERUN (D,i)
 6841 '
 END SUB
 
+
+'------------------------------
+'   CHECKSAVE Subroutine
+'------------------------------
+' ...explanation...
 SUB CHECKSAVE (D, p, S4%)
 	I3 = S6%(D, 0) - S6%(p, 0): S1%(D) = -1: IF I3 < 1 THEN 1807
 	IF S4% = 0 AND I3 <= 2 THEN S1%(D) = P1%(D)
@@ -331,10 +420,20 @@ SUB CHECKSAVE (D, p, S4%)
 1820 '
 END SUB
 
+
+'------------------------------
+'   CLEARBASE Subroutine
+'------------------------------
+' ...explanation...
 SUB CLEARBASE (i)
 	B1%(i, 0) = 0: B1%(i, 1) = 0
 END SUB
 
+
+'------------------------------
+'   CREDITASSIST Subroutine
+'------------------------------
+' ...explanation...
 SUB CREDITASSIST (W%, D)
 	'*** CREDIT ASSISTS ***
 	IF W% = 1 THEN I5 = P1%(D): I6 = 39: CALL ADDPIT(D, I5, I6): GOTO 3408
@@ -343,6 +442,11 @@ SUB CREDITASSIST (W%, D)
 3408 '
 END SUB
 
+
+'------------------------------
+'   CREDITPUTOUT Subroutine
+'------------------------------
+' ...explanation...
 SUB CREDITPUTOUT (I3, FB2P%, AST%, D)
 	'*** CREDIT INFIELD PUTOUTS ***
 	if i3>4 then i3=1
@@ -362,6 +466,11 @@ SUB CREDITPUTOUT (I3, FB2P%, AST%, D)
 3418 '
 END SUB
 
+
+'------------------------------
+'   CREDITREGPO Subroutine
+'------------------------------
+' ...explanation...
 SUB CREDITREGPO (W%, D)
 	'*** CREDIT REGULAR PUTOUT  ***
 	IF W% = 1 THEN
@@ -373,13 +482,23 @@ SUB CREDITREGPO (W%, D)
 	END IF
 END SUB
 
-SUB DELAY ()
-	IF G4 = 0 THEN 6097
-	U! = TIMER: WHILE TIMER < U! + G4: WEND
 
-6097 '
+'------------------------------
+'   DELAY Subroutine
+'------------------------------
+' ...explanation...
+SUB DELAY ()
+	'Is the IF statement necessary?
+	'IF displayPause <> THEN
+		_Delay displayPause
+	'END IF
 END SUB
 
+
+'------------------------------
+'   DELIVERY Subroutine
+'------------------------------
+' ...explanation...
 SUB DELIVERY (D)
 	'*** setup the delivery ***
 	CALL RANDNUM(RN)
@@ -397,6 +516,11 @@ SUB DELIVERY (D)
 	CALL DELAY
 END SUB
 
+
+'------------------------------
+'   DISPFLDG Subroutine
+'------------------------------
+' ...explanation...
 SUB DISPFLDG (PG, P9, TG)
 	'DIS FLDG
 	LOCATE 1, 16: PRINT "P1 FAVG A R   P2 FAVG A R   P3 FAVG A R   P4 FAVG A R      "
@@ -418,6 +542,11 @@ SUB DISPFLDG (PG, P9, TG)
 5802 NEXT i: TG = TG + 1
 END SUB
 
+
+'------------------------------
+'   DISPRUN Subroutine
+'------------------------------
+' ...explanation...
 SUB DISPRUN (I2, p, X)
 	J = B0%(I2, 0): IF J = 0 THEN 363
 	COLOR l%(p, 11), l%(p, 12)
@@ -428,6 +557,11 @@ SUB DISPRUN (I2, p, X)
 363 COLOR 15, 0
 END SUB
 
+
+'------------------------------
+'   DPPBP Subroutine
+'------------------------------
+' ...explanation...
 SUB DPPBP ()
 	CALL RANDNUM(rn)
 	IF rn <= 20 THEN PRINT "may be a double play ball"
@@ -438,6 +572,11 @@ SUB DPPBP ()
 	CALL DELAY
 END SUB
 
+
+'------------------------------
+'   DPPIVOT Subroutine
+'------------------------------
+' ...explanation...
 SUB DPPIVOT (W%, D)
 	'*** double play pivot ***
 	IF W% = 4 THEN ww% = 6
@@ -449,6 +588,11 @@ SUB DPPIVOT (W%, D)
 	CALL DELAY
 END SUB
 
+
+'------------------------------
+'   DPRELAY Subroutine
+'------------------------------
+' ...explanation...
 SUB DPRELAY ()
 	CALL RANDNUM(rn)
 	IF rn <= 10 AND A5%(0)<>11 THEN PRINT "Give me the Hoover!": GOTO 3716
@@ -471,6 +615,11 @@ SUB DPRELAY ()
 3716 CALL DELAY
 END SUB
 
+
+'------------------------------
+'   DPSAFE Subroutine
+'------------------------------
+' ...explanation...
 SUB DPSAFE ()
 	CALL RANDNUM(rn)
 	IF rn <= 8 THEN PRINT "over to 1st..."
@@ -493,6 +642,11 @@ SUB DPSAFE ()
 	CALL DELAY
 END SUB
 
+
+'------------------------------
+'   DRAWBOX Subroutine
+'------------------------------
+' ...explanation...
 SUB DRAWBOX (J)
 	LOCATE 8, 8: COLOR l%(1, 11), l%(1, 12)
 	PRINT " Ö"; STRING$(61, 196); "· ";
@@ -503,10 +657,20 @@ SUB DRAWBOX (J)
 	LOCATE 9 + J, 8: PRINT " Ó"; STRING$(61, 196); "½ ";
 END SUB
 
+
+'------------------------------
+'   EJECTINC Subroutine
+'------------------------------
+' ...explanation...
 SUB EJECTINC (EJ%, X$)
 	EJ% = EJ% + 1: EJ$(EJ%) = X$
 END SUB
 
+
+'------------------------------
+'   EJECTIONINJURY Subroutine
+'------------------------------
+' ...explanation...
 SUB EJECTIONINJURY (u6, p, u9, D, po%, P9, W5, W6)
 	'*** Defensive Player Ejected/Injured ***
 	IF u6 = 2 OR u6 = 1 AND p <> u9 THEN 2704
@@ -543,6 +707,11 @@ SUB EJECTIONINJURY (u6, p, u9, D, po%, P9, W5, W6)
 2749 '
 END SUB
 
+
+'------------------------------
+'   FLDAVG Subroutine
+'------------------------------
+' ...explanation...
 SUB FLDAVG (D, W%, I3)
 	IF b%(D, B9%(D, W%), 19) >= 999 THEN I3 = 999: GOTO 4454
 	IF W% >= 7 THEN I3 = b%(D, B9%(D, W%), 19): GOTO 4454
@@ -568,6 +737,11 @@ SUB FLDAVG (D, W%, I3)
 4464 REM
 END SUB
 
+
+'------------------------------
+'   FLDDISP Subroutine
+'------------------------------
+' ...explanation...
 SUB FLDDISP (BC%, p, U%, D)
 	COLOR , 0: CLS
 	FOR X = 5 TO 25
@@ -639,6 +813,11 @@ SUB FLDDISP (BC%, p, U%, D)
 	LOCATE 14, 1: PRINT STRING$(20, 196); CHR$(193); STRING$(23, 196); CHR$(180)
 END SUB
 
+
+'------------------------------
+'   FLDERR Subroutine
+'------------------------------
+' ...explanation...
 SUB FLDERR (F%, W%, D, I3, SB%, S2%, p)
 	F% = 0
 	IF W% = 1 THEN I3 = p%(D, P1%(D), 17) + 30
@@ -701,6 +880,11 @@ SUB FLDERR (F%, W%, D, I3, SB%, S2%, p)
 4421 '
 END SUB
 
+
+'------------------------------
+'   GETFIELDER Subroutine
+'------------------------------
+' ...explanation...
 SUB GETFIELDER (W%, p, I1, D)
 	W% = 0
 	i = INT(RND(1) * 100) + 1
@@ -710,11 +894,21 @@ SUB GETFIELDER (W%, p, I1, D)
 	IF B7%(p, B1!(p)) = 1 THEN I1 = p%(p, P1%(p), 0)
 END SUB
 
+
+'------------------------------
+'   GETFIELDNAME Subroutine
+'------------------------------
+' ...explanation...
 SUB GETFIELDNAME (W%, D)
 	IF W% <> 1 THEN Q$(4) = b$(D, B9%(D, W%))
 	IF W% = 1 THEN Q$(4) = p$(D, P1%(D))
 END SUB
 
+
+'------------------------------
+'   GETINFIELDER Subroutine
+'------------------------------
+' ...explanation...
 SUB GETINFIELDER (W%, p, I1, D, S2%, P2)
 	CALL GETFIELDER(W%, p, I1, D)
 	i = INT(RND(1) * 100) + 1
@@ -734,6 +928,11 @@ SUB GETINFIELDER (W%, p, I1, D, S2%, P2)
 	CALL GETFIELDNAME(W%, D)
 END SUB
 
+
+'------------------------------
+'   GETOUTFIELDER Subroutine
+'------------------------------
+' ...explanation...
 SUB GETOUTFIELDER (W%, p, I1, D)
 	CALL GETFIELDER(W%, p, I1, D)
 	i = INT(RND(1) * 100) + 1
@@ -745,6 +944,11 @@ SUB GETOUTFIELDER (W%, p, I1, D)
 	Q$(4) = b$(D, B9%(D, W%))
 END SUB
 
+
+'------------------------------
+'   GETRPBP Subroutine
+'------------------------------
+' ...explanation...
 SUB GETRPBP (Y%, Y$, D)
 OPEN "revised.pbp" FOR RANDOM AS #1 LEN = 44
 	FIELD #1, 44 AS YY$
@@ -781,6 +985,11 @@ CLOSE 1
 	'PRINT Y$; " AFT"
 END SUB
 
+
+'------------------------------
+'   GROUNDERPBP Subroutine
+'------------------------------
+' ...explanation...
 SUB GROUNDERPBP (W%, D)
 	IF W% = 2 THEN 3760
 	CALL RANDNUM(rn)
@@ -807,6 +1016,11 @@ SUB GROUNDERPBP (W%, D)
 3765 '
 END SUB
 
+
+'------------------------------
+'   GROUNDERS Subroutine
+'------------------------------
+' ...explanation...
 SUB GROUNDERS (W%, D)
 	'*** grounders to infielders ***
 	X$ = Q$(4)
@@ -828,6 +1042,11 @@ SUB GROUNDERS (W%, D)
 3954 '
 END SUB
 
+
+'------------------------------
+'   HITS2GAP Subroutine
+'------------------------------
+' ...explanation...
 SUB HITS2GAP (W%, p, I1, D)
 	CALL GETFIELDER(W%, p, I1, D): i = INT(RND(1) * 100) + 1
 	IF I1 = 1 THEN W% = 7
@@ -838,15 +1057,30 @@ SUB HITS2GAP (W%, p, I1, D)
 	Q$(4) = b$(D, B9%(D, W%))
 END SUB
 
+
+'------------------------------
+'   HOLDSTATUS Subroutine
+'------------------------------
+' ...explanation...
 SUB HOLDSTATUS (H0%)
 	LOCATE 17, 77: COLOR 15, 2: PRINT H0$(H0%): COLOR , 0
 END SUB
 
+
+'------------------------------
+'   INCBATDF Subroutine
+'------------------------------
+' ...explanation...
 SUB INCBATDF (D, I5, I6)
 	B8%(D, I5, I6) = B8%(D, I5, I6) + 1
 	B5%(D, I5, I6) = B5%(D, I5, I6) + 1
 END SUB
 
+
+'------------------------------
+'   INCBATOFF Subroutine
+'------------------------------
+' ...explanation...
 SUB INCBATOFF (p, I5, I6)
 	B8%(p, I5, I6) = B8%(p, I5, I6) + 1
 	B5%(p, I5, I6) = B5%(p, I5, I6) + 1
@@ -857,11 +1091,21 @@ SUB INCBATOFF (p, I5, I6)
 
 105 END SUB
 
+
+'------------------------------
+'   INCPITOFF Subroutine
+'------------------------------
+' ...explanation...
 SUB INCPITOFF (p, I5, I6)
 	P8%(p, I5, I6) = P8%(p, I5, I6) + 1
 	P5%(p, I5, I6) = P5%(p, I5, I6) + 1
 END SUB
 
+
+'------------------------------
+'   INCREMENTHIT Subroutine
+'------------------------------
+' ...explanation...
 SUB INCREMENTHIT (p, D, MO)
 	IF B7%(p, B1!(p)) <> 1 THEN I5 = B3%(p, B1!(p)): I6 = 15: CALL INCBATOFF (P, I5, I6): GOTO 3646
 	I5 = P1%(p): I6 = 37: CALL INCPITOFF(P, I5, I6)
@@ -870,6 +1114,11 @@ SUB INCREMENTHIT (p, D, MO)
 	IF MO > 0 THEN MO = MO - 1
 END SUB
 
+
+'------------------------------
+'   INJPIT Subroutine
+'------------------------------
+' ...explanation...
 SUB INJPIT (p, D)
 	'*** Defensive Pitcher Ejected/Injured ***
 	IF u6 = 2 OR u6 = 1 AND p <> u9 THEN 2755
@@ -880,6 +1129,11 @@ SUB INJPIT (p, D)
 2799 '
 END SUB
 
+
+'------------------------------
+'   INJURYLENGTH Subroutine
+'------------------------------
+' ...explanation...
 SUB INJURYLENGTH (IJL%, D, po%, u6, p, u9, P9, W5, W6)
 	IJL% = IJL% + 1
 	IJ$(IJL%) = b$(D, B9%(D, po%))
@@ -912,6 +1166,11 @@ SUB INJURYLENGTH (IJL%, D, po%, u6, p, u9, P9, W5, W6)
 2120
 END SUB
 
+
+'------------------------------
+'   INNDISP Subroutine
+'------------------------------
+' ...explanation...
 SUB INNDISP (I2, i)
 	IF I2 < 4 THEN LOCATE , 3 * I2 + 7
 	IF I2 > 3 AND I2 < 7 THEN LOCATE , 3 * I2 + 8
@@ -925,6 +1184,11 @@ SUB INNDISP (I2, i)
 	PRINT USING "##"; s%(i, I2);
 END SUB
 
+
+'------------------------------
+'   LDRIVE Subroutine
+'------------------------------
+' ...explanation...
 SUB LDRIVE ()
 	CALL RANDNUM(rn)
 	IF rn <= 20 THEN X$ = "rips"
@@ -935,6 +1199,11 @@ SUB LDRIVE ()
 	PRINT " "; X$; " ";
 END SUB
 
+
+'------------------------------
+'   LET2NUM Subroutine
+'------------------------------
+' ...explanation...
 SUB LET2NUM (i$)
 	IF UCASE$(i$) = "A" THEN i$ = "10"
 	IF UCASE$(i$) = "B" THEN i$ = "11"
@@ -951,6 +1220,11 @@ SUB LET2NUM (i$)
 	IF UCASE$(i$) = "M" THEN i$ = "22"
 END SUB
 
+
+'------------------------------
+'   LONGFLY Subroutine
+'------------------------------
+' ...explanation...
 SUB LONGFLY (D, W%)
 	Y% = INT(RND(1) * 60) + 1310
 	CALL GETRPBP(Y%, Y$, D)
@@ -975,6 +1249,11 @@ SUB LONGFLY (D, W%)
 8055 REM
 END SUB
 
+
+'------------------------------
+'   MAINSCREEN Subroutine
+'------------------------------
+' ...explanation...
 SUB MAINSCREEN (D, p, BC%, U%, MO)
 	FOR I5 = 5 TO 13
 	LOCATE I5, 1
@@ -1040,10 +1319,20 @@ SUB MAINSCREEN (D, p, BC%, U%, MO)
 	COLOR 15, 0
 END SUB
 
+
+'------------------------------
+'   NEWLINES Subroutine
+'------------------------------
+' ...explanation...
 SUB NEWLINES ()
 	FOR I5 = 15 TO 24: LOCATE , 1: LOCATE I5: CALL BLANKLINE: NEXT I5: LOCATE 15: LOCATE , 1
 END SUB
 
+
+'------------------------------
+'   NEWPITCHER Subroutine
+'------------------------------
+' ...explanation...
 SUB NEWPITCHER
 	V0 = i
 	IF S1%(D) <> -1 AND P6%(D) > 1 THEN I5 = P1%(D): I6 = 22: CALL ADDPIT(D, I5, I6)
@@ -1065,6 +1354,11 @@ SUB NEWPITCHER
 8895 pz=1
 END SUB
 
+
+'------------------------------
+'   NOJUMP Subroutine
+'------------------------------
+' ...explanation...
 SUB NOJUMP (D)
 	Y% = INT(RND(1) * 20) + 1050
 	CALL GETRPBP(Y%, Y$, D)
@@ -1072,10 +1366,20 @@ SUB NOJUMP (D)
 	PRINT Y$:CALL DELAY:CALL DELAY
 END SUB
 
+
+'------------------------------
+'   OFFPIT Subroutine
+'------------------------------
+' ...explanation...
 SUB OFFPIT (P9, I5, I6)
 	P8%(P9, I5, I6) = P8%(P9, I5, I6) + 1: P5%(P9, I5, I6) = P5%(P9, I5, I6) + 1
 END SUB
 
+
+'------------------------------
+'   OUTATFIRST Subroutine
+'------------------------------
+' ...explanation...
 SUB OUTATFIRST (W%, D, fbu%, FB2P%)
 	CALL PITCHERNAME(W%, D)
 	CALL GROUNDERS(W%, D)
@@ -1088,6 +1392,11 @@ SUB OUTATFIRST (W%, D, fbu%, FB2P%)
 3745 '
 END SUB
 
+
+'------------------------------
+'   OUTFIELDERR Subroutine
+'------------------------------
+' ...explanation...
 SUB OUTFIELDERR ()
 	'*** outfielders in trouble ***
 	CALL RANDNUM(rn)
@@ -1099,12 +1408,22 @@ SUB OUTFIELDERR ()
 	CALL DELAY
 END SUB
 
+
+'------------------------------
+'   OUTFLDLOCATION Subroutine
+'------------------------------
+' ...explanation...
 SUB OUTFLDLOCATION (W%)
 	CALL RANDNUM(rn)
 	IF W% = 7 OR W% = 8 AND rn > 50 THEN PRINT "lcf"
 	IF W% = 9 OR W% = 8 AND rn <= 50 THEN PRINT "rcf"
 END SUB
 
+
+'------------------------------
+'   OUTFLDNAME Subroutine
+'------------------------------
+' ...explanation...
 SUB OUTFLDNAME (W%, D)
 	W% = 9: i = INT(RND(1) * 100) + 1
 	IF i <= 25 THEN W% = 8
@@ -1112,6 +1431,11 @@ SUB OUTFLDNAME (W%, D)
 	Q$(4) = b$(D, B9%(D, W%))
 END SUB
 
+
+'------------------------------
+'   PICKEDOFF Subroutine
+'------------------------------
+' ...explanation...
 SUB PICKEDOFF (D, i)
 	'*** picked off ***
 	CALL NEWLINES
@@ -1128,6 +1452,11 @@ SUB PICKEDOFF (D, i)
 	CALL DELAY
 END SUB
 
+
+'------------------------------
+'   PINCHRUNNER Subroutine
+'------------------------------
+' ...explanation...
 SUB PINCHRUNNER (MS%, A1, S4%, I2, p, PR%, BC%, U%, D, MO)
 	' *** CHECK FOR PINCH RUNNER ***
 	i0% = 0
@@ -1200,11 +1529,21 @@ SUB PINCHRUNNER (MS%, A1, S4%, I2, p, PR%, BC%, U%, D, MO)
 8999 '
 END SUB
 
+
+'------------------------------
+'   PITCHERNAME Subroutine
+'------------------------------
+' ...explanation...
 SUB PITCHERNAME (W%, D)
 	IF W% = 1 THEN Q$(4) = p$(D, P1%(D))
 	IF W% <> 1 THEN Q$(4) = b$(D, B9%(D, W%))
 END SUB
 
+
+'------------------------------
+'   PITCHOUT Subroutine
+'------------------------------
+' ...explanation...
 SUB PITCHOUT (S4%, TGTBASE%, Q0)
 	IF S4% = 5 OR TGTBASE% <> 2 THEN 4883: REM*** PITCH OUT ***
 	PJ = INT(RND(1) * 100) + 1
@@ -1213,6 +1552,11 @@ SUB PITCHOUT (S4%, TGTBASE%, Q0)
 4883 '
 END SUB
 
+
+'------------------------------
+'   PITDISP Subroutine
+'------------------------------
+' ...explanation...
 SUB PITDISP (P9)
 	CLS
 	COLOR 14: PRINT "#"; : COLOR l%(P9, 11), l%(P9, 12): PRINT A$(P9); : COLOR 14, 0
@@ -1231,16 +1575,31 @@ SUB PITDISP (P9)
 206 NEXT i
 END SUB
 
+
+'------------------------------
+'   PITOFF Subroutine
+'------------------------------
+' ...explanation...
 SUB PITOFF (p, I5, I6)
 	P8%(p, I5, I6) = P8%(p, I5, I6) - 1: P5%(p, I5, I6) = P5%(p, I5, I6) - 1
 END SUB
 
+
+'------------------------------
+'   PITPLACEMENT Subroutine
+'------------------------------
+' ...explanation...
 SUB PITPLACEMENT (p, X$)
 	IF p%(p, P1%(p), 0) < 0 THEN LOCATE 21, 64
 	IF p%(p, P1%(p), 0) > 0 THEN LOCATE 21, 51
 	PRINT X$
 END SUB
 
+
+'------------------------------
+'   PITSTAM Subroutine
+'------------------------------
+' ...explanation...
 SUB PITSTAM (P9)
 	IF p%(P9, P1%(P9), 4) = 0 THEN S8%(P9, 0) = 3
 	IF p%(P9, P1%(P9), 4)<>0 THEN S8%(P9, 0) = INT(((p%(P9, P1%(P9), 8) + p%(P9, P1%(P9), 7)) / p%(P9, P1%(P9), 4)) + .5)
@@ -1253,6 +1612,11 @@ SUB PITSTAM (P9)
 	 IF INNING% <= 5 AND S6%(P9, 0) - S6%(1 - P9, 0) > 0 THEN P2%(P9) = P1%(P9)
 END SUB
 
+
+'------------------------------
+'   PITSTRAT Subroutine
+'------------------------------
+' ...explanation...
 SUB PITSTRAT
 	  A1 = S6%(D, 0) - S6%(p, 0)
 	pz=0
@@ -1359,12 +1723,22 @@ SUB PITSTRAT
 8195 '
 END SUB
 
+
+'------------------------------
+'   PITSWAP Subroutine
+'------------------------------
+' ...explanation...
 SUB PITSWAP (i)
 	IF i = 4 THEN V = 3: CALL SOMESTATS(V, p, F%, D): V = 2: CALL SOMESTATS(V, p, F%, D): V = 1: CALL SOMESTATS(V, p, F%, D)
 	IF i = 3 THEN V = 2: CALL SOMESTATS(V, p, F%, D): V = 1: CALL SOMESTATS(V, p, F%, D)
 	IF i = 2 THEN V = 2: CALL SOMESTATS(V, p, F%, D): V = 1: CALL SOMESTATS(V, p, F%, D)
 END SUB
 
+
+'------------------------------
+'   PLAYERNAME Subroutine
+'------------------------------
+' ...explanation...
 SUB PLAYERNAME (p)
 	IF B7%(p, B1!(p)) = 1 THEN Q$(0) = p$(p, P1%(p)): GOTO 8002
 	Q$(0) = b$(p, B3%(p, B1!(p)))
@@ -1375,6 +1749,11 @@ SUB PLAYERNAME (p)
 	NEXT i
 END SUB
 
+
+'------------------------------
+'   PLYRHRT Subroutine
+'------------------------------
+' ...explanation...
 SUB PLYRHRT (p, P9, W5, W6, BC%, U%, D, MO)
 	'*** Offensive Player Ejected/Injured ***
 	IF u6 = 2 OR u6 = 1 AND p = u9 THEN 2805
@@ -1402,6 +1781,11 @@ SUB PLYRHRT (p, P9, W5, W6, BC%, U%, D, MO)
 2849 '
 END SUB
 
+
+'------------------------------
+'   POPUP Subroutine
+'------------------------------
+' ...explanation...
 SUB POPUP ()
 	' *** POPUP LINEUPS FOR TEAMS ***
 	J = 11
@@ -1433,6 +1817,11 @@ SUB POPUP ()
 
 END SUB
 
+
+'------------------------------
+'   POPUPBAT Subroutine
+'------------------------------
+' ...explanation...
 SUB POPUPBAT (WK, M)
 	IF TS%(WK,0)=999 THEN LOCATE 4,56:PRINT "VS LHP  .000";
 	IF TS%(WK,0)=999 AND B%(WK,M,42)<>0 THEN LOCATE 4,64:PRINT USING ".###";B%(WK,M,43)/B%(WK,M,42)
@@ -1468,6 +1857,11 @@ B5%(WK, M, 10); B5%(WK, M, 12); B5%(WK, M, 13)
 B8%(WK, M, 10); B8%(WK, M, 12); B8%(WK, M, 13)
 END SUB
 
+
+'------------------------------
+'   POPUPPIT Subroutine
+'------------------------------
+' ...explanation...
 SUB POPUPPIT (WK, M)
 	LOCATE 14, 3: : COLOR l%(WK, 11), l%(WK, 12): PRINT " "; CHR$(201); STRING$(71, 205); CHR$(187); " "
 	FOR X = 1 TO 7: LOCATE , 3: PRINT " "; CHR$(186); STRING$(71, 32); CHR$(186); " ": NEXT
@@ -1504,6 +1898,11 @@ SUB POPUPPIT (WK, M)
 808 PRINT USING " ### ### ### ### ### ##"; P8%(WK, M, 1); P8%(WK, M, 4); P8%(WK, M, 5); P8%(WK, M, 2); P8%(WK, M, 3); P8%(WK, M, 14)
 END SUB
 
+
+'------------------------------
+'   POPUPSTATS Subroutine
+'------------------------------
+' ...explanation...
 SUB POPUPSTATS ()
 	J = B3%(p, B1!(p))
 	LOCATE 3, 3: COLOR l%(p, 11), l%(p, 12): PRINT " "; CHR$(201); STRING$(71, 205); CHR$(187); " "
@@ -1565,15 +1964,30 @@ P8%(p, J, 33); P8%(p, J, 35); P8%(p, J, 36)
 	COLOR 7, 0
 END SUB
 
+
+'------------------------------
+'   PUTOUT Subroutine
+'------------------------------
+' ...explanation...
 SUB PUTOUT (i, D, p)
 	IF B7%(p, B0%(i - 1, 0)) = 1 THEN I5 = P1%(p): I6 = 33: CALL INCPITOFF(P, I5, I6)
 	IF B7%(p, B0%(i - 1, 0)) <> 1 THEN I5 = B3%(p, B0%(i - 1, 0)): I6 = 10: CALL INCBATOFF(P, I5, I6)
 END SUB
 
+
+'------------------------------
+'   RANDNUM Subroutine
+'------------------------------
+' ...explanation...
 SUB RANDNUM (rn)
 	rn = INT(RND(1) * 100) + 1
 END SUB
 
+
+'------------------------------
+'   RecordOut Subroutine
+'------------------------------
+' ...explanation...
 SUB RecordOut (i, I3)
 	PRINT Q$(i); " out @ "; H$(I3)
 	B0%(i, 0) = 0: B0%(i, 1) = 0: B0%(i, 2) = 0
@@ -1581,6 +1995,11 @@ SUB RecordOut (i, I3)
 	CALL DELAY
 END SUB
 
+
+'------------------------------
+'   RecordRun Subroutine
+'------------------------------
+' ...explanation...
 SUB RecordRun (sah%, i, D, F%, PQ, S2%, W%, INFPOS%)
 	IF sah% = 0 THEN PRINT Q$(i); " scores"
 	sah% = 0
@@ -1611,6 +2030,11 @@ SUB RecordRun (sah%, i, D, F%, PQ, S2%, W%, INFPOS%)
 	IF INNING% >= 9 AND p = 1 AND S6%(p, 0) - S6%(D, 0) = 1 AND S2% <> 10 THEN A5%(0) = 0: A5%(1) = 0: A5%(2) = 0: A5%(3) = 0
 END SUB
 
+
+'------------------------------
+'   OPTIONS Subroutine
+'------------------------------
+' ...explanation...
 SUB OPTIONS ()
 DIM u6$(3)
 	U6$(0) = "HUMAN OPPONENT      "
@@ -1626,7 +2050,7 @@ IF U6 = 1 AND U9 = 0 THEN U6 = 1
 
 171 COLOR , 0: LOCATE 3, 1
 	COLOR 14: PRINT "(1) "; : COLOR 15: PRINT U6$(U6)
-	COLOR 14: PRINT "(2) "; : COLOR 15: PRINT USING "DISPLAY INTERVAL: #.# "; G4
+	COLOR 14: PRINT "(2) "; : COLOR 15: PRINT USING "DISPLAY INTERVAL: #.# "; displayPause
 	COLOR 14: PRINT "<ENTER> ";:COLOR 15:PRINT "RETURN TO GAME PLAY"
 
 183 COLOR 7, 0
@@ -1638,7 +2062,7 @@ IF U6 = 1 AND U9 = 0 THEN U6 = 1
 	IF I = 1 THEN U6 = U6 + 1
 	IF U6 > 3 THEN U6 = 0
 	IF I = 1 THEN 171
-	IF I = 2 THEN LOCATE 4, 22: INPUT G4: GOTO 171
+	IF I = 2 THEN LOCATE 4, 22: INPUT displayPause: GOTO 171
 
 184 IF U6 = 0 THEN 185
 IF U6 = 3 THEN U6 = 2:GOTO 185

@@ -1,11 +1,14 @@
-'-- I have an equivalent BI/BM file for the gfx routines used
-'-- However I don't know which files below they replace
 '$INCLUDE: 'COMMON.GW'
 '$INCLUDE: 'GETVIDEO.BAS'
 '$INCLUDE: 'GWDECL.BAS'
 
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'
+
+_Title "Full Count Baseball - Source"
+$ExeIcon:'./lhg_fcbase.ico'
+_Icon	
+_AllowFullScreen
 
 DEFINT A-Z
 

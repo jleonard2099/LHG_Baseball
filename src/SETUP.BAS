@@ -1,6 +1,11 @@
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'
 
+_Title "Full Count Baseball - Game Setup"
+$ExeIcon:'./lhg_fcbase.ico'
+_Icon	
+_AllowFullScreen
+
 DEFINT A-Z
 DECLARE SUB LRADJ (A!, A1!)
 DECLARE SUB NORMALIZE (I7!, I2!, I6!, K8!)
@@ -29,15 +34,15 @@ DIM CSS%(1,22,6),SU%(1,1)
 DIM NG%(18), YN$(1), Q$(23), H0$(1), TM$(4), SC$(4), PC$(4), N$(1), D$(3), M$(1)
 DIM H0%(1), CZ%(1), BP(1), BT%(1, 9, 9), CF%(9, 2), LB%(9, 1), SO%(5, 2)
 DIM PR%(24), GK%(1),MG%(1,999),VA%(26)
-COMMON SHARED TS%(),SA%(),P8%(), B8%(), p%(), p$(), b$(), P5%(), B5%(), X0%(), b%(), AP%(), A$()
-COMMON SHARED C$(), T3%(), P6%(), P2%(), L0%(), DP%(), U$(), IJ$(), EJ$(), SC$(), PC$()
-COMMON SHARED S%(), P1%(), S1%(), D$(), S6%(), l%(), D3%(), NG%(), A5%(), B1!(), B1%(), B7%()
-COMMON SHARED B0%(), B3%(), B9%(), Q$(), PR%(), W%, GK%(), B1$(), X$(), S8%(), NN$(), N$(), O%()
-COMMON SHARED VV(), VV1(), B4%(), K9() AS SINGLE, H0$(), H$(), D0%(), M$(), LB%()
-COMMON SHARED F$(), TM$(), T1%(), YN$(), TP%(), SO%(), CF%(), BT%()
-COMMON SHARED S$, p, U6, DH%, U9, G4 AS SINGLE, RE, RD
-COMMON SHARED TA%, SC%, WF AS SINGLE, PC%, TP%, WS%, WI$, AP%,INNING%,BUCK AS PBP
-COMMON SHARED MG%(),CSS%(),D,IJ%,DR%,CGERA%,IJL%,EJ%
+Dim Shared TS%(),SA%(),P8%(), B8%(), p%(), p$(), b$(), P5%(), B5%(), X0%(), b%(), AP%(), A$()
+Dim Shared C$(), T3%(), P6%(), P2%(), L0%(), DP%(), U$(), IJ$(), EJ$(), SC$(), PC$()
+Dim Shared S%(), P1%(), S1%(), D$(), S6%(), l%(), D3%(), NG%(), A5%(), B1!(), B1%(), B7%()
+Dim Shared B0%(), B3%(), B9%(), Q$(), PR%(), W%, GK%(), B1$(), X$(), S8%(), NN$(), N$(), O%()
+Dim Shared VV(), VV1(), B4%(), K9() AS SINGLE, H0$(), H$(), D0%(), M$(), LB%()
+Dim Shared F$(), TM$(), T1%(), YN$(), TP%(), SO%(), CF%(), BT%()
+Dim Shared S$, p, U6, DH%, U9, G4 AS SINGLE, RE, RD
+Dim Shared TA%, SC%, WF AS SINGLE, PC%, TP%, WS%, WI$, AP%,INNING%,BUCK AS PBP
+Dim Shared MG%(),CSS%(),D,IJ%,DR%,CGERA%,IJL%,EJ%
 '$INCLUDE: 'COMMON.GW'
 DATA first,second,third,short
 DATA 6,12,37,55,66,74,86,96,100
@@ -71,6 +76,11 @@ DATA 100,0,0,90,100,0,70,95,100,50,80,100,30,65,100,10,50,100
 DATA 0,90,100,5,87,100,10,85,100,15,80,100,20,77,100,25,75,100
 DATA 30,73,100,35,70,100,40,67,100,45,65,100,50,63,100,60,65,100
 
+
+'------------------------------
+'   CONVNAME Subroutine
+'------------------------------
+' ...explanation...
 SUB CONVNAME (QQ,I)
 	N$(I) = A$(I)
 	FOR xx = 4 TO 11
@@ -86,6 +96,11 @@ SUB CONVNAME (QQ,I)
 119 '
 END SUB
 
+
+'------------------------------
+'   DISPBAVG Subroutine
+'------------------------------
+' ...explanation...
 SUB DISPBAVG (D)
 	IF INNING% > 5 AND S8%(D, 0) < P8%(D, P1%(D), 4) + P8%(D, P1%(D), 1) AND S8%(D, 1) < P8%(D, P1%(D), 2) THEN LOCATE 10, 17: COLOR 30, 0: PRINT "-T-": COLOR 15, 0
 	LOCATE 5, 1
@@ -107,6 +122,11 @@ SUB DISPBAVG (D)
 359 NEXT: COLOR 15, 0
 END SUB
 
+
+'------------------------------
+'   GETSTATS Subroutine
+'------------------------------
+' ...explanation...
 SUB GETSTATS ()
 	I = 0
 
@@ -125,6 +145,11 @@ OPEN D$(1) + R$ FOR INPUT AS #1
 	IF I = 0 THEN I = 1: GOTO 100
 END SUB
 
+
+'------------------------------
+'   HITTINGLINES Subroutine
+'------------------------------
+' ...explanation...
 SUB HITTINGLINES (l%(), p%(), P1%(), B7%(), b%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
 	RANDOMIZE TIMER
 	CLS : PRINT "Please Wait..."
@@ -224,6 +249,7 @@ SUB HITTINGLINES (l%(), p%(), P1%(), B7%(), b%(), VV(), VV1(), B3%(), B4%(), K9!
 	I2! = i9!
 	CALL NORMALIZE (I7!, I2!, I6!, K8!)
 	B4%(I, 0, I3) = K8!
+'------------------------------
 '    PRINT B$(I, B3%(I, I3)),B4%(I, 0, I3)
 	NEXT I3
 '222 I$=GetKeyPress$
@@ -325,6 +351,11 @@ SUB HITTINGLINES (l%(), p%(), P1%(), B7%(), b%(), VV(), VV1(), B3%(), B4%(), K9!
 273 '
 END SUB
 
+
+'------------------------------
+'   LRADJ Subroutine
+'------------------------------
+' ...explanation...
 SUB LRADJ (A!, A1!)
 	FOR I6 = 0 TO 3
 	B4%(I, I6, I3) = B4%(I, I6, I3) * A!
@@ -333,6 +364,11 @@ SUB LRADJ (A!, A1!)
 	B4%(I, 4, I3) = B4%(I, 4, I3) * A1!
 END SUB
 
+
+'------------------------------
+'   NORMALIZE Subroutine
+'------------------------------
+' ...explanation...
 SUB NORMALIZE (I7!, I2!, I6!, K8!)
 	 I0! = (I7! * I2! * (1 - I6!))
 	IF (I0! + ((1 - I7!) * (1 - I2!) * I6!))=0 THEN K8!=0:GOTO 15
@@ -342,6 +378,11 @@ SUB NORMALIZE (I7!, I2!, I6!, K8!)
 
 END SUB
 
+
+'------------------------------
+'   SETUP Subroutine
+'------------------------------
+' ...explanation...
 SUB SETUP ()
 		FOR I = 3 TO 6: READ F$(I): NEXT
 	H0$(0) = " ": H0$(1) = "H"
@@ -359,6 +400,11 @@ SUB SETUP ()
 	FOR I = 11 TO 0 STEP -1: FOR I1 = 0 TO 2: READ TP%(I, I1): NEXT: NEXT
 END SUB
 
+
+'------------------------------
+'   BASEONBALLS Subroutine
+'------------------------------
+' ...explanation...
 SUB BASEONBALLS (S2%,D2,D,P)
 	S2% = 2
 	CALL NEWLINES: bv = INT(RND(1) * 100) + 1: CALL RANDNUM (RN)
@@ -390,6 +436,11 @@ SUB BASEONBALLS (S2%,D2,D,P)
 3243 '
 END SUB
 
+
+'------------------------------
+'   HITBYPITCH Subroutine
+'------------------------------
+' ...explanation...
 SUB HITBYPITCH (S2%,D)
 	S2% = 1
 	CALL NEWLINES
@@ -410,6 +461,11 @@ SUB HITBYPITCH (S2%,D)
 	if rn<=50 and s4% = 7 then print "tough way to get an RBI":call delay
 END SUB
 
+
+'------------------------------
+'   WILDPITCH Subroutine
+'------------------------------
+' ...explanation...
 SUB WILDPITCH (S2%,D)
 	S2% = 6
 	CALL RANDNUM (RN)
@@ -429,6 +485,11 @@ SUB WILDPITCH (S2%,D)
 3235 '
 END SUB
 
+
+'------------------------------
+'   RELIEVERS Subroutine
+'------------------------------
+' ...explanation...
 SUB RELIEVERS
 	CALL PITSTRAT
 	if pz=1 then pz=0:goto 8885
@@ -462,6 +523,11 @@ SUB RELIEVERS
 8885 '
 END SUB
 
+
+'------------------------------
+'   REPLACEMENTS Subroutine
+'------------------------------
+' ...explanation...
 SUB REPLACEMENTS (I7%, I8%, i9%)
 	' REPLACEMENT AVERAGE CALCS, I7%,I8%,I9%
 	FOR xx = 22 TO 25
@@ -480,6 +546,11 @@ SUB REPLACEMENTS (I7%, I8%, i9%)
 7110 '
 END SUB
 
+
+'------------------------------
+'   SCOREBOARD Subroutine
+'------------------------------
+' ...explanation...
 SUB SCOREBOARD ()
 	'***INCREMENT THE HIT TOTAL ON THE SCOREBOARD***
 	COLOR 14, 0: S6%(p, 1) = S6%(p, 1) + 1
@@ -487,6 +558,11 @@ SUB SCOREBOARD ()
 	COLOR 15, 0
 END SUB
 
+
+'------------------------------
+'   SECOND2FIRST Subroutine
+'------------------------------
+' ...explanation...
 SUB SECOND2FIRST (D)
 	'*** throw to 1st from 2nd ***
 	Y% = INT(RND(1) * 30) + 1540
@@ -495,6 +571,11 @@ SUB SECOND2FIRST (D)
 	CALL DELAY
 END SUB
 
+
+'------------------------------
+'   SINGLEPBP Subroutine
+'------------------------------
+' ...explanation...
 SUB SINGLEPBP (S2%, D, W%)
 	'*** play by play for a single s2%=7, s2%=12 ***
 	if s2% = -12 then s2% = 12:goto 8014
@@ -512,6 +593,11 @@ SUB SINGLEPBP (S2%, D, W%)
 
 8014 END SUB
 
+
+'------------------------------
+'   SINGLEROUTINE Subroutine
+'------------------------------
+' ...explanation...
 SUB SINGLEROUTINE (W%, p, I1, D, S2%, P2)
 	CALL GETOUTFIELDER (W%, p, I1, D)
 	CALL NEWLINES
@@ -556,11 +642,21 @@ SUB SINGLEROUTINE (W%, p, I1, D, S2%, P2)
 3092 CALL ADVANCEMENT(p, D, S2%, F%,I3)
 END SUB
 
+
+'------------------------------
+'   SOMESTATS Subroutine
+'------------------------------
+' ...explanation...
 SUB SOMESTATS (V, p, F%, D)
 	IF B0%(V, 0) > 0 AND B7%(p, B0%(V, 0)) = 1 AND F% = 0 THEN I5 = P1%(p): I6 = 32: CALL INCPITOFF(P, I5, I6)
 	IF B0%(V, 0) > 0 AND B7%(p, B0%(V, 0)) <> 1 AND F% = 0 THEN I5 = B3%(p, B0%(V, 0)): I6 = 9: CALL INCBATOFF(P, I5, I6)
 END SUB
 
+
+'------------------------------
+'   SQUEEZECHOICE Subroutine
+'------------------------------
+' ...explanation...
 SUB SQUEEZECHOICE (SH)
 	'*** SQUEEZE ***
 	IF u6 = 2 OR u6 = 1 AND p = u9 THEN SH = 2: GOTO 4242
@@ -571,6 +667,11 @@ SUB SQUEEZECHOICE (SH)
 4242 '
 END SUB
 
+
+'------------------------------
+'   STEAL3RD Subroutine
+'------------------------------
+' ...explanation...
 SUB STEAL3RD (TGTBASE%, AA, Q0, H0%, D)
 	IF TGTBASE% = 3 AND AA >= 24 THEN Q0 = 830: ' *** SUCCESS OF 3B STEAL ***
 	IF TGTBASE% = 3 AND AA < 24 THEN Q0 = 700
@@ -582,6 +683,11 @@ SUB STEAL3RD (TGTBASE%, AA, Q0, H0%, D)
 4874 REM
 END SUB
 
+
+'------------------------------
+'   STEALCHANCE Subroutine
+'------------------------------
+' ...explanation...
 SUB STEALCHANCE (AA, I2, TGTBASE%,CHANCE%)
 DIM DD AS SINGLE
 DIM TT AS SINGLE
@@ -619,6 +725,11 @@ DIM I1 AS SINGLE
 	'
 END SUB
 
+
+'------------------------------
+'   STRIKEOUT Subroutine
+'------------------------------
+' ...explanation...
 SUB STRIKEOUT (U%, D)
 	'*** strikeout pbp ***
 	IF U% = 3 THEN BV = 20: GOTO 3770
@@ -650,10 +761,20 @@ SUB STRIKEOUT (U%, D)
 	CALL DELAY
 END SUB
 
+
+'------------------------------
+'   STRIKEOUTCS Subroutine
+'------------------------------
+' ...explanation...
 SUB STRIKEOUTCS (SO)
 	IF SO = 7 THEN B1!(p) = B1!(p) + 1
 END SUB
 
+
+'------------------------------
+'   STRIPRPBP Subroutine
+'------------------------------
+' ...explanation...
 SUB STRIPRPBP (Y$, Y%, D)
 
 3991 FOR BH% = 1 TO LEN(Y$)
@@ -661,6 +782,11 @@ SUB STRIPRPBP (Y$, Y%, D)
 	NEXT
 END SUB
 
+
+'------------------------------
+'   TAGADVANCE Subroutine
+'------------------------------
+' ...explanation...
 SUB TAGADVANCE (S2%, I8, D)
 	IF S2% = 7 AND I8 = 2 AND B7%(p, B1!(p)) = 1 THEN I5 = P1%(p): I6 = 27: CALL INCPITOFF(P, I5, I6): GOTO 3394
 	IF S2% = 7 AND I8 = 2 AND B7%(p, B1!(p)) <> 1 THEN I5 = B3%(p, B1!(p)): I6 = 4: CALL INCBATOFF(P, I5, I6): GOTO 3394
@@ -682,6 +808,11 @@ SUB TAGADVANCE (S2%, I8, D)
 3394 '
 END SUB
 
+
+'------------------------------
+'   THROW2FIRST Subroutine
+'------------------------------
+' ...explanation...
 SUB THROW2FIRST (D)
 	'*** throw to 1st from 3rd/ss ***
 	Y% = INT(RND(1) * 40) + 1570
@@ -691,6 +822,11 @@ SUB THROW2FIRST (D)
 	CALL DELAY
 END SUB
 
+
+'------------------------------
+'   TIRING Subroutine
+'------------------------------
+' ...explanation...
 SUB TIRING (P9)
 	'tired on runs and hits
 	IF S8%(P9, 0) <= P8%(P9, P1%(P9), 4) + P8%(P9, P1%(P9), 1) AND S8%(P9, 1) <= P8%(P9, P1%(P9), 2) THEN 9756
@@ -711,6 +847,11 @@ SUB TIRING (P9)
 9757 '
 END SUB
 
+
+'------------------------------
+'   TRIPLEPLAY Subroutine
+'------------------------------
+' ...explanation...
 SUB TRIPLEPLAY (D)
 	CALL NEWLINES: Q$(4) = b$(D, B9%(D, 5))
 	PRINT "grounder to "; Q$(4); " @ 3B": CALL DELAY
@@ -724,6 +865,11 @@ SUB TRIPLEPLAY (D)
 	IF B7%(p, B1!(p)) <> 1 THEN I5 = B3%(p, B1!(p)): I6 = 0: CALL INCBATOFF(P, I5, I6)
 END SUB
 
+
+'------------------------------
+'   TRYFOREXTRABASE Subroutine
+'------------------------------
+' ...explanation...
 SUB TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%,I8,I9)
 	IF LN% = 3308 THEN LN% = 0: GOTO 3308
 	I8 = 0: H6% = INT(RND(1) * 100) + 1
@@ -854,6 +1000,11 @@ SUB TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%,I8,I9)
 3385 '
 END SUB
 
+
+'------------------------------
+'   VIEWTEAM Subroutine
+'------------------------------
+' ...explanation...
 SUB VIEWTEAM ()
 
 700 CLS
@@ -918,6 +1069,11 @@ SUB VIEWTEAM ()
 850 '
 END SUB
 
+
+'------------------------------
+'   WALLDOUBLE Subroutine
+'------------------------------
+' ...explanation...
 SUB WALLDOUBLE (HW%, W%)
 	'*** doubles off of a wall ***
 	BV = INT(RND(1) * 100) + 1: rn = INT(RND(1) * 100) + 1
@@ -939,6 +1095,11 @@ SUB WALLDOUBLE (HW%, W%)
 3785 '
 END SUB
 
+
+'------------------------------
+'   WHICHRUNNER Subroutine
+'------------------------------
+' ...explanation...
 SUB WHICHRUNNER (i, S4%, D5)
 	IF i = 4 THEN A5%(3) = 1
 	IF S4% <> 4 THEN 4297
@@ -955,6 +1116,11 @@ SUB WHICHRUNNER (i, S4%, D5)
 4297 '
 END SUB
 
+
+'------------------------------
+'   WHOSON1ST Subroutine
+'------------------------------
+' ...explanation...
 SUB WHOSON1ST (S4%)
 	S4% = 0: I1 = B0%(1, 0): I2 = B0%(2, 0): I3 = B0%(3, 0)
 	IF I1 > 0 AND I2 = 0 AND I3 = 0 THEN S4% = 1
@@ -966,6 +1132,11 @@ SUB WHOSON1ST (S4%)
 	IF I1 > 0 AND I2 > 0 AND I3 > 0 THEN S4% = 7: REM*** BASES LOADED ***
 END SUB
 
+
+'------------------------------
+'   FOULBALL Subroutine
+'------------------------------
+' ...explanation...
 SUB FOULBALL ()
 	call randnum(rn)
 	if rn<=50 then

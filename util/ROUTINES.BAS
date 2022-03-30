@@ -375,10 +375,10 @@ SUB CREDITREGPO (W%, D)
 END SUB
 
 SUB DELAY ()
-	IF G4 = 0 THEN 6097
-	U! = TIMER: WHILE TIMER < U! + G4: WEND
-
-6097 '
+	'Is the If statement needed?
+	'IF G4 <> 0 THEN 
+		_Delay G4
+	'END IF
 END SUB
 
 SUB DELIVERY (D)

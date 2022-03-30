@@ -2,11 +2,16 @@
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'
 
+_Title "Full Count Baseball - Create League"
+''$ExeIcon:'./lhg_fcbase.ico'
+'_Icon	
+_AllowFullScreen
+
 DEFINT A-Z
-DECLARE FUNCTION FnExt$ (X$, Length)
+DECLARE FUNCTION PadRight$ (X$, Length)
 
 DIM Z1$(40), Z2$(40), Z1%(40), D$(2)
-DIM Q$(15), VV$(200), V%(200), T%(34), L%(13)
+DIM Q$(15), teamItems$(200), V%(200), T%(34), L%(13)
 DIM Y AS LONG
 
 'determine if the monitor is mono or color
@@ -63,13 +68,13 @@ CLOSE 2
 25  CLS
 	COLOR 15, 1
 	LOCATE 5, 1: QPrint "Name for Division 1 ", 30, -1
-	LOCATE , 21: QPrint FnExt$(D1$, 8), FG, BG, -1
+	LOCATE , 21: QPrint PadRight$(D1$, 8), FG, BG, -1
 	LOCATE 7, 1: QPrint "Name for Division 2 ", 30, -1
-	LOCATE , 21: QPrint FnExt$(D2$, 8), FG, BG, -1
+	LOCATE , 21: QPrint PadRight$(D2$, 8), FG, BG, -1
 	LOCATE 9, 1: QPrint "Name for Division 3 ", 30, -1
-	LOCATE , 21: QPrint FnExt$(D3$, 8), FG, BG, -1
+	LOCATE , 21: QPrint PadRight$(D3$, 8), FG, BG, -1
 	LOCATE 11, 1: QPrint "Name for Division 4 ", 30, -1
-	LOCATE , 21: QPrint FnExt$(D4$, 8), FG, BG, -1
+	LOCATE , 21: QPrint PadRight$(D4$, 8), FG, BG, -1
 
 GetDiv1:
 	LOCATE 5, 21                         'location of beginning of field
@@ -102,9 +107,9 @@ Done:
 	LOCATE 23, 1
 	PRINT "Is this okay? (Yes/No) ";
 	X$ = ""
-	CALL YesNoB(X$, XCode, Colr)
+	CALL YesNoB(X$, XCode, FG, BG)
 	LOCATE , 1
-	ClearEOL 30
+	ClearEOL 14, 1
 	IF XCode = 1 GOTO GetDiv4
 	IF X$ = "N" GOTO GetDiv1
 	IF X$ <> "Y" GOTO Done               'insist on either Y or N or up-arrow
@@ -202,7 +207,7 @@ OPEN D$(0) + "FCTEAMS." + YN$ FOR RANDOM AS #1 LEN = 4342
 	IF LEFT$(Q$(0),2) = "XX"OR LEFT$(Q$(0),1) = " " OR ASC(MID$(Q$(0), I2, 1)) < 32 OR ASC(MID$(Q$(0), I2, 1)) > 123 OR UCASE$(LEFT$(Q$(0), 3)) = "NOT" OR UCASE$(LEFT$(Q$(0), 3)) = "UN" THEN 1103
 	NEXT I2
 	NT = NT + 1
-	VV$(NT) = Q$(0): V%(NT) = I1
+	teamItems$(NT) = Q$(0): V%(NT) = I1
 
 1103 NEXT I1
 CLOSE 1
@@ -221,7 +226,7 @@ COLOR , 4: CLS : LOCATE , 33: COLOR 14: PRINT "TEAM SELECTION": COLOR 15
 	LOCATE 25, 1: COLOR 14: PRINT "ESC"; : COLOR 15: PRINT "-SELECT NEW ID  PGDN  PGUP  "; : COLOR 14: PRINT "ENTER"; : COLOR 15: PRINT "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-MAMenu VARPTR(VV$(1)), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu teamItems$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 	IF ExitCode% = 27 THEN BO% = 1: RETURN
@@ -251,7 +256,7 @@ CLOSE 1
 	LOCATE 7, 27: INPUT NY$
 	IF NY$ = "" THEN GOSUB 1102: GOTO 182
 	YN$ = NY$
-	FOR I = 1 TO 200: VV$(I) = "": NEXT
+	FOR I = 1 TO 200: teamItems$(I) = "": NEXT
 
 182 IF BO% = 1 THEN BO% = 0: GOTO 1440
 
@@ -322,16 +327,19 @@ CLOSE 2
 	GOTO 25
 
 4500 LOCATE 10, 8
-	CALL CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Cnf)
+	CALL CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
 	I$ = GetKeyPress$
-	CALL CSMsgBox("", 0, Cnf)
+	CALL CSMsgBox("", 0, Pass)
 	GOTO 50
 
 
-FUNCTION FnExt$ (X$, Length) 
-'Essentially this pads space to the right of the string
-	X$ = X$ + SPACE$(Length - LEN(X$))  'for display only
-END FUNCTION
+'------------------------------
+'      PadRight Function
+'------------------------------
+' Pads string to the right with spaces
+Function PadRight$ (X$, Length)
+    PadRight$ = X$ + Space$(Length - Len(X$)) 'for display only
+End Function
 
 
 '$INCLUDE: 'KeyInput.BM'

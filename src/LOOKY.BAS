@@ -1,9 +1,14 @@
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'
 
+_Title "Full Count Baseball - View Stats"
+''$ExeIcon:'./lhg_fcbase.ico'
+'_Icon	
+_AllowFullScreen
+
 DECLARE SUB TITLE ()
 
-DIM O%(100), O$(100), T%(100), P%(100), Q$(500), VV$(500)
+DIM O%(100), O$(100), T%(100), P%(100), Q$(500), teamItems$(500)
 DIM Z2(14, 14), Z(15), Z1(15), VV%(500)
 DIM A$(14), D$(1), L%(4)
 DIM A(14, 24)
@@ -21,9 +26,9 @@ OPEN "DEV.BAS" FOR INPUT AS #1: INPUT #1, D$(0): INPUT #1, D$(1): CLOSE 1
 750 CALL TITLE
 
 ' This may be in the wrong spot
-	item$(1) = "VIEW / PRINT COMPILED STATS FOR ONE TEAM"
-	item$(2) = "PRINT REPORTS FOR ALL TEAMS IN A LEAGUE "
-	item$(3) = "RETURN TO MAIN MENU    "
+	menuItems$(1) = "VIEW / PRINT COMPILED STATS FOR ONE TEAM"
+	menuItems$(2) = "PRINT REPORTS FOR ALL TEAMS IN A LEAGUE "
+	menuItems$(3) = "RETURN TO MAIN MENU    "
 	SELECTION% = 1
 	Count% = 5
 	Start% = 1
@@ -37,7 +42,7 @@ OPEN "DEV.BAS" FOR INPUT AS #1: INPUT #1, D$(0): INPUT #1, D$(1): CLOSE 1
 CALL box0(7, 24, 13, 58, 2, 31)
 	
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(item$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -73,7 +78,7 @@ _MouseHide
 
 	IF NY$ = "" THEN GOSUB 1102: GOTO 3060
 	YN$ = NY$
-	FOR I = 1 TO 500: VV$(I) = "": NEXT
+	FOR I = 1 TO 500: teamItems$(I) = "": NEXT
 	GOSUB 1100
 
 3060 IF BO% = 1 THEN BO% = 0: GOTO 3056
@@ -90,7 +95,7 @@ _MouseHide
 	FIELD #1, 15 AS Q$(0), 640 AS X$
 	FOR I1 = 1 TO Y / 655
 	GET #1, I1
-	VV$(I1) = Q$(0): VV%(I1) = I1
+	teamItems$(I1) = Q$(0): VV%(I1) = I1
 	NEXT
 CLOSE 1
 	NTMS = Y / 655
@@ -112,7 +117,7 @@ CLOSE 1
 	PRINT "ENTER"; : COLOR 15: PRINT "-SELECTS TEAM";
 	
 _MouseShow "DEFAULT"
-20   MAMenu VARPTR(VV$(1)), SELECTION%, Start%, Count%, EXITCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+20   MAMenu teamItems$(), SELECTION%, Start%, Count%, EXITCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 	IF EXITCODE% = 27 THEN BO% = 1: RETURN
@@ -162,6 +167,11 @@ CLOSE 1
 896 I$ = GetKeyPress$
 	RETURN
 
+
+'------------------------------
+'      TITLE Subroutine
+'------------------------------
+' Displays window title / game copyright
 SUB TITLE ()
 	COLOR , 2
 	LOCATE 1, 1: PRINT TAB(80); : LOCATE , 26: COLOR 0

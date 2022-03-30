@@ -8,7 +8,7 @@ DECLARE FUNCTION OneColor% (FGColor, BGColor)
 DECLARE FUNCTION READDIR$(spec$)
 
 DECLARE SUB AddInt (AElement, Value, NumEls)
-DECLARE SUB CSMsgBox (Message$, Wdth%, Cnf AS ANY)
+DECLARE SUB CSMsgBox (Message$, Wdth%, Pass)
 DECLARE SUB CapNum ()
 DECLARE SUB ClearEOL (FGColor%, BGColor%)
 DECLARE SUB Comline (NumArgs%, Args$(), MaxArgs)

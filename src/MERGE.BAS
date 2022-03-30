@@ -1,5 +1,10 @@
 '$INCLUDE: 'KeyInput.BI'
 
+_Title "Full Count Baseball - Merge Stats"
+''$ExeIcon:'./lhg_fcbase.ico'
+'_Icon	
+_AllowFullScreen
+
 4 CLS
 
 5 CLS:COLOR 12:PRINT"STATISTICS MERGE/ALIGN MENU":PRINT

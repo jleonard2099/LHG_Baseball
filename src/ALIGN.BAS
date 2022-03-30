@@ -1,6 +1,11 @@
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'
 
+_Title "Full Count Baseball - Align Stats"
+''$ExeIcon:'./lhg_fcbase.ico'
+'_Icon	
+_AllowFullScreen
+
 3 CLS
 
 4 DIM B$(23), P$(22), B0%(23, 22), P0%(22, 42), T(22), T1(23)
@@ -52,7 +57,7 @@
 
 80 LOCATE 18, 5: COLOR 12: PRINT "SEARCHING FOR FILES . . ."
 
-110 IF NOT _FILEXIST(PR$ + "\" + Z$) THEN 950
+110 IF NOT _FILEEXISTS(PR$ + "\" + Z$) THEN 950
 
 111 CLS
 	COLOR 15
@@ -74,7 +79,7 @@
 	FOR I = 0 TO 22: INPUT #1, TR1(I): NEXT I
 
 160 CLOSE #1
-	IF NOT _FILEXIST(PR$ + "\" + Z$ + "R") THEN 210
+	IF NOT _FILEEXISTS(PR$ + "\" + Z$ + "R") THEN 210
 OPEN PR$ + "\" + Z$ + "R" FOR INPUT AS #1
 	FOR I = 0 TO 22
 	FOR I1 = 0 TO 6
@@ -82,7 +87,7 @@ OPEN PR$ + "\" + Z$ + "R" FOR INPUT AS #1
 	NEXT: NEXT
 CLOSE #1
 
-210 IF NOT _FILEXIST(PC$ + "\" + Z$) THEN 950
+210 IF NOT _FILEEXISTS(PC$ + "\" + Z$) THEN 950
 
 220 OPEN PC$ + "\" + Z$ FOR INPUT AS #1
 
@@ -101,7 +106,7 @@ CLOSE #1
 	FOR I = 0 TO 22: INPUT #1, T1(I): NEXT I
 
 260 CLOSE #1
-	IF NOT _FILEXIST(PC$ + "\" + Z$ + "R") THEN 400
+	IF NOT _FILEEXISTS(PC$ + "\" + Z$ + "R") THEN 400
 OPEN PC$ + "\" + Z$ + "R" FOR INPUT AS #1
 	FOR I = 0 TO 22
 	FOR I1 = 0 TO 6

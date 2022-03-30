@@ -1,6 +1,11 @@
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'
 
+_Title "Full Count Baseball - Umpire Manager"
+''$ExeIcon:'./lhg_fcbase.ico'
+'_Icon	
+_AllowFullScreen
+
 10 DIM U$(50), U%(50), D$(2)
 
 15 OPEN "DEV.BAS" FOR INPUT AS #1
@@ -56,7 +61,7 @@
 	I = VAL(I$): IF I < 1 OR I > 2 THEN 301
 	IF I = 1 THEN LG$ = "AL"
 	IF I = 2 THEN LG$ = "NL"
-	IF NOT _FILEXIST(D$(0) + "UMPIRES." + LG$) THEN 315
+	IF NOT _FILEEXISTS(D$(0) + "UMPIRES." + LG$) THEN 315
 OPEN D$(0) + "UMPIRES." + LG$ FOR INPUT AS #1
 	FOR X = 1 TO 50: INPUT #1, U$(X): INPUT #1, U%(X): NEXT: CLOSE #1
 

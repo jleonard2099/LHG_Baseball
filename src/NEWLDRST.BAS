@@ -2,12 +2,17 @@
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'
 
+_Title "Full Count Baseball - League Standings"
+''$ExeIcon:'./lhg_fcbase.ico'
+'_Icon	
+_AllowFullScreen
+
 DECLARE SUB TITLE ()
 
 DIM WW(40), LL(40), TML$(40), Z1$(40), EWW(40), RWW(40), HWW(40), ELL(40), RLL(40), HLL(40), LTW(40), LTL(40)
 DIM H%(162), H$(162), V%(162), PL$(162), W$(162), L$(162), I%(162)
 DIM TWS(40), TLS(40), CWS(40), CLT(40), LWS(40), LLS(40)
-DIM D$(2), ITEM$(10)
+DIM D$(2), menuItems$(10)
 
 4 FOR I = 1 TO 40: TWS(I) = 0: TLS(I) = 0: LWS(I) = 0: LLS(I) = 0: CWS(I) = 0: CLT(I) = 0: NEXT
 OPEN "DEV.BAS" FOR INPUT AS #2: FOR I = 0 TO 2: INPUT #2, D$(I): NEXT: CLOSE 2
@@ -161,9 +166,9 @@ IF Z1$(KK) = "*" THEN 60 ELSE 10
 
 2300 CLS
 	CALL TITLE
-	ITEM$(1) = "UPDATE LEAGUE STANDINGS      "
-	ITEM$(2) = "VIEW / PRINT LEAGUE STANDINGS"
-	ITEM$(3) = "RETURN TO MAIN MENU          "
+	menuItems$(1) = "UPDATE LEAGUE STANDINGS      "
+	menuItems$(2) = "VIEW / PRINT LEAGUE STANDINGS"
+	menuItems$(3) = "RETURN TO MAIN MENU          "
 	SELECTION% = 1
 	Count% = 3
 	Start% = 1
@@ -176,7 +181,7 @@ IF Z1$(KK) = "*" THEN 60 ELSE 10
 CALL box0(5, 26, 9, 56, 2, 31)
 	
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(ITEM$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -356,6 +361,11 @@ LOCATE , 33: PRINT "ANY CHANGE (YN)";
 
 3100 GOTO 2300
 
+
+'------------------------------
+'      TITLE Subroutine
+'------------------------------
+' Displays window title / game copyright
 SUB TITLE ()
 COLOR , 0: KEY OFF: CLS
 	COLOR , 1: LOCATE 1, 1: PRINT TAB(80); : LOCATE , 30: COLOR 12

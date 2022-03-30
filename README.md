@@ -23,6 +23,8 @@ No installation required. Pre-compiled binaries and required reference files are
 ## Usage
 Run Hello.exe to start with the main game menu.
 
+Teams files will not be included at this time. However, if you're nice enough, the people at the [Haffner Files Facebook group](https://www.facebook.com/groups/183455342454939) will be glad to help you.
+
 ## Support
 Contact me at my [profile page](https://github.com/jleonard2099/jleonard2099/tree/main) for now.
 See future revisions to this for possible links to bug trackers / etc. as they are considered.

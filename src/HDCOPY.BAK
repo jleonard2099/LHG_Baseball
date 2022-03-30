@@ -1,5 +1,10 @@
 '$INCLUDE: 'KeyInput.BI'
 
+_Title "Full Count Baseball - x"
+$ExeIcon:'./lhg_fcbase.ico'
+_Icon	
+_AllowFullScreen
+
 10 KEY OFF:COLOR 0,7:CLS:PN$="BASEBALL"
 
 20 LOCATE 1,1:COLOR ,1:COLOR 15,1

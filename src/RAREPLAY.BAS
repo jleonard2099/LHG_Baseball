@@ -2,6 +2,11 @@
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'
 
+_Title "Full Count Baseball - Rare Play"
+$ExeIcon:'./lhg_fcbase.ico'
+_Icon	
+_AllowFullScreen
+
 DEFINT A-Z
 
 DECLARE SUB ADDPIT (D,I5,I6)
@@ -38,16 +43,21 @@ DIM CSS%(1,22,6),SU%(1,1)
 DIM NG%(18), YN$(1), Q$(23), H0$(1), tm$(4), SC$(4), PC$(4), N$(1), D$(3), m$(1)
 DIM H0%(1), CZ%(1), BP(1), BT%(1, 9, 9), CF%(9, 2), LB%(9, 1), SO%(5, 2)
 DIM PR%(24), GK%(1),AP%(2),VA%(26)
-COMMON SHARED TS%(),SA%(),P8%(), B8%(), P%(), P$(), B$(), P5%(), B5%(), X0%(), B%(), AP%(), A$()
-COMMON SHARED C$(), T3%(), P6%(), P2%(), L0%(), DP%(), U$(), IJ$(), EJ$(), SC$(), PC$()
-COMMON SHARED S%(), P1%(), S1%(), D$(), S6%(), L%(), D3%(), NG%(), A5%(), B1!(), B1%(), B7%()
-COMMON SHARED B0%(), B3%(), B9%(), Q$(), PR%(), W%, GK%(), B1$(), X$(), S8%(), NN$(), N$(), O%()
-COMMON SHARED VV(), VV1(), B4%(), K9() AS SINGLE, H0$(), h$(), D0%(), M$(), LB%()
-COMMON SHARED F$(), TM$(), T1%(), YN$(), TP%(), SO%(), CF%(), BT%()
-COMMON SHARED S$, P, U6, DH%, U9, G4 AS SINGLE, RE, RD
-COMMON SHARED TA%, SC%, WF AS SINGLE, PC%, TP%, WS%, WI$, AP%,INNING%,BUCK AS PBP
-COMMON SHARED MG%(),CSS%(),D,IJ%,DR%,CGERA%,IJL%,EJ%
+Dim Shared TS%(),SA%(),P8%(), B8%(), P%(), P$(), B$(), P5%(), B5%(), X0%(), B%(), AP%(), A$()
+Dim Shared C$(), T3%(), P6%(), P2%(), L0%(), DP%(), U$(), IJ$(), EJ$(), SC$(), PC$()
+Dim Shared S%(), P1%(), S1%(), D$(), S6%(), L%(), D3%(), NG%(), A5%(), B1!(), B1%(), B7%()
+Dim Shared B0%(), B3%(), B9%(), Q$(), PR%(), W%, GK%(), B1$(), X$(), S8%(), NN$(), N$(), O%()
+Dim Shared VV(), VV1(), B4%(), K9() AS SINGLE, H0$(), h$(), D0%(), M$(), LB%()
+Dim Shared F$(), TM$(), T1%(), YN$(), TP%(), SO%(), CF%(), BT%()
+Dim Shared S$, P, U6, DH%, U9, displayPause AS SINGLE, RE, RD
+Dim Shared TA%, SC%, WF AS SINGLE, PC%, TP%, WS%, WI$, AP%,INNING%,BUCK AS PBP
+Dim Shared MG%(),CSS%(),D,IJ%,DR%,CGERA%,IJL%,EJ%
 
+
+'------------------------------
+'   RAREPLAYS Subroutine
+'------------------------------
+' ...explanation...
 SUB RAREPLAYS (H6%, H7%)
 IF H7% = 20 THEN H7% = 0: GOTO 2008
 

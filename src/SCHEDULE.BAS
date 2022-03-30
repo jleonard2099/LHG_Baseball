@@ -3,6 +3,11 @@
 '$INCLUDE: 'QPProEqu.BI'
 ''$INCLUDE: 'QEditype.BI'
 
+_Title "Full Count Baseball - Scheduler"
+''$ExeIcon:'./lhg_fcbase.ico'
+'_Icon	
+_AllowFullScreen
+
 DEFINT A-Z
 DIM U6 AS SINGLE
 
@@ -14,15 +19,15 @@ DIM U6 AS SINGLE
 DECLARE SUB TITLE ()
 'DECLARE SUB QEdit (array$(), Ky$, Action, Ed AS EditInfo)
 
-DIM VV$(200), V%(200), TS$(1), MO$(3), U5$(4), TE$(2), CM$(1), PU$(48)
+DIM teamItems$(200), V%(200), TS$(1), MO$(3), U5$(4), TE$(2), CM$(1), PU$(48)
 DIM Q$(377), AP%(1), T(34), FT$(1), FR$(1), T$(0), Z1$(40), Z1%(40), Z2$(40)
 DIM H$(20), V$(20), HS%(1300), VS%(1300), L%(13), D$(2), WE$(1), E%(13)
-DIM Y AS LONG, ITEM$(8)
+DIM Y AS LONG, menuItems$(8)
 DIM Y1 AS SINGLE
 'DIM Ed AS EditInfo              'create the editor's data structure
 
-COMMON SHARED VV$(), V%(), TS$(), DY(), Q$()
-COMMON SHARED YN$(), NG%(), HS%(), VS%()
+Dim Shared teamItems$(), V%(), TS$(), DY(), Q$()
+Dim Shared YN$(), NG%(), HS%(), VS%()
 
 'commenting out here as it is mostly irrelevant
 'CALL InitMouse(There)
@@ -69,14 +74,14 @@ OPEN "DEV.BAS" FOR INPUT AS #1: FOR I = 0 TO 2: INPUT #1, D$(I): NEXT: CLOSE 1
 	PRINT "GENERATING A STANDARD SEASON SCHEDULE IS TO BE USED IN CONJUNCTION"
 	PRINT "WITH THE STANDINGS AND LEAGUE LEADERS OPTIONS. YOU MUST ALREADY HAVE"
 	PRINT "CREATED AN APPROPRIATE LEAGUE FOR THIS OPTION TO PROPERLY FUNCTION."
-	ITEM$(1) = "ENTER A NEW SCHEDULE                             "
-	ITEM$(2) = "RETRIEVE/EDIT/PLAY AN EXISTING SCHEDULE          "
-	ITEM$(3) = "EXTRACT ONE TEAM'S SCHEDULE FROM LEAGUE SCHEDULE "
-	ITEM$(4) = "CHANGE THE MODE OF PLAY FOR A TEAM IN A SCHEDULE "
-	ITEM$(5) = "MAKE GLOBAL CHANGES TO A SCHEDULE                "
-	ITEM$(6) = "GENERATE A STANDARD SEASON SCHEDULE              "
-	ITEM$(7) = "BOXSCORE MAINTENANCE / SAVE BOXSCORE PARAMETERS  "
-	ITEM$(8) = "EXIT AUTO SCHEDULER TO FULL COUNT MENU           "
+	menuItems$(1) = "ENTER A NEW SCHEDULE                             "
+	menuItems$(2) = "RETRIEVE/EDIT/PLAY AN EXISTING SCHEDULE          "
+	menuItems$(3) = "EXTRACT ONE TEAM'S SCHEDULE FROM LEAGUE SCHEDULE "
+	menuItems$(4) = "CHANGE THE MODE OF PLAY FOR A TEAM IN A SCHEDULE "
+	menuItems$(5) = "MAKE GLOBAL CHANGES TO A SCHEDULE                "
+	menuItems$(6) = "GENERATE A STANDARD SEASON SCHEDULE              "
+	menuItems$(7) = "BOXSCORE MAINTENANCE / SAVE BOXSCORE PARAMETERS  "
+	menuItems$(8) = "EXIT AUTO SCHEDULER TO FULL COUNT MENU           "
 	  SELECTION% = 1
 	Count% = 8
 	Start% = 1
@@ -89,7 +94,7 @@ OPEN "DEV.BAS" FOR INPUT AS #1: FOR I = 0 TO 2: INPUT #1, D$(I): NEXT: CLOSE 1
 CALL box0(5, 15, 14, 65, 2, 31)
 	
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(ITEM$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -310,7 +315,7 @@ LOCATE 1, 33: COLOR 14: PRINT "AUTO SCHEDULER"
 	LOCATE 7, 27: INPUT NY$
 	IF NY$ = "" THEN GOSUB 1102: GOTO 182
 	YN$ = NY$
-	FOR I = 1 TO 200: VV$(I) = "": NEXT
+	FOR I = 1 TO 200: teamItems$(I) = "": NEXT
 	GOSUB 1100
 
 182 IF BO% = 1 THEN BO% = 0: GOTO 181
@@ -515,7 +520,7 @@ CLOSE 1
 	LOCATE 8, 27: INPUT NY$
 	IF NY$ = "" THEN GOSUB 1102: GOTO 730
 	YN$ = NY$
-	FOR I = 1 TO 200: VV$(I) = "": NEXT
+	FOR I = 1 TO 200: teamItems$(I) = "": NEXT
 	GOSUB 1100
 
 730 IF BO% = 1 THEN BO% = 0: GOTO 725
@@ -633,7 +638,7 @@ OPEN D$(0) + "FCTEAMS." + YN$ FOR RANDOM AS #1 LEN = 4342
 	IF LEFT$(Q$(0),2) = "XX" OR LEFT$(Q$(0),1) = " " OR ASC(MID$(Q$(0), I2, 1)) < 32 OR ASC(MID$(Q$(0), I2, 1)) > 123 OR UCASE$(LEFT$(Q$(0), 3)) = "NOT" OR UCASE$(LEFT$(Q$(0), 3)) = "UN" THEN 1103
 	NEXT I2
 	NT = NT + 1
-	VV$(NT) = Q$(0): V%(NT) = I1
+	teamItems$(NT) = Q$(0): V%(NT) = I1
 
 1103 NEXT I1
 CLOSE 1
@@ -652,7 +657,7 @@ COLOR , 4: CLS : LOCATE , 33: COLOR 14: PRINT "TEAM SELECTION": COLOR 15
 	LOCATE 25, 1: COLOR 14: PRINT "ESC"; : COLOR 15: PRINT "-SELECT NEW ID  PGDN  PGUP  "; : COLOR 14: PRINT "ENTER"; : COLOR 15: PRINT "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-26 MAMenu VARPTR(VV$(1)), SELECTION%, Start%, Count%, EXITCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+26 MAMenu teamItems$(), SELECTION%, Start%, Count%, EXITCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 	IF EXITCODE% = 27 THEN BO% = 1: RETURN
@@ -926,43 +931,43 @@ CLOSE 1
 	GOTO 4500
 
 4000 LOCATE 10, 8
-	CALL CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Cnf)
+	CALL CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
 	I$ = GetKeyPress$
-	CALL CSMsgBox("", 0, Cnf)
+	CALL CSMsgBox("", 0, Pass)
 	GOTO 10
 
 4010 LOCATE 10, 8
-	CALL CSMsgBox("NO SPECIAL EVENTS BOXSCORES WERE FOUND PRESS ANY KEY TO RETURN TO MENU", 26, Cnf)
+	CALL CSMsgBox("NO SPECIAL EVENTS BOXSCORES WERE FOUND PRESS ANY KEY TO RETURN TO MENU", 26, Pass)
 	I$ = GetKeyPress$
-	CALL CSMsgBox("", 0, Cnf)
+	CALL CSMsgBox("", 0, Pass)
 	GOTO 4500
 
 4020 LOCATE 10, 8
-	CALL CSMsgBox("NO BOXSCORES WERE FOUND PRESS ANY KEY TO RETURN TO MENU", 26, Cnf)
+	CALL CSMsgBox("NO BOXSCORES WERE FOUND PRESS ANY KEY TO RETURN TO MENU", 26, Pass)
 	I$ = GetKeyPress$
-	CALL CSMsgBox("", 0, Cnf)
+	CALL CSMsgBox("", 0, Pass)
 	GOTO 4500
 
 4050 LOCATE 10, 8
-	CALL CSMsgBox("NO SCHEDULE FILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Cnf)
+	CALL CSMsgBox("NO SCHEDULE FILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
 	I$ = GetKeyPress$
-	CALL CSMsgBox("", 0, Cnf)
+	CALL CSMsgBox("", 0, Pass)
 	GOTO 10
 
 4060 LOCATE 10, 8
 	CALL CSMsgBox("BOXSCORE DOES NOT EXIST PRESS ANY KEY TO RETURN TO MAIN MENU", 23, Cnf)
 	I$ = GetKeyPress$
-	CALL CSMsgBox("", 0, Cnf)
+	CALL CSMsgBox("", 0, Pass)
 	RETURN
 
 4500 'BOXSCORE MAINTENANCE
 	CALL TITLE
-	ITEM$(1) = "SET PARAMETERS TO SAVE SPECIAL EVENTS BOXSCORES  "
-	ITEM$(2) = "ACCESS USER SAVED AND SPECIAL EVENTS BOXSCORES   "
-	ITEM$(3) = "DELETE ALL SCHEDULE GENERATED BOXSCORES          "
-	ITEM$(4) = "DELETE ALL USER SAVED, & SPECIAL BOXSCORES       "
-	ITEM$(5) = "DELETE ALL BOXSCORES (SCHEDULE, USER, &  SPECIAL)"
-	ITEM$(6) = "RETURN TO MAIN AUTO SCHEDULER MENU               "
+	menuItems$(1) = "SET PARAMETERS TO SAVE SPECIAL EVENTS BOXSCORES  "
+	menuItems$(2) = "ACCESS USER SAVED AND SPECIAL EVENTS BOXSCORES   "
+	menuItems$(3) = "DELETE ALL SCHEDULE GENERATED BOXSCORES          "
+	menuItems$(4) = "DELETE ALL USER SAVED, & SPECIAL BOXSCORES       "
+	menuItems$(5) = "DELETE ALL BOXSCORES (SCHEDULE, USER, &  SPECIAL)"
+	menuItems$(6) = "RETURN TO MAIN AUTO SCHEDULER MENU               "
 	  SELECTION% = 1
 	Count% = 6
 	Start% = 1
@@ -975,7 +980,7 @@ CLOSE 1
 CALL box0(5, 15, 12, 65, 2, 31)
 	
 _MouseShow "DEFAULT"
-MMenuVert VARPTR(ITEM$(1)), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -1125,7 +1130,7 @@ CLOSE #1
 
 			CALL CSMsgBox("REVISED BOXSCORE HAS BEEN SAVED...PRESS ANY KEY TO CONTINUE", 31, Cnf)
 			I$ = GetKeyPress$
-			CALL CSMsgBox("", 0, Cnf)
+			CALL CSMsgBox("", 0, Pass)
 
 		END IF
 
@@ -1135,6 +1140,11 @@ CLOSE #1
 	'CALL QEdit(array$(), Ky$, 5, Ed)
 	 RETURN
 
+
+'------------------------------
+'      TITLE Subroutine
+'------------------------------
+' Displays window title / game copyright
 SUB TITLE ()
 	COLOR , 0: KEY OFF: CLS
 	COLOR , 1: LOCATE 1, 1: PRINT TAB(80); : LOCATE , 33: COLOR 14
