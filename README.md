@@ -14,8 +14,8 @@ Since 1983 Lance Haffner Games has been publishing the finest quality text-based
 LH Games were some of the premier simulators of the 80's. They were a staple of of the mail order days and  served as one of the earliest computer sports simulation. Available for several platforms at the time thanks to their use of BASIC, they fast became known for their impressive accuracy and surprisingly quick speed. Not only that, they allowed very detailed and thorough team, conference and season management - yet somehow maintained an entertaining feel with gameplay that was never overly detailed. 
 
 ## Visuals
-![baseball box art](https://github.com/jleonard2099/LHG_FullCount/tree/main/blob/main/base-box.jpg)
-![baseball in action](https://github.com/jleonard2099/LHG_FullCount/tree/main/blob/main/base-action.jpg)
+![baseball box art](base-box.jpg)
+![baseball in action](base-action.jpg)
 	
 ## Installation
 No installation required. Pre-compiled binaries and required reference files are in /bin.
@@ -60,13 +60,15 @@ Contact me directly if interested in contributing. Only considering people who s
 # Authors / Acknowledgment
 - I am responsible for maintaining / updating most of the code and will spend equal effort to code cleanup as to code improvement.
 - Jason Lamb, for lending his expertise in BASIC to helping me learn some standards and rewriting the menu functions.
-- Philip Lupi of the [Lance Haffner Sports Sims](https://www.facebook.com/groups/115923978469802) Facebook group, for his hard work keeping Lance's games alive and active with fans old and new.
 - Lance Haffner, for his hard work over 2 decades giving people endless hours of playable sports games and making dreams come true.
+- [Lance Haffner Sports Sims](https://www.facebook.com/groups/115923978469802) Facebook group admin Philip Lupi, for his hard work keeping Lance's games alive and active with fans old and new.
+- [Manual images created by Cool Clips](http://search.coolclips.com/)
+- [Game icons created by Joseph Gan (Icon-Icons)](https://icon-icons.com/users/XHgnBHIfJk0ZlajSy0A0x/icon-sets/)
 
 # License
-...TBD...
+Affero GNU GPL v3
 
 # Project Status
-Preliminary work has been done so that code should be able to compile with minimal changes. Most immediate updates will be changes made to reach successful compile.
+Preliminary work has completed so that code can compile in a modern environment. Next stages will be cleaning up code and commenting it so we can later consolidate for purporses of going cross-platform.
 
 Things are moving along as fast as personal time allows for now, which is reasonable given the scope of the project.
