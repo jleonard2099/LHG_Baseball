@@ -1,0 +1,6 @@
+'**** COMMON.GW - This file is used to maintain a equivalent set of common
+'                 statements throughout the progam
+
+COMMON SHARED GPDat%(), Font$(), FontWidth%(), FontHeight%()
+COMMON SHARED OutLineFont$(), FontSize%(), OutLineHeight%()
+COMMON SHARED Tile$(), AltTile$(),va%(),VB%(),VC%(),PB%,F$,G$()

@@ -161,7 +161,8 @@ CLOSE #1
 	LOCATE 7, 27: INPUT NY$
 	IF NY$ = "" THEN GOSUB 1102: GOTO 182
 	YN$(1) = NY$
-	FOR I = 1 TO 200: teamItems$(I) = "": V%(I) = 1: NEXT
+	ERASE teamItems$
+	FOR I = 1 TO 200: V%(I) = 1: NEXT
 	GOSUB 1100
 
 182 IF BO% = 1 THEN BO% = 0: GOTO 100

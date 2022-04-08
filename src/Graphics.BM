@@ -1,0 +1,236 @@
+'VE = VGA/EGA
+'EGA = EGA Only
+'V256 = VGA Only
+
+SUB GMove1VE (BYVAL FromCol%, BYVAL FromLine%, BYVAL Cols%, BYVAL Lines%, BYVAL DestCol%, BYVAL DestLine%)
+'GMovel VE moves any rectangular block on any video page to 
+' any location on any video page
+
+End Sub
+
+
+
+SUB GMove2VE (BYVAL FromCol%, BYVAL FromLine%, BYVAL Cols%, BYVAL Lines%, BYVAL DestSegment%, BYVAL Direction%)
+'GMove2VE will save and restore any rectangular region of the screen to
+' a video memory location which you specify.
+
+End Sub
+
+
+
+SUB GMove3VE (BYVAL FromCol%, BYVAL FromLine%, BYVAL Cols%, BYVAL Lines%, BYVAL DestCol%, BYVAL DestLine%, BYVAL SkipLines%)
+'GMove3VE moves any rectangular block on any video page to 
+' any location on any video page. Interlacing effect is possible.
+
+End Sub
+
+
+
+SUB GMove4VE (BYVAL FromCol%, BYVAL FromLine%, BYVAL Cols%, BYVAL Lines%, BYVAL DestSegment%, BYVAL Direction%)
+'GMove4VE will save and restore any rectangular region of the screen to
+' an array you specify.
+
+End Sub
+
+
+
+SUB ClearVE ()
+'Reset EGA / VGA registers
+End Sub
+
+
+
+SUB SCREEN1(0)
+'Yeah, an ASM alternative to the BASIC command
+END SUB
+
+SUB SCREEN2(0)
+'Yeah, an ASM alternative to the BASIC command
+END SUB
+
+SUB SCREEN3(0)
+'Yeah, an ASM alternative to the BASIC command
+END SUB
+
+SUB SCREEN13(0)
+'Yeah, an ASM alternative to the BASIC command
+END SUB
+
+
+
+SUB DispPCXH
+'Display previously loaded image to Hercules screen
+
+END SUB
+
+
+
+SUB DispPCXV256
+'Display previously loaded image to VGA screen
+END SUB
+
+
+
+SUB DispPCXVE
+'Display previously loaded image to EGA/VGA screen
+
+END SUB
+
+
+
+SUB SetPalTripleVGA
+'Sets RGB color value for VGA palette
+END SUB
+
+
+
+SUB SetPaletteEGA
+'Sets color value for EGA palette
+END SUB
+
+
+
+SUB DisplayPCXFile (FileName$, VideoPage%) STATIC
+	L = INSTR(FileName$, ".")   'Append the .PCX extension if it isn't already there
+	IF L = 0 THEN FileName$ = FileName$ + ".PCX"
+	Array$ = SPACE$(68 + 768)   'Set up an array for the header and VGA 256 palette
+	IF NOT OpenPCXFile(FileName$, Array$) THEN EXIT SUB
+	CALL WhichPCXScreen(Array$, WhichScreen%)
+	CALL HandlePCXPalette(Array$, WhichScreen%)
+	'Each of the if statements before the CALL's to Screen statements
+	'could be removed if you want the screen mode to be set by this routine
+	'and not by calling SetVideo prior to calling this routine.  What the
+	'if statements do is attempt not to set the screen mode if it the computer
+	'is already in that screen mode.
+	IF WhichScreen = 4 OR WhichScreen = 6 THEN
+	 IF WhichScreen = 4 THEN CALL Screen1(0) ELSE CALL Screen2(0)
+	 CALL DispPCXC(VideoPage%)
+	ELSEIF WhichScreen = 2 THEN
+	 IF GPDat%(31) <> 3 THEN CALL Screen3(0)
+	 CALL DispPCXH(VideoPage%)
+	ELSEIF WhichScreen = 9 AND GPDat%(31) = 8 THEN
+	 CALL Screen13(0)
+	 CALL DispPCXV256(VideoPage%)
+	ELSEIF WhichScreen = 5 THEN
+	 IF GPDat%(31) = 8 THEN CALL Screen9(0)
+	 CALL DispPCXVE(VideoPage%)
+	ELSE 'WhichScreen = 8
+	 'Un-' this next line if you want the routine to set its own screen
+	 'mode.  Otherwise if the image is VGA, then the machine is likely to
+	 'be set in either VGA or EGA mode already.
+	 'IF GPDat%(31) = 5 THEN CALL Screen9(0) ELSE CALL Screen12(0)
+	 CALL DispPCXVE(VideoPage%)
+	END IF
+	  Array$ = ""     'Empty the Array$.  We're done working with it.
+
+END SUB
+
+
+
+SUB HandlePCXPalette (Array$, WhichScreen) STATIC
+	PCXVersion = ASC(MID$(Array$, 2, 1))
+IF PCXVersion <> 2 AND PCXVersion <> 5 THEN EXIT SUB
+	I = 17
+IF WhichScreen = 9 THEN I = 69
+	IF WhichScreen = 8 THEN
+		IF GPDat%(31) = 5 THEN
+	FOR T = 0 TO 15
+		N = 0
+		a = ASC(MID$(Array$, I, 1)) \ 64
+		IF (a AND 1) = 1 THEN N = N + 32
+		IF (a AND 2) = 2 THEN N = N + 4
+		I = I + 1
+		b = ASC(MID$(Array$, I, 1)) \ 64
+		IF (b AND 1) = 1 THEN N = N + 16
+		IF (b AND 2) = 2 THEN N = N + 2
+		I = I + 1
+		c = ASC(MID$(Array$, I, 1)) \ 64
+		IF (c AND 1) = 1 THEN N = N + 8
+		IF (c AND 2) = 2 THEN N = N + 1
+		I = I + 1
+		CALL SetPaletteEGA(T, N)
+	NEXT
+		ELSE
+	FOR T = 0 TO 15
+		CALL SetPaletteEGA(T, T)
+	NEXT
+	FOR T = 0 TO 15
+		a = ASC(MID$(Array$, I, 1)) \ 4
+		I = I + 1
+		b = ASC(MID$(Array$, I, 1)) \ 4
+		I = I + 1
+		c = ASC(MID$(Array$, I, 1)) \ 4
+		I = I + 1
+		CALL SetPalTripleVGA(T, a, b, c)
+	NEXT
+		END IF
+ELSEIF WhichScreen = 5 THEN
+		FOR T = 0 TO 15
+	N = 0
+	a = ASC(MID$(Array$, I, 1)) \ 64
+	IF (a AND 1) = 1 THEN N = N + 32
+	IF (a AND 2) = 2 THEN N = N + 4
+	I = I + 1
+	b = ASC(MID$(Array$, I, 1)) \ 64
+	IF (b AND 1) = 1 THEN N = N + 16
+	IF (b AND 2) = 2 THEN N = N + 2
+	I = I + 1
+	c = ASC(MID$(Array$, I, 1)) \ 64
+	IF (c AND 1) = 1 THEN N = N + 8
+	IF (c AND 2) = 2 THEN N = N + 1
+	I = I + 1
+	CALL SetPaletteEGA(T, N)
+		NEXT
+ELSEIF WhichScreen = 9 THEN
+		FOR T = 0 TO 255
+	a = ASC(MID$(Array$, I, 1)) \ 4
+	I = I + 1
+	b = ASC(MID$(Array$, I, 1)) \ 4
+	I = I + 1
+	c = ASC(MID$(Array$, I, 1)) \ 4
+	I = I + 1
+	CALL SetPalTripleVGA(T, a, b, c)
+		NEXT
+END IF
+	END SUB
+
+
+
+SUB WhichPCXScreen (Array$, WhichScreen) STATIC
+	Manufacturer = ASC(MID$(Array$, 1, 1))
+PCXVersion = ASC(MID$(Array$, 2, 1))
+	Compression = ASC(MID$(Array$, 3, 1))
+BitsPerPixel = ASC(MID$(Array$, 4, 1))
+	XMin = CVI(MID$(Array$, 5, 2))          'Image locations
+YMin = CVI(MID$(Array$, 7, 2))
+XMax = CVI(MID$(Array$, 9, 2))
+YMax = CVI(MID$(Array$, 11, 2))
+	XSize = CVI(MID$(Array$, 13, 2))        'Monitor Display Size
+YSize = CVI(MID$(Array$, 15, 2))
+	NumPlanes = ASC(MID$(Array$, 66, 1))    'Number of video planes
+BytesPerLine = CVI(MID$(Array$, 67, 2)) 'Bytes Per Line
+	'Determine Monitor Needed
+IF (XMax - XMin + 1) = 320 OR XSize = 320 THEN
+		IF BitsPerPixel = 8 THEN
+	WhichScreen = 9
+		ELSE
+	WhichScreen = 4
+		END IF
+ELSEIF (XSize = 720) OR (XMax - XMin + 1) = 720 THEN
+		WhichScreen = 2
+ELSEIF (XSize = 640) OR (XMax - XMin + 1) = 640 THEN
+		IF (YSize = 200) OR (YMax - YMin + 1) = 200 THEN
+	WhichScreen = 6
+		ELSEIF (YSize = 350) OR (YMax - YMin + 1) <= 350 THEN
+	WhichScreen = 5
+		ELSEIF (YSize = 480) OR (YMax - YMin + 1) <= 480 THEN
+	WhichScreen = 8
+		END IF
+END IF
+	IF WhichScreen = 0 THEN
+		IF NumPlanes > 1 THEN WhichScreen = 8 ELSE WhichScreen = 6
+		IF BitsPerPixel = 2 THEN WhichScreen = 4
+		IF BitsPerPixel = 8 THEN WhichScreen = 9
+END IF
+
+END SUB

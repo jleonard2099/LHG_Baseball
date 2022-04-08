@@ -12,7 +12,7 @@ DECLARE SUB TITLE ()
 DIM B$(23), B%(23), P$(22), P%(22), B0%(23, 22), P0%(22, 42), T(22)
 DIM T1(23), TT(40, 22), TT1(40, 23), TT$(40, 22), TT1$(40, 23)
 
-2 DIM WW(40), LL(40), menuItems$(10)
+2 DIM WW(40), LL(40), menuItems$(4)
 DIM Z1$(40), TYP2(920), D$(2)
 
 3 DIM TMB(920) AS STRING * 15, TP$(32)

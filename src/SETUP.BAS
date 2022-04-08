@@ -1,6 +1,13 @@
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'
 
+'The following files are combined
+'to make the loader + game setup / PBP
+'LOADER + SETUP + RAREPLAY + ROUTINES
+
+'The following files are actual game routines
+'SOURCE (regular game), SOURCEG (VGA graphics)
+
 _Title "Full Count Baseball - Game Setup"
 $ExeIcon:'./lhg_fcbase.ico'
 _Icon	
@@ -43,7 +50,7 @@ Dim Shared F$(), TM$(), T1%(), YN$(), TP%(), SO%(), CF%(), BT%()
 Dim Shared S$, p, U6, DH%, U9, G4 AS SINGLE, RE, RD
 Dim Shared TA%, SC%, WF AS SINGLE, PC%, TP%, WS%, WI$, AP%,INNING%,BUCK AS PBP
 Dim Shared MG%(),CSS%(),D,IJ%,DR%,CGERA%,IJL%,EJ%
-'$INCLUDE: 'COMMON.GW'
+
 DATA first,second,third,short
 DATA 6,12,37,55,66,74,86,96,100
 DATA 5,10,32,55,67,75,86,96,100

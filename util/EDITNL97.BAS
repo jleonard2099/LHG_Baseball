@@ -10,7 +10,7 @@ DECLARE SUB PITCHEREDIT ()
 DECLARE SUB TITLE ()
 DECLARE SUB EDITTEAM (YN$, T$, NN$, S$, M$, T)
 
-DIM D$(3), menuItems$(15)
+DIM D$(3), menuItems$(10)
 DIM K9(1) AS LONG
 DIM Q$(2100), FS%(22, 4, 4), BP$(3)
 DIM B%(22, 79), P%(21, 88), B$(22), P$(21), L%(13)
@@ -460,7 +460,7 @@ RETURN
 	LOCATE 7, 27: INPUT NY$
 	IF NY$ = "" THEN GOSUB 1102: GOTO 182
 	YN$ = NY$
-	FOR I = 1 TO 200: teamItems$(I) = "": NEXT
+	ERASE teamItems$
 
 1441 GOSUB 1100
 

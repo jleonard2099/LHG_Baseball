@@ -12,7 +12,7 @@ DECLARE SUB TITLE ()
 DIM WW(40), LL(40), TML$(40), Z1$(40), EWW(40), RWW(40), HWW(40), ELL(40), RLL(40), HLL(40), LTW(40), LTL(40)
 DIM H%(162), H$(162), V%(162), PL$(162), W$(162), L$(162), I%(162)
 DIM TWS(40), TLS(40), CWS(40), CLT(40), LWS(40), LLS(40)
-DIM D$(2), menuItems$(10)
+DIM D$(2), menuItems$(4)
 
 4 FOR I = 1 TO 40: TWS(I) = 0: TLS(I) = 0: LWS(I) = 0: LLS(I) = 0: CWS(I) = 0: CLT(I) = 0: NEXT
 OPEN "DEV.BAS" FOR INPUT AS #2: FOR I = 0 TO 2: INPUT #2, D$(I): NEXT: CLOSE 2

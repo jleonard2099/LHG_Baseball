@@ -18,7 +18,7 @@ DIM HW(50), AW(50), HL(50), AL(50), R1(200), R2(200), R3(200), R4(200)
 
 7DIM B%(22, 41), P%(21, 36), B$(22), P$(21), L%(13), BS$(22), PS$(21), B0%(22, 40)
 DIM P0%(21, 41), BS%(22), PS%(32), T(22), T1(22), N$(22), NP$(21), Q$(15)
-DIM teamItems$(200), VV%(200), D$(3), menuItems$(10), K9(0) AS LONG
+DIM teamItems$(200), VV%(200), D$(3), menuItems$(5), K9(0) AS LONG
 DIM DV$(4), TR4(4), TR3(4), TR2(4), TR1(4), THW(4), THL(4), TAW(4), TAL(4)
 DIM Y AS LONG
 
@@ -74,7 +74,7 @@ _MouseHide
 	LOCATE 7, 27: INPUT NY$
 	IF NY$ = "" THEN GOSUB 1102: GOTO 182
 	YN$ = NY$
-	FOR I = 1 TO 200: teamItems$(I) = "": NEXT
+	ERASE teamItems$
 
 1441 GOSUB 1100
 

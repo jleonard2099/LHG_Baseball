@@ -21,9 +21,9 @@ Function FCount% (fileSpec$)
         osSpec$ = Left$(_OS$, InStr(2, _OS$, "[") - 1)
 
         Select Case osSpec$
-            Case "[WINDOWS]": Shell _Hide "dir /on /b" + fileSpec$ + " > " + TmpFile$
-            Case "[MAC]": Shell _Hide "find . -iname fileSpec$ -type f -print0 | sort -z | tee TmpFile"
-            Case "[LINUX]": Shell _Hide "find . -iname fileSpec$ -type f -print0 | sort -z | tee TmpFile$'"
+            Case "[WINDOWS]": Shell _Hide "dir /on /b " + fileSpec$ + " > " + TmpFile$
+            Case "[MAC]": Shell _Hide "find . -iname " + fileSpec$ + " -type f -print0 | sort -z | tee " + TmpFile$
+            Case "[LINUX]": Shell _Hide "find . -iname " + fileSpec$ + " -type f -print0 | sort -z | tee " + TmpFile$
         End Select
 
         Index% = 0: DirList$(Index%) = "": ff% = FreeFile
@@ -209,7 +209,8 @@ End Sub
 Sub box0 (ULRow%, ULCol%, LRRow%, LRCol%, Char%, Colr%)
 
     ' TO DO:
-    ' Replace print characters with Char%
+    ' Convert Colr% to FG/ BG
+
     '1 = single line all around
     '2 = double line all around
     '3 = double line horizontally, single line vertically
@@ -682,8 +683,26 @@ End Sub
 ' MAMenu Copycat Subroutine
 '-----------------------------------
 Sub MAMenu (menuItems$(), Selected%, Start%, Count%, ScanCode%, ItemFGColor%, ItemBGColor%, HighlightFGColor%, HighlightBGColor%, NumRows%, NumCols%, Spacing%, Row%, Column%)
+    'Adapted from the following:
+    'HMenu          Ray Thomas      March 2002
+    'http://brisray.com/qbasic/qmenu.htm
+    'A horizontally scrolling menu
+
+    'Variable names were made to match MAMenu from
+    'the QuickPack Pro functions. I also reduced a
+    'few areas of the code that was redundant or
+    'glitchy when using colored backgrounds.
+    'Also corrected an area where glitching would
+    'happen with the right arrow / page down if
+    'there were multiple pages of results
+
+    'Right now the only issue with the code is
+    'that it's very trusting of the user to get
+    'the parameters right, like column sizes
+    '(so it's not told to print off screen)
+
     'Selected%
-    ' which element to put at the top of the menu
+    ' which element was selected from the menu
 
     'Start%
     ' which element to put at the top of the menu
@@ -708,406 +727,167 @@ Sub MAMenu (menuItems$(), Selected%, Start%, Count%, ScanCode%, ItemFGColor%, It
     ' Row% / Column%
     ' row / column from which to start printing
 
-    _MouseHide
+    Option Base 1
 
-    'Determine our limits for # screens / rows
-    currentScreen% = 1
-    colMaxItems% = NumRows% - 3
-    MaxScreenItems% = colMaxItems% * NumCols%
-    screenStartItem = 1
-    screenEndItem = MaxScreenItems%
+    'Examples of using MAMenu I've seen usually assign
+    'this variable before calling
+    'Selected% = 1
 
-    '--- this should be assigned based on the
-    '--- length of the first element in the array
-    elementLength = 15
+    Dim numberItems%, maxItemsPerScreen%, itemLength%, ColWidth%, TotalColsData%
 
-    'value between 1st column and 4th column -- left and right arrow routines
-    colDiff% = colMaxItems% * (Row% - 1)
+    itemLength% = Len(menuItems$(1))
+    maxItemsPerScreen% = NumRows% * NumCols%
+    If maxItemsPerScreen% > Count% Then maxItemsPerScreen% = Count%
+    ColWidth% = itemLength% + Spacing%
+    TotalColsData% = Fix((Count% + (NumRows% - 1)) / NumRows%)
 
-    MaxScrnNum% = Int(Count% / MaxScreenItems%)
-    If (MaxScreenItems% Mod Count%) <> 0 Then
-        MaxScrnNum% = MaxScrnNum% + 1
-    End If
-
-    'Currently this routine is NOT mouse-friendly
-
-    'Basically just need to consider # of columns
-    'Loop through them and print a row for each one
-    'Also move "column" to print at based on spacing
-
-    If ScanCode% = 0 Then ScanCode% = NumRows%
-
-    If NumRows% > ScanCode% Then
-        NumRows% = ScanCode%
-    End If
-
-    currentChoice = Selected%
-
-    ' Output menu options first
-    ItemIndex = Start%
-
-    'For itemIndex = Start% To (Start% + Count% - 1)
-
-    For colIndex = Column% To NumCols%
-
-        For rowIndex = Row% To NumRows% Step 1
-
-            PrintColumn = Column% + ((colIndex - 1) * (elementLength + Spacing%))
-            Locate rowIndex, PrintColumn
-
-            'If we did not start at the 1st position, we're going to
-            'loop back around in our array to the beginning elements
-
-            If ItemIndex = Selected% Then
-                ' Print the specified item in the menu, highlighted
-                Color HighlightFGColor%, HighlightBGColor%
-                Print String$(elementLength + Spacing%, " ")
-                Locate rowIndex, PrintColumn
-            Else
-                Color ItemFGColor%, ItemBGColor%
-            End If
-
-            Print menuItems$(ItemIndex)
-
-            ItemIndex = ItemIndex + 1
-            If ItemIndex > UBound(menuItems$) Then ItemIndex = LBound(menuItems$)
-
-        Next rowIndex
-
-    Next colIndex
-
-    userRow = Row%
-    userCol = Column%
-
-    ' Read user input, only act on up/down/ENTER
-    Do: Selection$ = InKey$
-        If Selection$ <> "" Then
-            ScanCode% = Asc(Selection$)
-            Select Case Selection$
-                Case Chr$(0) + "H": GoSub Up.Arrow
-                Case Chr$(0) + "P": GoSub Down.Arrow
-                Case Chr$(0) + "K": GoSub Left.Arrow
-                Case Chr$(0) + "M": GoSub Right.Arrow
-                Case Chr$(0) + "I": GoSub Page.Up
-                Case Chr$(0) + "Q": GoSub Page.Down
-            End Select
+    'Determine how many items in the array are actually
+    'needed for a menu (find the first empty element)
+    'This is basically a check against the Count% parameter
+    'It really shouldn't be used or needed
+    numberItems% = UBound(menuItems$)
+    For x = Start% To UBound(menuItems$)
+        If menuItems$(x) = "" Then
+            numberItems% = x - 1
+            Exit For
         End If
-    Loop Until Selection$ = Chr$(13) Or Selection$ = Chr$(27)
+    Next x
 
-    If Selection$ = Chr$(27) Then
-        currentChoice = 0
-    End If
+    Do
+        GoSub DrawMenu '*** Draw the menu ***
+        GoSub UserInput '*** Get the user input ***
 
-    Color HighlightBGColor%, HighlightFGColor%
-    Selected% = currentChoice
+    Loop Until UserIn$ = Chr$(27) Or UserIn$ = Chr$(13)
+
+    Locate Row%, Column%
+
+    ScanCode% = Asc(UserIn$)
 
     Exit Sub
 
-    Up.Arrow:
 
-    If currentChoice > screenStartItem Then
-        PrintColumn = Column% + ((elementLength + Spacing%) * (userCol - 1))
-        ' Print menu item w/o highlight, below where we just moved to
-        Locate userRow, PrintColumn
+
+    '*** Draw the menu - obviously ***
+    DrawMenu:
+
+    XItemPosn = Column%
+    Locate Row%, XItemPosn
+    Color ItemFGColor%, ItemBGColor%
+    'Clear the part of the screen being used for menu
+    For currentItem = Row% To (Row% + NumRows% - 1)
+        For currentCol = 1 To NumCols%
+            Locate currentItem, Column% + (ColWidth% * (currentCol - 1))
+            'This ideally would be several columns of itemLength% spaces
+            Print Space$(itemLength%)
+        Next currentCol
+    Next currentItem
+
+    'Determine which item is selected
+    If Selected% > Start% + maxItemsPerScreen% - 1 Then
+        Do
+            Start% = Start% + NumRows%
+        Loop Until Selected% < Start% + maxItemsPerScreen%
+    End If
+
+    If Selected% < Start% Then
+        Do
+            Start% = Start% - NumRows%
+        Loop Until Selected% >= Start%
+    End If
+
+
+    'Print menu items
+    XItemPosn = Column%
+    Locate Row%, XItemPosn
+    For currentItem = Start% To Start% + maxItemsPerScreen% - 1
         Color ItemFGColor%, ItemBGColor%
-        If PrintColumn < 64 Then
-            Print String$(elementLength + Spacing%, " ")
-        Else: Print String$(elementLength + Spacing2%, " ")
+        Print menuItems$(currentItem);
+        Locate CsrLin + 1, XItemPosn
+        If currentItem Mod NumRows% = 0 Then
+            XItemPosn = XItemPosn + ColWidth%
+            If XItemPosn > 80 Then XItemPosn = Column%
+            Locate Row%, XItemPosn
         End If
-        Locate userRow, PrintColumn
-        Print menuItems$(currentChoice)
-        userRow = userRow - 1
+    Next currentItem
 
-        'Move to previous column
-        If (userRow Mod NumRows%) < Row% Then
-            If userCol > 1 Then
-                userCol = userCol - 1
-                userRow = NumRows%
-            End If
+    'Print highlighted item
+    XItemPosn = Column%
+    If Selected% > 1 Then Locate Row% + ((Selected% - Start%) Mod NumRows%), XItemPosn + (Fix((Selected% - Start%) / NumRows%) * ColWidth%)
+    If Selected% = 1 Then Locate Row%, XItemPosn
+    Color HighlightFGColor%, HighlightBGColor%
+    Print menuItems$(Selected%);
 
-            PrintColumn = Column% + ((elementLength + Spacing%) * (userCol - 1))
-        End If
+    Return
 
-        'We've technically chosen the previous entry
-        currentChoice = currentChoice - 1
-        ' Highlight the new menu item
-        Locate userRow, PrintColumn
-        Color HighlightFGColor%, HighlightBGColor%:
-        If PrintColumn < 64 Then
-            Print String$(elementLength + Spacing%, " ")
-            Locate userRow, PrintColumn
-            Print menuItems$(currentChoice)
 
-        Else: Print String$(elementLength + Spacing2%, " ")
-            Locate userRow, PrintColumn
-            Print menuItems$(currentChoice)
-        End If
-    End If: Return
+    '*** Get and process the user input ***
+    UserInput:
 
-    Down.Arrow:
+    UserIn$ = "" '*** Reset UserIn$ ***
 
-    If currentChoice < screenEndItem And currentChoice < Count% Then
-        PrintColumn = Column% + ((elementLength + Spacing%) * (userCol - 1))
-        ' Print menu item w/o highlight, above where we just moved to
-        Locate userRow, PrintColumn
-        Color ItemFGColor%, ItemBGColor%
-        If PrintColumn < 64 Then
-            Print String$(elementLength + Spacing%, " ")
-            Locate userRow, PrintColumn
-            Print menuItems$(currentChoice)
-        Else: Print String$(elementLength + Spacing2%, " ")
-            Locate userRow, PrintColumn
-            Print menuItems$(currentChoice)
-        End If
-        userRow = userRow + 1
+    Do
+        UserIn$ = InKey$
+    Loop Until UserIn$ <> ""
 
-        'Move to next column
-        If (userRow Mod NumRows%) = 1 Then
-            userCol = userCol + 1
-            PrintColumn = Column% + ((elementLength + Spacing%) * (userCol - 1))
-            userRow = Row%
-        End If
+    Select Case UserIn$
 
-        'We've technically chosen the next entry
-        currentChoice = currentChoice + 1
-        ' Highlight the new menu item
-        Locate userRow, PrintColumn
-        Color HighlightFGColor%, HighlightBGColor%
-        If PrintColumn < 64 Then
-            Print String$(elementLength + Spacing%, " ")
-            Locate userRow, PrintColumn
-            Print menuItems$(currentChoice)
+        Case Chr$(0) + Chr$(80) '*** Down arrow pressed ***
 
-        Else: Print String$(elementLength + Spacing2%, " ")
-            Locate userRow, PrintColumn
-            Print menuItems$(currentChoice)
-        End If
-    End If: Return:
+            If Selected% < numberItems% Then Selected% = Selected% + 1
 
-    Left.Arrow:
+        Case Chr$(0) + Chr$(72) '*** Up arrow pressed ***
 
-    If currentChoice > screenStartItem And currentChoice <= screenEndItem Then
+            If Selected% - 1 <> 0 Then Selected% = Selected% - 1
 
-        If currentScreen% = MaxScrnNum% Then
+        Case Chr$(0) + Chr$(75) '*** Left arrow pressed ***
 
-            'Determines last column on final screen
-            If Count% - screenStartItem + 1 <= colMaxItems% Then
-                finalMaxCols = 1: Return
+            If Selected% > NumRows% Then Selected% = Selected% - NumRows%
+
+        Case Chr$(0) + Chr$(77) '*** Right arrow pressed ***
+
+            If Selected% < (TotalColsData% - 1) * NumRows% + 1 Then Selected% = Selected% + NumRows%
+            If Selected% > Count% Then Selected% = Count%
+
+        Case Chr$(0) + Chr$(71) '*** Home pressed ***
+
+            Selected% = 1
+
+        Case Chr$(0) + Chr$(79) '*** End pressed ***
+
+            Selected% = Count%
+
+        Case Chr$(0) + Chr$(73) '*** Page Up pressed ***
+
+            If Selected% > maxItemsPerScreen% Then
+                Selected% = Selected% - maxItemsPerScreen%
             Else
-                finalMaxCols = Int((Count% - screenStartItem + 1) / colMaxItems%)
-                If (finalMaxCols Mod Count%) <> 0 Then
-                    finalMaxCols = finalMaxCols + 1
-                    MaxRowOnFinalColumn = Row% + (finalMaxCols Mod Count%)
-                End If
+                Selected% = 1
             End If
-            NumCols% = finalMaxCols
-            colDiff% = colMaxItems% * (NumCols% - 1)
-        End If
 
-        If userCol = Column% Then
-            PrintColumn = Column% + ((elementLength + Spacing%) * (userCol - 1))
-            Locate userRow, PrintColumn: Color ItemFGColor%, ItemBGColor%
-            Print String$(elementLength + Spacing%, " ")
-            Locate userRow, PrintColumn: Print menuItems$(currentChoice)
+        Case Chr$(0) + Chr$(81) '*** Page Down pressed ***
 
-            userCol = NumCols%
-            If currentScreen% = MaxScrnNum% Then
-                If currentChoice + colDiff% > Count% Then
-                    currentChoice = Count% + 1
-                    userRow = MaxRowOnFinalColumn
-                End If
+            If Selected% < Count% - maxItemsPerScreen% Then
+                Selected% = Selected% + maxItemsPerScreen%
+            Else
+                Selected% = Count%
             End If
-            If currentChoice + colDiff% <= Count% Then
-                currentChoice = currentChoice + colDiff%
-            End If
-            GoSub Up.Arrow: Return
-        End If
 
-        PrintColumn = Column% + ((elementLength + Spacing%) * (userCol - 1))
+        Case Else
 
-        ' Print menu item w/o highlight, right to where we just moved to
-        Locate userRow, PrintColumn
-        Color ItemFGColor%, ItemBGColor%
-        If PrintColumn < 64 Then
-            Print String$(elementLength + Spacing%, " ")
-            Locate userRow, PrintColumn
-            Print menuItems$(currentChoice)
-        Else
-            Print String$(elementLength + Spacing2%, " ")
-            Locate userRow, PrintColumn
-            Print menuItems$(currentChoice)
-        End If
+            '*** For any other key press find the first menu item ***
+            '*** starting with that key ***
 
-        userCol = userCol - 1
-
-        'Move to previous Column
-        PrintColumn = Column% + ((elementLength + Spacing%) * (userCol - 1))
-
-        currentChoice = currentChoice - colMaxItems%
-
-        Locate userRow, PrintColumn ' Highlight the new menu item
-        Color HighlightFGColor%, HighlightBGColor%
-        Print String$(elementLength + Spacing%, " ")
-        Locate userRow, PrintColumn
-        Print menuItems$(currentChoice)
-    End If: Return
-
-    Right.Arrow:
-
-    If currentChoice >= screenStartItem And currentChoice < screenEndItem Then
-
-        If currentScreen% = MaxScrnNum% Then
-            If (currentChoice + colMaxItems%) > Count% Then
-                Return
-            End If
-        End If
-
-        If userCol = NumCols% Then
-            PrintColumn = Column% + ((elementLength + Spacing%) * (userCol - 1))
-            Locate userRow, PrintColumn: Color ItemFGColor%, ItemBGColor%
-            Print String$(elementLength + Spacing2%, " ")
-            Locate userRow, PrintColumn
-            Print menuItems$(currentChoice)
-
-            userCol = Column%: PrintColumn = Column%
-            currentChoice = currentChoice - colDiff%
-            GoSub Down.Arrow: Return
-        End If
-
-        PrintColumn = Column% + ((elementLength + Spacing%) * (userCol - 1))
-
-        ' Print menu item w/o highlight, left to where we just moved to
-        Locate userRow, PrintColumn
-        Color ItemFGColor%, ItemBGColor%
-        If PrintColumn < 64 Then
-            Print String$(elementLength + Spacing%, " ")
-            Locate userRow, PrintColumn
-            Print menuItems$(currentChoice)
-        Else
-            Print String$(elementLength + Spacing2%, " ")
-            Locate userRow, PrintColumn
-            Print menuItems$(currentChoice)
-        End If
-
-        userCol = userCol + 1
-
-        'Move to next Col
-        PrintColumn = Column% + ((elementLength + Spacing%) * (userCol - 1))
-
-        'We've technically chosen the next entry
-        currentChoice = currentChoice + colMaxItems%
-
-        ' Highlight the new menu item
-        Locate userRow, PrintColumn
-        Color HighlightFGColor%, HighlightBGColor%
-
-        If PrintColumn < 64 Then
-            Print String$(elementLength + Spacing%, " ")
-            Locate userRow, PrintColumn
-            Print menuItems$(currentChoice)
-
-        Else: Print String$(elementLength + Spacing2%, " ")
-            Locate userRow, PrintColumn
-            Print menuItems$(currentChoice)
-        End If
-    End If: Return
-
-    Page.Up:
-
-    If currentScreen% > 1 Then
-        Color , 4: Cls: Locate , 33: Color 14
-        Print "TEAM SELECTION": Color 15
-        Locate 25, 1: Color 14: Print "ESC";: Color 15
-        Print "-SELECT NEW ID  PGDN  PGUP  ";: Color 14
-        Print "ENTER";: Color 15: Print "-SELECTS TEAM";
-        userRow = Row%: userCol = Column%
-
-        currentScreen% = currentScreen% - 1
-        screenStartItem = screenStartItem - MaxScreenItems%
-        screenEndItem = screenStartItem + (MaxScreenItems% - 1)
-        ItemIndex = screenStartItem
-        Selected% = ItemIndex
-
-        For colIndex = Column% To NumCols%
-
-            For rowIndex = Row% To NumRows% Step 1
-
-                PrintColumn = Column% + ((colIndex - 1) * (elementLength + Spacing%))
-                Locate rowIndex, PrintColumn
-
-                'If we did not start at the 1st position, we're going to
-                'loop back around in our array to the beginning elements
-
-                If ItemIndex = Selected% Then
-                    ' Print the specified item in the menu, highlighted
-                    Color 0, HighlightColor%
-                    Print String$(elementLength + Spacing%, " ")
-                    Locate rowIndex, PrintColumn
-                Else: Color ItemFGColor%, ItemBGColor%
+            For currentItem = 1 To numberItems%
+                If Left$(menuItems$(Count), 1) = UserIn$ Then
+                    Selected% = currentItem
+                    Exit For
                 End If
+            Next currentItem
+    End Select
 
-                Print menuItems$(ItemIndex)
-
-                ItemIndex = ItemIndex + 1
-                If ItemIndex > UBound(menuItems$) Then ItemIndex = LBound(menuItems$)
-
-            Next rowIndex
-
-        Next colIndex: currentChoice = Selected%
-    End If: Return
-
-    Page.Down:
-
-    Selected% = ItemIndex ' makes sure the 1st item on page gets highlighted
-
-    If currentScreen% < MaxScrnNum% Then
-        Color , 4: Cls: Locate , 33: Color 14
-        Print "TEAM SELECTION": Color 15
-        Locate 25, 1: Color 14: Print "ESC";: Color 15
-        Print "-SELECT NEW ID  PGDN  PGUP  ";: Color 14
-        Print "ENTER";: Color 15: Print "-SELECTS TEAM";
-        userRow = Row%: userCol = Column%
-
-        For colIndex = Column% To NumCols%
-
-            For rowIndex = Row% To NumRows% Step 1
-
-                PrintColumn = Column% + ((colIndex - 1) * (elementLength + Spacing%))
-                Locate rowIndex, PrintColumn
-
-                'If we did not start at the 1st position, we're going to
-                'loop back around in our array to the beginning elements
-
-                If ItemIndex = Selected% Then
-                    ' Print the specified item in the menu, highlighted
-                    Color HighlightFGColor%, HighlightBGColor%
-                    Print String$(elementLength + Spacing%, " ")
-                    Locate rowIndex, PrintColumn
-                Else: Color ItemFGColor%, ItemBGColor%
-                End If
-
-                Print menuItems$(ItemIndex)
-
-                ItemIndex = ItemIndex + 1
-                If ItemIndex > UBound(menuItems$) Then ItemIndex = LBound(menuItems$)
-
-            Next rowIndex
-
-        Next colIndex
-
-        If currentScreen% = 1 Then
-            currentChoice = 1
-        End If
-
-        currentChoice = (MaxScreenItems% * currentScreen%) + 1
-        currentScreen% = currentScreen% + 1
-        screenStartItem = currentChoice
-        screenEndItem = screenStartItem + (MaxScreenItems% - 1)
-
-    End If: Return
+    Return
 
 End Sub
-
 
 
 '-----------------------------------
@@ -1137,7 +917,7 @@ Sub MMenuVert (menuItems$(), Selected%, Start%, ScanCode%, ItemFGColor%, ItemBGC
 
     '--- this should be assigned based on the
     '--- length of the first element in the array
-    itemLength = 32
+    itemLength = Len(menuItems$(1))
     If ScanCode% = 0 Then ScanCode% = NumRows%
 
     If NumRows% > ScanCode% Then
@@ -1343,20 +1123,20 @@ Sub ReadFile (fileList$())
     osSpec$ = Left$(_OS$, InStr(2, _OS$, "[") - 1)
 
     Select Case osSpec$
-        Case "[WINDOWS]": Shell _Hide "dir /on /b" + fileSpec$ + " > " + TmpFile$
-        Case "[MAC]": Shell _Hide "find . -iname fileSpec$ -type f -print0 | sort -z | tee TmpFile"
-        Case "[LINUX]": Shell _Hide "find . -iname fileSpec$ -type f -print0 | sort -z | tee TmpFile$'"
+        Case "[WINDOWS]": Shell _Hide "dir /on /b " + fileSpec$ + " > " + TmpFile$
+        Case "[MAC]": Shell _Hide "find . -iname " + fileSpec$ + " -type f -print0 | sort -z | tee " + TmpFile$
+        Case "[LINUX]": Shell _Hide "find . -iname " + fileSpec$ + " -type f -print0 | sort -z | tee " + TmpFile$
     End Select
 
     dirEntry = 0
-    Open tem$ For Input As #5
+    Open TmpFile$ For Input As #5
     While Not EOF(5)
         Line Input #5, x$
         dirEntry = dirEntry + 1
         fileList$(dirEntry) = x$
     Wend
     Close 5
-    Kill tem$
+    Kill TmpFile$
 End Sub
 
 

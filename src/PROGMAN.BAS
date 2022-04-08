@@ -19,16 +19,26 @@ DECLARE SUB PITCHAROUND ()
 DECLARE SUB THROWHOME ()
 DECLARE SUB BASERUN ()
 
-5 DIM K9(1) AS LONG, D$(3), Q$(1843), PB$(23), R$(999)
-
-15 DIM B%(22, 44), P%(21, 36), B$(23), P$(21), L%(13), BS$(22), PS$(21)
-DIM N$(22), NP$(21), MG%(1000), X$(12), CZ(23), BTR$(23), BPR(23)
-DIM teamItems$(500), V%(500), GS%(21, 1), C$(10), AB%(9), YN$(1)
-DIM PT$(1), B1$(4), B3%(9), B7%(9), V1%(1), M%(9), B9%(9)
-DIM menuItems$(14)
+5 DIM K9(1) AS LONG
 DIM Y AS LONG
 DIM FRAC AS SINGLE
-Dim Shared MG%(), D$(), T, Q$(), YN$(), R$(), YN$,B$(),P$()
+
+15 Dim B$(23), B1$(4), BS$(22), BTR$(23), C$(10),
+Dim N$(22), NP$(21), P$(21), PB$(23), PT$(1), PS$(21)
+DIM X$(12),  YN$(1)
+DIM teamItems$(500), menuItems$(15)
+Dim Shared D$(3), R$(999)
+Dim Shared Q$(1843), YN$(), B$()
+Dim Shared YN$, P$()
+
+
+Dim AB%(9), B%(22, 44), B3%(9), B7%(9), B9%(9)
+DIM GS%(21, 1), L%(13), M%(9), P%(21, 36)
+Dim V%(500), V1%(1)
+Dim Shared MG%(1000)
+
+Dim CZ(23), BPR(23)
+Dim Shared T
 
 	YN$(0) = "Y": YN$(1) = "N"
 	DATA A,B,C,D,E,F,G,H,I,J,K,L,M
@@ -61,7 +71,13 @@ CLOSE #1
 	GOSUB 4512
 	IF MG%(0) <> 999 THEN MG%(0) = 999: FOR I = 1 TO 999: MG%(I) = -1: NEXT
 
-45 COLOR , 1: CLS : PRINT : PRINT TAB(23); : COLOR 14, 4: PRINT "FULL COUNT PROGRAMMABLE MANAGER": PRINT
+45 COLOR , 1
+	CLS
+	PRINT
+	PRINT TAB(23); 
+	COLOR 14, 4: PRINT "FULL COUNT PROGRAMMABLE MANAGER"
+	PRINT
+	ERASE menuItems$
 	menuItems$(1) = "SELECT NEW TEAM TO EDIT                                  "
 	menuItems$(2) = "SELECT/CHANGE LINEUPS                                    "
 	menuItems$(3) = "SELECT/CHANGE ROTATIONS/RELIEVERS                        "
@@ -71,11 +87,11 @@ CLOSE #1
 	menuItems$(7) = "SELECT/CHANGE HITTING STRATEGY                           "
 	menuItems$(8) = "SELECT/CHANGE DEFENSIVE STRATEGY                         "
 	menuItems$(9) = "SELECT/CHANGE PINCH RUNNING STRATEGY                     "
-menuItems$(10) = "SELECT/CHANGE BASE RUNNING STRATEGY                      "
-menuItems$(11) = "IMPORT MANAGERIAL PROFILE                                "
-menuItems$(12) = "EXPORT MANAGERIAL PROFILE                                "
-menuItems$(13) = "PRINT MANAGERIAL PROFILE                                 "
-menuItems$(14) = "RETURN TO GAME MENU                                      "
+	menuItems$(10) = "SELECT/CHANGE BASE RUNNING STRATEGY                      "
+	menuItems$(11) = "IMPORT MANAGERIAL PROFILE                                "
+	menuItems$(12) = "EXPORT MANAGERIAL PROFILE                                "
+	menuItems$(13) = "PRINT MANAGERIAL PROFILE                                 "
+	menuItems$(14) = "RETURN TO GAME MENU                                      "
 	SELECTION% = 1
 	Count% = 14
 	Start% = 1
@@ -125,6 +141,7 @@ _MouseHide
 	END SELECT
 
 55 CLS : PRINT TAB(22); : COLOR 14, 4: PRINT "PITCHING ROTATION/RELIEVER MANAGEMENT": PRINT : PRINT : COLOR , 0
+	ERASE menuItems$
 	menuItems$(1) = "INPUT A NEW STARTING PITCHING ROTATION     "
 	menuItems$(2) = "EDIT AN EXISTING STARTING PITCHING ROTATION"
 	menuItems$(3) = "SELECT/EDIT MIDDLE RELIEVERS               "
@@ -157,6 +174,7 @@ _MouseHide
 88 RUN "HELLO.EXE"
 
 100 CLS : PRINT TAB(26); : COLOR 14, 4: PRINT "LINEUP STRATEGY OPTIONS": PRINT : PRINT : COLOR , 0
+	ERASE menuItems$
 	menuItems$(1) = "SELECT/CHANGE/DISPLAY LINEUPS VS. RHP                  "
 	menuItems$(2) = "SELECT/CHANGE/DISPLAY LINEUPS VS. LHP                  "
 	menuItems$(3) = "ANALYZE PLAYER USAGE ACCORDING TO YOUR LINEUPS SELECTED"
@@ -385,7 +403,8 @@ _MouseHide
 480 CLS
 	LOCATE 3, 1
 	COLOR L%(11), L%(12): PRINT T$; : COLOR 15, 0: PRINT " LINEUPS VS "; PT$(Q2%): PRINT
-	 menuItems$(1) = "INPUT A NEW LINEUP            "
+	ERASE menuItems$
+	menuItems$(1) = "INPUT A NEW LINEUP            "
 	menuItems$(2) = "EDIT AN EXISTING LINEUP       "
 	menuItems$(3) = "DELETE AN EXISTING LINEUP     "
 	menuItems$(4) = "RETURN TO LINEUP STRATEGY MENU"
@@ -780,7 +799,8 @@ _MouseHide
 	LOCATE 7, 27: INPUT NY$
 	IF NY$ = "" THEN GOSUB 1102: GOTO 182
 	YN$ = NY$
-	FOR I = 1 TO 500: teamItems$(I) = "": V%(I) = 1: NEXT
+	ERASE teamItems$
+	FOR I = 1 TO 500: V%(I) = 1: NEXT
 	GOSUB 2100
 
 182 IF BO% = 1 THEN BO% = 0: GOTO 1445
@@ -1702,6 +1722,7 @@ CLOSE 2
 3000 'HITTING STRATEGIES
 	CLS
 	PRINT TAB(28); : COLOR 14, 4: PRINT "HITTING STRATEGIES": COLOR 15, 0: PRINT
+	ERASE menuItems$
 	menuItems$(1) = "SITUATIONS TO PH FOR PITCHER                 "
 	menuItems$(2) = "SITUATIONS FOR PITCHER TO SAC BUNT IN        "
 	menuItems$(3) = "SITUATONS FOR POSITION PLAYERS TO SAC BUNT IN"
@@ -1835,7 +1856,8 @@ _MouseHide
 3300 'DEFENSIVE STRATEGIES
 	CLS
 	PRINT TAB(31); : COLOR 14, 4: PRINT "DEFENSIVE STRATEGIES": COLOR 15, 0: PRINT
-	  menuItems$(1) = "INFIELD IN WITH 3RD BASE OCCUPIED            "
+	ERASE menuItems$
+	menuItems$(1) = "INFIELD IN WITH 3RD BASE OCCUPIED            "
 	menuItems$(2) = "CORNERS IN VS HITTER WHO MIGHT BUNT FOR A HIT"
 	menuItems$(3) = "CORNERS IN VS HITTER IN SAC BUNT SITUATION   "
 	menuItems$(4) = "CORNERS IN VS PITCHER IN SAC BUNT SITUATION  "
@@ -2015,6 +2037,7 @@ _MouseHide
 3501 'PINCH RUNNING STRATEGY
 	CLS
 	PRINT TAB(31); : COLOR 14, 2: PRINT "PINCH RUNNING STRATEGIES": COLOR 15, 0: PRINT
+	ERASE menuItems$
 	menuItems$(1) = "SELECT PINCH RUNNERS                                  "
 	menuItems$(2) = "SELECT PLAYERS TO PINCH RUN FOR AND THEIR REPLACEMENTS"
 	menuItems$(3) = "SITUATIONS TO PINCH RUN FOR THE PITCHER               "

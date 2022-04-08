@@ -12,7 +12,7 @@ DECLARE SUB TITLE ()
 
 DIM B$(22), P$(21), B0%(22, 21), P0%(21, 41), T(21), T1(22), H%(162), H$(162)
 DIM V%(162), PL$(162), W$(162), L$(162), ING%(162)
-DIM D$(2), P%(21), B%(22), teamItems$(200), VV%(200), Q$(15), menuItems$(3)
+DIM D$(2), P%(21), B%(22), teamItems$(200), VV%(200), Q$(15), menuItems$(4)
 DIM Y AS LONG, L%(13)
 OPEN "DEV.BAS" FOR INPUT AS #1
 	FOR I = 0 TO 2
@@ -556,7 +556,7 @@ PRINT "TEAM BATTING STATS"
 	LOCATE 7, 27: INPUT NY$
 	IF NY$ = "" THEN GOSUB 1102: GOTO 182
 	YN$ = NY$
-	FOR I = 1 TO 200: teamItems$(I) = "": NEXT
+	ERASE teamItems$
 
 1441 GOSUB 1101
 

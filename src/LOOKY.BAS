@@ -8,7 +8,8 @@ _AllowFullScreen
 
 DECLARE SUB TITLE ()
 
-DIM O%(100), O$(100), T%(100), P%(100), Q$(500), teamItems$(500)
+DIM O%(100), O$(100), T%(100), P%(100), Q$(500)
+DIM menuItems$(4), teamItems$(500)
 DIM Z2(14, 14), Z(15), Z1(15), VV%(500)
 DIM A$(14), D$(1), L%(4)
 DIM A(14, 24)
@@ -78,7 +79,7 @@ _MouseHide
 
 	IF NY$ = "" THEN GOSUB 1102: GOTO 3060
 	YN$ = NY$
-	FOR I = 1 TO 500: teamItems$(I) = "": NEXT
+	ERASE teamItems$
 	GOSUB 1100
 
 3060 IF BO% = 1 THEN BO% = 0: GOTO 3056

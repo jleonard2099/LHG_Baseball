@@ -1,6 +1,13 @@
-'$INCLUDE: 'COMMON.GW'
+'--INCLUDE: 'COMMON.GW'
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'
+
+'The following files are combined
+'to make the loader + game setup / PBP
+'LOADER + SETUP + RAREPLAY + ROUTINES
+
+'The following files are actual game routines
+'SOURCE (regular game), SOURCEG (VGA graphics)
 
 _Title "Full Count Baseball - Routines"
 ''$ExeIcon:'./lhg_ccb.ico'
@@ -189,6 +196,7 @@ END SUB
 '------------------------------
 '   ADV3BASES Subroutine
 '------------------------------
+' ...explanation...
 SUB ADV3BASES (I3, p, D)
 	B0%(I3, 0) = B1!(p): B0%(I3, 1) = P1%(D): Q$(I3) = Q$(0): B0%(I3, 2) = 0
 	B0%(0, 0) = 0

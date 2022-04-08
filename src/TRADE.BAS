@@ -17,7 +17,7 @@ DIM D0%(1), D1%(1), TEAM%(1, 22), P4%(1, 14), T1%(2, 23)
 DIM K9(1) AS LONG, S(1), YR$(2), SA$(2)
 DIM TS%(1, 11), SA%(1, 24)
 DIM Y AS LONG
-DIM X$(4), C$(9), menuItems$(4), teamItems$(200), V%(200), M$(2), S$(2), NN$(2)
+DIM X$(4), C$(9), menuItems$(3), teamItems$(200), V%(200), M$(2), S$(2), NN$(2)
 	X$(0) = "LP": X$(1) = "L": X$(2) = "S": X$(3) = "R": X$(4) = "RP"
 	C$(0) = "DH": C$(1) = "P": C$(2) = "C": C$(3) = "1B": C$(4) = "2B": C$(5) = "3B": C$(6) = "SS": C$(7) = "LF": C$(8) = "CF": C$(9) = "RF"
 
@@ -69,7 +69,7 @@ _MouseHide
 	LOCATE 7, 36: INPUT NY$
 	IF NY$ = "" AND YR$(0) <> "" THEN GOSUB 1102: GOTO 77
 	YR$(0) = NY$
-	FOR I = 1 TO 200: teamItems$(I) = "": NEXT
+	ERASE teamItems$
 
 76  GOSUB 1100
 
@@ -288,7 +288,7 @@ CLOSE #1
 	LOCATE 7, 36: INPUT NY$
 	IF NY$ = "" AND YR$(1) <> "" THEN GOSUB 1102: GOTO 277
 	YR$(1) = NY$
-	FOR I = 1 TO 200: teamItems$(I) = "": NEXT
+	ERASE teamItems$
 
 276  GOSUB 1100
 

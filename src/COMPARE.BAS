@@ -13,7 +13,7 @@ DECLARE SUB TITLE ()
 DIM K9(1) AS LONG, Q$(1844), FS%(22, 4, 4), D$(4)
 DIM B%(22, 41), P%(21, 36), B$(22), P$(21), L%(13), BS$(22), PS$(21)
 DIM B0%(22, 40), P0%(21, 41), BS%(22), PS%(32), T(22), T1(22), N$(22)
-DIM teamItems$(200), V%(200), NP$(21), menuItems$(10)
+DIM teamItems$(200), V%(200), NP$(21), menuItems$(3)
 DIM P1%(22), B1%(23), TB%(15), TP(33) AS LONG
 DIM Y AS LONG
 DIM I2 AS SINGLE, I3 AS SINGLE, I4 AS SINGLE, I5 AS SINGLE, ERX AS SINGLE
@@ -62,7 +62,7 @@ _MouseHide
 	LOCATE 7, 27: INPUT NY$
 	IF NY$ = "" THEN GOSUB 1102: GOTO 182
 	YN$ = NY$
-	FOR I = 1 TO 200: teamItems$(I) = "": NEXT
+	ERASE teamItems$
 
 1441 GOSUB 1100
 

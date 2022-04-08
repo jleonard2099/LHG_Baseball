@@ -14,7 +14,7 @@ DIM B$(100), P$(80), P1%(80), B1%(100), B0%(100, 23), P0%(80, 42)
 DIM T(22), T1(23), BR$(100), PR$(80), PR1%(80), BR1%(100)
 DIM BR0%(100, 17), PR0%(80, 16), TR(14), TR1(15)
 DIM BLYR(15), BL$(15), BLL(15) AS SINGLE, PLYR(15), PL$(15), PLL(15) AS SINGLE
-DIM D$(3), menuItems$(10), AVG AS SINGLE, SLG AS SINGLE, OBP AS SINGLE, EV AS SINGLE
+DIM D$(3), menuItems$(8), AVG AS SINGLE, SLG AS SINGLE, OBP AS SINGLE, EV AS SINGLE
 REDIM PRS%(15, 80, 17), BRS%(15, 100, 18)
 
 OPEN "DEV.BAS" FOR INPUT AS #1
@@ -26,13 +26,13 @@ CLOSE #1
 2 CLS : CH = 0: TMR = 4175: TMR1 = 6875: NB = -1: NP = -1: JX = 0: VV = 0
 
 3 CALL TITLE
-menuItems$(1) = "CREATE AND MERGE INITIAL CAREER STAT STATS"
-menuItems$(2) = "MERGE/UPDATE CAREER STATS                 "
-menuItems$(3) = "VIEW/PRINT CAREER STATS                   "
-menuItems$(4) = "EDIT CAREER STATS                         "
-menuItems$(5) = "VIEW/PRINT TEAM CAREER LEADERS (SEASON)   "
-menuItems$(6) = "UPDATE TEAM CAREER LEADERS (CAREER)       "
-menuItems$(7) = "RETURN TO MAIN MENU                       "
+	menuItems$(1) = "CREATE AND MERGE INITIAL CAREER STAT STATS"
+	menuItems$(2) = "MERGE/UPDATE CAREER STATS                 "
+	menuItems$(3) = "VIEW/PRINT CAREER STATS                   "
+	menuItems$(4) = "EDIT CAREER STATS                         "
+	menuItems$(5) = "VIEW/PRINT TEAM CAREER LEADERS (SEASON)   "
+	menuItems$(6) = "UPDATE TEAM CAREER LEADERS (CAREER)       "
+	menuItems$(7) = "RETURN TO MAIN MENU                       "
 	SELECTION% = 1
 	Count% = 7
 	Start% = 1

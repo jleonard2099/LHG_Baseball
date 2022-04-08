@@ -12,7 +12,7 @@ DECLARE SUB TITLE ()
 DIM B$(23), B%(23), P$(22), P%(22), B0%(23, 22), P0%(22, 42), T(22)
 DIM T1(23), TT(40, 22) AS SINGLE, TT1(40, 23) AS SINGLE, TM$(40, 22), TT2$(40, 23)
 
-2 DIM WW(40), LL(40), menuItems$(10)
+2 DIM WW(40), LL(40), menuItems$(6)
 DIM Z1$(40), TYP2(920), D$(2)
 
 3 DIM TMB(920) AS STRING * 15, TP$(32)
@@ -145,6 +145,7 @@ CLOSE 1
 CLOSE #1
 
 70 CALL TITLE
+	ERASE menuItems$
 	menuItems$(1) = "VIEW BATTING LEADERS "
 	menuItems$(2) = "VIEW PITCHING LEADERS"
 	menuItems$(3) = "VIEW TEAM TOTALS     "
@@ -781,6 +782,7 @@ _MouseHide
 
 2300 CLS
 	CALL TITLE
+	ERASE menuItems$
 	menuItems$(1) = "UPDATE EXPANDED LEAGUE LEADER FILES  "
 	menuItems$(2) = "VIEW EXPANDED LEAGUE LEADER FILES    "
 	menuItems$(3) = "UPDATE/VIEW EXPANDED LEAGUE STANDINGS"

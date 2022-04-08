@@ -1,6 +1,12 @@
-'$INCLUDE: 'COMMON.GW'
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'
+
+'The following files are combined
+'to make the loader + game setup / PBP
+'LOADER + SETUP + RAREPLAY + ROUTINES
+
+'The following files are actual game routines
+'SOURCE (regular game), SOURCEG (VGA graphics)
 
 _Title "Full Count Baseball - Rare Play"
 $ExeIcon:'./lhg_fcbase.ico'
