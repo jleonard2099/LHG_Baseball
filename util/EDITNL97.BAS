@@ -58,7 +58,7 @@ CLOSE #1
 	Row% = 6
 	Column% = 25
 
-CALL box0(5, 24, 15, 52, 2, 31)	
+CALL box0(5, 24, 15, 52, 2,  15, 1)	
 _MouseShow "DEFAULT"
 MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide

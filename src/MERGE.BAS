@@ -2,305 +2,304 @@
 
 _Title "Full Count Baseball - Merge Stats"
 ''$ExeIcon:'./lhg_fcbase.ico'
-'_Icon	
+'_Icon
 _AllowFullScreen
 
-4 CLS
+4 Cls
 
-5 CLS:COLOR 12:PRINT"STATISTICS MERGE/ALIGN MENU":PRINT
+5 Cls: Color 12: Print "STATISTICS MERGE/ALIGN MENU": Print
 
-6 COLOR 14:PRINT "(1) ";:COLOR 15:PRINT "MERGE STAT FILES":PRINT
+6 Color 14: Print "(1) ";: Color 15: Print "MERGE STAT FILES": Print
 
-7 COLOR 14:PRINT "(2) ";:COLOR 15:PRINT "ALIGN STAT FILES":PRINT
+7 Color 14: Print "(2) ";: Color 15: Print "ALIGN STAT FILES": Print
 
-8 COLOR 14:PRINT "(3) ";:COLOR 15:PRINT "RETURN TO UTILITIES MENU"
+8 Color 14: Print "(3) ";: Color 15: Print "RETURN TO UTILITIES MENU"
 
-9 I$=GetKeyPress$
-10 I = VAL(I$):IF I<1 OR I>3 THEN 9
+9 I$ = GetKeyPress$
+10 I = Val(I$): If I < 1 Or I > 3 Then 9
 
-11 IF I = 1 THEN GOTO 16
+11 If I = 1 Then GoTo 16
 
-12 IF I = 2 THEN GOSUB 910:RUN "ALIGN.EXE"
+12 If I = 2 Then Run "ALIGN.EXE"
 
-13 IF I = 3 THEN GOTO 990
+13 If I = 3 Then GoTo 990
 
-14DIM B$(22),P$(21),B0%(22,22),P0%(21,41),T(22),T1(22)
+14 Dim B$(22), P$(21), B0%(22, 22), P0%(21, 41), T(22), T1(22)
 
-15DIM H1$(40),P%(21),B%(22),H%(162),H$(162),V%(162),PL$(162),W$(162),L$(162),D$(2),I%(162)
+15 Dim H1$(40), P%(21), B%(22), H%(162), H$(162), V%(162), PL$(162), W$(162), L$(162), D$(2), I%(162)
 
-16DIM BR$(22),PR$(21),B0R%(22,22),P0R%(21,41),TR(22),TR1(22)
+16 Dim BR$(22), PR$(21), B0R%(22, 22), P0R%(21, 41), TR(22), TR1(22)
 
-17DIM H1R$(40),PR%(21),BR%(22),HR%(162),HR$(162),VR%(162),PLR$(162),WR$(162),LR$(162),DR$(2),IR%(162)
-DIM S0%(22,6),SR%(22,6)
+17 Dim H1R$(40), PR%(21), BR%(22), HR%(162), HR$(162), VR%(162), PLR$(162), WR$(162), LR$(162), DR$(2), IR%(162)
+Dim S0%(22, 6), SR%(22, 6)
 
-22 COLOR 12,0:CLS:LOCATE 2,5:PRINT "ENTER COMPLETE PATH FOR TEAM STATS TO MERGE"
+22 Color 12, 0: Cls: Locate 2, 5: Print "ENTER COMPLETE PATH FOR TEAM STATS TO MERGE"
 
-23 COLOR 15:LOCATE 4,5:PRINT "EXAMPLE - A:"
+23 Color 15: Locate 4, 5: Print "EXAMPLE - A:"
 
-24 LOCATE ,5:PRINT "          C:\HAFFNER"
+24 Locate , 5: Print "          C:\HAFFNER"
 
-25 LOCATE ,5:PRINT "          C:\HAFFNER\1960"
+25 Locate , 5: Print "          C:\HAFFNER\1960"
 
-26 LOCATE ,5:PRINT "          D:\BASEBALL"
+26 Locate , 5: Print "          D:\BASEBALL"
 
-27 FOR J=10 TO 13:LOCATE J
+27 For J = 10 To 13: Locate J
 
-28 PRINT"                                                            ":NEXT
+28 Print "                                                            ": Next
 
-35 COLOR 10:LOCATE 10,5:LINE INPUT "ROAD STATS:     ";PR$
+35 Color 10: Locate 10, 5: Line Input "ROAD STATS:     "; PR$
 
-36 LOCATE ,5:LOCATE ,5:LINE INPUT "CURRENT STATS:  ";PC$
+36 Locate , 5: Locate , 5: Line Input "CURRENT STATS:  "; PC$
 
-37 COLOR 14:LOCATE 13,5:PRINT "ANY CHANGE (Y/N)"
+37 Color 14: Locate 13, 5: Print "ANY CHANGE (Y/N)"
 
-38 I$=GetKeyPress$
-39 IF UCASE$(I$)="Y" THEN 27
+38 I$ = GetKeyPress$
+39 If UCase$(I$) = "Y" Then 27
 
-45 LOCATE 15,5:PRINT"                                                       "
+45 Locate 15, 5: Print "                                                       "
 
-46 LOCATE 16,5:PRINT"                                                       "
+46 Locate 16, 5: Print "                                                       "
 
-47 COLOR 11:LOCATE 15,5:INPUT "ENTER NAME OF STAT FILE (EX.- MINNESOT.61)";Z$
+47 Color 11: Locate 15, 5: Input "ENTER NAME OF STAT FILE (EX.- MINNESOT.61)"; Z$
 
-50 LOCATE ,5:PRINT"ANY CHANGE (YN)"
+50 Locate , 5: Print "ANY CHANGE (YN)"
 
-60 I$=GetKeyPress$
-70 IF UCASE$(I$)="Y" THEN 45
-	IF LEN(Z$)>11 THEN Z$=LEFT$(Z$,8)+RIGHT$(Z$,3)
+60 I$ = GetKeyPress$
+70 If UCase$(I$) = "Y" Then 45
+If Len(Z$) > 11 Then Z$ = Left$(Z$, 8) + Right$(Z$, 3)
 
-100 REMM
+100 Rem
 
-110 IF NOT EXIST (PR$+"\"+Z$) THEN 900
+110 If Not _FileExists(PR$ + "\" + Z$) Then 900
 
-120 OPEN PR$+"\"+Z$ FOR INPUT AS #1
+120 Open PR$ + "\" + Z$ For Input As #1
 
-121 INPUT #1,A$: INPUT #1,WR2%: INPUT #1,LR2%
+121 Input #1, A$: Input #1, WR2%: Input #1, LR2%
 
-122 FOR I=0 TO 22:INPUT #1,BR$(I):INPUT #1,BR%(I):NEXT I
+122 For I = 0 To 22: Input #1, BR$(I): Input #1, BR%(I): Next I
 
-123 FOR I=0 TO 21:INPUT #1,PR$(I):INPUT #1,PR%(I):NEXT I
+123 For I = 0 To 21: Input #1, PR$(I): Input #1, PR%(I): Next I
 
-124 FOR I=0 TO 22:FOR I1=0 TO 21:INPUT #1,B0R%(I,I1):NEXT I1:NEXT I
+124 For I = 0 To 22: For I1 = 0 To 21: Input #1, B0R%(I, I1): Next I1: Next I
 
-125 FOR I=0 TO 21:FOR I1=0 TO 41:INPUT #1,P0R%(I,I1):NEXT I1:NEXT I
+125 For I = 0 To 21: For I1 = 0 To 41: Input #1, P0R%(I, I1): Next I1: Next I
 
-126 INPUT #1,D0R%:INPUT #1,D1R%
-	FOR I=0 TO 21:INPUT #1,TR(I):NEXT I
-	FOR I=0 TO 22:INPUT #1,TR1(I):NEXT I
+126 Input #1, D0R%: Input #1, D1R%
+For I = 0 To 21: Input #1, TR(I): Next I
+For I = 0 To 22: Input #1, TR1(I): Next I
 
-160 CLOSE #1
-	IF NOT EXIST (PR$+"\"+Z$+"R") THEN 165
-OPEN PR$+"\"+Z$+"R" FOR INPUT AS #1
-	FOR I=0 TO 22
-	FOR I1 = 0 TO 6
-	INPUT #1,SR%(I,I1)
-	NEXT:NEXT
-CLOSE 1
+160 Close #1
+If Not _FileExists(PR$ + "\" + Z$ + "R") Then 165
+Open PR$ + "\" + Z$ + "R" For Input As #1
+For I = 0 To 22
+    For I1 = 0 To 6
+        Input #1, SR%(I, I1)
+Next: Next
+Close 1
 
-165 OPEN PR$+"\"+Z$+"S" FOR INPUT AS #1
-	INPUT #1,YR%
-	FOR I=1 TO 162:INPUT #1,HR%(I):NEXT I
-	FOR I=1 TO 162:INPUT #1,HR$(I):NEXT I
-	FOR I=1 TO 162:INPUT #1,VR%(I):NEXT I
-	FOR I=1 TO 162:INPUT #1,PLR$(I):NEXT I
-	FOR I=1 TO 162:INPUT #1,WR$(I):NEXT I
-	FOR I=1 TO 162:INPUT #1,LR$(I):NEXT I
-	FOR I=1 TO 162:INPUT #1,IR%(I):NEXT I
-CLOSE #1
-	GOSUB 1100
+165 Open PR$ + "\" + Z$ + "S" For Input As #1
+Input #1, YR%
+For I = 1 To 162: Input #1, HR%(I): Next I
+For I = 1 To 162: Input #1, HR$(I): Next I
+For I = 1 To 162: Input #1, VR%(I): Next I
+For I = 1 To 162: Input #1, PLR$(I): Next I
+For I = 1 To 162: Input #1, WR$(I): Next I
+For I = 1 To 162: Input #1, LR$(I): Next I
+For I = 1 To 162: Input #1, IR%(I): Next I
+Close #1
 
-210 IF NOT EXIST (PC$+"\"+Z$) THEN 900
+210 If Not _FileExists(PC$ + "\" + Z$) Then 900
 
-220 OPEN PC$+"\"+Z$ FOR INPUT AS #1
+220 Open PC$ + "\" + Z$ For Input As #1
 
-221 INPUT #1,A$: INPUT #1,W2%: INPUT #1,L2%
+221 Input #1, A$: Input #1, W2%: Input #1, L2%
 
-222 FOR I=0 TO 22:INPUT #1,B$(I):INPUT #1,B%(I):NEXT I
+222 For I = 0 To 22: Input #1, B$(I): Input #1, B%(I): Next I
 
-223 FOR I=0 TO 21:INPUT #1,P$(I):INPUT #1,P%(I):NEXT I
+223 For I = 0 To 21: Input #1, P$(I): Input #1, P%(I): Next I
 
-224 FOR I=0 TO 22:FOR I1=0 TO 21:INPUT #1,B0%(I,I1):NEXT I1:NEXT I
+224 For I = 0 To 22: For I1 = 0 To 21: Input #1, B0%(I, I1): Next I1: Next I
 
-225 FOR I=0 TO 21:FOR I1=0 TO 41:INPUT #1,P0%(I,I1):NEXT I1:NEXT I
+225 For I = 0 To 21: For I1 = 0 To 41: Input #1, P0%(I, I1): Next I1: Next I
 
-226 INPUT #1,D0%:INPUT #1,D1%
-	FOR I=0 TO 21:INPUT #1,T(I):NEXT I
-	FOR I=0 TO 22:INPUT #1,T1(I):NEXT I
+226 Input #1, D0%: Input #1, D1%
+For I = 0 To 21: Input #1, T(I): Next I
+For I = 0 To 22: Input #1, T1(I): Next I
 
-260 CLOSE #1
-	IF NOT EXIST (PC$+"\"+Z$+"R") THEN 265
-OPEN PC$+"\"+Z$+"R" FOR INPUT AS #1
-	FOR I=0 TO 22
-	FOR I1 = 0 TO 6
-	INPUT #1,S0%(I,I1)
-	NEXT:NEXT
-CLOSE 1
+260 Close #1
+If Not _FileExists(PC$ + "\" + Z$ + "R") Then 265
+Open PC$ + "\" + Z$ + "R" For Input As #1
+For I = 0 To 22
+    For I1 = 0 To 6
+        Input #1, S0%(I, I1)
+Next: Next
+Close 1
 
-265 OPEN PC$+"\"+Z$+"S" FOR INPUT AS #1
-	INPUT #1,Y%
-	FOR I=1 TO 162:INPUT #1,H%(I):NEXT I
-	FOR I=1 TO 162:INPUT #1,H$(I):NEXT I
-	FOR I=1 TO 162:INPUT #1,V%(I):NEXT I
-	FOR I=1 TO 162:INPUT #1,PL$(I):NEXT I
-	FOR I=1 TO 162:INPUT #1,W$(I):NEXT I
-	FOR I=1 TO 162:INPUT #1,L$(I):NEXT I
-	FOR I=1 TO 162:INPUT #1,I%(I):NEXT I
-CLOSE #1
-	GOTO 1200
+265 Open PC$ + "\" + Z$ + "S" For Input As #1
+Input #1, Y%
+For I = 1 To 162: Input #1, H%(I): Next I
+For I = 1 To 162: Input #1, H$(I): Next I
+For I = 1 To 162: Input #1, V%(I): Next I
+For I = 1 To 162: Input #1, PL$(I): Next I
+For I = 1 To 162: Input #1, W$(I): Next I
+For I = 1 To 162: Input #1, L$(I): Next I
+For I = 1 To 162: Input #1, I%(I): Next I
+Close #1
+GoTo 1200
 
-319 W2%=W2%+WR2%:L2%=L2%+LR2%
+319 W2% = W2% + WR2%: L2% = L2% + LR2%
 
-320 LOCATE 18,20:COLOR 12:PRINT "MERGING STAT FILE AND SCHEDULE RESULTS . . . ."
+320 Locate 18, 20: Color 12: Print "MERGING STAT FILE AND SCHEDULE RESULTS . . . ."
 
-324 FOR I = 0 TO 22
-	FOR I1 = 0 TO 6
-	S0%(I,I1) = S0%(I,I1)+ SR%(I,I1)
-	NEXT
+324 For I = 0 To 22
+    For I1 = 0 To 6
+        S0%(I, I1) = S0%(I, I1) + SR%(I, I1)
+    Next
 
-325 FOR I1=0 TO 11:B0%(I,I1)=B0%(I,I1)+B0R%(I,I1):NEXT I1
+    325 For I1 = 0 To 11: B0%(I, I1) = B0%(I, I1) + B0R%(I, I1): Next I1
 
-326 FOR I1=14 TO 21:B0%(I,I1)=B0%(I,I1)+B0R%(I,I1):NEXT I1:NEXT I
+326 For I1 = 14 To 21: B0%(I, I1) = B0%(I, I1) + B0R%(I, I1): Next I1: Next I
 
-327 FOR I = 0 TO 21
+327 For I = 0 To 21
 
-328 FOR I1 = 0 TO 34:P0%(I,I1)=P0%(I,I1)+P0R%(I,I1):NEXT I1
+    328 For I1 = 0 To 34: P0%(I, I1) = P0%(I, I1) + P0R%(I, I1): Next I1
 
-329 FOR I1 = 37 TO 41:P0%(I,I1)=P0%(I,I1)+P0R%(I,I1):NEXT I1:NEXT I
+329 For I1 = 37 To 41: P0%(I, I1) = P0%(I, I1) + P0R%(I, I1): Next I1: Next I
 
-330 D0%=D0%+DR0%:D1%=D1%+DR1%
+330 D0% = D0% + DR0%: D1% = D1% + DR1%
 
-350 FOR I = 0 TO 21:T(I)=T(I)+TR(I):NEXT
+350 For I = 0 To 21: T(I) = T(I) + TR(I): Next
 
-355 FOR I = 0 TO 22:T1(I)=T1(I)+TR1(I):NEXT
+355 For I = 0 To 22: T1(I) = T1(I) + TR1(I): Next
 
-420 OPEN PC$+"\"+Z$ FOR OUTPUT AS #1
+420 Open PC$ + "\" + Z$ For Output As #1
 
-421 WRITE #1,A$: WRITE #1,W2%: WRITE #1,L2%
+421 Write #1, A$: Write #1, W2%: Write #1, L2%
 
-422 FOR I=0 TO 22:WRITE #1,B$(I):WRITE #1,B%(I):NEXT I
+422 For I = 0 To 22: Write #1, B$(I): Write #1, B%(I): Next I
 
-423 FOR I=0 TO 21:WRITE #1,P$(I):WRITE #1,P%(I):NEXT I
+423 For I = 0 To 21: Write #1, P$(I): Write #1, P%(I): Next I
 
-424 FOR I=0 TO 22:FOR I1=0 TO 21:WRITE #1,B0%(I,I1):NEXT I1:NEXT I
+424 For I = 0 To 22: For I1 = 0 To 21: Write #1, B0%(I, I1): Next I1: Next I
 
-425 FOR I=0 TO 21:FOR I1=0 TO 41:WRITE #1,P0%(I,I1):NEXT I1:NEXT I
+425 For I = 0 To 21: For I1 = 0 To 41: Write #1, P0%(I, I1): Next I1: Next I
 
-426 WRITE #1,D0%:WRITE #1,D1%
-	FOR I=0 TO 21:WRITE #1,T(I):NEXT I
-	FOR I=0 TO 22:WRITE #1,T1(I):NEXT I
+426 Write #1, D0%: Write #1, D1%
+For I = 0 To 21: Write #1, T(I): Next I
+For I = 0 To 22: Write #1, T1(I): Next I
 
-460 CLOSE #1
-OPEN PC$+"\"+Z$+"R" FOR OUTPUT AS #1
-	FOR I=0 TO 22
-	FOR I1=0 TO 6
-	WRITE #1, S0%(I,I1)
-	NEXT:NEXT
-CLOSE 1
+460 Close #1
+Open PC$ + "\" + Z$ + "R" For Output As #1
+For I = 0 To 22
+    For I1 = 0 To 6
+        Write #1, S0%(I, I1)
+Next: Next
+Close 1
 
-495 GOTO 800
+495 GoTo 800
 
-700 FOR K = 1 TO YR%
+700 For K = 1 To YR%
 
-701 Y%=Y%+1
+    701 Y% = Y% + 1
 
-705 H%(Y%)=HR%(K)
+    705 H%(Y%) = HR%(K)
 
-710 H$(Y%)=HR$(K)
+    710 H$(Y%) = HR$(K)
 
-715 V%(Y%)=VR%(K)
+    715 V%(Y%) = VR%(K)
 
-720 PL$(Y%)=PLR$(K)
+    720 PL$(Y%) = PLR$(K)
 
-725 W$(Y%)=WR$(K)
+    725 W$(Y%) = WR$(K)
 
-730 L$(Y%)=LR$(K)
+    730 L$(Y%) = LR$(K)
 
-735 I%(Y%)=IR%(K)
+    735 I%(Y%) = IR%(K)
 
-750 NEXT
+750 Next
 
-790 GOTO 319
+790 GoTo 319
 
-800 OPEN PC$+"\"+Z$+"S" FOR OUTPUT AS #1
+800 Open PC$ + "\" + Z$ + "S" For Output As #1
 
-804 WRITE #1,Y%
+804 Write #1, Y%
 
-805 FOR I=1 TO 162:WRITE #1,H%(I):NEXT I
+805 For I = 1 To 162: Write #1, H%(I): Next I
 
-806 FOR I=1 TO 162:WRITE #1,H$(I):NEXT I
+806 For I = 1 To 162: Write #1, H$(I): Next I
 
-807 FOR I=1 TO 162:WRITE #1,V%(I):NEXT I
+807 For I = 1 To 162: Write #1, V%(I): Next I
 
-808 FOR I=1 TO 162:WRITE #1,PL$(I):NEXT I
+808 For I = 1 To 162: Write #1, PL$(I): Next I
 
-809 FOR I=1 TO 162:WRITE #1,W$(I):NEXT I
+809 For I = 1 To 162: Write #1, W$(I): Next I
 
-810 FOR I=1 TO 162:WRITE #1,L$(I):NEXT I
+810 For I = 1 To 162: Write #1, L$(I): Next I
 
-811 FOR I=1 TO 162:WRITE #1,I%(I):NEXT I
+811 For I = 1 To 162: Write #1, I%(I): Next I
 
-812 CLOSE #1
+812 Close #1
 
-850 Y=0
+850 Y = 0
 
-860 LOCATE 20,20:COLOR 12:PRINT "RESULTS SUCCESSFULLY MERGED!!"
+860 Locate 20, 20: Color 12: Print "RESULTS SUCCESSFULLY MERGED!!"
 
-861 FOR J = 1 TO 5000:NEXT J
+861 For J = 1 To 5000: Next J
 
-875 GOTO 4
+875 GoTo 4
 
-900 CLS
-	LOCATE 2,10
-	COLOR 7
-	PRINT"NON-EXISTANT PATH OR INCORRECT FILE NAME"
+900 Cls
+Locate 2, 10
+Color 7
+Print "NON-_FILEEXISTSANT PATH OR INCORRECT FILE NAME"
 
-951 PRINT
-	LOCATE ,10
-	PRINT "TRY AGAIN (YN) ";
+951 Print
+Locate , 10
+Print "TRY AGAIN (YN) ";
 
-952 I$=GetKeyPress$
-	IF UCASE$(I$)<>"Y" THEN 990
-	PRINT "HIT ENTER TO RE-ENTER INFORMATION"
+952 I$ = GetKeyPress$
+If UCase$(I$) <> "Y" Then 990
+Print "HIT ENTER TO RE-ENTER INFORMATION"
 
-955 I$=GetKeyPress$
-	GOTO 12
+955 I$ = GetKeyPress$
+GoTo 12
 
-990 RUN "HELLO.EXE"
+990 Run "HELLO.EXE"
 
-1200 SEQ=0
+1200 SEQ = 0
 
-1201 FOR K = 0 TO 22
+1201 For K = 0 To 22
 
-1202 IF UCASE$(BR$(K))=UCASE$(B$(K)) THEN 1220 ELSE 1210
+    1202 If UCase$(BR$(K)) = UCase$(B$(K)) Then 1220 Else GoTo 1210
 
-1210 SEQ=SEQ + 1
+    1210 SEQ = SEQ + 1
 
-1220 NEXT
+1220 Next
 
-1230 FOR K = 0 TO 21
+1230 For K = 0 To 21
 
-1231 IF UCASE$(PR$(K))=UCASE$(P$(K)) THEN 1250 ELSE 1240
+    1231 If UCase$(PR$(K)) = UCase$(P$(K)) Then 1250 Else GoTo 1240
 
-1240 SEQ=SEQ+1
+    1240 SEQ = SEQ + 1
 
-1250 NEXT
+1250 Next
 
-1260 IF SEQ = 0 THEN 700 ELSE 1270
+1260 If SEQ = 0 Then 700 Else GoTo 1270
 
-1270 CLS:COLOR 14:LOCATE 5,27:PRINT"PLAYERS NOT IN SEQUENCE !!";DUMMY$
+1270 Cls: Color 14: Locate 5, 27: Print "PLAYERS NOT IN SEQUENCE !!"; DUMMY$
 
-1275 COLOR 15:LOCATE 7,20:PRINT"STATS WILL BE DISTORTED UNLESS THE ROAD"
+1275 Color 15: Locate 7, 20: Print "STATS WILL BE DISTORTED UNLESS THE ROAD"
 
-1276 LOCATE ,19:PRINT"FILE LISTS THE PLAYERS IN THE SAME SEQUENCE"
+1276 Locate , 19: Print "FILE LISTS THE PLAYERS IN THE SAME SEQUENCE"
 
-1277 LOCATE ,24:PRINT"AS YOUR CURRENT PLAYER STAT FILE."
+1277 Locate , 24: Print "AS YOUR CURRENT PLAYER STAT FILE."
 
-1278 LOCATE 11,24:COLOR 12:PRINT"YOU MUST REALIGN ROAD STAT FILE OR"
+1278 Locate 11, 24: Color 12: Print "YOU MUST REALIGN ROAD STAT FILE OR"
 
-1279 LOCATE ,31:PRINT"ENTER STATS MANUALLY."
+1279 Locate , 31: Print "ENTER STATS MANUALLY."
 
-1280 LOCATE 15,29:COLOR 13:LINE INPUT"HIT ENTER TO GO TO MENU";DUMMY$
+1280 Locate 15, 29: Color 13: Line Input "HIT ENTER TO GO TO MENU"; DUMMY$
 
-1290 GOTO 5
+1290 GoTo 5
 
 '$INCLUDE: 'KeyInput.BM'

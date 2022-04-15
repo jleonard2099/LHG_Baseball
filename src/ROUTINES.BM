@@ -635,6 +635,16 @@ End Sub
 
 
 '------------------------------
+'   SPA Subroutine
+'------------------------------
+' ...explanation...
+SUB SPA (F$,L)
+   F$=LEFT$(F$,L)
+10 IF LEN(F$)<L THEN F$=F$+" ":GOTO 10
+END SUB
+
+
+'------------------------------
 '   FLDDISP Subroutine
 '------------------------------
 ' ...explanation...

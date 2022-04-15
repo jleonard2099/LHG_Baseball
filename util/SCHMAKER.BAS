@@ -20,13 +20,13 @@ OPEN "DEV.BAS" FOR INPUT AS #2: FOR I = 0 TO 2: INPUT #2, D$(I): NEXT: CLOSE 2
 	null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
 	Count% = DirCount%
 	IF Count% = 0 THEN 4500
-	REDIM F$(0 TO Count%)
+	REDIM leagueFiles$(0 TO Count%)
 	FOR X = 1 TO Count%
-	F$(X) = SPACE$(12)
+	leagueFiles$(X) = SPACE$(12)
 	NEXT
-	F$(0) = Spec$
-	CALL ReadFile(F$())
-	'CALL SortStr(VARPTR(F$(1)), Count%, 0)
+	leagueFiles$(0) = Spec$
+	CALL ReadFile(leagueFiles$())
+	'CALL SortStr(VARPTR(leagueFiles$(1)), Count%, 0)
 
 1310 CLS
 	COLOR , 1
@@ -49,19 +49,19 @@ OPEN "DEV.BAS" FOR INPUT AS #2: FOR I = 0 TO 2: INPUT #2, D$(I): NEXT: CLOSE 2
 	PRINT "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-MAMenu F$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu leagueFiles$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 	IF ExitCode% = 27 THEN END
-	F$ = F$(SELECTION%)
-	LOCATE 2, 33: PRINT F$
+	targetFile$ = leagueFiles$(SELECTION%)
+	LOCATE 2, 33: PRINT targetFile$
 LOCATE , 33: PRINT "ANY CHANGE (YN)";
 	COLOR 15, 0
 3910 I$ = GetKeyPress$
 	IF UCASE$(I$) = "Y" THEN 1310
 
-3911 F$ = RTrim$(F$)
-	LG$ = LEFT$(F$, LEN(F$) - 4)
+3911 targetFile$ = RTrim$(targetFile$)
+	LG$ = LEFT$(targetFile$, LEN(targetFile$) - 4)
 OPEN D$(2) + LG$ + ".LIB" FOR INPUT AS #2
 	INPUT #2, LG$: INPUT #2, D1$: INPUT #2, D2$: INPUT #2, D3$: INPUT #2, D4$
 	FOR X = 1 TO 40
@@ -133,7 +133,7 @@ CLOSE 2
 		LOCATE 14, 1: PRINT "YOU STILL NEED TO SCHEDULE ";
 		PRINT ";ANY CHANGE ROUTINE"
 	CLS : PRINT "ENTER DATE SEASON TO BEGIN ON :"
-		INPUT "XX/XX/XX"; F$
+		INPUT "XX/XX/XX"; targetFile$
 		'SELECT C VS C , DH NO DH , RULES ETC.
 		';CALC # OF DAYS IN SN.
 		IF (B / 2) - INT(B / 2) = 0 THEN SX = C * (B - 1) - ((N + I) * 2): E0 = 0: 'EVEN # OF TMS/DIV

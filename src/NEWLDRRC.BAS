@@ -80,7 +80,7 @@ FOR I = 0 TO 18: READ TP3$(I): NEXT
 	Spacing% = 1
 	Row% = 6
 	Column% = 30
-CALL box0(5, 29, 9, 55, 2, 31)
+CALL box0(5, 29, 9, 55, 2,  15, 1)
 	
 _MouseShow "DEFAULT"
 MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
@@ -100,13 +100,13 @@ _MouseHide
 	null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
 	Count% = DirCount%
 	IF Count% = 0 THEN 2000
-REDIM F$(0 TO Count%)
+REDIM batFiles$(0 TO Count%)
 	FOR X = 1 TO Count%
-	  F$(X) = SPACE$(12)
+	  batFiles$(X) = SPACE$(12)
 	NEXT
-	F$(0) = Spec$
-	CALL ReadFile(F$())
-	'CALL SortStr(VARPTR(F$(1)), Count%, 0)
+	batFiles$(0) = Spec$
+	CALL ReadFile(batFiles$())
+	'CALL SortStr(VARPTR(batFiles$(1)), Count%, 0)
 
 1310 CLS
 	COLOR , 1
@@ -129,18 +129,18 @@ REDIM F$(0 TO Count%)
 	PRINT "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-MAMenu F$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu batFiles$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 	IF ExitCode% = 27 THEN 2000
-	F$ = F$(SELECTION%)
-	LOCATE 2, 33: PRINT F$
+	targetFile$ = batFiles$(SELECTION%)
+	LOCATE 2, 33: PRINT targetFile$
 LOCATE , 33: PRINT "ANY CHANGE (YN)";
 	COLOR 15, 0
 2535 I$ = GetKeyPress$
 	IF UCASE$(I$) = "Y" THEN 1310
-	F$ = RTrim$(F$)
-	LGE$ = LEFT$(F$, LEN(F$) - 4)
+	targetFile$ = RTrim$(targetFile$)
+	LGE$ = LEFT$(targetFile$, LEN(targetFile$) - 4)
 	CLS
 	INPUT "ENTER SEASON YEAR (1991,1992)"; SYR
 	INPUT "IS THIS THE FINAL UPDATE FOR THE YEAR (Y/N)"; UP$

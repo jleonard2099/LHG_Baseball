@@ -51,7 +51,7 @@ DIM PR%(24), GK%(1)
 DIM CSS%(1, 22, 6)
 DIM MG%(1, 999), GS%(21, 1), PS%(23, 1)
 DIM U%(50)
-DIM V$(200), S$(1), SP%(1), U6$(2), LGT$(2), DH$(1), UMP$(50), WE$(1), MN$(10), NB%(1, 4)
+DIM teamItems$(200), S$(1), SP%(1), U6$(2), LGT$(2), DH$(1), UMP$(50), WE$(1), MN$(10), NB%(1, 4)
 DIM UV%(200), VI$(1), DL$(1), DN$(1), F(9), M%(9), BB%(9), BP(9)
 
 COMMON SHARED TS%(), SA%(), P8%(), B8%(), P%(), P$(), B$(), P5%(), B5%(), X0%(), B%(), AP%(), A$()
@@ -316,7 +316,7 @@ CLOSE #1
 	COLOR 15, 0
 	IF NY$ = "" THEN GOSUB 8102: GOTO 2856
 	YN$ = NY$
-	FOR I1 = 1 TO 200: V$(I1) = "": NEXT
+	FOR I1 = 1 TO 200: teamItems$(I1) = "": NEXT
 	GOSUB 8100
 
 2856 IF BO% = 1 THEN BO% = 0: GOTO 2800
@@ -379,7 +379,7 @@ A$(I) = RTrim$(A$(I))
 	BMT$(9) = "View more stats (fielding, situational, etc.)"
 	BMT$(10) = "Proceed to next menu"
 	
-2862 CALL Box0(6, 58, 17, 80, 2, 31)
+2862 CALL box0(6, 58, 17, 80, 2,  15, 1)
 	
 	CALL NEWLINES (P9)
 	
@@ -668,7 +668,7 @@ A$(I) = RTrim$(A$(I))
 
 910  RETURN
 
-1370 CALL Box0(19, 58, 22, 80, 2, 31)
+1370 CALL box0(19, 58, 22, 80, 2,  15, 1)
 	LOCATE 20, 59
 	FOR I1 = 0 TO 4
 	IF DH% = 0 AND I1 = 0 THEN
@@ -1126,7 +1126,7 @@ PARK$(72) = "GENERIC                     "
 	Row% = 5
 	Column% = 10
 
-CALL box0(4, 9, 20, 38, 2, 31)
+CALL box0(4, 9, 20, 38, 2,  15, 1)
 _MouseShow "DEFAULT"
 MMenuVert PARK$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
@@ -1531,7 +1531,7 @@ OPEN D$(0) + "FCTEAMS." + YN$ FOR RANDOM AS #1 LEN = 4342
 	IF LEFT$(Q2$(0),1) = " " OR ASC(MID$(Q2$(0), I2, 1)) < 32 OR ASC(MID$(Q2$(0), I2, 1)) > 123 OR UCASE$(LEFT$(Q2$(0), 3)) = "NOT" OR UCASE$(LEFT$(Q2$(0), 3)) = "UN" THEN 8105
 	NEXT I2
 	NT = NT + 1
-	V$(NT) = Q2$(0): UV%(NT) = I1
+	teamItems$(NT) = Q2$(0): UV%(NT) = I1
 
 8105 NEXT I1
 CLOSE 1
@@ -1550,7 +1550,7 @@ COLOR , 4: CLS : LOCATE , 33: COLOR 14: PRINT "TEAM SELECTION": COLOR 15
 	LOCATE 25, 1: COLOR 14: PRINT "ESC"; : COLOR 15: PRINT "-SELECT NEW ID  PGDN  PGUP  "; : COLOR 14: PRINT "ENTER"; : COLOR 15: PRINT "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-MAMenu V$(), SELECTION%, Start%, Count%, EXITCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu teamItems$(), SELECTION%, Start%, Count%, EXITCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 	IF EXITCODE% = 27 THEN BO% = 1: RETURN

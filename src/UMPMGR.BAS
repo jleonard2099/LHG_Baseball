@@ -3,96 +3,96 @@
 
 _Title "Full Count Baseball - Umpire Manager"
 ''$ExeIcon:'./lhg_fcbase.ico'
-'_Icon	
+'_Icon
 _AllowFullScreen
 
-10 DIM U$(50), U%(50), D$(2)
+10 Dim U$(50), U%(50), D$(2)
 
-15 OPEN "DEV.BAS" FOR INPUT AS #1
+15 Open "DEV.BAS" For Input As #1
 
-16 FOR I = 0 TO 2
-	INPUT #1, D$(I)
-	NEXT
+16 For I = 0 To 2
+    Input #1, D$(I)
+Next
 
-17 CLOSE #1
+17 Close #1
 
-20 CLS : COLOR 12, 0: PRINT TAB(33); "UMPIRE MANAGEMENT": PRINT : PRINT
-	COLOR 14: PRINT "(1) "; : COLOR 15: PRINT "ENTER A NEW UMPIRE FILE": PRINT
-	COLOR 14: PRINT "(2) "; : COLOR 15: PRINT "EDIT EXISTING UMPIRE FILE": PRINT
-	COLOR 14: PRINT "(3) "; : COLOR 15: PRINT "RETURN TO MAIN MENU"
+20 Cls: Color 12, 0: Print Tab(33); "UMPIRE MANAGEMENT": Print: Print
+Color 14: Print "(1) ";: Color 15: Print "ENTER A NEW UMPIRE FILE": Print
+Color 14: Print "(2) ";: Color 15: Print "EDIT EXISTING UMPIRE FILE": Print
+Color 14: Print "(3) ";: Color 15: Print "RETURN TO MAIN MENU"
 30 I$ = GetKeyPress$
 
-40 I = VAL(I$): IF I < 1 OR I > 3 THEN 20
+40 I = Val(I$): If I < 1 Or I > 3 Then 20
 
-50 IF I = 3 THEN 500
+50 If I = 3 Then 500
 
-60 IF I = 2 THEN 300
+60 If I = 2 Then 300
 
-100 FOR X = 1 TO 50
+100 For X = 1 To 50
 
-110 CLS
-	PRINT "UMPIRE #"; X
-	INPUT "ENTER UMPIRE NAME (END TO QUIT) "; U$(X)
+    110 Cls
+    Print "UMPIRE #"; X
+    Input "ENTER UMPIRE NAME (END TO QUIT) "; U$(X)
 
-120 IF UCASE$(U$(X)) = "END" THEN FOR I = X TO 50: U$(I) = "": NEXT: GOTO 150
-	INPUT "ENTER RATING (0-9) "; U%(X)
+    120 If UCase$(U$(X)) = "END" Then For I = X To 50: U$(I) = "": Next: GoTo 150
+    Input "ENTER RATING (0-9) "; U%(X)
 
-130 NEXT
+130 Next
 
-150 CLS
-	PRINT "IS THIS UMPIRING CREW (1)-AL OR (2)-NL ??"
+150 Cls
+Print "IS THIS UMPIRING CREW (1)-AL OR (2)-NL ??"
 160 I$ = GetKeyPress$
 
-170 I = VAL(I$): IF I < 1 OR I > 2 THEN 150
+170 I = Val(I$): If I < 1 Or I > 2 Then 150
 
-175 IF I = 1 THEN LG$ = "AL": GOTO 180
+175 If I = 1 Then LG$ = "AL": GoTo 180
 
 176 LG$ = "NL"
 
-180 OPEN D$(0) + "UMPIRES." + LG$ FOR OUTPUT AS #1
+180 Open D$(0) + "UMPIRES." + LG$ For Output As #1
 
-190 FOR X = 1 TO 50: PRINT #1, U$(X): PRINT #1, U%(X): NEXT: CLOSE #1
+190 For X = 1 To 50: Print #1, U$(X): Print #1, U%(X): Next: Close #1
 
-200 FOR X = 1 TO 50: U$(X) = "": U%(X) = 5: NEXT: GOTO 20
+200 For X = 1 To 50: U$(X) = "": U%(X) = 5: Next: GoTo 20
 
-300 CLS
-	PRINT "IS THIS UMPIRING CREW (1)-AL OR (2)-NL ??"
+300 Cls
+Print "IS THIS UMPIRING CREW (1)-AL OR (2)-NL ??"
 301 I$ = GetKeyPress$
-	I = VAL(I$): IF I < 1 OR I > 2 THEN 301
-	IF I = 1 THEN LG$ = "AL"
-	IF I = 2 THEN LG$ = "NL"
-	IF NOT _FILEEXISTS(D$(0) + "UMPIRES." + LG$) THEN 315
-OPEN D$(0) + "UMPIRES." + LG$ FOR INPUT AS #1
-	FOR X = 1 TO 50: INPUT #1, U$(X): INPUT #1, U%(X): NEXT: CLOSE #1
+I = Val(I$): If I < 1 Or I > 2 Then 301
+If I = 1 Then LG$ = "AL"
+If I = 2 Then LG$ = "NL"
+If Not _FileExists(D$(0) + "UMPIRES." + LG$) Then 315
+Open D$(0) + "UMPIRES." + LG$ For Input As #1
+For X = 1 To 50: Input #1, U$(X): Input #1, U%(X): Next: Close #1
 
-315 CLS
-	FOR I = 1 TO 10
-	LOCATE I + 5, 1: PRINT USING "##"; I; : PRINT " "; U$(I);
-	LOCATE , 17: PRINT USING "##"; I + 10; : PRINT " "; U$(I + 10);
-	LOCATE , 33: PRINT USING "##"; I + 20; : PRINT " "; U$(I + 20);
-	LOCATE , 50: PRINT USING "##"; I + 30; : PRINT " "; U$(I + 30);
-	LOCATE , 67: PRINT USING "##"; I + 40; : PRINT " "; U$(I + 40)
-	NEXT
+315 Cls
+For I = 1 To 10
+    Locate I + 5, 1: Print Using "##"; I;: Print " "; U$(I);
+    Locate , 17: Print Using "##"; I + 10;: Print " "; U$(I + 10);
+    Locate , 33: Print Using "##"; I + 20;: Print " "; U$(I + 20);
+    Locate , 50: Print Using "##"; I + 30;: Print " "; U$(I + 30);
+    Locate , 67: Print Using "##"; I + 40;: Print " "; U$(I + 40)
+Next
 
-302 LOCATE 18, 5: PRINT "SELECT UMPIRE TO EDIT (0 TO QUIT) ";
-	INPUT I
-	IF I < 0 OR I > 50 THEN 302
-	IF I = 0 THEN 180
-	CLS
-	LOCATE 1, 30: PRINT "UMPIRE-"; I: LOCATE , 1
-	LOCATE 1: PRINT "1. NAME "; U$(I)
-	LOCATE 2: PRINT "2. RATING "; U%(I)
-	C1 = 1: GOTO 310
+302 Locate 18, 5: Print "SELECT UMPIRE TO EDIT (0 TO QUIT) ";
+Input I
+If I < 0 Or I > 50 Then 302
+If I = 0 Then 180
+Cls
+Locate 1, 30: Print "UMPIRE-"; I: Locate , 1
+Locate 1: Print "1. NAME "; U$(I)
+Locate 2: Print "2. RATING "; U%(I)
+C1 = 1: GoTo 310
 
-305 LOCATE 1: INPUT "1. NAME "; U$(I): IF C1 = 1 THEN 310
+305 Locate 1: Input "1. NAME "; U$(I): If C1 = 1 Then 310
 
-306 LOCATE 2: INPUT "2. RATING "; U%(I): IF C1 = 1 THEN 310
+306 Locate 2: Input "2. RATING "; U%(I): If C1 = 1 Then 310
 
-310 C1 = 1: LOCATE 5: INPUT "# TO CHANGE (0 TO CONTINUE) "; B9
-	IF B9 < 1 OR B9 > 2 THEN 315
-	ON B9 GOTO 305, 306
+310 C1 = 1: Locate 5: Input "# TO CHANGE (0 TO CONTINUE) "; B9
+If B9 < 1 Or B9 > 2 Then 315
+On B9 GOTO 305, 306
 
-500 RUN "HELLO.EXE"
+500 Run "HELLO.EXE"
 
 '$INCLUDE: 'KeyInput.BM'
 '$INCLUDE: 'QPProEqu.BM'

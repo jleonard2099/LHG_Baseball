@@ -4,360 +4,360 @@
 
 _Title "Full Count Baseball - League Standings"
 ''$ExeIcon:'./lhg_fcbase.ico'
-'_Icon	
+'_Icon
 _AllowFullScreen
 
 DECLARE SUB TITLE ()
 
-DIM WW(40), LL(40), TML$(40), Z1$(40), EWW(40), RWW(40), HWW(40), ELL(40), RLL(40), HLL(40), LTW(40), LTL(40)
-DIM H%(162), H$(162), V%(162), PL$(162), W$(162), L$(162), I%(162)
-DIM TWS(40), TLS(40), CWS(40), CLT(40), LWS(40), LLS(40)
-DIM D$(2), menuItems$(4)
+Dim WW(40), LL(40), TML$(40), Z1$(40), EWW(40), RWW(40), HWW(40), ELL(40), RLL(40), HLL(40), LTW(40), LTL(40)
+Dim H%(162), H$(162), V%(162), PL$(162), W$(162), L$(162), I%(162)
+Dim TWS(40), TLS(40), CWS(40), CLT(40), LWS(40), LLS(40)
+Dim D$(2), menuItems$(4)
 
-4 FOR I = 1 TO 40: TWS(I) = 0: TLS(I) = 0: LWS(I) = 0: LLS(I) = 0: CWS(I) = 0: CLT(I) = 0: NEXT
-OPEN "DEV.BAS" FOR INPUT AS #2: FOR I = 0 TO 2: INPUT #2, D$(I): NEXT: CLOSE 2
+4 For I = 1 To 40: TWS(I) = 0: TLS(I) = 0: LWS(I) = 0: LLS(I) = 0: CWS(I) = 0: CLT(I) = 0: Next
+Open "DEV.BAS" For Input As #2: For I = 0 To 2: Input #2, D$(I): Next: Close 2
 
-6 TMR = 40: PV = 0: GOTO 2300
+6 TMR = 40: PV = 0: GoTo 2300
 
-9 FOR KK = 1 TO 40: YY = YY + 1
-LOCATE 7, 20: COLOR 14: TMR = TMR - 1: PRINT USING "###"; TMR
-IF Z1$(KK) = "*" THEN 60 ELSE 10
+9 For KK = 1 To 40: YY = YY + 1
+    Locate 7, 20: Color 14: TMR = TMR - 1: Print Using "###"; TMR
+    If Z1$(KK) = "*" Then 60 Else GoTo 10
 
-10 TML$(YY) = Z1$(KK)
+    10 TML$(YY) = Z1$(KK)
 
-11 LOCATE 4: COLOR 15: PRINT "COMPUTING RECORDS . . . . . PLEASE WAIT"
+    11 Locate 4: Color 15: Print "COMPUTING RECORDS . . . . . PLEASE WAIT"
 
-20 OPEN D$(1) + Z1$(KK) + "S" FOR INPUT AS #1
+    20 Open D$(1) + Z1$(KK) + "S" For Input As #1
 
-21 INPUT #1, XX%
+    21 Input #1, XX%
 
-22 FOR I = 1 TO 162: INPUT #1, H%(I): NEXT I
+    22 For I = 1 To 162: Input #1, H%(I): Next I
 
-23 FOR I = 1 TO 162: INPUT #1, H$(I): NEXT I
+    23 For I = 1 To 162: Input #1, H$(I): Next I
 
-24 FOR I = 1 TO 162: INPUT #1, V%(I): NEXT I
+    24 For I = 1 To 162: Input #1, V%(I): Next I
 
-25 FOR I = 1 TO 162: INPUT #1, PL$(I): NEXT I
+    25 For I = 1 To 162: Input #1, PL$(I): Next I
 
-26 FOR I = 1 TO 162: INPUT #1, W$(I): NEXT I
+    26 For I = 1 To 162: Input #1, W$(I): Next I
 
-27 FOR I = 1 TO 162: INPUT #1, L$(I): NEXT I
+    27 For I = 1 To 162: Input #1, L$(I): Next I
 
-28 FOR I = 1 TO 162: INPUT #1, I%(I): NEXT I
+    28 For I = 1 To 162: Input #1, I%(I): Next I
 
-29 CLOSE #1
+    29 Close #1
 
-30 FOR I = 1 TO XX%
+    30 For I = 1 To XX%
 
-31 IF H%(I) > V%(I) THEN WW(YY) = WW(YY) + 1
+        31 If H%(I) > V%(I) Then WW(YY) = WW(YY) + 1
 
-32 IF H%(I) > V%(I) AND I%(I) > 9 THEN EWW(YY) = EWW(YY) + 1
+        32 If H%(I) > V%(I) And I%(I) > 9 Then EWW(YY) = EWW(YY) + 1
 
-33 IF H%(I) > V%(I) AND PL$(I) = "A" THEN RWW(YY) = RWW(YY) + 1
+        33 If H%(I) > V%(I) And PL$(I) = "A" Then RWW(YY) = RWW(YY) + 1
 
-34 IF H%(I) > V%(I) AND PL$(I) = "H" THEN HWW(YY) = HWW(YY) + 1
+        34 If H%(I) > V%(I) And PL$(I) = "H" Then HWW(YY) = HWW(YY) + 1
 
-35 IF V%(I) > H%(I) THEN LL(YY) = LL(YY) + 1
+        35 If V%(I) > H%(I) Then LL(YY) = LL(YY) + 1
 
-36 IF V%(I) > H%(I) AND I%(I) > 9 THEN ELL(YY) = ELL(YY) + 1
+        36 If V%(I) > H%(I) And I%(I) > 9 Then ELL(YY) = ELL(YY) + 1
 
-37 IF V%(I) > H%(I) AND PL$(I) = "A" THEN RLL(YY) = RLL(YY) + 1
+        37 If V%(I) > H%(I) And PL$(I) = "A" Then RLL(YY) = RLL(YY) + 1
 
-38 IF V%(I) > H%(I) AND PL$(I) = "H" THEN HLL(YY) = HLL(YY) + 1
-	IF H%(I) > V%(I) THEN LWS(YY) = LWS(YY) + 1: LLS(YY) = 0
-	IF LWS(YY) > TWS(YY) THEN TWS(YY) = LWS(YY)
-	IF H%(I) < V%(I) THEN LLS(YY) = LLS(YY) + 1: LWS(YY) = 0
-	IF LLS(YY) > TLS(YY) THEN TLS(YY) = LLS(YY)
+        38 If V%(I) > H%(I) And PL$(I) = "H" Then HLL(YY) = HLL(YY) + 1
+        If H%(I) > V%(I) Then LWS(YY) = LWS(YY) + 1: LLS(YY) = 0
+        If LWS(YY) > TWS(YY) Then TWS(YY) = LWS(YY)
+        If H%(I) < V%(I) Then LLS(YY) = LLS(YY) + 1: LWS(YY) = 0
+        If LLS(YY) > TLS(YY) Then TLS(YY) = LLS(YY)
 
-39 IF H%(I) > V%(I) THEN 40
-	IF H%(I) < V%(I) THEN 42
+        39 If H%(I) > V%(I) Then 40
+        If H%(I) < V%(I) Then 42
 
-40 CWS(YY) = CWS(YY) + 1: CLT(YY) = 0: GOTO 44
+        40 CWS(YY) = CWS(YY) + 1: CLT(YY) = 0: GoTo 44
 
-42 CLT(YY) = CLT(YY) + 1: CWS(YY) = 0
+        42 CLT(YY) = CLT(YY) + 1: CWS(YY) = 0
 
-44 NEXT I
+    44 Next I
 
-45 IF XX% <= 10 THEN LTL(YY) = LL(YY): LTW(YY) = WW(YY): GOTO 60
+    45 If XX% <= 10 Then LTL(YY) = LL(YY): LTW(YY) = WW(YY): GoTo 60
 
-46 M = XX% - 9
+    46 M = XX% - 9
 
-47 FOR J = M TO XX%
+    47 For J = M To XX%
 
-48 IF H%(J) > V%(J) THEN LTW(YY) = LTW(YY) + 1
+        48 If H%(J) > V%(J) Then LTW(YY) = LTW(YY) + 1
 
-49 IF V%(J) > H%(J) THEN LTL(YY) = LTL(YY) + 1
+        49 If V%(J) > H%(J) Then LTL(YY) = LTL(YY) + 1
 
-50 NEXT J
+    50 Next J
 
-60 NEXT KK
+60 Next KK
 
-62 OPEN D$(2) + LG$ + ".STD" FOR OUTPUT AS #1
+62 Open D$(2) + LG$ + ".STD" For Output As #1
 
-63 WRITE #1, LGF$, D1$, D2$, D3$, D4$
+63 Write #1, LGF$, D1$, D2$, D3$, D4$
 
-67 FOR I = 1 TO 40: WRITE #1, TML$(I), WW(I), LL(I), TWS(I), TLS(I), CWS(I), CLT(I), HWW(I), HLL(I), RWW(I), RLL(I), EWW(I), ELL(I), LTW(I), LTL(I): NEXT
+67 For I = 1 To 40: Write #1, TML$(I), WW(I), LL(I), TWS(I), TLS(I), CWS(I), CLT(I), HWW(I), HLL(I), RWW(I), RLL(I), EWW(I), ELL(I), LTW(I), LTL(I): Next
 
-69 CLOSE #1
+69 Close #1
 
-70 GOTO 2300
+70 GoTo 2300
 
-950 FOR X = AA TO ZZ - 1: FOR Y = X + 1 TO ZZ: IF WW(X) - LL(X) > WW(Y) - LL(Y) THEN 985
+950 For X = AA To ZZ - 1: For Y = X + 1 To ZZ: If WW(X) - LL(X) > WW(Y) - LL(Y) Then 985
 
-955 IF WW(X) - LL(X) = WW(Y) - LL(Y) AND WW(X) <= WW(Y) AND WW(X) > LL(X) THEN 985
+    955 If WW(X) - LL(X) = WW(Y) - LL(Y) And WW(X) <= WW(Y) And WW(X) > LL(X) Then 985
 
-960 IF WW(X) - LL(X) = WW(Y) - LL(Y) AND WW(X) >= WW(Y) AND WW(X) < LL(X) THEN 985
+        960 If WW(X) - LL(X) = WW(Y) - LL(Y) And WW(X) >= WW(Y) And WW(X) < LL(X) Then 985
 
-965 SWAP TML$(X), TML$(Y)
-	SWAP TWS(X), TWS(Y)
-	SWAP TLS(X), TLS(Y)
-	SWAP CWS(X), CWS(Y)
-	SWAP CLT(X), CLT(Y)
-	SWAP WW(X), WW(Y)
-	SWAP LL(X), LL(Y)
-	SWAP EWW(X), EWW(Y)
-	SWAP ELL(X), ELL(Y)
-	SWAP HLL(X), HLL(Y)
-	SWAP RLL(X), RLL(Y)
-	SWAP HWW(X), HWW(Y)
-	SWAP RWW(X), RWW(Y)
-	SWAP LTL(X), LTL(Y)
-	SWAP LTW(X), LTW(Y)
+        965 Swap TML$(X), TML$(Y)
+        Swap TWS(X), TWS(Y)
+        Swap TLS(X), TLS(Y)
+        Swap CWS(X), CWS(Y)
+        Swap CLT(X), CLT(Y)
+        Swap WW(X), WW(Y)
+        Swap LL(X), LL(Y)
+        Swap EWW(X), EWW(Y)
+        Swap ELL(X), ELL(Y)
+        Swap HLL(X), HLL(Y)
+        Swap RLL(X), RLL(Y)
+        Swap HWW(X), HWW(Y)
+        Swap RWW(X), RWW(Y)
+        Swap LTL(X), LTL(Y)
+        Swap LTW(X), LTW(Y)
 
-985 NEXT Y: NEXT X
-	RETURN
+985 Next Y: Next X
+Return
 
-2000 FOR NT = 1 TO 4
-	AA = NT * 10 - 9: ZZ = NT * 10: GOSUB 950
+2000 For NT = 1 To 4
+    AA = NT * 10 - 9: ZZ = NT * 10: GoSub 950
 
-2011 CLS : LOCATE 1, 35: COLOR 11: PRINT LGF$
-	LOCATE 2: COLOR 14: PRINT TAB(16); "                      MAG.  L  L   C  C   HOME  ROAD  X-IN  L-10"
-	LOCATE 3: COLOR 14
-	IF NT = 1 THEN PRINT D1$;
-	IF NT = 2 THEN PRINT D2$;
-	IF NT = 3 THEN PRINT D3$;
-	IF NT = 4 THEN PRINT D4$;
-	PRINT TAB(16); "G   W   L   PCT   GB   #    WS LS  WS LS  W- L  W- L  W- L  W- L"
-	FOR I = AA TO ZZ
+    2011 Cls: Locate 1, 35: Color 11: Print LGF$
+    Locate 2: Color 14: Print Tab(16); "                      MAG.  L  L   C  C   HOME  ROAD  X-IN  L-10"
+    Locate 3: Color 14
+    If NT = 1 Then Print D1$;
+    If NT = 2 Then Print D2$;
+    If NT = 3 Then Print D3$;
+    If NT = 4 Then Print D4$;
+    Print Tab(16); "G   W   L   PCT   GB   #    WS LS  WS LS  W- L  W- L  W- L  W- L"
+    For I = AA To ZZ
 
-2012 IF TML$(I) = "" THEN 2014
+        2012 If TML$(I) = "" Then 2014
 
-2013 COLOR 3: PRINT TML$(I); : COLOR 15: PRINT TAB(14); USING "###"; WW(I) + LL(I); TAB(18);
-	PRINT USING "###"; WW(I); TAB(22);
-	PRINT USING "###"; LL(I);
-	IF LL(I) = 0 AND LL(I) + WW(I) <> 0 THEN PRINT TAB(26); "1.000"; : GOTO 2015
-	IF WW(I) = 0 THEN PRINT TAB(27); ".000"; : GOTO 2015
-	IF WW(I) + LL(I) <> 0 THEN PRINT TAB(27); USING ".###"; WW(I) / (WW(I) + LL(I)); : GOTO 2015
-	IF WW(I) + LL(I) = 0 THEN PRINT TAB(27); ".000";
+        2013 Color 3: Print TML$(I);: Color 15: Print Tab(14); Using "###"; WW(I) + LL(I); Tab(18);
+        Print Using "###"; WW(I); Tab(22);
+        Print Using "###"; LL(I);
+        If LL(I) = 0 And LL(I) + WW(I) <> 0 Then Print Tab(26); "1.000";: GoTo 2015
+        If WW(I) = 0 Then Print Tab(27); ".000";: GoTo 2015
+        If WW(I) + LL(I) <> 0 Then Print Tab(27); Using ".###"; WW(I) / (WW(I) + LL(I));: GoTo 2015
+        If WW(I) + LL(I) = 0 Then Print Tab(27); ".000";
 
-2015 IF ((WW(NT * 10 - 9) - WW(I)) + (LL(I) - LL(NT * 10 - 9))) / 2 = 0 THEN PRINT TAB(32); " ---";
-	IF ((WW(NT * 10 - 9) - WW(I)) + (LL(I) - LL(NT * 10 - 9))) / 2 <> 0 THEN PRINT TAB(32); USING "##.#"; ((WW(NT * 10 - 9) - WW(I)) + (LL(I) - LL(NT * 10 - 9))) / 2;
-	PRINT TAB(44); USING "##"; TWS(I); TAB(47); TLS(I); TAB(51); CWS(I); TAB(54); CLT(I);
-	PRINT TAB(57); USING "##"; HWW(I); : PRINT TAB(60); USING "##"; HLL(I);
-	PRINT TAB(63); USING "##"; RWW(I); : PRINT TAB(66); USING "##"; RLL(I);
-	PRINT TAB(69); USING "##"; EWW(I); : PRINT TAB(72); USING "##"; ELL(I);
-	PRINT TAB(75); USING "##"; LTW(I); : PRINT TAB(78); USING "##"; LTL(I)
+        2015 If ((WW(NT * 10 - 9) - WW(I)) + (LL(I) - LL(NT * 10 - 9))) / 2 = 0 Then Print Tab(32); " ---";
+        If ((WW(NT * 10 - 9) - WW(I)) + (LL(I) - LL(NT * 10 - 9))) / 2 <> 0 Then Print Tab(32); Using "##.#"; ((WW(NT * 10 - 9) - WW(I)) + (LL(I) - LL(NT * 10 - 9))) / 2;
+        Print Tab(44); Using "##"; TWS(I); Tab(47); TLS(I); Tab(51); CWS(I); Tab(54); CLT(I);
+        Print Tab(57); Using "##"; HWW(I);: Print Tab(60); Using "##"; HLL(I);
+        Print Tab(63); Using "##"; RWW(I);: Print Tab(66); Using "##"; RLL(I);
+        Print Tab(69); Using "##"; EWW(I);: Print Tab(72); Using "##"; ELL(I);
+        Print Tab(75); Using "##"; LTW(I);: Print Tab(78); Using "##"; LTL(I)
 
-2014 NEXT
-	LOCATE 4, 38: PRINT USING "###"; 163 - WW(NT * 10 - 9) - LL(NT * 10 - 8)
-	LOCATE 23: COLOR 14: PRINT "HIT ANY KEY TO CONTINUE"
-2036 I$ = GetKeyPress$
-	NEXT NT
+    2014 Next
+    Locate 4, 38: Print Using "###"; 163 - WW(NT * 10 - 9) - LL(NT * 10 - 8)
+    Locate 23: Color 14: Print "HIT ANY KEY TO CONTINUE"
+    2036 I$ = GetKeyPress$
+Next NT
 
-2300 CLS
-	CALL TITLE
-	menuItems$(1) = "UPDATE LEAGUE STANDINGS      "
-	menuItems$(2) = "VIEW / PRINT LEAGUE STANDINGS"
-	menuItems$(3) = "RETURN TO MAIN MENU          "
-	SELECTION% = 1
-	Count% = 3
-	Start% = 1
-	SCANCODE% = 3
-	FileFGColr% = 15:FileBGColr% = 1
-	HiLiteFGColr% = 0:HiLiteBGColr% = 7
-	Spacing% = 1
-	Row% = 6
-	Column% = 27
-CALL box0(5, 26, 9, 56, 2, 31)
-	
+2300 Cls
+Call TITLE
+menuItems$(1) = "UPDATE LEAGUE STANDINGS      "
+menuItems$(2) = "VIEW / PRINT LEAGUE STANDINGS"
+menuItems$(3) = "RETURN TO MAIN MENU          "
+SELECTION% = 1
+Count% = 3
+Start% = 1
+SCANCODE% = 3
+FileFGColr% = 15: FileBGColr% = 1
+HiLiteFGColr% = 0: HiLiteBGColr% = 7
+Spacing% = 1
+Row% = 6
+Column% = 27
+Call box0(5, 26, 9, 56, 2, 15, 1)
+    
 _MouseShow "DEFAULT"
 MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
 _MouseHide
 
-	COLOR , 0
-	IF SCANCODE% = 27 THEN SELECTION% = 3
-	I = SELECTION%
+Color , 0
+If SCANCODE% = 27 Then SELECTION% = 3
+I = SELECTION%
 
-2306 IF I = 1 THEN 2500
+2306 If I = 1 Then 2500
 
-2307 IF I = 2 THEN 2600
+2307 If I = 2 Then 2600
 
-2308 IF I = 3 THEN RUN "NEWLDR.EXE"
+2308 If I = 3 Then Run "NEWLDR.EXE"
 
-2500 CLS
+2500 Cls
 
 4000 Spec$ = D$(2) + "*.TMS"
-	null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
-	Count% = DirCount%
-	IF Count% = 0 THEN 2300
-REDIM F$(0 TO Count%)
-	FOR X = 1 TO Count%
-	  F$(X) = SPACE$(12)
-	NEXT
-	F$(0) = Spec$
-	CALL ReadFile(F$())
-	'CALL SortStr(VARPTR(F$(1)), Count%, 0)
+null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
+Count% = DirCount%
+If Count% = 0 Then 2300
+ReDim leagueFiles$(0 To Count%)
+For X = 1 To Count%
+    leagueFiles$(X) = Space$(12)
+Next
+leagueFiles$(0) = Spec$
+Call ReadFile(leagueFiles$())
+'CALL SortStr(VARPTR(leagueFiles$(1)), Count%, 0)
 
-1310 CLS
-	COLOR , 1
-	CLS
-	LOCATE , 28
-	COLOR 14
-	PRINT "SELECT LEAGUE TO UPDATE": COLOR 15
-	SELECTION% = 1
-	Start% = 1
-	FileFGColr% = 15:FileBGColr% = 1
-	HiLiteFGColr% = 0:HiLiteBGColr% = 7
-	Rows% = 20
-	Columns% = 4
-	Spacing% = 6
-	Row% = 4
-	Column% = 1
-	LOCATE 25, 1
-	COLOR 14
-	PRINT "ENTER"; : COLOR 15
-	PRINT "-SELECTS TEAM";
+1310 Cls
+Color , 1
+Cls
+Locate , 28
+Color 14
+Print "SELECT LEAGUE TO UPDATE": Color 15
+SELECTION% = 1
+Start% = 1
+FileFGColr% = 15: FileBGColr% = 1
+HiLiteFGColr% = 0: HiLiteBGColr% = 7
+Rows% = 20
+Columns% = 4
+Spacing% = 6
+Row% = 4
+Column% = 1
+Locate 25, 1
+Color 14
+Print "ENTER";: Color 15
+Print "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-MAMenu F$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu leagueFiles$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
-	IF ExitCode% = 27 THEN 2300
-	F$ = F$(SELECTION%)
-	LOCATE 2, 33: PRINT F$
-LOCATE , 33: PRINT "ANY CHANGE (YN)";
-	COLOR 15, 0
+If ExitCode% = 27 Then 2300
+targetFile$ = leagueFiles$(SELECTION%)
+Locate 2, 33: Print targetFile$
+Locate , 33: Print "ANY CHANGE (YN)";
+Color 15, 0
 2535 I$ = GetKeyPress$
-	IF UCASE$(I$) = "Y" THEN 1310
-	F$ = RTrim$(F$)
-	LG$ = LEFT$(F$, LEN(F$) - 4)
+If UCase$(I$) = "Y" Then 1310
+targetFile$ = RTrim$(targetFile$)
+LG$ = Left$(targetFile$, Len(targetFile$) - 4)
 
-2530 OPEN D$(2) + LG$ + ".TMS" FOR INPUT AS #2
+2530 Open D$(2) + LG$ + ".TMS" For Input As #2
 
-2540 INPUT #2, LGF$: INPUT #2, D1$: INPUT #2, D2$: INPUT #2, D3$: INPUT #2, D4$
+2540 Input #2, LGF$: Input #2, D1$: Input #2, D2$: Input #2, D3$: Input #2, D4$
 
-2550 FOR X = 1 TO 40: INPUT #2, Z1$(X): NEXT
+2550 For X = 1 To 40: Input #2, Z1$(X): Next
 
-2560 CLOSE 2
+2560 Close 2
 
-2565 GOTO 9
+2565 GoTo 9
 
-2600 CLS
-	Spec$ = D$(2) + "*.STD"
-	null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
-	Count% = DirCount%
-	IF Count% = 0 THEN 2300
-REDIM F$(0 TO Count%)
-	FOR X = 1 TO Count%
-	  F$(X) = SPACE$(12)
-	NEXT
-	F$(0) = Spec$
-	CALL ReadFile(F$())
-	'CALL SortStr(VARPTR(F$(1)), Count%, 0)
+2600 Cls
+Spec$ = D$(2) + "*.STD"
+null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
+Count% = DirCount%
+If Count% = 0 Then 2300
+ReDim stdFiles$(0 To Count%)
+For X = 1 To Count%
+    stdFiles$(X) = Space$(12)
+Next
+stdFiles$(0) = Spec$
+Call ReadFile(stdFiles$())
+'CALL SortStr(VARPTR(stdFiles$(1)), Count%, 0)
 
-1311 CLS
-	COLOR , 1
-	CLS
-	LOCATE , 28
-	COLOR 14
-	PRINT "SELECT LEAGUE TO VIEW": COLOR 15
-	SELECTION% = 1
-	Start% = 1
-	FileFGColr% = 15:FileBGColr% = 1
-	HiLiteFGColr% = 0:HiLiteBGColr% = 7
-	Rows% = 20
-	Columns% = 4
-	Spacing% = 6
-	Row% = 4
-	Column% = 1
-	LOCATE 25, 1
-	COLOR 14
-	PRINT "ENTER"; : COLOR 15
-	PRINT "-SELECTS TEAM";
+1311 Cls
+Color , 1
+Cls
+Locate , 28
+Color 14
+Print "SELECT LEAGUE TO VIEW": Color 15
+SELECTION% = 1
+Start% = 1
+FileFGColr% = 15: FileBGColr% = 1
+HiLiteFGColr% = 0: HiLiteBGColr% = 7
+Rows% = 20
+Columns% = 4
+Spacing% = 6
+Row% = 4
+Column% = 1
+Locate 25, 1
+Color 14
+Print "ENTER";: Color 15
+Print "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-MAMenu F$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu stdFiles$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
-	IF ExitCode% = 27 THEN 2300
-	F$ = F$(SELECTION%)
-	LOCATE 2, 33: PRINT F$
-LOCATE , 33: PRINT "ANY CHANGE (YN)";
-	COLOR 15, 0
+If ExitCode% = 27 Then 2300
+targetFile$ = stdFiles$(SELECTION%)
+Locate 2, 33: Print targetFile$
+Locate , 33: Print "ANY CHANGE (YN)";
+Color 15, 0
 2536 I$ = GetKeyPress$
-	IF UCASE$(I$) = "Y" THEN 1310
-	F$ = RTrim$(F$)
-	LGS$ = LEFT$(F$, LEN(F$) - 4)
+If UCase$(I$) = "Y" Then 1310
+targetFile$ = RTrim$(targetFile$)
+LGS$ = Left$(targetFile$, Len(targetFile$) - 4)
 
-2602 OPEN D$(2) + LGS$ + ".STD" FOR INPUT AS #1
+2602 Open D$(2) + LGS$ + ".STD" For Input As #1
 
-2603 INPUT #1, LGF$, D1$, D2$, D3$, D4$
+2603 Input #1, LGF$, D1$, D2$, D3$, D4$
 
-2667 FOR I = 1 TO 40: INPUT #1, TML$(I), WW(I), LL(I), TWS(I), TLS(I), CWS(I), CLT(I), HWW(I), HLL(I), RWW(I), RLL(I), EWW(I), ELL(I), LTW(I), LTL(I): NEXT
+2667 For I = 1 To 40: Input #1, TML$(I), WW(I), LL(I), TWS(I), TLS(I), CWS(I), CLT(I), HWW(I), HLL(I), RWW(I), RLL(I), EWW(I), ELL(I), LTW(I), LTL(I): Next
 
-2669 CLOSE #1
+2669 Close #1
 
-2670 LOCATE 10, 1
-	COLOR 12
-	PRINT "P"; : COLOR 7: PRINT "RINT OR ";
-	COLOR 12: PRINT "V"; : COLOR 7: PRINT "IEW STANDINGS"
+2670 Locate 10, 1
+Color 12
+Print "P";: Color 7: Print "RINT OR ";
+Color 12: Print "V";: Color 7: Print "IEW STANDINGS"
 2671 I$ = GetKeyPress$
 
-2672 IF UCASE$(I$) = "P" GOTO 3000
+2672 If UCase$(I$) = "P" GoTo 3000
 
-2673 IF UCASE$(I$) = "V" GOTO 2000
+2673 If UCase$(I$) = "V" GoTo 2000
 
-3000 MJ = 0: LPRINT CHR$(15)
+3000 MJ = 0: LPrint Chr$(15)
 
-3001 WIDTH "LPT1:1", 130
-	LPRINT TAB(35); LGF$
-	FOR NT = 1 TO 4
-	AA = NT * 10 - 9: ZZ = NT * 10: GOSUB 950
-	LPRINT TAB(16); "                      MAG.  L  L   C  C   HOME  ROAD  X-IN  L-10"
-	IF NT = 1 THEN LPRINT D1$;
-	IF NT = 2 THEN LPRINT D2$;
-	IF NT = 3 THEN LPRINT D3$;
-	IF NT = 4 THEN LPRINT D4$;
-	LPRINT TAB(16); "G   W   L   PCT   GB   #    WS LS  WS LS  W- L  W- L  W- L  W- L"
-	FOR I = AA TO ZZ
+'3001 WIDTH "LPT1:1", 130
+LPrint Tab(35); LGF$
+For NT = 1 To 4
+    AA = NT * 10 - 9: ZZ = NT * 10: GoSub 950
+    LPrint Tab(16); "                      MAG.  L  L   C  C   HOME  ROAD  X-IN  L-10"
+    If NT = 1 Then LPrint D1$;
+    If NT = 2 Then LPrint D2$;
+    If NT = 3 Then LPrint D3$;
+    If NT = 4 Then LPrint D4$;
+    LPrint Tab(16); "G   W   L   PCT   GB   #    WS LS  WS LS  W- L  W- L  W- L  W- L"
+    For I = AA To ZZ
 
-3012 IF TML$(I) = "" THEN 3014
+        3012 If TML$(I) = "" Then 3014
 
-3013 COLOR 3: LPRINT TML$(I); : COLOR 15: LPRINT TAB(14); USING "###"; WW(I) + LL(I); TAB(18);
-	LPRINT USING "###"; WW(I); TAB(22);
-	LPRINT USING "###"; LL(I);
-	IF LL(I) = 0 AND LL(I) + WW(I) <> 0 THEN LPRINT TAB(26); "1.000"; : GOTO 3015
-	IF WW(I) = 0 THEN LPRINT TAB(27); ".000"; : GOTO 3015
-	IF WW(I) + LL(I) <> 0 THEN LPRINT TAB(27); USING ".###"; WW(I) / (WW(I) + LL(I)); : GOTO 3015
-	IF WW(I) + LL(I) = 0 THEN LPRINT TAB(27); ".000";
+        3013 Color 3: LPrint TML$(I);: Color 15: LPrint Tab(14); Using "###"; WW(I) + LL(I); Tab(18);
+        LPrint Using "###"; WW(I); Tab(22);
+        LPrint Using "###"; LL(I);
+        If LL(I) = 0 And LL(I) + WW(I) <> 0 Then LPrint Tab(26); "1.000";: GoTo 3015
+        If WW(I) = 0 Then LPrint Tab(27); ".000";: GoTo 3015
+        If WW(I) + LL(I) <> 0 Then LPrint Tab(27); Using ".###"; WW(I) / (WW(I) + LL(I));: GoTo 3015
+        If WW(I) + LL(I) = 0 Then LPrint Tab(27); ".000";
 
-3015 IF ((WW(NT * 10 - 9) - WW(I)) + (LL(I) - LL(NT * 10 - 9))) / 2 = 0 THEN LPRINT TAB(32); " ---";
-	IF ((WW(NT * 10 - 9) - WW(I)) + (LL(I) - LL(NT * 10 - 9))) / 2 <> 0 THEN LPRINT TAB(32); USING "##.#"; ((WW(NT * 10 - 9) - WW(I)) + (LL(I) - LL(NT * 10 - 9))) / 2;
-	IF I = NT * 10 - 9 THEN LPRINT TAB(38); USING "###"; 163 - WW(NT * 10 - 9) - LL(NT * 10 - 8);
-	LPRINT TAB(44); USING "##"; TWS(I); TAB(47); TLS(I); TAB(51); CWS(I); TAB(54); CLT(I);
-	LPRINT TAB(57); USING "##"; HWW(I); : LPRINT TAB(60); USING "##"; HLL(I);
-	LPRINT TAB(63); USING "##"; RWW(I); : LPRINT TAB(66); USING "##"; RLL(I);
-	LPRINT TAB(69); USING "##"; EWW(I); : LPRINT TAB(72); USING "##"; ELL(I);
-	LPRINT TAB(75); USING "##"; LTW(I); : LPRINT TAB(78); USING "##"; LTL(I)
+        3015 If ((WW(NT * 10 - 9) - WW(I)) + (LL(I) - LL(NT * 10 - 9))) / 2 = 0 Then LPrint Tab(32); " ---";
+        If ((WW(NT * 10 - 9) - WW(I)) + (LL(I) - LL(NT * 10 - 9))) / 2 <> 0 Then LPrint Tab(32); Using "##.#"; ((WW(NT * 10 - 9) - WW(I)) + (LL(I) - LL(NT * 10 - 9))) / 2;
+        If I = NT * 10 - 9 Then LPrint Tab(38); Using "###"; 163 - WW(NT * 10 - 9) - LL(NT * 10 - 8);
+        LPrint Tab(44); Using "##"; TWS(I); Tab(47); TLS(I); Tab(51); CWS(I); Tab(54); CLT(I);
+        LPrint Tab(57); Using "##"; HWW(I);: LPrint Tab(60); Using "##"; HLL(I);
+        LPrint Tab(63); Using "##"; RWW(I);: LPrint Tab(66); Using "##"; RLL(I);
+        LPrint Tab(69); Using "##"; EWW(I);: LPrint Tab(72); Using "##"; ELL(I);
+        LPrint Tab(75); Using "##"; LTW(I);: LPrint Tab(78); Using "##"; LTL(I)
 
-3014 NEXT
-	LPRINT : LPRINT
-	NEXT NT
-	LPRINT CHR$(12)
+    3014 Next
+    LPrint: LPrint
+Next NT
+LPrint Chr$(12)
 
-3096 LPRINT CHR$(18)
+3096 LPrint Chr$(18)
 
-3097 WIDTH "LPT1:1", 80
+'3097 WIDTH "LPT1:1", 80
 
 3100 GOTO 2300
 
@@ -368,14 +368,14 @@ LOCATE , 33: PRINT "ANY CHANGE (YN)";
 ' Displays window title / game copyright
 SUB TITLE ()
 COLOR , 0: KEY OFF: CLS
-	COLOR , 1: LOCATE 1, 1: PRINT TAB(80); : LOCATE , 30: COLOR 12
-	PRINT "FULL COUNT BASEBALL 6.0"
-	LOCATE 24, 1: PRINT TAB(80); : LOCATE , 1
-	PRINT "(C) LANCE HAFFNER/SHANNON LYNN 1987-1994"; TAB(70); LEFT$(TIME$, 5);
-	LOCATE 3, 1: COLOR 2, 0
-	COLOR 15: PRINT "        PROGRAMMED AND DEVELOPED BY LANCE HAFFNER AND SHANNON LYNN"
-	  PRINT "              FOR TECHNICAL SUPPORT, CALL (615) 366-8088"
-	COLOR 10
+    COLOR , 1: LOCATE 1, 1: PRINT TAB(80); : LOCATE , 30: COLOR 12
+    PRINT "FULL COUNT BASEBALL 6.0"
+    LOCATE 24, 1: PRINT TAB(80); : LOCATE , 1
+    PRINT "(C) LANCE HAFFNER/SHANNON LYNN 1987-1994"; TAB(70); LEFT$(TIME$, 5);
+    LOCATE 3, 1: COLOR 2, 0
+    COLOR 15: PRINT "        PROGRAMMED AND DEVELOPED BY LANCE HAFFNER AND SHANNON LYNN"
+      PRINT "              FOR TECHNICAL SUPPORT, CALL (615) 366-8088"
+    COLOR 10
 END SUB
 
 '$INCLUDE: 'KeyInput.BM'

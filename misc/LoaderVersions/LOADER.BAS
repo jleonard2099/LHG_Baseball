@@ -52,7 +52,7 @@ Dim PR%(24), GK%(1)
 Dim CSS%(1, 22, 6)
 Dim MG%(1, 999), GS%(21, 1), PS%(23, 1)
 Dim U%(50)
-Dim V$(200), S$(1), SP%(1), U6$(2), LGT$(2), DH$(1), UMP$(50), WE$(1), MN$(10), NB%(1, 4)
+Dim teamItems$(200), S$(1), SP%(1), U6$(2), LGT$(2), DH$(1), UMP$(50), WE$(1), MN$(10), NB%(1, 4)
 Dim UV%(200), VI$(1), DL$(1), DN$(1), F(9), M%(9), BB%(9), BP(9)
 
 ' DIM Ed AS EditInfo              'create the editor's data structure
@@ -391,7 +391,7 @@ If YU < 4 Then 265
     Color 15, 0
     If NY$ = "" Then GoSub 8102: GoTo 2856
     YN$ = NY$
-    For I1 = 1 To 200: V$(I1) = "": Next
+    For I1 = 1 To 200: teamItems$(I1) = "": Next
 
     2857 GoSub 8100
 
@@ -1049,7 +1049,7 @@ HiLiteFGColr% = 0: HiLiteBGColr% = 7
 Spacing% = 1
 Row% = 5
 Column% = 10
-Call box0(4, 9, 20, 38, 2, 31)
+CALL box0(4, 9, 20, 38, 2,  15, 1)
     
 _MouseShow "DEFAULT"
 MMenuVert PARK$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
@@ -1403,7 +1403,7 @@ For I1 = 1 To Y / 4342
         If Left$(Q2$(0), 1) = " " Or Asc(Mid$(Q2$(0), I2, 1)) < 32 Or Asc(Mid$(Q2$(0), I2, 1)) > 123 Or UCase$(Left$(Q2$(0), 3)) = "NOT" Or UCase$(Left$(Q2$(0), 3)) = "UN" Then 8105
     Next I2
     NT = NT + 1
-    V$(NT) = Q2$(0): UV%(NT) = I1
+    teamItems$(NT) = Q2$(0): UV%(NT) = I1
 
 8105 Next I1
 Close 1
@@ -1422,7 +1422,7 @@ Color , 4: Cls: Locate , 33: Color 14: Print "TEAM SELECTION": Color 15
 Locate 25, 1: Color 14: Print "ESC";: Color 15: Print "-SELECT NEW ID  PGDN  PGUP  ";: Color 14: Print "ENTER";: Color 15: Print "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-MAMenu V$(), SELECTION%, Start%, Count%, EXITCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu teamItems$(), SELECTION%, Start%, Count%, EXITCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 If EXITCODE% = 27 Then BO% = 1: Return

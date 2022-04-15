@@ -206,10 +206,7 @@ End Sub
 ' ------------------------------------------------------------
 ' Subroutine to draw box in Screen Mode 0
 ' ------------------------------------------------------------
-Sub box0 (ULRow%, ULCol%, LRRow%, LRCol%, Char%, Colr%)
-
-    ' TO DO:
-    ' Convert Colr% to FG/ BG
+Sub box0 (ULRow%, ULCol%, LRRow%, LRCol%, Char%, FGColor%, BGColor%)
 
     '1 = single line all around
     '2 = double line all around
@@ -233,19 +230,19 @@ Sub box0 (ULRow%, ULCol%, LRRow%, LRCol%, Char%, Colr%)
             llCorner$ = Chr$(200)
             lrCorner$ = Chr$(188)
         Case 3:
-            ulCorner$ = Chr$(201)
+            ulCorner$ = Chr$(213)
             horizontal$ = Chr$(205)
-            urCorner$ = Chr$(187)
+            urCorner$ = Chr$(184)
             vertical$ = Chr$(179)
-            llCorner$ = Chr$(200)
-            lrCorner$ = Chr$(188)
+            llCorner$ = Chr$(212)
+            lrCorner$ = Chr$(190)
         Case 4:
-            ulCorner$ = Chr$(218)
+            ulCorner$ = Chr$(214)
             horizontal$ = Chr$(196)
-            urCorner$ = Chr$(191)
+            urCorner$ = Chr$(183)
             vertical$ = Chr$(186)
-            llCorner$ = Chr$(192)
-            lrCorner$ = Chr$(217)
+            llCorner$ = Chr$(211)
+            lrCorner$ = Chr$(189)
         Case Else:
             ulCorner$ = Chr$(Char%)
             horizontal$ = Chr$(Char%)
@@ -255,7 +252,9 @@ Sub box0 (ULRow%, ULCol%, LRRow%, LRCol%, Char%, Colr%)
             lrCorner$ = Chr$(Char%)
     End Select
 
-    Color 15, 1
+    'SplitColor Colr%, FGColor%, BGColor% 'split color into FG and BG
+
+    Color FGColor%, BGColor%
 
     ' Prints the top of the box
     Locate ULRow%, ULCol%
@@ -268,10 +267,10 @@ Sub box0 (ULRow%, ULCol%, LRRow%, LRCol%, Char%, Colr%)
     Next
 
     'Print the bottom line of the box
-    Locate LRRow%, ULCol%
+    'Locate LRRow%, ULCol%
     Print llCorner$ + String$(LRCol% - ULCol%, Asc(horizontal$)) + lrCorner$
 
-    Color Colr%,
+    'Color Colr%,
 
 End Sub
 
@@ -415,13 +414,12 @@ Sub CSMsgBox (Message$, Wdth%, Pass)
         BotRow = Row + LN + 1 'Find the bottom row #
 
         'Save current screen
-        'oldScrn& = _CopyImage(0)
-        PCopy 0, 1
+		oldmode& = _COPYIMAGE(0)  'the 0 value designates the current destination SCREEN
+        'PCopy 0, 1
 
         BoxWdth = Wdth + 4 'Find the outer box width
         ColPos = 40 - (BoxWdth \ 2) 'Starting pos. for centered box
         Locate Row, ColPos 'Print the top of box
-
 
         MQPrint "É" + String$(Wdth + 2, "Í") + "»", 0, 7
 
@@ -446,7 +444,8 @@ Sub CSMsgBox (Message$, Wdth%, Pass)
 
     ElseIf Pass = 1 Then 'If we've been here before...
         'Restore the original screen
-        PCopy 1, 0
+        'PCopy 1, 0
+		SCREEN oldmode&
 
         Pass = 0 'Reset flag for next call
     End If
@@ -514,168 +513,6 @@ Sub ISortI (Element%, IndexElement%, NumElements%, Direction%)
 End Sub
 
 
-
-'-----------------------------------
-' Lts2Menu Subroutine
-'-----------------------------------
-Sub Lts2Menu (Item$(), Prompt$(), Choice%, Colr%)
-    'Item$() and Prompt$() have oneDIMension
-    'Choice% is the value returned, or zero if Escape is pressed
-    'Colr% is the packed color to use for the display
-    '
-    'NOTE: The foreground and background portions of Colr% are reversed for
-    '      the highlighted item.  Also, a new color is derived from Colr%
-    '      for the prompt message - change this to suit by searching for
-    '      the string "prompt color".
-    '
-    'NOTE: A comment near the end shows how to modify this menu to exit
-    '      when a letter key is pressed, without also needing to press Enter.
-    '      If you do this, each item should start with a unique first letter.
-    '      Search for the string "having" to find where.
-
-    Locate , , 0 'turn off the cursor
-    SplitColor Colr%, FG%, BG% 'split color into FG and BG
-    ReDim ScrBuf%(0 To 159)
-    TRow% = CsrLin
-    '--Need to update below with correct code
-    'ScrnSave0 TRow%, 1, TRow% + 1, 80, ScrBuf%(0)
-
-    Call ClearEOL(FG%, BG%) 'clear any old prompt information
-
-    '-- determine how many choices there are
-    NumItems% = UBound(Item$) 'get the number of items passed
-    While Item$(NumItems%) = "" 'seek the last non-blank item
-        NumItems% = NumItems% - 1
-    Wend
-    ReDim Break%(NumItems% + 1) 'remembers which items start on a new screen
-    Break%(NumItems% + 1) = -2 'mark one past the end as a flag
-    Col% = 1 'tracks the accumulated line width and columns
-    Page% = 1 'tracks which item begins a new screen page
-
-    '-- Build a table of starting columns and page breaks for each item.
-    '   For each item that begins a new page, use a negative version of the
-    '   page number as a flag.  we don't need the starting column for those
-    '   anyway, because the first item on each pagwe always is in column 1.
-    '   For all other items, the equivalent Break%() element will hold the
-    '   column in which this item is located.
-    For X% = 1 To NumItems%
-        Break%(X%) = Col% 'assume we're not starting a new screen page
-        If X% = 1 Then Break%(X%) = -1
-        Col% = Col% + Len(Item$(X%)) + 2 'add two for a small border
-        If Col% > 80 Then
-            Page% = Page% + 1 'we advanced to the next page
-            Break%(X%) = -Page% 'this item starts a page, remember which one
-            Col% = Len(Item$(X%)) + 3
-        End If
-    Next
-
-    '-- print a page-full of items
-    Choice% = 1 'start with item 1 the first time
-
-    QPPrintLt2:
-    X% = Choice% 'assume we'll start at the current item
-    While Break%(X%) > 0 'seek the first item on this page
-        X% = X% - 1
-    Wend
-    Do 'print until the negative Break%() flag
-        C% = Colr% 'assume the item being printed is NOT current
-        CH% = 12
-        If X% = Choice% Then 'we were wrong, reverse the FG and BG colors
-            C% = OneColor%(BG%, FG% And 7)
-            CH% = C%
-            Locate CsrLin + 1, 1 'go down a line and to the first column
-            Call ClearEOL(FG%, BG%) 'clear any old prompt information
-            'you may adjust the prompt color by changing the line below
-            test$ = Space$(1) + Prompt$(X%) + Space$(1)
-            QPrint test$, FG%, BG%, -1
-            Locate CsrLin - 1 'return to the line above
-        End If
-        If Break%(X%) < 0 Then 'if it's the first item on this page
-            Locate , 1 'locate to the first column
-            If ClearFlag% Then 'if we just crossed a page boundary
-                Call ClearEOL(FG%, BG%) '  clear any old items that may still show
-                ClearFlag% = 0
-            End If
-        Else 'otherwise
-            Locate , Break%(X%) '  locate to the correct column
-        End If
-        If Break%(X%) < 0 Then
-            '--Need to update below with colors
-            'QPrint SPACE$(1) + left$(Item$(X%),1) + SPACE$(1), CH%, -1
-            Locate , 3
-            '--Need to update below with colors
-            'QPrint right$(Item$(X%),len(item$(x%))-1) + SPACE$(1), C%, -1
-        Else
-            '--Need to update below with colors
-            'QPrint SPACE$(1) + left$(Item$(X%),1) + SPACE$(1), CH%, -1
-            Locate , Break%(X%) + 2
-            '--Need to update below with colors
-            'QPrint right$(Item$(X%),len(item$(x%))-1) + SPACE$(1), C%, -1
-        End If
-        X% = X% + 1 'advance to the next item
-    Loop Until Break%(X%) < -1
-    Do
-        X$ = GetKeyPress$
-    Loop Until Len(X$)
-    If Len(X$) = 2 Then 'extended key
-        Select Case Asc(Right$(X$, 1))
-            Case 71 'Home Key
-                Choice% = 1 'set to the first item in the list
-                ClearFlag% = 1 'flag to clear old items
-            Case 75 'Left Arrow
-                If Choice% > 1 Then
-                    Choice% = Choice% - 1
-                    If Break%(Choice%) < 0 Then ClearFlag% = 1
-                Else
-                    Choice% = NumItems%
-                    ClearFlag% = 1
-                End If
-            Case 77 'Right Arrow
-                If Choice% < NumItems% Then
-                    Choice% = Choice% + 1
-                    If Break%(Choice%) < 0 Then ClearFlag% = 1
-                Else
-                    Choice% = 1
-                    ClearFlag% = 1
-                End If
-     
-            Case 79 'End Key
-                Choice% = NumItems%
-                ClearFlag% = 1
-            Case Else
-        End Select
-    Else
-        Select Case X$
-            Case Chr$(13) 'Enter Key
-                GoTo QPExitLt2 'exit with the current choice
-            Case Chr$(27) 'Escape Key
-                Choice% = 0 'set the choice to zero as an Escape flag
-                GoTo QPExitLt2
-            Case Else 'they must be typing a choice's first letter
-                X% = Choice% 'scan through each item looking for a match
-                Do 'starting at the item after the current one
-                    If X% = NumItems% Then X% = 0 'wrap past the last one
-                    X% = X% + 1 'consider the next item
-                    If Asc(UCase$(Item$(X%))) = Asc(UCase$(X$)) Then
-                        Choice% = X% 'we found one, save where
-                        ClearFlag% = 1 'set flag to clear old stuff
-                        'EXIT DO                      '  and stop searching
-                        GoTo QPExitLt2
-                        'change the EXIT DO above to GOTO QPExitLt2 to exit without
-                        '  having to press Enter
-                    End If
-                    If X% = Choice% Then Exit Do 'we already went around once
-                Loop
-        End Select
-    End If
-    GoTo QPPrintLt2
-
-    QPExitLt2:
-    '--Need to update below with correct code
-    'ScrnRest0 TRow%, 1, TRow% + 1, 80, ScrBuf%(0)
-    Erase Break%, ScrBuf%
-
-End Sub
 
 
 
@@ -1481,5 +1318,182 @@ Sub YesNoB (YN$, ExitCode, FGColor%, BGColor%)
 
     YD2:
     Locate , , 0
+
+End Sub
+
+
+'-----------------------------------
+' Lts2Menu Subroutine
+'-----------------------------------
+Sub Lts2Menu (Item$(), Prompt$(), Choice%, FGColor%, BGColor%)
+    'Item$() and Prompt$() have one dimension
+    'Choice% is the value returned, or zero if Escape is pressed
+    'Colr% is the packed color to use for the display
+    '
+    'NOTE: The foreground and background portions of Colr% are reversed for
+    '      the highlighted item.  Also, a new color is derived from Colr%
+    '      for the prompt message - change this to suit by searching for
+    '      the string "prompt color".
+    '
+    'NOTE: A comment near the end shows how to modify this menu to exit
+    '      when a letter key is pressed, without also needing to press Enter.
+    '      If you do this, each item should start with a unique first letter.
+    '      Search for the string "having" to find where.
+
+    Locate , , 0 'turn off the cursor
+
+    'SplitColor Colr%, FGColor%, BGColor% 'split color into FG and BG
+    ReDim ScrBuf%(0 To 159)
+    TRow% = CsrLin
+
+    'PCopy 0, 1
+    oldmode& = _CopyImage(0) 'the 0 value designates the current destination SCREEN
+
+    Call ClearEOL(7, 0) 'clear any old prompt information
+
+    '-- determine how many choices there are
+    NumItems% = UBound(Item$) 'get the number of items passed
+
+    While Item$(NumItems%) = "" 'seek the last non-blank item
+        NumItems% = NumItems% - 1
+    Wend
+
+    ReDim Break%(NumItems% + 1) 'remembers which items start on a new screen
+    Break%(NumItems% + 1) = -2 'mark one past the end as a flag
+    Col% = 1 'tracks the accumulated line width and columns
+    Page% = 1 'tracks which item begins a new screen page
+
+    '-- Build a table of starting columns and page breaks for each item.
+    '   For each item that begins a new page, use a negative version of the
+    '   page number as a flag.  we don't need the starting column for those
+    '   anyway, because the first item on each page always is in column 1.
+    '   For all other items, the equivalent Break%() element will hold the
+    '   column in which this item is located.
+    For X% = 1 To NumItems%
+        Break%(X%) = Col% 'assume we're not starting a new screen page
+        If X% = 1 Then Break%(X%) = -1
+        Col% = Col% + Len(Item$(X%)) + 2 'add two for a small border
+        If Col% > 80 Then
+            Page% = Page% + 1 'we advanced to the next page
+            Break%(X%) = -Page% 'this item starts a page, remember which one
+            Col% = Len(Item$(X%)) + 3
+        End If
+    Next
+
+    '-- print a page-full of items
+    Choice% = 1 'start with item 1 the first time
+
+    QPPrintLt2:
+    X% = Choice% 'assume we'll start at the current item
+
+    While Break%(X%) > 0 'seek the first item on this page
+        X% = X% - 1
+    Wend
+
+    Do 'print until the negative Break%() flag
+        C_FG% = FGColor% 'assume the item being printed is NOT current
+        C_BG% = BGColor%
+
+        If X% = Choice% Then 'we were wrong, reverse the FG and BG colors
+            'C% = OneColor%(BG%, FG% And 7)
+            C_FG% = BGColor%
+            C_BG% = FGColor%
+
+            Locate CsrLin + 1, 1 'go down a line and to the first column
+            Call ClearEOL(7, 0) 'clear any old prompt information
+
+            'you may adjust the prompt color by changing the line below
+            Locate CsrLin - 2 'return to the line above
+
+            ' ((NOT Colr) AND 7) OR 2
+            QPrint Space$(1) + Prompt$(X%) + Space$(1), 2, 0, -1
+            Locate CsrLin + 1 'return to the line above
+        End If
+
+        If Break%(X%) < 0 Then 'if it's the first item on this page
+            Locate , 1 'locate to the first column
+            If ClearFlag% Then 'if we just crossed a page boundary
+                Call ClearEOL(FGColor%, BGColor%) '  clear any old items that may still show
+                ClearFlag% = 0
+            End If
+        Else 'otherwise
+            Locate , Break%(X%) '  locate to the correct column
+        End If
+
+        QPrint Space$(1) + Item$(X%) + Space$(1), C_FG%, C_BG%, -1
+        X% = X% + 1 'advance to the next item
+    Loop Until Break%(X%) < -1
+
+    Do
+        X$ = GetKeyPress$
+    Loop Until Len(X$)
+
+    If Len(X$) = 2 Then 'extended key
+        Select Case Asc(Right$(X$, 1))
+            Case 71 'Home Key
+                Choice% = 1 'set to the first item in the list
+                ClearFlag% = 1 'flag to clear old items
+            Case 75 'Left Arrow
+                If Choice% > 1 Then
+                    Choice% = Choice% - 1
+                    If Break%(Choice%) < 0 Then ClearFlag% = 1
+                Else
+                    Choice% = NumItems%
+                    ClearFlag% = 1
+                End If
+            Case 77 'Right Arrow
+                If Choice% < NumItems% Then
+                    Choice% = Choice% + 1
+                    If Break%(Choice%) < 0 Then ClearFlag% = 1
+                Else
+                    Choice% = 1
+                    ClearFlag% = 1
+                End If
+
+            Case 79 'End Key
+                Choice% = NumItems%
+                ClearFlag% = 1
+            Case Else
+        End Select
+    Else
+        Select Case X$
+            Case Chr$(13) 'Enter Key
+                GoTo QPExitLt2 'exit with the current choice
+
+            Case Chr$(27) 'Escape Key
+                Choice% = 0 'set the choice to zero as an Escape flag
+                GoTo QPExitLt2
+
+            Case Else 'they must be typing a choice's first letter
+                '--- haha, bold of you to assume that!!!
+
+                X% = Choice% 'scan through each item looking for a match
+
+                Do 'starting at the item after the current one
+                    If X% = NumItems% Then X% = 0 'wrap past the last one
+                    X% = X% + 1 'consider the next item
+                    If Asc(UCase$(Item$(X%))) = Asc(UCase$(X$)) Then
+                        Choice% = X% 'we found one, save where
+                        ClearFlag% = 1 'set flag to clear old stuff
+                        'EXIT DO                      '  and stop searching
+                        GoTo QPExitLt2
+                        'change the EXIT DO above to GOTO QPExitLt2 to exit without
+                        '  having to press Enter
+                    End If
+
+                    If X% = Choice% Then Exit Do 'we already went around once
+                Loop
+
+        End Select
+
+    End If
+
+    GoTo QPPrintLt2
+
+    QPExitLt2:
+
+    Screen oldmode&
+    'PCopy 1, 0
+    Erase Break%, ScrBuf%
 
 End Sub

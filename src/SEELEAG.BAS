@@ -4,132 +4,129 @@
 
 _Title "Full Count Baseball - View League Results"
 ''$ExeIcon:'./lhg_fcbase.ico'
-'_Icon	
+'_Icon
 _AllowFullScreen
 
-DEFINT A-Z
+DefInt A-Z
 
-1 DIM T$(40), W(40), L(40), P$(298), S$(40), P(40), BA$(40), ER$(40), OFT(40, 20) AS SINGLE, DFT(40, 20) AS SINGLE
-DIM D$(2), J AS SINGLE
-DIM ATBATS AS SINGLE
-DIM INNINGS AS SINGLE
+1 Dim T$(40), W(40), L(40), P$(298), S$(40), P(40), BA$(40), ER$(40), OFT(40, 20) As Single, DFT(40, 20) As Single
+Dim D$(2), J As Single
+Dim ATBATS As Single
+Dim INNINGS As Single
 
-2 DIM LD$(50, 3), LD(50, 2), NM$(10, 6, 3), NM%(10, 6), Z2$(298), Z3$(298), Z(298) AS SINGLE, Z1(298) AS SINGLE
+2 Dim LD$(50, 3), LD(50, 2), NM$(10, 6, 3), NM%(10, 6), Z2$(298), Z3$(298), Z(298) As Single, Z1(298) As Single
 
-OPEN "DEV.BAS" FOR INPUT AS #2
-	FOR I = 0 TO 2
-	INPUT #2, D$(I)
-	NEXT
-CLOSE 2
-	CLS
-	IF UCASE$(LEFT$(D$(2), 1)) <> "A" AND UCASE$(LEFT$(D$(2), 1)) <> "B" THEN 4000
-	PRINT "MAKE SURE DISK WITH STATS AND LEADER FILES IS IN DRIVE "; D$(2)
-	CALL GETKEY
+Open "DEV.BAS" For Input As #2
+For I = 0 To 2
+    Input #2, D$(I)
+Next
+Close 2
+Cls
 
 4000 Spec$ = D$(2) + "*.LDR"
-	null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
-	Count% = DirCount%
-	IF Count% = 0 THEN 4500
-REDIM F$(0 TO Count%)
-	FOR X = 1 TO Count%
-	  F$(X) = SPACE$(12)
-	NEXT
-	F$(0) = Spec$
-	CALL ReadFile(F$())
-	'CALL SortStr(VARPTR(F$(1)), Count%, 0)
+null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
+Count% = DirCount%
+If Count% = 0 Then 4500
+ReDim leaderFiles$(0 To Count%)
+For X = 1 To Count%
+    leaderFiles$(X) = Space$(12)
+Next
+leaderFiles$(0) = Spec$
+Call ReadFile(leaderFiles$())
+'CALL SortStr(VARPTR(leaderFiles$(1)), Count%, 0)
 
-1310 CLS
-	COLOR , 1
-	CLS
-	LOCATE , 28
-	COLOR 14
-	PRINT "SELECT LEAGUE TO VIEW": COLOR 15
-	SELECTION% = 1
-	Start% = 1
-	FileFGColr% = 15:FileBGColr% = 1
-	HiLiteFGColr% = 0:HiLiteBGColr% = 7
-	Rows% = 20
-	Columns% = 4
-	Spacing% = 6
-	Row% = 4
-	Column% = 1
-	LOCATE 25, 1
-	COLOR 14
-	PRINT "ENTER"; : COLOR 15
-	PRINT "-SELECTS LEAGUE";
+1310 Cls
+Color , 1
+Cls
+Locate , 28
+Color 14
+Print "SELECT LEAGUE TO VIEW": Color 15
+SELECTION% = 1
+Start% = 1
+FileFGColr% = 15: FileBGColr% = 1
+HiLiteFGColr% = 0: HiLiteBGColr% = 7
+Rows% = 20
+Columns% = 4
+Spacing% = 6
+Row% = 4
+Column% = 1
+Locate 25, 1
+Color 14
+Print "ENTER";: Color 15
+Print "-SELECTS LEAGUE";
 
 _MouseShow "DEFAULT"
-MAMenu F$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu leaderFiles$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
-	IF ExitCode% = 27 THEN 2900
-	F$ = F$(SELECTION%)
-	LOCATE 2, 33: PRINT F$
-	
-	LOCATE , 33: PRINT "ANY CHANGE (YN)";
-	COLOR 15, 0
+If ExitCode% = 27 Then 2900
+targetFile$ = leaderFiles$(SELECTION%)
+Locate 2, 33: Print targetFile$
+    
+Locate , 33: Print "ANY CHANGE (YN)";
+Color 15, 0
 3910 I$ = GetKeyPress$
-	IF UCASE$(I$) = "Y" THEN 1310
+If UCase$(I$) = "Y" Then 1310
 
-3911 F$ = RTrim$(F$)
-	WE$ = LEFT$(F$, LEN(F$) - 4)
-	GOTO 7
+3911 targetFile$ = RTrim$(targetFile$)
+WE$ = Left$(targetFile$, Len(targetFile$) - 4)
+GoTo 7
 
-4500 LOCATE 10, 8
-	CALL CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-	I$ = GetKeyPress$
-	CALL CSMsgBox("", 0, Pass)
+4500 Locate 10, 8
+Call CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+I$ = GetKeyPress$
+Call CSMsgBox("", 0, Pass)
 
-	GOTO 2900
+GoTo 2900
 
-7 WE$ = LEFT$(WE$, 8)
-OPEN D$(2) + WE$ + ".TMS" FOR INPUT AS #2
-INPUT #2, LG$, D1$, D2$, D3$, D4$
-CLOSE 2
-GOSUB 200
+7 WE$ = Left$(WE$, 8)
+Open D$(2) + WE$ + ".TMS" For Input As #2
+Input #2, LG$, D1$, D2$, D3$, D4$
+Close 2
+GoSub 200
 
 9 H$ = " 1/2"
-CLS
-	LOCATE 9, 1: PRINT "      PLEASE WAIT WHILE THE LEADER FILES ARE LOADING!!"
+Cls
+Locate 9, 1: Print "      PLEASE WAIT WHILE THE LEADER FILES ARE LOADING!!"
 
-15 OPEN D$(2) + WE$ + ".LDR" FOR INPUT AS #2
+15 Open D$(2) + WE$ + ".LDR" For Input As #2
 
-20 FOR X = 1 TO 40: INPUT #2, T$(X), W(X), L(X): NEXT
+20 For X = 1 To 40: Input #2, T$(X), W(X), L(X): Next
 
-30 FOR X = 1 TO 298: INPUT #2, Z2$(X), Z3$(X), Z(X), Z1(X): NEXT
+30 For X = 1 To 298: Input #2, Z2$(X), Z3$(X), Z(X), Z1(X): Next
 
-40 FOR X = 1 TO 40: INPUT #2, BA$(X): FOR M = 1 TO 14: INPUT #2, OFT(X, M): NEXT: NEXT
+40 For X = 1 To 40: Input #2, BA$(X): For M = 1 To 14: Input #2, OFT(X, M): Next: Next
 
-41 FOR X = 1 TO 40: INPUT #2, ER$(X): FOR M = 1 TO 14: INPUT #2, DFT(X, M): NEXT: NEXT
-	INPUT #2, APP
+41 For X = 1 To 40: Input #2, ER$(X): For M = 1 To 14: Input #2, DFT(X, M): Next: Next
+Input #2, APP
 
-50 CLOSE #2
+50 Close #2
 
-88 GOTO 1119
+88 GoTo 1119
 
-200 L = 8: IF LEN(D1$) < L THEN D1$ = D1$ + " ": GOTO 200
+200 L = 8: If Len(D1$) < L Then D1$ = D1$ + " ": GoTo 200
 
-201 L = 8: IF LEN(D2$) < L THEN D2$ = D2$ + " ": GOTO 201
+201 L = 8: If Len(D2$) < L Then D2$ = D2$ + " ": GoTo 201
 
-202 L = 8: IF LEN(D3$) < L THEN D3$ = D3$ + " ": GOTO 202
+202 L = 8: If Len(D3$) < L Then D3$ = D3$ + " ": GoTo 202
 
-203 L = 8: IF LEN(D4$) < L THEN D4$ = D4$ + " ": GOTO 203
+203 L = 8: If Len(D4$) < L Then D4$ = D4$ + " ": GoTo 203
 
-204 RETURN
+204 Return
 
-410 FOR P = 1 TO 5: P$(P) = "": IF NM$(CT, P, 1) = "*" THEN 445
+410 For P = 1 To 5: P$(P) = "": If NM$(CT, P, 1) = "*" Then 445
 
-415 P$(P) = NM$(CT, P, 1): IF NM$(CT, P, 2) <> "*" THEN P$(P) = P$(P) + ", " + NM$(CT, P, 2)
+    415 P$(P) = NM$(CT, P, 1): If NM$(CT, P, 2) <> "*" Then P$(P) = P$(P) + ", " + NM$(CT, P, 2)
 
-425 L = 22: GOSUB 900: J = NM%(CT, P): W = 3: GOSUB 940
+    425 L = 22: GoSub 900: J = NM%(CT, P): W = 3: GoSub 940
 
-445 NEXT P: RETURN
+445 Next P: Return
 
-900 IF LEN(P$(P)) < L THEN P$(P) = P$(P) + " ": GOTO 900
+900 If Len(P$(P)) < L Then P$(P) = P$(P) + " ": GoTo 900
 
-910 RETURN
+910 Return
 
-920 J = INT(100 * J + .5): A$ = STR$(J): LN = LEN(A$): A$ = RIGHT$(A$, LN - 1)
+920 J = Int(100 * J + .5): A$ = Str$(J): LN = Len(A$): A$ = Right$(A$, LN - 1)
 
 922 LN = LEN(A$): IF LEN(A$) < 3 THEN A$ = "0" + A$: GOTO 922
 
@@ -140,17 +137,17 @@ CLS
 925 P$(P) = P$(P) + A$: RETURN
 
 930 J = INT(1000 * J + .5)
-	IF J = 1000 THEN P$(P) = P$(P) + "1.000 ": RETURN
-	 IF J > 1000 THEN
-	  A$ = STR$(J - 1000)
-	  L = LEN(A$)
-	  A$ = RIGHT$(A$, L - 1)
+    IF J = 1000 THEN P$(P) = P$(P) + "1.000 ": RETURN
+     IF J > 1000 THEN
+      A$ = STR$(J - 1000)
+      L = LEN(A$)
+      A$ = RIGHT$(A$, L - 1)
 
 965 IF LEN(A$) < 3 THEN A$ = "0" + A$: GOTO 965
 A$ = "1." + A$
 P$(P) = P$(P) + A$
 RETURN
-	END IF
+    END IF
 
 931 A$ = STR$(J): L = LEN(A$): A$ = RIGHT$(A$, L - 1)
 
@@ -257,10 +254,10 @@ RETURN
 1200 CLS
 
 1201 COLOR 12: PRINT "                        "; LG$; " LEAGUE STANDINGS": PRINT
-	COLOR 14
+    COLOR 14
 
 1212 LOCATE 3, 1: PRINT "    " + D1$ + "      W   L   PCT   GB"
-	COLOR 15
+    COLOR 15
 
 1220 FOR P = 1 TO 10: IF P$(P) = "" THEN RT = RT + 1: GOTO 1256
 
@@ -275,9 +272,9 @@ RETURN
 1271 REM
 
 1272 COLOR 14
-	LOCATE 15, 1: PRINT "    " + D3$ + "      W   L   PCT   GB"
-	COLOR 15
-	FOR P = 21 TO 30: IF P$(P) = "" THEN RT = RT + 1: GOTO 1274
+    LOCATE 15, 1: PRINT "    " + D3$ + "      W   L   PCT   GB"
+    COLOR 15
+    FOR P = 21 TO 30: IF P$(P) = "" THEN RT = RT + 1: GOTO 1274
 
 1273 LOCATE (P - 5 - RT), 1: PRINT "    "; P$(P)
 
@@ -288,8 +285,8 @@ RETURN
 1276 RT = 0
 
 1277 COLOR 14: LOCATE 3, 41: PRINT "    " + D2$ + "      W   L   PCT   GB"
-	COLOR 15
-	FOR P = 11 TO 20: IF P$(P) = "" THEN RT = RT + 1: GOTO 1280
+    COLOR 15
+    FOR P = 11 TO 20: IF P$(P) = "" THEN RT = RT + 1: GOTO 1280
 
 1278 LOCATE (P - 7 - RT), 41: PRINT "    "; P$(P)
 
@@ -300,8 +297,8 @@ RETURN
 1282 REM
 
 1283 COLOR 14: LOCATE 15, 41: PRINT "    " + D4$ + "      W   L   PCT   GB"
-	COLOR 15
-	FOR P = 31 TO 40: IF P$(P) = "" THEN RT = RT + 1: GOTO 1285
+    COLOR 15
+    FOR P = 31 TO 40: IF P$(P) = "" THEN RT = RT + 1: GOTO 1285
 
 1284 LOCATE (P - 15 - RT), 41: PRINT "    "; P$(P)
 
@@ -310,33 +307,33 @@ RETURN
 1300 AB = INT(AB): AB$ = STR$(AB): TD = IP - 3 * IG
 
 1305 L = LEN(AB$): AB$ = RIGHT$(AB$, L - 1): IF TD > 0 THEN TD$ = " 1/3"
-	IG$ = STR$(IP): L = LEN(IG$): IG$ = RIGHT$(IG$, L - 1): IP$ = IG$
+    IG$ = STR$(IP): L = LEN(IG$): IG$ = RIGHT$(IG$, L - 1): IP$ = IG$
 
 1375 FOR P = 1 TO 19
-	P$(P) = ""
-	IF Z2$(P) = "*" THEN 1390
+    P$(P) = ""
+    IF Z2$(P) = "*" THEN 1390
 
 1376 P$(P) = Z2$(P)
 
 1380 IF Z3$(P) <> "*" THEN
-		P$(P) = P$(P) + ", " + Z3$(P)
-	END IF
+        P$(P) = P$(P) + ", " + Z3$(P)
+    END IF
 
 1385 L = 26: GOSUB 900: J = Z(P): GOSUB 930: J = Z1(P): GOSUB 960
 
 1390 NEXT P
-	CLS
+    CLS
 
 1391 COLOR 14
-	PRINT "      BATTING LEADERS  (MIN 3.1 PA/G)": COLOR 15
-	PRINT "WHO'S HOT                   AVG   AB    AND WHO'S NOT                AVG   AB"
+    PRINT "      BATTING LEADERS  (MIN 3.1 PA/G)": COLOR 15
+    PRINT "WHO'S HOT                   AVG   AB    AND WHO'S NOT                AVG   AB"
 
 1392 FOR P = 1 TO 19
-	PRINT Z2$(P) + ", " + Z3$(P); TAB(28); USING ".###  ###"; Z(P); Z1(P);
-	PRINT TAB(41); Z2$(P + 238) + ", " + Z3$(P + 238); TAB(69);
-	PRINT USING ".###  ###"; Z(P + 238); Z1(P + 238)
-	NEXT
-	PRINT
+    PRINT Z2$(P) + ", " + Z3$(P); TAB(28); USING ".###  ###"; Z(P); Z1(P);
+    PRINT TAB(41); Z2$(P + 238) + ", " + Z3$(P + 238); TAB(69);
+    PRINT USING ".###  ###"; Z(P + 238); Z1(P + 238)
+    NEXT
+    PRINT
 
 1410 FOR P = 21 TO 30: P$(P) = "": IF Z2$(P) = "" THEN 1413
 
@@ -429,10 +426,10 @@ RETURN
 1458 REM
 
 1459 FOR P = 98 TO 107: P$(P) = ""
-	IF Z2$(P) = "" THEN 1463
+    IF Z2$(P) = "" THEN 1463
 
 1460 P$(P) = Z2$(P)
-	IF Z3$(P) <> "*" THEN P$(P) = P$(P) + ", " + Z3$(P)
+    IF Z3$(P) <> "*" THEN P$(P) = P$(P) + ", " + Z3$(P)
 
 1462 L = 26: GOSUB 900: J = Z(P): GOSUB 930
 
@@ -443,11 +440,11 @@ RETURN
 1465 FOR P = 99 TO 108: LOCATE (P - 85), 40: PRINT "      "; P$(P): NEXT P: GOSUB 7900
 
 1466 FOR P = 110 TO 119
-	P$(P) = ""
-	IF Z2$(P) = "" THEN 1470
+    P$(P) = ""
+    IF Z2$(P) = "" THEN 1470
 
 1467 P$(P) = Z2$(P)
-	IF Z3$(P) <> "*" THEN P$(P) = P$(P) + ", " + Z3$(P)
+    IF Z3$(P) <> "*" THEN P$(P) = P$(P) + ", " + Z3$(P)
 
 1469 L = 26: GOSUB 900: J = Z(P): GOSUB 930
 
@@ -456,9 +453,9 @@ RETURN
 1471 COLOR 14: PRINT "ON BASE PCT LEADERS": COLOR 15
 
 1472 FOR P = 110 TO 119
-	PRINT P$(P)
-	NEXT P
-	PRINT
+    PRINT P$(P)
+    NEXT P
+    PRINT
 
 1473 FOR P = 217 TO 226: P$(P) = "": IF Z2$(P) = "" THEN 1476
 
@@ -471,17 +468,17 @@ RETURN
 1477 COLOR 14: LOCATE 1, 41: PRINT "BASE ON BALLS": COLOR 15
 
 1478 FOR P = 217 TO 226: LOCATE (P - 215), 41: PRINT P$(P): NEXT P
-	LOCATE 13, 1
-	COLOR 14: PRINT "CURRENT HITTING STREAK": COLOR 15
-	FOR P = 279 TO 288
-	PRINT Z2$(P)+", "+Z3$(P); TAB(28); USING "###";Z(P)
-	NEXT P
-	LOCATE 13, 41
-	COLOR 14: PRINT "LONGEST HITTING STREAK": COLOR 15
-	FOR P = 289 TO 298
-	LOCATE, 41:PRINT Z2$(P)+", "+Z3$(P); TAB(68); USING "###";Z(P)
-	NEXT P
-	
+    LOCATE 13, 1
+    COLOR 14: PRINT "CURRENT HITTING STREAK": COLOR 15
+    FOR P = 279 TO 288
+    PRINT Z2$(P)+", "+Z3$(P); TAB(28); USING "###";Z(P)
+    NEXT P
+    LOCATE 13, 41
+    COLOR 14: PRINT "LONGEST HITTING STREAK": COLOR 15
+    FOR P = 289 TO 298
+    LOCATE, 41:PRINT Z2$(P)+", "+Z3$(P); TAB(68); USING "###";Z(P)
+    NEXT P
+    
 
 1479 GOSUB 7900
 
@@ -496,16 +493,16 @@ RETURN
 2510 NEXT P
 
 2511 CLS : COLOR 14
-	PRINT "       ERA LEADERS (MIN 1 IP/G)"
-	COLOR 15
-	PRINT "WHO'S HOT                     ERA   IP  WHO'S NOT                      ERA  IP"
+    PRINT "       ERA LEADERS (MIN 1 IP/G)"
+    COLOR 15
+    PRINT "WHO'S HOT                     ERA   IP  WHO'S NOT                      ERA  IP"
 
 2515 FOR P = 121 TO 139
-	PRINT Z2$(P) + ", " + Z3$(P); TAB(30); USING "#.##  ###"; Z(P); Z1(P);
-	PRINT TAB(41);
-	PRINT Z2$(P + 138) + ", " + Z3$(P + 138); TAB(70); USING "##.## ###"; Z(P + 138); Z1(P + 138)
-	NEXT
-	  GOSUB 7900
+    PRINT Z2$(P) + ", " + Z3$(P); TAB(30); USING "#.##  ###"; Z(P); Z1(P);
+    PRINT TAB(41);
+    PRINT Z2$(P + 138) + ", " + Z3$(P + 138); TAB(70); USING "##.## ###"; Z(P + 138); Z1(P + 138)
+    NEXT
+      GOSUB 7900
 
 2590 FOR P = 140 TO 149: P$(P) = "": IF Z(P) = Z(150) AND Z1(P) = Z1(150) THEN 2602
 
@@ -518,7 +515,7 @@ RETURN
 2602 NEXT P
 
 2605 CLS : COLOR 14:
-	PRINT "      PITCHING RECORD": COLOR 15
+    PRINT "      PITCHING RECORD": COLOR 15
 
 2610 FOR P = 140 TO 149: PRINT "      "; P$(P)
 
@@ -613,7 +610,7 @@ RETURN
 2850 CLS : COLOR 12: PRINT "                                 CLUB BATTING   ": COLOR 14
 
 2851 PRINT "CLUB         AVG   AB    R    H   2B   3B  HR   RBI   BB   SO  SB  CS   E": COLOR 15
-	H = 0: AB = 0: R = 0: B2% = 0: B3 = 0: HR = 0: RBI = 0: BB = 0: SO = 0: SB = 0: CS = 0: E = 0
+    H = 0: AB = 0: R = 0: B2% = 0: B3 = 0: HR = 0: RBI = 0: BB = 0: SO = 0: SB = 0: CS = 0: E = 0
 
 2852 FOR X = 1 TO 40
 
@@ -622,14 +619,14 @@ RETURN
 2854 PRINT LEFT$(BA$(X), 11); TAB(13);
 
 2855 PRINT USING ".### #### #### ####  ###  ### ###  #### #### #### ### ### ###"; OFT(X, 1); OFT(X, 3); OFT(X, 5); OFT(X, 4); OFT(X, 7); OFT(X, 8); OFT(X, 9); OFT(X, 6); OFT(X, 10); OFT(X, 11); OFT(X, 12); OFT(X, 13); OFT(X, 14)
-	ATBATS = ATBATS + OFT(X, 3): H = H + OFT(X, 4): R = R + OFT(X, 5)
-	B2 = B2 + OFT(X, 7): B3 = B3 + OFT(X, 8): HR = HR + OFT(X, 9)
-	RBI = RBI + OFT(X, 6): BB = BB + OFT(X, 10): SO = SO + OFT(X, 11): SB = SB + OFT(X, 12): CS = CS + OFT(X, 13): E = E + OFT(X, 14)
+    ATBATS = ATBATS + OFT(X, 3): H = H + OFT(X, 4): R = R + OFT(X, 5)
+    B2 = B2 + OFT(X, 7): B3 = B3 + OFT(X, 8): HR = HR + OFT(X, 9)
+    RBI = RBI + OFT(X, 6): BB = BB + OFT(X, 10): SO = SO + OFT(X, 11): SB = SB + OFT(X, 12): CS = CS + OFT(X, 13): E = E + OFT(X, 14)
 
 2860 NEXT
-	PRINT
-	PRINT "LG TOTALS"; TAB(13); USING ".###      ####      ####  ###      ####     #####    ####"; H / ATBATS; R; B2; B3; RBI; SO; CS
-	PRINT TAB(17); USING "#####     #####          ####       ####     ####    ####"; ATBATS; H; HR; BB; SB; E
+    PRINT
+    PRINT "LG TOTALS"; TAB(13); USING ".###      ####      ####  ###      ####     #####    ####"; H / ATBATS; R; B2; B3; RBI; SO; CS
+    PRINT TAB(17); USING "#####     #####          ####       ####     ####    ####"; ATBATS; H; HR; BB; SB; E
 
 2861 GOSUB 7900
 
@@ -640,23 +637,23 @@ RETURN
 2872 R = 0: G = 0: IP = 0: FOR X = 1 TO 40
 
 2873 IF ER$(X) = "" OR ER$(X) = "*" THEN 2880
-	R = R + DFT(X, 5)
-	G = G + DFT(X, 12)
-	INNINGS = INNINGS + DFT(X, 2)
+    R = R + DFT(X, 5)
+    G = G + DFT(X, 12)
+    INNINGS = INNINGS + DFT(X, 2)
 
 2874 PRINT LEFT$(ER$(X), 11); TAB(13);
 
 2875 DFT(X, 1) = INT(DFT(X, 1) * 100) / 100
-	PRINT USING "##.##"; DFT(X, 1);
+    PRINT USING "##.##"; DFT(X, 1);
 
 2876 PRINT TAB(19); USING "### ### ###  ###  ####  ####  ####  ####"; DFT(X, 11); DFT(X, 12); DFT(X, 13); DFT(X, 14); CINT(DFT(X, 2) / 3); DFT(X, 3); DFT(X, 4); DFT(X, 5);
 
 2877 PRINT USING "   ####   ####"; DFT(X, 6); DFT(X, 7)
 
 2880 NEXT
-	PRINT TAB(13); USING "##.##"; R / (INNINGS / 3) * 9
-	'PRINT "COMPLETE GAMES: "; G
-	'PRINT "APPEARANCES: "; APP
+    PRINT TAB(13); USING "##.##"; R / (INNINGS / 3) * 9
+    'PRINT "COMPLETE GAMES: "; G
+    'PRINT "APPEARANCES: "; APP
 
 2881 GOSUB 7900
 
