@@ -11,7 +11,7 @@
 	LOCATE 6, 8: COLOR 15, 1
 	PRINT " "; CHR$(201); STRING$(61, 205); CHR$(187); " ";
 	FOR II = 1 TO JJ: LOCATE 6 + II, 8
-	PRINT " º"; STRING$(61, 32); "º "; : NEXT
+	Print " " + Chr$(186); String$(61, 32); Chr$(186) + " "; : NEXT
 	LOCATE 7 + JJ, 8
 	PRINT " "; CHR$(200); STRING$(61, 205); CHR$(188); " "; : LOCATE 8, 32
 	LOCATE , 12: PRINT "ENTER LETTER OF DRIVE YOU WISH TO INSTALL FROM: ";
@@ -97,7 +97,7 @@ CLOSE 2
 	LOCATE 16, 8: COLOR 15, 4
 	PRINT " "; CHR$(201); STRING$(61, 205); CHR$(187); " ";
 	FOR II = 1 TO JJ: LOCATE 16 + II, 8
-	PRINT " º"; STRING$(61, 32); "º "; : NEXT
+	Print " " + Chr$(186); String$(61, 32); Chr$(186) + " "; : NEXT
 	LOCATE 17 + JJ, 8
 	PRINT " "; CHR$(200); STRING$(61, 205); CHR$(188); " "; : LOCATE 17
 	RETURN

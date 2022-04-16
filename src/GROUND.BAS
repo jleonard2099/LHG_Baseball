@@ -29,35 +29,16 @@ BG = 7
 COLR = OneColor%(FG, BG) 'pack FG and BG into a single byte
 Cls: Locate , 16: Print "SPECIFY LEAGUE STATS": Print
 Locate 7, 1: QPrint "League Batting Average ", 14, 1, -1
+Locate , 24: QPrint FUsing$(Str$(BP), "######", 1), FG, BG, -1
 
-'LOCATE , 24: QPrint FUsing(STR$(BP), "######"), FG, BG, -1
-H = Pos(0): V = CsrLin
-Color FG, BG
-Locate , 24: Print Using "######"; Str$(BP)
-Locate V, H
-
-'LOCATE , 28: QPrint FUsing(STR$(SA), "######"), FG, BG, -1
 Locate 9, 1: QPrint "League Slugging Percentage ", 14, 1, -1
-H = Pos(0): V = CsrLin
-Color FG, BG
-Locate , 24: Print Using "######"; Str$(SA)
-Locate V, H
+Locate , 28: QPrint FUsing$(Str$(SA), "######", 1), FG, BG, -1
 
 Locate 11, 1: QPrint "Total Hits in League ", 14, 1, -1
-
-'LOCATE , 22: QPrint FUsing(STR$(PH), "######"), FG, BG, -1
-H = Pos(0): V = CsrLin
-Color FG, BG
-Locate , 24: Print Using "######"; Str$(PH)
-Locate V, H
+Locate , 22: QPrint FUsing$(Str$(PH), "######", 1), FG, BG, -1
 
 Locate 13, 1: QPrint "Total Earned Runs in League ", 14, 1, -1
-
-'LOCATE , 29: QPrint FUsing(STR$(ER), "######"), FG, BG, -1
-H = Pos(0): V = CsrLin
-Color FG, BG
-Locate , 24: Print Using "######"; Str$(ER)
-Locate V, H
+Locate , 29: QPrint FUsing$(Str$(ER), "######", 1), FG, BG, -1
 
 GetDiv1:
 Locate 7, 24 'location of beginning of field
@@ -233,10 +214,10 @@ End
 300 Color 15, 0: Cls
 JJ = 7
 Locate 6, 8: Color 15, 4
-Print " Ö"; String$(61, 196); "· ";: For II = 1 To JJ: Locate 6 + II, 8
-Print " º"; String$(61, 32); "º ";: Next
+Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";: For II = 1 To JJ: Locate 6 + II, 8
+Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
 Locate 7 + JJ, 8
-Print " Ó"; String$(61, 196); "½ ";: Locate 7, 32
+Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";: Locate 7, 32
 Locate , 12: Print "ENTER DISK ID: ": Print
 Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
 Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."

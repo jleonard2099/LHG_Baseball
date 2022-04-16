@@ -1405,19 +1405,13 @@ CALL WILDPITCH (S2%,D)
      I2 = INNING%: I = P
      IF S%(P, INNING%) > 0 THEN CALL INNDISP (I2,I)
 
-    'Need to strip it to 2 digits
-    FORMATTED$ = STR$(INT(S6%(I,0)*100)/100)
-
-     'FORMATTED$ = Print Using "##"; STR$(S6%(I,0))
-     _PRINTSTRING (1-I+29,53), FORMATTED$, park_graphic
+     FORMATTED$=FUSING$(STR$(S6%(I,0)),"##")
      '--GPRINT0VE I+29,53,FORMATTED$,15
+     _PRINTSTRING (1-I+29,53), FORMATTED$, park_graphic
      
-    'Need to strip it to 2 digits
-    FORMATTED$ = STR$(INT(S6%(D,2)*100)/100)
-
-     'FORMATTED$ = Print Using "##"; STR$(S6%(D,2))
-     _PRINTSTRING (1-I+29,59), FORMATTED$, park_graphic
+     FORMATTED$=FUSING$(STR$(S6%(D,2)),"##")
      '--GPRINT0VE 1-I+29,59,FORMATTED$,15
+     _PRINTSTRING (1-I+29,59), FORMATTED$, park_graphic
      
      Z2% = B0%(2, 0): F% = 0: PQ = 0: GOTO 5080
 5054 D2 = VAL(I$): IF D2 < 1 OR D2 > 9 THEN 5052

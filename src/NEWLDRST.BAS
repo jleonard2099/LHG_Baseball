@@ -257,13 +257,13 @@ Spec$ = D$(2) + "*.STD"
 null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
 Count% = DirCount%
 If Count% = 0 Then 2300
-ReDim stdFiles$(0 To Count%)
+ReDim standingsFiles$(0 To Count%)
 For X = 1 To Count%
-    stdFiles$(X) = Space$(12)
+    standingsFiles$(X) = Space$(12)
 Next
-stdFiles$(0) = Spec$
-Call ReadFile(stdFiles$())
-'CALL SortStr(VARPTR(stdFiles$(1)), Count%, 0)
+standingsFiles$(0) = Spec$
+Call ReadFile(standingsFiles$())
+'CALL SortStr(VARPTR(standingsFiles$(1)), Count%, 0)
 
 1311 Cls
 Color , 1
@@ -286,11 +286,11 @@ Print "ENTER";: Color 15
 Print "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-MAMenu stdFiles$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu standingsFiles$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 If ExitCode% = 27 Then 2300
-targetFile$ = stdFiles$(SELECTION%)
+targetFile$ = standingsFiles$(SELECTION%)
 Locate 2, 33: Print targetFile$
 Locate , 33: Print "ANY CHANGE (YN)";
 Color 15, 0

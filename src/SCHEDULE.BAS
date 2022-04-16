@@ -306,7 +306,7 @@ GoTo 151
 JJ = 7
 Locate 6, 8: Color 15, 4
 'Print box top
-Print " " + Chr$(201); String$(61, 196); Chr$(187) + " ";
+Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
 
 'Print box sides
 For II = 1 To JJ
@@ -316,7 +316,7 @@ Next
 
 'Print box bottom
 Locate 7 + JJ, 8
-Print " " + Chr$(200); String$(61, 196); Chr$(188) + " ";
+Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
 
 Locate 7, 32
 Locate , 12: Print "ENTER DISK ID: ": Print
@@ -369,7 +369,7 @@ Color , 0: Cls
 JJ = 8
 Locate 6, 8: Color 15, 4
 'Print box top
-Print " " + Chr$(201); String$(61, 196); Chr$(187) + " ";
+Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
 
 'Print box sides
 For II = 1 To JJ
@@ -379,7 +379,7 @@ Next
 
 'Print box bottom
 Locate 7 + JJ, 8
-Print " " + Chr$(200); String$(61, 196); Chr$(188) + " ";
+Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
 
 Locate 7, 32
 Locate , 12: Print "TOTAL GAMES ="; AP%(0)
@@ -509,7 +509,7 @@ Color 15, 0: Cls
 JJ = 7
 Locate 6, 8: Color 15, 1
 'Print box top
-Print " " + Chr$(201); String$(61, 196); Chr$(187) + " ";
+Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
 
 'Print box sides
 For II = 1 To JJ
@@ -519,7 +519,7 @@ Next
 
 'Print box bottom
 Locate 7 + JJ, 8
-Print " " + Chr$(200); String$(61, 196); Chr$(188) + " ";
+Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
 
 Locate 7, 32
 Locate , 12: Print "ENTER NAME FOR SUB-SCHEDULE: ": Print
@@ -539,7 +539,7 @@ Cls
 JJ = 7
 Locate 6, 8: Color 15, 4
 'Print box top
-Print " " + Chr$(201); String$(61, 196); Chr$(187) + " ";
+Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
 
 'Print box sides
 For II = 1 To JJ
@@ -549,7 +549,7 @@ Next
 
 'Print box bottom
 Locate 7 + JJ, 8
-Print " " + Chr$(200); String$(61, 196); Chr$(188) + " ";
+Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
 
 Locate 7, 32
 Locate , 12: Print "SELECTING TEAM TO CHANGE CONTROL FOR"
@@ -782,13 +782,13 @@ Spec$ = D$(2) + "*.LIB"
 null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
 Count% = DirCount%
 If Count% = 0 Then 4000
-ReDim libFiles$(0 To Count%)
+ReDim leagueFiles$(0 To Count%)
 For X = 1 To Count%
-    libFiles$(X) = Space$(12)
+    leagueFiles$(X) = Space$(12)
 Next
-libFiles$(0) = Spec$
-Call ReadFile(libFiles$())
-'CALL SortStr(VARPTR(libFiles$(1)), Count, 0)
+leagueFiles$(0) = Spec$
+Call ReadFile(leagueFiles$())
+'CALL SortStr(VARPTR(leagueFiles$(1)), Count, 0)
 
 1310 Cls
 Color , 1
@@ -811,7 +811,7 @@ Print "ENTER";: Color 15
 Print "-SELECTS LEAGUE";
 
 _MouseShow "DEFAULT"
-1320 MAMenu libFiles$(), SELECTION%, Start%, Count%, EXITCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+1320 MAMenu leagueFiles$(), SELECTION%, Start%, Count%, EXITCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 If EXITCODE% = 27 Then 1300
@@ -820,7 +820,7 @@ If EXITCODE% = -79 Then Start% = Count%: EXITCODE% = 3: SELECTION% = Count%: GoT
 If EXITCODE% = -73 Then Start% = Start% - 80: If Start% < 1 Then Start% = 1
 If EXITCODE% = -81 Then Start% = Start% + 80: If Start% > Count% Then Start% = Count%
 If EXITCODE% = -81 Or EXITCODE% = -73 Then EXITCODE% = 3: SELECTION% = Start%: GoTo 1320
-F$ = libFiles$(SELECTION%)
+F$ = leagueFiles$(SELECTION%)
 Locate 2, 33: Print F$
 Locate , 33: Print "ANY CHANGE (YN)";
 Color 15, 0
@@ -891,7 +891,7 @@ GoTo 25
 JJ = 7
 Locate 6, 8: Color 15, 1
 'Print box top
-Print " " + Chr$(201); String$(61, 196); Chr$(187) + " ";
+Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
 
 'Print box sides
 For II = 1 To JJ
@@ -901,7 +901,7 @@ Next
 
 'Print box bottom
 Locate 7 + JJ, 8
-Print " " + Chr$(200); String$(61, 196); Chr$(188) + " ";
+Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
 
 Locate 7, 32
 Locate , 12: Print "ENTER NAME FOR SCHEDULE: ": Print

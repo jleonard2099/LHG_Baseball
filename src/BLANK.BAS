@@ -29,13 +29,13 @@ APP = 0
 null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
 Count% = DirCount%
 If Count% = 0 Then 4500
-ReDim libFiles$(0 To Count%)
+ReDim leagueFiles$(0 To Count%)
 For X = 1 To Count%
-    libFiles$(X) = Space$(12)
+    leagueFiles$(X) = Space$(12)
 Next
-libFiles$(0) = Spec$
-Call ReadFile(libFiles$())
-'CALL SortStr(VARPTR(libFiles$(1)), Count%, 0)
+leagueFiles$(0) = Spec$
+Call ReadFile(leagueFiles$())
+'CALL SortStr(VARPTR(leagueFiles$(1)), Count%, 0)
 
 1310 Cls
 Color , 1
@@ -61,11 +61,11 @@ Print "HIT ESCAPE KEY TO EXIT";
 Color 15
 
 _MouseShow "DEFAULT"
-MAMenu libFiles$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu leagueFiles$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 If ExitCode% = 27 Then 103
-targetFile$ = libFiles$(SELECTION%)
+targetFile$ = leagueFiles$(SELECTION%)
 Locate 2, 33: Print targetFile$
 Locate , 33: Print "ANY CHANGE (YN)";
 Color 15, 0

@@ -30,13 +30,13 @@ APP = 0
 	null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
 	Count% = DirCount%
 	IF Count% = 0 THEN 4500
-REDIM libFiles$(0 TO Count%)
+REDIM leagueFiles$(0 TO Count%)
 	FOR X = 1 TO Count%
-	  libFiles$(X) = SPACE$(12)
+	  leagueFiles$(X) = SPACE$(12)
 	NEXT
-	libFiles$(0) = Spec$
-	CALL ReadFile(libFiles$())
-	'CALL SortStr(VARPTR(libFiles$(1)), Count%, 0)
+	leagueFiles$(0) = Spec$
+	CALL ReadFile(leagueFiles$())
+	'CALL SortStr(VARPTR(leagueFiles$(1)), Count%, 0)
 
 1310 CLS
 	COLOR , 1
@@ -59,11 +59,11 @@ REDIM libFiles$(0 TO Count%)
 	PRINT "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-MAMenu libFiles$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu leagueFiles$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 	IF ExitCode% = 27 THEN 103
-	targetFile$ = libFiles$(SELECTION%)
+	targetFile$ = leagueFiles$(SELECTION%)
 	LOCATE 2, 33: PRINT targetFile$
 	LOCATE	, 33: PRINT "ANY CHANGE (YN)";
 	COLOR 15, 0

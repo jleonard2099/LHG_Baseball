@@ -50,7 +50,7 @@ If I1 = 1 Then 4000
 JJ = 7
 Locate 6, 8: Color 15, 1
 'Print box top
-Print " " + Chr$(201); String$(61, 196); Chr$(187) + " ";
+Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
 
 'Print box sides
 For II = 1 To JJ
@@ -60,7 +60,7 @@ Next
 
 'Print box bottom
 Locate 7 + JJ, 8
-Print " " + Chr$(200); String$(61, 196); Chr$(188) + " ";
+Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
 
 Locate 7, 32
 Locate , 12: Print "ENTER NAME FOR LEAGUE: ": Print
@@ -256,7 +256,7 @@ Return
 JJ = 7
 Locate 6, 8: Color 15, 4
 'Print box top
-Print " " + Chr$(201); String$(61, 196); Chr$(187) + " ";
+Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
 
 'Print box sides
 For II = 1 To JJ
@@ -266,7 +266,7 @@ Next
 
 'Print box bottom
 Locate 7 + JJ, 8
-Print " " + Chr$(200); String$(61, 196); Chr$(188) + " ";
+Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
 
 Locate 7, 32
 Locate , 12: Print "ENTER DISK ID: ": Print
@@ -294,13 +294,13 @@ Return
 null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
 Count% = DirCount%
 If Count% = 0 Then 4500
-ReDim libFiles$(0 To Count%)
+ReDim leagueFiles$(0 To Count%)
 For X = 1 To Count%
-    libFiles$(X) = Space$(12)
+    leagueFiles$(X) = Space$(12)
 Next
-libFiles$(0) = Spec$
-Call ReadFile(libFiles$())
-'CALL SortStr(VARPTR(libFiles$(1)), Count, 0)
+leagueFiles$(0) = Spec$
+Call ReadFile(leagueFiles$())
+'CALL SortStr(VARPTR(leagueFiles$(1)), Count, 0)
 
 1310 Cls
 Color , 1
@@ -323,11 +323,11 @@ Print "ENTER";: Color 15
 Print "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-MAMenu libFiles$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu leagueFiles$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 If ExitCode% = 27 Then 60
-targetFile$ = libFiles$(SELECTION%)
+targetFile$ = leagueFiles$(SELECTION%)
 Locate 2, 33: Print targetFile$
     
 Locate , 33: Print "ANY CHANGE (YN)";

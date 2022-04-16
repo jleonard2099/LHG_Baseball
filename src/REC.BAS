@@ -63,10 +63,10 @@ I = SELECTION%
 39 Color 15, 0: Cls
 JJ = 7
 Locate 6, 8: Color 15, 4
-Print " Ö"; String$(61, 196); "· ";: For II = 1 To JJ: Locate 6 + II, 8
-Print " º"; String$(61, 32); "º ";: Next
+Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";: For II = 1 To JJ: Locate 6 + II, 8
+Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
 Locate 7 + JJ, 8
-Print " Ó"; String$(61, 196); "½ ";: Locate 7, 32
+Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";: Locate 7, 32
 Locate , 12: Print "ENTER DISK ID: ": Print
 Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
 Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
@@ -176,13 +176,13 @@ Open D$(1) + Z$ + "S" For Input As #1
 null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
 Count% = DirCount%
 If Count% = 0 Then GoSub 4575: GoTo 600
-ReDim libFiles$(0 To Count%)
+ReDim leagueFiles$(0 To Count%)
 For X = 1 To Count%
-    libFiles$(X) = Space$(12)
+    leagueFiles$(X) = Space$(12)
 Next
-libFiles$(0) = Spec$
-Call ReadFile(libFiles$())
-'CALL SortStr(VARPTR(libFiles$(1)), Count, 0)
+leagueFiles$(0) = Spec$
+Call ReadFile(leagueFiles$())
+'CALL SortStr(VARPTR(leagueFiles$(1)), Count, 0)
 
 1310 Cls
 Color , 1
@@ -205,11 +205,11 @@ Print "ENTER";: Color 15
 Print "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-MAMenu libFiles$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu leagueFiles$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 If ExitCode% = 27 Then 600
-targetFile$ = libFiles$(SELECTION%)
+targetFile$ = leagueFiles$(SELECTION%)
 Locate 2, 33: Print targetFile$
 Locate , 33: Print "ANY CHANGE (YN)";
 Color 15, 0

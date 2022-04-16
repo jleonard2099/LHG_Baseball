@@ -630,13 +630,13 @@ Spec$ = D$(2) + "*.CLD"
 null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
 Count% = DirCount%
 If Count% = 0 Then 4500
-ReDim cldFiles$(0 To Count%)
+ReDim conferenceLeaderFiles$(0 To Count%)
 For X = 1 To Count%
-    cldFiles$(X) = Space$(12)
+    conferenceLeaderFiles$(X) = Space$(12)
 Next
-cldFiles$(0) = Spec$
-Call ReadFile(cldFiles$())
-'CALL SortStr(VARPTR(cldFiles$(1)), Count, 0)
+conferenceLeaderFiles$(0) = Spec$
+Call ReadFile(conferenceLeaderFiles$())
+'CALL SortStr(VARPTR(conferenceLeaderFiles$(1)), Count, 0)
 
 1310 Cls
 Color , 1
@@ -659,11 +659,11 @@ Print "ENTER";: Color 15
 Print "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-MAMenu cldFiles$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu conferenceLeaderFiles$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 If ExitCode% = 27 Then 2
-targetFile$ = cldFiles$(SELECTION%)
+targetFile$ = conferenceLeaderFiles$(SELECTION%)
 Locate 2, 33: Print targetFile$
 Locate , 33: Print "ANY CHANGE (YN)";
 Color 15, 0

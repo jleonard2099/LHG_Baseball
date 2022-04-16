@@ -1,6 +1,5 @@
 DECLARE FUNCTION FCount% (spec$)
-DECLARE FUNCTION FUsing (Str$(Number), Image$)
-DECLARE FUNCTION FUsing$ (Number$, Image$)
+DECLARE FUNCTION FUsing$ (Number$, Image$, Typ%)
 DECLARE FUNCTION FileSize& (FileName$)
 DECLARE FUNCTION MGetKey (Row%, Col%)
 DECLARE FUNCTION Monitor%
@@ -19,7 +18,7 @@ DECLARE SUB MAMenu (menuItems$(), Selected%, Start%, count%, ScanCode%, ItemFGCo
 DECLARE SUB MMenuVert (menuItems$(), Selected%, Start%, ScanCode%, ItemFGColor%, ItemBGColor%, HighlightFGColor%, HighlightBGColor%, NumRows%, Row%, Column%)
 DECLARE SUB MPaintBox (ULRow%, ULCol%, LRRow%, LRCol%, Colr%)
 DECLARE SUB MQPrint (X$, Colr%)
-DECLARE SUB NumIn(INJ%(i), Max, XCode, Colr)
+DECLARE SUB NumIn(Number%, Max, XCode, FGColor%, BGColor%)
 DECLARE SUB QPrint (X$, FGColor%, BGColor%, Page)
 DECLARE SUB QuickSort (start AS INTEGER, finish AS INTEGER, array() AS SINGLE)
 DECLARE SUB ReadFile$ (fileList$())

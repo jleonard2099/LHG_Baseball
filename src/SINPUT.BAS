@@ -545,10 +545,10 @@ PRINT "TEAM BATTING STATS"
 860 COLOR 15, 0: CLS
 	JJ = 7
 	LOCATE 6, 8: COLOR 15, 4
-	PRINT " Ö"; STRING$(61, 196); "· "; : FOR II = 1 TO JJ: LOCATE 6 + II, 8
-	PRINT " º"; STRING$(61, 32); "º "; : NEXT
+	Print " " + Chr$(214); String$(61, 196); Chr$(183) + " "; : FOR II = 1 TO JJ: LOCATE 6 + II, 8
+	Print " " + Chr$(186); String$(61, 32); Chr$(186) + " "; : NEXT
 	LOCATE 7 + JJ, 8
-	PRINT " Ó"; STRING$(61, 196); "½ "; : LOCATE 7, 32
+	Print " " + Chr$(211); String$(61, 196); Chr$(189) + " "; : LOCATE 7, 32
 	LOCATE , 12: PRINT "ENTER DISK ID: ": PRINT
 	LOCATE , 12: PRINT "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
 	LOCATE , 12: PRINT "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."

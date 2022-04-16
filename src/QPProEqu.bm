@@ -67,10 +67,48 @@ End Function
 '-----------------------------------
 ' FUsing Copycat Function
 '-----------------------------------
-Function FUsing (Number$, Image$)
-    Print Using Number$; Image$
-End Function
+Function FUsing$ (Number$, Image$, Typ%)
+    '# - digit position
+    '. - decimal point
+    '+ - sign indicator
+    '** - replace leading space with asterisk (*)
+    '$$ - adds dollar sign to left of number
+    '**$ - combines effect of the above 2
+    ', - add commas to the number
 
+    'Function:  Can return a PRINT USING formatted string for assignment to
+    '           any string variable. This is a multiple name function for
+    '           use of upto three arguments (Format$, Format2$, Format3$).
+    '
+    'Synopsis:  res$ = FUsing$  (Number$, Image$, Typ%)
+    '
+    'Result:    res$ --> the resulting formatted string
+    '
+    'Inputs:    Image$ --> the string with format options for PRINT USING
+    '           Number$ --> the argument(s) to format into the Image$ string,
+    '                    use STR$(num) to pass in a number
+    '           Typ% --> the type(s) of the respective argument(s),
+    '                     0 = argument is a real (alphanumeric) string
+    '                     1 = argument is a STR$() number string
+
+    'Notes:
+    '   This function is adapted and slightly altered
+    '   from an idea posted in the QB64 Forum by
+    '   Fellippe Heitor
+
+    shan& = _Source: dhan& = _Dest: than& = _NewImage(256, 1, 0) 'if results may get longer, then raise the 256 value
+    _Source than&: _Dest than&
+    If Typ% Then
+        Print Using Image$; Val(Number$);
+    Else
+        Print Using Image$; Number$;
+    End If
+    For i% = 1 To Pos(0) - 1
+        res$ = res$ + Chr$(Screen(1, i%))
+    Next i%
+    _Source shan&: _Dest dhan&: _FreeImage than&
+    FUsing$ = res$
+End Function
 
 
 '-----------------------------------
@@ -414,7 +452,7 @@ Sub CSMsgBox (Message$, Wdth%, Pass)
         BotRow = Row + LN + 1 'Find the bottom row #
 
         'Save current screen
-		oldmode& = _COPYIMAGE(0)  'the 0 value designates the current destination SCREEN
+        oldmode& = _CopyImage(0) 'the 0 value designates the current destination SCREEN
         'PCopy 0, 1
 
         BoxWdth = Wdth + 4 'Find the outer box width
@@ -445,7 +483,7 @@ Sub CSMsgBox (Message$, Wdth%, Pass)
     ElseIf Pass = 1 Then 'If we've been here before...
         'Restore the original screen
         'PCopy 1, 0
-		SCREEN oldmode&
+        Screen oldmode&
 
         Pass = 0 'Reset flag for next call
     End If
@@ -906,9 +944,180 @@ End Sub
 
 
 '-----------------------------------
-' NumIn Copycat Subroutine
+' NumIn Subroutine
 '-----------------------------------
-Sub NumIn (INJ%( i), Max, XCode, Colr)
+Sub NumIn (Number#, Max, XCode, FGColor%, BGColor%)
+
+    NInitialize:
+    If Max = 0 Then Max = 1 'leave room for minus sign
+
+    X$ = String$(Max, "#") 'build a formatting string
+    If Places Then X$ = X$ + "." + String$(Places, "#")
+       
+    X$ = FUsing$(Str$(Number#), X$, 1) 'let FUsing do the real work
+       
+    Zero = InStr(X$, "0") 'did FUsing leave a leading 0?
+    If Left$(LTrim$(X$), 1) = "0" Then Mid$(X$, Zero, 1) = " " 'yes, delete it
+
+    ExitCode = 0: Insrt = 1: Curpo = Max 'initialize local variables
+    ALength = Len(Str$(Fix(Number#))) 'active length of leading part
+
+    If Abs(Number#) >= 1# Then 'insert only if no leading #'s
+        Insrt = 0 '  and position cursor over
+        Curpo = Max - ALength + 2 '  first digit
+    End If
+
+    Call QPrint(X$, FGColor%, BGColor%, -1) 'print it
+    Locate , Pos(0) + Max - ALength + 1, 1 'locate and turn on the cursor
+
+
+    NGetKey:
+    Call CapNum 'print Cap/Num if active
+    If Curpo > Len(X$) GoTo NEnter 'field full, handle as Enter
+    If Mid$(X$, Curpo, 1) = "." Then 'cursor is on the point, skip
+        Locate , Pos(0) + 1
+        Curpo = Curpo + 1
+    End If
+
+    A$ = InKey$
+    If A$ = "" GoTo NGetKey
+    If Len(A$) = 1 GoTo NRegularKey
+
+    A$ = Right$(A$, 1) 'extended key, get the code
+    On InStr(Chr$(15) + ".HKMPS", A$) GOTO NShiftTab, NClear, NUp, NLeft, NRight, NDown, NDel
+    GoTo NGetKey 'none of the above, ignore
+
+
+    NShiftTab: 'this space is provided to put
+    '  your own handler for the
+
+    NUp: '  Shift-Tab key if you want
+    ExitCode = 1 'user wants to go back a field
+    GoTo NEnter 'handle as if it were Enter
+
+
+    NClear:
+    Locate , Pos(0) - (Curpo - 1) 'position cursor at beginning
+    Number# = 0# 'clear the field
+    GoTo NInitialize
+
+
+    NLeft:
+    Insrt = 0 'cancel insert mode
+    If Mid$(X$, Curpo, 1) = " " GoTo NGetKey 'allow only one leading space
+    If Mid$(X$, Curpo, 1) = "-" GoTo NGetKey 'disallow digits ahead of "-"
+
+    If Curpo > 1 Then
+        Curpo = Curpo - 1
+        Locate , Pos(0) - 1 'back up the cursor
+    End If
+
+    If Curpo = Max + 1 Then 'one more to skip the point
+        Curpo = Curpo - 1
+        Locate , Pos(0) - 1
+    End If
+
+    GoTo NGetKey
+
+
+    NRight:
+    Insrt = 0 'cancel insert mode
+    Curpo = Curpo + 1
+    Locate , Pos(0) + 1 'advance the cursor
+    GoTo NGetKey
+
+
+    NDown:
+    GoTo NEnter 'handle as Enter
+
+
+    NDel:
+    GoTo NSB2 'handle as a space
+
+
+    NRegularKey:
+    If A$ < " " Then 'a control key
+        On InStr(Chr$(8) + Chr$(9) + Chr$(13) + Chr$(27), A$) GOTO NBackSpace, NTabKey, NEnter, NEscape
+        GoTo NGetKey 'none of the above, get again
+    End If
+
+    If A$ = "-" Then
+        If Curpo = 1 GoTo NNumericOkay
+        If InStr(X$, "-") GoTo NGetKey 'disallow if already a minus
+        If Mid$(X$, Curpo - 1, 1) <> " " GoTo NGetKey
+        GoTo NNumericOkay
+    End If
+
+    If A$ = "." Then
+        If Places = 0 GoTo NGetKey 'disallow if no decimals
+        If Insrt = 0 GoTo NGetKey 'disallow unless new entry
+        Locate , Pos(0) + 2 'advance the cursor by two
+        Curpo = Curpo + 2
+        Insrt = 0 'clear the insert flag
+        GoTo NGetKey 'get another keypress
+    End If
+
+
+    NSpaceBar:
+    If A$ = " " Then
+        Insrt = 0
+
+        NSB2:
+        If Curpo = 1 GoTo NSpaceOkay 'okay if in first position
+
+        'disallow if not first digit
+        If Mid$(X$, Curpo - 1, 1) <> " " GoTo NGetKey
+
+        NSpaceOkay:
+        Mid$(X$, Curpo, 1) = " " 'assign a space to the string
+        Call QPrint(" ", FGColor%, BGColor%, -1) 'print a space
+        Locate , Pos(0) + 1 'advance the cursor
+        Curpo = Curpo + 1 'update Curpo
+        GoTo NGetKey
+
+    End If
+
+    If A$ < "0" Or A$ > "9" GoTo NGetKey 'invalid character
+
+
+    NNumericOkay:
+    Call QPrint(A$, FGColor%, BGColor%, -1) 'print the digit
+    If Insrt GoTo NHandleInsert 'special treatment for insert
+    Mid$(X$, Curpo, 1) = A$ 'assign new digit
+    Curpo = Curpo + 1 'show the cursor being forward
+    Locate , Pos(0) + 1
+    GoTo NGetKey
+
+
+    NHandleInsert:
+    Locate , Pos(0) - Curpo + 1 'back the cursor to beginning
+
+    For A = 1 To Max - 1 'slide all characters left one
+        Mid$(X$, A, 1) = Mid$(X$, A + 1, 1)
+        QPrint Mid$(X$, A, 1), FGColor%, BGColor%, -1 'and reprint them in new place
+        Locate , Pos(0) + 1
+    Next
+     
+    Mid$(X$, Curpo, 1) = A$ 'assign the digit
+    Call QPrint(A$, FGColor%, BGColor%, -1)
+    If Asc(X$) = 32 GoTo NGetKey 'field not full, get another
+    GoTo NRight 'field full, do a cursor right
+
+
+    NBackSpace:
+    GoTo NLeft 'handle as Left-Arrow key
+
+
+    NEscape:
+    ExitCode = 2
+
+
+    NTabKey: 'you may handle Tab separately
+    '  if you'd like
+    NEnter:
+    Number# = Val(X$) 'assign returned amount
+    Locate , , 0 'turn off the cursor
+
 End Sub
 
 

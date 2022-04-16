@@ -182,9 +182,9 @@ I = SELECTION%
 81 Color , 0: Cls: Print: Print: Print: J = 19: ZZ = 1
 
 87 '
-Locate 2, 4: Color 15, 4: Print " Ö"; String$(66, 196); "· ";
-For II = 1 To J: Locate 2 + II, 4: Print " º"; String$(66, 32); "º ";: Next
-Locate 3 + J, 4: Print " Ó"; String$(66, 196); "½ ";: Locate 10, 15
+Locate 2, 4: Color 15, 4: Print " " + Chr$(214); String$(66, 196); "· ";
+For II = 1 To J: Locate 2 + II, 4: Print " " + Chr$(186); String$(66, 32); Chr$(186) + " ";: Next
+Locate 3 + J, 4: Print " " + Chr$(211); String$(66, 196); Chr$(189) + " ";: Locate 10, 15
 
 200 For I = 0 To 15: Color 14: Locate I + 3, 8: Print Using "##"; I;: Print " ";: Color 0: Print TP$(I);: Color 14: Print Tab(40); Using "##"; I + 16;: Print " ";: Color 0: Print TP$(I + 16): Next
 
@@ -500,9 +500,9 @@ For I = 1 To JB
 1081 Color , 0: Cls: Print: Print: Print: Print: J = 20: ZZ = 2
 
 1087 '
-Locate 2, 4: Color 15, 2: Print " Ö"; String$(66, 196); "· ";
-For II = 1 To J: Locate 2 + II, 4: Print " º"; String$(66, 32); "º ";: Next
-Locate 3 + J, 4: Print " Ó"; String$(66, 196); "½ ";: Locate 10, 15
+Locate 2, 4: Color 15, 2: Print " " + Chr$(214); String$(66, 196); "· ";
+For II = 1 To J: Locate 2 + II, 4: Print " " + Chr$(186); String$(66, 32); Chr$(186) + " ";: Next
+Locate 3 + J, 4: Print " " + Chr$(211); String$(66, 196); Chr$(189) + " ";: Locate 10, 15
 
 1200 For I = 0 To 14: Color 14: Locate I + 3, 8: Print Using "##"; I;: Print " ";: Color 0: Print TP1$(I);: Color 14: Print Tab(40); Using "##"; I + 15;: Print " ";: Color 0: Print TP1$(I + 15): Next
 
@@ -954,9 +954,9 @@ Close #1: Return
 2881 Color , 0: Cls: Print: J = 21: ZZ = 3
 
 2887 '
-Locate 2, 4: Color 15, 6: Print " Ö"; String$(66, 196); "· ";
-For II = 1 To J: Locate 2 + II, 4: Print " º"; String$(66, 32); "º ";: Next
-Locate 3 + J, 4: Print " Ó"; String$(66, 196); "½ ";: Locate 10, 15
+Locate 2, 4: Color 15, 6: Print " " + Chr$(214); String$(66, 196); "· ";
+For II = 1 To J: Locate 2 + II, 4: Print " " + Chr$(186); String$(66, 32); Chr$(186) + " ";: Next
+Locate 3 + J, 4: Print " " + Chr$(211); String$(66, 196); Chr$(189) + " ";: Locate 10, 15
 
 3000 For I = 0 To 19: Locate I + 3, 8: Color 11: Print Using "##"; I;: Print " ";: Color 0: Print TP2$(I): Next
 
@@ -1310,9 +1310,9 @@ Locate , 30: Color 15: Print "R";: Color 7: Print "E-SELECT CATEGORY"
 If UCase$(I$) <> "H" And UCase$(I$) <> "L" And UCase$(I$) <> "R" Then 5002
 
 5007 '
-Locate 8, 8: Color 15, 1: Print " Ö"; String$(57, 196); "· ";
-For II = 1 To J: Locate 8 + II, 8: Print " º"; String$(57, 32); "º ";: Next
-Locate 9 + J, 8: Print " Ó"; String$(57, 196); "½ ";: Locate 10, 15: Return
+Locate 8, 8: Color 15, 1: Print " " + Chr$(214); String$(57, 196); "· ";
+For II = 1 To J: Locate 8 + II, 8: Print " " + Chr$(186); String$(57, 32); Chr$(186) + " ";: Next
+Locate 9 + J, 8: Print " " + Chr$(211); String$(57, 196); Chr$(189) + " ";: Locate 10, 15: Return
 
 5015 JX = 1: GoTo 5030
 
@@ -1405,9 +1405,9 @@ If UCase$(I$) = "R" Then GoTo 5017
 If UCase$(I$) <> "P" And UCase$(I$) <> "V" And UCase$(I$) <> "R" Then 7002
 
 7007 '
-Locate 9, 15: Color 15, 0: Print " Ö"; String$(40, 196); "· ";
-For II = 1 To J: Locate 9 + II, 15: Print " º"; String$(40, 32); "º ";: Next
-Locate 10 + J, 15: Print " Ó"; String$(40, 196); "½ ": Locate 10, 10
+Locate 9, 15: Color 15, 0: Print " " + Chr$(214); String$(40, 196); "· ";
+For II = 1 To J: Locate 9 + II, 15: Print " " + Chr$(186); String$(40, 32); Chr$(186) + " ";: Next
+Locate 10 + J, 15: Print " " + Chr$(211); String$(40, 196); "½ ": Locate 10, 10
 
 7015 Return
 
@@ -1421,9 +1421,9 @@ Locate , 25: Input "ENTER LENGTH OF LIST"; LG
 8003 GoTo 8015
 
 8007 '
-Locate 10, 20: Color 4, 15: Print " Ö"; String$(30, 196); "· ";
-For II = 1 To J: Locate 10 + II, 20: Print " º"; String$(30, 32); "º ";: Next
-Locate 11 + J, 20: Print " Ó"; String$(30, 196); "½ ": Locate 11
+Locate 10, 20: Color 4, 15: Print " " + Chr$(214); String$(30, 196); "· ";
+For II = 1 To J: Locate 10 + II, 20: Print " " + Chr$(186); String$(30, 32); Chr$(186) + " ";: Next
+Locate 11 + J, 20: Print " " + Chr$(211); String$(30, 196); "½ ": Locate 11
 
 8015 Return
 
