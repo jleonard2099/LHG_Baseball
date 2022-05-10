@@ -26,7 +26,7 @@ Close 2
 500 Color 15, 1
 FG = 0
 BG = 7
-COLR = OneColor%(FG, BG) 'pack FG and BG into a single byte
+'Colr = OneColor%(FG, BG) 'pack FG and BG into a single byte
 Cls: Locate , 16: Print "SPECIFY LEAGUE STATS": Print
 Locate 7, 1: QPrint "League Batting Average ", 14, 1, -1
 Locate , 24: QPrint FUsing$(Str$(BP), "######", 1), FG, BG, -1

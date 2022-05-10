@@ -232,26 +232,27 @@ Sub CAUGHTFLY (i, S2%, D)
     On i GOTO 4352, 4354, 4356, 4358, 4361, 4362
 
     4352 If S2% = 17 Then 4353
+
     Y% = Int(Rnd(1) * 60) + 1230
     Call GETRPBP(Y%, Y$, D): Call STRIPRPBP(Y$, Y%, D)
-    Print Q$(4); " "; Y$
-    Call DELAY
+    CALL PBP (Q$(4) + " " + Y$)
 
-    4353 If S2% = 17 And l%(1, 13) = 37 Then Print "he climbs the terrace": Call DELAY
+    4353 If S2% = 17 And l%(1, 13) = 37 Then CALL PBP ("he climbs the terrace")
+
     Y% = Int(Rnd(1) * 20) + 1290
     Call GETRPBP(Y%, Y$, D): Call STRIPRPBP(Y$, Y%, D)
-    Print Y$
+    CALL PBP (Y$)
     GoTo 4359
 
-    4354 Print Q$(4); " makes a sliding catch": Call DELAY: Print "What a play!!!": GoTo 4359
+    4354 Call PBP (Q$(4) + " makes a sliding catch"): Call PBP ("What a play!!!"): GoTo 4359
 
-    4356 Print Q$(4); " makes a leaping grab": Call DELAY: Print "What a catch!!!": GoTo 4359
+    4356 CALL PBP (Q$(4) + " makes a leaping grab"): CALL PBP ("What a catch!!!"): GoTo 4359
 
-    4362 Print Q$(4); " makes an incredible catch!!": GoTo 4359
+    4362 CALL PBP (Q$(4) + " makes an incredible catch!!"): GoTo 4359
 
-    4358 Print Q$(4); " makes a diving catch!!!"
-
-    4359 Call DELAY
+    4358 CALL PBP (Q$(4) + " makes a diving catch!!!")
+	
+	4359 '
 
     4361 '
 End Sub
@@ -396,18 +397,18 @@ End Sub
 Sub DELIVERY (D)
     '*** setup the delivery ***
     Call RANDNUM(RN)
+
     If RN <= 20 Then
         Y% = Int(Rnd(1) * 20) + 50
         Call GETRPBP(Y%, Y$, D)
         Call STRIPRPBP(Y$, Y%, D)
-        Print Y$
-        Call DELAY
+        CALL PBP(Y$)
     End If
+
     Y% = Int(Rnd(1) * 46) + 1
     Call GETRPBP(Y%, Y$, D)
     Call STRIPRPBP(Y$, Y%, D)
-    Print Y$
-    Call DELAY
+    CALL PBP(Y$)
 End Sub
 
 
@@ -458,12 +459,12 @@ End Sub
 ' ...explanation...
 Sub DPPBP ()
     Call RANDNUM(rn)
-    If rn <= 20 Then Print "may be a double play ball"
-    If rn > 20 And rn <= 40 Then Print "they might turn two"
-    If rn > 40 And rn <= 60 Then Print "they could get two"
-    If rn > 60 And rn <= 80 Then Print "could be two"
-    If rn > 80 Then Print "could be a double play"
-    Call DELAY
+    If rn <= 20 Then Double$ = "may be a double play ball"
+    If rn > 20 And rn <= 40 Then Double$ = "they might turn two"
+    If rn > 40 And rn <= 60 Then Double$ = "they could get two"
+    If rn > 60 And rn <= 80 Then Double$ = "could be two"
+    If rn > 80 Then Double$ = "could be a double play"
+    CALL PBP (Double$)
 End Sub
 
 
@@ -478,8 +479,7 @@ Sub DPPIVOT (W%, D)
     If W% = 3 Then ww% = 1
     Y% = Int(Rnd(1) * 20) + 1910
     Call GETRPBP(Y%, Y$, D): Call STRIPRPBP(Y$, Y%, D)
-    Print Y$; " "; b$(D, B9%(D, ww%))
-    Call DELAY
+    CALL PBP(Y$ +  " " + b$(D, B9%(D, ww%)))
 End Sub
 
 
@@ -488,25 +488,33 @@ End Sub
 '------------------------------
 ' ...explanation...
 Sub DPRELAY ()
-    Call RANDNUM(rn)
-    If rn <= 10 And A5%(0) <> 11 Then Print "Give me the Hoover!": GoTo 3716
-    If A5%(0) <> 11 Then 3716
-    Call RANDNUM(rn)
-    If rn <= 8 Then Print "over to 1st..."
-    If rn > 8 And rn <= 16 Then Print "throw to 1st..."
-    If rn > 16 And rn <= 24 Then Print "on to first..."
-    If rn > 24 And rn <= 30 Then Print Q$(4); " pivots and throws"
-    If rn > 30 And rn <= 36 Then Print Q$(4); " gets the throw off"
-    If rn > 36 And rn <= 44 Then Print Q$(4); " is hit as he throws"
-    If rn > 44 And rn <= 50 Then Print Q$(4); " leaps and throws"
-    If rn > 50 And rn <= 56 Then Print Q$(4); " jumps over the sliding "; Q$(1)
-    If rn > 56 And rn <= 64 Then Print "the relay to first..."
-    If rn > 64 And rn <= 72 Then Print "quick turn by "; Q$(4)
-    If rn > 72 And rn <= 80 Then Print "relay to 1st..."
-    If rn > 80 And rn <= 88 Then Print "to 1st..."
-    If rn > 88 And A5%(0) = 11 Then Print "over to 1st..."
 
-    3716 Call DELAY
+    If A5%(0) = 11 Then 
+        Call RANDNUM(rn)
+        If rn <= 10 Then 
+            CALL PBP ("Give me the Hoover!")
+        Else
+            Call RANDNUM(rn)
+            If rn <= 8 Then Print "over to 1st..."
+            If rn > 8 And rn <= 16 Then relay$ = "throw to 1st..."
+            If rn > 16 And rn <= 24 Then relay$ = "on to first..."
+            If rn > 24 And rn <= 30 Then relay$ = Q$(4) + " pivots and throws"
+            If rn > 30 And rn <= 36 Then relay$ =Q$(4) + " gets the throw off"
+            If rn > 36 And rn <= 44 Then relay$ = Q$(4) + " is hit as he throws"
+            If rn > 44 And rn <= 50 Then relay$ = Q$(4) + " leaps and throws"
+            If rn > 50 And rn <= 56 Then relay$ =Q$(4) + " jumps over the sliding " + Q$(1)
+            If rn > 56 And rn <= 64 Then relay$ ="the relay to first..."
+            If rn > 64 And rn <= 72 Then relay$ = "quick turn by " + Q$(4)
+            If rn > 72 And rn <= 80 Then relay$ = "relay to 1st..."
+            If rn > 80 And rn <= 88 Then relay$ = "to 1st..."
+            If rn > 88 And A5%(0) = 11 Then relay$ = "over to 1st..."
+            
+            CALL PBP (relay$)
+        End If
+    Else
+        CALL DELAY
+    End If
+    
 End Sub
 
 
@@ -516,24 +524,24 @@ End Sub
 ' ...explanation...
 Sub DPSAFE ()
     Call RANDNUM(rn)
-    If rn <= 8 Then Print "over to 1st..."
-    If rn > 8 And rn <= 16 Then Print "throw to 1st..."
-    If rn > 16 And rn <= 24 Then Print "on to first..."
-    If rn > 24 And rn <= 30 Then Print "pivot to first"
-    If rn > 30 And rn <= 36 Then Print "the throw to 1st"
-    If rn > 36 And rn <= 44 Then Print "relay to first"
-    If rn > 44 And rn <= 50 Then Print "on to first..."
-    If rn > 50 And rn <= 56 Then Print "on to first"
-    If rn > 56 And rn <= 64 Then Print "the relay to first..."
-    If rn > 64 And rn <= 72 Then Print "quick turn to first"
-    If rn > 72 And rn <= 80 Then Print "relay to 1st..."
-    If rn > 80 And rn <= 88 Then Print "to 1st..."
-    If rn > 88 And A5%(0) = 11 Then Print "over to 1st..."
-    Call DELAY
+    If rn <= 8 Then safe$ = "over to 1st..."
+    If rn > 8 And rn <= 16 Then safe$ = "throw to 1st..."
+    If rn > 16 And rn <= 24 Then safe$ = "on to first..."
+    If rn > 24 And rn <= 30 Then safe$ = "pivot to first"
+    If rn > 30 And rn <= 36 Then safe$ = "the throw to 1st"
+    If rn > 36 And rn <= 44 Then safe$ = "relay to first"
+    If rn > 44 And rn <= 50 Then safe$ = "on to first..."
+    If rn > 50 And rn <= 56 Then safe$ = "on to first"
+    If rn > 56 And rn <= 64 Then safe$ = "the relay to first..."
+    If rn > 64 And rn <= 72 Then safe$ = "quick turn to first"
+    If rn > 72 And rn <= 80 Then safe$ = "relay to 1st..."
+    If rn > 80 And rn <= 88 Then safe$ = "to 1st..."
+    If rn > 88 And A5%(0) = 11 Then safe$ = "over to 1st..."
+    Call PBP(safe$)
+
     Y% = Int(Rnd(1) * 20) + 1890
     Call GETRPBP(Y%, Y$, D): Call STRIPRPBP(Y$, Y%, D)
-    Print Y$
-    Call DELAY
+    CALL PBP(Y$)
 End Sub
 
 
@@ -544,13 +552,13 @@ End Sub
 Sub DRAWBOX (J)
     Locate 8, 8
     Color l%(1, 11), l%(1, 12)
-    Print " Ö"; String$(61, 196); "· ";
+	Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
     For II = 1 To J
         Locate 8 + II, 8
-        Print " º"; String$(61, 32); "º ";
+		Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
     Next
     Locate 9 + J, 8
-    Print " Ó"; String$(61, 196); "½ ";
+    Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
 End Sub
 
 
@@ -570,7 +578,7 @@ End Sub
 Sub EJECTIONINJURY (u6, p, u9, D, po%, P9, W5, W6)
     '*** Defensive Player Ejected/Injured ***
     If u6 = 2 Or u6 = 1 And p <> u9 Then 2704
-    Print "You must replace "; b$(D, B9%(D, po%)): Call DELAY: GoTo 2749
+    CALL PBP ("You must replace " + b$(D, B9%(D, po%))): GoTo 2749
 
     2704 For I2 = 1 To 9: If B7%(D, I2) = po% Then 2705
     Next
@@ -578,7 +586,7 @@ Sub EJECTIONINJURY (u6, p, u9, D, po%, P9, W5, W6)
     2705 For i = 0 To 22: If b%(D, i, 21) > 0 Or b$(D, i) = "XXX" Then 2708
         If B7%(D, I2) <> b%(D, i, 22) And B7%(D, I2) <> b%(D, i, 23) And B7%(D, I2) <> b%(D, i, 24) And B7%(D, I2) <> b%(D, i, 25) Then 2708
 
-        2707 Print b$(D, B9%(D, po%)); " will be replaced by "; b$(D, i): Call DELAY
+        2707 CALL PBP (b$(D, B9%(D, po%)) + " will be replaced by " + b$(D, i))
         D0%(D) = D0%(D) + 1
         X0%(D, 0, D0%(D)) = i
         X0%(D, 1, D0%(D)) = B7%(D, I2)
@@ -589,7 +597,7 @@ Sub EJECTIONINJURY (u6, p, u9, D, po%, P9, W5, W6)
         Call REPLACEMENTS(I7%, I8%, i9%)
         B9%(D, B7%(D, I2)) = i
         P9 = D: W5 = P9: W6 = P9: VV(P9) = po%: VV1(P9) = po%
-        Call HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)		
+        Call HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)      
         Call FLDDISP(BC%, p, U%, D): Call MAINSCREEN(D, p, BC%, U%, MO): Locate 15, 1
         VV(P9) = 1: VV1(P9) = 9
         GoTo 2749
@@ -744,7 +752,7 @@ Sub FLDERR (F%, W%, D, I3, SB%, S2%, p)
     If W% = 1 Then I5 = P1%(D): I6 = 34: Call ADDPIT(D, I5, I6)
     If W% <> 1 Then I5 = B9%(D, W%): I6 = 11: Call INCBATDF(D, I5, I6)
     If S2% <> 12 Then 4410
-    If S2% = 12 Then Print Q$(0); " beats out an infield single": Call DELAY
+    If S2% = 12 Then Call PBP (Q$(0) + " beats out an infield single")
     If B7%(p, B1!(p)) <> 1 Then I5 = B3%(p, B1!(p)): I6 = 0: Call INCBATOFF(p, I5, I6): I6 = 1: Call INCBATOFF(p, I5, I6)
     I5 = P1%(D): I6 = 1: Call ADDPIT(D, I5, I6)
     If B7%(p, B1!(p)) = 1 Then I5 = P1%(p): I6 = 23: Call INCPITOFF(p, I5, I6): I6 = 24: Call INCPITOFF(p, I5, I6)
@@ -753,6 +761,7 @@ Sub FLDERR (F%, W%, D, I3, SB%, S2%, p)
     If S2% >= 17 And S2% <= 20 Then Call OUTFIELDERR
     If S2% = 8 Or S2% = 9 Or S2% >= 22 Or S2% = 16 Then I1 = 1
     If S2% >= 12 And S2% <= 14 And i = 1 Or S2% = 15 Then I1 = 1
+
     Call RANDNUM(rn)
     If I1 = 1 And W% = 1 And S2% = 16 Then Print "*** WILD PICK OFF THROW BY";: GoTo 4415
     If I1 = 1 And rn <= 50 Then Print "*** THROWING ERROR ON";: GoTo 4415
@@ -770,6 +779,7 @@ Sub FLDERR (F%, W%, D, I3, SB%, S2%, p)
     4415 Print " "; Q$(4); " ***"
 
     4403 If S2% = 16 Or S2% = 22 Then I8 = Int(Rnd(1) * 10) + 1: If I8 < 5 Then A5%(1) = 2: A5%(2) = 2: A5%(3) = 1: A5%(0) = 2: Call DELAY: GoTo 4418
+
     i = Int(Rnd(1) * 100) + 1
     A5%(1) = 1: A5%(2) = 1: A5%(3) = 1: A5%(0) = 1: Call DELAY
     If S2% > 17 And S2% <= 21 Then 4418
@@ -852,52 +862,12 @@ End Sub
 
 
 '------------------------------
-'   GETRPBP Subroutine
-'------------------------------
-' ...explanation...
-Sub GETRPBP (Y%, Y$, D)
-    Open "revised.pbp" For Random As #1 Len = 44
-    Field #1, 44 As YY$
-    Get #1, Y%
-    Y$ = YY$
-    Close 1
-
-    3996 'PRINT Y$; " BEF", Y%, YY$
-    If Right$(Y$, 1) = " " Then Y$ = Left$(Y$, Len(Y$) - 1): GoTo 3996
-    If TGTBASE% = 3 And Left$(Y$, 2) = "Q1" Then Y$ = "Q2 " + Right$(Y$, Len(Y$) - 3)
-    If TGTBASE% = 3 And Right$(Y$, 2) = "Q1" Then Y$ = Left$(Y$, Len(Y$) - 2) + "Q2"
-    If Left$(Y$, 2) = "BB" Then Y$ = Q$(0) + Right$(Y$, Len(Y$) - 2)
-    If Left$(Y$, 2) = "Q1" Then Y$ = Q$(1) + Right$(Y$, Len(Y$) - 2)
-    If Left$(Y$, 2) = "Q2" Then Y$ = Q$(2) + Right$(Y$, Len(Y$) - 2)
-    If Left$(Y$, 2) = "PP" Then Y$ = p$(D, P1%(D)) + Right$(Y$, Len(Y$) - 2)
-    If Left$(Y$, 2) = "UU" Then Y$ = U$(1) + Right$(Y$, Len(Y$) - 2)
-    If Left$(Y$, 2) = "XX" Then Y$ = b$(D, B9%(D, 5)) + " and " + b$(D, B9%(D, 6)) + Right$(Y$, Len(Y$) - 2)
-    If Left$(Y$, 2) = "TT" Then Y$ = b$(D, B9%(D, 5)) + Right$(Y$, Len(Y$) - 2)
-    If Left$(Y$, 2) = "FB" Then Y$ = b$(D, B9%(D, 3)) + Right$(Y$, Len(Y$) - 2)
-    If Left$(Y$, 2) = "YY" Then Y$ = b$(D, B9%(D, 4)) + " and " + b$(D, B9%(D, 3)) + Right$(Y$, Len(Y$) - 2)
-    If Left$(Y$, 2) = "ZZ" Then Y$ = b$(D, B9%(D, 4)) + " and " + b$(D, B9%(D, 6)) + Right$(Y$, Len(Y$) - 2)
-    If Left$(Y$, 2) = "Q4" Then Y$ = Q$(4) + Right$(Y$, Len(Y$) - 2)
-    If Right$(Y$, 3) = " PP" Then Y$ = Left$(Y$, Len(Y$) - 2) + p$(D, P1%(D))
-    If Right$(Y$, 3) = " BB" Then Y$ = Left$(Y$, Len(Y$) - 2) + Q$(0)
-    If Right$(Y$, 2) = "Q1" Then Y$ = Left$(Y$, Len(Y$) - 2) + Q$(1)
-    If Right$(Y$, 2) = "Q2" Then Y$ = Left$(Y$, Len(Y$) - 2) + Q$(2)
-    If Right$(Y$, 2) = "UU" Then Y$ = Left$(Y$, Len(Y$) - 2) + U$(1)
-    If Right$(Y$, 2) = "Q4" Then Y$ = Left$(Y$, Len(Y$) - 2) + Q$(4)
-    If Right$(Y$, 3) = " TT" Then Y$ = Left$(Y$, Len(Y$) - 2) + b$(D, B9%(D, 5))
-    If Right$(Y$, 2) = "FB" Then Y$ = Left$(Y$, Len(Y$) - 2) + b$(D, B9%(D, 3))
-    If Right$(Y$, 3) = " XX" Then Y$ = Left$(Y$, Len(Y$) - 2) + b$(D, B9%(D, 5)) + " and " + b$(D, B9%(D, 6))
-    If Right$(Y$, 2) = "YY" Then Y$ = Left$(Y$, Len(Y$) - 2) + b$(D, B9%(D, 3)) + " and " + b$(D, B9%(D, 4))
-    If Right$(Y$, 3) = " ZZ" Then Y$ = Left$(Y$, Len(Y$) - 2) + b$(D, B9%(D, 6)) + " and " + b$(D, B9%(D, 4))
-    'PRINT Y$; " AFT"
-End Sub
-
-
-'------------------------------
 '   GROUNDERPBP Subroutine
 '------------------------------
 ' ...explanation...
 Sub GROUNDERPBP (W%, D)
     If W% = 2 Then 3760
+
     Call RANDNUM(rn)
     Y% = Int(Rnd(1) * 140) + 1930
     If rn <= 35 Then 3752
@@ -908,16 +878,14 @@ Sub GROUNDERPBP (W%, D)
     If W% = 5 Then Y% = Int(Rnd(1) * 150) + 2700
 
     3752 Call GETRPBP(Y%, Y$, D): Call STRIPRPBP(Y$, Y%, D)
-    Print Y$; " ";
-
-    3751 GoTo 3765
+    F$ = Y$ + " "
+	3751 GOTO 3765
 
     3760 '*** in front of plate ***
     Y% = Int(Rnd(1) * 25) + 2870
     Call GETRPBP(Y%, Y$, D)
     Call STRIPRPBP(Y$, Y%, D)
-    Print Y$
-    Call DELAY
+    CALL PBP(Y$)
 
     3765 '
 End Sub
@@ -934,16 +902,14 @@ Sub GROUNDERS (W%, D)
     Y% = Int(Rnd(1) * 120) + 1420
     Call GETRPBP(Y%, Y$, D)
     Call STRIPRPBP(Y$, Y%, D)
-    Print X$; " "; Y$
-    Call DELAY
+    CALL PBP (X$ + " " + Y$)
     GoTo 3954
 
     3953 ' field grounders in front of the plate
     Y% = Int(Rnd(1) * 13) + 2850
     Call GETRPBP(Y%, Y$, D): Call STRIPRPBP(Y$, Y%, D)
     If Left$(Y$, 2) = "QQ" Then Y$ = X$ + Right$(Y$, Len(Y$) - 2)
-    Print Y$
-    Call DELAY
+    CALL PBP(Y$)
 
     3954 '
 End Sub
@@ -1028,7 +994,7 @@ End Sub
 Sub INJPIT (p, D)
     '*** Defensive Pitcher Ejected/Injured ***
     If u6 = 2 Or u6 = 1 And p <> u9 Then 2755
-    Print "You must replace "; p$(D, P1%(D)): Call DELAY: GoTo 2799
+    CALL PBP ("You must replace " + p$(D, P1%(D))): GoTo 2799
 
     2755 Call RELIEVERS
 
@@ -1043,18 +1009,19 @@ End Sub
 Sub INJURYLENGTH (IJL%, D, po%, u6, p, u9, P9, W5, W6)
     IJL% = IJL% + 1
     IJ$(IJL%) = b$(D, B9%(D, po%))
-    Call DELAY: Print b$(D, B9%(D, po%)); " is injured for"
+    Call DELAY
+    injury$ = b$(D, B9%(D, po%)) + " is injured for"
     '*** Determine Injury Length ***
     il = 0
-    If b%(D, B9%(D, po%), 3) = 162 Then Print " remainder of game": GoTo 2115
+    If b%(D, B9%(D, po%), 3) = 162 Then injury$ = injury$ + " remainder of game": GoTo 2115
     GoSub 2116
     If il = 0 Then 2115
-    If b%(D, B9%(D, po%), 3) = 161 Then Print " this game and next game": il = 1: GoTo 2115
+    If b%(D, B9%(D, po%), 3) = 161 Then injury$ = injury$ + " this game and next game": il = 1: GoTo 2115
     il = Int(Rnd(1) * (162 - b%(D, B9%(D, po%), 3))) + 1
-    Print il; " games"
+    injury$ = injury$ + STR$(il) + " games"
 
     2115 b%(D, B9%(D, po%), 32) = b%(D, B9%(D, po%), 32) + il
-    Call DELAY: Call DELAY
+    Call PBP (injury$): Call DELAY
     Call EJECTIONINJURY(u6, p, u9, D, po%, P9, W5, W6)
     GoTo 2120
 
@@ -1102,7 +1069,7 @@ Sub LDRIVE ()
     If rn > 40 And rn <= 60 Then X$ = "lashes"
     If rn > 60 And rn <= 80 Then X$ = "lines"
     If rn > 80 Then X$ = "drives"
-    Print " "; X$; " ";
+    CALL PBP (" " + X$ + " ")
 End Sub
 
 
@@ -1135,22 +1102,24 @@ Sub LONGFLY (D, W%)
     Y% = Int(Rnd(1) * 60) + 1310
     Call GETRPBP(Y%, Y$, D)
     Call STRIPRPBP(Y$, Y%, D)
-    Print Y$; " "; C$(W%): Call DELAY
+    CALL PBP(Y$ + " " + C$(W%))
+
     If WF! < 1 And Rnd(1) > WF! Then Print "The wind is bringing it back...": Call DELAY: GoTo 8055
     If WF! > 1 And Rnd(1) <= 1 - WF! Then Print "It's carrying well in the breeze...": Call DELAY
+
     Y% = Int(Rnd(1) * 50) + 1370
     Call GETRPBP(Y%, Y$, D)
     Call STRIPRPBP(Y$, Y%, D)
-    Print Y$
-    Call DELAY
+    CALL PBP(Y$)
+
     Call RANDNUM(rn)
     If (l%(1, 13) = 21 Or l%(1, 13) = 27) And W% = 7 Then 8059
-    If rn <= 5 Then Print Q$(4); " leaps"
-    If rn > 5 And rn <= 10 Then Print Q$(4); " against the wall"
-    If rn > 10 And rn <= 20 Then Print Q$(4); " jumps at the wall"
-    If rn > 20 And rn <= 30 Then Print Q$(4); " climbs the wall"
+    If rn <= 5 Then longfly_pbp$ = Q$(4) + " leaps"
+    If rn > 5 And rn <= 10 Then longfly_pbp$ = Q$(4) + " against the wall"
+    If rn > 10 And rn <= 20 Then longfly_pbp$ = Q$(4) + " jumps at the wall"
+    If rn > 20 And rn <= 30 Then longfly_pbp$ = Q$(4) + " climbs the wall"
 
-    8059 Call DELAY
+    8059 Call PBP (longfly_pbp$)
 
     8055 Rem
 End Sub
@@ -1206,10 +1175,12 @@ Sub MAINSCREEN (D, p, BC%, U%, MO)
     333 Print " TODAY"
     Color 14, 0: Locate 3, 58: Print O%(0): Locate 2, 58: Print U%: Locate 1, 58: Print BC%
     Color 15, 2: Locate 22, 46: Print "INFIELD:"
+
     Locate 23, 46
     If INFPOS% = 0 Then Print "NORMAL    "
     If INFPOS% = 1 Then Print "CORNERS IN"
     If INFPOS% = 2 Then Print "INFIELD IN"
+
     Call HOLDSTATUS(H0%)
     BK$ = "        "
     Locate 13, 58: Color 15, 2: Print Tab(68);: Locate 14, 58: Print BK$: Locate 13, 58
@@ -1231,13 +1202,27 @@ End Sub
 '------------------------------
 ' ...explanation...
 Sub BLANKLINES ()
-    For I5 = 15 To 24
-        Locate , 1
-        Locate I5
-        Print Space$(44);
-    Next I5
-    Locate 15
-    Locate , 1
+
+    If displayPause > 0 Then
+        PB% = 0
+
+		If usingGfx = 1 Then
+			For I5 = 4 To 11
+				PrintOnGfx 20, I5, Space$(44), imageScreen&
+			Next
+		Else
+			For I5 = 15 To 24
+				Locate , 1
+				Locate I5
+				Print Space$(44);
+			Next I5
+			Locate 15, 1
+		End If
+		
+		Erase G$
+
+    End If
+
 End Sub
 
 
@@ -1277,11 +1262,18 @@ Sub NEWPITCHER
     CALL BLANKLINES
     LOCATE 15, 1
     CALL RANDNUM(rn)
-    IF rn <= 50 THEN PRINT "Hold the phone...": CALL DELAY
-    PRINT M$(D); " is making a pitching change"
-    CALL DELAY: CALL DELAY
+    IF rn <= 50 THEN CALL PBP ("Hold the phone...")
+    CALL PBP (M$(D) + " is making a pitching change")
+    CALL DELAY
     Call HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
-    CALL FLDDISP (BC%, p, U%, D): CALL MAINSCREEN (D, p, BC%, U%, MO): PPH = 0
+	If usingGfx = 1 Then 
+		CALL FLDDISP_G (BC%, p, U%, D)
+		CALL MAINSCREEN_G (D, p, BC%, U%, MO): PPH = 0
+	ELSE
+		CALL FLDDISP (BC%, p, U%, D)
+		CALL MAINSCREEN (D, p, BC%, U%, MO): PPH = 0
+	END IF
+
 
 8895 pz=1
 END SUB
@@ -1294,8 +1286,9 @@ END SUB
 SUB NOJUMP (D)
     Y% = INT(RND(1) * 20) + 1050
     CALL GETRPBP(Y%, Y$, D)
-      CALL STRIPRPBP (Y$,Y%,D)
-    PRINT Y$:CALL DELAY:CALL DELAY
+    CALL STRIPRPBP (Y$,Y%,D)
+    CALL PBP(Y$)
+    CALL DELAY
 END SUB
 
 
@@ -1332,12 +1325,12 @@ END SUB
 SUB OUTFIELDERR ()
     '*** outfielders in trouble ***
     CALL RANDNUM(rn)
-    IF rn <= 20 THEN PRINT Q$(4); " can't find it"
-    IF rn > 20 AND rn <= 40 THEN PRINT Q$(4); " misjudges it"
-    IF rn > 40 AND rn <= 60 THEN PRINT Q$(4); " turns the wrong way"
-    IF rn > 60 AND rn <= 80 THEN PRINT Q$(4); " loses it"
-    IF rn > 80 THEN PRINT Q$(4); " doesn't see it"
-    CALL DELAY
+    IF rn <= 20 THEN of_error_pbp$ = Q$(4) + " can't find it"
+    IF rn > 20 AND rn <= 40 THEN of_error_pbp$ = Q$(4) + " misjudges it"
+    IF rn > 40 AND rn <= 60 THEN of_error_pbp$ = Q$(4) + " turns the wrong way"
+    IF rn > 60 AND rn <= 80 THEN of_error_pbp$ = Q$(4) + " loses it"
+    IF rn > 80 THEN of_error_pbp$ = Q$(4) + " doesn't see it"
+    CALL PBP (of_error_pbp$)
 END SUB
 
 
@@ -1345,11 +1338,11 @@ END SUB
 '   OUTFLDLOCATION Subroutine
 '------------------------------
 ' ...explanation...
-SUB OUTFLDLOCATION (W%)
+FUNCTION OUTFLDLOCATION$ (W%)
     CALL RANDNUM(rn)
-    IF W% = 7 OR W% = 8 AND rn > 50 THEN PRINT "lcf"
-    IF W% = 9 OR W% = 8 AND rn <= 50 THEN PRINT "rcf"
-END SUB
+    IF W% = 7 OR W% = 8 AND rn > 50 THEN OUTFLDLOCATION$="lcf"
+    IF W% = 9 OR W% = 8 AND rn <= 50 THEN OUTFLDLOCATION$="rcf"
+END FUNCTION
 
 
 '------------------------------
@@ -1371,17 +1364,23 @@ END SUB
 SUB PICKEDOFF (D, i)
     '*** picked off ***
     CALL BLANKLINES
-    CALL DELIVERY(D): CALL RANDNUM(rn)
-    IF rn <= 33 THEN PRINT "NO, "; p$(D, P1%(D)); " throws to "; H$(i - 1)
-    IF rn > 33 AND rn <= 66 THEN PRINT "quick move to "; H$(i - 1)
-    IF rn > 66 THEN PRINT "pickoff throw to "; H$(i - 1)
-    CALL DELAY: CALL RANDNUM(rn)
-    IF rn <= 50 THEN PRINT Q$(i - 1); " is picked off base!"
-    IF rn > 50 THEN PRINT Q$(i - 1); " is caught napping"
-    CALL DELAY: I8 = INT(RND(1) * 100) + 1
-    IF I8 <= 25 THEN PRINT "he can't believe it"
-    IF I8 > 25 AND I8 <= 50 THEN PRINT "what a teriffic move by "; p$(D, P1%(D))
-    CALL DELAY
+    CALL DELIVERY(D)
+    
+    CALL RANDNUM(rn)
+    IF rn <= 33 THEN picked_pbp$ = "NO, " + p$(D, P1%(D)) + " throws to " + H$(i - 1)
+    IF rn > 33 AND rn <= 66 THEN picked_pbp$ = "quick move to " + H$(i - 1)
+    IF rn > 66 THEN picked_pbp$ = "pickoff throw to " + H$(i - 1)
+    CALL PBP(picked_pbp$)
+    
+    CALL RANDNUM(rn)
+    IF rn <= 50 THEN picked_pbp$ = Q$(i - 1) + " is picked off base!"
+    IF rn > 50 THEN picked_pbp$ = Q$(i - 1) + " is caught napping"
+    CALL PBP(picked_pbp$)
+    
+    I8 = INT(RND(1) * 100) + 1
+    IF I8 <= 25 THEN picked_pbp$ = "he can't believe it"
+    IF I8 > 25 AND I8 <= 50 THEN picked_pbp$ = "what a teriffic move by " + p$(D, P1%(D))
+    CALL PBP(picked_pbp$)
 END SUB
 
 
@@ -1453,8 +1452,10 @@ SUB PINCHRUNNER (MS%, A1, S4%, I2, p, PR%, BC%, U%, D, MO)
     NEXT
 
 8995 CALL BLANKLINES
-LOCATE 15, 1: PRINT M$(p); " is sending in a pinch runner": PR% = 1
-    CALL DELAY: CALL DELAY
+    LOCATE 15, 1
+    CALL PBP (M$(p) + " is sending in a pinch runner")
+    PR% = 1
+    CALL DELAY
     Call HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
     CALL FLDDISP(BC%, p, U%, D): CALL MAINSCREEN(D, p, BC%, U%, MO): MS% = 1
     VV(P)=1:VV1(P)=9
@@ -1480,7 +1481,7 @@ END SUB
 SUB PITCHOUT (S4%, TGTBASE%, Q0)
     IF S4% = 5 OR TGTBASE% <> 2 THEN 4883: REM*** PITCH OUT ***
     PJ = INT(RND(1) * 100) + 1
-    IF PJ<=8 THEN PRINT "...PITCH OUT!!!": CALL DELAY: Q0 = Q0 - 200
+    IF PJ<=8 THEN CALL PBP ("...PITCH OUT!!!"): Q0 = Q0 - 200
 
 4883 '
 END SUB
@@ -1690,12 +1691,12 @@ END SUB
 SUB PLYRHRT (p, P9, W5, W6, BC%, U%, D, MO)
     '*** Offensive Player Ejected/Injured ***
     IF u6 = 2 OR u6 = 1 AND p = u9 THEN 2805
-    PRINT "You must replace "; Q$(0); " with a pinch-hitter": CALL DELAY: GOTO 2849
+    CALL PBP ("You must replace " + Q$(0) + " with a pinch-hitter"): GOTO 2849
 
 2805 FOR i = 0 TO 22: IF b%(p, i, 21) > 0 OR b$(p, i) = "XXX" THEN 2808
     IF B7%(p, B1!(p)) <> b%(p, i, 22) AND B7%(p, B1!(p)) <> b%(p, i, 23) AND B7%(p, B1!(p)) <> b%(p, i, 24) AND B7%(p, B1!(p)) <> b%(p, i, 25) THEN 2808
 
-2807 PRINT Q$(0); " will be replaced by "; b$(p, i): CALL DELAY
+2807 CALL PBP (Q$(0) + " will be replaced by " + b$(p, i))
     D0%(p) = D0%(p) + 1: X0%(p, 0, D0%(p)) = i: X0%(p, 1, D0%(p)) = B7%(p, B1!(p)): X0%(p, 2, D0%(p)) = (B1!(p) * 10) + (D0%(p) - 9)
     b%(p, i, 21) = 1: B3%(p, B1!(p)) = i: B9%(p, B7%(p, B1!(p))) = i: IF B7%(p, B1!(p)) = 1 OR B7%(p, B1!(p)) = 10 THEN B9%(p, 1) = 99: B9%(p, 0) = B1!(p): B7%(p, B1!(p)) = 10
     P9 = p: W5 = P9: W6 = P9: VV(P9) = B1!(p): VV1(P9) = B1!(p)
@@ -1922,10 +1923,9 @@ END SUB
 '------------------------------
 ' ...explanation...
 SUB RecordOut (i, I3)
-    PRINT Q$(i); " out @ "; H$(I3)
+    Call PBP(Q$(i) + " out @ " + H$(I3))
     B0%(i, 0) = 0: B0%(i, 1) = 0: B0%(i, 2) = 0
-    Q$(i) = ""
-    CALL DELAY
+    Q$(i) = ""	
 END SUB
 
 
@@ -1934,7 +1934,7 @@ END SUB
 '------------------------------
 ' ...explanation...
 SUB RecordRun (sah%, i, D, F%, PQ, S2%, W%, INFPOS%)
-    IF sah% = 0 THEN PRINT Q$(i); " scores"
+    If sah% = 0 Then Call PBP(Q$(i) + " scores")
     sah% = 0
     I5 = B0%(i, 1): I6 = 2: CALL ADDPIT (D, I5, I6)
     IF P1%(D) <> B0%(i, 1) THEN I5 = P1%(D): I6 = 18: CALL ADDPIT (D, I5, I6)
@@ -1957,8 +1957,8 @@ SUB RecordRun (sah%, i, D, F%, PQ, S2%, W%, INFPOS%)
     IF S6%(p, 0) - S6%(D, 0) = 1 THEN P2%(D) = B0%(i, 1): P2%(p) = P1%(p): S1%(1) = -1: S1%(0) = -1: GOTO 1155
     IF S6%(p, 0) - S6%(D, 0) = 0 AND S1%(D) <> -1 THEN I5 = P1%(D): I6 = 19: CALL ADDPIT(D, I5, I6): S1%(D) = -1
 
-1155 B0%(i, 0) = 0: B0%(i, 1) = 0: B0%(i, 2) = 0: Q$(i) = "": CALL DELAY
-    IF s%(p, INNING%) = 4 AND INT(RND(1)*100)+1<=25 THEN PRINT "They're tearin' up the peapatch!": CALL DELAY
+1155 B0%(i, 0) = 0: B0%(i, 1) = 0: B0%(i, 2) = 0: Q$(i) = ""
+    IF s%(p, INNING%) = 4 AND INT(RND(1)*100)+1<=25 THEN CALL PBP ("They're tearin' up the peapatch!")
     IF INNING% >= 9 AND p = 1 AND S6%(p, 0) - S6%(D, 0) = 1 AND F% = 0 AND O%(1) < 3 AND S2% <> 10 THEN CALL CHARGERUN (D,i)
     IF INNING% >= 9 AND p = 1 AND S6%(p, 0) - S6%(D, 0) = 1 AND S2% <> 10 THEN A5%(0) = 0: A5%(1) = 0: A5%(2) = 0: A5%(3) = 0
 END SUB
@@ -2080,10 +2080,10 @@ END SUB
 ' ...explanation...
 SUB HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
     RANDOMIZE TIMER
-    CLS 
-	PRINT "Please Wait..."
-    PRINT
-    PRINT "Calculating Pitcher/Batter Park Effects..."
+    'CLS 
+    'PRINT "Please Wait..."
+    'PRINT
+    'PRINT "Calculating Pitcher/Batter Park Effects..."
     FOR I = 0 TO 1
     I1 = 1 - I
 
@@ -2315,29 +2315,33 @@ END SUB
 SUB BASEONBALLS (S2%,D2,D,P)
     S2% = 2
     CALL BLANKLINES
-	bv = INT(RND(1) * 100) + 1: CALL RANDNUM (RN)
-    IF D2 = 2 AND bv <= 50 THEN PRINT Q$(0); " is walked intentionally..."
-    IF D2 = 2 AND bv > 50 THEN PRINT Q$(0); " is given a purpose pass..."
-    IF D2 = 2 THEN S8%(D, 0) = S8%(D, 0) + 1: CALL DELAY: GOTO 3241
-    IF RN <= 30 THEN PRINT "Full count...": CALL DELAY
+
+    bv = INT(RND(1) * 100) + 1: CALL RANDNUM (RN)
+    IF D2 = 2 AND bv <= 50 THEN CALL PBP (Q$(0) + " is walked intentionally...")
+    IF D2 = 2 AND bv > 50 THEN CALL PBP (Q$(0) + " is given a purpose pass...")
+    IF D2 = 2 THEN S8%(D, 0) = S8%(D, 0) + 1: GOTO 3241
+    IF RN <= 30 THEN CALL PBP ("Full count...")
+
     CALL DELIVERY (D)
-      Y% = INT(RND(1) * 80) + 780
+
+    Y% = INT(RND(1) * 80) + 780
     CALL GETRPBP (Y%,Y$,D): CALL STRIPRPBP (Y$,Y%,D)
-    PRINT Y$
-    CALL DELAY
-        Y% = INT(RND(1) * 30) + 860
+    CALL PBP(Y$)
+
+    Y% = INT(RND(1) * 30) + 860
     CALL GETRPBP (Y%,Y$,D): CALL STRIPRPBP (Y$,Y%,D)
-    PRINT Y$
-    call delay
+    CALL PBP(Y$)
 
 3241 call randnum(rn)
     if s4% = 7 and  rn<=30 then PRINT "that forces a run in":call delay
+
     rn=int(rnd(1)*4)+1
-    if s4%>3 and s4%<7 and rn=1 then print "and the bases are loaded!":call delay
-    if s4%>3 and s4%<7 and rn=2 then print "and the sacks are jammed!":call delay
-    if s4%>3 and s4%<7 and rn=3 then print "and the bases are full!":call delay
-    if s4%>3 and s4%<7 and rn=4 then print "and that loads them up!":call delay
-      I5 = P1%(D): I6 = 4: CALL ADDPIT (D,I5,I6)
+    if s4%>3 and s4%<7 and rn=1 then CALL PBP ("and the bases are loaded!")
+    if s4%>3 and s4%<7 and rn=2 then CALL PBP ("and the sacks are jammed!")
+    if s4%>3 and s4%<7 and rn=3 then CALL PBP ("and the bases are full!")
+    if s4%>3 and s4%<7 and rn=4 then CALL PBP ("and that loads them up!")
+
+    I5 = P1%(D): I6 = 4: CALL ADDPIT (D,I5,I6)
     IF B7%(P, B1!(P)) = 1 THEN I5 = P1%(P): I6 = 30: CALL INCPITOFF (P,I5,I6): GOTO 3243
     I5 = B3%(P, B1!(P)): I6 = 7: CALL INCBATOFF (P,I5,I6)
 
@@ -2353,20 +2357,21 @@ SUB HITBYPITCH (S2%,D)
     S2% = 1
     CALL BLANKLINES
     CALL DELIVERY (D)
+
     y% = INT(RND(1) * 20) + 720
     CALL GETRPBP(Y%, Y$, D): CALL STRIPRPBP (Y$,Y%,D)
-    PRINT Y$
-    CALL DELAY
+    CALL PBP(Y$)
+
     y% = INT(RND(1) * 11) + 740
     CALL GETRPBP(Y%, Y$, D): CALL STRIPRPBP (Y$,Y%,D)
-    PRINT Y$
-    CALL DELAY
+    CALL PBP(Y$)
+
     y% = INT(RND(1) * 20) + 760
     CALL GETRPBP(Y%, Y$, D): CALL STRIPRPBP (Y$,Y%,D)
-    PRINT Y$
-    CALL DELAY
+    CALL PBP(Y$)
+
     call randnum(rn)
-    if rn<=50 and s4% = 7 then print "tough way to get an RBI":call delay
+    if rn<=50 and s4% = 7 then CALL PBP ("tough way to get an RBI")
 END SUB
 
 
@@ -2377,18 +2382,18 @@ END SUB
 SUB WILDPITCH (S2%,D)
     S2% = 6
     CALL RANDNUM (RN)
-    IF RN <= 16 THEN PRINT "and it gets away from "; B$(D, B9%(D, 2))
-    IF RN > 16 AND RN <= 32 THEN PRINT "pitch is WAY high, and "; B$(D, B9%(D, 2)); " can't get it"
-    IF RN > 32 AND RN <= 48 THEN PRINT "It's in the dirt": CALL DELAY: PRINT "The runners move up 90 ft."
-    IF RN > 48 AND RN <= 64 THEN PRINT "It bounces in front of the plate": CALL DELAY: PRINT "it's past the catcher": CALL DELAY: PRINT "the runners advance"
-    IF RN > 64 AND RN <= 80 THEN PRINT "it's over "; B$(D, B9%(D, 2)); "'s head"
-    IF RN > 67 THEN PRINT "wild pitch by "; P$(D, P1%(D)): CALL DELAY: GOTO 3235
+    IF RN <= 16 THEN CALL PBP ("and it gets away from " + B$(D, B9%(D, 2)))
+    IF RN > 16 AND RN <= 32 THEN CALL PBP ("pitch is WAY high, and " + B$(D, B9%(D, 2)) + " can't get it")
+    IF RN > 32 AND RN <= 48 THEN CALL PBP ("It's in the dirt"): CALL PBP ("The runners move up 90 ft.")
+    IF RN > 48 AND RN <= 64 THEN CALL PBP ("It bounces in front of the plate"): CALL PBP ("it's past the catcher"): CALL PBP ("the runners advance")
+    IF RN > 64 AND RN <= 80 THEN CALL PBP ("it's over " + B$(D, B9%(D, 2)) + "'s head")
+    IF RN > 67 THEN CALL PBP ("wild pitch by " + P$(D, P1%(D))): GOTO 3235
+
     CALL RANDNUM (RN)
-    CALL DELAY
-    IF RN <= 33 THEN PRINT "It's ruled a wild pitch"
-    IF RN > 33 AND RN <= 66 THEN PRINT "score it a wild pitch"
-    IF RN > 66 THEN PRINT "credit "; P$(D, P1%(D)); " with a wild pitch"
-    CALL DELAY
+    IF RN <= 33 THEN wildpitch_pbp$ = "It's ruled a wild pitch"
+    IF RN > 33 AND RN <= 66 THEN wildpitch_pbp$ = "score it a wild pitch"
+    IF RN > 66 THEN wildpitch_pbp$ = "credit " + P$(D, P1%(D)) + " with a wild pitch"
+    CALL PBP(wildpitch_pbp$)
 
 3235 '
 END SUB
@@ -2441,6 +2446,7 @@ SUB REPLACEMENTS (I7%, I8%, i9%)
     FOR xx = 22 TO 25
     IF B7%(I7%, I8%) = b%(I7%, i9%, xx) THEN b%(I7%, i9%, 15) = b%(I7%, i9%, 33 + (xx - 22) * 2): b%(I7%, i9%, 17) = b%(I7%, i9%, 34 + (xx - 22) * 2): b%(I7%, i9%, 19) = b%(I7%, i9%, xx + 4): GOTO 7110
     NEXT
+
     J1 = B7%(I7%, I8%)
     IF J1 = 2 THEN J2 = 1: J3 = 0: J4 = 910 + INT(RND(1) * 10) + 1
     IF J1 = 3 THEN J2 = 0: J3 = 3: J4 = 960 + INT(RND(1) * 10) + 1
@@ -2475,8 +2481,7 @@ SUB SECOND2FIRST (D)
     '*** throw to 1st from 2nd ***
     Y% = INT(RND(1) * 30) + 1540
     CALL GETRPBP(Y%, Y$, D): CALL STRIPRPBP(Y$, Y%, D)
-    PRINT Y$; " to first"
-    CALL DELAY
+    CALL PBP(Y$ + " to first")
 END SUB
 
 
@@ -2489,15 +2494,16 @@ SUB SINGLEPBP (S2%, D, W%)
     if s2% = -12 then s2% = 12:goto 8014
     CALL DELIVERY(D)
     CALL RANDNUM(rn)
-    IF S2% = 12 THEN PRINT Q$(0); " beats out an infield single": GOTO 8013
-    IF rn <= 50 THEN Y% = INT(RND(1) * 50) + 1610: CALL GETRPBP(Y%, Y$, D): CALL STRIPRPBP(Y$, Y%, D): PRINT Y$; " "; C$(W%): GOTO 8013
+    
+    IF S2% = 12 THEN CALL PBP (Q$(0) + " beats out an infield single"): GOTO 8013
+    IF rn <= 50 THEN Y% = INT(RND(1) * 50) + 1610: CALL GETRPBP(Y%, Y$, D): CALL STRIPRPBP(Y$, Y%, D): CALL PBP (Y$ + " " + C$(W%)): GOTO 8013
     IF W% = 7 THEN Y% = INT(RND(1) * 70) + 1660
     IF W% = 9 THEN Y% = INT(RND(1) * 70) + 1730
     IF W% = 8 THEN Y% = INT(RND(1) * 90) + 1800
     CALL GETRPBP(Y%, Y$, D): CALL STRIPRPBP(Y$, Y%, D)
-    PRINT Y$
+    CALL PBP (Y$)
 
-8013 CALL DELAY:CALL DELAY
+8013 CALL DELAY
 
 8014 END SUB
 
@@ -2509,14 +2515,18 @@ SUB SINGLEPBP (S2%, D, W%)
 SUB SINGLEROUTINE (W%, p, I1, D, S2%, P2)
     CALL GETOUTFIELDER (W%, p, I1, D)
     CALL BLANKLINES
+
     IF B7%(p, B1!(p)) <> 1 THEN I5 = B3%(p, B1!(p)): I6 = 0: CALL INCBATOFF(P, I5, I6): I6 = 1: CALL INCBATOFF(P, I5, I6)
     I5 = P1%(D): I6 = 1: CALL ADDPIT(D, I5, I6)
     IF B7%(p, B1!(p)) = 1 THEN I5 = P1%(p): I6 = 23: CALL INCPITOFF(P, I5, I6): I6 = 24: CALL INCPITOFF(P, I5, I6)
     if h7% > sn then CALL SINGLEPBP(S2%, D, W%)
+
     FOR I = 0 TO 3
     A5%(I) = 1
     NEXT I
+
     IF S2% = 12 OR B0%(2, 0) = 0 THEN 3075
+
     H6% = INT(RND(1) * 100) + 1
     IF B7%(p, B0%(2, 0)) <> 1 THEN BR% = b%(p, B3%(p, B0%(2, 0)), 16)
     IF B7%(p, B0%(2, 0)) = 1 THEN BR% = p%(p, P1%(p), 31)
@@ -2642,11 +2652,29 @@ SUB STRIKEOUT (U%, D)
     '*** strikeout pbp ***
     IF U% = 3 THEN BV = 20: GOTO 3770
     BV = INT(RND(1) * 100): CALL RANDNUM(rn)
-    IF rn <= 20 THEN PRINT "FULL COUNT...": CALL DELAY
+    IF rn <= 20 THEN CALL PBP ("FULL COUNT...")
     CALL DELIVERY(D)
-    IF BV = 1 THEN PRINT "Strike Three!!": PRINT Q$(0); " turns to "; U$(1): CALL DELAY: PRINT "he says he tees them up higher than that": PRINT "at the country club!!": CALL DELAY: GOTO 3774
-    IF BV = 2 THEN PRINT "Strike three...": CALL DELAY: PRINT Q$(0); " stands there like a house": PRINT "by the side of the road": CALL DELAY: CALL DELAY: GOTO 3774
-    IF BV > 2 AND BV <= 5 THEN PRINT Q$(0); " looks at a called strike three": CALL DELAY: PRINT "and turns to glare at "; U$(1): CALL DELAY: PRINT M$(p); " is barking from the dugout!!": GOTO 3774
+
+    IF BV = 1 THEN 
+        CALL PBP ("Strike Three!!")
+        CALL PBP (Q$(0) + " turns to " + U$(1))
+        CALL PBP ("he says he tees them up higher than that")
+        CALL PBP ("at the country club!!")
+    End If
+
+    IF BV = 2 THEN 
+        CALL PBP ("Strike three...")
+        CALL PBP (Q$(0) + " stands there like a house")
+        CALL PBP ("by the side of the road")
+        CALL DELAY
+    End If
+
+    IF BV > 2 AND BV <= 5 THEN 
+        CALL PBP (Q$(0) + " looks at a called strike three")
+        CALL PBP ("and turns to glare at " + U$(1))
+        CALL PBP (M$(p) + " is barking from the dugout!!")
+    End If
+
       CALL RANDNUM(RN)
     IF RN<=25 THEN
         Y% = INT(RND(1) * 40) + 890
@@ -2654,19 +2682,18 @@ SUB STRIKEOUT (U%, D)
         Y% = INT(RND(1) * 80) + 930
     END IF
     CALL GETRPBP(Y%, Y$, D): CALL STRIPRPBP(Y$, Y%, D)
-    PRINT Y$: CALL DELAY
+    CALL PBP(Y$)
 
 3770 Y% = INT(RND(1) * 40) + 1010
     CALL GETRPBP(Y%, Y$, D): CALL STRIPRPBP(Y$, Y%, D)
-    PRINT Y$
+    CALL PBP(Y$)
 
-3774 CALL DELAY
-    CALL RANDNUM(rn)
-    IF rn <= 20 THEN PRINT "Number"; P8%(D, P1%(D), 5) + 1; "for "; p$(D, P1%(D))
-    IF rn > 20 AND rn <= 40 THEN PRINT "That's"; P8%(D, P1%(D), 5) + 1; "for "; p$(D, P1%(D))
-    IF RN = 41 THEN PRINT Q$(0)+" is not a happy man"
-    IF RN = 42 THEN PRINT Q$(0)+" has had better AB's"
-    CALL DELAY
+3774 CALL RANDNUM(rn)
+    IF rn <= 20 THEN strikeout_pbp$ = "Number" + STR$(P8%(D, P1%(D), 5) + 1) + " for " + p$(D, P1%(D))
+    IF rn > 20 AND rn <= 40 THEN strikeout_pbp$ = "That's " + STR$(P8%(D, P1%(D), 5) + 1) + " for " + p$(D, P1%(D))
+    IF RN = 41 THEN strikeout_pbp$ = Q$(0) + " is not a happy man"
+    IF RN = 42 THEN strikeout_pbp$ = Q$(0) + " has had better AB's"
+    CALL PBP(strikeout_pbp$)
 END SUB
 
 
@@ -2676,18 +2703,6 @@ END SUB
 ' ...explanation...
 SUB STRIKEOUTCS (SO)
     IF SO = 7 THEN B1!(p) = B1!(p) + 1
-END SUB
-
-
-'------------------------------
-'   STRIPRPBP Subroutine
-'------------------------------
-' ...explanation...
-SUB STRIPRPBP (Y$, Y%, D)
-
-3991 FOR BH% = 1 TO LEN(Y$)
-    IF ASC(MID$(Y$, BH%, 1)) > 122 OR ASC(MID$(Y$, BH%, 1)) < 32 THEN CALL GETRPBP(Y%, Y$, D): GOTO 3991
-    NEXT
 END SUB
 
 
@@ -2726,8 +2741,7 @@ SUB THROW2FIRST (D)
     Y% = INT(RND(1) * 40) + 1570
     CALL GETRPBP(Y%, Y$, D)
     CALL STRIPRPBP(Y$, Y%, D)
-    PRINT Y$; " to first"
-    CALL DELAY
+    CALL PBP(Y$ + " to first")
 END SUB
 
 
@@ -2762,12 +2776,13 @@ END SUB
 ' ...explanation...
 SUB TRIPLEPLAY (D)
     CALL BLANKLINES
-	Q$(4) = b$(D, B9%(D, 5))
-    PRINT "grounder to "; Q$(4); " @ 3B": CALL DELAY
-    PRINT Q$(2); " OUT @ 3B": CALL DELAY
-    PRINT Q$(1); " OUT @ 2B": CALL DELAY
-    PRINT Q$(0); " OUT @ 1B": CALL DELAY:
-    PRINT "--- TRIPLE PLAY !!! ---": CALL DELAY: CALL DELAY
+    Q$(4) = b$(D, B9%(D, 5))
+    CALL PBP ("grounder to " + Q$(4) + " @ 3B")
+    CALL PBP (Q$(2) + " OUT @ 3B")
+    CALL PBP (Q$(1) + " OUT @ 2B")
+    CALL PBP (Q$(0) + " OUT @ 1B")
+    CALL PBP ("--- TRIPLE PLAY !!! ---"): CALL DELAY
+
     O%(0) = 3
     I5 = P1%(D): I6 = 0: FOR i = 1 TO 3: CALL ADDPIT(D, I5, I6): NEXT i
     IF B7%(p, B1!(p)) = 1 THEN I5 = P1%(p): I6 = 23: CALL INCPITOFF(P, I5, I6)
@@ -2782,6 +2797,8 @@ END SUB
 SUB TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%,I8,I9)
     IF LN% = 3308 THEN LN% = 0: GOTO 3308
     I8 = 0: H6% = INT(RND(1) * 100) + 1
+    
+    ' B3%(P, ...) is -1 
     IF S2% = 8 AND B0%(2, 0) > 0 AND H6% < 6 AND B0%(3, 0) = 0 AND b%(p, B3%(p, B0%(2, 0)), 8) > 0 THEN I8 = 3
     IF S2% = 9 AND B0%(3, 0) > 0 AND H6% <= 2 AND b%(p, B3%(p, B0%(3, 0)), 9) > 0 THEN I8 = 4
     IF S2% = 7 AND B0%(3, 0) > 0 AND P2 = 2 AND H6% >= 6 AND H6% <= b%(p, B3%(p, B0%(3, 0)), 16) THEN I8 = 4
@@ -2807,9 +2824,9 @@ SUB TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%,I8,I9)
 3311 i$ = GetKeyPress$
 
 3312 IF UCASE$(i$) <> "Y" THEN i9 = 1: GOTO 3385
-    PRINT Q$(I8 - 1); " is "; : IF S2% < 10 THEN PRINT "going for "; H$(I8)
-    IF S2% > 10 THEN PRINT "tagging"
-    CALL DELAY
+    PRINT Q$(I8 - 1); " is "; : IF S2% < 10 THEN CALL PBP ("going for " + H$(I8))
+    IF S2% > 10 THEN CALL PBP ("tagging")
+
     IF S2% = 7 AND I8 = 2 OR S2% > 10 AND S4% = 3 THEN 3317
     IF u6 = 2 OR u6 = 1 AND D = u9 THEN 3322
     PRINT Q$(4); " throw to "; H$(I8); " (YN) "
@@ -2820,11 +2837,12 @@ SUB TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%,I8,I9)
     IF u6 = 2 OR u6 = 1 AND D = u9 THEN i$ = "Y": GOTO 3316
 3315 i$ = GetKeyPress$
 
-3316 i9 = 0: IF UCASE$(i$) <> "Y" THEN i9 = 1: PRINT "No throw is made": CALL DELAY: GOTO 3380
+3316 i9 = 0: IF UCASE$(i$) <> "Y" THEN i9 = 1: CALL PBP ("No throw is made"): GOTO 3380
 
 3317 CALL BLANKLINES
-	PRINT "Here comes the throw by "; Q$(4)
-    FOR i = 1 TO 3: PRINT "."; : CALL DELAY: NEXT i: PRINT " "
+    CALL PBP ("Here comes the throw by " + Q$(4))
+    FOR i = 1 TO 3: CALL PBP ("."): NEXT i: CALL PBP (" ")
+    
     CALL FLDERR (F%, W%, D, I3, SB%, S2%, p): IF F% = 1 THEN 3385
     I4 = INT(RND(1) * 1000) + 1: A = b%(p, B3%(p, B0%(I8 - 1, 0)), 16)
     IF B7%(p, B0%((I8 - 1), 0)) = 1 THEN A = p%(p, P1%(p), 31)
@@ -2835,16 +2853,15 @@ SUB TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%,I8,I9)
     IF I4 <= I3 THEN 3380
     A5%(I8 - 1) = 11: O%(0) = O%(0) + 1: O%(1) = O%(1) + 1: I5 = P1%(D): I6 = 0: CALL ADDPIT(D, I5, I6)
     CALL RANDNUM (rn)
-    IF rn <= 4 AND I8 = 4 THEN PRINT Q$(I8 - 1); " collides with "; b$(D, B9%(D, 2)): CALL DELAY: PRINT b$(D, B9%(D, 2)); " hangs on!!": GOTO 3377
-    IF rn <= 50 AND I8 <> 4 THEN PRINT Q$(I8 - 1); " doesn't make it!": GOTO 3377
-    IF rn <= 80 THEN PRINT "throw is perfect!": GOTO 3377
-    IF rn <= 90 THEN PRINT "This will be close": GOTO 3377
-    PRINT "Close play.....": CALL DELAY
-    IF I8 < 4 THEN PRINT U$(I8 + 1);
-    IF I8 = 4 THEN PRINT U$(1);
-    PRINT " makes the call..."
+    IF rn <= 4 AND I8 = 4 THEN CALL PBP (Q$(I8 - 1) + " collides with " + b$(D, B9%(D, 2))): CALL PBP (b$(D, B9%(D, 2)) + " hangs on!!"): GOTO 3377
+    IF rn <= 50 AND I8 <> 4 THEN CALL PBP (Q$(I8 - 1) + " doesn't make it!"): GOTO 3377
+    IF rn <= 80 THEN CALL PBP ("throw is perfect!"): GOTO 3377
+    IF rn <= 90 THEN CALL PBP ("This will be close"): GOTO 3377
+    CALL PBP ("Close play.....")
+    IF I8 < 4 THEN CALL PBP (U$(I8 + 1) + " makes the call...")
+    IF I8 = 4 THEN CALL PBP (U$(1) + " makes the call...")
 
-3377 CALL DELAY: CALL CREDITASSIST (W%, D): CALL ADVANCEMENT (p, D, S2%, F%,I3): CALL CREDITPUTOUT(2, FB2P%, AST%, D): W% = 2
+3377 CALL CREDITASSIST (W%, D): CALL ADVANCEMENT (p, D, S2%, F%,I3): CALL CREDITPUTOUT(2, FB2P%, AST%, D): W% = 2
     IF O%(0) = 3 OR S2% > 10 THEN 3385
 
 3371 I5 = INT(RND(1) * 100) + 1
@@ -2853,7 +2870,7 @@ SUB TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%,I8,I9)
       '*** RUNNER ON 2ND GUNNED AT 3RD ON THROW HOME ***
     IF I8 - 1 > 2 AND I5 <= 15 AND B0%(2, 0) > 0 THEN
         CALL CREDITASSIST (W%, D)
-        PRINT "runner is trying for 3rd...": CALL DELAY
+        CALL PBP ("runner is trying for 3rd...")
         A5%(2) = 11
         O%(0) = O%(0) + 1: O%(1) = O%(1) + 1
         W% = 5: CALL CREDITREGPO(W%, D)
@@ -2865,34 +2882,33 @@ SUB TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%,I8,I9)
     IF I8 - 1 > 1 AND I5 <= 15 AND B0%(1, 0) > 0 AND A5%(2) <> 11 THEN
         CALL CREDITASSIST(W%, D)
         W% = 6: CALL CREDITREGPO(W%, D)
-        PRINT "runner is trying for 2nd...":CALL DELAY
+        CALL PBP ("runner is trying for 2nd...")
         A5%(1) = 11
         O%(0) = O%(0) + 1: O%(1) = O%(1) + 1
         I5 = P1%(D): I6 = 0
         CALL ADDPIT(D, I5, I6)
     END IF
     I5 = INT(RND(1) * 100) + 1
-    IF B0%(2,0)>0 AND I8 - 1 > 2 AND A5%(2) <> 11 AND I5 > (80 - b%(p, B3%(p, B0%(2, 0)), 16) * 2) AND i9 = 0 THEN A5%(2) = 1: PRINT "runner is trying for 3rd...": CALL DELAY: PRINT "He's safe!": CALL DELAY
+    IF B0%(2,0)>0 AND I8 - 1 > 2 AND A5%(2) <> 11 AND I5 > (80 - b%(p, B3%(p, B0%(2, 0)), 16) * 2) AND i9 = 0 THEN A5%(2) = 1: CALL PBP ("runner is trying for 3rd..."): CALL PBP ("He's safe!")
     I5 = INT(RND(1) * 10) + 1
-    IF B0%(1,0)>0 AND A5%(1)<>11 AND (S4%=4 OR S4%=7 AND I8-1>1 AND I5>(10 - b%(p, B3%(p, B0%(1, 0)), 16)) AND i9 = 0) THEN A5%(1) = 1: PRINT "runner is trying for 2nd...": CALL DELAY: PRINT "He's in there!": CALL DELAY: GOTO 3376
+    IF B0%(1,0)>0 AND A5%(1)<>11 AND (S4%=4 OR S4%=7 AND I8-1>1 AND I5>(10 - b%(p, B3%(p, B0%(1, 0)), 16)) AND i9 = 0) THEN A5%(1) = 1: CALL PBP ("runner is trying for 2nd..."): CALL PBP ("He's in there!"): GOTO 3376
     I5 = INT(RND(1) * 100) + 1
-    IF B0%(1,0)>0 AND I8-1>1 AND I5>(80-b%(p,B3%(p,B0%(1, 0)),16)*2) AND i9=0 AND A5%(1)<>11 THEN PRINT "runner safe at 2nd on the throw": CALL DELAY: A5%(1) = 1
+    IF B0%(1,0)>0 AND I8-1>1 AND I5>(80-b%(p,B3%(p,B0%(1, 0)),16)*2) AND i9=0 AND A5%(1)<>11 THEN CALL PBP ("runner safe at 2nd on the throw"): A5%(1) = 1
 
 3376 CALL ADVANCEMENT(p, D, S2%, F%,I3): i9 = 0: GOTO 3385
 
 3380 A5%(I8 - 1) = 1: IF i9 = 1 THEN 3379
     CALL RANDNUM (rn)
-    IF rn <= 4 AND I8 = 4 THEN PRINT Q$(I8 - 1); " collides with "; b$(D, B9%(D, 2)): CALL DELAY: PRINT "He knocks the ball loose!!": GOTO 3379
-    IF rn <= 50 AND I8 <> 4 THEN PRINT Q$(I8 - 1); " beats the throw!": GOTO 3379
-    IF rn <= 60 THEN PRINT Q$(I8 - 1); " is ahead of the throw": GOTO 3379
-    IF rn <= 80 THEN PRINT "throw is off line": GOTO 3379
-    IF rn <= 90 THEN PRINT Q$(I8 - 1); " slides under the tag": GOTO 3379
-    PRINT "Close play...": CALL DELAY
-    IF I8 <> 4 THEN PRINT U$(I8 + 1);
-    IF I8 = 4 THEN PRINT U$(1);
-    PRINT " makes the call..."
+    IF rn <= 4 AND I8 = 4 THEN CALL PBP (Q$(I8 - 1) + " collides with " + b$(D, B9%(D, 2))): CALL PBP ("He knocks the ball loose!!"): GOTO 3379
+    IF rn <= 50 AND I8 <> 4 THEN CALL PBP (Q$(I8 - 1) + " beats the throw!"): GOTO 3379
+    IF rn <= 60 THEN CALL PBP (Q$(I8 - 1) + " is ahead of the throw"): GOTO 3379
+    IF rn <= 80 THEN CALL PBP ("throw is off line"): GOTO 3379
+    IF rn <= 90 THEN CALL PBP (Q$(I8 - 1) + " slides under the tag"): GOTO 3379
+    CALL PBP ("Close play...")
+    IF I8 <> 4 THEN CALL PBP (U$(I8 + 1) + " makes the call...")
+    IF I8 = 4 THEN CALL PBP (U$(1) + " makes the call...")
 
-3379 CALL DELAY: PRINT Q$(I8 - 1); " is safe @ "; H$(I8): CALL DELAY
+3379 CALL PBP (Q$(I8 - 1) + " is safe @ " + H$(I8))
     IF I8 = 4 THEN sah% = 1
     CALL TAGADVANCE(S2%, I8, D): IF S2% < 10 THEN 3371
     IF S2% > 10 AND B7%(p, B1!(p)) = 1 THEN P8%(p, P1%(p), 23) = P8%(p, P1%(p), 23) - 1: P5%(p, P1%(p), 23) = P5%(p, P1%(p), 23) - 1: I5 = P1%(p): I6 = 41: CALL INCPITOFF(P, I5, I6): I5 = P1%(D): I6 = 16: CALL ADDPIT(D, I5, I6): GOTO 3385
@@ -2994,7 +3010,7 @@ SUB WALLDOUBLE (HW%, W%)
     IF BV <= 65 AND l%(1, 13) = 27 AND W% = 7 THEN PRINT "It hits off the screen!": GOTO 3785
     IF BV <= 65 THEN PRINT "It's off the wall": GOTO 3785
     IF BV <= 85 AND HW% = 0 THEN 3788
-    IF BV <= 90 AND HW% = 0 THEN PRINT "It's to the wall": CALL DELAY: PRINT Q$(0); " slides into second": PRINT "with a stand-up double!!": GOTO 3785
+    IF BV <= 90 AND HW% = 0 THEN CALL PBP ("It's to the wall"): PRINT Q$(0); " slides into second": PRINT "with a stand-up double!!": GOTO 3785
     IF rn <= 25 AND l%(1, 13) = 21 THEN PRINT "It's off the Green Monster!": GOTO 3785
     IF l%(1, 13) = 27 AND W% = 7 THEN PRINT "It's off the screen...": GOTO 3785
     PRINT "It's off the top of the wall...": GOTO 3785
@@ -3014,7 +3030,7 @@ SUB WHICHRUNNER (i, S4%, D5)
     IF i = 4 THEN A5%(3) = 1
     IF S4% <> 4 THEN 4297
     CALL BLANKLINES
-	LOCATE 15, 1: PRINT "WHICH RUNNER DO YOU WANT TO GO AFTER"
+    LOCATE 15, 1: PRINT "WHICH RUNNER DO YOU WANT TO GO AFTER"
     PRINT "1 - "; b$(p, B3%(p, B0%(2, 0)))
     IF B7%(p, B0%(1, 0)) <> 1 THEN PRINT "2 - "; b$(p, B3%(p, B0%(1, 0)))
     IF B7%(p, B0%(1, 0)) = 1 THEN PRINT "2 - "; p$(p, P1%(p))
@@ -3022,7 +3038,7 @@ SUB WHICHRUNNER (i, S4%, D5)
 4295 i$ = GetKeyPress$
 
 4296 D5 = VAL(i$): CALL BLANKLINES
-	LOCATE 15, 1: IF D5 = 2 THEN i = 2: D5 = 3: I2 = B3%(p, B0%(1, 0)): IF B7%(p, B0%(1, 0)) = 1 THEN Q$(i - 1) = p$(p, P1%(p))
+    LOCATE 15, 1: IF D5 = 2 THEN i = 2: D5 = 3: I2 = B3%(p, B0%(1, 0)): IF B7%(p, B0%(1, 0)) = 1 THEN Q$(i - 1) = p$(p, P1%(p))
     D5 = 0
 
 4297 '
@@ -3054,19 +3070,16 @@ SUB FOULBALL ()
     if rn<=50 then
         Y% = INT(RND(1) * 20) + 3130
         CALL GETRPBP (Y%,Y$,D): CALL STRIPRPBP (Y$,Y%,D)
-        PRINT Y$
-        CALL DELAY
-        PRINT "foul ball!!"
-        call delay
+        CALL PBP(Y$)
+        CALL PBP("foul ball!!")
     else
         Y% = INT(RND(1) * 10) + 3150
         CALL GETRPBP (Y%,Y$,D): CALL STRIPRPBP (Y$,Y%,D)
-        PRINT Y$
-        CALL DELAY
+        CALL PBP(Y$)
+
         Y% = INT(RND(1) * 10) + 3160
         CALL GETRPBP (Y%,Y$,D): CALL STRIPRPBP (Y$,Y%,D)
-        PRINT Y$
-        CALL DELAY
+        CALL PBP(Y$)
     end if
 END SUB
 
@@ -3078,37 +3091,44 @@ SUB RAREPLAYS (H6%, H7%)
 IF H7% = 20 THEN H7% = 0: GOTO 2008
 
 2000 CALL BLANKLINES
-	H6% = INT(RND(1) * 100) + 1
-    IF H6% = 1 THEN PRINT b$(D, B9%(D, 2)); " is arguing ball and strike calls": CALL DELAY
-    IF H6% = 1 THEN PRINT U$(1); " has heard enough": CALL DELAY
-    IF H6% = 1 THEN PRINT b$(D, B9%(D, 2)); " has been ejected!!": X$ = b$(D, B9%(D, 2)): CALL EJECTINC (EJ%,X$): CALL DELAY: po% = 2: CALL EJECTIONINJURY (U6,P,U9,D,PO%,P9,W5,W6): GOTO 2850
-    IF H6% <= 3 THEN PRINT p$(D, P1%(D)); " steps off the mound"
-    IF H6% <= 3 THEN PRINT "after that last call": CALL DELAY: PRINT "He is shouting at "; U$(1): CALL DELAY
-    IF H6% <= 3 THEN PRINT U$(1); " does not appreciate what he hears...": CALL DELAY: PRINT p$(D, P1%(D)); " has been ejected!!"
+    H6% = INT(RND(1) * 100) + 1
+    IF H6% = 1 THEN CALL PBP(b$(D, B9%(D, 2)) + " is arguing ball and strike calls")
+    IF H6% = 1 THEN CALL PBP(U$(1) + " has heard enough")
+    IF H6% = 1 THEN 
+        PRINT b$(D, B9%(D, 2)) + " has been ejected!!": X$ = b$(D, B9%(D, 2)): CALL EJECTINC (EJ%,X$): CALL DELAY: po% = 2: CALL EJECTIONINJURY (U6,P,U9,D,PO%,P9,W5,W6): GOTO 2850
+    END IF
+
+    IF H6% <= 3 THEN CALL PBP(p$(D, P1%(D)) + " steps off the mound")
+    IF H6% <= 3 THEN CALL PBP("after that last call"): CALL PBP("He is shouting at " + U$(1))
+    IF H6% <= 3 THEN CALL PBP(U$(1) + " does not appreciate what he hears..."): CALL PBP(p$(D, P1%(D)) + " has been ejected!!")
     IF H6% <= 3 THEN X$ = p$(D, P1%(D)): CALL EJECTINC (EJ%,X$): CALL DELAY: CALL INJPIT (P,D): GOTO 2850
-    IF H6% = 4 AND B7%(p, B1!(p)) <> 1 THEN PRINT Q$(0); " is unhappy with that last call": CALL DELAY: PRINT "He is venting his opinion to "; U$(1): CALL DELAY: PRINT "Thats it!! "; U$(1); " has ejected "; Q$(0); "!!"
+    IF H6% = 4 AND B7%(p, B1!(p)) <> 1 THEN CALL PBP(Q$(0) + " is unhappy with that last call"): CALL PBP("He is venting his opinion to " + U$(1)): PRINT "Thats it!! "; U$(1); " has ejected "; Q$(0); "!!"
     IF H6% = 4 AND B7%(p, B1!(p)) <> 1 THEN X$ = Q$(0): CALL EJECTINC (EJ%,X$):CALL DELAY: CALL PLYRHRT (P,P9,W5,W6,BC%,U%,D,MO)
     IF H6% = 4 AND B7%(p, B1!(p)) <> 1 THEN 2850
-    IF H6% = 4 THEN PRINT Q$(0); " did not like that": PRINT "last call at all!!": CALL DELAY: GOTO 2850
+    IF H6% = 4 THEN CALL PBP(Q$(0) + " did not like that"): CALL PBP("last call at all!!"): GOTO 2850
     IF H6% > 5 THEN 2005
-    PRINT Q$(0); " hits a slow roller to first"
-    CALL DELAY: PRINT b$(D, B9%(D, 3)); " fields it cleanly"
-    CALL DELAY: PRINT "He flips it to "; p$(D, P1%(D)); " covering just in time!"
-    CALL DELAY: PRINT "Wait... "; U$(2); " rules safe!!": CALL DELAY
+    CALL PBP(Q$(0) + " hits a slow roller to first")
+    CALL PBP(b$(D, B9%(D, 3)) + " fields it cleanly")
+    CALL PBP("He flips it to " + p$(D, P1%(D)) + " covering just in time!")
+    CALL PBP("Wait... " + U$(2) + " rules safe!!")
+    
     IF B7%(p, B1!(p)) <> 1 THEN I5 = B3%(p, B1!(p)): I6 = 0: CALL INCBATOFF (P,I5,I6): I6 = 1: CALL INCBATOFF (P,I5,I6)
     I5 = P1%(D): I6 = 1: CALL ADDPIT (D,I5,I6)
     IF B7%(p, B1!(p)) = 1 THEN I5 = P1%(p): I6 = 23: CALL INCPITOFF (P,I5,I6): I6 = 24: CALL INCPITOFF (P,I5,I6)
     FOR i = 0 TO 3: a5%(i) = 1: NEXT i: CALL ADVANCEMENT (P,D,S2%,F%,I3): CALL SCOREBOARD
     CALL BLANKLINES
-	PRINT m$(D); " charges from the dugout": CALL DELAY
-    PRINT m$(D); ", "; p$(D, P1%(D)); ","
-    PRINT b$(D, B9%(D, 2)); ", and "; b$(D, B9%(D, 3))
-    PRINT "are going at it with "; U$(2)
-    CALL DELAY: CALL DELAY: CALL DELAY
-    PRINT U$(3); " and "; U$(1); " come in to help out": CALL DELAY
-    PRINT "This argument is out of control now!!": CALL DELAY
-    PRINT "What is this!!": CALL DELAY
+    
+    CALL PBP(m$(D) + " charges from the dugout")
+    CALL PBP(m$(D) + ", " + p$(D, P1%(D)) + ",")
+    CALL PBP(b$(D, B9%(D, 2)) + ", and " + b$(D, B9%(D, 3)))
+    CALL PBP("are going at it with " + U$(2))
+    CALL DELAY: CALL DELAY
+    
+    CALL PBP(U$(3) + " and " + U$(1) + " come in to help out")
+    CALL PBP("This argument is out of control now!!")
+    CALL PBP("What is this!!")
     PRINT "All of them have been ejected!!!"
+
     X$ = p$(D, P1%(D)): CALL EJECTINC (EJ%,X$)
     X$ = b$(D, B9%(D, 2)): CALL EJECTINC (EJ%,X$)
     X$ = b$(D, B9%(D, 3)): CALL EJECTINC (EJ%,X$)
@@ -3116,82 +3136,98 @@ IF H7% = 20 THEN H7% = 0: GOTO 2008
     CALL DELAY: po% = 2: CALL EJECTIONINJURY (U6,P,U9,D,PO%,P9,W5,W6): po% = 3: CALL EJECTIONINJURY (U6,P,U9,D,PO%,P9,W5,W6): CALL INJPIT (P,D): GOTO 2850
 
 2005 IF H6% > 7 THEN 2007
-    PRINT Q$(0); " sends a long one"
-    PRINT "down the left field line": CALL DELAY
-    PRINT "It may go...": CALL DELAY: PRINT "HOME RUN!!!": CALL DELAY
-    PRINT "Wait!!! "; : CALL DELAY: PRINT U$(4); " is calling it foul!!": CALL DELAY
-	CALL BLANKLINES
-    PRINT Q$(0); " is arguing vehemently"
-    PRINT "with "; U$(1); " and "; U$(4): CALL DELAY
-    PRINT m$(p); " charges from the dugout": CALL DELAY
-    PRINT "He and "; Q$(0); " are really going"
-    PRINT "at it with the umpires!!": CALL DELAY: CALL DELAY
-    PRINT Q$(0); " has just been tossed!!": X$ = Q$(0): CALL EJECTINC (EJ%,X$): CALL DELAY
+    CALL PBP(Q$(0) + " sends a long one")
+    CALL PBP("down the left field line")
+
+    CALL PBP("It may go..."): CALL PBP("HOME RUN!!!")
+
+    CALL PBP("Wait!!! ")
+
+    CALL PBP(U$(4) + " is calling it foul!!")
+
+    CALL BLANKLINES
+
+    CALL PBP(Q$(0) + " is arguing vehemently")
+    CALL PBP("with " + U$(1) + " and " + U$(4))
+
+    CALL PBP(m$(p) + " charges from the dugout")
+
+    CALL PBP("He and " + Q$(0) + " are really going")
+    CALL PBP("at it with the umpires!!")
+    CALL DELAY
+
+    CALL PBP(" has just been tossed!!"): X$ = Q$(0): CALL EJECTINC (EJ%,X$)
     CALL PLYRHRT (P,P9,W5,W6,BC%,U%,D,MO): GOTO 2850
 
-2007 IF H6% = 8 THEN PRINT U$(1); " has just ejected "; p$(D, P1%(D))
-    IF H6% = 8 THEN PRINT "for wetting the ball!!": CALL EJECTINC (EJ%,X$): EJ$(EJ%) = p$(D, P1%(D)): CALL DELAY: CALL DELAY: CALL INJPIT (P,D): GOTO 2850
-    IF H6% = 9 THEN PRINT "Here's the 3-2 pitch...": CALL DELAY: PRINT "Time called...": PRINT U$(1); " is calling it ball 4": CALL DELAY: PRINT "He says "; p$(D, P1%(D)); " went to his mouth": CALL DELAY: GOTO 2850
+2007 IF H6% = 8 THEN CALL PBP(U$(1) + " has just ejected " + p$(D, P1%(D)))
+    IF H6% = 8 THEN CALL PBP("for wetting the ball!!"): CALL EJECTINC (EJ%,X$): EJ$(EJ%) = p$(D, P1%(D)): CALL DELAY: CALL INJPIT (P,D): GOTO 2850
+    IF H6% = 9 THEN CALL PBP("Here's the 3-2 pitch..."): PRINT "Time called...": CALL PBP(U$(1) + " is calling it ball 4"): CALL PBP("He says " + p$(D, P1%(D)) + " went to his mouth"): GOTO 2850
     IF H6% > 15 THEN 2006
-    PRINT Q$(0); " hits the deck on a high"
-    PRINT "and tight pitch from "; p$(D, P1%(D)): CALL DELAY: CALL DELAY
-    PRINT Q$(0); " charges the mound!": CALL DELAY
-    PRINT "Both dugouts have emptied...": CALL DELAY
-    PRINT "It's a bench-clearing brawl!": CALL DELAY
+    CALL PBP(Q$(0) + " hits the deck on a high")
+    CALL PBP("and tight pitch from " + p$(D, P1%(D)))
+    CALL PBP(Q$(0) + " charges the mound!")
+    CALL PBP("Both dugouts have emptied...")
+    CALL PBP("It's a bench-clearing brawl!")
     CALL BLANKLINES
-	PRINT "It will take a few minutes to clean this up": CALL DELAY: i = INT(RND(1) * 3) + 1
-    IF i = 1 THEN PRINT p$(D, P1%(D)); " has been ejected": X$ = p$(D, P1%(D)): CALL EJECTINC (EJ%,X$): CALL DELAY: CALL INJPIT (P,D): GOTO 2850
-    IF i = 2 THEN PRINT Q$(0); " has been ejected": X$ = Q$(0): CALL EJECTINC (EJ%,X$): CALL DELAY: CALL PLYRHRT (P,P9,W5,W6,BC%,U%,D,MO): GOTO 2850
-    PRINT Q$(0); " and "; p$(D, P1%(D)); " have been ejected": X$ = Q$(0): CALL EJECTINC (EJ%,X$): X$ = p$(D, P1%(D)): CALL EJECTINC (EJ%,X$): CALL DELAY: CALL INJPIT (P,D): CALL PLYRHRT (P,P9,W5,W6,BC%,U%,D,MO): GOTO 2850
+    CALL PBP("It will take a few minutes to clean this up"): i = INT(RND(1) * 3) + 1
+    IF i = 1 THEN CALL PBP(p$(D, P1%(D)) + " has been ejected"): X$ = p$(D, P1%(D)): CALL EJECTINC (EJ%,X$): CALL INJPIT (P,D): GOTO 2850
+    IF i = 2 THEN CALL PBP(Q$(0) + " has been ejected"): X$ = Q$(0): CALL EJECTINC (EJ%,X$): CALL PLYRHRT (P,P9,W5,W6,BC%,U%,D,MO): GOTO 2850
+    CALL PBP(Q$(0) + " and " + p$(D, P1%(D)) + " have been ejected"): X$ = Q$(0): CALL EJECTINC (EJ%,X$): X$ = p$(D, P1%(D)): CALL EJECTINC (EJ%,X$): CALL INJPIT (P,D): CALL PLYRHRT (P,P9,W5,W6,BC%,U%,D,MO): GOTO 2850
 
 2006 IF H6% > 21 THEN 2010
 
 2008 H6%=21:CALL BLANKLINES
-	IF RD = 0 AND (PC% = 0 OR PC% = 4) THEN PRINT Q$(0); " fouls the pitch out of play": CALL DELAY: GOTO 2850
-    tm = INT(RND(1) * 59) + 2: COLOR 0, 7: PRINT "The game has been halted by rain": FOR i = 1 TO 3: CALL DELAY: NEXT
-    PRINT "Rain delay lasted"; tm; " minutes": CALL DELAY: CALL DELAY
+    IF RD = 0 AND (PC% = 0 OR PC% = 4) THEN CALL PBP (Q$(0) + " fouls the pitch out of play"): GOTO 2850
+    tm = INT(RND(1) * 59) + 2: COLOR 0, 7: CALL PBP ("The game has been halted by rain"): FOR i = 1 TO 2: CALL DELAY: NEXT
+    CALL PBP ("Rain delay lasted" + STR$(tm) + " minutes"): CALL DELAY
     RD% = 1
-    IF tm > 28 THEN PRINT "Pitchers have lost effectiveness during delay": CALL DELAY: PRINT "Their arms have stiffened up": CALL DELAY: CALL DELAY: FOR i = 0 TO 1: s8%(i, 0) = s8%(i, 0) - 2: NEXT
+    IF tm > 28 THEN CALL PBP ("Pitchers have lost effectiveness during delay"): CALL PBP ("Their arms have stiffened up"): CALL DELAY: FOR i = 0 TO 1: s8%(i, 0) = s8%(i, 0) - 2: NEXT
     GOTO 2850
 
 2010 IF H6% > 24 THEN 2015
-    IF s4% = 0 AND L%(1, 13) = 14 THEN PRINT Q$(0); " steps out of the box as a jet passes over": CALL DELAY: GOTO 2850
-    IF s4% = 0 THEN PRINT U$(1); " calls time to get some new baseballs": CALL DELAY: GOTO 2850
-    PRINT b$(D, B9%(D, 2)); " rifles the ball to ";
-    IF s4% = 1 THEN PRINT "1st...": CALL DELAY: i = 2: GOTO 2012
-    IF s4% = 2 OR s4% = 4 THEN PRINT "2nd base...": CALL DELAY: i = 3: GOTO 2012
-    PRINT "3rd base...": CALL DELAY: i = 4
+    IF s4% = 0 AND L%(1, 13) = 14 THEN CALL PBP (Q$(0) + " steps out of the box as a jet passes over"): GOTO 2850
+    IF s4% = 0 THEN CALL PBP (U$(1) + " calls time to get some new baseballs"): GOTO 2850
+    CALL PBP (b$(D, B9%(D, 2)) + " rifles the ball to ")
+    IF s4% = 1 THEN CALL PBP ("1st..."): i = 2: GOTO 2012
+    IF s4% = 2 OR s4% = 4 THEN CALL PBP ("2nd base..."): i = 3: GOTO 2012
+    CALL PBP ("3rd base..."): i = 4
 
-2012 PRINT Q$(i - 1); " is picked off base!"
+2012 CALL PBP (Q$(i - 1) + " is picked off base!")
     a5%(i - 1) = 10: O%(0) = O%(0) + 1: O%(1) = O%(1) + 1: W% = 2
     CALL CREDITASSIST (W%,D): CALL ADVANCEMENT (P,D,S2%,F%,I3): CALL CREDITPUTOUT (I3,FB2P%,AST%,D)
     I5 = P1%(D): I6 = 0: CALL ADDPIT (D,I5,I6)
     IF O%(0) >= 3 THEN B1!(p)=B1!(p)-1:H6%=5:GOTO 2850
 
 2015 IF H6% > 29 THEN 2020
-    PRINT Q$(0); " pops it up near the 3rd base stands": CALL DELAY
-    PRINT "A fan interferes...": CALL DELAY
-    PRINT b$(D, B9%(D, 6)); " makes a great catch!!": W% = 6: CALL CREDITREGPO (W%,D)
+    CALL PBP (Q$(0) + " pops it up near the 3rd base stands")
+    CALL PBP ("A fan interferes...")
+    CALL PBP (b$(D, B9%(D, 6)) + " makes a great catch!!"): W% = 6: CALL CREDITREGPO (W%,D)
     O%(0) = O%(0) + 1: O%(1) = O%(1) + 1: CALL DELAY
     IF B7%(p, B1!(p)) <> 1 THEN I5 = B3%(p, B1!(p)): I6 = 0: CALL INCBATOFF (P,I5,I6)
     I5 = P1%(D): I6 = 0: CALL ADDPIT (D,I5,I6)
     IF B7%(p, B1!(p)) = 1 THEN I5 = P1%(p): I6 = 23: CALL INCPITOFF (P,I5,I6)
     CALL DELAY: GOTO 2850
 
-2020 IF H6% <= 31 THEN PRINT Q$(0); " pops it up foul near the stands": CALL DELAY
+2020 IF H6% <= 31 THEN CALL PBP (Q$(0) + " pops it up foul near the stands")
     IF H6% <= 30 THEN PRINT b$(D, B9%(D, 2)); " runs into the stands!!": po% = 2: GOTO 2099
     IF H6% <= 31 THEN PRINT b$(D, B9%(D, 3)); " gives chase and runs into the stands!!": po% = 3: GOTO 2099
-    IF H6% = 32 THEN PRINT Q$(0); " pops it up foul down the rf line": CALL DELAY: PRINT b$(D, B9%(D, 4)); " crashes into the wall going for it": po% = 4: GOTO 2099
-    IF H6% = 33 THEN PRINT Q$(0); " pops it up foul by"
-    IF H6% = 33 THEN PRINT "the 3rd base dugout": CALL DELAY
-    IF H6% = 33 THEN PRINT b$(D, B9%(D, 5)); " falls in trying to make the catch!!": CALL DELAY: po% = 5: GOTO 2099
-    IF H6% = 34 THEN PRINT Q$(0); " pops it up foul"
-    IF H6% = 34 THEN PRINT "down the lf line": CALL DELAY
-    IF H6% = 34 THEN PRINT b$(D, B9%(D, 6)); " tumbles over the railing"
-    IF H6% = 34 THEN PRINT "trying to make the catch!": CALL DELAY: CALL DELAY: po% = 6: GOTO 2099
+    IF H6% = 32 THEN CALL PBP (Q$(0) + " pops it up foul down the rf line"): PRINT b$(D, B9%(D, 4)); " crashes into the wall going for it": po% = 4: GOTO 2099
+    IF H6% = 33 THEN 
+        CALL PBP (Q$(0) + " pops it up foul by")
+        CALL PBP ("the 3rd base dugout")
+        CALL PBP (b$(D, B9%(D, 5)) + " falls in trying to make the catch!!"): po% = 5: GOTO 2099
+    END IF
+    IF H6% = 34 THEN CALL PBP (Q$(0) + " pops it up foul")
+    IF H6% = 34 THEN CALL PBP ("down the lf line")
+    IF H6% = 34 THEN CALL PBP (b$(D, B9%(D, 6)) + " tumbles over the railing")
+    IF H6% = 34 THEN CALL PBP ("trying to make the catch!"): CALL DELAY: po% = 6: GOTO 2099
     IF H6% > 37 THEN 2023
-    PRINT Q$(0); " lines one to deep left field": CALL DELAY: PRINT b$(D, B9%(D, 7)); " races back...": CALL DELAY: PRINT "He slams into the wall and is down!!": CALL DELAY
-    op% = 7: PRINT b$(D, B9%(D, 8)); " comes over and gets the ball in": CALL DELAY
+
+    CALL PBP (Q$(0) + " lines one to deep left field")
+    CALL PBP (b$(D, B9%(D, 7)) + " races back...")
+    CALL PBP ("He slams into the wall and is down!!")
+    op% = 7
+    CALL PBP (b$(D, B9%(D, 8)) + " comes over and gets the ball in")
 
 2021 I5 = P1%(D): I6 = 1: CALL ADDPIT (D,I5,I6)
     IF B7%(p, B1!(p)) <> 1 THEN I5 = B3%(p, B1!(p)): I6 = 0: CALL INCBATOFF (P,I5,I6): I6 = 1: CALL INCBATOFF (P,I5,I6): I6 = 4: CALL INCBATOFF (P,I5,I6)
@@ -3199,94 +3235,94 @@ IF H7% = 20 THEN H7% = 0: GOTO 2008
     FOR i = 0 TO 3: a5%(i) = 2: NEXT i: a5%(3) = 1: a5%(1) = 3: CALL ADVANCEMENT (P,D,S2%,F%,I3): CALL SCOREBOARD: CALL BLANKLINES: po% = op%: GOTO 2098
 
 2023 IF H6% > 40 THEN 2025
-    PRINT Q$(0); " drives a sinking liner"
-    PRINT "into deep center": CALL DELAY
-    PRINT b$(D, B9%(D, 8)); " gets a good jump on it": CALL DELAY
-    PRINT "He crashes into the wall and"
-    PRINT "the ball bounces away!!": CALL DELAY
-    PRINT "The runners are circling the bases": CALL DELAY
-    PRINT b$(D, B9%(D, 9)); " retrieves the ball": CALL DELAY
+    CALL PBP (Q$(0) + " drives a sinking liner")
+    CALL PBP ("into deep center")
+    CALL PBP (b$(D, B9%(D, 8)) + " gets a good jump on it")
+    CALL PBP ("He crashes into the wall and")
+    CALL PBP ("the ball bounces away!!")
+    CALL PBP ("The runners are circling the bases")
+    CALL PBP (b$(D, B9%(D, 9)) + " retrieves the ball")
     I5 = P1%(D): I6 = 1: CALL ADDPIT (D,I5,I6): I6 = 14: CALL ADDPIT (D,I5,I6): W% = 8
     IF B7%(p, B1!(p)) <> 1 THEN I5 = B3%(p, B1!(p)): I6 = 0: CALL INCBATOFF (P,I5,I6): I6 = 1: CALL INCBATOFF (P,I5,I6): I6 = 6: CALL INCBATOFF (P,I5,I6)
     IF B7%(p, B1!(p)) = 1 THEN I5 = P1%(p): I6 = 23: CALL INCPITOFF (P,I5,I6): I6 = 24: CALL INCPITOFF (P,I5,I6): I6 = 29: CALL INCPITOFF (P,I5,I6)
     a5%(0) = 4: a5%(1) = 3: a5%(2) = 2: a5%(3) = 1: CALL ADVANCEMENT (P,D,S2%,F%,I3): PRINT "It's an inside the park HOME RUN!!!": CALL DELAY: CALL DELAY: CALL SCOREBOARD: CALL BLANKLINES: po% = 8: GOTO 2098
 
 2025 IF H6% > 43 THEN 2027
-    PRINT Q$(0); " lifts a deep drive into right": CALL DELAY: PRINT b$(D, B9%(D, 9)); " races back...": CALL DELAY: PRINT "He slams into the wall and is down!!": CALL DELAY
-    I5 = P1%(D): I6 = 1: CALL ADDPIT (D,I5,I6): W% = 9: PRINT b$(D, B9%(D, 8)); " comes over to get the ball back in": CALL DELAY
+    CALL PBP (Q$(0) + " lifts a deep drive into right"): CALL PBP (b$(D, B9%(D, 9)) + " races back..."): CALL PBP ("He slams into the wall and is down!!")
+    I5 = P1%(D): I6 = 1: CALL ADDPIT (D,I5,I6): W% = 9: CALL PBP (b$(D, B9%(D, 8)) + " comes over to get the ball back in")
     IF B7%(p, B1!(p)) <> 1 THEN I5 = B3%(p, B1!(p)): I6 = 0: CALL INCBATOFF (P,I5,I6): I6 = 1: CALL INCBATOFF (P,I5,I6): I6 = 5: CALL INCBATOFF (P,I5,I6)
     IF B7%(p, B1!(p)) = 1 THEN I5 = P1%(p): I6 = 23: CALL INCPITOFF (P,I5,I6): I6 = 24: CALL INCPITOFF (P,I5,I6): I6 = 28: CALL INCPITOFF (P,I5,I6)
-    a5%(0) = 3: a5%(1) = 3: a5%(2) = 2: a5%(3) = 1: CALL ADVANCEMENT (P,D,S2%,F%,I3): PRINT "Triple!!": CALL DELAY: CALL DELAY: CALL SCOREBOARD: CALL BLANKLINES: po% = 9: GOTO 2098
+    a5%(0) = 3: a5%(1) = 3: a5%(2) = 2: a5%(3) = 1: CALL ADVANCEMENT (P,D,S2%,F%,I3): CALL PBP ("Triple!!"): CALL DELAY: CALL SCOREBOARD: CALL BLANKLINES: po% = 9: GOTO 2098
 
 2027 IF H6% > 44 THEN 2030
-    I5 = P1%(D): I6 = 1: CALL ADDPIT (D,I5,I6): W% = INT(RND(1) * 3) + 7: PRINT Q$(0); " hits a sinking liner into "; c$(W%): CALL DELAY
-    PRINT b$(D, B9%(D, W%)); " dives for the catch...": CALL DELAY
-    PRINT "the ball rolls free!": CALL DELAY
-    PRINT b$(D, B9%(D, W% - 1)); " gets the loose ball in": CALL DELAY
+    I5 = P1%(D): I6 = 1: CALL ADDPIT (D,I5,I6): W% = INT(RND(1) * 3) + 7: CALL PBP (Q$(0) + " hits a sinking liner into " + c$(W%))
+    CALL PBP (b$(D, B9%(D, W%)) + " dives for the catch...")
+    CALL PBP ("the ball rolls free!")
+    CALL PBP (b$(D, B9%(D, W% - 1)) + " gets the loose ball in")
     op% = W%: GOTO 2021
 
-2030 IF H6% = 45 THEN PRINT Q$(0); " is hit by a pitch and injured": CALL DELAY: CALL PLYRHRT (P,P9,W5,W6,BC%,U%,D,MO): GOTO 2850
-    IF H6% <= 49 THEN PRINT b$(D, B9%(D, 2)); " is injured by a foul tip!": CALL DELAY: po% = 2: GOTO 2099
+2030 IF H6% = 45 THEN CALL PBP(Q$(0) + " is hit by a pitch and injured"): CALL PLYRHRT (P,P9,W5,W6,BC%,U%,D,MO): GOTO 2850
+    IF H6% <= 49 THEN CALL PBP(b$(D, B9%(D, 2)) + " is injured by a foul tip!"): po% = 2: GOTO 2099
     IF H6% > 58 THEN 2037
     i = INT(RND(1) * 3) + 7
     IF i = 9 THEN hi1 = 3: hi2 = 9: hi3 = 8
     IF i = 8 THEN hi1 = 4: hi2 = 8: hi3 = 7
     IF i = 7 THEN hi1 = 6: hi2 = 7: hi3 = 8
-    PRINT Q$(0); " hits a weak fly into short "; c$(i): CALL DELAY
-    PRINT b$(D, B9%(D, hi1)); " goes out": CALL DELAY
-    PRINT b$(D, B9%(D, hi2)); " is charging in": CALL DELAY
-    PRINT "They collide and the ball rolls free!!": CALL DELAY
-    PRINT b$(D, B9%(D, hi3)); " gets it back in"
-    CALL DELAY
+    CALL PBP(Q$(0) + " hits a weak fly into short " + c$(i))
+    CALL PBP(b$(D, B9%(D, hi1)) + " goes out")
+    CALL PBP(b$(D, B9%(D, hi2)) + " is charging in")
+    CALL PBP("They collide and the ball rolls free!!")
+    CALL PBP(b$(D, B9%(D, hi3)) + " gets it back in")
     I5 = P1%(D): I6 = 1: CALL ADDPIT (D,I5,I6)
     IF B7%(p, B1!(p)) <> 1 THEN I5 = B3%(p, B1!(p)): I6 = 0: CALL INCBATOFF (P,I5,I6): I6 = 1: CALL INCBATOFF (P,I5,I6): I6 = 4: CALL INCBATOFF (P,I5,I6)
     IF B7%(p, B1!(p)) = 1 THEN I5 = P1%(p): I6 = 23: CALL INCPITOFF (P,I5,I6): I6 = 24: CALL INCPITOFF (P,I5,I6): I6 = 27: CALL INCPITOFF (P,I5,I6)
     FOR i = 0 TO 3: a5%(i) = 2: NEXT i: a5%(3) = 1: a5%(1) = 3: CALL ADVANCEMENT (P,D,S2%,F%,I3): CALL SCOREBOARD
     CALL BLANKLINES: po% = hi1: CALL INJURYLENGTH (IJL%,D,PO%,U6,P,U9,P9,W5,W6): po% = hi2: CALL INJURYLENGTH (IJL%,D,PO%,U6,P,U9,P9,W5,W6): H6% = 5: GOTO 2850
 
-2037 IF H6% <= 61 THEN PRINT Q$(0); " fouls the pitch off his foot": CALL DELAY: PRINT "He is injured": CALL DELAY: CALL PLYRHRT (P,P9,W5,W6,BC%,U%,D,MO): H6% = 1: GOTO 2850
+2037 IF H6% <= 61 THEN CALL PBP(Q$(0) + " fouls the pitch off his foot"): CALL PBP("He is injured"): CALL PLYRHRT (P,P9,W5,W6,BC%,U%,D,MO): H6% = 1: GOTO 2850
     IF H6% > 64 THEN 2040
-    PRINT Q$(0); " pops it up in foul along the 3b line": CALL DELAY: PRINT "It drifts into foul territory": CALL DELAY
-    PRINT b$(D, B9%(D, 5)); " and "; p$(D, P1%(D)); " chase after it and collide!!": CALL DELAY
-    PRINT b$(D, B9%(D, 5)); " is down and injured": CALL DELAY: po% = 5: GOTO 2099
+    CALL PBP(Q$(0) + " pops it up in foul along the 3b line"): CALL PBP("It drifts into foul territory")
+    CALL PBP(b$(D, B9%(D, 5)) + " and " + p$(D, P1%(D)) + " chase after it and collide!!")
+    CALL PBP(b$(D, B9%(D, 5)) + " is down and injured"): po% = 5: GOTO 2099
 
 2040 IF H6% > 70 THEN 2045
     PRINT Q$(0); : I5 = P1%(D): I6 = 1: CALL ADDPIT (D,I5,I6): W% = 8: CALL LONGFLY (D,W%)
-    PRINT b$(D, B9%(D, 7)); " collides with "; b$(D, B9%(D, 8)); "!!": CALL DELAY
-    PRINT "both fielders are down... ": CALL DELAY
-    PRINT b$(D, B9%(D, 6)); " gets the ball back in": CALL DELAY
+    CALL PBP(b$(D, B9%(D, 7)) + " collides with " + b$(D, B9%(D, 8)) + "!!")
+    CALL PBP("both fielders are down... ")
+    CALL PBP(b$(D, B9%(D, 6)) + " gets the ball back in")
     IF B7%(p, B1!(p)) <> 1 THEN I5 = B3%(p, B1!(p)): I6 = 0: CALL INCBATOFF (P,I5,I6): I6 = 1: CALL INCBATOFF (P,I5,I6): I6 = 4: CALL INCBATOFF (P,I5,I6)
     IF B7%(p, B1!(p)) = 1 THEN I5 = P1%(p): I6 = 23: CALL INCPITOFF (P,I5,I6): I6 = 24: CALL INCPITOFF (P,I5,I6): I6 = 27: CALL INCPITOFF (P,I5,I6)
     a5%(0) = 2: a5%(1) = 3: a5%(2) = 2: a5%(3) = 1
-    CALL ADVANCEMENT (P,D,S2%,F%,I3): PRINT "Double!!": CALL SCOREBOARD
+    CALL ADVANCEMENT (P,D,S2%,F%,I3): CALL PBP("Double!!"): CALL SCOREBOARD
     CALL BLANKLINES: po% = 7: CALL INJURYLENGTH (IJL%,D,PO%,U6,P,U9,P9,W5,W6)
     po% = 8: CALL INJURYLENGTH (IJL%,D,PO%,U6,P,U9,P9,W5,W6): H6% = 5
     GOTO 2850
 
 2045 IF H6% > 85 THEN 2055
-    PRINT Q$(0); " lines it off ";
+    pain$ = Q$(0) + " lines it off "
     i = INT(RND(1) * 5) + 1: ON i GOTO 2046, 2047, 2047, 2047, 2047
 
-2046 PRINT "the leg of "; p$(D, P1%(D)): CALL DELAY
+2046 pain$ = pain$ + "the leg of " + p$(D, P1%(D)): CALL PBP(pain$)
     IF B7%(p, B1!(p)) <> 1 THEN I5 = B3%(p, B1!(p)): I6 = 0: CALL INCBATOFF (P,I5,I6): I6 = 1: CALL INCBATOFF (P,I5,I6)
     IF B7%(p, B1!(p)) = 1 THEN I5 = P1%(p): I6 = 23: CALL INCPITOFF (P,I5,I6): I6 = 24: CALL INCPITOFF (P,I5,I6)
     I5 = P1%(D): I6 = 1: CALL ADDPIT (D,I5,I6)
     FOR i = 0 TO 3: a5%(i) = 1: NEXT: CALL ADVANCEMENT (P,D,S2%,F%,I3): CALL SCOREBOARD: CALL BLANKLINES
-    PRINT "He reaches on a single": CALL DELAY: PRINT p$(D, P1%(D)); " is down and in pain!": CALL DELAY
+    CALL PBP ("He reaches on a single"): CALL PBP (p$(D, P1%(D)) + " is down and in pain!")
     CALL INJPIT (P,D): H6% = 5: GOTO 2850
 
-2047 po% = i + 1: PRINT "of "; b$(D, B9%(D, po%)); " for a single": CALL DELAY: CALL DELAY
+2047 po% = i + 1
+    pain$ = pain$ + "of " + b$(D, B9%(D, po%)) + " for a single": CALL PBP(pain$): CALL DELAY
     IF B7%(p, B1!(p)) <> 1 THEN I5 = B3%(p, B1!(p)): I6 = 0: CALL INCBATOFF (P,I5,I6): I6 = 1: CALL INCBATOFF (P,I5,I6)
     IF B7%(p, B1!(p)) = 1 THEN I5 = P1%(p): I6 = 23: CALL INCPITOFF (P,I5,I6): I6 = 24: CALL INCPITOFF (P,I5,I6)
     I5 = P1%(D): I6 = 1: CALL ADDPIT (D,I5,I6)
     FOR i = 0 TO 3: a5%(i) = 1: NEXT: CALL ADVANCEMENT (P,D,S2%,F%,I3): CALL SCOREBOARD: CALL BLANKLINES
-    PRINT b$(D, B9%(D, po%)); " is down and injured": CALL DELAY
+    CALL PBP (b$(D, B9%(D, po%)) + " is down and injured")
     CALL INJURYLENGTH (IJL%,D,PO%,U6,P,U9,P9,W5,W6): H6% = 5: GOTO 2850
 
-2055 IF H6% <= 89 THEN PRINT p$(D, P1%(D)); " is motioning for "; m$(D); " to come out": CALL DELAY: PRINT "It appears he has a blister": CALL DELAY: PRINT "He will have to leave the game": CALL DELAY: CALL INJPIT (P,D): H6% = 1: GOTO 2850
-    IF H6% = 90 THEN PRINT Q$(0); " takes a mighty swing!": CALL DELAY: PRINT "It looks like he injured himself": CALL DELAY: CALL PLYRHRT (P,P9,W5,W6,BC%,U%,D,MO): H6% = 1: GOTO 2850
-    IF H6% = 91 THEN PRINT "Time is called": CALL DELAY: PRINT "Morganna strikes again!!": CALL DELAY: H6% = 1: GOTO 2850
-    PRINT U$(1); " calls time to dust off the plate": CALL DELAY: H6% = 1: GOTO 2850
+2055 IF H6% <= 89 THEN CALL PBP(p$(D, P1%(D)) + " is motioning for " + m$(D) + " to come out"): CALL PBP("It appears he has a blister"): CALL PBP("He will have to leave the game"): CALL INJPIT (P,D): H6% = 1: GOTO 2850
+    IF H6% = 90 THEN CALL PBP(Q$(0) + " takes a mighty swing!"): CALL PBP("It looks like he injured himself"): CALL PLYRHRT (P,P9,W5,W6,BC%,U%,D,MO): H6% = 1: GOTO 2850
+    IF H6% = 91 THEN CALL PBP("Time is called"): CALL PBP("Morganna strikes again!!"): H6% = 1: GOTO 2850
+    CALL PBP(U$(1) + " calls time to dust off the plate"): H6% = 1: GOTO 2850
 
 2098 CALL INJURYLENGTH (IJL%,D,PO%,U6,P,U9,P9,W5,W6): H6% = 5: GOTO 2850
 
@@ -3294,3 +3330,84 @@ IF H7% = 20 THEN H7% = 0: GOTO 2008
 
 2850 '
 END SUB
+
+
+'------------------------------
+'   WEATHER Subroutine
+'------------------------------
+' ...explanation...
+SUB WEATHER
+     CALL DRAWBOX (5)
+     LOCATE 9, 11
+     IF L%(1, 9) = 1 THEN LOCATE , 11: PRINT "TEMPERATURE: 70": LOCATE , 11: PRINT "WEATHER: DOME": LOCATE , 11: PRINT "WIND: NONE": GOTO 8719
+     LOCATE , 11: PRINT "TEMPERATURE: "; TP%
+     LOCATE , 11: PRINT "SKY CONDITIONS: "; SC$(SC%)
+     WS% = INT(RND(1) * 15) + 7
+     LOCATE , 11: PRINT "WIND: ";WI$
+     LOCATE , 11: PRINT "PRECIPITATION: "; PC$(PC%)
+
+8719 I$=INKEY$:IF I$="" THEN 8719
+     COLOR 15,0
+END SUB
+
+
+'------------------------------
+'   GETRPBP Subroutine
+'------------------------------
+' ...explanation...
+Sub GETRPBP (Y%, Y$, D)
+    Open "revised.pbp" For Random As #1 Len = 44
+    Field #1, 44 As YY$
+    Get #1, Y%
+    Y$ = YY$
+    Close 1
+
+    3996 'PRINT Y$; " BEF", Y%, YY$
+    If Right$(Y$, 1) = " " Then Y$ = Left$(Y$, Len(Y$) - 1): GoTo 3996
+    If TGTBASE% = 3 And Left$(Y$, 2) = "Q1" Then Y$ = "Q2 " + Right$(Y$, Len(Y$) - 3)
+    If TGTBASE% = 3 And Right$(Y$, 2) = "Q1" Then Y$ = Left$(Y$, Len(Y$) - 2) + "Q2"
+    If Left$(Y$, 2) = "BB" Then Y$ = Q$(0) + Right$(Y$, Len(Y$) - 2)
+    If Left$(Y$, 2) = "Q1" Then Y$ = Q$(1) + Right$(Y$, Len(Y$) - 2)
+    If Left$(Y$, 2) = "Q2" Then Y$ = Q$(2) + Right$(Y$, Len(Y$) - 2)
+    If Left$(Y$, 2) = "PP" Then Y$ = P$(D, P1%(D)) + Right$(Y$, Len(Y$) - 2)
+    If Left$(Y$, 2) = "UU" Then Y$ = U$(1) + Right$(Y$, Len(Y$) - 2)
+    If Left$(Y$, 2) = "XX" Then Y$ = B$(D, B9%(D, 5)) + " and " + B$(D, B9%(D, 6)) + Right$(Y$, Len(Y$) - 2)
+    If Left$(Y$, 2) = "TT" Then Y$ = B$(D, B9%(D, 5)) + Right$(Y$, Len(Y$) - 2)
+    If Left$(Y$, 2) = "FB" Then Y$ = B$(D, B9%(D, 3)) + Right$(Y$, Len(Y$) - 2)
+    If Left$(Y$, 2) = "YY" Then Y$ = B$(D, B9%(D, 4)) + " and " + B$(D, B9%(D, 3)) + Right$(Y$, Len(Y$) - 2)
+    If Left$(Y$, 2) = "ZZ" Then Y$ = B$(D, B9%(D, 4)) + " and " + B$(D, B9%(D, 6)) + Right$(Y$, Len(Y$) - 2)
+    If Left$(Y$, 2) = "Q4" Then Y$ = Q$(4) + Right$(Y$, Len(Y$) - 2)
+    If Right$(Y$, 3) = " PP" Then Y$ = Left$(Y$, Len(Y$) - 2) + P$(D, P1%(D))
+    If Right$(Y$, 3) = " BB" Then Y$ = Left$(Y$, Len(Y$) - 2) + Q$(0)
+    If Right$(Y$, 2) = "Q1" Then Y$ = Left$(Y$, Len(Y$) - 2) + Q$(1)
+    If Right$(Y$, 2) = "Q2" Then Y$ = Left$(Y$, Len(Y$) - 2) + Q$(2)
+    If Right$(Y$, 2) = "UU" Then Y$ = Left$(Y$, Len(Y$) - 2) + U$(1)
+    If Right$(Y$, 2) = "Q4" Then Y$ = Left$(Y$, Len(Y$) - 2) + Q$(4)
+    If Right$(Y$, 3) = " TT" Then Y$ = Left$(Y$, Len(Y$) - 2) + B$(D, B9%(D, 5))
+    If Right$(Y$, 2) = "FB" Then Y$ = Left$(Y$, Len(Y$) - 2) + B$(D, B9%(D, 3))
+    If Right$(Y$, 3) = " XX" Then Y$ = Left$(Y$, Len(Y$) - 2) + B$(D, B9%(D, 5)) + " and " + B$(D, B9%(D, 6))
+    If Right$(Y$, 2) = "YY" Then Y$ = Left$(Y$, Len(Y$) - 2) + B$(D, B9%(D, 3)) + " and " + B$(D, B9%(D, 4))
+    If Right$(Y$, 3) = " ZZ" Then Y$ = Left$(Y$, Len(Y$) - 2) + B$(D, B9%(D, 6)) + " and " + B$(D, B9%(D, 4))
+    'PRINT Y$; " AFT"
+End Sub
+
+
+'------------------------------
+'   STRIPRPBP Subroutine
+'------------------------------
+' ...explanation...
+Sub STRIPRPBP (Y$, Y%, D)
+
+    3991 For BH% = 1 To Len(Y$)
+        'If current PBP string has non-printable characters (corrupt data)
+        If Asc(Mid$(Y$, BH%, 1)) > 122 Or Asc(Mid$(Y$, BH%, 1)) < 32 Then
+            'Get a new PBP string to use
+            Call GETRPBP(Y%, Y$, D)
+            '-- this only works as long as the PBP file structure is the same
+            '-- Y% basically is the index of the PBP item to grab and is hardcoded
+            '-- depending on the PBP type
+            GoTo 3991
+        End If
+    Next
+End Sub
+

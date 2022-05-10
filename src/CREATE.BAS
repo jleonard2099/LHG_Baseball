@@ -17,7 +17,7 @@ Dim Y As Long
 'determine if the monitor is mono or color
 FG = 0
 BG = 7
-Colr = OneColor%(FG, BG) 'pack FG and BG into a single byte
+'Colr = OneColor%(FG, BG) 'pack FG and BG into a single byte
 
 Open "DEV.BAS" For Input As #2
 For I = 0 To 2

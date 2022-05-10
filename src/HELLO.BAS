@@ -79,7 +79,7 @@ BG = 7
 For I = 0 To 3
     D$(I) = Left$(D$(I), Len(D$(I)) - 1)
 Next
-Colr = OneColor%(FG, BG) 'pack FG and BG into a single byte
+'Colr = OneColor%(FG, BG) 'pack FG and BG into a single byte
 Cls: Locate , 16: Print "SPECIFY PATHS FOR YOUR TEAMS AND COMPILED STATS": Print
 
 510 Locate , 31: Print "PATHNAME EXAMPLES:": Print

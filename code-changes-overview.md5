@@ -1,0 +1,23 @@
+- Improved array handling / assignment
+	
+- Updated routines that printed custom char's (boxes, etc.) to use Chr$ references instead of literal strings
+
+- Moved code out of "INITIALIZE" / "SETUP" routines
+
+- Organized variables by type
+
+- Update variable declarations to scope as Dim Shared (not Common Shared)
+
+- Update variable names where needed (similar/redundant names were problematic)
+
+- Found / replaced BLINKOFF function from QPPro with native BASIC function
+
+- Found any code where existing subroutine could be used, and called it instead (PBP, drawing boxes)
+
+- Made sure display pause worked as a single!
+
+- Changed custom one-line FnExt to actual Function called PadRight
+
+- Added title text / icons for main EXEs
+
+

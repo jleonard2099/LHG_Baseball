@@ -1,0 +1,55 @@
+' These routines are unique in that they
+' only use a PBP routine for printing gfx
+
+' *** These routines should not be needed ***
+
+DECLARE SUB BLANKLINES_G ()
+DECLARE SUB CAUGHTFLY_G (i, S2%, D)
+DECLARE SUB DPPBP_G ()
+DECLARE SUB DPPIVOT_G (W%, D)
+DECLARE SUB DPRELAY_G ()
+DECLARE SUB DPSAFE_G ()
+DECLARE SUB FLDERR_G (F%, W%, D, I3, SB%, S2%, p)
+DECLARE SUB GROUNDERPBP_G (W%, D)
+DECLARE SUB GROUNDERS_G (W%, D)
+DECLARE SUB LONGFLY_G (D, W%)
+DECLARE SUB MAINSCREEN_G (D, p, BC%, U%, MO)
+DECLARE SUB NEWPITCHER_G
+DECLARE SUB NOJUMP_G (D)
+DECLARE SUB OUTATFIRST_G (W%, D, fbu%, FB2P%)
+DECLARE SUB OUTFIELDERR_G ()
+DECLARE SUB PICKEDOFF_G (D, i)
+DECLARE SUB PINCHRUNNER_G (MS%, A1, S4%, I2, p, PR%, BC%, U%, D, MO)
+DECLARE SUB PITCHOUT_G (S4%, TGTBASE%, Q0)
+DECLARE SUB OPTIONS_G ()
+DECLARE SUB RAREPLAYS_G (H6%, H7%, IP%)
+
+' These routines are unique ONLY to
+' graphics mode. Period. Was injury
+' handling never added back to the
+' text mode???
+DECLARE SUB PLYRHRT_G (P9, W5, W6, BC%, U%, D, MO)
+DECLARE SUB INJURYLENGTH_G (D, po%)
+DECLARE SUB EJECTIONINJURY_G (D, po%)
+DECLARE SUB INJPIT_G (p, D, IP%)
+
+' These routines are unique in that
+' they use graphics printing / etc.
+' --- in the long run they may be unecessary
+DECLARE SUB DISPRUN_G (I2, p, X)
+DECLARE SUB SUB FLDDISP_G (BC%, p, U%, D)
+DECLARE SUB HOLDSTATUS_G (H0%)
+DECLARE SUB INNDISP_G (I2, i)
+DECLARE SUB MAINSCREEN_G (D, p, BC%, U%, MO)
+DECLARE SUB LOADSCREEN
+DECLARE SUB PBP (F$)
+DECLARE SUB PITPLACEMENT_G (p, X$)
+DECLARE SUB SCOREBOARD_G ()
+DECLARE SUB TRYFOREXTRABASE_G (LN%, S2%, P2, Z2%, D, W%, sah%, SB%,I8,I9)
+DECLARE SUB WALLDOUBLE_G (HW%, W%)
+DECLARE SUB WHICHRUNNER_G (i, S4%, D5)
+DECLARE SUB FOULBALL_G ()
+
+DECLARE SUB WEATHER_G ()
+DECLARE SUB PrintOnGfx (Col%, Row%, Text$, tgtScrn&)
+DECLARE SUB EndOfGame ()
