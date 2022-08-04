@@ -1,7 +1,7 @@
 # LH Games Full Count Baseball
 
 ## Game Description
-***29-man rosters * Ball park effects * Stats compiler automatically keeps all player and team stats as well as past schedule results * Complete boxscore to screen and/or printer after each game * One-player vs. computer-manager, two-player, and auto-play options. * Input your own teams, draft or trade players from teams already included * YOU choose the starting lineups, batting order, relief pitchers, plus game decisions like when to hit away, bunt for a hit, sacrifice, steal, hit & run, bring in the corners or the entire infield, take an extra base, DH option and more!**
+**· 29-man rosters · Ball park effects · Stats compiler automatically keeps all player and team stats as well as past schedule results · Complete boxscore to screen and/or printer after each game · One-player vs. computer-manager, two-player, and auto-play options. · Input your own teams, draft or trade players from teams already included · YOU choose the starting lineups, batting order, relief pitchers, plus game decisions like when to hit away, bunt for a hit, sacrifice, steal, hit & run, bring in the corners or the entire infield, take an extra base, DH option and more! ·**
 
 ## About Project
 With permission from Lance Haffner himself, this effort is being made to bring his original source code from the DOS world into the modern world. This is due in part to cross-platform compilers for BASIC. But this effort restores his original vision for a cross-platform sports sim empire, also opening the door for any manner of improvements to accuracy and portability.
