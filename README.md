@@ -29,7 +29,7 @@ Teams files will not be included at this time. However, if you're nice enough, t
 Contact me at my [profile page](https://github.com/jleonard2099/jleonard2099/tree/main) for now.
 See future revisions to this for possible links to bug trackers / etc. as they are considered.
 
-# Project Status
+## Project Status
 Code has been re-worked to compile in a modern environment. Code is in progress of being re-factored for menu navigation, along with consolidating so it can be supported for Linux / Mac compile in QB64.
 
 Things are moving along as fast as personal time allows for now, which is pretty well now. Anticipate finished product by September 2022.
