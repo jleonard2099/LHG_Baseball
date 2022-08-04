@@ -19,14 +19,14 @@ Dim U6 As Single
 DECLARE SUB TITLE ()
 'DECLARE SUB QEdit (array$(), Ky$, Action, Ed AS EditInfo)
 
-Dim teamItems$(200), V%(200), TS$(1), MO$(3), U5$(4), TE$(2), CM$(1), PU$(48)
+Dim teamNames$(200), teamIndex%(500), TS$(1), MO$(3), U5$(4), TE$(2), CM$(1), PU$(48)
 Dim Q$(377), AP%(1), T(34), FT$(1), FR$(1), T$(0), Z1$(40), Z1%(40), Z2$(40)
 Dim H$(20), V$(20), HS%(1300), VS%(1300), L%(13), D$(2), WE$(1), E%(13)
 Dim Y As Long, menuItems$(9)
 Dim Y1 As Single
 'DIM Ed AS EditInfo              'create the editor's data structure
 
-Dim Shared teamItems$, V%, TS$, DY, Q$
+Dim Shared teamNames$, V%, TS$, DY, Q$
 Dim Shared YN$, NG%, HS%, VS%
 
 'commenting out here as it is mostly irrelevant
@@ -326,7 +326,7 @@ Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
 Locate 7, 27: Input NY$
 If NY$ = "" Then GoSub 1102: GoTo 182
 YN$ = NY$
-Erase teamItems$
+Erase teamNames$
 GoSub 1100
 
 182 If BO% = 1 Then BO% = 0: GoTo 181
@@ -561,7 +561,7 @@ Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
 Locate 8, 27: Input NY$
 If NY$ = "" Then GoSub 1102: GoTo 730
 YN$ = NY$
-Erase teamItems$
+Erase teamNames$
 GoSub 1100
 
 730 If BO% = 1 Then BO% = 0: GoTo 725
@@ -679,7 +679,7 @@ For I1 = 1 To Y / 4342
         If Left$(Q$(0), 2) = "XX" Or Left$(Q$(0), 1) = " " Or Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then 1103
     Next I2
     NT = NT + 1
-    teamItems$(NT) = Q$(0): V%(NT) = I1
+    teamNames$(NT) = Q$(0): V%(NT) = I1
 
 1103 Next I1
 Close 1
@@ -698,7 +698,7 @@ Color , 4: Cls: Locate , 33: Color 14: Print "TEAM SELECTION": Color 15
 Locate 25, 1: Color 14: Print "ESC";: Color 15: Print "-SELECT NEW ID  PGDN  PGUP  ";: Color 14: Print "ENTER";: Color 15: Print "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-26 MAMenu teamItems$(), SELECTION%, Start%, Count%, EXITCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+26 MAMenu teamNames$(), SELECTION%, Start%, Count%, EXITCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 If EXITCODE% = 27 Then BO% = 1: Return
@@ -707,7 +707,7 @@ If EXITCODE% = -79 Then Start% = NT: EXITCODE% = 3: SELECTION% = NT: GoTo 26
 If EXITCODE% = -73 Then Start% = Start% - 80: If Start% < 1 Then Start% = 1
 If EXITCODE% = -81 Then Start% = Start% + 80: If Start% > NT Then Start% = NT
 If EXITCODE% = -81 Or EXITCODE% = -73 Then EXITCODE% = 3: SELECTION% = Start%: GoTo 26
-T1 = V%(SELECTION%)
+T1 = teamIndex%(SELECTION%)
 GoTo 9000
 
 1200 For I = 1 To AP%(0)

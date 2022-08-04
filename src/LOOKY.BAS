@@ -11,7 +11,7 @@ DECLARE SUB TITLE ()
 
 Dim B$(22), P$(21), B0%(22, 22), P0%(21, 41), T(22), T1(22)
 Dim H1$(40), P%(21), B%(22), H%(162), H$(162), VS%(162), PL$(162), W$(162), L$(162)
-Dim D$(2), I%(162), L%(13), Q$(15), VteamItems$(200), VV%(200), Y As Long, menuItems$(5)
+Dim D$(2), I%(162), L%(13), Q$(15), VteamNames$(200), teamIndex%(200), Y As Long, menuItems$(5)
 Dim SS%(22, 6)
 
 Open "DEV.BAS" For Input As #1
@@ -117,8 +117,12 @@ For J = M To GAMES%
 Next J
 138 GoTo 8530
 
+
+
 100 '
 110 Run "HELLO.EXE"
+
+
 
 200 Cls: Color 12, 0: Color L%(11), L%(12): Print A$;
 Color 12, 0: Print "    WON: "; W2%; "  LOST: "; L2%
@@ -132,6 +136,8 @@ Color 15, 1: Print "BATTERS      G  CHS LHS GIDP NEEDS PROJ AB  PO   A  E  FAVG 
 GoSub 8670
 GoTo 8550
 
+
+
 230 Cls: Color L%(11), L%(12)
 Print A$;: Color 12, 0: Print "    WON: "; W2%; "  LOST: "; L2%
 Color 15, 1: Print "PITCHERS     G  CHS LHS GIDP   PO   A  E  FAVG SH SF": Color 15
@@ -144,6 +150,8 @@ For I = 0 To 21
 Locate 1, 1
 GoSub 8670
 GoTo 8562
+
+
 300 Print Left$(B$(I), 10);
 Locate , 12: Print Using "###"; B0%(I, 14);
 Locate , 18: Print Using "##"; B0%(I, 12);
@@ -256,7 +264,7 @@ NY$ = I$ + NY$
 Color 15, 0
 If NY$ = "" Then GoSub 1102: GoTo 182
 YN$ = NY$
-For I = 1 To 200: VteamItems$(I) = "": Next
+For I = 1 To 200: VteamNames$(I) = "": Next
 1441 GoSub 1101
 182 If BO% = 1 Then BO% = 0: Return
 183 Locate 2, 33
@@ -280,7 +288,7 @@ For I1 = 1 To Y / 4342
         If Left$(Q$(0), 2) = "XX" Or Left$(Q$(0), 1) = " " Or Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then 1103
     Next I2
     NT = NT + 1
-    VteamItems$(NT) = Q$(0): VV%(NT) = I1
+    VteamNames$(NT) = Q$(0): teamIndex%(NT) = I1
 1103 Next I1
 Close 1
 1102 SELECTION% = 1
@@ -296,10 +304,10 @@ Column% = 1
 Color , 4: Cls: Locate , 33: Color 14: Print "TEAM SELECTION": Color 15
 Locate 25, 1: Color 14: Print "ESC";: Color 15: Print "-SELECT NEW ID  PGDN  PGUP  ";: Color 14: Print "ENTER";: Color 15: Print "-SELECTS TEAM";
 _MouseShow "Default"
-MAMenu VteamItems$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu VteamNames$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 If ExitCode% = 27 Then BO% = 1: Return
-T = VV%(SELECTION%)
+T = teamIndex%(SELECTION%)
 Locate 2, 33: Color 31: Print "LOADING..."
 If Not _FileExists(D$(0) + "FCTEAMS." + YN$) Then GoSub 4500: BO% = 1: Return
 Open D$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342
@@ -562,6 +570,7 @@ For I = 0 To 22
 Locate 1, 1
 GoSub 8670
 GoTo 200
+
 8540 Locate , 11: Print Using "###"; B0%(I, 0);
 Locate , 15: Print Using "###"; B0%(I, 2);
 Locate , 19: Print Using "###"; B0%(I, 1);

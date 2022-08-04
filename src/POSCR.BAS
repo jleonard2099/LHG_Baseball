@@ -13,7 +13,7 @@ DECLARE SUB TITLE ()
 Dim K9(1) As Long, D$(4), Q$(1844), FS%(22, 4, 4)
 Dim B%(22, 41), P%(21, 36), B$(22), P$(21), L%(13), BS$(22), PS$(21), B0%(22, 40)
 Dim P0%(21, 41), BS%(22), PS%(32), T(22), T1(22), N$(22), NP$(21)
-Dim TM(40), T$(40), TYN$(40), teamItems$(200), V%(200)
+Dim TM(40), T$(40), TYN$(40), teamNames$(200), teamIndex%(500)
 Dim Y As Long
 For I = 1 To 40
     TM(I) = 0
@@ -64,7 +64,7 @@ Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
 Locate 7, 27: Input NY$
 If NY$ = "" Then GoSub 1102: GoTo 182
 YN$ = NY$
-Erase teamItems$
+Erase teamNames$
 
 1441 GoSub 1105
 
@@ -150,7 +150,7 @@ For I1 = 1 To Y / 4342
         If Left$(Q$(0), 2) = "XX" Or Left$(Q$(0), 1) = " " Or Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then 1103
     Next I2
     NT = NT + 1
-    teamItems$(NT) = Q$(0): V%(NT) = I1
+    teamNames$(NT) = Q$(0): V%(NT) = I1
 
 1103 Next I1
 Close 1
@@ -169,11 +169,11 @@ Color , 4: Cls: Locate , 33: Color 14: Print "TEAM SELECTION": Color 15
 Locate 25, 1: Color 14: Print "ESC";: Color 15: Print "-SELECT NEW ID  PGDN  PGUP  ";: Color 14: Print "ENTER";: Color 15: Print "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-MAMenu teamItems$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu teamNames$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 If ExitCode% = 27 Then BO% = 1: Return
-T = V%(SELECTION%)
+T = teamIndex%(SELECTION%)
 Locate 2, 33: Color 31: Print "LOADING..."
 
 5500 Open D$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342

@@ -14,7 +14,7 @@ DIM Q$(2100), FS%(22, 4, 4)
 DIM b%(22, 79), p%(21, 88), b$(22), p$(21), L%(13)
 DIM BS$(22), PS$(21)
 DIM B0%(22, 40), P0%(21, 41), BS%(22), PS%(32), T(22), T1(22)
-DIM teamItems$(200), V%(200)
+DIM teamNames$(200), teamIndex%(500)
 DIM TB%(11), TP%(33),INJ%(22),DYS%(21)
 DIM SA%(24), TS%(11), BRS$(79)
 DIM Y AS LONG

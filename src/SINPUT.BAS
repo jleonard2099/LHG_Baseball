@@ -12,7 +12,7 @@ DECLARE SUB TITLE ()
 
 DIM B$(22), P$(21), B0%(22, 21), P0%(21, 41), T(21), T1(22), H%(162), H$(162)
 DIM V%(162), PL$(162), W$(162), L$(162), ING%(162)
-DIM D$(2), P%(21), B%(22), teamItems$(200), VV%(200), Q$(15), menuItems$(4)
+DIM D$(2), P%(21), B%(22), teamNames$(200), teamIndex%(200), Q$(15), menuItems$(4)
 DIM Y AS LONG, L%(13)
 OPEN "DEV.BAS" FOR INPUT AS #1
 	FOR I = 0 TO 2
@@ -556,7 +556,7 @@ PRINT "TEAM BATTING STATS"
 	LOCATE 7, 27: INPUT NY$
 	IF NY$ = "" THEN GOSUB 1102: GOTO 182
 	YN$ = NY$
-	ERASE teamItems$
+	ERASE teamNames$
 
 1441 GOSUB 1101
 
@@ -581,7 +581,7 @@ OPEN D$(0) + "FCTEAMS." + YN$ FOR RANDOM AS #1 LEN = 4342
 	IF LEFT$(Q$(0),2) = "XX" OR LEFT$(Q$(0),1) = " " OR ASC(MID$(Q$(0), I2, 1)) < 32 OR ASC(MID$(Q$(0), I2, 1)) > 123 OR UCASE$(LEFT$(Q$(0), 3)) = "NOT" OR UCASE$(LEFT$(Q$(0), 3)) = "UN" THEN 1103
 	NEXT I2
 	NT = NT + 1
-	teamItems$(NT) = Q$(0): VV%(NT) = I1
+	teamNames$(NT) = Q$(0): teamIndex%(NT) = I1
 
 1103 NEXT I1
 CLOSE 1
@@ -600,11 +600,11 @@ COLOR , 4: CLS : LOCATE , 33: COLOR 14: PRINT "TEAM SELECTION": COLOR 15
 	LOCATE 25, 1: COLOR 14: PRINT "ESC"; : COLOR 15: PRINT "-SELECT NEW ID  PGDN  PGUP  "; : COLOR 14: PRINT "ENTER"; : COLOR 15: PRINT "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-MAMenu teamItems$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu teamNames$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 	IF ExitCode% = 27 THEN BO% = 1: RETURN
-	T = VV%(SELECTION%)
+	T = teamIndex%(SELECTION%)
 	LOCATE 2, 33: COLOR 31: PRINT "LOADING..."
 	IF NOT _FILEEXISTS(D$(0) + "FCTEAMS." + YN$) THEN GOSUB 4500: BO% = 1: RETURN
 OPEN D$(0) + "FCTEAMS." + YN$ FOR RANDOM AS #1 LEN = 4342
@@ -723,6 +723,7 @@ OPEN D$(1) + Z$ FOR INPUT AS #1
 1220 FOR I = 1 TO 162: PRINT #1, H$(I): NEXT
 
 1230 FOR I = 1 TO 162: PRINT #1, V%(I): NEXT
+
 	FOR I = 1 TO 162: PRINT #1, PL$(I): NEXT
 
 1250 FOR I = 1 TO 162: PRINT #1, W$(I): NEXT

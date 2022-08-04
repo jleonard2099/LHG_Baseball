@@ -12,7 +12,7 @@ DECLARE SUB TITLE ()
 Dim L%(13), L1%(13), B%(22, 79), B1%(22, 79), P%(21, 88), P1%(21, 88)
 Dim SA%(24), SA1%(24)
 Dim TS%(11), TS1%(11), YN$(5)
-Dim B$(22), B1$(22), P$(21), P1$(21), Q$(2056), teamItems$(200), V%(200), VV%(200), V$(200)
+Dim B$(22), B1$(22), P$(21), P1$(21), Q$(2056), teamNames$(200), teamIndex%(200), V$(200)
 Dim K9(1) As Long, E6 As Long
 Dim D$(2), Y As Long
 
@@ -161,8 +161,8 @@ Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
 Locate 7, 27: Input NY$
 If NY$ = "" Then GoSub 1102: GoTo 182
 YN$(1) = NY$
-Erase teamItems$
-For I = 1 To 200: V%(I) = 1: Next
+Erase teamNames$
+For I = 1 To 200: teamIndex%(I) = 1: Next
 GoSub 1100
 
 182 If BO% = 1 Then BO% = 0: GoTo 100
@@ -478,7 +478,7 @@ For I1 = 1 To Y / 4342
         If Left$(Q$(0), 2) = "XX" Or Left$(Q$(0), 1) = " " Or Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then 1103
     Next I2
     NT = NT + 1
-    teamItems$(NT) = Q$(0): V%(NT) = I1
+    teamNames$(NT) = Q$(0): teamIndex%(NT) = I1
 
 1103 Next I1
 Close 1
@@ -497,11 +497,11 @@ Color , 4: Cls: Locate , 33: Color 14: Print "TEAM SELECTION": Color 15
 Locate 25, 1: Color 14: Print "ESC";: Color 15: Print "-SELECT NEW ID  PGDN  PGUP  ";: Color 14: Print "ENTER";: Color 15: Print "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-MAMenu teamItems$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu teamNames$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 If ExitCode% = 27 Then BO% = 1: Return
-D = V%(SELECTION%)
+D = teamIndex%(SELECTION%)
 Locate 2, 33: Color 31: Print "LOADING..."
 GoTo 105
 
@@ -516,7 +516,7 @@ For I1 = 1 To Y / 4342
         If Left$(Q$(0), 2) = "XX" Or Left$(Q$(0), 1) = " " Or Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then 1203
     Next I2
     NT = NT + 1
-    teamItems$(NT) = Q$(0): V%(NT) = I1
+    teamNames$(NT) = Q$(0): teamIndex%(NT) = I1
 
 1203 Next I1
 Close 1
@@ -535,11 +535,11 @@ Color , 4: Cls: Locate , 33: Color 14: Print "TEAM SELECTION": Color 15
 Locate 25, 1: Color 14: Print "ESC";: Color 15: Print "-SELECT NEW ID  PGDN  PGUP  ";: Color 14: Print "ENTER";: Color 15: Print "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-MAMenu teamItems$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu teamNames$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 If ExitCode% = 27 Then BO% = 1: Return
-T = V%(SELECTION%)
+T = teamIndex%(SELECTION%)
 Locate 2, 33: Color 31: Print "LOADING..."
 GoTo 2500
 

@@ -52,7 +52,6 @@ Function FCount% (fileSpec$)
 End Function
 
 
-
 '-----------------------------------
 ' FileSize Copycat Function
 '-----------------------------------
@@ -61,7 +60,6 @@ Function FileSize& (sourceFile$)
     FileSize& = LOF(1)
     Close #1
 End Function
-
 
 
 '-----------------------------------
@@ -92,9 +90,8 @@ Function FUsing$ (Number$, Image$, Typ%)
     '                     1 = argument is a STR$() number string
 
     'Notes:
-    '   This function is adapted and slightly altered
-    '   from an idea posted in the QB64 Forum by
-    '   Fellippe Heitor
+    '   This function is adapted and slightly altered from 
+    '   an idea posted in the QB64 Forum by Fellippe Heitor
 
     shan& = _Source: dhan& = _Dest: than& = _NewImage(256, 1, 0) 'if results may get longer, then raise the 256 value
     _Source than&: _Dest than&
@@ -132,7 +129,6 @@ Function MGetKey (Row%, Col%)
     KeyCode% = CVI(k$ + Chr$(0))
 
 End Function
-
 
 
 '-----------------------------------
@@ -184,7 +180,6 @@ Function Monitor% ()
 End Function
 
 
-
 '-----------------------------------
 ' OneColor Copycat Function
 '-----------------------------------
@@ -195,7 +190,6 @@ Function OneColor% (FGColor%, BGColor%)
     'But this is the doumented function from QPPro
     OneColor% = (FGColor% And 16) * 8 + ((BGColor% And 7) * 16) + (FGColor% And 15)
 End Function
-
 
 
 '-----------------------------------
@@ -243,7 +237,6 @@ End Function
 ' NOT IMPLEMENTED
 Sub AddInt (AElement, Value, NumEls)
 End Sub
-
 
 
 ' ------------------------------------------------------------
@@ -318,7 +311,6 @@ Sub box0 (ULRow%, ULCol%, LRRow%, LRCol%, Char%, FGColor%, BGColor%)
 End Sub
 
 
-
 '-----------------------------------
 ' Print NumLock / CapsLock Status
 '-----------------------------------
@@ -384,7 +376,6 @@ Sub ClearEOL (FGColor%, BGColor%)
 End Sub
 
 
-
 '-----------------------------------
 ' Get Command Line Subroutine
 '-----------------------------------
@@ -421,7 +412,6 @@ Sub Comline (NumArgs%, Args$(), MaxArgs%)
     Next I
 
 End Sub
-
 
 
 '-----------------------------------
@@ -496,7 +486,6 @@ Sub CSMsgBox (Message$, Wdth%, Pass)
 End Sub
 
 
-
 '-----------------------------------
 ' FCopy Copycat Subroutine
 '-----------------------------------
@@ -537,7 +526,6 @@ Sub FCopy (srcFile$, dstFile$, Buff$, copyErr%)
 
 End Sub
 
- 
 
 '-----------------------------------
 ' InitInt Copycat Subroutine
@@ -545,7 +533,6 @@ End Sub
 Sub InitInt (AElement, StartValue, NumEls)
     ' NOT IMPLEMENTED / OBSOLETE
 End Sub
-
 
 
 '-----------------------------------
@@ -556,13 +543,10 @@ Sub ISortI (Element%, IndexElement%, NumElements%, Direction%)
 End Sub
 
 
-
-
-
 '-----------------------------------
 ' MAMenu Copycat Subroutine
 '-----------------------------------
-Sub MAMenu (menuItems$(), Selected%, Start%, Count%, ScanCode%, ItemFGColor%, ItemBGColor%, HighlightFGColor%, HighlightBGColor%, NumRows%, NumCols%, Spacing%, Row%, Column%)
+Sub MAMenu (menuChoices$(), Selected%, Start%, Count%, ScanCode%, ItemFGColor%, ItemBGColor%, HighlightFGColor%, HighlightBGColor%, NumRows%, NumCols%, Spacing%, Row%, Column%)
     'Adapted from the following:
     'HMenu          Ray Thomas      March 2002
     'http://brisray.com/qbasic/qmenu.htm
@@ -611,7 +595,8 @@ Sub MAMenu (menuItems$(), Selected%, Start%, Count%, ScanCode%, ItemFGColor%, It
     'this variable before calling
     'Selected% = 1
 
-    Dim numberItems%, maxItemsPerScreen%, itemLength%, ColWidth%, TotalColsData%
+    Dim itemLength%, numberItems%, maxItemsPerScreen%
+	Dim ColWidth%, TotalColsData%
 
     maxItemsPerScreen% = NumRows% * NumCols%
     If maxItemsPerScreen% > Count% Then maxItemsPerScreen% = Count%
@@ -623,10 +608,10 @@ Sub MAMenu (menuItems$(), Selected%, Start%, Count%, ScanCode%, ItemFGColor%, It
     'has the longest length, for column spacing
 
     itemLength% = 0
-    numberItems% = UBound(menuItems$)
-    For x = Start% To UBound(menuItems$)
-        If Len(menuItems$(x)) > itemLength% Then itemLength% = Len(menuItems$(x))
-        If menuItems$(x) = "" Then
+    numberItems% = UBound(menuChoices$)
+    For x = Start% To UBound(menuChoices$)
+        If Len(menuChoices$(x)) > itemLength% Then itemLength% = Len(menuChoices$(x))
+        If menuChoices$(x) = "" Then
             numberItems% = x - 1
             Exit For
         End If
@@ -681,7 +666,7 @@ Sub MAMenu (menuItems$(), Selected%, Start%, Count%, ScanCode%, ItemFGColor%, It
     For currentItem = Start% To Start% + maxItemsPerScreen% - 1
         If (currentItem <= numberItems%) Then
             Color ItemFGColor%, ItemBGColor%
-            Print menuItems$(currentItem);
+            Print menuChoices$(currentItem);
             Locate CsrLin + 1, XItemPosn
             If currentItem Mod NumRows% = 0 Then
                 'Move to a new column
@@ -697,7 +682,7 @@ Sub MAMenu (menuItems$(), Selected%, Start%, Count%, ScanCode%, ItemFGColor%, It
     If Selected% > 1 Then Locate Row% + ((Selected% - Start%) Mod NumRows%), XItemPosn + (Fix((Selected% - Start%) / NumRows%) * ColWidth%)
     If Selected% = 1 Then Locate Row%, XItemPosn
     Color HighlightFGColor%, HighlightBGColor%
-    Print menuItems$(Selected%);
+    Print menuChoices$(Selected%);
 
     Return
 
@@ -760,7 +745,7 @@ Sub MAMenu (menuItems$(), Selected%, Start%, Count%, ScanCode%, ItemFGColor%, It
             '*** starting with that key ***
 
             For currentItem = 1 To numberItems%
-                If Left$(menuItems$(Count), 1) = UserIn$ Then
+                If Left$(menuChoices$(Count), 1) = UserIn$ Then
                     Selected% = currentItem
                     Exit For
                 End If
@@ -775,9 +760,13 @@ End Sub
 '-----------------------------------
 ' MMenuVert Copycat Subroutine
 '-----------------------------------
-Sub MMenuVert (menuItems$(), Selected%, Start%, ScanCode%, ItemFGColor%, ItemBGColor%, HighlightFGColor%, HighlightBGColor%, NumRows%, Row%, Column%)
+Sub MMenuVert (menuChoices$(), Selected%, Start%, ScanCode%, ItemFGColor%, ItemBGColor%, HighlightFGColor%, HighlightBGColor%, NumRows%, Row%, Column%)
+    'Adapted from the following:
+    'Menu.bas       Ray Thomas      February 2002
+    'http://brisray.com/qbasic/qmenu.htm
+
     'Selected%
-    ' which element to put at the top of the menu
+    ' which element is selected in the menu
 
     'Start%
     ' which element to put at the top of the menu
@@ -795,111 +784,74 @@ Sub MMenuVert (menuItems$(), Selected%, Start%, ScanCode%, ItemFGColor%, ItemBGC
 
     ' Row% / Column%
     ' row / column from which to start printing
+
     _MouseHide
 
-    '--- this should be assigned based on the
-    '--- length of the first element in the array
-    itemLength = Len(menuItems$(1))
-    If ScanCode% = 0 Then ScanCode% = NumRows%
+    Dim itemLength%, numberItems%
 
-    If NumRows% > ScanCode% Then
-        NumRows% = ScanCode%
-    End If
-
-    currentChoice = Selected%
-    itemIndex = Start%
-
-    For rowIndex = 1 To NumRows% Step 1
-
-        'If we did not start at the 1st position, we're going to
-        'loop back around in our array to the beginning elements
-        Locate rowIndex + Row% - 1, Column%
-
-        If itemIndex = Selected% Then
-            ' Print the specified item in the menu, highlighted
-            '--If using OneColor, use the below
-            '--Color (HighlightColor% And 15), ((HighlightColor% And 240) / 16)
-            Color HighlightFGColor%, HighlightBGColor%
-            Print String$(itemLength, " ")
-            Locate rowIndex + Row% - 1, Column%
-        Else
-            '--If using OneColor, use the below
-            '--Color (ItemColor% And 15), ((ItemColor% And 240) / 16)
-            Color ItemFGColor%, ItemBGColor%
+    itemLength% = 0
+    numberItems% = UBound(menuChoices$)
+    For x = Start% To UBound(menuChoices$)
+        If Len(menuChoices$(x)) > itemLength% Then itemLength% = Len(menuChoices$(x))
+        If menuChoices$(x) = "" Then
+            numberItems% = x - 1
+            Exit For
         End If
+    Next x
 
-        Print menuItems$(itemIndex)
-        itemIndex = itemIndex + 1
-        If itemIndex > UBound(menuItems$) Then itemIndex = LBound(menuItems$)
+    GoSub DrawMenu
 
-    Next rowIndex
+    'get cursor key movements and redraw menu
+    Do
+        UserIn$ = InKey$
 
-    ' Read user input, only act on Up/Down
-    Do:
-        Selection$ = InKey$
-        If Selection$ <> "" Then
-            ScanCode% = Asc(Selection$)
-            Select Case Selection$
-                Case Chr$(0) + "H": GoSub Up.Arrow
-                Case Chr$(0) + "P": GoSub Down.Arrow
-            End Select
-        End If
-        ' End when user presses Enter/Esc
-    Loop Until Selection$ = Chr$(13) Or Selection$ = Chr$(27)
+        If Len(UserIn$) = 2 Then UserIn$ = Right$(UserIn$, 1)
 
-    'ESC means we made no choice
-    If Selection$ = Chr$(27) Then
-        currentChoice = 0
-    End If
+        If UserIn$ = "8" Or UserIn$ = Chr$(72) Then GoSub MoveUp
+        If UserIn$ = "2" Or UserIn$ = Chr$(80) Then GoSub MoveDown
+        If UserIn$ = "7" Or UserIn$ = Chr$(71) Then Selected% = 1
+        If UserIn$ = "1" Or UserIn$ = Chr$(79) Then Selected% = UBound(MenuItem)
 
-    '--If using OneColor, use the below
-    '--Color (HighlightColor% And 15), ((HighlightColor% And 240) / 16)
-    Color HighlightFGColor%, HighlightBGColor%
-    Selected% = currentChoice
+        GoSub DrawMenu
+		
+    Loop Until UserIn$ = Chr$(13) Or UserIn$ = Chr$(27)
 
-    _MouseShow "DEFAULT"
+	ScanCode% = Asc(UserIn$)
+
     Exit Sub
 
-    Up.Arrow:
-    If currentChoice > 1 And currentChoice < NumRows% + 1 Then
-        ' Print menu item w/o highlight, above where we just moved to
-        Locate Row%, Column%
-        '--If using OneColor, use the below
-        '--Color (ItemColor% And 15), ((ItemColor% And 240) / 16)
-        Color ItemFGColor%, ItemBGColor%
-        Print String$(itemLength, " ")
-        Locate Row%, Column%: Print menuItems$(currentChoice): Row% = Row% - 1
-        ' Highlight the new menu item
-        currentChoice = currentChoice - 1
-        Locate Row%, Column%
-        '--If using OneColor, use the below
-        '--Color (HighlightColor% And 15), ((HighlightColor% And 240) / 16)
-        Color HighlightFGColor%, HighlightBGColor%
-        Print String$(itemLength, " ")
-        Locate Row%, Column%: Print menuItems$(currentChoice)
-    End If: Return
 
-    Down.Arrow:
-    If currentChoice < NumRows% Then
-        ' Print menu item w/o highlight, above where we just moved to
-        Locate Row%, Column%
-        '--If using OneColor, use the below
-        '--Color (ItemColor% And 15), ((ItemColor% And 240) / 16)
-        Color ItemFGColor%, ItemBGColor%
-        Print String$(itemLength, " ")
-        Locate Row%, Column%: Print menuItems$(currentChoice): Row% = Row% + 1
-        ' Highlight the new menu item
-        currentChoice = currentChoice + 1
-        Locate Row%, Column%
-        '--If using OneColor, use the below
-        '--Color (HighlightColor% And 15), ((HighlightColor% And 240) / 16)
-        Color HighlightFGColor%, HighlightBGColor%
-        Print String$(itemLength, " ")
-        Locate Row%, Column%: Print menuItems$(currentChoice)
-    End If: Return:
+    DrawMenu:
+    'Draw the menu
+    Locate Row%, Column%
+    For Count = Start% To numberItems% '(Start% + NumRows%) 
+        If Count = Selected% Then
+            Color HighlightFGColor%, HighlightBGColor%
+        Else
+            Color ItemFGColor%, ItemBGColor%
+        End If
+        Print menuChoices$(Count)
+        Locate CsrLin, Column%
+    Next Count
+    Return
+
+    MoveUp:
+    If Selected% = 1 Then
+        Selected% = UBound(menuChoices$)
+    Else
+        Selected% = Selected% - 1
+    End If
+    Return
+
+    MoveDown:
+    If Selected% = UBound(menuChoices$) Then
+        Selected% = 1
+    Else
+        Selected% = Selected% + 1
+    End If
+    Return
 
 End Sub
-
 
 
 '-----------------------------------
@@ -910,7 +862,6 @@ Sub MPaintBox (ULRow%, ULCol%, LRRow%, LRCol%, Colr%)
 
     _MouseShow "DEFAULT"
 End Sub
-
 
 
 '-----------------------------------
@@ -926,7 +877,6 @@ Sub MQPrint (X$, FGColor%, BGColor%)
     Locate V, H
     _MouseShow "DEFAULT"
 End Sub
-
 
 
 '-----------------------------------
@@ -947,7 +897,6 @@ Sub QuickSort (start As Integer, finish As Integer, array() As Single)
     If Hi > start Then Call QuickSort(start, Hi, array())
     If Lo < finish Then Call QuickSort(Lo, finish, array())
 End Sub
-
 
 
 '-----------------------------------
@@ -1128,7 +1077,6 @@ Sub NumIn (Number#, Max, XCode, FGColor%, BGColor%)
 End Sub
 
 
-
 '-----------------------------------
 ' QPrint Copycat Subroutine
 '-----------------------------------
@@ -1156,7 +1104,6 @@ Sub QPrint (X$, FGColor%, BGColor%, Page%)
     'Restore cursor position
     Locate V, H
 End Sub
-
 
 
 '-----------------------------------
@@ -1193,7 +1140,6 @@ Sub ReadFile (fileList$())
 End Sub
 
 
-
 '-----------------------------------
 ' SplitColor Copycat Subroutine
 '-----------------------------------
@@ -1206,7 +1152,6 @@ Sub SplitColor (Colr%, FG%, BG%)
     BG% = ((Colr% And 240) / 16)
 
 End Sub
-
 
 
 '-----------------------------------
@@ -1258,24 +1203,20 @@ Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode%, FGColor%, BGColor%)
     ExitCode% = 1 'User wants to go to previous field
     GoTo TEnter 'Behavior is similar to the Enter key
 
-
     TClear:
     X$ = "" 'Alt-C, erase the current string
     GoSub TInsertOff 'clear insert mode and restore cursor
     Locate , Pos(0) - (CursorPos - 1)
     GoTo TC 'and start all over again
 
-
     THome:
     Locate , Pos(0) - (CursorPos - 1) 'put cursor at beginning of line
     CursorPos = 1 'show cursor as being on 1st character
     GoTo TGetKey
 
-
     TUp:
     ExitCode% = 1 'user wants to go back a field
     GoTo TEnter 'handle as if it were the Enter key
-
 
     TLeft:
     If CursorPos = 1 GoTo TShiftTab 'cursor is on 1st character, handle as Shift-Tab
@@ -1466,7 +1407,6 @@ Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode%, FGColor%, BGColor%)
 End Sub
 
 
-
 '-----------------------------------
 ' Yes / No Input Routine
 '-----------------------------------
@@ -1515,7 +1455,6 @@ Sub YesNoB (YN$, ExitCode, FGColor%, BGColor%)
         GoTo YD2
     End If
 
-
     If Len(X$) = 2 Then 'extended key
         X$ = Right$(X$, 1)
         If X$ = "P" Or X$ = "M" Then GoTo YD2 'Down arrow, Right arrow
@@ -1526,7 +1465,6 @@ Sub YesNoB (YN$, ExitCode, FGColor%, BGColor%)
     End If
 
     GoTo YGetKey
-
 
     YDone:
     If X$ > "Y" Then X$ = Chr$(Asc(X$) - 32) 'capitalize if necessary

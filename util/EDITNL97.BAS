@@ -16,7 +16,7 @@ DIM Q$(2100), FS%(22, 4, 4), BP$(3)
 DIM B%(22, 79), P%(21, 88), B$(22), P$(21), L%(13)
 DIM BS$(22), PS$(21)
 DIM B0%(22, 40), P0%(21, 41), BS%(22), PS%(32), T(22), T1(22)
-DIM teamItems$(200), V%(200), SS%(22, 6)
+DIM teamNames$(200), teamIndex%(500), SS%(22, 6)
 DIM TB%(15), TP%(33),INJ%(22),DYS%(21)
 DIM SA%(24), TS%(11), BRS$(79)
 DIM SLG2 AS SINGLE, OB AS SINGLE, R1 AS SINGLE, R2 AS SINGLE
@@ -280,7 +280,7 @@ OPEN D$(0) + "FCTEAMS." + YN$ FOR RANDOM AS #1 LEN = 4342
 	IF LEFT$(Q$(0),2) = "XX"OR LEFT$(Q$(0),1) = " " OR ASC(MID$(Q$(0), I2, 1)) < 32 OR ASC(MID$(Q$(0), I2, 1)) > 123 OR UCASE$(LEFT$(Q$(0), 3)) = "NOT" OR UCASE$(LEFT$(Q$(0), 3)) = "UN" THEN 1103
 	NEXT I2
 	NT = NT + 1
-	teamItems$(NT) = Q$(0): V%(NT) = I1
+	teamNames$(NT) = Q$(0): V%(NT) = I1
 
 1103 NEXT I1
 CLOSE 1
@@ -299,11 +299,11 @@ CLOSE 1
 	LOCATE 25, 1: COLOR 14: PRINT "ESC"; : COLOR 15: PRINT "-SELECT NEW ID  PGDN  PGUP  "; : COLOR 14: PRINT "ENTER"; : COLOR 15: PRINT "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-MAMenu teamItems$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu teamNames$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 	IF ExitCode% = 27 THEN BO% = 1: RETURN
-	T = V%(SELECTION%)
+	T = teamIndex%(SELECTION%)
 	LOCATE 2, 33: COLOR 31: PRINT "LOADING..."
 
 OPEN D$(0) + "FCTEAMS." + YN$ FOR RANDOM AS #1 LEN = 4342
@@ -460,7 +460,7 @@ RETURN
 	LOCATE 7, 27: INPUT NY$
 	IF NY$ = "" THEN GOSUB 1102: GOTO 182
 	YN$ = NY$
-	ERASE teamItems$
+	ERASE teamNames$
 
 1441 GOSUB 1100
 

@@ -17,7 +17,7 @@ Dim D0%(1), D1%(1), TEAM%(1, 22), P4%(1, 14), T1%(2, 23)
 Dim K9(1) As Long, S(1), YR$(2), SA$(2)
 Dim TS%(1, 11), SA%(1, 24)
 Dim Y As Long
-Dim X$(4), C$(9), menuItems$(3), teamItems$(200), V%(200), M$(2), S$(2), NN$(2)
+Dim X$(4), C$(9), menuItems$(3), teamNames$(200), teamIndex%(500), M$(2), S$(2), NN$(2)
 X$(0) = "LP": X$(1) = "L": X$(2) = "S": X$(3) = "R": X$(4) = "RP"
 C$(0) = "DH": C$(1) = "P": C$(2) = "C": C$(3) = "1B": C$(4) = "2B": C$(5) = "3B": C$(6) = "SS": C$(7) = "LF": C$(8) = "CF": C$(9) = "RF"
 
@@ -69,7 +69,7 @@ Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
 Locate 7, 36: Input NY$
 If NY$ = "" And YR$(0) <> "" Then GoSub 1102: GoTo 77
 YR$(0) = NY$
-Erase teamItems$
+Erase teamNames$
 
 76 GoSub 1100
 
@@ -95,7 +95,7 @@ For I1 = 1 To Y / 4342
         If Left$(Q$(0), 2) = "XX" Or Left$(Q$(0), 1) = " " Or Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then 1103
     Next I2
     NT = NT + 1
-    teamItems$(NT) = Q$(0): V%(NT) = I1
+    teamNames$(NT) = Q$(0): V%(NT) = I1
 1103 Next I1
 Close 1
 
@@ -114,11 +114,11 @@ Color , 4: Cls: Locate , 33: Color 14: Print "TEAM SELECTION": Color 15
 Locate 25, 1: Color 14: Print "ESC";: Color 15: Print "-SELECT NEW ID  PGDN  PGUP  ";: Color 14: Print "ENTER";: Color 15: Print "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-MAMenu teamItems$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu teamNames$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 If ExitCode% = 27 Then BO% = 1: Return
-T(J) = V%(SELECTION%)
+T(J) = teamIndex%(SELECTION%)
 Locate 2, 33: Color 31: Print "LOADING..."
 Open D$(0) + "FCTEAMS." + YR$(J) For Random As #1 Len = 4342
 Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
@@ -287,7 +287,7 @@ Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
 Locate 7, 36: Input NY$
 If NY$ = "" And YR$(1) <> "" Then GoSub 1102: GoTo 277
 YR$(1) = NY$
-Erase teamItems$
+Erase teamNames$
 
 276 GoSub 1100
 

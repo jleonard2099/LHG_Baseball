@@ -25,14 +25,14 @@ Dim FRAC As Single
 15 Dim B$(23), B1$(4), BS$(22), BTR$(23), C$(10)
 Dim N$(22), NP$(21), P$(21), PB$(23), PT$(1), PS$(21)
 Dim X$(12), YN$(1)
-Dim teamItems$(500), menuItems$(15)
+Dim teamNames$(500), menuItems$(15)
 Dim Shared D$(3), R$(999)
 Dim Shared Q$(1843), YN$, B$
 
 
 Dim AB%(9), B%(22, 44), B3%(9), B7%(9), B9%(9)
 Dim GS%(21, 1), L%(13), M%(9), P%(21, 36)
-Dim V%(500), V1%(1)
+Dim teamIndex%(500), V1%(1)
 Dim Shared MG%(1000)
 
 Dim CZ(23), BPR(23)
@@ -456,7 +456,7 @@ If Q3% = 2 Then MG%(120 + LN% * 21) = 0: MG%(100 + LN% * 21) = 0: GoTo 480
 
 525 'GOSUB 2390
 
-530 W5 = 0: W6 = 1: V%(0) = 1: V1%(0) = 9: V%(1) = 1: V1%(1) = 9
+530 W5 = 0: W6 = 1: teamIndex%(0) = 1: V1%(0) = 9: teamIndex%(1) = 1: V1%(1) = 9
 GoTo 480
 
 540 For I = 0 To 9: M%(I) = 0: Next I: GoSub 1370
@@ -755,7 +755,7 @@ For I1 = 1 To Y / 4342
         If Left$(Q$(0), 2) = "XX" Or Left$(Q$(0), 1) = " " Or Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then 1105
     Next I2
     NT = NT + 1
-    teamItems$(NT) = Q$(0): V%(NT) = I1
+    teamNames$(NT) = Q$(0): teamIndex%(NT) = I1
 
 1105 Next I1
 Close 1
@@ -774,11 +774,11 @@ Color , 4: Cls: Locate , 33: Color 14: Print "TEAM SELECTION": Color 15
 Locate 25, 1: Color 14: Print "ESC";: Color 15: Print "-SELECT NEW ID  PGDN  PGUP  ";: Color 14: Print "ENTER";: Color 15: Print "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-MAMenu teamItems$(), SELECTION%, Start%, Count%, EXITCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu teamNames$(), SELECTION%, Start%, Count%, EXITCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 If EXITCODE% = 27 Then BO% = 1: Return
-T = V%(SELECTION%)
+T = teamIndex%(SELECTION%)
 Locate 2, 33: Color 31: Print "LOADING..."
 
 1195 GoTo 1485
@@ -797,8 +797,8 @@ Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
 Locate 7, 27: Input NY$
 If NY$ = "" Then GoSub 1102: GoTo 182
 YN$ = NY$
-Erase teamItems$
-For I = 1 To 500: V%(I) = 1: Next
+Erase teamNames$
+For I = 1 To 500: teamIndex%(I) = 1: Next
 GoSub 2100
 
 182 If BO% = 1 Then BO% = 0: GoTo 1445

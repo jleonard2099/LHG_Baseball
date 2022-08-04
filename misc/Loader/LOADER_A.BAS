@@ -55,7 +55,7 @@ Dim Shared VV(1), VV1(1)
 
 Dim BAT$(23), BM$(10), BMT$(10), DH$(1), DL$(1), DN$(1)
 Dim LGT$(2), MN$(10), PARK$(72), PIT$(22), PM$(6), PMT$(6), PT$(1), PU$(8)
-Dim Q3$(100), U6$(2), UMP$(50), teamItems$(200), VI$(1), WD$(9), WE$(1)
+Dim Q3$(100), U6$(2), UMP$(50), teamNames$(200), VI$(1), WD$(9), WE$(1)
 
 Dim Shared A$(1), B$(1, 22), B1$(4), C$(11), D$(3)
 Dim Shared EJ$(20), F$(10), H$(4), H0$(1), IJ$(20)
@@ -64,7 +64,7 @@ Dim Shared Q$(23), S$(1), SC$(4), TM$(4), U$(4), X$(12), YN$(1)
 
 Dim BAT%(23), BB%(9), DYS%(1, 21), GS%(21, 1), INJ%(1, 22)
 Dim MF%(1), NB%(1, 4), PS%(23, 1), PIT%(22), SP%(1)
-Dim U%(50), UM%(1, 9, 4), UV%(200)
+Dim U%(50), UM%(1, 9, 4), teamIndex%(500)
 Dim Shared A5%(4), AP%(2), B%(1, 22, 80), B0%(3, 2)
 Dim Shared B1%(3, 1), B2%(1, 22), B3%(1, 9), B4%(1, 7, 9)
 Dim Shared B5%(1, 22, 21), B7%(1, 9), B8%(1, 22, 21), B9%(1, 10), BT%(1, 9, 9)
@@ -357,7 +357,7 @@ GoTo 270
     Color 15, 0
     If NY$ = "" Then GoSub 8102: GoTo 2856
     YN$ = NY$
-    For I1 = 1 To 200: teamItems$(I1) = "": Next
+    For I1 = 1 To 200: teamNames$(I1) = "": Next
     GoSub 8100
 
     2856 If BO% = 1 Then BO% = 0: GoTo 2800
@@ -1575,7 +1575,7 @@ For I1 = 1 To Y / 4342
         If Left$(Q2$(0), 1) = " " Or Asc(Mid$(Q2$(0), I2, 1)) < 32 Or Asc(Mid$(Q2$(0), I2, 1)) > 123 Or UCase$(Left$(Q2$(0), 3)) = "NOT" Or UCase$(Left$(Q2$(0), 3)) = "UN" Then 8105
     Next I2
     NT = NT + 1
-    teamItems$(NT) = Q2$(0): UV%(NT) = I1
+    teamNames$(NT) = Q2$(0): teamIndex%(NT) = I1
 
 8105 Next I1
 Close 1
@@ -1594,11 +1594,11 @@ Color , 4: Cls: Locate , 33: Color 14: Print "TEAM SELECTION": Color 15
 Locate 25, 1: Color 14: Print "ESC";: Color 15: Print "-SELECT NEW ID  PGDN  PGUP  ";: Color 14: Print "ENTER";: Color 15: Print "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-MAMenu teamItems$(), SELECTION%, Start%, Count%, EXITCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu teamNames$(), SELECTION%, Start%, Count%, EXITCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 If EXITCODE% = 27 Then BO% = 1: Return
-T1(I) = UV%(SELECTION%)
+T1(I) = teamIndex%(SELECTION%)
 Locate 2, 33: Color 31: Print "LOADING..."
 
 300 Open D$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342
