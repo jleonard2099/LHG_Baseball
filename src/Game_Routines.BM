@@ -665,19 +665,19 @@ Sub FLDDISP (BC%, p, U%, D)
     Next
     Color , 0
     Locate 1, 1
-    X% = 1: Y% = 9
-    If INNING% > 9 Then X% = 10: Y% = 18
-    If INNING% > 18 Then X% = 19: Y% = 27
+    inningStart = 1: inningEnd = 9
+    If INNING% > 9 Then inningStart = 10: inningEnd = 18
+    If INNING% > 18 Then inningStart = 19: inningEnd = 27
     Print Tab(10);
     For X1% = 0 To 2
-        Print Using "## ## ##  "; X% + 3 * X1%; X% + 3 * X1% + 1; X% + 3 * X1% + 2;
+        Print Using "## ## ##  "; inningStart + 3 * X1%; inningStart + 3 * X1% + 1; inningStart + 3 * X1% + 2;
     Next
     Print " R  H  E ";: Color 1
     Print Chr$(179);: Color 15: Print " BALL:  ";: Color 14: Print BC%;
     Color 1: Print Chr$(179);: Color 15
     Print "WIND: ";: Color 14: Print WI$
     For i = 0 To 1: Locate i + 2: Print Left$(A$(i), 3); NN$(i);
-        For I2 = X% To Y%
+        For I2 = inningStart To inningEnd
             If p = 0 And i = 0 And I2 > INNING% - 1 And s%(i, INNING%) = 0 Or p = 0 And i = 0 And I2 > INNING% And s%(i, INNING%) > 0 Or p = 1 And I2 > INNING% And i = 0 Then 310
             If p = 0 And i = 1 And I2 > INNING% - 1 Or p = 1 And i = 1 And s%(i, INNING%) = 0 And I2 > INNING% - 1 Or p = 1 And i = 1 And s%(i, INNING%) > 0 And I2 > INNING% Then 310
             Call INNDISP(I2, i)
@@ -1036,6 +1036,7 @@ Sub INJURYLENGTH (IJL%, D, po%, u6, p, u9, P9, W5, W6)
 
     2117 Return
 
+
     2120
 End Sub
 
@@ -1163,9 +1164,10 @@ Sub MAINSCREEN (D, p, BC%, U%, MO)
     If b%(p, J, 4) = 0 Then Print ".000  0   0   0";: GoTo 337
     Print Using ".### ## ### ###"; b%(p, J, 6) / b%(p, J, 4); b%(p, J, 9); b%(p, J, 11); b%(p, J, 12): GoTo 337
 
-    336 If p%(p, P1%(p), 11) <> 999 Then Print Using ".###"; p%(p, P1%(p), 11) / 1000: GoTo 337
+    336 If p%(p, P1%(p), 11) <> 999 Then statPCT! = p%(p, P1%(p), 11) / 1000: Print Using ".###"; statPCT!: GoTo 337
     If p%(p, P1%(p), 20) = 0 Then Print ".000 0";: GoTo 337
-    Print Using ".### ## ### ###"; p%(p, P1%(p), 22) / p%(p, P1%(p), 20); p%(p, P1%(p), 25); p%(p, P1%(p), 27); p%(p, P1%(p), 28)
+	statPCT! = p%(p, P1%(p), 22) / p%(p, P1%(p), 20)
+    Print Using ".### ## ### ###"; statPCT!; p%(p, P1%(p), 25); p%(p, P1%(p), 27); p%(p, P1%(p), 28)
 
     337 Locate 8, 2: If B7%(p, B1!(p)) = 1 Then 332
     Print B8%(p, B3%(p, B1!(p)), 1); "-"; B8%(p, B3%(p, B1!(p)), 0);: GoTo 333
@@ -1758,30 +1760,34 @@ END SUB
 ' ...explanation...
 SUB POPUPBAT (WK, M)
     IF TS%(WK,0)=999 THEN LOCATE 4,56:PRINT "VS LHP  .000";
-    IF TS%(WK,0)=999 AND B%(WK,M,42)<>0 THEN LOCATE 4,64:PRINT USING ".###";B%(WK,M,43)/B%(WK,M,42)
+    IF TS%(WK,0)=999 AND B%(WK,M,42)<>0 THEN statPCT! = B%(WK,M,43)/B%(WK,M,42): LOCATE 4,64:PRINT USING ".###"; statPCT!
     IF TS%(WK,0)=999 THEN LOCATE 5,56:PRINT "VS RHP  .000";
-    IF TS%(WK,0)=999 AND B%(WK,M,49)<>0 THEN LOCATE 5,64:PRINT USING ".###";B%(WK,M,50)/B%(WK,M,49)
+    IF TS%(WK,0)=999 AND B%(WK,M,49)<>0 THEN statPCT! = B%(WK,M,50)/B%(WK,M,49): LOCATE 5,64:PRINT USING ".###"; statPCT!
     LOCATE 8, 6: PRINT "SEASON"; : LOCATE , 15
     IF b%(WK, M, 4) = 0 THEN PRINT ".---  .---":GOTO 734
-    PRINT USING ".###  .### ### ### ### ### ## ## ## ### ### ### "; b%(WK, M, 6) / b%(WK, M, 4); (b%(WK, M, 6) + b%(WK, M, 11)) / (b%(WK, M, 4) + b%(WK, M, 11)); b%(WK, M, 3); b%(WK, M, 4); b%(WK, M, 5); b%(WK, M, 6); b%(WK, M, 7); b%(WK, M, 8); b%( _
-WK, M, 9); b%(WK, M, 10);
+	statPCT! = b%(WK, M, 6) / b%(WK, M, 4)
+	statPCT2! = (b%(WK, M, 6) + b%(WK, M, 11)) / (b%(WK, M, 4) + b%(WK, M, 11))
+    PRINT USING ".###  .### ### ### ### ### ## ## ## ### ### ### "; statPCT!; statPCT2!; b%(WK, M, 3); b%(WK, M, 4); b%(WK, M, 5); b%(WK, M, 6); b%(WK, M, 7); b%(WK, M, 8); b%(WK, M, 9); b%(WK, M, 10);
     PRINT USING "### ### ### ##"; b%(WK, M, 11); b%(WK, M, 12); b%(WK, M, 13); b%(WK, M, 14)
 
 734 LOCATE , 6: PRINT "LEAGUE";
     IF B5%(WK, M, 0) = 0 OR B5%(WK, M, 1) = 0 THEN LOCATE , 15: PRINT ".000"; : GOTO 735
     IF B5%(WK, M, 0) = B5%(WK, M, 1) THEN LOCATE , 14: PRINT "1.000"; : GOTO 735
-    LOCATE , 15: PRINT USING ".###"; B5%(WK, M, 1) / B5%(WK, M, 0);
+	statPCT! = B5%(WK, M, 1) / B5%(WK, M, 0)
+    LOCATE , 15: PRINT USING ".###"; statPCT!;
 
 735 IF B5%(WK, M, 0) + B5%(WK, M, 7) = 0 THEN LOCATE , 21: PRINT ".000"; : GOTO 736
     IF B5%(WK, M, 1) + B5%(WK, M, 7) = B5%(WK, M, 0) + B5%(WK, M, 7) THEN LOCATE , 20: PRINT "1.000"; : GOTO 736
-    LOCATE , 21: PRINT USING ".###"; (B5%(WK, M, 1) + B5%(WK, M, 7)) / (B5%(WK, M, 0) + B5%(WK, M, 7));
+	statPCT! = (B5%(WK, M, 1) + B5%(WK, M, 7)) / (B5%(WK, M, 0) + B5%(WK, M, 7))
+    LOCATE , 21: PRINT USING ".###"; statPCT!;
 
 736 LOCATE , 26: PRINT USING "### ### ### ### ## ## ## ### ### ### ### ## ## ##"; B5%(WK, M, 14); B5%(WK, M, 0); B5%(WK, M, 2); B5%(WK, M, 1); B5%(WK, M, 4); B5%(WK, M, 5); B5%(WK, M, 6); B5%(WK, M, 3); B5%(WK, M, 7); B5%(WK, M, 8); B5%(WK, M, 9);  _
 B5%(WK, M, 10); B5%(WK, M, 12); B5%(WK, M, 13)
     LOCATE , 6: PRINT "GAME";
     IF B8%(WK, M, 0) = 0 OR B8%(WK, M, 1) = 0 THEN LOCATE , 15: PRINT ".000"; : GOTO 737
     IF B8%(WK, M, 0) = B8%(WK, M, 1) THEN LOCATE , 14: PRINT "1.000"; : GOTO 737
-    LOCATE , 15: PRINT USING ".###"; B8%(WK, M, 1) / B8%(WK, M, 0);
+	statPCT! = B8%(WK, M, 1) / B8%(WK, M, 0)
+    LOCATE , 15: PRINT USING ".###"; statPCT!;
 
 737 IF B8%(WK, M, 0) + B8%(WK, M, 7) = 0 THEN LOCATE , 21: PRINT ".000"; : GOTO 738
     IF B8%(WK, M, 1) + B8%(WK, M, 7) = B8%(WK, M, 0) + B8%(WK, M, 7) THEN LOCATE , 20: PRINT "1.000"; : GOTO 738
@@ -1801,9 +1807,9 @@ SUB POPUPPIT (WK, M)
     FOR X = 1 TO 7: LOCATE , 3: PRINT " "; CHR$(186); STRING$(71, 32); CHR$(186); " ": NEXT
     LOCATE , 3: PRINT " "; CHR$(200); STRING$(71, 205); CHR$(188); " "
     IF TS%(WK,0)=999 THEN LOCATE 15,56:PRINT "VS LHB  .000";
-    IF TS%(WK,0)=999 AND P%(WK,M,51)<>0 THEN LOCATE 15,64:PRINT USING ".###";P%(WK,M,52)/P%(WK,M,51)
+    IF TS%(WK,0)=999 AND P%(WK,M,51)<>0 THEN statPCT! = P%(WK,M,52)/P%(WK,M,51): LOCATE 15,64:PRINT USING ".###"; statPCT!
     IF TS%(WK,0)=999 THEN LOCATE 16,56:PRINT "VS RHB  .000";
-    IF TS%(WK,0)=999 AND P%(WK,M,58)<>0 THEN LOCATE 16,64:PRINT USING ".###";P%(WK,M,59)/P%(WK,M,58)
+    IF TS%(WK,0)=999 AND P%(WK,M,58)<>0 THEN statPCT! = P%(WK,M,59)/P%(WK,M,58): LOCATE 16,64:PRINT USING ".###"; statPCT!
     LOCATE 15, 6: PRINT "Stats for "; p$(WK, M)
     LOCATE , 6: PRINT "THROWS: "; B1$(p%(WK, M, 0) + 2); "    "; : PRINT USING "G/A%: ##     HOLD: #"; p%(WK, M, 12); p%(WK, M, 18)
     LOCATE , 3: PRINT " "; CHR$(204); STRING$(71, 205); CHR$(185); " "
@@ -1848,12 +1854,15 @@ SUB POPUPSTATS ()
     PRINT b$(p, J): LOCATE , 6: PRINT "BATS: "; B1$(b%(p, J, 0) + 2); "    "; : PRINT USING "G/A%: ##       BUNT: #       RUN: #"; b%(p, J, 18); b%(p, J, 30); b%(p, J, 16)
 
 510 IF B7%(P, B1!(P)) = 1 AND TS%(P,0)=999 THEN LOCATE 4,56:PRINT "VS LHP  .000";
-    IF B7%(P, B1!(P)) = 1 AND TS%(P,0)=999 AND P%(P,P1%(P),37)<>0 THEN LOCATE 4,64:PRINT USING ".###";P%(P,P1%(P),38)/P%(P,P1%(P),37)
-    IF B7%(P, B1!(P)) = 1 AND TS%(P,0)=999 THEN LOCATE 5,56:PRINT "VS RHP  .000";
-    IF B7%(P, B1!(P)) = 1 AND TS%(P,0)=999 AND P%(P,P1%(P),44)<>0 THEN LOCATE 5,64:PRINT USING ".###";P%(P,P1%(P),45)/P%(P,P1%(P),44)
+    IF B7%(P, B1!(P)) = 1 AND TS%(P,0)=999 AND P%(P,P1%(P),37)<>0 THEN statPCT! = P%(P,P1%(P),38)/P%(P,P1%(P),37): LOCATE 4,64:PRINT USING ".###"; statPCT!
+    
+	IF B7%(P, B1!(P)) = 1 AND TS%(P,0)=999 THEN LOCATE 5,56:PRINT "VS RHP  .000";
+    IF B7%(P, B1!(P)) = 1 AND TS%(P,0)=999 AND P%(P,P1%(P),44)<>0 THEN statPCT! = P%(P,P1%(P),45)/P%(P,P1%(P),44): LOCATE 5,64:PRINT USING ".###"; statPCT!
+	
     LOCATE 6, 3: PRINT " "; CHR$(204); STRING$(71, 205); CHR$(185); " "
     LOCATE , 6: PRINT "          AVG   OBP   G  AB   R   H 2B 3B HR RBI  BB  SO  SB CS HS LS"
-    IF B7%(p, B1!(p)) = 1 AND p%(p, P1%(p), 11) <> 999 THEN LOCATE , 6: PRINT "SEASON"; : LOCATE , 15: PRINT USING ".###"; p%(p, P1%(p), 11) / 1000: GOTO 520
+    
+	IF B7%(p, B1!(p)) = 1 AND p%(p, P1%(p), 11) <> 999 THEN statPCT! = p%(p, P1%(p), 11) / 1000: LOCATE , 6: PRINT "SEASON"; : LOCATE , 15: PRINT USING ".###"; statPCT!: GOTO 520
     IF B7%(p, B1!(p)) = 1 THEN 517
     WK = p
     M = J
@@ -1869,22 +1878,25 @@ p%(p, P1%(p), 23);
 520 LOCATE , 6: PRINT "LEAGUE"; : J = P1%(p)
     IF P5%(p, J, 23) = 0 OR P5%(p, J, 24) = 0 THEN LOCATE , 15: PRINT ".000"; : GOTO 521
     IF P5%(p, J, 23) = P5%(p, J, 24) THEN LOCATE , 14: PRINT "1.000"; : GOTO 521
-    LOCATE , 15: PRINT USING ".###"; P5%(p, J, 24) / P5%(p, J, 23);
+    statPCT! = P5%(p, J, 24) / P5%(p, J, 23)
+	LOCATE , 15: PRINT USING ".###"; statPCT!;
 
 521 IF P5%(p, J, 23) + P5%(p, J, 30) = 0 THEN LOCATE , 21: PRINT ".000"; : GOTO 522
     IF P5%(p, J, 24) + P5%(p, J, 30) = P5%(p, J, 23) + P5%(p, J, 30) THEN LOCATE , 20: PRINT "1.000"; : GOTO 522
-    LOCATE , 21: PRINT USING ".###"; (P5%(p, J, 24) + P5%(p, J, 30)) / (P5%(p, J, 23) + P5%(p, J, 30));
+	statPCT! = (P5%(p, J, 24) + P5%(p, J, 30)) / (P5%(p, J, 23) + P5%(p, J, 30))
+    LOCATE , 21: PRINT USING ".###"; statPCT!;
 
-522 LOCATE , 26: PRINT USING "### ### ### ### ## ## ## ### ### ### ### ## ## ##"; P5%(p, J, 8); P5%(p, J, 23); P5%(p, J, 25); P5%(p, J, 24); P5%(p, J, 27); P5%(p, J, 28); P5%(p, J, 29); P5%(p, J, 26); P5%(p, J, 30); P5%(p, J, 31); P5%(p, J, 32);  _
-P5%(p, J, 33); P5%(p, J, 35); P5%(p, J, 36)
+522 LOCATE , 26: PRINT USING "### ### ### ### ## ## ## ### ### ### ### ## ## ##"; P5%(p, J, 8); P5%(p, J, 23); P5%(p, J, 25); P5%(p, J, 24); P5%(p, J, 27); P5%(p, J, 28); P5%(p, J, 29); P5%(p, J, 26); P5%(p, J, 30); P5%(p, J, 31); P5%(p, J, 32); P5%(p, J, 33); P5%(p, J, 35); P5%(p, J, 36)
     LOCATE , 6: PRINT "GAME";
     IF P8%(p, J, 23) = 0 OR P8%(p, J, 24) = 0 THEN LOCATE , 15: PRINT ".000"; : GOTO 523
     IF P8%(p, J, 23) = P8%(p, J, 24) THEN LOCATE , 14: PRINT "1.000"; : GOTO 523
-    LOCATE , 15: PRINT USING ".###"; P8%(p, J, 24) / P8%(p, J, 23);
+    statPCT! = P8%(p, J, 24) / P8%(p, J, 23)
+	LOCATE , 15: PRINT USING ".###"; statPCT!;
 
 523 IF P8%(p, J, 23) + P8%(p, J, 30) = 0 THEN LOCATE , 21: PRINT ".000"; : GOTO 524
     IF P8%(p, J, 24) + P8%(p, J, 30) = P8%(p, J, 23) + P8%(p, J, 30) THEN LOCATE , 20: PRINT "1.000"; : GOTO 524
-    LOCATE , 21: PRINT USING ".###"; (P8%(p, J, 24) + P8%(p, J, 30)) / (P8%(p, J, 23) + P8%(p, J, 30));
+    statPCT! = (P8%(p, J, 24) + P8%(p, J, 30)) / (P8%(p, J, 23) + P8%(p, J, 30))
+	LOCATE , 21: PRINT USING ".###"; statPCT!;
 
 524 LOCATE , 26: PRINT USING "### ### ### ### ## ## ## ### ### ### ### ## ## ##"; P8%(p, J, 8); P8%(p, J, 23); P8%(p, J, 25); P8%(p, J, 24); P8%(p, J, 27); P8%(p, J, 28); P8%(p, J, 29); P8%(p, J, 26); P8%(p, J, 30); P8%(p, J, 31); P8%(p, J, 32);  _
 P8%(p, J, 33); P8%(p, J, 35); P8%(p, J, 36)
@@ -2275,7 +2287,8 @@ SUB HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9
     IF TY%=2 OR TY%=3 THEN PY%=1
     IF TY%=0 OR TY%=2 THEN BY%=0
     IF TY%=1 OR TY%=3 THEN BY%=1
-    RETURN
+    Return
+
 
 273 '
 END SUB

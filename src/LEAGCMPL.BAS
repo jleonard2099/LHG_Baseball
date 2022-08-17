@@ -1,884 +1,1234 @@
-'$INCLUDE: 'Config.BI'
-'$INCLUDE: 'KeyInput.BI'
-'$INCLUDE: 'QPProEqu.BI'
-
-_Title "Full Count Baseball - Update League Stats"
-''$ExeIcon:'./lhg_fcbase.ico'
-'_Icon	
-_AllowFullScreen
-
-DEFINT A-Z
-
-DIM O1(40), TM$(40), JS(46, 42) AS SINGLE, ZM%(46), NM$(46)
-DIM H1$(40), PS$(40), D$(2)
-DIM BA$(40), DFT(40, 20) AS SINGLE, ER$(40), OFT(40, 20) AS SINGLE
-DIM O2(40)
-DIM Z2$(298), Z3$(298), Z1(298, 2) AS SINGLE
-DIM BAT(24), PIT(23)
-DIM J AS SINGLE
-
-4 OPEN "DEV.BAS" FOR INPUT AS #2
-FOR I = 0 TO 2
-INPUT #2, D$(I)
-NEXT
-CLOSE 2
-
-5 CLS
-APP = 0
-
-4000 Spec$ = D$(2) + "*.LIB"
-	null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
-	Count% = DirCount%
-	IF Count% = 0 THEN 4500
-REDIM leagueFiles$(0 TO Count%)
-	FOR X = 1 TO Count%
-	  leagueFiles$(X) = SPACE$(12)
-	NEXT
-	leagueFiles$(0) = Spec$
-	CALL ReadFile(leagueFiles$())
-	'CALL SortStr(VARPTR(leagueFiles$(1)), Count%, 0)
-
-1310 CLS
-	COLOR , 1
-	CLS
-	LOCATE , 28
-	COLOR 14
-	PRINT "SELECT LEAGUE TO COMPILE": COLOR 15
-	SELECTION% = 1
-	Start% = 1
-	FileFGColr% = 15:FileBGColr% = 1
-	HiLiteFGColr% = 0:HiLiteBGColr% = 7
-	Rows% = 20
-	Columns% = 4
-	Spacing% = 6
-	Row% = 4
-	Column% = 1
-	LOCATE 25, 1
-	COLOR 14
-	PRINT "ENTER"; : COLOR 15
-	PRINT "-SELECTS TEAM";
-
-_MouseShow "DEFAULT"
-MAMenu leagueFiles$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
-_MouseHide
-
-	IF ExitCode% = 27 THEN 103
-	targetFile$ = leagueFiles$(SELECTION%)
-	LOCATE 2, 33: PRINT targetFile$
-	LOCATE	, 33: PRINT "ANY CHANGE (YN)";
-	COLOR 15, 0
-3910 I$ = GetKeyPress$
-	IF UCASE$(I$) = "Y" THEN 1310
-
-3911 targetFile$ = RTrim$(targetFile$)
-	WE$ = LEFT$(targetFile$, LEN(targetFile$) - 4)
-	GOTO 7
-
-4500 LOCATE 10, 8
-	CALL CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-	I$ = GetKeyPress$
-	CALL CSMsgBox("", 0, Pass)
-	GOTO 103
-
-7 LH$ = LEFT$(WE$, 8)
-
-10 C$ = ","
-
-11 FOR Z = 1 TO 40: DFT(Z, 1) = 99.99: NEXT
-
-15 CLS
-
-30 OPEN D$(2) + LH$ + ".TMS" FOR INPUT AS #2
-	INPUT #2, LG$, D1$, D2$, D3$, D4$
-	FOR XW = 1 TO 40
-
-35 INPUT #2, H1$(XW)
-	NEXT
-CLOSE 2
-
-70 GOSUB 3018
-
-71 FOR XW = 1 TO 40
-
-72 GOSUB 700
-
-73 GOSUB 900
-
-74 CLOSE 1: NEXT
-
-75 AA = 1: ZZ = 10
-	GOSUB 950
-	AA = 11: ZZ = 20
-	GOSUB 950
-	AA = 21: ZZ = 30
-	GOSUB 950
-	AA = 31: ZZ = 40
-	GOSUB 950
-	GOSUB 4010
-
-103 RUN "HELLO.EXE"
-
-700 WN = 0: LS = 0: IF H1$(XW) = CHR$(42) THEN RETURN
-
-800 IF NOT _FILEEXISTS(D$(1) + H1$(XW)) THEN 822
-
-801 PRINT "FINDING "; H1$(XW); " STATS"
-
-802 WN = 0: LS = 0
-OPEN D$(1) + H1$(XW) FOR INPUT AS #1
-	INPUT #1, TN$, WN, LS
-	RETURN
-
-804 FOR K = 1 TO 23
-	INPUT #1, NM$(K), ZM%(K)
-	NEXT
-	FOR K = 25 TO 46
-	INPUT #1, NM$(K), ZM%(K)
-
-805 NEXT
-	NM$(24) = "PITCHERS"
-	FOR J = 1 TO 23
-	FOR K = 1 TO 22
-	INPUT #1, JS(J, K)
-	NEXT K, J
-
-806 FOR J = 25 TO 46
-	FOR K = 1 TO 42
-	INPUT #1, JS(J, K)
-	NEXT K, J
-	FOR K = 1 TO 24
-	INPUT #1, BAT(K)
-	NEXT K
-	FOR K = 1 TO 23
-	INPUT #1, PIT(K)
-	NEXT K
-CLOSE #1
-	GOTO 810
-
-810 FOR J = 1 TO 23
-	IF JS(J, 1) = 0 THEN JS(J, 1) = 1
-	JS(J, 17) = JS(J, 13)
-	JS(J, 18) = JS(J, 14)
-
-811 IF (JS(J, 8) + JS(J, 1)) / (WN + LS) < 3.1 THEN JS(J, 14) = 0: JS(J, 15) = 0: JS(J, 16) = 0: GOTO 815
-
-812 JS(J, 16) = JS(J, 2) / JS(J, 1)
-
-813 JS(J, 14) = (JS(J, 2) + JS(J, 5) + 2 * JS(J, 6) + 3 * JS(J, 7)) / JS(J, 1)
-
-814 JS(J, 15) = (JS(J, 2) + JS(J, 8)) / (JS(J, 1) + JS(J, 8))
-
-815 NEXT
-
-816 FOR J = 25 TO 46
-	IF JS(J, 1) = 0 OR (JS(J, 1) / 3) < (WN + LS) THEN JS(J, 14) = 99.99: GOTO 818
-
-817 JS(J, 14) = JS(J, 4) / JS(J, 1) * 27
-
-818 NEXT: RETURN
-
-822 RETURN
-
-900 L = LEN(H1$(XW)): WT$ = "": FOR X = 1 TO L: A = ASC(MID$(H1$(XW), X, 1))
-
-910 WT$ = WT$ + CHR$(A): NEXT X
-
-935 FOR X = 1 TO 40: IF TM$(X) <> WT$ THEN 945
-
-936 IF O1(X) = WN AND O2(X) = LS THEN RETURN
-
-940 O1(X) = WN: O2(X) = LS
-
-945 NEXT X: GOSUB 804: GOSUB 3100
-
-946 RETURN
-
-950 FOR X = AA TO ZZ - 1: FOR Y = X + 1 TO ZZ: IF O1(X) - O2(X) > O1(Y) - O2(Y) THEN 985
-
-955 IF O1(X) - O2(X) = O1(Y) - O2(Y) AND O1(X) <= O1(Y) AND O1(X) > O2(X) THEN 985
-
-960 IF O1(X) - O2(X) = O1(Y) - O2(Y) AND O1(X) >= O1(Y) AND O1(X) < O2(X) THEN 985
-
-965 TN$ = TM$(X): TM$(X) = TM$(Y): TM$(Y) = TN$
-
-970 J = O1(X): O1(X) = O1(Y): O1(Y) = J
-
-975 J = O2(X): O2(X) = O2(Y): O2(Y) = J
-
-985 NEXT Y: NEXT X: RETURN
-
-3018 targetFile$ = LH$ + ".TMS"
-
-3019 C$ = ","
-
-3020 OPEN D$(2) + targetFile$ FOR INPUT AS #2
-
-3021 INPUT #2, LG$, D1$, D2$, D3$, D4$
-
-3022 FOR X = 1 TO 40: INPUT #2, TM$(X): NEXT: CLOSE 2
-
-3023 FOR X = 120 TO 139
-	Z2$(X) = "*": Z3$(X) = "*": Z1(X, 1) = 99.99: Z1(X, 2) = 0
-
-3024 NEXT X
-	FOR X = 239 TO 258
-	Z2$(X) = "*": Z3$(X) = "*": Z1(X, 1) = 99.99: Z1(X, 2) = 99.99
-	NEXT X
-
-3025 RETURN
-
-3071 CLOSE 2
-
-3100 PRINT "CHECKING "; H1$(XW); " STATS"
-
-3300 CLS
-	FOR X = 1 TO 23
-	IF NM$(X) = "XXX" THEN 3414
-	PRINT "     CHECKING STATS OF "; NM$(X)
-
-3301 'IF JS(X,1)>0 THEN JS(X,16)=JS(X,2)/JS(X,1)
-
-3309 PS$(X) = WT$
-
-3310 FOR Y = 1 TO 20
-	IF Z2$(Y) = NM$(X) AND Z3$(Y) = WT$ THEN GOSUB 4818: GOTO 3318
-
-3311 NEXT Y
-
-3312 IF JS(X, 16) < Z1(20, 1) THEN 3318
-
-3315 Z2$(20) = NM$(X)
-
-3317 Z3$(20) = PS$(X)
-	Z1(20, 1) = JS(X, 16)
-	Z1(20, 2) = JS(X, 1)
-	GOSUB 4820
-
-3318 IF (JS(X, 8) + JS(X, 1)) / (WN + LS) < 3.1 THEN 3320
-	IF JS(X, 16) > Z1(258, 1) THEN 3320
-	Z2$(258) = NM$(X)
-	Z3$(258) = PS$(X)
-	Z1(258, 1) = JS(X, 16)
-	Z1(258, 2) = JS(X, 1)
-	GOSUB 4832
-
-3320 FOR Y = 99 TO 108: IF Z2$(Y) = NM$(X) AND Z3$(Y) = WT$ THEN GOSUB 4871: GOTO 3325
-
-3321 NEXT Y
-
-3322 IF JS(X, 14) < Z1(108, 1) THEN 3325
-
-3323 Z2$(108) = NM$(X)
-
-3324 Z3$(108) = PS$(X): Z1(108, 1) = JS(X, 14): Z1(108, 2) = JS(X, 1): GOSUB 4871
-
-3325 FOR Y = 110 TO 119: IF Z2$(Y) = NM$(X) AND Z3$(Y) = WT$ THEN GOSUB 4878: GOTO 3330
-
-3326 NEXT Y
-
-3327 IF JS(X, 15) < Z1(119, 1) THEN 3330
-
-3328 Z2$(119) = NM$(X)
-
-3329 Z3$(119) = PS$(X): Z1(119, 1) = JS(X, 15): Z1(119, 2) = JS(X, 1): GOSUB 4878
-
-3330 FOR Z = 21 TO 31
-
-3331 IF Z2$(Z) = NM$(X) AND Z3$(Z) = WT$ THEN Z1(Z, 1) = JS(X, 2): GOTO 3335
-
-3332 NEXT Z: IF JS(X, 2) <= Z1(31, 1) THEN 3342
-
-3333 Z1(31, 1) = JS(X, 2): Z2$(31) = NM$(X)
-
-3334 Z3$(31) = WT$
-
-3335 FOR Z = 21 TO 30: FOR Z1 = Z + 1 TO 31: IF Z1(Z, 1) >= Z1(Z1, 1) THEN 3339
-
-3336 TN$ = Z2$(Z1): Z2$(Z1) = Z2$(Z): Z2$(Z) = TN$
-
-3337 TN$ = Z3$(Z1): Z3$(Z1) = Z3$(Z): Z3$(Z) = TN$
-
-3338 J = Z1(Z1, 1): Z1(Z1, 1) = Z1(Z, 1): Z1(Z, 1) = J
-
-3339 NEXT Z1: NEXT Z
-
-3340 FOR Z = 21 TO 31
-
-3341 NEXT Z
-
-3342 FOR Z = 32 TO 42
-
-3343 IF Z2$(Z) = NM$(X) AND Z3$(Z) = WT$ THEN Z1(Z, 1) = JS(X, 5): GOTO 3347
-
-3344 NEXT Z: IF JS(X, 5) <= Z1(42, 1) THEN 3354
-
-3345 Z1(42, 1) = JS(X, 5): Z2$(42) = NM$(X)
-
-3346 Z3$(42) = WT$
-
-3347 FOR Z = 32 TO 41: FOR Z1 = Z + 1 TO 42: IF Z1(Z, 1) >= Z1(Z1, 1) THEN 3351
-
-3348 TN$ = Z2$(Z1): Z2$(Z1) = Z2$(Z): Z2$(Z) = TN$
-
-3349 TN$ = Z3$(Z1): Z3$(Z1) = Z3$(Z): Z3$(Z) = TN$
-
-3350 J = Z1(Z1, 1): Z1(Z1, 1) = Z1(Z, 1): Z1(Z, 1) = J
-
-3351 NEXT Z1: NEXT Z
-
-3352 FOR Z = 32 TO 42
-
-3353 NEXT Z
-
-3354 FOR Z = 43 TO 53
-
-3355 IF Z2$(Z) = NM$(X) AND Z3$(Z) = WT$ THEN Z1(Z, 1) = JS(X, 6): GOTO 3359
-
-3356 NEXT Z: IF JS(X, 6) <= Z1(53, 1) THEN 3366
-
-3357 Z1(53, 1) = JS(X, 6): Z2$(53) = NM$(X)
-
-3358 Z3$(53) = WT$
-
-3359 FOR Z = 43 TO 52: FOR Z1 = Z + 1 TO 53: IF Z1(Z, 1) >= Z1(Z1, 1) THEN 3363
-
-3360 TN$ = Z2$(Z1): Z2$(Z1) = Z2$(Z): Z2$(Z) = TN$
-
-3361 TN$ = Z3$(Z1): Z3$(Z1) = Z3$(Z): Z3$(Z) = TN$
-
-3362 J = Z1(Z1, 1): Z1(Z1, 1) = Z1(Z, 1): Z1(Z, 1) = J
-
-3363 NEXT Z1: NEXT Z
-
-3364 FOR Z = 43 TO 53
-
-3365 NEXT Z
-
-3366 FOR Z = 54 TO 64
-
-3367 IF Z2$(Z) = NM$(X) AND Z3$(Z) = WT$ THEN Z1(Z, 1) = JS(X, 7): GOTO 3371
-
-3368 NEXT Z: IF JS(X, 7) <= Z1(64, 1) THEN 3378
-
-3369 Z1(64, 1) = JS(X, 7): Z2$(64) = NM$(X)
-
-3370 Z3$(64) = WT$
-
-3371 FOR Z = 54 TO 63: FOR Z1 = Z + 1 TO 64: IF Z1(Z, 1) >= Z1(Z1, 1) THEN 3375
-
-3372 TN$ = Z2$(Z1): Z2$(Z1) = Z2$(Z): Z2$(Z) = TN$
-
-3373 TN$ = Z3$(Z1): Z3$(Z1) = Z3$(Z): Z3$(Z) = TN$
-
-3374 J = Z1(Z1, 1): Z1(Z1, 1) = Z1(Z, 1): Z1(Z, 1) = J
-
-3375 NEXT Z1: NEXT Z
-
-3376 FOR Z = 54 TO 64
-
-3377 NEXT Z
-
-3378 FOR Z = 65 TO 74
-
-3379 IF Z2$(Z) = NM$(X) AND Z3$(Z) = WT$ THEN Z1(Z, 1) = JS(X, 3): GOTO 3383
-
-3380 NEXT Z: IF JS(X, 3) <= Z1(74, 1) THEN 3390
-
-3381 Z1(74, 1) = JS(X, 3): Z2$(74) = NM$(X)
-
-3382 Z3$(74) = WT$
-
-3383 FOR Z = 65 TO 73: FOR Z1 = Z + 1 TO 74: IF Z1(Z, 1) >= Z1(Z1, 1) THEN 3387
-
-3384 TN$ = Z2$(Z1): Z2$(Z1) = Z2$(Z): Z2$(Z) = TN$
-
-3385 TN$ = Z3$(Z1): Z3$(Z1) = Z3$(Z): Z3$(Z) = TN$
-
-3386 J = Z1(Z1, 1): Z1(Z1, 1) = Z1(Z, 1): Z1(Z, 1) = J
-
-3387 NEXT Z1: NEXT Z
-
-3388 FOR Z = 65 TO 74
-
-3389 NEXT Z
-
-3390 FOR Z = 76 TO 85
-
-3391 IF Z2$(Z) = NM$(X) AND Z3$(Z) = WT$ THEN Z1(Z, 1) = JS(X, 4): GOTO 3395
-
-3392 NEXT Z: IF JS(X, 4) <= Z1(85, 1) THEN 3402
-
-3393 Z1(85, 1) = JS(X, 4): Z2$(85) = NM$(X)
-
-3394 Z3$(85) = WT$
-
-3395 FOR Z = 76 TO 84: FOR Z1 = Z + 1 TO 85: IF Z1(Z, 1) >= Z1(Z1, 1) THEN 3399
-
-3396 TN$ = Z2$(Z1): Z2$(Z1) = Z2$(Z): Z2$(Z) = TN$
-
-3397 TN$ = Z3$(Z1): Z3$(Z1) = Z3$(Z): Z3$(Z) = TN$
-
-3398 J = Z1(Z1, 1): Z1(Z1, 1) = Z1(Z, 1): Z1(Z, 1) = J
-
-3399 NEXT Z1: NEXT Z
-
-3400 FOR Z = 76 TO 86
-
-3401 NEXT Z
-
-3402 FOR Z = 87 TO 97
-
-3403 IF Z2$(Z) = NM$(X) AND Z3$(Z) = WT$ THEN Z1(Z, 1) = JS(X, 10): GOTO 3407
-
-3404 NEXT Z: IF JS(X, 10) <= Z1(97, 1) THEN 3414
-
-3405 Z1(97, 1) = JS(X, 10): Z2$(97) = NM$(X)
-
-3406 Z3$(97) = WT$
-
-3407 FOR Z = 87 TO 96: FOR Z1 = Z + 1 TO 97: IF Z1(Z, 1) >= Z1(Z1, 1) THEN 3411
-
-3408 TN$ = Z2$(Z1): Z2$(Z1) = Z2$(Z): Z2$(Z) = TN$
-
-3409 TN$ = Z3$(Z1): Z3$(Z1) = Z3$(Z): Z3$(Z) = TN$
-
-3410 J = Z1(Z1, 1): Z1(Z1, 1) = Z1(Z, 1): Z1(Z, 1) = J
-
-3411 NEXT Z1: NEXT Z
-
-3412 FOR Z = 87 TO 97
-
-3413 NEXT Z
-
-3414 GOSUB 3600
-	NEXT X
-
-3415 FOR X = 25 TO 46
-	IF NM$(X) = "XXX" THEN 3525
-	PRINT "     CHECKING STATS OF "; NM$(X)
-
-3422 IF JS(X, 14) > Z1(139, 1) THEN 3425
-
-3423 Z2$(139) = NM$(X)
-
-3424 Z3$(139) = WT$
-	Z1(139, 1) = JS(X, 14)
-	Z1(139, 2) = JS(X, 1) / 3
-	GOSUB 4840
-
-3425 IF JS(X, 1) / 3 < (WN + LS) OR JS(X, 1) = 0 THEN 3430
-	IF JS(X, 14) < Z1(278, 1) THEN 3430
-	Z2$(278) = NM$(X)
-	Z3$(278) = WT$
-	Z1(278, 1) = JS(X, 14)
-	Z1(278, 2) = JS(X, 1) / 3
-	GOSUB 4841
-
-3430 FOR Y = 140 TO 150
-	IF Z2$(Y) = NM$(X) AND Z3$(Y) = WT$ THEN GOSUB 4859: GOTO 3440
-
-3431 NEXT Y
-
-3432 IF JS(X, 7) - JS(X, 8) < Z1(150, 1) - Z1(150, 2) THEN 3440
-
-3433 IF JS(X, 7) - JS(X, 8) = Z1(150, 1) - Z1(150, 2) AND JS(X, 7) >= Z1(150, 1) THEN 3440
-
-3434 Z2$(150) = NM$(X)
-
-3435 Z3$(150) = WT$: Z1(150, 1) = JS(X, 7): Z1(150, 2) = JS(X, 8): GOSUB 4860
-
-3440 FOR Z = 151 TO 161
-
-3441 IF Z2$(Z) = NM$(X) AND Z3$(Z) = WT$ THEN Z1(Z, 1) = JS(X, 7): GOTO 3445
-
-3442 NEXT Z: IF JS(X, 7) <= Z1(161, 1) THEN 3452
-
-3443 Z1(161, 1) = JS(X, 7): Z2$(161) = NM$(X)
-
-3444 Z3$(161) = WT$
-
-3445 FOR Z = 151 TO 160: FOR Z1 = Z + 1 TO 161: IF Z1(Z, 1) >= Z1(Z1, 1) THEN 3449
-
-3446 TN$ = Z2$(Z1): Z2$(Z1) = Z2$(Z): Z2$(Z) = TN$
-
-3447 TN$ = Z3$(Z1): Z3$(Z1) = Z3$(Z): Z3$(Z) = TN$
-
-3448 J = Z1(Z1, 1): Z1(Z1, 1) = Z1(Z, 1): Z1(Z, 1) = J
-
-3449 NEXT Z1: NEXT Z
-
-3450 FOR Z = 151 TO 161
-
-3451 NEXT Z
-
-3452 FOR Z = 162 TO 172
-
-3453 IF Z2$(Z) = NM$(X) AND Z3$(Z) = WT$ THEN Z1(Z, 1) = JS(X, 1) / 3: GOTO 3457
-
-3454 NEXT Z: IF JS(X, 1) / 3 <= Z1(172, 1) THEN 3464
-
-3455 Z1(172, 1) = JS(X, 1) / 3: Z2$(172) = NM$(X)
-
-3456 Z3$(172) = WT$
-
-3457 FOR Z = 162 TO 171: FOR Z1 = Z + 1 TO 172: IF Z1(Z, 1) >= Z1(Z1, 1) THEN 3461
-
-3458 TN$ = Z2$(Z1): Z2$(Z1) = Z2$(Z): Z2$(Z) = TN$
-
-3459 TN$ = Z3$(Z1): Z3$(Z1) = Z3$(Z): Z3$(Z) = TN$
-
-3460 J = Z1(Z1, 1): Z1(Z1, 1) = Z1(Z, 1): Z1(Z, 1) = J
-
-3461 NEXT Z1: NEXT Z
-
-3462 FOR Z = 162 TO 172
-
-3463 NEXT Z
-
-3464 FOR Z = 173 TO 183
-
-3465 IF Z2$(Z) = NM$(X) AND Z3$(Z) = WT$ THEN Z1(Z, 1) = JS(X, 6): GOTO 3469
-
-3466 NEXT Z: IF JS(X, 6) <= Z1(183, 1) THEN 3476
-
-3467 Z1(183, 1) = JS(X, 6): Z2$(183) = NM$(X)
-
-3468 Z3$(183) = WT$
-
-3469 FOR Z = 173 TO 182: FOR Z1 = Z + 1 TO 183: IF Z1(Z, 1) >= Z1(Z1, 1) THEN 3473
-
-3470 TN$ = Z2$(Z1): Z2$(Z1) = Z2$(Z): Z2$(Z) = TN$
-
-3471 TN$ = Z3$(Z1): Z3$(Z1) = Z3$(Z): Z3$(Z) = TN$
-
-3472 J = Z1(Z1, 1): Z1(Z1, 1) = Z1(Z, 1): Z1(Z, 1) = J
-
-3473 NEXT Z1: NEXT Z
-
-3474 FOR Z = 173 TO 183
-
-3475 NEXT Z
-
-3476 FOR Z = 184 TO 194
-
-3477 IF Z2$(Z) = NM$(X) AND Z3$(Z) = WT$ THEN Z1(Z, 1) = JS(X, 11): GOTO 3481
-
-3478 NEXT Z: IF JS(X, 11) <= Z1(194, 1) THEN 3488
-
-3479 Z1(194, 1) = JS(X, 11): Z2$(194) = NM$(X)
-
-3480 Z3$(194) = WT$
-
-3481 FOR Z = 184 TO 193: FOR Z1 = Z + 1 TO 194: IF Z1(Z, 1) >= Z1(Z1, 1) THEN 3485
-
-3482 TN$ = Z2$(Z1): Z2$(Z1) = Z2$(Z): Z2$(Z) = TN$
-
-3483 TN$ = Z3$(Z1): Z3$(Z1) = Z3$(Z): Z3$(Z) = TN$
-
-3484 J = Z1(Z1, 1): Z1(Z1, 1) = Z1(Z, 1): Z1(Z, 1) = J
-
-3485 NEXT Z1: NEXT Z
-
-3486 FOR Z = 184 TO 194
-
-3487 NEXT Z
-
-3488 FOR Z = 195 TO 205
-
-3489 IF Z2$(Z) = NM$(X) AND Z3$(Z) = WT$ THEN Z1(Z, 1) = JS(X, 12): GOTO 3493
-
-3490 NEXT Z: IF JS(X, 12) <= Z1(205, 1) THEN 3500
-
-3491 Z1(205, 1) = JS(X, 12): Z2$(205) = NM$(X)
-
-3492 Z3$(205) = WT$
-
-3493 FOR Z = 195 TO 204: FOR Z1 = Z + 1 TO 205: IF Z1(Z, 1) >= Z1(Z1, 1) THEN 3497
-
-3494 TN$ = Z2$(Z1): Z2$(Z1) = Z2$(Z): Z2$(Z) = TN$
-
-3495 TN$ = Z3$(Z1): Z3$(Z1) = Z3$(Z): Z3$(Z) = TN$
-
-3496 J = Z1(Z1, 1): Z1(Z1, 1) = Z1(Z, 1): Z1(Z, 1) = J
-
-3497 NEXT Z1: NEXT Z
-
-3498 FOR Z = 195 TO 205
-
-3499 NEXT Z
-
-3500 FOR Z = 206 TO 216
-
-3501 IF Z2$(Z) = NM$(X) AND Z3$(Z) = WT$ THEN Z1(Z, 1) = JS(X, 13): GOTO 3505
-
-3502 NEXT Z: IF JS(X, 13) <= Z1(216, 1) THEN 3512
-
-3503 Z1(216, 1) = JS(X, 13): Z2$(216) = NM$(X)
-
-3504 Z3$(216) = WT$
-
-3505 FOR Z = 206 TO 215: FOR Z1 = Z + 1 TO 216: IF Z1(Z, 1) >= Z1(Z1, 1) THEN 3509
-
-3506 TN$ = Z2$(Z1): Z2$(Z1) = Z2$(Z): Z2$(Z) = TN$
-
-3507 TN$ = Z3$(Z1): Z3$(Z1) = Z3$(Z): Z3$(Z) = TN$
-
-3508 J = Z1(Z1, 1): Z1(Z1, 1) = Z1(Z, 1): Z1(Z, 1) = J
-
-3509 NEXT Z1: NEXT Z
-
-3510 FOR Z = 206 TO 216
-
-3511 NEXT Z
-
-3512 REM
-
-3513 APP = APP + JS(X, 9)
-	FOR Z = 228 TO 238
-
-3514 IF Z2$(Z) = NM$(X) AND Z3$(Z) = WT$ THEN Z1(Z, 1) = JS(X, 9): GOTO 3518
-
-3515 NEXT Z: IF JS(X, 9) <= Z1(238, 1) THEN 3525
-
-3516 Z1(238, 1) = JS(X, 9): Z2$(238) = NM$(X)
-
-3517 Z3$(238) = WT$
-
-3518 FOR Z = 228 TO 237: FOR Z1 = Z + 1 TO 238: IF Z1(Z, 1) >= Z1(Z1, 1) THEN 3522
-
-3519 TN$ = Z2$(Z1): Z2$(Z1) = Z2$(Z): Z2$(Z) = TN$
-
-3520 TN$ = Z3$(Z1): Z3$(Z1) = Z3$(Z): Z3$(Z) = TN$
-
-3521 J = Z1(Z1, 1): Z1(Z1, 1) = Z1(Z, 1): Z1(Z, 1) = J
-
-3522 NEXT Z1: NEXT Z
-
-3523 FOR Z = 228 TO 238
-
-3524 NEXT Z
-
-3525 NEXT X
-
-3530 FOR Z = 1 TO 40: IF BAT(3) = 0 THEN BAT(3) = 1
-
-3531 IF BA$(Z) = WT$ THEN OFT(Z, 1) = BAT(4) / BAT(3): FOR M = 3 TO 14: OFT(Z, M) = BAT(M): NEXT M: GOTO 3535
-
-3532 NEXT Z: IF BAT(4) / BAT(3) <= OFT(40, 1) THEN 3550
-
-3533 OFT(40, 1) = BAT(4) / BAT(3): FOR M = 3 TO 14: OFT(40, M) = BAT(M): NEXT M: BA$(40) = WT$
-
-3534 BA$(40) = WT$
-
-3535 FOR Z = 1 TO 39: FOR Z1 = Z + 1 TO 40: IF OFT(Z, 1) >= OFT(Z1, 1) THEN 3539
-
-3536 TN$ = BA$(Z1): BA$(Z1) = BA$(Z): BA$(Z) = TN$
-
-3538 FOR M = 1 TO 14: J = OFT(Z1, M): OFT(Z1, M) = OFT(Z, M): OFT(Z, M) = J: NEXT M
-
-3539 NEXT Z1: NEXT Z
-
-3540 FOR Z = 1 TO 40: IF OFT(Z, 1) = OFT(40, 1) THEN BA$(Z) = "*": BA$(Z) = "*"
-
-3541 NEXT Z
-
-3550 FOR Z = 1 TO 40: IF PIT(1) = 0 THEN PIT(1) = 1: PIT(4) = 3
-
-3551 IF ER$(Z) = WT$ THEN DFT(Z, 1) = PIT(4) / PIT(1) * 27: FOR M = 2 TO 14: DFT(Z, M) = PIT(M - 1): NEXT M: GOTO 3555
-
-3552 NEXT Z: IF PIT(4) / PIT(1) * 27 >= DFT(40, 1) THEN 3590
-
-3553 DFT(40, 1) = PIT(4) / PIT(1) * 27: FOR M = 2 TO 14: DFT(40, M) = PIT(M - 1): NEXT M: ER$(40) = WT$
-
-3554 ER$(40) = WT$
-
-3555 FOR Z = 1 TO 39: FOR Z1 = Z + 1 TO 40: IF DFT(Z, 1) <= DFT(Z1, 1) THEN 3559
-
-3556 TN$ = ER$(Z1): ER$(Z1) = ER$(Z): ER$(Z) = TN$
-
-3558 FOR M = 1 TO 14: J = DFT(Z1, M): DFT(Z1, M) = DFT(Z, M): DFT(Z, M) = J: NEXT M
-
-3559 NEXT Z1: NEXT Z
-
-3560 FOR Z = 1 TO 40: IF DFT(Z, 1) = DFT(40, 1) THEN ER$(Z) = "*": ER$(Z) = "*"
-
-3561 NEXT Z
-
-3590 RETURN
-
-3600 FOR Z = 217 TO 227
-
-3601 IF Z2$(Z) = NM$(X) AND Z3$(Z) = WT$ THEN Z1(Z, 1) = JS(X, 8): GOTO 3605
-
-3602 NEXT Z: IF JS(X, 8) <= Z1(227, 1) THEN 3610
-
-3603 Z1(227, 1) = JS(X, 8): Z2$(227) = NM$(X)
-
-3604 Z3$(227) = WT$
-
-3605 FOR Z = 217 TO 226: FOR Z1 = Z + 1 TO 227: IF Z1(Z, 1) >= Z1(Z1, 1) THEN 3609
-
-3606 TN$ = Z2$(Z1): Z2$(Z1) = Z2$(Z): Z2$(Z) = TN$
-
-3607 TN$ = Z3$(Z1): Z3$(Z1) = Z3$(Z): Z3$(Z) = TN$
-
-3608 J = Z1(Z1, 1): Z1(Z1, 1) = Z1(Z, 1): Z1(Z, 1) = J
-
-3609 NEXT Z1: NEXT Z
-
-3610 FOR Z = 279 TO 288
-
-3611 IF Z2$(Z) = NM$(X) AND Z3$(Z) = WT$ THEN Z1(Z, 1) = JS(X, 17): GOTO 3615
-
-3612 NEXT Z: IF JS(X, 17) <= Z1(288, 1) THEN 3620
-
-3613 Z1(288, 1) = JS(X, 17): Z2$(288) = NM$(X)
-
-3614 Z3$(288) = WT$
-
-3615 FOR Z = 279 TO 287
-	FOR Z1 = Z + 1 TO 288: IF Z1(Z, 1) >= Z1(Z1, 1) THEN 3619
-
-3616 TN$ = Z2$(Z1): Z2$(Z1) = Z2$(Z): Z2$(Z) = TN$
-
-3617 TN$ = Z3$(Z1): Z3$(Z1) = Z3$(Z): Z3$(Z) = TN$
-
-3618 J = Z1(Z1, 1): Z1(Z1, 1) = Z1(Z, 1): Z1(Z, 1) = J
-
-3619 NEXT Z1: NEXT Z
-
-3620 FOR Z = 289 TO 298
-
-3621 IF Z2$(Z) = NM$(X) AND Z3$(Z) = WT$ THEN Z1(Z, 1) = JS(X, 18): GOTO 3625
-
-3622 NEXT Z: IF JS(X, 18) <= Z1(298, 1) THEN 3630
-
-3623 Z1(298, 1) = JS(X, 18): Z2$(298) = NM$(X)
-
-3624 Z3$(298) = WT$
-
-3625 FOR Z = 289 TO 297: FOR Z1 = Z + 1 TO 298
-	IF Z1(Z, 1) >= Z1(Z1, 1) THEN 3629
-
-3626 TN$ = Z2$(Z1): Z2$(Z1) = Z2$(Z): Z2$(Z) = TN$
-
-3627 TN$ = Z3$(Z1): Z3$(Z1) = Z3$(Z): Z3$(Z) = TN$
-
-3628 J = Z1(Z1, 1): Z1(Z1, 1) = Z1(Z, 1): Z1(Z, 1) = J
-
-3629 NEXT Z1: NEXT Z
-
-3630 RETURN
-
-4010 OPEN D$(2) + LH$ + ".LDR" FOR OUTPUT AS #2: PRINT "POSTING "; LG$; " LEADERS"
-
-4020 FOR X = 1 TO 40: WRITE #2, TM$(X), O1(X), O2(X): NEXT
-
-4029 FOR X = 1 TO 298
-
-4030 WRITE #2, Z2$(X), Z3$(X), Z1(X, 1), Z1(X, 2): NEXT
-
-4031 FOR X = 1 TO 40: WRITE #2, BA$(X): FOR M = 1 TO 14: WRITE #2, OFT(X, M): NEXT: NEXT
-
-4032 FOR X = 1 TO 40: WRITE #2, ER$(X): FOR M = 1 TO 14: WRITE #2, DFT(X, M): NEXT: NEXT
-
-4075 WRITE #2, APP
-CLOSE 2: RETURN
-
-4818 Z1(Y, 1) = JS(X, 13)
-	Z1(Y, 2) = JS(X, 1)
-	IF Z1(Y, 2) >= 2.5 * (WN + LS) THEN 4820
-	Z2$(Y) = "*": Z3$(Y) = "*": Z1(Y, 1) = 0: Z1(Y, 2) = 0
-
-4820 FOR Y = 1 TO 19
-	FOR Z = Y + 1 TO 20: IF Z1(Y, 1) >= Z1(Z, 1) THEN 4830
-	SWAP Z3$(Y), Z3$(Z)
-	SWAP Z2$(Y), Z2$(Z)
-	FOR Z1 = 1 TO 2: SWAP Z1(Y, Z1), Z1(Z, Z1): NEXT Z1
-
-4830 NEXT Z: NEXT Y: RETURN
-
-4832 FOR Y = 239 TO 257
-	FOR Z = Y + 1 TO 258
-	IF Z1(Y, 1) <= Z1(Z, 1) THEN 4833
-	SWAP Z3$(Y), Z3$(Z)
-	SWAP Z2$(Y), Z2$(Z)
-	FOR Z1 = 1 TO 2: SWAP Z1(Y, Z1), Z1(Z, Z1): NEXT Z1
-
-4833 NEXT Z: NEXT Y
-	RETURN
-
-4840 FOR Y = 121 TO 138
-	FOR Z = Y + 1 TO 139
-	IF Z1(Y, 1) <= Z1(Z, 1) THEN 4850
-	SWAP Z2$(Y), Z2$(Z)
-	SWAP Z3$(Y), Z3$(Z)
-	FOR Z1 = 1 TO 2
-	SWAP Z1(Y, Z1), Z1(Z, Z1)
-	NEXT Z1
-
-4850 NEXT Z: NEXT Y
-	RETURN
-
-4841 FOR Y = 259 TO 277
-	FOR Z = Y + 1 TO 278
-	IF Z1(Y, 1) >= Z1(Z, 1) THEN 4851
-	SWAP Z2$(Y), Z2$(Z)
-	SWAP Z3$(Y), Z3$(Z)
-	FOR Z1 = 1 TO 2
-	SWAP Z1(Y, Z1), Z1(Z, Z1)
-	NEXT Z1
-
-4851 NEXT Z: NEXT Y
-	RETURN
-
-4859 Z1(Y, 1) = JS(X, 7): Z1(Y, 2) = JS(X, 8)
-
-4860 FOR Z = 140 TO 149: FOR Y1 = Z + 1 TO 150: IF Z1(Z, 1) - Z1(Z, 2) > Z1(Y1, 1) - Z1(Y1, 2) THEN 4870
-
-4861 IF Z1(Z, 1) - Z1(Z, 2) = Z1(Y1, 1) - Z1(Y1, 2) AND Z1(Z, 1) <= Z1(Y1, 1) THEN 4870
-
-4865 TN$ = Z2$(Y1): Z2$(Y1) = Z2$(Z): Z2$(Z) = TN$
-
-4866 TN$ = Z3$(Y1): Z3$(Y1) = Z3$(Z): Z3$(Z) = TN$
-
-4868 FOR Z1 = 1 TO 2: J = Z1(Y1, Z1): Z1(Y1, Z1) = Z1(Z, Z1): Z1(Z, Z1) = J: NEXT Z1
-
-4870 NEXT Y1: NEXT Z: RETURN
-
-4871 Z1(Y, 1) = JS(X, 14): Z1(Y, 2) = JS(X, 1): IF Z1(Y, 2) >= (WN + LS) * 2.5 THEN 4873
-
-4872 Z2$(Y) = "*": Z3$(Y) = "*": Z1(Y, 1) = 0: Z1(Y, 2) = 0
-
-4873 FOR Y = 99 TO 107: FOR Z = Y + 1 TO 108: IF Z1(Y, 1) >= Z1(Z, 1) THEN 4877
-
-4874 TN$ = Z3$(Y): Z3$(Y) = Z3$(Z): Z3$(Z) = TN$
-
-4875 TN$ = Z2$(Y): Z2$(Y) = Z2$(Z): Z2$(Z) = TN$
-
-4876 FOR Z1 = 1 TO 2: J = Z1(Y, Z1): Z1(Y, Z1) = Z1(Z, Z1): Z1(Z, Z1) = J: NEXT Z1
-
-4877 NEXT Z: NEXT Y: RETURN
-
-4878 Z1(Y, 1) = JS(X, 15): Z1(Y, 2) = JS(X, 1): IF Z1(Y, 2) >= (WN + LS) * 2.5 THEN 4880
-
-4879 Z2$(Y) = "*": Z3$(Y) = "*": Z1(Y, 1) = 0: Z1(Y, 2) = 0
-
-4880 FOR Y = 110 TO 118: FOR Z = Y + 1 TO 119: IF Z1(Y, 1) >= Z1(Z, 1) THEN 4884
-
-4881 TN$ = Z3$(Y): Z3$(Y) = Z3$(Z): Z3$(Z) = TN$
-
-4882 TN$ = Z2$(Y): Z2$(Y) = Z2$(Z): Z2$(Z) = TN$
-
-4883 FOR Z1 = 1 TO 2: J = Z1(Y, Z1): Z1(Y, Z1) = Z1(Z, Z1): Z1(Z, Z1) = J: NEXT Z1
-
-4884 NEXT Z: NEXT Y: RETURN
-
-5005 L = LEN(TN$): WX$ = "": FOR X = 1 TO (L - 3): A = ASC(MID$(TN$, X, 1))
-
-5006 WT$ = WT$ + CHR$(A): NEXT X
-
-5007 TN$ = WT$: RETURN
-
-'$INCLUDE: 'KeyInput.BM'
-'$INCLUDE: 'QPProEqu.BM'
+Sub LEAGCMPL ()
+
+    _Title "Full Count Baseball - Update League Stats"
+
+    DefInt A-Z
+
+    Dim H1$(40), TM$(40)
+
+    Dim ZM%(46)
+
+    Dim O1(40), O2(40)
+
+    Shared BAT%(), PIT%()
+    Shared cmplZ2$(), cmplZ3$()
+    Shared BA$(), ER$(), NM$()
+    Shared cmplZ1!(), DFT!(), JS!(), OFT!()
+
+    CLS
+
+    APP = 0
+
+    Do 
+    'Display list of files...
+
+        Spec$ = diskPaths$(2) + "*.LIB"
+        null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
+        Count% = DirCount%
+        IF Count% = 0 THEN 
+            LOCATE 10, 8
+            CALL CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+            I$ = GetKeyPress$
+            CALL CSMsgBox("", 0, Pass)
+        Else
+
+            REDIM leagueFiles$(0 TO Count%)
+
+            FOR X = 1 TO Count%
+              leagueFiles$(X) = SPACE$(12)
+            NEXT
+
+            leagueFiles$(0) = Spec$
+            CALL ReadFile(leagueFiles$())
+
+            Do
+                CLS
+                COLOR , 1
+                CLS
+                LOCATE , 28
+                COLOR 14
+                PRINT "SELECT LEAGUE TO COMPILE": COLOR 15
+                Selection% = 1
+                Start% = 1
+                FileFGColr% = 15:FileBGColr% = 1
+                HiLiteFGColr% = 0:HiLiteBGColr% = 7
+                Rows% = 20
+                Columns% = 4
+                Spacing% = 6
+                Row% = 4
+                Column% = 1
+                LOCATE 25, 1
+                COLOR 14
+                PRINT "ENTER"; : COLOR 15
+                PRINT "-SELECTS TEAM";
+
+                _MouseShow "DEFAULT"
+                MAMenu leagueFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+                _MouseHide
+
+                IF ExitCode% <> 27 THEN
+                    targetFile$ = leagueFiles$(Selection%)
+                    LOCATE 2, 33: PRINT targetFile$
+                    LOCATE  , 33: PRINT "ANY CHANGE (YN)";
+                    COLOR 15, 0
+                    I$ = GetKeyPress$
+                End If
+                    
+            Loop Until UCase$(I$) = "N"
+
+            If ExitCode% <> 27 Then
+                targetFile$ = RTrim$(targetFile$)
+                WE$ = LEFT$(targetFile$, LEN(targetFile$) - 4)
+                LH$ = LEFT$(WE$, 8)
+
+                C$ = ","
+
+                FOR Z = 1 TO 40
+                    DFT!(Z, 1) = 99.99
+                NEXT
+
+                CLS
+
+                targetFile$ = LH$ + ".TMS"
+
+                OPEN diskPaths$(2) + targetFile$ FOR INPUT AS #2
+                INPUT #2, LG$, D1$, D2$, D3$, D4$
+                FOR XW = 1 TO 40
+                    INPUT #2, H1$(XW)
+                NEXT
+                CLOSE 2
+
+                C$ = ","
+
+                OPEN diskPaths$(2) + targetFile$ FOR INPUT AS #2
+                INPUT #2, LG$, D1$, D2$, D3$, D4$
+                FOR X = 1 TO 40: 
+                    INPUT #2, TM$(X)
+                NEXT
+                CLOSE 2
+
+                'H1$(XW) = TM$(X)
+
+                FOR X = 120 TO 139
+                    cmplZ2$(X) = "*"
+                    cmplZ3$(X) = "*"
+                    cmplZ1!(X, 1) = 99.99
+                    cmplZ1!(X, 2) = 0
+                NEXT X
+                
+                FOR X = 239 TO 258
+                    cmplZ2$(X) = "*"
+                    cmplZ3$(X) = "*"
+                    cmplZ1!(X, 1) = 99.99
+                    cmplZ1!(X, 2) = 99.99
+                NEXT X
+
+                FOR XW = 1 TO 40
+                    WN = 0
+                    LS = 0
+
+                    IF H1$(XW) <> CHR$(42) And _FILEEXISTS(diskPaths$(1) + H1$(XW)) THEN
+                        PRINT "FINDING "; H1$(XW); " STATS"
+                        WN = 0
+                        LS = 0
+                        OPEN diskPaths$(1) + H1$(XW) FOR INPUT AS #1
+                        INPUT #1, TN$, WN, LS
+                    END IF
+                    
+                    L = LEN(H1$(XW))
+                    WT$ = ""
+
+                    FOR X = 1 TO L
+                        A = ASC(MID$(H1$(XW), X, 1))
+                        WT$ = WT$ + CHR$(A)
+                    NEXT X
+
+                    FOR X = 1 TO 40:
+                        IF TM$(X) = WT$ THEN
+
+                            IF O1(X) = WN AND O2(X) = LS THEN 
+                                Return
+                            Else
+                                O1(X) = WN
+                                O2(X) = LS
+                            End If
+                        END IF
+                        
+                    NEXT X
+
+                    FOR K = 1 TO 23
+                        INPUT #1, NM$(K), ZM%(K)
+                    NEXT
+
+                    FOR K = 25 TO 46
+                        INPUT #1, NM$(K), ZM%(K)
+                    NEXT
+                        
+                    NM$(24) = "PITCHERS"
+
+                    FOR J = 1 TO 23
+                        FOR K = 1 TO 22
+                            INPUT #1, JS!(J, K)
+                        NEXT K
+                    NEXT J
+
+                    FOR J = 25 TO 46
+                        FOR K = 1 TO 42
+                            INPUT #1, JS!(J, K)
+                        NEXT K
+                    NEXT J
+
+                    FOR K = 1 TO 24
+                        INPUT #1, BAT%(K)
+                    NEXT K
+
+                    FOR K = 1 TO 23
+                        INPUT #1, PIT%(K)
+                    NEXT K
+
+                    CLOSE #1
+
+
+                    FOR J = 1 TO 23
+                        IF JS!(J, 1) = 0 THEN JS!(J, 1) = 1
+                        JS!(J, 17) = JS!(J, 13)
+                        JS!(J, 18) = JS!(J, 14)
+
+                        IF (JS!(J, 8) + JS!(J, 1)) / (WN + LS) < 3.1 THEN 
+                            JS!(J, 14) = 0: JS!(J, 15) = 0: JS!(J, 16) = 0
+                        ELSE
+                            JS!(J, 16) = JS!(J, 2) / JS!(J, 1)
+                            JS!(J, 14) = (JS!(J, 2) + JS!(J, 5) + 2 * JS!(J, 6) + 3 * JS!(J, 7)) / JS!(J, 1)
+                            JS!(J, 15) = (JS!(J, 2) + JS!(J, 8)) / (JS!(J, 1) + JS!(J, 8))
+                        END IF
+                    NEXT
+
+                    FOR J = 25 TO 46
+                        IF JS!(J, 1) = 0 OR (JS!(J, 1) / 3) < (WN + LS) THEN 
+                            JS!(J, 14) = 99.99
+                        ELSE
+                            JS!(J, 14) = JS!(J, 4) / JS!(J, 1) * 27
+                        END IF
+                    NEXT
+
+                    Call CheckLeagueStats
+
+                    CLOSE 1
+                NEXT
+
+                FOR VV = 1 To 4
+                    '1 to 10, 11 to 20, 21 to 30, 31 to 40)
+                    AA = ((QZ-1)*10) + 1
+                    ZZ = QZ * 10
+
+                    FOR X = AA TO ZZ - 1
+                        FOR Y = X + 1 TO ZZ: 
+                            IF O1(X) - O2(X) <= O1(Y) - O2(Y) THEN
+                                IF O1(X) - O2(X) <> O1(Y) - O2(Y) Or O1(X) > O1(Y) AND O1(X) <= O2(X) THEN
+                                    IF O1(X) - O2(X) <> O1(Y) - O2(Y) AND O1(X) < O1(Y) AND O1(X) >= O2(X) THEN             
+                                        TN$ = TM$(X)
+                                        TM$(X) = TM$(Y)
+                                        TM$(Y) = TN$
+
+                                        J = O1(X)
+                                        O1(X) = O1(Y)
+                                        O1(Y) = J
+
+                                        J = O2(X)
+                                        O2(X) = O2(Y)
+                                        O2(Y) = J
+                                    End If
+                                End If
+                            End if
+                        NEXT Y
+                    NEXT X
+                NEXT VV
+                
+                OPEN diskPaths$(2) + LH$ + ".LDR" FOR OUTPUT AS #2: PRINT "POSTING "; LG$; " LEADERS"
+
+                FOR X = 1 TO 40: WRITE #2, TM$(X), O1(X), O2(X): NEXT
+
+                FOR X = 1 TO 298
+                    WRITE #2, cmplZ2$(X), cmplZ3$(X), cmplZ1!(X, 1), cmplZ1!(X, 2)
+                NEXT
+
+                FOR X = 1 TO 40: 
+                    WRITE #2, BA$(X)
+                    FOR M = 1 TO 14: 
+                        WRITE #2, OFT!(X, M)
+                    NEXT
+                NEXT
+
+                FOR X = 1 TO 40: 
+                    WRITE #2, ER$(X)
+                    FOR M = 1 TO 14: 
+                        WRITE #2, DFT!(X, M)
+                    NEXT
+                NEXT
+
+                WRITE #2, APP
+                CLOSE 2
+                
+            End If 'Done checking for ESC
+
+        End If 'Done checking for file count
+
+    '...Until we press ESC
+    Loop Until ExitCode% = 27 Or Count% = 0 Or I$ = "N"
+
+    '103 Exit Sub
+
+End Sub
+
+
+'----------------------------------------
+'      CheckLeagueStats Subroutine
+'----------------------------------------
+'...explanation...
+Sub CheckLeagueStats ()
+
+    Dim PS$(40)
+
+    Shared NM$()
+    Shared cmplZ2$(), cmplZ3$()
+    Shared cmplZ1!(), DFT!(), JS!(), OFT!()
+    
+    PRINT "CHECKING "; H1$(XW); " STATS"
+
+    CLS
+
+    FOR X = 1 TO 23
+        IF NM$(X) <> "XXX" THEN
+
+            PRINT "     CHECKING STATS OF "; NM$(X)
+
+            '3301 IF JS!(X,1)>0 THEN JS!(X,16)=JS!(X,2)/JS!(X,1)
+
+            PS$(X) = WT$
+
+            FOR Y = 1 TO 20
+                IF cmplZ2$(Y) = NM$(X) AND cmplZ3$(Y) = WT$ THEN
+
+                    cmplZ1!(Y, 1) = JS!(X, 13)
+                    cmplZ1!(Y, 2) = JS!(X, 1)
+
+                    IF cmplZ1!(Y, 2) < 2.5 * (WN + LS) THEN
+                        cmplZ2$(Y) = "*"
+                        cmplZ3$(Y) = "*"
+                        cmplZ1!(Y, 1) = 0
+                        cmplZ1!(Y, 2) = 0
+                    END IF
+
+                    '4820
+                    FOR Y = 1 TO 19
+                        FOR Z = Y + 1 TO 20
+                            IF cmplZ1!(Y, 1) < cmplZ1!(Z, 1) THEN
+                                SWAP cmplZ3$(Y), cmplZ3$(Z)
+                                SWAP cmplZ2$(Y), cmplZ2$(Z)
+                                FOR Z1 = 1 TO 2: SWAP cmplZ1!(Y, Z1), cmplZ1!(Z, Z1): Next Z1
+                            END IF
+                        NEXT Z
+                    NEXT Y
+                    'Return
+
+                    skipIF = 1
+                    Exit For
+
+                END IF
+
+            NEXT Y
+
+            IF JS!(X, 16) >= cmplZ1!(20, 1) Or skipIF = 0 THEN
+                cmplZ2$(20) = NM$(X)
+                cmplZ3$(20) = PS$(X)
+                cmplZ1!(20, 1) = JS!(X, 16)
+                cmplZ1!(20, 2) = JS!(X, 1)
+                '4820
+                FOR Y = 1 TO 19
+                    FOR Z = Y + 1 TO 20
+                        IF cmplZ1!(Y, 1) < cmplZ1!(Z, 1) THEN
+                            SWAP cmplZ3$(Y), cmplZ3$(Z)
+                            SWAP cmplZ2$(Y), cmplZ2$(Z)
+                            FOR Z1 = 1 TO 2: SWAP cmplZ1!(Y, Z1), cmplZ1!(Z, Z1): Next Z1
+                        END IF
+                    NEXT Z
+                NEXT Y
+                'Return
+
+            END IF
+
+            3318 '
+            IF (JS!(X, 8) + JS!(X, 1)) / (WN + LS) >= 3.1 THEN
+                IF JS!(X, 16) <= cmplZ1!(258, 1) THEN
+                    cmplZ2$(258) = NM$(X)
+                    cmplZ3$(258) = PS$(X)
+                    cmplZ1!(258, 1) = JS!(X, 16)
+                    cmplZ1!(258, 2) = JS!(X, 1)
+                    FOR Y = 239 TO 257
+                        FOR Z = Y + 1 TO 258
+                            IF cmplZ1!(Y, 1) > cmplZ1!(Z, 1) THEN
+                                SWAP cmplZ3$(Y), cmplZ3$(Z)
+                                SWAP cmplZ2$(Y), cmplZ2$(Z)
+                                FOR Z1 = 1 TO 2: SWAP cmplZ1!(Y, Z1), cmplZ1!(Z, Z1): Next Z1
+                            END IF
+                        NEXT Z
+                    NEXT Y
+                END IF
+            END IF
+        
+        
+            3320 '
+            FOR Y = 99 TO 108
+                IF cmplZ2$(Y) = NM$(X) AND cmplZ3$(Y) = WT$ THEN
+                    '4871
+                    cmplZ1!(Y, 1) = JS!(X, 14)
+                    cmplZ1!(Y, 2) = JS!(X, 1)
+                    IF cmplZ1!(Y, 2) < (WN + LS) * 2.5 THEN
+                        cmplZ2$(Y) = "*"
+                        cmplZ3$(Y) = "*"
+                        cmplZ1!(Y, 1) = 0
+                        cmplZ1!(Y, 2) = 0
+                    END IF
+
+                    FOR Y = 99 TO 107
+                        FOR Z = Y + 1 TO 108
+                            IF cmplZ1!(Y, 1) < cmplZ1!(Z, 1) THEN
+                                TN$ = cmplZ3$(Y)
+                                cmplZ3$(Y) = cmplZ3$(Z)
+                                cmplZ3$(Z) = TN$
+                                TN$ = cmplZ2$(Y)
+                                cmplZ2$(Y) = cmplZ2$(Z)
+                                cmplZ2$(Z) = TN$
+                                FOR Z1 = 1 TO 2
+                                    J = cmplZ1!(Y, Z1)
+                                    cmplZ1!(Y, Z1) = cmplZ1!(Z, Z1)
+                                    cmplZ1!(Z, Z1) = J
+                                Next Z1
+                            END IF
+                        NEXT Z
+                    NEXT Y
+                    'Return
+
+                    skipIF = 1
+                    Exit For
+                END IF
+            NEXT Y
+
+            IF JS!(X, 14) >= cmplZ1!(108, 1) Or skipIF = 0 THEN
+                cmplZ2$(108) = NM$(X)
+                cmplZ3$(108) = PS$(X)
+                cmplZ1!(108, 1) = JS!(X, 14)
+                cmplZ1!(108, 2) = JS!(X, 1)
+
+                '4871
+                cmplZ1!(Y, 1) = JS!(X, 14)
+                cmplZ1!(Y, 2) = JS!(X, 1)
+                IF cmplZ1!(Y, 2) < (WN + LS) * 2.5 THEN
+                    cmplZ2$(Y) = "*"
+                    cmplZ3$(Y) = "*"
+                    cmplZ1!(Y, 1) = 0
+                    cmplZ1!(Y, 2) = 0
+                END IF
+
+                FOR Y = 99 TO 107
+                    FOR Z = Y + 1 TO 108
+                        IF cmplZ1!(Y, 1) < cmplZ1!(Z, 1) THEN
+                            TN$ = cmplZ3$(Y)
+                            cmplZ3$(Y) = cmplZ3$(Z)
+                            cmplZ3$(Z) = TN$
+                            TN$ = cmplZ2$(Y)
+                            cmplZ2$(Y) = cmplZ2$(Z)
+                            cmplZ2$(Z) = TN$
+                            FOR Z1 = 1 TO 2
+                                J = cmplZ1!(Y, Z1)
+                                cmplZ1!(Y, Z1) = cmplZ1!(Z, Z1)
+                                cmplZ1!(Z, Z1) = J
+                            Next Z1
+                        END IF
+                    NEXT Z
+                NEXT Y
+                'Return
+
+            END IF
+
+            3325 '
+            FOR Y = 110 TO 119
+
+                IF cmplZ2$(Y) = NM$(X) AND cmplZ3$(Y) = WT$ THEN
+
+                    '4878
+                    cmplZ1!(Y, 1) = JS!(X, 15): cmplZ1!(Y, 2) = JS!(X, 1)
+                    IF cmplZ1!(Y, 2) < (WN + LS) * 2.5 THEN
+                        cmplZ2$(Y) = "*": cmplZ3$(Y) = "*": cmplZ1!(Y, 1) = 0: cmplZ1!(Y, 2) = 0
+                    END IF
+
+                    FOR Y = 110 TO 118
+                        FOR Z = Y + 1 TO 119
+                            IF cmplZ1!(Y, 1) < cmplZ1!(Z, 1) THEN
+                                TN$ = cmplZ3$(Y): cmplZ3$(Y) = cmplZ3$(Z): cmplZ3$(Z) = TN$
+                                TN$ = cmplZ2$(Y): cmplZ2$(Y) = cmplZ2$(Z): cmplZ2$(Z) = TN$
+                                FOR Z1 = 1 TO 2:
+                                    J = cmplZ1!(Y, Z1): cmplZ1!(Y, Z1) = cmplZ1!(Z, Z1): cmplZ1!(Z, Z1) = J
+                                Next Z1
+                            END IF
+                        NEXT Z
+                    NEXT Y
+                    'Return
+
+                    skipIF = 1
+                END IF
+
+            NEXT Y
+
+            3327 '
+            IF JS!(X, 15) >= cmplZ1!(119, 1) Or skipIF = 0 THEN
+
+                cmplZ2$(119) = NM$(X)
+                cmplZ3$(119) = PS$(X): cmplZ1!(119, 1) = JS!(X, 15): cmplZ1!(119, 2) = JS!(X, 1):
+
+                '4878
+                cmplZ1!(Y, 1) = JS!(X, 15): cmplZ1!(Y, 2) = JS!(X, 1)
+
+                IF cmplZ1!(Y, 2) < (WN + LS) * 2.5 THEN
+                    cmplZ2$(Y) = "*": cmplZ3$(Y) = "*": cmplZ1!(Y, 1) = 0: cmplZ1!(Y, 2) = 0
+                END IF
+
+                FOR Y = 110 TO 118
+                    FOR Z = Y + 1 TO 119
+                        IF cmplZ1!(Y, 1) < cmplZ1!(Z, 1) THEN
+                            TN$ = cmplZ3$(Y): cmplZ3$(Y) = cmplZ3$(Z): cmplZ3$(Z) = TN$
+                            TN$ = cmplZ2$(Y): cmplZ2$(Y) = cmplZ2$(Z): cmplZ2$(Z) = TN$
+                            FOR Z1 = 1 TO 2
+                                J = cmplZ1!(Y, Z1): cmplZ1!(Y, Z1) = cmplZ1!(Z, Z1): cmplZ1!(Z, Z1) = J
+                            Next Z1
+                        END IF
+                    NEXT Z
+                NEXT Y
+                'Return
+
+            End If
+
+
+            3330 '
+            FOR Z = 21 TO 31
+                If cmplZ2$(Z) = NM$(X) AND cmplZ3$(Z) = WT$ THEN
+                    cmplZ1!(Z, 1) = JS!(X, 2)
+                    GoTo 3335
+                End If
+
+            NEXT Z
+
+            IF JS!(X, 2) > cmplZ1!(31, 1) THEN
+
+                cmplZ1!(31, 1) = JS!(X, 2)
+                cmplZ2$(31) = NM$(X)
+                cmplZ3$(31) = WT$
+
+                3335'
+                FOR Z = 21 TO 30
+                    FOR Z1 = Z + 1 TO 31
+                        IF cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) THEN
+                            TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
+                            TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
+                            J = cmplZ1!(Z1, 1): cmplZ1!(Z1, 1) = cmplZ1!(Z, 1): cmplZ1!(Z, 1) = J
+                        END IF
+                    Next Z1
+                NEXT Z
+
+                '3340 FOR Z = 21 TO 31
+                '3341 NEXT Z
+
+            End If
+
+
+            FOR Z = 32 TO 42
+                IF cmplZ2$(Z) = NM$(X) AND cmplZ3$(Z) = WT$ THEN
+                    cmplZ1!(Z, 1) = JS!(X, 5)
+                    GOTO 3347
+                End If
+            NEXT Z
+
+            IF JS!(X, 5) > cmplZ1!(42, 1) THEN
+
+                cmplZ1!(42, 1) = JS!(X, 5): cmplZ2$(42) = NM$(X)
+                cmplZ3$(42) = WT$
+
+                3347'
+                FOR Z = 32 TO 41
+                    FOR Z1 = Z + 1 TO 42
+                        IF cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) THEN
+                            TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
+                            TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
+                            J = cmplZ1!(Z1, 1): cmplZ1!(Z1, 1) = cmplZ1!(Z, 1): cmplZ1!(Z, 1) = J
+                        End If
+                    Next Z1
+                NEXT Z
+
+                '3352 FOR Z = 32 TO 42
+                '3353 NEXT Z
+            End If
+
+            3354 '
+            FOR Z = 43 TO 53
+                    IF cmplZ2$(Z) = NM$(X) AND cmplZ3$(Z) = WT$ THEN
+                        cmplZ1!(Z, 1) = JS!(X, 6)
+                        GOTO 3359
+                    End If
+            NEXT Z
+
+            IF JS!(X, 6) > cmplZ1!(53, 1) THEN
+
+                cmplZ1!(53, 1) = JS!(X, 6): cmplZ2$(53) = NM$(X)
+                cmplZ3$(53) = WT$
+
+                3359 '
+                FOR Z = 43 TO 52
+                    FOR Z1 = Z + 1 TO 53
+                        IF cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) THEN
+                            TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
+                            TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
+                            J = cmplZ1!(Z1, 1): cmplZ1!(Z1, 1) = cmplZ1!(Z, 1): cmplZ1!(Z, 1) = J
+                        END IF
+                    Next Z1
+                NEXT Z
+
+                '3364 FOR Z = 43 TO 53
+                '3365 NEXT Z
+            End If
+        
+
+
+            FOR Z = 54 TO 64
+                IF cmplZ2$(Z) = NM$(X) AND cmplZ3$(Z) = WT$ THEN
+                    cmplZ1!(Z, 1) = JS!(X, 7)
+                    GOTO 3371
+                End If
+            NEXT Z
+
+            IF JS!(X, 7) > cmplZ1!(64, 1) THEN
+
+                cmplZ1!(64, 1) = JS!(X, 7): cmplZ2$(64) = NM$(X)
+                cmplZ3$(64) = WT$
+
+                3371 '
+                FOR Z = 54 TO 63:
+                    FOR Z1 = Z + 1 TO 64:
+                        IF cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) THEN
+                            TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
+                            TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
+                            J = cmplZ1!(Z1, 1): cmplZ1!(Z1, 1) = cmplZ1!(Z, 1): cmplZ1!(Z, 1) = J
+                        End If
+                    Next Z1
+                NEXT Z
+
+                '3376 FOR Z = 54 TO 64
+                '3377 NEXT Z
+            End If
+
+            3378 '
+            FOR Z = 65 TO 74
+
+                IF cmplZ2$(Z) = NM$(X) AND cmplZ3$(Z) = WT$ THEN
+                    cmplZ1!(Z, 1) = JS!(X, 3)
+                    GOTO 3383
+                End If
+
+            NEXT Z
+        
+            IF JS!(X, 3) > cmplZ1!(74, 1) THEN
+
+                cmplZ1!(74, 1) = JS!(X, 3): cmplZ2$(74) = NM$(X)
+                cmplZ3$(74) = WT$
+
+                3383 '
+                FOR Z = 65 TO 73
+                    FOR Z1 = Z + 1 TO 74
+                        IF cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) THEN
+                            TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
+                            TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
+                            J = cmplZ1!(Z1, 1): cmplZ1!(Z1, 1) = cmplZ1!(Z, 1): cmplZ1!(Z, 1) = J
+                        END IF
+                    Next Z1
+                NEXT Z
+
+                '3388 FOR Z = 65 TO 74
+                '3389 NEXT Z
+            End If
+
+
+            FOR Z = 76 TO 85
+                IF cmplZ2$(Z) = NM$(X) AND cmplZ3$(Z) = WT$ THEN
+                    cmplZ1!(Z, 1) = JS!(X, 4)
+                    GOTO 3395
+                End If
+            NEXT Z
+
+            IF JS!(X, 4) > cmplZ1!(85, 1) THEN
+
+                cmplZ1!(85, 1) = JS!(X, 4)
+                cmplZ2$(85) = NM$(X)
+                cmplZ3$(85) = WT$
+
+                '3395
+                FOR Z = 76 TO 84
+                    FOR Z1 = Z + 1 TO 85
+                        IF cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) THEN
+                            TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
+                            TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
+                            J = cmplZ1!(Z1, 1): cmplZ1!(Z1, 1) = cmplZ1!(Z, 1): cmplZ1!(Z, 1) = J
+                        End If
+
+                    Next Z1
+                NEXT Z
+
+                '3400 FOR Z = 76 TO 86
+                '3401 NEXT Z
+            End If
+
+
+            FOR Z = 87 TO 97
+
+                IF cmplZ2$(Z) = NM$(X) AND cmplZ3$(Z) = WT$ THEN
+                    cmplZ1!(Z, 1) = JS!(X, 10)
+                    GOTO 3407
+                End If
+            NEXT Z
+        
+            IF JS!(X, 10) > cmplZ1!(97, 1) THEN
+
+                cmplZ1!(97, 1) = JS!(X, 10): cmplZ2$(97) = NM$(X)
+                cmplZ3$(97) = WT$
+
+                3407 '
+                FOR Z = 87 TO 96
+                    FOR Z1 = Z + 1 TO 97
+                        IF cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) THEN
+                            TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
+                            TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
+                            J = cmplZ1!(Z1, 1): cmplZ1!(Z1, 1) = cmplZ1!(Z, 1): cmplZ1!(Z, 1) = J
+                        End If
+                    Next Z1
+                NEXT Z
+
+                '3412 FOR Z = 87 TO 97
+                '3413 NEXT Z
+            End If
+
+        End If 'Done checking for XXX / terminating chars
+
+        3414 '
+        FOR Z = 217 TO 227
+
+            IF cmplZ2$(Z) = NM$(X) AND cmplZ3$(Z) = WT$ THEN 
+                cmplZ1!(Z, 1) = JS!(X, 8)
+                GOTO 3605
+            END IF
+
+        NEXT Z
+        
+        IF JS!(X, 8) <= cmplZ1!(227, 1) THEN
+            cmplZ1!(227, 1) = JS!(X, 8)
+            cmplZ2$(227) = NM$(X)
+            cmplZ3$(227) = WT$
+
+            3605 '
+            FOR Z = 217 TO 226
+                FOR Z1 = Z + 1 TO 227
+                    IF cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) THEN
+                        TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
+                        TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
+                        J = cmplZ1!(Z1, 1): cmplZ1!(Z1, 1) = cmplZ1!(Z, 1): cmplZ1!(Z, 1) = J
+                    END IF
+                Next Z1
+            NEXT Z
+        End If
+
+
+        FOR Z = 279 TO 288
+            IF cmplZ2$(Z) = NM$(X) AND cmplZ3$(Z) = WT$ THEN 
+                cmplZ1!(Z, 1) = JS!(X, 17)
+                GOTO 3615
+            End If
+        NEXT Z
+        
+        IF JS!(X, 17) > cmplZ1!(288, 1) THEN
+
+            cmplZ1!(288, 1) = JS!(X, 17)
+            cmplZ2$(288) = NM$(X)
+            cmplZ3$(288) = WT$
+
+            3615 '
+            FOR Z = 279 TO 287
+                FOR Z1 = Z + 1 TO 288: 
+                    IF cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) THEN 
+                        TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
+                        TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
+                        J = cmplZ1!(Z1, 1): cmplZ1!(Z1, 1) = cmplZ1!(Z, 1): cmplZ1!(Z, 1) = J
+                    End If  
+                Next Z1
+            NEXT Z
+
+        End If
+
+
+        FOR Z = 289 TO 298
+            3621 '
+            IF cmplZ2$(Z) = NM$(X) AND cmplZ3$(Z) = WT$ THEN 
+                cmplZ1!(Z, 1) = JS!(X, 18)
+                GOTO 3625
+            End If
+        NEXT Z
+        
+        IF JS!(X, 18) > cmplZ1!(298, 1) THEN
+            cmplZ1!(298, 1) = JS!(X, 18)
+            cmplZ2$(298) = NM$(X)
+            cmplZ3$(298) = WT$
+
+            3625 '
+            FOR Z = 289 TO 297
+                FOR Z1 = Z + 1 TO 298
+                    IF cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) THEN
+                        TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
+                        TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
+                        J = cmplZ1!(Z1, 1): cmplZ1!(Z1, 1) = cmplZ1!(Z, 1): cmplZ1!(Z, 1) = J
+                    END IF
+                    
+                Next Z1
+            NEXT Z
+            
+        End If
+        
+    NEXT X
+
+    Call CheckMoreStats
+
+End Sub
+
+
+'----------------------------------------
+'      CheckMoreStats Subroutine
+'----------------------------------------
+'...explanation...
+Sub CheckMoreStats ()
+
+    Shared BAT%(), PIT%()
+    Shared cmplZ2$(), cmplZ3$()
+    Shared BA$(), ER$(), NM$()
+    Shared cmplZ1!(), DFT!(), JS!(), OFT!()
+
+    3415 '
+    FOR X = 25 TO 46
+        IF NM$(X) = "XXX" THEN 3525
+        PRINT "     CHECKING STATS OF "; NM$(X)
+
+        IF JS!(X, 14) <= cmplZ1!(139, 1) THEN
+            cmplZ2$(139) = NM$(X)
+            cmplZ3$(139) = WT$
+            cmplZ1!(139, 1) = JS!(X, 14)
+            cmplZ1!(139, 2) = JS!(X, 1) / 3
+            FOR Y = 121 TO 138
+                FOR Z = Y + 1 TO 139
+                    IF cmplZ1!(Y, 1) > cmplZ1!(Z, 1) THEN
+                        SWAP cmplZ2$(Y), cmplZ2$(Z)
+                        SWAP cmplZ3$(Y), cmplZ3$(Z)
+                        FOR Z1 = 1 TO 2
+                            SWAP cmplZ1!(Y, Z1), cmplZ1!(Z, Z1)
+                        Next Z1
+                    END IF  
+                NEXT Z
+            NEXT Y
+
+        End If
+
+        IF JS!(X, 1) / 3 >= (WN + LS) AND JS!(X, 1) <> 0 THEN
+            IF JS!(X, 14) < cmplZ1!(278, 1) THEN 3430
+            cmplZ2$(278) = NM$(X)
+            cmplZ3$(278) = WT$
+            cmplZ1!(278, 1) = JS!(X, 14)
+            cmplZ1!(278, 2) = JS!(X, 1) / 3
+            FOR Y = 259 TO 277
+                FOR Z = Y + 1 TO 278
+                    IF cmplZ1!(Y, 1) < cmplZ1!(Z, 1) THEN
+                        SWAP cmplZ2$(Y), cmplZ2$(Z)
+                        SWAP cmplZ3$(Y), cmplZ3$(Z)
+                        FOR Z1 = 1 TO 2
+                            SWAP cmplZ1!(Y, Z1), cmplZ1!(Z, Z1)
+                        Next Z1
+                    END IF
+                NEXT Z
+            NEXT Y
+
+        END IF
+
+
+        3430 '
+        FOR Y = 140 TO 150
+            IF cmplZ2$(Y) = NM$(X) AND cmplZ3$(Y) = WT$ THEN 
+                cmplZ1!(Y, 1) = JS!(X, 7)
+                cmplZ1!(Y, 2) = JS!(X, 8)
+
+                '4860 '
+                FOR Z = 140 TO 149: 
+                    FOR Y1 = Z + 1 TO 150
+                        IF cmplZ1!(Z, 1) - cmplZ1!(Z, 2) <= cmplZ1!(Y1, 1) - cmplZ1!(Y1, 2) THEN
+
+                            IF cmplZ1!(Z, 1) - cmplZ1!(Z, 2) <> cmplZ1!(Y1, 1) - cmplZ1!(Y1, 2) OR cmplZ1!(Z, 1) > cmplZ1!(Y1, 1) THEN
+                                TN$ = cmplZ2$(Y1)
+                                cmplZ2$(Y1) = cmplZ2$(Z)
+                                cmplZ2$(Z) = TN$
+                                TN$ = cmplZ3$(Y1)
+                                cmplZ3$(Y1) = cmplZ3$(Z)
+                                cmplZ3$(Z) = TN$
+                                FOR Z1 = 1 TO 2: 
+                                    J = cmplZ1!(Y1, Z1)
+                                    cmplZ1!(Y1, Z1) = cmplZ1!(Z, Z1)
+                                    cmplZ1!(Z, Z1) = J
+                                Next Z1
+                            END IF
+                            
+                        END IF
+
+                    NEXT Y1
+                NEXT Z
+
+                GOTO 3440
+            END IF
+        NEXT Y
+
+
+        IF JS!(X, 7) - JS!(X, 8) >= cmplZ1!(150, 1) - cmplZ1!(150, 2) THEN
+
+            IF JS!(X, 7) - JS!(X, 8) <> cmplZ1!(150, 1) - cmplZ1!(150, 2) OR JS!(X, 7) < cmplZ1!(150, 1) THEN   
+                cmplZ2$(150) = NM$(X)
+                cmplZ3$(150) = WT$
+                cmplZ1!(150, 1) = JS!(X, 7)
+                cmplZ1!(150, 2) = JS!(X, 8)
+
+                '4860 '
+                FOR Z = 140 TO 149: 
+                    FOR Y1 = Z + 1 TO 150
+                        IF cmplZ1!(Z, 1) - cmplZ1!(Z, 2) <= cmplZ1!(Y1, 1) - cmplZ1!(Y1, 2) THEN
+
+                            IF cmplZ1!(Z, 1) - cmplZ1!(Z, 2) <> cmplZ1!(Y1, 1) - cmplZ1!(Y1, 2) OR cmplZ1!(Z, 1) > cmplZ1!(Y1, 1) THEN
+                                TN$ = cmplZ2$(Y1)
+                                cmplZ2$(Y1) = cmplZ2$(Z)
+                                cmplZ2$(Z) = TN$
+                                TN$ = cmplZ3$(Y1)
+                                cmplZ3$(Y1) = cmplZ3$(Z)
+                                cmplZ3$(Z) = TN$
+                                FOR Z1 = 1 TO 2: 
+                                    J = cmplZ1!(Y1, Z1)
+                                    cmplZ1!(Y1, Z1) = cmplZ1!(Z, Z1)
+                                    cmplZ1!(Z, Z1) = J
+                                Next Z1
+                            END IF
+                            
+                        END IF
+
+                    NEXT Y1
+                NEXT Z
+                'Return
+
+            END IF
+
+        END IF
+
+
+        3440 '
+        FOR Z = 151 TO 161
+
+            IF cmplZ2$(Z) = NM$(X) AND cmplZ3$(Z) = WT$ THEN 
+                cmplZ1!(Z, 1) = JS!(X, 7)
+                '3445
+                FOR Z = 151 TO 160
+                    FOR Z1 = Z + 1 TO 161
+                        IF cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) THEN
+                            TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
+                            TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
+                            J = cmplZ1!(Z1, 1): cmplZ1!(Z1, 1) = cmplZ1!(Z, 1): cmplZ1!(Z, 1) = J
+                        END IF
+                    Next Z1
+                NEXT Z
+                skipIF = 1
+                Exit For
+            End If
+            
+        NEXT Z
+
+        IF JS!(X, 7) > cmplZ1!(161, 1) Or skipIF = 0 THEN 
+
+            cmplZ1!(161, 1) = JS!(X, 7): cmplZ2$(161) = NM$(X)
+
+            cmplZ3$(161) = WT$
+
+            '3445
+            FOR Z = 151 TO 160
+                FOR Z1 = Z + 1 TO 161
+                    IF cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) THEN
+                        TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
+                        TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
+                        J = cmplZ1!(Z1, 1): cmplZ1!(Z1, 1) = cmplZ1!(Z, 1): cmplZ1!(Z, 1) = J
+                    END IF
+                Next Z1
+            NEXT Z
+
+            '3450 FOR Z = 151 TO 161
+            '3451 NEXT Z
+
+        End If
+
+
+        3452 '
+        FOR Z = 162 TO 172
+
+            IF cmplZ2$(Z) = NM$(X) AND cmplZ3$(Z) = WT$ THEN 
+                cmplZ1!(Z, 1) = JS!(X, 1) / 3
+                GOTO 3457
+            ENd If
+        NEXT Z
+        
+        IF JS!(X, 1) / 3 > cmplZ1!(172, 1) THEN
+
+            cmplZ1!(172, 1) = JS!(X, 1) / 3: cmplZ2$(172) = NM$(X)
+            cmplZ3$(172) = WT$
+
+            3457 '
+            FOR Z = 162 TO 171
+                FOR Z1 = Z + 1 TO 172
+                    IF cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) THEN
+                        TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
+                        TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
+                        J = cmplZ1!(Z1, 1): cmplZ1!(Z1, 1) = cmplZ1!(Z, 1): cmplZ1!(Z, 1) = J
+                    End If
+                Next Z1
+            NEXT Z
+
+            '3462 FOR Z = 162 TO 172
+            '3463 NEXT Z
+        End If
+        
+        
+        3464 '
+        FOR Z = 173 TO 183
+            IF cmplZ2$(Z) = NM$(X) AND cmplZ3$(Z) = WT$ THEN 
+                cmplZ1!(Z, 1) = JS!(X, 6)
+                GOTO 3469
+            END IF
+        NEXT Z
+        
+        IF JS!(X, 6) > cmplZ1!(183, 1) THEN
+
+            cmplZ1!(183, 1) = JS!(X, 6): cmplZ2$(183) = NM$(X)
+            cmplZ3$(183) = WT$
+
+            3469 '
+            FOR Z = 173 TO 182: 
+                FOR Z1 = Z + 1 TO 183: 
+                    IF cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) THEN
+                        TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
+                        TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
+                        J = cmplZ1!(Z1, 1): cmplZ1!(Z1, 1) = cmplZ1!(Z, 1): cmplZ1!(Z, 1) = J
+                    End If
+                    
+                Next Z1
+            NEXT Z
+
+            '3474 FOR Z = 173 TO 183
+            '3475 NEXT Z
+        End If
+        
+        
+        3476 '
+        FOR Z = 184 TO 194
+            IF cmplZ2$(Z) = NM$(X) AND cmplZ3$(Z) = WT$ THEN 
+                cmplZ1!(Z, 1) = JS!(X, 11)
+                GOTO 3481
+            End If
+        NEXT Z
+        
+        IF JS!(X, 11) >= cmplZ1!(194, 1) THEN
+
+            cmplZ1!(194, 1) = JS!(X, 11): cmplZ2$(194) = NM$(X)
+            cmplZ3$(194) = WT$
+
+            3481 '
+            FOR Z = 184 TO 193
+                FOR Z1 = Z + 1 TO 194
+                    IF cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) THEN
+                        TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
+                        TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
+                        J = cmplZ1!(Z1, 1): cmplZ1!(Z1, 1) = cmplZ1!(Z, 1): cmplZ1!(Z, 1) = J
+                    End If
+                Next Z1
+            NEXT Z
+
+            '3486 FOR Z = 184 TO 194
+
+            '3487 NEXT Z
+        End If
+
+
+        3488 '
+        FOR Z = 195 TO 205
+
+            IF cmplZ2$(Z) = NM$(X) AND cmplZ3$(Z) = WT$ THEN 
+                cmplZ1!(Z, 1) = JS!(X, 12)
+                GOTO 3493
+            End If
+        NEXT Z
+        
+        IF JS!(X, 12) > cmplZ1!(205, 1) THEN
+            cmplZ1!(205, 1) = JS!(X, 12): cmplZ2$(205) = NM$(X)
+            cmplZ3$(205) = WT$
+
+            3493 '
+            FOR Z = 195 TO 204
+                FOR Z1 = Z + 1 TO 205
+                    IF cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) THEN
+                        TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
+                        TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
+                        J = cmplZ1!(Z1, 1): cmplZ1!(Z1, 1) = cmplZ1!(Z, 1): cmplZ1!(Z, 1) = J
+                    End If
+                Next Z1
+            NEXT Z
+
+            '3498 FOR Z = 195 TO 205
+            'NEXT Z
+        End If
+        
+        
+        3500 '
+        FOR Z = 206 TO 216
+
+            IF cmplZ2$(Z) = NM$(X) AND cmplZ3$(Z) = WT$ THEN 
+                cmplZ1!(Z, 1) = JS!(X, 13)
+                GOTO 3505
+            End If
+        NEXT Z
+        
+        IF JS!(X, 13) > cmplZ1!(216, 1) THEN
+
+            cmplZ1!(216, 1) = JS!(X, 13): cmplZ2$(216) = NM$(X)
+            cmplZ3$(216) = WT$
+
+            3505 '
+            FOR Z = 206 TO 215
+                FOR Z1 = Z + 1 TO 216
+                    IF cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) THEN
+                        TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
+                        TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
+                        J = cmplZ1!(Z1, 1): cmplZ1!(Z1, 1) = cmplZ1!(Z, 1): cmplZ1!(Z, 1) = J
+                    End If
+                Next Z1
+            NEXT Z
+
+            '3510 FOR Z = 206 TO 216
+            'NEXT Z
+        End If
+
+
+        3512 '
+        APP = APP + JS!(X, 9)
+        FOR Z = 228 TO 238
+            IF cmplZ2$(Z) = NM$(X) AND cmplZ3$(Z) = WT$ THEN 
+                cmplZ1!(Z, 1) = JS!(X, 9)
+                GOTO 3518
+            End If
+        NEXT Z
+        
+        IF JS!(X, 9) > cmplZ1!(238, 1) THEN
+
+            cmplZ1!(238, 1) = JS!(X, 9): cmplZ2$(238) = NM$(X)
+            cmplZ3$(238) = WT$
+            
+            3518 '
+            FOR Z = 228 TO 237: 
+                FOR Z1 = Z + 1 TO 238: 
+                    IF cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) THEN
+                        TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
+                        TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
+                        J = cmplZ1!(Z1, 1): cmplZ1!(Z1, 1) = cmplZ1!(Z, 1): cmplZ1!(Z, 1) = J
+                    End If
+
+                Next Z1
+            NEXT Z
+
+            '3523 FOR Z = 228 TO 238
+            '3524 NEXT Z
+        End If
+    
+    NEXT X
+
+
+    3530 '
+    FOR Z = 1 TO 40: 
+        IF BAT%(3) = 0 THEN BAT%(3) = 1
+        IF BA$(Z) = WT$ THEN 
+            OFT!(Z, 1) = BAT%(4) / BAT%(3)
+            FOR M = 3 TO 14: OFT!(Z, M) = BAT%(M): NEXT M
+            GOTO 3535
+        End If
+
+    NEXT Z
+
+    IF BAT%(4) / BAT%(3) > OFT!(40, 1) THEN
+
+        OFT!(40, 1) = BAT%(4) / BAT%(3): FOR M = 3 TO 14: OFT!(40, M) = BAT%(M): NEXT M: BA$(40) = WT$
+        BA$(40) = WT$
+
+        3535 '
+        FOR Z = 1 TO 39
+            FOR Z1 = Z + 1 TO 40
+                IF OFT!(Z, 1) < OFT!(Z1, 1) THEN
+                    TN$ = BA$(Z1): BA$(Z1) = BA$(Z): BA$(Z) = TN$
+                    FOR M = 1 TO 14: 
+                        J! = OFT!(Z1, M): OFT!(Z1, M) = OFT!(Z, M): OFT!(Z, M) = J!
+                    NEXT M
+                End If
+            NEXT Z1
+        NEXT Z
+
+        FOR Z = 1 TO 40
+            IF OFT!(Z, 1) = OFT!(40, 1) THEN BA$(Z) = "*": BA$(Z) = "*"
+        NEXT Z
+
+    End If
+
+    FOR Z = 1 TO 40
+        IF PIT%(1) = 0 THEN PIT%(1) = 1: PIT%(4) = 3
+        IF ER$(Z) = WT$ THEN 
+            DFT!(Z, 1) = PIT%(4) / PIT%(1) * 27
+            FOR M = 2 TO 14: DFT!(Z, M) = PIT%(M - 1): NEXT M
+            GOTO 3555
+        End If
+    NEXT Z
+
+    IF PIT%(4) / PIT%(1) * 27 < DFT!(40, 1) THEN
+
+        DFT!(40, 1) = PIT%(4) / PIT%(1) * 27
+        FOR M = 2 TO 14: DFT!(40, M) = PIT%(M - 1): NEXT M
+        
+        ER$(40) = WT$
+        ER$(40) = WT$
+
+        3555 '
+        FOR Z = 1 TO 39
+            FOR Z1 = Z + 1 TO 40
+                IF DFT!(Z, 1) > DFT!(Z1, 1) THEN
+                    TN$ = ER$(Z1): ER$(Z1) = ER$(Z): ER$(Z) = TN$
+                    FOR M = 1 TO 14: J! = DFT!(Z1, M): DFT!(Z1, M) = DFT!(Z, M): DFT!(Z, M) = J!: NEXT M
+                End If
+            Next Z1
+        NEXT Z
+
+        FOR Z = 1 TO 40: 
+            IF DFT!(Z, 1) = DFT!(40, 1) THEN ER$(Z) = "*": ER$(Z) = "*"
+        NEXT Z
+
+    End If
+
+End Sub
+
+'5005 L = LEN(TN$): WX$ = "": FOR X = 1 TO (L - 3): A = ASC(MID$(TN$, X, 1))
+''5006 WT$ = WT$ + CHR$(A): NEXT X
+'5007 TN$ = WT$: Return

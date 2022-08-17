@@ -1,6 +1,6 @@
-
-'$INCLUDE: 'GameRoutines.BI'
-'$INCLUDE: 'GameRoutines_Gfx.BI'
+$Debug
+'$INCLUDE: 'Game_Routines.BI'
+'$INCLUDE: 'Game_Routines_Gfx.BI'
 '$INCLUDE: 'SOURCE.BI'
 '$INCLUDE: 'SOURCE_Gfx.BI'
 '$INCLUDE: 'KeyInput.BI'
@@ -44,7 +44,7 @@ Dim Shared D, P, RE, RD, U6, U9
 Dim Shared usingGfx
 
 'DIM SHARED BP(1)
-Dim BP(9), F(9), T1(1)
+Dim BP(9), F(9), T1%(1)
 Dim Shared MON(5, 14), VV(1), VV1(1)
 
 Dim BAT$(23), BM$(10), BMT$(10), DH$(1), DL$(1), DN$(1)
@@ -53,7 +53,7 @@ Dim U6$(2), UMP$(50), teamNames$(200), VI$(1), WE$(1)
 Dim Shared PARK$(99), Q3$(100), WD$(10)
 '--> should WD$ have been increased??? Probably not, just DIM'd as 0 to 9
 
-Dim Shared A$(1), B$(1, 22), B1$(4), C$(11), D$(3)
+Dim Shared A$(1), B$(1, 22), B1$(4), C$(11), diskPaths$(3)
 'G$ = PBP lines
 Dim Shared EJ$(20), F$(10), G$(10), H$(4), H0$(1), IJ$(20)
 Dim Shared M$(1), N$(1), NN$(1), P$(1, 21), PC$(4)
@@ -61,7 +61,7 @@ Dim Shared Q$(23), S$(1), SC$(4), TM$(4), U$(4), X$(12), YN$(1)
 
 Dim BAT%(23), BB%(9), DYS%(1, 21), GS%(21, 1)
 Dim MF%(1), NB%(1, 4), PS%(23, 1), PIT%(22), SP%(1)
-Dim U%(50), UM%(1, 9, 4), teamIndex%(500)
+Dim U%(50), UM%(1, 9, 4), UV%(200)
 Dim Shared A5%(4), AP%(2), B%(1, 0 To 22, 80), B0%(3, 2)
 Dim Shared B1%(3, 1), B2%(1, 22), B3%(1, 9), B4%(1, 7, 9)
 Dim Shared B5%(0 To 1, 0 To 22, 0 To 21), B7%(1, 9), B8%(0 To 1, 0 To 22, 0 To 21), B9%(1, 10), BT%(1, 9, 9)
@@ -151,11 +151,6 @@ Input #1, IJ%: Input #1, LR%: Input #1, DR%: Input #1, MP%
 Input #1, displayPause: Input #1, VG%: Input #1, CGERA%
 Close 1
 
-60 Open "DEV.BAS" For Input As #1
-
-70 For I = 0 To 3: Input #1, D$(I): Next I
-
-80 Close #1
 
 85 MN$(4) = "APRIL"
 MN$(5) = "MAY"
@@ -210,7 +205,7 @@ Open "GAME82" For Input As #2
 Input #2, FF$
 For I = 0 To 2: Input #2, AP%(I): Next
 Close 2
-Open D$(0) + FF$ For Random As #1 Len = 48
+Open diskPaths$(0) + FF$ For Random As #1 Len = 48
 For X = 0 To 18
     Field #1, X * 2 As X$, 2 As Q2$(X + 1), 48 - 2 - 2 * X As X$
 Next
@@ -276,7 +271,7 @@ Color 14: Print "(F) ";: Color 15: Print "PITCHER USAGE ERA: "; PU$(CGERA%)
 
 183 Color 7, 0
 I$ = GetKeyPress$
-If I$ = Chr$(27) Then Run "HELLO.EXE"
+If I$ = Chr$(27) Then Exit Sub
 Call LETTER(I$)
 
 185 I = Val(I$): If I < 0 Or I > 16 Then 183
@@ -330,9 +325,9 @@ GoTo 171
 
 260 YV = 1: YM = 0
 
-261 If Not _FileExists(D$(0) + "UMPIRES." + UMP$(LGT)) Then 265
+261 If Not _FileExists(diskPaths$(0) + "UMPIRES." + UMP$(LGT)) Then 265
 YU = 0
-Open D$(0) + "UMPIRES." + UMP$(LGT) For Input As #1
+Open diskPaths$(0) + "UMPIRES." + UMP$(LGT) For Input As #1
 For I1 = 1 To 50
     Input #1, UMP$(I1)
     Input #1, U%(I1)
@@ -352,7 +347,7 @@ If YU < 4 Then 265
 265 U$(1) = "RHODES": U$(2) = "WINBERRY": U$(3) = "TIPPETT": U$(4) = "MILLER"
 
 270 For I = 0 To 1
-    If AP% = 1 Then T1(I) = NG%(I): YN$ = YN$(I): GoSub 300: GoTo 2860
+    If AP% = 1 Then T1%(I) = NG%(I): YN$ = YN$(I): GoSub 300: GoTo 2860
 
 
     280 Call INFO
@@ -377,7 +372,7 @@ If YU < 4 Then 265
     Color 15, 0
     If NY$ = "" Then GoSub 8102: GoTo 2856
     YN$ = NY$
-    For I1 = 1 To 200: teamNames$(I1) = "": Next
+    Erase teamNames$
 
     2857 GoSub 8100
 
@@ -542,6 +537,7 @@ If UCase$(I$) = "P" Then Call POSSWAP(P9): GoTo 850
 
 910 Return
 
+
 1001 For J = 0 To 22: If B%(P9, J, 31) <> 0 Then B%(P9, J, 21) = 99
 Next
 GoTo 910
@@ -558,6 +554,7 @@ GoTo 910
 Return
 
 
+
 1200 For I = 1 To 9
 
     1210 If B7%(P9, I) = 1 Then 1230
@@ -568,9 +565,11 @@ Return
 
 1240 M%(0) = 0: Return
 
+
 1250 If I% <= 5 And S6%(P9, 0) - S6%(1 - P9, 0) > 0 Then P2%(P9) = P1%(P9)
 
 1260 Return
+
 
 
 1370 Locate 25, 1: For I1 = 0 To 9: If DH% = 0 And I1 = 0 Then 1410
@@ -584,6 +583,7 @@ Return
 1410 Next I1
 
 1420 Return
+
 
 1520 Cls: Print "#";: Color L%(P9, 11), L%(P9, 12): Print A$(P9);
 Color 14, 0: Locate , 16: Print "T  IP   H  G  GS DR  BB  SO   W- L   ERA"
@@ -632,6 +632,7 @@ If AP% = 1 And (U6 = 2 Or U6 = 1 And U9 = P9) Then 1680
 
 1681 Return
 
+
 1710 Locate 25, 1: Print "                                                                          ";
 
 1711 Locate 25, 1: Print "SAVE THIS LINE UP (YN) ";
@@ -666,6 +667,7 @@ Next
 GoSub 4522
 
 1820 Return
+
 
 2500 Cls
 If P%(1 - P9, P1%(1 - P9), 0) = -1 Then Q2% = 1
@@ -708,6 +710,7 @@ For I = 5 To 9
 Next
 Return
 
+
 2530 RN = Int(Rnd(1) * PCT%) + 1
 PCT% = 0
 For I = 0 To 9
@@ -718,6 +721,7 @@ For I = 0 To 9
 2535 Next
 
 2536 Return
+
 
 1830 GoSub 2500
 LF% = 0: PCT% = 0
@@ -759,9 +763,11 @@ GoSub 2310: Call NEWLINES(P9): GoSub 1940: GoTo 850
 
 1970 Return
 
+
 2000 If P%(P9, I, 15) >= 98 Then Color 0, 7
 
 2010 Return
+
 
 2040 I% = 99: GoSub 1520
 Locate 15, 58: Print "DISABLE PITCHER (0-L)"
@@ -789,6 +795,7 @@ If P%(P9, I1, 15) <> 0 Then P%(P9, I1, 15) = 0: Locate I1 + 2, 3: Color 15, 0: P
 
 2120 I% = 0: Return
 
+
 2125 ':GRANT DAY OFF
 If DR% = 1 Then 2126
 For I1 = 0 To 21
@@ -797,11 +804,13 @@ Next
 
 2126 Return
 
+
 2130 For I3 = 0 To 21: If P%(P9, I3, 15) = 99 And P%(P9, I3, 34) = 0 Then P%(P9, I3, 15) = 0: Locate I3 + 2, 3: Print P$(P9, I3)
 
 2140 Next I3
 
 2150 Return
+
 
 2160 I% = 99: Call SHOWBATTERS(P9)
 Color 15, 0: Locate 5, 59: Print "OPPOSING PITCHER"
@@ -852,9 +861,11 @@ If Asc(I$) = 9 And TG = 2 Then Call SHOWSPLIT(P9): GoTo 2170
 Locate 6, 59: Print P$(1 - P9, P1%(1 - P9)); " "; B1$(P%(1 - P9, P1%(1 - P9), 0) + 2)
 I% = 0: Return
 
+
 2240 For I3 = 0 To 22: If B%(P9, I3, 21) = 99 And B%(P9, I3, 31) = 0 Then B%(P9, I3, 21) = 0: Locate I3 + 2, 3: Print B$(P9, I3)
 
 2250 Next I3: Return
+
 
 2260 Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
 If AP% = 1 And (U6 = 2 Or U6 = 1 And U9 = P9) Then 2280
@@ -863,10 +874,12 @@ If AP% = 1 And (U6 = 2 Or U6 = 1 And U9 = P9) Then 2280
 
 2280 Return
 
+
 2310 For I = 10 To 22
     Locate I, 59: Print "                     ";
 Next
 Return
+
 
 2320 Cls
 
@@ -956,6 +969,7 @@ End If
 Next I
 Return
 
+
 2430 Call INFO: Color 14: Print "WHICH TEAM DOES COMPUTER MANAGE ?": Print
 
 2431 Color 15: Print "(0) ";: Color L%(0, 11), L%(0, 12): Print A$(0): Color 7, 0: Print
@@ -966,6 +980,7 @@ Color 15: Print "(1) ";: Color L%(1, 11), L%(1, 12): Print A$(1): Color 7, 0
 2450 U9 = Val(I$): If U9 <> 1 Then U9 = 0
 
 2460 Return
+
 
 2470 RD = 0
 For I = 0 To 1
@@ -1008,6 +1023,7 @@ Locate , 11: Print "PRECIPITATION: "; PC$(PC%)
 
 2479 S$ = PARK$
 Return
+
 
 
 3110 Cls: Print "ERROR:: NO LINEUPS  FOUND...BE SURE CORRECT LINEUP DISK IS IN DRIVE"
@@ -1117,16 +1133,18 @@ Color 15, 0
 
 If AP% = 1 Then Return
 
+
 3505 I$ = GetKeyPress$
 If UCase$(I$) <> "Y" Then Return
+
 
 Cls
 Locate 23, 10: Print "* - STADIUM GRAPHIC FILE NOT AVAILABLE"
 Start% = 1
 
-3510 SELECTION% = 1
+3510 Selection% = 1
 Count% = 15
-SCANCODE% = 99
+ExitCode% = 99
 FileFGColr% = 15: FileBGColr% = 1
 HiLiteFGColr% = 0: HiLiteBGColr% = 7
 Spacing% = 1
@@ -1135,16 +1153,18 @@ Column% = 10
 
 Call box0(4, 9, 20, 38, 2, 15, 1)
 _MouseShow "Default"
-'MMenuVert PARK$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
-MAMenu PARK$(), SELECTION%, Start%, Count%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, 15, 1, 1, Row%, Column%
+'MMenuVert PARK$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MAMenu PARK$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, 15, 1, 1, Row%, Column%
 _MouseHide
 
 Color , 0
-If SCANCODE% = 27 Then BO% = 1: Return
-PARK$ = Right$(Str$(SELECTION%), Len(Str$(SELECTION%)) - 1)
+If ExitCode% = 27 Then BO% = 1: Return
+
+PARK$ = Right$(Str$(Selection%), Len(Str$(Selection%)) - 1)
 If DN% = 0 Then PARK$ = PARK$ + "D.PNG" Else PARK$ = PARK$ + "N.PNG"
 Color 15, 0
-If _FileExists(".\parks\" + PARK$) Then L%(1, 13) = SELECTION%: S$(1) = PARK$(SELECTION%): Return
+If _FileExists(".\parks\" + PARK$) Then L%(1, 13) = Selection%: S$(1) = PARK$(Selection%): Return
+
 Locate 10, 8
 Print "STADIUM GRAPHIC NOT AVAILABLE"
 Locate , 8: Print "USE SELECTED PARK RATINGS WITH"
@@ -1152,9 +1172,10 @@ Locate , 8: Print "GENERIC DISPLAY (YN)"
 
 3515 I$ = GetKeyPress$
 If I$ <> "Y" Then 3510
-L%(1, 13) = SELECTION%: S$(1) = PARK$(SELECTION%)
+L%(1, 13) = Selection%: S$(1) = PARK$(Selection%)
 If DN% = 0 Then PARK$ = "99D.PNG" Else PARK$ = "99N.PNG"
 Return
+
 
 
 4500 ':*** PITCHING ROTATIONS ***
@@ -1206,14 +1227,15 @@ GoTo 4517
 4522 MG%(P9, 99) = 999
 MG%(P9, 0) = 999
 MF%(P9) = 0
-Open D$(3) + "MGR." + YN$(P9) For Random As #2 Len = 2000
+Open diskPaths$(3) + "MGR." + YN$(P9) For Random As #2 Len = 2000
 For I = 0 To 999
     Field #2, I * 2 As Q$, 2 As Q2$(I), 2000 - I * 2 - 2 As Q$
 Next
 For I = 0 To 999: LSet Q2$(I) = MKI$(MG%(P9, I)): Next
-Put #2, T1(P9): Close 2
+Put #2, T1%(P9): Close 2
 
 4535 Return
+
 
 4600 If AP% = 1 And (U6 = 2 Or U6 = 1 And U9 = P9) Then CR% = 1: GoTo 4610
 Cls: Print "ERROR::: ROTATION NOT FOUND": Print
@@ -1301,6 +1323,7 @@ GoTo 4700
 
 4683 Return
 
+
 4685 GS = 0
 For I = 0 To 21
     If P%(P9, I, 5) > GS Then GS = P%(P9, I, 5)
@@ -1311,6 +1334,7 @@ If GS <= 54 Then I = 3
 If GS <= 41 Then I = 4
 If GS <= 32 Then I = 5
 Return
+
 
 4690 ':COMPUTER SET ROTATION
 CR% = 0
@@ -1401,6 +1425,7 @@ GoTo 4516
 
     5163 Return
 
+
 5119 Next I: GoTo 5230
 
 5120 If DH% = 0 Then BP(9) = 1: GoTo 5230
@@ -1471,6 +1496,7 @@ BB%(B) = T
 BP(B) = U
 Return
 
+
 5355 ':IF A PITCHER THEN 268
 
 5360 Q1 = (B%(P9, JJ, 6) - B%(P9, JJ, 8) - B%(P9, JJ, 9) + B%(P9, JJ, 11)) * .7
@@ -1490,8 +1516,9 @@ If Q1 = 0 Then Q1 = 1
 
 5395 Return
 
-8100 NT = 0
-Open D$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342
+
+8100 NTMS = 0
+Open diskPaths$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342
 Y = LOF(1)
 Field #1, 15 As Q2$(0)
 For I1 = 1 To Y / 4342
@@ -1499,14 +1526,14 @@ For I1 = 1 To Y / 4342
     For I2 = 1 To 15
         If Left$(Q2$(0), 1) = " " Or Asc(Mid$(Q2$(0), I2, 1)) < 32 Or Asc(Mid$(Q2$(0), I2, 1)) > 123 Or UCase$(Left$(Q2$(0), 3)) = "NOT" Or UCase$(Left$(Q2$(0), 3)) = "UN" Then 8105
     Next I2
-    NT = NT + 1
-    teamNames$(NT) = Q2$(0): teamIndex%(NT) = I1
+    NTMS = NTMS + 1
+    teamNames$(NTMS) = Q2$(0): UV%(NTMS) = I1
 
 8105 Next I1
 Close 1
 
-8102 SELECTION% = 1
-Count% = NT
+8102 Selection% = 1
+Count% = NTMS
 Start% = 1
 FileFGColr% = 15: FileBGColr% = 4
 HiLiteFGColr% = 0: HiLiteBGColr% = 7
@@ -1519,14 +1546,15 @@ Color , 4: Cls: Locate , 33: Color 14: Print "TEAM SELECTION": Color 15
 Locate 25, 1: Color 14: Print "ESC";: Color 15: Print "-SELECT NEW ID  PGDN  PGUP  ";: Color 14: Print "ENTER";: Color 15: Print "-SELECTS TEAM";
 
 _MouseShow "Default"
-MAMenu teamNames$(), SELECTION%, Start%, Count%, EXITCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu teamNames$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
-If EXITCODE% = 27 Then BO% = 1: Return
-T1(I) = teamIndex%(SELECTION%)
+If ExitCode% = 27 Then BO% = 1: Return
+
+T1%(I) = UV%(Selection%)
 Locate 2, 33: Color 31: Print "LOADING..."
 
-300 Open D$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342
+300 Open diskPaths$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342
 Field #1, 15 As Q2$(0), 2 As Q2$(1), 2 As Q2$(2), 2 As Q2$(3), 2 As Q2$(4), 2 As Q2$(5), 2 As Q2$(6), 2 As Q2$(7), 2 As Q2$(8), 2 As Q2$(9), 2 As Q2$(10), 2 As Q2$(11), 2 As Q2$(12), 2 As Q2$(13), 4 As Q2$(14), 4297 As X$
 For A = 0 To 22
     Field #1, 45 + A * 99 As X$, 15 As Q2$(A * 43 + 15), 2 As Q2$(A * 43 + 16), 2 As Q2$(A * 43 + 17), 2 As Q2$(A * 43 + 18), 2 As Q2$(A * 43 + 19), 2 As Q2$(A * 43 + 20), 2 As Q2$(A * 43 + 21), 2 As Q2$(A * 43 + 22), 2 As Q2$(A * 43 + 23), 2 As Q2$(A * 43 + 24), 2 As Q2$(A * 43 + 25), 2 As Q2$(A * 43 + 26), 4297 - 37 - A * 99 As X$
@@ -1543,7 +1571,7 @@ For A = 0 To 21
 Next
 
 Field #1, 4280 As X$, 40 As Q2$(1840), 15 As Q2$(1841), 5 As Q2$(1842), 2 As Q2$(1843)
-Get #1, T1(I)
+Get #1, T1%(I)
 A$(I) = Q2$(0)
 A$(I) = RTrim$(A$(I))
 
@@ -1593,8 +1621,8 @@ For X = 0 To 21
         P%(I, X, X1 + 36) = 0
 Next: Next
 If LR% = 1 Then TS%(I, 0) = -1: GoTo 316
-If Not _FileExists(D$(0) + "LR." + YN$) Then TS%(I, 0) = -1: GoTo 316
-Open D$(0) + "LR." + YN$ For Random As #1 Len = 4108
+If Not _FileExists(diskPaths$(0) + "LR." + YN$) Then TS%(I, 0) = -1: GoTo 316
+Open diskPaths$(0) + "LR." + YN$ For Random As #1 Len = 4108
 For X = 0 To 11
     Field #1, X * 2 As X$, 2 As Q2$(X + 1), 4108 - 2 - 2 * X As X$
 Next
@@ -1626,7 +1654,7 @@ For X = 0 To 21
         Field #1, 3052 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q2$(1528 + X1 + X * 24), 4108 - 2 - (3052 + (X1 - 1) * 2 + X * 24 * 2) As X$
     Next
 Next
-Get #1, T1(I)
+Get #1, T1%(I)
 For X = 0 To 11
     TS%(I, X) = CVI(Q2$(X + 1))
 Next
@@ -1666,12 +1694,12 @@ For X = 0 To 21
 Next: Next
 
 
-If Not _FileExists(D$(3) + "MGR." + YN$) Then MF%(I) = -1: GoTo 317
-Open D$(3) + "MGR." + YN$ For Random As #2 Len = 2000
+If Not _FileExists(diskPaths$(3) + "MGR." + YN$) Then MF%(I) = -1: GoTo 317
+Open diskPaths$(3) + "MGR." + YN$ For Random As #2 Len = 2000
 For X = 0 To 999
     Field #2, X * 2 As Q2$, 2 As Q2$(X), 2000 - X * 2 - 2 As Q2$
 Next
-Get #2, T1(I)
+Get #2, T1%(I)
 For X = 0 To 999: MG%(I, X) = CVI(Q2$(X)): Next
 Close 2
 
@@ -1692,9 +1720,9 @@ For xx = 11 To 4 Step -1
 
 F$ = Mid$(N$(I), 4, QQ)
 F$ = F$ + "." + Left$(N$(I), 2)
-If Not _FileExists(D$(1) + F$ + "D") Then 318
+If Not _FileExists(diskPaths$(1) + F$ + "D") Then 318
 
-Open D$(1) + F$ + "D" For Input As #1
+Open diskPaths$(1) + F$ + "D" For Input As #1
 For I1 = 0 To 22
     Input #1, INJ%(I, I1)
 Next
@@ -1715,6 +1743,7 @@ For I1 = 0 To 21
 320 Next
 
 319 Return
+
 
 
 '------------------------------
@@ -2149,12 +2178,13 @@ Sub POSTGAME ()
     Next
     GoTo 7105
 
-    7100 Spec$ = D$(1) + "*.SPC"
+    7100 Spec$ = diskPaths$(1) + "*.SPC"
     null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
     Count% = DirCount%
     Count% = Count% + 1
     SPECIAL = 1
     Return
+
 
     7105 BK$ = "## # # ## # #  # # #  #  # # ## ##"
     For I = 0 To 1: For I1 = 0 To 21: If P8%(I, I1, 1) < 0 Then P8%(I, I1, 1) = 0
@@ -2274,7 +2304,7 @@ Sub POSTGAME ()
 
     7120 Cls: Print "ENTER 8-CHARACTER FILENAME FOR BOXSCORE (NO SPACES OR PERIODS)";: Input NM$: NM$ = NM$ + ".SPC"
 
-    7121 Open D$(1) + NM$ For Output As #2
+    7121 Open diskPaths$(1) + NM$ For Output As #2
     If SPECIAL = 1 Then GoSub 7188
     GoSub 7183
     For I = 0 To 1
@@ -2397,7 +2427,7 @@ Sub POSTGAME ()
     Print #2, "SKY: "; SC$(SC%)
     Print #2, "PRECIPITATION: "; PC$(PC%)
     Print #2, Chr$(12): Close #2
-    If SPECIAL = 1 Then FCopy D$(1) + NM$, D$(1) + "BOX" + Mid$(Str$(Count%), 2, Len(Str$(Count%))) + ".SPC", Space$(4096), ErrCode 'copy the file
+    If SPECIAL = 1 Then FCopy diskPaths$(1) + NM$, diskPaths$(1) + "BOX" + Mid$(Str$(Count%), 2, Len(Str$(Count%))) + ".SPC", Space$(4096), ErrCode 'copy the file
     If X = 1 Then 7580
     GoTo 7328
 
@@ -2407,11 +2437,13 @@ Sub POSTGAME ()
     Locate , 33: Print "-";: Locate , 34: Print Using "##"; S6%(I, 0);
     Locate , 37: Print Using "##"; S6%(I, 1);: Locate , 40: Print Using "#"; S6%(I, 2): Return
 
+
     7183 If INNING% < 9 Then GoSub 7185
     If INNING% = 10 And P = 0 Or INNING% = 9 Then GoSub 7187
     If INNING% = 10 And P = 1 Or INNING% > 10 And INNING% < 19 Or INNING% = 19 And P = 0 Then GoSub 7194
     If INNING% = 19 And P = 1 Or INNING% > 19 And INNING% <= 28 Then GoSub 7202
     Return
+
 
     7185 For I = 0 To 1
         Print #2, A$(I);
@@ -2426,6 +2458,7 @@ Sub POSTGAME ()
     Next I
     Return
 
+
     7187 For I = 0 To 1
         Print #2, A$(I);
         For I2 = 1 To 9
@@ -2439,18 +2472,19 @@ Sub POSTGAME ()
     Next I
     Return
 
+
     7188 If INNING% > E%(1) Then Print #2, Using "MORE THAN ## INNINGS"; E%(1)
     If S6%(1, 0) < E%(2) Then Print #2, A$(1);: Print #2, Using " SCORED LESS THAN ## RUN(S)"; E%(2)
     If S6%(0, 0) < E%(2) Then Print #2, A$(0);: Print #2, Using " SCORED LESS THAN ## RUN(S)"; E%(2)
     If S6%(1, 0) > E%(3) Then Print #2, A$(1);: Print #2, Using " SCORED MORE THAN ## RUN(S)"; E%(3)
     If S6%(0, 0) > E%(3) Then Print #2, A$(0);: Print #2, Using " SCORED MORE THAN ## RUN(S)"; E%(3)
-    If S6%(1, 1) > E%(5) Then Print #2, A$(1);: Print #2, Using " HAD MORE THAN ## HIT(S)"; E%(5)
-    If S6%(0, 1) > E%(5) Then Print #2, A$(0);: Print #2, Using " HAD MORE THAN ## HIT(S)"; E%(5)
-    If S6%(1, 1) < E%(4) Then Print #2, A$(1);: Print #2, Using " HAD LESS THAN ## HIT(S)"; E%(4)
-    If S6%(0, 1) < E%(4) Then Print #2, A$(0);: Print #2, Using " HAD LESS THAN ## HIT(S)S"; E%(4)
+    If S6%(1, 1) > E%(5) Then Print #2, A$(1);: Print #2, Using " HAD MORE THAN ## HIT%(S)"; E%(5)
+    If S6%(0, 1) > E%(5) Then Print #2, A$(0);: Print #2, Using " HAD MORE THAN ## HIT%(S)"; E%(5)
+    If S6%(1, 1) < E%(4) Then Print #2, A$(1);: Print #2, Using " HAD LESS THAN ## HIT%(S)"; E%(4)
+    If S6%(0, 1) < E%(4) Then Print #2, A$(0);: Print #2, Using " HAD LESS THAN ## HIT%(S)S"; E%(4)
     For I = 0 To 1
         For I1 = 0 To 22
-            If B8%(I, I1, 1) > E%(6) Then Print #2, B$(I, I1);: Print #2, Using " HAD MORE THAN ## HIT(S)"; E%(6)
+            If B8%(I, I1, 1) > E%(6) Then Print #2, B$(I, I1);: Print #2, Using " HAD MORE THAN ## HIT%(S)"; E%(6)
             If B8%(I, I1, 2) > E%(7) Then Print #2, B$(I, I1);: Print #2, Using " SCORED MORE THAN ## RUN(S)"; E%(7)
             If B8%(I, I1, 3) > E%(8) Then Print #2, B$(I, I1);: Print #2, Using " HAD MORE THAN ## RBI(S)"; E%(8)
             If B8%(I, I1, 4) > E%(9) Then Print #2, B$(I, I1);: Print #2, Using " HIT MORE THAN ## DOUBLES(S)"; E%(9)
@@ -2465,6 +2499,7 @@ Sub POSTGAME ()
         Next
     Next
     Return
+
 
     7194 For I = 0 To 1
         Print #2, A$(I);
@@ -2483,6 +2518,7 @@ Sub POSTGAME ()
         GoSub 7222
     Next I
     Return
+
 
     7202 For I = 0 To 1
         Print #2, A$(I);
@@ -2506,6 +2542,7 @@ Sub POSTGAME ()
     Next I
     Print #2,: Return
 
+
     7212 If I2 < 4 Then Print #2, Tab(((2 * I2) + 18));
     If I2 > 3 And I2 < 7 Then Print #2, Tab(((2 * I2) + 19));
     If I2 > 6 And I2 < 10 Then Print #2, Tab(((2 * I2) + 20));
@@ -2517,6 +2554,7 @@ Sub POSTGAME ()
     If I2 > 24 And I2 < 28 Then Print #2, Tab(((2 * (I2 - 18)) + 20));
     Return
 
+
     7222 Print #2, Tab(40); "-";
     Print #2, Tab(41);
     Print #2, Using "##"; S6%(I, 0);
@@ -2524,10 +2562,13 @@ Sub POSTGAME ()
     Print #2, Tab(47);: Print #2, Using "#"; S6%(I, 2)
     Return
 
+
     7227 If AP% = 1 And U6 = 2 Then Return
+
     Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
     7229 I$ = GetKeyPress$
     Return
+
 
     7293 I3 = 0: If S6%(1, 0) - S6%(0, 0) > 0 Then I3 = 1
     If P2%(I3) <> P1%(I3) And S1%(I3) = -1 And P8%(I3, P1%(I3), 0) >= 9 And P8%(I3, P1%(I3), 0) <= 12 And P6%(I3) > 0 And P8%(I3, P1%(I3), 3) < 3 Then S1%(I3) = P1%(I3)
@@ -2645,16 +2686,19 @@ Sub POSTGAME ()
     Color 15, 0
     Cls: J = 2: Call DRAWBOX(J)
 
-    7334 Run "HELLO.EXE"
+    7334 Exit Sub
 
     7340 If X = 1 Then X = 0
     Return
 
+
     7342 If X = 0 Then Cls
     Return
 
+
     7344 If X = 0 Then GoSub 7227
     Return
+
 
     7346 Print "(W,"; Right$(Str$(P5%(I, I2, 6) + 1), (Len(Str$(P5%(I, I2, 6) + 1)) - 1)); "-"; Right$(Str$(P5%(I, I2, 7)), (Len(Str$(P5%(I, I2, 7))) - 1)); ")";: W$ = P$(I, I2): GoTo 7316
 
@@ -2662,9 +2706,11 @@ Sub POSTGAME ()
 
     7348 If S1%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then Print "(S,"; Right$(Str$(P5%(I, I2, 12) + 1), (Len(Str$(P5%(I, I2, 12) + 1)) - 1)); ")";
     Return
+
     DSKBOX:
     If S1%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then Print #2, "(S,"; Right$(Str$(P5%(I, I2, 12) + 1), (Len(Str$(P5%(I, I2, 12) + 1)) - 1)); ")";
     Return
+
 
     7375 Color 14, 0: Print " E-";
     Color 15, 0
@@ -2705,10 +2751,12 @@ Sub POSTGAME ()
     Color 14, 0: Print "PRECIPITATION: ";: Color 15, 0: Print PC$(PC%)
     Return
 
+
     7408 Cls
     Color 15, 0: Cls: J = 1: Call DRAWBOX(J): Locate 9, 28: Print "SAVE STATS FOR EITHER TEAM (YN)";: Color 15, 0: If AP% = 1 Then BG% = 0: BN% = 1: GoTo 7411
     7410 I$ = GetKeyPress$
     If UCase$(I$) <> "Y" Then X1 = 3: Return
+
     Cls: Color 12: Print Tab(33); "COMPILE STATS": Print
     Color 14: Print "(0) ";: Color 15: Print "BOTH TEAMS": Print
     Color 14: Print "(1) ";: Color L%(0, 11), L%(0, 12): Print A$(0); " ONLY": Color , 0: Print
@@ -2732,6 +2780,7 @@ Sub POSTGAME ()
     If INNING% = 19 And P = 1 Or INNING% > 19 And INNING% <= 28 Then GoSub 7512
     Return
 
+
     7493 For I = 0 To 1
         Color L%(I, 11), L%(I, 12)
         Print A$(I);
@@ -2747,6 +2796,7 @@ Sub POSTGAME ()
     Next I
     Return
 
+
     7495 For I = 0 To 1
         Color L%(I, 11), L%(I, 12)
         Print A$(I);
@@ -2761,6 +2811,7 @@ Sub POSTGAME ()
         GoSub 7532
     Next I
     Return
+
 
     7504 For I = 0 To 1
         Color L%(I, 11), L%(I, 12)
@@ -2782,6 +2833,7 @@ Sub POSTGAME ()
         GoSub 7532
     Next I
     Return
+
 
     7512 For I = 0 To 1
         Color L%(I, 11), L%(I, 12)
@@ -2809,6 +2861,7 @@ Sub POSTGAME ()
     Next I
     Return
 
+
     7522 If I2 < 4 Then Locate , ((2 * I2) + 18)
     If I2 > 3 And I2 < 7 Then Locate , ((2 * I2) + 19)
     If I2 > 6 And I2 < 10 Then Locate , ((2 * I2) + 20)
@@ -2820,11 +2873,13 @@ Sub POSTGAME ()
     If I2 > 24 And I2 < 28 Then Locate , ((2 * (I2 - 18)) + 20)
     Return
 
+
     7532 Locate , 40: Print "-";: Locate , 41: Print Using "##"; S6%(I, 0);
     Locate , 44: Print Using "##"; S6%(I, 1);: Locate , 47: Print Using "#"; S6%(I, 2)
     Return
 
-    7580 Open D$(1) + NM$ For Input As #2
+
+    7580 Open diskPaths$(1) + NM$ For Input As #2
 
     7581 Line Input #2, X$
     If Left$(X$, 1) = Chr$(12) Then LPrint X$: Close #2: GoTo 7328
@@ -2835,7 +2890,7 @@ Sub POSTGAME ()
     Open "GAME82" For Input As #2
     Input #2, FF$
     For I = 0 To 2: Input #2, AP%(I): Next: Close 2
-    Open D$(0) + FF$ For Random As #1 Len = 48
+    Open diskPaths$(0) + FF$ For Random As #1 Len = 48
     For X = 0 To 18
         Field #1, X * 2 As X$, 2 As Q$(X + 1), 48 - 2 - 2 * X As X$
     Next
@@ -2859,9 +2914,9 @@ Sub POSTGAME ()
     7662 C% = 0: GoSub 7834: If C% = 1 Then 7770
     SA$(Q) = A$(Q): GoSub 7862
     F$ = Mid$(SA$(Q), 4, QQ): R$ = F$ + "." + Left$(SA$(Q), 2)
-    FILENAME$ = D$(1) + R$ + "D"
+    FILENAME$ = diskPaths$(1) + R$ + "D"
     If Not _FileExists(FILENAME$) Then 7663
-    Open D$(1) + R$ + "D" For Input As #1
+    Open diskPaths$(1) + R$ + "D" For Input As #1
     For I1 = 0 To 22
         Input #1, INJ%(Q, I1)
     Next
@@ -2899,7 +2954,7 @@ Sub POSTGAME ()
 
     7667 Next
 
-    7665 Open D$(1) + R$ + "D" For Output As #1
+    7665 Open diskPaths$(1) + R$ + "D" For Output As #1
     For I1 = 0 To 22
         Print #1, INJ%(Q, I1)
     Next
@@ -2908,9 +2963,9 @@ Sub POSTGAME ()
     Next
     Close 1
 
-    7666 FILENAME$ = D$(1) + R$
+    7666 FILENAME$ = diskPaths$(1) + R$
     If Not _FileExists(FILENAME$) Then 7690
-    Open D$(1) + R$ For Input As #1
+    Open diskPaths$(1) + R$ For Input As #1
     Input #1, A$(Q): Input #1, W2%: Input #1, L2%
     For I = 0 To 22: Input #1, B$(Q, I): Input #1, B2%(Q, I): Next I
     For I = 0 To 21: Input #1, P$(Q, I): Input #1, P3%(Q, I): Next I
@@ -2977,7 +3032,7 @@ Sub POSTGAME ()
     Color 15, 0
     Print ">>>>>": Print: Print: Print "THE STATS ARE BEING SAVED UNDER": Print "THE FOLLOWING NAME ::: ";
     Color L%(Q, 11), L%(Q, 12): Print R$: Color 15, 0
-    Open D$(1) + R$ For Output As #1
+    Open diskPaths$(1) + R$ For Output As #1
     Print #1, A$(Q): Print #1, W2%: Print #1, L2%
 
     1 For I = 0 To 22: Print #1, B$(Q, I): Print #1, B2%(Q, I): Next I
@@ -3004,11 +3059,11 @@ Sub POSTGAME ()
     7770 Q = Q + 1: If Q < 2 Then 7662
     If AP% = 1 And NM <> 1 Then Run "LOADER.EXE"
 
-    7777 Run "HELLO.EXE"
+    7777 Exit Sub
 
-    7780 FILENAME$ = D$(1) + R$ + "R"
+    7780 FILENAME$ = diskPaths$(1) + R$ + "R"
     If Not _FileExists(FILENAME$) Then 7782
-    Open D$(1) + R$ + "R" For Input As #1
+    Open diskPaths$(1) + R$ + "R" For Input As #1
     For I = 0 To 22
         For I1 = 0 To 6
             Input #1, SS%(I, I1)
@@ -3021,7 +3076,7 @@ Sub POSTGAME ()
             SS%(I, I1) = SS%(I, I1) + CSS%(Q, I, I1)
         Next
     Next
-    Open D$(1) + R$ + "R" For Output As #1
+    Open diskPaths$(1) + R$ + "R" For Output As #1
     For I = 0 To 22
         For I1 = 0 To 6
             Print #1, SS%(I, I1)
@@ -3029,9 +3084,9 @@ Sub POSTGAME ()
     Next
     Close 1
     Y% = 0
-    FILENAME$ = D$(1) + R$ + "S"
+    FILENAME$ = diskPaths$(1) + R$ + "S"
     If Not _FileExists(FILENAME$) Then 7800
-    Open D$(1) + R$ + "S" For Input As #1
+    Open diskPaths$(1) + R$ + "S" For Input As #1
     Input #1, Y%
 
     10 For I = 1 To 162: Input #1, H%(I): Next I
@@ -3073,7 +3128,7 @@ Sub POSTGAME ()
     7813 PL$(Y%) = "H"
 
     7814 Rem
-    Open D$(1) + R$ + "S" For Output As #1: Print #1, Y%
+    Open diskPaths$(1) + R$ + "S" For Output As #1: Print #1, Y%
     For I = 1 To 162: Print #1, H%(I): Next I
     For I = 1 To 162: Print #1, HT$(I): Next I
     For I = 1 To 162: Print #1, V%(I): Next I
@@ -3085,6 +3140,7 @@ Sub POSTGAME ()
     Y% = 0
     Return
 
+
     7834 If AP% = 1 Then C% = 0: GoTo 7848
     If X1 = 0 Or X1 = 1 And Q = 0 Or X1 = 2 And Q = 1 Then 7840
     If X1 = 2 And Q = 0 Or X1 = 1 And Q = 1 Then C% = 1: GoTo 7848
@@ -3093,14 +3149,17 @@ Sub POSTGAME ()
 
     7848 Return
 
+
     7850 For I = 0 To 22: For I1 = 0 To 21: B6%(I, I1) = 0: Next: Next
     For I = 0 To 22: For I1 = 0 To 6: SS%(I, I1) = 0: Next: Next
     For I = 0 To 21: For I1 = 0 To 41: P0%(I, I1) = 0: Next: Next
     W2% = 0: L2% = 0: For I = 0 To 21: T%(I) = 0: Next I: For I = 0 To 22: P4%(I) = 0: Next I: Return
 
+
     7856 For I = 0 To 1: For I1 = 0 To 22: B2%(I, I1) = 0: Next: Next
     For I = 0 To 1: For I1 = 0 To 21: P3%(I, I1) = 0: Next: Next
     Return
+
 
     7862 For XX = 4 To 11
         If Mid$(SA$(Q), XX, 1) = " " Or Mid$(SA$(Q), XX, 1) = "." Then Mid$(SA$(Q), XX, 1) = "_"
@@ -3112,11 +3171,12 @@ Sub POSTGAME ()
 
     7872 Return
 
+
 End Sub
 
 
-'$INCLUDE: 'GameRoutines.BM'
-'$INCLUDE: 'GameRoutines_Gfx.BM'
+'$INCLUDE: 'Game_Routines.BM'
+'$INCLUDE: 'Game_Routines_Gfx.BM'
 '$INCLUDE: 'SOURCE.BM'
 '$INCLUDE: 'SOURCE_Gfx.BM'
 

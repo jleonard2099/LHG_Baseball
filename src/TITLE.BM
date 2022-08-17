@@ -1,0 +1,72 @@
+'------------------------------
+'   TITLE_HEADER Subroutine
+'------------------------------
+' Displays window title / game copyright
+Sub TITLE_HEADER ()
+End Sub
+
+
+'------------------------------
+'  TITLE_SCHEDULER Subroutine
+'------------------------------
+' Displays window title / game copyright
+Sub TITLE_SCHEDULER ()
+    Color , 0
+    KEY Off
+    Cls
+    Color , 1
+    Locate 1, 1: Print Tab(80);
+    Locate , 33
+    Color 14
+    Print "AUTO SCHEDULER"
+    Locate 24, 1: Print Tab(80);
+    Locate , 1
+    Print "(C) LANCE HAFFNER/SHANNON LYNN 1987-1995";
+    Locate 5, 1
+    Color , 0
+End Sub
+
+
+'------------------------------
+'    TITLE_STATS Subroutine
+'------------------------------
+' Displays window title / game copyright
+Sub TITLE_STATS ()
+End Sub
+
+
+'------------------------------
+'    TITLE_TOURN Subroutine
+'------------------------------
+' Displays window title / game copyright
+Sub TITLE_TOURN ()
+End Sub
+
+
+'------------------------------
+'      TITLE Subroutine
+'------------------------------
+' Displays window title / game copyright
+Sub TITLE ()
+    Color , 0
+    KEY Off
+    Cls
+    Color , 1
+    Locate 1, 1: Print Tab(80);
+    Locate , 30
+    Color 12
+    Print "FULL COUNT BASEBALL V" + GAME_VERSION$
+    Locate 24, 1: Print Tab(80);
+    Locate , 1
+    Print "(C) LANCE HAFFNER/SHANNON LYNN 1987-1997"; Tab(70); Left$(Time$, 5);
+    Print "     FOR TECHNICAL SUPPORT, CALL (800) 477-7032 OR SportGames@AOL.COM"
+    Print "      LANCE HAFFNER GAMES ON THE INTERNET AT  HTTP://WWW.LHGAMES.COM"
+
+    Locate 12, 1
+    Locate 12, 1
+    Print "LANCE HAFFNER GAMES"
+    Print "P.O. BOX 100594"
+    Print "NASHVILLE, TN 37214"
+    Color 10
+End Sub
+

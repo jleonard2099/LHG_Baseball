@@ -1,249 +1,411 @@
+Const GAME_VERSION$ = "6.58"
+'Const MAX_CONFERENCES = 40
+'Const TEAMS_PER_CONFERENCE = 30
+'Const TEAMS_PER_DIV = 15
+'Const DIVS_PER_CONFERENCE = 2
+
+Const NUM_STATRECORDS = 162
+Const MAX_TEAMS = 500
+Const MAX_GAMES = 1500
+Const MAX_FILES = 1024 '1048576
+
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'
+'$INCLUDE: 'PadRight.BI'
+'$INCLUDE: 'MainRoutines.BI'
+'$INCLUDE: 'TITLE.BI'
+'$INCLUDE: 'Variables.BI'
 
+' DefInt A-Z
+
+Data AT BATS,HITS,RUNS,RUNS BATTED IN,DOUBLES,TRIPLES,HOME RUNS,TIMES WALKED
+Data TIME STRUCK OUT,STOLEN BASES,CAUGHT STEALING,ERRORS,CURRENT HITTING STREAK
+Data LONGEST HITTING STREAK,GAMES,GROUND INTO DP,PUTOUTS,ASSISTS
+Data SACRIFICE HITS,SACRIFICE FLIES
+Data FIELDING AVERAGE,BATTING AVERAGE,SLUGGING PCT.,ON-BASE PCT.,AT BATS PER HOME RUN
+Data AT BATS PER STRIKEOUT,AT BATS PER WALK,AT BATS PER RBI,AT BATS PER RUNS SCORED
+Data AT BATS PER DOUBLE PLAY
+Data RUNNERS CAUGHT STEALING,GO TO MAIN MENU
+For I = 0 To 31: Read TP$(I): Next
+
+Data AT BATS,HITS,RUNS,RUNS BATTED IN,DOUBLES,TRIPLES,HOME RUNS,TIMES WALKED
+Data TIME STRUCK OUT,STOLEN BASES,CAUGHT STEALING,ERRORS,CURRENT HITTING STREAK
+Data LONGEST HITTING STREAK,GAMES,GROUND INTO DP,PUTOUTS,ASSISTS
+Data SACRIFICE HITS,SACRIFICE FLIES
+Data BATTING AVERAGE,SLUGGING PCT.,ON-BASE PCT.,AT BATS PER HOME RUN
+Data AT BATS PER STRIKEOUT,AT BATS PER WALK,AT BATS PER RBI,AT BATS PER RUNS SCORED
+Data AT BATS PER DOUBLE PLAY
+Data SB ATTEMPTS AGAINST,RUNNERS CAUGHT STEALING,% CAUGHT STEALING
+For I = 1 To 32: Read TP0$(I): Next
+
+Data INNINGS PITCHED,HITS,RUNS,EARNED RUNS,WALKS
+Data STRIKE OUTS,WON,LOST,GAMES,GAMES STARTED
+Data COMPLETE GAMES,SHUTOUTS,SAVES,DOUBLE PLAYS,HOME RUNS ALLOWED
+Data LEADS HELD,RUNNERS INHERITED,RUNNNERS INH. SCORED,% OF INH. RUNNERS SCORING
+Data BLOWN SAVES,QUALITY STARTS,EARNED RUN AVERAGE
+Data WALKS PER 9 IP,STRIKEOUTS PER 9 IP,HITS ALLOWED PER 9 IP,DOUBLE PLAYS PER 9 IP
+Data SACRIFICE HITS,SACRIFICE FLIES,RUN SUPPORT,RETURN TO MAIN MENU
+For I = 0 To 29: Read TP1$(I): Next
+
+Data INNINGS PITCHED,HITS,RUNS,EARNED RUNS,WALKS
+Data STRIKEOUTS,WON,LOST,GAMES,GAMES STARTED
+Data COMPLETE GAMES,SHUTOUTS,SAVES,DOUBLE PLAYS,HOME RUNS ALLOWED
+Data SACRIFICE FLIES,SACRIFICE HITS
+Data RUNNERS INHERITED,RUNNNERS INH. SCORED,% OF INH. RUNNERS SCORING
+Data BLOWN SAVES,RUN SUPPORT,QUALITY STARTS,EARNED RUN AVERAGE
+Data WALKS PER 9 IP,STRIKEOUTS PER 9 IP,HITS ALLOWED PER 9 IP,DOUBLE PLAYS PER 9 IP
+For I = 1 To 28: Read TP1A$(I): Next
+
+Data AT BATS,HITS,RUNS,RUNS BATTED IN,DOUBLES,TRIPLES,HOME RUNS,TIMES WALKED,TIME STRUCK OUT
+Data STOLEN BASES,CAUGHT STEALING,ERRORS,SACRIFICE HITS,SACRIFICE FLIES
+Data BATTING AVERAGE,SLUGGING PCT.,ON-BASE PCT.,RUNNERS LEFT ON BASE,DOUBLE PLAYS GROUNDED INTO
+Data FIELDING AVERAGE,INNINGS PITCHED,HITS,RUNS,EARNED RUNS,WALKS,STRIKE OUTS,COMPLETE GAMES,SHUTOUTS
+Data SAVES,DOUBLE PLAYS,HOME RUNS ALLOWED,RUNNERS INHERITED,RUNNNERS INH. SCORED,% OF INH. RUNNERS SCORING
+Data BLOWN SAVES,QUALITY STARTS,EARNED RUN AVERAGE,SACRIFICE HITS,SACRIFICE FLIES,RETURN TO MAIN MENU
+For I = 0 To 39: Read TP2$(I): Next
+
+Data AT BATS,HITS,RUNS,RUNS BATTED IN,DOUBLES,TRIPLES,HOME RUNS,TIMES WALKED,TIME STRUCK OUT
+Data STOLEN BASES,CAUGHT STEALING,ERRORS,LEFT ON BASE,DOUBLE PLAYS GR. INTO
+Data PUTOUTS,ASSISTS,SACRIFICE HITS,SACRIFICE FLIES
+Data BATTING AVERAGE,SLUGGING PCT.,ON-BASE PCT.
+For I = 0 To 20: Read TP2A$(I): Next
+
+Data INNINGS PITCHED,HITS ALLOWED,RUNS ALLOWED,EARNED RUNS,WALKS,STRIKEOUTS,COMPLETE GAMES,SHUTOUTS
+Data SAVES,DOUBLEPLAYS TURNED,HOME RUNS ALLOWED,SACRIFICE HITS,SACRIFICE FLIES,RUNERS INHERITED
+Data RUNNERS INHERITED SCORED,BLOWN SAVES,QUALITY STARTS,PER CENT OF RI SCORED,EARNED RUN AVERAGE
+For I = 0 To 18: Read TP3$(I): Next
+
+Data A,B,C,D,E,F,G,H,I,J,K,L,M
+Data 681,663,645,627,609,591,573,555,537
+For I = 0 To 12: Read X$(I): Next
+For I = 1 To 9: Read AB%(I): Next
+
+Data LP,L,S,R,RP
+Data dh,"p ","c ",1b,2b,3b,ss,lf,cf,rf,ph
+For I = 0 To 4: Read B1$(I): Next
+For I = 0 To 10: Read C$(I): Next I
+
+Data "OUTDOOR","INDOOR ","GRASS","TURF"
+For I = 0 To 3: Read BP$(I): Next
+
+Data HH,C1,C2,CC
+For X = 0 To 3: Read MO$(X): Next
+
+Data 15,0,15,1,19,4,4,6,3,1,2,3,14
+For X = 1 To 13: Read E%(X): Next
+
+
+'----------------------------------------
+'               MAIN CODE
+'----------------------------------------
 _Title "Full Count Baseball - Menu"
 $ExeIcon:'./lhg_fcbase.ico'
 _Icon
 _AllowFullScreen
 
-DefInt A-Z
-DECLARE FUNCTION PadRight$ (X$, Length)
-DECLARE SUB TITLE ()
-
-Dim D$(3), menuItems$(16)
-
-'CALL INITMOUSE(X)
-_MouseShow "DEFAULT"
-
 Open "DEV.BAS" For Input As #1
 For I = 0 To 3
-    Input #1, D$(I)
+    Input #1, diskPaths$(I)
 Next
 Close 1
 
-1 Call TITLE
-Erase menuItems$
-menuItems$(1) = "PLAY A GAME                     "
-menuItems$(2) = "ENTER NEW/CHANGE EXISTING TEAMS "
-menuItems$(3) = "PROGRAMMABLE MANAGER            "
-menuItems$(4) = "AUTO SCHEDULER/BOXSCORE OPTIONS "
-menuItems$(5) = "DRAFT A TEAM                    "
-menuItems$(6) = "TRADE PLAYERS                   "
-menuItems$(7) = "VIEW/PRINT COMPILED STATS       "
-menuItems$(8) = "MODIFY REPLAY STATS             "
-menuItems$(9) = "LEAGUE LEADERS AND STANDINGS    "
-menuItems$(10) = "LEAGUE UTILITIES                "
-menuItems$(11) = "ACTIVATE/DEACTIVATE PLAYERS     "
-menuItems$(12) = "GROUNDBALL/FLYOUT CALCS         "
-menuItems$(13) = "HARD DRIVE INSTALLATION         "
-menuItems$(14) = "CONFIGURE DRIVES FOR TEAMS,STATS"
-menuItems$(15) = "EXIT TO DOS                     "
-SELECTION% = 1
-Count% = 15
-Start% = 1
-SCANCODE% = 15
-FileFGColr% = 15: FileBGColr% = 1
-HiLiteFGColr% = 0: HiLiteBGColr% = 7
-Spacing% = 1
-Row% = 7
-Column% = 25
+Selection% = 1
 
-Call box0(6, 24, 22, 57, 2, 15, 1)
-_MouseShow "DEFAULT"
-MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
-_MouseHide
+Do
+    Call Main_Menu(Selection%)
+Loop Until Selection% = 15
 
-Color , 0
-If SCANCODE% = 27 Then End
-If SELECTION% = 1 Then Run "LOADER.EXE"
-If SELECTION% = 2 Then Run "BINPUT.EXE"
-If SELECTION% = 3 Then Run "PROGMAN.EXE"
-If SELECTION% = 4 Then Run "SCHEDULE.EXE"
-If SELECTION% = 5 Then Run "DRAFT.EXE"
-If SELECTION% = 6 Then Run "TRADE.EXE"
-If SELECTION% = 7 Then Run "LOOKY.EXE"
-If SELECTION% = 8 Then Run "SINPUT.EXE"
-If SELECTION% = 9 Then 700
-If SELECTION% = 10 Then 800
-If SELECTION% = 11 Then Run "ACTIVATE.EXE"
-If SELECTION% = 12 Then Run "GROUND.EXE"
-'IF SELECTION% = 13 THEN RUN "HDCOPY.EXE"
-If SELECTION% = 14 Then 505
-If SELECTION% = 15 Then Cls: End
+End
 
-307 Return
-
-505 Color 15, 1
-FG = 0
-BG = 7
-For I = 0 To 3
-    D$(I) = Left$(D$(I), Len(D$(I)) - 1)
-Next
-'Colr = OneColor%(FG, BG) 'pack FG and BG into a single byte
-Cls: Locate , 16: Print "SPECIFY PATHS FOR YOUR TEAMS AND COMPILED STATS": Print
-
-510 Locate , 31: Print "PATHNAME EXAMPLES:": Print
-
-515 Locate , 31: Print "A:"
-
-520 Locate , 31: Print "C:\FULL\TEAMS"
-Locate 7, 1: QPrint "Path for Teams ", 14, 1, -1
-Locate , 16: QPrint PadRight$(D$(0), 30), FG, BG, -1
-Locate 9, 1: QPrint "Path for Stats ", 14, 1, -1
-Locate , 16: QPrint PadRight$(D$(1), 30), FG, BG, -1
-Locate 11, 1: QPrint "Path for Leaders ", 14, 1, -1
-Locate , 18: QPrint PadRight$(D$(2), 30), FG, BG, -1
-Locate 13, 1: QPrint "Path for Manager Profiles ", 14, 1, -1
-Locate , 27: QPrint PadRight$(D$(3), 30), FG, BG, -1
-
-GetDiv1:
-Locate 7, 16 'location of beginning of field
-CapsOn = 0: NumOnly = 0: Max = 30 'specify field parameters
-Call TextIn(D$(0), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
-If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
-If XCode = 2 GoTo Done 'all done entering data
-D$(0) = _Trim$(D$(0))
-GetDiv2:
-Locate 9, 16 'location of beginning of field
-CapsOn = 0: NumOnly = 0: Max = 30 'specify field parameters
-Call TextIn(D$(1), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
-If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
-If XCode = 2 GoTo Done 'all done entering data
-D$(1) = _Trim$(D$(1))
-GetDiv3:
-Locate 11, 18 'location of beginning of field
-CapsOn = 0: NumOnly = 0: Max = 30 'specify field parameters
-Call TextIn(D$(2), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
-If XCode = 1 GoTo GetDiv2: 'can't back up any more, stay here
-If XCode = 2 GoTo Done 'all done entering data
-D$(2) = _Trim$(D$(2))
-GetDiv4:
-Locate 13, 27 'location of beginning of field
-CapsOn = 0: NumOnly = 0: Max = 30 'specify field parameters
-Call TextIn(D$(3), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
-If XCode = 1 GoTo GetDiv3: 'can't back up any more, stay here
-D$(3) = _Trim$(D$(3))
-Done:
-Locate 23, 1
-Print "Is this okay? (Yes/No) ";
-X$ = ""
-Call YesNoB(X$, XCode, FG, BG)
-Locate , 1
-ClearEOL 14, 1
-If XCode = 1 GoTo GetDiv4
-If X$ = "N" GoTo GetDiv1
-If X$ <> "Y" GoTo Done 'insist on either Y or N or up-arrow
-
-580 Open "DEV.BAS" For Output As #1
-
-585 For R = 0 To 3: D$(R) = D$(R) + "\": Next R
-
-590 Print #1, D$(0)
-
-595 Print #1, D$(1)
-Print #1, D$(2)
-Print #1, D$(3)
-
-600 Close #1
-
-620 GoTo 1
-
-700 Call TITLE
-Erase menuItems$
-menuItems$(1) = "CREATE/EDIT A LEAGUE                 "
-menuItems$(2) = "UPDATE STANDINGS/LEADERS FOR A LEAGUE"
-menuItems$(3) = "EXPANDED LEADERS AND STANDINGS       "
-menuItems$(4) = "VIEW RESULTS FOR A LEAGUE            "
-menuItems$(5) = "PRINT RESULTS FOR A LEAGUE           "
-menuItems$(6) = "DELETE ALL STATS FOR A LEAGUE        "
-menuItems$(7) = "RETURN TO FULL COUNT MAIN MENU       "
-menuItems$(8) = "EXIT TO DOS                          "
-SELECTION% = 1
-Count% = 8
-Start% = 1
-SCANCODE% = 8
-FileFGColr% = 15: FileBGColr% = 1
-HiLiteFGColr% = 0: HiLiteBGColr% = 7
-Spacing% = 1
-Row% = 8
-Column% = 23
-Call box0(7, 22, 16, 60, 2, 15, 1)
-_MouseShow "DEFAULT"
-MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
-_MouseHide
-
-Color , 0
-If SCANCODE% = 27 Then 1
-If SELECTION% = 1 Then Run "CREATE.EXE"
-If SELECTION% = 2 Then Run "LEAGCMPL.EXE"
-If SELECTION% = 3 Then Run "NEWLDR.EXE"
-If SELECTION% = 4 Then Run "SEELEAG.EXE"
-If SELECTION% = 5 Then Run "PRTLEAG.EXE"
-If SELECTION% = 6 Then Run "BLANK.EXE"
-If SELECTION% = 7 Then 1
-If SELECTION% = 8 Then Cls: End
-
-800 Call TITLE
-Erase menuItems$
-menuItems$(1) = "COMPARE COMPILED STATS VS. ACTUAL"
-menuItems$(2) = "MERGE TWO STAT FILES             "
-menuItems$(3) = "VIEW TEAM HEAD TO HEAD RESULTS   "
-menuItems$(4) = "CAREER FILE OPTIONS              "
-menuItems$(5) = "SORT PLAYERS BY POSITION         "
-menuItems$(6) = "RETURN TO FULL COUNT MAIN MENU   "
-SELECTION% = 1
-Count% = 6
-Start% = 1
-SCANCODE% = 6
-FileFGColr% = 15: FileBGColr% = 1
-HiLiteFGColr% = 0: HiLiteBGColr% = 7
-Spacing% = 1
-Row% = 8
-Column% = 23
-Call box0(7, 22, 14, 56, 2, 15, 1)
-_MouseShow "DEFAULT"
-MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
-_MouseHide
-
-Color , 0
-If SCANCODE% = 27 Then 1
-If SELECTION% = 1 Then Run "COMPARE.EXE"
-If SELECTION% = 2 Then Run "MERGE.EXE"
-If SELECTION% = 3 Then Run "REC.EXE"
-If SELECTION% = 4 Then Run "CAREER.EXE"
-If SELECTION% = 5 Then Run "POS.EXE"
-If SELECTION% = 6 Then 1
+System
 
 
-'------------------------------
-'      PadRight Function
-'------------------------------
-' Pads string to the right with spaces
-Function PadRight$ (X$, Length)
-    PadRight$ = X$ + Space$(Length - Len(X$)) 'for display only
-End Function
+'----------------------------------------
+'       Main_Menu Subroutine
+'----------------------------------------
+Sub Main_Menu (menuSelection%)
 
+    ReDim menuChoices$(1 To 15)
 
-'------------------------------
-'      TITLE Subroutine
-'------------------------------
-' Displays window title / game copyright
-Sub TITLE ()
-    Color , 0: KEY Off: Cls
-    Color , 1: Locate 1, 1: Print Tab(80);: Locate , 30: Color 12
-    Print "FULL COUNT BASEBALL 6.51"
-    Locate 24, 1: Print Tab(80);: Locate , 1
-    Print "(C) LANCE HAFFNER/SHANNON LYNN 1987-1997"; Tab(70); Left$(Time$, 5);
-    Locate 3, 1: Color 2, 0
-    Color 15: Print "        PROGRAMMED AND DEVELOPED BY LANCE HAFFNER AND SHANNON LYNN"
-    Print "     FOR TECHNICAL SUPPORT, CALL (800) 477-7032 OR SportGames@AOL.COM"
-    Print "      LANCE HAFFNER GAMES ON THE INTERNET AT  HTTP://WWW.LHGAMES.COM"
-    Locate 12, 1
-    Print "LANCE HAFFNER GAMES"
-    Print "P.O. BOX 100594"
-    Print "NASHVILLE, TN 37214"
-    Color 10
+    Do
+        Cls
+
+        1 Call TITLE
+        'Erase menuChoices$
+        menuChoices$(1) = "PLAY A GAME                     "
+        menuChoices$(2) = "ENTER NEW/CHANGE EXISTING TEAMS "
+        menuChoices$(3) = "PROGRAMMABLE MANAGER            "
+        menuChoices$(4) = "AUTO SCHEDULER/BOXSCORE OPTIONS "
+        menuChoices$(5) = "DRAFT A TEAM                    "
+        menuChoices$(6) = "TRADE PLAYERS                   "
+        menuChoices$(7) = "VIEW/PRINT COMPILED STATS       "
+        menuChoices$(8) = "MODIFY REPLAY STATS             "
+        menuChoices$(9) = "LEAGUE LEADERS AND STANDINGS    "
+        menuChoices$(10) = "LEAGUE UTILITIES                "
+        menuChoices$(11) = "ACTIVATE/DEACTIVATE PLAYERS     "
+        menuChoices$(12) = "GROUNDBALL/FLYOUT CALCS         "
+        menuChoices$(13) = "HARD DRIVE INSTALLATION         "
+        menuChoices$(14) = "CONFIGURE DRIVES FOR TEAMS,STATS"
+        menuChoices$(15) = "EXIT TO DOS                     "
+        Selection% = 1
+        Count% = 15
+        Start% = 1
+        ExitCode% = 15
+        FileFGColr% = 15: FileBGColr% = 1
+        HiLiteFGColr% = 0: HiLiteBGColr% = 7
+        Spacing% = 1
+        Row% = 7
+        Column% = 25
+
+        Call box0(6, 24, 22, 57, 2, 15, 1)
+        _MouseShow "DEFAULT"
+        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+        _MouseHide
+
+        Color , 0
+        If ExitCode% <> 27 Then
+            Select Case Selection%
+                Case 1: Run "LOADER.EXE"
+                Case 2: Call BINPUT
+                Case 3: Call PROGMAN
+                Case 4: Call SCHEDULE
+                Case 5: Call DRAFT
+                Case 6: Call TRADE
+                Case 7: Call LOOKY
+                Case 8: Call SINPUT
+                Case 9: Call Leaders_Menu
+                Case 10: Call Replay_Menu
+                Case 11: Call ACTIVATE
+                Case 12: Call GROUND
+                    'Case 13: Call HDCOPY
+                Case 14: Call ConfigureDrives
+                Case 15: Cls
+            End Select
+        End If
+
+    Loop Until Selection% = 15 Or ExitCode% = 27
+
+    If ExitCode% = 27 Then menuSelection% = 15
+
 End Sub
+
+
+'----------------------------------------
+'       Configure_Drives Subroutine
+'----------------------------------------
+'...explanation...
+Sub ConfigureDrives ()
+    505 Color 15, 1
+    FG = 0
+    BG = 7
+    For I = 0 To 3
+        diskPaths$(I) = Left$(diskPaths$(I), Len(diskPaths$(I)) - 1)
+    Next
+    'Colr = OneColor%(FG, BG) 'pack FG and BG into a single byte
+    Cls: Locate , 16: Print "SPECIFY PATHS FOR YOUR TEAMS AND COMPILED STATS": Print
+
+    Locate , 31: Print "PATHNAME EXAMPLES:": Print
+
+    Locate , 31: Print "A:"
+
+    Locate , 31: Print "C:\FULL\TEAMS"
+    Locate 7, 1: QPrint "Path for Teams ", 14, 1, -1
+    Locate , 16: QPrint PadRight$(diskPaths$(0), 30), FG, BG, -1
+    Locate 9, 1: QPrint "Path for Stats ", 14, 1, -1
+    Locate , 16: QPrint PadRight$(diskPaths$(1), 30), FG, BG, -1
+    Locate 11, 1: QPrint "Path for Leaders ", 14, 1, -1
+    Locate , 18: QPrint PadRight$(diskPaths$(2), 30), FG, BG, -1
+    Locate 13, 1: QPrint "Path for Manager Profiles ", 14, 1, -1
+    Locate , 27: QPrint PadRight$(diskPaths$(3), 30), FG, BG, -1
+
+    GetDiv1:
+    Locate 7, 16 'location of beginning of field
+    CapsOn = 0: NumOnly = 0: Max = 30 'specify field parameters
+    Call TextIn(diskPaths$(0), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+    If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
+    If XCode = 2 GoTo Done 'all done entering data
+    diskPaths$(0) = _Trim$(diskPaths$(0))
+
+    GetDiv2:
+    Locate 9, 16 'location of beginning of field
+    CapsOn = 0: NumOnly = 0: Max = 30 'specify field parameters
+    Call TextIn(diskPaths$(1), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+    If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
+    If XCode = 2 GoTo Done 'all done entering data
+    diskPaths$(1) = _Trim$(diskPaths$(1))
+
+    GetDiv3:
+    Locate 11, 18 'location of beginning of field
+    CapsOn = 0: NumOnly = 0: Max = 30 'specify field parameters
+    Call TextIn(diskPaths$(2), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+    If XCode = 1 GoTo GetDiv2: 'can't back up any more, stay here
+    If XCode = 2 GoTo Done 'all done entering data
+    diskPaths$(2) = _Trim$(diskPaths$(2))
+
+    GetDiv4:
+    Locate 13, 27 'location of beginning of field
+    CapsOn = 0: NumOnly = 0: Max = 30 'specify field parameters
+    Call TextIn(diskPaths$(3), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+    If XCode = 1 GoTo GetDiv3: 'can't back up any more, stay here
+    diskPaths$(3) = _Trim$(diskPaths$(3))
+
+    Done:
+    Locate 23, 1
+    Print "Is this okay? (Yes/No) ";
+    X$ = ""
+    Call YesNoB(X$, XCode, FG, BG)
+    Locate , 1
+    ClearEOL 14, 1
+    If XCode = 1 GoTo GetDiv4
+    If X$ = "N" GoTo GetDiv1
+    If X$ <> "Y" GoTo Done 'insist on either Y or N or up-arrow
+
+    Open "DEV.BAS" For Output As #1
+    For R = 0 To 3: diskPaths$(R) = diskPaths$(R) + "\": Next R
+    Print #1, diskPaths$(0)
+    Print #1, diskPaths$(1)
+    Print #1, diskPaths$(2)
+    Print #1, diskPaths$(3)
+    Close #1
+
+    '620 GoTo 1
+End Sub
+
+
+'----------------------------------------
+'       Leaders_Menu Subroutine
+'----------------------------------------
+'...explanation...
+Sub Leaders_Menu ()
+
+    Do
+
+        700 Call TITLE
+        ReDim menuChoices$(1 To 8)
+        'Erase menuChoices$
+        menuChoices$(1) = "CREATE/EDIT A LEAGUE                 "
+        menuChoices$(2) = "UPDATE STANDINGS/LEADERS FOR A LEAGUE"
+        menuChoices$(3) = "EXPANDED LEADERS AND STANDINGS       "
+        menuChoices$(4) = "VIEW RESULTS FOR A LEAGUE            "
+        menuChoices$(5) = "PRINT RESULTS FOR A LEAGUE           "
+        menuChoices$(6) = "DELETE ALL STATS FOR A LEAGUE        "
+        menuChoices$(7) = "RETURN TO FULL COUNT MAIN MENU       "
+        menuChoices$(8) = "EXIT TO DOS                          "
+        Selection% = 1
+        Count% = 8
+        Start% = 1
+        ExitCode% = 8
+        FileFGColr% = 15: FileBGColr% = 1
+        HiLiteFGColr% = 0: HiLiteBGColr% = 7
+        Spacing% = 1
+        Row% = 8
+        Column% = 23
+        Call box0(7, 22, 16, 60, 2, 15, 1)
+        _MouseShow "DEFAULT"
+        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+        _MouseHide
+
+        Color , 0
+
+        If ExitCode% <> 27 Then
+            Select Case Selection%
+                Case 1: Call CREATE
+                Case 2: Call LEAGCMPL
+                Case 3: Call NEWLDR
+                Case 4: Call SEELEAG
+                Case 5: Call PRTLEAG
+                Case 6: Call BLANK
+                Case 7: Cls
+            End Select
+        End If
+
+    Loop Until Selection% >= 7 Or ExitCode% = 27
+
+    If Selection% = 8 Then End
+
+End Sub
+
+
+'----------------------------------------
+'       Replay_Menu Subroutine
+'----------------------------------------
+'...explanation...
+Sub Replay_Menu ()
+
+    Do
+
+        Call TITLE
+        ReDim menuChoices$(1 To 6)
+        'Erase menuChoices$
+        menuChoices$(1) = "COMPARE COMPILED STATS VS. ACTUAL"
+        menuChoices$(2) = "MERGE TWO STAT FILES             "
+        menuChoices$(3) = "VIEW TEAM HEAD TO HEAD RESULTS   "
+        menuChoices$(4) = "CAREER FILE OPTIONS              "
+        menuChoices$(5) = "SORT PLAYERS BY POSITION         "
+        menuChoices$(6) = "RETURN TO FULL COUNT MAIN MENU   "
+        Selection% = 1
+        Count% = 6
+        Start% = 1
+        ExitCode% = 6
+        FileFGColr% = 15: FileBGColr% = 1
+        HiLiteFGColr% = 0: HiLiteBGColr% = 7
+        Spacing% = 1
+        Row% = 8
+        Column% = 23
+        Call box0(7, 22, 14, 56, 2, 15, 1)
+        _MouseShow "DEFAULT"
+        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+        _MouseHide
+
+        Color , 0
+        If ExitCode% <> 27 Then
+            Select Case Selection%
+                Case 1: Call COMPARE
+                Case 2: Call MERGE
+                Case 3: 'Call REC
+                Case 4: Call CAREER
+                Case 5: Call POSSRT
+                Case 6: Cls
+            End Select
+        End If
+
+    Loop Until Selection% = 6 Or ExitCode% = 27
+
+End Sub
+
+
 
 '$INCLUDE: 'KeyInput.BM'
 '$INCLUDE: 'QPProEqu.BM'
+'$INCLUDE: 'PadRight.BM'
+'$INCLUDE: 'MainRoutines.BI'
+'$INCLUDE: 'TITLE.BM'
+'$INCLUDE: 'ACTIVATE.BAS'
+'$INCLUDE: 'ALIGN.BAS'
+'$INCLUDE: 'BINPUT.BAS'
+'$INCLUDE: 'BLANK.BAS'
+'$INCLUDE: 'CAREDIT.BAS'
+'$INCLUDE: 'CARVIEW.BAS'
+'$INCLUDE: 'CAREER.BAS'
+'$INCLUDE: 'CARLDR.BAS'
+'$INCLUDE: 'COMPARE.BAS'
+'$INCLUDE: 'CREATE.BAS'
+'$INCLUDE: 'DRAFT.BAS'
+'$INCLUDE: 'GROUND.BAS'
+'$INCLUDE: 'LEAGCMPL.BAS'
+'$INCLUDE: 'LOOKY.BAS'
+'$INCLUDE: 'MERGE.BAS'
+'$INCLUDE: 'NEWLDR.BAS'
+'$INCLUDE: 'NEWLDRRC.BAS'
+'$INCLUDE: 'NEWLDRST.BAS'
+'$INCLUDE: 'POSSRT.BAS'
+'$INCLUDE: 'POSCR.BAS'
+'$INCLUDE: 'PROGMAN.BAS'
+'$INCLUDE: 'PRTLEAG.BAS'
+'$INCLUDE: 'REC.BAS'
+'$INCLUDE: 'SCHEDULE.BAS'
+'$INCLUDE: 'SEELEAG.BAS'
+'$INCLUDE: 'SINPUT.BAS'
+'$INCLUDE: 'TRADE.BAS'
+'$INCLUDE: 'UMPMGR.BAS'
+

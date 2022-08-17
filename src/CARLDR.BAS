@@ -1,492 +1,605 @@
-'$INCLUDE: 'Config.BI'
-'$INCLUDE: 'KeyInput.BI'
-'$INCLUDE: 'QPProEqu.BI'
+Sub CARLDR ()
 
-_Title "Full Count Baseball - Career Leaders"
-''$ExeIcon:'./lhg_fcbase.ico'
-'_Icon
-_AllowFullScreen
+    _Title "Full Count Baseball - Career Leaders"
 
-DefInt A-Z
-DECLARE SUB TITLE ()
+    DefInt A-Z
 
-Dim B$(100), P$(80), P1(80), B1(100), B0(100, 23), P0(80, 42), T(22), T1(23)
-Dim D$(3)
-Dim BC(100, 18), PC(80, 17)
-Dim BL1(18, 20) As Single, BL0$(18, 20), PL1(16, 21) As Single, PL0$(80, 20)
-ReDim BRS%(15, 100, 18), PRS%(15, 80, 17)
+    TMR1 = 2700
 
-TMR1 = 2700
+    Do
+        Cls
 
-Open "DEV.BAS" For Input As #1
-For I = 0 To 3
-    Input #1, D$(I)
-Next
-Close #1
+        Color 12: Print "CAREER LEADER MENU"
+        Color 14: Print "(1)  ";: Color 15: Print "UPDATE LEADERS": Print
+        Color 14: Print "(2)  ";: Color 15: Print "VIEW/PRINT CAREER LEADERS": Print
+        Color 14: Print "(3)  ";: Color 15: Print "RETURN TO UTILITIES MENU"
 
-3 Cls
-Color 12: Print "CAREER LEADER MENU"
+        Do
+            I$ = GetKeyPress$
+            I = Val(I$)
+        Loop Until I >= 1 And I <= 3
 
-4 Color 14: Print "(1)  ";: Color 15: Print "UPDATE LEADERS": Print
+        Select Case I
+            Case 1: Call UpdateLeaders
+            Case 2: Call ViewPrintLeaders
+            Case 3: Cls
+        End Select
 
-5 Color 14: Print "(2)  ";: Color 15: Print "VIEW/PRINT CAREER LEADERS": Print
+    Loop Until I = 3
 
-8 Color 14: Print "(3)  ";: Color 15: Print "RETURN TO UTILITIES MENU"
-
-9 I$ = GetKeyPress$
-10 I = Val(I$): If I < 1 Or I > 3 Then 9
-
-11 If I = 1 Then GoTo 130
-
-12 If I = 2 Then GoTo 2000
-
-15 If I = 3 Then GoTo 5610
-
-130 For I = 0 To 17: For I1 = 0 To 19: BL1(I, I1) = 0: Next: Next
-
-131 For I = 0 To 14: For I1 = 0 To 19: PL1(I, I1) = 0: Next: Next
-
-132 For I1 = 0 To 20: PL1(15, I1) = 1000: Next
-
-200 Spec$ = D$(1) + "*.CAR"
-null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
-Count% = DirCount%
-If Count% = 0 Then 4500
-ReDim careerFiles$(0 To Count%)
-For X = 1 To Count%
-    careerFiles$(X) = Space$(12)
-Next
-careerFiles$(0) = Spec$
-Call ReadFile(careerFiles$())
-'CALL SortStr(VARPTR(careerFiles$(1)), Count, 0)
-
-1310 Cls
-Color , 1
-Cls
-Locate , 28
-Color 14
-Print "SELECT CAREER FILE TO VIEW": Color 15
-SELECTION% = 1
-Start% = 1
-FileFGColr% = 15: FileBGColr% = 1
-HiLiteFGColr% = 0: HiLiteBGColr% = 7
-Rows% = 20
-Columns% = 4
-Spacing% = 6
-Row% = 4
-Column% = 1
-Locate 25, 1
-Color 14
-Print "ENTER";: Color 15
-Print "-SELECTS TEAM";
-
-_MouseShow "DEFAULT"
-MAMenu careerFiles$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
-_MouseHide
-
-If ExitCode% = 27 Then 3
-targetFile$ = careerFiles$(SELECTION%)
-Locate 2, 33: Print targetFile$
-Locate , 33: Print "ANY CHANGE (YN)";
-Color 15, 0
-3913 I$ = GetKeyPress$
-If UCase$(I$) = "Y" Then 1310
-
-3911 Z$ = RTrim$(targetFile$)
-Cls
-
-201 Input "ENTER NUMBER OF AT BATS TO QUALIFY"; N1
-
-202 Input "ENTER NUMBER OF INNINGS PITCHED TO QUALIFY"; N2
-
-203 Locate 7: Print "ANY CHANGE (Y/N)"
-
-204 I$ = GetKeyPress$
-205 If UCase$(I$) = "Y" Then 200
-
-220 Open D$(1) + Z$ For Input As #1
-
-221 Input #1, NB, NP
-
-222 For I = 0 To 99: Input #1, B$(I): Next
-
-223 For I = 0 To 79: Input #1, P$(I): Next
-
-224 For J = 1 To 15: For I = 0 To 99: For I1 = O To 17: Input #1, BRS%(J, I, I1): Next I1: Locate 7, 35: TMR1 = TMR1 - 1: Color 9: Print Using "####"; TMR1: Next I: Next J
-
-225 For J = 1 To 15: For I = 0 To 79: For I1 = 0 To 16: Input #1, PRS%(J, I, I1): Next I1: Locate 7, 35: TMR1 = TMR1 - 1: Color 9: Print Using "####"; TMR1: Next I: Next J
-
-226 Close #1
-
-250 Locate 10: Color 14: Print "COMPUTING LEADER FILE . . . . . . PLEASE WAIT"
-
-400 For I = 0 To 99
-
-    401 For I1 = 0 To 14
-
-        402 For J = 1 To 15
-
-            403 BC(I, I1) = BC(I, I1) + BRS%(J, I, I1)
-
-404 Next: Next: Next
-
-420 For I = 0 To 79
-
-    421 For I1 = 0 To 16
-
-        422 For J = 1 To 15
-
-            423 PC(I, I1) = PC(I, I1) + PRS%(J, I, I1)
-
-424 Next: Next: Next
-
-430 For K = 0 To 99
-    For X = 0 To 14
-
-        431 If BC(K, X) > BL1(X, 19) Then 432 Else GoTo 440
-
-        432 BL1(X, 19) = BC(K, X): BL0$(X, 19) = B$(K)
-        For I = 1 To 20
-            For J = 20 To I Step -1
-                If BL1(X, J - 1) < BL1(X, J) Then Swap BL1(X, J - 1), BL1(X, J): Swap BL0$(X, J - 1), BL0$(X, J)
-            Next J
-        Next I
-
-    440 Next X
-
-450 Next K
-
-460 For K = 0 To 99
-    If BC(K, 0) < N1 Or BC(K, 0) = 0 Then 469
-
-    461 If BC(K, 1) / BC(K, 0) > BL1(15, 19) Then 462 Else GoTo 469
-
-    462 BL1(15, 19) = BC(K, 1) / BC(K, 0): BL0$(15, 19) = B$(K)
-    For I = 1 To 20
-        For J = 20 To I Step -1
-            If BL1(15, J - 1) < BL1(15, J) Then Swap BL1(15, J - 1), BL1(15, J): Swap BL0$(15, J - 1), BL0$(15, J)
-        Next J
-    Next I
-
-469 Next K
-
-470 For K = 0 To 99
-    If BC(K, 0) < N1 Or BC(K, 0) = 0 Then 479
-
-    471 If (BC(K, 1) + BC(K, 4) + BC(K, 5) * 2 + BC(K, 6) * 3) / BC(K, 0) > BL1(16, 19) Then 472 Else GoTo 479
-
-    472 BL1(16, 19) = (BC(K, 1) + BC(K, 4) + BC(K, 5) * 2 + BC(K, 6) * 3) / BC(K, 0): BL0$(16, 19) = B$(K)
-    For I = 1 To 20
-        For J = 20 To I Step -1
-            If BL1(16, J - 1) < BL1(16, J) Then Swap BL1(16, J - 1), BL1(16, J): Swap BL0$(16, J - 1), BL0$(16, J)
-        Next J
-    Next I
-
-479 Next K
-
-480 For K = 0 To 99
-    If BC(K, 0) < N1 Or BC(K, 0) + BC(K, 7) = 0 Then 489
-
-    481 If (BC(K, 1) + BC(K, 7)) / (BC(K, 0) + BC(K, 7)) > BL1(17, 19) Then 482 Else GoTo 489
-
-    482 BL1(17, 19) = (BC(K, 1) + BC(K, 7)) / (BC(K, 0) + BC(K, 7)): BL0$(17, 19) = B$(K)
-    For I = 1 To 20
-        For J = 20 To I Step -1
-            If BL1(17, J - 1) < BL1(17, J) Then Swap BL1(17, J - 1), BL1(17, J): Swap BL0$(17, J - 1), BL0$(17, J)
-        Next J
-    Next I
-
-489 Next K
-
-530 For K = 0 To 79
-    For X = 0 To 14
-
-        531 If PC(K, X) > PL1(X, 19) Then 532 Else GoTo 540
-
-        532 PL1(X, 19) = PC(K, X): PL0$(X, 19) = P$(K)
-        For I = 1 To 20
-            For J = 20 To I Step -1
-                If PL1(X, J - 1) < PL1(X, J) Then Swap PL1(X, J - 1), PL1(X, J): Swap PL0$(X, J - 1), PL0$(X, J)
-            Next J
-        Next I
-
-    540 Next X
-
-550 Next K
-
-560 For K = 0 To 79
-    If PC(K, 0) < N2 * 3 Or PC(K, 0) = 0 Then 569
-
-    561 If ((PC(K, 3) * 9) / PC(K, 0)) * 3 < PL1(15, 19) Then 562 Else GoTo 569
-
-    562 PL1(15, 19) = ((PC(K, 3) * 9) / PC(K, 0)) * 3: PL0$(15, 19) = P$(K)
-    For I = 1 To 20
-        For J = 20 To I Step -1
-            If PL1(15, J) < PL1(15, J - 1) Then Swap PL1(15, J), PL1(15, J - 1): Swap PL0$(15, J), PL0$(15, J - 1)
-        Next J
-    Next I
-
-569 Next K
-
-600 GoSub 5000: Open D$(1) + Left$(Z$, JX) + ".TCL" For Output As #1
-
-601 For I = 0 To 17: For I1 = 0 To 19: Write #1, BL1(I, I1), BL0$(I, I1): Next: Next
-
-602 For I = 0 To 15: For I1 = 0 To 19: Write #1, PL1(I, I1), PL0$(I, I1): Next: Next
-
-603 Close #1
-
-610 GoTo 3
-
-2000 Cls
-Spec$ = D$(1) + "*.TCL"
-null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
-Count% = DirCount%
-If Count% = 0 Then 4500
-ReDim tclFiles$(0 To Count%)
-For X = 1 To Count%
-    tclFiles$(X) = Space$(12)
-Next
-tclFiles$(0) = Spec$
-Call ReadFile(tclFiles$())
-'CALL SortStr(VARPTR(tclFiles$(1)), Count, 0)
-
-1311 Cls
-Color , 1
-Cls
-Locate , 28
-Color 14
-Print "SELECT CAREER FILE TO VIEW": Color 15
-SELECTION% = 1
-Start% = 1
-FileFGColr% = 15: FileBGColr% = 1
-HiLiteFGColr% = 0: HiLiteBGColr% = 7
-Rows% = 20
-Columns% = 4
-Spacing% = 6
-Row% = 4
-Column% = 1
-Locate 25, 1
-Color 14
-Print "ENTER";: Color 15
-Print "-SELECTS TEAM";
-
-_MouseShow "DEFAULT"
-MAMenu tclFiles$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
-_MouseHide
-
-If ExitCode% = 27 Then 3
-targetFile$ = tclFiles$(SELECTION%)
-Locate 2, 33: Print targetFile$
-Locate , 33: Print "ANY CHANGE (YN)";
-Color 15, 0
-3912 I$ = GetKeyPress$
-If UCase$(I$) = "Y" Then 1311
-Z1$ = RTrim$(targetFile$)
-Cls
-
-2001 Cls
-Open D$(1) + Z1$ For Input As #1
-
-2002 For I = 0 To 17: For I1 = 0 To 19: Input #1, BL1(I, I1), BL0$(I, I1): Next: Next
-
-2003 For I = 0 To 15: For I1 = 0 To 19: Input #1, PL1(I, I1), PL0$(I, I1): Next: Next
-
-2004 Close #1
-
-2010 Color 15, 0
-Cls
-Locate 8: Color 14: Print "P";: Color 15: Print "RINT OR ";: Color 14: Print "V";: Color 15: Print "IEW"
-
-2011 I$ = GetKeyPress$
-2012 If UCase$(I$) = "P" Then 2300
-
-2100 Cls: Color 12: Print Tab(5); "AT BATS                                HITS"
-For I = 0 To 19
-    Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(0, I);: Color 14: Print Tab(20); Using "####"; BL1(0, I);:
-Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(1, I);: Color 14: Print Tab(60); Using "####"; BL1(1, I): Next
-GoSub 2950
-Cls: Color 12: Print Tab(5); "RUNS SCORED                            RBI'S"
-For I = 0 To 19
-    Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(2, I);: Color 14: Print Tab(20); Using "####"; BL1(2, I);:
-Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(3, I);: Color 14: Print Tab(60); Using "####"; BL1(3, I): Next
-GoSub 2950
-
-2105 Cls: Color 12: Print Tab(5); "DOUBLES                                TRIPLES"
-For I = 0 To 19
-    Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(4, I);: Color 14: Print Tab(20); Using "####"; BL1(4, I);:
-Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(5, I);: Color 14: Print Tab(60); Using "####"; BL1(5, I): Next
-GoSub 2950
-Cls: Color 12: Print Tab(5); "HOME RUNS                              WALKS"
-For I = 0 To 19
-    Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(6, I);: Color 14: Print Tab(20); Using "####"; BL1(6, I);:
-Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(7, I);: Color 14: Print Tab(60); Using "####"; BL1(7, I): Next
-GoSub 2950
-
-2110 Cls: Color 12: Print Tab(5); "STRIKE OUTS                            STOLEN BASES"
-For I = 0 To 19
-    Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(8, I);: Color 14: Print Tab(20); Using "####"; BL1(8, I);:
-Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(9, I);: Color 14: Print Tab(60); Using "####"; BL1(9, I): Next
-GoSub 2950
-Cls: Color 12: Print Tab(5); "CAUGHT STEALING                        ERRORS"
-For I = 0 To 19
-    Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(10, I);: Color 14: Print Tab(20); Using "####"; BL1(10, I);:
-Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(11, I);: Color 14: Print Tab(60); Using "####"; BL1(11, I): Next
-GoSub 2950
-
-2115 Cls: Color 12: Print Tab(5); "GAMES PLAYED                           BATTING AVERAGE"
-For I = 0 To 19
-    Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(14, I);: Color 14: Print Tab(20); Using "####"; BL1(14, I);:
-Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(15, I);: Color 14: Print Tab(60); Using ".###"; BL1(15, I): Next
-GoSub 2950
-Cls: Color 12: Print Tab(5); "SLUGGING PCT.                          ON-BASE PCT."
-For I = 0 To 19
-    Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(16, I);: Color 14: Print Tab(20); Using ".###"; BL1(16, I);:
-Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(17, I);: Color 14: Print Tab(60); Using ".###"; BL1(17, I): Next
-GoSub 2950
-
-2200 Cls: Color 12: Print Tab(5); "INNINGS PITCHED                        HITS ALLOWED"
-For I = 0 To 19
-    Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(0, I);: Color 14: Print Tab(18); Using "###"; Int(PL1(0, I) / 3);: If PL1(O, I) - (Int(PL1(O, I) / 3) * 3) > 0 Then Print ".";: Print Using "#"; PL1(O, I) - (Int(PL1(O, I) / 3) * 3);:
-Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(1, I);: Color 14: Print Tab(60); Using "####"; PL1(1, I): Next
-GoSub 2950
-Cls: Color 12: Print Tab(5); "RUNS ALLOWED                           EARNED RUNS ALLOWED"
-For I = 0 To 19
-    Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(2, I);: Color 14: Print Tab(20); Using "####"; PL1(2, I);:
-Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(3, I);: Color 14: Print Tab(60); Using "####"; PL1(3, I): Next
-GoSub 2950
-
-2205 Cls: Color 12: Print Tab(5); "WALKS                                  STRIKEOUTS"
-For I = 0 To 19
-    Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(4, I);: Color 14: Print Tab(20); Using "####"; PL1(4, I);:
-Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(5, I);: Color 14: Print Tab(60); Using "####"; PL1(5, I): Next
-GoSub 2950
-Cls: Color 12: Print Tab(5); "WINS                                   LOSSES"
-For I = 0 To 19
-    Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(6, I);: Color 14: Print Tab(20); Using "####"; PL1(6, I);:
-Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(7, I);: Color 14: Print Tab(60); Using "####"; PL1(7, I): Next
-GoSub 2950
-
-2210 Cls: Color 12: Print Tab(5); "GAMES                                  GAMES STARTED"
-For I = 0 To 19
-    Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(8, I);: Color 14: Print Tab(20); Using "####"; PL1(8, I);:
-Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(9, I);: Color 14: Print Tab(60); Using "####"; PL1(9, I): Next
-GoSub 2950
-Cls: Color 12: Print Tab(5); "COMPLETE GAMES                         SHUTOUTS"
-For I = 0 To 19
-    Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(10, I);: Color 14: Print Tab(20); Using "####"; PL1(10, I);:
-Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(11, I);: Color 14: Print Tab(60); Using "####"; PL1(11, I): Next
-GoSub 2950
-Cls: Color 12: Print Tab(5); "SAVES                                  DOUBLE PLAYS THROWN"
-For I = 0 To 19
-    Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(12, I);: Color 14: Print Tab(20); Using "####"; PL1(12, I);:
-Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(13, I);: Color 14: Print Tab(60); Using "####"; PL1(13, I): Next
-GoSub 2950
-Cls: Color 12: Print Tab(5); "HOME RUNS ALLOWED                     EARNED RUN AVERAGE"
-For I = 0 To 19
-    Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(14, I);: Color 14: Print Tab(20); Using "####"; PL1(14, I);
-Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(15, I);: Color 14: Print Tab(58); Using "###.##"; PL1(15, I): Next
-GoSub 2950
-
-2215 GoTo 3
-
-2300 LPrint Chr$(15)
-
-'2301 WIDTH "LPT1:1",130
-LPrint Tab(5); "AT BATS"; Tab(29); "HITS"; Tab(54); "RUNS SCORED"; Tab(79); "RBI'S"; Tab(104); "DOUBLES"
-For I = 0 To 19
-    LPrint Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(0, I);: LPrint Tab(18); Using "####"; BL1(0, I);: LPrint Tab(25); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(1, I);: LPrint Tab(43); Using "####"; BL1(1, I);
-    LPrint Tab(50); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(2, I);: LPrint Tab(68); Using "####"; BL1(2, I);: LPrint Tab(75); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(3, I);: LPrint Tab(93); Using "####"; BL1(3, I);
-LPrint Tab(100); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(4, I);: LPrint Tab(118); Using "####"; BL1(4, I): Next
-LPrint: LPrint
-LPrint Tab(5); "TRIPLES"; Tab(29); "HOME RUNS"; Tab(54); "WALKS"; Tab(79); "STRIKE OUTS"; Tab(104); "STOLEN BASES"
-For I = 0 To 19
-    LPrint Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(5, I);: LPrint Tab(18); Using "####"; BL1(5, I);: LPrint Tab(25); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(6, I);: LPrint Tab(43); Using "####"; BL1(6, I);
-    LPrint Tab(50); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(7, I);: LPrint Tab(68); Using "####"; BL1(7, I);: LPrint Tab(75); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(8, I);: LPrint Tab(93); Using "####"; BL1(8, I);
-LPrint Tab(100); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(9, I);: LPrint Tab(118); Using "####"; BL1(9, I): Next
-GoSub 2980
-LPrint: LPrint
-LPrint Tab(5); "CAUGHT STEALING"; Tab(29); "ERRORS"; Tab(54); "GAMES PLAYED"; Tab(79); "BATTING AVERAGE"; Tab(104); "SLUGGING PCT."
-For I = 0 To 19
-    LPrint Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(10, I);: LPrint Tab(18); Using "####"; BL1(10, I);: LPrint Tab(25); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(11, I);: LPrint Tab(43); Using "####"; BL1(11, I);
-    LPrint Tab(50); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(14, I);: LPrint Tab(68); Using "####"; BL1(14, I);: LPrint Tab(75); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(15, I);: LPrint Tab(93); Using ".###"; BL1(15, I);
-LPrint Tab(100); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(16, I);: LPrint Tab(118); Using ".###"; BL1(16, I): Next
-LPrint: LPrint
-LPrint Tab(5); "ON-BASE PCT."; Tab(29); "INNINGS PITCHED"; Tab(54); "HITS ALLOWED"; Tab(79); "RUNS ALLOWED"; Tab(104); "EARNED RUNS ALLOWED"
-For I = 0 To 19
-    LPrint Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(17, I);: LPrint Tab(18); Using ".###"; BL1(17, I);
-    LPrint Tab(25); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(0, I);: LPrint Tab(43); Using "###"; Int(PL1(0, I) / 3);: If PL1(O, I) - (Int(PL1(O, I) / 3) * 3) > 0 Then LPrint ".";: LPrint Using "#"; PL1(O, I) - (Int(PL1(O, I) / 3) * 3);
-    LPrint Tab(50); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(1, I);: LPrint Tab(68); Using "####"; PL1(1, I);: LPrint Tab(75); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(2, I);: LPrint Tab(93); Using "####"; PL1(2, I);
-LPrint Tab(100); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(3, I);: LPrint Tab(118); Using "####"; PL1(3, I): Next
-GoSub 2980
-LPrint: LPrint
-LPrint Tab(5); "WALKS"; Tab(29); "STRIKEOUTS"; Tab(54); "WINS"; Tab(79); "LOSSES"; Tab(104); "GAMES"
-For I = 0 To 19
-    LPrint Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(4, I);: LPrint Tab(18); Using "####"; PL1(4, I);: LPrint Tab(25); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(5, I);: LPrint Tab(43); Using "####"; PL1(5, I);
-    LPrint Tab(50); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(6, I);: LPrint Tab(68); Using "####"; PL1(6, I);: LPrint Tab(75); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(7, I);: LPrint Tab(93); Using "####"; PL1(7, I);
-LPrint Tab(100); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(8, I);: LPrint Tab(118); Using "####"; PL1(8, I): Next
-LPrint: LPrint
-LPrint Tab(5); "GAMES STARTED"; Tab(29); "COMPLETE GAMES"; Tab(54); "SHUTOUTS"; Tab(79); "SAVES"; Tab(104); "DOUBLE PLAYS THROWN"
-For I = 0 To 19
-    LPrint Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(9, I);: LPrint Tab(18); Using "####"; PL1(9, I);: LPrint Tab(25); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(10, I);: LPrint Tab(43); Using "####"; PL1(10, I);
-    LPrint Tab(50); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(11, I);: LPrint Tab(68); Using "####"; PL1(11, I);: LPrint Tab(75); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(12, I);: LPrint Tab(93); Using "####"; PL1(12, I);
-LPrint Tab(100); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(13, I);: LPrint Tab(118); Using "####"; PL1(13, I): Next
-GoSub 2980
-LPrint: LPrint
-LPrint Tab(5); "HOME RUNS ALLOWED"; Tab(29); "EARNED RUN AVERAGE"
-For I = 0 To 19
-LPrint Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(14, I);: LPrint Tab(20); Using "####"; PL1(14, I);: LPrint Tab(25); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(15, I);: LPrint Tab(43); Using "###.##"; PL1(15, I): Next
-GoSub 2980
-
-2902 GoTo 3
-
-2950 Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
-
-2951 I$ = GetKeyPress$
-2952 Return
-
-2980 LPrint Chr$(12)
-
-2981 Return
-
-5000 D = 0
-
-5001 For J = 0 To 8
-
-    5002 D = D + 1
-
-    5003 X$ = Mid$(Z$, D, 1)
-
-    5004 If X$ = "." Then JX = D - 1
-
-5005 Next J
-
-5006 Return
-
-5610 Run "CAREER.EXE"
-
-4500 Locate 10, 8
-Call CSMsgBox("NO CAREER FILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-I$ = GetKeyPress$
-Call CSMsgBox("", 0, Pass)
-GoTo 5610
-
-
-'------------------------------
-'      TITLE Subroutine
-'------------------------------
-' Displays window title / game copyright
-Sub TITLE ()
-    Color , 0: KEY Off: Cls
-    Color , 1: Locate 1, 1: Print Tab(80);: Locate , 30: Color 12
-    Print "FULL COUNT BASEBALL 6.0"
-    Locate 24, 1: Print Tab(80);: Locate , 1
-    Print "(C) LANCE HAFFNER/SHANNON LYNN 1987-1994"; Tab(70); Left$(Time$, 5);
-    Locate 3, 1: Color 2, 0
-    Color 15: Print "        PROGRAMMED AND DEVELOPED BY LANCE HAFFNER AND SHANNON LYNN"
-    Print "              FOR TECHNICAL SUPPORT, CALL (615) 366-8088"
-    Color 10
 End Sub
 
-'$INCLUDE: 'KeyInput.BM'
-'$INCLUDE: 'QPProEqu.BM'
+
+'----------------------------------------
+'       UpdateLeaders Subroutine
+'----------------------------------------
+'...explanation...
+Sub UpdateLeaders ()
+
+    Dim BC(100, 18), PC(80, 17)
+
+    Shared BL0$(), PL0$()
+    Shared careerB$(), careerP$()
+
+    Shared BRS%(), PRS%()
+
+    Shared BL1!(), PL1!()
+
+    For I = 0 To 17: For I1 = 0 To 19: BL1!(I, I1) = 0: Next: Next
+
+    For I = 0 To 14: For I1 = 0 To 19: PL1!(I, I1) = 0: Next: Next
+
+    For I1 = 0 To 20: PL1!(15, I1) = 1000: Next
+
+    Do
+    'Display list of files...
+
+        Spec$ = diskPaths$(1) + "*.CAR"
+        null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
+        Count% = DirCount%
+
+        If Count% = 0 Then 
+            Locate 10, 8
+            Call CSMsgBox("NO CAREER FILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+            I$ = GetKeyPress$
+            Call CSMsgBox("", 0, Pass)
+        Else
+            ReDim careerFiles$(0 To Count%)
+            For X = 1 To Count%
+                careerFiles$(X) = Space$(12)
+            Next
+            careerFiles$(0) = Spec$
+            Call ReadFile(careerFiles$())
+
+            Do
+                Cls
+                Color , 1
+                Cls
+                Locate , 28
+                Color 14
+                Print "SELECT CAREER FILE TO VIEW": Color 15
+                Selection% = 1
+                Start% = 1
+                FileFGColr% = 15: FileBGColr% = 1
+                HiLiteFGColr% = 0: HiLiteBGColr% = 7
+                Rows% = 20
+                Columns% = 4
+                Spacing% = 6
+                Row% = 4
+                Column% = 1
+                Locate 25, 1
+                Color 14
+                Print "ENTER";: Color 15
+                Print "-SELECTS TEAM";
+
+                _MouseShow "DEFAULT"
+                MAMenu careerFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+                _MouseHide
+
+                If ExitCode% <> 27 Then
+                    targetFile$ = careerFiles$(Selection%)
+                    Locate 2, 33: Print targetFile$
+                    Locate , 33: Print "ANY CHANGE (YN)";
+                    Color 15, 0
+                    I$ = GetKeyPress$
+                End If
+            Loop Until UCase$(I$) = "N"
+
+            If ExitCode% <> 27 Then
+            
+                leaderFile$ = RTrim$(targetFile$)
+                
+                Cls
+
+                Do
+                    Input "ENTER NUMBER OF AT BATS TO QUALIFY"; N1
+                    Input "ENTER NUMBER OF INNINGS PITCHED TO QUALIFY"; N2
+                    Locate 7: Print "ANY CHANGE (Y/N)"
+                    I$ = GetKeyPress$
+                Loop Until UCase$(I$) = "N"
+
+
+                Open diskPaths$(1) + leaderFile$ For Input As #1
+                Input #1, NB, NP
+                For I = 0 To 99: Input #1, careerB$(I): Next
+                For I = 0 To 79: Input #1, careerP$(I): Next
+                For J = 1 To 15: For I = 0 To 99: For I1 = O To 17: Input #1, BRS%(J, I, I1): Next I1: Locate 7, 35: TMR1 = TMR1 - 1: Color 9: Print Using "####"; TMR1: Next I: Next J
+                For J = 1 To 15: For I = 0 To 79: For I1 = 0 To 16: Input #1, PRS%(J, I, I1): Next I1: Locate 7, 35: TMR1 = TMR1 - 1: Color 9: Print Using "####"; TMR1: Next I: Next J
+                Close #1
+
+                Locate 10: Color 14: Print "COMPUTING LEADER FILE . . . . . . PLEASE WAIT"
+
+                For I = 0 To 99
+                    For I1 = 0 To 14
+                        For J = 1 To 15
+                            BC(I, I1) = BC(I, I1) + BRS%(J, I, I1)
+                        Next
+                    Next
+                Next
+
+                For I = 0 To 79
+                    For I1 = 0 To 16
+                        For J = 1 To 15
+                            PC(I, I1) = PC(I, I1) + PRS%(J, I, I1)
+                        Next
+                    Next
+                Next
+
+
+                For K = 0 To 99
+                    For X = 0 To 14
+
+                        If BC(K, X) > BL1!(X, 19) Then 
+                        
+                            BL1!(X, 19) = BC(K, X): BL0$(X, 19) = careerB$(K)
+                            
+                            For I = 1 To 20
+                                For J = 20 To I Step -1
+                                    If BL1!(X, J - 1) < BL1!(X, J) Then Swap BL1!(X, J - 1), BL1!(X, J): Swap BL0$(X, J - 1), BL0$(X, J)
+                                Next J
+                            Next I
+                            
+                        End If
+                        
+                    Next X
+
+                Next K
+
+                For K = 0 To 99
+                    If BC(K, 0) < N1 Or BC(K, 0) = 0 Then
+        
+                        If BC(K, 1) / BC(K, 0) > BL1!(15, 19) Then 
+                        
+                            BL1!(15, 19) = BC(K, 1) / BC(K, 0): BL0$(15, 19) = careerB$(K)
+                            For I = 1 To 20
+                                For J = 20 To I Step -1
+                                    If BL1!(15, J - 1) < BL1!(15, J) Then Swap BL1!(15, J - 1), BL1!(15, J): Swap BL0$(15, J - 1), BL0$(15, J)
+                                Next J
+                            Next I
+
+                        End If
+                        
+                    End If
+                    
+                Next K
+
+                For K = 0 To 99
+                    If BC(K, 0) < N1 Or BC(K, 0) = 0 Then
+                    
+                        If (BC(K, 1) + BC(K, 4) + BC(K, 5) * 2 + BC(K, 6) * 3) / BC(K, 0) > BL1!(16, 19) Then 
+                        
+                            BL1!(16, 19) = (BC(K, 1) + BC(K, 4) + BC(K, 5) * 2 + BC(K, 6) * 3) / BC(K, 0): BL0$(16, 19) = careerB$(K)
+
+                            For I = 1 To 20
+                                For J = 20 To I Step -1
+                                    If BL1!(16, J - 1) < BL1!(16, J) Then Swap BL1!(16, J - 1), BL1!(16, J): Swap BL0$(16, J - 1), BL0$(16, J)
+                                Next J
+                            Next I
+                        
+                        End If
+                        
+                    End If
+                    
+                Next K
+
+                For K = 0 To 99
+                
+                    If Not (BC(K, 0) < N1 Or BC(K, 0) + BC(K, 7) = 0) Then
+
+                        If (BC(K, 1) + BC(K, 7)) / (BC(K, 0) + BC(K, 7)) > BL1!(17, 19) Then 
+                        
+                            BL1!(17, 19) = (BC(K, 1) + BC(K, 7)) / (BC(K, 0) + BC(K, 7)): BL0$(17, 19) = careerB$(K)
+                            For I = 1 To 20
+                                For J = 20 To I Step -1
+                                    If BL1!(17, J - 1) < BL1!(17, J) Then Swap BL1!(17, J - 1), BL1!(17, J): Swap BL0$(17, J - 1), BL0$(17, J)
+                                Next J
+                            Next I
+                            
+                        End If
+                        
+                    End If
+                    
+                Next K
+
+                For K = 0 To 79
+                    For X = 0 To 14
+
+                        If PC(K, X) > PL1!(X, 19) Then 
+                        
+                            532 PL1!(X, 19) = PC(K, X): PL0$(X, 19) = careerP$(K)
+                            For I = 1 To 20
+                                For J = 20 To I Step -1
+                                    If PL1!(X, J - 1) < PL1!(X, J) Then Swap PL1!(X, J - 1), PL1!(X, J): Swap PL0$(X, J - 1), PL0$(X, J)
+                                Next J
+                            Next I
+                        End If
+                        
+                    Next X
+
+                Next K
+
+                For K = 0 To 79
+                    If Not(PC(K, 0) < N2 * 3 Or PC(K, 0) = 0) Then
+
+                        If ((PC(K, 3) * 9) / PC(K, 0)) * 3 < PL1!(15, 19) Then 
+                        
+                            PL1!(15, 19) = ((PC(K, 3) * 9) / PC(K, 0)) * 3: PL0$(15, 19) = careerP$(K)
+                            For I = 1 To 20
+                                For J = 20 To I Step -1
+                                    If PL1!(15, J) < PL1!(15, J - 1) Then Swap PL1!(15, J), PL1!(15, J - 1): Swap PL0$(15, J), PL0$(15, J - 1)
+                                Next J
+                            Next I
+                        
+                        End If
+                        
+                    End If
+
+                Next K
+
+                D = 0
+                For J = 0 To 8
+                    D = D + 1
+                    X$ = Mid$(leaderFile$, D, 1)
+                    If X$ = "." Then JX = D - 1
+                Next J
+                            
+                Open diskPaths$(1) + Left$(leaderFile$, JX) + ".TCL" For Output As #1
+                For I = 0 To 17: For I1 = 0 To 19: Write #1, BL1!(I, I1), BL0$(I, I1): Next: Next
+                For I = 0 To 15: For I1 = 0 To 19: Write #1, PL1!(I, I1), PL0$(I, I1): Next: Next
+                Close #1
+            
+            End If 'Done checking for ESC
+            
+        End If 'Done checking file count
+
+    '...Until we press ESC
+    Loop Until ExitCode% = 27 Or Count% = 0
+
+End Sub
+
+
+'----------------------------------------
+'       ViewPrintLeaders Subroutine
+'----------------------------------------
+'...explanation...
+Sub ViewPrintLeaders ()
+
+    Shared BL1!(), PL1!()
+    Shared BL0$(), PL0$()
+
+    Cls
+
+    Do
+    'Display list of files...
+        Spec$ = diskPaths$(1) + "*.TCL"
+        null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
+        Count% = DirCount%
+
+        If Count% = 0 Then 
+            Locate 10, 8
+            Call CSMsgBox("NO CAREER FILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+            I$ = GetKeyPress$
+            Call CSMsgBox("", 0, Pass)
+        Else
+            ReDim tclFiles$(0 To Count%)
+            For X = 1 To Count%
+                tclFiles$(X) = Space$(12)
+            Next
+            tclFiles$(0) = Spec$
+            Call ReadFile(tclFiles$())
+
+            Do
+                Cls
+                Color , 1
+                Cls
+                Locate , 28
+                Color 14
+                Print "SELECT CAREER FILE TO VIEW": Color 15
+                Selection% = 1
+                Start% = 1
+                FileFGColr% = 15: FileBGColr% = 1
+                HiLiteFGColr% = 0: HiLiteBGColr% = 7
+                Rows% = 20
+                Columns% = 4
+                Spacing% = 6
+                Row% = 4
+                Column% = 1
+                Locate 25, 1
+                Color 14
+                Print "ENTER";: Color 15
+                Print "-SELECTS TEAM";
+
+                _MouseShow "DEFAULT"
+                MAMenu tclFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+                _MouseHide
+
+                If ExitCode% = 27 Then 3
+                targetFile$ = tclFiles$(Selection%)
+                Locate 2, 33: Print targetFile$
+                Locate , 33: Print "ANY CHANGE (YN)";
+                Color 15, 0
+                I$ = GetKeyPress$
+            Loop Until UCase$(I$) = "N"
+
+            Z1$ = RTrim$(targetFile$)
+            Cls
+
+            Cls
+            
+            Open diskPaths$(1) + Z1$ For Input As #1
+            For I = 0 To 17: For I1 = 0 To 19: Input #1, BL1!(I, I1), BL0$(I, I1): Next: Next
+            For I = 0 To 15: For I1 = 0 To 19: Input #1, PL1!(I, I1), PL0$(I, I1): Next: Next
+            Close #1
+
+            ' -- Choose --
+            Color 15, 0
+            Cls
+            Locate 8: Color 14: Print "P";: Color 15: Print "RINT OR ";: Color 14: Print "V";: Color 15: Print "IEW"
+
+            Do
+                I$ = GetKeyPress$
+            Loop Until UCase$(I$) = "P" Or UCase$(I$) = "V"
+            
+            If UCase$(I$) = "P" Then 
+                Call PrintLeaders_Screen
+            Else
+                Call ViewLeaders_Screen
+            End If
+            
+        End If 'Done checking file count
+        
+    '...Until we press ESC
+    Loop Until ExitCode% = 27 or Count% = 0
+
+End Sub
+
+
+
+'----------------------------------------
+'       PrintLeaders_Screen Subroutine
+'----------------------------------------
+'...explanation...
+Sub PrintLeaders_Screen ()
+
+    Shared BL0$(), PL0$()
+    Shared BL1!(), PL1!()
+
+    LPrint Chr$(15)
+
+    'WIDTH "LPT1:1",130
+    LPrint Tab(5); "AT BATS"; Tab(29); "HITS"; Tab(54); "RUNS SCORED"; Tab(79); "RBI'S"; Tab(104); "DOUBLES"
+    For I = 0 To 19
+        LPrint Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(0, I);: LPrint Tab(18); Using "####"; BL1!(0, I);: LPrint Tab(25); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(1, I);: LPrint Tab(43); Using "####"; BL1!(1, I);
+        LPrint Tab(50); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(2, I);: LPrint Tab(68); Using "####"; BL1!(2, I);: LPrint Tab(75); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(3, I);: LPrint Tab(93); Using "####"; BL1!(3, I);
+    LPrint Tab(100); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(4, I);: LPrint Tab(118); Using "####"; BL1!(4, I): Next
+    LPrint
+    LPrint
+    LPrint Tab(5); "TRIPLES"; Tab(29); "HOME RUNS"; Tab(54); "WALKS"; Tab(79); "STRIKE OUTS"; Tab(104); "STOLEN BASES"
+    For I = 0 To 19
+        LPrint Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(5, I);: LPrint Tab(18); Using "####"; BL1!(5, I);: LPrint Tab(25); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(6, I);: LPrint Tab(43); Using "####"; BL1!(6, I);
+        LPrint Tab(50); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(7, I);: LPrint Tab(68); Using "####"; BL1!(7, I);: LPrint Tab(75); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(8, I);: LPrint Tab(93); Using "####"; BL1!(8, I);
+    LPrint Tab(100); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(9, I);: LPrint Tab(118); Using "####"; BL1!(9, I): Next
+    
+    LPrint Chr$(12)
+    
+    LPrint
+    LPrint
+    LPrint Tab(5); "CAUGHT STEALING"; Tab(29); "ERRORS"; Tab(54); "GAMES PLAYED"; Tab(79); "BATTING AVERAGE"; Tab(104); "SLUGGING PCT."
+    For I = 0 To 19
+        LPrint Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(10, I);: LPrint Tab(18); Using "####"; BL1!(10, I);: LPrint Tab(25); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(11, I);: LPrint Tab(43); Using "####"; BL1!(11, I);
+        LPrint Tab(50); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(14, I);: LPrint Tab(68); Using "####"; BL1!(14, I);: LPrint Tab(75); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(15, I);: LPrint Tab(93); Using ".###"; BL1!(15, I);
+    LPrint Tab(100); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(16, I);: LPrint Tab(118); Using ".###"; BL1!(16, I): Next
+    LPrint
+    LPrint
+    LPrint Tab(5); "ON-BASE PCT."; Tab(29); "INNINGS PITCHED"; Tab(54); "HITS ALLOWED"; Tab(79); "RUNS ALLOWED"; Tab(104); "EARNED RUNS ALLOWED"
+    For I = 0 To 19
+        LPrint Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(17, I);: LPrint Tab(18); Using ".###"; BL1!(17, I);
+        LPrint Tab(25); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(0, I);: LPrint Tab(43); Using "###"; Int(PL1!(0, I) / 3);: If PL1!(O, I) - (Int(PL1!(O, I) / 3) * 3) > 0 Then LPrint ".";: LPrint Using "#"; PL1!(O, I) - (Int(PL1!(O, I) / 3) * 3);
+        LPrint Tab(50); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(1, I);: LPrint Tab(68); Using "####"; PL1!(1, I);: LPrint Tab(75); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(2, I);: LPrint Tab(93); Using "####"; PL1!(2, I);
+    LPrint Tab(100); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(3, I);: LPrint Tab(118); Using "####"; PL1!(3, I): Next
+    
+    LPrint Chr$(12)
+    
+    LPrint
+    LPrint
+    LPrint Tab(5); "WALKS"; Tab(29); "STRIKEOUTS"; Tab(54); "WINS"; Tab(79); "LOSSES"; Tab(104); "GAMES"
+    For I = 0 To 19
+        LPrint Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(4, I);: LPrint Tab(18); Using "####"; PL1!(4, I);: LPrint Tab(25); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(5, I);: LPrint Tab(43); Using "####"; PL1!(5, I);
+        LPrint Tab(50); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(6, I);: LPrint Tab(68); Using "####"; PL1!(6, I);: LPrint Tab(75); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(7, I);: LPrint Tab(93); Using "####"; PL1!(7, I);
+    LPrint Tab(100); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(8, I);: LPrint Tab(118); Using "####"; PL1!(8, I): Next
+    LPrint
+    LPrint
+    LPrint Tab(5); "GAMES STARTED"; Tab(29); "COMPLETE GAMES"; Tab(54); "SHUTOUTS"; Tab(79); "SAVES"; Tab(104); "DOUBLE PLAYS THROWN"
+    For I = 0 To 19
+        LPrint Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(9, I);: LPrint Tab(18); Using "####"; PL1!(9, I);: LPrint Tab(25); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(10, I);: LPrint Tab(43); Using "####"; PL1!(10, I);
+        LPrint Tab(50); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(11, I);: LPrint Tab(68); Using "####"; PL1!(11, I);: LPrint Tab(75); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(12, I);: LPrint Tab(93); Using "####"; PL1!(12, I);
+    LPrint Tab(100); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(13, I);: LPrint Tab(118); Using "####"; PL1!(13, I): Next
+    
+    LPrint Chr$(12)
+    
+    LPrint
+    LPrint
+    LPrint Tab(5); "HOME RUNS ALLOWED"; Tab(29); "EARNED RUN AVERAGE"
+    For I = 0 To 19
+    LPrint Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(14, I);: LPrint Tab(20); Using "####"; PL1!(14, I);: LPrint Tab(25); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(15, I);: LPrint Tab(43); Using "###.##"; PL1!(15, I): Next
+    
+    LPrint Chr$(12)
+    
+End Sub
+
+
+
+'----------------------------------------
+'     ViewLeaders_Screen Subroutine
+'----------------------------------------
+'...explanation...
+Sub ViewLeaders_Screen
+
+    Shared BL0$(), PL0$()
+    Shared BL1!(), PL1!()
+
+    Cls
+    Color 12: Print Tab(5); "AT BATS                                HITS"
+    For I = 0 To 19
+        Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(0, I);: Color 14: Print Tab(20); Using "####"; BL1!(0, I);:
+    Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(1, I);: Color 14: Print Tab(60); Using "####"; BL1!(1, I): Next
+
+    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    I$ = GetKeyPress$
+
+    Cls
+    Color 12: Print Tab(5); "RUNS SCORED                            RBI'S"
+    For I = 0 To 19
+        Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(2, I);: Color 14: Print Tab(20); Using "####"; BL1!(2, I);:
+    Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(3, I);: Color 14: Print Tab(60); Using "####"; BL1!(3, I): Next
+
+    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    I$ = GetKeyPress$
+
+    Cls
+    Color 12: Print Tab(5); "DOUBLES                                TRIPLES"
+    For I = 0 To 19
+        Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(4, I);: Color 14: Print Tab(20); Using "####"; BL1!(4, I);:
+    Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(5, I);: Color 14: Print Tab(60); Using "####"; BL1!(5, I): Next
+
+    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    I$ = GetKeyPress$
+
+    Cls
+    Color 12: Print Tab(5); "HOME RUNS                              WALKS"
+    For I = 0 To 19
+        Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(6, I);: Color 14: Print Tab(20); Using "####"; BL1!(6, I);:
+    Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(7, I);: Color 14: Print Tab(60); Using "####"; BL1!(7, I): Next
+
+    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    I$ = GetKeyPress$
+
+    Cls
+    Color 12: Print Tab(5); "STRIKE OUTS                            STOLEN BASES"
+    For I = 0 To 19
+        Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(8, I);: Color 14: Print Tab(20); Using "####"; BL1!(8, I);:
+    Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(9, I);: Color 14: Print Tab(60); Using "####"; BL1!(9, I): Next
+
+    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    I$ = GetKeyPress$
+
+    Cls
+    Color 12: Print Tab(5); "CAUGHT STEALING                        ERRORS"
+    For I = 0 To 19
+        Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(10, I);: Color 14: Print Tab(20); Using "####"; BL1!(10, I);:
+    Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(11, I);: Color 14: Print Tab(60); Using "####"; BL1!(11, I): Next
+
+    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    I$ = GetKeyPress$
+
+    Cls
+    Color 12: Print Tab(5); "GAMES PLAYED                           BATTING AVERAGE"
+    For I = 0 To 19
+        Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(14, I);: Color 14: Print Tab(20); Using "####"; BL1!(14, I);:
+    Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(15, I);: Color 14: Print Tab(60); Using ".###"; BL1!(15, I): Next
+
+    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    I$ = GetKeyPress$
+
+    Cls
+    Color 12: Print Tab(5); "SLUGGING PCT.                          ON-BASE PCT."
+    For I = 0 To 19
+        Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(16, I);: Color 14: Print Tab(20); Using ".###"; BL1!(16, I);:
+    Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print BL0$(17, I);: Color 14: Print Tab(60); Using ".###"; BL1!(17, I): Next
+
+    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    I$ = GetKeyPress$
+
+    Cls
+    Color 12: Print Tab(5); "INNINGS PITCHED                        HITS ALLOWED"
+    For I = 0 To 19
+        Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(0, I);: Color 14: Print Tab(18); Using "###"; Int(PL1!(0, I) / 3);: If PL1!(O, I) - (Int(PL1!(O, I) / 3) * 3) > 0 Then Print ".";: Print Using "#"; PL1!(O, I) - (Int(PL1!(O, I) / 3) * 3);:
+    Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(1, I);: Color 14: Print Tab(60); Using "####"; PL1!(1, I): Next
+
+    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    I$ = GetKeyPress$
+
+    Cls
+    Color 12: Print Tab(5); "RUNS ALLOWED                           EARNED RUNS ALLOWED"
+    For I = 0 To 19
+        Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(2, I);: Color 14: Print Tab(20); Using "####"; PL1!(2, I);:
+    Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(3, I);: Color 14: Print Tab(60); Using "####"; PL1!(3, I): Next
+
+    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    I$ = GetKeyPress$
+
+    Cls
+    Color 12: Print Tab(5); "WALKS                                  STRIKEOUTS"
+    For I = 0 To 19
+        Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(4, I);: Color 14: Print Tab(20); Using "####"; PL1!(4, I);:
+    Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(5, I);: Color 14: Print Tab(60); Using "####"; PL1!(5, I): Next
+
+    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    I$ = GetKeyPress$
+
+    Cls
+    Color 12: Print Tab(5); "WINS                                   LOSSES"
+    For I = 0 To 19
+        Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(6, I);: Color 14: Print Tab(20); Using "####"; PL1!(6, I);:
+    Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(7, I);: Color 14: Print Tab(60); Using "####"; PL1!(7, I): Next
+
+    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    I$ = GetKeyPress$
+
+    Cls
+    Color 12: Print Tab(5); "GAMES                                  GAMES STARTED"
+    For I = 0 To 19
+        Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(8, I);: Color 14: Print Tab(20); Using "####"; PL1!(8, I);:
+    Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(9, I);: Color 14: Print Tab(60); Using "####"; PL1!(9, I): Next
+
+    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    I$ = GetKeyPress$
+
+    Cls
+    Color 12: Print Tab(5); "COMPLETE GAMES                         SHUTOUTS"
+    For I = 0 To 19
+        Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(10, I);: Color 14: Print Tab(20); Using "####"; PL1!(10, I);:
+    Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(11, I);: Color 14: Print Tab(60); Using "####"; PL1!(11, I): Next
+
+    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    I$ = GetKeyPress$
+
+    Cls
+    Color 12: Print Tab(5); "SAVES                                  DOUBLE PLAYS THROWN"
+    For I = 0 To 19
+        Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(12, I);: Color 14: Print Tab(20); Using "####"; PL1!(12, I);:
+    Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(13, I);: Color 14: Print Tab(60); Using "####"; PL1!(13, I): Next
+
+    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    I$ = GetKeyPress$
+
+    Cls
+    Color 12: Print Tab(5); "HOME RUNS ALLOWED                     EARNED RUN AVERAGE"
+    For I = 0 To 19
+        Color 3: Locate I + 2: Print Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(14, I);: Color 14: Print Tab(20); Using "####"; PL1!(14, I);
+    Color 3: Print Tab(40); Using "##"; I + 1;: Print ". ";: Color 15: Print PL0$(15, I);: Color 14: Print Tab(58); Using "###.##"; PL1!(15, I): Next
+
+    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    I$ = GetKeyPress$
+
+End Sub

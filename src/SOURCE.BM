@@ -823,6 +823,7 @@ Sub SOURCE ()
     4095 I$ = GetKeyPress$
     Return
 
+
     4100 '*** BUNT ROUTINE ***
     Call BLANKLINES
     For I = 0 To 3: A5%(I) = 0: Next
@@ -911,7 +912,7 @@ Sub SOURCE ()
     If PLB = 0 Then Call PBP(Q$(4) + " makes an easy play")
     PLB = 0: O%(0) = O%(0) + 1: O%(1) = O%(1) + 1
     Call ADDSTTS(P, D)
-    Call CREDITASSIST(W%, D): Call ADVANCEMENT(P, D, S2%, F%, I3): Call CREDITPUTOUT(I3, FB2P%, AST%, D): GoTo 3900
+    Call CREDITASSIST%(W%, D): Call ADVANCEMENT(P, D, S2%, F%, I3): Call CREDITPUTOUT(I3, FB2P%, AST%, D): GoTo 3900
     4140 'SHGOOD
     Call PBP(Q$(0) + " lays down a good bunt...")
     Call FLDERR(F%, W%, D, I3, SB%, S2%, P): If F% = 1 Then 3900
@@ -934,7 +935,7 @@ Sub SOURCE ()
     Call PBP("The only play is to first")
     I5 = P1%(D): I6 = 0: Call ADDPIT(D, I5, I6)
     O%(0) = O%(0) + 1: O%(1) = O%(1) + 1
-    Call CREDITASSIST(W%, D): Call ADVANCEMENT(P, D, S2%, F%, I3): Call CREDITPUTOUT(I3, FB2P%, AST%, D)
+    Call CREDITASSIST%(W%, D): Call ADVANCEMENT(P, D, S2%, F%, I3): Call CREDITPUTOUT(I3, FB2P%, AST%, D)
     If O%(0) >= 3 Then 3900
     For I = 1 To 3: A5%(I) = 1: Next: Call ADVANCEMENT(P, D, S2%, F%, I3)
     GoTo 3900
@@ -1169,7 +1170,7 @@ Sub SOURCE ()
     A5%(TGTBASE% - 1) = 11: INFPOS% = 0
     I5 = B3%(P, B0%(TGTBASE% - 1, 0)): I6 = 10: Call INCBATOFF(P, I5, I6)
     I5 = P1%(D): I6 = 0: Call ADDPIT(D, I5, I6)
-    O%(0) = O%(0) + 1: O%(1) = O%(1) + 1: W% = 2: Call CREDITASSIST(W%, D): Call ADVANCEMENT(P, D, S2%, F%, I3): Call CREDITPUTOUT(I3, FB2P%, AST%, D): Call DELAY
+    O%(0) = O%(0) + 1: O%(1) = O%(1) + 1: W% = 2: Call CREDITASSIST%(W%, D): Call ADVANCEMENT(P, D, S2%, F%, I3): Call CREDITPUTOUT(I3, FB2P%, AST%, D): Call DELAY
     I5 = B9%(D, 2): I6 = 21: Call INCBATDF(D, I5, I6)
     If O%(0) >= 3 Then B1!(P) = B1!(P) - 1: Call STRIKEOUTCS(SO): GoTo 3900
     4831 If O%(0) >= 3 Or P2 = 2 And U% = 3 Then 3900
@@ -1249,12 +1250,15 @@ Sub SOURCE ()
     Call FLDDISP(BC%, P, U%, D): Call MAINSCREEN(D, P, BC%, U%, MO)
     VV(D) = 1: VV1(D) = 9
     Return
+
     4956 For I2 = 1 To 9
         If B7%(D, I2) = MG%(D, 576 + IJ0%) Then 4957
     Next
     4957 Return
+
     4998 S8%(I, 0) = S8%(I, 0) + 6: S8%(I, 1) = 6
     Return
+
 
     5000 F% = 0: PQ = 0
     For I = 0 To 1: O%(I) = 0
@@ -1549,6 +1553,7 @@ Sub SOURCE ()
         Print "                                                    "
     Next I5
     Return
+
     8500 Locate 22, 1
     If S6%(0, 0) > S6%(1, 0) Then Print A$(0); " defeats "; A$(1); S6%(0, 0); "TO"; S6%(1, 0); "!" Else Print A$(1); " defeats "; A$(0); S6%(1, 0); "TO"; S6%(0, 0); "!"
     If AP% = 1 And U6 = 2 Then 8607

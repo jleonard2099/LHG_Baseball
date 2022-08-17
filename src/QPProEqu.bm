@@ -45,11 +45,12 @@ Function FCount% (fileSpec$)
         Close #ff%
         Kill TmpFile$
 
-        'SHARED variable can return the file count
+        ' Shared variable can return the file count
         FCount% = Index%
     End If
 
 End Function
+
 
 
 '-----------------------------------
@@ -60,6 +61,7 @@ Function FileSize& (sourceFile$)
     FileSize& = LOF(1)
     Close #1
 End Function
+
 
 
 '-----------------------------------
@@ -131,6 +133,7 @@ Function MGetKey (Row%, Col%)
 End Function
 
 
+
 '-----------------------------------
 ' Monitor Copycat Function
 '-----------------------------------
@@ -144,7 +147,8 @@ End Function
 ' Modern compilers "emulate" these
 ' features to some degree but that
 ' does not make this any more relevant.
-' So, we're essentially going to return
+' So, we're essentially going to Return
+
 ' 12 for VGA to the functions requesting.
 ' Currently this is only used in some
 ' logic to determine print colors and
@@ -163,7 +167,8 @@ Function Monitor% ()
     '
     'End Select
 
-    'Results to return
+    'Results to Return
+
     '1 = Mono
     '2 = Hercules
     '3 = CGA
@@ -180,6 +185,7 @@ Function Monitor% ()
 End Function
 
 
+
 '-----------------------------------
 ' OneColor Copycat Function
 '-----------------------------------
@@ -190,6 +196,7 @@ Function OneColor% (FGColor%, BGColor%)
     'But this is the doumented function from QPPro
     OneColor% = (FGColor% And 16) * 8 + ((BGColor% And 7) * 16) + (FGColor% And 15)
 End Function
+
 
 
 '-----------------------------------
@@ -220,7 +227,7 @@ Function READDIR$ (spec$)
             Index% = Index% + 1
             Line Input #ff%, DirList$(Index%)
         Loop
-        DirCount% = Index% 'SHARED variable can return the file count
+        DirCount% = Index% ' Shared variable can return the file count
         Close #ff%
 
         Kill TmpFile$
@@ -237,6 +244,7 @@ End Function
 ' NOT IMPLEMENTED
 Sub AddInt (AElement, Value, NumEls)
 End Sub
+
 
 
 ' ------------------------------------------------------------
@@ -311,6 +319,7 @@ Sub box0 (ULRow%, ULCol%, LRRow%, LRCol%, Char%, FGColor%, BGColor%)
 End Sub
 
 
+
 '-----------------------------------
 ' Print NumLock / CapsLock Status
 '-----------------------------------
@@ -376,6 +385,7 @@ Sub ClearEOL (FGColor%, BGColor%)
 End Sub
 
 
+
 '-----------------------------------
 ' Get Command Line Subroutine
 '-----------------------------------
@@ -412,6 +422,7 @@ Sub Comline (NumArgs%, Args$(), MaxArgs%)
     Next I
 
 End Sub
+
 
 
 '-----------------------------------
@@ -486,6 +497,7 @@ Sub CSMsgBox (Message$, Wdth%, Pass)
 End Sub
 
 
+
 '-----------------------------------
 ' FCopy Copycat Subroutine
 '-----------------------------------
@@ -526,6 +538,7 @@ Sub FCopy (srcFile$, dstFile$, Buff$, copyErr%)
 
 End Sub
 
+ 
 
 '-----------------------------------
 ' InitInt Copycat Subroutine
@@ -535,12 +548,16 @@ Sub InitInt (AElement, StartValue, NumEls)
 End Sub
 
 
+
 '-----------------------------------
 ' ISortI Copycat Subroutine
 '-----------------------------------
 Sub ISortI (Element%, IndexElement%, NumElements%, Direction%)
     ' NOT IMPLEMENTED / OBSOLETE
 End Sub
+
+
+
 
 
 '-----------------------------------
@@ -687,6 +704,7 @@ Sub MAMenu (menuChoices$(), Selected%, Start%, Count%, ScanCode%, ItemFGColor%, 
     Return
 
 
+
     '*** Get and process the user input ***
     UserInput:
 
@@ -753,6 +771,7 @@ Sub MAMenu (menuChoices$(), Selected%, Start%, Count%, ScanCode%, ItemFGColor%, 
     End Select
 
     Return
+
 
 End Sub
 
@@ -835,6 +854,7 @@ Sub MMenuVert (menuChoices$(), Selected%, Start%, ScanCode%, ItemFGColor%, ItemB
     Next Count
     Return
 
+
     MoveUp:
     If Selected% = 1 Then
         Selected% = UBound(menuChoices$)
@@ -842,6 +862,7 @@ Sub MMenuVert (menuChoices$(), Selected%, Start%, ScanCode%, ItemFGColor%, ItemB
         Selected% = Selected% - 1
     End If
     Return
+
 
     MoveDown:
     If Selected% = UBound(menuChoices$) Then
@@ -851,7 +872,9 @@ Sub MMenuVert (menuChoices$(), Selected%, Start%, ScanCode%, ItemFGColor%, ItemB
     End If
     Return
 
+
 End Sub
+
 
 
 '-----------------------------------
@@ -862,6 +885,7 @@ Sub MPaintBox (ULRow%, ULCol%, LRRow%, LRCol%, Colr%)
 
     _MouseShow "DEFAULT"
 End Sub
+
 
 
 '-----------------------------------
@@ -877,6 +901,7 @@ Sub MQPrint (X$, FGColor%, BGColor%)
     Locate V, H
     _MouseShow "DEFAULT"
 End Sub
+
 
 
 '-----------------------------------
@@ -897,6 +922,7 @@ Sub QuickSort (start As Integer, finish As Integer, array() As Single)
     If Hi > start Then Call QuickSort(start, Hi, array())
     If Lo < finish Then Call QuickSort(Lo, finish, array())
 End Sub
+
 
 
 '-----------------------------------
@@ -1077,6 +1103,7 @@ Sub NumIn (Number#, Max, XCode, FGColor%, BGColor%)
 End Sub
 
 
+
 '-----------------------------------
 ' QPrint Copycat Subroutine
 '-----------------------------------
@@ -1104,6 +1131,7 @@ Sub QPrint (X$, FGColor%, BGColor%, Page%)
     'Restore cursor position
     Locate V, H
 End Sub
+
 
 
 '-----------------------------------
@@ -1140,6 +1168,7 @@ Sub ReadFile (fileList$())
 End Sub
 
 
+
 '-----------------------------------
 ' SplitColor Copycat Subroutine
 '-----------------------------------
@@ -1152,6 +1181,7 @@ Sub SplitColor (Colr%, FG%, BG%)
     BG% = ((Colr% And 240) / 16)
 
 End Sub
+
 
 
 '-----------------------------------
@@ -1203,20 +1233,24 @@ Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode%, FGColor%, BGColor%)
     ExitCode% = 1 'User wants to go to previous field
     GoTo TEnter 'Behavior is similar to the Enter key
 
+
     TClear:
     X$ = "" 'Alt-C, erase the current string
     GoSub TInsertOff 'clear insert mode and restore cursor
     Locate , Pos(0) - (CursorPos - 1)
     GoTo TC 'and start all over again
 
+
     THome:
     Locate , Pos(0) - (CursorPos - 1) 'put cursor at beginning of line
     CursorPos = 1 'show cursor as being on 1st character
     GoTo TGetKey
 
+
     TUp:
     ExitCode% = 1 'user wants to go back a field
     GoTo TEnter 'handle as if it were the Enter key
+
 
     TLeft:
     If CursorPos = 1 GoTo TShiftTab 'cursor is on 1st character, handle as Shift-Tab
@@ -1404,7 +1438,9 @@ Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode%, FGColor%, BGColor%)
     End If
     Return
 
+
 End Sub
+
 
 
 '-----------------------------------
@@ -1455,6 +1491,7 @@ Sub YesNoB (YN$, ExitCode, FGColor%, BGColor%)
         GoTo YD2
     End If
 
+
     If Len(X$) = 2 Then 'extended key
         X$ = Right$(X$, 1)
         If X$ = "P" Or X$ = "M" Then GoTo YD2 'Down arrow, Right arrow
@@ -1465,6 +1502,7 @@ Sub YesNoB (YN$, ExitCode, FGColor%, BGColor%)
     End If
 
     GoTo YGetKey
+
 
     YDone:
     If X$ > "Y" Then X$ = Chr$(Asc(X$) - 32) 'capitalize if necessary

@@ -1617,14 +1617,19 @@ For A = 0 To 21
 Next
 
 Field #1, 4280 As X$, 40 As Q2$(1840), 15 As Q2$(1841), 5 As Q2$(1842), 2 As Q2$(1843)
+
 Get #1, T1(I)
 A$(I) = Q2$(0)
 A$(I) = RTrim$(A$(I))
+
 For I1 = 1 To 13
     L%(I, I1) = CVI(Q2$(I1))
 Next
+
 If (L%(I, 11) = 7 Or L%(I, 11) = 15) And L%(I, 12) = 0 Then L%(I, 11) = 0: L%(I, 12) = 7
+
 K9(I) = CVS(Q2$(14))
+
 For I1 = 0 To 22: B$(I, I1) = Q2$(I1 * 43 + 15)
     B$(I, I1) = RTrim$(B$(I, I1))
     For I2 = 0 To 41
@@ -1632,6 +1637,7 @@ For I1 = 0 To 22: B$(I, I1) = Q2$(I1 * 43 + 15)
     Next
     If B%(I, I1, 31) <> 0 Then B%(I, I1, 21) = 99
 Next
+
 For I1 = 0 To 21: P$(I, I1) = Q2$(I1 * 38 + 1004)
     P$(I, I1) = RTrim$(P$(I, I1))
     For I2 = 0 To 36: P%(I, I1, I2) = CVI(Q2$(I1 * 38 + I2 + 1005))
@@ -1639,8 +1645,10 @@ For I1 = 0 To 21: P$(I, I1) = Q2$(I1 * 38 + 1004)
     If P%(I, I1, 34) <> 0 Then P%(I, I1, 15) = 99
     If P%(I, I1, 0) = 0 Then P%(I, I1, 0) = 1
 Next
+
 S$(I) = Q2$(1840): M$(I) = Q2$(1841): NN$(I) = Q2$(1842): CK = CVI(Q2$(1843))
 Close 1
+
 For I1 = 0 To 22
 
     'check for 1934 season
@@ -1650,13 +1658,17 @@ For I1 = 0 To 22
         If B%(I, I1, I2) <> -1 And B%(I, I1, I2) <> 0 And B%(I, I1, I2 + 4) = 0 Then B%(I, I1, I2 + 4) = 900
     Next
 Next
+
 M$(I) = RTrim$(M$(I))
 S$(I) = RTrim$(S$(I))
 NN$(I) = RTrim$(NN$(I))
+
 For X = 0 To 22
     For X1 = 1 To 14
         B%(I, X, X1 + 41) = 0
-Next: Next
+	Next
+Next
+
 For X = 0 To 21
     For X1 = 1 To 28
         P%(I, X, X1 + 36) = 0
