@@ -98,14 +98,15 @@ Sub MergeIt
                 Cls
                 Locate 2, 10
                 Color 7
-                Print "NON-_FILEEXISTSANT PATH OR INCORRECT FILE NAME"
+                Print "NON-EXISTENT PATH OR INCORRECT FILE NAME"
                 Print
                 Locate , 10
-                Print "TRY AGAIN (YN) ";
+                Print "TRY AGAIN (YN) "
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
             
             If UCase$(I$) = "Y" Then 
+				Print
                 Print "HIT ENTER TO RE-ENTER INFORMATION"
                 I$ = GetKeyPress$
             End If
@@ -152,14 +153,15 @@ Sub MergeIt
                     Cls
                     Locate 2, 10
                     Color 7
-                    Print "NON-_FILEEXISTSANT PATH OR INCORRECT FILE NAME"
+                    Print "NON-EXISTENT PATH OR INCORRECT FILE NAME"
                     Print
                     Locate , 10
-                    Print "TRY AGAIN (YN) ";
+                    Print "TRY AGAIN (YN) "
                     I$ = GetKeyPress$
                 Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
                 
                 If UCase$(I$) = "Y" Then 
+					Print
                     Print "HIT ENTER TO RE-ENTER INFORMATION"
                     I$ = GetKeyPress$
                 End If

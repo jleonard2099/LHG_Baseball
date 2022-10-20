@@ -6,26 +6,19 @@ Sub CAREER ()
 
     ReDim menuChoices$(1 To 7)
 
-    '--- where do these get used???
-    CH = 0
-    TMR = 4175
-    TMR1 = 6875
-    NB = -1
-    NP = -1
-    JX = 0
-    VV = 0
-
     Do
         Cls
-
+		Color 15,0
+		
         Call TITLE
-        menuChoices$(1) = "CREATE AND MERGE INITIAL CAREER STAT STATS"
-        menuChoices$(2) = "MERGE/UPDATE CAREER STATS                 "
-        menuChoices$(3) = "VIEW/PRINT CAREER STATS                   "
-        menuChoices$(4) = "EDIT CAREER STATS                         "
-        menuChoices$(5) = "VIEW/PRINT TEAM CAREER LEADERS (SEASON)   "
-        menuChoices$(6) = "UPDATE TEAM CAREER LEADERS (CAREER)       "
-        menuChoices$(7) = "RETURN TO MAIN MENU                       "
+
+        menuChoices$(1) = "CREATE AND MERGE INITIAL CAREER STATS  "
+        menuChoices$(2) = "MERGE/UPDATE CAREER STATS              "
+        menuChoices$(3) = "VIEW/PRINT CAREER STATS                "
+        menuChoices$(4) = "EDIT CAREER STATS                      "
+        menuChoices$(5) = "VIEW/PRINT TEAM CAREER LEADERS (SEASON)"
+        menuChoices$(6) = "UPDATE TEAM CAREER LEADERS (CAREER)    "
+        menuChoices$(7) = "RETURN TO MAIN MENU                    "
         Selection% = 1
         Count% = 7
         Start% = 1
@@ -34,9 +27,9 @@ Sub CAREER ()
         HiLiteFGColr% = 0: HiLiteBGColr% = 7
         Spacing% = 1
         Row% = 6
-        Column% = 17
+        Column% = 21
 
-        Call box0(5, 16, 13, 59, 2, 15, 1)
+        Call box0(5, 20, 13, 59, 2, 15, 1)
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
         _MouseHide
@@ -162,129 +155,134 @@ Sub ViewTeamLeaders ()
                 Locate 25, 1
                 Color 14
                 Print "ENTER";: Color 15
-                Print "-SELECTS TEAM";
+                Print "-SELECTS FILE";
 
                 _MouseShow "DEFAULT"
                 MAMenu conferenceLeaderFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
                 _MouseHide
 
-                If ExitCode% = 27 Then 2
-                targetFile$ = conferenceLeaderFiles$(Selection%)
-                Locate 2, 33: Print targetFile$
-                Locate , 33: Print "ANY CHANGE (YN)";
-                Color 15, 0
-                I$ = GetKeyPress$
+                If ExitCode% <> 27 Then
+                    targetFile$ = conferenceLeaderFiles$(Selection%)
+                    Locate 2, 33: Print targetFile$
+                    Locate , 33: Print "ANY CHANGE (YN)";
+                    Color 15, 0
+                    I$ = GetKeyPress$
+                End If
             Loop Until UCase$(I$) = "N"
 
-            ZZ$ = RTrim$(targetFile$)
+			If ExitCode% <> 27 Then
 
-            Open diskPaths$(1) + ZZ$ For Input As #1
-            For I = 0 To 14: Input #1, BLYR%(I), BL$(I), BLL!(I): Next
-            For I = 0 To 14: Input #1, PLYR%(I), careerPL$(I), PLL!(I): Next
-            Close #1
+				leaderFile$ = RTrim$(targetFile$)
 
-            Do
-                Locate 15, 10: Color 12: Print "V";: Color 7: Print "IEW OR ";: Color 12: Print "P";: Color 7: Print "RINT"
-                I$ = GetKeyPress$
-            Loop Until UCase$(I$) = "P" Or UCase$(I$) = "V"
+				Open diskPaths$(2) + leaderFile$ For Input As #1
+				For I = 0 To 14: Input #1, BLYR%(I), BL$(I), BLL!(I): Next
+				For I = 0 To 14: Input #1, PLYR%(I), careerPL$(I), PLL!(I): Next
+				Close #1
 
-            Select Case UCase$(I$)
-                Case "P": 
-                    LPrint "CATEGORY           RECORD           PLAYER              YEAR"
-                    LPrint
-                    LPrint "AT BATS";: LPrint Tab(23); Using "###"; BLL!(0);: LPrint Tab(37); BL$(0);: LPrint Tab(56); BLYR%(0)
-                    LPrint "RUNS SCORED";: LPrint Tab(23); Using "###"; BLL!(1);: LPrint Tab(37); BL$(1);: LPrint Tab(56); BLYR%(1)
-                    LPrint "HITS";: LPrint Tab(23); Using "###"; BLL!(2);: LPrint Tab(37); BL$(2);: LPrint Tab(56); BLYR%(2)
-                    LPrint "DOUBLES";: LPrint Tab(23); Using "###"; BLL!(3);: LPrint Tab(37); BL$(3);: LPrint Tab(56); BLYR%(3)
-                    LPrint "TRIPLES";: LPrint Tab(23); Using "###"; BLL!(4);: LPrint Tab(37); BL$(4);: LPrint Tab(56); BLYR%(4)
-                    LPrint "HOME RUNS";: LPrint Tab(23); Using "###"; BLL!(5);: LPrint Tab(37); BL$(5);: LPrint Tab(56); BLYR%(5)
-                    LPrint "RUNS BATTED IN";: LPrint Tab(23); Using "###"; BLL!(6);: LPrint Tab(37); BL$(6);: LPrint Tab(56); BLYR%(6)
-                    LPrint "WALKS";: LPrint Tab(23); Using "###"; BLL!(7);: LPrint Tab(37); BL$(7);: LPrint Tab(56); BLYR%(7)
-                    LPrint "STRIKEOUTS";: LPrint Tab(23); Using "###"; BLL!(8);: LPrint Tab(37); BL$(8);: LPrint Tab(56); BLYR%(8)
-                    LPrint "STEALS";: LPrint Tab(23); Using "###"; BLL!(9);: LPrint Tab(37); BL$(9);: LPrint Tab(56); BLYR%(9)
-                    LPrint "CAUGHT STEALING";: LPrint Tab(23); Using "###"; BLL!(10);: LPrint Tab(37); BL$(10);: LPrint Tab(56); BLYR%(10)
-                    LPrint "ERRORS";: LPrint Tab(23); Using "###"; BLL!(11);: LPrint Tab(37); BL$(11);: LPrint Tab(56); BLYR%(11)
-                    LPrint "BATTING AVERAGE";: LPrint Tab(22); Using ".###"; BLL!(12);: LPrint Tab(37); BL$(12);: LPrint Tab(56); BLYR%(12)
-                    LPrint "SLUGGING PCT.";: LPrint Tab(22); Using ".###"; BLL!(13);: LPrint Tab(37); BL$(13);: LPrint Tab(56); BLYR%(13)
-                    LPrint "ON BASE PCT.";: LPrint Tab(22); Using ".###"; BLL!(14);: LPrint Tab(37); BL$(14);: LPrint Tab(56); BLYR%(14)
-                    LPrint "WINS";: LPrint Tab(23); Using "###"; PLL!(0);: LPrint Tab(37); careerPL$(0);: LPrint Tab(56); PLYR%(0)
-                    LPrint "LOSSES";: LPrint Tab(23); Using "###"; PLL!(1);: LPrint Tab(37); careerPL$(1);: LPrint Tab(56); PLYR%(1)
-                    LPrint "SAVES";: LPrint Tab(23); Using "###"; PLL!(2);: LPrint Tab(37); careerPL$(2);: LPrint Tab(56); PLYR%(2)
-                    LPrint "INNINGS PITCHED";: LPrint Tab(23); Using "###"; PLL!(3);:
+				Do
+					Locate 15, 10: Color 12: Print "V";: Color 7: Print "IEW OR ";: Color 12: Print "P";: Color 7: Print "RINT"
+					I$ = GetKeyPress$
+				Loop Until UCase$(I$) = "P" Or UCase$(I$) = "V"
 
-                    If PLL!(3) - (Int(PLL!(3) / 3) * 3) > 0 Then LPrint ".";: LPrint Using "#"; PLL!(3) - (Int(PLL!(3) / 3) * 3);:
+				Select Case UCase$(I$)
+					Case "P": 
+						LPrint "CATEGORY           RECORD           PLAYER              YEAR"
+						LPrint
+						LPrint "AT BATS";: LPrint Tab(23); Using "###"; BLL!(0);: LPrint Tab(37); BL$(0);: LPrint Tab(56); BLYR%(0)
+						LPrint "RUNS SCORED";: LPrint Tab(23); Using "###"; BLL!(1);: LPrint Tab(37); BL$(1);: LPrint Tab(56); BLYR%(1)
+						LPrint "HITS";: LPrint Tab(23); Using "###"; BLL!(2);: LPrint Tab(37); BL$(2);: LPrint Tab(56); BLYR%(2)
+						LPrint "DOUBLES";: LPrint Tab(23); Using "###"; BLL!(3);: LPrint Tab(37); BL$(3);: LPrint Tab(56); BLYR%(3)
+						LPrint "TRIPLES";: LPrint Tab(23); Using "###"; BLL!(4);: LPrint Tab(37); BL$(4);: LPrint Tab(56); BLYR%(4)
+						LPrint "HOME RUNS";: LPrint Tab(23); Using "###"; BLL!(5);: LPrint Tab(37); BL$(5);: LPrint Tab(56); BLYR%(5)
+						LPrint "RUNS BATTED IN";: LPrint Tab(23); Using "###"; BLL!(6);: LPrint Tab(37); BL$(6);: LPrint Tab(56); BLYR%(6)
+						LPrint "WALKS";: LPrint Tab(23); Using "###"; BLL!(7);: LPrint Tab(37); BL$(7);: LPrint Tab(56); BLYR%(7)
+						LPrint "STRIKEOUTS";: LPrint Tab(23); Using "###"; BLL!(8);: LPrint Tab(37); BL$(8);: LPrint Tab(56); BLYR%(8)
+						LPrint "STEALS";: LPrint Tab(23); Using "###"; BLL!(9);: LPrint Tab(37); BL$(9);: LPrint Tab(56); BLYR%(9)
+						LPrint "CAUGHT STEALING";: LPrint Tab(23); Using "###"; BLL!(10);: LPrint Tab(37); BL$(10);: LPrint Tab(56); BLYR%(10)
+						LPrint "ERRORS";: LPrint Tab(23); Using "###"; BLL!(11);: LPrint Tab(37); BL$(11);: LPrint Tab(56); BLYR%(11)
+						LPrint "BATTING AVERAGE";: LPrint Tab(22); Using ".###"; BLL!(12);: LPrint Tab(37); BL$(12);: LPrint Tab(56); BLYR%(12)
+						LPrint "SLUGGING PCT.";: LPrint Tab(22); Using ".###"; BLL!(13);: LPrint Tab(37); BL$(13);: LPrint Tab(56); BLYR%(13)
+						LPrint "ON BASE PCT.";: LPrint Tab(22); Using ".###"; BLL!(14);: LPrint Tab(37); BL$(14);: LPrint Tab(56); BLYR%(14)
+						LPrint "WINS";: LPrint Tab(23); Using "###"; PLL!(0);: LPrint Tab(37); careerPL$(0);: LPrint Tab(56); PLYR%(0)
+						LPrint "LOSSES";: LPrint Tab(23); Using "###"; PLL!(1);: LPrint Tab(37); careerPL$(1);: LPrint Tab(56); PLYR%(1)
+						LPrint "SAVES";: LPrint Tab(23); Using "###"; PLL!(2);: LPrint Tab(37); careerPL$(2);: LPrint Tab(56); PLYR%(2)
+						LPrint "INNINGS PITCHED";: LPrint Tab(23); Using "###"; PLL!(3);:
 
-                    LPrint Tab(37); careerPL$(3);: LPrint Tab(56); PLYR%(3)
-                    LPrint "HITS ALLOWED";: LPrint Tab(23); Using "###"; PLL!(4);: LPrint Tab(37); careerPL$(4);: LPrint Tab(56); PLYR%(4)
-                    LPrint "WALKS";: LPrint Tab(23); Using "###"; PLL!(5);: LPrint Tab(37); careerPL$(5);: LPrint Tab(56); PLYR%(5)
-                    LPrint "STRIKOUTS";: LPrint Tab(23); Using "###"; PLL!(6);: LPrint Tab(37); careerPL$(6);: LPrint Tab(56); PLYR%(6)
-                    LPrint "EARNED RUN AVERAGE";: LPrint Tab(22); Using "#.##"; PLL!(7);: LPrint Tab(37); careerPL$(7);: LPrint Tab(56); PLYR%(7)
-                    LPrint "GAMES";: LPrint Tab(23); Using "###"; PLL!(8);: LPrint Tab(37); careerPL$(8);: LPrint Tab(56); PLYR%(8)
-                    LPrint "COMPLETE GAMES";: LPrint Tab(23); Using "###"; PLL!(9);: LPrint Tab(37); careerPL$(9);: LPrint Tab(56); PLYR%(9)
-                    LPrint "RUNS ALLOWED";: LPrint Tab(23); Using "###"; PLL!(10);: LPrint Tab(37); careerPL$(10);: LPrint Tab(56); PLYR%(10)
-                    LPrint "EARNED RUNS ALLOWED";: LPrint Tab(23); Using "###"; PLL!(11);: LPrint Tab(37); careerPL$(11);: LPrint Tab(56); PLYR%(11)
-                    LPrint "SHUTOUTS";: LPrint Tab(23); Using "###"; PLL!(12);: LPrint Tab(37); careerPL$(12);: LPrint Tab(56); PLYR%(12)
-                    LPrint "HOME RUNS ALLOWED";: LPrint Tab(23); Using "###"; PLL!(13);: LPrint Tab(37); careerPL$(13);: LPrint Tab(56); PLYR%(13)
-                    LPrint "DOUBLE PLAYS";: LPrint Tab(23); Using "###"; PLL!(14);: LPrint Tab(37); careerPL$(14);: LPrint Tab(56); PLYR%(14)
-                    LPrint Chr$(12)
+						If PLL!(3) - (Int(PLL!(3) / 3) * 3) > 0 Then LPrint ".";: LPrint Using "#"; PLL!(3) - (Int(PLL!(3) / 3) * 3);:
 
-                Case "V": 
-                    Do
-                        Cls
+						LPrint Tab(37); careerPL$(3);: LPrint Tab(56); PLYR%(3)
+						LPrint "HITS ALLOWED";: LPrint Tab(23); Using "###"; PLL!(4);: LPrint Tab(37); careerPL$(4);: LPrint Tab(56); PLYR%(4)
+						LPrint "WALKS";: LPrint Tab(23); Using "###"; PLL!(5);: LPrint Tab(37); careerPL$(5);: LPrint Tab(56); PLYR%(5)
+						LPrint "STRIKOUTS";: LPrint Tab(23); Using "###"; PLL!(6);: LPrint Tab(37); careerPL$(6);: LPrint Tab(56); PLYR%(6)
+						LPrint "EARNED RUN AVERAGE";: LPrint Tab(22); Using "#.##"; PLL!(7);: LPrint Tab(37); careerPL$(7);: LPrint Tab(56); PLYR%(7)
+						LPrint "GAMES";: LPrint Tab(23); Using "###"; PLL!(8);: LPrint Tab(37); careerPL$(8);: LPrint Tab(56); PLYR%(8)
+						LPrint "COMPLETE GAMES";: LPrint Tab(23); Using "###"; PLL!(9);: LPrint Tab(37); careerPL$(9);: LPrint Tab(56); PLYR%(9)
+						LPrint "RUNS ALLOWED";: LPrint Tab(23); Using "###"; PLL!(10);: LPrint Tab(37); careerPL$(10);: LPrint Tab(56); PLYR%(10)
+						LPrint "EARNED RUNS ALLOWED";: LPrint Tab(23); Using "###"; PLL!(11);: LPrint Tab(37); careerPL$(11);: LPrint Tab(56); PLYR%(11)
+						LPrint "SHUTOUTS";: LPrint Tab(23); Using "###"; PLL!(12);: LPrint Tab(37); careerPL$(12);: LPrint Tab(56); PLYR%(12)
+						LPrint "HOME RUNS ALLOWED";: LPrint Tab(23); Using "###"; PLL!(13);: LPrint Tab(37); careerPL$(13);: LPrint Tab(56); PLYR%(13)
+						LPrint "DOUBLE PLAYS";: LPrint Tab(23); Using "###"; PLL!(14);: LPrint Tab(37); careerPL$(14);: LPrint Tab(56); PLYR%(14)
+						LPrint Chr$(12)
 
-                        Color 12: Print "CATEGORY           RECORD           PLAYER              YEAR"
+					Case "V": 
+						Do
+							Cls
 
-                        Print
+							Color 12: Print "CATEGORY           RECORD           PLAYER              YEAR"
 
-                        Color 3: Print "AT BATS";: Color 7: Print Tab(23); Using "###"; BLL!(0);: Print Tab(37); BL$(0);: Print Tab(56); BLYR%(0)
-                        Color 3: Print "RUNS SCORED";: Color 7: Print Tab(23); Using "###"; BLL!(1);: Print Tab(37); BL$(1);: Print Tab(56); BLYR%(1)
-                        Color 3: Print "HITS";: Color 7: Print Tab(23); Using "###"; BLL!(2);: Print Tab(37); BL$(2);: Print Tab(56); BLYR%(2)
-                        Color 3: Print "DOUBLES";: Color 7: Print Tab(23); Using "###"; BLL!(3);: Print Tab(37); BL$(3);: Print Tab(56); BLYR%(3)
-                        Color 3: Print "TRIPLES";: Color 7: Print Tab(23); Using "###"; BLL!(4);: Print Tab(37); BL$(4);: Print Tab(56); BLYR%(4)
-                        Color 3: Print "HOME RUNS";: Color 7: Print Tab(23); Using "###"; BLL!(5);: Print Tab(37); BL$(5);: Print Tab(56); BLYR%(5)
-                        Color 3: Print "RUNS BATTED IN";: Color 7: Print Tab(23); Using "###"; BLL!(6);: Print Tab(37); BL$(6);: Print Tab(56); BLYR%(6)
-                        Color 3: Print "WALKS";: Color 7: Print Tab(23); Using "###"; BLL!(7);: Print Tab(37); BL$(7);: Print Tab(56); BLYR%(7)
-                        Color 3: Print "STRIKEOUTS";: Color 7: Print Tab(23); Using "###"; BLL!(8);: Print Tab(37); BL$(8);: Print Tab(56); BLYR%(8)
-                        Color 3: Print "STEALS";: Color 7: Print Tab(23); Using "###"; BLL!(9);: Print Tab(37); BL$(9);: Print Tab(56); BLYR%(9)
-                        Color 3: Print "CAUGHT STEALING";: Color 7: Print Tab(23); Using "###"; BLL!(10);: Print Tab(37); BL$(10);: Print Tab(56); BLYR%(10)
-                        Color 3: Print "ERRORS";: Color 7: Print Tab(23); Using "###"; BLL!(11);: Print Tab(37); BL$(11);: Print Tab(56); BLYR%(11)
-                        Color 3: Print "BATTING AVERAGE";: Color 7: Print Tab(22); Using ".###"; BLL!(12);: Print Tab(37); BL$(12);: Print Tab(56); BLYR%(12)
-                        Color 3: Print "SLUGGING PCT.";: Color 7: Print Tab(22); Using ".###"; BLL!(13);: Print Tab(37); BL$(13);: Print Tab(56); BLYR%(13)
-                        Color 3: Print "ON BASE PCT.";: Color 7: Print Tab(22); Using ".###"; BLL!(14);: Print Tab(37); BL$(14);: Print Tab(56); BLYR%(14)
-                        Color 15: Locate 22: Print "HIT ANY KEY TO CONTINUE"
-                        I$ = GetKeyPress$
+							Print
 
-                        Cls
+							Color 3: Print "AT BATS";: Color 7: Print Tab(23); Using "###"; BLL!(0);: Print Tab(37); BL$(0);: Print Tab(56); BLYR%(0)
+							Color 3: Print "RUNS SCORED";: Color 7: Print Tab(23); Using "###"; BLL!(1);: Print Tab(37); BL$(1);: Print Tab(56); BLYR%(1)
+							Color 3: Print "HITS";: Color 7: Print Tab(23); Using "###"; BLL!(2);: Print Tab(37); BL$(2);: Print Tab(56); BLYR%(2)
+							Color 3: Print "DOUBLES";: Color 7: Print Tab(23); Using "###"; BLL!(3);: Print Tab(37); BL$(3);: Print Tab(56); BLYR%(3)
+							Color 3: Print "TRIPLES";: Color 7: Print Tab(23); Using "###"; BLL!(4);: Print Tab(37); BL$(4);: Print Tab(56); BLYR%(4)
+							Color 3: Print "HOME RUNS";: Color 7: Print Tab(23); Using "###"; BLL!(5);: Print Tab(37); BL$(5);: Print Tab(56); BLYR%(5)
+							Color 3: Print "RUNS BATTED IN";: Color 7: Print Tab(23); Using "###"; BLL!(6);: Print Tab(37); BL$(6);: Print Tab(56); BLYR%(6)
+							Color 3: Print "WALKS";: Color 7: Print Tab(23); Using "###"; BLL!(7);: Print Tab(37); BL$(7);: Print Tab(56); BLYR%(7)
+							Color 3: Print "STRIKEOUTS";: Color 7: Print Tab(23); Using "###"; BLL!(8);: Print Tab(37); BL$(8);: Print Tab(56); BLYR%(8)
+							Color 3: Print "STEALS";: Color 7: Print Tab(23); Using "###"; BLL!(9);: Print Tab(37); BL$(9);: Print Tab(56); BLYR%(9)
+							Color 3: Print "CAUGHT STEALING";: Color 7: Print Tab(23); Using "###"; BLL!(10);: Print Tab(37); BL$(10);: Print Tab(56); BLYR%(10)
+							Color 3: Print "ERRORS";: Color 7: Print Tab(23); Using "###"; BLL!(11);: Print Tab(37); BL$(11);: Print Tab(56); BLYR%(11)
+							Color 3: Print "BATTING AVERAGE";: Color 7: Print Tab(22); Using ".###"; BLL!(12);: Print Tab(37); BL$(12);: Print Tab(56); BLYR%(12)
+							Color 3: Print "SLUGGING PCT.";: Color 7: Print Tab(22); Using ".###"; BLL!(13);: Print Tab(37); BL$(13);: Print Tab(56); BLYR%(13)
+							Color 3: Print "ON BASE PCT.";: Color 7: Print Tab(22); Using ".###"; BLL!(14);: Print Tab(37); BL$(14);: Print Tab(56); BLYR%(14)
+							Color 15: Locate 22: Print "HIT ANY KEY TO CONTINUE"
+							I$ = GetKeyPress$
 
-                        Color 12: Print "CATEGORY           RECORD           PLAYER              YEAR"
+							Cls
 
-                        Print
+							Color 12: Print "CATEGORY           RECORD           PLAYER              YEAR"
 
-                        Color 3: Print "WINS";: Color 7: Print Tab(23); Using "###"; PLL!(0);: Print Tab(37); careerPL$(0);: Print Tab(56); PLYR%(0)
-                        Color 3: Print "LOSSES";: Color 7: Print Tab(23); Using "###"; PLL!(1);: Print Tab(37); careerPL$(1);: Print Tab(56); PLYR%(1)
-                        Color 3: Print "SAVES";: Color 7: Print Tab(23); Using "###"; PLL!(2);: Print Tab(37); careerPL$(2);: Print Tab(56); PLYR%(2)
-                        Color 3: Print "INNINGS PITCHED";: Color 7: Print Tab(23); Using "###"; PLL!(3);:
+							Print
 
-                        If PLL!(3) - (Int(PLL!(3) / 3) * 3) > 0 Then Print ".";: Print Using "#"; PLL!(3) - (Int(PLL!(3) / 3) * 3);:
+							Color 3: Print "WINS";: Color 7: Print Tab(23); Using "###"; PLL!(0);: Print Tab(37); careerPL$(0);: Print Tab(56); PLYR%(0)
+							Color 3: Print "LOSSES";: Color 7: Print Tab(23); Using "###"; PLL!(1);: Print Tab(37); careerPL$(1);: Print Tab(56); PLYR%(1)
+							Color 3: Print "SAVES";: Color 7: Print Tab(23); Using "###"; PLL!(2);: Print Tab(37); careerPL$(2);: Print Tab(56); PLYR%(2)
+							Color 3: Print "INNINGS PITCHED";: Color 7: Print Tab(23); Using "###"; PLL!(3);:
 
-                        Print Tab(37); careerPL$(3);: Print Tab(56); PLYR%(3)
-                        Color 3: Print "HITS ALLOWED";: Color 7: Print Tab(23); Using "###"; PLL!(4);: Print Tab(37); careerPL$(4);: Print Tab(56); PLYR%(4)
-                        Color 3: Print "WALKS";: Color 7: Print Tab(23); Using "###"; PLL!(5);: Print Tab(37); careerPL$(5);: Print Tab(56); PLYR%(5)
-                        Color 3: Print "STRIKOUTS";: Color 7: Print Tab(23); Using "###"; PLL!(6);: Print Tab(37); careerPL$(6);: Print Tab(56); PLYR%(6)
-                        Color 3: Print "EARNED RUN AVERAGE";: Color 7: Print Tab(22); Using "#.##"; PLL!(7);: Print Tab(37); careerPL$(7);: Print Tab(56); PLYR%(7)
-                        Color 3: Print "GAMES";: Color 7: Print Tab(23); Using "###"; PLL!(8);: Print Tab(37); careerPL$(8);: Print Tab(56); PLYR%(8)
-                        Color 3: Print "COMPLETE GAMES";: Color 7: Print Tab(23); Using "###"; PLL!(9);: Print Tab(37); careerPL$(9);: Print Tab(56); PLYR%(9)
-                        Color 3: Print "RUNS ALLOWED";: Color 7: Print Tab(23); Using "###"; PLL!(10);: Print Tab(37); careerPL$(10);: Print Tab(56); PLYR%(10)
-                        Color 3: Print "EARNED RUNS ALLOWED";: Color 7: Print Tab(23); Using "###"; PLL!(11);: Print Tab(37); careerPL$(11);: Print Tab(56); PLYR%(11)
-                        Color 3: Print "SHUTOUTS";: Color 7: Print Tab(23); Using "###"; PLL!(12);: Print Tab(37); careerPL$(12);: Print Tab(56); PLYR%(12)
-                        Color 3: Print "HOME RUNS ALLOWED";: Color 7: Print Tab(23); Using "###"; PLL!(13);: Print Tab(37); careerPL$(13);: Print Tab(56); PLYR%(13)
-                        Color 3: Print "DOUBLE PLAYS";: Color 7: Print Tab(23); Using "###"; PLL!(14);: Print Tab(37); careerPL$(14);: Print Tab(56); PLYR%(14)
-                        Color 15: Locate 22: Print "VIEW AGAIN (Y/N)"
-                        I$ = GetKeyPress$
+							If PLL!(3) - (Int(PLL!(3) / 3) * 3) > 0 Then Print ".";: Print Using "#"; PLL!(3) - (Int(PLL!(3) / 3) * 3);:
 
-                    Loop Until UCase$(I$) = "N"
-                '
-            End Select
+							Print Tab(37); careerPL$(3);: Print Tab(56); PLYR%(3)
+							Color 3: Print "HITS ALLOWED";: Color 7: Print Tab(23); Using "###"; PLL!(4);: Print Tab(37); careerPL$(4);: Print Tab(56); PLYR%(4)
+							Color 3: Print "WALKS";: Color 7: Print Tab(23); Using "###"; PLL!(5);: Print Tab(37); careerPL$(5);: Print Tab(56); PLYR%(5)
+							Color 3: Print "STRIKOUTS";: Color 7: Print Tab(23); Using "###"; PLL!(6);: Print Tab(37); careerPL$(6);: Print Tab(56); PLYR%(6)
+							Color 3: Print "EARNED RUN AVERAGE";: Color 7: Print Tab(22); Using "#.##"; PLL!(7);: Print Tab(37); careerPL$(7);: Print Tab(56); PLYR%(7)
+							Color 3: Print "GAMES";: Color 7: Print Tab(23); Using "###"; PLL!(8);: Print Tab(37); careerPL$(8);: Print Tab(56); PLYR%(8)
+							Color 3: Print "COMPLETE GAMES";: Color 7: Print Tab(23); Using "###"; PLL!(9);: Print Tab(37); careerPL$(9);: Print Tab(56); PLYR%(9)
+							Color 3: Print "RUNS ALLOWED";: Color 7: Print Tab(23); Using "###"; PLL!(10);: Print Tab(37); careerPL$(10);: Print Tab(56); PLYR%(10)
+							Color 3: Print "EARNED RUNS ALLOWED";: Color 7: Print Tab(23); Using "###"; PLL!(11);: Print Tab(37); careerPL$(11);: Print Tab(56); PLYR%(11)
+							Color 3: Print "SHUTOUTS";: Color 7: Print Tab(23); Using "###"; PLL!(12);: Print Tab(37); careerPL$(12);: Print Tab(56); PLYR%(12)
+							Color 3: Print "HOME RUNS ALLOWED";: Color 7: Print Tab(23); Using "###"; PLL!(13);: Print Tab(37); careerPL$(13);: Print Tab(56); PLYR%(13)
+							Color 3: Print "DOUBLE PLAYS";: Color 7: Print Tab(23); Using "###"; PLL!(14);: Print Tab(37); careerPL$(14);: Print Tab(56); PLYR%(14)
+							Color 15: Locate 22: Print "VIEW AGAIN (Y/N)"
+							I$ = GetKeyPress$
+
+						Loop Until UCase$(I$) = "N"
+					'
+				End Select
+
+			End If 'Done checking ESC
 
         End If 'Done checking file count
 
@@ -313,6 +311,12 @@ Sub Merge_FirstYear ()
     Shared B0%(), B1%(), BRS%()
     Shared P0%(), P1%(), PRS%()
 
+    Dim TMR%
+
+	TMR% = 4175
+    NB = -1
+    NP = -1
+
     Do
         Color 12, 0
         Cls
@@ -326,16 +330,16 @@ Sub Merge_FirstYear ()
         Next
 
         Color 11
-        Locate 15, 5: Input "ENTER NAME OF CAREER STAT FILE (MAX. - 8 CHARACTERS)"; Z$
+        Locate 15, 5: Input "ENTER NAME OF CAREER STAT FILE (MAX. - 8 CHARACTERS)"; careerFile$
         
-        Z$ = Left$(Z$, 8) + ".CAR"
-        For XX = 1 To Len(Z$)
-            If Mid$(Z$, XX, 1) = " " Then Mid$(Z$, XX, 1) = "_"
+        careerFile$ = Left$(careerFile$, 8) + ".CAR"
+        For XX = 1 To Len(careerFile)
+            If Mid$(careerFile$, XX, 1) = " " Then Mid$(careerFile$, XX, 1) = "_"
         Next XX
 
-        Locate , 5: Input "ENTER NAME OF STAT FILE TO ADD (EX. - WASHINGT.60)"; Z1$
-        If Len(Z1$) > 11 Then 
-            Z1$ = Left$(Z1$, 8) + Right$(Z1$, 3)
+        Locate , 5: Input "ENTER NAME OF STAT FILE TO ADD (EX. - WASHINGT.60)"; statFile$
+        If Len(statFile$) > 11 Then 
+            statFile$ = Left$(statFile$, 8) + Right$(statFile$, 3)
         End If
         
         Locate , 5: Input "ENTER YEAR TO ADD (EX. - 1960)"; statYear
@@ -345,30 +349,31 @@ Sub Merge_FirstYear ()
 
     Loop Until UCase$(I$) = "N"
 
+	'Where is VV used??
     VV = 1
     Locate , 5: Print "IS THIS THE FINAL UPDATE FOR THE CURRENT SEASON? (Y/N)"
     I$ = GetKeyPress$
 
-    If UCase$(I$) = "Y" Then JX = 1 Else JX = 0
+    If UCase$(I$) = "Y" Then finalupdate% = 1 Else finalupdate% = 0
 
     Locate 20, 5
     Color 15: Print "MERGING CAREER STATS AND UPDATING CAREER LEADER FILE . . . . PLEASE WAIT"
     
-    If Not _FileExists(diskPaths$(1) + Z1$) Then 
+    If Not _FileExists(diskPaths$(1) + statFile$) Then 
         Cls
         Color 7: Print "UNABLE TO LOCATE STAT FILE . . . PLEASE RE-ENTER"
         Print
         Line Input "HIT ENTER TO CONTINUE"; DUMMY$
     Else
 
-        Open diskPaths$(1) + Z1$ For Input As #1
+        Open diskPaths$(1) + statFile$ For Input As #1
         Input #1, A$
         Input #1, W2%
         Input #1, L2%
-        For I = 0 To 22: Input #1, careerB$(I): Input #1, B1%(I): Locate 21, 35: TMR = TMR - 1: Color 9: Print Using "####"; TMR: Next I
-        For I = 0 To 21: Input #1, careerP$(I): Input #1, P1%(I): Locate 21, 35: TMR = TMR - 1: Color 9: Print Using "####"; TMR: Next I
-        For I = 0 To 22: For I1 = 0 To 21: Input #1, B0%(I, I1): Locate 21, 35: TMR = TMR - 1: Color 9: Print Using "####"; TMR: Next I1: Next I
-        For I = 0 To 21: For I1 = 0 To 41: Input #1, P0%(I, I1): Locate 21, 35: TMR = TMR - 1: Color 9: Print Using "####"; TMR: Next I1: Next I
+        For I = 0 To 22: Input #1, careerB$(I): Input #1, B1%(I): Locate 21, 35: TMR% = TMR% - 1: Color 9: Print Using "####"; TMR%: Next I
+        For I = 0 To 21: Input #1, careerP$(I): Input #1, P1%(I): Locate 21, 35: TMR% = TMR% - 1: Color 9: Print Using "####"; TMR%: Next I
+        For I = 0 To 22: For I1 = 0 To 21: Input #1, B0%(I, I1): Locate 21, 35: TMR% = TMR% - 1: Color 9: Print Using "####"; TMR%: Next I1: Next I
+        For I = 0 To 21: For I1 = 0 To 41: Input #1, P0%(I, I1): Locate 21, 35: TMR% = TMR% - 1: Color 9: Print Using "####"; TMR%: Next I1: Next I
         Input #1, D0%
         Input #1, D1%
         For I = 0 To 21: Input #1, T%(I): Next I
@@ -411,18 +416,18 @@ Sub Merge_FirstYear ()
 
         Next I
 
-        If JX = 1 Then 
-            Call FinalMerge (Z$)
+        If finalupdate% = 1 Then 
+            Call FinalMerge (careerFile$)
         End If
 
         Locate 20, 5: Color 15: Print "MERGING CAREER STATS AND UPDATING CAREER LEADER FILE . . . . PLEASE WAIT"
 
-        Open diskPaths$(1) + Z$ For Output As #1
+        Open diskPaths$(1) + careerFile$ For Output As #1
         Write #1, NB, NP
         For I = 0 To 99: Write #1, careerB$(I): Next
         For I = 0 To 79: Write #1, careerP$(I): Next
-        For J = 1 To 15: For I = 0 To 99: For I1 = O To 17: Write #1, BRS%(J, I, I1): Next I1: Locate 21, 35: TMR = TMR - 1: Color 9: Print Using "####"; TMR: Next I: Next J
-        For J = 1 To 15: For I = 0 To 79: For I1 = 0 To 16: Write #1, PRS%(J, I, I1): Next I1: Locate 21, 35: TMR = TMR - 1: Color 9: Print Using "####"; TMR: Next I: Next J
+        For J = 1 To 15: For I = 0 To 99: For I1 = O To 17: Write #1, BRS%(J, I, I1): Next I1: Locate 21, 35: TMR% = TMR% - 1: Color 9: Print Using "####"; TMR%: Next I: Next J
+        For J = 1 To 15: For I = 0 To 79: For I1 = 0 To 16: Write #1, PRS%(J, I, I1): Next I1: Locate 21, 35: TMR% = TMR% - 1: Color 9: Print Using "####"; TMR%: Next I: Next J
         Close #1
 
     End If 'Done checking for file
@@ -444,6 +449,13 @@ Sub Merge_AddYear ()
     'Dim T%(0 to 21), T1%(0 to 22)
     Shared T%(), T1%()
 
+	Dim BR$(100), PR$(80)
+
+	Dim TMR%, TMR1%
+	
+	TMR% = 4175
+    TMR1% = 6875
+
     Do
         Color 12, 0
         Cls
@@ -455,16 +467,16 @@ Sub Merge_AddYear ()
 
         Color 11
         Locate 15, 5
-        Input "ENTER NAME OF CAREER STAT FILE (EX. - MINNESOT)"; Z$
+        Input "ENTER NAME OF CAREER STAT FILE (EX. - MINNESOT)"; careerFile$
         
-        Z$ = Left$(Z$, 8) + ".CAR"
-        For XX = 1 To Len(Z$)
-            If Mid$(Z$, XX, 1) = " " Then Mid$(Z$, XX, 1) = "_"
+        careerFile$ = Left$(careerFile$, 8) + ".CAR"
+        For XX = 1 To Len(careerFile$)
+            If Mid$(careerFile$, XX, 1) = " " Then Mid$(careerFile$, XX, 1) = "_"
         Next XX
 
-        Locate , 5: Input "ENTER NAME OF FILE TO ADD (EX. - MINNESOT.61)"; Z1$
-        If Len(Z1$) > 11 Then 
-            Z1$ = Left$(Z1$, 8) + Right$(Z1$, 3)
+        Locate , 5: Input "ENTER NAME OF FILE TO ADD (EX. - MINNESOT.61)"; statFile$
+        If Len(statFile$) > 11 Then 
+            statFile$ = Left$(statFile$, 8) + Right$(statFile$, 3)
         End If
 
         Locate , 5: Input "ENTER YEAR TO ADD (EX. - 1961)"; statYear
@@ -474,6 +486,7 @@ Sub Merge_AddYear ()
 
     Loop Until UCase$(I$) = "N"
 
+	'Where is VV used??
     VV = 0
     Do
         Locate , 5
@@ -481,39 +494,39 @@ Sub Merge_AddYear ()
         I$ = GetKeyPress$
     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
-    If UCase$(I$) = "Y" Then JX = 1 Else JX = 0
+    If UCase$(I$) = "Y" Then finalupdate% = 1 Else finalupdate% = 0
 
     Locate 20, 5
     Color 15
     Print "LOADING CAREER LEADER FILE . . . . PLEASE WAIT"
 
-    If _FileExists(diskPaths$(1) + Z$) Then
-        Open diskPaths$(1) + Z$ For Input As #1
+    If _FileExists(diskPaths$(1) + careerFile$) Then
+        Open diskPaths$(1) + careerFile$ For Input As #1
         Input #1, NB, NP
         For I = 0 To 99: Input #1, careerB$(I): Next
         For I = 0 To 79: Input #1, careerP$(I): Next
-        For J = 1 To 15: For I = 0 To 99: For I1 = O To 17: Input #1, BRS%(J, I, I1): Next I1: Locate 21, 35: TMR1 = TMR1 - 1: Color 9: Print Using "####"; TMR1: Next I: Next J
-        For J = 1 To 15: For I = 0 To 79: For I1 = 0 To 16: Input #1, PRS%(J, I, I1): Next I1: Locate 21, 35: TMR1 = TMR1 - 1: Color 9: Print Using "####"; TMR1: Next I: Next J
+        For J = 1 To 15: For I = 0 To 99: For I1 = O To 17: Input #1, BRS%(J, I, I1): Next I1: Locate 21, 35: TMR1% = TMR1% - 1: Color 9: Print Using "####"; TMR1%: Next I: Next J
+        For J = 1 To 15: For I = 0 To 79: For I1 = 0 To 16: Input #1, PRS%(J, I, I1): Next I1: Locate 21, 35: TMR1% = TMR1% - 1: Color 9: Print Using "####"; TMR1%: Next I: Next J
         Close #1
     End If
     
     Locate 20, 5
     Color 15
     Print "LOADING STATS FILE . . . . PLEASE WAIT"
-    If Not _FileExists(diskPaths$(1) + Z1$) Then 
+    If Not _FileExists(diskPaths$(1) + statFile$) Then 
         Cls
         Color 7: Print "UNABLE TO LOCATE STAT FILE . . . PLEASE RE-ENTER"
         Print
         Line Input "HIT ENTER TO CONTINUE"; DUMMY$
     Else
-        Open diskPaths$(1) + Z1$ For Input As #1
+        Open diskPaths$(1) + statFile$ For Input As #1
         Input #1, A$
         Input #1, W2%
         Input #1, L2%
-        For I = 0 To 22: Input #1, BR$(I): Input #1, B1%(I): Locate 21, 35: TMR = TMR - 1: Color 9: Print Using "####"; TMR: Next I
-        For I = 0 To 21: Input #1, PR$(I): Input #1, P1%(I): Locate 21, 35: TMR = TMR - 1: Color 9: Print Using "####"; TMR: Next I
-        For I = 0 To 22: For I1 = 0 To 21: Input #1, B0%(I, I1): Locate 21, 35: TMR = TMR - 1: Color 9: Print Using "####"; TMR: Next I1: Next I
-        For I = 0 To 21: For I1 = 0 To 41: Input #1, P0%(I, I1): Locate 21, 35: TMR = TMR - 1: Color 9: Print Using "####"; TMR: Next I1: Next I
+        For I = 0 To 22: Input #1, BR$(I): Input #1, B1%(I): Locate 21, 35: TMR% = TMR% - 1: Color 9: Print Using "####"; TMR%: Next I
+        For I = 0 To 21: Input #1, PR$(I): Input #1, P1%(I): Locate 21, 35: TMR% = TMR% - 1: Color 9: Print Using "####"; TMR%: Next I
+        For I = 0 To 22: For I1 = 0 To 21: Input #1, B0%(I, I1): Locate 21, 35: TMR% = TMR% - 1: Color 9: Print Using "####"; TMR%: Next I1: Next I
+        For I = 0 To 21: For I1 = 0 To 41: Input #1, P0%(I, I1): Locate 21, 35: TMR% = TMR% - 1: Color 9: Print Using "####"; TMR%: Next I1: Next I
         Input #1, D0%
         Input #1, D1%
         For I = 0 To 21: Input #1, T%(I): Next I
@@ -614,18 +627,18 @@ Sub Merge_AddYear ()
 
         Next I
 
-        If JX = 1 Then
-            Call FinalMerge (Z$)
+        If finalupdate% = 1 Then
+            Call FinalMerge (careerFile$)
         End If
 
         Locate 20, 5: Color 15: Print "MERGING CAREER STATS AND UPDATING CAREER LEADER FILE . . . . PLEASE WAIT"
 
-        Open diskPaths$(1) + Z$ For Output As #1
+        Open diskPaths$(1) + careerFile$ For Output As #1
         Write #1, NB, NP
         For I = 0 To 99: Write #1, careerB$(I): Next
         For I = 0 To 79: Write #1, careerP$(I): Next
-        For J = 1 To 15: For I = 0 To 99: For I1 = O To 17: Write #1, BRS%(J, I, I1): Next I1: Locate 21, 35: TMR1 = TMR1 - 1: Color 9: Print Using "####"; TMR1: Next I: Next J
-        For J = 1 To 15: For I = 0 To 79: For I1 = 0 To 16: Write #1, PRS%(J, I, I1): Next I1: Locate 21, 35: TMR1 = TMR1 - 1: Color 9: Print Using "####"; TMR1: Next I: Next J
+        For J = 1 To 15: For I = 0 To 99: For I1 = O To 17: Write #1, BRS%(J, I, I1): Next I1: Locate 21, 35: TMR1% = TMR1% - 1: Color 9: Print Using "####"; TMR1%: Next I: Next J
+        For J = 1 To 15: For I = 0 To 79: For I1 = 0 To 16: Write #1, PRS%(J, I, I1): Next I1: Locate 21, 35: TMR1% = TMR1% - 1: Color 9: Print Using "####"; TMR1%: Next I: Next J
         Close #1
 
     End If 'Done checking if file exists
@@ -639,7 +652,7 @@ End Sub
 '...explanation...
 Sub FinalMerge (leaderFile$)
 
-    Dim AVG As Single, SLG As Single, OBP As Single, EV As Single
+    Dim AVG!, SLG!, OBP!, EV!
 
     Shared BLL!(), PLL!()
 
@@ -654,11 +667,11 @@ Sub FinalMerge (leaderFile$)
     For J = 0 To 8
         D = D + 1
         X$ = Mid$(leaderFile$, D, 1)
-        If X$ = "." Then JX = D - 1
+        If X$ = "." Then finalupdate% = D - 1
     Next J
 
-    If _FileExists(diskPaths$(1) + Left$(leaderFile$, JX) + ".CLD") Then
-        Open diskPaths$(1) + Left$(leaderFile$, JX) + ".CLD" For Input As #1
+    If _FileExists(diskPaths$(2) + Left$(leaderFile$, finalupdate%) + ".CLD") Then
+        Open diskPaths$(2) + Left$(leaderFile$, finalupdate%) + ".CLD" For Input As #1
         For I = 0 To 14: Input #1, BLYR%(I), BL$(I), BLL!(I): Next
         For I = 0 To 14: Input #1, PLYR%(I), careerPL$(I), PLL!(I): Next
         Close #1
@@ -723,27 +736,27 @@ Sub FinalMerge (leaderFile$)
                     End If
 
                     If BRS%(J, I, 0) + BRS%(J, I, 7) > 501 Then 
-                        AVG = BRS%(J, I, 1) / BRS%(J, I, 0)
+                        AVG! = BRS%(J, I, 1) / BRS%(J, I, 0)
 
-                        If AVG > BLL!(12) Then 
-                            BLL!(12) = AVG: BL$(12) = careerB$(I): BLYR%(12) = BRS%(J, I, 17)
+                        If AVG! > BLL!(12) Then 
+                            BLL!(12) = AVG!: BL$(12) = careerB$(I): BLYR%(12) = BRS%(J, I, 17)
                         End If
                         
                     End If
 
                     If BRS%(J, I, 0) + BRS%(J, I, 7) > 501 Then 
-                        SLG = (BRS%(J, I, 1) + BRS%(J, I, 4) + BRS%(J, I, 5) * 2 + BRS%(J, I, 6) * 3) / BRS%(J, I, 0)
-                        If SLG > BLL!(13) Then 
-                            BLL!(13) = SLG: BL$(13) = careerB$(I): BLYR%(13) = BRS%(J, I, 17)
+                        SLG! = (BRS%(J, I, 1) + BRS%(J, I, 4) + BRS%(J, I, 5) * 2 + BRS%(J, I, 6) * 3) / BRS%(J, I, 0)
+                        If SLG! > BLL!(13) Then 
+                            BLL!(13) = SLG!: BL$(13) = careerB$(I): BLYR%(13) = BRS%(J, I, 17)
                         End If
                     End If
                     
                     If BRS%(J, I, 0) + BRS%(J, I, 7) > 501 Then
 
-                        OBP = (BRS%(J, I, 1) + BRS%(J, I, 7)) / (BRS%(J, I, 7) + BRS%(J, I, 0))
+                        OBP! = (BRS%(J, I, 1) + BRS%(J, I, 7)) / (BRS%(J, I, 7) + BRS%(J, I, 0))
 
-                        If OBP > BLL!(14) Then 
-                            BLL!(14) = OBP: BL$(14) = careerB$(I): BLYR%(14) = BRS%(J, I, 17)
+                        If OBP! > BLL!(14) Then 
+                            BLL!(14) = OBP!: BL$(14) = careerB$(I): BLYR%(14) = BRS%(J, I, 17)
                         End If
 
                     End If
@@ -794,10 +807,10 @@ Sub FinalMerge (leaderFile$)
                     End If
 
                     If PRS%(J, I, 0) / 3 > 162 Then
-                        EV = (PRS%(J, I, 3) * 9) / (PRS%(J, I, 0) / 3)
+                        EV! = (PRS%(J, I, 3) * 9) / (PRS%(J, I, 0) / 3)
                         If PLL!(7) = 0 Then PLL!(7) = 1000
-                        If EV < PLL!(7) Then
-                            PLL!(7) = EV: careerPL$(7) = careerP$(I): PLYR%(7) = PRS%(J, I, 16)
+                        If EV! < PLL!(7) Then
+                            PLL!(7) = EV!: careerPL$(7) = careerP$(I): PLYR%(7) = PRS%(J, I, 16)
                         End If
                     End If
 
@@ -840,11 +853,11 @@ Sub FinalMerge (leaderFile$)
     D = 0
     For J = 0 To 8
         D = D + 1
-        X$ = Mid$(Z$, D, 1)
-        If X$ = "." Then JX = D - 1
+        X$ = Mid$(leaderFile$, D, 1)
+        If X$ = "." Then finalupdate% = D - 1
     Next J
 
-    Open diskPaths$(1) + Left$(Z$, JX) + ".CLD" For Output As #1
+    Open diskPaths$(2) + Left$(leaderFile$, finalupdate%) + ".CLD" For Output As #1
     For I = 0 To 14: Write #1, BLYR%(I), BL$(I), BLL!(I): Next
     For I = 0 To 14: Write #1, PLYR%(I), careerPL$(I), PLL!(I): Next
     Close #1

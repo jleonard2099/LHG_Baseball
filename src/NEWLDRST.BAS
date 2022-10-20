@@ -20,8 +20,10 @@ Sub NEWLDRST ()
     Do
 
         Cls
+		Color 15,0
 
         Call TITLE
+
         menuChoices$(1) = "UPDATE LEAGUE STANDINGS      "
         menuChoices$(2) = "VIEW / PRINT LEAGUE STANDINGS"
         menuChoices$(3) = "RETURN TO MAIN MENU          "
@@ -74,7 +76,7 @@ Sub UpdateLeagueStandings ()
     Shared H%(), I%(), V%()
     Shared H$(), L$(), PL$(), W$()
 
-    TMR = 40
+    TMR% = 40
 
     Do
         Cls
@@ -113,7 +115,7 @@ Sub UpdateLeagueStandings ()
                 Locate 25, 1
                 Color 14
                 Print "ENTER";: Color 15
-                Print "-SELECTS TEAM";
+                Print "-SELECTS LEAGUE";
 
                 _MouseShow "DEFAULT"
                 MAMenu leagueFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
@@ -126,7 +128,7 @@ Sub UpdateLeagueStandings ()
                     Color 15, 0
                     I$ = GetKeyPress$
                 End If
-                
+					
             Loop Until UCase$(I$) = "N" Or ExitCode% = 27
 
             If ExitCode% <> 27 Then
@@ -147,9 +149,9 @@ Sub UpdateLeagueStandings ()
 
                 For KK = 1 To 40
                     YY = YY + 1
-                    TMR = TMR - 1
+                    TMR% = TMR% - 1
                     Locate 7, 20
-                    Color 14: Print Using "###"; TMR
+                    Color 14: Print Using "###"; TMR%
                     
                     If Z1$(KK) <> "*" Then
 
@@ -276,7 +278,7 @@ Sub ViewPrintLeagueStandings
             Locate 25, 1
             Color 14
             Print "ENTER";: Color 15
-            Print "-SELECTS TEAM";
+            Print "-SELECTS LEAGUE";
 
             _MouseShow "DEFAULT"
             MAMenu standingsFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%

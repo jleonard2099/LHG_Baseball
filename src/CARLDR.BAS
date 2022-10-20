@@ -90,7 +90,7 @@ Sub UpdateLeaders ()
                 Locate 25, 1
                 Color 14
                 Print "ENTER";: Color 15
-                Print "-SELECTS TEAM";
+                Print "-SELECTS FILE";
 
                 _MouseShow "DEFAULT"
                 MAMenu careerFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
@@ -327,47 +327,51 @@ Sub ViewPrintLeaders ()
                 Locate 25, 1
                 Color 14
                 Print "ENTER";: Color 15
-                Print "-SELECTS TEAM";
+                Print "-SELECTS FILE";
 
                 _MouseShow "DEFAULT"
                 MAMenu tclFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
                 _MouseHide
 
-                If ExitCode% = 27 Then 3
-                targetFile$ = tclFiles$(Selection%)
-                Locate 2, 33: Print targetFile$
-                Locate , 33: Print "ANY CHANGE (YN)";
-                Color 15, 0
-                I$ = GetKeyPress$
+                If ExitCode% <> 27 Then
+                    targetFile$ = tclFiles$(Selection%)
+                    Locate 2, 33: Print targetFile$
+                    Locate , 33: Print "ANY CHANGE (YN)";
+                    Color 15, 0
+                    I$ = GetKeyPress$
+                End If
             Loop Until UCase$(I$) = "N"
 
-            Z1$ = RTrim$(targetFile$)
-            Cls
+			If ExitCode% <> 27 Then
+				Z1$ = RTrim$(targetFile$)
+				Cls
 
-            Cls
-            
-            Open diskPaths$(1) + Z1$ For Input As #1
-            For I = 0 To 17: For I1 = 0 To 19: Input #1, BL1!(I, I1), BL0$(I, I1): Next: Next
-            For I = 0 To 15: For I1 = 0 To 19: Input #1, PL1!(I, I1), PL0$(I, I1): Next: Next
-            Close #1
+				Cls
+				
+				Open diskPaths$(1) + Z1$ For Input As #1
+				For I = 0 To 17: For I1 = 0 To 19: Input #1, BL1!(I, I1), BL0$(I, I1): Next: Next
+				For I = 0 To 15: For I1 = 0 To 19: Input #1, PL1!(I, I1), PL0$(I, I1): Next: Next
+				Close #1
 
-            ' -- Choose --
-            Color 15, 0
-            Cls
-            Locate 8: Color 14: Print "P";: Color 15: Print "RINT OR ";: Color 14: Print "V";: Color 15: Print "IEW"
+				' -- Choose --
+				Color 15, 0
+				Cls
+				Locate 8: Color 14: Print "P";: Color 15: Print "RINT OR ";: Color 14: Print "V";: Color 15: Print "IEW"
 
-            Do
-                I$ = GetKeyPress$
-            Loop Until UCase$(I$) = "P" Or UCase$(I$) = "V"
-            
-            If UCase$(I$) = "P" Then 
-                Call PrintLeaders_Screen
-            Else
-                Call ViewLeaders_Screen
-            End If
-            
-        End If 'Done checking file count
-        
+				Do
+					I$ = GetKeyPress$
+				Loop Until UCase$(I$) = "P" Or UCase$(I$) = "V"
+				
+				If UCase$(I$) = "P" Then 
+					Call PrintLeaders_Screen
+				Else
+					Call ViewLeaders_Screen
+				End If
+				
+			End If 'Done checking for ESC
+
+		End If 'Done checking file count
+		
     '...Until we press ESC
     Loop Until ExitCode% = 27 or Count% = 0
 

@@ -10,7 +10,7 @@ Sub PRTLEAG ()
     Dim W(40), L(40)
 
     Dim OFT!(40, 20), DFT!(40, 20)
-    Dim Z(298) As Single, Z1(298) As Single
+    Dim Z!(298), Z1!(298)
 
 
     Do
@@ -54,7 +54,7 @@ Sub PRTLEAG ()
                 LOCATE 25, 1
                 COLOR 14
                 PRINT "ENTER"; : COLOR 15
-                PRINT "-SELECTS TEAM";
+                PRINT "-SELECTS LEAGUE";
 
                 _MouseShow "DEFAULT"
                 MAMenu leagueLeaderFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
@@ -436,7 +436,7 @@ Sub PRTLEAG ()
 
                         J! = Z1!(P)
 
-                        GOSUB 411
+                        P$(P) = P$(P) + " " + STR$(J!)
                     End If
                 NEXT P
             
@@ -840,7 +840,7 @@ Sub PRTLEAG ()
                         P$(P) = P$(P) + A$
                         J! = INT(Z1!(P))
 
-                        GOSUB 411
+                        P$(P) = P$(P) + " " + STR$(J!)
                     End If
                 NEXT P
 

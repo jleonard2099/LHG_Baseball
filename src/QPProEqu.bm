@@ -52,7 +52,6 @@ Function FCount% (fileSpec$)
 End Function
 
 
-
 '-----------------------------------
 ' FileSize Copycat Function
 '-----------------------------------
@@ -61,7 +60,6 @@ Function FileSize& (sourceFile$)
     FileSize& = LOF(1)
     Close #1
 End Function
-
 
 
 '-----------------------------------
@@ -133,7 +131,6 @@ Function MGetKey (Row%, Col%)
 End Function
 
 
-
 '-----------------------------------
 ' Monitor Copycat Function
 '-----------------------------------
@@ -185,7 +182,6 @@ Function Monitor% ()
 End Function
 
 
-
 '-----------------------------------
 ' OneColor Copycat Function
 '-----------------------------------
@@ -196,7 +192,6 @@ Function OneColor% (FGColor%, BGColor%)
     'But this is the doumented function from QPPro
     OneColor% = (FGColor% And 16) * 8 + ((BGColor% And 7) * 16) + (FGColor% And 15)
 End Function
-
 
 
 '-----------------------------------
@@ -244,7 +239,6 @@ End Function
 ' NOT IMPLEMENTED
 Sub AddInt (AElement, Value, NumEls)
 End Sub
-
 
 
 ' ------------------------------------------------------------
@@ -319,7 +313,6 @@ Sub box0 (ULRow%, ULCol%, LRRow%, LRCol%, Char%, FGColor%, BGColor%)
 End Sub
 
 
-
 '-----------------------------------
 ' Print NumLock / CapsLock Status
 '-----------------------------------
@@ -362,7 +355,6 @@ Sub CapNum ()
 End Sub
 
 
-
 '-----------------------------------
 ' ClearEOL Copycat Subroutine
 '-----------------------------------
@@ -383,7 +375,6 @@ Sub ClearEOL (FGColor%, BGColor%)
     Print Space$(80 - column%)
 
 End Sub
-
 
 
 '-----------------------------------
@@ -424,12 +415,13 @@ Sub Comline (NumArgs%, Args$(), MaxArgs%)
 End Sub
 
 
-
 '-----------------------------------
 ' ClearScrn + MsgBox Subroutine
 '-----------------------------------
-Sub CSMsgBox (Message$, Wdth%, Pass)
-    If Len(Message$) Then
+Sub CSMsgBox (Message$, MsgWidth%, Pass)
+    
+	If Len(Message$) Then
+
         Row = CsrLin 'Get the Row Position
 
         ReDim Temp$(23) 'Make temporary array to hold the parsed up lines
@@ -444,30 +436,34 @@ Sub CSMsgBox (Message$, Wdth%, Pass)
             While Mid$(Message$, Strt, 1) = " " 'Skip over blanks
                 Strt = Strt + 1
             Wend
-            ND = Strt + Wdth 'Guess at the end of line
+
+            ND = Strt + MsgWidth% 'Guess at the end of line
+
             'Loop backwards to find
             While Mid$(Message$, ND, 1) <> " " And ND <= MesLen And ND > Strt
                 ND = ND - 1 '  blank space
             Wend
+
             LN = LN + 1 'Increment the Line number
+
             'Pull out the new line
             Temp$(LN) = Mid$(Message$, Strt, ND - Strt)
-            Strt = ND + 1 'Reset starting posit. for
-            '  next line
+            Strt = ND + 1 'Reset starting pos. for next line
         Loop Until ND >= MesLen 'Get more unless @ end of mes
+
         BotRow = Row + LN + 1 'Find the bottom row #
 
         'Save current screen
         oldmode& = _CopyImage(0) 'the 0 value designates the current destination SCREEN
         'PCopy 0, 1
 
-        BoxWdth = Wdth + 4 'Find the outer box width
-        ColPos = 40 - (BoxWdth \ 2) 'Starting pos. for centered box
+        BoxWidth% = MsgWidth% + 4 'Find the outer box width
+        ColPos = 40 - (BoxWidth% \ 2) 'Starting pos. for centered box
         Locate Row, ColPos 'Print the top of box
 
-        MQPrint "É" + String$(Wdth + 2, "Í") + "»", 0, 7
+        MQPrint Chr$(214) + String$(MsgWidth% + 2, 196) + Chr$(183), 0, 7
 
-        Box$ = "º" + Space$(Wdth + 2) + "º" 'Make the box sides
+        Box$ = Chr$(186) + Space$(MsgWidth% + 2) + Chr$(186) 'Make the box sides
 
         For N = 1 To LN 'Print message lines
             Locate N + Row, ColPos
@@ -477,25 +473,27 @@ Sub CSMsgBox (Message$, Wdth%, Pass)
         Next
 
         Locate N + Row, ColPos 'Print the bottom of box
-        MQPrint "È" + String$(Wdth + 2, "Í") + "¼", 0, 7
+        MQPrint Chr$(211) + String$(MsgWidth% + 2, 196) + Chr$(189), 0, 7
 
-        'MPaintBox Row + 1, ColPos + BoxWdth, N + Row, ColPos + BoxWdth + 1, 8
-        'MPaintBox N + Row + 1, ColPos + 2, N + Row + 1, ColPos + BoxWdth + 1, 8
+        'MPaintBox Row + 1, ColPos + BoxWidth%, N + Row, ColPos + BoxWidth% + 1, 8
+        'MPaintBox N + Row + 1, ColPos + 2, N + Row + 1, ColPos + BoxWidth% + 1, 8
         Locate Row,
 
         Pass = 1 'Set flag say we've been here
+
         Erase Temp$ 'Don't need this anymore
 
-    ElseIf Pass = 1 Then 'If we've been here before...
-        'Restore the original screen
-        'PCopy 1, 0
-        Screen oldmode&
+    Else
+		If Pass = 1 Then 'If we've been here before...
+			'Restore the original screen
+			'PCopy 1, 0
+			Screen oldmode&
 
-        Pass = 0 'Reset flag for next call
+			Pass = 0 'Reset flag for next call
+		End If
     End If
 
 End Sub
-
 
 
 '-----------------------------------
@@ -537,7 +535,6 @@ Sub FCopy (srcFile$, dstFile$, Buff$, copyErr%)
     End If
 
 End Sub
-
  
 
 '-----------------------------------
@@ -548,16 +545,12 @@ Sub InitInt (AElement, StartValue, NumEls)
 End Sub
 
 
-
 '-----------------------------------
 ' ISortI Copycat Subroutine
 '-----------------------------------
 Sub ISortI (Element%, IndexElement%, NumElements%, Direction%)
     ' NOT IMPLEMENTED / OBSOLETE
 End Sub
-
-
-
 
 
 '-----------------------------------
@@ -876,7 +869,6 @@ Sub MMenuVert (menuChoices$(), Selected%, Start%, ScanCode%, ItemFGColor%, ItemB
 End Sub
 
 
-
 '-----------------------------------
 ' MPaintBox Copycat Subroutine
 '-----------------------------------
@@ -885,7 +877,6 @@ Sub MPaintBox (ULRow%, ULCol%, LRRow%, LRCol%, Colr%)
 
     _MouseShow "DEFAULT"
 End Sub
-
 
 
 '-----------------------------------
@@ -901,7 +892,6 @@ Sub MQPrint (X$, FGColor%, BGColor%)
     Locate V, H
     _MouseShow "DEFAULT"
 End Sub
-
 
 
 '-----------------------------------
@@ -924,7 +914,6 @@ Sub QuickSort (start As Integer, finish As Integer, array() As Single)
 End Sub
 
 
-
 '-----------------------------------
 ' NumIn Subroutine
 '-----------------------------------
@@ -935,9 +924,9 @@ Sub NumIn (Number#, Max, XCode, FGColor%, BGColor%)
 
     X$ = String$(Max, "#") 'build a formatting string
     If Places Then X$ = X$ + "." + String$(Places, "#")
-       
+
     X$ = FUsing$(Str$(Number#), X$, 1) 'let FUsing do the real work
-       
+
     Zero = InStr(X$, "0") 'did FUsing leave a leading 0?
     If Left$(LTrim$(X$), 1) = "0" Then Mid$(X$, Zero, 1) = " " 'yes, delete it
 
@@ -954,15 +943,18 @@ Sub NumIn (Number#, Max, XCode, FGColor%, BGColor%)
 
 
     NGetKey:
-    Call CapNum 'print Cap/Num if active
-    If Curpo > Len(X$) GoTo NEnter 'field full, handle as Enter
-    If Mid$(X$, Curpo, 1) = "." Then 'cursor is on the point, skip
-        Locate , Pos(0) + 1
-        Curpo = Curpo + 1
-    End If
+    Do
+        Call CapNum 'print Cap/Num if active
 
-    A$ = InKey$
-    If A$ = "" GoTo NGetKey
+        If Curpo > Len(X$) GoTo NEnter 'field full, handle as Enter
+        If Mid$(X$, Curpo, 1) = "." Then 'cursor is on the point, skip
+            Locate , Pos(0) + 1
+            Curpo = Curpo + 1
+        End If
+
+        A$ = InKey$
+    Loop Until A$ <> "" 'GoTo NGetKey
+
     If Len(A$) = 1 GoTo NRegularKey
 
     A$ = Right$(A$, 1) 'extended key, get the code
@@ -1079,7 +1071,7 @@ Sub NumIn (Number#, Max, XCode, FGColor%, BGColor%)
         QPrint Mid$(X$, A, 1), FGColor%, BGColor%, -1 'and reprint them in new place
         Locate , Pos(0) + 1
     Next
-     
+
     Mid$(X$, Curpo, 1) = A$ 'assign the digit
     Call QPrint(A$, FGColor%, BGColor%, -1)
     If Asc(X$) = 32 GoTo NGetKey 'field not full, get another
@@ -1101,7 +1093,6 @@ Sub NumIn (Number#, Max, XCode, FGColor%, BGColor%)
     Locate , , 0 'turn off the cursor
 
 End Sub
-
 
 
 '-----------------------------------
@@ -1131,7 +1122,6 @@ Sub QPrint (X$, FGColor%, BGColor%, Page%)
     'Restore cursor position
     Locate V, H
 End Sub
-
 
 
 '-----------------------------------
@@ -1168,7 +1158,6 @@ Sub ReadFile (fileList$())
 End Sub
 
 
-
 '-----------------------------------
 ' SplitColor Copycat Subroutine
 '-----------------------------------
@@ -1181,7 +1170,6 @@ Sub SplitColor (Colr%, FG%, BG%)
     BG% = ((Colr% And 240) / 16)
 
 End Sub
-
 
 
 '-----------------------------------
@@ -1440,7 +1428,6 @@ Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode%, FGColor%, BGColor%)
 
 
 End Sub
-
 
 
 '-----------------------------------

@@ -5,7 +5,6 @@ DECLARE FUNCTION MGetKey (Row%, Col%)
 DECLARE FUNCTION Monitor%
 DECLARE FUNCTION OneColor% (FGColor, BGColor)
 DECLARE FUNCTION READDIR$(spec$)
-
 DECLARE SUB AddInt (AElement, Value, NumEls)
 DECLARE SUB CSMsgBox (Message$, Wdth, Pass)
 DECLARE SUB CapNum ()
@@ -18,7 +17,7 @@ DECLARE SUB MAMenu (menuChoices$(), Selected%, Start%, count%, ScanCode%, ItemFG
 DECLARE SUB MMenuVert (menuChoices$(), Selected%, Start%, ScanCode%, ItemFGColor%, ItemBGColor%, HighlightFGColor%, HighlightBGColor%, NumRows%, Row%, Column%)
 DECLARE SUB MPaintBox (ULRow%, ULCol%, LRRow%, LRCol%, Colr%)
 DECLARE SUB MQPrint (X$, Colr%)
-DECLARE SUB NumIn(Number%, Max, XCode, FGColor%, BGColor%)
+DECLARE SUB NumIn(Number#, Max, XCode, FGColor%, BGColor%)
 DECLARE SUB QPrint (X$, FGColor%, BGColor%, Page)
 DECLARE SUB QuickSort (start AS INTEGER, finish AS INTEGER, array() AS SINGLE)
 DECLARE SUB ReadFile$ (fileList$())

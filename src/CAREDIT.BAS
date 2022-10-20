@@ -7,7 +7,7 @@ Sub CAREDIT ()
     Shared careerB$(), careerP$()
     
     Shared BRS%(), PRS%()
-
+    
     Cls
     TMR = 2700
 
@@ -52,74 +52,78 @@ Sub CAREDIT ()
                 Locate 25, 1
                 Color 14
                 Print "ENTER";: Color 15
-                Print "-SELECTS TEAM";
+                Print "-SELECTS FILE";
 
                 _MouseShow "DEFAULT"
                 MAMenu careerFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
                 _MouseHide
 
-                If ExitCode% = 27 Then 5017
-                targetFile$ = careerFiles$(Selection%)
-                Locate 2, 33: Print targetFile$
-                Locate , 33: Print "ANY CHANGE (YN)";
-                Color 15, 0
-                I$ = GetKeyPress$
+                If ExitCode% <> 27 Then
+                    targetFile$ = careerFiles$(Selection%)
+                    Locate 2, 33: Print targetFile$
+                    Locate , 33: Print "ANY CHANGE (YN)";
+                    Color 15, 0
+                    I$ = GetKeyPress$
+                End If
 
-            Loop Until UCase$(I$) = "N"
+            Loop Until UCase$(I$) = "N" Or ExitCode% = 27
 
-            Z$ = RTrim$(targetFile$)
+            If ExitCode% <> 27 Then
+                Z$ = RTrim$(targetFile$)
 
-            Cls
-
-            Color 15
-            Locate 12, 10: Print "LOADING CAREER FILE . . . . PLEASE WAIT"
-
-            Open diskPaths$(1) + Z$ For Input As #2
-            Input #2, NB, NP
-            For I = 0 To 99: Input #2, careerB$(I): Next
-            For I = 0 To 79: Input #2, careerP$(I): Next
-            For J = 1 To 15: For I = 0 To 99: For I1 = O To 17: Input #2, BRS%(J, I, I1): Next I1: Locate 12, 55: Color 3: TMR = TMR - 1: Print Using "####"; TMR: Next I: Next J
-            For J = 1 To 15: For I = 0 To 79: For I1 = 0 To 16: Input #2, PRS%(J, I, I1): Next I1: Locate 12, 55: Color 3: TMR = TMR - 1: Print Using "####"; TMR: Next I: Next J
-
-            Close #2
-
-            Do
                 Cls
-                Color 7: Print "EDIT ";
-                Color 12: Print "B";
-                Color 7: Print "ATTERS, ";
-                Color 12: Print "P";
-                Color 7: Print "ITCHERS, ";
-                Color 12: Print "U";: Color 7
-                Print "PDATE FILE, OR ";: Color 12
-                Print "E";: Color 7: Print "XIT WITHOUT UPDATING"
-                I$ = GetKeyPress$
 
-                Select Case UCase$(I$)
-                    Case "B": Call EditBatters (Z$)
-                    Case "E", "X": '
-                    Case "P": Call EditPitchers (Z$)
-                    Case "U":
-                        Cls
-                        Color 15: Locate 12, 6: Print "SAVING UPDATED CAREER FILE . . . PLEASE WAIT"
+                Color 15
+                Locate 12, 10: Print "LOADING CAREER FILE . . . . PLEASE WAIT"
 
-                        TMR = 2700
+                Open diskPaths$(1) + Z$ For Input As #2
+                Input #2, NB, NP
+                For I = 0 To 99: Input #2, careerB$(I): Next
+                For I = 0 To 79: Input #2, careerP$(I): Next
+                For J = 1 To 15: For I = 0 To 99: For I1 = O To 17: Input #2, BRS%(J, I, I1): Next I1: Locate 12, 55: Color 3: TMR = TMR - 1: Print Using "####"; TMR: Next I: Next J
+                For J = 1 To 15: For I = 0 To 79: For I1 = 0 To 16: Input #2, PRS%(J, I, I1): Next I1: Locate 12, 55: Color 3: TMR = TMR - 1: Print Using "####"; TMR: Next I: Next J
 
-                        Open diskPaths$(1) + Z$ For Output As #3
+                Close #2
 
-                        Write #3, NB, NP
+                Do
+                    Cls
+                    Color 7: Print "EDIT ";
+                    Color 12: Print "B";
+                    Color 7: Print "ATTERS, ";
+                    Color 12: Print "P";
+                    Color 7: Print "ITCHERS, ";
+                    Color 12: Print "U";: Color 7
+                    Print "PDATE FILE, OR ";: Color 12
+                    Print "E";: Color 7: Print "XIT WITHOUT UPDATING"
+                    I$ = GetKeyPress$
+
+                    Select Case UCase$(I$)
+                        Case "B": Call EditBatters (Z$)
+                        Case "E", "X": '
+                        Case "P": Call EditPitchers (Z$)
+                        Case "U":
+                            Cls
+                            Color 15: Locate 12, 6: Print "SAVING UPDATED CAREER FILE . . . PLEASE WAIT"
+
+                            TMR = 2700
+
+                            Open diskPaths$(1) + Z$ For Output As #3
+
+                            Write #3, NB, NP
+                            
+                            For I = 0 To 99: Write #3, careerB$(I): Next
+                            For I = 0 To 79: Write #3, careerP$(I): Next
+                            For J = 1 To 15: For I = 0 To 99: For I1 = O To 17: Write #3, BRS%(J, I, I1): Next I1: Locate 12, 55: Color 3: TMR = TMR - 1: Print Using "####"; TMR: Next I: Next J
+                            For J = 1 To 15: For I = 0 To 79: For I1 = 0 To 16: Write #3, PRS%(J, I, I1): Next I1: Locate 12, 55: Color 3: TMR = TMR - 1: Print Using "####"; TMR: Next I: Next J
+
+                            Close #3
                         
-                        For I = 0 To 99: Write #3, careerB$(I): Next
-                        For I = 0 To 79: Write #3, careerP$(I): Next
-                        For J = 1 To 15: For I = 0 To 99: For I1 = O To 17: Write #3, BRS%(J, I, I1): Next I1: Locate 12, 55: Color 3: TMR = TMR - 1: Print Using "####"; TMR: Next I: Next J
-                        For J = 1 To 15: For I = 0 To 79: For I1 = 0 To 16: Write #3, PRS%(J, I, I1): Next I1: Locate 12, 55: Color 3: TMR = TMR - 1: Print Using "####"; TMR: Next I: Next J
+                    End Select
 
-                        Close #3
-                    
-                End Select
+                Loop Until UCase$(I$) = "E" Or UCase$(I$) = "X"
 
-            Loop Until UCase$(I$) = "E" Or UCase$(I$) = "X"
-
+            End If
+            
         End If 'Done checking file count
 
     '...Until we press ESC
@@ -167,10 +171,10 @@ Sub EditBatters (careerFile$)
 
         Color 15: Input "ENTER NUMBER OF PLAYER TO DELETE (100 TO EXIT)"; B9
         
-        If B9 <> 100 Then 
+        If B9 <> 100 Then
 
             If B9 < 99 Then 
-
+                Cls
                 Locate 5, 20
                 Color 15: Print "PRINT CAREER STATS OF ";
                 Color 12: Print careerB$(B9);: Color 15: Print " BEFORE "
@@ -269,7 +273,7 @@ Sub EditPitchers (careerFile$)
         If B9 <> 100 Then
 
             If B9 < 79 Then
-            
+                Cls            
                 Locate 5, 20
                 Color 15: Print "PRINT CAREER STATS OF ";
                 Color 12: Print careerP$(B9);: Color 15: Print " BEFORE "
@@ -338,7 +342,7 @@ End Sub
 '...explanation...
 Sub PrintBatterStats (careerFile$, playerIdx)
 
-    Dim I2 As Single, I3 As Single, I4 As Single
+    Dim I2!, I3!, I4!
 
     Shared careerB$()
     Shared BRS%()
@@ -374,20 +378,20 @@ Sub PrintBatterStats (careerFile$, playerIdx)
         LPrint Tab(95); Using "##"; BRS%(V, B9, 10);
         LPrint Tab(101); Using "##"; BRS%(V, B9, 11);
 
-        I2 = 0
-        I3 = 0
-        I4 = 0
+        I2! = 0
+        I3! = 0
+        I4! = 0
 
-        IF BRS%(V, B9, 0) > 0 THEN I2 = INT((BRS%(V, B9, 1) / BRS%(V, B9, 0) + .0005) * 1000): I3 = INT(((BRS%(V, B9, 1) + BRS%(V, B9, 4) + 2 * BRS%(V, B9, 5) + 3 * BRS%(V, B9, 6)) / BRS%(V, B9, 0) + .0005) * 1000): I4 = INT(((BRS%(V, B9, 1) + BRS%(V, B9, 7)) / (BRS%(V, B9, 7) + BRS%(V, B9, 0)) + .0005) * 1000)
-        If BRS%(V, B9, 0) = 0 Or I2 = 0 Then LPrint Tab(107); ".000";
-        If I2 > 0 And I2 < 100 Then LPrint Tab(107); ".0";: LPrint Using "##"; I2;
-        If I2 >= 100 Then LPrint Tab(107); ".";: LPrint Using "###"; I2;
-        If BRS%(V, B9, 0) = 0 Or I3 = 0 Then LPrint Tab(115); ".000";
-        If I3 > 0 And I3 < 100 Then LPrint Tab(115); ".0";: LPrint Using "##"; I3;
-        If I3 >= 100 Then LPrint Tab(115); ".";: LPrint Using "###"; I3;
-        If BRS%(V, B9, 0) = 0 Or I4 = 0 Then LPrint Tab(123); ".000"
-        If I4 > 0 And I4 < 100 Then LPrint Tab(123); ".";: LPrint Using "###"; I4
-        If I4 >= 100 Then LPrint Tab(123); ".";: LPrint Using "###"; I4
+        IF BRS%(V, B9, 0) > 0 THEN I2! = INT((BRS%(V, B9, 1) / BRS%(V, B9, 0) + .0005) * 1000): I3! = INT(((BRS%(V, B9, 1) + BRS%(V, B9, 4) + 2 * BRS%(V, B9, 5) + 3 * BRS%(V, B9, 6)) / BRS%(V, B9, 0) + .0005) * 1000): I4! = INT(((BRS%(V, B9, 1) + BRS%(V, B9, 7)) / (BRS%(V, B9, 7) + BRS%(V, B9, 0)) + .0005) * 1000)
+        If BRS%(V, B9, 0) = 0 Or I2! = 0 Then LPrint Tab(107); ".000";
+        If I2! > 0 And I2! < 100 Then LPrint Tab(107); ".0";: LPrint Using "##"; I2!;
+        If I2! >= 100 Then LPrint Tab(107); ".";: LPrint Using "###"; I2!;
+        If BRS%(V, B9, 0) = 0 Or I3! = 0 Then LPrint Tab(115); ".000";
+        If I3! > 0 And I3! < 100 Then LPrint Tab(115); ".0";: LPrint Using "##"; I3!;
+        If I3! >= 100 Then LPrint Tab(115); ".";: LPrint Using "###"; I3!;
+        If BRS%(V, B9, 0) = 0 Or I4! = 0 Then LPrint Tab(123); ".000"
+        If I4! > 0 And I4! < 100 Then LPrint Tab(123); ".";: LPrint Using "###"; I4!
+        If I4! >= 100 Then LPrint Tab(123); ".";: LPrint Using "###"; I4!
 
     Next V
 
@@ -427,23 +431,23 @@ Sub PrintBatterStats (careerFile$, playerIdx)
     LPrint Tab(94); Using "###"; TT12;
     LPrint Tab(100); Using "###"; TT13;
 
-    I2 = 0: If TT2 > 0 Then I2 = Int((TT4 / TT2 + .0005) * 1000)
+    I2! = 0: If TT2 > 0 Then I2! = Int((TT4 / TT2 + .0005) * 1000)
 
-    If TT2 = 0 Or I2 = 0 Then LPrint Tab(107); ".000";
-    If I2 > 0 And I2 < 100 Then LPrint Tab(107); ".0";: LPrint Using "##"; I2;
-    If I2 >= 100 Then LPrint Tab(107); ".";: LPrint Using "###"; I2;
+    If TT2 = 0 Or I2! = 0 Then LPrint Tab(107); ".000";
+    If I2! > 0 And I2! < 100 Then LPrint Tab(107); ".0";: LPrint Using "##"; I2!;
+    If I2! >= 100 Then LPrint Tab(107); ".";: LPrint Using "###"; I2!;
 
-    I3 = 0: I3 = Int(TT4 + TT5 + (2 * TT6) + (3 * TT7)) / ((TT2) + .0005) * 1000
+    I3! = 0: I3! = Int(TT4 + TT5 + (2 * TT6) + (3 * TT7)) / ((TT2) + .0005) * 1000
 
-    If TT2 = 0 Or I3 = 0 Then LPrint Tab(115); ".000";
-    If I3 > 0 And I3 < 100 Then LPrint Tab(115); ".0";: LPrint Using "##"; I3;
-    If I3 >= 100 Then LPrint Tab(115); ".";: LPrint Using "###"; I3;
+    If TT2 = 0 Or I3! = 0 Then LPrint Tab(115); ".000";
+    If I3! > 0 And I3! < 100 Then LPrint Tab(115); ".0";: LPrint Using "##"; I3!;
+    If I3! >= 100 Then LPrint Tab(115); ".";: LPrint Using "###"; I3!;
 
-    I4 = 0: If TT9 + TT2 > 0 Then I4 = Int(((TT4 + TT9) / (TT9 + TT2) + .0005) * 1000)
+    I4! = 0: If TT9 + TT2 > 0 Then I4! = Int(((TT4 + TT9) / (TT9 + TT2) + .0005) * 1000)
 
-    If TT2 = 0 Or I4 = 0 Then LPrint Tab(123); ".000"
-    If I4 > 0 And I4 < 100 Then LPrint Tab(123); ".";: LPrint Using "###"; I4
-    If I4 >= 100 Then LPrint Tab(123); ".";: LPrint Using "###"; I4
+    If TT2 = 0 Or I4! = 0 Then LPrint Tab(123); ".000"
+    If I4! > 0 And I4! < 100 Then LPrint Tab(123); ".";: LPrint Using "###"; I4!
+    If I4! >= 100 Then LPrint Tab(123); ".";: LPrint Using "###"; I4!
 
     '-- Why is this important?
     '-- Do we use this elsewhere?
@@ -475,7 +479,7 @@ End Sub
 '...explanation...
 Sub PrintPitcherStats (careerFile$, playerIdx)
 
-    Dim I2 As Single, I3 As Single, I4 As Single
+    Dim I2!, I3!, I4!
 
     Shared careerP$()
     
@@ -509,17 +513,17 @@ Sub PrintPitcherStats (careerFile$, playerIdx)
         LPrint Tab(55); Using "###"; PRS%(V, B9, 4);
         LPrint Tab(62); Using "###"; PRS%(V, B9, 5)
 
-        I2 = 0
-        If PRS%(V, B9, 0) > 0 Then I2 = Int((((PRS%(V, B9, 3) * 9) / (PRS%(V, B9, 0) / 3)) + .0005) * 100)
-        I3 = Int(I2 / 100)
-        I4 = I2 - (I3 * 100)
+        I2! = 0
+        If PRS%(V, B9, 0) > 0 Then I2! = Int((((PRS%(V, B9, 3) * 9) / (PRS%(V, B9, 0) / 3)) + .0005) * 100)
+        I3! = Int(I2! / 100)
+        I4! = I2! - (I3! * 100)
 
-        If PRS%(V, B9, 0) = 0 Or I2 = 0 Then LPrint Tab(68); " 0.00";
-        If PRS%(V, B9, 0) > 0 And I2 > 0 And I2 <= 999 Then LPrint Tab(68); Using "##"; I3;: LPrint ".";
-        If PRS%(V, B9, 0) > 0 And I2 >= 1000 Then LPrint Tab(68); Using "##"; I3;: LPrint ".";
-        If PRS%(V, B9, 0) > 0 And I4 = 0 And I2 > 0 Then LPrint "00";
-        If PRS%(V, B9, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then LPrint "0";: LPrint Using "#"; I4;
-        If PRS%(V, B9, 0) > 0 And I4 >= 10 And I2 > 0 Then LPrint Using "##"; I4;
+        If PRS%(V, B9, 0) = 0 Or I2! = 0 Then LPrint Tab(68); " 0.00";
+        If PRS%(V, B9, 0) > 0 And I2! > 0 And I2! <= 999 Then LPrint Tab(68); Using "##"; I3!;: LPrint ".";
+        If PRS%(V, B9, 0) > 0 And I2! >= 1000 Then LPrint Tab(68); Using "##"; I3!;: LPrint ".";
+        If PRS%(V, B9, 0) > 0 And I4! = 0 And I2! > 0 Then LPrint "00";
+        If PRS%(V, B9, 0) > 0 And I4! > 0 And I4! < 10 And I2! > 0 Then LPrint "0";: LPrint Using "#"; I4!;
+        If PRS%(V, B9, 0) > 0 And I4! >= 10 And I2! > 0 Then LPrint Using "##"; I4!;
 
         LPrint Tab(77); Using "##"; PRS%(V, B9, 8);
         LPrint Tab(83); Using "##"; PRS%(V, B9, 9);
@@ -585,16 +589,16 @@ Sub PrintPitcherStats (careerFile$, playerIdx)
     LPrint Tab(55); Using "###"; TT18;
     LPrint Tab(61); Using "####"; TT19;
 
-    I2 = 0
-    If TT16 > 0 Then I2 = Int((((TT25 * 9) / (TT16 / 3)) + .0005) * 100)
-    I3 = Int(I2 / 100): I4 = I2 - (I3 * 100)
+    I2! = 0
+    If TT16 > 0 Then I2! = Int((((TT25 * 9) / (TT16 / 3)) + .0005) * 100)
+    I3! = Int(I2! / 100): I4! = I2! - (I3! * 100)
 
-    If TT16 = 0 Or I2 = 0 Then LPrint Tab(68); " 0.00";
-    If TT16 > 0 And I2 > 0 And I2 <= 999 Then LPrint Tab(68); Using "##"; I3;: LPrint ".";
-    If TT16 > 0 And I2 >= 1000 Then LPrint Tab(68); Using "##"; I3;: LPrint ".";
-    If TT16 > 0 And I4 = 0 And I2 > 0 Then LPrint "00";
-    If TT16 > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then LPrint "0";: LPrint Using "#"; I4;
-    If TT16 > 0 And I4 >= 10 And I2 > 0 Then LPrint Using "##"; I4;
+    If TT16 = 0 Or I2! = 0 Then LPrint Tab(68); " 0.00";
+    If TT16 > 0 And I2! > 0 And I2! <= 999 Then LPrint Tab(68); Using "##"; I3!;: LPrint ".";
+    If TT16 > 0 And I2! >= 1000 Then LPrint Tab(68); Using "##"; I3!;: LPrint ".";
+    If TT16 > 0 And I4! = 0 And I2! > 0 Then LPrint "00";
+    If TT16 > 0 And I4! > 0 And I4! < 10 And I2! > 0 Then LPrint "0";: LPrint Using "#"; I4!;
+    If TT16 > 0 And I4! >= 10 And I2! > 0 Then LPrint Using "##"; I4!;
 
     LPrint Tab(76); Using "###"; TT21;
     LPrint Tab(81); Using "####"; TT22;

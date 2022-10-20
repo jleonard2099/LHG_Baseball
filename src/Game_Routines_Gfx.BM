@@ -1,381 +1,150 @@
 '------------------------------
-'   CAUGHTFLY_G routine
-'------------------------------
-' ...explanation...
-Sub CAUGHTFLY_G (i, S2%, D)
-    Call RANDNUM(rn)
-    If rn <= 96 Then i = 1
-    If rn = 97 Then i = 2
-    If rn = 98 Then i = 3
-    If rn = 99 Then i = 4
-    If rn = 100 Then i = 6
-    On i GOTO 4352, 4354, 4356, 4358, 4361, 4362
-    4352 If S2% = 17 Then 4353
-    Y% = Int(Rnd(1) * 60) + 1230
-    Call GETRPBP(Y%, Y$, D): Call STRIPRPBP(Y$, Y%, D)
-    Call PBP(Q$(4) + " " + Y$)
-    4353 If S2% = 17 And L%(1, 13) = 37 Then Call PBP("he climbs the terrace")
-    Y% = Int(Rnd(1) * 20) + 1290
-    Call GETRPBP(Y%, Y$, D): Call STRIPRPBP(Y$, Y%, D)
-    Call PBP(Y$)
-    GoTo 4359
-    4354 Call PBP(Q$(4) + " makes a sliding catch"): Call PBP("What a play!!!"): GoTo 4359
-    4356 Call PBP(Q$(4) + " makes a leaping grab"): Call PBP("What a catch!!!"): GoTo 4359
-    4362 Call PBP(Q$(4) + " makes an incredible catch!!"): GoTo 4359
-    4358 Call PBP(Q$(4) + " makes a diving catch!!!")
-    4359 '
-    4361 '
-End Sub
-
-
-
-'------------------------------
-'   DPPBP_G routine
-'------------------------------
-' ...explanation...
-Sub DPPBP_G ()
-    Call RANDNUM(rn)
-    If rn <= 20 Then F$ = "may be a double play ball"
-    If rn > 20 And rn <= 40 Then F$ = "they might turn two"
-    If rn > 40 And rn <= 60 Then F$ = "they could get two"
-    If rn > 60 And rn <= 80 Then F$ = "could be two"
-    If rn > 80 Then F$ = "could be a double play"
-    Call PBP(F$)
-End Sub
-
-
-'------------------------------
-'   DPPIVOT_G routine
-'------------------------------
-' ...explanation...
-Sub DPPIVOT_G (W%, D)
-    '*** double play pivot ***
-    If W% = 4 Then ww% = 6
-    If W% = 6 Then ww% = 4
-    If W% = 3 Then ww% = 1
-    Y% = Int(Rnd(1) * 20) + 1910
-    Call GETRPBP(Y%, Y$, D): Call STRIPRPBP(Y$, Y%, D)
-    F$ = Y$ + " " + B$(D, B9%(D, ww%))
-    Call PBP(F$)
-End Sub
-
-
-'------------------------------
-'   DPRELAY_G routine
-'------------------------------
-' ...explanation...
-Sub DPRELAY_G ()
-    Call RANDNUM(rn)
-    If rn <= 10 Then Call PBP("Give me the Hoover!"): GoTo 3716
-    If A5%(0) <> 11 Then 3716
-    Call RANDNUM(rn)
-    If rn <= 8 Then F$ = "over to 1st..."
-    If rn > 8 And rn <= 16 Then F$ = "throw to 1st..."
-    If rn > 16 And rn <= 24 Then F$ = "on to first..."
-    If rn > 24 And rn <= 30 Then F$ = Q$(4) + " pivots and throws"
-    If rn > 30 And rn <= 36 Then F$ = Q$(4) + " gets the throw off"
-    If rn > 36 And rn <= 44 Then F$ = Q$(4) + " is hit as he throws"
-    If rn > 44 And rn <= 50 Then F$ = Q$(4) + " leaps and throws"
-    If rn > 50 And rn <= 56 Then F$ = Q$(4) + " jumps over the sliding " + Q$(1)
-    If rn > 56 And rn <= 64 Then F$ = "the relay to first..."
-    If rn > 64 And rn <= 72 Then F$ = "quick turn by " + Q$(4)
-    If rn > 72 And rn <= 80 Then F$ = "relay to 1st..."
-    If rn > 80 And rn <= 88 Then F$ = "to 1st..."
-    If rn > 88 And A5%(0) = 11 Then F$ = "over to 1st..."
-    Call PBP(F$)
-    3716 '
-End Sub
-
-
-'------------------------------
-'   DPSAFE_G routine
-'------------------------------
-' ...explanation...
-Sub DPSAFE_G ()
-    Call RANDNUM(rn)
-    If rn <= 8 Then F$ = "over to 1st..."
-    If rn > 8 And rn <= 16 Then F$ = "throw to 1st..."
-    If rn > 16 And rn <= 24 Then F$ = "on to first..."
-    If rn > 24 And rn <= 30 Then F$ = "pivot to first"
-    If rn > 30 And rn <= 36 Then F$ = "the throw to first"
-    If rn > 36 And rn <= 44 Then F$ = "relay to first"
-    If rn > 44 And rn <= 50 Then F$ = "quick turn to 1st"
-    If rn > 50 And rn <= 56 Then F$ = "on to first..."
-    If rn > 56 And rn <= 64 Then F$ = "the relay to first..."
-    If rn > 64 And rn <= 72 Then F$ = "quick turn"
-    If rn > 72 And rn <= 80 Then F$ = "relay to 1st..."
-    If rn > 80 And rn <= 88 Then F$ = "to 1st..."
-    If rn > 88 And A5%(0) = 11 Then F$ = "over to 1st..."
-    Call PBP(F$)
-    Y% = Int(Rnd(1) * 20) + 1890
-    Call GETRPBP(Y%, Y$, D): Call STRIPRPBP(Y$, Y%, D)
-    Call PBP(Y$)
-End Sub
-
-
-'------------------------------
-'   FLDERR_G routine
-'------------------------------
-' ...explanation...
-Sub FLDERR_G (F%, W%, D, I3, SB%, S2%, p)
-    F% = 0: If W% = 1 Then I3 = P%(D, P1%(D), 17) + 30
-    If W% = 1 And SB% = 1 Then I3 = 995
-    If W% <> 1 Then Call FLDAVG(D, W%, I3)
-    If I3 >= 999 Then I6 = 1: GoTo 4408
-    If S2% >= 12 And S2% <= 15 Then I6 = 1009 - I3
-    If S2% >= 7 And S2% <= 9 Then I6 = 1006 - I3
-    If S2% = 16 Or S2% >= 22 Then I6 = 1000 - I3
-    If S2% >= 17 And S2% <= 21 Then I6 = (1000 - I3) * .05
-    4408 If W% = 7 Then I6 = I6 - 4
-    If W% = 8 Then I6 = I6 - 10
-    If W% = 9 Then I6 = I6 - 15
-    If W% = 5 Then I6 = I6 - 15
-    H6% = Int(Rnd(1) * 1000) + 1: If H6% > I6 Then 4421
-    F% = 1: i = Int(Rnd(1) * 2) + 1: I1 = 2
-    If W% = 1 Then I5 = P1%(D): I6 = 34: Call ADDPIT(D, I5, I6)
-    If W% <> 1 Then I5 = B9%(D, W%): I6 = 11: Call INCBATDF(D, I5, I6)
-    If S2% <> 12 Then 4410
-    If S2% = 12 Then F$ = Q$(0) + " beats out an infield single": Call PBP(F$)
-    If B7%(p, B1!(p)) <> 1 Then I5 = B3%(p, B1!(p)): I6 = 0: Call INCBATOFF(p, I5, I6): I6 = 1: Call INCBATOFF(p, I5, I6)
-    I5 = P1%(D): I6 = 1: Call ADDPIT(D, I5, I6)
-    If B7%(p, B1!(p)) = 1 Then I5 = P1%(p): I6 = 23: Call INCPITOFF(p, I5, I6): I6 = 24: Call INCPITOFF(p, I5, I6)
-    4410 If S2% >= 17 And S2% <= 21 Then I1 = 3
-    If S2% >= 17 And S2% <= 20 Then Call OUTFIELDERR_G
-    If S2% = 8 Or S2% = 9 Or S2% >= 22 Or S2% = 16 Then I1 = 1
-    If S2% >= 12 And S2% <= 14 And i = 1 Or S2% = 15 Then I1 = 1
-    Call RANDNUM(rn)
-    If I1 = 1 And W% = 1 And S2% = 16 Then F$ = "*** WILD PICK OFF THROW BY": GoTo 4415
-    If I1 = 1 And rn <= 50 Then F$ = "*** THROWING ERROR ON": GoTo 4415
-    If I1 = 1 And rn > 50 And rn <= 55 Then F$ = "*** BALL KICKED BY": GoTo 4415
-    If I1 = 1 Then F$ = "*** " + Q$(4) + " THROWS IT AWAY ***": Call PBP(F$): GoTo 4403
-    If I1 = 2 And rn <= 30 Then F$ = "*** FIELDING ERROR ON": GoTo 4415
-    If I1 = 2 And rn > 30 And rn <= 50 Then F$ = "*** OFF THE GLOVE OF": GoTo 4415
-    If I1 = 2 And rn > 50 And rn <= 75 Then F$ = "*** BALL IS BOOTED BY": GoTo 4415
-    If I1 = 2 And rn > 75 And rn <= 95 Then F$ = "*** BALL IS BOBBLED BY": GoTo 4415
-    If I1 = 2 And rn > 95 Then F$ = "*** BALL IS THROUGH THE LEGS OF": GoTo 4415
-    If I1 = 3 And rn <= 33 Then F$ = "*** BALL DROPPED BY": GoTo 4415
-    If I1 = 3 And rn > 33 And rn <= 66 Then F$ = "*** OFF THE GLOVE OF": GoTo 4415
-    If I1 = 3 Then F$ = "*** BALL IS MISPLAYED BY"
-    4415 F$ = F$ + " " + Q$(4) + " ***": Call PBP(F$)
-    4403 If S2% = 16 Or S2% = 22 Then I8 = Int(Rnd(1) * 10) + 1: If I8 < 5 Then A5%(1) = 2: A5%(2) = 2: A5%(3) = 1: A5%(0) = 2: GoTo 4418
-    i = Int(Rnd(1) * 100) + 1
-    A5%(1) = 1: A5%(2) = 1: A5%(3) = 1: A5%(0) = 1
-    If S2% > 17 And S2% <= 21 Then 4418
-    If i <= 17 And S2% <> 8 Or S2% = 12 Then A5%(1) = 2: A5%(2) = 2: A5%(0) = 2
-    4418 If S2% >= 17 And S2% <= 20 And O%(0) = 2 Or S2% >= 23 Or S2% = 16 And W% = 2 Then A5%(2) = 2: A5%(1) = 2: A5%(0) = 2: A5%(3) = 1
-    If S2% >= 17 And S2% <= 19 And i <= 33 And O%(0) < 2 And B0%(1, 0) = 0 Then A5%(0) = 2
-    If S2% = 16 Or S2% = 22 Then A5%(0) = 0
-    If I1 > 0 And S2% <> 7 And S2% <> 8 And S2% <> 9 And S2% <> 16 And S2% <> 22 Then O%(1) = O%(1) + 1
-    If S2% = 16 Or S2% = 7 Or S2% = 8 Or S2% = 9 Or S2% = 22 Then A5%(0) = 0: If I8 > 4 And W% <> 2 Then A5%(1) = 1: A5%(2) = 1: A5%(3) = 1
-    S6%(D, 2) = S6%(D, 2) + 1
-    Call ADVANCEMENT(p, D, S2%, F%, I3)
-    4421 '
-End Sub
-
-
-'------------------------------
-'   GROUNDERPBP_G routine
-'------------------------------
-' ...explanation...
-Sub GROUNDERPBP_G (W%, D)
-    If W% = 2 Then 3760
-	
-    Call RANDNUM(rn)
-    Y% = Int(Rnd(1) * 140) + 1930
-    If rn <= 35 Then 3752
-    If W% = 1 Then Y% = Int(Rnd(1) * 160) + 2070
-    If W% = 3 Then Y% = Int(Rnd(1) * 150) + 2230
-    If W% = 4 Then Y% = Int(Rnd(1) * 160) + 2380
-    If W% = 6 Then Y% = Int(Rnd(1) * 160) + 2540
-    If W% = 5 Then Y% = Int(Rnd(1) * 150) + 2700
-
-    3752 Call GETRPBP(Y%, Y$, D): Call STRIPRPBP(Y$, Y%, D)
-    F$ = Y$ + " "
-    3751 GoTo 3765
-
-    3760 '*** in front of plate ***
-    Y% = Int(Rnd(1) * 25) + 2870
-    Call GETRPBP(Y%, Y$, D)
-    Call STRIPRPBP(Y$, Y%, D)
-    Call PBP(Y$)
-	
-    3765 '
-End Sub
-
-
-'------------------------------
-'   GROUNDERS_G routine
-'------------------------------
-' ...explanation...
-Sub GROUNDERS_G (W%, D)
-    '*** GROUNDERS_G to infielders ***
-    X$ = Q$(4)
-    If W% = 2 Then 3953
-    Y% = Int(Rnd(1) * 120) + 1420
-    Call GETRPBP(Y%, Y$, D)
-    Call STRIPRPBP(Y$, Y%, D)
-    Call PBP(X$ + " " + Y$)
-    GoTo 3954
-    3953 ' field GROUNDERS_G in front of the plate
-    Y% = Int(Rnd(1) * 13) + 2850
-    Call GETRPBP(Y%, Y$, D): Call STRIPRPBP(Y$, Y%, D)
-    If Left$(Y$, 2) = "QQ" Then Y$ = X$ + Right$(Y$, Len(Y$) - 2)
-    Call PBP(Y$)
-    3954 '
-End Sub
-
-
-'------------------------------
-'   LONGFLY_G routine
-'------------------------------
-' ...explanation...
-Sub LONGFLY_G (D, W%)
-    Y% = Int(Rnd(1) * 60) + 1310
-    Call GETRPBP(Y%, Y$, D)
-    Call STRIPRPBP(Y$, Y%, D)
-    Call PBP(Y$ + " " + C$(W%))
-    If WF < 1 And Rnd(1) > WF Then Call PBP("The wind is bringing it back..."): GoTo 8055
-    If WF > 1 And Rnd(1) <= 1 - WF Then Call PBP("It's carrying well in the breeze...")
-    Y% = Int(Rnd(1) * 50) + 1370
-    Call GETRPBP(Y%, Y$, D)
-    Call STRIPRPBP(Y$, Y%, D)
-    Call PBP(Y$)
-    Call RANDNUM(rn)
-    If (L%(1, 13) = 21 Or L%(1, 13) = 27) And W% = 7 Then 8059
-    If rn <= 5 Then Call PBP(Q$(4) + " leaps")
-    If rn > 5 And rn <= 10 Then Call PBP(Q$(4) + " against the wall")
-    If rn > 10 And rn <= 20 Then Call PBP(Q$(4) + " jumps at the wall")
-    If rn > 20 And rn <= 30 Then Call PBP(Q$(4) + " climbs the wall")
-    8059 '
-    8055 '
-End Sub
-
-
-'------------------------------
 '   MAINSCREEN_G routine
 '------------------------------
 ' ...explanation...
 
 Sub MAINSCREEN_G (D, p, BC%, U%, MO)
 
-    _PutImage (30 * FontColAdj%, 400)-Step(22 * FontColAdj%, 16), backupScreen&, imageScreen&, (30 * FontColAdj%, 400)-Step(22 * FontColAdj%, 16)
+    _PutImage (29 * FontColAdj%, 400)-Step(24 * FontColAdj%, 16), backupScreen&, imageScreen&, (29 * FontColAdj%, 400)-Step(24 * FontColAdj%, 16)
 
     'Printing white on black
     Color 4294967295
     _PrintMode _FillBackground , imageScreen&
+
+    'Print #9, "Calling gfx print from MAINSCREEN_G; usingGfx = "; Str$(usingGfx)
 
     'Pitcher Name
     PrintOnGfx 67, 26, Left$(P$(D, P1%(D)), 14), imageScreen&
 
     FORMATTED$ = FUsing$(Str$(P%(D, P1%(D), 1)), "##", 1)
-    F$ = FORMATTED$ + "-"
+    pStats$ = FORMATTED$ + "-"
 
     FORMATTED$ = FUsing$(Str$(P%(D, P1%(D), 2)), "##", 1)
-    F$ = F$ + FORMATTED$ + " " + FUsing$(Str$(P%(D, P1%(D), 10) / 100), "##.##", 1)
+    pStats$ = pStats$ + FORMATTED$ + " " + FUsing$(Str$(P%(D, P1%(D), 10) / 100), "##.##", 1)
 
     'Pitcher Stats
-    PrintOnGfx 67, 27, F$, imageScreen&
+    PrintOnGfx 67, 27, pStats$, imageScreen&
 
-	'IP / H / BB / K headers	
+    'IP / H / BB / K headers
     PrintOnGfx 67, 28, "IP   H BB  K", imageScreen&
 
-    If P8%(D, P1%(D), 0) <> 0 Then 
-		F$ = FUsing$(Str$(Int(P8%(D, P1%(D), 0) / 3)), "##.#", 1)
-		'F$ = F$ + "." + FUsing$(Str$(P8%(D, P1%(D), 1) - (Int(P8%(D, P1%(D), 0) / 3) * 3)), "#", 1)	
-	Else
-		F$ = " 0.0"
-	End If
-	
-	'H / BB / K values
-    338 F$ = F$ + " " + FUsing$(Str$(P8%(D, P1%(D), 1)), "##", 1) + " " + FUsing$(Str$(P8%(D, P1%(D), 4)), "##", 1) + " " + FUsing$(Str$(P8%(D, P1%(D), 5)), "##", 1)
+    If P8%(D, P1%(D), 0) <> 0 Then
+        pStats$ = FUsing$(Str$(Int(P8%(D, P1%(D), 0) / 3)), "##.#", 1)
+    Else
+        pStats$ = " 0.0"
+    End If
 
-    PrintOnGfx 66, 29, F$, imageScreen&
+    'H / BB / K values
+    338 pStats$ = pStats$ + " " + FUsing$(Str$(P8%(D, P1%(D), 1)), "##", 1) + " " + FUsing$(Str$(P8%(D, P1%(D), 4)), "##", 1) + " " + FUsing$(Str$(P8%(D, P1%(D), 5)), "##", 1)
+
+    PrintOnGfx 66, 29, pStats$, imageScreen&
 
     J = B3%(p, B1!(p))
-    If B7%(p, B1!(p)) = 1 Then X$ = P$(p, P1%(p)): F$ = X$: Call SPA(X$, 10): Call PITPLACEMENT_G(p, X$): GoTo 335
-    X$ = B$(p, J): F$ = X$: Call SPA(X$, 10)
 
-    'Printing white on background
-    _PrintMode _KeepBackground , imageScreen&
-    Color 4294967295
+    If B7%(p, B1!(p)) = 1 Then
+        X$ = P$(p, P1%(p))
+        'We're going to use this in just a bit
+        'We'll be printing it with more space
+        player$ = X$
+        X$ = PadRight$(X$, 11)
+        Call PITPLACEMENT(p, X$)
+    Else
+        X$ = B$(p, J)
+        'We're going to use this in just a bit
+        'We'll be printing it with more space
+        player$ = X$
+        X$ = PadRight$(X$, 11)
 
-    If B%(p, J, 0) < 0 Or B%(p, J, 0) = 0 And P%(D, P1%(D), 0) > 0 Then
-        'Batter Name - Right
-        PrintOnGfx 42, 25, X$, imageScreen&
+        'Printing white on background
+        _PrintMode _KeepBackground , imageScreen&
+        Color 4294967295
+
+        If B%(p, J, 0) < 0 Or B%(p, J, 0) = 0 And P%(D, P1%(D), 0) > 0 Then
+            'Batter Name - Right of Plate
+            PrintOnGfx 41, 25, Left$(X$, 11), imageScreen&
+        End If
+
+        X = Len(X$)
+        If B%(p, J, 0) > 0 Or B%(p, J, 0) = 0 And P%(D, P1%(D), 0) < 0 Then
+            'Batter Name - Left of Plate
+            PrintOnGfx 30, 25, Left$(X$, 11), imageScreen&
+        End If
+
+        'Printing white on black
+        _PrintMode _FillBackground , imageScreen&
+
     End If
 
-    X = Len(X$)
-    If B%(p, J, 0) > 0 Or B%(p, J, 0) = 0 And P%(D, P1%(D), 0) < 0 Then
-        'Batter Name - Left
-        PrintOnGfx 30, 25, X$, imageScreen&
-    End If
+    player$ = PadRight$(player$, 14)
 
-    'Printing white on black
-    _PrintMode _FillBackground , imageScreen&
-
-    335 Call SPA(F$, 14)
-
-    'Batter Name
-    PrintOnGfx 67, 22, F$, imageScreen&
+    'Batter Name - Full
+    PrintOnGfx 67, 22, player$, imageScreen&
 
     'Batter Stats - Header
     PrintOnGfx 66, 23, " AVG HR  BB   K", imageScreen&
 
-    If B7%(p, B1!(p)) = 1 Then 336
-    If B%(p, J, 4) = 0 Then
-        PrintOnGfx 66, 25, ".000  0   0   0", imageScreen&
-        GoTo 337
+    If B7%(p, B1!(p)) <> 1 Then
+
+        If B%(p, J, 4) = 0 Then
+            PrintOnGfx 66, 24, ".000  0   0   0", imageScreen&
+        Else
+            pStats$ = FUsing$(Str$(B%(p, J, 6) / B%(p, J, 4)), ".###", 1)
+            pStats$ = pStats$ + " " + FUsing$(Str$(B%(p, J, 9)), "##", 1) + " " + FUsing$(Str$(B%(p, J, 11)), "###", 1) + " " + FUsing$(Str$(B%(p, J, 12)), "###", 1)
+
+            'Batter Stats - Values
+            PrintOnGfx 66, 24, pStats$, imageScreen&
+        End If
+
+    Else
+
+        'Batter Stats - Conditional
+        336 If P%(p, P1%(p), 11) <> 999 Then
+            pStats$ = FUsing$(Str$(P%(p, P1%(p), 11) / 1000), ".###", 1)
+            PrintOnGfx 66, 24, pStats$ + "           ", imageScreen&
+        Else
+            If P%(p, P1%(p), 20) = 0 Then
+                PrintOnGfx 66, 24, ".000  0   0   0", imageScreen&
+            Else
+                pStats$ = FUsing$(Str$(P%(p, P1%(p), 22) / P%(p, P1%(p), 20)), ".###", 1)
+                pStats$ = pStats$ + " " + FUsing$(Str$(P%(p, P1%(p), 25)), "##", 1) + " " + FUsing$(Str$(P%(p, P1%(p), 27)), "###", 1) + " " + FUsing$(Str$(P%(p, P1%(p), 28)), "###", 1)
+
+                PrintOnGfx 66, 24, pStats$, imageScreen&
+            End If
+        End If
+
     End If
 
-    F$ = FUsing$(Str$(B%(p, J, 6) / B%(p, J, 4)), ".###", 1)
-    F$ = F$ + " " + FUsing$(Str$(B%(p, J, 9)), "##", 1) + " " + FUsing$(Str$(B%(p, J, 11)), "###", 1) + " " + FUsing$(Str$(B%(p, J, 12)), "###", 1)
-
-    'Batter Stats - Values
-    PrintOnGfx 66, 24, F$, imageScreen&
-
-    GoTo 337
-
-    'Batter Stats - Conditional
-    336 If P%(p, P1%(p), 11) <> 999 Then
-        F$ = FUsing$(Str$(P%(p, P1%(p), 11) / 1000), ".###", 1)
-        PrintOnGfx 66, 24, F$ + "           ", imageScreen&
-        GoTo 337
+    337 '
+    If B7%(p, B1!(p)) <> 1 Then
+        today$ = FUsing$(Str$(B8%(p, B3%(p, B1!(p)), 1)), "##", 1) + "-" + FUsing$(Str$(B8%(p, B3%(p, B1!(p)), 0)), "##", 1)
+    Else
+        today$ = FUsing$(Str$(P8%(p, P1%(p), 24)), "##", 1) + "-" + FUsing$(Str$(P8%(p, P1%(p), 23)), "##", 1)
     End If
 
-    If P%(p, P1%(p), 20) = 0 Then
-        PrintOnGfx 66, 24, ".000  0   0   0", imageScreen&
-        GoTo 337
-    End If
+    today$ = today$ + " TODAY"
 
-    F$ = FUsing$(Str$(P%(p, P1%(p), 22) / P%(p, P1%(p), 20)), ".###", 1)
-    F$ = F$ + " " + FUsing$(Str$(P%(p, P1%(p), 25)), "##", 1) + " " + FUsing$(Str$(P%(p, P1%(p), 27)), "###", 1) + " " + FUsing$(Str$(P%(p, P1%(p), 28)), "###", 1)
-
-    PrintOnGfx 66, 24, F$, imageScreen&
-    337 If B7%(p, B1!(p)) = 1 Then 332
-
-    F$ = FUsing$(Str$(B8%(p, B3%(p, B1!(p)), 1)), "##", 1) + "-" + FUsing$(Str$(B8%(p, B3%(p, B1!(p)), 0)), "##", 1): GoTo 333
-    332 F$ = FUsing$(Str$(P8%(p, P1%(p), 24)), "##", 1) + "-" + FUsing$(Str$(P8%(p, P1%(p), 23)), "##", 1)
-    333 F$ = F$ + " TODAY"
-
-    ' 0-0 TODAY
-    PrintOnGfx 66, 25, F$, imageScreen&
+    ' # - # TODAY
+    PrintOnGfx 66, 25, today$, imageScreen&
 
     'Obviously 3 numbers next to each other
     PrintOnGfx 63, 27, Str$(BC%), imageScreen&
     PrintOnGfx 63, 28, Str$(U%), imageScreen&
     PrintOnGfx 63, 29, Str$(O%(0)), imageScreen&
 
+    'Infield
     _PutImage (52 * FontColAdj%, 416)-Step(14 * FontColAdj%, 16), backupScreen&, imageScreen&, (52 * FontColAdj%, 416)-Step(14 * FontColAdj%, 16)
 
-    F$ = "INF:"
-    If INFPOS% = 0 Then F$ = F$ + "NORMAL    "
-    If INFPOS% = 1 Then F$ = F$ + "CORNERS IN"
-    If INFPOS% = 2 Then F$ = F$ + "INFIELD IN"
+    infStatus$ = "INF:"
+    Select Case INFPOS%
+        Case 0: infStatus$ = infStatus$ + "NORMAL    "
+        Case 1: infStatus$ = infStatus$ + "CORNERS IN"
+        Case 2: infStatus$ = infStatus$ + "INFIELD IN"
+    End Select
 
     'Printing black on background
     _PrintMode _KeepBackground , imageScreen&
     Color 4278190080
-    PrintOnGfx 52, 26, F$, imageScreen&
+    PrintOnGfx 52, 26, infStatus$, imageScreen&
 
     'Printing white on black
     Color 4294967295
@@ -383,540 +152,27 @@ Sub MAINSCREEN_G (D, p, BC%, U%, MO)
     Call HOLDSTATUS_G(H0%)
 
     'RUNNER AT SECOND
-    I2 = 2: X = 37: Call DISPRUN_G(I2, p, X)
+    I2 = 2
+    X = 37
+    Call DISPRUN_G(I2, p, X)
+
     If O%(0) <> 3 Then MO = 0
+
     For WK = 1 To 3
         If B0%(WK, 0) > 0 Then MO = MO + 1
     Next
 
     'RUNNER AT THIRD
-    I2 = 3: X = 15: Call DISPRUN_G(I2, p, X)
+    I2 = 3
+    X = 15
+    Call DISPRUN_G(I2, p, X)
 
     'RUNNER AT FIRST
-    I2 = 1: X = 56: Call DISPRUN_G(I2, p, X)
-End Sub
-
-
-'------------------------------
-'   NEWPITCHER_G routine
-'------------------------------
-' ...explanation...
-Sub NEWPITCHER_G
-    V0 = i
-    If S1%(D) <> -1 And P6%(D) > 1 Then I5 = P1%(D): I6 = 22: Call ADDPIT(D, I5, I6)
-    P1%(D) = V0: P6%(D) = P6%(D) + 1: P%(D, V0, 15) = P6%(D): P9 = D: Call PITSTAM(P9)
-    For V0 = 1 To 9
-        If B7%(D, V0) = 1 Or B7%(D, V0) = 10 Then B3%(D, V0) = P1%(D): B7%(D, V0) = 1: B9%(D, 1) = P1%(D): P9 = D: W5 = P9: W6 = P9: VV(P9) = V0: VV1(P9) = V0: Call HITTINGLINES '(l%(), p%(), P1%(), B7%(), b%(), VV(), VV1(),B3%(),B4%(),K9!(),WF!)
-    Next V0
-    VV(P9) = 1: VV1(P9) = 9
-    B9%(D, 1) = P1%(D): Call CHECKSAVE(D, P, S4%)
-    W5 = 1 - P9: W6 = 1 - P9: VV(1 - P9) = 1: VV1(1 - P9) = 9
-    Call HITTINGLINES '(l%(), p%(), P1%(), B7%(), b%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
-    Call FLDDISP_G(BC%, P, U%, D): Call MAINSCREEN_G(D, P, BC%, U%, MO): PPH = 0
-    Call BLANKLINES_G
-    Call RANDNUM(rn)
-    If rn <= 10 Then F$ = "Hold the phone...": Call PBP(F$)
-    F$ = M$(D) + " is making a pitching change": Call PBP(F$)
-    8895 pz = 1
-End Sub
-
-
-'------------------------------
-'   NOJUMP_G routine
-'------------------------------
-' ...explanation...
-Sub NOJUMP_G (D)
-    Y% = Int(Rnd(1) * 20) + 1050
-    Call GETRPBP(Y%, Y$, D)
-    Call STRIPRPBP(Y$, Y%, D)
-    Call PBP(Y$)
-    Call DELAY
-End Sub
-
-
-'------------------------------
-'   OUTATFIRST_G routine
-'------------------------------
-' ...explanation...
-Sub OUTATFIRST_G (W%, D, fbu%, FB2P%)
-    Call PITCHERNAME(W%, D)
-    Call GROUNDERS_G(W%, D)
-    Call RANDNUM(rn)
-    If W% = 3 And rn <= 94 Then Call PBP("he takes it to the bag unassisted"): fbu% = 1: GoTo 3745
-    If W% = 3 Then W% = 1: Call PITCHERNAME(W%, D): Call PBP("He flips it to " + Q$(4) + " covering"): FB2P% = 1: W% = 3
-    If W% = 4 Then Call SECOND2FIRST(D)
-    If W% = 5 Or W% = 6 Then Call THROW2FIRST(D)
-    3745 ':
-End Sub
-
-
-'------------------------------
-'   OUTFIELDERR_G routine
-'------------------------------
-' ...explanation...
-Sub OUTFIELDERR_G ()
-    ':*** outfielders in trouble ***
-    Call RANDNUM(rn)
-    If rn <= 20 Then F$ = Q$(4) + " can't find it"
-    If rn > 20 And rn <= 40 Then F$ = Q$(4) + " misjudges it"
-    If rn > 40 And rn <= 60 Then F$ = Q$(4) + " turns the wrong way"
-    If rn > 60 And rn <= 80 Then F$ = Q$(4) + " loses it"
-    If rn > 80 Then F$ = Q$(4) + " doesn't see it"
-    Call PBP(F$)
-End Sub
-
-
-'------------------------------
-'   PICKEDOFF_G routine
-'------------------------------
-' ...explanation...
-Sub PICKEDOFF_G (D, i)
-    ':*** picked off ***
-    Call BLANKLINES_G
-    Call DELIVERY(D): Call RANDNUM(rn)
-    If rn <= 33 Then Call PBP("NO, " + P$(D, P1%(D)) + " throws to " + H$(i - 1))
-    If rn > 33 And rn <= 66 Then Call PBP("quick move to " + H$(i - 1))
-    If rn > 66 Then Call PBP("pickoff throw to " + H$(i - 1))
-    Call RANDNUM(rn)
-    If rn <= 50 Then F$ = Q$(i - 1) + " is picked off base!"
-    If rn > 50 Then F$ = Q$(i - 1) + " is caught napping"
-    Call PBP(F$): I8 = Int(Rnd(1) * 100) + 1
-    If I8 <= 25 Then Call PBP("he can't believe it")
-    If I8 > 25 And I8 <= 50 Then Call PBP("what a teriffic move by " + P$(D, P1%(D)))
-End Sub
-
-
-'------------------------------
-'   PINCHRUNNER_G routine
-'------------------------------
-' ...explanation...
-Sub PINCHRUNNER_G (MS%, A1, S4%, I2, p, PR%, BC%, U%, D, MO)
-    ' *** CHECK FOR PINCH RUNNER ***
-    i0% = 0
-    If A1 > 1 Or A1 < -2 Or INNING% < 8 Then 8999
     I2 = 1
-    If S4% = 1 Or S4% = 5 Then I2 = 1
-    If S4% = 2 Or S4% = 4 Or S4% = 6 Then I2 = 2
-    ': J REPRESENTS THE SPOT IN THE BATTING ORDER
-    J = B0%(I2, 0)
-    j1 = I2
-    If J = 0 Then 8999
-    If MG%(p, 771) <> 999 Then 8000
-    For I1 = 772 To 777
-        If MG%(p, I1) <> -1 And B%(p, MG%(p, I1), 21) = 0 Then I1 = MG%(p, I1): GoTo 8001
-        MG%(p, I1) = -1
-    Next
-    GoTo 8999
-    8001 If B7%(p, J) = 1 Then 8010
-    For I = 0 To 5
-        If MG%(p, I * 4 + 779) = B3%(p, J) Then 8003
-    Next
-    GoTo 8999
-    8003 ':FOUND A MATCH FOR THE RUNNER ON BASE
-    Call RANDNUM(RN)
-    If INNING% >= MG%(p, I * 4 + 780) And B%(p, MG%(p, I * 4 + 781), 21) = 0 And RN <= MG%(p, I * 4 + 782) Then B%(p, MG%(p, I * 4 + 781), 21) = 40 + J: GoTo 8993
-    GoTo 8999
-    8010 ':PINCH RUNNING FOR THE PITCHER
-    If MG%(p, 803) <> 999 Then 8999
-    Call RANDNUM(RN)
-    If P%(p, P1%(p), 31) <= MG%(p, 804) And INNING% >= MG%(p, 805) And RN <= MG%(p, 806) Then 8993
-    If P%(p, P1%(p), 31) <= MG%(p, 807) And INNING% >= MG%(p, 808) And RN <= MG%(p, 809) Then 8993
-    GoTo 8999
-    8000 If B7%(p, J) = 1 And P%(p, P1%(p), 31) > 4 Then 8999
-    If B7%(p, J) <> 1 And B%(p, B3%(p, J), 16) > 3 Then 8999
-    I1 = -1
-    For I = 0 To 22
-        If B$(p, I) = "XXX" Or B%(p, I, 21) > 0 Then 8992
-        For I2 = 22 To 25
-            If B%(p, I, I2) <> -1 And B%(p, I, I2) = B7%(p, J) And B7%(p, J) <> 1 Then I1 = I
-        Next
-        If B%(p, I, 16) > 5 Then PR%(i0%) = I: i0% = i0% + 1
-    8992 Next
-    If i0% = 0 Or I1 = -1 And B7%(p, J) <> 1 Then 8999
-    If B7%(p, J) <> 1 Then B%(p, I1, 21) = 40 + J
-    RN = Int(Rnd(1) * i0%)
-    I1 = PR%(RN)
-    8993 I2 = J
-    Q$(j1) = B$(p, I1): B%(p, I1, 21) = 1: B3%(p, I2) = I1: B9%(p, B7%(p, I2)) = I1
-    If B7%(p, I2) = 1 Or B7%(p, I2) = 10 Then B9%(p, 1) = 99: B9%(p, 0) = I2: B7%(p, I2) = 10
-    D0%(p) = D0%(p) + 1: X0%(p, 0, D0%(p)) = B3%(p, I2)
-    X0%(p, 1, D0%(p)) = 11: ' WAS EQUAL TO B7%(p, I2)
-    X0%(p, 2, D0%(p)) = (I2 * 10) + (D0%(p) - 9)
-    W5 = p: W6 = p: VV(p) = I2: VV1(p) = I2
-    For xx = 22 To 25
-        If B7%(p, I2) = B%(p, I1, xx) Then B%(p, I1, 15) = B%(p, I1, 33 + (xx - 22) * 2): B%(p, I1, 17) = B%(p, I1, 34 + (xx - 22) * 2): B%(p, I1, 19) = B%(p, I1, xx + 4): GoTo 8995
-    Next
-    8995 Call BLANKLINES_G: Call PBP(M$(p) + " is sending in a pinch runner"): PR% = 1
-    Call HITTINGLINES '(l%(), p%(), P1%(), B7%(), b%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
-    Call FLDDISP_G(BC%, p, U%, D)
-    Call MAINSCREEN_G(D, p, BC%, U%, MO)
-    MS% = 1
-    VV(p) = 1: VV1(p) = 9
-    8999 ':
+    X = 56
+    Call DISPRUN_G(I2, p, X)
+
 End Sub
-
-
-'------------------------------
-'   PITCHOUT_G routine
-'------------------------------
-' ...explanation...
-Sub PITCHOUT_G (S4%, TGTBASE%, Q0)
-    If S4% = 5 Or TGTBASE% <> 2 Then 4883: '*** PITCH OUT ***
-    PJ = Int(Rnd(1) * 100) + 1
-    If PJ <= 8 Then Call PBP("...PITCH OUT!!!"): Q0 = Q0 - 200
-    4883 ':
-End Sub
-
-
-'------------------------------
-'   PLYRHRT_G routine
-'------------------------------
-' ...explanation...
-Sub PLYRHRT_G (P9, W5, W6, BC%, U%, D, MO)
-    ':*** Offensive Player Ejected/Injured ***
-    If U6 = 2 Or U6 = 1 And P = U9 Then 2805
-    Call PBP("You must replace " + Q$(0) + " with a pinch-hitter"): GoTo 2849
-    2805 For i = 0 To 22: If B%(P, i, 21) > 0 Or B$(P, i) = "XXX" Then 2808
-        If B7%(P, B1!(P)) <> B%(P, i, 22) And B7%(P, B1!(P)) <> B%(P, i, 23) And B7%(P, B1!(P)) <> B%(P, i, 24) And B7%(P, B1!(P)) <> B%(P, i, 25) Then 2808
-        2807 Call PBP(Q$(0) + " will be replaced by " + B$(P, i))
-        D0%(P) = D0%(P) + 1: X0%(P, 0, D0%(P)) = i: X0%(P, 1, D0%(P)) = B7%(P, B1!(P)): X0%(P, 2, D0%(P)) = (B1!(P) * 10) + (D0%(P) - 9)
-        B%(P, i, 21) = 1: B3%(P, B1!(P)) = i: B9%(P, B7%(P, B1!(P))) = i: If B7%(P, B1!(P)) = 1 Or B7%(P, B1!(P)) = 10 Then B9%(P, 1) = 99: B9%(P, 0) = B1!(P): B7%(P, B1!(P)) = 10
-        P9 = P: W5 = P9: W6 = P9: VV(P9) = B1!(P): VV1(P9) = B1!(P)
-        VV(P9) = 1: VV1(P9) = 9
-        Q$(0) = B$(P, B3%(P, B1!(P)))
-        If B7%(P, B1!(P)) = 1 Then Q$(0) = P$(P, P1%(D))
-        GoTo 2849
-    2808 Next i
-    For i = 0 To 22: If B%(P, i, 21) > 0 Or B$(P, i) = "XXX" Then 2810
-        GoTo 2807
-    2810 Next i
-    2849 ':
-End Sub
-
-
-'------------------------------
-'   INJURYLENGTH_G routine
-'------------------------------
-' ...explanation...
-Sub INJURYLENGTH_G (D, po%)
-    IJL% = IJL% + 1
-    IJ$(IJL%) = B$(D, B9%(D, po%))
-    F$ = B$(D, B9%(D, po%)) + " is injured for": Call PBP(F$)
-    ':*** Determine Injury Length ***
-    il = 0
-    If B%(D, B9%(D, po%), 3) = 162 Then F$ = " 'ainder of game": GoTo 2115
-    GoSub 2116
-    If il = 0 Then 2115
-    If B%(D, B9%(D, po%), 3) = 161 Then F$ = " this game and next game": il = 1: GoTo 2115
-    il = Int(Rnd(1) * (162 - B%(D, B9%(D, po%), 3))) + 1
-    F$ = Str$(il) + " games"
-    2115 Call PBP(F$)
-    B%(D, B9%(D, po%), 32) = B%(D, B9%(D, po%), 32) + il
-    Call DELAY: Call DELAY
-    Call EJECTIONINJURY_G(D, po%)
-    GoTo 2120
-    2116 ct = 0
-    For I = 0 To 22
-        For I1 = 22 To 25
-            If B%(D, I, I1) = po% And B%(D, I, 32) = 0 And I <> B9%(D, po%) Then ct = ct + 1
-            If ct > 3 Then il = 1: GoTo 2117
-        Next
-    Next
-    F$ = " 'ainder of game": il = 0
-    2117 Return
-
-    2120
-End Sub
-
-
-'------------------------------
-'   EJECTIONINJURY_G routine
-'------------------------------
-' ...explanation...
-Sub EJECTIONINJURY_G (D, po%)
-    ':*** Defensive Player Ejected/Injured ***
-    If U6 = 2 Or U6 = 1 And P <> U9 Then 2704
-    F$ = "You must replace " + B$(D, B9%(D, po%)): Call PBP(F$): GoTo 2749
-    2704 For I2 = 1 To 9
-        If B7%(D, I2) = po% Then 2705
-    Next
-    2705 For i = 0 To 22
-        If B%(D, i, 21) > 0 Or B$(D, i) = "XXX" Then 2708
-        If B7%(D, I2) <> B%(D, i, 22) And B7%(D, I2) <> B%(D, i, 23) And B7%(D, I2) <> B%(D, i, 24) And B7%(D, I2) <> B%(D, i, 25) Then 2708
-        2707 F$ = B$(D, B9%(D, po%)) + " will be replaced by " + B$(D, i): Call PBP(F$)
-        D0%(D) = D0%(D) + 1
-        X0%(D, 0, D0%(D)) = i
-        X0%(D, 1, D0%(D)) = B7%(D, I2)
-        X0%(D, 2, D0%(D)) = (I2 * 10) + (D0%(D) - 9)
-        B%(D, i, 21) = 1
-        B3%(D, I2) = i
-        I7% = D: I8% = I2: i9% = i
-        Call REPLACEMENTS(I7%, I8%, i9%)
-        B9%(D, B7%(D, I2)) = i
-        P9 = D: W5 = P9: W6 = P9
-        VV(P9) = 1: VV1(P9) = 9
-        GoTo 2749
-    2708 Next i
-    For i = 0 To 22
-        If B%(D, i, 21) > 0 Or B$(D, i) = "XXX" Then 2710
-        GoTo 2707
-    2710 Next i
-    2749 ':
-End Sub
-
-
-'------------------------------
-'   INJPIT_G routine
-'------------------------------
-' ...explanation...
-Sub INJPIT_G (p, D, IP%)
-    ':*** Defensive Pitcher Ejected/Injured ***
-    If U6 = 2 Or U6 = 1 And p <> U9 Then 2755
-    F$ = "You must replace " + P$(D, P1%(D)): Call PBP(F$): GoTo 2799
-    2755 IP% = 1: ':CALL RELIEVERS
-    2799 ':
-End Sub
-
-
-'------------------------------
-'   OPTIONS_G routine
-'------------------------------
-' ...explanation...
-Sub OPTIONS_G ()
-    Dim u6$(3)
-    Cls: Screen 0
-    u6$(0) = "HUMAN OPPONENT      "
-    u6$(1) = "COMPUTER VISIT TEAM "
-    u6$(2) = "COMPUTER HOME TEAM  "
-    u6$(3) = "COMPUTER VS COMPUTER"
-
-
-    If U6 = 2 Then U6 = 3: GoTo 170
-    If U6 = 1 And U9 = 1 Then U6 = 2: GoTo 170
-    If U6 = 1 And U9 = 0 Then U6 = 1
-
-    170 Cls
-    171 Color , 0: Locate 3, 1
-    Color 14: Print "(1) ";: Color 15: Print u6$(U6)
-    Color 14: Print "(2) ";: Color 15: Print Using "DISPLAY INTERVAL: #.# "; displayPause
-    Color 14: Print "<ENTER> ";: Color 15: Print "RETURN TO GAME PLAY"
-    183 Color 7, 0: I$ = InKey$: If I$ = "" Then 183
-    I = Val(I$)
-    If I < 0 Or I > 2 Then 183
-    If I = 0 Then 184
-    If I = 1 Then U6 = U6 + 1
-    If U6 > 3 Then U6 = 0
-    If I = 1 Then 171
-    If I = 2 Then Locate 4, 22: Input displayPause: GoTo 171
-
-    184 If U6 = 0 Then 185
-    If U6 = 3 Then U6 = 2: GoTo 185
-    If U6 = 2 Then U6 = 1: U9 = 1: GoTo 185
-    U6 = 1: U9 = 0
-
-    185 ':
-End Sub
-
-
-'------------------------------
-'   RAREPLAYS_G routine
-'------------------------------
-' ...explanation...
-Sub RAREPLAYS_G (H6%, H7%) ', IP%)
-    If H7% = 20 Then H7% = 0: GoTo 2008
-    2000 Call BLANKLINES_G: H6% = Int(Rnd(1) * 100) + 1
-    If H6% = 1 Then F$ = B$(D, B9%(D, 2)) + " is arguing the calls": Call PBP(F$)
-    If H6% = 1 Then Call PBP(U$(1) + " has heard enough")
-    If H6% = 1 Then Call PBP(B$(D, B9%(D, 2)) + " has been ejected!!"): X$ = B$(D, B9%(D, 2)): Call EJECTINC(EJ%, X$): po% = 2: Call EJECTIONINJURY_G(D, po%): GoTo 2850
-    If H6% <= 3 Then Call PBP(P$(D, P1%(D)) + " steps off the mound")
-    If H6% <= 3 Then Call PBP("He is shouting at " + U$(1))
-    If H6% <= 3 Then Call PBP(U$(1) + " does not appreciate it..."): Call PBP(P$(D, P1%(D)) + " has been ejected!!")
-    If H6% <= 3 Then X$ = P$(D, P1%(D)): Call EJECTINC(EJ%, X$): Call INJPIT_G(P, D, IP%): GoTo 2850
-    If H6% = 4 And B7%(P, B1!(P)) <> 1 Then Call PBP(Q$(0) + " is unhappy with that last call"): Call PBP("He is venting his opinion to " + U$(1)): Call PBP("Thats it!! " + U$(1) + " ejects him!!")
-    If H6% = 4 And B7%(P, B1!(P)) <> 1 Then X$ = Q$(0): Call EJECTINC(EJ%, X$): Call PLYRHRT_G(P9, W5, W6, BC%, U%, D, MO)
-    If H6% = 4 And B7%(P, B1!(P)) <> 1 Then 2850
-    If H6% = 4 Then Call PBP(Q$(0) + " is unhappy with the last call!!"): GoTo 2850
-    If H6% > 5 Then 2005
-    Call PBP(Q$(0) + " hits a slow roller to first")
-    Call PBP(B$(D, B9%(D, 3)) + " fields it cleanly")
-    Call PBP("He flips it to " + P$(D, P1%(D)) + " covering just in time!")
-    Call PBP("Wait... " + U$(2) + " rules safe!!")
-    If B7%(P, B1!(P)) <> 1 Then I5 = B3%(P, B1!(P)): I6 = 0: Call INCBATOFF(P, I5, I6): I6 = 1: Call INCBATOFF(P, I5, I6)
-    I5 = P1%(D): I6 = 1: Call ADDPIT(D, I5, I6)
-    If B7%(P, B1!(P)) = 1 Then I5 = P1%(P): I6 = 23: Call INCPITOFF(P, I5, I6): I6 = 24: Call INCPITOFF(P, I5, I6)
-    For i = 0 To 3: A5%(i) = 1: Next i: Call ADVANCEMENT(P, D, S2%, F%, I3): Call SCOREBOARD_G
-    Call BLANKLINES_G
-    Call PBP(M$(D) + " charges from the dugout")
-    Call PBP(M$(D) + ", " + P$(D, P1%(D)) + ",")
-    Call PBP(B$(D, B9%(D, 2)) + ", and " + B$(D, B9%(D, 3)))
-    Call PBP("are going at it with " + U$(2))
-    Call PBP(U$(3) + " and " + U$(1) + " come to help")
-    Call PBP("This argument is out of control now!!")
-    Call PBP("What is this!!")
-    Call PBP("All of them have been ejected!!!")
-    X$ = P$(D, P1%(D)): Call EJECTINC(EJ%, X$)
-    X$ = B$(D, B9%(D, 2)): Call EJECTINC(EJ%, X$)
-    X$ = B$(D, B9%(D, 3)): Call EJECTINC(EJ%, X$)
-    X$ = M$(D): Call EJECTINC(EJ%, X$)
-    po% = 2: Call EJECTIONINJURY_G(D, po%): po% = 3: Call EJECTIONINJURY_G(D, po%): Call INJPIT_G(P, D, IP%): GoTo 2850
-    2005 If H6% > 7 Then 2007
-    Call PBP(Q$(0) + " sends a long one")
-    Call PBP("down the left field line")
-    Call PBP("It may go..."): Call PBP("HOME RUN!!!")
-    Call PBP("Wait!!! "): Call PBP(U$(4) + " is calling it foul!!")
-    Call BLANKLINES_G
-    Call PBP(Q$(0) + " is arguing vehemently")
-    Call PBP(M$(P) + " charges from the dugout")
-    Call PBP("He and " + Q$(0) + " are really fuming")
-    Call PBP(Q$(0) + " has just been tossed!!")
-    X$ = Q$(0): Call EJECTINC(EJ%, X$)
-    Call PLYRHRT_G(P9, W5, W6, BC%, U%, D, MO): GoTo 2850
-    2007 If H6% = 8 Then Call PBP(U$(1) + " has just ejected " + P$(D, P1%(D)))
-    If H6% = 8 Then Call PBP("He was wetting the ball!!"): Call EJECTINC(EJ%, X$): EJ$(EJ%) = P$(D, P1%(D)): Call INJPIT_G(P, D, IP%): GoTo 2850
-    If H6% = 9 Then Call PBP("Here's the 3-2 pitch..."): Call PBP("Time called..."): Call PBP(U$(1) + " is calling it ball 4"): Call PBP("He says " + P$(D, P1%(D)) + " went to his mouth"): GoTo 2850
-    If H6% > 15 Then 2006
-    Call PBP(Q$(0) + " hits the deck on a high")
-    Call PBP("and tight pitch from " + P$(D, P1%(D)))
-    Call PBP(Q$(0) + " charges the mound!")
-    Call PBP("Both dugouts have emptied...")
-    Call PBP("It's a bench-clearing brawl!")
-    Call BLANKLINES_G
-    Call PBP("It will take time to clean this up"): i = Int(Rnd(1) * 3) + 1
-    If i = 1 Then Call PBP(P$(D, P1%(D)) + " has been ejected"): X$ = P$(D, P1%(D)): Call EJECTINC(EJ%, X$): Call INJPIT_G(P, D, IP%): GoTo 2850
-    If i = 2 Then Call PBP(Q$(0) + " has been ejected"): X$ = Q$(0): Call EJECTINC(EJ%, X$): Call PLYRHRT_G(P9, W5, W6, BC%, U%, D, MO): GoTo 2850
-    Call PBP(Q$(0) + " and " + P$(D, P1%(D)) + " have been ejected"): X$ = Q$(0): Call EJECTINC(EJ%, X$): X$ = P$(D, P1%(D)): Call EJECTINC(EJ%, X$): Call INJPIT_G(P, D, IP%): Call PLYRHRT_G(P9, W5, W6, BC%, U%, D, MO): GoTo 2850
-    2006 If H6% > 21 Then 2010
-    2008 H6% = 21: Call BLANKLINES_G
-    If RD = 0 And (PC% = 0 Or PC% = 4) Then Call PBP(Q$(0) + " fouls the pitch out of play"): GoTo 2850
-    tm = Int(Rnd(1) * 59) + 2: Call PBP("The game has been halted by rain"): For i = 1 To 2: Call DELAY: Next
-    Call PBP("Rain delay lasted" + Str$(tm) + " minutes"): Call DELAY
-    RD% = 1
-    If tm > 28 Then Call PBP("Pitchers lost effectiveness during delay"): Call PBP("Their arms have stiffened"): Call DELAY: For i = 0 To 1: S8%(i, 0) = S8%(i, 0) - 2: Next
-    GoTo 2850
-    2010 If H6% > 24 Then 2015
-    If s4% = 0 And L%(1, 13) = 14 Then Call PBP(Q$(0) + " steps out of the box"): Call PBP("A jet is passing over"): GoTo 2850
-    If s4% = 0 Then Call PBP(U$(1) + " calls time to get new baseballs"): GoTo 2850
-    F$ = B$(D, B9%(D, 2)) + " rifles the ball to "
-    If s4% = 1 Then Call PBP(F$ + "1st..."): i = 2: GoTo 2012
-    If s4% = 2 Or s4% = 4 Then Call PBP(F$ + "2nd base..."): i = 3: GoTo 2012
-    Call PBP(F$ + "3rd base..."): i = 4
-    2012 Call PBP(Q$(i - 1) + " is picked off base!")
-    A5%(i - 1) = 10: O%(0) = O%(0) + 1: O%(1) = O%(1) + 1: W% = 2
-    Call CREDITASSIST%(W%, D): Call ADVANCEMENT%(P, D, S2%, F%, I3): Call CREDITPUTOUT(I3, FB2P%, AST%, D)
-    I5 = P1%(D): I6 = 0: Call ADDPIT(D, I5, I6)
-    If O%(0) >= 3 Then B1!(P) = B1!(P) - 1: H6% = 5: GoTo 2850
-    2015 If H6% > 29 Then 2020
-    Call PBP(Q$(0) + " pops it up near the 3rd base stands")
-    Call PBP("A fan interferes...")
-    Call PBP(B$(D, B9%(D, 6)) + " makes a great catch!!"): W% = 6: Call CREDITREGPO(W%, D)
-    O%(0) = O%(0) + 1: O%(1) = O%(1) + 1
-    If B7%(P, B1!(P)) <> 1 Then I5 = B3%(P, B1!(P)): I6 = 0: Call INCBATOFF(P, I5, I6)
-    I5 = P1%(D): I6 = 0: Call ADDPIT(D, I5, I6)
-    If B7%(P, B1!(P)) = 1 Then I5 = P1%(P): I6 = 23: Call INCPITOFF(P, I5, I6)
-    GoTo 2850
-    2020 If H6% <= 31 Then Call PBP(Q$(0) + " pops it up foul near the stands")
-    If H6% <= 30 Then Call PBP(B$(D, B9%(D, 2)) + " runs into the stands!!"): po% = 2: GoTo 2099
-    If H6% <= 31 Then Call PBP(B$(D, B9%(D, 3)) + " gives chase"): Call PBP("he runs into the stands!!"): po% = 3: GoTo 2099
-    If H6% = 32 Then Call PBP(Q$(0) + " pops it up foul down the rf line"): Call PBP(B$(D, B9%(D, 4)) + " crashes into the wall"): po% = 4: GoTo 2099
-    If H6% = 33 Then Call PBP(Q$(0) + " pops it up foul")
-    If H6% = 33 Then Call PBP("it's by the 3rd base dugout")
-    If H6% = 33 Then Call PBP(B$(D, B9%(D, 5)) + " tumbles in!!"): po% = 5: GoTo 2099
-    If H6% = 34 Then Call PBP(Q$(0) + " pops it up foul")
-    If H6% = 34 Then Call PBP("down the lf line")
-    If H6% = 34 Then Call PBP(B$(D, B9%(D, 6)) + " tumbles over the railing!!"): po% = 6: GoTo 2099
-    If H6% > 37 Then 2023
-    Call PBP(Q$(0) + " lines one to deep left"): Call PBP(B$(D, B9%(D, 7)) + " races back..."): Call PBP("He slams into the wall and is down!!")
-    op% = 7: Call PBP(B$(D, B9%(D, 8)) + " comes over"): Call PBP("He gets the ball in")
-    2021 I5 = P1%(D): I6 = 1: Call ADDPIT(D, I5, I6)
-    If B7%(P, B1!(P)) <> 1 Then I5 = B3%(P, B1!(P)): I6 = 0: Call INCBATOFF(P, I5, I6): I6 = 1: Call INCBATOFF(P, I5, I6): I6 = 4: Call INCBATOFF(P, I5, I6)
-    If B7%(P, B1!(P)) = 1 Then I5 = P1%(P): I6 = 23: Call INCPITOFF(P, I5, I6): I6 = 24: Call INCPITOFF(P, I5, I6): I6 = 27: Call INCPITOFF(P, I5, I6)
-    For i = 0 To 3: A5%(i) = 2: Next i: A5%(3) = 1: A5%(1) = 3: Call ADVANCEMENT(P, D, S2%, F%, I3): Call SCOREBOARD_G: Call BLANKLINES_G: po% = op%: GoTo 2098
-    2023 If H6% > 40 Then 2025
-    Call PBP(Q$(0) + " drives a sinking liner to cf")
-    Call PBP(B$(D, B9%(D, 8)) + " gets a good jump on it")
-    Call PBP("He crashes into the wall")
-    Call PBP("the ball bounces away!!")
-    Call PBP("The runners are circling the bases")
-    Call PBP(B$(D, B9%(D, 9)) + " retrieves the ball")
-    I5 = P1%(D): I6 = 1: Call ADDPIT%(D, I5, I6): I6 = 14: Call ADDPIT(D, I5, I6): W% = 8
-    If B7%(P, B1!(P)) <> 1 Then I5 = B3%(P, B1!(P)): I6 = 0: Call INCBATOFF(P, I5, I6): I6 = 1: Call INCBATOFF(P, I5, I6): I6 = 6: Call INCBATOFF(P, I5, I6)
-    If B7%(P, B1!(P)) = 1 Then I5 = P1%(P): I6 = 23: Call INCPITOFF(P, I5, I6): I6 = 24: Call INCPITOFF(P, I5, I6): I6 = 29: Call INCPITOFF(P, I5, I6)
-    A5%(0) = 4: A5%(1) = 3: A5%(2) = 2: A5%(3) = 1: Call ADVANCEMENT(P, D, S2%, F%, I3): Call PBP("It's an inside the park HOME RUN!!!"): Call DELAY: Call SCOREBOARD_G: Call BLANKLINES_G: po% = 8: GoTo 2098
-    2025 If H6% > 43 Then 2027
-    Call PBP(Q$(0) + " lifts a deep drive to rf"): Call PBP(B$(D, B9%(D, 9)) + " races back..."): Call PBP("He slams into the wall and is down!!")
-    I5 = P1%(D): I6 = 1: Call ADDPIT(D, I5, I6): W% = 9: Call PBP(B$(D, B9%(D, 8)) + " comes over"): Call PBP("he gets the ball back in")
-    If B7%(P, B1!(P)) <> 1 Then I5 = B3%(P, B1!(P)): I6 = 0: Call INCBATOFF(P, I5, I6): I6 = 1: Call INCBATOFF(P, I5, I6): I6 = 5: Call INCBATOFF(P, I5, I6)
-    If B7%(P, B1!(P)) = 1 Then I5 = P1%(P): I6 = 23: Call INCPITOFF(P, I5, I6): I6 = 24: Call INCPITOFF(P, I5, I6): I6 = 28: Call INCPITOFF(P, I5, I6)
-    A5%(0) = 3: A5%(1) = 3: A5%(2) = 2: A5%(3) = 1: Call ADVANCEMENT(P, D, S2%, F%, I3): Call PBP("Triple!!"): Call DELAY: Call SCOREBOARD_G: Call BLANKLINES_G: po% = 9: GoTo 2098
-    2027 If H6% > 44 Then 2030
-    I5 = P1%(D): I6 = 1: Call ADDPIT(D, I5, I6): W% = Int(Rnd(1) * 3) + 7: Call PBP(Q$(0) + " hits a sinking liner to " + C$(W%))
-    Call PBP(B$(D, B9%(D, W%)) + " dives for the catch...")
-    Call PBP("the ball rolls free!")
-    Call PBP(B$(D, B9%(D, W% - 1)) + " gets the ball in")
-    op% = W%: GoTo 2021
-    2030 If H6% = 45 Then Call PBP(Q$(0) + " is beaned and injured"): Call PLYRHRT_G(P9, W5, W6, BC%, U%, D, MO): GoTo 2850
-    If H6% <= 49 Then Call PBP(B$(D, B9%(D, 2)) + " is injured by a foul tip!"): po% = 2: GoTo 2099
-    If H6% > 58 Then 2037
-    i = Int(Rnd(1) * 3) + 7
-    If i = 9 Then hi1 = 3: hi2 = 9: hi3 = 8
-    If i = 8 Then hi1 = 4: hi2 = 8: hi3 = 7
-    If i = 7 Then hi1 = 6: hi2 = 7: hi3 = 8
-    Call PBP(Q$(0) + " hits a weak fly to short " + C$(i))
-    Call PBP(B$(D, B9%(D, hi1)) + " goes out")
-    Call PBP(B$(D, B9%(D, hi2)) + " is charging in")
-    Call PBP("They collide and the ball rolls free!!")
-    Call PBP(B$(D, B9%(D, hi3)) + " gets it back in")
-    I5 = P1%(D): I6 = 1: Call ADDPIT(D, I5, I6)
-    If B7%(P, B1!(P)) <> 1 Then I5 = B3%(P, B1!(P)): I6 = 0: Call INCBATOFF(P, I5, I6): I6 = 1: Call INCBATOFF(P, I5, I6): I6 = 4: Call INCBATOFF(P, I5, I6)
-    If B7%(P, B1!(P)) = 1 Then I5 = P1%(P): I6 = 23: Call INCPITOFF(P, I5, I6): I6 = 24: Call INCPITOFF(P, I5, I6): I6 = 27: Call INCPITOFF(P, I5, I6)
-    For i = 0 To 3: A5%(i) = 2: Next i: A5%(3) = 1: A5%(1) = 3: Call ADVANCEMENT(P, D, S2%, F%, I3): Call SCOREBOARD_G
-    Call BLANKLINES_G: po% = hi1: Call INJURYLENGTH_G(D, po%): po% = hi2: Call INJURYLENGTH_G(D, po%): H6% = 5: GoTo 2850
-    2037 If H6% <= 61 Then Call PBP(Q$(0) + " fouls one off his foot"): Call PBP("He is injured"): Call PLYRHRT_G(P9, W5, W6, BC%, U%, D, MO): H6% = 1: GoTo 2850
-    If H6% > 64 Then 2040
-    Call PBP(Q$(0) + " pops it up"): Call PBP("it's along the 3b line"): Call PBP("It drifts into foul territory")
-    Call PBP(B$(D, B9%(D, 5)) + " and " + P$(D, P1%(D)) + " give chase")
-    Call PBP("they collide!!")
-    Call PBP(B$(D, B9%(D, 5)) + " is down and injured"): po% = 5: GoTo 2099
-    2040 If H6% > 70 Then 2045
-    I5 = P1%(D): I6 = 1: Call ADDPIT(D, I5, I6): W% = 8: Call LONGFLY_G(D, W%)
-    Call PBP(B$(D, B9%(D, 7)) + " collides with " + B$(D, B9%(D, 8)) + "!!")
-    Call PBP("both fielders are down... ")
-    Call PBP(B$(D, B9%(D, 6)) + " gets the ball back in")
-    If B7%(P, B1!(P)) <> 1 Then I5 = B3%(P, B1!(P)): I6 = 0: Call INCBATOFF(P, I5, I6): I6 = 1: Call INCBATOFF(P, I5, I6): I6 = 4: Call INCBATOFF(P, I5, I6)
-    If B7%(P, B1!(P)) = 1 Then I5 = P1%(P): I6 = 23: Call INCPITOFF(P, I5, I6): I6 = 24: Call INCPITOFF(P, I5, I6): I6 = 27: Call INCPITOFF(P, I5, I6)
-    A5%(0) = 2: A5%(1) = 3: A5%(2) = 2: A5%(3) = 1
-    Call ADVANCEMENT(P, D, S2%, F%, I3): Call PBP("Double!!"): Call SCOREBOARD_G
-    Call BLANKLINES_G: po% = 7: Call INJURYLENGTH_G(D, po%)
-    po% = 8: Call INJURYLENGTH_G(D, po%): H6% = 5
-    GoTo 2850
-    2045 If H6% > 85 Then 2055
-    Call PBP(Q$(0) + " lines it hard")
-    i = Int(Rnd(1) * 5) + 1: On i GOTO 2046, 2047, 2047, 2047, 2047
-    2046 Call PBP("It's off the leg of " + P$(D, P1%(D)))
-    If B7%(P, B1!(P)) <> 1 Then I5 = B3%(P, B1!(P)): I6 = 0: Call INCBATOFF(P, I5, I6): I6 = 1: Call INCBATOFF(P, I5, I6)
-    If B7%(P, B1!(P)) = 1 Then I5 = P1%(P): I6 = 23: Call INCPITOFF(P, I5, I6): I6 = 24: Call INCPITOFF(P, I5, I6)
-    I5 = P1%(D): I6 = 1: Call ADDPIT(D, I5, I6)
-    For i = 0 To 3: A5%(i) = 1: Next: Call ADVANCEMENT(P, D, S2%, F%, I3): Call SCOREBOARD_G: Call BLANKLINES_G
-    Call PBP("He reaches on a single")
-    Call PBP(P$(D, P1%(D)) + " is down and in pain!")
-    Call INJPIT_G(P, D, IP%): H6% = 5: GoTo 2850
-    2047 po% = i + 1
-    Call PBP("it's off of " + B$(D, B9%(D, po%)) + " for a single")
-    If B7%(P, B1!(P)) <> 1 Then I5 = B3%(P, B1!(P)): I6 = 0: Call INCBATOFF(P, I5, I6): I6 = 1: Call INCBATOFF(P, I5, I6)
-    If B7%(P, B1!(P)) = 1 Then I5 = P1%(P): I6 = 23: Call INCPITOFF(P, I5, I6): I6 = 24: Call INCPITOFF(P, I5, I6)
-    I5 = P1%(D): I6 = 1: Call ADDPIT(D, I5, I6)
-    For i = 0 To 3: A5%(i) = 1: Next: Call ADVANCEMENT(P, D, S2%, F%, I3): Call SCOREBOARD_G: Call BLANKLINES_G
-    Call PBP(B$(D, B9%(D, po%)) + " is down and injured")
-    Call INJURYLENGTH_G(D, po%): H6% = 5: GoTo 2850
-    2055 If H6% <= 89 Then Call PBP(P$(D, P1%(D)) + " is motioning for " + M$(D)): Call PBP("It appears he has a blister"): Call PBP("He will have to leave the game"): Call INJPIT_G(P, D, IP%): H6% = 1: GoTo 2850
-    If H6% = 90 Then Call PBP(Q$(0) + " takes a mighty swing!"): Call PBP("It looks like he injured himself"): Call PLYRHRT_G(P9, W5, W6, BC%, U%, D, MO): H6% = 1: GoTo 2850
-    If H6% = 91 Then Call PBP("Time is called"): Call PBP("Morganna strikes again!!"): H6% = 1: GoTo 2850
-    Call PBP(U$(1) + " calls time to dust the plate"): H6% = 1: GoTo 2850
-    2098 Call INJURYLENGTH_G(D, po%): H6% = 5: GoTo 2850
-    2099 Call INJURYLENGTH_G(D, po%): H6% = 1: GoTo 2850
-    2850 ':
-End Sub
-
 
 
 '------------------------------
@@ -924,54 +180,60 @@ End Sub
 '------------------------------
 ' ...explanation...
 Sub DISPRUN_G (I2, p, X)
+
+    'I2 = Base #
+
     Select Case I2
-        Case 1: _PutImage (37 * FontColAdj%, 304)-Step(10 * FontColAdj%, 32), backupScreen&, imageScreen&, (37 * FontColAdj%, 304)-Step(10 * FontColAdj%, 32)
-        Case 2: _PutImage (15 * FontColAdj%, 336)-Step(10 * FontColAdj%, 32), backupScreen&, imageScreen&, (15 * FontColAdj%, 336)-Step(10 * FontColAdj%, 32)
-        Case 3: _PutImage (56 * FontColAdj%, 336)-Step(10 * FontColAdj%, 32), backupScreen&, imageScreen&, (56 * FontColAdj%, 336)-Step(10 * FontColAdj%, 32)
+        '1st Base
+        Case 1: _PutImage (54 * FontColAdj%, 336)-Step(14 * FontColAdj%, 32), backupScreen&, imageScreen&, (54 * FontColAdj%, 336)-Step(14 * FontColAdj%, 32)
+
+            '2nd Base
+        Case 2: _PutImage (35 * FontColAdj%, 304)-Step(14 * FontColAdj%, 32), backupScreen&, imageScreen&, (37 * FontColAdj%, 304)-Step(14 * FontColAdj%, 32)
+
+            '3rd Base
+        Case 3: _PutImage (15 * FontColAdj%, 336)-Step(14 * FontColAdj%, 32), backupScreen&, imageScreen&, (15 * FontColAdj%, 336)-Step(14 * FontColAdj%, 32)
+
     End Select
 
-    J = B0%(I2, 0): If J = 0 Then 363
-    Y = 22
-    If I2 = 2 Then Y = 20
+    J = B0%(I2, 0)
 
-    'Printing white on background
-    _PrintMode _KeepBackground , imageScreen&
-    Color 4294967295
+    If J <> 0 Then
 
-    If B7%(p, J) = 1 And P%(p, P1%(p), 11) <> 999 Then
-        F$ = P$(p, P1%(p))
-        Call SPA(F$, 10)
+        Y = 22
+        If I2 = 2 Then Y = 20
 
-        PrintOnGfx X, Y - 1, F$, imageScreen&
+        'Printing white on background
+        _PrintMode _KeepBackground , imageScreen&
+        Color 4294967295
 
-        PrintOnGfx X, Y, "1/  0", imageScreen&
+        'Print #9, "Calling gfx print from DISPRUN_G; usingGfx = "; Str$(usingGfx)
 
-        GoTo 363
+        If B7%(p, J) = 1 Then
+            If P%(p, P1%(p), 11) <> 999 Then
+                runner$ = P$(p, P1%(p))
+                runner$ = PadRight(runner$, 11)
+                PrintOnGfx X, Y - 1, runner$, imageScreen&
+                PrintOnGfx X, Y, "1/  0", imageScreen&
+            Else
+                runner$ = P$(p, P1%(p))
+                runner$ = PadRight(runner$, 11)
+                PrintOnGfx X, Y - 1, runner$, imageScreen&
+                runStats$ = FUsing$(Str$(P%(p, P1%(p), 31)), "#", 1) + "/" + FUsing$(Str$(P%(p, P1%(p), 29)), "###", 1)
+                PrintOnGfx X, Y, runStats$, imageScreen&
+            End If
+        Else
+            runner$ = B$(p, B3%(p, J))
+            runner$ = PadRight(runner$, 11)
+            PrintOnGfx X, Y - 1, runner$, imageScreen&
+            runStats$ = FUsing$(Str$(B%(p, B3%(p, J), 16)), "#", 1) + "/" + FUsing$(Str$(B%(p, B3%(p, J), 13)), "###", 1)
+            PrintOnGfx X, Y, runStats$, imageScreen&
+
+            'Printing white on black
+            _PrintMode _FillBackground , imageScreen&
+        End If
+
     End If
 
-    If B7%(p, J) = 1 Then
-        F$ = P$(p, P1%(p))
-        Call SPA(F$, 10)
-
-        PrintOnGfx X, Y - 1, F$, imageScreen&
-        F$ = FUsing$(Str$(P%(p, P1%(p), 31)), "#", 1) + "/" + FUsing$(Str$(P%(p, P1%(p), 29)), "###", 1)
-
-        PrintOnGfx X, Y, F$, imageScreen&
-        GoTo 363
-    End If
-
-    F$ = B$(p, B3%(p, J))
-    Call SPA(F$, 10)
-
-    PrintOnGfx X, Y - 1, F$, imageScreen&
-    F$ = FUsing$(Str$(B%(p, B3%(p, J), 16)), "#", 1) + "/" + FUsing$(Str$(B%(p, B3%(p, J), 13)), "###", 1)
-
-    PrintOnGfx X, Y, F$, imageScreen&
-
-    'Printing white on black
-    _PrintMode _FillBackground , imageScreen&
-
-    363 'DONE
 End Sub
 
 
@@ -980,10 +242,16 @@ End Sub
 '------------------------------
 ' ...explanation...
 Sub FLDDISP_G (BC%, p, U%, D)
+
     ReDim FORMATTED$(0 To 2)
-    X% = 1: Y% = 9
-    If INNING% > 9 Then X% = 10: Y% = 18
-    If INNING% > 18 Then X% = 19: Y% = 27
+
+    inningStart% = 1
+    inningEnd% = 9
+
+    If INNING% > 9 Then X% = 10: inningStart% = 18
+    If INNING% > 18 Then X% = 19: inningEnd% = 27
+
+    'Print #9, "Calling gfx print from FLDDISP_G; usingGfx = "; Str$(usingGfx)
 
     'Print Batter / Pitcher box
     '----------------------------------------
@@ -998,7 +266,7 @@ Sub FLDDISP_G (BC%, p, U%, D)
     Next
 
     For X1% = 0 To 2
-        FORMATTED$(X1%) = FUsing$(Str$(X% + 3 * X1%), "##", 1) + " " + FUsing$(Str$(X% + 3 * X1% + 1), "##", 1) + " " + FUsing$(Str$(X% + 3 * X1% + 2), "##", 1) + "  "
+        FORMATTED$(X1%) = FUsing$(Str$(inningStart% + 3 * X1%), "##", 1) + " " + FUsing$(Str$(inningStart% + 3 * X1% + 1), "##", 1) + " " + FUsing$(Str$(inningStart% + 3 * X1% + 2), "##", 1) + "  "
     Next
 
     'Print innings, runs, hits, errors, balls
@@ -1010,19 +278,22 @@ Sub FLDDISP_G (BC%, p, U%, D)
 
         PrintOnGfx 15, I + 28, Left$(A$(I), 3) + NN$(I), imageScreen&
 
-        For I2 = X% To Y%
-            If p = 0 And I = 0 And I2 > INNING% - 1 And S%(I, INNING%) = 0 Or p = 0 And I = 0 And I2 > INNING% And S%(I, INNING%) > 0 Or p = 1 And I2 > INNING% And I = 0 Then 310
-            If p = 0 And I = 1 And I2 > INNING% - 1 Or p = 1 And I = 1 And S%(I, INNING%) = 0 And I2 > INNING% - 1 Or p = 1 And I = 1 And S%(I, INNING%) > 0 And I2 > INNING% Then 310
+        For I2 = inningStart% To inningEnd%
+            If p = 0 And I = 0 And I2 > INNING% - 1 And S%(I, INNING%) = 0 Or p = 0 And I = 0 And I2 > INNING% And S%(I, INNING%) > 0 Or p = 1 And I2 > INNING% And I = 0 Then Exit For
+            If p = 0 And I = 1 And I2 > INNING% - 1 Or p = 1 And I = 1 And S%(I, INNING%) = 0 And I2 > INNING% - 1 Or p = 1 And I = 1 And S%(I, INNING%) > 0 And I2 > INNING% Then Exit For
             Call INNDISP_G(I2, I)
         Next I2
 
-        310 FORMATTED$ = FUsing$(Str$(S6%(I, 0)), "##", 1) + " " + FUsing$(Str$(S6%(I, 1)), "##", 1) + " " + FUsing$(Str$(S6%(I, 2)), "##", 1) + " "
+        FORMATTED$ = FUsing$(Str$(S6%(I, 0)), "##", 1) + " " + FUsing$(Str$(S6%(I, 1)), "##", 1) + " " + FUsing$(Str$(S6%(I, 2)), "##", 1) + " "
+
         If I = 0 Then FORMATTED$ = FORMATTED$ + "S" + Str$(U%)
         ':PRINT "SKY:  "; : COLOR 14: PRINT SC$(SC%)
+
         If I = 1 Then FORMATTED$ = FORMATTED$ + "O" + Str$(O%(0))
         ':PRINT "TEMP:"; : COLOR 14: PRINT TP%
 
         PrintOnGfx 53, I + 28, FORMATTED$, imageScreen&
+
     Next I
 
     'Center Field
@@ -1038,13 +309,13 @@ Sub FLDDISP_G (BC%, p, U%, D)
     _PutImage (28 * FontColAdj%, 272)-Step(12 * FontColAdj%, 32), backupScreen&, imageScreen&, (28 * FontColAdj%, 272)-Step(12 * FontColAdj%, 32)
 
     '2nd Base
-    _PutImage (46 * FontColAdj%, 272)-Step(12 * FontColAdj%, 32), backupScreen&, imageScreen&, (46 * FontColAdj%, 272)-Step(12 * FontColAdj%, 32)
+    _PutImage (46 * FontColAdj%, 272)-Step(13 * FontColAdj%, 32), backupScreen&, imageScreen&, (46 * FontColAdj%, 272)-Step(13 * FontColAdj%, 32)
 
     '3rd Base
     _PutImage (13 * FontColAdj%, 304)-Step(12 * FontColAdj%, 32), backupScreen&, imageScreen&, (13 * FontColAdj%, 304)-Step(12 * FontColAdj%, 32)
 
     '1st Base
-    _PutImage (61 * FontColAdj%, 304)-Step(13 * FontColAdj%, 32), backupScreen&, imageScreen&, (61 * FontColAdj%, 304)-Step(13 * FontColAdj%, 32)
+    _PutImage (61 * FontColAdj%, 304)-Step(12 * FontColAdj%, 32), backupScreen&, imageScreen&, (61 * FontColAdj%, 304)-Step(13 * FontColAdj%, 32)
 
     'Pitcher
     _PutImage (35 * FontColAdj%, 336)-Step(13 * FontColAdj%, 32), backupScreen&, imageScreen&, (35 * FontColAdj%, 336)-Step(13 * FontColAdj%, 32)
@@ -1052,8 +323,8 @@ Sub FLDDISP_G (BC%, p, U%, D)
     'Catcher
     _PutImage (35 * FontColAdj%, 416)-Step(13 * FontColAdj%, 32), backupScreen&, imageScreen&, (35 * FontColAdj%, 416)-Step(13 * FontColAdj%, 32)
 
-    F$ = Left$(B$(D, B9%(D, 8)), 10)
-    Call SPA(F$, 10)
+    player$ = Left$(B$(D, B9%(D, 8)), 11)
+    player$ = PadRight(player$, 11)
 
     'Print all positions around the diamond
     '----------------------------------------
@@ -1062,81 +333,81 @@ Sub FLDDISP_G (BC%, p, U%, D)
     Color 4278190080
 
     'Center Field Name
-    PrintOnGfx 36, 14, F$, imageScreen&
+    PrintOnGfx 36, 14, player$, imageScreen&
 
     'Center Field Stats
-    F$ = "A" + FUsing$(Str$(B%(D, B9%(D, 8), 15)), "#", 1) + " R" + FUsing$(Str$(B%(D, B9%(D, 8), 17)), "#", 1) + " F" + FUsing$(Str$(B%(D, B9%(D, 8), 19) / 10), "##.#", 1)
-    PrintOnGfx 36, 15, F$, imageScreen&
+    player$ = "A" + FUsing$(Str$(B%(D, B9%(D, 8), 15)), "#", 1) + " R" + FUsing$(Str$(B%(D, B9%(D, 8), 17)), "#", 1) + " F" + FUsing$(Str$(B%(D, B9%(D, 8), 19) / 10), "##.#", 1)
+    PrintOnGfx 36, 15, player$, imageScreen&
 
     'Left Field Name
-    F$ = Left$(B$(D, B9%(D, 7)), 10)
-    Call SPA(F$, 10)
-    PrintOnGfx 7, 16, F$, imageScreen&
+    player$ = Left$(B$(D, B9%(D, 7)), 10)
+    player$ = PadRight(player$, 10)
+    PrintOnGfx 7, 16, player$, imageScreen&
 
     'Left Field Stats
-    F$ = "A" + FUsing$(Str$(B%(D, B9%(D, 7), 15)), "#", 1) + " R" + FUsing$(Str$(B%(D, B9%(D, 7), 17)), "#", 1) + " F" + FUsing$(Str$(B%(D, B9%(D, 7), 19) / 10), "##.#, 1", 1)
-    PrintOnGfx 7, 17, F$, imageScreen&
+    player$ = "A" + FUsing$(Str$(B%(D, B9%(D, 7), 15)), "#", 1) + " R" + FUsing$(Str$(B%(D, B9%(D, 7), 17)), "#", 1) + " F" + FUsing$(Str$(B%(D, B9%(D, 7), 19) / 10), "##.#, 1", 1)
+    PrintOnGfx 7, 17, player$, imageScreen&
 
     'Right Field Name
-    F$ = Left$(B$(D, B9%(D, 9)), 10)
-    Call SPA(F$, 10)
-    PrintOnGfx 64, 16, F$, imageScreen&
+    player$ = Left$(B$(D, B9%(D, 9)), 10)
+    player$ = PadRight(player$, 10)
+    PrintOnGfx 64, 16, player$, imageScreen&
 
     'Right Field Stats
-    F$ = "A" + FUsing$(Str$(B%(D, B9%(D, 9), 15)), "#", 1) + " R" + FUsing$(Str$(B%(D, B9%(D, 9), 17)), "#", 1) + " F" + FUsing$(Str$(B%(D, B9%(D, 9), 19) / 10), "##.#", 1)
-    PrintOnGfx 64, 17, F$, imageScreen&
+    player$ = "A" + FUsing$(Str$(B%(D, B9%(D, 9), 15)), "#", 1) + " R" + FUsing$(Str$(B%(D, B9%(D, 9), 17)), "#", 1) + " F" + FUsing$(Str$(B%(D, B9%(D, 9), 19) / 10), "##.#", 1)
+    PrintOnGfx 64, 17, player$, imageScreen&
 
     'Short Stop Name
-    F$ = Left$(B$(D, B9%(D, 6)), 10)
-    Call SPA(F$, 10)
-    PrintOnGfx 28, 17, F$, imageScreen&
+    player$ = Left$(B$(D, B9%(D, 6)), 10)
+    player$ = PadRight(player$, 10)
+    PrintOnGfx 28, 17, player$, imageScreen&
 
     'Short Stop Stats
-    F$ = "R" + FUsing$(Str$(B%(D, B9%(D, 6), 17)), "#", 1) + " F" + FUsing$(Str$(B%(D, B9%(D, 6), 19) / 10), "##.#", 1)
-    PrintOnGfx 28, 18, F$, imageScreen&
+    player$ = "R" + FUsing$(Str$(B%(D, B9%(D, 6), 17)), "#", 1) + " F" + FUsing$(Str$(B%(D, B9%(D, 6), 19) / 10), "##.#", 1)
+    PrintOnGfx 28, 18, player$, imageScreen&
 
     '2nd Base Name
-    F$ = Left$(B$(D, B9%(D, 4)), 10)
-    Call SPA(F$, 10)
-    PrintOnGfx 46, 17, F$, imageScreen&
+    player$ = Left$(B$(D, B9%(D, 4)), 10)
+    player$ = PadRight(player$, 10)
+    PrintOnGfx 46, 17, player$, imageScreen&
 
     '2nd Base Stats
-    F$ = "R" + FUsing$(Str$(B%(D, B9%(D, 4), 17)), "#", 1) + " F" + FUsing$(Str$(B%(D, B9%(D, 4), 19) / 10), "##.#", 1)
-    PrintOnGfx 46, 18, F$, imageScreen&
+    player$ = "R" + FUsing$(Str$(B%(D, B9%(D, 4), 17)), "#", 1) + " F" + FUsing$(Str$(B%(D, B9%(D, 4), 19) / 10), "##.#", 1)
+    PrintOnGfx 46, 18, player$, imageScreen&
 
     '3rd Base Name
-    F$ = Left$(B$(D, B9%(D, 5)), 10)
-    Call SPA(F$, 10)
-    PrintOnGfx 13, 19, F$, imageScreen&
+    player$ = Left$(B$(D, B9%(D, 5)), 10)
+    player$ = PadRight(player$, 10)
+    PrintOnGfx 13, 19, player$, imageScreen&
 
     '3rd Base Stats
-    F$ = "R" + FUsing$(Str$(B%(D, B9%(D, 5), 17)), "#", 1) + " F" + FUsing$(Str$(B%(D, B9%(D, 5), 19) / 10), "##.#", 1)
-    PrintOnGfx 13, 20, F$, imageScreen&
+    player$ = "R" + FUsing$(Str$(B%(D, B9%(D, 5), 17)), "#", 1) + " F" + FUsing$(Str$(B%(D, B9%(D, 5), 19) / 10), "##.#", 1)
+    PrintOnGfx 13, 20, player$, imageScreen&
 
     '1st Base Name
-    F$ = Left$(B$(D, B9%(D, 3)), 10)
-    Call SPA(F$, 10)
-    PrintOnGfx 61, 19, F$, imageScreen&
+    player$ = Left$(B$(D, B9%(D, 3)), 10)
+    player$ = PadRight(player$, 10)
+    PrintOnGfx 61, 19, player$, imageScreen&
 
     '1st Base Stats
-    F$ = "R" + FUsing$(Str$(B%(D, B9%(D, 3), 17)), "#", 1) + " F" + FUsing$(Str$(B%(D, B9%(D, 3), 19) / 10), "##.#", 1)
-    PrintOnGfx 61, 20, F$, imageScreen&
+    player$ = "R" + FUsing$(Str$(B%(D, B9%(D, 3), 17)), "#", 1) + " F" + FUsing$(Str$(B%(D, B9%(D, 3), 19) / 10), "##.#", 1)
+    PrintOnGfx 61, 20, player$, imageScreen&
 
     'Pitcher Name
-    F$ = "[" + B1$(P%(D, P1%(D), 0) + 2) + "] " + Left$(P$(D, P1%(D)), 10)
-    Call SPA(F$, 13)
-    PrintOnGfx 35, 21, F$, imageScreen&
+    player$ = "[" + B1$(P%(D, P1%(D), 0) + 2) + "] " + Left$(P$(D, P1%(D)), 10)
+    player$ = PadRight(player$, 10)
+    PrintOnGfx 35, 21, player$, imageScreen&
 
     'Pitcher Stats
-    F$ = "H" + FUsing$(Str$(P%(D, P1%(D), 18)), "#", 1) + " F" + FUsing$(Str$(P%(D, P1%(D), 17) / 10), "##.#", 1)
+    player$ = "H" + FUsing$(Str$(P%(D, P1%(D), 18)), "#", 1) + " F" + FUsing$(Str$(P%(D, P1%(D), 17) / 10), "##.#", 1)
     'was column 39 previously
-    PrintOnGfx 35, 22, F$, imageScreen&
+    PrintOnGfx 35, 22, player$, imageScreen&
 
     'Catcher Name
-    F$ = Left$(B$(D, B9%(D, 2)), 10)
-    Call SPA(F$, 10)
-    F$ = F$ + "A" + FUsing$(Str$(B%(D, B9%(D, 2), 15)), "#", 1)
-    PrintOnGfx 35, 26, F$, imageScreen&
+    player$ = Left$(B$(D, B9%(D, 2)), 10)
+    player$ = PadRight(player$, 10)
+    player$ = player$ + "A" + FUsing$(Str$(B%(D, B9%(D, 2), 15)), "#", 1)
+    PrintOnGfx 35, 26, player$, imageScreen&
 
     'Printing white on black
     Color 4294967295
@@ -1152,18 +423,23 @@ End Sub
 Sub HOLDSTATUS_G (H0%)
 
     _PutImage (53 * FontColAdj%, 400)-Step(12 * FontColAdj%, 16), backupScreen&, imageScreen&, (53 * FontColAdj%, 400)-Step(12 * FontColAdj%, 16)
-    F$ = "RUNNERS:"
-    If H0% = 0 Then F$ = F$ + "    "
-    If H0% = 1 Then F$ = F$ + "HELD"
+
+    rhStatus$ = "RUNNERS:"
+    'Can this only be 0 | 1???
+    If H0% = 0 Then rhStatus$ = rhStatus$ + "    "
+    If H0% = 1 Then rhStatus$ = rhStatus$ + "HELD"
+
+    'Print #9, "Calling gfx print from HOLDSTATUS_G; usingGfx = "; Str$(usingGfx)
 
     'Printing black on background
     _PrintMode _KeepBackground , imageScreen&
     Color 4278190080
-    PrintOnGfx 53, 25, F$, imageScreen&
+    PrintOnGfx 53, 25, rhStatus$, imageScreen&
 
     'Printing white on black
     Color 4294967295
     _PrintMode _FillBackground , imageScreen&
+
 End Sub
 
 
@@ -1171,21 +447,23 @@ End Sub
 '   INNDISP_G Subroutine
 '------------------------------
 ' ...explanation...
-Sub INNDISP_G (I2, i)
-    If I2 < 4 Then L = 3 * I2 + 7
-    If I2 > 3 And I2 < 7 Then L = 3 * I2 + 8
-    If I2 > 6 And I2 < 10 Then L = 3 * I2 + 9
-    If I2 > 9 And I2 < 13 Then L = 3 * (I2 - 9) + 7
-    If I2 > 12 And I2 < 16 Then L = 3 * (I2 - 9) + 8
-    If I2 > 15 And I2 < 19 Then L = 3 * (I2 - 9) + 9
-    If I2 > 18 And I2 < 22 Then L = 3 * (I2 - 18) + 7
-    If I2 > 21 And I2 < 25 Then L = 3 * (I2 - 18) + 8
-    If I2 > 24 And I2 < 28 Then L = 3 * (I2 - 18) + 9
+Sub INNDISP_G (currInning, teamLine)
 
-    FORMATTED$ = FUsing$(Str$(S%(i, I2)), "##", 1)
-    PrintOnGfx L + 13, i + 28, FORMATTED$, imageScreen&
+    If currInning < 4 Then L = 3 * currInning + 7
+    If currInning > 3 And currInning < 7 Then L = 3 * currInning + 8
+    If currInning > 6 And currInning < 10 Then L = 3 * currInning + 9
+    If currInning > 9 And currInning < 13 Then L = 3 * (currInning - 9) + 7
+    If currInning > 12 And currInning < 16 Then L = 3 * (currInning - 9) + 8
+    If currInning > 15 And currInning < 19 Then L = 3 * (currInning - 9) + 9
+    If currInning > 18 And currInning < 22 Then L = 3 * (currInning - 18) + 7
+    If currInning > 21 And currInning < 25 Then L = 3 * (currInning - 18) + 8
+    If currInning > 24 And currInning < 28 Then L = 3 * (currInning - 18) + 9
+
+    'Print #9, "Calling gfx print from INNDISP_G; usingGfx = "; Str$(usingGfx)
+    FORMATTED$ = FUsing$(Str$(S%(teamLine, currInning)), "##", 1)
+    PrintOnGfx L + 13, teamLine + 28, FORMATTED$, imageScreen&
+
 End Sub
-
 
 
 '------------------------------
@@ -1227,7 +505,7 @@ Sub LOADSCREEN
     _PutImage (28 * FontColAdj%, 272)-Step(12 * FontColAdj%, 32), imageScreen&, backupScreen&, (28 * FontColAdj%, 272)-Step(12 * FontColAdj%, 32)
 
     '2nd Base
-    _PutImage (46 * FontColAdj%, 272)-Step(12 * FontColAdj%, 32), imageScreen&, backupScreen&, (46 * FontColAdj%, 272)-Step(12 * FontColAdj%, 32)
+    _PutImage (46 * FontColAdj%, 272)-Step(13 * FontColAdj%, 32), imageScreen&, backupScreen&, (46 * FontColAdj%, 272)-Step(13 * FontColAdj%, 32)
 
     '3rd Base
     _PutImage (13 * FontColAdj%, 304)-Step(12 * FontColAdj%, 32), imageScreen&, backupScreen&, (13 * FontColAdj%, 304)-Step(12 * FontColAdj%, 32)
@@ -1242,305 +520,24 @@ Sub LOADSCREEN
     _PutImage (35 * FontColAdj%, 416)-Step(13 * FontColAdj%, 16), imageScreen&, backupScreen&, (35 * FontColAdj%, 416)-Step(13 * FontColAdj%, 16)
 
     'Runner on 2nd Base
-    _PutImage (37 * FontColAdj%, 304)-Step(10 * FontColAdj%, 32), imageScreen&, backupScreen&, (37 * FontColAdj%, 304)-Step(10 * FontColAdj%, 32)
+    _PutImage (37 * FontColAdj%, 304)-Step(14 * FontColAdj%, 32), imageScreen&, backupScreen&, (37 * FontColAdj%, 304)-Step(14 * FontColAdj%, 32)
 
     'Runner on 3rd Base
-    _PutImage (15 * FontColAdj%, 336)-Step(10 * FontColAdj%, 32), imageScreen&, backupScreen&, (15 * FontColAdj%, 336)-Step(10 * FontColAdj%, 32)
+    _PutImage (15 * FontColAdj%, 336)-Step(14 * FontColAdj%, 32), imageScreen&, backupScreen&, (15 * FontColAdj%, 336)-Step(14 * FontColAdj%, 32)
 
     'Runner on 1st Base
-    _PutImage (56 * FontColAdj%, 336)-Step(10 * FontColAdj%, 32), imageScreen&, backupScreen&, (56 * FontColAdj%, 336)-Step(10 * FontColAdj%, 32)
+    'We need more room for the name, which lies just above
+    'our stats "black box" with the batter name
+    _PutImage (54 * FontColAdj%, 336)-Step(14 * FontColAdj%, 16), imageScreen&, backupScreen&, (54 * FontColAdj%, 336)-Step(14 * FontColAdj%, 16)
+    _PutImage (54 * FontColAdj%, 352)-Step(12 * FontColAdj%, 16), imageScreen&, backupScreen&, (54 * FontColAdj%, 352)-Step(12 * FontColAdj%, 16)
 
-    '???
-    _PutImage (30 * FontColAdj%, 400)-Step(22 * FontColAdj%, 16), imageScreen&, backupScreen&, (30 * FontColAdj%, 400)-Step(22 * FontColAdj%, 16)
+    'Batter - Right
+    _PutImage (30 * FontColAdj%, 400)-Step(23 * FontColAdj%, 16), imageScreen&, backupScreen&, (30 * FontColAdj%, 400)-Step(23 * FontColAdj%, 16)
 
-    '???
-    _PutImage (1 * FontColAdj%, 304)-Step(14 * FontColAdj%, 176), imageScreen&, backupScreen&, (1 * FontColAdj%, 304)-Step(14 * FontColAdj%, 176)
+    'This is to the far left of 3rd base
+    'What would go here ???
+    '_PutImage (1 * FontColAdj%, 304)-Step(14 * FontColAdj%, 176), imageScreen&, backupScreen&, (1 * FontColAdj%, 304)-Step(14 * FontColAdj%, 176)
 
-End Sub
-
-
-'------------------------------
-'   PBP Subroutine
-'------------------------------
-' ...explanation...
-
-' Has been updated from original
-' source to determine if we're
-' printing on GFX or text screen
-Sub PBP (F$)
-    If displayPause > 0 Then
-
-        Call SPA(F$, 44)
-        F$ = Left$(F$, 44)
-        PB% = PB% + 1
-
-        ' Put PBP text in a slot for line PB%
-        If PB% < 9 Then G$(PB%) = F$
-
-        ' If we're past line 8, move all slots down
-        ' to make room
-        If PB% > 8 Then
-            For I9 = 1 To 7
-                G$(I9) = G$(I9 + 1)
-            Next
-            G$(8) = F$
-        End If
-
-        'Print all 8 lines from scratch
-        For I9 = 1 To 8
-            If usingGfx = 1 Then
-                PrintOnGfx 20, I9 + 2, G$(I9), imageScreen&
-            Else
-                Locate 14 + I9, 1
-                Print G$(I9)
-            End If
-        Next
-
-        Call DELAY
-    End If
-End Sub
-
-
-'------------------------------
-'  PITPLACEMENT_G Subroutine
-'------------------------------
-' ...explanation...
-Sub PITPLACEMENT_G (p, X$)
-
-
-    'Printing black on background
-    _PrintMode _KeepBackground , imageScreen&
-    Color 4278190080
-
-    If P%(p, P1%(p), 0) < 0 Then
-        PrintOnGfx 42, 25, X$, imageScreen&
-    End If
-
-    If P%(p, P1%(p), 0) > 0 Then
-        PrintOnGfx 30, 25, X$, imageScreen&
-    End If
-
-    'Printing white on black
-    Color 4294967295
-    _PrintMode _FillBackground , imageScreen&
-
-End Sub
-
-'------------------------------
-'   SCOREBOARD_G Subroutine
-'------------------------------
-' ...explanation...
-Sub SCOREBOARD_G ()
-    S6%(P, 1) = S6%(P, 1) + 1
-    FORMATTED$ = FUsing$(Str$(S6%(P, 1)), "##", 1)
-    PrintOnGfx 56, P + 29, FORMATTED$, imageScreen&
-End Sub
-
-
-'------------------------------
-'   BLANKLINES_G Subroutine
-'------------------------------
-Sub BLANKLINES_G ()
-    If displayPause > 0 Then
-        PB% = 0
-        For I5 = 4 To 11
-            PrintOnGfx 20, I5, Space$(44), imageScreen&
-        Next
-        'For I5 = 1 To 8: G$(I5) = "": Next
-        Erase G$
-    End If
-End Sub
-
-
-'------------------------------
-'   TRYFOREXTRABASE_G Subroutine
-'------------------------------
-' ...explanation...
-Sub TRYFOREXTRABASE_G (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8, I9)
-    If LN% = 3308 Then LN% = 0: GoTo 3308
-    I8 = 0: H6% = Int(Rnd(1) * 100) + 1
-    'IF S2% = 8 AND B0%(3, 0) > 0 AND H6% <= b%(p, B3%(p, B0%(3, 0)), 16) * 4 THEN I8 = 4
-    If S2% = 8 And B0%(2, 0) > 0 And I8 = 0 And H6% < 6 And B0%(3, 0) = 0 And B%(P, B3%(P, B0%(2, 0)), 8) > 0 Then I8 = 3
-    If S2% = 9 And B0%(3, 0) > 0 And H6% <= 2 And B%(P, B3%(P, B0%(3, 0)), 9) > 0 Then I8 = 4
-    If S2% = 7 And B0%(3, 0) > 0 And P2 = 2 And H6% >= 6 And H6% <= B%(P, B3%(P, B0%(3, 0)), 16) Then I8 = 4
-    If S2% = 7 And B0%(3, 0) > 0 And Z2% = B0%(3, 0) And P2 <> 2 And H6% <= B%(P, B3%(P, B0%(3, 0)), 16) * 12 Then I8 = 4
-    E2% = 10
-    If B0%(2, 0) > 0 Then E2% = E2% + B%(P, B3%(P, B0%(2, 0)), 16)
-    If S2% = 7 And B0%(2, 0) > 0 And P2 <> 2 And H6% <= E2% And B0%(3, 0) = 0 And I8 = 0 Then I8 = 3
-    If S2% = 7 And B0%(1, 0) > 0 And B0%(2, 0) = 0 And I8 = 0 And H6% <= B%(P, B3%(P, B0%(1, 0)), 16) And B%(P, B3%(P, B0%(1, 0)), 7) > 0 Then I8 = 2
-    If I8 = 0 Then 3385
-    3308 If U6 = 2 Or U6 = 1 And P = U9 Then 3310
-    F$ = Q$(I8 - 1)
-    If S2% < 10 Then Call PBP(F$ + " try for " + H$(I8) + " (YN) ")
-    If S2% > 10 Then Call PBP(F$ + " tag up (YN) ")
-    Call PBP("against " + Q$(4))
-    3310 ';" Arm:";B%(D,B9%(D,W%),15)
-    i$ = "N": A1 = S6%(P, 0) - S6%(D, 0)
-    If (U6 = 2 Or U6 = 1 And P = U9) And A1 > -2 And A1 < 2 And S2% <> 19 Then i$ = "Y": GoTo 3312
-    If (U6 = 2 Or U6 = 1 And P = U9) And A1 < 0 And (INNING% >= 7 Or S2% = 19) Then i$ = "N": GoTo 3312
-    If S2% = 8 And O%(0) = 2 And I8 = 3 And (U6 = 2 Or U6 = 1 And P = U9) Then i$ = "N"
-    If U6 = 2 Or U6 = 1 And P = U9 Then 3312
-    3311 i$ = InKey$: If i$ = "" Then 3311
-    3312 If UCase$(i$) <> "Y" Then I9 = 1: GoTo 3385
-    F$ = Q$(I8 - 1) + " is "
-    If S2% < 10 Then Call PBP(F$ + "going for " + H$(I8))
-    If S2% > 10 Then Call PBP(F$ + "tagging")
-    If S2% = 7 And I8 = 2 Or S2% > 10 And S4% = 3 Then 3317
-    If U6 = 2 Or U6 = 1 And D = U9 Then 3322
-    Call PBP(Q$(4) + " throw to " + H$(I8) + " (YN) ")
-    3322 Call RANDNUM(RN)
-    If (U6 = 2 Or U6 = 1 And D = U9) And MG%(D, 766) = 999 And I8 = 4 And INNING% >= MG%(D, 767) And MG%(D, 767) <> 0 And MG%(D, 768) <= S6%(D, 0) - S6%(P, 0) Then i$ = "N": GoTo 3316
-    If (U6 = 2 Or U6 = 1 And D = U9) And MG%(D, 766) = 999 And I8 = 4 And INNING% >= MG%(D, 769) And MG%(D, 769) <> 0 And MG%(D, 770) <= S6%(D, 0) - S6%(P, 0) Then i$ = "N": GoTo 3316
-    If U6 = 2 Or U6 = 1 And D = U9 Then i$ = "Y": GoTo 3316
-    3315 i$ = InKey$: If i$ = "" Then 3315
-    3316 I9 = 0: If UCase$(i$) <> "Y" Then I9 = 1: Call PBP("No throw is made"): GoTo 3380
-    3317 Call PBP("Here comes the throw by " + Q$(4))
-    'FOR i = 1 TO 3: PRINT "."; : CALL DELAY: NEXT i: PRINT " "
-    Call FLDERR(F%, W%, D, I3, SB%, S2%, P): If F% = 1 Then 3385
-    I4 = Int(Rnd(1) * 1000) + 1: A = B%(P, B3%(P, B0%(I8 - 1, 0)), 16)
-    If B7%(P, B0%((I8 - 1), 0)) = 1 Then A = P%(P, P1%(P), 31)
-    A = A - 5: A = A * 50
-    If S2% = 17 Then b = ((B%(D, B9%(D, W%), 15) - 5) * 25): I3 = 1000 + A - b: ' WAS 800
-    If S2% = 18 Then b = ((B%(D, B9%(D, W%), 15) - 5) * 25): I3 = 800 + A - b: ' WAS 650
-    If S2% = 19 Or S2% < 10 Then b = ((B%(D, B9%(D, W%), 15) - 5) * 25): I3 = 500 + A - b
-    If I4 <= I3 Then 3380
-    A5%(I8 - 1) = 11: O%(0) = O%(0) + 1: O%(1) = O%(1) + 1: I5 = P1%(D): I6 = 0: Call ADDPIT(D, I5, I6)
-    Call RANDNUM(RN)
-    If RN <= 4 And I8 = 4 Then Call PBP(Q$(I8 - 1) + " collides with " + B$(D, B9%(D, 2))): Call PBP(B$(D, B9%(D, 2)) + " hangs on!!"): GoTo 3377
-    If RN <= 50 And I8 <> 4 Then Call PBP(Q$(I8 - 1) + " doesn't make it!"): GoTo 3377
-    If RN <= 80 Then Call PBP("throw is perfect!"): GoTo 3377
-    If RN <= 90 Then Call PBP("This will be close"): GoTo 3377
-    Call PBP("Close play.....")
-    If I8 < 4 Then F$ = U$(I8 + 1)
-    If I8 = 4 Then F$ = U$(1)
-    Call PBP(F$ + " makes the call...")
-    3377 Call CREDITASSIST%(W%, D): Call ADVANCEMENT%(P, D, S2%, F%, I3): Call CREDITPUTOUT(2, FB2P%, AST%, D): W% = 2
-    If O%(0) = 3 Or S2% > 10 Then 3385
-    3371 I5 = Int(Rnd(1) * 100) + 1
-    A1 = S6%(P, 0) - S6%(D, 0)
-    If A1 < -2 Or A1 < 0 And INNING% > 8 Then 3376
-    '*** RUNNER ON 2ND GUNNED AT 3RD ON THROW HOME ***
-    If I8 - 1 > 2 And I5 <= 15 And B0%(2, 0) > 0 Then Call CREDITASSIST%(W%, D): Call PBP("runner trying for 3rd..."): A5%(2) = 11: O%(0) = O%(0) + 1: O%(1) = O%(1) + 1: W% = 5: Call CREDITREGPO(W%, D): I5 = P1%(D): I6 = 0: Call ADDPIT(D, I5, I6)
-    I5 = Int(Rnd(1) * 100) + 1
-    '*** RUNNER ON 1ST GUNNED AT 2ND ON THROW TO HOME OR 3RD ***
-
-    If I8 - 1 > 1 And I5 <= 15 And B0%(1, 0) > 0 And A5%(2) <> 11 Then Call CREDITASSIST%(W%, D): W% = 6: Call CREDITREGPO(W%, D): Call PBP("runner trying for 2nd..."): A5%(1) = 11: O%(0) = O%(0) + 1: O%(1) = O%(1) + 1: I5 = P1%(D): I6 = 0: Call ADDPIT(D, I5, I6)
-    I5 = Int(Rnd(1) * 100) + 1
-    If B0%(2, 0) > 0 And I8 - 1 > 2 And A5%(2) <> 11 And I5 > (80 - B%(P, B3%(P, B0%(2, 0)), 16) * 2) And I9 = 0 Then A5%(2) = 1: Call PBP("runner trying for 3rd..."): Call PBP("He's safe!")
-    I5 = Int(Rnd(1) * 10) + 1
-    If B0%(1, 0) > 0 And A5%(1) <> 11 And (S4% = 4 Or S4% = 7 And I8 - 1 > 1 And I5 > (10 - B%(P, B3%(P, B0%(1, 0)), 16)) And I9 = 0) Then A5%(1) = 1: Call PBP("runner trying for 2nd..."): Call PBP("He's in there!"): GoTo 3376
-    I5 = Int(Rnd(1) * 100) + 1
-    If B0%(1, 0) > 0 And I8 - 1 > 1 And I5 > (80 - B%(P, B3%(P, B0%(1, 0)), 16) * 2) And I9 = 0 And A5%(1) <> 11 Then Call PBP("runner safe at 2nd on the throw"): A5%(1) = 1
-    3376 Call ADVANCEMENT(P, D, S2%, F%, I3): I9 = 0: GoTo 3385
-
-    3380 A5%(I8 - 1) = 1: If I9 = 1 Then 3379
-    Call RANDNUM(RN)
-    If RN <= 4 And I8 = 4 Then Call PBP(Q$(I8 - 1) + " collides with " + B$(D, B9%(D, 2))): Call PBP("He knocks the ball loose!!"): GoTo 3379
-    If RN <= 50 And I8 <> 4 Then Call PBP(Q$(I8 - 1) + " beats the throw!"): GoTo 3379
-    If RN <= 60 Then Call PBP(Q$(I8 - 1) + " is ahead of the throw"): GoTo 3379
-    If RN <= 80 Then Call PBP("throw is off line"): GoTo 3379
-    If RN <= 90 Then Call PBP(Q$(I8 - 1) + " slides under the tag"): GoTo 3379
-    Call PBP("Close play...")
-    If I8 <> 4 Then F$ = U$(I8 + 1)
-    If I8 = 4 Then F$ = U$(1)
-    Call PBP(F$ + " makes the call...")
-    3379 Call PBP(Q$(I8 - 1) + " is safe @ " + H$(I8))
-    If I8 = 4 Then sah% = 1
-    Call TAGADVANCE(S2%, I8, D): If S2% < 10 Then 3371
-    If S2% > 10 And B7%(P, B1!(P)) = 1 Then P8%(P, P1%(P), 23) = P8%(P, P1%(P), 23) - 1: P5%(P, P1%(P), 23) = P5%(P, P1%(P), 23) - 1: I5 = P1%(P): I6 = 41: Call INCPITOFF(P, I5, I6): I5 = P1%(D): I6 = 16: Call ADDPIT(D, I5, I6): GoTo 3385
-    If S2% > 10 And B7%(P, B1!(P)) <> 1 Then 3381
-    GoTo 3385
-    3381 B8%(P, B3%(P, B1!(P)), 0) = B8%(P, B3%(P, B1!(P)), 0) - 1
-    B5%(P, B3%(P, B1!(P)), 0) = B5%(P, B3%(P, B1!(P)), 0) - 1
-    If P%(D, P1%(D), 0) = 1 Then 3382
-    CSS%(P, B3%(P, B1!(P)), 0) = CSS%(P, B3%(P, B1!(P)), 0) - 1
-    3382 I5 = B3%(P, B1!(P)): I6 = 19: Call INCBATOFF(P, I5, I6): I5 = P1%(D)
-    I6 = 16: Call ADDPIT(D, I5, I6): GoTo 3371
-    3385 '
-End Sub
-
-
-'------------------------------
-'   WALLDOUBLE_G Subroutine
-'------------------------------
-' ...explanation...
-Sub WALLDOUBLE_G (HW%, W%)
-    '*** doubles off of a wall ***
-    BV = Int(Rnd(1) * 100) + 1: rn = Int(Rnd(1) * 100) + 1
-    3781 If BV <= 40 And HW% = 0 Then F$ = "It's in the gap and to the wall": GoTo 3785
-    If BV <= 65 And rn <= 25 And (L%(1, 13) = 8 Or L%(1, 13) = 40) Then F$ = "It's off the ivy!": GoTo 3785
-    If BV <= 65 And rn <= 50 And L%(1, 13) = 21 And W% = 7 Then F$ = "It hits off the Green Monster!": GoTo 3785
-    If BV <= 65 And L%(1, 13) = 27 And W% = 7 Then F$ = "It hits off the screen!": GoTo 3785
-    If BV <= 65 Then F$ = "It's off the wall": GoTo 3785
-    If BV <= 85 And HW% = 0 Then 3788
-    If BV <= 90 And HW% = 0 Then Call PBP("It's to the wall"): Call PBP(Q$(0) + " slides into second"): F$ = "It's a stand-up double!!": GoTo 3785
-    If rn <= 25 And L%(1, 13) = 21 Then F$ = "It's off the Green Monster!": GoTo 3785
-    If L%(1, 13) = 27 And W% = 7 Then F$ = "It's off the screen...": GoTo 3785
-    F$ = "It's off the top of the wall...": GoTo 3785
-    3788 If W% = 8 Then BV = 39: GoTo 3781
-    Call PBP("It's past " + Q$(4)): F$ = "It goes into the corner...": GoTo 3785
-    3785 Call PBP(F$)
-End Sub
-
-
-'------------------------------
-'   WHICHRUNNER_G Subroutine
-'------------------------------
-' ...explanation...
-Sub WHICHRUNNER_G (i, S4%, D5)
-    If i = 4 Then A5%(3) = 1
-    If S4% <> 4 Then 4297
-    Call PBP("WHICH RUNNER DO YOU WANT TO GO AFTER")
-    Call PBP("1 - " + B$(P, B3%(P, B0%(2, 0))))
-    If B7%(P, B0%(1, 0)) <> 1 Then Call PBP("2 - " + B$(P, B3%(P, B0%(1, 0))))
-    If B7%(P, B0%(1, 0)) = 1 Then Call PBP("2 - " + P$(P, P1%(P)))
-    If U6 = 2 Or U6 = 1 And P <> U9 Then D5 = Int(Rnd(1) * 2) + 1: i$ = Str$(D5): GoTo 4296
-    4295 i$ = InKey$: If i$ = "" Then 4295
-    4296 D5 = Val(i$)
-    If D5 = 2 Then i = 2: D5 = 3: I2 = B3%(P, B0%(1, 0)): If B7%(P, B0%(1, 0)) = 1 Then Q$(i - 1) = P$(P, P1%(P))
-    D5 = 0
-    4297 '
-End Sub
-
-
-'------------------------------
-'   FOULBALL_G Subroutine
-'------------------------------
-' ...explanation...
-Sub FOULBALL_G ()
-    Call RANDNUM(rn)
-    If rn <= 50 Then
-        Y% = Int(Rnd(1) * 20) + 3130
-        Call GETRPBP(Y%, Y$, D): Call STRIPRPBP(Y$, Y%, D)
-        Call PBP(Y$)
-        Call PBP("foul ball!!")
-    Else
-        Y% = Int(Rnd(1) * 10) + 3150
-        Call GETRPBP(Y%, Y$, D): Call STRIPRPBP(Y$, Y%, D)
-        Call PBP(Y$)
-        Y% = Int(Rnd(1) * 10) + 3160
-        Call GETRPBP(Y%, Y$, D): Call STRIPRPBP(Y$, Y%, D)
-        Call PBP(Y$)
-    End If
-End Sub
-
-
-'------------------------------
-'   WEATHER Subroutine
-'------------------------------
-' ...explanation...
-Sub WEATHER_G
-    Cls: Screen 0
-    Call DRAWBOX(5)
-    Locate 9, 11
-    If L%(1, 9) = 1 Then Locate , 11: Print "TEMPERATURE: 70": Locate , 11: Print "WEATHER: DOME": Locate , 11: Print "WIND: NONE": GoTo 8719
-    Locate , 11: Print "TEMPERATURE: "; TP%
-    Locate , 11: Print "SKY CONDITIONS: "; SC$(SC%)
-    WS% = Int(Rnd(1) * 15) + 7
-    Locate , 11: Print "WIND: "; WI$
-    Locate , 11: Print "PRECIPITATION: "; PC$(PC%)
-
-    8719 I$ = GetKeyPress$
 End Sub
 
 
@@ -1549,18 +546,9 @@ End Sub
 '------------------------------
 ' ...explanation...
 Sub PrintOnGfx (Col%, Row%, Text$, tgtScrn&)
+
     PrintCol% = (Col% * _PrintWidth("W"))
     PrintRow% = (Row% * _FontHeight)
     _PrintString (PrintCol%, PrintRow%), Text$, tgtScrn&
-End Sub
 
-
-'------------------------------
-'   EndOfGame Subroutine
-'------------------------------
-' ...explanation...
-Sub EndOfGame ()
-    Cls: Screen 0
-    _FreeImage imageScreen&
-    If normalFinish% = 1 Then Call POSTGAME
 End Sub

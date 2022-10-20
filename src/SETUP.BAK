@@ -357,7 +357,7 @@ END SUB
 ' ...explanation...
 SUB BASEONBALLS (S2%,D2,D,P)
     S2% = 2
-    CALL BLANKLINES: bv = INT(RND(1) * 100) + 1: CALL RANDNUM (RN)
+    CALL BLANKLINES: bv = INT(RND(1) * 100) + 1: CALL d100 (RN)
     IF D2 = 2 AND bv <= 50 THEN PRINT Q$(0); " is walked intentionally..."
     IF D2 = 2 AND bv > 50 THEN PRINT Q$(0); " is given a purpose pass..."
     IF D2 = 2 THEN S8%(D, 0) = S8%(D, 0) + 1: CALL DELAY: GOTO 3241
@@ -418,14 +418,14 @@ END SUB
 ' ...explanation...
 SUB WILDPITCH (S2%,D)
     S2% = 6
-    CALL RANDNUM (RN)
+    CALL d100 (RN)
     IF RN <= 16 THEN PRINT "and it gets away from "; B$(D, B9%(D, 2))
     IF RN > 16 AND RN <= 32 THEN PRINT "pitch is WAY high, and "; B$(D, B9%(D, 2)); " can't get it"
     IF RN > 32 AND RN <= 48 THEN PRINT "It's in the dirt": CALL DELAY: PRINT "The runners move up 90 ft."
     IF RN > 48 AND RN <= 64 THEN PRINT "It bounces in front of the plate": CALL DELAY: PRINT "it's past the catcher": CALL DELAY: PRINT "the runners advance"
     IF RN > 64 AND RN <= 80 THEN PRINT "it's over "; B$(D, B9%(D, 2)); "'s head"
     IF RN > 67 THEN PRINT "wild pitch by "; P$(D, P1%(D)): CALL DELAY: GOTO 3235
-    CALL RANDNUM (RN)
+    CALL d100 (RN)
     CALL DELAY
     IF RN <= 33 THEN PRINT "It's ruled a wild pitch"
     IF RN > 33 AND RN <= 66 THEN PRINT "score it a wild pitch"
@@ -530,7 +530,7 @@ SUB SINGLEPBP (S2%, D, W%)
     '*** play by play for a single s2%=7, s2%=12 ***
     if s2% = -12 then s2% = 12:goto 8014
     CALL DELIVERY(D)
-    CALL RANDNUM(rn)
+    CALL d100(rn)
     IF S2% = 12 THEN PRINT Q$(0); " beats out an infield single": GOTO 8013
     IF rn <= 50 THEN Y% = INT(RND(1) * 50) + 1610: CALL GETRPBP(Y%, Y$, D): CALL STRIPRPBP(Y$, Y%, D): PRINT Y$; " "; C$(W%): GOTO 8013
     IF W% = 7 THEN Y% = INT(RND(1) * 70) + 1660
@@ -683,13 +683,13 @@ END SUB
 SUB STRIKEOUT (U%, D)
     '*** strikeout pbp ***
     IF U% = 3 THEN BV = 20: GOTO 3770
-    BV = INT(RND(1) * 100): CALL RANDNUM(rn)
+    BV = INT(RND(1) * 100): CALL d100(rn)
     IF rn <= 20 THEN PRINT "FULL COUNT...": CALL DELAY
     CALL DELIVERY(D)
     IF BV = 1 THEN PRINT "Strike Three!!": PRINT Q$(0); " turns to "; U$(1): CALL DELAY: PRINT "he says he tees them up higher than that": PRINT "at the country club!!": CALL DELAY: GOTO 3774
     IF BV = 2 THEN PRINT "Strike three...": CALL DELAY: PRINT Q$(0); " stands there like a house": PRINT "by the side of the road": CALL DELAY: CALL DELAY: GOTO 3774
     IF BV > 2 AND BV <= 5 THEN PRINT Q$(0); " looks at a called strike three": CALL DELAY: PRINT "and turns to glare at "; U$(1): CALL DELAY: PRINT M$(p); " is barking from the dugout!!": GOTO 3774
-      CALL RANDNUM(RN)
+      CALL d100(RN)
     IF RN<=25 THEN
         Y% = INT(RND(1) * 40) + 890
     ELSE
@@ -703,7 +703,7 @@ SUB STRIKEOUT (U%, D)
     PRINT Y$
 
 3774 CALL DELAY
-    CALL RANDNUM(rn)
+    CALL d100(rn)
     IF rn <= 20 THEN PRINT "Number"; P8%(D, P1%(D), 5) + 1; "for "; p$(D, P1%(D))
     IF rn > 20 AND rn <= 40 THEN PRINT "That's"; P8%(D, P1%(D), 5) + 1; "for "; p$(D, P1%(D))
     IF RN = 41 THEN PRINT Q$(0)+" is not a happy man"
@@ -789,7 +789,7 @@ SUB TIRING (P9)
 
 9755 PRINT p$(P9, P1%(P9)); " is tiring!!"; : GOTO 9757
 
-9756 CALL RANDNUM(rn)
+9756 CALL d100(rn)
     IF rn <= 50 AND S8%(P9, 1) > 0 AND INNING% < 6 OR S8%(P9, 1) = 0 AND P8%(P9, P1%(P9), 4) + P8%(P9, P1%(P9), 1) > 4 THEN PRINT p$(P9, P1%(P9)); " just doesn't have it today"; : GOTO 9757
     IF rn > 50 AND S8%(P9, 1) > 0 AND INNING% < 6 OR S8%(P9, 1) = 0 AND P8%(P9, P1%(P9), 4) + P8%(P9, P1%(P9), 1) > 4 THEN PRINT p$(P9, P1%(P9)); " ain't got nuthin' on his fastball folks!"; : GOTO 9757
     PRINT p$(P9, P1%(P9)); " is tired!!";
@@ -855,7 +855,7 @@ SUB TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%,I8,I9)
     IF u6 = 2 OR u6 = 1 AND D = u9 THEN 3322
     PRINT Q$(4); " throw to "; H$(I8); " (YN) "
 
-3322 CALL RANDNUM (RN)
+3322 CALL d100 (RN)
     IF (u6 = 2 OR u6 = 1 AND D = u9) AND MG%(D,766)=999 AND I8=4 AND INNING%>=MG%(D,767) AND MG%(D,767)<>0 AND MG%(D,768)<=S6%(D, 0) - S6%(P, 0) THEN I$="N":GOTO 3316
     IF (u6 = 2 OR u6 = 1 AND D = u9) AND MG%(D,766)=999 AND I8=4 AND INNING%>=MG%(D,769) AND MG%(D,769)<>0 AND MG%(D,770)<=S6%(D, 0) - S6%(P, 0) THEN I$="N":GOTO 3316
     IF u6 = 2 OR u6 = 1 AND D = u9 THEN i$ = "Y": GOTO 3316
@@ -874,7 +874,7 @@ SUB TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%,I8,I9)
     IF S2% = 19 OR S2% < 10 THEN b = ((b%(D, B9%(D, W%), 15) - 5) * 25): I3 = 500 + A - b
     IF I4 <= I3 THEN 3380
     A5%(I8 - 1) = 11: O%(0) = O%(0) + 1: O%(1) = O%(1) + 1: I5 = P1%(D): I6 = 0: CALL ADDPIT(D, I5, I6)
-    CALL RANDNUM (rn)
+    CALL d100 (rn)
     IF rn <= 4 AND I8 = 4 THEN PRINT Q$(I8 - 1); " collides with "; b$(D, B9%(D, 2)): CALL DELAY: PRINT b$(D, B9%(D, 2)); " hangs on!!": GOTO 3377
     IF rn <= 50 AND I8 <> 4 THEN PRINT Q$(I8 - 1); " doesn't make it!": GOTO 3377
     IF rn <= 80 THEN PRINT "throw is perfect!": GOTO 3377
@@ -921,7 +921,7 @@ SUB TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%,I8,I9)
 3376 CALL ADVANCEMENT(p, D, S2%, F%,I3): i9 = 0: GOTO 3385
 
 3380 A5%(I8 - 1) = 1: IF i9 = 1 THEN 3379
-    CALL RANDNUM (rn)
+    CALL d100 (rn)
     IF rn <= 4 AND I8 = 4 THEN PRINT Q$(I8 - 1); " collides with "; b$(D, B9%(D, 2)): CALL DELAY: PRINT "He knocks the ball loose!!": GOTO 3379
     IF rn <= 50 AND I8 <> 4 THEN PRINT Q$(I8 - 1); " beats the throw!": GOTO 3379
     IF rn <= 60 THEN PRINT Q$(I8 - 1); " is ahead of the throw": GOTO 3379

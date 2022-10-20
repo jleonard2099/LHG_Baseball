@@ -50,7 +50,7 @@ Sub CARVIEW ()
                 Locate 25, 1
                 Color 14
                 Print "ENTER";: Color 15
-                Print "-SELECTS TEAM";
+                Print "-SELECTS FILE";
 
                 _MouseShow "DEFAULT"
                 MAMenu careerFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
@@ -64,61 +64,63 @@ Sub CARVIEW ()
                     I$ = GetKeyPress$
                 End If
 
-            Loop Until UCase$(I$) = "N"
+            Loop Until UCase$(I$) = "N" Or ExitCode% = 27
 
-            If ExitCode% = 27 Then Exit Sub
+            If ExitCode% <> 27 Then
 
-            Z$ = RTrim$(targetFile$)
+				Z$ = RTrim$(targetFile$)
 
-            Color 15
-            Locate 12, 10: Print "LOADING CAREER FILE . . . . PLEASE WAIT"
+				Color 15
+				Locate 12, 10: Print "LOADING CAREER FILE . . . . PLEASE WAIT"
 
-            Open diskPaths$(1) + Z$ For Input As #2
-            Input #2, NB, NP
+				Open diskPaths$(1) + Z$ For Input As #2
+				Input #2, NB, NP
 
-            For I = 0 To 99: Input #2, careerB$(I): Next
-            For I = 0 To 79: Input #2, careerP$(I): Next
+				For I = 0 To 99: Input #2, careerB$(I): Next
+				For I = 0 To 79: Input #2, careerP$(I): Next
 
-            For J = 1 To 15
-                For I = 0 To 99
-                    For I1 = O To 17: 
-                        Input #2, BRS%(J, I, I1)
-                    Next I1
-                    Locate 12, 55: Color 3
-                    TMR = TMR - 1
-                    Print Using "####"; TMR
-                Next I
-            Next J
-            
-            For J = 1 To 15
-                For I = 0 To 79
-                    For I1 = 0 To 16
-                        Input #2, PRS%(J, I, I1)
-                    Next I1
-                Locate 12, 55
-                Color 3
-                TMR = TMR - 1
-                Print Using "####"; TMR
-                Next I
-            Next J
+				For J = 1 To 15
+					For I = 0 To 99
+						For I1 = O To 17: 
+							Input #2, BRS%(J, I, I1)
+						Next I1
+						Locate 12, 55: Color 3
+						TMR = TMR - 1
+						Print Using "####"; TMR
+					Next I
+				Next J
+				
+				For J = 1 To 15
+					For I = 0 To 79
+						For I1 = 0 To 16
+							Input #2, PRS%(J, I, I1)
+						Next I1
+					Locate 12, 55
+					Color 3
+					TMR = TMR - 1
+					Print Using "####"; TMR
+					Next I
+				Next J
 
-            Close #2
+				Close #2
 
-            Cls
-            Locate 18, 10
-            Color 12: Print "P";: Color 7: Print "RINT OR ";
-            Color 12: Print "V";: Color 7: Print "IEW"
-            Do
-                I$ = GetKeyPress$
-            Loop Until UCase$(I$) = "P" OR UCase$(I$) = "V"
+				Cls
+				Locate 18, 10
+				Color 12: Print "P";: Color 7: Print "RINT OR ";
+				Color 12: Print "V";: Color 7: Print "IEW"
+				Do
+					I$ = GetKeyPress$
+				Loop Until UCase$(I$) = "P" OR UCase$(I$) = "V"
 
-            If UCase$(I$) = "V" Then 
-                Call CareerToScreen (Z$)
-            Else
-                Call CareerToPrinter (Z$)
-            End If
+				If UCase$(I$) = "V" Then 
+					Call CareerToScreen (Z$)
+				Else
+					Call CareerToPrinter (Z$)
+				End If
 
-        End If
+			End If 'Done checking for ESC
+
+        End If 'Done checking file count
 
     '...Until we press ESC
     Loop Until ExitCode% = 27 Or Count% = 0
@@ -133,7 +135,7 @@ End Sub
 '...explanation...
 Sub BatterTotals
 
-    Dim I2 As Single, I3 As Single, I4 As Single
+    Dim I2!, I3!, I4!
     Shared BRS%()
 
     VV = BRS%(1, I, 16) + BRS%(2, I, 16) + BRS%(3, I, 16) + BRS%(4, I, 16) + BRS%(5, I, 16) + BRS%(6, I, 16) + BRS%(7, I, 16) + BRS%(8, I, 16) + BRS%(9, I, 16) + BRS%(10, I, 16) + BRS%(11, I, 16) + BRS%(12, I, 16) + BRS%(13, I, 16) + BRS%(14, I, 16)+ BRS%(15, I, 16)
@@ -167,12 +169,12 @@ Sub BatterTotals
     Print Tab(54); Using "####"; TT11;
     Print Tab(61); Using "###"; TT13;
 
-    I3 = 0
-    I3 = Int(TT4 + TT5 + (2 * TT6) + (3 * TT7)) / ((TT2) + .0005) * 1000
+    I3! = 0
+    I3! = Int(TT4 + TT5 + (2 * TT6) + (3 * TT7)) / ((TT2) + .0005) * 1000
 
-    If TT2 = 0 Or I3 = O Then Locate , 70: Print ".000"
-    If I3 > 0 And I3 < 100 Then Locate , 70: Print ".0";: Print Using "##"; I3
-    If I3 >= 100 Then Locate , 70: Print ".";: Print Using "###"; I3
+    If TT2 = 0 Or I3! = O Then Locate , 70: Print ".000"
+    If I3! > 0 And I3! < 100 Then Locate , 70: Print ".0";: Print Using "##"; I3!
+    If I3! >= 100 Then Locate , 70: Print ".";: Print Using "###"; I3!
 
     Print "TOTALS";
 
@@ -191,12 +193,12 @@ Sub BatterTotals
     If I2 > 0 And I2 < 100 Then Locate , 65: Print ".0";: Print Using "##"; I2;
     If I2 >= 100 Then Locate , 65: Print ".";: Print Using "###"; I2;
 
-    I4 = 0
+    I4! = 0
 
-    If TT9 + TT2 > 0 Then I4 = Int(((TT4 + TT9) / (TT9 + TT2) + .0005) * 1000)
-    If TT2 = 0 Or I4 = 0 Then Locate , 75: Print ".000"
-    If I4 > 0 And I4 < 100 Then Locate , 75: Print ".0";: Print Using "##"; I4
-    If I4 >= 100 Then Locate , 75: Print ".";: Print Using "###"; I4
+    If TT9 + TT2 > 0 Then I4! = Int(((TT4 + TT9) / (TT9 + TT2) + .0005) * 1000)
+    If TT2 = 0 Or I4! = 0 Then Locate , 75: Print ".000"
+    If I4! > 0 And I4! < 100 Then Locate , 75: Print ".0";: Print Using "##"; I4!
+    If I4! >= 100 Then Locate , 75: Print ".";: Print Using "###"; I4!
 
 End Sub
 
@@ -207,7 +209,7 @@ End Sub
 '...explanation...
 Sub PitcherTotals ()
 
-    Dim I2 As Single, I3 As Single, I4 As Single
+    Dim I2!, I3!, I4!
     Shared PRS%()
     
     VV = PRS%(1, I, 15) + PRS%(2, I, 15) + PRS%(3, I, 15) + PRS%(4, I, 15) + PRS%(5, I, 15) + PRS%(6, I, 15) + PRS%(7, I, 15) + PRS%(8, I, 15) + PRS%(9, I, 15) + PRS%(10, I, 15) + PRS%(11, I, 15) + PRS%(12, I, 15) + PRS%(13, I, 15) + PRS%(14, I, 15)+ PRS%(15, I, 15)
@@ -253,18 +255,18 @@ Sub PitcherTotals ()
 
     Print Tab(37); Using "###"; TT18;
 
-    I2 = 0
-    If TT16 > 0 Then I2 = Int((((TT25 * 9) / (TT16 / 3)) + .0005) * 100)
+    I2! = 0
+    If TT16 > 0 Then I2! = Int((((TT25 * 9) / (TT16 / 3)) + .0005) * 100)
 
-    I3 = Int(I2 / 100)
-    I4 = I2 - (I3 * 100)
+    I3! = Int(I2! / 100)
+    I4! = I2! - (I3! * 100)
 
-    If TT16 = 0 Or I2 = 0 Then Locate , 44: Print " 0.00";
-    If TT16 > 0 And I2 > 0 And I2 <= 999 Then Locate , 44: Print Using "##"; I3;: Print ".";
-    If TT16 > 0 And I2 >= 1000 Then Locate , 44: Print Using "##"; I3;: Print ".";
-    If TT16 > 0 And I4 = 0 And I2 > 0 Then Print "00";
-    If TT16 > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then Print "0";: Print Using "#"; I4;
-    If TT16 > 0 And I4 >= 10 And I2 > 0 Then Print Using "##"; I4;
+    If TT16 = 0 Or I2! = 0 Then Locate , 44: Print " 0.00";
+    If TT16 > 0 And I2! > 0 And I2! <= 999 Then Locate , 44: Print Using "##"; I3!;: Print ".";
+    If TT16 > 0 And I2! >= 1000 Then Locate , 44: Print Using "##"; I3!;: Print ".";
+    If TT16 > 0 And I4! = 0 And I2! > 0 Then Print "00";
+    If TT16 > 0 And I4! > 0 And I4! < 10 And I2! > 0 Then Print "0";: Print Using "#"; I4!;
+    If TT16 > 0 And I4! >= 10 And I2! > 0 Then Print Using "##"; I4!;
 
     Print Tab(51); Using "####"; TT22;
     Print Tab(59); Using "###"; TT24;
@@ -280,7 +282,7 @@ End Sub
 '...explanation...
 Sub CareerToPrinter (careerFile$)
 
-    Dim I2 As Single, I3 As Single, I4 As Single
+    Dim I2!, I3!, I4!
     Shared BRS%(), PRS%()
     Shared careerB$(), careerP$()
 
@@ -324,25 +326,25 @@ Sub CareerToPrinter (careerFile$)
                 LPrint Tab(95); Using "##"; BRS%(V, I, 10);
                 LPrint Tab(101); Using "##"; BRS%(V, I, 11);
 
-                I2 = 0
-                I3 = 0
-                I4 = 0
+                I2! = 0
+                I3! = 0
+                I4! = 0
                 
-                IF BRS%(V, I, 0) > 0 THEN I2 = INT((BRS%(V, I, 1) / BRS%(V, I, 0) + .0005) * 1000): I3 = INT(((BRS%(V, I, 1) + BRS%(V, I, 4) + 2 * BRS%(V, I, 5) + 3 * BRS%(V, I, 6)) / BRS%(V, I, 0) + .0005) * 1000): I4 = INT(((BRS%(V, I, 1) + BRS%(V, I, 7)) / (BRS%(V, I, 7) + BRS%(V, I, 0)) + .0005) * 1000)
-                If BRS%(V, I, 0) = 0 Or I2 = 0 Then LPrint Tab(107); ".000";
+                IF BRS%(V, I, 0) > 0 THEN I2! = INT((BRS%(V, I, 1) / BRS%(V, I, 0) + .0005) * 1000): I3! = INT(((BRS%(V, I, 1) + BRS%(V, I, 4) + 2 * BRS%(V, I, 5) + 3 * BRS%(V, I, 6)) / BRS%(V, I, 0) + .0005) * 1000): I4! = INT(((BRS%(V, I, 1) + BRS%(V, I, 7)) / (BRS%(V, I, 7) + BRS%(V, I, 0)) + .0005) * 1000)
+                If BRS%(V, I, 0) = 0 Or I2! = 0 Then LPrint Tab(107); ".000";
 
-                If I2 > 0 And I2 < 100 Then LPrint Tab(107); ".0";: LPrint Using "##"; I2;
-                If I2 >= 100 Then LPrint Tab(107); ".";: LPrint Using "###"; I2;
+                If I2! > 0 And I2! < 100 Then LPrint Tab(107); ".0";: LPrint Using "##"; I2!;
+                If I2! >= 100 Then LPrint Tab(107); ".";: LPrint Using "###"; I2!;
 
-                If BRS%(V, I, 0) = 0 Or I3 = O Then LPrint Tab(115); ".000";
+                If BRS%(V, I, 0) = 0 Or I3! = O Then LPrint Tab(115); ".000";
 
-                If I3 > 0 And I3 < 100 Then LPrint Tab(115); ".0";: LPrint Using "##"; I3;
-                If I3 >= 100 Then LPrint Tab(115); ".";: LPrint Using "###"; I3;
+                If I3! > 0 And I3! < 100 Then LPrint Tab(115); ".0";: LPrint Using "##"; I3!;
+                If I3! >= 100 Then LPrint Tab(115); ".";: LPrint Using "###"; I3!;
 
-                If BRS%(V, I, 0) = 0 Or I4 = 0 Then LPrint Tab(123); ".000"
+                If BRS%(V, I, 0) = 0 Or I4! = 0 Then LPrint Tab(123); ".000"
 
-                If I4 > 0 And I4 < 100 Then LPrint Tab(123); ".0";: LPrint Using "##"; I4
-                If I4 >= 100 Then LPrint Tab(123); ".";: LPrint Using "###"; I4
+                If I4! > 0 And I4! < 100 Then LPrint Tab(123); ".0";: LPrint Using "##"; I4!
+                If I4! >= 100 Then LPrint Tab(123); ".";: LPrint Using "###"; I4!
 
             Next V
 
@@ -383,26 +385,26 @@ Sub CareerToPrinter (careerFile$)
             LPrint Tab(94); Using "###"; TT12;
             LPrint Tab(100); Using "###"; TT13;
 
-            I2 = 0
+            I2! = 0
 
-            If TT2 > 0 Then I2 = Int((TT4 / TT2 + .0005) * 1000)
-            If TT2 = 0 Or I2 = 0 Then LPrint Tab(107); ".000";
-            If I2 > 0 And I2 < 100 Then LPrint Tab(107); ".0";: LPrint Using "##"; I2;
-            If I2 >= 100 Then LPrint Tab(107); ".";: LPrint Using "###"; I2;
+            If TT2 > 0 Then I2! = Int((TT4 / TT2 + .0005) * 1000)
+            If TT2 = 0 Or I2! = 0 Then LPrint Tab(107); ".000";
+            If I2! > 0 And I2! < 100 Then LPrint Tab(107); ".0";: LPrint Using "##"; I2!;
+            If I2! >= 100 Then LPrint Tab(107); ".";: LPrint Using "###"; I2!;
 
-            I3 = 0
+            I3! = 0
 
-            I3 = Int(TT4 + TT5 + (2 * TT6) + (3 * TT7)) / ((TT2) + .0005) * 1000
-            If TT2 = 0 Or I3 = O Then LPrint Tab(115); ".000";
-            If I3 > 0 And I3 < 100 Then LPrint Tab(115); ".0";: LPrint Using "##"; I3;
-            If I3 >= 100 Then LPrint Tab(115); ".";: LPrint Using "###"; I3;
+            I3! = Int(TT4 + TT5 + (2 * TT6) + (3 * TT7)) / ((TT2) + .0005) * 1000
+            If TT2 = 0 Or I3! = O Then LPrint Tab(115); ".000";
+            If I3! > 0 And I3! < 100 Then LPrint Tab(115); ".0";: LPrint Using "##"; I3!;
+            If I3! >= 100 Then LPrint Tab(115); ".";: LPrint Using "###"; I3!;
 
-            I4 = 0
+            I4! = 0
 
-            If TT9 + TT2 > 0 Then I4 = Int(((TT4 + TT9) / (TT9 + TT2) + .0005) * 1000)
-            If TT2 = 0 Or I4 = 0 Then LPrint Tab(123); ".000"
-            If I4 > 0 And I4 < 100 Then LPrint Tab(123); ".0";: LPrint Using "##"; I4
-            If I4 >= 100 Then LPrint Tab(123); ".";: LPrint Using "###"; I4
+            If TT9 + TT2 > 0 Then I4! = Int(((TT4 + TT9) / (TT9 + TT2) + .0005) * 1000)
+            If TT2 = 0 Or I4! = 0 Then LPrint Tab(123); ".000"
+            If I4! > 0 And I4! < 100 Then LPrint Tab(123); ".0";: LPrint Using "##"; I4!
+            If I4! >= 100 Then LPrint Tab(123); ".";: LPrint Using "###"; I4!
 
 
             TT1 = 0: TT2 = 0: TT3 = 0: TT4 = 0: TT5 = 0: TT6 = 0: TT7 = 0: TT8 = 0: TT9 = 0: TT10 = 0: TT11 = 0: TT12 = 0: TT13 = 0
@@ -449,16 +451,16 @@ Sub CareerToPrinter (careerFile$)
                 LPrint Tab(55); Using "###"; PRS%(V, I, 4);
                 LPrint Tab(62); Using "###"; PRS%(V, I, 5);
 
-                I2 = 0: If PRS%(V, I, 0) > 0 Then I2 = Int((((PRS%(V, I, 3) * 9) / (PRS%(V, I, 0) / 3)) + .0005) * 100)
+                I2! = 0: If PRS%(V, I, 0) > 0 Then I2! = Int((((PRS%(V, I, 3) * 9) / (PRS%(V, I, 0) / 3)) + .0005) * 100)
 
-                I3 = Int(I2 / 100): I4 = I2 - (I3 * 100)
+                I3! = Int(I2! / 100): I4! = I2! - (I3! * 100)
 
-                If PRS%(V, I, 0) = 0 Or I2 = 0 Then LPrint Tab(68); " 0.00";
-                If PRS%(V, I, 0) > 0 And I2 > 0 And I2 <= 999 Then LPrint Tab(68); Using "##"; I3;: LPrint ".";
-                If PRS%(V, I, 0) > 0 And I2 >= 1000 Then LPrint Tab(68); Using "##"; I3;: LPrint ".";
-                If PRS%(V, I, 0) > 0 And I4 = 0 And I2 > 0 Then LPrint "00";
-                If PRS%(V, I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then LPrint "0";: LPrint Using "#"; I4;
-                If PRS%(V, I, 0) > 0 And I4 >= 10 And I2 > 0 Then LPrint Using "##"; I4;
+                If PRS%(V, I, 0) = 0 Or I2! = 0 Then LPrint Tab(68); " 0.00";
+                If PRS%(V, I, 0) > 0 And I2! > 0 And I2! <= 999 Then LPrint Tab(68); Using "##"; I3!;: LPrint ".";
+                If PRS%(V, I, 0) > 0 And I2! >= 1000 Then LPrint Tab(68); Using "##"; I3!;: LPrint ".";
+                If PRS%(V, I, 0) > 0 And I4! = 0 And I2! > 0 Then LPrint "00";
+                If PRS%(V, I, 0) > 0 And I4! > 0 And I4! < 10 And I2! > 0 Then LPrint "0";: LPrint Using "#"; I4!;
+                If PRS%(V, I, 0) > 0 And I4! >= 10 And I2! > 0 Then LPrint Using "##"; I4!;
 
                 LPrint Tab(77); Using "##"; PRS%(V, I, 8);
                 LPrint Tab(83); Using "##"; PRS%(V, I, 9);
@@ -510,19 +512,19 @@ Sub CareerToPrinter (careerFile$)
         LPrint Tab(55); Using "###"; TT18;
         LPrint Tab(61); Using "####"; TT19;
 
-        I2 = 0
+        I2! = 0
 
-        If TT16 > 0 Then I2 = Int((((TT25 * 9) / (TT16 / 3)) + .0005) * 100)
+        If TT16 > 0 Then I2! = Int((((TT25 * 9) / (TT16 / 3)) + .0005) * 100)
 
-        I3 = Int(I2 / 100)
-        I4 = I2 - (I3 * 100)
+        I3! = Int(I2! / 100)
+        I4! = I2! - (I3! * 100)
 
-        If TT16 = 0 Or I2 = 0 Then LPrint Tab(68); " 0.00";
-        If TT16 > 0 And I2 > 0 And I2 <= 999 Then LPrint Tab(68); Using "##"; I3;: LPrint ".";
-        If TT16 > 0 And I2 >= 1000 Then LPrint Tab(68); Using "##"; I3;: LPrint ".";
-        If TT16 > 0 And I4 = 0 And I2 > 0 Then LPrint "00";
-        If TT16 > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then LPrint "0";: LPrint Using "#"; I4;
-        If TT16 > 0 And I4 >= 10 And I2 > 0 Then LPrint Using "##"; I4;
+        If TT16 = 0 Or I2! = 0 Then LPrint Tab(68); " 0.00";
+        If TT16 > 0 And I2! > 0 And I2! <= 999 Then LPrint Tab(68); Using "##"; I3!;: LPrint ".";
+        If TT16 > 0 And I2! >= 1000 Then LPrint Tab(68); Using "##"; I3!;: LPrint ".";
+        If TT16 > 0 And I4! = 0 And I2! > 0 Then LPrint "00";
+        If TT16 > 0 And I4! > 0 And I4! < 10 And I2! > 0 Then LPrint "0";: LPrint Using "#"; I4!;
+        If TT16 > 0 And I4! >= 10 And I2! > 0 Then LPrint Using "##"; I4!;
 
         LPrint Tab(76); Using "###"; TT21;
         LPrint Tab(81); Using "####"; TT22;
@@ -576,7 +578,7 @@ End Sub
 '...explanation...
 Sub ViewLeaders_Batters (careerFile$)
 
-    Dim I2 As Single, I3 As Single, I4 As Single
+    Dim I2!, I3!, I4!
     Shared careerB$()
     Shared BRS%()
 
@@ -628,25 +630,25 @@ Sub ViewLeaders_Batters (careerFile$)
         Print Tab(59); Using "##"; BRS%(V, B9, 10);
         Print Tab(62); Using "##"; BRS%(V, B9, 11);
 
-        I2 = 0
-        I3 = 0
-        I4 = 0
+        I2! = 0
+        I3! = 0
+        I4! = 0
         
-        IF BRS%(V, B9, 0) > 0 THEN I2 = INT((BRS%(V, B9, 1) / BRS%(V, B9, 0) + .0005) * 1000): I3 = INT(((BRS%(V, B9, 1) + BRS%(V, B9, 4) + 2 * BRS%(V, B9, 5) + 3 * BRS%(V, B9, 6)) / BRS%(V, B9, 0) + .0005) * 1000): I4 = INT(((BRS%(V, B9, 1) + BRS%(V, B9, 7)) / (BRS%(V, B9, 7) + BRS%(V, B9, 0)) + .0005) * 1000)
-        If BRS%(V, B9, 0) = 0 Or I2 = 0 Then Locate , 65: Print ".000";
+        IF BRS%(V, B9, 0) > 0 THEN I2! = INT((BRS%(V, B9, 1) / BRS%(V, B9, 0) + .0005) * 1000): I3! = INT(((BRS%(V, B9, 1) + BRS%(V, B9, 4) + 2 * BRS%(V, B9, 5) + 3 * BRS%(V, B9, 6)) / BRS%(V, B9, 0) + .0005) * 1000): I4! = INT(((BRS%(V, B9, 1) + BRS%(V, B9, 7)) / (BRS%(V, B9, 7) + BRS%(V, B9, 0)) + .0005) * 1000)
+        If BRS%(V, B9, 0) = 0 Or I2! = 0 Then Locate , 65: Print ".000";
 
-        If I2 > 0 And I2 < 100 Then Locate , 65: Print ".0";: Print Using "##"; I2;
-        If I2 >= 100 Then Locate , 65: Print ".";: Print Using "###"; I2;
+        If I2! > 0 And I2! < 100 Then Locate , 65: Print ".0";: Print Using "##"; I2!;
+        If I2! >= 100 Then Locate , 65: Print ".";: Print Using "###"; I2!;
 
-        If BRS%(V, B9, 0) = 0 Or I3 = O Then Locate , 70: Print ".000";
+        If BRS%(V, B9, 0) = 0 Or I3! = O Then Locate , 70: Print ".000";
 
-        If I3 > 0 And I3 < 100 Then Locate , 70: Print ".0";: Print Using "##"; I3;
-        If I3 >= 100 Then Locate , 70: Print ".";: Print Using "###"; I3;
+        If I3! > 0 And I3! < 100 Then Locate , 70: Print ".0";: Print Using "##"; I3!;
+        If I3! >= 100 Then Locate , 70: Print ".";: Print Using "###"; I3!;
         
-        If BRS%(V, B9, 0) = 0 Or I4 = 0 Then Locate , 75: Print ".000"
+        If BRS%(V, B9, 0) = 0 Or I4! = 0 Then Locate , 75: Print ".000"
         
-        If I4 > 0 And I4 < 100 Then Locate , 75: Print ".";: Print Using "###"; I4
-        If I4 >= 100 Then Locate , 75: Print ".";: Print Using "###"; I4
+        If I4! > 0 And I4! < 100 Then Locate , 75: Print ".";: Print Using "###"; I4!
+        If I4! >= 100 Then Locate , 75: Print ".";: Print Using "###"; I4!
 
     Next V
 
@@ -682,12 +684,12 @@ Sub ViewLeaders_Batters (careerFile$)
     Print Tab(54); Using "####"; TT11;
     Print Tab(61); Using "###"; TT13;
 
-    I3 = 0
-    I3 = Int(TT4 + TT5 + (2 * TT6) + (3 * TT7)) / ((TT2) + .0005) * 1000
+    I3! = 0
+    I3! = Int(TT4 + TT5 + (2 * TT6) + (3 * TT7)) / ((TT2) + .0005) * 1000
 
-    If TT2 = 0 Or I3 = O Then Locate , 70: Print ".000"
-    If I3 > 0 And I3 < 100 Then Locate , 70: Print ".0";: Print Using "##"; I3
-    If I3 >= 100 Then Locate , 70: Print ".";: Print Using "###"; I3
+    If TT2 = 0 Or I3! = O Then Locate , 70: Print ".000"
+    If I3! > 0 And I3! < 100 Then Locate , 70: Print ".0";: Print Using "##"; I3!
+    If I3! >= 100 Then Locate , 70: Print ".";: Print Using "###"; I3!
 
     Print "TOTALS";
 
@@ -699,19 +701,19 @@ Sub ViewLeaders_Batters (careerFile$)
     Print Tab(50); Using "####"; TT10;
     Print Tab(58); Using "###"; TT12;
 
-    I2 = 0
-    If TT2 > 0 Then I2 = Int((TT4 / TT2 + .0005) * 1000)
+    I2! = 0
+    If TT2 > 0 Then I2! = Int((TT4 / TT2 + .0005) * 1000)
 
-    If TT2 = 0 Or I2 = 0 Then Locate , 65: Print ".000";
-    If I2 > 0 And I2 < 100 Then Locate , 65: Print ".0";: Print Using "##"; I2;
-    If I2 >= 100 Then Locate , 65: Print ".";: Print Using "###"; I2;
+    If TT2 = 0 Or I2! = 0 Then Locate , 65: Print ".000";
+    If I2! > 0 And I2! < 100 Then Locate , 65: Print ".0";: Print Using "##"; I2!;
+    If I2! >= 100 Then Locate , 65: Print ".";: Print Using "###"; I2!;
 
-    I4 = 0
-    If TT9 + TT2 > 0 Then I4 = Int(((TT4 + TT9) / (TT9 + TT2) + .0005) * 1000)
+    I4! = 0
+    If TT9 + TT2 > 0 Then I4! = Int(((TT4 + TT9) / (TT9 + TT2) + .0005) * 1000)
 
-    If TT2 = 0 Or I4 = 0 Then Locate , 75: Print ".000"
-    If I4 > 0 And I4 < 100 Then Locate , 75: Print ".";: Print Using "###"; I4
-    If I4 >= 100 Then Locate , 75: Print ".";: Print Using "###"; I4
+    If TT2 = 0 Or I4! = 0 Then Locate , 75: Print ".000"
+    If I4! > 0 And I4! < 100 Then Locate , 75: Print ".";: Print Using "###"; I4!
+    If I4! >= 100 Then Locate , 75: Print ".";: Print Using "###"; I4!
 
     Print
     Print
@@ -727,7 +729,7 @@ End Sub
 '...explanation...
 Sub ViewLeaders_Pitchers (careerFile$)
 
-    Dim I2 As Single, I3 As Single, I4 As Single
+    Dim I2!, I3!, I4!
     Shared careerP$()
     Shared PRS%()
 
@@ -779,18 +781,18 @@ Sub ViewLeaders_Pitchers (careerFile$)
         Print Tab(37); Using "###"; PRS%(V, B9, 4);
         Print Tab(41); Using "###"; PRS%(V, B9, 5);
 
-        I2 = 0
-        If PRS%(V, B9, 0) > 0 Then I2 = Int((((PRS%(V, B9, 3) * 9) / (PRS%(V, B9, 0) / 3)) + .0005) * 100)
+        I2! = 0
+        If PRS%(V, B9, 0) > 0 Then I2! = Int((((PRS%(V, B9, 3) * 9) / (PRS%(V, B9, 0) / 3)) + .0005) * 100)
 
-        I3 = Int(I2 / 100)
-        I4 = I2 - (I3 * 100)
+        I3! = Int(I2! / 100)
+        I4! = I2! - (I3! * 100)
 
-        If PRS%(V, B9, 0) = 0 Or I2 = 0 Then Locate , 44: Print " 0.00";
-        If PRS%(V, B9, 0) > 0 And I2 > 0 And I2 <= 999 Then Locate , 44: Print Using "##"; I3;: Print ".";
-        If PRS%(V, B9, 0) > 0 And I2 >= 1000 Then Locate , 44: Print Using "##"; I3;: Print ".";
-        If PRS%(V, B9, 0) > 0 And I4 = 0 And I2 > 0 Then Print "00";
-        If PRS%(V, B9, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then Print "0";: Print Using "#"; I4;
-        If PRS%(V, B9, 0) > 0 And I4 >= 10 And I2 > 0 Then Print Using "##"; I4;
+        If PRS%(V, B9, 0) = 0 Or I2! = 0 Then Locate , 44: Print " 0.00";
+        If PRS%(V, B9, 0) > 0 And I2! > 0 And I2! <= 999 Then Locate , 44: Print Using "##"; I3!;: Print ".";
+        If PRS%(V, B9, 0) > 0 And I2! >= 1000 Then Locate , 44: Print Using "##"; I3!;: Print ".";
+        If PRS%(V, B9, 0) > 0 And I4! = 0 And I2! > 0 Then Print "00";
+        If PRS%(V, B9, 0) > 0 And I4! > 0 And I4! < 10 And I2! > 0 Then Print "0";: Print Using "#"; I4!;
+        If PRS%(V, B9, 0) > 0 And I4! >= 10 And I2! > 0 Then Print Using "##"; I4!;
 
         Print Tab(50); Using "##"; PRS%(V, B9, 8);
         Print Tab(53); Using "##"; PRS%(V, B9, 9);
@@ -851,18 +853,18 @@ Sub ViewLeaders_Pitchers (careerFile$)
 
     Print Tab(37); Using "###"; TT18;
 
-    I2 = 0
-    If TT16 > 0 Then I2 = Int((((TT25 * 9) / (TT16 / 3)) + .0005) * 100)
+    I2! = 0
+    If TT16 > 0 Then I2! = Int((((TT25 * 9) / (TT16 / 3)) + .0005) * 100)
 
-    I3 = Int(I2 / 100)
-    I4 = I2 - (I3 * 100)
+    I3! = Int(I2! / 100)
+    I4! = I2! - (I3! * 100)
 
-    If TT16 = 0 Or I2 = 0 Then Locate , 44: Print " 0.00";
-    If TT16 > 0 And I2 > 0 And I2 <= 999 Then Locate , 44: Print Using "##"; I3;: Print ".";
-    If TT16 > 0 And I2 >= 1000 Then Locate , 44: Print Using "##"; I3;: Print ".";
-    If TT16 > 0 And I4 = 0 And I2 > 0 Then Print "00";
-    If TT16 > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then Print "0";: Print Using "#"; I4;
-    If TT16 > 0 And I4 >= 10 And I2 > 0 Then Print Using "##"; I4;
+    If TT16 = 0 Or I2! = 0 Then Locate , 44: Print " 0.00";
+    If TT16 > 0 And I2! > 0 And I2! <= 999 Then Locate , 44: Print Using "##"; I3!;: Print ".";
+    If TT16 > 0 And I2! >= 1000 Then Locate , 44: Print Using "##"; I3!;: Print ".";
+    If TT16 > 0 And I4! = 0 And I2! > 0 Then Print "00";
+    If TT16 > 0 And I4! > 0 And I4! < 10 And I2! > 0 Then Print "0";: Print Using "#"; I4!;
+    If TT16 > 0 And I4! >= 10 And I2! > 0 Then Print Using "##"; I4!;
 
     Print Tab(51); Using "####"; TT22;
     Print Tab(59); Using "###"; TT24;
@@ -883,7 +885,7 @@ End Sub
 '...explanation...
 Sub ViewLeaders_Sequence (careerFile$)
 
-    Dim I2 As Single, I3 As Single, I4 As Single
+    Dim I2!, I3!, I4!
     Shared BRS%(), PRS%()
     Shared careerB$(), careerP$()
 
@@ -922,22 +924,22 @@ Sub ViewLeaders_Sequence (careerFile$)
                     Print Tab(59); Using "##"; BRS%(V, I, 10);
                     Print Tab(62); Using "##"; BRS%(V, I, 11);
 
-                    I2 = 0: I3 = 0: I4 = 0
+                    I2! = 0: I3! = 0: I4! = 0
                     
-                    IF BRS%(V, I, 0) > 0 THEN I2 = INT((BRS%(V, I, 1) / BRS%(V, I, 0) + .0005) * 1000): I3 = INT(((BRS%(V, I, 1) + BRS%(V, I, 4) + 2 * BRS%(V, I, 5) + 3 * BRS%(V, I, 6)) / BRS%(V, I, 0) + .0005) * 1000): I4 = INT(((BRS%(V, I, 1) + BRS%(V, I, 7)) / (BRS%(V, I, 7) + BRS%(V, I, 0)) + .0005) * 1000)
+                    IF BRS%(V, I, 0) > 0 THEN I2! = INT((BRS%(V, I, 1) / BRS%(V, I, 0) + .0005) * 1000): I3! = INT(((BRS%(V, I, 1) + BRS%(V, I, 4) + 2 * BRS%(V, I, 5) + 3 * BRS%(V, I, 6)) / BRS%(V, I, 0) + .0005) * 1000): I4! = INT(((BRS%(V, I, 1) + BRS%(V, I, 7)) / (BRS%(V, I, 7) + BRS%(V, I, 0)) + .0005) * 1000)
 
-                    If BRS%(V, I, 0) = 0 Or I2 = 0 Then Locate , 65: Print ".000";
-                    If I2 > 0 And I2 < 100 Then Locate , 65: Print ".0";: Print Using "##"; I2;
-                    If I2 >= 100 Then Locate , 65: Print ".";: Print Using "###"; I2;
-                    If BRS%(V, I, 0) = 0 Or I3 = O Then Locate , 70: Print ".000";
+                    If BRS%(V, I, 0) = 0 Or I2! = 0 Then Locate , 65: Print ".000";
+                    If I2! > 0 And I2! < 100 Then Locate , 65: Print ".0";: Print Using "##"; I2!;
+                    If I2! >= 100 Then Locate , 65: Print ".";: Print Using "###"; I2!;
+                    If BRS%(V, I, 0) = 0 Or I3! = O Then Locate , 70: Print ".000";
 
-                    If I3 > 0 And I3 < 100 Then Locate , 70: Print ".0";: Print Using "##"; I3;
-                    If I3 >= 100 Then Locate , 70: Print ".";: Print Using "###"; I3;
+                    If I3! > 0 And I3! < 100 Then Locate , 70: Print ".0";: Print Using "##"; I3!;
+                    If I3! >= 100 Then Locate , 70: Print ".";: Print Using "###"; I3!;
 
-                    If BRS%(V, I, 0) = 0 Or I4 = 0 Then Locate , 75: Print ".000"
+                    If BRS%(V, I, 0) = 0 Or I4! = 0 Then Locate , 75: Print ".000"
 
-                    If I4 > 0 And I4 < 100 Then Locate , 75: Print ".0";: Print Using "##"; I4
-                    If I4 >= 100 Then Locate , 75: Print ".";: Print Using "###"; I4
+                    If I4! > 0 And I4! < 100 Then Locate , 75: Print ".0";: Print Using "##"; I4!
+                    If I4! >= 100 Then Locate , 75: Print ".";: Print Using "###"; I4!
 
                 Next V
 
@@ -996,17 +998,17 @@ Sub ViewLeaders_Sequence (careerFile$)
                         Print Tab(37); Using "###"; PRS%(V, I, 4);
                         Print Tab(41); Using "###"; PRS%(V, I, 5);
 
-                        I2 = 0
-                        If PRS%(V, I, 0) > 0 Then I2 = Int((((PRS%(V, I, 3) * 9) / (PRS%(V, I, 0) / 3)) + .0005) * 100)
+                        I2! = 0
+                        If PRS%(V, I, 0) > 0 Then I2! = Int((((PRS%(V, I, 3) * 9) / (PRS%(V, I, 0) / 3)) + .0005) * 100)
 
-                        I3 = Int(I2 / 100): I4 = I2 - (I3 * 100)
+                        I3! = Int(I2! / 100): I4! = I2! - (I3! * 100)
 
-                        If PRS%(V, I, 0) = 0 Or I2 = 0 Then Locate , 44: Print " 0.00";
-                        If PRS%(V, I, 0) > 0 And I2 > 0 And I2 <= 999 Then Locate , 44: Print Using "##"; I3;: Print ".";
-                        If PRS%(V, I, 0) > 0 And I2 >= 1000 Then Locate , 44: Print Using "##"; I3;: Print ".";
-                        If PRS%(V, I, 0) > 0 And I4 = 0 And I2 > 0 Then Print "00";
-                        If PRS%(V, I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then Print "0";: Print Using "#"; I4;
-                        If PRS%(V, I, 0) > 0 And I4 >= 10 And I2 > 0 Then Print Using "##"; I4;
+                        If PRS%(V, I, 0) = 0 Or I2! = 0 Then Locate , 44: Print " 0.00";
+                        If PRS%(V, I, 0) > 0 And I2! > 0 And I2! <= 999 Then Locate , 44: Print Using "##"; I3!;: Print ".";
+                        If PRS%(V, I, 0) > 0 And I2! >= 1000 Then Locate , 44: Print Using "##"; I3!;: Print ".";
+                        If PRS%(V, I, 0) > 0 And I4! = 0 And I2! > 0 Then Print "00";
+                        If PRS%(V, I, 0) > 0 And I4! > 0 And I4! < 10 And I2! > 0 Then Print "0";: Print Using "#"; I4!;
+                        If PRS%(V, I, 0) > 0 And I4! >= 10 And I2! > 0 Then Print Using "##"; I4!;
 
                         Print Tab(50); Using "##"; PRS%(V, I, 8);
                         Print Tab(53); Using "##"; PRS%(V, I, 9);
@@ -1031,7 +1033,7 @@ Sub ViewLeaders_Sequence (careerFile$)
                         Print "HIT ENTER TO CONTINUE OR ESC TO GO TO MAIN MENU"
                         I$ = GetKeyPress$
 
-                         If I$ = Chr$(27) Then Exit Sub
+                         If I$ = Chr$(27) Then Exit Do
 
                          If I$ = Chr$(0) Then
                             For T = 3 To 20: Locate T
@@ -1052,6 +1054,8 @@ Sub ViewLeaders_Sequence (careerFile$)
                 Locate 5, 20
                 Color 14: Print "VIEW AGAIN (Y/N)"
                 I$ = GetKeyPress$
+			Else
+				Exit Do
             End If
 
         End If

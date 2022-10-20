@@ -9,8 +9,10 @@ Sub SINPUT ()
     Do
 
         Cls
+        Color 15, 0
 
-        CALL TITLE
+        Call TITLE
+
         menuChoices$(1) = "EDIT/CHANGE EXISTING REPLAY STAT FILE"
         menuChoices$(2) = "ENTER SCHEDULE RESULTS               "
         menuChoices$(3) = "RETURN TO MAIN MENU                  "
@@ -18,26 +20,28 @@ Sub SINPUT ()
         Count% = 3
         Start% = 1
         ExitCode% = 3
-        FileFGColr% = 15:FileBGColr% = 1
-        HiLiteFGColr% = 0:HiLiteBGColr% = 7
+        FileFGColr% = 15: FileBGColr% = 1
+        HiLiteFGColr% = 0: HiLiteBGColr% = 7
         Spacing% = 1
         Row% = 6
         Column% = 23
 
-        CALL box0(5, 22, 9, 60, 2,  15, 1)  
+        Call box0(5, 22, 9, 60, 2, 15, 1)
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
         _MouseHide
 
-        COLOR , 0
+        Color , 0
+
         If ExitCode% <> 27 Then
             Select Case Selection%
-                Case 1 Or 2: Call EditStatsSchedules (Selection%)
+                Case 1: Call EditStatsSchedules(Selection%)
+                Case 2: Call EditStatsSchedules(Selection%)
                 Case 3: Cls
             End Select
         End If
 
-    Loop Until Selection% = 3 OR ExitCode% = 27
+    Loop Until Selection% = 3 Or ExitCode% = 27
 
     '73 Exit Sub
 End Sub
@@ -47,75 +51,77 @@ End Sub
 '     EditStatsSchedules Subroutine
 '----------------------------------------
 '...explanation...
-Sub EditStatsSchedules (Q)
+Sub EditStatsSchedules (action%)
 
     Shared B$(), P$()
     Shared statB%(), B0%(), L%()
     Shared statP%(), P0%()
     Shared T%(), T1%()
 
-    CLS
-    PRINT "CHANGE TEAM BATTING STATS"
-    PRINT
+    Cls
+    Print "CHANGE TEAM BATTING STATS"
+    Print
     X% = 2
 
-    Call GetTeam_SINPUT (yearNumber$, numberTeams)
+    Call GetTeam_SINPUT(yearNumber$, numberTeams)
+
+    T$ = RTrim$(Q$(0))
 
     B$ = T$
-    B$ = RTRIM$(B$)
+    B$ = RTrim$(B$)
 
-    FOR XX = 4 TO 11
-        IF MID$(B$, XX, 1) = " " OR MID$(B$, XX, 1) = "." THEN MID$(B$, XX, 1) = "_"
-    NEXT XX
-    
-    FOR XX = 12 TO 14
-        IF MID$(B$, XX, 2) = "ST" THEN MID$(B$, 9, 1) = "_": MID$(B$, 10, 2) = "ST"
-    NEXT XX
-    
+    For XX = 4 To 11
+        If Mid$(B$, XX, 1) = " " Or Mid$(B$, XX, 1) = "." Then Mid$(B$, XX, 1) = "_"
+    Next XX
+
+    For XX = 12 To 14
+        If Mid$(B$, XX, 2) = "ST" Then Mid$(B$, 9, 1) = "_": Mid$(B$, 10, 2) = "ST"
+    Next XX
+
     QQ = 8
-    FOR XX = 11 TO 4 STEP -1
-        IF MID$(B$, XX, 1) = "_" THEN 
+    For XX = 11 To 4 Step -1
+        If Mid$(B$, XX, 1) = "_" Then
             QQ = XX - 4
-        ELSE
+        Else
             Exit For
         End If
-    NEXT XX
+    Next XX
 
     'Z$ = LEFT$(Z$, 11)
     'Z$ = LEFT$(RIGHT$(B$, LEN(B$) - 3), 8) + "." + LEFT$(B$, 2)
-    Z$ = MID$(B$, 4, QQ) + "." + LEFT$(B$, 2)
-    
-    IF Q = 2 THEN 
-        Call PromptScheduleChanges
+    Z$ = Mid$(B$, 4, QQ) + "." + Left$(B$, 2)
+
+    If action% = 2 Then
+        Call PromptScheduleChanges(Z$)
     Else
-        'Q = 1
-        
-        IF NOT _FILEEXISTS(diskPaths$(1) + Z$) THEN 
-            LOCATE 10, 8
-            CALL CSMsgBox("NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+        'action% = 1
+
+        If Not _FileExists(diskPaths$(1) + Z$) Then
+            Locate 10, 8
+            Call CSMsgBox("NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
             I$ = GetKeyPress$
-            CALL CSMsgBox("", 0, Pass)
+            Call CSMsgBox("", 0, Pass)
         Else
-            OPEN diskPaths$(1) + Z$ FOR INPUT AS #1
+            Open diskPaths$(1) + Z$ For Input As #1
 
-            INPUT #1, A$: INPUT #1, W2%: INPUT #1, L2%
+            Input #1, A$: Input #1, W2%: Input #1, L2%
 
-            FOR I = 0 TO 22: INPUT #1, B$(I): INPUT #1, statB%(I): NEXT I
-            FOR I = 0 TO 21: INPUT #1, P$(I): INPUT #1, statP%(I): NEXT I
-            FOR I = 0 TO 22: FOR I1 = 0 TO 21: INPUT #1, B0%(I, I1): NEXT I1: NEXT I
-            FOR I = 0 TO 21: FOR I1 = 0 TO 41: INPUT #1, P0%(I, I1): NEXT I1: NEXT I
+            For I = 0 To 22: Input #1, B$(I): Input #1, statB%(I): Next I
+            For I = 0 To 21: Input #1, P$(I): Input #1, statP%(I): Next I
+            For I = 0 To 22: For I1 = 0 To 21: Input #1, B0%(I, I1): Next I1: Next I
+            For I = 0 To 21: For I1 = 0 To 41: Input #1, P0%(I, I1): Next I1: Next I
 
-            INPUT #1, D0%: INPUT #1, D1%
+            Input #1, D0%: Input #1, D1%
 
-            FOR I = 0 TO 21: INPUT #1, T%(I): NEXT I
-            FOR I = 0 TO 22: INPUT #1, T1%(I): NEXT I
+            For I = 0 To 21: Input #1, T%(I): Next I
+            For I = 0 To 22: Input #1, T1%(I): Next I
 
-            CLOSE #1
+            Close #1
 
-            COLOR L%(11), L%(12)
-            CLS
+            Color L%(11), L%(12)
+            Cls
 
-            Call InputTeamStats (Z$, A$, D0%, D1%, L2%, W2%)
+            Call InputTeamStats(Z$, A$, D0%, D1%, L2%, W2%)
 
         End If
 
@@ -135,34 +141,34 @@ Sub InputTeamStats (Z$, A$, D0%, D1%, L2%, W2%)
     Shared T%(), T1%()
 
     C1 = 0
-    CLS
+    Cls
 
-    PRINT "TEAM BATTING STATS"
-    80 LOCATE 2: INPUT "1. TEAM NAME (EX. ST_LOUIS.64) "; Z$: IF C1 = 1 THEN 145
-    85 LOCATE 3: INPUT "2. TM AB "; T%(0): IF C1 = 1 THEN 145
-    90 LOCATE 4: INPUT "3. TM RUNS "; T%(2): IF C1 = 1 THEN 145
-    95 LOCATE 5: INPUT "4. TM HITS "; T%(1): IF C1 = 1 THEN 145
-    100 LOCATE 6: INPUT "5. TM DBL "; T%(4): IF C1 = 1 THEN 145
-    105 LOCATE 7: INPUT "6. TM TRPL "; T%(5): IF C1 = 1 THEN 145
-    110 LOCATE 8: INPUT "7. TM HR "; T%(6): IF C1 = 1 THEN 145
-    115 LOCATE 9: INPUT "8. TM RBI "; T%(3): IF C1 = 1 THEN 145
-    120 LOCATE 10: INPUT "9. TM BB "; T%(7): IF C1 = 1 THEN 145
-    125 LOCATE 11: INPUT "10. TM SO "; T%(8): IF C1 = 1 THEN 145
-    130 LOCATE 12: INPUT "11. TM ERR "; T%(11): IF C1 = 1 THEN 145
-    135 LOCATE 13: INPUT "12. TM SB "; T%(9): IF C1 = 1 THEN 145
-    140 LOCATE 14: INPUT "13. TM CS "; T%(10): IF C1 = 1 THEN 145
-    141 LOCATE 15: INPUT "14. TM PO "; T%(16): IF C1 = 1 THEN 145
-    142 LOCATE 16: INPUT "15. TM A  "; T%(17): IF C1 = 1 THEN 145
-    143 LOCATE 17: INPUT "16. TM SH "; T%(18): IF C1 = 1 THEN 145
-    144 LOCATE 18: INPUT "17. TM SF "; T%(19): IF C1 = 1 THEN 145
-    116 LOCATE 19: INPUT "18. TM GIDP "; T%(15): IF C1 = 1 THEN 145
-    117 LOCATE 20: INPUT "19. TM LOB "; T%(12): IF C1 = 1 THEN 145
+    Print "TEAM BATTING STATS"
+    80 Locate 2: Input "1. TEAM NAME (EX. ST_LOUIS.64) "; Z$: If C1 = 1 Then 145
+    85 Locate 3: Input "2. TM AB "; T%(0): If C1 = 1 Then 145
+    90 Locate 4: Input "3. TM RUNS "; T%(2): If C1 = 1 Then 145
+    95 Locate 5: Input "4. TM HITS "; T%(1): If C1 = 1 Then 145
+    100 Locate 6: Input "5. TM DBL "; T%(4): If C1 = 1 Then 145
+    105 Locate 7: Input "6. TM TRPL "; T%(5): If C1 = 1 Then 145
+    110 Locate 8: Input "7. TM HR "; T%(6): If C1 = 1 Then 145
+    115 Locate 9: Input "8. TM RBI "; T%(3): If C1 = 1 Then 145
+    120 Locate 10: Input "9. TM BB "; T%(7): If C1 = 1 Then 145
+    125 Locate 11: Input "10. TM SO "; T%(8): If C1 = 1 Then 145
+    130 Locate 12: Input "11. TM ERR "; T%(11): If C1 = 1 Then 145
+    135 Locate 13: Input "12. TM SB "; T%(9): If C1 = 1 Then 145
+    140 Locate 14: Input "13. TM CS "; T%(10): If C1 = 1 Then 145
+    141 Locate 15: Input "14. TM PO "; T%(16): If C1 = 1 Then 145
+    142 Locate 16: Input "15. TM A  "; T%(17): If C1 = 1 Then 145
+    143 Locate 17: Input "16. TM SH "; T%(18): If C1 = 1 Then 145
+    144 Locate 18: Input "17. TM SF "; T%(19): If C1 = 1 Then 145
+    116 Locate 19: Input "18. TM GIDP "; T%(15): If C1 = 1 Then 145
+    117 Locate 20: Input "19. TM LOB "; T%(12): If C1 = 1 Then 145
 
     145 '
     Do
         C1 = 1
-        
-        LOCATE 22: INPUT "# TO CHANGE (0 TO CONTINUE) "; B9
+
+        Locate 22: Input "# TO CHANGE (0 TO CONTINUE) "; B9
 
         Select Case B9
             Case 1: GoTo 80
@@ -185,43 +191,43 @@ Sub InputTeamStats (Z$, A$, D0%, D1%, L2%, W2%)
             Case 18: GoTo 116
             Case 19: GoTo 117
         End Select
-        
+
         C1 = 0
 
-        IF X% > 0 THEN Call ChangePitchingStats (L2%, W2%)
+        If X% > 0 Then Call ChangePitchingStats(L2%, W2%)
 
     Loop Until B9 = 0
 
 
     155 '
-    CLS : PRINT "TEAM PITCHING STATS"
-    160 LOCATE 2: INPUT "1. WON "; W2%: IF C1 = 1 THEN 220
-    165 LOCATE 3: INPUT "2. LOST "; L2%: IF C1 = 1 THEN 220
-    170 LOCATE 4: INPUT "3. TM SV "; T1%(12): IF C1 = 1 THEN 220
-    175 LOCATE 5: INPUT "4. (TM IP X 3) "; T1%(0): IF C1 = 1 THEN 220
-    180 LOCATE 6: INPUT "5. TM HITS "; T1%(1): IF C1 = 1 THEN 220
-    185 LOCATE 7: INPUT "6. TM BB "; T1%(4): IF C1 = 1 THEN 220
-    190 LOCATE 8: INPUT "7. TM SO "; T1%(5): IF C1 = 1 THEN 220
-    195 LOCATE 9: INPUT "8. TM CG "; T1%(10): IF C1 = 1 THEN 220
-    200 LOCATE 10: INPUT "9. TM RUNS "; T1%(2): IF C1 = 1 THEN 220
-    205 LOCATE 11: INPUT "10. TM E R "; T1%(3): IF C1 = 1 THEN 220
-    210 LOCATE 12: INPUT "11. TM SH OUT "; T1%(11): IF C1 = 1 THEN 220
-    211 LOCATE 13: INPUT "12. TM STARTS "; T1%(9): IF C1 = 1 THEN 220
-    212 LOCATE 14: INPUT "13. TM HRA "; T1%(14): IF C1 = 1 THEN 220
-    213 LOCATE 15: INPUT "14. TM DP TURNED "; T1%(13): IF C1 = 1 THEN 220
-    214 LOCATE 16: INPUT "15. TM SH "; T1%(15): IF C1 = 1 THEN 220
-    215 LOCATE 17: INPUT "16. TM SF "; T1%(16): IF C1 = 1 THEN 220
-    216 LOCATE 18: INPUT "17. TM RUNNERS INHERITED (RI) "; T1%(17): IF C1 = 1 THEN 220
-    217 LOCATE 19: INPUT "18. TM RI SCORED "; T1%(18): IF C1 = 1 THEN 220
-    218 LOCATE 20: INPUT "19. TM BLOWN SAVES "; T1%(19): IF C1 = 1 THEN 220
-    219 LOCATE 21: INPUT "20. TM QUALITY STARTS "; T1%(21): IF C1 = 1 THEN 220
-    
+    Cls: Print "TEAM PITCHING STATS"
+    160 Locate 2: Input "1. WON "; W2%: If C1 = 1 Then 220
+    165 Locate 3: Input "2. LOST "; L2%: If C1 = 1 Then 220
+    170 Locate 4: Input "3. TM SV "; T1%(12): If C1 = 1 Then 220
+    175 Locate 5: Input "4. (TM IP X 3) "; T1%(0): If C1 = 1 Then 220
+    180 Locate 6: Input "5. TM HITS "; T1%(1): If C1 = 1 Then 220
+    185 Locate 7: Input "6. TM BB "; T1%(4): If C1 = 1 Then 220
+    190 Locate 8: Input "7. TM SO "; T1%(5): If C1 = 1 Then 220
+    195 Locate 9: Input "8. TM CG "; T1%(10): If C1 = 1 Then 220
+    200 Locate 10: Input "9. TM RUNS "; T1%(2): If C1 = 1 Then 220
+    205 Locate 11: Input "10. TM E R "; T1%(3): If C1 = 1 Then 220
+    210 Locate 12: Input "11. TM SH OUT "; T1%(11): If C1 = 1 Then 220
+    211 Locate 13: Input "12. TM STARTS "; T1%(9): If C1 = 1 Then 220
+    212 Locate 14: Input "13. TM HRA "; T1%(14): If C1 = 1 Then 220
+    213 Locate 15: Input "14. TM DP TURNED "; T1%(13): If C1 = 1 Then 220
+    214 Locate 16: Input "15. TM SH "; T1%(15): If C1 = 1 Then 220
+    215 Locate 17: Input "16. TM SF "; T1%(16): If C1 = 1 Then 220
+    216 Locate 18: Input "17. TM RUNNERS INHERITED (RI) "; T1%(17): If C1 = 1 Then 220
+    217 Locate 19: Input "18. TM RI SCORED "; T1%(18): If C1 = 1 Then 220
+    218 Locate 20: Input "19. TM BLOWN SAVES "; T1%(19): If C1 = 1 Then 220
+    219 Locate 21: Input "20. TM QUALITY STARTS "; T1%(21): If C1 = 1 Then 220
+
     220 '
-    Do      
+    Do
         C1 = 1
-    
-        LOCATE 22: INPUT "# TO CHANGE (0 TO CONTINUE) "; B9
-        
+
+        Locate 22: Input "# TO CHANGE (0 TO CONTINUE) "; B9
+
         Select Case B9
             Case 1: GoTo 160
             Case 2: GoTo 165
@@ -242,48 +248,48 @@ Sub InputTeamStats (Z$, A$, D0%, D1%, L2%, W2%)
             Case 17: GoTo 216
             Case 18: GoTo 217
             Case 19: GoTo 218
-            Case 20: GoTo 219   
+            Case 20: GoTo 219
         End Select
-        
+
         C1 = 0
-        
-        IF X% > 0 THEN Call SelectBatters_SINPUT 'GoTo 309 
+
+        If X% > 0 Then Call SelectBatters_SINPUT 'GoTo 309
 
     Loop Until B9 = 0
 
-    
-    230 '
-    FOR I = 0 TO 22
-        CLS
 
-        235 LOCATE 1, 30: PRINT "BATTER - "; I + 1: LOCATE , 1
-        240 LOCATE 1: INPUT "1. NAME "; B$(I): IF C1 = 1 THEN 309
-        245 LOCATE 2: INPUT "2. AB "; B0%(I, 0): IF C1 = 1 THEN 309
-        250 LOCATE 3: INPUT "3. RUNS "; B0%(I, 2): IF C1 = 1 THEN 309
-        255 LOCATE 4: INPUT "4. HITS "; B0%(I, 1): IF C1 = 1 THEN 309
-        260 LOCATE 5: INPUT "5. DBL "; B0%(I, 4): IF C1 = 1 THEN 309
-        265 LOCATE 6: INPUT "6. TRPL "; B0%(I, 5): IF C1 = 1 THEN 309
-        270 LOCATE 7: INPUT "7. HR "; B0%(I, 6): IF C1 = 1 THEN 309
-        275 LOCATE 8: INPUT "8. RBI "; B0%(I, 3): IF C1 = 1 THEN 309
-        280 LOCATE 9: INPUT "9. BB "; B0%(I, 7): IF C1 = 1 THEN 309
-        285 LOCATE 10: INPUT "10. SO "; B0%(I, 8): IF C1 = 1 THEN 309
-        290 LOCATE 11: INPUT "11. ERR "; B0%(I, 11): IF C1 = 1 THEN 309
-        295 LOCATE 12: INPUT "12. SB "; B0%(I, 9): IF C1 = 1 THEN 309
-        300 LOCATE 13: INPUT "13. CS "; B0%(I, 10): IF C1 = 1 THEN 309
-        301 LOCATE 14: INPUT "14.  G "; B0%(I, 14): IF C1 = 1 THEN 309
-        302 LOCATE 15: INPUT "15. CHS "; B0%(I, 12): IF C1 = 1 THEN 309
-        303 LOCATE 16: INPUT "16. LHS "; B0%(I, 13): IF C1 = 1 THEN 309
-        304 LOCATE 17: INPUT "17. GIDP "; B0%(I, 15): IF C1 = 1 THEN 309
-        305 LOCATE 18: INPUT "18. PO "; B0%(I, 16): IF C1 = 1 THEN 309
-        306 LOCATE 19: INPUT "19. A  "; B0%(I, 17): IF C1 = 1 THEN 309
-        307 LOCATE 20: INPUT "20. SH "; B0%(I, 18): IF C1 = 1 THEN 309
-        308 LOCATE 21: INPUT "21. SF "; B0%(I, 19): IF C1 = 1 THEN 309
+    230 '
+    For I = 0 To 22
+        Cls
+
+        235 Locate 1, 30: Print "BATTER - "; I + 1: Locate , 1
+        240 Locate 1: Input "1. NAME "; B$(I): If C1 = 1 Then 309
+        245 Locate 2: Input "2. AB "; B0%(I, 0): If C1 = 1 Then 309
+        250 Locate 3: Input "3. RUNS "; B0%(I, 2): If C1 = 1 Then 309
+        255 Locate 4: Input "4. HITS "; B0%(I, 1): If C1 = 1 Then 309
+        260 Locate 5: Input "5. DBL "; B0%(I, 4): If C1 = 1 Then 309
+        265 Locate 6: Input "6. TRPL "; B0%(I, 5): If C1 = 1 Then 309
+        270 Locate 7: Input "7. HR "; B0%(I, 6): If C1 = 1 Then 309
+        275 Locate 8: Input "8. RBI "; B0%(I, 3): If C1 = 1 Then 309
+        280 Locate 9: Input "9. BB "; B0%(I, 7): If C1 = 1 Then 309
+        285 Locate 10: Input "10. SO "; B0%(I, 8): If C1 = 1 Then 309
+        290 Locate 11: Input "11. ERR "; B0%(I, 11): If C1 = 1 Then 309
+        295 Locate 12: Input "12. SB "; B0%(I, 9): If C1 = 1 Then 309
+        300 Locate 13: Input "13. CS "; B0%(I, 10): If C1 = 1 Then 309
+        301 Locate 14: Input "14.  G "; B0%(I, 14): If C1 = 1 Then 309
+        302 Locate 15: Input "15. CHS "; B0%(I, 12): If C1 = 1 Then 309
+        303 Locate 16: Input "16. LHS "; B0%(I, 13): If C1 = 1 Then 309
+        304 Locate 17: Input "17. GIDP "; B0%(I, 15): If C1 = 1 Then 309
+        305 Locate 18: Input "18. PO "; B0%(I, 16): If C1 = 1 Then 309
+        306 Locate 19: Input "19. A  "; B0%(I, 17): If C1 = 1 Then 309
+        307 Locate 20: Input "20. SH "; B0%(I, 18): If C1 = 1 Then 309
+        308 Locate 21: Input "21. SF "; B0%(I, 19): If C1 = 1 Then 309
 
         309 '
         Do
             C1 = 1
 
-            LOCATE 23: INPUT "# TO CHANGE (0 TO CONTINUE) "; B9
+            Locate 23: Input "# TO CHANGE (0 TO CONTINUE) "; B9
 
             Select Case B9
                 Case 1: GoTo 240
@@ -311,65 +317,65 @@ Sub InputTeamStats (Z$, A$, D0%, D1%, L2%, W2%)
 
             C1 = 0
 
-            IF X% > 0 THEN Call SelectBatters_SINPUT 'GoTo 309 
+            If X% > 0 Then Call SelectBatters_SINPUT 'GoTo 309
 
         Loop Until B9 = 0
 
-    NEXT I
+    Next I
 
     '-----
-    FOR I = 0 TO 21: CLS
+    For I = 0 To 21: Cls
 
-        325 LOCATE 1, 30: PRINT "PITCHER - "; I + 1: LOCATE , 1
-        330 LOCATE 1: INPUT "1. NAME "; P$(I): IF C1 = 1 THEN 401
-        335 LOCATE 2: INPUT "2. WON "; P0%(I, 6): IF C1 = 1 THEN 401
-        340 LOCATE 3: INPUT "3. LOST "; P0%(I, 7): IF C1 = 1 THEN 401
-        345 LOCATE 4: INPUT "4. SV "; P0%(I, 12): IF C1 = 1 THEN 401
-        350 LOCATE 5: INPUT "5. (IP X 3) "; P0%(I, 0): IF C1 = 1 THEN 401
-        355 LOCATE 6: INPUT "6. HITS "; P0%(I, 1): IF C1 = 1 THEN 401
-        360 LOCATE 7: INPUT "7. BB "; P0%(I, 4): IF C1 = 1 THEN 401
-        365 LOCATE 8: INPUT "8. SO "; P0%(I, 5): IF C1 = 1 THEN 401
-        370 LOCATE 9: INPUT "9. CG "; P0%(I, 10): IF C1 = 1 THEN 401
-        375 LOCATE 10: INPUT "10. RUNS "; P0%(I, 2): IF C1 = 1 THEN 401
-        380 LOCATE 11: INPUT "11. E R "; P0%(I, 3): IF C1 = 1 THEN 401
-        385 LOCATE 12: INPUT "12. SH OUT "; P0%(I, 11): IF C1 = 1 THEN 401
-        390 LOCATE 13: INPUT "13. GAMES "; P0%(I, 8): IF C1 = 1 THEN 401
-        391 LOCATE 14: INPUT "14. STARTS "; P0%(I, 9): IF C1 = 1 THEN 401
-        392 LOCATE 15: INPUT "15. HR ALL "; P0%(I, 14): IF C1 = 1 THEN 401
-        393 LOCATE 16: INPUT "16. GIDP "; P0%(I, 13): IF C1 = 1 THEN 401
-        394 LOCATE 17: INPUT "17. SH "; P0%(I, 15): IF C1 = 1 THEN 401
-        395 LOCATE 18: INPUT "18. SF "; P0%(I, 16): IF C1 = 1 THEN 401
-        396 LOCATE 19: INPUT "19. RUNNERS INHERITED (RI) "; P0%(I, 17): IF C1 = 1 THEN 401
-        397 LOCATE 20: INPUT "20. RI SCORED "; P0%(I, 18): IF C1 = 1 THEN 401
-        398 LOCATE 21: INPUT "21. BLOWN SAVES "; P0%(I, 19): IF C1 = 1 THEN 401
-        399 LOCATE 22: INPUT "22. RUN SUPPORT "; P0%(I, 20): IF C1 = 1 THEN 401
-        400 LOCATE 23: INPUT "23. QUALITY STARTS "; P0%(I, 21): IF C1 = 1 THEN 401
-        911 LOCATE 2, 40: INPUT "24. AB "; P0%(I, 23): IF C1 = 1 THEN 401
-        912 LOCATE 3, 40: INPUT "25. H "; P0%(I, 24): IF C1 = 1 THEN 401
-        913 LOCATE 4, 40: INPUT "26. R "; P0%(I, 25): IF C1 = 1 THEN 401
-        914 LOCATE 5, 40: INPUT "27. RBI "; P0%(I, 26): IF C1 = 1 THEN 401
-        915 LOCATE 6, 40: INPUT "28. DBL "; P0%(I, 27): IF C1 = 1 THEN 401
-        916 LOCATE 7, 40: INPUT "29. TRPL "; P0%(I, 28): IF C1 = 1 THEN 401
-        917 LOCATE 8, 40: INPUT "30. HR "; P0%(I, 29): IF C1 = 1 THEN 401
-        918 LOCATE 9, 40: INPUT "31. BB "; P0%(I, 30): IF C1 = 1 THEN 401
-        919 LOCATE 10, 40: INPUT "32. K "; P0%(I, 31): IF C1 = 1 THEN 401
-        920 LOCATE 11, 40: INPUT "33. SB "; P0%(I, 32): IF C1 = 1 THEN 401
-        921 LOCATE 12, 40: INPUT "34. CS "; P0%(I, 33): IF C1 = 1 THEN 401
-        922 LOCATE 13, 40: INPUT "35. ERR "; P0%(I, 34): IF C1 = 1 THEN 401
-        923 LOCATE 14, 40: INPUT "36. CHS "; P0%(I, 35): IF C1 = 1 THEN 401
-        924 LOCATE 15, 40: INPUT "37. LHS "; P0%(I, 36): IF C1 = 1 THEN 401
-        925 LOCATE 16, 40: INPUT "38. GIDP "; P0%(I, 37): IF C1 = 1 THEN 401
-        926 LOCATE 17, 40: INPUT "39. PO "; P0%(I, 38): IF C1 = 1 THEN 401
-        927 LOCATE 18, 40: INPUT "40. A "; P0%(I, 39): IF C1 = 1 THEN 401
-        928 LOCATE 19, 40: INPUT "41. SH "; P0%(I, 40): IF C1 = 1 THEN 401
-        929 LOCATE 20, 40: INPUT "42. SF "; P0%(I, 41): IF C1 = 1 THEN 401
+        325 Locate 1, 30: Print "PITCHER - "; I + 1: Locate , 1
+        330 Locate 1: Input "1. NAME "; P$(I): If C1 = 1 Then 401
+        335 Locate 2: Input "2. WON "; P0%(I, 6): If C1 = 1 Then 401
+        340 Locate 3: Input "3. LOST "; P0%(I, 7): If C1 = 1 Then 401
+        345 Locate 4: Input "4. SV "; P0%(I, 12): If C1 = 1 Then 401
+        350 Locate 5: Input "5. (IP X 3) "; P0%(I, 0): If C1 = 1 Then 401
+        355 Locate 6: Input "6. HITS "; P0%(I, 1): If C1 = 1 Then 401
+        360 Locate 7: Input "7. BB "; P0%(I, 4): If C1 = 1 Then 401
+        365 Locate 8: Input "8. SO "; P0%(I, 5): If C1 = 1 Then 401
+        370 Locate 9: Input "9. CG "; P0%(I, 10): If C1 = 1 Then 401
+        375 Locate 10: Input "10. RUNS "; P0%(I, 2): If C1 = 1 Then 401
+        380 Locate 11: Input "11. E R "; P0%(I, 3): If C1 = 1 Then 401
+        385 Locate 12: Input "12. SH OUT "; P0%(I, 11): If C1 = 1 Then 401
+        390 Locate 13: Input "13. GAMES "; P0%(I, 8): If C1 = 1 Then 401
+        391 Locate 14: Input "14. STARTS "; P0%(I, 9): If C1 = 1 Then 401
+        392 Locate 15: Input "15. HR ALL "; P0%(I, 14): If C1 = 1 Then 401
+        393 Locate 16: Input "16. GIDP "; P0%(I, 13): If C1 = 1 Then 401
+        394 Locate 17: Input "17. SH "; P0%(I, 15): If C1 = 1 Then 401
+        395 Locate 18: Input "18. SF "; P0%(I, 16): If C1 = 1 Then 401
+        396 Locate 19: Input "19. RUNNERS INHERITED (RI) "; P0%(I, 17): If C1 = 1 Then 401
+        397 Locate 20: Input "20. RI SCORED "; P0%(I, 18): If C1 = 1 Then 401
+        398 Locate 21: Input "21. BLOWN SAVES "; P0%(I, 19): If C1 = 1 Then 401
+        399 Locate 22: Input "22. RUN SUPPORT "; P0%(I, 20): If C1 = 1 Then 401
+        400 Locate 23: Input "23. QUALITY STARTS "; P0%(I, 21): If C1 = 1 Then 401
+        911 Locate 2, 40: Input "24. AB "; P0%(I, 23): If C1 = 1 Then 401
+        912 Locate 3, 40: Input "25. H "; P0%(I, 24): If C1 = 1 Then 401
+        913 Locate 4, 40: Input "26. R "; P0%(I, 25): If C1 = 1 Then 401
+        914 Locate 5, 40: Input "27. RBI "; P0%(I, 26): If C1 = 1 Then 401
+        915 Locate 6, 40: Input "28. DBL "; P0%(I, 27): If C1 = 1 Then 401
+        916 Locate 7, 40: Input "29. TRPL "; P0%(I, 28): If C1 = 1 Then 401
+        917 Locate 8, 40: Input "30. HR "; P0%(I, 29): If C1 = 1 Then 401
+        918 Locate 9, 40: Input "31. BB "; P0%(I, 30): If C1 = 1 Then 401
+        919 Locate 10, 40: Input "32. K "; P0%(I, 31): If C1 = 1 Then 401
+        920 Locate 11, 40: Input "33. SB "; P0%(I, 32): If C1 = 1 Then 401
+        921 Locate 12, 40: Input "34. CS "; P0%(I, 33): If C1 = 1 Then 401
+        922 Locate 13, 40: Input "35. ERR "; P0%(I, 34): If C1 = 1 Then 401
+        923 Locate 14, 40: Input "36. CHS "; P0%(I, 35): If C1 = 1 Then 401
+        924 Locate 15, 40: Input "37. LHS "; P0%(I, 36): If C1 = 1 Then 401
+        925 Locate 16, 40: Input "38. GIDP "; P0%(I, 37): If C1 = 1 Then 401
+        926 Locate 17, 40: Input "39. PO "; P0%(I, 38): If C1 = 1 Then 401
+        927 Locate 18, 40: Input "40. A "; P0%(I, 39): If C1 = 1 Then 401
+        928 Locate 19, 40: Input "41. SH "; P0%(I, 40): If C1 = 1 Then 401
+        929 Locate 20, 40: Input "42. SF "; P0%(I, 41): If C1 = 1 Then 401
 
         401 '
-            
+
         Do
             C1 = 1
 
-            LOCATE 23, 40: INPUT "# TO CHANGE (0 TO CONTINUE) "; B9
+            Locate 23, 40: Input "# TO CHANGE (0 TO CONTINUE) "; B9
 
             Select Case B9
                 Case 1: GoTo 330
@@ -415,26 +421,26 @@ Sub InputTeamStats (Z$, A$, D0%, D1%, L2%, W2%)
                 Case 41: GoTo 928
                 Case 42: GoTo 929
             End Select
-            
+
             C1 = 0
 
-            IF X% > 0 THEN Call SelectPitchers_SINPUT (D0%, D1%, L2%, W2%) 'GoTo 401
-            
+            If X% > 0 Then Call SelectPitchers_SINPUT(D0%, D1%, L2%, W2%, Z$) 'GoTo 401
+
         Loop Until B9 = 0
 
-    NEXT I
+    Next I
 
     ' Save the File
-    OPEN diskPaths$(1) + Z$ FOR OUTPUT AS #1
-    PRINT #1, A$: PRINT #1, W2%: PRINT #1, L2%
-    FOR I = 0 TO 22: PRINT #1, B$(I): PRINT #1, statB%(I): NEXT I
-    FOR I = 0 TO 21: PRINT #1, P$(I): PRINT #1, statP%(I): NEXT I
-    FOR I = 0 TO 22: FOR I1 = 0 TO 21: PRINT #1, B0%(I, I1): NEXT I1: NEXT I
-    FOR I = 0 TO 21: FOR I1 = 0 TO 41: PRINT #1, P0%(I, I1): NEXT I1: NEXT I
-    PRINT #1, D0%: PRINT #1, D1%
-    FOR I = 0 TO 21: PRINT #1, T%(I): NEXT I
-    FOR I = 0 TO 22: PRINT #1, T1%(I): NEXT I
-    CLOSE #1
+    Open diskPaths$(1) + Z$ For Output As #1
+    Print #1, A$: Print #1, W2%: Print #1, L2%
+    For I = 0 To 22: Print #1, B$(I): Print #1, statB%(I): Next I
+    For I = 0 To 21: Print #1, P$(I): Print #1, statP%(I): Next I
+    For I = 0 To 22: For I1 = 0 To 21: Print #1, B0%(I, I1): Next I1: Next I
+    For I = 0 To 21: For I1 = 0 To 41: Print #1, P0%(I, I1): Next I1: Next I
+    Print #1, D0%: Print #1, D1%
+    For I = 0 To 21: Print #1, T%(I): Next I
+    For I = 0 To 22: Print #1, T1%(I): Next I
+    Close #1
 
 End Sub
 
@@ -446,77 +452,77 @@ End Sub
 Sub GetTeam_SINPUT (yearNumber$, numberTeams)
 
     Shared L%()
-    
-    DO
-        COLOR 15, 0: CLS
+
+    Do
+        Color 15, 0: Cls
         JJ = 7
-        LOCATE 6, 8: COLOR 15, 4
-        Print " " + Chr$(214); String$(61, 196); Chr$(183) + " "; : FOR II = 1 TO JJ: LOCATE 6 + II, 8
-        Print " " + Chr$(186); String$(61, 32); Chr$(186) + " "; : NEXT
-        LOCATE 7 + JJ, 8
-        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " "; : LOCATE 7, 32
-        LOCATE , 12: PRINT "ENTER DISK ID: ": PRINT
-        LOCATE , 12: PRINT "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
-        LOCATE , 12: PRINT "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
-        LOCATE , 12: PRINT "HIT <ENTER> TO USE PREVIOUS ID"
-        LOCATE 7, 27: INPUT NY$
+        Locate 6, 8: Color 15, 4
+        Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";: For II = 1 To JJ: Locate 6 + II, 8
+        Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
+        Locate 7 + JJ, 8
+        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";: Locate 7, 32
+        Locate , 12: Print "ENTER DISK ID: ": Print
+        Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
+        Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
+        Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
+        Locate 7, 27: Input NY$
 
-        IF NY$ = "" THEN 
-            Call SelectTeam_SINPUT (yearNumber$, numberTeams)
-        Else    
-
-            YN$ = NY$
-            ERASE teamNames$
+		If NY$ = "" And yearNumber$ <> "" Then
+            Call SelectTeam_SINPUT(yearNumber$, numberTeams)
+        Else
+            yearNumber$ = NY$
+            Erase teamNames$
 
             numberTeams = 0
-            
-            IF _FILEEXISTS(diskPaths$(0) + "FCTEAMS." + YN$) THEN 
 
-                OPEN diskPaths$(0) + "FCTEAMS." + YN$ FOR RANDOM AS #1 LEN = 4342
+            If _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
+
+                Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
                 Y = LOF(1)
-                FIELD #1, 15 AS Q$(0)
-                
-                FOR I1 = 1 TO Y / 4342
-                    GET #1, I1
-                    FOR I2 = 1 TO 15
-                        IF LEFT$(Q$(0),2) = "XX" OR LEFT$(Q$(0),1) = " " OR ASC(MID$(Q$(0), I2, 1)) < 32 OR ASC(MID$(Q$(0), I2, 1)) > 123 OR UCASE$(LEFT$(Q$(0), 3)) = "NOT" OR UCASE$(LEFT$(Q$(0), 3)) = "UN" THEN nullTeam = 1: Exit For
-                    NEXT I2
-                    
+                Field #1, 15 As Q$(0)
+
+                For I1 = 1 To Y / 4342
+                    Get #1, I1
+                    For I2 = 1 To 15
+                        If Left$(Q$(0), 2) = "XX" Or Left$(Q$(0), 1) = " " Or Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then nullTeam = 1: Exit For
+                    Next I2
+
                     If nullTeam <> 1 Then
                         numberTeams = numberTeams + 1
                         teamNames$(numberTeams) = Q$(0)
                         teamIndex%(numberTeams) = I1
                     End If
-                NEXT I1
-                
-                CLOSE 1
-                
-                Call SelectTeam_SINPUT (yearNumber$, numberTeams)
+                Next I1
+
+                Close 1
+
+                Call SelectTeam_SINPUT(yearNumber$, numberTeams)
 
             Else
 
                 BO% = 1
-                LOCATE 10, 8
-                CALL CSMsgBox("NO TEAM FILES WERE FOUND MATCHING THIS ID.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+                Locate 10, 8
+                Call CSMsgBox("NO TEAM FILES WERE FOUND MATCHING THIS ID.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
                 I$ = GetKeyPress$
-                CALL CSMsgBox("", 0, Pass)
+                Call CSMsgBox("", 0, Pass)
 
             End If '
 
         End If
 
-        T$ = RTRIM$(Q$(0))
+        T$ = RTrim$(Q$(0))
 
-        IF BO% = 1 THEN 
+        If BO% = 1 Then
             BO% = 0
         Else
-            
-            LOCATE 2, 33: COLOR 15, 0: COLOR L%(11), L%(12)
-            PRINT T$: COLOR 15, 4
-            LOCATE , 33: PRINT "ANY CHANGE (YN)";
+
+            Locate 2, 33
+            Color 15, 0: Color L%(11), L%(12)
+            Print T$: Color 15, 4
+            Locate , 33: Print "ANY CHANGE (YN)";
             Do
-                I$ =GetKeyPress$
-            Loop Until UCase$(I$) = "N" OR UCase$(I$) = "Y"
+                I$ = GetKeyPress$
+            Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
         End If
 
     Loop Until UCase$(I$) = "N" Or I$ = Chr$(27)
@@ -535,43 +541,43 @@ Sub SelectTeam_SINPUT (yearNumber$, numberTeams)
     Selection% = 1
     Count% = numberTeams
     Start% = 1
-    FileFGColr% = 15:FileBGColr% = 4
-    HiLiteFGColr% = 0:HiLiteBGColr% = 7
+    FileFGColr% = 15: FileBGColr% = 4
+    HiLiteFGColr% = 0: HiLiteBGColr% = 7
     Rows% = 20
     Columns% = 4
     Spacing% = 6
     Row% = 4
     Column% = 1
-    COLOR , 4: CLS : LOCATE , 33: COLOR 14: PRINT "TEAM SELECTION": COLOR 15
-    LOCATE 25, 1: COLOR 14: PRINT "ESC"; : COLOR 15: PRINT "-SELECT NEW ID  PGDN  PGUP  "; : COLOR 14: PRINT "ENTER"; : COLOR 15: PRINT "-SELECTS TEAM";
+    Color , 4: Cls: Locate , 33: Color 14: Print "TEAM SELECTION": Color 15
+    Locate 25, 1: Color 14: Print "ESC";: Color 15: Print "-SELECT NEW ID  PGDN  PGUP  ";: Color 14: Print "ENTER";: Color 15: Print "-SELECTS TEAM";
 
     _MouseShow "DEFAULT"
     MAMenu teamNames$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
     _MouseHide
 
-    IF ExitCode% <> 27 THEN 
+    If ExitCode% <> 27 Then
 
         T = teamIndex%(Selection%)
-        LOCATE 2, 33: COLOR 31: PRINT "LOADING..."
-        
-        IF _FILEEXISTS(diskPaths$(0) + "FCTEAMS." + YN$) THEN 
-        
-            OPEN diskPaths$(0) + "FCTEAMS." + YN$ FOR RANDOM AS #1 LEN = 4342
-            FIELD #1, 15 AS Q$(0), 2 AS Q$(1), 2 AS Q$(2), 2 AS Q$(3), 2 AS Q$(4), 2 AS Q$(5), 2 AS Q$(6), 2 AS Q$(7), 2 AS Q$(8), 2 AS Q$(9), 2 AS Q$(10), 2 AS Q$(11), 2 AS Q$(12), 2 AS Q$(13), 4 AS Q$(14), 4297 AS X$
-            GET #1, T
-            
-            FOR I = 1 TO 13
+        Locate 2, 33: Color 31: Print "LOADING..."
+
+        If _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
+
+            Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
+            Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
+            Get #1, T
+
+            For I = 1 To 13
                 L%(I) = CVI(Q$(I))
-            NEXT
-            
-            CLOSE 1
+            Next
+
+            Close 1
         Else
-            LOCATE 10, 8
-            CALL CSMsgBox("NO TEAM FILES WERE FOUND MATCHING THIS ID.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+            Locate 10, 8
+            Call CSMsgBox("NO TEAM FILES WERE FOUND MATCHING THIS ID.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
             I$ = GetKeyPress$
-            CALL CSMsgBox("", 0, Pass)
+            Call CSMsgBox("", 0, Pass)
             BO% = 1
-        End If      
+        End If
     Else
         BO% = 1
     End If
@@ -589,32 +595,32 @@ Sub ChangePitchingStats (L2%, W2%)
 
     Shared T1%()
 
-495 '
-    CLS
-    PRINT "CHANGE TEAM PITCHING STATS"
-    PRINT
+    495 '
+    Cls
+    Print "CHANGE TEAM PITCHING STATS"
+    Print
     X% = 2
-    
-    LOCATE 2: PRINT "1. WON "; W2%
-    LOCATE 3: PRINT "2. LOST "; L2%
-    LOCATE 4: PRINT "3. TM SV "; T1%(12)
-    LOCATE 5: PRINT "4. (TM IP X 3) "; T1%(0)
-    LOCATE 6: PRINT "5. TM HITS "; T1%(1)
-    LOCATE 7: PRINT "6. TM BB "; T1%(4)
-    LOCATE 8: PRINT "7. TM SO "; T1%(5)
-    LOCATE 9: PRINT "8. TM CG "; T1%(10)
-    LOCATE 10: PRINT "9. TM RUNS "; T1%(2)
-    LOCATE 11: PRINT "10. TM E R "; T1%(3)
-    LOCATE 12: PRINT "11. TM SHT OUT "; T1%(11)
-    LOCATE 13: PRINT "12. TM STARTS "; T1%(9)
-    LOCATE 14: PRINT "13. TM HRA "; T1%(14)
-    LOCATE 15: PRINT "14. TM DP TURNED "; T1%(13)
-    LOCATE 16: PRINT "15. TM SH "; T1%(15)
-    LOCATE 17: PRINT "16. TM SF "; T1%(16)
-    LOCATE 18: PRINT "17. TM RUNNERS INHERITED (RI) "; T1%(17)
-    LOCATE 19: PRINT "18. TM RI SCORED "; T1%(18)
-    LOCATE 20: PRINT "19. TM BLOWN SAVES "; T1%(19)
-    LOCATE 21: PRINT "20. TM QUALITY STARTS "; T1%(21)
+
+    Locate 2: Print "1. WON "; W2%
+    Locate 3: Print "2. LOST "; L2%
+    Locate 4: Print "3. TM SV "; T1%(12)
+    Locate 5: Print "4. (TM IP X 3) "; T1%(0)
+    Locate 6: Print "5. TM HITS "; T1%(1)
+    Locate 7: Print "6. TM BB "; T1%(4)
+    Locate 8: Print "7. TM SO "; T1%(5)
+    Locate 9: Print "8. TM CG "; T1%(10)
+    Locate 10: Print "9. TM RUNS "; T1%(2)
+    Locate 11: Print "10. TM E R "; T1%(3)
+    Locate 12: Print "11. TM SHT OUT "; T1%(11)
+    Locate 13: Print "12. TM STARTS "; T1%(9)
+    Locate 14: Print "13. TM HRA "; T1%(14)
+    Locate 15: Print "14. TM DP TURNED "; T1%(13)
+    Locate 16: Print "15. TM SH "; T1%(15)
+    Locate 17: Print "16. TM SF "; T1%(16)
+    Locate 18: Print "17. TM RUNNERS INHERITED (RI) "; T1%(17)
+    Locate 19: Print "18. TM RI SCORED "; T1%(18)
+    Locate 20: Print "19. TM BLOWN SAVES "; T1%(19)
+    Locate 21: Print "20. TM QUALITY STARTS "; T1%(21)
 
 End Sub
 
@@ -624,59 +630,59 @@ End Sub
 '----------------------------------------
 '...explanation...
 Sub SelectBatters_SINPUT
-    
+
     Shared B$()
     Shared B0%()
 
-565 '
-    CLS 
-    PRINT "CHANGE BATTERS "
-    PRINT
+    565 '
+    Cls
+    Print "CHANGE BATTERS "
+    Print
     X% = 2
-    
-    FOR I = 0 TO 10
-        LOCATE I + 5, 5: PRINT USING "##"; I + 1; : PRINT " "; B$(I); TAB(40); : PRINT USING "##"; I + 13; : PRINT " "; B$(I + 12)
-    NEXT
-    
-    LOCATE , 5: PRINT USING "##"; 12; : PRINT " "; B$(11)
-    PRINT
-    
+
+    For I = 0 To 10
+        Locate I + 5, 5: Print Using "##"; I + 1;: Print " "; B$(I); Tab(40);: Print Using "##"; I + 13;: Print " "; B$(I + 12)
+    Next
+
+    Locate , 5: Print Using "##"; 12;: Print " "; B$(11)
+    Print
+
     Do
-        PRINT "# TO CHANGE (1-23) (0 TO CONTINUE) "; I$ = GetKeyPress$
+        Print "# TO CHANGE (1-23) (0 TO CONTINUE) "; I$ = GetKeyPress$
         I = Val(I$)
     Loop Until I >= 0 And I <= 23
-    
-    IF I = 0 THEN 
+
+    If I = 0 Then
         X% = 0
-        Call SelectPitchers_SINPUT (D0%, D1%, L2%, W2%)
+        Call SelectPitchers_SINPUT(D0%, D1%, L2%, W2%, Z$)
     Else
         I = I - 1
-        CLS : LOCATE 1: PRINT "1. NAME "; B$(I)
-        LOCATE 2: PRINT "2. AB "; B0%(I, 0)
-        LOCATE 3: PRINT "3. RUNS "; B0%(I, 2)
-        LOCATE 4: PRINT "4. HITS "; B0%(I, 1)
-        LOCATE 5: PRINT "5. DBL "; B0%(I, 4)
-        LOCATE 6: PRINT "6. TRPL "; B0%(I, 5)
-        LOCATE 7: PRINT "7. HR "; B0%(I, 6)
-        LOCATE 8: PRINT "8. RBI "; B0%(I, 3)
-        LOCATE 9: PRINT "9. BB "; B0%(I, 7)
-        LOCATE 10: PRINT "10. SO "; B0%(I, 8)
-        LOCATE 11: PRINT "11. ERR "; B0%(I, 11)
-        LOCATE 12: PRINT "12. SB "; B0%(I, 9)
-        LOCATE 13: PRINT "13. CS "; B0%(I, 10)
-        LOCATE 14: PRINT "14. G  "; B0%(I, 14)
-        LOCATE 15: PRINT "15. CHS "; B0%(I, 12)
-        LOCATE 16: PRINT "16. LHS "; B0%(I, 13)
-        LOCATE 17: PRINT "17. GIDP "; B0%(I, 15)
-        LOCATE 18: PRINT "18. PO "; B0%(I, 16)
-        LOCATE 19: PRINT "19. A  "; B0%(I, 17)
-        LOCATE 20: PRINT "20. SH "; B0%(I, 18)
-        LOCATE 21: PRINT "21. SF "; B0%(I, 19)
-        
+        Cls: Locate 1: Print "1. NAME "; B$(I)
+        Locate 2: Print "2. AB "; B0%(I, 0)
+        Locate 3: Print "3. RUNS "; B0%(I, 2)
+        Locate 4: Print "4. HITS "; B0%(I, 1)
+        Locate 5: Print "5. DBL "; B0%(I, 4)
+        Locate 6: Print "6. TRPL "; B0%(I, 5)
+        Locate 7: Print "7. HR "; B0%(I, 6)
+        Locate 8: Print "8. RBI "; B0%(I, 3)
+        Locate 9: Print "9. BB "; B0%(I, 7)
+        Locate 10: Print "10. SO "; B0%(I, 8)
+        Locate 11: Print "11. ERR "; B0%(I, 11)
+        Locate 12: Print "12. SB "; B0%(I, 9)
+        Locate 13: Print "13. CS "; B0%(I, 10)
+        Locate 14: Print "14. G  "; B0%(I, 14)
+        Locate 15: Print "15. CHS "; B0%(I, 12)
+        Locate 16: Print "16. LHS "; B0%(I, 13)
+        Locate 17: Print "17. GIDP "; B0%(I, 15)
+        Locate 18: Print "18. PO "; B0%(I, 16)
+        Locate 19: Print "19. A  "; B0%(I, 17)
+        Locate 20: Print "20. SH "; B0%(I, 18)
+        Locate 21: Print "21. SF "; B0%(I, 19)
+
         'GOTO 309
 
     End If
-    
+
 End Sub
 
 
@@ -684,143 +690,144 @@ End Sub
 '    SelectPitchers_SINPUT Subroutine
 '----------------------------------------
 '...explanation...
-Sub SelectPitchers_SINPUT (D0%, D1%, L2%, W2%)
+Sub SelectPitchers_SINPUT (D0%, D1%, L2%, W2%, Z$)
 
     Shared B$(), P$()
     Shared statB%(), B0%(), statP%(), P0%()
     Shared T%(), T1%()
 
-    CLS
-    PRINT "CHANGE PITCHERS"
+    Cls
+    Print "CHANGE PITCHERS"
     X% = 2
-    
-    FOR I = 0 TO 10
-        LOCATE I + 5, 5: PRINT USING "##"; I + 1;
-        PRINT " "; P$(I); TAB(40);
-        PRINT USING "##"; I + 12; : PRINT " "; P$(I + 11)
-    NEXT
-    
-    PRINT
-    PRINT
+
+    For I = 0 To 10
+        Locate I + 5, 5: Print Using "##"; I + 1;
+        Print " "; P$(I); Tab(40);
+        Print Using "##"; I + 12;: Print " "; P$(I + 11)
+    Next
+
+    Print
+    Print
     Do
-        PRINT "# TO CHANGE (1-22) (0 TO CONTINUE) ";
+        Print "# TO CHANGE (1-22) (0 TO CONTINUE) ";
         I$ = GetKeyPress$
         I = Val(I$)
     Loop Until I >= 0 And I <= 23
 
-    IF I = 0 THEN 
+    If I = 0 Then
         X% = 0
-        OPEN diskPaths$(1) + Z$ FOR OUTPUT AS #1
-        PRINT #1, A$: PRINT #1, W2%: PRINT #1, L2%
-        
-        FOR I = 0 TO 22: PRINT #1, B$(I): PRINT #1, statB%(I): NEXT I
-        FOR I = 0 TO 21: PRINT #1, P$(I): PRINT #1, statP%(I): NEXT I
-        FOR I = 0 TO 22: FOR I1 = 0 TO 21: PRINT #1, B0%(I, I1): NEXT I1: NEXT I
-        FOR I = 0 TO 21: FOR I1 = 0 TO 41: PRINT #1, P0%(I, I1): NEXT I1: NEXT I
-        
-        PRINT #1, D0%: PRINT #1, D1%
-        
-        FOR I = 0 TO 21: PRINT #1, T%(I): NEXT I
-        FOR I = 0 TO 22: PRINT #1, T1%(I): NEXT I
-        
-        CLOSE #1
+        Open diskPaths$(1) + Z$ For Output As #1
+        Print #1, A$: Print #1, W2%: Print #1, L2%
+
+        For I = 0 To 22: Print #1, B$(I): Print #1, statB%(I): Next I
+        For I = 0 To 21: Print #1, P$(I): Print #1, statP%(I): Next I
+        For I = 0 To 22: For I1 = 0 To 21: Print #1, B0%(I, I1): Next I1: Next I
+        For I = 0 To 21: For I1 = 0 To 41: Print #1, P0%(I, I1): Next I1: Next I
+
+        Print #1, D0%: Print #1, D1%
+
+        For I = 0 To 21: Print #1, T%(I): Next I
+        For I = 0 To 22: Print #1, T1%(I): Next I
+
+        Close #1
     Else
         I = I - 1
-        CLS : LOCATE 1: PRINT "1. NAME "; P$(I)
-        LOCATE 2: PRINT "2. WON "; P0%(I, 6);
-        LOCATE , 40: PRINT "24. AB "; P0%(I, 23)
-        LOCATE 3: PRINT "3. LOST "; P0%(I, 7);
-        LOCATE , 40: PRINT "25. H "; P0%(I, 24)
-        LOCATE 4: PRINT "4. SV "; P0%(I, 12);
-        LOCATE , 40: PRINT "26. R "; P0%(I, 25)
-        LOCATE 5: PRINT "5. (IP X 3) "; P0%(I, 0);
-        LOCATE , 40: PRINT "27. RBI "; P0%(I, 26)
-        LOCATE 6: PRINT "6. HITS "; P0%(I, 1);
-        LOCATE , 40: PRINT "28. DBL "; P0%(I, 27)
-        LOCATE 7: PRINT "7. BB "; P0%(I, 4);
-        LOCATE , 40: PRINT "29. TRPL "; P0%(I, 28)
-        LOCATE 8: PRINT "8. SO "; P0%(I, 5);
-        LOCATE , 40: PRINT "30. HR "; P0%(I, 29)
-        LOCATE 9: PRINT "9. CG "; P0%(I, 10);
-        LOCATE , 40: PRINT "31. BB "; P0%(I, 30)
-        LOCATE 10: PRINT "10. RUNS "; P0%(I, 2);
-        LOCATE , 40: PRINT "32. K "; P0%(I, 31)
-        LOCATE 11: PRINT "11. E R "; P0%(I, 3);
-        LOCATE , 40: PRINT "33. SB "; P0%(I, 32)
-        LOCATE 12: PRINT "12. SH OUT "; P0%(I, 11);
-        LOCATE , 40: PRINT "34. CS "; P0%(I, 33)
-        LOCATE 13: PRINT "13. GAMES "; P0%(I, 8);
-        LOCATE , 40: PRINT "35. ERR "; P0%(I, 34)
-        LOCATE 14: PRINT "14. STARTS "; P0%(I, 9);
-        LOCATE , 40: PRINT "36. CHS "; P0%(I, 35)
-        LOCATE 15: PRINT "15. HR ALL "; P0%(I, 14);
-        LOCATE , 40: PRINT "37. LHS "; P0%(I, 36)
-        LOCATE 16: PRINT "16. GIDP "; P0%(I, 13);
-        LOCATE , 40: PRINT "38. GIDP "; P0%(I, 37)
-        LOCATE 17: PRINT "17. SH "; P0%(I, 15);
-        LOCATE , 40: PRINT "39. PO "; P0%(I, 38)
-        LOCATE 18: PRINT "18. SF "; P0%(I, 16);
-        LOCATE , 40: PRINT "40. A "; P0%(I, 39)
-        LOCATE 19: PRINT "19. RUNNERS INHERITED (RI) "; P0%(I, 17);
-        LOCATE , 40: PRINT "41. SH "; P0%(I, 40)
-        LOCATE 20: PRINT "20. RI SCORED "; P0%(I, 18);
-        LOCATE , 40: PRINT "42. SF "; P0%(I, 41)
-        LOCATE 21: PRINT "21. BLOWN SAVES "; P0%(I, 19)
-        LOCATE 22: PRINT "22. RUN SUPPORT "; P0%(I, 20)
-        LOCATE 23: PRINT "23. QUALITY STARTS "; P0%(I, 21)
-        
+        Cls: Locate 1: Print "1. NAME "; P$(I)
+        Locate 2: Print "2. WON "; P0%(I, 6);
+        Locate , 40: Print "24. AB "; P0%(I, 23)
+        Locate 3: Print "3. LOST "; P0%(I, 7);
+        Locate , 40: Print "25. H "; P0%(I, 24)
+        Locate 4: Print "4. SV "; P0%(I, 12);
+        Locate , 40: Print "26. R "; P0%(I, 25)
+        Locate 5: Print "5. (IP X 3) "; P0%(I, 0);
+        Locate , 40: Print "27. RBI "; P0%(I, 26)
+        Locate 6: Print "6. HITS "; P0%(I, 1);
+        Locate , 40: Print "28. DBL "; P0%(I, 27)
+        Locate 7: Print "7. BB "; P0%(I, 4);
+        Locate , 40: Print "29. TRPL "; P0%(I, 28)
+        Locate 8: Print "8. SO "; P0%(I, 5);
+        Locate , 40: Print "30. HR "; P0%(I, 29)
+        Locate 9: Print "9. CG "; P0%(I, 10);
+        Locate , 40: Print "31. BB "; P0%(I, 30)
+        Locate 10: Print "10. RUNS "; P0%(I, 2);
+        Locate , 40: Print "32. K "; P0%(I, 31)
+        Locate 11: Print "11. E R "; P0%(I, 3);
+        Locate , 40: Print "33. SB "; P0%(I, 32)
+        Locate 12: Print "12. SH OUT "; P0%(I, 11);
+        Locate , 40: Print "34. CS "; P0%(I, 33)
+        Locate 13: Print "13. GAMES "; P0%(I, 8);
+        Locate , 40: Print "35. ERR "; P0%(I, 34)
+        Locate 14: Print "14. STARTS "; P0%(I, 9);
+        Locate , 40: Print "36. CHS "; P0%(I, 35)
+        Locate 15: Print "15. HR ALL "; P0%(I, 14);
+        Locate , 40: Print "37. LHS "; P0%(I, 36)
+        Locate 16: Print "16. GIDP "; P0%(I, 13);
+        Locate , 40: Print "38. GIDP "; P0%(I, 37)
+        Locate 17: Print "17. SH "; P0%(I, 15);
+        Locate , 40: Print "39. PO "; P0%(I, 38)
+        Locate 18: Print "18. SF "; P0%(I, 16);
+        Locate , 40: Print "40. A "; P0%(I, 39)
+        Locate 19: Print "19. RUNNERS INHERITED (RI) "; P0%(I, 17);
+        Locate , 40: Print "41. SH "; P0%(I, 40)
+        Locate 20: Print "20. RI SCORED "; P0%(I, 18);
+        Locate , 40: Print "42. SF "; P0%(I, 41)
+        Locate 21: Print "21. BLOWN SAVES "; P0%(I, 19)
+        Locate 22: Print "22. RUN SUPPORT "; P0%(I, 20)
+        Locate 23: Print "23. QUALITY STARTS "; P0%(I, 21)
+
         'GOTO 401
 
     End If
 
 
-End Sub 
+End Sub
 
 
 '----------------------------------------
 '    PromptScheduleChanges Subroutine
 '----------------------------------------
 '...explanation...
-Sub PromptScheduleChanges
+Sub PromptScheduleChanges (Z$)
 
     Shared H%(), I%(), V%()
     Shared H$(), L$(), PL$(), W$()
 
-    IF _FILEEXISTS(diskPaths$(2) + Z$ + "S") THEN 
-        CLS
+    statsFile$ = diskPaths$(1) + Z$ + "S"
+    If _FileExists(statsFile$) Then
+        Cls
 
-        OPEN diskPaths$(2) + Z$ + "S" FOR INPUT AS #1
-        INPUT #1, GAMES%
+        Open statsFile$ For Input As #1
+        Input #1, GAMES%
 
-        FOR I = 1 TO 162: INPUT #1, H%(I): NEXT
-        FOR I = 1 TO 162: INPUT #1, H$(I): NEXT
-        FOR I = 1 TO 162: INPUT #1, V%(I): NEXT
-        FOR I = 1 TO 162: INPUT #1, PL$(I): NEXT
-        FOR I = 1 TO 162: INPUT #1, W$(I): NEXT
-        FOR I = 1 TO 162: INPUT #1, L$(I): NEXT
-        FOR I = 1 TO 162: INPUT #1, I%(I): NEXT
+        For I = 1 To 162: Input #1, H%(I): Next
+        For I = 1 To 162: Input #1, H$(I): Next
+        For I = 1 To 162: Input #1, V%(I): Next
+        For I = 1 To 162: Input #1, PL$(I): Next
+        For I = 1 To 162: Input #1, W$(I): Next
+        For I = 1 To 162: Input #1, L$(I): Next
+        For I = 1 To 162: Input #1, I%(I): Next
 
-        CLOSE 1
+        Close 1
 
-        CLS
+        Cls
 
         Do
-            1050 LOCATE 1, 1: PRINT "1. SCORE FOR "; Z$; " "; : INPUT H%: IF C1 = 1 THEN 1100
-            1051 LOCATE 2, 1: PRINT "2. OPPONENT'S NAME "; : INPUT H$: IF C1 = 1 THEN 1100
-            1052 LOCATE 3, 1: PRINT "3. OPPONENT'S SCORE "; : INPUT V%: IF C1 = 1 THEN 1100
-            1053 LOCATE 4, 1: PRINT "4. (H)OME OR (A)WAY "; : INPUT PL$: IF C1 = 1 THEN 1100
-            1054 LOCATE 5, 1: PRINT "5. WINNING PITCHER "; : INPUT W$: IF C1 = 1 THEN 1100
-            1055 LOCATE 6, 1: PRINT "6. LOSING PITCHER "; : INPUT L$: IF C1 = 1 THEN 1100
-            1056 LOCATE 7, 1: PRINT "7. NUMBER OF INNINGS "; : INPUT I%: IF C1 = 1 THEN 1100
+            1050 Locate 1, 1: Print "1. SCORE FOR "; Z$; " ";: Input H%: If C1 = 1 Then 1100
+            1051 Locate 2, 1: Print "2. OPPONENT'S NAME ";: Input H$: If C1 = 1 Then 1100
+            1052 Locate 3, 1: Print "3. OPPONENT'S SCORE ";: Input V%: If C1 = 1 Then 1100
+            1053 Locate 4, 1: Print "4. (H)OME OR (A)WAY ";: Input PL$: If C1 = 1 Then 1100
+            1054 Locate 5, 1: Print "5. WINNING PITCHER ";: Input W$: If C1 = 1 Then 1100
+            1055 Locate 6, 1: Print "6. LOSING PITCHER ";: Input L$: If C1 = 1 Then 1100
+            1056 Locate 7, 1: Print "7. NUMBER OF INNINGS ";: Input I%: If C1 = 1 Then 1100
 
             1057 C1 = 1
 
             1100 '
             Do
-                LOCATE 9, 1: PRINT "ENTER # TO CHANGE (1-7) OR 0 TO CONTINUE"
+                Locate 9, 1: Print "ENTER # TO CHANGE (1-7) OR 0 TO CONTINUE"
                 I$ = GetKeyPress$
-                D = VAL(I$)
-                
+                D = Val(I$)
+
                 Select Case D
                     Case 1: GoTo 1050
                     Case 2: GoTo 1051
@@ -830,7 +837,7 @@ Sub PromptScheduleChanges
                     Case 6: GoTo 1055
                     Case 7: GoTo 1056
                 End Select
-                
+
             Loop Until D >= 0 And D <= 7
 
             GAMES% = GAMES% + 1
@@ -843,68 +850,38 @@ Sub PromptScheduleChanges
             I%(GAMES%) = I%
 
             Do
-                PRINT "ADD ANOTHER GAME (YN)";
+                Print "ADD ANOTHER GAME (YN)";
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
-            IF UCASE$(I$) = "Y" THEN C1 = 0
-            
+            If UCase$(I$) = "Y" Then C1 = 0
+
         Loop Until UCase$(I$) = "N"
 
 
-        OPEN diskPaths$(2) + Z$ + "S" FOR OUTPUT AS #1
-        
-        PRINT #1, GAMES%
+        Open diskPaths$(1) + Z$ + "S" For Output As #1
 
-        FOR I = 1 TO 162: PRINT #1, H%(I): NEXT
-        FOR I = 1 TO 162: PRINT #1, H$(I): NEXT
-        FOR I = 1 TO 162: PRINT #1, V%(I): NEXT
-        FOR I = 1 TO 162: PRINT #1, PL$(I): NEXT
-        FOR I = 1 TO 162: PRINT #1, W$(I): NEXT
-        FOR I = 1 TO 162: PRINT #1, L$(I): NEXT
-        FOR I = 1 TO 162: PRINT #1, I%(I): NEXT
+        Print #1, GAMES%
 
-        CLOSE 1
-        
-        CLS
+        For I = 1 To 162: Print #1, H%(I): Next
+        For I = 1 To 162: Print #1, H$(I): Next
+        For I = 1 To 162: Print #1, V%(I): Next
+        For I = 1 To 162: Print #1, PL$(I): Next
+        For I = 1 To 162: Print #1, W$(I): Next
+        For I = 1 To 162: Print #1, L$(I): Next
+        For I = 1 To 162: Print #1, I%(I): Next
+
+        Close 1
+
+        Cls
 
     Else
 
-        LOCATE 10, 8
-        CALL CSMsgBox("NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+        Locate 10, 8
+        Call CSMsgBox("NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
         I$ = GetKeyPress$
-        CALL CSMsgBox("", 0, Pass)
+        Call CSMsgBox("", 0, Pass)
 
     End If 'Done checking if file exiss
-    
+
 End Sub
-
-
-'805 
-'CLS : PRINT "TEAM INFO"
-'LOCATE 2: INPUT "1. TEAM NAME (EX. ST_LOUIS.82) "; Z$
-
-'OPEN diskPaths$(1) + Z$ FOR OUTPUT AS #1
-'PRINT #1, Z$: PRINT #1, 1: PRINT #1, 1
-'FOR I = 0 TO 22: PRINT #1, "XXX": PRINT #1, statB%(I): NEXT I
-'FOR I = 0 TO 21: PRINT #1, "XXX": PRINT #1, statP%(I): NEXT I
-'FOR I = 0 TO 22: FOR I1 = 0 TO 21: PRINT #1, 0: NEXT I1: NEXT I
-'FOR I = 0 TO 21: FOR I1 = 0 TO 41: PRINT #1, 0: NEXT I1: NEXT I
-'PRINT #1, 0: PRINT #1, 0
-'FOR I = 0 TO 21: PRINT #1, 1: NEXT I: FOR I = 0 TO 22: PRINT #1, 1: NEXT I
-
-'CLOSE 1
-
-
-'OPEN diskPaths$(1) + Z$ + "S" FOR OUTPUT AS #1
-
-'PRINT #1, 0
-'FOR I = 1 TO 162: PRINT #1, 0: NEXT I
-'FOR I = 1 TO 162: PRINT #1, "X": NEXT I
-'FOR I = 1 TO 162: PRINT #1, 0: NEXT I
-'FOR I = 1 TO 162: PRINT #1, "N": NEXT I
-'FOR I = 1 TO 162: PRINT #1, "Z": NEXT I
-'FOR I = 1 TO 162: PRINT #1, "W": NEXT I
-'FOR I = 1 TO 162: PRINT #1, 0: NEXT I
-
-'CLOSE #1

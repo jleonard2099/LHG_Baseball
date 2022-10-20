@@ -1,3 +1,4 @@
+
 ' Long INT vs. Single
 ' 4 bytes either way
 ' https://wiki.qb64.dev/qb64wiki/index.php/Variable_Types
@@ -6,8 +7,9 @@
 ' Used across more than one source file
 '----------------------------------------
 Dim Shared backToMenu, BO%, X%
+Dim Shared diskPaths$(0 To 3), Q$(0 To 2056)
 
-Dim Shared diskPaths$(0 To 3), Q$(0 To 1843)
+'Dim Shared diskPaths$(0 To 3), Q$(0 To 2056)
 Dim Shared R$(999)
 
 Dim Shared teamNames$(MAX_TEAMS)
@@ -25,23 +27,23 @@ Dim H$(NUM_STATRECORDS), L$(NUM_STATRECORDS)
 Dim PL$(NUM_STATRECORDS), W$(NUM_STATRECORDS)
 
 Dim H%(NUM_STATRECORDS), I%(NUM_STATRECORDS), V%(NUM_STATRECORDS)
-Dim L%(13), Z1%(40)
+
+Dim L%(1 to 13), Z1%(40)
 Dim T%(0 To 21)
 Dim T1%(0 To 22)
 
 Dim K9&(1)
 
-Dim Z1$(40), Z2$(40)
+Dim B$(0 To 23), P$(0 To 21)
+Dim X$(12), Z1$(40), Z2$(40)
 
 '----------------------------------------
 '  Shared across ACTIVATE.BAS,
 '   DRAFT.BAS routines
 '----------------------------------------
-Dim B$(0 To 23), draftB1$(22)
-Dim P$(0 To 21), draftP1$(22)
+Dim draftB1$(22), draftP1$(22)
 
-'-- Why so much variance?
-Dim B%(22, 41), L1%(13), P%(21, 36)
+Dim B%(0 to 22, 0 to 41), L1%(13), P%(21, 36)
 Dim draftB%(22, 79), draftB1%(22, 79)
 Dim draftP%(21, 88), draftP1%(21, 88)
 
@@ -68,14 +70,17 @@ Dim M$, NN$, S$
 '----------------------------------------
 ' Shared across CREATE.BAS
 '----------------------------------------
+Dim D1$, D2$, D3$, D4$
+
 Dim createT%(34)
 
 '----------------------------------------
 ' Shared across LOOKY.BAS,
 '   BINPUT, other routines
 '----------------------------------------
-Dim ERX As Single, statI2 As Single
+Dim ERX!, statI2!
 
+'These are integers
 Dim CK
 Dim EW, EL, HW, HL
 Dim LTL, LTW, ORW, ORL
@@ -88,8 +93,8 @@ Dim BP$(3), BS$(22), PS$(21)
 Dim statT!(22), statT1!(22)
 
 Dim BS%(22), DYS%(21)
-Dim statB0%(22, 40), statB%(22)
-Dim statP%(21), statP0%(21, 41)
+Dim statB0%(22, 40), statB%(0 to 22)
+Dim statP%(0 to 21), statP0%(21, 41)
 
 Dim INJ%(22), PS%(32), SA%(24), SA1%(24), TS%(11), TS1%(11)
 
@@ -116,15 +121,21 @@ Dim DFT!(40, 20), JS!(46, 42), OFT!(40, 20)
 '   NEWLDRST.BAS routines
 '----------------------------------------
 'NEWLDR
+
+Dim leaderPL$(1 to 880)
+
 '-- corresponds to TP$, TP1$, TP2$
-Dim TM$(40, 22)
+				'40x22
+Dim TM$(40, 22), TMP$(1 to 880)
+
 Dim TP$(0 To 31), TP1$(0 To 29), TP2$(0 To 39)
-Dim leaderBL$(920), TMB$(920), TMM$(920), TPP$(920), TT2$(40, 23)
 
-Dim BK%(920, 22), PM%(880, 23)
+			'40x23
+Dim leaderBL$(1 to 920), TMB$(1 to 920), TMM$(1 to 920), TPP$(1 to 920), TT2$(40, 23)
 
-Dim TYP!(920), TYP1!(920)
+Dim BK%(1 to 920, 22), PM%(1 to 880, 23)
 
+Dim TYP!(1 to 920), TYP1!(1 to 920)
 Dim TT!(40, 22), TT1!(40, 23)
 
 Dim GM1!(920)
@@ -142,22 +153,25 @@ Dim TML$(40)
 Dim BRC!(32), BTYR!(32), PRC!(29), PRYR!(29)
 Dim TRC!(24), TRC1!(25), TRYR!(24), TRYR1!(25)
 
-Dim BRT$(32), PRC$(29), PRT$(29)
+Dim BRC$(32), BRT$(32), PRC$(29), PRT$(29)
 Dim TRC$(24), TRC1$(25)
 
-'-- corresponds to TP$, TP1$, TP2$, TP3$ (no change)
+'-- corresponds to 
+'	TP$, 			TP1$, 			TP2$, 			TP3$ (no change)
 Dim TP0$(1 To 32), TP1A$(1 To 28), TP2A$(0 To 20), TP3$(0 To 18)
 
 '----------------------------------------
 ' Shared across PROGMAN.BAS routines
 '----------------------------------------
 Dim AB%(9), MG%(1000), progB%(22, 44)
-Dim B3%(9), B7%(9), B9%(9)
-Dim M%(9)
+Dim B3%(0 to 9), B7%(0 To 9), B9%(0 to 9)
+Dim M%(0 to 9)
 
-Dim B1$(4), C$(10), PT$(1), X$(12)
+Dim B1$(4), C$(10), PT$(1), mgrX$(0 To 21)
 
 Dim yesNo$(1)
+
+Dim mgr_idx%
 
 '----------------------------------------
 ' Shared across POSSRT.BAS routines
@@ -176,7 +190,7 @@ Dim E%(13)
 Dim scheduleAP%(1), scheduleL%(13)
 Dim scheduleT%(34), scheduleZ1%(40)
 
-Dim MO$(3)
+Dim MO$(3), TS$(0 To 1)
 Dim scheduleH$(1 To 20), scheduleV$(1 To 20)
 Dim scheduleYN$(MAX_GAMES, 1)
 
@@ -208,7 +222,6 @@ Dim W2%(1)
 Dim M$(2), S$(2), NN$(2)
 
 Dim S%(1), tradeInfo%(1)
-
 
 '----------------------------------------
 ' Shared across Game Routines

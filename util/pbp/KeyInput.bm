@@ -1,0 +1,15 @@
+
+FUNCTION GetKeyPress$ STATIC
+    DO
+        k$=INKEY$
+    LOOP UNTIL k$<>""
+    GetKeyPress$=k$
+END FUNCTION
+
+
+FUNCTION GetKeyCode% STATIC
+    DO
+        k$=INKEY$
+    LOOP UNTIL k$<>""
+    GetKeyCode%=CVI(k$+CHR$(0))
+END FUNCTION

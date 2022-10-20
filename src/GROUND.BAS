@@ -6,13 +6,14 @@ Sub GROUND ()
 
     Shared B%(), L%(), P%()
     Shared B$(), P$()
+
     Shared K9&()
 
     Dim BA%(29), DP%(29), RH%(21)
     Dim SP%(29), TB%(29)
 
-    Dim BAP As Single, CH As Single, PD As Single
-    Dim RHP As Single, SLP As Single
+    Dim BAP!, CH!, PD!
+    Dim RHP!, SLP!
 
     Color 15, 1
     FG = 0
@@ -77,11 +78,11 @@ Sub GROUND ()
 
     MD = SA - BP
 
-    PD = PH / (ER) * 100
+    PD! = PH / (ER) * 100
 
     Do
         Cls
-        Call GetTeam_GROUND (YN$, numberTeams)
+        Call GetTeam_GROUND(YN$, numberTeams, T$, teamIdx)
 
         S$ = RTrim$(Q$(1840))
         M$ = RTrim$(Q$(1841))
@@ -91,22 +92,22 @@ Sub GROUND ()
         For I = 0 To 22
             TB%(I) = B%(I, 6) + B%(I, 7) + 2 * B%(I, 8) + 3 * B%(I, 9)
 
-            If B%(I, 4) = 0 Then 
+            If B%(I, 4) = 0 Then
                 SP%(I) = 0
                 BA%(I) = 0
             Else
-                SLP = TB%(I) / B%(I, 4)
-                SP%(I) = SLP * 1000
+                SLP! = TB%(I) / B%(I, 4)
+                SP%(I) = SLP! * 1000
                 B%(I, 20) = BP
-                BAP = B%(I, 6) / B%(I, 4)
-                BA%(I) = BAP * 1000
+                BAP! = B%(I, 6) / B%(I, 4)
+                BA%(I) = BAP! * 1000
             End If
-            
+
             DP%(I) = SP%(I) - BA%(I)
 
             DI = DP%(I) - MD
-            CH = Int(DI / 10)
-            B%(I, 18) = 52 - CH
+            CH! = Int(DI / 10)
+            B%(I, 18) = 52 - CH!
 
             If B%(I, 18) < 34 Then B%(I, 18) = 34
             If B%(I, 18) > 64 Then B%(I, 18) = 64
@@ -116,31 +117,32 @@ Sub GROUND ()
 
         For I = 0 To 21
 
-            If P%(I, 6) = 0 Or P%(I, 10) = 0 Then 
+            If P%(I, 6) = 0 Or P%(I, 10) = 0 Then
                 P%(I, 12) = 52
             Else
 
                 P%(I, 14) = BP
 
-                RHP = P%(I, 7) / (P%(I, 10) / 900 * P%(I, 6))
-                RH%(I) = RHP * 100
+                RHP! = P%(I, 7) / (P%(I, 10) / 900 * P%(I, 6))
+                RH%(I) = RHP! * 100
                 Print RH%(I)
                 'INT(P%(I,7)*900/(P%(I,10)*P%(I,6))*100)/100
 
-                DF = RH%(I) - PD
-                CH = Int(DF / 10) * 2
-                P%(I, 12) = Int(CH + 52)
+                DF = RH%(I) - PD!
+                CH! = Int(DF / 10) * 2
+                P%(I, 12) = Int(CH! + 52)
                 RH%(I) = RH%(I) / 10
 
                 If P%(I, 12) > 64 Then P%(I, 12) = 64
                 If P%(I, 12) < 34 Then P%(I, 12) = 34
-                
+
             End If
-            
+
         Next I
 
-        Cls: Print "BATTER         BA            SA            GA"
-        
+        Cls
+        Print "BATTER         BA            SA            GA"
+
         For I = 0 To 22
             If B$(I) <> "" And B$(I) <> "XXX" Then
                 Print B$(I), BA%(I), SP%(I), B%(I, 18)
@@ -148,19 +150,20 @@ Sub GROUND ()
         Next
 
         Print "HIT ANY KEY TO CONTINUE";
-
         U$ = GetKeyPress$
 
-        Cls: Print "PITCHER               HITS/RUN ALLOWED     GA"
+        Cls
+        Print "PITCHER               HITS/RUN ALLOWED     GA"
 
         For I = 0 To 21
-            If P$(I) <> "" And P$(I) <> "XXX" Then  
+            If P$(I) <> "" And P$(I) <> "XXX" Then
                 Print P$(I), , Int(RH%(I)) / 10, P%(I, 12)
             End If
         Next
 
         Print "HIT ANY KEY TO CONTINUE";
         U$ = GetKeyPress$
+
         Cls
 
         '    L%(1)=267
@@ -183,20 +186,20 @@ Sub GROUND ()
         Next
 
         For I = 0 To 21
-            FIELD #1, 2322 + I * 89 AS X$, 15 AS Q$(I * 38 + 1004), 2 AS Q$(I * 38 + 1005), 2 AS Q$(I * 38 + 1006), 2 AS Q$(I * 38 + 1007), 2 AS Q$(I * 38 + 1008), 2 AS Q$(I * 38 + 1009), 2 AS Q$(I * 38 + 1010), 2 AS Q$(I * 38 + 1011), 2 AS Q$(I * 38 + 1012), 2 AS Q$(I * 38 + 1013), 2 AS Q$(I * 38 + 1014), 2 AS Q$(I * 38 + 1015), 2020 - 37 - I * 89 AS X$
-            FIELD #1, 2359 + I * 89 AS X$, 2 AS Q$(I * 38 + 1016), 2 AS Q$(I * 38 + 1017), 2 AS Q$(I * 38 + 1018), 2 AS Q$(I * 38 + 1019), 2 AS Q$(I * 38 + 1020), 2 AS Q$(I * 38 + 1021), 2 AS Q$(I * 38 + 1022), 2 AS Q$(I * 38 + 1023), 2 AS Q$(I * 38 + 1024), 2 AS Q$(I * 38 + 1025), 2 AS Q$(I * 38 + 1026), 2 AS Q$(I * 38 + 1027), 2020 - 61 - I * 89 AS X$
-            FIELD #1, 2383 + I * 89 AS X$, 2 AS Q$(I * 38 + 1028), 2 AS Q$(I * 38 + 1029), 2 AS Q$(I * 38 + 1030), 2 AS Q$(I * 38 + 1031), 2 AS Q$(I * 38 + 1032), 2 AS Q$(I * 38 + 1033), 2 AS Q$(I * 38 + 1034), 2 AS Q$(I * 38 + 1035), 2 AS Q$(I * 38 + 1036), 2 AS Q$(I * 38 + 1037), 2 AS Q$(I * 38 + 1038), 2 AS Q$(I * 38 + 1039), 2020 - 85 - I * 89 AS X$
+            Field #1, 2322 + I * 89 As X$, 15 As Q$(I * 38 + 1004), 2 As Q$(I * 38 + 1005), 2 As Q$(I * 38 + 1006), 2 As Q$(I * 38 + 1007), 2 As Q$(I * 38 + 1008), 2 As Q$(I * 38 + 1009), 2 As Q$(I * 38 + 1010), 2 As Q$(I * 38 + 1011), 2 As Q$(I * 38 + 1012), 2 As Q$(I * 38 + 1013), 2 As Q$(I * 38 + 1014), 2 As Q$(I * 38 + 1015), 2020 - 37 - I * 89 As X$
+            Field #1, 2359 + I * 89 As X$, 2 As Q$(I * 38 + 1016), 2 As Q$(I * 38 + 1017), 2 As Q$(I * 38 + 1018), 2 As Q$(I * 38 + 1019), 2 As Q$(I * 38 + 1020), 2 As Q$(I * 38 + 1021), 2 As Q$(I * 38 + 1022), 2 As Q$(I * 38 + 1023), 2 As Q$(I * 38 + 1024), 2 As Q$(I * 38 + 1025), 2 As Q$(I * 38 + 1026), 2 As Q$(I * 38 + 1027), 2020 - 61 - I * 89 As X$
+            Field #1, 2383 + I * 89 As X$, 2 As Q$(I * 38 + 1028), 2 As Q$(I * 38 + 1029), 2 As Q$(I * 38 + 1030), 2 As Q$(I * 38 + 1031), 2 As Q$(I * 38 + 1032), 2 As Q$(I * 38 + 1033), 2 As Q$(I * 38 + 1034), 2 As Q$(I * 38 + 1035), 2 As Q$(I * 38 + 1036), 2 As Q$(I * 38 + 1037), 2 As Q$(I * 38 + 1038), 2 As Q$(I * 38 + 1039), 2020 - 85 - I * 89 As X$
             Field #1, 2407 + I * 89 As X$, 2 As Q$(I * 38 + 1040), 2 As Q$(I * 38 + 1041), 2020 - 89 - I * 89 As X$
         Next
 
         Field #1, 4280 As X$, 40 As Q$(1840), 15 As Q$(1841), 5 As Q$(1842), 2 As Q$(1843)
-        
+
         LSet Q$(0) = T$
-        
-        For I = 1 To 13: 
+
+        For I = 1 To 13:
             LSet Q$(I) = MKI$(L%(I))
         Next
-        
+
         LSet Q$(14) = MKS$(K9&(0))
 
         For I = 0 To 22
@@ -217,11 +220,15 @@ Sub GROUND ()
         LSet Q$(1841) = M$
         LSet Q$(1842) = NN$
         LSet Q$(1843) = MKI$(999)
-        Put #1, T: Close 1
+        Put #1, teamIdx
+        Close 1
 
         Cls
         Print "EDIT ANOTHER TEAM (YN) ";
-        I$ = GetKeyPress$
+
+        Do
+            I$ = GetKeyPress$
+        Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
     Loop Until UCase$(I$) = "N" 'from 300
 
@@ -233,7 +240,7 @@ End Sub
 '       GetTeam_GROUND subroutine
 '----------------------------------------
 '...explanation...
-Sub GetTeam_GROUND (yearNumber$, numberTeams)
+Sub GetTeam_GROUND (yearNumber$, numberTeams, teamName$, teamIdx)
 
     Shared L%()
 
@@ -250,19 +257,20 @@ Sub GetTeam_GROUND (yearNumber$, numberTeams)
         Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
         Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
         Locate 7, 27: Input NY$
-        
-        If NY$ = "" Then 
-            Call SelectTeam_GROUND (NY$, numberTeams)
+
+		If NY$ = "" And yearNumber$ <> "" Then
+            Call SelectTeam_GROUND(yearNumber$, numberTeams, teamIdx)
         Else
-            YN$ = NY$
+            yearNumber$ = NY$
             Erase teamNames$
 
             numberTeams = 0
-            If _FileExists(diskPaths$(0) + "FCTEAMS." + YN$) Then 
+            If _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
 
-                Open diskPaths$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342
+                Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
                 Y = LOF(1)
                 Field #1, 15 As Q$(0)
+
                 For I1 = 1 To Y / 4342
                     Get #1, I1
                     For I2 = 1 To 15
@@ -273,28 +281,32 @@ Sub GetTeam_GROUND (yearNumber$, numberTeams)
                         teamNames$(numberTeams) = Q$(0)
                         teamIndex%(numberTeams) = I1
                     End If
-                1103 Next I1
+                Next I1
+
                 Close 1
-                
-                Call SelectTeam_GROUND (YN$, numberTeams)
+
+                Call SelectTeam_GROUND(yearNumber$, numberTeams, teamIdx)
             Else
                 Cls
                 Print "ERROR:: UNABLE TO READ TEAM FILE": Print
                 BO% = 1
             End If 'Done checking file exists
-        
+
         End If 'Done checking input
-    
+
+        teamName$ = RTrim$(Q$(0))
+
         If BO% = 1 Then
             BO% = 0
         Else
             Locate 2, 33
-            Color 15, 0: Color L%(11), L%(12): Print T$
+            Color 15, 0
+            Color L%(11), L%(12): Print teamName$
             Color 15, 4
             Locate , 33: Print "ANY CHANGE (YN)";
             I$ = GetKeyPress$
         End If
-        
+
     Loop Until UCase$(I$) = "N"
 
 End Sub
@@ -304,7 +316,7 @@ End Sub
 '   SelectTeam_GROUND subroutine
 '----------------------------------------
 '...explanation...
-Sub SelectTeam_GROUND (yearNumber$, numberTeams)
+Sub SelectTeam_GROUND (yearNumber$, numberTeams, teamIdx)
 
     Shared B%(), L%(), P%()
     Shared B$(), P$()
@@ -313,8 +325,8 @@ Sub SelectTeam_GROUND (yearNumber$, numberTeams)
     Selection% = 1
     Count% = numberTeams
     Start% = 1
-    FileFGColr% = 15: FileBGColr% = 4
-    HiLiteFGColr% = 0: HiLiteBGColr% = 7
+    FileFGColor% = 15: FileBGColor% = 4
+    HiLiteFGColor% = 0: HiLiteBGColor% = 7
     Rows% = 20
     Columns% = 4
     Spacing% = 6
@@ -327,15 +339,15 @@ Sub SelectTeam_GROUND (yearNumber$, numberTeams)
     Print "ENTER";: Color 15: Print "-SELECTS TEAM";
 
     _MouseShow "DEFAULT"
-    MAMenu teamNames$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+    MAMenu teamNames$(), Selection%, Start%, Count%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Rows%, Columns%, Spacing%, Row%, Column%
     _MouseHide
 
     If ExitCode% <> 27 Then
-        T = teamIndex%(Selection%)
+        teamIdx = teamIndex%(Selection%)
         Locate 2, 33
         Color 31: Print "LOADING..."
-        
-        Open diskPaths$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342
+
+        Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
 
         Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
 
@@ -347,16 +359,14 @@ Sub SelectTeam_GROUND (yearNumber$, numberTeams)
         Next
 
         For I = 0 To 21
-            FIELD #1, 2322 + I * 89 AS X$, 15 AS Q$(I * 38 + 1004), 2 AS Q$(I * 38 + 1005), 2 AS Q$(I * 38 + 1006), 2 AS Q$(I * 38 + 1007), 2 AS Q$(I * 38 + 1008), 2 AS Q$(I * 38 + 1009), 2 AS Q$(I * 38 + 1010), 2 AS Q$(I * 38 + 1011), 2 AS Q$(I * 38 + 1012), 2 AS Q$(I * 38 + 1013), 2 AS Q$(I * 38 + 1014), 2 AS Q$(I * 38 + 1015), 2020 - 37 - I * 89 AS X$
-            FIELD #1, 2359 + I * 89 AS X$, 2 AS Q$(I * 38 + 1016), 2 AS Q$(I * 38 + 1017), 2 AS Q$(I * 38 + 1018), 2 AS Q$(I * 38 + 1019), 2 AS Q$(I * 38 + 1020), 2 AS Q$(I * 38 + 1021), 2 AS Q$(I * 38 + 1022), 2 AS Q$(I * 38 + 1023), 2 AS Q$(I * 38 + 1024), 2 AS Q$(I * 38 + 1025), 2 AS Q$(I * 38 + 1026), 2 AS Q$(I * 38 + 1027), 2020 - 61 - I * 89 AS X$
-            FIELD #1, 2383 + I * 89 AS X$, 2 AS Q$(I * 38 + 1028), 2 AS Q$(I * 38 + 1029), 2 AS Q$(I * 38 + 1030), 2 AS Q$(I * 38 + 1031), 2 AS Q$(I * 38 + 1032), 2 AS Q$(I * 38 + 1033), 2 AS Q$(I * 38 + 1034), 2 AS Q$(I * 38 + 1035), 2 AS Q$(I * 38 + 1036), 2 AS Q$(I * 38 + 1037), 2 AS Q$(I * 38 + 1038), 2 AS Q$(I * 38 + 1039), 2020 - 85 - I * 89 AS X$
+            Field #1, 2322 + I * 89 As X$, 15 As Q$(I * 38 + 1004), 2 As Q$(I * 38 + 1005), 2 As Q$(I * 38 + 1006), 2 As Q$(I * 38 + 1007), 2 As Q$(I * 38 + 1008), 2 As Q$(I * 38 + 1009), 2 As Q$(I * 38 + 1010), 2 As Q$(I * 38 + 1011), 2 As Q$(I * 38 + 1012), 2 As Q$(I * 38 + 1013), 2 As Q$(I * 38 + 1014), 2 As Q$(I * 38 + 1015), 2020 - 37 - I * 89 As X$
+            Field #1, 2359 + I * 89 As X$, 2 As Q$(I * 38 + 1016), 2 As Q$(I * 38 + 1017), 2 As Q$(I * 38 + 1018), 2 As Q$(I * 38 + 1019), 2 As Q$(I * 38 + 1020), 2 As Q$(I * 38 + 1021), 2 As Q$(I * 38 + 1022), 2 As Q$(I * 38 + 1023), 2 As Q$(I * 38 + 1024), 2 As Q$(I * 38 + 1025), 2 As Q$(I * 38 + 1026), 2 As Q$(I * 38 + 1027), 2020 - 61 - I * 89 As X$
+            Field #1, 2383 + I * 89 As X$, 2 As Q$(I * 38 + 1028), 2 As Q$(I * 38 + 1029), 2 As Q$(I * 38 + 1030), 2 As Q$(I * 38 + 1031), 2 As Q$(I * 38 + 1032), 2 As Q$(I * 38 + 1033), 2 As Q$(I * 38 + 1034), 2 As Q$(I * 38 + 1035), 2 As Q$(I * 38 + 1036), 2 As Q$(I * 38 + 1037), 2 As Q$(I * 38 + 1038), 2 As Q$(I * 38 + 1039), 2020 - 85 - I * 89 As X$
             Field #1, 2407 + I * 89 As X$, 2 As Q$(I * 38 + 1040), 2 As Q$(I * 38 + 1041), 2020 - 89 - I * 89 As X$
         Next
 
         Field #1, 4280 As X$, 40 As Q$(1840), 15 As Q$(1841), 5 As Q$(1842), 2 As Q$(1843)
-        Get #1, T
-
-        T$ = RTrim$(Q$(0))
+        Get #1, teamIdx
 
         For I = 1 To 13: L%(I) = CVI(Q$(I)): Next: K9&(0) = CVS(Q$(14))
 
@@ -378,5 +388,5 @@ Sub SelectTeam_GROUND (yearNumber$, numberTeams)
     Else
         BO% = 1
     End If
-    
+
 End Sub

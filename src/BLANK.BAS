@@ -13,7 +13,7 @@ Sub BLANK ()
         null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
         Count% = DirCount%
 
-        If Count% = 0 Then 
+        If Count% = 0 Then
             Locate 10, 8
             Call CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
             I$ = GetKeyPress$
@@ -72,8 +72,8 @@ Sub BLANK ()
                         Call CSMsgBox("WARNING!!!::: THIS WILL ERASE ALL COMPILED STATS AND LEAGUE FILES FOR THIS LEAGUE. IF YOU STILL WISH TO ERASE ALL LEAGUE FILES AND STATS, HIT 'Y' FOR YES", 26, Pass)
                         A$ = GetKeyPress$
                         Call CSMsgBox("", 0, Pass)
-                        
-                        If A$ = "Y" Then
+
+                        If UCase$(A$) = "Y" Then
 
                             Open diskPaths$(2) + leagueFile$ + ".TMS" For Input As #2
                             Input #2, LG$, D1$, D2$, D3$, D4$
@@ -83,30 +83,31 @@ Sub BLANK ()
                             Close 2
 
                             For XW = 1 To 40
-                                If H1$(XW) <> Chr$(42) Then 
-                                    Print "DELETING "; H1$(XW); " STATS"
-                                    Kill (diskPaths$(1) + H1$(XW))
-                                    Kill (diskPaths$(1) + H1$(XW) + "R")
-                                    Kill (diskPaths$(1) + H1$(XW) + "S")
-                                    Kill (diskPaths$(1) + H1$(XW) + "D")
+                                If H1$(XW) <> Chr$(42) Then
+                                    statFile$ = diskPaths$(1) + H1$(XW)
+                                    Print "DELETING "; statFile$; " STATS"
+                                    If _FileExists (statFile$) Then Kill statFile$
+                                    If _FileExists (statFile$ + "R") Then Kill statFile$ + "R"
+                                    If _FileExists (statFile$ + "S") Then Kill statFile$ + "S"
+                                    If _FileExists (statFile$ + "D") Then Kill statFile$ + "D"
                                 End If
                             Next
 
                         End If 'Done with keypress from CsMsgBox
-                        
+
                     End If 'Done respond to Any Change?
-                    
+
                 End If 'Done checking Exit Code from file selection
-            
-            Loop Until ExitCode% = 27 OR UCase$(I$) = "N"
+
+            Loop Until ExitCode% = 27 Or UCase$(I$) = "N"
 
             Cls
-            
+
             'End If
-            
+
         End If 'Done checking file count
 
-    '...Until we press ESC
+        '...Until we press ESC
     Loop Until ExitCode% = 27 Or Count% = 0
 
 End Sub

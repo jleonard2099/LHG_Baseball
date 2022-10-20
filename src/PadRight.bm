@@ -5,4 +5,3 @@
 Function PadRight$ (X$, Length)
     PadRight$ = X$ + Space$(Length - Len(X$)) 'for display only
 End Function
-

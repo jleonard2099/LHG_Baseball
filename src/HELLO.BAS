@@ -1,3 +1,4 @@
+$Debug
 Const GAME_VERSION$ = "6.58"
 'Const MAX_CONFERENCES = 40
 'Const TEAMS_PER_CONFERENCE = 30
@@ -77,7 +78,7 @@ For I = 0 To 18: Read TP3$(I): Next
 
 Data A,B,C,D,E,F,G,H,I,J,K,L,M
 Data 681,663,645,627,609,591,573,555,537
-For I = 0 To 12: Read X$(I): Next
+For I = 0 To 12: Read mgrX$(I): Next
 For I = 1 To 9: Read AB%(I): Next
 
 Data LP,L,S,R,RP
@@ -129,9 +130,10 @@ Sub Main_Menu (menuSelection%)
 
     Do
         Cls
+        Color 15, 0
 
-        1 Call TITLE
-        'Erase menuChoices$
+        Call TITLE
+        ReDim menuChoices$(1 To 15)
         menuChoices$(1) = "PLAY A GAME                     "
         menuChoices$(2) = "ENTER NEW/CHANGE EXISTING TEAMS "
         menuChoices$(3) = "PROGRAMMABLE MANAGER            "
@@ -151,15 +153,15 @@ Sub Main_Menu (menuSelection%)
         Count% = 15
         Start% = 1
         ExitCode% = 15
-        FileFGColr% = 15: FileBGColr% = 1
-        HiLiteFGColr% = 0: HiLiteBGColr% = 7
+        FileFGColor% = 15: FileBGColor% = 1
+        HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 7
         Column% = 25
 
         Call box0(6, 24, 22, 57, 2, 15, 1)
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
@@ -185,6 +187,8 @@ Sub Main_Menu (menuSelection%)
 
     Loop Until Selection% = 15 Or ExitCode% = 27
 
+
+    menuSelection% = Selection%
     If ExitCode% = 27 Then menuSelection% = 15
 
 End Sub
@@ -280,9 +284,13 @@ Sub Leaders_Menu ()
 
     Do
 
-        700 Call TITLE
+        700 '
+        Cls
+        Color 15, 0
+
+        Call TITLE
+
         ReDim menuChoices$(1 To 8)
-        'Erase menuChoices$
         menuChoices$(1) = "CREATE/EDIT A LEAGUE                 "
         menuChoices$(2) = "UPDATE STANDINGS/LEADERS FOR A LEAGUE"
         menuChoices$(3) = "EXPANDED LEADERS AND STANDINGS       "
@@ -295,14 +303,14 @@ Sub Leaders_Menu ()
         Count% = 8
         Start% = 1
         ExitCode% = 8
-        FileFGColr% = 15: FileBGColr% = 1
-        HiLiteFGColr% = 0: HiLiteBGColr% = 7
+        FileFGColor% = 15: FileBGColor% = 1
+        HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 8
         Column% = 23
         Call box0(7, 22, 16, 60, 2, 15, 1)
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
@@ -333,10 +341,12 @@ End Sub
 Sub Replay_Menu ()
 
     Do
+        Cls
+        Color 15, 0
 
         Call TITLE
+
         ReDim menuChoices$(1 To 6)
-        'Erase menuChoices$
         menuChoices$(1) = "COMPARE COMPILED STATS VS. ACTUAL"
         menuChoices$(2) = "MERGE TWO STAT FILES             "
         menuChoices$(3) = "VIEW TEAM HEAD TO HEAD RESULTS   "
@@ -347,14 +357,14 @@ Sub Replay_Menu ()
         Count% = 6
         Start% = 1
         ExitCode% = 6
-        FileFGColr% = 15: FileBGColr% = 1
-        HiLiteFGColr% = 0: HiLiteBGColr% = 7
+        FileFGColor% = 15: FileBGColor% = 1
+        HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 8
         Column% = 23
         Call box0(7, 22, 14, 56, 2, 15, 1)
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
@@ -362,7 +372,7 @@ Sub Replay_Menu ()
             Select Case Selection%
                 Case 1: Call COMPARE
                 Case 2: Call MERGE
-                Case 3: 'Call REC
+                Case 3: Call REC
                 Case 4: Call CAREER
                 Case 5: Call POSSRT
                 Case 6: Cls
@@ -372,7 +382,6 @@ Sub Replay_Menu ()
     Loop Until Selection% = 6 Or ExitCode% = 27
 
 End Sub
-
 
 
 '$INCLUDE: 'KeyInput.BM'

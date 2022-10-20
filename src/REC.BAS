@@ -11,8 +11,10 @@ Sub REC ()
     Do
 
         Cls
-        
+        Color 15, 0
+
         Call TITLE
+
         menuChoices$(1) = "ANALYZE A TEAM'S RECORD                "
         menuChoices$(2) = "ANALYZE ANOTHER TEAM IN THE SAME LEAGUE"
         menuChoices$(3) = "SELECT A NEW TEAM AND LEAGUE           "
@@ -27,7 +29,7 @@ Sub REC ()
         Row% = 6
         Column% = 22
         Call box0(5, 21, 10, 61, 2, 15, 1)
-            
+
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
         _MouseHide
@@ -36,26 +38,24 @@ Sub REC ()
 
         If ExitCode% <> 27 Then
             Select Case Selection%
-                Case 1: 
-                    Call AnalyzeTeamRecord (0)
-                                
-                Case 2: 
+                Case 1:
+                    Call AnalyzeTeamRecord(0)
+
+                Case 2:
                     'RDD = 0
                     'VPP = 0
-                    Call AnalyzeTeamRecord (1)
+                    Call AnalyzeTeamRecord(1)
 
                 Case 3:
                     'RDD = 0
                     'VPP = 0
-                    Call AnalyzeTeamRecord (0)
-                
+                    Call AnalyzeTeamRecord(0)
+
                 Case 4: Cls
             End Select
         End If
 
-    Loop Until Selection% = 4 OR ExitCode% = 27
-
-    Color 15
+    Loop Until Selection% = 4 Or ExitCode% = 27
 
 End Sub
 
@@ -81,14 +81,14 @@ Sub GetTeam_REC (yearNumber$, numberTeams)
         Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
         Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
         Locate 7, 27: Input NY$
-        If NY$ = "" Then 
-            Call SelectTeam_REC(NY$, numberTeams)
+		If NY$ = "" And yearNumber$ <> "" Then
+            Call SelectTeam_REC(yearNumber$, numberTeams)
         Else
             yearNumber$ = NY$
             Erase teamNames$
 
             numberTeams = 0
-            If _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then 
+            If _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
 
                 Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
                 Y = LOF(1)
@@ -105,13 +105,13 @@ Sub GetTeam_REC (yearNumber$, numberTeams)
                     End If
                 Next I1
                 Close 1
-            
-                Call SelectTeam_REC (yearNumber$, numberTeams)
+
+                Call SelectTeam_REC(yearNumber$, numberTeams)
             End If
 
         End If
 
-        If BO% = 1 Then 
+        If BO% = 1 Then
             BO% = 0
         Else
             T$ = RTrim$(Q$(0))
@@ -120,7 +120,7 @@ Sub GetTeam_REC (yearNumber$, numberTeams)
             Locate , 33: Print "ANY CHANGE (YN)";
             I$ = GetKeyPress$
         End If
-    
+
     Loop Until UCase$(I$) = "N" Or I$ = Chr$(27)
 
 End Sub
@@ -130,7 +130,7 @@ End Sub
 '     SelectTeam_REC Subroutine
 '----------------------------------------
 '...explanation...
-Sub SelectTeam_REC  (yearNumber$, numberTeams)
+Sub SelectTeam_REC (yearNumber$, numberTeams)
 
     Shared L%()
 
@@ -157,17 +157,17 @@ Sub SelectTeam_REC  (yearNumber$, numberTeams)
     If ExitCode% <> 27 Then
 
         T = teamIndex%(Selection%)
-    
+
         Locate 2, 33: Color 31: Print "LOADING..."
 
-        If Not _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then 
+        If Not _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
             BO% = 1
             Locate 10, 8
             Call CSMsgBox("NO TEAM FILES WERE FOUND MATCHING THIS ID.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
             I$ = GetKeyPress$
             Call CSMsgBox("", 0, Pass)
         Else
-            Open diskPaths$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342
+            Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
             Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
             Get #1, T
 
@@ -178,8 +178,8 @@ Sub SelectTeam_REC  (yearNumber$, numberTeams)
     Else
         BO% = 1
     End If
-    
-    
+
+
 End Sub
 
 
@@ -194,10 +194,10 @@ Sub AnalyzeTeamRecord (sameLeague)
     Shared TR1%(), TR2%(), TR3%(), TR4%(), THW%(), THL%(), TAW%(), TAL%()
 
     Shared DV$(), L$(), Z1$(), Z2$()
-    
+
     Dim O$(NUM_STATRECORDS), LP$(NUM_STATRECORDS), WP$(NUM_STATRECORDS)
 
-    Call GetTeam_REC (yearNumber$, numberTeams)
+    Call GetTeam_REC(yearNumber$, numberTeams)
 
     B$ = RTrim$(Q$(0))
 
@@ -208,7 +208,7 @@ Sub AnalyzeTeamRecord (sameLeague)
     QQ = 8
 
     For XX = 11 To 4 Step -1
-        If Mid$(B$, XX, 1) = "_" Then 
+        If Mid$(B$, XX, 1) = "_" Then
             QQ = XX - 4
         Else
             Exit For
@@ -221,13 +221,13 @@ Sub AnalyzeTeamRecord (sameLeague)
 
     Cls
 
-    If Not _FileExists(diskPaths$(1) + Z$ + "S") Then 
+    If Not _FileExists(diskPaths$(1) + Z$ + "S") Then
         Locate 10, 8
         Call CSMsgBox("NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
         I$ = GetKeyPress$
         Call CSMsgBox("", 0, Pass)
     Else
-    
+
         Open diskPaths$(1) + Z$ + "S" For Input As #1
         Input #1, Y
         For J = 1 To 162: Input #1, H%(J): Next
@@ -239,15 +239,15 @@ Sub AnalyzeTeamRecord (sameLeague)
         For J = 1 To 162: Input #1, I%(J): Next
         Close #1
 
-        Do 
-        
+        Do
+
             If sameLeague <> 1 Then
 
                 'Select a new league!
                 Spec$ = diskPaths$(2) + "*.LIB"
                 null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
                 Count% = DirCount%
-                If Count% = 0 Then 
+                If Count% = 0 Then
                     Locate 10, 8
                     Call CSMsgBox("NO LEAGUE FILES WERE FOUND.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
                     I$ = GetKeyPress$
@@ -281,7 +281,7 @@ Sub AnalyzeTeamRecord (sameLeague)
                         Locate 25, 1
                         Color 14
                         Print "ENTER";: Color 15
-                        Print "-SELECTS TEAM";
+                        Print "-SELECTS LEAGUE";
 
                         _MouseShow "DEFAULT"
                         MAMenu leagueFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
@@ -301,13 +301,13 @@ Sub AnalyzeTeamRecord (sameLeague)
                         targetFile$ = RTrim$(targetFile$)
                         LG$ = Left$(targetFile$, Len(targetFile$) - 4)
                     End If
-                
+
                 End If 'Done checking for files
-                
+
             End If 'done checking if new league or not
 
             If ExitCode% <> 27 Then
-            
+
                 Color 15, 0
                 Cls
                 Color 12: Locate 12, 5
@@ -315,9 +315,9 @@ Sub AnalyzeTeamRecord (sameLeague)
 
                 Do
                     M$ = GetKeyPress$
-                Loop Until UCase$(I$) = "V" Or UCase$(I$) = "P"
+                Loop Until UCase$(M$) = "V" Or UCase$(M$) = "P"
 
-                If UCase$(M$) = "V" Then 
+                If UCase$(M$) = "V" Then
                     VPP = 1
                 Else
                     VPP = 0
@@ -339,7 +339,7 @@ Sub AnalyzeTeamRecord (sameLeague)
 
                 Locate 18, 18: Print "COMPUTING W/L RECORDS . . . PLEASE WAIT"
 
-                For Q = 1 To 40: 
+                For Q = 1 To 40:
                     HW%(Q) = 0
                     AW%(Q) = 0
                     AL%(Q) = 0
@@ -384,7 +384,7 @@ Sub AnalyzeTeamRecord (sameLeague)
                     DV$(2) = D2$
                     DV$(3) = D3$
                     DV$(4) = D4$
-                    
+
                     Do
 
                         Call Records_Screen
@@ -408,19 +408,19 @@ Sub AnalyzeTeamRecord (sameLeague)
                                 TR4%(K) = 0
                             Next
                         End If
-                        
+
                     Loop Until UCase$(I$) = "N"
 
                 Else
 
                     Call Records_Printer
-                    
+
                 End If 'Done checking VPP
-            
+
             End If 'Done checking for ESC
-            
-        'Keep letting user select files
-        Loop Until ExitCode% = 27 Or Count% = 0 
+
+            'Keep letting user select files
+        Loop Until ExitCode% = 27 Or Count% = 0
 
     End If 'Done checking for compiled stats
 
@@ -449,14 +449,14 @@ Sub Records_Screen
 
         Color 3
         Locate 4: Print Tab(15); String$(7, 196); " HOME "; String$(7, 196); Tab(35); Chr$(194); String$(7, 196); " AWAY "; String$(9, 196); Tab(58); Chr$(194); String$(6, 196); " TOTALS "; String$(6, 196)
-        LOCATE 5: PRINT TAB(16); "W"; TAB(19); "L"; TAB(23); "PCT."; TAB(28); "RF"; TAB(32); "RA"; TAB(35); CHR$(179); TAB(38); "W"; TAB(41); "L"; TAB(45); "PCT."; TAB(50); "RF"; TAB(54); "RA"; TAB(58); CHR$(179); TAB(61); "W"; TAB(64); "L"; TAB(68); "PCT."; TAB(73); "RF"; TAB(77); "RA"
+        Locate 5: Print Tab(16); "W"; Tab(19); "L"; Tab(23); "PCT."; Tab(28); "RF"; Tab(32); "RA"; Tab(35); Chr$(179); Tab(38); "W"; Tab(41); "L"; Tab(45); "PCT."; Tab(50); "RF"; Tab(54); "RA"; Tab(58); Chr$(179); Tab(61); "W"; Tab(64); "L"; Tab(68); "PCT."; Tab(73); "RF"; Tab(77); "RA"
 
         RDD = RDD + 1
         If RDD = 1 Then DD = 1: EE = 10
         If RDD = 2 Then DD = 11: EE = 20
         If RDD = 3 Then DD = 21: EE = 30
         If RDD = 4 Then DD = 31: EE = 40
-        
+
         If DV$(RDD) <> "XXX" And DV$(RDD) <> "" Then
 
             Color 11: Print DV$(RDD);: Color 3: Print Tab(35); Chr$(179); Tab(58); Chr$(179)
@@ -543,7 +543,7 @@ Sub Records_Screen
             Locate , 72: Print Using "###"; TR1%(RDD) + TR3%(RDD);
             Locate , 76: Print Using "###"; TR2%(RDD) + TR4%(RDD)
             Locate 22, 5: Color 14: Input "HIT ENTER TO CONTINUE"; DUMMY$
-        
+
         End If
 
     Loop Until RDD = 4
@@ -551,7 +551,7 @@ Sub Records_Screen
     Cls
     Color 12: Locate 2, 35: Print Z$
     Color 3: Locate 4: Print Tab(15); String$(7, 196); " HOME "; String$(7, 196); Tab(35); Chr$(194); String$(7, 196); " AWAY "; String$(9, 196); Tab(58); Chr$(194); String$(6, 196); " TOTALS "; String$(6, 196)
-    LOCATE 5: PRINT TAB(16); "W"; TAB(19); "L"; TAB(23); "PCT."; TAB(28); "RF"; TAB(32); "RA"; TAB(35); CHR$(179); TAB(38); "W"; TAB(41); "L"; TAB(45); "PCT."; TAB(50); "RF"; TAB(54); "RA"; TAB(58); CHR$(179); TAB(61); "W"; TAB(64); "L"; TAB(68); "PCT."; TAB(73); "RF"; TAB(77); "RA"
+    Locate 5: Print Tab(16); "W"; Tab(19); "L"; Tab(23); "PCT."; Tab(28); "RF"; Tab(32); "RA"; Tab(35); Chr$(179); Tab(38); "W"; Tab(41); "L"; Tab(45); "PCT."; Tab(50); "RF"; Tab(54); "RA"; Tab(58); Chr$(179); Tab(61); "W"; Tab(64); "L"; Tab(68); "PCT."; Tab(73); "RF"; Tab(77); "RA"
     Color 11: Print "DIVISIONS";
     Color 3: Print Tab(35); Chr$(179); Tab(58); Chr$(179)
 
@@ -590,9 +590,9 @@ Sub Records_Screen
             Locate , 72: Print Using "###"; TR1%(W) + TR3%(W);
             Locate , 76: Print Using "###"; TR2%(W) + TR4%(W)
             Color 3: Print Tab(35); Chr$(179); Tab(58); Chr$(179);
-            
+
         End If
-        
+
     Next W
 
     THWW = 0
@@ -769,7 +769,7 @@ Sub Records_Printer
             LPrint
 
         End If
-    
+
     Loop Until RDD = 4
 
     LPrint
@@ -878,5 +878,5 @@ Sub Records_Printer
     'WIDTH "LPT1:1", 80
 
     LPrint Chr$(12)
-                
+
 End Sub

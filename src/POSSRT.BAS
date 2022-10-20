@@ -9,8 +9,10 @@ Sub POSSRT ()
     Do
 
         Cls
+		Color 15,0
 
         Call TITLE
+
         menuChoices$(1) = "CREATE POSITION SEARCH FILE   "
         menuChoices$(2) = "SEARCH FOR PLAYERS BY POSITION"
         menuChoices$(3) = "RETURN TO MAIN MENU           "
@@ -24,7 +26,7 @@ Sub POSSRT ()
         Row% = 6
         Column% = 22
         Call box0(5, 21, 9, 52, 2, 15, 1)
-            
+
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
         _MouseHide
@@ -39,7 +41,7 @@ Sub POSSRT ()
             End Select
         End If
 
-    Loop Until Selection% = 3 OR ExitCode% = 27
+    Loop Until Selection% = 3 Or ExitCode% = 27
 
 End Sub
 
@@ -55,7 +57,7 @@ Sub SearchPlayers
     null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
     Count% = DirCount%
 
-    If Count% = 0 Then 
+    If Count% = 0 Then
         Locate 10, 8
         Call CSMsgBox("NO LEAGUE POSITION FILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
         I$ = GetKeyPress$
@@ -88,7 +90,7 @@ Sub SearchPlayers
             Locate 25, 1
             Color 14
             Print "ENTER";: Color 15
-            Print "-SELECTS TEAM";
+            Print "-SELECTS FILE";
 
             _MouseShow "DEFAULT"
             MAMenu positionFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
@@ -103,71 +105,78 @@ Sub SearchPlayers
                     I$ = GetKeyPress$
                 Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
             End If
-            
+
         Loop Until UCase$(I$) = "N"
 
-        LGE$ = RTrim$(targetFile$)
+		If ExitCode% <> 27 Then
 
-        Do
+			LGE$ = RTrim$(targetFile$)
 
-            Cls
-            SS = 0
-            Color 11: Locate 5, 30: Print "S E L E C T"
+			Do
 
-            Locate 7, 28: Color 12: Print "0. ";: Color 7: Print "Catchers"
-            Locate , 28: Color 12: Print "1. ";: Color 7: Print "First Basemen"
-            Locate , 28: Color 12: Print "2. ";: Color 7: Print "Second Basemen"
-            Locate , 28: Color 12: Print "3. ";: Color 7: Print "Shortstops"
-            Locate , 28: Color 12: Print "4. ";: Color 7: Print "Third Basemen"
-            Locate , 28: Color 12: Print "5. ";: Color 7: Print "Left Fielders"
-            Locate , 28: Color 12: Print "6. ";: Color 7: Print "Center Fielders"
-            Locate , 28: Color 12: Print "7. ";: Color 7: Print "Right Fielders"
-            Locate , 28: Color 12: Print "8. ";: Color 7: Print "Pitchers"
-            Locate , 28: Color 12: Print "9. ";: Color 7: Print "Return To Main Menu"
+				Cls
+				SS = 0
+				Color 11: Locate 5, 30: Print "S E L E C T"
 
-            Do
-                Z$ = GetKeyPress$
-                Z = Val(Z$)
-            Loop Until Z >= 0 And Z <= 9
+				Locate 7, 28: Color 12: Print "0. ";: Color 7: Print "Catchers"
+				Locate , 28: Color 12: Print "1. ";: Color 7: Print "First Basemen"
+				Locate , 28: Color 12: Print "2. ";: Color 7: Print "Second Basemen"
+				Locate , 28: Color 12: Print "3. ";: Color 7: Print "Shortstops"
+				Locate , 28: Color 12: Print "4. ";: Color 7: Print "Third Basemen"
+				Locate , 28: Color 12: Print "5. ";: Color 7: Print "Left Fielders"
+				Locate , 28: Color 12: Print "6. ";: Color 7: Print "Center Fielders"
+				Locate , 28: Color 12: Print "7. ";: Color 7: Print "Right Fielders"
+				Locate , 28: Color 12: Print "8. ";: Color 7: Print "Pitchers"
+				Locate , 28: Color 12: Print "9. ";: Color 7: Print "Return To Main Menu"
 
-            Select Case Z
-                Case 0: PS = 2: PS$ = "CATCHERS"
-                Case 1: PS = 3: PS$ = "FIRST BASEMEN"
-                Case 2: PS = 4: PS$ = "SECOND BASEMEN"
-                Case 3: PS = 6: PS$ = "SHORTSTOPS"
-                Case 4: PS = 5: PS$ = "THIRD BASEMEN"
-                Case 5: PS = 7: PS$ = "LEFT FIELDERS"
-                Case 6: PS = 8: PS$ = "CENTER FIELDERS"
-                Case 7: PS = 9: PS$ = "RIGHT FIELDERS"
-                Case 8: 
-                    PS = 1
-                    Call SortPitchers (LGE$)
-                Case 9: 
-                    Cls '
-            End Select
+				Do
+					Z$ = GetKeyPress$
+					Z = Val(Z$)
+				Loop Until Z >= 0 And Z <= 9 Or Z$ = Chr$(27)
 
-            If Z <> 9 Then
+				If Z$ <> Chr$(27) Then
+					Select Case Z
+						Case 0: PS = 2: PS$ = "CATCHERS"
+						Case 1: PS = 3: PS$ = "FIRST BASEMEN"
+						Case 2: PS = 4: PS$ = "SECOND BASEMEN"
+						Case 3: PS = 6: PS$ = "SHORTSTOPS"
+						Case 4: PS = 5: PS$ = "THIRD BASEMEN"
+						Case 5: PS = 7: PS$ = "LEFT FIELDERS"
+						Case 6: PS = 8: PS$ = "CENTER FIELDERS"
+						Case 7: PS = 9: PS$ = "RIGHT FIELDERS"
+						Case 8:
+							PS = 1
+							Call SortPitchers(LGE$)
+						Case 9:
+							Cls '
+					End Select
 
-                Do
-                    Locate 18, 28
-                    Color 12: Print "P";: Color 7: Print "RINT OR ";
-                    Color 12: Print "V";: Color 7: Print "IEW"
-                    I$ = GetKeyPress$
-                Loop Until UCase$(I$) = "P" Or UCase$(I$) = "V"
-                
-                Select Case UCase$(I$)
-                    Case "P": Call PrintSearchResults (PS, PS$, LGE$)
-                    Case "V": Call ViewSearchResults (PS, PS$, LGE$)
-                End Select
+					If Z <> 9 Then
 
-            End If 'Done looking for Z = 9
+						Do
+							Locate 18, 28
+							Color 12: Print "P";: Color 7: Print "RINT OR ";
+							Color 12: Print "V";: Color 7: Print "IEW"
+							I$ = GetKeyPress$
+						Loop Until UCase$(I$) = "P" Or UCase$(I$) = "V"
 
-        Loop Until Z = 9
+						Select Case UCase$(I$)
+							Case "P": Call PrintSearchResults(PS, PS$, LGE$)
+							Case "V": Call ViewSearchResults(PS, PS$, LGE$)
+						End Select
 
+					End If 'Done looking for Z = 9
+			
+				End If 'Done checking for ESC
+		
+			Loop Until Z = 9
+		
+		End If 'Done checking for ESC
+		
     End If
 
-'...Until we press ESC
-'Loop Until ExitCode% = 27 Or Count% = 0 Or I$ = "N"
+    '...Until we press ESC
+    'Loop Until ExitCode% = 27 Or Count% = 0 Or I$ = "N"
 
 End Sub
 
@@ -181,11 +190,11 @@ Sub ViewSearchResults (PS, PS$, LGE$)
     Shared SS
     Shared NN$
 
-    Shared A$(), B$(), TYN$()
+    Shared B$(), TYN$()
     Shared B%()
 
-    Dim TM(40)
-    Dim BB$(23)
+    Dim TM(1 To 40)
+    Dim A$(1 To 40), BB$(23)
 
     Open diskPaths$(0) + LGE$ For Input As #1
     For J = 1 To 40
@@ -194,7 +203,7 @@ Sub ViewSearchResults (PS, PS$, LGE$)
     Close #1
 
     Cls
-    
+
     Locate 1, 35
     Color 15: Print PS$
     Locate 3
@@ -204,11 +213,12 @@ Sub ViewSearchResults (PS, PS$, LGE$)
 
         If TM(J) <> 0 Then
 
-            Call ReadTeam_PosSrt (TM(J), TYN$(J))
+            Call ReadTeam_PosSrt(TM(J), TYN$(J))
 
             T$ = RTrim$(Q$(0))
 
             For I = 0 To 22
+
                 If B$(I) <> "XXX" And B$(I) <> "" Then
 
                     If B%(I, 22) = PS Then I2 = 33
@@ -220,16 +230,17 @@ Sub ViewSearchResults (PS, PS$, LGE$)
 
                         SS = SS + 1
 
-                        If SS = 19 Or SS = 37 Or SS = 55 Or SS = 73 Or SS = 91 Or SS = 109 Or SS = 127 Or SS = 145 Or SS = 163 Or SS = 181 Or SS = 199 Or SS = 217 Then 
+                        If SS = 19 Or SS = 37 Or SS = 55 Or SS = 73 Or SS = 91 Or SS = 109 Or SS = 127 Or SS = 145 Or SS = 163 Or SS = 181 Or SS = 199 Or SS = 217 Then
                             Locate 23: Color 14: Print "HIT ANY KEY TO CONTINUE"
                             I$ = GetKeyPress$
-                            Cls: Locate 1, 35: Color 15: Print PS$
+                            Cls
+                            Locate 1, 35: Color 15: Print PS$
                             Locate 3: Color 11: Print "PLAYER     TEAM   B    G  AB HITS 2B 3B HR RBI RUNS SO  BB SB CS  AVG  OBP  SLG"
                         End If
 
-                        If B%(I, 22) = PS Then 
-                            Color 12: Print Left$(B$(I), 10); 
-                        Else 
+                        If B%(I, 22) = PS Then
+                            Color 12: Print Left$(B$(I), 10);
+                        Else
                             Color 2: Print Left$(B$(I), 10);
                         End If
 
@@ -260,7 +271,8 @@ Sub ViewSearchResults (PS, PS$, LGE$)
                         I2 = 0
                         I3 = 0
                         I4 = 0
-                        IF B%(I, 4) > 0 THEN I2 = INT((B%(I, 6) / B%(I, 4) + .0005) * 1000): I3 = INT(((B%(I, 6) + B%(I, 7) + 2 * B%(I, 8) + 3 * B%(I, 9)) / B%(I, 4) + .0005) * 1000): I4 = INT(((B%(I, 6) + B%(I, 11)) / (B%(I, 11) + B%(I, 4)) + .0005) * 1000)
+
+                        If B%(I, 4) > 0 Then I2 = Int((B%(I, 6) / B%(I, 4) + .0005) * 1000): I3 = Int(((B%(I, 6) + B%(I, 7) + 2 * B%(I, 8) + 3 * B%(I, 9)) / B%(I, 4) + .0005) * 1000): I4 = Int(((B%(I, 6) + B%(I, 11)) / (B%(I, 11) + B%(I, 4)) + .0005) * 1000)
 
                         If B%(I, 4) = 0 Or I2 = 0 Then Print Tab(66); ".000";
                         If I2 > 0 And I2 < 100 Then Print Tab(66); ".0";: Print Using "##"; I2;
@@ -296,13 +308,13 @@ Sub PrintSearchResults (PS, PS$, LGE$)
 
     Shared SS
     Shared NN$
-    
+
     Shared B%()
-    Shared A$(), TYN$()
-    
+    Shared TYN$()
+
     Dim TM(40)
-    Dim BB$(23)
-    
+    Dim A$(1 To 40), BB$(23)
+
     Open diskPaths$(0) + LGE$ For Input As #1
     For J = 1 To 40: Input #1, TM(J), A$(J), TYN$(J): Next
     Close #1
@@ -317,29 +329,29 @@ Sub PrintSearchResults (PS, PS$, LGE$)
 
         If TM(J) <> 0 Then
 
-            Call ReadTeam_PosSrt (TM(J), TYN$(J))
+            Call ReadTeam_PosSrt(TM(J), TYN$(J))
 
             For I = 0 To 22
-            
+
                 If B$(I) <> "XXX" And B$(I) <> "" Then
 
                     If B%(I, 22) = PS Or B%(I, 23) = PS Or B%(I, 24) = PS Or B%(I, 25) = PS Then
 
                         SS = SS + 1
 
-                        If SS = 51 Or SS = 101 Or SS = 151 Or SS = 201 Then 
+                        If SS = 51 Or SS = 101 Or SS = 151 Or SS = 201 Then
                             LPrint Chr$(12)
                             LPrint Tab(50); PPS$
                             LPrint
                             LPrint "PLAYER               TEAM         T     G    W    L    SV    GS     IP    H    BB    SO    ERA    HR"
                         End If
-                        
-                        If B%(I, 22) = PS Then 
-                            LPrint B$(I); 
-                        Else 
+
+                        If B%(I, 22) = PS Then
+                            LPrint B$(I);
+                        Else
                             LPrint Tab(3); B$(I);
                         End If
-                        
+
                         LPrint Tab(16); Left$(T$, 2); NN$;
 
                         If B%(I, 0) = -1 Then BB$(I) = "L"
@@ -363,8 +375,8 @@ Sub PrintSearchResults (PS, PS$, LGE$)
                         I2 = 0
                         I3 = 0
                         I4 = 0
-                        
-                        IF B%(I, 4) > 0 THEN I2 = INT((B%(I, 6) / B%(I, 4) + .0005) * 1000): I3 = INT(((B%(I, 6) + B%(I, 7) + 2 * B%(I, 8) + 3 * B%(I, 9)) / B%(I, 4) + .0005) * 1000): I4 = INT(((B%(I, 6) + B%(I, 11)) / (B%(I, 11) + B%(I, 4)) + .0005) * 1000)
+
+                        If B%(I, 4) > 0 Then I2 = Int((B%(I, 6) / B%(I, 4) + .0005) * 1000): I3 = Int(((B%(I, 6) + B%(I, 7) + 2 * B%(I, 8) + 3 * B%(I, 9)) / B%(I, 4) + .0005) * 1000): I4 = Int(((B%(I, 6) + B%(I, 11)) / (B%(I, 11) + B%(I, 4)) + .0005) * 1000)
 
                         If B%(I, 4) = 0 Or I2 = 0 Then LPrint Tab(107); ".000";
                         If I2 > 0 And I2 < 100 Then LPrint Tab(107); ".0";: LPrint Using "##"; I2;
@@ -416,31 +428,31 @@ Sub SortPitchers (LGE$)
     Locate , 16
     Color 12: Print "4. ";
     Color 7: Print "Left-Handed Pitchers"
-    
+
     Do
         I$ = GetKeyPress$
         I = Val(I$)
     Loop Until I >= 1 And I <= 4
 
     Select Case I
-        Case 1: 
+        Case 1:
             PPS = 10
             PC = 1
             PPS$ = "PITCHERS WITH LESS THAN 10 GAMES STARTED"
-            Call Pitchers10_Games (PC, PPS$, LGE$)
-        Case 2: 
+            Call Pitchers10_Games(PC, PPS$, LGE$)
+        Case 2:
             PPS = 10
             PC = 2
             PPS$ = "PITCHERS WITH MORE THAN 10 GAMES STARTED"
-            Call Pitchers10_Games (PC, PPS$, LGE$)
-        Case 3: 
+            Call Pitchers10_Games(PC, PPS$, LGE$)
+        Case 3:
             THR = 1
             PPS$ = "RIGHT-HANDED PITCHERS"
-            Call PitchersHanded (THR, PPS$, LGE$)
-        Case 4: 
+            Call PitchersHanded(THR, PPS$, LGE$)
+        Case 4:
             THR = 2
             PPS$ = "LEFT-HANDED PITCHERS"
-            Call PitchersHanded (THR, PPS$, LGE$)
+            Call PitchersHanded(THR, PPS$, LGE$)
     End Select
 
 End Sub
@@ -455,9 +467,10 @@ Sub Pitchers10_Games (PC, PPS$, LGE$)
     Shared SS
     Shared NN$
 
-    Shared A$(), P$(), PB$(), TYN$()
+    Shared P$(), PB$(), TYN$()
     Shared L%(), P%()
 
+    Dim A$(1 To 40)
     Dim TM(40)
 
     Do
@@ -468,10 +481,10 @@ Sub Pitchers10_Games (PC, PPS$, LGE$)
     Loop Until UCase$(I$) = "P" Or UCase$(I$) = "V"
 
     Select Case UCase$(I$)
-        Case "P": 
-            Call Pitchers10_Print (PC, PPS$, LGE$)
+        Case "P":
+            Call Pitchers10_Print(PC, PPS$, LGE$)
 
-        Case "V": 
+        Case "V":
             Open diskPaths$(0) + LGE$ For Input As #1
             For J = 1 To 40: Input #1, TM(J), A$(J), TYN$(J): Next
             Close #1
@@ -483,17 +496,17 @@ Sub Pitchers10_Games (PC, PPS$, LGE$)
 
             For J = 1 To 40
 
-                 If TM(J) <> 0 Then
+                If TM(J) <> 0 Then
 
-                    Call ReadTeam_PosSrt (TM(J), TYN$(J))
+                    Call ReadTeam_PosSrt(TM(J), TYN$(J))
 
                     For I = 0 To 21
                         If P$(I) <> "XXX" And P$(I) <> "" Then
 
-                            If PC = 1 And P%(I, 5) < PPS Or P%(I, 5) > PPS Then 
+                            If PC = 1 And P%(I, 5) < PPS Or P%(I, 5) > PPS Then
                                 SS = SS + 1
 
-                                If SS = 19 Or SS = 37 Or SS = 55 Or SS = 73 Or SS = 91 Or SS = 109 Or SS = 127 Or SS = 145 Or SS = 163 Or SS = 181 Or SS = 199 Or SS = 217 Or SS = 235 Or SS = 253 Or SS = 271 Or SS = 289 Or SS = 307 Or SS = 325 Or SS = 343 Or SS = 361 Or SS = 379 Or SS = 397 Or SS = 415 Then 
+                                If SS = 19 Or SS = 37 Or SS = 55 Or SS = 73 Or SS = 91 Or SS = 109 Or SS = 127 Or SS = 145 Or SS = 163 Or SS = 181 Or SS = 199 Or SS = 217 Or SS = 235 Or SS = 253 Or SS = 271 Or SS = 289 Or SS = 307 Or SS = 325 Or SS = 343 Or SS = 361 Or SS = 379 Or SS = 397 Or SS = 415 Then
                                     Locate 23: Color 14: Print "HIT ANY KEY TO CONTINUE"
                                     I$ = GetKeyPress$
                                     Cls
@@ -523,9 +536,9 @@ Sub Pitchers10_Games (PC, PPS$, LGE$)
                                 Print Tab(65); Using "##.##"; P%(I, 10) / 100;
                                 Print Tab(73); Using "##"; P%(I, 13)
                             End If
-                            
+
                         End If
-                    
+
                     Next I
 
                 End If
@@ -536,7 +549,7 @@ Sub Pitchers10_Games (PC, PPS$, LGE$)
             I$ = GetKeyPress$
 
     End Select
-    
+
 End Sub
 
 
@@ -549,15 +562,16 @@ Sub PitchersHanded (THR, PPS$, LGE$)
     Shared SS
     Shared NN$
 
-    Shared A$(), P$(), PB$(), TYN$()
+    Shared P$(), PB$(), TYN$()
     Shared P%()
 
+    Dim A$(1 To 40)
     Dim TM(40)
 
     Locate 18, 28
     Color 12: Print "P";: Color 7: Print "RINT OR ";
     Color 12: Print "V";: Color 7: Print "IEW"
-    
+
     Do
         I$ = GetKeyPress$
     Loop Until UCase$(I$) = "P" Or UCase$(I$) = "V"
@@ -580,16 +594,16 @@ Sub PitchersHanded (THR, PPS$, LGE$)
 
                 If TM(J) <> 0 Then
 
-                    Call ReadTeam_PosSrt (TM(J), TYN$(J))
+                    Call ReadTeam_PosSrt(TM(J), TYN$(J))
 
                     For I = 0 To 21
                         If P$(I) <> "XXX" And P$(I) <> "" Then
 
-                            If THR = 1 And P%(I, 0) = 1 Or P%(I, 0) = -1 Then 
-        
+                            If THR = 1 And P%(I, 0) = 1 Or P%(I, 0) = -1 Then
+
                                 SS = SS + 1
 
-                                If SS = 19 Or SS = 37 Or SS = 55 Or SS = 73 Or SS = 91 Or SS = 109 Or SS = 127 Or SS = 145 Or SS = 163 Or SS = 181 Or SS = 199 Or SS = 217 Or SS = 235 Or SS = 253 Or SS = 271 Or SS = 289 Or SS = 307 Or SS = 325 Or SS = 343 Or SS = 361 Or SS = 379 Or SS = 397 Or SS = 415 Then 
+                                If SS = 19 Or SS = 37 Or SS = 55 Or SS = 73 Or SS = 91 Or SS = 109 Or SS = 127 Or SS = 145 Or SS = 163 Or SS = 181 Or SS = 199 Or SS = 217 Or SS = 235 Or SS = 253 Or SS = 271 Or SS = 289 Or SS = 307 Or SS = 325 Or SS = 343 Or SS = 361 Or SS = 379 Or SS = 397 Or SS = 415 Then
                                     Locate 23: Color 14: Print "HIT ANY KEY TO CONTINUE"
                                     I$ = GetKeyPress$
                                     Cls
@@ -644,21 +658,21 @@ Sub PitchersHanded (THR, PPS$, LGE$)
 
                 If TM(J) <> 0 Then
 
-                    Call ReadTeam_PosSrt (TM(J), TYN$(J))
+                    Call ReadTeam_PosSrt(TM(J), TYN$(J))
 
                     For I = 0 To 21
                         If P$(I) <> "XXX" And P$(I) <> "" Then
 
                             If THR = 1 And P%(I, 0) = 1 Or P%(I, 0) = -1 Then
-                                
+
                                 SS = SS + 1
 
-                                If SS = 51 Or SS = 101 Or SS = 151 Or SS = 201 Or SS = 251 Or SS = 301 Or SS = 351 Or SS = 401 Then 
+                                If SS = 51 Or SS = 101 Or SS = 151 Or SS = 201 Or SS = 251 Or SS = 301 Or SS = 351 Or SS = 401 Then
                                     LPrint Chr$(12)
                                     LPrint Tab(50); PPS$
                                     LPrint: LPrint "PLAYER               TEAM         T     G    W    L    SV    GS     IP    H    BB    SO    ERA    HR"
                                 End If
-                                
+
                                 LPrint P$(I);
                                 LPrint Tab(19); Left$(T$, 2); NN$;
 
@@ -692,7 +706,7 @@ Sub PitchersHanded (THR, PPS$, LGE$)
             LPrint Chr$(18)
 
     End Select
-            '4813 WIDTH "LPT1:1", 80
+    '4813 WIDTH "LPT1:1", 80
 
 End Sub
 
@@ -701,7 +715,7 @@ End Sub
 '          ReadTeam_PosSrt Subroutine
 '----------------------------------------
 '...explanation...
-Sub ReadTeam_PosSrt (teamIndex, yearNumber$)
+Sub ReadTeam_PosSrt (teamIndex%, yearNumber$)
 
     Shared K9&()
     Shared B$(), P$()
@@ -719,21 +733,22 @@ Sub ReadTeam_PosSrt (teamIndex, yearNumber$)
     Next
 
     For I = 0 To 21
-        FIELD #1, 2322 + I * 89 AS X$, 15 AS Q$(I * 38 + 1004), 2 AS Q$(I * 38 + 1005), 2 AS Q$(I * 38 + 1006), 2 AS Q$(I * 38 + 1007), 2 AS Q$(I * 38 + 1008), 2 AS Q$(I * 38 + 1009), 2 AS Q$(I * 38 + 1010), 2 AS Q$(I * 38 + 1011), 2 AS Q$(I * 38 + 1012), 2 AS Q$(I * 38 + 1013), 2 AS Q$(I * 38 + 1014), 2 AS Q$(I * 38 + 1015), 2020 - 37 - I * 89 AS X$
-        FIELD #1, 2359 + I * 89 AS X$, 2 AS Q$(I * 38 + 1016), 2 AS Q$(I * 38 + 1017), 2 AS Q$(I * 38 + 1018), 2 AS Q$(I * 38 + 1019), 2 AS Q$(I * 38 + 1020), 2 AS Q$(I * 38 + 1021), 2 AS Q$(I * 38 + 1022), 2 AS Q$(I * 38 + 1023), 2 AS Q$(I * 38 + 1024), 2 AS Q$(I * 38 + 1025), 2 AS Q$(I * 38 + 1026), 2 AS Q$(I * 38 + 1027), 2020 - 61 - I * 89 AS X$
-        FIELD #1, 2383 + I * 89 AS X$, 2 AS Q$(I * 38 + 1028), 2 AS Q$(I * 38 + 1029), 2 AS Q$(I * 38 + 1030), 2 AS Q$(I * 38 + 1031), 2 AS Q$(I * 38 + 1032), 2 AS Q$(I * 38 + 1033), 2 AS Q$(I * 38 + 1034), 2 AS Q$(I * 38 + 1035), 2 AS Q$(I * 38 + 1036), 2 AS Q$(I * 38 + 1037), 2 AS Q$(I * 38 + 1038), 2 AS Q$(I * 38 + 1039), 2020 - 85 - I * 89 AS X$
+        Field #1, 2322 + I * 89 As X$, 15 As Q$(I * 38 + 1004), 2 As Q$(I * 38 + 1005), 2 As Q$(I * 38 + 1006), 2 As Q$(I * 38 + 1007), 2 As Q$(I * 38 + 1008), 2 As Q$(I * 38 + 1009), 2 As Q$(I * 38 + 1010), 2 As Q$(I * 38 + 1011), 2 As Q$(I * 38 + 1012), 2 As Q$(I * 38 + 1013), 2 As Q$(I * 38 + 1014), 2 As Q$(I * 38 + 1015), 2020 - 37 - I * 89 As X$
+        Field #1, 2359 + I * 89 As X$, 2 As Q$(I * 38 + 1016), 2 As Q$(I * 38 + 1017), 2 As Q$(I * 38 + 1018), 2 As Q$(I * 38 + 1019), 2 As Q$(I * 38 + 1020), 2 As Q$(I * 38 + 1021), 2 As Q$(I * 38 + 1022), 2 As Q$(I * 38 + 1023), 2 As Q$(I * 38 + 1024), 2 As Q$(I * 38 + 1025), 2 As Q$(I * 38 + 1026), 2 As Q$(I * 38 + 1027), 2020 - 61 - I * 89 As X$
+        Field #1, 2383 + I * 89 As X$, 2 As Q$(I * 38 + 1028), 2 As Q$(I * 38 + 1029), 2 As Q$(I * 38 + 1030), 2 As Q$(I * 38 + 1031), 2 As Q$(I * 38 + 1032), 2 As Q$(I * 38 + 1033), 2 As Q$(I * 38 + 1034), 2 As Q$(I * 38 + 1035), 2 As Q$(I * 38 + 1036), 2 As Q$(I * 38 + 1037), 2 As Q$(I * 38 + 1038), 2 As Q$(I * 38 + 1039), 2020 - 85 - I * 89 As X$
         Field #1, 2407 + I * 89 As X$, 2 As Q$(I * 38 + 1040), 2 As Q$(I * 38 + 1041), 2020 - 89 - I * 89 As X$
     Next
 
     Field #1, 4280 As X$, 40 As Q$(1840), 15 As Q$(1841), 5 As Q$(1842), 2 As Q$(1843)
 
-    Get #1, teamIndex
+    Get #1, teamIndex%
 
     For I = 1 To 13: L%(I) = CVI(Q$(I)): Next
 
     K9&(0) = CVS(Q$(14))
 
-    For I = 0 To 22: B$(I) = RTrim$(Q$(I * 43 + 15))
+    For I = 0 To 22
+        B$(I) = RTrim$(Q$(I * 43 + 15))
         For I1 = 0 To 41
             B%(I, I1) = CVI(Q$(I * 43 + I1 + 16))
         Next
@@ -749,7 +764,7 @@ Sub ReadTeam_PosSrt (teamIndex, yearNumber$)
     M$ = RTrim$(Q$(1841))
     NN$ = RTrim$(Q$(1842))
     CK = CVI(Q$(1843))
-    
+
     Close 1
 
 End Sub
@@ -769,9 +784,10 @@ Sub Pitchers10_Print (PC, PPS$, LGE$)
     Shared SS
     Shared NN$
 
-    Shared A$(), P$(), PB$(), TYN$()
+    Shared P$(), PB$(), TYN$()
     Shared P%()
 
+    Dim A$(1 To 40)
     Dim TM(40)
 
     Open diskPaths$(0) + LGE$ For Input As #1
@@ -790,17 +806,17 @@ Sub Pitchers10_Print (PC, PPS$, LGE$)
 
         If TM(J) <> 0 Then
 
-            Call ReadTeam_PosSrt (TM(J), TYN$(J))
+            Call ReadTeam_PosSrt(TM(J), TYN$(J))
 
             For I = 0 To 21
-            
+
                 If P$(I) <> "XXX" And P$(I) <> "" Then
 
                     If PC = 1 And P%(I, 5) < PPS Or P%(I, 5) > PPS Then
-                    
+
                         SS = SS + 1
 
-                        If SS = 51 Or SS = 101 Or SS = 151 Or SS = 201 Or SS = 251 Or SS = 301 Or SS = 351 Or SS = 401 Then 
+                        If SS = 51 Or SS = 101 Or SS = 151 Or SS = 201 Or SS = 251 Or SS = 301 Or SS = 351 Or SS = 401 Then
                             LPrint Chr$(12)
                             LPrint Tab(50); PPS$
                             LPrint
@@ -826,13 +842,13 @@ Sub Pitchers10_Print (PC, PPS$, LGE$)
                         LPrint Tab(90); Using "##.##"; P%(I, 10) / 100;
                         LPrint Tab(99); Using "##"; P%(I, 13)
                     End If
-                    
+
                 End If
-                
+
             Next I
-        
+
         End If
-        
+
     Next J
 
     LPrint Chr$(12)
