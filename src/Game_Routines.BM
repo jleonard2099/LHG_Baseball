@@ -518,7 +518,8 @@ Sub CHECKSAVE (D, P, S4%)
         If S4% = 1 Or S4% = 2 Or S4% = 3 Then RI = 1
         If S4% = 4 Or S4% = 5 Or S4% = 6 Then RI = 2
         If S4% = 7 Then RI = 3
-        P5%(D, P1%(D), 17) = P5%(D, P1%(D), 17) + RI: P8%(D, P1%(D), 17) = P8%(D, P1%(D), 17) + RI
+        P5%(D, P1%(D), 17) = P5%(D, P1%(D), 17) + RI
+		P8%(D, P1%(D), 17) = P8%(D, P1%(D), 17) + RI
     End If
 
 End Sub
@@ -8043,7 +8044,7 @@ Sub CheckRecords
             End If
 
             '        ***CHECKING TRIPLES***
-            If P8%(I, I1, 28) = 0 Then
+            If P8%(I, I1, 28) <> 0 Then
 
                 If P8%(I, I1, 28) = 1 Then
                     TR$(TR) = P$(I, I1)
@@ -8085,18 +8086,14 @@ Sub CheckRecords
         Next I1
     Next I
 
-    'Do
+
     GT$ = "2:"
 
     'Random # from 5 to 60
     ATT = Int(Rnd(1) * 55) + 5
-    'Loop Until ATT >= 5 And ATT <= 60
-
     ATT = ATT * 1000
 
-    Do
-        MIN = Int(Rnd(1) * 100)
-    Loop Until MIN <= 59
+	MIN = Int(Rnd(1) * 60)
 
     If MIN < 10 Then MIN$ = "0" + Right$(Str$(MIN), 1): GT$ = GT$ + MIN$ Else GT$ = GT$ + Right$(Str$(MIN), 2)
 
@@ -8293,9 +8290,12 @@ End Sub
 ' source to determine Or we're
 ' printing on GFX or text screen
 Sub PBP (F$)
+
     If pbpDelay! > 0 Then
 
         F$ = PadRight(F$, 44)
+		'Should this ever be more than 44 characters?
+		
         F$ = Left$(F$, 44)
         PB% = PB% + 1
 
@@ -8323,7 +8323,9 @@ Sub PBP (F$)
         Next
 
         Call DELAY
-    End If
+    
+	End If
+	
 End Sub
 
 

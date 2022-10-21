@@ -13,105 +13,10 @@ $ExeIcon:'./lhg_fcbase.ico'
 _Icon
 _AllowFullScreen
 
-'-------------------------
-' Initialize variables
-'-------------------------
 
-normalFinish% = 0
-
-'Graphics co-ordinates originally were for a
-'routine that operated as if the screen were
-'still just 80 column width; so 80x8 = 640
-FontColAdj% = 8
-
-MON = Monitor%
-'CALL InitMouse(There)
-
-BK$ = Space$(25)
-
-VI$(0) = "VISITING TEAM"
-VI$(1) = "HOME TEAM"
-
-TM$(1) = "HOT": TM$(2) = "WARM": TM$(3) = "COOL": TM$(4) = "COLD"
-
-PT$(0) = "RIGHT"
-PT$(1) = "LEFT "
-
-WD$(2) = "LEFT TO RIGHT AT"
-WD$(3) = "RIGHT TO LEFT AT"
-WD$(4) = "BLOWING IN FROM LEFT AT"
-WD$(5) = "BLOWING IN FROM CENTER AT"
-WD$(6) = "BLOWING IN FROM RIGHT AT"
-WD$(7) = "BLOWING OUT TO LEFT AT"
-WD$(8) = "BLOWING OUT TO CENTER AT"
-WD$(9) = "BLOWING OUT TO RIGHT AT"
-
-SC$(1) = "CLEAR": SC$(2) = "PARTLY CLOUDY": SC$(3) = "OVERCAST": SC$(4) = "DOME"
-
-PC$(1) = "THUNDERSTORMS": PC$ = "RAIN": PC$(3) = "SPRINKLES": PC$(4) = "NONE"
-
-SP%(0) = -1: SP%(1) = -1
-
-U6$(0) = "HUMAN OPPONENT      "
-U6$(1) = "COMPUTER OPPONENT   "
-U6$(2) = "COMPUTER VS COMPUTER"
-
-PU$(0) = "1980 - PRESENT"
-PU$(1) = "1973 - 1979   "
-PU$(2) = "1955 - 1972   "
-PU$(3) = "1946 - 1954   "
-PU$(4) = "1933 - 1945   "
-PU$(5) = "1919 - 1932   "
-PU$(6) = "1909 - 1918   "
-PU$(7) = "1894 - 1908   "
-PU$(8) = "1876 - 1893   "
-
-LGT$(0) = "AL GAME         "
-LGT$(1) = "NL GAME         "
-LGT$(2) = "INTERLEAGUE GAME"
-
-DH$(0) = "NO DH "
-DH$(1) = "USE DH"
-
-UMP$(0) = "AL"
-UMP$(1) = "NL"
-UMP$(2) = "NL"
-
-WE$(0) = "YES"
-WE$(1) = "NO "
-
-DL$(0) = "LEAGUE GAME    "
-DL$(1) = "EXHIBITION GAME"
-
-month$(4) = "APRIL"
-month$(5) = "MAY"
-month$(6) = "JUNE"
-month$(7) = "JULY"
-month$(8) = "AUGUST"
-month$(9) = "SEPTEMBER"
-month$(10) = "OCTOBER"
-MO% = 4
-
-dayNight$(0) = "AFTERNOON"
-dayNight$(1) = "NIGHT"
-
-B1$(0) = "LP"
-B1$(1) = "L"
-B1$(2) = "S"
-B1$(3) = "R"
-B1$(4) = "RP"
-
-H$(1) = "1b"
-H$(2) = "2b"
-H$(3) = "3b"
-H$(4) = "home"
-
-
-H0$(0) = " ": H0$(1) = "H"
-TM$(1) = "HOT": TM$(2) = "WARM": TM$(3) = "COOL": TM$(4) = "COLD"
-SC$(1) = "CLEAR": SC$(2) = "PARTLY CLOUDY": SC$(3) = "OVERCAST": SC$(4) = "DOME"
-PC$(1) = "THUNDERSTORMS": PC$(2) = "SHOWERS": PC$(3) = "DRIZZLE": PC$(4) = "NONE"
-
+'----------------------------------------
+'          READ IN ALL DATA
+'----------------------------------------
 
 Data A,B,C,D,E,F,G,H,I,J,K,L,M,dh,p,"c ",1b,2b,3b,ss,lf,cf,rf,ph,pr
 For I = 0 To 12: Read X$(I): Next I
@@ -189,34 +94,141 @@ For I = 11 To 0 Step -1
 Next
 
 
-'------------------------------
+'----------------------------------------
+'    INITIALIZE ALL VARIABLES
+'----------------------------------------
 
-'Make an array of PBP strings
-'This was previously done by
-'random file access, but while
-'testing issues with the file,
-'I realized 126 KB of memory
-'to store is worth the savings
-'in disk I/O or possibility of
-'file corruption
-'Open "pbpstrings" For Input As #1
-'Do
-'    Line Input #1, A$
-'    numRecords% = numRecords% + 1
-'Loop Until EOF(1)
-'Close #1
+normalFinish% = 0
+
+'Graphics co-ordinates originally were for a
+'routine that operated as if the screen were
+'still just 80 column width; so 80x8 = 640
+FontColAdj% = 8
+
+MON = Monitor%
+'CALL InitMouse(There)
+
+BK$ = Space$(25)
+
+VI$(0) = "VISITING TEAM"
+VI$(1) = "HOME TEAM"
+
+TM$(1) = "HOT"
+TM$(2) = "WARM"
+TM$(3) = "COOL"
+TM$(4) = "COLD"
+
+PT$(0) = "RIGHT"
+PT$(1) = "LEFT "
+
+WD$(2) = "LEFT TO RIGHT AT"
+WD$(3) = "RIGHT TO LEFT AT"
+WD$(4) = "BLOWING IN FROM LEFT AT"
+WD$(5) = "BLOWING IN FROM CENTER AT"
+WD$(6) = "BLOWING IN FROM RIGHT AT"
+WD$(7) = "BLOWING OUT TO LEFT AT"
+WD$(8) = "BLOWING OUT TO CENTER AT"
+WD$(9) = "BLOWING OUT TO RIGHT AT"
+
+SC$(1) = "CLEAR"
+SC$(2) = "PARTLY CLOUDY"
+SC$(3) = "OVERCAST"
+SC$(4) = "DOME"
+
+PC$(1) = "THUNDERSTORMS"
+PC$(2) = "SHOWERS"
+PC$(3) = "DRIZZLE"
+PC$(4) = "NONE"
+
+SP%(0) = -1
+SP%(1) = -1
+
+U6$(0) = "HUMAN OPPONENT      "
+U6$(1) = "COMPUTER OPPONENT   "
+U6$(2) = "COMPUTER VS COMPUTER"
+
+PU$(0) = "1980 - PRESENT"
+PU$(1) = "1973 - 1979   "
+PU$(2) = "1955 - 1972   "
+PU$(3) = "1946 - 1954   "
+PU$(4) = "1933 - 1945   "
+PU$(5) = "1919 - 1932   "
+PU$(6) = "1909 - 1918   "
+PU$(7) = "1894 - 1908   "
+PU$(8) = "1876 - 1893   "
+
+LGT$(0) = "AL GAME         "
+LGT$(1) = "NL GAME         "
+LGT$(2) = "INTERLEAGUE GAME"
+
+DH$(0) = "NO DH "
+DH$(1) = "USE DH"
+
+UMP$(0) = "AL"
+UMP$(1) = "NL"
+UMP$(2) = "NL"
+
+WE$(0) = "YES"
+WE$(1) = "NO "
+
+DL$(0) = "LEAGUE GAME    "
+DL$(1) = "EXHIBITION GAME"
+
+month$(4) = "APRIL"
+month$(5) = "MAY"
+month$(6) = "JUNE"
+month$(7) = "JULY"
+month$(8) = "AUGUST"
+month$(9) = "SEPTEMBER"
+month$(10) = "OCTOBER"
+MO% = 4
+
+dayNight$(0) = "AFTERNOON"
+dayNight$(1) = "NIGHT"
+
+B1$(0) = "LP"
+B1$(1) = "L"
+B1$(2) = "S"
+B1$(3) = "R"
+B1$(4) = "RP"
+
+H$(1) = "1b"
+H$(2) = "2b"
+H$(3) = "3b"
+H$(4) = "home"
+
+H0$(0) = " "
+H0$(1) = "H"
+
+P = 1
+
+For I = 0 To 1: For I1 = 0 To 4: NB%(I, I1) = -1: Next: Next
+For I = 0 To 1: P1%(I) = -1: P6%(I) = -1: Next
+
+SP%(0) = -1
+SP%(1) = -1
+
+For I = 0 To 1
+    For J = 1 To 9
+        M%(J) = 0
+        B7%(I, J) = -1
+        B3%(I, J) = -1
+    Next
+Next
+
+Call INITVARI
 
 
-'Open "pbpstrings" For Input As #1 'Len = 44
-'ReDim Shared YYY$(numRecords%)
+'----------------------------------------
+'       DETERMINE GAME OPTIONS
+'----------------------------------------
 
-'For X = 1 To numRecords%
-'    Line Input #1, YYY$(X)
-'Next X
+Open "DEV.BAS" For Input As #1
+For I = 0 To 3
+    Input #1, diskPaths$(I)
+Next
+Close 1
 
-'Close #1
-
-'------------------------------
 
 If Not _FileExists("DEFERA") Then
     Open "DEFERA" For Output As #1
@@ -239,31 +251,6 @@ Input #1, MP%
 Input #1, pbpDelay!
 Input #1, VG%
 Input #1, CGERA%
-Close 1
-
-P = 1
-
-For I = 0 To 1: For I1 = 0 To 4: NB%(I, I1) = -1: Next: Next
-For I = 0 To 1: P1%(I) = -1: P6%(I) = -1: Next
-
-SP%(0) = -1
-SP%(1) = -1
-
-For I = 0 To 1
-    For J = 1 To 9
-        M%(J) = 0
-        B7%(I, J) = -1
-        B3%(I, J) = -1
-    Next
-Next
-
-Call INITVARI
-
-
-Open "DEV.BAS" For Input As #1
-For I = 0 To 3
-    Input #1, diskPaths$(I)
-Next
 Close 1
 
 
@@ -302,12 +289,6 @@ If _FileExists("GAME82") Then
 End If
 
 
-'-------------------------
-' Determine game options
-'-------------------------
-'170 could be here and
-'"game options" could be
-' its own sub...
 If AP% = 1 Then
     'Setup variables for auto-play
     U6 = NG%(8)
@@ -366,10 +347,14 @@ Else
 
         Do
             Color 7, 0
+			
             I$ = GetKeyPress$
+			
             If I$ <> Chr$(27) Then Call LetterToNumber(I$)
+			
             I = Val(I$)
-        Loop Until I >= 0 And I <= 16
+			
+        Loop Until I >= 0 And I <= 16 Or I$ = Chr$(27)
 
         If I$ <> Chr$(27) Then
 

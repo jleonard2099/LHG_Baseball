@@ -3094,8 +3094,10 @@ Sub SOURCE ()
     normalFinish% = 1
 
     If AP% <> 1 Or U6 <> 2 Then
-        'displayPause! = 1
-        Call PBP("PRESS ANY KEY TO CONTINUE")
+		If pbpDelay! = 0 Then pbpDelay! = 0.1
+		'Delay of 0 will not present the text
+		'But we want to be sure the user sees it
+		Call PBP("PRESS ANY KEY TO CONTINUE")
         I$ = GetKeyPress$
     End If
 
