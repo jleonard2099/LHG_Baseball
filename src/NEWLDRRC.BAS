@@ -47,7 +47,6 @@ Sub NEWLDRRC ()
 
 End Sub
 
-
 '----------------------------------------
 '       SelectLeague Subroutine
 '----------------------------------------
@@ -113,7 +112,6 @@ Sub SelectLeague (leagueFile$)
     Loop Until UCase$(I$) = "N"
 
 End Sub
-
 
 '----------------------------------------
 '       UpdateRecords Subroutine
@@ -511,7 +509,6 @@ Sub UpdateRecords (leagueFile$)
 
 End Sub
 
-
 '----------------------------------------
 '       ViewPrintRecords Subroutine
 '----------------------------------------
@@ -684,7 +681,6 @@ Sub ViewPrintRecords (leagueFile$)
     End If
 
 End Sub
-
 
 '----------------------------------------
 '       PrintRecords Subroutine

@@ -57,9 +57,9 @@ Sub SOURCE ()
     End If
 
     If usingGfx = 1 Then
-        Call FLDDISP_G(BC%, P, U%, D)
+        Call DisplayField_G(BC%, P, U%, D)
     Else
-        Call FLDDISP(BC%, P, U%, D)
+        Call DisplayField(BC%, P, U%, D)
     End If
 
     For IJ0% = 0 To 22
@@ -86,10 +86,10 @@ Sub SOURCE ()
             Call HITTINGLINES '(l%(), p%(), P1%(), B7%(), b%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
 
             If usingGfx = 1 Then
-                Call FLDDISP_G(BC%, P, U%, D)
+                Call DisplayField_G(BC%, P, U%, D)
                 Call MAINSCREEN_G(D, P, BC%, U%, MO)
             Else
-                Call FLDDISP(BC%, P, U%, D)
+                Call DisplayField(BC%, P, U%, D)
                 Call MAINSCREEN(D, P, BC%, U%, MO)
             End If
 
@@ -135,10 +135,10 @@ Sub SOURCE ()
             Call HITTINGLINES '(l%(), p%(), P1%(), B7%(), b%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
 
             If usingGfx = 1 Then
-                Call FLDDISP_G(BC%, P, U%, D)
+                Call DisplayField_G(BC%, P, U%, D)
                 Call MAINSCREEN_G(D, P, BC%, U%, MO)
             Else
-                Call FLDDISP(BC%, P, U%, D)
+                Call DisplayField(BC%, P, U%, D)
                 Call MAINSCREEN(D, P, BC%, U%, MO)
             End If
 
@@ -494,9 +494,7 @@ Sub SOURCE ()
     If I9 <= B4%(P, 4, B1!(P)) * 2 Then Call PBP(Q$(0) + " fouls off the pitch...hit away"): Call DELAY: P2 = 1
     GoTo 13050
 
-
     '--- end of a new sub
-
 
     12000 ' BRANCH FOR RARE PLAYS
     Call RAREPLAYS(H6%, H7%, IP%)
@@ -529,26 +527,23 @@ Sub SOURCE ()
 
     '-----
 
-
     12002 Call HITTINGLINES '(l%(), p%(), P1%(), B7%(), b%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
 
     If usingGfx = 1 Then
-        Call FLDDISP_G(BC%, P, U%, D)
+        Call DisplayField_G(BC%, P, U%, D)
         Call MAINSCREEN_G(D, P, BC%, U%, MO)
     Else
-        Call FLDDISP(BC%, P, U%, D)
+        Call DisplayField(BC%, P, U%, D)
         Call MAINSCREEN(D, P, BC%, U%, MO)
     End If
 
     Return
-
 
     '================================================================================
     ' Below are all the different GoTo branches for the gameplay
     ' These have not yet been worked out into a different flow
     ' yet for the game's logic.
     '================================================================================
-
 
     13050 Call d100(RN)
 
@@ -1075,9 +1070,7 @@ Sub SOURCE ()
     Call SCOREBOARD
     GoTo 13900
 
-
     '-----
-
 
     13530 ' *** HOME RUN S2%=10 ***
 
@@ -1174,9 +1167,7 @@ Sub SOURCE ()
 
     GoTo 13900
 
-
     '-----
-
 
     13600 ' *** strikeout ***
     H6% = Int(Rnd(1) * 1000) + 1
@@ -1310,11 +1301,9 @@ Sub SOURCE ()
 
     GoTo 13900
 
-
     '-----
     13633 A5%(3) = 0: A5%(2) = 11: A5%(1) = 0: A5%(0) = 0
     '-----
-
 
     13634 I5 = P1%(D): I6 = 0
     Call ADDPIT(D, I5, I6)
@@ -1367,9 +1356,7 @@ Sub SOURCE ()
 
     GoTo 13900
 
-
     '-----
-
 
     13650 If O%(0) < 2 Then 13690
     I = Int(Rnd(1) * 10) + 1
@@ -1454,9 +1441,7 @@ Sub SOURCE ()
 
     GoTo 13900
 
-
     '-----
-
 
     13690 I = Int(Rnd(1) * 100) + 1
     If (I <= 90 And P2 <> 2 Or S4% = 0) Or (I <= 10 And P2 = 2) Then
@@ -1517,9 +1502,7 @@ Sub SOURCE ()
 
     13713 GoTo 13684
 
-
     '-----
-
 
     13725 If S4% = 4 Or S4% = 7 Then 13732
     If S6%(P, 0) - S6%(D, 0) >= 0 And INNING% > 6 And O%(0) = 0 And INFPOS% > 0 And W% = 5 Or S6%(P, 0) - S6%(D, 0) >= 0 And INNING% > 6 And O%(0) = 0 And INFPOS% > 0 And W% = 3 Then A5%(3) = 11: GoTo 13743
@@ -1531,9 +1514,7 @@ Sub SOURCE ()
 
     GoTo 13743
 
-
     '-----
-
 
     13732 If W% = 6 And I < 6 And INFPOS% < 2 And INNING% < 9 Or W% = 5 And I < 6 And INFPOS% < 2 And INNING% < 9 Then A5%(2) = 11: GoTo 13684
     If S4% = 7 Then 13740
@@ -1545,16 +1526,13 @@ Sub SOURCE ()
 
     GoTo 13743
 
-
     '-----
-
 
     13740 I = Int(Rnd(1) * 100) + 1: A5%(1) = 11: A5%(2) = 1: A5%(3) = 1: A5%(0) = 1
     If INFPOS% > 0 And W% = 5 Or INFPOS% > 0 And W% = 3 Or INFPOS% = 2 And W% = 4 Or INFPOS% = 2 And W% = 6 Or W% = 2 Or W% = 1 Then A5%(3) = 11: A5%(0) = 1: A5%(1) = 1: A5%(2) = 1: GoTo 13743
     If W% = 5 And I <= 5 Or W% = 1 Or W% = 2 Then A5%(3) = 11: A5%(2) = 1: A5%(1) = 1: A5%(0) = 1
 
     13743 GoTo 13684
-
 
     '-----------------------------------------------------
     '--- THIS IS CRITICAL FOR PBP MOVING AUTOMATICALLY ---
@@ -1592,9 +1570,7 @@ Sub SOURCE ()
         GoTo 15050
     End If
 
-
     '-----
-
 
     14000 'balls hit to the air
     I = Int(Rnd(1) * 100) + 1
@@ -1650,9 +1626,7 @@ Sub SOURCE ()
 
     GoTo 13900
 
-
     '-----
-
 
     14010 ' infield popup
     Call GETINFIELDER(W%, P, I1, D, S2%, P2)
@@ -1710,9 +1684,7 @@ Sub SOURCE ()
 
     GoTo 13900
 
-
     '-----
-
 
     14012 'runner doubled off of 1st
     A5%(1) = 10: O%(0) = O%(0) + 1: O%(1) = O%(1) + 1
@@ -1736,9 +1708,7 @@ Sub SOURCE ()
 
     GoTo 14009
 
-
     '-----
-
 
     14014 'runner doubled off of 2nd
     A5%(2) = 10: O%(0) = O%(0) + 1: O%(1) = O%(1) + 1
@@ -1751,9 +1721,7 @@ Sub SOURCE ()
 
     GoTo 14009
 
-
     '-----
-
 
     14020 ' *** FLY  OUTS ***
     Call GETOUTFIELDER(W%, P, I1, D)
@@ -1904,9 +1872,7 @@ Sub SOURCE ()
 
     End If
 
-
     '-----
-
 
     'Case 34 to 100
     ' *** regular fly out ***
@@ -1977,13 +1943,11 @@ Sub SOURCE ()
         GoTo 14066
     End If
 
-
     '--------------------
     'Do we ever get here???
     '14095 I$ = GetKeyPress$
     'Return
     '--------------------
-
 
     14100 ' *** BUNT ROUTINE ***
     Call WINDEX
@@ -2489,9 +2453,7 @@ Sub SOURCE ()
 
     End Select
 
-
     '-----
-
 
     14800 SH% = 0
     S2% = 16
@@ -2587,9 +2549,7 @@ Sub SOURCE ()
 
     GoTo 15051
 
-
     '-----
-
 
     14825 'RUNNER HAS A CHANCE TO STEAL
     B0%(TGTBASE% - 1, 2) = B0%(TGTBASE% - 1, 2) + 17
@@ -2700,9 +2660,7 @@ Sub SOURCE ()
         GoTo 15051
     End If
 
-
     '-----
-
 
     14830 RN = Int(Rnd(1) * 100) + 1
     If RN <= 20 Then F$ = B$(D, B9%(D, 2)) + " nails " + Q$(TGTBASE% - 1)
@@ -2759,9 +2717,7 @@ Sub SOURCE ()
     Q0 = 700
     GoTo 14826 ' *** STEAL HOME ***
 
-
     '-----
-
 
     14900 '
     Cls
@@ -2803,7 +2759,6 @@ Sub SOURCE ()
     I5 = 66
 
     GoTo 15504
-
 
     '--------------------------------------
     '--- THESE DO NOT APPEAR TO BE USED ---
@@ -2858,9 +2813,9 @@ Sub SOURCE ()
 
             If usingGfx = 1 Then
                 Call LOADSCREEN
-                Call FLDDISP_G(BC%, P, U%, D)
+                Call DisplayField_G(BC%, P, U%, D)
             Else
-                Call FLDDISP(BC%, P, U%, D)
+                Call DisplayField(BC%, P, U%, D)
             End If
 
             GoTo 15051
@@ -3012,7 +2967,6 @@ Sub SOURCE ()
 
     End Select
 
-
     15550 Locate 20, 30: Print "LINEUP SLOT TO REPLACE (1-9) (Z)=NO CHANGE"
 
     15552 I$ = GetKeyPress$
@@ -3054,9 +3008,7 @@ Sub SOURCE ()
 
     GoTo 15540
 
-
     '-----
-
 
     15567 Locate 20, 29: Print "B.O. #1 (1-9)"
 
@@ -3077,11 +3029,10 @@ Sub SOURCE ()
     Call REPLACEMENTS(I7%, I8%, I9%)
     GoTo 15540
 
-
     '----------------------------------------
-    '           END OF GAME!!!
+    ' Print final score and run post game
+	' routines (scoreboard, stats, etc.)
     '----------------------------------------
-
     18500 '
     'Locate 22, 1
     'Print winning team and score
@@ -3102,11 +3053,19 @@ Sub SOURCE ()
     End If
 
     Call EndOfGame
-    End
 
+    End
+	System
 
     '----------------------------------------
+    '           END OF GAME!!!
+    '----------------------------------------
 
+	'================================================================================
+	' Below are all the different GoTo branches for the gameplay
+	' These have not yet been worked out into a different flow
+	' yet for the game's logic.
+	'================================================================================
 
     18700 H0% = 0
     If usingGfx = 1 Then
@@ -3150,9 +3109,7 @@ Sub SOURCE ()
     GK%(D) = 1
     GoTo 18725
 
-
     '-----
-
 
     18730 Call d100(RN)
     If RN <= 80 And P%(D, P1%(D), 3) < 15 Then GK%(D) = 1
@@ -3274,9 +3231,7 @@ Sub SOURCE ()
 
     GoTo 15055
 
-
     '-----
-
 
     18820 If A1 <= 0 Or A1 = 0 And S4% <= 1 Or A1 = 0 And S4% = 4 Or S4% = 7 Or B7%(P, B1!(P)) = 1 Then 18850
     If INNING% >= 9 And P = 1 And O%(0) < 2 And A1 = 0 And S4% >= 2 And S4% <= 3 Or INNING% >= 9 And P = 1 And O%(0) = 2 And A1 = 0 And S4% >= 5 And S4% <= 6 Then
@@ -3297,9 +3252,7 @@ Sub SOURCE ()
         GoTo 18850
     End If
 
-
     '-----
-
 
     18850 If (S8%(D, 0) <= P8%(D, P1%(D), 4) + P8%(D, P1%(D), 1) And S8%(D, 1) <= P8%(D, P1%(D), 2)) Or B9%(D, 1) = 99 Then
         Call RELIEVERS
@@ -3308,9 +3261,7 @@ Sub SOURCE ()
 
     GoTo 15055
 
-
     '-----
-
 
     18900 JM = B3%(P, B1!(P))
     If PPH = 1 Then 18905
@@ -3322,9 +3273,7 @@ Sub SOURCE ()
 
     GoTo 18941
 
-
     '-----
-
 
     18903 If MG%(P, 590) = 999 Then 18985
     If INNING% > 4 And INNING% < 7 And A1 < -2 And S6%(P, 0) > 0 Then 18930
@@ -3335,9 +3284,7 @@ Sub SOURCE ()
 
     18905 GoTo 18941
 
-
     '-----
-
 
     18906 If MG%(P, 847) = 999 Then 18991
     If B%(P, JM, 4) = 0 Then 18909
@@ -3346,9 +3293,7 @@ Sub SOURCE ()
 
     18908 GoTo 18941
 
-
     '-----
-
 
     18909 'GET A PINCH HITTER FOR A POSITION PLAYER
     If MG%(P, 540) = 999 Then
@@ -3400,9 +3345,7 @@ Sub SOURCE ()
 
     GoTo 18941
 
-
     '-----
-
 
     18930 'GET A PINCH HITTER FOR THE PITCHER
     If MG%(P, 540) = 999 Then
@@ -3450,7 +3393,6 @@ Sub SOURCE ()
 
     GoTo 18941
 
-
     '--- this could maybe be a subroutine? ---
     18934 I = PH%: PPH = 1: D0%(P) = D0%(P) + 1
     X0%(P, 0, D0%(P)) = I
@@ -3462,10 +3404,10 @@ Sub SOURCE ()
     18938 P9 = P: W5 = P9: W6 = P9: VV(P9) = B1!(P): VV1(P9) = B1!(P)
     Call HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
     If usingGfx = 1 Then
-        Call FLDDISP_G(BC%, P, U%, D)
+        Call DisplayField_G(BC%, P, U%, D)
         Call MAINSCREEN_G(D, P, BC%, U%, MO)
     Else
-        Call FLDDISP(BC%, P, U%, D)
+        Call DisplayField(BC%, P, U%, D)
         Call MAINSCREEN(D, P, BC%, U%, MO)
     End If
 
@@ -3481,9 +3423,7 @@ Sub SOURCE ()
 
     GoTo 15052
 
-
     '-----
-
 
     18941 If PR% <> 1 Then Call PINCHRUNNER(MS%, A1, S4%, I2, P, PR%, BC%, U%, D, MO)
     If MS% = 1 Then MS% = 0: GoTo 15052
@@ -3571,18 +3511,14 @@ Sub SOURCE ()
     P2 = 2
     GoTo 15067
 
-
     '-----
-
 
     18969 If O%(0) >= 1 And INNING% >= 7 Then 18968
 
     18970 P2 = 4
     GoTo 14100
 
-
     '-----
-
 
     18985 'PH FOR PITCHER WITH PROFILE
     Call d100(RN)
@@ -3600,9 +3536,7 @@ Sub SOURCE ()
 
     GoTo 18905
 
-
     '-----
-
 
     18991 'PH FOR POS PLAYER CASES
     Call d100(RN)
@@ -3627,4 +3561,3 @@ Sub SOURCE ()
     GoTo 18905
 
 End Sub
-

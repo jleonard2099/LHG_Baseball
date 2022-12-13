@@ -42,11 +42,15 @@ Sub ALIGN ()
     Loop Until UCase$(I$) = "N"
 
     Do
+
         Locate 15, 5: Print Space$(55)
         Locate 16, 5: Print Space$(55)
-        Color 11: Locate 15, 5: Input "ENTER NAME OF STAT FILE (EX.- MINNESOT.61)"; Z$
+        Color 11: Locate 15, 5
+		Input "ENTER NAME OF STAT FILE (EX.- MINNESOT.61)"; Z$
         Locate , 5: Print "ANY CHANGE (YN)"
+
         I$ = GetKeyPress$
+
     Loop Until UCase$(I$) = "N"
 
     If Len(Z$) > 11 Then Z$ = Left$(Z$, 8) + Right$(Z$, 3)
@@ -190,7 +194,7 @@ Sub ALIGN ()
                 Loop Until N = 22
 
                 KKK = 1
-                
+
                 SEQ = 0
 
                 'Check batters
@@ -217,7 +221,7 @@ Sub ALIGN ()
                     Color 7: Print " ROAD"
 
                     For I = 0 To 22: Color 12: Locate I + 1, 1: Print Using "##"; I;: Print " ";: Color 15: Print Left$(B$(I), 10);: Color 12: Print Tab(17); Using "##"; I;: Print " ";: Color 7: Print Left$(BN$(I), 10);: Next
-                    
+
                     For I = 0 To 21: Color 12: Locate I + 1, 48: Print Using "##"; I;: Print " ";: Color 15: Print Left$(P$(I), 10);: Color 12: Print Tab(62); Using "##"; I;: Print " ";: Color 7: Print Left$(PN$(I), 10);: Next
 
                     Locate 7, 33
@@ -297,4 +301,3 @@ Sub ALIGN ()
     Loop Until UCase$(I$) = "N" Or DUMMY$ <> ""
 
 End Sub
-

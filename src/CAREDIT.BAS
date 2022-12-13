@@ -5,9 +5,9 @@ Sub CAREDIT ()
     DefInt A-Z
 
     Shared careerB$(), careerP$()
-    
+
     Shared BRS%(), PRS%()
-    
+
     Cls
     TMR = 2700
 
@@ -39,7 +39,7 @@ Sub CAREDIT ()
                 Cls
                 Locate , 28
                 Color 14
-                Print "SELECT CAREER FILE TO EDIT": Color 15
+                Print "SELECT FILE TO EDIT": Color 15
                 Selection% = 1
                 Start% = 1
                 FileFGColr% = 15: FileBGColr% = 1
@@ -110,27 +110,26 @@ Sub CAREDIT ()
                             Open diskPaths$(1) + Z$ For Output As #3
 
                             Write #3, NB, NP
-                            
+
                             For I = 0 To 99: Write #3, careerB$(I): Next
                             For I = 0 To 79: Write #3, careerP$(I): Next
                             For J = 1 To 15: For I = 0 To 99: For I1 = O To 17: Write #3, BRS%(J, I, I1): Next I1: Locate 12, 55: Color 3: TMR = TMR - 1: Print Using "####"; TMR: Next I: Next J
                             For J = 1 To 15: For I = 0 To 79: For I1 = 0 To 16: Write #3, PRS%(J, I, I1): Next I1: Locate 12, 55: Color 3: TMR = TMR - 1: Print Using "####"; TMR: Next I: Next J
 
                             Close #3
-                        
+
                     End Select
 
                 Loop Until UCase$(I$) = "E" Or UCase$(I$) = "X"
 
             End If
-            
+
         End If 'Done checking file count
 
     '...Until we press ESC
     Loop Until ExitCode% = 27 Or Count% = 0
 
 End Sub
-
 
 '----------------------------------------
 '       EditBatters Subroutine
@@ -143,26 +142,26 @@ Sub EditBatters (careerFile$)
     Shared BRS%()
 
     Do
-    
+
         Cls
         Color 12: Print careerFile$
 
         For I = 0 To 19
             Color 11: Locate I + 2, 1: Print Using "##"; I;: Print " ";: Color 7: Print Left$(careerB$(I), 12)
         Next
-        
+
         For I = 20 To 39
             Color 11: Locate I - 18, 16: Print Using "##"; I;: Print " ";: Color 7: Print Left$(careerB$(I), 12)
         Next
-        
+
         For I = 40 To 59
             Color 11: Locate I - 38, 32: Print Using "##"; I;: Print " ";: Color 7: Print Left$(careerB$(I), 12)
         Next
-        
+
         For I = 60 To 79
             Color 11: Locate I - 58, 48: Print Using "##"; I;: Print " ";: Color 7: Print Left$(careerB$(I), 12)
         Next
-        
+
         For I = 80 To 99
             Color 11: Locate I - 78, 64: Print Using "##"; I;: Print " ";: Color 7: Print Left$(careerB$(I), 12)
         Next
@@ -170,7 +169,7 @@ Sub EditBatters (careerFile$)
         Print
 
         Color 15: Input "ENTER NUMBER OF PLAYER TO DELETE (100 TO EXIT)"; B9
-        
+
         If B9 <> 100 Then
 
             If B9 < 99 Then 
@@ -179,7 +178,7 @@ Sub EditBatters (careerFile$)
                 Color 15: Print "PRINT CAREER STATS OF ";
                 Color 12: Print careerB$(B9);: Color 15: Print " BEFORE "
                 Locate , 20: Print "DELETING THEM? (Y/N)"
-                
+
                 Color 14
                 Print
                 Locate , 20: Print "IF YOU DO NOT WISH TO PRINT/DELETE THE STATS"
@@ -206,7 +205,7 @@ Sub EditBatters (careerFile$)
                 UPP = (99 - B9) * 15
 
                 I = B9
-                
+
                 For J = 1 To 15
                     For I = B9 To 98
                         For I1 = O To 17
@@ -217,7 +216,7 @@ Sub EditBatters (careerFile$)
                         Print Using "####"; UPP
                     Next
                 Next
-                
+
             End If
 
             If B9 < 100 Then 'we have to ignore if they entered over 100
@@ -228,13 +227,12 @@ Sub EditBatters (careerFile$)
                     Next
                 Next
             End If
-            
+
         End If
 
     Loop Until B9 = 100
 
 End Sub
-
 
 '----------------------------------------
 '       EditPitchers Subroutine
@@ -249,19 +247,19 @@ Sub EditPitchers (careerFile$)
     Do
         Cls
         Color 12: Print careerFile$
-        
+
         For I = 0 To 19
         Color 11: Locate I + 2, 1: Print Using "##"; I;: Print " ";: Color 7: Print Left$(careerP$(I), 15)
         Next
-        
+
         For I = 20 To 39
         Color 11: Locate I - 18, 21: Print Using "##"; I;: Print " ";: Color 7: Print Left$(careerP$(I), 15)
         Next
-        
+
         For I = 40 To 59
         Color 11: Locate I - 38, 41: Print Using "##"; I;: Print " ";: Color 7: Print Left$(careerP$(I), 15)
         Next
-        
+
         For I = 60 To 79
         Color 11: Locate I - 58, 61: Print Using "##"; I;: Print " ";: Color 7: Print Left$(careerP$(I), 15)
         Next
@@ -273,12 +271,13 @@ Sub EditPitchers (careerFile$)
         If B9 <> 100 Then
 
             If B9 < 79 Then
-                Cls            
+                Cls
+
                 Locate 5, 20
                 Color 15: Print "PRINT CAREER STATS OF ";
                 Color 12: Print careerP$(B9);: Color 15: Print " BEFORE "
                 Locate , 20: Print "DELETING THEM? (Y/N)"
-                
+
                 Color 14
                 Print
                 Locate , 20: Print "IF YOU DO NOT WISH TO PRINT/DELETE THE STATS"
@@ -296,7 +295,7 @@ Sub EditPitchers (careerFile$)
                     End Select
 
                 Loop Until UCase$(I$) = "N"
-            
+
                 Cls
                 Locate 5, 15: Print "CHANGING PITCHER'S FILES . . . . . PLEASE WAIT"
 
@@ -305,7 +304,7 @@ Sub EditPitchers (careerFile$)
                 UPP = (79 - B9) * 15
 
                 I = B9
-                
+
                 For J = 1 To 15
                     For I = B9 To 78
                         For I1 = O To 16
@@ -334,7 +333,6 @@ Sub EditPitchers (careerFile$)
     Loop Until B9 = 100
 
 End Sub
-
 
 '----------------------------------------
 '      PrintBatterStats Subroutine
@@ -395,7 +393,6 @@ Sub PrintBatterStats (careerFile$, playerIdx)
 
     Next V
 
-
     For V = 0 To VV
 
         TT1 = TT1 + BRS%(V, B9, 14)
@@ -413,7 +410,6 @@ Sub PrintBatterStats (careerFile$, playerIdx)
         TT12 = TT12 + BRS%(V, B9, 10)
 
     Next V
-
 
     LPrint "   Totals";
     LPrint Tab(14); Using "##"; VV;
@@ -472,7 +468,6 @@ Sub PrintBatterStats (careerFile$, playerIdx)
 
 End Sub
 
-
 '----------------------------------------
 '      PrintPitcherStats Subroutine
 '----------------------------------------
@@ -482,7 +477,7 @@ Sub PrintPitcherStats (careerFile$, playerIdx)
     Dim I2!, I3!, I4!
 
     Shared careerP$()
-    
+
     Shared PRS%()
 
     B9 = playerIdx

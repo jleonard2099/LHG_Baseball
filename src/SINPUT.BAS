@@ -46,7 +46,6 @@ Sub SINPUT ()
     '73 Exit Sub
 End Sub
 
-
 '----------------------------------------
 '     EditStatsSchedules Subroutine
 '----------------------------------------
@@ -129,7 +128,6 @@ Sub EditStatsSchedules (action%)
 
 End Sub
 
-
 '----------------------------------------
 '       InputTeamStats Subroutine
 '----------------------------------------
@@ -198,7 +196,6 @@ Sub InputTeamStats (Z$, A$, D0%, D1%, L2%, W2%)
 
     Loop Until B9 = 0
 
-
     155 '
     Cls: Print "TEAM PITCHING STATS"
     160 Locate 2: Input "1. WON "; W2%: If C1 = 1 Then 220
@@ -256,7 +253,6 @@ Sub InputTeamStats (Z$, A$, D0%, D1%, L2%, W2%)
         If X% > 0 Then Call SelectBatters_SINPUT 'GoTo 309
 
     Loop Until B9 = 0
-
 
     230 '
     For I = 0 To 22
@@ -444,7 +440,6 @@ Sub InputTeamStats (Z$, A$, D0%, D1%, L2%, W2%)
 
 End Sub
 
-
 '----------------------------------------
 '       GetTeam_SINPUT Subroutine
 '----------------------------------------
@@ -529,7 +524,6 @@ Sub GetTeam_SINPUT (yearNumber$, numberTeams)
 
 End Sub
 
-
 '----------------------------------------
 '       SelectTeam_SINPUT Subroutine
 '----------------------------------------
@@ -584,9 +578,6 @@ Sub SelectTeam_SINPUT (yearNumber$, numberTeams)
 
 End Sub
 
-
-
-
 '----------------------------------------
 '     ChangePitchingStats Subroutine
 '----------------------------------------
@@ -624,12 +615,11 @@ Sub ChangePitchingStats (L2%, W2%)
 
 End Sub
 
-
 '----------------------------------------
 '     SelectBatters_SINPUT Subroutine
 '----------------------------------------
 '...explanation...
-Sub SelectBatters_SINPUT
+Sub SelectBatters_SINPUT ()
 
     Shared B$()
     Shared B0%()
@@ -684,7 +674,6 @@ Sub SelectBatters_SINPUT
     End If
 
 End Sub
-
 
 '----------------------------------------
 '    SelectPitchers_SINPUT Subroutine
@@ -779,9 +768,7 @@ Sub SelectPitchers_SINPUT (D0%, D1%, L2%, W2%, Z$)
 
     End If
 
-
 End Sub
-
 
 '----------------------------------------
 '    PromptScheduleChanges Subroutine
@@ -857,7 +844,6 @@ Sub PromptScheduleChanges (Z$)
             If UCase$(I$) = "Y" Then C1 = 0
 
         Loop Until UCase$(I$) = "N"
-
 
         Open diskPaths$(1) + Z$ + "S" For Output As #1
 

@@ -112,7 +112,6 @@ Sub POSCR ()
 
 End Sub
 
-
 '----------------------------------------
 '           GetTeam Subroutine
 '----------------------------------------
@@ -184,13 +183,6 @@ Sub GetTeam (yearNumber$, numberTeams, teamIndex%)
 End Sub
 
 
-'4500 Locate 10, 8
-'Call CSMsgBox("NO TEAM FILE FOUND MATCHING ID... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-'I$ = GetKeyPress$
-'Call CSMsgBox("", 0, Pass)
-'GoTo 605
-
-
 '----------------------------------------
 '    SelectTeam_POSCR Subroutine
 '----------------------------------------
@@ -222,7 +214,6 @@ Sub SelectTeam_POSCR (yearNumber$, numberTeams, teamIndex%)
     End If
 
 End Sub
-
 
 '----------------------------------------
 '       ReadTeam_POSCR Subroutine

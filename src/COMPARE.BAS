@@ -42,7 +42,6 @@ Sub COMPARE ()
 
 End Sub
 
-
 '----------------------------------------
 '      ViewComparisons SubRoutine
 '----------------------------------------
@@ -225,7 +224,6 @@ Sub ViewComparisons ()
     End If 'Done checking for ESC
 
 End Sub
-
 
 '----------------------------------------
 '   Comparisons_Printer Subroutine
@@ -456,7 +454,6 @@ Sub Comparisons_Printer (teamName$)
 
 End Sub
 
-
 '----------------------------------------
 '   TeamComparison_Printer Subroutine
 '----------------------------------------
@@ -536,7 +533,6 @@ Sub TeamComparison_Printer (teamName$)
     Next
 
 End Sub
-
 
 '----------------------------------------
 '     Comparisons_Screen Subroutine
@@ -1036,7 +1032,6 @@ Sub Comparisons_Screen (teamName$)
 
 End Sub
 
-
 '----------------------------------------
 '     SelectTeam_COMPARE Subroutine
 '----------------------------------------
@@ -1126,7 +1121,6 @@ Sub SelectTeam_COMPARE (yearNumber$, numberTeams)
     End If
 
 End Sub
-
 
 '----------------------------------------
 '       PlayerStats_Screen Subroutine
@@ -1368,5 +1362,5 @@ End Sub
 '   Locate 15, 20: Line Input "HIT ENTER TO RE-ENTER"; DUMMY$
 '   For J = 5 To 15
 '       Locate J
-'       Print "                                                                         "
+'       Print Space$(73)
 '   Next

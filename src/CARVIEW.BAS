@@ -24,11 +24,15 @@ Sub CARVIEW ()
             I$ = GetKeyPress$
             Call CSMsgBox("", 0, Pass)
         Else
+
             ReDim careerFiles$(0 To Count%)
+
             For X = 1 To Count%
                 careerFiles$(X) = Space$(12)
             Next
+
             careerFiles$(0) = Spec$
+
             Call ReadFile(careerFiles$())
 
             Do
@@ -37,7 +41,7 @@ Sub CARVIEW ()
                 Cls
                 Locate , 28
                 Color 14
-                Print "SELECT CAREER FILE TO VIEW": Color 15
+                Print "SELECT FILE TO VIEW": Color 15
                 Selection% = 1
                 Start% = 1
                 FileFGColr% = 15: FileBGColr% = 1
@@ -89,7 +93,7 @@ Sub CARVIEW ()
 						Print Using "####"; TMR
 					Next I
 				Next J
-				
+
 				For J = 1 To 15
 					For I = 0 To 79
 						For I1 = 0 To 16
@@ -125,15 +129,13 @@ Sub CARVIEW ()
     '...Until we press ESC
     Loop Until ExitCode% = 27 Or Count% = 0
 
-
 End Sub
-
 
 '----------------------------------------
 '       BatterTotals Subroutine
 '----------------------------------------
 '...explanation...
-Sub BatterTotals
+Sub BatterTotals ()
 
     Dim I2!, I3!, I4!
     Shared BRS%()
@@ -202,7 +204,6 @@ Sub BatterTotals
 
 End Sub
 
-
 '----------------------------------------
 '       PitcherTotals Subroutine
 '----------------------------------------
@@ -211,7 +212,7 @@ Sub PitcherTotals ()
 
     Dim I2!, I3!, I4!
     Shared PRS%()
-    
+
     VV = PRS%(1, I, 15) + PRS%(2, I, 15) + PRS%(3, I, 15) + PRS%(4, I, 15) + PRS%(5, I, 15) + PRS%(6, I, 15) + PRS%(7, I, 15) + PRS%(8, I, 15) + PRS%(9, I, 15) + PRS%(10, I, 15) + PRS%(11, I, 15) + PRS%(12, I, 15) + PRS%(13, I, 15) + PRS%(14, I, 15)+ PRS%(15, I, 15)
 
     For V = 0 To VV
@@ -275,7 +276,6 @@ Sub PitcherTotals ()
 
 End Sub
 
-
 '----------------------------------------
 '     CareerToPrinter Subroutine
 '----------------------------------------
@@ -302,7 +302,8 @@ Sub CareerToPrinter (careerFile$)
                 LPrint Chr$(12)
                 LPrint careerFile$
                 LPrint "BATTER     YEAR      G      AB      R      H    2B    3B    HR    RBI     BB     SO     SB    CS     E     AVG     SLG      OB"
-                PTN = 0     
+                PTN = 0
+
             End If
 
             LPrint Left$(careerB$(I), 10);
@@ -329,7 +330,7 @@ Sub CareerToPrinter (careerFile$)
                 I2! = 0
                 I3! = 0
                 I4! = 0
-                
+
                 IF BRS%(V, I, 0) > 0 THEN I2! = INT((BRS%(V, I, 1) / BRS%(V, I, 0) + .0005) * 1000): I3! = INT(((BRS%(V, I, 1) + BRS%(V, I, 4) + 2 * BRS%(V, I, 5) + 3 * BRS%(V, I, 6)) / BRS%(V, I, 0) + .0005) * 1000): I4! = INT(((BRS%(V, I, 1) + BRS%(V, I, 7)) / (BRS%(V, I, 7) + BRS%(V, I, 0)) + .0005) * 1000)
                 If BRS%(V, I, 0) = 0 Or I2! = 0 Then LPrint Tab(107); ".000";
 
@@ -406,13 +407,12 @@ Sub CareerToPrinter (careerFile$)
             If I4! > 0 And I4! < 100 Then LPrint Tab(123); ".0";: LPrint Using "##"; I4!
             If I4! >= 100 Then LPrint Tab(123); ".";: LPrint Using "###"; I4!
 
-
             TT1 = 0: TT2 = 0: TT3 = 0: TT4 = 0: TT5 = 0: TT6 = 0: TT7 = 0: TT8 = 0: TT9 = 0: TT10 = 0: TT11 = 0: TT12 = 0: TT13 = 0
             PTN = PTN + 2
             LPrint
 
         End If
-    
+
     Next I
 
     LPrint Chr$(12)
@@ -432,7 +432,7 @@ Sub CareerToPrinter (careerFile$)
                 LPrint "PITCHER    YEAR     W     L     S      IP        H     BB     SO     ERA     G    GS    CG    RUN     ER    SHO    HR    DP"
                 PTN = 0
             End If
-            
+
             LPrint Left$(careerP$(I), 10);
 
             For V = 1 To VV
@@ -546,7 +546,6 @@ Sub CareerToPrinter (careerFile$)
 
 End Sub
 
-
 '----------------------------------------
 '     CareerToScreen Subroutine
 '----------------------------------------
@@ -567,10 +566,8 @@ Sub CareerToScreen (careerFile$)
         Case "R": Call ViewLeaders_Sequence (careerFile$)
         Case "E": Cls 'Exit
     End Select
-    
+
 End Sub
-
-
 
 '----------------------------------------
 '     ViewLeaders_Batters Subroutine
@@ -588,15 +585,15 @@ Sub ViewLeaders_Batters (careerFile$)
     For I = 0 To 19
         Color 11: Locate I + 2: Print Using "##"; I;: Print ".";: Color 7: Print Left$(careerB$(I), 12)
     Next
-    
+
     For I = 20 To 39
         Color 11: Locate I - 18, 21: Print Using "##"; I;: Print ".";: Color 7: Print Left$(careerB$(I), 12)
     Next
-    
+
     For I = 40 To 59
         Color 11: Locate I - 38, 41: Print Using "##"; I;: Print ".";: Color 7: Print Left$(careerB$(I), 12)
     Next
-    
+
     For I = 60 To 79
         Color 11: Locate I - 58, 61: Print Using "##"; I;: Print ".";: Color 7: Print Left$(careerB$(I), 12)
     Next
@@ -633,7 +630,7 @@ Sub ViewLeaders_Batters (careerFile$)
         I2! = 0
         I3! = 0
         I4! = 0
-        
+
         IF BRS%(V, B9, 0) > 0 THEN I2! = INT((BRS%(V, B9, 1) / BRS%(V, B9, 0) + .0005) * 1000): I3! = INT(((BRS%(V, B9, 1) + BRS%(V, B9, 4) + 2 * BRS%(V, B9, 5) + 3 * BRS%(V, B9, 6)) / BRS%(V, B9, 0) + .0005) * 1000): I4! = INT(((BRS%(V, B9, 1) + BRS%(V, B9, 7)) / (BRS%(V, B9, 7) + BRS%(V, B9, 0)) + .0005) * 1000)
         If BRS%(V, B9, 0) = 0 Or I2! = 0 Then Locate , 65: Print ".000";
 
@@ -644,9 +641,9 @@ Sub ViewLeaders_Batters (careerFile$)
 
         If I3! > 0 And I3! < 100 Then Locate , 70: Print ".0";: Print Using "##"; I3!;
         If I3! >= 100 Then Locate , 70: Print ".";: Print Using "###"; I3!;
-        
+
         If BRS%(V, B9, 0) = 0 Or I4! = 0 Then Locate , 75: Print ".000"
-        
+
         If I4! > 0 And I4! < 100 Then Locate , 75: Print ".";: Print Using "###"; I4!
         If I4! >= 100 Then Locate , 75: Print ".";: Print Using "###"; I4!
 
@@ -721,8 +718,6 @@ Sub ViewLeaders_Batters (careerFile$)
 
 End Sub
 
-
-
 '----------------------------------------
 '     ViewLeaders_Pitchers Subroutine
 '----------------------------------------
@@ -739,7 +734,7 @@ Sub ViewLeaders_Pitchers (careerFile$)
     For I = 0 To 19
         Color 11: Locate I + 2: Print Using "##"; I;: Print ".";: Color 7: Print Left$(careerP$(I), 12)
     Next
-    
+
     For I = 20 To 39
         Color 11: Locate I - 18, 21: Print Using "##"; I;: Print ".";: Color 7: Print Left$(careerP$(I), 12)
     Next
@@ -877,8 +872,6 @@ Sub ViewLeaders_Pitchers (careerFile$)
 
 End Sub
 
-
-
 '----------------------------------------
 '     ViewLeaders_Sequence Subroutine
 '----------------------------------------
@@ -925,7 +918,7 @@ Sub ViewLeaders_Sequence (careerFile$)
                     Print Tab(62); Using "##"; BRS%(V, I, 11);
 
                     I2! = 0: I3! = 0: I4! = 0
-                    
+
                     IF BRS%(V, I, 0) > 0 THEN I2! = INT((BRS%(V, I, 1) / BRS%(V, I, 0) + .0005) * 1000): I3! = INT(((BRS%(V, I, 1) + BRS%(V, I, 4) + 2 * BRS%(V, I, 5) + 3 * BRS%(V, I, 6)) / BRS%(V, I, 0) + .0005) * 1000): I4! = INT(((BRS%(V, I, 1) + BRS%(V, I, 7)) / (BRS%(V, I, 7) + BRS%(V, I, 0)) + .0005) * 1000)
 
                     If BRS%(V, I, 0) = 0 Or I2! = 0 Then Locate , 65: Print ".000";
@@ -1061,6 +1054,5 @@ Sub ViewLeaders_Sequence (careerFile$)
         End If
 
     Loop Until UCase$(I$) = "N" Or I$ = Chr$(27)
-    
-End Sub
 
+End Sub

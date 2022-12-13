@@ -172,7 +172,6 @@ Sub BINPUT ()
 
 End Sub
 
-
 '----------------------------------------
 '       GetTeam_BINPUT subroutine
 '----------------------------------------
@@ -249,7 +248,6 @@ Sub GetTeam_BINPUT (yearNumber$, numberTeams, teamIdx)
     Loop Until UCase$(I$) = "N"
 
 End Sub
-
 
 '----------------------------------------
 '     SelectTeam_BINPUT subroutine
@@ -484,7 +482,6 @@ Sub SelectTeam_BINPUT (yearNumber$, numberTeams, teamIdx)
 
 End Sub
 
-
 '----------------------------------------
 '     ViewRostersRatings subroutine
 '----------------------------------------
@@ -593,7 +590,6 @@ Sub ViewRostersRatings (targetTeam$)
 
 End Sub
 
-
 '----------------------------------------
 '           InputTeam subroutine
 '----------------------------------------
@@ -672,7 +668,6 @@ Sub InputTeam (inputAction%, yearNumber$, targetTeam$, teamIdx)
     Locate 10, 8
 
 End Sub
-
 
 '----------------------------------------
 '        SaveTeamFile subroutine
@@ -859,7 +854,6 @@ Sub SaveTeamFile (yearNumber$, targetTeam$, targetFile$, teamIdx)
 
 End Sub
 
-
 '----------------------------------------
 '       SwapSpots subroutine
 '----------------------------------------
@@ -954,7 +948,6 @@ Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
 
 End Sub
 
-
 '----------------------------------------
 '       LoadTeamStats subroutine
 '----------------------------------------
@@ -1032,7 +1025,6 @@ Sub LoadTeamStats (targetTeam$, teamHasStats, SS, targetFile$)
 
 End Sub
 
-
 '----------------------------------------
 '       SwitchBatters subroutine
 '----------------------------------------
@@ -1075,12 +1067,11 @@ Sub SwitchBatters ()
 
 End Sub
 
-
 '----------------------------------------
 '       SwitchBatters subroutine
 '----------------------------------------
 '...explanation...
-Sub SwitchPitchers
+Sub SwitchPitchers ()
 
     Shared draftP%(), statP0%(), PS%()
     Shared P$(), PS$()
@@ -1114,7 +1105,6 @@ Sub SwitchPitchers
     Swap PS%(I1 - 1), PS%(I2 - 1)
 
 End Sub
-
 
 '----------------------------------------
 '       PrintTeamStats subroutine
@@ -1233,7 +1223,6 @@ Sub PrintTeamStats (targetTeam$, teamIdx)
 
 End Sub
 
-
 '----------------------------------------
 '     CalculateRunRating subroutine
 '----------------------------------------
@@ -1289,7 +1278,6 @@ Sub CalculateRunRating ()
     I$ = GetKeyPress$
 
 End Sub
-
 
 '----------------------------------------
 '     CalculateBuntRating subroutine
@@ -1394,7 +1382,6 @@ Sub CalculateBuntRating ()
     I$ = GetKeyPress$
 
 End Sub
-
 
 '----------------------------------------
 '       BATTEREDIT subroutine
@@ -2320,9 +2307,7 @@ Sub BATTEREDIT ()
 
     Loop Until i = 0
 
-
 End Sub
-
 
 '----------------------------------------
 '       EDITTEAM subroutine
@@ -2872,8 +2857,6 @@ Sub EDITTEAM (YN$, T$, NN$, S$, M$, teamIdx)
 
 End Sub
 
-
-
 '----------------------------------------
 '       PITCHEREDIT subroutine
 '----------------------------------------
@@ -2894,7 +2877,6 @@ Sub PITCHEREDIT ()
             Print Using "##"; i + 12;
             Print " "; P$(i + 11)
         Next
-
 
         Do
             Locate 22, 1
@@ -3861,8 +3843,6 @@ Sub PITCHEREDIT ()
 
 End Sub
 
-
-
 '----------------------------------------
 '       PITCHINIT subroutine
 '----------------------------------------
@@ -3962,12 +3942,11 @@ Sub PITCHINIT (i, FG, BG)
 
 End Sub
 
-
 '----------------------------------------
 '       VIEWHITTERS subroutine
 '----------------------------------------
 '...explanation...
-Sub ViewHitters
+Sub ViewHitters ()
 
     Shared B$()
     Shared draftB%(), TB%()
@@ -4047,12 +4026,11 @@ Sub ViewHitters
 
 End Sub
 
-
 '----------------------------------------
 '       ViewPitchers subroutine
 '----------------------------------------
 '...explanation...
-Sub ViewPitchers
+Sub ViewPitchers ()
 
     Shared P$()
     Shared draftP%(), TP%()
@@ -4115,12 +4093,11 @@ Sub ViewPitchers
 
 End Sub
 
-
 '----------------------------------------
 '     ViewHittingFielding subroutine
 '----------------------------------------
 '...explanation...
-Sub ViewHittingFielding
+Sub ViewHittingFielding ()
 
     Shared draftP%()
     Shared P$()
@@ -4172,7 +4149,6 @@ Sub ViewHittingFielding
     I$ = GetKeyPress$
 
 End Sub
-
 
 '----------------------------------------
 '       FieldingStats Subroutine

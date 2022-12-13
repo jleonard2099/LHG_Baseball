@@ -38,7 +38,6 @@ DECLARE SUB WHICHRUNNER (i, S4%, D5)
 DECLARE SUB WHOSON1ST (S4%)
 DECLARE SUB WILDPITCH (S2%,D)
 
-
 '------------------------------
 '   CONVNAME Subroutine
 '------------------------------
@@ -57,7 +56,6 @@ SUB CONVNAME (QQ,I)
 
 119 '
 END SUB
-
 
 '------------------------------
 '   DISPBAVG Subroutine
@@ -84,7 +82,6 @@ SUB DISPBAVG (D)
 359 NEXT: COLOR 15, 0
 END SUB
 
-
 '------------------------------
 '   GETSTATS Subroutine
 '------------------------------
@@ -93,7 +90,7 @@ SUB GETSTATS ()
     I = 0
 
 100 COLOR 15, 0: CLS : CALL CONVNAME (QQ,I): F$ = MID$(N$(I), 4, QQ): R$ = F$ + "." + LEFT$(N$(I), 2)
-    
+
 102 FILENAME$ = D$(1) + R$
     IF NOT _FILEEXISTS(FILENAME$) THEN 110
 OPEN D$(1) + R$ FOR INPUT AS #1
@@ -106,7 +103,6 @@ OPEN D$(1) + R$ FOR INPUT AS #1
 110 CLOSE #1
     IF I = 0 THEN I = 1: GOTO 100
 END SUB
-
 
 '------------------------------
 '   HITTINGLINES Subroutine
@@ -323,7 +319,6 @@ SUB HITTINGLINES(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9!(
 273 '
 END SUB
 
-
 '------------------------------
 '   LRADJ Subroutine
 '------------------------------
@@ -335,7 +330,6 @@ SUB LRADJ (A!, A1!)
     B4%(I, 5, I3) = B4%(I, 5, I3) * A!: ' NEWLY ADDED
     B4%(I, 4, I3) = B4%(I, 4, I3) * A1!
 END SUB
-
 
 '------------------------------
 '   NORMALIZE Subroutine
@@ -349,7 +343,6 @@ SUB NORMALIZE (I7!, I2!, I6!, K8!)
 15  K8! = INT((K8! * 1000) + .0005)
 
 END SUB
-
 
 '------------------------------
 '   BASEONBALLS Subroutine
@@ -386,7 +379,6 @@ SUB BASEONBALLS (S2%,D2,D,P)
 3243 '
 END SUB
 
-
 '------------------------------
 '   HITBYPITCH Subroutine
 '------------------------------
@@ -411,7 +403,6 @@ SUB HITBYPITCH (S2%,D)
     if rn<=50 and s4% = 7 then print "tough way to get an RBI":call delay
 END SUB
 
-
 '------------------------------
 '   WILDPITCH Subroutine
 '------------------------------
@@ -434,7 +425,6 @@ SUB WILDPITCH (S2%,D)
 
 3235 '
 END SUB
-
 
 '------------------------------
 '   RELIEVERS Subroutine
@@ -473,7 +463,6 @@ SUB RELIEVERS
 8885 '
 END SUB
 
-
 '------------------------------
 '   REPLACEMENTS Subroutine
 '------------------------------
@@ -496,7 +485,6 @@ SUB REPLACEMENTS (I7%, I8%, i9%)
 7110 '
 END SUB
 
-
 '------------------------------
 '   SCOREBOARD Subroutine
 '------------------------------
@@ -507,7 +495,6 @@ SUB SCOREBOARD ()
     LOCATE p + 2, 43: PRINT USING "##"; S6%(p, 1);
     COLOR 15, 0
 END SUB
-
 
 '------------------------------
 '   SECOND2FIRST Subroutine
@@ -520,7 +507,6 @@ SUB SECOND2FIRST (D)
     PRINT Y$; " to first"
     CALL DELAY
 END SUB
-
 
 '------------------------------
 '   SINGLEPBP Subroutine
@@ -542,7 +528,6 @@ SUB SINGLEPBP (S2%, D, W%)
 8013 CALL DELAY:CALL DELAY
 
 8014 END SUB
-
 
 '------------------------------
 '   SINGLEROUTINE Subroutine
@@ -592,7 +577,6 @@ SUB SINGLEROUTINE (W%, p, I1, D, S2%, P2)
 3092 CALL ADVANCEMENT(p, D, S2%, F%,I3)
 END SUB
 
-
 '------------------------------
 '   SOMESTATS Subroutine
 '------------------------------
@@ -601,7 +585,6 @@ SUB SOMESTATS (V, p, F%, D)
     IF B0%(V, 0) > 0 AND B7%(p, B0%(V, 0)) = 1 AND F% = 0 THEN I5 = P1%(p): I6 = 32: CALL INCPITOFF(P, I5, I6)
     IF B0%(V, 0) > 0 AND B7%(p, B0%(V, 0)) <> 1 AND F% = 0 THEN I5 = B3%(p, B0%(V, 0)): I6 = 9: CALL INCBATOFF(P, I5, I6)
 END SUB
-
 
 '------------------------------
 '   SQUEEZECHOICE Subroutine
@@ -617,7 +600,6 @@ SUB SQUEEZECHOICE (SH)
 4242 '
 END SUB
 
-
 '------------------------------
 '   STEAL3RD Subroutine
 '------------------------------
@@ -632,7 +614,6 @@ SUB STEAL3RD (TGTBASE%, AA, Q0, H0%, D)
 
 4874 REM
 END SUB
-
 
 '------------------------------
 '   STEALCHANCE Subroutine
@@ -675,7 +656,6 @@ DIM I1 AS SINGLE
     '
 END SUB
 
-
 '------------------------------
 '   STRIKEOUT Subroutine
 '------------------------------
@@ -711,7 +691,6 @@ SUB STRIKEOUT (U%, D)
     CALL DELAY
 END SUB
 
-
 '------------------------------
 '   STRIKEOUTCS Subroutine
 '------------------------------
@@ -719,7 +698,6 @@ END SUB
 SUB STRIKEOUTCS (SO)
     IF SO = 7 THEN B1!(p) = B1!(p) + 1
 END SUB
-
 
 '------------------------------
 '   STRIPRPBP Subroutine
@@ -731,7 +709,6 @@ SUB STRIPRPBP (Y$, Y%, D)
     IF ASC(MID$(Y$, BH%, 1)) > 122 OR ASC(MID$(Y$, BH%, 1)) < 32 THEN CALL GETRPBP(Y%, Y$, D): GOTO 3991
     NEXT
 END SUB
-
 
 '------------------------------
 '   TAGADVANCE Subroutine
@@ -758,7 +735,6 @@ SUB TAGADVANCE (S2%, I8, D)
 3394 '
 END SUB
 
-
 '------------------------------
 '   THROW2FIRST Subroutine
 '------------------------------
@@ -771,7 +747,6 @@ SUB THROW2FIRST (D)
     PRINT Y$; " to first"
     CALL DELAY
 END SUB
-
 
 '------------------------------
 '   TIRING Subroutine
@@ -797,7 +772,6 @@ SUB TIRING (P9)
 9757 '
 END SUB
 
-
 '------------------------------
 '   TRIPLEPLAY Subroutine
 '------------------------------
@@ -814,7 +788,6 @@ SUB TRIPLEPLAY (D)
     IF B7%(p, B1!(p)) = 1 THEN I5 = P1%(p): I6 = 23: CALL INCPITOFF(P, I5, I6)
     IF B7%(p, B1!(p)) <> 1 THEN I5 = B3%(p, B1!(p)): I6 = 0: CALL INCBATOFF(P, I5, I6)
 END SUB
-
 
 '------------------------------
 '   TRYFOREXTRABASE Subroutine
@@ -950,7 +923,6 @@ SUB TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%,I8,I9)
 3385 '
 END SUB
 
-
 '------------------------------
 '   VIEWTEAM Subroutine
 '------------------------------
@@ -1019,7 +991,6 @@ SUB VIEWTEAM ()
 850 '
 END SUB
 
-
 '------------------------------
 '   WALLDOUBLE Subroutine
 '------------------------------
@@ -1045,7 +1016,6 @@ SUB WALLDOUBLE (HW%, W%)
 3785 '
 END SUB
 
-
 '------------------------------
 '   WHICHRUNNER Subroutine
 '------------------------------
@@ -1066,7 +1036,6 @@ SUB WHICHRUNNER (i, S4%, D5)
 4297 '
 END SUB
 
-
 '------------------------------
 '   WHOSON1ST Subroutine
 '------------------------------
@@ -1081,7 +1050,6 @@ SUB WHOSON1ST (S4%)
     IF I1 = 0 AND I2 > 0 AND I3 > 0 THEN S4% = 6: REM*** 2ND AND 3RD ***
     IF I1 > 0 AND I2 > 0 AND I3 > 0 THEN S4% = 7: REM*** BASES LOADED ***
 END SUB
-
 
 '------------------------------
 '   FOULBALL Subroutine

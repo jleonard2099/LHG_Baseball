@@ -37,7 +37,7 @@ Sub NEWLDRST ()
         Row% = 6
         Column% = 27
         Call box0(5, 26, 9, 56, 2, 15, 1)
-            
+
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
         _MouseHide
@@ -56,7 +56,6 @@ Sub NEWLDRST ()
 
 End Sub
 
-
 '----------------------------------------
 '   UpdateLeagueStandings Subroutine
 '----------------------------------------
@@ -65,7 +64,7 @@ Sub UpdateLeagueStandings ()
 
     Shared ELL!(), EWW!(), HLL!(), HWW!()
     Shared RLL!(), RWW!(), LL!(), LTW!(), LTL!(), WW!()
-    
+
     Shared CLT!(), CWS!()
     Shared LLS!(), LWS!()
     Shared TLS!(), TWS!()
@@ -80,7 +79,7 @@ Sub UpdateLeagueStandings ()
 
     Do
         Cls
-    
+
         Spec$ = diskPaths$(2) + "*.TMS"
         null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
         Count% = DirCount%
@@ -128,7 +127,7 @@ Sub UpdateLeagueStandings ()
                     Color 15, 0
                     I$ = GetKeyPress$
                 End If
-					
+
             Loop Until UCase$(I$) = "N" Or ExitCode% = 27
 
             If ExitCode% <> 27 Then
@@ -152,7 +151,7 @@ Sub UpdateLeagueStandings ()
                     TMR% = TMR% - 1
                     Locate 7, 20
                     Color 14: Print Using "###"; TMR%
-                    
+
                     If Z1$(KK) <> "*" Then
 
                         TML$(YY) = Z1$(KK)
@@ -208,9 +207,9 @@ Sub UpdateLeagueStandings ()
                                 If V%(J) > H%(J) Then LTL!(YY) = LTL!(YY) + 1
                             Next J
                         End If
-                        
+
                     End If 'Done checking for '*'
-                    
+
                 Next KK
 
                 Open diskPaths$(2) + LG$ + ".STD" For Output As #1
@@ -219,21 +218,20 @@ Sub UpdateLeagueStandings ()
                     Write #1, TML$(I), WW!(I), LL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
                 Next
                 Close #1
-                
+
             End If
-            
+
         End If 'Done checking file count
 
     Loop Until Count% = 0 Or ExitCode% = 27 Or I$ = "N"
 
 End Sub
 
-
 '----------------------------------------
 '   ViewPrintLeagueStandings Subroutine
 '----------------------------------------
 '...explanation...
-Sub ViewPrintLeagueStandings
+Sub ViewPrintLeagueStandings ()
 
     Shared CLT!(), CWS!()
     Shared ELL!(), EWW!(), HLL!(), HWW!()
@@ -258,7 +256,6 @@ Sub ViewPrintLeagueStandings
             Next
             standingsFiles$(0) = Spec$
             Call ReadFile(standingsFiles$())
-            'CALL SortStr(VARPTR(standingsFiles$(1)), Count%, 0)
 
             Cls
             Color , 1
@@ -285,15 +282,15 @@ Sub ViewPrintLeagueStandings
             _MouseHide
 
             If ExitCode% <> 27 Then
-                
+
                 targetFile$ = standingsFiles$(Selection%)
                 Locate 2, 33: Print targetFile$
                 Locate , 33: Print "ANY CHANGE (YN)";
                 Color 15, 0
                 I$ = GetKeyPress$
-                
+
                 If UCase$(I$) = "N" Then
-                
+
                     targetFile$ = RTrim$(targetFile$)
                     LGS$ = Left$(targetFile$, Len(targetFile$) - 4)
 
@@ -325,11 +322,10 @@ Sub ViewPrintLeagueStandings
             End If 'Done checking for ESC
 
         End If 'Done checking file count
-        
+
     Loop Until UCase$(A$) = "P" Or UCase$(A$) = "V" Or ExitCode% = 27
 
-End Sub 
-
+End Sub
 
 '----------------------------------------
 '       ViewNewLeaders Subroutine
@@ -343,7 +339,7 @@ Sub ViewNewLeaders ()
     Shared RLL!(), RWW!(), TLS!(), TWS!(), WW!()
 
     Shared TML$()
-    
+
     For NT = 1 To 4
         AA = NT * 10 - 9
         ZZ = NT * 10
@@ -371,13 +367,13 @@ Sub ViewNewLeaders ()
                             Swap RWW!(X), RWW!(Y)
                             Swap LTL!(X), LTL!(Y)
                             Swap LTW!(X), LTW!(Y)
-                        
+
                         End If
-                        
+
                     End If
-                    
+
                 End If
-                    
+
             Next Y
         Next X
 
@@ -393,9 +389,9 @@ Sub ViewNewLeaders ()
         If NT = 2 Then Print D2$;
         If NT = 3 Then Print D3$;
         If NT = 4 Then Print D4$;
-        
+
         Print Tab(16); "G   W   L   PCT   GB   #    WS LS  WS LS  W- L  W- L  W- L  W- L"
-        
+
         For I = AA To ZZ
 
             If TML$(I) <> "" Then
@@ -403,7 +399,7 @@ Sub ViewNewLeaders ()
                 Color 3: Print TML$(I);: Color 15: Print Tab(14); Using "###"; WW!(I) + LL!(I); Tab(18);
                 Print Using "###"; WW!(I); Tab(22);
                 Print Using "###"; LL!(I);
-                
+
                 If LL!(I) = 0 And LL!(I) + WW!(I) <> 0 Then 
                     Print Tab(26); "1.000";
                 Else
@@ -418,7 +414,7 @@ Sub ViewNewLeaders ()
                         End If
                     End If
                 End If
-                
+
                 If ((WW!(NT * 10 - 9) - WW!(I)) + (LL!(I) - LL!(NT * 10 - 9))) / 2 = 0 Then Print Tab(32); " ---";
                 If ((WW!(NT * 10 - 9) - WW!(I)) + (LL!(I) - LL!(NT * 10 - 9))) / 2 <> 0 Then Print Tab(32); Using "##.#"; ((WW!(NT * 10 - 9) - WW!(I)) + (LL!(I) - LL!(NT * 10 - 9))) / 2;
                 Print Tab(44); Using "##"; TWS!(I); Tab(47); TLS!(I); Tab(51); CWS!(I); Tab(54); CLT!(I);
@@ -430,17 +426,16 @@ Sub ViewNewLeaders ()
             End If
 
         Next
-        
+
         Locate 4, 38
         Print Using "###"; 163 - WW!(NT * 10 - 9) - LL!(NT * 10 - 8)
         Locate 23
         Color 14: Print "HIT ANY KEY TO CONTINUE"
         I$ = GetKeyPress$
-        
+
     Next NT
 
 End Sub
-
 
 '----------------------------------------
 '       PrintNewLeaders Subroutine
@@ -454,14 +449,14 @@ Sub PrintNewLeaders ()
     Shared RLL!(), RWW!(), TLS!(), TWS!(), WW!()
 
     Shared TML$()
-    
+
     MJ = 0
-    
+
     LPrint Chr$(15)
 
     '3001 WIDTH "LPT1:1", 130
     LPrint Tab(35); LGF$
-    
+
     For NT = 1 To 4
         AA = NT * 10 - 9
         ZZ = NT * 10
@@ -489,16 +484,16 @@ Sub PrintNewLeaders ()
                             Swap RWW!(X), RWW!(Y)
                             Swap LTL!(X), LTL!(Y)
                             Swap LTW!(X), LTW!(Y)
-                        
+
                         End If
-                        
+
                     End If
-                    
+
                 End If
-                    
+
             Next Y
         Next X
-        
+
         LPrint Tab(16); "                      MAG.  L  L   C  C   HOME  ROAD  X-IN  L-10"
 
         If NT = 1 Then LPrint D1$;
@@ -515,7 +510,7 @@ Sub PrintNewLeaders ()
                 Color 3: LPrint TML$(I);: Color 15: LPrint Tab(14); Using "###"; WW!(I) + LL!(I); Tab(18);
                 LPrint Using "###"; WW!(I); Tab(22);
                 LPrint Using "###"; LL!(I);
-                
+
                 If LL!(I) = 0 And LL!(I) + WW!(I) <> 0 Then 
                     LPrint Tab(26); "1.000";
                 Else
@@ -546,7 +541,7 @@ Sub PrintNewLeaders ()
         LPrint
         LPrint
     Next NT
-    
+
     LPrint Chr$(12)
 
     LPrint Chr$(18)

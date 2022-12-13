@@ -12,7 +12,6 @@ Sub PRTLEAG ()
     Dim OFT!(40, 20), DFT!(40, 20)
     Dim Z!(298), Z1!(298)
 
-
     Do
         'Display list of files...
 
@@ -147,7 +146,7 @@ Sub PRTLEAG ()
 
                         P$(P) = P$(P) + BK$
                     End If
-                
+
                 NEXT P
 
                 D1 = W(11) - L(11)
@@ -335,7 +334,7 @@ Sub PRTLEAG ()
                 RT = 0
 
                 LF$(15) = "    " + D3$ + "      W   L   PCT   GB"
-            
+
                 FOR P = 21 TO 30: 
                     IF P$(P) = "" THEN 
                         RT = RT + 1
@@ -346,7 +345,8 @@ Sub PRTLEAG ()
 
                 RT = 0
 
-                RT$(3) = "    " + D2$ + "      W   L   PCT   GB"            
+                RT$(3) = "    " + D2$ + "      W   L   PCT   GB"
+
                 FOR P = 11 TO 20
                     IF P$(P) = "" THEN 
                         RT = RT + 1
@@ -358,7 +358,7 @@ Sub PRTLEAG ()
                 RT = 0
 
                 RT$(15) = "    " + D4$ + "      W   L   PCT   GB"
-                
+
                 FOR P = 31 TO 40
                     IF P$(P) = "" THEN 
                         RT = RT + 1
@@ -411,7 +411,7 @@ Sub PRTLEAG ()
                         P$(P) = P$(P) + " " + STR$(J)
                     End If
                 NEXT P
-            
+
                 CLS
 
                 LF$(27) = "   BATTING LEADERS  (MIN 3.1 PA/G)"
@@ -439,11 +439,12 @@ Sub PRTLEAG ()
                         P$(P) = P$(P) + " " + STR$(J!)
                     End If
                 NEXT P
-            
+
                 CLS
 
                 RT$(27) = "       BATTING TRAILERS  (MIN 3.1 PA/G)"
-                FOR P = 239 TO 258: RT$(P - 211) = "   " + P$(P): NEXT              
+                FOR P = 239 TO 258: RT$(P - 211) = "   " + P$(P): NEXT
+
                 RT$(47) = " "
 
                 FOR P = 27 TO 47
@@ -537,7 +538,8 @@ Sub PRTLEAG ()
                 NEXT P
 
                 LF$(1) = "   TRIPLES"
-                FOR P = 43 TO 52: LF$(P - 41) = "   " + P$(P): NEXT P               
+                FOR P = 43 TO 52: LF$(P - 41) = "   " + P$(P): NEXT P
+
                 LF$(12) = " "
 
                 FOR P = 54 TO 63: 
@@ -750,10 +752,10 @@ Sub PRTLEAG ()
                 FOR X = 36 TO 47
                     LPRINT LF$(X); RT$(X)
                 NEXT
-                    
+
                 FOR P = 279 TO 288
                     P$(P) = ""
-                    
+
                     IF Z2$(P) <> "*" THEN
                         P$(P) = Z2$(P)
                         IF Z3$(P) <> "*" THEN P$(P) = P$(P) + ", " + Z3$(P)
@@ -879,7 +881,7 @@ Sub PRTLEAG ()
                 FOR P = 140 TO 149
                     LF$(P - 91) = "   " + P$(P)
                 NEXT
-                
+
                 LF$(59) = " "
 
                 FOR P = 151 TO 160: P$(P) = ""
@@ -904,7 +906,7 @@ Sub PRTLEAG ()
                 FOR P = 151 TO 160
                     RT$(P - 102) = "     " + P$(P)
                 NEXT P
-                
+
                 RT$(59) = " "
                 FOR P = 48 TO 59
                     While LEN(LF$(P)) < 35 
@@ -917,7 +919,7 @@ Sub PRTLEAG ()
                 NEXT P
 
                 FOR X = 48 TO 59: LPRINT LF$(X); RT$(X): NEXT
-                
+
                 LPRINT CHR$(12)
 
                 FOR P = 162 TO 171
@@ -931,7 +933,6 @@ Sub PRTLEAG ()
                             P$(P) = P$(P) + " "
                         Wend
 
-
                         J! = INT(Z!(P))
                         W = 3
                         A$ = "     " + STR$(J)
@@ -943,7 +944,7 @@ Sub PRTLEAG ()
                 LF$(1) = "   INNINGS PITCHED"
 
                 FOR P = 162 TO 171: LF$(P - 160) = "   " + P$(P): NEXT P
-                
+
                 LF$(12) = " "
 
                 FOR P = 173 TO 182: 
@@ -1063,7 +1064,7 @@ Sub PRTLEAG ()
                 LF$(25) = "   SAVES"
 
                 FOR P = 206 TO 215: LF$(P - 180) = "   " + P$(P): NEXT P
-                
+
                 LF$(36) = " "
                 RT$(25) = "     APPEARANCES"
 
@@ -1129,7 +1130,7 @@ Sub PRTLEAG ()
                         LPRINT TAB(55); DFT!(X, 6); TAB(60); DFT!(X, 7)
                     End If
                 NEXT
-                
+
                 LPRINT CHR$(12)
 
             End If 'Done checking for ESC

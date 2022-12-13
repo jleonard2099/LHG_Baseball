@@ -20,7 +20,7 @@ Sub UMPMGR ()
             Color 15: Print "RETURN TO MAIN MENU"
             I$ = GetKeyPress$
             I = Val(I$)
-        
+
         Loop Until I >= 1 And I <= 3
 
         Select Case I
@@ -32,7 +32,6 @@ Sub UMPMGR ()
     Loop Until I = 3
 
 End Sub
-
 
 '----------------------------------------
 '       EnterUmpireFile Subroutine
@@ -53,7 +52,7 @@ Sub EnterUmpireFile ()
         Else
             Input "ENTER RATING (0-9) "; U%(X)
         End If
-        
+
     Next
 
     Do
@@ -73,9 +72,8 @@ Sub EnterUmpireFile ()
     Close #1
 
     For X = 1 To 50: U$(X) = "": U%(X) = 5: Next
-    
-End Sub
 
+End Sub
 
 '----------------------------------------
 '       EditUmpireFile Subroutine

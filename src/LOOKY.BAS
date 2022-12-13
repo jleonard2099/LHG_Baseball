@@ -46,12 +46,11 @@ Sub LOOKY ()
 
 End Sub
 
-
 '----------------------------------------
 '       StatsOneTeam Subroutine
 '----------------------------------------
 '...explanation...
-Sub StatsOneTeam
+Sub StatsOneTeam ()
 
     Shared L%()
 
@@ -171,7 +170,6 @@ Sub StatsOneTeam
 
 End Sub
 
-
 '----------------------------------------
 '       ReadStats Subroutine
 '----------------------------------------
@@ -275,7 +273,6 @@ Sub ReadStats (statFile$)
     End If 'Done checking file count
 
 End Sub
-
 
 '----------------------------------------
 '     ViewAndPrintOptions Subroutine
@@ -728,7 +725,6 @@ Sub ViewAndPrintOptions (statFile$, splitScreenChoice%, teamName$)
 
         If X = 0 Or X = 1 Then I$ = GetKeyPress$
 
-
         Cls
         Color L%(11), L%(12): Print teamName$;
         Color 12, 0: Print "    WON: "; W2%; "  LOST: "; L2%
@@ -796,7 +792,6 @@ Sub ViewAndPrintOptions (statFile$, splitScreenChoice%, teamName$)
         I$ = GetKeyPress$
 
     Loop Until UCase$(I$) = "N"
-
 
     Cls
     JJ = 1
@@ -870,12 +865,11 @@ Sub ViewAndPrintOptions (statFile$, splitScreenChoice%, teamName$)
 
 End Sub
 
-
 '----------------------------------------
 '       ReadStats Subroutine
 '----------------------------------------
 '...explanation...
-Sub ReportsAllTeams
+Sub ReportsAllTeams ()
 
     Dim H1$(40)
     Shared D0%, D1%, L2%, W2%
@@ -884,7 +878,6 @@ Sub ReportsAllTeams
     Shared statT!(), statT1!()
     Shared statB%(), statB0%()
     Shared statP%(), statP0%()
-
 
     Do
         'Display list of files...
@@ -984,7 +977,6 @@ Sub ReportsAllTeams
 
 End Sub
 
-
 '----------------------------------------
 '       SelectTeam_LOOKY Subroutine
 '----------------------------------------
@@ -1041,8 +1033,6 @@ Sub SelectTeam_LOOKY (numberTeams, yearNumber$)
     End If
 
 End Sub
-
-
 
 '----------------------------------------
 '       NewPrintStats Subroutine
@@ -1211,10 +1201,9 @@ Sub NewPrintStats (statFile$, printChoice, splitScreenChoice%, teamName$)
 
     Next
 
-
     For I = 0 To 21
 
-        If P$(I) <> "XXX" Or P$(I) <> "" Then
+        If P$(I) <> "XXX" And P$(I) <> "" Then
             LPrint Left$(P$(I), 10); Tab(12);: LPrint Using "###"; statP0%(I, 8);
             LPrint Tab(16); Using "### ### ### ##"; statP0%(I, 23); statP0%(I, 25); statP0%(I, 24); statP0%(I, 27);
             LPrint Tab(31); Using "## ## ### ###"; statP0%(I, 28); statP0%(I, 29); statP0%(I, 26); statP0%(I, 30);
@@ -1277,7 +1266,6 @@ Sub NewPrintStats (statFile$, printChoice, splitScreenChoice%, teamName$)
                     End If
                 End If
             End If
-
 
             LPrint Tab(105);: LPrint Using "####"; statP0%(I, 38);
             LPrint Tab(110);: LPrint Using "###"; statP0%(I, 39);
@@ -1400,7 +1388,6 @@ Sub NewPrintStats (statFile$, printChoice, splitScreenChoice%, teamName$)
         End If
 
     Next
-
 
     LPrint
     LPrint "TOTALS";

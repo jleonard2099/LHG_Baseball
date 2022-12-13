@@ -37,7 +37,6 @@ Sub SEELEAG ()
             Next
             leagueLeaderFiles$(0) = Spec$
             Call ReadFile(leagueLeaderFiles$())
-            'CALL SortStr(VARPTR(leagueLeaderFiles$(1)), Count%, 0)
 
             Do
                 Cls
@@ -162,7 +161,6 @@ Sub SEELEAG ()
                     End If
                 Next P
 
-
                 '-----
                 D1 = W(11) - L(11)
 
@@ -225,7 +223,6 @@ Sub SEELEAG ()
                     End If
                 Next P
 
-
                 '-----
                 D1 = W(21) - L(21)
 
@@ -286,7 +283,6 @@ Sub SEELEAG ()
 
                 Next P
 
-
                 '-----
                 D1 = W(31) - L(31)
 
@@ -336,7 +332,6 @@ Sub SEELEAG ()
                         L = 28
                         While Len(seeP$(P)) < L: seeP$(P) = seeP$(P) + " ": Wend
 
-
                         D = W(P) - L(P): D = D1 - D: BK$ = Str$(Int(D / 2))
 
                         If D = 0 Then BK$ = "---"
@@ -366,7 +361,6 @@ Sub SEELEAG ()
 
                 Print
 
-
                 RT = 0
                 Color 14
                 Locate 15, 1: Print "    " + D3$ + "      W   L   PCT   GB"
@@ -380,7 +374,6 @@ Sub SEELEAG ()
                     End If
                 Next P
 
-
                 RT = 0
                 Color 14: Locate 3, 41: Print "    " + D2$ + "      W   L   PCT   GB"
                 Color 15
@@ -393,7 +386,6 @@ Sub SEELEAG ()
                 Next P
 
                 Print
-
 
                 RT = 0
                 Color 14: Locate 15, 41: Print "    " + D4$ + "      W   L   PCT   GB"
@@ -514,7 +506,6 @@ Sub SEELEAG ()
                     End If
                 Next P
 
-
                 Color 14: Print "      DOUBLES"
                 Color 15
 
@@ -626,7 +617,6 @@ Sub SEELEAG ()
                         seeP$(P) = seeP$(P) + A$
                     End If
                 Next P
-
 
                 Color 14: Locate 1, 40: Print "      STOLEN BASES"
                 Color 15
@@ -1059,7 +1049,6 @@ Sub SEELEAG ()
 
 End Sub
 
-
 '410 '
 'For P = 1 To 5
 '   seeP$(P) = ""
@@ -1076,7 +1065,6 @@ End Sub
 'Next P
 'Return
 
-
 '5000 '
 'CP$ = ""
 'L = LEN(LW$)
@@ -1090,7 +1078,6 @@ End Sub
 'NEXT Z
 'Return
 
-
 '931 '
 'A$ = STR$(J!)
 'L = LEN(A$)
@@ -1102,4 +1089,3 @@ End Sub
 'A$ = RIGHT$(A$, W)
 'seeP$(P) = seeP$(P) + A$
 'Return
-

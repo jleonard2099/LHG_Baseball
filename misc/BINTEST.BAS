@@ -1,4 +1,3 @@
-$Debug
 '$INCLUDE: 'Config.BI'
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'

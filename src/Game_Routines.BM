@@ -51,9 +51,7 @@ Sub PitchingStarter (idx%)
     If P6%(idx%) > 1 Then S8%(idx%, 1) = 0
     If INotLoopCounter% <= 5 And S6%(idx%, 0) - S6%(1 - idx%, 0) > 0 Then P2%(idx%) = P1%(idx%)
 
-
 End Sub
-
 
 '------------------------------
 '      ADDPIT Subroutine
@@ -66,7 +64,6 @@ Sub ADDPIT (D, I5, I6)
     P5%(D, I5, I6) = P5%(D, I5, I6) + 1
 
 End Sub
-
 
 '------------------------------
 '      ADDSTTS Subroutine
@@ -89,7 +86,6 @@ Sub ADDSTTS (P, D)
     Call ADDPIT(D, I5, I6)
 
 End Sub
-
 
 '------------------------------
 '    ADJRUNNERS Subroutine
@@ -144,7 +140,6 @@ Sub ADJRUNNERS (S2%, P)
 
 End Sub
 
-
 '------------------------------
 '   ADV1BASE Subroutine
 '------------------------------
@@ -162,7 +157,6 @@ Sub ADV1BASE (i)
 
 End Sub
 
-
 '------------------------------
 '   ADV2BASES Subroutine
 '------------------------------
@@ -173,12 +167,11 @@ Sub ADV2BASES (i)
         B0%(i + 1, 2) = 0
         B0%(i, I4) = 0
     Next I4
-    
+
     Q$(i + 2) = Q$(i)
     Q$(i) = ""
-    
-End Sub
 
+End Sub
 
 '------------------------------
 '   ADV3BASES Subroutine
@@ -188,21 +181,20 @@ Sub ADV3BASES (I3, P, D)
 
     B0%(I3, 0) = B1!(P)
     B0%(I3, 1) = P1%(D)
-    
+
     Q$(I3) = Q$(0)
-    
+
     B0%(I3, 2) = 0
     B0%(0, 0) = 0
-    
-End Sub
 
+End Sub
 
 '------------------------------
 '   ADVANCEMENT Subroutine
 '------------------------------
 ' ...explanation...
 Sub ADVANCEMENT (P, D, S2%, F%, I3)
-    
+
     If B0%(3, 0) <> 0 And A5%(3) <> 0 Then
         i = 3
         If A5%(3) >= 1 And A5%(3) <= 4 Then Call RecordRun(sah%, i, D, F%, PQ, S2%, W%, INFPOS%)
@@ -243,7 +235,7 @@ Sub ADVANCEMENT (P, D, S2%, F%, I3)
     i = 0
     B0%(0, 0) = B1!(P)
     B0%(0, 1) = P1%(D)
-    
+
     If A5%(0) <> 0 Then
         'values 1 to 3
         If A5%(0) > 0 And A5%(0) < 4 Then I3 = A5%(0): Call ADV3BASES(I3, P, D)
@@ -265,24 +257,23 @@ Sub ADVANCEMENT (P, D, S2%, F%, I3)
 
 End Sub
 
-
 '------------------------------
 '   BATDISP Subroutine
 '------------------------------
 ' ...explanation...
 Sub BATDISP (PG, P9)
-    
+
     Locate 1, 1
-    
+
     Color 14: Print "#";
     Color L%(P9, 11), L%(P9, 12): Print A$(P9);
-    
+
     Color 14, 0
 
     Locate , 16: Print "B   POS    G  AB 2B 3B HR RBI  BB  SO SRAB  SB CS G%  BA"
 
     For i = 2 To 13: Locate i, 1: Print String$(78, 32): Next
-    
+
     Locate 2, 1
 
     If PG = 0 Then AA = 0: BB = 12
@@ -320,16 +311,15 @@ Sub BATDISP (PG, P9)
         End If
 
     Next i
-    
-End Sub
 
+End Sub
 
 '------------------------------
 '   BATOFF Subroutine
 '------------------------------
 ' ...explanation...
 Sub BATOFF (P, I5, I6)
-    
+
     B8%(P, I5, I6) = B8%(P, I5, I6) - 1
     B5%(P, I5, I6) = B5%(P, I5, I6) - 1
 
@@ -349,7 +339,6 @@ Sub BATOFF (P, I5, I6)
 
 End Sub
 
-
 '------------------------------
 '   BATTER1 Subroutine
 '------------------------------
@@ -362,7 +351,6 @@ Sub BATTER1 (i)
     Next I4
 
 End Sub
-
 
 '------------------------------
 '   BATTER2 Subroutine
@@ -377,7 +365,6 @@ Sub BATTER2 (i)
 
 End Sub
 
-
 '------------------------------
 '   BATTER3 Subroutine
 '------------------------------
@@ -388,7 +375,6 @@ Sub BATTER3 (I3, P, D)
     B1%(I3, 1) = P1%(D)
 
 End Sub
-
 
 '------------------------------
 '   CAUGHTFLY Subroutine
@@ -439,7 +425,6 @@ Sub CAUGHTFLY (i, S2%, D)
 
 End Sub
 
-
 '------------------------------
 '   CHANGELINEUP Subroutine
 '------------------------------
@@ -449,7 +434,7 @@ Sub CHANGELINEUP (P9, P)
     Locate 14, 1
     Color 2: Print " # LINEUP       PS  FA  OB"
     Color 15
-    
+
     For i = 1 To 9:
 
         Locate , 1
@@ -475,7 +460,6 @@ Sub CHANGELINEUP (P9, P)
 
 End Sub
 
-
 '------------------------------
 '   CHARGERUN Subroutine
 '------------------------------
@@ -493,7 +477,6 @@ Sub CHARGERUN (D, i)
 
 End Sub
 
-
 '------------------------------
 '   CHECKSAVE Subroutine
 '------------------------------
@@ -502,7 +485,7 @@ Sub CHECKSAVE (D, P, S4%)
 
     I3 = S6%(D, 0) - S6%(P, 0)
     S1%(D) = -1
-    
+
     If I3 >= 1 Then
         If S4% = 0 And I3 <= 2 Then S1%(D) = P1%(D)
         If S4% > 0 And S4% < 4 And I3 <= 3 Then S1%(D) = P1%(D)
@@ -513,7 +496,7 @@ Sub CHECKSAVE (D, P, S4%)
     End If
 
     RI = 0
-    
+
     If S4% <> 0 Then
         If S4% = 1 Or S4% = 2 Or S4% = 3 Then RI = 1
         If S4% = 4 Or S4% = 5 Or S4% = 6 Then RI = 2
@@ -523,7 +506,6 @@ Sub CHECKSAVE (D, P, S4%)
     End If
 
 End Sub
-
 
 '------------------------------
 '   CLEARBASE Subroutine
@@ -535,7 +517,6 @@ Sub CLEARBASE (i)
     B1%(i, 1) = 0
 
 End Sub
-
 
 '------------------------------
 '   CREDITASSIST Subroutine
@@ -555,7 +536,6 @@ Sub CREDITASSIST (W%, D)
 
 End Sub
 
-
 '------------------------------
 '   CREDITPUTOUT Subroutine
 '------------------------------
@@ -563,7 +543,7 @@ End Sub
 Sub CREDITPUTOUT (I3, FB2P%, AST%, D)
 
     ' *** CREDIT INFIELD PUTOUTS ***
-    
+
     If I3 > 4 Then I3 = 1
 
     po% = I3 + 2: ' 1=1st 2=2nd 3=3rd 4=home
@@ -596,7 +576,6 @@ Sub CREDITPUTOUT (I3, FB2P%, AST%, D)
     3418 '
 End Sub
 
-
 '------------------------------
 '   CREDITREGPO Subroutine
 '------------------------------
@@ -617,7 +596,6 @@ Sub CREDITREGPO (W%, D)
 
 End Sub
 
-
 '------------------------------
 '   DELAY Subroutine
 '------------------------------
@@ -627,7 +605,6 @@ Sub DELAY ()
     _Delay pbpDelay!
 
 End Sub
-
 
 '------------------------------
 '   DELIVERY Subroutine
@@ -653,7 +630,6 @@ Sub DELIVERY (D)
     Call PBP(Y$)
 
 End Sub
-
 
 '------------------------------
 '   DISPFLDG Subroutine
@@ -689,11 +665,10 @@ Sub DISPFLDG (PG, P9, TG)
         End If
 
     Next i
-    
+
     TG = TG + 1
 
 End Sub
-
 
 '------------------------------
 '   DISPRUN Subroutine
@@ -702,7 +677,7 @@ End Sub
 Sub DISPRUN (I2, P, X)
 
     J = B0%(I2, 0)
-    
+
     If J <> 0 Then
 
         Color L%(P, 11), L%(P, 12)
@@ -727,21 +702,20 @@ Sub DISPRUN (I2, P, X)
         End If
 
     End If
-    
+
     363 '
     Color 15, 0
-    
-End Sub
 
+End Sub
 
 '------------------------------
 '   DPPBP Subroutine
 '------------------------------
 ' ...explanation...
 Sub DPPBP ()
-    
+
     Call d100(RN)
-    
+
     Select Case RN
         Case 1 TO 19: F$ = "may be a double play ball"
         Case 20 TO 40: F$ = "they might turn two"
@@ -751,9 +725,8 @@ Sub DPPBP ()
     End Select
 
     Call PBP(F$)
-    
-End Sub
 
+End Sub
 
 '------------------------------
 '   DPPIVOT Subroutine
@@ -774,7 +747,6 @@ Sub DPPIVOT (W%, D)
 
 End Sub
 
-
 '------------------------------
 '   DPRELAY Subroutine
 '------------------------------
@@ -783,7 +755,7 @@ Sub DPRELAY ()
 
     If A5%(0) = 11 Then
         Call d100(RN)
-    
+
         If RN <= 10 Then
             Call PBP("Give me the Hoover!")
         Else
@@ -805,7 +777,7 @@ Sub DPRELAY ()
                 Case 81 TO 88: F$ = "to 1st..."
                 Case 89 TO 100: If A5%(0) = 11 Then F$ = "over to 1st..."
             End Select
-            
+
             Call PBP(F$)
 
         End If
@@ -817,7 +789,6 @@ Sub DPRELAY ()
     End If
 
 End Sub
-
 
 '------------------------------
 '   DPSAFE routine
@@ -855,7 +826,6 @@ Sub DPSAFE ()
 
 End Sub
 
-
 '------------------------------
 '   DRAWBOX Subroutine
 '------------------------------
@@ -879,7 +849,6 @@ Sub DRAWBOX (J)
 
 End Sub
 
-
 '------------------------------
 '   EJECTINC Subroutine
 '------------------------------
@@ -891,7 +860,6 @@ Sub EJECTINC (EJ%, X$)
     EJ$(EJ%) = X$
 
 End Sub
-
 
 '------------------------------
 '   EJECTIONINJURY Subroutine
@@ -956,7 +924,6 @@ Sub EJECTIONINJURY (u6, P, u9, D, po%, P9, W5, W6)
 
 End Sub
 
-
 '------------------------------
 '   FLDAVG Subroutine
 '------------------------------
@@ -1004,12 +971,11 @@ Sub FLDAVG (D, W%, I3)
 
 End Sub
 
-
 '------------------------------
-'   FLDDISP Subroutine
+'   DisplayField Subroutine
 '------------------------------
 ' ...explanation...
-Sub FLDDISP (BC%, P, U%, D)
+Sub DisplayField (BC%, P, U%, D)
 
     Color , 0
     Cls
@@ -1119,7 +1085,6 @@ Sub FLDDISP (BC%, P, U%, D)
 
 End Sub
 
-
 '------------------------------
 '   FLDERR Subroutine
 '------------------------------
@@ -1145,7 +1110,7 @@ Sub FLDERR (F%, W%, D, I3, SB%, S2%, P)
     If W% = 9 Then I6 = I6 - 15
     If W% = 5 Then I6 = I6 - 15
     H6% = Int(Rnd(1) * 1000) + 1
-    
+
     If H6% <= I6 Then
 
         F% = 1
@@ -1154,7 +1119,7 @@ Sub FLDERR (F%, W%, D, I3, SB%, S2%, P)
 
         If W% = 1 Then I5 = P1%(D): I6 = 34: Call ADDPIT(D, I5, I6)
         If W% <> 1 Then I5 = B9%(D, W%): I6 = 11: Call INCBATDF(D, I5, I6)
-        
+
         If S2% = 12 Then
             If S2% = 12 Then Call PBP(Q$(0) + " beats out an infield single")
             If B7%(P, B1!(P)) <> 1 Then I5 = B3%(P, B1!(P)): I6 = 0: Call INCBATOFF(P, I5, I6): I6 = 1: Call INCBATOFF(P, I5, I6)
@@ -1168,7 +1133,7 @@ Sub FLDERR (F%, W%, D, I3, SB%, S2%, P)
         If S2% >= 12 And S2% <= 14 And i = 1 Or S2% = 15 Then I1 = 1
 
         Call d100(RN)
-        
+
         If I1 = 1 And W% = 1 And S2% = 16 Then F$ = "*** WILD PICK OFF THROW BY" + " " + Q$(4) + " ***"
         If I1 = 1 And RN <= 50 Then F$ = "*** THROWING ERROR ON" + " " + Q$(4) + " ***"
         If I1 = 1 And RN > 50 And RN <= 55 Then F$ = "*** BALL KICKED BY" + " " + Q$(4) + " ***"
@@ -1187,7 +1152,7 @@ Sub FLDERR (F%, W%, D, I3, SB%, S2%, P)
         Call PBP(F$)
 
         If S2% = 16 Or S2% = 22 Then
-        
+
             I8 = Int(Rnd(1) * 10) + 1
 
             If I8 < 5 Then
@@ -1205,7 +1170,7 @@ Sub FLDERR (F%, W%, D, I3, SB%, S2%, P)
             A5%(1) = 1
             A5%(2) = 1
             A5%(3) = 1
-            
+
             If S2% <= 17 Or S2% > 21 Then
                 If i <= 17 And S2% <> 8 Or S2% = 12 Then
                     A5%(0) = 2
@@ -1228,9 +1193,9 @@ Sub FLDERR (F%, W%, D, I3, SB%, S2%, P)
         If S2% >= 17 And S2% <= 19 And i <= 33 And O%(0) < 2 And B0%(1, 0) = 0 Then A5%(0) = 2
 
         If S2% = 16 Or S2% = 22 Then A5%(0) = 0
-        
+
         If I1 > 0 And S2% <> 7 And S2% <> 8 And S2% <> 9 And S2% <> 16 And S2% <> 22 Then O%(1) = O%(1) + 1
-        
+
         If S2% = 16 Or S2% = 7 Or S2% = 8 Or S2% = 9 Or S2% = 22 Then
 
             A5%(0) = 0
@@ -1242,17 +1207,16 @@ Sub FLDERR (F%, W%, D, I3, SB%, S2%, P)
             End If
 
         End If
-        
+
         S6%(D, 2) = S6%(D, 2) + 1
-        
+
         Call ADVANCEMENT(P, D, S2%, F%, I3)
-    
+
     End If
 
     4421 '
 
 End Sub
-
 
 '------------------------------
 '   GETFIELDER Subroutine
@@ -1272,13 +1236,12 @@ Sub GETFIELDER (W%, P, I1, D)
         If B%(P, B3%(P, B1!(P)), 0) = 0 Then I1 = -1 * P%(D, P1%(D), 0)
 
     Else
-        
+
         I1 = P%(P, P1%(P), 0)
 
     End If
 
 End Sub
-
 
 '------------------------------
 '   GETFIELDNAME Subroutine
@@ -1297,7 +1260,6 @@ Sub GETFIELDNAME (W%, D)
     End If
 
 End Sub
-
 
 '------------------------------
 '   GETINFIELDER Subroutine
@@ -1327,7 +1289,6 @@ Sub GETINFIELDER (W%, P, I1, D, S2%, P2)
 
 End Sub
 
-
 '------------------------------
 '   GETOUTFIELDER Subroutine
 '------------------------------
@@ -1347,7 +1308,6 @@ Sub GETOUTFIELDER (W%, P, I1, D)
     Q$(4) = B$(D, B9%(D, W%))
 
 End Sub
-
 
 '------------------------------
 '   GROUNDERPBP Subroutine
@@ -1373,7 +1333,7 @@ Sub GROUNDERPBP (W%, D)
         Call GETRPBP(pbpIdx%, Y$, D)
         Call STRIPRPBP(Y$, pbpIdx%, D)
         F$ = Y$ + " "
-        
+
     Else
 
         3760 '*** in front of plate ***
@@ -1387,7 +1347,6 @@ Sub GROUNDERPBP (W%, D)
     End If
 
 End Sub
-
 
 '------------------------------
 '   GROUNDERS Subroutine
@@ -1414,9 +1373,8 @@ Sub GROUNDERS (W%, D)
         If Left$(Y$, 2) = "QQ" Then Y$ = X$ + Right$(Y$, Len(Y$) - 2)
         Call PBP(Y$)
     End If
-    
-End Sub
 
+End Sub
 
 '------------------------------
 '   HITS2GAP Subroutine
@@ -1452,7 +1410,6 @@ Sub HITS2GAP (W%, P, I1, D)
 
 End Sub
 
-
 '------------------------------
 '   HOLDSTATUS Subroutine
 '------------------------------
@@ -1469,7 +1426,6 @@ Sub HOLDSTATUS (H0%)
 
 End Sub
 
-
 '------------------------------
 '   INCBATDF Subroutine
 '------------------------------
@@ -1481,7 +1437,6 @@ Sub INCBATDF (D, I5, I6)
     B5%(D, I5, I6) = B5%(D, I5, I6) + 1
 
 End Sub
-
 
 '------------------------------
 '   INCBATOFF Subroutine
@@ -1505,7 +1460,6 @@ Sub INCBATOFF (P, I5, I6)
 
 End Sub
 
-
 '------------------------------
 '   INCPITOFF Subroutine
 '------------------------------
@@ -1517,7 +1471,6 @@ Sub INCPITOFF (P, I5, I6)
     P5%(P, I5, I6) = P5%(P, I5, I6) + 1
 
 End Sub
-
 
 '------------------------------
 '   INCREMENTHIT Subroutine
@@ -1543,7 +1496,6 @@ Sub INCREMENTHIT (P, D, MO)
 
 End Sub
 
-
 '------------------------------
 '   INJPIT Subroutine
 '------------------------------
@@ -1559,7 +1511,6 @@ Sub INJPIT (P, D, IP%)
     End If
 
 End Sub
-
 
 '------------------------------
 '   INJURYLENGTH Subroutine
@@ -1624,7 +1575,6 @@ Sub INJURYLENGTH (IJL%, D, po%, u6, P, u9, P9, W5, W6)
 
 End Sub
 
-
 '------------------------------
 '   INNDISP Subroutine
 '------------------------------
@@ -1645,7 +1595,6 @@ Sub INNDISP (currInning, teamLine)
 
 End Sub
 
-
 '------------------------------
 '   LDRIVE Subroutine
 '------------------------------
@@ -1661,11 +1610,10 @@ Sub LDRIVE ()
         Case 61 TO 80: X$ = "lines"
         Case 81 TO 100: X$ = "drives"
     End Select
-    
+
     Call PBP(" " + X$ + " ")
 
 End Sub
-
 
 '------------------------------
 '   LONGFLY Subroutine
@@ -1693,20 +1641,19 @@ Sub LONGFLY (D, W%)
         Call d100(RN)
 
         If Not ((L%(1, 13) = 21 Or L%(1, 13) = 27) And W% = 7) Then
-            
+
             Select Case RN
                 Case 1 TO 5: Call PBP(Q$(4) + " leaps")
                 Case 6 TO 10: Call PBP(Q$(4) + " against the wall")
                 Case 11 TO 20: Call PBP(Q$(4) + " jumps at the wall")
                 Case 21 TO 30: Call PBP(Q$(4) + " climbs the wall")
             End Select
-            
+
         End If
 
     End If
 
 End Sub
-
 
 '------------------------------
 '   MAINSCREEN Subroutine
@@ -1852,7 +1799,7 @@ Sub MAINSCREEN (D, P, BC%, U%, MO)
     Locate 18, 69
     Color 15, 2: Print Tab(79);
     Locate 19, 70: Print Space$(8)
-    
+
     Locate 18, 69
 
     I2 = 1
@@ -1863,7 +1810,6 @@ Sub MAINSCREEN (D, P, BC%, U%, MO)
     Color 15, 0
 
 End Sub
-
 
 '------------------------------
 '   WINDEX Subroutine
@@ -1894,7 +1840,6 @@ Sub WINDEX ()
     End If
 
 End Sub
-
 
 '------------------------------
 '   NEWPITCHER Subroutine
@@ -1951,11 +1896,11 @@ Sub NEWPITCHER
     Call HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
 
     If usingGfx = 1 Then
-        Call FLDDISP_G(BC%, P, U%, D)
+        Call DisplayField_G(BC%, P, U%, D)
         Call MAINSCREEN_G(D, P, BC%, U%, MO)
         PPH = 0
     Else
-        Call FLDDISP(BC%, P, U%, D)
+        Call DisplayField(BC%, P, U%, D)
         Call MAINSCREEN(D, P, BC%, U%, MO)
         PPH = 0
     End If
@@ -1963,7 +1908,6 @@ Sub NEWPITCHER
     pz = 1
 
 End Sub
-
 
 '------------------------------
 '   NOJUMP Subroutine
@@ -1980,7 +1924,6 @@ Sub NOJUMP (D)
 
 End Sub
 
-
 '------------------------------
 '   OFFPIT Subroutine
 '------------------------------
@@ -1991,7 +1934,6 @@ Sub OFFPIT (P9, I5, I6)
     P5%(P9, I5, I6) = P5%(P9, I5, I6) + 1
 
 End Sub
-
 
 '------------------------------
 '   OUTATFIRST Subroutine
@@ -2023,7 +1965,6 @@ Sub OUTATFIRST (W%, D, fbu%, FB2P%)
 
 End Sub
 
-
 '------------------------------
 '   OUTFIELDERR Subroutine
 '------------------------------
@@ -2046,7 +1987,6 @@ Sub OUTFIELDERR ()
 
 End Sub
 
-
 '------------------------------
 '   OUTFLDLOCATION Subroutine
 '------------------------------
@@ -2060,13 +2000,12 @@ Function OUTFLDLOCATION$ (W%)
 
 End Function
 
-
 '------------------------------
 '   OUTFLDNAME Subroutine
 '------------------------------
 ' ...explanation...
 Sub OUTFLDNAME (W%, D)
-   
+
     W% = 9
 
     Call d100(i)
@@ -2079,7 +2018,6 @@ Sub OUTFLDNAME (W%, D)
     Q$(4) = B$(D, B9%(D, W%))
 
 End Sub
-
 
 '------------------------------
 '   PICKEDOFF Subroutine
@@ -2120,7 +2058,6 @@ Sub PICKEDOFF (D, i)
     Call PBP(F$)
 
 End Sub
-
 
 '------------------------------
 '   PINCHRUNNER Subroutine
@@ -2207,7 +2144,7 @@ Sub PINCHRUNNER (MS%, A1, S4%, I2, P, PR%, BC%, U%, D, MO)
             B%(P, I1, 21) = 1
             B3%(P, I2) = I1
             B9%(P, B7%(P, I2)) = I1
-            
+
             If B7%(P, I2) = 1 Or B7%(P, I2) = 10 Then B9%(P, 1) = 99: B9%(P, 0) = I2: B7%(P, I2) = 10
 
             D0%(P) = D0%(P) + 1
@@ -2235,11 +2172,11 @@ Sub PINCHRUNNER (MS%, A1, S4%, I2, P, PR%, BC%, U%, D, MO)
             Call HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
 
             If usingGfx = 1 Then
-                Call FLDDISP_G(BC%, P, U%, D)
+                Call DisplayField_G(BC%, P, U%, D)
                 Call MAINSCREEN_G(D, P, BC%, U%, MO)
                 MS% = 1
             Else
-                Call FLDDISP(BC%, P, U%, D)
+                Call DisplayField(BC%, P, U%, D)
                 Call MAINSCREEN(D, P, BC%, U%, MO)
                 MS% = 1
             End If
@@ -2255,7 +2192,6 @@ Sub PINCHRUNNER (MS%, A1, S4%, I2, P, PR%, BC%, U%, D, MO)
 
 End Sub
 
-
 '------------------------------
 '   PITCHERNAME Subroutine
 '------------------------------
@@ -2270,7 +2206,6 @@ Sub PITCHERNAME (W%, D)
 
 End Sub
 
-
 '------------------------------
 '   PITCHOUT Subroutine
 '------------------------------
@@ -2284,8 +2219,6 @@ Sub PITCHOUT (S4%, TGTBASE%, Q0)
 
 End Sub
 
-
-
 '------------------------------
 '   PITDISP Subroutine
 '------------------------------
@@ -2296,17 +2229,17 @@ Sub PITDISP (P9)
     Color 14: Print "#";
     Color L%(P9, 11), L%(P9, 12): Print A$(P9);
     Color 14, 0
-    
+
     Locate , 18: Print "T  IP   H   G GS CG SV HR  BB  SO  W- L   ERA  H G%"
-    
+
     AA = 0
     BB = 21
 
     For i = AA To BB:
-    
+
         If P%(P9, i, 15) <= 0 Then
             Color 2, 0
-        
+
             If i <= 9 Then
                 Print Using "#"; i;
             Else
@@ -2330,7 +2263,6 @@ Sub PITDISP (P9)
 
 End Sub
 
-
 '------------------------------
 '   PITOFF Subroutine
 '------------------------------
@@ -2341,7 +2273,6 @@ Sub PITOFF (P, I5, I6)
     P5%(P, I5, I6) = P5%(P, I5, I6) - 1
 
 End Sub
-
 
 '------------------------------
 '   PITPLACEMENT Subroutine
@@ -2383,7 +2314,6 @@ Sub PITPLACEMENT (P, X$)
 
 End Sub
 
-
 '------------------------------
 '   PITSTAM Subroutine
 '------------------------------
@@ -2414,12 +2344,11 @@ Sub PITSTAM (P9)
 
 End Sub
 
-
 '------------------------------
 '   PITSTRAT Subroutine
 '------------------------------
 ' ...explanation...
-Sub PITSTRAT
+Sub PITSTRAT ()
 
     A1 = S6%(D, 0) - S6%(P, 0)
 
@@ -2502,7 +2431,6 @@ Sub PITSTRAT
 
     'strategy identified, now
 
-
     8114
     I2 = 0
     If I3 < 0 Then I1 = 81
@@ -2563,7 +2491,6 @@ Sub PITSTRAT
     8195 '
 End Sub
 
-
 '------------------------------
 '   PITSWAP Subroutine
 '------------------------------
@@ -2578,13 +2505,12 @@ Sub PITSWAP (i)
 
 End Sub
 
-
 '------------------------------
 '   PLAYERNAME Subroutine
 '------------------------------
 ' ...explanation...
 Sub PLAYERNAME (P)
-    
+
     If B7%(P, B1!(P)) = 1 Then
         Q$(0) = P$(P, P1%(P))
     Else
@@ -2605,7 +2531,6 @@ Sub PLAYERNAME (P)
 
 End Sub
 
-
 '------------------------------
 '   PLYRHRT Subroutine
 '------------------------------
@@ -2620,7 +2545,7 @@ Sub PLYRHRT (P, P9, W5, W6, BC%, U%, D, MO)
     Else
 
         For i = 0 To 22
-            
+
             If B%(P, i, 21) <= 0 And B$(P, i) <> "XXX" Then
 
                 If B7%(P, B1!(P)) = B%(P, i, 22) Or B7%(P, B1!(P)) = B%(P, i, 23) Or B7%(P, B1!(P)) = B%(P, i, 24) Or B7%(P, B1!(P)) = B%(P, i, 25) Then
@@ -2628,10 +2553,10 @@ Sub PLYRHRT (P, P9, W5, W6, BC%, U%, D, MO)
                     Call PINCHITTER(P, P9, W5, W6)
 
                     If usingGfx = 1 Then
-                        Call FLDDISP_G(BC%, P, U%, D)
+                        Call DisplayField_G(BC%, P, U%, D)
                         Call MAINSCREEN_G(D, P, BC%, U%, MO)
                     Else
-                        Call FLDDISP(BC%, P, U%, D)
+                        Call DisplayField(BC%, P, U%, D)
                         Call MAINSCREEN(D, P, BC%, U%, MO): MS% = 1
                     End If
 
@@ -2646,16 +2571,16 @@ Sub PLYRHRT (P, P9, W5, W6, BC%, U%, D, MO)
             End If
 
         Next i
-        
+
         For i = 0 To 22
             If B%(P, i, 21) <= 0 And B$(P, i) <> "XXX" Then
                 Call PINCHITTER(P, P9, W5, W6)
 
                 If usingGfx = 1 Then
-                    Call FLDDISP_G(BC%, P, U%, D)
+                    Call DisplayField_G(BC%, P, U%, D)
                     Call MAINSCREEN_G(D, P, BC%, U%, MO)
                 Else
-                    Call FLDDISP(BC%, P, U%, D)
+                    Call DisplayField(BC%, P, U%, D)
                     Call MAINSCREEN(D, P, BC%, U%, MO): MS% = 1
                 End If
 
@@ -2673,7 +2598,6 @@ Sub PLYRHRT (P, P9, W5, W6, BC%, U%, D, MO)
 
 End Sub
 
-
 '------------------------------
 '   PINCHITTER Subroutine
 '------------------------------
@@ -2682,7 +2606,6 @@ Sub PINCHITTER (P, P9, W5, W6)
     2807 '
     Call PBP(Q$(0) + " will be replaced by " + B$(P, i))
 
-    
     D0%(P) = D0%(P) + 1
     X0%(P, 0, D0%(P)) = i
     X0%(P, 1, D0%(P)) = B7%(P, B1!(P))
@@ -2690,9 +2613,9 @@ Sub PINCHITTER (P, P9, W5, W6)
     B%(P, i, 21) = 1
     B3%(P, B1!(P)) = i
     B9%(P, B7%(P, B1!(P))) = i
-    
+
     If B7%(P, B1!(P)) = 1 Or B7%(P, B1!(P)) = 10 Then B9%(P, 1) = 99: B9%(P, 0) = B1!(P): B7%(P, B1!(P)) = 10
-    
+
     P9 = P
     W5 = P9
     W6 = P9
@@ -2705,7 +2628,6 @@ Sub PINCHITTER (P, P9, W5, W6)
     VV1(P9) = 9
 
 End Sub
-
 
 '------------------------------
 '   POPUP Subroutine
@@ -2757,7 +2679,7 @@ Sub POPUP ()
 
             Else
                 Print B1$(B%(J, B3%(J, X), 0) + 2); Tab(14 + J * 26); Left$(B$(J, B3%(J, X)), 10); " "; C$(B7%(J, X)); Tab(28 + J * 26);
-                
+
                 If B%(J, B3%(J, X), 4) = 0 Then
                     Print " .000"
                 Else
@@ -2772,13 +2694,12 @@ Sub POPUP ()
         Next
 
     Next
-    
+
     Color 15, 0
     Locate 24, 1: Print "Hit any key to continue";
     I$ = GetKeyPress$
 
 End Sub
-
 
 '------------------------------
 '   POPUPBAT Subroutine
@@ -2789,7 +2710,7 @@ Sub POPUPBAT (WK, M)
     If TS%(WK, 0) = 999 Then
         Locate 4, 56: Print "VS LHP  .000";
         If B%(WK, M, 42) <> 0 Then statPCT! = B%(WK, M, 43) / B%(WK, M, 42): Locate 4, 64: Print Using ".###"; statPCT!
-        
+
         Locate 5, 56: Print "VS RHP  .000";
         If B%(WK, M, 49) <> 0 Then statPCT! = B%(WK, M, 50) / B%(WK, M, 49): Locate 5, 64: Print Using ".###"; statPCT!
     End If
@@ -2858,9 +2779,8 @@ Sub POPUPBAT (WK, M)
 
     Locate , 26
     Print Using "### ### ### ### ## ## ## ### ### ### ### ## ## ##"; B8%(WK, M, 14); B8%(WK, M, 0); B8%(WK, M, 2); B8%(WK, M, 1); B8%(WK, M, 4); B8%(WK, M, 5); B8%(WK, M, 6); B8%(WK, M, 3); B8%(WK, M, 7); B8%(WK, M, 8); B8%(WK, M, 9); B8%(WK, M, 10); B8%(WK, M, 12); B8%(WK, M, 13)
-    
-End Sub
 
+End Sub
 
 '------------------------------
 '   POPUPPIT Subroutine
@@ -2890,7 +2810,7 @@ Sub POPUPPIT (WK, M)
     Print Using "### ###         ##"; P%(WK, M, 8); P%(WK, M, 9); P%(WK, M, 13)
 
     Locate , 6: Print "LEAGUE   ";: Print Using "## ## ## "; P5%(WK, M, 6); P5%(WK, M, 7); P5%(WK, M, 12);
-    
+
     If P5%(WK, M, 3) = 0 Or P5%(WK, M, 0) = 0 Then
         Print " 0.00";
     Else
@@ -2898,7 +2818,7 @@ Sub POPUPPIT (WK, M)
     End If
 
     Print Using " ## ## ## "; P5%(WK, M, 8); P5%(WK, M, 9); P5%(WK, M, 10);
-    
+
     If P5%(WK, M, 0) = 0 Then
         Print "  0.0";
     Else
@@ -2924,9 +2844,8 @@ Sub POPUPPIT (WK, M)
     End If
 
     Print Using " ### ### ### ### ### ##"; P8%(WK, M, 1); P8%(WK, M, 4); P8%(WK, M, 5); P8%(WK, M, 2); P8%(WK, M, 3); P8%(WK, M, 14)
-    
-End Sub
 
+End Sub
 
 '------------------------------
 '   POPUPSTATS Subroutine
@@ -2956,7 +2875,7 @@ Sub POPUPSTATS ()
     If B7%(P, B1!(P)) = 1 And TS%(P, 0) = 999 Then
         Locate 4, 56: Print "VS LHP  .000";
         If P%(P, P1%(P), 37) <> 0 Then statPCT! = P%(P, P1%(P), 38) / P%(P, P1%(P), 37): Locate 4, 64: Print Using ".###"; statPCT!
-    
+
         Locate 5, 56: Print "VS RHP  .000";
         If P%(P, P1%(P), 44) <> 0 Then statPCT! = P%(P, P1%(P), 45) / P%(P, P1%(P), 44): Locate 5, 64: Print Using ".###"; statPCT!
     End If
@@ -2975,7 +2894,7 @@ Sub POPUPSTATS ()
         End If
 
         Locate , 6: Print "SEASON";: Locate , 15
-        
+
         If P%(P, P1%(P), 20) = 0 Then
             Print ".---  .---"
         Else
@@ -3010,7 +2929,7 @@ Sub POPUPSTATS ()
 
     Locate , 26: Print Using "### ### ### ### ## ## ## ### ### ### ### ## ## ##"; P5%(P, J, 8); P5%(P, J, 23); P5%(P, J, 25); P5%(P, J, 24); P5%(P, J, 27); P5%(P, J, 28); P5%(P, J, 29); P5%(P, J, 26); P5%(P, J, 30); P5%(P, J, 31); P5%(P, J, 32); P5%(P, J, 33); P5%(P, J, 35); P5%(P, J, 36)
     Locate , 6: Print "GAME";
-    
+
     If P8%(P, J, 23) = 0 Or P8%(P, J, 24) = 0 Then
         Locate , 15: Print ".000";
     Else
@@ -3046,7 +2965,6 @@ Sub POPUPSTATS ()
 
 End Sub
 
-
 '------------------------------
 '   PUTOUT Subroutine
 '------------------------------
@@ -3065,7 +2983,6 @@ Sub PUTOUT (i, D, P)
 
 End Sub
 
-
 '------------------------------
 '   d100 Subroutine
 '------------------------------
@@ -3075,7 +2992,6 @@ Sub d100 (randNumVar)
     randNumVar = Int(Rnd(1) * 100) + 1
 
 End Sub
-
 
 '------------------------------
 '   RecordOut Subroutine
@@ -3091,7 +3007,6 @@ Sub RecordOut (i, I3)
 
 End Sub
 
-
 '------------------------------
 '   RecordRun Subroutine
 '------------------------------
@@ -3104,11 +3019,11 @@ Sub RecordRun (sah%, i, D, F%, PQ, S2%, W%, INFPOS%)
     I5 = B0%(i, 1)
     I6 = 2
     Call ADDPIT(D, I5, I6)
-    
+
     If P1%(D) <> B0%(i, 1) Then I5 = P1%(D): I6 = 18: Call ADDPIT(D, I5, I6)
-    
+
     If P6%(P) = 1 Then P8%(P, P1%(P), 20) = P8%(P, P1%(P), 20) + 1
-    
+
     If B7%(P, B0%(i, 0)) = 1 Then
         I5 = P1%(P)
         I6 = 25
@@ -3118,7 +3033,7 @@ Sub RecordRun (sah%, i, D, F%, PQ, S2%, W%, INFPOS%)
         I6 = 2
         Call INCBATOFF(P, I5, I6)
     End If
-    
+
     If F% = 1 Then
         If O%(0) = 2 Then
             PQ = 8
@@ -3153,7 +3068,7 @@ Sub RecordRun (sah%, i, D, F%, PQ, S2%, W%, INFPOS%)
 
     S%(P, INNING%) = S%(P, INNING%) + 1
     S6%(P, 0) = S6%(P, 0) + 1
-    
+
     If S6%(P, 0) - S6%(D, 0) = 1 Then
         P2%(D) = B0%(i, 1)
         P2%(P) = P1%(P)
@@ -3172,12 +3087,11 @@ Sub RecordRun (sah%, i, D, F%, PQ, S2%, W%, INFPOS%)
     B0%(i, 1) = 0
     B0%(i, 2) = 0
     Q$(i) = ""
-    
+
     If S%(P, INNING%) = 4 And Int(Rnd(1) * 100) + 1 <= 25 Then Call PBP("They're tearin' up the peapatch!")
     If INNING% >= 9 And P = 1 And S6%(P, 0) - S6%(D, 0) = 1 And F% = 0 And O%(1) < 3 And S2% <> 10 Then Call CHARGERUN(D, i)
     If INNING% >= 9 And P = 1 And S6%(P, 0) - S6%(D, 0) = 1 And S2% <> 10 Then A5%(0) = 0: A5%(1) = 0: A5%(2) = 0: A5%(3) = 0
 End Sub
-
 
 '------------------------------
 '   OPTIONS Subroutine
@@ -3257,7 +3171,6 @@ Sub OPTIONS ()
     185 '
 End Sub
 
-
 '------------------------------
 '   CONVNAME Subroutine
 '------------------------------
@@ -3265,13 +3178,13 @@ End Sub
 Sub CONVNAME (QQ, I)
 
     N$(I) = A$(I)
-    
+
     For xx = 4 To 11
         If Mid$(N$(I), xx, 1) = " " Or Mid$(N$(I), xx, 1) = "." Then Mid$(N$(I), xx, 1) = "_"
     Next xx
-    
+
     QQ = 8
-    
+
     For xx = 11 To 4 Step -1
         If Mid$(N$(I), xx, 1) = "_" Then
             QQ = xx - 4
@@ -3282,7 +3195,6 @@ Sub CONVNAME (QQ, I)
     Next xx
 
 End Sub
-
 
 '------------------------------
 '   DISPBAVG Subroutine
@@ -3338,7 +3250,6 @@ Sub DISPBAVG (D)
 
 End Sub
 
-
 '------------------------------
 '   GETSTATS Subroutine
 '------------------------------
@@ -3373,7 +3284,6 @@ Sub GETSTATS ()
     'If I = 0 Then I = 1: GoTo 100
 
 End Sub
-
 
 '------------------------------
 '   HITTINGLINES Subroutine
@@ -3461,12 +3371,12 @@ Sub HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9
             223 '
             Call NORMALIZE(I7!, I2!, I6!, K8!)
             B4%(I, 5, I3) = K8!
-        
+
         Next I3
 
         ' CALCULATE STRIKEOUT PERCENTAGES
         For I3 = VV(I) To VV1(I)
-            
+
             If P%(I1, P1%(I1), 6) = 0 Then
                 I2! = 0
             Else
@@ -3723,7 +3633,6 @@ Sub HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9
 
 End Sub
 
-
 '------------------------------
 '   LRADJ Subroutine
 '------------------------------
@@ -3739,7 +3648,6 @@ Sub LRADJ (A!, A1!)
     B4%(I, 4, I3) = B4%(I, 4, I3) * A1!
 
 End Sub
-
 
 '------------------------------
 '   NORMALIZE Subroutine
@@ -3758,7 +3666,6 @@ Sub NORMALIZE (I7!, I2!, I6!, K8!)
     K8! = Int((K8! * 1000) + .0005)
 
 End Sub
-
 
 '------------------------------
 '   BASEONBALLS Subroutine
@@ -3779,7 +3686,7 @@ Sub BASEONBALLS (S2%, D2, D, P)
         Else
             Call PBP(Q$(0) + " is given a purpose pass...")
         End If
-    
+
         S8%(D, 0) = S8%(D, 0) + 1
     Else
         If RN <= 30 Then Call PBP("Full count...")
@@ -3816,7 +3723,7 @@ Sub BASEONBALLS (S2%, D2, D, P)
     I5 = P1%(D)
     I6 = 4
     Call ADDPIT(D, I5, I6)
-    
+
     If B7%(P, B1!(P)) = 1 Then
         I5 = P1%(P)
         I6 = 30
@@ -3828,7 +3735,6 @@ Sub BASEONBALLS (S2%, D2, D, P)
     End If
 
 End Sub
-
 
 '------------------------------
 '   HITBYPITCH Subroutine
@@ -3860,7 +3766,6 @@ Sub HITBYPITCH (S2%, D)
     Call d100(RN)
     If RN <= 50 And s4% = 7 Then Call PBP("tough way to get an RBI")
 End Sub
-
 
 '------------------------------
 '   WILDPITCH Subroutine
@@ -3919,12 +3824,11 @@ Sub WILDPITCH (S2%, D)
 
 End Sub
 
-
 '------------------------------
 '   RELIEVERS Subroutine
 '------------------------------
 ' ...explanation...
-Sub RELIEVERS
+Sub RELIEVERS ()
 
     Call PITSTRAT
 
@@ -3943,10 +3847,10 @@ Sub RELIEVERS
                 If INNING% > 7 And A1 >= 0 Then I2 = I2 + P%(D, I, 3)
             End If
         Next I
-        
+
         I3 = Int(Rnd(1) * I2) + 1
         I2 = 0
-        
+
         For I = 0 To 21
 
             A2 = P%(D, I, 4) - P%(D, I, 5) - P%(D, I, 3) * 1.3
@@ -3999,7 +3903,6 @@ Sub RELIEVERS
 
 End Sub
 
-
 '------------------------------
 '   REPLACEMENTS Subroutine
 '------------------------------
@@ -4040,7 +3943,6 @@ Sub REPLACEMENTS (I7%, I8%, i9%)
 
 End Sub
 
-
 '------------------------------
 '   SCOREBOARD Subroutine
 '------------------------------
@@ -4064,7 +3966,6 @@ Sub SCOREBOARD ()
 
 End Sub
 
-
 '------------------------------
 '   SECOND2FIRST Subroutine
 '------------------------------
@@ -4079,7 +3980,6 @@ Sub SECOND2FIRST (D)
     Call PBP(Y$ + " to first")
 
 End Sub
-
 
 '------------------------------
 '   SINGLEPBP Subroutine
@@ -4122,7 +4022,6 @@ Sub SINGLEPBP (S2%, D, W%)
 
 End Sub
 
-
 '------------------------------
 '   SINGLEROUTINE Subroutine
 '------------------------------
@@ -4133,11 +4032,11 @@ Sub SINGLEROUTINE (W%, P, I1, D, S2%, P2)
     Call WINDEX
 
     If B7%(P, B1!(P)) <> 1 Then I5 = B3%(P, B1!(P)): I6 = 0: Call INCBATOFF(P, I5, I6): I6 = 1: Call INCBATOFF(P, I5, I6)
-    
+
     I5 = P1%(D)
     I6 = 1
     Call ADDPIT(D, I5, I6)
-    
+
     If B7%(P, B1!(P)) = 1 Then I5 = P1%(P): I6 = 23: Call INCPITOFF(P, I5, I6): I6 = 24: Call INCPITOFF(P, I5, I6)
 
     If h7% > sn Then Call SINGLEPBP(S2%, D, W%)
@@ -4183,7 +4082,7 @@ Sub SINGLEROUTINE (W%, P, I1, D, S2%, P2)
         Call d100(H6%)
 
         BR% = B%(P, B3%(P, B0%(1, 0)), 16)
-    
+
         If B7%(P, B0%(1, 0)) = 1 Then BR% = P%(P, P1%(P), 31)
 
         I3 = 0
@@ -4205,15 +4104,14 @@ Sub SINGLEROUTINE (W%, P, I1, D, S2%, P2)
             If W% = 8 Then I3 = 45 + BR% * 3
             If W% = 9 Then I3 = 62 + BR% * 3
         End If
-        
+
         If H6% <= I3 Or P2 = 2 And S2% <> 12 Then A5%(1) = 2
 
     End If
-    
+
     Call ADVANCEMENT(P, D, S2%, F%, I3)
 
 End Sub
-
 
 '------------------------------
 '   SOMESTATS Subroutine
@@ -4235,13 +4133,12 @@ Sub SOMESTATS (V, P, F%, D)
 
 End Sub
 
-
 '------------------------------
 '   SQUEEZECHOICE Subroutine
 '------------------------------
 ' ...explanation...
 Sub SQUEEZECHOICE (SH)
-    
+
     If U6 = 2 Or U6 = 1 And P = U9 Then
         '--- Autoplay essentially
         'always does a Bunt rather
@@ -4271,7 +4168,6 @@ Sub SQUEEZECHOICE (SH)
 
 End Sub
 
-
 '------------------------------
 '   STEAL3RD Subroutine
 '------------------------------
@@ -4297,7 +4193,6 @@ Sub STEAL3RD (TGTBASE%, AA, Q0, H0%, D)
     End If
 
 End Sub
-
 
 '------------------------------
 '   STEALCHANCE Subroutine
@@ -4326,7 +4221,7 @@ Sub STEALCHANCE (AA, I2, TGTBASE%, CHANCE%)
     RR = (TT * .19) * 1.4: ' *** "      "      "   "     "  1 OUT ***
     SS = (TT * .56) * 1.4: ' ***                            0 OUT ***
     GG = RR + SS: ' ***                            (0,1 OUT) ***
-    
+
     If TGTBASE% <> 3 Then
         FF = B%(P, I2, 6) + B%(P, I2, 11) - B%(P, I2, 9)
         If FF = 0 Then
@@ -4348,7 +4243,6 @@ Sub STEALCHANCE (AA, I2, TGTBASE%, CHANCE%)
     4868 CHANCE% = I1
     '
 End Sub
-
 
 '------------------------------
 '   STRIKEOUT Subroutine
@@ -4416,7 +4310,6 @@ Sub STRIKEOUT (U%, D)
 
 End Sub
 
-
 '------------------------------
 '   STRIKEOUTCS Subroutine
 '------------------------------
@@ -4426,7 +4319,6 @@ Sub STRIKEOUTCS (SO)
     If SO = 7 Then B1!(P) = B1!(P) + 1
 
 End Sub
-
 
 '------------------------------
 '   TAGADVANCE Subroutine
@@ -4460,7 +4352,7 @@ Sub TAGADVANCE (S2%, I8, D)
         I4 = 6
         I5 = B3%(P, B1!(P))
     End If
- 
+
     If S2% = 8 And I8 = 3 Or S2% = 9 And I8 = 4 Then
         If P%(D, P1%(D), 0) <> 1 Then
             CSS%(P, I5, I3 - 2) = CSS%(P, I5, I3 - 2) - 1
@@ -4474,7 +4366,6 @@ Sub TAGADVANCE (S2%, I8, D)
     End If
 
 End Sub
-
 
 '------------------------------
 '   THROW2FIRST Subroutine
@@ -4492,7 +4383,6 @@ Sub THROW2FIRST (D)
     Call PBP(Y$ + " to first")
 
 End Sub
-
 
 '------------------------------
 '   TIRING Subroutine
@@ -4528,9 +4418,7 @@ Sub TIRING (P9)
 
     End If
 
-
 End Sub
-
 
 '------------------------------
 '   TRIPLEPLAY Subroutine
@@ -4551,7 +4439,7 @@ Sub TRIPLEPLAY (D)
     O%(0) = 3
     I5 = P1%(D)
     I6 = 0
-    
+
     For i = 1 To 3: Call ADDPIT(D, I5, I6): Next i
 
     If B7%(P, B1!(P)) = 1 Then
@@ -4566,13 +4454,12 @@ Sub TRIPLEPLAY (D)
 
 End Sub
 
-
 '------------------------------
 '   TRYFOREXTRABASE Subroutine
 '------------------------------
 ' ...explanation...
 Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8, I9)
-    
+
     If LN% = 3308 Then
 
         LN% = 0
@@ -4896,7 +4783,6 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8, I9)
 
 End Sub
 
-
 '------------------------------
 '   VIEWTEAM Subroutine
 '------------------------------
@@ -4985,19 +4871,19 @@ Sub VIEWTEAM ()
                 Case 2
                     Do
                         Cls
-                        
+
                         Color 12: Print "VIEW PITCHERS (AVAILABLE PLAYERS HIGHLIGHTED)"
-                        
+
                         For i = 0 To 10:
 
                             Color 3, 0
 
                             If P%(WK, i, 15) = 0 Then Color 11
-                            
+
                             Locate i + 5, 5: Print Using "##"; i;: Print " "; P$(WK, i); Tab(40);
 
                             Color 3
-                            
+
                             If P%(WK, i + 11, 15) = 0 Then Color 11
 
                             Print Using "##"; i + 11;: Print " "; P$(WK, i + 11)
@@ -5029,7 +4915,6 @@ Sub VIEWTEAM ()
 
 End Sub
 
-
 '------------------------------
 '   WALLDOUBLE Subroutine
 '------------------------------
@@ -5051,7 +4936,7 @@ Sub WALLDOUBLE (HW%, W%)
                 Case 26 TO 50
                     If L%(1, 13) = 21 And W% = 7 Then F$ = "It hits off the Green Monster!"
             End Select
-            
+
             If L%(1, 13) = 27 And W% = 7 Then
                 F$ = "It hits off the screen!"
             Else
@@ -5066,7 +4951,7 @@ Sub WALLDOUBLE (HW%, W%)
                     Call PBP("It's past " + Q$(4)): F$ = "It goes into the corner..."
                 End If
             End If
-    
+
         Case 86 TO 90
             If HW% = 0 Then
                 Call PBP("It's to the wall")
@@ -5089,7 +4974,6 @@ Sub WALLDOUBLE (HW%, W%)
     Call PBP(F$)
 
 End Sub
-
 
 '------------------------------
 '   WHICHRUNNER Subroutine
@@ -5132,7 +5016,6 @@ Sub WHICHRUNNER (i, S4%, D5)
     End If
 
 End Sub
-
 
 '------------------------------
 '   WHOSON1ST Subroutine
@@ -5187,7 +5070,6 @@ Sub WHOSON1ST (S4%)
 
 End Sub
 
-
 '------------------------------
 '   FOULBALL Subroutine
 '------------------------------
@@ -5217,7 +5099,6 @@ Sub FOULBALL ()
         Call PBP(Y$)
     End If
 End Sub
-
 
 '------------------------------
 '   RAREPLAYS Subroutine
@@ -5340,7 +5221,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 Call INJPIT(P, D, IP%)
 
             Case 6 TO 7
-                
+
                 Call PBP(Q$(0) + " sends a long one")
                 Call PBP("down the left field line")
                 Call PBP("It may go...")
@@ -5358,7 +5239,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 Call DELAY
                 Call PBP(" has just been tossed!!"): X$ = Q$(0): Call EJECTINC(EJ%, X$)
                 Call PLYRHRT(P, P9, W5, W6, BC%, U%, D, MO)
-                
+
             Case 8
 
                 Call PBP(U$(1) + " has just ejected " + P$(D, P1%(D)))
@@ -5376,7 +5257,6 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 Call PBP("Time called...")
                 Call PBP(U$(1) + " is calling it ball 4")
                 Call PBP("He says " + P$(D, P1%(D)) + " went to his mouth")
-
 
             Case 10 TO 15
 
@@ -5597,11 +5477,11 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 A5%(3) = 1
                 A5%(1) = 3
-                
+
                 Call ADVANCEMENT(P, D, S2%, F%, I3)
                 Call SCOREBOARD
                 Call WINDEX
-                
+
                 po% = op%
 
                 Call INJURYLENGTH(IJL%, D, po%, U6, P, U9, P9, W5, W6)
@@ -5630,20 +5510,20 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 W% = 8
 
                 If B7%(P, B1!(P)) <> 1 Then I5 = B3%(P, B1!(P)): I6 = 0: Call INCBATOFF(P, I5, I6): I6 = 1: Call INCBATOFF(P, I5, I6): I6 = 6: Call INCBATOFF(P, I5, I6)
-                
+
                 If B7%(P, B1!(P)) = 1 Then I5 = P1%(P): I6 = 23: Call INCPITOFF(P, I5, I6): I6 = 24: Call INCPITOFF(P, I5, I6): I6 = 29: Call INCPITOFF(P, I5, I6)
-                
+
                 A5%(0) = 4
                 A5%(1) = 3
                 A5%(2) = 2
                 A5%(3) = 1
-                
+
                 Call ADVANCEMENT(P, D, S2%, F%, I3)
                 Call PBP("It's an inside the park HOME RUN!!!")
                 Call DELAY
                 Call SCOREBOARD
                 Call WINDEX
-                
+
                 po% = 8
 
                 Call INJURYLENGTH(IJL%, D, po%, U6, P, U9, P9, W5, W6)
@@ -5673,25 +5553,25 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 A5%(1) = 3
                 A5%(2) = 2
                 A5%(3) = 1
-                
+
                 Call ADVANCEMENT(P, D, S2%, F%, I3)
                 Call PBP("Triple!!")
                 Call DELAY
                 Call SCOREBOARD
                 Call WINDEX
-                
+
                 po% = 9
-                
+
                 Call INJURYLENGTH(IJL%, D, po%, U6, P, U9, P9, W5, W6)
-                
+
                 H6% = 5
-                
+
             Case 44
 
                 I5 = P1%(D)
                 I6 = 1
                 Call ADDPIT(D, I5, I6)
-                
+
                 W% = Int(Rnd(1) * 3) + 7
 
                 Call PBP(Q$(0) + " hits a sinking liner into " + C$(W%))
@@ -5705,7 +5585,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 I6 = 1
 
                 Call ADDPIT(D, I5, I6)
-                
+
                 If B7%(P, B1!(P)) <> 1 Then I5 = B3%(P, B1!(P)): I6 = 0: Call INCBATOFF(P, I5, I6): I6 = 1: Call INCBATOFF(P, I5, I6): I6 = 4: Call INCBATOFF(P, I5, I6)
                 If B7%(P, B1!(P)) = 1 Then I5 = P1%(P): I6 = 23: Call INCPITOFF(P, I5, I6): I6 = 24: Call INCPITOFF(P, I5, I6): I6 = 27: Call INCPITOFF(P, I5, I6)
 
@@ -5717,7 +5597,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 Call ADVANCEMENT(P, D, S2%, F%, I3)
                 Call SCOREBOARD
                 Call WINDEX
-                
+
                 po% = op%
 
                 Call INJURYLENGTH(IJL%, D, po%, U6, P, U9, P9, W5, W6)
@@ -5813,10 +5693,10 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 Call PBP(B$(D, B9%(D, 7)) + " collides with " + B$(D, B9%(D, 8)) + "!!")
                 Call PBP("both fielders are down... ")
                 Call PBP(B$(D, B9%(D, 6)) + " gets the ball back in")
-                
+
                 If B7%(P, B1!(P)) <> 1 Then I5 = B3%(P, B1!(P)): I6 = 0: Call INCBATOFF(P, I5, I6): I6 = 1: Call INCBATOFF(P, I5, I6): I6 = 4: Call INCBATOFF(P, I5, I6)
                 If B7%(P, B1!(P)) = 1 Then I5 = P1%(P): I6 = 23: Call INCPITOFF(P, I5, I6): I6 = 24: Call INCPITOFF(P, I5, I6): I6 = 27: Call INCPITOFF(P, I5, I6)
-                
+
                 A5%(0) = 2
                 A5%(1) = 3
                 A5%(2) = 2
@@ -5875,14 +5755,14 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                     If B7%(P, B1!(P)) <> 1 Then I5 = B3%(P, B1!(P)): I6 = 0: Call INCBATOFF(P, I5, I6): I6 = 1: Call INCBATOFF(P, I5, I6)
 
                     If B7%(P, B1!(P)) = 1 Then I5 = P1%(P): I6 = 23: Call INCPITOFF(P, I5, I6): I6 = 24: Call INCPITOFF(P, I5, I6)
-                    
+
                     I5 = P1%(D)
                     I6 = 1
-                    
+
                     Call ADDPIT(D, I5, I6)
 
                     For i = 0 To 3: A5%(i) = 1: Next
-                    
+
                     Call ADVANCEMENT(P, D, S2%, F%, I3)
                     Call SCOREBOARD
                     Call WINDEX
@@ -5897,7 +5777,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 Call PBP("It appears he has a blister")
                 Call PBP("He will have to leave the game")
                 Call INJPIT(P, D, IP%)
-                
+
                 H6% = 1
 
             Case 90
@@ -5905,7 +5785,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 Call PBP(Q$(0) + " takes a mighty swing!")
                 Call PBP("It looks like he injured himself")
                 Call PLYRHRT(P, P9, W5, W6, BC%, U%, D, MO)
-                
+
                 H6% = 1
 
             Case 91
@@ -5927,12 +5807,11 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
 End Sub
 
-
 '------------------------------
 '   WEATHER Subroutine
 '------------------------------
 ' ...explanation...
-Sub WEATHER
+Sub WEATHER ()
 
     If usingGfx = 1 Then Cls: Screen 0
 
@@ -5960,7 +5839,6 @@ Sub WEATHER
 
 End Sub
 
-
 '------------------------------
 '   COLCHK Subroutine
 '------------------------------
@@ -5970,7 +5848,6 @@ Sub COLCHK (P9, I)
     If B%(P9, I, 21) >= 98 Then Color 0, 7
 
 End Sub
-
 
 '------------------------------
 '   DRAWBOXA Subroutine
@@ -5992,11 +5869,10 @@ Sub DRAWBOXA ()
     Locate 7 + JJ, 8
 
     Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";
-    
+
     Locate 7
 
 End Sub
-
 
 '------------------------------
 '   GETWEATHER Subroutine
@@ -6069,7 +5945,6 @@ Sub GETWEATHER (WD%, WS%, MO%, WF!, SC%, TP%, RD)
         If RN <= SUM Then Exit For
     Next
 
-
     WD% = I
 
     SUM = 0
@@ -6086,7 +5961,6 @@ Sub GETWEATHER (WD%, WS%, MO%, WF!, SC%, TP%, RD)
         If RN <= SUM Then Exit For
     Next
 
-
     If I = 10 Then WS% = Int(Rnd(1) * 10)
     If I = 11 Then WS% = Int(Rnd(1) * 5) + 10
     If I = 12 Then WS% = Int(Rnd(1) * 5) + 15
@@ -6096,7 +5970,6 @@ Sub GETWEATHER (WD%, WS%, MO%, WF!, SC%, TP%, RD)
 
     If WD% > 3 And WD% < 7 And WS% >= 15 Then WF! = 1 - WINFAC / 100
     If WD% > 6 And WD% < 10 And WS% >= 15 Then WF! = 1 + WINFAC / 100
-
 
     PC% = 4
     SC% = Int(Rnd(1) * 2) + 1
@@ -6114,7 +5987,6 @@ Sub GETWEATHER (WD%, WS%, MO%, WF!, SC%, TP%, RD)
     If L%(1, 13) = 2 Or L%(1, 13) = 4 Or L%(1, 13) = 10 Or L%(1, 13) = 13 Or L%(1, 13) = 24 Then PC% = 4: SC% = 4
 
 6200 End Sub
-
 
 '------------------------------
 '   INFO Subroutine
@@ -6184,7 +6056,6 @@ Sub LetterToNumber (I$)
 
 End Sub
 
-
 '------------------------------
 '   LINSWAP Subroutine
 '------------------------------
@@ -6197,7 +6068,6 @@ Sub LINSWAP (P9)
         I$ = GetKeyPress$
         K1 = Val(I$)
     Loop Until K1 >= 1 And K1 <= 9 Or B7%(P9, K1) <> 1
-
 
     Locate 19, 59: Print "B.O. PLYR 2 (1-9)";
 
@@ -6219,7 +6089,6 @@ Sub LINSWAP (P9)
 
 End Sub
 
-
 '------------------------------
 '   NEWLINES Subroutine
 '------------------------------
@@ -6227,9 +6096,9 @@ End Sub
 Sub NEWLINES (P9)
 
     For I = 1 To 9
-    
+
         Call POSITION(I)
-    
+
         Print Using "# "; I;
 
         If B7%(P9, I) = 1 And I5 <> 66 Then Print P$(P9, B3%(P9, I));
@@ -6246,7 +6115,6 @@ Sub NEWLINES (P9)
 
 End Sub
 
-
 '------------------------------
 '   POSITION Subroutine
 '------------------------------
@@ -6256,7 +6124,6 @@ Sub POSITION (I)
     Locate I + 7, 59
 
 End Sub
-
 
 '------------------------------
 '   POSSWAP Subroutine
@@ -6290,7 +6157,6 @@ Sub POSSWAP (P9)
 
 End Sub
 
-
 '------------------------------
 '   SHOWBATTERS Subroutine
 '------------------------------
@@ -6298,10 +6164,10 @@ End Sub
 Sub SHOWBATTERS (P9)
 
     Cls
-    
+
     Color 14
     Print "#";: Color L%(P9, 11), L%(P9, 12): Print A$(P9);
-    
+
     Color 14, 0
 
     Locate , 15: Print "B  POS  AB  2B 3B HR  BB  SO SRA SB G%  BA"
@@ -6356,7 +6222,6 @@ Sub SHOWBATTERS (P9)
 
 End Sub
 
-
 '------------------------------
 '     SHOWFIELD Subroutine
 '------------------------------
@@ -6386,22 +6251,21 @@ Sub SHOWFIELD (P9)
 
 End Sub
 
-
 '------------------------------
 '   SHOWSPLIT Subroutine
 '------------------------------
 ' ...explanation...
 Sub SHOWSPLIT (P9)
-    
+
     'DISPLAY SPLIT STATS
     Locate 1, 15
     Color 14, 0
-    
+
     Print "VS L  AB 2B 3B HR  BB   K   AVG  VS R  AB 2B 3B HR  BB   K   AVG"
     Color 15, 0
-    
+
     Locate 2
-    
+
     For I = 0 To 22
 
         Locate , 15: Print "                                                                ";
@@ -6409,7 +6273,7 @@ Sub SHOWSPLIT (P9)
         If B$(P9, I) <> "XXX" And Left$(B$(P9, I), 1) <> " " And B$(P9, I) <> "" Then
 
             Locate , 20: Print Using "### ## ## ## ### ### "; B%(P9, I, 42); B%(P9, I, 44); B%(P9, I, 45); B%(P9, I, 46); B%(P9, I, 47); B%(P9, I, 48);
-            
+
             If B%(P9, I, 42) = 0 Or B%(P9, I, 43) = 0 Then
                 Print " .000";
             Else
@@ -6440,8 +6304,6 @@ Sub SHOWSPLIT (P9)
 
 End Sub
 
-
-
 '------------------------------
 '   POSTGAME Subroutine
 '------------------------------
@@ -6452,7 +6314,6 @@ Sub POSTGAME ()
     Dim SA$(0 To 1), W$(0 To 162)
     Dim B6%(22, 21), D1%(1), DYS%(0 To 1, 0 To 21), E%(13), H%(0 To 162)
     Dim ING%(0 To 162), P0%(0 To 21, 0 To 41), SS%(0 To 22, 0 To 6), SX%(0 To 1), V%(0 To 162)
-
 
     '--------------------
     ' Determine settings
@@ -7040,7 +6901,6 @@ Sub POSTGAME ()
 
 End Sub
 
-
 '-----
 
 ' It doesn't seem like we ever get here
@@ -7067,7 +6927,6 @@ Sub LocateInning (I2)
     If I2 > 24 And I2 < 28 Then Locate , ((2 * (I2 - 18)) + 20)
 
 End Sub
-
 
 '------------------------------
 '       BoxToScreen routine
@@ -7193,7 +7052,6 @@ Sub BoxToScreen (BK$)
             Locate , 40: Print "-";: Locate , 41: Print Using "##"; S6%(I, 0);
             Locate , 44: Print Using "##"; S6%(I, 1);: Locate , 47: Print Using "#"; S6%(I, 2)
         Next I
-
 
     End If
 
@@ -7502,7 +7360,6 @@ Sub BoxToScreen (BK$)
 
 End Sub
 
-
 '------------------------------
 '       BoxToFile routine
 '------------------------------
@@ -7544,7 +7401,6 @@ Sub BoxToFile (NM$, BK$, E%(), SPECIAL)
         Next
 
     End If
-
 
     If INNING% < 9 Then
 
@@ -7673,9 +7529,7 @@ Sub BoxToFile (NM$, BK$, E%(), SPECIAL)
         Next I
         Print #2,
 
-
     End If
-
 
     For I = 0 To 1
 
@@ -7914,15 +7768,13 @@ Sub BoxToFile (NM$, BK$, E%(), SPECIAL)
 
     End If
 
-
 End Sub
-
 
 '------------------------------
 '      CheckRecords routine
 '------------------------------
 ' ...explanation...
-Sub CheckRecords
+Sub CheckRecords ()
 
     Shared DB, HR, TR, SB
 
@@ -8086,7 +7938,6 @@ Sub CheckRecords
         Next I1
     Next I
 
-
     GT$ = "2:"
 
     'Random # from 5 to 60
@@ -8158,7 +8009,6 @@ Sub CheckRecords
 
 End Sub
 
-
 '------------------------------
 '      InningPrint routine
 '------------------------------
@@ -8176,7 +8026,6 @@ Sub InningPrint (I2)
     If I2 > 24 And I2 < 28 Then Print #2, Tab(((2 * (I2 - 18)) + 20));
 
 End Sub
-
 
 '------------------------------
 '   GETRPBP Subroutine
@@ -8218,7 +8067,6 @@ Sub GETRPBP (pbpIdx%, Y$, D)
 
 End Sub
 
-
 '------------------------------
 '   STRIPRPBP Subroutine
 '------------------------------
@@ -8239,7 +8087,6 @@ Sub STRIPRPBP (Y$, pbpIdx%, D)
         Wend
     Next
 End Sub
-
 
 '------------------------------
 '    LDRNRCTDN Subroutine
@@ -8279,8 +8126,6 @@ Sub LDRNRCTDN ()
 
 End Sub
 
-
-
 '------------------------------
 '   PBP Subroutine
 '------------------------------
@@ -8295,7 +8140,7 @@ Sub PBP (F$)
 
         F$ = PadRight(F$, 44)
 		'Should this ever be more than 44 characters?
-		
+
         F$ = Left$(F$, 44)
         PB% = PB% + 1
 
@@ -8323,11 +8168,10 @@ Sub PBP (F$)
         Next
 
         Call DELAY
-    
-	End If
-	
-End Sub
 
+	End If
+
+End Sub
 
 '------------------------------
 '   EndOfGame Subroutine

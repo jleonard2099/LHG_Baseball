@@ -1,4 +1,3 @@
-$Debug
 Const GAME_VERSION$ = "6.58"
 'Const MAX_CONFERENCES = 40
 'Const TEAMS_PER_CONFERENCE = 30
@@ -95,7 +94,6 @@ For X = 0 To 3: Read MO$(X): Next
 Data 15,0,15,1,19,4,4,6,3,1,2,3,14
 For X = 1 To 13: Read E%(X): Next
 
-
 '----------------------------------------
 '               MAIN CODE
 '----------------------------------------
@@ -119,7 +117,6 @@ Loop Until Selection% = 15
 End
 
 System
-
 
 '----------------------------------------
 '       Main_Menu Subroutine
@@ -187,12 +184,10 @@ Sub Main_Menu (menuSelection%)
 
     Loop Until Selection% = 15 Or ExitCode% = 27
 
-
     menuSelection% = Selection%
     If ExitCode% = 27 Then menuSelection% = 15
 
 End Sub
-
 
 '----------------------------------------
 '       Configure_Drives Subroutine
@@ -275,7 +270,6 @@ Sub ConfigureDrives ()
     '620 GoTo 1
 End Sub
 
-
 '----------------------------------------
 '       Leaders_Menu Subroutine
 '----------------------------------------
@@ -333,7 +327,6 @@ Sub Leaders_Menu ()
 
 End Sub
 
-
 '----------------------------------------
 '       Replay_Menu Subroutine
 '----------------------------------------
@@ -382,7 +375,6 @@ Sub Replay_Menu ()
     Loop Until Selection% = 6 Or ExitCode% = 27
 
 End Sub
-
 
 '$INCLUDE: 'KeyInput.BM'
 '$INCLUDE: 'QPProEqu.BM'

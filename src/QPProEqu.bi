@@ -26,3 +26,4 @@ DECLARE SUB TextIn (T$, Max%, NumOnly%, CapsOn, ExitCode%, FGColor%, BGColor%)
 DECLARE SUB YesNoB (YN$, ExitCode%, FGColor%, BGColor%)
 DECLARE SUB box0 (ULRow%, ULCol%, LRRow%, LRCol%, Char%, FGColor%, BGColor%)
 DECLARE Sub FCopy (srcFile$, dstFile$, Buff$, copyErr%)
+

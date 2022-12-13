@@ -59,7 +59,6 @@ Sub REC ()
 
 End Sub
 
-
 '----------------------------------------
 '       GetTeam_REC Subroutine
 '----------------------------------------
@@ -125,7 +124,6 @@ Sub GetTeam_REC (yearNumber$, numberTeams)
 
 End Sub
 
-
 '----------------------------------------
 '     SelectTeam_REC Subroutine
 '----------------------------------------
@@ -179,9 +177,7 @@ Sub SelectTeam_REC (yearNumber$, numberTeams)
         BO% = 1
     End If
 
-
 End Sub
-
 
 '----------------------------------------
 '     AnalyzeTeamRecord Subroutine
@@ -260,7 +256,6 @@ Sub AnalyzeTeamRecord (sameLeague)
                     Next
                     leagueFiles$(0) = Spec$
                     Call ReadFile(leagueFiles$())
-                    'CALL SortStr(VARPTR(leagueFiles$(1)), Count, 0)
 
                     Do
                         Cls
@@ -426,13 +421,11 @@ Sub AnalyzeTeamRecord (sameLeague)
 
 End Sub
 
-
-
 '----------------------------------------
 '       Records_Screen Subroutine
 '----------------------------------------
 '...explanation...
-Sub Records_Screen
+Sub Records_Screen ()
 
     Shared HW%(), AW%(), HL%(), AL%(), R1%(), R2%(), R3%(), R4%()
 
@@ -655,13 +648,11 @@ Sub Records_Screen
 
 End Sub
 
-
-
 '----------------------------------------
 '       Records_Printer Subroutine
 '----------------------------------------
 '...explanation...
-Sub Records_Printer
+Sub Records_Printer ()
 
     Shared HW%(), HW%(), HL%(), AL%(), R1%(), R2%(), R3%(), R4%()
 
@@ -817,7 +808,6 @@ Sub Records_Printer
         End If
 
     Next W
-
 
     THWW = 0
     THLL = 0

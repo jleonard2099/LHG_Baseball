@@ -49,7 +49,6 @@ Sub NEWLDR ()
 
 End Sub
 
-
 '----------------------------------------
 '      ViewBattingLeaders Subroutine
 '----------------------------------------
@@ -346,7 +345,6 @@ Sub ViewBattingLeaders (leagueFile$)
 
 End Sub
 
-
 '----------------------------------------
 '       PlayerTotals Subroutine
 '----------------------------------------
@@ -448,7 +446,6 @@ Sub PlayerTotals (TVN, B9, QW)
     Loop Until UCase$(I$) = "N" Or I$ = Chr$(27)
 
 End Sub
-
 
 '----------------------------------------
 '      ViewPitchingLeaders Subroutine
@@ -711,7 +708,6 @@ Sub ViewPitchingLeaders (leagueFile$)
 
 End Sub
 
-
 '----------------------------------------
 '   PitchingLeaders_Screen Subroutine
 '----------------------------------------
@@ -830,12 +826,11 @@ Sub PitchingLeaders_Screen (TVN, B9, QW)
 
 End Sub
 
-
 '----------------------------------------
 '      UpdateExpandedLeaders Subroutine
 '----------------------------------------
 '...explanation...
-Sub UpdateExpandedLeaders
+Sub UpdateExpandedLeaders ()
 
     Shared BK%()
     Shared statB%(), B0%(), BK%()
@@ -911,7 +906,6 @@ Sub UpdateExpandedLeaders
             targetFile$ = RTrim$(targetFile$)
             league$ = Left$(targetFile$, Len(targetFile$) - 4)
             leagueFile$ = league$
-
 
             Open diskPaths$(2) + league$ + ".TMS" For Input As #2
             Input #2, leagueFile$: Input #2, D1$: Input #2, D2$: Input #2, D3$: Input #2, D4$
@@ -1046,8 +1040,6 @@ Sub UpdateExpandedLeaders
 
 End Sub
 
-
-
 '----------------------------------------
 '      ExpandedLeaders_Menu Subroutine
 '----------------------------------------
@@ -1103,7 +1095,6 @@ Sub ExpandedLeaders_Menu (leagueFile$)
 
 End Sub
 
-
 '----------------------------------------
 '     ViewExpandedLeaders Subroutine
 '----------------------------------------
@@ -1118,15 +1109,21 @@ Sub ViewExpandedLeaders ()
         null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
         Count% = DirCount%
 
-        If Count% <> 0 Then
-
+        If Count% = 0 Then
+            'This was not in the original code
+            'I'm assuming because this technically
+            'should be impossible as the files get
+            'created right before presenting the menu
+            Call CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+            I$ = GetKeyPress$
+            Call CSMsgBox("", 0, Pass)
+		Else
             ReDim leagueFiles$(0 To Count%)
             For X = 1 To Count%
                 leagueFiles$(X) = Space$(12)
             Next
             leagueFiles$(0) = Spec$
             Call ReadFile(leagueFiles$())
-            'CALL SortStr(VARPTR(leagueFiles$(1)), Count%, 0)
 
             Do
                 Cls
@@ -1172,20 +1169,11 @@ Sub ViewExpandedLeaders ()
                 leagueFile$ = league$
                 Call ExpandedLeaders_Menu(leagueFile$)
             End If
-        Else
-            'This was not in the original code
-            'I'm assuming because this technically
-            'should be impossible as the files get
-            'created right before presenting the menu
-            Call CSMsgBox("NO LEADER FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-            I$ = GetKeyPress$
-            Call CSMsgBox("", 0, Pass)
         End If
 
     Loop Until Count% = 0 Or UCase$(I$) = "N" Or ExitCode% = 27
 
 End Sub
-
 
 '----------------------------------------
 '     ViewTeamTotals Subroutine
@@ -1401,7 +1389,6 @@ Sub ViewTeamTotals (leagueFile$)
 
     End Select
 
-
     If screenType = 0 Then
         Select Case PV
             Case 1: Call LeagueTotals_A_Screen(TVN, QW)
@@ -1454,9 +1441,6 @@ Sub ViewTeamTotals (leagueFile$)
     End If
 
 End Sub
-
-
-
 
 '----------------------------------------
 '    LeagueTotals_A_Screen Subroutine
@@ -1512,7 +1496,6 @@ Sub LeagueTotals_A_Screen (TVN, QW)
     Loop Until UCase$(I$) = "N" Or I$ = Chr$(27)
 
 End Sub
-
 
 '----------------------------------------
 '    LeagueTotals_B_Screen Subroutine
@@ -1572,7 +1555,6 @@ Sub LeagueTotals_B_Screen (TVN, QW)
 
 End Sub
 
-
 '----------------------------------------
 '       GetSortOptions Subroutine
 '----------------------------------------
@@ -1618,7 +1600,6 @@ Sub GetSortOptions (JX, PV)
 
 End Sub
 
-
 '----------------------------------------
 '       SelectPrintOrView Subroutine
 '----------------------------------------
@@ -1654,7 +1635,6 @@ Sub SelectPrintOrView (printOption)
 
 End Sub
 
-
 '----------------------------------------
 '       SortPlayer1 Subroutine
 '----------------------------------------
@@ -1682,7 +1662,6 @@ Sub SortPlayer1 (JX, PPP, stpl)
 
 End Sub
 
-
 '----------------------------------------
 '       SortPlayer2 Subroutine
 '----------------------------------------
@@ -1708,7 +1687,6 @@ Sub SortPlayer2 (JX, PPP, stpl)
     Next I
 
 End Sub
-
 
 '----------------------------------------
 '       SortTeam1 Subroutine
@@ -1736,7 +1714,6 @@ Sub SortTeam1 (JX, TS, stpl)
 
 End Sub
 
-
 '----------------------------------------
 '       SortTeam2 Subroutine
 '----------------------------------------
@@ -1761,7 +1738,6 @@ Sub SortTeam2 (JX, TTS, stpl)
     Next I
 
 End Sub
-
 
 '----------------------------------------
 '       GetListLength Subroutine

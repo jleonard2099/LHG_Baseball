@@ -28,12 +28,11 @@ Sub MERGE ()
 
 End Sub
 
-
 '----------------------------------------
 '       MergeIt Subroutine
 '----------------------------------------
 '...explanation...
-Sub MergeIt
+Sub MergeIt ()
     Shared B$(), P$()
 
     Dim BR$(22), DR$(2)
@@ -42,15 +41,14 @@ Sub MergeIt
     Dim PL$(162), PLR$(162), PR$(21)
     Dim W$(162), WR$(162)
 
-    
     Dim mergeB%(22), B0%(22, 22), B0R%(22, 22), BR%(22)
     Dim H%(162), HR%(162), I%(162), IR%(162)
     Dim mergeP%(21), P0%(21, 41), P0R%(21, 41), PR%(21)
     Dim S0%(22, 6), SR%(22, 6)
     Dim V%(162), VR%(162)
-    
+
     Dim TR(22), TR1(22)
-    
+
     'Dim T%(0 to 21), T1%(0 to 22)
     Shared T%(), T1%()
 
@@ -104,7 +102,7 @@ Sub MergeIt
                 Print "TRY AGAIN (YN) "
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-            
+
             If UCase$(I$) = "Y" Then 
 				Print
                 Print "HIT ENTER TO RE-ENTER INFORMATION"
@@ -136,7 +134,7 @@ Sub MergeIt
                 Next
                 Close 1
             End If
-            
+
             Open PR$ + "\" + Z$ + "S" For Input As #1
             Input #1, YR%
             For I = 1 To 162: Input #1, HR%(I): Next I
@@ -159,13 +157,13 @@ Sub MergeIt
                     Print "TRY AGAIN (YN) "
                     I$ = GetKeyPress$
                 Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-                
+
                 If UCase$(I$) = "Y" Then 
 					Print
                     Print "HIT ENTER TO RE-ENTER INFORMATION"
                     I$ = GetKeyPress$
                 End If
-            
+
             Else
 
                 Open PC$ + "\" + Z$ For Input As #1
@@ -182,7 +180,7 @@ Sub MergeIt
                 For I = 0 To 22: Input #1, T1%(I): Next I
 
                 Close #1
-        
+
                 If  _FileExists(PC$ + "\" + Z$ + "R") Then
                     Open PC$ + "\" + Z$ + "R" For Input As #1
                     For I = 0 To 22
@@ -203,7 +201,6 @@ Sub MergeIt
                 For I = 1 To 162: Input #1, I%(I): Next I
                 Close #1
 
-
                 SEQ = 0
 
                 For K = 0 To 22
@@ -218,8 +215,8 @@ Sub MergeIt
                     End If
                 Next
 
-                If SEQ = 0 Then 
-                
+                If SEQ = 0 Then
+
                     For K = 1 To YR%
                         Y% = Y% + 1
                         H%(Y%) = HR%(K)
@@ -254,7 +251,6 @@ Sub MergeIt
                     For I = 0 To 21: T%(I) = T%(I) + TR(I): Next
                     For I = 0 To 22: T1%(I) = T1%(I) + TR1(I): Next
 
-
                     Open PC$ + "\" + Z$ For Output As #1
 
                     Write #1, A$: Write #1, W2%: Write #1, L2%
@@ -265,12 +261,12 @@ Sub MergeIt
                     For I = 0 To 21: For I1 = 0 To 41: Write #1, P0%(I, I1): Next I1: Next I
 
                     Write #1, D0%: Write #1, D1%
-                    
+
                     For I = 0 To 21: Write #1, T%(I): Next I
                     For I = 0 To 22: Write #1, T1%(I): Next I
 
                     Close #1
-                    
+
                     Open PC$ + "\" + Z$ + "R" For Output As #1
                     For I = 0 To 22
                         For I1 = 0 To 6
@@ -293,9 +289,9 @@ Sub MergeIt
                     Y = 0
 
                     Locate 20, 20: Color 12: Print "RESULTS SUCCESSFULLY MERGED!!"
-                
-                Else 
-                
+
+                Else
+
                     Cls
                     Color 14
                     Locate 5, 27: Print "PLAYERS NOT IN SEQUENCE !!"; DUMMY$

@@ -122,7 +122,6 @@ Sub PROGMAN ()
 
 End Sub
 
-
 '----------------------------------------
 '    RotationReliefMenu Subroutine
 '----------------------------------------
@@ -178,7 +177,6 @@ Sub RotationReliefMenu (targetTeam$)
 
 End Sub
 
-
 '----------------------------------------
 '       GetTeam_PROGMAN Subroutine
 '----------------------------------------
@@ -221,7 +219,6 @@ Sub GetTeam_PROGMAN (targetTeam$, yearNumber$)
     End If
 
 End Sub
-
 
 '----------------------------------------
 '       GetDiskYear Subroutine
@@ -294,7 +291,6 @@ Sub GetDiskYear (targetTeam$, yearNumber$, teamidx)
     Color 15, 0
 
 End Sub
-
 
 '----------------------------------------
 '      SelectTeam_PROGMAN Subroutine
@@ -388,7 +384,6 @@ Sub SelectTeam_PROGMAN (numberTeams, yearNumber$, T)
 
 End Sub
 
-
 '----------------------------------------
 '       LineupStrategy Subroutine
 '----------------------------------------
@@ -444,7 +439,6 @@ Sub LineupStrategy (targetTeam$)
     Loop Until Selection% = 4 Or ExitCode% = 27
 
 End Sub
-
 
 '----------------------------------------
 '       AnalyzePlayerUsage Subroutine
@@ -549,7 +543,6 @@ Sub AnalyzePlayerUsage (targetTeam$)
     I$ = GetKeyPress$
 
 End Sub
-
 
 '----------------------------------------
 '     SelectPinchHitters Subroutine
@@ -675,7 +668,6 @@ Sub SelectPinchHitters (yearNumber$, targetTeam$)
     Loop Until I = 11
 
 End Sub
-
 
 '----------------------------------------
 '    DefenseLateInning Subroutine
@@ -832,9 +824,7 @@ Sub DefenseLateInning (yearNumber$, T$)
 
     Loop Until I = 5
 
-
 End Sub
-
 
 '----------------------------------------
 '       EditLineups Subroutine
@@ -875,7 +865,6 @@ Sub EditLineups (handRL%, targetTeam$, yearNumber$)
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
         _MouseHide
-
 
         If ExitCode% <> 27 And Selection% <> 4 Then
 
@@ -979,7 +968,6 @@ Sub EditLineups (handRL%, targetTeam$, yearNumber$)
 
 End Sub
 
-
 '----------------------------------------
 '       ViewLineup Subroutine
 '----------------------------------------
@@ -1036,7 +1024,6 @@ Sub ViewLineup (targetTeam$)
     Next I
 
 End Sub
-
 
 '----------------------------------------
 '       InputDeleteLineup Subroutine
@@ -1175,7 +1162,6 @@ Sub InputDeleteLineup (D%, yearNumber$)
 
 End Sub
 
-
 '----------------------------------------
 '       GetLineupPosition Subroutine
 '----------------------------------------
@@ -1274,7 +1260,6 @@ Sub ChangeLineup_PROGMAN (yearNumber$, I$)
                 Locate 18, 59: Print Space$(17)
                 Locate 19, 59: Print Space$(17)
 
-
             Case "P":
                 Do
                     Locate 18, 59: Print "B.O. PLYR 1 (1-9)";
@@ -1365,7 +1350,6 @@ Sub ChangeLineup_PROGMAN (yearNumber$, I$)
 
 End Sub
 
-
 '----------------------------------------
 '          EditLineup Subroutine
 '----------------------------------------
@@ -1431,7 +1415,6 @@ Sub EditOneLineup (targetTeam$, yearNumber$)
     Call ChangeLineup_PROGMAN(yearNumber$, J$)
 
 End Sub
-
 
 '----------------------------------------
 '         GetLineup Subroutine
@@ -1518,7 +1501,6 @@ Sub GetLineup (handRL%, targetTeam$)
     Next I
 
 End Sub
-
 
 '----------------------------------------
 '     PrintManagerProfile Subroutine
@@ -2021,7 +2003,6 @@ Sub PrintManagerProfile (targetTeam$)
 
 End Sub
 
-
 '----------------------------------------
 '       ShowPitcherInfo Subroutine
 '----------------------------------------
@@ -2032,7 +2013,6 @@ Sub ShowPitcherInfo (targetTeam$)
     Shared B1$(), P$(), mgrX$()
 
     Cls
-
 
     Locate 1, 1
     Print "#";: Color L%(11), L%(12): Print targetTeam$;
@@ -2072,7 +2052,6 @@ Sub ShowPitcherInfo (targetTeam$)
     Next I
 
 End Sub
-
 
 '----------------------------------------
 '       SpotStarters Subroutine
@@ -2115,8 +2094,8 @@ Sub SpotStarters (targetTeam$, yearNumber$)
 
             Case "D":
                 Do
-                    Locate 20, 40: Print "                                "
-                    Locate 21, 40: Print "                                "
+                    Locate 20, 40: Print Space$(32)
+                    Locate 21, 40: Print Space$(32)
                     Locate 20, 40: Input "ENTER NUMBER TO DELETE (1-16) "; I1
                 Loop Until I1 >= 1 And I1 <= 16
 
@@ -2174,7 +2153,6 @@ Sub SpotStarters (targetTeam$, yearNumber$)
     Loop Until UCase$(I$) = "S"
 
 End Sub
-
 
 '----------------------------------------
 '       RotationParams Subroutine
@@ -2294,17 +2272,21 @@ Sub PitchingRotations (action%, targetTeam$)
 
     End If 'Done for action = 2
 
-
     'Enter Rotation
     I = 1
     JJ = 1
-    Locate 6, 8: Color 15, 1
+    
+	Locate 6, 8
+	Color 15, 1
     Print " "; Chr$(201); String$(61, 205); Chr$(187); " ";
-    For II = 1 To JJ: Locate 6 + II, 8
+    For II = 1 To JJ: 
+		Locate 6 + II, 8
         Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
     Next
+	
     Locate 7 + JJ, 8
-    Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";: Locate 7
+    Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";
+	Locate 7
 
     '4604
     Do
@@ -2500,7 +2482,6 @@ Sub PitchingRotations (action%, targetTeam$)
 
 End Sub
 
-
 '----------------------------------------
 '    SetupMiddleRelievers Subroutine
 '----------------------------------------
@@ -2620,7 +2601,6 @@ Sub SetupMiddleRelievers (targetTeam$, yearNumber$)
     Loop Until I = 11
 
 End Sub
-
 
 '----------------------------------------
 '       SetupRelievers Subroutine
@@ -2744,7 +2724,6 @@ Sub SetupRelievers (targetTeam$, yearNumber$)
 
 End Sub
 
-
 '----------------------------------------
 '       SetupClosers Subroutine
 '----------------------------------------
@@ -2861,7 +2840,6 @@ Sub SetupClosers (targetTeam$, yearNumber$)
     Loop Until I = 7
 
 End Sub
-
 
 '----------------------------------------
 '       HittingStrategy Subroutine
@@ -3008,7 +2986,6 @@ Sub HittingStrategy (yearNumber$)
 
 End Sub
 
-
 '----------------------------------------
 '       HitAndRun Subroutine
 '----------------------------------------
@@ -3060,7 +3037,6 @@ Sub HitAndRun (yearNumber$)
     Loop Until I = 7
 
 End Sub
-
 
 '----------------------------------------
 '      DefensiveStrategy Subroutine
@@ -3314,8 +3290,6 @@ Sub DefensiveStrategy (yearNumber$)
 
 End Sub
 
-
-
 '----------------------------------------
 '       PinchRunStrategy Subroutine
 '----------------------------------------
@@ -3392,7 +3366,6 @@ Sub PinchRunStrategy (targetTeam$)
     Loop Until Selection% = 4 Or ExitCode% = 27
 
 End Sub
-
 
 '----------------------------------------
 '       PinchRunners Subroutine
@@ -3491,7 +3464,6 @@ Sub PinchRunners (targetTeam$)
     Loop Until I = 7
 
 End Sub
-
 
 '----------------------------------------
 '       DefenseSubPinchRun Subroutine
@@ -3628,9 +3600,7 @@ Sub DefenseSubPinchRun (targetTeam$)
 
     Loop Until I = 7
 
-
 End Sub
-
 
 '----------------------------------------
 '    ExportManagerProfile Subroutine
@@ -3672,13 +3642,16 @@ Sub ExportManagerProfile ()
         If PP% = 1 Then PP% = 0: Call PrintManagerProfile(T$)
 
         JJ = 5
-        Locate 6, 8: Color 15, 1
+        Locate 6, 8
+		Color 15, 1
         Print " "; Chr$(201); String$(61, 205); Chr$(187); " ";
-        For II = 1 To JJ: Locate 6 + II, 8
+        For II = 1 To JJ: 
+			Locate 6 + II, 8
             Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
         Next
         Locate 7 + JJ, 8
-        Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";: Locate 7
+        Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";
+		Locate 7
 
         Locate , 11: Input "ENTER 8 CHARACTER NAME FOR PROFILE"; profileFile$
         For X = 1 To 8
@@ -3696,7 +3669,6 @@ Sub ExportManagerProfile ()
     End If
 
 End Sub
-
 
 '----------------------------------------
 '    ImportManagerProfile Subroutine
@@ -3758,13 +3730,16 @@ Sub ImportManagerProfile ()
                     L% = 0
 
                     JJ = 5
-                    Locate 6, 8: Color 15, 1
+                    Locate 6, 8
+					Color 15, 1
                     Print " "; Chr$(201); String$(61, 205); Chr$(187); " ";
-                    For II = 1 To JJ: Locate 6 + II, 8
+                    For II = 1 To JJ: 
+						Locate 6 + II, 8
                         Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
                     Next
                     Locate 7 + JJ, 8
-                    Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";: Locate 7
+                    Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";
+					Locate 7
 
                     Locate , 11: Print "IMPORT STRATEGY PERCENTAGES ONLY (YN)"
                     Do
@@ -3794,7 +3769,6 @@ Sub ImportManagerProfile ()
     End If 'Done checking for 0 file count
 
 End Sub
-
 
 '----------------------------------------
 '       UpdateManagerFile Subroutine
@@ -3826,7 +3800,6 @@ Sub UpdateManagerFile (yearNumber$)
     End If
 
 End Sub
-
 
 '----------------------------------------
 '           PHBATTER Subroutine
@@ -3880,7 +3853,6 @@ Sub PHBATTER (yearNumber$)
 
 End Sub
 
-
 '----------------------------------------
 '           PHPITCHER Subroutine
 '----------------------------------------
@@ -3933,7 +3905,6 @@ Sub PHPITCHER (yearNumber$)
 
 End Sub
 
-
 '----------------------------------------
 '           PITCHAROUND Subroutine
 '----------------------------------------
@@ -3975,9 +3946,7 @@ Sub PITCHAROUND (yearNumber$)
 
     Loop Until I = 4
 
-
 End Sub
-
 
 '----------------------------------------
 '           Input_PITSTRAT Subroutine
@@ -4035,9 +4004,7 @@ Sub Input_PITSTRAT (yearNumber$)
 
     Loop Until I = 9
 
-
 End Sub
-
 
 '----------------------------------------
 '           THROWHOME Subroutine
@@ -4078,7 +4045,6 @@ Sub THROWHOME (yearNumber$)
     Loop Until I = 3
 
 End Sub
-
 
 '------------------------------
 '   BASERUN Subroutine

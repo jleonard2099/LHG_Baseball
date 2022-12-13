@@ -81,7 +81,6 @@ Sub CREATE ()
 
 End Sub
 
-
 '----------------------------------------
 '      ChooseLeague Subroutine
 '----------------------------------------
@@ -106,10 +105,13 @@ Sub ChooseLeague (targetFile$)
             'GoTo 50
         Else
             ReDim leagueFiles$(0 To Count%)
+
             For X = 1 To Count%
                 leagueFiles$(X) = Space$(12)
             Next
+
             leagueFiles$(0) = Spec$
+
             Call ReadFile(leagueFiles$())
 
             Do
@@ -174,7 +176,6 @@ Sub ChooseLeague (targetFile$)
     Cls
 
 End Sub
-
 
 '----------------------------------------
 '       EditLeague Subroutine
@@ -346,9 +347,7 @@ Sub EditLeague (leagueFile$)
 
     Loop Until I$ = "3"
 
-
 End Sub
-
 
 '----------------------------------------
 '       GetTeam_CREATE Subroutine
@@ -433,7 +432,6 @@ Sub GetTeam_CREATE (yearNumber$, teamName$, teamIdx)
     Loop Until UCase$(I$) = "N"
 
 End Sub
-
 
 '----------------------------------------
 '      SelectTeam_CREATE Subroutine

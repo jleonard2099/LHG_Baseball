@@ -52,8 +52,6 @@ Sub TRADE ()
     '70 Exit Sub
 End Sub
 
-
-
 '----------------------------------------
 '       GetTeam_TRADE Subroutine
 '----------------------------------------
@@ -87,8 +85,13 @@ Sub GetTeamA_TRADE (yearNumber$, numberTeams, tradeIdx)
             Erase teamNames$
 
             numberTeams = 0
-            If _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
-
+            If Not _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
+                BO% = 1
+                Locate 10, 8
+                Call CSMsgBox("NO TEAMS MATCHING THIS ID WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+                I$ = GetKeyPress$
+                Call CSMsgBox("", 0, Pass)
+			Else
                 Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
                 Y = LOF(1)
                 Field #1, 15 As Q$(0)
@@ -111,12 +114,7 @@ Sub GetTeamA_TRADE (yearNumber$, numberTeams, tradeIdx)
                 Close 1
 
                 Call SelectTeam_TRADE(yearNumber$, numberTeams, tradeIdx)
-            Else
-                BO% = 1
-                Locate 10, 8
-                Call CSMsgBox("NO TEAMS MATCHING THIS ID WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-                I$ = GetKeyPress$
-                Call CSMsgBox("", 0, Pass)
+				
             End If 'Done checking for file
 
         End If 'Done checking for emtpy value
@@ -133,7 +131,6 @@ Sub GetTeamA_TRADE (yearNumber$, numberTeams, tradeIdx)
     Loop Until UCase$(I$) = "N" Or I$ = Chr$(27)
 
 End Sub
-
 
 '----------------------------------------
 '     SelectTeam_TRADE Subroutine
@@ -226,7 +223,6 @@ Sub SelectTeam_TRADE (yearNumber$, numberTeams, tradeIdx)
     End If
 
 End Sub
-
 
 '----------------------------------------
 '     ReadStats_TRADE Subroutine
@@ -350,7 +346,6 @@ Sub ReadStats_TRADE (yearNumbers$(), tradeIdx)
 
 End Sub
 
-
 '----------------------------------------
 '       GetTeamB_TRADE Subroutine
 '----------------------------------------
@@ -382,8 +377,14 @@ Sub GetTeamB_TRADE (yearNumber$, numberTeams, tradeIdx)
             Erase teamNames$
 
             numberTeams = 0
-            If _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
 
+            If Not _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
+                BO% = 1
+                Locate 10, 8
+                Call CSMsgBox("NO TEAMS MATCHING THIS ID WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+                I$ = GetKeyPress$
+                Call CSMsgBox("", 0, Pass)
+			Else
                 Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
                 Y = LOF(1)
                 Field #1, 15 As Q$(0)
@@ -406,12 +407,6 @@ Sub GetTeamB_TRADE (yearNumber$, numberTeams, tradeIdx)
                 Close 1
 
                 Call SelectTeam_TRADE(yearNumber$, numberTeams, tradeIdx)
-            Else
-                BO% = 1
-                Locate 10, 8
-                Call CSMsgBox("NO TEAMS MATCHING THIS ID WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-                I$ = GetKeyPress$
-                Call CSMsgBox("", 0, Pass)
             End If
         End If
 
@@ -427,7 +422,6 @@ Sub GetTeamB_TRADE (yearNumber$, numberTeams, tradeIdx)
     Loop Until UCase$(I$) = "N" Or I$ = Chr$(27)
 
 End Sub
-
 
 '----------------------------------------
 '       ContinueTrade Subroutine
@@ -631,13 +625,11 @@ Sub ContinueTrade (yearNumbers$(), tradeIdx)
 
 End Sub
 
-
-
 '----------------------------------------
 '       TradeBatters Subroutine
 '----------------------------------------
 '...explanation...
-Sub TradeBatters
+Sub TradeBatters ()
 
     Shared A$(), tradeB1$(), tradeB$()
 
@@ -745,12 +737,11 @@ Sub TradeBatters
 
 End Sub
 
-
 '----------------------------------------
 '       TradePitchers Subroutine
 '----------------------------------------
 '...explanation...
-Sub TradePitchers
+Sub TradePitchers ()
 
     Shared A$(), tradeB$(), tradeP1$()
     Shared tradeL%(), tradeP0%(), tradeP%(), tradeP3%()
@@ -837,7 +828,6 @@ Sub TradePitchers
     I$ = GetKeyPress$
 
 End Sub
-
 
 '----------------------------------------
 '       SaveTrades Subroutine
@@ -1060,7 +1050,6 @@ Sub SaveTrades (yearNumbers$())
 
 End Sub
 
-
 '----------------------------------------
 '    TradeSummary_Batters Subroutine
 '----------------------------------------
@@ -1257,8 +1246,6 @@ Sub TradeSummary_Batters
 
 End Sub
 
-
-
 '----------------------------------------
 '     PrintTradeSummary Subroutine
 '----------------------------------------
@@ -1268,7 +1255,6 @@ Sub TradeSummary_Pitchers
     Shared A$(), tradeB$()
     Shared tradeL%(), tradeP%(), tradeP0%()
     Dim plateX$(4)
-
 
     plateX$(0) = "LP"
     plateX$(1) = "L"

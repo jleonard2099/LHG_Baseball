@@ -13,7 +13,6 @@ $ExeIcon:'./lhg_fcbase.ico'
 _Icon
 _AllowFullScreen
 
-
 '----------------------------------------
 '          READ IN ALL DATA
 '----------------------------------------
@@ -21,7 +20,6 @@ _AllowFullScreen
 Data A,B,C,D,E,F,G,H,I,J,K,L,M,dh,p,"c ",1b,2b,3b,ss,lf,cf,rf,ph,pr
 For I = 0 To 12: Read X$(I): Next I
 For I = 0 To 11: Read C$(I): Next I
-
 
 'Data to read in to variables
 Data first,second,third,short
@@ -92,7 +90,6 @@ For I = 11 To 0 Step -1
         Read TP%(I, I1)
     Next
 Next
-
 
 '----------------------------------------
 '    INITIALIZE ALL VARIABLES
@@ -218,7 +215,6 @@ Next
 
 Call INITVARI
 
-
 '----------------------------------------
 '       DETERMINE GAME OPTIONS
 '----------------------------------------
@@ -228,7 +224,6 @@ For I = 0 To 3
     Input #1, diskPaths$(I)
 Next
 Close 1
-
 
 If Not _FileExists("DEFERA") Then
     Open "DEFERA" For Output As #1
@@ -252,7 +247,6 @@ Input #1, pbpDelay!
 Input #1, VG%
 Input #1, CGERA%
 Close 1
-
 
 'Load game in-progress, if there is one
 If _FileExists("GAME82") Then
@@ -287,7 +281,6 @@ If _FileExists("GAME82") Then
 
     AP% = 1
 End If
-
 
 If AP% = 1 Then
     'Setup variables for auto-play
@@ -347,16 +340,16 @@ Else
 
         Do
             Color 7, 0
-			
-            I$ = GetKeyPress$
-			
-            If I$ <> Chr$(27) Then Call LetterToNumber(I$)
-			
-            I = Val(I$)
-			
-        Loop Until I >= 0 And I <= 16 Or I$ = Chr$(27)
 
-        If I$ <> Chr$(27) Then
+            I$ = GetKeyPress$
+
+            If I$ <> Chr$(27) Then Call LetterToNumber(I$)
+
+            I = Val(I$)
+
+        Loop Until I >= 0 And I <= 16 Or I$ = Chr$(27) Or UCase$(I$) = "Q"
+
+        If I$ <> Chr$(27) And UCase$(I$) <> "Q" Then
 
             Select Case I + 1
                 Case 1:
@@ -432,7 +425,10 @@ Else
             End Select
 
         Else
+
             End
+            System
+
         End If
 
     Loop Until I$ = "7"
@@ -479,7 +475,6 @@ Else
     'Assign generic umpire names if we don't have any
     U$(1) = "RHODES": U$(2) = "WINBERRY": U$(3) = "TIPPETT": U$(4) = "MILLER"
 End If
-
 
 '-------------------------
 ' Team Selection
@@ -570,7 +565,6 @@ For I = 0 To 1
 
 Next I
 
-
 '-------------------------
 ' Team Mgmt + Lineups
 '-------------------------
@@ -594,7 +588,6 @@ If U6 = 1 And AP% <> 1 Then
     Loop Until U9 = 0 Or U9 = 1
 End If
 
-
 'Determine pitchers
 For P9 = 0 To 1
     cancelPitchers% = 0
@@ -616,7 +609,6 @@ For P9 = 0 To 1
     If cancelPitchers% = 1 Then GoTo 170
 
 Next P9
-
 
 'Determine lineup for each team
 For P9 = 0 To 1
@@ -731,7 +723,6 @@ For P9 = 0 To 1
 
 Next P9
 
-
 For I = 0 To 1
     For I1 = 1 To 9
         X0%(I, 0, I1) = B3%(I, I1)
@@ -740,7 +731,6 @@ For I = 0 To 1
     Next I1
     D0%(I) = 9
 Next I
-
 
 W5 = 0
 W6 = 1
@@ -781,7 +771,6 @@ For I = 0 To 1
         End If
     Next I1
 Next I
-
 
 2476 Call SelectStadium
 
@@ -843,15 +832,13 @@ Else
     usingGfx = 0
 End If
 
-Open "errlog" For Append As #9
 Call SOURCE
-Close #9
 
 End
 
+System
 
 '================================================================================
-
 
 Errhandler:
 'Open "errlog" For Append As #9
@@ -861,9 +848,7 @@ Print #9, ""
 'Close #9
 Resume Next ' moves program to code following the error.
 
-
 '================================================================================
-
 
 '------------------------------
 '   StartingLineup Subroutine
@@ -898,8 +883,6 @@ Sub StartingLineup (P9)
     If skipLU% = 1 Then GoTo 540
 
 End Sub
-
-
 
 '------------------------------
 '   LineupPositions Subroutine
@@ -994,7 +977,6 @@ Sub LineupPositions (teamIdx, posIdx, skipLU%)
 
                         End If
 
-
                     Else
 
                         '650
@@ -1061,7 +1043,6 @@ Sub LineupPositions (teamIdx, posIdx, skipLU%)
     End If 'Done checking for ESC
 
 End Sub
-
 
 '------------------------------
 '    ChangeLineup_PreGame Subroutine
@@ -1134,7 +1115,7 @@ Sub ChangeLineup_PreGame (P9, reselect)
 
                 End Select
 
-            Case 1 TO 9:
+            Case 1 To 9:
                 Locate B3%(P9, I) + 2 - B4%, 2: Print " "; B$(P9, B3%(P9, I))
 
                 'GoTo 560
@@ -1145,7 +1126,6 @@ Sub ChangeLineup_PreGame (P9, reselect)
     Loop Until UCase$(I$) = "0" Or UCase$(I$) = "R" Or I$ = Chr$(27)
 
 End Sub
-
 
 '------------------------------
 '     SaveLineup Subroutine
@@ -1213,7 +1193,6 @@ Sub SaveLineup (idx%)
     End If
 
 End Sub
-
 
 '------------------------------
 '  SearchForLineup Subroutine
@@ -1290,7 +1269,6 @@ Sub SearchForLineup (P9)
     Next
 
 End Sub
-
 
 '------------------------------
 ' LineupFromProfile Subroutine
@@ -1372,7 +1350,6 @@ Sub LineupFromProfile (lineupFound%, P9, skipLineChange%)
 
 End Sub
 
-
 '------------------------------
 '   DHLineups Subroutine
 '------------------------------
@@ -1420,7 +1397,6 @@ Sub DHLineups (P9, reselect, LU%)
     'End If
 
 End Sub
-
 
 '------------------------------
 ' SelectBatters Subroutine
@@ -1530,8 +1506,6 @@ Sub SelectBatters (batterFlag%, P9)
     Loop Until UCase$(I$) = "Z"
 
 End Sub
-
-
 
 '------------------------------
 '   SelectStadium Subroutine
@@ -1686,7 +1660,7 @@ Sub SelectStadium ()
                     Color , 0
 
                     If ExitCode% <> 27 Then
-                        
+
                         PARK$ = Right$(Str$(Selection%), Len(Str$(Selection%)) - 1)
                         If DN% = 0 Then PARK$ = PARK$ + "D.PNG" Else PARK$ = PARK$ + "N.PNG"
                         Color 15, 0
@@ -1724,7 +1698,6 @@ Sub SelectStadium ()
     Loop Until B0% = 0 Or UCase$(I$) = "N" Or ExitCode% = 27
 
 End Sub
-
 
 '------------------------------
 ' PitchingRotations Subroutine
@@ -1783,10 +1756,10 @@ Sub PitchingRotations (computerRotations%, P9)
         'based on # of games started?
         I = 1
         Select Case gamesStarted
-            Case 1 TO 32: I = 5
-            Case 33 TO 41: I = 4
-            Case 42 TO 54: I = 3
-            Case 55 TO 75: I = 2
+            Case 1 To 32: I = 5
+            Case 33 To 41: I = 4
+            Case 42 To 54: I = 3
+            Case 55 To 75: I = 2
         End Select
 
     Else
@@ -1927,7 +1900,6 @@ Sub PitchingRotations (computerRotations%, P9)
     End If
 
 End Sub
-
 
 '------------------------------
 '  ComputerLineups Subroutine
@@ -2108,7 +2080,6 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
 
 End Sub
 
-
 '------------------------------
 '   SortHitters Subroutine
 '------------------------------
@@ -2157,7 +2128,6 @@ Sub SortHitters (P9)
 
 End Sub
 
-
 '------------------------------
 ' SomeCalculations Subroutine
 '------------------------------
@@ -2189,7 +2159,7 @@ Sub SomeCalculations (B, C, P9)
         For Z = 1 To 9
             If BB%(Z) = J Then X = 0: Z = 9
         Next Z
-        
+
         If X <> 0 Then
 
             If C <> 1 Then
@@ -2197,7 +2167,7 @@ Sub SomeCalculations (B, C, P9)
                 If SE! >= E! Then E! = SE!: T = J: U = L
             Else
                 JJ = J
-                
+
                 'IF A PITCHER THEN 268
                 Q1! = (B%(P9, JJ, 6) - B%(P9, JJ, 8) - B%(P9, JJ, 9) + B%(P9, JJ, 11)) * .7
 
@@ -2235,7 +2205,6 @@ Sub SomeCalculations (B, C, P9)
 
 End Sub
 
-
 '------------------------------
 ' SelectTeam_LOADER Subroutine
 '------------------------------
@@ -2270,7 +2239,6 @@ Sub SelectTeam_LOADER (NTMS, YN$, idx%)
     End If
 
 End Sub
-
 
 '------------------------------
 '   LoadTeam_LOADER Subroutine
@@ -2544,8 +2512,6 @@ Sub LoadTeam_LOADER (teamIdx%, YN$, idx%)
 
 End Sub
 
-
-
 '------------------------------
 '   SelectPitchers Subroutine
 '------------------------------
@@ -2638,7 +2604,6 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
                     skipDisablePitchers% = 0
                 End If
 
-
             Case 2:
                 '4604
                 Cls
@@ -2718,7 +2683,6 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
 
         End If
 
-
         2040 '
         Do
 
@@ -2782,7 +2746,6 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
         cancelPitchers% = 1
     End If 'Done checking for ESC from rotation choice
 
-
     If I$ <> Chr$(27) Then
 
         INotLoopCounter% = 0
@@ -2794,7 +2757,6 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
     End If 'Done checking for ESC
 
 End Sub
-
 
 '------------------------------
 ' PrintPitcherInfo Subroutine
@@ -2839,9 +2801,7 @@ Sub PrintPitcherInfo (idx%)
 
     End If
 
-
 End Sub
-
 
 '$INCLUDE: 'Game_Routines.BM'
 '$INCLUDE: 'Game_Routines_Gfx.BM'

@@ -153,7 +153,6 @@ Sub DRAFT ()
 
 End Sub
 
-
 '----------------------------------------
 '       DraftNewTeam Subroutine
 '----------------------------------------
@@ -202,7 +201,6 @@ Sub DraftNewTeam (draftYear$, teamName$)
     'Loop Until C1 = 0
 
 End Sub
-
 
 '----------------------------------------
 '       DoTheDraft Subroutine
@@ -268,13 +266,20 @@ Sub DoTheDraft (DNT%, doneDrafting%, teamName$, teamYears$(), saveSpot)
                 Call SaveTeamDraft(DNT%, teamYears$(0), teamName$, saveSpot)
                 Cls
                 JJ = 2
-                Locate 6, 8: Color 15, 1
+
+                Locate 6, 8
+				Color 15, 1
+
                 Print " "; Chr$(201); String$(61, 205); Chr$(187); " ";
-                For II = 1 To JJ: Locate 6 + II, 8
+
+                For II = 1 To JJ
+					Locate 6 + II, 8
                     Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
                 Next
+
                 Locate 7 + JJ, 8
-                Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";: Locate 7
+                Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";
+				Locate 7
 
                 U$ = "DRAFT ANOTHER TEAM (YN)"
                 Locate , (80 - Len(U$)) / 2
@@ -291,7 +296,6 @@ Sub DoTheDraft (DNT%, doneDrafting%, teamName$, teamYears$(), saveSpot)
     Loop Until I1 = 3
 
 End Sub
-
 
 '----------------------------------------
 '       DraftPlayer Subroutine
@@ -329,14 +333,22 @@ Sub DraftPlayer (playerType, yearNumber$)
             numberTeams% = 0
             If Not _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
                 BO% = 1
-                JJ = 2
-                Locate 6, 8: Color 15, 1
-                Print " "; Chr$(201); String$(61, 205); Chr$(187); " ";
-                For II = 1 To JJ: Locate 6 + II, 8
+                
+				JJ = 2
+				Locate 6, 8
+				Color 15, 1
+                
+				Print " "; Chr$(201); String$(61, 205); Chr$(187); " ";
+                
+				For II = 1 To JJ: Locate 6 + II, 8
                     Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
                 Next
-                Locate 7 + JJ, 8
-                Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";: Locate 7
+                
+				Locate 7 + JJ, 8
+                Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";
+
+				Locate 7
+
             Else
 
                 Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
@@ -443,7 +455,6 @@ Sub DraftPlayer (playerType, yearNumber$)
     End If
 
 End Sub
-
 
 '----------------------------------------
 '       SaveTeamDraft Subroutine
@@ -614,7 +625,6 @@ Sub SaveTeamDraft (DNT%, yearNumber$, teamName$, teamIdx)
 
 End Sub
 
-
 '----------------------------------------
 '     SelectTeam_DRAFT Subroutine
 '----------------------------------------
@@ -651,9 +661,6 @@ Sub SelectTeam_DRAFT (draftYear$, numberTeams%, teamNumber, teamIdx)
     End If
 
 End Sub
-
-
-
 
 '----------------------------------------
 '          ReadTeam Subroutine
@@ -823,9 +830,6 @@ Sub ReadTeam_A (yearNumber$, teamIdx)
     End If 'Done checking for file exists
 
 End Sub
-
-
-
 
 '----------------------------------------
 '          ReadTeam Subroutine

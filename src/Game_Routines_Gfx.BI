@@ -1,7 +1,7 @@
-
-DECLARE SUB MAINSCREEN_G (D, p, BC%, U%, MO)
-DECLARE SUB DISPRUN_G (I2, p, X)
-DECLARE SUB SUB FLDDISP_G (BC%, p, U%, D)
-DECLARE SUB HOLDSTATUS_G (H0%)
-DECLARE SUB LOADSCREEN
-DECLARE SUB PrintOnGfx (Col%, Row%, Text$, tgtScrn&)
+Declare Sub MAINSCREEN_G (D, p, BC%, U%, MO)
+Declare Sub DISPRUN_G (I2, p, X)
+Declare Sub DisplayField_G (BC%, p, U%, D)
+Declare Sub HOLDSTATUS_G (H0%)
+Declare Sub INNDISP_G (currInning, teamLine)
+Declare Sub LOADSCREEN ()
+Declare Sub PrintOnGfx (Col%, Row%, Text$, tgtScrn&)

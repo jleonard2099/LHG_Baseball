@@ -47,7 +47,6 @@ Sub ACTIVATE ()
 
 End Sub
 
-
 '----------------------------------------
 '     ChangePlayers Subroutine
 '----------------------------------------
@@ -182,7 +181,6 @@ Sub ChangePlayers (yearNumber$, teamName$, teamIdx)
 
 End Sub
 
-
 '----------------------------------------
 '     GetTeams_Activate Subroutine
 '----------------------------------------
@@ -217,7 +215,6 @@ Sub GetTeams_Activate (yearNumber$, numberTeams)
     End If
 
 End Sub
-
 
 '----------------------------------------
 '     SelectTeam_ACTIVATE Subroutine
@@ -300,6 +297,5 @@ Sub SelectTeam_ACTIVATE (yearNumber$, numberTeams, teamIdx)
     Else
         BO% = 1
     End If
-
 
 End Sub

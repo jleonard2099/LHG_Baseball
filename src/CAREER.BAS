@@ -9,7 +9,7 @@ Sub CAREER ()
     Do
         Cls
 		Color 15,0
-		
+
         Call TITLE
 
         menuChoices$(1) = "CREATE AND MERGE INITIAL CAREER STATS  "
@@ -101,7 +101,6 @@ Sub CAREER ()
 
 End Sub
 
-
 '----------------------------------------
 '      ViewTeamLeaders Subroutine
 '----------------------------------------
@@ -129,12 +128,12 @@ Sub ViewTeamLeaders ()
             'GoTo 2
         Else
 
-            ReDim conferenceLeaderFiles$(0 To Count%)
+            ReDim careerLeaderFiles$(0 To Count%)
             For X = 1 To Count%
-                conferenceLeaderFiles$(X) = Space$(12)
+                careerLeaderFiles$(X) = Space$(12)
             Next
-            conferenceLeaderFiles$(0) = Spec$
-            Call ReadFile(conferenceLeaderFiles$())
+            careerLeaderFiles$(0) = Spec$
+            Call ReadFile(careerLeaderFiles$())
 
             Do
                 Cls
@@ -142,7 +141,7 @@ Sub ViewTeamLeaders ()
                 Cls
                 Locate , 28
                 Color 14
-                Print "SELECT LEADERS TO VIEW": Color 15
+                Print "SELECT FILE TO VIEW": Color 15
                 Selection% = 1
                 Start% = 1
                 FileFGColr% = 15: FileBGColr% = 1
@@ -158,11 +157,11 @@ Sub ViewTeamLeaders ()
                 Print "-SELECTS FILE";
 
                 _MouseShow "DEFAULT"
-                MAMenu conferenceLeaderFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+                MAMenu careerLeaderFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
                 _MouseHide
 
                 If ExitCode% <> 27 Then
-                    targetFile$ = conferenceLeaderFiles$(Selection%)
+                    targetFile$ = careerLeaderFiles$(Selection%)
                     Locate 2, 33: Print targetFile$
                     Locate , 33: Print "ANY CHANGE (YN)";
                     Color 15, 0
@@ -291,7 +290,6 @@ Sub ViewTeamLeaders ()
 
 End Sub
 
-
 '----------------------------------------
 '      Merge_FirstYear Subroutine
 '----------------------------------------
@@ -331,7 +329,7 @@ Sub Merge_FirstYear ()
 
         Color 11
         Locate 15, 5: Input "ENTER NAME OF CAREER STAT FILE (MAX. - 8 CHARACTERS)"; careerFile$
-        
+
         careerFile$ = Left$(careerFile$, 8) + ".CAR"
         For XX = 1 To Len(careerFile)
             If Mid$(careerFile$, XX, 1) = " " Then Mid$(careerFile$, XX, 1) = "_"
@@ -341,7 +339,7 @@ Sub Merge_FirstYear ()
         If Len(statFile$) > 11 Then 
             statFile$ = Left$(statFile$, 8) + Right$(statFile$, 3)
         End If
-        
+
         Locate , 5: Input "ENTER YEAR TO ADD (EX. - 1960)"; statYear
 
         Locate , 5: Print "ANY CHANGE (YN)"
@@ -358,7 +356,7 @@ Sub Merge_FirstYear ()
 
     Locate 20, 5
     Color 15: Print "MERGING CAREER STATS AND UPDATING CAREER LEADER FILE . . . . PLEASE WAIT"
-    
+
     If Not _FileExists(diskPaths$(1) + statFile$) Then 
         Cls
         Color 7: Print "UNABLE TO LOCATE STAT FILE . . . PLEASE RE-ENTER"
@@ -434,7 +432,6 @@ Sub Merge_FirstYear ()
 
 End Sub
 
-
 '----------------------------------------
 '      Merge_AddYear Subroutine
 '----------------------------------------
@@ -452,7 +449,7 @@ Sub Merge_AddYear ()
 	Dim BR$(100), PR$(80)
 
 	Dim TMR%, TMR1%
-	
+
 	TMR% = 4175
     TMR1% = 6875
 
@@ -468,7 +465,7 @@ Sub Merge_AddYear ()
         Color 11
         Locate 15, 5
         Input "ENTER NAME OF CAREER STAT FILE (EX. - MINNESOT)"; careerFile$
-        
+
         careerFile$ = Left$(careerFile$, 8) + ".CAR"
         For XX = 1 To Len(careerFile$)
             If Mid$(careerFile$, XX, 1) = " " Then Mid$(careerFile$, XX, 1) = "_"
@@ -509,7 +506,7 @@ Sub Merge_AddYear ()
         For J = 1 To 15: For I = 0 To 79: For I1 = 0 To 16: Input #1, PRS%(J, I, I1): Next I1: Locate 21, 35: TMR1% = TMR1% - 1: Color 9: Print Using "####"; TMR1%: Next I: Next J
         Close #1
     End If
-    
+
     Locate 20, 5
     Color 15
     Print "LOADING STATS FILE . . . . PLEASE WAIT"
@@ -540,8 +537,8 @@ Sub Merge_AddYear ()
 
             For J = 0 To 99
 
-                If UCase$(BR$(I)) = UCase$(careerB$(J)) Then 
-                    
+                If UCase$(BR$(I)) = UCase$(careerB$(J)) Then
+
                     For W = 1 To 15
                         If BRS%(W, J, 17) = statYear Then 
                             CHK = CHK + 1
@@ -645,7 +642,6 @@ Sub Merge_AddYear ()
 
 End Sub
 
-
 '----------------------------------------
 '           FinalMerge Subroutine
 '----------------------------------------
@@ -660,7 +656,7 @@ Sub FinalMerge (leaderFile$)
 
     Shared careerB$(), careerP$()
     Shared BL$(), careerPL$()
-    
+
     Shared BRS%(), PRS%()
 
     D = 0
@@ -683,17 +679,16 @@ Sub FinalMerge (leaderFile$)
         If careerB$(I) <> "" And careerB$(I) <> "XXX" And careerB$(I) <> "END" Then
 
             For J = 1 To 15
-                
-                If BRS%(J, I, 17) <> 0 Then 
-                
+
+                If BRS%(J, I, 17) <> 0 Then
+
                     If BRS%(J, I, 0) > BLL!(0) Then 
                         BLL!(0) = BRS%(J, I, 0): BL$(0) = careerB$(I): BLYR%(0) = BRS%(J, I, 17)
                     End If
-                    
+
                     If BRS%(J, I, 2) > BLL!(1) Then
                         BLL!(1) = BRS%(J, I, 2): BL$(1) = careerB$(I): BLYR%(1) = BRS%(J, I, 17)
                     End If
-
 
                     If BRS%(J, I, 1) > BLL!(2) Then
                         BLL!(2) = BRS%(J, I, 1): BL$(2) = careerB$(I): BLYR%(2) = BRS%(J, I, 17)
@@ -741,7 +736,7 @@ Sub FinalMerge (leaderFile$)
                         If AVG! > BLL!(12) Then 
                             BLL!(12) = AVG!: BL$(12) = careerB$(I): BLYR%(12) = BRS%(J, I, 17)
                         End If
-                        
+
                     End If
 
                     If BRS%(J, I, 0) + BRS%(J, I, 7) > 501 Then 
@@ -750,7 +745,7 @@ Sub FinalMerge (leaderFile$)
                             BLL!(13) = SLG!: BL$(13) = careerB$(I): BLYR%(13) = BRS%(J, I, 17)
                         End If
                     End If
-                    
+
                     If BRS%(J, I, 0) + BRS%(J, I, 7) > 501 Then
 
                         OBP! = (BRS%(J, I, 1) + BRS%(J, I, 7)) / (BRS%(J, I, 7) + BRS%(J, I, 0))
@@ -760,9 +755,9 @@ Sub FinalMerge (leaderFile$)
                         End If
 
                     End If
-                
+
                 End If 'Done checking for non-zero value
-                
+
             Next J
 
         End If 'Done checking for terminating characters
@@ -775,13 +770,13 @@ Sub FinalMerge (leaderFile$)
         If careerP$(I) <> "" And careerP$(I) <> "XXX" And careerP$(I) <> "END" Then
 
             For J = 1 To 15
-            
-                If PRS%(J, I, 16) <> 0 Then 
-                
+
+                If PRS%(J, I, 16) <> 0 Then
+
                     If PRS%(J, I, 6) > PLL!(0) Then
                         PLL!(0) = PRS%(J, I, 6): careerPL$(0) = careerP$(I): PLYR%(0) = PRS%(J, I, 16)
                     End If
-                    
+
                     If PRS%(J, I, 7) > PLL!(1) Then
                         PLL!(1) = PRS%(J, I, 7): careerPL$(1) = careerP$(I): PLYR%(1) = PRS%(J, I, 16)
                     End If
@@ -841,7 +836,7 @@ Sub FinalMerge (leaderFile$)
                     If PRS%(J, I, 13) > PLL!(14) Then 
                         PLL!(14) = PRS%(J, I, 13): careerPL$(14) = careerP$(I): PLYR%(14) = PRS%(J, I, 16)
                     End If
-                    
+
                 End If 'Done checking value of 0
 
             Next J

@@ -25,6 +25,7 @@ Sub LEAGCMPL ()
         Spec$ = diskPaths$(2) + "*.LIB"
         null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
         Count% = DirCount%
+
         If Count% = 0 Then
             Locate 10, 8
             Call CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
@@ -190,7 +191,6 @@ Sub LEAGCMPL ()
 
                         Close #1
 
-
                         For J = 1 To 23
                             If JS!(J, 1) = 0 Then JS!(J, 1) = 1
                             JS!(J, 17) = JS!(J, 13)
@@ -284,7 +284,6 @@ Sub LEAGCMPL ()
     '103 Exit Sub
 
 End Sub
-
 
 '----------------------------------------
 '      CheckLeagueStats Subroutine
@@ -380,7 +379,6 @@ Sub CheckLeagueStats (targetTeam$)
                     Next Y
                 End If
             End If
-
 
             3320 '
             For Y = 99 To 108
@@ -513,7 +511,6 @@ Sub CheckLeagueStats (targetTeam$)
 
             End If
 
-
             3330 '
             For Z = 21 To 31
                 If cmplZ2$(Z) = NM$(X) And cmplZ3$(Z) = WT$ Then
@@ -544,7 +541,6 @@ Sub CheckLeagueStats (targetTeam$)
                 '3341 NEXT Z
 
             End If
-
 
             For Z = 32 To 42
                 If cmplZ2$(Z) = NM$(X) And cmplZ3$(Z) = WT$ Then
@@ -600,8 +596,6 @@ Sub CheckLeagueStats (targetTeam$)
                 '3364 FOR Z = 43 TO 53
                 '3365 NEXT Z
             End If
-
-
 
             For Z = 54 To 64
                 If cmplZ2$(Z) = NM$(X) And cmplZ3$(Z) = WT$ Then
@@ -660,7 +654,6 @@ Sub CheckLeagueStats (targetTeam$)
                 '3389 NEXT Z
             End If
 
-
             For Z = 76 To 85
                 If cmplZ2$(Z) = NM$(X) And cmplZ3$(Z) = WT$ Then
                     cmplZ1!(Z, 1) = JS!(X, 4)
@@ -689,7 +682,6 @@ Sub CheckLeagueStats (targetTeam$)
                 '3400 FOR Z = 76 TO 86
                 '3401 NEXT Z
             End If
-
 
             For Z = 87 To 97
 
@@ -748,7 +740,6 @@ Sub CheckLeagueStats (targetTeam$)
             Next Z
         End If
 
-
         For Z = 279 To 288
             If cmplZ2$(Z) = NM$(X) And cmplZ3$(Z) = WT$ Then
                 cmplZ1!(Z, 1) = JS!(X, 17)
@@ -774,7 +765,6 @@ Sub CheckLeagueStats (targetTeam$)
             Next Z
 
         End If
-
 
         For Z = 289 To 298
             3621 '
@@ -808,7 +798,6 @@ Sub CheckLeagueStats (targetTeam$)
     Call CheckMoreStats
 
 End Sub
-
 
 '----------------------------------------
 '      CheckMoreStats Subroutine
@@ -865,7 +854,6 @@ Sub CheckMoreStats ()
 
             End If
 
-
             3430 '
             For Y = 140 To 150
                 If cmplZ2$(Y) = NM$(X) And cmplZ3$(Y) = WT$ Then
@@ -899,7 +887,6 @@ Sub CheckMoreStats ()
                     GoTo 3440
                 End If
             Next Y
-
 
             If JS!(X, 7) - JS!(X, 8) >= cmplZ1!(150, 1) - cmplZ1!(150, 2) Then
 
@@ -937,7 +924,6 @@ Sub CheckMoreStats ()
                 End If
 
             End If
-
 
             3440 '
             For Z = 151 To 161
@@ -982,7 +968,6 @@ Sub CheckMoreStats ()
 
             End If
 
-
             3452 '
             For Z = 162 To 172
 
@@ -1011,7 +996,6 @@ Sub CheckMoreStats ()
                 '3462 FOR Z = 162 TO 172
                 '3463 NEXT Z
             End If
-
 
             3464 '
             For Z = 173 To 183
@@ -1042,7 +1026,6 @@ Sub CheckMoreStats ()
                 '3475 NEXT Z
             End If
 
-
             3476 '
             For Z = 184 To 194
                 If cmplZ2$(Z) = NM$(X) And cmplZ3$(Z) = WT$ Then
@@ -1072,7 +1055,6 @@ Sub CheckMoreStats ()
                 '3487 NEXT Z
             End If
 
-
             3488 '
             For Z = 195 To 205
 
@@ -1100,7 +1082,6 @@ Sub CheckMoreStats ()
                 '3498 FOR Z = 195 TO 205
                 'NEXT Z
             End If
-
 
             3500 '
             For Z = 206 To 216
@@ -1130,7 +1111,6 @@ Sub CheckMoreStats ()
                 '3510 FOR Z = 206 TO 216
                 'NEXT Z
             End If
-
 
             3512 '
             APP = APP + JS!(X, 9)
@@ -1165,7 +1145,6 @@ Sub CheckMoreStats ()
         End If 'Done checking for "XXX"
 
     Next X
-
 
     3530 '
     For Z = 1 To 40:

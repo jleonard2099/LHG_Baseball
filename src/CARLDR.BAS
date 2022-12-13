@@ -29,7 +29,6 @@ Sub CARLDR ()
 
 End Sub
 
-
 '----------------------------------------
 '       UpdateLeaders Subroutine
 '----------------------------------------
@@ -77,7 +76,7 @@ Sub UpdateLeaders ()
                 Cls
                 Locate , 28
                 Color 14
-                Print "SELECT CAREER FILE TO VIEW": Color 15
+                Print "SELECT FILE TO VIEW": Color 15
                 Selection% = 1
                 Start% = 1
                 FileFGColr% = 15: FileBGColr% = 1
@@ -106,9 +105,9 @@ Sub UpdateLeaders ()
             Loop Until UCase$(I$) = "N"
 
             If ExitCode% <> 27 Then
-            
+
                 leaderFile$ = RTrim$(targetFile$)
-                
+
                 Cls
 
                 Do
@@ -117,7 +116,6 @@ Sub UpdateLeaders ()
                     Locate 7: Print "ANY CHANGE (Y/N)"
                     I$ = GetKeyPress$
                 Loop Until UCase$(I$) = "N"
-
 
                 Open diskPaths$(1) + leaderFile$ For Input As #1
                 Input #1, NB, NP
@@ -145,31 +143,30 @@ Sub UpdateLeaders ()
                     Next
                 Next
 
-
                 For K = 0 To 99
                     For X = 0 To 14
 
-                        If BC(K, X) > BL1!(X, 19) Then 
-                        
+                        If BC(K, X) > BL1!(X, 19) Then
+
                             BL1!(X, 19) = BC(K, X): BL0$(X, 19) = careerB$(K)
-                            
+
                             For I = 1 To 20
                                 For J = 20 To I Step -1
                                     If BL1!(X, J - 1) < BL1!(X, J) Then Swap BL1!(X, J - 1), BL1!(X, J): Swap BL0$(X, J - 1), BL0$(X, J)
                                 Next J
                             Next I
-                            
+
                         End If
-                        
+
                     Next X
 
                 Next K
 
                 For K = 0 To 99
                     If BC(K, 0) < N1 Or BC(K, 0) = 0 Then
-        
-                        If BC(K, 1) / BC(K, 0) > BL1!(15, 19) Then 
-                        
+
+                        If BC(K, 1) / BC(K, 0) > BL1!(15, 19) Then
+
                             BL1!(15, 19) = BC(K, 1) / BC(K, 0): BL0$(15, 19) = careerB$(K)
                             For I = 1 To 20
                                 For J = 20 To I Step -1
@@ -178,16 +175,16 @@ Sub UpdateLeaders ()
                             Next I
 
                         End If
-                        
+
                     End If
-                    
+
                 Next K
 
                 For K = 0 To 99
                     If BC(K, 0) < N1 Or BC(K, 0) = 0 Then
-                    
-                        If (BC(K, 1) + BC(K, 4) + BC(K, 5) * 2 + BC(K, 6) * 3) / BC(K, 0) > BL1!(16, 19) Then 
-                        
+
+                        If (BC(K, 1) + BC(K, 4) + BC(K, 5) * 2 + BC(K, 6) * 3) / BC(K, 0) > BL1!(16, 19) Then
+
                             BL1!(16, 19) = (BC(K, 1) + BC(K, 4) + BC(K, 5) * 2 + BC(K, 6) * 3) / BC(K, 0): BL0$(16, 19) = careerB$(K)
 
                             For I = 1 To 20
@@ -195,37 +192,37 @@ Sub UpdateLeaders ()
                                     If BL1!(16, J - 1) < BL1!(16, J) Then Swap BL1!(16, J - 1), BL1!(16, J): Swap BL0$(16, J - 1), BL0$(16, J)
                                 Next J
                             Next I
-                        
+
                         End If
-                        
+
                     End If
-                    
+
                 Next K
 
                 For K = 0 To 99
-                
+
                     If Not (BC(K, 0) < N1 Or BC(K, 0) + BC(K, 7) = 0) Then
 
-                        If (BC(K, 1) + BC(K, 7)) / (BC(K, 0) + BC(K, 7)) > BL1!(17, 19) Then 
-                        
+                        If (BC(K, 1) + BC(K, 7)) / (BC(K, 0) + BC(K, 7)) > BL1!(17, 19) Then
+
                             BL1!(17, 19) = (BC(K, 1) + BC(K, 7)) / (BC(K, 0) + BC(K, 7)): BL0$(17, 19) = careerB$(K)
                             For I = 1 To 20
                                 For J = 20 To I Step -1
                                     If BL1!(17, J - 1) < BL1!(17, J) Then Swap BL1!(17, J - 1), BL1!(17, J): Swap BL0$(17, J - 1), BL0$(17, J)
                                 Next J
                             Next I
-                            
+
                         End If
-                        
+
                     End If
-                    
+
                 Next K
 
                 For K = 0 To 79
                     For X = 0 To 14
 
-                        If PC(K, X) > PL1!(X, 19) Then 
-                        
+                        If PC(K, X) > PL1!(X, 19) Then
+
                             532 PL1!(X, 19) = PC(K, X): PL0$(X, 19) = careerP$(K)
                             For I = 1 To 20
                                 For J = 20 To I Step -1
@@ -233,7 +230,7 @@ Sub UpdateLeaders ()
                                 Next J
                             Next I
                         End If
-                        
+
                     Next X
 
                 Next K
@@ -241,17 +238,17 @@ Sub UpdateLeaders ()
                 For K = 0 To 79
                     If Not(PC(K, 0) < N2 * 3 Or PC(K, 0) = 0) Then
 
-                        If ((PC(K, 3) * 9) / PC(K, 0)) * 3 < PL1!(15, 19) Then 
-                        
+                        If ((PC(K, 3) * 9) / PC(K, 0)) * 3 < PL1!(15, 19) Then
+
                             PL1!(15, 19) = ((PC(K, 3) * 9) / PC(K, 0)) * 3: PL0$(15, 19) = careerP$(K)
                             For I = 1 To 20
                                 For J = 20 To I Step -1
                                     If PL1!(15, J) < PL1!(15, J - 1) Then Swap PL1!(15, J), PL1!(15, J - 1): Swap PL0$(15, J), PL0$(15, J - 1)
                                 Next J
                             Next I
-                        
+
                         End If
-                        
+
                     End If
 
                 Next K
@@ -262,21 +259,20 @@ Sub UpdateLeaders ()
                     X$ = Mid$(leaderFile$, D, 1)
                     If X$ = "." Then JX = D - 1
                 Next J
-                            
+
                 Open diskPaths$(1) + Left$(leaderFile$, JX) + ".TCL" For Output As #1
                 For I = 0 To 17: For I1 = 0 To 19: Write #1, BL1!(I, I1), BL0$(I, I1): Next: Next
                 For I = 0 To 15: For I1 = 0 To 19: Write #1, PL1!(I, I1), PL0$(I, I1): Next: Next
                 Close #1
-            
+
             End If 'Done checking for ESC
-            
+
         End If 'Done checking file count
 
     '...Until we press ESC
     Loop Until ExitCode% = 27 Or Count% = 0
 
 End Sub
-
 
 '----------------------------------------
 '       ViewPrintLeaders Subroutine
@@ -297,16 +293,16 @@ Sub ViewPrintLeaders ()
 
         If Count% = 0 Then 
             Locate 10, 8
-            Call CSMsgBox("NO CAREER FILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+            Call CSMsgBox("NO CAREER LEADER FILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
             I$ = GetKeyPress$
             Call CSMsgBox("", 0, Pass)
         Else
-            ReDim tclFiles$(0 To Count%)
+            ReDim careerLeaderFiles$(0 To Count%)
             For X = 1 To Count%
-                tclFiles$(X) = Space$(12)
+                careerLeaderFiles$(X) = Space$(12)
             Next
-            tclFiles$(0) = Spec$
-            Call ReadFile(tclFiles$())
+            careerLeaderFiles$(0) = Spec$
+            Call ReadFile(careerLeaderFiles$())
 
             Do
                 Cls
@@ -314,7 +310,7 @@ Sub ViewPrintLeaders ()
                 Cls
                 Locate , 28
                 Color 14
-                Print "SELECT CAREER FILE TO VIEW": Color 15
+                Print "SELECT FILE TO VIEW": Color 15
                 Selection% = 1
                 Start% = 1
                 FileFGColr% = 15: FileBGColr% = 1
@@ -330,11 +326,11 @@ Sub ViewPrintLeaders ()
                 Print "-SELECTS FILE";
 
                 _MouseShow "DEFAULT"
-                MAMenu tclFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+                MAMenu careerLeaderFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
                 _MouseHide
 
                 If ExitCode% <> 27 Then
-                    targetFile$ = tclFiles$(Selection%)
+                    targetFile$ = careerLeaderFiles$(Selection%)
                     Locate 2, 33: Print targetFile$
                     Locate , 33: Print "ANY CHANGE (YN)";
                     Color 15, 0
@@ -347,7 +343,7 @@ Sub ViewPrintLeaders ()
 				Cls
 
 				Cls
-				
+
 				Open diskPaths$(1) + Z1$ For Input As #1
 				For I = 0 To 17: For I1 = 0 To 19: Input #1, BL1!(I, I1), BL0$(I, I1): Next: Next
 				For I = 0 To 15: For I1 = 0 To 19: Input #1, PL1!(I, I1), PL0$(I, I1): Next: Next
@@ -361,23 +357,21 @@ Sub ViewPrintLeaders ()
 				Do
 					I$ = GetKeyPress$
 				Loop Until UCase$(I$) = "P" Or UCase$(I$) = "V"
-				
+
 				If UCase$(I$) = "P" Then 
 					Call PrintLeaders_Screen
 				Else
 					Call ViewLeaders_Screen
 				End If
-				
+
 			End If 'Done checking for ESC
 
 		End If 'Done checking file count
-		
+
     '...Until we press ESC
     Loop Until ExitCode% = 27 or Count% = 0
 
 End Sub
-
-
 
 '----------------------------------------
 '       PrintLeaders_Screen Subroutine
@@ -403,9 +397,9 @@ Sub PrintLeaders_Screen ()
         LPrint Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(5, I);: LPrint Tab(18); Using "####"; BL1!(5, I);: LPrint Tab(25); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(6, I);: LPrint Tab(43); Using "####"; BL1!(6, I);
         LPrint Tab(50); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(7, I);: LPrint Tab(68); Using "####"; BL1!(7, I);: LPrint Tab(75); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(8, I);: LPrint Tab(93); Using "####"; BL1!(8, I);
     LPrint Tab(100); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(9, I);: LPrint Tab(118); Using "####"; BL1!(9, I): Next
-    
+
     LPrint Chr$(12)
-    
+
     LPrint
     LPrint
     LPrint Tab(5); "CAUGHT STEALING"; Tab(29); "ERRORS"; Tab(54); "GAMES PLAYED"; Tab(79); "BATTING AVERAGE"; Tab(104); "SLUGGING PCT."
@@ -421,9 +415,9 @@ Sub PrintLeaders_Screen ()
         LPrint Tab(25); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(0, I);: LPrint Tab(43); Using "###"; Int(PL1!(0, I) / 3);: If PL1!(O, I) - (Int(PL1!(O, I) / 3) * 3) > 0 Then LPrint ".";: LPrint Using "#"; PL1!(O, I) - (Int(PL1!(O, I) / 3) * 3);
         LPrint Tab(50); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(1, I);: LPrint Tab(68); Using "####"; PL1!(1, I);: LPrint Tab(75); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(2, I);: LPrint Tab(93); Using "####"; PL1!(2, I);
     LPrint Tab(100); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(3, I);: LPrint Tab(118); Using "####"; PL1!(3, I): Next
-    
+
     LPrint Chr$(12)
-    
+
     LPrint
     LPrint
     LPrint Tab(5); "WALKS"; Tab(29); "STRIKEOUTS"; Tab(54); "WINS"; Tab(79); "LOSSES"; Tab(104); "GAMES"
@@ -438,26 +432,24 @@ Sub PrintLeaders_Screen ()
         LPrint Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(9, I);: LPrint Tab(18); Using "####"; PL1!(9, I);: LPrint Tab(25); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(10, I);: LPrint Tab(43); Using "####"; PL1!(10, I);
         LPrint Tab(50); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(11, I);: LPrint Tab(68); Using "####"; PL1!(11, I);: LPrint Tab(75); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(12, I);: LPrint Tab(93); Using "####"; PL1!(12, I);
     LPrint Tab(100); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(13, I);: LPrint Tab(118); Using "####"; PL1!(13, I): Next
-    
+
     LPrint Chr$(12)
-    
+
     LPrint
     LPrint
     LPrint Tab(5); "HOME RUNS ALLOWED"; Tab(29); "EARNED RUN AVERAGE"
     For I = 0 To 19
     LPrint Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(14, I);: LPrint Tab(20); Using "####"; PL1!(14, I);: LPrint Tab(25); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(15, I);: LPrint Tab(43); Using "###.##"; PL1!(15, I): Next
-    
+
     LPrint Chr$(12)
-    
+
 End Sub
-
-
 
 '----------------------------------------
 '     ViewLeaders_Screen Subroutine
 '----------------------------------------
 '...explanation...
-Sub ViewLeaders_Screen
+Sub ViewLeaders_Screen ()
 
     Shared BL0$(), PL0$()
     Shared BL1!(), PL1!()

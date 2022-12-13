@@ -45,12 +45,11 @@ Sub POSSRT ()
 
 End Sub
 
-
 '----------------------------------------
 '       SearchPlayers Subroutine
 '----------------------------------------
 '...explanation...
-Sub SearchPlayers
+Sub SearchPlayers ()
 
     Cls
     Spec$ = diskPaths$(0) + "*.POS"
@@ -59,7 +58,7 @@ Sub SearchPlayers
 
     If Count% = 0 Then
         Locate 10, 8
-        Call CSMsgBox("NO LEAGUE POSITION FILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+        Call CSMsgBox("NO POSITION FILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
         I$ = GetKeyPress$
         Call CSMsgBox("", 0, Pass)
     Else
@@ -69,7 +68,6 @@ Sub SearchPlayers
         Next
         positionFiles$(0) = Spec$
         Call ReadFile(positionFiles$())
-        'CALL SortStr(VARPTR(positionFiles$(1)), Count, 0)
 
         Do
             Cls
@@ -77,7 +75,7 @@ Sub SearchPlayers
             Cls
             Locate , 28
             Color 14
-            Print "SELECT LEADERS TO VIEW": Color 15
+            Print "SELECT FILE TO VIEW": Color 15
             Selection% = 1
             Start% = 1
             FileFGColr% = 15: FileBGColr% = 1
@@ -166,20 +164,19 @@ Sub SearchPlayers
 						End Select
 
 					End If 'Done looking for Z = 9
-			
+
 				End If 'Done checking for ESC
-		
+
 			Loop Until Z = 9
-		
+
 		End If 'Done checking for ESC
-		
+
     End If
 
     '...Until we press ESC
     'Loop Until ExitCode% = 27 Or Count% = 0 Or I$ = "N"
 
 End Sub
-
 
 '----------------------------------------
 '      ViewSearchResults Subroutine
@@ -299,7 +296,6 @@ Sub ViewSearchResults (PS, PS$, LGE$)
 
 End Sub
 
-
 '----------------------------------------
 '      PrintSearchResults Subroutine
 '----------------------------------------
@@ -405,7 +401,6 @@ Sub PrintSearchResults (PS, PS$, LGE$)
 
 End Sub
 
-
 '----------------------------------------
 '       SortPitchers Subroutine
 '----------------------------------------
@@ -456,7 +451,6 @@ Sub SortPitchers (LGE$)
     End Select
 
 End Sub
-
 
 '----------------------------------------
 '      Pitchers10_Games Subroutine
@@ -551,7 +545,6 @@ Sub Pitchers10_Games (PC, PPS$, LGE$)
     End Select
 
 End Sub
-
 
 '----------------------------------------
 '    PitchersHanded Subroutine
@@ -709,7 +702,6 @@ Sub PitchersHanded (THR, PPS$, LGE$)
     '4813 WIDTH "LPT1:1", 80
 
 End Sub
-
 
 '----------------------------------------
 '          ReadTeam_PosSrt Subroutine

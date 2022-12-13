@@ -114,7 +114,6 @@ Sub GROUND ()
 
         Next I
 
-
         For I = 0 To 21
 
             If P%(I, 6) = 0 Or P%(I, 10) = 0 Then
@@ -232,9 +231,7 @@ Sub GROUND ()
 
     Loop Until UCase$(I$) = "N" 'from 300
 
-
 End Sub
-
 
 '----------------------------------------
 '       GetTeam_GROUND subroutine
@@ -310,7 +307,6 @@ Sub GetTeam_GROUND (yearNumber$, numberTeams, teamName$, teamIdx)
     Loop Until UCase$(I$) = "N"
 
 End Sub
-
 
 '----------------------------------------
 '   SelectTeam_GROUND subroutine
