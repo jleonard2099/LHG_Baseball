@@ -30,12 +30,13 @@ Teams files will not be included at this time. However, if you're nice enough, t
 Contact me at my [profile page](https://github.com/jleonard2099/jleonard2099/tree/main) for now.
 Bugs and/or feature requests can be submitted using GitHub (see the "Issues" tab at the top of page). This will be the easiest way for me to implement ideas.
 
-### Project Status ###
+# Project Status #
+## Current ##
 Code has been re-worked to compile in a modern environment. Code is in progress of being re-factored for menu navigation, along with consolidating so it can be supported for Linux / Mac compile in QB64.
 
-Things are moving along as fast as personal time allows for now, which is pretty well now. Anticipate finished product by September 2022.
+Things are almost complete, code has been compiled and tested. Anticipate finished product before 2023.
 
-# Roadmap #
+## Road Map ##
 ### Phase 1 ###
 Nearly complete. The focus has been completely on refactoring code and first steps towards consistency / cleanup.
 - Make wording of menus and options consistent for all products
