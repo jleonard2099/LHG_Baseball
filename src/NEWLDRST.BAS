@@ -121,11 +121,18 @@ Sub UpdateLeagueStandings ()
                 _MouseHide
 
                 If ExitCode% <> 27 Then
+
+					Color 15, 1
                     targetFile$ = leagueFiles$(Selection%)
                     Locate 2, 33: Print targetFile$
-                    Locate , 33: Print "ANY CHANGE (YN)";
-                    Color 15, 0
-                    I$ = GetKeyPress$
+
+					Do
+						Locate , 33: Print "ANY CHANGE (YN)";
+						I$ = GetKeyPress$
+					Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+					Color 15, 0
+
                 End If
 
             Loop Until UCase$(I$) = "N" Or ExitCode% = 27
@@ -283,11 +290,16 @@ Sub ViewPrintLeagueStandings ()
 
             If ExitCode% <> 27 Then
 
+				Color 15, 1
                 targetFile$ = standingsFiles$(Selection%)
                 Locate 2, 33: Print targetFile$
-                Locate , 33: Print "ANY CHANGE (YN)";
-                Color 15, 0
-                I$ = GetKeyPress$
+
+				Do
+					Locate , 33: Print "ANY CHANGE (YN)";
+					I$ = GetKeyPress$
+				Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+				Color 15, 0
 
                 If UCase$(I$) = "N" Then
 
@@ -317,7 +329,7 @@ Sub ViewPrintLeagueStandings ()
                         Call PrintNewLeaders
                     End If
 
-                End If 'Done checking for ANY CHANGE?
+                End If 'Done checking for changes
 
             End If 'Done checking for ESC
 

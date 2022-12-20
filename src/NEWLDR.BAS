@@ -439,8 +439,15 @@ Sub PlayerTotals (TVN, B9, QW)
 
         If I$ <> Chr$(27) Then
             Locate 22: Print Space$(64)
-            Locate 22: Color 14: Print "VIEW AGAIN (Y/N)"
-            I$ = GetKeyPress$
+
+			Color 14
+			
+			Do
+				Locate 22
+				Print "VIEW AGAIN (Y/N)"
+				I$ = GetKeyPress$
+			Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
+
         End If
 
     Loop Until UCase$(I$) = "N" Or I$ = Chr$(27)
@@ -815,8 +822,12 @@ Sub PitchingLeaders_Screen (TVN, B9, QW)
         If I$ <> Chr$(27) Then
 
             Locate 22: Print Space$(64)
-            Locate 22: Color 14: Print "VIEW AGAIN (Y/N)"
+			
+			Color 14
+			
             Do
+				Locate 22
+				Print "VIEW AGAIN (Y/N)"
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -890,16 +901,23 @@ Sub UpdateExpandedLeaders ()
             _MouseHide
 
             If ExitCode% <> 27 Then
+
+				Color 15, 1
                 targetFile$ = leagueFiles$(Selection%)
                 Locate 2, 33: Print targetFile$
-                Locate , 33: Print "ANY CHANGE (YN)";
-                Color 15, 0
+
                 Do
+					Locate , 33: Print "ANY CHANGE (YN)";
                     I$ = GetKeyPress$
                 Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+				Color 15, 0
+
             End If
 
         Loop Until UCase$(I$) = "N"
+
+		Color 15, 0
 
         If ExitCode% <> 27 Then
 
@@ -1151,13 +1169,17 @@ Sub ViewExpandedLeaders ()
                 _MouseHide
 
                 If ExitCode% <> 27 Then
+					
+					Color 15, 1
                     targetFile$ = leagueFiles$(Selection%)
                     Locate 2, 33: Print targetFile$
-                    Locate , 33: Print "ANY CHANGE (YN)";
-                    Color 15, 0
+
                     Do
+						Locate , 33: Print "ANY CHANGE (YN)";
                         I$ = GetKeyPress$
                     Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
+
+					Color 15, 0
 
                 End If
 
@@ -1485,12 +1507,17 @@ Sub LeagueTotals_A_Screen (TVN, QW)
         Color 15: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
         I$ = GetKeyPress$
 
+
         If I$ <> Chr$(27) Then
-            Locate 22: Print Space$(64)
-            Locate 22: Color 14: Print "VIEW AGAIN (Y/N)"
+			Locate 22: Print Space$(64)
+			Color 14
+
             Do
+				Locate 22
+				Print "VIEW AGAIN (Y/N)"
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
         End If
 
     Loop Until UCase$(I$) = "N" Or I$ = Chr$(27)
@@ -1543,9 +1570,12 @@ Sub LeagueTotals_B_Screen (TVN, QW)
 
         If I$ <> Chr$(27) Then
 
+			Locate 22: Print Space$(64)
+			Color 14
+
             Do
-                Locate 22: Print Space$(64)
-                Locate 22: Color 14: Print "VIEW AGAIN (Y/N)"
+                Locate 22
+				Print "VIEW AGAIN (Y/N)"
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 

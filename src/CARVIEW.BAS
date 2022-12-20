@@ -12,13 +12,13 @@ Sub CARVIEW ()
     TMR = 2700
 
     Do
-    'Display list of files...
+        'Display list of files...
 
         Spec$ = diskPaths$(1) + "*.CAR"
         null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
         Count% = DirCount%
 
-        If Count% = 0 Then 
+        If Count% = 0 Then
             Locate 10, 8
             Call CSMsgBox("NO CAREER FILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
             I$ = GetKeyPress$
@@ -60,73 +60,81 @@ Sub CARVIEW ()
                 MAMenu careerFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
                 _MouseHide
 
-                If ExitCode% <> 27 Then 
+                If ExitCode% <> 27 Then
+
+                    Color 15, 1
                     targetFile$ = careerFiles$(Selection%)
                     Locate 2, 33: Print targetFile$
-                    Locate , 33: Print "ANY CHANGE (YN)";
-                    Color 15, 0
-                    I$ = GetKeyPress$
+
+                    Do
+                        Locate , 33: Print "ANY CHANGE (YN)";
+                        I$ = GetKeyPress$
+                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+					Color 15, 0
+
                 End If
 
             Loop Until UCase$(I$) = "N" Or ExitCode% = 27
 
             If ExitCode% <> 27 Then
 
-				Z$ = RTrim$(targetFile$)
+                Cls
+                Locate 12, 10: Print "LOADING CAREER FILE . . . . PLEASE WAIT"
 
-				Color 15
-				Locate 12, 10: Print "LOADING CAREER FILE . . . . PLEASE WAIT"
+                Z$ = RTrim$(targetFile$)
 
-				Open diskPaths$(1) + Z$ For Input As #2
-				Input #2, NB, NP
+                Open diskPaths$(1) + Z$ For Input As #2
+                Input #2, NB, NP
 
-				For I = 0 To 99: Input #2, careerB$(I): Next
-				For I = 0 To 79: Input #2, careerP$(I): Next
+                For I = 0 To 99: Input #2, careerB$(I): Next
+                For I = 0 To 79: Input #2, careerP$(I): Next
 
-				For J = 1 To 15
-					For I = 0 To 99
-						For I1 = O To 17: 
-							Input #2, BRS%(J, I, I1)
-						Next I1
-						Locate 12, 55: Color 3
-						TMR = TMR - 1
-						Print Using "####"; TMR
-					Next I
-				Next J
+                For J = 1 To 15
+                    For I = 0 To 99
+                        For I1 = O To 17:
+                            Input #2, BRS%(J, I, I1)
+                        Next I1
+                        Locate 12, 55: Color 3
+                        TMR = TMR - 1
+                        Print Using "####"; TMR
+                    Next I
+                Next J
 
-				For J = 1 To 15
-					For I = 0 To 79
-						For I1 = 0 To 16
-							Input #2, PRS%(J, I, I1)
-						Next I1
-					Locate 12, 55
-					Color 3
-					TMR = TMR - 1
-					Print Using "####"; TMR
-					Next I
-				Next J
+                For J = 1 To 15
+                    For I = 0 To 79
+                        For I1 = 0 To 16
+                            Input #2, PRS%(J, I, I1)
+                        Next I1
+                        Locate 12, 55
+                        Color 3
+                        TMR = TMR - 1
+                        Print Using "####"; TMR
+                    Next I
+                Next J
 
-				Close #2
+                Close #2
 
-				Cls
-				Locate 18, 10
-				Color 12: Print "P";: Color 7: Print "RINT OR ";
-				Color 12: Print "V";: Color 7: Print "IEW"
-				Do
-					I$ = GetKeyPress$
-				Loop Until UCase$(I$) = "P" OR UCase$(I$) = "V"
+                Cls
+                Do
+					Locate 18, 10	'this is original
+					'Locate 15, 10	'this matches other games
+					Color 12: Print "V";: Color 7: Print "iew or ";
+					Color 12: Print "P";: Color 7: Print "rint"
+                    I$ = GetKeyPress$
+                Loop Until UCase$(I$) = "P" Or UCase$(I$) = "V"
 
-				If UCase$(I$) = "V" Then 
-					Call CareerToScreen (Z$)
-				Else
-					Call CareerToPrinter (Z$)
-				End If
+                If UCase$(I$) = "V" Then
+                    Call CareerToScreen(Z$)
+                Else
+                    Call CareerToPrinter(Z$)
+                End If
 
-			End If 'Done checking for ESC
+            End If 'Done checking for ESC
 
         End If 'Done checking file count
 
-    '...Until we press ESC
+        '...Until we press ESC
     Loop Until ExitCode% = 27 Or Count% = 0
 
 End Sub
@@ -140,7 +148,7 @@ Sub BatterTotals ()
     Dim I2!, I3!, I4!
     Shared BRS%()
 
-    VV = BRS%(1, I, 16) + BRS%(2, I, 16) + BRS%(3, I, 16) + BRS%(4, I, 16) + BRS%(5, I, 16) + BRS%(6, I, 16) + BRS%(7, I, 16) + BRS%(8, I, 16) + BRS%(9, I, 16) + BRS%(10, I, 16) + BRS%(11, I, 16) + BRS%(12, I, 16) + BRS%(13, I, 16) + BRS%(14, I, 16)+ BRS%(15, I, 16)
+    VV = BRS%(1, I, 16) + BRS%(2, I, 16) + BRS%(3, I, 16) + BRS%(4, I, 16) + BRS%(5, I, 16) + BRS%(6, I, 16) + BRS%(7, I, 16) + BRS%(8, I, 16) + BRS%(9, I, 16) + BRS%(10, I, 16) + BRS%(11, I, 16) + BRS%(12, I, 16) + BRS%(13, I, 16) + BRS%(14, I, 16) + BRS%(15, I, 16)
 
     For V = 0 To VV
 
@@ -213,7 +221,7 @@ Sub PitcherTotals ()
     Dim I2!, I3!, I4!
     Shared PRS%()
 
-    VV = PRS%(1, I, 15) + PRS%(2, I, 15) + PRS%(3, I, 15) + PRS%(4, I, 15) + PRS%(5, I, 15) + PRS%(6, I, 15) + PRS%(7, I, 15) + PRS%(8, I, 15) + PRS%(9, I, 15) + PRS%(10, I, 15) + PRS%(11, I, 15) + PRS%(12, I, 15) + PRS%(13, I, 15) + PRS%(14, I, 15)+ PRS%(15, I, 15)
+    VV = PRS%(1, I, 15) + PRS%(2, I, 15) + PRS%(3, I, 15) + PRS%(4, I, 15) + PRS%(5, I, 15) + PRS%(6, I, 15) + PRS%(7, I, 15) + PRS%(8, I, 15) + PRS%(9, I, 15) + PRS%(10, I, 15) + PRS%(11, I, 15) + PRS%(12, I, 15) + PRS%(13, I, 15) + PRS%(14, I, 15) + PRS%(15, I, 15)
 
     For V = 0 To VV
 
@@ -298,7 +306,7 @@ Sub CareerToPrinter (careerFile$)
 
             VV = BRS%(1, I, 16) + BRS%(2, I, 16) + BRS%(3, I, 16) + BRS%(4, I, 16) + BRS%(5, I, 16) + BRS%(6, I, 16) + BRS%(7, I, 16) + BRS%(8, I, 16) + BRS%(9, I, 16) + BRS%(10, I, 16) + BRS%(11, I, 16) + BRS%(12, I, 16) + BRS%(13, I, 16) + BRS%(14, I, 16) + BRS%(15, I, 16)
 
-            If 55 - PTN < VV Then 
+            If 55 - PTN < VV Then
                 LPrint Chr$(12)
                 LPrint careerFile$
                 LPrint "BATTER     YEAR      G      AB      R      H    2B    3B    HR    RBI     BB     SO     SB    CS     E     AVG     SLG      OB"
@@ -331,7 +339,7 @@ Sub CareerToPrinter (careerFile$)
                 I3! = 0
                 I4! = 0
 
-                IF BRS%(V, I, 0) > 0 THEN I2! = INT((BRS%(V, I, 1) / BRS%(V, I, 0) + .0005) * 1000): I3! = INT(((BRS%(V, I, 1) + BRS%(V, I, 4) + 2 * BRS%(V, I, 5) + 3 * BRS%(V, I, 6)) / BRS%(V, I, 0) + .0005) * 1000): I4! = INT(((BRS%(V, I, 1) + BRS%(V, I, 7)) / (BRS%(V, I, 7) + BRS%(V, I, 0)) + .0005) * 1000)
+                If BRS%(V, I, 0) > 0 Then I2! = Int((BRS%(V, I, 1) / BRS%(V, I, 0) + .0005) * 1000): I3! = Int(((BRS%(V, I, 1) + BRS%(V, I, 4) + 2 * BRS%(V, I, 5) + 3 * BRS%(V, I, 6)) / BRS%(V, I, 0) + .0005) * 1000): I4! = Int(((BRS%(V, I, 1) + BRS%(V, I, 7)) / (BRS%(V, I, 7) + BRS%(V, I, 0)) + .0005) * 1000)
                 If BRS%(V, I, 0) = 0 Or I2! = 0 Then LPrint Tab(107); ".000";
 
                 If I2! > 0 And I2! < 100 Then LPrint Tab(107); ".0";: LPrint Using "##"; I2!;
@@ -426,7 +434,7 @@ Sub CareerToPrinter (careerFile$)
         If careerP$(I) <> "" And careerP$(I) <> "XXX" Then
             VV = PRS%(1, I, 15) + PRS%(2, I, 15) + PRS%(3, I, 15) + PRS%(4, I, 15) + PRS%(5, I, 15) + PRS%(6, I, 15) + PRS%(7, I, 15) + PRS%(8, I, 15) + PRS%(9, I, 15) + PRS%(10, I, 15) + PRS%(11, I, 15) + PRS%(12, I, 15) + PRS%(13, I, 15) + PRS%(14, I, 15) + PRS%(15, I, 15)
 
-            If 55 - PTN < VV Then 
+            If 55 - PTN < VV Then
                 LPrint Chr$(12)
                 LPrint careerFile$
                 LPrint "PITCHER    YEAR     W     L     S      IP        H     BB     SO     ERA     G    GS    CG    RUN     ER    SHO    HR    DP"
@@ -552,18 +560,18 @@ End Sub
 '...explanation...
 Sub CareerToScreen (careerFile$)
 
-    CLS 
-    COLOR 7: PRINT "VIEW "; 
-    COLOR 12: PRINT "B"; : COLOR 7: PRINT "ATTERS, ";
-    COLOR 12: PRINT "P"; : COLOR 7: PRINT "ITCHERS, ";
-    COLOR 12: PRINT "R"; : COLOR 7: PRINT "OSTER IN SEQUENCE, OR ";
-    COLOR 12: PRINT "E"; : COLOR 7: PRINT "XIT TO MAIN MENU"
+    Cls
+    Color 7: Print "VIEW ";
+    Color 12: Print "B";: Color 7: Print "ATTERS, ";
+    Color 12: Print "P";: Color 7: Print "ITCHERS, ";
+    Color 12: Print "R";: Color 7: Print "OSTER IN SEQUENCE, OR ";
+    Color 12: Print "E";: Color 7: Print "XIT TO MAIN MENU"
     I$ = GetKeyPress$
 
     Select Case UCase$(I$)
-        Case "B": Call ViewLeaders_Batters (careerFile$)
-        Case "P": Call ViewLeaders_Pitchers (careerFile$)
-        Case "R": Call ViewLeaders_Sequence (careerFile$)
+        Case "B": Call ViewLeaders_Batters(careerFile$)
+        Case "P": Call ViewLeaders_Pitchers(careerFile$)
+        Case "R": Call ViewLeaders_Sequence(careerFile$)
         Case "E": Cls 'Exit
     End Select
 
@@ -631,7 +639,7 @@ Sub ViewLeaders_Batters (careerFile$)
         I3! = 0
         I4! = 0
 
-        IF BRS%(V, B9, 0) > 0 THEN I2! = INT((BRS%(V, B9, 1) / BRS%(V, B9, 0) + .0005) * 1000): I3! = INT(((BRS%(V, B9, 1) + BRS%(V, B9, 4) + 2 * BRS%(V, B9, 5) + 3 * BRS%(V, B9, 6)) / BRS%(V, B9, 0) + .0005) * 1000): I4! = INT(((BRS%(V, B9, 1) + BRS%(V, B9, 7)) / (BRS%(V, B9, 7) + BRS%(V, B9, 0)) + .0005) * 1000)
+        If BRS%(V, B9, 0) > 0 Then I2! = Int((BRS%(V, B9, 1) / BRS%(V, B9, 0) + .0005) * 1000): I3! = Int(((BRS%(V, B9, 1) + BRS%(V, B9, 4) + 2 * BRS%(V, B9, 5) + 3 * BRS%(V, B9, 6)) / BRS%(V, B9, 0) + .0005) * 1000): I4! = Int(((BRS%(V, B9, 1) + BRS%(V, B9, 7)) / (BRS%(V, B9, 7) + BRS%(V, B9, 0)) + .0005) * 1000)
         If BRS%(V, B9, 0) = 0 Or I2! = 0 Then Locate , 65: Print ".000";
 
         If I2! > 0 And I2! < 100 Then Locate , 65: Print ".0";: Print Using "##"; I2!;
@@ -919,7 +927,7 @@ Sub ViewLeaders_Sequence (careerFile$)
 
                     I2! = 0: I3! = 0: I4! = 0
 
-                    IF BRS%(V, I, 0) > 0 THEN I2! = INT((BRS%(V, I, 1) / BRS%(V, I, 0) + .0005) * 1000): I3! = INT(((BRS%(V, I, 1) + BRS%(V, I, 4) + 2 * BRS%(V, I, 5) + 3 * BRS%(V, I, 6)) / BRS%(V, I, 0) + .0005) * 1000): I4! = INT(((BRS%(V, I, 1) + BRS%(V, I, 7)) / (BRS%(V, I, 7) + BRS%(V, I, 0)) + .0005) * 1000)
+                    If BRS%(V, I, 0) > 0 Then I2! = Int((BRS%(V, I, 1) / BRS%(V, I, 0) + .0005) * 1000): I3! = Int(((BRS%(V, I, 1) + BRS%(V, I, 4) + 2 * BRS%(V, I, 5) + 3 * BRS%(V, I, 6)) / BRS%(V, I, 0) + .0005) * 1000): I4! = Int(((BRS%(V, I, 1) + BRS%(V, I, 7)) / (BRS%(V, I, 7) + BRS%(V, I, 0)) + .0005) * 1000)
 
                     If BRS%(V, I, 0) = 0 Or I2! = 0 Then Locate , 65: Print ".000";
                     If I2! > 0 And I2! < 100 Then Locate , 65: Print ".0";: Print Using "##"; I2!;
@@ -949,7 +957,7 @@ Sub ViewLeaders_Sequence (careerFile$)
 
                 If I$ = Chr$(0) Then
 
-                    For T = 3 To 20: 
+                    For T = 3 To 20:
                         Locate T
                         Print Space$(78)
                     Next
@@ -975,7 +983,7 @@ Sub ViewLeaders_Sequence (careerFile$)
 
                     Locate 3: Color 15: Print Left$(careerP$(I), 10);
 
-                    VV = PRS%(1, I, 15) + PRS%(2, I, 15) + PRS%(3, I, 15) + PRS%(4, I, 15) + PRS%(5, I, 15) + PRS%(6, I, 15) + PRS%(7, I, 15) + PRS%(8, I, 15) + PRS%(9, I, 15) + PRS%(10, I, 15) + PRS%(11, I, 15) + PRS%(12, I, 15) + PRS%(13, I, 15) + PRS%(14, I, 15)+ PRS%(15, I, 15)
+                    VV = PRS%(1, I, 15) + PRS%(2, I, 15) + PRS%(3, I, 15) + PRS%(4, I, 15) + PRS%(5, I, 15) + PRS%(6, I, 15) + PRS%(7, I, 15) + PRS%(8, I, 15) + PRS%(9, I, 15) + PRS%(10, I, 15) + PRS%(11, I, 15) + PRS%(12, I, 15) + PRS%(13, I, 15) + PRS%(14, I, 15) + PRS%(15, I, 15)
 
                     For V = 1 To VV
 
@@ -1026,9 +1034,9 @@ Sub ViewLeaders_Sequence (careerFile$)
                         Print "HIT ENTER TO CONTINUE OR ESC TO GO TO MAIN MENU"
                         I$ = GetKeyPress$
 
-                         If I$ = Chr$(27) Then Exit Do
+                        If I$ = Chr$(27) Then Exit Do
 
-                         If I$ = Chr$(0) Then
+                        If I$ = Chr$(0) Then
                             For T = 3 To 20: Locate T
                                 Print String$(76, " ")
                             Next
@@ -1044,11 +1052,15 @@ Sub ViewLeaders_Sequence (careerFile$)
 
             If I$ <> Chr$(27) Then
                 Cls
-                Locate 5, 20
-                Color 14: Print "VIEW AGAIN (Y/N)"
-                I$ = GetKeyPress$
-			Else
-				Exit Do
+
+				Color 14
+				
+				Do
+					Locate 5, 20
+					Print "VIEW AGAIN (Y/N)"
+					I$ = GetKeyPress$
+				Loop Until UCase$(I$) = "N" Or Ucase$(I$) = "Y"
+
             End If
 
         End If

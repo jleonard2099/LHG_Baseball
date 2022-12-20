@@ -95,13 +95,18 @@ Sub SearchPlayers ()
             _MouseHide
 
             If ExitCode% <> 27 Then
+
+				Color 15, 1
                 targetFile$ = positionFiles$(Selection%)
                 Locate 2, 33: Print targetFile$
+
                 Do
+					I$ = GetKeyPress$
                     Locate , 33: Print "ANY CHANGE (YN)";
-                    Color 15, 0
-                    I$ = GetKeyPress$
                 Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+				
+				Color 15, 0
+
             End If
 
         Loop Until UCase$(I$) = "N"
@@ -153,8 +158,8 @@ Sub SearchPlayers ()
 
 						Do
 							Locate 18, 28
-							Color 12: Print "P";: Color 7: Print "RINT OR ";
-							Color 12: Print "V";: Color 7: Print "IEW"
+							Color 12: Print "V";: Color 7: Print "iew or ";
+							Color 12: Print "P";: Color 7: Print "rint"
 							I$ = GetKeyPress$
 						Loop Until UCase$(I$) = "P" Or UCase$(I$) = "V"
 
@@ -469,8 +474,8 @@ Sub Pitchers10_Games (PC, PPS$, LGE$)
 
     Do
         Locate 18, 28
-        Color 12: Print "P";: Color 7: Print "RINT OR ";
-        Color 12: Print "V";: Color 7: Print "IEW"
+		Color 12: Print "V";: Color 7: Print "iew or ";
+		Color 12: Print "P";: Color 7: Print "rint"
         I$ = GetKeyPress$
     Loop Until UCase$(I$) = "P" Or UCase$(I$) = "V"
 
@@ -562,8 +567,8 @@ Sub PitchersHanded (THR, PPS$, LGE$)
     Dim TM(40)
 
     Locate 18, 28
-    Color 12: Print "P";: Color 7: Print "RINT OR ";
-    Color 12: Print "V";: Color 7: Print "IEW"
+	Color 12: Print "V";: Color 7: Print "iew or ";
+	Color 12: Print "P";: Color 7: Print "rint"
 
     Do
         I$ = GetKeyPress$

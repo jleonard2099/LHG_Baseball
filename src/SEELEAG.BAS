@@ -64,13 +64,20 @@ Sub SEELEAG ()
                 _MouseHide
 
                 If ExitCode% <> 27 Then
+
+					Color 15, 1
                     targetFile$ = leagueLeaderFiles$(Selection%)
                     Locate 2, 33: Print targetFile$
 
-                    Locate , 33: Print "ANY CHANGE (YN)";
-                    Color 15, 0
-                    I$ = GetKeyPress$
+					Do
+						Locate , 33: Print "ANY CHANGE (YN)";
+						I$ = GetKeyPress$
+					Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+					Color 15, 0
+
                 End If
+
             Loop Until UCase$(I$) = "N" Or ExitCode% = 27
 
             If ExitCode% <> 27 Then
@@ -995,7 +1002,12 @@ Sub SEELEAG ()
                     End If
                 Next
 
-                statCalc! = H! / ATBATS!
+				If ATBATS! <> 0 Then 
+					statCalc! = H! / ATBATS!
+				Else
+					statCalc! = 0
+				End If
+
                 Print
                 'Print "LG TOTALS"; Tab(13); Using ".###      ####      ####  ###      ####     #####    ####"; statCalc!; R; B2; B3; RBI; SO; CS
                 Print "LG TOTALS"; Tab(13); Using ".###"; statCalc!

@@ -74,7 +74,9 @@ Sub GetTeam_REC (yearNumber$, numberTeams)
         Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";: For II = 1 To JJ: Locate 6 + II, 8
         Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
         Locate 7 + JJ, 8
-        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";: Locate 7, 32
+        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+		
+		Locate 7, 32
         Locate , 12: Print "ENTER DISK ID: ": Print
         Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
         Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
@@ -92,7 +94,8 @@ Sub GetTeam_REC (yearNumber$, numberTeams)
                 Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
                 Y = LOF(1)
                 Field #1, 15 As Q$(0)
-                For I1 = 1 To Y / 4342
+                
+				For I1 = 1 To Y / 4342
                     Get #1, I1
                     For I2 = 1 To 15
                         If Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then nullTeam = 1: Exit For
@@ -103,10 +106,12 @@ Sub GetTeam_REC (yearNumber$, numberTeams)
                         teamIndex%(numberTeams) = I1
                     End If
                 Next I1
+				
                 Close 1
 
                 Call SelectTeam_REC(yearNumber$, numberTeams)
-            End If
+            
+			End If
 
         End If
 
@@ -114,10 +119,16 @@ Sub GetTeam_REC (yearNumber$, numberTeams)
             BO% = 0
         Else
             T$ = RTrim$(Q$(0))
-            Locate 2, 33: Color 15, 0: Color L%(11), L%(12)
-            Print T$: Color 15, 4
-            Locate , 33: Print "ANY CHANGE (YN)";
-            I$ = GetKeyPress$
+            Locate 2, 33
+			Color L%(11), L%(12): Print T$
+
+			Color 15, 4
+
+			Do
+				Locate , 33: Print "ANY CHANGE (YN)";
+				I$ = GetKeyPress$
+			Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
         End If
 
     Loop Until UCase$(I$) = "N" Or I$ = Chr$(27)
@@ -171,6 +182,7 @@ Sub SelectTeam_REC (yearNumber$, numberTeams)
 
             For I = 1 To 13: L%(I) = CVI(Q$(I)): Next
             Close 1
+
         End If
 
     Else
@@ -283,11 +295,18 @@ Sub AnalyzeTeamRecord (sameLeague)
                         _MouseHide
 
                         If ExitCode% <> 27 Then
+
+							Color 15, 1
                             targetFile$ = leagueFiles$(Selection%)
                             Locate 2, 33: Print targetFile$
-                            Locate , 33: Print "ANY CHANGE (YN)";
-                            Color 15, 0
-                            I$ = GetKeyPress$
+
+							Do
+								Locate , 33: Print "ANY CHANGE (YN)";
+								I$ = GetKeyPress$
+							Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+							
+							Color 15, 0
+
                         End If
 
                     Loop Until UCase$(I$) = "N" Or ExitCode% = 27
@@ -305,10 +324,11 @@ Sub AnalyzeTeamRecord (sameLeague)
 
                 Color 15, 0
                 Cls
-                Color 12: Locate 12, 5
-                Print "V";: Color 7: Print "IEW OR ";: Color 12: Print "P";: Color 7: Print "RINT"
 
                 Do
+					Locate 12, 5
+					Color 12: Print "V";: Color 7: Print "iew or ";
+					Color 12: Print "P";: Color 7: Print "rint"
                     M$ = GetKeyPress$
                 Loop Until UCase$(M$) = "V" Or UCase$(M$) = "P"
 

@@ -17,287 +17,293 @@ Sub ALIGN ()
     'Dim T%(0 to 21), T1%(0 to 22)
     Shared T%(), T1%()
 
-    Cls
+	Do
 
-    Color 12, 0: Cls: Locate 2, 5: Print "ENTER COMPLETE PATH FOR TEAM STATS TO ALIGN"
-    Color 15: Locate 4, 5: Print "EXAMPLE - A:"
-    Locate , 5: Print "          C:\HAFFNER"
-    Locate , 5: Print "          C:\HAFFNER\1960"
-    Locate , 5: Print "          D:\BASEBALL"
+		Color 12, 0
+		Cls
+		
+		Locate 2, 5: Print "ENTER COMPLETE PATH FOR TEAM STATS TO ALIGN"
+		Color 15
+		Locate 4, 5: Print "EXAMPLE - A:"
+		Locate , 5: Print "          C:\HAFFNER"
+		Locate , 5: Print "          C:\HAFFNER\1960"
+		Locate , 5: Print "          D:\BASEBALL"
 
-    Do
+		For J = 10 To 13
+			Locate J
+			Print Space$(62)
+		Next
 
-        For J = 10 To 13
-            Locate J
-            Print Space$(62)
-        Next
+		Color 10
 
-        Color 10
-        Locate 10, 5: Line Input "ROAD STATS:     "; PR$
-        Locate , 5: Line Input "CURRENT STATS:  "; PC$
-        Color 14
-        Locate 13, 5: Print "ANY CHANGE (Y/N)"
-        I$ = GetKeyPress$
+		Do
 
-    Loop Until UCase$(I$) = "N"
+			Locate 10, 5: Line Input "ROAD STATS:     "; PR$
+			Locate , 5: Line Input "CURRENT STATS:  "; PC$
 
-    Do
+			Color 14
 
-        Locate 15, 5: Print Space$(55)
-        Locate 16, 5: Print Space$(55)
-        Color 11: Locate 15, 5
-		Input "ENTER NAME OF STAT FILE (EX.- MINNESOT.61)"; Z$
-        Locate , 5: Print "ANY CHANGE (YN)"
+			Locate 13, 5: Print "ANY CHANGE (Y/N)"
+			I$ = GetKeyPress$
 
-        I$ = GetKeyPress$
+		Loop Until UCase$(I$) = "N"
 
-    Loop Until UCase$(I$) = "N"
+		Locate 15, 5: Print Space$(55)
+		Locate 16, 5: Print Space$(55)
 
-    If Len(Z$) > 11 Then Z$ = Left$(Z$, 8) + Right$(Z$, 3)
+		Color 11
 
-    Locate 18, 5: Color 12: Print "SEARCHING FOR FILES . . ."
+		Do
+			Locate 15, 5
+			Input "ENTER NAME OF STAT FILE (EX.- MINNESOT.61)"; Z$
 
-    Do
+			Locate , 5: Print "ANY CHANGE (YN)"
+			I$ = GetKeyPress$
 
-        If _FileExists(PR$ + "\" + Z$) Then
+		Loop Until UCase$(I$) = "N"
 
-            Cls
-            Color 15
+		If Len(Z$) > 11 Then Z$ = Left$(Z$, 8) + Right$(Z$, 3)
 
-            Open PR$ + "\" + Z$ For Input As #1
+		Locate 18, 5: Color 12: Print "SEARCHING FOR FILES . . ."
 
-            Input #1, AR$
-            Input #1, W2R%
-            Input #1, L2R%
+		If _FileExists(PR$ + "\" + Z$) Then
 
-            For I = 0 To 22: Input #1, BR$(I): Input #1, BR%(I): Next I
+			Cls
+			Color 15
 
-            For I = 0 To 21: Input #1, PR$(I): Input #1, PR%(I): Next I
+			Open PR$ + "\" + Z$ For Input As #1
 
-            For I = 0 To 22: For I1 = 0 To 21: Input #1, B0R%(I, I1): Next I1: Next I
+			Input #1, AR$
+			Input #1, W2R%
+			Input #1, L2R%
 
-            For I = 0 To 21: For I1 = 0 To 41: Input #1, P0R%(I, I1): Next I1: Next I
+			For I = 0 To 22: Input #1, BR$(I): Input #1, BR%(I): Next I
 
-            Input #1, DR0%
-            Input #1, DR1%
-            For I = 0 To 21: Input #1, TR(I): Next I
-            For I = 0 To 22: Input #1, TR1(I): Next I
+			For I = 0 To 21: Input #1, PR$(I): Input #1, PR%(I): Next I
 
-            Close #1
+			For I = 0 To 22: For I1 = 0 To 21: Input #1, B0R%(I, I1): Next I1: Next I
 
-            If _FileExists(PR$ + "\" + Z$ + "R") Then
+			For I = 0 To 21: For I1 = 0 To 41: Input #1, P0R%(I, I1): Next I1: Next I
 
-                Open PR$ + "\" + Z$ + "R" For Input As #1
-                For I = 0 To 22
-                    For I1 = 0 To 6
-                        Input #1, S0R%(I, I1)
-                    Next
-                Next
-                Close #1
+			Input #1, DR0%
+			Input #1, DR1%
+			For I = 0 To 21: Input #1, TR(I): Next I
+			For I = 0 To 22: Input #1, TR1(I): Next I
 
-            End If
+			Close #1
 
-            If _FileExists(PC$ + "\" + Z$) Then
+			If _FileExists(PR$ + "\" + Z$ + "R") Then
 
-                Open PC$ + "\" + Z$ For Input As #1
+				Open PR$ + "\" + Z$ + "R" For Input As #1
+				For I = 0 To 22
+					For I1 = 0 To 6
+						Input #1, S0R%(I, I1)
+					Next
+				Next
+				Close #1
 
-                Input #1, A$: Input #1, W2%: Input #1, L2%
+			End If
 
-                For I = 0 To 22: Input #1, B$(I): Input #1, B%(I): Next I
+			If _FileExists(PC$ + "\" + Z$) Then
 
-                For I = 0 To 21: Input #1, P$(I): Input #1, P%(I): Next I
+				Open PC$ + "\" + Z$ For Input As #1
 
-                For I = 0 To 22: For I1 = 0 To 21: Input #1, B0%(I, I1): Next I1: Next I
+				Input #1, A$: Input #1, W2%: Input #1, L2%
 
-                For I = 0 To 21: For I1 = 0 To 41: Input #1, P0%(I, I1): Next I1: Next I
+				For I = 0 To 22: Input #1, B$(I): Input #1, B%(I): Next I
 
-                Input #1, D0%: Input #1, D1%
-                For I = 0 To 21: Input #1, T%(I): Next I
-                For I = 0 To 22: Input #1, T1%(I): Next I
+				For I = 0 To 21: Input #1, P$(I): Input #1, P%(I): Next I
 
-                Close #1
+				For I = 0 To 22: For I1 = 0 To 21: Input #1, B0%(I, I1): Next I1: Next I
 
-                If _FileExists(PC$ + "\" + Z$ + "R") Then
-                    Open PC$ + "\" + Z$ + "R" For Input As #1
-                    For I = 0 To 22
-                        For I1 = 0 To 6
-                            Input #1, S0%(I, I1)
-                        Next
-                    Next
-                    Close #1
-                End If
+				For I = 0 To 21: For I1 = 0 To 41: Input #1, P0%(I, I1): Next I1: Next I
 
-                'Do
+				Input #1, D0%: Input #1, D1%
+				For I = 0 To 21: Input #1, T%(I): Next I
+				For I = 0 To 22: Input #1, T1%(I): Next I
 
-                Cls
-                Locate 1, 34: Color 12: Print "STAT ROSTERS"
+				Close #1
 
-                Locate , 33: Color 15: Print "CURRENT  ";: Color 7: Print " ROAD"
+				If Not _FileExists(PC$ + "\" + Z$ + "R") Then
+					Cls
+					Locate 2, 10: Color 7
+					Print "NON-EXISTANT PATH OR INCORRECT FILE NAME"
+					Print
+					Locate , 10
+					Line Input "HIT ENTER TO RE-ENTER INFORMATION"; DUMMY$
 
-                For I = 0 To 22: Color 12: Locate I + 1, 1: Print Using "##"; I;: Print " ";: Color 15: Print Left$(B$(I), 10);: Color 12: Print Tab(17); Using "##"; I;: Print " ";: Color 7: Print Left$(BR$(I), 10);: Next
+				Else
 
-                For I = 0 To 21: Color 12: Locate I + 1, 48: Print Using "##"; I;: Print " ";: Color 15: Print Left$(P$(I), 10);: Color 12: Print Tab(62); Using "##"; I;: Print " ";: Color 7: Print Left$(PR$(I), 10);: Next
+					Open PC$ + "\" + Z$ + "R" For Input As #1
+					For I = 0 To 22
+						For I1 = 0 To 6
+							Input #1, S0%(I, I1)
+						Next
+					Next
+					Close #1
 
-                Color 11: Locate 7, 33: Print "HIT ANY KEY TO"
-                Locate 8, 37: Print "ALIGN"
-                I$ = GetKeyPress$
+				End If
 
-                Color 11
-                Locate 7, 33: Print "ALIGNING FILES"
-                Locate 8, 37: Print Space$(7)
+				'Do
 
-                N = 0
+				Cls
+				Locate 1, 34: Color 12: Print "STAT ROSTERS"
+				Locate , 33: Color 15: Print "CURRENT  ";
+				Color 7: Print " ROAD"
 
-                Do
+				For I = 0 To 22: 
+					Color 12: Locate I + 1, 1: Print Using "##"; I;: Print " ";: Color 15: Print Left$(B$(I), 10);: Color 12: Print Tab(17); Using "##"; I;: Print " ";: Color 7: Print Left$(BR$(I), 10);
+				Next
 
-                    For J = 0 To 22
+				For I = 0 To 21: 
+					Color 12: Locate I + 1, 48: Print Using "##"; I;: Print " ";: Color 15: Print Left$(P$(I), 10);: Color 12: Print Tab(62); Using "##"; I;: Print " ";: Color 7: Print Left$(PR$(I), 10);
+				Next
 
-                        If UCase$(B$(N)) = UCase$(BR$(J)) Then
-                            BN$(N) = BR$(J): BN%(N) = BR%(J)
+				Color 11
+				Locate 7, 33: Print "HIT ANY KEY TO"
+				Locate 8, 37: Print "ALIGN"
+				I$ = GetKeyPress$
 
-                            For K = 0 To 21
-                                B0N%(N, K) = B0R%(J, K)
-                            Next K
+				Color 11
+				Locate 7, 33: Print "ALIGNING FILES"
+				Locate 8, 37: Print Space$(7)
 
-                            For K = 0 To 6
-                                S0N%(N, K) = S0R%(J, K)
-                            Next K
+				N = 0
 
-                        End If
+				Do
 
-                    Next J
+					For J = 0 To 22
 
-                    N = N + 1
+						If UCase$(B$(N)) = UCase$(BR$(J)) Then
+							BN$(N) = BR$(J): BN%(N) = BR%(J)
 
-                Loop Until N = 23
+							For K = 0 To 21
+								B0N%(N, K) = B0R%(J, K)
+							Next K
 
-                N = 0
+							For K = 0 To 6
+								S0N%(N, K) = S0R%(J, K)
+							Next K
 
-                Do
-                    For J = 0 To 21
+						End If
 
-                        If UCase$(P$(N)) = UCase$(PR$(J)) Then
+					Next J
 
-                            PN$(N) = PR$(J)
-                            PN%(N) = PR%(J)
+					N = N + 1
 
-                            For K = 0 To 41
-                                P0N%(N, K) = P0R%(J, K)
-                            Next K
+				Loop Until N = 23
 
-                        End If
+				N = 0
 
-                    Next J
+				Do
+					For J = 0 To 21
 
-                    N = N + 1
+						If UCase$(P$(N)) = UCase$(PR$(J)) Then
 
-                Loop Until N = 22
+							PN$(N) = PR$(J)
+							PN%(N) = PR%(J)
 
-                KKK = 1
+							For K = 0 To 41
+								P0N%(N, K) = P0R%(J, K)
+							Next K
 
-                SEQ = 0
+						End If
 
-                'Check batters
-                For J = 0 To 22
-                    If UCase$(BN$(J)) <> UCase$(B$(J)) Then
-                        SEQ = SEQ + 1
-                    End If
-                Next J
+					Next J
 
-                'Check pitchers
-                For J = 0 To 21
-                    If UCase$(PN$(J)) <> UCase$(P$(J)) Then
-                        SEQ = SEQ + 1
-                    End If
-                Next J
+					N = N + 1
 
-                If SEQ = 0 Then
+				Loop Until N = 22
 
-                    Cls
-                    Locate 1, 34
-                    Color 12: Print "STAT ROSTERS"
-                    Locate , 33
-                    Color 15: Print "CURRENT  ";
-                    Color 7: Print " ROAD"
+				KKK = 1
 
-                    For I = 0 To 22: Color 12: Locate I + 1, 1: Print Using "##"; I;: Print " ";: Color 15: Print Left$(B$(I), 10);: Color 12: Print Tab(17); Using "##"; I;: Print " ";: Color 7: Print Left$(BN$(I), 10);: Next
+				SEQ = 0
 
-                    For I = 0 To 21: Color 12: Locate I + 1, 48: Print Using "##"; I;: Print " ";: Color 15: Print Left$(P$(I), 10);: Color 12: Print Tab(62); Using "##"; I;: Print " ";: Color 7: Print Left$(PN$(I), 10);: Next
+				'Check batters
+				For J = 0 To 22
+					If UCase$(BN$(J)) <> UCase$(B$(J)) Then
+						SEQ = SEQ + 1
+					End If
+				Next J
 
-                    Locate 7, 33
-                    Color 11: Print "HIT ANY KEY TO"
-                    Locate 8, 36: Print "CONTINUE"
-                    I$ = GetKeyPress$
+				'Check pitchers
+				For J = 0 To 21
+					If UCase$(PN$(J)) <> UCase$(P$(J)) Then
+						SEQ = SEQ + 1
+					End If
+				Next J
 
-                    Open PR$ + "\" + Z$ For Output As #1
+				If SEQ = 0 Then
 
-                    Write #1, AR$
-                    Write #1, W2R%
-                    Write #1, L2R%
+					Cls
+					Locate 1, 34
+					Color 12: Print "STAT ROSTERS"
+					Locate , 33
+					Color 15: Print "CURRENT  ";
+					Color 7: Print " ROAD"
 
-                    For I = 0 To 22: Write #1, BN$(I): Write #1, BN%(I): Next I
-                    For I = 0 To 21: Write #1, PN$(I): Write #1, PN%(I): Next I
-                    For I = 0 To 22: For I1 = 0 To 21: Write #1, B0N%(I, I1): Next I1: Next I
-                    For I = 0 To 21: For I1 = 0 To 41: Write #1, P0N%(I, I1): Next I1: Next I
+					For I = 0 To 22: Color 12: Locate I + 1, 1: Print Using "##"; I;: Print " ";: Color 15: Print Left$(B$(I), 10);: Color 12: Print Tab(17); Using "##"; I;: Print " ";: Color 7: Print Left$(BN$(I), 10);: Next
 
-                    Write #1, DR0%
-                    Write #1, DR1%
-                    For I = 0 To 21: Write #1, TR(I): Next I
-                    For I = 0 To 22: Write #1, TR1(I): Next I
+					For I = 0 To 21: Color 12: Locate I + 1, 48: Print Using "##"; I;: Print " ";: Color 15: Print Left$(P$(I), 10);: Color 12: Print Tab(62); Using "##"; I;: Print " ";: Color 7: Print Left$(PN$(I), 10);: Next
 
-                    Close #1
+					Locate 7, 33
+					Color 11: Print "HIT ANY KEY TO"
+					Locate 8, 36: Print "CONTINUE"
+					I$ = GetKeyPress$
 
-                    Open PR$ + "\" + Z$ + "R" For Output As #1
-                    For I = 0 To 22
-                        For I1 = 0 To 6
-                            Print #1, S0N%(I, I1)
-                        Next
-                    Next
-                    Close 1
+					Open PR$ + "\" + Z$ For Output As #1
 
-                    Cls
-                    Locate 8, 20: Print "RE-ALIGNMENT COMPLETED"
-                    Print
-                    Locate 12, 20
-                    Color 12: Line Input "HIT ENTER TO CONTINUE"; DUMMY$
+					Write #1, AR$
+					Write #1, W2R%
+					Write #1, L2R%
 
-                    Cls
+					For I = 0 To 22: Write #1, BN$(I): Write #1, BN%(I): Next I
+					For I = 0 To 21: Write #1, PN$(I): Write #1, PN%(I): Next I
+					For I = 0 To 22: For I1 = 0 To 21: Write #1, B0N%(I, I1): Next I1: Next I
+					For I = 0 To 21: For I1 = 0 To 41: Write #1, P0N%(I, I1): Next I1: Next I
 
-                Else
+					Write #1, DR0%
+					Write #1, DR1%
+					For I = 0 To 21: Write #1, TR(I): Next I
+					For I = 0 To 22: Write #1, TR1(I): Next I
 
-                    Cls
-                    Locate 5
-                    Color 14: Print "WARNING !! - - ROAD STAT FILE CONTAINS PLAYERS NOT IN EXISTING STATS.  YOU MUST"
-                    Print "CHANGE ROAD STAT FILE USING OPTION #6 ON GAME MENU BEFORE ATTEMPTING STAT MERGE."
-                    Locate 23, 30
-                    Color 13: Line Input "HIT ENTER TO CONTINUE"; DUMMY$
+					Close #1
 
-                End If 'Done checking SEQ
+					Open PR$ + "\" + Z$ + "R" For Output As #1
+					For I = 0 To 22
+						For I1 = 0 To 6
+							Print #1, S0N%(I, I1)
+						Next
+					Next
+					Close 1
 
-                'Loop Until DUMMY$ <> ""
-                'End If 'Done checking stat files
+					Cls
 
-            Else
+					Locate 8, 20: Print "RE-ALIGNMENT COMPLETED"
+					Print
+					Locate 12, 20
+					Color 12: Line Input "HIT ENTER TO CONTINUE"; DUMMY$
 
-                Do
-                    Cls
-                    Color 15: Locate 2, 10: Color 7
-                    Print "NON-EXISTANT PATH OR INCORRECT FILE NAME"
-                    Print
-                    Locate , 10
-                    Print "TRY AGAIN (YN) ";
-                    I$ = GetKeyPress$
-                Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+					Cls
 
-                If UCase$(I$) = "Y" Then
-                    Print "HIT ENTER TO RE-ENTER INFORMATION"
-                    I$ = GetKeyPress$
-                End If
+				Else
 
-            End If
+					Cls
+					Locate 5
+					Color 14: Print "WARNING !! - - ROAD STAT FILE CONTAINS PLAYERS NOT IN EXISTING STATS.  YOU MUST"
+					Print "CHANGE ROAD STAT FILE USING OPTION #6 ON GAME MENU BEFORE ATTEMPTING STAT MERGE."
+					Locate 23, 30
+					Color 13: Line Input "HIT ENTER TO CONTINUE"; DUMMY$
 
-        End If
+				End If 'Done checking SEQ
 
-    Loop Until UCase$(I$) = "N" Or DUMMY$ <> ""
+				'Loop Until DUMMY$ <> ""
+				'End If 'Done checking stat files
+
+			End If
+
+		End If
+
+    Loop Until DUMMY$ <> "" Or UCase$(I$) = "N"
 
 End Sub

@@ -67,7 +67,9 @@ Sub ViewComparisons ()
         Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";: For II = 1 To JJ: Locate 6 + II, 8
         Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
         Locate 7 + JJ, 8
-        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";: Locate 7, 32
+        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+		
+		Locate 7, 32
         Locate , 12: Print "ENTER DISK ID: ": Print
         Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
         Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
@@ -78,7 +80,9 @@ Sub ViewComparisons ()
         Else
             YN$ = NY$
             Erase teamNames$
+
             numberTeams = 0
+
             If Not _FileExists(diskPaths$(0) + "FCTEAMS." + YN$) Then
                 BO% = 1
                 Locate 10, 8
@@ -100,22 +104,30 @@ Sub ViewComparisons ()
                         teamNames$(numberTeams) = Q$(0)
                         teamIndex%(numberTeams) = I1
                     End If
-                1103 Next I1
+                Next I1
+
+				Call SelectTeam_COMPARE(YN$, numberTeams)
+
                 Close 1
+
             End If 'Done checking for teams file
 
-            Call SelectTeam_COMPARE(YN$, numberTeams)
         End If 'Done checking INPUT
-
-        T$ = RTrim$(Q$(0))
 
         If BO% = 1 Then
             BO% = 0
         Else
-            Locate 2, 33: Color 15, 0: Color L%(11), L%(12)
-            Print T$: Color 15, 4
-            Locate , 33: Print "ANY CHANGE (YN)";
-            I$ = GetKeyPress$
+            Locate 2, 33
+			T$ = RTrim$(Q$(0))
+			Color L%(11), L%(12): Print T$
+			
+			Color 15, 4
+
+			Do
+				Locate , 33: Print "ANY CHANGE (YN)";
+				I$ = GetKeyPress$
+			Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
         End If
 
     Loop Until UCase$(I$) = "N"
@@ -200,12 +212,13 @@ Sub ViewComparisons ()
 
             Close #1
 
+			Color 15, 0
+			Cls
+
             Do
-                Color 15, 0
-                Cls
                 Locate 12, 5
-                Color 12: Print "V";: Color 7: Print "IEW OR ";
-                Color 12: Print "P";: Color 7: Print "RINT"
+				Color 12: Print "V";: Color 7: Print "iew or ";
+				Color 12: Print "P";: Color 7: Print "rint"
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "P" Or UCase$(I$) = "V"
 

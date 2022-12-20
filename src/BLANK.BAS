@@ -45,7 +45,8 @@ Sub BLANK ()
                 Column% = 1
                 Locate 25, 1
                 Color 14
-                Print "ENTER";: Color 15
+                Print "ENTER";
+				Color 15
                 Print "-SELECTS LEAGUE   ";
                 Color 14
                 Print "HIT ESCAPE KEY TO EXIT";
@@ -56,11 +57,17 @@ Sub BLANK ()
                 _MouseHide
 
                 If ExitCode% <> 27 Then
-                    targetFile$ = leagueFiles$(Selection%)
+
+					Color 15, 1                 
+					targetFile$ = leagueFiles$(Selection%)
                     Locate 2, 33: Print targetFile$
-                    Locate , 33: Print "ANY CHANGE (YN)";
-                    Color 15, 0
-                    I$ = GetKeyPress$
+
+					Do
+						Locate , 33: Print "ANY CHANGE (YN)";
+						I$ = GetKeyPress$
+					Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+					Color 15, 0
 
                     If UCase$(I$) = "N" Then
                         targetFile$ = RTrim$(targetFile$)
@@ -95,7 +102,7 @@ Sub BLANK ()
 
                         End If 'Done with keypress from CsMsgBox
 
-                    End If 'Done respond to Any Change?
+                    End If 'Done confirming no changes
 
                 End If 'Done checking Exit Code from file selection
 

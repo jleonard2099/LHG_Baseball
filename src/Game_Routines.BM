@@ -24,20 +24,24 @@ Sub PitchingStarter (idx%)
 
         Locate , 58
         Print P$(idx%, I1); " "; B1$(P%(idx%, I1, 0) + 2)
+
         Print
-        Locate , 58: Print "ANY CHANGE (YN)"
 
         If Not (AP% = 1 And (U6 = 2 Or U6 = 1 And U9 = idx%)) Then
 
-            I$ = GetKeyPress$
+            Do
+                Locate , 58: Print "ANY CHANGE (YN)"
+                I$ = GetKeyPress$
+            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
             If UCase$(I$) = "Y" Then
                 Locate 20, 58: SP%(idx%) = -1: Print Space$(16)
-            Else
-
             End If
+
         Else
+
             I$ = "N"
+
         End If
 
     Loop Until UCase$(I$) = "N"
@@ -386,7 +390,7 @@ Sub CAUGHTFLY (i, S2%, D)
 
     Select Case RN
 
-        Case 1 TO 96
+        Case 1 To 96
             i = 1
 
             If S2% <> 17 Then
@@ -502,7 +506,7 @@ Sub CHECKSAVE (D, P, S4%)
         If S4% = 4 Or S4% = 5 Or S4% = 6 Then RI = 2
         If S4% = 7 Then RI = 3
         P5%(D, P1%(D), 17) = P5%(D, P1%(D), 17) + RI
-		P8%(D, P1%(D), 17) = P8%(D, P1%(D), 17) + RI
+        P8%(D, P1%(D), 17) = P8%(D, P1%(D), 17) + RI
     End If
 
 End Sub
@@ -717,11 +721,11 @@ Sub DPPBP ()
     Call d100(RN)
 
     Select Case RN
-        Case 1 TO 19: F$ = "may be a double play ball"
-        Case 20 TO 40: F$ = "they might turn two"
-        Case 41 TO 60: F$ = "they could get two"
-        Case 61 TO 80: F$ = "could be two"
-        Case 81 TO 100: F$ = "could be a double play"
+        Case 1 To 19: F$ = "may be a double play ball"
+        Case 20 To 40: F$ = "they might turn two"
+        Case 41 To 60: F$ = "they could get two"
+        Case 61 To 80: F$ = "could be two"
+        Case 81 To 100: F$ = "could be a double play"
     End Select
 
     Call PBP(F$)
@@ -763,19 +767,19 @@ Sub DPRELAY ()
             Call d100(RN)
 
             Select Case RN
-                Case 1 TO 8: F$ = "over to 1st..."
-                Case 9 TO 16: F$ = "throw to 1st..."
-                Case 17 TO 24: F$ = "on to first..."
-                Case 25 TO 30: F$ = Q$(4) + " pivots and throws"
-                Case 31 TO 36: F$ = Q$(4) + " gets the throw off"
-                Case 37 TO 44: F$ = Q$(4) + " is hit as he throws"
-                Case 45 TO 50: F$ = Q$(4) + " leaps and throws"
-                Case 51 TO 56: F$ = Q$(4) + " jumps over the sliding " + Q$(1)
-                Case 57 TO 64: F$ = "the relay to first..."
-                Case 65 TO 72: F$ = "quick turn by " + Q$(4)
-                Case 73 TO 80: F$ = "relay to 1st..."
-                Case 81 TO 88: F$ = "to 1st..."
-                Case 89 TO 100: If A5%(0) = 11 Then F$ = "over to 1st..."
+                Case 1 To 8: F$ = "over to 1st..."
+                Case 9 To 16: F$ = "throw to 1st..."
+                Case 17 To 24: F$ = "on to first..."
+                Case 25 To 30: F$ = Q$(4) + " pivots and throws"
+                Case 31 To 36: F$ = Q$(4) + " gets the throw off"
+                Case 37 To 44: F$ = Q$(4) + " is hit as he throws"
+                Case 45 To 50: F$ = Q$(4) + " leaps and throws"
+                Case 51 To 56: F$ = Q$(4) + " jumps over the sliding " + Q$(1)
+                Case 57 To 64: F$ = "the relay to first..."
+                Case 65 To 72: F$ = "quick turn by " + Q$(4)
+                Case 73 To 80: F$ = "relay to 1st..."
+                Case 81 To 88: F$ = "to 1st..."
+                Case 89 To 100: If A5%(0) = 11 Then F$ = "over to 1st..."
             End Select
 
             Call PBP(F$)
@@ -801,19 +805,19 @@ Sub DPSAFE ()
     F$ = ""
 
     Select Case RN
-        Case 1 TO 8: F$ = "over to 1st..."
-        Case 9 TO 16: F$ = "throw to 1st..."
-        Case 17 TO 24: F$ = "on to first..."
-        Case 25 TO 30: F$ = "pivot to first"
-        Case 31 TO 36: F$ = "the throw to first"
-        Case 37 TO 44: F$ = "relay to first"
-        Case 45 TO 50: F$ = "quick turn to 1st"
-        Case 51 TO 56: F$ = "on to first..."
-        Case 57 TO 64: F$ = "the relay to first..."
-        Case 65 TO 72: F$ = "quick turn"
-        Case 73 TO 80: F$ = "relay to 1st..."
-        Case 81 TO 88: F$ = "to 1st..."
-        Case 89 TO 100: If A5%(0) = 11 Then F$ = "over to 1st..."
+        Case 1 To 8: F$ = "over to 1st..."
+        Case 9 To 16: F$ = "throw to 1st..."
+        Case 17 To 24: F$ = "on to first..."
+        Case 25 To 30: F$ = "pivot to first"
+        Case 31 To 36: F$ = "the throw to first"
+        Case 37 To 44: F$ = "relay to first"
+        Case 45 To 50: F$ = "quick turn to 1st"
+        Case 51 To 56: F$ = "on to first..."
+        Case 57 To 64: F$ = "the relay to first..."
+        Case 65 To 72: F$ = "quick turn"
+        Case 73 To 80: F$ = "relay to 1st..."
+        Case 81 To 88: F$ = "to 1st..."
+        Case 89 To 100: If A5%(0) = 11 Then F$ = "over to 1st..."
     End Select
 
     Call PBP(F$)
@@ -1153,9 +1157,9 @@ Sub FLDERR (F%, W%, D, I3, SB%, S2%, P)
 
         If S2% = 16 Or S2% = 22 Then
 
-            I8 = Int(Rnd(1) * 10) + 1
+            I8! = Int(Rnd(1) * 10) + 1
 
-            If I8 < 5 Then
+            If I8! < 5 Then
                 A5%(0) = 2
                 A5%(1) = 2
                 A5%(2) = 2
@@ -1200,7 +1204,7 @@ Sub FLDERR (F%, W%, D, I3, SB%, S2%, P)
 
             A5%(0) = 0
 
-            If I8 > 4 And W% <> 2 Then
+            If I8! > 4 And W% <> 2 Then
                 A5%(1) = 1
                 A5%(2) = 1
                 A5%(3) = 1
@@ -1604,11 +1608,11 @@ Sub LDRIVE ()
     Call d100(RN)
 
     Select Case RN
-        Case 1 TO 20: X$ = "rips"
-        Case 21 TO 40: X$ = "hammers"
-        Case 41 TO 60: X$ = "lashes"
-        Case 61 TO 80: X$ = "lines"
-        Case 81 TO 100: X$ = "drives"
+        Case 1 To 20: X$ = "rips"
+        Case 21 To 40: X$ = "hammers"
+        Case 41 To 60: X$ = "lashes"
+        Case 61 To 80: X$ = "lines"
+        Case 81 To 100: X$ = "drives"
     End Select
 
     Call PBP(" " + X$ + " ")
@@ -1643,10 +1647,10 @@ Sub LONGFLY (D, W%)
         If Not ((L%(1, 13) = 21 Or L%(1, 13) = 27) And W% = 7) Then
 
             Select Case RN
-                Case 1 TO 5: Call PBP(Q$(4) + " leaps")
-                Case 6 TO 10: Call PBP(Q$(4) + " against the wall")
-                Case 11 TO 20: Call PBP(Q$(4) + " jumps at the wall")
-                Case 21 TO 30: Call PBP(Q$(4) + " climbs the wall")
+                Case 1 To 5: Call PBP(Q$(4) + " leaps")
+                Case 6 To 10: Call PBP(Q$(4) + " against the wall")
+                Case 11 To 20: Call PBP(Q$(4) + " jumps at the wall")
+                Case 21 To 30: Call PBP(Q$(4) + " climbs the wall")
             End Select
 
         End If
@@ -1976,11 +1980,11 @@ Sub OUTFIELDERR ()
     Call d100(RN)
 
     Select Case RN
-        Case 1 TO 20: F$ = Q$(4) + " can't find it"
-        Case 21 TO 40: F$ = Q$(4) + " misjudges it"
-        Case 41 TO 60: F$ = Q$(4) + " turns the wrong way"
-        Case 61 TO 80: F$ = Q$(4) + " loses it"
-        Case 81 TO 100: F$ = Q$(4) + " doesn't see it"
+        Case 1 To 20: F$ = Q$(4) + " can't find it"
+        Case 21 To 40: F$ = Q$(4) + " misjudges it"
+        Case 41 To 60: F$ = Q$(4) + " turns the wrong way"
+        Case 61 To 80: F$ = Q$(4) + " loses it"
+        Case 81 To 100: F$ = Q$(4) + " doesn't see it"
     End Select
 
     Call PBP(F$)
@@ -2011,8 +2015,8 @@ Sub OUTFLDNAME (W%, D)
     Call d100(i)
 
     Select Case i
-        Case 1 TO 5: W% = 7
-        Case 6 TO 25: W% = 8
+        Case 1 To 5: W% = 7
+        Case 6 To 25: W% = 8
     End Select
 
     Q$(4) = B$(D, B9%(D, W%))
@@ -2031,9 +2035,9 @@ Sub PICKEDOFF (D, i)
 
     Call d100(RN)
     Select Case RN
-        Case 1 TO 33: F$ = "NO, " + P$(D, P1%(D)) + " throws to " + H$(i - 1)
-        Case 34 TO 66: F$ = "quick move to " + H$(i - 1)
-        Case 67 TO 100: F$ = "pickoff throw to " + H$(i - 1)
+        Case 1 To 33: F$ = "NO, " + P$(D, P1%(D)) + " throws to " + H$(i - 1)
+        Case 34 To 66: F$ = "quick move to " + H$(i - 1)
+        Case 67 To 100: F$ = "pickoff throw to " + H$(i - 1)
     End Select
 
     Call PBP(F$)
@@ -2048,11 +2052,11 @@ Sub PICKEDOFF (D, i)
 
     Call PBP(F$)
 
-    Call d100(I8)
+    Call d100(I8!)
 
-    Select Case I8
-        Case 1 TO 25: F$ = "he can't believe it"
-        Case 26 TO 50: F$ = "what a teriffic move by " + P$(D, P1%(D))
+    Select Case I8!
+        Case 1 To 25: F$ = "he can't believe it"
+        Case 26 To 50: F$ = "what a teriffic move by " + P$(D, P1%(D))
     End Select
 
     Call PBP(F$)
@@ -3779,22 +3783,22 @@ Sub WILDPITCH (S2%, D)
     Call d100(RN)
 
     Select Case RN
-        Case 1 TO 16:
+        Case 1 To 16:
             Call PBP("and it gets away from " + B$(D, B9%(D, 2)))
             ruleAsWild = 1
-        Case 17 TO 32:
+        Case 17 To 32:
             Call PBP("pitch is WAY high, and " + B$(D, B9%(D, 2)) + " can't get it")
             ruleAsWild = 1
-        Case 33 TO 48:
+        Case 33 To 48:
             Call PBP("It's in the dirt")
             Call PBP("The runners move up 90 ft.")
             ruleAsWild = 1
-        Case 49 TO 64:
+        Case 49 To 64:
             Call PBP("It bounces in front of the plate")
             Call PBP("it's past the catcher")
             Call PBP("the runners advance")
             ruleAsWild = 1
-        Case 65 TO 80:
+        Case 65 To 80:
             Call PBP("it's over " + B$(D, B9%(D, 2)) + "'s head")
 
             'below was originally written as:
@@ -3807,16 +3811,16 @@ Sub WILDPITCH (S2%, D)
             'My working theory is the Case 67+ below
             'for crediting the pitch may have been
             'duplicated but not fixed
-        Case 81 TO 100:
+        Case 81 To 100:
             Call PBP("wild pitch by " + P$(D, P1%(D)))
     End Select
 
     If ruleAsWild = 1 Then
         Call d100(RN)
         Select Case RN
-            Case 1 TO 33: F$ = "It's ruled a wild pitch"
-            Case 34 TO 66: F$ = "score it a wild pitch"
-            Case 67 TO 100: F$ = "credit " + P$(D, P1%(D)) + " with a wild pitch"
+            Case 1 To 33: F$ = "It's ruled a wild pitch"
+            Case 34 To 66: F$ = "score it a wild pitch"
+            Case 67 To 100: F$ = "credit " + P$(D, P1%(D)) + " with a wild pitch"
         End Select
 
         Call PBP(F$)
@@ -3927,7 +3931,7 @@ Sub REPLACEMENTS (I7%, I8%, i9%)
             J2 = 0
             J3 = 3
             J4 = 912 + Int(Rnd(1) * 10) + 1
-        Case 5 TO 6
+        Case 5 To 6
             J2 = 0
             J3 = 3
             J4 = 902 + Int(Rnd(1) * 10) + 1
@@ -4213,7 +4217,7 @@ Sub STEALCHANCE (AA, I2, TGTBASE%, CHANCE%)
 
     Select Case AA
         Case Is <= 43: DD = .16
-        Case 44 TO 60: DD = .21
+        Case 44 To 60: DD = .21
         Case Else: DD = .3
     End Select
 
@@ -4300,8 +4304,8 @@ Sub STRIKEOUT (U%, D)
 
     Call d100(RN)
     Select Case RN
-        Case 1 TO 20: F$ = "Number" + Str$(P8%(D, P1%(D), 5) + 1) + " for " + P$(D, P1%(D))
-        Case 21 TO 40: F$ = "That's " + Str$(P8%(D, P1%(D), 5) + 1) + " for " + P$(D, P1%(D))
+        Case 1 To 20: F$ = "Number" + Str$(P8%(D, P1%(D), 5) + 1) + " for " + P$(D, P1%(D))
+        Case 21 To 40: F$ = "That's " + Str$(P8%(D, P1%(D), 5) + 1) + " for " + P$(D, P1%(D))
         Case 41: F$ = Q$(0) + " is not a happy man"
         Case 42: F$ = Q$(0) + " has had better AB's"
     End Select
@@ -4324,9 +4328,9 @@ End Sub
 '   TAGADVANCE Subroutine
 '------------------------------
 ' ...explanation...
-Sub TAGADVANCE (S2%, I8, D)
+Sub TAGADVANCE (S2%, I8!, D)
 
-    If S2% = 7 And I8 = 2 Then
+    If S2% = 7 And I8! = 2 Then
         If B7%(P, B1!(P)) = 1 Then
             I5 = P1%(P)
             I6 = 27
@@ -4338,7 +4342,7 @@ Sub TAGADVANCE (S2%, I8, D)
         End If
     End If
 
-    If S2% = 8 And I8 = 3 Then
+    If S2% = 8 And I8! = 3 Then
         If B7%(P, B1!(P)) = 1 Then
             I5 = P1%(P): I6 = 28: Call INCPITOFF(P, I5, I6): P8%(P, P1%(P), 27) = P8%(P, P1%(P), 27) - 1: P5%(P, P1%(P), 27) = P5%(P, P1%(P), 27) - 1
             Exit Sub
@@ -4347,13 +4351,13 @@ Sub TAGADVANCE (S2%, I8, D)
         End If
     End If
 
-    If S2% = 9 And I8 = 4 Then
+    If S2% = 9 And I8! = 4 Then
         I3 = 5
         I4 = 6
         I5 = B3%(P, B1!(P))
     End If
 
-    If S2% = 8 And I8 = 3 Or S2% = 9 And I8 = 4 Then
+    If S2% = 8 And I8! = 3 Or S2% = 9 And I8! = 4 Then
         If P%(D, P1%(D), 0) <> 1 Then
             CSS%(P, I5, I3 - 2) = CSS%(P, I5, I3 - 2) - 1
             CSS%(P, I5, I4 - 2) = CSS%(P, I5, I4 - 2) + 1
@@ -4458,7 +4462,7 @@ End Sub
 '   TRYFOREXTRABASE Subroutine
 '------------------------------
 ' ...explanation...
-Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8, I9)
+Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8!, I9)
 
     If LN% = 3308 Then
 
@@ -4466,30 +4470,30 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8, I9)
 
     Else
 
-        I8 = 0
+        I8! = 0
 
         Call d100(H6%)
 
         ' B3%(P, ...) is -1
-        If S2% = 8 And B0%(2, 0) > 0 And H6% < 6 And B0%(3, 0) = 0 And B%(P, B3%(P, B0%(2, 0)), 8) > 0 Then I8 = 3
-        If S2% = 9 And B0%(3, 0) > 0 And H6% <= 2 And B%(P, B3%(P, B0%(3, 0)), 9) > 0 Then I8 = 4
-        If S2% = 7 And B0%(3, 0) > 0 And P2 = 2 And H6% >= 6 And H6% <= B%(P, B3%(P, B0%(3, 0)), 16) Then I8 = 4
-        If S2% = 7 And B0%(3, 0) > 0 And Z2% = B0%(3, 0) And P2 <> 2 And H6% <= B%(P, B3%(P, B0%(3, 0)), 16) * 12 Then I8 = 4
+        If S2% = 8 And B0%(2, 0) > 0 And H6% < 6 And B0%(3, 0) = 0 And B%(P, B3%(P, B0%(2, 0)), 8) > 0 Then I8! = 3
+        If S2% = 9 And B0%(3, 0) > 0 And H6% <= 2 And B%(P, B3%(P, B0%(3, 0)), 9) > 0 Then I8! = 4
+        If S2% = 7 And B0%(3, 0) > 0 And P2 = 2 And H6% >= 6 And H6% <= B%(P, B3%(P, B0%(3, 0)), 16) Then I8! = 4
+        If S2% = 7 And B0%(3, 0) > 0 And Z2% = B0%(3, 0) And P2 <> 2 And H6% <= B%(P, B3%(P, B0%(3, 0)), 16) * 12 Then I8! = 4
 
         E2% = 10
 
         If B0%(2, 0) > 0 Then E2% = E2% + B%(P, B3%(P, B0%(2, 0)), 16)
-        If S2% = 7 And B0%(2, 0) > 0 And P2 <> 2 And H6% <= E2% And B0%(3, 0) = 0 And I8 = 0 Then I8 = 3
-        If S2% = 7 And B0%(1, 0) > 0 And B0%(2, 0) = 0 And I8 = 0 And H6% <= B%(P, B3%(P, B0%(1, 0)), 16) And B%(P, B3%(P, B0%(1, 0)), 7) > 0 Then I8 = 2
+        If S2% = 7 And B0%(2, 0) > 0 And P2 <> 2 And H6% <= E2% And B0%(3, 0) = 0 And I8! = 0 Then I8! = 3
+        If S2% = 7 And B0%(1, 0) > 0 And B0%(2, 0) = 0 And I8! = 0 And H6% <= B%(P, B3%(P, B0%(1, 0)), 16) And B%(P, B3%(P, B0%(1, 0)), 7) > 0 Then I8! = 2
 
-        If I8 = 0 Then Exit Sub
+        If I8! = 0 Then Exit Sub
 
     End If
 
     '3308
     If Not (U6 = 2 Or U6 = 1 And P = U9) Then
-        If S2% < 10 Then Call PBP(Q$(I8 - 1) + " try for " + H$(I8) + " (YN) ")
-        If S2% > 10 Then Call PBP(Q$(I8 - 1) + " tag up (YN) ")
+        If S2% < 10 Then Call PBP(Q$(I8! - 1) + " try for " + H$(I8!) + " (YN) ")
+        If S2% > 10 Then Call PBP(Q$(I8! - 1) + " tag up (YN) ")
         Call PBP("against " + Q$(4))
     End If
 
@@ -4506,7 +4510,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8, I9)
             End If
         End If
     Else
-        If S2% = 8 And O%(0) = 2 And I8 = 3 And (U6 = 2 Or U6 = 1 And P = U9) Then
+        If S2% = 8 And O%(0) = 2 And I8! = 3 And (U6 = 2 Or U6 = 1 And P = U9) Then
             i$ = "N"
         End If
     End If
@@ -4522,20 +4526,20 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8, I9)
 
     Else
 
-        F$ = Q$(I8 - 1) + " is "
+        F$ = Q$(I8! - 1) + " is "
 
-        If S2% < 10 Then Call PBP(F$ + "going for " + H$(I8))
+        If S2% < 10 Then Call PBP(F$ + "going for " + H$(I8!))
         If S2% > 10 Then Call PBP(F$ + "tagging")
 
-        If Not (S2% = 7 And I8 = 2 Or S2% > 10 And S4% = 3) Then
+        If Not (S2% = 7 And I8! = 2 Or S2% > 10 And S4% = 3) Then
 
             If Not (U6 = 2 Or U6 = 1 And D = U9) Then
-                Call PBP(Q$(4) + " throw to " + H$(I8) + " (YN) ")
+                Call PBP(Q$(4) + " throw to " + H$(I8!) + " (YN) ")
             End If
 
             Call d100(RN)
 
-            If (U6 = 2 Or U6 = 1 And D = U9) And MG%(D, 766) = 999 And I8 = 4 Then
+            If (U6 = 2 Or U6 = 1 And D = U9) And MG%(D, 766) = 999 And I8! = 4 Then
                 If INNING% >= MG%(D, 767) And MG%(D, 767) <> 0 And MG%(D, 768) <= S6%(D, 0) - S6%(P, 0) Then
                     i$ = "N"
                 Else
@@ -4572,9 +4576,9 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8, I9)
             If F% <> 1 Then
 
                 I4 = Int(Rnd(1) * 1000) + 1
-                A = B%(P, B3%(P, B0%(I8 - 1, 0)), 16)
+                A = B%(P, B3%(P, B0%(I8! - 1, 0)), 16)
 
-                If B7%(P, B0%((I8 - 1), 0)) = 1 Then A = P%(P, P1%(P), 31)
+                If B7%(P, B0%((I8! - 1), 0)) = 1 Then A = P%(P, P1%(P), 31)
                 A = A - 5
                 A = A * 50
 
@@ -4584,7 +4588,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8, I9)
 
                 If I4 > I3 Then
 
-                    A5%(I8 - 1) = 11
+                    A5%(I8! - 1) = 11
                     O%(0) = O%(0) + 1
                     O%(1) = O%(1) + 1
                     I5 = P1%(D)
@@ -4593,21 +4597,21 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8, I9)
                     Call d100(RN)
 
                     Select Case RN
-                        Case 1 TO 4
-                            If I8 = 4 Then
-                                Call PBP(Q$(I8 - 1) + " collides with " + B$(D, B9%(D, 2))): Call PBP(B$(D, B9%(D, 2)) + " hangs on!!")
+                        Case 1 To 4
+                            If I8! = 4 Then
+                                Call PBP(Q$(I8! - 1) + " collides with " + B$(D, B9%(D, 2))): Call PBP(B$(D, B9%(D, 2)) + " hangs on!!")
                             End If
 
-                        Case 5 TO 50
-                            If I8 <> 4 Then Call PBP(Q$(I8 - 1) + " doesn't make it!")
-                        Case 51 TO 80
+                        Case 5 To 50
+                            If I8! <> 4 Then Call PBP(Q$(I8! - 1) + " doesn't make it!")
+                        Case 51 To 80
                             Call PBP("throw is perfect!")
-                        Case 81 TO 90
+                        Case 81 To 90
                             Call PBP("This will be close"): GoTo 3377
-                        Case 91 TO 100
+                        Case 91 To 100
                             Call PBP("Close play.....")
-                            If I8 < 4 Then
-                                Call PBP(U$(I8 + 1) + " makes the call...")
+                            If I8! < 4 Then
+                                Call PBP(U$(I8! + 1) + " makes the call...")
                             Else
                                 Call PBP(U$(1) + " makes the call...")
                             End If
@@ -4629,7 +4633,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8, I9)
                     If Not (A1 < -2 Or A1 < 0 And INNING% > 8) Then
 
                         ' *** RUNNER ON 2ND GUNNED AT 3RD ON THROW HOME ***
-                        If I8 - 1 > 2 And I5 <= 15 And B0%(2, 0) > 0 Then
+                        If I8! - 1 > 2 And I5 <= 15 And B0%(2, 0) > 0 Then
                             Call CREDITASSIST(W%, D)
                             Call PBP("runner is trying for 3rd...")
                             A5%(2) = 11
@@ -4645,7 +4649,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8, I9)
                         ' *** RUNNER ON 1ST GUNNED AT 2ND ON THROW TO HOME OR 3RD ***
                         Call d100(I5)
 
-                        If I8 - 1 > 1 And I5 <= 15 And B0%(1, 0) > 0 And A5%(2) <> 11 Then
+                        If I8! - 1 > 1 And I5 <= 15 And B0%(1, 0) > 0 And A5%(2) <> 11 Then
                             Call CREDITASSIST(W%, D)
                             W% = 6
                             Call CREDITREGPO(W%, D)
@@ -4660,7 +4664,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8, I9)
 
                         Call d100(I5)
 
-                        If B0%(2, 0) > 0 And I8 - 1 > 2 And A5%(2) <> 11 And I5 > (80 - B%(P, B3%(P, B0%(2, 0)), 16) * 2) And I9 = 0 Then
+                        If B0%(2, 0) > 0 And I8! - 1 > 2 And A5%(2) <> 11 And I5 > (80 - B%(P, B3%(P, B0%(2, 0)), 16) * 2) And I9 = 0 Then
                             A5%(2) = 1
                             Call PBP("runner is trying for 3rd...")
                             Call PBP("He's safe!")
@@ -4668,7 +4672,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8, I9)
 
                         I5 = Int(Rnd(1) * 10) + 1
 
-                        If B0%(1, 0) > 0 And A5%(1) <> 11 And (S4% = 4 Or S4% = 7 And I8 - 1 > 1 And I5 > (10 - B%(P, B3%(P, B0%(1, 0)), 16)) And I9 = 0) Then
+                        If B0%(1, 0) > 0 And A5%(1) <> 11 And (S4% = 4 Or S4% = 7 And I8! - 1 > 1 And I5 > (10 - B%(P, B3%(P, B0%(1, 0)), 16)) And I9 = 0) Then
                             A5%(1) = 1
                             Call PBP("runner is trying for 2nd...")
                             Call PBP("He's in there!")
@@ -4676,7 +4680,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8, I9)
 
                             Call d100(I5)
 
-                            If B0%(1, 0) > 0 And I8 - 1 > 1 And I5 > (80 - B%(P, B3%(P, B0%(1, 0)), 16) * 2) And I9 = 0 And A5%(1) <> 11 Then Call PBP("runner safe at 2nd on the throw"): A5%(1) = 1
+                            If B0%(1, 0) > 0 And I8! - 1 > 1 And I5 > (80 - B%(P, B3%(P, B0%(1, 0)), 16) * 2) And I9 = 0 And A5%(1) <> 11 Then Call PBP("runner safe at 2nd on the throw"): A5%(1) = 1
 
                         End If
 
@@ -4692,36 +4696,36 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8, I9)
             End If
 
             3380 '
-            A5%(I8 - 1) = 1
+            A5%(I8! - 1) = 1
 
             If I9 <> 1 Then
 
                 Call d100(RN)
 
                 Select Case RN
-                    Case 1 TO 4:
-                        If I8 = 4 Then
-                            Call PBP(Q$(I8 - 1) + " collides with " + B$(D, B9%(D, 2)))
+                    Case 1 To 4:
+                        If I8! = 4 Then
+                            Call PBP(Q$(I8! - 1) + " collides with " + B$(D, B9%(D, 2)))
                             Call PBP("He knocks the ball loose!!")
                         End If
 
-                    Case 5 TO 50:
-                        If I8 <> 4 Then Call PBP(Q$(I8 - 1) + " beats the throw!")
+                    Case 5 To 50:
+                        If I8! <> 4 Then Call PBP(Q$(I8! - 1) + " beats the throw!")
 
-                    Case 51 TO 60:
-                        Call PBP(Q$(I8 - 1) + " is ahead of the throw")
+                    Case 51 To 60:
+                        Call PBP(Q$(I8! - 1) + " is ahead of the throw")
 
-                    Case 61 TO 80:
+                    Case 61 To 80:
                         Call PBP("throw is off line")
 
-                    Case 81 TO 90:
-                        Call PBP(Q$(I8 - 1) + " slides under the tag")
+                    Case 81 To 90:
+                        Call PBP(Q$(I8! - 1) + " slides under the tag")
 
-                    Case 91 TO 100:
+                    Case 91 To 100:
                         Call PBP("Close play...")
 
-                        If I8 <> 4 Then
-                            Call PBP(U$(I8 + 1) + " makes the call...")
+                        If I8! <> 4 Then
+                            Call PBP(U$(I8! + 1) + " makes the call...")
                         Else
                             Call PBP(U$(1) + " makes the call...")
                         End If
@@ -4730,12 +4734,12 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8, I9)
             End If
 
             3379 '
-            Call PBP(Q$(I8 - 1) + " is safe @ " + H$(I8))
+            Call PBP(Q$(I8! - 1) + " is safe @ " + H$(I8!))
 
             'sah% = safeAtHome ?
-            If I8 = 4 Then sah% = 1
+            If I8! = 4 Then sah% = 1
 
-            Call TAGADVANCE(S2%, I8, D)
+            Call TAGADVANCE(S2%, I8!, D)
 
             If S2% < 10 Then 3371
 
@@ -4927,13 +4931,13 @@ Sub WALLDOUBLE (HW%, W%)
 
     3781 '
     Select Case BV
-        Case 1 TO 40:
+        Case 1 To 40:
             If HW% = 0 Then F$ = "It's in the gap and to the wall"
-        Case 41 TO 65
+        Case 41 To 65
             Select Case rn
-                Case 1 TO 25
+                Case 1 To 25
                     If (L%(1, 13) = 8 Or L%(1, 13) = 40) Then F$ = "It's off the ivy!"
-                Case 26 TO 50
+                Case 26 To 50
                     If L%(1, 13) = 21 And W% = 7 Then F$ = "It hits off the Green Monster!"
             End Select
 
@@ -4942,7 +4946,7 @@ Sub WALLDOUBLE (HW%, W%)
             Else
                 F$ = "It's off the wall"
             End If
-        Case 66 TO 85
+        Case 66 To 85
             If HW% = 0 Then
                 If W% = 8 Then
                     BV = 39
@@ -4952,7 +4956,7 @@ Sub WALLDOUBLE (HW%, W%)
                 End If
             End If
 
-        Case 86 TO 90
+        Case 86 To 90
             If HW% = 0 Then
                 Call PBP("It's to the wall")
                 Call PBP(Q$(0) + " slides into second")
@@ -5138,7 +5142,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 Call EJECTIONINJURY(U6, P, U9, D, po%, P9, W5, W6)
 
-            Case 2 TO 3
+            Case 2 To 3
 
                 Call PBP(P$(D, P1%(D)) + " steps off the mound")
                 Call PBP("after that last call")
@@ -5220,7 +5224,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 Call EJECTIONINJURY(U6, P, U9, D, po%, P9, W5, W6)
                 Call INJPIT(P, D, IP%)
 
-            Case 6 TO 7
+            Case 6 To 7
 
                 Call PBP(Q$(0) + " sends a long one")
                 Call PBP("down the left field line")
@@ -5258,7 +5262,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 Call PBP(U$(1) + " is calling it ball 4")
                 Call PBP("He says " + P$(D, P1%(D)) + " went to his mouth")
 
-            Case 10 TO 15
+            Case 10 To 15
 
                 Call PBP(Q$(0) + " hits the deck on a high")
                 Call PBP("and tight pitch from " + P$(D, P1%(D)))
@@ -5295,7 +5299,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 End Select
 
-            Case 16 TO 21
+            Case 16 To 21
 
                 H6% = 21
 
@@ -5325,7 +5329,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 End If
 
-            Case 22 TO 24
+            Case 22 To 24
 
                 Select Case s4%
                     Case 0
@@ -5377,7 +5381,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 'little sense to me that right after an out
                 ' GoTo 2020
 
-            Case 25 TO 29
+            Case 25 To 29
 
                 2020 '
                 Call PBP(Q$(0) + " pops it up near the 3rd base stands")
@@ -5405,7 +5409,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 H6% = 1
 
-            Case 30 TO 31
+            Case 30 To 31
 
                 Call PBP(Q$(0) + " pops it up foul near the stands")
                 Call PBP(B$(D, B9%(D, 3)) + " gives chase")
@@ -5454,7 +5458,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 H6% = 1
 
-            Case 35 TO 37
+            Case 35 To 37
 
                 Call PBP(Q$(0) + " lines one to deep left field")
                 Call PBP(B$(D, B9%(D, 7)) + " races back...")
@@ -5488,7 +5492,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 H6% = 5
 
-            Case 38 TO 40
+            Case 38 To 40
 
                 Call PBP(Q$(0) + " drives a sinking liner")
                 Call PBP("into deep center")
@@ -5530,7 +5534,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 H6% = 5
 
-            Case 41 TO 43
+            Case 41 To 43
 
                 Call PBP(Q$(0) + " lifts a deep drive into right")
                 Call PBP(B$(D, B9%(D, 9)) + " races back...")
@@ -5609,7 +5613,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 Call PBP(Q$(0) + " is hit by a pitch and injured")
                 Call PLYRHRT(P, P9, W5, W6, BC%, U%, D, MO)
 
-            Case 46 TO 49
+            Case 46 To 49
 
                 Call PBP(B$(D, B9%(D, 2)) + " is injured by a foul tip!")
 
@@ -5619,7 +5623,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 H6% = 1
 
-            Case 50 TO 58
+            Case 50 To 58
 
                 i = Int(Rnd(1) * 3) + 7
 
@@ -5660,7 +5664,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 H6% = 5
 
-            Case 59 TO 61
+            Case 59 To 61
                 Call PBP(Q$(0) + " fouls the pitch off his foot")
                 Call PBP("He is injured")
                 Call PLYRHRT(P, P9, W5, W6, BC%, U%, D, MO)
@@ -5668,7 +5672,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 H6% = 1
 
                 '62 to 64
-            Case 62 TO 64
+            Case 62 To 64
 
                 Call PBP(Q$(0) + " pops it up in foul along the 3b line"): Call PBP("It drifts into foul territory")
                 Call PBP(B$(D, B9%(D, 5)) + " and " + P$(D, P1%(D)) + " chase after it and collide!!")
@@ -5680,7 +5684,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 H6% = 1
 
-            Case 65 TO 70
+            Case 65 To 70
 
                 I5 = P1%(D)
                 I6 = 1
@@ -5715,7 +5719,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 Call INJURYLENGTH(IJL%, D, po%, U6, P, U9, P9, W5, W6): H6% = 5
 
-            Case 71 TO 85
+            Case 71 To 85
 
                 F$ = Q$(0) + " lines it off "
 
@@ -5771,7 +5775,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 End If
 
-            Case 86 TO 89
+            Case 86 To 89
 
                 Call PBP(P$(D, P1%(D)) + " is motioning for " + M$(D) + " to come out")
                 Call PBP("It appears he has a blister")
@@ -5795,7 +5799,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 H6% = 1
 
-            Case 92 TO 100
+            Case 92 To 100
 
                 Call PBP(U$(1) + " calls time to dust off the plate")
 
@@ -6419,12 +6423,16 @@ Sub POSTGAME ()
         End If
 
         Select Case X
+            Case 0:
+                Call BoxToScreen(BK$)
+
             Case 1, 2:
                 If X = 1 Then
                     NM$ = "TEMPBOX"
                 Else
                     If AP% <> 1 Then
-                        Cls: Print "ENTER 8-CHARACTER FILENAME FOR BOXSCORE (NO SPACES OR PERIODS)";: Input NM$
+                        Cls
+                        Print "ENTER 8-CHARACTER FILENAME FOR BOXSCORE (NO SPACES OR PERIODS)";: Input NM$
                         NM$ = NM$ + ".SPC"
                     Else
                         Open "GAME82" For Input As #1
@@ -6440,27 +6448,27 @@ Sub POSTGAME ()
 
                 Call BoxToFile(NM$, BK$, E%(), SPECIAL)
 
-            Case 0:
-                Call BoxToScreen(BK$)
-
         End Select
 
-        Color 15, 0: Cls
+        Color 15, 0
+        Cls
 
         J = 1
         Call DRAWBOX(J)
 
-        Locate 9, 28
-        Print "DISPLAY STATS AGAIN (YN)";
-        Color 15, 0
-
         If Not (AP% = 1 And U6 = 2) Then
+
+            Locate 9, 28
+            Print "DISPLAY STATS AGAIN (YN)";
+            Color 15, 0
+
             Do
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
         End If
 
-    Loop Until UCase$(I$) = "N"
+    Loop Until UCase$(I$) = "N" Or (AP% = 1 And U6 = 2)
 
     Cls
     Color 15, 0
@@ -6475,6 +6483,7 @@ Sub POSTGAME ()
     If AP% = 1 Then
         BG% = 0
         BN% = 1
+        I$ = "Y"
     Else
         Do
             I$ = GetKeyPress$
@@ -6935,7 +6944,7 @@ End Sub
 Sub BoxToScreen (BK$)
 
     Shared DB, HR, TR, SB
-    Shared DB$(), E$(), HR$(), SB$(), TR$()
+    'Shared DB$(), E$(), HR$(), SB$(), TR$()
 
     X = 0
 
@@ -7777,8 +7786,7 @@ End Sub
 Sub CheckRecords ()
 
     Shared DB, HR, TR, SB
-
-    Shared DB$(), E$(), HR$(), SB$(), TR$()
+    'Shared DB$(), E$(), HR$(), SB$(), TR$()
 
     For I = 0 To 1:
         For I1 = 0 To 21:
@@ -7944,7 +7952,7 @@ Sub CheckRecords ()
     ATT = Int(Rnd(1) * 55) + 5
     ATT = ATT * 1000
 
-	MIN = Int(Rnd(1) * 60)
+    MIN = Int(Rnd(1) * 60)
 
     If MIN < 10 Then MIN$ = "0" + Right$(Str$(MIN), 1): GT$ = GT$ + MIN$ Else GT$ = GT$ + Right$(Str$(MIN), 2)
 
@@ -8139,7 +8147,7 @@ Sub PBP (F$)
     If pbpDelay! > 0 Then
 
         F$ = PadRight(F$, 44)
-		'Should this ever be more than 44 characters?
+        'Should this ever be more than 44 characters?
 
         F$ = Left$(F$, 44)
         PB% = PB% + 1
@@ -8169,7 +8177,7 @@ Sub PBP (F$)
 
         Call DELAY
 
-	End If
+    End If
 
 End Sub
 

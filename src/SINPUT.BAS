@@ -103,14 +103,17 @@ Sub EditStatsSchedules (action%)
         Else
             Open diskPaths$(1) + Z$ For Input As #1
 
-            Input #1, A$: Input #1, W2%: Input #1, L2%
+            Input #1, A$
+			Input #1, W2%
+			Input #1, L2%
 
             For I = 0 To 22: Input #1, B$(I): Input #1, statB%(I): Next I
             For I = 0 To 21: Input #1, P$(I): Input #1, statP%(I): Next I
             For I = 0 To 22: For I1 = 0 To 21: Input #1, B0%(I, I1): Next I1: Next I
             For I = 0 To 21: For I1 = 0 To 41: Input #1, P0%(I, I1): Next I1: Next I
 
-            Input #1, D0%: Input #1, D1%
+            Input #1, D0%
+			Input #1, D1%
 
             For I = 0 To 21: Input #1, T%(I): Next I
             For I = 0 To 22: Input #1, T1%(I): Next I
@@ -120,7 +123,7 @@ Sub EditStatsSchedules (action%)
             Color L%(11), L%(12)
             Cls
 
-            Call InputTeamStats(Z$, A$, D0%, D1%, L2%, W2%)
+            Call InputTeamStats(Z$, A$, D0%, D1%, L2%, W2%, action%)
 
         End If
 
@@ -132,35 +135,62 @@ End Sub
 '       InputTeamStats Subroutine
 '----------------------------------------
 '...explanation...
-Sub InputTeamStats (Z$, A$, D0%, D1%, L2%, W2%)
+Sub InputTeamStats (Z$, A$, D0%, D1%, L2%, W2%, action%)
 
     Shared B$(), P$()
     Shared B0%(), P0%()
     Shared T%(), T1%()
 
     C1 = 0
+
     Cls
 
-    Print "TEAM BATTING STATS"
-    80 Locate 2: Input "1. TEAM NAME (EX. ST_LOUIS.64) "; Z$: If C1 = 1 Then 145
-    85 Locate 3: Input "2. TM AB "; T%(0): If C1 = 1 Then 145
-    90 Locate 4: Input "3. TM RUNS "; T%(2): If C1 = 1 Then 145
-    95 Locate 5: Input "4. TM HITS "; T%(1): If C1 = 1 Then 145
-    100 Locate 6: Input "5. TM DBL "; T%(4): If C1 = 1 Then 145
-    105 Locate 7: Input "6. TM TRPL "; T%(5): If C1 = 1 Then 145
-    110 Locate 8: Input "7. TM HR "; T%(6): If C1 = 1 Then 145
-    115 Locate 9: Input "8. TM RBI "; T%(3): If C1 = 1 Then 145
-    120 Locate 10: Input "9. TM BB "; T%(7): If C1 = 1 Then 145
-    125 Locate 11: Input "10. TM SO "; T%(8): If C1 = 1 Then 145
-    130 Locate 12: Input "11. TM ERR "; T%(11): If C1 = 1 Then 145
-    135 Locate 13: Input "12. TM SB "; T%(9): If C1 = 1 Then 145
-    140 Locate 14: Input "13. TM CS "; T%(10): If C1 = 1 Then 145
-    141 Locate 15: Input "14. TM PO "; T%(16): If C1 = 1 Then 145
-    142 Locate 16: Input "15. TM A  "; T%(17): If C1 = 1 Then 145
-    143 Locate 17: Input "16. TM SH "; T%(18): If C1 = 1 Then 145
-    144 Locate 18: Input "17. TM SF "; T%(19): If C1 = 1 Then 145
-    116 Locate 19: Input "18. TM GIDP "; T%(15): If C1 = 1 Then 145
-    117 Locate 20: Input "19. TM LOB "; T%(12): If C1 = 1 Then 145
+	If action% = 2 Then
+		Print "TEAM BATTING STATS"
+		Locate 2: Input "1. TEAM NAME (EX. ST_LOUIS.64) "; Z$
+		Locate 3: Input "2. TM AB "; T%(0)
+		Locate 4: Input "3. TM RUNS "; T%(2)
+		Locate 5: Input "4. TM HITS "; T%(1)
+		Locate 6: Input "5. TM DBL "; T%(4)
+		Locate 7: Input "6. TM TRPL "; T%(5)
+		Locate 8: Input "7. TM HR "; T%(6)
+		Locate 9: Input "8. TM RBI "; T%(3)
+		Locate 10: Input "9. TM BB "; T%(7)
+		Locate 11: Input "10. TM SO "; T%(8)
+		Locate 12: Input "11. TM ERR "; T%(11)
+		Locate 13: Input "12. TM SB "; T%(9)
+		Locate 14: Input "13. TM CS "; T%(10)
+		Locate 15: Input "14. TM PO "; T%(16)
+		Locate 16: Input "15. TM A  "; T%(17)
+		Locate 17: Input "16. TM SH "; T%(18)
+		Locate 18: Input "17. TM SF "; T%(19)
+		Locate 19: Input "18. TM GIDP "; T%(15)
+		Locate 20: Input "19. TM LOB "; T%(12)
+
+	Else
+
+		Print "TEAM BATTING STATS"
+		80 Locate 2: Input "1. TEAM NAME (EX. ST_LOUIS.64) "; Z$: If C1 = 1 Then 145
+		85 Locate 3: Input "2. TM AB "; T%(0): If C1 = 1 Then 145
+		90 Locate 4: Input "3. TM RUNS "; T%(2): If C1 = 1 Then 145
+		95 Locate 5: Input "4. TM HITS "; T%(1): If C1 = 1 Then 145
+		100 Locate 6: Input "5. TM DBL "; T%(4): If C1 = 1 Then 145
+		105 Locate 7: Input "6. TM TRPL "; T%(5): If C1 = 1 Then 145
+		110 Locate 8: Input "7. TM HR "; T%(6): If C1 = 1 Then 145
+		115 Locate 9: Input "8. TM RBI "; T%(3): If C1 = 1 Then 145
+		120 Locate 10: Input "9. TM BB "; T%(7): If C1 = 1 Then 145
+		125 Locate 11: Input "10. TM SO "; T%(8): If C1 = 1 Then 145
+		130 Locate 12: Input "11. TM ERR "; T%(11): If C1 = 1 Then 145
+		135 Locate 13: Input "12. TM SB "; T%(9): If C1 = 1 Then 145
+		140 Locate 14: Input "13. TM CS "; T%(10): If C1 = 1 Then 145
+		141 Locate 15: Input "14. TM PO "; T%(16): If C1 = 1 Then 145
+		142 Locate 16: Input "15. TM A  "; T%(17): If C1 = 1 Then 145
+		143 Locate 17: Input "16. TM SH "; T%(18): If C1 = 1 Then 145
+		144 Locate 18: Input "17. TM SF "; T%(19): If C1 = 1 Then 145
+		116 Locate 19: Input "18. TM GIDP "; T%(15): If C1 = 1 Then 145
+		117 Locate 20: Input "19. TM LOB "; T%(12): If C1 = 1 Then 145
+
+	End If
 
     145 '
     Do
@@ -449,13 +479,18 @@ Sub GetTeam_SINPUT (yearNumber$, numberTeams)
     Shared L%()
 
     Do
-        Color 15, 0: Cls
+        Color 15, 0
+		Cls
+
         JJ = 7
+
         Locate 6, 8: Color 15, 4
         Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";: For II = 1 To JJ: Locate 6 + II, 8
         Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
         Locate 7 + JJ, 8
-        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";: Locate 7, 32
+        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+		
+		Locate 7, 32
         Locate , 12: Print "ENTER DISK ID: ": Print
         Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
         Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
@@ -512,12 +547,15 @@ Sub GetTeam_SINPUT (yearNumber$, numberTeams)
         Else
 
             Locate 2, 33
-            Color 15, 0: Color L%(11), L%(12)
-            Print T$: Color 15, 4
-            Locate , 33: Print "ANY CHANGE (YN)";
+            Color L%(11), L%(12): Print T$
+
+			Color 15, 4
+
             Do
+				Locate , 33: Print "ANY CHANGE (YN)";
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
+
         End If
 
     Loop Until UCase$(I$) = "N" Or I$ = Chr$(27)
@@ -836,8 +874,9 @@ Sub PromptScheduleChanges (Z$)
             L$(GAMES%) = L$
             I%(GAMES%) = I%
 
+			Print "ADD ANOTHER GAME (YN)";
+
             Do
-                Print "ADD ANOTHER GAME (YN)";
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 

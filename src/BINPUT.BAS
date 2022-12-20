@@ -188,7 +188,9 @@ Sub GetTeam_BINPUT (yearNumber$, numberTeams, teamIdx)
         Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";: For II = 1 To JJ: Locate 6 + II, 8
         Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
         Locate 7 + JJ, 8
-        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";: Locate 7, 32
+        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+		
+		Locate 7, 32
         Locate , 12: Print "ENTER DISK ID: ": Print
         Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
         Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
@@ -238,11 +240,16 @@ Sub GetTeam_BINPUT (yearNumber$, numberTeams, teamIdx)
             BO% = 0
         Else
             T$ = RTrim$(Q$(0))
-            Locate 2, 33: Color 15, 0
+            Locate 2, 33
             Color L%(11), L%(12): Print T$
-            Color 15, 4
-            Locate , 33: Print "ANY CHANGE (YN)";
-            I$ = GetKeyPress$
+
+			Color 15, 4
+
+			Do
+				Locate , 33: Print "ANY CHANGE (YN)";
+				I$ = GetKeyPress$
+			Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
         End If
 
     Loop Until UCase$(I$) = "N"
@@ -1051,8 +1058,10 @@ Sub SwitchBatters ()
 
         Locate 17, 60: Print B$(I2 - 1)
 
-        Locate 18, 50: Print "ANY CHANGE (YN)";
-        I$ = GetKeyPress$
+		Do
+			Locate 18, 50: Print "ANY CHANGE (YN)";
+			I$ = GetKeyPress$
+		Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
     Loop Until UCase$(I$) = "N"
 
@@ -1091,8 +1100,10 @@ Sub SwitchPitchers ()
 
         Locate 17, 60: Print P$(I2 - 1)
 
-        Locate 18, 50: Print "ANY CHANGE (YN)";
-        I$ = GetKeyPress$
+		Do
+			Locate 18, 50: Print "ANY CHANGE (YN)";
+			I$ = GetKeyPress$
+		Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
     Loop Until UCase$(I$) = "N"
 

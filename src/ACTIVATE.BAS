@@ -14,7 +14,9 @@ Sub ACTIVATE ()
 		Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";: For II = 1 To JJ: Locate 6 + II, 8
 		Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
 		Locate 7 + JJ, 8
-		Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";: Locate 7, 32
+		Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+		
+		Locate 7, 32
 		Locate , 12: Print "ENTER DISK ID: ": Print
 		Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
 		Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
@@ -26,19 +28,23 @@ Sub ACTIVATE ()
 			YN$ = NY$
 			Erase teamNames$
 			Call GetTeams_Activate(YN$, NTMS)
-			Call SelectTeam_ACTIVATE(YN$, NTMS, T)
+			If NTMS <> 0 Then Call SelectTeam_ACTIVATE(YN$, NTMS, T)
 		End If
-
-		T$ = RTrim$(Q$(0))
 
 		If BO% = 1 Then
 			BO% = 0
 		Else
-			Locate 2, 33: Color 15, 0
+			Locate 2, 33
+			T$ = RTrim$(Q$(0))
 			Color L%(11), L%(12): Print T$
+
 			Color 15, 4
-			Locate , 33: Print "ANY CHANGE (YN)";
-			I$ = GetKeyPress$
+
+			Do
+				Locate , 33: Print "ANY CHANGE (YN)";
+				I$ = GetKeyPress$
+			Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
 		End If
 
 	Loop Until UCase$(I$) = "N" Or I$ = Chr$(27)
@@ -186,15 +192,16 @@ End Sub
 '----------------------------------------
 '...explanation...
 Sub GetTeams_Activate (yearNumber$, numberTeams)
+       
+	numberTeams = 0
 
     If Not _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
+        BO% = 1
         Locate 10, 8
         Call CSMsgBox("NO TEAM FILES WERE FOUND MATCHING THIS ID.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
         I$ = GetKeyPress$
         Call CSMsgBox("", 0, Pass)
-        BO% = 1
     Else
-        numberTeams = 0
         Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
         Y = LOF(1)
 
@@ -210,7 +217,8 @@ Sub GetTeams_Activate (yearNumber$, numberTeams)
                 teamNames$(numberTeams) = Q$(0)
                 teamIndex%(numberTeams) = I1
             End If
-        1103 Next I1
+        Next I1
+		
         Close 1
     End If
 

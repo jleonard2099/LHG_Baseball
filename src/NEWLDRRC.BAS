@@ -93,11 +93,18 @@ Sub SelectLeague (leagueFile$)
                 _MouseHide
 
                 If ExitCode% <> 27 Then
+
+					Color 15, 1
                     targetFile$ = batFiles$(Selection%)
                     Locate 2, 33: Print targetFile$
-                    Locate , 33: Print "ANY CHANGE (YN)";
-                    Color 15, 0
-                    I$ = GetKeyPress$
+
+					Do
+						Locate , 33: Print "ANY CHANGE (YN)";
+						I$ = GetKeyPress$
+					Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+					Color 15, 0
+
                 End If
 
             Loop Until UCase$(I$) = "N"
@@ -145,12 +152,15 @@ Sub UpdateRecords (leagueFile$)
 
     Cls
     Input "ENTER SEASON YEAR (1991,1992)"; seasonYear
-    Do
-        Print "IS THIS THE FINAL UPDATE FOR THE YEAR (Y/N)"
-        finalUpdate$ = GetKeyPress$
+    
+	Do
+		I$ = GetKeyPress$
+		finalUpdate$ = UCase$(I$)
     Loop Until UCase$(finalUpdate$) = "Y" Or UCase$(finalUpdate$) = "N"
 
-    Print: Print "ANY CHANGE (Y/N)"
+    Print
+	Print "ANY CHANGE (Y/N)"
+
     Do
         I$ = GetKeyPress$
     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
@@ -212,7 +222,7 @@ Sub UpdateRecords (leagueFile$)
 
     Next I
 
-    If UCase$(finalUpdate$) = "Y" Then
+    If finalUpdate$ = "Y" Then
 
         For I = 1 To 920
             If BK%(I, 1) + BK%(I, 8) >= GM1!(I) * 3.1 And BK%(I, 1) <> 0 Then
@@ -352,7 +362,7 @@ Sub UpdateRecords (leagueFile$)
         Locate 8, 40: Print Using "###"; AAS
     Next I
 
-    If UCase$(finalUpdate$) = "Y" Then
+    If finalUpdate$ = "Y" Then
 
         For I = 1 To 880
             If PM%(I, 18) <> 0 And PM%(I, 9) >= 25 Then
@@ -427,7 +437,7 @@ Sub UpdateRecords (leagueFile$)
         Locate 9, 40: Print Using "###"; AAT
     Next I
 
-    If UCase$(finalUpdate$) = "Y" Then
+    If finalUpdate$ = "Y" Then
         For I = 1 To 40
             If TT!(I, 0) <> 0 Then
                 If TT!(I, 1) / TT!(I, 0) > TRC!(22) Then
@@ -471,7 +481,7 @@ Sub UpdateRecords (leagueFile$)
             Locate 9, 40: Print Using "###"; AAT
         Next I
 
-        If UCase$(finalUpdate$) = "Y" Then
+        If finalUpdate$ = "Y" Then
 
             For I = 1 To 40
                 If TT1!(I, 17) <> 0 Then

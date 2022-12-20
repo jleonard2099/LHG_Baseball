@@ -23,7 +23,10 @@ Sub PROGMAN ()
     Print
     Print "     THIS PROGRAM ALLOWS YOU TO CUSTOMIZE THE COMPUTER MANAGER'S"
     Print
-    Print "     STRATEGY AND PLAYER USAGE FOR EACH INDIVIDUAL TEAM"
+    Print "     STRATEGY AND PLAYER USAGE FOR EACH INDIVIDUAL TEAM         "
+    Print
+    Print
+    Print "                    PRESS ANY KEY TO CONTINUE                   "
     I$ = GetKeyPress$
 
     Call GetTeam_PROGMAN(T$, YN$)
@@ -236,7 +239,9 @@ Sub GetDiskYear (targetTeam$, yearNumber$, teamidx)
         Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";: For II = 1 To JJ: Locate 6 + II, 8
         Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
         Locate 7 + JJ, 8
-        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";: Locate 7, 32
+        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+		
+		Locate 7, 32
         Locate , 12: Print "ENTER DISK ID: ": Print
         Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
         Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
@@ -281,9 +286,14 @@ Sub GetDiskYear (targetTeam$, yearNumber$, teamidx)
 
             Locate 2, 33
             Color L%(11), L%(12): Print targetTeam$
-            Color 15, 4
-            Locate , 33: Print "ANY CHANGE (YN)";
-            I$ = GetKeyPress$
+
+			Color 15, 4
+
+			Do
+				Locate , 33: Print "ANY CHANGE (YN)";
+				I$ = GetKeyPress$
+			Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
         End If
 
     Loop Until UCase$(I$) = "N"
@@ -902,7 +912,8 @@ Sub EditLineups (handRL%, targetTeam$, yearNumber$)
                     D% = 0
 
                     Do
-                        Locate 12, 1: Print "IS A DH TO BE USED IN THIS LINEUP (YN)"
+                        Locate 12, 1
+						Print "IS A DH TO BE USED IN THIS LINEUP (YN)"
                         I$ = GetKeyPress$
                     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -2293,10 +2304,11 @@ Sub PitchingRotations (action%, targetTeam$)
         U$ = "COMPUTER DETERMINE ROTATION (YN) "
         Locate , (80 - Len(U$)) / 2
         Print U$
-        Color 15, 0
         Print
         I$ = GetKeyPress$
     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+	Color 15, 0
 
     If UCase$(I$) = "Y" Then CR% = 1
     'Adjust this as necessary
@@ -2394,8 +2406,10 @@ Sub PitchingRotations (action%, targetTeam$)
 
                 Locate , 59: Print P$(I1)
 
-                Locate , 59: Print "ANY CHANGE (YN)";
-                I$ = GetKeyPress$
+				Do
+					Locate , 59: Print "ANY CHANGE (YN)";
+					I$ = GetKeyPress$
+				Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
                 If UCase$(I$) = "Y" Then
                     For I2 = 15 To 17
@@ -3718,13 +3732,16 @@ Sub ImportManagerProfile ()
 
             If ExitCode% <> 27 Then
 
+				Color 15, 1
                 targetFile$ = managerFiles$(Selection%)
                 Locate 2, 33: Print targetFile$
-                Locate , 33: Print "ANY CHANGE (YN)";
-                Color 15, 0
+
                 Do
+					Locate , 33: Print "ANY CHANGE (YN)";
                     I$ = GetKeyPress$
                 Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+				Color 15, 0
 
                 If UCase$(I$) = "N" Then
                     L% = 0
@@ -3741,8 +3758,9 @@ Sub ImportManagerProfile ()
                     Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";
 					Locate 7
 
-                    Locate , 11: Print "IMPORT STRATEGY PERCENTAGES ONLY (YN)"
                     Do
+						Locate , 11
+						Print "IMPORT STRATEGY PERCENTAGES ONLY (YN)"
                         A$ = GetKeyPress$
                     Loop Until UCase$(A$) = "Y" Or UCase$(A$) = "N"
 

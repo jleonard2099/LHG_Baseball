@@ -96,12 +96,20 @@ Sub UpdateLeaders ()
                 _MouseHide
 
                 If ExitCode% <> 27 Then
+
+					Color 15, 1
                     targetFile$ = careerFiles$(Selection%)
                     Locate 2, 33: Print targetFile$
-                    Locate , 33: Print "ANY CHANGE (YN)";
-                    Color 15, 0
-                    I$ = GetKeyPress$
+					
+					Do
+						Locate , 33: Print "ANY CHANGE (YN)";
+						I$ = GetKeyPress$
+					Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+					Color 15, 0
+
                 End If
+
             Loop Until UCase$(I$) = "N"
 
             If ExitCode% <> 27 Then
@@ -111,10 +119,15 @@ Sub UpdateLeaders ()
                 Cls
 
                 Do
+
                     Input "ENTER NUMBER OF AT BATS TO QUALIFY"; N1
                     Input "ENTER NUMBER OF INNINGS PITCHED TO QUALIFY"; N2
-                    Locate 7: Print "ANY CHANGE (Y/N)"
-                    I$ = GetKeyPress$
+
+					Do
+						Locate 7: Print "ANY CHANGE (Y/N)"
+						I$ = GetKeyPress$
+					Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
                 Loop Until UCase$(I$) = "N"
 
                 Open diskPaths$(1) + leaderFile$ For Input As #1
@@ -330,19 +343,27 @@ Sub ViewPrintLeaders ()
                 _MouseHide
 
                 If ExitCode% <> 27 Then
+
+					Color 15, 1
                     targetFile$ = careerLeaderFiles$(Selection%)
                     Locate 2, 33: Print targetFile$
-                    Locate , 33: Print "ANY CHANGE (YN)";
-                    Color 15, 0
-                    I$ = GetKeyPress$
+
+					Do
+						Locate , 33: Print "ANY CHANGE (YN)";
+						I$ = GetKeyPress$
+					Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+					Color 15, 0
+
                 End If
+
             Loop Until UCase$(I$) = "N"
 
 			If ExitCode% <> 27 Then
-				Z1$ = RTrim$(targetFile$)
-				Cls
 
 				Cls
+
+				Z1$ = RTrim$(targetFile$)
 
 				Open diskPaths$(1) + Z1$ For Input As #1
 				For I = 0 To 17: For I1 = 0 To 19: Input #1, BL1!(I, I1), BL0$(I, I1): Next: Next

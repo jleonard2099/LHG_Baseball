@@ -70,7 +70,9 @@ Sub GetTeamA_TRADE (yearNumber$, numberTeams, tradeIdx)
         Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";: For II = 1 To JJ: Locate 6 + II, 8
         Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
         Locate 7 + JJ, 8
-        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";: Locate 7, 32
+        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+		
+		Locate 7, 32
         Locate , 12: Print "ENTER DISK ID FOR TEAM 1: ": Print
         Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
         Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
@@ -122,10 +124,16 @@ Sub GetTeamA_TRADE (yearNumber$, numberTeams, tradeIdx)
         If BO% = 1 Then
             BO% = 0
         Else
-            Locate 2, 33: Color 15, 0: Color tradeL%(tradeIdx, 11), tradeL%(tradeIdx, 12)
-            Print A$(tradeIdx): Color 15, 4
-            Locate , 33: Print "ANY CHANGE (YN)";
-            I$ = GetKeyPress$
+            Locate 2, 33
+			Color tradeL%(tradeIdx, 11), tradeL%(tradeIdx, 12): Print A$(tradeIdx)
+			
+			Color 15, 4
+
+			Do
+				Locate , 33: Print "ANY CHANGE (YN)";
+				I$ = GetKeyPress$
+            Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
+			
         End If
 
     Loop Until UCase$(I$) = "N" Or I$ = Chr$(27)
@@ -362,7 +370,9 @@ Sub GetTeamB_TRADE (yearNumber$, numberTeams, tradeIdx)
         Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";: For II = 1 To JJ: Locate 6 + II, 8
         Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
         Locate 7 + JJ, 8
-        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";: Locate 7, 32
+        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+		
+		Locate 7, 32
         Locate , 12: Print "ENTER DISK ID FOR TEAM 2: ": Print
         Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
         Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
@@ -413,10 +423,17 @@ Sub GetTeamB_TRADE (yearNumber$, numberTeams, tradeIdx)
         If BO% = 1 Then
             BO% = 0
         Else
-            Locate 2, 33: Color 15, 0: Color tradeL%(tradeIdx, 11), tradeL%(tradeIdx, 12)
-            Print A$(tradeIdx): Color 15, 4
-            Locate , 33: Print "ANY CHANGE (YN)";
-            I$ = GetKeyPress$
+
+            Locate 2, 33
+			Color tradeL%(tradeIdx, 11), tradeL%(tradeIdx, 12): Print A$(tradeIdx)
+
+			Color 15, 4
+
+			Do
+				Locate , 33: Print "ANY CHANGE (YN)";
+				I$ = GetKeyPress$
+            Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
+
         End If
 
     Loop Until UCase$(I$) = "N" Or I$ = Chr$(27)
@@ -438,12 +455,13 @@ Sub ContinueTrade (yearNumbers$(), tradeIdx)
 
     Shared S%()
 
+	Cls
+	Print "DOES ";: Color tradeL%(tradeIdx, 11), tradeL%(tradeIdx, 12)
+	Print A$(0);: Color 15, 0
+	Print " HAVE COMPILED STATS (YN)"
+	S%(0) = 0
+
     Do
-        Cls
-        Print "DOES ";: Color tradeL%(tradeIdx, 11), tradeL%(tradeIdx, 12)
-        Print A$(0);: Color 15, 0
-        Print " HAVE COMPILED STATS (YN)"
-        S%(0) = 0
         I$ = GetKeyPress$
     Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
 
@@ -519,15 +537,16 @@ Sub ContinueTrade (yearNumbers$(), tradeIdx)
     tradeIdx = 1
     Call GetTeamB_TRADE(yearNumbers$(tradeIdx), numberTeams, tradeIdx)
 
+	Color 15, 0
+
+	Cls
+
+	Print "DOES ";: Color tradeL%(tradeIdx, 11), tradeL%(tradeIdx, 12)
+	Print A$(1);: Color 15, 0
+	Print " HAVE COMPILED STATS (YN)"
+	S%(1) = 0
+
     Do
-        Color 15, 0
-
-        Cls
-
-        Print "DOES ";: Color tradeL%(tradeIdx, 11), tradeL%(tradeIdx, 12)
-        Print A$(1);: Color 15, 0
-        Print " HAVE COMPILED STATS (YN)"
-        S%(1) = 0
         I$ = GetKeyPress$
     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -793,9 +812,11 @@ Sub TradePitchers ()
         Loop Until I >= 0 And I <= 21
 
         Print tradeB$(1, I1)
-        Locate 22, 1: Print "ANY CHANGE (YN) ";
 
-        I$ = GetKeyPress
+        Do
+			Locate 22, 1: Print "ANY CHANGE (YN) ";
+			I$ = GetKeyPress
+		Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
 
     Loop Until UCase$(I$) = "N"
 

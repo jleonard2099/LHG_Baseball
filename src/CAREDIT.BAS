@@ -51,7 +51,8 @@ Sub CAREDIT ()
                 Column% = 1
                 Locate 25, 1
                 Color 14
-                Print "ENTER";: Color 15
+                Print "ENTER";
+				Color 15
                 Print "-SELECTS FILE";
 
                 _MouseShow "DEFAULT"
@@ -59,22 +60,28 @@ Sub CAREDIT ()
                 _MouseHide
 
                 If ExitCode% <> 27 Then
+
+					Color 15, 1
                     targetFile$ = careerFiles$(Selection%)
                     Locate 2, 33: Print targetFile$
-                    Locate , 33: Print "ANY CHANGE (YN)";
-                    Color 15, 0
-                    I$ = GetKeyPress$
+
+					Do
+						Locate , 33: Print "ANY CHANGE (YN)";
+						I$ = GetKeyPress$
+					Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+					Color 15, 0
+
                 End If
 
             Loop Until UCase$(I$) = "N" Or ExitCode% = 27
 
             If ExitCode% <> 27 Then
-                Z$ = RTrim$(targetFile$)
 
                 Cls
-
-                Color 15
                 Locate 12, 10: Print "LOADING CAREER FILE . . . . PLEASE WAIT"
+
+                Z$ = RTrim$(targetFile$)
 
                 Open diskPaths$(1) + Z$ For Input As #2
                 Input #2, NB, NP
@@ -92,9 +99,9 @@ Sub CAREDIT ()
                     Color 7: Print "ATTERS, ";
                     Color 12: Print "P";
                     Color 7: Print "ITCHERS, ";
-                    Color 12: Print "U";: Color 7
-                    Print "PDATE FILE, OR ";: Color 12
-                    Print "E";: Color 7: Print "XIT WITHOUT UPDATING"
+                    Color 12: Print "U";
+					Color 7: Print "PDATE FILE, OR ";
+					Color 12: Print "E";: Color 7: Print "XIT WITHOUT UPDATING"
                     I$ = GetKeyPress$
 
                     Select Case UCase$(I$)

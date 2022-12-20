@@ -1,4 +1,4 @@
-
+$Debug
 '$INCLUDE: 'Game_Routines.BI'
 '$INCLUDE: 'Game_Routines_Gfx.BI'
 '$INCLUDE: 'SOURCE.BI'
@@ -497,7 +497,9 @@ For I = 0 To 1
             Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";: For II = 1 To JJ: Locate 6 + II, 8
             Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
             Locate 7 + JJ, 8
-            Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";: Locate 7, 32
+            Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+            
+            Locate 7, 32
             Locate , 12: Print VI$(I)
             Locate , 12: Print "ENTER DISK ID: ": Print
             Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
@@ -550,16 +552,22 @@ For I = 0 To 1
             Else
                 Locate 2, 33
                 Color L%(I, 11), L%(I, 12): Print A$(I)
+
                 Color 15, 4
-                Locate , 33: Print "ANY CHANGE (YN)";
-                I$ = GetKeyPress$
+
+                Do
+                    Locate , 33: Print "ANY CHANGE (YN)";
+                    I$ = GetKeyPress$
+                Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
             End If
 
         Loop Until UCase$(I$) = "N"
 
         YN$(I) = YN$
-        Color 15, 0
         A$(I) = RTrim$(A$(I))
+
+        Color 15, 0
 
     End If 'Done checking for autoplay
 
@@ -835,17 +843,16 @@ End If
 Call SOURCE
 
 End
-
 System
 
 '================================================================================
 
 Errhandler:
-'Open "errlog" For Append As #9
+Open "errlog" For Append As #9
 Print #9, "Error occurred! " '; Date$; " "; Time$
 Print #9, "Error #"; Err; "on program file line"; _ErrorLine
 Print #9, ""
-'Close #9
+Close #9
 Resume Next ' moves program to code following the error.
 
 '================================================================================
@@ -1136,14 +1143,15 @@ Sub SaveLineup (idx%)
     Shared MF%(), T1%()
     Shared Q2$()
 
-    Locate 25, 1: Print Space$(74);
-
-    Locate 25, 1: Print "SAVE THIS LINE UP (YN) ";
-
     If AP% = 1 And (U6 = 2 Or U6 = 1 And U9 = idx%) Then
         I$ = "N"
     Else
-        I$ = GetKeyPress$
+        Do
+            Locate 25, 1: Print Space$(74);
+            Locate 25, 1: Print "SAVE THIS LINE UP (YN) ";
+            I$ = GetKeyPress$
+        Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
     End If
 
     If UCase$(I$) = "Y" Then
@@ -1626,14 +1634,14 @@ Sub SelectStadium ()
             PARK$ = "99N.PNG"
         End If
 
-        Locate , 11: Print "SELECT A DIFFERENT STADIUM (YN)"
-        Color 15, 0
-
         If AP% <> 1 Then
             'No autoplay
             Do
+                Locate , 11: Print "SELECT A DIFFERENT STADIUM (YN)"
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+            Color 15, 0
 
             If UCase$(I$) = "Y" Then
 
@@ -1670,11 +1678,11 @@ Sub SelectStadium ()
                             L%(1, 13) = Selection%
                             S$(1) = PARK$(Selection%)
                         Else
-                            Locate 10, 8
-                            Print "STADIUM GRAPHIC NOT AVAILABLE"
-                            Locate , 8: Print "USE SELECTED PARK RATINGS WITH"
-                            Locate , 8: Print "GENERIC DISPLAY (YN)"
                             Do
+                                Locate 10, 8
+                                Print "STADIUM GRAPHIC NOT AVAILABLE"
+                                Locate , 8: Print "USE SELECTED PARK RATINGS WITH"
+                                Locate , 8: Print "GENERIC DISPLAY (YN)"
                                 J$ = GetKeyPress$
                             Loop Until UCase$(J$) = "Y" Or UCase$(J$) = "N"
 
@@ -1807,9 +1815,9 @@ Sub PitchingRotations (computerRotations%, P9)
                 Loop Until I1 <= 21 And MG%(P9, 3) <> I1 And MG%(P9, 4) <> I1 And MG%(P9, 5) <> I1 And MG%(P9, 6) <> I1 And MG%(P9, 7) <> I1
 
                 Locate , 59: Print P$(P9, I1)
-                Locate , 59: Print "ANY CHANGE (YN)";
 
                 Do
+                    Locate , 59: Print "ANY CHANGE (YN)";
                     J$ = GetKeyPress$
                 Loop Until UCase$(J$) = "Y" Or UCase$(J$) = "N"
 

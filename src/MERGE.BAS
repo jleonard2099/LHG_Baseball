@@ -52,30 +52,34 @@ Sub MergeIt ()
     'Dim T%(0 to 21), T1%(0 to 22)
     Shared T%(), T1%()
 
-    Color 12, 0: Cls
-    Locate 2, 5: Print "ENTER COMPLETE PATH FOR TEAM STATS TO MERGE"
-    Color 15
-    Locate 4, 5: Print "EXAMPLE - A:"
-    Locate , 5: Print "          C:\HAFFNER"
-    Locate , 5: Print "          C:\HAFFNER\1960"
-    Locate , 5: Print "          D:\BASEBALL"
+	Do
 
-    Do
+		Color 12, 0
+		Cls
+
+		Locate 2, 5: Print "ENTER COMPLETE PATH FOR TEAM STATS TO MERGE"
+		Color 15
+		Locate 4, 5: Print "EXAMPLE - A:"
+		Locate , 5: Print "          C:\HAFFNER"
+		Locate , 5: Print "          C:\HAFFNER\1960"
+		Locate , 5: Print "          D:\BASEBALL"
+
+		For J = 10 To 13: 
+			Locate J
+			Print Space$(60) 
+		Next
 
         Do
-            For J = 10 To 13: 
-                Locate J
-                Print Space$(60) 
-            Next
-
             Color 10
             Locate 10, 5: Line Input "ROAD STATS:     "; PR$
             Locate , 5
             Locate , 5: Line Input "CURRENT STATS:  "; PC$
 
-            Color 14
-            Locate 13, 5: Print "ANY CHANGE (Y/N)"
-            I$ = GetKeyPress$
+			Color 14
+
+			Locate 13, 5: Print "ANY CHANGE (Y/N)"
+			I$ = GetKeyPress$
+
         Loop Until UCase$(I$) = "N"
 
         Do
@@ -84,20 +88,25 @@ Sub MergeIt ()
 
             Color 11
             Locate 15, 5: Input "ENTER NAME OF STAT FILE (EX.- MINNESOT.61)"; Z$
-            Locate , 5: Print "ANY CHANGE (YN)"
 
-            I$ = GetKeyPress$
+			Do
+				Locate , 5: Print "ANY CHANGE (YN)"
+				I$ = GetKeyPress$
+
+			Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
         Loop Until UCase$(I$) = "N"
 
         If Len(Z$) > 11 Then Z$ = Left$(Z$, 8) + Right$(Z$, 3)
 
         If Not _FileExists(PR$ + "\" + Z$) Then 
+			Cls
+			Locate 2, 10
+			Color 7
+			Print "NON-EXISTENT PATH OR INCORRECT FILE NAME"
+			Print
+
             Do
-                Cls
-                Locate 2, 10
-                Color 7
-                Print "NON-EXISTENT PATH OR INCORRECT FILE NAME"
-                Print
                 Locate , 10
                 Print "TRY AGAIN (YN) "
                 I$ = GetKeyPress$
@@ -147,12 +156,13 @@ Sub MergeIt ()
             Close #1
 
             If Not _FileExists(PC$ + "\" + Z$) Then
+				Cls
+				Locate 2, 10
+				Color 7
+				Print "NON-EXISTENT PATH OR INCORRECT FILE NAME"
+				Print
+
                 Do
-                    Cls
-                    Locate 2, 10
-                    Color 7
-                    Print "NON-EXISTENT PATH OR INCORRECT FILE NAME"
-                    Print
                     Locate , 10
                     Print "TRY AGAIN (YN) "
                     I$ = GetKeyPress$
@@ -311,9 +321,6 @@ Sub MergeIt ()
 
         End If 'Done checking for road file
 
-        ' WTF? Is this an intentional delay?
-        'For J = 1 To 5000: Next J
-
-    Loop Until UCase$(I$) = "N" OR DUMMY$ <> ""
+	Loop Until DUMMY$ <> "" Or UCase$(I$) = "N"
 
 End Sub

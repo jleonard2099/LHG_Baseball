@@ -60,11 +60,18 @@ Sub PRTLEAG ()
                 _MouseHide
 
                 IF ExitCode% <> 27 THEN
+
+					COLOR 15, 1
                     targetFile$ = leagueLeaderFiles$(Selection%)
                     LOCATE 2, 33: PRINT targetFile$
-                    LOCATE , 33: PRINT "ANY CHANGE (YN)";
-                    COLOR 15, 0
-                    I$ = GetKeyPress$
+
+					Do
+						LOCATE , 33: PRINT "ANY CHANGE (YN)";
+						I$ = GetKeyPress$
+					Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+					
+					Color 15, 0
+
                 End If
 
             Loop Until UCase$(I$) = "N" Or ExitCode% = 27

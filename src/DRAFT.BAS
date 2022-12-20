@@ -84,7 +84,9 @@ Sub DRAFT ()
                     Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";: For II = 1 To JJ: Locate 6 + II, 8
                     Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
                     Locate 7 + JJ, 8
-                    Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";: Locate 7, 32
+                    Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+					
+					Locate 7, 32
                     Locate , 12: Print "ENTER DISK ID: ": Print
                     Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
                     Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
@@ -128,28 +130,30 @@ Sub DRAFT ()
                         BO% = 0
                     Else
                         Locate 2, 33
-                        'Color is not getting assigned here
-                        'Neither is player data???
                         Color L%(11), L%(12): Print T$
-                        Color 15, 4
-                        Locate , 33: Print "ANY CHANGE (YN)";
-                        I$ = GetKeyPress$
+
+						Color 15, 4
+
+						Do
+							Locate , 33: Print "ANY CHANGE (YN)";
+							I$ = GetKeyPress$
+						Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+						Color 15, 0
+
                     End If
 
                 Loop Until UCase$(I$) = "N"
 
-                Color 15, 0
-
                 '--- We need to track the index of the team to save
                 Call DoTheDraft(DNT%, done%, T$, draftYN$(), idx)
-                If done% = 1 Then Exit Sub
 
             Case 2
                 Cls '
 
         End Select
 
-    Loop Until I = 2
+    Loop Until I = 2 or done% = 1
 
 End Sub
 
@@ -282,10 +286,13 @@ Sub DoTheDraft (DNT%, doneDrafting%, teamName$, teamYears$(), saveSpot)
 				Locate 7
 
                 U$ = "DRAFT ANOTHER TEAM (YN)"
-                Locate , (80 - Len(U$)) / 2
-                Print U$
-                Color 15, 0
-                I$ = GetKeyPress$
+				Do
+					Locate , (80 - Len(U$)) / 2
+					Print U$
+					I$ = GetKeyPress$
+				Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+				Color 15, 0
 
                 If UCase$(I$) = "N" Then
                     doneDrafting% = 1
@@ -317,7 +324,9 @@ Sub DraftPlayer (playerType, yearNumber$)
         Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";: For II = 1 To JJ: Locate 6 + II, 8
         Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
         Locate 7 + JJ, 8
-        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";: Locate 7, 32
+        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+		
+		Locate 7, 32
         Locate , 12: Print "ENTER DISK ID: ": Print
         Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
         Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
@@ -380,16 +389,21 @@ Sub DraftPlayer (playerType, yearNumber$)
         Else
             Locate 2, 33
             Color L1%(11), L1%(12): Print T1$
-            Color 15, 4
-            Locate , 33: Print "ANY CHANGE (YN)";
-            I$ = GetKeyPress$
+	
+			Color 15, 4
+	
+			Do
+				Locate , 33: Print "ANY CHANGE (YN)";
+				I$ = GetKeyPress$
+			Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
         End If
 
     Loop Until UCase$(I$) = "N"
 
     Color 15, 0
-
     Cls
+
     Color L1%(11), L1%(12): Print T1$
     Color 15, 0
 

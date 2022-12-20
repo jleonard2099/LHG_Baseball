@@ -617,8 +617,8 @@ Sub SOURCE ()
         Call PBP("It's ruled a passed ball")
         If B0%(1, 0) = 0 And I = 9 And SO = 1 Or O%(0) > 1 And I = 9 And SO = 1 Then O%(1) = O%(1) + 1
 
-        13222 I8 = Int(Rnd(1) * 10) + 1
-        If S4% = 1 And P2 = 2 And I8 < B%(P, B3%(P, B0%(1, 0)), 16) Or S4% = 5 And P2 = 2 And I8 < B%(P, B3%(P, B0%(1, 0)), 16) Then
+        13222 I8! = Int(Rnd(1) * 10) + 1
+        If S4% = 1 And P2 = 2 And I8! < B%(P, B3%(P, B0%(1, 0)), 16) Or S4% = 5 And P2 = 2 And I8! < B%(P, B3%(P, B0%(1, 0)), 16) Then
             A5%(1) = 2
             A5%(3) = 1
             A5%(0) = 0
@@ -881,7 +881,7 @@ Sub SOURCE ()
         F% = 0
         Call FLDERR(F%, W%, D, I3, SB%, S2%, P)
 
-        If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8, I9)
+        If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8!, I9)
         Call SCOREBOARD
 
         GoTo 13900
@@ -1023,7 +1023,7 @@ Sub SOURCE ()
         F% = 0
 
         Call FLDERR(F%, W%, D, I3, SB%, S2%, P)
-        If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8, I9)
+        If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8!, I9)
         Call SCOREBOARD
         GoTo 13900
 
@@ -1066,7 +1066,7 @@ Sub SOURCE ()
     PQ = 0
 
     Call FLDERR(F%, W%, D, I3, SB%, S2%, P)
-    If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8, I9)
+    If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8!, I9)
     Call SCOREBOARD
     GoTo 13900
 
@@ -1818,9 +1818,9 @@ Sub SOURCE ()
         '------------------------------------------------------------------
 
         If A5%(2) <> 1 And S2% = 18 And W% = 9 And P2 <> 2 And S4% < 6 And I > 800 Then
-            I8 = 3
+            I8! = 3
             LN% = 3308
-            If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8, I9)
+            If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8!, I9)
 
             'Print #9, "We just called TRYFOREXTRABASE for deep fly out ~14060"
 
@@ -1828,9 +1828,9 @@ Sub SOURCE ()
         End If
 
         If A5%(2) <> 1 And S2% = 18 And W% = 8 And P2 <> 2 And S4% < 6 And I > 840 Then
-            I8 = 3
+            I8! = 3
             LN% = 3308
-            If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8, I9)
+            If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8!, I9)
 
             'Print #9, "We just called TRYFOREXTRABASE again for deep fly out ~14060"
 
@@ -1838,9 +1838,9 @@ Sub SOURCE ()
         End If
 
         If A5%(2) <> 1 And W% = 7 And P2 <> 2 And S4% < 6 And I > 880 Then
-            I8 = 3
+            I8! = 3
             LN% = 3308
-            If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8, I9)
+            If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8!, I9)
 
             'Print #9, "We just called TRYFOREXTRABASE once more for deep fly out ~14060"
 
@@ -1853,11 +1853,11 @@ Sub SOURCE ()
             I4 = (B%(D, B9%(D, W%), 15) - 5) * 25: J5 = I3 - I4
 
             If S2% = 17 And P2 <> 2 And S4% = 1 And I <= 100 + J5 Then
-                I8 = 2
+                I8! = 2
                 LN% = 3308
-                If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8, I9)
+                If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8!, I9)
             End If
-            I8 = 2
+            I8! = 2
             LN% = 3308
 
             'Print #9, "We just called TRYFOREXTRABASE last time for deep fly out ~14060"
@@ -1927,9 +1927,9 @@ Sub SOURCE ()
     'Print #9, "We just checked S2% from ~14025"
 
     If B0%(3, 0) > 0 Then
-        I8 = 4
+        I8! = 4
         LN% = 3308
-        If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8, I9)
+        If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8!, I9)
 
     End If
 
@@ -3031,7 +3031,7 @@ Sub SOURCE ()
 
     '----------------------------------------
     ' Print final score and run post game
-	' routines (scoreboard, stats, etc.)
+    ' routines (scoreboard, stats, etc.)
     '----------------------------------------
     18500 '
     'Locate 22, 1
@@ -3045,27 +3045,27 @@ Sub SOURCE ()
     normalFinish% = 1
 
     If AP% <> 1 Or U6 <> 2 Then
-		If pbpDelay! = 0 Then pbpDelay! = 0.1
-		'Delay of 0 will not present the text
-		'But we want to be sure the user sees it
-		Call PBP("PRESS ANY KEY TO CONTINUE")
+        If pbpDelay! = 0 Then pbpDelay! = 0.1
+        'Delay of 0 will not present the text
+        'But we want to be sure the user sees it
+        Call PBP("PRESS ANY KEY TO CONTINUE")
         I$ = GetKeyPress$
     End If
 
     Call EndOfGame
 
     End
-	System
+    System
 
     '----------------------------------------
     '           END OF GAME!!!
     '----------------------------------------
 
-	'================================================================================
-	' Below are all the different GoTo branches for the gameplay
-	' These have not yet been worked out into a different flow
-	' yet for the game's logic.
-	'================================================================================
+    '================================================================================
+    ' Below are all the different GoTo branches for the gameplay
+    ' These have not yet been worked out into a different flow
+    ' yet for the game's logic.
+    '================================================================================
 
     18700 H0% = 0
     If usingGfx = 1 Then
@@ -3335,7 +3335,9 @@ Sub SOURCE ()
         GoTo 18917
 
         18916 PPH = 1: D0%(P) = D0%(P) + 1: X0%(P, 0, D0%(P)) = I: X0%(P, 1, D0%(P)) = B7%(P, B1!(P)): X0%(P, 2, D0%(P)) = (B1!(P) * 10) + (D0%(P) - 9)
-        18919 B%(P, I, 21) = 1: B3%(P, B1!(P)) = I: B9%(P, B7%(P, B1!(P))) = I
+        18919 B%(P, I, 21) = 1
+        B3%(P, B1!(P)) = I
+        B9%(P, B7%(P, B1!(P))) = I
         If B7%(P, B1!(P)) = 1 Or B7%(P, B1!(P)) = 10 Then B9%(P, 1) = 99: B9%(P, 0) = B1!(P): B7%(P, B1!(P)) = 10
         I7% = P: I8% = B1!(P): I9% = B3%(P, B1!(P))
         Call REPLACEMENTS(I7%, I8%, I9%)

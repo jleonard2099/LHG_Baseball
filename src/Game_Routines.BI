@@ -103,11 +103,11 @@ Declare Sub STEAL3RD (TGTBASE%, AA, Q0, H0%, D)
 Declare Sub STEALCHANCE (AA, I2, TGTBASE%, CHANCE%)
 Declare Sub STRIKEOUT (U%, D)
 Declare Sub STRIKEOUTCS (SO)
-Declare Sub TAGADVANCE (S2%, I8, D)
+Declare Sub TAGADVANCE (S2%, I8!, D)
 Declare Sub THROW2FIRST (D)
 Declare Sub TIRING (P9)
 Declare Sub TRIPLEPLAY (D)
-Declare Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8, I9)
+Declare Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8!, I9)
 Declare Sub VIEWTEAM ()
 Declare Sub WALLDOUBLE (HW%, W%)
 Declare Sub WHICHRUNNER (i, S4%, D5)
@@ -148,8 +148,9 @@ DefInt A-Z
 
 'Used by postgame routines
 Dim DB, HR, TR, SB
-Dim DB$(0 To 22), E$(0 To 22), HR$(0 To 22), SB$(0 To 22), TR$(0 To 22)
-Dim Shared A$(1), B$(1, 22), B1$(4), C$(11), diskPaths$(3)
+'Dim DB$(0 To 22), E$(0 To 22), HR$(0 To 22), SB$(0 To 22), TR$(0 To 22)
+Dim Shared DB$(0 To 22), E$(0 To 22), HR$(0 To 22), SB$(0 To 22), TR$(0 To 22)
+Dim Shared A$(1), B$(0 To 1, 0 To 22), B1$(4), C$(11), diskPaths$(3)
 
 ' Restricted
 '---------------
@@ -197,18 +198,18 @@ Dim Shared PARK$(99), Q3$(100), WD$(10)
 
 'Dim Shared A$(1), B$(1, 22), B1$(4), C$(11), diskPaths$(3)
 'G$ = PBP lines
-Dim Shared EJ$(20), F$(10), G$(10), H$(4), H0$(1), IJ$(20)
+Dim Shared EJ$(20), F$(10), G$(10), H$(0 To 4), H0$(1), IJ$(20)
 Dim Shared M$(1), N$(1), NN$(1), P$(1, 21), PC$(4)
 Dim Shared Q$(23), S$(1), SC$(4), TM$(4), U$(4), X$(12), YN$(1)
 Dim Shared teamNames$(500)
 
-Dim Shared A5%(4), AP%(2), B%(0 To 1, 0 To 22, 80), B0%(3, 2)
-Dim Shared B1%(3, 1), B2%(1, 22), B3%(1, 9), B4%(1, 7, 9)
-Dim Shared B5%(0 To 1, 0 To 22, 0 To 21), B7%(1, 9), B8%(0 To 1, 0 To 22, 0 To 21), B9%(1, 10), BT%(1, 9, 9)
+Dim Shared A5%(0 To 4), AP%(2), B%(0 To 1, 0 To 22, 80), B0%(0 To 3, 0 To 2)
+Dim Shared B1%(3, 1), B2%(1, 22), B3%(0 To 1, 0 To 9), B4%(1, 7, 9)
+Dim Shared B5%(0 To 1, 0 To 22, 0 To 21), B7%(0 To 1, 0 To 9), B8%(0 To 1, 0 To 22, 0 To 21), B9%(1, 10), BT%(1, 9, 9)
 Dim Shared CF%(9, 2), CSS%(1, 22, 6), D0%(1), D3%(1), DP%(1), GK%(1), H0%(1)
 Dim Shared INJ%(0 To 1, 0 To 22)
 Dim Shared L%(1, 13), L0%(1), LB%(9, 1), M%(9), MG%(0 To 1, 999), NG%(18), O%(1)
-Dim Shared P%(0 To 1, 0 To 21, 0 To 89), P1%(1), P2%(1), P3%(1, 21), P4%(22), P5%(1, 21, 41), P6%(1), P8%(1, 21, 41), PR%(24)
+Dim Shared P%(0 To 1, 0 To 21, 0 To 89), P1%(0 To 1), P2%(1), P3%(1, 21), P4%(22), P5%(1, 21, 41), P6%(1), P8%(1, 21, 41), PR%(24)
 Dim Shared S%(1, 26), S1%(1), S6%(1, 2), S8%(1, 1), SA%(1, 24), SO%(5, 2), SU%(1, 1)
 Dim Shared T%(22), T3%(22), TP%(11, 2), TS%(1, 11), VA%(26), X0%(1, 2, 23)
 Dim Shared normalFinish%

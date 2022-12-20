@@ -161,12 +161,20 @@ Sub ViewTeamLeaders ()
                 _MouseHide
 
                 If ExitCode% <> 27 Then
+
+					Color 15, 1
                     targetFile$ = careerLeaderFiles$(Selection%)
                     Locate 2, 33: Print targetFile$
-                    Locate , 33: Print "ANY CHANGE (YN)";
-                    Color 15, 0
-                    I$ = GetKeyPress$
+					
+					Do
+						Locate , 33: Print "ANY CHANGE (YN)";
+						I$ = GetKeyPress$
+					Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+					Color 15, 0
+
                 End If
+
             Loop Until UCase$(I$) = "N"
 
 			If ExitCode% <> 27 Then
@@ -179,7 +187,9 @@ Sub ViewTeamLeaders ()
 				Close #1
 
 				Do
-					Locate 15, 10: Color 12: Print "V";: Color 7: Print "IEW OR ";: Color 12: Print "P";: Color 7: Print "RINT"
+					Locate 15, 10
+					Color 12: Print "V";: Color 7: Print "iew or ";
+					Color 12: Print "P";: Color 7: Print "rint"
 					I$ = GetKeyPress$
 				Loop Until UCase$(I$) = "P" Or UCase$(I$) = "V"
 
@@ -274,8 +284,13 @@ Sub ViewTeamLeaders ()
 							Color 3: Print "SHUTOUTS";: Color 7: Print Tab(23); Using "###"; PLL!(12);: Print Tab(37); careerPL$(12);: Print Tab(56); PLYR%(12)
 							Color 3: Print "HOME RUNS ALLOWED";: Color 7: Print Tab(23); Using "###"; PLL!(13);: Print Tab(37); careerPL$(13);: Print Tab(56); PLYR%(13)
 							Color 3: Print "DOUBLE PLAYS";: Color 7: Print Tab(23); Using "###"; PLL!(14);: Print Tab(37); careerPL$(14);: Print Tab(56); PLYR%(14)
-							Color 15: Locate 22: Print "VIEW AGAIN (Y/N)"
-							I$ = GetKeyPress$
+
+							Color 15
+
+							Do
+								Locate 22: Print "VIEW AGAIN (Y/N)"
+								I$ = GetKeyPress$
+							Loop Until UCase$(I$) = "N"
 
 						Loop Until UCase$(I$) = "N"
 					'
@@ -342,17 +357,24 @@ Sub Merge_FirstYear ()
 
         Locate , 5: Input "ENTER YEAR TO ADD (EX. - 1960)"; statYear
 
-        Locate , 5: Print "ANY CHANGE (YN)"
-        I$ = GetKeyPress$
+		Do
+			Locate , 5: Print "ANY CHANGE (YN)"
+			I$ = GetKeyPress$
+		Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
     Loop Until UCase$(I$) = "N"
 
 	'Where is VV used??
     VV = 1
-    Locate , 5: Print "IS THIS THE FINAL UPDATE FOR THE CURRENT SEASON? (Y/N)"
-    I$ = GetKeyPress$
 
-    If UCase$(I$) = "Y" Then finalupdate% = 1 Else finalupdate% = 0
+	Do
+		Locate , 5
+		Print "IS THIS THE FINAL UPDATE FOR THE CURRENT SEASON? (Y/N)"
+		I$ = GetKeyPress$
+		finalUpdate$ = UCase$(I$)
+	Loop Until finalUpdate$ = "Y" Or finalUpdate$ = "N"
+
+    If finalUpdate$ = "Y" Then finalupdate% = 1 Else finalupdate% = 0
 
     Locate 20, 5
     Color 15: Print "MERGING CAREER STATS AND UPDATING CAREER LEADER FILE . . . . PLEASE WAIT"
@@ -478,24 +500,27 @@ Sub Merge_AddYear ()
 
         Locate , 5: Input "ENTER YEAR TO ADD (EX. - 1961)"; statYear
 
-        Locate , 5: Print "ANY CHANGE (YN)"
-        I$ = GetKeyPress$
+		Do
+			Locate , 5: Print "ANY CHANGE (YN)"
+			I$ = GetKeyPress$
+		Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
     Loop Until UCase$(I$) = "N"
 
 	'Where is VV used??
     VV = 0
+
     Do
         Locate , 5
         Print "IS THIS THE FINAL UPDATE FOR THE CURRENT SEASON? (Y/N)"
-        I$ = GetKeyPress$
-    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+		finalUpdate$ = UCase$(I$)
+	Loop Until finalUpdate$ = "Y" Or finalUpdate$ = "N"
 
-    If UCase$(I$) = "Y" Then finalupdate% = 1 Else finalupdate% = 0
+    If finalUpdate$ = "Y" Then finalupdate% = 1 Else finalupdate% = 0
 
-    Locate 20, 5
-    Color 15
-    Print "LOADING CAREER LEADER FILE . . . . PLEASE WAIT"
+	Color 15, 0
+	Cls
+    Locate 20, 5: Print "LOADING CAREER LEADER FILE . . . . PLEASE WAIT"
 
     If _FileExists(diskPaths$(1) + careerFile$) Then
         Open diskPaths$(1) + careerFile$ For Input As #1
@@ -507,8 +532,8 @@ Sub Merge_AddYear ()
         Close #1
     End If
 
+    'Color 15, 0
     Locate 20, 5
-    Color 15
     Print "LOADING STATS FILE . . . . PLEASE WAIT"
     If Not _FileExists(diskPaths$(1) + statFile$) Then 
         Cls

@@ -65,8 +65,12 @@ Sub CREATE ()
 
                     If LG$ <> "" Then
                         LG$ = Left$(LG$, 8)
-                        Locate 13, 12: Print "ANY CHANGE (YN) "
-                        I$ = GetKeyPress$
+
+						Do
+							Locate 13, 12: Print "ANY CHANGE (YN) "
+							I$ = GetKeyPress$
+						Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
                     End If
 
                 Loop Until UCase$(I$) = "N" Or LG$ <> ""
@@ -140,16 +144,24 @@ Sub ChooseLeague (targetFile$)
                 _MouseHide
 
                 If ExitCode% <> 27 Then
+
+					Color 15, 1
                     targetFile$ = leagueFiles$(Selection%)
                     Locate 2, 33: Print targetFile$
 
-                    Locate , 33: Print "ANY CHANGE (YN)";
-                    Color 15, 0
-                    I$ = GetKeyPress$
+					Do
+						Locate , 33: Print "ANY CHANGE (YN)";
+						I$ = GetKeyPress$
+					Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+					Color 15, 0
+
                 End If
+
             Loop Until UCase$(I$) = "N"
 
             If ExitCode% <> 27 Then
+
                 targetFile$ = RTrim$(targetFile$)
                 LG$ = Left$(targetFile$, Len(targetFile$) - 4)
 
@@ -422,11 +434,15 @@ Sub GetTeam_CREATE (yearNumber$, teamName$, teamIdx)
             BO% = 0
         Else
             Locate 2, 33
-            Color 15, 0
             Color L%(11), L%(12): Print teamName$
-            Color 15, 4
-            Locate , 33: Print "ANY CHANGE (YN)";
-            I$ = GetKeyPress$
+
+			Color 15, 4
+
+			Do
+				Locate , 33: Print "ANY CHANGE (YN)";
+				I$ = GetKeyPress$
+			Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
         End If
 
     Loop Until UCase$(I$) = "N"
