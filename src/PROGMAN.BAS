@@ -29,100 +29,104 @@ Sub PROGMAN ()
     Print "                    PRESS ANY KEY TO CONTINUE                   "
     I$ = GetKeyPress$
 
-    Call GetTeam_PROGMAN(T$, YN$)
+	If I$ <> Chr$(27) Then
+		Call GetTeam_PROGMAN(T$, YN$)
 
-    Do
+		Do
 
-        '45
-        Color 15, 1
+			'45
+			Color 15, 1
 
-        Cls
+			Cls
 
-        Print
-        Print Tab(23);
-        Color 14, 4: Print "FULL COUNT PROGRAMMABLE MANAGER"
-        Print
-        ReDim menuChoices$(1 To 14)
-        menuChoices$(1) = "SELECT NEW TEAM TO EDIT                                  "
-        menuChoices$(2) = "SELECT/CHANGE LINEUPS                                    "
-        menuChoices$(3) = "SELECT/CHANGE ROTATIONS/RELIEVERS                        "
-        menuChoices$(4) = "SELECT/CHANGE PINCH HITTERS                              "
-        menuChoices$(5) = "SELECT/CHANGE DEFENSIVE REPLACEMENTS (8TH AND 9TH INNING)"
-        menuChoices$(6) = "SELECT/CHANGE CLOSING STRATEGY                           "
-        menuChoices$(7) = "SELECT/CHANGE HITTING STRATEGY                           "
-        menuChoices$(8) = "SELECT/CHANGE DEFENSIVE STRATEGY                         "
-        menuChoices$(9) = "SELECT/CHANGE PINCH RUNNING STRATEGY                     "
-        menuChoices$(10) = "SELECT/CHANGE BASE RUNNING STRATEGY                      "
-        menuChoices$(11) = "IMPORT MANAGERIAL PROFILE                                "
-        menuChoices$(12) = "EXPORT MANAGERIAL PROFILE                                "
-        menuChoices$(13) = "PRINT MANAGERIAL PROFILE                                 "
-        menuChoices$(14) = "RETURN TO GAME MENU                                      "
-        Selection% = 1
-        Count% = 14
-        Start% = 1
-        ExitCode% = 14
-        FileFGColr% = 15: FileBGColr% = 1
-        HiLiteFGColr% = 0: HiLiteBGColr% = 7
-        Spacing% = 1
-        Row% = 5
-        Column% = 10
-        Call box0(4, 9, 19, 70, 2, 15, 1)
+			Print
+			Print Tab(23);
+			Color 14, 4: Print "FULL COUNT PROGRAMMABLE MANAGER"
+			Print
+			ReDim menuChoices$(1 To 14)
+			menuChoices$(1) = "SELECT NEW TEAM TO EDIT                                  "
+			menuChoices$(2) = "SELECT/CHANGE LINEUPS                                    "
+			menuChoices$(3) = "SELECT/CHANGE ROTATIONS/RELIEVERS                        "
+			menuChoices$(4) = "SELECT/CHANGE PINCH HITTERS                              "
+			menuChoices$(5) = "SELECT/CHANGE DEFENSIVE REPLACEMENTS (8TH AND 9TH INNING)"
+			menuChoices$(6) = "SELECT/CHANGE CLOSING STRATEGY                           "
+			menuChoices$(7) = "SELECT/CHANGE HITTING STRATEGY                           "
+			menuChoices$(8) = "SELECT/CHANGE DEFENSIVE STRATEGY                         "
+			menuChoices$(9) = "SELECT/CHANGE PINCH RUNNING STRATEGY                     "
+			menuChoices$(10) = "SELECT/CHANGE BASE RUNNING STRATEGY                      "
+			menuChoices$(11) = "IMPORT MANAGERIAL PROFILE                                "
+			menuChoices$(12) = "EXPORT MANAGERIAL PROFILE                                "
+			menuChoices$(13) = "PRINT MANAGERIAL PROFILE                                 "
+			menuChoices$(14) = "RETURN TO GAME MENU                                      "
+			Selection% = 1
+			Count% = 14
+			Start% = 1
+			ExitCode% = 14
+			FileFGColr% = 15: FileBGColr% = 1
+			HiLiteFGColr% = 0: HiLiteBGColr% = 7
+			Spacing% = 1
+			Row% = 5
+			Column% = 10
+			Call box0(4, 9, 19, 70, 2, 15, 1)
 
-        _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
-        _MouseHide
+			_MouseShow "DEFAULT"
+			MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+			_MouseHide
 
-        Color , 0
+			Color , 0
 
-        If ExitCode% <> 27 Then
-            Select Case Selection%
-                Case 1
-                    For I = 1 To 999: MG%(I) = -1: Next
-                    Call GetTeam_PROGMAN(T$, YN$)
+			If ExitCode% <> 27 Then
 
-                Case 2
-                    Call LineupStrategy(T$)
+				Select Case Selection%
+					Case 1
+						For I = 1 To 999: MG%(I) = -1: Next
+						Call GetTeam_PROGMAN(T$, YN$)
 
-                Case 3
-                    Call RotationReliefMenu(T$)
+					Case 2
+						Call LineupStrategy(T$)
 
-                Case 4
-                    Call SelectPinchHitters(YN$, T$)
+					Case 3
+						Call RotationReliefMenu(T$)
 
-                Case 5
-                    Call DefenseLateInning(YN$, T$)
+					Case 4
+						Call SelectPinchHitters(YN$, T$)
 
-                Case 6
-                    Call Input_PITSTRAT(YN$)
+					Case 5
+						Call DefenseLateInning(YN$, T$)
 
-                Case 7
-                    Call HittingStrategy(YN$)
+					Case 6
+						Call Input_PITSTRAT(YN$)
 
-                Case 8
-                    Call DefensiveStrategy(YN$)
+					Case 7
+						Call HittingStrategy(YN$)
 
-                Case 9
-                    Call PinchRunStrategy(T$)
+					Case 8
+						Call DefensiveStrategy(YN$)
 
-                Case 10
-                    Call BASERUN(YN$)
+					Case 9
+						Call PinchRunStrategy(T$)
 
-                Case 11
-                    Call ImportManagerProfile
+					Case 10
+						Call BASERUN(YN$)
 
-                Case 12
-                    Call ExportManagerProfile
+					Case 11
+						Call ImportManagerProfile
 
-                Case 13
-                    Call PrintManagerProfile(T$)
+					Case 12
+						Call ExportManagerProfile
 
-                Case 14
-                    Cls '
-            End Select
-        End If
+					Case 13
+						Call PrintManagerProfile(T$)
 
-    Loop Until Selection% = 14 Or ExitCode% = 27
+					Case 14
+						Cls '
+				End Select
+			End If
 
+		Loop Until Selection% = 14 Or ExitCode% = 27
+
+	End If 'Done checking for ESC
+	
 End Sub
 
 '----------------------------------------

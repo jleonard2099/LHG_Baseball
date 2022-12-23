@@ -8,8 +8,9 @@ Sub POSSRT ()
 
     Do
 
-        Cls
 		Color 15,0
+
+        Cls
 
         Call TITLE
 
@@ -109,7 +110,7 @@ Sub SearchPlayers ()
 
             End If
 
-        Loop Until UCase$(I$) = "N"
+        Loop Until UCase$(I$) = "N" Or ExitCode% = 27
 
 		If ExitCode% <> 27 Then
 

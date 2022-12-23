@@ -7,6 +7,8 @@ Sub CARLDR ()
     TMR1 = 2700
 
     Do
+		Color 15, 1
+
         Cls
 
         Color 12: Print "CAREER LEADER MENU"
@@ -17,15 +19,17 @@ Sub CARLDR ()
         Do
             I$ = GetKeyPress$
             I = Val(I$)
-        Loop Until I >= 1 And I <= 3
+        Loop Until I >= 1 And I <= 3 Or I$ = Chr$(27)
 
-        Select Case I
-            Case 1: Call UpdateLeaders
-            Case 2: Call ViewPrintLeaders
-            Case 3: Cls
-        End Select
+		If I$ <> Chr$(27) Then
+			Select Case I
+				Case 1: Call UpdateLeaders
+				Case 2: Call ViewPrintLeaders
+				Case 3: Cls
+			End Select
+		End If
 
-    Loop Until I = 3
+    Loop Until I = 3 Or I$ = Chr$(27)
 
 End Sub
 
@@ -110,7 +114,7 @@ Sub UpdateLeaders ()
 
                 End If
 
-            Loop Until UCase$(I$) = "N"
+            Loop Until UCase$(I$) = "N" Or ExitCode% = 27
 
             If ExitCode% <> 27 Then
 
@@ -310,11 +314,15 @@ Sub ViewPrintLeaders ()
             I$ = GetKeyPress$
             Call CSMsgBox("", 0, Pass)
         Else
+
             ReDim careerLeaderFiles$(0 To Count%)
+
             For X = 1 To Count%
                 careerLeaderFiles$(X) = Space$(12)
             Next
+
             careerLeaderFiles$(0) = Spec$
+
             Call ReadFile(careerLeaderFiles$())
 
             Do

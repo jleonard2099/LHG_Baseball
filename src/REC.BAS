@@ -10,8 +10,9 @@ Sub REC ()
 
     Do
 
-        Cls
         Color 15, 0
+
+        Cls
 
         Call TITLE
 

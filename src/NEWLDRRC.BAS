@@ -33,13 +33,15 @@ Sub NEWLDRRC ()
 
         If ExitCode% <> 27 Then
 
-            Call SelectLeague(LGE$)
+            Call SelectLeague(LGE$, menuExit%)
 
-            Select Case Selection%
-                Case 1: Call UpdateRecords(LGE$)
-                Case 2: Call ViewPrintRecords(LGE$)
-                Case 3: Cls
-            End Select
+			If menuExit% <> 27 Then
+				Select Case Selection%
+					Case 1: Call UpdateRecords(LGE$)
+					Case 2: Call ViewPrintRecords(LGE$)
+					Case 3: Cls
+				End Select
+			End If
 
         End If
 
@@ -51,7 +53,7 @@ End Sub
 '       SelectLeague Subroutine
 '----------------------------------------
 '...explanation...
-Sub SelectLeague (leagueFile$)
+Sub SelectLeague (leagueFile$, ExitCode%)
 
     Do
         Spec$ = diskPaths$(2) + "*.BAT"
@@ -107,7 +109,7 @@ Sub SelectLeague (leagueFile$)
 
                 End If
 
-            Loop Until UCase$(I$) = "N"
+            Loop Until UCase$(I$) = "N" Or ExitCode% = 27
 
             If ExitCode% <> 27 Then
                 targetFile$ = RTrim$(targetFile$)
@@ -116,7 +118,7 @@ Sub SelectLeague (leagueFile$)
 
         End If 'Done checking file count
 
-    Loop Until UCase$(I$) = "N"
+    Loop Until UCase$(I$) = "N" Or ExitCode% = 27
 
 End Sub
 

@@ -1,3 +1,4 @@
+
 Const GAME_VERSION$ = "6.60"
 'Const MAX_CONFERENCES = 40
 'Const TEAMS_PER_CONFERENCE = 30
@@ -278,8 +279,8 @@ Sub Leaders_Menu ()
 
     Do
 
-        700 '
         Cls
+
         Color 15, 0
 
         Call TITLE
@@ -335,7 +336,8 @@ Sub Replay_Menu ()
 
     Do
         Cls
-        Color 15, 0
+        
+		Color 15, 0
 
         Call TITLE
 

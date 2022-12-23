@@ -16,15 +16,19 @@ Sub MERGE ()
         Do
             I$ = GetKeyPress$
             I = Val(I$)
-        Loop Until I >= 1 Or I <= 3
+        Loop Until I >= 1 Or I <= 3 Or I$ = Chr$(27)
 
-        Select Case I
-            Case 1: Call MergeIt
-            Case 2: Call ALIGN
-            Case 3: Cls
-        End Select
+		If I$ <> Chr$(27) Then
 
-    Loop Until I = 3
+			Select Case I
+				Case 1: Call MergeIt
+				Case 2: Call ALIGN
+				Case 3: Cls
+			End Select
+
+		End If
+
+    Loop Until I = 3 Or I$ = Chr$(27)
 
 End Sub
 

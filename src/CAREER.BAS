@@ -7,9 +7,13 @@ Sub CAREER ()
     ReDim menuChoices$(1 To 7)
 
     Do
+
         Cls
+
 		Color 15,0
 
+		'Need to replace with custom CAREER/UTILS title
+		'to be consistent with all other games
         Call TITLE
 
         menuChoices$(1) = "CREATE AND MERGE INITIAL CAREER STATS  "
@@ -37,21 +41,24 @@ Sub CAREER ()
         Color , 0
 
         If ExitCode% <> 27 Then
+
             Select Case Selection%
+
                 Case 1: 
                     Cls
                     Color 14
-                    Locate 5, 27: Print " - - - C A U T I O N - - -"
-                    Color 15
-                    Locate 8, 18: Print "THIS OPTION SHOULD ONLY BE USED WHEN CREATING"
-                    Locate , 18: Print "AND MERGING THE INITIAL STAT FILE.  IF YOU ARE"
-                    Locate , 18: Print "ADDING AN ADDITIONAL YEAR TO AN EXISTING FILE,"
-                    Locate , 18: Print "            USE OPTION #2."
-                    Print
-                    Print
-                    Print
+
+					Locate 5, 27: Print " - - - C A U T I O N - - -"
 
                     Do
+						Color 15: Locate 8, 18
+						Print "THIS OPTION SHOULD ONLY BE USED WHEN CREATING"
+						Locate , 18: Print "AND MERGING THE INITIAL STAT FILE.  IF YOU ARE"
+						Locate , 18: Print "ADDING AN ADDITIONAL YEAR TO AN EXISTING FILE,"
+						Locate , 18: Print "            USE OPTION #2."
+						Print
+						Print
+						Print
                         Color 12
                         Locate , 25: Print "DO YOU WISH TO CONTINUE? (Y/N)"
                         I$ = GetKeyPress$
@@ -60,34 +67,42 @@ Sub CAREER ()
                             Call Merge_FirstYear
                         End If 'Done confirming user continue
 
-                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N" Or I$ = Chr$(27)
 
                 Case 2: 
                     Cls
-                    Color 14: Locate 5, 27: Print "- - - C A U T I O N - - -"
+                    Color 14
 
-                    Color 15: Locate 8, 8: Print "THIS OPTION SHOULD ONLY BE USED WHEN ADDING YEARS TO AN EXISTING STAT"
-                    Print "FILE.  IF YOU ARE CREATING A NEW CAREER FILE, USE OPTION #1.  IF YOU ARE ADDING"
-                    Print "AN ADDITIONAL CAREER YEAR, MAKE SURE THAT ANY UNUSED PLAYER SLOTS (XXX, END,"
-                    Print "ETC.) ARE AT THE END OF THE SEASON STAT LIST BEFORE YOU MERGE."
-                    Locate , 8: Print "ALSO MAKE SURE THAT THE PLAYERS NAMES IN THE FILE YOU ARE ADDING, MATCH"
-                    Print "THE EXACT SPELLING OF THE NAME OF THE SAME PLAYER IN THE CAREER FILE FOR THE"
-                    Print "PLAYERS THAT HAD PLAYED IN PREVIOUS YEARS.  EXAMPLE - IF BILLY WILLIAMS IS"
-                    Print "LISTED AS 'WILLIAMS' IN THE CAREER FILE AND THE SEASON STATS HAD HIM AS"
-                    Print "'B.WILLIAMS', HE SHOULD BE CHANGED TO 'WILLIAMS' IN THE SEASON FILE BEFORE"
-                    Print "MERGING, OR YOU COULD CHANGE HIM TO 'B.WILLIAMS' IN THE CAREER FILE BY USING"
-                    Print "THE MODIFY REPLAY STATS OPTION FROM THE MAIN MENU."
+					Locate 5, 27
+					Print "- - - C A U T I O N - - -"
 
-                    Print
-                    Print
+					Do
 
-                    Color 12
-                    Locate , 25: Print "DO YOU WISH TO CONTINUE? (Y/N)"
-                    I$ = GetKeyPress$
+						Color 15: Locate 8, 8
+						Print "THIS OPTION SHOULD ONLY BE USED WHEN ADDING YEARS TO AN EXISTING STAT"
+						Print "FILE.  IF YOU ARE CREATING A NEW CAREER FILE, USE OPTION #1.  IF YOU ARE ADDING"
+						Print "AN ADDITIONAL CAREER YEAR, MAKE SURE THAT ANY UNUSED PLAYER SLOTS (XXX, END,"
+						Print "ETC.) ARE AT THE END OF THE SEASON STAT LIST BEFORE YOU MERGE."
+						Locate , 8: Print "ALSO MAKE SURE THAT THE PLAYERS NAMES IN THE FILE YOU ARE ADDING, MATCH"
+						Print "THE EXACT SPELLING OF THE NAME OF THE SAME PLAYER IN THE CAREER FILE FOR THE"
+						Print "PLAYERS THAT HAD PLAYED IN PREVIOUS YEARS.  EXAMPLE - IF BILLY WILLIAMS IS"
+						Print "LISTED AS 'WILLIAMS' IN THE CAREER FILE AND THE SEASON STATS HAD HIM AS"
+						Print "'B.WILLIAMS', HE SHOULD BE CHANGED TO 'WILLIAMS' IN THE SEASON FILE BEFORE"
+						Print "MERGING, OR YOU COULD CHANGE HIM TO 'B.WILLIAMS' IN THE CAREER FILE BY USING"
+						Print "THE MODIFY REPLAY STATS OPTION FROM THE MAIN MENU."
 
-                    If UCase$(I$) = "Y" Then 
-                        Call Merge_AddYear
-                    End If
+						Print
+						Print
+
+						Color 12
+						Locate , 25: Print "DO YOU WISH TO CONTINUE? (Y/N)"
+						I$ = GetKeyPress$
+
+						If UCase$(I$) = "Y" Then
+							Call Merge_AddYear
+						End If
+                    
+					Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N" Or I$ = Chr$(27)
 
                 Case 3: Call CARVIEW
                 Case 4: Call CAREDIT
@@ -175,7 +190,7 @@ Sub ViewTeamLeaders ()
 
                 End If
 
-            Loop Until UCase$(I$) = "N"
+            Loop Until UCase$(I$) = "N" Or ExitCode% = 27
 
 			If ExitCode% <> 27 Then
 

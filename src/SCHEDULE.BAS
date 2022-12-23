@@ -178,11 +178,12 @@ Sub CreateSeasonSchedule ()
     Print
     Color 15: Print "(4) ";
     Color 14: Print "RETURN TO FULL COUNT MAIN MENU"
+
     Do
         I$ = GetKeyPress$
-        choice% = Val(I$)
-        If I$ = Chr$(27) Then choice% = 4
-    Loop Until choice% >= 0 And choice% <= 4
+        choice% = Val(I$)+1
+        If I$ = Chr$(27) Then choice% = 5
+    Loop Until choice% >= 1 And choice% <= 5
 
     If choice% <> 4 Then
 

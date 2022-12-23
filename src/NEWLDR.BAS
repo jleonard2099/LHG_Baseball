@@ -915,7 +915,7 @@ Sub UpdateExpandedLeaders ()
 
             End If
 
-        Loop Until UCase$(I$) = "N"
+        Loop Until UCase$(I$) = "N" Or ExitCode% = 27
 
 		Color 15, 0
 
@@ -1191,6 +1191,7 @@ Sub ViewExpandedLeaders ()
                 leagueFile$ = league$
                 Call ExpandedLeaders_Menu(leagueFile$)
             End If
+
         End If
 
     Loop Until Count% = 0 Or UCase$(I$) = "N" Or ExitCode% = 27
