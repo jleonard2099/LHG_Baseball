@@ -3,6 +3,8 @@
 - add "Boxes" subfolder to structure and adapt code
 - add "Schedules" subfolder to structure and adapt code
 
+[ ] Consistency of TITLE screens with other games
+
 [ ] SCHEDULE.BAS
 - menu needs to come down some
 - playing games should return back to the menu, not DOS
@@ -22,6 +24,9 @@
 - set as function to just return the file name
 
 [ ] Bad file extension - .BAT file --> .BTR (for Batters)
+
+[ ] Change name of major routines
+- LEAGCMPL --> CMPLEAG
 
 [ ] BINPUT.BAS - Team Management is a redundant option
 

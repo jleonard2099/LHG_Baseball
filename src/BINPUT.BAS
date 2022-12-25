@@ -4133,7 +4133,8 @@ Sub ViewHittingFielding ()
         Print Tab(55); Using "##"; draftP%(I, 30);
 
         If draftP%(I, 11) <> 999 Then
-            statPCT! = draftP%(I, 11) / 1000: Print Tab(59); Using "#.###"; statPCT!;
+            statPCT! = draftP%(I, 11) / 1000
+			Print Tab(59); Using "#.###"; statPCT!;
         Else
             statI2! = 0
             '-- For our mystery players, this is getting assigned 1000

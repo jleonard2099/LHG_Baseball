@@ -1,16 +1,14 @@
 Sub CAREER ()
 
-    _Title "Full Count Baseball - Career Files"
-
-    DefInt A-Z
-
     ReDim menuChoices$(1 To 7)
+
+    _Title "Full Count Baseball - Career Files"
 
     Do
 
-        Cls
+		Color 15, 0
 
-		Color 15,0
+        Cls
 
 		'Need to replace with custom CAREER/UTILS title
 		'to be consistent with all other games

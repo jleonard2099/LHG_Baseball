@@ -1,5 +1,5 @@
 
-Const GAME_VERSION$ = "6.60"
+Const GAME_VERSION$ = "6.61"
 'Const MAX_CONFERENCES = 40
 'Const TEAMS_PER_CONFERENCE = 30
 'Const TEAMS_PER_DIV = 15
@@ -337,7 +337,7 @@ Sub Replay_Menu ()
     Do
         Cls
         
-		Color 15, 0
+        Color 15, 0
 
         Call TITLE
 

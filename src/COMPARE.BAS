@@ -9,7 +9,7 @@ Sub COMPARE ()
     Do
 
         Cls
-		Color 15,0
+        Color 15, 0
 
         Call TITLE
 
@@ -68,14 +68,14 @@ Sub ViewComparisons ()
         Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
         Locate 7 + JJ, 8
         Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
-		
-		Locate 7, 32
+
+        Locate 7, 32
         Locate , 12: Print "ENTER DISK ID: ": Print
         Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
         Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
         Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
         Locate 7, 27: Input NY$
-		If NY$ = "" And YN$ <> "" Then
+        If NY$ = "" And YN$ <> "" Then
             Call SelectTeam_COMPARE(YN$, numberTeams)
         Else
             YN$ = NY$
@@ -106,9 +106,9 @@ Sub ViewComparisons ()
                     End If
                 Next I1
 
-				Call SelectTeam_COMPARE(YN$, numberTeams)
-
                 Close 1
+
+                Call SelectTeam_COMPARE(YN$, numberTeams)
 
             End If 'Done checking for teams file
 
@@ -118,15 +118,15 @@ Sub ViewComparisons ()
             BO% = 0
         Else
             Locate 2, 33
-			T$ = RTrim$(Q$(0))
-			Color L%(11), L%(12): Print T$
-			
-			Color 15, 4
+            T$ = RTrim$(Q$(0))
+            Color L%(11), L%(12): Print T$
 
-			Do
-				Locate , 33: Print "ANY CHANGE (YN)";
-				I$ = GetKeyPress$
-			Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+            Color 15, 4
+
+            Do
+                Locate , 33: Print "ANY CHANGE (YN)";
+                I$ = GetKeyPress$
+            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
         End If
 
@@ -212,13 +212,13 @@ Sub ViewComparisons ()
 
             Close #1
 
-			Color 15, 0
-			Cls
+            Color 15, 0
+            Cls
 
             Do
                 Locate 12, 5
-				Color 12: Print "V";: Color 7: Print "iew or ";
-				Color 12: Print "P";: Color 7: Print "rint"
+                Color 12: Print "V";: Color 7: Print "iew or ";
+                Color 12: Print "P";: Color 7: Print "rint"
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "P" Or UCase$(I$) = "V"
 
@@ -606,7 +606,7 @@ Sub Comparisons_Screen (teamName$)
             startI = 0
 
             Select Case B9
-                Case 1 TO 23
+                Case 1 To 23
                     startI = B9 - 1
                     Cls
                     For dc = 1 To 20
@@ -614,7 +614,7 @@ Sub Comparisons_Screen (teamName$)
                         Print String$(79, 177)
                     Next
 
-                Case 24 TO 45
+                Case 24 To 45
                     startI = B9 - 24
                     Cls
                     For dc = 1 To 14
@@ -1219,13 +1219,18 @@ Sub PlayerStats_Screen (teamName$)
 
     statPCT! = TB%(3) / TB%(1)
     Locate , 61: Print Using ".###"; statPCT!;: Print " ";
+
     statPCT! = (TB%(3) + TB%(4) + TB%(5) * 2 + TB%(6) * 3) / TB%(1)
     Locate , 66: Print Using ".###"; statPCT!;: Print " ";
+
     statPCT! = (TB%(3) + TB%(8)) / (TB%(1) + TB%(8))
     Locate , 71: Print Using ".###"; statPCT!;
-    Color 7, 0: Print String$(2, 177)
 
-    Color 14, 11: Locate 5, 13: Print Using "####"; T%(0);
+    Color 7, 0
+	Print String$(2, 177)
+
+    Color 14, 11
+	Locate 5, 13: Print Using "####"; T%(0);
     Locate , 17: Print Using "####"; T%(2);
     Locate , 21: Print Using "#####"; T%(1);
     Locate , 26: Print Using "####"; T%(4);
@@ -1240,11 +1245,16 @@ Sub PlayerStats_Screen (teamName$)
 
     statPCT! = T%(1) / T%(0)
     Locate , 61: Print Using ".###"; statPCT!;: Print " ";
+
     statPCT! = (T%(1) + T%(4) + T%(5) * 2 + T%(6) * 3) / T%(0)
     Locate , 66: Print Using ".###"; statPCT!;: Print " ";
+
     statPCT! = (T%(1) + T%(7)) / (T%(0) + T%(7))
     Locate , 71: Print Using ".###"; statPCT!;
-    Color 7, 0: Print String$(2, 177)
+
+    Color 7, 0
+	Print String$(2, 177)
+
     Locate , 15: Print String$(62, 177)
 
     Color 1, 11
@@ -1267,7 +1277,9 @@ Sub PlayerStats_Screen (teamName$)
     If TB%(10) = 0 Then Locate , 68: Print " ---.--";
     If TB%(10) > 0 Then Locate , 68: Print Using "####.##"; TB%(10) / (TB%(10) + TB%(11));
     Print " ";
-    Color 7, 0: Print String$(2, 177)
+
+    Color 7, 0
+	Print String$(2, 177)
 
     Color 14, 11
 
@@ -1295,11 +1307,23 @@ Sub PlayerStats_Screen (teamName$)
     Locate , 15: Print String$(63, 177)
     Color 10, 0: Locate 14, 2: Print "PITCHING"
     Color 12, 0: Locate 15, 2: Print "REGULAR ";
-    Color 7, 0: Print String$(2, 177)
-    Locate 16, 2: Color 12: Print "LEAGUE  ";
-    Color 7, 0: Print String$(2, 177)
-    Locate 17, 4: Print String$(8, 177)
-    Color 0, 12: Locate 14, 14: Print "  SV";
+    
+	Color 7, 0
+	Print String$(2, 177)
+    
+	Locate 16, 2
+	
+	Color 12
+	
+	Print "LEAGUE  ";
+    
+	Color 7, 0
+	Print String$(2, 177)
+    
+	Locate 17, 4: Print String$(8, 177)
+    
+	Color 0, 12
+	Locate 14, 14: Print "  SV";
 
     Print Tab(20); " IP";
     Print Tab(25); "  H";
@@ -1311,17 +1335,24 @@ Sub PlayerStats_Screen (teamName$)
 
     Color 10, 0: Locate 19, 2: Print "PITCHING"
     Color 12, 0: Locate 20, 2: Print "REGULAR ";
-    Color 7, 0: Print String$(2, 177)
+    
+	Color 7, 0
+	Print String$(2, 177)
 
     Locate 21, 2: Color 12: Print "LEAGUE  ";
-    Color 7, 0: Print String$(2, 177)
+    
+	Color 7, 0
+	Print String$(2, 177)
+
     Locate 22, 4: Print String$(8, 177)
 
     Color 0, 12
-    Locate 19, 14: Print " H/9IP ";
+    
+	Locate 19, 14: Print " H/9IP ";
     Print Tab(21); " SO/9IP ";
     Print Tab(29); " BB/9IP";
-    Color 15, 12
+    
+	Color 15, 12
     Locate 15, 14: Print Using "####"; TP&(3);
 
     Locate , 18: Print Using "#####"; TP&(6);
@@ -1331,15 +1362,20 @@ Sub PlayerStats_Screen (teamName$)
     Locate , 41: Print Using "######"; TP&(13);
     Locate , 47: Print Using "#####"; TP&(16);
     Locate , 52: Print Using "###.##"; (ERX! * 9) / TP&(6);
-    Color 7, 0: Print String$(2, 177)
+    
+	Color 7, 0
+	Print String$(2, 177)
 
     Color 15, 12: Locate 20, 14: Print Using "###.##"; TP&(7) * 9 / TP&(6);
 
     Locate , 20: Print Using "#####.##"; TP&(9) * 9 / TP&(6);
     Locate , 28: Print Using "#####.##"; TP&(8) * 9 / TP&(6);
-    Color 7, 0: Print String$(2, 177)
+    
+	Color 7, 0
+	Print String$(2, 177)
 
-    Color 14, 12: Locate 16, 14: Print Using "####"; T1%(12);
+    Color 14, 12
+	Locate 16, 14: Print Using "####"; T1%(12);
 
     Locate , 18: Print Using "#####"; T1%(0) / 3;
     Locate , 23: Print Using "#####"; T1%(1);
@@ -1348,18 +1384,27 @@ Sub PlayerStats_Screen (teamName$)
     Locate , 41: Print Using "######"; T1%(14);
     Locate , 47: Print Using "#####"; T1%(10);
     Locate , 52: Print Using "###.##"; (T1%(3) * 9) / (T1%(0) / 3);
-    Color 7, 0: Print String$(2, 177)
+    
+	Color 7, 0
+	Print String$(2, 177)
     Locate , 16
-    Color 7, 0: Print String$(44, 177)
+    
+	Color 7, 0
+	Print String$(44, 177)
 
     Locate 21, 14
     Color 14, 12: Print Using "###.##"; T1%(1) * 9 / (T1%(0) / 3);
 
     Locate , 20: Print Using "#####.##"; T1%(5) * 9 / (T1%(0) / 3);
     Locate , 28: Print Using "#####.##"; T1%(4) * 9 / (T1%(0) / 3);
-    Color 7, 0: Print String$(2, 177)
+    
+	Color 7, 0
+	Print String$(2, 177)
+
     Locate , 16
-    Color 7, 0: Print String$(22, 177)
+    
+	Color 7, 0
+	Print String$(22, 177)
 
     Color 15, 0
     Locate 22, 48: Print "HIT ANY KEY TO CONTINUE"

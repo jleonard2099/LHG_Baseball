@@ -81,7 +81,9 @@ Sub GROUND ()
     PD! = PH / (ER) * 100
 
     Do
+
         Cls
+
         Call GetTeam_GROUND(YN$, numberTeams, T$, teamIdx)
 
         S$ = RTrim$(Q$(1840))
@@ -139,7 +141,10 @@ Sub GROUND ()
 
         Next I
 
+        Color 15, 0
+
         Cls
+
         Print "BATTER         BA            SA            GA"
 
         For I = 0 To 22
@@ -249,15 +254,15 @@ Sub GetTeam_GROUND (yearNumber$, numberTeams, teamName$, teamIdx)
         Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
         Locate 7 + JJ, 8
         Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
-		
-		Locate 7, 32
+
+        Locate 7, 32
         Locate , 12: Print "ENTER DISK ID: ": Print
         Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
         Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
         Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
         Locate 7, 27: Input NY$
 
-		If NY$ = "" And yearNumber$ <> "" Then
+        If NY$ = "" And yearNumber$ <> "" Then
             Call SelectTeam_GROUND(yearNumber$, numberTeams, teamIdx)
         Else
             yearNumber$ = NY$
@@ -301,12 +306,12 @@ Sub GetTeam_GROUND (yearNumber$, numberTeams, teamName$, teamIdx)
             Locate 2, 33
             Color L%(11), L%(12): Print teamName$
 
-			Color 15, 4
+            Color 15, 4
 
-			Do
-				Locate , 33: Print "ANY CHANGE (YN)";
-				I$ = GetKeyPress$
-			Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+            Do
+                Locate , 33: Print "ANY CHANGE (YN)";
+                I$ = GetKeyPress$
+            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
         End If
 

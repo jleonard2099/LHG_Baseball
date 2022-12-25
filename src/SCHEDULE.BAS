@@ -1347,8 +1347,10 @@ Sub BoxscoreMaintenance ()
                 Case 5:
                     Spec$ = diskPaths$(1) + "*.SPC"
                     Call DeleteSchedules(Selection%, Spec$)
+
                     Spec$ = diskPaths$(1) + "BOX*."
                     Call DeleteSchedules(Selection%, Spec$)
+
             End Select
 
         End If 'Done checking for ESC
@@ -1367,10 +1369,8 @@ Sub SaveScheduleFile (saveFile$)
     Shared NG%()
     Shared scheduleYN$()
 
-    'If _FileExists(diskPaths$(0) + saveFile$ + ".SCD") Then Kill diskPaths$(0) + saveFile$ + ".SCD"
     If _FileExists(diskPaths$(0) + saveFile$) Then Kill diskPaths$(0) + saveFile$
 
-    'Open diskPaths$(0) + saveFile$ + ".SCD" For Random As #1 Len = 48
     Open diskPaths$(0) + saveFile$ For Random As #1 Len = 48
 
     For X = 0 To 18
@@ -1738,18 +1738,18 @@ Sub DeleteSchedules (fileChoice%, fileSpec$)
 
         ReDim boxFiles$(0 To Count%)
 
-        For X = 1 To Count%
-            boxFiles$(X) = Space$(12)
-        Next
+		For X = 1 To Count%
+			boxFiles$(X) = Space$(12)
+		Next
 
-        boxFiles$(0) = fileSpec$
+		boxFiles$(0) = fileSpec$
 
-        Call ReadFile(boxFiles$())
+		Call ReadFile(boxFiles$())
 
-        For X = 1 To Count%
-            Kill (diskPaths$(1) + boxFiles$(X))
-            Locate 12, 34: Print "DELETING "; boxFiles$(X)
-        Next
+		For X = 1 To Count%
+			Kill (diskPaths$(1) + boxFiles$(X))
+			Locate 12, 34: Print "DELETING "; boxFiles$(X)
+		Next
 
     End If
 

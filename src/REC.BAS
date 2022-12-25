@@ -2,8 +2,6 @@ Sub REC ()
 
     _Title "Full Count Baseball - Head-to-Head Stats"
 
-    DefInt A-Z
-
     Cls
 
     ReDim menuChoices$(1 To 4)
@@ -40,17 +38,17 @@ Sub REC ()
         If ExitCode% <> 27 Then
             Select Case Selection%
                 Case 1:
-                    Call AnalyzeTeamRecord(0)
+                    Call AnalyzeTeamRecord(league$, 0)
 
                 Case 2:
                     'RDD = 0
                     'VPP = 0
-                    Call AnalyzeTeamRecord(1)
+                    Call AnalyzeTeamRecord(league$, 1)
 
                 Case 3:
                     'RDD = 0
                     'VPP = 0
-                    Call AnalyzeTeamRecord(0)
+                    Call AnalyzeTeamRecord(league$, 0)
 
                 Case 4: Cls
             End Select
@@ -76,14 +74,14 @@ Sub GetTeam_REC (yearNumber$, numberTeams)
         Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
         Locate 7 + JJ, 8
         Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
-		
-		Locate 7, 32
+
+        Locate 7, 32
         Locate , 12: Print "ENTER DISK ID: ": Print
         Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
         Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
         Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
         Locate 7, 27: Input NY$
-		If NY$ = "" And yearNumber$ <> "" Then
+        If NY$ = "" And yearNumber$ <> "" Then
             Call SelectTeam_REC(yearNumber$, numberTeams)
         Else
             yearNumber$ = NY$
@@ -95,8 +93,8 @@ Sub GetTeam_REC (yearNumber$, numberTeams)
                 Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
                 Y = LOF(1)
                 Field #1, 15 As Q$(0)
-                
-				For I1 = 1 To Y / 4342
+
+                For I1 = 1 To Y / 4342
                     Get #1, I1
                     For I2 = 1 To 15
                         If Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then nullTeam = 1: Exit For
@@ -107,12 +105,12 @@ Sub GetTeam_REC (yearNumber$, numberTeams)
                         teamIndex%(numberTeams) = I1
                     End If
                 Next I1
-				
+
                 Close 1
 
                 Call SelectTeam_REC(yearNumber$, numberTeams)
-            
-			End If
+
+            End If
 
         End If
 
@@ -121,14 +119,14 @@ Sub GetTeam_REC (yearNumber$, numberTeams)
         Else
             T$ = RTrim$(Q$(0))
             Locate 2, 33
-			Color L%(11), L%(12): Print T$
+            Color L%(11), L%(12): Print T$
 
-			Color 15, 4
+            Color 15, 4
 
-			Do
-				Locate , 33: Print "ANY CHANGE (YN)";
-				I$ = GetKeyPress$
-			Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+            Do
+                Locate , 33: Print "ANY CHANGE (YN)";
+                I$ = GetKeyPress$
+            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
         End If
 
@@ -196,7 +194,7 @@ End Sub
 '     AnalyzeTeamRecord Subroutine
 '----------------------------------------
 '...explanation...
-Sub AnalyzeTeamRecord (sameLeague)
+Sub AnalyzeTeamRecord (LG$, sameLeague)
 
     Shared H%(), I%(), V%(), Z1%()
     Shared HW%(), AW%(), HL(), AL(), R1%(), R2%(), R3%(), R4%()
@@ -297,16 +295,16 @@ Sub AnalyzeTeamRecord (sameLeague)
 
                         If ExitCode% <> 27 Then
 
-							Color 15, 1
+                            Color 15, 1
                             targetFile$ = leagueFiles$(Selection%)
                             Locate 2, 33: Print targetFile$
 
-							Do
-								Locate , 33: Print "ANY CHANGE (YN)";
-								I$ = GetKeyPress$
-							Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-							
-							Color 15, 0
+                            Do
+                                Locate , 33: Print "ANY CHANGE (YN)";
+                                I$ = GetKeyPress$
+                            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+                            Color 15, 0
 
                         End If
 
@@ -327,9 +325,9 @@ Sub AnalyzeTeamRecord (sameLeague)
                 Cls
 
                 Do
-					Locate 12, 5
-					Color 12: Print "V";: Color 7: Print "iew or ";
-					Color 12: Print "P";: Color 7: Print "rint"
+                    Locate 12, 5
+                    Color 12: Print "V";: Color 7: Print "iew or ";
+                    Color 12: Print "P";: Color 7: Print "rint"
                     M$ = GetKeyPress$
                 Loop Until UCase$(M$) = "V" Or UCase$(M$) = "P"
 

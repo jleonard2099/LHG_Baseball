@@ -20,7 +20,7 @@ Sub NEWLDRST ()
     Do
 
         Cls
-		Color 15,0
+        Color 15,0
 
         Call TITLE
 
@@ -122,16 +122,16 @@ Sub UpdateLeagueStandings ()
 
                 If ExitCode% <> 27 Then
 
-					Color 15, 1
+                    Color 15, 1
                     targetFile$ = leagueFiles$(Selection%)
                     Locate 2, 33: Print targetFile$
 
-					Do
-						Locate , 33: Print "ANY CHANGE (YN)";
-						I$ = GetKeyPress$
-					Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+                    Do
+                        Locate , 33: Print "ANY CHANGE (YN)";
+                        I$ = GetKeyPress$
+                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
-					Color 15, 0
+                    Color 15, 0
 
                 End If
 
@@ -290,16 +290,16 @@ Sub ViewPrintLeagueStandings ()
 
             If ExitCode% <> 27 Then
 
-				Color 15, 1
+                Color 15, 1
                 targetFile$ = standingsFiles$(Selection%)
                 Locate 2, 33: Print targetFile$
 
-				Do
-					Locate , 33: Print "ANY CHANGE (YN)";
-					I$ = GetKeyPress$
-				Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+                Do
+                    Locate , 33: Print "ANY CHANGE (YN)";
+                    I$ = GetKeyPress$
+                Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
-				Color 15, 0
+                Color 15, 0
 
                 If UCase$(I$) = "N" Then
 
@@ -429,6 +429,7 @@ Sub ViewNewLeaders ()
 
                 If ((WW!(NT * 10 - 9) - WW!(I)) + (LL!(I) - LL!(NT * 10 - 9))) / 2 = 0 Then Print Tab(32); " ---";
                 If ((WW!(NT * 10 - 9) - WW!(I)) + (LL!(I) - LL!(NT * 10 - 9))) / 2 <> 0 Then Print Tab(32); Using "##.#"; ((WW!(NT * 10 - 9) - WW!(I)) + (LL!(I) - LL!(NT * 10 - 9))) / 2;
+
                 Print Tab(44); Using "##"; TWS!(I); Tab(47); TLS!(I); Tab(51); CWS!(I); Tab(54); CLT!(I);
                 Print Tab(57); Using "##"; HWW!(I);: Print Tab(60); Using "##"; HLL!(I);
                 Print Tab(63); Using "##"; RWW!(I);: Print Tab(66); Using "##"; RLL!(I);
