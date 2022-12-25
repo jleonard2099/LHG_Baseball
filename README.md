@@ -32,25 +32,25 @@ Bugs and/or feature requests can be submitted using GitHub (see the "Issues" tab
 
 # Project Status #
 ## Current ##
-Code has been re-worked to compile in a modern environment. Code is in progress of being re-factored for menu navigation, along with consolidating so it can be supported for Linux / Mac compile in QB64.
+Code has been adapted to compile in a modern environment and re-factored. Most obvious GUI bugs have been fixed, Menu navigation is improved and code has been consolidated tremendously in a move towards adding ability to compile for Linux / Mac in QB64.
 
-Things are almost complete, code has been compiled and tested. Anticipate finished product before 2023.
+All compiled code has been thoroughly tested, known bugs documented (including those from the original game (of which I know about.
 
 ## Road Map ##
 ### Phase 1 ###
-Nearly complete. The focus has been completely on refactoring code and first steps towards consistency / cleanup.
-- Make wording of menus and options consistent for all products
-- Make subroutines for all repeated code
+Completed.
 
 ### Phase 2 ###
 This phase will start to identify these as new games, and involve these short and simple goals:
 - Update standards for code
+	- Make wording of menus and options consistent for all products
 	- variable names, config files, etc.
 	- document purpose of functions
 - Improve file, path and error handling to provide helpful messages
 - Further improve code efficiency and consistency
-	- global Team Selection routine 
-	- consistent operation for the same functions in each game
+	- Make subroutines for all repeated code
+	- Global Team Selection routine 
+	- Consistent operation for the same functions in each game
 - Updating the games to support modern rules
 - Bug fixes / etc. as reported by longtime users and playtesters
 
