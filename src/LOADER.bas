@@ -1,4 +1,4 @@
-$Debug
+
 '$INCLUDE: 'Game_Routines.BI'
 '$INCLUDE: 'Game_Routines_Gfx.BI'
 '$INCLUDE: 'SOURCE.BI'
@@ -219,11 +219,20 @@ Call INITVARI
 '       DETERMINE GAME OPTIONS
 '----------------------------------------
 
-Open "DEV.BAS" For Input As #1
-For I = 0 To 3
-    Input #1, diskPaths$(I)
-Next
-Close 1
+If _FileExists("DEV.BAS") Then
+    Open "DEV.BAS" For Input As #1
+    For I = 0 To 3
+        Input #1, diskPaths$(I)
+    Next
+    Close 1
+Else
+    Open "DEV.BAS" For Output As #1
+    For I = 0 To 3
+        Print #1, _CWD$
+    Next
+    Close 1
+End If
+
 
 If Not _FileExists("DEFERA") Then
     Open "DEFERA" For Output As #1
@@ -247,6 +256,7 @@ Input #1, pbpDelay!
 Input #1, VG%
 Input #1, CGERA%
 Close 1
+
 
 'Load game in-progress, if there is one
 If _FileExists("GAME82") Then

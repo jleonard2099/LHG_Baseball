@@ -1,5 +1,4 @@
 [ ] Paths / folders
-- use _CWD$ function to set as defaults if not existent
 - add "Boxes" subfolder to structure and adapt code
 - add "Schedules" subfolder to structure and adapt code
 

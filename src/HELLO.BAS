@@ -103,11 +103,20 @@ $ExeIcon:'./lhg_fcbase.ico'
 _Icon
 _AllowFullScreen
 
-Open "DEV.BAS" For Input As #1
-For I = 0 To 3
-    Input #1, diskPaths$(I)
-Next
-Close 1
+If _FileExists ("DEV.BAS") Then
+	Open "DEV.BAS" For Input As #1
+	For I = 0 To 3
+		Input #1, diskPaths$(I)
+	Next
+	Close 1
+Else
+	Open "DEV.BAS" For Output As #1
+	For I = 0 To 3
+		Print #1, _CWD$
+	Next
+	Close 1
+End If
+
 
 Selection% = 1
 
