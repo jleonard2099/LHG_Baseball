@@ -219,13 +219,7 @@ Call INITVARI
 '       DETERMINE GAME OPTIONS
 '----------------------------------------
 
-If _FileExists("DEV.BAS") Then
-    Open "DEV.BAS" For Input As #1
-    For I = 0 To 3
-        Input #1, diskPaths$(I)
-    Next
-    Close 1
-Else
+If Not _FileExists("DEV.BAS") Then
     Open "DEV.BAS" For Output As #1
     For I = 0 To 3
         Print #1, _CWD$
@@ -233,10 +227,18 @@ Else
     Close 1
 End If
 
+Open "DEV.BAS" For Input As #1
+For I = 0 To 3
+	Input #1, diskPaths$(I)
+Next
+Close 1
+
 
 If Not _FileExists("DEFERA") Then
     Open "DEFERA" For Output As #1
-    For I = 1 To 14: Print #1, 0: Next
+    For I = 1 To 14: 
+		Print #1, 0
+	Next
     Close 1
 End If
 

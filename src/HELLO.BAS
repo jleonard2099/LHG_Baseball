@@ -103,19 +103,19 @@ $ExeIcon:'./lhg_fcbase.ico'
 _Icon
 _AllowFullScreen
 
-If _FileExists ("DEV.BAS") Then
-	Open "DEV.BAS" For Input As #1
-	For I = 0 To 3
-		Input #1, diskPaths$(I)
-	Next
-	Close 1
-Else
+If Not _FileExists ("DEV.BAS") Then
 	Open "DEV.BAS" For Output As #1
 	For I = 0 To 3
-		Print #1, _CWD$
+		Print #1, _CWD$ + "\"
 	Next
 	Close 1
 End If
+
+Open "DEV.BAS" For Input As #1
+For I = 0 To 3
+	Input #1, diskPaths$(I)
+Next
+Close 1
 
 
 Selection% = 1
@@ -204,20 +204,24 @@ End Sub
 '----------------------------------------
 '...explanation...
 Sub ConfigureDrives ()
-    505 Color 15, 1
+    
+	Color 15, 1
     FG = 0
     BG = 7
-    For I = 0 To 3
-        diskPaths$(I) = Left$(diskPaths$(I), Len(diskPaths$(I)) - 1)
-    Next
-    'Colr = OneColor%(FG, BG) 'pack FG and BG into a single byte
-    Cls: Locate , 16: Print "SPECIFY PATHS FOR YOUR TEAMS AND COMPILED STATS": Print
+    
+	'For I = 0 To 3
+    '    diskPaths$(I) = Left$(diskPaths$(I), Len(diskPaths$(I)) - 1)
+    'Next
 
-    Locate , 31: Print "PATHNAME EXAMPLES:": Print
-
+    Cls
+	
+	Locate , 16: Print "SPECIFY PATHS FOR YOUR TEAMS AND COMPILED STATS"
+	Print
+    Locate , 31: Print "PATHNAME EXAMPLES:"
+	Print
     Locate , 31: Print "A:"
-
     Locate , 31: Print "C:\FULL\TEAMS"
+
     Locate 7, 1: QPrint "Path for Teams ", 14, 1, -1
     Locate , 16: QPrint PadRight$(diskPaths$(0), 30), FG, BG, -1
     Locate 9, 1: QPrint "Path for Stats ", 14, 1, -1
@@ -270,11 +274,11 @@ Sub ConfigureDrives ()
     If X$ <> "Y" GoTo Done 'insist on either Y or N or up-arrow
 
     Open "DEV.BAS" For Output As #1
-    For R = 0 To 3: diskPaths$(R) = diskPaths$(R) + "\": Next R
-    Print #1, diskPaths$(0)
-    Print #1, diskPaths$(1)
-    Print #1, diskPaths$(2)
-    Print #1, diskPaths$(3)
+	For R = 0 To 3: 
+		diskPaths$(R) = diskPaths$(R) + "\"
+		Print #1, diskPaths$(R)
+	Next R
+
     Close #1
 
     '620 GoTo 1
