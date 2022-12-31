@@ -326,13 +326,15 @@ Else
 
     Randomize Timer
 
-    Cls
-
     170 '
     Call INFO
 
     Do
-        Color , 0: Locate 3, 1
+        Color 15, 0
+		Cls
+		'Color , 0
+		
+		Locate 3, 1
         Color 14: Print "(1) ";: Color 15: Print U6$(U6)
         Color 14: Print "(2) ";: Color 15: Print LGT$(LGT)
         Color 14: Print "(3) ";: Color 15: Print DH$(DH%)
