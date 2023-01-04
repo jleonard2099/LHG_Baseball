@@ -414,7 +414,8 @@ Sub SOURCE ()
         Color 15, 0
     End If
 
-    15061 I$ = GetKeyPress$
+    15061 '
+	I$ = GetKeyPress$
 
     _PutImage (1 * FontColAdj%, 304)-Step(14 * FontColAdj%, 176), backupScreen&, imageScreen&, (1 * FontColAdj%, 304)-Step(14 * FontColAdj%, 176)
 
@@ -436,6 +437,10 @@ Sub SOURCE ()
     End If
 
     P2 = Val(I$)
+
+	'-- Is this right?
+	'-- It appears to me I usually can't press options 2/3
+	'-- But I see below there are conditions to that
     If P2 < 1 Or P2 > 5 Then 15085
 
     15064 If P2 = 5 Then P9 = P: W5 = -1: W6 = -1: GoTo 15500

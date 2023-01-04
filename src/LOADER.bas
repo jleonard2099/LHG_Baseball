@@ -222,23 +222,23 @@ Call INITVARI
 If Not _FileExists("DEV.BAS") Then
     Open "DEV.BAS" For Output As #1
     For I = 0 To 3
-        Print #1, _CWD$
+        Print #1, _CWD$ + "\"
     Next
     Close 1
 End If
 
 Open "DEV.BAS" For Input As #1
 For I = 0 To 3
-	Input #1, diskPaths$(I)
+    Input #1, diskPaths$(I)
 Next
 Close 1
 
 
 If Not _FileExists("DEFERA") Then
     Open "DEFERA" For Output As #1
-    For I = 1 To 14: 
-		Print #1, 0
-	Next
+    For I = 1 To 14:
+        Print #1, 0
+    Next
     Close 1
 End If
 
@@ -331,10 +331,10 @@ Else
 
     Do
         Color 15, 0
-		Cls
-		'Color , 0
-		
-		Locate 3, 1
+        Cls
+        'Color , 0
+        
+        Locate 3, 1
         Color 14: Print "(1) ";: Color 15: Print U6$(U6)
         Color 14: Print "(2) ";: Color 15: Print LGT$(LGT)
         Color 14: Print "(3) ";: Color 15: Print DH$(DH%)

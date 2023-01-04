@@ -69,6 +69,7 @@ Sub SCHEDULE ()
             'action% = 6 | Selection% = 7: BOXSCORE MAINTENANCE / SAVE BOXSCORE PARAMETERS
 
             Select Case action%
+			
                 Case 0:
                     scheduleAP%(0) = 0
                     NS% = 0
@@ -496,7 +497,7 @@ Sub NewSchedule (scheduleFile$)
                 N$ = RTrim$(Q$(0))
                 scheduleH$(X) = N$ 'T$(0)
 
-                'Game Numnber
+                'Game number
                 Print Using "####  "; X + NS% * 20;
 
                 'Date
@@ -510,10 +511,13 @@ Sub NewSchedule (scheduleFile$)
 
                 If HR% = 12 Then I$ = "P"
                 If HR% > 12 Then HR% = HR% - 12: I$ = "P"
+
                 TM$ = Right$(Str$(HR%), 2) + ":"
 
                 If MIN% < 10 Then TM$ = TM$ + "0" + Right$(Str$(MIN%), 1)
                 If MIN% >= 10 Then TM$ = TM$ + Right$(Str$(MIN%), 2)
+
+				'Time
                 TM$ = TM$ + I$
                 Print TM$;
 

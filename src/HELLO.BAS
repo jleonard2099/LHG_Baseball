@@ -1,5 +1,5 @@
 
-Const GAME_VERSION$ = "6.61"
+Const GAME_VERSION$ = "6.62"
 'Const MAX_CONFERENCES = 40
 'Const TEAMS_PER_CONFERENCE = 30
 'Const TEAMS_PER_DIV = 15
@@ -17,8 +17,11 @@ Const MAX_FILES = 1024 '1048576
 '$INCLUDE: 'TITLE.BI'
 '$INCLUDE: 'Variables.BI'
 
-' DefInt A-Z
+'DefInt A-Z
 
+'----------------------------------------
+'          READ IN ALL DATA
+'----------------------------------------
 Data AT BATS,HITS,RUNS,RUNS BATTED IN,DOUBLES,TRIPLES,HOME RUNS,TIMES WALKED
 Data TIME STRUCK OUT,STOLEN BASES,CAUGHT STEALING,ERRORS,CURRENT HITTING STREAK
 Data LONGEST HITTING STREAK,GAMES,GROUND INTO DP,PUTOUTS,ASSISTS
@@ -103,17 +106,17 @@ $ExeIcon:'./lhg_fcbase.ico'
 _Icon
 _AllowFullScreen
 
-If Not _FileExists ("DEV.BAS") Then
-	Open "DEV.BAS" For Output As #1
-	For I = 0 To 3
-		Print #1, _CWD$ + "\"
-	Next
-	Close 1
+If Not _FileExists("DEV.BAS") Then
+    Open "DEV.BAS" For Output As #1
+    For I = 0 To 3
+        Print #1, _CWD$ + "\"
+    Next
+    Close 1
 End If
 
 Open "DEV.BAS" For Input As #1
 For I = 0 To 3
-	Input #1, diskPaths$(I)
+    Input #1, diskPaths$(I)
 Next
 Close 1
 
@@ -204,21 +207,21 @@ End Sub
 '----------------------------------------
 '...explanation...
 Sub ConfigureDrives ()
-    
-	Color 15, 1
+
+    Color 15, 1
     FG = 0
     BG = 7
-    
-	'For I = 0 To 3
-    '    diskPaths$(I) = Left$(diskPaths$(I), Len(diskPaths$(I)) - 1)
-    'Next
+
+    For I = 0 To 3
+        diskPaths$(I) = Left$(diskPaths$(I), Len(diskPaths$(I)) - 1)
+    Next
 
     Cls
-	
-	Locate , 16: Print "SPECIFY PATHS FOR YOUR TEAMS AND COMPILED STATS"
-	Print
+
+    Locate , 16: Print "SPECIFY PATHS FOR YOUR TEAMS AND COMPILED STATS"
+    Print
     Locate , 31: Print "PATHNAME EXAMPLES:"
-	Print
+    Print
     Locate , 31: Print "A:"
     Locate , 31: Print "C:\FULL\TEAMS"
 
@@ -274,10 +277,10 @@ Sub ConfigureDrives ()
     If X$ <> "Y" GoTo Done 'insist on either Y or N or up-arrow
 
     Open "DEV.BAS" For Output As #1
-	For R = 0 To 3: 
-		diskPaths$(R) = diskPaths$(R) + "\"
-		Print #1, diskPaths$(R)
-	Next R
+    For R = 0 To 3:
+        diskPaths$(R) = diskPaths$(R) + "\"
+        Print #1, diskPaths$(R)
+    Next R
 
     Close #1
 
