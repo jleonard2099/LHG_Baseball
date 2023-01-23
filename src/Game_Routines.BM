@@ -425,8 +425,6 @@ Sub CAUGHTFLY (i, S2%, D)
 
     End Select
 
-    'Print #9, "We just called PBP from CAUGHTFLY "
-
 End Sub
 
 '------------------------------
@@ -621,14 +619,13 @@ Sub DELIVERY (D)
 
     If RN <= 20 Then
         pbpIdx% = Int(Rnd(1) * 20) + 50
-        'Print #9, "Calling PBP from DELIVERY, index "; pbpIdx%
         Call GETRPBP(pbpIdx%, Y$, D)
         Call STRIPRPBP(Y$, pbpIdx%, D)
         Call PBP(Y$)
     End If
 
     pbpIdx% = Int(Rnd(1) * 46) + 1
-    'Print #9, "Calling PBP from DELIVERY, index "; pbpIdx%
+
     Call GETRPBP(pbpIdx%, Y$, D)
     Call STRIPRPBP(Y$, pbpIdx%, D)
     Call PBP(Y$)
@@ -744,7 +741,7 @@ Sub DPPIVOT (W%, D)
     If W% = 3 Then ww% = 1
 
     pbpIdx% = Int(Rnd(1) * 20) + 1910
-    'Print #9, "Calling PBP from DPPIVOT, index "; pbpIdx%
+
     Call GETRPBP(pbpIdx%, Y$, D)
     Call STRIPRPBP(Y$, pbpIdx%, D)
     Call PBP(Y$ + " " + B$(D, B9%(D, ww%)))
@@ -823,7 +820,7 @@ Sub DPSAFE ()
     Call PBP(F$)
 
     pbpIdx% = Int(Rnd(1) * 20) + 1890
-    'Print #9, "Calling PBP from DPSAFE, index "; pbpIdx%
+
     Call GETRPBP(pbpIdx%, Y$, D)
     Call STRIPRPBP(Y$, pbpIdx%, D)
     Call PBP(Y$)
@@ -1333,7 +1330,6 @@ Sub GROUNDERPBP (W%, D)
             If W% = 5 Then pbpIdx% = Int(Rnd(1) * 150) + 2700
         End If
 
-        'Print #9, "Calling PBP from GROUNDERPBP, index "; pbpIdx%
         Call GETRPBP(pbpIdx%, Y$, D)
         Call STRIPRPBP(Y$, pbpIdx%, D)
         F$ = Y$ + " "
@@ -1343,7 +1339,6 @@ Sub GROUNDERPBP (W%, D)
         3760 '*** in front of plate ***
         pbpIdx% = Int(Rnd(1) * 25) + 2870
 
-        'Print #9, "Calling PBP from GROUNDERPBP, index "; pbpIdx%
         Call GETRPBP(pbpIdx%, Y$, D)
         Call STRIPRPBP(Y$, pbpIdx%, D)
         Call PBP(Y$)
@@ -1363,7 +1358,6 @@ Sub GROUNDERS (W%, D)
 
     If W% <> 2 Then
         pbpIdx% = Int(Rnd(1) * 120) + 1420
-        'Print #9, "Calling PBP from GROUNDERS, index "; pbpIdx%
         Call GETRPBP(pbpIdx%, Y$, D)
         Call STRIPRPBP(Y$, pbpIdx%, D)
         Call PBP(X$ + " " + Y$)
@@ -1371,7 +1365,6 @@ Sub GROUNDERS (W%, D)
 
         ' field grounders in front of the plate
         pbpIdx% = Int(Rnd(1) * 13) + 2850
-        'Print #9, "Calling PBP from GROUNDERS, index "; pbpIdx%
         Call GETRPBP(pbpIdx%, Y$, D)
         Call STRIPRPBP(Y$, pbpIdx%, D)
         If Left$(Y$, 2) = "QQ" Then Y$ = X$ + Right$(Y$, Len(Y$) - 2)
@@ -1626,7 +1619,6 @@ End Sub
 Sub LONGFLY (D, W%)
 
     pbpIdx% = Int(Rnd(1) * 60) + 1310
-    'Print #9, "Calling PBP from LONGFLY, index "; pbpIdx%
     Call GETRPBP(pbpIdx%, Y$, D)
     Call STRIPRPBP(Y$, pbpIdx%, D)
     Call PBP(Y$ + " " + C$(W%))
@@ -1637,7 +1629,6 @@ Sub LONGFLY (D, W%)
         If WF > 1 And Rnd(1) <= 1 - WF Then Call PBP("It's carrying well in the breeze...")
 
         pbpIdx% = Int(Rnd(1) * 50) + 1370
-        'Print #9, "Calling PBP from LONGFLY, index "; pbpIdx%
         Call GETRPBP(pbpIdx%, Y$, D)
         Call STRIPRPBP(Y$, pbpIdx%, D)
         Call PBP(Y$)
@@ -1827,7 +1818,6 @@ Sub WINDEX ()
 
         If usingGfx = 1 Then
             For I5 = 4 To 11
-                'Print #9, "Calling gfx print from WINDEX; usingGfx = "; Str$(usingGfx)
                 PrintOnGfx 20, I5, Space$(44), imageScreen&
             Next
         Else
@@ -1920,7 +1910,6 @@ End Sub
 Sub NOJUMP (D)
 
     pbpIdx% = Int(Rnd(1) * 20) + 1050
-    'Print #9, "Calling PBP from NOJUMP, index "; pbpIdx%
     Call GETRPBP(pbpIdx%, Y$, D)
     Call STRIPRPBP(Y$, pbpIdx%, D)
     Call PBP(Y$)
@@ -2289,8 +2278,6 @@ Sub PITPLACEMENT (P, X$)
         _PrintMode _KeepBackground , imageScreen&
         Color 4278190080
     End If
-
-    'Print #9, "Calling gfx print from PITPLACEMENT; usingGfx = "; Str$(usingGfx)
 
     If P%(P, P1%(P), 0) < 0 Then
         If usingGfx = 1 Then
@@ -2721,6 +2708,7 @@ Sub POPUPBAT (WK, M)
 
     Locate 8, 6: Print "SEASON";
     Locate , 15
+
 
     If B%(WK, M, 4) = 0 Then
         Print ".---  .---"
@@ -3698,13 +3686,11 @@ Sub BASEONBALLS (S2%, D2, D, P)
         Call DELIVERY(D)
 
         pbpIdx% = Int(Rnd(1) * 80) + 780
-        'Print #9, "Calling PBP from BASEONBALLS, index "; pbpIdx%
         Call GETRPBP(pbpIdx%, Y$, D)
         Call STRIPRPBP(Y$, pbpIdx%, D)
         Call PBP(Y$)
 
         pbpIdx% = Int(Rnd(1) * 30) + 860
-        'Print #9, "Calling PBP from BASEONBALLS, index "; pbpIdx%
         Call GETRPBP(pbpIdx%, Y$, D)
         Call STRIPRPBP(Y$, pbpIdx%, D)
         Call PBP(Y$)
@@ -3750,19 +3736,16 @@ Sub HITBYPITCH (S2%, D)
     Call DELIVERY(D)
 
     pbpIdx% = Int(Rnd(1) * 20) + 720
-    'Print #9, "Calling PBP from HITBYPITCH, index "; pbpIdx%
     Call GETRPBP(pbpIdx%, Y$, D)
     Call STRIPRPBP(Y$, pbpIdx%, D)
     Call PBP(Y$)
 
     pbpIdx% = Int(Rnd(1) * 11) + 740
-    'Print #9, "Calling PBP from HITBYPITCH, index "; pbpIdx%
     Call GETRPBP(pbpIdx%, Y$, D)
     Call STRIPRPBP(Y$, pbpIdx%, D)
     Call PBP(Y$)
 
     pbpIdx% = Int(Rnd(1) * 20) + 760
-    'Print #9, "Calling PBP from HITBYPITCH, index "; pbpIdx%
     Call GETRPBP(pbpIdx%, Y$, D)
     Call STRIPRPBP(Y$, pbpIdx%, D)
     Call PBP(Y$)
@@ -3964,7 +3947,6 @@ Sub SCOREBOARD ()
         Color 15, 0
     Else
         FORMATTED$ = FUsing$(Str$(S6%(P, 1)), "##", 1)
-        'Print #9, "Calling gfx print from SCOREBOARD; usingGfx = "; Str$(usingGfx)
         PrintOnGfx 56, P + 29, FORMATTED$, imageScreen&
     End If
 
@@ -3978,7 +3960,6 @@ Sub SECOND2FIRST (D)
 
     ' *** throw to 1st from 2nd ***
     pbpIdx% = Int(Rnd(1) * 30) + 1540
-    'Print #9, "Calling PBP from SECOND2FIRST, index "; pbpIdx%
     Call GETRPBP(pbpIdx%, Y$, D)
     Call STRIPRPBP(Y$, pbpIdx%, D)
     Call PBP(Y$ + " to first")
@@ -4004,7 +3985,6 @@ Sub SINGLEPBP (S2%, D, W%)
 
             If RN <= 50 Then
                 pbpIdx% = Int(Rnd(1) * 50) + 1610
-                'Print #9, "Calling PBP from SINGLEPBP, index "; pbpIdx%
                 Call GETRPBP(pbpIdx%, Y$, D)
                 Call STRIPRPBP(Y$, pbpIdx%, D)
                 Call PBP(Y$ + " " + C$(W%))
@@ -4012,7 +3992,6 @@ Sub SINGLEPBP (S2%, D, W%)
                 If W% = 7 Then pbpIdx% = Int(Rnd(1) * 70) + 1660
                 If W% = 9 Then pbpIdx% = Int(Rnd(1) * 70) + 1730
                 If W% = 8 Then pbpIdx% = Int(Rnd(1) * 90) + 1800
-                'Print #9, "Calling PBP from SINGLEPBP, index "; pbpIdx%
                 Call GETRPBP(pbpIdx%, Y$, D)
                 Call STRIPRPBP(Y$, pbpIdx%, D)
                 Call PBP(Y$)
@@ -4289,7 +4268,6 @@ Sub STRIKEOUT (U%, D)
             pbpIdx% = Int(Rnd(1) * 80) + 930
         End If
 
-        'Print #9, "Calling PBP from STRIKEOUT, index "; pbpIdx%
         Call GETRPBP(pbpIdx%, Y$, D)
         Call STRIPRPBP(Y$, pbpIdx%, D)
         Call PBP(Y$)
@@ -4297,7 +4275,6 @@ Sub STRIKEOUT (U%, D)
     End If
 
     pbpIdx% = Int(Rnd(1) * 40) + 1010
-    'Print #9, "Calling PBP from STRIKEOUT, index "; pbpIdx%
     Call GETRPBP(pbpIdx%, Y$, D)
     Call STRIPRPBP(Y$, pbpIdx%, D)
     Call PBP(Y$)
@@ -4381,7 +4358,6 @@ Sub THROW2FIRST (D)
 
     pbpIdx% = Int(Rnd(1) * 40) + 1570
 
-    'Print #9, "Calling PBP from THROW2FIRST, index "; pbpIdx%
     Call GETRPBP(pbpIdx%, Y$, D)
     Call STRIPRPBP(Y$, pbpIdx%, D)
     Call PBP(Y$ + " to first")
@@ -5084,20 +5060,17 @@ Sub FOULBALL ()
 
     If RN <= 50 Then
         pbpIdx% = Int(Rnd(1) * 20) + 3130
-        'Print #9, "Calling PBP from FOULBALL, index "; pbpIdx%
         Call GETRPBP(pbpIdx%, Y$, D)
         Call STRIPRPBP(Y$, pbpIdx%, D)
         Call PBP(Y$)
         Call PBP("foul ball!!")
     Else
         pbpIdx% = Int(Rnd(1) * 10) + 3150
-        'Print #9, "Calling PBP from FOULBALL, index "; pbpIdx%
         Call GETRPBP(pbpIdx%, Y$, D)
         Call STRIPRPBP(Y$, pbpIdx%, D)
         Call PBP(Y$)
 
         pbpIdx% = Int(Rnd(1) * 10) + 3160
-        'Print #9, "Calling PBP from FOULBALL, index "; pbpIdx%
         Call GETRPBP(pbpIdx%, Y$, D)
         Call STRIPRPBP(Y$, pbpIdx%, D)
         Call PBP(Y$)
@@ -6655,12 +6628,17 @@ Sub POSTGAME ()
 
                 If _FileExists(FILENAME$) Then
                     Open diskPaths$(1) + statFile$ For Input As #1
-                    Input #1, A$(Q): Input #1, W2%: Input #1, L2%
+                    Input #1, A$(Q)
+					Input #1, W2%
+					Input #1, L2%
                     For I = 0 To 22: Input #1, B$(Q, I): Input #1, B2%(Q, I): Next I
                     For I = 0 To 21: Input #1, P$(Q, I): Input #1, P3%(Q, I): Next I
                     For I = 0 To 22: For I1 = 0 To 21: Input #1, B6%(I, I1): Next I1: Next I
                     For I = 0 To 21: For I1 = 0 To 41: Input #1, P0%(I, I1): Next I1: Next I
-                    Input #1, D0%(Q): Input #1, D1%(Q): For I = 0 To 21: Input #1, T%(I): Next I: For I = 0 To 22: Input #1, P4%(I): Next I
+                    Input #1, D0%(Q)
+					Input #1, D1%(Q)
+					For I = 0 To 21: Input #1, T%(I): Next I
+					For I = 0 To 22: Input #1, P4%(I): Next I
                     Close #1
                 End If
 
@@ -6763,12 +6741,15 @@ Sub POSTGAME ()
                 Color 15, 0
 
                 Open diskPaths$(1) + statFile$ For Output As #1
-                Print #1, A$(Q): Print #1, W2%: Print #1, L2%
+                Print #1, A$(Q)
+				Print #1, W2%
+				Print #1, L2%
                 For I = 0 To 22: Print #1, B$(Q, I): Print #1, B2%(Q, I): Next I
                 For I = 0 To 21: Print #1, P$(Q, I): Print #1, P3%(Q, I): Next I
                 For I = 0 To 22: For I1 = 0 To 21: Print #1, B6%(I, I1): Next I1: Next I
                 For I = 0 To 21: For I1 = 0 To 41: Print #1, P0%(I, I1): Next I1: Next I
-                Print #1, D0%(Q): Print #1, D1%(Q)
+                Print #1, D0%(Q)
+				Print #1, D1%(Q)
                 For I = 0 To 21: Print #1, T%(I): Next I
                 For I = 0 To 22: Print #1, P4%(I): Next I
                 Close #1
@@ -7184,16 +7165,20 @@ Sub BoxToScreen (BK$)
             For I2 = 0 To 21
 
                 If P%(I, I2, 15) = I1 Then
-                    I4 = 1 - I: Locate , 1
+                    I4 = 1 - I
+					Locate , 1
                     Print P$(I, I2); " ";
-                    If P2%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then
-                        Print "(W,"; Right$(Str$(P5%(I, I2, 6) + 1), (Len(Str$(P5%(I, I2, 6) + 1)) - 1)); "-"; Right$(Str$(P5%(I, I2, 7)), (Len(Str$(P5%(I, I2, 7))) - 1)); ")";: W$ = P$(I, I2)
+                    
+					If P2%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then
+                        Print "(W,"; Right$(Str$(P5%(I, I2, 6) + 1), (Len(Str$(P5%(I, I2, 6) + 1)) - 1)); "-"; Right$(Str$(P5%(I, I2, 7)), (Len(Str$(P5%(I, I2, 7))) - 1)); ")";
+						W$ = P$(I, I2)
                     End If
 
                     If S1%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then Print "(S,"; Right$(Str$(P5%(I, I2, 12) + 1), (Len(Str$(P5%(I, I2, 12) + 1)) - 1)); ")";
 
                     If P2%(I) = I2 And S6%(I, 0) - S6%(I4, 0) < 0 Then
-                        Print "(L,"; Right$(Str$(P5%(I, I2, 6) + 0), (Len(Str$(P5%(I, I2, 6) + 0)) - 1)); "-"; Right$(Str$(P5%(I, I2, 7) + 1), (Len(Str$(P5%(I, I2, 7) + 1)) - 1)); ")";: L$ = P$(I, I2)
+                        Print "(L,"; Right$(Str$(P5%(I, I2, 6) + 0), (Len(Str$(P5%(I, I2, 6) + 0)) - 1)); "-"; Right$(Str$(P5%(I, I2, 7) + 1), (Len(Str$(P5%(I, I2, 7) + 1)) - 1)); ")";
+						L$ = P$(I, I2)
                     End If
 
                     If P8%(I, I2, 19) > 0 Then Print "(BS,";: Print Using "##"; P5%(I, I2, 19);: Print ")";
@@ -7627,13 +7612,15 @@ Sub BoxToFile (NM$, BK$, E%(), SPECIAL)
                     I4 = 1 - I: Print #2, P$(I, I2); " ";
 
                     If P2%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then
-                        Print #2, "(W,"; Right$(Str$(P5%(I, I2, 6) + 1), (Len(Str$(P5%(I, I2, 6) + 1)) - 1)); "-"; Right$(Str$(P5%(I, I2, 7)), (Len(Str$(P5%(I, I2, 7))) - 1)); ")";: W$ = P$(I, I2)
+                        Print #2, "(W,"; Right$(Str$(P5%(I, I2, 6) + 1), (Len(Str$(P5%(I, I2, 6) + 1)) - 1)); "-"; Right$(Str$(P5%(I, I2, 7)), (Len(Str$(P5%(I, I2, 7))) - 1)); ")";
+						W$ = P$(I, I2)
                     End If
 
                     If S1%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then Print #2, "(S,"; Right$(Str$(P5%(I, I2, 12) + 1), (Len(Str$(P5%(I, I2, 12) + 1)) - 1)); ")";
 
                     If P2%(I) = I2 And S6%(I, 0) - S6%(I4, 0) < 0 Then
-                        Print #2, "(L,"; Right$(Str$(P5%(I, I2, 6) + 0), (Len(Str$(P5%(I, I2, 6) + 0)) - 1)); "-"; Right$(Str$(P5%(I, I2, 7) + 1), (Len(Str$(P5%(I, I2, 7) + 1)) - 1)); ")";: L$ = P$(I, I2)
+                        Print #2, "(L,"; Right$(Str$(P5%(I, I2, 6) + 0), (Len(Str$(P5%(I, I2, 6) + 0)) - 1)); "-"; Right$(Str$(P5%(I, I2, 7) + 1), (Len(Str$(P5%(I, I2, 7) + 1)) - 1)); ")";
+						L$ = P$(I, I2)
                     End If
 
                     If P8%(I, I2, 19) > 0 Then Print #2, "(BS,";: Print #2, Using "##"; P5%(I, I2, 19);: Print #2, ")";
@@ -8167,8 +8154,10 @@ Sub PBP (F$)
         'Print all 8 lines from scratch
         For I9 = 1 To 8
             If usingGfx = 1 Then
-                'Print #9, "Calling gfx print from PBP; usingGfx = "; Str$(usingGfx)
-                PrintOnGfx 20, I9 + 2, G$(I9), imageScreen&
+                Color 4294967295
+                _PrintMode _FillBackground , imageScreen&
+                'PrintOnGfx 20, I9 + 2, G$(I9), imageScreen&
+                PrintOnGfx 20, I9 + 3, G$(I9), imageScreen&
             Else
                 Locate 14 + I9, 1
                 Print G$(I9)

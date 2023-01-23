@@ -148,7 +148,6 @@ DefInt A-Z
 
 'Used by postgame routines
 Dim DB, HR, TR, SB
-'Dim DB$(0 To 22), E$(0 To 22), HR$(0 To 22), SB$(0 To 22), TR$(0 To 22)
 Dim Shared DB$(0 To 22), E$(0 To 22), HR$(0 To 22), SB$(0 To 22), TR$(0 To 22)
 Dim Shared A$(1), B$(0 To 1, 0 To 22), B1$(4), C$(11), diskPaths$(3)
 
@@ -186,8 +185,8 @@ Dim Shared attendance&
 Dim Shared INotLoopCounter% ', pbpIdx%
 
 Dim Shared AP%, CGERA%, DH%, DR%, EJ%, IJ%, IJL%, INNING%
-Dim Shared NLF%, PB%, PC%, SC%, TA%, TP%, W%, WS%
-Dim Shared F$, PARK$, S$, WI$
+Dim Shared LYN%, NLF%, PB%, PC%, SC%, TA%, TP%, W%, WS%
+Dim Shared F$, PARK$, S$, WI$, W$, L$
 Dim Shared D, P, RE, RD, U6, U9
 Dim Shared usingGfx
 
@@ -196,7 +195,6 @@ Dim Shared MON(5, 14), VV(1), VV1(1)
 Dim Shared PARK$(99), Q3$(100), WD$(10)
 '--> should WD$ have been increased??? Probably not, just DIM'd as 0 to 9
 
-'Dim Shared A$(1), B$(1, 22), B1$(4), C$(11), diskPaths$(3)
 'G$ = PBP lines
 Dim Shared EJ$(20), F$(10), G$(10), H$(0 To 4), H0$(1), IJ$(20)
 Dim Shared M$(1), N$(1), NN$(1), P$(1, 21), PC$(4)
@@ -215,3 +213,4 @@ Dim Shared T%(22), T3%(22), TP%(11, 2), TS%(1, 11), VA%(26), X0%(1, 2, 23)
 Dim Shared normalFinish%
 
 Dim Shared FontColAdj%
+

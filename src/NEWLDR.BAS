@@ -23,9 +23,9 @@ Sub NEWLDR ()
         FileFGColr% = 15: FileBGColr% = 1
         HiLiteFGColr% = 0: HiLiteBGColr% = 7
         Spacing% = 1
-        Row% = 6
+        Row% = 7
         Column% = 23
-        Call box0(5, 22, 11, 60, 2, 15, 1)
+        Call box0(6, 22, 12, 60, 2, 15, 1)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
@@ -155,7 +155,7 @@ Sub ViewBattingLeaders (leagueFile$)
     PPP = 0
 
     Select Case B9
-        Case 0 TO 19:
+        Case 0 To 19:
             For I = 1 To JB
 
                 If BK%(I, X) <> 0 Then
@@ -248,7 +248,7 @@ Sub ViewBattingLeaders (leagueFile$)
             Call SortPlayer1(JX, PPP, stpl)
             TVN = 2
 
-        Case 24 TO 29:
+        Case 24 To 29:
             For I = 1 To JB
                 If BK%(I, X) >= GM1!(I) * 3.1 Then
                     PPP = PPP + 1: Locate 1, 5: Print "CHANGING PLAYER "; PPP
@@ -290,46 +290,29 @@ Sub ViewBattingLeaders (leagueFile$)
     End Select
 
     QW = PPP
-    Call GetListLength(QW, LG)
 
     If PV = 1 Then
-        Call PlayerTotals (TVN, B9, QW)
+        Call PlayerTotals(TVN, B9, QW)
     Else
         'PV = 2
-        LPrint Chr$(15)
-        '851 WIDTH "LPT1:1", 130
-        Color 14, 0
+        Call GetListLength(QW, LG)
+
+        Color 0, 15
+
         Cls
+
         LPrint "     PLAYER                  TEAM                     "; TP$(B9)
 
         For W = 1 To LG
 
-            If W = 50 Or W = 100 Or W = 150 Or W = 200 Then
+            If W <> 0 And (W Mod 50 = 0) Then
                 LPrint Chr$(12)
                 LPrint "     PLAYER                  TEAM                     "; TP$(B9)
             End If
 
-            If W = 250 Or W = 300 Or W = 350 Or W = 400 Then
-                LPrint Chr$(12)
-                LPrint "     PLAYER                  TEAM                     "; TP$(B9)
-            End If
+            LPrint Using "###"; W;: LPrint " ";: LPrint TPP$(W);
+            LPrint Tab(25); TMM$(W);
 
-            If W = 450 Or W = 500 Or W = 550 Or W = 600 Then
-                LPrint Chr$(12)
-                LPrint "     PLAYER                  TEAM                     "; TP$(B9)
-            End If
-
-            If W = 650 Or W = 700 Or W = 750 Or W = 800 Then
-                LPrint Chr$(12)
-                LPrint "     PLAYER                  TEAM                     "; TP$(B9)
-            End If
-
-            If W = 850 Or W = 900 Then
-                LPrint Chr$(12)
-                LPrint "     PLAYER                  TEAM                     "; TP$(B9)
-            End If
-
-            LPrint Using "###"; W;: LPrint " ";: LPrint TPP$(W);: LPrint Tab(25); TMM$(W);
             Select Case TVN
                 Case 1: LPrint Tab(58); Using "#####"; TYP!(W)
                 Case 2: LPrint Tab(58); Using ".###"; TYP!(W)
@@ -338,9 +321,8 @@ Sub ViewBattingLeaders (leagueFile$)
 
         Next W
 
-        LPrint Chr$(18)
-        '912 WIDTH "LPT1:1", 80
-        '913 GoTo 70
+        LPrint Chr$(12)
+
     End If
 
 End Sub
@@ -362,7 +344,7 @@ Sub PlayerTotals (TVN, B9, QW)
 
         For W = 1 To QW
 
-            If W = 20 Or W = 40 Or W = 60 Or W = 80 Or W = 100 Or W = 120 Or W = 140 Or W = 160 Or W = 180 Or W = 200 Then
+            If W <> 0 And (W Mod 20 = 0) Then
                 Locate 22: Color 15: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
                 I$ = GetKeyPress$
 
@@ -372,54 +354,7 @@ Sub PlayerTotals (TVN, B9, QW)
                 Else
                     Exit Sub
                 End If
-            End If
 
-            If W = 220 Or W = 240 Or W = 260 Or W = 280 Or W = 300 Or W = 320 Or W = 340 Or W = 360 Or W = 380 Or W = 400 Then
-                Locate 22: Color 15: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
-                I$ = GetKeyPress$
-
-                If I$ <> Chr$(27) Then
-                    Cls
-                    Color 14: Print "     PLAYER                  TEAM                     "; TP$(B9)
-                Else
-                    Exit Sub
-                End If
-            End If
-
-            If W = 420 Or W = 440 Or W = 460 Or W = 480 Or W = 500 Or W = 520 Or W = 540 Or W = 560 Or W = 580 Or W = 600 Then
-                Locate 22: Color 15: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
-                I$ = GetKeyPress$
-
-                If I$ <> Chr$(27) Then
-                    Cls
-                    Color 14: Print "     PLAYER                  TEAM                     "; TP$(B9)
-                Else
-                    Exit Sub
-                End If
-            End If
-
-            If W = 620 Or W = 640 Or W = 660 Or W = 680 Or W = 700 Or W = 720 Or W = 740 Or W = 760 Or W = 780 Or W = 800 Then
-                Locate 22: Color 15: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
-                I$ = GetKeyPress$
-
-                If I$ <> Chr$(27) Then
-                    Cls
-                    Color 14: Print "     PLAYER                  TEAM                     "; TP$(B9)
-                Else
-                    Exit Sub
-                End If
-            End If
-
-            If W = 820 Or W = 840 Or W = 860 Or W = 880 Or W = 900 Or W = 920 Then
-                Locate 22: Color 15: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
-                I$ = GetKeyPress$
-
-                If I$ <> Chr$(27) Then
-                    Cls
-                    Color 14: Print "     PLAYER                  TEAM                     "; TP$(B9)
-                Else
-                    Exit Sub
-                End If
             End If
 
             Color 12: Print Using "###"; W;
@@ -434,19 +369,20 @@ Sub PlayerTotals (TVN, B9, QW)
 
         Next W
 
-        Locate 22: Color 15: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
+        Color 15
+        Locate 22: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
         I$ = GetKeyPress$
 
         If I$ <> Chr$(27) Then
-            Locate 22: Print Space$(64)
 
-			Color 14
-			
-			Do
-				Locate 22
-				Print "VIEW AGAIN (Y/N)"
-				I$ = GetKeyPress$
-			Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
+            Locate 22: Print Space$(64)
+            Color 14
+
+            Do
+                Locate 22
+                Print "VIEW AGAIN (Y/N)"
+                I$ = GetKeyPress$
+            Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
 
         End If
 
@@ -585,7 +521,7 @@ Sub ViewPitchingLeaders (leagueFile$)
 
             TVN = 1
 
-        Case 1 TO 16, 19, 20, 26, 27:
+        Case 1 To 16, 19, 20, 26, 27:
             For I = 1 To JP
 
                 If PM%(I, X) <> 0 Then
@@ -618,7 +554,7 @@ Sub ViewPitchingLeaders (leagueFile$)
             Call SortPlayer2(JX, PPP, stpl)
             TVN = 4
 
-        Case 21 TO 25:
+        Case 21 To 25:
             For I = 1 To JP
                 If PM%(I, X) / 3 >= GM2(I) Then
                     PPP = PPP + 1
@@ -653,42 +589,20 @@ Sub ViewPitchingLeaders (leagueFile$)
     End Select
 
     QW = PPP
-    Call GetListLength(QW, LG)
 
-    If PV = 1 Then Call PitchingLeaders_Screen(TVN, B9, QW)
+    If PV = 1 Then
+        Call PitchingLeaders_Screen(TVN, B9, QW)
+    Else
+        'PV = 2
+        Call GetListLength(QW, LG)
 
-    If PV = 2 Then
-        LPrint Chr$(15)
-        '1851 WIDTH "LPT1:1", 130
+        Color 0, 15
+
         LPrint "     PLAYER                  TEAM                     "; TP1$(B9)
 
         For W = 1 To LG
 
-            If W = 50 Or W = 100 Or W = 150 Or W = 200 Then
-                Cls
-                Color 14
-                Print "     PLAYER                  TEAM                     "; TP1$(B9)
-            End If
-
-            If W = 250 Or W = 300 Or W = 350 Or W = 400 Then
-                Cls
-                Color 14
-                Print "     PLAYER                  TEAM                     "; TP1$(B9)
-            End If
-
-            If W = 450 Or W = 500 Or W = 550 Or W = 600 Then
-                Cls
-                Color 14
-                Print "     PLAYER                  TEAM                     "; TP1$(B9)
-            End If
-
-            If W = 650 Or W = 700 Or W = 750 Or W = 800 Then
-                Cls
-                Color 14
-                Print "     PLAYER                  TEAM                     "; TP1$(B9)
-            End If
-
-            If W = 850 Or W = 900 Then
+            If W <> 0 And (W Mod 50 = 0) Then
                 Cls
                 Color 14
                 Print "     PLAYER                  TEAM                     "; TP1$(B9)
@@ -704,12 +618,7 @@ Sub ViewPitchingLeaders (leagueFile$)
 
         Next W
 
-        LPrint Chr$(18)
-        '1912 WIDTH "LPT1:1", 80
-
-        '1913 GoTo 70
-        '1914 LPrint Chr$(12)
-        '1915 LPrint "     PLAYER                  TEAM                     "; TP1$(B9)
+        LPrint Chr$(12)
 
     End If
 
@@ -731,7 +640,7 @@ Sub PitchingLeaders_Screen (TVN, B9, QW)
 
         For W = 1 To QW
 
-            If W = 20 Or W = 40 Or W = 60 Or W = 80 Or W = 100 Or W = 120 Or W = 140 Or W = 160 Or W = 180 Or W = 200 Then
+            If W <> 0 And (W Mod 20 = 0) Then
                 Locate 22
                 Color 15: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
                 I$ = GetKeyPress$
@@ -822,12 +731,12 @@ Sub PitchingLeaders_Screen (TVN, B9, QW)
         If I$ <> Chr$(27) Then
 
             Locate 22: Print Space$(64)
-			
-			Color 14
-			
+
+            Color 14
+
             Do
-				Locate 22
-				Print "VIEW AGAIN (Y/N)"
+                Locate 22
+                Print "VIEW AGAIN (Y/N)"
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -902,22 +811,22 @@ Sub UpdateExpandedLeaders ()
 
             If ExitCode% <> 27 Then
 
-				Color 15, 1
+                Color 15, 1
                 targetFile$ = leagueFiles$(Selection%)
                 Locate 2, 33: Print targetFile$
 
                 Do
-					Locate , 33: Print "ANY CHANGE (YN)";
+                    Locate , 33: Print "ANY CHANGE (YN)";
                     I$ = GetKeyPress$
                 Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
-				Color 15, 0
+                Color 15, 0
 
             End If
 
         Loop Until UCase$(I$) = "N" Or ExitCode% = 27
 
-		Color 15, 0
+        Color 15, 0
 
         If ExitCode% <> 27 Then
 
@@ -930,8 +839,11 @@ Sub UpdateExpandedLeaders ()
             For X = 1 To 40: Input #2, Z1$(X): Next
             Close 2
 
+            Color 15, 0
             Cls
+
             For KK = 1 To 40: YY = YY + 1
+
                 If Z1$(KK) <> "*" Then
                     If _FileExists(diskPaths$(1) + Z1$(KK)) Then
                         teamStat$ = Z1$(KK)
@@ -1082,9 +994,9 @@ Sub ExpandedLeaders_Menu (leagueFile$)
         FileFGColr% = 15: FileBGColr% = 1
         HiLiteFGColr% = 0: HiLiteBGColr% = 7
         Spacing% = 1
-        Row% = 6
+        Row% = 7
         Column% = 30
-        Call box0(5, 29, 10, 51, 2, 15, 1)
+        Call box0(6, 29, 11, 51, 2, 15, 1)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
@@ -1135,7 +1047,7 @@ Sub ViewExpandedLeaders ()
             Call CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
             I$ = GetKeyPress$
             Call CSMsgBox("", 0, Pass)
-		Else
+        Else
             ReDim leagueFiles$(0 To Count%)
             For X = 1 To Count%
                 leagueFiles$(X) = Space$(12)
@@ -1169,17 +1081,17 @@ Sub ViewExpandedLeaders ()
                 _MouseHide
 
                 If ExitCode% <> 27 Then
-					
-					Color 15, 1
+
+                    Color 15, 1
                     targetFile$ = leagueFiles$(Selection%)
                     Locate 2, 33: Print targetFile$
 
                     Do
-						Locate , 33: Print "ANY CHANGE (YN)";
+                        Locate , 33: Print "ANY CHANGE (YN)";
                         I$ = GetKeyPress$
                     Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
 
-					Color 15, 0
+                    Color 15, 0
 
                 End If
 
@@ -1205,7 +1117,7 @@ End Sub
 Sub ViewTeamTotals (leagueFile$)
 
     Shared TM$(), TMM$()
-    Shared TP2$(), TT2$()
+    Shared TP$(), TP2$(), TT2$()
 
     Shared TT!(), TT1!()
     Shared TYP!(), TYP1!()
@@ -1291,7 +1203,7 @@ Sub ViewTeamTotals (leagueFile$)
     Cls
 
     Select Case B9
-        Case 0 TO 13, 17, 18:
+        Case 0 To 13, 17, 18:
             For I = 1 To TS
                 TMM$(I) = TM$(I, X)
                 TYP!(I) = TT!(I, X)
@@ -1374,7 +1286,7 @@ Sub ViewTeamTotals (leagueFile$)
             QW = TTS
             screenType = 1
 
-        Case 21 TO 32, 34, 35, 37, 38
+        Case 21 To 32, 34, 35, 37, 38
             For I = 1 To TTS
                 TMM$(I) = TT2$(I, X): TYP!(I) = TT1!(I, X)
             Next
@@ -1416,8 +1328,8 @@ Sub ViewTeamTotals (leagueFile$)
         Select Case PV
             Case 1: Call LeagueTotals_A_Screen(TVN, QW)
             Case 2:
-                LPrint Chr$(15)
-                '3851 WIDTH "LPT1:1", 130
+                Color 0, 15
+
                 LPrint "     TEAM                     "; TP$(XX)
 
                 For W = 1 To QW
@@ -1431,7 +1343,6 @@ Sub ViewTeamTotals (leagueFile$)
                 Next W
 
                 LPrint Chr$(12)
-                LPrint Chr$(18)
 
         End Select
 
@@ -1439,11 +1350,13 @@ Sub ViewTeamTotals (leagueFile$)
         Select Case PV
             Case 1: Call LeagueTotals_B_Screen(TVN, QW)
             Case 2:
-                LPrint Chr$(15)
-                '4851 WIDTH "LPT1:1", 130
+                Color 0, 15
+
                 LPrint "     TEAM                     "; TP1$(XX)
 
-                LPrint Using "###"; W;: LPrint " ";: LPrint TMM$(W);:
+                LPrint Using "###"; W;
+                LPrint " ";
+                LPrint TMM$(W);:
 
                 For W = 1 To QW
                     Select Case TVN
@@ -1454,10 +1367,6 @@ Sub ViewTeamTotals (leagueFile$)
                 Next W
 
                 LPrint Chr$(12)
-                LPrint Chr$(18)
-
-                '4922 WIDTH "LPT1:1", 80
-                'GoTo 70
 
         End Select
 
@@ -1510,12 +1419,12 @@ Sub LeagueTotals_A_Screen (TVN, QW)
 
 
         If I$ <> Chr$(27) Then
-			Locate 22: Print Space$(64)
-			Color 14
+            Locate 22: Print Space$(64)
+            Color 14
 
             Do
-				Locate 22
-				Print "VIEW AGAIN (Y/N)"
+                Locate 22
+                Print "VIEW AGAIN (Y/N)"
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -1571,12 +1480,12 @@ Sub LeagueTotals_B_Screen (TVN, QW)
 
         If I$ <> Chr$(27) Then
 
-			Locate 22: Print Space$(64)
-			Color 14
+            Locate 22: Print Space$(64)
+            Color 14
 
             Do
                 Locate 22
-				Print "VIEW AGAIN (Y/N)"
+                Print "VIEW AGAIN (Y/N)"
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 

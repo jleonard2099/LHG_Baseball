@@ -6,7 +6,7 @@ Sub NEWLDRST ()
     Shared LLS!(), LWS!()
     Shared TLS!(), TWS!()
 
-    For I = 1 To 40: 
+    For I = 1 To 40:
         TWS!(I) = 0
         TLS!(I) = 0
         LWS!(I) = 0
@@ -15,12 +15,12 @@ Sub NEWLDRST ()
         CLT!(I) = 0
     Next
 
-    ReDim menuChoices$(1 to 3)
+    ReDim menuChoices$(1 To 3)
 
     Do
 
         Cls
-        Color 15,0
+        Color 15, 0
 
         Call TITLE
 
@@ -34,9 +34,9 @@ Sub NEWLDRST ()
         FileFGColr% = 15: FileBGColr% = 1
         HiLiteFGColr% = 0: HiLiteBGColr% = 7
         Spacing% = 1
-        Row% = 6
+        Row% = 7
         Column% = 27
-        Call box0(5, 26, 9, 56, 2, 15, 1)
+        Call box0(6, 26, 10, 56, 2, 15, 1)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
@@ -52,7 +52,7 @@ Sub NEWLDRST ()
             End Select
         End If
 
-    Loop Until Selection% = 3 OR ExitCode% = 27
+    Loop Until Selection% = 3 Or ExitCode% = 27
 
 End Sub
 
@@ -83,7 +83,7 @@ Sub UpdateLeagueStandings ()
         Spec$ = diskPaths$(2) + "*.TMS"
         null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
         Count% = DirCount%
-        If Count% = 0 Then 
+        If Count% = 0 Then
             'No prompt to the user???
             'Should use CSMsgBox
         Else
@@ -166,6 +166,7 @@ Sub UpdateLeagueStandings ()
                         Locate 4
                         Color 15: Print "COMPUTING RECORDS . . . . . PLEASE WAIT"
 
+                        test$ = Z1$(KK)
                         Open diskPaths$(1) + Z1$(KK) + "S" For Input As #1
 
                         Input #1, XX%
@@ -194,7 +195,7 @@ Sub UpdateLeagueStandings ()
                             If H%(I) < V%(I) Then LLS!(YY) = LLS!(YY) + 1: LWS!(YY) = 0
                             If LLS!(YY) > TLS!(YY) Then TLS!(YY) = LLS!(YY)
 
-                            If H%(I) <= V%(I) Then 
+                            If H%(I) <= V%(I) Then
                                 If H%(I) < V%(I) Then
                                     CLT!(YY) = CLT!(YY) + 1: CWS!(YY) = 0
                                 Else
@@ -204,7 +205,7 @@ Sub UpdateLeagueStandings ()
 
                         Next I
 
-                        If XX% <= 10 Then 
+                        If XX% <= 10 Then
                             LTL!(YY) = LL!(YY): LTW!(YY) = WW!(YY)
                         Else
                             M = XX% - 9
@@ -221,7 +222,7 @@ Sub UpdateLeagueStandings ()
 
                 Open diskPaths$(2) + LG$ + ".STD" For Output As #1
                 Write #1, LGF$, D1$, D2$, D3$, D4$
-                For I = 1 To 40: 
+                For I = 1 To 40:
                     Write #1, TML$(I), WW!(I), LL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
                 Next
                 Close #1
@@ -252,7 +253,7 @@ Sub ViewPrintLeagueStandings ()
         Spec$ = diskPaths$(2) + "*.STD"
         null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
         Count% = DirCount%
-        If Count% = 0 Then 
+        If Count% = 0 Then
             'Exit
             'Shouldn't we want user?
             'Use CSMsgBox
@@ -310,19 +311,23 @@ Sub ViewPrintLeagueStandings ()
 
                     Input #1, LGF$, D1$, D2$, D3$, D4$
 
-                    For I = 1 To 40: 
+                    For I = 1 To 40:
                         Input #1, TML$(I), WW!(I), LL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
                     Next
 
                     Close #1
 
-                    Locate 10, 1
-                    Color 12
-                    Print "P";: Color 7: Print "RINT OR ";
-                    Color 12: Print "V";: Color 7: Print "IEW STANDINGS"
-                    A$ = GetKeyPress$
+					Color 15, 0
+					Cls
 
-                    If UCase$(A$) = "V" Then 
+					Do
+						Locate 15, 10
+						Color 12: Print "V";: Color 7: Print "iew or ";
+						Color 12: Print "P";: Color 7: Print "rint"
+						A$ = GetKeyPress$
+					Loop Until UCase$(A$) = "P" Or UCase$(A$) = "V"
+
+                    If UCase$(A$) = "V" Then
                         Call ViewNewLeaders
                     Else
                         'Assumes we only have V or P
@@ -412,13 +417,13 @@ Sub ViewNewLeaders ()
                 Print Using "###"; WW!(I); Tab(22);
                 Print Using "###"; LL!(I);
 
-                If LL!(I) = 0 And LL!(I) + WW!(I) <> 0 Then 
+                If LL!(I) = 0 And LL!(I) + WW!(I) <> 0 Then
                     Print Tab(26); "1.000";
                 Else
-                    If WW!(I) = 0 Then 
+                    If WW!(I) = 0 Then
                         Print Tab(27); ".000";
                     Else
-                        If WW!(I) + LL!(I) <> 0 Then 
+                        If WW!(I) + LL!(I) <> 0 Then
                             statPCT! = WW!(I) / (WW!(I) + LL!(I))
                             Print Tab(27); Using ".###"; statPCT!;
                         Else
@@ -465,9 +470,6 @@ Sub PrintNewLeaders ()
 
     MJ = 0
 
-    LPrint Chr$(15)
-
-    '3001 WIDTH "LPT1:1", 130
     LPrint Tab(35); LGF$
 
     For NT = 1 To 4
@@ -524,13 +526,13 @@ Sub PrintNewLeaders ()
                 LPrint Using "###"; WW!(I); Tab(22);
                 LPrint Using "###"; LL!(I);
 
-                If LL!(I) = 0 And LL!(I) + WW!(I) <> 0 Then 
+                If LL!(I) = 0 And LL!(I) + WW!(I) <> 0 Then
                     LPrint Tab(26); "1.000";
                 Else
-                    If WW!(I) = 0 Then 
+                    If WW!(I) = 0 Then
                         LPrint Tab(27); ".000";
                     Else
-                        If WW!(I) + LL!(I) <> 0 Then 
+                        If WW!(I) + LL!(I) <> 0 Then
                             statPCT! = WW!(I) / (WW!(I) + LL!(I))
                             LPrint Tab(27); Using ".###"; statPCT!;
                         Else
@@ -556,9 +558,5 @@ Sub PrintNewLeaders ()
     Next NT
 
     LPrint Chr$(12)
-
-    LPrint Chr$(18)
-
-'3097 WIDTH "LPT1:1", 80
 
 End Sub

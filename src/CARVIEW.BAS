@@ -71,7 +71,7 @@ Sub CARVIEW ()
                         I$ = GetKeyPress$
                     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
-					Color 15, 0
+                    Color 15, 0
 
                 End If
 
@@ -115,12 +115,13 @@ Sub CARVIEW ()
 
                 Close #2
 
+                Color 15, 0
                 Cls
+
                 Do
-					Locate 18, 10	'this is original
-					'Locate 15, 10	'this matches other games
-					Color 12: Print "V";: Color 7: Print "iew or ";
-					Color 12: Print "P";: Color 7: Print "rint"
+                    Locate 15, 10
+                    Color 12: Print "V";: Color 7: Print "iew or ";
+                    Color 12: Print "P";: Color 7: Print "rint"
                     I$ = GetKeyPress$
                 Loop Until UCase$(I$) = "P" Or UCase$(I$) = "V"
 
@@ -295,8 +296,7 @@ Sub CareerToPrinter (careerFile$)
     Shared careerB$(), careerP$()
 
     PTN = 0
-    LPrint Chr$(15)
-    '1103 WIDTH "LPT1:1", 130
+
     LPrint careerFile$
     LPrint "BATTER     YEAR      G      AB      R      H    2B    3B    HR    RBI     BB     SO     SB    CS     E     AVG     SLG      OB"
 
@@ -549,8 +549,7 @@ Sub CareerToPrinter (careerFile$)
 
     Next I
 
-    LPrint Chr$(18)
-    '1371 WIDTH "LPT1:1", 80
+    LPrint Chr$(12)
 
 End Sub
 
@@ -560,20 +559,24 @@ End Sub
 '...explanation...
 Sub CareerToScreen (careerFile$)
 
-    Cls
-    Color 7: Print "VIEW ";
-    Color 12: Print "B";: Color 7: Print "ATTERS, ";
-    Color 12: Print "P";: Color 7: Print "ITCHERS, ";
-    Color 12: Print "R";: Color 7: Print "OSTER IN SEQUENCE, OR ";
-    Color 12: Print "E";: Color 7: Print "XIT TO MAIN MENU"
-    I$ = GetKeyPress$
+    Do
 
-    Select Case UCase$(I$)
-        Case "B": Call ViewLeaders_Batters(careerFile$)
-        Case "P": Call ViewLeaders_Pitchers(careerFile$)
-        Case "R": Call ViewLeaders_Sequence(careerFile$)
-        Case "E": Cls 'Exit
-    End Select
+        Cls
+        Color 7: Print "VIEW ";
+        Color 12: Print "B";: Color 7: Print "ATTERS, ";
+        Color 12: Print "P";: Color 7: Print "ITCHERS, ";
+        Color 12: Print "R";: Color 7: Print "OSTER IN SEQUENCE, OR ";
+        Color 12: Print "E";: Color 7: Print "XIT TO MAIN MENU"
+        I$ = GetKeyPress$
+
+        Select Case UCase$(I$)
+            Case "B": Call ViewLeaders_Batters(careerFile$)
+            Case "P": Call ViewLeaders_Pitchers(careerFile$)
+            Case "R": Call ViewLeaders_Sequence(careerFile$)
+            Case "E": Cls 'Exit
+        End Select
+
+    Loop Until UCase$(I$) = "E"
 
 End Sub
 
@@ -897,8 +900,10 @@ Sub ViewLeaders_Sequence (careerFile$)
         TT13 = 0: TT13 = 0: TT14 = 0: TT15 = 0: TT16 = 0: TT17 = 0: TT18 = 0: TT19 = 0: TT20 = 0: TT21 = 0: TT22 = 0
         TT23 = 0: TT24 = 0: TT25 = 0: TT26 = 0: TT27 = 0: TT28 = 0
 
-        Color 11: Locate 1: Print careerFile$
-        Color 12: Locate 2: Print "BATTER     YEAR   G   AB   R   H 2B 3B HR RBI  BB  SO  SB CS  E  AVG  SLG   OB"
+        Color 11
+        Locate 1: Print careerFile$
+        Color 12
+        Locate 2: Print "BATTER     YEAR   G   AB   R   H 2B 3B HR RBI  BB  SO  SB CS  E  AVG  SLG   OB"
 
         For I = 0 To 99
 
@@ -929,18 +934,30 @@ Sub ViewLeaders_Sequence (careerFile$)
 
                     If BRS%(V, I, 0) > 0 Then I2! = Int((BRS%(V, I, 1) / BRS%(V, I, 0) + .0005) * 1000): I3! = Int(((BRS%(V, I, 1) + BRS%(V, I, 4) + 2 * BRS%(V, I, 5) + 3 * BRS%(V, I, 6)) / BRS%(V, I, 0) + .0005) * 1000): I4! = Int(((BRS%(V, I, 1) + BRS%(V, I, 7)) / (BRS%(V, I, 7) + BRS%(V, I, 0)) + .0005) * 1000)
 
-                    If BRS%(V, I, 0) = 0 Or I2! = 0 Then Locate , 65: Print ".000";
-                    If I2! > 0 And I2! < 100 Then Locate , 65: Print ".0";: Print Using "##"; I2!;
-                    If I2! >= 100 Then Locate , 65: Print ".";: Print Using "###"; I2!;
-                    If BRS%(V, I, 0) = 0 Or I3! = O Then Locate , 70: Print ".000";
+                    If I2! = 1000 Then
+                        Locate , 65: Print "1.000";
+                    Else
+                        If BRS%(V, I, 0) = 0 Or I2! = 0 Then Locate , 65: Print ".000 ";
 
-                    If I3! > 0 And I3! < 100 Then Locate , 70: Print ".0";: Print Using "##"; I3!;
-                    If I3! >= 100 Then Locate , 70: Print ".";: Print Using "###"; I3!;
+                        If I2! > 0 And I2! < 100 Then Locate , 65: Print ".0";: Print Using "## "; I2!;
+                        If I2! >= 100 Then Locate , 65: Print Using ".### "; I2! / 1000;
+                    End If
 
-                    If BRS%(V, I, 0) = 0 Or I4! = 0 Then Locate , 75: Print ".000"
+                    If I3! = 1000 Then
+                        Locate , 65: Print "1.000";
+                    Else
+                        If BRS%(V, I, 0) = 0 Or I3! = O Then Locate , 70: Print ".000 ";
+                        If I3! > 0 And I3! < 100 Then Locate , 70: Print ".0";: Print Using "## "; I3!;
+                        If I3! >= 100 Then Locate , 70: Print Using ".### "; I3! / 1000;
+                    End If
 
-                    If I4! > 0 And I4! < 100 Then Locate , 75: Print ".0";: Print Using "##"; I4!
-                    If I4! >= 100 Then Locate , 75: Print ".";: Print Using "###"; I4!
+                    If I4! = 1000 Then
+                        Locate , 65: Print "1.000"
+                    Else
+                        If BRS%(V, I, 0) = 0 Or I4! = 0 Then Locate , 76: Print ".000 "
+                        If I4! > 0 And I4! < 100 Then Locate , 76: Print ".0";: Print Using "## "; I4!
+                        If I4! >= 100 Then Locate , 76: Print Using ".### "; I4! / 1000
+                    End If
 
                 Next V
 
@@ -948,23 +965,24 @@ Sub ViewLeaders_Sequence (careerFile$)
 
                 TT1 = 0: TT2 = 0: TT3 = 0: TT4 = 0: TT5 = 0: TT6 = 0: TT7 = 0: TT8 = 0: TT9 = 0: TT10 = 0: TT11 = 0: TT12 = 0: TT13 = 0
 
-                Print
-                Print
-                Print
-                Color 14
-                Print "HIT ENTER TO CONTINUE OR ESC TO GO TO MAIN MENU"
-                I$ = GetKeyPress$
 
-                If I$ = Chr$(0) Then
+                Do
+                    Locate 10: Color 14
+                    Print "HIT ENTER TO CONTINUE OR ESC TO GO TO MAIN MENU"
+                    I$ = GetKeyPress$
 
-                    For T = 3 To 20:
-                        Locate T
-                        Print Space$(78)
-                    Next
+                    If I$ = Chr$(0) Then
 
-                End If
+                        For T = 3 To 20:
+                            Locate T
+                            Print Space$(78)
+                        Next
 
-                If I$ = Chr$(27) Then Exit For
+                    End If
+
+                    If I$ = Chr$(27) Then Exit For
+
+                Loop Until I$ = Chr$(27) Or I$ = Chr$(13)
 
             End If
 
@@ -974,8 +992,10 @@ Sub ViewLeaders_Sequence (careerFile$)
 
             Cls
 
-            Color 11: Locate 1: Print careerFile$
-            Color 12: Locate 2: Print "PITCHER    YEAR  W  L  S   IP     H  BB  SO  ERA  G GS CG RUN  ER SHO HR DP"
+            Color 11
+            Locate 1: Print careerFile$
+            Color 12
+            Locate 2: Print "PITCHER    YEAR  W  L  S   IP     H  BB  SO  ERA  G GS CG RUN  ER SHO HR DP"
 
             For I = 0 To 79
 
@@ -1026,23 +1046,22 @@ Sub ViewLeaders_Sequence (careerFile$)
 
                     TT13 = 0: TT14 = 0: TT15 = 0: TT16 = 0: TT17 = 0: TT18 = 0: TT19 = 0: TT20 = 0: TT21 = 0: TT22 = 0: TT23 = 0: TT24 = 0: TT25 = 0: TT26 = 0: TT27 = 0: TT28 = 0
 
-                    Print
-                    Print
-                    Print
-                    Color 14
                     Do
+                        Locate 10: Color 14
                         Print "HIT ENTER TO CONTINUE OR ESC TO GO TO MAIN MENU"
                         I$ = GetKeyPress$
 
-                        If I$ = Chr$(27) Then Exit Do
-
                         If I$ = Chr$(0) Then
+
                             For T = 3 To 20: Locate T
                                 Print String$(76, " ")
                             Next
                         End If
 
-                    Loop Until I$ = Chr$(0) Or I$ = Chr$(27)
+
+                        If I$ = Chr$(27) Then Exit For
+
+                    Loop Until I$ = Chr$(27) Or I$ = Chr$(13)
 
                     If I$ = Chr$(27) Then Exit For
 
@@ -1051,15 +1070,35 @@ Sub ViewLeaders_Sequence (careerFile$)
             Next I
 
             If I$ <> Chr$(27) Then
-                Cls
 
-				Color 14
-				
-				Do
-					Locate 5, 20
-					Print "VIEW AGAIN (Y/N)"
-					I$ = GetKeyPress$
-				Loop Until UCase$(I$) = "N" Or Ucase$(I$) = "Y"
+                Color 15, 0
+
+                Cls
+                JJ = 1
+                Locate 6, 8
+                Color 15, 1
+
+                'Print box top
+                Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+
+                'Print box sides
+                For II = 1 To JJ
+                    Locate 6 + II, 8
+                    Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
+                Next
+
+                'Print box bottom
+                Locate 7 + JJ, 8
+                Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+
+                Locate 7
+                U$ = "DISPLAY STATS AGAIN (YN)"
+                Do
+                    Locate , (80 - Len(U$)) / 2
+                    Print U$
+                    I$ = GetKeyPress$
+                Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
 
             End If
 

@@ -21,10 +21,10 @@ Sub NEWLDRRC ()
         FileFGColr% = 15: FileBGColr% = 1
         HiLiteFGColr% = 0: HiLiteBGColr% = 7
         Spacing% = 1
-        Row% = 6
+        Row% = 7
         Column% = 30
 
-        Call box0(5, 29, 9, 55, 2, 15, 1)
+        Call box0(6, 29, 10, 55, 2, 15, 1)
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
         _MouseHide
@@ -35,13 +35,13 @@ Sub NEWLDRRC ()
 
             Call SelectLeague(LGE$, menuExit%)
 
-			If menuExit% <> 27 Then
-				Select Case Selection%
-					Case 1: Call UpdateRecords(LGE$)
-					Case 2: Call ViewPrintRecords(LGE$)
-					Case 3: Cls
-				End Select
-			End If
+            If menuExit% <> 27 Then
+                Select Case Selection%
+                    Case 1: Call UpdateRecords(LGE$)
+                    Case 2: Call ViewPrintRecords(LGE$)
+                    Case 3: Cls
+                End Select
+            End If
 
         End If
 
@@ -96,16 +96,16 @@ Sub SelectLeague (leagueFile$, ExitCode%)
 
                 If ExitCode% <> 27 Then
 
-					Color 15, 1
+                    Color 15, 1
                     targetFile$ = batFiles$(Selection%)
                     Locate 2, 33: Print targetFile$
 
-					Do
-						Locate , 33: Print "ANY CHANGE (YN)";
-						I$ = GetKeyPress$
-					Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+                    Do
+                        Locate , 33: Print "ANY CHANGE (YN)";
+                        I$ = GetKeyPress$
+                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
-					Color 15, 0
+                    Color 15, 0
 
                 End If
 
@@ -154,14 +154,13 @@ Sub UpdateRecords (leagueFile$)
 
     Cls
     Input "ENTER SEASON YEAR (1991,1992)"; seasonYear
-    
-	Do
-		I$ = GetKeyPress$
-		finalUpdate$ = UCase$(I$)
+    Do
+        Locate 2
+        Input "IS THIS THE FINAL UPDATE FOR THE YEAR (Y/N)"; finalUpdate$
     Loop Until UCase$(finalUpdate$) = "Y" Or UCase$(finalUpdate$) = "N"
 
     Print
-	Print "ANY CHANGE (Y/N)"
+    Print "ANY CHANGE (Y/N)"
 
     Do
         I$ = GetKeyPress$
@@ -545,12 +544,15 @@ Sub ViewPrintRecords (leagueFile$)
         Close #1
     End If
 
+    Color 15, 0
     Cls
-    Print "(V)IEW OR (P)RINT"
 
     Do
+        Locate 15, 10
+        Color 12: Print "V";: Color 7: Print "iew or ";
+        Color 12: Print "P";: Color 7: Print "rint"
         I$ = GetKeyPress$
-    Loop Until UCase$(I$) = "V" Or UCase$(I$) = "P"
+    Loop Until UCase$(I$) = "P" Or UCase$(I$) = "V"
 
     If UCase$(I$) = "P" Then
         Call PrintRecords(leagueFile$)
@@ -704,7 +706,7 @@ Sub PrintRecords (leagueFile$)
     Shared TRC!(), TRC1!(), TRYR!(), TRYR1!()
 
     Shared BRC$(), BRT$(), PRC$(), PRT$()
-    Shared TP0$(), TP1A$(), TP3$()
+    Shared TP0$(), TP1A$(), TP2A$(), TP3$()
     Shared TRC$(), TRC1$()
 
     LPrint leagueFile$; "  BATTING RECORDS": LPrint

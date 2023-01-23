@@ -1,3 +1,4 @@
+$Debug
 
 Const GAME_VERSION$ = "6.62"
 'Const MAX_CONFERENCES = 40
@@ -10,6 +11,8 @@ Const MAX_TEAMS = 500
 Const MAX_GAMES = 1500
 Const MAX_FILES = 1024 '1048576
 
+DefInt A-Z
+
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'
 '$INCLUDE: 'PadRight.BI'
@@ -17,7 +20,10 @@ Const MAX_FILES = 1024 '1048576
 '$INCLUDE: 'TITLE.BI'
 '$INCLUDE: 'Variables.BI'
 
-'DefInt A-Z
+Dim H$(NUM_STATRECORDS), L$(NUM_STATRECORDS)
+Dim PL$(NUM_STATRECORDS), W$(NUM_STATRECORDS)
+
+Dim H%(NUM_STATRECORDS), I%(NUM_STATRECORDS), V%(NUM_STATRECORDS)
 
 '----------------------------------------
 '          READ IN ALL DATA

@@ -11,8 +11,6 @@ Sub MAINSCREEN_G (D, p, BC%, U%, MO)
     Color 4294967295
     _PrintMode _FillBackground , imageScreen&
 
-    'Print #9, "Calling gfx print from MAINSCREEN_G; usingGfx = "; Str$(usingGfx)
-
     'Pitcher Name
     PrintOnGfx 67, 26, Left$(P$(D, P1%(D)), 14), imageScreen&
 
@@ -35,7 +33,7 @@ Sub MAINSCREEN_G (D, p, BC%, U%, MO)
     End If
 
     'H / BB / K values
-    338 pStats$ = pStats$ + " " + FUsing$(Str$(P8%(D, P1%(D), 1)), "##", 1) + " " + FUsing$(Str$(P8%(D, P1%(D), 4)), "##", 1) + " " + FUsing$(Str$(P8%(D, P1%(D), 5)), "##", 1)
+    pStats$ = pStats$ + " " + FUsing$(Str$(P8%(D, P1%(D), 1)), "##", 1) + " " + FUsing$(Str$(P8%(D, P1%(D), 4)), "##", 1) + " " + FUsing$(Str$(P8%(D, P1%(D), 5)), "##", 1)
 
     PrintOnGfx 66, 29, pStats$, imageScreen&
 
@@ -98,7 +96,7 @@ Sub MAINSCREEN_G (D, p, BC%, U%, MO)
     Else
 
         'Batter Stats - Conditional
-        336 If P%(p, P1%(p), 11) <> 999 Then
+        If P%(p, P1%(p), 11) <> 999 Then
             pStats$ = FUsing$(Str$(P%(p, P1%(p), 11) / 1000), ".###", 1)
             PrintOnGfx 66, 24, pStats$ + "           ", imageScreen&
         Else
@@ -114,7 +112,6 @@ Sub MAINSCREEN_G (D, p, BC%, U%, MO)
 
     End If
 
-    337 '
     If B7%(p, B1!(p)) <> 1 Then
         today$ = FUsing$(Str$(B8%(p, B3%(p, B1!(p)), 1)), "##", 1) + "-" + FUsing$(Str$(B8%(p, B3%(p, B1!(p)), 0)), "##", 1)
     Else
@@ -205,8 +202,6 @@ Sub DISPRUN_G (I2, p, X)
         _PrintMode _KeepBackground , imageScreen&
         Color 4294967295
 
-        'Print #9, "Calling gfx print from DISPRUN_G; usingGfx = "; Str$(usingGfx)
-
         If B7%(p, J) = 1 Then
             If P%(p, P1%(p), 11) <> 999 Then
                 runner$ = P$(p, P1%(p))
@@ -248,8 +243,6 @@ Sub DisplayField_G (BC%, p, U%, D)
 
     If INNING% > 9 Then X% = 10: inningStart% = 18
     If INNING% > 18 Then X% = 19: inningEnd% = 27
-
-    'Print #9, "Calling gfx print from DisplayField_G; usingGfx = "; Str$(usingGfx)
 
     'Print Batter / Pitcher box
     '----------------------------------------
@@ -426,8 +419,6 @@ Sub HOLDSTATUS_G (H0%)
     If H0% = 0 Then rhStatus$ = rhStatus$ + "    "
     If H0% = 1 Then rhStatus$ = rhStatus$ + "HELD"
 
-    'Print #9, "Calling gfx print from HOLDSTATUS_G; usingGfx = "; Str$(usingGfx)
-
     'Printing black on background
     _PrintMode _KeepBackground , imageScreen&
     Color 4278190080
@@ -455,7 +446,6 @@ Sub INNDISP_G (currInning, teamLine)
     If currInning > 21 And currInning < 25 Then L = 3 * (currInning - 18) + 8
     If currInning > 24 And currInning < 28 Then L = 3 * (currInning - 18) + 9
 
-    'Print #9, "Calling gfx print from INNDISP_G; usingGfx = "; Str$(usingGfx)
     FORMATTED$ = FUsing$(Str$(S%(teamLine, currInning)), "##", 1)
     PrintOnGfx L + 13, teamLine + 28, FORMATTED$, imageScreen&
 
@@ -530,11 +520,11 @@ Sub LOADSCREEN ()
     'Batter - Right
     _PutImage (30 * FontColAdj%, 400)-Step(23 * FontColAdj%, 16), imageScreen&, backupScreen&, (30 * FontColAdj%, 400)-Step(23 * FontColAdj%, 16)
 
-    'This is to the far left of 3rd base
-    'What would go here ???
-    '_PutImage (1 * FontColAdj%, 304)-Step(14 * FontColAdj%, 176), imageScreen&, backupScreen&, (1 * FontColAdj%, 304)-Step(14 * FontColAdj%, 176)
+    'Commands for Human Play
+    _PutImage (1 * FontColAdj%, 304)-Step(14 * FontColAdj%, 176), imageScreen&, backupScreen&, (1 * FontColAdj%, 304)-Step(14 * FontColAdj%, 176)
 
 End Sub
+
 
 '------------------------------
 '   PrintOnGfx Subroutine

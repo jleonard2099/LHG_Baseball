@@ -745,12 +745,6 @@ For P9 = 0 To 1
 
 Next P9
 
-
-
-'-------------------------
-' Ready to Play
-'-------------------------
-
 For I = 0 To 1
     For I1 = 1 To 9
         X0%(I, 0, I1) = B3%(I, I1)
@@ -759,8 +753,6 @@ For I = 0 To 1
     Next I1
     D0%(I) = 9
 Next I
-
-
 
 W5 = 0
 W6 = 1
@@ -805,9 +797,7 @@ Next I
 2476 Call SelectStadium
 
 Call GETWEATHER(WD%, WS%, MO%, WF!, SC%, TP%, RD)
-
 Cls
-
 Call DRAWBOXA
 
 Locate , 11: Print "CONDITIONS AT "; S$(1)
@@ -1546,7 +1536,7 @@ End Sub
 Sub SelectStadium ()
 
     Do
-        'SELECT A DIFFERENT STADIUM
+        3500 ':SELECT A DIFFERENT STADIUM
         PARK$(1) = "ANAHEIM STADIUM             "
         PARK$(2) = "THE ASTRODOME               "
         PARK$(3) = "OAKLAND-ALAMEADA COLISEUM   "

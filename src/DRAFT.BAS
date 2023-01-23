@@ -16,38 +16,6 @@ Sub DRAFT ()
     Do
 
         Cls
-
-        '-- I know there's a command to assign all 0's
-        '-- Of course, QB64 also assigns all 0s when Dim'd
-        For I = 0 To 22
-            B$(I) = "XXX"
-            draftB1$(I) = "XXX"
-            For I1 = 0 To 79
-                draftB%(I, I1) = 0
-                draftB1%(I, I1) = 0
-            Next
-        Next
-
-        For I = 0 To 21
-            P$(I) = "XXX"
-            draftP1$(I) = "XXX"
-            For I1 = 0 To 88
-                draftP%(I, I1) = 0
-                draftP1%(I, I1) = 0
-            Next
-        Next
-
-        For I = 0 To 11
-            TS%(I) = 0
-            TS1%(I) = 0
-        Next
-
-        For I = 1 To 24
-            SA%(I) = 0
-            SA1%(I) = 0
-        Next
-
-        Cls
         Color 12, 0: Print Tab(31); "DRAFT TEAM UTILITY"
         Print
         Color 14: Print "(0) ";
@@ -69,6 +37,36 @@ Sub DRAFT ()
         Select Case I
             Case 0:
                 DNT% = 0
+				
+				For I = 0 To 22
+					B$(I) = "XXX"
+					draftB1$(I) = "XXX"
+					For I1 = 0 To 79
+						draftB%(I, I1) = 0
+						draftB1%(I, I1) = 0
+					Next
+				Next
+
+				For I = 0 To 21
+					P$(I) = "XXX"
+					draftP1$(I) = "XXX"
+					For I1 = 0 To 88
+						draftP%(I, I1) = 0
+						draftP1%(I, I1) = 0
+					Next
+				Next
+
+				For I = 0 To 11
+					TS%(I) = 0
+					TS1%(I) = 0
+				Next
+
+				For I = 1 To 24
+					SA%(I) = 0
+					SA1%(I) = 0
+				Next
+
+
                 Call DraftNewTeam(draftYN$(0), T$)
                 Call DoTheDraft(DNT%, done%, T$, draftYN$(), teamIdx)
                 If done% = 1 Then Exit Sub

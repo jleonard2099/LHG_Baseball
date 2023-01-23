@@ -24,10 +24,10 @@ Sub LOOKY ()
         FileFGColor% = 15: FileBGColor% = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
-        Row% = 6
+        Row% = 7
         Column% = 22
 
-        Call box0(5, 21, 9, 61, 2, 15, 1)
+        Call box0(6, 21, 10, 61, 2, 15, 1)
         _MouseShow "Default"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
@@ -66,8 +66,8 @@ Sub StatsOneTeam ()
         Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
         Locate 7 + JJ, 8
         Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
-		
-		Locate 7, 32
+
+        Locate 7, 32
         Locate , 12: Print "ENTER DISK ID: ": Print
         Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
         Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
@@ -85,8 +85,8 @@ Sub StatsOneTeam ()
                 Locate 7, 28: Line Input NY$
                 NY$ = I$ + NY$
                 Color 15, 0
-				
-				If NY$ = "" And YN$ <> "" Then
+
+                If NY$ = "" And YN$ <> "" Then
                     Call SelectTeam_LOOKY(numberTeams, YN$)
                 Else
                     YN$ = NY$
@@ -118,7 +118,7 @@ Sub StatsOneTeam ()
 
                         Close 1
 
-						Call SelectTeam_LOOKY(numberTeams, YN$)
+                        Call SelectTeam_LOOKY(numberTeams, YN$)
 
                     End If
 
@@ -138,24 +138,24 @@ Sub StatsOneTeam ()
 
                 Color L%(11), L%(12): Print A$
 
-				Color 15, 4
+                Color 15, 4
 
-				Do
-					Locate , 33
-					Print "ANY CHANGE (YN)";
-					I$ = GetKeyPress$
-				Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+                Do
+                    Locate , 33
+                    Print "ANY CHANGE (YN)";
+                    I$ = GetKeyPress$
+                Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
-				Color 15, 0
+                Color 15, 0
 
                 If UCase$(I$) = "N" Then
 
-                    For XX = 4 To 11: 
-						If Mid$(B$, XX, 1) = " " Or Mid$(B$, XX, 1) = "." Then Mid$(B$, XX, 1) = "_"
+                    For XX = 4 To 11:
+                        If Mid$(B$, XX, 1) = " " Or Mid$(B$, XX, 1) = "." Then Mid$(B$, XX, 1) = "_"
                     Next XX
 
-                    For XX = 12 To 14: 
-						If Mid$(B$, XX, 2) = "ST" Then Mid$(B$, 9, 1) = "_": Mid$(B$, 10, 2) = "ST"
+                    For XX = 12 To 14:
+                        If Mid$(B$, XX, 2) = "ST" Then Mid$(B$, 9, 1) = "_": Mid$(B$, 10, 2) = "ST"
                     Next XX
 
                     QQ = 8
@@ -246,6 +246,7 @@ Sub ReadStats (statFile$)
             SS% = 0
         End If
 
+        test$ = diskPaths$(1) + statFile$ + "S"
         Open diskPaths$(1) + statFile$ + "S" For Input As #1
         Input #1, totalGames%
         For I = 1 To NUM_STATRECORDS: Input #1, H%(I): Next I
@@ -298,17 +299,22 @@ Sub ViewAndPrintOptions (statFile$, splitScreenChoice%, teamName$, totalGames%)
     Shared LTL, LTW, ORW, ORL
     Shared RW, RL, W, L
 
-    Shared L%()
+    Shared L2%, W2%
 
     Shared B$(), P$(), SS%()
     Shared statT!(), statT1!()
+
     Shared statB%(), statB0%()
+    Shared H%(), I%(), L%(), V%()
     Shared statP%(), statP0%()
+
+    Shared H$(), L$(), PL$(), W$()
 
     Do
         Cls
         Print
         Print
+        '-- Setup a box menu here; centered (similar to "STATS TO SCREEN / STATS TO PRINTER"
         Color 14: Print "(0) ";: Color 15: Print "VIEW SCHEDULE AND STATS"
         Print
         Color 14: Print "(1) ";: Color 15: Print "VIEW STATS ONLY"
@@ -317,615 +323,563 @@ Sub ViewAndPrintOptions (statFile$, splitScreenChoice%, teamName$, totalGames%)
         Print
         Color 14: Print "(3) ";: Color 15: Print "PRINT STATS ONLY"
 
-		Do
-			prompt$ = GetKeyPress$
-			X = Val(prompt$)+1
-		Loop Until X >= 1 And X <= 4 Or prompt$ = Chr$(27)
-
-		If prompt$ <> Chr$(27) Then
-		
-			If X = 2 Or X = 3 Then
-				Call NewPrintStats(statFile$, X, splitScreenChoice%, teamName$, totalGames%)
-			End If
-
-			'9810
-			If X = 1 Then
-				Cls
-			Else
-				Cls
-				Color 12: Print "        SCHEDULE RESULTS FOR ";
-				Color L%(11), L%(12): Print teamName$
-
-				Color 15, 0
-				Color 14: Print Tab(6); "OPPONENT"; Tab(33); "WINNING PITCHER"; Tab(50); "LOSING PITCHER"; Tab(66); "INNINGS"
-				Color 15
-				For I = 1 To totalGames%
-					'Multiples of 21..in other words we've printed a full page
-					If I = 22 Or I = 43 Or I = 64 Or I = 85 Or I = 106 Or I = 127 Or I = 148 Then
-						If X = 0 Or X = 1 Then
-							I$ = GetKeyPress$
-							Cls
-						End If
-						Cls
-						Color 14: Print Tab(6); "OPPONENT"; Tab(33); "WINNING PITCHER"; Tab(50); "LOSING PITCHER"; Tab(66); "INNINGS"
-						Color 15
-					End If
-					Print Str$(H%(I)); Tab(6); Left$(H$(I), 15); Tab(22); Str$(V%(I)); Tab(27); "("; PL$(I); ")"; Tab(33); W$(I); Tab(50); L$(I); Tab(66); I%(I)
-				Next
-				If X = 0 Or X = 1 Then
-					I$ = GetKeyPress$
-					Cls
-				End If
-
-			End If
-
-			Print Tab(20); "RECORD         ("; Str$(W); " -"; Str$(L); " )"
-			Print Tab(20); "HOME RECORD    ("; Str$(HW); " -"; Str$(HL); " )"
-			Print Tab(20); "ROAD RECORD    ("; Str$(RW); " -"; Str$(RL); " )"
-			Print Tab(20); "LAST 10 GAMES  ("; Str$(LTW); " -"; Str$(LTL); " )"
-			Print Tab(20); "EXTRA INNINGS  ("; Str$(EW); " -"; Str$(EL); " )"
-			Print Tab(20); "ONE RUN GAMES  ("; Str$(ORW); " -"; Str$(ORL); " )"
-
-			If X = 0 Or X = 1 Then
-				I$ = GetKeyPress$
-				Cls
-			End If
-
-			Cls
-			Color L%(11), L%(12): Print teamName$;
-
-			Color 12, 0: Print "    WON: "; W2%; "  LOST: "; L2%
-			Color 15, 1
-			Print "BATTERS    AB   R   H RBI  2B 3B  HR    BA   SLG   OBP  SO  BB  SB  CS %RAB"
-			Color 15, 0
-
-			For I = 0 To 22
-				If B$(I) <> "XXX" And B$(I) <> "" Then
-					Locate I + 3, 1
-					Color 7
-					If I / 2 = Int(I / 2) Then Color 15
-
-					Print Left$(B$(I), 10);
-
-					Locate , 11: Print Using "###"; statB0%(I, 0);
-					Locate , 15: Print Using "###"; statB0%(I, 2);
-					Locate , 19: Print Using "###"; statB0%(I, 1);
-					Locate , 23: Print Using "###"; statB0%(I, 3);
-					Locate , 28: Print Using "##"; statB0%(I, 4);
-					Locate , 31: Print Using "##"; statB0%(I, 5);
-					Locate , 35: Print Using "##"; statB0%(I, 6);
-
-					I2 = 0: I3 = 0: I4 = 0
-					Locate , 38
-					If statB0%(I, 0) = 0 Then
-						Print " .--- ";
-					Else
-						If statB0%(I, 0) = statB0%(I, 1) Then
-							Print "1.000 ";
-						Else
-							If statB0%(I, 1) = 0 Then
-								Print " .000 ";
-							Else
-								Print Using " .### "; statB0%(I, 1) / statB0%(I, 0);
-							End If
-						End If
-					End If
-
-					I3 = statB0%(I, 1) + statB0%(I, 4) + 2 * statB0%(I, 5) + 3 * statB0%(I, 6)
-					If statB0%(I, 0) = 0 Then
-						Print " .--- ";
-					Else
-						If I3 = 0 Then
-							Print " .000 ";
-						Else
-							If statB0%(I, 0) = I3 Then
-								Print "1.000 ";
-							Else
-								If I3 / statB0%(I, 0) >= 1 Then
-									Print Using "#.### "; I3 / statB0%(I, 0);
-								Else
-									Print Using " .### "; I3 / statB0%(I, 0);
-								End If
-							End If
-						End If
-					End If
-
-					I4 = statB0%(I, 1) + statB0%(I, 7): I3 = statB0%(I, 7) + statB0%(I, 0)
-					If I3 = 0 Then
-						Print " .---";
-					Else
-						If I4 = 0 Then
-							Print " .000";
-						Else
-							If I4 = I3 Then
-								Print "1.000";
-							Else
-								Print Using " .###"; I4 / I3;
-							End If
-						End If
-					End If
-
-					Locate , 56: Print Using "###"; statB0%(I, 8);
-					Locate , 60: Print Using "###"; statB0%(I, 7);
-					Locate , 64: Print Using "###"; statB0%(I, 9);
-					Locate , 69: Print Using "##"; statB0%(I, 10);
-
-					If statB%(I) > 0 Then
-						Locate , 73
-						MM = statB0%(I, 0) / statB%(I) * 100
-						MM = Int(MM)
-						Print Str$(MM);
-					Else
-						If statB%(I) = 0 Then Locate , 73: Print "--";
-					End If
-
-					If statT!(0) = 0 Then statT!(0) = 1
-
-				End If 'Done checking for XXX / terminal chars
-
-			Next I
-
-			Locate 1, 1
-			If X = 0 Or X = 1 Then I$ = GetKeyPress$
-
-			'200
-			Cls
-			Color 12, 0: Color L%(11), L%(12): Print teamName$;
-
-			Color 12, 0: Print "    WON: "; W2%; "  LOST: "; L2%
-			Color 15, 1
-			Print "BATTERS      G  CHS LHS GIDP NEEDS PROJ AB  PO   A  E  FAVG  SBA CS %CS SH SF": Color 15
-
-			For I = 0 To 22
-				If B$(I) <> "XXX" And B$(I) <> "" Then
-					
-					Locate I + 3, 1
-					
-					Color 7, 0
-					
-					If I / 2 = Int(I / 2) Then Color 15
-
-					Print Left$(B$(I), 10);
-					Locate , 12: Print Using "###"; statB0%(I, 14);
-					Locate , 18: Print Using "##"; statB0%(I, 12);
-					Locate , 22: Print Using "##"; statB0%(I, 13);
-					Locate , 27: Print Using "##"; statB0%(I, 15);
-
-					RQ$ = Right$(statFile$, 2)
-					RT = 60
-					RQ = Val(RQ$)
-					If RQ > RT Then
-						QT = 162
-					Else
-						QT = 154
-					End If
-
-					statCalc% = (Int((((statB%(I) + 0) / QT) * (statT1!(9) + 1)) + .5) - (statB0%(I, 0) + 0))
-
-					If (statB%(I) > 0) And statCalc% > 0 Then
-						Locate , 31: Print Using "####"; statCalc%;
-					Else
-						If statB%(I) = 0 Then Print "  ";
-						If statB%(I) > 0 Then Locate , 31: Print Using "####"; statCalc%;
-					End If
-
-					If statB%(I) > 0 Then Locate , 37: H5% = Int((((statB%(I) + 0) / QT) * (statT1!(9) + 1)) + .5): Print Using "####"; H5%;: statT!(13) = statT!(13) + H5%
-					If statB%(I) = 0 Then Locate , 39: Print "0";
-					Locate , 42
-
-					Print Using " #### ### ## "; statB0%(I, 16); statB0%(I, 17); statB0%(I, 11);
-
-					If statB0%(I, 16) + statB0%(I, 17) + statB0%(I, 11) <> 0 Then
-						If statB0%(I, 11) <> 0 Then
-							Print Using " .###"; (statB0%(I, 16) + statB0%(I, 17)) / (statB0%(I, 16) + statB0%(I, 17) + statB0%(I, 11));
-						Else
-							Print "1.000";
-						End If
-					End If
-
-					If statB0%(I, 21) + statB0%(I, 20) <> 0 Then
-						Print Using "  ### ## ###"; statB0%(I, 20) + statB0%(I, 21); statB0%(I, 21); statB0%(I, 21) / (statB0%(I, 20) + statB0%(I, 21)) * 100;
-					End If
-					Locate , 73: Print Using "## ##"; statB0%(I, 18); statB0%(I, 19);
-
-				End If
-
-			Next I
-
-			If X = 0 Or X = 1 Then I$ = GetKeyPress$
-
-			Cls
-			Color L%(11), L%(12): Print teamName$;
-
-			Color 12, 0: Print "    WON: "; W2%; "  LOST: "; L2%
-			Color 15, 1
-			Print "PITCHERS   AB   R   H RBI  2B 3B  HR    BA   SLG   OBP  SO  BB  SB  CS"
-
-			For I = 0 To 21
-
-				If P$(I) <> "XXX" And P$(I) <> "" Then
-					
-					Color 7, 0
-					
-					If I / 2 = Int(I / 2) Then Color 15
-					
-					Locate I + 3, 1: Print Left$(P$(I), 10);
-					Locate , 11: Print Using "###"; statP0%(I, 23);
-					Locate , 15: Print Using "###"; statP0%(I, 25);
-					Locate , 19: Print Using "###"; statP0%(I, 24);
-					Locate , 23: Print Using "###"; statP0%(I, 26);
-					Locate , 28: Print Using "##"; statP0%(I, 27);
-					Locate , 31: Print Using "##"; statP0%(I, 28);
-					Locate , 35: Print Using "##"; statP0%(I, 29);
-
-					Locate , 38
-
-					If statP0%(I, 23) = 0 Then
-						Print " .--- ";
-					Else
-						If statP0%(I, 23) = statP0%(I, 24) Then
-							Print "1.000 ";
-						Else
-							If statP0%(I, 24) = 0 Then
-								Print " .000 ";
-							Else
-								Print Using " .### "; statP0%(I, 24) / statP0%(I, 23);
-							End If
-						End If
-					End If
-
-					I3 = statP0%(I, 24) + statP0%(I, 27) + 2 * statP0%(I, 28) + 3 * statP0%(I, 29)
-
-					If statP0%(I, 23) = 0 Then
-						Print " .--- ";
-					Else
-						If I3 = 0 Then
-							Print " .000 ";
-						Else
-							If statP0%(I, 23) = I3 Then
-								Print "1.000 ";
-							Else
-								If I3 / statP0%(I, 23) >= 1 Then
-									Print Using "#.### "; I3 / statP0%(I, 23);
-								Else
-									Print Using " .### "; I3 / statP0%(I, 23);
-								End If
-							End If
-						End If
-					End If
-
-					I3 = statP0%(I, 30) + statP0%(I, 23)
-					I4 = statP0%(I, 24) + statP0%(I, 30)
-					If I3 = 0 Then
-						Print " .---";
-					Else
-						If I4 = 0 Then
-							Print " .000";
-						Else
-							If I4 = I3 Then
-								Print "1.000";
-							Else
-								Print Using " .###"; I4 / I3;
-							End If
-						End If
-					End If
-
-					Locate , 56: Print Using "###"; statP0%(I, 31);
-					Locate , 60: Print Using "###"; statP0%(I, 30);
-					Locate , 64: Print Using "###"; statP0%(I, 32);
-					Locate , 69: Print Using "##"; statP0%(I, 33);
-					If statT!(0) = 0 Then statT!(0) = 1
-
-				End If
-			Next I
-
-			Locate 1, 1
-			If X = 0 Or X = 1 Then I$ = GetKeyPress$
-
-			Cls
-			Color L%(11), L%(12): Print teamName$;
-			Color 12, 0: Print "    WON: "; W2%; "  LOST: "; L2%
-			Color 15, 1: Print "PITCHERS     G  CHS LHS GIDP   PO   A  E  FAVG SH SF": Color 15
-
-			For I = 0 To 21
-
-				If P$(I) <> "XXX" And P$(I) <> "" Then
-
-					Locate I + 3, 1
-					
-					Color 7, 0
-					
-					If I / 2 = Int(I / 2) Then Color 15
-					
-					Print Left$(P$(I), 10);
-					Locate , 12: Print Using "###"; statP0%(I, 8);
-					Locate , 18: Print Using "##"; statP0%(I, 35);
-					Locate , 22: Print Using "##"; statP0%(I, 36);
-					Locate , 27: Print Using "##"; statP0%(I, 37);: Locate , 29
-					Print Using " #### ### ## "; statP0%(I, 38); statP0%(I, 39); statP0%(I, 34);
-
-					If statP0%(I, 38) + statP0%(I, 39) + statP0%(I, 34) <> 0 Then
-						If statP0%(I, 34) = 0 Then
-							Print "1.000";
-						Else
-							Print Using " .###"; (statP0%(I, 38) + statP0%(I, 39)) / (statP0%(I, 38) + statP0%(I, 39) + statP0%(I, 34));
-						End If
-					End If
-					
-					Locate , 48: Print Using "## ##"; statP0%(I, 40); statP0%(I, 41);
-
-				End If
-			Next I
-
-			Locate 1, 1
-			If X = 0 Or X = 1 Then I$ = GetKeyPress$
-
-			Cls
-			Color L%(11), L%(12): Print teamName$;
-
-			Color 12, 0: Print "    WON: "; W2%; "  LOST: "; L2%;
-			Color 14, 0: Print "  TEAM BATTING TOTALS"
-			Color 15, 1: Print "  AB    R    H  RBI  2B  3B  HR    BA   SLG   OBP   SO   BB  SB  CS"
-			Color 14, 0
-
-			Print Using "#### #### #### #### ### ### ###"; statT!(0); statT!(2); statT!(1); statT!(3); statT!(4); statT!(5); statT!(6);
-			Locate , 34: Print ".";: Print Using "###"; Int((statT!(1) / statT!(0) + .0005) * 1000);
-			Locate , 40: Print ".";
-			Print Using "###"; Int((((statT!(1) + statT!(4) + 2 * statT!(5) + 3 * statT!(6)) / statT!(0)) + .0005) * 1000);
-			Locate , 46: Print ".";
-			Print Using "###"; Int(((statT!(1) + statT!(7)) / (statT!(7) + statT!(0)) + .0005) * 1000);
-			Locate , 51: Print Using "#### #### ### ###"; statT!(8); statT!(7); statT!(9); statT!(10)
-			Locate 8, 1: Color 15, 1: Print "GIDP   PO    A   E  FAVG  SH  SF  LOB": Color 15
-			Color 14, 0
-			Print Using "#### #### #### ###"; statT!(15); statT!(16); statT!(17); statT!(11);
-			Locate , 20: If statT!(11) = 0 Then Print "1.000";
-			If statT!(11) <> 0 Then Print Using " .###"; (statT!(16) + statT!(17)) / (statT!(16) + statT!(17) + statT!(11));
-			Print Using " ### ### ####"; statT!(18); statT!(19); statT!(12)
-			If X = 0 Or X = 1 Then I$ = GetKeyPress$
-
-			If splitScreenChoice% <> 0 Then
-				' DISPLAY SPLIT STATS
-				Cls
-				Color L%(11), L%(12): Print teamName$;
-				Locate 1, 15
-				Color 14, 0
-				Print "VS L  AB 2B 3B HR  BB   K   AVG  VS R  AB 2B 3B HR  BB   K   AVG"
-				Color 15, 0
-				Locate 2
-
-				For I = 0 To 22
-					If B$(I) <> "XXX" And Left$(B$(I), 1) <> " " And B$(I) <> "" Then
-						Print B$(I);
-						Locate , 20: Print Using "### ## ## ## ### ### "; SS%(I, 0); SS%(I, 2); SS%(I, 3); SS%(I, 4); SS%(I, 5); SS%(I, 6);
-
-						If SS%(I, 0) = 0 And SS%(I, 1) = 0 Then
-							Print " .000";
-						Else
-							If SS%(I, 0) = SS%(I, 1) Then
-								Print "1.000";
-							Else
-								Print Using " .###"; SS%(I, 1) / SS%(I, 0);
-							End If
-						End If
-
-						Locate , 53: Print Using "### ## ## ## ### ### "; statB0%(I, 0) - SS%(I, 0); statB0%(I, 4) - SS%(I, 2); statB0%(I, 5) - SS%(I, 3); statB0%(I, 6) - SS%(I, 4); statB0%(I, 7) - SS%(I, 5); statB0%(I, 8) - SS%(I, 6);
-						If statB0%(I, 0) - SS%(I, 0) = 0 Or statB0%(I, 1) - SS%(I, 1) = 0 Then
-							Print " .000";
-						Else
-							If statB0%(I, 0) - SS%(I, 0) = statB0%(I, 1) - SS%(I, 1) Then
-								Print "1.000";
-							Else
-								Print Using " .###"; (statB0%(I, 1) - SS%(I, 1)) / (statB0%(I, 0) - SS%(I, 0));
-							End If
-						End If
-						If I <> 22 Then Print
-
-					End If
-				Next I
-
-				If X = 0 Or X = 1 Then I$ = GetKeyPress$
-
-			End If
-
-			Cls
-			Color L%(11), L%(12): Print teamName$;
-			Color 12, 0: Print "    WON: "; W2%; "  LOST: "; L2%
-			Color 15, 4: Print "PITCHERS    W  L SV    IP    H  BB   SO   ERA  G GS CG RUN  ER ShO HRA  DP %RIP"
-			
-			Color 15
-
-			For I = 0 To 21
-				If P$(I) <> "XXX" And P$(I) <> "" Then
-					Locate I + 3, 1
-					Color 7, 0: If I / 2 = Int(I / 2) Then Color 15
-					Print Left$(P$(I), 10);
-					Locate , 12: Print Using "##"; statP0%(I, 6);
-					Locate , 15: Print Using "##"; statP0%(I, 7);
-					Locate , 18: Print Using "##"; statP0%(I, 12);
-					Locate , 22: Print Using "###"; Int(statP0%(I, 0) / 3);
-					Print ".";: Print Using "#"; statP0%(I, 0) - Int(statP0%(I, 0) / 3) * 3;
-					Locate , 27: Print Using "####"; statP0%(I, 1);
-					Locate , 32: Print Using "###"; statP0%(I, 4);
-					Locate , 36: Print Using "####"; statP0%(I, 5);
-					Locate , 41
-
-					If statP0%(I, 0) = 0 Then
-						Print " -.--";
-					Else
-						If statP0%(I, 3) = 0 Then
-							Print " 0.00";
-						Else
-							Print Using "##.##"; (statP0%(I, 3) * 9) / (statP0%(I, 0) / 3);
-						End If
-					End If
-
-					Locate , 47: Print Using "## ## ## ### ### ## ### ###"; statP0%(I, 8); statP0%(I, 9); statP0%(I, 10); statP0%(I, 2); statP0%(I, 3); statP0%(I, 11); statP0%(I, 14); statP0%(I, 13);
-
-					If statP%(I) > 0 Then Locate , 76: Print Using "###"; Int((((statP0%(I, 0) / 3) * 100) / statP%(I)) + .5);
-					If statP%(I) = 0 Then Print "  ";
-
-				End If
-
-			Next I
-
-			If X = 0 Or X = 1 Then I$ = GetKeyPress$
-
-			Cls
-			Color L%(11), L%(12): Print teamName$;
-			Color 12, 0: Print "    WON: "; W2%; "  LOST: "; L2%
-			Color 15, 4: Print "PITCHERS   BS HL  RI  RS   SUP GS QS  SH SF"
-			
-			Color 15
-
-			For I = 0 To 21
-				If P$(I) <> "XXX" And P$(I) <> "" Then
-					Locate I + 3, 1
-					Color 7, 0: If I / 2 = Int(I / 2) Then Color 15
-					Print Left$(P$(I), 10);: Locate , 12
-					Print Using "## ## ### ### "; statP0%(I, 19); statP0%(I, 22); statP0%(I, 17); statP0%(I, 18);
-					If statP0%(I, 9) > 0 Then
-						Print Using "##.## ## ##"; statP0%(I, 20) / statP0%(I, 9); statP0%(I, 9); statP0%(I, 21);
-					Else
-						Print " -.-- -- --";
-					End If
-					Print Using "  ## ##"; statP0%(I, 15); statP0%(I, 16);
-				End If
-			Next I
-
-			Locate 1, 1
-			
-			If X = 0 Or X = 1 Then I$ = GetKeyPress$
-
-			Cls
-
-			Color L%(11), L%(12): Print teamName$;
-
-			Color 12, 0: Print "    WON: "; W2%; "  LOST: "; L2%;
-			Color 14, 0: Print "  TEAM PITCHING TOTALS"
-			Color 15, 4: Print "  W   L  SV     IP    H   BB   SO   ERA   G  GS  CG  RUN   ER ShO HRA  DP": Color 14, 0
-			Print Using "### ### ### "; W2%; L2%; statT1!(12);
-			Print Using "####"; Int(statT1!(0) / 3);
-			Print ".";: Print Using "#"; statT1!(0) - Int(statT1!(0) / 3) * 3;
-			Print Using " #### #### #### ##.## ### ### ### "; statT1!(1); statT1!(4); statT1!(5); statT1!(3) * 9 / (statT1!(0) / 3); statT1!(9); statT1!(9); statT1!(10);
-			Print Using "#### #### ### ### ###"; statT1!(2); statT1!(3); statT1!(11); statT1!(14); statT1!(13)
-			Locate 8, 1
-			Color 15, 4: Print " BS   RI   RS   SUP  QS  SH  SF": Color 14, 0
-			Print Using "### #### #### ##.## ### ### ###"; statT1!(19); statT1!(17); statT1!(18); statT!(2) / statT1!(9); statT1!(21); statT1!(15); statT1!(16)
-
-			If X = 0 Or X = 1 Then I$ = GetKeyPress$
-
-			Print
-
-			If X = 2 Then X = 0
-
-			Color 15, 0
-
-			Cls
-			JJ = 1
-			Locate 6, 8
-			Color L%(11), L%(12)
-
-			'Print box top
-			Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
-
-			'Print box sides
-			For II = 1 To JJ
-				Locate 6 + II, 8
-				Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-			Next
-
-			'Print box bottom
-			Locate 7 + JJ, 8
-			Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
-
-			Locate 7
-			U$ = "DISPLAY STATS AGAIN (YN)"
-			Do
-				Locate , (80 - Len(U$)) / 2
-				Print U$
-				I$ = GetKeyPress$
-			Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
-			Color 15, 0
-
-		End If
+        Do
+            prompt$ = GetKeyPress$
+            X = Val(prompt$) + 1
+        Loop Until X >= 1 And X <= 4 Or prompt$ = Chr$(27)
+
+        If prompt$ <> Chr$(27) Then
+
+            If X = 3 Or X = 4 Then
+                Call NewPrintStats(statFile$, X, splitScreenChoice%, teamName$, totalGames%)
+            End If
+
+            '9810
+            If X = 2 Then
+                Cls
+            Else
+                'X = 1
+                Cls
+                Color 12: Print "        SCHEDULE RESULTS FOR ";
+                Color L%(11), L%(12): Print teamName$
+
+                Color 15, 0
+                Color 14: Print Tab(6); "OPPONENT"; Tab(33); "WINNING PITCHER"; Tab(50); "LOSING PITCHER"; Tab(66); "INNINGS"
+                Color 15
+
+                For I = 1 To totalGames%
+
+					If (I Mod 21 = 1) Then
+
+                        If X = 0 Or X = 1 Then
+                            I$ = GetKeyPress$
+                            Cls
+                        End If
+
+                        Cls
+                        Color 14: Print Tab(6); "OPPONENT"; Tab(33); "WINNING PITCHER"; Tab(50); "LOSING PITCHER"; Tab(66); "INNINGS"
+                        Color 15
+
+                    End If
+
+                    'W$() = Winning Pitcher
+                    'L$() = Losing Pitcher
+                    'I%() = Innings
+                    Print Str$(H%(I)); Tab(6); Left$(H$(I), 15); Tab(22); Str$(V%(I)); Tab(27); "("; PL$(I); ")"; Tab(33); W$(I); Tab(50); L$(I); Tab(66); I%(I)
+
+                Next
+
+                If X = 1 Or X = 2 Then
+                    I$ = GetKeyPress$
+                    Cls
+                End If
+
+            End If
+
+            Print Tab(20); "RECORD         ("; Str$(W); " -"; Str$(L); " )"
+            Print Tab(20); "HOME RECORD    ("; Str$(HW); " -"; Str$(HL); " )"
+            Print Tab(20); "ROAD RECORD    ("; Str$(RW); " -"; Str$(RL); " )"
+            Print Tab(20); "LAST 10 GAMES  ("; Str$(LTW); " -"; Str$(LTL); " )"
+            Print Tab(20); "EXTRA INNINGS  ("; Str$(EW); " -"; Str$(EL); " )"
+            Print Tab(20); "ONE RUN GAMES  ("; Str$(ORW); " -"; Str$(ORL); " )"
+
+            If X = 1 Or X = 2 Then
+                I$ = GetKeyPress$
+                Cls
+            End If
+
+            Cls
+            Color L%(11), L%(12): Print teamName$;
+
+            Color 12, 0: Print "    WON: "; W2%; "  LOST: "; L2%
+            Color 15, 1
+            Print "BATTERS    AB   R   H RBI  2B 3B  HR    BA   SLG   OBP  SO  BB  SB  CS %RAB"
+            Color 15, 0
+
+            For I = 0 To 22
+                If B$(I) <> "XXX" And B$(I) <> "" Then
+                    Locate I + 3, 1
+                    Color 7
+                    If I / 2 = Int(I / 2) Then Color 15
+
+                    Print Left$(B$(I), 10);
+
+                    Locate , 11: Print Using "###"; statB0%(I, 0);
+                    Locate , 15: Print Using "###"; statB0%(I, 2);
+                    Locate , 19: Print Using "###"; statB0%(I, 1);
+                    Locate , 23: Print Using "###"; statB0%(I, 3);
+                    Locate , 28: Print Using "##"; statB0%(I, 4);
+                    Locate , 31: Print Using "##"; statB0%(I, 5);
+                    Locate , 35: Print Using "##"; statB0%(I, 6);
+
+                    I2 = 0: I3 = 0: I4 = 0
+                    Locate , 38
+                    If statB0%(I, 0) = 0 Then
+                        Print " .--- ";
+                    Else
+                        If statB0%(I, 0) = statB0%(I, 1) Then
+                            Print "1.000 ";
+                        Else
+                            If statB0%(I, 1) = 0 Then
+                                Print " .000 ";
+                            Else
+                                Print Using " .### "; statB0%(I, 1) / statB0%(I, 0);
+                            End If
+                        End If
+                    End If
+
+                    I3 = statB0%(I, 1) + statB0%(I, 4) + 2 * statB0%(I, 5) + 3 * statB0%(I, 6)
+                    If statB0%(I, 0) = 0 Then
+                        Print " .--- ";
+                    Else
+                        If I3 = 0 Then
+                            Print " .000 ";
+                        Else
+                            If statB0%(I, 0) = I3 Then
+                                Print "1.000 ";
+                            Else
+                                If I3 / statB0%(I, 0) >= 1 Then
+                                    Print Using "#.### "; I3 / statB0%(I, 0);
+                                Else
+                                    Print Using " .### "; I3 / statB0%(I, 0);
+                                End If
+                            End If
+                        End If
+                    End If
+
+                    I4 = statB0%(I, 1) + statB0%(I, 7): I3 = statB0%(I, 7) + statB0%(I, 0)
+                    If I3 = 0 Then
+                        Print " .---";
+                    Else
+                        If I4 = 0 Then
+                            Print " .000";
+                        Else
+                            If I4 = I3 Then
+                                Print "1.000";
+                            Else
+                                Print Using " .###"; I4 / I3;
+                            End If
+                        End If
+                    End If
+
+                    Locate , 56: Print Using "###"; statB0%(I, 8);
+                    Locate , 60: Print Using "###"; statB0%(I, 7);
+                    Locate , 64: Print Using "###"; statB0%(I, 9);
+                    Locate , 69: Print Using "##"; statB0%(I, 10);
+
+                    If statB%(I) > 0 Then
+                        Locate , 73
+                        MM = statB0%(I, 0) / statB%(I) * 100
+                        MM = Int(MM)
+                        Print Str$(MM);
+                    Else
+                        If statB%(I) = 0 Then Locate , 73: Print "--";
+                    End If
+
+                    If statT!(0) = 0 Then statT!(0) = 1
+
+                End If 'Done checking for XXX / terminal chars
+
+            Next I
+
+            Locate 1, 1
+            If X = 1 Or X = 2 Then I$ = GetKeyPress$
+
+            '200
+            Cls
+            Color 12, 0: Color L%(11), L%(12): Print teamName$;
+
+            Color 12, 0: Print "    WON: "; W2%; "  LOST: "; L2%
+            Color 15, 1
+            Print "BATTERS      G  CHS LHS GIDP NEEDS PROJ AB  PO   A  E  FAVG  SBA CS %CS SH SF": Color 15
+
+            For I = 0 To 22
+                If B$(I) <> "XXX" And B$(I) <> "" Then
+
+                    Locate I + 3, 1
+
+                    Color 7, 0
+
+                    If I / 2 = Int(I / 2) Then Color 15
+
+                    Print Left$(B$(I), 10);
+                    Locate , 12: Print Using "###"; statB0%(I, 14);
+                    Locate , 18: Print Using "##"; statB0%(I, 12);
+                    Locate , 22: Print Using "##"; statB0%(I, 13);
+                    Locate , 27: Print Using "##"; statB0%(I, 15);
+
+                    RQ$ = Right$(statFile$, 2)
+                    RT = 60
+                    RQ = Val(RQ$)
+                    If RQ > RT Then
+                        QT = 162
+                    Else
+                        QT = 154
+                    End If
+
+                    statCalc% = (Int((((statB%(I) + 0) / QT) * (statT1!(9) + 1)) + .5) - (statB0%(I, 0) + 0))
+
+                    If (statB%(I) > 0) And statCalc% > 0 Then
+                        Locate , 31: Print Using "####"; statCalc%;
+                    Else
+                        If statB%(I) = 0 Then Print "  ";
+                        If statB%(I) > 0 Then Locate , 31: Print Using "####"; statCalc%;
+                    End If
+
+                    If statB%(I) > 0 Then Locate , 37: H5% = Int((((statB%(I) + 0) / QT) * (statT1!(9) + 1)) + .5): Print Using "####"; H5%;: statT!(13) = statT!(13) + H5%
+                    If statB%(I) = 0 Then Locate , 39: Print "0";
+                    Locate , 42
+
+                    Print Using " #### ### ## "; statB0%(I, 16); statB0%(I, 17); statB0%(I, 11);
+
+                    If statB0%(I, 16) + statB0%(I, 17) + statB0%(I, 11) <> 0 Then
+                        If statB0%(I, 11) <> 0 Then
+                            Print Using " .###"; (statB0%(I, 16) + statB0%(I, 17)) / (statB0%(I, 16) + statB0%(I, 17) + statB0%(I, 11));
+                        Else
+                            Print "1.000";
+                        End If
+                    End If
+
+                    If statB0%(I, 21) + statB0%(I, 20) <> 0 Then
+                        Print Using "  ### ## ###"; statB0%(I, 20) + statB0%(I, 21); statB0%(I, 21); statB0%(I, 21) / (statB0%(I, 20) + statB0%(I, 21)) * 100;
+                    End If
+                    Locate , 73: Print Using "## ##"; statB0%(I, 18); statB0%(I, 19);
+
+                End If
+
+            Next I
+
+            If X = 1 Or X = 2 Then I$ = GetKeyPress$
+
+            Cls
+            Color L%(11), L%(12): Print teamName$;
+
+            Color 12, 0: Print "    WON: "; W2%; "  LOST: "; L2%
+            Color 15, 1
+            Print "PITCHERS   AB   R   H RBI  2B 3B  HR    BA   SLG   OBP  SO  BB  SB  CS"
+
+            For I = 0 To 21
+
+                If P$(I) <> "XXX" And P$(I) <> "" Then
+
+                    Color 7, 0
+
+                    If I / 2 = Int(I / 2) Then Color 15
+
+                    Locate I + 3, 1: Print Left$(P$(I), 10);
+                    Locate , 11: Print Using "###"; statP0%(I, 23);
+                    Locate , 15: Print Using "###"; statP0%(I, 25);
+                    Locate , 19: Print Using "###"; statP0%(I, 24);
+                    Locate , 23: Print Using "###"; statP0%(I, 26);
+                    Locate , 28: Print Using "##"; statP0%(I, 27);
+                    Locate , 31: Print Using "##"; statP0%(I, 28);
+                    Locate , 35: Print Using "##"; statP0%(I, 29);
+
+                    Locate , 38
+
+                    If statP0%(I, 23) = 0 Then
+                        Print " .--- ";
+                    Else
+                        If statP0%(I, 23) = statP0%(I, 24) Then
+                            Print "1.000 ";
+                        Else
+                            If statP0%(I, 24) = 0 Then
+                                Print " .000 ";
+                            Else
+                                Print Using " .### "; statP0%(I, 24) / statP0%(I, 23);
+                            End If
+                        End If
+                    End If
+
+                    I3 = statP0%(I, 24) + statP0%(I, 27) + 2 * statP0%(I, 28) + 3 * statP0%(I, 29)
+
+                    If statP0%(I, 23) = 0 Then
+                        Print " .--- ";
+                    Else
+                        If I3 = 0 Then
+                            Print " .000 ";
+                        Else
+                            If statP0%(I, 23) = I3 Then
+                                Print "1.000 ";
+                            Else
+                                If I3 / statP0%(I, 23) >= 1 Then
+                                    Print Using "#.### "; I3 / statP0%(I, 23);
+                                Else
+                                    Print Using " .### "; I3 / statP0%(I, 23);
+                                End If
+                            End If
+                        End If
+                    End If
+
+                    I3 = statP0%(I, 30) + statP0%(I, 23)
+                    I4 = statP0%(I, 24) + statP0%(I, 30)
+                    If I3 = 0 Then
+                        Print " .---";
+                    Else
+                        If I4 = 0 Then
+                            Print " .000";
+                        Else
+                            If I4 = I3 Then
+                                Print "1.000";
+                            Else
+                                Print Using " .###"; I4 / I3;
+                            End If
+                        End If
+                    End If
+
+                    Locate , 56: Print Using "###"; statP0%(I, 31);
+                    Locate , 60: Print Using "###"; statP0%(I, 30);
+                    Locate , 64: Print Using "###"; statP0%(I, 32);
+                    Locate , 69: Print Using "##"; statP0%(I, 33);
+                    If statT!(0) = 0 Then statT!(0) = 1
+
+                End If
+            Next I
+
+            Locate 1, 1
+            If X = 1 Or X = 2 Then I$ = GetKeyPress$
+
+            Cls
+            Color L%(11), L%(12): Print teamName$;
+            Color 12, 0: Print "    WON: "; W2%; "  LOST: "; L2%
+            Color 15, 1: Print "PITCHERS     G  CHS LHS GIDP   PO   A  E  FAVG SH SF": Color 15
+
+            For I = 0 To 21
+
+                If P$(I) <> "XXX" And P$(I) <> "" Then
+
+                    Locate I + 3, 1
+
+                    Color 7, 0
+
+                    If I / 2 = Int(I / 2) Then Color 15
+
+                    Print Left$(P$(I), 10);
+                    Locate , 12: Print Using "###"; statP0%(I, 8);
+                    Locate , 18: Print Using "##"; statP0%(I, 35);
+                    Locate , 22: Print Using "##"; statP0%(I, 36);
+                    Locate , 27: Print Using "##"; statP0%(I, 37);: Locate , 29
+                    Print Using " #### ### ## "; statP0%(I, 38); statP0%(I, 39); statP0%(I, 34);
+
+                    If statP0%(I, 38) + statP0%(I, 39) + statP0%(I, 34) <> 0 Then
+                        If statP0%(I, 34) = 0 Then
+                            Print "1.000";
+                        Else
+                            Print Using " .###"; (statP0%(I, 38) + statP0%(I, 39)) / (statP0%(I, 38) + statP0%(I, 39) + statP0%(I, 34));
+                        End If
+                    End If
+
+                    Locate , 48: Print Using "## ##"; statP0%(I, 40); statP0%(I, 41);
+
+                End If
+            Next I
+
+            Locate 1, 1
+            If X = 1 Or X = 2 Then I$ = GetKeyPress$
+
+            Cls
+            Color L%(11), L%(12): Print teamName$;
+
+            Color 12, 0: Print "    WON: "; W2%; "  LOST: "; L2%;
+            Color 14, 0: Print "  TEAM BATTING TOTALS"
+            Color 15, 1: Print "  AB    R    H  RBI  2B  3B  HR    BA   SLG   OBP   SO   BB  SB  CS"
+            Color 14, 0
+
+            Print Using "#### #### #### #### ### ### ###"; statT!(0); statT!(2); statT!(1); statT!(3); statT!(4); statT!(5); statT!(6);
+            Locate , 34: Print ".";: Print Using "###"; Int((statT!(1) / statT!(0) + .0005) * 1000);
+            Locate , 40: Print ".";
+            Print Using "###"; Int((((statT!(1) + statT!(4) + 2 * statT!(5) + 3 * statT!(6)) / statT!(0)) + .0005) * 1000);
+            Locate , 46: Print ".";
+            Print Using "###"; Int(((statT!(1) + statT!(7)) / (statT!(7) + statT!(0)) + .0005) * 1000);
+            Locate , 51: Print Using "#### #### ### ###"; statT!(8); statT!(7); statT!(9); statT!(10)
+            Locate 8, 1: Color 15, 1: Print "GIDP   PO    A   E  FAVG  SH  SF  LOB": Color 15
+            Color 14, 0
+            Print Using "#### #### #### ###"; statT!(15); statT!(16); statT!(17); statT!(11);
+            Locate , 20: If statT!(11) = 0 Then Print "1.000";
+            If statT!(11) <> 0 Then Print Using " .###"; (statT!(16) + statT!(17)) / (statT!(16) + statT!(17) + statT!(11));
+            Print Using " ### ### ####"; statT!(18); statT!(19); statT!(12)
+            If X = 0 Or X = 1 Then I$ = GetKeyPress$
+
+            If splitScreenChoice% <> 0 Then
+                ' DISPLAY SPLIT STATS
+                Cls
+                Color L%(11), L%(12): Print teamName$;
+                Locate 1, 15
+                Color 14, 0
+                Print "VS L  AB 2B 3B HR  BB   K   AVG  VS R  AB 2B 3B HR  BB   K   AVG"
+                Color 15, 0
+                Locate 2
+
+                For I = 0 To 22
+
+                    If B$(I) <> "XXX" And Left$(B$(I), 1) <> " " And B$(I) <> "" Then
+
+                        Print B$(I);
+                        '                        AB   2B 3B HR BB  K
+                        Locate , 20: Print Using "### ## ## ## ### ### "; SS%(I, 0); SS%(I, 2); SS%(I, 3); SS%(I, 4); SS%(I, 5); SS%(I, 6);
+
+                        If SS%(I, 0) = 0 And SS%(I, 1) = 0 Then
+                            Print " .000";
+                        Else
+                            If SS%(I, 0) = SS%(I, 1) Then
+                                Print "1.000";
+                            Else
+                                Print Using "#.###"; SS%(I, 1) / SS%(I, 0);
+                            End If
+                        End If
+
+                        '                        AB   2B 3B HR BB  K
+                        Locate , 53: Print Using "### ## ## ## ### ### "; statB0%(I, 0) - SS%(I, 0); statB0%(I, 4) - SS%(I, 2); statB0%(I, 5) - SS%(I, 3); statB0%(I, 6) - SS%(I, 4); statB0%(I, 7) - SS%(I, 5); statB0%(I, 8) - SS%(I, 6);
+                        If statB0%(I, 0) - SS%(I, 0) = 0 Or statB0%(I, 1) - SS%(I, 1) = 0 Then
+                            Print " .000";
+                        Else
+                            If statB0%(I, 0) - SS%(I, 0) = statB0%(I, 1) - SS%(I, 1) Then
+                                Print "1.000";
+                            Else
+                                Print Using "#.###"; (statB0%(I, 1) - SS%(I, 1)) / (statB0%(I, 0) - SS%(I, 0));
+                            End If
+                        End If
+                        If I <> 22 Then Print
+
+                    End If
+                Next I
+
+                If X = 1 Or X = 2 Then I$ = GetKeyPress$
+
+            End If
+
+            Cls
+            Color L%(11), L%(12): Print teamName$;
+            Color 12, 0: Print "    WON: "; W2%; "  LOST: "; L2%
+            Color 15, 4: Print "PITCHERS    W  L SV    IP    H  BB   SO   ERA  G GS CG RUN  ER ShO HRA  DP %RIP"
+
+            Color 15
+
+            For I = 0 To 21
+                If P$(I) <> "XXX" And P$(I) <> "" Then
+                    Locate I + 3, 1
+                    Color 7, 0: If I / 2 = Int(I / 2) Then Color 15
+                    Print Left$(P$(I), 10);
+                    Locate , 12: Print Using "##"; statP0%(I, 6);
+                    Locate , 15: Print Using "##"; statP0%(I, 7);
+                    Locate , 18: Print Using "##"; statP0%(I, 12);
+                    Locate , 22: Print Using "###"; Int(statP0%(I, 0) / 3);
+                    Print ".";: Print Using "#"; statP0%(I, 0) - Int(statP0%(I, 0) / 3) * 3;
+                    Locate , 27: Print Using "####"; statP0%(I, 1);
+                    Locate , 32: Print Using "###"; statP0%(I, 4);
+                    Locate , 36: Print Using "####"; statP0%(I, 5);
+                    Locate , 41
+
+                    If statP0%(I, 0) = 0 Then
+                        Print " -.--";
+                    Else
+                        If statP0%(I, 3) = 0 Then
+                            Print " 0.00";
+                        Else
+                            Print Using "##.##"; (statP0%(I, 3) * 9) / (statP0%(I, 0) / 3);
+                        End If
+                    End If
+
+                    Locate , 47: Print Using "## ## ## ### ### ## ### ###"; statP0%(I, 8); statP0%(I, 9); statP0%(I, 10); statP0%(I, 2); statP0%(I, 3); statP0%(I, 11); statP0%(I, 14); statP0%(I, 13);
+
+                    If statP%(I) > 0 Then Locate , 76: Print Using "###"; Int((((statP0%(I, 0) / 3) * 100) / statP%(I)) + .5);
+                    If statP%(I) = 0 Then Print "  ";
+
+                End If
+
+            Next I
+
+            If X = 0 Or X = 1 Then I$ = GetKeyPress$
+
+            Cls
+            Color L%(11), L%(12): Print teamName$;
+            Color 12, 0: Print "    WON: "; W2%; "  LOST: "; L2%
+            Color 15, 4: Print "PITCHERS   BS HL  RI  RS   SUP GS QS  SH SF"
+
+            Color 15
+
+            For I = 0 To 21
+                If P$(I) <> "XXX" And P$(I) <> "" Then
+                    Locate I + 3, 1
+                    Color 7, 0: If I / 2 = Int(I / 2) Then Color 15
+                    Print Left$(P$(I), 10);: Locate , 12
+                    Print Using "## ## ### ### "; statP0%(I, 19); statP0%(I, 22); statP0%(I, 17); statP0%(I, 18);
+                    If statP0%(I, 9) > 0 Then
+                        Print Using "##.## ## ##"; statP0%(I, 20) / statP0%(I, 9); statP0%(I, 9); statP0%(I, 21);
+                    Else
+                        Print " -.-- -- --";
+                    End If
+                    Print Using "  ## ##"; statP0%(I, 15); statP0%(I, 16);
+                End If
+            Next I
+
+            Locate 1, 1
+
+            If X = 1 Or X = 2 Then I$ = GetKeyPress$
+
+            Cls
+
+            Color L%(11), L%(12): Print teamName$;
+
+            Color 12, 0: Print "    WON: "; W2%; "  LOST: "; L2%;
+            Color 14, 0: Print "  TEAM PITCHING TOTALS"
+            Color 15, 4: Print "  W   L  SV     IP    H   BB   SO   ERA   G  GS  CG  RUN   ER ShO HRA  DP": Color 14, 0
+            Print Using "### ### ### "; W2%; L2%; statT1!(12);
+            Print Using "####"; Int(statT1!(0) / 3);
+            Print ".";: Print Using "#"; statT1!(0) - Int(statT1!(0) / 3) * 3;
+            Print Using " #### #### #### ##.## ### ### ### "; statT1!(1); statT1!(4); statT1!(5); statT1!(3) * 9 / (statT1!(0) / 3); statT1!(9); statT1!(9); statT1!(10);
+            Print Using "#### #### ### ### ###"; statT1!(2); statT1!(3); statT1!(11); statT1!(14); statT1!(13)
+
+            Locate 8, 1
+            Color 15, 4: Print " BS   RI   RS   SUP  QS  SH  SF": Color 14, 0
+            Print Using "### #### #### ##.## ### ### ###"; statT1!(19); statT1!(17); statT1!(18); statT!(2) / statT1!(9); statT1!(21); statT1!(15); statT1!(16)
+
+            If X = 1 Or X = 2 Then I$ = GetKeyPress$
+
+            Print
+
+            If X = 2 Then X = 0
+
+            Color 15, 0
+
+            Cls
+            JJ = 1
+            Locate 6, 8
+            Color L%(11), L%(12)
+
+            'Print box top
+            Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+
+            'Print box sides
+            For II = 1 To JJ
+                Locate 6 + II, 8
+                Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
+            Next
+
+            'Print box bottom
+            Locate 7 + JJ, 8
+            Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+
+            Locate 7
+            U$ = "DISPLAY STATS AGAIN (YN)"
+            Do
+                Locate , (80 - Len(U$)) / 2
+                Print U$
+                I$ = GetKeyPress$
+            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+            Color 15, 0
+
+        End If
 
     Loop Until UCase$(I$) = "N" Or prompt$ = Chr$(27)
 
-	If prompt$ <> Chr$(27) Then
+    'If prompt$ <> Chr$(27) Then
 
-		Cls
-		JJ = 1
-		Locate 6, 8
-		Color L%(11), L%(12)
+	'Call ResetStatPrompt (statFile$, L%())
 
-		'Print box top
-		Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+    'End If 'Done checking for ESC
 
-		'Print box sides
-		For II = 1 To JJ
-			Locate 6 + II, 8
-			Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-		Next
-
-		'Print box bottom
-		Locate 7 + JJ, 8
-		Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
-
-		Locate 7
-
-		Do
-			U$ = "RESET COMPILED STATS TO 0 (YN)"
-			Locate , (80 - Len(U$)) / 2
-			Print U$
-			I$ = GetKeyPress$
-		Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
-		Color 15, 0
-
-		If UCase$(I$) = "Y" Then
-
-			'Do
-			JJ = 1
-			Locate 6, 8
-			Color L%(11), L%(12)
-
-			'Print box top
-			Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
-
-			'Print box sides
-			For II = 1 To JJ
-				Locate 6 + II, 8
-				Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-			Next
-
-			'Print box bottom
-			Locate 7 + JJ, 8
-			Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
-
-			Locate 7
-
-			Do
-				U$ = "ARE YOU SURE (YN)"
-				Locate , (80 - Len(U$)) / 2
-				Print U$
-				I$ = GetKeyPress$
-			Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
-			Color 15, 0
-
-			If UCase$(I$) = "Y" Then
-				Kill diskPaths$(1) + statFile$
-				Kill diskPaths$(1) + statFile$ + "S"
-				If _FileExists(diskPaths$(1) + statFile$ + "R") Then Kill diskPaths$(1) + statFile$ + "R"
-			End If
-
-			'Loop Until UCase$(I$) = "N"
-
-		End If 'Done checking if reset stats
-	
-	End If 'Done checking for ESC
-	
     Cls
 
 End Sub
@@ -991,23 +945,24 @@ Sub ReportsAllTeams ()
                 _MouseHide
 
                 If ExitCode% <> 27 Then
-				
-					Color 15, 1
+
+                    Color 15, 1
                     targetFile$ = leagueFiles$(Selection%)
                     Locate 2, 33: Print targetFile$
 
-					Do
-						Locate , 33: Print "ANY CHANGE (YN)";
-						I$ = GetKeyPress$
-					Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+                    Do
+                        Locate , 33: Print "ANY CHANGE (YN)";
+                        I$ = GetKeyPress$
+                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
-					Color 15, 0
+                    Color 15, 0
 
                 End If
 
             Loop Until UCase$(I$) = "N" Or ExitCode% = 27
-			
+
             If ExitCode% <> 27 Then
+
                 targetFile$ = RTrim$(targetFile$)
                 LH$ = Left$(targetFile$, Len(targetFile$) - 4)
 
@@ -1069,8 +1024,8 @@ Sub SelectTeam_LOOKY (numberTeams, yearNumber$)
     Row% = 4
     Column% = 1
     Color , 4
-	Cls
-	Locate , 33: Color 14
+    Cls
+    Locate , 33: Color 14
     Print "TEAM SELECTION": Color 15
     Locate 25, 1: Color 14: Print "ESC";: Color 15
     Print "-SELECT NEW ID  PGDN  PGUP  ";: Color 14
@@ -1164,7 +1119,6 @@ Sub NewPrintStats (statFile$, printChoice, splitScreenChoice%, teamName$, totalG
 
     End If
 
-    LPrint Chr$(15) ': WIDTH "LPT1:", 137
     LPrint teamName$; "    WON: "; W2%; " LOST: "; L2%
     LPrint "BATTERS      G  AB   R   H 2B 3B HR RBI  BB   K  SB CS CHS LHS GIDP  BAVG   SLG   OBP NEED PROJ.AB %RAB   PO   A  E  FAVG SH SF"
 
@@ -1540,6 +1494,88 @@ Sub NewPrintStats (statFile$, printChoice, splitScreenChoice%, teamName$, totalG
 
     End If
 
-    LPrint Chr$(18): LPrint Chr$(12)
+    LPrint Chr$(12)
+
+End Sub
+
+
+'----------------------------------------
+'       ResetStatPrompt Subroutine
+'----------------------------------------
+' Prompts user with choice to reset stats
+' If they chose so, and confirm, then
+' it will proceed to delete the files.
+Sub ResetStatPrompt (statFile$, L%())
+	
+	Cls
+
+	JJ = 1
+	Locate 6, 8
+	'Color L%(11), L%(12)
+
+	'Print box top
+	Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+
+	'Print box sides
+	For II = 1 To JJ
+		Locate 6 + II, 8
+		Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
+	Next
+
+	'Print box bottom
+	Locate 7 + JJ, 8
+	Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+
+	Locate 7
+
+	Do
+		U$ = "RESET COMPILED STATS TO 0 (YN)"
+		Locate , (80 - Len(U$)) / 2
+		Print U$
+		I$ = GetKeyPress$
+	Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+	Color 15, 0
+
+	If UCase$(I$) = "Y" Then
+
+		'Do
+		JJ = 1
+		Locate 6, 8
+		'Color L%(11), L%(12)
+
+		'Print box top
+		Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+
+		'Print box sides
+		For II = 1 To JJ
+			Locate 6 + II, 8
+			Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
+		Next
+
+		'Print box bottom
+		Locate 7 + JJ, 8
+		Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+
+		Locate 7
+
+		Do
+			U$ = "ARE YOU SURE (YN)"
+			Locate , (80 - Len(U$)) / 2
+			Print U$
+			I$ = GetKeyPress$
+		Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+		Color 15, 0
+
+		If UCase$(I$) = "Y" Then
+			Kill diskPaths$(1) + statFile$
+			Kill diskPaths$(1) + statFile$ + "S"
+			If _FileExists(diskPaths$(1) + statFile$ + "R") Then Kill diskPaths$(1) + statFile$ + "R"
+		End If
+
+		'Loop Until UCase$(I$) = "N"
+
+	End If 'Done checking if reset stats
 
 End Sub

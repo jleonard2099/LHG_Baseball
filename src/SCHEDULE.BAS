@@ -47,9 +47,9 @@ Sub SCHEDULE ()
         FileFGColr% = 15: FileBGColr% = 1
         HiLiteFGColr% = 0: HiLiteBGColr% = 7
         Spacing% = 1
-        Row% = 6
+        Row% = 7
         Column% = 16
-        Call box0(5, 15, 14, 65, 2, 15, 1)
+        Call box0(6, 15, 15, 65, 2, 15, 1)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
@@ -273,6 +273,7 @@ Sub CreateSeasonSchedule ()
                     Open scxFile$ For Random As #1 Len = 48
                     Y = LOF(1)
                     scheduleAP%(0) = Y / 48
+
                     BS% = Int((scheduleAP%(0) - 1) / 20)
 
                     For X = 0 To 18
@@ -541,12 +542,17 @@ Sub NewSchedule (scheduleFile$)
         Next
 
         I$ = GetKeyPress$
+
         Select Case UCase$(I$)
             Case "A":
                 ' *** ADD A GAME TO THE SCHEDULE ***
-                V$ = "": H$ = ""
+                V$ = ""
+				H$ = ""
+
+                'number of games in schedule
                 scheduleAP%(0) = scheduleAP%(0) + 1
                 targetGame% = scheduleAP%(0)
+
                 BS% = Int((targetGame% - 1) / 20)
                 If NS% < BS% Then NS% = BS%
 
@@ -609,20 +615,6 @@ Sub NewSchedule (scheduleFile$)
 
             Case "C", "X":
                 Call SaveScheduleFile(scheduleFile$)
-
-            Case Chr$(0) + "Q":
-                ' *** PAGE DOWN ***
-                If NS% >= BS% Then
-                    NS% = BS%
-                Else
-                    NS% = NS% + 1
-                End If
-
-            Case Chr$(0) + "I":
-                ' *** PAGE UP ***
-                If NS% <> 0 Then
-                    NS% = NS% - 1
-                End If
 
             Case "Q", Chr$(27): '
 
@@ -698,6 +690,21 @@ Sub NewSchedule (scheduleFile$)
                 For I = 1 To scheduleAP%(0)
                     NG%(I, 13) = 0
                 Next
+
+            Case Chr$(0) + "Q":
+                ' *** PAGE DOWN ***
+                If NS% >= BS% Then
+                    NS% = BS%
+                Else
+                    NS% = NS% + 1
+                End If
+
+            Case Chr$(0) + "I":
+                ' *** PAGE UP ***
+                If NS% <> 0 Then
+                    NS% = NS% - 1
+                End If
+
         End Select
 
     Loop Until UCase$(I$) = "Q" Or UCase$(I$) = "X"
@@ -1257,14 +1264,14 @@ Sub BoxscoreMaintenance ()
     FileFGColr% = 15: FileBGColr% = 1
     HiLiteFGColr% = 0: HiLiteBGColr% = 7
     Spacing% = 1
-    Row% = 6
+    Row% = 7
     Column% = 16
 
     Do
 
         Call TITLE_SCHEDULER
 
-        Call box0(5, 15, 12, 65, 2, 15, 1)
+        Call box0(6, 15, 13, 65, 2, 15, 1)
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
         _MouseHide
@@ -1573,7 +1580,6 @@ Sub LoadSchedule (targetFile$)
             Y = LOF(1)
 
             scheduleAP%(0) = Y / 48
-
             BS% = Int((scheduleAP%(0) - 1) / 20)
 
             For X = 0 To 18
@@ -1606,6 +1612,9 @@ Sub LoadSchedule (targetFile$)
             Next
 
             Close 1
+			
+			NS% = 0
+			
         Else
             'Force a loop exit as someone tried to ESC
             Count% = 0

@@ -23,10 +23,10 @@ Sub SINPUT ()
         FileFGColr% = 15: FileBGColr% = 1
         HiLiteFGColr% = 0: HiLiteBGColr% = 7
         Spacing% = 1
-        Row% = 6
+        Row% = 7
         Column% = 23
 
-        Call box0(5, 22, 9, 60, 2, 15, 1)
+        Call box0(6, 22, 10, 60, 2, 15, 1)
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
         _MouseHide
@@ -139,7 +139,7 @@ Sub InputTeamStats (Z$, A$, X%, D0%, D1%, L2%, W2%, action%)
 
     Shared B$(), P$()
     Shared B0%(), P0%()
-    Shared statB%(), T%(), T1%()
+    Shared statB%(), statP%(), T%(), T1%()
 
     C1 = 0
 

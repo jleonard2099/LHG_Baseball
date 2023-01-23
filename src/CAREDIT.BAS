@@ -352,10 +352,6 @@ Sub PrintBatterStats (careerFile$, playerIdx)
     Shared careerB$()
     Shared BRS%()
 
-    LPrint Chr$(15)
-
-    '6103 WIDTH "LPT1:1", 130
-
     B9 = playerIdx
 
     LPrint careerFile$
@@ -469,9 +465,7 @@ Sub PrintBatterStats (careerFile$, playerIdx)
     TT13 = 0
 
     LPrint
-    LPrint Chr$(18)
-
-    '6293 WIDTH "LPT1:1", 80
+    LPrint Chr$(12)
 
 End Sub
 
@@ -488,10 +482,6 @@ Sub PrintPitcherStats (careerFile$, playerIdx)
     Shared PRS%()
 
     B9 = playerIdx
-
-    LPrint Chr$(15)
-
-    'WIDTH "LPT1:1", 130
 
     LPrint careerFile$
 
@@ -610,7 +600,8 @@ Sub PrintPitcherStats (careerFile$, playerIdx)
     LPrint Tab(108); Using "####"; TT26;
     LPrint Tab(114); Using "####"; TT27;
     LPrint Tab(121); Using "###"; TT28
-    LPrint
-    LPrint Chr$(18)
+    
+	LPrint
+    LPrint Chr$(12)
 
 End Sub

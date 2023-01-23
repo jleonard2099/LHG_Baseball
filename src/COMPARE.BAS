@@ -22,10 +22,10 @@ Sub COMPARE ()
         FileFGColr% = 15: FileBGColr% = 1
         HiLiteFGColr% = 0: HiLiteBGColr% = 7
         Spacing% = 1
-        Row% = 6
+        Row% = 7
         Column% = 24
 
-        Call box0(5, 23, 8, 58, 2, 15, 1)
+        Call box0(6, 23, 9, 58, 2, 15, 1)
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
         _MouseHide
@@ -61,12 +61,23 @@ Sub ViewComparisons ()
     Dim compareB1%(23), compareP1%(22)
 
     Do
-        Color 15, 0: Cls
+        Color 15, 0
+
+		Cls
+
         JJ = 7
+
         Locate 6, 8: Color 15, 4
-        Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";: For II = 1 To JJ: Locate 6 + II, 8
-        Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
+
+        Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+		
+		For II = 1 To JJ: 
+			Locate 6 + II, 8
+			Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
+		Next
+
         Locate 7 + JJ, 8
+
         Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
 
         Locate 7, 32
@@ -248,10 +259,9 @@ Sub Comparisons_Printer (teamName$)
     Shared B%(), P%()
     Shared compareB0%(), compareP0%()
 
-    LPrint Chr$(15)
-    'WIDTH "LPT1:1", 140
     LPrint "STAT COMPARISONS FOR "; teamName$
-    LPrint: LPrint:
+    LPrint
+	LPrint
     LPrint "BATTER";
     LPrint Tab(21); "  G";
     LPrint Tab(26); " AB";
@@ -284,9 +294,9 @@ Sub Comparisons_Printer (teamName$)
             LPrint Tab(50); Using "##"; B%(I, 9);
             LPrint Tab(54); Using "###"; B%(I, 10);
             LPrint Tab(59); Using "###"; B%(I, 11);
-            LPrint Tab(64); Using "###"; B%(I, 12);
-            LPrint Tab(69); Using "###"; B%(I, 13);
-            LPrint Tab(74); Using "###"; B%(I, 14);
+            LPrint Tab(64); Using "#.###"; B%(I, 12);
+            LPrint Tab(69); Using "#.###"; B%(I, 13);
+            LPrint Tab(74); Using "#.###"; B%(I, 14);
 
             I2 = 0
             I3 = 0
@@ -462,8 +472,7 @@ Sub Comparisons_Printer (teamName$)
 
     Next
 
-    LPrint Chr$(18)
-    'WIDTH "LPT1:1", 80
+    LPrint Chr$(12)
 
 End Sub
 

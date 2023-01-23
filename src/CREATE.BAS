@@ -11,10 +11,6 @@ Sub CREATE ()
     FG = 0
     BG = 7
 
-    For X = 1 To 40
-        Z1$(X) = "XXX": Z2$(X) = "XXX": Z1%(X) = -1
-    Next
-
     Cls
 
     Color 12: Print Tab(31); "LEAGUE EDITOR MENU": Print
@@ -28,15 +24,25 @@ Sub CREATE ()
 
     If I$ <> Chr$(27) Then
 
+        For X = 1 To 40
+            Z1$(X) = "XXX"
+            Z2$(X) = "XXX"
+            Z1%(X) = -1
+        Next
+
         Select Case I1
+
             Case 1:
-                Call ChooseLeague (LG$)
+
+                Call ChooseLeague(LG$)
+
                 If LG$ <> "" Then
                     Color 15, 1
                     Call EditLeague(LG$)
                 End If
 
             Case 2:
+
                 Do
 
                     Color 15, 0
@@ -66,10 +72,10 @@ Sub CREATE ()
                     If LG$ <> "" Then
                         LG$ = Left$(LG$, 8)
 
-						Do
-							Locate 13, 12: Print "ANY CHANGE (YN) "
-							I$ = GetKeyPress$
-						Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+                        Do
+                            Locate 13, 12: Print "ANY CHANGE (YN) "
+                            I$ = GetKeyPress$
+                        Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
                     End If
 
@@ -89,7 +95,7 @@ End Sub
 '      ChooseLeague Subroutine
 '----------------------------------------
 '...explanation...
-Sub ChooseLeague (targetFile$)
+Sub ChooseLeague (leagueFile$)
 
     Shared D1$, D2$, D3$, D4$
     Shared Z1%()
@@ -145,16 +151,16 @@ Sub ChooseLeague (targetFile$)
 
                 If ExitCode% <> 27 Then
 
-					Color 15, 1
+                    Color 15, 1
                     targetFile$ = leagueFiles$(Selection%)
                     Locate 2, 33: Print targetFile$
 
-					Do
-						Locate , 33: Print "ANY CHANGE (YN)";
-						I$ = GetKeyPress$
-					Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+                    Do
+                        Locate , 33: Print "ANY CHANGE (YN)";
+                        I$ = GetKeyPress$
+                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
-					Color 15, 0
+                    Color 15, 0
 
                 End If
 
@@ -163,26 +169,28 @@ Sub ChooseLeague (targetFile$)
             If ExitCode% <> 27 Then
 
                 targetFile$ = RTrim$(targetFile$)
-                LG$ = Left$(targetFile$, Len(targetFile$) - 4)
+                leagueFile$ = Left$(targetFile$, Len(targetFile$) - 4)
 
-                Open diskPaths$(2) + LG$ + ".LIB" For Input As #2
-                Input #2, LG$
+                Open diskPaths$(2) + leagueFile$ + ".LIB" For Input As #2
+                Input #2, leagueFile$
                 Input #2, D1$
                 Input #2, D2$
                 Input #2, D3$
                 Input #2, D4$
+
                 For X = 1 To 40
                     Input #2, Z1$(X)
                     Input #2, Z1%(X)
                     Input #2, Z2$(X)
                 Next
+
                 Close 2
 
             End If 'Done checking for ESC
 
         End If 'Done checking for files
 
-    Loop Until ExitCode% = 27 Or Count% = 0
+    Loop Until UCase$(I$) = "N" Or ExitCode% = 27 Or Count% = 0
 
     Color 15, 0
     Cls
@@ -193,7 +201,7 @@ End Sub
 '       EditLeague Subroutine
 '----------------------------------------
 '...explanation...
-Sub EditLeague (leagueFile$)
+Sub EditLeague (LG$)
 
     Shared D1$, D2$, D3$, D4$
     Shared L%(), Z1%()
@@ -296,11 +304,12 @@ Sub EditLeague (leagueFile$)
 
         Else
 
+			'Save settings
             Cls
 
-            Open diskPaths$(2) + leagueFile$ + ".LIB" For Output As #2
+            Open diskPaths$(2) + LG$ For Output As #2
 
-            Print #2, leagueFile$
+            Print #2, LG$
             Print #2, D1$
             Print #2, D2$
             Print #2, D3$
@@ -340,24 +349,23 @@ Sub EditLeague (leagueFile$)
 
             Next X
 
-            Q$ = leagueFile$ + ".TMS"
-
-            Open diskPaths$(2) + Q$ For Output As #2
-            Write #2, leagueFile$
-            Write #2, D1$
-            Write #2, D2$
-            Write #2, D3$
-            Write #2, D4$
-
-            For X = 1 To 40
-                Write #2, Z1$(X)
-            Next
-
-            Close 2
-
         End If 'Done checking value of I$
 
     Loop Until I$ = "3"
+
+	Open diskPaths$(2) + LG$ + ".TMS" For Output As #2
+	Write #2, LG$
+	Write #2, D1$
+	Write #2, D2$
+	Write #2, D3$
+	Write #2, D4$
+
+	For X = 1 To 40
+		Write #2, Z1$(X)
+	Next
+
+	Close 2
+
 
 End Sub
 
@@ -394,7 +402,7 @@ Sub GetTeam_CREATE (yearNumber$, teamName$, teamIdx)
         Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
         Locate 7, 27: Input NY$
 
-		If NY$ = "" And YN$ <> "" Then
+        If NY$ = "" And yearNumber$ <> "" Then
             'NY$ = yearNumber$
             Call SelectTeam_CREATE(yearNumber$, numberTeams, teamIdx)
         Else
@@ -436,12 +444,12 @@ Sub GetTeam_CREATE (yearNumber$, teamName$, teamIdx)
             Locate 2, 33
             Color L%(11), L%(12): Print teamName$
 
-			Color 15, 4
+            Color 15, 4
 
-			Do
-				Locate , 33: Print "ANY CHANGE (YN)";
-				I$ = GetKeyPress$
-			Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+            Do
+                Locate , 33: Print "ANY CHANGE (YN)";
+                I$ = GetKeyPress$
+            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
         End If
 

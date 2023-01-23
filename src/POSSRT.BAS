@@ -24,9 +24,9 @@ Sub POSSRT ()
         FileFGColr% = 15: FileBGColr% = 1
         HiLiteFGColr% = 0: HiLiteBGColr% = 7
         Spacing% = 1
-        Row% = 6
+        Row% = 7
         Column% = 22
-        Call box0(5, 21, 9, 52, 2, 15, 1)
+        Call box0(6, 21, 10, 52, 2, 15, 1)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
@@ -71,9 +71,9 @@ Sub SearchPlayers ()
         Call ReadFile(positionFiles$())
 
         Do
-            Cls
             Color , 1
             Cls
+
             Locate , 28
             Color 14
             Print "SELECT FILE TO VIEW": Color 15
@@ -119,7 +119,9 @@ Sub SearchPlayers ()
 			Do
 
 				Cls
+
 				SS = 0
+
 				Color 11: Locate 5, 30: Print "S E L E C T"
 
 				Locate 7, 28: Color 12: Print "0. ";: Color 7: Print "Catchers"
@@ -139,6 +141,7 @@ Sub SearchPlayers ()
 				Loop Until Z >= 0 And Z <= 9 Or Z$ = Chr$(27)
 
 				If Z$ <> Chr$(27) Then
+
 					Select Case Z
 						Case 0: PS = 2: PS$ = "CATCHERS"
 						Case 1: PS = 3: PS$ = "FIRST BASEMEN"
@@ -153,9 +156,13 @@ Sub SearchPlayers ()
 							Call SortPitchers(LGE$)
 						Case 9:
 							Cls '
+
 					End Select
 
 					If Z <> 9 Then
+
+						Color 15, 0
+						Cls
 
 						Do
 							Locate 18, 28
@@ -321,8 +328,6 @@ Sub PrintSearchResults (PS, PS$, LGE$)
     For J = 1 To 40: Input #1, TM(J), A$(J), TYN$(J): Next
     Close #1
 
-    LPrint Chr$(15)
-    '2311 WIDTH "LPT1:1", 130
     LPrint Tab(55); PS$
     LPrint
     LPrint "PLAYER            TEAM           B      G    AB   HITS   2B   3B   HR   RBI   RUNS   SO    BB   SB   CS    AVG    OBP    SLG"
@@ -401,9 +406,6 @@ Sub PrintSearchResults (PS, PS$, LGE$)
     Next J
 
     LPrint Chr$(12)
-    LPrint Chr$(18)
-
-    '2413 WIDTH "LPT1:1", 80
 
 End Sub
 
@@ -645,9 +647,6 @@ Sub PitchersHanded (THR, PPS$, LGE$)
             I$ = GetKeyPress$
 
         Case "P":
-            LPrint Chr$(15)
-
-            '4712 WIDTH "LPT1:1", 130
 
             LPrint Tab(50); PPS$
             LPrint
@@ -702,10 +701,8 @@ Sub PitchersHanded (THR, PPS$, LGE$)
             Next J
 
             LPrint Chr$(12)
-            LPrint Chr$(18)
 
     End Select
-    '4813 WIDTH "LPT1:1", 80
 
 End Sub
 
@@ -792,10 +789,6 @@ Sub Pitchers10_Print (PC, PPS$, LGE$)
     For J = 1 To 40: Input #1, TM(J), A$(J), TYN$(J): Next
     Close #1
 
-    LPrint Chr$(15)
-
-    '3712 WIDTH "LPT1:1", 130
-
     LPrint Tab(50); PPS$
     LPrint
     LPrint "PLAYER               TEAM         T     G    W    L    SV    GS     IP    H    BB    SO    ERA    HR"
@@ -850,8 +843,5 @@ Sub Pitchers10_Print (PC, PPS$, LGE$)
     Next J
 
     LPrint Chr$(12)
-    LPrint Chr$(18)
-
-    '3813 WIDTH "LPT1:1", 80
 
 End Sub

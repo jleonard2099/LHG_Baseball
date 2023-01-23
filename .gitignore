@@ -1,8 +1,9 @@
 
-*.zip
-*.odt
-*.ini
 *.7z
+*.exe
+*.ini
+*.odt
+*.zip
 bin
 src/DEFERA
 src/DEV.BAS

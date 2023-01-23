@@ -12,9 +12,6 @@ Sub BINPUT ()
 
     Shared T$ 'only if we can't keep up with team name separately
 
-    'Dim FS%(22, 4, 4)
-    'Dim BRS$(79)
-
     ReDim menuChoices$(1 To 9)
 
     Do
@@ -39,10 +36,10 @@ Sub BINPUT ()
         FileFGColr% = 15: FileBGColr% = 1
         HiLiteFGColr% = 0: HiLiteBGColr% = 7
         Spacing% = 1
-        Row% = 6
+        Row% = 7
         Column% = 25
 
-        Call box0(5, 24, 15, 52, 2, 15, 1)
+        Call box0(6, 24, 16, 52, 2, 15, 1)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
@@ -189,15 +186,15 @@ Sub GetTeam_BINPUT (yearNumber$, numberTeams, teamIdx)
         Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
         Locate 7 + JJ, 8
         Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
-		
-		Locate 7, 32
+
+        Locate 7, 32
         Locate , 12: Print "ENTER DISK ID: ": Print
         Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
         Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
         Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
         Locate 7, 27: Input NY$
 
-		If NY$ = "" And yearNumber$ <> "" Then
+        If NY$ = "" And yearNumber$ <> "" Then
             Call SelectTeam_BINPUT(yearNumber$, numberTeams, teamIdx)
         Else
             yearNumber$ = NY$
@@ -243,12 +240,12 @@ Sub GetTeam_BINPUT (yearNumber$, numberTeams, teamIdx)
             Locate 2, 33
             Color L%(11), L%(12): Print T$
 
-			Color 15, 4
+            Color 15, 4
 
-			Do
-				Locate , 33: Print "ANY CHANGE (YN)";
-				I$ = GetKeyPress$
-			Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+            Do
+                Locate , 33: Print "ANY CHANGE (YN)";
+                I$ = GetKeyPress$
+            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
         End If
 
@@ -614,6 +611,7 @@ Sub InputTeam (inputAction%, yearNumber$, targetTeam$, teamIdx)
 
     ' New team only
     If inputAction% = 1 Then
+
         targetTeam$ = ""
         teamIdx = 0
         yearNumber$ = ""
@@ -1058,10 +1056,10 @@ Sub SwitchBatters ()
 
         Locate 17, 60: Print B$(I2 - 1)
 
-		Do
-			Locate 18, 50: Print "ANY CHANGE (YN)";
-			I$ = GetKeyPress$
-		Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+        Do
+            Locate 18, 50: Print "ANY CHANGE (YN)";
+            I$ = GetKeyPress$
+        Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
     Loop Until UCase$(I$) = "N"
 
@@ -1100,10 +1098,10 @@ Sub SwitchPitchers ()
 
         Locate 17, 60: Print P$(I2 - 1)
 
-		Do
-			Locate 18, 50: Print "ANY CHANGE (YN)";
-			I$ = GetKeyPress$
-		Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+        Do
+            Locate 18, 50: Print "ANY CHANGE (YN)";
+            I$ = GetKeyPress$
+        Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
     Loop Until UCase$(I$) = "N"
 
@@ -1132,9 +1130,6 @@ Sub PrintTeamStats (targetTeam$, teamIdx)
     S$ = RTrim$(Q$(1840))
     M$ = RTrim$(Q$(1841))
     NN$ = RTrim$(Q$(1842))
-    'M$, S$, T$
-
-    LPrint Chr$(15) ': WIDTH "LPT1:", 137
 
     LPrint "TEAM # "; teamIdx
 
@@ -1230,7 +1225,7 @@ Sub PrintTeamStats (targetTeam$, teamIdx)
 
     Next I
 
-    LPrint Chr$(18): LPrint Chr$(12)
+    LPrint Chr$(12)
 
 End Sub
 
@@ -1323,14 +1318,14 @@ Sub CalculateBuntRating ()
             Select Case B1!
                 Case Is <= 0: BR = 1
                 Case 1: BR = 2
-                Case 2 TO 3: BR = 3
-                Case 4 TO 6: BR = 4
-                Case 7 TO 10: BR = 5
-                Case 11 TO 15: BR = 6
-                Case 16 TO 20: BR = 7
-                Case 21 TO 25: BR = 8
-                Case 26 TO 30: BR = 9
-                Case 31 TO 35: BR = 10
+                Case 2 To 3: BR = 3
+                Case 4 To 6: BR = 4
+                Case 7 To 10: BR = 5
+                Case 11 To 15: BR = 6
+                Case 16 To 20: BR = 7
+                Case 21 To 25: BR = 8
+                Case 26 To 30: BR = 9
+                Case 31 To 35: BR = 10
                 Case Is >= 36: BR = 10
             End Select
 
@@ -1369,14 +1364,14 @@ Sub CalculateBuntRating ()
             Select Case B1!
                 Case Is <= 0: BR = 1
                 Case 1: BR = 2
-                Case 2 TO 3: BR = 3
-                Case 4 TO 6: BR = 4
-                Case 7 TO 10: BR = 5
-                Case 11 TO 15: BR = 6
-                Case 16 TO 20: BR = 7
-                Case 21 TO 25: BR = 8
-                Case 26 TO 30: BR = 9
-                Case 31 TO 35: BR = 10
+                Case 2 To 3: BR = 3
+                Case 4 To 6: BR = 4
+                Case 7 To 10: BR = 5
+                Case 11 To 15: BR = 6
+                Case 16 To 20: BR = 7
+                Case 21 To 25: BR = 8
+                Case 26 To 30: BR = 9
+                Case 31 To 35: BR = 10
                 Case Is >= 36: BR = 10
             End Select
 
@@ -2329,540 +2324,547 @@ Sub EDITTEAM (YN$, T$, NN$, S$, M$, teamIdx)
     Shared K9&()
     Shared L%(), SA%()
 
-    Color 15, 1: Cls
-    Locate 1, 36: Print "TEAM DATA"
-    Locate 3, 1: Print "TEAM NUMBER:"
-    Locate 5, 1: Print "LEAGUE BATTING AVERAGE:"
-    Locate 6, 1: Print "LEAGUE STRIKEOUT %    :"
-    Locate 7, 1: Print "LEAGUE WALK PERCENTAGE:"
-    Locate 8, 1: Print "LEAGUE HOME RUN %     :"
-    Locate 10, 1: Print "DBL PLAYS/GAME X 100  :"
-    Locate 14, 1: Print "PARK NAME:"
-    Locate 15, 1: Print "PARK ID  :"
-    Locate 16, 1: Print "DOUBLES RATING  :"
-    Locate 17, 1: Print "TRIPLES RATING  :"
-    Locate 18, 1: Print "HOME RUN RATING :"
-    Locate 19, 1: Print "FOUL BALL RATING:"
-    Locate 21, 1: Print "OUTDOOR(0)/INDOOR(1):"
-    Locate 22, 1: Print "GRASS(0)/TURF(1)    :"
-    Locate 24, 1: Print "MANAGER :";
-    Locate 18, 29: Print "TEXT COLOR      :"
-    Locate 19, 29: Print "BACKGROUND COLOR:"
-    Locate 3, 25: Print "DISK ID:"
-    Locate 3, 44: Print "TEAM NAME:"
-    Locate 4, 44: Print "ABBREVIATION:"
-    Locate 6, 51: Print "SPLIT STATS LEAGUE DATA"
-    Locate 7, 50: Print "BAVG   K%  BB%  HR%  2B%  3B%"
-    Locate 8, 38: Print "LHB vs LHP"
-    Locate 9, 38: Print "LHB vs RHP"
-    Locate 10, 38: Print "RHB vs LHP"
-    Locate 11, 38: Print "RHB vs RHP"
+    Do
 
-    ' INITIALIZE THE FIELDS
-    FG = 0
-    BG = 7
-    Color FG, BG
-    'COLR = 112
+        Color 15, 1
+        Cls
 
-    '--- This is not saving right???
-    Locate 3, 14: Print Using "###"; teamIdx
+        Locate 1, 36: Print "TEAM DATA"
+        Locate 3, 1: Print "TEAM NUMBER:"
+        Locate 5, 1: Print "LEAGUE BATTING AVERAGE:"
+        Locate 6, 1: Print "LEAGUE STRIKEOUT %    :"
+        Locate 7, 1: Print "LEAGUE WALK PERCENTAGE:"
+        Locate 8, 1: Print "LEAGUE HOME RUN %     :"
+        Locate 10, 1: Print "DBL PLAYS/GAME X 100  :"
+        Locate 14, 1: Print "PARK NAME:"
+        Locate 15, 1: Print "PARK ID  :"
+        Locate 16, 1: Print "DOUBLES RATING  :"
+        Locate 17, 1: Print "TRIPLES RATING  :"
+        Locate 18, 1: Print "HOME RUN RATING :"
+        Locate 19, 1: Print "FOUL BALL RATING:"
+        Locate 21, 1: Print "OUTDOOR(0)/INDOOR(1):"
+        Locate 22, 1: Print "GRASS(0)/TURF(1)    :"
+        Locate 24, 1: Print "MANAGER :";
+        Locate 18, 29: Print "TEXT COLOR      :"
+        Locate 19, 29: Print "BACKGROUND COLOR:"
+        Locate 3, 25: Print "DISK ID:"
+        Locate 3, 44: Print "TEAM NAME:"
+        Locate 4, 44: Print "ABBREVIATION:"
+        Locate 6, 51: Print "SPLIT STATS LEAGUE DATA"
+        Locate 7, 50: Print "BAVG   K%  BB%  HR%  2B%  3B%"
+        Locate 8, 38: Print "LHB vs LHP"
+        Locate 9, 38: Print "LHB vs RHP"
+        Locate 10, 38: Print "RHB vs LHP"
+        Locate 11, 38: Print "RHB vs RHP"
 
-    Locate 3, 33: Print YN$
-    Locate 3, 55: Print T$
+        ' INITIALIZE THE FIELDS
+        FG = 0
+        BG = 7
+        Color FG, BG
+        'COLR = 112
 
-    Locate 4, 58: Print NN$
+        Locate 3, 14: Print Using "###"; teamIdx
+        Locate 3, 33: Print YN$
+        Locate 3, 55: Print T$
+        Locate 4, 58: Print NN$
 
-    Locate 5, 25: Print Using "###"; L%(1)
-    Locate 6, 25: Print Using "###"; L%(2)
-    Locate 7, 25: Print Using "###"; L%(3)
-    Locate 8, 25: Print Using "###"; L%(4)
-    Locate 10, 25: Print Using "###"; L%(5)
-    Locate 14, 12: Print S$
-    Locate 15, 12: Print Using "###"; L%(13)
-    Locate 16, 19: Print Using "###"; L%(6)
-    Locate 17, 19: Print Using "###"; L%(7)
-    Locate 18, 19: Print Using "######"; K9&(0)
-    Locate 19, 19: Print Using "###"; L%(8)
-    Locate 21, 25: Print Using "#"; L%(9)
-    Locate 22, 25: Print Using "#"; L%(10)
-    Locate 24, 11: Print M$;
-    Locate 18, 46: Print Using "##"; L%(11)
-    Locate 19, 46: Print Using "##"; L%(12)
-    Locate 8, 50: Print Using "###"; SA%(1)
-    Locate 8, 55: Print Using "###"; SA%(2)
-    Locate 8, 60: Print Using "###"; SA%(3)
-    Locate 8, 65: Print Using "###"; SA%(4)
-    Locate 8, 70: Print Using "###"; SA%(5)
-    Locate 8, 75: Print Using "###"; SA%(6)
-    Locate 9, 50: Print Using "###"; SA%(7)
-    Locate 9, 55: Print Using "###"; SA%(8)
-    Locate 9, 60: Print Using "###"; SA%(9)
-    Locate 9, 65: Print Using "###"; SA%(10)
-    Locate 9, 70: Print Using "###"; SA%(11)
-    Locate 9, 75: Print Using "###"; SA%(12)
-    Locate 10, 50: Print Using "###"; SA%(13)
-    Locate 10, 55: Print Using "###"; SA%(14)
-    Locate 10, 60: Print Using "###"; SA%(15)
-    Locate 10, 65: Print Using "###"; SA%(16)
-    Locate 10, 70: Print Using "###"; SA%(17)
-    Locate 10, 75: Print Using "###"; SA%(18)
-    Locate 11, 50: Print Using "###"; SA%(19)
-    Locate 11, 55: Print Using "###"; SA%(20)
-    Locate 11, 60: Print Using "###"; SA%(21)
-    Locate 11, 65: Print Using "###"; SA%(22)
-    Locate 11, 70: Print Using "###"; SA%(23)
-    Locate 11, 75: Print Using "###"; SA%(24)
-    Locate 25, 1: Print "ESC-WILL END EDITING";
+        Locate 5, 25: Print Using "###"; L%(1)
+        Locate 6, 25: Print Using "###"; L%(2)
+        Locate 7, 25: Print Using "###"; L%(3)
+        Locate 8, 25: Print Using "###"; L%(4)
+        Locate 10, 25: Print Using "###"; L%(5)
+        Locate 14, 12: Print S$
+        Locate 15, 12: Print Using "###"; L%(13)
+        Locate 16, 19: Print Using "###"; L%(6)
+        Locate 17, 19: Print Using "###"; L%(7)
+        Locate 18, 19: Print Using "######"; K9&(0)
+        Locate 19, 19: Print Using "###"; L%(8)
+        Locate 21, 25: Print Using "#"; L%(9)
+        Locate 22, 25: Print Using "#"; L%(10)
+        Locate 24, 11: Print M$;
+        Locate 18, 46: Print Using "##"; L%(11)
+        Locate 19, 46: Print Using "##"; L%(12)
+        Locate 8, 50: Print Using "###"; SA%(1)
+        Locate 8, 55: Print Using "###"; SA%(2)
+        Locate 8, 60: Print Using "###"; SA%(3)
+        Locate 8, 65: Print Using "###"; SA%(4)
+        Locate 8, 70: Print Using "###"; SA%(5)
+        Locate 8, 75: Print Using "###"; SA%(6)
+        Locate 9, 50: Print Using "###"; SA%(7)
+        Locate 9, 55: Print Using "###"; SA%(8)
+        Locate 9, 60: Print Using "###"; SA%(9)
+        Locate 9, 65: Print Using "###"; SA%(10)
+        Locate 9, 70: Print Using "###"; SA%(11)
+        Locate 9, 75: Print Using "###"; SA%(12)
+        Locate 10, 50: Print Using "###"; SA%(13)
+        Locate 10, 55: Print Using "###"; SA%(14)
+        Locate 10, 60: Print Using "###"; SA%(15)
+        Locate 10, 65: Print Using "###"; SA%(16)
+        Locate 10, 70: Print Using "###"; SA%(17)
+        Locate 10, 75: Print Using "###"; SA%(18)
+        Locate 11, 50: Print Using "###"; SA%(19)
+        Locate 11, 55: Print Using "###"; SA%(20)
+        Locate 11, 60: Print Using "###"; SA%(21)
+        Locate 11, 65: Print Using "###"; SA%(22)
+        Locate 11, 70: Print Using "###"; SA%(23)
+        Locate 11, 75: Print Using "###"; SA%(24)
+        Locate 25, 1: Print "ESC-WILL END EDITING";
 
-    HR$ = _Trim$(Str$(K9&(0)))
+        HR$ = _Trim$(Str$(K9&(0)))
 
-    TeamNum:
-    Locate 3, 14
-    Max = 3
-    T# = teamIdx
-    Call NumIn(T#, Max, XCode, FG, BG)
-    teamIdx = Int(T#)
-    Locate 3, 14: Print Using "###"; teamIdx
-    If XCode = 1 GoTo TeamNum:
-    If XCode = 2 GoTo Done
+        TeamNum:
+        Locate 3, 14
+        Max = 3
+        T# = teamIdx
+        Call NumIn(T#, Max, XCode, FG, BG)
+        teamIdx = Int(T#)
+        Locate 3, 14: Print Using "###"; teamIdx
+        If XCode = 1 GoTo TeamNum:
+        If XCode = 2 GoTo Done
 
-    DiskID:
-    Locate 3, 33
-    Max = 3
-    Call TextIn(YN$, Max, NumOnly, CapsOn, XCode, FG, BG)
-    If XCode = 1 GoTo TeamNum:
-    If XCode = 2 GoTo Done
+        DiskID:
+        Locate 3, 33
+        Max = 3
+        Call TextIn(YN$, Max, NumOnly, CapsOn, XCode, FG, BG)
+        If XCode = 1 GoTo TeamNum:
+        If XCode = 2 GoTo Done
 
-    TeamName:
-    Locate 3, 55
-    Max = 15
-    Call TextIn(T$, Max, NumOnly, CapsOn, XCode, FG, BG)
-    If XCode = 1 GoTo DiskID:
-    If XCode = 2 GoTo Done
+        TeamName:
+        Locate 3, 55
+        Max = 15
+        Call TextIn(T$, Max, NumOnly, CapsOn, XCode, FG, BG)
+        If XCode = 1 GoTo DiskID:
+        If XCode = 2 GoTo Done
 
-    Abbrev:
-    Locate 4, 58
-    Max = 5
-    Call TextIn(NN$, Max, NumOnly, CapsOn, XCode, FG, BG)
-    If XCode = 1 GoTo TeamName:
-    If XCode = 2 GoTo Done
+        Abbrev:
+        Locate 4, 58
+        Max = 5
+        Call TextIn(NN$, Max, NumOnly, CapsOn, XCode, FG, BG)
+        If XCode = 1 GoTo TeamName:
+        If XCode = 2 GoTo Done
 
-    LgBA:
-    Locate 5, 25
-    Max = 3
-    L# = L%(1)
-    Call NumIn(L#, Max, XCode, FG, BG)
-    L%(1) = Int(L#)
-    Locate 5, 25: Print Using "###"; L%(1)
-    If XCode = 1 GoTo Abbrev:
-    If XCode = 2 GoTo Done
+        LgBA:
+        Locate 5, 25
+        Max = 3
+        L# = L%(1)
+        Call NumIn(L#, Max, XCode, FG, BG)
+        L%(1) = Int(L#)
+        Locate 5, 25: Print Using "###"; L%(1)
+        If XCode = 1 GoTo Abbrev:
+        If XCode = 2 GoTo Done
 
-    LgKO:
-    Locate 6, 25
-    Max = 3
-    L# = L%(2)
-    Call NumIn(L#, Max, XCode, FG, BG)
-    L%(2) = Int(L#)
-    Locate 6, 25: Print Using "###"; L%(2)
-    If XCode = 1 GoTo LgBA:
-    If XCode = 2 GoTo Done
+        LgKO:
+        Locate 6, 25
+        Max = 3
+        L# = L%(2)
+        Call NumIn(L#, Max, XCode, FG, BG)
+        L%(2) = Int(L#)
+        Locate 6, 25: Print Using "###"; L%(2)
+        If XCode = 1 GoTo LgBA:
+        If XCode = 2 GoTo Done
 
-    LgBB:
-    Locate 7, 25
-    Max = 3
-    L# = L%(3)
-    Call NumIn(L#, Max, XCode, FG, BG)
-    L%(3) = Int(L#)
-    Locate 7, 25: Print Using "###"; L%(3)
-    If XCode = 1 GoTo LgKO:
-    If XCode = 2 GoTo Done
+        LgBB:
+        Locate 7, 25
+        Max = 3
+        L# = L%(3)
+        Call NumIn(L#, Max, XCode, FG, BG)
+        L%(3) = Int(L#)
+        Locate 7, 25: Print Using "###"; L%(3)
+        If XCode = 1 GoTo LgKO:
+        If XCode = 2 GoTo Done
 
-    LgHR:
-    Locate 8, 25
-    Max = 3
-    L# = L%(4)
-    Call NumIn(L#, Max, XCode, FG, BG)
-    L%(4) = Int(L#)
-    Locate 8, 25: Print Using "###"; L%(4)
-    If XCode = 1 GoTo LgBB:
-    If XCode = 2 GoTo Done
+        LgHR:
+        Locate 8, 25
+        Max = 3
+        L# = L%(4)
+        Call NumIn(L#, Max, XCode, FG, BG)
+        L%(4) = Int(L#)
+        Locate 8, 25: Print Using "###"; L%(4)
+        If XCode = 1 GoTo LgBB:
+        If XCode = 2 GoTo Done
 
-    LgDP:
-    Locate 10, 25
-    Max = 3
-    L# = L%(5)
-    Call NumIn(L#, Max, XCode, FG, BG)
-    L%(5) = Int(L#)
-    Locate 10, 25: Print Using "###"; L%(5)
-    If XCode = 1 GoTo LgHR:
-    If XCode = 2 GoTo Done
+        LgDP:
+        Locate 10, 25
+        Max = 3
+        L# = L%(5)
+        Call NumIn(L#, Max, XCode, FG, BG)
+        L%(5) = Int(L#)
+        Locate 10, 25: Print Using "###"; L%(5)
+        If XCode = 1 GoTo LgHR:
+        If XCode = 2 GoTo Done
 
-    ParkName:
-    Locate 14, 12
-    Max = 40
-    Call TextIn(S$, Max, NumOnly, CapsOn, XCode, FG, BG)
-    If XCode = 1 GoTo LgDP:
-    If XCode = 2 GoTo Done
+        ParkName:
+        Locate 14, 12
+        Max = 40
+        Call TextIn(S$, Max, NumOnly, CapsOn, XCode, FG, BG)
+        If XCode = 1 GoTo LgDP:
+        If XCode = 2 GoTo Done
 
-    ParkID:
-    Locate 15, 12
-    Max = 3
-    L# = L%(13)
-    Call NumIn(L#, Max, XCode, FG, BG)
-    L%(13) = Int(L#)
-    Locate 15, 12: Print Using "###"; L%(13)
-    If XCode = 1 GoTo ParkName:
-    If XCode = 2 GoTo Done
+        ParkID:
+        Locate 15, 12
+        Max = 3
+        L# = L%(13)
+        Call NumIn(L#, Max, XCode, FG, BG)
+        L%(13) = Int(L#)
+        Locate 15, 12: Print Using "###"; L%(13)
+        If XCode = 1 GoTo ParkName:
+        If XCode = 2 GoTo Done
 
-    DoubleRating:
-    Locate 16, 19
-    Max = 3
-    L# = L%(6)
-    Call NumIn(L#, Max, XCode, FG, BG)
-    L%(6) = Int(L#)
-    Locate 16, 19: Print Using "###"; L%(6)
-    If XCode = 1 GoTo ParkID:
-    If XCode = 2 GoTo Done
+        DoubleRating:
+        Locate 16, 19
+        Max = 3
+        L# = L%(6)
+        Call NumIn(L#, Max, XCode, FG, BG)
+        L%(6) = Int(L#)
+        Locate 16, 19: Print Using "###"; L%(6)
+        If XCode = 1 GoTo ParkID:
+        If XCode = 2 GoTo Done
 
-    TripleRating:
-    Locate 17, 19
-    Max = 3
-    L# = L%(7)
-    Call NumIn(L#, Max, XCode, FG, BG)
-    L%(7) = Int(L#)
-    Locate 17, 19: Print Using "###"; L%(7)
-    If XCode = 1 GoTo DoubleRating:
-    If XCode = 2 GoTo Done
+        TripleRating:
+        Locate 17, 19
+        Max = 3
+        L# = L%(7)
+        Call NumIn(L#, Max, XCode, FG, BG)
+        L%(7) = Int(L#)
+        Locate 17, 19: Print Using "###"; L%(7)
+        If XCode = 1 GoTo DoubleRating:
+        If XCode = 2 GoTo Done
 
-    Homer:
-    Locate 18, 19
-    Max = 6
-    Call TextIn(HR$, Max, NumOnly, CapsOn, XCode, FG, BG)
-    If XCode = 1 GoTo TripleRating:
-    If XCode = 2 GoTo Done
+        Homer:
+        Locate 18, 19
+        Max = 6
+        Call TextIn(HR$, Max, NumOnly, CapsOn, XCode, FG, BG)
+        If XCode = 1 GoTo TripleRating:
+        If XCode = 2 GoTo Done
 
-    Foul:
-    Locate 19, 19
-    Max = 3
-    L# = L%(8)
-    Call NumIn(L#, Max, XCode, FG, BG)
-    L%(8) = Int(L#)
-    Locate 19, 19: Print Using "###"; L%(8)
-    If XCode = 1 GoTo Homer:
-    If XCode = 2 GoTo Done
+        Foul:
+        Locate 19, 19
+        Max = 3
+        L# = L%(8)
+        Call NumIn(L#, Max, XCode, FG, BG)
+        L%(8) = Int(L#)
+        Locate 19, 19: Print Using "###"; L%(8)
+        If XCode = 1 GoTo Homer:
+        If XCode = 2 GoTo Done
 
-    Outdoor:
-    Locate 21, 25
-    Max = 1
-    L# = L%(9)
-    Call NumIn(L#, Max, XCode, FG, BG)
-    L%(9) = Int(L#)
-    Locate 21, 25: Print Using "#"; L%(9)
-    If XCode = 1 GoTo Foul:
-    If XCode = 2 GoTo Done
+        Outdoor:
+        Locate 21, 25
+        Max = 1
+        L# = L%(9)
+        Call NumIn(L#, Max, XCode, FG, BG)
+        L%(9) = Int(L#)
+        Locate 21, 25: Print Using "#"; L%(9)
+        If XCode = 1 GoTo Foul:
+        If XCode = 2 GoTo Done
 
-    Grass:
-    Locate 22, 25
-    Max = 1
-    L# = L%(10)
-    Call NumIn(L#, Max, XCode, FG, BG)
-    L%(10) = Int(L#)
-    Locate 22, 25: Print Using "#"; L%(10)
-    If XCode = 1 GoTo Outdoor:
-    If XCode = 2 GoTo Done
+        Grass:
+        Locate 22, 25
+        Max = 1
+        L# = L%(10)
+        Call NumIn(L#, Max, XCode, FG, BG)
+        L%(10) = Int(L#)
+        Locate 22, 25: Print Using "#"; L%(10)
+        If XCode = 1 GoTo Outdoor:
+        If XCode = 2 GoTo Done
 
-    Manager:
-    Locate 24, 11
-    Max = 15
-    Call TextIn(M$, Max, NumOnly, CapsOn, XCode, FG, BG)
-    If XCode = 1 GoTo Grass:
-    If XCode = 2 GoTo Done
+        Manager:
+        Locate 24, 11
+        Max = 15
+        Call TextIn(M$, Max, NumOnly, CapsOn, XCode, FG, BG)
+        If XCode = 1 GoTo Grass:
+        If XCode = 2 GoTo Done
 
-    Text:
-    Locate 18, 46
-    Max = 2
-    L# = L%(11)
-    Call NumIn(L#, Max, XCode, FG, BG)
-    L%(11) = Int(L#)
-    Locate 18, 46: Print Using "##"; L%(11)
-    If XCode = 1 GoTo Manager:
-    If XCode = 2 GoTo Done
+        Text:
+        Locate 18, 46
+        Max = 2
+        L# = L%(11)
+        Call NumIn(L#, Max, XCode, FG, BG)
+        L%(11) = Int(L#)
+        Locate 18, 46: Print Using "##"; L%(11)
+        If XCode = 1 GoTo Manager:
+        If XCode = 2 GoTo Done
 
-    Bgrnd:
-    Locate 19, 46
-    Max = 2
-    L# = L%(12)
-    Call NumIn(L#, Max, XCode, FG, BG)
-    L%(12) = Int(L#)
-    Locate 19, 46: Print Using "##"; L%(12)
-    If XCode = 1 GoTo Text:
-    If XCode = 2 GoTo Done
+        Bgrnd:
+        Locate 19, 46
+        Max = 2
+        L# = L%(12)
+        Call NumIn(L#, Max, XCode, FG, BG)
+        L%(12) = Int(L#)
+        Locate 19, 46: Print Using "##"; L%(12)
+        If XCode = 1 GoTo Text:
+        If XCode = 2 GoTo Done
 
-    Locate 20, 29: Color L%(11), L%(12): Print "SAMPLE TEXT": Color 0, 7
+        Locate 20, 29: Color L%(11), L%(12): Print "SAMPLE TEXT": Color 0, 7
 
-    LLBA:
-    Locate 8, 50
-    Max = 3
-    SA# = SA%(1)
-    Call NumIn(SA%(1), Max, XCode, FG, BG)
-    SA%(1) = Int(SA#)
-    Locate 8, 50: Print Using "###"; SA%(1)
-    If XCode = 1 GoTo Bgrnd:
-    If XCode = 2 GoTo Done
+        LLBA:
+        Locate 8, 50
+        Max = 3
+        SA# = SA%(1)
+        Call NumIn(SA%(1), Max, XCode, FG, BG)
+        SA%(1) = Int(SA#)
+        Locate 8, 50: Print Using "###"; SA%(1)
+        If XCode = 1 GoTo Bgrnd:
+        If XCode = 2 GoTo Done
 
-    LL2B:
-    Locate 8, 55
-    Max = 3
-    SA# = SA%(2)
-    Call NumIn(SA#, Max, XCode, FG, BG)
-    SA%(2) = Int(SA#)
-    Locate 8, 55: Print Using "###"; SA%(2)
-    If XCode = 1 GoTo LLBA:
-    If XCode = 2 GoTo Done
+        LL2B:
+        Locate 8, 55
+        Max = 3
+        SA# = SA%(2)
+        Call NumIn(SA#, Max, XCode, FG, BG)
+        SA%(2) = Int(SA#)
+        Locate 8, 55: Print Using "###"; SA%(2)
+        If XCode = 1 GoTo LLBA:
+        If XCode = 2 GoTo Done
 
-    '-- resume here
+        LL3B:
+        Locate 8, 60
+        Max = 3
+        SA# = SA%(3)
+        Call NumIn(SA#, Max, XCode, FG, BG)
+        SA%(3) = Int(SA#)
+        Locate 8, 60: Print Using "###"; SA%(3)
+        If XCode = 1 GoTo LL2B:
+        If XCode = 2 GoTo Done
 
-    LL3B:
-    Locate 8, 60
-    Max = 3
-    SA# = SA%(3)
-    Call NumIn(SA#, Max, XCode, FG, BG)
-    SA%(3) = Int(SA#)
-    Locate 8, 60: Print Using "###"; SA%(3)
-    If XCode = 1 GoTo LL2B:
-    If XCode = 2 GoTo Done
+        LLHR:
+        Locate 8, 65
+        Max = 3
+        SA# = SA%(4)
+        Call NumIn(SA#, Max, XCode, FG, BG)
+        SA%(4) = Int(SA#)
+        Locate 8, 65: Print Using "###"; SA%(4)
+        If XCode = 1 GoTo LL3B:
+        If XCode = 2 GoTo Done
 
-    LLHR:
-    Locate 8, 65
-    Max = 3
-    SA# = SA%(4)
-    Call NumIn(SA#, Max, XCode, FG, BG)
-    SA%(4) = Int(SA#)
-    Locate 8, 65: Print Using "###"; SA%(4)
-    If XCode = 1 GoTo LL3B:
-    If XCode = 2 GoTo Done
+        LLBB:
+        Locate 8, 70
+        Max = 3
+        SA# = SA%(5)
+        Call NumIn(SA#, Max, XCode, FG, BG)
+        SA%(5) = Int(SA#)
+        Locate 8, 70: Print Using "###"; SA%(5)
+        If XCode = 1 GoTo LLHR:
+        If XCode = 2 GoTo Done
 
-    LLBB:
-    Locate 8, 70
-    Max = 3
-    SA# = SA%(5)
-    Call NumIn(SA#, Max, XCode, FG, BG)
-    SA%(5) = Int(SA#)
-    Locate 8, 70: Print Using "###"; SA%(5)
-    If XCode = 1 GoTo LLHR:
-    If XCode = 2 GoTo Done
+        LLKO:
+        Locate 8, 75
+        Max = 3
+        SA# = SA%(6)
+        Call NumIn(SA#, Max, XCode, FG, BG)
+        SA%(6) = Int(SA#)
+        Locate 8, 75: Print Using "###"; SA%(6)
+        If XCode = 1 GoTo LLBB:
+        If XCode = 2 GoTo Done
 
-    LLKO:
-    Locate 8, 75
-    Max = 3
-    SA# = SA%(6)
-    Call NumIn(SA#, Max, XCode, FG, BG)
-    SA%(6) = Int(SA#)
-    Locate 8, 75: Print Using "###"; SA%(6)
-    If XCode = 1 GoTo LLBB:
-    If XCode = 2 GoTo Done
+        LRBA:
+        Locate 9, 50
+        Max = 3
+        SA# = SA%(7)
+        Call NumIn(SA#, Max, XCode, FG, BG)
+        SA%(7) = Int(SA#)
+        Locate 9, 50: Print Using "###"; SA%(7)
+        If XCode = 1 GoTo LLKO:
+        If XCode = 2 GoTo Done
 
-    LRBA:
-    Locate 9, 50
-    Max = 3
-    SA# = SA%(7)
-    Call NumIn(SA#, Max, XCode, FG, BG)
-    SA%(7) = Int(SA#)
-    Locate 9, 50: Print Using "###"; SA%(7)
-    If XCode = 1 GoTo LLKO:
-    If XCode = 2 GoTo Done
+        LR2B:
+        Locate 9, 55
+        Max = 3
+        SA# = SA%(8)
+        Call NumIn(SA#, Max, XCode, FG, BG)
+        SA%(8) = Int(SA#)
+        Locate 9, 55: Print Using "###"; SA%(8)
+        If XCode = 1 GoTo LRBA:
+        If XCode = 2 GoTo Done
 
-    LR2B:
-    Locate 9, 55
-    Max = 3
-    SA# = SA%(8)
-    Call NumIn(SA#, Max, XCode, FG, BG)
-    SA%(8) = Int(SA#)
-    Locate 9, 55: Print Using "###"; SA%(8)
-    If XCode = 1 GoTo LRBA:
-    If XCode = 2 GoTo Done
+        LR3B:
+        Locate 9, 60
+        Max = 3
+        SA# = SA%(9)
+        Call NumIn(SA#, Max, XCode, FG, BG)
+        SA%(9) = Int(SA#)
+        Locate 9, 60: Print Using "###"; SA%(9)
+        If XCode = 1 GoTo LR2B:
+        If XCode = 2 GoTo Done
 
-    LR3B:
-    Locate 9, 60
-    Max = 3
-    SA# = SA%(9)
-    Call NumIn(SA#, Max, XCode, FG, BG)
-    SA%(9) = Int(SA#)
-    Locate 9, 60: Print Using "###"; SA%(9)
-    If XCode = 1 GoTo LR2B:
-    If XCode = 2 GoTo Done
+        LRHR:
+        Locate 9, 65
+        Max = 3
+        SA# = SA%(10)
+        Call NumIn(SA#, Max, XCode, FG, BG)
+        SA%(10) = Int(SA#)
+        Locate 9, 65: Print Using "###"; SA%(10)
+        If XCode = 1 GoTo LR3B:
+        If XCode = 2 GoTo Done
 
-    LRHR:
-    Locate 9, 65
-    Max = 3
-    SA# = SA%(10)
-    Call NumIn(SA#, Max, XCode, FG, BG)
-    SA%(10) = Int(SA#)
-    Locate 9, 65: Print Using "###"; SA%(10)
-    If XCode = 1 GoTo LR3B:
-    If XCode = 2 GoTo Done
+        LRBB:
+        Locate 9, 70
+        Max = 3
+        SA# = SA%(11)
+        Call NumIn(SA#, Max, XCode, FG, BG)
+        SA%(11) = Int(SA#)
+        Locate 9, 70: Print Using "###"; SA%(11)
+        If XCode = 1 GoTo LRHR:
+        If XCode = 2 GoTo Done
 
-    LRBB:
-    Locate 9, 70
-    Max = 3
-    SA# = SA%(11)
-    Call NumIn(SA#, Max, XCode, FG, BG)
-    SA%(11) = Int(SA#)
-    Locate 9, 70: Print Using "###"; SA%(11)
-    If XCode = 1 GoTo LRHR:
-    If XCode = 2 GoTo Done
+        LRKO:
+        Locate 9, 75
+        Max = 3
+        SA# = SA%(12)
+        Call NumIn(SA#, Max, XCode, FG, BG)
+        SA%(12) = Int(SA#)
+        Locate 9, 75: Print Using "###"; SA%(12)
+        If XCode = 1 GoTo LRBB:
+        If XCode = 2 GoTo Done
 
-    LRKO:
-    Locate 9, 75
-    Max = 3
-    SA# = SA%(12)
-    Call NumIn(SA#, Max, XCode, FG, BG)
-    SA%(12) = Int(SA#)
-    Locate 9, 75: Print Using "###"; SA%(12)
-    If XCode = 1 GoTo LRBB:
-    If XCode = 2 GoTo Done
+        RLBA:
+        Locate 10, 50
+        Max = 3
+        SA# = SA%(13)
+        Call NumIn(SA#, Max, XCode, FG, BG)
+        SA%(13) = Int(SA#)
+        Locate 10, 50: Print Using "###"; SA%(13)
+        If XCode = 1 GoTo LRKO:
+        If XCode = 2 GoTo Done
 
-    RLBA:
-    Locate 10, 50
-    Max = 3
-    SA# = SA%(13)
-    Call NumIn(SA#, Max, XCode, FG, BG)
-    SA%(13) = Int(SA#)
-    Locate 10, 50: Print Using "###"; SA%(13)
-    If XCode = 1 GoTo LRKO:
-    If XCode = 2 GoTo Done
+        RL2B:
+        Locate 10, 55
+        Max = 3
+        SA# = SA%(14)
+        Call NumIn(SA#, Max, XCode, FG, BG)
+        SA%(14) = Int(SA#)
+        Locate 10, 55: Print Using "###"; SA%(14)
+        If XCode = 1 GoTo RLBA:
+        If XCode = 2 GoTo Done
 
-    RL2B:
-    Locate 10, 55
-    Max = 3
-    SA# = SA%(14)
-    Call NumIn(SA#, Max, XCode, FG, BG)
-    SA%(14) = Int(SA#)
-    Locate 10, 55: Print Using "###"; SA%(14)
-    If XCode = 1 GoTo RLBA:
-    If XCode = 2 GoTo Done
+        RL3B:
+        Locate 10, 60
+        Max = 3
+        SA# = SA%(15)
+        Call NumIn(SA#, Max, XCode, FG, BG)
+        SA%(15) = Int(SA#)
+        Locate 10, 60: Print Using "###"; SA%(15)
+        If XCode = 1 GoTo RL2B:
+        If XCode = 2 GoTo Done
 
-    RL3B:
-    Locate 10, 60
-    Max = 3
-    SA# = SA%(15)
-    Call NumIn(SA#, Max, XCode, FG, BG)
-    SA%(15) = Int(SA#)
-    Locate 10, 60: Print Using "###"; SA%(15)
-    If XCode = 1 GoTo RL2B:
-    If XCode = 2 GoTo Done
+        RLHR:
+        Locate 10, 65
+        Max = 3
+        SA# = SA%(16)
+        Call NumIn(SA#, Max, XCode, FG, BG)
+        SA%(16) = Int(SA#)
+        Locate 10, 65: Print Using "###"; SA%(16)
+        If XCode = 1 GoTo RL3B:
+        If XCode = 2 GoTo Done
 
-    RLHR:
-    Locate 10, 65
-    Max = 3
-    SA# = SA%(16)
-    Call NumIn(SA#, Max, XCode, FG, BG)
-    SA%(16) = Int(SA#)
-    Locate 10, 65: Print Using "###"; SA%(16)
-    If XCode = 1 GoTo RL3B:
-    If XCode = 2 GoTo Done
+        RLBB:
+        Locate 10, 70
+        Max = 3
+        SA# = SA%(17)
+        Call NumIn(SA#, Max, XCode, FG, BG)
+        SA%(17) = Int(SA#)
+        Locate 10, 70: Print Using "###"; SA%(17)
+        If XCode = 1 GoTo RLHR:
+        If XCode = 2 GoTo Done
 
-    RLBB:
-    Locate 10, 70
-    Max = 3
-    SA# = SA%(17)
-    Call NumIn(SA#, Max, XCode, FG, BG)
-    SA%(17) = Int(SA#)
-    Locate 10, 70: Print Using "###"; SA%(17)
-    If XCode = 1 GoTo RLHR:
-    If XCode = 2 GoTo Done
+        RLKO:
+        Locate 10, 75
+        Max = 3
+        SA# = SA%(18)
+        Call NumIn(SA#, Max, XCode, FG, BG)
+        SA%(18) = Int(SA#)
+        Locate 10, 75: Print Using "###"; SA%(18)
+        If XCode = 1 GoTo RLBB:
+        If XCode = 2 GoTo Done
 
-    RLKO:
-    Locate 10, 75
-    Max = 3
-    SA# = SA%(18)
-    Call NumIn(SA#, Max, XCode, FG, BG)
-    SA%(18) = Int(SA#)
-    Locate 10, 75: Print Using "###"; SA%(18)
-    If XCode = 1 GoTo RLBB:
-    If XCode = 2 GoTo Done
+        RRBA:
+        Locate 11, 50
+        Max = 3
+        SA# = SA%(19)
+        Call NumIn(SA#, Max, XCode, FG, BG)
+        SA%(19) = Int(SA#)
+        Locate 11, 50: Print Using "###"; SA%(19)
+        If XCode = 1 GoTo RLKO:
+        If XCode = 2 GoTo Done
 
-    RRBA:
-    Locate 11, 50
-    Max = 3
-    SA# = SA%(19)
-    Call NumIn(SA#, Max, XCode, FG, BG)
-    SA%(19) = Int(SA#)
-    Locate 11, 50: Print Using "###"; SA%(19)
-    If XCode = 1 GoTo RLKO:
-    If XCode = 2 GoTo Done
+        RR2B:
+        Locate 11, 55
+        Max = 3
+        SA# = SA%(20)
+        Call NumIn(SA#, Max, XCode, FG, BG)
+        SA%(20) = Int(SA#)
+        Locate 11, 55: Print Using "###"; SA%(20)
+        If XCode = 1 GoTo RRBA:
+        If XCode = 2 GoTo Done
 
-    RR2B:
-    Locate 11, 55
-    Max = 3
-    SA# = SA%(20)
-    Call NumIn(SA#, Max, XCode, FG, BG)
-    SA%(20) = Int(SA#)
-    Locate 11, 55: Print Using "###"; SA%(20)
-    If XCode = 1 GoTo RRBA:
-    If XCode = 2 GoTo Done
+        RR3B:
+        Locate 11, 60
+        Max = 3
+        SA# = SA%(21)
+        Call NumIn(SA#, Max, XCode, FG, BG)
+        SA%(21) = Int(SA#)
+        Locate 11, 60: Print Using "###"; SA%(21)
+        If XCode = 1 GoTo RR2B:
+        If XCode = 2 GoTo Done
 
-    RR3B:
-    Locate 11, 60
-    Max = 3
-    SA# = SA%(21)
-    Call NumIn(SA#, Max, XCode, FG, BG)
-    SA%(21) = Int(SA#)
-    Locate 11, 60: Print Using "###"; SA%(21)
-    If XCode = 1 GoTo RR2B:
-    If XCode = 2 GoTo Done
+        RRHR:
+        Locate 11, 65
+        Max = 3
+        SA# = SA%(22)
+        Call NumIn(SA#, Max, XCode, FG, BG)
+        SA%(22) = Int(SA#)
+        Locate 11, 65: Print Using "###"; SA%(22)
+        If XCode = 1 GoTo RR3B:
+        If XCode = 2 GoTo Done
 
-    RRHR:
-    Locate 11, 65
-    Max = 3
-    SA# = SA%(22)
-    Call NumIn(SA#, Max, XCode, FG, BG)
-    SA%(22) = Int(SA#)
-    Locate 11, 65: Print Using "###"; SA%(22)
-    If XCode = 1 GoTo RR3B:
-    If XCode = 2 GoTo Done
+        RRBB:
+        Locate 11, 70
+        Max = 3
+        SA# = SA%(23)
+        Call NumIn(SA#, Max, XCode, FG, BG)
+        SA%(23) = Int(SA#)
+        Locate 11, 70: Print Using "###"; SA%(23)
+        If XCode = 1 GoTo RRHR:
+        If XCode = 2 GoTo Done
 
-    RRBB:
-    Locate 11, 70
-    Max = 3
-    SA# = SA%(23)
-    Call NumIn(SA#, Max, XCode, FG, BG)
-    SA%(23) = Int(SA#)
-    Locate 11, 70: Print Using "###"; SA%(23)
-    If XCode = 1 GoTo RRHR:
-    If XCode = 2 GoTo Done
+        RRKO:
+        Locate 11, 75
+        Max = 3
+        SA# = SA%(24)
+        Call NumIn(SA#, Max, XCode, FG, BG)
+        SA%(24) = Int(SA#)
+        Locate 11, 75: Print Using "###"; SA%(24)
+        If XCode = 1 GoTo RRBB:
 
-    RRKO:
-    Locate 11, 75
-    Max = 3
-    SA# = SA%(24)
-    Call NumIn(SA#, Max, XCode, FG, BG)
-    SA%(24) = Int(SA#)
-    Locate 11, 75: Print Using "###"; SA%(24)
-    If XCode = 1 GoTo RRBB:
+        Done:
+        'Do
+        Locate 25, 1
+        'Print "Is this okay? (Y)es/(N)o/(A)bort ";
+        Print "Is this okay? (Y)es/(N)o";
+        X$ = ""
+        Call YesNoB(X$, XCode, FG, BG)
+        Locate , 1
+        ClearEOL 14, 1
+        If XCode = 1 GoTo RRKO
 
-    Done:
-    'Do
-    Locate 25, 1
-    'Print "Is this okay? (Y)es/(N)o/(A)bort ";
-    Print "Is this okay? (Y)es/(N)o";
-    X$ = ""
-    Call YesNoB(X$, XCode, FG, BG)
-    Locate , 1
-    ClearEOL 14, 1
-    If XCode = 1 GoTo RRKO
+        If X$ = "N" Then GoTo TeamNum
+        If X$ <> "Y" GoTo Done 'insist on either Y or N or up-arrow
 
-    If X$ = "N" Then GoTo TeamNum
-    If X$ <> "Y" GoTo Done 'insist on either Y or N or up-arrow
+        validData = 1
 
-    'Select Case UCase$(X$)
-    '     Case "A": Exit Sub
-    '     Case "N": GoTo TeamNum
-    '     Case "Y": '
-    '     Case Else: GoTo Done
-    ' End Select
+        If teamIdx = 0 Then validData = 0
+        If T$ = "" Then validData = 0
 
-    'Loop Until X$ = "N" 'insist on either Y or N or up-arrow
+        If validData = 0 Then
+            MsgText$ = "TEAM INDEX OR TEAM NAME NOT COMPLETED. PRESS ANY KEY TO RETURN TO DATA ENTRY"
+            BoxWidth = 26
+            BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+            Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+            Call CSMsgBox(MsgText$, BoxWidth, Pass)
+            I$ = GetKeyPress$
+            Call CSMsgBox("", 0, Pass)
+        End If
+
+    Loop Until validData = 1
 
     K9&(0) = Val(HR$)
 
@@ -2969,8 +2971,6 @@ Sub PITCHEREDIT ()
             Call TextIn(ACT$, Max, NumOnly, CapsOn, XCode, FG, BG)
             If XCode = 1 GoTo THROW:
             If XCode = 2 GoTo PDone
-
-            '-- also have to work here
 
             PINJ:
             Locate 1, 60
@@ -4134,21 +4134,19 @@ Sub ViewHittingFielding ()
 
         If draftP%(I, 11) <> 999 Then
             statPCT! = draftP%(I, 11) / 1000
-			Print Tab(59); Using "#.###"; statPCT!;
+            Print Tab(59); Using "#.###"; statPCT!;
         Else
             statI2! = 0
-            '-- For our mystery players, this is getting assigned 1000
-            '-- My guess is that this is not an accurate stat
-            '-- All other players calculate fine and the original game
-            '-- has the same behavior
+            '-- This is initialized as 1000
+            '-- So when not given a value it calculates too large
             If draftP%(I, 20) > 0 Then statI2! = Int((draftP%(I, 22) / draftP%(I, 20) + .0005) * 1000)
 
             If draftP%(I, 20) = 0 Or statI2! = 0 Then Print Tab(59); ".000";
             If statI2! > 0 And statI2! < 100 Then Print Tab(59); ".0";: Print Tab(61); Using "##"; statI2!;
+            If statI2! > 100 And statI2! < 1000 Then Print Tab(59); ".";: Print Tab(60); Using "###"; statI2!;
+            'If statI2! >= 1000 Then Print Tab(59); Using "#.###"; statI2!
+            If statI2! >= 1000 Then Print Tab(59); " ---";
 
-            '-- Here's where we get 1000 printed as .%1000
-            '-- Even if adding an extra digit to the width, it will show up as .1000
-            If statI2! > 100 Then Print Tab(59); ".";: Print Tab(60); Using "###"; statI2!;
         End If
 
         Print Tab(64); Using "#"; draftP%(I, 31);

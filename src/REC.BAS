@@ -25,9 +25,9 @@ Sub REC ()
         FileFGColr% = 15: FileBGColr% = 1
         HiLiteFGColr% = 0: HiLiteBGColr% = 7
         Spacing% = 1
-        Row% = 6
+        Row% = 7
         Column% = 22
-        Call box0(5, 21, 10, 61, 2, 15, 1)
+        Call box0(6, 21, 11, 61, 2, 15, 1)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
@@ -269,9 +269,9 @@ Sub AnalyzeTeamRecord (LG$, sameLeague)
                     Call ReadFile(leagueFiles$())
 
                     Do
-                        Cls
                         Color , 1
                         Cls
+
                         Locate , 33
                         Color 14
                         Print "SELECT LEAGUE": Color 15
@@ -325,7 +325,7 @@ Sub AnalyzeTeamRecord (LG$, sameLeague)
                 Cls
 
                 Do
-                    Locate 12, 5
+                    Locate 15, 10
                     Color 12: Print "V";: Color 7: Print "iew or ";
                     Color 12: Print "P";: Color 7: Print "rint"
                     M$ = GetKeyPress$
@@ -677,10 +677,6 @@ Sub Records_Printer ()
 
     Shared DV$(), Z1$()
 
-    LPrint Chr$(15)
-
-    'WIDTH "LPT1:1", 130
-
     DV$(1) = D1$
     DV$(2) = D2$
     DV$(3) = D3$
@@ -882,9 +878,6 @@ Sub Records_Printer ()
 
     LPrint Tab(102); Using "###"; TR11 + TR33;
     LPrint Tab(106); Using "###"; TR22 + TR44
-    LPrint Chr$(18)
-
-    'WIDTH "LPT1:1", 80
 
     LPrint Chr$(12)
 
