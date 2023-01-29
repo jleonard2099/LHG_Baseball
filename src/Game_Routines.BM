@@ -97,52 +97,53 @@ End Sub
 ' ...explanation...
 Sub ADJRUNNERS (S2%, P)
 
-    For i = 1 To 3
-        If S2% = 13 And A5%(i) = 11 And B1%(i, 0) = 0 Then A5%(0) = 11
-    Next i
+    For idx = 1 To 3
+        If S2% = 13 And A5%(idx) = 11 And B1%(idx, 0) = 0 Then A5%(0) = 11
+    Next idx
 
-    If B1%(3, 0) = 0 Or A5%(3) <> 0 Then
-        i = 3
-        If A5%(3) = 10 Then I3 = 3: Call CLEARBASE(i)
-        If A5%(3) >= 1 And A5%(3) <= 4 Then Call CHARGERUN(D, i)
-        If A5%(3) = 11 Then I3 = 4: Call CLEARBASE(i)
+    If Not (B1%(3, 0) = 0 Or A5%(3) = 0) Then
+        idx = 3
+        If A5%(3) = 10 Then I3 = 3: Call CLEARBASE(idx)
+        If A5%(3) >= 1 And A5%(3) <= 4 Then Call CHARGERUN(D, idx)
+        If A5%(3) = 11 Then I3 = 4: Call CLEARBASE(idx)
     End If
 
-    If B1%(2, 0) <> 0 And A5%(2) <> 0 Then
-        i = 2
-        If A5%(2) = 10 Then I3 = 2: Call CLEARBASE(i)
-        If A5%(2) = 11 Then I3 = 3: Call CLEARBASE(i)
-        If A5%(2) = 12 And B1%(3, 0) = 0 Then I3 = 4: Call CLEARBASE(i)
-        If A5%(2) = 1 And B1%(3, 0) = 0 Then Call BATTER1(i)
-        If A5%(2) >= 2 And A5%(2) <= 4 And B1%(3, 0) = 0 Then Call CHARGERUN(D, i)
+    If Not (B1%(2, 0) = 0 Or A5%(2) = 0) Then
+        idx = 2
+        If A5%(2) = 10 Then I3 = 2: Call CLEARBASE(idx)
+        If A5%(2) = 11 Then I3 = 3: Call CLEARBASE(idx)
+        If A5%(2) = 12 And B1%(3, 0) = 0 Then I3 = 4: Call CLEARBASE(idx)
+        If A5%(2) = 1 And B1%(3, 0) = 0 Then Call BATTER1(idx)
+        If A5%(2) >= 2 And A5%(2) <= 4 And B1%(3, 0) = 0 Then Call CHARGERUN(D, idx)
     End If
 
-    If B1%(1, 0) <> 0 And A5%(1) <> 0 Then
-        i = 1
-        If A5%(1) = 8 And B1%(2, 0) = 0 Then Call BATTER1(i)
-        If A5%(1) = 10 Then I3 = 1: Call CLEARBASE(i)
-        If A5%(1) = 11 Then I3 = 2: Call CLEARBASE(i)
-        If A5%(1) = 12 And B1%(3, 0) = 0 And B1%(2, 0) = 0 Then I3 = 3: Call CLEARBASE(i)
-        If A5%(1) = 13 And B1%(3, 0) = 0 And B1%(2, 0) = 0 Then I3 = 4: Call CLEARBASE(i)
-        If A5%(1) = 1 And B1%(2, 0) = 0 Then Call BATTER1(i)
-        If A5%(1) = 2 And B1%(2, 0) = 0 And B1%(3, 0) = 0 Then Call BATTER2(i)
-        If A5%(1) >= 3 And A5%(1) <= 4 And B1%(2, 0) = 0 And B1%(3, 0) = 0 Then Call CHARGERUN(D, i)
+    If Not (B1%(1, 0) = 0 Or A5%(1) = 0) Then
+        idx = 1
+        If A5%(1) = 8 And B1%(2, 0) = 0 Then Call BATTER1(idx)
+        If A5%(1) = 10 Then I3 = 1: Call CLEARBASE(idx)
+        If A5%(1) = 11 Then I3 = 2: Call CLEARBASE(idx)
+        If A5%(1) = 12 And B1%(3, 0) = 0 And B1%(2, 0) = 0 Then I3 = 3: Call CLEARBASE(idx)
+        If A5%(1) = 13 And B1%(3, 0) = 0 And B1%(2, 0) = 0 Then I3 = 4: Call CLEARBASE(idx)
+        If A5%(1) = 1 And B1%(2, 0) = 0 Then Call BATTER1(idx)
+        If A5%(1) = 2 And B1%(2, 0) = 0 And B1%(3, 0) = 0 Then Call BATTER2(idx)
+        If A5%(1) >= 3 And A5%(1) <= 4 And B1%(2, 0) = 0 And B1%(3, 0) = 0 Then Call CHARGERUN(D, idx)
     End If
 
-    i = 0
+    idx = 0
     B1%(0, 0) = B1!(P)
     B1%(0, 1) = P1%(D)
 
     If A5%(0) <> 0 Then
         If A5%(0) > 0 And A5%(0) < 4 Then I3 = A5%(0): Call BATTER3(I3, P, D)
-        If A5%(0) = 4 Then I3 = A5%(0): Call CHARGERUN(D, i)
-        If A5%(0) = 11 Then I3 = 1: Call CLEARBASE(i)
-        If A5%(0) = 12 Then I3 = 2: Call CLEARBASE(i)
-        If A5%(0) = 13 Then I3 = 3: Call CLEARBASE(i)
-        If A5%(0) = 14 Then I3 = 4: Call CLEARBASE(i)
+        If A5%(0) = 4 Then I3 = A5%(0): Call CHARGERUN(D, idx)
+        If A5%(0) = 11 Then I3 = 1: Call CLEARBASE(idx)
+        If A5%(0) = 12 Then I3 = 2: Call CLEARBASE(idx)
+        If A5%(0) = 13 Then I3 = 3: Call CLEARBASE(idx)
+        If A5%(0) = 14 Then I3 = 4: Call CLEARBASE(idx)
     End If
 
 End Sub
+
 
 '------------------------------
 '   ADV1BASE Subroutine
@@ -6629,16 +6630,16 @@ Sub POSTGAME ()
                 If _FileExists(FILENAME$) Then
                     Open diskPaths$(1) + statFile$ For Input As #1
                     Input #1, A$(Q)
-					Input #1, W2%
-					Input #1, L2%
+                    Input #1, W2%
+                    Input #1, L2%
                     For I = 0 To 22: Input #1, B$(Q, I): Input #1, B2%(Q, I): Next I
                     For I = 0 To 21: Input #1, P$(Q, I): Input #1, P3%(Q, I): Next I
                     For I = 0 To 22: For I1 = 0 To 21: Input #1, B6%(I, I1): Next I1: Next I
                     For I = 0 To 21: For I1 = 0 To 41: Input #1, P0%(I, I1): Next I1: Next I
                     Input #1, D0%(Q)
-					Input #1, D1%(Q)
-					For I = 0 To 21: Input #1, T%(I): Next I
-					For I = 0 To 22: Input #1, P4%(I): Next I
+                    Input #1, D1%(Q)
+                    For I = 0 To 21: Input #1, T%(I): Next I
+                    For I = 0 To 22: Input #1, P4%(I): Next I
                     Close #1
                 End If
 
@@ -6742,14 +6743,14 @@ Sub POSTGAME ()
 
                 Open diskPaths$(1) + statFile$ For Output As #1
                 Print #1, A$(Q)
-				Print #1, W2%
-				Print #1, L2%
+                Print #1, W2%
+                Print #1, L2%
                 For I = 0 To 22: Print #1, B$(Q, I): Print #1, B2%(Q, I): Next I
                 For I = 0 To 21: Print #1, P$(Q, I): Print #1, P3%(Q, I): Next I
                 For I = 0 To 22: For I1 = 0 To 21: Print #1, B6%(I, I1): Next I1: Next I
                 For I = 0 To 21: For I1 = 0 To 41: Print #1, P0%(I, I1): Next I1: Next I
                 Print #1, D0%(Q)
-				Print #1, D1%(Q)
+                Print #1, D1%(Q)
                 For I = 0 To 21: Print #1, T%(I): Next I
                 For I = 0 To 22: Print #1, P4%(I): Next I
                 Close #1
@@ -7072,9 +7073,14 @@ Sub BoxToScreen (BK$)
                 Locate , 18
                 Print Using BK$; B8%(I, I1, 0); B8%(I, I1, 2); B8%(I, I1, 1); B8%(I, I1, 3); B8%(I, I1, 4); B8%(I, I1, 5); B8%(I, I1, 6); B8%(I, I1, 8); B8%(I, I1, 7); B8%(I, I1, 9); B8%(I, I1, 10); B8%(I, I1, 11); B8%(I, I1, 16); B8%(I, I1, 17);
                 Print "   ";
+
+                hits = B5%(I, I1, 1)
+                swings = B5%(I, I1, 0)
+
+                'BA
                 If B5%(I, I1, 0) = 0 Or B5%(I, I1, 1) = 0 Then Print " .000   ";: GoTo 735
                 If B5%(I, I1, 0) = B5%(I, I1, 1) Then Print "1.000   ";: GoTo 735
-                Print Using " .###   "; B5%(I, I1, 1) / B5%(I, I1, 0);
+                Print Using "#.###   "; B5%(I, I1, 1) / B5%(I, I1, 0);
 
                 735 Print Using "##  ###"; B5%(I, I1, 6); B5%(I, I1, 3)
                 For I2 = 0 To 17
@@ -7085,6 +7091,7 @@ Sub BoxToScreen (BK$)
         Next I3
 
         For I1 = 0 To 21: For I2 = 0 To 13: T3%(I2) = T3%(I2) + P8%(I, I1, I2 + 23): Next
+
         For I2 = 14 To 17: T3%(I2) = T3%(I2) + P8%(I, I1, I2 + 22): Next: Next
 
         For I1 = 1 To P6%(I)
@@ -7103,7 +7110,7 @@ Sub BoxToScreen (BK$)
                         If P5%(I, I2, 24) = P5%(I, I2, 23) Then
                             Print "1.000   ";
                         Else
-                            Print Using " .###   "; P5%(I, I2, 24) / P5%(I, I2, 23);
+                            Print Using "#.###   "; P5%(I, I2, 24) / P5%(I, I2, 23);
                         End If
 
                         Print Using "##  ###"; P5%(I, I2, 29); P5%(I, I2, 26)
@@ -7166,25 +7173,25 @@ Sub BoxToScreen (BK$)
 
                 If P%(I, I2, 15) = I1 Then
                     I4 = 1 - I
-					Locate , 1
+                    Locate , 1
                     Print P$(I, I2); " ";
-                    
-					If P2%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then
+
+                    If P2%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then
                         Print "(W,"; Right$(Str$(P5%(I, I2, 6) + 1), (Len(Str$(P5%(I, I2, 6) + 1)) - 1)); "-"; Right$(Str$(P5%(I, I2, 7)), (Len(Str$(P5%(I, I2, 7))) - 1)); ")";
-						W$ = P$(I, I2)
+                        W$ = P$(I, I2)
                     End If
 
                     If S1%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then Print "(S,"; Right$(Str$(P5%(I, I2, 12) + 1), (Len(Str$(P5%(I, I2, 12) + 1)) - 1)); ")";
 
                     If P2%(I) = I2 And S6%(I, 0) - S6%(I4, 0) < 0 Then
                         Print "(L,"; Right$(Str$(P5%(I, I2, 6) + 0), (Len(Str$(P5%(I, I2, 6) + 0)) - 1)); "-"; Right$(Str$(P5%(I, I2, 7) + 1), (Len(Str$(P5%(I, I2, 7) + 1)) - 1)); ")";
-						L$ = P$(I, I2)
+                        L$ = P$(I, I2)
                     End If
 
                     If P8%(I, I2, 19) > 0 Then Print "(BS,";: Print Using "##"; P5%(I, I2, 19);: Print ")";
                     If P8%(I, I2, 22) > 0 Then Print "(H,";: Print Using "##"; P5%(I, I2, 22);: Print ")";
 
-                    Locate , 29: Print Using "##"; Int(P8%(I, I2, 0) / 3);
+                    Locate , 30: Print Using "##"; Int(P8%(I, I2, 0) / 3);
 
                     If P8%(I, I2, 0) - (Int(P8%(I, I2, 0) / 3) * 3) > 0 Then Print ".";: Print Using "#"; P8%(I, I2, 0) - (Int(P8%(I, I2, 0) / 3) * 3);
 
@@ -7194,16 +7201,16 @@ Sub BoxToScreen (BK$)
 
                     Print "   ";
 
-                    If P5%(I, I2, 3) > 0 And P5%(I, I2, 0) = 0 Then
+                    If P8%(I, I2, 3) > 0 And P8%(I, I2, 0) = 0 Then
                         Print "99.99 ";
                     Else
-                        If P5%(I, I2, 0) = 0 Then
+                        If P8%(I, I2, 0) = 0 Then
                             Print "--.-- ";
                         Else
-                            If P5%(I, I2, 3) = 0 Then
+                            If P8%(I, I2, 3) = 0 Then
                                 Print " 0.00 ";
                             Else
-                                Print Using "##.## "; P5%(I, I2, 3) / (P5%(I, I2, 0) / 3) * 9;
+                                Print Using "##.## "; P8%(I, I2, 3) / (P8%(I, I2, 0) / 3) * 9;
                             End If
                         End If
                     End If
@@ -7226,11 +7233,13 @@ Sub BoxToScreen (BK$)
         Color 14, 0
         Print "TOTALS";
         Color 15, 0
-        Locate , 29
+
+        Locate , 30
 
         If (T3%(0) / 3) >= 10 Then
-            Locate (P6%(I) + 2), 28
+            Locate (P6%(I) + 2), 29
         End If
+
         Print Int(T3%(0) / 3);
 
         If T3%(0) - (Int(T3%(0) / 3) * 3) > 0 Then
@@ -7613,14 +7622,14 @@ Sub BoxToFile (NM$, BK$, E%(), SPECIAL)
 
                     If P2%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then
                         Print #2, "(W,"; Right$(Str$(P5%(I, I2, 6) + 1), (Len(Str$(P5%(I, I2, 6) + 1)) - 1)); "-"; Right$(Str$(P5%(I, I2, 7)), (Len(Str$(P5%(I, I2, 7))) - 1)); ")";
-						W$ = P$(I, I2)
+                        W$ = P$(I, I2)
                     End If
 
                     If S1%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then Print #2, "(S,"; Right$(Str$(P5%(I, I2, 12) + 1), (Len(Str$(P5%(I, I2, 12) + 1)) - 1)); ")";
 
                     If P2%(I) = I2 And S6%(I, 0) - S6%(I4, 0) < 0 Then
                         Print #2, "(L,"; Right$(Str$(P5%(I, I2, 6) + 0), (Len(Str$(P5%(I, I2, 6) + 0)) - 1)); "-"; Right$(Str$(P5%(I, I2, 7) + 1), (Len(Str$(P5%(I, I2, 7) + 1)) - 1)); ")";
-						L$ = P$(I, I2)
+                        L$ = P$(I, I2)
                     End If
 
                     If P8%(I, I2, 19) > 0 Then Print #2, "(BS,";: Print #2, Using "##"; P5%(I, I2, 19);: Print #2, ")";

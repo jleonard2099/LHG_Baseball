@@ -2835,10 +2835,11 @@ Sub PrintPitcherInfo (idx%)
 
 End Sub
 
+
+
 '$INCLUDE: 'Game_Routines.BM'
 '$INCLUDE: 'Game_Routines_Gfx.BM'
 '$INCLUDE: 'SOURCE.BM'
 '$INCLUDE: 'KeyInput.BM'
 '$INCLUDE: 'QPProEqu.BM'
 '$INCLUDE: 'PadRight.BM'
-
