@@ -288,6 +288,9 @@ End Sub
 Sub TITLE ()
 
     KEY Off
+
+	Color 15, 0
+
 	Cls
 
 	Color 12, 1

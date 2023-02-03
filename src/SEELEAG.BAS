@@ -110,243 +110,90 @@ Sub SEELEAG ()
 
                     Close #2
 
-                    'First, it appears we're going to build strings from the values we want to print
-                    'Later, we will simply loop through this array and print those strings
-                    'This appears to have been adopted in place of the approach used most anywhere
-                    'else in the games, where complex print using logic is included in the loop
+                    'First, we build strings from the values we want to print
+                    'Later, we will loop through this array and print those strings
+                    'This appears to have been adopted in place of the approach used
+                    'most in other games, where complex print logic is in the loop
 
-                    '-- I'm pretty confident these 4 loops can be made into 1
-                    '-- with an outer loop from 1 to 4.
-                    '-- I think the only thing different each time is literally
-                    '-- the claculation of D1 based on where the W/L tallies
-                    '-- are for each division
-
-                    '-----
                     RT = 0
 
-                    D1 = W(1) - L(1)
+                    For O = 1 To 4
 
-                    For P = 1 To 10
+                        first = ((O - 1) * 10) + 1
+                        last = O * 10
 
-                        If T$(P) = "*" Then
+                        D1 = W(first) - L(first)
 
-                            seeP$(P) = ""
+                        For P = first To last
 
-                        Else
+                            If T$(P) = "*" Then
 
-                            seeP$(P) = PadRight$(T$(P), 12)
+                                seeP$(P) = ""
 
-                            J! = W(P)
-                            seeP$(P) = seeP$(P) + Right$("     " + Str$(J!), 3)
-                            seeP$(P) = PadRight$(seeP$(P), 16)
-
-                            J! = L(P)
-                            seeP$(P) = seeP$(P) + Right$("     " + Str$(J!), 3)
-                            seeP$(P) = PadRight$(seeP$(P), 21)
-
-                            J! = 0
-                            If W(P) + L(P) > 0 Then J! = W(P) / (W(P) + L(P))
-
-                            J! = Int(1000 * J! + .5)
-
-                            If J! = 1000 Then
-                                seeP$(P) = seeP$(P) + "1.000 "
                             Else
 
-                                If J! > 1000 Then
+                                seeP$(P) = PadRight$(T$(P), 12)
 
-                                    A$ = Str$(J! - 1000)
-                                    L = Len(A$)
-                                    A$ = Right$(A$, L - 1)
-                                    While Len(A$) < 3: A$ = "0" + A$: Wend
+                                'Wins
+                                J! = W(P)
+                                seeP$(P) = seeP$(P) + Right$("     " + Str$(J!), 3)
+                                seeP$(P) = PadRight$(seeP$(P), 16)
 
-                                    seeP$(P) = seeP$(P) + "1." + A$
+                                'Losses
+                                J! = L(P)
+                                seeP$(P) = seeP$(P) + Right$("     " + Str$(J!), 3)
+                                seeP$(P) = PadRight$(seeP$(P), 21)
+
+                                'PCT
+                                J! = 0
+                                If W(P) + L(P) > 0 Then J! = W(P) / (W(P) + L(P))
+
+                                J! = Int(1000 * J! + .5)
+
+                                If J! = 1000 Then
+                                    seeP$(P) = seeP$(P) + "1.000 "
+                                Else
+
+                                    If J! > 1000 Then
+
+                                        A$ = Str$(J! - 1000)
+                                        L = Len(A$)
+                                        A$ = Right$(A$, L - 1)
+                                        '0-pad PCT of fewer than 3 chars
+                                        While Len(A$) < 3: A$ = "0" + A$: Wend
+
+                                        seeP$(P) = seeP$(P) + "1." + A$
+                                    Else
+                                        A$ = Str$(J!)
+                                        L = Len(A$)
+                                        A$ = Right$(A$, L - 1)
+                                        '0-pad PCT of fewer than 3 chars
+                                        While Len(A$) < 3: A$ = "0" + A$: Wend
+
+                                        seeP$(P) = seeP$(P) + "." + A$
+
+                                    End If
 
                                 End If
 
-                            End If
+                                seeP$(P) = PadRight$(seeP$(P), 28)
 
-                            seeP$(P) = PadRight$(seeP$(P), 28)
+                                'Games Behind
+                                D = W(P) - L(P)
+                                D = D1 - D
+                                BK$ = Str$(Int(D / 2))
+                                If D = 0 Then BK$ = "---"
+                                If D = 1 Then BK$ = "  "
+                                If D > 19 Then L = Len(BK$): BK$ = Right$(BK$, L - 1)
+                                If D / 2 <> Int(D / 2) Then BK$ = BK$ + H$
 
-                            D = W(P) - L(P)
-                            D = D1 - D
-                            BK$ = Str$(Int(D / 2))
-                            If D = 0 Then BK$ = "---"
-                            If D = 1 Then BK$ = "  "
-                            If D > 19 Then L = Len(BK$): BK$ = Right$(BK$, L - 1)
-                            If D / 2 <> Int(D / 2) Then BK$ = BK$ + H$
-
-                            seeP$(P) = seeP$(P) + BK$
-
-                        End If
-
-                    Next P
-
-                    '-----
-                    D1 = W(11) - L(11)
-
-                    For P = 11 To 20
-                        If T$(P) = "*" Then
-
-                            seeP$(P) = ""
-
-                        Else
-
-                            seeP$(P) = PadRight$(T$(P), 12)
-
-                            J! = W(P)
-                            A$ = Right$("     " + Str$(J!), 3)
-                            seeP$(P) = PadRight$(seeP$(P), 16)
-
-                            J! = L(P)
-                            seeP$(P) = seeP$(P) + Right$("     " + Str$(J!), 3)
-                            seeP$(P) = PadRight$(seeP$(P), 21)
-
-                            J! = 0
-                            If W(P) + L(P) > 0 Then J! = W(P) / (W(P) + L(P))
-
-                            J! = Int(1000 * J! + .5)
-
-                            If J! = 1000 Then
-                                seeP$(P) = seeP$(P) + "1.000 "
-                            Else
-
-                                If J! > 1000 Then
-                                    A$ = Str$(J! - 1000)
-                                    L = Len(A$)
-                                    A$ = Right$(A$, L - 1)
-                                    While Len(A$) < 3: A$ = "0" + A$: Wend
-                                    A$ = "1." + A$
-                                    seeP$(P) = seeP$(P) + A$
-
-                                End If
+                                seeP$(P) = seeP$(P) + BK$
 
                             End If
 
-                            seeP$(P) = PadRight$(seeP$(P), 28)
+                        Next P
 
-                            D = W(P) - L(P)
-                            D = D1 - D
-                            BK$ = Str$(Int(D / 2))
-
-                            If D = 0 Then BK$ = "---"
-                            If D = 1 Then BK$ = "  "
-                            If D > 19 Then L = Len(BK$): BK$ = Right$(BK$, L - 1)
-                            If D / 2 <> Int(D / 2) Then BK$ = BK$ + H$
-
-                            seeP$(P) = seeP$(P) + BK$
-
-                        End If
-
-                    Next P
-
-                    '-----
-                    D1 = W(21) - L(21)
-
-                    For P = 21 To 30
-
-                        If T$(P) = "*" Then
-
-                            seeP$(P) = ""
-
-                        Else
-
-                            seeP$(P) = PadRight$(T$(P), 12)
-
-                            J! = W(P)
-                            seeP$(P) = seeP$(P) + Right$("     " + Str$(J!), 3)
-                            seeP$(P) = PadRight$(seeP$(P), 16)
-
-                            J! = L(P)
-                            seeP$(P) = seeP$(P) + Right$("     " + Str$(J!), 3)
-                            seeP$(P) = PadRight$(seeP$(P), 21)
-
-                            J! = 0
-                            If W(P) + L(P) > 0 Then J! = W(P) / (W(P) + L(P))
-
-                            J! = Int(1000 * J! + .5)
-
-                            If J = 1000 Then
-                                seeP$(P) = seeP$(P) + "1.000 "
-                            Else
-                                If J! > 1000 Then
-                                    A$ = Str$(J! - 1000)
-                                    L = Len(A$)
-                                    A$ = Right$(A$, L - 1)
-                                    While Len(A$) < 3: A$ = "0" + A$: Wend
-                                    A$ = "1." + A$
-                                    seeP$(P) = seeP$(P) + A$
-                                End If
-                            End If
-
-                            seeP$(P) = PadRight$(seeP$(P), 28)
-
-                            D = W(P) - L(P)
-                            D = D1 - D
-                            BK$ = Str$(Int(D / 2))
-                            If D = 0 Then BK$ = "---"
-                            If D = 1 Then BK$ = "  "
-                            If D > 19 Then L = Len(BK$): BK$ = Right$(BK$, L - 1)
-                            If D / 2 <> Int(D / 2) Then BK$ = BK$ + H$
-
-                            seeP$(P) = seeP$(P) + BK$
-
-                        End If
-
-                    Next P
-
-                    '-----
-                    D1 = W(31) - L(31)
-
-                    For P = 31 To 40
-
-                        If T$(P) = "*" Then
-
-                            seeP$(P) = ""
-
-                        Else
-
-                            seeP$(P) = PadRight$(T$(P), 12)
-
-                            J! = W(P)
-                            seeP$(P) = seeP$(P) + Right$("     " + Str$(J!), 3)
-                            seeP$(P) = PadRight$(seeP$(P), 16)
-
-                            J! = L(P)
-                            seeP$(P) = seeP$(P) + Right$("     " + Str$(J!), 3)
-                            seeP$(P) = PadRight$(seeP$(P), 21)
-
-                            J! = 0
-                            If W(P) + L(P) > 0 Then J! = W(P) / (W(P) + L(P))
-
-                            J! = Int(1000 * J! + .5)
-                            If J! = 1000 Then
-                                seeP$(P) = seeP$(P) + "1.000 "
-                            Else
-                                If J! > 1000 Then
-                                    A$ = Str$(J! - 1000)
-                                    L = Len(A$)
-                                    A$ = Right$(A$, L - 1)
-                                    While Len(A$) < 3: A$ = "0" + A$: Wend
-                                    A$ = "1." + A$
-                                    seeP$(P) = seeP$(P) + A$
-                                End If
-                            End If
-
-                            seeP$(P) = PadRight$(seeP$(P), 28)
-
-                            D = W(P) - L(P): D = D1 - D: BK$ = Str$(Int(D / 2))
-
-                            If D = 0 Then BK$ = "---"
-                            If D = 1 Then BK$ = "  "
-                            If D > 19 Then L = Len(BK$): BK$ = Right$(BK$, L - 1)
-                            If D / 2 <> Int(D / 2) Then BK$ = BK$ + H$
-
-                            seeP$(P) = seeP$(P) + BK$
-
-                        End If
-
-                    Next P
+                    Next O
 
                     '-----
                     Cls
@@ -457,13 +304,20 @@ Sub SEELEAG ()
 
                                 If J! > 1000 Then
                                     A$ = Str$(J! - 1000)
-
                                     L = Len(A$)
                                     A$ = Right$(A$, L - 1)
                                     While Len(A$) < 3: A$ = "0" + A$: Wend
 
                                     A$ = "1." + A$
                                     seeP$(P) = seeP$(P) + A$
+                                Else
+                                    A$ = Str$(J!)
+                                    L = Len(A$)
+                                    A$ = Right$(A$, L - 1)
+                                    '0-pad PCT of fewer than 3 chars
+                                    While Len(A$) < 3: A$ = "0" + A$: Wend
+
+                                    seeP$(P) = seeP$(P) + "." + A$
 
                                 End If
 
@@ -484,6 +338,7 @@ Sub SEELEAG ()
 
                     For P = 1 To 19
                         Print cmplZ2$(P) + ", " + cmplZ3$(P); Tab(28); Using "#.###  ###"; Z!(P); Z1!(P);
+
                         Print Tab(41); cmplZ2$(P + 238) + ", " + cmplZ3$(P + 238); Tab(69);
                         Print Using "#.###  ###"; Z!(P + 238); Z1!(P + 238)
                     Next
@@ -545,6 +400,7 @@ Sub SEELEAG ()
 
                     '-----
                     For P = 43 To 52
+
                         seeP$(P) = ""
 
                         If cmplZ2$(P) <> "" Then
@@ -620,6 +476,7 @@ Sub SEELEAG ()
 
                     '-----
                     For P = 76 To 84:
+
                         seeP$(P) = ""
 
                         If cmplZ2$(P) <> "" Then
@@ -667,6 +524,7 @@ Sub SEELEAG ()
 
                     '-----
                     For P = 98 To 107:
+
                         seeP$(P) = ""
 
                         If cmplZ2$(P) <> "" Then
@@ -736,6 +594,15 @@ Sub SEELEAG ()
                                     While Len(A$) < 3: A$ = "0" + A$: Wend
                                     A$ = "1." + A$
                                     seeP$(P) = seeP$(P) + A$
+                                Else
+                                    A$ = Str$(J!)
+                                    L = Len(A$)
+                                    A$ = Right$(A$, L - 1)
+                                    '0-pad PCT of fewer than 3 chars
+                                    While Len(A$) < 3: A$ = "0" + A$: Wend
+
+                                    seeP$(P) = seeP$(P) + "." + A$
+
                                 End If
 
                             End If
@@ -862,7 +729,7 @@ Sub SEELEAG ()
                             seeP$(P) = PadRight$(seeP$(P), 26)
                             seeP$(P) = seeP$(P) + Right$("     " + Str$(Z!(P)), 2)
                             seeP$(P) = seeP$(P) + "-"
-                            seeP$(P) = seeP$(P) + Right$("     " + Str$(Z!(P)), 2)
+                            seeP$(P) = seeP$(P) + Right$("     " + Str$(Z1!(P)), 2)
 
                         End If
 
@@ -909,7 +776,7 @@ Sub SEELEAG ()
                             seeP$(P) = cmplZ2$(P)
                             If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
                             seeP$(P) = PadRight$(seeP$(P), 26)
-                            seeP$(P) = seeP$(P) + Right$("     " + Str$(Z!(P)), 3)
+                            seeP$(P) = seeP$(P) + Right$("     " + Str$(Int(Z!(P))), 3)
 
                         End If
 
@@ -1055,14 +922,25 @@ Sub SEELEAG ()
 
                     Print "CLUB         AVG   AB    R    H   2B   3B  HR   RBI   BB   SO  SB  CS   E"
                     Color 15
-                    H! = 0: AB = 0: R = 0: B2% = 0: B3 = 0: HR = 0: RBI = 0: BB = 0: SO = 0: SB = 0: CS = 0: E = 0
+                    H! = 0
+                    AB = 0
+                    R = 0
+                    B2% = 0
+                    B3 = 0
+                    HR = 0
+                    RBI = 0
+                    BB = 0
+                    SO = 0
+                    SB = 0
+                    CS = 0
+                    E = 0
 
                     For X = 1 To 40
 
                         If BA$(X) <> "" And BA$(X) <> "*" Then
                             Print Left$(BA$(X), 11); Tab(13);
                             '           "AVG   AB    R    H   2B   3B  HR   RBI   BB   SO  SB  CS   E"
-                            Print Using "#.### ####  ###  ### ###  ### ###  ####  ###  ### ### ###  ###"; OFT!(X, 1); OFT!(X, 3); OFT!(X, 5); OFT!(X, 4); OFT!(X, 7); OFT!(X, 8); OFT!(X, 9); OFT!(X, 6); OFT!(X, 10); OFT!(X, 11); OFT!(X, 12); OFT!(X, 13); OFT!(X, 14)
+                            Print Using ".### ####  ### #### ###  ### ###  ####  ### #### ### ###  ###"; OFT!(X, 1); OFT!(X, 3); OFT!(X, 5); OFT!(X, 4); OFT!(X, 7); OFT!(X, 8); OFT!(X, 9); OFT!(X, 6); OFT!(X, 10); OFT!(X, 11); OFT!(X, 12); OFT!(X, 13); OFT!(X, 14)
                             ATBATS! = ATBATS! + OFT!(X, 3)
                             H! = H! + OFT!(X, 4)
                             R = R + OFT!(X, 5)
@@ -1087,9 +965,8 @@ Sub SEELEAG ()
                     Print
                     Print "LG TOTALS"; Tab(13); Using "#.###"; statCalc!;
 
-                    '                    "AB    R    H   2B   3B  HR   RBI   BB   SO  SB  CS   E"
-
-                    Print Tab(18); Using "###   ###  ### ###  ### ###  ###   ###  ### ### ###  ###"; ATBATS!; R; H!; B2; B3; HR; RBI; BB; SO; SB; CS; E
+                    '                      AB    R    H   2B   3B  HR   RBI   BB   SO  SB  CS   E"
+                    Print Tab(18); Using "#### ### #### ###  ### ###  ####  ### #### ### ###  ###"; ATBATS!; R; H!; B2; B3; HR; RBI; BB; SO; SB; CS; E
 
                     '-----
                     HZ = 1: VT = 24

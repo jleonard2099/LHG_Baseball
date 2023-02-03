@@ -111,11 +111,11 @@ Dim TP&(33)
 '----------------------------------------
 '   Used across LEAGCMPL.BAS routines
 '----------------------------------------
-Dim cmplZ2$(298), cmplZ3$(298)
-Dim BA$(40), ER$(40), NM$(46)
+'Dim cmplZ2$(298), cmplZ3$(298)
+'Dim BA$(40), ER$(40), NM$(46)
 Dim BAT%(24), PIT%(23)
-Dim cmplZ1!(298, 2)
-Dim DFT!(40, 20), JS!(46, 42), OFT!(40, 20)
+'Dim cmplZ1!(298, 2)
+'Dim DFT!(40, 20), JS!(46, 42), OFT!(40, 20)
 
 '----------------------------------------
 '   Used across NEWLDR.BAS,

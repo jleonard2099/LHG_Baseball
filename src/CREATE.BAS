@@ -304,10 +304,10 @@ Sub EditLeague (LG$)
 
         Else
 
-			'Save settings
+            'Save settings
             Cls
 
-            Open diskPaths$(2) + LG$ For Output As #2
+            Open diskPaths$(2) + LG$ + ".LIB" For Output As #2
 
             Print #2, LG$
             Print #2, D1$
@@ -353,18 +353,18 @@ Sub EditLeague (LG$)
 
     Loop Until I$ = "3"
 
-	Open diskPaths$(2) + LG$ + ".TMS" For Output As #2
-	Write #2, LG$
-	Write #2, D1$
-	Write #2, D2$
-	Write #2, D3$
-	Write #2, D4$
+    Open diskPaths$(2) + LG$ + ".TMS" For Output As #2
+    Write #2, LG$
+    Write #2, D1$
+    Write #2, D2$
+    Write #2, D3$
+    Write #2, D4$
 
-	For X = 1 To 40
-		Write #2, Z1$(X)
-	Next
+    For X = 1 To 40
+        Write #2, Z1$(X)
+    Next
 
-	Close 2
+    Close 2
 
 
 End Sub

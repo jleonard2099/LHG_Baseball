@@ -85,6 +85,7 @@ Sub LEAGCMPL ()
             Loop Until UCase$(I$) = "N" Or ExitCode% = 27
 
             If ExitCode% <> 27 Then
+
                 targetFile$ = RTrim$(targetFile$)
                 WE$ = Left$(targetFile$, Len(targetFile$) - 4)
                 LH$ = Left$(WE$, 8)
@@ -114,7 +115,6 @@ Sub LEAGCMPL ()
                 Input #2, LG$, D1$, D2$, D3$, D4$
                 For X = 1 To 40:
                     Input #2, TM$(X)
-                    'H1$(X) = TM$(X)
                 Next
                 Close 2
 
@@ -166,11 +166,13 @@ Sub LEAGCMPL ()
                                 O1(X) = fullWins
                                 O2(X) = fullLosses
                             End If
+
                         End If
 
                     Next X
 
                     If skipCheck <> 1 Then
+
                         For K = 1 To 23
                             Input #1, NM$(K), ZM%(K)
                         Next
@@ -208,8 +210,11 @@ Sub LEAGCMPL ()
                             JS!(J, 17) = JS!(J, 13)
                             JS!(J, 18) = JS!(J, 14)
 
+                            'Here is where AVG is assigned 0
                             If (JS!(J, 8) + JS!(J, 1)) / (fullWins + fullLosses) < 3.1 Then
-                                JS!(J, 14) = 0: JS!(J, 15) = 0: JS!(J, 16) = 0
+                                JS!(J, 14) = 0
+                                JS!(J, 15) = 0
+                                JS!(J, 16) = 0
                             Else
                                 JS!(J, 16) = JS!(J, 2) / JS!(J, 1)
                                 JS!(J, 14) = (JS!(J, 2) + JS!(J, 5) + 2 * JS!(J, 6) + 3 * JS!(J, 7)) / JS!(J, 1)
@@ -240,9 +245,12 @@ Sub LEAGCMPL ()
 
                     For X = AA To ZZ - 1
                         For Y = X + 1 To ZZ:
-                            If O1(X) - O2(X) <= O1(Y) - O2(Y) Then
-                                If O1(X) - O2(X) <> O1(Y) - O2(Y) Or O1(X) > O1(Y) And O1(X) <= O2(X) Then
-                                    If O1(X) - O2(X) <> O1(Y) - O2(Y) And O1(X) < O1(Y) And O1(X) >= O2(X) Then
+                            diffX = O1(X) - O2(X)
+                            diffY = O1(Y) - O2(Y)
+
+                            If diffX <= diffY Then
+                                If diffX <> diffY Or O1(X) > O1(Y) And O1(X) <= O2(X) Then
+                                    If diffX <> diffY And O1(X) < O1(Y) And O1(X) >= O2(X) Then
                                         TN$ = TM$(X)
                                         TM$(X) = TM$(Y)
                                         TM$(Y) = TN$
@@ -321,11 +329,12 @@ Sub CheckLeagueStats (targetTeam$, WT$)
 
             Print "     CHECKING STATS OF "; NM$(X)
 
-            '3301 IF JS!(X,1)>0 THEN JS!(X,16)=JS!(X,2)/JS!(X,1)
-
             PS$(X) = WT$
 
+            skipIF = 0
+
             For Y = 1 To 20
+
                 If cmplZ2$(Y) = NM$(X) And cmplZ3$(Y) = WT$ Then
 
                     cmplZ1!(Y, 1) = JS!(X, 13)
@@ -338,17 +347,17 @@ Sub CheckLeagueStats (targetTeam$, WT$)
                         cmplZ1!(Y, 2) = 0
                     End If
 
-                    '4820
                     For Y = 1 To 19
                         For Z = Y + 1 To 20
                             If cmplZ1!(Y, 1) < cmplZ1!(Z, 1) Then
                                 Swap cmplZ3$(Y), cmplZ3$(Z)
                                 Swap cmplZ2$(Y), cmplZ2$(Z)
-                                For Z1 = 1 To 2: Swap cmplZ1!(Y, Z1), cmplZ1!(Z, Z1): Next Z1
+                                For Z1 = 1 To 2:
+                                    Swap cmplZ1!(Y, Z1), cmplZ1!(Z, Z1)
+                                Next Z1
                             End If
                         Next Z
                     Next Y
-                    'Return
 
                     skipIF = 1
                     Exit For
@@ -357,50 +366,63 @@ Sub CheckLeagueStats (targetTeam$, WT$)
 
             Next Y
 
-            If JS!(X, 16) >= cmplZ1!(20, 1) Or skipIF = 0 Then
+            If JS!(X, 16) >= cmplZ1!(20, 1) And skipIF = 0 Then
+
                 cmplZ2$(20) = NM$(X)
                 cmplZ3$(20) = PS$(X)
                 cmplZ1!(20, 1) = JS!(X, 16)
                 cmplZ1!(20, 2) = JS!(X, 1)
-                '4820
+
                 For Y = 1 To 19
                     For Z = Y + 1 To 20
                         If cmplZ1!(Y, 1) < cmplZ1!(Z, 1) Then
                             Swap cmplZ3$(Y), cmplZ3$(Z)
                             Swap cmplZ2$(Y), cmplZ2$(Z)
-                            For Z1 = 1 To 2: Swap cmplZ1!(Y, Z1), cmplZ1!(Z, Z1): Next Z1
+                            For Z1 = 1 To 2:
+                                Swap cmplZ1!(Y, Z1), cmplZ1!(Z, Z1)
+                            Next Z1
                         End If
                     Next Z
                 Next Y
-                'Return
 
             End If
 
             3318 '
             If (JS!(X, 8) + JS!(X, 1)) / (fullWins + fullLosses) >= 3.1 Then
-                If JS!(X, 16) <= cmplZ1!(258, 1) Then
+
+                If JS!(X, 16) <> 0 And JS!(X, 16) <= cmplZ1!(258, 1) Then
+
                     cmplZ2$(258) = NM$(X)
                     cmplZ3$(258) = PS$(X)
                     cmplZ1!(258, 1) = JS!(X, 16)
                     cmplZ1!(258, 2) = JS!(X, 1)
+
                     For Y = 239 To 257
                         For Z = Y + 1 To 258
                             If cmplZ1!(Y, 1) > cmplZ1!(Z, 1) Then
                                 Swap cmplZ3$(Y), cmplZ3$(Z)
                                 Swap cmplZ2$(Y), cmplZ2$(Z)
-                                For Z1 = 1 To 2: Swap cmplZ1!(Y, Z1), cmplZ1!(Z, Z1): Next Z1
+                                For Z1 = 1 To 2:
+                                    Swap cmplZ1!(Y, Z1), cmplZ1!(Z, Z1)
+                                Next Z1
                             End If
                         Next Z
                     Next Y
+
                 End If
+
             End If
+
+            skipIF = 0
 
             3320 '
             For Y = 99 To 108
+
                 If cmplZ2$(Y) = NM$(X) And cmplZ3$(Y) = WT$ Then
-                    '4871
+
                     cmplZ1!(Y, 1) = JS!(X, 14)
                     cmplZ1!(Y, 2) = JS!(X, 1)
+
                     If cmplZ1!(Y, 2) < (fullWins + fullLosses) * 2.5 Then
                         cmplZ2$(Y) = "*"
                         cmplZ3$(Y) = "*"
@@ -411,36 +433,32 @@ Sub CheckLeagueStats (targetTeam$, WT$)
                     For Y = 99 To 107
                         For Z = Y + 1 To 108
                             If cmplZ1!(Y, 1) < cmplZ1!(Z, 1) Then
-                                TN$ = cmplZ3$(Y)
-                                cmplZ3$(Y) = cmplZ3$(Z)
-                                cmplZ3$(Z) = TN$
-                                TN$ = cmplZ2$(Y)
-                                cmplZ2$(Y) = cmplZ2$(Z)
-                                cmplZ2$(Z) = TN$
-                                For Z1 = 1 To 2
-                                    J! = cmplZ1!(Y, Z1)
-                                    cmplZ1!(Y, Z1) = cmplZ1!(Z, Z1)
-                                    cmplZ1!(Z, Z1) = J!
+                                Swap cmplZ2$(Y), cmplZ2$(Y)
+                                Swap cmplZ3$(Y), cmplZ3$(Z)
+                                For Z1 = 1 To 2:
+                                    Swap cmplZ1!(Y, Z1), cmplZ1!(Z, Z1)
                                 Next Z1
                             End If
                         Next Z
                     Next Y
-                    'Return
 
                     skipIF = 1
                     Exit For
+
                 End If
+
             Next Y
 
-            If JS!(X, 14) >= cmplZ1!(108, 1) Or skipIF = 0 Then
+            If JS!(X, 14) >= cmplZ1!(108, 1) And skipIF = 0 Then
+
                 cmplZ2$(108) = NM$(X)
                 cmplZ3$(108) = PS$(X)
                 cmplZ1!(108, 1) = JS!(X, 14)
                 cmplZ1!(108, 2) = JS!(X, 1)
 
-                '4871
                 cmplZ1!(Y, 1) = JS!(X, 14)
                 cmplZ1!(Y, 2) = JS!(X, 1)
+
                 If cmplZ1!(Y, 2) < (fullWins + fullLosses) * 2.5 Then
                     cmplZ2$(Y) = "*"
                     cmplZ3$(Y) = "*"
@@ -451,87 +469,87 @@ Sub CheckLeagueStats (targetTeam$, WT$)
                 For Y = 99 To 107
                     For Z = Y + 1 To 108
                         If cmplZ1!(Y, 1) < cmplZ1!(Z, 1) Then
-                            TN$ = cmplZ3$(Y)
-                            cmplZ3$(Y) = cmplZ3$(Z)
-                            cmplZ3$(Z) = TN$
-                            TN$ = cmplZ2$(Y)
-                            cmplZ2$(Y) = cmplZ2$(Z)
-                            cmplZ2$(Z) = TN$
-                            For Z1 = 1 To 2
-                                J! = cmplZ1!(Y, Z1)
-                                cmplZ1!(Y, Z1) = cmplZ1!(Z, Z1)
-                                cmplZ1!(Z, Z1) = J!
+                            Swap cmplZ2$(Y), cmplZ2$(Y)
+                            Swap cmplZ3$(Y), cmplZ3$(Z)
+                            For Z1 = 1 To 2:
+                                Swap cmplZ1!(Y, Z1), cmplZ1!(Z, Z1)
                             Next Z1
                         End If
                     Next Z
                 Next Y
-                'Return
 
             End If
+
+            skipIF = 0
 
             3325 '
             For Y = 110 To 119
 
                 If cmplZ2$(Y) = NM$(X) And cmplZ3$(Y) = WT$ Then
 
-                    '4878
-                    cmplZ1!(Y, 1) = JS!(X, 15): cmplZ1!(Y, 2) = JS!(X, 1)
+                    cmplZ1!(Y, 1) = JS!(X, 15)
+                    cmplZ1!(Y, 2) = JS!(X, 1)
+
                     If cmplZ1!(Y, 2) < (fullWins + fullLosses) * 2.5 Then
-                        cmplZ2$(Y) = "*": cmplZ3$(Y) = "*": cmplZ1!(Y, 1) = 0: cmplZ1!(Y, 2) = 0
+                        cmplZ2$(Y) = "*"
+                        cmplZ3$(Y) = "*"
+                        cmplZ1!(Y, 1) = 0
+                        cmplZ1!(Y, 2) = 0
                     End If
 
                     For Y = 110 To 118
                         For Z = Y + 1 To 119
                             If cmplZ1!(Y, 1) < cmplZ1!(Z, 1) Then
-                                TN$ = cmplZ3$(Y): cmplZ3$(Y) = cmplZ3$(Z): cmplZ3$(Z) = TN$
-                                TN$ = cmplZ2$(Y): cmplZ2$(Y) = cmplZ2$(Z): cmplZ2$(Z) = TN$
+                                Swap cmplZ2$(Y), cmplZ2$(Y)
+                                Swap cmplZ3$(Y), cmplZ3$(Z)
                                 For Z1 = 1 To 2:
-                                    J! = cmplZ1!(Y, Z1)
-                                    cmplZ1!(Y, Z1) = cmplZ1!(Z, Z1)
-                                    cmplZ1!(Z, Z1) = J!
+                                    Swap cmplZ1!(Y, Z1), cmplZ1!(Z, Z1)
                                 Next Z1
                             End If
                         Next Z
                     Next Y
-                    'Return
 
                     skipIF = 1
+
                 End If
 
             Next Y
 
             3327 '
-            If JS!(X, 15) >= cmplZ1!(119, 1) Or skipIF = 0 Then
+            If JS!(X, 15) >= cmplZ1!(119, 1) And skipIF = 0 Then
 
                 cmplZ2$(119) = NM$(X)
-                cmplZ3$(119) = PS$(X): cmplZ1!(119, 1) = JS!(X, 15): cmplZ1!(119, 2) = JS!(X, 1):
+                cmplZ3$(119) = PS$(X)
+                cmplZ1!(119, 1) = JS!(X, 15)
+                cmplZ1!(119, 2) = JS!(X, 1)
 
-                '4878
-                cmplZ1!(Y, 1) = JS!(X, 15): cmplZ1!(Y, 2) = JS!(X, 1)
+                cmplZ1!(Y, 1) = JS!(X, 15)
+                cmplZ1!(Y, 2) = JS!(X, 1)
 
                 If cmplZ1!(Y, 2) < (fullWins + fullLosses) * 2.5 Then
-                    cmplZ2$(Y) = "*": cmplZ3$(Y) = "*": cmplZ1!(Y, 1) = 0: cmplZ1!(Y, 2) = 0
+                    cmplZ2$(Y) = "*"
+                    cmplZ3$(Y) = "*"
+                    cmplZ1!(Y, 1) = 0
+                    cmplZ1!(Y, 2) = 0
                 End If
 
                 For Y = 110 To 118
                     For Z = Y + 1 To 119
                         If cmplZ1!(Y, 1) < cmplZ1!(Z, 1) Then
-                            TN$ = cmplZ3$(Y): cmplZ3$(Y) = cmplZ3$(Z): cmplZ3$(Z) = TN$
-                            TN$ = cmplZ2$(Y): cmplZ2$(Y) = cmplZ2$(Z): cmplZ2$(Z) = TN$
+                            Swap cmplZ2$(Y), cmplZ2$(Y)
+                            Swap cmplZ3$(Y), cmplZ3$(Z)
                             For Z1 = 1 To 2
-                                J! = cmplZ1!(Y, Z1)
-                                cmplZ1!(Y, Z1) = cmplZ1!(Z, Z1)
-                                cmplZ1!(Z, Z1) = J!
+                                Swap cmplZ1!(Y, Z1), cmplZ1!(Z, Z1)
                             Next Z1
                         End If
                     Next Z
                 Next Y
-                'Return
 
             End If
 
             3330 '
             For Z = 21 To 31
+
                 If cmplZ2$(Z) = NM$(X) And cmplZ3$(Z) = WT$ Then
                     cmplZ1!(Z, 1) = JS!(X, 2)
                     GoTo 3335
@@ -549,25 +567,22 @@ Sub CheckLeagueStats (targetTeam$, WT$)
                 For Z = 21 To 30
                     For Z1 = Z + 1 To 31
                         If cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) Then
-                            TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
-                            TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
-                            J! = cmplZ1!(Z1, 1)
-                            cmplZ1!(Z1, 1) = cmplZ1!(Z, 1)
-                            cmplZ1!(Z, 1) = J!
+                            Swap cmplZ2$(Z1), cmplZ2$(Z)
+                            Swap cmplZ3$(Z1), cmplZ3$(Z)
+                            Swap cmplZ1!(Z1, 1), cmplZ1!(Z, 1)
                         End If
                     Next Z1
                 Next Z
 
-                '3340 FOR Z = 21 TO 31
-                '3341 NEXT Z
-
             End If
 
             For Z = 32 To 42
+
                 If cmplZ2$(Z) = NM$(X) And cmplZ3$(Z) = WT$ Then
                     cmplZ1!(Z, 1) = JS!(X, 5)
                     GoTo 3347
                 End If
+
             Next Z
 
             If JS!(X, 5) > cmplZ1!(42, 1) Then
@@ -579,18 +594,16 @@ Sub CheckLeagueStats (targetTeam$, WT$)
                 3347 '
                 For Z = 32 To 41
                     For Z1 = Z + 1 To 42
+
                         If cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) Then
-                            TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
-                            TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
-                            J! = cmplZ1!(Z1, 1)
-                            cmplZ1!(Z1, 1) = cmplZ1!(Z, 1)
-                            cmplZ1!(Z, 1) = J!
+                            Swap cmplZ2$(Z1), cmplZ2$(Z)
+                            Swap cmplZ3$(Z1), cmplZ3$(Z)
+                            Swap cmplZ1!(Z1, 1), cmplZ1!(Z, 1)
                         End If
+
                     Next Z1
                 Next Z
 
-                '3352 FOR Z = 32 TO 42
-                '3353 NEXT Z
             End If
 
             3354 '
@@ -611,17 +624,13 @@ Sub CheckLeagueStats (targetTeam$, WT$)
                 For Z = 43 To 52
                     For Z1 = Z + 1 To 53
                         If cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) Then
-                            TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
-                            TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
-                            J! = cmplZ1!(Z1, 1)
-                            cmplZ1!(Z1, 1) = cmplZ1!(Z, 1)
-                            cmplZ1!(Z, 1) = J!
+                            Swap cmplZ2$(Z1), cmplZ2$(Z)
+                            Swap cmplZ3$(Z1), cmplZ3$(Z)
+                            Swap cmplZ1!(Z1, 1), cmplZ1!(Z, 1)
                         End If
                     Next Z1
                 Next Z
 
-                '3364 FOR Z = 43 TO 53
-                '3365 NEXT Z
             End If
 
             For Z = 54 To 64
@@ -641,20 +650,14 @@ Sub CheckLeagueStats (targetTeam$, WT$)
                 For Z = 54 To 63:
                     For Z1 = Z + 1 To 64:
                         If cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) Then
-                            TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
-                            TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
-                            J! = cmplZ1!(Z1, 1)
-                            cmplZ1!(Z1, 1) = cmplZ1!(Z, 1)
-                            cmplZ1!(Z, 1) = J!
+                            Swap cmplZ2$(Z1), cmplZ2$(Z)
+                            Swap cmplZ3$(Z1), cmplZ3$(Z)
+                            Swap cmplZ1!(Z1, 1), cmplZ1!(Z, 1)
                         End If
                     Next Z1
                 Next Z
 
-                '3376 FOR Z = 54 TO 64
-                '3377 NEXT Z
             End If
-
-            '-- This ends where we have problems with Z3$()
 
             3378 '
             For Z = 65 To 74
@@ -676,17 +679,13 @@ Sub CheckLeagueStats (targetTeam$, WT$)
                 For Z = 65 To 73
                     For Z1 = Z + 1 To 74
                         If cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) Then
-                            TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
-                            TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
-                            J! = cmplZ1!(Z1, 1)
-                            cmplZ1!(Z1, 1) = cmplZ1!(Z, 1)
-                            cmplZ1!(Z, 1) = J!
+                            Swap cmplZ2$(Z1), cmplZ2$(Z)
+                            Swap cmplZ3$(Z1), cmplZ3$(Z)
+                            Swap cmplZ1!(Z1, 1), cmplZ1!(Z, 1)
                         End If
                     Next Z1
                 Next Z
 
-                '3388 FOR Z = 65 TO 74
-                '3389 NEXT Z
             End If
 
             For Z = 76 To 85
@@ -706,18 +705,14 @@ Sub CheckLeagueStats (targetTeam$, WT$)
                 For Z = 76 To 84
                     For Z1 = Z + 1 To 85
                         If cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) Then
-                            TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
-                            TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
-                            J! = cmplZ1!(Z1, 1)
-                            cmplZ1!(Z1, 1) = cmplZ1!(Z, 1)
-                            cmplZ1!(Z, 1) = J!
+                            Swap cmplZ2$(Z1), cmplZ2$(Z)
+                            Swap cmplZ3$(Z1), cmplZ3$(Z)
+                            Swap cmplZ1!(Z1, 1), cmplZ1!(Z, 1)
                         End If
 
                     Next Z1
                 Next Z
 
-                '3400 FOR Z = 76 TO 86
-                '3401 NEXT Z
             End If
 
             For Z = 87 To 97
@@ -738,17 +733,13 @@ Sub CheckLeagueStats (targetTeam$, WT$)
                 For Z = 87 To 96
                     For Z1 = Z + 1 To 97
                         If cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) Then
-                            TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
-                            TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
-                            J! = cmplZ1!(Z1, 1)
-                            cmplZ1!(Z1, 1) = cmplZ1!(Z, 1)
-                            cmplZ1!(Z, 1) = J!
+                            Swap cmplZ2$(Z1), cmplZ2$(Z)
+                            Swap cmplZ3$(Z1), cmplZ3$(Z)
+                            Swap cmplZ1!(Z1, 1), cmplZ1!(Z, 1)
                         End If
                     Next Z1
                 Next Z
 
-                '3412 FOR Z = 87 TO 97
-                '3413 NEXT Z
             End If
 
         End If 'Done checking for XXX / terminating chars
@@ -773,11 +764,9 @@ Sub CheckLeagueStats (targetTeam$, WT$)
             For Z = 217 To 226
                 For Z1 = Z + 1 To 227
                     If cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) Then
-                        TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
-                        TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
-                        J! = cmplZ1!(Z1, 1)
-                        cmplZ1!(Z1, 1) = cmplZ1!(Z, 1)
-                        cmplZ1!(Z, 1) = J!
+                        Swap cmplZ2$(Z1), cmplZ2$(Z)
+                        Swap cmplZ3$(Z1), cmplZ3$(Z)
+                        Swap cmplZ1!(Z1, 1), cmplZ1!(Z, 1)
                     End If
                 Next Z1
             Next Z
@@ -799,13 +788,13 @@ Sub CheckLeagueStats (targetTeam$, WT$)
             3615 '
             For Z = 279 To 287
                 For Z1 = Z + 1 To 288:
+
                     If cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) Then
-                        TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
-                        TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
-                        J! = cmplZ1!(Z1, 1)
-                        cmplZ1!(Z1, 1) = cmplZ1!(Z, 1)
-                        cmplZ1!(Z, 1) = J!
+                        Swap cmplZ2$(Z1), cmplZ2$(Z)
+                        Swap cmplZ3$(Z1), cmplZ3$(Z)
+                        Swap cmplZ1!(Z1, 1), cmplZ1!(Z, 1)
                     End If
+
                 Next Z1
             Next Z
 
@@ -820,6 +809,7 @@ Sub CheckLeagueStats (targetTeam$, WT$)
         Next Z
 
         If JS!(X, 18) > cmplZ1!(298, 1) Then
+
             cmplZ1!(298, 1) = JS!(X, 18)
             cmplZ2$(298) = NM$(X)
             cmplZ3$(298) = WT$
@@ -827,12 +817,11 @@ Sub CheckLeagueStats (targetTeam$, WT$)
             3625 '
             For Z = 289 To 297
                 For Z1 = Z + 1 To 298
+
                     If cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) Then
-                        TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
-                        TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
-                        J! = cmplZ1!(Z1, 1)
-                        cmplZ1!(Z1, 1) = cmplZ1!(Z, 1)
-                        cmplZ1!(Z, 1) = J!
+                        Swap cmplZ2$(Z1), cmplZ2$(Z)
+                        Swap cmplZ3$(Z1), cmplZ3$(Z)
+                        Swap cmplZ1!(Z1, 1), cmplZ1!(Z, 1)
                     End If
 
                 Next Z1
@@ -886,7 +875,7 @@ Sub CheckMoreStats (WT$)
 
             If JS!(X, 1) / 3 >= (fullWins + fullLosses) And JS!(X, 1) <> 0 Then
 
-                If JS!(X, 14) >= cmplZ1!(278, 1) Then
+                If JS!(X, 14) < 99.9 And JS!(X, 14) >= cmplZ1!(278, 1) Then
 
                     cmplZ2$(278) = NM$(X)
                     cmplZ3$(278) = WT$
@@ -925,16 +914,10 @@ Sub CheckMoreStats (WT$)
                             If cmplZ1!(Z, 1) - cmplZ1!(Z, 2) <= cmplZ1!(Y1, 1) - cmplZ1!(Y1, 2) Then
 
                                 If cmplZ1!(Z, 1) - cmplZ1!(Z, 2) <> cmplZ1!(Y1, 1) - cmplZ1!(Y1, 2) Or cmplZ1!(Z, 1) > cmplZ1!(Y1, 1) Then
-                                    TN$ = cmplZ2$(Y1)
-                                    cmplZ2$(Y1) = cmplZ2$(Z)
-                                    cmplZ2$(Z) = TN$
-                                    TN$ = cmplZ3$(Y1)
-                                    cmplZ3$(Y1) = cmplZ3$(Z)
-                                    cmplZ3$(Z) = TN$
+                                    Swap cmplZ2$(Y1), cmplZ2$(Z)
+                                    Swap cmplZ3$(Y1), cmplZ3$(Z)
                                     For Z1 = 1 To 2:
-                                        J! = cmplZ1!(Y1, Z1)
-                                        cmplZ1!(Y1, Z1) = cmplZ1!(Z, Z1)
-                                        cmplZ1!(Z, Z1) = J!
+                                        Swap cmplZ1!(Y1, Z1), cmplZ1!(Z, Z1)
                                     Next Z1
                                 End If
 
@@ -966,16 +949,10 @@ Sub CheckMoreStats (WT$)
                             If cmplZ1!(Z, 1) - cmplZ1!(Z, 2) <= cmplZ1!(Y1, 1) - cmplZ1!(Y1, 2) Then
 
                                 If cmplZ1!(Z, 1) - cmplZ1!(Z, 2) <> cmplZ1!(Y1, 1) - cmplZ1!(Y1, 2) Or cmplZ1!(Z, 1) > cmplZ1!(Y1, 1) Then
-                                    TN$ = cmplZ2$(Y1)
-                                    cmplZ2$(Y1) = cmplZ2$(Z)
-                                    cmplZ2$(Z) = TN$
-                                    TN$ = cmplZ3$(Y1)
-                                    cmplZ3$(Y1) = cmplZ3$(Z)
-                                    cmplZ3$(Z) = TN$
+                                    Swap cmplZ2$(Y1), cmplZ2$(Z)
+                                    Swap cmplZ3$(Y1), cmplZ3$(Z)
                                     For Z1 = 1 To 2:
-                                        J! = cmplZ1!(Y1, Z1)
-                                        cmplZ1!(Y1, Z1) = cmplZ1!(Z, Z1)
-                                        cmplZ1!(Z, Z1) = J!
+                                        Swap cmplZ1!(Y1, Z1), cmplZ1!(Z, Z1)
                                     Next Z1
                                 End If
 
@@ -1000,11 +977,9 @@ Sub CheckMoreStats (WT$)
                     For Z = 151 To 160
                         For Z1 = Z + 1 To 161
                             If cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) Then
-                                TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
-                                TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
-                                J! = cmplZ1!(Z1, 1)
-                                cmplZ1!(Z1, 1) = cmplZ1!(Z, 1)
-                                cmplZ1!(Z, 1) = J!
+                                Swap cmplZ2$(Z1), cmplZ2$(Z)
+                                Swap cmplZ3$(Z1), cmplZ3$(Z)
+                                Swap cmplZ1!(Z1, 1), cmplZ1!(Z, 1)
                             End If
                         Next Z1
                     Next Z
@@ -1016,7 +991,7 @@ Sub CheckMoreStats (WT$)
 
             Next Z
 
-            If JS!(X, 7) > cmplZ1!(161, 1) Or skipIF = 0 Then
+            If JS!(X, 7) > cmplZ1!(161, 1) And skipIF = 0 Then
 
                 cmplZ1!(161, 1) = JS!(X, 7)
                 cmplZ2$(161) = NM$(X)
@@ -1028,11 +1003,9 @@ Sub CheckMoreStats (WT$)
                     For Z1 = Z + 1 To 161
 
                         If cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) Then
-                            TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
-                            TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
-                            J! = cmplZ1!(Z1, 1)
-                            cmplZ1!(Z1, 1) = cmplZ1!(Z, 1)
-                            cmplZ1!(Z, 1) = J!
+                            Swap cmplZ2$(Z1), cmplZ2$(Z)
+                            Swap cmplZ3$(Z1), cmplZ3$(Z)
+                            Swap cmplZ1!(Z1, 1), cmplZ1!(Z, 1)
                         End If
 
                     Next Z1
@@ -1053,18 +1026,17 @@ Sub CheckMoreStats (WT$)
 
             If JS!(X, 1) / 3 > cmplZ1!(172, 1) Then
 
-                cmplZ1!(172, 1) = JS!(X, 1) / 3: cmplZ2$(172) = NM$(X)
+                cmplZ1!(172, 1) = JS!(X, 1) / 3
+                cmplZ2$(172) = NM$(X)
                 cmplZ3$(172) = WT$
 
                 3457 '
                 For Z = 162 To 171
                     For Z1 = Z + 1 To 172
                         If cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) Then
-                            TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
-                            TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
-                            J! = cmplZ1!(Z1, 1)
-                            cmplZ1!(Z1, 1) = cmplZ1!(Z, 1)
-                            cmplZ1!(Z, 1) = J!
+                            Swap cmplZ2$(Z1), cmplZ2$(Z)
+                            Swap cmplZ3$(Z1), cmplZ3$(Z)
+                            Swap cmplZ1!(Z1, 1), cmplZ1!(Z, 1)
                         End If
                     Next Z1
                 Next Z
@@ -1089,11 +1061,9 @@ Sub CheckMoreStats (WT$)
                 For Z = 173 To 182:
                     For Z1 = Z + 1 To 183:
                         If cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) Then
-                            TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
-                            TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
-                            J! = cmplZ1!(Z1, 1)
-                            cmplZ1!(Z1, 1) = cmplZ1!(Z, 1)
-                            cmplZ1!(Z, 1) = J!
+                            Swap cmplZ2$(Z1), cmplZ2$(Z)
+                            Swap cmplZ3$(Z1), cmplZ3$(Z)
+                            Swap cmplZ1!(Z1, 1), cmplZ1!(Z, 1)
                         End If
 
                     Next Z1
@@ -1121,11 +1091,9 @@ Sub CheckMoreStats (WT$)
                 For Z = 184 To 193
                     For Z1 = Z + 1 To 194
                         If cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) Then
-                            TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
-                            TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
-                            J! = cmplZ1!(Z1, 1)
-                            cmplZ1!(Z1, 1) = cmplZ1!(Z, 1)
-                            cmplZ1!(Z, 1) = J!
+                            Swap cmplZ2$(Z1), cmplZ2$(Z)
+                            Swap cmplZ3$(Z1), cmplZ3$(Z)
+                            Swap cmplZ1!(Z1, 1), cmplZ1!(Z, 1)
                         End If
                     Next Z1
                 Next Z
@@ -1150,11 +1118,9 @@ Sub CheckMoreStats (WT$)
                 For Z = 195 To 204
                     For Z1 = Z + 1 To 205
                         If cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) Then
-                            TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
-                            TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
-                            J! = cmplZ1!(Z1, 1)
-                            cmplZ1!(Z1, 1) = cmplZ1!(Z, 1)
-                            cmplZ1!(Z, 1) = J!
+                            Swap cmplZ2$(Z1), cmplZ2$(Z)
+                            Swap cmplZ3$(Z1), cmplZ3$(Z)
+                            Swap cmplZ1!(Z1, 1), cmplZ1!(Z, 1)
                         End If
                     Next Z1
                 Next Z
@@ -1180,11 +1146,9 @@ Sub CheckMoreStats (WT$)
                 For Z = 206 To 215
                     For Z1 = Z + 1 To 216
                         If cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) Then
-                            TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
-                            TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
-                            J! = cmplZ1!(Z1, 1)
-                            cmplZ1!(Z1, 1) = cmplZ1!(Z, 1)
-                            cmplZ1!(Z, 1) = J!
+                            Swap cmplZ2$(Z1), cmplZ2$(Z)
+                            Swap cmplZ3$(Z1), cmplZ3$(Z)
+                            Swap cmplZ1!(Z1, 1), cmplZ1!(Z, 1)
                         End If
                     Next Z1
                 Next Z
@@ -1210,11 +1174,9 @@ Sub CheckMoreStats (WT$)
                 For Z = 228 To 237:
                     For Z1 = Z + 1 To 238:
                         If cmplZ1!(Z, 1) < cmplZ1!(Z1, 1) Then
-                            TN$ = cmplZ2$(Z1): cmplZ2$(Z1) = cmplZ2$(Z): cmplZ2$(Z) = TN$
-                            TN$ = cmplZ3$(Z1): cmplZ3$(Z1) = cmplZ3$(Z): cmplZ3$(Z) = TN$
-                            J! = cmplZ1!(Z1, 1)
-                            cmplZ1!(Z1, 1) = cmplZ1!(Z, 1)
-                            cmplZ1!(Z, 1) = J!
+                            Swap cmplZ2$(Z1), cmplZ2$(Z)
+                            Swap cmplZ3$(Z1), cmplZ3$(Z)
+                            Swap cmplZ1!(Z1, 1), cmplZ1!(Z, 1)
                         End If
 
                     Next Z1
@@ -1228,7 +1190,9 @@ Sub CheckMoreStats (WT$)
 
     3530 '
     For Z = 1 To 40:
+
         If BAT%(3) = 0 Then BAT%(3) = 1
+
         If BA$(Z) = WT$ Then
             OFT!(Z, 1) = BAT%(4) / BAT%(3)
             For M = 3 To 14: OFT!(Z, M) = BAT%(M): Next M
@@ -1239,21 +1203,32 @@ Sub CheckMoreStats (WT$)
 
     If BAT%(4) / BAT%(3) > OFT!(40, 1) Then
 
-        OFT!(40, 1) = BAT%(4) / BAT%(3): For M = 3 To 14: OFT!(40, M) = BAT%(M): Next M: BA$(40) = WT$
+        OFT!(40, 1) = BAT%(4) / BAT%(3)
+
+        For M = 3 To 14: OFT!(40, M) = BAT%(M): Next M
+
         BA$(40) = WT$
+        'BA$(40) = WT$
 
         3535 '
         For Z = 1 To 39
+
             For Z1 = Z + 1 To 40
+
                 If OFT!(Z, 1) < OFT!(Z1, 1) Then
-                    TN$ = BA$(Z1): BA$(Z1) = BA$(Z): BA$(Z) = TN$
+
+                    TN$ = BA$(Z1)
+                    BA$(Z1) = BA$(Z)
+                    BA$(Z) = TN$
+
                     For M = 1 To 14:
-                        J! = OFT!(Z1, M)
-                        OFT!(Z1, M) = OFT!(Z, M)
-                        OFT!(Z, M) = J!
+                        Swap OFT!(Z1, M), OFT!(Z, M)
                     Next M
+
                 End If
+
             Next Z1
+
         Next Z
 
         For Z = 1 To 40
@@ -1263,12 +1238,15 @@ Sub CheckMoreStats (WT$)
     End If
 
     For Z = 1 To 40
+
         If PIT%(1) = 0 Then PIT%(1) = 1: PIT%(4) = 3
+
         If ER$(Z) = WT$ Then
             DFT!(Z, 1) = PIT%(4) / PIT%(1) * 27
             For M = 2 To 14: DFT!(Z, M) = PIT%(M - 1): Next M
             GoTo 3555
         End If
+
     Next Z
 
     If PIT%(4) / PIT%(1) * 27 < DFT!(40, 1) Then
@@ -1281,16 +1259,23 @@ Sub CheckMoreStats (WT$)
 
         3555 '
         For Z = 1 To 39
+
             For Z1 = Z + 1 To 40
+
                 If DFT!(Z, 1) > DFT!(Z1, 1) Then
-                    TN$ = ER$(Z1): ER$(Z1) = ER$(Z): ER$(Z) = TN$
+
+                    TN$ = ER$(Z1)
+                    ER$(Z1) = ER$(Z)
+                    ER$(Z) = TN$
+
                     For M = 1 To 14:
-                        J! = DFT!(Z1, M)
-                        DFT!(Z1, M) = DFT!(Z, M)
-                        DFT!(Z, M) = J!
+                        Swap DFT!(Z1, M), DFT!(Z, M)
                     Next M
+
                 End If
+
             Next Z1
+
         Next Z
 
         For Z = 1 To 40:
