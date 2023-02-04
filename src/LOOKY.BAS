@@ -1057,6 +1057,7 @@ Sub SelectTeam_LOOKY (numberTeams, yearNumber$)
             For I = 1 To 13
                 L%(I) = CVI(Q$(I))
             Next
+			
             Close 1
 
         End If

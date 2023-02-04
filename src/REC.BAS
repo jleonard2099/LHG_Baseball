@@ -41,13 +41,9 @@ Sub REC ()
                     Call AnalyzeTeamRecord(league$, 0)
 
                 Case 2:
-                    'RDD = 0
-                    'VPP = 0
                     Call AnalyzeTeamRecord(league$, 1)
 
                 Case 3:
-                    'RDD = 0
-                    'VPP = 0
                     Call AnalyzeTeamRecord(league$, 0)
 
                 Case 4: Cls
@@ -401,7 +397,7 @@ Sub AnalyzeTeamRecord (LG$, sameLeague)
 
                     Do
 
-                        Call Records_Screen
+                        Call Records_Screen(B$)
 
                         Do
                             Locate 23: Color 15: Print "VIEW TEAM AGAIN (Y/N)"
@@ -427,7 +423,7 @@ Sub AnalyzeTeamRecord (LG$, sameLeague)
 
                 Else
 
-                    Call Records_Printer
+                    Call Records_Printer(B$)
 
                 End If 'Done checking VPP
 
@@ -444,9 +440,11 @@ End Sub
 '       Records_Screen Subroutine
 '----------------------------------------
 '...explanation...
-Sub Records_Screen ()
+Sub Records_Screen (teamName$)
 
-    Shared HW%(), AW%(), HL%(), AL%(), R1%(), R2%(), R3%(), R4%()
+    Shared HW%(), AW%(), HL%(), AL%()
+    Shared R1%(), R2%(), R3%(), R4%()
+    Shared L%()
 
     Shared DV$(), Z1$()
 
@@ -455,13 +453,14 @@ Sub Records_Screen ()
 
     Do
         Cls
-        Color 12
+        Locate 2, 35
+        Color L%(11), L%(12): Print teamName$
+        Color 3, 0
 
-        Locate 2, 35: Print Z$
-
-        Color 3
-        Locate 4: Print Tab(15); String$(7, 196); " HOME "; String$(7, 196); Tab(35); Chr$(194); String$(7, 196); " AWAY "; String$(9, 196); Tab(58); Chr$(194); String$(6, 196); " TOTALS "; String$(6, 196)
-        Locate 5: Print Tab(16); "W"; Tab(19); "L"; Tab(23); "PCT."; Tab(28); "RF"; Tab(32); "RA"; Tab(35); Chr$(179); Tab(38); "W"; Tab(41); "L"; Tab(45); "PCT."; Tab(50); "RF"; Tab(54); "RA"; Tab(58); Chr$(179); Tab(61); "W"; Tab(64); "L"; Tab(68); "PCT."; Tab(73); "RF"; Tab(77); "RA"
+        Locate 4
+        Print Tab(15); String$(7, 196); " HOME "; String$(7, 196); Tab(35); Chr$(194); String$(7, 196); " AWAY "; String$(9, 196); Tab(58); Chr$(194); String$(6, 196); " TOTALS "; String$(6, 196)
+        Locate 5
+        Print Tab(16); "W"; Tab(19); "L"; Tab(23); "PCT."; Tab(28); "RF"; Tab(32); "RA"; Tab(35); Chr$(179); Tab(38); "W"; Tab(41); "L"; Tab(45); "PCT."; Tab(50); "RF"; Tab(54); "RA"; Tab(58); Chr$(179); Tab(61); "W"; Tab(64); "L"; Tab(68); "PCT."; Tab(73); "RF"; Tab(77); "RA"
 
         RDD = RDD + 1
         If RDD = 1 Then DD = 1: EE = 10
@@ -475,7 +474,7 @@ Sub Records_Screen ()
 
             For K = DD To EE
 
-                If Z1$(K) <> "XXX" And Z1$(K) <> T$ Then
+                If Z1$(K) <> "XXX" And Z1$(K) <> teamName$ Then
 
                     Color 15: Locate , 1: Print Left$(Z1$(K), 13);
                     Color 7: Locate , 15: Print Using "##"; HW%(K);
@@ -561,9 +560,15 @@ Sub Records_Screen ()
     Loop Until RDD = 4
 
     Cls
-    Color 12: Locate 2, 35: Print Z$
-    Color 3: Locate 4: Print Tab(15); String$(7, 196); " HOME "; String$(7, 196); Tab(35); Chr$(194); String$(7, 196); " AWAY "; String$(9, 196); Tab(58); Chr$(194); String$(6, 196); " TOTALS "; String$(6, 196)
-    Locate 5: Print Tab(16); "W"; Tab(19); "L"; Tab(23); "PCT."; Tab(28); "RF"; Tab(32); "RA"; Tab(35); Chr$(179); Tab(38); "W"; Tab(41); "L"; Tab(45); "PCT."; Tab(50); "RF"; Tab(54); "RA"; Tab(58); Chr$(179); Tab(61); "W"; Tab(64); "L"; Tab(68); "PCT."; Tab(73); "RF"; Tab(77); "RA"
+    Locate 2, 35
+    Color L%(11), L%(12): Print teamName$
+    Color 3, 0
+
+    Locate 4
+    Print Tab(15); String$(7, 196); " HOME "; String$(7, 196); Tab(35); Chr$(194); String$(7, 196); " AWAY "; String$(9, 196); Tab(58); Chr$(194); String$(6, 196); " TOTALS "; String$(6, 196)
+    Locate 5
+    Print Tab(16); "W"; Tab(19); "L"; Tab(23); "PCT."; Tab(28); "RF"; Tab(32); "RA"; Tab(35); Chr$(179); Tab(38); "W"; Tab(41); "L"; Tab(45); "PCT."; Tab(50); "RF"; Tab(54); "RA"; Tab(58); Chr$(179); Tab(61); "W"; Tab(64); "L"; Tab(68); "PCT."; Tab(73); "RF"; Tab(77); "RA"
+
     Color 11: Print "DIVISIONS";
     Color 3: Print Tab(35); Chr$(179); Tab(58); Chr$(179)
 
@@ -671,7 +676,7 @@ End Sub
 '       Records_Printer Subroutine
 '----------------------------------------
 '...explanation...
-Sub Records_Printer ()
+Sub Records_Printer (teamName$)
 
     Shared HW%(), HW%(), HL%(), AL%(), R1%(), R2%(), R3%(), R4%()
 
@@ -682,7 +687,7 @@ Sub Records_Printer ()
     DV$(3) = D3$
     DV$(4) = D4$
 
-    LPrint Tab(5); Z$
+    LPrint Tab(5); teamName$
     LPrint Tab(22); "------- HOME -------"; Tab(54); "------- AWAY -------"; Tab(86); "-------- TOTALS -------"
     LPrint Tab(22); "W"; Tab(26); "L"; Tab(30); "PCT."; Tab(36); "RF"; Tab(40); "RA"; Tab(54); "W"; Tab(58); "L"; Tab(62); "PCT."; Tab(68); "RF"; Tab(72); "RA"; Tab(86); "W"; Tab(91); "L"; Tab(97); "PCT."; Tab(103); "RF"; Tab(107); "RA"
 

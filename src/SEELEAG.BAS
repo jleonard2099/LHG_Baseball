@@ -548,6 +548,15 @@ Sub SEELEAG ()
                                     While Len(A$) < 3: A$ = "0" + A$: Wend
                                     A$ = "1." + A$
                                     seeP$(P) = seeP$(P) + A$
+                                Else
+                                    A$ = Str$(J!)
+                                    L = Len(A$)
+                                    A$ = Right$(A$, L - 1)
+                                    '0-pad PCT of fewer than 3 chars
+                                    While Len(A$) < 3: A$ = "0" + A$: Wend
+
+                                    seeP$(P) = seeP$(P) + "." + A$
+
                                 End If
 
                             End If

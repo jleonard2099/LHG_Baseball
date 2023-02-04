@@ -238,35 +238,33 @@ Sub LEAGCMPL ()
 
                 Next XW
 
+                'Sort record by games won
                 For VV = 1 To 4
-                    '1 to 10, 11 to 20, 21 to 30, 31 to 40)
+
                     AA = ((VV - 1) * 10) + 1
                     ZZ = VV * 10
 
                     For X = AA To ZZ - 1
+
                         For Y = X + 1 To ZZ:
+
                             diffX = O1(X) - O2(X)
                             diffY = O1(Y) - O2(Y)
 
                             If diffX <= diffY Then
-                                If diffX <> diffY Or O1(X) > O1(Y) And O1(X) <= O2(X) Then
-                                    If diffX <> diffY And O1(X) < O1(Y) And O1(X) >= O2(X) Then
-                                        TN$ = TM$(X)
-                                        TM$(X) = TM$(Y)
-                                        TM$(Y) = TN$
-
-                                        J = O1(X)
-                                        O1(X) = O1(Y)
-                                        O1(Y) = J
-
-                                        J = O2(X)
-                                        O2(X) = O2(Y)
-                                        O2(Y) = J
+                                If diffX = diffY Then
+									If Not (O1(X) <= O1(Y) And O1(X) > O2(X)) Or Not (O1(X) >= O1(Y) And O1(X) < O2(X)) Then
+                                        Swap TM$(X), TM$(Y)
+                                        Swap O1(X), O1(Y)
+                                        Swap O2(X), O2(Y)
                                     End If
                                 End If
                             End If
+
                         Next Y
+
                     Next X
+
                 Next VV
 
                 Print "POSTING "; LG$; " LEADERS"
@@ -359,14 +357,13 @@ Sub CheckLeagueStats (targetTeam$, WT$)
                         Next Z
                     Next Y
 
-                    skipIF = 1
-                    Exit For
+                    GoTo 3318
 
                 End If
 
             Next Y
 
-            If JS!(X, 16) >= cmplZ1!(20, 1) And skipIF = 0 Then
+            If JS!(X, 16) >= cmplZ1!(20, 1) Then
 
                 cmplZ2$(20) = NM$(X)
                 cmplZ3$(20) = PS$(X)
@@ -376,8 +373,8 @@ Sub CheckLeagueStats (targetTeam$, WT$)
                 For Y = 1 To 19
                     For Z = Y + 1 To 20
                         If cmplZ1!(Y, 1) < cmplZ1!(Z, 1) Then
-                            Swap cmplZ3$(Y), cmplZ3$(Z)
                             Swap cmplZ2$(Y), cmplZ2$(Z)
+                            Swap cmplZ3$(Y), cmplZ3$(Z)
                             For Z1 = 1 To 2:
                                 Swap cmplZ1!(Y, Z1), cmplZ1!(Z, Z1)
                             Next Z1
@@ -400,8 +397,8 @@ Sub CheckLeagueStats (targetTeam$, WT$)
                     For Y = 239 To 257
                         For Z = Y + 1 To 258
                             If cmplZ1!(Y, 1) > cmplZ1!(Z, 1) Then
-                                Swap cmplZ3$(Y), cmplZ3$(Z)
                                 Swap cmplZ2$(Y), cmplZ2$(Z)
+                                Swap cmplZ3$(Y), cmplZ3$(Z)
                                 For Z1 = 1 To 2:
                                     Swap cmplZ1!(Y, Z1), cmplZ1!(Z, Z1)
                                 Next Z1
@@ -412,8 +409,6 @@ Sub CheckLeagueStats (targetTeam$, WT$)
                 End If
 
             End If
-
-            skipIF = 0
 
             3320 '
             For Y = 99 To 108
@@ -433,7 +428,7 @@ Sub CheckLeagueStats (targetTeam$, WT$)
                     For Y = 99 To 107
                         For Z = Y + 1 To 108
                             If cmplZ1!(Y, 1) < cmplZ1!(Z, 1) Then
-                                Swap cmplZ2$(Y), cmplZ2$(Y)
+                                Swap cmplZ2$(Y), cmplZ2$(Z)
                                 Swap cmplZ3$(Y), cmplZ3$(Z)
                                 For Z1 = 1 To 2:
                                     Swap cmplZ1!(Y, Z1), cmplZ1!(Z, Z1)
@@ -442,14 +437,13 @@ Sub CheckLeagueStats (targetTeam$, WT$)
                         Next Z
                     Next Y
 
-                    skipIF = 1
-                    Exit For
+                    GoTo 3325
 
                 End If
 
             Next Y
 
-            If JS!(X, 14) >= cmplZ1!(108, 1) And skipIF = 0 Then
+            If JS!(X, 14) >= cmplZ1!(108, 1) Then
 
                 cmplZ2$(108) = NM$(X)
                 cmplZ3$(108) = PS$(X)
@@ -469,7 +463,7 @@ Sub CheckLeagueStats (targetTeam$, WT$)
                 For Y = 99 To 107
                     For Z = Y + 1 To 108
                         If cmplZ1!(Y, 1) < cmplZ1!(Z, 1) Then
-                            Swap cmplZ2$(Y), cmplZ2$(Y)
+                            Swap cmplZ2$(Y), cmplZ2$(Z)
                             Swap cmplZ3$(Y), cmplZ3$(Z)
                             For Z1 = 1 To 2:
                                 Swap cmplZ1!(Y, Z1), cmplZ1!(Z, Z1)
@@ -479,8 +473,6 @@ Sub CheckLeagueStats (targetTeam$, WT$)
                 Next Y
 
             End If
-
-            skipIF = 0
 
             3325 '
             For Y = 110 To 119
@@ -500,7 +492,7 @@ Sub CheckLeagueStats (targetTeam$, WT$)
                     For Y = 110 To 118
                         For Z = Y + 1 To 119
                             If cmplZ1!(Y, 1) < cmplZ1!(Z, 1) Then
-                                Swap cmplZ2$(Y), cmplZ2$(Y)
+                                Swap cmplZ2$(Y), cmplZ2$(Z)
                                 Swap cmplZ3$(Y), cmplZ3$(Z)
                                 For Z1 = 1 To 2:
                                     Swap cmplZ1!(Y, Z1), cmplZ1!(Z, Z1)
@@ -509,14 +501,14 @@ Sub CheckLeagueStats (targetTeam$, WT$)
                         Next Z
                     Next Y
 
-                    skipIF = 1
+                    GoTo 3330
 
                 End If
 
             Next Y
 
             3327 '
-            If JS!(X, 15) >= cmplZ1!(119, 1) And skipIF = 0 Then
+            If JS!(X, 15) >= cmplZ1!(119, 1) Then
 
                 cmplZ2$(119) = NM$(X)
                 cmplZ3$(119) = PS$(X)
@@ -536,7 +528,7 @@ Sub CheckLeagueStats (targetTeam$, WT$)
                 For Y = 110 To 118
                     For Z = Y + 1 To 119
                         If cmplZ1!(Y, 1) < cmplZ1!(Z, 1) Then
-                            Swap cmplZ2$(Y), cmplZ2$(Y)
+                            Swap cmplZ2$(Y), cmplZ2$(Z)
                             Swap cmplZ3$(Y), cmplZ3$(Z)
                             For Z1 = 1 To 2
                                 Swap cmplZ1!(Y, Z1), cmplZ1!(Z, Z1)
@@ -984,20 +976,19 @@ Sub CheckMoreStats (WT$)
                         Next Z1
                     Next Z
 
-                    skipIF = 1
-                    Exit For
+                    GoTo 3445
 
                 End If
 
             Next Z
 
-            If JS!(X, 7) > cmplZ1!(161, 1) And skipIF = 0 Then
+            If JS!(X, 7) > cmplZ1!(161, 1) Then
 
                 cmplZ1!(161, 1) = JS!(X, 7)
                 cmplZ2$(161) = NM$(X)
                 cmplZ3$(161) = WT$
 
-                '3445
+                3445 '
                 For Z = 151 To 160
 
                     For Z1 = Z + 1 To 161
@@ -1217,9 +1208,7 @@ Sub CheckMoreStats (WT$)
 
                 If OFT!(Z, 1) < OFT!(Z1, 1) Then
 
-                    TN$ = BA$(Z1)
-                    BA$(Z1) = BA$(Z)
-                    BA$(Z) = TN$
+                    Swap BA$(Z1), BA$(Z)
 
                     For M = 1 To 14:
                         Swap OFT!(Z1, M), OFT!(Z, M)
@@ -1264,9 +1253,7 @@ Sub CheckMoreStats (WT$)
 
                 If DFT!(Z, 1) > DFT!(Z1, 1) Then
 
-                    TN$ = ER$(Z1)
-                    ER$(Z1) = ER$(Z)
-                    ER$(Z) = TN$
+                    Swap ER$(Z1), ER$(Z)
 
                     For M = 1 To 14:
                         Swap DFT!(Z1, M), DFT!(Z, M)

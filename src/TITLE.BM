@@ -68,7 +68,6 @@ Sub TITLE_HEADER ()
 	Cls
 
     Color 12, 1
-	
 	Locate 1, 1
 	Print Tab(80);
 	Locate , 23
@@ -309,7 +308,7 @@ Sub TITLE ()
 	Locate , 1
 	
 	Color 12, 1
-	Print "(C) LANCE HAFFNER/SHANNON LYNN 1987-1997"; Tab(75); Left$(Time$, 5);
+	Print "(C) LANCE HAFFNER/SHANNON LYNN 1986-1999"; Tab(75); Left$(Time$, 5);
 
     'Contact
     Locate 3, 1
