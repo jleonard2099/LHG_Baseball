@@ -182,32 +182,31 @@ Sub SOURCE ()
 
     I2 = INNING%
 
-    '-- This is the variable "I" that is used
-    '-- later for my crashing code???
-    '-- it essentially should be 0/1 to represent
-    '-- home / visitor team, respectively
-    I = P
+    '-- This is the variable "I" that has given me issues
+    '-- it essentially should be 0/1 to represent either
+    '-- the home / visitor team, respectively
+    I0 = P
 
     If S%(P, INNING%) > 0 Then
         If usingGfx = 1 Then
-            Call INNDISP_G(I2, I)
+            Call INNDISP_G(I2, I0)
         Else
-            Call INNDISP(I2, I)
+            Call INNDISP(I2, I0)
         End If
     End If
 
     If usingGfx = 1 Then
 
-        FORMATTED$ = FUsing$(Str$(S6%(I, 0)), "##", 1)
-        PrintOnGfx 53, I + 28, FORMATTED$, imageScreen&
+        FORMATTED$ = FUsing$(Str$(S6%(I0, 0)), "##", 1)
+        PrintOnGfx 53, I0 + 28, FORMATTED$, imageScreen&
 
         FORMATTED$ = FUsing$(Str$(S6%(D, 2)), "##", 1)
-        PrintOnGfx 59, 1 - I + 28, FORMATTED$, imageScreen&
+        PrintOnGfx 59, 1 - I0 + 28, FORMATTED$, imageScreen&
 
     Else
 
         Locate , 40
-        Print Using "##"; S6%(I, 0);: Locate D + 2
+        Print Using "##"; S6%(I0, 0);: Locate D + 2
         Locate , 46: Print Using "##"; S6%(D, 2);
         Color 15, 0
 
@@ -330,6 +329,7 @@ Sub SOURCE ()
         End If
         GoTo 15081
     End If
+
     If Val(I$) = 7 Then P2 = 1: D2 = 1: GoTo 13050
 
     15054 '
@@ -443,9 +443,6 @@ Sub SOURCE ()
 
     P2 = Val(I$)
 
-    '-- Is this right?
-    '-- It appears to me I usually can't press options 2/3
-    '-- but I see below there are conditions to that
     If P2 < 1 Or P2 > 5 Then 15085
 
     15064 '
@@ -464,9 +461,12 @@ Sub SOURCE ()
         GoTo 13201
     End If
 
+	'-- it's not clear what variable this "I" should be
     If S4% = 4 Then I = 3 Else I = 2
-    I3 = Int(Rnd(1) * 100) + 1
+
+	Call d100(I3)
     If I3 >= 6 Then 15068
+
     Call PICKEDOFF(D, I)
 
     PO = 1
@@ -475,6 +475,8 @@ Sub SOURCE ()
     O%(1) = O%(1) + 1
     W% = 1
 
+	'----------
+	
     Call CREDITASSIST(W%, D)
     Call ADVANCEMENT(P, D, S2%, F%, I3)
     Call CREDITPUTOUT(I3, FB2P%, AST%, D)
@@ -557,7 +559,8 @@ Sub SOURCE ()
     ' yet for the game's logic.
     '================================================================================
 
-    13050 Call d100(RN)
+    13050 '
+	Call d100(RN)
 
     If (((PC% = 1 Or PC% = 2 Or PC% = 3) And RN = 2) Or (RD = 1 And RN <= 5)) And INNING% >= 2 And RD% = 0 Then
         H7% = 20
@@ -582,7 +585,11 @@ Sub SOURCE ()
         13200 ' *** hit by pitch ***
         Call HITBYPITCH(S2%, D)
 
-        13201 A5%(0) = 1: A5%(1) = 0: A5%(2) = 0: A5%(3) = 0
+        13201 '
+		A5%(0) = 1
+		A5%(1) = 0
+		A5%(2) = 0
+		A5%(3) = 0
         If B0%(1, 0) > 0 Then A5%(1) = 1
         If B0%(1, 0) > 0 And B0%(2, 0) > 0 Then A5%(2) = 1
         If B0%(1, 0) > 0 And B0%(2, 0) > 0 And B0%(3, 0) > 0 Then A5%(3) = 1: If W% = 2 And S2% > 2 Then A5%(3) = 11
@@ -623,13 +630,23 @@ Sub SOURCE ()
         S2% = 5
         Call WINDEX
         Call DELIVERY(D)
-        Call d100(RN)
-        If RN <= 50 Then Call PBP("pitch gets by " + B$(D, B9%(D, 2)))
-        If RN > 50 Then Call PBP("off " + B$(D, B9%(D, 2)) + "'s glove"): Call PBP("it gets away from him")
-        Call PBP("It's ruled a passed ball")
-        If B0%(1, 0) = 0 And I = 9 And SO = 1 Or O%(0) > 1 And I = 9 And SO = 1 Then O%(1) = O%(1) + 1
+        Call d100(RN2)
 
-        13222 I8! = Int(Rnd(1) * 10) + 1
+        If RN2 <= 50 Then 
+			Call PBP("pitch gets by " + B$(D, B9%(D, 2)))
+		Else
+			'RN > 50 
+			Call PBP("off " + B$(D, B9%(D, 2)) + "'s glove")
+			Call PBP("it gets away from him")
+		End If
+
+        Call PBP("It's ruled a passed ball")
+		
+		'-- it's not clear what variable this "I" should be
+        If B0%(1, 0) = 0 And RN = 9 And SO = 1 Or O%(0) > 1 And RN = 9 And SO = 1 Then O%(1) = O%(1) + 1
+
+        13222 '
+		I8! = Int(Rnd(1) * 10) + 1
         If S4% = 1 And P2 = 2 And I8! < B%(P, B3%(P, B0%(1, 0)), 16) Or S4% = 5 And P2 = 2 And I8! < B%(P, B3%(P, B0%(1, 0)), 16) Then
             A5%(1) = 2
             A5%(3) = 1
@@ -639,7 +656,8 @@ Sub SOURCE ()
             GoTo 15051
         End If
 
-        13223 If B0%(1, 0) = 0 And I = 9 And SO = 1 Or O%(0) > 1 And I = 9 And SO = 1 Then
+        13223 '
+		If B0%(1, 0) = 0 And RN = 9 And SO = 1 Or O%(0) > 1 And RN = 9 And SO = 1 Then
             A5%(0) = 1
             A5%(1) = 1
             A5%(2) = 1
@@ -864,12 +882,13 @@ Sub SOURCE ()
 
         If B0%(1, 0) <> 0 Then
 
-            H6% = Int(Rnd(1) * 100) + 1
+            Call d100(H6%)
             BR% = B%(P, B3%(P, B0%(1, 0)), 16)
 
             If B7%(P, B0%(1, 0)) = 1 Then BR% = P%(P, P1%(P), 31)
 
             I3 = 0
+
             If O%(0) = 0 And W% = 7 Then I3 = 18 + BR% * 3
             If O%(0) = 1 And W% = 7 Then I3 = 16 + BR% * 3
             If O%(0) = 2 And W% = 7 Then I3 = 34 + BR% * 3
@@ -879,15 +898,18 @@ Sub SOURCE ()
             If O%(0) = 0 And W% = 9 Then I3 = 12 + BR% * 3
             If O%(0) = 1 And W% = 9 Then I3 = 18 + BR% * 3
             If O%(0) = 2 And W% = 9 Then I3 = 40 + BR% * 3
+
             If H6% <= I3 Or P2 = 2 Then A5%(1) = 3
 
         End If
 
-        13511 Call ADVANCEMENT(P, D, S2%, F%, I3)
+        13511 '
+		Call ADVANCEMENT(P, D, S2%, F%, I3)
+
         F% = 0
         Call FLDERR(F%, W%, D, I3, SB%, S2%, P)
-
         If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8!, I9)
+
         Call SCOREBOARD
 
         GoTo 13900
@@ -993,7 +1015,6 @@ Sub SOURCE ()
         Call LONGFLY(D, W%)
         ad$ = "wall"
         If W% = 7 And L%(1, 13) = 27 Then ad$ = "screen"
-        bv = Int(Rnd(1) * 100) + 1
 
         Call d100(RN)
         If RN <= 20 Then F$ = "It one-hops the " + ad$ + "..."
@@ -1004,7 +1025,8 @@ Sub SOURCE ()
         If RN > 99 Then F$ = "The outfielders cross"
         Call PBP(F$)
 
-        13524 Call d100(RN)
+        13524 '
+		Call d100(RN)
         If RN <= 90 Then
             F$ = "Triple!!"
         Else
@@ -1042,7 +1064,7 @@ Sub SOURCE ()
     If W% = 9 And H6% <= E2% And P2 <> 2 Or W% = 9 And H6% <= E2% * .5 And P2 = 2 Then S2% = 10: GoTo 13530
 
     13063 '
-    H6% = Int(Rnd(1) * 100) + 1
+    Call d100(H6%)
     S2% = 7
 
     If B7%(P, B1!(P)) <> 1 And H7% > SN Then
@@ -1173,8 +1195,10 @@ Sub SOURCE ()
     H6% = Int(Rnd(1) * 1000) + 1
 
     If H6% > B4%(P, 4, B1!(P)) Then
+
         13610 ' *** ground ball for out ***
-        H6% = Int(Rnd(1) * 100) + 1
+        Call d100(H6%)
+
         E2% = B%(P, B3%(P, B1!(P)), 18) + P%(D, P1%(D), 12) - 52
         E3% = 23 + P%(D, P1%(D), 12)
         E4% = 0
@@ -1270,15 +1294,17 @@ Sub SOURCE ()
     If P2 = 2 And O%(0) < 3 Then SO = 7: GoTo 14800
 
     ' *** WILD PITCH OR PASSED BALL ON A STRIKEOUT
-    I = Int(Rnd(1) * 600) + 1
-    If B0%(1, 0) = 0 And I = 9 And SO = 1 Or O%(0) = 3 And I = 9 Then
-        O%(0) = O%(0) - 1: O%(1) = O%(1) - 1
-        I5 = P1%(D): P8%(D, I5, 0) = P8%(D, I5, 0) - 1
+    RN = Int(Rnd(1) * 600) + 1
+    If RN = 9 And B0%(1, 0) = 0 And SO = 1 Or RN = 9 And O%(0) = 3 Then
+        O%(0) = O%(0) - 1
+		O%(1) = O%(1) - 1
+        I5 = P1%(D)
+		P8%(D, I5, 0) = P8%(D, I5, 0) - 1
         P5%(D, I5, 0) = P5%(D, I5, 0) - 1
         B8%(D, B9%(D, 2), 16) = B8%(D, B9%(D, 2), 16) - 1
         B5%(D, B9%(D, 2), 16) = B5%(D, B9%(D, 2), 16) - 1
 
-        I1 = Int(Rnd(1) * 100) + 1
+        Call d100(I1)
         If I1 < 77 Then
             '13230 / *** wild pitch ***
             If S4% = 0 And SO <> 1 Then
@@ -1301,11 +1327,17 @@ Sub SOURCE ()
 
     GoTo 13900
 
-    '-----
-    13633 A5%(3) = 0: A5%(2) = 11: A5%(1) = 0: A5%(0) = 0
-    '-----
+    '--------------------
 
-    13634 I5 = P1%(D): I6 = 0
+    13633 '
+	A5%(3) = 0
+	A5%(2) = 11
+	A5%(1) = 0
+	A5%(0) = 0
+
+    13634 '
+	I5 = P1%(D)
+	I6 = 0
     Call ADDPIT(D, I5, I6)
     O%(0) = O%(0) + 1
     O%(1) = O%(1) + 1
@@ -1358,13 +1390,20 @@ Sub SOURCE ()
 
     '-----
 
-    13650 If O%(0) < 2 Then 13690
-    I = Int(Rnd(1) * 10) + 1
+    13650 '
+	If O%(0) < 2 Then 13690
+    RN = Int(Rnd(1) * 10) + 1
     S2% = 13
 
     If W% = 5 Then
-        If I <= 5 And (S4% = 4 Or S4% = 7) Then
-            Call PITCHERNAME(W%, D): Call PBP(Q$(4) + " gloves it and heads for 3rd"): A5%(0) = 0: A5%(1) = 0: A5%(2) = 11: A5%(3) = 0: GoTo 13684
+        If RN <= 5 And (S4% = 4 Or S4% = 7) Then
+            Call PITCHERNAME(W%, D)
+			Call PBP(Q$(4) + " gloves it and heads for 3rd")
+			A5%(0) = 0
+			A5%(1) = 0
+			A5%(2) = 11
+			A5%(3) = 0
+			GoTo 13684
         Else
             Call PITCHERNAME(W%, D)
             Call GROUNDERS(W%, D)
@@ -1373,25 +1412,37 @@ Sub SOURCE ()
     End If
 
     If W% = 6 Then
-        If I <= 8 And (S4% = 1 Or S4% = 4 Or S4% = 5 Or S4% = 7) Then
+        If RN <= 8 And (S4% = 1 Or S4% = 4 Or S4% = 5 Or S4% = 7) Then
             Call PITCHERNAME(W%, D)
             Call GROUNDERS(W%, D)
             Call DPPIVOT(W%, D)
-            AST% = 6: A5%(0) = 0: A5%(1) = 11: A5%(2) = 0: A5%(3) = 0: GoTo 13684
+            AST% = 6
+			A5%(0) = 0
+			A5%(1) = 11
+			A5%(2) = 0
+			A5%(3) = 0
+			GoTo 13684
         Else
             Call PITCHERNAME(W%, D)
             Call GROUNDERS(W%, D)
-            Call THROW2FIRST(D): GoTo 13672
+            Call THROW2FIRST(D)
+			GoTo 13672
         End If
     End If
 
-    If W% = 4 And I <= 5 And (S4% = 1 Or S4% = 4 Or S4% = 5 Or S4% = 7) Then
+    If W% = 4 And RN <= 5 And (S4% = 1 Or S4% = 4 Or S4% = 5 Or S4% = 7) Then
         Call PITCHERNAME(W%, D)
         Call GROUNDERS(W%, D)
         Call DPPIVOT(W%, D)
-        AST% = 4: A5%(0) = 0: A5%(1) = 11: A5%(2) = 0: A5%(3) = 0: GoTo 13684
+        AST% = 4
+		A5%(0) = 0
+		A5%(1) = 11
+		A5%(2) = 0
+		A5%(3) = 0
+		GoTo 13684
     End If
 
+	' new random number
     Call d100(RN)
 
     If W% = 3 Then
@@ -1416,7 +1467,11 @@ Sub SOURCE ()
     Call SECOND2FIRST(D)
     'GoTo 13672
 
-    13672 A5%(0) = 11: A5%(1) = 0: A5%(2) = 0: A5%(3) = 0
+    13672 '
+	A5%(0) = 11
+	A5%(1) = 0
+	A5%(2) = 0
+	A5%(3) = 0
 
     13684 'Call DELAY
     If fbu% = 0 Then Call CREDITASSIST(W%, D)
@@ -1437,14 +1492,19 @@ Sub SOURCE ()
 
     O%(0) = O%(0) + 1
     O%(1) = O%(1) + 1
-    I5 = P1%(D): I6 = 0: Call ADDPIT(D, I5, I6)
+    I5 = P1%(D)
+	I6 = 0
+	Call ADDPIT(D, I5, I6)
 
     GoTo 13900
 
+
     '-----
 
-    13690 I = Int(Rnd(1) * 100) + 1
-    If (I <= 90 And P2 <> 2 Or S4% = 0) Or (I <= 10 And P2 = 2) Then
+
+    13690 '
+	Call d100(RN)
+    If (RN <= 90 And P2 <> 2 Or S4% = 0) Or (RN <= 10 And P2 = 2) Then
         13720 '
         S2% = 14
 
@@ -1454,7 +1514,7 @@ Sub SOURCE ()
             GoTo 13693
         End If
 
-        I = Int(Rnd(1) * 100) + 1
+        Call d100(RN)
 
         A5%(0) = 1
         A5%(1) = 1
@@ -1466,7 +1526,7 @@ Sub SOURCE ()
 
         A5%(1) = 11
 
-        GoTo 13743
+        GoTo 13684
 
     End If
 
@@ -1475,64 +1535,136 @@ Sub SOURCE ()
     A5%(2) = 1
     A5%(3) = 1
     A5%(0) = 11
-    I = Int(Rnd(1) * 100) + 1
-    If S4% = 1 Or S4% = 4 Or S4% = 5 Or S4% = 7 Then 13713
+	
+	'--- why is this needed? ---
+    Call d100(RN)
+    
+	If Not (S4% = 1 Or S4% = 4 Or S4% = 5 Or S4% = 7) Then
 
-    13693 I = Int(Rnd(1) * 100) + 1
-    A5%(1) = 0: A5%(2) = 0: A5%(3) = 0
-    If W% = 5 And I <= 25 And INFPOS% < 2 Then A5%(2) = 1
-    If W% = 5 And I <= 83 And INFPOS% = 0 Then A5%(3) = 1: ' WAS 50
-    If W% = 5 And I <= 10 And INFPOS% > 0 Then A5%(3) = 1
-    If W% = 5 And I < 5 And INFPOS% < 2 And S4% = 2 And S6%(P, 0) - S6%(D, 0) > -2 Or W% = 5 And I < 5 And INFPOS% < 2 And S4% = 6 And A5%(3) = 1 And S6%(P, 0) - S6%(D, 0) > -2 Then A5%(2) = 11: A5%(0) = 1: Call PBP("NO, he's going to third")
-    If W% = 6 And I <= 20 And INFPOS% < 2 Then A5%(2) = 1
-    If W% = 6 And I <= 92 And INFPOS% < 2 Then A5%(3) = 1
-    If W% = 6 And I <= 5 And INFPOS% = 2 Then A5%(3) = 1
-    If W% = 6 And I < 6 And INFPOS% < 2 And S4% = 2 And S6%(P, 0) - S6%(D, 0) > -2 Or W% = 6 And I < 6 And INFPOS% < 2 And S4% = 6 And A5%(3) = 1 And S6%(P, 0) - S6%(D, 0) > -2 Then A5%(2) = 11: A5%(0) = 1: Call PBP("NO, he's going to third")
-    If W% = 4 And I <= 90 And INFPOS% < 2 Then A5%(2) = 1
-    If W% = 4 And I <= 90 And INFPOS% < 2 Then A5%(3) = 1
-    If W% = 4 And I <= 65 And INFPOS% = 2 Then A5%(2) = 1
-    If W% = 4 And I <= 5 And INFPOS% = 2 Then A5%(3) = 1
-    If W% = 3 And I <= 95 Then A5%(2) = 1
-    If W% = 3 And I <= 88 And INFPOS% = 0 Then A5%(3) = 1: ' WAS 60
-    If W% = 3 And I <= 15 And INFPOS% > 0 Then A5%(3) = 1
-    If W% = 1 And I <= 30 Then A5%(2) = 1
-    If W% = 1 And I <= 50 And INFPOS% = 0 Then A5%(3) = 1
-    If W% = 1 And I <= 10 And INFPOS% > 0 Then A5%(3) = 1
-    If W% = 2 And I <= 45 Then A5%(2) = 1
+		13693 '
+		Call d100(RN)
+		A5%(1) = 0
+		A5%(2) = 0
+		A5%(3) = 0
 
-    13713 GoTo 13684
+		If W% = 5 And RN <= 25 And INFPOS% < 2 Then A5%(2) = 1
+		If W% = 5 And RN <= 83 And INFPOS% = 0 Then A5%(3) = 1: ' WAS 50
+		If W% = 5 And RN <= 10 And INFPOS% > 0 Then A5%(3) = 1
 
-    '-----
+		If W% = 5 And RN < 5 And INFPOS% < 2 And S4% = 2 And S6%(P, 0) - S6%(D, 0) > -2 Or W% = 5 And RN < 5 And INFPOS% < 2 And S4% = 6 And A5%(3) = 1 And S6%(P, 0) - S6%(D, 0) > -2 Then 
+			A5%(2) = 11
+			A5%(0) = 1
+			Call PBP("NO, he's going to third")
+		End If
 
-    13725 If S4% = 4 Or S4% = 7 Then 13732
-    If S6%(P, 0) - S6%(D, 0) >= 0 And INNING% > 6 And O%(0) = 0 And INFPOS% > 0 And W% = 5 Or S6%(P, 0) - S6%(D, 0) >= 0 And INNING% > 6 And O%(0) = 0 And INFPOS% > 0 And W% = 3 Then A5%(3) = 11: GoTo 13743
-    If INFPOS% = 0 And W% <> 2 Then A5%(1) = 11: GoTo 13743
-    If INFPOS% > 0 And W% = 5 Or INFPOS% > 0 And W% = 3 Then A5%(3) = 0: A5%(1) = 11: GoTo 13743
-    If INFPOS% > 0 And (W% = 1 Or W% = 3) Then A5%(3) = 0: A5%(1) = 1: A5%(0) = 11: GoTo 13743
-    If INFPOS% = 2 And W% = 4 Or INFPOS% = 2 And W% = 6 And I <= 90 Then A5%(3) = 0: A5%(1) = 11: GoTo 13743
-    A5%(1) = 11
+		If W% = 6 And RN <= 20 And INFPOS% < 2 Then A5%(2) = 1
+		If W% = 6 And RN <= 92 And INFPOS% < 2 Then A5%(3) = 1
+		If W% = 6 And RN <= 5 And INFPOS% = 2 Then A5%(3) = 1
+		If W% = 6 And RN < 6 And INFPOS% < 2 And S4% = 2 And S6%(P, 0) - S6%(D, 0) > -2 Or W% = 6 And RN < 6 And INFPOS% < 2 And S4% = 6 And A5%(3) = 1 And S6%(P, 0) - S6%(D, 0) > -2 Then A5%(2) = 11: A5%(0) = 1: Call PBP("NO, he's going to third")
+		If W% = 4 And RN <= 90 And INFPOS% < 2 Then A5%(2) = 1
+		If W% = 4 And RN <= 90 And INFPOS% < 2 Then A5%(3) = 1
+		If W% = 4 And RN <= 65 And INFPOS% = 2 Then A5%(2) = 1
+		If W% = 4 And RN <= 5 And INFPOS% = 2 Then A5%(3) = 1
+		If W% = 3 And RN <= 95 Then A5%(2) = 1
+		If W% = 3 And RN <= 88 And INFPOS% = 0 Then A5%(3) = 1: ' WAS 60
+		If W% = 3 And RN <= 15 And INFPOS% > 0 Then A5%(3) = 1
+		If W% = 1 And RN <= 30 Then A5%(2) = 1
+		If W% = 1 And RN <= 50 And INFPOS% = 0 Then A5%(3) = 1
+		If W% = 1 And RN <= 10 And INFPOS% > 0 Then A5%(3) = 1
+		If W% = 2 And RN <= 45 Then A5%(2) = 1
 
-    GoTo 13743
+	End If
 
-    '-----
+	13713 '
+	GoTo 13684
 
-    13732 If W% = 6 And I < 6 And INFPOS% < 2 And INNING% < 9 Or W% = 5 And I < 6 And INFPOS% < 2 And INNING% < 9 Then A5%(2) = 11: GoTo 13684
-    If S4% = 7 Then 13740
-    I = Int(Rnd(1) * 10) + 1: A5%(0) = 1: A5%(1) = 11: A5%(2) = 1: A5%(3) = 0
-    If W% = 5 And I <= 5 Then A5%(1) = 1: A5%(2) = 11: A5%(3) = 0
-    If W% = 1 And I <= 3 Then A5%(1) = 1: A5%(2) = 11: A5%(3) = 0
-    If W% = 2 And B%(P, B3%(P, B0%(2, 0)), 16) < 7 And B%(P, B3%(P, B0%(2, 0)), 16) > 0 Then A5%(1) = 1: A5%(2) = 11: A5%(3) = 0: GoTo 13743
-    If W% = 2 And B%(P, B3%(P, B0%(2, 0)), 16) > 6 Then A5%(1) = 1: A5%(2) = 1: A5%(0) = 11
-
-    GoTo 13743
 
     '-----
 
-    13740 I = Int(Rnd(1) * 100) + 1: A5%(1) = 11: A5%(2) = 1: A5%(3) = 1: A5%(0) = 1
-    If INFPOS% > 0 And W% = 5 Or INFPOS% > 0 And W% = 3 Or INFPOS% = 2 And W% = 4 Or INFPOS% = 2 And W% = 6 Or W% = 2 Or W% = 1 Then A5%(3) = 11: A5%(0) = 1: A5%(1) = 1: A5%(2) = 1: GoTo 13743
-    If W% = 5 And I <= 5 Or W% = 1 Or W% = 2 Then A5%(3) = 11: A5%(2) = 1: A5%(1) = 1: A5%(0) = 1
 
-    13743 GoTo 13684
+    13725 '
+	
+	If S4% <> 4 And S4% <> 7 Then
+		If S6%(P, 0) - S6%(D, 0) >= 0 And INNING% > 6 And O%(0) = 0 And INFPOS% > 0 And W% = 5 Or S6%(P, 0) - S6%(D, 0) >= 0 And INNING% > 6 And O%(0) = 0 And INFPOS% > 0 And W% = 3 Then 
+			A5%(3) = 11
+			GoTo 13684
+		End If
+
+		If INFPOS% = 0 And W% <> 2 Then A5%(1) = 11: GoTo 13684
+		If INFPOS% > 0 And W% = 5 Or INFPOS% > 0 And W% = 3 Then A5%(3) = 0: A5%(1) = 11: GoTo 13684
+		If INFPOS% > 0 And (W% = 1 Or W% = 3) Then A5%(3) = 0: A5%(1) = 1: A5%(0) = 11: GoTo 13684
+		If INFPOS% = 2 And W% = 4 Or INFPOS% = 2 And W% = 6 And RN <= 90 Then 
+			A5%(3) = 0: A5%(1) = 11
+			GoTo 13684
+		End If
+
+		A5%(1) = 11
+
+	Else
+
+
+		13732 '
+		If W% = 6 And RN < 6 And INFPOS% < 2 And INNING% < 9 Or W% = 5 And RN < 6 And INFPOS% < 2 And INNING% < 9 Then 
+			A5%(2) = 11
+		Else
+			If S4% = 7 Then 13740
+
+			RN = Int(Rnd(1) * 10) + 1
+			
+			A5%(0) = 1
+			A5%(1) = 11
+			A5%(2) = 1
+			A5%(3) = 0
+
+			If W% = 5 And RN <= 5 Then A5%(1) = 1: A5%(2) = 11: A5%(3) = 0
+			If W% = 1 And RN <= 3 Then A5%(1) = 1: A5%(2) = 11: A5%(3) = 0
+
+			If W% = 2 And B%(P, B3%(P, B0%(2, 0)), 16) < 7 And B%(P, B3%(P, B0%(2, 0)), 16) > 0 Then 
+				A5%(1) = 1
+				A5%(2) = 11
+				A5%(3) = 0
+			Else
+				If W% = 2 And B%(P, B3%(P, B0%(2, 0)), 16) > 6 Then 
+					A5%(1) = 1
+					A5%(2) = 1
+					A5%(0) = 11
+				End If
+			End If
+		End If
+
+	End If
+
+
+    GoTo 13684
+
+
+    '-----
+
+
+    13740 '
+	Call d100(RN)
+	A5%(1) = 11
+	A5%(2) = 1
+	A5%(3) = 1
+	A5%(0) = 1
+
+    If INFPOS% > 0 And W% = 5 Or INFPOS% > 0 And W% = 3 Or INFPOS% = 2 And W% = 4 Or INFPOS% = 2 And W% = 6 Or W% = 2 Or W% = 1 Then 
+		A5%(3) = 11
+		A5%(0) = 1
+		A5%(1) = 1
+		A5%(2) = 1
+	Else
+		If W% = 5 And RN <= 5 Or W% = 1 Or W% = 2 Then 
+			A5%(3) = 11
+			A5%(2) = 1
+			A5%(1) = 1
+			A5%(0) = 1
+		End If
+	End If
+
+    GoTo 13684
+
+
 
     '-----------------------------------------------------
     '--- THIS IS CRITICAL FOR PBP MOVING AUTOMATICALLY ---
@@ -1573,14 +1705,17 @@ Sub SOURCE ()
     '-----
 
     14000 'balls hit to the air
-    I = Int(Rnd(1) * 100) + 1
-    A5%(0) = 0: A5%(1) = 0: A5%(2) = 0: A5%(3) = 0
+    Call d100(RN)
+    A5%(0) = 0
+	A5%(1) = 0
+	A5%(2) = 0
+	A5%(3) = 0
 
     'Case 1 to 73
-    If I <= 73 Then 14020: ' flyout
+    If RN <= 73 Then 14020: ' flyout
 
     'Case 74 to 89
-    If I <= 89 Then 14010: ' popup
+    If RN <= 89 Then 14010: ' popup
 
     'Case 90 to 100
     S2% = 21
@@ -1610,21 +1745,25 @@ Sub SOURCE ()
 
     O%(0) = O%(0) + 1
     O%(1) = O%(1) + 1
+
     Call CREDITREGPO(W%, D)
     I5 = P1%(D): I6 = 0
+
     Call ADDPIT(D, I5, I6)
     If O%(0) = 3 Then 13900
 
-    I = Int(Rnd(1) * 100) + 1
+    Call d100(RN)
+    If (S4% = 1 Or S4% = 5) And RN >= 80 Or (S4% = 1 Or S4% = 5) And P2 = 2 Then 14012
+    If (S4% = 4 Or S4% = 2) And RN >= 80 Or S4% = 4 And P2 = 2 Then 14014
 
-    If (S4% = 1 Or S4% = 5) And I >= 80 Or (S4% = 1 Or S4% = 5) And P2 = 2 Then 14012
-    If (S4% = 4 Or S4% = 2) And I >= 80 Or S4% = 4 And P2 = 2 Then 14014
-
-    14009 Call ADVANCEMENT(P, D, S2%, F%, I3)
+    14009 '
+	Call ADVANCEMENT(P, D, S2%, F%, I3)
 
     GoTo 13900
 
+
     '-----
+
 
     14010 ' infield popup
     Call GETINFIELDER(W%, P, I1, D, S2%, P2)
@@ -1727,19 +1866,22 @@ Sub SOURCE ()
         I5 = P1%(P): I6 = 23
         Call INCPITOFF(P, I5, I6)
     End If
-    I = Int(Rnd(1) * 100) + 1
+    
+	Call d100(RN)
 
     'Case 1 to 17
-    If I <= 17 Then
+    If RN <= 17 Then
         14050 ' *** shallow fly ball ***
         S2% = 19
         Call WINDEX
+
         X$ = C$(W%)
         If Int(Rnd(1) * 100) <= 25 And W% = 7 Then X$ = "lcf"
         If Int(Rnd(1) * 100) <= 25 And W% = 9 Then X$ = "rcf"
-        Call DELIVERY(D)
-        Call d100(RN)
 
+        Call DELIVERY(D)
+        
+		Call d100(RN)
         Y% = Int(Rnd(1) * 60) + 1170
         Call GETRPBP(Y%, Y$, D)
         Call STRIPRPBP(Y$, Y%, D)
@@ -1751,7 +1893,7 @@ Sub SOURCE ()
     End If
 
     'Case 18 to 33
-    If I <= 33 Then
+    If RN <= 33 Then
         14060 ' *** deep fly out ***
         S2% = 17
 
@@ -1760,7 +1902,7 @@ Sub SOURCE ()
         Call FLDERR(F%, W%, D, I3, SB%, S2%, P)
         If F% = 1 Then 13900
         Call CREDITREGPO(W%, D)
-        Call CAUGHTFLY(I, S2%, D)
+        Call CAUGHTFLY(RN, S2%, D)
 
         O%(0) = O%(0) + 1
         O%(1) = O%(1) + 1
@@ -1780,9 +1922,14 @@ Sub SOURCE ()
             Call ADDPIT(D, I5, I6)
 
             If B7%(P, B1!(P)) = 1 Then I5 = P1%(P): I6 = 23: Call PITOFF(P, I5, I6): I5 = P1%(P): I6 = 41: Call INCPITOFF(P, I5, I6): GoTo 14066
-            I5 = B3%(P, B1!(P)): I6 = 0
+            
+			I5 = B3%(P, B1!(P))
+			I6 = 0
 
-            Call BATOFF(P, I5, I6): I5 = B3%(P, B1!(P)): I6 = 19: Call INCBATOFF(P, I5, I6)
+            Call BATOFF(P, I5, I6)
+			I5 = B3%(P, B1!(P))
+			I6 = 19
+			Call INCBATOFF(P, I5, I6)
 
         End If
 
@@ -1794,14 +1941,11 @@ Sub SOURCE ()
         ZM = (B%(D, B9%(D, W%), 15) - 5) * 25
         I4 = I4 - ZM
 
-        I = Int(Rnd(1) * 1000) + 1
+        RN = Int(Rnd(1) * 1000) + 1
 
-        If W% = 9 And S2% = 17 And I <= 800 + I4 And P2 <> 2 Or W% = 9 And S2% = 18 And I <= 400 + I4 And P2 <> 2 Or W% = 8 And S2% = 17 And I <= 700 + I4 And P2 <> 2 Or W% = 8 And S2% = 18 And I <= 350 + I4 And P2 <> 2 Or W% = 7 And S2% = 17 And I <= 250 + I4 And P2 <> 2 Then A5%(2) = 1
-        If P2 = 2 And B%(P, B3%(P, B0%(2, 0)), 16) > 6 And W% = 9 And S2% = 17 And I <= 400 + I4 Or P2 = 2 And B%(P, B3%(P, B0%(2, 0)), 16) > 6 And W% = 8 And S2% = 17 And I <= 400 + I4 Then A5%(2) = 1
-
-        '------------------------------------------------------------------
-
-        If A5%(2) <> 1 And S2% = 18 And W% = 9 And P2 <> 2 And S4% < 6 And I > 800 Then
+        If W% = 9 And S2% = 17 And RN <= 800 + I4 And P2 <> 2 Or W% = 9 And S2% = 18 And RN <= 400 + I4 And P2 <> 2 Or W% = 8 And S2% = 17 And RN <= 700 + I4 And P2 <> 2 Or W% = 8 And S2% = 18 And RN <= 350 + I4 And P2 <> 2 Or W% = 7 And S2% = 17 And RN <= 250 + I4 And P2 <> 2 Then A5%(2) = 1
+        If P2 = 2 And B%(P, B3%(P, B0%(2, 0)), 16) > 6 And W% = 9 And S2% = 17 And RN <= 400 + I4 Or P2 = 2 And B%(P, B3%(P, B0%(2, 0)), 16) > 6 And W% = 8 And S2% = 17 And RN <= 400 + I4 Then A5%(2) = 1
+        If A5%(2) <> 1 And S2% = 18 And W% = 9 And P2 <> 2 And S4% < 6 And RN > 800 Then
             I8! = 3
             LN% = 3308
             If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8!, I9)
@@ -1809,35 +1953,34 @@ Sub SOURCE ()
             GoTo 14072
         End If
 
-        If A5%(2) <> 1 And S2% = 18 And W% = 8 And P2 <> 2 And S4% < 6 And I > 840 Then
+        If A5%(2) <> 1 And S2% = 18 And W% = 8 And P2 <> 2 And S4% < 6 And RN > 840 Then
             I8! = 3
             LN% = 3308
             If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8!, I9)
-
             GoTo 14072
         End If
 
-        If A5%(2) <> 1 And W% = 7 And P2 <> 2 And S4% < 6 And I > 880 Then
+        If A5%(2) <> 1 And W% = 7 And P2 <> 2 And S4% < 6 And RN > 880 Then
             I8! = 3
             LN% = 3308
             If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8!, I9)
-
         End If
 
         14072 '
         If B0%(1, 0) <> 0 Then
-            I = Int(Rnd(1) * 1000) + 1: A5%(1) = 0
+            RN = Int(Rnd(1) * 1000) + 1
+			A5%(1) = 0
             I3 = (B%(P, B3%(P, B0%(1, 0)), 16) - 5) * 25
-            I4 = (B%(D, B9%(D, W%), 15) - 5) * 25: J5 = I3 - I4
+            I4 = (B%(D, B9%(D, W%), 15) - 5) * 25
+			J5 = I3 - I4
 
-            If S2% = 17 And P2 <> 2 And S4% = 1 And I <= 100 + J5 Then
+            If S2% = 17 And P2 <> 2 And S4% = 1 And RN <= 100 + J5 Then
                 I8! = 2
                 LN% = 3308
                 If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8!, I9)
             End If
             I8! = 2
             LN% = 3308
-
         End If
 
         '--- Double-check this sometime
@@ -1874,7 +2017,7 @@ Sub SOURCE ()
     '--- can we turn into subroutine?
     14025 '
     Call CREDITREGPO(W%, D)
-    Call CAUGHTFLY(I, S2%, D)
+    Call CAUGHTFLY(RN, S2%, D)
 
     O%(0) = O%(0) + 1
     O%(1) = O%(1) + 1
@@ -1885,9 +2028,9 @@ Sub SOURCE ()
 
     If O%(0) = 3 Then 13900
 
-    I = Int(Rnd(1) * 100) + 1
+    Call d100(RN)
 
-    If S2% = 19 And S4% = 1 And I <= 33 And P2 = 2 Or S2% = 19 And S4% = 5 And I <= 33 Then
+    If S2% = 19 And S4% = 1 And RN <= 33 And P2 = 2 Or S2% = 19 And S4% = 5 And RN <= 33 Then
         A5%(1) = 10
         O%(0) = O%(0) + 1: O%(1) = O%(1) + 1
         Call ADDPIT(D, I5, I6)
@@ -1919,29 +2062,37 @@ Sub SOURCE ()
 
     14100 ' *** BUNT ROUTINE ***
     Call WINDEX
-    For I = 0 To 3: A5%(I) = 0: Next
-    SH = 2
+    
+	For I = 0 To 3: A5%(I) = 0: Next
+    
+	SH = 2
     S2% = 23
-    If (S4% = 3 Or S4% > 4) And O%(0) < 2 Then Call SQUEEZECHOICE(SH)
-    Call d100(RN)
+    
+	If (S4% = 3 Or S4% > 4) And O%(0) < 2 Then Call SQUEEZECHOICE(SH)
+    
+	Call d100(RN)
     If B7%(P, B1!(P)) = 1 Then BR = P%(P, P1%(P), 32)
     If B7%(P, B1!(P)) <> 1 Then BR = B%(P, B3%(P, B1!(P)), 30)
     If INFPOS% > 0 Then BR = BR - 2
     If BR <= 1 Then BR = 1
-    For I = 1 To 9:
+    
+	For I = 1 To 9:
         If RN <= BT%(L%(1, 10), BR, I) Then 14107
     Next
 
-    14107 WW% = Int(Rnd(1) * 10)
+    14107 '
+	WW% = Int(Rnd(1) * 10)
     If WW% <= 2 Then W% = 5
     If WW% > 2 And WW% <= 4 Then W% = 1
     If WW% > 4 And WW% <= 7 Then W% = 3
     If WW% > 7 Then W% = 2
     Call GETFIELDNAME(W%, D)
-    Call d100(RN)
-
+    
+	Call d100(RN)
     If RN <= 52 Then 14175
 
+	'This I and the ones in the case statement
+	'all have to do with the For-Next loop
     Select Case I
         Case 1
             14110 'PU
@@ -2136,6 +2287,7 @@ Sub SOURCE ()
             Call PBP(Q$(0) + " lays down a good bunt...")
             Call FLDERR(F%, W%, D, I3, SB%, S2%, P)
             Call PBP(Q$(4) + " makes a nice play")
+
             If S4% = 0 Then
                 S2% = -12
                 Call PBP(Q$(0) + " beats out an infield hit!")
@@ -2154,9 +2306,9 @@ Sub SOURCE ()
                 I5 = B3%(P, B1!(P)): I6 = 18: Call INCBATOFF(P, I5, I6)
             End If
 
-            I = Int(Rnd(1) * 100) + 1
+            Call d100(RN)
 
-            If S4% = 5 And SH = 2 And I > 98 Or I > 97 Then
+            If S4% = 5 And SH = 2 And RN > 98 Or RN > 97 Then
                 S2% = -12
                 Call PBP(Q$(0) + " beats it out!")
                 GoTo 13065
@@ -2188,8 +2340,8 @@ Sub SOURCE ()
         Case 5
             14150 'C@3
             If SH = 1 Then 14160
-            Call d100(RN)
 
+            Call d100(RN)
             If B7%(P, B1!(P)) = 1 Then RR = 2
             If B7%(P, B1!(P)) <> 1 Then RR = B%(P, B3%(P, B1!(P)), 16)
             If INFPOS% > 0 Then RR = RR - 2
@@ -2199,6 +2351,7 @@ Sub SOURCE ()
                 If RN <= CF%(RR, I) Then Exit For
             Next
 
+			'This I has to do with the above For-Next
             Select Case I + 1
                 Case 1
                     14156 If S4% > 0 Then 14157
@@ -2266,6 +2419,7 @@ Sub SOURCE ()
             Next
 
             14163 '
+			'This I has to do with the above For-Next
             If I = 0 Then
                 PLB = 1
                 Call LDRNRCTDN
@@ -2273,7 +2427,8 @@ Sub SOURCE ()
                 Call PBP(Q$(4) + " throws to " + J3$ + "... SAFE!!")
                 If B7%(P, B1!(P)) <> 1 Then I5 = B3%(P, B1!(P)): I6 = 0: Call INCBATOFF(P, I5, I6)
                 If B7%(P, B1!(P)) = 1 Then I5 = P1%(P): I6 = 23: Call INCPITOFF(P, I5, I6)
-                For I = 0 To 3: A5%(I) = 1: Next: Call ADVANCEMENT(P, D, S2%, F%, I3)
+                For I = 0 To 3: A5%(I) = 1: Next
+				Call ADVANCEMENT(P, D, S2%, F%, I3)
             End If
 
             GoTo 13900
@@ -2300,6 +2455,7 @@ Sub SOURCE ()
                 If RN <= SO%(PR, I) Then Exit For
             Next
 
+			'This I has to do with the above For-Next
             Select Case I + 1
 
                 Case 1
@@ -2365,6 +2521,7 @@ Sub SOURCE ()
             Next
 
             14182 '
+			'This I has to do with the above For-Next
             Select Case I + 1
                 Case 1:
                     14183 S2% = 12
@@ -2419,7 +2576,7 @@ Sub SOURCE ()
 
     End Select
 
-    '-----
+    '--------------------
 
     14800 '
     SH% = 0
@@ -2483,14 +2640,16 @@ Sub SOURCE ()
     If B%(P, I2, 13) > 0 Then Q0 = 400 + ((B%(P, I2, 13) * 20))
     Q0 = 100
 
-    14813 If B7%(P, B0%(TGTBASE% - 1, 0)) = 1 Then Q0 = 100
+    14813 '
+	If B7%(P, B0%(TGTBASE% - 1, 0)) = 1 Then Q0 = 100
 
     Call STEAL3RD(TGTBASE%, AA, Q0, H0%, D) ' *** SUCCESS OF 3B STEAL ***
 
     If P%(D, P1%(D), 0) = 1 And TGTBASE% = 2 Then CHANCE% = CHANCE% + 25: Q0 = Q0 + 10
     If P%(D, P1%(D), 0) = -1 And TGTBASE% = 2 Then CHANCE% = CHANCE% - 50: Q0 = Q0 - 30
     If P2 = 2 Then
-        14838 CHANCE% = 100: Q0 = Q0 - 200: W% = 2: Q$(4) = B$(D, B9%(D, 2))
+        14838 '
+		CHANCE% = 100: Q0 = Q0 - 200: W% = 2: Q$(4) = B$(D, B9%(D, 2))
         TGBASE% = B3%(P, B0%(TGTBASE% - 1, 0))
         B0%(TGTBASE% - 1, 2) = 18
         Call FLDERR(F%, W%, D, I3, SB%, S2%, P)
@@ -2499,11 +2658,13 @@ Sub SOURCE ()
     End If
 
     B0%(TGTBASE% - 1, 2) = B0%(TGTBASE% - 1, 2) + 1
-    I4 = Int(Rnd(1) * 100) + 1
 
+    Call d100(I4)
     If I4 > B0%(TGTBASE% - 1, 2) Then 14825
 
-    S2% = 22: W% = 1: Q$(4) = P$(D, P1%(D))
+    S2% = 22
+	W% = 1
+	Q$(4) = P$(D, P1%(D))
 
     14820 '
     Call WINDEX
@@ -2591,7 +2752,8 @@ Sub SOURCE ()
 
     14837 If B0%(TGTBASE% - 1, 2) = 18 And I9 > Q0 Or B0%(TGTBASE% - 1, 2) > 18 And I9 > Q0 - 200 Then 14830
 
-    14829 RN = Int(Rnd(1) * 100) + 1
+    14829 
+	Call d100(RN)
     If RN <= 20 Then F$ = "He beats the throw!"
     If RN > 20 And RN <= 40 Then F$ = "He's in there!"
     If RN > 40 And RN <= 50 Then F$ = "Throw is off-line..."
@@ -2629,7 +2791,8 @@ Sub SOURCE ()
 
     '-----
 
-    14830 RN = Int(Rnd(1) * 100) + 1
+    14830 '
+	Call d100(RN)
     If RN <= 20 Then F$ = B$(D, B9%(D, 2)) + " nails " + Q$(TGTBASE% - 1)
     If RN > 20 And RN <= 40 Then F$ = Q$(TGTBASE% - 1) + " is pegged at " + H$(TGTBASE%)
     If RN > 40 And RN <= 60 Then F$ = "Great throw by " + B$(D, B9%(D, 2)) + "!!"
@@ -2700,6 +2863,7 @@ Sub SOURCE ()
     If UCase$(I$) = "N" Then I5 = 77: GoTo 15504
     I5 = 66
     Locate 5, 1
+
     For I = 1 To 9:
         Color 3, 0
         If BP(P9) = I Then Color 9
@@ -2727,31 +2891,12 @@ Sub SOURCE ()
 
     GoTo 15504
 
-    '--------------------------------------
-    '--- THESE DO NOT APPEAR TO BE USED ---
-    '--------------------------------------
-    If CGERA% > 0 And INNING% = 8 And P = 0 And S6%(1, 0) > S6%(0, 0) And P%(1, P1%(1), 1) > 0 And P6%(1) = 1 And Int(P%(1, P1%(1), 5) / P%(1, P1%(1), 1) * 100 + .5) <= 75 And Int(Rnd(1) * 100) + 1 <= Int(P%(1, P1%(1), 16) / P%(1, P1%(1), 1) * 100 + .5) Then I = 1: S8%(I, 0) = S8%(I, 0) + 6: S8%(I, 1) = 6
 
-    If CGERA% > 0 And INNING% = 8 And P = 0 And S6%(0, 0) > S6%(1, 0) And P%(0, P1%(0), 1) > 0 And P6%(0) = 1 And Int(P%(0, P1%(0), 5) / P%(0, P1%(0), 1) * 100 + .5) <= 75 And Int(Rnd(1) * 100) + 1 <= Int(P%(0, P1%(0), 16) / P%(0, P1%(0), 1) * 100 + .5) Then I = 0: S8%(I, 0) = S8%(I, 0) + 6: S8%(I, 1) = 6
-
-    If P%(1, P1%(1), 1) = 0 Or P6%(1) <> 1 Then 15002
-
-    Call d100(RN)
-
-    If CGERA% > 0 And INNING% = 8 And P = 0 And S6%(1, 0) >= S6%(0, 0) And Int(P%(1, P1%(1), 5) / P%(1, P1%(1), 1) * 100 + .5) > 75 And Int(P%(1, P1%(1), 5) / P%(1, P1%(1), 1) * 100 + .5) <= 100 And RN <= Int(P%(1, P1%(1), 16) / P%(1, P1%(1), 1) * 100 + .5) Then I = 1: S8%(I, 0) = S8%(I, 0) + 6: S8%(I, 1) = 6
-
-    15002 If P%(0, P1%(0), 1) = 0 Or P6%(0) <> 1 Then 15003
-
-    Call d100(RN)
-
-    If CGERA% > 0 And INNING% = 8 And P = 0 And S6%(0, 0) >= S6%(1, 0) And Int(P%(0, P1%(0), 5) / P%(0, P1%(0), 1) * 100 + .5) > 75 And Int(P%(0, P1%(0), 5) / P%(0, P1%(0), 1) * 100 + .5) <= 100 And RN <= Int(P%(0, P1%(0), 16) / P%(0, P1%(0), 1) * 100 + .5) Then I = 0: S8%(I, 0) = S8%(I, 0) + 6: S8%(I, 1) = 6
-
-    15003 If CGERA% > 0 And INNING% = 8 And P = 0 And (S6%(1, 0) >= S6%(0, 0) Or S6%(0, 0) - S6%(1, 0) <= 2) And P%(1, P1%(1), 1) > 0 And P6%(1) = 1 And Int(P%(1, P1%(1), 16) / P%(1, P1%(1), 1) * 100 + .5) > 100 Then I = 1: S8%(I, 0) = S8%(I, 0) + 6: S8%(I, 1) = 6
-
-    If CGERA% > 0 And INNING% = 8 And P = 0 And (S6%(0, 0) >= S6%(1, 0) Or S6%(1, 0) - S6%(0, 0) <= 2) And P%(0, P1%(0), 1) > 0 And P6%(0) = 1 And Int(P%(0, P1%(0), 16) / P%(0, P1%(0), 1) * 100 + .5) > 100 Then I = 0: S8%(I, 0) = S8%(I, 0) + 6: S8%(I, 1) = 6
     '-----------------------------------
 
-    15500 Cls
+
+    15500 '
+	Cls
     If usingGfx = 1 Then Screen 0
     TG = 0
     PG = 0
@@ -2768,6 +2913,7 @@ Sub SOURCE ()
         I5 = 0
     Loop Until I >= 0 And I <= 2
 
+	'This I has to do with the above key loop
     Select Case I + 1
 
         Case 1
@@ -2788,9 +2934,11 @@ Sub SOURCE ()
             GoTo 15051
 
         Case 2
-            15504 If P2 = 5 Then Call TIRING(P9): GoTo 15501
+            15504 '
+			If P2 = 5 Then Call TIRING(P9): GoTo 15501
 
-            15505 Call PITDISP(P9)
+            15505 '
+			Call PITDISP(P9)
             Locate 23, 1: Print "SELECT RELIEVER (Z = NO CHANGE) ";
             If B9%(P9, 1) <> 99 Then Call TIRING(P9)
             Print
@@ -3093,24 +3241,16 @@ Sub SOURCE ()
 
     If P%(P, P1%(P), 11) <> 999 Then
 
-        If I > 1 Then
-            ' Variable I sometimes has a value of 3 or 4
-            ' It's likely meant to resemble something else
-            ' but used for several loops as well
-
-            ' In the original game context, it may have ended
-            ' up just getting 0 ?!?!
+        If I0 > 1 Then
+            ' Variable I0 here should only have a value of 0/1
             Open "errlog" For Append As #9
             Print #9, "An error is about to happen"
-            Print #9, "I -      "; I
-            Print #9, "P -      "; P
-            Print #9, "P1%(0) - "; P1%(0)
-            Print #9, "P1%(1) - "; P1%(1)
+            Print #9, "I0 -      "; I0
             Print #9, ""
             Close #9
         End If
 
-        I7! = P%(I, P1%(I), 11)
+        I7! = P%(I0, P1%(I0), 11)
     Else
         If P%(P, P1%(P), 20) = 0 Then
             I7! = 0
@@ -3119,13 +3259,15 @@ Sub SOURCE ()
         End If
     End If
 
-    18726 D2 = 1
+    18726 '
+	D2 = 1
     If INFPOS% > 0 Then 18820
     If MG%(D, 690) <> 999 Then 18801
 
     ' PROFILE INFIELD IN WITH 3RD OCCUPIED
     If S4% < 3 Or S4% = 4 Then 18801
-    Call d100(RN)
+    
+	Call d100(RN)
     If O%(0) = 0 And A1 >= MG%(D, 691) * -1 And A1 <= MG%(D, 692) * -1 And INNING% >= MG%(D, 693) And RN <= MG%(D, 694) Then INFPOS% = 2: D2 = 3: GoTo 15055
     If O%(0) = 0 And A1 >= MG%(D, 695) * -1 And A1 <= MG%(D, 696) * -1 And INNING% >= MG%(D, 697) And RN <= MG%(D, 698) Then INFPOS% = 2: D2 = 3: GoTo 15055
     If O%(0) = 1 And (S4% = 5 Or S4% = 7) And A1 >= MG%(D, 699) * -1 And A1 <= MG%(D, 700) * -1 And INNING% >= MG%(D, 701) And RN <= MG%(D, 702) Then INFPOS% = 2: D2 = 3: GoTo 15055
@@ -3169,7 +3311,9 @@ Sub SOURCE ()
 
     18805 If MG%(D, 756) <> 999 Then 18806
     If S4% = 1 Or S4% = 4 Or S4% = 5 Or S4% = 7 Then 18806
+
     MOB% = 0
+
     For I = 1 To 3
         If B0%(I, 0) > 0 Then MOB% = MOB% + 1
     Next
@@ -3198,51 +3342,58 @@ Sub SOURCE ()
 
     GoTo 15055
 
-    '-----
+    '--------------------
 
-    18820 If A1 <= 0 Or A1 = 0 And S4% <= 1 Or A1 = 0 And S4% = 4 Or S4% = 7 Or B7%(P, B1!(P)) = 1 Then 18850
+    18820 '
+	If A1 <= 0 Or A1 = 0 And S4% <= 1 Or A1 = 0 And S4% = 4 Or S4% = 7 Or B7%(P, B1!(P)) = 1 Then 18850
     If INNING% >= 9 And P = 1 And O%(0) < 2 And A1 = 0 And S4% >= 2 And S4% <= 3 Or INNING% >= 9 And P = 1 And O%(0) = 2 And A1 = 0 And S4% >= 5 And S4% <= 6 Then
         '18835
         D2 = 2
         GoTo 15058
     End If
 
-    I = B4%(P, 0, B1!(P)): I1 = B4%(P, 3, B1!(P)): If B1!(P) = 9 Then I2 = B4%(P, 0, 0): I3 = B4%(P, 3, 0)
-
+    Ib4 = B4%(P, 0, B1!(P))
+	I1 = B4%(P, 3, B1!(P))
+	If B1!(P) = 9 Then I2 = B4%(P, 0, 0): I3 = B4%(P, 3, 0)
     If B1!(P) < 9 Then I2 = B4%(P, 0, B1!(P) + 1): I3 = B4%(P, 3, B1!(P) + 1)
     If S4% <> 2 And S4% <> 6 Then 18850
 
-    If I - I2 >= 50 And I1 - I3 >= 50 And A1 < 1 And INNING% > 8 Or I >= 280 And I1 >= 140 And INNING% > 8 And I1 > I3 And A1 < 1 Then
+    If Ib4 - I2 >= 50 And I1 - I3 >= 50 And A1 < 1 And INNING% > 8 Or Ib4 >= 280 And I1 >= 140 And INNING% > 8 And I1 > I3 And A1 < 1 Then
         D2 = 2
         GoTo 15058
     Else
         GoTo 18850
     End If
 
-    '-----
+    '--------------------
 
-    18850 If (S8%(D, 0) <= P8%(D, P1%(D), 4) + P8%(D, P1%(D), 1) And S8%(D, 1) <= P8%(D, P1%(D), 2)) Or B9%(D, 1) = 99 Then
+    18850 '
+	If (S8%(D, 0) <= P8%(D, P1%(D), 4) + P8%(D, P1%(D), 1) And S8%(D, 1) <= P8%(D, P1%(D), 2)) Or B9%(D, 1) = 99 Then
         Call RELIEVERS
         If usingGfx = 1 Then _PutImage (20 * FontColAdj%, 48)-Step(44 * FontColAdj%, 128), backupScreen&, imageScreen&, (20 * FontColAdj%, 48)-Step(44 * FontColAdj%, 128)
     End If
 
     GoTo 15055
 
-    '-----
+    '--------------------
 
-    18900 JM = B3%(P, B1!(P))
+    18900 '
+	JM = B3%(P, B1!(P))
+
     If PPH = 1 Then 18905
     A1 = S6%(P, 0) - S6%(D, 0)
     If B7%(P, B1!(P)) <> 1 Then 18906
+
     For I = 0 To 21
         If P%(P, I, 15) = 0 Then 18903
     Next
 
     GoTo 18941
 
-    '-----
+    '--------------------
 
-    18903 If MG%(P, 590) = 999 Then 18985
+    18903 '
+	If MG%(P, 590) = 999 Then 18985
     If INNING% > 4 And INNING% < 7 And A1 < -2 And S6%(P, 0) > 0 Then 18930
     If INNING% > 4 And INNING% < 7 And A1 < -3 Then 18930
     If INNING% > 6 And A1 < 0 Or A1 = 0 And INNING% > 6 And INNING% < 9 And S4% > 1 Then 18930
@@ -3251,35 +3402,41 @@ Sub SOURCE ()
 
     18905 GoTo 18941
 
-    '-----
+    '--------------------
 
-    18906 If MG%(P, 847) = 999 Then 18991
+    18906 '
+	If MG%(P, 847) = 999 Then 18991
     If B%(P, JM, 4) = 0 Then 18909
     If B%(P, JM, 6) / B%(P, JM, 4) * 1000 > 233 Or B%(P, JM, 9) >= 15 Then 18908
     If INNING% > 6 And A1 < -2 Or A1 <= 0 And INNING% >= 8 Or A1 = 0 And INNING% >= 9 Then 18909
 
     18908 GoTo 18941
 
-    '-----
+    '--------------------
 
     18909 'GET A PINCH HITTER FOR A POSITION PLAYER
     If MG%(P, 540) = 999 Then
+
         18993 'SELECT PH FOR HITTER
         For I = 0 To 22
+
             If B%(P, I, 21) <= 0 And B$(P, I) <> "XXX" Then
 
                 If B7%(P, B1!(P)) = B%(P, I, 22) Or B7%(P, B1!(P)) = B%(P, I, 23) Or B7%(P, B1!(P)) = B%(P, I, 24) Or B7%(P, B1!(P)) = B%(P, I, 25) Then
 
+					'-- it's not clear what variable this "I" should be
                     I = P%(D, P1%(D), 0)
                     I1 = 6
                     If I < 0 Then I1 = 1
 
                     For I = I1 To I1 + 4
+
                         If MG%(P, I1 + 540) <> -1 And B%(P, MG%(P, I1 + 540), 21) = 0 Then
                             I = MG%(P, I1 + 540)
                             MG%(P, I1 + 540) = -1
                             GoTo 18916
                         End If
+
                     Next
 
                 End If
@@ -3292,6 +3449,7 @@ Sub SOURCE ()
 
     18935 '
     For I = 0 To 22:
+
         If B%(P, I, 21) > 0 Or B$(P, I) = "XXX" Or B%(P, I, 4) = 0 Then 18917
         If B7%(P, B1!(P)) <> B%(P, I, 22) And B7%(P, B1!(P)) <> B%(P, I, 23) And B7%(P, B1!(P)) <> B%(P, I, 24) And B7%(P, B1!(P)) <> B%(P, I, 25) Then 18917
 
@@ -3301,12 +3459,19 @@ Sub SOURCE ()
         If B%(P, I, 0) = 0 And B%(P, I, 6) / B%(P, I, 4) * 1000 > B%(P, JM, 6) / B%(P, JM, 4) * 1000 + 30 Then 18916
         GoTo 18917
 
-        18916 PPH = 1: D0%(P) = D0%(P) + 1: X0%(P, 0, D0%(P)) = I: X0%(P, 1, D0%(P)) = B7%(P, B1!(P)): X0%(P, 2, D0%(P)) = (B1!(P) * 10) + (D0%(P) - 9)
-        18919 B%(P, I, 21) = 1
+        18916 '
+		PPH = 1: D0%(P) = D0%(P) + 1: X0%(P, 0, D0%(P)) = I: X0%(P, 1, D0%(P)) = B7%(P, B1!(P)): X0%(P, 2, D0%(P)) = (B1!(P) * 10) + (D0%(P) - 9)
+        
+		18919 '
+		B%(P, I, 21) = 1
         B3%(P, B1!(P)) = I
         B9%(P, B7%(P, B1!(P))) = I
-        If B7%(P, B1!(P)) = 1 Or B7%(P, B1!(P)) = 10 Then B9%(P, 1) = 99: B9%(P, 0) = B1!(P): B7%(P, B1!(P)) = 10
-        I7% = P: I8% = B1!(P): I9% = B3%(P, B1!(P))
+        
+		If B7%(P, B1!(P)) = 1 Or B7%(P, B1!(P)) = 10 Then B9%(P, 1) = 99: B9%(P, 0) = B1!(P): B7%(P, B1!(P)) = 10
+        
+		I7% = P
+		I8% = B1!(P)
+		I9% = B3%(P, B1!(P))
         Call REPLACEMENTS(I7%, I8%, I9%)
         GoTo 18938
 
@@ -3314,10 +3479,12 @@ Sub SOURCE ()
 
     GoTo 18941
 
-    '-----
+    '--------------------
 
+	'-- it's not clear what variable this "I" should be
     18930 'GET A PINCH HITTER FOR THE PITCHER
     If MG%(P, 540) = 999 Then
+
         18990 'SELECT PH FOR PITCHER
         I = P%(D, P1%(D), 0)
         I1 = 6
@@ -3330,7 +3497,9 @@ Sub SOURCE ()
 
     End If
 
-    18933 J% = 0: GP% = 0
+    18933 '
+	J% = 0
+	GP% = 0
 
     If CGERA% > 1 And INNING% < 4 Then 18941
     If CGERA% > 2 And INNING% < 7 Then 18941
@@ -3340,15 +3509,22 @@ Sub SOURCE ()
     If CGERA% > 0 And INNING% > 7 And (S6%(P, 0) >= S6%(D, 0) Or S6%(D, 0) - S6%(P, 0) <= 2) And P%(P, P1%(P), 1) > 0 And P6%(P) = 1 And Int(P%(P, P1%(P), 16) / P%(P, P1%(P), 1) * 100 + .5) >= 100 Then 18941
 
     For Idx = 0 To 22
-        If B$(P, Idx) = "XXX" Or B%(P, Idx, 21) > 0 Or B%(P, Idx, 4) = 0 Then 18932
-        If B%(P, Idx, 0) > 0 And P%(D, P1%(D), 0) = 1 Or B%(P, Idx, 0) < 0 And P%(D, P1%(D), 0) = -1 Then
-            PH%(J%, 0) = Int(B%(P, Idx, 3) / 4 + .5)
-        Else
-            PH%(J%, 0) = B%(P, Idx, 3)
-        End If
-        PH%(J%, 1) = Idx: GP% = GP% + PH%(J%, 0): J% = J% + 1
+        
+		If Not (B$(P, Idx) = "XXX" Or B%(P, Idx, 21) > 0 Or B%(P, Idx, 4) = 0) Then
 
-    18932 Next
+			If B%(P, Idx, 0) > 0 And P%(D, P1%(D), 0) = 1 Or B%(P, Idx, 0) < 0 And P%(D, P1%(D), 0) = -1 Then
+				PH%(J%, 0) = Int(B%(P, Idx, 3) / 4 + .5)
+			Else
+				PH%(J%, 0) = B%(P, Idx, 3)
+			End If
+
+			PH%(J%, 1) = Idx
+			GP% = GP% + PH%(J%, 0)
+			J% = J% + 1
+
+		End If
+
+    Next
 
     If J% <> 0 Then
 
@@ -3363,18 +3539,28 @@ Sub SOURCE ()
 
     GoTo 18941
 
-    '--- this could maybe be a subroutine? ---
+    '--------------------
+
     18934 '
-    I = PH%: PPH = 1: D0%(P) = D0%(P) + 1
-    X0%(P, 0, D0%(P)) = I
+    Iph = PH%
+	PPH = 1
+	D0%(P) = D0%(P) + 1
+    X0%(P, 0, D0%(P)) = Iph
     X0%(P, 1, D0%(P)) = 10
     X0%(P, 2, D0%(P)) = 81 + D0%(P)
-    B%(P, I, 21) = 1: B3%(P, B1!(P)) = I
+    B%(P, I, 21) = 1
+	B3%(P, B1!(P)) = Iph
+
     If B7%(P, B1!(P)) = 1 Or B7%(P, B1!(P)) = 10 Then B9%(P, 1) = 99: B9%(P, 0) = B1!(P): B7%(P, B1!(P)) = 10
 
     18938 '
-    P9 = P: W5 = P9: W6 = P9: VV(P9) = B1!(P): VV1(P9) = B1!(P)
+    P9 = P
+	W5 = P9
+	W6 = P9
+	VV(P9) = B1!(P)
+	VV1(P9) = B1!(P)
     Call HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
+
     If usingGfx = 1 Then
         Call DisplayField_G(BC%, P, U%, D)
         Call MAINSCREEN_G(D, P, BC%, U%, MO)
@@ -3485,30 +3671,46 @@ Sub SOURCE ()
 
     '-----
 
-    18969 If O%(0) >= 1 And INNING% >= 7 Then 18968
+    18969 '
+	If O%(0) >= 1 And INNING% >= 7 Then 18968
 
-    18970 P2 = 4
+    18970 '
+	P2 = 4
     GoTo 14100
 
     '-----
 
     18985 'PH FOR PITCHER WITH PROFILE
     Call d100(RN)
+
     MOB% = 0
+
     For I = 1 To 3
         If B0%(I, 0) > 0 Then MOB% = MOB% + 1
     Next
-    If P%(P, P1%(P), 11) <> 999 Then I7! = P%(I, P1%(I), 11): GoTo 18986
-    If P%(P, P1%(P), 20) = 0 Then I7! = 0: GoTo 18986
+
+    If P%(P, P1%(P), 11) <> 999 Then 
+		I7! = P%(I0, P1%(I0), 11)
+		GoTo 18986
+	End If
+
+    If P%(P, P1%(P), 20) = 0 Then 
+		I7! = 0
+		GoTo 18986
+	End If
+
     I7! = Int((P%(P, P1%(P), 22) / P%(P, P1%(P), 20) * 1000 + .5))
 
-    18986 For I = 0 To 2
+    18986 '
+	For I = 0 To 2
         If INNING% >= MG%(P, 591 + I * 6) And A1 <= MG%(P, 592 + I * 6) * -1 And O%(0) <= MG%(P, 594 + I * 6) And I7! <= MG%(P, 595 + I * 6) And RN <= MG%(P, 596 + I * 6) And MOB% >= MG%(P, 593 + I * 6) Then 18930
     Next
 
     GoTo 18905
 
-    '-----
+
+    '--------------------
+
 
     18991 'PH FOR POS PLAYER CASES
     Call d100(RN)
@@ -3519,7 +3721,8 @@ Sub SOURCE ()
     Next
 
     If B%(P, B3%(P, B1!(P)), 4) = 0 Then
-        I7! = 0: I6! = 0
+        I7! = 0
+		I6! = 0
     Else
         I7! = Int(B%(P, B3%(P, B1!(P)), 6) / B%(P, B3%(P, B1!(P)), 4) * 1000 + .5)
         I6! = Int((B%(P, B3%(P, B1!(P)), 6) + B%(P, B3%(P, B1!(P)), 7) + B%(P, B3%(P, B1!(P)), 8) * 2 + B%(P, B3%(P, B1!(P)), 9) * 3) / B%(P, B3%(P, B1!(P)), 4) * 1000 + .5)

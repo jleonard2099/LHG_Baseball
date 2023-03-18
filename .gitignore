@@ -7,3 +7,8 @@
 bin
 src/DEFERA
 src/DEV.BAS
+src/EVENTS.BOX
+src/TICKER
+src/UMPIRES.*
+src/parks/*.*
+src/errlog

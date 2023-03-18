@@ -181,8 +181,8 @@ Dim Y As Long
 Dim Shared Y$, YY$
 Dim Shared B1!(9), K9!(1)
 Dim Shared pbpDelay!, WF!
-Dim Shared attendance&
-Dim Shared INotLoopCounter% ', pbpIdx%
+Dim Shared attendance&, gameTime$
+Dim Shared Inotloop% ', pbpIdx%
 
 Dim Shared AP%, CGERA%, DH%, DR%, EJ%, IJ%, IJL%, INNING%
 Dim Shared LYN%, NLF%, PB%, PC%, SC%, TA%, TP%, W%, WS%
@@ -202,6 +202,7 @@ Dim Shared Q$(23), S$(1), SC$(4), TM$(4), U$(4), X$(12), YN$(1)
 Dim Shared teamNames$(500)
 
 Dim Shared A5%(0 To 4), AP%(2), B%(0 To 1, 0 To 22, 80), B0%(0 To 3, 0 To 2)
+'B3% --> active batters?
 Dim Shared B1%(3, 1), B2%(1, 22), B3%(0 To 1, 0 To 9), B4%(1, 7, 9)
 Dim Shared B5%(0 To 1, 0 To 22, 0 To 21), B7%(0 To 1, 0 To 9), B8%(0 To 1, 0 To 22, 0 To 21), B9%(1, 10), BT%(1, 9, 9)
 Dim Shared CF%(9, 2), CSS%(1, 22, 6), D0%(1), D3%(1), DP%(1), GK%(1), H0%(1)

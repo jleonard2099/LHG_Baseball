@@ -26,6 +26,7 @@ Sub MAINSCREEN_G (D, p, BC%, U%, MO)
     'IP / H / BB / K headers
     PrintOnGfx 67, 28, "IP   H BB  K", imageScreen&
 
+	'-- Check alignment of "K" value after this is printed
     If P8%(D, P1%(D), 0) <> 0 Then
         pStats$ = FUsing$(Str$(Int(P8%(D, P1%(D), 0) / 3)), "##.#", 1)
     Else
@@ -86,7 +87,9 @@ Sub MAINSCREEN_G (D, p, BC%, U%, MO)
         If B%(p, J, 4) = 0 Then
             PrintOnGfx 66, 24, ".000  0   0   0", imageScreen&
         Else
+			'AVG
             pStats$ = FUsing$(Str$(B%(p, J, 6) / B%(p, J, 4)), ".###", 1)
+			'								       HR										   BB											 K
             pStats$ = pStats$ + " " + FUsing$(Str$(B%(p, J, 9)), "##", 1) + " " + FUsing$(Str$(B%(p, J, 11)), "###", 1) + " " + FUsing$(Str$(B%(p, J, 12)), "###", 1)
 
             'Batter Stats - Values

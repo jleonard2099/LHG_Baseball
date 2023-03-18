@@ -52,8 +52,9 @@ Sub PitchingStarter (idx%)
 
     S8%(idx%, 0) = Int(((P%(idx%, P1%(idx%), 8) + P%(idx%, P1%(idx%), 7)) / P%(idx%, P1%(idx%), 4)) + .5)
     S8%(idx%, 1) = 3
+
     If P6%(idx%) > 1 Then S8%(idx%, 1) = 0
-    If INotLoopCounter% <= 5 And S6%(idx%, 0) - S6%(1 - idx%, 0) > 0 Then P2%(idx%) = P1%(idx%)
+    If Iprot% <= 5 And S6%(idx%, 0) - S6%(1 - idx%, 0) > 0 Then P2%(idx%) = P1%(idx%)
 
 End Sub
 
@@ -205,7 +206,7 @@ Sub ADVANCEMENT (P, D, S2%, F%, I3)
         If A5%(3) >= 1 And A5%(3) <= 4 Then Call RecordRun(sah%, i, D, F%, PQ, S2%, W%, INFPOS%)
 
         'nothing happens for values 5-9? or are they not possible?
-
+        
         If A5%(3) = 10 Then I3 = 3: Call RecordOut(i, I3)
         If A5%(3) = 11 Then I3 = 4: Call RecordOut(i, I3)
     End If
@@ -420,6 +421,7 @@ Sub CAUGHTFLY (i, S2%, D)
         Case 99
             i = 4
             Call PBP(Q$(4) + " makes a diving catch!!!")
+
         Case 100
             i = 6
             Call PBP(Q$(4) + " makes an incredible catch!!")
@@ -639,7 +641,8 @@ End Sub
 ' ...explanation...
 Sub DISPFLDG (PG, P9, TG)
 
-    Locate 1, 16: Print "P1 FAVG A R   P2 FAVG A R   P3 FAVG A R   P4 FAVG A R      "
+    Locate 1, 16
+	Color 14: Print "P1 FAVG A R   P2 FAVG A R   P3 FAVG A R   P4 FAVG A R      "
 
     For i = 2 To 13: Locate i, 1: Print String$(78, 32): Next
 
@@ -651,6 +654,7 @@ Sub DISPFLDG (PG, P9, TG)
     For i = AA To BB:
 
         If B%(P9, i, 21) = 0 Then
+			Color 2
             If i < 10 Then Print Using "#"; i;
             If i > 9 Then Print X$(i - 10);
 
@@ -1111,6 +1115,7 @@ Sub FLDERR (F%, W%, D, I3, SB%, S2%, P)
     If W% = 8 Then I6 = I6 - 10
     If W% = 9 Then I6 = I6 - 15
     If W% = 5 Then I6 = I6 - 15
+    
     H6% = Int(Rnd(1) * 1000) + 1
 
     If H6% <= I6 Then
@@ -1167,14 +1172,15 @@ Sub FLDERR (F%, W%, D, I3, SB%, S2%, P)
 
         Else
 
-            Call d100(i)
+            Call d100(RN)
             A5%(0) = 1
             A5%(1) = 1
             A5%(2) = 1
             A5%(3) = 1
 
             If S2% <= 17 Or S2% > 21 Then
-                If i <= 17 And S2% <> 8 Or S2% = 12 Then
+
+                If RN <= 17 And S2% <> 8 Or S2% = 12 Then
                     A5%(0) = 2
                     A5%(1) = 2
                     A5%(2) = 2
@@ -1192,7 +1198,7 @@ Sub FLDERR (F%, W%, D, I3, SB%, S2%, P)
             A5%(0) = 2
         End If
 
-        If S2% >= 17 And S2% <= 19 And i <= 33 And O%(0) < 2 And B0%(1, 0) = 0 Then A5%(0) = 2
+        If S2% >= 17 And S2% <= 19 And RN <= 33 And O%(0) < 2 And B0%(1, 0) = 0 Then A5%(0) = 2
 
         If S2% = 16 Or S2% = 22 Then A5%(0) = 0
 
@@ -1227,8 +1233,7 @@ End Sub
 Sub GETFIELDER (W%, P, I1, D)
 
     W% = 0
-    Call d100(i)
-
+    
     If B7%(P, B1!(P)) <> 1 Then
 
         If B%(P, B3%(P, B1!(P)), 0) < 0 Then I1 = -1
@@ -1271,18 +1276,18 @@ Sub GETINFIELDER (W%, P, I1, D, S2%, P2)
 
     Call GETFIELDER(W%, P, I1, D)
 
-    Call d100(i)
+    Call d100(RN)
 
     If I1 = 1 Then W% = 3
-    If I1 = 1 And i <= 92 Then W% = 4
-    If I1 = 1 And i <= 72 Then W% = 6
-    If I1 = 1 And i <= 32 Then W% = 5
+    If I1 = 1 And RN <= 92 Then W% = 4
+    If I1 = 1 And RN <= 72 Then W% = 6
+    If I1 = 1 And RN <= 32 Then W% = 5
     If I1 = -1 Then W% = 5
-    If I1 = -1 And i <= 88 Then W% = 6
-    If I1 = -1 And i <= 68 Then W% = 4
-    If I1 = -1 And i <= 28 Then W% = 3
-    If i <= 12 And S2% <> 20 Then W% = 1
-    If i <= 4 Or i <= 12 And S2% = 20 Then W% = 2
+    If I1 = -1 And RN <= 88 Then W% = 6
+    If I1 = -1 And RN <= 68 Then W% = 4
+    If I1 = -1 And RN <= 28 Then W% = 3
+    If RN <= 12 And S2% <> 20 Then W% = 1
+    If RN <= 4 Or RN <= 12 And S2% = 20 Then W% = 2
     If S2% = 21 And W% = 2 Then W% = 1
     If P2 = 4 And W% = 6 Then W% = 1
     If P2 = 4 And W% = 4 Or S2% = 20 And W% = 1 Then W% = 2
@@ -1299,13 +1304,13 @@ Sub GETOUTFIELDER (W%, P, I1, D)
 
     Call GETFIELDER(W%, P, I1, D)
 
-    Call d100(i)
+    Call d100(RN)
 
     If I1 = 1 Then W% = 7
-    If I1 = 1 And i <= 50 Then W% = 9
+    If I1 = 1 And RN <= 50 Then W% = 9
     If I1 = -1 Then W% = 9
-    If I1 = -1 And i <= 50 Then W% = 7
-    If i <= 30 Then W% = 8
+    If I1 = -1 And RN <= 50 Then W% = 7
+    If RN <= 30 Then W% = 8
 
     Q$(4) = B$(D, B9%(D, W%))
 
@@ -1382,11 +1387,11 @@ Sub HITS2GAP (W%, P, I1, D)
 
     Call GETFIELDER(W%, P, I1, D)
 
-    Call d100(i)
+    Call d100(RN)
 
     If I1 = 1 Then
         'should be 6 to 15 ?
-        If i <= 15 Then
+        If RN <= 15 Then
             W% = 9
         Else
             W% = 7
@@ -1395,14 +1400,14 @@ Sub HITS2GAP (W%, P, I1, D)
 
     If I1 = -1 Then
         'should be 6 to 15 ?
-        If i <= 15 Then
+        If RN <= 15 Then
             W% = 7
         Else
             W% = 9
         End If
     End If
 
-    If i <= 5 Then W% = 8
+    If RN <= 5 Then W% = 8
 
     Q$(4) = B$(D, B9%(D, W%))
 
@@ -2002,9 +2007,9 @@ Sub OUTFLDNAME (W%, D)
 
     W% = 9
 
-    Call d100(i)
+    Call d100(RN)
 
-    Select Case i
+    Select Case RN
         Case 1 To 5: W% = 7
         Case 6 To 25: W% = 8
     End Select
@@ -3196,24 +3201,32 @@ End Sub
 Sub DISPBAVG (D)
 
     If INNING% > 5 And S8%(D, 0) < P8%(D, P1%(D), 4) + P8%(D, P1%(D), 1) And S8%(D, 1) < P8%(D, P1%(D), 2) Then
-        Locate 10, 17: Color 30, 0: Print "-T-": Color 15, 0
+        Locate 10, 17
+        Color 30, 0: Print "-T-"
+        Color 15, 0
     End If
 
     Locate 5, 1
 
     For X = 1 To 9
-        Color 3, 0: Locate X + 4, 22
+
+        Color 3, 0
+        Locate X + 4, 22
 
         If B1!(P) = X Then Color 11, 0
 
         Locate , 22
 
         If B7%(P, X) = 1 Then
+
             Print B1$(P%(P, P1%(P), 0) + 2); Tab(25); Left$(P$(P, P1%(P)), 10); " P"; Tab(39);
 
             If P%(P, P1%(P), 11) <> 999 Then
+
                 Print Using " .###"; P%(P, P1%(P), 11) / 1000
+
             Else
+
                 If P%(P, P1%(P), 20) = 0 Then
                     Print " .000"
                 Else
@@ -3223,9 +3236,13 @@ Sub DISPBAVG (D)
                         Print Using " .###"; P%(P, P1%(P), 22) / P%(P, P1%(P), 20)
                     End If
                 End If
+
             End If
+        
         Else
+
             Print B1$(B%(P, B3%(P, X), 0) + 2); Tab(25); Left$(B$(P, B3%(P, X)), 10); " "; C$(B7%(P, X)); Tab(39);
+
             If B%(P, B3%(P, X), 4) = 0 Then
                 Print " .000"
             Else
@@ -3235,6 +3252,7 @@ Sub DISPBAVG (D)
                     Print Using " .###"; B%(P, B3%(P, X), 6) / B%(P, B3%(P, X), 4)
                 End If
             End If
+
         End If
 
     Next
@@ -3251,7 +3269,6 @@ Sub GETSTATS ()
 
     For I = 0 To 1
 
-        100 '
         Color 15, 0
         Cls
 
@@ -3269,9 +3286,8 @@ Sub GETSTATS ()
             For I1 = 0 To 21: Input #1, K$: Input #1, K%: Next I1
             For I1 = 0 To 22: For I2 = 0 To 21: Input #1, B5%(I, I1, I2): Next: Next
             For I1 = 0 To 21: For I2 = 0 To 41: Input #1, P5%(I, I1, I2): Next: Next
+            Close #1
         End If
-
-        Close #1
 
     Next I
     'If I = 0 Then I = 1: GoTo 100
@@ -3292,6 +3308,7 @@ Sub HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9
     'PRINT "Calculating Pitcher/Batter Park Effects..."
 
     For I = 0 To 1
+
         I1 = 1 - I
 
         'CALCULATE BASE ON BALLS PERCENTAGES
@@ -3308,6 +3325,7 @@ Sub HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9
 
             II = B%(I, B3%(I, I3), 0)
             I4 = P%(I1, P1%(I1), 0)
+
             If B7%(I, I3) = 1 And P%(I, P1%(I), 0) = -1 And I4 = 1 Then TY% = 1
             If B7%(I, I3) = 1 And P%(I, P1%(I), 0) = -1 And I4 = -1 Then TY% = 0
             If B7%(I, I3) = 1 And P%(I, P1%(I), 0) = 1 And I4 = -1 Then TY% = 2
@@ -3443,9 +3461,10 @@ Sub HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9
                 End If
             End If
 
-            282 'IF I7!>=1 THEN I7%=.8
+            'IF I7!>=1 THEN I7%=.8
             Call NORMALIZE(I7!, I2!, I6!, K8!)
             B4%(I, 4, I3) = K8!
+
         Next I3
 
         ' CALCULATE THE BATTING AVERAGE
@@ -3460,7 +3479,7 @@ Sub HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9
                 I7! = P%(I1, P1%(I1), 7) / (((P%(I1, P1%(I1), 6) * 3) * .94) + P%(I1, P1%(I1), 7))
             End If
 
-            283 Call NORMALIZE(I7!, I2!, I6!, K8!)
+            Call NORMALIZE(I7!, I2!, I6!, K8!)
             i9! = K8! / 1000
             II = B%(I, B3%(I, I3), 0)
             I4 = P%(I1, P1%(I1), 0)
@@ -3490,44 +3509,89 @@ Sub HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9
 
             End If
 
-            '--- RESUME HERE
-
-            225 If TS%(I1, 0) = 999 And P%(I1, P1%(I1), 89) <> 0 Then I2! = SA%(I1, TY% * 6 + 1) / 1000
+            225 '
+            If TS%(I1, 0) = 999 And P%(I1, P1%(I1), 89) <> 0 Then I2! = SA%(I1, TY% * 6 + 1) / 1000
             If TS%(I1, 0) = 999 And P%(I1, P1%(I1), 89) <> 0 Then Call NORMALIZE(I7!, I2!, I6!, K8!)
             If TS%(I1, 0) = 999 And P%(I1, P1%(I1), 89) <> 0 Then i9! = K8! / 1000
-            If B7%(I, I3) = 1 And P%(I, P1%(I), 11) <> 999 Then I7! = P%(I, P1%(I), 11) / 1000: I6! = P%(I, P1%(I), 14) / 1000: GoTo 228
-            If B7%(I, I3) = 1 And P%(I, P1%(I), 20) = 0 Then I7! = 0: GoTo 227
-            If B7%(I, I3) = 1 And TS%(I, 0) = 999 And P%(I, P1%(I), 37 + BY% * 7) = 0 Then I7! = 0: GoTo 227
-            If B7%(I, I3) = 1 And TS%(I, 0) = 999 Then I7! = P%(I, P1%(I), 38 + BY% * 7) / P%(I, P1%(I), 37 + BY% * 7): GoTo 227
-            If B7%(I, I3) = 1 Then I7! = P%(I, P1%(I), 22) / P%(I, P1%(I), 20)
 
-            227 If B7%(I, I3) = 1 And TS%(I, 0) = 999 Then I6! = P%(I, P1%(I), TY% * 6 + 65) / 1000: GoTo 228
-            If B7%(I, I3) = 1 Then I6! = P%(I, P1%(I), 14) / 1000: GoTo 228
-            If B%(I, B3%(I, I3), 4) = 0 Then I7! = 0: GoTo 230
-            If TS%(I, 0) = 999 And B%(I, B3%(I, I3), 80) <> 0 And B%(I, B3%(I, I3), 42 + BY% * 7) = 0 Then I7! = 0: GoTo 230
-            If TS%(I, 0) = 999 And B%(I, B3%(I, I3), 80) <> 0 Then I7! = B%(I, B3%(I, I3), 43 + BY% * 7) / B%(I, B3%(I, I3), 42 + BY% * 7): GoTo 230
-            I7! = B%(I, B3%(I, I3), 6) / B%(I, B3%(I, I3), 4)
+            If B7%(I, I3) = 1 And P%(I, P1%(I), 11) <> 999 Then
 
-            230 I6! = B%(I, B3%(I, I3), 20) / 1000
-            If TS%(I, 0) = 999 And B%(I, B3%(I, I3), 80) <> 0 Then I6! = B%(I, B3%(I, I3), 56 + TY% * 6) / 1000
+                I7! = P%(I, P1%(I), 11) / 1000: I6! = P%(I, P1%(I), 14) / 1000
 
-            228 I2! = L%(I, 1) / 1000
+            Else
+
+                If B7%(I, I3) = 1 And P%(I, P1%(I), 20) = 0 Then
+                    I7! = 0
+                Else
+                
+                    If B7%(I, I3) = 1 And TS%(I, 0) = 999 Then
+                        If P%(I, P1%(I), 37 + BY% * 7) = 0 Then
+                            I7! = 0
+                        Else
+                            I7! = P%(I, P1%(I), 38 + BY% * 7) / P%(I, P1%(I), 37 + BY% * 7)
+                        End If
+                    Else
+                        If B7%(I, I3) = 1 Then I7! = P%(I, P1%(I), 22) / P%(I, P1%(I), 20)
+                    End If
+
+                End If
+
+                If B7%(I, I3) = 1 And TS%(I, 0) = 999 Then
+
+                    I6! = P%(I, P1%(I), TY% * 6 + 65) / 1000
+                Else
+
+                    If B7%(I, I3) = 1 Then
+                        I6! = P%(I, P1%(I), 14) / 1000
+                    Else
+                        If B%(I, B3%(I, I3), 4) = 0 Then
+                            I7! = 0
+                        Else
+
+                            If TS%(I, 0) = 999 And B%(I, B3%(I, I3), 80) <> 0 Then
+                                If B%(I, B3%(I, I3), 42 + BY% * 7) = 0 Then
+                                    I7! = 0
+                                Else
+                                    I7! = B%(I, B3%(I, I3), 43 + BY% * 7) / B%(I, B3%(I, I3), 42 + BY% * 7)
+                                End If
+                            Else
+                                I7! = B%(I, B3%(I, I3), 6) / B%(I, B3%(I, I3), 4)
+                            End If
+
+                        End If
+
+                        I6! = B%(I, B3%(I, I3), 20) / 1000
+                        If TS%(I, 0) = 999 And B%(I, B3%(I, I3), 80) <> 0 Then I6! = B%(I, B3%(I, I3), 56 + TY% * 6) / 1000
+
+                    End If
+
+                End If
+
+            End If
+
+            228 '
+            I2! = L%(I, 1) / 1000
             If TS%(I, 0) = 999 And B%(I, B3%(I, I3), 80) <> 0 Then I2! = SA%(I, TY% * 6 + 1) / 1000
             Call NORMALIZE(I7!, I2!, I6!, K8!)
+
             I7! = K8! / 1000
             I6! = L%(I, 1) / 1000
+
             If TS%(I, 0) = 999 And B%(I, B3%(I, I3), 80) <> 0 Then I6! = SA%(I, TY% * 6 + 1) / 1000
+
             I2! = i9!
             Call NORMALIZE(I7!, I2!, I6!, K8!)
+
             B4%(I, 0, I3) = K8!
-            '------------------------------
-            '    PRINT B$(I, B3%(I, I3)),B4%(I, 0, I3)
+
         Next I3
 
         ' CALCULATE THE EXTRA BASE HITS RATIOS
         For I3 = VV(I) To VV1(I)
+
             II = B%(I, B3%(I, I3), 0)
             I4 = P%(I1, P1%(I1), 0)
+
             If B7%(I, I3) = 1 And P%(I, P1%(I), 0) = -1 And I4 = 1 Then TY% = 1
             If B7%(I, I3) = 1 And P%(I, P1%(I), 0) = -1 And I4 = -1 Then TY% = 0
             If B7%(I, I3) = 1 And P%(I, P1%(I), 0) = 1 And I4 = -1 Then TY% = 2
@@ -3538,64 +3602,88 @@ Sub HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9
             If B7%(I, I3) <> 1 And II > 0 And I4 = 1 Then TY% = 3
             If B7%(I, I3) <> 1 And II = 0 And I4 = 1 Then TY% = 1
             If B7%(I, I3) <> 1 And II = 0 And I4 = -1 Then TY% = 2
+
             If TY% = 0 Or TY% = 1 Then PY% = 0
             If TY% = 2 Or TY% = 3 Then PY% = 1
             If TY% = 0 Or TY% = 2 Then BY% = 0
             If TY% = 1 Or TY% = 3 Then BY% = 1
 
-            If B7%(I, I3) = 1 And P%(I, P1%(I), 11) <> 999 Then B4%(I, 1, I3) = (130 * (i9! * 1000)) / L%(I1, 1): B4%(I, 2, I3) = (19 * (i9! * 1000)) / L%(I1, 1): B4%(I, 3, I3) = 37: GoTo 235
-            E2! = (i9! * 1000) / L%(I1, 1)
-            If TS%(I1, 0) = 999 Then E2! = (i9! * 1000) / SA%(I1, TY% * 6 + 1)
-            If B7%(I, I3) = 1 And P%(I, P1%(I), 22) = 0 Then B4%(I, 1, I3) = 0: B4%(I, 2, I3) = 0: B4%(I, 3, I3) = 0: GoTo 235
-            If B7%(I, I3) <> 1 And B%(I, B3%(I, I3), 6) = 0 Then B4%(I, 1, I3) = 0: B4%(I, 2, I3) = 0: B4%(I, 3, I3) = 0: GoTo 235
-            If B7%(I, I3) = 1 And TS%(I, 0) = 999 And P%(I, P1%(I), 38 + BY% * 7) = 0 Then B4%(I, 1, I3) = 0: B4%(I, 2, I3) = 0: B4%(I, 3, I3) = 0: GoTo 235
-            If B7%(I, I3) = 1 And TS%(I, 0) = 999 Then B4%(I, 1, I3) = Int((P%(I, P1%(I), 39 + BY% * 7) / P%(I, P1%(I), 38 + BY% * 7)) * 1000) * E2!: ' doubles times  * .95
-            If B7%(I, I3) = 1 And TS%(I, 0) = 999 Then B4%(I, 2, I3) = Int((P%(I, P1%(I), 40 + BY% * 7) / P%(I, P1%(I), 38 + BY% * 7)) * 1000) * E2!
-            If B7%(I, I3) = 1 And TS%(I, 0) = 999 Then B4%(I, 3, I3) = Int((P%(I, P1%(I), 41 + BY% * 7) / P%(I, P1%(I), 38 + BY% * 7)) * 1000): GoTo 235
-            If B7%(I, I3) = 1 Then B4%(I, 1, I3) = Int((P%(I, P1%(I), 23) / P%(I, P1%(I), 22)) * 1000) * E2!: ' doubles times  * .95
-            If B7%(I, I3) = 1 Then B4%(I, 2, I3) = Int((P%(I, P1%(I), 24) / P%(I, P1%(I), 22)) * 1000) * E2!
-            If B7%(I, I3) = 1 Then B4%(I, 3, I3) = Int((P%(I, P1%(I), 25) / P%(I, P1%(I), 22)) * 1000): GoTo 235
-            If B%(I, B3%(I, I3), 6) = 0 Then B4%(I, 1, I3) = 0: B4%(I, 2, I3) = 0: B4%(I, 3, I3) = 0: GoTo 235
-            If TS%(I, 0) = 999 And B%(I, B3%(I, I3), 80) <> 0 And B%(I, B3%(I, I3), 43 + BY% * 7) = 0 Then B4%(I, 1, I3) = 0: B4%(I, 2, I3) = 0: B4%(I, 3, I3) = 0: GoTo 235
-            If TS%(I, 0) = 999 And B%(I, B3%(I, I3), 80) <> 0 Then B4%(I, 1, I3) = Int((B%(I, B3%(I, I3), 44 + BY% * 7) / B%(I, B3%(I, I3), 43 + BY% * 7)) * 1000) * E2!: 'see note on pitchers * .95
-            If TS%(I, 0) = 999 And B%(I, B3%(I, I3), 80) <> 0 Then B4%(I, 2, I3) = Int((B%(I, B3%(I, I3), 45 + BY% * 7) / B%(I, B3%(I, I3), 43 + BY% * 7)) * 1000) * E2!
-            If TS%(I, 0) = 999 And B%(I, B3%(I, I3), 80) <> 0 Then B4%(I, 3, I3) = Int((B%(I, B3%(I, I3), 46 + BY% * 7) / B%(I, B3%(I, I3), 43 + BY% * 7)) * 1000): GoTo 235
-            B4%(I, 1, I3) = Int((B%(I, B3%(I, I3), 7) / B%(I, B3%(I, I3), 6)) * 1000) * E2!: 'see note on pitchers * .95
-            B4%(I, 2, I3) = Int((B%(I, B3%(I, I3), 8) / B%(I, B3%(I, I3), 6)) * 1000) * E2!
-            B4%(I, 3, I3) = Int((B%(I, B3%(I, I3), 9) / B%(I, B3%(I, I3), 6)) * 1000)
+            If B7%(I, I3) = 1 And P%(I, P1%(I), 11) <> 999 Then
+                B4%(I, 1, I3) = (130 * (i9! * 1000)) / L%(I1, 1)
+                B4%(I, 2, I3) = (19 * (i9! * 1000)) / L%(I1, 1)
+                B4%(I, 3, I3) = 37
+            Else
 
-            235 I6! = L%(I1, 4) / 1000
+                E2! = (i9! * 1000) / L%(I1, 1)
+
+                If TS%(I1, 0) = 999 Then E2! = (i9! * 1000) / SA%(I1, TY% * 6 + 1)
+
+                If B7%(I, I3) = 1 And P%(I, P1%(I), 22) = 0 Then B4%(I, 1, I3) = 0: B4%(I, 2, I3) = 0: B4%(I, 3, I3) = 0: GoTo 235
+                If B7%(I, I3) <> 1 And B%(I, B3%(I, I3), 6) = 0 Then B4%(I, 1, I3) = 0: B4%(I, 2, I3) = 0: B4%(I, 3, I3) = 0: GoTo 235
+                If B7%(I, I3) = 1 And TS%(I, 0) = 999 And P%(I, P1%(I), 38 + BY% * 7) = 0 Then B4%(I, 1, I3) = 0: B4%(I, 2, I3) = 0: B4%(I, 3, I3) = 0: GoTo 235
+                If B7%(I, I3) = 1 And TS%(I, 0) = 999 Then B4%(I, 1, I3) = Int((P%(I, P1%(I), 39 + BY% * 7) / P%(I, P1%(I), 38 + BY% * 7)) * 1000) * E2!: ' doubles times  * .95
+                If B7%(I, I3) = 1 And TS%(I, 0) = 999 Then B4%(I, 2, I3) = Int((P%(I, P1%(I), 40 + BY% * 7) / P%(I, P1%(I), 38 + BY% * 7)) * 1000) * E2!
+                If B7%(I, I3) = 1 And TS%(I, 0) = 999 Then B4%(I, 3, I3) = Int((P%(I, P1%(I), 41 + BY% * 7) / P%(I, P1%(I), 38 + BY% * 7)) * 1000): GoTo 235
+                If B7%(I, I3) = 1 Then B4%(I, 1, I3) = Int((P%(I, P1%(I), 23) / P%(I, P1%(I), 22)) * 1000) * E2!: ' doubles times  * .95
+                If B7%(I, I3) = 1 Then B4%(I, 2, I3) = Int((P%(I, P1%(I), 24) / P%(I, P1%(I), 22)) * 1000) * E2!
+                If B7%(I, I3) = 1 Then B4%(I, 3, I3) = Int((P%(I, P1%(I), 25) / P%(I, P1%(I), 22)) * 1000): GoTo 235
+
+                If B%(I, B3%(I, I3), 6) = 0 Then B4%(I, 1, I3) = 0: B4%(I, 2, I3) = 0: B4%(I, 3, I3) = 0: GoTo 235
+
+                If TS%(I, 0) = 999 And B%(I, B3%(I, I3), 80) <> 0 And B%(I, B3%(I, I3), 43 + BY% * 7) = 0 Then B4%(I, 1, I3) = 0: B4%(I, 2, I3) = 0: B4%(I, 3, I3) = 0: GoTo 235
+                If TS%(I, 0) = 999 And B%(I, B3%(I, I3), 80) <> 0 Then B4%(I, 1, I3) = Int((B%(I, B3%(I, I3), 44 + BY% * 7) / B%(I, B3%(I, I3), 43 + BY% * 7)) * 1000) * E2!: 'see note on pitchers * .95
+                If TS%(I, 0) = 999 And B%(I, B3%(I, I3), 80) <> 0 Then B4%(I, 2, I3) = Int((B%(I, B3%(I, I3), 45 + BY% * 7) / B%(I, B3%(I, I3), 43 + BY% * 7)) * 1000) * E2!
+                If TS%(I, 0) = 999 And B%(I, B3%(I, I3), 80) <> 0 Then B4%(I, 3, I3) = Int((B%(I, B3%(I, I3), 46 + BY% * 7) / B%(I, B3%(I, I3), 43 + BY% * 7)) * 1000): GoTo 235
+
+                B4%(I, 1, I3) = Int((B%(I, B3%(I, I3), 7) / B%(I, B3%(I, I3), 6)) * 1000) * E2!: 'see note on pitchers * .95
+                B4%(I, 2, I3) = Int((B%(I, B3%(I, I3), 8) / B%(I, B3%(I, I3), 6)) * 1000) * E2!
+                B4%(I, 3, I3) = Int((B%(I, B3%(I, I3), 9) / B%(I, B3%(I, I3), 6)) * 1000)
+
+            End If
+
+            235 '
+            I6! = L%(I1, 4) / 1000
             I7! = B4%(I, 3, I3) / 1000
             I2! = 0
+
             If P%(I1, P1%(I1), 7) <> 0 Then I2! = P%(I1, P1%(I1), 13) / P%(I1, P1%(I1), 7)
             If TS%(I1, 0) = 999 And P%(I1, P1%(I1), 89) <> 0 Then I6! = SA%(I1, TY% * 6 + 4) / 1000
             If TS%(I1, 0) = 999 And P%(I1, P1%(I1), 89) <> 0 And P%(I1, P1%(I1), 52 + PY% * 7) <> 0 Then I2! = P%(I1, P1%(I1), 55 + PY% * 7) / P%(I1, P1%(I1), 52 + PY% * 7)
             Call NORMALIZE(I7!, I2!, I6!, K8!)
+
             B4%(I, 3, I3) = K8!
+
         Next I3
 
         ' ADJUST LEFTY/RIGHTY THE OLD WAY
         I4 = P%(I1, P1%(I1), 0)
 
         For I3 = VV(I) To VV1(I)
-            If TS%(I, 0) = 999 And B%(I, B3%(I, I3), 80) <> 0 Then 236
-            I2 = B%(I, B3%(I, I3), 0)
-            If B7%(I, I3) = 1 And P%(I, P1%(I), 0) = -1 And P%(I1, P1%(I1), 0) = 1 Then A = 1.04: A1 = .88: Call LRADJ(A!, A1!)
-            If B7%(I, I3) = 1 And P%(I, P1%(I), 0) = -1 And P%(I1, P1%(I1), 0) = -1 Then A = .93: A1 = 1.16: Call LRADJ(A!, A1!)
-            If B7%(I, I3) = 1 And P%(I, P1%(I), 0) = 1 And P%(I1, P1%(I1), 0) = -1 Then A = 1.02: A1 = .98: Call LRADJ(A!, A1!)
-            If B7%(I, I3) = 1 And P%(I, P1%(I), 0) = 1 And P%(I1, P1%(I1), 0) = 1 Then A = .97: A1 = 1.1: Call LRADJ(A!, A1!)
-            If B7%(I, I3) <> 1 And I2 = -2 And I4 = 1 Then A = 1.04: A1 = .96: Call LRADJ(A!, A1!)
-            If B7%(I, I3) <> 1 And I2 = -2 And I4 = -1 Then A = .78: A1 = 1.22: Call LRADJ(A!, A1!)
-            If B7%(I, I3) <> 1 And I2 = 2 And I4 = 1 Then A = .78: A1 = 1.22: Call LRADJ(A!, A1!)
-            If B7%(I, I3) <> 1 And I2 = 2 And I4 = -1 Then A = 1.04: A1 = .96: Call LRADJ(A!, A1!)
-            If B7%(I, I3) <> 1 And I2 = -1 And I4 = -1 Then A = .93: A1 = 1.16: Call LRADJ(A!, A1!)
-            If B7%(I, I3) <> 1 And I2 = -1 And I4 = 1 Then A = 1.04: A1 = .88: Call LRADJ(A!, A1!)
-            If B7%(I, I3) <> 1 And I2 = 1 And I4 = 1 Then A = .97: A1 = 1.1: Call LRADJ(A!, A1!)
-            If B7%(I, I3) <> 1 And I2 = 1 And I4 = -1 Then A = 1.02: A1 = .98: Call LRADJ(A!, A1!)
-            If B7%(I, I3) <> 1 And I2 = 0 And I4 = -1 Then A = 1.01: A1 = .86: Call LRADJ(A!, A1!)
-            If B7%(I, I3) <> 1 And I2 = 0 And I4 = 1 Then A = .99: A1 = .93: Call LRADJ(A!, A1!)
 
-            236 B4%(I, 6, I3) = B4%(I, 3, I3): B4%(I, 7, I3) = B4%(I, 3, I3)
+            If TS%(I, 0) = 999 And B%(I, B3%(I, I3), 80) = 0 Then
+
+                I2 = B%(I, B3%(I, I3), 0)
+
+                If B7%(I, I3) = 1 And P%(I, P1%(I), 0) = -1 And P%(I1, P1%(I1), 0) = 1 Then A = 1.04: A1 = .88: Call LRADJ(A!, A1!)
+                If B7%(I, I3) = 1 And P%(I, P1%(I), 0) = -1 And P%(I1, P1%(I1), 0) = -1 Then A = .93: A1 = 1.16: Call LRADJ(A!, A1!)
+                If B7%(I, I3) = 1 And P%(I, P1%(I), 0) = 1 And P%(I1, P1%(I1), 0) = -1 Then A = 1.02: A1 = .98: Call LRADJ(A!, A1!)
+                If B7%(I, I3) = 1 And P%(I, P1%(I), 0) = 1 And P%(I1, P1%(I1), 0) = 1 Then A = .97: A1 = 1.1: Call LRADJ(A!, A1!)
+                If B7%(I, I3) <> 1 And I2 = -2 And I4 = 1 Then A = 1.04: A1 = .96: Call LRADJ(A!, A1!)
+                If B7%(I, I3) <> 1 And I2 = -2 And I4 = -1 Then A = .78: A1 = 1.22: Call LRADJ(A!, A1!)
+                If B7%(I, I3) <> 1 And I2 = 2 And I4 = 1 Then A = .78: A1 = 1.22: Call LRADJ(A!, A1!)
+                If B7%(I, I3) <> 1 And I2 = 2 And I4 = -1 Then A = 1.04: A1 = .96: Call LRADJ(A!, A1!)
+                If B7%(I, I3) <> 1 And I2 = -1 And I4 = -1 Then A = .93: A1 = 1.16: Call LRADJ(A!, A1!)
+                If B7%(I, I3) <> 1 And I2 = -1 And I4 = 1 Then A = 1.04: A1 = .88: Call LRADJ(A!, A1!)
+                If B7%(I, I3) <> 1 And I2 = 1 And I4 = 1 Then A = .97: A1 = 1.1: Call LRADJ(A!, A1!)
+                If B7%(I, I3) <> 1 And I2 = 1 And I4 = -1 Then A = 1.02: A1 = .98: Call LRADJ(A!, A1!)
+                If B7%(I, I3) <> 1 And I2 = 0 And I4 = -1 Then A = 1.01: A1 = .86: Call LRADJ(A!, A1!)
+                If B7%(I, I3) <> 1 And I2 = 0 And I4 = 1 Then A = .99: A1 = .93: Call LRADJ(A!, A1!)
+
+            End If
+            
+            B4%(I, 6, I3) = B4%(I, 3, I3)
+            B4%(I, 7, I3) = B4%(I, 3, I3)
+
         Next I3
 
         ' ADJUST AVERAGES FOR THE HOME TEAM
@@ -3608,14 +3696,32 @@ Sub HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9
         If N <> 2 Then
 
             For I2 = VV(I) To VV1(I)
-                If I = 1 Then B4%(I, 1, I2) = Int(B4%(I, 1, I2) * (L%(I, 6) / 100) + .5): B4%(I, 2, I2) = Int(B4%(I, 2, I2) * (L%(I, 7) / 100) + .5)
-                If I <> 1 Then B4%(I, 1, I2) = Int(B4%(I, 1, I2) * (L%(I1, 6) / 100) * ((200 - L%(I, 6)) / 100) + .5): B4%(I, 2, I2) = Int(B4%(I, 2, I2) * (L%(I1, 7) / 100) * ((200 - L%(I, 7)) / 100) + .5)
+                If I = 1 Then
+                    B4%(I, 1, I2) = Int(B4%(I, 1, I2) * (L%(I, 6) / 100) + .5)
+                    B4%(I, 2, I2) = Int(B4%(I, 2, I2) * (L%(I, 7) / 100) + .5)
+                Else
+                    'I <> 1
+                    B4%(I, 1, I2) = Int(B4%(I, 1, I2) * (L%(I1, 6) / 100) * ((200 - L%(I, 6)) / 100) + .5)
+                    B4%(I, 2, I2) = Int(B4%(I, 2, I2) * (L%(I1, 7) / 100) * ((200 - L%(I, 7)) / 100) + .5)
+                End If
+
                 If K9!(I) > 1000 Then I3! = 100: I6! = Int(K9!(I) / 1000) * WF!: I7! = (K9!(I) - Int((K9!(I) / 1000)) * 1000) * WF!
                 If K9!(I1) > 1000 Then I4! = 100: K8! = Int(K9!(I1) / 1000) * WF!: i9! = (K9!(I1) - Int((K9!(I1) / 1000)) * 1000) * WF!
+
                 If K9!(I) < 1000 Then I3! = K9!(I) * WF!: I6! = I3!: I7! = I3!
                 If K9!(I1) < 1000 Then I4! = K9!(I1) * WF!: K8! = I4!: i9! = I4!
-                If I = 1 Then B4%(I, 3, I2) = Int((B4%(I, 3, I2) * (I3! / 100)) + .5): B4%(I, 6, I2) = Int((B4%(I, 6, I2) * (I6! / 100)) + .5): B4%(I, 7, I2) = Int((B4%(I, 7, I2) * (I7! / 100)) + .5)
-                If I <> 1 Then B4%(I, 3, I2) = Int((B4%(I, 3, I2) * (I4! / 100) * ((200 - I3!) / 100)) + .5): B4%(I, 6, I2) = Int((B4%(I, 6, I2) * (K8! / 100) * ((200 - I6!) / 100)) + .5): B4%(I, 7, I2) = Int((B4%(I, 7, I2) * (i9! / 100) * ((200 - I7!) / 100)) + .5)
+
+                If I = 1 Then
+                    B4%(I, 3, I2) = Int((B4%(I, 3, I2) * (I3! / 100)) + .5)
+                    B4%(I, 6, I2) = Int((B4%(I, 6, I2) * (I6! / 100)) + .5)
+                    B4%(I, 7, I2) = Int((B4%(I, 7, I2) * (I7! / 100)) + .5)
+                Else
+                    'I <> 1
+                    B4%(I, 3, I2) = Int((B4%(I, 3, I2) * (I4! / 100) * ((200 - I3!) / 100)) + .5)
+                    B4%(I, 6, I2) = Int((B4%(I, 6, I2) * (K8! / 100) * ((200 - I6!) / 100)) + .5)
+                    B4%(I, 7, I2) = Int((B4%(I, 7, I2) * (i9! / 100) * ((200 - I7!) / 100)) + .5)
+                End If
+
             Next I2
 
         Else
@@ -3636,8 +3742,7 @@ Sub LRADJ (A!, A1!)
         B4%(I, I6, I3) = B4%(I, I6, I3) * A!
     Next I6
 
-    B4%(I, 5, I3) = B4%(I, 5, I3) * A!: ' NEWLY ADDED
-
+    B4%(I, 5, I3) = B4%(I, 5, I3) * A! ' NEWLY ADDED
     B4%(I, 4, I3) = B4%(I, 4, I3) * A1!
 
 End Sub
@@ -3674,6 +3779,7 @@ Sub BASEONBALLS (S2%, D2, D, P)
     Call d100(RN)
 
     If D2 = 2 Then
+
         If bv <= 50 Then
             Call PBP(Q$(0) + " is walked intentionally...")
         Else
@@ -3681,7 +3787,9 @@ Sub BASEONBALLS (S2%, D2, D, P)
         End If
 
         S8%(D, 0) = S8%(D, 0) + 1
+
     Else
+
         If RN <= 30 Then Call PBP("Full count...")
 
         Call DELIVERY(D)
@@ -3699,9 +3807,25 @@ Sub BASEONBALLS (S2%, D2, D, P)
     End If
 
     Call d100(RN)
+
+    '-- Where does s4 get a value???
+    '-- There is an S4 variable, but
+    '--     it's passed as a parameter to
+    '--     any routines that need it
+    '-- From context of original source,
+    '--     it can have a value of 0 to 7
+
+    '-- is s4 the # of "BALLS"?
+    '-- theny why look for it to get as high as 7?
+
+    '-- is it a SUM of STRIKES + BALLS?
+    '-- it would never get to 7
     If s4% = 7 And RN <= 30 Then Call PBP("that forces a run in")
 
     RN = Int(Rnd(1) * 4) + 1
+
+    '-- here, if s4 is between 4 and 6, bases are loaded
+    '-- in context, this is obviously AFTER the walk
     If s4% > 3 And s4% < 7 Then
         Select Case RN
             Case 1: Call PBP("and the bases are loaded!")
@@ -3753,6 +3877,7 @@ Sub HITBYPITCH (S2%, D)
 
     Call d100(RN)
     If RN <= 50 And s4% = 7 Then Call PBP("tough way to get an RBI")
+    
 End Sub
 
 '------------------------------
@@ -3785,16 +3910,16 @@ Sub WILDPITCH (S2%, D)
         Case 65 To 80:
             Call PBP("it's over " + B$(D, B9%(D, 2)) + "'s head")
 
-            'below was originally written as:
+            '-- This was originally written as:
             '   If RN > 67 Then
-            'This would clearly work by adding
-            'the "wild pitch" text to the above.
-            'But then it's clear that some numbers
-            'were meant to not append that text.
-            'For now,I've chosen to remove the overlap
-            'My working theory is the Case 67+ below
-            'for crediting the pitch may have been
-            'duplicated but not fixed
+            '-- This would clearly work by adding
+            '--     the "wild pitch" text to the above.
+            '-- But then it's clear that some numbers
+            '--     were meant to not append that text.
+            '-- For now,I've chosen to remove the overlap
+            '-- My working theory is the Case 67+ below
+            '--     for crediting the pitch may have been
+            '--     duplicated but not fixed
         Case 81 To 100:
             Call PBP("wild pitch by " + P$(D, P1%(D)))
     End Select
@@ -3812,6 +3937,7 @@ Sub WILDPITCH (S2%, D)
 
 End Sub
 
+
 '------------------------------
 '   RELIEVERS Subroutine
 '------------------------------
@@ -3827,13 +3953,15 @@ Sub RELIEVERS ()
         A1 = S6%(D, 0) - S6%(P, 0)
 
         For I = 0 To 21
+
             A2 = P%(D, I, 4) - P%(D, I, 5) - P%(D, I, 3) * 1.3
 
-            If P%(D, I, 15) <= 0 And P$(D, I) <> "XXX" And A2 <> 0 Then
+            If Not (P%(D, I, 15) > 0 Or P$(D, I) = "XXX" Or A2 = 0) Then
                 If INNING% <= 7 And A2 > 0 Then I2 = I2 + A2
                 If INNING% > 7 And A1 < 0 And A2 > 0 Then I2 = I2 + A2
                 If INNING% > 7 And A1 >= 0 Then I2 = I2 + P%(D, I, 3)
             End If
+
         Next I
 
         I3 = Int(Rnd(1) * I2) + 1
@@ -3843,7 +3971,7 @@ Sub RELIEVERS ()
 
             A2 = P%(D, I, 4) - P%(D, I, 5) - P%(D, I, 3) * 1.3
 
-            If P%(D, I, 15) <= 0 And P$(D, I) <> "XXX" And A2 <> 0 Then
+            If Not (P%(D, I, 15) > 0 Or P$(D, I) = "XXX" Or A2 = 0) Then
 
                 If INNING% <= 7 Then
 
@@ -3898,7 +4026,12 @@ End Sub
 Sub REPLACEMENTS (I7%, I8%, i9%)
     ' REPLACEMENT AVERAGE CALCS, I7%,I8%,I9%
     For xx = 22 To 25
-        If B7%(I7%, I8%) = B%(I7%, i9%, xx) Then B%(I7%, i9%, 15) = B%(I7%, i9%, 33 + (xx - 22) * 2): B%(I7%, i9%, 17) = B%(I7%, i9%, 34 + (xx - 22) * 2): B%(I7%, i9%, 19) = B%(I7%, i9%, xx + 4): Exit Sub
+        If B7%(I7%, I8%) = B%(I7%, i9%, xx) Then
+            B%(I7%, i9%, 15) = B%(I7%, i9%, 33 + (xx - 22) * 2)
+            B%(I7%, i9%, 17) = B%(I7%, i9%, 34 + (xx - 22) * 2)
+            B%(I7%, i9%, 19) = B%(I7%, i9%, xx + 4)
+            Exit Sub
+        End If
     Next
 
     J1 = B7%(I7%, I8%)
@@ -3972,7 +4105,7 @@ End Sub
 '------------------------------
 ' ...explanation...
 Sub SINGLEPBP (S2%, D, W%)
-    '*** play by play for a single s2%=7, s2%=12 ***
+    ' *** play by play for a single s2%=7, s2%=12 ***
 
     If S2% = -12 Then
         S2% = 12
@@ -4124,21 +4257,21 @@ End Sub
 Sub SQUEEZECHOICE (SH)
 
     If U6 = 2 Or U6 = 1 And P = U9 Then
-        '--- Autoplay essentially
-        'always does a Bunt rather
-        'than ever attempt a squeeze
+        '-- Autoplay essentially
+        '-- always does a Bunt rather
+        '-- than ever attempt a squeeze
 
-        'Consider updating to run
-        'a squeeze play a small %
-        'of time, and only in the
-        'most common conditions:
+        '-- Consider updating to run
+        '-- a squeeze play a small %
+        '-- of time, and only in the
+        '-- most common conditions:
         '   Team has < 2 outs
         '   Runner is on 3rd
 
-        'This could be done even more
-        'often for teams before the
-        '1970's DH rule, since bunting
-        'is not as frequent now
+        '-- This could be done even more
+        '-- often for teams before the
+        '-- 1970's DH rule, since bunting
+        '-- is not as frequent now
         SH = 2
     Else
         Locate 15, 1
@@ -4201,13 +4334,15 @@ Sub STEALCHANCE (AA, I2, TGTBASE%, CHANCE%)
         Case Else: DD = .3
     End Select
 
-    TT = CC + BB - (BB * DD): ' *** TOTAL CHANCES TO STEAL 3RD ***
-    RR = (TT * .19) * 1.4: ' *** "      "      "   "     "  1 OUT ***
-    SS = (TT * .56) * 1.4: ' ***                            0 OUT ***
-    GG = RR + SS: ' ***                            (0,1 OUT) ***
+    TT = CC + BB - (BB * DD): ' *** TOTAL CHANCES TO STEAL 3RD
+    RR = (TT * .19) * 1.4: ' *** "      "      "   "     "  1 OUT
+    SS = (TT * .56) * 1.4: ' ***                            0 OUT
+    GG = RR + SS: ' ***                           (0,1 OUT)
 
     If TGTBASE% <> 3 Then
+
         FF = B%(P, I2, 6) + B%(P, I2, 11) - B%(P, I2, 9)
+
         If FF = 0 Then
             I1 = 0
         Else
@@ -4215,6 +4350,7 @@ Sub STEALCHANCE (AA, I2, TGTBASE%, CHANCE%)
             If AA < 12 Then I1 = Int((BB / FF) * 1500)
             If I1 < 0 Then I1 = 0
         End If
+
     Else
         If BB < 10 And O%(0) = 0 Then I1 = 0
         If BB < 10 And O%(0) = 1 Then I1 = 10
@@ -4224,8 +4360,8 @@ Sub STEALCHANCE (AA, I2, TGTBASE%, CHANCE%)
         If I1 < 0 Then I1 = 0
     End If
 
-    4868 CHANCE% = I1
-    '
+    CHANCE% = I1
+
 End Sub
 
 '------------------------------
@@ -4322,7 +4458,12 @@ Sub TAGADVANCE (S2%, I8!, D)
 
     If S2% = 8 And I8! = 3 Then
         If B7%(P, B1!(P)) = 1 Then
-            I5 = P1%(P): I6 = 28: Call INCPITOFF(P, I5, I6): P8%(P, P1%(P), 27) = P8%(P, P1%(P), 27) - 1: P5%(P, P1%(P), 27) = P5%(P, P1%(P), 27) - 1
+            I5 = P1%(P)
+            I6 = 28
+            Call INCPITOFF(P, I5, I6)
+            
+            P8%(P, P1%(P), 27) = P8%(P, P1%(P), 27) - 1
+            P5%(P, P1%(P), 27) = P5%(P, P1%(P), 27) - 1
             Exit Sub
         Else
             I3 = 4: I4 = 5: I5 = B3%(P, B1!(P))
@@ -4365,6 +4506,7 @@ Sub THROW2FIRST (D)
 
 End Sub
 
+
 '------------------------------
 '   TIRING Subroutine
 '------------------------------
@@ -4372,7 +4514,21 @@ End Sub
 Sub TIRING (P9)
     'tired on runs and hits
 
-    If S8%(P9, 0) > P8%(P9, P1%(P9), 4) + P8%(P9, P1%(P9), 1) Or S8%(P9, 1) > P8%(P9, P1%(P9), 2) Then
+    If S8%(P9, 0) <= P8%(P9, P1%(P9), 4) + P8%(P9, P1%(P9), 1) And S8%(P9, 1) <= P8%(P9, P1%(P9), 2) Then
+
+        Call d100(RN)
+
+        If S8%(P9, 1) > 0 And INNING% < 6 Or S8%(P9, 1) = 0 And P8%(P9, P1%(P9), 4) + P8%(P9, P1%(P9), 1) > 4 Then
+            If RN <= 50 Then
+                Print P$(P9, P1%(P9)); " just doesn't have it today";
+            Else
+                Print P$(P9, P1%(P9)); " ain't got nuthin' on his fastball folks!";
+            End If
+        End If
+
+        Print P$(P9, P1%(P9)); " is tired!!";
+
+    Else
 
         If S8%(P9, 1) > 0 And (S8%(P9, 0) <= P8%(P9, P1%(P9), 4) + P8%(P9, P1%(P9), 1) Or S8%(P9, 1) <= P8%(P9, P1%(P9), 2)) Or (P8%(P9, P1%(P9), 4) + P8%(P9, P1%(P9), 1) > 2 And P8%(P9, P1%(P9), 0) >= 5) Then
             Print P$(P9, P1%(P9)); " is tiring!!";
@@ -4383,19 +4539,6 @@ Sub TIRING (P9)
             End If
 
         End If
-
-    Else
-
-        Call d100(RN)
-        If S8%(P9, 1) > 0 And INNING% < 6 Or S8%(P9, 1) = 0 And P8%(P9, P1%(P9), 4) + P8%(P9, P1%(P9), 1) > 4 Then
-            If RN <= 50 Then
-                Print P$(P9, P1%(P9)); " just doesn't have it today";
-            Else
-                Print P$(P9, P1%(P9)); " ain't got nuthin' on his fastball folks!";
-            End If
-        End If
-
-        Print P$(P9, P1%(P9)); " is tired!!";
 
     End If
 
@@ -4543,7 +4686,6 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8!, I9)
         End If
 
         If skipThrow% = 0 Then
-            3317 '
             Call WINDEX
             Call PBP("Here comes the throw by " + Q$(4))
             'For i = 1 To 3: Call PBP("."): Next i: Call PBP(" ")
@@ -4584,7 +4726,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8!, I9)
                         Case 51 To 80
                             Call PBP("throw is perfect!")
                         Case 81 To 90
-                            Call PBP("This will be close"): GoTo 3377
+                            Call PBP("This will be close")
                         Case 91 To 100
                             Call PBP("Close play.....")
                             If I8! < 4 Then
@@ -4594,7 +4736,6 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8!, I9)
                             End If
                     End Select
 
-                    3377 '
                     Call CREDITASSIST(W%, D)
                     Call ADVANCEMENT(P, D, S2%, F%, I3)
                     Call CREDITPUTOUT(2, FB2P%, AST%, D)
@@ -4657,7 +4798,10 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8!, I9)
 
                             Call d100(I5)
 
-                            If B0%(1, 0) > 0 And I8! - 1 > 1 And I5 > (80 - B%(P, B3%(P, B0%(1, 0)), 16) * 2) And I9 = 0 And A5%(1) <> 11 Then Call PBP("runner safe at 2nd on the throw"): A5%(1) = 1
+                            If B0%(1, 0) > 0 And I8! - 1 > 1 And I5 > (80 - B%(P, B3%(P, B0%(1, 0)), 16) * 2) And I9 = 0 And A5%(1) <> 11 Then
+                                A5%(1) = 1
+                                Call PBP("runner safe at 2nd on the throw")
+                            End If
 
                         End If
 
@@ -4706,6 +4850,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8!, I9)
                         Else
                             Call PBP(U$(1) + " makes the call...")
                         End If
+
                 End Select
 
             End If
@@ -4737,6 +4882,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8!, I9)
 
                     B8%(P, B3%(P, B1!(P)), 0) = B8%(P, B3%(P, B1!(P)), 0) - 1
                     B5%(P, B3%(P, B1!(P)), 0) = B5%(P, B3%(P, B1!(P)), 0) - 1
+
                     If P%(D, P1%(D), 0) <> 1 Then
                         CSS%(P, B3%(P, B1!(P)), 0) = CSS%(P, B3%(P, B1!(P)), 0) - 1
                     End If
@@ -4744,6 +4890,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8!, I9)
                     I5 = B3%(P, B1!(P))
                     I6 = 19
                     Call INCBATOFF(P, I5, I6)
+
                     I5 = P1%(D)
                     I6 = 16
                     Call ADDPIT(D, I5, I6)
@@ -4759,8 +4906,6 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, I8!, I9)
         End If 'Done checking for fielding error
 
     End If 'Done checking if we're going to try for base
-
-    3385 '
 
 End Sub
 
@@ -5360,15 +5505,26 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 2020 '
                 Call PBP(Q$(0) + " pops it up near the 3rd base stands")
                 Call PBP("A fan interferes...")
-                Call PBP(B$(D, B9%(D, 6)) + " makes a great catch!!"): W% = 6: Call CREDITREGPO(W%, D)
+                Call PBP(B$(D, B9%(D, 6)) + " makes a great catch!!")
+                
+                W% = 6
+                Call CREDITREGPO(W%, D)
 
-                O%(0) = O%(0) + 1: O%(1) = O%(1) + 1: Call DELAY
+                O%(0) = O%(0) + 1
+                O%(1) = O%(1) + 1
+                Call DELAY
 
                 If B7%(P, B1!(P)) <> 1 Then I5 = B3%(P, B1!(P)): I6 = 0: Call INCBATOFF(P, I5, I6)
 
-                I5 = P1%(D): I6 = 0: Call ADDPIT(D, I5, I6)
+                I5 = P1%(D)
+                I6 = 0
+                Call ADDPIT(D, I5, I6)
 
-                If B7%(P, B1!(P)) = 1 Then I5 = P1%(P): I6 = 23: Call INCPITOFF(P, I5, I6)
+                If B7%(P, B1!(P)) = 1 Then
+                    I5 = P1%(P)
+                    I6 = 23
+                    Call INCPITOFF(P, I5, I6)
+                End If
 
                 Call DELAY
 
@@ -5442,7 +5598,6 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 Call PBP(B$(D, B9%(D, 8)) + " comes over and gets the ball in")
 
-                2021 '
                 I5 = P1%(D)
                 I6 = 1
 
@@ -5629,11 +5784,9 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 Call WINDEX
 
                 po% = hi1
-
                 Call INJURYLENGTH(IJL%, D, po%, U6, P, U9, P9, W5, W6)
 
                 po% = hi2
-
                 Call INJURYLENGTH(IJL%, D, po%, U6, P, U9, P9, W5, W6)
 
                 H6% = 5
@@ -5653,7 +5806,6 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 Call PBP(B$(D, B9%(D, 5)) + " is down and injured")
 
                 po% = 5
-
                 Call INJURYLENGTH(IJL%, D, po%, U6, P, U9, P9, W5, W6)
 
                 H6% = 1
@@ -5686,11 +5838,9 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 Call WINDEX
 
                 po% = 7
-
                 Call INJURYLENGTH(IJL%, D, po%, U6, P, U9, P9, W5, W6)
 
                 po% = 8
-
                 Call INJURYLENGTH(IJL%, D, po%, U6, P, U9, P9, W5, W6): H6% = 5
 
             Case 71 To 85
@@ -5700,8 +5850,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 i = Int(Rnd(1) * 5) + 1
 
                 If i = 1 Then
-                    2046 F$ = F$ + "the leg of " + P$(D, P1%(D))
-
+                    F$ = F$ + "the leg of " + P$(D, P1%(D))
                     Call PBP(F$)
 
                     If B7%(P, B1!(P)) <> 1 Then I5 = B3%(P, B1!(P)): I6 = 0: Call INCBATOFF(P, I5, I6): I6 = 1: Call INCBATOFF(P, I5, I6)
@@ -5731,7 +5880,6 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                     Call DELAY
 
                     If B7%(P, B1!(P)) <> 1 Then I5 = B3%(P, B1!(P)): I6 = 0: Call INCBATOFF(P, I5, I6): I6 = 1: Call INCBATOFF(P, I5, I6)
-
                     If B7%(P, B1!(P)) = 1 Then I5 = P1%(P): I6 = 23: Call INCPITOFF(P, I5, I6): I6 = 24: Call INCPITOFF(P, I5, I6)
 
                     I5 = P1%(D)
@@ -5785,6 +5933,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
 End Sub
 
+
 '------------------------------
 '   WEATHER Subroutine
 '------------------------------
@@ -5816,6 +5965,7 @@ Sub WEATHER ()
     End If
 
 End Sub
+
 
 '------------------------------
 '   COLCHK Subroutine
@@ -5964,7 +6114,7 @@ Sub GETWEATHER (WD%, WS%, MO%, WF!, SC%, TP%, RD)
 
     If L%(1, 13) = 2 Or L%(1, 13) = 4 Or L%(1, 13) = 10 Or L%(1, 13) = 13 Or L%(1, 13) = 24 Then PC% = 4: SC% = 4
 
-6200 End Sub
+End Sub
 
 '------------------------------
 '   INFO Subroutine
@@ -6319,9 +6469,11 @@ Sub POSTGAME ()
     Else
 
         skipAhead% = 0
+
         For I = 0 To 1
 
             For I1 = 0 To 22
+
                 If B8%(I, I1, 1) > E%(6) Or B8%(I, I1, 2) > E%(7) Or B8%(I, I1, 3) > E%(8) Or B8%(I, I1, 4) > E%(9) Or B8%(I, I1, 5) > E%(10) Or B8%(I, I1, 6) > E%(11) Or B8%(I, I1, 9) > E%(12) Then
                     Spec$ = diskPaths$(1) + "*.SPC"
                     null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
@@ -6342,6 +6494,7 @@ Sub POSTGAME ()
         For I = 0 To 1
 
             For I1 = 0 To 21
+
                 If P8%(I, I1, 5) > E%(13) Then
                     Spec$ = diskPaths$(1) + "*.SPC"
                     null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
@@ -6351,6 +6504,7 @@ Sub POSTGAME ()
                     skipAhead% = 1
                     Exit For
                 End If
+
             Next
 
             If skipAhead% = 1 Then Exit For
@@ -6502,15 +6656,21 @@ Sub POSTGAME ()
             Close 2
 
             Open diskPaths$(0) + scheduleFile$ For Random As #1 Len = 48
+
             For X = 0 To 18
                 Field #1, X * 2 As X$, 2 As Q$(X + 1), 48 - 2 - 2 * X As X$
             Next
+
             Field #1, 38 As X$, 2 As Q$(22), 2 As Q$(23), 3 As Q$(20), 3 As Q$(21)
             NG%(13) = 1
+
             For X = 0 To 18: LSet Q$(X + 1) = MKI$(NG%(X)): Next
             For X = 0 To 1: LSet Q$(20 + X) = YN$(X): Next
-            LSet Q$(22) = MKI$(S6%(0, 0)): LSet Q$(23) = MKI$(S6%(1, 0))
+
+            LSet Q$(22) = MKI$(S6%(0, 0))
+            LSet Q$(23) = MKI$(S6%(1, 0))
             Put #1, AP%(0) + AP%(2)
+
             Close 1
 
             AP%(2) = AP%(2) + 1
@@ -6609,6 +6769,7 @@ Sub POSTGAME ()
                             If P8%(Q, I1, 0) > 3 And P8%(Q, I1, 0) <= 6 And DYS%(Q, I1) = 911 Then DYS%(Q, I1) = 1: GoTo 7667
                             If P8%(Q, I1, 0) > 3 And P8%(Q, I1, 0) <= 6 And DYS%(Q, I1) > 0 Then DYS%(Q, I1) = DYS%(Q, I1) + 1: GoTo 7667
                             If P8%(Q, I1, 0) > 6 Then DYS%(Q, I1) = Int(P8%(Q, I1, 0) / 3) + 1 - 2
+
                             If MG%(Q, 1) <= 0 Then DYS%(Q, I1) = 3: GoTo 7667
                             If DYS%(Q, I1) > MG%(Q, 1) - 1 Then DYS%(Q, I1) = MG%(Q, 1) - 1
                             If DYS%(Q, I1) < 0 Then DYS%(Q, I1) = 0
@@ -6738,8 +6899,6 @@ Sub POSTGAME ()
                 Color 15, 0
 
                 Print ">>>>>"
-                Print
-                Print
                 Print "THE STATS ARE BEING SAVED UNDER": Print "THE FOLLOWING NAME ::: ";
                 Color L%(Q, 11), L%(Q, 12): Print statFile$
                 Color 15, 0
@@ -6759,6 +6918,8 @@ Sub POSTGAME ()
                 Close #1
 
                 Print "<<<<<"
+                Print
+                Print
 
                 FILENAME$ = diskPaths$(1) + statFile$ + "R"
 
@@ -6803,7 +6964,7 @@ Sub POSTGAME ()
                     Close #1
 
                 Else
-
+                    'Default stat values
                     For I = 1 To 162
                         H%(I) = 999
                         HT$(I) = "XXXXXXX"
@@ -6831,7 +6992,9 @@ Sub POSTGAME ()
                 End If
 
                 Open diskPaths$(1) + statFile$ + "S" For Output As #1
+
                 Print #1, Y%
+
                 For I = 1 To 162: Print #1, H%(I): Next I
                 For I = 1 To 162: Print #1, HT$(I): Next I
                 For I = 1 To 162: Print #1, V%(I): Next I
@@ -6839,6 +7002,7 @@ Sub POSTGAME ()
                 For I = 1 To 162: Print #1, W$(I): Next I
                 For I = 1 To 162: Print #1, L$(I): Next I
                 For I = 1 To 162: Print #1, ING%(I): Next I
+
                 Close #1
 
                 Y% = 0
@@ -6894,15 +7058,6 @@ Sub POSTGAME ()
     Cls
 
 End Sub
-
-'-----
-
-' It doesn't seem like we ever get here
-' Locate , 33: Print "-";: Locate , 34: Print Using "##"; S6%(I, 0);
-' Locate , 37: Print Using "##"; S6%(I, 1);: Locate , 40: Print Using "#"; S6%(I, 2)
-' Return
-
-'-----
 
 '------------------------------
 '   LocateInning routine
@@ -7072,7 +7227,7 @@ Sub BoxToScreen (BK$)
 
                 I1 = X0%(I, 0, I3)
 
-                7298 Print B$(I, I1); ", "; C$(X0%(I, 1, I3));
+                Print B$(I, I1); ", "; C$(X0%(I, 1, I3));
                 Locate , 18
                 Print Using BK$; B8%(I, I1, 0); B8%(I, I1, 2); B8%(I, I1, 1); B8%(I, I1, 3); B8%(I, I1, 4); B8%(I, I1, 5); B8%(I, I1, 6); B8%(I, I1, 8); B8%(I, I1, 7); B8%(I, I1, 9); B8%(I, I1, 10); B8%(I, I1, 11); B8%(I, I1, 16); B8%(I, I1, 17);
                 Print "   ";
@@ -7081,11 +7236,17 @@ Sub BoxToScreen (BK$)
                 swings = B5%(I, I1, 0)
 
                 'BA
-                If B5%(I, I1, 0) = 0 Or B5%(I, I1, 1) = 0 Then Print " .000   ";: GoTo 735
-                If B5%(I, I1, 0) = B5%(I, I1, 1) Then Print "1.000   ";: GoTo 735
-                Print Using "#.###   "; B5%(I, I1, 1) / B5%(I, I1, 0);
+                If B5%(I, I1, 0) = 0 Or B5%(I, I1, 1) = 0 Then
+                    Print " .000   ";
+                Else
+                    If B5%(I, I1, 0) = B5%(I, I1, 1) Then
+                        Print "1.000   ";
+                    Else
+                        Print Using "#.###   "; B5%(I, I1, 1) / B5%(I, I1, 0);
+                    End If
+                End If
 
-                735 Print Using "##  ###"; B5%(I, I1, 6); B5%(I, I1, 3)
+                Print Using "##  ###"; B5%(I, I1, 6); B5%(I, I1, 3)
                 For I2 = 0 To 17
                     T3%(I2) = T3%(I2) + B8%(I, I1, I2)
                 Next I2
@@ -7093,9 +7254,15 @@ Sub BoxToScreen (BK$)
             End If
         Next I3
 
-        For I1 = 0 To 21: For I2 = 0 To 13: T3%(I2) = T3%(I2) + P8%(I, I1, I2 + 23): Next
+        For I1 = 0 To 21:
+            For I2 = 0 To 13:
+                T3%(I2) = T3%(I2) + P8%(I, I1, I2 + 23)
+            Next
 
-        For I2 = 14 To 17: T3%(I2) = T3%(I2) + P8%(I, I1, I2 + 22): Next: Next
+            For I2 = 14 To 17
+                T3%(I2) = T3%(I2) + P8%(I, I1, I2 + 22)
+            Next
+        Next
 
         For I1 = 1 To P6%(I)
 
@@ -7107,6 +7274,7 @@ Sub BoxToScreen (BK$)
                     Locate , 18
                     Print Using BK$; P8%(I, I2, 23); P8%(I, I2, 25); P8%(I, I2, 24); P8%(I, I2, 26); P8%(I, I2, 27); P8%(I, I2, 28); P8%(I, I2, 29); P8%(I, I2, 31); P8%(I, I2, 30); P8%(I, I2, 32); P8%(I, I2, 33); P8%(I, I2, 34); P8%(I, I2, 38); P8%(I, I2, 39);
                     Print "   ";
+
                     If P5%(I, I2, 24) = 0 Or P5%(I, I2, 23) = 0 Then
                         Print " .000   ";
                     Else
@@ -7348,7 +7516,8 @@ Sub BoxToScreen (BK$)
     End If
 
     Color 14, 0: Print "UMPIRES: ";
-    Color 15, 0: Print "HP-"; U$(1); "; 1B-"; U$(2); "; 2B-"; U$(3); "; 3B-"; U$(4): Print "T: "; GT$; " A: "; ATT
+    Color 15, 0: Print "HP-"; U$(1); "; 1B-"; U$(2); "; 2B-"; U$(3); "; 3B-"; U$(4)
+	Print "T: "; GT$; " A: "; attendance&
     Print
     Color 14, 0: Print "TEMPERATURE:";
     Color 15, 0: Print TP%
@@ -7379,6 +7548,7 @@ Sub BoxToFile (NM$, BK$, E%(), SPECIAL)
     If SPECIAL = 1 Then
 
         If INNING% > E%(1) Then Print #2, Using "MORE THAN ## INNINGS"; E%(1)
+
         If S6%(1, 0) < E%(2) Then Print #2, A$(1);: Print #2, Using " SCORED LESS THAN ## RUN(S)"; E%(2)
         If S6%(0, 0) < E%(2) Then Print #2, A$(0);: Print #2, Using " SCORED LESS THAN ## RUN(S)"; E%(2)
         If S6%(1, 0) > E%(3) Then Print #2, A$(1);: Print #2, Using " SCORED MORE THAN ## RUN(S)"; E%(3)
@@ -7389,7 +7559,9 @@ Sub BoxToFile (NM$, BK$, E%(), SPECIAL)
         If S6%(0, 1) < E%(4) Then Print #2, A$(0);: Print #2, Using " HAD LESS THAN ## HIT%(S)S"; E%(4)
 
         For I = 0 To 1
+
             For I1 = 0 To 22
+
                 If B8%(I, I1, 1) > E%(6) Then Print #2, B$(I, I1);: Print #2, Using " HAD MORE THAN ## HIT%(S)"; E%(6)
                 If B8%(I, I1, 2) > E%(7) Then Print #2, B$(I, I1);: Print #2, Using " SCORED MORE THAN ## RUN(S)"; E%(7)
                 If B8%(I, I1, 3) > E%(8) Then Print #2, B$(I, I1);: Print #2, Using " HAD MORE THAN ## RBI(S)"; E%(8)
@@ -7397,7 +7569,9 @@ Sub BoxToFile (NM$, BK$, E%(), SPECIAL)
                 If B8%(I, I1, 5) > E%(10) Then Print #2, B$(I, I1);: Print #2, Using " HIT MORE THAN ## TRIPLE(S)"; E%(10)
                 If B8%(I, I1, 6) > E%(11) Then Print #2, B$(I, I1);: Print #2, Using " HOMERED MORE THAN ## TIME(S)"; E%(11)
                 If B8%(I, I1, 9) > E%(12) Then Print #2, B$(I, I1);: Print #2, Using " STOLE MORE THAN ## BASE(S)"; E%(12)
+
             Next
+
         Next
 
         For I = 0 To 1
@@ -7735,7 +7909,8 @@ Sub BoxToFile (NM$, BK$, E%(), SPECIAL)
 
     Print #2, "LOB-"; A$(0); Str$(L0%(0)); ","; A$(1); Str$(L0%(1))
     Print #2, "DP-"; A$(0); Str$(DP%(0)); ","; A$(1); Str$(DP%(1))
-    Print #2, "UMPIRES: HP-"; U$(1); "; 1B-"; U$(2); "; 2B-"; U$(3); "; 3B-"; U$(4): Print #2, "T: "; GT$; " A: "; ATT
+    Print #2, "UMPIRES: HP-"; U$(1); "; 1B-"; U$(2); "; 2B-"; U$(3); "; 3B-"; U$(4)
+	Print #2, "T: "; GT$; " A: "; attendance&
     Print #2,
     Print #2, "INJURIES-";
 
@@ -7948,8 +8123,8 @@ Sub CheckRecords ()
     GT$ = "2:"
 
     'Random # from 5 to 60
-    ATT = Int(Rnd(1) * 55) + 5
-    ATT = ATT * 1000
+    attendance& = Int(Rnd(1) * 55) + 5
+    attendance& = attendance& * 1000
 
     MIN = Int(Rnd(1) * 60)
 
@@ -8197,3 +8372,4 @@ Sub EndOfGame ()
     If normalFinish% = 1 Then Call POSTGAME
 
 End Sub
+

@@ -47,4 +47,13 @@
 	- Use that flag later in the game to make decisions
 	- Give the flag a user-friendly name like silentPBP
 
+[ ] Popup Menus
+There are no separate menus for Batter, Pitcher
+- I've added the option in for grins
+- However neither works right (would have to change to screen 0
+
+Pop-Up Batter doesn't draw it's own box
+- Update routines so that each box is drawn in its own routine
+- Each call needs to take a keypress before continuing to gfx
+
 [ ] Update RECORDS file(s) using real-world data
