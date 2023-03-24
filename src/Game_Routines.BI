@@ -187,8 +187,10 @@ Dim Shared Inotloop% ', pbpIdx%
 Dim Shared AP%, CGERA%, DH%, DR%, EJ%, IJ%, IJL%, INNING%
 Dim Shared LYN%, NLF%, PB%, PC%, SC%, TA%, TP%, W%, WS%
 Dim Shared F$, PARK$, S$, WI$, W$, L$
-Dim Shared D, P, RE, RD, U6, U9
+'Dim Shared BC%, U%
 Dim Shared usingGfx
+
+Dim Shared D, P, RE, RD, U6, U9
 
 Dim Shared MON(5, 14), VV(1), VV1(1)
 
@@ -209,8 +211,9 @@ Dim Shared CF%(9, 2), CSS%(1, 22, 6), D0%(1), D3%(1), DP%(1), GK%(1), H0%(1)
 Dim Shared INJ%(0 To 1, 0 To 22)
 Dim Shared L%(1, 13), L0%(1), LB%(9, 1), M%(9), MG%(0 To 1, 999), NG%(18), O%(1)
 Dim Shared P%(0 To 1, 0 To 21, 0 To 89), P1%(0 To 1), P2%(1), P3%(1, 21), P4%(22), P5%(1, 21, 41), P6%(1), P8%(1, 21, 41), PR%(24)
-Dim Shared S%(1, 26), S1%(1), S6%(1, 2), S8%(1, 1), SA%(1, 24), SO%(5, 2), SU%(1, 1)
+Dim Shared S%(1, 26), S1%(1), S8%(1, 1), SA%(1, 24), SO%(5, 2), SU%(1, 1)
 Dim Shared T%(22), T3%(22), TP%(11, 2), TS%(1, 11), VA%(26), X0%(1, 2, 23)
+Dim Shared S6%(1, 2)
 Dim Shared normalFinish%
 
 Dim Shared FontColAdj%
