@@ -21,7 +21,7 @@ _AllowFullScreen
 '----------------------------------------
 
 
-Data A,B,C,D,E,F,G,H,I,J,K,L,M,dh,"p ","c ",1b,2b,3b,ss,lf,cf,rf,ph,pr
+Data A,B,C,D,E,F,G,H,I,J,K,L,M,dh," p"," c",1b,2b,3b,ss,lf,cf,rf,ph,pr
 For I = 0 To 12: Read X$(I): Next I
 For I = 0 To 11: Read C$(I): Next I
 
@@ -519,8 +519,12 @@ For I = 0 To 1
             Cls
             JJ = 10
             Locate 6, 8: Color 15, 4
-            Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";: For II = 1 To JJ: Locate 6 + II, 8
-            Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
+            Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+
+            For II = 1 To JJ:
+                Locate 6 + II, 8
+                Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
+            Next
             Locate 7 + JJ, 8
             Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
 
@@ -662,7 +666,7 @@ For P9 = 0 To 1
 
         If AP% = 1 Then
 
-            'What is NLF% ???
+            'NLF% = no lineup found?
             If NLF% = 1 Then
                 NLF% = 0
                 I$ = "2"
@@ -688,8 +692,6 @@ For P9 = 0 To 1
             Case "0":
                 'Lineup - no profile
 
-                'GoSub 2160
-                '--> includes 2310
                 Call SelectBatters(batterFlag%, P9)
 
                 If batterFlag% = 1 Then
@@ -697,7 +699,6 @@ For P9 = 0 To 1
                         Locate I, 59: Print Space$(21);
                     Next
 
-                    'Gosub 540
                     Call StartingLineup(P9)
                     Call ChangeLineup_PreGame(P9, reselect)
 
@@ -903,8 +904,13 @@ Resume Next ' moves program to code following the error.
 ' ...explanation...
 Sub StartingLineup (P9)
 
-    540
-    For I = 0 To 9: M%(I) = 0: Next I
+    540 '
+
+    'track assigned positions
+    '0 = unassigned
+    For I = 0 To 9:
+        M%(I) = 0
+    Next I
 
     '1370
     Locate 25, 1
@@ -912,8 +918,13 @@ Sub StartingLineup (P9)
     For I1 = 0 To 9
         If DH% <> 0 Or I1 <> 0 Then
             If DH% <> 1 Or I1 <> 1 Then
-                If M%(I1) = 0 Then Print I1; " ";
-                If M%(I1) = 1 Then Print "  ";
+                Locate 24, (I1 * 3) + 1
+                If M%(I1) = 0 Then Print C$(I1); "  ";
+                If M%(I1) = 1 Then Print "   ";
+
+                Locate 25, (I1 * 3) + 1
+                If M%(I1) = 0 Then Print I1; "  ";
+                If M%(I1) = 1 Then Print "   ";
             End If
         End If
     Next I1
@@ -1000,7 +1011,7 @@ Sub LineupPositions (teamIdx, posIdx, skipLU%)
                         Print P$(teamIdx, P1%(teamIdx));
                         M%(I1) = 1
 
-                        Locate , 72
+                        Locate , 75
 
                         Print "P ";
                         B7%(teamIdx, posIdx) = 1
@@ -1012,8 +1023,15 @@ Sub LineupPositions (teamIdx, posIdx, skipLU%)
                         For I0 = 0 To 9
                             If DH% <> 0 Or I0 <> 0 Then
                                 If DH% <> 1 Or I0 <> 1 Then
-                                    If M%(I0) = 0 Then Print I0; " ";
-                                    If M%(I0) = 1 Then Print "  ";
+
+                                    Locate 24, (I0 * 3) + 1
+                                    If M%(I0) = 0 Then Print C$(I0); "  ";
+                                    If M%(I0) = 1 Then Print "   ";
+
+                                    Locate 25, (I0 * 3) + 1
+                                    If M%(I0) = 0 Then Print I0; "  ";
+                                    If M%(I0) = 1 Then Print "   ";
+
                                 End If
                             End If
                         Next I0
@@ -1068,8 +1086,13 @@ Sub LineupPositions (teamIdx, posIdx, skipLU%)
                         For I1 = 0 To 9
                             If DH% <> 0 Or I1 <> 0 Then
                                 If DH% <> 1 Or I1 <> 1 Then
-                                    If M%(I1) = 0 Then Print I1; " ";
-                                    If M%(I1) = 1 Then Print "  ";
+                                    Locate 24, (I1 * 3) + 1
+                                    If M%(I1) = 0 Then Print C$(I1); "  ";
+                                    If M%(I1) = 1 Then Print "   ";
+
+                                    Locate 25, (I1 * 3) + 1
+                                    If M%(I1) = 0 Then Print I1; "  ";
+                                    If M%(I1) = 1 Then Print "   ";
                                 End If
                             End If
                         Next I1
@@ -3736,10 +3759,10 @@ End Sub
 '   EJECTIONINJURY Subroutine
 '------------------------------
 ' ...explanation...
-Sub EJECTIONINJURY (u6, P, u9, D, po%, P9, W5, W6)
+Sub EJECTIONINJURY (U6, P, U9, D, po%, P9, W5, W6)
     ' *** Defensive Player Ejected/Injured ***
 
-    If Not (u6 = 2 Or u6 = 1 And P <> u9) Then
+    If Not (U6 = 2 Or U6 = 1 And P <> U9) Then
         F$ = "You must replace " + B$(D, B9%(D, po%)): Call PBP(F$)
     Else
 
@@ -3747,29 +3770,29 @@ Sub EJECTIONINJURY (u6, P, u9, D, po%, P9, W5, W6)
             If B7%(D, I2) = po% Then Exit For
         Next
 
-        For i = 0 To 22
+        For idx = 0 To 22
 
-            If B%(D, i, 21) <= 0 And B$(D, i) <> "XXX" Then
+            If B%(D, idx, 21) <= 0 And B$(D, idx) <> "XXX" Then
 
-                If B7%(D, I2) = B%(D, i, 22) Or B7%(D, I2) = B%(D, i, 23) Or B7%(D, I2) = B%(D, i, 24) Or B7%(D, I2) = B%(D, i, 25) Then
+                If B7%(D, I2) = B%(D, idx, 22) Or B7%(D, I2) = B%(D, idx, 23) Or B7%(D, I2) = B%(D, idx, 24) Or B7%(D, I2) = B%(D, idx, 25) Then
 
                     2707 '
-                    F$ = B$(D, B9%(D, po%)) + " will be replaced by " + B$(D, i)
+                    F$ = B$(D, B9%(D, po%)) + " will be replaced by " + B$(D, idx)
                     Call PBP(F$)
 
                     D0%(D) = D0%(D) + 1
-                    X0%(D, 0, D0%(D)) = i
+                    X0%(D, 0, D0%(D)) = idx
                     X0%(D, 1, D0%(D)) = B7%(D, I2)
                     X0%(D, 2, D0%(D)) = (I2 * 10) + (D0%(D) - 9)
-                    B%(D, i, 21) = 1
-                    B3%(D, I2) = i
+                    B%(D, idx, 21) = 1
+                    B3%(D, I2) = idx
                     I7% = D
                     I8% = I2
-                    i9% = i
+                    i9% = idx
 
                     Call REPLACEMENTS(I7%, I8%, i9%)
 
-                    B9%(D, B7%(D, I2)) = i
+                    B9%(D, B7%(D, I2)) = idx
                     P9 = D
                     W5 = P9
                     W6 = P9
@@ -3782,7 +3805,7 @@ Sub EJECTIONINJURY (u6, P, u9, D, po%, P9, W5, W6)
 
             End If
 
-        Next i
+        Next idx
 
     End If
     'For i = 0 To 22
@@ -4081,14 +4104,27 @@ Sub FLDERR (F%, W%, D, I3, SB%, S2%, P)
         If W% <> 1 Then I5 = B9%(D, W%): I6 = 11: Call INCBATDF(D, I5, I6)
 
         If S2% = 12 Then
-            If S2% = 12 Then Call PBP(Q$(0) + " beats out an infield single")
-            If B7%(P, B1!(P)) <> 1 Then I5 = B3%(P, B1!(P)): I6 = 0: Call INCBATOFF(P, I5, I6): I6 = 1: Call INCBATOFF(P, I5, I6)
+
+            Call PBP(Q$(0) + " beats out an infield single")
+            If B7%(P, B1!(P)) <> 1 Then
+                I5 = B3%(P, B1!(P))
+                I6 = 0
+                Call INCBATOFF(P, I5, I6)
+                I6 = 1
+                Call INCBATOFF(P, I5, I6)
+            End If
 
             I5 = P1%(D)
             I6 = 1
             Call ADDPIT(D, I5, I6)
 
-            If B7%(P, B1!(P)) = 1 Then I5 = P1%(P): I6 = 23: Call INCPITOFF(P, I5, I6): I6 = 24: Call INCPITOFF(P, I5, I6)
+            If B7%(P, B1!(P)) = 1 Then
+                I5 = P1%(P)
+                I6 = 23
+                Call INCPITOFF(P, I5, I6)
+                I6 = 24
+                Call INCPITOFF(P, I5, I6)
+            End If
         End If
 
         If S2% >= 17 And S2% <= 21 Then I1 = 3
@@ -4476,7 +4512,7 @@ End Sub
 '   INJURYLENGTH Subroutine
 '------------------------------
 ' ...explanation...
-Sub INJURYLENGTH (IJL%, D, po%, u6, P, u9, P9, W5, W6)
+Sub INJURYLENGTH (IJL%, D, po%, U6, P, U9, P9, W5, W6)
 
     doneLength = 0
 
@@ -4531,7 +4567,7 @@ Sub INJURYLENGTH (IJL%, D, po%, u6, P, u9, P9, W5, W6)
 
     Call DELAY
     Call DELAY
-    Call EJECTIONINJURY(u6, P, u9, D, po%, P9, W5, W6)
+    Call EJECTIONINJURY(U6, P, U9, D, po%, P9, W5, W6)
 
 End Sub
 
@@ -5132,7 +5168,7 @@ Sub PINCHRUNNER (MS%, A1, S4%, I2, P, PR%, BC%, U%, D, MO)
             D0%(P) = D0%(P) + 1
             X0%(P, 0, D0%(P)) = B3%(P, I2)
 
-            X0%(P, 1, D0%(P)) = 11: ' WAS EQUAL TO B7%(P, I2)
+            X0%(P, 1, D0%(P)) = 11
             X0%(P, 2, D0%(P)) = (I2 * 10) + (D0%(P) - 9)
 
             W5 = P
@@ -5531,7 +5567,7 @@ Sub PLYRHRT (P, P9, W5, W6, BC%, U%, D, MO)
 
                 If B7%(P, B1!(P)) = B%(P, i, 22) Or B7%(P, B1!(P)) = B%(P, i, 23) Or B7%(P, B1!(P)) = B%(P, i, 24) Or B7%(P, B1!(P)) = B%(P, i, 25) Then
 
-                    Call PINCHITTER(P, P9, W5, W6)
+                    Call PinchHitter(P, P9, W5, W6, i)
 
                     If usingGfx = 1 Then
                         Call DisplayBallField_Gfx(BC%, P, U%, D)
@@ -5555,7 +5591,7 @@ Sub PLYRHRT (P, P9, W5, W6, BC%, U%, D, MO)
 
         For i = 0 To 22
             If B%(P, i, 21) <= 0 And B$(P, i) <> "XXX" Then
-                Call PINCHITTER(P, P9, W5, W6)
+                Call PinchHitter(P, P9, W5, W6, i)
 
                 If usingGfx = 1 Then
                     Call DisplayBallField_Gfx(BC%, P, U%, D)
@@ -5580,22 +5616,26 @@ Sub PLYRHRT (P, P9, W5, W6, BC%, U%, D, MO)
 End Sub
 
 '------------------------------
-'   PINCHITTER Subroutine
+'   PinchHitter Subroutine
 '------------------------------
-Sub PINCHITTER (P, P9, W5, W6)
+Sub PinchHitter (P, P9, W5, W6, idx)
 
     2807 '
-    Call PBP(Q$(0) + " will be replaced by " + B$(P, i))
+    Call PBP(Q$(0) + " will be replaced by " + B$(P, idx))
 
     D0%(P) = D0%(P) + 1
-    X0%(P, 0, D0%(P)) = i
+    X0%(P, 0, D0%(P)) = idx
     X0%(P, 1, D0%(P)) = B7%(P, B1!(P))
     X0%(P, 2, D0%(P)) = (B1!(P) * 10) + (D0%(P) - 9)
-    B%(P, i, 21) = 1
-    B3%(P, B1!(P)) = i
-    B9%(P, B7%(P, B1!(P))) = i
+    B%(P, idx, 21) = 1
+    B3%(P, B1!(P)) = idx
+    B9%(P, B7%(P, B1!(P))) = idx
 
-    If B7%(P, B1!(P)) = 1 Or B7%(P, B1!(P)) = 10 Then B9%(P, 1) = 99: B9%(P, 0) = B1!(P): B7%(P, B1!(P)) = 10
+    If B7%(P, B1!(P)) = 1 Or B7%(P, B1!(P)) = 10 Then
+        B9%(P, 1) = 99
+        B9%(P, 0) = B1!(P)
+        B7%(P, B1!(P)) = 10
+    End If
 
     P9 = P
     W5 = P9
@@ -6098,14 +6138,14 @@ End Sub
 ' ...explanation...
 Sub OPTIONS ()
 
-    Dim u6$(3)
+    Dim U6$(3)
 
     If usingGfx = 1 Then Cls: Screen 0
 
-    u6$(0) = "HUMAN OPPONENT      "
-    u6$(1) = "COMPUTER VISIT TEAM "
-    u6$(2) = "COMPUTER HOME TEAM  "
-    u6$(3) = "COMPUTER VS COMPUTER"
+    U6$(0) = "HUMAN OPPONENT      "
+    U6$(1) = "COMPUTER VISIT TEAM "
+    U6$(2) = "COMPUTER HOME TEAM  "
+    U6$(3) = "COMPUTER VS COMPUTER"
 
     If U6 = 2 Then
         U6 = 3
@@ -6127,7 +6167,7 @@ Sub OPTIONS ()
         171 '
         Color , 0: Locate 3, 1
         Color 14: Print "(1) ";
-        Color 15: Print u6$(U6)
+        Color 15: Print U6$(U6)
         Color 14: Print "(2) ";
         Color 15: Print Using "DISPLAY INTERVAL: #.# "; pbpDelay!
         Color 14: Print "<ENTER> ";
@@ -7154,15 +7194,30 @@ Sub SINGLEROUTINE (W%, P, I1, D, S2%, P2)
     Call GETOUTFIELDER(W%, P, I1, D)
     Call WINDEX
 
-    If B7%(P, B1!(P)) <> 1 Then I5 = B3%(P, B1!(P)): I6 = 0: Call INCBATOFF(P, I5, I6): I6 = 1: Call INCBATOFF(P, I5, I6)
+    If B7%(P, B1!(P)) <> 1 Then
+        I5 = B3%(P, B1!(P))
+        I6 = 0
+        Call INCBATOFF(P, I5, I6)
+        I6 = 1
+        Call INCBATOFF(P, I5, I6)
+    End If
 
     I5 = P1%(D)
     I6 = 1
     Call ADDPIT(D, I5, I6)
 
-    If B7%(P, B1!(P)) = 1 Then I5 = P1%(P): I6 = 23: Call INCPITOFF(P, I5, I6): I6 = 24: Call INCPITOFF(P, I5, I6)
+    If B7%(P, B1!(P)) = 1 Then
+        I5 = P1%(P)
+        I6 = 23
+        Call INCPITOFF(P, I5, I6)
+        I6 = 24
+        Call INCPITOFF(P, I5, I6)
+    End If
 
-    If h7% > sn Then Call SINGLEPBP(S2%, D, W%)
+    '-- Original code is as follows:
+    'If H7% > sn Then Call SINGLEPBP(S2%, D, W%)
+    '-- But there is no clue what sn is supposed to be
+    Call SINGLEPBP(S2%, D, W%)
 
     For I = 0 To 3
         A5%(I) = 1
@@ -7298,8 +7353,9 @@ End Sub
 Sub STEAL3RD (TGTBASE%, AA, Q0, H0%, D)
 
     If TGTBASE% = 3 Then
+        ' *** SUCCESS OF 3B STEAL ***
         If AA >= 24 Then
-            Q0 = 830: ' *** SUCCESS OF 3B STEAL ***
+            Q0 = 830
         Else
             Q0 = 700
         End If
@@ -11380,14 +11436,18 @@ Sub PBP (F$)
         ' Or we're past line 8, move all slots down
         ' to make room
         If PB% > 8 Then
+
             For I9 = 1 To 7
                 G$(I9) = G$(I9 + 1)
             Next
+
             G$(8) = F$
+
         End If
 
         'Print all 8 lines from scratch
         For I9 = 1 To 8
+
             If usingGfx = 1 Then
                 Color 4294967295
                 _PrintMode _FillBackground , imageScreen&
@@ -11397,6 +11457,7 @@ Sub PBP (F$)
                 Locate 14 + I9, 1
                 Print G$(I9)
             End If
+
         Next
 
         Call DELAY
@@ -12574,7 +12635,7 @@ Sub SOURCE ()
     15085 '
     Do
 
-        If U6 = 2 Or U6 = 1 And P = U9 Then
+        If (U6 = 2 Or U6 = 1 And P = U9) Then
 
             18900 '
             JM = B3%(P, B1!(P))
@@ -12971,7 +13032,7 @@ Sub SOURCE ()
         H6% = 21
         GoTo 12000
     Else
-        H6% = Int(Rnd(1) * 11000) + 1
+        H6% = Int(Rnd(1) * 1000) + 1
     End If
 
     If H6% <= 3 And IJ% = 0 Then 12000
@@ -14713,9 +14774,11 @@ Sub SOURCE ()
 
     If S2% = 19 And S4% = 1 And RN <= 33 And P2 = 2 Or S2% = 19 And S4% = 5 And RN <= 33 Then
         A5%(1) = 10
-        O%(0) = O%(0) + 1: O%(1) = O%(1) + 1
+        O%(0) = O%(0) + 1
+        O%(1) = O%(1) + 1
         Call ADDPIT(D, I5, I6)
-        D3%(D) = D3%(D) + 1: DP%(D) = DP%(D) + 1
+        D3%(D) = D3%(D) + 1
+        DP%(D) = DP%(D) + 1
         Call CREDITASSIST(W%, D)
         GoTo 14009
     End If
@@ -16470,23 +16533,29 @@ Sub SOURCE ()
 
                 If B7%(P, B1!(P)) = B%(P, I, 22) Or B7%(P, B1!(P)) = B%(P, I, 23) Or B7%(P, B1!(P)) = B%(P, I, 24) Or B7%(P, B1!(P)) = B%(P, I, 25) Then
 
-                    '-- it's not clear what variable this "I" should be
-                    I = P%(D, P1%(D), 0)
                     I1 = 6
-                    If I < 0 Then I1 = 1
+                    If P%(D, P1%(D), 0) < 0 Then I1 = 1
 
                     For I = I1 To I1 + 4
 
                         If MG%(P, I1 + 540) <> -1 And B%(P, MG%(P, I1 + 540), 21) = 0 Then
-                            I = MG%(P, I1 + 540)
+                            mg% = MG%(P, I1 + 540)
                             MG%(P, I1 + 540) = -1
 
-                            PPH = 1: D0%(P) = D0%(P) + 1: X0%(P, 0, D0%(P)) = I: X0%(P, 1, D0%(P)) = B7%(P, B1!(P)): X0%(P, 2, D0%(P)) = (B1!(P) * 10) + (D0%(P) - 9)
+                            PPH = 1
+                            D0%(P) = D0%(P) + 1
+                            X0%(P, 0, D0%(P)) = mg%
+                            X0%(P, 1, D0%(P)) = B7%(P, B1!(P))
+                            X0%(P, 2, D0%(P)) = (B1!(P) * 10) + (D0%(P) - 9)
                             B%(P, I, 21) = 1
-                            B3%(P, B1!(P)) = I
-                            B9%(P, B7%(P, B1!(P))) = I
+                            B3%(P, B1!(P)) = mg%
+                            B9%(P, B7%(P, B1!(P))) = mg%
 
-                            If B7%(P, B1!(P)) = 1 Or B7%(P, B1!(P)) = 10 Then B9%(P, 1) = 99: B9%(P, 0) = B1!(P): B7%(P, B1!(P)) = 10
+                            If B7%(P, B1!(P)) = 1 Or B7%(P, B1!(P)) = 10 Then
+                                B9%(P, 1) = 99
+                                B9%(P, 0) = B1!(P)
+                                B7%(P, B1!(P)) = 10
+                            End If
 
                             I7% = P
                             I8% = B1!(P)
@@ -16516,13 +16585,17 @@ Sub SOURCE ()
 
                 '-- The next 3 IF statements execute identical code
                 If P%(D, P1%(D), 0) = 1 And B%(P, I, 0) > 0 And B%(P, I, 6) / B%(P, I, 4) * 1000 > B%(P, JM, 6) / B%(P, JM, 4) * 1000 + 35 Then
-                    PPH = 1: D0%(P) = D0%(P) + 1: X0%(P, 0, D0%(P)) = I: X0%(P, 1, D0%(P)) = B7%(P, B1!(P)): X0%(P, 2, D0%(P)) = (B1!(P) * 10) + (D0%(P) - 9)
+                    PPH = 1
+                    D0%(P) = D0%(P) + 1
+                    X0%(P, 0, D0%(P)) = I
+                    X0%(P, 1, D0%(P)) = B7%(P, B1!(P))
+                    X0%(P, 2, D0%(P)) = (B1!(P) * 10) + (D0%(P) - 9)
                     B%(P, I, 21) = 1
                     B3%(P, B1!(P)) = I
                     B9%(P, B7%(P, B1!(P))) = I
-                    
+
                     If B7%(P, B1!(P)) = 1 Or B7%(P, B1!(P)) = 10 Then B9%(P, 1) = 99: B9%(P, 0) = B1!(P): B7%(P, B1!(P)) = 10
-                    
+
                     I7% = P
                     I8% = B1!(P)
                     I9% = B3%(P, B1!(P))
@@ -16531,13 +16604,17 @@ Sub SOURCE ()
                 End If
 
                 If P%(D, P1%(D), 0) = -1 And B%(P, I, 0) < 0 And B%(P, I, 6) / B%(P, I, 4) * 1000 > B%(P, JM, 6) / B%(P, JM, 4) * 1000 + 45 Then
-                    PPH = 1: D0%(P) = D0%(P) + 1: X0%(P, 0, D0%(P)) = I: X0%(P, 1, D0%(P)) = B7%(P, B1!(P)): X0%(P, 2, D0%(P)) = (B1!(P) * 10) + (D0%(P) - 9)
+                    PPH = 1
+                    D0%(P) = D0%(P) + 1
+                    X0%(P, 0, D0%(P)) = I
+                    X0%(P, 1, D0%(P)) = B7%(P, B1!(P))
+                    X0%(P, 2, D0%(P)) = (B1!(P) * 10) + (D0%(P) - 9)
                     B%(P, I, 21) = 1
                     B3%(P, B1!(P)) = I
                     B9%(P, B7%(P, B1!(P))) = I
-                    
+
                     If B7%(P, B1!(P)) = 1 Or B7%(P, B1!(P)) = 10 Then B9%(P, 1) = 99: B9%(P, 0) = B1!(P): B7%(P, B1!(P)) = 10
-                    
+
                     I7% = P
                     I8% = B1!(P)
                     I9% = B3%(P, B1!(P))
@@ -16546,7 +16623,11 @@ Sub SOURCE ()
                 End If
 
                 If B%(P, I, 0) = 0 And B%(P, I, 6) / B%(P, I, 4) * 1000 > B%(P, JM, 6) / B%(P, JM, 4) * 1000 + 30 Then
-                    PPH = 1: D0%(P) = D0%(P) + 1: X0%(P, 0, D0%(P)) = I: X0%(P, 1, D0%(P)) = B7%(P, B1!(P)): X0%(P, 2, D0%(P)) = (B1!(P) * 10) + (D0%(P) - 9)
+                    PPH = 1
+                    D0%(P) = D0%(P) + 1
+                    X0%(P, 0, D0%(P)) = I
+                    X0%(P, 1, D0%(P)) = B7%(P, B1!(P))
+                    X0%(P, 2, D0%(P)) = (B1!(P) * 10) + (D0%(P) - 9)
                     B%(P, I, 21) = 1
                     B3%(P, B1!(P)) = I
                     B9%(P, B7%(P, B1!(P))) = I
@@ -16579,10 +16660,11 @@ Sub SOURCE ()
     If MG%(P, 540) = 999 Then
 
         'SELECT PH FOR PITCHER
-        I = P%(D, P1%(D), 0)
-        I1 = 6
-
-        If I < 0 Then I1 = 1
+        If P%(D, P1%(D), 0) < 0 Then
+            I1 = 1
+        Else
+            I1 = 6
+        End If
 
         For I = I1 To I1 + 4
 
@@ -16592,14 +16674,13 @@ Sub SOURCE ()
                 MG%(P, I1 + 540) = -1
 
                 18934 '
-                Iph% = PH%
                 PPH = 1
                 D0%(P) = D0%(P) + 1
-                X0%(P, 0, D0%(P)) = Iph%
+                X0%(P, 0, D0%(P)) = PH%
                 X0%(P, 1, D0%(P)) = 10
                 X0%(P, 2, D0%(P)) = 81 + D0%(P)
                 B%(P, I, 21) = 1
-                B3%(P, B1!(P)) = Iph%
+                B3%(P, B1!(P)) = PH%
 
                 If B7%(P, B1!(P)) = 1 Or B7%(P, B1!(P)) = 10 Then B9%(P, 1) = 99: B9%(P, 0) = B1!(P): B7%(P, B1!(P)) = 10
 
