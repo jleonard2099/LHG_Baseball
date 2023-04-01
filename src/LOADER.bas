@@ -1,5 +1,3 @@
-$Debug
-
 '$INCLUDE: 'Game_Routines.BI'
 '$INCLUDE: 'Game_Routines_Gfx.BI'
 '$INCLUDE: 'SOURCE.BI'
@@ -9,17 +7,21 @@ $Debug
 
 On Error GoTo Errhandler
 
-'Open "pbplog" For Append As #7
+'Open "pbplog" For Output As #7
 
 _Title "Full Count Baseball - PLAY BALL!"
 $ExeIcon:'./lhg_fcbase.ico'
 _Icon
 _AllowFullScreen
 
+Color 7, 0
+Cls
+
+Randomize Timer
+
 '----------------------------------------
 '          READ IN ALL DATA
 '----------------------------------------
-
 
 Data A,B,C,D,E,F,G,H,I,J,K,L,M,dh," p"," c",1b,2b,3b,ss,lf,cf,rf,ph,pr
 For I = 0 To 12: Read X$(I): Next I
@@ -203,7 +205,7 @@ H0$(1) = "H"
 
 P = 1
 
-For I = 0 To 1: For I1 = 0 To 4: NB%(I, I1) = -1: Next: Next
+'For I = 0 To 1: For I1 = 0 To 4: NB%(I, I1) = -1: Next: Next
 For I = 0 To 1: P1%(I) = -1: P6%(I) = -1: Next
 
 SP%(0) = -1
@@ -305,6 +307,7 @@ If _FileExists("GAME82") Then
     AP% = 1
 End If
 
+
 If AP% = 1 Then
     'Setup variables for auto-play
     U6 = NG%(8)
@@ -335,8 +338,6 @@ If AP% = 1 Then
     'option selection below
 Else
 
-    Randomize Timer
-
     170 '
     Call INFO
 
@@ -344,7 +345,7 @@ Else
         Color 15, 0
         Cls
         'Color , 0
-        
+
         Locate 3, 1
         Color 14: Print "(1) ";: Color 15: Print U6$(U6)
         Color 14: Print "(2) ";: Color 15: Print LGT$(LGT)
@@ -451,6 +452,7 @@ Else
 
         Else
 
+            'Close #7
             End
             System
 
@@ -770,7 +772,9 @@ For I = 0 To 1
         X0%(I, 1, I1) = B7%(I, I1)
         X0%(I, 2, I1) = I1 * 10
     Next I1
+
     D0%(I) = 9
+
 Next I
 
 
@@ -879,6 +883,7 @@ End If
 
 Call SOURCE
 
+'Close #7
 End
 System
 
@@ -889,9 +894,9 @@ Open "errlog" For Append As #9
 Print #9, "Error occurred! " '; Date$; " "; Time$
 Print #9, "Error #"; Err; "on program file line"; _ErrorLine
 Print #9, A$(0) + " vs " + A$(1)
-Print #9, "D0%(P)      "; D0%(P)
-Print #9, "B3%(0, X)   "; Using "## ## ## ## ## ## ## ## ## ##"; B3%(0, 0); B3%(0, 1); B3%(0, 2); B3%(0, 3); B3%(0, 4); B3%(0, 5); B3%(0, 6); B3%(0, 7); B3%(0, 8); B3%(0, 9)
-Print #9, "B3%(1, X)   "; Using "## ## ## ## ## ## ## ## ## ##"; B3%(1, 0); B3%(1, 1); B3%(1, 2); B3%(1, 3); B3%(1, 4); B3%(1, 5); B3%(1, 6); B3%(1, 7); B3%(1, 8); B3%(1, 9)
+Print #9, "P           "; P
+Print #9, "D0%(0)      "; D0%(0)
+Print #9, "D0%(1)      "; D0%(1)
 Print #9,
 Close #9
 Resume Next ' moves program to code following the error.
@@ -2876,19 +2881,19 @@ Sub PrintPitcherInfo (idx%)
 End Sub
 
 
+Sub pbpLog (lineNbr%)
+
+    Print #7, "Executing code from: "; lineNbr%
+    Print #7, Y$
+    Print #7,
+
+End Sub
+
+
 '$INCLUDE: 'Game_Routines.BM'
 '$INCLUDE: 'Game_Routines_Gfx.BM'
 '$INCLUDE: 'SOURCE.BM'
 '$INCLUDE: 'KeyInput.BM'
 '$INCLUDE: 'QPProEqu.BM'
 '$INCLUDE: 'PadRight.BM'
-
-
-Sub pbpLog (lineNbr%)
-
-    Print #7, "Executing code from "; lineNbr%
-    Print #7, "S6%(0, 1)"; S6%(0, 1)
-    Print #7, "S6%(1, 1)"; S6%(1, 1)
-
-End Sub
 
