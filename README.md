@@ -32,12 +32,15 @@ Bugs and/or feature requests can be submitted using GitHub (see the "Issues" tab
 
 # Project Status #
 ## Current ##
-Code has been adapted to compile in a modern environment and re-factored. Most obvious GUI bugs have been fixed, Menu navigation is improved and code has been consolidated tremendously in a move towards adding ability to compile for Linux / Mac in QB64.
+Code now compiles in a modern environment and has been heavily re-factored. GUI bugs have been fixed, Menu navigation is improved and code has been consolidated.
 
-All compiled code has been thoroughly tested, known bugs documented (including those from the original game (of which I know about.
+Currently working on further consolidating to be able to provide source that will work for Linux / Mac in QB64.
+
+All code has been thoroughly tested with known bugs documented (including those from the original game - that I am aware of) and being worked on.
 
 ## Road Map ##
 ### Phase 1 ###
+This phase will get the games available to the general public in a steady and reliable shapes.
 Completed.
 
 ### Phase 2 ###
@@ -47,15 +50,18 @@ This phase will start to identify these as new games, and involve these short an
 	- variable names, config files, etc.
 	- document purpose of functions
 - Improve file, path and error handling to provide helpful messages
-- Further improve code efficiency and consistency
+- Iimprove code efficiency and consistency
 	- Make subroutines for all repeated code
 	- Global Team Selection routine 
 	- Consistent operation for the same functions in each game
-- Updating the games to support modern rules
-- Bug fixes / etc. as reported by longtime users and playtesters
 
 ### Phase 3 ###
 This final phase will involve the following:
+- Updating the games to support modern rules
+- Including support files such as team files, leagues, schedules, etc.
+- Bug fixes / etc. as reported by longtime users and playtesters
+
+### The Future ###
 - Updating code to work with databases instead of flat files.
 - Bringing modern interface concepts to the design (including GUI)
 
