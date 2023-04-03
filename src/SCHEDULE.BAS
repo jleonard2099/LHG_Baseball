@@ -1,7 +1,3 @@
-' STILL HAVE TO TAKE OLD FORMAT AND WRITE TO NEW FORMAT....HAVE REMOVED
-' NEED FOR TEAM ABBREV....FIND WAY TO PUT MO AND DATE IN INTEGER VARIABLES
-' POSSIBLY STORE EACH PART OF DATE IN 3 FIELDS ON INTEGER 6 VS 8 BYTES
-' TIME SAME WAY, CONVERT TO MILITARY EQUIVAKLENT FOR STORAGE PURPOSES
 
 Sub SCHEDULE ()
 
@@ -566,7 +562,7 @@ Sub NewSchedule (scheduleFile$)
 
                 DT$ = "04-04-93"
                 TM$ = "07:30P"
-                Call NewGame(V$, H$, targetGame%)
+                Call NewGame(V$, H$, YN$, NTMS, targetGame%)
 
             Case "E"
                 Call EditGame
@@ -727,9 +723,15 @@ Sub EditGame ()
         Locate 23, 1: Input "ENTER GAME # TO EDIT "; targetGame%
     Loop Until targetGame% >= 1 And targetGame% <= scheduleAP%(0)
 
-    V$ = scheduleV$(targetGame% - Int(targetGame% / 20) * 20)
-    H$ = scheduleH$(targetGame% - Int(targetGame% / 20) * 20)
-    If targetGame% - Int(targetGame% / 20) * 20 = 0 Then V$ = scheduleV$(20): H$ = scheduleH$(20)
+    If targetGame% - Int(targetGame% / 20) * 20 = 0 Then 
+        V$ = scheduleV$(20)
+        H$ = scheduleH$(20)
+        YN$ = scheduleYN$(20, 0)
+    Else
+        V$ = scheduleV$(targetGame% - Int(targetGame% / 20) * 20)
+        H$ = scheduleH$(targetGame% - Int(targetGame% / 20) * 20)
+        YN$ = scheduleYN$(targetGame% - Int(targetGame% / 20) * 20, 0)
+    End If
 
     I$ = "A"
     HR% = Int(NG%(targetGame%, 15) / 100)
@@ -739,19 +741,25 @@ Sub EditGame ()
     If HR% > 12 Then HR% = HR% - 12: I$ = "P"
     TM$ = Right$(Str$(HR%), 2) + ":"
 
-    If MIN% < 10 Then TM$ = TM$ + "0" + Right$(Str$(MIN%), 1)
-    If MIN% >= 10 Then TM$ = TM$ + Right$(Str$(MIN%), 2)
+    If MIN% < 10 Then 
+		TM$ = TM$ + "0" + Right$(Str$(MIN%), 1)
+	Else
+		TM$ = TM$ + Right$(Str$(MIN%), 2)
+	End If
 
     TM$ = TM$ + I$
     DT$ = Right$(Str$(NG%(targetGame%, 17)), 2) + "/"
-    DY% = Val(Right$(Str$(NG%(targetGame%, 16)), 2))
+    DYMO% = Val(Right$(Str$(NG%(targetGame%, 16)), 2))
 
-    If DY% < 10 Then DY$ = "0" + Right$(Str$(NG%(targetGame%, 16)), 1)
-    If DY% >= 10 Then DY$ = Right$(Str$(NG%(targetGame%, 16)), 2)
+    If DYMO% < 10 Then 
+		DYMO$ = "0" + Right$(Str$(NG%(targetGame%, 16)), 1)
+	Else
+		DYMO$ = Right$(Str$(NG%(targetGame%, 16)), 2)
+	End If
 
-    DT$ = DT$ + DY$ + "/" + Right$(Str$(NG%(targetGame%, 18)), 2)
+    DT$ = DT$ + DYMO$ + "/" + Right$(Str$(NG%(targetGame%, 18)), 2)
 
-    Call NewGame(V$, H$, targetGame%)
+    Call NewGame(V$, H$, YN$, NTMS, targetGame%)
 
 End Sub
 
@@ -759,7 +767,7 @@ End Sub
 '           NewGame SubRoutine
 '----------------------------------------
 '...explanation...
-Sub NewGame (visitor$, home$, gameIndex%)
+Sub NewGame (visitor$, home$, YN$, NTMS, gameIndex%)
 
     Dim TS$(1), U5$(4), PU$(48)
     Dim displayPause!
