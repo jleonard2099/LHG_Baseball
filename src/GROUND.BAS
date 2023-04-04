@@ -4,7 +4,7 @@ Sub GROUND ()
 
     DefInt A-Z
 
-    Shared B%(), L%(), P%()
+    Shared actB%(), L%(), actP%()
     Shared B$(), P$()
 
     Shared K9&()
@@ -92,16 +92,16 @@ Sub GROUND ()
         CK = CVI(Q$(1843))
 
         For I = 0 To 22
-            TB%(I) = B%(I, 6) + B%(I, 7) + 2 * B%(I, 8) + 3 * B%(I, 9)
+            TB%(I) = actB%(I, 6) + actB%(I, 7) + 2 * actB%(I, 8) + 3 * actB%(I, 9)
 
-            If B%(I, 4) = 0 Then
+            If actB%(I, 4) = 0 Then
                 SP%(I) = 0
                 BA%(I) = 0
             Else
-                SLP! = TB%(I) / B%(I, 4)
+                SLP! = TB%(I) / actB%(I, 4)
                 SP%(I) = SLP! * 1000
-                B%(I, 20) = BP
-                BAP! = B%(I, 6) / B%(I, 4)
+                actB%(I, 20) = BP
+                BAP! = actB%(I, 6) / actB%(I, 4)
                 BA%(I) = BAP! * 1000
             End If
 
@@ -109,33 +109,33 @@ Sub GROUND ()
 
             DI = DP%(I) - MD
             CH! = Int(DI / 10)
-            B%(I, 18) = 52 - CH!
+            actB%(I, 18) = 52 - CH!
 
-            If B%(I, 18) < 34 Then B%(I, 18) = 34
-            If B%(I, 18) > 64 Then B%(I, 18) = 64
+            If actB%(I, 18) < 34 Then actB%(I, 18) = 34
+            If actB%(I, 18) > 64 Then actB%(I, 18) = 64
 
         Next I
 
         For I = 0 To 21
 
-            If P%(I, 6) = 0 Or P%(I, 10) = 0 Then
-                P%(I, 12) = 52
+            If actP%(I, 6) = 0 Or actP%(I, 10) = 0 Then
+                actP%(I, 12) = 52
             Else
 
-                P%(I, 14) = BP
+                actP%(I, 14) = BP
 
-                RHP! = P%(I, 7) / (P%(I, 10) / 900 * P%(I, 6))
+                RHP! = actP%(I, 7) / (actP%(I, 10) / 900 * actP%(I, 6))
                 RH%(I) = RHP! * 100
                 Print RH%(I)
-                'INT(P%(I,7)*900/(P%(I,10)*P%(I,6))*100)/100
+                'INT(actP%(I,7)*900/(actP%(I,10)*actP%(I,6))*100)/100
 
                 DF = RH%(I) - PD!
                 CH! = Int(DF / 10) * 2
-                P%(I, 12) = Int(CH! + 52)
+                actP%(I, 12) = Int(CH! + 52)
                 RH%(I) = RH%(I) / 10
 
-                If P%(I, 12) > 64 Then P%(I, 12) = 64
-                If P%(I, 12) < 34 Then P%(I, 12) = 34
+                If actP%(I, 12) > 64 Then actP%(I, 12) = 64
+                If actP%(I, 12) < 34 Then actP%(I, 12) = 34
 
             End If
 
@@ -149,7 +149,7 @@ Sub GROUND ()
 
         For I = 0 To 22
             If B$(I) <> "" And B$(I) <> "XXX" Then
-                Print B$(I), BA%(I), SP%(I), B%(I, 18)
+                Print B$(I), BA%(I), SP%(I), actB%(I, 18)
             End If
         Next
 
@@ -161,7 +161,7 @@ Sub GROUND ()
 
         For I = 0 To 21
             If P$(I) <> "" And P$(I) <> "XXX" Then
-                Print P$(I), , Int(RH%(I)) / 10, P%(I, 12)
+                Print P$(I), , Int(RH%(I)) / 10, actP%(I, 12)
             End If
         Next
 
@@ -209,14 +209,14 @@ Sub GROUND ()
         For I = 0 To 22
             LSet Q$(I * 43 + 15) = B$(I)
             For I1 = 0 To 41
-                LSet Q$(I * 43 + I1 + 16) = MKI$(B%(I, I1))
+                LSet Q$(I * 43 + I1 + 16) = MKI$(actB%(I, I1))
             Next
         Next
 
         For I = 0 To 21
             LSet Q$(I * 38 + 1004) = P$(I)
             For I1 = 0 To 36
-                LSet Q$(I * 38 + I1 + 1005) = MKI$(P%(I, I1))
+                LSet Q$(I * 38 + I1 + 1005) = MKI$(actP%(I, I1))
             Next
         Next
 
@@ -325,7 +325,7 @@ End Sub
 '...explanation...
 Sub SelectTeam_GROUND (yearNumber$, numberTeams, teamIdx)
 
-    Shared B%(), L%(), P%()
+    Shared actB%(), L%(), actP%()
     Shared B$(), P$()
     Shared K9&()
 
@@ -379,14 +379,14 @@ Sub SelectTeam_GROUND (yearNumber$, numberTeams, teamIdx)
 
         For I = 0 To 22: B$(I) = RTrim$(Q$(I * 43 + 15))
             For I1 = 0 To 41
-                B%(I, I1) = CVI(Q$(I * 43 + I1 + 16)): 'PRINT B$(I),B%(I,I1)
+                actB%(I, I1) = CVI(Q$(I * 43 + I1 + 16)): 'PRINT B$(I),actB%(I,I1)
             Next
         Next
 
         For I = 0 To 21
             P$(I) = RTrim$(Q$(I * 38 + 1004))
             For I1 = 0 To 36
-                P%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
+                actP%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
             Next
         Next
 

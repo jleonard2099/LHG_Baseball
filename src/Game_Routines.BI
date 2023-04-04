@@ -1,5 +1,7 @@
 DECLARE FUNCTION OUTFLDLOCATION$ (W%)
 
+Declare Sub LOADER
+
 Declare Sub ADDPIT (D, I5, I6)
 Declare Sub ADDSTTS (P, D)
 Declare Sub ADJRUNNERS (S2%, P)
@@ -160,89 +162,4 @@ Declare Sub WHICHRUNNER (i, S4%, D5)
 Declare Sub WHOSON1ST (S4%)
 Declare Sub WILDPITCH (S2%, D)
 Declare Sub WINDEX ()
-
-DefInt A-Z
-
-'-------------------------
-' Variable declarations
-'-------------------------
-
-'Used by postgame routines
-Dim DB, HR, TR, SB
-Dim Shared DB$(0 To 22), E$(0 To 22), HR$(0 To 22), SB$(0 To 22), TR$(0 To 22)
-Dim Shared A$(1), B$(0 To 1, 0 To 22), B1$(4), C$(11), diskPaths$(3)
-
-' LOADER ONLY
-'---------------
-Dim BP(0 To 9), F(0 To 9)
-
-Dim DH$(1), DL$(1), LGT$(2)
-Dim PT$(1), PU$(8), U6$(2), UMP$(50)
-Dim VI$(1), WE$(1)
-
-Dim BB%(0 To 9), MF%(1)
-
-'-- NB% doesn't apppear to be used
-'-- Dim NB%(1, 4)
-Dim SP%(1)
-
-Dim T1%(0 To 1), U%(50), UV%(200)
-
-ReDim Q2$(2056)
-
-Dim E!
-Dim Y As Long
-
-
-' Shared / Global
-'---------------
-Dim Shared Y$, YY$
-Dim Shared B1!(9), K9!(1)
-Dim Shared pbpDelay!, WF!
-Dim Shared attendance&, gameTime$
-Dim Shared Inotloop% ', pbpIdx%
-
-Dim Shared AP%, CGERA%, DH%, DR%, EJ%
-Dim Shared IJ%, IJL%, INNING%, LYN%, NLF%
-Dim Shared PB%, PC%, SC%, TA%, TP%, W%, WS%
-Dim Shared F$, PARK$, S$, WI$, W$, L$
-
-' Set these up just to determine values / troubleshoot
-Dim Shared H6%
-
-Dim Shared usingGfx
-
-Dim Shared D, P, RE, RD, U6, U9
-
-Dim Shared MON(5, 14), VV(1), VV1(1)
-
-Dim Shared PARK$(99), Q3$(100)
-Dim Shared WD$(10)
-'-- WD$ was originally DIM'd as 0 to 9
-'-- I think it was increased by mistake
-
-Dim Shared EJ$(20), F$(10), G$(10), H$(0 To 4), H0$(1), IJ$(20)
-'G$ = PBP lines
-
-Dim Shared M$(1), N$(1), NN$(1), P$(1, 21), PC$(4)
-Dim Shared Q$(23), S$(1), SC$(4), TM$(4), U$(4), X$(12), YN$(1)
-Dim Shared teamNames$(500)
-
-
-Dim Shared A5%(0 To 4), AP%(2), B%(0 To 1, 0 To 22, 80), B0%(0 To 3, 0 To 2)
-Dim Shared B1%(3, 1), B2%(1, 22), B3%(0 To 1, 0 To 9), B4%(1, 7, 9)
-'B3% --> active batters?
-
-Dim Shared B5%(0 To 1, 0 To 22, 0 To 21), B7%(0 To 1, 0 To 9), B8%(0 To 1, 0 To 22, 0 To 21), B9%(1, 10), BT%(1, 9, 9)
-Dim Shared CF%(9, 2), CSS%(1, 22, 6), D0%(1), D3%(1), DP%(1), GK%(1), H0%(1)
-Dim Shared INJ%(0 To 1, 0 To 22)
-Dim Shared L%(1, 13), L0%(1), LB%(9, 1), M%(9), MG%(0 To 1, 999), NG%(18), O%(1)
-Dim Shared P%(0 To 1, 0 To 21, 0 To 89), P1%(0 To 1), P2%(1), P3%(1, 21), P4%(22), P5%(1, 21, 41), P6%(1), P8%(1, 21, 41)
-Dim Shared PR%(24)
-Dim Shared S%(1, 26), S1%(1), S6%(1, 2), S8%(1, 1)
-Dim Shared SA%(1, 24), SO%(5, 2), SU%(1, 1)
-Dim Shared T%(22), T3%(22), TP%(11, 2), TS%(1, 11), VA%(26), X0%(1, 2, 23)
-
-'-- Can these not be local???
-Dim Shared FontColAdj%, normalFinish%
 

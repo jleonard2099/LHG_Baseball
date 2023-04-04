@@ -6,9 +6,9 @@ Sub ALIGN ()
     Dim P$(22), PN$(22), PR$(22)
 
     Dim B0%(23, 22), B0N%(23, 22), B0R%(23, 22)
-    Dim B%(23), BN%(23), BR%(23)
+    Dim alignB%(23), BN%(23), BR%(23)
     Dim P0%(22, 42), P0N%(22, 42), P0R%(22, 42)
-    Dim P%(22), PN%(22), PR%(22)
+    Dim alignP%(22), PN%(22), PR%(22)
     Dim S0%(22, 6), S0N%(22, 6), S0R%(22, 6)
 
     Dim TR(22), TR1(23)
@@ -122,9 +122,9 @@ Sub ALIGN ()
 
                     Input #1, A$: Input #1, W2%: Input #1, L2%
 
-                    For I = 0 To 22: Input #1, B$(I): Input #1, B%(I): Next I
+                    For I = 0 To 22: Input #1, B$(I): Input #1, alignB%(I): Next I
 
-                    For I = 0 To 21: Input #1, P$(I): Input #1, P%(I): Next I
+                    For I = 0 To 21: Input #1, P$(I): Input #1, alignP%(I): Next I
 
                     For I = 0 To 22: For I1 = 0 To 21: Input #1, B0%(I, I1): Next I1: Next I
 

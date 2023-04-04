@@ -753,7 +753,7 @@ End Sub
 Sub UpdateExpandedLeaders ()
 
     Shared BK%()
-    Shared statB%(), B0%(), BK%()
+    Shared statB%(), statB0%(), BK%()
     Shared statP%(), P0%(), PM%()
     Shared T%(), T1%(), GM1!()
 
@@ -861,7 +861,7 @@ Sub UpdateExpandedLeaders ()
                         Next I
                         For I = 0 To 22
                             For I1 = 0 To 21
-                                Input #1, B0%(I, I1)
+                                Input #1, statB0%(I, I1)
                             Next I1
                         Next I
                         For I = 0 To 21
@@ -917,7 +917,7 @@ Sub UpdateExpandedLeaders ()
                                 K = K + 1: K1 = 0
                                 For I1 = 0 To 21
                                     K1 = K1 + 1
-                                    BK%(K, K1) = B0%(I, I1)
+                                    BK%(K, K1) = statB0%(I, I1)
                                 Next I1
                             End If
                         Next I

@@ -22,8 +22,8 @@ Sub POSCR ()
             Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
             Locate 7 + JJ, 8
             Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
-			
-			Locate 7, 32
+
+            Locate 7, 32
             Locate , 12: Print "ENTER NAME FOR POSITION FILE: ": Print
             Locate , 12: Print "THE NAME IS 8 CHARACTERS LONG WITH NO PERIODS OR"
             Locate , 12: Print "SPACES. DO NOT ADD A FILE EXTENSION, THE SCHEDULER"
@@ -133,14 +133,14 @@ Sub GetTeam (yearNumber$, numberTeams, teamIndex%)
         Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
         Locate 7 + JJ, 8
         Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
-		
-		Locate 7, 32
+        
+        Locate 7, 32
         Locate , 12: Print "ENTER DISK ID: ": Print
         Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
         Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
         Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
         Locate 7, 27: Input NY$
-		If NY$ = "" And yearNumber$ <> "" Then
+        If NY$ = "" And yearNumber$ <> "" Then
             Call SelectTeam_POSCR(yearNumber$, numberTeams, teamIndex%)
         Else
             yearNumber$ = NY$
@@ -180,12 +180,12 @@ Sub GetTeam (yearNumber$, numberTeams, teamIndex%)
             Locate 2, 33
             Color L%(11), L%(12): Print targetTeam$
 
-			Color 15, 4
+            Color 15, 4
 
-			Do
-				Locate , 33: Print "ANY CHANGE (YN)";
-				I$ = GetKeyPress$
-			Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+            Do
+                Locate , 33: Print "ANY CHANGE (YN)";
+                I$ = GetKeyPress$
+            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
         End If
 
@@ -234,7 +234,7 @@ Sub ReadTeam_POSCR (yearNumber$, teamIndex%)
 
     Shared K9&()
     Shared B$(), P$()
-    Shared B%(), L%(), P%()
+    Shared actB%(), L%(), actP%()
 
     5500 '
     Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
@@ -264,14 +264,14 @@ Sub ReadTeam_POSCR (yearNumber$, teamIndex%)
     For I = 0 To 22:
         B$(I) = RTrim$(Q$(I * 43 + 15))
         For I1 = 0 To 41:
-            B%(I, I1) = CVI(Q$(I * 43 + I1 + 16))
+            actB%(I, I1) = CVI(Q$(I * 43 + I1 + 16))
         Next
     Next
 
     For I = 0 To 21:
         P$(I) = RTrim$(Q$(I * 38 + 1004))
         For I1 = 0 To 36
-            P%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
+            actP%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
         Next
     Next
 

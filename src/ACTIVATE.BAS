@@ -62,7 +62,7 @@ Sub ChangePlayers (yearNumber$, teamName$, teamIdx)
     Dim M$, NN$, S
 
     Shared K9&()
-    Shared B%(), L%(), P%()
+    Shared actB%(), L%(), actP%()
     Shared B$(), P$()
 
     S$ = RTrim$(Q$(1840))
@@ -81,16 +81,16 @@ Sub ChangePlayers (yearNumber$, teamName$, teamIdx)
         For I = 0 To 10
             Color 15, 0
             Locate I + 5, 5: Print Using "## "; I + 1;
-            If B%(I, 31) <> 0 Then Color L%(11), L%(12)
+            If actB%(I, 31) <> 0 Then Color L%(11), L%(12)
             Print B$(I);
             Color 15, 0
             Print Tab(40);: Print Using "## "; I + 13;
-            If B%(I + 12, 31) <> 0 Then Color L%(11), L%(12)
+            If actB%(I + 12, 31) <> 0 Then Color L%(11), L%(12)
             Print B$(I + 12): Color 15, 0
         Next
 
         Locate , 5: Print Using "## "; 12;
-        If B%(11, 31) <> 0 Then Color L%(11), L%(12)
+        If actB%(11, 31) <> 0 Then Color L%(11), L%(12)
         Print B$(11)
         Color 15, 0
         Print
@@ -102,7 +102,7 @@ Sub ChangePlayers (yearNumber$, teamName$, teamIdx)
         If I < 0 Or I > 22 Then
             X% = 0
         Else
-            B%(I, 31) = 1 - B%(I, 31)
+            actB%(I, 31) = 1 - actB%(I, 31)
         End If
 
     Loop Until I < 0
@@ -113,10 +113,10 @@ Sub ChangePlayers (yearNumber$, teamName$, teamIdx)
     Do
         For I = 0 To 10
             Locate I + 5, 5: Print Using "## "; I + 1;
-            If P%(I, 34) <> 0 Then Color L%(11), L%(12)
+            If actP%(I, 34) <> 0 Then Color L%(11), L%(12)
             Print P$(I);: Color 15, 0
             Print Tab(40);: Print Using "## "; I + 12;
-            If P%(I + 11, 34) <> 0 Then Color L%(11), L%(12)
+            If actP%(I + 11, 34) <> 0 Then Color L%(11), L%(12)
             Print P$(I + 11): Color 15, 0
         Next
         Print
@@ -129,7 +129,7 @@ Sub ChangePlayers (yearNumber$, teamName$, teamIdx)
         If I < 0 Or I > 21 Then
             X% = 0
         Else
-            P%(I, 34) = 1 - P%(I, 34)
+            actP%(I, 34) = 1 - actP%(I, 34)
         End If
 
     Loop Until I < 0
@@ -165,14 +165,14 @@ Sub ChangePlayers (yearNumber$, teamName$, teamIdx)
 
     For I = 0 To 22: LSet Q$(I * 43 + 15) = B$(I)
         For I1 = 0 To 41
-            LSet Q$(I * 43 + I1 + 16) = MKI$(B%(I, I1))
+            LSet Q$(I * 43 + I1 + 16) = MKI$(actB%(I, I1))
         Next
     Next
 
     For I = 0 To 21
         LSet Q$(I * 38 + 1004) = P$(I)
         For I1 = 0 To 36
-            LSet Q$(I * 38 + I1 + 1005) = MKI$(P%(I, I1))
+            LSet Q$(I * 38 + I1 + 1005) = MKI$(actP%(I, I1))
         Next
     Next
 
@@ -231,7 +231,7 @@ End Sub
 Sub SelectTeam_ACTIVATE (yearNumber$, numberTeams, teamIdx)
 
     Shared K9&()
-    Shared B%(), L%(), P%()
+    Shared actB%(), L%(), actP%()
     Shared B$(), P$()
 
     Selection% = 1
@@ -289,14 +289,14 @@ Sub SelectTeam_ACTIVATE (yearNumber$, numberTeams, teamIdx)
         For I = 0 To 22:
             B$(I) = RTrim$(Q$(I * 43 + 15))
             For I1 = 0 To 41
-                B%(I, I1) = CVI(Q$(I * 43 + I1 + 16))
+                actB%(I, I1) = CVI(Q$(I * 43 + I1 + 16))
             Next
         Next
 
         For I = 0 To 21
             P$(I) = RTrim$(Q$(I * 38 + 1004))
             For I1 = 0 To 36
-                P%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
+                actP%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
             Next
         Next
 

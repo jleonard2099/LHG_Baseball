@@ -449,7 +449,7 @@ Sub ContinueTrade (yearNumbers$(), tradeIdx)
     Shared A$(), A1$(), SA$()
     Shared tradeB1$(), tradeP1$()
 
-    Shared D0%(), D1%(), tradeL%(), L2%()
+    Shared tradeD0%(), D1%(), tradeL%(), L2%()
     Shared TEAM%(), tradeT1%(), tradeP0%(), tradeP3%()
     Shared tradeB0%(), tradeB3%(), tradeSS%(), W2%()
 
@@ -459,14 +459,14 @@ Sub ContinueTrade (yearNumbers$(), tradeIdx)
 	Print "DOES ";: Color tradeL%(tradeIdx, 11), tradeL%(tradeIdx, 12)
 	Print A$(0);: Color 15, 0
 	Print " HAVE COMPILED STATS (YN)"
-	S%(0) = 0
+	tradeS%(0) = 0
 
     Do
         I$ = GetKeyPress$
     Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
 
     If UCase$(I$) = "N" Then
-        S%(0) = 1
+        tradeS%(0) = 1
         yearNumbers$(1) = yearNumbers$(0)
     Else
         Cls
@@ -503,7 +503,7 @@ Sub ContinueTrade (yearNumbers$(), tradeIdx)
             For I1 = 0 To 22: For I2 = 0 To 21: Input #1, tradeB0%(tradeIdx, I1, I2): Next I2: Next I1
             For I1 = 0 To 21: For I2 = 0 To 41: Input #1, tradeP0%(tradeIdx, I1, I2): Next I2: Next I1
 
-            Input #1, D0%(tradeIdx)
+            Input #1, tradeD0%(tradeIdx)
             Input #1, D1%(tradeIdx)
 
             For I = 0 To 21: Input #1, TEAM%(tradeIdx, I): Next I
@@ -511,7 +511,7 @@ Sub ContinueTrade (yearNumbers$(), tradeIdx)
 
             Close #1
 
-            If NF = 1 Then NF = 0: S%(0) = 1
+            If NF = 1 Then NF = 0: tradeS%(0) = 1
             yearNumbers$(1) = yearNumbers$(0)
 
             If _FileExists(diskPaths$(1) + R$ + "R") Then
@@ -544,14 +544,14 @@ Sub ContinueTrade (yearNumbers$(), tradeIdx)
 	Print "DOES ";: Color tradeL%(tradeIdx, 11), tradeL%(tradeIdx, 12)
 	Print A$(1);: Color 15, 0
 	Print " HAVE COMPILED STATS (YN)"
-	S%(1) = 0
+	tradeS%(1) = 0
 
     Do
         I$ = GetKeyPress$
     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
     If UCase$(I$) = "N" Then
-        S%(1) = 1
+        tradeS%(1) = 1
     Else
         Cls
         SA$(tradeIdx) = A$(tradeIdx)
@@ -567,7 +567,7 @@ Sub ContinueTrade (yearNumbers$(), tradeIdx)
             End If
         Next XX
 
-        If NF = 1 Then NF = 0: S%(1) = 1
+        If NF = 1 Then NF = 0: tradeS%(1) = 1
     End If
 
     Do
@@ -588,7 +588,7 @@ Sub ContinueTrade (yearNumbers$(), tradeIdx)
 
         Select Case I$
             Case "1":
-                If S%(0) <> 1 And S%(1) <> 1 Then
+                If tradeS%(0) <> 1 And tradeS%(1) <> 1 Then
                     Cls
                     Print
                     Print
@@ -610,7 +610,7 @@ Sub ContinueTrade (yearNumbers$(), tradeIdx)
                 Call TradeBatters
 
             Case "2":
-                If S%(0) <> 1 And S%(1) <> 1 Then
+                If tradeS%(0) <> 1 And tradeS%(1) <> 1 Then
                     Cls
                     Print
                     Print
@@ -742,7 +742,7 @@ Sub TradeBatters ()
     tradeB1$(1, I1) = tradeB$(1, I1)
     Swap tradeB3%(0, I), tradeB3%(1, I1)
 
-    If S%(0) = 1 Or S%(1) = 1 Or W1 = 0 Then
+    If tradeS%(0) = 1 Or tradeS%(1) = 1 Or W1 = 0 Then
         For I2 = 0 To 21: Swap tradeB0%(0, I, I2), tradeB0%(1, I1, I2): Next I2
     Else
         For I2 = 0 To 21: tradeB0%(0, I, I2) = 0: tradeB0%(1, I1, I2) = 0: Next I2
@@ -837,7 +837,7 @@ Sub TradePitchers ()
     tradeP1$(0, I) = tradeB$(0, I)
     tradeP1$(1, I1) = tradeB$(1, I1)
 
-    If S%(0) = 1 Or S%(1) = 1 Or W1 = 0 Then
+    If tradeS%(0) = 1 Or tradeS%(1) = 1 Or W1 = 0 Then
         For I2 = 0 To 41: tradeP0%(0, I, I2) = 0: tradeP0%(1, I1, I2) = 0: Next I2
     Else
         Swap tradeP3%(0, I), tradeP3%(1, I1)
@@ -860,7 +860,7 @@ Sub SaveTrades (yearNumbers$())
     Shared tradeB$(), tradeP$()
     Shared tradeB1$(), tradeP1$()
 
-    Shared D0%(), D1%(), tradeL%(), L2%()
+    Shared tradeD0%(), D1%(), tradeL%(), L2%()
     Shared S%(), TEAM%()
     Shared tradeB%(), tradeB0%(), tradeB3%()
     Shared tradeP%(), tradeP0%(), tradeP3%()
@@ -1020,7 +1020,7 @@ Sub SaveTrades (yearNumbers$())
     Next tradeIdx
 
     For I = 0 To 1
-        If S%(I) <> 1 Then
+        If tradeS%(I) <> 1 Then
             Cls
 
             For XX = 4 To 11
@@ -1049,7 +1049,7 @@ Sub SaveTrades (yearNumbers$())
 
             For I1 = 0 To 21: For I2 = 0 To 41: Print #1, tradeP0%(I, I1, I2): Next I2: Next I1
 
-            Print #1, D0%(I): Print #1, D1%(I)
+            Print #1, tradeD0%(I): Print #1, D1%(I)
 
             For I1 = 0 To 21: Print #1, TEAM%(I, I1): Next I1
 

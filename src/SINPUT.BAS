@@ -53,7 +53,7 @@ End Sub
 Sub EditStatsSchedules (action%)
 
     Shared B$(), P$()
-    Shared statB%(), B0%(), L%()
+    Shared statB%(), statB0%(), L%()
     Shared statP%(), P0%()
     Shared T%(), T1%()
 
@@ -109,7 +109,7 @@ Sub EditStatsSchedules (action%)
 
             For I = 0 To 22: Input #1, B$(I): Input #1, statB%(I): Next I
             For I = 0 To 21: Input #1, P$(I): Input #1, statP%(I): Next I
-            For I = 0 To 22: For I1 = 0 To 21: Input #1, B0%(I, I1): Next I1: Next I
+            For I = 0 To 22: For I1 = 0 To 21: Input #1, statB0%(I, I1): Next I1: Next I
             For I = 0 To 21: For I1 = 0 To 41: Input #1, P0%(I, I1): Next I1: Next I
 
             Input #1, D0%
@@ -138,7 +138,7 @@ End Sub
 Sub InputTeamStats (Z$, A$, X%, D0%, D1%, L2%, W2%, action%)
 
     Shared B$(), P$()
-    Shared B0%(), P0%()
+    Shared statB0%(), P0%()
     Shared statB%(), statP%(), T%(), T1%()
 
     C1 = 0
@@ -317,49 +317,49 @@ Sub InputTeamStats (Z$, A$, X%, D0%, D1%, L2%, W2%, action%)
         If action% = 2 Then
             Locate 1, 30: Print "BATTER - "; I + 1: Locate , 1
             Locate 1: Print "1. NAME "; B$(I)
-            Locate 2: Print "2. AB "; B0%(I, 0)
-            Locate 3: Print "3. RUNS "; B0%(I, 2)
-            Locate 4: Print "4. HITS "; B0%(I, 1)
-            Locate 5: Print "5. DBL "; B0%(I, 4)
-            Locate 6: Print "6. TRPL "; B0%(I, 5)
-            Locate 7: Print "7. HR "; B0%(I, 6)
-            Locate 8: Print "8. RBI "; B0%(I, 3)
-            Locate 9: Print "9. BB "; B0%(I, 7)
-            Locate 10: Print "10. SO "; B0%(I, 8)
-            Locate 11: Print "11. ERR "; B0%(I, 11)
-            Locate 12: Print "12. SB "; B0%(I, 9)
-            Locate 13: Print "13. CS "; B0%(I, 10)
-            Locate 14: Print "14.  G "; B0%(I, 14)
-            Locate 15: Print "15. CHS "; B0%(I, 12)
-            Locate 16: Print "16. LHS "; B0%(I, 13)
-            Locate 17: Print "17. GIDP "; B0%(I, 15)
-            Locate 18: Print "18. PO "; B0%(I, 16)
-            Locate 19: Print "19. A  "; B0%(I, 17)
-            Locate 20: Print "20. SH "; B0%(I, 18)
-            Locate 21: Print "21. SF "; B0%(I, 19)
+            Locate 2: Print "2. AB "; statB0%(I, 0)
+            Locate 3: Print "3. RUNS "; statB0%(I, 2)
+            Locate 4: Print "4. HITS "; statB0%(I, 1)
+            Locate 5: Print "5. DBL "; statB0%(I, 4)
+            Locate 6: Print "6. TRPL "; statB0%(I, 5)
+            Locate 7: Print "7. HR "; statB0%(I, 6)
+            Locate 8: Print "8. RBI "; statB0%(I, 3)
+            Locate 9: Print "9. BB "; statB0%(I, 7)
+            Locate 10: Print "10. SO "; statB0%(I, 8)
+            Locate 11: Print "11. ERR "; statB0%(I, 11)
+            Locate 12: Print "12. SB "; statB0%(I, 9)
+            Locate 13: Print "13. CS "; statB0%(I, 10)
+            Locate 14: Print "14.  G "; statB0%(I, 14)
+            Locate 15: Print "15. CHS "; statB0%(I, 12)
+            Locate 16: Print "16. LHS "; statB0%(I, 13)
+            Locate 17: Print "17. GIDP "; statB0%(I, 15)
+            Locate 18: Print "18. PO "; statB0%(I, 16)
+            Locate 19: Print "19. A  "; statB0%(I, 17)
+            Locate 20: Print "20. SH "; statB0%(I, 18)
+            Locate 21: Print "21. SF "; statB0%(I, 19)
         Else
             235 Locate 1, 30: Print "BATTER - "; I + 1: Locate , 1
             240 Locate 1: Input "1. NAME "; B$(I): If C1 = 1 Then 309
-            245 Locate 2: Input "2. AB "; B0%(I, 0): If C1 = 1 Then 309
-            250 Locate 3: Input "3. RUNS "; B0%(I, 2): If C1 = 1 Then 309
-            255 Locate 4: Input "4. HITS "; B0%(I, 1): If C1 = 1 Then 309
-            260 Locate 5: Input "5. DBL "; B0%(I, 4): If C1 = 1 Then 309
-            265 Locate 6: Input "6. TRPL "; B0%(I, 5): If C1 = 1 Then 309
-            270 Locate 7: Input "7. HR "; B0%(I, 6): If C1 = 1 Then 309
-            275 Locate 8: Input "8. RBI "; B0%(I, 3): If C1 = 1 Then 309
-            280 Locate 9: Input "9. BB "; B0%(I, 7): If C1 = 1 Then 309
-            285 Locate 10: Input "10. SO "; B0%(I, 8): If C1 = 1 Then 309
-            290 Locate 11: Input "11. ERR "; B0%(I, 11): If C1 = 1 Then 309
-            295 Locate 12: Input "12. SB "; B0%(I, 9): If C1 = 1 Then 309
-            300 Locate 13: Input "13. CS "; B0%(I, 10): If C1 = 1 Then 309
-            301 Locate 14: Input "14.  G "; B0%(I, 14): If C1 = 1 Then 309
-            302 Locate 15: Input "15. CHS "; B0%(I, 12): If C1 = 1 Then 309
-            303 Locate 16: Input "16. LHS "; B0%(I, 13): If C1 = 1 Then 309
-            304 Locate 17: Input "17. GIDP "; B0%(I, 15): If C1 = 1 Then 309
-            305 Locate 18: Input "18. PO "; B0%(I, 16): If C1 = 1 Then 309
-            306 Locate 19: Input "19. A  "; B0%(I, 17): If C1 = 1 Then 309
-            307 Locate 20: Input "20. SH "; B0%(I, 18): If C1 = 1 Then 309
-            308 Locate 21: Input "21. SF "; B0%(I, 19): If C1 = 1 Then 309
+            245 Locate 2: Input "2. AB "; statB0%(I, 0): If C1 = 1 Then 309
+            250 Locate 3: Input "3. RUNS "; statB0%(I, 2): If C1 = 1 Then 309
+            255 Locate 4: Input "4. HITS "; statB0%(I, 1): If C1 = 1 Then 309
+            260 Locate 5: Input "5. DBL "; statB0%(I, 4): If C1 = 1 Then 309
+            265 Locate 6: Input "6. TRPL "; statB0%(I, 5): If C1 = 1 Then 309
+            270 Locate 7: Input "7. HR "; statB0%(I, 6): If C1 = 1 Then 309
+            275 Locate 8: Input "8. RBI "; statB0%(I, 3): If C1 = 1 Then 309
+            280 Locate 9: Input "9. BB "; statB0%(I, 7): If C1 = 1 Then 309
+            285 Locate 10: Input "10. SO "; statB0%(I, 8): If C1 = 1 Then 309
+            290 Locate 11: Input "11. ERR "; statB0%(I, 11): If C1 = 1 Then 309
+            295 Locate 12: Input "12. SB "; statB0%(I, 9): If C1 = 1 Then 309
+            300 Locate 13: Input "13. CS "; statB0%(I, 10): If C1 = 1 Then 309
+            301 Locate 14: Input "14.  G "; statB0%(I, 14): If C1 = 1 Then 309
+            302 Locate 15: Input "15. CHS "; statB0%(I, 12): If C1 = 1 Then 309
+            303 Locate 16: Input "16. LHS "; statB0%(I, 13): If C1 = 1 Then 309
+            304 Locate 17: Input "17. GIDP "; statB0%(I, 15): If C1 = 1 Then 309
+            305 Locate 18: Input "18. PO "; statB0%(I, 16): If C1 = 1 Then 309
+            306 Locate 19: Input "19. A  "; statB0%(I, 17): If C1 = 1 Then 309
+            307 Locate 20: Input "20. SH "; statB0%(I, 18): If C1 = 1 Then 309
+            308 Locate 21: Input "21. SF "; statB0%(I, 19): If C1 = 1 Then 309
         End If
 
         309 '
@@ -560,7 +560,7 @@ Sub InputTeamStats (Z$, A$, X%, D0%, D1%, L2%, W2%, action%)
     Print #1, L2%
     For I = 0 To 22: Print #1, B$(I): Print #1, statB%(I): Next I
     For I = 0 To 21: Print #1, P$(I): Print #1, statP%(I): Next I
-    For I = 0 To 22: For I1 = 0 To 21: Print #1, B0%(I, I1): Next I1: Next I
+    For I = 0 To 22: For I1 = 0 To 21: Print #1, statB0%(I, I1): Next I1: Next I
     For I = 0 To 21: For I1 = 0 To 41: Print #1, P0%(I, I1): Next I1: Next I
     Print #1, D0%: Print #1, D1%
     For I = 0 To 21: Print #1, T%(I): Next I
@@ -759,7 +759,7 @@ End Sub
 Sub SelectBatters_SINPUT (Z$)
 
     Shared B$()
-    Shared B0%()
+    Shared statB0%()
 
     565 '
     Cls
@@ -785,26 +785,26 @@ Sub SelectBatters_SINPUT (Z$)
     Else
         I = I - 1
         Cls: Locate 1: Print "1. NAME "; B$(I)
-        Locate 2: Print "2. AB "; B0%(I, 0)
-        Locate 3: Print "3. RUNS "; B0%(I, 2)
-        Locate 4: Print "4. HITS "; B0%(I, 1)
-        Locate 5: Print "5. DBL "; B0%(I, 4)
-        Locate 6: Print "6. TRPL "; B0%(I, 5)
-        Locate 7: Print "7. HR "; B0%(I, 6)
-        Locate 8: Print "8. RBI "; B0%(I, 3)
-        Locate 9: Print "9. BB "; B0%(I, 7)
-        Locate 10: Print "10. SO "; B0%(I, 8)
-        Locate 11: Print "11. ERR "; B0%(I, 11)
-        Locate 12: Print "12. SB "; B0%(I, 9)
-        Locate 13: Print "13. CS "; B0%(I, 10)
-        Locate 14: Print "14. G  "; B0%(I, 14)
-        Locate 15: Print "15. CHS "; B0%(I, 12)
-        Locate 16: Print "16. LHS "; B0%(I, 13)
-        Locate 17: Print "17. GIDP "; B0%(I, 15)
-        Locate 18: Print "18. PO "; B0%(I, 16)
-        Locate 19: Print "19. A  "; B0%(I, 17)
-        Locate 20: Print "20. SH "; B0%(I, 18)
-        Locate 21: Print "21. SF "; B0%(I, 19)
+        Locate 2: Print "2. AB "; statB0%(I, 0)
+        Locate 3: Print "3. RUNS "; statB0%(I, 2)
+        Locate 4: Print "4. HITS "; statB0%(I, 1)
+        Locate 5: Print "5. DBL "; statB0%(I, 4)
+        Locate 6: Print "6. TRPL "; statB0%(I, 5)
+        Locate 7: Print "7. HR "; statB0%(I, 6)
+        Locate 8: Print "8. RBI "; statB0%(I, 3)
+        Locate 9: Print "9. BB "; statB0%(I, 7)
+        Locate 10: Print "10. SO "; statB0%(I, 8)
+        Locate 11: Print "11. ERR "; statB0%(I, 11)
+        Locate 12: Print "12. SB "; statB0%(I, 9)
+        Locate 13: Print "13. CS "; statB0%(I, 10)
+        Locate 14: Print "14. G  "; statB0%(I, 14)
+        Locate 15: Print "15. CHS "; statB0%(I, 12)
+        Locate 16: Print "16. LHS "; statB0%(I, 13)
+        Locate 17: Print "17. GIDP "; statB0%(I, 15)
+        Locate 18: Print "18. PO "; statB0%(I, 16)
+        Locate 19: Print "19. A  "; statB0%(I, 17)
+        Locate 20: Print "20. SH "; statB0%(I, 18)
+        Locate 21: Print "21. SF "; statB0%(I, 19)
 
         'GOTO 309
 
@@ -819,7 +819,7 @@ End Sub
 Sub SelectPitchers_SINPUT (D0%, D1%, L2%, W2%, Z$)
 
     Shared B$(), P$()
-    Shared statB%(), B0%(), statP%(), P0%()
+    Shared statB%(), statB0%(), statP%(), P0%()
     Shared T%(), T1%()
 
     Cls
@@ -847,7 +847,7 @@ Sub SelectPitchers_SINPUT (D0%, D1%, L2%, W2%, Z$)
 
         For I = 0 To 22: Print #1, B$(I): Print #1, statB%(I): Next I
         For I = 0 To 21: Print #1, P$(I): Print #1, statP%(I): Next I
-        For I = 0 To 22: For I1 = 0 To 21: Print #1, B0%(I, I1): Next I1: Next I
+        For I = 0 To 22: For I1 = 0 To 21: Print #1, statB0%(I, I1): Next I1: Next I
         For I = 0 To 21: For I1 = 0 To 41: Print #1, P0%(I, I1): Next I1: Next I
 
         Print #1, D0%: Print #1, D1%
