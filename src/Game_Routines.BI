@@ -1,7 +1,5 @@
 DECLARE FUNCTION OUTFLDLOCATION$ (W%)
 
-Declare Sub LOADER
-
 Declare Sub ADDPIT (D, I5, I6)
 Declare Sub ADDSTTS (P, D)
 Declare Sub ADJRUNNERS (S2%, P)
@@ -162,4 +160,6 @@ Declare Sub WHICHRUNNER (i, S4%, D5)
 Declare Sub WHOSON1ST (S4%)
 Declare Sub WILDPITCH (S2%, D)
 Declare Sub WINDEX ()
+
+DefInt A-Z
 

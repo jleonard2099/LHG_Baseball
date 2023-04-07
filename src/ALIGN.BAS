@@ -2,18 +2,18 @@ Sub ALIGN ()
 
     _Title "Full Count Baseball - Align Stats"
 
-    Dim B$(23), BN$(23), BR$(23)
-    Dim P$(22), PN$(22), PR$(22)
+    Dim statB$(23), BN$(23), BR$(23)
+    Dim statP$(22), PN$(22), PR$(22)
 
-    Dim B0%(23, 22), B0N%(23, 22), B0R%(23, 22)
-    Dim alignB%(23), BN%(23), BR%(23)
+    Dim careerB0%(23, 22), B0N%(23, 22), B0R%(23, 22)
+    Dim draftB%(23), BN%(23), BR%(23)
     Dim P0%(22, 42), P0N%(22, 42), P0R%(22, 42)
-    Dim alignP%(22), PN%(22), PR%(22)
+    Dim draftP%(22), PN%(22), PR%(22)
     Dim S0%(22, 6), S0N%(22, 6), S0R%(22, 6)
 
     Dim TR(22), TR1(23)
 
-    Shared T%(), T1%()
+    Shared statT%(), statT1%()
 
     Do
 
@@ -55,26 +55,26 @@ Sub ALIGN ()
 
             Call GetDiskID_ALIGN(A$)
 
-            B$ = A$
+            statB$ = A$
 
             For XX = 4 To 11:
-                If Mid$(B$, XX, 1) = " " Or Mid$(B$, XX, 1) = "." Then Mid$(B$, XX, 1) = "_"
+                If Mid$(statB$, XX, 1) = " " Or Mid$(statB$, XX, 1) = "." Then Mid$(statB$, XX, 1) = "_"
             Next XX
 
             For XX = 12 To 14:
-                If Mid$(B$, XX, 2) = "ST" Then Mid$(B$, 9, 1) = "_": Mid$(B$, 10, 2) = "ST"
+                If Mid$(statB$, XX, 2) = "ST" Then Mid$(statB$, 9, 1) = "_": Mid$(statB$, 10, 2) = "ST"
             Next XX
 
             QQ = 8
             For XX = 11 To 4 Step -1:
-                If Mid$(B$, XX, 1) = "_" Then
+                If Mid$(statB$, XX, 1) = "_" Then
                     QQ = XX - 4
                 Else
                     Exit For
                 End If
             Next XX
 
-            statFile$ = Mid$(B$, 4, QQ) + "." + Left$(B$, 2)
+            statFile$ = Mid$(statB$, 4, QQ) + "." + Left$(statB$, 2)
 
             Locate 18, 5: Color 12: Print "SEARCHING FOR FILES . . ."
 
@@ -122,17 +122,17 @@ Sub ALIGN ()
 
                     Input #1, A$: Input #1, W2%: Input #1, L2%
 
-                    For I = 0 To 22: Input #1, B$(I): Input #1, alignB%(I): Next I
+                    For I = 0 To 22: Input #1, statB$(I): Input #1, draftB%(I): Next I
 
-                    For I = 0 To 21: Input #1, P$(I): Input #1, alignP%(I): Next I
+                    For I = 0 To 21: Input #1, statP$(I): Input #1, draftP%(I): Next I
 
-                    For I = 0 To 22: For I1 = 0 To 21: Input #1, B0%(I, I1): Next I1: Next I
+                    For I = 0 To 22: For I1 = 0 To 21: Input #1, careerB0%(I, I1): Next I1: Next I
 
                     For I = 0 To 21: For I1 = 0 To 41: Input #1, P0%(I, I1): Next I1: Next I
 
                     Input #1, D0%: Input #1, D1%
-                    For I = 0 To 21: Input #1, T%(I): Next I
-                    For I = 0 To 22: Input #1, T1%(I): Next I
+                    For I = 0 To 21: Input #1, statT%(I): Next I
+                    For I = 0 To 22: Input #1, statT1%(I): Next I
 
                     Close #1
 
@@ -164,11 +164,11 @@ Sub ALIGN ()
                     Color 7: Print " ROAD"
 
                     For I = 0 To 22: 
-                        Color 12: Locate I + 1, 1: Print Using "##"; I;: Print " ";: Color 15: Print Left$(B$(I), 10);: Color 12: Print Tab(17); Using "##"; I;: Print " ";: Color 7: Print Left$(BR$(I), 10);
+                        Color 12: Locate I + 1, 1: Print Using "##"; I;: Print " ";: Color 15: Print Left$(statB$(I), 10);: Color 12: Print Tab(17); Using "##"; I;: Print " ";: Color 7: Print Left$(BR$(I), 10);
                     Next
 
                     For I = 0 To 21: 
-                        Color 12: Locate I + 1, 48: Print Using "##"; I;: Print " ";: Color 15: Print Left$(P$(I), 10);: Color 12: Print Tab(62); Using "##"; I;: Print " ";: Color 7: Print Left$(PR$(I), 10);
+                        Color 12: Locate I + 1, 48: Print Using "##"; I;: Print " ";: Color 15: Print Left$(statP$(I), 10);: Color 12: Print Tab(62); Using "##"; I;: Print " ";: Color 7: Print Left$(PR$(I), 10);
                     Next
 
                     Color 11
@@ -186,7 +186,7 @@ Sub ALIGN ()
 
                         For J = 0 To 22
 
-                            If UCase$(B$(N)) = UCase$(BR$(J)) Then
+                            If UCase$(statB$(N)) = UCase$(BR$(J)) Then
                                 BN$(N) = BR$(J): BN%(N) = BR%(J)
 
                                 For K = 0 To 21
@@ -210,7 +210,7 @@ Sub ALIGN ()
                     Do
                         For J = 0 To 21
 
-                            If UCase$(P$(N)) = UCase$(PR$(J)) Then
+                            If UCase$(statP$(N)) = UCase$(PR$(J)) Then
 
                                 PN$(N) = PR$(J)
                                 PN%(N) = PR%(J)
@@ -233,14 +233,14 @@ Sub ALIGN ()
 
                     'Check batters
                     For J = 0 To 22
-                        If UCase$(BN$(J)) <> UCase$(B$(J)) Then
+                        If UCase$(BN$(J)) <> UCase$(statB$(J)) Then
                             SEQ = SEQ + 1
                         End If
                     Next J
 
                     'Check pitchers
                     For J = 0 To 21
-                        If UCase$(PN$(J)) <> UCase$(P$(J)) Then
+                        If UCase$(PN$(J)) <> UCase$(statP$(J)) Then
                             SEQ = SEQ + 1
                         End If
                     Next J
@@ -254,9 +254,9 @@ Sub ALIGN ()
                         Color 15: Print "CURRENT  ";
                         Color 7: Print " ROAD"
 
-                        For I = 0 To 22: Color 12: Locate I + 1, 1: Print Using "##"; I;: Print " ";: Color 15: Print Left$(B$(I), 10);: Color 12: Print Tab(17); Using "##"; I;: Print " ";: Color 7: Print Left$(BN$(I), 10);: Next
+                        For I = 0 To 22: Color 12: Locate I + 1, 1: Print Using "##"; I;: Print " ";: Color 15: Print Left$(statB$(I), 10);: Color 12: Print Tab(17); Using "##"; I;: Print " ";: Color 7: Print Left$(BN$(I), 10);: Next
 
-                        For I = 0 To 21: Color 12: Locate I + 1, 48: Print Using "##"; I;: Print " ";: Color 15: Print Left$(P$(I), 10);: Color 12: Print Tab(62); Using "##"; I;: Print " ";: Color 7: Print Left$(PN$(I), 10);: Next
+                        For I = 0 To 21: Color 12: Locate I + 1, 48: Print Using "##"; I;: Print " ";: Color 15: Print Left$(statP$(I), 10);: Color 12: Print Tab(62); Using "##"; I;: Print " ";: Color 7: Print Left$(PN$(I), 10);: Next
 
                         Locate 7, 33
                         Color 11: Print "HIT ANY KEY TO"
@@ -327,7 +327,7 @@ End Sub
 '...explanation...
 Sub GetDiskID_ALIGN (A$)
 
-    Shared L%()
+    Shared ratings%()
 
     Do
 
@@ -405,7 +405,7 @@ Sub GetDiskID_ALIGN (A$)
                 BO% = 0
             Else
                 Locate 2, 33
-                Color L%(11), L%(12): Print A$
+                Color ratings%(11), ratings%(12): Print A$
 
                 Color 15, 4
 
@@ -432,7 +432,7 @@ End Sub
 '...explanation...
 Sub SelectTeam_ALIGN (numberTeams, yearNumber$)
 
-    Shared L%()
+    Shared ratings%()
 
     Selection% = 1
     Count% = numberTeams
@@ -476,7 +476,7 @@ Sub SelectTeam_ALIGN (numberTeams, yearNumber$)
             Get #1, T1
 
             For I = 1 To 13
-                L%(I) = CVI(Q$(I))
+                ratings%(I) = CVI(Q$(I))
             Next
 
             Close 1

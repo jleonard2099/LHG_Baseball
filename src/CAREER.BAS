@@ -387,13 +387,8 @@ Sub Merge_FirstYear ()
     Shared careerB0%(), careerB1%(), BRS%()
     Shared P0%(), careerP1%(), PRS%()
 
-    'Dim T%(0 to 21), T1%(0 to 22)
-    Shared T%(), T1%()
-
-    Shared careerB$(), careerP$()
-
-    Shared careerB0%(), careerB1%(), BRS%()
-    Shared P0%(), careerP1%(), PRS%()
+    'Dim statT%(0 to 21), statT1%(0 to 22)
+    Shared statT%(), statT1%()
 
     Dim TMR%
 
@@ -467,8 +462,8 @@ Sub Merge_FirstYear ()
         For I = 0 To 21: For I1 = 0 To 41: Input #1, P0%(I, I1): Locate 21, 35: TMR% = TMR% - 1: Color 9: Print Using "####"; TMR%: Next I1: Next I
         Input #1, D0%
         Input #1, D1%
-        For I = 0 To 21: Input #1, T%(I): Next I
-        For I = 0 To 22: Input #1, T1%(I): Next I
+        For I = 0 To 21: Input #1, statT%(I): Next I
+        For I = 0 To 22: Input #1, statT1%(I): Next I
         Close #1
 
         For I = 0 To 99
@@ -536,8 +531,8 @@ Sub Merge_AddYear ()
     Shared careerB0%(), careerB1%(), BRS%()
     Shared P0%(), careerP1%(), PRS%()
 
-    'Dim T%(0 to 21), T1%(0 to 22)
-    Shared T%(), T1%()
+    'Dim statT%(0 to 21), statT1%(0 to 22)
+    Shared statT%(), statT1%()
 
     Dim BR$(100), PR$(80)
 
@@ -622,8 +617,8 @@ Sub Merge_AddYear ()
         For I = 0 To 21: For I1 = 0 To 41: Input #1, P0%(I, I1): Locate 21, 35: TMR% = TMR% - 1: Color 9: Print Using "####"; TMR%: Next I1: Next I
         Input #1, D0%
         Input #1, D1%
-        For I = 0 To 21: Input #1, T%(I): Next I
-        For I = 0 To 22: Input #1, T1%(I): Next I
+        For I = 0 To 21: Input #1, statT%(I): Next I
+        For I = 0 To 22: Input #1, statT1%(I): Next I
         Close #1
 
         For I = 0 To 22

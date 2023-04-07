@@ -37,15 +37,15 @@ End Sub
 '----------------------------------------
 '...explanation...
 Sub MergeIt ()
-    Shared B$(), P$()
+    Shared statB$(), statP$()
 
     Dim BR$(22), DR$(2)
-    Dim H$(162), H1$(40), H1R$(40), HR$(162)
+    Dim statH$(162), H1$(40), H1R$(40), HR$(162)
     Dim L$(162), LR$(162)
     Dim PL$(162), PLR$(162), PR$(21)
     Dim W$(162), WR$(162)
 
-    Dim mergeB%(22), B0%(22, 22), B0R%(22, 22), BR%(22)
+    Dim mergeB%(22), careerB0%(22, 22), B0R%(22, 22), BR%(22)
     Dim H%(162), HR%(162), I%(162), IR%(162)
     Dim mergeP%(21), P0%(21, 41), P0R%(21, 41), PR%(21)
     Dim S0%(22, 6), SR%(22, 6)
@@ -53,8 +53,8 @@ Sub MergeIt ()
 
     Dim TR(22), TR1(22)
 
-    'Dim T%(0 to 21), T1%(0 to 22)
-    Shared T%(), T1%()
+    'Dim statT%(0 to 21), statT1%(0 to 22)
+    Shared statT%(), statT1%()
 
     Do
 
@@ -90,26 +90,26 @@ Sub MergeIt ()
 
             Call GetDiskID_MERGE(A$)
 
-            B$ = A$
+            statB$ = A$
 
             For XX = 4 To 11:
-                If Mid$(B$, XX, 1) = " " Or Mid$(B$, XX, 1) = "." Then Mid$(B$, XX, 1) = "_"
+                If Mid$(statB$, XX, 1) = " " Or Mid$(statB$, XX, 1) = "." Then Mid$(statB$, XX, 1) = "_"
             Next XX
 
             For XX = 12 To 14:
-                If Mid$(B$, XX, 2) = "ST" Then Mid$(B$, 9, 1) = "_": Mid$(B$, 10, 2) = "ST"
+                If Mid$(statB$, XX, 2) = "ST" Then Mid$(statB$, 9, 1) = "_": Mid$(statB$, 10, 2) = "ST"
             Next XX
 
             QQ = 8
             For XX = 11 To 4 Step -1:
-                If Mid$(B$, XX, 1) = "_" Then
+                If Mid$(statB$, XX, 1) = "_" Then
                     QQ = XX - 4
                 Else
                     Exit For
                 End If
             Next XX
 
-            statFile$ = Mid$(B$, 4, QQ) + "." + Left$(B$, 2)
+            statFile$ = Mid$(statB$, 4, QQ) + "." + Left$(statB$, 2)
 
             Cls
 
@@ -206,14 +206,14 @@ Sub MergeIt ()
 
                         Input #1, A$: Input #1, W2%: Input #1, L2%
 
-                        For I = 0 To 22: Input #1, B$(I): Input #1, mergeB%(I): Next I
-                        For I = 0 To 21: Input #1, P$(I): Input #1, mergeP%(I): Next I
-                        For I = 0 To 22: For I1 = 0 To 21: Input #1, B0%(I, I1): Next I1: Next I
+                        For I = 0 To 22: Input #1, statB$(I): Input #1, mergeB%(I): Next I
+                        For I = 0 To 21: Input #1, statP$(I): Input #1, mergeP%(I): Next I
+                        For I = 0 To 22: For I1 = 0 To 21: Input #1, careerB0%(I, I1): Next I1: Next I
                         For I = 0 To 21: For I1 = 0 To 41: Input #1, P0%(I, I1): Next I1: Next I
 
                         Input #1, D0%: Input #1, D1%
-                        For I = 0 To 21: Input #1, T%(I): Next I
-                        For I = 0 To 22: Input #1, T1%(I): Next I
+                        For I = 0 To 21: Input #1, statT%(I): Next I
+                        For I = 0 To 22: Input #1, statT1%(I): Next I
 
                         Close #1
 
@@ -229,7 +229,7 @@ Sub MergeIt ()
                         Open PC$ + "\" + statFile$ + "S" For Input As #1
                         Input #1, Y%
                         For I = 1 To 162: Input #1, H%(I): Next I
-                        For I = 1 To 162: Input #1, H$(I): Next I
+                        For I = 1 To 162: Input #1, statH$(I): Next I
                         For I = 1 To 162: Input #1, V%(I): Next I
                         For I = 1 To 162: Input #1, PL$(I): Next I
                         For I = 1 To 162: Input #1, W$(I): Next I
@@ -240,13 +240,13 @@ Sub MergeIt ()
                         SEQ = 0
 
                         For K = 0 To 22
-                            If UCase$(BR$(K)) <> UCase$(B$(K)) Then
+                            If UCase$(BR$(K)) <> UCase$(statB$(K)) Then
                                 SEQ = SEQ + 1
                             End If
                         Next
 
                         For K = 0 To 21
-                            If UCase$(PR$(K)) <> UCase$(P$(K)) Then
+                            If UCase$(PR$(K)) <> UCase$(statP$(K)) Then
                                 SEQ = SEQ + 1
                             End If
                         Next
@@ -256,7 +256,7 @@ Sub MergeIt ()
                             For K = 1 To YR%
                                 Y% = Y% + 1
                                 H%(Y%) = HR%(K)
-                                H$(Y%) = HR$(K)
+                                statH$(Y%) = HR$(K)
                                 V%(Y%) = VR%(K)
                                 PL$(Y%) = PLR$(K)
                                 W$(Y%) = WR$(K)
@@ -273,8 +273,8 @@ Sub MergeIt ()
                                     S0%(I, I1) = S0%(I, I1) + SR%(I, I1)
                                 Next
 
-                                For I1 = 0 To 11: B0%(I, I1) = B0%(I, I1) + B0R%(I, I1): Next I1
-                                For I1 = 14 To 21: B0%(I, I1) = B0%(I, I1) + B0R%(I, I1): Next I1
+                                For I1 = 0 To 11: careerB0%(I, I1) = careerB0%(I, I1) + B0R%(I, I1): Next I1
+                                For I1 = 14 To 21: careerB0%(I, I1) = careerB0%(I, I1) + B0R%(I, I1): Next I1
                             Next I
 
                             For I = 0 To 21
@@ -284,22 +284,22 @@ Sub MergeIt ()
 
                             D0% = D0% + DR0%: D1% = D1% + DR1%
 
-                            For I = 0 To 21: T%(I) = T%(I) + TR(I): Next
-                            For I = 0 To 22: T1%(I) = T1%(I) + TR1(I): Next
+                            For I = 0 To 21: statT%(I) = statT%(I) + TR(I): Next
+                            For I = 0 To 22: statT1%(I) = statT1%(I) + TR1(I): Next
 
                             Open PC$ + "\" + statFile$ For Output As #1
 
                             Write #1, A$: Write #1, W2%: Write #1, L2%
 
-                            For I = 0 To 22: Write #1, B$(I): Write #1, mergeB%(I): Next I
-                            For I = 0 To 21: Write #1, P$(I): Write #1, mergeP%(I): Next I
-                            For I = 0 To 22: For I1 = 0 To 21: Write #1, B0%(I, I1): Next I1: Next I
+                            For I = 0 To 22: Write #1, statB$(I): Write #1, mergeB%(I): Next I
+                            For I = 0 To 21: Write #1, statP$(I): Write #1, mergeP%(I): Next I
+                            For I = 0 To 22: For I1 = 0 To 21: Write #1, careerB0%(I, I1): Next I1: Next I
                             For I = 0 To 21: For I1 = 0 To 41: Write #1, P0%(I, I1): Next I1: Next I
 
                             Write #1, D0%: Write #1, D1%
 
-                            For I = 0 To 21: Write #1, T%(I): Next I
-                            For I = 0 To 22: Write #1, T1%(I): Next I
+                            For I = 0 To 21: Write #1, statT%(I): Next I
+                            For I = 0 To 22: Write #1, statT1%(I): Next I
 
                             Close #1
 
@@ -314,7 +314,7 @@ Sub MergeIt ()
                             Open PC$ + "\" + statFile$ + "S" For Output As #1
                             Write #1, Y%
                             For I = 1 To 162: Write #1, H%(I): Next I
-                            For I = 1 To 162: Write #1, H$(I): Next I
+                            For I = 1 To 162: Write #1, statH$(I): Next I
                             For I = 1 To 162: Write #1, V%(I): Next I
                             For I = 1 To 162: Write #1, PL$(I): Next I
                             For I = 1 To 162: Write #1, W$(I): Next I
@@ -362,7 +362,7 @@ End Sub
 '...explanation...
 Sub GetDiskID_MERGE (A$)
 
-    Shared L%()
+    Shared ratings%()
 
     Do
 
@@ -440,7 +440,7 @@ Sub GetDiskID_MERGE (A$)
                 BO% = 0
             Else
                 Locate 2, 33
-                Color L%(11), L%(12): Print A$
+                Color ratings%(11), ratings%(12): Print A$
 
                 Color 15, 4
 
@@ -467,7 +467,7 @@ End Sub
 '...explanation...
 Sub SelectTeam_MERGE (numberTeams, yearNumber$)
 
-    Shared L%()
+    Shared ratings%()
 
     Selection% = 1
     Count% = numberTeams
@@ -511,7 +511,7 @@ Sub SelectTeam_MERGE (numberTeams, yearNumber$)
             Get #1, T1
 
             For I = 1 To 13
-                L%(I) = CVI(Q$(I))
+                ratings%(I) = CVI(Q$(I))
             Next
 
             Close 1

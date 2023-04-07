@@ -1,34 +1,4 @@
 
-## Balls, Strikes
-are these updating accurately?
-
-
-## Manual Lineup Choices
-
-### With DH
-0 2 3 4 5 6 7 8 9
-
-
-### Without DH
-1 2 3 4 5 6 7 8 9
-
-[ ] Add a summary of positions above using C$()
-
-Key		Orig	Curr
-0		DH		?
-1		p		?
-2		C		ph
-3		1B		?
-4 		2B		DH, SS
-5		3B		?
-6		SS		?
-7 		LF		3B
-8		CF		?
-9 		RF		CF
-10		PH
-11		PR
-
-
 ## Game Flow ?!?!? ##
 
 An excerpt:
@@ -60,6 +30,12 @@ currentGame
 ## Variables ##
 
 #### Naming ####
+
+S$ = Stadium$ = RTrim$(player$(1840))
+M$ = Manager$ = RTrim$(player$(1841))
+NN$ = teamAbbrev$ = RTrim$(player$(1842))
+
+
 F$ ---> pbpText$
 F$() --> better name
 

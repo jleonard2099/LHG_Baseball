@@ -73,7 +73,7 @@ Sub UpdateLeagueStandings ()
 
     'These are just read in and written back
     Shared H%(), I%(), V%()
-    Shared H$(), L$(), PL$(), W$()
+    Shared statH$(), L$(), PL$(), W$()
 
     TMR% = 40
 
@@ -172,7 +172,7 @@ Sub UpdateLeagueStandings ()
                         Input #1, XX%
 
                         For I = 1 To 162: Input #1, H%(I): Next I
-                        For I = 1 To 162: Input #1, H$(I): Next I
+                        For I = 1 To 162: Input #1, statH$(I): Next I
                         For I = 1 To 162: Input #1, V%(I): Next I
                         For I = 1 To 162: Input #1, PL$(I): Next I
                         For I = 1 To 162: Input #1, W$(I): Next I

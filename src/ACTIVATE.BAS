@@ -4,7 +4,7 @@ Sub ACTIVATE ()
 
     DefInt A-Z
 
-    Shared L%()
+    Shared ratings%()
 
 	Do
 
@@ -36,7 +36,7 @@ Sub ACTIVATE ()
 		Else
 			Locate 2, 33
 			T$ = RTrim$(Q$(0))
-			Color L%(11), L%(12): Print T$
+			Color ratings%(11), ratings%(12): Print T$
 
 			Color 15, 4
 
@@ -62,8 +62,8 @@ Sub ChangePlayers (yearNumber$, teamName$, teamIdx)
     Dim M$, NN$, S
 
     Shared K9&()
-    Shared actB%(), L%(), actP%()
-    Shared B$(), P$()
+    Shared draftB%(), ratings%(), draftP%()
+    Shared statB$(), statP$()
 
     S$ = RTrim$(Q$(1840))
     M$ = RTrim$(Q$(1841))
@@ -81,17 +81,17 @@ Sub ChangePlayers (yearNumber$, teamName$, teamIdx)
         For I = 0 To 10
             Color 15, 0
             Locate I + 5, 5: Print Using "## "; I + 1;
-            If actB%(I, 31) <> 0 Then Color L%(11), L%(12)
-            Print B$(I);
+            If draftB%(I, 31) <> 0 Then Color ratings%(11), ratings%(12)
+            Print statB$(I);
             Color 15, 0
             Print Tab(40);: Print Using "## "; I + 13;
-            If actB%(I + 12, 31) <> 0 Then Color L%(11), L%(12)
-            Print B$(I + 12): Color 15, 0
+            If draftB%(I + 12, 31) <> 0 Then Color ratings%(11), ratings%(12)
+            Print statB$(I + 12): Color 15, 0
         Next
 
         Locate , 5: Print Using "## "; 12;
-        If actB%(11, 31) <> 0 Then Color L%(11), L%(12)
-        Print B$(11)
+        If draftB%(11, 31) <> 0 Then Color ratings%(11), ratings%(12)
+        Print statB$(11)
         Color 15, 0
         Print
 
@@ -102,7 +102,7 @@ Sub ChangePlayers (yearNumber$, teamName$, teamIdx)
         If I < 0 Or I > 22 Then
             X% = 0
         Else
-            actB%(I, 31) = 1 - actB%(I, 31)
+            draftB%(I, 31) = 1 - draftB%(I, 31)
         End If
 
     Loop Until I < 0
@@ -113,11 +113,11 @@ Sub ChangePlayers (yearNumber$, teamName$, teamIdx)
     Do
         For I = 0 To 10
             Locate I + 5, 5: Print Using "## "; I + 1;
-            If actP%(I, 34) <> 0 Then Color L%(11), L%(12)
-            Print P$(I);: Color 15, 0
+            If draftP%(I, 34) <> 0 Then Color ratings%(11), ratings%(12)
+            Print statP$(I);: Color 15, 0
             Print Tab(40);: Print Using "## "; I + 12;
-            If actP%(I + 11, 34) <> 0 Then Color L%(11), L%(12)
-            Print P$(I + 11): Color 15, 0
+            If draftP%(I + 11, 34) <> 0 Then Color ratings%(11), ratings%(12)
+            Print statP$(I + 11): Color 15, 0
         Next
         Print
 
@@ -129,7 +129,7 @@ Sub ChangePlayers (yearNumber$, teamName$, teamIdx)
         If I < 0 Or I > 21 Then
             X% = 0
         Else
-            actP%(I, 34) = 1 - actP%(I, 34)
+            draftP%(I, 34) = 1 - draftP%(I, 34)
         End If
 
     Loop Until I < 0
@@ -158,21 +158,21 @@ Sub ChangePlayers (yearNumber$, teamName$, teamIdx)
     LSet Q$(0) = teamName$
 
     For I = 1 To 13
-        LSet Q$(I) = MKI$(L%(I))
+        LSet Q$(I) = MKI$(ratings%(I))
     Next
 
     LSet Q$(14) = MKS$(K9&(0))
 
-    For I = 0 To 22: LSet Q$(I * 43 + 15) = B$(I)
+    For I = 0 To 22: LSet Q$(I * 43 + 15) = statB$(I)
         For I1 = 0 To 41
-            LSet Q$(I * 43 + I1 + 16) = MKI$(actB%(I, I1))
+            LSet Q$(I * 43 + I1 + 16) = MKI$(draftB%(I, I1))
         Next
     Next
 
     For I = 0 To 21
-        LSet Q$(I * 38 + 1004) = P$(I)
+        LSet Q$(I * 38 + 1004) = statP$(I)
         For I1 = 0 To 36
-            LSet Q$(I * 38 + I1 + 1005) = MKI$(actP%(I, I1))
+            LSet Q$(I * 38 + I1 + 1005) = MKI$(draftP%(I, I1))
         Next
     Next
 
@@ -231,8 +231,8 @@ End Sub
 Sub SelectTeam_ACTIVATE (yearNumber$, numberTeams, teamIdx)
 
     Shared K9&()
-    Shared actB%(), L%(), actP%()
-    Shared B$(), P$()
+    Shared draftB%(), ratings%(), draftP%()
+    Shared statB$(), statP$()
 
     Selection% = 1
     Count% = numberTeams
@@ -281,22 +281,22 @@ Sub SelectTeam_ACTIVATE (yearNumber$, numberTeams, teamIdx)
         Get #1, teamIdx
 
         For I = 1 To 13
-            L%(I) = CVI(Q$(I))
+            ratings%(I) = CVI(Q$(I))
         Next
 
         K9&(0) = CVS(Q$(14))
 
         For I = 0 To 22:
-            B$(I) = RTrim$(Q$(I * 43 + 15))
+            statB$(I) = RTrim$(Q$(I * 43 + 15))
             For I1 = 0 To 41
-                actB%(I, I1) = CVI(Q$(I * 43 + I1 + 16))
+                draftB%(I, I1) = CVI(Q$(I * 43 + I1 + 16))
             Next
         Next
 
         For I = 0 To 21
-            P$(I) = RTrim$(Q$(I * 38 + 1004))
+            statP$(I) = RTrim$(Q$(I * 38 + 1004))
             For I1 = 0 To 36
-                actP%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
+                draftP%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
             Next
         Next
 
