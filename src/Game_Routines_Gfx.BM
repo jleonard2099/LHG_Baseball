@@ -308,8 +308,8 @@ Sub DisplayBallField_Gfx (BC%, p, U%, D)
         PrintOnGfx 15, I + 28, Left$(A$(I), 3) + NN$(I), imageScreen&
 
         For I2 = inningStart% To inningEnd%
-            If p = 0 And I = 0 And I2 > INNING% - 1 And S%(I, INNING%) = 0 Or p = 0 And I = 0 And I2 > INNING% And S%(I, INNING%) > 0 Or p = 1 And I2 > INNING% And I = 0 Then Exit For
-            If p = 0 And I = 1 And I2 > INNING% - 1 Or p = 1 And I = 1 And S%(I, INNING%) = 0 And I2 > INNING% - 1 Or p = 1 And I = 1 And S%(I, INNING%) > 0 And I2 > INNING% Then Exit For
+            If p = 0 And I = 0 And I2 > INNING% - 1 And inningScore%(I, INNING%) = 0 Or p = 0 And I = 0 And I2 > INNING% And inningScore%(I, INNING%) > 0 Or p = 1 And I2 > INNING% And I = 0 Then Exit For
+            If p = 0 And I = 1 And I2 > INNING% - 1 Or p = 1 And I = 1 And inningScore%(I, INNING%) = 0 And I2 > INNING% - 1 Or p = 1 And I = 1 And inningScore%(I, INNING%) > 0 And I2 > INNING% Then Exit For
             Call INNDISP_G(I2, I)
         Next I2
 
@@ -572,7 +572,7 @@ Sub INNDISP_G (currInning, teamLine)
     If currInning > 21 And currInning < 25 Then L = 3 * (currInning - 18) + 8
     If currInning > 24 And currInning < 28 Then L = 3 * (currInning - 18) + 9
 
-    FORMATTED$ = FUsing$(Str$(S%(teamLine, currInning)), "##", 1)
+    FORMATTED$ = FUsing$(Str$(inningScore%(teamLine, currInning)), "##", 1)
     PrintOnGfx L + 13, teamLine + 28, FORMATTED$, imageScreen&
 
 End Sub

@@ -240,7 +240,7 @@ Sub SOURCE ()
 
         I0 = P
 
-        If S%(P, INNING%) > 0 Then
+        If inningScore%(P, INNING%) > 0 Then
             If usingGfx = 1 Then
                 Call INNDISP_G(I2, I0)
             Else
@@ -4153,7 +4153,7 @@ Sub SOURCE ()
         End If
 
     End If
- 
+
     18725 '
     If GK%(D) = 1 Then
 
@@ -4787,3 +4787,5 @@ Sub SOURCE ()
 
 
 End Sub
+
+
