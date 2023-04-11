@@ -5,14 +5,16 @@ Sub LOADER
     Dim PU$(8), U6$(2), UMP$(50)
     Dim VI$(1), WE$(1)
 
+    Dim U%(50)
+
     Dim fileLength&
 
-    Shared PT$(), Q2$()
-    Shared SP%()
+    Shared PT$()
+    Shared SP%(), T1%()
 
     'Open "pbplog" For Output As #7
 
-    _Title "Full Count Baseball - PLAY BALL!"
+    _Title "Full Count Baseball v" + GAME_VERSION$ + " - PLAY BALL!"
     ''$ExeIcon:'./lhg_fcbase.ico'
     '_Icon
     '_AllowFullScreen
@@ -141,7 +143,7 @@ Sub LOADER
         Next
     Next
 
-    Call INITVARI
+    Call InitVar
 
     '----------------------------------------
     '       DETERMINE GAME OPTIONS
@@ -435,6 +437,8 @@ Sub LOADER
             T1%(Idx) = NG%(Idx)
             YN$ = YN$(Idx)
             Call LoadTeam_LOADER(T1%(Idx), YN$, Idx)
+            YN$(Idx) = YN$
+
         Else
 
             Call INFO
@@ -523,7 +527,7 @@ Sub LOADER
             Loop Until UCase$(I$) = "N"
 
             YN$(Idx) = YN$
-            A$(Idx) = RTrim$(A$(Idx))
+            'A$(Idx) = RTrim$(Q2$(0))
 
             Color 15, 0
 
@@ -560,9 +564,11 @@ Sub LOADER
         cancelPitchers% = 0
 
         '4500 / 2040
+        'Call pbpLog(10805)
         Call SelectPitchers(P9, cancelPitchers%, computerRotations%)
 
         '1590
+        'Call pbpLog(10809)
         Call PitchingStarter(P9)
         If Inotloop% <= 5 And S6%(P9, 0) - S6%(1 - P9, 0) > 0 Then P2%(P9) = P1%(P9)
 
@@ -618,6 +624,7 @@ Sub LOADER
             End If
 
             Select Case I$
+
                 Case "0":
                     'Lineup - no profile
 
@@ -640,6 +647,7 @@ Sub LOADER
                     'Lineup using profile
 
                     '2500
+                    'Call pbpLog(10886)
                     Call SearchForLineup(P9)
 
                     '1830
@@ -1123,7 +1131,6 @@ End Sub
 Sub SaveLineup (idx%)
 
     Shared MF%(), T1%()
-    Shared Q2$()
 
     If AP% = 1 And (U6 = 2 Or U6 = 1 And U9 = idx%) Then
         I$ = "N"
@@ -1298,8 +1305,10 @@ Sub LineupFromProfile (lineupFound%, P9, skipLineChange%)
     Else
 
         If AP% = 1 And MP% = 0 And (U6 = 2 Or U6 = 1 And U9 = P9) Or I$ = "3" Then
+
             RN = Int(Rnd(1) * PCT%) + 1
             PCT% = 0
+
             For I = 0 To 9
                 If MG%(P9, 120 + (I + Q2% * 10) * 21) = 999 Then
                     PCT% = PCT% + MG%(P9, 100 + (I + Q2% * 10) * 21)
@@ -1318,14 +1327,13 @@ Sub LineupFromProfile (lineupFound%, P9, skipLineChange%)
 
             If Q2% = 1 Then LN% = LN% + 10
 
-            I1 = MG%(P9, 101 + LN% * 21)
-
-            If DH% = I1 Then
+            If DH% = MG%(P9, 101 + LN% * 21) Then
 
                 For I = 1 To 9
                     B3%(P9, I) = MG%(P9, 110 + I + LN% * 21)
                     B7%(P9, I) = MG%(P9, 101 + I + LN% * 21)
                 Next
+
                 LU% = 1
                 Call DHLineups(P9, skipLineChange%, LU%)
 
@@ -1353,13 +1361,20 @@ Sub DHLineups (P9, reselect, LU%)
     1910 '
     For I = 1 To 9:
 
-        B9%(P9, B7%(P9, I)) = B3%(P9, I)
+        testIdx = B7%(P9, I)
 
-        If B7%(P9, I) = 1 Then
-            B3%(P9, I) = P1%(P9)
-            B9%(P9, 1) = P1%(P9)
+        If testIdx >= 0 Then
+
+            B9%(P9, B7%(P9, I)) = B3%(P9, I)
+
+            If B7%(P9, I) = 1 Then
+                B3%(P9, I) = P1%(P9)
+                B9%(P9, 1) = P1%(P9)
+            Else
+                B%(P9, B3%(P9, I), 21) = 0
+            End If
         Else
-            B%(P9, B3%(P9, I), 21) = 0
+            'Call pbpLog(11608)
         End If
 
     Next I
@@ -1371,7 +1386,7 @@ Sub DHLineups (P9, reselect, LU%)
     Next
 
     'Cls
-
+    'Call pbpLog(11625)
     Call NEWLINES(P9)
 
     For I2 = 0 To 22:
@@ -2235,7 +2250,6 @@ Sub LoadTeam_LOADER (teamIdx%, YN$, idx%)
 
     Dim DYS%(1, 21)
     Shared MF%()
-    Shared Q2$()
 
     Open diskPaths$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342
 
@@ -2257,9 +2271,6 @@ Sub LoadTeam_LOADER (teamIdx%, YN$, idx%)
 
     Field #1, 4280 As X$, 40 As Q2$(1840), 15 As Q2$(1841), 5 As Q2$(1842), 2 As Q2$(1843)
     Get #1, teamIdx%
-
-    A$(idx%) = Q2$(0)
-    A$(idx%) = RTrim$(A$(idx%))
 
     For I1 = 1 To 13
         L%(idx%, I1) = CVI(Q2$(I1))
@@ -2426,6 +2437,9 @@ Sub LoadTeam_LOADER (teamIdx%, YN$, idx%)
         Next
     Next
 
+    A$(idx%) = RTrim$(Q2$(0))
+    N$(idx%) = A$(idx%)
+
     'Read in manager data
     If _FileExists(diskPaths$(3) + "MGR." + YN$) Then
 
@@ -2448,8 +2462,6 @@ Sub LoadTeam_LOADER (teamIdx%, YN$, idx%)
         MF%(idx%) = -1
         For X = 0 To 999: MG%(idx%, X) = -1: Next
     End If
-
-    N$(idx%) = A$(idx%)
 
     For xx = 4 To 11
         If Mid$(N$(idx%), xx, 1) = " " Or Mid$(N$(idx%), xx, 1) = "." Then Mid$(N$(idx%), xx, 1) = "_"
@@ -2506,7 +2518,6 @@ End Sub
 Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
 
     Shared MF%(), SP%(), T1%()
-    Shared Q2$()
 
     4500 '
     ' *** PITCHING ROTATIONS ***
@@ -2796,9 +2807,15 @@ End Sub
 
 Sub pbpLog (lineNbr%)
 
+    'Open "pbplog" For Output As #7
     Print #7, "Executing code from: "; lineNbr%
-    Print #7, Y$
+    Print #7, A$(0); " vs "; A$(1)
+    'Print #7, "B3%(P9, I) "; dudVal
+    'Print #7, "B7%(P9, I) "; testIdx
+    'Print #7, "B9%(D, 1)  "; B9%(D, 1)
+    Print #7, "P1%(0)     "; P1%(0)
+    Print #7, "P1%(1)     "; P1%(1)
     Print #7,
+    'Close #7
 
 End Sub
-

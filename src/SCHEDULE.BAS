@@ -535,6 +535,7 @@ Sub NewSchedule (scheduleFile$)
                 'Weather
                 Locate , 75: Print TS$(1 - scheduleNG%(X + NS% * 20, 5))
             End If
+
         Next
 
         I$ = GetKeyPress$
@@ -680,6 +681,46 @@ Sub NewSchedule (scheduleFile$)
                 Close 2
 
                 Call LOADER
+
+				'-- This code actually loads a schedule
+				Open diskPaths$(0) + scheduleFile$ For Random As #1 Len = 48
+				Y = LOF(1)
+
+				scheduleAP%(0) = Y / 48
+				BS% = Int((scheduleAP%(0) - 1) / 20)
+
+				For X = 0 To 18
+					Field #1, X * 2 As X$, 2 As Q$(X + 1), 48 - 2 - 2 * X As X$
+				Next
+
+				Field #1, 38 As X$, 2 As Q$(22), 2 As Q$(23), 3 As Q$(20), 3 As Q$(21)
+
+				For I = 1 To scheduleAP%(0)
+					Get #1, I
+
+					For X = 0 To 18
+						scheduleNG%(I, X) = CVI(Q$(X + 1))
+					Next
+
+					If scheduleNG%(I, 14) > 8 Then scheduleNG%(I, 14) = 0
+
+					For X = 0 To 1
+						scheduleYN$(I, X) = RTrim$(Q$(20 + X))
+					Next
+
+					visitingScore%(I) = CVI(Q$(22))
+					homeScore%(I) = CVI(Q$(23))
+
+					If scheduleNG%(I, 6) > 1 Then scheduleNG%(I, 6) = 1
+					If scheduleNG%(I, 7) > 1 Then scheduleNG%(I, 7) = 1
+					If scheduleNG%(I, 9) > 1 Then scheduleNG%(I, 9) = 1
+					If scheduleNG%(I, 10) > 1 Then scheduleNG%(I, 10) = 1
+					If scheduleNG%(I, 11) > 1 Then scheduleNG%(I, 11) = 1
+				Next
+
+				Close 1
+				
+				NS% = 0
 
             Case "R":
                 ' *** RESET GAMES ***
@@ -1559,6 +1600,9 @@ Sub LoadSchedule (targetFile$)
     Spec$ = diskPaths$(0) + "*.SCD"
 
     Do
+	
+		'-- This code is to select a schedule
+		
         null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
         Count% = DirCount%
 
@@ -1582,6 +1626,8 @@ Sub LoadSchedule (targetFile$)
         End If
 
         If targetFile$ <> "" Then
+
+			'-- This code actually loads a schedule
 
             'Open diskPaths$(0) + targetFile$ + ".SCD" For Random As #1 Len = 48
             Open diskPaths$(0) + targetFile$ For Random As #1 Len = 48

@@ -662,4 +662,3 @@ Sub PrintOnGfx (Col%, Row%, Text$, tgtScrn&)
     _PrintString (PrintCol%, PrintRow%), Text$, tgtScrn&
 
 End Sub
-

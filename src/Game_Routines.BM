@@ -1012,8 +1012,8 @@ Sub DisplayBallField (BC%, P, U%, D)
         Locate team + 2: Print Left$(A$(team), 3); NN$(team);
 
         For I2 = inningStart% To inningEnd%
-            If P = 0 And team = 0 And I2 > INNING% - 1 And S%(team, INNING%) = 0 Or P = 0 And team = 0 And I2 > INNING% And S%(team, INNING%) > 0 Or P = 1 And I2 > INNING% And team = 0 Then Exit For
-            If P = 0 And team = 1 And I2 > INNING% - 1 Or P = 1 And team = 1 And S%(team, INNING%) = 0 And I2 > INNING% - 1 Or P = 1 And team = 1 And S%(team, INNING%) > 0 And I2 > INNING% Then Exit For
+            If P = 0 And team = 0 And I2 > INNING% - 1 And inningScore%(team, INNING%) = 0 Or P = 0 And team = 0 And I2 > INNING% And inningScore%(team, INNING%) > 0 Or P = 1 And I2 > INNING% And team = 0 Then Exit For
+            If P = 0 And team = 1 And I2 > INNING% - 1 Or P = 1 And team = 1 And inningScore%(team, INNING%) = 0 And I2 > INNING% - 1 Or P = 1 And team = 1 And inningScore%(team, INNING%) > 0 And I2 > INNING% Then Exit For
             Call INNDISP(I2, team)
         Next I2
 
@@ -1601,7 +1601,7 @@ End Sub
 '   INJPIT Subroutine
 '------------------------------
 ' ...explanation...
-Sub INJPIT (P, D, IP%)
+Sub INJPIT (P, D, IP%, PPH)
 
     ' *** Defensive Pitcher Ejected/Injured ***
     If U6 = 2 Or U6 = 1 And P <> U9 Then
@@ -1698,7 +1698,7 @@ Sub INNDISP (currInning, teamLine)
     If currInning > 21 And currInning < 25 Then Locate , 3 * (currInning - 18) + 8
     If currInning > 24 And currInning < 28 Then Locate , 3 * (currInning - 18) + 9
 
-    Print Using "##"; S%(teamLine, currInning);
+    Print Using "##"; inningScore%(teamLine, currInning);
 
 End Sub
 
@@ -2024,6 +2024,7 @@ Sub NEWPITCHER (pIdx, PPH, pz)
     Call HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
 
     If usingGfx = 1 Then
+        'Call pbpLog(2868)
         Call DisplayBallField_Gfx(BC%, P, U%, D)
         Call MAINSCREEN_G(D, P, BC%, U%, MO)
     Else
@@ -2297,6 +2298,7 @@ Sub PINCHRUNNER (MS%, A1, S4%, I2, P, PR%, BC%, U%, D, MO)
             Call HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
 
             If usingGfx = 1 Then
+                'Call pbpLog(3142)
                 Call DisplayBallField_Gfx(BC%, P, U%, D)
                 Call MAINSCREEN_G(D, P, BC%, U%, MO)
                 MS% = 1
@@ -2675,6 +2677,7 @@ Sub PLYRHRT (P, P9, W5, W6, BC%, U%, D, MO)
                     Call PinchHitter(P, P9, W5, W6, pIdx)
 
                     If usingGfx = 1 Then
+                        'Call pbpLog(3521)
                         Call DisplayBallField_Gfx(BC%, P, U%, D)
                         Call MAINSCREEN_G(D, P, BC%, U%, MO)
                     Else
@@ -2703,6 +2706,7 @@ Sub PLYRHRT (P, P9, W5, W6, BC%, U%, D, MO)
                 Call PinchHitter(P, P9, W5, W6, pIdx)
 
                 If usingGfx = 1 Then
+                    'Call pbpLog(3550)
                     Call DisplayBallField_Gfx(BC%, P, U%, D)
                     Call MAINSCREEN_G(D, P, BC%, U%, MO)
                 Else
@@ -3215,7 +3219,7 @@ Sub RecordRun (sah%, i, D, F%, PQ, S2%, W%, INFPOS%)
 
     End If
 
-    S%(P, INNING%) = S%(P, INNING%) + 1
+    inningScore%(P, INNING%) = inningScore%(P, INNING%) + 1
     S6%(P, 0) = S6%(P, 0) + 1
 
     If S6%(P, 0) - S6%(D, 0) = 1 Then
@@ -3237,7 +3241,7 @@ Sub RecordRun (sah%, i, D, F%, PQ, S2%, W%, INFPOS%)
     B0%(i, 2) = 0
     player$(i) = ""
 
-    If S%(P, INNING%) = 4 And Int(Rnd(1) * 100) + 1 <= 25 Then Call PBP("They're tearin' up the peapatch!")
+    If inningScore%(P, INNING%) = 4 And Int(Rnd(1) * 100) + 1 <= 25 Then Call PBP("They're tearin' up the peapatch!")
     If INNING% >= 9 And P = 1 And S6%(P, 0) - S6%(D, 0) = 1 And F% = 0 And O%(1) < 3 And S2% <> 10 Then Call CHARGERUN(D, i)
     If INNING% >= 9 And P = 1 And S6%(P, 0) - S6%(D, 0) = 1 And S2% <> 10 Then A5%(0) = 0: A5%(1) = 0: A5%(2) = 0: A5%(3) = 0
 End Sub
@@ -3951,10 +3955,12 @@ Sub BASEONBALLS (S2%, D2, D, P)
 
         Call DELIVERY(D)
 
+        'Call pbpLog(4799)
         Call GETRPBP(80, 780, Y$, D)
         Call STRIPRPBP(80, 780, Y$, D)
         Call PBP(Y$)
 
+        'Call pbpLog(4804)
         Call GETRPBP(30, 860, Y$, D)
         Call STRIPRPBP(30, 860, Y$, D)
         Call PBP(Y$)
@@ -5084,7 +5090,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, baseNbr!, I9)
         End If 'Done checking if we're going to try for base
 
     End If
-    
+
 End Sub
 
 '------------------------------
@@ -5397,15 +5403,18 @@ Sub FOULBALL ()
     Call d100(RN)
 
     If RN <= 50 Then
+        'Call pbpLog(6247)
         Call GETRPBP(20, 3130, Y$, D)
         Call STRIPRPBP(20, 3130, Y$, D)
         Call PBP(Y$)
         Call PBP("foul ball!!")
     Else
+        'Call pbpLog(6253)
         Call GETRPBP(10, 3150, Y$, D)
         Call STRIPRPBP(10, 3150, Y$, D)
         Call PBP(Y$)
 
+        'Call pbpLog(6253)
         Call GETRPBP(10, 3160, Y$, D)
         Call STRIPRPBP(10, 3160, Y$, D)
         Call PBP(Y$)
@@ -5462,7 +5471,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 Call EJECTINC(EJ%, X$)
                 Call DELAY
-                Call INJPIT(P, D, IP%)
+                Call INJPIT(P, D, IP%, PPH)
 
             Case 4
                 If B7%(P, B1!(P)) <> 1 Then
@@ -5530,7 +5539,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 po% = 3
 
                 Call EJECTIONINJURY(U6, P, U9, D, po%, P9, W5, W6)
-                Call INJPIT(P, D, IP%)
+                Call INJPIT(P, D, IP%, PPH)
 
             Case 6 To 7
 
@@ -5561,7 +5570,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 EJ$(EJ%) = P$(D, P1%(D))
 
                 Call DELAY
-                Call INJPIT(P, D, IP%)
+                Call INJPIT(P, D, IP%, PPH)
 
             Case 9
 
@@ -5588,7 +5597,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                         Call PBP(P$(D, P1%(D)) + " has been ejected")
                         X$ = P$(D, P1%(D))
                         Call EJECTINC(EJ%, X$)
-                        Call INJPIT(P, D, IP%)
+                        Call INJPIT(P, D, IP%, PPH)
 
                     Case 2:
                         Call PBP(player$(0) + " has been ejected")
@@ -5602,7 +5611,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                         Call EJECTINC(EJ%, X$)
                         X$ = P$(D, P1%(D))
                         Call EJECTINC(EJ%, X$)
-                        Call INJPIT(P, D, IP%)
+                        Call INJPIT(P, D, IP%, PPH)
                         Call PLYRHRT(P, P9, W5, W6, BC%, U%, D, MO)
 
                 End Select
@@ -5641,7 +5650,6 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 Select Case s4%
                     Case 0
-
                         If L%(1, 13) = 14 Then
                             Call PBP(player$(0) + " steps out of the box as a jet passes over")
                         Else
@@ -5665,29 +5673,27 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 End Select
 
-                Call PBP(player$(i - 1) + " is picked off base!")
+                If s4% <> 0 Then
 
-                A5%(i - 1) = 10
-                O%(0) = O%(0) + 1
-                O%(1) = O%(1) + 1
-                W% = 2
+                    Call PBP(player$(i - 1) + " is picked off base!")
 
-                Call CREDITASSIST(W%, D)
-                Call ADVANCEMENT(P, D, S2%, F%, I3)
-                Call CREDITPUTOUT(I3, FB2P%, AST%, D)
+                    A5%(i - 1) = 10
+                    O%(0) = O%(0) + 1
+                    O%(1) = O%(1) + 1
+                    W% = 2
 
-                I5 = P1%(D)
-                I6 = 0
+                    Call CREDITASSIST(W%, D)
+                    Call ADVANCEMENT(P, D, S2%, F%, I3)
+                    Call CREDITPUTOUT(I3, FB2P%, AST%, D)
 
-                Call ADDPIT(D, I5, I6)
+                    I5 = P1%(D)
+                    I6 = 0
 
-                If O%(0) >= 3 Then B1!(P) = B1!(P) - 1: H6% = 5
+                    Call ADDPIT(D, I5, I6)
 
-                'If I understand the logic right, most cases
-                'of values 22 - 24 will still move ahead
-                'and run the code below, although it makes
-                'little sense to me that right after an out
-                ' GoTo 2020
+                    If O%(0) >= 3 Then B1!(P) = B1!(P) - 1: H6% = 5
+
+                End If
 
             Case 25 To 29
 
@@ -6058,7 +6064,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                     Call WINDEX
                     Call PBP("He reaches on a single")
                     Call PBP(P$(D, P1%(D)) + " is down and in pain!")
-                    Call INJPIT(P, D, IP%)
+                    Call INJPIT(P, D, IP%, PPH)
                     H6% = 5
                 Else
                     'i = 2 to 5
@@ -6091,7 +6097,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 Call PBP(P$(D, P1%(D)) + " is motioning for " + M$(D) + " to come out")
                 Call PBP("It appears he has a blister")
                 Call PBP("He will have to leave the game")
-                Call INJPIT(P, D, IP%)
+                Call INJPIT(P, D, IP%, PPH)
 
                 H6% = 1
 
@@ -6319,14 +6325,95 @@ Sub INFO ()
 End Sub
 
 '----------------------------------------
-'           INITVARI Subroutine
+'           InitVar Subroutine
 '----------------------------------------
 ' Initializes variables for the game
 ' It is not clear why more variables
 ' aren't processed here, but in future
 ' versions this type of thing will be
 ' stadard for all variables
-Sub INITVARI ()
+Sub InitVar ()
+
+    Shared DB, HR, TR, SB
+    Shared BP(), F()
+    Shared BB%(), MF%(), SP%(), T1%()
+
+    F$ = ""
+    gameTime$ = ""
+    L$ = ""
+    PARK$ = ""
+    S$ = ""
+    W$ = ""
+    WI$ = ""
+    Y$ = ""
+    YY$ = ""
+
+    E! = 0
+    pbpDelay! = 0
+    WF! = 0
+    attendance& = 0
+
+    CGERA% = 0
+    DH% = 0
+    DR% = 0
+    EJ% = 0
+    H6% = 0
+    IJ% = 0
+    IJL% = 0
+    Inotloop% = 0
+    INNING% = 1
+    LYN% = 0
+    NLF% = 0
+    PB% = 0
+    PC% = 0
+    SC% = 0
+    TA% = 0
+    TP% = 0
+    W% = 0
+    WS% = 0
+
+    DB = 0
+    HR = 0
+    TR = 0
+    SB = 0
+
+    D = 0
+    P = 0
+    RE = 0
+    RD = 0
+    U6 = 0
+    U9 = 0
+    usingGfx = 0
+
+    Erase B1!, K9!
+
+    Erase BP, F
+    Erase MON, VV, VV1
+
+    Erase A$, B$
+    Erase DB$, E$, EJ$
+    Erase G$, HR$
+    Erase IJ$, M$, N$, NN$
+    Erase P$, PARK$, player$
+    Erase Q3$, S$, SB$, TR$
+    Erase U$, YN$
+
+    Erase A5%, AP%, B%, B0%
+    Erase B1%, B2%, B3%, B4%
+
+    Erase B5%, B7%, B8%, B9%, BT%
+    Erase BB%, MF%, SP%, T1%
+    Erase CSS%, D0%, D3%, DP%, GK%, H0%
+    Erase INJ%
+    Erase L%, L0%, M%, MG%, NG%, O%
+    Erase P%, P1%, P2%, P3%, P4%, P5%, P6%, P8%
+    Erase PR%
+
+    Erase inningScore%, S1%, S6%, S8%
+    Erase SA%, SU%
+    Erase T%, T3%, TS%, VA%, X0%
+
+    AP% = 0
 
     For P9 = 0 To 1
         For I3 = 0 To 21
@@ -6346,6 +6433,7 @@ Sub INITVARI ()
             If B%(I, I1, 21) <> 99 Then B%(I, I1, 21) = 0
         Next
     Next
+
 
 End Sub
 
@@ -6420,6 +6508,7 @@ Sub NEWLINES (P9)
 
         If B7%(P9, I) = 1 And I5 <> 66 Then Print P$(P9, B3%(P9, I));
 
+        dudVal = B3%(P9, I)
         If B7%(P9, I) <> 1 Then Print B$(P9, B3%(P9, I));
 
         Print Tab(74);
@@ -6690,6 +6779,7 @@ Sub POSTGAME ()
         Next
 
         skipAhead% = 0
+
         For I = 0 To 1
 
             For I1 = 0 To 21
@@ -7250,6 +7340,8 @@ Sub POSTGAME ()
 
     End If
 
+    Close #7
+
     If AP% = 1 And NM <> 1 Then Call LOADER
 
     Color 15, 0
@@ -7288,7 +7380,9 @@ Sub BoxToScreen (BK$)
     X = 0
 
     Cls
+
     If INNING% < 9 Then
+
         For I = 0 To 1
 
             Color L%(I, 11), L%(I, 12)
@@ -7297,10 +7391,10 @@ Sub BoxToScreen (BK$)
 
             For I2 = 1 To INNING%
                 Call LocateInning(I2)
-                If I = 0 Then Print Using "##"; S%(I, I2);
-                If I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = INNING% And S%(1, INNING%) = 0 Then Print , " X";
-                If I = 1 And S6%(1, 0) < S6%(0, 0) And I2 = INNING% Or I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = INNING% And S%(1, INNING%) > 0 Then Print Using "##"; S%(I, I2);
-                If I = 1 And I2 < INNING% Then Print Using "##"; S%(I, I2);
+                If I = 0 Then Print Using "##"; inningScore%(I, I2);
+                If I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = INNING% And inningScore%(1, INNING%) = 0 Then Print , " X";
+                If I = 1 And S6%(1, 0) < S6%(0, 0) And I2 = INNING% Or I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = INNING% And inningScore%(1, INNING%) > 0 Then Print Using "##"; inningScore%(I, I2);
+                If I = 1 And I2 < INNING% Then Print Using "##"; inningScore%(I, I2);
 
             Next I2
 
@@ -7323,10 +7417,10 @@ Sub BoxToScreen (BK$)
 
             For I2 = 1 To 9
                 Call LocateInning(I2)
-                If I = 0 Then Print Using "##"; S%(I, I2);
-                If I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = 9 And S%(1, 9) = 0 Then Print " X";
-                If I = 1 And S6%(1, 0) < S6%(0, 0) And I2 = 9 Or I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = 9 And S%(1, 9) > 0 Then Print Using "##"; S%(I, I2);
-                If I = 1 And I2 < 9 Then Print Using "##"; S%(I, I2);
+                If I = 0 Then Print Using "##"; inningScore%(I, I2);
+                If I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = 9 And inningScore%(1, 9) = 0 Then Print " X";
+                If I = 1 And S6%(1, 0) < S6%(0, 0) And I2 = 9 Or I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = 9 And inningScore%(1, 9) > 0 Then Print Using "##"; inningScore%(I, I2);
+                If I = 1 And I2 < 9 Then Print Using "##"; inningScore%(I, I2);
             Next I2
 
             Locate , 40: Print "-";
@@ -7348,7 +7442,7 @@ Sub BoxToScreen (BK$)
 
             For I2 = 1 To 9
                 Call LocateInning(I2)
-                Print Using "##"; S%(I, I2);
+                Print Using "##"; inningScore%(I, I2);
             Next I2
 
             Print
@@ -7362,7 +7456,7 @@ Sub BoxToScreen (BK$)
 
             For I2 = 10 To INNING%
                 Call LocateInning(I2)
-                Print Using "##"; S%(I, I2);
+                Print Using "##"; inningScore%(I, I2);
             Next I2
 
             Locate , 40: Print "-";
@@ -7382,7 +7476,7 @@ Sub BoxToScreen (BK$)
             Color 14, 0
             For I2 = 1 To 9
                 Call LocateInning(I2)
-                Print Using "##"; S%(I, I2);
+                Print Using "##"; inningScore%(I, I2);
             Next I2
             Print
         Next I
@@ -7394,7 +7488,7 @@ Sub BoxToScreen (BK$)
         For I = 0 To 1
             For I2 = 10 To 18
                 Call LocateInning(I2)
-                Print Using "##"; S%(I, I2);
+                Print Using "##"; inningScore%(I, I2);
             Next I2
             Print
         Next I
@@ -7404,7 +7498,7 @@ Sub BoxToScreen (BK$)
         For I = 0 To 1
             For I2 = 19 To INNING%
                 Call LocateInning(I2)
-                Print Using "##"; S%(I, I2);
+                Print Using "##"; inningScore%(I, I2);
             Next I2
             Locate , 40: Print "-";
             Locate , 41: Print Using "##"; S6%(I, 0);
@@ -7804,10 +7898,10 @@ Sub BoxToFile (NM$, BK$, E%(), SPECIAL)
             For I2 = 1 To INNING%
                 Call InningPrint(I2)
 
-                If I = 0 Then Print #2, Using "##"; S%(I, I2);
-                If I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = INNING% And S%(1, INNING%) = 0 Then Print #2, " X";
-                If I = 1 And S6%(1, 0) < S6%(0, 0) And I2 = INNING% Or I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = INNING% And S%(1, INNING%) > 0 Then Print #2, Using "##"; S%(I, I2);
-                If I = 1 And I2 < INNING% Then Print #2, Using "##"; S%(I, I2);
+                If I = 0 Then Print #2, Using "##"; inningScore%(I, I2);
+                If I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = INNING% And inningScore%(1, INNING%) = 0 Then Print #2, " X";
+                If I = 1 And S6%(1, 0) < S6%(0, 0) And I2 = INNING% Or I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = INNING% And inningScore%(1, INNING%) > 0 Then Print #2, Using "##"; inningScore%(I, I2);
+                If I = 1 And I2 < INNING% Then Print #2, Using "##"; inningScore%(I, I2);
 
             Next I2
 
@@ -7831,10 +7925,10 @@ Sub BoxToFile (NM$, BK$, E%(), SPECIAL)
 
             For I2 = 1 To 9
                 Call InningPrint(I2)
-                If I = 0 Then Print #2, Using "##"; S%(I, I2);
-                If I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = 9 And S%(1, 9) = 0 Then Print #2, " X";
-                If I = 1 And S6%(1, 0) < S6%(0, 0) And I2 = 9 Or I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = 9 And S%(1, 9) > 0 Then Print #2, Using "##"; S%(I, I2);
-                If I = 1 And I2 < 9 Then Print #2, Using "##"; S%(I, I2);
+                If I = 0 Then Print #2, Using "##"; inningScore%(I, I2);
+                If I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = 9 And inningScore%(1, 9) = 0 Then Print #2, " X";
+                If I = 1 And S6%(1, 0) < S6%(0, 0) And I2 = 9 Or I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = 9 And inningScore%(1, 9) > 0 Then Print #2, Using "##"; inningScore%(I, I2);
+                If I = 1 And I2 < 9 Then Print #2, Using "##"; inningScore%(I, I2);
 
             Next I2
 
@@ -7858,7 +7952,7 @@ Sub BoxToFile (NM$, BK$, E%(), SPECIAL)
 
             For I2 = 1 To 9
                 Call InningPrint(I2)
-                Print #2, Using "##"; S%(I, I2);
+                Print #2, Using "##"; inningScore%(I, I2);
 
             Next I2
 
@@ -7873,7 +7967,7 @@ Sub BoxToFile (NM$, BK$, E%(), SPECIAL)
 
             For I2 = 10 To INNING%
                 Call InningPrint(I2)
-                Print #2, Using "##"; S%(I, I2);
+                Print #2, Using "##"; inningScore%(I, I2);
             Next I2
 
             Print #2, Tab(40); "-";
@@ -7895,7 +7989,7 @@ Sub BoxToFile (NM$, BK$, E%(), SPECIAL)
 
             For I2 = 1 To 9
                 Call InningPrint(I2)
-                Print #2, Using "##"; S%(I, I2);
+                Print #2, Using "##"; inningScore%(I, I2);
             Next I2
             Print #2,
         Next I
@@ -7907,7 +8001,7 @@ Sub BoxToFile (NM$, BK$, E%(), SPECIAL)
         For I = 0 To 1
             For I2 = 10 To 18
                 Call InningPrint(I2)
-                Print #2, Using "##"; S%(I, I2);
+                Print #2, Using "##"; inningScore%(I, I2);
             Next I2
             Print #2,
         Next I
@@ -7916,7 +8010,7 @@ Sub BoxToFile (NM$, BK$, E%(), SPECIAL)
 
             For I2 = 19 To INNING%
                 Call InningPrint(I2)
-                Print #2, Using "##"; S%(I, I2);
+                Print #2, Using "##"; inningScore%(I, I2);
             Next I2
 
             Print #2, Tab(40); "-";
@@ -8203,6 +8297,7 @@ Sub CheckRecords ()
     Next I
 
     For I = 0 To 1:
+
         For I1 = 0 To 22
 
             If B8%(I, I1, 11) <> 0 Then
@@ -8227,6 +8322,7 @@ Sub CheckRecords ()
                 End If
 
                 DB$(DB) = DB$(DB) + " (" + Right$(Str$(B5%(I, I1, 4)), (Len(Str$(B5%(I, I1, 4))) - 1)) + ")"
+                'Call pbpLog(9149)
                 DB = DB + 1
 
             End If
@@ -8297,6 +8393,7 @@ Sub CheckRecords ()
                 End If
 
                 DB$(DB) = DB$(DB) + " (" + Right$(Str$(P5%(I, I1, 27)), (Len(Str$(P5%(I, I1, 27))) - 1)) + ")"
+                'Call pbpLog(9220)
                 DB = DB + 1
 
             End If
@@ -8619,4 +8716,3 @@ Sub EndOfGame ()
     If normalFinish% = 1 Then Call POSTGAME
 
 End Sub
-
