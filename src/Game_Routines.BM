@@ -2024,7 +2024,6 @@ Sub NEWPITCHER (pIdx, PPH, pz)
     Call HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
 
     If usingGfx = 1 Then
-        'Call pbpLog(2868)
         Call DisplayBallField_Gfx(BC%, P, U%, D)
         Call MAINSCREEN_G(D, P, BC%, U%, MO)
     Else
@@ -2298,7 +2297,6 @@ Sub PINCHRUNNER (MS%, A1, S4%, I2, P, PR%, BC%, U%, D, MO)
             Call HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
 
             If usingGfx = 1 Then
-                'Call pbpLog(3142)
                 Call DisplayBallField_Gfx(BC%, P, U%, D)
                 Call MAINSCREEN_G(D, P, BC%, U%, MO)
                 MS% = 1
@@ -2677,7 +2675,6 @@ Sub PLYRHRT (P, P9, W5, W6, BC%, U%, D, MO)
                     Call PinchHitter(P, P9, W5, W6, pIdx)
 
                     If usingGfx = 1 Then
-                        'Call pbpLog(3521)
                         Call DisplayBallField_Gfx(BC%, P, U%, D)
                         Call MAINSCREEN_G(D, P, BC%, U%, MO)
                     Else
@@ -2706,7 +2703,6 @@ Sub PLYRHRT (P, P9, W5, W6, BC%, U%, D, MO)
                 Call PinchHitter(P, P9, W5, W6, pIdx)
 
                 If usingGfx = 1 Then
-                    'Call pbpLog(3550)
                     Call DisplayBallField_Gfx(BC%, P, U%, D)
                     Call MAINSCREEN_G(D, P, BC%, U%, MO)
                 Else
@@ -3955,12 +3951,10 @@ Sub BASEONBALLS (S2%, D2, D, P)
 
         Call DELIVERY(D)
 
-        'Call pbpLog(4799)
         Call GETRPBP(80, 780, Y$, D)
         Call STRIPRPBP(80, 780, Y$, D)
         Call PBP(Y$)
 
-        'Call pbpLog(4804)
         Call GETRPBP(30, 860, Y$, D)
         Call STRIPRPBP(30, 860, Y$, D)
         Call PBP(Y$)
@@ -5403,18 +5397,15 @@ Sub FOULBALL ()
     Call d100(RN)
 
     If RN <= 50 Then
-        'Call pbpLog(6247)
         Call GETRPBP(20, 3130, Y$, D)
         Call STRIPRPBP(20, 3130, Y$, D)
         Call PBP(Y$)
         Call PBP("foul ball!!")
     Else
-        'Call pbpLog(6253)
         Call GETRPBP(10, 3150, Y$, D)
         Call STRIPRPBP(10, 3150, Y$, D)
         Call PBP(Y$)
 
-        'Call pbpLog(6253)
         Call GETRPBP(10, 3160, Y$, D)
         Call STRIPRPBP(10, 3160, Y$, D)
         Call PBP(Y$)
@@ -8322,7 +8313,6 @@ Sub CheckRecords ()
                 End If
 
                 DB$(DB) = DB$(DB) + " (" + Right$(Str$(B5%(I, I1, 4)), (Len(Str$(B5%(I, I1, 4))) - 1)) + ")"
-                'Call pbpLog(9149)
                 DB = DB + 1
 
             End If
@@ -8393,7 +8383,6 @@ Sub CheckRecords ()
                 End If
 
                 DB$(DB) = DB$(DB) + " (" + Right$(Str$(P5%(I, I1, 27)), (Len(Str$(P5%(I, I1, 27))) - 1)) + ")"
-                'Call pbpLog(9220)
                 DB = DB + 1
 
             End If
@@ -8598,7 +8587,6 @@ Sub STRIPRPBP (range%, minIdx%, Y$, D)
         'If it is a non-printable character (corrupt data)
         If test > 122 Or test < 32 Then
             'Get a new PBP string to use
-            'Call pbpLog(11417)
             stringPosition% = 1
             Call GETRPBP(range%, minIdx%, Y$, D)
         Else

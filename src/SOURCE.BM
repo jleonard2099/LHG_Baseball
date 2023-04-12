@@ -14,6 +14,16 @@ Sub SOURCE ()
 
     15000 '
     'PQ = 0
+    'Call pbpLog(13070)
+
+    '-- An error comes up every so many games
+    '-- when B9%(D, 1) gets a negative value
+    '-- Nothing in the the code modifies B9%()
+    '-- between here and when it is corrupted.
+    '-- Here, we save the non-negative value
+    '-- so we can restore after it's corrupted.
+    b9d1 = B9%(D, 1)
+    b9d2 = B9%(D, 2)
 
     F% = 0
 
@@ -21,6 +31,7 @@ Sub SOURCE ()
         O%(I) = 0
     Next I
 
+    'Call pbpLog(13087)
     L0%(P) = L0%(P) + MO
     MO = 0
     H0% = 0
@@ -35,6 +46,7 @@ Sub SOURCE ()
 
     S4% = 0
 
+    'Call pbpLog(13102)
     If P = 1 Then
         INNING% = INNING% + 1
         CZ%(0) = 0
@@ -45,6 +57,7 @@ Sub SOURCE ()
     P = 1 - P
     D = 1 - P
 
+    'Call pbpLog(13113)
     If INNING% = 7 And L%(1, 13) = 8 And P = 1 And Val(Left$(A$(1), 2)) > 75 Then
         Call WINDEX
         Call PBP("ALL RIGHT..."): Call PBP("LEMME HEAR YA..."): Call PBP("A ONE, A TWO...")
@@ -78,7 +91,12 @@ Sub SOURCE ()
 
     'Game is not over - show the field
     If usingGfx = 1 Then
-        'Call pbpLog(13118)
+        '-- Here, we restore the non-negative value
+        '-- of B9%() to prevent an error
+        B9%(D, 1) = b9d1
+        B9%(D, 2) = b9d2
+
+        'Call pbpLog(13152)
         Call DisplayBallField_Gfx(BC%, P, U%, D)
     Else
         Call DisplayBallField(BC%, P, U%, D)
@@ -117,7 +135,6 @@ Sub SOURCE ()
             Call HITTINGLINES '(l%(), p%(), P1%(), B7%(), b%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
 
             If usingGfx = 1 Then
-                'Call pbpLog(13157)
                 Call DisplayBallField_Gfx(BC%, P, U%, D)
                 Call MAINSCREEN_G(D, P, BC%, U%, MO)
             Else
@@ -176,7 +193,6 @@ Sub SOURCE ()
                     Call HITTINGLINES '(l%(), p%(), P1%(), B7%(), b%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
 
                     If usingGfx = 1 Then
-                        'Call pbpLog(13216)
                         Call DisplayBallField_Gfx(BC%, P, U%, D)
                         Call MAINSCREEN_G(D, P, BC%, U%, MO)
                     Else
@@ -209,8 +225,6 @@ Sub SOURCE ()
     B1!(P) = B1!(P) + 1
     INFPOS% = 0
     U% = 0
-
-    'Call pbpLog(12398)
 
     If B1!(P) = 10 Then B1!(P) = 1
 
@@ -561,7 +575,6 @@ Sub SOURCE ()
 
                             18986 '
                             For I = 0 To 2
-                                'Call pbpLog(12749)
 
                                 If INNING% >= MG%(P, 591 + I * 6) And A1 <= MG%(P, 592 + I * 6) * -1 And O%(0) <= MG%(P, 594 + I * 6) And I7! <= MG%(P, 595 + I * 6) And RN <= MG%(P, 596 + I * 6) And MOB% >= MG%(P, 593 + I * 6) Then
                                     GoTo 18930
@@ -585,8 +598,6 @@ Sub SOURCE ()
                     End If
 
                 Next
-
-                'Call pbpLog(12778)
 
             End If
 
@@ -676,7 +687,7 @@ Sub SOURCE ()
     Select Case P2
 
         Case 1, 4
-            'Call pbpLog(12875)
+
             If D2 <> 8 Then 13050
 
             Call WINDEX
@@ -689,15 +700,12 @@ Sub SOURCE ()
             GoTo 13201
 
         Case 2
-            'Call pbpLog(12888)
             If O%(0) = 2 Or (S4% <> 1 And S4% <> 4 And S4% <> 5) Then 15051
 
         Case 3
-            'Call pbpLog(12892)
             GoTo 14800
 
         Case 5
-            'Call pbpLog(12896)
             P9 = P
             W5 = -1
             W6 = -1
@@ -706,7 +714,6 @@ Sub SOURCE ()
     End Select
 
     15067 '
-    'Call pbpLog(12905)
     '-- this is related to the PICKEDOFF routine and it's immediate aftermath
     If S4% = 4 Then I = 3 Else I = 2
 
@@ -775,8 +782,6 @@ Sub SOURCE ()
         P2 = 1
     End If
 
-    'Call pbpLog(12974)
-
     GoTo 13050
 
 
@@ -810,7 +815,6 @@ Sub SOURCE ()
         Call HITTINGLINES '(l%(), p%(), P1%(), B7%(), b%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
 
         If usingGfx = 1 Then
-            'Call pbpLog(13850)
             Call DisplayBallField_Gfx(BC%, P, U%, D)
             Call MAINSCREEN_G(D, P, BC%, U%, MO)
         Else
@@ -827,7 +831,6 @@ Sub SOURCE ()
         Call HITTINGLINES '(l%(), p%(), P1%(), B7%(), b%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
 
         If usingGfx = 1 Then
-            'Call pbpLog(13867)
             Call DisplayBallField_Gfx(BC%, P, U%, D)
             Call MAINSCREEN_G(D, P, BC%, U%, MO)
         Else
@@ -843,7 +846,6 @@ Sub SOURCE ()
         Call HITTINGLINES '(l%(), p%(), P1%(), B7%(), b%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
 
         If usingGfx = 1 Then
-            'Call pbpLog(13882)
             Call DisplayBallField_Gfx(BC%, P, U%, D)
             Call MAINSCREEN_G(D, P, BC%, U%, MO)
         Else
@@ -862,7 +864,6 @@ Sub SOURCE ()
         Call HITTINGLINES '(l%(), p%(), P1%(), B7%(), b%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
 
         If usingGfx = 1 Then
-            'Call pbpLog(13902)
             Call DisplayBallField_Gfx(BC%, P, U%, D)
             Call MAINSCREEN_G(D, P, BC%, U%, MO)
         Else
@@ -878,7 +879,6 @@ Sub SOURCE ()
     Call HITTINGLINES '(l%(), p%(), P1%(), B7%(), b%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
 
     If usingGfx = 1 Then
-        'Call pbpLog(13918)
         Call DisplayBallField_Gfx(BC%, P, U%, D)
         Call MAINSCREEN_G(D, P, BC%, U%, MO)
     Else
@@ -891,7 +891,6 @@ Sub SOURCE ()
 
     '----------------------------------------
 
-    'Call pbpLog(13085)
 
     13050 '
     Call d100(RN)
@@ -910,7 +909,6 @@ Sub SOURCE ()
     H6% = Int(Rnd(1) * 1000) + 1
 
     If O%(0) = 0 And S4% = 4 And INFPOS% < 2 And H6% = 768 Or O%(0) = 0 And S4% = 4 And INFPOS% < 2 And H6% = 123 Or O%(0) = 0 And S4% = 7 And INFPOS% < 2 And H6% = 245 Or O%(0) = 0 And S4% = 7 And INFPOS% < 2 And H6% = 381 Then
-        'Call pbpLog(13957)
         Call TRIPLEPLAY(D)
         GoTo 13900
     End If
@@ -921,7 +919,6 @@ Sub SOURCE ()
 
     If H6% <= 4 Then
         13200 ' *** hit by pitch ***
-        'Call pbpLog(13968)
         Call HITBYPITCH(S2%, D)
 
         13201 '
@@ -949,8 +946,6 @@ Sub SOURCE ()
     End If
 
     If H6% <= 6 Then
-
-        'Call pbpLog(13997)
 
         13210 ' *** balk ***
         If S4% = 0 Then
@@ -992,8 +987,6 @@ Sub SOURCE ()
 
     '7 to 11 OR 7 to 200 And ...
     If H6% <= 11 Or H6% <= 200 And B%(D, B9%(D, 2), 22) <> 2 And B%(D, B9%(D, 2), 23) <> 2 And B%(D, B9%(D, 2), 24) <> 2 And B%(D, B9%(D, 2), 25) <> 2 Then
-
-        'Call pbpLog(14040)
 
         13220 ' *** passed ball ***
         If S4% = 0 And SO <> 1 Then
@@ -1051,7 +1044,6 @@ Sub SOURCE ()
     End If
 
     If H6% <= 19 Then
-        'Call pbpLog(14098)
 
         '13230 / *** wild pitch ***
         If S4% = 0 And SO <> 1 Then
@@ -1067,7 +1059,6 @@ Sub SOURCE ()
 
     If H7% = 27 Then
         13244 '
-        'Call pbpLog(14114)
         S2% = 2
         Call WINDEX
         Call PBP(B$(D, B9%(D, 2)) + " is called for interference!!")
@@ -1077,7 +1068,6 @@ Sub SOURCE ()
 
     If H7% = 28 Then
 
-        'Call pbpLog(14124)
         Call WINDEX
         Call PBP(player$(0) + " is out for obstruction!")
         W% = 2
@@ -1104,7 +1094,6 @@ Sub SOURCE ()
     End If
 
     If H6% <= B4%(P, 5, B1!(P)) + 25 Then
-        'Call pbpLog(14151)
         S2% = 2
         '13240 / *** base on balls ***
         Call BASEONBALLS(S2%, D2, D, P)
@@ -1134,15 +1123,12 @@ Sub SOURCE ()
         GoTo 13063
     End If
 
-    'Call pbpLog(13317)
-
     If H6% > B4%(P, 0, B1!(P)) + I4 Then
 
         ' *** strikeout ***
         H6% = Int(Rnd(1) * 1000) + 1
 
         If H6% > B4%(P, 4, B1!(P)) Then
-            'Call pbpLog(13325)
 
             ' *** ground ball for out ***
             Call d100(H6%)
@@ -1313,7 +1299,6 @@ Sub SOURCE ()
             Call d100(I1)
 
             If I1 < 77 Then
-                'Call pbpLog(13495)
 
                 '13230 / *** wild pitch ***
                 If S4% = 0 And SO <> 1 Then
@@ -1338,8 +1323,6 @@ Sub SOURCE ()
         H6% = Int(Rnd(1) * 1000) + 1
 
         If H6% <= B4%(P, 1, B1!(P)) And P2 <> 2 Or H6% <= B4%(P, 1, B1!(P)) * .5 And P2 = 2 Then
-
-            'Call pbpLog(13519)
 
             S2% = 8
 
@@ -1398,7 +1381,6 @@ Sub SOURCE ()
 
             Else
 
-                'Call pbpLog(13593)
                 Call d100(RN)
 
                 Select Case RN
@@ -1446,8 +1428,6 @@ Sub SOURCE ()
 
             HW% = 0
 
-            'Call pbpLog(13641)
-
             If Int(Rnd(1) * 100) + 1 <= 80 Then
                 F$ = "Double!!"
             Else
@@ -1460,11 +1440,8 @@ Sub SOURCE ()
             '-- wtf?
             A5%(3) = 1
 
-            'Call pbpLog(13655)
-
             If B0%(1, 0) <> 0 Then
 
-                'Call pbpLog(13655)
                 Call d100(H6%)
                 BR% = B%(P, B3%(P, B0%(1, 0)), 16)
 
@@ -1500,8 +1477,6 @@ Sub SOURCE ()
 
 
         If H6% <= B4%(P, 1, B1!(P)) + B4%(P, 2, B1!(P)) And P2 <> 2 Or H6% <= B4%(P, 1, B1!(P)) * .5 + B4%(P, 2, B1!(P)) * .5 And P2 = 2 Then
-
-            'Call pbpLog(13680)
 
             S2% = 9
 
@@ -1641,14 +1616,11 @@ Sub SOURCE ()
             If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8!, I9)
 
             Call SCOREBOARD
-            'Call pbpLog(13832)
             GoTo 13900
 
         End If
 
         '-- this could be nested in an Else clause below
-        'Call pbpLog(13828)
-
         Call HITS2GAP(W%, P, I1, D)
 
         I3 = B4%(P, 1, B1!(P)) + B4%(P, 2, B1!(P))
@@ -1690,7 +1662,6 @@ Sub SOURCE ()
         Call SINGLEROUTINE(W%, P, I1, D, S2%, P2)
 
         If S2% = 12 Then
-            'Call pbpLog(13871)
 
             Call SCOREBOARD
             GoTo 15050
@@ -1698,7 +1669,6 @@ Sub SOURCE ()
         Else
 
             'PQ = 0
-            'Call pbpLog(13879)
 
             F% = 0
             Call FLDERR(F%, W%, D, I3, SB%, S2%, P)
@@ -1881,7 +1851,6 @@ Sub SOURCE ()
 
 
     13634 '
-    'Call pbpLog(14054)
     I5 = P1%(D)
     I6 = 0
 
@@ -2285,7 +2254,6 @@ Sub SOURCE ()
         'Call pbpLog(14470)
         GoTo 15000
     Else
-        'Call pbpLog(14473)
         GoTo 15050
     End If
 
@@ -3710,7 +3678,6 @@ Sub SOURCE ()
 
             If usingGfx = 1 Then
                 Call LOADSCREEN
-                'Call pbpLog(16739)
                 Call DisplayBallField_Gfx(BC%, P, U%, D)
             Else
                 Call DisplayBallField(BC%, P, U%, D)
@@ -3823,7 +3790,6 @@ Sub SOURCE ()
                     I$ = GetKeyPress$
 
                     If UCase$(I$) = "Y" Then
-                        'Call pbpLog(15977)
 
                         D0%(D) = D0%(D) + 1
                         X0%(D, 0, D0%(D)) = V3
@@ -3993,8 +3959,6 @@ Sub SOURCE ()
 
             If B7%(P9, I2) = 1 Or B7%(P9, I2) = 10 Then B9%(P9, 1) = 99: B9%(P9, 0) = I2: B7%(P9, I2) = 10
 
-            'Call pbpLog(16147)
-
             D0%(P9) = D0%(P9) + 1
             X0%(P9, 0, D0%(P9)) = B3%(P9, I2)
             X0%(P9, 1, D0%(P9)) = B7%(P9, I2)
@@ -4108,8 +4072,6 @@ Sub SOURCE ()
 
     If Not (A1 > 1 Or S4% = 3 Or S4% >= 6) Then
 
-        'Call pbpLog(16267)
-
         If S4% <> 1 And S4% <> 5 Then
             I2 = 2
         Else
@@ -4148,8 +4110,6 @@ Sub SOURCE ()
     Call d100(RN)
 
     If Not (INNING% < 9 Or CZ%(D) = -1 Or MG%(D, 581) = 999) Then
-
-        'Call pbpLog(16308)
 
         CZ%(D) = -1
 
@@ -4201,7 +4161,6 @@ Sub SOURCE ()
 
     18726 '
     D2 = 1
-    'Call pbpLog(16308)
 
     If INFPOS% <= 0 Then
 
@@ -4391,8 +4350,6 @@ Sub SOURCE ()
 
     End If
 
-    'Call pbpLog(16549)
-
     18820 '
     If Not (A1 <= 0 Or A1 = 0 And S4% <= 1 Or A1 = 0 And S4% = 4 Or S4% = 7 Or B7%(P, B1!(P)) = 1) Then
 
@@ -4482,8 +4439,6 @@ Sub SOURCE ()
         Next
 
     End If
-
-    'Call pbpLog(16640)
 
     18935 '
     For I = 0 To 22:
@@ -4611,7 +4566,6 @@ Sub SOURCE ()
                 For I = 0 To J% - 1
 
                     If RN <= PH%(I, 0) Then
-                        'Call pbpLog(16789)
                         PH% = PH%(I, 1)
                         callPinch = 1
                         Exit For
@@ -4648,7 +4602,6 @@ Sub SOURCE ()
             Call HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
 
             If usingGfx = 1 Then
-                'Call pbpLog(17677)
                 Call DisplayBallField_Gfx(BC%, P, U%, D)
                 Call MAINSCREEN_G(D, P, BC%, U%, MO)
             Else
@@ -4672,7 +4625,6 @@ Sub SOURCE ()
 
 
         18941 '
-        'Call pbpLog(16851)
         If PR% <> 1 Then Call PINCHRUNNER(MS%, A1, S4%, I2, P, PR%, BC%, U%, D, MO)
         If MS% = 1 Then MS% = 0: GoTo 15052
 
@@ -4704,7 +4656,6 @@ Sub SOURCE ()
         End If
 
         18945 '
-        'Call pbpLog(16859)
         If Not (MG%(P, 609) <> 999 Or B7%(P, B1!(P)) <> 1) Then
 
             If Not (S4% <> 1 And S4% <> 2 And S4% <> 4) Then
@@ -4745,7 +4696,6 @@ Sub SOURCE ()
 
         End If
 
-        'Call pbpLog(16921)
         P2 = 1
 
         If S4% = 1 Or S4% = 5 Then
@@ -4784,8 +4734,6 @@ Sub SOURCE ()
     PPH = 0
     PR% = 0
 
-    'Call pbpLog(16943)
-
     If O%(0) = 2 Or B4%(P, 4, B1!(P)) > 100 Or S4% = 0 Or S4% = 7 Or S4% = 6 Or S4% = 3 Or S4% = 2 Or A1 < -3 Or Int(Rnd(1) * 100) + 1 > 20 Then
         GoTo 15064
     Else
@@ -4796,9 +4744,6 @@ Sub SOURCE ()
     '----------
 
     18969 '
-
-    'Call pbpLog(16956)
-
     If O%(0) >= 1 And INNING% >= 7 Then
         GoTo 18968
     Else

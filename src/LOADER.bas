@@ -12,7 +12,7 @@ Sub LOADER
     Shared PT$()
     Shared SP%(), T1%()
 
-    'Open "pbplog" For Output As #7
+    Open "pbplog" For Output As #7
 
     _Title "Full Count Baseball v" + GAME_VERSION$ + " - PLAY BALL!"
     ''$ExeIcon:'./lhg_fcbase.ico'
@@ -376,7 +376,7 @@ Sub LOADER
 
             Else
 
-                'Close #7
+                Close #7
                 'End
                 'System
                 Exit Sub
@@ -564,11 +564,9 @@ Sub LOADER
         cancelPitchers% = 0
 
         '4500 / 2040
-        'Call pbpLog(10805)
         Call SelectPitchers(P9, cancelPitchers%, computerRotations%)
 
         '1590
-        'Call pbpLog(10809)
         Call PitchingStarter(P9)
         If Inotloop% <= 5 And S6%(P9, 0) - S6%(1 - P9, 0) > 0 Then P2%(P9) = P1%(P9)
 
@@ -647,7 +645,6 @@ Sub LOADER
                     'Lineup using profile
 
                     '2500
-                    'Call pbpLog(10886)
                     Call SearchForLineup(P9)
 
                     '1830
@@ -711,8 +708,6 @@ Sub LOADER
         D0%(I) = 9
 
     Next I
-
-
 
     W5 = 0
     W6 = 1
@@ -818,7 +813,7 @@ Sub LOADER
 
     Call SOURCE
 
-    'Close #7
+    Close #7
     'End
     'System
 
@@ -1289,6 +1284,7 @@ Sub LineupFromProfile (lineupFound%, P9, skipLineChange%)
     Next
 
     If lineupFound% = 0 Then
+
         Cls
         Print "ERROR:: NO LINEUPS FOUND...BE SURE CORRECT LINEUP ID WAS CHOSEN"
 
@@ -1374,7 +1370,7 @@ Sub DHLineups (P9, reselect, LU%)
                 B%(P9, B3%(P9, I), 21) = 0
             End If
         Else
-            'Call pbpLog(11608)
+            'Call pbpLog(11601)
         End If
 
     Next I
@@ -1386,7 +1382,7 @@ Sub DHLineups (P9, reselect, LU%)
     Next
 
     'Cls
-    'Call pbpLog(11625)
+    'Call pbpLog(11613)
     Call NEWLINES(P9)
 
     For I2 = 0 To 22:
@@ -1437,8 +1433,11 @@ Sub SelectBatters (batterFlag%, P9)
 
             'Handle ESC
             If I$ = Chr$(27) Then
+
                 For J = 1 To 9
-                    M%(J) = 0: B7%(P9, J) = -1: B3%(P9, J) = -1
+                    M%(J) = 0
+                    B7%(P9, J) = -1
+                    B3%(P9, J) = -1
                 Next
 
                 C1 = 0
@@ -1489,7 +1488,8 @@ Sub SelectBatters (batterFlag%, P9)
                 Case "X":
                     For I3 = 0 To 22
                         If B%(P9, I3, 21) = 99 And B%(P9, I3, 31) = 0 Then
-                            B%(P9, I3, 21) = 0: Locate I3 + 2, 3: Print B$(P9, I3)
+                            B%(P9, I3, 21) = 0
+                            Locate I3 + 2, 3: Print B$(P9, I3)
                         End If
                     Next I3
 
@@ -2081,6 +2081,7 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
         Next I
 
         Call SortHitters(P9)
+        'Call pbpLog(12312)
         Call DHLineups(P9, reselect, LU%)
 
     End If 'done checking batterFlag
@@ -2810,11 +2811,8 @@ Sub pbpLog (lineNbr%)
     'Open "pbplog" For Output As #7
     Print #7, "Executing code from: "; lineNbr%
     Print #7, A$(0); " vs "; A$(1)
-    'Print #7, "B3%(P9, I) "; dudVal
-    'Print #7, "B7%(P9, I) "; testIdx
-    'Print #7, "B9%(D, 1)  "; B9%(D, 1)
-    Print #7, "P1%(0)     "; P1%(0)
-    Print #7, "P1%(1)     "; P1%(1)
+    Print #7, "B7%(P9, I) "; testIdx
+    Print #7, "B9%(D, 1)  "; B9%(D, 1)
     Print #7,
     'Close #7
 

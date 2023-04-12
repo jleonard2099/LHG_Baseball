@@ -1,46 +1,63 @@
 
-Error occurred! 
-Error # 9 on program file line 7354 
-99 TORONTO vs 99 MINNESOTA
-B3%(P9, I) -1 
+- Executing code from:  12330 
 B7%(P9, I)  1 
-B9%(D, 1)   1 
+
+ComputerLineups
+	Call SortHitters(P9)
+	Call pbpLog(12330)
+	Call DHLineups(P9, reselect, LU%)
 
 
-SUMMARY
+- Executing code from:  11608 
+B7%(P9, I) -1 
 
--1 --> P1%(P9) --> B3%(P9, I)
-	P1%(P9) should be index # (of pitchers) for STARTER
-	PitchingStarter assigns I1 (number pressed from menu)
+DHLineups
 
--1 --> MG%(P9, 101 + I + LN% * 21) ---> B7%(P9, I)
+    For I = 1 To 9:
+		...
+		Call pbpLog(11608)
+		...
+	Next I
 
-I suspect something with logic from DH assignments
-However it's odd that P1%(x) should never be -1
+
+- Executing code from:  11625 
+B7%(P9, I)  1 
+
+    If LU% = 1 Then LU% = 0: Call SelectBatters(batterFlag%, P9)
+
+    For I = 10 To 22
+        Locate I, 59: Print Space$(21);
+    Next
+
+    'Cls
+    Call pbpLog(11625)
+    Call NEWLINES(P9)
+
+
+SelectBatters does not modify B7%() or call any routine that does
+The exception is assigning -1 if you ESC from the menu
+This is only happening outside of autoplay
+Moreover, at this point the value has been corrected
 
 ________________________________________
-
-
-Error occurred! 
-Error # 9 on program file line 10055 
-99 ARIZONA vs 99 ATLANTA
-B7%(P9, I)  1 
-B9%(D, 1)   99 
 
 
 - Executing code from:  14470 
-	B9%(D, 1)   5
-- GoTo 15000
-~~ Absolutely NO WAY to modify B9%(D, 1) in between here ~~
+B9%(D, 1)   2 
+
+    If O%(0) = 3 Then
+        Call pbpLog(14470)
+        GoTo 15000
+
+- 1500 '
+beginning of source
+nothing that changes B9%()
+
 - Executing code from:  13118 
-	B9%(D, 1)   99 
+B9%(D, 1)   99 
 
-________________________________________
-
-No longer occurs???
-
-- PH%
-	- Line 17664
-	- X0%(P, 0, D0%(P)) = PH%
+    If usingGfx = 1 Then
+        Call pbpLog(13118)
+        Call DisplayBallField_Gfx(BC%, P, U%, D)
 
 ________________________________________

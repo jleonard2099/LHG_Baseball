@@ -19,7 +19,7 @@ DefInt A-Z
 ' For Utils
 '$INCLUDE: 'MainRoutines.BI'
 '$INCLUDE: 'TITLE.BI'
-'$INCLUDE: 'Variables.BI'
+'INCLUDE: 'Variables.BI'
 
 ' For Game
 '$INCLUDE: 'Game_Routines.BI'
@@ -224,12 +224,10 @@ System
 
 Errhandler:
 Open "errlog" For Append As #9
-Print #9, "Error occurred! " '; Date$; " "; Time$
 Print #9, "Error #"; Err; "on program file line"; _ErrorLine
 Print #9, A$(0); " vs "; A$(1)
-'Print #9, "B3%(P9, I) "; dudVal
-'Print #9, "B7%(P9, I) "; testIdx
-'Print #9, "B9%(D, 1)  "; B9%(D, 1)
+Print #9, "B7%(P9, I) "; testIdx
+Print #9, "B9%(D, 1)  "; B9%(D, 1)
 Print #9,
 Close #9
 Resume Next ' moves program to code following the error.
@@ -497,7 +495,6 @@ Sub Replay_Menu ()
     Loop Until Selection% = 6 Or ExitCode% = 27
 
 End Sub
-
 
 '$INCLUDE: 'KeyInput.BM'
 '$INCLUDE: 'QPProEqu.BM'
