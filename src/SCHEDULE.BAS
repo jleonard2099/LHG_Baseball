@@ -1629,7 +1629,6 @@ Sub LoadSchedule (targetFile$)
 
 			'-- This code actually loads a schedule
 
-            'Open diskPaths$(0) + targetFile$ + ".SCD" For Random As #1 Len = 48
             Open diskPaths$(0) + targetFile$ For Random As #1 Len = 48
             Y = LOF(1)
 
