@@ -6319,15 +6319,128 @@ End Sub
 '           InitVar Subroutine
 '----------------------------------------
 ' Initializes variables for the game
-' It is not clear why more variables
-' aren't processed here, but in future
-' versions this type of thing will be
-' stadard for all variables
+' Does not process any that will be read
+' in from file or assigned elsewhere
 Sub InitVar ()
 
     Shared DB, HR, TR, SB
     Shared BP(), F()
     Shared BB%(), MF%(), SP%(), T1%()
+
+    normalFinish% = 0
+
+    'Graphics co-ordinates originally were for a
+    'routine that operated as if the screen were
+    'still just 80 column width; so 80x8 = 640
+    FontColAdj% = 8
+
+    MON = Monitor%
+
+    BK$ = Space$(25)
+
+    VI$(0) = "VISITING TEAM"
+    VI$(1) = "HOME TEAM"
+
+    'temp$(1) = "HOT"
+    'temp$(2) = "WARM"
+    'temp$(3) = "COOL"
+    'temp$(4) = "COLD"
+
+    PT$(0) = "RIGHT"
+    PT$(1) = "LEFT "
+
+    WD$(2) = "LEFT TO RIGHT AT"
+    WD$(3) = "RIGHT TO LEFT AT"
+    WD$(4) = "BLOWING IN FROM LEFT AT"
+    WD$(5) = "BLOWING IN FROM CENTER AT"
+    WD$(6) = "BLOWING IN FROM RIGHT AT"
+    WD$(7) = "BLOWING OUT TO LEFT AT"
+    WD$(8) = "BLOWING OUT TO CENTER AT"
+    WD$(9) = "BLOWING OUT TO RIGHT AT"
+
+    SC$(1) = "CLEAR"
+    SC$(2) = "PARTLY CLOUDY"
+    SC$(3) = "OVERCAST"
+    SC$(4) = "DOME"
+
+    PC$(1) = "THUNDERSTORMS"
+    PC$(2) = "SHOWERS"
+    PC$(3) = "DRIZZLE"
+    PC$(4) = "NONE"
+
+    U6$(0) = "HUMAN OPPONENT      "
+    U6$(1) = "COMPUTER OPPONENT   "
+    U6$(2) = "COMPUTER VS COMPUTER"
+
+    PU$(0) = "1980 - PRESENT"
+    PU$(1) = "1973 - 1979   "
+    PU$(2) = "1955 - 1972   "
+    PU$(3) = "1946 - 1954   "
+    PU$(4) = "1933 - 1945   "
+    PU$(5) = "1919 - 1932   "
+    PU$(6) = "1909 - 1918   "
+    PU$(7) = "1894 - 1908   "
+    PU$(8) = "1876 - 1893   "
+
+    LGT$(0) = "AL GAME         "
+    LGT$(1) = "NL GAME         "
+    LGT$(2) = "INTERLEAGUE GAME"
+
+    DH$(0) = "NO DH "
+    DH$(1) = "USE DH"
+
+    UMP$(0) = "AL"
+    UMP$(1) = "NL"
+    UMP$(2) = "NL"
+
+    WE$(0) = "YES"
+    WE$(1) = "NO "
+
+    DL$(0) = "LEAGUE GAME    "
+    DL$(1) = "EXHIBITION GAME"
+
+    month$(4) = "APRIL"
+    month$(5) = "MAY"
+    month$(6) = "JUNE"
+    month$(7) = "JULY"
+    month$(8) = "AUGUST"
+    month$(9) = "SEPTEMBER"
+    month$(10) = "OCTOBER"
+    MO% = 4
+
+    dayNight$(0) = "AFTERNOON"
+    dayNight$(1) = "NIGHT"
+
+    B1$(0) = "LP"
+    B1$(1) = "L"
+    B1$(2) = "S"
+    B1$(3) = "R"
+    B1$(4) = "RP"
+
+    H$(1) = "1b"
+    H$(2) = "2b"
+    H$(3) = "3b"
+    H$(4) = "home"
+
+    H0$(0) = " "
+    H0$(1) = "H"
+
+    P = 1
+
+    'For I = 0 To 1: For I1 = 0 To 4: NB%(I, I1) = -1: Next: Next
+    For I = 0 To 1: P1%(I) = -1: P6%(I) = -1: Next
+
+    SP%(0) = -1
+    SP%(1) = -1
+
+    For I = 0 To 1
+        For J = 1 To 9
+            M%(J) = 0
+            B7%(I, J) = -1
+            B3%(I, J) = -1
+        Next
+    Next
+
 
     F$ = ""
     gameTime$ = ""

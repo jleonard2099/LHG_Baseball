@@ -19,13 +19,12 @@ DefInt A-Z
 ' For Utils
 '$INCLUDE: 'MainRoutines.BI'
 '$INCLUDE: 'TITLE.BI'
-'INCLUDE: 'Variables.BI'
+'$INCLUDE: 'Variables.BI'
 
 ' For Game
 '$INCLUDE: 'Game_Routines.BI'
 '$INCLUDE: 'Game_Routines_Gfx.BI'
 '$INCLUDE: 'SOURCE.BI'
-
 
 On Error GoTo Errhandler
 
