@@ -156,7 +156,7 @@ Sub ChooseLeague (leagueFile$)
                     Locate 2, 33: Print targetFile$
 
                     Do
-                        Locate , 33: Print "ANY CHANGE (YN)";
+                        Locate 3, 33: Print "ANY CHANGE (YN)";
                         I$ = GetKeyPress$
                     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -447,7 +447,7 @@ Sub GetTeam_CREATE (yearNumber$, teamName$, teamIdx)
             Color 15, 4
 
             Do
-                Locate , 33: Print "ANY CHANGE (YN)";
+                Locate 3, 33: Print "ANY CHANGE (YN)";
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 

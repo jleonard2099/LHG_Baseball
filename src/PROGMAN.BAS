@@ -294,7 +294,7 @@ Sub GetDiskYear (targetTeam$, yearNumber$, teamidx)
             Color 15, 4
 
             Do
-                Locate , 33: Print "ANY CHANGE (YN)";
+                Locate 3, 33: Print "ANY CHANGE (YN)";
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -2408,10 +2408,10 @@ Sub ManagePitchingRotations (action%, targetTeam$)
 
                 Loop Until I1 <= 21 And progMG%(3) <> I1 And progMG%(4) <> I1 And progMG%(5) <> I1 And progMG%(6) <> I1 And progMG%(7) <> I1
 
-                Locate , 59: Print statP$(I1)
+                Locate 16, 59: Print statP$(I1)
 
                 Do
-                    Locate , 59: Print "ANY CHANGE (YN)";
+                    Locate 17, 59: Print "ANY CHANGE (YN)";
                     I$ = GetKeyPress$
                 Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -3741,7 +3741,7 @@ Sub ImportManagerProfile ()
                 Locate 2, 33: Print targetFile$
 
                 Do
-                    Locate , 33: Print "ANY CHANGE (YN)";
+                    Locate 3, 33: Print "ANY CHANGE (YN)";
                     I$ = GetKeyPress$
                 Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 

@@ -865,7 +865,7 @@ Sub PitchingStarter (idx%)
 
         End If
 
-        Locate , 58
+        Locate 20, 58
         Print P$(idx%, I1); " "; B1$(P%(idx%, I1, 0) + 2)
 
         Print
@@ -873,7 +873,7 @@ Sub PitchingStarter (idx%)
         If Not (AP% = 1 And (U6 = 2 Or U6 = 1 And U9 = idx%)) Then
 
             Do
-                Locate , 58: Print "ANY CHANGE (YN)"
+                Locate 21, 58: Print "ANY CHANGE (YN)"
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -10745,7 +10745,7 @@ Sub LOADER
                     Color 15, 4
 
                     Do
-                        Locate , 33: Print "ANY CHANGE (YN)";
+                        Locate 3, 33: Print "ANY CHANGE (YN)";
                         I$ = GetKeyPress$
                     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -12046,10 +12046,10 @@ Sub PitchingRotations (computerRotations%, P9)
 
                 Loop Until I1 <= 21 And MG%(P9, 3) <> I1 And MG%(P9, 4) <> I1 And MG%(P9, 5) <> I1 And MG%(P9, 6) <> I1 And MG%(P9, 7) <> I1
 
-                Locate , 59: Print P$(P9, I1)
+                Locate 16, 59: Print P$(P9, I1)
 
                 Do
-                    Locate , 59: Print "ANY CHANGE (YN)";
+                    Locate 17, 59: Print "ANY CHANGE (YN)";
                     J$ = GetKeyPress$
                 Loop Until UCase$(J$) = "Y" Or UCase$(J$) = "N"
 

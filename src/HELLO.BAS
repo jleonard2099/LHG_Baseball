@@ -1,14 +1,15 @@
 
 Const GAME_VERSION$ = "6.65"
+Const MAX_TEAMS = 500
+Const MAX_GAMES = 1500
+Const MAX_FILES = 10240
+'optimium = 1048576 (but slows code)
 'Const MAX_CONFERENCES = 40
 'Const TEAMS_PER_CONFERENCE = 30
 'Const TEAMS_PER_DIV = 15
 'Const DIVS_PER_CONFERENCE = 2
 
 Const NUM_STATRECORDS = 162
-Const MAX_TEAMS = 500
-Const MAX_GAMES = 1500
-Const MAX_FILES = 1024 '1048576
 
 DefInt A-Z
 
@@ -25,6 +26,7 @@ DefInt A-Z
 '$INCLUDE: 'Game_Routines.BI'
 '$INCLUDE: 'Game_Routines_Gfx.BI'
 '$INCLUDE: 'SOURCE.BI'
+
 
 On Error GoTo Errhandler
 
@@ -207,7 +209,6 @@ For I = 0 To 3
 Next
 Close 1
 
-
 Selection% = 1
 
 Do
@@ -260,6 +261,7 @@ Sub Main_Menu (menuSelection%)
         menuChoices$(13) = "HARD DRIVE INSTALLATION         "
         menuChoices$(14) = "CONFIGURE DRIVES FOR TEAMS,STATS"
         menuChoices$(15) = "EXIT TO DOS                     "
+
         Selection% = 1
         Count% = 15
         Start% = 1
@@ -276,6 +278,7 @@ Sub Main_Menu (menuSelection%)
         _MouseHide
 
         Color , 0
+
         If ExitCode% <> 27 Then
             Select Case Selection%
                 Case 1: Call LOADER
@@ -298,10 +301,10 @@ Sub Main_Menu (menuSelection%)
 
     Loop Until Selection% = 15 Or ExitCode% = 27
 
-    menuSelection% = Selection%
     If ExitCode% = 27 Then menuSelection% = 15
 
 End Sub
+
 
 '----------------------------------------
 '       Configure_Drives Subroutine
@@ -388,8 +391,60 @@ Sub ConfigureDrives ()
     '620 GoTo 1
 End Sub
 
+
 '----------------------------------------
-'       Leaders_Menu Subroutine
+'         Replay_Menu Subroutine
+'----------------------------------------
+'...explanation...
+Sub Replay_Menu ()
+
+    Do
+        Cls
+
+        Color 15, 0
+
+        Call TITLE
+
+        ReDim menuChoices$(1 To 6)
+        menuChoices$(1) = "COMPARE COMPILED STATS VS. ACTUAL"
+        menuChoices$(2) = "MERGE TWO STAT FILES             "
+        menuChoices$(3) = "VIEW TEAM HEAD TO HEAD RESULTS   "
+        menuChoices$(4) = "CAREER FILE OPTIONS              "
+        menuChoices$(5) = "SORT PLAYERS BY POSITION         "
+        menuChoices$(6) = "RETURN TO FULL COUNT MAIN MENU   "
+        Selection% = 1
+        Count% = 6
+        Start% = 1
+        ExitCode% = 6
+        FileFGColor% = 15: FileBGColor% = 1
+        HiLiteFGColor% = 0: HiLiteBGColor% = 7
+        Spacing% = 1
+        Row% = 8
+        Column% = 23
+        Call box0(7, 22, 14, 56, 2, 15, 1)
+        _MouseShow "DEFAULT"
+        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        _MouseHide
+
+        Color , 0
+        If ExitCode% <> 27 Then
+            Select Case Selection%
+                Case 1: Call COMPARE
+                Case 2: Call MERGE
+                Case 3: Call REC
+                Case 4: Call CAREER
+                Case 5: Call POSSRT
+                Case 6: Cls
+            End Select
+        End If
+
+    Loop Until Selection% = 6 Or ExitCode% = 27
+
+End Sub
+
+
+'----------------------------------------
+'        Leaders_Menu Subroutine
 '----------------------------------------
 '...explanation...
 Sub Leaders_Menu ()
@@ -445,55 +500,6 @@ Sub Leaders_Menu ()
 
 End Sub
 
-'----------------------------------------
-'       Replay_Menu Subroutine
-'----------------------------------------
-'...explanation...
-Sub Replay_Menu ()
-
-    Do
-        Cls
-
-        Color 15, 0
-
-        Call TITLE
-
-        ReDim menuChoices$(1 To 6)
-        menuChoices$(1) = "COMPARE COMPILED STATS VS. ACTUAL"
-        menuChoices$(2) = "MERGE TWO STAT FILES             "
-        menuChoices$(3) = "VIEW TEAM HEAD TO HEAD RESULTS   "
-        menuChoices$(4) = "CAREER FILE OPTIONS              "
-        menuChoices$(5) = "SORT PLAYERS BY POSITION         "
-        menuChoices$(6) = "RETURN TO FULL COUNT MAIN MENU   "
-        Selection% = 1
-        Count% = 6
-        Start% = 1
-        ExitCode% = 6
-        FileFGColor% = 15: FileBGColor% = 1
-        HiLiteFGColor% = 0: HiLiteBGColor% = 7
-        Spacing% = 1
-        Row% = 8
-        Column% = 23
-        Call box0(7, 22, 14, 56, 2, 15, 1)
-        _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
-        _MouseHide
-
-        Color , 0
-        If ExitCode% <> 27 Then
-            Select Case Selection%
-                Case 1: Call COMPARE
-                Case 2: Call MERGE
-                Case 3: Call REC
-                Case 4: Call CAREER
-                Case 5: Call POSSRT
-                Case 6: Cls
-            End Select
-        End If
-
-    Loop Until Selection% = 6 Or ExitCode% = 27
-
-End Sub
 
 '$INCLUDE: 'KeyInput.BM'
 '$INCLUDE: 'QPProEqu.BM'

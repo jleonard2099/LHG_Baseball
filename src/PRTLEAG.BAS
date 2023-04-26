@@ -69,7 +69,7 @@ Sub PRTLEAG ()
                     LOCATE 2, 33: PRINT targetFile$
 
                     Do
-                        LOCATE , 33: PRINT "ANY CHANGE (YN)";
+                        Locate 3, 33: Print "ANY CHANGE (YN)";
                         I$ = GetKeyPress$
                     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
                     

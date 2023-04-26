@@ -14,8 +14,7 @@ Sub SOURCE ()
 
     15000 '
     'PQ = 0
-    'Call pbpLog(13070)
-
+    
     '-- An error comes up every so many games
     '-- when B9%(D, 1) gets a negative value
     '-- Nothing in the the code modifies B9%()
@@ -31,7 +30,7 @@ Sub SOURCE ()
         O%(I) = 0
     Next I
 
-    'Call pbpLog(13087)
+    
     L0%(P) = L0%(P) + MO
     MO = 0
     H0% = 0
@@ -46,7 +45,7 @@ Sub SOURCE ()
 
     S4% = 0
 
-    'Call pbpLog(13102)
+    
     If P = 1 Then
         INNING% = INNING% + 1
         CZ%(0) = 0
@@ -57,14 +56,13 @@ Sub SOURCE ()
     P = 1 - P
     D = 1 - P
 
-    'Call pbpLog(13113)
     If INNING% = 7 And L%(1, 13) = 8 And P = 1 And Val(Left$(A$(1), 2)) > 75 Then
         Call WINDEX
         Call PBP("ALL RIGHT..."): Call PBP("LEMME HEAR YA..."): Call PBP("A ONE, A TWO...")
     End If
 
-    'Check status of scores / innings
-    '----------------------------------------
+    'Check scores / innings
+	'------------------------------
     If INNING% > 9 And D = 1 And S6%(1, 0) <> S6%(0, 0) Or INNING% = 28 Or INNING% >= 9 And P = 1 And S6%(P, 0) - S6%(D, 0) > 0 Then
         'After 9th inning, score not tied, etc..
         'End of game!
@@ -96,7 +94,7 @@ Sub SOURCE ()
         B9%(D, 1) = b9d1
         B9%(D, 2) = b9d2
 
-        'Call pbpLog(13152)
+        
         Call DisplayBallField_Gfx(BC%, P, U%, D)
     Else
         Call DisplayBallField(BC%, P, U%, D)
@@ -789,11 +787,11 @@ Sub SOURCE ()
 
     '================================================================================
     ' Below are all the different GoTo branches for the gameplay
-    ' These have not yet been worked out into a different flow
+    ' These have not been worked out into a different flow
     ' yet for the game's logic.
     '================================================================================
 
-    '----------------------------------------
+	'----- NOODLE -----
 
     12000 ' BRANCH FOR RARE PLAYS
     Call RAREPLAYS(H6%, H7%, IP%)
@@ -889,7 +887,7 @@ Sub SOURCE ()
     GoTo 15052
 
 
-    '----------------------------------------
+    '----- NOODLE -----
 
 
     13050 '
@@ -1684,7 +1682,7 @@ Sub SOURCE ()
 
 
 
-    '----------------------------------------
+    '----- NOODLE -----
 
 
     13530 ' *** HOME RUN S2%=10 ***
@@ -1847,7 +1845,7 @@ Sub SOURCE ()
     GoTo 13900
 
 
-    '----------------------------------------
+    '----- NOODLE -----
 
 
     13634 '
@@ -1912,7 +1910,7 @@ Sub SOURCE ()
     GoTo 13900
 
 
-    '----------------------------------------
+    '----- NOODLE -----
 
 
     13650 '
@@ -2235,8 +2233,6 @@ Sub SOURCE ()
         Call OPTIONS
     End If
 
-    '----------------------------------------------------
-
     'There was some question as to whether this is needed
     'based on comparing to the original code, but the working
     'version of my code had this in it still
@@ -2251,13 +2247,13 @@ Sub SOURCE ()
     H0%(0) = 0
 
     If O%(0) = 3 Then
-        'Call pbpLog(14470)
+        
         GoTo 15000
     Else
         GoTo 15050
     End If
 
-    '----------
+	'----- NOODLE -----
 
     14000 'balls hit to the air
     Call d100(RN)
@@ -4017,6 +4013,7 @@ Sub SOURCE ()
 
     GoTo 15540
 
+	'----- NOODLE -----
 
     '----------------------------------------
     ' Print final score and run post game
@@ -4384,7 +4381,7 @@ Sub SOURCE ()
     GoTo 15055
 
 
-    '--------------------
+    '----- NOODLE -----
 
 
     18909 'GET A PINCH HITTER FOR A POSITION PLAYER
@@ -4525,7 +4522,7 @@ Sub SOURCE ()
 
     GoTo 18941
 
-    '--------------------
+    '----- NOODLE -----
 
     18930 'GET A PINCH HITTER FOR THE PITCHER
 
@@ -4741,7 +4738,7 @@ Sub SOURCE ()
         GoTo 15067
     End If
 
-    '----------
+	'----- NOODLE -----
 
     18969 '
     If O%(0) >= 1 And INNING% >= 7 Then

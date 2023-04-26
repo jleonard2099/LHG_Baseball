@@ -1,4 +1,4 @@
-
+	
 Sub SCHEDULE ()
 
     DefInt A-Z
@@ -237,7 +237,7 @@ Sub CreateSeasonSchedule ()
                         Locate 2, 33: Print leagueFile$
 
                         Do
-                            Locate , 33: Print "ANY CHANGE? (YN)";
+                            Locate 3, 33: Print "ANY CHANGE? (YN)";
                             I$ = GetKeyPress$
                         Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -640,16 +640,16 @@ Sub NewSchedule (scheduleFile$)
                 Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
 
                 Do
-                    Locate 7, 32
-                    Locate , 12: Print "TOTAL GAMES ="; scheduleAP%(0)
-                    Locate , 12: Print "SELECT GAME # TO START AND END WITH": Print
-                    Locate , 12: Input "ENTER START GAME #: "; SG%: Print
-                    Locate , 12: Input "ENTER END GAME #:"; EG%: Print
+                    'Locate 7, 32
+                    Locate 8, 12: Print "TOTAL GAMES ="; scheduleAP%(0)
+                    Locate 9, 12: Print "SELECT GAME # TO START AND END WITH": Print
+                    Locate 10, 12: Input "ENTER START GAME #: "; SG%: Print
+                    Locate 11, 12: Input "ENTER END GAME #:"; EG%: Print
 
                     Do
-                        Locate , 12: Print "ANY CHANGE (YN)"
+                        Locate 13, 12: Print "ANY CHANGE (YN)"
                         I$ = GetKeyPress$
-                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+					Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
 
                 Loop Until UCase$(I$) = "N"
 
@@ -671,13 +671,24 @@ Sub NewSchedule (scheduleFile$)
                 Next
 
                 Open "TICKER" For Output As #2
-                For I = 1 To 32: For I1 = 0 To 1: For I2 = 1 To 14
-                Print #2, -1: Next: Next: Next
-                For I = 1 To 32: For I1 = 0 To 1: Print #2, "XXX"
-                Next: Next
+                For I = 1 To 32: 
+					For I1 = 0 To 1: 
+						For I2 = 1 To 14
+							Print #2, -1
+						Next
+					Next
+				Next
+
+                For I = 1 To 32: 
+					For I1 = 0 To 1: 
+						Print #2, "XXX"
+					Next
+				Next
+
                 For I = SG% To SG% + 31
                     Print #2, scheduleNG%(I, 12)
                 Next
+
                 Close 2
 
                 Call LOADER
@@ -919,7 +930,7 @@ Sub NewGame (visitor$, home$, YN$, NTMS, gameIndex%)
                             Color 15, 4
 
                             Do
-                                Locate , 33: Print "ANY CHANGE (YN)";
+                                Locate 3, 33: Print "ANY CHANGE (YN)";
                                 I$ = GetKeyPress$
                             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -1131,7 +1142,7 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
                     Color 15, 4
 
                     Do
-                        Locate , 33: Print "ANY CHANGE (YN)";
+                        Locate 3, 33: Print "ANY CHANGE (YN)";
                         J$ = GetKeyPress$
                     Loop Until UCase$(J$) = "Y" Or UCase$(J$) = "N"
 
@@ -1379,7 +1390,7 @@ Sub BoxscoreMaintenance ()
                                 Locate 2, 33: Print targetFile$
 
                                 Do
-                                    Locate , 33: Print "ANY CHANGE (YN)";
+                                    Locate 3, 33: Print "ANY CHANGE (YN)";
                                     I$ = GetKeyPress$
                                 Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -1936,7 +1947,7 @@ Sub SelectScheduleFile (targetFile$, scheduleFiles$(), Count%)
             Locate 2, 33: Print targetFile$
 
             Do
-                Locate , 33: Print "ANY CHANGE (YN)";
+                Locate 3, 33: Print "ANY CHANGE (YN)";
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 

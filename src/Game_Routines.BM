@@ -22,7 +22,7 @@ Sub PitchingStarter (idx%)
 
         End If
 
-        Locate , 58
+        Locate 20, 58
         Print P$(idx%, I1); " "; B1$(P%(idx%, I1, 0) + 2)
 
         Print
@@ -30,7 +30,7 @@ Sub PitchingStarter (idx%)
         If Not (AP% = 1 And (U6 = 2 Or U6 = 1 And U9 = idx%)) Then
 
             Do
-                Locate , 58: Print "ANY CHANGE (YN)"
+                Locate 21, 58: Print "ANY CHANGE (YN)"
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 

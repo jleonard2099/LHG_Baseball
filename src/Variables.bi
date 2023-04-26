@@ -229,8 +229,7 @@ Dim Managers$(2), Stadiums$(2), teamAbbrevs$(2)
 '----------------------------------------
 ' Used across Game Routines
 '----------------------------------------
-
-'Used by postgame routines
+'Used by POSTGAME
 Dim DB, HR, TR, SB, PPH
 
 Dim BP(0 To 9), F(0 To 9)
@@ -242,8 +241,18 @@ Dim PT$(1)
 Dim E!
 
 
+'Used by LOADER
+Dim dayNight$(0 To 1), DH$(1), DL$(1)
+Dim LGT$(2), month$(1 To 12)
+Dim PU$(8), U6$(2), UMP$(50)
+Dim VI$(1), WE$(1)
+
+Dim U%(50)
+
+Dim fileLength&
+
+
 ' Shared / Global
-'---------------
 Dim Shared Y$, YY$
 Dim Shared B1!(9), K9!(1)
 Dim Shared pbpDelay!, WF!
@@ -276,7 +285,6 @@ Dim Shared IJ$(20), M$(1), N$(1), NN$(1)
 Dim Shared P$(1, 21), PARK$(99), PC$(4), player$(23)
 Dim Shared Q3$(100), S$(1), SB$(0 To 22), SC$(4), TR$(0 To 22)
 Dim Shared U$(4), WD$(10), X$(12), YN$(1)
-'Dim Shared temp$(4)
 
 Dim Shared A5%(0 To 4), AP%(2), B%(0 To 1, 0 To 22, 80), B0%(0 To 3, 0 To 2)
 Dim Shared B1%(3, 1), B2%(1, 22), B3%(0 To 1, 0 To 9), B4%(1, 7, 9)

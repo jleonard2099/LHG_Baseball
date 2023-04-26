@@ -180,7 +180,7 @@ Sub ViewTeamLeaders ()
                     Locate 2, 33: Print targetFile$
 
                     Do
-                        Locate , 33: Print "ANY CHANGE (YN)";
+                        Locate 3, 33: Print "ANY CHANGE (YN)";
                         I$ = GetKeyPress$
                     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -424,7 +424,7 @@ Sub Merge_FirstYear ()
         Locate , 5: Input "ENTER YEAR TO ADD (EX. - 1960)"; statYear
 
         Do
-            Locate , 5: Print "ANY CHANGE (YN)"
+            Locate 18, 5: Print "ANY CHANGE (YN)"
             I$ = GetKeyPress$
         Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -567,7 +567,7 @@ Sub Merge_AddYear ()
         Locate , 5: Input "ENTER YEAR TO ADD (EX. - 1961)"; statYear
 
         Do
-            Locate , 5: Print "ANY CHANGE (YN)"
+            Locate 18, 5: Print "ANY CHANGE (YN)"
             I$ = GetKeyPress$
         Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 

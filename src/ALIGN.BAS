@@ -410,7 +410,7 @@ Sub GetDiskID_ALIGN (A$)
                 Color 15, 4
 
                 Do
-                    Locate , 33: Print "ANY CHANGE (YN)";
+                    Locate 3, 33: Print "ANY CHANGE (YN)";
                     I$ = GetKeyPress$
                 Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 

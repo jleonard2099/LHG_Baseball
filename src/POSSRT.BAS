@@ -103,7 +103,7 @@ Sub SearchPlayers ()
 
                 Do
 					I$ = GetKeyPress$
-                    Locate , 33: Print "ANY CHANGE (YN)";
+                    Locate 3, 33: Print "ANY CHANGE (YN)";
                 Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 				
 				Color 15, 0

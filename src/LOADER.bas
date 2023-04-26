@@ -1,16 +1,7 @@
 Sub LOADER
 
-    Dim dayNight$(0 To 1), DH$(1), DL$(1)
-    Dim LGT$(2), month$(1 To 12)
-    Dim PU$(8), U6$(2), UMP$(50)
-    Dim VI$(1), WE$(1)
-
-    Dim U%(50)
-
-    Dim fileLength&
-
-    Shared PT$()
-    Shared SP%(), T1%()
+	Shared PT$()
+	Shared SP%(), T1%()
 
     Open "pbplog" For Output As #7
 
@@ -24,14 +15,14 @@ Sub LOADER
 
     Randomize Timer
 
-    '----------------------------------------
-    '    INITIALIZE ALL VARIABLES
-    '----------------------------------------
+	'----------------------------------------
+	'        INITIALIZE ALL VARIABLES
+	'----------------------------------------
 
     Call InitVar
 
     '----------------------------------------
-    '       DETERMINE GAME OPTIONS
+    '         DETERMINE GAME OPTIONS
     '----------------------------------------
 
     If Not _FileExists("DEV.BAS") Then
@@ -403,7 +394,7 @@ Sub LOADER
                     Color 15, 4
 
                     Do
-                        Locate , 33: Print "ANY CHANGE (YN)";
+                        Locate 3, 33: Print "ANY CHANGE (YN)";
                         I$ = GetKeyPress$
                     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -1704,10 +1695,10 @@ Sub PitchingRotations (computerRotations%, P9)
 
                 Loop Until I1 <= 21 And MG%(P9, 3) <> I1 And MG%(P9, 4) <> I1 And MG%(P9, 5) <> I1 And MG%(P9, 6) <> I1 And MG%(P9, 7) <> I1
 
-                Locate , 59: Print P$(P9, I1)
+                Locate 16, 59: Print P$(P9, I1)
 
                 Do
-                    Locate , 59: Print "ANY CHANGE (YN)";
+                    Locate 17, 59: Print "ANY CHANGE (YN)";
                     J$ = GetKeyPress$
                 Loop Until UCase$(J$) = "Y" Or UCase$(J$) = "N"
 

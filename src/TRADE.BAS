@@ -130,7 +130,7 @@ Sub GetTeamA_TRADE (yearNumber$, numberTeams, tradeIdx)
 			Color 15, 4
 
 			Do
-				Locate , 33: Print "ANY CHANGE (YN)";
+				Locate 3, 33: Print "ANY CHANGE (YN)";
 				I$ = GetKeyPress$
             Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
 			
@@ -430,7 +430,7 @@ Sub GetTeamB_TRADE (yearNumber$, numberTeams, tradeIdx)
 			Color 15, 4
 
 			Do
-				Locate , 33: Print "ANY CHANGE (YN)";
+				Locate 3, 33: Print "ANY CHANGE (YN)";
 				I$ = GetKeyPress$
             Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
 
