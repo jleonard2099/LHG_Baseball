@@ -1,907 +1,704 @@
-'$INCLUDE: 'Game_Routines.BI'
-'$INCLUDE: 'Game_Routines_Gfx.BI'
-'$INCLUDE: 'SOURCE.BI'
-'$INCLUDE: 'KeyInput.BI'
-'$INCLUDE: 'QPProEqu.BI'
-'$INCLUDE: 'PadRight.BI'
+Sub LOADER
 
-On Error GoTo Errhandler
+    Shared dayNight$(), DH$(), DL$()
+    Shared LGT$(), month$()
+    Shared PT$(), PU$()
+    Shared U6$(), UMP$()
+    Shared VI$(), WE$()
 
-'Open "pbplog" For Output As #7
+    Shared SP%(), T1%(), U%()
 
-_Title "Full Count Baseball - PLAY BALL!"
-$ExeIcon:'./lhg_fcbase.ico'
-_Icon
-_AllowFullScreen
+    Open "pbplog" For Output As #7
 
-Color 7, 0
-Cls
+    _Title "Full Count Baseball v" + GAME_VERSION$ + " - PLAY BALL!"
+    ''$ExeIcon:'./lhg_fcbase.ico'
+    '_Icon
+    '_AllowFullScreen
 
-Randomize Timer
+    Color 7, 0
+    Cls
 
-'----------------------------------------
-'          READ IN ALL DATA
-'----------------------------------------
+    Randomize Timer
 
-Data A,B,C,D,E,F,G,H,I,J,K,L,M,dh," p"," c",1b,2b,3b,ss,lf,cf,rf,ph,pr
-For I = 0 To 12: Read X$(I): Next I
-For I = 0 To 11: Read C$(I): Next I
+    '----------------------------------------
+    '        INITIALIZE ALL VARIABLES
+    '----------------------------------------
 
-'Data to read in to variables
-Data first,second,third,short
-Data 6,12,37,55,66,74,86,96,100
-Data 5,10,32,55,67,75,86,96,100
-Data 4,8,27,54,68,76,86,96,100
-Data 3,7,25,54,69,76,86,96,100
-Data 3,6,22,54,69,77,86,96,100
-Data 2,5,20,53,69,78,86,96,100
-Data 2,4,17,53,70,78,86,96,100
-Data 1,3,12,52,71,79,86,96,100
-Data 1,2,7,51,72,80,86,96,100
-Data 6,14,42,55,63,74,86,96,100
-Data 5,12,37,55,64,75,86,96,100
-Data 4,10,32,55,65,76,86,96,100
-Data 3,8,30,55,66,77,86,96,100
-Data 3,7,27,55,66,77,86,96,100
-Data 3,6,24,55,66,77,86,96,100
-Data 2,5,22,55,67,78,86,96,100
-Data 1,4,17,55,68,79,86,96,100
-Data 1,3,12,55,69,80,86,96,100
-Data 0,0,100
-Data 0,15,100
-Data 0,30,100
-Data 0,45,100
-Data 0,60,100
-Data 1,75,100
-Data 3,90,100
-Data 4,97,100
-Data 100,0,90,100,75,100,60,100,45,100,30,100,15,100,8,100
-Data 100,0,0,90,100,0,70,95,100,50,80,100,30,65,100,10,50,100
-Data 0,90,100,5,87,100,10,85,100,15,80,100,20,77,100,25,75,100
-Data 30,73,100,35,70,100,40,67,100,45,65,100,50,63,100,60,65,100
+    Call InitVar
 
-'Read in data and assign variables
-For I = 3 To 6
-    Read F$(I)
-Next
+    '----------------------------------------
+    '         DETERMINE GAME OPTIONS
+    '----------------------------------------
 
-For I = 0 To 1
-    For I1 = 1 To 9
-        For I2 = 1 To 9
-            Read BT%(I, I1, I2)
+    If Not _FileExists("DEV.BAS") Then
+        Open "DEV.BAS" For Output As #1
+        For I = 0 To 3
+            Print #1, _CWD$ + "\"
         Next
-    Next
-Next
-
-For I = 2 To 9
-    For I1 = 0 To 2
-        Read CF%(I, I1)
-    Next
-Next
-
-For I = 2 To 9
-    For I1 = 0 To 1
-        Read LB%(I, I1)
-    Next
-Next
-
-For I = 0 To 5
-    For I1 = 0 To 2
-        Read SO%(I, I1)
-    Next
-Next
-
-For I = 11 To 0 Step -1
-    For I1 = 0 To 2
-        Read TP%(I, I1)
-    Next
-Next
-
-'----------------------------------------
-'    INITIALIZE ALL VARIABLES
-'----------------------------------------
-
-normalFinish% = 0
-
-'Graphics co-ordinates originally were for a
-'routine that operated as if the screen were
-'still just 80 column width; so 80x8 = 640
-FontColAdj% = 8
-
-MON = Monitor%
-'CALL InitMouse(There)
-
-BK$ = Space$(25)
-
-VI$(0) = "VISITING TEAM"
-VI$(1) = "HOME TEAM"
-
-TM$(1) = "HOT"
-TM$(2) = "WARM"
-TM$(3) = "COOL"
-TM$(4) = "COLD"
-
-PT$(0) = "RIGHT"
-PT$(1) = "LEFT "
-
-WD$(2) = "LEFT TO RIGHT AT"
-WD$(3) = "RIGHT TO LEFT AT"
-WD$(4) = "BLOWING IN FROM LEFT AT"
-WD$(5) = "BLOWING IN FROM CENTER AT"
-WD$(6) = "BLOWING IN FROM RIGHT AT"
-WD$(7) = "BLOWING OUT TO LEFT AT"
-WD$(8) = "BLOWING OUT TO CENTER AT"
-WD$(9) = "BLOWING OUT TO RIGHT AT"
-
-SC$(1) = "CLEAR"
-SC$(2) = "PARTLY CLOUDY"
-SC$(3) = "OVERCAST"
-SC$(4) = "DOME"
-
-PC$(1) = "THUNDERSTORMS"
-PC$(2) = "SHOWERS"
-PC$(3) = "DRIZZLE"
-PC$(4) = "NONE"
-
-SP%(0) = -1
-SP%(1) = -1
-
-U6$(0) = "HUMAN OPPONENT      "
-U6$(1) = "COMPUTER OPPONENT   "
-U6$(2) = "COMPUTER VS COMPUTER"
-
-PU$(0) = "1980 - PRESENT"
-PU$(1) = "1973 - 1979   "
-PU$(2) = "1955 - 1972   "
-PU$(3) = "1946 - 1954   "
-PU$(4) = "1933 - 1945   "
-PU$(5) = "1919 - 1932   "
-PU$(6) = "1909 - 1918   "
-PU$(7) = "1894 - 1908   "
-PU$(8) = "1876 - 1893   "
-
-LGT$(0) = "AL GAME         "
-LGT$(1) = "NL GAME         "
-LGT$(2) = "INTERLEAGUE GAME"
-
-DH$(0) = "NO DH "
-DH$(1) = "USE DH"
-
-UMP$(0) = "AL"
-UMP$(1) = "NL"
-UMP$(2) = "NL"
-
-WE$(0) = "YES"
-WE$(1) = "NO "
-
-DL$(0) = "LEAGUE GAME    "
-DL$(1) = "EXHIBITION GAME"
-
-month$(4) = "APRIL"
-month$(5) = "MAY"
-month$(6) = "JUNE"
-month$(7) = "JULY"
-month$(8) = "AUGUST"
-month$(9) = "SEPTEMBER"
-month$(10) = "OCTOBER"
-MO% = 4
-
-dayNight$(0) = "AFTERNOON"
-dayNight$(1) = "NIGHT"
-
-B1$(0) = "LP"
-B1$(1) = "L"
-B1$(2) = "S"
-B1$(3) = "R"
-B1$(4) = "RP"
-
-H$(1) = "1b"
-H$(2) = "2b"
-H$(3) = "3b"
-H$(4) = "home"
-
-H0$(0) = " "
-H0$(1) = "H"
-
-P = 1
-
-'For I = 0 To 1: For I1 = 0 To 4: NB%(I, I1) = -1: Next: Next
-For I = 0 To 1: P1%(I) = -1: P6%(I) = -1: Next
-
-SP%(0) = -1
-SP%(1) = -1
-
-For I = 0 To 1
-    For J = 1 To 9
-        M%(J) = 0
-        B7%(I, J) = -1
-        B3%(I, J) = -1
-    Next
-Next
-
-Call INITVARI
-
-'----------------------------------------
-'       DETERMINE GAME OPTIONS
-'----------------------------------------
-
-If Not _FileExists("DEV.BAS") Then
-    Open "DEV.BAS" For Output As #1
-    For I = 0 To 3
-        Print #1, _CWD$ + "\"
-    Next
-    Close 1
-End If
-
-Open "DEV.BAS" For Input As #1
-For I = 0 To 3
-    Input #1, diskPaths$(I)
-Next
-Close 1
-
-
-If Not _FileExists("DEFERA") Then
-    Open "DEFERA" For Output As #1
-    For I = 1 To 4:
-        Print #1, 0
-    Next
-
-    Print #1, 4
-
-    For I = 6 To 14:
-        Print #1, 0
-    Next
-
-    Close 1
-End If
-
-Open "DEFERA" For Input As #1
-Input #1, U6
-Input #1, LGT
-Input #1, DH%
-Input #1, DL
-Input #1, MO%
-Input #1, DN%
-Input #1, WE%
-Input #1, IJ%
-Input #1, LR%
-Input #1, DR%
-Input #1, MP%
-Input #1, pbpDelay!
-Input #1, VG%
-Input #1, CGERA%
-Close 1
-
-
-'Load game in-progress, if there is one
-If _FileExists("GAME82") Then
-
-    Open "GAME82" For Input As #2
-    Input #2, scheduleFile$
-    For I = 0 To 2: Input #2, AP%(I): Next
-    Close 2
-
-    Open diskPaths$(0) + scheduleFile$ For Random As #1 Len = 48
-
-    For X = 0 To 18
-        Field #1, X * 2 As X$, 2 As Q2$(X + 1), 48 - 2 - 2 * X As X$
-    Next
-
-    Field #1, 38 As X$, 2 As Q2$(22), 2 As Q2$(23), 3 As Q2$(20), 3 As Q2$(21)
-
-    Get #1, AP%(0) + AP%(2)
-
-    For X = 0 To 18
-        NG%(X) = CVI(Q2$(X + 1))
-    Next
-
-    For X = 0 To 1
-        YN$(X) = _Trim$(Q2$(20 + X))
-    Next
-
-    VS% = CVI(Q2$(22))
-    HS% = CVI(Q2$(23))
-
-    Close 1
-
-    AP% = 1
-End If
-
-
-If AP% = 1 Then
-    'Setup variables for auto-play
-    U6 = NG%(8)
-    DH% = NG%(3)
-    pbpDelay! = NG%(4) / 10
-    MO% = NG%(17)
-    WE% = NG%(5)
-    VG% = NG%(11)
-    IJ% = NG%(6)
-    LR% = NG%(7)
-    DR% = NG%(9)
-    MP% = NG%(10)
-    CGERA% = NG%(14)
-
-    DN% = 1
-    If NG%(15) < 1600 Then DN% = 0
-
-    Select Case U6
-        Case 0: '
-        Case 1: U9 = 0
-        Case 3: U6 = 2
-        Case Else:
-            U9 = 1
-            U6 = 1
-    End Select
-
-    'At this point we can skip the
-    'option selection below
-Else
-
-    170 '
-    Call INFO
-
-    Do
-        Color 15, 0
-        Cls
-        'Color , 0
-
-        Locate 3, 1
-        Color 14: Print "(1) ";: Color 15: Print U6$(U6)
-        Color 14: Print "(2) ";: Color 15: Print LGT$(LGT)
-        Color 14: Print "(3) ";: Color 15: Print DH$(DH%)
-        Color 14: Print "(4) ";: Color 15: Print DL$(DL)
-        Color 14: Print "(5) ";: Color 15: Print month$(MO%)
-        Color 14: Print "(6) ";: Color 15: Print dayNight$(DN%)
-        Color 14: Print "(7) ";: Color 15: Print "PROCEED TO TEAM SELECTION"
-        Color 14: Print "(8) ";: Color 15: Print "USE CLIMATE/WIND/TEMP DATA "; WE$(WE%)
-        Color 14: Print "(9) ";: Color 15: Print "USE INJURIES "; WE$(IJ%)
-        Color 14: Print "(0) ";: Color 15: Print "SAVE SETTINGS AS DEFAULT"
-        Color 14: Print "(A) ";: Color 15: Print "USE LEFT/RIGHT SPLIT STATS "; WE$(LR%)
-        Color 14: Print "(B) ";: Color 15: Print "USE DAYS REST DATA FOR PITCHERS "; WE$(DR%)
-        Color 14: Print "(C) ";: Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE "; WE$(MP%)
-        Color 14: Print "(D) ";: Color 15: Print Using "DISPLAY INTERVAL: #.# "; pbpDelay!
-        Color 14: Print "(E) ";: Color 15: Print "USE VGA SCREENS, IF ABLE: "; WE$(VG%)
-        Color 14: Print "(F) ";: Color 15: Print "PITCHER USAGE ERA: "; PU$(CGERA%)
-
-        Do
-            Color 7, 0
-
-            I$ = GetKeyPress$
-
-            If I$ <> Chr$(27) Then Call LetterToNumber(I$)
-
-            I = Val(I$)
-
-        Loop Until I >= 0 And I <= 16 Or I$ = Chr$(27) Or UCase$(I$) = "Q"
-
-        If I$ <> Chr$(27) And UCase$(I$) <> "Q" Then
-
-            Select Case I + 1
-                Case 1:
-                    Open "DEFERA" For Output As #1
-                    Print #1, U6
-                    Print #1, LGT
-                    Print #1, DH%
-                    Print #1, DL
-                    Print #1, MO%
-                    Print #1, DN%
-                    Print #1, WE%
-                    Print #1, IJ%
-                    Print #1, LR%
-                    Print #1, DR%
-                    Print #1, MP%
-                    Print #1, pbpDelay!
-                    Print #1, VG%
-                    Print #1, CGERA%
-                    Close 1
-
-                Case 2:
-                    U6 = U6 + 1
-                    If U6 > 2 Then U6 = 0
-
-                Case 3:
-                    LGT = LGT + 1
-                    If LGT > 2 Then LGT = 0
-
-                Case 4:
-                    DH% = 1 - DH%
-
-                Case 5:
-                    DL = 1 - DL
-
-                Case 6:
-                    MO% = MO% + 1
-                    If MO% > 10 Then MO% = 4
-                    Locate 7, 4: Print BK$
-
-                Case 7:
-                    DN% = 1 - DN%
-                    Locate 8, 4
-                    Print BK$
-
-                Case 8:
-                    '
-
-                Case 9:
-                    WE% = 1 - WE%
-
-                Case 10:
-                    IJ% = 1 - IJ%
-
-                Case 11:
-                    LR% = 1 - LR%
-
-                Case 12:
-                    DR% = 1 - DR%
-
-                Case 13:
-                    MP% = 1 - MP%
-
-                Case 14:
-                    Locate 16, 22: Input pbpDelay!
-
-                Case 15:
-                    VG% = 1 - VG%
-
-                Case 16:
-                    CGERA% = CGERA% + 1
-                    If CGERA% > 8 Then CGERA% = 0
-
-            End Select
-
-        Else
-
-            'Close #7
-            End
-            System
-
-        End If
-
-    Loop Until I$ = "7"
-
-End If
-
-YV = 1
-YM = 0
-
-'-------------------------
-' Determine umpires
-'-------------------------
-If _FileExists(diskPaths$(0) + "UMPIRES." + UMP$(LGT)) Then
-
-    YU = 0
-
-    Open diskPaths$(0) + "UMPIRES." + UMP$(LGT) For Input As #1
-    For I1 = 1 To 50
-        Input #1, UMP$(I1)
-        Input #1, U%(I1)
-    Next
-
-    Close #1
-
-    For I1 = 1 To 50
-        If UMP$(I1) <> "" Then YU = YU + 1
-    Next
-
-    If YU < 4 Then
-        'If there aren't 4 umpires, assign generic names
-        U$(1) = "RHODES": U$(2) = "WINBERRY": U$(3) = "TIPPETT": U$(4) = "MILLER"
-    Else
-        'Randomly assign umpires
-        Do
-            While (UMP$(YU) = "" Or YU = YM)
-                YU = Int(Rnd(1) * 50) + 1
-            Wend
-
-            U$(YV) = UMP$(YU): YM = YU: YV = YV + 1
-        Loop Until YV >= 5
-
+        Close 1
     End If
-Else
-    'Assign generic umpire names if we don't have any
-    U$(1) = "RHODES": U$(2) = "WINBERRY": U$(3) = "TIPPETT": U$(4) = "MILLER"
-End If
 
-'-------------------------
-' Team Selection
-'-------------------------
-For I = 0 To 1
+    Open "DEV.BAS" For Input As #1
+    For I = 0 To 3
+        Input #1, diskPaths$(I)
+    Next
+    Close 1
+
+
+    If Not _FileExists("DEFERA") Then
+        Open "DEFERA" For Output As #1
+        For I = 1 To 4:
+            Print #1, 0
+        Next
+
+        Print #1, 4
+
+        For I = 6 To 14:
+            Print #1, 0
+        Next
+
+        Close 1
+    End If
+
+    Open "DEFERA" For Input As #1
+    Input #1, U6
+    Input #1, LGT
+    Input #1, DH%
+    Input #1, DL
+    Input #1, MO%
+    Input #1, DN%
+    Input #1, WE%
+    Input #1, IJ%
+    Input #1, LR%
+    Input #1, DR%
+    Input #1, MP%
+    Input #1, pbpDelay!
+    Input #1, VG%
+    Input #1, CGERA%
+    Close 1
+
+
+    'Load game in-progress, if there is one
+    If _FileExists("GAME82") Then
+
+        Open "GAME82" For Input As #2
+        Input #2, scheduleFile$
+        For I = 0 To 2: Input #2, AP%(I): Next
+        Close 2
+
+        Open diskPaths$(0) + scheduleFile$ For Random As #1 Len = 48
+
+        For X = 0 To 18
+            Field #1, X * 2 As X$, 2 As Q2$(X + 1), 48 - 2 - 2 * X As X$
+        Next
+
+        Field #1, 38 As X$, 2 As Q2$(22), 2 As Q2$(23), 3 As Q2$(20), 3 As Q2$(21)
+
+        Get #1, AP%(0) + AP%(2)
+
+        For X = 0 To 18
+            NG%(X) = CVI(Q2$(X + 1))
+        Next
+
+        For X = 0 To 1
+            YN$(X) = _Trim$(Q2$(20 + X))
+        Next
+
+        VS% = CVI(Q2$(22))
+        HS% = CVI(Q2$(23))
+
+        Close 1
+
+        AP% = 1
+    End If
+
 
     If AP% = 1 Then
-        T1%(I) = NG%(I)
-        YN$ = YN$(I)
-        Call LoadTeam_LOADER(T1%(I), YN$, I)
+        'Setup variables for auto-play
+        U6 = NG%(8)
+        DH% = NG%(3)
+        pbpDelay! = NG%(4) / 10
+        MO% = NG%(17)
+        WE% = NG%(5)
+        VG% = NG%(11)
+        IJ% = NG%(6)
+        LR% = NG%(7)
+        DR% = NG%(9)
+        MP% = NG%(10)
+        CGERA% = NG%(14)
+
+        DN% = 1
+        If NG%(15) < 1600 Then DN% = 0
+
+        Select Case U6
+            Case 0: '
+            Case 1: U9 = 0
+            Case 3: U6 = 2
+            Case Else:
+                U9 = 1
+                U6 = 1
+        End Select
+
+        'At this point we can skip the
+        'option selection below
     Else
 
+        170 '
         Call INFO
 
         Do
             Color 15, 0
             Cls
-            JJ = 10
-            Locate 6, 8: Color 15, 4
-            Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+            'Color , 0
 
-            For II = 1 To JJ:
-                Locate 6 + II, 8
-                Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-            Next
-            Locate 7 + JJ, 8
-            Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
-
-            Locate 7, 32
-            Locate , 12: Print VI$(I)
-            Locate , 12: Print "ENTER DISK ID: ": Print
-            Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
-            Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
-            Print
-            Locate , 12: Print "MAKE SURE NUM LOCK KEY IS OFF TO USE ARROW KEYS"
-            Locate , 12: Print "AND PG UP/PG DN KEYS"
-            Print
-            Locate , 12: Print "(JUST HIT ENTER TO USE PREVIOUS ID, IF SAME)"
-            Locate 8, 27: Input NY$
-            Color 15, 0
-
-            If NY$ = "" And YN$ <> "" Then
-                'NY$ = YN$
-                Call SelectTeam_LOADER(NTMS, YN$, I) 'GoSub 8102
-            Else
-                YN$ = NY$
-                Erase teamNames$
-
-                NTMS = 0
-
-                Open diskPaths$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342
-                Y = LOF(1)
-
-                Field #1, 15 As Q2$(0)
-
-                For I1 = 1 To Y / 4342
-
-                    Get #1, I1
-
-                    For I2 = 1 To 15
-                        If Left$(Q2$(0), 1) = " " Or Asc(Mid$(Q2$(0), I2, 1)) < 32 Or Asc(Mid$(Q2$(0), I2, 1)) > 123 Or UCase$(Left$(Q2$(0), 3)) = "NOT" Or UCase$(Left$(Q2$(0), 3)) = "UN" Then skipCount% = 1: Exit For
-                    Next I2
-
-                    If skipCount% <> 1 Then
-                        NTMS = NTMS + 1
-                        teamNames$(NTMS) = Q2$(0)
-                        UV%(NTMS) = I1
-                    End If
-
-                Next I1
-
-                Close 1
-
-                Call SelectTeam_LOADER(NTMS, YN$, I)
-            End If
-
-            If BO% = 1 Then
-                BO% = 0
-            Else
-                Locate 2, 33
-                Color L%(I, 11), L%(I, 12): Print A$(I)
-
-                Color 15, 4
-
-                Do
-                    Locate , 33: Print "ANY CHANGE (YN)";
-                    I$ = GetKeyPress$
-                Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
-            End If
-
-        Loop Until UCase$(I$) = "N"
-
-        YN$(I) = YN$
-        A$(I) = RTrim$(A$(I))
-
-        Color 15, 0
-
-    End If 'Done checking for autoplay
-
-Next I
-
-'-------------------------
-' Team Mgmt + Lineups
-'-------------------------
-
-N = 1
-
-'Determine which team PC will play
-If U6 = 1 And AP% <> 1 Then
-    'If not doing autoplay...
-    Call INFO
-
-    Color 14: Print "WHICH TEAM DOES COMPUTER MANAGE ?": Print
-
-    Color 15: Print "(0) ";: Color L%(0, 11), L%(0, 12): Print A$(0): Color 7, 0
-    Print
-    Color 15: Print "(1) ";: Color L%(1, 11), L%(1, 12): Print A$(1): Color 7, 0
-
-    Do
-        I$ = GetKeyPress$
-        U9 = Val(I$)
-    Loop Until U9 = 0 Or U9 = 1
-End If
-
-'Determine pitchers
-For P9 = 0 To 1
-
-    cancelPitchers% = 0
-
-    '4500 / 2040
-    Call SelectPitchers(P9, cancelPitchers%, computerRotations%)
-
-    '1590
-    Call PitchingStarter(P9)
-    If Inotloop% <= 5 And S6%(P9, 0) - S6%(1 - P9, 0) > 0 Then P2%(P9) = P1%(P9)
-
-    '1060
-    S8%(P9, 0) = Int(((P%(P9, P1%(P9), 8) + P%(P9, P1%(P9), 7)) / P%(P9, P1%(P9), 4)) + .5)
-    S8%(P9, 1) = 3
-
-    If P6%(P9) > 1 Then S8%(P9, 1) = 0
-
-    'I'm not sure why we go back only
-    'if ESC was pressed during pitcher select
-    If cancelPitchers% = 1 Then GoTo 170
-
-Next P9
-
-'Determine lineup for each team
-For P9 = 0 To 1
-
-    Do
-        480 '
-        Cls
-        Call INFO
-        Locate 3, 1
-        Color L%(P9, 11), L%(P9, 12): Print A$(P9): Color 7, 0: Print
-        Color 14: Print "(0) ";: Color 15: Print "INPUT A LINEUP MANUALLY": Print
-        Color 14: Print "(1) ";: Color 15: Print "SELECT A LINEUP FROM MANAGER PROFILE": Print
-        Color 14: Print "(2) ";: Color 15: Print "COMPUTER DETERMINE LINEUP RANDOMLY": Print
-        Color 14: Print "(3) ";: Color 15: Print "COMPUTER DETERMINE LINEUP FROM MANAGER PROFILE"
-        reselect = 0
-
-        If AP% = 1 Then
-
-            'NLF% = no lineup found?
-            If NLF% = 1 Then
-                NLF% = 0
-                I$ = "2"
-            Else
-                If (U6 = 2 Or U6 = 1 And U9 = P9) Then
-                    If MP% = 0 Then
-                        I$ = "1"
-                    Else
-                        I$ = "2"
-                    End If
-                End If
-            End If
-        Else
+            Locate 3, 1
+            Color 14: Print "(1) ";: Color 15: Print U6$(U6)
+            Color 14: Print "(2) ";: Color 15: Print LGT$(LGT)
+            Color 14: Print "(3) ";: Color 15: Print DH$(DH%)
+            Color 14: Print "(4) ";: Color 15: Print DL$(DL)
+            Color 14: Print "(5) ";: Color 15: Print month$(MO%)
+            Color 14: Print "(6) ";: Color 15: Print dayNight$(DN%)
+            Color 14: Print "(7) ";: Color 15: Print "PROCEED TO TEAM SELECTION"
+            Color 14: Print "(8) ";: Color 15: Print "USE CLIMATE/WIND/TEMP DATA "; WE$(WE%)
+            Color 14: Print "(9) ";: Color 15: Print "USE INJURIES "; WE$(IJ%)
+            Color 14: Print "(0) ";: Color 15: Print "SAVE SETTINGS AS DEFAULT"
+            Color 14: Print "(A) ";: Color 15: Print "USE LEFT/RIGHT SPLIT STATS "; WE$(LR%)
+            Color 14: Print "(B) ";: Color 15: Print "USE DAYS REST DATA FOR PITCHERS "; WE$(DR%)
+            Color 14: Print "(C) ";: Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE "; WE$(MP%)
+            Color 14: Print "(D) ";: Color 15: Print Using "DISPLAY INTERVAL: #.# "; pbpDelay!
+            Color 14: Print "(E) ";: Color 15: Print "USE VGA SCREENS, IF ABLE: "; WE$(VG%)
+            Color 14: Print "(F) ";: Color 15: Print "PITCHER USAGE ERA: "; PU$(CGERA%)
 
             Do
+                Color 7, 0
+
                 I$ = GetKeyPress$
-                I1 = Val(I$)
-            Loop Until I1 >= 0 And I1 <= 3 And I$ <> Chr$(27)
 
-        End If
+                If I$ <> Chr$(27) Then Call LetterToNumber(I$)
 
-        Select Case I$
-            Case "0":
-                'Lineup - no profile
+                I = Val(I$)
 
-                Call SelectBatters(batterFlag%, P9)
+            Loop Until I >= 0 And I <= 16 Or I$ = Chr$(27) Or UCase$(I$) = "Q"
 
-                If batterFlag% = 1 Then
-                    For I = 10 To 22
-                        Locate I, 59: Print Space$(21);
-                    Next
+            If I$ <> Chr$(27) And UCase$(I$) <> "Q" Then
 
-                    Call StartingLineup(P9)
-                    Call ChangeLineup_PreGame(P9, reselect)
+                Select Case I + 1
+                    Case 1:
+                        Open "DEFERA" For Output As #1
+                        Print #1, U6
+                        Print #1, LGT
+                        Print #1, DH%
+                        Print #1, DL
+                        Print #1, MO%
+                        Print #1, DN%
+                        Print #1, WE%
+                        Print #1, IJ%
+                        Print #1, LR%
+                        Print #1, DR%
+                        Print #1, MP%
+                        Print #1, pbpDelay!
+                        Print #1, VG%
+                        Print #1, CGERA%
+                        Close 1
 
-                    If noLineups = 1 Then
-                        noLineups = 0
-                    End If
-                End If
+                    Case 2:
+                        U6 = U6 + 1
+                        If U6 > 2 Then U6 = 0
 
-            Case "1", "3":
-                'Lineup using profile
+                    Case 3:
+                        LGT = LGT + 1
+                        If LGT > 2 Then LGT = 0
 
-                '2500
-                Call SearchForLineup(P9)
+                    Case 4:
+                        DH% = 1 - DH%
 
-                '1830
-                Call LineupFromProfile(lineupFound%, P9, skipLineChange%)
+                    Case 5:
+                        DL = 1 - DL
 
-                'Lineup found?
-                If lineupFound% = 1 Or skipLineChange% = 0 Then
-                    Call ChangeLineup_PreGame(P9, reselect)
-                    If noLineups = 1 Then
-                        noLineups = 0
-                    End If
-                Else
-                    noLineups = 1
-                End If
+                    Case 6:
+                        MO% = MO% + 1
+                        If MO% > 10 Then MO% = 4
+                        Locate 7, 4: Print BK$
 
-            Case "2"
-                'GoSub 5000
-                Call ComputerLineups(batterFlag%, P9, noLineups, reselect)
+                    Case 7:
+                        DN% = 1 - DN%
+                        Locate 8, 4
+                        Print BK$
 
-                If noLineups = 1 Then
-                    noLineups = 0
-                    skipLineChange% = 1
-                End If
+                    Case 8:
+                        '
 
-        End Select
+                    Case 9:
+                        WE% = 1 - WE%
 
-        If I$ <> Chr$(27) Then
-            'We didn't ESC so we have to move forward
+                    Case 10:
+                        IJ% = 1 - IJ%
 
-            If skipLineChange% <> 1 Then
-                Color 15, 0
-                Locate 5, 59: Print "OPPOSING PITCHER"
-                Locate , 59: Print P$(1 - P9, P1%(1 - P9)); " "; B1$(P%(1 - P9, P1%(1 - P9), 0) + 2)
-                If RP = 1 Then RP = 0
+                    Case 11:
+                        LR% = 1 - LR%
+
+                    Case 12:
+                        DR% = 1 - DR%
+
+                    Case 13:
+                        MP% = 1 - MP%
+
+                    Case 14:
+                        Locate 16, 22: Input pbpDelay!
+
+                    Case 15:
+                        VG% = 1 - VG%
+
+                    Case 16:
+                        CGERA% = CGERA% + 1
+                        If CGERA% > 8 Then CGERA% = 0
+
+                End Select
+
+            Else
+
+                Close #7
+                'End
+                'System
+                Exit Sub
+
             End If
 
+        Loop Until I$ = "7"
+
+    End If
+
+    YV = 1
+    YM = 0
+
+    '-------------------------
+    ' Determine umpires
+    '-------------------------
+    If _FileExists(diskPaths$(0) + "UMPIRES." + UMP$(LGT)) Then
+
+        YU = 0
+
+        Open diskPaths$(0) + "UMPIRES." + UMP$(LGT) For Input As #1
+        For I1 = 1 To 50
+            Input #1, UMP$(I1)
+            Input #1, U%(I1)
+        Next
+
+        Close #1
+
+        For I1 = 1 To 50
+            If UMP$(I1) <> "" Then YU = YU + 1
+        Next
+
+        If YU < 4 Then
+            'If there aren't 4 umpires, assign generic names
+            U$(1) = "RHODES": U$(2) = "WINBERRY": U$(3) = "TIPPETT": U$(4) = "MILLER"
         Else
-            'ESC means we go back to earlier menus
-            noLineups = 1
-            GoTo 170
+            'Randomly assign umpires
+            Do
+                While (UMP$(YU) = "" Or YU = YM)
+                    YU = Int(Rnd(1) * 50) + 1
+                Wend
+
+                U$(YV) = UMP$(YU): YM = YU: YV = YV + 1
+            Loop Until YV >= 5
 
         End If
+    Else
+        'Assign generic umpire names if we don't have any
+        U$(1) = "RHODES": U$(2) = "WINBERRY": U$(3) = "TIPPETT": U$(4) = "MILLER"
+    End If
 
-    Loop Until noLineups = 0 And reselect = 0
+    '-------------------------
+    ' Team Selection
+    '-------------------------
+    For Idx = 0 To 1
 
-Next P9
+        If AP% = 1 Then
+            T1%(Idx) = NG%(Idx)
+            YN$ = YN$(Idx)
+            Call LoadTeam_LOADER(T1%(Idx), YN$, Idx)
+            YN$(Idx) = YN$
 
+        Else
 
+            Call INFO
 
-'-------------------------
-' Ready to Play
-'-------------------------
+            Do
+                skipCount% = 0
 
-For I = 0 To 1
-    For I1 = 1 To 9
-        X0%(I, 0, I1) = B3%(I, I1)
-        X0%(I, 1, I1) = B7%(I, I1)
-        X0%(I, 2, I1) = I1 * 10
-    Next I1
+                Color 15, 0
+                Cls
+                JJ = 10
 
-    D0%(I) = 9
+                Locate 6, 8: Color 15, 4
+                Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
 
-Next I
+                For II = 1 To JJ:
+                    Locate 6 + II, 8
+                    Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
+                Next
+                Locate 7 + JJ, 8
+                Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
 
+                Locate 7, 32
+                Locate , 12: Print VI$(Idx)
+                Locate , 12: Print "ENTER DISK ID: ": Print
+                Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
+                Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
+                Print
+                Locate , 12: Print "MAKE SURE NUM LOCK KEY IS OFF TO USE ARROW KEYS"
+                Locate , 12: Print "AND PG UP/PG DN KEYS"
+                Print
+                Locate , 12: Print "(JUST HIT ENTER TO USE PREVIOUS ID, IF SAME)"
+                Locate 8, 27: Input NY$
+                Color 15, 0
 
-
-W5 = 0
-W6 = 1
-VV(0) = 1
-VV1(0) = 9
-VV(1) = 1
-VV1(1) = 9
-
-Cls
-
-RD = 0
-
-For I = 0 To 1
-    For I1 = 1 To 9
-        If B7%(I, I1) >= 2 And B7%(I, I1) <= 9 Then
-            If B7%(I, I1) = B%(I, B3%(I, I1), 22) Then
-                B%(I, B3%(I, I1), 15) = B%(I, B3%(I, I1), 33): B%(I, B3%(I, I1), 17) = B%(I, B3%(I, I1), 34): B%(I, B3%(I, I1), 19) = B%(I, B3%(I, I1), 26)
-            Else
-                If B7%(I, I1) = B%(I, B3%(I, I1), 23) Then
-                    B%(I, B3%(I, I1), 15) = B%(I, B3%(I, I1), 35): B%(I, B3%(I, I1), 17) = B%(I, B3%(I, I1), 36): B%(I, B3%(I, I1), 19) = B%(I, B3%(I, I1), 27)
+                If NY$ = "" And YN$ <> "" Then
+                    'NY$ = YN$
+                    Call SelectTeam_LOADER(NTMS, YN$, Idx) 'GoSub 8102
                 Else
-                    If B7%(I, I1) = B%(I, B3%(I, I1), 24) Then
-                        B%(I, B3%(I, I1), 15) = B%(I, B3%(I, I1), 37): B%(I, B3%(I, I1), 17) = B%(I, B3%(I, I1), 38): B%(I, B3%(I, I1), 19) = B%(I, B3%(I, I1), 28)
-                    Else
-                        If B7%(I, I1) = B%(I, B3%(I, I1), 25) Then
-                            B%(I, B3%(I, I1), 15) = B%(I, B3%(I, I1), 39): B%(I, B3%(I, I1), 17) = B%(I, B3%(I, I1), 40): B%(I, B3%(I, I1), 19) = B%(I, B3%(I, I1), 29)
-                        Else
+                    YN$ = NY$
+                    Erase teamNames$
 
-                            If B7%(I, I1) = 2 Then B%(I, B3%(I, I1), 15) = 1: B%(I, B3%(I, I1), 17) = 0: B%(I, B3%(I, I1), 19) = 910 + Int(Rnd(1) * 10) + 1
-                            If B7%(I, I1) = 3 Then B%(I, B3%(I, I1), 15) = 0: B%(I, B3%(I, I1), 17) = 3: B%(I, B3%(I, I1), 19) = 960 + Int(Rnd(1) * 10) + 1
-                            If B7%(I, I1) = 4 Then B%(I, B3%(I, I1), 15) = 0: B%(I, B3%(I, I1), 17) = 3: B%(I, B3%(I, I1), 19) = 912 + Int(Rnd(1) * 10) + 1
-                            If B7%(I, I1) = 5 Or B7%(I, I1) = 6 Then B%(I, B3%(I, I1), 15) = 0: B%(I, B3%(I, I1), 17) = 3: B%(I, B3%(I, I1), 19) = 902 + Int(Rnd(1) * 10) + 1
-                            If B7%(I, I1) >= 7 Then B%(I, B3%(I, I1), 15) = 2: B%(I, B3%(I, I1), 17) = 2: B%(I, B3%(I, I1), 19) = 972 + Int(Rnd(1) * 10) + 1
+                    NTMS = 0
+
+                    Open diskPaths$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342
+                    fileLength& = LOF(1)
+
+                    Field #1, 15 As Q2$(0)
+
+                    For I1 = 1 To fileLength& / 4342
+
+                        Get #1, I1
+
+                        For I2 = 1 To 15
+                            If Left$(Q2$(0), 1) = " " Or Asc(Mid$(Q2$(0), I2, 1)) < 32 Or Asc(Mid$(Q2$(0), I2, 1)) > 123 Or UCase$(Left$(Q2$(0), 3)) = "NOT" Or UCase$(Left$(Q2$(0), 3)) = "UN" Then skipCount% = 1: Exit For
+                        Next I2
+
+                        If skipCount% <> 1 Then
+                            NTMS = NTMS + 1
+                            teamNames$(NTMS) = Q2$(0)
+                            teamIndex%(NTMS) = I1
+                        End If
+
+                    Next I1
+
+                    Close 1
+
+                    Call SelectTeam_LOADER(NTMS, YN$, Idx)
+
+                End If
+
+                If BO% = 1 Then
+                    BO% = 0
+                Else
+                    Locate 2, 33
+                    Color L%(Idx, 11), L%(Idx, 12): Print A$(Idx)
+
+                    Color 15, 4
+
+                    Do
+                        Locate 3, 33: Print "ANY CHANGE (YN)";
+                        I$ = GetKeyPress$
+                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+                End If
+
+            Loop Until UCase$(I$) = "N"
+
+            YN$(Idx) = YN$
+            'A$(Idx) = RTrim$(Q2$(0))
+
+            Color 15, 0
+
+        End If 'Done checking for autoplay
+
+    Next Idx
+
+    '-------------------------
+    ' Team Mgmt + Lineups
+    '-------------------------
+
+    N = 1
+
+    'Determine which team PC will play
+    If U6 = 1 And AP% <> 1 Then
+        'If not doing autoplay...
+        Call INFO
+
+        Color 14: Print "WHICH TEAM DOES COMPUTER MANAGE ?": Print
+
+        Color 15: Print "(0) ";: Color L%(0, 11), L%(0, 12): Print A$(0): Color 7, 0
+        Print
+        Color 15: Print "(1) ";: Color L%(1, 11), L%(1, 12): Print A$(1): Color 7, 0
+
+        Do
+            I$ = GetKeyPress$
+            U9 = Val(I$)
+        Loop Until U9 = 0 Or U9 = 1
+    End If
+
+    'Determine pitchers
+    For P9 = 0 To 1
+
+        cancelPitchers% = 0
+
+        '4500 / 2040
+        Call SelectPitchers(P9, cancelPitchers%, computerRotations%)
+
+        '1590
+        Call PitchingStarter(P9)
+        If Inotloop% <= 5 And S6%(P9, 0) - S6%(1 - P9, 0) > 0 Then P2%(P9) = P1%(P9)
+
+        '1060
+        S8%(P9, 0) = Int(((P%(P9, P1%(P9), 8) + P%(P9, P1%(P9), 7)) / P%(P9, P1%(P9), 4)) + .5)
+        S8%(P9, 1) = 3
+
+        If P6%(P9) > 1 Then S8%(P9, 1) = 0
+
+        'I'm not sure why we go back only
+        'if ESC was pressed during pitcher select
+        If cancelPitchers% = 1 Then GoTo 170
+
+    Next P9
+
+    'Determine lineup for each team
+    For P9 = 0 To 1
+
+        Do
+            480 '
+            Cls
+            Call INFO
+            Locate 3, 1
+            Color L%(P9, 11), L%(P9, 12): Print A$(P9): Color 7, 0: Print
+            Color 14: Print "(0) ";: Color 15: Print "INPUT A LINEUP MANUALLY": Print
+            Color 14: Print "(1) ";: Color 15: Print "SELECT A LINEUP FROM MANAGER PROFILE": Print
+            Color 14: Print "(2) ";: Color 15: Print "COMPUTER DETERMINE LINEUP RANDOMLY": Print
+            Color 14: Print "(3) ";: Color 15: Print "COMPUTER DETERMINE LINEUP FROM MANAGER PROFILE"
+            reselect = 0
+
+            If AP% = 1 Then
+
+                'NLF% = no lineup found?
+                If NLF% = 1 Then
+                    NLF% = 0
+                    I$ = "2"
+                Else
+                    If (U6 = 2 Or U6 = 1 And U9 = P9) Then
+                        If MP% = 0 Then
+                            I$ = "1"
+                        Else
+                            I$ = "2"
+                        End If
+                    End If
+                End If
+            Else
+
+                Do
+                    I$ = GetKeyPress$
+                    I1 = Val(I$)
+                Loop Until I1 >= 0 And I1 <= 3 And I$ <> Chr$(27)
+
+            End If
+
+            Select Case I$
+
+                Case "0":
+                    'Lineup - no profile
+
+                    Call SelectBatters(batterFlag%, P9)
+
+                    If batterFlag% = 1 Then
+                        For I = 10 To 22
+                            Locate I, 59: Print Space$(21);
+                        Next
+
+                        Call StartingLineup(P9)
+                        Call ChangeLineup_PreGame(P9, reselect)
+
+                        If noLineups = 1 Then
+                            noLineups = 0
+                        End If
+                    End If
+
+                Case "1", "3":
+                    'Lineup using profile
+
+                    '2500
+                    Call SearchForLineup(P9)
+
+                    '1830
+                    Call LineupFromProfile(lineupFound%, P9, skipLineChange%)
+
+                    'Lineup found?
+                    If lineupFound% = 1 Or skipLineChange% = 0 Then
+                        Call ChangeLineup_PreGame(P9, reselect)
+                        If noLineups = 1 Then
+                            noLineups = 0
+                        End If
+                    Else
+                        noLineups = 1
+                    End If
+
+                Case "2"
+                    'GoSub 5000
+                    Call ComputerLineups(batterFlag%, P9, noLineups, reselect)
+
+                    If noLineups = 1 Then
+                        noLineups = 0
+                        skipLineChange% = 1
+                    End If
+
+            End Select
+
+            If I$ <> Chr$(27) Then
+                'We didn't ESC so we have to move forward
+
+                If skipLineChange% <> 1 Then
+                    Color 15, 0
+                    Locate 5, 59: Print "OPPOSING PITCHER"
+                    Locate , 59: Print P$(1 - P9, P1%(1 - P9)); " "; B1$(P%(1 - P9, P1%(1 - P9), 0) + 2)
+                    If RP = 1 Then RP = 0
+                End If
+
+            Else
+                'ESC means we go back to earlier menus
+                noLineups = 1
+                GoTo 170
+
+            End If
+
+        Loop Until noLineups = 0 And reselect = 0
+
+    Next P9
+
+
+
+    '-------------------------
+    ' Ready to Play
+    '-------------------------
+
+    For I = 0 To 1
+        For I1 = 1 To 9
+            X0%(I, 0, I1) = B3%(I, I1)
+            X0%(I, 1, I1) = B7%(I, I1)
+            X0%(I, 2, I1) = I1 * 10
+        Next I1
+
+        D0%(I) = 9
+
+    Next I
+
+    W5 = 0
+    W6 = 1
+    VV(0) = 1
+    VV1(0) = 9
+    VV(1) = 1
+    VV1(1) = 9
+
+    Cls
+
+    RD = 0
+
+    For I = 0 To 1
+        For I1 = 1 To 9
+            If B7%(I, I1) >= 2 And B7%(I, I1) <= 9 Then
+                If B7%(I, I1) = B%(I, B3%(I, I1), 22) Then
+                    B%(I, B3%(I, I1), 15) = B%(I, B3%(I, I1), 33): B%(I, B3%(I, I1), 17) = B%(I, B3%(I, I1), 34): B%(I, B3%(I, I1), 19) = B%(I, B3%(I, I1), 26)
+                Else
+                    If B7%(I, I1) = B%(I, B3%(I, I1), 23) Then
+                        B%(I, B3%(I, I1), 15) = B%(I, B3%(I, I1), 35): B%(I, B3%(I, I1), 17) = B%(I, B3%(I, I1), 36): B%(I, B3%(I, I1), 19) = B%(I, B3%(I, I1), 27)
+                    Else
+                        If B7%(I, I1) = B%(I, B3%(I, I1), 24) Then
+                            B%(I, B3%(I, I1), 15) = B%(I, B3%(I, I1), 37): B%(I, B3%(I, I1), 17) = B%(I, B3%(I, I1), 38): B%(I, B3%(I, I1), 19) = B%(I, B3%(I, I1), 28)
+                        Else
+                            If B7%(I, I1) = B%(I, B3%(I, I1), 25) Then
+                                B%(I, B3%(I, I1), 15) = B%(I, B3%(I, I1), 39): B%(I, B3%(I, I1), 17) = B%(I, B3%(I, I1), 40): B%(I, B3%(I, I1), 19) = B%(I, B3%(I, I1), 29)
+                            Else
+
+                                If B7%(I, I1) = 2 Then B%(I, B3%(I, I1), 15) = 1: B%(I, B3%(I, I1), 17) = 0: B%(I, B3%(I, I1), 19) = 910 + Int(Rnd(1) * 10) + 1
+                                If B7%(I, I1) = 3 Then B%(I, B3%(I, I1), 15) = 0: B%(I, B3%(I, I1), 17) = 3: B%(I, B3%(I, I1), 19) = 960 + Int(Rnd(1) * 10) + 1
+                                If B7%(I, I1) = 4 Then B%(I, B3%(I, I1), 15) = 0: B%(I, B3%(I, I1), 17) = 3: B%(I, B3%(I, I1), 19) = 912 + Int(Rnd(1) * 10) + 1
+                                If B7%(I, I1) = 5 Or B7%(I, I1) = 6 Then B%(I, B3%(I, I1), 15) = 0: B%(I, B3%(I, I1), 17) = 3: B%(I, B3%(I, I1), 19) = 902 + Int(Rnd(1) * 10) + 1
+                                If B7%(I, I1) >= 7 Then B%(I, B3%(I, I1), 15) = 2: B%(I, B3%(I, I1), 17) = 2: B%(I, B3%(I, I1), 19) = 972 + Int(Rnd(1) * 10) + 1
+                            End If
                         End If
                     End If
                 End If
             End If
+        Next I1
+    Next I
+
+    Call SelectStadium
+
+    Call GETWEATHER(WD%, WS%, MO%, WF!, SC%, TP%, RD)
+
+    Cls
+
+    Call DRAWBOXA
+
+    Locate , 11: Print "CONDITIONS AT "; S$(1)
+    If L%(1, 9) = 1 Then
+        Locate , 11: Print "TEMPERATURE: 70"
+        Locate , 11: Print "WEATHER: DOME"
+        Locate , 11: Print "WIND: NONE"
+    Else
+        Locate , 11: Print "TEMPERATURE: "; TP%
+        Locate , 11: Print "SKY CONDITIONS: "; SC$(SC%)
+        Locate , 11: Print "WIND: "; WD$(WD%);
+        Print Using " ## MPH"; WS%
+
+        If VG% = 1 Then
+            WD$(2) = "L->R"
+            WD$(3) = "R->L"
+            WD$(4) = "<-LF"
+            WD$(5) = "<-CF"
+            WD$(6) = "<-RF"
+            WD$(7) = "->LF"
+            WD$(8) = "->CF"
+            WD$(9) = "->RF"
         End If
-    Next I1
-Next I
 
-Call SelectStadium
+        WI$ = WD$(WD%) + Str$(WS%) + " MPH"
+        Locate , 11: Print "PRECIPITATION: "; PC$(PC%)
 
-Call GETWEATHER(WD%, WS%, MO%, WF!, SC%, TP%, RD)
-
-Cls
-
-Call DRAWBOXA
-
-Locate , 11: Print "CONDITIONS AT "; S$(1)
-If L%(1, 9) = 1 Then
-    Locate , 11: Print "TEMPERATURE: 70"
-    Locate , 11: Print "WEATHER: DOME"
-    Locate , 11: Print "WIND: NONE"
-Else
-    Locate , 11: Print "TEMPERATURE: "; TP%
-    Locate , 11: Print "SKY CONDITIONS: "; SC$(SC%)
-    Locate , 11: Print "WIND: "; WD$(WD%);
-    Print Using " ## MPH"; WS%
-
-    If VG% = 1 Then
-        WD$(2) = "L->R"
-        WD$(3) = "R->L"
-        WD$(4) = "<-LF"
-        WD$(5) = "<-CF"
-        WD$(6) = "<-RF"
-        WD$(7) = "->LF"
-        WD$(8) = "->CF"
-        WD$(9) = "->RF"
     End If
 
-    WI$ = WD$(WD%) + Str$(WS%) + " MPH"
-    Locate , 11: Print "PRECIPITATION: "; PC$(PC%)
+    S$ = PARK$
 
-End If
+    I1 = Val(Left$(A$(0), 2))
+    I2 = Val(Left$(A$(1), 2))
 
-S$ = PARK$
+    If Val(Left$(A$(0), 3)) = 211 Then I1 = 201
+    If Val(Left$(A$(0), 3)) = 200 Then I1 = 200
+    If Val(Left$(A$(1), 3)) = 200 Then I2 = 200
+    If Val(Left$(A$(1), 3)) = 211 Then I2 = 201
 
-I1 = Val(Left$(A$(0), 2))
-I2 = Val(Left$(A$(1), 2))
+    If CGERA% > 2 Then S8%(1, 1) = 4: S8%(0, 1) = 4
+    If CGERA% > 3 Then S8%(1, 1) = 5: S8%(0, 1) = 5
+    If CGERA% = 7 Then S8%(1, 1) = 7: S8%(0, 1) = 7
+    If CGERA% >= 8 Then S8%(1, 1) = 99: S8%(0, 1) = 99
 
-If Val(Left$(A$(0), 3)) = 211 Then I1 = 201
-If Val(Left$(A$(0), 3)) = 200 Then I1 = 200
-If Val(Left$(A$(1), 3)) = 200 Then I2 = 200
-If Val(Left$(A$(1), 3)) = 211 Then I2 = 201
+    Call GETSTATS
+    Call DISPBAVG(D)
 
-If CGERA% > 2 Then S8%(1, 1) = 4: S8%(0, 1) = 4
-If CGERA% > 3 Then S8%(1, 1) = 5: S8%(0, 1) = 5
-If CGERA% = 7 Then S8%(1, 1) = 7: S8%(0, 1) = 7
-If CGERA% >= 8 Then S8%(1, 1) = 99: S8%(0, 1) = 99
+    W5 = 0
+    W6 = 1
 
-Call GETSTATS
-Call DISPBAVG(D)
+    If (MON = 6 Or MON = 7 Or MON = 12) And VG% = 0 Then
+        usingGfx = 1
+    Else
+        usingGfx = 0
+    End If
 
-W5 = 0
-W6 = 1
+    Call SOURCE
 
-If (MON = 6 Or MON = 7 Or MON = 12) And VG% = 0 Then
-    usingGfx = 1
-Else
-    usingGfx = 0
-End If
+    Close #7
+    'End
+    'System
 
-Call SOURCE
-
-'Close #7
-End
-System
-
-'================================================================================
-
-Errhandler:
-Open "errlog" For Append As #9
-Print #9, "Error occurred! " '; Date$; " "; Time$
-Print #9, "Error #"; Err; "on program file line"; _ErrorLine
-Print #9, A$(0) + " vs " + A$(1)
-Print #9, "P           "; P
-Print #9, "D0%(0)      "; D0%(0)
-Print #9, "D0%(1)      "; D0%(1)
-Print #9,
-Close #9
-Resume Next ' moves program to code following the error.
-
-'================================================================================
+End Sub
 
 '------------------------------
 '   StartingLineup Subroutine
@@ -1210,7 +1007,6 @@ End Sub
 Sub SaveLineup (idx%)
 
     Shared MF%(), T1%()
-    Shared Q2$()
 
     If AP% = 1 And (U6 = 2 Or U6 = 1 And U9 = idx%) Then
         I$ = "N"
@@ -1369,6 +1165,7 @@ Sub LineupFromProfile (lineupFound%, P9, skipLineChange%)
     Next
 
     If lineupFound% = 0 Then
+
         Cls
         Print "ERROR:: NO LINEUPS FOUND...BE SURE CORRECT LINEUP ID WAS CHOSEN"
 
@@ -1385,8 +1182,10 @@ Sub LineupFromProfile (lineupFound%, P9, skipLineChange%)
     Else
 
         If AP% = 1 And MP% = 0 And (U6 = 2 Or U6 = 1 And U9 = P9) Or I$ = "3" Then
+
             RN = Int(Rnd(1) * PCT%) + 1
             PCT% = 0
+
             For I = 0 To 9
                 If MG%(P9, 120 + (I + Q2% * 10) * 21) = 999 Then
                     PCT% = PCT% + MG%(P9, 100 + (I + Q2% * 10) * 21)
@@ -1405,14 +1204,13 @@ Sub LineupFromProfile (lineupFound%, P9, skipLineChange%)
 
             If Q2% = 1 Then LN% = LN% + 10
 
-            I1 = MG%(P9, 101 + LN% * 21)
-
-            If DH% = I1 Then
+            If DH% = MG%(P9, 101 + LN% * 21) Then
 
                 For I = 1 To 9
                     B3%(P9, I) = MG%(P9, 110 + I + LN% * 21)
                     B7%(P9, I) = MG%(P9, 101 + I + LN% * 21)
                 Next
+
                 LU% = 1
                 Call DHLineups(P9, skipLineChange%, LU%)
 
@@ -1440,13 +1238,19 @@ Sub DHLineups (P9, reselect, LU%)
     1910 '
     For I = 1 To 9:
 
-        B9%(P9, B7%(P9, I)) = B3%(P9, I)
+        testIdx = B7%(P9, I)
 
-        If B7%(P9, I) = 1 Then
-            B3%(P9, I) = P1%(P9)
-            B9%(P9, 1) = P1%(P9)
-        Else
-            B%(P9, B3%(P9, I), 21) = 0
+        If testIdx >= 0 Then
+
+            B9%(P9, B7%(P9, I)) = B3%(P9, I)
+
+            If B7%(P9, I) = 1 Then
+                B3%(P9, I) = P1%(P9)
+                B9%(P9, 1) = P1%(P9)
+            Else
+                B%(P9, B3%(P9, I), 21) = 0
+            End If
+
         End If
 
     Next I
@@ -1458,7 +1262,7 @@ Sub DHLineups (P9, reselect, LU%)
     Next
 
     'Cls
-
+    ''Call pbplog(10959)
     Call NEWLINES(P9)
 
     For I2 = 0 To 22:
@@ -1509,8 +1313,11 @@ Sub SelectBatters (batterFlag%, P9)
 
             'Handle ESC
             If I$ = Chr$(27) Then
+
                 For J = 1 To 9
-                    M%(J) = 0: B7%(P9, J) = -1: B3%(P9, J) = -1
+                    M%(J) = 0
+                    B7%(P9, J) = -1
+                    B3%(P9, J) = -1
                 Next
 
                 C1 = 0
@@ -1561,7 +1368,8 @@ Sub SelectBatters (batterFlag%, P9)
                 Case "X":
                     For I3 = 0 To 22
                         If B%(P9, I3, 21) = 99 And B%(P9, I3, 31) = 0 Then
-                            B%(P9, I3, 21) = 0: Locate I3 + 2, 3: Print B$(P9, I3)
+                            B%(P9, I3, 21) = 0
+                            Locate I3 + 2, 3: Print B$(P9, I3)
                         End If
                     Next I3
 
@@ -1891,10 +1699,10 @@ Sub PitchingRotations (computerRotations%, P9)
 
                 Loop Until I1 <= 21 And MG%(P9, 3) <> I1 And MG%(P9, 4) <> I1 And MG%(P9, 5) <> I1 And MG%(P9, 6) <> I1 And MG%(P9, 7) <> I1
 
-                Locate , 59: Print P$(P9, I1)
+                Locate 16, 59: Print P$(P9, I1)
 
                 Do
-                    Locate , 59: Print "ANY CHANGE (YN)";
+                    Locate 17, 59: Print "ANY CHANGE (YN)";
                     J$ = GetKeyPress$
                 Loop Until UCase$(J$) = "Y" Or UCase$(J$) = "N"
 
@@ -2285,7 +2093,7 @@ End Sub
 ' ...explanation...
 Sub SelectTeam_LOADER (NTMS, YN$, idx%)
 
-    Shared T1%(), UV%()
+    Shared T1%()
 
     Selection% = 1
     Count% = NTMS
@@ -2305,7 +2113,7 @@ Sub SelectTeam_LOADER (NTMS, YN$, idx%)
     _MouseHide
 
     If ExitCode% <> 27 Then
-        T1%(idx%) = UV%(Selection%)
+        T1%(idx%) = teamIndex%(Selection%)
         Locate 2, 33: Color 31: Print "LOADING..."
         Call LoadTeam_LOADER(T1%(idx%), YN$, idx%)
     Else
@@ -2320,9 +2128,8 @@ End Sub
 ' ...explanation...
 Sub LoadTeam_LOADER (teamIdx%, YN$, idx%)
 
-    Dim DYS%(1, 21)
     Shared MF%()
-    Shared Q2$()
+    Dim DYS%(1, 21)
 
     Open diskPaths$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342
 
@@ -2344,9 +2151,6 @@ Sub LoadTeam_LOADER (teamIdx%, YN$, idx%)
 
     Field #1, 4280 As X$, 40 As Q2$(1840), 15 As Q2$(1841), 5 As Q2$(1842), 2 As Q2$(1843)
     Get #1, teamIdx%
-
-    A$(idx%) = Q2$(0)
-    A$(idx%) = RTrim$(A$(idx%))
 
     For I1 = 1 To 13
         L%(idx%, I1) = CVI(Q2$(I1))
@@ -2513,6 +2317,9 @@ Sub LoadTeam_LOADER (teamIdx%, YN$, idx%)
         Next
     Next
 
+    A$(idx%) = RTrim$(Q2$(0))
+    N$(idx%) = A$(idx%)
+
     'Read in manager data
     If _FileExists(diskPaths$(3) + "MGR." + YN$) Then
 
@@ -2535,8 +2342,6 @@ Sub LoadTeam_LOADER (teamIdx%, YN$, idx%)
         MF%(idx%) = -1
         For X = 0 To 999: MG%(idx%, X) = -1: Next
     End If
-
-    N$(idx%) = A$(idx%)
 
     For xx = 4 To 11
         If Mid$(N$(idx%), xx, 1) = " " Or Mid$(N$(idx%), xx, 1) = "." Then Mid$(N$(idx%), xx, 1) = "_"
@@ -2593,7 +2398,6 @@ End Sub
 Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
 
     Shared MF%(), SP%(), T1%()
-    Shared Q2$()
 
     4500 '
     ' *** PITCHING ROTATIONS ***
@@ -2883,17 +2687,12 @@ End Sub
 
 Sub pbpLog (lineNbr%)
 
+    'Open "pbplog" For Output As #7
     Print #7, "Executing code from: "; lineNbr%
-    Print #7, Y$
+    Print #7, A$(0); " vs "; A$(1)
+    Print #7, "B7%(P9, I) "; testIdx
+    Print #7, "B9%(D, 1)  "; B9%(D, 1)
     Print #7,
+    'Close #7
 
 End Sub
-
-
-'$INCLUDE: 'Game_Routines.BM'
-'$INCLUDE: 'Game_Routines_Gfx.BM'
-'$INCLUDE: 'SOURCE.BM'
-'$INCLUDE: 'KeyInput.BM'
-'$INCLUDE: 'QPProEqu.BM'
-'$INCLUDE: 'PadRight.BM'
-

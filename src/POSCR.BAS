@@ -122,7 +122,7 @@ End Sub
 '...explanation...
 Sub GetTeam (yearNumber$, numberTeams, teamIndex%)
 
-    Shared L%()
+    Shared ratings%()
 
     Do
 
@@ -178,12 +178,12 @@ Sub GetTeam (yearNumber$, numberTeams, teamIndex%)
             BO% = 0
         Else
             Locate 2, 33
-            Color L%(11), L%(12): Print targetTeam$
+            Color ratings%(11), ratings%(12): Print targetTeam$
 
 			Color 15, 4
 
 			Do
-				Locate , 33: Print "ANY CHANGE (YN)";
+				Locate 3, 33: Print "ANY CHANGE (YN)";
 				I$ = GetKeyPress$
 			Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -233,8 +233,8 @@ End Sub
 Sub ReadTeam_POSCR (yearNumber$, teamIndex%)
 
     Shared K9&()
-    Shared B$(), P$()
-    Shared B%(), L%(), P%()
+    Shared statB$(), statP$()
+    Shared draftB%(), ratings%(), draftP%()
 
     5500 '
     Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
@@ -258,20 +258,20 @@ Sub ReadTeam_POSCR (yearNumber$, teamIndex%)
     Field #1, 4280 As X$, 40 As Q$(1840), 15 As Q$(1841), 5 As Q$(1842), 2 As Q$(1843)
     Get #1, teamIndex%
 
-    For I = 1 To 13: L%(I) = CVI(Q$(I)): Next
+    For I = 1 To 13: ratings%(I) = CVI(Q$(I)): Next
     K9&(0) = CVS(Q$(14))
 
     For I = 0 To 22:
-        B$(I) = RTrim$(Q$(I * 43 + 15))
+        statB$(I) = RTrim$(Q$(I * 43 + 15))
         For I1 = 0 To 41:
-            B%(I, I1) = CVI(Q$(I * 43 + I1 + 16))
+            draftB%(I, I1) = CVI(Q$(I * 43 + I1 + 16))
         Next
     Next
 
     For I = 0 To 21:
-        P$(I) = RTrim$(Q$(I * 38 + 1004))
+        statP$(I) = RTrim$(Q$(I * 38 + 1004))
         For I1 = 0 To 36
-            P%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
+            draftP%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
         Next
     Next
 

@@ -1,4 +1,5 @@
 Sub NEWLDR ()
+
     _Title "Full Count Baseball - Expanded Standings"
 
     ReDim menuChoices$(1 To 5)
@@ -753,11 +754,11 @@ End Sub
 Sub UpdateExpandedLeaders ()
 
     Shared BK%()
-    Shared statB%(), B0%(), BK%()
+    Shared statB%(), careerB0%(), BK%()
     Shared statP%(), P0%(), PM%()
-    Shared T%(), T1%(), GM1!()
+    Shared statT%(), statT1%(), GM1!()
 
-    Shared B$(), leaderBL$(), P$(), leaderPL$()
+    Shared statB$(), leaderBL$(), statP$(), leaderPL$()
     Shared TM$(), TMB$(), TMP$(), TT2$()
     Shared Z1$()
 
@@ -816,7 +817,7 @@ Sub UpdateExpandedLeaders ()
                 Locate 2, 33: Print targetFile$
 
                 Do
-                    Locate , 33: Print "ANY CHANGE (YN)";
+                    Locate 3, 33: Print "ANY CHANGE (YN)";
                     I$ = GetKeyPress$
                 Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -852,16 +853,16 @@ Sub UpdateExpandedLeaders ()
                         Open diskPaths$(1) + teamStat$ For Input As #1
                         Input #1, A$: Input #1, W2%: Input #1, L2%
                         For I = 0 To 22
-                            Input #1, B$(I)
+                            Input #1, statB$(I)
                             Input #1, statB%(I)
                         Next I
                         For I = 0 To 21:
-                            Input #1, P$(I)
+                            Input #1, statP$(I)
                             Input #1, statP%(I)
                         Next I
                         For I = 0 To 22
                             For I1 = 0 To 21
-                                Input #1, B0%(I, I1)
+                                Input #1, careerB0%(I, I1)
                             Next I1
                         Next I
                         For I = 0 To 21
@@ -871,8 +872,8 @@ Sub UpdateExpandedLeaders ()
                         Next I
                         Input #1, D0%
                         Input #1, D1%
-                        For I = 0 To 21: Input #1, T%(I): Next I
-                        For I = 0 To 22: Input #1, T1%(I): Next I
+                        For I = 0 To 21: Input #1, statT%(I): Next I
+                        For I = 0 To 22: Input #1, statT1%(I): Next I
                         Close #1
 
                         WW(YY) = W2%
@@ -881,20 +882,20 @@ Sub UpdateExpandedLeaders ()
                         TS = TS + 1
 
                         For I = 0 To 21
-                            TT!(TS, I) = T%(I)
+                            TT!(TS, I) = statT%(I)
                             TM$(TS, I) = A$
                         Next
 
                         TTS = TTS + 1
                         For I = 0 To 22
-                            TT1!(TTS, I) = T1%(I)
+                            TT1!(TTS, I) = statT1%(I)
                             TT2$(TTS, I) = A$
                         Next
 
                         For I = 0 To 22
-                            If B$(I) <> "XXX" Then
+                            If statB$(I) <> "XXX" Then
                                 JB = JB + 1
-                                leaderBL$(JB) = B$(I)
+                                leaderBL$(JB) = statB$(I)
                                 TBN = TBN + 1
                                 TMB$(TBN) = A$
                                 GM1!(JB) = WW(YY) + LL(YY)
@@ -903,9 +904,9 @@ Sub UpdateExpandedLeaders ()
                         Next I
 
                         For I = 0 To 21
-                            If P$(I) <> "XXX" Then
+                            If statP$(I) <> "XXX" Then
                                 JP = JP + 1
-                                leaderPL$(JP) = P$(I)
+                                leaderPL$(JP) = statP$(I)
                                 TPN = TPN + 1
                                 TMP$(TPN) = A$
                                 GM2(JP) = WW(YY) + LL(YY)
@@ -913,17 +914,17 @@ Sub UpdateExpandedLeaders ()
                         Next I
 
                         For I = 0 To 22
-                            If B$(I) <> "XXX" Then
+                            If statB$(I) <> "XXX" Then
                                 K = K + 1: K1 = 0
                                 For I1 = 0 To 21
                                     K1 = K1 + 1
-                                    BK%(K, K1) = B0%(I, I1)
+                                    BK%(K, K1) = careerB0%(I, I1)
                                 Next I1
                             End If
                         Next I
 
                         For I = 0 To 21
-                            If P$(I) <> "XXX" Then
+                            If statP$(I) <> "XXX" Then
                                 PK = PK + 1: PK1 = 0
                                 For I1 = 0 To 22
                                     PK1 = PK1 + 1
@@ -1087,7 +1088,7 @@ Sub ViewExpandedLeaders ()
                     Locate 2, 33: Print targetFile$
 
                     Do
-                        Locate , 33: Print "ANY CHANGE (YN)";
+                        Locate 3, 33: Print "ANY CHANGE (YN)";
                         I$ = GetKeyPress$
                     Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
 

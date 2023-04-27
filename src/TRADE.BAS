@@ -58,7 +58,7 @@ End Sub
 '...explanation...
 Sub GetTeamA_TRADE (yearNumber$, numberTeams, tradeIdx)
 
-    Shared A$()
+    Shared tradeA$()
     Shared tradeL%()
 
     tradeIdx = 0
@@ -125,12 +125,12 @@ Sub GetTeamA_TRADE (yearNumber$, numberTeams, tradeIdx)
             BO% = 0
         Else
             Locate 2, 33
-			Color tradeL%(tradeIdx, 11), tradeL%(tradeIdx, 12): Print A$(tradeIdx)
+			Color tradeL%(tradeIdx, 11), tradeL%(tradeIdx, 12): Print tradeA$(tradeIdx)
 			
 			Color 15, 4
 
 			Do
-				Locate , 33: Print "ANY CHANGE (YN)";
+				Locate 3, 33: Print "ANY CHANGE (YN)";
 				I$ = GetKeyPress$
             Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
 			
@@ -146,10 +146,10 @@ End Sub
 '...explanation...
 Sub SelectTeam_TRADE (yearNumber$, numberTeams, tradeIdx)
 
-    Shared A$(), tradeB$(), tradeP$()
+    Shared tradeA$(), tradeB$(), tradeP$()
     Shared tradeL%(), tradeB%(), tradeP%()
     Shared tradeInfo%()
-    Shared M$(), NN$(), S$()
+    Shared Managers$(), Stadiums$(), teamAbbrevs$()
 
     Shared K9&()
 
@@ -197,7 +197,7 @@ Sub SelectTeam_TRADE (yearNumber$, numberTeams, tradeIdx)
 
         Get #1, tradeInfo%(tradeIdx)
 
-        A$(tradeIdx) = RTrim$(Q$(0))
+        tradeA$(tradeIdx) = RTrim$(Q$(0))
 
         For I1 = 1 To 13: tradeL%(tradeIdx, I1) = CVI(Q$(I1)): Next
 
@@ -217,9 +217,9 @@ Sub SelectTeam_TRADE (yearNumber$, numberTeams, tradeIdx)
             Next
         Next
 
-        S$(tradeIdx) = RTrim$(Q$(1840))
-        M$(tradeIdx) = RTrim$(Q$(1841))
-        NN$(tradeIdx) = RTrim$(Q$(1842))
+        Stadiums$(tradeIdx) = RTrim$(Q$(1840))
+        Managers$(tradeIdx) = RTrim$(Q$(1841))
+        teamAbbrevs$(tradeIdx) = RTrim$(Q$(1842))
         CK = CVI(Q$(1843))
 
         Close 1
@@ -360,7 +360,7 @@ End Sub
 '...explanation...
 Sub GetTeamB_TRADE (yearNumber$, numberTeams, tradeIdx)
 
-    Shared A$()
+    Shared tradeA$()
     Shared tradeL%()
 
     Do
@@ -425,12 +425,12 @@ Sub GetTeamB_TRADE (yearNumber$, numberTeams, tradeIdx)
         Else
 
             Locate 2, 33
-			Color tradeL%(tradeIdx, 11), tradeL%(tradeIdx, 12): Print A$(tradeIdx)
+			Color tradeL%(tradeIdx, 11), tradeL%(tradeIdx, 12): Print tradeA$(tradeIdx)
 
 			Color 15, 4
 
 			Do
-				Locate , 33: Print "ANY CHANGE (YN)";
+				Locate 3, 33: Print "ANY CHANGE (YN)";
 				I$ = GetKeyPress$
             Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
 
@@ -446,32 +446,32 @@ End Sub
 '...explanation...
 Sub ContinueTrade (yearNumbers$(), tradeIdx)
 
-    Shared A$(), A1$(), SA$()
+    Shared tradeA$(), A1$(), SA$()
     Shared tradeB1$(), tradeP1$()
 
-    Shared D0%(), D1%(), tradeL%(), L2%()
+    Shared tradeD0%(), D1%(), tradeL%(), L2%()
     Shared TEAM%(), tradeT1%(), tradeP0%(), tradeP3%()
     Shared tradeB0%(), tradeB3%(), tradeSS%(), W2%()
 
-    Shared S%()
+    Shared tradeS%()
 
 	Cls
 	Print "DOES ";: Color tradeL%(tradeIdx, 11), tradeL%(tradeIdx, 12)
-	Print A$(0);: Color 15, 0
+	Print tradeA$(0);: Color 15, 0
 	Print " HAVE COMPILED STATS (YN)"
-	S%(0) = 0
+	tradeS%(0) = 0
 
     Do
         I$ = GetKeyPress$
     Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
 
     If UCase$(I$) = "N" Then
-        S%(0) = 1
+        tradeS%(0) = 1
         yearNumbers$(1) = yearNumbers$(0)
     Else
         Cls
 
-        SA$(tradeIdx) = A$(tradeIdx)
+        SA$(tradeIdx) = tradeA$(tradeIdx)
         For XX = 4 To 11
             If Mid$(SA$(tradeIdx), XX, 1) = " " Or Mid$(SA$(tradeIdx), XX, 1) = "." Then Mid$(SA$(tradeIdx), XX, 1) = "_"
         Next
@@ -503,7 +503,7 @@ Sub ContinueTrade (yearNumbers$(), tradeIdx)
             For I1 = 0 To 22: For I2 = 0 To 21: Input #1, tradeB0%(tradeIdx, I1, I2): Next I2: Next I1
             For I1 = 0 To 21: For I2 = 0 To 41: Input #1, tradeP0%(tradeIdx, I1, I2): Next I2: Next I1
 
-            Input #1, D0%(tradeIdx)
+            Input #1, tradeD0%(tradeIdx)
             Input #1, D1%(tradeIdx)
 
             For I = 0 To 21: Input #1, TEAM%(tradeIdx, I): Next I
@@ -511,7 +511,7 @@ Sub ContinueTrade (yearNumbers$(), tradeIdx)
 
             Close #1
 
-            If NF = 1 Then NF = 0: S%(0) = 1
+            If NF = 1 Then NF = 0: tradeS%(0) = 1
             yearNumbers$(1) = yearNumbers$(0)
 
             If _FileExists(diskPaths$(1) + R$ + "R") Then
@@ -542,19 +542,19 @@ Sub ContinueTrade (yearNumbers$(), tradeIdx)
 	Cls
 
 	Print "DOES ";: Color tradeL%(tradeIdx, 11), tradeL%(tradeIdx, 12)
-	Print A$(1);: Color 15, 0
+	Print tradeA$(1);: Color 15, 0
 	Print " HAVE COMPILED STATS (YN)"
-	S%(1) = 0
+	tradeS%(1) = 0
 
     Do
         I$ = GetKeyPress$
     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
     If UCase$(I$) = "N" Then
-        S%(1) = 1
+        tradeS%(1) = 1
     Else
         Cls
-        SA$(tradeIdx) = A$(tradeIdx)
+        SA$(tradeIdx) = tradeA$(tradeIdx)
         For XX = 4 To 11
             If Mid$(SA$(tradeIdx), XX, 1) = " " Or Mid$(SA$(tradeIdx), XX, 1) = "." Then Mid$(SA$(tradeIdx), XX, 1) = "_"
         Next
@@ -567,7 +567,7 @@ Sub ContinueTrade (yearNumbers$(), tradeIdx)
             End If
         Next XX
 
-        If NF = 1 Then NF = 0: S%(1) = 1
+        If NF = 1 Then NF = 0: tradeS%(1) = 1
     End If
 
     Do
@@ -588,7 +588,7 @@ Sub ContinueTrade (yearNumbers$(), tradeIdx)
 
         Select Case I$
             Case "1":
-                If S%(0) <> 1 And S%(1) <> 1 Then
+                If tradeS%(0) <> 1 And tradeS%(1) <> 1 Then
                     Cls
                     Print
                     Print
@@ -610,7 +610,7 @@ Sub ContinueTrade (yearNumbers$(), tradeIdx)
                 Call TradeBatters
 
             Case "2":
-                If S%(0) <> 1 And S%(1) <> 1 Then
+                If tradeS%(0) <> 1 And tradeS%(1) <> 1 Then
                     Cls
                     Print
                     Print
@@ -650,12 +650,12 @@ End Sub
 '...explanation...
 Sub TradeBatters ()
 
-    Shared A$(), tradeB1$(), tradeB$()
+    Shared tradeA$(), tradeB1$(), tradeB$()
 
     Shared tradeB%(), tradeB0%(), tradeB3%(), tradeL%()
     Shared tradeSA%(), tradeSS%(), tradeTS%()
 
-    Shared S%()
+    Shared tradeS%()
 
     Cls
 
@@ -664,8 +664,8 @@ Sub TradeBatters ()
     For I = 0 To 16: Locate I + 2, 44: Color , tradeL%(1, 12): Print Space$(15): Next
     For I = 0 To 5: Locate I + 2, 64: Color , tradeL%(1, 12): Print Space$(15): Next
 
-    Color 15, 0: Locate 1: Print A$(0);
-    Locate , 40: Print A$(1)
+    Color 15, 0: Locate 1: Print tradeA$(0);
+    Locate , 40: Print tradeA$(1)
 
     For I = 0 To 16
         Color 15, 0: Print Using "##"; I;: Print " ";
@@ -686,7 +686,7 @@ Sub TradeBatters ()
         Print Space$(40);
         Print Space$(40);
 
-        Locate 20, 1: Print A$(0); " BATTER: ";
+        Locate 20, 1: Print tradeA$(0); " BATTER: ";
 
         Do
             Input I$
@@ -694,7 +694,7 @@ Sub TradeBatters ()
         Loop Until I >= 0 And I <= 22
 
         Print tradeB$(0, I)
-        Locate 21, 1: Print A$(1); " BATTER: ";
+        Locate 21, 1: Print tradeA$(1); " BATTER: ";
 
         Do
             Input I$
@@ -742,7 +742,7 @@ Sub TradeBatters ()
     tradeB1$(1, I1) = tradeB$(1, I1)
     Swap tradeB3%(0, I), tradeB3%(1, I1)
 
-    If S%(0) = 1 Or S%(1) = 1 Or W1 = 0 Then
+    If tradeS%(0) = 1 Or tradeS%(1) = 1 Or W1 = 0 Then
         For I2 = 0 To 21: Swap tradeB0%(0, I, I2), tradeB0%(1, I1, I2): Next I2
     Else
         For I2 = 0 To 21: tradeB0%(0, I, I2) = 0: tradeB0%(1, I1, I2) = 0: Next I2
@@ -762,10 +762,10 @@ End Sub
 '...explanation...
 Sub TradePitchers ()
 
-    Shared A$(), tradeB$(), tradeP1$()
+    Shared tradeA$(), tradeB$(), tradeP1$()
     Shared tradeL%(), tradeP0%(), tradeP%(), tradeP3%()
     Shared tradeSA%(), tradeTS%()
-    Shared S%()
+    Shared tradeS%()
 
     Cls
 
@@ -774,7 +774,7 @@ Sub TradePitchers ()
     For I = 0 To 11: Locate I + 2, 44: Color , tradeL%(1, 12): Print Space$(15): Next
     For I = 0 To 10: Locate I + 2, 64: Color , tradeL%(1, 12): Print Space$(15): Next
 
-    Color 15, 0: Locate 1: Print A$(0);: Locate , 40: Print A$(1)
+    Color 15, 0: Locate 1: Print tradeA$(0);: Locate , 40: Print tradeA$(1)
 
     For I = 0 To 11
         Color 15, 0: Print Using "##"; I;: Print " ";
@@ -796,7 +796,7 @@ Sub TradePitchers ()
         Print Space$(40);
         Print Space$(40);
 
-        Locate 20, 1: Print A$(0); " PITCHER: ";
+        Locate 20, 1: Print tradeA$(0); " PITCHER: ";
 
         Do
             Input I$
@@ -804,7 +804,7 @@ Sub TradePitchers ()
         Loop Until I >= 0 And I <= 21
 
         Print tradeB$(0, I)
-        Locate 21, 1: Print A$(1); " PITCHER: ";
+        Locate 21, 1: Print tradeA$(1); " PITCHER: ";
 
         Do
             Input I$
@@ -837,7 +837,7 @@ Sub TradePitchers ()
     tradeP1$(0, I) = tradeB$(0, I)
     tradeP1$(1, I1) = tradeB$(1, I1)
 
-    If S%(0) = 1 Or S%(1) = 1 Or W1 = 0 Then
+    If tradeS%(0) = 1 Or tradeS%(1) = 1 Or W1 = 0 Then
         For I2 = 0 To 41: tradeP0%(0, I, I2) = 0: tradeP0%(1, I1, I2) = 0: Next I2
     Else
         Swap tradeP3%(0, I), tradeP3%(1, I1)
@@ -856,19 +856,19 @@ End Sub
 '...explanation...
 Sub SaveTrades (yearNumbers$())
 
-    Shared A$(), A1$(), SA$()
+    Shared tradeA$(), A1$(), SA$()
     Shared tradeB$(), tradeP$()
     Shared tradeB1$(), tradeP1$()
 
-    Shared D0%(), D1%(), tradeL%(), L2%()
-    Shared S%(), TEAM%()
+    Shared tradeD0%(), D1%(), tradeL%(), L2%()
+    Shared tradeS%(), TEAM%()
     Shared tradeB%(), tradeB0%(), tradeB3%()
     Shared tradeP%(), tradeP0%(), tradeP3%()
     Shared tradeSA%(), tradeSS%(), tradeT1%(), tradeTS%()
     Shared tradeInfo%(), W2%()
 
-    Shared M$(), NN$(), S$()
-
+    Shared Managers$(), Stadiums$(), teamAbbrevs$()
+	
     Shared K9&()
 
     For tradeIdx = 0 To 1
@@ -895,7 +895,7 @@ Sub SaveTrades (yearNumbers$())
 
         Field #1, 4280 As X$, 40 As Q$(1840), 15 As Q$(1841), 5 As Q$(1842), 2 As Q$(1843)
 
-        LSet Q$(0) = A$(tradeIdx)
+        LSet Q$(0) = tradeA$(tradeIdx)
 
         For J = 1 To 13: LSet Q$(J) = MKI$(tradeL%(tradeIdx, J)): Next
 
@@ -915,9 +915,9 @@ Sub SaveTrades (yearNumbers$())
             Next
         Next
 
-        LSet Q$(1840) = S$(tradeIdx)
-        LSet Q$(1841) = M$(tradeIdx)
-        LSet Q$(1842) = NN$(tradeIdx)
+        LSet Q$(1840) = Stadiums$(tradeIdx)
+        LSet Q$(1841) = Managers$(tradeIdx)
+        LSet Q$(1842) = teamAbbrevs$(tradeIdx)
         LSet Q$(1843) = MKI$(999)
 
         Put #1, tradeInfo%(tradeIdx): Close 1
@@ -1020,7 +1020,7 @@ Sub SaveTrades (yearNumbers$())
     Next tradeIdx
 
     For I = 0 To 1
-        If S%(I) <> 1 Then
+        If tradeS%(I) <> 1 Then
             Cls
 
             For XX = 4 To 11
@@ -1049,7 +1049,7 @@ Sub SaveTrades (yearNumbers$())
 
             For I1 = 0 To 21: For I2 = 0 To 41: Print #1, tradeP0%(I, I1, I2): Next I2: Next I1
 
-            Print #1, D0%(I): Print #1, D1%(I)
+            Print #1, tradeD0%(I): Print #1, D1%(I)
 
             For I1 = 0 To 21: Print #1, TEAM%(I, I1): Next I1
 
@@ -1077,10 +1077,10 @@ End Sub
 '...explanation...
 Sub TradeSummary_Batters
 
-    Shared A$(), tradeB$()
+    Shared tradeA$(), tradeB$()
     Shared tradeL%(), tradeB%(), tradeB0%()
 
-    Dim C$(9), plateX$(4)
+    Dim progC$(9), plateX$(4)
 
     plateX$(0) = "LP"
     plateX$(1) = "L"
@@ -1088,34 +1088,34 @@ Sub TradeSummary_Batters
     plateX$(3) = "R"
     plateX$(4) = "RP"
 
-    C$(0) = "DH"
-    C$(1) = "P"
-    C$(2) = "C"
-    C$(3) = "1B"
-    C$(4) = "2B"
-    C$(5) = "3B"
-    C$(6) = "SS"
-    C$(7) = "LF"
-    C$(8) = "CF"
-    C$(9) = "RF"
+    progC$(0) = "DH"
+    progC$(1) = "P"
+    progC$(2) = "C"
+    progC$(3) = "1B"
+    progC$(4) = "2B"
+    progC$(5) = "3B"
+    progC$(6) = "SS"
+    progC$(7) = "LF"
+    progC$(8) = "CF"
+    progC$(9) = "RF"
 
     Cls
-    Color tradeL%(0, 11), tradeL%(0, 12): Print A$(0);
+    Color tradeL%(0, 11), tradeL%(0, 12): Print tradeA$(0);
     Locate , 41
-    Color tradeL%(1, 11), tradeL%(1, 12): Print A$(1)
+    Color tradeL%(1, 11), tradeL%(1, 12): Print tradeA$(1)
     Color 15, 0
 
-    Print tradeB$(0, I); " "; plateX$(tradeB%(0, I, 0) + 2); " "; C$(tradeB%(0, I, 22));
-    If tradeB%(0, I, 23) >= 0 Then Print ","; C$(tradeB%(0, I, 23));
-    If tradeB%(0, I, 24) >= 0 Then Print ","; C$(tradeB%(0, I, 24));
-    If tradeB%(0, I, 25) >= 0 Then Print ","; C$(tradeB%(0, I, 25));
+    Print tradeB$(0, I); " "; plateX$(tradeB%(0, I, 0) + 2); " "; progC$(tradeB%(0, I, 22));
+    If tradeB%(0, I, 23) >= 0 Then Print ","; progC$(tradeB%(0, I, 23));
+    If tradeB%(0, I, 24) >= 0 Then Print ","; progC$(tradeB%(0, I, 24));
+    If tradeB%(0, I, 25) >= 0 Then Print ","; progC$(tradeB%(0, I, 25));
 
     Locate , 41:
 
-    Print tradeB$(1, I1); " "; plateX$(tradeB%(1, I1, 0) + 2); " "; C$(tradeB%(1, I1, 22));
-    If tradeB%(1, I1, 23) >= 0 Then Print ","; C$(tradeB%(1, I1, 23));
-    If tradeB%(1, I1, 24) >= 0 Then Print ","; C$(tradeB%(1, I1, 24));
-    If tradeB%(1, I1, 25) >= 0 Then Print ","; C$(tradeB%(1, I1, 25));
+    Print tradeB$(1, I1); " "; plateX$(tradeB%(1, I1, 0) + 2); " "; progC$(tradeB%(1, I1, 22));
+    If tradeB%(1, I1, 23) >= 0 Then Print ","; progC$(tradeB%(1, I1, 23));
+    If tradeB%(1, I1, 24) >= 0 Then Print ","; progC$(tradeB%(1, I1, 24));
+    If tradeB%(1, I1, 25) >= 0 Then Print ","; progC$(tradeB%(1, I1, 25));
 
     Locate , 1: Print
     Print "REAL";: Locate , 15
@@ -1273,7 +1273,7 @@ End Sub
 '...explanation...
 Sub TradeSummary_Pitchers
 
-    Shared A$(), tradeB$()
+    Shared tradeA$(), tradeB$()
     Shared tradeL%(), tradeP%(), tradeP0%()
     Dim plateX$(4)
 
@@ -1285,9 +1285,9 @@ Sub TradeSummary_Pitchers
 
     '905
     Cls
-    Color tradeL%(0, 11), tradeL%(0, 12): Print A$(0);
+    Color tradeL%(0, 11), tradeL%(0, 12): Print tradeA$(0);
     Locate , 41
-    Color tradeL%(1, 11), tradeL%(1, 12): Print A$(1)
+    Color tradeL%(1, 11), tradeL%(1, 12): Print tradeA$(1)
     Color 15, 0
 
     Locate , 1: Print tradeB$(0, I); " "; plateX$(tradeP%(0, I, 0) + 2);

@@ -1,33 +1,35 @@
 
-Const GAME_VERSION$ = "6.65"
+Const GAME_VERSION$ = "6.67"
+Const MAX_TEAMS = 1000
+Const MAX_GAMES = 1500
+Const MAX_FILES = 10240
+'optimium = 1048576 (but slows code)
 'Const MAX_CONFERENCES = 40
 'Const TEAMS_PER_CONFERENCE = 30
 'Const TEAMS_PER_DIV = 15
 'Const DIVS_PER_CONFERENCE = 2
 
 Const NUM_STATRECORDS = 162
-Const MAX_TEAMS = 500
-Const MAX_GAMES = 1500
-Const MAX_FILES = 1024 '1048576
 
 DefInt A-Z
 
 '$INCLUDE: 'KeyInput.BI'
 '$INCLUDE: 'QPProEqu.BI'
 '$INCLUDE: 'PadRight.BI'
+
+' For Utils
 '$INCLUDE: 'MainRoutines.BI'
 '$INCLUDE: 'TITLE.BI'
 '$INCLUDE: 'Variables.BI'
 
-Dim cmplZ2$(298), cmplZ3$(298)
-Dim BA$(40), ER$(40), NM$(46)
-Dim cmplZ1!(298, 2)
-Dim DFT!(40, 20), JS!(46, 42), OFT!(40, 20)
+' For Game
+'$INCLUDE: 'Game_Routines.BI'
+'$INCLUDE: 'Game_Routines_Gfx.BI'
+'$INCLUDE: 'SOURCE.BI'
 
-Dim H$(NUM_STATRECORDS), L$(NUM_STATRECORDS)
-Dim PL$(NUM_STATRECORDS), W$(NUM_STATRECORDS)
 
-Dim H%(NUM_STATRECORDS), I%(NUM_STATRECORDS), V%(NUM_STATRECORDS)
+On Error GoTo Errhandler
+
 
 '----------------------------------------
 '          READ IN ALL DATA
@@ -108,6 +110,83 @@ For X = 0 To 3: Read MO$(X): Next
 Data 15,0,15,1,19,4,4,6,3,1,2,3,14
 For X = 1 To 13: Read E%(X): Next
 
+
+Data A,B,C,D,E,F,G,H,I,J,K,L,M,dh," p"," c",1b,2b,3b,ss,lf,cf,rf,ph,pr
+For I = 0 To 12: Read X$(I): Next I
+For I = 0 To 11: Read C$(I): Next I
+
+'Data to read in to variables
+Data first,second,third,short
+Data 6,12,37,55,66,74,86,96,100
+Data 5,10,32,55,67,75,86,96,100
+Data 4,8,27,54,68,76,86,96,100
+Data 3,7,25,54,69,76,86,96,100
+Data 3,6,22,54,69,77,86,96,100
+Data 2,5,20,53,69,78,86,96,100
+Data 2,4,17,53,70,78,86,96,100
+Data 1,3,12,52,71,79,86,96,100
+Data 1,2,7,51,72,80,86,96,100
+Data 6,14,42,55,63,74,86,96,100
+Data 5,12,37,55,64,75,86,96,100
+Data 4,10,32,55,65,76,86,96,100
+Data 3,8,30,55,66,77,86,96,100
+Data 3,7,27,55,66,77,86,96,100
+Data 3,6,24,55,66,77,86,96,100
+Data 2,5,22,55,67,78,86,96,100
+Data 1,4,17,55,68,79,86,96,100
+Data 1,3,12,55,69,80,86,96,100
+Data 0,0,100
+Data 0,15,100
+Data 0,30,100
+Data 0,45,100
+Data 0,60,100
+Data 1,75,100
+Data 3,90,100
+Data 4,97,100
+Data 100,0,90,100,75,100,60,100,45,100,30,100,15,100,8,100
+Data 100,0,0,90,100,0,70,95,100,50,80,100,30,65,100,10,50,100
+Data 0,90,100,5,87,100,10,85,100,15,80,100,20,77,100,25,75,100
+Data 30,73,100,35,70,100,40,67,100,45,65,100,50,63,100,60,65,100
+
+'Read in data and assign variables
+For I = 3 To 6
+    Read F$(I)
+Next
+
+For I = 0 To 1
+    For I1 = 1 To 9
+        For I2 = 1 To 9
+            Read BT%(I, I1, I2)
+        Next
+    Next
+Next
+
+For I = 2 To 9
+    For I1 = 0 To 2
+        Read CF%(I, I1)
+    Next
+Next
+
+For I = 2 To 9
+    For I1 = 0 To 1
+        Read LB%(I, I1)
+    Next
+Next
+
+For I = 0 To 5
+    For I1 = 0 To 2
+        Read SO%(I, I1)
+    Next
+Next
+
+For I = 11 To 0 Step -1
+    For I1 = 0 To 2
+        Read TP%(I, I1)
+    Next
+Next
+
+
+
 '----------------------------------------
 '               MAIN CODE
 '----------------------------------------
@@ -130,7 +209,6 @@ For I = 0 To 3
 Next
 Close 1
 
-
 Selection% = 1
 
 Do
@@ -140,6 +218,20 @@ Loop Until Selection% = 15
 End
 
 System
+
+
+'----------------------------------------
+
+Errhandler:
+Open "errlog" For Append As #9
+Print #9, "Error #"; Err; "on program file line"; _ErrorLine
+Print #9, A$(0); " vs "; A$(1)
+Print #9, "B7%(P9, I) "; testIdx
+Print #9, "B9%(D, 1)  "; B9%(D, 1)
+Print #9,
+Close #9
+Resume Next ' moves program to code following the error.
+
 
 '----------------------------------------
 '       Main_Menu Subroutine
@@ -169,6 +261,7 @@ Sub Main_Menu (menuSelection%)
         menuChoices$(13) = "HARD DRIVE INSTALLATION         "
         menuChoices$(14) = "CONFIGURE DRIVES FOR TEAMS,STATS"
         menuChoices$(15) = "EXIT TO DOS                     "
+
         Selection% = 1
         Count% = 15
         Start% = 1
@@ -185,9 +278,10 @@ Sub Main_Menu (menuSelection%)
         _MouseHide
 
         Color , 0
+
         If ExitCode% <> 27 Then
             Select Case Selection%
-                Case 1: Run "LOADER.EXE"
+                Case 1: Call LOADER
                 Case 2: Call BINPUT
                 Case 3: Call PROGMAN
                 Case 4: Call SCHEDULE
@@ -207,10 +301,10 @@ Sub Main_Menu (menuSelection%)
 
     Loop Until Selection% = 15 Or ExitCode% = 27
 
-    menuSelection% = Selection%
     If ExitCode% = 27 Then menuSelection% = 15
 
 End Sub
+
 
 '----------------------------------------
 '       Configure_Drives Subroutine
@@ -297,8 +391,60 @@ Sub ConfigureDrives ()
     '620 GoTo 1
 End Sub
 
+
 '----------------------------------------
-'       Leaders_Menu Subroutine
+'         Replay_Menu Subroutine
+'----------------------------------------
+'...explanation...
+Sub Replay_Menu ()
+
+    Do
+        Cls
+
+        Color 15, 0
+
+        Call TITLE
+
+        ReDim menuChoices$(1 To 6)
+        menuChoices$(1) = "COMPARE COMPILED STATS VS. ACTUAL"
+        menuChoices$(2) = "MERGE TWO STAT FILES             "
+        menuChoices$(3) = "VIEW TEAM HEAD TO HEAD RESULTS   "
+        menuChoices$(4) = "CAREER FILE OPTIONS              "
+        menuChoices$(5) = "SORT PLAYERS BY POSITION         "
+        menuChoices$(6) = "RETURN TO FULL COUNT MAIN MENU   "
+        Selection% = 1
+        Count% = 6
+        Start% = 1
+        ExitCode% = 6
+        FileFGColor% = 15: FileBGColor% = 1
+        HiLiteFGColor% = 0: HiLiteBGColor% = 7
+        Spacing% = 1
+        Row% = 8
+        Column% = 23
+        Call box0(7, 22, 14, 56, 2, 15, 1)
+        _MouseShow "DEFAULT"
+        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        _MouseHide
+
+        Color , 0
+        If ExitCode% <> 27 Then
+            Select Case Selection%
+                Case 1: Call COMPARE
+                Case 2: Call MERGE
+                Case 3: Call REC
+                Case 4: Call CAREER
+                Case 5: Call POSSRT
+                Case 6: Cls
+            End Select
+        End If
+
+    Loop Until Selection% = 6 Or ExitCode% = 27
+
+End Sub
+
+
+'----------------------------------------
+'        Leaders_Menu Subroutine
 '----------------------------------------
 '...explanation...
 Sub Leaders_Menu ()
@@ -354,59 +500,12 @@ Sub Leaders_Menu ()
 
 End Sub
 
-'----------------------------------------
-'       Replay_Menu Subroutine
-'----------------------------------------
-'...explanation...
-Sub Replay_Menu ()
-
-    Do
-        Cls
-        
-        Color 15, 0
-
-        Call TITLE
-
-        ReDim menuChoices$(1 To 6)
-        menuChoices$(1) = "COMPARE COMPILED STATS VS. ACTUAL"
-        menuChoices$(2) = "MERGE TWO STAT FILES             "
-        menuChoices$(3) = "VIEW TEAM HEAD TO HEAD RESULTS   "
-        menuChoices$(4) = "CAREER FILE OPTIONS              "
-        menuChoices$(5) = "SORT PLAYERS BY POSITION         "
-        menuChoices$(6) = "RETURN TO FULL COUNT MAIN MENU   "
-        Selection% = 1
-        Count% = 6
-        Start% = 1
-        ExitCode% = 6
-        FileFGColor% = 15: FileBGColor% = 1
-        HiLiteFGColor% = 0: HiLiteBGColor% = 7
-        Spacing% = 1
-        Row% = 8
-        Column% = 23
-        Call box0(7, 22, 14, 56, 2, 15, 1)
-        _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
-        _MouseHide
-
-        Color , 0
-        If ExitCode% <> 27 Then
-            Select Case Selection%
-                Case 1: Call COMPARE
-                Case 2: Call MERGE
-                Case 3: Call REC
-                Case 4: Call CAREER
-                Case 5: Call POSSRT
-                Case 6: Cls
-            End Select
-        End If
-
-    Loop Until Selection% = 6 Or ExitCode% = 27
-
-End Sub
 
 '$INCLUDE: 'KeyInput.BM'
 '$INCLUDE: 'QPProEqu.BM'
 '$INCLUDE: 'PadRight.BM'
+
+' For Utils
 '$INCLUDE: 'MainRoutines.BI'
 '$INCLUDE: 'TITLE.BM'
 '$INCLUDE: 'ACTIVATE.BAS'
@@ -437,4 +536,10 @@ End Sub
 '$INCLUDE: 'SINPUT.BAS'
 '$INCLUDE: 'TRADE.BAS'
 '$INCLUDE: 'UMPMGR.BAS'
+
+' For Game
+'$INCLUDE: 'Game_Routines.BM'
+'$INCLUDE: 'Game_Routines_Gfx.BM'
+'$INCLUDE: 'LOADER.BAS'
+'$INCLUDE: 'SOURCE.BM'
 

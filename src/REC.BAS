@@ -60,7 +60,7 @@ End Sub
 '...explanation...
 Sub GetTeam_REC (yearNumber$, numberTeams)
 
-    Shared L%()
+    Shared ratings%()
 
     Do
         Color 15, 0: Cls
@@ -115,12 +115,12 @@ Sub GetTeam_REC (yearNumber$, numberTeams)
         Else
             T$ = RTrim$(Q$(0))
             Locate 2, 33
-            Color L%(11), L%(12): Print T$
+            Color ratings%(11), ratings%(12): Print T$
 
             Color 15, 4
 
             Do
-                Locate , 33: Print "ANY CHANGE (YN)";
+                Locate 3, 33: Print "ANY CHANGE (YN)";
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -136,7 +136,7 @@ End Sub
 '...explanation...
 Sub SelectTeam_REC (yearNumber$, numberTeams)
 
-    Shared L%()
+    Shared ratings%()
 
     Selection% = 1
     Count% = numberTeams
@@ -175,7 +175,7 @@ Sub SelectTeam_REC (yearNumber$, numberTeams)
             Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
             Get #1, T
 
-            For I = 1 To 13: L%(I) = CVI(Q$(I)): Next
+            For I = 1 To 13: ratings%(I) = CVI(Q$(I)): Next
             Close 1
 
         End If
@@ -296,7 +296,7 @@ Sub AnalyzeTeamRecord (LG$, sameLeague)
                             Locate 2, 33: Print targetFile$
 
                             Do
-                                Locate , 33: Print "ANY CHANGE (YN)";
+                                Locate 3, 33: Print "ANY CHANGE (YN)";
                                 I$ = GetKeyPress$
                             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -444,7 +444,7 @@ Sub Records_Screen (teamName$)
 
     Shared HW%(), AW%(), HL%(), AL%()
     Shared R1%(), R2%(), R3%(), R4%()
-    Shared L%()
+    Shared ratings%()
 
     Shared DV$(), Z1$()
 
@@ -454,7 +454,7 @@ Sub Records_Screen (teamName$)
     Do
         Cls
         Locate 2, 35
-        Color L%(11), L%(12): Print teamName$
+        Color ratings%(11), ratings%(12): Print teamName$
         Color 3, 0
 
         Locate 4
@@ -561,7 +561,7 @@ Sub Records_Screen (teamName$)
 
     Cls
     Locate 2, 35
-    Color L%(11), L%(12): Print teamName$
+    Color ratings%(11), ratings%(12): Print teamName$
     Color 3, 0
 
     Locate 4

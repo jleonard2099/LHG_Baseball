@@ -4,8 +4,8 @@ Sub GROUND ()
 
     DefInt A-Z
 
-    Shared B%(), L%(), P%()
-    Shared B$(), P$()
+    Shared draftB%(), ratings%(), draftP%()
+    Shared statB$(), statP$()
 
     Shared K9&()
 
@@ -92,16 +92,16 @@ Sub GROUND ()
         CK = CVI(Q$(1843))
 
         For I = 0 To 22
-            TB%(I) = B%(I, 6) + B%(I, 7) + 2 * B%(I, 8) + 3 * B%(I, 9)
+            TB%(I) = draftB%(I, 6) + draftB%(I, 7) + 2 * draftB%(I, 8) + 3 * draftB%(I, 9)
 
-            If B%(I, 4) = 0 Then
+            If draftB%(I, 4) = 0 Then
                 SP%(I) = 0
                 BA%(I) = 0
             Else
-                SLP! = TB%(I) / B%(I, 4)
+                SLP! = TB%(I) / draftB%(I, 4)
                 SP%(I) = SLP! * 1000
-                B%(I, 20) = BP
-                BAP! = B%(I, 6) / B%(I, 4)
+                draftB%(I, 20) = BP
+                BAP! = draftB%(I, 6) / draftB%(I, 4)
                 BA%(I) = BAP! * 1000
             End If
 
@@ -109,33 +109,33 @@ Sub GROUND ()
 
             DI = DP%(I) - MD
             CH! = Int(DI / 10)
-            B%(I, 18) = 52 - CH!
+            draftB%(I, 18) = 52 - CH!
 
-            If B%(I, 18) < 34 Then B%(I, 18) = 34
-            If B%(I, 18) > 64 Then B%(I, 18) = 64
+            If draftB%(I, 18) < 34 Then draftB%(I, 18) = 34
+            If draftB%(I, 18) > 64 Then draftB%(I, 18) = 64
 
         Next I
 
         For I = 0 To 21
 
-            If P%(I, 6) = 0 Or P%(I, 10) = 0 Then
-                P%(I, 12) = 52
+            If draftP%(I, 6) = 0 Or draftP%(I, 10) = 0 Then
+                draftP%(I, 12) = 52
             Else
 
-                P%(I, 14) = BP
+                draftP%(I, 14) = BP
 
-                RHP! = P%(I, 7) / (P%(I, 10) / 900 * P%(I, 6))
+                RHP! = draftP%(I, 7) / (draftP%(I, 10) / 900 * draftP%(I, 6))
                 RH%(I) = RHP! * 100
                 Print RH%(I)
-                'INT(P%(I,7)*900/(P%(I,10)*P%(I,6))*100)/100
+                'INT(draftP%(I,7)*900/(draftP%(I,10)*draftP%(I,6))*100)/100
 
                 DF = RH%(I) - PD!
                 CH! = Int(DF / 10) * 2
-                P%(I, 12) = Int(CH! + 52)
+                draftP%(I, 12) = Int(CH! + 52)
                 RH%(I) = RH%(I) / 10
 
-                If P%(I, 12) > 64 Then P%(I, 12) = 64
-                If P%(I, 12) < 34 Then P%(I, 12) = 34
+                If draftP%(I, 12) > 64 Then draftP%(I, 12) = 64
+                If draftP%(I, 12) < 34 Then draftP%(I, 12) = 34
 
             End If
 
@@ -148,8 +148,8 @@ Sub GROUND ()
         Print "BATTER         BA            SA            GA"
 
         For I = 0 To 22
-            If B$(I) <> "" And B$(I) <> "XXX" Then
-                Print B$(I), BA%(I), SP%(I), B%(I, 18)
+            If statB$(I) <> "" And statB$(I) <> "XXX" Then
+                Print statB$(I), BA%(I), SP%(I), draftB%(I, 18)
             End If
         Next
 
@@ -160,8 +160,8 @@ Sub GROUND ()
         Print "PITCHER               HITS/RUN ALLOWED     GA"
 
         For I = 0 To 21
-            If P$(I) <> "" And P$(I) <> "XXX" Then
-                Print P$(I), , Int(RH%(I)) / 10, P%(I, 12)
+            If statP$(I) <> "" And statP$(I) <> "XXX" Then
+                Print statP$(I), , Int(RH%(I)) / 10, draftP%(I, 12)
             End If
         Next
 
@@ -170,12 +170,12 @@ Sub GROUND ()
 
         Cls
 
-        '    L%(1)=267
-        '    L%(2)=228
-        '    L%(3)=94
-        '    L%(4)=100
-        '    L%(6)=99
-        '    L%(7)=99
+        '    ratings%(1)=267
+        '    ratings%(2)=228
+        '    ratings%(3)=94
+        '    ratings%(4)=100
+        '    ratings%(6)=99
+        '    ratings%(7)=99
         '    K9&(0)=99
 
         Open diskPaths$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342
@@ -201,22 +201,22 @@ Sub GROUND ()
         LSet Q$(0) = T$
 
         For I = 1 To 13:
-            LSet Q$(I) = MKI$(L%(I))
+            LSet Q$(I) = MKI$(ratings%(I))
         Next
 
         LSet Q$(14) = MKS$(K9&(0))
 
         For I = 0 To 22
-            LSet Q$(I * 43 + 15) = B$(I)
+            LSet Q$(I * 43 + 15) = statB$(I)
             For I1 = 0 To 41
-                LSet Q$(I * 43 + I1 + 16) = MKI$(B%(I, I1))
+                LSet Q$(I * 43 + I1 + 16) = MKI$(draftB%(I, I1))
             Next
         Next
 
         For I = 0 To 21
-            LSet Q$(I * 38 + 1004) = P$(I)
+            LSet Q$(I * 38 + 1004) = statP$(I)
             For I1 = 0 To 36
-                LSet Q$(I * 38 + I1 + 1005) = MKI$(P%(I, I1))
+                LSet Q$(I * 38 + I1 + 1005) = MKI$(draftP%(I, I1))
             Next
         Next
 
@@ -244,7 +244,7 @@ End Sub
 '...explanation...
 Sub GetTeam_GROUND (yearNumber$, numberTeams, teamName$, teamIdx)
 
-    Shared L%()
+    Shared ratings%()
 
     Do
         Color 15, 0: Cls
@@ -304,12 +304,12 @@ Sub GetTeam_GROUND (yearNumber$, numberTeams, teamName$, teamIdx)
             BO% = 0
         Else
             Locate 2, 33
-            Color L%(11), L%(12): Print teamName$
+            Color ratings%(11), ratings%(12): Print teamName$
 
             Color 15, 4
 
             Do
-                Locate , 33: Print "ANY CHANGE (YN)";
+                Locate 3, 33: Print "ANY CHANGE (YN)";
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -325,8 +325,8 @@ End Sub
 '...explanation...
 Sub SelectTeam_GROUND (yearNumber$, numberTeams, teamIdx)
 
-    Shared B%(), L%(), P%()
-    Shared B$(), P$()
+    Shared draftB%(), ratings%(), draftP%()
+    Shared statB$(), statP$()
     Shared K9&()
 
     Selection% = 1
@@ -375,18 +375,18 @@ Sub SelectTeam_GROUND (yearNumber$, numberTeams, teamIdx)
         Field #1, 4280 As X$, 40 As Q$(1840), 15 As Q$(1841), 5 As Q$(1842), 2 As Q$(1843)
         Get #1, teamIdx
 
-        For I = 1 To 13: L%(I) = CVI(Q$(I)): Next: K9&(0) = CVS(Q$(14))
+        For I = 1 To 13: ratings%(I) = CVI(Q$(I)): Next: K9&(0) = CVS(Q$(14))
 
-        For I = 0 To 22: B$(I) = RTrim$(Q$(I * 43 + 15))
+        For I = 0 To 22: statB$(I) = RTrim$(Q$(I * 43 + 15))
             For I1 = 0 To 41
-                B%(I, I1) = CVI(Q$(I * 43 + I1 + 16)): 'PRINT B$(I),B%(I,I1)
+                draftB%(I, I1) = CVI(Q$(I * 43 + I1 + 16)): 'PRINT statB$(I),draftB%(I,I1)
             Next
         Next
 
         For I = 0 To 21
-            P$(I) = RTrim$(Q$(I * 38 + 1004))
+            statP$(I) = RTrim$(Q$(I * 38 + 1004))
             For I1 = 0 To 36
-                P%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
+                draftP%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
             Next
         Next
 

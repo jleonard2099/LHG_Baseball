@@ -9,9 +9,9 @@ Sub DRAFT ()
     Dim draftYN$(0 To 1)
 
     Shared K9&()
-    Shared B$(), P$(), draftB1$(), draftP1$()
+    Shared statB$(), statP$(), draftB1$(), draftP1$()
     Shared draftB%(), draftB1%(), draftP%(), draftP1%()
-    Shared L%(), SA%(), SA1%(), TS%(), TS1%()
+    Shared ratings%(), inputSA%(), SA1%(), inputTS%(), TS1%()
 
     Do
 
@@ -39,7 +39,7 @@ Sub DRAFT ()
                 DNT% = 0
 				
 				For I = 0 To 22
-					B$(I) = "XXX"
+					statB$(I) = "XXX"
 					draftB1$(I) = "XXX"
 					For I1 = 0 To 79
 						draftB%(I, I1) = 0
@@ -48,7 +48,7 @@ Sub DRAFT ()
 				Next
 
 				For I = 0 To 21
-					P$(I) = "XXX"
+					statP$(I) = "XXX"
 					draftP1$(I) = "XXX"
 					For I1 = 0 To 88
 						draftP%(I, I1) = 0
@@ -57,12 +57,12 @@ Sub DRAFT ()
 				Next
 
 				For I = 0 To 11
-					TS%(I) = 0
+					inputTS%(I) = 0
 					TS1%(I) = 0
 				Next
 
 				For I = 1 To 24
-					SA%(I) = 0
+					inputSA%(I) = 0
 					SA1%(I) = 0
 				Next
 
@@ -128,12 +128,12 @@ Sub DRAFT ()
                         BO% = 0
                     Else
                         Locate 2, 33
-                        Color L%(11), L%(12): Print T$
+                        Color ratings%(11), ratings%(12): Print T$
 
 						Color 15, 4
 
 						Do
-							Locate , 33: Print "ANY CHANGE (YN)";
+							Locate 3, 33: Print "ANY CHANGE (YN)";
 							I$ = GetKeyPress$
 						Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -162,9 +162,9 @@ End Sub
 Sub DraftNewTeam (draftYear$, teamName$)
 
     ' Shared T$()
-    Shared L%()
+    Shared ratings%()
     Shared K9&()
-    Shared M$, NN$, S$
+    Shared M$, NN$, Stadium$
 
     Cls
     Print "INPUT TEAM INFORMATION"
@@ -172,25 +172,25 @@ Sub DraftNewTeam (draftYear$, teamName$)
     'Do
     315 Locate 2: Input "1. DISK ID "; draftYear$: If C1 = 1 Then 415
     325 Locate 3: Input "2. TEAM NAME "; teamName$: If C1 = 1 Then 415
-    335 Locate 4: Input "3. LGE BA (WHL #) "; L%(1): If C1 = 1 Then 415
-    345 Locate 5: Input "4. LGE SO % (WHL #) "; L%(2): If C1 = 1 Then 415
-    355 Locate 6: Input "5. LGE BB % (WHL #) "; L%(3): If C1 = 1 Then 415
-    365 Locate 7: Input "6. LGE HR % (WHL #) "; L%(4): If C1 = 1 Then 415
-    375 Locate 8: Input "7. TM DP/G X 10 "; L%(5): If C1 = 1 Then 415
-    385 Locate 9: Input "8. PARK DOUBLE ADJUSTMENT (WHL #) "; L%(6): If C1 = 1 Then 415
-    395 Locate 10: Input "9. PARK TRIPLE ADJUSTMENT (WHL #) "; L%(7): If C1 = 1 Then 415
+    335 Locate 4: Input "3. LGE BA (WHL #) "; ratings%(1): If C1 = 1 Then 415
+    345 Locate 5: Input "4. LGE SO % (WHL #) "; ratings%(2): If C1 = 1 Then 415
+    355 Locate 6: Input "5. LGE BB % (WHL #) "; ratings%(3): If C1 = 1 Then 415
+    365 Locate 7: Input "6. LGE HR % (WHL #) "; ratings%(4): If C1 = 1 Then 415
+    375 Locate 8: Input "7. TM DP/G X 10 "; ratings%(5): If C1 = 1 Then 415
+    385 Locate 9: Input "8. PARK DOUBLE ADJUSTMENT (WHL #) "; ratings%(6): If C1 = 1 Then 415
+    395 Locate 10: Input "9. PARK TRIPLE ADJUSTMENT (WHL #) "; ratings%(7): If C1 = 1 Then 415
     405 Locate 11: Input "10. PARK HOME RUN ADJUSTMENT (WHL #) "; K9&(0): If C1 = 1 Then 415
-    406 Locate 12: Input "11. PARK FOUL GROUND ADJUSTMENT (WHL #) "; L%(8): If C1 = 1 Then 415
-    407 Locate 13: Input "12. OUTDOOR = 0 / INDOOR = 1 "; L%(9): If C1 = 1 Then 415
-    408 Locate 14: Input "13. GRASS = 0 / TURF = 1 "; L%(10): If C1 = 1 Then 415
+    406 Locate 12: Input "11. PARK FOUL GROUND ADJUSTMENT (WHL #) "; ratings%(8): If C1 = 1 Then 415
+    407 Locate 13: Input "12. OUTDOOR = 0 / INDOOR = 1 "; ratings%(9): If C1 = 1 Then 415
+    408 Locate 14: Input "13. GRASS = 0 / TURF = 1 "; ratings%(10): If C1 = 1 Then 415
     409 Locate 15: Input "14. STADIUM NAME "; S$: If C1 = 1 Then 415
-    410 Locate 16: Input "15. PARK ID NUMBER "; L%(13): If C1 = 1 Then 415
+    410 Locate 16: Input "15. PARK ID NUMBER "; ratings%(13): If C1 = 1 Then 415
     411 Locate 17: Input "16. MANAGER NAME "; M$: If C1 = 1 Then 415
-    412 Locate 18: Input "17. TEAM TEXT COLOR (0-15) "; L%(11): If C1 = 1 Then 415
-    413 Locate 19: Input "18. TEAM BACKGROUND (0-8) "; L%(12): If C1 = 1 Then 415
+    412 Locate 18: Input "17. TEAM TEXT COLOR (0-15) "; ratings%(11): If C1 = 1 Then 415
+    413 Locate 19: Input "18. TEAM BACKGROUND (0-8) "; ratings%(12): If C1 = 1 Then 415
     414 Locate 20: Input "19. TEAM ABBREVIATION "; NN$: If C1 = 1 Then 415
 
-    415 Locate 21, 1: Color L%(11), L%(12): Print "SAMPLE TEXT APPEARANCE": Color 15, 0
+    415 Locate 21, 1: Color ratings%(11), ratings%(12): Print "SAMPLE TEXT APPEARANCE": Color 15, 0
     C1 = 1: Locate 22: Input "# TO CHANGE (0 TO CONTINUE) "; B9
 
     416 If B9 < 0 Or B9 > 19 Then 415
@@ -210,29 +210,29 @@ End Sub
 '...explanation...
 Sub DoTheDraft (DNT%, doneDrafting%, teamName$, teamYears$(), saveSpot)
 
-    Shared L%()
-    Shared B$(), P$()
+    Shared ratings%()
+    Shared statB$(), statP$()
 
     Cls
-    Color L%(11), L%(12): Print teamName$;
+    Color ratings%(11), ratings%(12): Print teamName$;
     Color 15, 0: Print "     (DRAFTING)"
 
     Print: Print "BATTERS";: Locate , 40: Print "PITCHERS"
 
     For I = 0 To 10
         Locate I + 5, 1
-        Print Using "##"; I;: Print " "; B$(I); Tab(20);
-        Print Using "##"; I + 12;: Print " "; B$(I + 12)
+        Print Using "##"; I;: Print " "; statB$(I); Tab(20);
+        Print Using "##"; I + 12;: Print " "; statB$(I + 12)
     Next
 
-    Locate , 1: Print Using "##"; 11;: Print " "; B$(11)
+    Locate , 1: Print Using "##"; 11;: Print " "; statB$(11)
     Print
 
     For I = 0 To 10
         Locate I + 5, 40
         Print Using "##"; I;
-        Print " "; P$(I); Tab(60);
-        Print Using "##"; I + 11;: Print " "; P$(I + 11)
+        Print " "; statP$(I); Tab(60);
+        Print Using "##"; I + 11;: Print " "; statP$(I + 11)
     Next
 
     Do
@@ -309,10 +309,10 @@ End Sub
 Sub DraftPlayer (playerType, yearNumber$)
 
     Shared L1%(), draftB%(), draftB1%()
-    Shared SA%(), SA1%(), draftP%(), draftP1%()
-    Shared TS%(), TS1%()
+    Shared inputSA%(), SA1%(), draftP%(), draftP1%()
+    Shared inputTS%(), TS1%()
 
-    Shared B$(), draftB1$(), draftP1$(), P$()
+    Shared statB$(), draftB1$(), draftP1$(), statP$()
 
     Do
         Color 15, 0
@@ -391,7 +391,7 @@ Sub DraftPlayer (playerType, yearNumber$)
 			Color 15, 4
 	
 			Do
-				Locate , 33: Print "ANY CHANGE (YN)";
+				Locate 3, 33: Print "ANY CHANGE (YN)";
 				I$ = GetKeyPress$
 			Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -425,18 +425,18 @@ Sub DraftPlayer (playerType, yearNumber$)
             Input B1
         Loop Until B1 >= 0 And B1 <= 22
 
-        B$(B) = draftB1$(B1)
+        statB$(B) = draftB1$(B1)
 
         For I = 0 To 79
             draftB%(B, I) = draftB1%(B1, I)
         Next I
 
-        If TS%(0) <> 999 And TS1%(0) = 999 Then
+        If inputTS%(0) <> 999 And TS1%(0) = 999 Then
             For I = 0 To 11
-                TS%(I) = TS1%(I)
+                inputTS%(I) = TS1%(I)
             Next
             For I = 1 To 24
-                SA%(I) = SA1%(I)
+                inputSA%(I) = SA1%(I)
             Next
         End If
 
@@ -448,19 +448,19 @@ Sub DraftPlayer (playerType, yearNumber$)
 
         Loop Until P1 >= 0 And P1 <= 21
 
-        P$(P) = draftP1$(P1)
+        statP$(P) = draftP1$(P1)
 
         For I = 0 To 88:
             draftP%(P, I) = draftP1%(P1, I)
         Next I
 
-        'TS%(0) = 999 Or TS1%(0) <> 999 Then End
-        If TS%(0) <> 999 And TS1%(0) = 999 Then
+        'inputTS%(0) = 999 Or TS1%(0) <> 999 Then End
+        If inputTS%(0) <> 999 And TS1%(0) = 999 Then
             For I = 0 To 11
-                TS%(I) = TS1%(I)
+                inputTS%(I) = TS1%(I)
             Next
             For I = 1 To 24
-                SA%(I) = SA1%(I)
+                inputSA%(I) = SA1%(I)
             Next
         End If
 
@@ -474,14 +474,14 @@ End Sub
 '...explanation...
 Sub SaveTeamDraft (DNT%, yearNumber$, teamName$, teamIdx)
 
-    Shared B$(), P$()
+    Shared statB$(), statP$()
 
-    Shared L%(), SA%(), draftB%(), draftP%()
-    Shared TS%()
+    Shared ratings%(), inputSA%(), draftB%(), draftP%()
+    Shared inputTS%()
 
     Shared K9&()
 
-    Shared M$, NN$, S$
+    Shared M$, NN$, Stadium$
 
     Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
 
@@ -513,28 +513,28 @@ Sub SaveTeamDraft (DNT%, yearNumber$, teamName$, teamIdx)
     LSet Q$(0) = teamName$
 
     For I = 1 To 13:
-        LSet Q$(I) = MKI$(L%(I))
+        LSet Q$(I) = MKI$(ratings%(I))
     Next
 
     LSet Q$(14) = MKS$(K9&(0))
 
     For I = 0 To 22:
-        LSet Q$(I * 43 + 15) = B$(I)
+        LSet Q$(I * 43 + 15) = statB$(I)
         For I1 = 0 To 41:
             LSet Q$(I * 43 + I1 + 16) = MKI$(draftB%(I, I1))
         Next
     Next
 
     For I = 0 To 21:
-        LSet Q$(I * 38 + 1004) = P$(I)
+        LSet Q$(I * 38 + 1004) = statP$(I)
         For I1 = 0 To 36:
             LSet Q$(I * 38 + I1 + 1005) = MKI$(draftP%(I, I1))
         Next
     Next
 
-    LSet Q$(1840) = S$
-    LSet Q$(1841) = M$
-    LSet Q$(1842) = NN$
+    LSet Q$(1840) = Stadium$
+    LSet Q$(1841) = Manager$
+    LSet Q$(1842) = teamAbbrev$
     LSet Q$(1843) = MKI$(999)
     Put #1, teamIdx
 
@@ -543,14 +543,14 @@ Sub SaveTeamDraft (DNT%, yearNumber$, teamName$, teamIdx)
     SCK = 0
 
     For X = 1 To 24
-        SCK = SCK + SA%(X)
+        SCK = SCK + inputSA%(X)
     Next
 
     If SCK > 0 Then
-        TS%(0) = 999
+        inputTS%(0) = 999
 
         For X = 1 To 11
-            TS%(X) = -1
+            inputTS%(X) = -1
         Next
 
         Open diskPaths$(0) + "LR." + yearNumber$ For Random As #1 Len = 4108
@@ -594,7 +594,7 @@ Sub SaveTeamDraft (DNT%, yearNumber$, teamName$, teamIdx)
         Next
 
         For X = 0 To 11
-            LSet Q$(X + 1) = MKI$(TS%(X))
+            LSet Q$(X + 1) = MKI$(inputTS%(X))
         Next
 
         For X = 0 To 22
@@ -616,7 +616,7 @@ Sub SaveTeamDraft (DNT%, yearNumber$, teamName$, teamIdx)
         Next
 
         For X = 1 To 24
-            LSet Q$(X + 950) = MKI$(SA%(X))
+            LSet Q$(X + 950) = MKI$(inputSA%(X))
         Next
 
         For X = 0 To 22
@@ -681,9 +681,9 @@ End Sub
 Sub ReadTeam_A (yearNumber$, teamIdx)
 
     ' Shared M1$, NN1$, S1$
-    Shared B$(), P$()
-    Shared L%()
-    Shared SA%(), draftB%(), draftP%(), TS%()
+    Shared statB$(), statP$()
+    Shared ratings%()
+    Shared inputSA%(), draftB%(), draftP%(), inputTS%()
 
     Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
 
@@ -708,27 +708,27 @@ Sub ReadTeam_A (yearNumber$, teamIdx)
     Get #1, teamIdx
 
     For I = 1 To 13:
-        L%(I) = CVI(Q$(I))
+        ratings%(I) = CVI(Q$(I))
     Next
 
     E6& = CVS(Q$(14))
 
-    For I = 0 To 22: B$(I) = RTrim$(Q$(I * 43 + 15))
+    For I = 0 To 22: statB$(I) = RTrim$(Q$(I * 43 + 15))
         For I1 = 0 To 41
             draftB%(I, I1) = CVI(Q$(I * 43 + I1 + 16))
         Next
     Next
 
     For I = 0 To 21:
-        P$(I) = RTrim$(Q$(I * 38 + 1004))
+        statP$(I) = RTrim$(Q$(I * 38 + 1004))
         For I1 = 0 To 36:
             draftP%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
         Next
     Next
 
-    S$ = RTrim$(Q$(1840))
-    M$ = RTrim$(Q$(1841))
-    NN$ = RTrim$(Q$(1842))
+    Stadium$ = RTrim$(Q$(1840))
+    Manager$ = RTrim$(Q$(1841))
+    teamAbbrev$ = RTrim$(Q$(1842))
 
     Close 1
 
@@ -777,7 +777,7 @@ Sub ReadTeam_A (yearNumber$, teamIdx)
         Get #1, teamIdx
 
         For X = 0 To 11
-            TS%(X) = CVI(Q$(X + 1))
+            inputTS%(X) = CVI(Q$(X + 1))
         Next
 
         For X = 0 To 22
@@ -799,7 +799,7 @@ Sub ReadTeam_A (yearNumber$, teamIdx)
         Next
 
         For X = 1 To 24
-            SA%(X) = CVI(Q$(X + 950))
+            inputSA%(X) = CVI(Q$(X + 950))
         Next
 
         For X = 0 To 22
@@ -831,11 +831,11 @@ Sub ReadTeam_A (yearNumber$, teamIdx)
             Next
 
             For X = 1 To 24
-                SA%(X) = 0
+                inputSA%(X) = 0
             Next
 
             For X = 0 To 11
-                TS%(X) = 0
+                inputTS%(X) = 0
             Next
         End If
 

@@ -9,7 +9,7 @@ Sub SEELEAG ()
 
     Dim seeP$(298), T$(40)
 
-    Dim W(40), L(40)
+    Dim Wins(40), Losses(40)
 
     Dim J!, ATBATS!, INNINGS!
     Dim OFT!(40, 20), DFT!(40, 20)
@@ -70,7 +70,7 @@ Sub SEELEAG ()
                     Locate 2, 33: Print targetFile$
 
                     Do
-                        Locate , 33: Print "ANY CHANGE (YN)";
+                        Locate 3, 33: Print "ANY CHANGE (YN)";
                         I$ = GetKeyPress$
                     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -102,7 +102,7 @@ Sub SEELEAG ()
                     Locate 9, 1: Print "      PLEASE WAIT WHILE THE LEADER FILES ARE LOADING!!"
 
                     Open diskPaths$(2) + WE$ + ".LDR" For Input As #2
-                    For X = 1 To 40: Input #2, T$(X), W(X), L(X): Next
+                    For X = 1 To 40: Input #2, T$(X), Wins(X), Losses(X): Next
                     For X = 1 To 298: Input #2, cmplZ2$(X), cmplZ3$(X), Z!(X), Z1!(X): Next
                     For X = 1 To 40: Input #2, BA$(X): For M = 1 To 14: Input #2, OFT!(X, M): Next: Next
                     For X = 1 To 40: Input #2, ER$(X): For M = 1 To 14: Input #2, DFT!(X, M): Next: Next
@@ -122,7 +122,7 @@ Sub SEELEAG ()
                         first = ((O - 1) * 10) + 1
                         last = O * 10
 
-                        D1 = W(first) - L(first)
+                        D1 = Wins(first) - Losses(first)
 
                         For P = first To last
 
@@ -135,18 +135,18 @@ Sub SEELEAG ()
                                 seeP$(P) = PadRight$(T$(P), 12)
 
                                 'Wins
-                                J! = W(P)
+                                J! = Wins(P)
                                 seeP$(P) = seeP$(P) + Right$("     " + Str$(J!), 3)
                                 seeP$(P) = PadRight$(seeP$(P), 16)
 
                                 'Losses
-                                J! = L(P)
+                                J! = Losses(P)
                                 seeP$(P) = seeP$(P) + Right$("     " + Str$(J!), 3)
                                 seeP$(P) = PadRight$(seeP$(P), 21)
 
                                 'PCT
                                 J! = 0
-                                If W(P) + L(P) > 0 Then J! = W(P) / (W(P) + L(P))
+                                If Wins(P) + Losses(P) > 0 Then J! = Wins(P) / (Wins(P) + Losses(P))
 
                                 J! = Int(1000 * J! + .5)
 
@@ -179,7 +179,7 @@ Sub SEELEAG ()
                                 seeP$(P) = PadRight$(seeP$(P), 28)
 
                                 'Games Behind
-                                D = W(P) - L(P)
+                                D = Wins(P) - Losses(P)
                                 D = D1 - D
                                 BK$ = Str$(Int(D / 2))
                                 If D = 0 Then BK$ = "---"
