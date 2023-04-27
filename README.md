@@ -32,16 +32,14 @@ Bugs and/or feature requests can be submitted using GitHub (see the "Issues" tab
 
 # Project Status #
 ## Current ##
-Code now compiles in a modern environment and has been heavily re-factored. GUI bugs have been fixed, Menu navigation is improved and code has been consolidated.
-
-Currently working on further consolidating to be able to provide source that will work for Linux / Mac in QB64.
+Code compiles in a modern environment and has been mostly re-factored. All known GUI bugs have been fixed, Menu navigation is improved and code was consolidated into a single EXE. This speeds up game play even more and allows compiling for Linux / Mac in QB64.
 
 All code has been thoroughly tested with known bugs documented (including those from the original game - that I am aware of) and being worked on.
 
 ## Road Map ##
 ### Phase 1 ###
-This phase will get the games available to the general public in a steady and reliable shapes.
-Completed.
+This phase will get the games available to the general public in a steady and reliable shape.
+**Completed.**
 
 ### Phase 2 ###
 This phase will start to identify these as new games, and involve these short and simple goals:
@@ -59,7 +57,7 @@ This phase will start to identify these as new games, and involve these short an
 This final phase will involve the following:
 - Updating the games to support modern rules
 - Including support files such as team files, leagues, schedules, etc.
-- Bug fixes / etc. as reported by longtime users and playtesters
+- Address gameplay bugs as reported by longtime users and playtesters
 
 ### The Future ###
 - Updating code to work with databases instead of flat files.
