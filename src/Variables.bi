@@ -231,9 +231,7 @@ Dim Managers$(2), Stadiums$(2), teamAbbrevs$(2)
 '----------------------------------------
 'Used by POSTGAME
 Dim DB, HR, TR, SB, PPH
-
 Dim BP(0 To 9), F(0 To 9)
-
 Dim BB%(0 To 9), MF%(1), SP%(1), T1%(0 To 1)
 
 Dim PT$(1)
@@ -254,27 +252,26 @@ Dim fileLength&
 
 ' Shared / Global
 Dim Shared Y$, YY$
+Dim Shared F$, PARK$, S$, WI$, W$, L$
+
 Dim Shared B1!(9), K9!(1)
 Dim Shared pbpDelay!, WF!
+
 Dim Shared attendance&, gameTime$
+
 Dim Shared Inotloop% ', pbpIdx%
 
 Dim Shared AP%, CGERA%, DH%, DR%, EJ%
+Dim Shared D, P, RE, RD, U6, U9
 Dim Shared IJ%, IJL%, INNING%, LYN%, NLF%
 Dim Shared PB%, PC%, SC%, TA%, TP%, W%, WS%
+Dim Shared H6%, MON
+Dim Shared usingGfx
 
 'These are just for tracing values / troubleshooting
 Dim Shared testIdx, dudVal
 
 
-Dim Shared F$, PARK$, S$, WI$, W$, L$
-
-' Set these up just to determine values / troubleshoot
-Dim Shared H6%
-
-Dim Shared usingGfx
-
-Dim Shared D, P, RE, RD, U6, U9
 
 Dim Shared MON(5, 14), VV(1), VV1(1)
 
@@ -292,8 +289,8 @@ Dim Shared B1%(3, 1), B2%(1, 22), B3%(0 To 1, 0 To 9), B4%(1, 7, 9)
 
 Dim Shared B5%(0 To 1, 0 To 22, 0 To 21), B7%(0 To 1, 0 To 9), B8%(0 To 1, 0 To 22, 0 To 21), B9%(1, 10), BT%(1, 9, 9)
 Dim Shared CF%(9, 2), CSS%(1, 22, 6), D0%(1), D3%(1), DP%(1), GK%(1), H0%(1)
-Dim Shared INJ%(0 To 1, 0 To 22)
-Dim Shared L%(1, 13), L0%(1), LB%(9, 1), M%(9), MG%(0 To 1, 999), NG%(18), O%(1)
+Dim Shared INJ%(0 To 1, 0 To 22), L%(1, 13), L0%(1), LB%(9, 1)
+Dim Shared M%(9), MG%(0 To 1, 999), NG%(18), O%(1)
 Dim Shared P%(0 To 1, 0 To 21, 0 To 89), P1%(0 To 1), P2%(1), P3%(1, 21), P4%(22), P5%(1, 21, 41), P6%(1), P8%(1, 21, 41)
 Dim Shared PR%(24)
 

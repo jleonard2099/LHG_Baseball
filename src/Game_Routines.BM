@@ -629,6 +629,8 @@ Sub DELIVERY (D)
         Call PBP(Y$)
     End If
 
+    'Call pbplog(1486)
+
     Call GETRPBP(46, 1, Y$, D)
     Call STRIPRPBP(46, 1, Y$, D)
     Call PBP(Y$)
@@ -1358,13 +1360,11 @@ End Sub
 Sub GETFIELDNAME (W%, D)
 
     If W% <> 1 Then
-
+        'Call pbplog(2215)
         player$(4) = B$(D, B9%(D, W%))
-
     Else
-
+        'Call pbplog(2219)
         player$(4) = P$(D, P1%(D))
-
     End If
 
 End Sub
@@ -1375,6 +1375,7 @@ End Sub
 ' ...explanation...
 Sub GETINFIELDER (W%, P, I1, D, S2%, P2)
 
+    'Call pbplog(2232)
     Call GETFIELDER(W%, P, I1, D)
 
     Call d100(RN)
@@ -1393,6 +1394,7 @@ Sub GETINFIELDER (W%, P, I1, D, S2%, P2)
     If P2 = 4 And W% = 6 Then W% = 1
     If P2 = 4 And W% = 4 Or S2% = 20 And W% = 1 Then W% = 2
 
+    'Call pbplog(2251)
     Call GETFIELDNAME(W%, D)
 
 End Sub
@@ -4538,11 +4540,14 @@ Sub STRIKEOUT (U%, D)
 
     ' *** strikeout pbp ***
     If U% = 3 Then
+        'Call pbplog(5395)
         BV = 20
     Else
+        'Call pbplog(5398)
         BV = Int(Rnd(1) * 100)
         Call d100(RN)
         If RN <= 20 Then Call PBP("FULL COUNT...")
+        'Call pbplog(5402)
         Call DELIVERY(D)
 
         If BV = 1 Then
@@ -4574,12 +4579,14 @@ Sub STRIKEOUT (U%, D)
             min = 930
         End If
 
+        'Call pbplog(5434)
         Call GETRPBP(range, min, Y$, D)
         Call STRIPRPBP(range, min, Y$, D)
         Call PBP(Y$)
 
     End If
 
+    'Call pbplog(5441)
     Call GETRPBP(40, 1010, Y$, D)
     Call STRIPRPBP(40, 1010, Y$, D)
     Call PBP(Y$)
@@ -4592,6 +4599,7 @@ Sub STRIKEOUT (U%, D)
         Case 42: F$ = player$(0) + " has had better AB's"
     End Select
 
+    'Call pbplog(5454)
     Call PBP(F$)
 
 End Sub
@@ -6324,8 +6332,17 @@ End Sub
 Sub InitVar ()
 
     Shared DB, HR, TR, SB
+    Shared E!
+    Shared fileLength&
+
     Shared BP(), F()
     Shared BB%(), MF%(), SP%(), T1%()
+    Shared U%()
+
+    Shared dayNight$(), DH$(), DL$()
+    Shared LGT$(), month$(), PT$()
+    Shared PU$(), U6$(), UMP$()
+    Shared VI$(), WE$()
 
     normalFinish% = 0
 
@@ -6334,7 +6351,7 @@ Sub InitVar ()
     'still just 80 column width; so 80x8 = 640
     FontColAdj% = 8
 
-    MON = Monitor%
+    MON = 12 'Monitor%
 
     BK$ = Space$(25)
 
@@ -7479,7 +7496,7 @@ End Sub
 Sub BoxToScreen (BK$)
 
     Shared DB, HR, TR, SB
-    'Shared DB$(), E$(), HR$(), SB$(), TR$()
+    Shared DB$(), E$(), HR$(), SB$(), TR$()
 
     X = 0
 
@@ -8382,7 +8399,7 @@ End Sub
 Sub CheckRecords ()
 
     Shared DB, HR, TR, SB
-    'Shared DB$(), E$(), HR$(), SB$(), TR$()
+    Shared DB$(), E$(), HR$(), SB$(), TR$()
 
     For I = 0 To 1:
         For I1 = 0 To 21:

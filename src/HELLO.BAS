@@ -1,6 +1,6 @@
 
-Const GAME_VERSION$ = "6.65"
-Const MAX_TEAMS = 500
+Const GAME_VERSION$ = "6.67"
+Const MAX_TEAMS = 1000
 Const MAX_GAMES = 1500
 Const MAX_FILES = 10240
 'optimium = 1048576 (but slows code)
@@ -542,3 +542,4 @@ End Sub
 '$INCLUDE: 'Game_Routines_Gfx.BM'
 '$INCLUDE: 'LOADER.BAS'
 '$INCLUDE: 'SOURCE.BM'
+

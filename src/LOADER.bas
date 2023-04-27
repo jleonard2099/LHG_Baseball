@@ -1,7 +1,12 @@
 Sub LOADER
 
-	Shared PT$()
-	Shared SP%(), T1%()
+    Shared dayNight$(), DH$(), DL$()
+    Shared LGT$(), month$()
+    Shared PT$(), PU$()
+    Shared U6$(), UMP$()
+    Shared VI$(), WE$()
+
+    Shared SP%(), T1%(), U%()
 
     Open "pbplog" For Output As #7
 
@@ -15,9 +20,9 @@ Sub LOADER
 
     Randomize Timer
 
-	'----------------------------------------
-	'        INITIALIZE ALL VARIABLES
-	'----------------------------------------
+    '----------------------------------------
+    '        INITIALIZE ALL VARIABLES
+    '----------------------------------------
 
     Call InitVar
 
@@ -1245,8 +1250,7 @@ Sub DHLineups (P9, reselect, LU%)
             Else
                 B%(P9, B3%(P9, I), 21) = 0
             End If
-        Else
-            'Call pbpLog(11601)
+
         End If
 
     Next I
@@ -1258,7 +1262,7 @@ Sub DHLineups (P9, reselect, LU%)
     Next
 
     'Cls
-    'Call pbpLog(11613)
+    ''Call pbplog(10959)
     Call NEWLINES(P9)
 
     For I2 = 0 To 22:
@@ -1957,7 +1961,6 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
         Next I
 
         Call SortHitters(P9)
-        'Call pbpLog(12312)
         Call DHLineups(P9, reselect, LU%)
 
     End If 'done checking batterFlag
@@ -2125,8 +2128,8 @@ End Sub
 ' ...explanation...
 Sub LoadTeam_LOADER (teamIdx%, YN$, idx%)
 
-    Dim DYS%(1, 21)
     Shared MF%()
+    Dim DYS%(1, 21)
 
     Open diskPaths$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342
 
