@@ -13,19 +13,19 @@ Const NUM_STATRECORDS = 162
 
 DefInt A-Z
 
-'$INCLUDE: 'KeyInput.BI'
-'$INCLUDE: 'QPProEqu.BI'
-'$INCLUDE: 'PadRight.BI'
+'$INCLUDE: 'KeyInput.bi'
+'$INCLUDE: 'QPProEqu.bi'
+'$INCLUDE: 'PadRight.bi'
 
 ' For Utils
-'$INCLUDE: 'MainRoutines.BI'
-'$INCLUDE: 'TITLE.BI'
-'$INCLUDE: 'Variables.BI'
+'$INCLUDE: 'MainRoutines.bi'
+'$INCLUDE: 'TITLE.bi'
+'$INCLUDE: 'Variables.bi'
 
 ' For Game
-'$INCLUDE: 'Game_Routines.BI'
-'$INCLUDE: 'Game_Routines_Gfx.BI'
-'$INCLUDE: 'SOURCE.BI'
+'$INCLUDE: 'Game_Routines.bi'
+'$INCLUDE: 'Game_Routines_Gfx.bi'
+'$INCLUDE: 'SOURCE.bi'
 
 
 On Error GoTo Errhandler
@@ -501,13 +501,12 @@ Sub Leaders_Menu ()
 End Sub
 
 
-'$INCLUDE: 'KeyInput.BM'
-'$INCLUDE: 'QPProEqu.BM'
-'$INCLUDE: 'PadRight.BM'
+'$INCLUDE: 'KeyInput.bm'
+'$INCLUDE: 'QPProEqu.bm'
+'$INCLUDE: 'PadRight.bm'
 
 ' For Utils
-'$INCLUDE: 'MainRoutines.BI'
-'$INCLUDE: 'TITLE.BM'
+'$INCLUDE: 'TITLE.bm'
 '$INCLUDE: 'ACTIVATE.BAS'
 '$INCLUDE: 'ALIGN.BAS'
 '$INCLUDE: 'BINPUT.BAS'
@@ -538,8 +537,7 @@ End Sub
 '$INCLUDE: 'UMPMGR.BAS'
 
 ' For Game
-'$INCLUDE: 'Game_Routines.BM'
-'$INCLUDE: 'Game_Routines_Gfx.BM'
+'$INCLUDE: 'Game_Routines.bm'
+'$INCLUDE: 'Game_Routines_Gfx.bm'
 '$INCLUDE: 'LOADER.BAS'
-'$INCLUDE: 'SOURCE.BM'
-
+'$INCLUDE: 'SOURCE.bm'
