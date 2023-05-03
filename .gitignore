@@ -2,7 +2,6 @@
 *.7z
 *.exe
 *.ini
-*.zip
 bin
 doc/*.odt
 src/DEFERA
