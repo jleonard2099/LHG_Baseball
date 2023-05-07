@@ -2,7 +2,7 @@
 *.7z
 *.exe
 *.ini
-bin
+bin/HELLO*
 doc/*.odt
 src/DEFERA
 src/DEV.BAS
