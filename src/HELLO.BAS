@@ -4,10 +4,10 @@ Const MAX_TEAMS = 1000
 Const MAX_GAMES = 1500
 Const MAX_FILES = 10240
 'optimium = 1048576 (but slows code)
-'Const MAX_CONFERENCES = 40
-'Const TEAMS_PER_CONFERENCE = 30
-'Const TEAMS_PER_DIV = 15
-'Const DIVS_PER_CONFERENCE = 2
+Const MAX_CONFERENCES = 40
+Const TEAMS_PER_DIV = 15
+Const DIVS_PER_CONFERENCE = 2
+Const TEAMS_PER_CONFERENCE = 30
 
 Const NUM_STATRECORDS = 162
 
@@ -195,10 +195,17 @@ $ExeIcon:'./lhg_fcbase.ico'
 _Icon
 _AllowFullScreen
 
+opSys$ = _OS$
+y% = Len(s$)
+osSpec$ = Left$(_OS$, InStr(2, _OS$, "[") - 1)
+
 If Not _FileExists("DEV.BAS") Then
     Open "DEV.BAS" For Output As #1
     For I = 0 To 3
-        Print #1, _CWD$ + "\"
+        Select Case osSpec$
+            Case "[WINDOWS]": Print #1, _CWD$ + "\"
+            Case "[MAC]","[LINUX]": Print #1, _CWD$ + "/"
+        End Select
     Next
     Close 1
 End If
@@ -225,13 +232,9 @@ System
 Errhandler:
 Open "errlog" For Append As #9
 Print #9, "Error #"; Err; "on program file line"; _ErrorLine
-Print #9, A$(0); " vs "; A$(1)
-Print #9, "B7%(P9, I) "; testIdx
-Print #9, "B9%(D, 1)  "; B9%(D, 1)
 Print #9,
 Close #9
 Resume Next ' moves program to code following the error.
-
 
 '----------------------------------------
 '       Main_Menu Subroutine
@@ -326,8 +329,17 @@ Sub ConfigureDrives ()
     Print
     Locate , 31: Print "PATHNAME EXAMPLES:"
     Print
-    Locate , 31: Print "A:"
-    Locate , 31: Print "C:\FULL\TEAMS"
+	Select Case osSpec$
+		Case "[WINDOWS]": 
+			Locate , 31: Print "A:"
+			Locate , 31: Print "C:\BASE\TEAMS"	
+		Case "[LINUX]": 
+			Locate , 31: Print "/mnt/floppy"
+			Locate , 31: Print "/usr/bin/base/teams"
+		Case "[MAC]": 			
+			Locate , 31: Print "/Volumes/floppy"
+			Locate , 31: Print "/Applications/base/teams"
+	End Select
 
     Locate 7, 1: QPrint "Path for Teams ", 14, 1, -1
     Locate , 16: QPrint PadRight$(diskPaths$(0), 30), FG, BG, -1
@@ -382,7 +394,10 @@ Sub ConfigureDrives ()
 
     Open "DEV.BAS" For Output As #1
     For R = 0 To 3:
-        diskPaths$(R) = diskPaths$(R) + "\"
+        Select Case osSpec$
+            Case "[WINDOWS]": diskPaths$(R) = diskPaths$(R) + "\"
+            Case "[MAC]","[LINUX]": diskPaths$(R) = diskPaths$(R) + "/"
+		End Select
         Print #1, diskPaths$(R)
     Next R
 
