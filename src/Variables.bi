@@ -1,14 +1,16 @@
-' Long INT vs. Single
-' 4 bytes either way
-' https://wiki.qb64.dev/qb64wiki/index.php/Variable_Types
+'----------------------------------------
+' Used mostly for HELLO
+'----------------------------------------
+Dim opSysType$
 
-'----------------------------------------
-' Used mostly for HELLO ?!?!
-'----------------------------------------
-Dim statH$(NUM_STATRECORDS), L$(NUM_STATRECORDS)
-Dim PL$(NUM_STATRECORDS), W$(NUM_STATRECORDS)
+Dim statH$(NUM_STATRECORDS), statHR$(NUM_STATRECORDS)
+
+Dim L$(NUM_STATRECORDS), LR$(NUM_STATRECORDS)
+Dim PL$(NUM_STATRECORDS), PLR$(NUM_STATRECORDS)
+Dim W$(NUM_STATRECORDS), WR$(NUM_STATRECORDS)
 
 Dim H%(NUM_STATRECORDS), I%(NUM_STATRECORDS), V%(NUM_STATRECORDS)
+Dim HR%(NUM_STATRECORDS), IR%(NUM_STATRECORDS), VR%(NUM_STATRECORDS)
 
 
 '----------------------------------------
@@ -37,14 +39,33 @@ Dim statT1%(0 To 22)
 
 Dim K9&(1)
 
-Dim statB$(0 To 23), statP$(0 To 21)
+Dim statB$(23), statP$(22)
 Dim Z1$(40), Z2$(40)
 'Dim X$(12)
 
 
 '----------------------------------------
-'  Used across ACTIVATE.BAS,
-'   DRAFT.BAS routines
+'  Used across ALIGN, MERGE routines
+'----------------------------------------
+Dim BN$(23), PN$(22)
+Dim BR$(23), PR$(22)
+
+Dim draftB0%(23, 22), draftPR%(22)
+
+Dim B0N%(23, 22), BN%(23)
+Dim P0N%(22, 42), PN%(22)
+Dim S0N%(22, 6)
+
+Dim B0R%(23, 22), BR%(23)
+Dim mergeB%(22), alignB0%(22, 22)
+Dim mergeP%(21), P0R%(22, 42)
+Dim S0R%(22, 6), S0%(22, 6), SR%(22, 6)
+
+Dim draftTR(22), draftTR1(23)
+
+'----------------------------------------
+'  Used across ACTIVATE,
+'   DRAFT routines
 '----------------------------------------
 Dim draftB1$(22), draftP1$(22)
 
@@ -55,8 +76,8 @@ Dim draftP%(21, 88), draftP1%(21, 88)
 Dim Manager$, teamAbbrev$, Stadium$
 
 '----------------------------------------
-'  Used across CAREER.BAS,
-'   CAREDIT.BAS, NEWLDR.BAS routines
+'  Used across CAREER,
+'   CAREDIT, NEWLDR routines
 '----------------------------------------
 Dim BL$(15), careerPL$(15)
 Dim BL0$(18, 20), PL0$(80, 20)
@@ -73,14 +94,14 @@ Dim BL1!(18, 20), PL1!(16, 21)
 
 
 '----------------------------------------
-' Used across CREATE.BAS
+' Used across CREATE
 '----------------------------------------
 Dim D1$, D2$, D3$, D4$
 
 Dim createT%(34)
 
 '----------------------------------------
-' Used across LOOKY.BAS,
+' Used across LOOKY,
 '   BINPUT, other routines
 '----------------------------------------
 Dim ERX!, statI2!
@@ -98,8 +119,8 @@ Dim BP$(3), BS$(22), PS$(21)
 Dim statT!(22), statT1!(22)
 
 Dim BS%(22), DYS%(21)
-Dim statB0%(22, 40), statB%(0 To 22)
-Dim statP%(0 To 21), statP0%(21, 41)
+Dim statB0%(22, 40), statB%(23)
+Dim statP%(22), statP0%(22, 41)
 
 Dim inputINJ%(22), PS%(32), inputSA%(24), SA1%(24), inputTS%(11), TS1%(11)
 
@@ -107,13 +128,13 @@ Dim SS%(22, 6)
 Dim TB%(15), inputTP%(33)
 
 '----------------------------------------
-'   Used across COMPARE.BAS routines
+'   Used across COMPARE routines
 '----------------------------------------
 Dim compareB0%(22, 40), compareP0%(21, 41)
 Dim TP&(33)
 
 '----------------------------------------
-'   Used across LEAGCMPL.BAS routines
+'   Used across LEAGCMPL routines
 '----------------------------------------
 Dim BA$(40), ER$(40)
 Dim cmplZ2$(298), cmplZ3$(298)
@@ -124,11 +145,11 @@ Dim BAT%(24), PIT%(23)
 Dim cmplZ1!(298, 2)
 Dim DFT!(40, 20), JS!(46, 42), OFT!(40, 20)
 
-'----------------------------------------
-'   Used across NEWLDR.BAS,
-'   NEWLDRST.BAS routines
-'----------------------------------------
 
+'----------------------------------------
+'   Used across NEWLDR,
+'   NEWLDRST routines
+'----------------------------------------
 Dim leaderPL$(1 To 880)
 
 '-- corresponds to TP$, TP1$, TP2$
@@ -164,8 +185,9 @@ Dim TRC$(24), TRC1$(25)
 '   TP$,            TP1$,           TP2$,           TP3$ (no change)
 Dim TP0$(1 To 32), TP1A$(1 To 28), TP2A$(0 To 20), TP3$(0 To 18)
 
+
 '----------------------------------------
-' Used across PROGMAN.BAS routines
+' Used across PROGMAN routines
 '----------------------------------------
 Dim AB%(9)
 Dim progB%(22, 44), progB3%(0 To 9), progB7%(0 To 9), progB9%(0 To 9)
@@ -178,13 +200,13 @@ Dim yesNo$(1)
 Dim mgr_idx%
 
 '----------------------------------------
-' Used across POSSRT.BAS routines
+' Used across POSSRT routines
 '----------------------------------------
 Dim SS
 Dim PB$(22), TYN$(40)
 
 '----------------------------------------
-' Used across SCHEDULE.BAS routines
+' Used across SCHEDULE routines
 '----------------------------------------
 Dim BS%, NS%
 Dim N$
@@ -199,19 +221,15 @@ Dim scheduleH$(1 To 20), scheduleV$(1 To 20)
 Dim scheduleYN$(MAX_GAMES, 1)
 
 '----------------------------------------
-' Used across SINPUT.BAS routines
+' Used across SINPUT routines
 '----------------------------------------
-'confirm how this is used;
-'   already commented out lines
-'B0%(22, 22)
-
 Dim HW%(50), AW%(50), HL%(50), AL%(50), R1%(200), R2%(200), R3%(200), R4%(200)
 Dim THW%(4), TAW%(4), THL%(4), TAL%(4), TR1%(4), TR2%(4), TR3%(4), TR4%(4)
 
 Dim DV$(4)
 
 '----------------------------------------
-' Used across TRADE.BAS routines
+' Used across TRADE routines
 '----------------------------------------
 Dim tradeA$(1), A1$(1), SA$(2)
 Dim tradeB$(2, 23), tradeB1$(2, 23), tradeP$(2, 22), tradeP1$(2, 22)
