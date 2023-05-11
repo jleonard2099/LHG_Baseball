@@ -355,7 +355,9 @@ Sub ConfigureDrives ()
 
     GetDiv1:
     Locate 7, 16 'location of beginning of field
-    CapsOn = 0: NumOnly = 0: Max = 50 'specify field parameters
+    CapsOn = 0
+	NumOnly = 0
+	Max = 50
     Call TextIn(diskPaths$(0), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
     If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
     If XCode = 2 GoTo Done 'all done entering data
@@ -363,7 +365,9 @@ Sub ConfigureDrives ()
 
     GetDiv2:
     Locate 9, 16 'location of beginning of field
-    CapsOn = 0: NumOnly = 0: Max = 50 'specify field parameters
+    CapsOn = 0
+	NumOnly = 0
+	Max = 50
     Call TextIn(diskPaths$(1), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
     If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
     If XCode = 2 GoTo Done 'all done entering data
@@ -371,7 +375,9 @@ Sub ConfigureDrives ()
 
     GetDiv3:
     Locate 11, 18 'location of beginning of field
-    CapsOn = 0: NumOnly = 0: Max = 50 'specify field parameters
+    CapsOn = 0
+	NumOnly = 0
+	Max = 50
     Call TextIn(diskPaths$(2), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
     If XCode = 1 GoTo GetDiv2: 'can't back up any more, stay here
     If XCode = 2 GoTo Done 'all done entering data
@@ -379,7 +385,9 @@ Sub ConfigureDrives ()
 
     GetDiv4:
     Locate 13, 27 'location of beginning of field
-    CapsOn = 0: NumOnly = 0: Max = 50 'specify field parameters
+    CapsOn = 0
+	NumOnly = 0
+	Max = 50
     Call TextIn(diskPaths$(3), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
     If XCode = 1 GoTo GetDiv3: 'can't back up any more, stay here
     diskPaths$(3) = _Trim$(diskPaths$(3))
