@@ -3,7 +3,9 @@
 *.exe
 *.ini
 bin/DEV.BAS
+bin/errlog
 bin/HELLO*
+bin/TICKER
 doc/*.odt
 src/DEFERA
 src/DEV.BAS

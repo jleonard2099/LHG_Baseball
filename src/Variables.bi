@@ -39,7 +39,7 @@ Dim statT1%(0 To 22)
 
 Dim K9&(1)
 
-Dim statB$(23), statP$(22)
+Dim statB$(0 To 22), statP$(0 To 21)
 Dim Z1$(40), Z2$(40)
 'Dim X$(12)
 
@@ -57,8 +57,8 @@ Dim P0N%(22, 42), PN%(22)
 Dim S0N%(22, 6)
 
 Dim B0R%(23, 22), BR%(23)
-Dim mergeB%(22), alignB0%(22, 22)
-Dim mergeP%(21), P0R%(22, 42)
+Dim mergeB%(0 To 22), alignB0%(22, 22)
+Dim mergeP%(0 To 21), P0R%(22, 42)
 Dim S0R%(22, 6), S0%(22, 6), SR%(22, 6)
 
 Dim draftTR(22), draftTR1(23)
@@ -120,7 +120,7 @@ Dim statT!(22), statT1!(22)
 
 Dim BS%(22), DYS%(21)
 Dim statB0%(22, 40), statB%(23)
-Dim statP%(22), statP0%(22, 41)
+Dim statP%(0 To 21), statP0%(22, 41)
 
 Dim inputINJ%(22), PS%(32), inputSA%(24), SA1%(24), inputTS%(11), TS1%(11)
 

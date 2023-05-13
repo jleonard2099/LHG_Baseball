@@ -2,7 +2,9 @@ Sub ALIGN ()
 
     _Title "Full Count Baseball - Align Stats"
 
-    Shared BR$(), PR$() 
+    Shared BR$(), PR$()
+    Shared statB$(), statP$()
+
     Shared B0R%(), BR%()
     Shared P0R%(), draftPR%()
 
@@ -23,11 +25,6 @@ Sub ALIGN ()
             Locate 16, 5: Print Space$(55)
             Color 11
 
-            'Here we let the user select the team 
-            ' to process stats for. This lets
-            ' us calculate stat file name, as 
-            ' opposed to typing it in
-            
             Call GetDiskID_ALIGN(A$)
 
             statB$ = A$
@@ -51,7 +48,8 @@ Sub ALIGN ()
 
             statFile$ = Mid$(statB$, 4, QQ) + "." + Left$(statB$, 2)
 
-            '-- Now we know the stat file
+            Color 12, 0
+            Cls
             Locate 18, 5: Color 12: Print "SEARCHING FOR FILES . . ."
 
             If _FileExists(pathRoadStats$ + statFile$) Then
@@ -61,13 +59,31 @@ Sub ALIGN ()
                 Input #1, W2R%
                 Input #1, L2R%
 
-                For I = 0 To 22: Input #1, BR$(I): Input #1, BR%(I): Next I
-                For I = 0 To 21: Input #1, PR$(I): Input #1, draftPR%(I): Next I
-                For I = 0 To 22: For I1 = 0 To 21: Input #1, B0R%(I, I1): Next I1: Next I
-                For I = 0 To 21: For I1 = 0 To 41: Input #1, P0R%(I, I1): Next I1: Next I
+                For I = 0 To 22:
+                    Input #1, BR$(I)
+                    Input #1, BR%(I)
+                Next I
+
+                For I = 0 To 21:
+                    Input #1, PR$(I)
+                    Input #1, draftPR%(I)
+                Next I
+
+                For I = 0 To 22:
+                    For I1 = 0 To 21:
+                        Input #1, B0R%(I, I1)
+                    Next I1
+                Next I
+
+                For I = 0 To 21:
+                    For I1 = 0 To 41:
+                        Input #1, P0R%(I, I1)
+                    Next I1
+                Next I
 
                 Input #1, DR0%
                 Input #1, DR1%
+
                 For I = 0 To 21: Input #1, draftTR(I): Next I
                 For I = 0 To 22: Input #1, draftTR1(I): Next I
 
@@ -93,12 +109,30 @@ Sub ALIGN ()
                     Input #1, W2%
                     Input #1, L2%
 
-                    For I = 0 To 22: Input #1, statB$(I): Input #1, mergeB%(I): Next I
-                    For I = 0 To 21: Input #1, statP$(I): Input #1, statP%(I): Next I
-                    For I = 0 To 22: For I1 = 0 To 21: Input #1, draftB0%(I, I1): Next I1: Next I
-                    For I = 0 To 21: For I1 = 0 To 41: Input #1, statP0%(I, I1): Next I1: Next I
+                    For I = 0 To 22:
+                        Input #1, statB$(I)
+                        Input #1, mergeB%(I)
+                    Next I
 
-                    Input #1, D0%: Input #1, D1%
+                    For I = 0 To 21:
+                        Input #1, statP$(I)
+                        Input #1, statP%(I)
+                    Next I
+                    For I = 0 To 22:
+                        For I1 = 0 To 21:
+                            Input #1, draftB0%(I, I1)
+                        Next I1
+                    Next I
+
+                    For I = 0 To 21:
+                        For I1 = 0 To 41:
+                            Input #1, statP0%(I, I1)
+                        Next I1
+                    Next I
+
+                    Input #1, D0%
+                    Input #1, D1%
+
                     For I = 0 To 21: Input #1, statT%(I): Next I
                     For I = 0 To 22: Input #1, statT1%(I): Next I
 
@@ -118,7 +152,7 @@ Sub ALIGN ()
                         DUMMY$ = "OK"
 
                     Else
-                    
+
                         Cls
                         Locate 2, 10: Color 7
                         Print "NON-EXISTANT PATH OR INCORRECT FILE NAME!!!!"
@@ -131,7 +165,7 @@ Sub ALIGN ()
                 End If 'Done checking if current file exists
 
             Else
-            
+
                 Cls
                 Locate 2, 10: Color 7
                 Print "NON-EXISTANT PATH OR INCORRECT FILE NAME!!!!"
@@ -143,7 +177,213 @@ Sub ALIGN ()
 
         End If 'Done checking for change / ESC
 
-    Loop Until DUMMY$ <> "" Or UCase$(I$) = "N"  Or I$ = Chr$(27)
+    Loop Until DUMMY$ <> "" Or UCase$(I$) = "N" Or I$ = Chr$(27)
+
+End Sub
+
+
+'----------------------------------------
+'         AlignStats Subroutine
+'----------------------------------------
+'...explanation...
+Sub AlignStats (pathRoadStats$, statFile$)
+
+    Shared statB$(), statP$()
+
+    Shared BN$(), PN$()
+    Shared B0N%(), BN%()
+    Shared P0N%(), PN%()
+    Shared S0N%()
+
+    Shared BR$(), PR$()
+    Shared draftPR%()
+    Shared B0R%(), BR%()
+    Shared P0R%(), S0R%()
+
+    Cls
+    Locate 1, 34
+    Color 12: Print "STAT ROSTERS"
+
+    Locate , 33
+    Color 15: Print "CURRENT  ";
+    Color 7: Print " ROAD"
+
+    For I = 0 To 22:
+        Color 12: Locate I + 1, 1: Print Using "##"; I;
+        Print " ";: Color 15: Print Left$(statB$(I), 10);
+        Color 12: Print Tab(17); Using "##"; I;
+        Print " ";
+        Color 7: Print Left$(BR$(I), 10);
+    Next
+
+    For I = 0 To 21:
+        Color 12: Locate I + 1, 48: Print Using "##"; I;
+        Print " ";: Color 15: Print Left$(statP$(I), 10);
+        Color 12: Print Tab(62); Using "##"; I;
+        Print " ";
+        Color 7: Print Left$(PR$(I), 10);
+    Next
+
+    Color 11
+	Locate 22: Line Input "HIT ENTER TO ALIGN"; DUMMY$
+    Color 11
+	Locate 22: Print "ALIGNING FILES . . .             "
+
+    N = 0
+
+    Do
+
+        For J = 0 To 22
+
+            If UCase$(statB$(N)) = UCase$(BR$(J)) Then
+                BN$(N) = BR$(J)
+                BN%(N) = BR%(J)
+
+                For K = 0 To 21
+                    B0N%(N, K) = B0R%(J, K)
+                Next K
+
+                For K = 0 To 6
+                    S0N%(N, K) = S0R%(J, K)
+                Next K
+
+            End If
+
+        Next J
+
+        N = N + 1
+
+    Loop Until N = 23
+
+    N = 0
+
+    Do
+        For J = 0 To 21
+
+            If UCase$(statP$(N)) = UCase$(PR$(J)) Then
+
+                PN$(N) = PR$(J)
+                PN%(N) = draftPR%(J)
+
+                For K = 0 To 41
+                    P0N%(N, K) = P0R%(J, K)
+                Next K
+
+            End If
+
+        Next J
+
+        N = N + 1
+
+    Loop Until N = 22
+
+    SEQ = 0
+
+    'Check batters
+    For J = 0 To 22
+        If UCase$(BN$(J)) <> UCase$(statB$(J)) Then
+            SEQ = SEQ + 1
+        End If
+    Next J
+
+    'Check pitchers
+    For J = 0 To 21
+        If UCase$(PN$(J)) <> UCase$(statP$(J)) Then
+            SEQ = SEQ + 1
+        End If
+    Next J
+
+    If SEQ = 0 Then
+        Call ReviewAndSaveAlignment(pathRoadStats$, statFile$)
+    Else
+
+        Locate 20
+        Color 14
+        Print "WARNING !! - - ROAD STAT FILE CONTAINS PLAYERS NOT IN EXISTING STATS.  YOU MUST"
+        Print "CHANGE ROAD STAT FILE USING OPTION #6 ON GAME MENU BEFORE ATTEMPTING STAT MERGE."
+        Locate 23, 30
+        Color 13: Line Input "HIT ENTER TO CONTINUE"; DUMMY$
+
+    End If 'Done checking SEQ
+
+End Sub
+
+
+'----------------------------------------
+'    ReviewAndSaveAlignment Subroutine
+'----------------------------------------
+'...explanation...
+Sub ReviewAndSaveAlignment (pathRoadStats$, statFile$)
+
+    Shared statB$(), statP$()
+
+    Shared draftTR(), draftTR1()
+
+    Shared BN$(), PN$()
+    Shared B0N%(), BN%()
+    Shared P0N%(), PN%()
+    Shared S0N%()
+
+    Cls
+    Locate 1, 34
+    Color 12: Print "STAT ROSTERS"
+    Locate , 33
+    Color 15: Print "CURRENT  ";
+    Color 7: Print " ROAD"
+
+    For I = 0 To 22:
+        Color 12: Locate I + 1, 1: Print Using "##"; I;
+        Print " ";: Color 15: Print Left$(statB$(I), 10);
+        Color 12: Print Tab(17); Using "##"; I;: Print " ";
+        Color 7: Print Left$(BN$(I), 10);
+    Next
+
+    For I = 0 To 21:
+        Color 12: Locate I + 1, 48: Print Using "##"; I;
+        Print " ";: Color 15: Print Left$(statP$(I), 10);
+        Color 12: Print Tab(62); Using "##"; I;: Print " ";
+        Color 7: Print Left$(PN$(I), 10);
+    Next
+
+    Color 11
+	Locate 22: Line Input "HIT ENTER TO ALIGN"; DUMMY$
+    Color 11
+	Locate 22: Print "ALIGNING FILES . . .             "
+
+    Open pathRoadStats$ + statFile$ For Output As #1
+
+    Write #1, AR$
+    Write #1, W2R%
+    Write #1, L2R%
+
+    For I = 0 To 22: Write #1, BN$(I): Write #1, BN%(I): Next I
+    For I = 0 To 21: Write #1, PN$(I): Write #1, PN%(I): Next I
+    For I = 0 To 22: For I1 = 0 To 21: Write #1, B0N%(I, I1): Next I1: Next I
+    For I = 0 To 21: For I1 = 0 To 41: Write #1, P0N%(I, I1): Next I1: Next I
+
+    Write #1, DR0%
+    Write #1, DR1%
+    For I = 0 To 21: Write #1, draftTR(I): Next I
+    For I = 0 To 22: Write #1, draftTR1(I): Next I
+
+    Close #1
+
+    Open pathRoadStats$ + statFile$ + "R" For Output As #1
+    For I = 0 To 22
+        For I1 = 0 To 6
+            Print #1, S0N%(I, I1)
+        Next
+    Next
+    Close 1
+
+    Cls
+
+    Locate 8, 20: Print "RE-ALIGNMENT COMPLETED"
+    Print
+    Locate 12, 20
+    Color 12: Line Input "HIT ENTER TO CONTINUE"; DUMMY$
+
+    Cls
 
 End Sub
 
@@ -202,7 +442,6 @@ Sub GetDiskID_ALIGN (A$)
                 Else
                     YN$ = NY$
                     Erase teamNames$
-
                     numberTeams = 0
 
                     Open diskPaths$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342
@@ -211,7 +450,6 @@ Sub GetDiskID_ALIGN (A$)
 
                     For I1 = 1 To Y / 4342
                         Get #1, I1
-                        
                         For I2 = 1 To 15
                             If Left$(Q$(0), 2) = "XX" Or Left$(Q$(0), 1) = " " Or Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then nullTeam = 1: Exit For
                         Next I2
@@ -317,213 +555,5 @@ Sub SelectTeam_ALIGN (numberTeams, yearNumber$)
     Else
         BO% = 1
     End If
-
-End Sub
-
-
-'----------------------------------------
-'         AlignStats Subroutine
-'----------------------------------------
-'...explanation...
-Sub AlignStats (pathRoadStats$, statFile$)
-
-    Shared statB$(), statP$()
-
-    Shared BN$(), PN$()
-    Shared B0N%(), BN%()
-    Shared P0N%(), PN%()
-    Shared S0N%()
-
-    Shared BR$(), PR$()
-    Shared draftPR%()
-    Shared B0R%(), BR%()
-    Shared P0R%(), S0R%()
-
-    Cls
-    Locate 1, 34
-    Color 12: Print "STAT ROSTERS"
-    Locate , 33
-    Color 15: Print "CURRENT  ";
-    Color 7: Print " ROAD"
-
-    For I = 0 To 22: 
-        Color 12: Locate I + 1, 1: Print Using "##"; I;
-        Print " ";: Color 15: Print Left$(statB$(I), 10);
-        Color 12: Print Tab(17); Using "##"; I;
-        Print " ";
-        Color 7: Print Left$(BR$(I), 10);
-    Next
-
-    For I = 0 To 21: 
-        Color 12: Locate I + 1, 48: Print Using "##"; I;
-        Print " ";: Color 15: Print Left$(statP$(I), 10);
-        Color 12: Print Tab(62); Using "##"; I;
-        Print " ";
-        Color 7: Print Left$(PR$(I), 10);
-    Next
-
-    Color 11
-    Locate 7, 33: Print "HIT ANY KEY TO ALIGN"
-    I$ = GetKeyPress$
-
-    Color 11
-    Locate 7, 33: Print "ALIGNING FILES"
-    Locate 8, 37: Print Space$(7)
-
-    N = 0
-
-    Do
-
-        For J = 0 To 22
-
-            If UCase$(statB$(N)) = UCase$(BR$(J)) Then
-                BN$(N) = BR$(J)
-                BN%(N) = BR%(J)
-
-                For K = 0 To 21
-                    B0N%(N, K) = B0R%(J, K)
-                Next K
-
-                For K = 0 To 6
-                    S0N%(N, K) = S0R%(J, K)
-                Next K
-
-            End If
-
-        Next J
-
-        N = N + 1
-
-    Loop Until N = 23
-
-    N = 0
-
-    Do
-        For J = 0 To 21
-
-            If UCase$(statP$(N)) = UCase$(PR$(J)) Then
-
-                PN$(N) = PR$(J)
-                PN%(N) = draftPR%(J)
-
-                For K = 0 To 41
-                    P0N%(N, K) = P0R%(J, K)
-                Next K
-
-            End If
-
-        Next J
-
-        N = N + 1
-
-    Loop Until N = 22
-
-    SEQ = 0
-
-    'Check batters
-    For J = 0 To 22
-        If UCase$(BN$(J)) <> UCase$(statB$(J)) Then
-            SEQ = SEQ + 1
-        End If
-    Next J
-
-    'Check pitchers
-    For J = 0 To 21
-        If UCase$(PN$(J)) <> UCase$(statP$(J)) Then
-            SEQ = SEQ + 1
-        End If
-    Next J
-
-    If SEQ = 0 Then
-        Call ReviewAndSaveAlignment(pathRoadStats$, statFile$)
-    Else
-
-        Locate 20
-        Color 14
-        Print "WARNING !! - - ROAD STAT FILE CONTAINS PLAYERS NOT IN EXISTING STATS.  YOU MUST"
-        Print "CHANGE ROAD STAT FILE USING OPTION #6 ON GAME MENU BEFORE ATTEMPTING STAT MERGE."
-        Locate 23, 30
-        Color 13: Line Input "HIT ENTER TO CONTINUE"; DUMMY$
-
-    End If 'Done checking SEQ
-
-End Sub
-
-
-'----------------------------------------
-'    ReviewAndSaveAlignment Subroutine
-'----------------------------------------
-'...explanation...
-Sub ReviewAndSaveAlignment (pathRoadStats$, statFile$)
-
-    Shared statB$(), statP$()
-
-    Shared draftTR(), draftTR1()
-
-    Shared BN$(), PN$()
-    Shared B0N%(), BN%()
-    Shared P0N%(), PN%()
-    Shared S0N%()
-    
-    Cls
-    Locate 1, 34
-    Color 12: Print "STAT ROSTERS"
-    Locate , 33
-    Color 15: Print "CURRENT  ";
-    Color 7: Print " ROAD"
-
-    For I = 0 To 22: 
-        Color 12: Locate I + 1, 1: Print Using "##"; I;
-        Print " ";: Color 15: Print Left$(statB$(I), 10);
-        Color 12: Print Tab(17); Using "##"; I;: Print " ";
-        Color 7: Print Left$(BN$(I), 10);
-    Next
-
-    For I = 0 To 21: 
-        Color 12: Locate I + 1, 48: Print Using "##"; I;
-        Print " ";: Color 15: Print Left$(statP$(I), 10);
-        Color 12: Print Tab(62); Using "##"; I;: Print " ";
-        Color 7: Print Left$(PN$(I), 10);
-    Next
-
-    Locate 7, 33
-    Color 11: Print "HIT ANY KEY TO"
-    Locate 8, 36: Print "CONTINUE"
-    I$ = GetKeyPress$
-
-    Open pathRoadStats$ + statFile$ For Output As #1
-
-    Write #1, AR$
-    Write #1, W2R%
-    Write #1, L2R%
-
-    For I = 0 To 22: Write #1, BN$(I): Write #1, BN%(I): Next I
-    For I = 0 To 21: Write #1, PN$(I): Write #1, PN%(I): Next I
-    For I = 0 To 22: For I1 = 0 To 21: Write #1, B0N%(I, I1): Next I1: Next I
-    For I = 0 To 21: For I1 = 0 To 41: Write #1, P0N%(I, I1): Next I1: Next I
-
-    Write #1, DR0%
-    Write #1, DR1%
-    For I = 0 To 21: Write #1, draftTR(I): Next I
-    For I = 0 To 22: Write #1, draftTR1(I): Next I
-
-    Close #1
-
-    Open pathRoadStats$ + statFile$ + "R" For Output As #1
-    For I = 0 To 22
-        For I1 = 0 To 6
-            Print #1, S0N%(I, I1)
-        Next
-    Next
-    Close 1
-
-    Cls
-
-    Locate 8, 20: Print "RE-ALIGNMENT COMPLETED"
-    Print
-    Locate 12, 20
-    Color 12: Line Input "HIT ENTER TO CONTINUE"; DUMMY$
-
-    Cls
 
 End Sub

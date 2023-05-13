@@ -44,13 +44,13 @@ Sub MERGE ()
 End Sub
 
 '----------------------------------------
-'       MergeStats Subroutine
+'          MergeStats Subroutine
 '----------------------------------------
 '...explanation...
 Sub MergeStats ()
 
     Dim BR$(22)
-	Dim BR%(22), PR%(21)
+    Shared BR%(), draftPR%()
 
     Shared statB$(), statP$()
     Shared statH$(), statHR$()
@@ -69,7 +69,7 @@ Sub MergeStats ()
 
     Do
 
-		Call GetMergePaths (pathCurrentStats$, pathRoadStats$, I$)
+        Call GetMergePaths (pathCurrentStats$, pathRoadStats$, I$)
 
         If UCase$(I$) = "N" And I$ <> Chr$(27) Then
 
@@ -96,6 +96,7 @@ Sub MergeStats ()
 
             statFile$ = Mid$(statB$, 4, QQ) + "." + Left$(statB$, 2)
 
+			Color , 0
             Cls
 
             Locate 10, 15: Print "ROAD STATS ARE ON DRIVE "; pathRoadStats$
@@ -113,11 +114,11 @@ Sub MergeStats ()
 
                     Open pathRoadStats$ + "\" + statFile$ For Input As #1
                     Input #1, A$
-					Input #1, WR2%
-					Input #1, LR2%
+                    Input #1, WR2%
+                    Input #1, LR2%
 
                     For I = 0 To 22: Input #1, BR$(I): Input #1, BR%(I): Next I
-                    For I = 0 To 21: Input #1, PR$(I): Input #1, PR%(I): Next I
+                    For I = 0 To 21: Input #1, PR$(I): Input #1, draftPR%(I): Next I
                     For I = 0 To 22: For I1 = 0 To 21: Input #1, B0R%(I, I1): Next I1: Next I
                     For I = 0 To 21: For I1 = 0 To 41: Input #1, P0R%(I, I1): Next I1: Next I
 
@@ -152,8 +153,8 @@ Sub MergeStats ()
 
                         Open pathCurrentStats$ + "\" + statFile$ For Input As #1
                         Input #1, A$
-						Input #1, W2%
-						Input #1, L2%
+                        Input #1, W2%
+                        Input #1, L2%
 
                         For I = 0 To 22: Input #1, statB$(I): Input #1, mergeB%(I): Next I
                         For I = 0 To 21: Input #1, statP$(I): Input #1, mergeP%(I): Next I
@@ -202,12 +203,12 @@ Sub MergeStats ()
 
                         If SEQ = 0 Then
 
-							Call DoTheMerge(pathCurrentStats$, statFile$)
+                            Call DoTheMerge(pathCurrentStats$, statFile$)
 
-							For J = 13 To 23
-								Locate J
-								Print Space$(65)
-							Next
+                            For J = 13 To 23
+                                Locate J
+                                Print Space$(65)
+                            Next
 
                         Else
 
@@ -227,7 +228,7 @@ Sub MergeStats ()
                         End If 'Done checking sequence
 
                     Else
-					
+
                         Cls
                         Color 7
                         Locate 2, 10: Print "NON-EXISTANT PATH OR INCORRECT FILE NAME!!!!"
@@ -245,16 +246,16 @@ Sub MergeStats ()
                             Print "HIT ENTER TO RE-ENTER INFORMATION"
                             I$ = GetKeyPress$
                         End If
-					
-					End If 'Done check if home file exists
 
-				Else
+                    End If 'Done check if home file exists
 
-					Cls
-					Locate 2, 10
-					Color 7: Print "NON-EXISTANT PATH OR INCORRECT FILE NAME!!!!"
-					Print
-					Locate , 10: Line Input "HIT ENTER TO RE-ENTER INFORMATION"; DUMMY$
+                Else
+
+                    Cls
+                    Locate 2, 10
+                    Color 7: Print "NON-EXISTANT PATH OR INCORRECT FILE NAME!!!!"
+                    Print
+                    Locate , 10: Line Input "HIT ENTER TO RE-ENTER INFORMATION"; DUMMY$
 
                     Do
                         Locate , 10
@@ -267,14 +268,14 @@ Sub MergeStats ()
                         Print "HIT ENTER TO RE-ENTER INFORMATION"
                         I$ = GetKeyPress$
                     End If
-				
+
                 End If 'Done checking if road file exists
 
             End If 'Done checking if ready to proceed
 
         End If 'Done checking for ESC
 
-    Loop Until DUMMY$ <> "" Or UCase$(I$) = "N"  Or I$ = Chr$(27)
+    Loop Until DUMMY$ <> "" Or UCase$(I$) = "N" Or I$ = Chr$(27)
 
 End Sub
 
@@ -300,78 +301,78 @@ Sub DoTheMerge (pathCurrentStats$, statFile$)
 
     Shared draftTR(), draftTR1()
 
-	For K = 1 To YR%
-		Y% = Y% + 1
-		H%(Y%) = HR%(K)
-		statH$(Y%) = statHR$(K)
-		V%(Y%) = VR%(K)
-		PL$(Y%) = PLR$(K)
-		W$(Y%) = WR$(K)
-		L$(Y%) = LR$(K)
-		I%(Y%) = IR%(K)
-	Next
+    For K = 1 To YR%
+        Y% = Y% + 1
+        H%(Y%) = HR%(K)
+        statH$(Y%) = statHR$(K)
+        V%(Y%) = VR%(K)
+        PL$(Y%) = PLR$(K)
+        W$(Y%) = WR$(K)
+        L$(Y%) = LR$(K)
+        I%(Y%) = IR%(K)
+    Next
 
-	W2% = W2% + WR2%: L2% = L2% + LR2%
+    W2% = W2% + WR2%: L2% = L2% + LR2%
 
-	Locate 18, 20: Color 12: Print "MERGING STAT FILE AND SCHEDULE RESULTS . . . ."
+    Locate 18, 20: Color 12: Print "MERGING STAT FILE AND SCHEDULE RESULTS . . . ."
 
-	For I = 0 To 22
-		For I1 = 0 To 6
-			S0%(I, I1) = S0%(I, I1) + SR%(I, I1)
-		Next
+    For I = 0 To 22
+        For I1 = 0 To 6
+            S0%(I, I1) = S0%(I, I1) + SR%(I, I1)
+        Next
 
-		For I1 = 0 To 11: alignB0%(I, I1) = alignB0%(I, I1) + B0R%(I, I1): Next I1
-		For I1 = 14 To 21: alignB0%(I, I1) = alignB0%(I, I1) + B0R%(I, I1): Next I1
-	Next I
+        For I1 = 0 To 11: alignB0%(I, I1) = alignB0%(I, I1) + B0R%(I, I1): Next I1
+        For I1 = 14 To 21: alignB0%(I, I1) = alignB0%(I, I1) + B0R%(I, I1): Next I1
+    Next I
 
-	For I = 0 To 21
-		For I1 = 0 To 34: statP0%(I, I1) = statP0%(I, I1) + P0R%(I, I1): Next I1
-		For I1 = 37 To 41: statP0%(I, I1) = statP0%(I, I1) + P0R%(I, I1): Next I1
-	Next I
+    For I = 0 To 21
+        For I1 = 0 To 34: statP0%(I, I1) = statP0%(I, I1) + P0R%(I, I1): Next I1
+        For I1 = 37 To 41: statP0%(I, I1) = statP0%(I, I1) + P0R%(I, I1): Next I1
+    Next I
 
-	D0% = D0% + DR0%: D1% = D1% + DR1%
+    D0% = D0% + DR0%: D1% = D1% + DR1%
 
-	For I = 0 To 21: statT%(I) = statT%(I) + draftTR(I): Next
-	For I = 0 To 22: statT1%(I) = statT1%(I) + draftTR1(I): Next
+    For I = 0 To 21: statT%(I) = statT%(I) + draftTR(I): Next
+    For I = 0 To 22: statT1%(I) = statT1%(I) + draftTR1(I): Next
 
-	Open pathCurrentStats$ + "\" + statFile$ For Output As #1
+    Open pathCurrentStats$ + "\" + statFile$ For Output As #1
 
-	Write #1, A$: Write #1, W2%: Write #1, L2%
+    Write #1, A$: Write #1, W2%: Write #1, L2%
 
-	For I = 0 To 22: Write #1, statB$(I): Write #1, mergeB%(I): Next I
-	For I = 0 To 21: Write #1, statP$(I): Write #1, mergeP%(I): Next I
-	For I = 0 To 22: For I1 = 0 To 21: Write #1, alignB0%(I, I1): Next I1: Next I
-	For I = 0 To 21: For I1 = 0 To 41: Write #1, statP0%(I, I1): Next I1: Next I
+    For I = 0 To 22: Write #1, statB$(I): Write #1, mergeB%(I): Next I
+    For I = 0 To 21: Write #1, statP$(I): Write #1, mergeP%(I): Next I
+    For I = 0 To 22: For I1 = 0 To 21: Write #1, alignB0%(I, I1): Next I1: Next I
+    For I = 0 To 21: For I1 = 0 To 41: Write #1, statP0%(I, I1): Next I1: Next I
 
-	Write #1, D0%: Write #1, D1%
+    Write #1, D0%: Write #1, D1%
 
-	For I = 0 To 21: Write #1, statT%(I): Next I
-	For I = 0 To 22: Write #1, statT1%(I): Next I
+    For I = 0 To 21: Write #1, statT%(I): Next I
+    For I = 0 To 22: Write #1, statT1%(I): Next I
 
-	Close #1
+    Close #1
 
-	Open pathCurrentStats$ + "\" + statFile$ + "R" For Output As #1
-	For I = 0 To 22
-		For I1 = 0 To 6
-			Write #1, S0%(I, I1)
-		Next
-	Next
-	Close 1
+    Open pathCurrentStats$ + "\" + statFile$ + "R" For Output As #1
+    For I = 0 To 22
+        For I1 = 0 To 6
+            Write #1, S0%(I, I1)
+        Next
+    Next
+    Close 1
 
-	Open pathCurrentStats$ + "\" + statFile$ + "S" For Output As #1
-	Write #1, Y%
-	For I = 1 To 162: Write #1, H%(I): Next I
-	For I = 1 To 162: Write #1, statH$(I): Next I
-	For I = 1 To 162: Write #1, V%(I): Next I
-	For I = 1 To 162: Write #1, PL$(I): Next I
-	For I = 1 To 162: Write #1, W$(I): Next I
-	For I = 1 To 162: Write #1, L$(I): Next I
-	For I = 1 To 162: Write #1, I%(I): Next I
-	Close #1
+    Open pathCurrentStats$ + "\" + statFile$ + "S" For Output As #1
+    Write #1, Y%
+    For I = 1 To 162: Write #1, H%(I): Next I
+    For I = 1 To 162: Write #1, statH$(I): Next I
+    For I = 1 To 162: Write #1, V%(I): Next I
+    For I = 1 To 162: Write #1, PL$(I): Next I
+    For I = 1 To 162: Write #1, W$(I): Next I
+    For I = 1 To 162: Write #1, L$(I): Next I
+    For I = 1 To 162: Write #1, I%(I): Next I
+    Close #1
 
-	Y = 0
+    Y = 0
 
-	Locate 20, 20: Color 12: Print "RESULTS SUCCESSFULLY MERGED!!"
+    Locate 20, 20: Color 12: Print "RESULTS SUCCESSFULLY MERGED!!"
 
 End Sub
 
@@ -382,70 +383,70 @@ End Sub
 '...explanation...
 Sub GetMergePaths (pathCurrentStats$, pathRoadStats$, promptResponse$)
 
-	Shared opSysType$
+    Shared opSysType$
 
-	Do
-		Color 12, 0
-		Cls
+    Do
+        Color 12, 0
+        Cls
 
-		Locate 2, 5: Print "ENTER COMPLETE PATH FOR TEAM STATS TO MERGE/ALIGN"
-		Color 15
-		Select Case opSysType$
-			Case "[WINDOWS]":
-				Locate 4, 5: Print "EXAMPLE - A:"
-				Locate , 5: Print "          C:\HAFFNER"
-				Locate , 5: Print "          C:\HAFFNER\1960"
-				Locate , 5: Print "          D:\FOOTBALL"
-			Case "[LINUX]":
-				Locate 4, 5: Print "EXAMPLE - /mnt/floppy"
-				Locate , 5: Print "           /usr/bin/haffner"
-				Locate , 5: Print "           /usr/bin/haffner/1960"
-				Locate , 5: Print "           /home/haffner/football"
-			Case "[MAC]":
-				Locate 4, 5: Print "EXAMPLE - /Volumes/floppy"
-				Locate , 5: Print "           /Applications/haffner"
-				Locate , 5: Print "           /Applications/haffner/1960"
-				Locate , 5: Print "           /Users/haffner/football"
-		End Select
+        Locate 2, 5: Print "ENTER COMPLETE PATH FOR TEAM STATS TO MERGE/ALIGN"
+        Color 15
+        Select Case opSysType$
+            Case "[WINDOWS]":
+                Locate 4, 5: Print "EXAMPLE - A:"
+                Locate , 5: Print "          C:\HAFFNER"
+                Locate , 5: Print "          C:\HAFFNER\1960"
+                Locate , 5: Print "          D:\FOOTBALL"
+            Case "[LINUX]":
+                Locate 4, 5: Print "EXAMPLE - /mnt/floppy"
+                Locate , 5: Print "           /usr/bin/haffner"
+                Locate , 5: Print "           /usr/bin/haffner/1960"
+                Locate , 5: Print "           /home/haffner/football"
+            Case "[MAC]":
+                Locate 4, 5: Print "EXAMPLE - /Volumes/floppy"
+                Locate , 5: Print "           /Applications/haffner"
+                Locate , 5: Print "           /Applications/haffner/1960"
+                Locate , 5: Print "           /Users/haffner/football"
+        End Select
 
-		For J = 10 To 13
-			Locate J
-			Print Space$(70)
-		Next
+        For J = 10 To 13
+            Locate J
+            Print Space$(70)
+        Next
 
-		Color 10
-		Locate 10, 5
-		Line Input "ROAD STATS:     "; pathRoadStats$
-		Locate , 5
-		Locate , 5
-		Line Input "CURRENT STATS:  "; pathCurrentStats$
+        Color 10
+        Locate 10, 5
+        Line Input "ROAD STATS:     "; pathRoadStats$
+        Locate , 5
+        Locate , 5
+        Line Input "CURRENT STATS:  "; pathCurrentStats$
 
-		Color 14
-		Locate 13, 5: Print "ANY CHANGE (Y/N)"
-		promptResponse$ = GetKeyPress$
+        Color 14
+        Locate 13, 5: Print "ANY CHANGE (Y/N)"
+        promptResponse$ = GetKeyPress$
 
-	Loop Until UCase$(promptResponse$) = "N" Or promptResponse$ = Chr$(27)
+    Loop Until UCase$(promptResponse$) = "N" Or promptResponse$ = Chr$(27)
 
-	'Adjust path terminator for OS type
-	Select Case opSysType$
-		Case "[WINDOWS]": 
-			If Not (Right$(pathCurrentStats$,1) = "\") Then
-				pathCurrentStats$ = pathCurrentStats$ + "\"
-			End If
+    'Adjust path terminator for OS type
+    Select Case opSysType$
+        Case "[WINDOWS]":
+            If Not (Right$(pathCurrentStats$, 1) = "\") Then
+                pathCurrentStats$ = pathCurrentStats$ + "\"
+            End If
 
-			If Not (Right$(pathRoadStats$,1) = "\") Then
-				pathRoadStats$ = pathRoadStats$ + "\"
-			End If
+            If Not (Right$(pathRoadStats$, 1) = "\") Then
+                pathRoadStats$ = pathRoadStats$ + "\"
+            End If
 
-		Case "[MAC]", "[LINUX]":
-			If Not (Right$(pathCurrentStats$, 1) = "/") Then
-				pathCurrentStats$ = pathCurrentStats$ + "/"
-			End If
+        Case "[MAC]", "[LINUX]":
+            If Not (Right$(pathCurrentStats$, 1) = "/") Then
+                pathCurrentStats$ = pathCurrentStats$ + "/"
+            End If
 
-			If Not (Right$(pathRoadStats$, 1) = "/") Then
-				pathRoadStats$ = pathRoadStats$ + "/"
-			End If
-	End Select
+            If Not (Right$(pathRoadStats$, 1) = "/") Then
+                pathRoadStats$ = pathRoadStats$ + "/"
+            End If
+    End Select
 
 End Sub
 
@@ -464,8 +465,8 @@ Sub GetDiskID_MERGE (A$)
         Cls
         JJ = 6
         SN = 1
-
-        Locate 6, 8: Color 15, 4
+        Locate 6, 8
+        Color 15, 4
 
         'Print box top
         Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
@@ -481,6 +482,7 @@ Sub GetDiskID_MERGE (A$)
         Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
 
         Locate 7, 32
+
         Locate , 12: Print "ENTER DISK ID: ": Print
         Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
         Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
@@ -497,8 +499,9 @@ Sub GetDiskID_MERGE (A$)
                 Locate 7, 28: Line Input NY$
                 NY$ = I$ + NY$
                 Color 15, 0
+
                 If NY$ = "" Then
-					Call SelectTeam_MERGE(yearNumber$, numberTeams)
+                    Call SelectTeam_MERGE(yearNumber$, numberTeams)
                 Else
                     yearNumber$ = NY$
                     Erase teamNames$
@@ -523,8 +526,9 @@ Sub GetDiskID_MERGE (A$)
 
                     Close 1
 
-					Call SelectTeam_MERGE(yearNumber$, numberTeams)
+                    Call SelectTeam_MERGE(yearNumber$, numberTeams)
                 End If
+
             End If
 
             A$ = RTrim$(Q$(0))
