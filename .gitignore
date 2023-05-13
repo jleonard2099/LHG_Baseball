@@ -9,6 +9,7 @@ bin/TICKER
 doc/*.odt
 src/DEFERA
 src/DEV.BAS
+src/errlog
 src/GAME82
 src/EVENTS.BOX
 src/TICKER

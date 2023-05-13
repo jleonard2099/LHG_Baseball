@@ -22,7 +22,7 @@ Function FCount% (fileSpec$)
 
         Select Case osSpec$
             Case "[WINDOWS]": Shell _Hide "dir /on /b " + fileSpec$ + " > " + TmpFile$
-            Case "[MAC]": Shell _Hide "find . -iname " + fileSpec$ + " -type f -print0 | sort -z | tee " + TmpFile$
+            Case "[MAC]","[MACOSX]": Shell _Hide "find . -iname " + fileSpec$ + " -type f -print0 | sort -z | tee " + TmpFile$
             Case "[LINUX]": Shell _Hide "find . -iname " + fileSpec$ + " -type f -print0 | sort -z | tee " + TmpFile$
         End Select
 
@@ -1094,7 +1094,7 @@ Sub ReadFile (fileList$())
 
     Select Case osSpec$
         Case "[WINDOWS]": Shell _Hide "dir /on /b " + fileSpec$ + " > " + TmpFile$
-        Case "[MAC]": Shell _Hide "find . -iname " + fileSpec$ + " -type f -print0 | sort -z | tee " + TmpFile$
+        Case "[MAC]","[MACOSX]": Shell _Hide "find . -iname " + fileSpec$ + " -type f -print0 | sort -z | tee " + TmpFile$
         Case "[LINUX]": Shell _Hide "find . -iname " + fileSpec$ + " -type f -print0 | sort -z | tee " + TmpFile$
     End Select
 
