@@ -1,52 +1,69 @@
 '-----------------------------------
 ' FCount Copycat Function
 '-----------------------------------
-Function FCount% (fileSpec$)
+Function FCount% (dirSpec$)
+
+    'ListMAX is the max # of files the function
+    'can process. The value chosen was used for
+    'efficiency and speed.
+
+    '-- The max # of files in a folder for most OS = 1024 * 1024 = 4294967295
 
     Const TmpFile$ = "DIR$INF0.INF", ListMAX~& = 8388608
 
-    'The max # of files in a folder of any OS is 4294967295
-    'The value used now comes from 1/2'ing this until I got
-    'the highest # I could and still get ~1 sec response
-    Static Ready%, Index%, DirList$()
+    Static emptyFile%, Ready%, Index%
+    Static DirList$()
+
+    emptyFile% = 0
 
     'DIM array for first use
-    If Not Ready% Then ReDim DirList$(ListMAX~&): Ready% = -1
+    If Not Ready% Then
+        ReDim DirList$(ListMAX~&)
+        Ready% = -1
+    End If
 
     'Get file names when a spec is given
-    If fileSpec$ > "" Then
+    If dirSpec$ > "" Then
 
-        opSys$ = _OS$
-        y% = Len(s$)
         osSpec$ = Left$(_OS$, InStr(2, _OS$, "[") - 1)
 
         Select Case osSpec$
-            Case "[WINDOWS]": Shell _Hide "dir /on /b " + fileSpec$ + " > " + TmpFile$
-            Case "[MAC]","[MACOSX]": Shell _Hide "find . -iname " + fileSpec$ + " -type f -print0 | sort -z | tee " + TmpFile$
-            Case "[LINUX]": Shell _Hide "find . -iname " + fileSpec$ + " -type f -print0 | sort -z | tee " + TmpFile$
+            Case "[WINDOWS]":
+                Shell _Hide "dir /on /b " + dirSpec$ + " > " + TmpFile$
+            Case "[LINUX]", "[MAC]", "[MACOSX]":
+                Shell _Hide "find $(dirname " + dirSpec$ + ") -name $(basename " + dirSpec$ + ") -type f -exec basename {} \; | sort | tee " + TmpFile$
         End Select
 
-        Index% = 0: DirList$(Index%) = "": ff% = FreeFile
+        Index% = 0
+        DirList$(Index%) = ""
+        ff% = FreeFile
 
         'Determine file size
         Open TmpFile$ For Append As #ff%
         size& = LOF(ff%)
         Close #ff%
 
-        'If it's an empty file, delete it
-        If size& = 0 Then Kill TmpFile$: Exit Function
+        If size& = 0 Then
+            emptyFile% = 1
+        End If
 
-        'Count # of files by reading through list of all
-        Open TmpFile$ For Input As #ff%
-        Do While Not EOF(ff%) And Index% < ListMAX%
-            Index% = Index% + 1
-            Line Input #ff%, DirList$(Index%)
-        Loop
-        Close #ff%
+        If emptyFile% = 0 Then
+            'Count # of files in list
+            Open TmpFile$ For Input As #ff%
+            Do While Not EOF(ff%) And Index% < ListMAX%
+                Index% = Index% + 1
+                Line Input #ff%, DirList$(Index%)
+            Loop
+            Close #ff%
+        End If
+
         Kill TmpFile$
+        Kill "basename.f"
+        Kill "dirname.f"
 
         ' Shared variable can return the file count
-        FCount% = Index%
+        If emptyFile% = 0 Then FCount% = Index%
+
     End If
 
 End Function
@@ -98,9 +115,9 @@ Function FUsing$ (Number$, Image$, Typ%)
     Else
         Print Using Image$; Number$;
     End If
-    For i% = 1 To Pos(0) - 1
-        res$ = res$ + Chr$(Screen(1, i%))
-    Next i%
+    For I% = 1 To Pos(0) - 1
+        res$ = res$ + Chr$(Screen(1, I%))
+    Next I%
     _Source shan&: _Dest dhan&: _FreeImage than&
     FUsing$ = res$
 End Function
@@ -188,21 +205,37 @@ Function OneColor% (FGColor%, BGColor%)
     OneColor% = (FGColor% And 16) * 8 + ((BGColor% And 7) * 16) + (FGColor% And 15)
 End Function
 
+
 '-----------------------------------
 ' Reads DIR into file list
 '-----------------------------------
-Function READDIR$ (spec$)
+Function READDIR$ (dirSpec$)
+
+    'ListMAX is the max # of files the function
+    'can process. The value chosen was used for
+    'efficiency and speed.
+
+    '-- The max # of files in a folder for most OS = 1024 * 1024 = 4294967295
     Const TmpFile$ = "DIR$INF0.INF", ListMAX~& = 131072
-    '1024 * 1024 = 4294967295 is the max # of files in a folder
-    Shared DirCount% 'returns file count if desired
+
+    Shared DirCount%
+
     Static Ready%, Index%, DirList$()
 
     If Not Ready% Then ReDim DirList$(ListMAX%): Ready% = -1 'DIM array first use
 
-    If spec$ > "" Then 'get file names when a spec is given
-        Shell _Hide "DIR " + spec$ + " /b /on > " + TmpFile$
+    If dirSpec$ > "" Then 'get file names when a spec is given
+
+        osSpec$ = Left$(_OS$, InStr(2, _OS$, "[") - 1)
+
+        Select Case osSpec$
+            Case "[WINDOWS]":
+                Shell _Hide "dir /on /b " + dirSpec$ + " > " + TmpFile$
+            Case "[LINUX]", "[MAC]", "[MACOSX]":
+                Shell _Hide "find $(dirname " + dirSpec$ + ") -name $(basename " + dirSpec$ + ") -type f -exec basename {} \; | sort | tee " + TmpFile$
+        End Select
+
         Index% = 0
-        'DirList$(Index%) = ""
         ff% = FreeFile
 
         Open TmpFile$ For Append As #ff%
@@ -216,15 +249,23 @@ Function READDIR$ (spec$)
             Index% = Index% + 1
             Line Input #ff%, DirList$(Index%)
         Loop
+
         DirCount% = Index% ' Shared variable can return the file count
+
         Close #ff%
 
         Kill TmpFile$
+
     Else
+
         If Index% > 0 Then Index% = Index% - 1 'if there's no spec, we get the next file name
+
     End If
+
     READDIR$ = DirList$(Index%)
+
 End Function
+
 
 '-----------------------------------
 ' AddInt Copycat Subroutine
@@ -370,7 +411,7 @@ End Sub
 Sub Comline (NumArgs%, Args$(), MaxArgs%)
     Const TRUE = -1, FALSE = 0
 
-    NumArgs% = 0: In = FALSE
+    NumArgs% = 0: IN = FALSE
 
     ' Get the command line using the COMMAND$ function
     Cl$ = Command$
@@ -383,19 +424,19 @@ Sub Comline (NumArgs%, Args$(), MaxArgs%)
         If (C$ <> " " And C$ <> Chr$(9)) Then
             ' Neither blank nor tab; test if you're already inside
             ' an argument
-            If Not In Then
+            If Not IN Then
                 ' You've found the start of a new argument
                 ' Test for too many arguments
                 If NumArgs% = MaxArgs% Then Exit For
                 NumArgs% = NumArgs% + 1
-                In = TRUE
+                IN = TRUE
             End If
             ' Add the character to the current argument
             Args$(NumArgs%) = Args$(NumArgs%) + C$
         Else
             ' Found a blank or a tab.
             ' Set "Not in an argument" flag to FALSE
-            In = FALSE
+            IN = FALSE
         End If
     Next I
 
@@ -1084,29 +1125,34 @@ Sub ReadFile (fileList$())
     TmpFile$ = "temp" + Time$ + ".tmp"
     Mid$(TmpFile$, 7, 1) = "-"
     Mid$(TmpFile$, 10, 1) = "-"
-    fileSpec$ = fileList$(0)
 
-    'We'll use shell commands and specify a sort-by-name
-    'This replaces the need to sort the list afterwards
-    opSys$ = _OS$
-    y% = Len(s$)
+    'Need to split this "spec" into:
+    ' path | file
+
+    dirSpec$ = fileList$(0)
     osSpec$ = Left$(_OS$, InStr(2, _OS$, "[") - 1)
 
     Select Case osSpec$
-        Case "[WINDOWS]": Shell _Hide "dir /on /b " + fileSpec$ + " > " + TmpFile$
-        Case "[MAC]","[MACOSX]": Shell _Hide "find . -iname " + fileSpec$ + " -type f -print0 | sort -z | tee " + TmpFile$
-        Case "[LINUX]": Shell _Hide "find . -iname " + fileSpec$ + " -type f -print0 | sort -z | tee " + TmpFile$
+        Case "[WINDOWS]":
+            Shell _Hide "dir /on /b " + dirSpec$ + " > " + TmpFile$
+        Case "[LINUX]", "[MAC]", "[MACOSX]":
+            Shell _Hide "find $(dirname " + dirSpec$ + ") -name $(basename " + dirSpec$ + ") -type f -exec basename {} \; | sort | tee " + TmpFile$
     End Select
 
     dirEntry = 0
+
     Open TmpFile$ For Input As #5
+
     While Not EOF(5)
         Line Input #5, x$
         dirEntry = dirEntry + 1
         fileList$(dirEntry) = x$
     Wend
+
     Close 5
+
     Kill TmpFile$
+
 End Sub
 
 '-----------------------------------

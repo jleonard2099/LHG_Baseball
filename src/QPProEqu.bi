@@ -1,10 +1,10 @@
-DECLARE FUNCTION FCount% (spec$)
+DECLARE FUNCTION FCount% (dirSpec$)
 DECLARE FUNCTION FUsing$ (Number$, Image$, Typ%)
 DECLARE FUNCTION FileSize& (FileName$)
 DECLARE FUNCTION MGetKey (Row%, Col%)
 DECLARE FUNCTION Monitor%
 DECLARE FUNCTION OneColor% (FGColor, BGColor)
-DECLARE FUNCTION READDIR$(spec$)
+DECLARE FUNCTION READDIR$(dirSpec$)
 DECLARE SUB AddInt (AElement, Value, NumEls)
 DECLARE SUB CSMsgBox (Message$, Wdth, Pass)
 DECLARE SUB CapNum ()
@@ -26,4 +26,3 @@ DECLARE SUB TextIn (T$, Max%, NumOnly%, CapsOn, ExitCode%, FGColor%, BGColor%)
 DECLARE SUB YesNoB (YN$, ExitCode%, FGColor%, BGColor%)
 DECLARE SUB box0 (ULRow%, ULCol%, LRRow%, LRCol%, Char%, FGColor%, BGColor%)
 DECLARE Sub FCopy (srcFile$, dstFile$, Buff$, copyErr%)
-
