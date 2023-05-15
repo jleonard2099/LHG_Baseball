@@ -9,7 +9,7 @@ Function FCount% (dirSpec$)
 
     '-- The max # of files in a folder for most OS = 1024 * 1024 = 4294967295
 
-    Const TmpFile$ = "DIR$INF0.INF", ListMAX~& = 8388608
+    Const TmpFile$ = "DIRINF0", ListMAX~& = 8388608
 
     Static emptyFile%, Ready%, Index%
     Static DirList$()
@@ -31,7 +31,7 @@ Function FCount% (dirSpec$)
             Case "[WINDOWS]":
                 Shell _Hide "dir /on /b " + dirSpec$ + " > " + TmpFile$
             Case "[LINUX]", "[MAC]", "[MACOSX]":
-                Shell _Hide "find $(dirname " + dirSpec$ + ") -name $(basename " + dirSpec$ + ") -type f -exec basename {} \; | sort | tee " + TmpFile$
+                Shell _Hide "ls -A1 " + dirSpec$ + " | awk -F/ '{print $NF}' | sort | tee " + TmpFile$			
         End Select
 
         Index% = 0
@@ -216,7 +216,7 @@ Function READDIR$ (dirSpec$)
     'efficiency and speed.
 
     '-- The max # of files in a folder for most OS = 1024 * 1024 = 4294967295
-    Const TmpFile$ = "DIR$INF0.INF", ListMAX~& = 131072
+    Const TmpFile$ = "DIRINF0", ListMAX~& = 131072
 
     Shared DirCount%
 
@@ -232,7 +232,7 @@ Function READDIR$ (dirSpec$)
             Case "[WINDOWS]":
                 Shell _Hide "dir /on /b " + dirSpec$ + " > " + TmpFile$
             Case "[LINUX]", "[MAC]", "[MACOSX]":
-                Shell _Hide "find $(dirname " + dirSpec$ + ") -name $(basename " + dirSpec$ + ") -type f -exec basename {} \; | sort | tee " + TmpFile$
+                Shell _Hide "ls -A1 " + dirSpec$ + " | awk -F/ '{print $NF}' | sort | tee " + TmpFile$			
         End Select
 
         Index% = 0
@@ -1136,7 +1136,7 @@ Sub ReadFile (fileList$())
         Case "[WINDOWS]":
             Shell _Hide "dir /on /b " + dirSpec$ + " > " + TmpFile$
         Case "[LINUX]", "[MAC]", "[MACOSX]":
-            Shell _Hide "find $(dirname " + dirSpec$ + ") -name $(basename " + dirSpec$ + ") -type f -exec basename {} \; | sort | tee " + TmpFile$
+			Shell _Hide "ls -A1 " + dirSpec$ + " | awk -F/ '{print $NF}' | sort | tee " + TmpFile$			
     End Select
 
     dirEntry = 0
