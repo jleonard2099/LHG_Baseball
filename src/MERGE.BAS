@@ -50,6 +50,9 @@ End Sub
 Sub MergeStats ()
 
     Dim BR$(22)
+
+	Shared Ycurr%, Yroad%
+
     Shared BR%(), draftPR%()
 
     Shared statB$(), statP$()
@@ -110,9 +113,9 @@ Sub MergeStats ()
 
             If UCase$(J$) = "N" Then
 
-                If _FileExists(pathRoadStats$ + "\" + statFile$) Then
+                If _FileExists(pathRoadStats$ + statFile$) Then
 
-                    Open pathRoadStats$ + "\" + statFile$ For Input As #1
+                    Open pathRoadStats$ + statFile$ For Input As #1
                     Input #1, A$
                     Input #1, WR2%
                     Input #1, LR2%
@@ -128,8 +131,8 @@ Sub MergeStats ()
 
                     Close #1
 
-                    If _FileExists(pathRoadStats$ + "\" + statFile$ + "R") Then
-                        Open pathRoadStats$ + "\" + statFile$ + "R" For Input As #1
+                    If _FileExists(pathRoadStats$ + statFile$ + "R") Then
+                        Open pathRoadStats$ + statFile$ + "R" For Input As #1
                         For I = 0 To 22
                             For I1 = 0 To 6
                                 Input #1, SR%(I, I1)
@@ -138,8 +141,8 @@ Sub MergeStats ()
                         Close 1
                     End If
 
-                    Open pathRoadStats$ + "\" + statFile$ + "S" For Input As #1
-                    Input #1, YR%
+                    Open pathRoadStats$ + statFile$ + "S" For Input As #1
+                    Input #1, Yroad%
                     For I = 1 To 162: Input #1, HR%(I): Next I
                     For I = 1 To 162: Input #1, statHR$(I): Next I
                     For I = 1 To 162: Input #1, VR%(I): Next I
@@ -149,35 +152,50 @@ Sub MergeStats ()
                     For I = 1 To 162: Input #1, IR%(I): Next I
                     Close #1
 
-                    If _FileExists(pathCurrentStats$ + "\" + statFile$) Then
+                    If _FileExists(pathCurrentStats$ + statFile$) Then
 
-                        Open pathCurrentStats$ + "\" + statFile$ For Input As #1
+                        Open pathCurrentStats$ + statFile$ For Input As #1
                         Input #1, A$
                         Input #1, W2%
                         Input #1, L2%
 
-                        For I = 0 To 22: Input #1, statB$(I): Input #1, mergeB%(I): Next I
-                        For I = 0 To 21: Input #1, statP$(I): Input #1, mergeP%(I): Next I
-                        For I = 0 To 22: For I1 = 0 To 21: Input #1, alignB0%(I, I1): Next I1: Next I
-                        For I = 0 To 21: For I1 = 0 To 41: Input #1, statP0%(I, I1): Next I1: Next I
+                        For I = 0 To 22: 
+							Input #1, statB$(I)
+							Input #1, mergeB%(I)
+						Next I
+                        
+						For I = 0 To 21: 
+							Input #1, statP$(I)
+							Input #1, mergeP%(I)
+						Next I
 
-                        Input #1, D0%: Input #1, D1%
-                        For I = 0 To 21: Input #1, statT%(I): Next I
+                        For I = 0 To 22: 
+							For I1 = 0 To 21: Input #1, alignB0%(I, I1): Next I1
+						Next I
+                        
+						For I = 0 To 21: 
+							For I1 = 0 To 41: Input #1, statP0%(I, I1): Next I1
+						Next I
+
+                        Input #1, D0%
+						Input #1, D1%
+                        
+						For I = 0 To 21: Input #1, statT%(I): Next I
                         For I = 0 To 22: Input #1, statT1%(I): Next I
 
                         Close #1
 
-                        If _FileExists(pathCurrentStats$ + "\" + statFile$ + "R") Then
-                            Open pathCurrentStats$ + "\" + statFile$ + "R" For Input As #1
+                        If _FileExists(pathCurrentStats$ + statFile$ + "R") Then
+                            Open pathCurrentStats$ + statFile$ + "R" For Input As #1
                             For I = 0 To 22
-                                For I1 = 0 To 6
-                                    Input #1, S0%(I, I1)
-                            Next: Next
+                                For I1 = 0 To 6: Input #1, S0%(I, I1): Next
+							Next
                             Close 1
                         End If
 
-                        Open pathCurrentStats$ + "\" + statFile$ + "S" For Input As #1
-                        Input #1, Y%
+                        Open pathCurrentStats$ + statFile$ + "S" For Input As #1
+                        Input #1, Ycurr%
+
                         For I = 1 To 162: Input #1, H%(I): Next I
                         For I = 1 To 162: Input #1, statH$(I): Next I
                         For I = 1 To 162: Input #1, V%(I): Next I
@@ -203,7 +221,7 @@ Sub MergeStats ()
 
                         If SEQ = 0 Then
 
-                            Call DoTheMerge(pathCurrentStats$, statFile$)
+                            Call DoTheMerge(pathCurrentStats$, statFile$, B$)
 
                             For J = 13 To 23
                                 Locate J
@@ -284,7 +302,11 @@ End Sub
 '       DoTheMerge Subroutine
 '----------------------------------------
 '...explanation...
-Sub DoTheMerge (pathCurrentStats$, statFile$)
+Sub DoTheMerge (pathCurrentStats$, statFile$, B$)
+
+	Shared Ycurr%, Yroad%
+	Shared L2%, LR2%
+    Shared W2%, WR2%
 
     Shared statB$(), statP$()
     Shared statH$(), statHR$()
@@ -301,18 +323,19 @@ Sub DoTheMerge (pathCurrentStats$, statFile$)
 
     Shared draftTR(), draftTR1()
 
-    For K = 1 To YR%
-        Y% = Y% + 1
-        H%(Y%) = HR%(K)
-        statH$(Y%) = statHR$(K)
-        V%(Y%) = VR%(K)
-        PL$(Y%) = PLR$(K)
-        W$(Y%) = WR$(K)
-        L$(Y%) = LR$(K)
-        I%(Y%) = IR%(K)
+    For K = 1 To Yroad%
+        Ycurr% = Ycurr% + 1
+        H%(Ycurr%) = HR%(K)
+        statH$(Ycurr%) = statHR$(K)
+        V%(Ycurr%) = VR%(K)
+        PL$(Ycurr%) = PLR$(K)
+        W$(Ycurr%) = WR$(K)
+        L$(Ycurr%) = LR$(K)
+        I%(Ycurr%) = IR%(K)
     Next
 
-    W2% = W2% + WR2%: L2% = L2% + LR2%
+    W2% = W2% + WR2%
+	L2% = L2% + LR2%
 
     Locate 18, 20: Color 12: Print "MERGING STAT FILE AND SCHEDULE RESULTS . . . ."
 
@@ -330,28 +353,44 @@ Sub DoTheMerge (pathCurrentStats$, statFile$)
         For I1 = 37 To 41: statP0%(I, I1) = statP0%(I, I1) + P0R%(I, I1): Next I1
     Next I
 
-    D0% = D0% + DR0%: D1% = D1% + DR1%
+    D0% = D0% + DR0%
+	D1% = D1% + DR1%
 
     For I = 0 To 21: statT%(I) = statT%(I) + draftTR(I): Next
     For I = 0 To 22: statT1%(I) = statT1%(I) + draftTR1(I): Next
 
-    Open pathCurrentStats$ + "\" + statFile$ For Output As #1
+    Open pathCurrentStats$ + statFile$ For Output As #1
+    Write #1, B$
+	Write #1, W2%
+	Write #1, L2%
 
-    Write #1, A$: Write #1, W2%: Write #1, L2%
+    For I = 0 To 22: 
+		Write #1, statB$(I)
+		Write #1, mergeB%(I)
+	Next I
+    
+	For I = 0 To 21: 
+		Write #1, statP$(I)
+		Write #1, mergeP%(I)
+	Next I
 
-    For I = 0 To 22: Write #1, statB$(I): Write #1, mergeB%(I): Next I
-    For I = 0 To 21: Write #1, statP$(I): Write #1, mergeP%(I): Next I
-    For I = 0 To 22: For I1 = 0 To 21: Write #1, alignB0%(I, I1): Next I1: Next I
-    For I = 0 To 21: For I1 = 0 To 41: Write #1, statP0%(I, I1): Next I1: Next I
+    For I = 0 To 22: 
+		For I1 = 0 To 21: Write #1, alignB0%(I, I1): Next I1
+	Next I
+    
+	For I = 0 To 21: 
+		For I1 = 0 To 41: Write #1, statP0%(I, I1): Next I1
+	Next I
 
-    Write #1, D0%: Write #1, D1%
+    Write #1, D0%
+	Write #1, D1%
 
     For I = 0 To 21: Write #1, statT%(I): Next I
     For I = 0 To 22: Write #1, statT1%(I): Next I
 
     Close #1
 
-    Open pathCurrentStats$ + "\" + statFile$ + "R" For Output As #1
+    Open pathCurrentStats$ + statFile$ + "R" For Output As #1
     For I = 0 To 22
         For I1 = 0 To 6
             Write #1, S0%(I, I1)
@@ -359,8 +398,8 @@ Sub DoTheMerge (pathCurrentStats$, statFile$)
     Next
     Close 1
 
-    Open pathCurrentStats$ + "\" + statFile$ + "S" For Output As #1
-    Write #1, Y%
+    Open pathCurrentStats$ + statFile$ + "S" For Output As #1
+    Write #1, Ycurr%
     For I = 1 To 162: Write #1, H%(I): Next I
     For I = 1 To 162: Write #1, statH$(I): Next I
     For I = 1 To 162: Write #1, V%(I): Next I

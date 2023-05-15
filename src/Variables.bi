@@ -47,6 +47,9 @@ Dim Z1$(40), Z2$(40)
 '----------------------------------------
 '  Used across ALIGN, MERGE routines
 '----------------------------------------
+Dim Ycurr%, Yroad%
+Dim LR2%, WR2%
+
 Dim BN$(23), PN$(22)
 Dim BR$(23), PR$(22)
 
@@ -56,8 +59,8 @@ Dim B0N%(23, 22), BN%(23)
 Dim P0N%(22, 42), PN%(22)
 Dim S0N%(22, 6)
 
-Dim B0R%(23, 22), BR%(23)
-Dim mergeB%(0 To 22), alignB0%(22, 22)
+Dim alignB0%(22, 22), B0R%(23, 22), BR%(23)
+Dim mergeB%(0 To 22)
 Dim mergeP%(0 To 21), P0R%(22, 42)
 Dim S0R%(22, 6), S0%(22, 6), SR%(22, 6)
 
