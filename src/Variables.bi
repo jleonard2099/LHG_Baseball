@@ -280,7 +280,7 @@ Dim fileLength&
 
 
 ' Shared / Global
-Dim Shared Y$, YY$
+Dim Shared NM$, Y$, YY$
 Dim Shared F$, PARK$, S$, WI$, W$, L$
 
 Dim Shared B1!(9), K9!(1)

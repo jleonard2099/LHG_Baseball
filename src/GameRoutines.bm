@@ -30,6 +30,8 @@ End Sub
 ' in from file or assigned elsewhere
 Sub InitVar ()
 
+    Shared scheduleFile$
+
     Shared DB, HR, TR, SB
     Shared E!
     Shared fileLength&
@@ -160,6 +162,7 @@ Sub InitVar ()
     gameTime$ = ""
     L$ = ""
     PARK$ = ""
+    scheduleFile$ = ""
     S$ = ""
     W$ = ""
     WI$ = ""
@@ -219,7 +222,8 @@ Sub InitVar ()
     Erase Q3$, S$, SB$, TR$
     Erase U$, YN$
 
-    Erase A5%, AP%, B%, B0%
+    'Erase AP%
+    Erase A5%, B%, B0%
     Erase B1%, B2%, B3%, B4%
 
     Erase B5%, B7%, B8%, B9%, BT%
@@ -951,8 +955,6 @@ Sub DELIVERY (D)
         Call PBP(Y$)
     End If
 
-    'Call pbplog(1486)
-
     Call GETRPBP(46, 1, Y$, D)
     Call STRIPRPBP(46, 1, Y$, D)
     Call PBP(Y$)
@@ -1660,10 +1662,8 @@ End Sub
 Sub GETFIELDNAME (W%, D)
 
     If W% <> 1 Then
-        'Call pbplog(2215)
         player$(4) = B$(D, B9%(D, W%))
     Else
-        'Call pbplog(2219)
         player$(4) = P$(D, P1%(D))
     End If
 
@@ -1675,7 +1675,6 @@ End Sub
 ' ...explanation...
 Sub GETINFIELDER (W%, P, I1, D, S2%, P2)
 
-    'Call pbplog(2232)
     Call GETFIELDER(W%, P, I1, D)
 
     Call d100(RN)
@@ -1694,7 +1693,6 @@ Sub GETINFIELDER (W%, P, I1, D, S2%, P2)
     If P2 = 4 And W% = 6 Then W% = 1
     If P2 = 4 And W% = 4 Or S2% = 20 And W% = 1 Then W% = 2
 
-    'Call pbplog(2251)
     Call GETFIELDNAME(W%, D)
 
 End Sub
@@ -4827,14 +4825,13 @@ Sub STRIKEOUT (U%, D)
 
     ' *** strikeout pbp ***
     If U% = 3 Then
-        'Call pbplog(5395)
         BV = 20
     Else
-        'Call pbplog(5398)
         BV = Int(Rnd(1) * 100)
         Call d100(RN)
+
         If RN <= 20 Then Call PBP("FULL COUNT...")
-        'Call pbplog(5402)
+
         Call DELIVERY(D)
 
         If BV = 1 Then
@@ -4866,14 +4863,12 @@ Sub STRIKEOUT (U%, D)
             min = 930
         End If
 
-        'Call pbplog(5434)
         Call GETRPBP(range, min, Y$, D)
         Call STRIPRPBP(range, min, Y$, D)
         Call PBP(Y$)
 
     End If
 
-    'Call pbplog(5441)
     Call GETRPBP(40, 1010, Y$, D)
     Call STRIPRPBP(40, 1010, Y$, D)
     Call PBP(Y$)
@@ -4886,7 +4881,6 @@ Sub STRIKEOUT (U%, D)
         Case 42: F$ = player$(0) + " has had better AB's"
     End Select
 
-    'Call pbplog(5454)
     Call PBP(F$)
 
 End Sub
@@ -7224,6 +7218,27 @@ Sub CheckRecords ()
 
 End Sub
 
+
+'------------------------------
+'   InningPrintBox routine
+'------------------------------
+' ...explanation...
+Sub InningPrintBox (I2)
+
+    If I2 < 4 Then Locate , ((2 * I2) + 18)
+    If I2 > 3 And I2 < 7 Then Locate , ((2 * I2) + 19)
+    If I2 > 6 And I2 < 10 Then Locate , ((2 * I2) + 20)
+
+    If I2 > 9 And I2 < 13 Then Locate , ((3 * (I2 - 9)) + 18)
+    If I2 > 12 And I2 < 16 Then Locate , ((3 * (I2 - 9)) + 19)
+    If I2 > 15 And I2 < 19 Then Locate , ((3 * (I2 - 9)) + 20)
+
+    If I2 > 18 And I2 < 22 Then Locate , ((3 * (I2 - 18)) + 18)
+    If I2 > 21 And I2 < 25 Then Locate , ((3 * (I2 - 18)) + 19)
+    If I2 > 24 And I2 < 28 Then Locate , ((3 * (I2 - 18)) + 20)
+
+End Sub
+
 '------------------------------
 '   InningPrintFile routine
 '------------------------------
@@ -7420,6 +7435,7 @@ Sub POSTGAME ()
 
     Call CheckRecords
     Call EVENTS(specialCount, specialStat)
+    endGame = 1
 
     Do
         I3 = 0
@@ -7452,6 +7468,7 @@ Sub POSTGAME ()
         End If
 
         Call BOXOPTIONS(X)
+        endGame = 0
 
         'Reset option for next call
         If X <> 0 Then X = 0
@@ -7545,7 +7562,7 @@ Sub SAVESTATS ()
         BN% = 1
     End If
 
-    If AP = 1 Or UCase$(I$) = "Y" Then
+    If UCase$(I$) = "Y" Or AP = 1 Then
 
         For PX = 0 To 1
             For I = 0 To 21
@@ -7553,14 +7570,7 @@ Sub SAVESTATS ()
             Next I
         Next PX
 
-        FILENAME$ = "GAME82"
-
-        If _FileExists(FILENAME$) Then
-
-            Open FILENAME$ For Input As #2
-            Input #2, scheduleFile$
-            For I = 0 To 2: Input #2, AP%(I): Next
-            Close 2
+        If _FileExists("GAME82") Then
 
             Open diskPaths$(0) + scheduleFile$ For Random As #1 Len = 48
 
@@ -7569,10 +7579,16 @@ Sub SAVESTATS ()
             Next
 
             Field #1, 38 As X$, 2 As player$(22), 2 As player$(23), 3 As player$(20), 3 As player$(21)
+
             NG%(13) = 1
 
-            For X = 0 To 18: LSet player$(X + 1) = MKI$(NG%(X)): Next
-            For X = 0 To 1: LSet player$(20 + X) = YN$(X): Next
+            For X = 0 To 18:
+                LSet player$(X + 1) = MKI$(NG%(X))
+            Next
+
+            For X = 0 To 1:
+                LSet player$(20 + X) = YN$(X)
+            Next
 
             LSet player$(22) = MKI$(S6%(0, 0))
             LSet player$(23) = MKI$(S6%(1, 0))
@@ -7585,11 +7601,13 @@ Sub SAVESTATS ()
 
             If AP%(1) < AP%(0) + AP%(2) Then
                 Kill "GAME82"
-                NM = 1
+                endGame = 1
             Else
                 Open "GAME82" For Output As #2
                 Print #2, scheduleFile$
-                For I = 0 To 2: Print #2, AP%(I): Next
+                For I = 0 To 2:
+                    Print #2, AP%(I)
+                Next
                 Close 2
             End If
 
@@ -8011,14 +8029,6 @@ Sub BOXOPTIONS (outputChoice)
                     Print "ENTER 8-CHARACTER FILENAME FOR BOXSCORE (NO SPACES OR PERIODS)";: Input NM$
                     NM$ = NM$ + ".SPC"
                 Else
-                    ' Determine game #
-                    Open "GAME82" For Input As #1
-                    Input #1, scheduleFile$
-                    For I = 0 To 2
-                        Input #1, AP%(I)
-                    Next
-                    Close 1
-
                     ' NM$ = "BOXSCORE." + MID$(STR$(AP%(0) + AP%(2)), 2, LEN(STR$(AP%(0) + AP%(2))))
                     NM$ = "BOX" + Mid$(Str$(AP%(0) + AP%(2)), 2, Len(Str$(AP%(0) + AP%(2))))
                 End If
@@ -8026,7 +8036,7 @@ Sub BOXOPTIONS (outputChoice)
             End If
 
             'Includes a special option to send to printer when done
-            Call BOX2FILE(outputChoice, NM$)
+            Call BOX2FILE(outputChoice)
 
     End Select
 
@@ -8045,7 +8055,7 @@ End Sub
 '   send to printer, the file
 '   is also looped through to
 '   print, line-by-line
-Sub BOX2FILE (printChoice, NM$)
+Sub BOX2FILE (printChoice)
 
     Shared E%()
     Shared DB, HR, TR, SB
@@ -8424,7 +8434,7 @@ Sub BOX2FILE (printChoice, NM$)
 
     If printChoice = 1 Then Print #2, Chr$(12)
 
-    Close #2
+    Close 2
 
     If printChoice = 1 Then
 
@@ -8450,9 +8460,6 @@ Sub BOX2SCREEN
 
     Shared DB, HR, TR, SB
     Shared DB$(), E$(), HR$(), SB$(), TR$()
-
-    Dim BK$
-    BK$ = "## # # ## # #  # # #  #  # # ## ##"
 
     Cls
 
@@ -8486,7 +8493,6 @@ Sub BOX2SCREEN
 
 End Sub
 
-
 '------------------------------
 '   ScoreSummary Subroutine
 '------------------------------
@@ -8495,16 +8501,15 @@ Sub ScoreSummary
 
     Color 14, 0
 
-    'Print innings 1 to 9
-    For IG = 1 To INNING%
-        Call LocateInning(IG)
-        Print IG;
-    Next IG
-
-    Print "  H  R E"
-
     'Fewer than 9 innings
     If INNING% < 9 Then
+
+        For IG = 1 To INNING%
+            Call InningPrintBox(IG)
+            Print IG;
+        Next IG
+
+        Print "  H  R E"
 
         For I = 0 To 1
 
@@ -8513,7 +8518,7 @@ Sub ScoreSummary
             Color 15, 0
 
             For I2 = 1 To INNING%
-                Call LocateInning(IG)
+                Call InningPrintBox(I2)
                 If I = 0 Then Print Using "##"; inningScore%(I, I2);
                 If I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = INNING% And inningScore%(1, INNING%) = 0 Then Print , " X";
                 If I = 1 And S6%(1, 0) < S6%(0, 0) And I2 = INNING% Or I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = INNING% And inningScore%(1, INNING%) > 0 Then Print Using "##"; inningScore%(I, I2);
@@ -8533,6 +8538,18 @@ Sub ScoreSummary
     '9 or 10 innings
     If INNING% = 10 And P = 0 Or INNING% <= 9 Then
 
+        Color 14, 0
+        For IG = 1 To 9
+            Call InningPrintBox(IG)
+            Print IG;
+        Next IG
+
+        If INNING% = 9 Then
+            Print "  H  R E"
+        Else
+            Print "    H  R E"
+        End If
+
         For I = 0 To 1
 
             Color L%(I, 11), L%(I, 12)
@@ -8540,11 +8557,8 @@ Sub ScoreSummary
             Color 15, 0
 
             For I2 = 1 To 9
-                Call LocateInning(IG)
-                If I = 0 Then Print Using "##"; inningScore%(I, I2);
-                If I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = 9 And inningScore%(1, 9) = 0 Then Print " X";
-                If I = 1 And S6%(1, 0) < S6%(0, 0) And I2 = 9 Or I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = 9 And inningScore%(1, 9) > 0 Then Print Using "##"; inningScore%(I, I2);
-                If I = 1 And I2 < 9 Then Print Using "##"; inningScore%(I, I2);
+                Call InningPrintBox(I2)
+                Print Using "##"; inningScore%(I, I2);
             Next I2
 
             If INNING% = 10 Then
@@ -8564,6 +8578,14 @@ Sub ScoreSummary
     'Innings 10 - 18
     If INNING% = 10 And P = 1 Or INNING% > 10 And INNING% < 19 Or INNING% = 19 And P = 0 Then
 
+        Color 14, 0
+        For IG = 1 To 9
+            Call InningPrintBox(IG)
+            Print IG;
+        Next IG
+
+        Print
+
         For I = 0 To 1
 
             Color L%(I, 11), L%(I, 12)
@@ -8571,32 +8593,39 @@ Sub ScoreSummary
             Color 15, 0
 
             For I2 = 1 To 9
-                Call LocateInning(I2)
+                Call InningPrintBox(I2)
                 Print Using "##"; inningScore%(I, I2);
             Next I2
 
-        Next I
+            Print
 
-        Print
+        Next I
 
         If P = 0 And INNING% < 19 Or INNING% = 19 Then INNING% = INNING% - 1
 
         'Print innings 10 to 18
+        Print
+
+        Locate 5,
+        Color 14, 0
         For IG = 10 To INNING%
-            Call LocateInning(IG)
+            Call InningPrintBox(IG)
             Print IG;
         Next IG
-
         Print "  H  R E"
 
         For I = 0 To 1
 
+            Color L%(I, 11), L%(I, 12)
+            Print A$(I);
+            Color 15, 0
+
             For I2 = 10 To INNING%
-                Call LocateInning(I2)
+                Call InningPrintBox(I2)
                 Print Using "##"; inningScore%(I, I2);
             Next I2
 
-            Print " -";
+            Print " - ";
             Print Using "## "; S6%(I, 0);
             Print Using "## "; S6%(I, 1);
             Print Using "#"; S6%(I, 2)
@@ -8608,6 +8637,14 @@ Sub ScoreSummary
     'Innings 19 - 27
     If INNING% = 19 And P = 1 Or INNING% > 19 And INNING% <= 28 Then
 
+        Color 14, 0
+        For IG = 1 To 9
+            Call InningPrintBox(IG)
+            Print IG;
+        Next IG
+
+        Print
+
         For I = 0 To 1
 
             Color L%(I, 11), L%(I, 12)
@@ -8616,7 +8653,7 @@ Sub ScoreSummary
             Color 15, 0
 
             For I2 = 1 To 9
-                Call LocateInning(I2)
+                Call InningPrintBox(I2)
                 Print Using "##"; inningScore%(I, I2);
             Next I2
 
@@ -8626,20 +8663,24 @@ Sub ScoreSummary
 
         Print
 
-        If INNING% = 28 Or INNING% < 28 And P = 0 Then INNING% = INNING% - 1
-
         'Print innings 10 to 18
-        For IG = 10 To INNING%
-            Call LocateInning(IG)
+        Locate 5,
+        Color 14, 0
+        For IG = 10 To 18
+            Call InningPrintBox(IG)
             Print IG;
         Next IG
 
-        Print "  H  R E"
+        Print
 
         For I = 0 To 1
+
+            Color L%(I, 11), L%(I, 12)
+            Print A$(I);
+            Color 15, 0
 
             For I2 = 10 To 18
-                Call LocateInning(I2)
+                Call InningPrintBox(I2)
                 Print Using "##"; inningScore%(I, I2);
             Next I2
 
@@ -8647,11 +8688,11 @@ Sub ScoreSummary
 
         Next I
 
-        Print
-
-        'Print innings 10 to 18
+        'Print innings 19 to 27
+        Locate 8,
+        Color 14, 0
         For IG = 19 To INNING%
-            Call LocateInning(IG)
+            Call InningPrintBox(IG)
             Print IG;
         Next IG
 
@@ -8659,8 +8700,12 @@ Sub ScoreSummary
 
         For I = 0 To 1
 
+            Color L%(I, 11), L%(I, 12)
+            Print A$(I);
+            Color 15, 0
+
             For I2 = 19 To INNING%
-                Call LocateInning(I2)
+                Call InningPrintBox(I2)
                 Print Using "##"; inningScore%(I, I2);
             Next I2
 
@@ -8681,6 +8726,9 @@ End Sub
 '------------------------------
 ' ...explanation...
 Sub STATS2SCREEN
+
+    Dim BK$
+    BK$ = "## # # ## # #  # # #  #  # # ## ##"
 
     For I = 0 To 1
 
@@ -9014,9 +9062,11 @@ End Sub
 ' to a boxscore file
 Sub BOX2SPC (NM$)
 
+    Shared E%()
+
     Open diskPaths$(1) + NM$ For Append As #2
 
-    Print #2, 
+    Print #2,
 
     If INNING% > E%(1) Then Print #2, Using "MORE THAN ## INNINGS"; E%(1)
 
@@ -9071,7 +9121,6 @@ Sub EndOfGame ()
 
     If normalFinish% = 1 Then
 
-        '-- Inning already increased ?!?!
         Call POSTGAME
 
         ' Prompt to play another game
@@ -9102,3 +9151,4 @@ Sub EndOfGame ()
     End If
 
 End Sub
+

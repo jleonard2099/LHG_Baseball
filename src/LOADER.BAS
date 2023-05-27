@@ -20,8 +20,9 @@ Sub LOADER
     Shared PT$(), PU$()
     Shared U6$(), UMP$()
     Shared VI$(), WE$()
-
     Shared SP%(), T1%(), U%()
+
+    Shared scheduleFile$
 
     Call InitVar
 
@@ -84,7 +85,9 @@ Sub LOADER
 
         Input #2, scheduleFile$
 
-        For I = 0 To 2: Input #2, AP%(I): Next
+        For I = 0 To 2:
+            Input #2, AP%(I)
+        Next
 
         Close 2
 
@@ -109,9 +112,10 @@ Sub LOADER
         VS% = CVI(Q2$(22))
         HS% = CVI(Q2$(23))
 
-        Close 1
+        Close #1
 
         AP% = 1
+
     End If
 
 
@@ -2545,9 +2549,6 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
             Do
                 RN = Int(Rnd(1) * 100) + 1
 
-                'Currently having issues here with auto-run
-                'But only from GAME82 / schedule file
-                'I suspect MG% isn't getting set right
                 P%(idx%, MG%(idx%, MG%(idx%, 2) + 3), 15) = 0
 
                 If RN <= MG%(idx%, MG%(idx%, 2) + 10 + 3) Or MG%(idx%, MG%(idx%, 2) + 10 + 3) = 0 Then

@@ -146,7 +146,6 @@ Sub SOURCE ()
     Next
 
     A1 = S6%(D, 0) - S6%(P, 0)
-    'Call pbplog(12549)
 
     If Not (MG%(D, 560) <> 999 Or INNING% < 8 Or U6 = 0 Or U6 = 1 And P = U9) Then
 
@@ -227,7 +226,6 @@ Sub SOURCE ()
 
     '--- Start of a new sub
     15051 '
-    'Call pbplog(12636)
     Call WHOSON1ST(S4%)
     Call PLAYERNAME(P)
 
@@ -240,7 +238,6 @@ Sub SOURCE ()
     P2 = 0
     D2 = 0
 
-    'Call pbplog(12642)
     ' Game over - there's a winner
     If INNING% >= 9 And P = 1 And S6%(P, 0) - S6%(D, 0) > 0 Then 18500
 
@@ -264,7 +261,6 @@ Sub SOURCE ()
             End If
         End If
 
-        'Call pbplog(12673)
         If usingGfx = 1 Then
 
             FORMATTED$ = FUsing$(Str$(S6%(I0, 0)), "##", 1)
@@ -304,7 +300,6 @@ Sub SOURCE ()
         ' DEFENSE OPTIONS MENU
         '----------------------------------------
         15081 '
-        'Call pbplog(12712)
         F$ = PadRight$(Left$(A$(D), 3) + NN$(D), 8)
 
         'Call WINDEX
@@ -329,6 +324,8 @@ Sub SOURCE ()
 
             '-- B/P do not do anything
             '-- but could be programmed to
+            '-- Presumably they are for
+            '-- Batter / Pitcher stats
             F1$(10) = "S/D/B/P STATS "
 
             For I = 21 To 30
@@ -432,7 +429,6 @@ Sub SOURCE ()
 
     Loop Until D2 >= 1 And D2 <= 9
 
-    'Call pbplog(12832)
     15055 '
     Select Case D2
         Case 1
@@ -493,7 +489,6 @@ Sub SOURCE ()
     '----------------------------------------
     ' OFFENSE OPTIONS MENU
     '----------------------------------------
-    'Call pbplog(12892)
     15085 '
     Do
 
@@ -715,7 +710,6 @@ Sub SOURCE ()
             GoTo 15500
 
     End Select
-    'Call pbplog(13115)
 
     15067 '
     '-- this is related to the PICKEDOFF routine and it's immediate aftermath
@@ -804,18 +798,23 @@ Sub SOURCE ()
 
     If IP% = 1 Then IP% = 0: Call RELIEVERS(PPH, pz)
 
-    '-- is it me, or do the code lines
+    '-- It appears the following lines get executed
+    '-- almost no matter what value H6% is.
+
     '   "Call HITTING LINES...
     '   If usingGfx = 1...
-    '-- get executed no matter what value H6% is?!?!
-    '-- in original code this was a short sub
-    '-- but in evaluating the logic I'm not sure
-    '-- why it can't be run outside the If/Then
+
+    '-- In original code this was a short sub
+    '-- I'm not sure why it can't be run outside
+    '-- of the If/Then statement.
+    '-- That would simply leave the If/Then code
+    '-- to determine where to GoTo
 
     '1 to 4
     '6 to 8
     '10 to 24
     If H6% <= 4 Or H6% > 5 And H6% < 9 Or H6% >= 10 And H6% <= 24 Then
+
         Call HITTINGLINES '(l%(), p%(), P1%(), B7%(), b%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
 
         If usingGfx = 1 Then
@@ -827,11 +826,13 @@ Sub SOURCE ()
         End If
 
         GoTo 15052
+
     End If
 
     '5
     '25 to 29
     If H6% = 5 Or H6% >= 25 And H6% <= 29 Then
+
         Call HITTINGLINES '(l%(), p%(), P1%(), B7%(), b%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
 
         If usingGfx = 1 Then
@@ -843,10 +844,12 @@ Sub SOURCE ()
         End If
 
         GoTo 13900
+
     End If
 
     '9
     If H6% = 9 Then
+
         Call HITTINGLINES '(l%(), p%(), P1%(), B7%(), b%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
 
         If usingGfx = 1 Then
@@ -865,6 +868,7 @@ Sub SOURCE ()
 
     '45
     If H6% = 45 Then
+
         Call HITTINGLINES '(l%(), p%(), P1%(), B7%(), b%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
 
         If usingGfx = 1 Then
@@ -876,6 +880,7 @@ Sub SOURCE ()
         End If
 
         GoTo 13201
+
     End If
 
     '30 to 44
@@ -896,7 +901,6 @@ Sub SOURCE ()
     '----- NOODLE -----
 
 
-    'Call pbplog(13296)
     13050 '
     Call d100(RN)
 
@@ -992,7 +996,6 @@ Sub SOURCE ()
 
     '7 to 11 OR 7 to 200 And ...
     If H6% <= 11 Or H6% <= 200 And B%(D, B9%(D, 2), 22) <> 2 And B%(D, B9%(D, 2), 23) <> 2 And B%(D, B9%(D, 2), 24) <> 2 And B%(D, B9%(D, 2), 25) <> 2 Then
-        'Call pbplog(13392)
 
         13220 ' *** passed ball ***
         If S4% = 0 And SO <> 1 Then
@@ -1005,7 +1008,6 @@ Sub SOURCE ()
         Call WINDEX
         Call DELIVERY(D)
 
-        'Call pbplog(13410)
         Call d100(RN2)
         If RN2 <= 50 Then
             Call PBP("pitch gets by " + B$(D, B9%(D, 2)))
@@ -1022,7 +1024,6 @@ Sub SOURCE ()
         13222 '
         RN3 = Int(Rnd(1) * 10) + 1
 
-        'Call pbplog(13428)
         If S4% = 1 And P2 = 2 And RN3 < B%(P, B3%(P, B0%(1, 0)), 16) Or S4% = 5 And P2 = 2 And RN3 < B%(P, B3%(P, B0%(1, 0)), 16) Then
             A5%(1) = 2
             A5%(3) = 1
@@ -1032,7 +1033,6 @@ Sub SOURCE ()
             GoTo 15051
         End If
 
-        'Call pbplog(13438)
         13223 '
         If B0%(1, 0) = 0 And RN = 9 And SO = 1 Or O%(0) > 1 And RN = 9 And SO = 1 Then
             A5%(0) = 1
@@ -1053,7 +1053,6 @@ Sub SOURCE ()
     End If
 
     If H6% <= 19 Then
-        'Call pbplog(13450)
 
         '13230 / *** wild pitch ***
         If S4% = 0 And SO <> 1 Then
@@ -1077,7 +1076,6 @@ Sub SOURCE ()
     End If
 
     If H7% = 28 Then
-        'Call pbplog(13474)
 
         Call WINDEX
         Call PBP(player$(0) + " is out for obstruction!")
@@ -1135,18 +1133,15 @@ Sub SOURCE ()
     End If
 
     If H6% > B4%(P, 0, B1!(P)) + I4 Then
-        'Call pbplog(13532)
 
         ' *** strikeout ***
         H6% = Int(Rnd(1) * 1000) + 1
 
         If H6% > B4%(P, 4, B1!(P)) Then
-            'Call pbplog(13538)
 
             ' *** ground ball for out ***
             Call d100(H6%)
 
-            'Call pbplog(13552)
             E2% = B%(P, B3%(P, B1!(P)), 18) + P%(D, P1%(D), 12) - 52
             E3% = 23 + P%(D, P1%(D), 12)
             E4% = 0
@@ -1155,20 +1150,14 @@ Sub SOURCE ()
             If H6% > E3% And B7%(P, B1!(P)) = 1 Then E4% = 1
             If E4% = 1 Then 14000
 
-            'Call pbplog(13560)
             S2% = 13
             Call GETINFIELDER(W%, P, I1, D, S2%, P2)
-            'Call pbplog(13563)
             Call WINDEX
 
-            'Call pbplog(13566)
             S2% = 13
-            'Call pbplog(13572)
             Call DELIVERY(D)
-            'Call pbplog(13574)
             Call GROUNDERPBP(W%, D)
 
-            'Call pbplog(13571)
             If W% <> 2 Then
                 If W% = 1 Then
                     F$ = F$ + "the pitcher"
@@ -1196,7 +1185,6 @@ Sub SOURCE ()
                 Call INCPITOFF(P, I5, I6)
             End If
 
-            'Call pbplog(13597)
             Call FLDERR(F%, W%, D, I3, SB%, S2%, P)
             If F% = 1 Then 13900
 
@@ -1232,7 +1220,6 @@ Sub SOURCE ()
 
             End If
 
-            'Call pbplog(13633)
             If S4% = 7 And W% = 1 Then Call CREDITASSIST(W%, D): TB = 9: W% = 2: Call PBP("He throws home"): A5%(3) = 11: A5%(1) = 0: A5%(2) = 0: A5%(0) = 0: GoTo 13634
             If S4% = 5 And S6%(P, 0) - S6%(D, 0) >= 0 And INNING% > 7 And O%(0) = 0 And INFPOS% > 0 And W% = 5 Or S4% = 5 And S6%(P, 0) - S6%(D, 0) >= 0 And INNING% > 7 And O%(0) = 0 And INFPOS% > 0 And W% = 3 Then 13650
             If S4% = 7 And INFPOS% > 0 And (W% = 5 Or W% = 3) Then Call CREDITASSIST(W%, D): TB = 9: W% = 2: Call PBP("He fires it home"): A5%(3) = 11: A5%(1) = 0: A5%(2) = 0: A5%(0) = 0: GoTo 13634
@@ -1254,7 +1241,6 @@ Sub SOURCE ()
             A5%(3) = 0
             A5%(0) = 0
 
-            'Call pbplog(13655)
             If S4% = 7 And (W% = 2 Or W% = 1) Then
                 A5%(3) = 11
                 A5%(2) = 1
@@ -1267,12 +1253,10 @@ Sub SOURCE ()
         End If
 
         'Strikeout!
-        'Call pbplog(13668)
         13601 '
         Call WINDEX
         Call STRIKEOUT(U%, D)
 
-        'Call pbplog(13659)
         13602 '
         W% = 2
         Call CREDITREGPO(W%, D)
@@ -1289,7 +1273,6 @@ Sub SOURCE ()
             If P2 = 2 Then U% = 3
         End If
 
-        'Call pbplog(13676)
         I5 = P1%(D)
         I6 = 5
         Call ADDPIT(D, I5, I6)
@@ -1345,13 +1328,11 @@ Sub SOURCE ()
         GoTo 13900
 
     Else
-        'Call pbplog(13728)
 
         H6% = Int(Rnd(1) * 1000) + 1
 
         If H6% <= B4%(P, 1, B1!(P)) And P2 <> 2 Or H6% <= B4%(P, 1, B1!(P)) * .5 And P2 = 2 Then
 
-            'Call pbplog(13752)
             S2% = 8
 
             '3500
@@ -1383,7 +1364,6 @@ Sub SOURCE ()
                 Call INCPITOFF(P, I5, I6)
             End If
 
-            'Call pbplog(13784)
             If RN <= 40 Then
 
                 If W% = 7 Then
@@ -1455,7 +1435,6 @@ Sub SOURCE ()
 
             End If
 
-            'Call pbplog(13856)
             HW% = 0
 
             If Int(Rnd(1) * 100) + 1 <= 80 Then
@@ -1508,7 +1487,6 @@ Sub SOURCE ()
 
         If H6% <= B4%(P, 1, B1!(P)) + B4%(P, 2, B1!(P)) And P2 <> 2 Or H6% <= B4%(P, 1, B1!(P)) * .5 + B4%(P, 2, B1!(P)) * .5 And P2 = 2 Then
 
-            'Call pbplog(13909)
             S2% = 9
 
             '3520
@@ -1542,7 +1520,6 @@ Sub SOURCE ()
 
             Call d100(RN)
 
-            'Call pbplog(13943)
             If RN <= 30 Then
 
                 If W% = 7 Then
@@ -1641,7 +1618,6 @@ Sub SOURCE ()
             A5%(2) = 2
             A5%(3) = 1
 
-            'Call pbplog(14042)
             Call ADVANCEMENT(P, D, S2%, F%, I3)
 
             F% = 0
@@ -1676,7 +1652,6 @@ Sub SOURCE ()
             GoTo 13530
         End If
 
-        'Call pbplog(14077)
         13063 '
         Call d100(H6%)
         S2% = 7
@@ -1685,7 +1660,6 @@ Sub SOURCE ()
 
             If H6% <= (B%(P, B3%(P, B1!(1)), 16) * 2.5) Then
                 S2% = 12
-                'Call pbplog(14088)
                 Call GETINFIELDER(W%, P, I1, D, S2%, P2)
                 Call FLDERR(F%, W%, D, I3, SB%, S2%, P)
                 If F% = 1 Then 13900
@@ -1693,7 +1667,6 @@ Sub SOURCE ()
 
         End If
 
-        'Call pbplog(14096)
         13065 '/ *** single ***
         Call SINGLEROUTINE(W%, P, I1, D, S2%, P2)
 
@@ -1723,7 +1696,6 @@ Sub SOURCE ()
     '----- NOODLE -----
 
 
-    'Call pbplog(14097)
     13530 ' *** HOME RUN S2%=10 ***
 
     Call WINDEX
@@ -2259,7 +2231,6 @@ Sub SOURCE ()
     '-----------------------------------------------------
     ' Play-by-Play box
     13900 '
-    'Call pbplog(14632)
     If usingGfx = 1 Then _PutImage (20 * FontColAdj%, 48)-Step(44 * FontColAdj%, 144), backupScreen&, imageScreen&, (20 * FontColAdj%, 48)-Step(44 * FontColAdj%, 144)
 
     ' essentially it allows the user to press a key
@@ -2267,7 +2238,7 @@ Sub SOURCE ()
     ' or special menus, etc.
     I$ = InKey$
 
-    If UCase$(I$) = "Q" Then 
+    If UCase$(I$) = "Q" Then
         Call EndOfGame
         Exit Sub
     End If
@@ -2305,7 +2276,6 @@ Sub SOURCE ()
     A5%(2) = 0
     A5%(3) = 0
 
-    'Call pbplog(14706)
     'Case 1 to 73
     If RN <= 73 Then
         '-- this is a longer area
@@ -2315,7 +2285,6 @@ Sub SOURCE ()
     'Case 74 to 89
     If RN <= 89 Then
         ' infield popup
-        'Call pbplog(14716)
         Call GETINFIELDER(W%, P, I1, D, S2%, P2)
         S2% = 20
         Call WINDEX
@@ -2387,7 +2356,6 @@ Sub SOURCE ()
     'Case 90 to 100
     S2% = 21
 
-    'Call pbplog(14788)
     Call GETINFIELDER(W%, P, I1, D, S2%, P2)
     Call WINDEX
     Call DELIVERY(D)
@@ -2410,7 +2378,6 @@ Sub SOURCE ()
         Call INCBATOFF(P, I5, I6)
     End If
 
-    'Call pbplog(14811)
     Call FLDERR(F%, W%, D, I3, SB%, S2%, P)
     If F% = 1 Then 13900
 
@@ -2424,7 +2391,6 @@ Sub SOURCE ()
     Call ADDPIT(D, I5, I6)
     If O%(0) = 3 Then 13900
 
-    'Call pbplog(14825)
     Call d100(RN)
 
     If (S4% = 1 Or S4% = 5) And RN >= 80 Or (S4% = 1 Or S4% = 5) And P2 = 2 Then
@@ -2490,7 +2456,6 @@ Sub SOURCE ()
 
 
     14020 ' *** FLY  OUTS ***
-    'Call pbplog(14894)
     Call GETOUTFIELDER(W%, P, I1, D)
 
     If B7%(P, B1!(P)) <> 1 Then
@@ -2505,7 +2470,6 @@ Sub SOURCE ()
 
     'Case 1 to 17
     If RN <= 17 Then
-        'Call pbplog(14909)
         14050 ' *** shallow fly ball ***
         S2% = 19
         Call WINDEX
@@ -2531,7 +2495,6 @@ Sub SOURCE ()
 
     'Case 18 to 33
     If RN <= 33 Then
-        'Call pbplog(14935)
         ' *** deep fly out ***
         S2% = 17
 
@@ -2583,7 +2546,6 @@ Sub SOURCE ()
 
         'ASSUMPTION: Somewhere in here is where it gets locked up
         14066 '
-        'Call pbplog(14987)
         If B0%(2, 0) <> 0 Then
 
             I4 = (B%(P, B3%(P, B0%(2, 0)), 16) - 5) * 25
@@ -2644,7 +2606,6 @@ Sub SOURCE ()
 
     'Case 34 to 100
     ' *** regular fly out ***
-    'Call pbplog(15047)
     S2% = 18
     Call WINDEX
     X$ = C$(W%)
