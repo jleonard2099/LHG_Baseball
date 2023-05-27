@@ -57,8 +57,7 @@ Sub SelectLeague (leagueFile$, ExitCode%)
 
     Do
         Spec$ = diskPaths$(2) + "*.BAT"
-        null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
-        Count% = DirCount%
+		Count% = FCount%(Spec$)
 
         If Count% <> 0 Then
 

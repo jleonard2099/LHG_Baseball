@@ -86,15 +86,14 @@ Sub ViewComparisons ()
         Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
         Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
         Locate 7, 27: Input NY$
-        If NY$ = "" And YN$ <> "" Then
+        If NY$ = "" And yearNumber$ <> "" Then
             Call SelectTeam_COMPARE(YN$, numberTeams)
         Else
-            YN$ = NY$
+            yearNumber$ = RTrim$(NY$)
             Erase teamNames$
-
             numberTeams = 0
 
-            If Not _FileExists(diskPaths$(0) + "FCTEAMS." + YN$) Then
+            If Not _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
                 BO% = 1
                 Locate 10, 8
                 Call CSMsgBox("NO TEAM FILES WERE FOUND MATCHING THIS ID.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
@@ -102,7 +101,7 @@ Sub ViewComparisons ()
                 Call CSMsgBox("", 0, Pass)
             Else
 
-                Open diskPaths$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342
+                Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
                 Y = LOF(1)
                 Field #1, 15 As Q$(0)
                 For I1 = 1 To Y / 4342
@@ -119,17 +118,18 @@ Sub ViewComparisons ()
 
                 Close 1
 
-                Call SelectTeam_COMPARE(YN$, numberTeams)
+                Call SelectTeam_COMPARE(yearNumber$, numberTeams)
 
             End If 'Done checking for teams file
 
         End If 'Done checking INPUT
 
+		T$ = RTrim$(Q$(0))
+		
         If BO% = 1 Then
             BO% = 0
         Else
             Locate 2, 33
-            T$ = RTrim$(Q$(0))
             Color ratings%(11), ratings%(12): Print T$
 
             Color 15, 4
@@ -145,8 +145,7 @@ Sub ViewComparisons ()
 
     If ExitCode% <> 27 Then
 
-        statB$ = T$
-        statB$ = RTrim$(statB$)
+        statB$ = RTrim$(T$)
 
         For XX = 4 To 11
             If Mid$(statB$, XX, 1) = " " Or Mid$(statB$, XX, 1) = "." Then Mid$(statB$, XX, 1) = "_"
@@ -166,8 +165,6 @@ Sub ViewComparisons ()
             End If
         Next XX
 
-        'Z$ = LEFT$(Z$, 11)
-        'Z$ = LEFT$(RIGHT$(statB$, LEN(statB$) - 3), 8) + "." + LEFT$(statB$, 2)
         Z$ = Mid$(statB$, 4, QQ) + "." + Left$(statB$, 2)
 
         For K = 4 To 18:
@@ -1084,17 +1081,21 @@ Sub SelectTeam_COMPARE (yearNumber$, numberTeams)
     If ExitCode% <> 27 Then
 
         T = teamIndex%(Selection%)
-        Locate 2, 33
-        Color 31: Print "LOADING..."
+		teamYear$ = RTrim$(yearNumber$)
 
-        If Not _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
+        Locate 2, 33: Color 31
+		Print "LOADING..."
+
+        If Not _FileExists(diskPaths$(0) + "FCTEAMS." + teamYear$) Then
             Locate 10, 8
             Call CSMsgBox("NO TEAM FILES WERE FOUND MATCHING THIS ID.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
             I$ = GetKeyPress$
             Call CSMsgBox("", 0, Pass)
         Else
-            Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
+            Open diskPaths$(0) + "FCTEAMS." + teamYear$ For Random As #1 Len = 4342
+
             Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
+
             For I = 0 To 22
                 Field #1, 45 + I * 99 As X$, 15 As Q$(I * 43 + 15), 2 As Q$(I * 43 + 16), 2 As Q$(I * 43 + 17), 2 As Q$(I * 43 + 18), 2 As Q$(I * 43 + 19), 2 As Q$(I * 43 + 20), 2 As Q$(I * 43 + 21), 2 As Q$(I * 43 + 22), 2 As Q$(I * 43 + 23), 2 As Q$(I * 43 + 24), 2 As Q$(I * 43 + 25), 2 As Q$(I * 43 + 26), 4297 - 37 - I * 99 As X$
                 Field #1, 82 + I * 99 As X$, 2 As Q$(I * 43 + 27), 2 As Q$(I * 43 + 28), 2 As Q$(I * 43 + 29), 2 As Q$(I * 43 + 30), 2 As Q$(I * 43 + 31), 2 As Q$(I * 43 + 32), 2 As Q$(I * 43 + 33), 2 As Q$(I * 43 + 34), 2 As Q$(I * 43 + 35), 2 As Q$(I * 43 + 36), 2 As Q$(I * 43 + 37), 2 As Q$(I * 43 + 38), 4297 - 61 - I * 99 As X$
@@ -1110,6 +1111,7 @@ Sub SelectTeam_COMPARE (yearNumber$, numberTeams)
             Next
 
             Field #1, 4280 As X$, 40 As Q$(1840), 15 As Q$(1841), 5 As Q$(1842), 2 As Q$(1843)
+
             Get #1, T
 
             For I = 1 To 13:
@@ -1135,6 +1137,7 @@ Sub SelectTeam_COMPARE (yearNumber$, numberTeams)
             M$ = RTrim$(Q$(1841))
             NN$ = RTrim$(Q$(1842))
             CK = CVI(Q$(1843))
+
             Close 1
 
         End If

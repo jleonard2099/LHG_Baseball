@@ -4,6 +4,7 @@
 Dim opSysType$
 
 Dim statH$(NUM_STATRECORDS), statHR$(NUM_STATRECORDS)
+Dim HT$(NUM_STATRECORDS)
 
 Dim L$(NUM_STATRECORDS), LR$(NUM_STATRECORDS)
 Dim PL$(NUM_STATRECORDS), PLR$(NUM_STATRECORDS)
@@ -11,7 +12,7 @@ Dim W$(NUM_STATRECORDS), WR$(NUM_STATRECORDS)
 
 Dim H%(NUM_STATRECORDS), I%(NUM_STATRECORDS), V%(NUM_STATRECORDS)
 Dim HR%(NUM_STATRECORDS), IR%(NUM_STATRECORDS), VR%(NUM_STATRECORDS)
-
+Dim ING%(NUM_STATRECORDS)
 
 '----------------------------------------
 ' Used across more than one source file
@@ -90,7 +91,7 @@ Dim careerB$(100), careerP$(80)
 Dim BLYR%(15), PLYR%(15)
 Dim BRS%(15, 100, 17), PRS%(15, 80, 18)
 Dim careerB1%(100), careerB0%(100, 23)
-Dim P0%(80, 42), careerP1%(80)
+Dim careerP0%(80, 42), careerP1%(80)
 
 Dim BLL!(15), PLL!(15)
 Dim BL1!(18, 20), PL1!(16, 21)
@@ -121,13 +122,13 @@ Dim BP$(3), BS$(22), PS$(21)
 
 Dim statT!(22), statT1!(22)
 
-Dim BS%(22), DYS%(21)
+Dim BS%(22), inputDYS%(21)
 Dim statB0%(22, 40), statB%(23)
 Dim statP%(0 To 21), statP0%(22, 41)
 
 Dim inputINJ%(22), PS%(32), inputSA%(24), SA1%(24), inputTS%(11), TS1%(11)
 
-Dim SS%(22, 6)
+Dim statSS%(22, 6)
 Dim TB%(15), inputTP%(33)
 
 '----------------------------------------
@@ -234,10 +235,10 @@ Dim DV$(4)
 '----------------------------------------
 ' Used across TRADE routines
 '----------------------------------------
-Dim tradeA$(1), A1$(1), SA$(2)
+Dim tradeA$(1), A1$(1), tradeSA$(2)
 Dim tradeB$(2, 23), tradeB1$(2, 23), tradeP$(2, 22), tradeP1$(2, 22)
 
-Dim tradeD0%(1), D1%(1), L2%(1), TEAM%(1, 22)
+Dim tradeD0%(1), tradeD1%(1), L2%(1), TEAM%(1, 22)
 Dim tradeB%(2, 23, 79), tradeB0%(2, 22, 22), tradeB3%(2, 23)
 Dim tradeInfo%(1), tradeL%(1, 14)
 Dim tradeP%(2, 22, 88), tradeP0%(2, 22, 42), tradeP3%(2, 22)
@@ -250,12 +251,19 @@ Dim Managers$(2), Stadiums$(2), teamAbbrevs$(2)
 '----------------------------------------
 ' Used across Game Routines
 '----------------------------------------
+
 'Used by POSTGAME
 Dim DB, HR, TR, SB, PPH
 Dim BP(0 To 9), F(0 To 9)
-Dim BB%(0 To 9), MF%(1), SP%(1), T1%(0 To 1)
 
-Dim PT$(1)
+Dim B6%(22, 21), BB%(0 To 9)
+Dim D1%(1), DYS%(0 To 1, 0 To 21)
+
+Dim MF%(1), P0%(0 To 21, 0 To 41)
+Dim SP%(1), SS%(0 To 22, 0 To 6), SX%(0 To 1)
+Dim T1%(0 To 1)
+
+Dim PT$(1), SA$(0 To 1)
 
 Dim E!
 
@@ -278,7 +286,7 @@ Dim Shared F$, PARK$, S$, WI$, W$, L$
 Dim Shared B1!(9), K9!(1)
 Dim Shared pbpDelay!, WF!
 
-Dim Shared attendance&, gameTime$
+Dim Shared actualAttendance&, avgAttendance&, gameTime$
 
 Dim Shared Inotloop% ', pbpIdx%
 
@@ -291,7 +299,6 @@ Dim Shared usingGfx
 
 'These are just for tracing values / troubleshooting
 Dim Shared testIdx, dudVal
-
 
 
 Dim Shared MON(5, 14), VV(1), VV1(1)

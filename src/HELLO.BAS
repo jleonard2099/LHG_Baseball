@@ -1,3 +1,4 @@
+$Debug
 
 Const GAME_VERSION$ = "6.67"
 Const MAX_TEAMS = 1000
@@ -13,6 +14,7 @@ Const NUM_STATRECORDS = 162
 
 DefInt A-Z
 
+'INCLUDE: 'FileTeamSelection.bi'
 '$INCLUDE: 'KeyInput.bi'
 '$INCLUDE: 'QPProEqu.bi'
 '$INCLUDE: 'PadRight.bi'
@@ -23,8 +25,8 @@ DefInt A-Z
 '$INCLUDE: 'TITLE.bi'
 
 ' For Game
-'$INCLUDE: 'Game_Routines.bi'
-'$INCLUDE: 'Game_Routines_Gfx.bi'
+'$INCLUDE: 'GameRoutines.bi'
+'$INCLUDE: 'GameRoutines_Gfx.bi'
 '$INCLUDE: 'SOURCE.bi'
 
 
@@ -232,6 +234,10 @@ System
 Errhandler:
 Open "errlog" For Append As #9
 Print #9, "Error #"; Err; "on program file line"; _ErrorLine
+If _FileExists("GAME82") Then
+    Print #9, "Schedule game # "; Using "###"; AP%(0) + AP%(2)
+    Print #9, A$(0) + " vs. " + A$(1)
+End If
 Print #9,
 Close #9
 Resume Next ' moves program to code following the error.
@@ -337,7 +343,7 @@ Sub ConfigureDrives ()
         Case "[LINUX]":
             Locate , 31: Print "/mnt/floppy"
             Locate , 31: Print "/usr/bin/base/teams"
-        Case "[MAC]","[MACOSX]":
+        Case "[MAC]", "[MACOSX]":
             Locate , 31: Print "/Volumes/floppy"
             Locate , 31: Print "/Applications/base/teams"
     End Select
@@ -527,6 +533,7 @@ Sub Leaders_Menu ()
 End Sub
 
 
+'INCLUDE: 'FileTeamSelection.bm'
 '$INCLUDE: 'KeyInput.bm'
 '$INCLUDE: 'QPProEqu.bm'
 '$INCLUDE: 'PadRight.bm'
@@ -563,7 +570,8 @@ End Sub
 '$INCLUDE: 'UMPMGR.BAS'
 
 ' For Game
-'$INCLUDE: 'Game_Routines.bm'
-'$INCLUDE: 'Game_Routines_Gfx.bm'
+'$INCLUDE: 'GameRoutines.bm'
+'$INCLUDE: 'GameRoutines_Gfx.bm'
 '$INCLUDE: 'LOADER.BAS'
 '$INCLUDE: 'SOURCE.bm'
+

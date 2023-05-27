@@ -1,0 +1,330 @@
+`'------------------------------
+'   ChooseTeam Subroutine
+'------------------------------
+'...explanation...
+Sub ChooseTeam (yearNumber$, numberTeams, teamIdx, teamName$)
+
+    Shared T%()
+    Shared teamNames$()
+
+    Do
+
+        Color 15, 0
+        Cls
+
+        JJ = 7
+
+        Locate 6, 8
+        Color 15, 4
+
+        Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+
+        For II = 1 To JJ
+            Locate 6 + II, 8
+            Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
+        Next
+
+        Locate 7 + JJ, 8
+        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+
+        Locate 7, 32
+
+        Locate , 12: Print "ENTER DISK ID: "
+        Print
+        Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
+        Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
+        Print
+        Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
+
+        I$ = GetKeyPress$
+
+        If I$ <> Chr$(27) Then
+
+            If I$ = Chr$(13) Then
+                'Use previous info
+                'Will have an issue if the file doesn't exist
+                NY$ = yearNumber$
+                Call SelectTeam(numberTeams, NY$, chosenIdx, teamName$)
+            Else
+                Locate 7, 27: Print I$
+                Locate 7, 28: Line Input NY$
+                NY$ = I$ + NY$
+                Color 15, 0
+
+                If NY$ = "" And YN$ <> "" Then
+                    Call SelectTeam(numberTeams, NY$, chosenIdx, teamName$)
+                Else
+                    yearNumber$ = RTrim$(NY$)
+                    Erase teamNames$
+                    numberTeams = 0
+
+                    Cls
+
+                    If Not _FileExists(diskPaths$(0) + TEAM_FILE_NAME$ + "." + yearNumber$) Then
+
+                        Locate 10, 8
+
+                        Call CSMsgBox("NO TEAMS WERE FOUND MATCHING THAT ID... PRESS ANY KEY TO SELECT ANOTHER ID", 20, Pass)
+                        I$ = GetKeyPress$
+                        Call CSMsgBox("", 0, Pass)
+
+                        BO% = 1
+
+                    Else
+
+                        Open diskPaths$(0) + TEAM_FILE_NAME$ + "." yearNumber$ For Random As #1 Len = TEAM_BIN_SIZE
+
+                        Y = LOF(1)
+
+                        Field #1, 15 As Q$(0)
+
+                        numberTeams = fileLength& / TEAM_BIN_SIZE
+
+                        For teamIdx = 1 To fileLength&
+                            Get #1, teamIdx
+                            'numberTeams = numberTeams + 1
+                            teamNames$(numberTeams) = Q$(0)
+                            teamIndex%(numberTeams) = teamIdx
+                        Next teamIdx
+
+                        Close 1
+
+                        If BO% = 1 Then
+
+                            BO% = 0
+
+                        Else
+                            'Locate 2, 33
+                            'Color 31: Print "LOADING..."
+
+                            Call SelectTeam(numberTeams, yearNumber$, chosenIdx, teamName$)
+
+                            Locate 2, 33
+                            Color T%(0), T%(1): Print teamName$
+
+                            Color 15, 4
+                            Locate , 33: Print "ANY CHANGE? (YN)";
+
+                            I$ = GetKeyPress$
+
+                        End If
+
+                    End If 'Done checking if file exists
+
+                End If 'Done checking for blank year number
+
+            End If 'Done checking for ENTER key
+
+        End If 'Done checking for ESC
+
+    Loop Until UCase$(I$) = "N" Or I$ = Chr$(27)
+
+End Sub
+
+
+'------------------------------
+'   SelectTeam Subroutine
+'------------------------------
+'...explanation...
+Sub SelectTeam (numberTeams, yearNumber$, selectedIdx, teamName$)
+
+    Shared teamNames$()
+
+    If numberTeams > 0 Then
+
+        SELECTION% = 1
+        Count% = numberTeams
+        Start% = 1
+        FileFGColr% = 15: FileBGColr% = 4
+        HiLiteFGColr% = 0: HiLiteBGColr% = 7
+        Rows% = 20
+        Columns% = 4
+        Spacing% = 6
+        Row% = 4
+        Column% = 1
+
+        Color , 4
+        Cls
+        Color 14
+        Locate , 33: Print "TEAM SELECTION"
+        Locate 25, 1
+        Color 14: Print "ESC";: Color 15: Print "-SELECT NEW ID  PGDN  PGUP  ";
+        Color 14: Print "ENTER";: Color 15: Print "-SELECTS TEAM";
+
+        _MouseShow "DEFAULT"
+        MAMenu teamNames$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+        _MouseHide
+
+        If ExitCode% <> 27 Then
+
+            selectedIdx = teamIndex%(SELECTION%)
+
+            Locate 2, 33: Color 3
+            Print "LOADING.."
+
+            Call ReadTeam(yearNumber$, teamName$, selectedIdx)
+
+        End If
+
+    End If
+
+End Sub
+
+
+'------------------------------
+'     ReadTeam Subroutine
+'------------------------------
+'...explanation...
+Sub ReadTeam (teamYear$, targetTeam$, teamIdx)
+
+    Shared L%(), T%()
+    'Shared varB%()
+
+    Open diskPaths$(0) +  TEAM_FILE_NAME$ + "." + teamYear$ For Random As #1 Len = TEAM_BIN_SIZE
+
+    '--- This will vary from game / module
+    Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 2 As Q$(14), 2 As Q$(15), 2 As Q$(16), 2 As Q$(17), 2 As Q$(18), 2 As Q$(19), 602 As X$
+    For I = 0 To 13
+        Field #1, 53 + I * 43 As X$, 15 As Q$(I * 15 + 20), 2 As Q$(I * 15 + 21), 2 As Q$(I * 15 + 22), 2 As Q$(I * 15 + 23), 2 As Q$(I * 15 + 24), 2 As Q$(I * 15 + 25), 2 As Q$(I * 15 + 26), 2 As Q$(I * 15 + 27), 2 As Q$(I * 15 + 28), 2 As Q$(I * 15 + 29), 2 As Q$(I * 15 + 30), 2 As Q$(I * 15 + 31), 2 As Q$(I * 15 + 32), 2 As Q$(I * 15 + 33), 2 As Q$(I * 15 + 34), 655 - 53 - 43 - I * 43 As X$
+    Next
+
+    '--- Done defining structure
+
+    Get #1, teamIdx
+
+    targetTeam$ = _Trim$(Q$(0))
+
+    '--- This will vary from game / module
+    SP = CVI(Q$(1))
+    DA = CVI(Q$(2))
+    V1% = CVI(Q$(3))
+    V2% = CVI(Q$(4))
+
+    For I = 0 To 4:
+        L%(I) = CVI(Q$(I + 5))
+    Next
+
+    For I = 0 To 9:
+        T%(I) = CVI(Q$(I + 10))
+    Next
+    '--- Done reading data
+
+    'Close team file
+    Close 1
+
+End Sub
+
+
+'------------------------------
+'   nameStatFile Function
+'------------------------------
+'...explanation...
+Function nameStatFile$ (teamName$)
+
+    For XX = 4 To 11
+        If Mid$(teamName$, XX, 1) = " " Or Mid$(teamName$, XX, 1) = "." Then Mid$(teamName$, XX, 1) = "_"
+    Next XX
+    For XX = 12 To 14
+        If Mid$(teamName$, XX, 2) = "ST" Then Mid$(teamName$, 9, 1) = "_": Mid$(teamName$, 10, 2) = "ST"
+    Next XX
+
+    QQ = 8
+    'QQ - Length of teamName$ ???
+    '-- if we want to support long files
+
+    For XX = 11 To 4 Step -1
+        If Mid$(teamName$, XX, 1) = "_" Then
+            QQ = XX - 4
+        Else
+            Exit For
+        End If
+    Next XX
+
+    nameStatFile$ = Mid$(teamName$, 4, QQ) + "." + Left$(teamName$, 2)
+
+End Function
+
+'------------------------------
+'   ChooseFile$ Function
+'------------------------------
+'...explanation...
+Function ChooseFile$ (fileSpec$, fileDesc$, ExitCode%)
+    Do
+        'Display list of files...
+
+        Count% = FCount%(fileSpec$)
+
+        If Count% = 0 Then
+
+            zeroCountMsg$ = "NO " + fileDesc$ + " FILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU"
+
+            Call CSMsgBox(zeroCountMsg$, 20, Pass)
+            I$ = GetKeyPress$
+            Call CSMsgBox("", 0, Pass)
+
+        Else
+
+            ReDim foundFiles$(0 To Count%)
+
+            For X = 1 To Count%
+                '8 char's filename + 4 char's (. + ext)
+                foundFiles$(X) = Space$(12)
+            Next
+
+            foundFiles$(0) = fileSpec$
+            Call ReadFile(foundFiles$())
+
+            Do
+                1310 Cls
+                Color , 1
+                Cls
+                Locate , 28
+                Color 14
+                Print "SELECT "; fileDesc$; " TO UPDATE": Color 15
+                Selection% = 1
+                START% = 1
+                FileFGColr% = 15: FileBGColr% = 1
+                HiLiteFGColr% = 0: HiLiteBGColr% = 7
+                Rows% = 20
+                Columns% = 4
+                Spacing% = 6
+                Row% = 4
+                Column% = 1
+                Locate 25, 1
+                Color 14
+                Print "ENTER";: Color 15
+                Print "-SELECTS "; fileDesc$;
+
+                _MouseShow "DEFAULT"
+                MAMenu foundFiles$(), Selection%, START%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+                _MouseHide
+
+                If ExitCode% <> 27 Then
+
+                    Color 15, 1
+                    targetFile$ = foundFiles$(Selection%)
+
+                    Do
+						Locate 2, 33
+						Print targetFile$
+                        Locate , 33
+						Print "ANY CHANGE (YN)";
+                        I$ = GetKeyPress$
+                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+                    Color 15, 0
+
+                End If
+
+            Loop Until UCase$(I$) = "N" Or ExitCode% = 27
+
+        End If 'Done checking file count
+
+	'...Until we press ESC
+    Loop Until ExitCode% = 27 Or Count% = 0 Or UCase$(I$) = "N"
+
+    If ExitCode% <> 27 Then
+        ChooseFile$ = Left$(RTrim$(targetFile$), Len(targetFile$) - 4)
+    End If
+
+End Function

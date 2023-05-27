@@ -81,8 +81,8 @@ Sub UpdateLeagueStandings ()
         Cls
 
         Spec$ = diskPaths$(2) + "*.TMS"
-        null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
-        Count% = DirCount%
+		Count% = FCount%(Spec$)
+
         If Count% = 0 Then
             'No prompt to the user???
             'Should use CSMsgBox
@@ -251,8 +251,8 @@ Sub ViewPrintLeagueStandings ()
     Do
         Cls
         Spec$ = diskPaths$(2) + "*.STD"
-        null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
-        Count% = DirCount%
+		Count% = FCount%(Spec$)
+
         If Count% = 0 Then
             'Exit
             'Shouldn't we want user?

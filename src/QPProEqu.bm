@@ -58,8 +58,6 @@ Function FCount% (dirSpec$)
         End If
 
         Kill TmpFile$
-        Kill "basename.f"
-        Kill "dirname.f"
 
         ' Shared variable can return the file count
         If emptyFile% = 0 Then FCount% = Index%

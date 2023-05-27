@@ -15,7 +15,10 @@ Sub POSCR ()
         Cls
 
         Do
-            30 Color 15, 0: Cls
+            
+			Color 15, 0
+			Cls
+
             JJ = 7
             Locate 6, 8: Color 15, 1
             Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";: For II = 1 To JJ: Locate 6 + II, 8
@@ -24,6 +27,7 @@ Sub POSCR ()
             Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
 			
 			Locate 7, 32
+
             Locate , 12: Print "ENTER NAME FOR POSITION FILE: ": Print
             Locate , 12: Print "THE NAME IS 8 CHARACTERS LONG WITH NO PERIODS OR"
             Locate , 12: Print "SPACES. DO NOT ADD A FILE EXTENSION, THE SCHEDULER"
@@ -62,46 +66,86 @@ Sub POSCR ()
 
         Color 15, 0
         Cls
-        Locate 7: Color 12: Print "1.  ";: Color 7: Print T$(1);
-        Locate , 27: Color 12: Print "2.  ";: Color 7: Print T$(2);
-        Locate , 54: Color 12: Print "3.  ";: Color 7: Print T$(3)
-        Locate 8: Color 12: Print "4.  ";: Color 7: Print T$(4);
-        Locate , 27: Color 12: Print "5.  ";: Color 7: Print T$(5);
-        Locate , 54: Color 12: Print "6.  ";: Color 7: Print T$(6)
-        Locate 9: Color 12: Print "7.  ";: Color 7: Print T$(7);
-        Locate , 27: Color 12: Print "8.  ";: Color 7: Print T$(8);
-        Locate , 54: Color 12: Print "9.  ";: Color 7: Print T$(9)
-        Locate 10: Color 12: Print "10. ";: Color 7: Print T$(10);
-        Locate , 27: Color 12: Print "11. ";: Color 7: Print T$(11);
-        Locate , 54: Color 12: Print "12. ";: Color 7: Print T$(12)
-        Locate 11: Color 12: Print "13. ";: Color 7: Print T$(13);
-        Locate , 27: Color 12: Print "14. ";: Color 7: Print T$(14);
-        Locate , 54: Color 12: Print "15. ";: Color 7: Print T$(15)
-        Locate 12: Color 12: Print "16. ";: Color 7: Print T$(16);
-        Locate , 27: Color 12: Print "17. ";: Color 7: Print T$(17);
-        Locate , 54: Color 12: Print "18. ";: Color 7: Print T$(18)
-        Locate 13: Color 12: Print "19. ";: Color 7: Print T$(19);
-        Locate , 27: Color 12: Print "20. ";: Color 7: Print T$(20);
-        Locate , 54: Color 12: Print "21. ";: Color 7: Print T$(21)
-        Locate 14: Color 12: Print "22. ";: Color 7: Print T$(22);
-        Locate , 27: Color 12: Print "23. ";: Color 7: Print T$(23);
-        Locate , 54: Color 12: Print "24. ";: Color 7: Print T$(24)
-        Locate 15: Color 12: Print "25. ";: Color 7: Print T$(25);
-        Locate , 27: Color 12: Print "26. ";: Color 7: Print T$(26);
-        Locate , 54: Color 12: Print "27. ";: Color 7: Print T$(27)
-        Locate 16: Color 12: Print "28. ";: Color 7: Print T$(28);
-        Locate , 27: Color 12: Print "29. ";: Color 7: Print T$(29);
-        Locate , 54: Color 12: Print "30. ";: Color 7: Print T$(30)
-        Locate 17: Color 12: Print "31. ";: Color 7: Print T$(31);
-        Locate , 27: Color 12: Print "32. ";: Color 7: Print T$(32);
-        Locate , 54: Color 12: Print "33. ";: Color 7: Print T$(33)
-        Locate 18: Color 12: Print "34. ";: Color 7: Print T$(34);
-        Locate , 27: Color 12: Print "35. ";: Color 7: Print T$(35);
-        Locate , 54: Color 12: Print "36. ";: Color 7: Print T$(36)
-        Locate 19: Color 12: Print "37. ";: Color 7: Print T$(37);
-        Locate , 27: Color 12: Print "38. ";: Color 7: Print T$(38);
-        Locate , 54: Color 12: Print "39. ";: Color 7: Print T$(39)
-        Locate 20: Color 12: Print "40. ";: Color 7: Print T$(40)
+        Locate 7: Color 12
+		Print "1.  ";: Color 7: Print T$(1);
+        Locate , 27: Color 12
+		Print "2.  ";: Color 7: Print T$(2);
+        Locate , 54: Color 12
+		Print "3.  ";: Color 7: Print T$(3)
+        Locate 8: Color 12
+		Print "4.  ";: Color 7: Print T$(4);
+        Locate , 27: Color 12
+		Print "5.  ";: Color 7: Print T$(5);
+        Locate , 54: Color 12
+		Print "6.  ";: Color 7: Print T$(6)
+        Locate 9: Color 12
+		Print "7.  ";: Color 7: Print T$(7);
+        Locate , 27: Color 12
+		Print "8.  ";: Color 7: Print T$(8);
+        Locate , 54: Color 12
+		Print "9.  ";: Color 7: Print T$(9)
+        Locate 10: Color 12
+		Print "10. ";: Color 7: Print T$(10);
+        Locate , 27: Color 12
+		Print "11. ";: Color 7: Print T$(11);
+        Locate , 54: Color 12
+		Print "12. ";: Color 7: Print T$(12)
+        Locate 11: Color 12
+		Print "13. ";: Color 7: Print T$(13);
+        Locate , 27: Color 12
+		Print "14. ";: Color 7: Print T$(14);
+        Locate , 54: Color 12
+		Print "15. ";: Color 7: Print T$(15)
+        Locate 12: Color 12
+		Print "16. ";: Color 7: Print T$(16);
+        Locate , 27: Color 12
+		Print "17. ";: Color 7: Print T$(17);
+        Locate , 54: Color 12
+		Print "18. ";: Color 7: Print T$(18)
+        Locate 13: Color 12
+		Print "19. ";: Color 7: Print T$(19);
+        Locate , 27: Color 12
+		Print "20. ";: Color 7: Print T$(20);
+        Locate , 54: Color 12
+		Print "21. ";: Color 7: Print T$(21)
+        Locate 14: Color 12
+		Print "22. ";: Color 7: Print T$(22);
+        Locate , 27: Color 12
+		Print "23. ";: Color 7: Print T$(23);
+        Locate , 54: Color 12
+		Print "24. ";: Color 7: Print T$(24)
+        Locate 15: Color 12
+		Print "25. ";: Color 7: Print T$(25);
+        Locate , 27: Color 12
+		Print "26. ";: Color 7: Print T$(26);
+        Locate , 54: Color 12
+		Print "27. ";: Color 7: Print T$(27)
+        Locate 16: Color 12
+		Print "28. ";: Color 7: Print T$(28);
+        Locate , 27: Color 12
+		Print "29. ";: Color 7: Print T$(29);
+        Locate , 54: Color 12
+		Print "30. ";: Color 7: Print T$(30)
+        Locate 17: Color 12
+		Print "31. ";: Color 7: Print T$(31);
+        Locate , 27: Color 12
+		Print "32. ";: Color 7: Print T$(32);
+        Locate , 54: Color 12
+		Print "33. ";: Color 7: Print T$(33)
+        Locate 18: Color 12
+		Print "34. ";: Color 7: Print T$(34);
+        Locate , 27: Color 12
+		Print "35. ";: Color 7: Print T$(35);
+        Locate , 54: Color 12
+		Print "36. ";: Color 7: Print T$(36)
+        Locate 19: Color 12
+		Print "37. ";: Color 7: Print T$(37);
+        Locate , 27: Color 12
+		Print "38. ";: Color 7: Print T$(38);
+        Locate , 54: Color 12
+		Print "39. ";: Color 7: Print T$(39)
+        Locate 20: Color 12
+		Print "40. ";: Color 7: Print T$(40)
 
         Do
             Locate 22: Print "ENTER ANOTHER TEAM (Y/N)"
@@ -126,7 +170,9 @@ Sub GetTeam (yearNumber$, numberTeams, teamIndex%)
 
     Do
 
-        Color 15, 0: Cls
+        Color 15, 0
+		Cls
+
         JJ = 7
         Locate 6, 8: Color 15, 4
         Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";: For II = 1 To JJ: Locate 6 + II, 8
@@ -135,24 +181,28 @@ Sub GetTeam (yearNumber$, numberTeams, teamIndex%)
         Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
 		
 		Locate 7, 32
+
         Locate , 12: Print "ENTER DISK ID: ": Print
         Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
         Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
         Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
         Locate 7, 27: Input NY$
+
 		If NY$ = "" And yearNumber$ <> "" Then
             Call SelectTeam_POSCR(yearNumber$, numberTeams, teamIndex%)
         Else
-            yearNumber$ = NY$
+            yearNumber$ = RTrim$(NY$)
             Erase teamNames$
-
             numberTeams = 0
 
             If _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
 
                 Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
+
                 Y = LOF(1)
+
                 Field #1, 15 As Q$(0)
+
                 For I1 = 1 To Y / 4342
                     Get #1, I1
                     For I2 = 1 To 15
@@ -163,7 +213,8 @@ Sub GetTeam (yearNumber$, numberTeams, teamIndex%)
                         teamNames$(numberTeams) = Q$(0)
                         teamIndex%(numberTeams) = I1
                     End If
-                1103 Next I1
+                Next I1
+
                 Close 1
 
                 Call SelectTeam_POSCR(yearNumber$, numberTeams, teamIndex%)
@@ -217,9 +268,15 @@ Sub SelectTeam_POSCR (yearNumber$, numberTeams, teamIndex%)
     _MouseHide
 
     If ExitCode% <> 27 Then
+
         teamIndex% = teamIndex%(Selection%)
-        Locate 2, 33: Color 31: Print "LOADING.."
-        Call ReadTeam_POSCR(yearNumber$, teamIndex%)
+		teamYear$ = RTrim$(yearNumber$)
+		
+        Locate 2, 33: Color 3
+		Print "LOADING.."
+
+        Call ReadTeam_POSCR(teamYear$, teamIndex%)
+
     Else
         BO% = 1
     End If
@@ -236,7 +293,6 @@ Sub ReadTeam_POSCR (yearNumber$, teamIndex%)
     Shared statB$(), statP$()
     Shared draftB%(), ratings%(), draftP%()
 
-    5500 '
     Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
 
     Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
@@ -256,9 +312,11 @@ Sub ReadTeam_POSCR (yearNumber$, teamIndex%)
     Next
 
     Field #1, 4280 As X$, 40 As Q$(1840), 15 As Q$(1841), 5 As Q$(1842), 2 As Q$(1843)
+
     Get #1, teamIndex%
 
     For I = 1 To 13: ratings%(I) = CVI(Q$(I)): Next
+
     K9&(0) = CVS(Q$(14))
 
     For I = 0 To 22:

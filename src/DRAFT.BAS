@@ -76,48 +76,61 @@ Sub DRAFT ()
 
                 'This needs to be a GetTeam_DRAFT routine
                 Do
-                    Color 15, 0: Cls
+                    Color 15, 0
+					Cls
+
                     JJ = 7
+
                     Locate 6, 8: Color 15, 4
+
                     Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";: For II = 1 To JJ: Locate 6 + II, 8
                     Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
                     Locate 7 + JJ, 8
                     Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
 					
 					Locate 7, 32
+
                     Locate , 12: Print "ENTER DISK ID: ": Print
                     Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
                     Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
                     Locate 7, 27: Input NY$
+
 					If NY$ = "" And YN$ <> "" Then
                         Call SelectTeam_DRAFT(draftYN$(0), numberTeams%, 0, idx)
                         'draftYN$(0) = NY$
                     Else
-                        draftYN$(0) = NY$
+                        draftYN$(0) = RTrim$(NY$)
                         Erase teamNames$
                         numberTeams% = 0
+
                         If _FileExists(diskPaths$(0) + "FCTEAMS." + draftYN$(0)) Then
 
                             Open diskPaths$(0) + "FCTEAMS." + draftYN$(0) For Random As #1 Len = 4342
+
                             Y = LOF(1)
+
                             Field #1, 15 As Q$(0)
+
                             For I1 = 1 To Y / 4342
+
                                 Get #1, I1
+
                                 For I2 = 1 To 15
                                     If Left$(Q$(0), 2) = "XX" Or Left$(Q$(0), 1) = " " Or Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then Exit For
                                 Next I2
+
                                 numberTeams% = numberTeams% + 1
                                 teamNames$(numberTeams%) = Q$(0)
                                 teamIndex%(numberTeams%) = I1
 
                             Next I1
+
                             Close 1
 
                             Call SelectTeam_DRAFT(draftYN$(0), numberTeams%, 0, idx)
-                            'draftYN$(0) = YN$
+
                         Else
                             BO% = 1
-                            'GoSub 4500
                         End If
 
                     End If
@@ -334,11 +347,12 @@ Sub DraftPlayer (playerType, yearNumber$)
             yearNumber$ = NY$
             Call SelectTeam_DRAFT(yearNumber$, numberTeams%, 1, idx)
         Else
-            yearNumber$ = NY$
+            yearNumber$ = RTrim$(NY$)
             Erase teamNames$
-            'For I = 1 To 500: teamIndex%(I) = 1: Next
             numberTeams% = 0
+			
             If Not _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
+
                 BO% = 1
                 
 				JJ = 2
@@ -359,25 +373,34 @@ Sub DraftPlayer (playerType, yearNumber$)
             Else
 
                 Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
+
                 Y = LOF(1)
+
                 Field #1, 15 As Q$(0)
+
                 For I1 = 1 To Y / 4342
+
                     Get #1, I1
+
                     For I2 = 1 To 15
                         'If Left$(Q$(0), 2) <> "XX" And Left$(Q$(0), 1) <> " " And Asc(Mid$(Q$(0), I2, 1)) >= 32 And Asc(Mid$(Q$(0), I2, 1)) <= 124 And UCase$(Left$(Q$(0), 3)) <> "NOT" And UCase$(Left$(Q$(0), 3)) <> "UN" Then
                         If Left$(Q$(0), 2) = "XX" Or Left$(Q$(0), 1) = " " Or Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then nullTeam = 1: Exit For
                     Next I2
+
                     If nullTeam <> 1 Then
                         numberTeams% = numberTeams% + 1
                         teamNames$(numberTeams%) = Q$(0)
                         teamIndex%(numberTeams%) = I1
                     End If
-                1103 Next I1
+
+					Next I1
+
                 Close 1
 
             End If
 
             Call SelectTeam_DRAFT(yearNumber$, numberTeams%, 1, idx)
+
         End If
 
         T1$ = RTrim$(Q$(0))
@@ -483,7 +506,9 @@ Sub SaveTeamDraft (DNT%, yearNumber$, teamName$, teamIdx)
 
     Shared M$, NN$, Stadium$
 
-    Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
+	teamYear$ = RTrim$(yearNumber$)
+
+    Open diskPaths$(0) + "FCTEAMS." + teamYear$ For Random As #1 Len = 4342
 
     Y = LOF(1)
 
@@ -536,6 +561,7 @@ Sub SaveTeamDraft (DNT%, yearNumber$, teamName$, teamIdx)
     LSet Q$(1841) = Manager$
     LSet Q$(1842) = teamAbbrev$
     LSet Q$(1843) = MKI$(999)
+
     Put #1, teamIdx
 
     Close 1
@@ -685,7 +711,9 @@ Sub ReadTeam_A (yearNumber$, teamIdx)
     Shared ratings%()
     Shared inputSA%(), draftB%(), draftP%(), inputTS%()
 
-    Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
+	teamYear$ = RTrim$(yearNumber$)
+
+    Open diskPaths$(0) + "FCTEAMS." + teamYear$ For Random As #1 Len = 4342
 
     Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
 
@@ -732,9 +760,9 @@ Sub ReadTeam_A (yearNumber$, teamIdx)
 
     Close 1
 
-    If _FileExists(diskPaths$(0) + "LR." + yearNumber$) Then
+    If _FileExists(diskPaths$(0) + "LR." + teamYear$) Then
 
-        Open diskPaths$(0) + "LR." + yearNumber$ For Random As #1 Len = 4108
+        Open diskPaths$(0) + "LR." + teamYear$ For Random As #1 Len = 4108
 
         For X = 0 To 11
             Field #1, X * 2 As X$, 2 As Q$(X + 1), 4108 - 2 - 2 * X As X$
@@ -854,7 +882,9 @@ Sub ReadTeam_B (yearNumber$, teamIdx)
     Shared L1%()
     Shared SA1%(), draftB1%(), draftP1%(), TS1%()
 
-    Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
+	teamYear$ = RTrim$(yearNumber$)
+
+    Open diskPaths$(0) + "FCTEAMS." + teamYear$ For Random As #1 Len = 4342
 
     Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
 

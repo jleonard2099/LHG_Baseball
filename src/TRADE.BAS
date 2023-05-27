@@ -83,10 +83,10 @@ Sub GetTeamA_TRADE (yearNumber$, numberTeams, tradeIdx)
             'yearNumber$ = NY$
             Call SelectTeam_TRADE(yearNumber$, numberTeams, tradeIdx)
         Else
-            yearNumber$ = NY$
+            yearNumber$ = RTrim$(NY$)
             Erase teamNames$
-
             numberTeams = 0
+
             If Not _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
                 BO% = 1
                 Locate 10, 8
@@ -174,8 +174,12 @@ Sub SelectTeam_TRADE (yearNumber$, numberTeams, tradeIdx)
     If ExitCode% <> 27 Then
 
         tradeInfo%(tradeIdx) = teamIndex%(Selection%)
-        Locate 2, 33: Color 31: Print "LOADING..."
-        Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
+		teamYear$ = RTrim$(yearNumber$)
+        
+		Locate 2, 33: Color 31
+		Print "LOADING..."
+		
+        Open diskPaths$(0) + "FCTEAMS." + teamYear$ For Random As #1 Len = 4342
 
         Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
 
@@ -243,7 +247,9 @@ Sub ReadStats_TRADE (yearNumbers$(), tradeIdx)
 
     If _FileExists(diskPaths$(0) + "LR." + yearNumbers$(tradeIdx)) Then
 
-        Open diskPaths$(0) + "LR." + yearNumbers$(tradeIdx) For Random As #1 Len = 4108
+		teamYear$ = RTrim$(yearNumbers$(tradeIdx))
+
+        Open diskPaths$(0) + "LR." + teamYear$ For Random As #1 Len = 4108
 
         For X = 0 To 11
             Field #1, X * 2 As X$, 2 As Q$(X + 1), 4108 - 2 - 2 * X As X$
@@ -383,9 +389,8 @@ Sub GetTeamB_TRADE (yearNumber$, numberTeams, tradeIdx)
             'yearNumber$ = NY$
             Call SelectTeam_TRADE(yearNumber$, numberTeams, tradeIdx)
         Else
-            yearNumber$ = NY$
+            yearNumber$ = RTrim$(NY$)
             Erase teamNames$
-
             numberTeams = 0
 
             If Not _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
@@ -446,10 +451,10 @@ End Sub
 '...explanation...
 Sub ContinueTrade (yearNumbers$(), tradeIdx)
 
-    Shared tradeA$(), A1$(), SA$()
+    Shared tradeA$(), A1$(), tradeSA$()
     Shared tradeB1$(), tradeP1$()
 
-    Shared tradeD0%(), D1%(), tradeL%(), L2%()
+    Shared tradeD0%(), tradeD1%(), tradeL%(), L2%()
     Shared TEAM%(), tradeT1%(), tradeP0%(), tradeP3%()
     Shared tradeB0%(), tradeB3%(), tradeSS%(), W2%()
 
@@ -471,21 +476,21 @@ Sub ContinueTrade (yearNumbers$(), tradeIdx)
     Else
         Cls
 
-        SA$(tradeIdx) = tradeA$(tradeIdx)
+        tradeSA$(tradeIdx) = tradeA$(tradeIdx)
         For XX = 4 To 11
-            If Mid$(SA$(tradeIdx), XX, 1) = " " Or Mid$(SA$(tradeIdx), XX, 1) = "." Then Mid$(SA$(tradeIdx), XX, 1) = "_"
+            If Mid$(tradeSA$(tradeIdx), XX, 1) = " " Or Mid$(tradeSA$(tradeIdx), XX, 1) = "." Then Mid$(tradeSA$(tradeIdx), XX, 1) = "_"
         Next
         QQ = 8
         For XX = 11 To 4 Step -1
-            If Mid$(SA$(tradeIdx), XX, 1) = "_" Then
+            If Mid$(tradeSA$(tradeIdx), XX, 1) = "_" Then
                 QQ = XX - 4:
             Else
                 Exit For
             End If
         Next XX
 
-        F$ = Mid$(SA$(tradeIdx), 4, QQ)
-        R$ = F$ + "." + Left$(SA$(tradeIdx), 2)
+        F$ = Mid$(tradeSA$(tradeIdx), 4, QQ)
+        R$ = F$ + "." + Left$(tradeSA$(tradeIdx), 2)
 
         If _FileExists(diskPaths$(1) + R$) Then
 
@@ -504,7 +509,7 @@ Sub ContinueTrade (yearNumbers$(), tradeIdx)
             For I1 = 0 To 21: For I2 = 0 To 41: Input #1, tradeP0%(tradeIdx, I1, I2): Next I2: Next I1
 
             Input #1, tradeD0%(tradeIdx)
-            Input #1, D1%(tradeIdx)
+            Input #1, tradeD1%(tradeIdx)
 
             For I = 0 To 21: Input #1, TEAM%(tradeIdx, I): Next I
             For I = 0 To 22: Input #1, tradeT1%(tradeIdx, I): Next I
@@ -554,13 +559,13 @@ Sub ContinueTrade (yearNumbers$(), tradeIdx)
         tradeS%(1) = 1
     Else
         Cls
-        SA$(tradeIdx) = tradeA$(tradeIdx)
+        tradeSA$(tradeIdx) = tradeA$(tradeIdx)
         For XX = 4 To 11
-            If Mid$(SA$(tradeIdx), XX, 1) = " " Or Mid$(SA$(tradeIdx), XX, 1) = "." Then Mid$(SA$(tradeIdx), XX, 1) = "_"
+            If Mid$(tradeSA$(tradeIdx), XX, 1) = " " Or Mid$(tradeSA$(tradeIdx), XX, 1) = "." Then Mid$(tradeSA$(tradeIdx), XX, 1) = "_"
         Next
         QQ = 8
         For XX = 11 To 4 Step -1
-            If Mid$(SA$(tradeIdx), XX, 1) = "_" Then
+            If Mid$(tradeSA$(tradeIdx), XX, 1) = "_" Then
                 QQ = XX - 4:
             Else
                 Exit For
@@ -856,11 +861,11 @@ End Sub
 '...explanation...
 Sub SaveTrades (yearNumbers$())
 
-    Shared tradeA$(), A1$(), SA$()
+    Shared tradeA$(), A1$(), tradeSA$()
     Shared tradeB$(), tradeP$()
     Shared tradeB1$(), tradeP1$()
 
-    Shared tradeD0%(), D1%(), tradeL%(), L2%()
+    Shared tradeD0%(), tradeD1%(), tradeL%(), L2%()
     Shared tradeS%(), TEAM%()
     Shared tradeB%(), tradeB0%(), tradeB3%()
     Shared tradeP%(), tradeP0%(), tradeP3%()
@@ -876,7 +881,10 @@ Sub SaveTrades (yearNumbers$())
         Cls
         Color 15, 0
 
-        Open diskPaths$(0) + "FCTEAMS." + yearNumbers$(tradeIdx) For Random As #1 Len = 4342
+		teamYear$ = RTrim$(yearNumbers$(tradeIdx))
+
+        Open diskPaths$(0) + "FCTEAMS." + teamYear$ For Random As #1 Len = 4342
+
         Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
 
         For J = 0 To 22
@@ -1024,21 +1032,22 @@ Sub SaveTrades (yearNumbers$())
             Cls
 
             For XX = 4 To 11
-                If Mid$(SA$(I), XX, 1) = " " Or Mid$(SA$(I), XX, 1) = "." Then Mid$(SA$(I), XX, 1) = "_"
+                If Mid$(tradeSA$(I), XX, 1) = " " Or Mid$(tradeSA$(I), XX, 1) = "." Then Mid$(tradeSA$(I), XX, 1) = "_"
             Next
             QQ = 8
             For XX = 11 To 4 Step -1
-                If Mid$(SA$(I), XX, 1) = "_" Then
+                If Mid$(tradeSA$(I), XX, 1) = "_" Then
                     QQ = XX - 4
                 Else
                     Exit For
                 End If
             Next XX
 
-            F$ = Mid$(SA$(I), 4, QQ)
-            R$ = F$ + "." + Left$(SA$(I), 2)
+            F$ = Mid$(tradeSA$(I), 4, QQ)
+            R$ = F$ + "." + Left$(tradeSA$(I), 2)
 
             Open diskPaths$(1) + R$ For Output As #1
+
             Print #1, A1$(I): Print #1, W2%(I): Print #1, L2%(I)
 
             For I1 = 0 To 22: Print #1, tradeB1$(I, I1): Print #1, tradeB3%(I, I1): Next I1
@@ -1049,7 +1058,7 @@ Sub SaveTrades (yearNumbers$())
 
             For I1 = 0 To 21: For I2 = 0 To 41: Print #1, tradeP0%(I, I1, I2): Next I2: Next I1
 
-            Print #1, tradeD0%(I): Print #1, D1%(I)
+            Print #1, tradeD0%(I): Print #1, tradeD1%(I)
 
             For I1 = 0 To 21: Print #1, TEAM%(I, I1): Next I1
 

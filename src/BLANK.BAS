@@ -5,13 +5,12 @@ Sub BLANK ()
     Dim H1$(40)
 
     Do
-        'Display list of files...
 
         Cls
 
+        'Display list of files...
         Spec$ = diskPaths$(2) + "*.LIB"
-        null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
-        Count% = DirCount%
+		Count% = FCount%(Spec$)
 
         If Count% = 0 Then
             Locate 10, 8
@@ -19,16 +18,16 @@ Sub BLANK ()
             I$ = GetKeyPress$
             Call CSMsgBox("", 0, Pass)
         Else
-
             ReDim leagueFiles$(0 To Count%)
+
             For X = 1 To Count%
                 leagueFiles$(X) = Space$(12)
             Next
+
             leagueFiles$(0) = Spec$
             Call ReadFile(leagueFiles$())
 
             Do
-                Cls
                 Color , 1
                 Cls
                 Locate , 28
@@ -43,6 +42,7 @@ Sub BLANK ()
                 Spacing% = 6
                 Row% = 4
                 Column% = 1
+
                 Locate 25, 1
                 Color 14
                 Print "ENTER";
@@ -57,20 +57,18 @@ Sub BLANK ()
                 _MouseHide
 
                 If ExitCode% <> 27 Then
-
 					Color 15, 1                 
-					targetFile$ = leagueFiles$(Selection%)
+					targetFile$ = RTrim$(leagueFiles$(Selection%))
                     Locate 2, 33: Print targetFile$
 
 					Do
 						Locate 3, 33: Print "ANY CHANGE (YN)";
 						I$ = GetKeyPress$
-					Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N" Or I$ = Chr$(27)
 
 					Color 15, 0
 
                     If UCase$(I$) = "N" Then
-                        targetFile$ = RTrim$(targetFile$)
                         WE$ = Left$(targetFile$, Len(targetFile$) - 4)
                         leagueFile$ = Left$(WE$, 8)
 
@@ -92,7 +90,7 @@ Sub BLANK ()
                             For XW = 1 To 40
                                 If H1$(XW) <> Chr$(42) Then
                                     statFile$ = diskPaths$(1) + H1$(XW)
-                                    Print "DELETING "; statFile$; " STATS"
+                                    Print "DELETING "; H1$(XW); " STATS"
                                     If _FileExists (statFile$) Then Kill statFile$
                                     If _FileExists (statFile$ + "R") Then Kill statFile$ + "R"
                                     If _FileExists (statFile$ + "S") Then Kill statFile$ + "S"
@@ -107,10 +105,6 @@ Sub BLANK ()
                 End If 'Done checking Exit Code from file selection
 
             Loop Until ExitCode% = 27 Or UCase$(I$) = "N"
-
-            Cls
-
-            'End If
 
         End If 'Done checking file count
 

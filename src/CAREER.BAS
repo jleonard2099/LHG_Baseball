@@ -130,8 +130,7 @@ Sub ViewTeamLeaders ()
 
         Cls
         Spec$ = diskPaths$(2) + "*.CLD"
-        null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
-        Count% = DirCount%
+		Count% = FCount%(Spec$)
 
         If Count% = 0 Then
             Locate 10, 8
@@ -385,7 +384,7 @@ Sub Merge_FirstYear ()
     Shared careerB$(), careerP$()
 
     Shared careerB0%(), careerB1%(), BRS%()
-    Shared P0%(), careerP1%(), PRS%()
+    Shared careerP0%(), careerP1%(), PRS%()
 
     'Dim statT%(0 to 21), statT1%(0 to 22)
     Shared statT%(), statT1%()
@@ -459,7 +458,7 @@ Sub Merge_FirstYear ()
         For I = 0 To 22: Input #1, careerB$(I): Input #1, careerB1%(I): Locate 21, 35: TMR% = TMR% - 1: Color 9: Print Using "####"; TMR%: Next I
         For I = 0 To 21: Input #1, careerP$(I): Input #1, careerP1%(I): Locate 21, 35: TMR% = TMR% - 1: Color 9: Print Using "####"; TMR%: Next I
         For I = 0 To 22: For I1 = 0 To 21: Input #1, careerB0%(I, I1): Locate 21, 35: TMR% = TMR% - 1: Color 9: Print Using "####"; TMR%: Next I1: Next I
-        For I = 0 To 21: For I1 = 0 To 41: Input #1, P0%(I, I1): Locate 21, 35: TMR% = TMR% - 1: Color 9: Print Using "####"; TMR%: Next I1: Next I
+        For I = 0 To 21: For I1 = 0 To 41: Input #1, careerP0%(I, I1): Locate 21, 35: TMR% = TMR% - 1: Color 9: Print Using "####"; TMR%: Next I1: Next I
         Input #1, D0%
         Input #1, D1%
         For I = 0 To 21: Input #1, statT%(I): Next I
@@ -494,7 +493,7 @@ Sub Merge_FirstYear ()
             End If
 
             For J = 0 To 14
-                PRS%(N, I, J) = P0%(I, J)
+                PRS%(N, I, J) = careerP0%(I, J)
             Next J
 
             PRS%(N, I, 15) = 1
@@ -529,7 +528,7 @@ Sub Merge_AddYear ()
     Shared careerB$(), careerP$()
 
     Shared careerB0%(), careerB1%(), BRS%()
-    Shared P0%(), careerP1%(), PRS%()
+    Shared careerP0%(), careerP1%(), PRS%()
 
     'Dim statT%(0 to 21), statT1%(0 to 22)
     Shared statT%(), statT1%()
@@ -614,7 +613,7 @@ Sub Merge_AddYear ()
         For I = 0 To 22: Input #1, BR$(I): Input #1, careerB1%(I): Locate 21, 35: TMR% = TMR% - 1: Color 9: Print Using "####"; TMR%: Next I
         For I = 0 To 21: Input #1, PR$(I): Input #1, careerP1%(I): Locate 21, 35: TMR% = TMR% - 1: Color 9: Print Using "####"; TMR%: Next I
         For I = 0 To 22: For I1 = 0 To 21: Input #1, careerB0%(I, I1): Locate 21, 35: TMR% = TMR% - 1: Color 9: Print Using "####"; TMR%: Next I1: Next I
-        For I = 0 To 21: For I1 = 0 To 41: Input #1, P0%(I, I1): Locate 21, 35: TMR% = TMR% - 1: Color 9: Print Using "####"; TMR%: Next I1: Next I
+        For I = 0 To 21: For I1 = 0 To 41: Input #1, careerP0%(I, I1): Locate 21, 35: TMR% = TMR% - 1: Color 9: Print Using "####"; TMR%: Next I1: Next I
         Input #1, D0%
         Input #1, D1%
         For I = 0 To 21: Input #1, statT%(I): Next I
@@ -689,7 +688,7 @@ Sub Merge_AddYear ()
                         1519 N = PRS%(1, J, 15) + PRS%(2, J, 15) + PRS%(3, J, 15) + PRS%(4, J, 15) + PRS%(5, J, 15) + PRS%(6, J, 15) + PRS%(7, J, 15) + PRS%(8, J, 15) + PRS%(9, J, 15) + PRS%(10, J, 15) + PRS%(11, J, 15) + PRS%(12, J, 15) + PRS%(13, J, 15) + PRS%(14, J, 15) + PRS%(15, J, 15) + 1
                     End If
 
-                    For K = 0 To 14: PRS%(N, J, K) = P0%(I, K): Next K
+                    For K = 0 To 14: PRS%(N, J, K) = careerP0%(I, K): Next K
 
                     PRS%(N, J, 15) = 1
                     PRS%(N, J, 16) = statYear
@@ -703,7 +702,7 @@ Sub Merge_AddYear ()
                             NP = NP + 1
                             careerP$(NP) = PR$(I)
                             N = 1
-                            For K = 0 To 14: PRS%(N, NP, K) = P0%(I, K): Next
+                            For K = 0 To 14: PRS%(N, NP, K) = careerP0%(I, K): Next
                             PRS%(N, NP, 15) = 1: PRS%(N, NP, 16) = statYear
                         End If
 

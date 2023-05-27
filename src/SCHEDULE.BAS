@@ -183,8 +183,8 @@ Sub CreateSeasonSchedule ()
         Do
 
             Spec$ = diskPaths$(2) + "*.LIB"
-            null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
-            Count% = DirCount%
+			Count% = FCount%(Spec$)
+
             If Count% = 0 Then
                 Locate 10, 8
                 Call CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
@@ -865,15 +865,16 @@ Sub NewGame (visitor$, home$, YN$, NTMS, gameIndex%)
                             NY$ = YN$
                             Call GetTeam_Schedule(numberTeams, YN$, T1)
                         Else
-                            YN$ = NY$
+                            YN$ = RTrim$(NY$)
                             Erase teamNames$
                             numberTeams = 0
+
                             Call SelectTeam_Schedule(numberTeams, YN$)
                             Call GetTeam_Schedule(numberTeams, YN$, T1)
+
                         End If
 
                         Call CheckTeam_Schedule(T1, YN$)
-                        'N$ = RTrim$(Q$(0))
                         N$ = teamNames$(T1)
 
                         If BO% = 1 Then
@@ -957,16 +958,20 @@ Sub NewGame (visitor$, home$, YN$, NTMS, gameIndex%)
         Loop Until (I3% >= 0 And I% <= 14)
 
         If visitor$ <> "" And home$ <> "" And TM$ <> "" And DT$ <> "" Then
+
             I$ = Right$(TM$, 1)
             TM$ = Left$(TM$, Len(TM$) - 1)
             MIN% = Val(Right$(TM$, 2))
             TM$ = Left$(TM$, Len(TM$) - 3)
             HR% = Val(TM$)
+
             If UCase$(I$) = "P" And HR% < 12 Then HR% = HR% + 12
+
             scheduleNG%(gameIndex%, 15) = HR% * 100 + MIN%
             scheduleNG%(gameIndex%, 17) = Val(Left$(DT$, 2))
             scheduleNG%(gameIndex%, 18) = Val(Mid$((DT$), 7, 2))
             scheduleNG%(gameIndex%, 16) = Val(Mid$((DT$), 4, 2))
+
         End If
 
     Loop Until I3% = 0
@@ -1079,11 +1084,13 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
                 If NY$ = "" And YN$ <> "" Then
                     Call GetTeam_Schedule(numberTeams, YN$, T1)
                 Else
-                    YN$ = NY$
+                    YN$ = RTrim$(NY$)
                     Erase teamNames$
                     numberTeams = 0
+
                     Call SelectTeam_Schedule(numberTeams, YN$)
                     Call GetTeam_Schedule(numberTeams, YN$, T1)
+
                 End If
 
                 N$ = RTrim$(Q$(0))
@@ -1121,7 +1128,7 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
                             I1 = Val(C$)
                         Loop Until I1 = 0 Or I1 = 1
 
-                        Input "ENTER DISPLAY VARIABLE FOR THESE GAMES "; displayPause!
+                        Input "ENTER DISPLAY PAUSE FOR THESE GAMES "; displayPause!
                         'displayPause! = displayPause! * 10
                     End If
 
@@ -1145,6 +1152,7 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
                                 Locate 1, 1: Print numberGames% + 1; " MATCHES"
 
                                 Open diskPaths$(0) + subSchedFile$ + ".SCD" For Random As #1 Len = 48
+
                                 Y = LOF(1)
 
                                 numberGames% = Y / 48
@@ -1298,8 +1306,8 @@ Sub BoxscoreMaintenance ()
                     Call EditParameters
                 Case 2:
                     Spec$ = diskPaths$(1) + "*.SPC"
-                    null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
-                    Count% = DirCount%
+					Count% = FCount%(Spec$)
+
                     If Count% = 0 Then
                         Locate 10, 8
                         Call CSMsgBox("NO SPECIAL EVENTS BOXSCORES WERE FOUND PRESS ANY KEY TO RETURN TO MENU", 26, Pass)
@@ -1556,12 +1564,11 @@ End Sub
 '...explanation...
 Sub LoadSchedule (targetFile$)
 
-    Spec$ = diskPaths$(0) + "*.SCD"
 
     Do
 		'Display list of files...		
-        null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
-        Count% = DirCount%
+		Spec$ = diskPaths$(0) + "*.SCD"
+		Count% = FCount%(Spec$)
 
         If Count% = 0 Then
             Locate 10, 8
@@ -1595,15 +1602,16 @@ End Sub
 Sub SelectTeam_Schedule (numberTeams, yearNumber$)
 
     numberTeams = 0
+    teamYear$ = RTrim$(yearNumber$)
 
-    If Not _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
+    If Not _FileExists(diskPaths$(0) + "FCTEAMS." + teamYear$) Then
         Cls
         Print "ERROR:: UNABLE TO READ TEAM FILE"
         Print
         BO% = 1
     Else
 
-        Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
+        Open diskPaths$(0) + "FCTEAMS." + teamYear$ For Random As #1 Len = 4342
 
         Y = LOF(1)
 

@@ -1,19 +1,11 @@
 Sub LOADER
 
-    Shared dayNight$(), DH$(), DL$()
-    Shared LGT$(), month$()
-    Shared PT$(), PU$()
-    Shared U6$(), UMP$()
-    Shared VI$(), WE$()
-
-    Shared SP%(), T1%(), U%()
-
-    Open "pbplog" For Output As #7
-
     _Title "Full Count Baseball v" + GAME_VERSION$ + " - PLAY BALL!"
     ''$ExeIcon:'./lhg_fcbase.ico'
     '_Icon
     '_AllowFullScreen
+
+    'Open "pbplog" For Output As #7
 
     Color 7, 0
     Cls
@@ -23,6 +15,13 @@ Sub LOADER
     '----------------------------------------
     '        INITIALIZE ALL VARIABLES
     '----------------------------------------
+    Shared dayNight$(), DH$(), DL$()
+    Shared LGT$(), month$()
+    Shared PT$(), PU$()
+    Shared U6$(), UMP$()
+    Shared VI$(), WE$()
+
+    Shared SP%(), T1%(), U%()
 
     Call InitVar
 
@@ -82,8 +81,11 @@ Sub LOADER
     If _FileExists("GAME82") Then
 
         Open "GAME82" For Input As #2
+
         Input #2, scheduleFile$
+
         For I = 0 To 2: Input #2, AP%(I): Next
+
         Close 2
 
         Open diskPaths$(0) + scheduleFile$ For Random As #1 Len = 48
@@ -145,6 +147,8 @@ Sub LOADER
 
         170 '
         Call INFO
+
+        N = 1
 
         Do
             Color 15, 0
@@ -292,7 +296,10 @@ Sub LOADER
 
         If YU < 4 Then
             'If there aren't 4 umpires, assign generic names
-            U$(1) = "RHODES": U$(2) = "WINBERRY": U$(3) = "TIPPETT": U$(4) = "MILLER"
+            U$(1) = "RHODES"
+            U$(2) = "WINBERRY"
+            U$(3) = "TIPPETT"
+            U$(4) = "MILLER"
         Else
             'Randomly assign umpires
             Do
@@ -306,7 +313,10 @@ Sub LOADER
         End If
     Else
         'Assign generic umpire names if we don't have any
-        U$(1) = "RHODES": U$(2) = "WINBERRY": U$(3) = "TIPPETT": U$(4) = "MILLER"
+        U$(1) = "RHODES"
+        U$(2) = "WINBERRY"
+        U$(3) = "TIPPETT"
+        U$(4) = "MILLER"
     End If
 
     '-------------------------
@@ -358,12 +368,13 @@ Sub LOADER
                     'NY$ = YN$
                     Call SelectTeam_LOADER(NTMS, YN$, Idx) 'GoSub 8102
                 Else
-                    YN$ = NY$
+                    YN$ = RTrim$(NY$)
                     Erase teamNames$
 
                     NTMS = 0
 
                     Open diskPaths$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342
+
                     fileLength& = LOF(1)
 
                     Field #1, 15 As Q2$(0)
@@ -420,15 +431,14 @@ Sub LOADER
     ' Team Mgmt + Lineups
     '-------------------------
 
-    N = 1
-
     'Determine which team PC will play
     If U6 = 1 And AP% <> 1 Then
+
         'If not doing autoplay...
         Call INFO
 
-        Color 14: Print "WHICH TEAM DOES COMPUTER MANAGE ?": Print
-
+        Color 14: Print "WHICH TEAM DOES COMPUTER MANAGE ?"
+        Print
         Color 15: Print "(0) ";: Color L%(0, 11), L%(0, 12): Print A$(0): Color 7, 0
         Print
         Color 15: Print "(1) ";: Color L%(1, 11), L%(1, 12): Print A$(1): Color 7, 0
@@ -437,6 +447,7 @@ Sub LOADER
             I$ = GetKeyPress$
             U9 = Val(I$)
         Loop Until U9 = 0 Or U9 = 1
+
     End If
 
     'Determine pitchers
@@ -573,6 +584,25 @@ Sub LOADER
 
     Next P9
 
+    'Determine attendance
+    '-- note this currently does not take home field
+    '-- advantage into play, nor is this info.
+    '-- available for each team. Rather it is for
+    '-- each park. This is a different approach in
+    '-- comparison to other games, but not necessarily
+    '-- a bad idea. Currently these calculations don't
+    '-- seem an accurate way to do anything
+    ' ** this was added by me (Jason) to reflect
+    ' ** how other games calculate attendance.
+    ' ** the original game only performed the
+    ' ** calculation from 5 to 60 thousand,
+    ' ** despite reading in data from PARKS.DBF
+    If N = 2 Or avgAttendance& = 0 Then
+        actualAttendance& = Int(Rnd(1) * 55) + 5
+        actualAttendance& = actualAttendance& * 1000
+    Else
+        actualAttendance& = Int(Rnd(1) * 2000) + avgAttendance& - 1000
+    End If
 
 
     '-------------------------
@@ -636,7 +666,7 @@ Sub LOADER
 
     Cls
 
-    Call DRAWBOXA
+    Call TEAMBOX(5, 1)
 
     Locate , 11: Print "CONDITIONS AT "; S$(1)
     If L%(1, 9) = 1 Then
@@ -745,7 +775,7 @@ Sub StartingLineup (P9)
 End Sub
 
 '------------------------------
-'   LineupPositions Subroutine
+'  LineupPositions Subroutine
 '------------------------------
 ' ...explanation...
 Sub LineupPositions (teamIdx, posIdx, skipLU%)
@@ -916,7 +946,7 @@ Sub LineupPositions (teamIdx, posIdx, skipLU%)
 End Sub
 
 '------------------------------
-'    ChangeLineup_PreGame Subroutine
+' ChangeLineup_PreGame Subroutine
 '------------------------------
 ' ...explanation...
 Sub ChangeLineup_PreGame (P9, reselect)
@@ -963,7 +993,9 @@ Sub ChangeLineup_PreGame (P9, reselect)
 
                     Case "R", Chr$(27):
                         For J = 1 To 9
-                            M%(J) = 0: B7%(P9, J) = -1: B3%(P9, J) = -1
+                            M%(J) = 0
+                            B7%(P9, J) = -1
+                            B3%(P9, J) = -1
                         Next
 
                         C1 = 0
@@ -1051,7 +1083,9 @@ Sub SaveLineup (idx%)
         MG%(idx%, 0) = 999
         MF%(idx%) = 0
 
-        Open diskPaths$(3) + "MGR." + YN$(idx%) For Random As #2 Len = 2000
+        teamYear$ = RTrim$(YN$(idx%))
+
+        Open diskPaths$(3) + "MGR." + teamYear$ For Random As #2 Len = 2000
 
         For I = 0 To 999
             Field #2, I * 2 As Q$, 2 As Q2$(I), 2000 - I * 2 - 2 As Q$
@@ -1493,7 +1527,7 @@ Sub SelectStadium ()
         PARK$(83) = "UNKNOWN                     "
         PARK$(99) = "GENERIC                     "
 
-        Call DRAWBOXA
+        Call TEAMBOX(5, 1)
 
         'Determine park from the team data
         PARK$ = Right$(Str$(L%(1, 13)), Len(Str$(L%(1, 13))) - 1)
@@ -1507,7 +1541,7 @@ Sub SelectStadium ()
         End If
 
         'Display detected park
-        Locate , 11: Print "CURRENT PARK IS:"
+        Locate 7, 11: Print "CURRENT PARK IS:"
         Locate , 11: Print PARK$(L%(1, 13))
 
         Locate , 11
@@ -1546,7 +1580,6 @@ Sub SelectStadium ()
 
                     Call box0(4, 9, 20, 38, 2, 15, 1)
                     _MouseShow "Default"
-                    'MMenuVert PARK$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
                     MAMenu PARK$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, 15, 1, 1, Row%, Column%
                     _MouseHide
 
@@ -1600,7 +1633,6 @@ Sub PitchingRotations (computerRotations%, P9)
 
     Dim gamesStarted%(21, 1)
 
-    '4610
     Cls
     Call INFO
 
@@ -2131,7 +2163,9 @@ Sub LoadTeam_LOADER (teamIdx%, YN$, idx%)
     Shared MF%()
     Dim DYS%(1, 21)
 
-    Open diskPaths$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342
+    teamYear$ = RTrim$(YN$)
+
+    Open diskPaths$(0) + "FCTEAMS." + teamYear$ For Random As #1 Len = 4342
 
     Field #1, 15 As Q2$(0), 2 As Q2$(1), 2 As Q2$(2), 2 As Q2$(3), 2 As Q2$(4), 2 As Q2$(5), 2 As Q2$(6), 2 As Q2$(7), 2 As Q2$(8), 2 As Q2$(9), 2 As Q2$(10), 2 As Q2$(11), 2 As Q2$(12), 2 As Q2$(13), 4 As Q2$(14), 4297 As X$
 
@@ -2157,6 +2191,7 @@ Sub LoadTeam_LOADER (teamIdx%, YN$, idx%)
     Next
 
     If (L%(idx%, 11) = 7 Or L%(idx%, 11) = 15) And L%(idx%, 12) = 0 Then L%(idx%, 11) = 0: L%(idx%, 12) = 7
+
     K9!(idx%) = CVS(Q2$(14))
 
     For I1 = 0 To 22:
@@ -2217,9 +2252,9 @@ Sub LoadTeam_LOADER (teamIdx%, YN$, idx%)
         TS%(idx%, 0) = -1
     Else
 
-        If _FileExists(diskPaths$(0) + "LR." + YN$) Then
+        If _FileExists(diskPaths$(0) + "LR." + teamYear$) Then
 
-            Open diskPaths$(0) + "LR." + YN$ For Random As #1 Len = 4108
+            Open diskPaths$(0) + "LR." + teamYear$ For Random As #1 Len = 4108
 
             For X = 0 To 11
                 Field #1, X * 2 As X$, 2 As Q2$(X + 1), 4108 - 2 - 2 * X As X$
@@ -2318,12 +2353,12 @@ Sub LoadTeam_LOADER (teamIdx%, YN$, idx%)
     Next
 
     A$(idx%) = RTrim$(Q2$(0))
-    N$(idx%) = A$(idx%)
+    N$(idx%) = RTrim$(A$(idx%))
 
     'Read in manager data
-    If _FileExists(diskPaths$(3) + "MGR." + YN$) Then
+    If _FileExists(diskPaths$(3) + "MGR." + teamYear$) Then
 
-        Open diskPaths$(3) + "MGR." + YN$ For Random As #2 Len = 2000
+        Open diskPaths$(3) + "MGR." + teamYear$ For Random As #2 Len = 2000
 
         For X = 0 To 999
             Field #2, X * 2 As Q2$, 2 As Q2$(X), 2000 - X * 2 - 2 As Q2$
@@ -2547,7 +2582,9 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
             MG%(idx%, 0) = 999
             MF%(idx%) = 0
 
-            Open diskPaths$(3) + "MGR." + YN$(idx%) For Random As #2 Len = 2000
+            teamYear$ = RTrim$(YN$(idx%))
+
+            Open diskPaths$(3) + "MGR." + teamYear$ For Random As #2 Len = 2000
 
             For I = 0 To 999
                 Field #2, I * 2 As Q$, 2 As Q2$(I), 2000 - I * 2 - 2 As Q$

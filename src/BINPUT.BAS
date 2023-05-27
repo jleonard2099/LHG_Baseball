@@ -4,7 +4,7 @@ Sub BINPUT ()
 
     DefInt A-Z
 
-    Shared ratings%(), statP0%(), SS%()
+    Shared ratings%(), statP0%(), statSS%()
 
     Shared statB$(), BP$(), statP$()
 
@@ -197,7 +197,7 @@ Sub GetTeam_BINPUT (yearNumber$, numberTeams, teamIdx)
         If NY$ = "" And yearNumber$ <> "" Then
             Call SelectTeam_BINPUT(yearNumber$, numberTeams, teamIdx)
         Else
-            yearNumber$ = NY$
+            yearNumber$ = RTrim$(NY$)
             Erase teamNames$
             numberTeams = 0
 
@@ -260,7 +260,7 @@ End Sub
 Sub SelectTeam_BINPUT (yearNumber$, numberTeams, teamIdx)
 
     Shared draftB%(), draftP%()
-    Shared DYS%(), inputINJ%(), ratings%()
+    Shared inputDYS%(), inputINJ%(), ratings%()
     Shared inputSA%(), inputTS%()
 
     Shared statB$(), statP$()
@@ -293,10 +293,12 @@ Sub SelectTeam_BINPUT (yearNumber$, numberTeams, teamIdx)
     If ExitCode% <> 27 Then
 
         teamIdx = teamIndex%(Selection%)
+		teamYear$ = RTRim$(yearNumber$)
 
-        Locate 2, 33: Color 31: Print "LOADING..."
+        Locate 2, 33: Color 31
+		Print "LOADING..."
 
-        Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
+        Open diskPaths$(0) + "FCTEAMS." + teamYear$ For Random As #1 Len = 4342
 
         Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14)
 
@@ -338,9 +340,9 @@ Sub SelectTeam_BINPUT (yearNumber$, numberTeams, teamIdx)
         CK = CVI(Q$(1843))
         Close 1
 
-        If _FileExists(diskPaths$(0) + "LR." + yearNumber$) Then
+        If _FileExists(diskPaths$(0) + "LR." + teamYear$) Then
 
-            Open diskPaths$(0) + "LR." + yearNumber$ For Random As #1 Len = 4108
+            Open diskPaths$(0) + "LR." + teamYear$ For Random As #1 Len = 4108
 
             For X = 0 To 11
                 Field #1, X * 2 As X$, 2 As Q$(X + 1)
@@ -474,7 +476,7 @@ Sub SelectTeam_BINPUT (yearNumber$, numberTeams, teamIdx)
                 Input #1, inputINJ%(I1)
             Next
             For I1 = 0 To 21
-                Input #1, DYS%(I1)
+                Input #1, inputDYS%(I1)
             Next
         End If
 
@@ -683,7 +685,7 @@ Sub SaveTeamFile (yearNumber$, targetTeam$, targetFile$, teamIdx)
 
     Shared K9&()
 
-    Shared DYS%(), inputINJ%()
+    Shared inputDYS%(), inputINJ%()
     Shared draftB%(), draftP%()
     Shared ratings%(), inputSA%(), inputTS%()
 
@@ -699,7 +701,9 @@ Sub SaveTeamFile (yearNumber$, targetTeam$, targetFile$, teamIdx)
 
     Call CSMsgBox("SAVING TEAM FILES", 20, Pass)
 
-    Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
+	teamYear$ = RTrim$(yearNumber$)
+
+    Open diskPaths$(0) + "FCTEAMS." + teamYear$ For Random As #1 Len = 4342
 
     Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14)
 
@@ -850,7 +854,7 @@ Sub SaveTeamFile (yearNumber$, targetTeam$, targetFile$, teamIdx)
     Next
 
     For I1 = 0 To 21
-        Print #1, DYS%(I1)
+        Print #1, inputDYS%(I1)
     Next
 
     Close 1
@@ -866,7 +870,7 @@ End Sub
 Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
 
     Shared statB$(), BS$(), statP$(), PS$()
-    Shared statB0%(), statP0%(), SS%()
+    Shared statB0%(), statP0%(), statSS%()
     Shared statT!(), statT1!()
 
     Shared D0%, D1%
@@ -936,7 +940,7 @@ Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
                         Open diskPaths$(1) + R$ + "R" For Output As #1
                         For I = 0 To 22
                             For I1 = 0 To 6
-                                Print #1, SS%(I, I1)
+                                Print #1, statSS%(I, I1)
                             Next I1
                         Next I
                         Close #1
@@ -959,7 +963,7 @@ End Sub
 '...explanation...
 Sub LoadTeamStats (targetTeam$, teamHasStats, SS, targetFile$)
 
-    Shared BS%(), PS%(), SS%()
+    Shared BS%(), PS%(), statSS%()
     Shared statB0%(), statP0%()
 
     Shared BS$(), PS$()
@@ -1019,7 +1023,7 @@ Sub LoadTeamStats (targetTeam$, teamHasStats, SS, targetFile$)
             Open diskPaths$(1) + targetFile$ + "R" For Input As #1
             For I = 0 To 22
                 For I1 = 0 To 6
-                    Input #1, SS%(I, I1)
+                    Input #1, statSS%(I, I1)
                 Next I1
             Next I
             Close #1
@@ -1037,7 +1041,7 @@ End Sub
 Sub SwitchBatters ()
 
     Shared statB$(), BS$()
-    Shared BS%(), draftB%(), statB0%(), SS%()
+    Shared BS%(), draftB%(), statB0%(), statSS%()
 
     Do
         For I = 16 To 19: Locate I, 50: Print Space$(27): Next
@@ -1068,7 +1072,7 @@ Sub SwitchBatters ()
 
     For I = 0 To 79: Swap draftB%(I1 - 1, I), draftB%(I2 - 1, I): Next
     For I = 0 To 21: Swap statB0%(I1 - 1, I), statB0%(I2 - 1, I): Next
-    For I = 0 To 6: Swap SS%(I1 - 1, I), SS%(I2 - 1, I): Next
+    For I = 0 To 6: Swap statSS%(I1 - 1, I), statSS%(I2 - 1, I): Next
 
     Swap BS%(I1 - 1), BS%(I2 - 1)
 

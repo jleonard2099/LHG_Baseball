@@ -80,26 +80,32 @@ Sub GetTeam_REC (yearNumber$, numberTeams)
         If NY$ = "" And yearNumber$ <> "" Then
             Call SelectTeam_REC(yearNumber$, numberTeams)
         Else
-            yearNumber$ = NY$
+            yearNumber$ = RTrim$(NY$)
             Erase teamNames$
-
             numberTeams = 0
+			
             If _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
 
                 Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
+
                 Y = LOF(1)
+
                 Field #1, 15 As Q$(0)
 
                 For I1 = 1 To Y / 4342
+
                     Get #1, I1
+
                     For I2 = 1 To 15
                         If Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then nullTeam = 1: Exit For
                     Next I2
+
                     If nullTeam <> 1 Then
                         numberTeams = numberTeams + 1
                         teamNames$(numberTeams) = Q$(0)
                         teamIndex%(numberTeams) = I1
                     End If
+
                 Next I1
 
                 Close 1
@@ -114,6 +120,7 @@ Sub GetTeam_REC (yearNumber$, numberTeams)
             BO% = 0
         Else
             T$ = RTrim$(Q$(0))
+
             Locate 2, 33
             Color ratings%(11), ratings%(12): Print T$
 
@@ -161,10 +168,11 @@ Sub SelectTeam_REC (yearNumber$, numberTeams)
     If ExitCode% <> 27 Then
 
         T = teamIndex%(Selection%)
+		teamYear$ = RTrim$(yearNumber$)
 
         Locate 2, 33: Color 31: Print "LOADING..."
 
-        If Not _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
+        If Not _FileExists(diskPaths$(0) + "FCTEAMS." + teamYear$) Then
             BO% = 1
             Locate 10, 8
             Call CSMsgBox("NO TEAM FILES WERE FOUND MATCHING THIS ID.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
@@ -172,10 +180,13 @@ Sub SelectTeam_REC (yearNumber$, numberTeams)
             Call CSMsgBox("", 0, Pass)
         Else
             Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
+
             Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
+
             Get #1, T
 
             For I = 1 To 13: ratings%(I) = CVI(Q$(I)): Next
+
             Close 1
 
         End If
@@ -248,8 +259,8 @@ Sub AnalyzeTeamRecord (LG$, sameLeague)
 
                 'Select a new league!
                 Spec$ = diskPaths$(2) + "*.LIB"
-                null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
-                Count% = DirCount%
+				Count% = FCount%(Spec$)
+
                 If Count% = 0 Then
                     Locate 10, 8
                     Call CSMsgBox("NO LEAGUE FILES WERE FOUND.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)

@@ -15,8 +15,7 @@ Sub CARVIEW ()
         'Display list of files...
 
         Spec$ = diskPaths$(1) + "*.CAR"
-        null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
-        Count% = DirCount%
+		Count% = FCount%(Spec$)
 
         If Count% = 0 Then
             Locate 10, 8

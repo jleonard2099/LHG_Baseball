@@ -440,16 +440,20 @@ Sub GetDiskID_ALIGN (A$)
                 If NY$ = "" Then
                     Call SelectTeam_ALIGN(numberTeams, NY$)
                 Else
-                    YN$ = NY$
+                    YN$ = RTrim$(NY$)
                     Erase teamNames$
                     numberTeams = 0
 
                     Open diskPaths$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342
+
                     Y = LOF(1)
+
                     Field #1, 15 As Q$(0)
 
                     For I1 = 1 To Y / 4342
+
                         Get #1, I1
+
                         For I2 = 1 To 15
                             If Left$(Q$(0), 2) = "XX" Or Left$(Q$(0), 1) = " " Or Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then nullTeam = 1: Exit For
                         Next I2
@@ -459,6 +463,7 @@ Sub GetDiskID_ALIGN (A$)
                             teamNames$(numberTeams) = Q$(0)
                             teamIndex%(numberTeams) = I1
                         End If
+
                     Next I1
 
                     Close 1
@@ -528,9 +533,12 @@ Sub SelectTeam_ALIGN (numberTeams, yearNumber$)
     If ExitCode% <> 27 Then
 
         T1 = teamIndex%(Selection%)
-        Locate 2, 33: Color 31: Print "LOADING..."
+		teamYear$ = RTrim$(yearNumber$)
+				
+        Locate 2, 33: Color 31
+		Print "LOADING..."
 
-        If Not _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
+        If Not _FileExists(diskPaths$(0) + "FCTEAMS." + teamYear$) Then
             BO% = 1
             Locate 10, 8
             Call CSMsgBox("NO TEAM FILES WERE FOUND MATCHING THIS ID.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
@@ -538,7 +546,7 @@ Sub SelectTeam_ALIGN (numberTeams, yearNumber$)
             Call CSMsgBox("", 0, Pass)
         Else
 
-            Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
+            Open diskPaths$(0) + "FCTEAMS." + teamYear$ For Random As #1 Len = 4342
 
             Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
 

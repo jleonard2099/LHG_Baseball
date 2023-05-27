@@ -21,8 +21,8 @@ Sub PRTLEAG ()
         Cls
 
         Spec$ = diskPaths$(2) + "*.LDR"
-        null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
-        Count% = DirCount%
+		Count% = FCount%(Spec$)
+
         IF Count% = 0 THEN 
             LOCATE 10, 8
             CALL CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)

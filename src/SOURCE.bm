@@ -93,7 +93,6 @@ Sub SOURCE ()
         B9%(D, 1) = b9d1
         B9%(D, 2) = b9d2
 
-
         Call DisplayBallField_Gfx(BC%, P, U%, D)
     Else
         Call DisplayBallField(BC%, P, U%, D)
@@ -396,7 +395,7 @@ Sub SOURCE ()
         If UCase$(I$) = "Q" Then
             If usingGfx = 0 Then Cls
             Call EndOfGame
-            End
+            Exit Sub
         End If
 
         If UCase$(I$) = "S" Then Call POPUPSTATS: GoTo 15580
@@ -672,7 +671,7 @@ Sub SOURCE ()
         If UCase$(I$) = "Q" Then
             If usingGfx = 0 Then Cls
             Call EndOfGame
-            End
+            Exit Sub
         End If
 
         If UCase$(I$) = "S" Then Call POPUPSTATS: GoTo 15580
@@ -2268,7 +2267,10 @@ Sub SOURCE ()
     ' or special menus, etc.
     I$ = InKey$
 
-    If UCase$(I$) = "Q" Then Call EndOfGame: End
+    If UCase$(I$) = "Q" Then 
+        Call EndOfGame
+        Exit Sub
+    End If
 
     If UCase$(I$) = "O" Then
         Call OPTIONS
@@ -4091,10 +4093,6 @@ Sub SOURCE ()
     End If
 
     Call EndOfGame
-
-    Close #7
-    'End
-    'System
     Exit Sub
 
 
@@ -4802,3 +4800,4 @@ Sub SOURCE ()
 
 
 End Sub
+

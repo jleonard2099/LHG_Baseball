@@ -265,26 +265,32 @@ Sub GetTeam_GROUND (yearNumber$, numberTeams, teamName$, teamIdx)
         If NY$ = "" And yearNumber$ <> "" Then
             Call SelectTeam_GROUND(yearNumber$, numberTeams, teamIdx)
         Else
-            yearNumber$ = NY$
+            yearNumber$ = RTrim$(NY$)
             Erase teamNames$
-
             numberTeams = 0
+			
             If _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
 
                 Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
+
                 Y = LOF(1)
+
                 Field #1, 15 As Q$(0)
 
                 For I1 = 1 To Y / 4342
+
                     Get #1, I1
+
                     For I2 = 1 To 15
                         If Left$(Q$(0), 2) = "XX" Or Left$(Q$(0), 1) = " " Or Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then nullTeam = 1: Exit For
                     Next I2
+
                     If nullTeam <> 1 Then
                         numberTeams = numberTeams + 1
                         teamNames$(numberTeams) = Q$(0)
                         teamIndex%(numberTeams) = I1
                     End If
+
                 Next I1
 
                 Close 1
@@ -350,11 +356,14 @@ Sub SelectTeam_GROUND (yearNumber$, numberTeams, teamIdx)
     _MouseHide
 
     If ExitCode% <> 27 Then
+
         teamIdx = teamIndex%(Selection%)
+		teamYear$ = RTrim$(yearNumber$)
+
         Locate 2, 33
         Color 31: Print "LOADING..."
 
-        Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
+        Open diskPaths$(0) + "FCTEAMS." + teamYear$ For Random As #1 Len = 4342
 
         Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
 
@@ -375,7 +384,9 @@ Sub SelectTeam_GROUND (yearNumber$, numberTeams, teamIdx)
         Field #1, 4280 As X$, 40 As Q$(1840), 15 As Q$(1841), 5 As Q$(1842), 2 As Q$(1843)
         Get #1, teamIdx
 
-        For I = 1 To 13: ratings%(I) = CVI(Q$(I)): Next: K9&(0) = CVS(Q$(14))
+        For I = 1 To 13: ratings%(I) = CVI(Q$(I)): Next
+		
+		K9&(0) = CVS(Q$(14))
 
         For I = 0 To 22: statB$(I) = RTrim$(Q$(I * 43 + 15))
             For I1 = 0 To 41

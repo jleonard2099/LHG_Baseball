@@ -755,7 +755,7 @@ Sub UpdateExpandedLeaders ()
 
     Shared BK%()
     Shared statB%(), careerB0%(), BK%()
-    Shared statP%(), P0%(), PM%()
+    Shared statP%(), careerP0%(), PM%()
     Shared statT%(), statT1%(), GM1!()
 
     Shared statB$(), leaderBL$(), statP$(), leaderPL$()
@@ -772,8 +772,7 @@ Sub UpdateExpandedLeaders ()
     Cls
 
     Spec$ = diskPaths$(2) + "*.TMS"
-    null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
-    Count% = DirCount%
+	Count% = FCount%(Spec$)
 
     If Count% <> 0 Then
 
@@ -867,7 +866,7 @@ Sub UpdateExpandedLeaders ()
                         Next I
                         For I = 0 To 21
                             For I1 = 0 To 41
-                                Input #1, P0%(I, I1)
+                                Input #1, careerP0%(I, I1)
                             Next I1
                         Next I
                         Input #1, D0%
@@ -928,7 +927,7 @@ Sub UpdateExpandedLeaders ()
                                 PK = PK + 1: PK1 = 0
                                 For I1 = 0 To 22
                                     PK1 = PK1 + 1
-                                    PM%(PK, PK1) = P0%(I, I1)
+                                    PM%(PK, PK1) = careerP0%(I, I1)
                                 Next I1
                             End If
                         Next I
@@ -1037,8 +1036,7 @@ Sub ViewExpandedLeaders ()
         Cls
 
         Spec$ = diskPaths$(2) + "*.TMS"
-        null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
-        Count% = DirCount%
+		Count% = FCount%(Spec$)
 
         If Count% = 0 Then
             'This was not in the original code

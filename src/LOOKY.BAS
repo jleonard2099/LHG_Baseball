@@ -104,9 +104,8 @@ Sub StatsOneTeam ()
 					If NY$ = "" And YN$ <> "" Then
 						Call SelectTeam_LOOKY(numberTeams, YN$)
 					Else
-						YN$ = NY$
+						YN$ = RTrim$(NY$)
 						Erase teamNames$
-
 						numberTeams = 0
 
 						If Not _FileExists(diskPaths$(0) + "FCTEAMS." + YN$) Then
@@ -117,18 +116,25 @@ Sub StatsOneTeam ()
 							Call CSMsgBox("", 0, Pass)
 						Else
 							Open diskPaths$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342
+
 							Y = LOF(1)
+
 							Field #1, 15 As Q$(0)
+
 							For I1 = 1 To Y / 4342
+
 								Get #1, I1
+
 								For I2 = 1 To 15
 									If Left$(Q$(0), 2) = "XX" Or Left$(Q$(0), 1) = " " Or Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then nullTeam = 1: Exit For
 								Next I2
+
 								If nullTeam <> 1 Then
 									numberTeams = numberTeams + 1
 									teamNames$(numberTeams) = Q$(0)
 									teamIndex%(numberTeams) = I1
 								End If
+
 							Next I1
 
 							Close 1
@@ -144,10 +150,7 @@ Sub StatsOneTeam ()
 				If BO% = 1 Then
 					BO% = 0
 				Else
-					'This could go in thte SelectTeam routine,
-					'if we use A$ as a parameter (ie, teamName)
-					A$ = RTrim$(Q$(0))
-					statB$ = A$
+					statB$ = RTrim$(Q$(0))
 
 					Locate 2, 33: Color 15, 0
 
@@ -215,7 +218,7 @@ Sub ReadStats (statFile$)
     Shared statT!(), statT1!()
     Shared statB%(), statB0%()
     Shared statP%(), statP0%()
-    Shared SS%()
+    Shared statSS%()
 
     Shared statH$(), L$(), PL$(), W$()
     Shared H%(), I%(), V%()
@@ -229,25 +232,36 @@ Sub ReadStats (statFile$)
         Call CSMsgBox("", 0, Pass)
     Else
 
-        Wins = 0: L = 0
-        RW = 0: RL = 0
-        ORW = 0: ORL = 0
-        HW = 0: HL = 0
-        EW = 0: EL = 0
-        LTL = 0: LTW = 0
+        Wins = 0
+		L = 0
+        RW = 0
+		RL = 0
+        ORW = 0
+		ORL = 0
+        HW = 0
+		HL = 0
+        EW = 0
+		EL = 0
+        LTL = 0
+		LTW = 0
 
         Open diskPaths$(1) + statFile$ For Input As #1
+
         Input #1, teamName$
         Input #1, W2%
         Input #1, L2%
+
         For I = 0 To 22: Input #1, statB$(I): Input #1, statB%(I): Next I
         For I = 0 To 21: Input #1, statP$(I): Input #1, statP%(I): Next I
         For I = 0 To 22: For I1 = 0 To 21: Input #1, statB0%(I, I1): Next I1: Next I
         For I = 0 To 21: For I1 = 0 To 41: Input #1, statP0%(I, I1): Next I1: Next I
+
         Input #1, D0%
         Input #1, D1%
+
         For I = 0 To 21: Input #1, statT!(I): Next I
         For I = 0 To 22: Input #1, statT1!(I): Next I
+
         Close #1
 
         If _FileExists(diskPaths$(1) + statFile$ + "R") Then
@@ -255,7 +269,7 @@ Sub ReadStats (statFile$)
             Open diskPaths$(1) + statFile$ + "R" For Input As #1
             For I = 0 To 22
                 For I1 = 0 To 6
-                    Input #1, SS%(I, I1)
+                    Input #1, statSS%(I, I1)
                 Next I1
             Next I
             Close #1
@@ -318,7 +332,7 @@ Sub ViewAndPrintOptions (statFile$, splitScreenChoice%, teamName$, totalGames%)
 
     Shared L2%, W2%
 
-    Shared statB$(), statP$(), SS%()
+    Shared statB$(), statP$(), statSS%()
     Shared statT!(), statT1!()
 
     Shared statB%(), statB0%()
@@ -733,27 +747,27 @@ Sub ViewAndPrintOptions (statFile$, splitScreenChoice%, teamName$, totalGames%)
 
                         Print statB$(I);
                         '                        AB   2B 3B HR BB  K
-                        Locate , 20: Print Using "### ## ## ## ### ### "; SS%(I, 0); SS%(I, 2); SS%(I, 3); SS%(I, 4); SS%(I, 5); SS%(I, 6);
+                        Locate , 20: Print Using "### ## ## ## ### ### "; statSS%(I, 0); statSS%(I, 2); statSS%(I, 3); statSS%(I, 4); statSS%(I, 5); statSS%(I, 6);
 
-                        If SS%(I, 0) = 0 And SS%(I, 1) = 0 Then
+                        If statSS%(I, 0) = 0 And statSS%(I, 1) = 0 Then
                             Print " .000";
                         Else
-                            If SS%(I, 0) = SS%(I, 1) Then
+                            If statSS%(I, 0) = statSS%(I, 1) Then
                                 Print "1.000";
                             Else
-                                Print Using "#.###"; SS%(I, 1) / SS%(I, 0);
+                                Print Using "#.###"; statSS%(I, 1) / statSS%(I, 0);
                             End If
                         End If
 
                         '                        AB   2B 3B HR BB  K
-                        Locate , 53: Print Using "### ## ## ## ### ### "; statB0%(I, 0) - SS%(I, 0); statB0%(I, 4) - SS%(I, 2); statB0%(I, 5) - SS%(I, 3); statB0%(I, 6) - SS%(I, 4); statB0%(I, 7) - SS%(I, 5); statB0%(I, 8) - SS%(I, 6);
-                        If statB0%(I, 0) - SS%(I, 0) = 0 Or statB0%(I, 1) - SS%(I, 1) = 0 Then
+                        Locate , 53: Print Using "### ## ## ## ### ### "; statB0%(I, 0) - statSS%(I, 0); statB0%(I, 4) - statSS%(I, 2); statB0%(I, 5) - statSS%(I, 3); statB0%(I, 6) - statSS%(I, 4); statB0%(I, 7) - statSS%(I, 5); statB0%(I, 8) - statSS%(I, 6);
+                        If statB0%(I, 0) - statSS%(I, 0) = 0 Or statB0%(I, 1) - statSS%(I, 1) = 0 Then
                             Print " .000";
                         Else
-                            If statB0%(I, 0) - SS%(I, 0) = statB0%(I, 1) - SS%(I, 1) Then
+                            If statB0%(I, 0) - statSS%(I, 0) = statB0%(I, 1) - statSS%(I, 1) Then
                                 Print "1.000";
                             Else
-                                Print Using "#.###"; (statB0%(I, 1) - SS%(I, 1)) / (statB0%(I, 0) - SS%(I, 0));
+                                Print Using "#.###"; (statB0%(I, 1) - statSS%(I, 1)) / (statB0%(I, 0) - statSS%(I, 0));
                             End If
                         End If
                         If I <> 22 Then Print
@@ -1055,9 +1069,12 @@ Sub SelectTeam_LOOKY (numberTeams, yearNumber$)
     If ExitCode% <> 27 Then
 
         T1 = teamIndex%(Selection%)
-        Locate 2, 33: Color 31: Print "LOADING..."
+		teamYear$ = RTrim$(yearNumber$)
+		
+        Locate 2, 33: Color 31
+		Print "LOADING..."
 
-        If Not _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
+        If Not _FileExists(diskPaths$(0) + "FCTEAMS." + teamYear$) Then
             BO% = 1
             Locate 10, 8
             Call CSMsgBox("NO TEAM FILES WERE FOUND MATCHING THIS ID.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
@@ -1065,7 +1082,7 @@ Sub SelectTeam_LOOKY (numberTeams, yearNumber$)
             Call CSMsgBox("", 0, Pass)
         Else
 
-            Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
+            Open diskPaths$(0) + "FCTEAMS." + teamYear$ For Random As #1 Len = 4342
 
             Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
 
@@ -1105,7 +1122,7 @@ Sub NewPrintStats (statFile$, printChoice, splitScreenChoice%, teamName$, totalG
     Shared statH$(), L$()
     Shared PL$(), W$()
     Shared H%(), I%()
-    Shared SS%(), V%()
+    Shared statSS%(), V%()
 
     ' *** NEW PRINT ROUTINE 6-24-90 ***
     If printChoice <> 3 Then
@@ -1482,27 +1499,27 @@ Sub NewPrintStats (statFile$, printChoice, splitScreenChoice%, teamName$, totalG
 
             If statB$(I) <> "XXX" And Left$(statB$(I), 1) <> " " And statB$(I) <> "" Then
                 LPrint statB$(I);
-                LPrint Tab(20); Using "### ## ## ## ### ### "; SS%(I, 0); SS%(I, 2); SS%(I, 3); SS%(I, 4); SS%(I, 5); SS%(I, 6);
+                LPrint Tab(20); Using "### ## ## ## ### ### "; statSS%(I, 0); statSS%(I, 2); statSS%(I, 3); statSS%(I, 4); statSS%(I, 5); statSS%(I, 6);
 
-                If SS%(I, 0) = 0 Or SS%(I, 1) = 0 Then
+                If statSS%(I, 0) = 0 Or statSS%(I, 1) = 0 Then
                     LPrint " .000";
                 Else
-                    If SS%(I, 0) = SS%(I, 1) Then
+                    If statSS%(I, 0) = statSS%(I, 1) Then
                         LPrint "1.000";
                     Else
-                        LPrint Using " .###"; SS%(I, 1) / SS%(I, 0);
+                        LPrint Using " .###"; statSS%(I, 1) / statSS%(I, 0);
                     End If
                 End If
 
-                LPrint Tab(53); Using "### ## ## ## ### ### "; statB0%(I, 0) - SS%(I, 0); statB0%(I, 4) - SS%(I, 2); statB0%(I, 5) - SS%(I, 3); statB0%(I, 6) - SS%(I, 4); statB0%(I, 7) - SS%(I, 5); statB0%(I, 8) - SS%(I, 6);
+                LPrint Tab(53); Using "### ## ## ## ### ### "; statB0%(I, 0) - statSS%(I, 0); statB0%(I, 4) - statSS%(I, 2); statB0%(I, 5) - statSS%(I, 3); statB0%(I, 6) - statSS%(I, 4); statB0%(I, 7) - statSS%(I, 5); statB0%(I, 8) - statSS%(I, 6);
 
-                If statB0%(I, 0) - SS%(I, 0) = 0 Or statB0%(I, 1) - SS%(I, 1) = 0 Then
+                If statB0%(I, 0) - statSS%(I, 0) = 0 Or statB0%(I, 1) - statSS%(I, 1) = 0 Then
                     LPrint " .000"
                 Else
-                    If statB0%(I, 0) - SS%(I, 0) = statB0%(I, 1) - SS%(I, 1) Then
+                    If statB0%(I, 0) - statSS%(I, 0) = statB0%(I, 1) - statSS%(I, 1) Then
                         LPrint "1.000"
                     Else
-                        LPrint Using " .###"; (statB0%(I, 1) - SS%(I, 1)) / (statB0%(I, 0) - SS%(I, 0))
+                        LPrint Using " .###"; (statB0%(I, 1) - statSS%(I, 1)) / (statB0%(I, 0) - statSS%(I, 0))
                     End If
                 End If
 

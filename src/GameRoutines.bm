@@ -1,4 +1,326 @@
 '------------------------------
+'   INFO Subroutine
+'------------------------------
+' ...explanation...
+Sub INFO ()
+
+    Cls
+
+    Color , 1
+    Locate 1, 1
+    Print Tab(80);
+
+    Locate , 33: Color 14
+    Print "GAME OPTIONS MENU"
+
+    Locate 24, 1
+    Print Tab(80);
+    Locate , 1
+    Print "(C) LANCE HAFFNER 1986-2000"; Tab(70); Left$(Time$, 5);
+    Locate 3, 1: Color , 0
+
+End Sub
+
+
+'----------------------------------------
+'           InitVar Subroutine
+'----------------------------------------
+' Initializes variables for the game
+' Does not process any that will be read
+' in from file or assigned elsewhere
+Sub InitVar ()
+
+    Shared DB, HR, TR, SB
+    Shared E!
+    Shared fileLength&
+
+    Shared BP(), F()
+    Shared BB%(), MF%(), SP%(), T1%()
+    Shared U%()
+
+    Shared dayNight$(), DH$(), DL$()
+    Shared LGT$(), month$(), PT$()
+    Shared PU$(), U6$(), UMP$()
+    Shared VI$(), WE$()
+
+    normalFinish% = 0
+
+    'Graphics co-ordinates originally were for a
+    'routine that operated as if the screen were
+    'still just 80 column width; so 80x8 = 640
+    FontColAdj% = 8
+
+    MON = 12 'Monitor%
+
+    VI$(0) = "VISITING TEAM"
+    VI$(1) = "HOME TEAM"
+
+    'temp$(1) = "HOT"
+    'temp$(2) = "WARM"
+    'temp$(3) = "COOL"
+    'temp$(4) = "COLD"
+
+    PT$(0) = "RIGHT"
+    PT$(1) = "LEFT "
+
+    WD$(2) = "LEFT TO RIGHT AT"
+    WD$(3) = "RIGHT TO LEFT AT"
+    WD$(4) = "BLOWING IN FROM LEFT AT"
+    WD$(5) = "BLOWING IN FROM CENTER AT"
+    WD$(6) = "BLOWING IN FROM RIGHT AT"
+    WD$(7) = "BLOWING OUT TO LEFT AT"
+    WD$(8) = "BLOWING OUT TO CENTER AT"
+    WD$(9) = "BLOWING OUT TO RIGHT AT"
+
+    SC$(1) = "CLEAR"
+    SC$(2) = "PARTLY CLOUDY"
+    SC$(3) = "OVERCAST"
+    SC$(4) = "DOME"
+
+    PC$(1) = "THUNDERSTORMS"
+    PC$(2) = "SHOWERS"
+    PC$(3) = "DRIZZLE"
+    PC$(4) = "NONE"
+
+    U6$(0) = "HUMAN OPPONENT      "
+    U6$(1) = "COMPUTER OPPONENT   "
+    U6$(2) = "COMPUTER VS COMPUTER"
+
+    PU$(0) = "1980 - PRESENT"
+    PU$(1) = "1973 - 1979   "
+    PU$(2) = "1955 - 1972   "
+    PU$(3) = "1946 - 1954   "
+    PU$(4) = "1933 - 1945   "
+    PU$(5) = "1919 - 1932   "
+    PU$(6) = "1909 - 1918   "
+    PU$(7) = "1894 - 1908   "
+    PU$(8) = "1876 - 1893   "
+
+    LGT$(0) = "AL GAME         "
+    LGT$(1) = "NL GAME         "
+    LGT$(2) = "INTERLEAGUE GAME"
+
+    DH$(0) = "NO DH "
+    DH$(1) = "USE DH"
+
+    UMP$(0) = "AL"
+    UMP$(1) = "NL"
+    UMP$(2) = "NL"
+
+    WE$(0) = "YES"
+    WE$(1) = "NO "
+
+    DL$(0) = "LEAGUE GAME    "
+    DL$(1) = "EXHIBITION GAME"
+
+    month$(4) = "APRIL"
+    month$(5) = "MAY"
+    month$(6) = "JUNE"
+    month$(7) = "JULY"
+    month$(8) = "AUGUST"
+    month$(9) = "SEPTEMBER"
+    month$(10) = "OCTOBER"
+    MO% = 4
+
+    dayNight$(0) = "AFTERNOON"
+    dayNight$(1) = "NIGHT"
+
+    B1$(0) = "LP"
+    B1$(1) = "L"
+    B1$(2) = "S"
+    B1$(3) = "R"
+    B1$(4) = "RP"
+
+    H$(1) = "1b"
+    H$(2) = "2b"
+    H$(3) = "3b"
+    H$(4) = "home"
+
+    H0$(0) = " "
+    H0$(1) = "H"
+
+    P = 1
+
+    'For I = 0 To 1: For I1 = 0 To 4: NB%(I, I1) = -1: Next: Next
+    For I = 0 To 1: P1%(I) = -1: P6%(I) = -1: Next
+
+    SP%(0) = -1
+    SP%(1) = -1
+
+    For I = 0 To 1
+        For J = 1 To 9
+            M%(J) = 0
+            B7%(I, J) = -1
+            B3%(I, J) = -1
+        Next
+    Next
+
+
+    F$ = ""
+    gameTime$ = ""
+    L$ = ""
+    PARK$ = ""
+    S$ = ""
+    W$ = ""
+    WI$ = ""
+    Y$ = ""
+    YY$ = ""
+
+    E! = 0
+    pbpDelay! = 0
+    WF! = 0
+    actualAttendance& = 0
+    avgAttendance& = 0
+
+    CGERA% = 0
+    DH% = 0
+    DR% = 0
+    EJ% = 0
+    H6% = 0
+    IJ% = 0
+    IJL% = 0
+    Inotloop% = 0
+    INNING% = 1
+    LYN% = 0
+    NLF% = 0
+    PB% = 0
+    PC% = 0
+    SC% = 0
+    TA% = 0
+    TP% = 0
+    W% = 0
+    WS% = 0
+
+    DB = 0
+    HR = 0
+    TR = 0
+    SB = 0
+
+    D = 0
+    P = 0
+    RE = 0
+    RD = 0
+    U6 = 0
+    U9 = 0
+
+    statSpecial = 0
+    usingGfx = 0
+
+    Erase B1!, K9!
+
+    Erase BP, F
+    Erase MON, VV, VV1
+
+    Erase A$, B$
+    Erase DB$, E$, EJ$
+    Erase G$, HR$
+    Erase IJ$, M$, N$, NN$
+    Erase P$, PARK$, player$
+    Erase Q3$, S$, SB$, TR$
+    Erase U$, YN$
+
+    Erase A5%, AP%, B%, B0%
+    Erase B1%, B2%, B3%, B4%
+
+    Erase B5%, B7%, B8%, B9%, BT%
+    Erase BB%, MF%, SP%, T1%
+    Erase CSS%, D0%, D3%, DP%, GK%, H0%
+    Erase INJ%
+    Erase L%, L0%, M%, MG%, NG%, O%
+    Erase P%, P1%, P2%, P3%, P4%, P5%, P6%, P8%
+    Erase PR%
+
+    Erase inningScore%, S1%, S6%, S8%
+    Erase SA%, SU%
+    Erase T%, T3%, TS%, VA%, X0%
+
+    AP% = 0
+
+    For P9 = 0 To 1
+        For I3 = 0 To 21
+            If P%(P9, I3, 15) <> 99 Then P%(P9, I3, 15) = 0
+        Next
+    Next
+
+    For I = 0 To 1
+        For I1 = 0 To 23
+            X0%(I, 0, I1) = -1
+            X0%(I, 2, I1) = 100
+        Next I1
+    Next I
+
+    For I = 0 To 1
+        For I1 = 0 To 22
+            If B%(I, I1, 21) <> 99 Then B%(I, I1, 21) = 0
+        Next
+    Next
+
+End Sub
+
+
+'------------------------------
+'      TEAMBOX Subroutine
+'------------------------------
+' Draws a box using team colors
+' Box starts at row 6 and is
+'   approx. 60 char's wide
+' Leaves cursor at first printable
+' row / column.
+Sub TEAMBOX (boxHeight, teamIdx)
+
+    Locate 6, 8
+    Color L%(teamIdx, 11), L%(teamIdx, 12)
+
+    'Print box top
+    Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+
+    'Print box sides
+    For II = 1 To boxHeight
+        Locate 6 + II, 8
+        Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
+    Next
+
+    'Print box bottom
+    Locate 7 + boxHeight, 8
+    Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+
+    Locate 7, 11
+
+End Sub
+
+
+'------------------------------
+'    FRAMEOPTION Subroutine
+'------------------------------
+' Draws a box using team colors
+' Box starts at row 8 and is
+'   approx. 60 char's wide
+' Leaves cursor at first printable
+' row / column.
+Sub FRAMEOPTION (boxHeight, teamIdx)
+
+    Locate 8, 8
+    Color L%(teamIdx, 11), L%(teamIdx, 12)
+
+    'Print box top
+    Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+
+    'Print box sides
+    For II = 1 To boxHeight
+        Locate 8 + II, 8
+        Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
+    Next
+
+    'Print box bottom
+    Locate 9 + boxHeight, 8
+    Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+
+    Locate 9, 12
+
+End Sub
+
+
+'------------------------------
 '   PitchingStarter routine
 '------------------------------
 ' ...explanation...
@@ -832,28 +1154,6 @@ Sub DPSAFE ()
 
 End Sub
 
-'------------------------------
-'   DRAWBOX Subroutine
-'------------------------------
-' ...explanation...
-Sub DRAWBOX (J)
-
-    Locate 8, 8
-
-    Color L%(1, 11), L%(1, 12)
-
-    Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
-
-    For II = 1 To J
-        Locate 8 + II, 8
-        Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-    Next
-
-    Locate 9 + J, 8
-
-    Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
-
-End Sub
 
 '------------------------------
 '   EJECTINC Subroutine
@@ -2771,31 +3071,18 @@ Sub PopUp_Lineup ()
     If usingGfx = 1 Then Screen 0
 
     ' *** POPUP LINEUPS FOR TEAMS ***
-    J = 11
+    Call FRAMEOPTION(11, 1)
 
-    Locate 8, 7
-    Color L%(1, 11), L%(1, 12)
-    Print " " + Chr$(214); String$(62, 196); Chr$(183) + " ";
-
-    For II = 1 To J:
-        Locate 8 + II, 7
-        Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-    Next
-
-    Locate 9 + J, 7
-    Print " " + Chr$(211); String$(62, 196); Chr$(189) + " ";
-    '-- the above is obviously just our drawbox routine
-
-    Locate 9, 14: Print A$(0); Tab(40); A$(1)
+    Print A$(0); Tab(40); A$(1)
 
     For J = 0 To 1
 
         For X = 1 To 9:
 
-            Locate X + 9, 9 + J * 26
+            Locate X + 9, 10 + J * 26
             If B1!(J) = X Then Print "->";
 
-            Locate , 11 + J * 26
+            Locate , 12 + J * 26
             If B7%(J, X) = 1 Then
 
                 Print B1$(P%(J, P1%(J), 0) + 2); Tab(14 + J * 26); Left$(P$(J, P1%(J)), 10); " P"; Tab(28 + J * 26);
@@ -2832,7 +3119,7 @@ Sub PopUp_Lineup ()
     Next
 
     Color 15, 0
-    Locate 24, 1: Print "Hit any key to continue";
+    Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
 End Sub
@@ -3110,7 +3397,7 @@ Sub POPUPSTATS ()
     M = P1%(D)
     Call PopUp_Pitcher(WK, M)
 
-    Locate 24, 1: Print "Hit any key to continue";
+    Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
     Color 7, 0
 
@@ -3287,7 +3574,7 @@ Sub OPTIONS ()
 
         Do
             183 Color 7, 0
-            Locate 24, 1: Print "Hit any key to continue";
+            Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
             I$ = GetKeyPress$
             I = Val(I$)
             'The 0 is likely there to catch ENTER
@@ -6136,12 +6423,12 @@ Sub WEATHER ()
 
     If usingGfx = 1 Then Cls: Screen 0
 
-    Call DRAWBOX(5)
-
-    Locate 9, 11
+    Call FRAMEOPTION(5, 1)
 
     If L%(1, 9) = 1 Then
-        Locate , 11: Print "TEMPERATURE: 70": Locate , 11: Print "WEATHER: DOME": Locate , 11: Print "WIND: NONE"
+        Locate , 11: Print "TEMPERATURE: 70"
+        Locate , 11: Print "WEATHER: DOME"
+        Locate , 11: Print "WIND: NONE"
     Else
         Locate , 11: Print "TEMPERATURE: "; TP%
         Locate , 11: Print "SKY CONDITIONS: "; SC$(SC%)
@@ -6150,6 +6437,8 @@ Sub WEATHER ()
         Locate , 11: Print "PRECIPITATION: "; PC$(PC%)
     End If
 
+    Color 15, 0
+    Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
     If usingGfx = 1 Then
@@ -6172,14 +6461,12 @@ Sub COLCHK (P9, I)
 End Sub
 
 '------------------------------
-'   DRAWBOXA Subroutine
+'   DRAWBOX Subroutine
 '------------------------------
 ' ...explanation...
-Sub DRAWBOXA ()
+Sub DRAWBOX (JJ, teamIdx)
 
-    JJ = 5
-
-    Locate 6, 8: Color L%(1, 11), L%(1, 12)
+    Locate 6, 8: Color L%(teamIdx, 11), L%(teamIdx, 12)
 
     Print " "; Chr$(201); String$(61, 205); Chr$(187); " ";
 
@@ -6224,7 +6511,7 @@ Sub GETWEATHER (WD%, WS%, MO%, WF!, SC%, TP%, RD)
 
     Get #1, ID
 
-    attendance& = CVL(Q3$(1))
+    avgAttendance& = CVL(Q3$(1))
     LF = CVI(Q3$(2))
     LCF = CVI(Q3$(3))
     CF = CVI(Q3$(4))
@@ -6310,253 +6597,6 @@ Sub GETWEATHER (WD%, WS%, MO%, WF!, SC%, TP%, RD)
 
 End Sub
 
-'------------------------------
-'   INFO Subroutine
-'------------------------------
-' ...explanation...
-Sub INFO ()
-    Cls
-    Color , 1: Locate 1, 1: Print Tab(80);: Locate , 33: Color 14
-    Print "GAME OPTIONS MENU"
-    Locate 24, 1: Print Tab(80);: Locate , 1
-    Print "(C) LANCE HAFFNER 1986-2000"; Tab(70); Left$(Time$, 5);
-    Locate 3, 1: Color , 0
-End Sub
-
-'----------------------------------------
-'           InitVar Subroutine
-'----------------------------------------
-' Initializes variables for the game
-' Does not process any that will be read
-' in from file or assigned elsewhere
-Sub InitVar ()
-
-    Shared DB, HR, TR, SB
-    Shared E!
-    Shared fileLength&
-
-    Shared BP(), F()
-    Shared BB%(), MF%(), SP%(), T1%()
-    Shared U%()
-
-    Shared dayNight$(), DH$(), DL$()
-    Shared LGT$(), month$(), PT$()
-    Shared PU$(), U6$(), UMP$()
-    Shared VI$(), WE$()
-
-    normalFinish% = 0
-
-    'Graphics co-ordinates originally were for a
-    'routine that operated as if the screen were
-    'still just 80 column width; so 80x8 = 640
-    FontColAdj% = 8
-
-    MON = 12 'Monitor%
-
-    BK$ = Space$(25)
-
-    VI$(0) = "VISITING TEAM"
-    VI$(1) = "HOME TEAM"
-
-    'temp$(1) = "HOT"
-    'temp$(2) = "WARM"
-    'temp$(3) = "COOL"
-    'temp$(4) = "COLD"
-
-    PT$(0) = "RIGHT"
-    PT$(1) = "LEFT "
-
-    WD$(2) = "LEFT TO RIGHT AT"
-    WD$(3) = "RIGHT TO LEFT AT"
-    WD$(4) = "BLOWING IN FROM LEFT AT"
-    WD$(5) = "BLOWING IN FROM CENTER AT"
-    WD$(6) = "BLOWING IN FROM RIGHT AT"
-    WD$(7) = "BLOWING OUT TO LEFT AT"
-    WD$(8) = "BLOWING OUT TO CENTER AT"
-    WD$(9) = "BLOWING OUT TO RIGHT AT"
-
-    SC$(1) = "CLEAR"
-    SC$(2) = "PARTLY CLOUDY"
-    SC$(3) = "OVERCAST"
-    SC$(4) = "DOME"
-
-    PC$(1) = "THUNDERSTORMS"
-    PC$(2) = "SHOWERS"
-    PC$(3) = "DRIZZLE"
-    PC$(4) = "NONE"
-
-    U6$(0) = "HUMAN OPPONENT      "
-    U6$(1) = "COMPUTER OPPONENT   "
-    U6$(2) = "COMPUTER VS COMPUTER"
-
-    PU$(0) = "1980 - PRESENT"
-    PU$(1) = "1973 - 1979   "
-    PU$(2) = "1955 - 1972   "
-    PU$(3) = "1946 - 1954   "
-    PU$(4) = "1933 - 1945   "
-    PU$(5) = "1919 - 1932   "
-    PU$(6) = "1909 - 1918   "
-    PU$(7) = "1894 - 1908   "
-    PU$(8) = "1876 - 1893   "
-
-    LGT$(0) = "AL GAME         "
-    LGT$(1) = "NL GAME         "
-    LGT$(2) = "INTERLEAGUE GAME"
-
-    DH$(0) = "NO DH "
-    DH$(1) = "USE DH"
-
-    UMP$(0) = "AL"
-    UMP$(1) = "NL"
-    UMP$(2) = "NL"
-
-    WE$(0) = "YES"
-    WE$(1) = "NO "
-
-    DL$(0) = "LEAGUE GAME    "
-    DL$(1) = "EXHIBITION GAME"
-
-    month$(4) = "APRIL"
-    month$(5) = "MAY"
-    month$(6) = "JUNE"
-    month$(7) = "JULY"
-    month$(8) = "AUGUST"
-    month$(9) = "SEPTEMBER"
-    month$(10) = "OCTOBER"
-    MO% = 4
-
-    dayNight$(0) = "AFTERNOON"
-    dayNight$(1) = "NIGHT"
-
-    B1$(0) = "LP"
-    B1$(1) = "L"
-    B1$(2) = "S"
-    B1$(3) = "R"
-    B1$(4) = "RP"
-
-    H$(1) = "1b"
-    H$(2) = "2b"
-    H$(3) = "3b"
-    H$(4) = "home"
-
-    H0$(0) = " "
-    H0$(1) = "H"
-
-    P = 1
-
-    'For I = 0 To 1: For I1 = 0 To 4: NB%(I, I1) = -1: Next: Next
-    For I = 0 To 1: P1%(I) = -1: P6%(I) = -1: Next
-
-    SP%(0) = -1
-    SP%(1) = -1
-
-    For I = 0 To 1
-        For J = 1 To 9
-            M%(J) = 0
-            B7%(I, J) = -1
-            B3%(I, J) = -1
-        Next
-    Next
-
-
-    F$ = ""
-    gameTime$ = ""
-    L$ = ""
-    PARK$ = ""
-    S$ = ""
-    W$ = ""
-    WI$ = ""
-    Y$ = ""
-    YY$ = ""
-
-    E! = 0
-    pbpDelay! = 0
-    WF! = 0
-    attendance& = 0
-
-    CGERA% = 0
-    DH% = 0
-    DR% = 0
-    EJ% = 0
-    H6% = 0
-    IJ% = 0
-    IJL% = 0
-    Inotloop% = 0
-    INNING% = 1
-    LYN% = 0
-    NLF% = 0
-    PB% = 0
-    PC% = 0
-    SC% = 0
-    TA% = 0
-    TP% = 0
-    W% = 0
-    WS% = 0
-
-    DB = 0
-    HR = 0
-    TR = 0
-    SB = 0
-
-    D = 0
-    P = 0
-    RE = 0
-    RD = 0
-    U6 = 0
-    U9 = 0
-    usingGfx = 0
-
-    Erase B1!, K9!
-
-    Erase BP, F
-    Erase MON, VV, VV1
-
-    Erase A$, B$
-    Erase DB$, E$, EJ$
-    Erase G$, HR$
-    Erase IJ$, M$, N$, NN$
-    Erase P$, PARK$, player$
-    Erase Q3$, S$, SB$, TR$
-    Erase U$, YN$
-
-    Erase A5%, AP%, B%, B0%
-    Erase B1%, B2%, B3%, B4%
-
-    Erase B5%, B7%, B8%, B9%, BT%
-    Erase BB%, MF%, SP%, T1%
-    Erase CSS%, D0%, D3%, DP%, GK%, H0%
-    Erase INJ%
-    Erase L%, L0%, M%, MG%, NG%, O%
-    Erase P%, P1%, P2%, P3%, P4%, P5%, P6%, P8%
-    Erase PR%
-
-    Erase inningScore%, S1%, S6%, S8%
-    Erase SA%, SU%
-    Erase T%, T3%, TS%, VA%, X0%
-
-    AP% = 0
-
-    For P9 = 0 To 1
-        For I3 = 0 To 21
-            If P%(P9, I3, 15) <> 99 Then P%(P9, I3, 15) = 0
-        Next
-    Next
-
-    For I = 0 To 1
-        For I1 = 0 To 23
-            X0%(I, 0, I1) = -1
-            X0%(I, 2, I1) = 100
-        Next I1
-    Next I
-
-    For I = 0 To 1
-        For I1 = 0 To 22
-            If B%(I, I1, 21) <> 99 Then B%(I, I1, 21) = 0
-        Next
-    Next
-
-
-End Sub
 
 '------------------------------
 '   LetterToNumber Subroutine
@@ -6629,7 +6669,7 @@ Sub NEWLINES (P9)
 
         If B7%(P9, I) = 1 And I5 <> 66 Then Print P$(P9, B3%(P9, I));
 
-        dudVal = B3%(P9, I)
+        'dudVal = B3%(P9, I)
         If B7%(P9, I) <> 1 Then Print B$(P9, B3%(P9, I));
 
         Print Tab(74);
@@ -6841,95 +6881,546 @@ Sub ShowSplit (P9)
 
 End Sub
 
+
+'------------------------------
+'      EVENTS Subroutine
+'------------------------------
+' ...explanation...
+Sub EVENTS (specialCount, specialStat)
+
+    Shared E%()
+
+    If _FileExists("EVENTS.BOX") Then
+
+        Open "EVENTS.BOX" For Input As #1
+        For X = 1 To 13
+            Input #1, E%(X)
+        Next
+        Close 1
+
+        checkSpecial% = 0
+
+        If INNING% > E%(1) Or S6%(1, 0) < E%(2) Or S6%(0, 0) < E%(2) Or S6%(1, 0) > E%(3) Or S6%(0, 0) > E%(3) Or S6%(1, 1) > E%(5) Or S6%(0, 1) > E%(5) Or S6%(1, 1) < E%(4) Or S6%(0, 1) < E%(4) Then
+            checkSpecial% = 1
+        Else
+
+            For I = 0 To 1
+
+                For I1 = 0 To 22
+
+                    If B8%(I, I1, 1) > E%(6) Or B8%(I, I1, 2) > E%(7) Or B8%(I, I1, 3) > E%(8) Or B8%(I, I1, 4) > E%(9) Or B8%(I, I1, 5) > E%(10) Or B8%(I, I1, 6) > E%(11) Or B8%(I, I1, 9) > E%(12) Then
+                        checkSpecial% = 1
+                        Exit For
+                    End If
+
+                    If checkSpecial% = 1 Then Exit For
+
+                Next
+
+            Next
+
+            If checkSpecial% <> 1 Then
+
+                For I = 0 To 1
+
+                    For I1 = 0 To 21
+
+                        If P8%(I, I1, 5) > E%(13) Then
+                            checkSpecial% = 1
+                            Exit For
+                        End If
+
+                        If checkSpecial% = 1 Then Exit For
+
+                    Next
+
+                Next
+
+            End If
+
+        End If
+
+    End If 'Done checking EVENTS.BOX file
+
+    If checkSpecial% = 1 Then
+        Call FoundSpecial(specialCount, specialStat)
+    End If
+
+End Sub
+
+
+'------------------------------
+'   LocateInning routine
+'------------------------------
+' ...explanation...
+Sub LocateInning (I2)
+
+    If I2 < 4 Then Locate , ((2 * I2) + 18)
+    If I2 > 3 And I2 < 7 Then Locate , ((2 * I2) + 19)
+    If I2 > 6 And I2 < 10 Then Locate , ((2 * I2) + 20)
+
+    If I2 > 9 And I2 < 13 Then Locate , ((2 * (I2 - 9)) + 18)
+    If I2 > 12 And I2 < 16 Then Locate , ((2 * (I2 - 9)) + 19)
+    If I2 > 15 And I2 < 19 Then Locate , ((2 * (I2 - 9)) + 20)
+
+    If I2 > 18 And I2 < 22 Then Locate , ((2 * (I2 - 18)) + 18)
+    If I2 > 21 And I2 < 25 Then Locate , ((2 * (I2 - 18)) + 19)
+    If I2 > 24 And I2 < 28 Then Locate , ((2 * (I2 - 18)) + 20)
+
+End Sub
+
+
+'------------------------------
+'    FoundSpecial Subroutine
+'------------------------------
+' ...explanation...
+Sub FoundSpecial (specialCount, specialStat)
+
+    'Beep
+    Spec$ = diskPaths$(1) + "*.SPC"
+    specialCount = FCount%(Spec$)
+    specialCount = specialCount + 1
+    specialStat = 1
+
+End Sub
+
+
+'------------------------------
+'      CheckRecords routine
+'------------------------------
+' ...explanation...
+Sub CheckRecords ()
+
+    Shared DB, HR, TR, SB
+    Shared DB$(), E$(), HR$(), SB$(), TR$()
+
+    For I = 0 To 1:
+        For I1 = 0 To 21:
+            If P8%(I, I1, 1) < 0 Then P8%(I, I1, 1) = 0
+        Next I1
+    Next I
+
+    For I = 0 To 1:
+
+        For I1 = 0 To 21
+            If P%(I, I1, 15) = 1 Then
+                If P8%(I, I1, 0) >= 18 And P8%(I, I1, 3) <= 3 Then P8%(I, I1, 21) = 1
+            End If
+        Next I1
+
+    Next I
+
+    For I = 0 To 1:
+
+        For I1 = 0 To 22
+
+            If B8%(I, I1, 11) <> 0 Then
+                'Where does value of E come from?
+                'Or from LOADER, it's a single not INT
+                If B8%(I, I1, 11) = 1 Then
+                    E$(E) = B$(I, I1)
+                Else
+                    E$(E) = B$(I, I1) + Str$(B8%(I, I1, 11))
+                End If
+
+                E$(E) = E$(E) + " (" + Right$(Str$(B5%(I, I1, 11)), (Len(Str$(B5%(I, I1, 11))) - 1)) + ")"
+                E = E + 1
+            End If
+
+            '        ***CHECKING DOUBLES***
+            If B8%(I, I1, 4) <> 0 Then
+                If B8%(I, I1, 4) = 1 Then
+                    DB$(DB) = B$(I, I1)
+                Else
+                    DB$(DB) = B$(I, I1) + Str$(B8%(I, I1, 4))
+                End If
+
+                DB$(DB) = DB$(DB) + " (" + Right$(Str$(B5%(I, I1, 4)), (Len(Str$(B5%(I, I1, 4))) - 1)) + ")"
+                DB = DB + 1
+
+            End If
+
+            '        ***CHECKING TRIPLES***
+            If B8%(I, I1, 5) <> 0 Then
+                If B8%(I, I1, 5) = 1 Then
+                    TR$(TR) = B$(I, I1)
+                Else
+                    TR$(TR) = B$(I, I1) + Str$(B8%(I, I1, 5))
+                End If
+
+                TR$(TR) = TR$(TR) + " (" + Right$(Str$(B5%(I, I1, 5)), (Len(Str$(B5%(I, I1, 5))) - 1)) + ")"
+                TR = TR + 1
+
+            End If
+
+            '        ***CHECKING HOME RUNS***
+            If B8%(I, I1, 6) <> 0 Then
+                If B8%(I, I1, 6) = 1 Then
+                    HR$(HR) = B$(I, I1)
+                Else
+                    HR$(HR) = B$(I, I1) + Str$(B8%(I, I1, 6))
+                End If
+
+                HR$(HR) = HR$(HR) + " (" + Right$(Str$(B5%(I, I1, 6)), (Len(Str$(B5%(I, I1, 6))) - 1)) + ")"
+                HR = HR + 1
+
+            End If
+
+            '        ***CHECKING STOLEN BASES ***
+            If B8%(I, I1, 9) <> 0 Then
+                If B8%(I, I1, 9) = 1 Then
+                    SB$(SB) = B$(I, I1) + " (" + Right$(Str$(B5%(I, I1, 9)), (Len(Str$(B5%(I, I1, 9))) - 1)) + ")": SB = SB + 1
+                Else
+                    SB$(SB) = B$(I, I1) + Str$(B8%(I, I1, 9)) + " (" + Right$(Str$(B5%(I, I1, 9)), (Len(Str$(B5%(I, I1, 9))) - 1)) + ")": SB = SB + 1
+                End If
+            End If
+
+        Next I1
+
+    Next I
+
+    For I = 0 To 1
+
+        For I1 = 0 To 21
+
+            If P8%(I, I1, 34) <> 0 Then
+
+                If P8%(I, I1, 34) = 1 Then
+                    E$(E) = P$(I, I1)
+                Else
+                    E$(E) = P$(I, I1) + Str$(P8%(I, I1, 34))
+                End If
+
+                E$(E) = E$(E) + " (" + Right$(Str$(P5%(I, I1, 34)), (Len(Str$(P5%(I, I1, 34))) - 1)) + ")"
+                E = E + 1
+
+            End If
+
+            '        ***CHECKING DOUBLES***
+            If P8%(I, I1, 27) <> 0 Then
+
+                If P8%(I, I1, 27) = 1 Then
+                    DB$(DB) = P$(I, I1)
+                Else
+                    DB$(DB) = P$(I, I1) + Str$(P8%(I, I1, 27))
+                End If
+
+                DB$(DB) = DB$(DB) + " (" + Right$(Str$(P5%(I, I1, 27)), (Len(Str$(P5%(I, I1, 27))) - 1)) + ")"
+                DB = DB + 1
+
+            End If
+
+            '        ***CHECKING TRIPLES***
+            If P8%(I, I1, 28) <> 0 Then
+
+                If P8%(I, I1, 28) = 1 Then
+                    TR$(TR) = P$(I, I1)
+                Else
+                    TR$(TR) = P$(I, I1) + Str$(P8%(I, I1, 28))
+                End If
+
+                'Error #9 = index ???
+                TR$(TR) = TR$(TR) + " (" + Right$(Str$(P5%(I, I1, 28)), (Len(Str$(P5%(I, I1, 28))) - 1)) + ")"
+                TR = TR + 1
+
+            End If
+
+            '        ***CHECKING HOME RUNS***
+            If P8%(I, I1, 29) <> 0 Then
+
+                If P8%(I, I1, 29) = 1 Then
+                    HR$(HR) = P$(I, I1)
+                Else
+                    HR$(HR) = P$(I, I1) + Str$(P8%(I, I1, 29))
+                End If
+
+                HR$(HR) = HR$(HR) + " (" + Right$(Str$(P5%(I, I1, 29)), (Len(Str$(P5%(I, I1, 29))) - 1)) + ")"
+                HR = HR + 1
+
+            End If
+
+            '        ***CHECKING STOLEN BASES ***
+            If P8%(I, I1, 32) <> 0 Then
+                If P8%(I, I1, 32) = 1 Then
+                    SB$(SB) = P$(I, I1) + " (" + Right$(Str$(P5%(I, I1, 32)), (Len(Str$(P5%(I, I1, 32))) - 1)) + ")"
+                    SB = SB + 1
+                Else
+                    SB$(SB) = P$(I, I1) + Str$(P8%(I, I1, 32)) + " (" + Right$(Str$(P5%(I, I1, 32)), (Len(Str$(P5%(I, I1, 32))) - 1)) + ")"
+                    SB = SB + 1
+                End If
+            End If
+
+        Next I1
+    Next I
+
+    gameTime$ = "2:"
+
+    MIN = Int(Rnd(1) * 60)
+
+    If MIN < 10 Then
+        MIN$ = "0" + Right$(Str$(MIN), 1): gameTime$ = gameTime$ + MIN$
+    Else
+        gameTime$ = gameTime$ + Right$(Str$(MIN), 2)
+    End If
+
+    For I = 0 To 1:
+        For I1 = 0 To 21:
+            If P%(I, I1, 15) >= 98 Then P%(I, I1, 15) = 0
+        Next I1
+    Next I
+
+    For I = 0 To 1:
+        For I1 = 0 To 22:
+            If B%(I, I1, 21) >= 98 Then B%(I, I1, 21) = 0
+            If B%(I, I1, 21) <> 0 Then B8%(I, I1, 14) = 1
+        Next I1
+    Next I
+
+    Cls
+    Print "PLEASE WAIT..."
+
+    For I = 0 To 1
+
+        M = 23
+        L = 22
+
+        Do
+            7363 '
+            I6 = 0
+            I7 = 0
+
+            Do
+                7364 '
+                H1 = 0
+                H2 = 0
+                H3 = 0
+
+                If X0%(I, 2, I6) > X0%(I, 2, I6 + 1) Then
+
+                    H1 = X0%(I, 2, I6)
+                    H2 = X0%(I, 1, I6)
+                    H3 = X0%(I, 0, I6)
+                    X0%(I, 0, I6) = X0%(I, 0, I6 + 1)
+                    X0%(I, 1, I6) = X0%(I, 1, I6 + 1)
+                    X0%(I, 2, I6) = X0%(I, 2, I6 + 1)
+                    X0%(I, 2, I6 + 1) = H1
+                    X0%(I, 1, I6 + 1) = H2
+                    X0%(I, 0, I6 + 1) = H3
+                    I7 = I6
+
+                End If
+
+                I6 = I6 + 1
+
+            Loop While I6 <= L
+
+            If I7 <> 0 Then
+                L = I7 - 1
+            End If
+
+        Loop While I7 <> 0
+
+    Next I
+
+End Sub
+
+'------------------------------
+'   InningPrintFile routine
+'------------------------------
+' ...explanation...
+Sub InningPrintFile (I2)
+
+    If I2 < 4 Then Print #2, Tab((2 * I2) + 15);
+    If I2 > 3 And I2 < 7 Then Print #2, Tab((2 * I2) + 16);
+    If I2 > 6 And I2 < 10 Then Print #2, Tab((2 * I2) + 17);
+
+    If I2 > 9 And I2 < 13 Then Print #2, Tab((3 * I2) + 8);
+    If I2 > 12 And I2 < 16 Then Print #2, Tab((3 * I2) + 9);
+    If I2 > 15 And I2 < 19 Then Print #2, Tab((3 * I2) + 10);
+
+    If I2 > 18 And I2 < 22 Then Print #2, Tab((3 * I2) + 11);
+    If I2 > 21 And I2 < 25 Then Print #2, Tab((3 * I2) + 12);
+    If I2 > 24 And I2 < 28 Then Print #2, Tab((3 * I2) + 13);
+
+End Sub
+
+
+'------------------------------
+'   GETRPBP Subroutine
+'------------------------------
+' ...explanation...
+' This routine works as long as the PBP file structure stays fixed
+' pbpIdx% is the record index to grab from the file
+' Where to grab is fixed throughout the code depending on context
+
+Sub GETRPBP (range%, minIdx%, Y$, D)
+
+    pbpIdx% = Int(Rnd(1) * range%) + minIdx%
+
+    Open "REVISED.PBP" For Random As #1 Len = 44
+    Field #1, 44 As YY$
+    Get #1, pbpIdx%
+    Y$ = _Trim$(YY$)
+    Close 1
+
+    'Y$ = _Trim$(YYY$(pbpIdx%))
+
+    If TGTBASE% = 3 And Left$(Y$, 2) = "Q1" Then Y$ = "Q2 " + Right$(Y$, Len(Y$) - 3)
+    If TGTBASE% = 3 And Right$(Y$, 2) = "Q1" Then Y$ = Left$(Y$, Len(Y$) - 2) + "Q2"
+
+    If Left$(Y$, 2) = "BB" Then Y$ = player$(0) + Right$(Y$, Len(Y$) - 2)
+    If Left$(Y$, 2) = "Q1" Then Y$ = player$(1) + Right$(Y$, Len(Y$) - 2)
+    If Left$(Y$, 2) = "Q2" Then Y$ = player$(2) + Right$(Y$, Len(Y$) - 2)
+    If Left$(Y$, 2) = "PP" Then Y$ = P$(D, P1%(D)) + Right$(Y$, Len(Y$) - 2)
+    If Left$(Y$, 2) = "UU" Then Y$ = U$(1) + Right$(Y$, Len(Y$) - 2)
+    If Left$(Y$, 2) = "XX" Then Y$ = B$(D, B9%(D, 5)) + " and " + B$(D, B9%(D, 6)) + Right$(Y$, Len(Y$) - 2)
+    If Left$(Y$, 2) = "TT" Then Y$ = B$(D, B9%(D, 5)) + Right$(Y$, Len(Y$) - 2)
+    If Left$(Y$, 2) = "FB" Then Y$ = B$(D, B9%(D, 3)) + Right$(Y$, Len(Y$) - 2)
+    If Left$(Y$, 2) = "YY" Then Y$ = B$(D, B9%(D, 4)) + " and " + B$(D, B9%(D, 3)) + Right$(Y$, Len(Y$) - 2)
+    If Left$(Y$, 2) = "ZZ" Then Y$ = B$(D, B9%(D, 4)) + " and " + B$(D, B9%(D, 6)) + Right$(Y$, Len(Y$) - 2)
+    If Left$(Y$, 2) = "Q4" Then Y$ = player$(4) + Right$(Y$, Len(Y$) - 2)
+    If Right$(Y$, 3) = " PP" Then Y$ = Left$(Y$, Len(Y$) - 2) + P$(D, P1%(D))
+    If Right$(Y$, 3) = " BB" Then Y$ = Left$(Y$, Len(Y$) - 2) + player$(0)
+    If Right$(Y$, 2) = "Q1" Then Y$ = Left$(Y$, Len(Y$) - 2) + player$(1)
+    If Right$(Y$, 2) = "Q2" Then Y$ = Left$(Y$, Len(Y$) - 2) + player$(2)
+    If Right$(Y$, 2) = "UU" Then Y$ = Left$(Y$, Len(Y$) - 2) + U$(1)
+    If Right$(Y$, 2) = "Q4" Then Y$ = Left$(Y$, Len(Y$) - 2) + player$(4)
+    If Right$(Y$, 3) = " TT" Then Y$ = Left$(Y$, Len(Y$) - 2) + B$(D, B9%(D, 5))
+    If Right$(Y$, 2) = "FB" Then Y$ = Left$(Y$, Len(Y$) - 2) + B$(D, B9%(D, 3))
+    If Right$(Y$, 3) = " XX" Then Y$ = Left$(Y$, Len(Y$) - 2) + B$(D, B9%(D, 5)) + " and " + B$(D, B9%(D, 6))
+    If Right$(Y$, 2) = "YY" Then Y$ = Left$(Y$, Len(Y$) - 2) + B$(D, B9%(D, 3)) + " and " + B$(D, B9%(D, 4))
+    If Right$(Y$, 3) = " ZZ" Then Y$ = Left$(Y$, Len(Y$) - 2) + B$(D, B9%(D, 6)) + " and " + B$(D, B9%(D, 4))
+
+End Sub
+
+'------------------------------
+'   STRIPRPBP Subroutine
+'------------------------------
+' ...explanation...
+Sub STRIPRPBP (range%, minIdx%, Y$, D)
+
+    stringPosition% = 1
+
+    'Check each character of PBP string
+    Do
+
+        test = Asc(Mid$(Y$, stringPosition%, 1))
+
+        'If it is a non-printable character (corrupt data)
+        If test > 122 Or test < 32 Then
+            'Get a new PBP string to use
+            stringPosition% = 1
+            Call GETRPBP(range%, minIdx%, Y$, D)
+        Else
+            stringPosition% = stringPosition% + 1
+        End If
+
+    Loop Until stringPosition% = Len(Y$)
+
+End Sub
+
+'------------------------------
+'    LDRNRCTDN Subroutine
+'------------------------------
+' ...explanation...
+Sub LDRNRCTDN ()
+
+    If S4% = 7 Or S4% = 6 Or S4% = 5 Or S4% = 3 Then
+        A5%(3) = 11
+        For I = 0 To 2: A5%(I) = 1: Next
+    End If
+
+    If S4% = 2 Or S4% = 4 Then
+        A5%(0) = 1
+        A5%(1) = 1
+        A5%(2) = 11
+    End If
+
+    If S4% = 1 Then
+        A5%(1) = 11
+        A5%(0) = 1
+    End If
+
+    If S4% = 0 Then A5%(0) = 11
+
+    If PLB = 0 Then Call PBP(player$(0) + " bunts it hard!")
+    If PLB = 0 Then Call PBP(player$(4) + " makes an easy play")
+
+    PLB = 0
+    O%(0) = O%(0) + 1
+    O%(1) = O%(1) + 1
+
+    Call ADDSTTS(P, D)
+    Call CREDITASSIST(W%, D)
+    Call ADVANCEMENT(P, D, S2%, F%, I3)
+    Call CREDITPUTOUT(I3, FB2P%, AST%, D)
+
+End Sub
+
+'------------------------------
+'   PBP Subroutine
+'------------------------------
+' ...explanation...
+
+' Has been updated from original
+' source to determine Or we're
+' printing on GFX or text screen
+Sub PBP (F$)
+
+    If pbpDelay! > 0 Then
+
+        F$ = PadRight(F$, 44)
+        'Should this ever be more than 44 characters?
+
+        F$ = Left$(F$, 44)
+        PB% = PB% + 1
+
+        ' Put PBP text in a slot for line PB%
+        If PB% < 9 Then G$(PB%) = F$
+
+        ' Or we're past line 8, move all slots down
+        ' to make room
+        If PB% > 8 Then
+
+            For I9 = 1 To 7
+                G$(I9) = G$(I9 + 1)
+            Next
+
+            G$(8) = F$
+
+        End If
+
+        'Print all 8 lines from scratch
+        For I9 = 1 To 8
+
+            If usingGfx = 1 Then
+                Color 4294967295
+                _PrintMode _FillBackground , imageScreen&
+                text$ = G$(I9)
+                PrintOnGfx 20, I9 + 3, text$, imageScreen&
+            Else
+                Locate 14 + I9, 1
+                Print G$(I9)
+            End If
+
+        Next
+
+        Call DELAY
+
+    End If
+
+End Sub
+
+
 '------------------------------
 '   POSTGAME Subroutine
 '------------------------------
 ' ...explanation...
 Sub POSTGAME ()
 
-    Dim HT$(0 To 162), L$(0 To 162), PL$(0 To 162)
-    Dim SA$(0 To 1), W$(0 To 162)
-    Dim B6%(22, 21), D1%(1), DYS%(0 To 1, 0 To 21), E%(13), H%(0 To 162)
-    Dim ING%(0 To 162), P0%(0 To 21, 0 To 41), SS%(0 To 22, 0 To 6), SX%(0 To 1), V%(0 To 162)
-
-    '--------------------
-    ' Determine settings
-    ' for records
-    '--------------------
-    If _FileExists("EVENTS.BOX") Then
-        Open "EVENTS.BOX" For Input As #1
-        For X = 1 To 13
-            Input #1, E%(X)
-        Next
-        Close 1
-    End If
-
-    '--------------------
-    ' Create special file
-    '--------------------
-    If INNING% > E%(1) Or S6%(1, 0) < E%(2) Or S6%(0, 0) < E%(2) Or S6%(1, 0) > E%(3) Or S6%(0, 0) > E%(3) Or S6%(1, 1) > E%(5) Or S6%(0, 1) > E%(5) Or S6%(1, 1) < E%(4) Or S6%(0, 1) < E%(4) Then
-
-        Spec$ = diskPaths$(1) + "*.SPC"
-        null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
-        Count% = DirCount%
-        Count% = Count% + 1
-        SPECIAL = 1
-
-    Else
-
-        skipAhead% = 0
-
-        For I = 0 To 1
-
-            For I1 = 0 To 22
-
-                If B8%(I, I1, 1) > E%(6) Or B8%(I, I1, 2) > E%(7) Or B8%(I, I1, 3) > E%(8) Or B8%(I, I1, 4) > E%(9) Or B8%(I, I1, 5) > E%(10) Or B8%(I, I1, 6) > E%(11) Or B8%(I, I1, 9) > E%(12) Then
-                    Spec$ = diskPaths$(1) + "*.SPC"
-                    null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
-                    Count% = DirCount%
-                    Count% = Count% + 1
-                    SPECIAL = 1
-                    skipAhead% = 1
-                    Exit For
-                End If
-
-                If skipAhead% = 1 Then Exit For
-
-            Next
-
-        Next
-
-        skipAhead% = 0
-
-        For I = 0 To 1
-
-            For I1 = 0 To 21
-
-                If P8%(I, I1, 5) > E%(13) Then
-                    Spec$ = diskPaths$(1) + "*.SPC"
-                    null$ = READDIR$(Spec$) 'use a file spec ONCE to find the last file name listed
-                    Count% = DirCount%
-                    Count% = Count% + 1
-                    SPECIAL = 1
-                    skipAhead% = 1
-                    Exit For
-                End If
-
-            Next
-
-            If skipAhead% = 1 Then Exit For
-
-        Next
-
-    End If
-
     Call CheckRecords
+    Call EVENTS(specialCount, specialStat)
 
-    BK$ = "## # # ## # #  # # #  #  # # ## ##"
-
-    '--------------------
-    ' Boxscore Options
-    '--------------------
     Do
         I3 = 0
 
@@ -6937,18 +7428,19 @@ Sub POSTGAME ()
         If P2%(I3) <> P1%(I3) And S1%(I3) = -1 And P8%(I3, P1%(I3), 0) >= 9 And P8%(I3, P1%(I3), 0) <= 12 And P6%(I3) > 0 And P8%(I3, P1%(I3), 3) < 3 Then S1%(I3) = P1%(I3)
         If P2%(I3) = S1%(I3) Then S1%(I3) = -1
 
+        Color 15, 0
         Cls
-        Print Tab(32);
-        Color 12: Print "BOXSCORE OPTIONS"
-        Print
+
         Color 14: Print "(0) ";
-        Color 15: Print "SEND BOXSCORE TO THE SCREEN"
+        Color 15: Print "STATS TO SCREEN"
         Print
+
         Color 14: Print "(1) ";
-        Color 15: Print "SEND BOXSCORE TO THE PRINTER"
+        Color 15: Print "STATS TO PRINTER"
         Print
+
         Color 14: Print "(2) ";
-        Color 15: Print "SEND BOXSCORE TO A TEXT FILE"
+        Color 15: Print "STATS TO TEXT FILE"
 
         If AP% = 1 And U6 = 2 Then
             X = 2
@@ -6957,50 +7449,26 @@ Sub POSTGAME ()
                 I$ = GetKeyPress$
                 X = Val(I$)
             Loop Until X >= 0 And X <= 2
-
         End If
 
-        Select Case X
-            Case 0:
-                Call BoxToScreen(BK$)
+        Call BOXOPTIONS(X)
 
-            Case 1, 2:
-                If X = 1 Then
-                    NM$ = "TEMPBOX"
-                Else
-                    If AP% <> 1 Then
-                        Cls
-                        Print "ENTER 8-CHARACTER FILENAME FOR BOXSCORE (NO SPACES OR PERIODS)";: Input NM$
-                        NM$ = NM$ + ".SPC"
-                    Else
-                        Open "GAME82" For Input As #1
-                        Input #1, scheduleFile$
-                        For I = 0 To 2
-                            Input #1, AP%(I)
-                        Next
-                        Close 1
-                        ' NM$ = "BOXSCORE." + MID$(STR$(AP%(0) + AP%(2)), 2, LEN(STR$(AP%(0) + AP%(2))))
-                        NM$ = "BOX" + Mid$(Str$(AP%(0) + AP%(2)), 2, Len(Str$(AP%(0) + AP%(2))))
-                    End If
-                End If
+        'Reset option for next call
+        If X <> 0 Then X = 0
 
-                Call BoxToFile(NM$, BK$, E%(), SPECIAL)
-
-        End Select
-
+        'Prompt to display stats again
         Color 15, 0
         Cls
 
-        J = 1
-        Call DRAWBOX(J)
-
         If Not (AP% = 1 And U6 = 2) Then
-
-            Locate 9, 28
-            Print "DISPLAY STATS AGAIN (YN)";
-            Color 15, 0
+            'Using Home Team's color for the box
+            Call TEAMBOX(1, 1)
 
             Do
+                U$ = "DISPLAY STATS AGAIN (YN)"
+                Locate 7, (80 - Len(U$)) / 2
+                Print U$
+                Color 15, 0
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -7008,22 +7476,48 @@ Sub POSTGAME ()
 
     Loop Until UCase$(I$) = "N" Or (AP% = 1 And U6 = 2)
 
-    Cls
+    'If we had special events
+    If specialStat = 1 Then
+
+        'Copy the BOX file as a "Special" file (.SPC)
+        srcFile$ = diskPaths$(1) + NM$
+        dstFile$ = diskPaths$(1) + "BOX" + Mid$(Str$(Count), 2, Len(Str$(Count%))) + ".SPC"
+        Call FCopy(srcFile$, dstFile$, null$, ErrCode%)
+
+        'Append special events
+        Call BOX2SPC(NM$)
+
+    End If
+
+    specialStat = 0
+
+    Call SAVESTATS
+
+End Sub
+
+
+'------------------------------
+'    SAVESTATS Subroutine
+'------------------------------
+' ...explanation...
+Sub SAVESTATS ()
+
+    Shared SX%()
+
+    Shared scheduleFile$
+
     Color 15, 0
     Cls
 
-    J = 1
-    Call DRAWBOX(J)
+    If AP <> 1 Then
 
-    Locate 9, 28: Print "SAVE STATS FOR EITHER TEAM (YN)";
-    Color 15, 0
+        Call TEAMBOX(1, 1)
 
-    If AP% = 1 Then
-        BG% = 0
-        BN% = 1
-        I$ = "Y"
-    Else
         Do
+            U$ = "SAVE STATS (YN)"
+            Locate 7, (80 - Len(U$)) / 2
+            Print U$
+            Color 15, 0
             I$ = GetKeyPress$
         Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -7046,9 +7540,12 @@ Sub POSTGAME ()
             Loop Until X1 >= 0 And X1 <= 2
         End If
 
+    Else
+        BG% = 0
+        BN% = 1
     End If
 
-    If UCase$(I$) = "Y" Then
+    If AP = 1 Or UCase$(I$) = "Y" Then
 
         For PX = 0 To 1
             For I = 0 To 21
@@ -7060,7 +7557,7 @@ Sub POSTGAME ()
 
         If _FileExists(FILENAME$) Then
 
-            Open "GAME82" For Input As #2
+            Open FILENAME$ For Input As #2
             Input #2, scheduleFile$
             For I = 0 To 2: Input #2, AP%(I): Next
             Close 2
@@ -7118,340 +7615,7 @@ Sub POSTGAME ()
 
             If C% <> 1 Then
 
-                SA$(Q) = A$(Q)
-
-                For XX = 4 To 11
-                    If Mid$(SA$(Q), XX, 1) = " " Or Mid$(SA$(Q), XX, 1) = "." Then Mid$(SA$(Q), XX, 1) = "_"
-                Next XX
-
-                QQ = 8
-
-                For XX = 11 To 4 Step -1:
-                    If Mid$(SA$(Q), XX, 1) = "_" Then
-                        QQ = XX - 4
-                    Else
-                        Exit For
-                    End If
-                Next XX
-
-                statName$ = Mid$(SA$(Q), 4, QQ)
-                statFile$ = statName$ + "." + Left$(SA$(Q), 2)
-                FILENAME$ = diskPaths$(1) + statFile$ + "D"
-
-                If _FileExists(FILENAME$) Then
-
-                    Open diskPaths$(1) + statFile$ + "D" For Input As #1
-                    For I1 = 0 To 22
-                        Input #1, INJ%(Q, I1)
-                    Next
-                    For I1 = 0 To 21
-                        Input #1, DYS%(Q, I1)
-                    Next
-                    Close 1
-
-                End If
-
-                If IJ% <> 1 Or DR% <> 1 Then
-
-                    If IJ% <> 1 Then
-                        For I1 = 0 To 22
-                            If INJ%(Q, I1) > 0 Then INJ%(Q, I1) = INJ%(Q, I1) - 1
-                            If B%(Q, I1, 32) > 0 Then INJ%(Q, I1) = B%(Q, I1, 32)
-                        Next
-                    End If
-
-                    If DR% <> 1 Then
-
-                        For I1 = 0 To 21
-
-                            If DYS%(Q, I1) > 0 And DYS%(Q, I1) < 90 Then DYS%(Q, I1) = DYS%(Q, I1) - 1
-
-                            If P8%(Q, I1, 0) = 0 And DYS%(Q, I1) > 0 And DYS%(Q, I1) < 90 Then 7667
-                            If P8%(Q, I1, 0) = 0 And (DYS%(Q, I1) = 0 Or DYS%(Q, I1) = 1 Or DYS%(Q, I1) = 91 Or DYS%(Q, I1) = 92) Then DYS%(Q, I1) = 0: GoTo 7667
-                            If P8%(Q, I1, 0) > 0 And P8%(Q, I1, 0) <= 3 And DYS%(Q, I1) = 0 Then DYS%(Q, I1) = 91: GoTo 7667
-                            If P8%(Q, I1, 0) > 0 And P8%(Q, I1, 0) <= 3 And DYS%(Q, I1) = 91 Then DYS%(Q, I1) = 911: GoTo 7667
-                            If P8%(Q, I1, 0) > 0 And P8%(Q, I1, 0) <= 3 And DYS%(Q, I1) = 911 Then DYS%(Q, I1) = 1: GoTo 7667
-                            If P8%(Q, I1, 0) > 0 And P8%(Q, I1, 0) <= 3 And DYS%(Q, I1) = 92 Then DYS%(Q, I1) = 1: GoTo 7667
-                            If P8%(Q, I1, 0) > 0 And P8%(Q, I1, 0) <= 3 And DYS%(Q, I1) > 0 Then DYS%(Q, I1) = DYS%(Q, I1) + 1: GoTo 7667
-                            If P8%(Q, I1, 0) > 3 And P8%(Q, I1, 0) <= 6 And DYS%(Q, I1) = 0 Then DYS%(Q, I1) = 92: GoTo 7667
-                            If P8%(Q, I1, 0) > 3 And P8%(Q, I1, 0) <= 6 And DYS%(Q, I1) = 91 Then DYS%(Q, I1) = 1: GoTo 7667
-                            If P8%(Q, I1, 0) > 3 And P8%(Q, I1, 0) <= 6 And DYS%(Q, I1) = 92 Then DYS%(Q, I1) = 1: GoTo 7667
-                            If P8%(Q, I1, 0) > 3 And P8%(Q, I1, 0) <= 6 And DYS%(Q, I1) = 911 Then DYS%(Q, I1) = 1: GoTo 7667
-                            If P8%(Q, I1, 0) > 3 And P8%(Q, I1, 0) <= 6 And DYS%(Q, I1) > 0 Then DYS%(Q, I1) = DYS%(Q, I1) + 1: GoTo 7667
-                            If P8%(Q, I1, 0) > 6 Then DYS%(Q, I1) = Int(P8%(Q, I1, 0) / 3) + 1 - 2
-
-                            If MG%(Q, 1) <= 0 Then DYS%(Q, I1) = 3: GoTo 7667
-                            If DYS%(Q, I1) > MG%(Q, 1) - 1 Then DYS%(Q, I1) = MG%(Q, 1) - 1
-                            If DYS%(Q, I1) < 0 Then DYS%(Q, I1) = 0
-
-                        7667 Next
-
-                    End If
-
-                    Open diskPaths$(1) + statFile$ + "D" For Output As #1
-                    For I1 = 0 To 22
-                        Print #1, INJ%(Q, I1)
-                    Next
-                    For I1 = 0 To 21
-                        Print #1, DYS%(Q, I1)
-                    Next
-                    Close 1
-
-                End If
-
-                FILENAME$ = diskPaths$(1) + statFile$
-
-                If _FileExists(FILENAME$) Then
-                    Open diskPaths$(1) + statFile$ For Input As #1
-                    Input #1, A$(Q)
-                    Input #1, W2%
-                    Input #1, L2%
-                    For I = 0 To 22: Input #1, B$(Q, I): Input #1, B2%(Q, I): Next I
-                    For I = 0 To 21: Input #1, P$(Q, I): Input #1, P3%(Q, I): Next I
-                    For I = 0 To 22: For I1 = 0 To 21: Input #1, B6%(I, I1): Next I1: Next I
-                    For I = 0 To 21: For I1 = 0 To 41: Input #1, P0%(I, I1): Next I1: Next I
-                    Input #1, D0%(Q)
-                    Input #1, D1%(Q)
-                    For I = 0 To 21: Input #1, T%(I): Next I
-                    For I = 0 To 22: Input #1, P4%(I): Next I
-                    Close #1
-                End If
-
-                For I = 0 To 22
-
-                    B2%(Q, I) = B%(Q, I, 4)
-
-                    For I1 = 0 To 11
-                        B6%(I, I1) = B6%(I, I1) + B8%(Q, I, I1): T%(I1) = T%(I1) + B8%(Q, I, I1)
-                    Next I1
-
-                    If B8%(Q, I, 0) > 0 Then
-                        If B8%(Q, I, 1) = 0 Then
-                            B6%(I, 12) = 0
-                        Else
-                            B6%(I, 12) = B6%(I, 12) + 1
-                        End If
-                    End If
-
-                    If B8%(Q, I, 14) > 0 Then B6%(I, 14) = B6%(I, 14) + 1
-
-                    For I1 = 15 To 21
-                        B6%(I, I1) = B6%(I, I1) + B8%(Q, I, I1)
-                        T%(I1) = T%(I1) + B8%(Q, I, I1)
-                    Next I1
-
-                    If B6%(I, 12) >= B6%(I, 13) Then B6%(I, 13) = B6%(I, 12)
-
-                Next I
-
-                For I = 0 To 21
-
-                    For I1 = 23 To 34
-                        P0%(I, I1) = P0%(I, I1) + P8%(Q, I, I1)
-                        T%(I1 - 23) = T%(I1 - 23) + P8%(Q, I, I1)
-                    Next I1
-
-                    If P8%(Q, I, 23) > 0 Then
-                        If P8%(Q, I, 24) = 0 Then
-                            P0%(I, 35) = 0
-                        Else
-                            P0%(I, 35) = P0%(I, 35) + 1
-                        End If
-                    End If
-
-                    For I1 = 37 To 41
-                        P0%(I, I1) = P0%(I, I1) + P8%(Q, I, I1)
-                        T%(I1 - 22) = T%(I1 - 22) + P8%(Q, I, I1)
-                    Next I1
-
-                    If P0%(I, 35) >= P0%(I, 36) Then P0%(I, 36) = P0%(I, 35)
-
-                Next I
-
-                T%(12) = T%(12) + L0%(Q)
-                INNING% = 0
-
-                For I = 0 To 21
-                    INNING% = INNING% + P8%(Q, I, 0)
-                    P3%(Q, I) = P%(Q, I, 6)
-
-                    For I1 = 0 To 5
-                        P0%(I, I1) = P0%(I, I1) + P8%(Q, I, I1)
-                        P4%(I1) = P4%(I1) + P8%(Q, I, I1)
-                    Next I1
-
-                    For I1 = 13 To 22:
-                        P0%(I, I1) = P0%(I, I1) + P8%(Q, I, I1)
-                        P4%(I1) = P4%(I1) + P8%(Q, I, I1)
-                    Next I1
-
-                Next I
-
-                If S6%(Q, 0) - S6%(1 - Q, 0) > 0 Then P0%(P2%(Q), 6) = P0%(P2%(Q), 6) + 1
-                If S6%(Q, 0) - S6%(1 - Q, 0) < 0 Then P0%(P2%(Q), 7) = P0%(P2%(Q), 7) + 1
-                If S6%(Q, 0) - S6%(1 - Q, 0) > 0 And S1%(Q) >= 0 Then P0%(S1%(Q), 12) = P0%(S1%(Q), 12) + 1: P4%(12) = P4%(12) + 1
-
-                For I = 0 To 21
-                    If P%(Q, I, 15) <> 0 Then P0%(I, 8) = P0%(I, 8) + 1: P4%(8) = P4%(8) + 1
-                    If INNING% = P8%(Q, I, 0) Then P0%(I, 10) = P0%(I, 10) + 1: P4%(10) = P4%(10) + 1
-                    If INNING% = P8%(Q, I, 0) And S6%(1 - Q, 0) = 0 Then P0%(I, 11) = P0%(I, 11) + 1: P4%(11) = P4%(11) + 1
-                Next I
-
-                P0%(SX%(Q), 9) = P0%(SX%(Q), 9) + 1
-                P4%(9) = P4%(9) + 1
-
-                D0%(Q) = D0%(Q) + D3%(Q)
-                D1%(Q) = D1%(Q) + D3%(1 - Q)
-
-                If S6%(Q, 0) - S6%(1 - Q, 0) > 0 Then W2% = W2% + 1
-                If S6%(Q, 0) - S6%(1 - Q, 0) < 0 Then L2% = L2% + 1
-
-                Color 15, 0
-
-                Print ">>>>>"
-                Print "THE STATS ARE BEING SAVED UNDER": Print "THE FOLLOWING NAME ::: ";
-                Color L%(Q, 11), L%(Q, 12): Print statFile$
-                Color 15, 0
-
-                Open diskPaths$(1) + statFile$ For Output As #1
-                Print #1, A$(Q)
-                Print #1, W2%
-                Print #1, L2%
-                For I = 0 To 22: Print #1, B$(Q, I): Print #1, B2%(Q, I): Next I
-                For I = 0 To 21: Print #1, P$(Q, I): Print #1, P3%(Q, I): Next I
-                For I = 0 To 22: For I1 = 0 To 21: Print #1, B6%(I, I1): Next I1: Next I
-                For I = 0 To 21: For I1 = 0 To 41: Print #1, P0%(I, I1): Next I1: Next I
-                Print #1, D0%(Q)
-                Print #1, D1%(Q)
-                For I = 0 To 21: Print #1, T%(I): Next I
-                For I = 0 To 22: Print #1, P4%(I): Next I
-                Close #1
-
-                Print "<<<<<"
-                Print
-                Print
-
-                FILENAME$ = diskPaths$(1) + statFile$ + "R"
-
-                If _FileExists(FILENAME$) Then
-                    Open diskPaths$(1) + statFile$ + "R" For Input As #1
-                    For I = 0 To 22
-                        For I1 = 0 To 6
-                            Input #1, SS%(I, I1)
-                        Next
-                    Next
-                    Close 1
-                End If
-
-                For I = 0 To 22
-                    For I1 = 0 To 6
-                        SS%(I, I1) = SS%(I, I1) + CSS%(Q, I, I1)
-                    Next
-                Next
-
-                Open diskPaths$(1) + statFile$ + "R" For Output As #1
-                For I = 0 To 22
-                    For I1 = 0 To 6
-                        Print #1, SS%(I, I1)
-                    Next
-                Next
-                Close 1
-
-                Y% = 0
-                FILENAME$ = diskPaths$(1) + statFile$ + "S"
-
-                If _FileExists(FILENAME$) Then
-
-                    Open diskPaths$(1) + statFile$ + "S" For Input As #1
-                    Input #1, Y%
-                    For I = 1 To 162: Input #1, H%(I): Next I
-                    For I = 1 To 162: Input #1, HT$(I): Next I
-                    For I = 1 To 162: Input #1, V%(I): Next I
-                    For I = 1 To 162: Input #1, PL$(I): Next I
-                    For I = 1 To 162: Input #1, W$(I): Next I
-                    For I = 1 To 162: Input #1, L$(I): Next I
-                    For I = 1 To 162: Input #1, ING%(I): Next I
-                    Close #1
-
-                Else
-                    'Default stat values
-                    For I = 1 To 162
-                        H%(I) = 999
-                        HT$(I) = "XXXXXXX"
-                        V%(I) = 999
-                        PL$(I) = "X"
-                        W$(I) = "LYNN"
-                        L$(I) = "SUMLER"
-                        ING%(I) = 999
-                    Next I
-
-                End If
-
-                Y% = Y% + 1
-                H%(Y%) = S6%(Q, 0)
-                HT$(Y%) = A$(1 - Q)
-                V%(Y%) = S6%(1 - Q, 0)
-                W$(Y%) = W$
-                L$(Y%) = L$
-                ING%(Y%) = LYN%
-
-                If Q = 0 Then
-                    PL$(Y%) = "A"
-                Else
-                    PL$(Y%) = "H"
-                End If
-
-                Open diskPaths$(1) + statFile$ + "S" For Output As #1
-
-                Print #1, Y%
-
-                For I = 1 To 162: Print #1, H%(I): Next I
-                For I = 1 To 162: Print #1, HT$(I): Next I
-                For I = 1 To 162: Print #1, V%(I): Next I
-                For I = 1 To 162: Print #1, PL$(I): Next I
-                For I = 1 To 162: Print #1, W$(I): Next I
-                For I = 1 To 162: Print #1, L$(I): Next I
-                For I = 1 To 162: Print #1, ING%(I): Next I
-
-                Close #1
-
-                Y% = 0
-
-                For I = 0 To 22:
-                    For I1 = 0 To 21:
-                        B6%(I, I1) = 0
-                    Next
-                Next
-
-                For I = 0 To 22:
-                    For I1 = 0 To 6:
-                        SS%(I, I1) = 0
-                    Next
-                Next
-
-                For I = 0 To 21:
-                    For I1 = 0 To 41:
-                        P0%(I, I1) = 0:
-                    Next
-                Next
-
-                W2% = 0
-                L2% = 0
-
-                For I = 0 To 21: T%(I) = 0: Next I
-                For I = 0 To 22: P4%(I) = 0: Next I
-
-                For I = 0 To 1:
-                    For I1 = 0 To 22:
-                        B2%(I, I1) = 0
-                    Next
-                Next
-
-                For I = 0 To 1:
-                    For I1 = 0 To 21:
-                        P3%(I, I1) = 0:
-                    Next
-                Next
+                Call COMPILESTATFILES(Q)
 
             End If
 
@@ -7461,554 +7625,451 @@ Sub POSTGAME ()
 
     End If
 
-    Close #7
-
-    If AP% = 1 And NM <> 1 Then Call LOADER
-
-    Color 15, 0
-
-    Cls
-
 End Sub
 
-'------------------------------
-'   LocateInning routine
-'------------------------------
-' ...explanation...
-Sub LocateInning (I2)
-
-    If I2 < 4 Then Locate , ((2 * I2) + 18)
-    If I2 > 3 And I2 < 7 Then Locate , ((2 * I2) + 19)
-    If I2 > 6 And I2 < 10 Then Locate , ((2 * I2) + 20)
-    If I2 > 9 And I2 < 13 Then Locate , ((2 * (I2 - 9)) + 18)
-    If I2 > 12 And I2 < 16 Then Locate , ((2 * (I2 - 9)) + 19)
-    If I2 > 15 And I2 < 19 Then Locate , ((2 * (I2 - 9)) + 20)
-    If I2 > 18 And I2 < 22 Then Locate , ((2 * (I2 - 18)) + 18)
-    If I2 > 21 And I2 < 25 Then Locate , ((2 * (I2 - 18)) + 19)
-    If I2 > 24 And I2 < 28 Then Locate , ((2 * (I2 - 18)) + 20)
-
-End Sub
 
 '------------------------------
-'       BoxToScreen routine
+' COMPILESTATFILES Subroutine
 '------------------------------
 ' ...explanation...
-Sub BoxToScreen (BK$)
+Sub COMPILESTATFILES (Q)
 
-    Shared DB, HR, TR, SB
-    Shared DB$(), E$(), HR$(), SB$(), TR$()
+    Shared HT$(), L$(), PL$()
+    Shared SA$(), W$()
 
-    X = 0
+    Shared B6%(), D1%(), DYS%(), E%()
+    Shared H%(), ING%(), P0%()
+    Shared SS%(), SX%(), V%()
 
-    Cls
+    SA$(Q) = A$(Q)
 
-    If INNING% < 9 Then
+    For XX = 4 To 11
+        If Mid$(SA$(Q), XX, 1) = " " Or Mid$(SA$(Q), XX, 1) = "." Then Mid$(SA$(Q), XX, 1) = "_"
+    Next XX
 
-        For I = 0 To 1
+    QQ = 8
 
-            Color L%(I, 11), L%(I, 12)
-            Print A$(I);
-            Color 14, 0
-
-            For I2 = 1 To INNING%
-                Call LocateInning(I2)
-                If I = 0 Then Print Using "##"; inningScore%(I, I2);
-                If I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = INNING% And inningScore%(1, INNING%) = 0 Then Print , " X";
-                If I = 1 And S6%(1, 0) < S6%(0, 0) And I2 = INNING% Or I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = INNING% And inningScore%(1, INNING%) > 0 Then Print Using "##"; inningScore%(I, I2);
-                If I = 1 And I2 < INNING% Then Print Using "##"; inningScore%(I, I2);
-
-            Next I2
-
-            Locate , 40: Print "-";
-            Locate , 41: Print Using "##"; S6%(I, 0);
-            Locate , 44: Print Using "##"; S6%(I, 1);
-            Locate , 47: Print Using "#"; S6%(I, 2)
-
-        Next I
-
-    End If
-
-    If INNING% = 10 And P = 0 Or INNING% <= 9 Then
-
-        For I = 0 To 1
-
-            Color L%(I, 11), L%(I, 12)
-            Print A$(I);
-            Color 14, 0
-
-            For I2 = 1 To 9
-                Call LocateInning(I2)
-                If I = 0 Then Print Using "##"; inningScore%(I, I2);
-                If I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = 9 And inningScore%(1, 9) = 0 Then Print " X";
-                If I = 1 And S6%(1, 0) < S6%(0, 0) And I2 = 9 Or I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = 9 And inningScore%(1, 9) > 0 Then Print Using "##"; inningScore%(I, I2);
-                If I = 1 And I2 < 9 Then Print Using "##"; inningScore%(I, I2);
-            Next I2
-
-            Locate , 40: Print "-";
-            Locate , 41: Print Using "##"; S6%(I, 0);
-            Locate , 44: Print Using "##"; S6%(I, 1);
-            Locate , 47: Print Using "#"; S6%(I, 2)
-
-        Next I
-
-    End If
-
-    If INNING% = 10 And P = 1 Or INNING% > 10 And INNING% < 19 Or INNING% = 19 And P = 0 Then
-
-        For I = 0 To 1
-
-            Color L%(I, 11), L%(I, 12)
-            Print A$(I);
-            Color 14, 0
-
-            For I2 = 1 To 9
-                Call LocateInning(I2)
-                Print Using "##"; inningScore%(I, I2);
-            Next I2
-
-            Print
-        Next I
-
-        Print
-
-        If P = 0 And INNING% < 19 Or INNING% = 19 Then INNING% = INNING% - 1
-
-        For I = 0 To 1
-
-            For I2 = 10 To INNING%
-                Call LocateInning(I2)
-                Print Using "##"; inningScore%(I, I2);
-            Next I2
-
-            Locate , 40: Print "-";
-            Locate , 41: Print Using "##"; S6%(I, 0);
-            Locate , 44: Print Using "##"; S6%(I, 1);
-            Locate , 47: Print Using "#"; S6%(I, 2)
-
-        Next I
-
-    End If
-
-    If INNING% = 19 And P = 1 Or INNING% > 19 And INNING% <= 28 Then
-
-        For I = 0 To 1
-            Color L%(I, 11), L%(I, 12)
-            Print A$(I);
-            Color 14, 0
-            For I2 = 1 To 9
-                Call LocateInning(I2)
-                Print Using "##"; inningScore%(I, I2);
-            Next I2
-            Print
-        Next I
-
-        Print
-
-        If INNING% = 28 Or INNING% < 28 And P = 0 Then INNING% = INNING% - 1
-
-        For I = 0 To 1
-            For I2 = 10 To 18
-                Call LocateInning(I2)
-                Print Using "##"; inningScore%(I, I2);
-            Next I2
-            Print
-        Next I
-
-        Print
-
-        For I = 0 To 1
-            For I2 = 19 To INNING%
-                Call LocateInning(I2)
-                Print Using "##"; inningScore%(I, I2);
-            Next I2
-            Locate , 40: Print "-";
-            Locate , 41: Print Using "##"; S6%(I, 0);
-            Locate , 44: Print Using "##"; S6%(I, 1);
-            Locate , 47: Print Using "#"; S6%(I, 2)
-        Next I
-
-    End If
-
-    If X = 0 Then
-        If AP% <> 1 Or U6 <> 2 Then
-            Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
-            I$ = GetKeyPress$
+    For XX = 11 To 4 Step -1:
+        If Mid$(SA$(Q), XX, 1) = "_" Then
+            QQ = XX - 4
+        Else
+            Exit For
         End If
+    Next XX
+
+    statFile$ = Mid$(SA$(Q), 4, QQ) + "." + Left$(SA$(Q), 2)
+    FILENAME$ = diskPaths$(1) + statFile$ + "D"
+
+    If _FileExists(FILENAME$) Then
+
+        Open diskPaths$(1) + statFile$ + "D" For Input As #1
+        For I1 = 0 To 22
+            Input #1, INJ%(Q, I1)
+        Next
+        For I1 = 0 To 21
+            Input #1, DYS%(Q, I1)
+        Next
+        Close 1
+
     End If
 
-    If X = 0 Then Cls
+    If IJ% <> 1 Or DR% <> 1 Then
 
-    For I = 0 To 1
-
-        Color L%(I, 11), L%(I, 12)
-        Print A$(I);
-        Color 14, 0
-        Locate , 18: Print "AB R H BI 2 3 HR K W SB CS E PO  A      BA   HR  RBI"
-        Color 15, 0
-
-        For I3 = 0 To 22
-
-            If X0%(I, 0, I3) <> -1 And X0%(I, 1, I3) <> 1 Then
-
-                I1 = X0%(I, 0, I3)
-
-                Print B$(I, I1); ", "; C$(X0%(I, 1, I3));
-                Locate , 18
-                '                AB             R              H              BI             2              3              HR             K              W              SB             CS              E               PO              A
-                Print Using BK$; B8%(I, I1, 0); B8%(I, I1, 2); B8%(I, I1, 1); B8%(I, I1, 3); B8%(I, I1, 4); B8%(I, I1, 5); B8%(I, I1, 6); B8%(I, I1, 8); B8%(I, I1, 7); B8%(I, I1, 9); B8%(I, I1, 10); B8%(I, I1, 11); B8%(I, I1, 16); B8%(I, I1, 17);
-                Print "   ";
-
-                'BA
-                If B5%(I, I1, 0) = 0 Or B5%(I, I1, 1) = 0 Then
-                    Print " .000   ";
-                Else
-                    If B5%(I, I1, 0) = B5%(I, I1, 1) Then
-                        Print "1.000   ";
-                    Else
-                        Print " ."; Using "###   "; (B5%(I, I1, 1) / B5%(I, I1, 0) * 1000);
-                    End If
-                End If
-
-                '           HR   RBI
-                Print Using "##  ###"; B5%(I, I1, 6); B5%(I, I1, 3)
-
-                For I2 = 0 To 17
-                    T3%(I2) = T3%(I2) + B8%(I, I1, I2)
-                Next I2
-
-            End If
-
-        Next I3
-
-        For I1 = 0 To 21:
-            For I2 = 0 To 13:
-                T3%(I2) = T3%(I2) + P8%(I, I1, I2 + 23)
+        If IJ% <> 1 Then
+            For I1 = 0 To 22
+                If INJ%(Q, I1) > 0 Then INJ%(Q, I1) = INJ%(Q, I1) - 1
+                If B%(Q, I1, 32) > 0 Then INJ%(Q, I1) = B%(Q, I1, 32)
             Next
-
-            For I2 = 14 To 17
-                T3%(I2) = T3%(I2) + P8%(I, I1, I2 + 22)
-            Next
-        Next
-
-        For I1 = 1 To P6%(I)
-
-            For I2 = 0 To 21
-
-                If P%(I, I2, 15) = I1 Then
-
-                    Print P$(I, I2); ", P";
-                    Locate , 18
-                    '                AB              R               H               BI              2               3               HR              K               W               SB              CS              E               PO              A
-                    Print Using BK$; P8%(I, I2, 23); P8%(I, I2, 25); P8%(I, I2, 24); P8%(I, I2, 26); P8%(I, I2, 27); P8%(I, I2, 28); P8%(I, I2, 29); P8%(I, I2, 31); P8%(I, I2, 30); P8%(I, I2, 32); P8%(I, I2, 33); P8%(I, I2, 34); P8%(I, I2, 38); P8%(I, I2, 39);
-                    Print "   ";
-
-                    'BA
-                    If P5%(I, I2, 24) = 0 Or P5%(I, I2, 23) = 0 Then
-                        Print " .000   "
-                    Else
-                        If P5%(I, I2, 24) = P5%(I, I2, 23) Then
-                            Print "1.000   ";
-                        Else
-                            Print Using "#.###   "; P5%(I, I2, 24) / P5%(I, I2, 23);
-                        End If
-
-                        '           HR   RBI
-                        Print Using "##  ###"; P5%(I, I2, 29); P5%(I, I2, 26)
-
-                    End If
-                End If
-
-            Next
-
-        Next
-
-        Color 14, 0: Print "TOTALS";
-        Color 15, 0
-        Locate , 17: Print T3%(0);
-        Locate , 22: Print T3%(1);
-        Locate , 27: Print T3%(4);
-        Locate , 32: Print T3%(6);
-        Locate , 36: Print T3%(7);
-        Locate , 42: Print T3%(10);
-        Locate , 46: Print T3%(16);
-        Locate , 50: Print T3%(17)
-        Locate , 20: Print T3%(2);
-        Locate , 24: Print T3%(3);
-        Locate , 29: Print T3%(5);
-        Locate , 34: Print T3%(8);
-        Locate , 39: Print T3%(9);
-        Locate , 44: Print T3%(11)
-
-        Print
-
-        If X = 0 Then
-            If AP% <> 1 Or U6 <> 2 Then
-                Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
-                I$ = GetKeyPress$
-            End If
         End If
 
-        If X = 0 Then Cls
+        If DR% <> 1 Then
 
-        For I1 = 0 To 22: T3%(I1) = 0: Next I1
+            For I1 = 0 To 21
 
-    Next I
+                If DYS%(Q, I1) > 0 And DYS%(Q, I1) < 90 Then DYS%(Q, I1) = DYS%(Q, I1) - 1
 
-    'GoTo 7313
+                If P8%(Q, I1, 0) = 0 And DYS%(Q, I1) > 0 And DYS%(Q, I1) < 90 Then 7667
+                If P8%(Q, I1, 0) = 0 And (DYS%(Q, I1) = 0 Or DYS%(Q, I1) = 1 Or DYS%(Q, I1) = 91 Or DYS%(Q, I1) = 92) Then DYS%(Q, I1) = 0: GoTo 7667
+                If P8%(Q, I1, 0) > 0 And P8%(Q, I1, 0) <= 3 And DYS%(Q, I1) = 0 Then DYS%(Q, I1) = 91: GoTo 7667
+                If P8%(Q, I1, 0) > 0 And P8%(Q, I1, 0) <= 3 And DYS%(Q, I1) = 91 Then DYS%(Q, I1) = 911: GoTo 7667
+                If P8%(Q, I1, 0) > 0 And P8%(Q, I1, 0) <= 3 And DYS%(Q, I1) = 911 Then DYS%(Q, I1) = 1: GoTo 7667
+                If P8%(Q, I1, 0) > 0 And P8%(Q, I1, 0) <= 3 And DYS%(Q, I1) = 92 Then DYS%(Q, I1) = 1: GoTo 7667
+                If P8%(Q, I1, 0) > 0 And P8%(Q, I1, 0) <= 3 And DYS%(Q, I1) > 0 Then DYS%(Q, I1) = DYS%(Q, I1) + 1: GoTo 7667
+                If P8%(Q, I1, 0) > 3 And P8%(Q, I1, 0) <= 6 And DYS%(Q, I1) = 0 Then DYS%(Q, I1) = 92: GoTo 7667
+                If P8%(Q, I1, 0) > 3 And P8%(Q, I1, 0) <= 6 And DYS%(Q, I1) = 91 Then DYS%(Q, I1) = 1: GoTo 7667
+                If P8%(Q, I1, 0) > 3 And P8%(Q, I1, 0) <= 6 And DYS%(Q, I1) = 92 Then DYS%(Q, I1) = 1: GoTo 7667
+                If P8%(Q, I1, 0) > 3 And P8%(Q, I1, 0) <= 6 And DYS%(Q, I1) = 911 Then DYS%(Q, I1) = 1: GoTo 7667
+                If P8%(Q, I1, 0) > 3 And P8%(Q, I1, 0) <= 6 And DYS%(Q, I1) > 0 Then DYS%(Q, I1) = DYS%(Q, I1) + 1: GoTo 7667
+                If P8%(Q, I1, 0) > 6 Then DYS%(Q, I1) = Int(P8%(Q, I1, 0) / 3) + 1 - 2
 
-    For I = 0 To 1
+                If MG%(Q, 1) <= 0 Then DYS%(Q, I1) = 3: GoTo 7667
+                If DYS%(Q, I1) > MG%(Q, 1) - 1 Then DYS%(Q, I1) = MG%(Q, 1) - 1
+                If DYS%(Q, I1) < 0 Then DYS%(Q, I1) = 0
 
-        If X = 0 Then Cls
+            7667 Next
 
-        Color L%(I, 11), L%(I, 12)
-        Print A$(I);
+        End If
 
-        Color 14, 0: Locate , 23
-        Print "       IP   H  R  ER BB SO    ERA   W  L  S  SO": Color 15, 0
+        Open diskPaths$(1) + statFile$ + "D" For Output As #1
+        For I1 = 0 To 22
+            Print #1, INJ%(Q, I1)
+        Next
+        For I1 = 0 To 21
+            Print #1, DYS%(Q, I1)
+        Next
+        Close 1
 
-        For I1 = 1 To P6%(I)
+    End If
 
-            For I2 = 0 To 21
+    FILENAME$ = diskPaths$(1) + statFile$
 
-                If P%(I, I2, 15) = I1 Then
-                    I4 = 1 - I
-                    Locate , 1
-                    Print P$(I, I2); " ";
+    If _FileExists(FILENAME$) Then
+        Open diskPaths$(1) + statFile$ For Input As #1
+        Input #1, A$(Q)
+        Input #1, W2%
+        Input #1, L2%
+        For I = 0 To 22: Input #1, B$(Q, I): Input #1, B2%(Q, I): Next I
+        For I = 0 To 21: Input #1, P$(Q, I): Input #1, P3%(Q, I): Next I
+        For I = 0 To 22: For I1 = 0 To 21: Input #1, B6%(I, I1): Next I1: Next I
+        For I = 0 To 21: For I1 = 0 To 41: Input #1, P0%(I, I1): Next I1: Next I
+        Input #1, D0%(Q)
+        Input #1, D1%(Q)
+        For I = 0 To 21: Input #1, T%(I): Next I
+        For I = 0 To 22: Input #1, P4%(I): Next I
+        Close #1
+    End If
 
-                    If P2%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then
-                        Print "(W,"; Right$(Str$(P5%(I, I2, 6) + 1), (Len(Str$(P5%(I, I2, 6) + 1)) - 1)); "-"; Right$(Str$(P5%(I, I2, 7)), (Len(Str$(P5%(I, I2, 7))) - 1)); ")";
-                        W$ = P$(I, I2)
-                    End If
+    For I = 0 To 22
 
-                    If S1%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then Print "(S,"; Right$(Str$(P5%(I, I2, 12) + 1), (Len(Str$(P5%(I, I2, 12) + 1)) - 1)); ")";
+        B2%(Q, I) = B%(Q, I, 4)
 
-                    If P2%(I) = I2 And S6%(I, 0) - S6%(I4, 0) < 0 Then
-                        Print "(L,"; Right$(Str$(P5%(I, I2, 6) + 0), (Len(Str$(P5%(I, I2, 6) + 0)) - 1)); "-"; Right$(Str$(P5%(I, I2, 7) + 1), (Len(Str$(P5%(I, I2, 7) + 1)) - 1)); ")";
-                        L$ = P$(I, I2)
-                    End If
-
-                    If P8%(I, I2, 19) > 0 Then Print "(BS,";: Print Using "##"; P5%(I, I2, 19);: Print ")";
-                    If P8%(I, I2, 22) > 0 Then Print "(H,";: Print Using "##"; P5%(I, I2, 22);: Print ")";
-
-                    Locate , 30: Print Using "##"; Int(P8%(I, I2, 0) / 3);
-
-                    If P8%(I, I2, 0) - (Int(P8%(I, I2, 0) / 3) * 3) > 0 Then Print ".";: Print Using "#"; P8%(I, I2, 0) - (Int(P8%(I, I2, 0) / 3) * 3);
-
-                    Locate , 34
-
-                    Print Using "## ##  ## ## ##"; P8%(I, I2, 1); P8%(I, I2, 2); P8%(I, I2, 3); P8%(I, I2, 4); P8%(I, I2, 5);
-
-                    Print "   ";
-
-                    If P8%(I, I2, 3) > 0 And P8%(I, I2, 0) = 0 Then
-                        Print "99.99 ";
-                    Else
-                        If P8%(I, I2, 0) = 0 Then
-                            Print "--.-- ";
-                        Else
-                            If P8%(I, I2, 3) = 0 Then
-                                Print " 0.00 ";
-                            Else
-                                Print Using "##.## "; P8%(I, I2, 3) / (P8%(I, I2, 0) / 3) * 9;
-                            End If
-                        End If
-                    End If
-
-                    If P2%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then Print Using "## "; P5%(I, I2, 6) + 1; Else Print Using "## "; P5%(I, I2, 6);
-                    If P2%(I) = I2 And S6%(I, 0) - S6%(I4, 0) < 0 Then Print Using "## "; P5%(I, I2, 7) + 1; Else Print Using "## "; P5%(I, I2, 7);
-                    If S1%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then Print Using "## "; P5%(I, I2, 12) + 1; Else Print Using "## "; P5%(I, I2, 12);
-
-                    Print Using "###"; P5%(I, I2, 5)
-
-                    For I4 = 0 To 5
-                        T3%(I4) = T3%(I4) + P8%(I, I2, I4)
-                    Next I4
-                End If
-
-            Next I2
-
+        For I1 = 0 To 11
+            B6%(I, I1) = B6%(I, I1) + B8%(Q, I, I1): T%(I1) = T%(I1) + B8%(Q, I, I1)
         Next I1
 
-        Color 14, 0
-        Print "TOTALS";
-        Color 15, 0
-
-        Locate , 30
-
-        If (T3%(0) / 3) >= 10 Then
-            Locate (P6%(I) + 2), 29
-        End If
-
-        Print Int(T3%(0) / 3);
-
-        If T3%(0) - (Int(T3%(0) / 3) * 3) > 0 Then
-            Print ".";: Print Using "#"; T3%(0) - (Int(T3%(0) / 3) * 3);
-        End If
-
-        Locate , 34
-
-        Print Using "## ##  ## ## ##"; T3%(1); T3%(2); T3%(3); T3%(4); T3%(5)
-        Print
-
-        If X = 0 Then
-            If AP% <> 1 Or U6 <> 2 Then
-                Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
-                I$ = GetKeyPress$
+        If B8%(Q, I, 0) > 0 Then
+            If B8%(Q, I, 1) = 0 Then
+                B6%(I, 12) = 0
+            Else
+                B6%(I, 12) = B6%(I, 12) + 1
             End If
         End If
 
-        If X = 0 Then Cls
+        If B8%(Q, I, 14) > 0 Then B6%(I, 14) = B6%(I, 14) + 1
 
-        LYN% = CInt(T3%(0) / 3)
+        For I1 = 15 To 21
+            B6%(I, I1) = B6%(I, I1) + B8%(Q, I, I1)
+            T%(I1) = T%(I1) + B8%(Q, I, I1)
+        Next I1
 
-        For I1 = 0 To 5: T3%(I1) = 0: Next I1
+        If B6%(I, 12) >= B6%(I, 13) Then B6%(I, 13) = B6%(I, 12)
 
     Next I
 
-    If X = 1 Then X = 0
+    For I = 0 To 21
 
-    Cls
+        For I1 = 23 To 34
+            P0%(I, I1) = P0%(I, I1) + P8%(Q, I, I1)
+            T%(I1 - 23) = T%(I1 - 23) + P8%(Q, I, I1)
+        Next I1
 
-    Color 14, 0: Print " E-";
+        If P8%(Q, I, 23) > 0 Then
+            If P8%(Q, I, 24) = 0 Then
+                P0%(I, 35) = 0
+            Else
+                P0%(I, 35) = P0%(I, 35) + 1
+            End If
+        End If
+
+        For I1 = 37 To 41
+            P0%(I, I1) = P0%(I, I1) + P8%(Q, I, I1)
+            T%(I1 - 22) = T%(I1 - 22) + P8%(Q, I, I1)
+        Next I1
+
+        If P0%(I, 35) >= P0%(I, 36) Then P0%(I, 36) = P0%(I, 35)
+
+    Next I
+
+    T%(12) = T%(12) + L0%(Q)
+    INNING% = 0
+
+    For I = 0 To 21
+        INNING% = INNING% + P8%(Q, I, 0)
+        P3%(Q, I) = P%(Q, I, 6)
+
+        For I1 = 0 To 5
+            P0%(I, I1) = P0%(I, I1) + P8%(Q, I, I1)
+            P4%(I1) = P4%(I1) + P8%(Q, I, I1)
+        Next I1
+
+        For I1 = 13 To 22:
+            P0%(I, I1) = P0%(I, I1) + P8%(Q, I, I1)
+            P4%(I1) = P4%(I1) + P8%(Q, I, I1)
+        Next I1
+
+    Next I
+
+    If S6%(Q, 0) - S6%(1 - Q, 0) > 0 Then P0%(P2%(Q), 6) = P0%(P2%(Q), 6) + 1
+    If S6%(Q, 0) - S6%(1 - Q, 0) < 0 Then P0%(P2%(Q), 7) = P0%(P2%(Q), 7) + 1
+    If S6%(Q, 0) - S6%(1 - Q, 0) > 0 And S1%(Q) >= 0 Then P0%(S1%(Q), 12) = P0%(S1%(Q), 12) + 1: P4%(12) = P4%(12) + 1
+
+    For I = 0 To 21
+        If P%(Q, I, 15) <> 0 Then P0%(I, 8) = P0%(I, 8) + 1: P4%(8) = P4%(8) + 1
+        If INNING% = P8%(Q, I, 0) Then P0%(I, 10) = P0%(I, 10) + 1: P4%(10) = P4%(10) + 1
+        If INNING% = P8%(Q, I, 0) And S6%(1 - Q, 0) = 0 Then P0%(I, 11) = P0%(I, 11) + 1: P4%(11) = P4%(11) + 1
+    Next I
+
+    P0%(SX%(Q), 9) = P0%(SX%(Q), 9) + 1
+    P4%(9) = P4%(9) + 1
+
+    D0%(Q) = D0%(Q) + D3%(Q)
+    D1%(Q) = D1%(Q) + D3%(1 - Q)
+
+    If S6%(Q, 0) - S6%(1 - Q, 0) > 0 Then W2% = W2% + 1
+    If S6%(Q, 0) - S6%(1 - Q, 0) < 0 Then L2% = L2% + 1
+
     Color 15, 0
 
-    If E = 0 Then
-        Print "none"
-    Else
-        For X = 0 To (E - 1): Print E$(X); ",";: Next
-        Print
-    End If
-
-    Color 14, 0: Print "2B-";
+    Print ">>>>>"
+    Print "THE STATS ARE BEING SAVED UNDER": Print "THE FOLLOWING NAME ::: ";
+    Color L%(Q, 11), L%(Q, 12): Print statFile$
     Color 15, 0
 
-    If DB = 0 Then
-        Print "none"
-    Else
-        For X = 0 To (DB - 1): Print DB$(X); ",";: Next
-        Print
-    End If
+    Open diskPaths$(1) + statFile$ For Output As #1
+    Print #1, A$(Q)
+    Print #1, W2%
+    Print #1, L2%
+    For I = 0 To 22: Print #1, B$(Q, I): Print #1, B2%(Q, I): Next I
+    For I = 0 To 21: Print #1, P$(Q, I): Print #1, P3%(Q, I): Next I
+    For I = 0 To 22: For I1 = 0 To 21: Print #1, B6%(I, I1): Next I1: Next I
+    For I = 0 To 21: For I1 = 0 To 41: Print #1, P0%(I, I1): Next I1: Next I
+    Print #1, D0%(Q)
+    Print #1, D1%(Q)
+    For I = 0 To 21: Print #1, T%(I): Next I
+    For I = 0 To 22: Print #1, P4%(I): Next I
+    Close #1
 
-    Color 14, 0: Print "3B-";
-    Color 15, 0
-
-    If TR = 0 Then
-        Print "none"
-    Else
-        For X = 0 To (TR - 1): Print TR$(X); ",";: Next
-        Print
-    End If
-
-    Color 14, 0: Print "HR-";
-    Color 15, 0
-
-    If HR = 0 Then
-        Print "none"
-    Else
-        For X = 0 To (HR - 1): Print HR$(X); ",";: Next
-        Print
-    End If
-
-    Color 14, 0: Print "SB-";
-    Color 15, 0
-    If SB = 0 Then
-        Print "none"
-    Else
-        For X = 0 To (SB - 1): Print SB$(X); ",";: Next
-        Print
-    End If
-
-    Color 14, 0: Print "LOB-";
-    Color 15, 0: Print A$(0); Str$(L0%(0)); ","; A$(1); Str$(L0%(1))
-    Print "DP-";
-    Color 15, 0: Print A$(0); Str$(DP%(0)); ","; A$(1); Str$(DP%(1))
-    Color 14, 0: Print "INJURIES-";
-    Color 15, 0
-
-    If IJL% = 0 Then
-        Print "none"
-    Else
-        For X = 1 To IJL%: Print IJ$(X); ",";: Next
-        Print
-    End If
-
-    eject:
-    Color 14, 0: Print "EJECTIONS-";
-    Color 15, 0
-
-    If EJ% = 0 Then
-        Print "none"
-    Else
-        For X = 1 To EJ%: Print EJ$(X); ",";: Next
-        Print
-    End If
-
-    Color 14, 0: Print "UMPIRES: ";
-    Color 15, 0: Print "HP-"; U$(1); "; 1B-"; U$(2); "; 2B-"; U$(3); "; 3B-"; U$(4)
-    Print "T: "; gameTime$; " A: "; attendance&
+    Print "<<<<<"
     Print
-    Color 14, 0: Print "TEMPERATURE:";
-    Color 15, 0: Print TP%
-    Color 14, 0: Print "WIND: ";
-    Color 15, 0: Print WI$
-    Color 14, 0: Print "SKY: ";
-    Color 15, 0: Print SC$(SC%)
-    Color 14, 0: Print "PRECIPITATION: ";
-    Color 15, 0: Print PC$(PC%)
+    Print
 
-    If AP% <> 1 Or U6 <> 2 Then
-        Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
-        I$ = GetKeyPress$
+    FILENAME$ = diskPaths$(1) + statFile$ + "R"
+
+    If _FileExists(FILENAME$) Then
+        Open diskPaths$(1) + statFile$ + "R" For Input As #1
+        For I = 0 To 22
+            For I1 = 0 To 6
+                Input #1, SS%(I, I1)
+            Next
+        Next
+        Close 1
     End If
+
+    For I = 0 To 22
+        For I1 = 0 To 6
+            SS%(I, I1) = SS%(I, I1) + CSS%(Q, I, I1)
+        Next
+    Next
+
+    Open diskPaths$(1) + statFile$ + "R" For Output As #1
+    For I = 0 To 22
+        For I1 = 0 To 6
+            Print #1, SS%(I, I1)
+        Next
+    Next
+    Close 1
+
+    Y% = 0
+    FILENAME$ = diskPaths$(1) + statFile$ + "S"
+
+    If _FileExists(FILENAME$) Then
+
+        Open diskPaths$(1) + statFile$ + "S" For Input As #1
+        Input #1, Y%
+        For I = 1 To 162: Input #1, H%(I): Next I
+        For I = 1 To 162: Input #1, HT$(I): Next I
+        For I = 1 To 162: Input #1, V%(I): Next I
+        For I = 1 To 162: Input #1, PL$(I): Next I
+        For I = 1 To 162: Input #1, W$(I): Next I
+        For I = 1 To 162: Input #1, L$(I): Next I
+        For I = 1 To 162: Input #1, ING%(I): Next I
+        Close #1
+
+    Else
+        'Default stat values
+        For I = 1 To 162
+            H%(I) = 999
+            HT$(I) = "XXXXXXX"
+            V%(I) = 999
+            PL$(I) = "X"
+            W$(I) = "LYNN"
+            L$(I) = "SUMLER"
+            ING%(I) = 999
+        Next I
+
+    End If
+
+    Y% = Y% + 1
+    H%(Y%) = S6%(Q, 0)
+    HT$(Y%) = A$(1 - Q)
+    V%(Y%) = S6%(1 - Q, 0)
+    W$(Y%) = W$
+    L$(Y%) = L$
+    ING%(Y%) = LYN%
+
+    If Q = 0 Then
+        PL$(Y%) = "A"
+    Else
+        PL$(Y%) = "H"
+    End If
+
+    Open diskPaths$(1) + statFile$ + "S" For Output As #1
+
+    Print #1, Y%
+
+    For I = 1 To 162: Print #1, H%(I): Next I
+    For I = 1 To 162: Print #1, HT$(I): Next I
+    For I = 1 To 162: Print #1, V%(I): Next I
+    For I = 1 To 162: Print #1, PL$(I): Next I
+    For I = 1 To 162: Print #1, W$(I): Next I
+    For I = 1 To 162: Print #1, L$(I): Next I
+    For I = 1 To 162: Print #1, ING%(I): Next I
+
+    Close #1
+
+    Y% = 0
+
+    For I = 0 To 22:
+        For I1 = 0 To 21:
+            B6%(I, I1) = 0
+        Next
+    Next
+
+    For I = 0 To 22:
+        For I1 = 0 To 6:
+            SS%(I, I1) = 0
+        Next
+    Next
+
+    For I = 0 To 21:
+        For I1 = 0 To 41:
+            P0%(I, I1) = 0:
+        Next
+    Next
+
+    W2% = 0
+    L2% = 0
+
+    For I = 0 To 21: T%(I) = 0: Next I
+    For I = 0 To 22: P4%(I) = 0: Next I
+
+    For I = 0 To 1:
+        For I1 = 0 To 22:
+            B2%(I, I1) = 0
+        Next
+    Next
+
+    For I = 0 To 1:
+        For I1 = 0 To 21:
+            P3%(I, I1) = 0:
+        Next
+    Next
 
 End Sub
 
-'------------------------------
-'       BoxToFile routine
-'------------------------------
-' ...explanation...
-Sub BoxToFile (NM$, BK$, E%(), SPECIAL)
 
+'------------------------------
+'    BOXOPTIONS Subroutine
+'------------------------------
+' PARAMETER outputChoice
+'   represents menu choice
+
+' Handle boxscore option chosen
+' 0 = Display on screen
+' 1 = Send to printer
+' 2 = Save to file
+
+' The option to send to printer
+' first creates a temporary file,
+' then loops through it to print
+Sub BOXOPTIONS (outputChoice)
+
+    Shared scheduleFile$
+
+    Select Case outputChoice
+        Case 0:
+            Call BOX2SCREEN
+
+        Case 1, 2
+            If outputChoice = 1 Then
+                'Printer = temporary file
+                NM$ = "TEMPBOX"
+            Else
+                'File = prompt | auto-create
+                If AP% <> 1 Then
+                    Cls
+                    Print "ENTER 8-CHARACTER FILENAME FOR BOXSCORE (NO SPACES OR PERIODS)";: Input NM$
+                    NM$ = NM$ + ".SPC"
+                Else
+                    ' Determine game #
+                    Open "GAME82" For Input As #1
+                    Input #1, scheduleFile$
+                    For I = 0 To 2
+                        Input #1, AP%(I)
+                    Next
+                    Close 1
+
+                    ' NM$ = "BOXSCORE." + MID$(STR$(AP%(0) + AP%(2)), 2, LEN(STR$(AP%(0) + AP%(2))))
+                    NM$ = "BOX" + Mid$(Str$(AP%(0) + AP%(2)), 2, Len(Str$(AP%(0) + AP%(2))))
+                End If
+
+            End If
+
+            'Includes a special option to send to printer when done
+            Call BOX2FILE(outputChoice, NM$)
+
+    End Select
+
+End Sub
+
+
+'------------------------------
+'     BOX2FILE Subroutine
+'------------------------------
+' PARAMETER printChoice
+'   represents choice to print
+'   the file over just saving it
+
+' Sends boxscore to file
+'   When menu choice is to
+'   send to printer, the file
+'   is also looped through to
+'   print, line-by-line
+Sub BOX2FILE (printChoice, NM$)
+
+    Shared E%()
     Shared DB, HR, TR, SB
+
+    Dim BK$
+    BK$ = "## # # ## # #  # # #  #  # # ## ##"
 
     Open diskPaths$(1) + NM$ For Output As #2
 
-    If SPECIAL = 1 Then
+    Print #2, Tab(17);
 
-        If INNING% > E%(1) Then Print #2, Using "MORE THAN ## INNINGS"; E%(1)
+    For IG = 1 To INNING%
 
-        If S6%(1, 0) < E%(2) Then Print #2, A$(1);: Print #2, Using " SCORED LESS THAN ## RUN(S)"; E%(2)
-        If S6%(0, 0) < E%(2) Then Print #2, A$(0);: Print #2, Using " SCORED LESS THAN ## RUN(S)"; E%(2)
-        If S6%(1, 0) > E%(3) Then Print #2, A$(1);: Print #2, Using " SCORED MORE THAN ## RUN(S)"; E%(3)
-        If S6%(0, 0) > E%(3) Then Print #2, A$(0);: Print #2, Using " SCORED MORE THAN ## RUN(S)"; E%(3)
-        If S6%(1, 1) > E%(5) Then Print #2, A$(1);: Print #2, Using " HAD MORE THAN ## HIT%(S)"; E%(5)
-        If S6%(0, 1) > E%(5) Then Print #2, A$(0);: Print #2, Using " HAD MORE THAN ## HIT%(S)"; E%(5)
-        If S6%(1, 1) < E%(4) Then Print #2, A$(1);: Print #2, Using " HAD LESS THAN ## HIT%(S)"; E%(4)
-        If S6%(0, 1) < E%(4) Then Print #2, A$(0);: Print #2, Using " HAD LESS THAN ## HIT%(S)S"; E%(4)
+        If IG < 10 Then
+            Print #2, Using " #"; IG;
+        Else
+            Print #2, Using " ##"; IG;
+        End If
 
-        For I = 0 To 1
+        If (IG Mod 3 = 0) Then Print #2, " ";
 
-            For I1 = 0 To 22
+    Next IG
 
-                If B8%(I, I1, 1) > E%(6) Then Print #2, B$(I, I1);: Print #2, Using " HAD MORE THAN ## HIT%(S)"; E%(6)
-                If B8%(I, I1, 2) > E%(7) Then Print #2, B$(I, I1);: Print #2, Using " SCORED MORE THAN ## RUN(S)"; E%(7)
-                If B8%(I, I1, 3) > E%(8) Then Print #2, B$(I, I1);: Print #2, Using " HAD MORE THAN ## RBI(S)"; E%(8)
-                If B8%(I, I1, 4) > E%(9) Then Print #2, B$(I, I1);: Print #2, Using " HIT MORE THAN ## DOUBLES(S)"; E%(9)
-                If B8%(I, I1, 5) > E%(10) Then Print #2, B$(I, I1);: Print #2, Using " HIT MORE THAN ## TRIPLE(S)"; E%(10)
-                If B8%(I, I1, 6) > E%(11) Then Print #2, B$(I, I1);: Print #2, Using " HOMERED MORE THAN ## TIME(S)"; E%(11)
-                If B8%(I, I1, 9) > E%(12) Then Print #2, B$(I, I1);: Print #2, Using " STOLE MORE THAN ## BASE(S)"; E%(12)
-
-            Next
-
-        Next
-
-        For I = 0 To 1
-            For I1 = 0 To 21
-                If P8%(I, I1, 5) > E%(13) Then Print #2, P$(I, I1);: Print #2, Using " STRUCK OUT MORE THAN ## BATTER(S)"; E%(13)
-            Next
-        Next
-
-    End If
+    Print #2, "   H  R E"
 
     If INNING% < 9 Then
 
@@ -8017,22 +8078,17 @@ Sub BoxToFile (NM$, BK$, E%(), SPECIAL)
             Print #2, A$(I);
 
             For I2 = 1 To INNING%
-                Call InningPrint(I2)
-
+                Call InningPrintFile(I2)
                 If I = 0 Then Print #2, Using "##"; inningScore%(I, I2);
                 If I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = INNING% And inningScore%(1, INNING%) = 0 Then Print #2, " X";
                 If I = 1 And S6%(1, 0) < S6%(0, 0) And I2 = INNING% Or I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = INNING% And inningScore%(1, INNING%) > 0 Then Print #2, Using "##"; inningScore%(I, I2);
                 If I = 1 And I2 < INNING% Then Print #2, Using "##"; inningScore%(I, I2);
-
             Next I2
 
-            Print #2, Tab(40); "-";
-            Print #2, Tab(41);
-            Print #2, Using "##"; S6%(I, 0);
-            Print #2, Tab(44);
-            Print #2, Using "##"; S6%(I, 1);
-            Print #2, Tab(47);
-            Print #2, Using "#"; S6%(I, 2)
+            Print #2, " -";
+            Print #2, Using " ##"; S6%(I, 0);
+            Print #2, Using " ##"; S6%(I, 1);
+            Print #2, Using " #"; S6%(I, 2)
 
         Next I
 
@@ -8045,21 +8101,18 @@ Sub BoxToFile (NM$, BK$, E%(), SPECIAL)
             Print #2, A$(I);
 
             For I2 = 1 To 9
-                Call InningPrint(I2)
+                Call InningPrintFile(I2)
                 If I = 0 Then Print #2, Using "##"; inningScore%(I, I2);
                 If I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = 9 And inningScore%(1, 9) = 0 Then Print #2, " X";
                 If I = 1 And S6%(1, 0) < S6%(0, 0) And I2 = 9 Or I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = 9 And inningScore%(1, 9) > 0 Then Print #2, Using "##"; inningScore%(I, I2);
                 If I = 1 And I2 < 9 Then Print #2, Using "##"; inningScore%(I, I2);
-
             Next I2
 
-            Print #2, Tab(40); "-";
-            Print #2, Tab(41);
-            Print #2, Using "##"; S6%(I, 0);
-            Print #2, Tab(44);
-            Print #2, Using "##"; S6%(I, 1);
-            Print #2, Tab(47);
-            Print #2, Using "#"; S6%(I, 2)
+            If INNING% = 10 Then Print #2, "   ";
+            Print #2, " -";
+            Print #2, Using " ##"; S6%(I, 0);
+            Print #2, Using " ##"; S6%(I, 1);
+            Print #2, Using " #"; S6%(I, 2)
 
         Next I
 
@@ -8071,33 +8124,27 @@ Sub BoxToFile (NM$, BK$, E%(), SPECIAL)
 
             Print #2, A$(I);
 
+            'Print innings 1 - 9
             For I2 = 1 To 9
-                Call InningPrint(I2)
+                Call InningPrintFile(I2)
                 Print #2, Using "##"; inningScore%(I, I2);
-
             Next I2
 
-            Print #2,
-        Next I
+            'If P = 0 And INNING% < 19 Or INNING% = 19 Then INNING% = INNING% - 1
 
-        Print #2,
-
-        If P = 0 And INNING% < 19 Or INNING% = 19 Then INNING% = INNING% - 1
-
-        For I = 0 To 1
-
+            'Prints innings 10 to 19
             For I2 = 10 To INNING%
-                Call InningPrint(I2)
+                Call InningPrintFile(I2)
                 Print #2, Using "##"; inningScore%(I, I2);
             Next I2
 
-            Print #2, Tab(40); "-";
-            Print #2, Tab(41);
-            Print #2, Using "##"; S6%(I, 0);
-            Print #2, Tab(44);
-            Print #2, Using "##"; S6%(I, 1);
-            Print #2, Tab(47);
-            Print #2, Using "#"; S6%(I, 2)
+            If (INNING% Mod 3 = 0) Then Print #2, " "
+
+            Print #2, " -";
+            Print #2, Using " ##"; S6%(I, 0);
+            Print #2, Using " ##"; S6%(I, 1);
+            Print #2, Using " #"; S6%(I, 2)
+
         Next I
 
     End If
@@ -8109,43 +8156,42 @@ Sub BoxToFile (NM$, BK$, E%(), SPECIAL)
             Print #2, A$(I);
 
             For I2 = 1 To 9
-                Call InningPrint(I2)
+                Call InningPrintFile(I2)
                 Print #2, Using "##"; inningScore%(I, I2);
             Next I2
-            Print #2,
-        Next I
 
-        Print #2,
+            'If INNING% = 28 Or INNING% < 28 And P = 0 Then INNING% = INNING% - 1
 
-        If INNING% = 28 Or INNING% < 28 And P = 0 Then INNING% = INNING% - 1
-
-        For I = 0 To 1
             For I2 = 10 To 18
-                Call InningPrint(I2)
+                Call InningPrintFile(I2)
                 Print #2, Using "##"; inningScore%(I, I2);
             Next I2
+
             Print #2,
+
         Next I
 
         For I = 0 To 1
+
+            Print #2, A$(I);
 
             For I2 = 19 To INNING%
-                Call InningPrint(I2)
+                Call InningPrintFile(I2)
                 Print #2, Using "##"; inningScore%(I, I2);
             Next I2
 
-            Print #2, Tab(40); "-";
-            Print #2, Tab(41);
-            Print #2, Using "##"; S6%(I, 0);
-            Print #2, Tab(44);
-            Print #2, Using "##"; S6%(I, 1);
-            Print #2, Tab(47);
-            Print #2, Using "#"; S6%(I, 2)
+            Print #2, " -";
+            Print #2, Using " ##"; S6%(I, 0);
+            Print #2, Using " ##"; S6%(I, 1);
+            Print #2, Using " #"; S6%(I, 2)
 
         Next I
+
         Print #2,
 
     End If
+
+    Print #2,
 
     For I = 0 To 1
 
@@ -8349,7 +8395,8 @@ Sub BoxToFile (NM$, BK$, E%(), SPECIAL)
     Print #2, "LOB-"; A$(0); Str$(L0%(0)); ","; A$(1); Str$(L0%(1))
     Print #2, "DP-"; A$(0); Str$(DP%(0)); ","; A$(1); Str$(DP%(1))
     Print #2, "UMPIRES: HP-"; U$(1); "; 1B-"; U$(2); "; 2B-"; U$(3); "; 3B-"; U$(4)
-    Print #2, "T: "; gameTime$; " A: "; attendance&
+    Print #2, "TIME: "; gameTime$
+    Print #2, "ATTENDANCE: ";: Print Using "###,###"; actualAttendance&
     Print #2,
     Print #2, "INJURIES-";
 
@@ -8374,12 +8421,12 @@ Sub BoxToFile (NM$, BK$, E%(), SPECIAL)
     Print #2, "WIND: "; WI$
     Print #2, "SKY: "; SC$(SC%)
     Print #2, "PRECIPITATION: "; PC$(PC%)
-    Print #2, Chr$(12)
+
+    If printChoice = 1 Then Print #2, Chr$(12)
+
     Close #2
 
-    If SPECIAL = 1 Then FCopy diskPaths$(1) + NM$, diskPaths$(1) + "BOX" + Mid$(Str$(Count%), 2, Len(Str$(Count%))) + ".SPC", Space$(4096), ErrCode 'copy the file
-
-    If X = 1 Then
+    If printChoice = 1 Then
 
         Open diskPaths$(1) + NM$ For Input As #2
 
@@ -8388,442 +8435,633 @@ Sub BoxToFile (NM$, BK$, E%(), SPECIAL)
             LPrint X$
         Loop While Left$(X$, 1) <> Chr$(12)
 
+        Kill "TEMPBOX"
+
     End If
 
 End Sub
 
+
 '------------------------------
-'      CheckRecords routine
+'    BOX2SCREEN Subroutine
 '------------------------------
-' ...explanation...
-Sub CheckRecords ()
+' Displays boxscore on screen
+Sub BOX2SCREEN
 
     Shared DB, HR, TR, SB
     Shared DB$(), E$(), HR$(), SB$(), TR$()
 
-    For I = 0 To 1:
-        For I1 = 0 To 21:
-            If P8%(I, I1, 1) < 0 Then P8%(I, I1, 1) = 0
-        Next I1
-    Next I
-
-    For I = 0 To 1:
-
-        For I1 = 0 To 21
-            If P%(I, I1, 15) = 1 Then
-                If P8%(I, I1, 0) >= 18 And P8%(I, I1, 3) <= 3 Then P8%(I, I1, 21) = 1
-            End If
-        Next I1
-
-    Next I
-
-    For I = 0 To 1:
-
-        For I1 = 0 To 22
-
-            If B8%(I, I1, 11) <> 0 Then
-                'Where does value of E come from?
-                'Or from LOADER, it's a single not INT
-                If B8%(I, I1, 11) = 1 Then
-                    E$(E) = B$(I, I1)
-                Else
-                    E$(E) = B$(I, I1) + Str$(B8%(I, I1, 11))
-                End If
-
-                E$(E) = E$(E) + " (" + Right$(Str$(B5%(I, I1, 11)), (Len(Str$(B5%(I, I1, 11))) - 1)) + ")"
-                E = E + 1
-            End If
-
-            '        ***CHECKING DOUBLES***
-            If B8%(I, I1, 4) <> 0 Then
-                If B8%(I, I1, 4) = 1 Then
-                    DB$(DB) = B$(I, I1)
-                Else
-                    DB$(DB) = B$(I, I1) + Str$(B8%(I, I1, 4))
-                End If
-
-                DB$(DB) = DB$(DB) + " (" + Right$(Str$(B5%(I, I1, 4)), (Len(Str$(B5%(I, I1, 4))) - 1)) + ")"
-                DB = DB + 1
-
-            End If
-
-            '        ***CHECKING TRIPLES***
-            If B8%(I, I1, 5) <> 0 Then
-                If B8%(I, I1, 5) = 1 Then
-                    TR$(TR) = B$(I, I1)
-                Else
-                    TR$(TR) = B$(I, I1) + Str$(B8%(I, I1, 5))
-                End If
-
-                TR$(TR) = TR$(TR) + " (" + Right$(Str$(B5%(I, I1, 5)), (Len(Str$(B5%(I, I1, 5))) - 1)) + ")"
-                TR = TR + 1
-
-            End If
-
-            '        ***CHECKING HOME RUNS***
-            If B8%(I, I1, 6) <> 0 Then
-                If B8%(I, I1, 6) = 1 Then
-                    HR$(HR) = B$(I, I1)
-                Else
-                    HR$(HR) = B$(I, I1) + Str$(B8%(I, I1, 6))
-                End If
-
-                HR$(HR) = HR$(HR) + " (" + Right$(Str$(B5%(I, I1, 6)), (Len(Str$(B5%(I, I1, 6))) - 1)) + ")"
-                HR = HR + 1
-
-            End If
-
-            '        ***CHECKING STOLEN BASES ***
-            If B8%(I, I1, 9) <> 0 Then
-                If B8%(I, I1, 9) = 1 Then
-                    SB$(SB) = B$(I, I1) + " (" + Right$(Str$(B5%(I, I1, 9)), (Len(Str$(B5%(I, I1, 9))) - 1)) + ")": SB = SB + 1
-                Else
-                    SB$(SB) = B$(I, I1) + Str$(B8%(I, I1, 9)) + " (" + Right$(Str$(B5%(I, I1, 9)), (Len(Str$(B5%(I, I1, 9))) - 1)) + ")": SB = SB + 1
-                End If
-            End If
-
-        Next I1
-
-    Next I
-
-    For I = 0 To 1
-
-        For I1 = 0 To 21
-
-            If P8%(I, I1, 34) <> 0 Then
-
-                If P8%(I, I1, 34) = 1 Then
-                    E$(E) = P$(I, I1)
-                Else
-                    E$(E) = P$(I, I1) + Str$(P8%(I, I1, 34))
-                End If
-
-                E$(E) = E$(E) + " (" + Right$(Str$(P5%(I, I1, 34)), (Len(Str$(P5%(I, I1, 34))) - 1)) + ")"
-                E = E + 1
-
-            End If
-
-            '        ***CHECKING DOUBLES***
-            If P8%(I, I1, 27) <> 0 Then
-
-                If P8%(I, I1, 27) = 1 Then
-                    DB$(DB) = P$(I, I1)
-                Else
-                    DB$(DB) = P$(I, I1) + Str$(P8%(I, I1, 27))
-                End If
-
-                DB$(DB) = DB$(DB) + " (" + Right$(Str$(P5%(I, I1, 27)), (Len(Str$(P5%(I, I1, 27))) - 1)) + ")"
-                DB = DB + 1
-
-            End If
-
-            '        ***CHECKING TRIPLES***
-            If P8%(I, I1, 28) <> 0 Then
-
-                If P8%(I, I1, 28) = 1 Then
-                    TR$(TR) = P$(I, I1)
-                Else
-                    TR$(TR) = P$(I, I1) + Str$(P8%(I, I1, 28))
-                End If
-
-                'Error #9 = index ???
-                TR$(TR) = TR$(TR) + " (" + Right$(Str$(P5%(I, I1, 28)), (Len(Str$(P5%(I, I1, 28))) - 1)) + ")"
-                TR = TR + 1
-
-            End If
-
-            '        ***CHECKING HOME RUNS***
-            If P8%(I, I1, 29) <> 0 Then
-
-                If P8%(I, I1, 29) = 1 Then
-                    HR$(HR) = P$(I, I1)
-                Else
-                    HR$(HR) = P$(I, I1) + Str$(P8%(I, I1, 29))
-                End If
-
-                HR$(HR) = HR$(HR) + " (" + Right$(Str$(P5%(I, I1, 29)), (Len(Str$(P5%(I, I1, 29))) - 1)) + ")"
-                HR = HR + 1
-
-            End If
-
-            '        ***CHECKING STOLEN BASES ***
-            If P8%(I, I1, 32) <> 0 Then
-                If P8%(I, I1, 32) = 1 Then
-                    SB$(SB) = P$(I, I1) + " (" + Right$(Str$(P5%(I, I1, 32)), (Len(Str$(P5%(I, I1, 32))) - 1)) + ")"
-                    SB = SB + 1
-                Else
-                    SB$(SB) = P$(I, I1) + Str$(P8%(I, I1, 32)) + " (" + Right$(Str$(P5%(I, I1, 32)), (Len(Str$(P5%(I, I1, 32))) - 1)) + ")"
-                    SB = SB + 1
-                End If
-            End If
-
-        Next I1
-    Next I
-
-    gameTime$ = "2:"
-
-    'Random # from 5 to 60
-    attendance& = Int(Rnd(1) * 55) + 5
-    attendance& = attendance& * 1000
-
-    MIN = Int(Rnd(1) * 60)
-
-    If MIN < 10 Then
-        MIN$ = "0" + Right$(Str$(MIN), 1): gameTime$ = gameTime$ + MIN$
-    Else
-        gameTime$ = gameTime$ + Right$(Str$(MIN), 2)
-    End If
-
-    For I = 0 To 1:
-        For I1 = 0 To 21:
-            If P%(I, I1, 15) >= 98 Then P%(I, I1, 15) = 0
-        Next I1
-    Next I
-
-    For I = 0 To 1:
-        For I1 = 0 To 22:
-            If B%(I, I1, 21) >= 98 Then B%(I, I1, 21) = 0
-            If B%(I, I1, 21) <> 0 Then B8%(I, I1, 14) = 1
-        Next I1
-    Next I
+    Dim BK$
+    BK$ = "## # # ## # #  # # #  #  # # ## ##"
 
     Cls
-    Print "PLEASE WAIT..."
+
+    'Color 14
+    'If N = 2 Then
+    '    Print "SITE: ";
+    '    Color 15
+    '    Print "NEUTRAL"
+    'Else
+    '    Print "SITE: ";
+    '    Color 15
+    '    Print gameStadium$(N)
+    'End If
+
+    'Color 14
+    'Print "ATTENDANCE: ";
+    'Color 15
+    'Print Using "###,###"; actualAttendance&
+    'Print
+
+    Call ScoreSummary
+
+    If AP% <> 1 Or U6 <> 2 Then
+        Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
+        I$ = GetKeyPress$
+    End If
+
+    Cls
+
+    Call STATS2SCREEN
+
+End Sub
+
+
+'------------------------------
+'   ScoreSummary Subroutine
+'------------------------------
+' Prints score by period for each team
+Sub ScoreSummary
+
+    Color 14, 0
+
+    'Print innings 1 to 9
+    For IG = 1 To INNING%
+        Call LocateInning(IG)
+        Print IG;
+    Next IG
+
+    Print "  H  R E"
+
+    'Fewer than 9 innings
+    If INNING% < 9 Then
+
+        For I = 0 To 1
+
+            Color L%(I, 11), L%(I, 12)
+            Print A$(I);
+            Color 15, 0
+
+            For I2 = 1 To INNING%
+                Call LocateInning(IG)
+                If I = 0 Then Print Using "##"; inningScore%(I, I2);
+                If I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = INNING% And inningScore%(1, INNING%) = 0 Then Print , " X";
+                If I = 1 And S6%(1, 0) < S6%(0, 0) And I2 = INNING% Or I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = INNING% And inningScore%(1, INNING%) > 0 Then Print Using "##"; inningScore%(I, I2);
+                If I = 1 And I2 < INNING% Then Print Using "##"; inningScore%(I, I2);
+
+            Next I2
+
+            Print " -";
+            Print Using "## "; S6%(I, 0);
+            Print Using "## "; S6%(I, 1);
+            Print Using "#"; S6%(I, 2)
+
+        Next I
+
+    End If
+
+    '9 or 10 innings
+    If INNING% = 10 And P = 0 Or INNING% <= 9 Then
+
+        For I = 0 To 1
+
+            Color L%(I, 11), L%(I, 12)
+            Print A$(I);
+            Color 15, 0
+
+            For I2 = 1 To 9
+                Call LocateInning(IG)
+                If I = 0 Then Print Using "##"; inningScore%(I, I2);
+                If I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = 9 And inningScore%(1, 9) = 0 Then Print " X";
+                If I = 1 And S6%(1, 0) < S6%(0, 0) And I2 = 9 Or I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = 9 And inningScore%(1, 9) > 0 Then Print Using "##"; inningScore%(I, I2);
+                If I = 1 And I2 < 9 Then Print Using "##"; inningScore%(I, I2);
+            Next I2
+
+            If INNING% = 10 Then
+                Print "   -";
+            Else
+                Print " -";
+            End If
+
+            Print Using "## "; S6%(I, 0);
+            Print Using "## "; S6%(I, 1);
+            Print Using "#"; S6%(I, 2)
+
+        Next I
+
+    End If
+
+    'Innings 10 - 18
+    If INNING% = 10 And P = 1 Or INNING% > 10 And INNING% < 19 Or INNING% = 19 And P = 0 Then
+
+        For I = 0 To 1
+
+            Color L%(I, 11), L%(I, 12)
+            Print A$(I);
+            Color 15, 0
+
+            For I2 = 1 To 9
+                Call LocateInning(I2)
+                Print Using "##"; inningScore%(I, I2);
+            Next I2
+
+        Next I
+
+        Print
+
+        If P = 0 And INNING% < 19 Or INNING% = 19 Then INNING% = INNING% - 1
+
+        'Print innings 10 to 18
+        For IG = 10 To INNING%
+            Call LocateInning(IG)
+            Print IG;
+        Next IG
+
+        Print "  H  R E"
+
+        For I = 0 To 1
+
+            For I2 = 10 To INNING%
+                Call LocateInning(I2)
+                Print Using "##"; inningScore%(I, I2);
+            Next I2
+
+            Print " -";
+            Print Using "## "; S6%(I, 0);
+            Print Using "## "; S6%(I, 1);
+            Print Using "#"; S6%(I, 2)
+
+        Next I
+
+    End If
+
+    'Innings 19 - 27
+    If INNING% = 19 And P = 1 Or INNING% > 19 And INNING% <= 28 Then
+
+        For I = 0 To 1
+
+            Color L%(I, 11), L%(I, 12)
+            Print A$(I);
+
+            Color 15, 0
+
+            For I2 = 1 To 9
+                Call LocateInning(I2)
+                Print Using "##"; inningScore%(I, I2);
+            Next I2
+
+            Print
+
+        Next I
+
+        Print
+
+        If INNING% = 28 Or INNING% < 28 And P = 0 Then INNING% = INNING% - 1
+
+        'Print innings 10 to 18
+        For IG = 10 To INNING%
+            Call LocateInning(IG)
+            Print IG;
+        Next IG
+
+        Print "  H  R E"
+
+        For I = 0 To 1
+
+            For I2 = 10 To 18
+                Call LocateInning(I2)
+                Print Using "##"; inningScore%(I, I2);
+            Next I2
+
+            Print
+
+        Next I
+
+        Print
+
+        'Print innings 10 to 18
+        For IG = 19 To INNING%
+            Call LocateInning(IG)
+            Print IG;
+        Next IG
+
+        Print "  H  R E"
+
+        For I = 0 To 1
+
+            For I2 = 19 To INNING%
+                Call LocateInning(I2)
+                Print Using "##"; inningScore%(I, I2);
+            Next I2
+
+            Print " -";
+            Print Using "## "; S6%(I, 0);
+            Print Using "## "; S6%(I, 1);
+            Print Using "#"; S6%(I, 2)
+
+        Next I
+
+    End If
+
+End Sub
+
+
+'------------------------------
+'   STATS2SCREEN Subroutine
+'------------------------------
+' ...explanation...
+Sub STATS2SCREEN
 
     For I = 0 To 1
 
-        M = 23
-        L = 22
+        Color L%(I, 11), L%(I, 12)
+        Print A$(I);
+        Color 14, 0
+        Locate , 18: Print "AB R H BI 2 3 HR K W SB CS E PO  A      BA   HR  RBI"
+        Color 15, 0
 
-        Do
-            7363 '
-            I6 = 0
-            I7 = 0
+        For I3 = 0 To 22
 
-            Do
-                7364 '
-                H1 = 0
-                H2 = 0
-                H3 = 0
+            If X0%(I, 0, I3) <> -1 And X0%(I, 1, I3) <> 1 Then
 
-                If X0%(I, 2, I6) > X0%(I, 2, I6 + 1) Then
+                I1 = X0%(I, 0, I3)
 
-                    H1 = X0%(I, 2, I6)
-                    H2 = X0%(I, 1, I6)
-                    H3 = X0%(I, 0, I6)
-                    X0%(I, 0, I6) = X0%(I, 0, I6 + 1)
-                    X0%(I, 1, I6) = X0%(I, 1, I6 + 1)
-                    X0%(I, 2, I6) = X0%(I, 2, I6 + 1)
-                    X0%(I, 2, I6 + 1) = H1
-                    X0%(I, 1, I6 + 1) = H2
-                    X0%(I, 0, I6 + 1) = H3
-                    I7 = I6
+                Print B$(I, I1); ", "; C$(X0%(I, 1, I3));
+                Locate , 18
+                '                AB             R              H              BI             2              3              HR             K              W              SB             CS              E               PO              A
+                Print Using BK$; B8%(I, I1, 0); B8%(I, I1, 2); B8%(I, I1, 1); B8%(I, I1, 3); B8%(I, I1, 4); B8%(I, I1, 5); B8%(I, I1, 6); B8%(I, I1, 8); B8%(I, I1, 7); B8%(I, I1, 9); B8%(I, I1, 10); B8%(I, I1, 11); B8%(I, I1, 16); B8%(I, I1, 17);
+                Print "   ";
 
+                'BA
+                If B5%(I, I1, 0) = 0 Or B5%(I, I1, 1) = 0 Then
+                    Print " .000   ";
+                Else
+                    If B5%(I, I1, 0) = B5%(I, I1, 1) Then
+                        Print "1.000   ";
+                    Else
+                        Print " ."; Using "###   "; (B5%(I, I1, 1) / B5%(I, I1, 0) * 1000);
+                    End If
                 End If
 
-                I6 = I6 + 1
+                '           HR   RBI
+                Print Using "##  ###"; B5%(I, I1, 6); B5%(I, I1, 3)
 
-            Loop While I6 <= L
+                For I2 = 0 To 17
+                    T3%(I2) = T3%(I2) + B8%(I, I1, I2)
+                Next I2
 
-            If I7 <> 0 Then
-                L = I7 - 1
             End If
 
-        Loop While I7 <> 0
+        Next I3
 
-    Next I
-
-End Sub
-
-'------------------------------
-'      InningPrint routine
-'------------------------------
-' ...explanation...
-Sub InningPrint (I2)
-
-    If I2 < 4 Then Print #2, Tab(((2 * I2) + 18));
-    If I2 > 3 And I2 < 7 Then Print #2, Tab(((2 * I2) + 19));
-    If I2 > 6 And I2 < 10 Then Print #2, Tab(((2 * I2) + 20));
-    If I2 > 9 And I2 < 13 Then Print #2, Tab(((2 * (I2 - 9)) + 18));
-    If I2 > 12 And I2 < 16 Then Print #2, Tab(((2 * (I2 - 9)) + 19));
-    If I2 > 15 And I2 < 19 Then Print #2, Tab(((2 * (I2 - 9)) + 20));
-    If I2 > 18 And I2 < 22 Then Print #2, Tab(((2 * (I2 - 18)) + 18));
-    If I2 > 21 And I2 < 25 Then Print #2, Tab(((2 * (I2 - 18)) + 19));
-    If I2 > 24 And I2 < 28 Then Print #2, Tab(((2 * (I2 - 18)) + 20));
-
-End Sub
-
-'------------------------------
-'   GETRPBP Subroutine
-'------------------------------
-' ...explanation...
-' This routine works as long as the PBP file structure stays fixed
-' pbpIdx% is the record index to grab from the file
-' Where to grab is fixed throughout the code depending on context
-
-Sub GETRPBP (range%, minIdx%, Y$, D)
-
-    pbpIdx% = Int(Rnd(1) * range%) + minIdx%
-
-    Open "REVISED.PBP" For Random As #1 Len = 44
-    Field #1, 44 As YY$
-    Get #1, pbpIdx%
-    Y$ = _Trim$(YY$)
-    Close 1
-
-    'Y$ = _Trim$(YYY$(pbpIdx%))
-
-    If TGTBASE% = 3 And Left$(Y$, 2) = "Q1" Then Y$ = "Q2 " + Right$(Y$, Len(Y$) - 3)
-    If TGTBASE% = 3 And Right$(Y$, 2) = "Q1" Then Y$ = Left$(Y$, Len(Y$) - 2) + "Q2"
-
-    If Left$(Y$, 2) = "BB" Then Y$ = player$(0) + Right$(Y$, Len(Y$) - 2)
-    If Left$(Y$, 2) = "Q1" Then Y$ = player$(1) + Right$(Y$, Len(Y$) - 2)
-    If Left$(Y$, 2) = "Q2" Then Y$ = player$(2) + Right$(Y$, Len(Y$) - 2)
-    If Left$(Y$, 2) = "PP" Then Y$ = P$(D, P1%(D)) + Right$(Y$, Len(Y$) - 2)
-    If Left$(Y$, 2) = "UU" Then Y$ = U$(1) + Right$(Y$, Len(Y$) - 2)
-    If Left$(Y$, 2) = "XX" Then Y$ = B$(D, B9%(D, 5)) + " and " + B$(D, B9%(D, 6)) + Right$(Y$, Len(Y$) - 2)
-    If Left$(Y$, 2) = "TT" Then Y$ = B$(D, B9%(D, 5)) + Right$(Y$, Len(Y$) - 2)
-    If Left$(Y$, 2) = "FB" Then Y$ = B$(D, B9%(D, 3)) + Right$(Y$, Len(Y$) - 2)
-    If Left$(Y$, 2) = "YY" Then Y$ = B$(D, B9%(D, 4)) + " and " + B$(D, B9%(D, 3)) + Right$(Y$, Len(Y$) - 2)
-    If Left$(Y$, 2) = "ZZ" Then Y$ = B$(D, B9%(D, 4)) + " and " + B$(D, B9%(D, 6)) + Right$(Y$, Len(Y$) - 2)
-    If Left$(Y$, 2) = "Q4" Then Y$ = player$(4) + Right$(Y$, Len(Y$) - 2)
-    If Right$(Y$, 3) = " PP" Then Y$ = Left$(Y$, Len(Y$) - 2) + P$(D, P1%(D))
-    If Right$(Y$, 3) = " BB" Then Y$ = Left$(Y$, Len(Y$) - 2) + player$(0)
-    If Right$(Y$, 2) = "Q1" Then Y$ = Left$(Y$, Len(Y$) - 2) + player$(1)
-    If Right$(Y$, 2) = "Q2" Then Y$ = Left$(Y$, Len(Y$) - 2) + player$(2)
-    If Right$(Y$, 2) = "UU" Then Y$ = Left$(Y$, Len(Y$) - 2) + U$(1)
-    If Right$(Y$, 2) = "Q4" Then Y$ = Left$(Y$, Len(Y$) - 2) + player$(4)
-    If Right$(Y$, 3) = " TT" Then Y$ = Left$(Y$, Len(Y$) - 2) + B$(D, B9%(D, 5))
-    If Right$(Y$, 2) = "FB" Then Y$ = Left$(Y$, Len(Y$) - 2) + B$(D, B9%(D, 3))
-    If Right$(Y$, 3) = " XX" Then Y$ = Left$(Y$, Len(Y$) - 2) + B$(D, B9%(D, 5)) + " and " + B$(D, B9%(D, 6))
-    If Right$(Y$, 2) = "YY" Then Y$ = Left$(Y$, Len(Y$) - 2) + B$(D, B9%(D, 3)) + " and " + B$(D, B9%(D, 4))
-    If Right$(Y$, 3) = " ZZ" Then Y$ = Left$(Y$, Len(Y$) - 2) + B$(D, B9%(D, 6)) + " and " + B$(D, B9%(D, 4))
-
-End Sub
-
-'------------------------------
-'   STRIPRPBP Subroutine
-'------------------------------
-' ...explanation...
-Sub STRIPRPBP (range%, minIdx%, Y$, D)
-
-    stringPosition% = 1
-
-    'Check each character of PBP string
-    Do
-
-        test = Asc(Mid$(Y$, stringPosition%, 1))
-
-        'If it is a non-printable character (corrupt data)
-        If test > 122 Or test < 32 Then
-            'Get a new PBP string to use
-            stringPosition% = 1
-            Call GETRPBP(range%, minIdx%, Y$, D)
-        Else
-            stringPosition% = stringPosition% + 1
-        End If
-
-    Loop Until stringPosition% = Len(Y$)
-
-End Sub
-
-'------------------------------
-'    LDRNRCTDN Subroutine
-'------------------------------
-' ...explanation...
-Sub LDRNRCTDN ()
-
-    If S4% = 7 Or S4% = 6 Or S4% = 5 Or S4% = 3 Then
-        A5%(3) = 11
-        For I = 0 To 2: A5%(I) = 1: Next
-    End If
-
-    If S4% = 2 Or S4% = 4 Then
-        A5%(0) = 1
-        A5%(1) = 1
-        A5%(2) = 11
-    End If
-
-    If S4% = 1 Then
-        A5%(1) = 11
-        A5%(0) = 1
-    End If
-
-    If S4% = 0 Then A5%(0) = 11
-
-    If PLB = 0 Then Call PBP(player$(0) + " bunts it hard!")
-    If PLB = 0 Then Call PBP(player$(4) + " makes an easy play")
-
-    PLB = 0
-    O%(0) = O%(0) + 1
-    O%(1) = O%(1) + 1
-
-    Call ADDSTTS(P, D)
-    Call CREDITASSIST(W%, D)
-    Call ADVANCEMENT(P, D, S2%, F%, I3)
-    Call CREDITPUTOUT(I3, FB2P%, AST%, D)
-
-End Sub
-
-'------------------------------
-'   PBP Subroutine
-'------------------------------
-' ...explanation...
-
-' Has been updated from original
-' source to determine Or we're
-' printing on GFX or text screen
-Sub PBP (F$)
-
-    If pbpDelay! > 0 Then
-
-        F$ = PadRight(F$, 44)
-        'Should this ever be more than 44 characters?
-
-        F$ = Left$(F$, 44)
-        PB% = PB% + 1
-
-        ' Put PBP text in a slot for line PB%
-        If PB% < 9 Then G$(PB%) = F$
-
-        ' Or we're past line 8, move all slots down
-        ' to make room
-        If PB% > 8 Then
-
-            For I9 = 1 To 7
-                G$(I9) = G$(I9 + 1)
+        For I1 = 0 To 21:
+            For I2 = 0 To 13:
+                T3%(I2) = T3%(I2) + P8%(I, I1, I2 + 23)
             Next
 
-            G$(8) = F$
+            For I2 = 14 To 17
+                T3%(I2) = T3%(I2) + P8%(I, I1, I2 + 22)
+            Next
+        Next
 
-        End If
+        For I1 = 1 To P6%(I)
 
-        'Print all 8 lines from scratch
-        For I9 = 1 To 8
+            For I2 = 0 To 21
 
-            If usingGfx = 1 Then
-                Color 4294967295
-                _PrintMode _FillBackground , imageScreen&
-                text$ = G$(I9)
-                PrintOnGfx 20, I9 + 3, text$, imageScreen&
-            Else
-                Locate 14 + I9, 1
-                Print G$(I9)
-            End If
+                If P%(I, I2, 15) = I1 Then
+
+                    Print P$(I, I2); ", P";
+                    Locate , 18
+                    '                AB              R               H               BI              2               3               HR              K               W               SB              CS              E               PO              A
+                    Print Using BK$; P8%(I, I2, 23); P8%(I, I2, 25); P8%(I, I2, 24); P8%(I, I2, 26); P8%(I, I2, 27); P8%(I, I2, 28); P8%(I, I2, 29); P8%(I, I2, 31); P8%(I, I2, 30); P8%(I, I2, 32); P8%(I, I2, 33); P8%(I, I2, 34); P8%(I, I2, 38); P8%(I, I2, 39);
+                    Print "   ";
+
+                    'BA
+                    If P5%(I, I2, 24) = 0 Or P5%(I, I2, 23) = 0 Then
+                        Print " .000   "
+                    Else
+                        If P5%(I, I2, 24) = P5%(I, I2, 23) Then
+                            Print "1.000   ";
+                        Else
+                            Print Using "#.###   "; P5%(I, I2, 24) / P5%(I, I2, 23);
+                        End If
+
+                        '           HR   RBI
+                        Print Using "##  ###"; P5%(I, I2, 29); P5%(I, I2, 26)
+
+                    End If
+                End If
+
+            Next
 
         Next
 
-        Call DELAY
+        Color 14, 0: Print "TOTALS";
+        Color 15, 0
+        Locate , 17: Print T3%(0);
+        Locate , 22: Print T3%(1);
+        Locate , 27: Print T3%(4);
+        Locate , 32: Print T3%(6);
+        Locate , 36: Print T3%(7);
+        Locate , 42: Print T3%(10);
+        Locate , 46: Print T3%(16);
+        Locate , 50: Print T3%(17)
+        Locate , 20: Print T3%(2);
+        Locate , 24: Print T3%(3);
+        Locate , 29: Print T3%(5);
+        Locate , 34: Print T3%(8);
+        Locate , 39: Print T3%(9);
+        Locate , 44: Print T3%(11)
 
+        Print
+
+        If AP% <> 1 Or U6 <> 2 Then
+            Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
+            I$ = GetKeyPress$
+        End If
+
+        Cls
+
+        For I1 = 0 To 22: T3%(I1) = 0: Next I1
+
+    Next I
+
+    'GoTo 7313
+
+    For I = 0 To 1
+
+        Cls
+
+        Color L%(I, 11), L%(I, 12)
+        Print A$(I);
+
+        Color 14, 0: Locate , 23
+        Print "       IP   H  R  ER BB SO    ERA   W  L  S  SO": Color 15, 0
+
+        For I1 = 1 To P6%(I)
+
+            For I2 = 0 To 21
+
+                If P%(I, I2, 15) = I1 Then
+                    I4 = 1 - I
+                    Locate , 1
+                    Print P$(I, I2); " ";
+
+                    If P2%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then
+                        Print "(W,"; Right$(Str$(P5%(I, I2, 6) + 1), (Len(Str$(P5%(I, I2, 6) + 1)) - 1)); "-"; Right$(Str$(P5%(I, I2, 7)), (Len(Str$(P5%(I, I2, 7))) - 1)); ")";
+                        W$ = P$(I, I2)
+                    End If
+
+                    If S1%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then Print "(S,"; Right$(Str$(P5%(I, I2, 12) + 1), (Len(Str$(P5%(I, I2, 12) + 1)) - 1)); ")";
+
+                    If P2%(I) = I2 And S6%(I, 0) - S6%(I4, 0) < 0 Then
+                        Print "(L,"; Right$(Str$(P5%(I, I2, 6) + 0), (Len(Str$(P5%(I, I2, 6) + 0)) - 1)); "-"; Right$(Str$(P5%(I, I2, 7) + 1), (Len(Str$(P5%(I, I2, 7) + 1)) - 1)); ")";
+                        L$ = P$(I, I2)
+                    End If
+
+                    If P8%(I, I2, 19) > 0 Then Print "(BS,";: Print Using "##"; P5%(I, I2, 19);: Print ")";
+                    If P8%(I, I2, 22) > 0 Then Print "(H,";: Print Using "##"; P5%(I, I2, 22);: Print ")";
+
+                    Locate , 30: Print Using "##"; Int(P8%(I, I2, 0) / 3);
+
+                    If P8%(I, I2, 0) - (Int(P8%(I, I2, 0) / 3) * 3) > 0 Then Print ".";: Print Using "#"; P8%(I, I2, 0) - (Int(P8%(I, I2, 0) / 3) * 3);
+
+                    Locate , 34
+
+                    Print Using "## ##  ## ## ##"; P8%(I, I2, 1); P8%(I, I2, 2); P8%(I, I2, 3); P8%(I, I2, 4); P8%(I, I2, 5);
+
+                    Print "   ";
+
+                    If P8%(I, I2, 3) > 0 And P8%(I, I2, 0) = 0 Then
+                        Print "99.99 ";
+                    Else
+                        If P8%(I, I2, 0) = 0 Then
+                            Print "--.-- ";
+                        Else
+                            If P8%(I, I2, 3) = 0 Then
+                                Print " 0.00 ";
+                            Else
+                                Print Using "##.## "; P8%(I, I2, 3) / (P8%(I, I2, 0) / 3) * 9;
+                            End If
+                        End If
+                    End If
+
+                    If P2%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then Print Using "## "; P5%(I, I2, 6) + 1; Else Print Using "## "; P5%(I, I2, 6);
+                    If P2%(I) = I2 And S6%(I, 0) - S6%(I4, 0) < 0 Then Print Using "## "; P5%(I, I2, 7) + 1; Else Print Using "## "; P5%(I, I2, 7);
+                    If S1%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then Print Using "## "; P5%(I, I2, 12) + 1; Else Print Using "## "; P5%(I, I2, 12);
+
+                    Print Using "###"; P5%(I, I2, 5)
+
+                    For I4 = 0 To 5
+                        T3%(I4) = T3%(I4) + P8%(I, I2, I4)
+                    Next I4
+                End If
+
+            Next I2
+
+        Next I1
+
+        Color 14, 0
+        Print "TOTALS";
+        Color 15, 0
+
+        Locate , 30
+
+        If (T3%(0) / 3) >= 10 Then
+            Locate (P6%(I) + 2), 29
+        End If
+
+        Print Int(T3%(0) / 3);
+
+        If T3%(0) - (Int(T3%(0) / 3) * 3) > 0 Then
+            Print ".";: Print Using "#"; T3%(0) - (Int(T3%(0) / 3) * 3);
+        End If
+
+        Locate , 34
+
+        Print Using "## ##  ## ## ##"; T3%(1); T3%(2); T3%(3); T3%(4); T3%(5)
+        Print
+
+        If AP% <> 1 Or U6 <> 2 Then
+            Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
+            I$ = GetKeyPress$
+        End If
+
+        Cls
+
+        LYN% = CInt(T3%(0) / 3)
+
+        For I1 = 0 To 5: T3%(I1) = 0: Next I1
+
+    Next I
+
+    Cls
+    '--- THIS NEEDS TO LOOK NICER
+
+    Color 14, 0: Print " E-";
+    Color 15, 0
+
+    If E = 0 Then
+        Print "none"
+    Else
+        For X = 0 To (E - 1): Print E$(X); ",";: Next
+        Print
+    End If
+
+    Color 14, 0: Print "2B-";
+    Color 15, 0
+
+    If DB = 0 Then
+        Print "none"
+    Else
+        For X = 0 To (DB - 1): Print DB$(X); ",";: Next
+        Print
+    End If
+
+    Color 14, 0: Print "3B-";
+    Color 15, 0
+
+    If TR = 0 Then
+        Print "none"
+    Else
+        For X = 0 To (TR - 1): Print TR$(X); ",";: Next
+        Print
+    End If
+
+    Color 14, 0: Print "HR-";
+    Color 15, 0
+
+    If HR = 0 Then
+        Print "none"
+    Else
+        For X = 0 To (HR - 1): Print HR$(X); ",";: Next
+        Print
+    End If
+
+    Color 14, 0: Print "SB-";
+    Color 15, 0
+    If SB = 0 Then
+        Print "none"
+    Else
+        For X = 0 To (SB - 1): Print SB$(X); ",";: Next
+        Print
+    End If
+
+    Color 14, 0: Print "LOB-";
+    Color 15, 0: Print A$(0); Str$(L0%(0)); ","; A$(1); Str$(L0%(1))
+    Print "DP-";
+    Color 15, 0: Print A$(0); Str$(DP%(0)); ","; A$(1); Str$(DP%(1))
+    Color 14, 0: Print "INJURIES-";
+    Color 15, 0
+
+    If IJL% = 0 Then
+        Print "none"
+    Else
+        For X = 1 To IJL%: Print IJ$(X); ",";: Next
+        Print
+    End If
+
+    eject:
+    Color 14, 0: Print "EJECTIONS-";
+    Color 15, 0
+
+    If EJ% = 0 Then
+        Print "none"
+    Else
+        For X = 1 To EJ%: Print EJ$(X); ",";: Next
+        Print
+    End If
+
+    Color 14, 0: Print "UMPIRES: ";
+    Color 15, 0: Print "HP-"; U$(1); "; 1B-"; U$(2); "; 2B-"; U$(3); "; 3B-"; U$(4)
+
+    '-- THIS COULD GO ON THE Score Summary
+    Color 14, 0: Print "TIME: ";
+    Color 15, 0: Print gameTime$
+    Color 14, 0: Print "ATTENDANCE: ";
+    Color 15, 0: Print Using "###,###"; actualAttendance&
+    Color 14, 0: Print "TEMPERATURE:";
+    Color 15, 0: Print TP%
+    Color 14, 0: Print "WIND: ";
+    Color 15, 0: Print WI$
+    Color 14, 0: Print "SKY: ";
+    Color 15, 0: Print SC$(SC%)
+    Color 14, 0: Print "PRECIPITATION: ";
+    Color 15, 0: Print PC$(PC%)
+
+    If AP% <> 1 Or U6 <> 2 Then
+        Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
+        I$ = GetKeyPress$
     End If
 
 End Sub
+
+
+'------------------------------
+'      BOX2SPC Subroutine
+'------------------------------
+' Adds special event information
+' to a boxscore file
+Sub BOX2SPC (NM$)
+
+    Open diskPaths$(1) + NM$ For Append As #2
+
+    Print #2, 
+
+    If INNING% > E%(1) Then Print #2, Using "MORE THAN ## INNINGS"; E%(1)
+
+    If S6%(1, 0) < E%(2) Then Print #2, A$(1);: Print #2, Using " SCORED LESS THAN ## RUN(S)"; E%(2)
+    If S6%(0, 0) < E%(2) Then Print #2, A$(0);: Print #2, Using " SCORED LESS THAN ## RUN(S)"; E%(2)
+    If S6%(1, 0) > E%(3) Then Print #2, A$(1);: Print #2, Using " SCORED MORE THAN ## RUN(S)"; E%(3)
+    If S6%(0, 0) > E%(3) Then Print #2, A$(0);: Print #2, Using " SCORED MORE THAN ## RUN(S)"; E%(3)
+    If S6%(1, 1) > E%(5) Then Print #2, A$(1);: Print #2, Using " HAD MORE THAN ## HIT%(S)"; E%(5)
+    If S6%(0, 1) > E%(5) Then Print #2, A$(0);: Print #2, Using " HAD MORE THAN ## HIT%(S)"; E%(5)
+    If S6%(1, 1) < E%(4) Then Print #2, A$(1);: Print #2, Using " HAD LESS THAN ## HIT%(S)"; E%(4)
+    If S6%(0, 1) < E%(4) Then Print #2, A$(0);: Print #2, Using " HAD LESS THAN ## HIT%(S)S"; E%(4)
+
+    For I = 0 To 1
+
+        For I1 = 0 To 22
+
+            If B8%(I, I1, 1) > E%(6) Then Print #2, B$(I, I1);: Print #2, Using " HAD MORE THAN ## HIT%(S)"; E%(6)
+            If B8%(I, I1, 2) > E%(7) Then Print #2, B$(I, I1);: Print #2, Using " SCORED MORE THAN ## RUN(S)"; E%(7)
+            If B8%(I, I1, 3) > E%(8) Then Print #2, B$(I, I1);: Print #2, Using " HAD MORE THAN ## RBI(S)"; E%(8)
+            If B8%(I, I1, 4) > E%(9) Then Print #2, B$(I, I1);: Print #2, Using " HIT MORE THAN ## DOUBLES(S)"; E%(9)
+            If B8%(I, I1, 5) > E%(10) Then Print #2, B$(I, I1);: Print #2, Using " HIT MORE THAN ## TRIPLE(S)"; E%(10)
+            If B8%(I, I1, 6) > E%(11) Then Print #2, B$(I, I1);: Print #2, Using " HOMERED MORE THAN ## TIME(S)"; E%(11)
+            If B8%(I, I1, 9) > E%(12) Then Print #2, B$(I, I1);: Print #2, Using " STOLE MORE THAN ## BASE(S)"; E%(12)
+
+        Next
+
+    Next
+
+    For I = 0 To 1
+        For I1 = 0 To 21
+            If P8%(I, I1, 5) > E%(13) Then Print #2, P$(I, I1);: Print #2, Using " STRUCK OUT MORE THAN ## BATTER(S)"; E%(13)
+        Next
+    Next
+
+End Sub
+
 
 '------------------------------
 '   EndOfGame Subroutine
 '------------------------------
 ' ...explanation...
 Sub EndOfGame ()
+
+    'Close #7
+
     Cls
 
     If (usingGfx = 1) Then
@@ -8831,6 +9069,36 @@ Sub EndOfGame ()
         _FreeImage imageScreen&
     End If
 
-    If normalFinish% = 1 Then Call POSTGAME
+    If normalFinish% = 1 Then
+
+        '-- Inning already increased ?!?!
+        Call POSTGAME
+
+        ' Prompt to play another game
+        Cls
+
+        If AP <> 1 Then
+
+            'Using Home Team's color for the box
+            Call TEAMBOX(1, 1)
+
+            Do
+                U$ = "PLAY ANOTHER GAME (YN)"
+                Locate 7, (80 - Len(U$)) / 2
+                Print U$
+
+                Color 15, 0
+                I$ = GetKeyPress$
+            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+        End If
+
+        If UCase$(I$) = "Y" Or AP = 1 Then
+            Cls
+            Print "PLEASE WAIT ..."
+            Call LOADER
+        End If
+
+    End If
 
 End Sub

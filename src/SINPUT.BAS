@@ -54,7 +54,7 @@ Sub EditStatsSchedules (action%)
 
     Shared statB$(), statP$()
     Shared statB%(), careerB0%(), ratings%()
-    Shared statP%(), P0%()
+    Shared statP%(), careerP0%()
     Shared statT%(), statT1%()
 
     Cls
@@ -110,7 +110,7 @@ Sub EditStatsSchedules (action%)
             For I = 0 To 22: Input #1, statB$(I): Input #1, statB%(I): Next I
             For I = 0 To 21: Input #1, statP$(I): Input #1, statP%(I): Next I
             For I = 0 To 22: For I1 = 0 To 21: Input #1, careerB0%(I, I1): Next I1: Next I
-            For I = 0 To 21: For I1 = 0 To 41: Input #1, P0%(I, I1): Next I1: Next I
+            For I = 0 To 21: For I1 = 0 To 41: Input #1, careerP0%(I, I1): Next I1: Next I
 
             Input #1, D0%
             Input #1, D1%
@@ -138,7 +138,7 @@ End Sub
 Sub InputTeamStats (Z$, A$, X%, D0%, D1%, L2%, W2%, action%)
 
     Shared statB$(), statP$()
-    Shared careerB0%(), P0%()
+    Shared careerB0%(), careerP0%()
     Shared statB%(), statP%(), statT%(), statT1%()
 
     C1 = 0
@@ -406,91 +406,91 @@ Sub InputTeamStats (Z$, A$, X%, D0%, D1%, L2%, W2%, action%)
         If action% = 2 Then
             Locate 1, 30: Print "PITCHER - "; I + 1: Locate , 1
             Locate 1: Print "1. NAME "; statP$(I)
-            Locate 2: Print "2. WON "; P0%(I, 6)
-            Locate 3: Print "3. LOST "; P0%(I, 7)
-            Locate 4: Print "4. SV "; P0%(I, 12)
-            Locate 5: Print "5. (IP X 3) "; P0%(I, 0)
-            Locate 6: Print "6. HITS "; P0%(I, 1)
-            Locate 7: Print "7. BB "; P0%(I, 4)
-            Locate 8: Print "8. SO "; P0%(I, 5)
-            Locate 9: Print "9. CG "; P0%(I, 10)
-            Locate 10: Print "10. RUNS "; P0%(I, 2)
-            Locate 11: Print "11. E R "; P0%(I, 3)
-            Locate 12: Print "12. SH OUT "; P0%(I, 11)
-            Locate 13: Print "13. GAMES "; P0%(I, 8)
-            Locate 14: Print "14. STARTS "; P0%(I, 9)
-            Locate 15: Print "15. HR ALL "; P0%(I, 14)
-            Locate 16: Print "16. GIDP "; P0%(I, 13)
-            Locate 17: Print "17. SH "; P0%(I, 15)
-            Locate 18: Print "18. SF "; P0%(I, 16)
-            Locate 19: Print "19. RUNNERS INHERITED (RI) "; P0%(I, 17)
-            Locate 20: Print "20. RI SCORED "; P0%(I, 18)
-            Locate 21: Print "21. BLOWN SAVES "; P0%(I, 19)
-            Locate 22: Print "22. RUN SUPPORT "; P0%(I, 20)
-            Locate 23: Print "23. QUALITY STARTS "; P0%(I, 21)
-            Locate 2, 40: Print "24. AB "; P0%(I, 23)
-            Locate 3, 40: Print "25. H "; P0%(I, 24)
-            Locate 4, 40: Print "26. R "; P0%(I, 25)
-            Locate 5, 40: Print "27. RBI "; P0%(I, 26)
-            Locate 6, 40: Print "28. DBL "; P0%(I, 27)
-            Locate 7, 40: Print "29. TRPL "; P0%(I, 28)
-            Locate 8, 40: Print "30. HR "; P0%(I, 29)
-            Locate 9, 40: Print "31. BB "; P0%(I, 30)
-            Locate 10, 40: Print "32. K "; P0%(I, 31)
-            Locate 11, 40: Print "33. SB "; P0%(I, 32)
-            Locate 12, 40: Print "34. CS "; P0%(I, 33)
-            Locate 13, 40: Print "35. ERR "; P0%(I, 34)
-            Locate 14, 40: Print "36. CHS "; P0%(I, 35)
-            Locate 15, 40: Print "37. LHS "; P0%(I, 36)
-            Locate 16, 40: Print "38. GIDP "; P0%(I, 37)
-            Locate 17, 40: Print "39. PO "; P0%(I, 38)
-            Locate 18, 40: Print "40. A "; P0%(I, 39)
-            Locate 19, 40: Print "41. SH "; P0%(I, 40)
-            Locate 20, 40: Print "42. SF "; P0%(I, 41)
+            Locate 2: Print "2. WON "; careerP0%(I, 6)
+            Locate 3: Print "3. LOST "; careerP0%(I, 7)
+            Locate 4: Print "4. SV "; careerP0%(I, 12)
+            Locate 5: Print "5. (IP X 3) "; careerP0%(I, 0)
+            Locate 6: Print "6. HITS "; careerP0%(I, 1)
+            Locate 7: Print "7. BB "; careerP0%(I, 4)
+            Locate 8: Print "8. SO "; careerP0%(I, 5)
+            Locate 9: Print "9. CG "; careerP0%(I, 10)
+            Locate 10: Print "10. RUNS "; careerP0%(I, 2)
+            Locate 11: Print "11. E R "; careerP0%(I, 3)
+            Locate 12: Print "12. SH OUT "; careerP0%(I, 11)
+            Locate 13: Print "13. GAMES "; careerP0%(I, 8)
+            Locate 14: Print "14. STARTS "; careerP0%(I, 9)
+            Locate 15: Print "15. HR ALL "; careerP0%(I, 14)
+            Locate 16: Print "16. GIDP "; careerP0%(I, 13)
+            Locate 17: Print "17. SH "; careerP0%(I, 15)
+            Locate 18: Print "18. SF "; careerP0%(I, 16)
+            Locate 19: Print "19. RUNNERS INHERITED (RI) "; careerP0%(I, 17)
+            Locate 20: Print "20. RI SCORED "; careerP0%(I, 18)
+            Locate 21: Print "21. BLOWN SAVES "; careerP0%(I, 19)
+            Locate 22: Print "22. RUN SUPPORT "; careerP0%(I, 20)
+            Locate 23: Print "23. QUALITY STARTS "; careerP0%(I, 21)
+            Locate 2, 40: Print "24. AB "; careerP0%(I, 23)
+            Locate 3, 40: Print "25. H "; careerP0%(I, 24)
+            Locate 4, 40: Print "26. R "; careerP0%(I, 25)
+            Locate 5, 40: Print "27. RBI "; careerP0%(I, 26)
+            Locate 6, 40: Print "28. DBL "; careerP0%(I, 27)
+            Locate 7, 40: Print "29. TRPL "; careerP0%(I, 28)
+            Locate 8, 40: Print "30. HR "; careerP0%(I, 29)
+            Locate 9, 40: Print "31. BB "; careerP0%(I, 30)
+            Locate 10, 40: Print "32. K "; careerP0%(I, 31)
+            Locate 11, 40: Print "33. SB "; careerP0%(I, 32)
+            Locate 12, 40: Print "34. CS "; careerP0%(I, 33)
+            Locate 13, 40: Print "35. ERR "; careerP0%(I, 34)
+            Locate 14, 40: Print "36. CHS "; careerP0%(I, 35)
+            Locate 15, 40: Print "37. LHS "; careerP0%(I, 36)
+            Locate 16, 40: Print "38. GIDP "; careerP0%(I, 37)
+            Locate 17, 40: Print "39. PO "; careerP0%(I, 38)
+            Locate 18, 40: Print "40. A "; careerP0%(I, 39)
+            Locate 19, 40: Print "41. SH "; careerP0%(I, 40)
+            Locate 20, 40: Print "42. SF "; careerP0%(I, 41)
         Else
             325 Locate 1, 30: Print "PITCHER - "; I + 1: Locate , 1
             330 Locate 1: Input "1. NAME "; statP$(I): If C1 = 1 Then 401
-            335 Locate 2: Input "2. WON "; P0%(I, 6): If C1 = 1 Then 401
-            340 Locate 3: Input "3. LOST "; P0%(I, 7): If C1 = 1 Then 401
-            345 Locate 4: Input "4. SV "; P0%(I, 12): If C1 = 1 Then 401
-            350 Locate 5: Input "5. (IP X 3) "; P0%(I, 0): If C1 = 1 Then 401
-            355 Locate 6: Input "6. HITS "; P0%(I, 1): If C1 = 1 Then 401
-            360 Locate 7: Input "7. BB "; P0%(I, 4): If C1 = 1 Then 401
-            365 Locate 8: Input "8. SO "; P0%(I, 5): If C1 = 1 Then 401
-            370 Locate 9: Input "9. CG "; P0%(I, 10): If C1 = 1 Then 401
-            375 Locate 10: Input "10. RUNS "; P0%(I, 2): If C1 = 1 Then 401
-            380 Locate 11: Input "11. E R "; P0%(I, 3): If C1 = 1 Then 401
-            385 Locate 12: Input "12. SH OUT "; P0%(I, 11): If C1 = 1 Then 401
-            390 Locate 13: Input "13. GAMES "; P0%(I, 8): If C1 = 1 Then 401
-            391 Locate 14: Input "14. STARTS "; P0%(I, 9): If C1 = 1 Then 401
-            392 Locate 15: Input "15. HR ALL "; P0%(I, 14): If C1 = 1 Then 401
-            393 Locate 16: Input "16. GIDP "; P0%(I, 13): If C1 = 1 Then 401
-            394 Locate 17: Input "17. SH "; P0%(I, 15): If C1 = 1 Then 401
-            395 Locate 18: Input "18. SF "; P0%(I, 16): If C1 = 1 Then 401
-            396 Locate 19: Input "19. RUNNERS INHERITED (RI) "; P0%(I, 17): If C1 = 1 Then 401
-            397 Locate 20: Input "20. RI SCORED "; P0%(I, 18): If C1 = 1 Then 401
-            398 Locate 21: Input "21. BLOWN SAVES "; P0%(I, 19): If C1 = 1 Then 401
-            399 Locate 22: Input "22. RUN SUPPORT "; P0%(I, 20): If C1 = 1 Then 401
-            400 Locate 23: Input "23. QUALITY STARTS "; P0%(I, 21): If C1 = 1 Then 401
-            911 Locate 2, 40: Input "24. AB "; P0%(I, 23): If C1 = 1 Then 401
-            912 Locate 3, 40: Input "25. H "; P0%(I, 24): If C1 = 1 Then 401
-            913 Locate 4, 40: Input "26. R "; P0%(I, 25): If C1 = 1 Then 401
-            914 Locate 5, 40: Input "27. RBI "; P0%(I, 26): If C1 = 1 Then 401
-            915 Locate 6, 40: Input "28. DBL "; P0%(I, 27): If C1 = 1 Then 401
-            916 Locate 7, 40: Input "29. TRPL "; P0%(I, 28): If C1 = 1 Then 401
-            917 Locate 8, 40: Input "30. HR "; P0%(I, 29): If C1 = 1 Then 401
-            918 Locate 9, 40: Input "31. BB "; P0%(I, 30): If C1 = 1 Then 401
-            919 Locate 10, 40: Input "32. K "; P0%(I, 31): If C1 = 1 Then 401
-            920 Locate 11, 40: Input "33. SB "; P0%(I, 32): If C1 = 1 Then 401
-            921 Locate 12, 40: Input "34. CS "; P0%(I, 33): If C1 = 1 Then 401
-            922 Locate 13, 40: Input "35. ERR "; P0%(I, 34): If C1 = 1 Then 401
-            923 Locate 14, 40: Input "36. CHS "; P0%(I, 35): If C1 = 1 Then 401
-            924 Locate 15, 40: Input "37. LHS "; P0%(I, 36): If C1 = 1 Then 401
-            925 Locate 16, 40: Input "38. GIDP "; P0%(I, 37): If C1 = 1 Then 401
-            926 Locate 17, 40: Input "39. PO "; P0%(I, 38): If C1 = 1 Then 401
-            927 Locate 18, 40: Input "40. A "; P0%(I, 39): If C1 = 1 Then 401
-            928 Locate 19, 40: Input "41. SH "; P0%(I, 40): If C1 = 1 Then 401
-            929 Locate 20, 40: Input "42. SF "; P0%(I, 41): If C1 = 1 Then 401
+            335 Locate 2: Input "2. WON "; careerP0%(I, 6): If C1 = 1 Then 401
+            340 Locate 3: Input "3. LOST "; careerP0%(I, 7): If C1 = 1 Then 401
+            345 Locate 4: Input "4. SV "; careerP0%(I, 12): If C1 = 1 Then 401
+            350 Locate 5: Input "5. (IP X 3) "; careerP0%(I, 0): If C1 = 1 Then 401
+            355 Locate 6: Input "6. HITS "; careerP0%(I, 1): If C1 = 1 Then 401
+            360 Locate 7: Input "7. BB "; careerP0%(I, 4): If C1 = 1 Then 401
+            365 Locate 8: Input "8. SO "; careerP0%(I, 5): If C1 = 1 Then 401
+            370 Locate 9: Input "9. CG "; careerP0%(I, 10): If C1 = 1 Then 401
+            375 Locate 10: Input "10. RUNS "; careerP0%(I, 2): If C1 = 1 Then 401
+            380 Locate 11: Input "11. E R "; careerP0%(I, 3): If C1 = 1 Then 401
+            385 Locate 12: Input "12. SH OUT "; careerP0%(I, 11): If C1 = 1 Then 401
+            390 Locate 13: Input "13. GAMES "; careerP0%(I, 8): If C1 = 1 Then 401
+            391 Locate 14: Input "14. STARTS "; careerP0%(I, 9): If C1 = 1 Then 401
+            392 Locate 15: Input "15. HR ALL "; careerP0%(I, 14): If C1 = 1 Then 401
+            393 Locate 16: Input "16. GIDP "; careerP0%(I, 13): If C1 = 1 Then 401
+            394 Locate 17: Input "17. SH "; careerP0%(I, 15): If C1 = 1 Then 401
+            395 Locate 18: Input "18. SF "; careerP0%(I, 16): If C1 = 1 Then 401
+            396 Locate 19: Input "19. RUNNERS INHERITED (RI) "; careerP0%(I, 17): If C1 = 1 Then 401
+            397 Locate 20: Input "20. RI SCORED "; careerP0%(I, 18): If C1 = 1 Then 401
+            398 Locate 21: Input "21. BLOWN SAVES "; careerP0%(I, 19): If C1 = 1 Then 401
+            399 Locate 22: Input "22. RUN SUPPORT "; careerP0%(I, 20): If C1 = 1 Then 401
+            400 Locate 23: Input "23. QUALITY STARTS "; careerP0%(I, 21): If C1 = 1 Then 401
+            911 Locate 2, 40: Input "24. AB "; careerP0%(I, 23): If C1 = 1 Then 401
+            912 Locate 3, 40: Input "25. H "; careerP0%(I, 24): If C1 = 1 Then 401
+            913 Locate 4, 40: Input "26. R "; careerP0%(I, 25): If C1 = 1 Then 401
+            914 Locate 5, 40: Input "27. RBI "; careerP0%(I, 26): If C1 = 1 Then 401
+            915 Locate 6, 40: Input "28. DBL "; careerP0%(I, 27): If C1 = 1 Then 401
+            916 Locate 7, 40: Input "29. TRPL "; careerP0%(I, 28): If C1 = 1 Then 401
+            917 Locate 8, 40: Input "30. HR "; careerP0%(I, 29): If C1 = 1 Then 401
+            918 Locate 9, 40: Input "31. BB "; careerP0%(I, 30): If C1 = 1 Then 401
+            919 Locate 10, 40: Input "32. K "; careerP0%(I, 31): If C1 = 1 Then 401
+            920 Locate 11, 40: Input "33. SB "; careerP0%(I, 32): If C1 = 1 Then 401
+            921 Locate 12, 40: Input "34. CS "; careerP0%(I, 33): If C1 = 1 Then 401
+            922 Locate 13, 40: Input "35. ERR "; careerP0%(I, 34): If C1 = 1 Then 401
+            923 Locate 14, 40: Input "36. CHS "; careerP0%(I, 35): If C1 = 1 Then 401
+            924 Locate 15, 40: Input "37. LHS "; careerP0%(I, 36): If C1 = 1 Then 401
+            925 Locate 16, 40: Input "38. GIDP "; careerP0%(I, 37): If C1 = 1 Then 401
+            926 Locate 17, 40: Input "39. PO "; careerP0%(I, 38): If C1 = 1 Then 401
+            927 Locate 18, 40: Input "40. A "; careerP0%(I, 39): If C1 = 1 Then 401
+            928 Locate 19, 40: Input "41. SH "; careerP0%(I, 40): If C1 = 1 Then 401
+            929 Locate 20, 40: Input "42. SF "; careerP0%(I, 41): If C1 = 1 Then 401
         End If
 
         401 '
@@ -561,7 +561,7 @@ Sub InputTeamStats (Z$, A$, X%, D0%, D1%, L2%, W2%, action%)
     For I = 0 To 22: Print #1, statB$(I): Print #1, statB%(I): Next I
     For I = 0 To 21: Print #1, statP$(I): Print #1, statP%(I): Next I
     For I = 0 To 22: For I1 = 0 To 21: Print #1, careerB0%(I, I1): Next I1: Next I
-    For I = 0 To 21: For I1 = 0 To 41: Print #1, P0%(I, I1): Next I1: Next I
+    For I = 0 To 21: For I1 = 0 To 41: Print #1, careerP0%(I, I1): Next I1: Next I
     Print #1, D0%: Print #1, D1%
     For I = 0 To 21: Print #1, statT%(I): Next I
     For I = 0 To 22: Print #1, statT1%(I): Next I
@@ -599,19 +599,22 @@ Sub GetTeam_SINPUT (yearNumber$, numberTeams)
         If NY$ = "" And yearNumber$ <> "" Then
             Call SelectTeam_SINPUT(yearNumber$, numberTeams)
         Else
-            yearNumber$ = NY$
+            yearNumber$ = RTrim$(NY$)
             Erase teamNames$
-
             numberTeams = 0
 
             If _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
 
                 Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
+
                 Y = LOF(1)
+
                 Field #1, 15 As Q$(0)
 
                 For I1 = 1 To Y / 4342
+
                     Get #1, I1
+
                     For I2 = 1 To 15
                         If Left$(Q$(0), 2) = "XX" Or Left$(Q$(0), 1) = " " Or Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then nullTeam = 1: Exit For
                     Next I2
@@ -621,6 +624,7 @@ Sub GetTeam_SINPUT (yearNumber$, numberTeams)
                         teamNames$(numberTeams) = Q$(0)
                         teamIndex%(numberTeams) = I1
                     End If
+
                 Next I1
 
                 Close 1
@@ -689,12 +693,17 @@ Sub SelectTeam_SINPUT (yearNumber$, numberTeams)
     If ExitCode% <> 27 Then
 
         T = teamIndex%(Selection%)
-        Locate 2, 33: Color 31: Print "LOADING..."
+		teamYear$ = RTrim$(yearNumber$)
 
-        If _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
+        Locate 2, 33: Color 31
+		Print "LOADING..."
 
-            Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
+        If _FileExists(diskPaths$(0) + "FCTEAMS." + teamYear$) Then
+
+            Open diskPaths$(0) + "FCTEAMS." + teamYear$ For Random As #1 Len = 4342
+
             Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
+
             Get #1, T
 
             For I = 1 To 13
@@ -723,8 +732,8 @@ Sub ChangePitchingStats (L2%, W2%)
 
     Shared statT1%()
 
-    495 '
     Cls
+
     Print "CHANGE TEAM PITCHING STATS"
     Print
     X% = 2
@@ -761,17 +770,24 @@ Sub SelectBatters_SINPUT (Z$)
     Shared statB$()
     Shared careerB0%()
 
-    565 '
     Cls
+
     Print "CHANGE BATTERS "
     Print
     X% = 2
 
     For I = 0 To 10
-        Locate I + 5, 5: Print Using "##"; I + 1;: Print " "; statB$(I); Tab(40);: Print Using "##"; I + 13;: Print " "; statB$(I + 12)
+        Locate I + 5, 5
+		Print Using "##"; I + 1;
+		Print " "; statB$(I); Tab(40);
+		Print Using "##"; I + 13;
+		Print " "; statB$(I + 12)
     Next
 
-    Locate , 5: Print Using "##"; 12;: Print " "; statB$(11)
+    Locate , 5
+	Print Using "##"; 12;
+	Print " "; statB$(11)
+
     Print
 
     Do
@@ -784,7 +800,10 @@ Sub SelectBatters_SINPUT (Z$)
         Call SelectPitchers_SINPUT(D0%, D1%, L2%, W2%, Z$)
     Else
         I = I - 1
-        Cls: Locate 1: Print "1. NAME "; statB$(I)
+
+        Cls
+
+		Locate 1: Print "1. NAME "; statB$(I)
         Locate 2: Print "2. AB "; careerB0%(I, 0)
         Locate 3: Print "3. RUNS "; careerB0%(I, 2)
         Locate 4: Print "4. HITS "; careerB0%(I, 1)
@@ -806,8 +825,6 @@ Sub SelectBatters_SINPUT (Z$)
         Locate 20: Print "20. SH "; careerB0%(I, 18)
         Locate 21: Print "21. SF "; careerB0%(I, 19)
 
-        'GOTO 309
-
     End If
 
 End Sub
@@ -819,7 +836,7 @@ End Sub
 Sub SelectPitchers_SINPUT (D0%, D1%, L2%, W2%, Z$)
 
     Shared statB$(), statP$()
-    Shared statB%(), careerB0%(), statP%(), P0%()
+    Shared statB%(), careerB0%(), statP%(), careerP0%()
     Shared statT%(), statT1%()
 
     Cls
@@ -848,7 +865,7 @@ Sub SelectPitchers_SINPUT (D0%, D1%, L2%, W2%, Z$)
         For I = 0 To 22: Print #1, statB$(I): Print #1, statB%(I): Next I
         For I = 0 To 21: Print #1, statP$(I): Print #1, statP%(I): Next I
         For I = 0 To 22: For I1 = 0 To 21: Print #1, careerB0%(I, I1): Next I1: Next I
-        For I = 0 To 21: For I1 = 0 To 41: Print #1, P0%(I, I1): Next I1: Next I
+        For I = 0 To 21: For I1 = 0 To 41: Print #1, careerP0%(I, I1): Next I1: Next I
 
         Print #1, D0%: Print #1, D1%
 
@@ -859,47 +876,47 @@ Sub SelectPitchers_SINPUT (D0%, D1%, L2%, W2%, Z$)
     Else
         I = I - 1
         Cls: Locate 1: Print "1. NAME "; statP$(I)
-        Locate 2: Print "2. WON "; P0%(I, 6);
-        Locate , 40: Print "24. AB "; P0%(I, 23)
-        Locate 3: Print "3. LOST "; P0%(I, 7);
-        Locate , 40: Print "25. H "; P0%(I, 24)
-        Locate 4: Print "4. SV "; P0%(I, 12);
-        Locate , 40: Print "26. R "; P0%(I, 25)
-        Locate 5: Print "5. (IP X 3) "; P0%(I, 0);
-        Locate , 40: Print "27. RBI "; P0%(I, 26)
-        Locate 6: Print "6. HITS "; P0%(I, 1);
-        Locate , 40: Print "28. DBL "; P0%(I, 27)
-        Locate 7: Print "7. BB "; P0%(I, 4);
-        Locate , 40: Print "29. TRPL "; P0%(I, 28)
-        Locate 8: Print "8. SO "; P0%(I, 5);
-        Locate , 40: Print "30. HR "; P0%(I, 29)
-        Locate 9: Print "9. CG "; P0%(I, 10);
-        Locate , 40: Print "31. BB "; P0%(I, 30)
-        Locate 10: Print "10. RUNS "; P0%(I, 2);
-        Locate , 40: Print "32. K "; P0%(I, 31)
-        Locate 11: Print "11. E R "; P0%(I, 3);
-        Locate , 40: Print "33. SB "; P0%(I, 32)
-        Locate 12: Print "12. SH OUT "; P0%(I, 11);
-        Locate , 40: Print "34. CS "; P0%(I, 33)
-        Locate 13: Print "13. GAMES "; P0%(I, 8);
-        Locate , 40: Print "35. ERR "; P0%(I, 34)
-        Locate 14: Print "14. STARTS "; P0%(I, 9);
-        Locate , 40: Print "36. CHS "; P0%(I, 35)
-        Locate 15: Print "15. HR ALL "; P0%(I, 14);
-        Locate , 40: Print "37. LHS "; P0%(I, 36)
-        Locate 16: Print "16. GIDP "; P0%(I, 13);
-        Locate , 40: Print "38. GIDP "; P0%(I, 37)
-        Locate 17: Print "17. SH "; P0%(I, 15);
-        Locate , 40: Print "39. PO "; P0%(I, 38)
-        Locate 18: Print "18. SF "; P0%(I, 16);
-        Locate , 40: Print "40. A "; P0%(I, 39)
-        Locate 19: Print "19. RUNNERS INHERITED (RI) "; P0%(I, 17);
-        Locate , 40: Print "41. SH "; P0%(I, 40)
-        Locate 20: Print "20. RI SCORED "; P0%(I, 18);
-        Locate , 40: Print "42. SF "; P0%(I, 41)
-        Locate 21: Print "21. BLOWN SAVES "; P0%(I, 19)
-        Locate 22: Print "22. RUN SUPPORT "; P0%(I, 20)
-        Locate 23: Print "23. QUALITY STARTS "; P0%(I, 21)
+        Locate 2: Print "2. WON "; careerP0%(I, 6);
+        Locate , 40: Print "24. AB "; careerP0%(I, 23)
+        Locate 3: Print "3. LOST "; careerP0%(I, 7);
+        Locate , 40: Print "25. H "; careerP0%(I, 24)
+        Locate 4: Print "4. SV "; careerP0%(I, 12);
+        Locate , 40: Print "26. R "; careerP0%(I, 25)
+        Locate 5: Print "5. (IP X 3) "; careerP0%(I, 0);
+        Locate , 40: Print "27. RBI "; careerP0%(I, 26)
+        Locate 6: Print "6. HITS "; careerP0%(I, 1);
+        Locate , 40: Print "28. DBL "; careerP0%(I, 27)
+        Locate 7: Print "7. BB "; careerP0%(I, 4);
+        Locate , 40: Print "29. TRPL "; careerP0%(I, 28)
+        Locate 8: Print "8. SO "; careerP0%(I, 5);
+        Locate , 40: Print "30. HR "; careerP0%(I, 29)
+        Locate 9: Print "9. CG "; careerP0%(I, 10);
+        Locate , 40: Print "31. BB "; careerP0%(I, 30)
+        Locate 10: Print "10. RUNS "; careerP0%(I, 2);
+        Locate , 40: Print "32. K "; careerP0%(I, 31)
+        Locate 11: Print "11. E R "; careerP0%(I, 3);
+        Locate , 40: Print "33. SB "; careerP0%(I, 32)
+        Locate 12: Print "12. SH OUT "; careerP0%(I, 11);
+        Locate , 40: Print "34. CS "; careerP0%(I, 33)
+        Locate 13: Print "13. GAMES "; careerP0%(I, 8);
+        Locate , 40: Print "35. ERR "; careerP0%(I, 34)
+        Locate 14: Print "14. STARTS "; careerP0%(I, 9);
+        Locate , 40: Print "36. CHS "; careerP0%(I, 35)
+        Locate 15: Print "15. HR ALL "; careerP0%(I, 14);
+        Locate , 40: Print "37. LHS "; careerP0%(I, 36)
+        Locate 16: Print "16. GIDP "; careerP0%(I, 13);
+        Locate , 40: Print "38. GIDP "; careerP0%(I, 37)
+        Locate 17: Print "17. SH "; careerP0%(I, 15);
+        Locate , 40: Print "39. PO "; careerP0%(I, 38)
+        Locate 18: Print "18. SF "; careerP0%(I, 16);
+        Locate , 40: Print "40. A "; careerP0%(I, 39)
+        Locate 19: Print "19. RUNNERS INHERITED (RI) "; careerP0%(I, 17);
+        Locate , 40: Print "41. SH "; careerP0%(I, 40)
+        Locate 20: Print "20. RI SCORED "; careerP0%(I, 18);
+        Locate , 40: Print "42. SF "; careerP0%(I, 41)
+        Locate 21: Print "21. BLOWN SAVES "; careerP0%(I, 19)
+        Locate 22: Print "22. RUN SUPPORT "; careerP0%(I, 20)
+        Locate 23: Print "23. QUALITY STARTS "; careerP0%(I, 21)
 
         'GOTO 401
 
