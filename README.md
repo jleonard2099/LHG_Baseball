@@ -32,9 +32,9 @@ Bugs and/or feature requests can be submitted using GitHub (see the "Issues" tab
 
 # Project Status #
 ## Current ##
-Code compiles in a modern environment and has been mostly re-factored. All known GUI bugs have been fixed, Menu navigation is improved and code was consolidated into a single EXE. This speeds up game play even more and allows compiling for Linux / Mac in QB64.
+Code now compiles in a modern environment and has been mostly re-factored. All known GUI bugs have been fixed, Menu navigation is improved and code was consolidated into a single EXE to speed up game play even more. First successful compiles completed in Linux / Mac OS, so builds should be available for major distros for next release.
 
-All code has been thoroughly tested with known bugs documented (including those from the original game - that I am aware of) and being worked on.
+All code features have  been thoroughly tested with known bugs documented (including those from the original game - that I am aware of) and being worked on.
 
 ## Road Map ##
 ### Phase 1 ###
