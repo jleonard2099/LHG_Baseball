@@ -514,7 +514,7 @@ Sub SaveTeamDraft (DNT%, yearNumber$, teamName$, teamIdx)
 
     '0 actually means YES we're drafting a NEW team
     'Put them in the first available slot
-    If DNT% = 0 Then teamIdx = Y / 4342 + 1
+    If DNT% = 0 Then teamIdx = fileLength& / 4342 + 1
 
     Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
 
