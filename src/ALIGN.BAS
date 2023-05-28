@@ -446,11 +446,11 @@ Sub GetDiskID_ALIGN (A$)
 
                     Open diskPaths$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342
 
-                    Y = LOF(1)
+                    fileLength& = LOF(1)
 
                     Field #1, 15 As Q$(0)
 
-                    For I1 = 1 To Y / 4342
+                    For I1 = 1 to fileLength& / 4342
 
                         Get #1, I1
 

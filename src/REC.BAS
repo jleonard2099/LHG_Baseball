@@ -88,11 +88,11 @@ Sub GetTeam_REC (yearNumber$, numberTeams)
 
                 Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
 
-                Y = LOF(1)
+                fileLength& = LOF(1)
 
                 Field #1, 15 As Q$(0)
 
-                For I1 = 1 To Y / 4342
+                For I1 = 1 to fileLength& / 4342
 
                     Get #1, I1
 
@@ -384,7 +384,7 @@ Sub AnalyzeTeamRecord (LG$, sameLeague)
 
                 For K = 1 To 40
                     If Z1$(K) <> "XXX" Then
-                        For I = 1 To Y
+                        For I = 1 to fileLength&
                             If H%(I) > V%(I) And L$(I) = "A" And O$(I) = Z1$(K) Then AW%(K) = AW%(K) + 1
                             If H%(I) > V%(I) And L$(I) = "H" And O$(I) = Z1$(K) Then HW%(K) = HW%(K) + 1
                             If H%(I) < V%(I) And L$(I) = "A" And O$(I) = Z1$(K) Then AL%(K) = AL%(K) + 1

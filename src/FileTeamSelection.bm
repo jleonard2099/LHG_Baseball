@@ -74,7 +74,7 @@ Sub ChooseTeam (yearNumber$, numberTeams, teamIdx, teamName$)
 
                         Open diskPaths$(0) + TEAM_FILE_NAME$ + "." yearNumber$ For Random As #1 Len = TEAM_BIN_SIZE
 
-                        Y = LOF(1)
+                        fileLength& = LOF(1)
 
                         Field #1, 15 As Q$(0)
 

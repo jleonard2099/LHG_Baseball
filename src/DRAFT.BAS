@@ -107,11 +107,11 @@ Sub DRAFT ()
 
                             Open diskPaths$(0) + "FCTEAMS." + draftYN$(0) For Random As #1 Len = 4342
 
-                            Y = LOF(1)
+                            fileLength& = LOF(1)
 
                             Field #1, 15 As Q$(0)
 
-                            For I1 = 1 To Y / 4342
+                            For I1 = 1 to fileLength& / 4342
 
                                 Get #1, I1
 
@@ -374,11 +374,11 @@ Sub DraftPlayer (playerType, yearNumber$)
 
                 Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
 
-                Y = LOF(1)
+                fileLength& = LOF(1)
 
                 Field #1, 15 As Q$(0)
 
-                For I1 = 1 To Y / 4342
+                For I1 = 1 to fileLength& / 4342
 
                     Get #1, I1
 
@@ -510,7 +510,7 @@ Sub SaveTeamDraft (DNT%, yearNumber$, teamName$, teamIdx)
 
     Open diskPaths$(0) + "FCTEAMS." + teamYear$ For Random As #1 Len = 4342
 
-    Y = LOF(1)
+    fileLength& = LOF(1)
 
     '0 actually means YES we're drafting a NEW team
     'Put them in the first available slot

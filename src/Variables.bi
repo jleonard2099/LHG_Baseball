@@ -1,5 +1,5 @@
 '----------------------------------------
-' Used mostly for HELLO
+' Used across more than one source file
 '----------------------------------------
 Dim opSysType$
 
@@ -14,25 +14,11 @@ Dim H%(NUM_STATRECORDS), I%(NUM_STATRECORDS), V%(NUM_STATRECORDS)
 Dim HR%(NUM_STATRECORDS), IR%(NUM_STATRECORDS), VR%(NUM_STATRECORDS)
 Dim ING%(NUM_STATRECORDS)
 
-'----------------------------------------
-' Used across more than one source file
-'----------------------------------------
 Dim Shared backToMenu, BO%, X%
-Dim Shared diskPaths$(0 To 3), Q$(0 To 2056), Q2$(0 To 2056)
-Dim Shared R$(999)
 
-Dim Shared teamNames$(MAX_TEAMS)
-Dim Shared teamIndex%(MAX_TEAMS)
-Dim Shared DirCount%
+Dim Shared fileLength&
 
 Dim Shared DT$, TM$
-
-
-' File size
-Dim Shared Y As Long
-
-Dim homeTeam$(MAX_GAMES), visitingTeam$(MAX_GAMES)
-Dim homeScore%(MAX_GAMES), visitingScore%(MAX_GAMES)
 
 Dim ratings%(1 To 13), Z1%(40)
 Dim statT%(0 To 21)
@@ -40,10 +26,16 @@ Dim statT1%(0 To 22)
 
 Dim K9&(1)
 
+Dim homeTeam$(MAX_GAMES), visitingTeam$(MAX_GAMES)
+Dim homeScore%(MAX_GAMES), visitingScore%(MAX_GAMES)
+
+Dim Shared R$(999)
 Dim statB$(0 To 22), statP$(0 To 21)
 Dim Z1$(40), Z2$(40)
-'Dim X$(12)
 
+Dim Shared diskPaths$(0 To 3), Q$(0 To 2056), Q2$(0 To 2056)
+Dim Shared teamNames$(MAX_TEAMS)
+Dim Shared teamIndex%(MAX_TEAMS)
 
 '----------------------------------------
 '  Used across ALIGN, MERGE routines
@@ -327,3 +319,5 @@ Dim Shared SA%(1, 24), SO%(5, 2), SU%(1, 1)
 Dim Shared T%(22), T3%(22), TP%(11, 2), TS%(1, 11), VA%(26), X0%(1, 2, 23)
 
 Dim Shared FontColAdj%, normalFinish%
+
+

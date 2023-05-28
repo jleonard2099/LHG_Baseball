@@ -102,9 +102,9 @@ Sub ViewComparisons ()
             Else
 
                 Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
-                Y = LOF(1)
+                fileLength& = LOF(1)
                 Field #1, 15 As Q$(0)
-                For I1 = 1 To Y / 4342
+                For I1 = 1 to fileLength& / 4342
                     Get #1, I1
                     For I2 = 1 To 15
                         If Left$(Q$(0), 2) = "XX" Or Left$(Q$(0), 1) = " " Or Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then nullTeam = 1: Exit For
