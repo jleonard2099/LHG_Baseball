@@ -887,7 +887,7 @@ Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
 
     If UCase$(I$) = "Y" Then
         TS = 1
-        Call LoadTeamStats(targetTeam$, TS, SS, teamStatFile$)
+        Call LoadTeam(targetTeam$, TS, SS, teamStatFile$)
     End If
 
     Do
@@ -958,10 +958,10 @@ Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
 End Sub
 
 '----------------------------------------
-'       LoadTeamStats subroutine
+'       LoadTeam subroutine
 '----------------------------------------
 '...explanation...
-Sub LoadTeamStats (targetTeam$, teamHasStats, SS, targetFile$)
+Sub LoadTeam (targetTeam$, teamHasStats, SS, targetFile$)
 
     Shared BS%(), PS%(), statSS%()
     Shared statB0%(), statP0%()
