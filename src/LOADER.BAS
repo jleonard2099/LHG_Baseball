@@ -17,8 +17,8 @@ Sub LOADER
     '----------------------------------------
     Shared dayNight$(), DH$(), DL$()
     Shared LGT$(), month$()
-    Shared PT$(), PU$()
-    Shared U6$(), UMP$()
+    Shared PT$(), pitcherEra$()
+    Shared MO$(), UMP$()
     Shared VI$(), WE$()
     Shared SP%(), T1%(), U%()
 
@@ -160,7 +160,7 @@ Sub LOADER
             'Color , 0
 
             Locate 3, 1
-            Color 14: Print "(1) ";: Color 15: Print U6$(U6)
+            Color 14: Print "(1) ";: Color 15: Print MO$(U6)
             Color 14: Print "(2) ";: Color 15: Print LGT$(LGT)
             Color 14: Print "(3) ";: Color 15: Print DH$(DH%)
             Color 14: Print "(4) ";: Color 15: Print DL$(DL)
@@ -175,7 +175,7 @@ Sub LOADER
             Color 14: Print "(C) ";: Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE "; WE$(MP%)
             Color 14: Print "(D) ";: Color 15: Print Using "DISPLAY INTERVAL: #.# "; pbpDelay!
             Color 14: Print "(E) ";: Color 15: Print "USE VGA SCREENS, IF ABLE: "; WE$(VG%)
-            Color 14: Print "(F) ";: Color 15: Print "PITCHER USAGE ERA: "; PU$(CGERA%)
+            Color 14: Print "(F) ";: Color 15: Print "PITCHER USAGE ERA: "; pitcherEra$(CGERA%)
 
             Do
                 Color 7, 0

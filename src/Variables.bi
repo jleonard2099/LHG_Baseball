@@ -27,7 +27,7 @@ Dim statT1%(0 To 22)
 Dim K9&(1)
 
 Dim homeTeam$(MAX_GAMES), visitingTeam$(MAX_GAMES)
-Dim homeScore%(MAX_GAMES), visitingScore%(MAX_GAMES)
+Dim homeScores(MAX_GAMES), visitorScores(MAX_GAMES)
 
 Dim Shared R$(999)
 Dim statB$(0 To 22), statP$(0 To 21)
@@ -36,6 +36,16 @@ Dim Z1$(40), Z2$(40)
 Dim Shared diskPaths$(0 To 3), Q$(0 To 2056), Q2$(0 To 2056)
 Dim Shared teamNames$(MAX_TEAMS)
 Dim Shared teamIndex%(MAX_TEAMS)
+
+' Game options
+Dim dayNight$(0 To 1), DH$(1), DL$(1)
+Dim LGT$(2), month$(1 To 12)
+Dim pitcherEra$(8), MO$(0 to 3), UMP$(50)
+Dim VI$(1), WE$(1)
+
+' Umpire selection
+Dim U%(50)
+
 
 '----------------------------------------
 '  Used across ALIGN, MERGE routines
@@ -212,7 +222,7 @@ Dim E%(13)
 Dim scheduleAP%(1), scheduleL%(13)
 Dim scheduleT%(34), scheduleZ1%(40)
 
-Dim MO$(3), TS$(0 To 1)
+Dim modeAbbrev$(3), yesNo$(0 To 1)
 Dim scheduleH$(1 To 20), scheduleV$(1 To 20)
 Dim scheduleYN$(MAX_GAMES, 1)
 
@@ -258,18 +268,6 @@ Dim T1%(0 To 1)
 Dim PT$(1), SA$(0 To 1)
 
 Dim E!
-
-
-'Used by LOADER
-Dim dayNight$(0 To 1), DH$(1), DL$(1)
-Dim LGT$(2), month$(1 To 12)
-Dim PU$(8), U6$(2), UMP$(50)
-Dim VI$(1), WE$(1)
-
-Dim U%(50)
-
-Dim fileLength&
-
 
 ' Shared / Global
 Dim Shared NM$, Y$, YY$

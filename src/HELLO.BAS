@@ -106,12 +106,8 @@ For I = 0 To 10: Read C$(I): Next I
 Data "OUTDOOR","INDOOR ","GRASS","TURF"
 For I = 0 To 3: Read BP$(I): Next
 
-Data HH,C1,C2,CC
-For X = 0 To 3: Read MO$(X): Next
-
 Data 15,0,15,1,19,4,4,6,3,1,2,3,14
 For X = 1 To 13: Read E%(X): Next
-
 
 Data A,B,C,D,E,F,G,H,I,J,K,L,M,dh," p"," c",1b,2b,3b,ss,lf,cf,rf,ph,pr
 For I = 0 To 12: Read X$(I): Next I
@@ -187,6 +183,29 @@ For I = 11 To 0 Step -1
     Next
 Next
 
+' Game options
+modeAbbrev$(0) = "HH"
+modeAbbrev$(1) = "CV"
+modeAbbrev$(2) = "CH"
+modeAbbrev$(3) = "CC"
+
+MO$(0) = "HUMAN OPPONENT           "
+MO$(1) = "COMPUTER IS VISITING TEAM"
+MO$(2) = "COMPUTER IS HOME TEAM    "
+MO$(3) = "COMPUTER VS COMPUTER     "
+
+yesNo$(0) = "N"
+yesNo$(1) = "Y"
+
+pitcherEra$(0) = "1980 - PRESENT"
+pitcherEra$(1) = "1973 - 1979   "
+pitcherEra$(2) = "1955 - 1972   "
+pitcherEra$(3) = "1946 - 1954   "
+pitcherEra$(4) = "1933 - 1945   "
+pitcherEra$(5) = "1919 - 1932   "
+pitcherEra$(6) = "1909 - 1918   "
+pitcherEra$(7) = "1894 - 1908   "
+pitcherEra$(8) = "1876 - 1893   "
 
 
 '----------------------------------------

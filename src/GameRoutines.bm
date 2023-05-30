@@ -34,15 +34,14 @@ Sub InitVar ()
 
     Shared DB, HR, TR, SB
     Shared E!
-    Shared fileLength&
 
     Shared BP(), F()
     Shared BB%(), MF%(), SP%(), T1%()
     Shared U%()
 
     Shared dayNight$(), DH$(), DL$()
-    Shared LGT$(), month$(), PT$()
-    Shared PU$(), U6$(), UMP$()
+    Shared LGT$(), month$(), pitcherEra$()
+    Shared MO$(), PT$(), UMP$()
     Shared VI$(), WE$()
 
     normalFinish% = 0
@@ -83,20 +82,6 @@ Sub InitVar ()
     PC$(2) = "SHOWERS"
     PC$(3) = "DRIZZLE"
     PC$(4) = "NONE"
-
-    U6$(0) = "HUMAN OPPONENT      "
-    U6$(1) = "COMPUTER OPPONENT   "
-    U6$(2) = "COMPUTER VS COMPUTER"
-
-    PU$(0) = "1980 - PRESENT"
-    PU$(1) = "1973 - 1979   "
-    PU$(2) = "1955 - 1972   "
-    PU$(3) = "1946 - 1954   "
-    PU$(4) = "1933 - 1945   "
-    PU$(5) = "1919 - 1932   "
-    PU$(6) = "1909 - 1918   "
-    PU$(7) = "1894 - 1908   "
-    PU$(8) = "1876 - 1893   "
 
     LGT$(0) = "AL GAME         "
     LGT$(1) = "NL GAME         "
@@ -3535,15 +3520,10 @@ End Sub
 ' ...explanation...
 Sub OPTIONS ()
 
-    Dim U6$(3)
+    Shared MO$()
 
     If usingGfx = 1 Then Cls: Screen 0
-
-    U6$(0) = "HUMAN OPPONENT      "
-    U6$(1) = "COMPUTER VISIT TEAM "
-    U6$(2) = "COMPUTER HOME TEAM  "
-    U6$(3) = "COMPUTER VS COMPUTER"
-
+    
     If U6 = 2 Then
         U6 = 3
     Else
@@ -3564,7 +3544,7 @@ Sub OPTIONS ()
         171 '
         Color , 0: Locate 3, 1
         Color 14: Print "(1) ";
-        Color 15: Print U6$(U6)
+        Color 15: Print MO$(U6)
         Color 14: Print "(2) ";
         Color 15: Print Using "DISPLAY INTERVAL: #.# "; pbpDelay!
         Color 14: Print "<ENTER> ";
