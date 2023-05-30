@@ -972,7 +972,7 @@ End Sub
 '       ReportsAllTeams Subroutine
 '----------------------------------------
 '...explanation...
-Sub ReportsAllTeams (splitScreenChoice%)
+Sub ReportsAllTeams ()
 
     Dim H1$(40)
     Shared D0%, D1%, L2%, W2%
