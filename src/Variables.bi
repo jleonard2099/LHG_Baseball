@@ -201,8 +201,6 @@ Dim progM%(0 To 9), progMG%(1000)
 
 Dim progB1$(4), progC$(10), progPT$(1), mgrX$(0 To 21)
 
-Dim yesNo$(1)
-
 Dim mgr_idx%
 
 '----------------------------------------
