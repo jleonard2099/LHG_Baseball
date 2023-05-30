@@ -344,7 +344,7 @@ Sub ViewAndPrintOptions (statFile$, teamName$, totalGames%)
         If prompt$ <> Chr$(27) Then
 
             If X = 3 Or X = 4 Then
-                Call NewPrintStats(statFile$, X, splitScreenChoice%, teamName$, totalGames%)
+                Call NewPrintStats(statFile$, teamName$, totalGames%, X, splitScreenChoice%)
             End If
 
             If X = 2 Then
