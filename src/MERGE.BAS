@@ -323,7 +323,7 @@ Sub DoTheMerge (pathCurrentStats$, statFile$, B$)
 
     Shared draftTR(), draftTR1()
 
-    For K = 1 to fileLength&road%
+    For K = 1 to Yroad%
         Ycurr% = Ycurr% + 1
         H%(Ycurr%) = HR%(K)
         statH$(Ycurr%) = statHR$(K)
