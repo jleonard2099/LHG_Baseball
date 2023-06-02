@@ -71,6 +71,7 @@ Sub CREATE ()
                     Locate 7, 37: Input LG$
 
                     If LG$ <> "" Then
+
                         LG$ = Left$(LG$, 8)
 
                         Do
@@ -454,9 +455,8 @@ Sub GetTeam_CREATE (yearNumber$, teamName$, teamIdx)
             Locate 2, 33
             Color ratings%(11), ratings%(12): Print teamName$
 
-            Color 15, 4
-
             Do
+                Color 15, 4
                 Locate 3, 33: Print "ANY CHANGE (YN)";
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"

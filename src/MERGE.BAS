@@ -248,12 +248,12 @@ Sub MergeStats ()
                     Else
 
                         Cls
-                        Color 7
-                        Locate 2, 10: Print "NON-EXISTANT PATH OR INCORRECT FILE NAME!!!!"
-                        Print
-                        Locate , 10: Line Input "HIT ENTER TO RE-ENTER INFORMATION"; DUMMY$
 
                         Do
+                            Color 7
+                            Locate 2, 10: Print "NON-EXISTANT PATH OR INCORRECT FILE NAME!!!!"
+                            Print
+                            Locate , 10: Line Input "HIT ENTER TO RE-ENTER INFORMATION"; DUMMY$
                             Locate , 10
                             Print "TRY AGAIN (YN) "
                             I$ = GetKeyPress$
@@ -578,9 +578,8 @@ Sub GetDiskID_MERGE (A$)
                 Locate 2, 33
                 Color ratings%(11), ratings%(12): Print A$
 
-                Color 15, 4
-
                 Do
+                    Color 15, 4
                     Locate 3, 33: Print "ANY CHANGE (YN)";
                     I$ = GetKeyPress$
                 Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"

@@ -397,7 +397,7 @@ Sub NewSchedule (scheduleFile$)
                     HR% = Int(scheduleNG%(I, 15) / 100)
                     MIN% = scheduleNG%(I, 15) - HR% * 100
                     TM% = HR% * 60 + MIN%
-                    scheduleNG%(I, 12) = Int(TM% / 30 - 18)
+                    scheduleNG%(I, 12) = Int(TM% / 30) - 18
                 Next
 
                 Open "TICKER" For Output As #2

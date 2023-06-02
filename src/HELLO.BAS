@@ -1,4 +1,3 @@
-$Debug
 
 Const GAME_VERSION$ = "6.67"
 Const MAX_TEAMS = 1000
@@ -9,6 +8,7 @@ Const MAX_CONFERENCES = 40
 Const TEAMS_PER_DIV = 15
 Const DIVS_PER_CONFERENCE = 2
 Const TEAMS_PER_CONFERENCE = 30
+Const TEAM_SIZE_BYTES = 4342
 
 Const NUM_STATRECORDS = 162
 
@@ -593,4 +593,3 @@ End Sub
 '$INCLUDE: 'GameRoutines_Gfx.bm'
 '$INCLUDE: 'LOADER.BAS'
 '$INCLUDE: 'SOURCE.bm'
-

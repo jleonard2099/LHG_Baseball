@@ -143,9 +143,8 @@ Sub DRAFT ()
                         Locate 2, 33
                         Color ratings%(11), ratings%(12): Print T$
 
-						Color 15, 4
-
 						Do
+                            Color 15, 4
 							Locate 3, 33: Print "ANY CHANGE (YN)";
 							I$ = GetKeyPress$
 						Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
@@ -297,6 +296,7 @@ Sub DoTheDraft (DNT%, doneDrafting%, teamName$, teamYears$(), saveSpot)
 				Locate 7
 
                 U$ = "DRAFT ANOTHER TEAM (YN)"
+
 				Do
 					Locate , (80 - Len(U$)) / 2
 					Print U$
@@ -410,10 +410,9 @@ Sub DraftPlayer (playerType, yearNumber$)
         Else
             Locate 2, 33
             Color L1%(11), L1%(12): Print T1$
-	
-			Color 15, 4
-	
+		
 			Do
+                Color 15, 4
 				Locate 3, 33: Print "ANY CHANGE (YN)";
 				I$ = GetKeyPress$
 			Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"

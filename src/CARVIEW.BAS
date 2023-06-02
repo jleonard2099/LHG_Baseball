@@ -1090,9 +1090,9 @@ Sub ViewLeaders_Sequence (careerFile$)
                 Locate 7 + JJ, 8
                 Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
 
-                Locate 7
-                U$ = "DISPLAY STATS AGAIN (YN)"
                 Do
+                    Locate 7
+                    U$ = "DISPLAY STATS AGAIN (YN)"
                     Locate , (80 - Len(U$)) / 2
                     Print U$
                     I$ = GetKeyPress$

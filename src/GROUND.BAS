@@ -228,13 +228,14 @@ Sub GROUND ()
         Close 1
 
         Cls
-        Print "EDIT ANOTHER TEAM (YN) ";
 
         Do
+            '-- Locate x, 
+            Print "EDIT ANOTHER TEAM (YN) ";
             I$ = GetKeyPress$
         Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
-    Loop Until UCase$(I$) = "N" 'from 300
+    Loop Until UCase$(I$) = "N"
 
 End Sub
 
@@ -312,9 +313,8 @@ Sub GetTeam_GROUND (yearNumber$, numberTeams, teamName$, teamIdx)
             Locate 2, 33
             Color ratings%(11), ratings%(12): Print teamName$
 
-            Color 15, 4
-
             Do
+                Color 15, 4
                 Locate 3, 33: Print "ANY CHANGE (YN)";
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"

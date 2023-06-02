@@ -298,9 +298,8 @@ Sub GetDiskYear (targetTeam$, yearNumber$, teamidx)
             Locate 2, 33
             Color ratings%(11), ratings%(12): Print targetTeam$
 
-            Color 15, 4
-
             Do
+                Color 15, 4
                 Locate 3, 33: Print "ANY CHANGE (YN)";
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
@@ -2297,11 +2296,11 @@ Sub ManagePitchingRotations (action%, targetTeam$)
 
         Else
             '4600
-            Cls
-            Print "ERROR::: ROTATION FILE NOT FOUND"
-            Print
-            Print "DO YOU WANT TO ENTER A ROTATION (YN)"
             Do
+                Cls
+                Print "ERROR::: ROTATION FILE NOT FOUND"
+                Print
+                Print "DO YOU WANT TO ENTER A ROTATION (YN)"
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -2325,10 +2324,10 @@ Sub ManagePitchingRotations (action%, targetTeam$)
     
     Locate 7 + JJ, 8
     Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";
-    Locate 7
 
     '4604
     Do
+        Locate 7
         U$ = "COMPUTER DETERMINE ROTATION (YN) "
         Locate , (80 - Len(U$)) / 2
         Print U$
@@ -3784,10 +3783,9 @@ Sub ImportManagerProfile ()
                     Next
                     Locate 7 + JJ, 8
                     Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";
-                    Locate 7
 
                     Do
-                        Locate , 11
+                        Locate 7, 11
                         Print "IMPORT STRATEGY PERCENTAGES ONLY (YN)"
                         A$ = GetKeyPress$
                     Loop Until UCase$(A$) = "Y" Or UCase$(A$) = "N"

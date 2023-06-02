@@ -423,7 +423,8 @@ Sub Merge_FirstYear ()
         Locate , 5: Input "ENTER YEAR TO ADD (EX. - 1960)"; statYear
 
         Do
-            Locate 18, 5: Print "ANY CHANGE (YN)"
+            Locate 18, 5
+            Print "ANY CHANGE (YN)"
             I$ = GetKeyPress$
         Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -566,7 +567,8 @@ Sub Merge_AddYear ()
         Locate , 5: Input "ENTER YEAR TO ADD (EX. - 1961)"; statYear
 
         Do
-            Locate 18, 5: Print "ANY CHANGE (YN)"
+            Locate 18, 5
+            Print "ANY CHANGE (YN)"
             I$ = GetKeyPress$
         Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 

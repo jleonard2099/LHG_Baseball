@@ -652,9 +652,8 @@ Sub GetTeam_SINPUT (yearNumber$, numberTeams)
             Locate 2, 33
             Color ratings%(11), ratings%(12): Print T$
 
-            Color 15, 4
-
             Do
+                Color 15, 4
                 Locate 3, 33: Print "ANY CHANGE (YN)";
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
@@ -996,9 +995,9 @@ Sub PromptScheduleChanges (Z$)
             L$(GAMES%) = L$
             I%(GAMES%) = I%
 
-            Print "ADD ANOTHER GAME (YN)";
-
             Do
+                'Locate x, 
+                Print "ADD ANOTHER GAME (YN)";
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 

@@ -124,9 +124,8 @@ Sub GetTeam_REC (yearNumber$, numberTeams)
             Locate 2, 33
             Color ratings%(11), ratings%(12): Print T$
 
-            Color 15, 4
-
             Do
+                Color 15, 4
                 Locate 3, 33: Print "ANY CHANGE (YN)";
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"

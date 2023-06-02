@@ -3600,7 +3600,8 @@ Sub SOURCE ()
     U% = 0
     If B1!(P) = 10 Then B1!(P) = 1
 
-    Color 15: Print "DOES "; B$(D, B3%(D, B9%(D, 0))); " STAY IN THE GAME (YN)"
+    Color 15
+    Print "DOES "; B$(D, B3%(D, B9%(D, 0))); " STAY IN THE GAME (YN)"
     I$ = GetKeyPress$
 
     If UCase$(I$) = "N" Then
@@ -3753,7 +3754,8 @@ Sub SOURCE ()
                 Do
 
                     Cls
-                    Locate , 14: Color 14: Print "DO YOU WISH TO MAKE A FLIP FLOP OR DOUBLE SWITCH (YN)";
+                    Locate , 14
+                    Color 14: Print "DO YOU WISH TO MAKE A FLIP FLOP OR DOUBLE SWITCH (YN)";
                     Color 15
 
                     I$ = GetKeyPress$

@@ -411,9 +411,8 @@ Sub LOADER
                     Locate 2, 33
                     Color L%(Idx, 11), L%(Idx, 12): Print A$(Idx)
 
-                    Color 15, 4
-
                     Do
+                        Color 15, 4
                         Locate 3, 33: Print "ANY CHANGE (YN)";
                         I$ = GetKeyPress$
                     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
@@ -1560,7 +1559,8 @@ Sub SelectStadium ()
         If AP% <> 1 Then
             'No autoplay
             Do
-                Locate 10, 11: Print "SELECT A DIFFERENT STADIUM (YN)"
+                Locate 10, 11
+                Print "SELECT A DIFFERENT STADIUM (YN)"
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -2194,7 +2194,10 @@ Sub LoadTeam_LOADER (teamIdx%, YN$, idx%)
         L%(idx%, I1) = CVI(Q2$(I1))
     Next
 
-    If (L%(idx%, 11) = 7 Or L%(idx%, 11) = 15) And L%(idx%, 12) = 0 Then L%(idx%, 11) = 0: L%(idx%, 12) = 7
+    If (L%(idx%, 11) = 7 Or L%(idx%, 11) = 15) And L%(idx%, 12) = 0 Then 
+        L%(idx%, 11) = 0
+        L%(idx%, 12) = 7
+    End If
 
     K9!(idx%) = CVS(Q2$(14))
 
@@ -2523,10 +2526,9 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
 
             Case 2:
                 '4604
-                Cls
-                Print "COMPUTER SET ROTATION (YN) ";
-
                 Do
+                    Cls
+                    Print "COMPUTER SET ROTATION (YN) ";
                     I$ = GetKeyPress$
                 Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 

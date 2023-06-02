@@ -7448,7 +7448,6 @@ Sub POSTGAME ()
         End If
 
         Call BOXOPTIONS(X)
-        endGame = 0
 
         'Reset option for next call
         If X <> 0 Then X = 0
@@ -7458,10 +7457,10 @@ Sub POSTGAME ()
         Cls
 
         If Not (AP% = 1 And U6 = 2) Then
-            'Using Home Team's color for the box
-            Call TEAMBOX(1, 1)
 
             Do
+                'Using Home Team's color for the box
+                Call TEAMBOX(1, 1)
                 U$ = "DISPLAY STATS AGAIN (YN)"
                 Locate 7, (80 - Len(U$)) / 2
                 Print U$
@@ -7473,22 +7472,22 @@ Sub POSTGAME ()
 
     Loop Until UCase$(I$) = "N" Or (AP% = 1 And U6 = 2)
 
+    Call SAVESTATS
+
     'If we had special events
     If specialStat = 1 Then
 
-        'Copy the BOX file as a "Special" file (.SPC)
-        srcFile$ = diskPaths$(1) + NM$
-        dstFile$ = diskPaths$(1) + "BOX" + Mid$(Str$(Count), 2, Len(Str$(Count%))) + ".SPC"
-        Call FCopy(srcFile$, dstFile$, null$, ErrCode%)
+        NM$ = "BOX" + Mid$(Str$(specialCount), 2, Len(Str$(specialCount))) + ".SPC"
 
         'Append special events
         Call BOX2SPC(NM$)
 
+        Call BOX2FILE(2, NM$)
+
     End If
 
+    endGame = 0
     specialStat = 0
-
-    Call SAVESTATS
 
 End Sub
 
@@ -7630,7 +7629,7 @@ End Sub
 ' COMPILESTATFILES Subroutine
 '------------------------------
 ' ...explanation...
-Sub COMPILESTATFILES (Q)
+Sub COMPILESTATFILES (teamIdx)
 
     Shared HT$(), L$(), PL$()
     Shared SA$(), W$()
@@ -7639,33 +7638,33 @@ Sub COMPILESTATFILES (Q)
     Shared H%(), ING%(), P0%()
     Shared SS%(), SX%(), V%()
 
-    SA$(Q) = A$(Q)
+    SA$(teamIdx) = A$(teamIdx)
 
     For XX = 4 To 11
-        If Mid$(SA$(Q), XX, 1) = " " Or Mid$(SA$(Q), XX, 1) = "." Then Mid$(SA$(Q), XX, 1) = "_"
+        If Mid$(SA$(teamIdx), XX, 1) = " " Or Mid$(SA$(teamIdx), XX, 1) = "." Then Mid$(SA$(teamIdx), XX, 1) = "_"
     Next XX
 
     QQ = 8
 
     For XX = 11 To 4 Step -1:
-        If Mid$(SA$(Q), XX, 1) = "_" Then
+        If Mid$(SA$(teamIdx), XX, 1) = "_" Then
             QQ = XX - 4
         Else
             Exit For
         End If
     Next XX
 
-    statFile$ = Mid$(SA$(Q), 4, QQ) + "." + Left$(SA$(Q), 2)
+    statFile$ = Mid$(SA$(teamIdx), 4, QQ) + "." + Left$(SA$(teamIdx), 2)
     FILENAME$ = diskPaths$(1) + statFile$ + "D"
 
     If _FileExists(FILENAME$) Then
 
         Open diskPaths$(1) + statFile$ + "D" For Input As #1
         For I1 = 0 To 22
-            Input #1, INJ%(Q, I1)
+            Input #1, INJ%(teamIdx, I1)
         Next
         For I1 = 0 To 21
-            Input #1, DYS%(Q, I1)
+            Input #1, DYS%(teamIdx, I1)
         Next
         Close 1
 
@@ -7675,8 +7674,8 @@ Sub COMPILESTATFILES (Q)
 
         If IJ% <> 1 Then
             For I1 = 0 To 22
-                If INJ%(Q, I1) > 0 Then INJ%(Q, I1) = INJ%(Q, I1) - 1
-                If B%(Q, I1, 32) > 0 Then INJ%(Q, I1) = B%(Q, I1, 32)
+                If INJ%(teamIdx, I1) > 0 Then INJ%(teamIdx, I1) = INJ%(teamIdx, I1) - 1
+                If B%(teamIdx, I1, 32) > 0 Then INJ%(teamIdx, I1) = B%(teamIdx, I1, 32)
             Next
         End If
 
@@ -7684,25 +7683,25 @@ Sub COMPILESTATFILES (Q)
 
             For I1 = 0 To 21
 
-                If DYS%(Q, I1) > 0 And DYS%(Q, I1) < 90 Then DYS%(Q, I1) = DYS%(Q, I1) - 1
+                If DYS%(teamIdx, I1) > 0 And DYS%(teamIdx, I1) < 90 Then DYS%(teamIdx, I1) = DYS%(teamIdx, I1) - 1
 
-                If P8%(Q, I1, 0) = 0 And DYS%(Q, I1) > 0 And DYS%(Q, I1) < 90 Then 7667
-                If P8%(Q, I1, 0) = 0 And (DYS%(Q, I1) = 0 Or DYS%(Q, I1) = 1 Or DYS%(Q, I1) = 91 Or DYS%(Q, I1) = 92) Then DYS%(Q, I1) = 0: GoTo 7667
-                If P8%(Q, I1, 0) > 0 And P8%(Q, I1, 0) <= 3 And DYS%(Q, I1) = 0 Then DYS%(Q, I1) = 91: GoTo 7667
-                If P8%(Q, I1, 0) > 0 And P8%(Q, I1, 0) <= 3 And DYS%(Q, I1) = 91 Then DYS%(Q, I1) = 911: GoTo 7667
-                If P8%(Q, I1, 0) > 0 And P8%(Q, I1, 0) <= 3 And DYS%(Q, I1) = 911 Then DYS%(Q, I1) = 1: GoTo 7667
-                If P8%(Q, I1, 0) > 0 And P8%(Q, I1, 0) <= 3 And DYS%(Q, I1) = 92 Then DYS%(Q, I1) = 1: GoTo 7667
-                If P8%(Q, I1, 0) > 0 And P8%(Q, I1, 0) <= 3 And DYS%(Q, I1) > 0 Then DYS%(Q, I1) = DYS%(Q, I1) + 1: GoTo 7667
-                If P8%(Q, I1, 0) > 3 And P8%(Q, I1, 0) <= 6 And DYS%(Q, I1) = 0 Then DYS%(Q, I1) = 92: GoTo 7667
-                If P8%(Q, I1, 0) > 3 And P8%(Q, I1, 0) <= 6 And DYS%(Q, I1) = 91 Then DYS%(Q, I1) = 1: GoTo 7667
-                If P8%(Q, I1, 0) > 3 And P8%(Q, I1, 0) <= 6 And DYS%(Q, I1) = 92 Then DYS%(Q, I1) = 1: GoTo 7667
-                If P8%(Q, I1, 0) > 3 And P8%(Q, I1, 0) <= 6 And DYS%(Q, I1) = 911 Then DYS%(Q, I1) = 1: GoTo 7667
-                If P8%(Q, I1, 0) > 3 And P8%(Q, I1, 0) <= 6 And DYS%(Q, I1) > 0 Then DYS%(Q, I1) = DYS%(Q, I1) + 1: GoTo 7667
-                If P8%(Q, I1, 0) > 6 Then DYS%(Q, I1) = Int(P8%(Q, I1, 0) / 3) + 1 - 2
+                If P8%(teamIdx, I1, 0) = 0 And DYS%(teamIdx, I1) > 0 And DYS%(teamIdx, I1) < 90 Then 7667
+                If P8%(teamIdx, I1, 0) = 0 And (DYS%(teamIdx, I1) = 0 Or DYS%(teamIdx, I1) = 1 Or DYS%(teamIdx, I1) = 91 Or DYS%(teamIdx, I1) = 92) Then DYS%(teamIdx, I1) = 0: GoTo 7667
+                If P8%(teamIdx, I1, 0) > 0 And P8%(teamIdx, I1, 0) <= 3 And DYS%(teamIdx, I1) = 0 Then DYS%(teamIdx, I1) = 91: GoTo 7667
+                If P8%(teamIdx, I1, 0) > 0 And P8%(teamIdx, I1, 0) <= 3 And DYS%(teamIdx, I1) = 91 Then DYS%(teamIdx, I1) = 911: GoTo 7667
+                If P8%(teamIdx, I1, 0) > 0 And P8%(teamIdx, I1, 0) <= 3 And DYS%(teamIdx, I1) = 911 Then DYS%(teamIdx, I1) = 1: GoTo 7667
+                If P8%(teamIdx, I1, 0) > 0 And P8%(teamIdx, I1, 0) <= 3 And DYS%(teamIdx, I1) = 92 Then DYS%(teamIdx, I1) = 1: GoTo 7667
+                If P8%(teamIdx, I1, 0) > 0 And P8%(teamIdx, I1, 0) <= 3 And DYS%(teamIdx, I1) > 0 Then DYS%(teamIdx, I1) = DYS%(teamIdx, I1) + 1: GoTo 7667
+                If P8%(teamIdx, I1, 0) > 3 And P8%(teamIdx, I1, 0) <= 6 And DYS%(teamIdx, I1) = 0 Then DYS%(teamIdx, I1) = 92: GoTo 7667
+                If P8%(teamIdx, I1, 0) > 3 And P8%(teamIdx, I1, 0) <= 6 And DYS%(teamIdx, I1) = 91 Then DYS%(teamIdx, I1) = 1: GoTo 7667
+                If P8%(teamIdx, I1, 0) > 3 And P8%(teamIdx, I1, 0) <= 6 And DYS%(teamIdx, I1) = 92 Then DYS%(teamIdx, I1) = 1: GoTo 7667
+                If P8%(teamIdx, I1, 0) > 3 And P8%(teamIdx, I1, 0) <= 6 And DYS%(teamIdx, I1) = 911 Then DYS%(teamIdx, I1) = 1: GoTo 7667
+                If P8%(teamIdx, I1, 0) > 3 And P8%(teamIdx, I1, 0) <= 6 And DYS%(teamIdx, I1) > 0 Then DYS%(teamIdx, I1) = DYS%(teamIdx, I1) + 1: GoTo 7667
+                If P8%(teamIdx, I1, 0) > 6 Then DYS%(teamIdx, I1) = Int(P8%(teamIdx, I1, 0) / 3) + 1 - 2
 
-                If MG%(Q, 1) <= 0 Then DYS%(Q, I1) = 3: GoTo 7667
-                If DYS%(Q, I1) > MG%(Q, 1) - 1 Then DYS%(Q, I1) = MG%(Q, 1) - 1
-                If DYS%(Q, I1) < 0 Then DYS%(Q, I1) = 0
+                If MG%(teamIdx, 1) <= 0 Then DYS%(teamIdx, I1) = 3: GoTo 7667
+                If DYS%(teamIdx, I1) > MG%(teamIdx, 1) - 1 Then DYS%(teamIdx, I1) = MG%(teamIdx, 1) - 1
+                If DYS%(teamIdx, I1) < 0 Then DYS%(teamIdx, I1) = 0
 
             7667 Next
 
@@ -7710,10 +7709,10 @@ Sub COMPILESTATFILES (Q)
 
         Open diskPaths$(1) + statFile$ + "D" For Output As #1
         For I1 = 0 To 22
-            Print #1, INJ%(Q, I1)
+            Print #1, INJ%(teamIdx, I1)
         Next
         For I1 = 0 To 21
-            Print #1, DYS%(Q, I1)
+            Print #1, DYS%(teamIdx, I1)
         Next
         Close 1
 
@@ -7723,15 +7722,15 @@ Sub COMPILESTATFILES (Q)
 
     If _FileExists(FILENAME$) Then
         Open diskPaths$(1) + statFile$ For Input As #1
-        Input #1, A$(Q)
+        Input #1, A$(teamIdx)
         Input #1, W2%
         Input #1, L2%
-        For I = 0 To 22: Input #1, B$(Q, I): Input #1, B2%(Q, I): Next I
-        For I = 0 To 21: Input #1, P$(Q, I): Input #1, P3%(Q, I): Next I
+        For I = 0 To 22: Input #1, B$(teamIdx, I): Input #1, B2%(teamIdx, I): Next I
+        For I = 0 To 21: Input #1, P$(teamIdx, I): Input #1, P3%(teamIdx, I): Next I
         For I = 0 To 22: For I1 = 0 To 21: Input #1, B6%(I, I1): Next I1: Next I
         For I = 0 To 21: For I1 = 0 To 41: Input #1, P0%(I, I1): Next I1: Next I
-        Input #1, D0%(Q)
-        Input #1, D1%(Q)
+        Input #1, D0%(teamIdx)
+        Input #1, D1%(teamIdx)
         For I = 0 To 21: Input #1, T%(I): Next I
         For I = 0 To 22: Input #1, P4%(I): Next I
         Close #1
@@ -7739,25 +7738,25 @@ Sub COMPILESTATFILES (Q)
 
     For I = 0 To 22
 
-        B2%(Q, I) = B%(Q, I, 4)
+        B2%(teamIdx, I) = B%(teamIdx, I, 4)
 
         For I1 = 0 To 11
-            B6%(I, I1) = B6%(I, I1) + B8%(Q, I, I1): T%(I1) = T%(I1) + B8%(Q, I, I1)
+            B6%(I, I1) = B6%(I, I1) + B8%(teamIdx, I, I1): T%(I1) = T%(I1) + B8%(teamIdx, I, I1)
         Next I1
 
-        If B8%(Q, I, 0) > 0 Then
-            If B8%(Q, I, 1) = 0 Then
+        If B8%(teamIdx, I, 0) > 0 Then
+            If B8%(teamIdx, I, 1) = 0 Then
                 B6%(I, 12) = 0
             Else
                 B6%(I, 12) = B6%(I, 12) + 1
             End If
         End If
 
-        If B8%(Q, I, 14) > 0 Then B6%(I, 14) = B6%(I, 14) + 1
+        If B8%(teamIdx, I, 14) > 0 Then B6%(I, 14) = B6%(I, 14) + 1
 
         For I1 = 15 To 21
-            B6%(I, I1) = B6%(I, I1) + B8%(Q, I, I1)
-            T%(I1) = T%(I1) + B8%(Q, I, I1)
+            B6%(I, I1) = B6%(I, I1) + B8%(teamIdx, I, I1)
+            T%(I1) = T%(I1) + B8%(teamIdx, I, I1)
         Next I1
 
         If B6%(I, 12) >= B6%(I, 13) Then B6%(I, 13) = B6%(I, 12)
@@ -7767,12 +7766,12 @@ Sub COMPILESTATFILES (Q)
     For I = 0 To 21
 
         For I1 = 23 To 34
-            P0%(I, I1) = P0%(I, I1) + P8%(Q, I, I1)
-            T%(I1 - 23) = T%(I1 - 23) + P8%(Q, I, I1)
+            P0%(I, I1) = P0%(I, I1) + P8%(teamIdx, I, I1)
+            T%(I1 - 23) = T%(I1 - 23) + P8%(teamIdx, I, I1)
         Next I1
 
-        If P8%(Q, I, 23) > 0 Then
-            If P8%(Q, I, 24) = 0 Then
+        If P8%(teamIdx, I, 23) > 0 Then
+            If P8%(teamIdx, I, 24) = 0 Then
                 P0%(I, 35) = 0
             Else
                 P0%(I, 35) = P0%(I, 35) + 1
@@ -7780,69 +7779,69 @@ Sub COMPILESTATFILES (Q)
         End If
 
         For I1 = 37 To 41
-            P0%(I, I1) = P0%(I, I1) + P8%(Q, I, I1)
-            T%(I1 - 22) = T%(I1 - 22) + P8%(Q, I, I1)
+            P0%(I, I1) = P0%(I, I1) + P8%(teamIdx, I, I1)
+            T%(I1 - 22) = T%(I1 - 22) + P8%(teamIdx, I, I1)
         Next I1
 
         If P0%(I, 35) >= P0%(I, 36) Then P0%(I, 36) = P0%(I, 35)
 
     Next I
 
-    T%(12) = T%(12) + L0%(Q)
+    T%(12) = T%(12) + L0%(teamIdx)
     INNING% = 0
 
     For I = 0 To 21
-        INNING% = INNING% + P8%(Q, I, 0)
-        P3%(Q, I) = P%(Q, I, 6)
+        INNING% = INNING% + P8%(teamIdx, I, 0)
+        P3%(teamIdx, I) = P%(teamIdx, I, 6)
 
         For I1 = 0 To 5
-            P0%(I, I1) = P0%(I, I1) + P8%(Q, I, I1)
-            P4%(I1) = P4%(I1) + P8%(Q, I, I1)
+            P0%(I, I1) = P0%(I, I1) + P8%(teamIdx, I, I1)
+            P4%(I1) = P4%(I1) + P8%(teamIdx, I, I1)
         Next I1
 
         For I1 = 13 To 22:
-            P0%(I, I1) = P0%(I, I1) + P8%(Q, I, I1)
-            P4%(I1) = P4%(I1) + P8%(Q, I, I1)
+            P0%(I, I1) = P0%(I, I1) + P8%(teamIdx, I, I1)
+            P4%(I1) = P4%(I1) + P8%(teamIdx, I, I1)
         Next I1
 
     Next I
 
-    If S6%(Q, 0) - S6%(1 - Q, 0) > 0 Then P0%(P2%(Q), 6) = P0%(P2%(Q), 6) + 1
-    If S6%(Q, 0) - S6%(1 - Q, 0) < 0 Then P0%(P2%(Q), 7) = P0%(P2%(Q), 7) + 1
-    If S6%(Q, 0) - S6%(1 - Q, 0) > 0 And S1%(Q) >= 0 Then P0%(S1%(Q), 12) = P0%(S1%(Q), 12) + 1: P4%(12) = P4%(12) + 1
+    If S6%(teamIdx, 0) - S6%(1 - teamIdx, 0) > 0 Then P0%(P2%(teamIdx), 6) = P0%(P2%(teamIdx), 6) + 1
+    If S6%(teamIdx, 0) - S6%(1 - teamIdx, 0) < 0 Then P0%(P2%(teamIdx), 7) = P0%(P2%(teamIdx), 7) + 1
+    If S6%(teamIdx, 0) - S6%(1 - teamIdx, 0) > 0 And S1%(teamIdx) >= 0 Then P0%(S1%(teamIdx), 12) = P0%(S1%(teamIdx), 12) + 1: P4%(12) = P4%(12) + 1
 
     For I = 0 To 21
-        If P%(Q, I, 15) <> 0 Then P0%(I, 8) = P0%(I, 8) + 1: P4%(8) = P4%(8) + 1
-        If INNING% = P8%(Q, I, 0) Then P0%(I, 10) = P0%(I, 10) + 1: P4%(10) = P4%(10) + 1
-        If INNING% = P8%(Q, I, 0) And S6%(1 - Q, 0) = 0 Then P0%(I, 11) = P0%(I, 11) + 1: P4%(11) = P4%(11) + 1
+        If P%(teamIdx, I, 15) <> 0 Then P0%(I, 8) = P0%(I, 8) + 1: P4%(8) = P4%(8) + 1
+        If INNING% = P8%(teamIdx, I, 0) Then P0%(I, 10) = P0%(I, 10) + 1: P4%(10) = P4%(10) + 1
+        If INNING% = P8%(teamIdx, I, 0) And S6%(1 - teamIdx, 0) = 0 Then P0%(I, 11) = P0%(I, 11) + 1: P4%(11) = P4%(11) + 1
     Next I
 
-    P0%(SX%(Q), 9) = P0%(SX%(Q), 9) + 1
+    P0%(SX%(teamIdx), 9) = P0%(SX%(teamIdx), 9) + 1
     P4%(9) = P4%(9) + 1
 
-    D0%(Q) = D0%(Q) + D3%(Q)
-    D1%(Q) = D1%(Q) + D3%(1 - Q)
+    D0%(teamIdx) = D0%(teamIdx) + D3%(teamIdx)
+    D1%(teamIdx) = D1%(teamIdx) + D3%(1 - teamIdx)
 
-    If S6%(Q, 0) - S6%(1 - Q, 0) > 0 Then W2% = W2% + 1
-    If S6%(Q, 0) - S6%(1 - Q, 0) < 0 Then L2% = L2% + 1
+    If S6%(teamIdx, 0) - S6%(1 - teamIdx, 0) > 0 Then W2% = W2% + 1
+    If S6%(teamIdx, 0) - S6%(1 - teamIdx, 0) < 0 Then L2% = L2% + 1
 
     Color 15, 0
 
     Print ">>>>>"
     Print "THE STATS ARE BEING SAVED UNDER": Print "THE FOLLOWING NAME ::: ";
-    Color L%(Q, 11), L%(Q, 12): Print statFile$
+    Color L%(teamIdx, 11), L%(teamIdx, 12): Print statFile$
     Color 15, 0
 
     Open diskPaths$(1) + statFile$ For Output As #1
-    Print #1, A$(Q)
+    Print #1, A$(teamIdx)
     Print #1, W2%
     Print #1, L2%
-    For I = 0 To 22: Print #1, B$(Q, I): Print #1, B2%(Q, I): Next I
-    For I = 0 To 21: Print #1, P$(Q, I): Print #1, P3%(Q, I): Next I
+    For I = 0 To 22: Print #1, B$(teamIdx, I): Print #1, B2%(teamIdx, I): Next I
+    For I = 0 To 21: Print #1, P$(teamIdx, I): Print #1, P3%(teamIdx, I): Next I
     For I = 0 To 22: For I1 = 0 To 21: Print #1, B6%(I, I1): Next I1: Next I
     For I = 0 To 21: For I1 = 0 To 41: Print #1, P0%(I, I1): Next I1: Next I
-    Print #1, D0%(Q)
-    Print #1, D1%(Q)
+    Print #1, D0%(teamIdx)
+    Print #1, D1%(teamIdx)
     For I = 0 To 21: Print #1, T%(I): Next I
     For I = 0 To 22: Print #1, P4%(I): Next I
     Close #1
@@ -7865,7 +7864,7 @@ Sub COMPILESTATFILES (Q)
 
     For I = 0 To 22
         For I1 = 0 To 6
-            SS%(I, I1) = SS%(I, I1) + CSS%(Q, I, I1)
+            SS%(I, I1) = SS%(I, I1) + CSS%(teamIdx, I, I1)
         Next
     Next
 
@@ -7880,7 +7879,7 @@ Sub COMPILESTATFILES (Q)
     Y% = 0
     FILENAME$ = diskPaths$(1) + statFile$ + "S"
 
-    If _FileExists(FILENAME$) Then
+    If (teamIdx(FILENAME$) Then
 
         Open diskPaths$(1) + statFile$ + "S" For Input As #1
         Input #1, Y%
@@ -7908,14 +7907,14 @@ Sub COMPILESTATFILES (Q)
     End If
 
     Y% = Y% + 1
-    H%(Y%) = S6%(Q, 0)
-    HT$(Y%) = A$(1 - Q)
-    V%(Y%) = S6%(1 - Q, 0)
+    H%(Y%) = S6%(teamIdx, 0)
+    HT$(Y%) = A$(1 - teamIdx)
+    V%(Y%) = S6%(1 - teamIdx, 0)
     W$(Y%) = W$
     L$(Y%) = L$
     ING%(Y%) = LYN%
 
-    If Q = 0 Then
+    If teamIdx = 0 Then
         PL$(Y%) = "A"
     Else
         PL$(Y%) = "H"
@@ -8043,7 +8042,7 @@ Sub BOX2FILE (printChoice)
     Dim BK$
     BK$ = "## # # ## # #  # # #  #  # # ## ##"
 
-    Open diskPaths$(1) + NM$ For Output As #2
+    Open diskPaths$(1) + NM$ For Append As #2
 
     Print #2, Tab(17);
 

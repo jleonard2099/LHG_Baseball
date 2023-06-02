@@ -544,14 +544,14 @@ Sub ContinueTrade (yearNumbers$(), tradeIdx)
 
 	Color 15, 0
 
-	Cls
-
-	Print "DOES ";: Color tradeL%(tradeIdx, 11), tradeL%(tradeIdx, 12)
-	Print tradeA$(1);: Color 15, 0
-	Print " HAVE COMPILED STATS (YN)"
-	tradeS%(1) = 0
 
     Do
+        Cls
+
+        Print "DOES ";: Color tradeL%(tradeIdx, 11), tradeL%(tradeIdx, 12)
+        Print tradeA$(1);: Color 15, 0
+        Print " HAVE COMPILED STATS (YN)"
+        tradeS%(1) = 0
         I$ = GetKeyPress$
     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
