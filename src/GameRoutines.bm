@@ -9151,13 +9151,13 @@ Sub EndOfGame ()
 End Sub
 
 
-'------------------------------
-'        pbplog Function
-'------------------------------
-'...explanation
-Sub pbplog (lineNumber)
 
-    Print #7, "Called from line "; lineNumber
+Sub pbpLog (lineNumber)
+
+    Print #7, "Executing code from: "; lineNumber
+    Print #7, A$(0); " vs "; A$(1)
+    Print #7, "B7%(P9, I) "; testIdx
+    Print #7, "B9%(D, 1)  "; B9%(D, 1)
     Print #7,
 
 End Sub

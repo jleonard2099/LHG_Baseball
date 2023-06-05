@@ -2726,13 +2726,3 @@ Sub PrintPitcherInfo (idx%)
 
 End Sub
 
-
-Sub pbpLog (lineNbr%)
-
-    Print #7, "Executing code from: "; lineNbr%
-    Print #7, A$(0); " vs "; A$(1)
-    Print #7, "B7%(P9, I) "; testIdx
-    Print #7, "B9%(D, 1)  "; B9%(D, 1)
-    Print #7,
-
-End Sub
