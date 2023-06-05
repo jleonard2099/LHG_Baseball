@@ -1,20 +1,9 @@
 Sub LOADER
 
     _Title "Full Count Baseball v" + GAME_VERSION$ + " - PLAY BALL!"
-    ''$ExeIcon:'./lhg_fcbase.ico'
-    '_Icon
-    '_AllowFullScreen
 
     'Open "pbplog" For Output As #7
 
-    Color 7, 0
-    Cls
-
-    Randomize Timer
-
-    '----------------------------------------
-    '        INITIALIZE ALL VARIABLES
-    '----------------------------------------
     Shared dayNight$(), DH$(), DL$()
     Shared LGT$(), month$()
     Shared PT$(), pitcherEra$()
@@ -23,6 +12,11 @@ Sub LOADER
     Shared SP%(), T1%(), U%()
 
     Shared scheduleFile$
+
+    Color 7, 0
+    Cls
+
+    Randomize Timer
 
     Call InitVar
 
@@ -481,24 +475,34 @@ Sub LOADER
     For P9 = 0 To 1
 
         Do
-            480 '
+
             Cls
+
             Call INFO
+
             Locate 3, 1
-            Color L%(P9, 11), L%(P9, 12): Print A$(P9): Color 7, 0: Print
-            Color 14: Print "(0) ";: Color 15: Print "INPUT A LINEUP MANUALLY": Print
-            Color 14: Print "(1) ";: Color 15: Print "SELECT A LINEUP FROM MANAGER PROFILE": Print
-            Color 14: Print "(2) ";: Color 15: Print "COMPUTER DETERMINE LINEUP RANDOMLY": Print
+            Color L%(P9, 11), L%(P9, 12): Print A$(P9): Color 7, 0
+            Print
+            Color 14: Print "(0) ";: Color 15: Print "INPUT A LINEUP MANUALLY"
+            Print
+            Color 14: Print "(1) ";: Color 15: Print "SELECT A LINEUP FROM MANAGER PROFILE"
+            Print
+            Color 14: Print "(2) ";: Color 15: Print "COMPUTER DETERMINE LINEUP RANDOMLY"
+            Print
             Color 14: Print "(3) ";: Color 15: Print "COMPUTER DETERMINE LINEUP FROM MANAGER PROFILE"
+
             reselect = 0
 
             If AP% = 1 Then
 
                 'NLF% = no lineup found?
                 If NLF% = 1 Then
+
                     NLF% = 0
                     I$ = "2"
+
                 Else
+
                     If (U6 = 2 Or U6 = 1 And U9 = P9) Then
                         If MP% = 0 Then
                             I$ = "1"
@@ -506,7 +510,9 @@ Sub LOADER
                             I$ = "2"
                         End If
                     End If
+
                 End If
+
             Else
 
                 Do
@@ -538,14 +544,10 @@ Sub LOADER
 
                 Case "1", "3":
                     'Lineup using profile
-
-                    '2500
                     Call SearchForLineup(P9)
 
-                    '1830
                     Call LineupFromProfile(lineupFound%, P9, skipLineChange%)
 
-                    'Lineup found?
                     If lineupFound% = 1 Or skipLineChange% = 0 Then
                         Call ChangeLineup_PreGame(P9, reselect)
                         If noLineups = 1 Then
@@ -556,7 +558,6 @@ Sub LOADER
                     End If
 
                 Case "2"
-                    'GoSub 5000
                     Call ComputerLineups(batterFlag%, P9, noLineups, reselect)
 
                     If noLineups = 1 Then
@@ -741,39 +742,40 @@ Sub StartingLineup (P9)
 
     540 '
 
-    'track assigned positions
-    '0 = unassigned
-    For I = 0 To 9:
-        M%(I) = 0
-    Next I
+    skipLU% = 0
 
-    '1370
-    Locate 25, 1
+    Do
+        'track assigned positions
+        '   0 = unassigned
+        For I = 0 To 9:
+            M%(I) = 0
+        Next I
 
-    For I1 = 0 To 9
-        If DH% <> 0 Or I1 <> 0 Then
-            If DH% <> 1 Or I1 <> 1 Then
-                Locate 24, (I1 * 3) + 1
-                If M%(I1) = 0 Then Print C$(I1); "  ";
-                If M%(I1) = 1 Then Print "   ";
+        Locate 25, 1
 
-                Locate 25, (I1 * 3) + 1
-                If M%(I1) = 0 Then Print I1; "  ";
-                If M%(I1) = 1 Then Print "   ";
+        For I1 = 0 To 9
+            If DH% <> 0 Or I1 <> 0 Then
+                If DH% <> 1 Or I1 <> 1 Then
+                    Locate 24, (I1 * 3) + 1
+                    If M%(I1) = 0 Then Print C$(I1); "  ";
+                    If M%(I1) = 1 Then Print "   ";
+
+                    Locate 25, (I1 * 3) + 1
+                    If M%(I1) = 0 Then Print I1; "  ";
+                    If M%(I1) = 1 Then Print "   ";
+                End If
             End If
-        End If
-    Next I1
+        Next I1
 
-    '550
-    For I = 1 To 9
-        Color 15, 0
-        Locate 5, 59: Print "OPPOSING PITCHER"
-        Locate , 59: Print P$(1 - P9, P1%(1 - P9)); " "; B1$(P%(1 - P9, P1%(1 - P9), 0) + 2)
-        Call LineupPositions(P9, I, skipLU%)
-        If C1 = 1 Then Exit For
-    Next I
+        For I = 1 To 9
+            Color 15, 0
+            Locate 5, 59: Print "OPPOSING PITCHER"
+            Locate , 59: Print P$(1 - P9, P1%(1 - P9)); " "; B1$(P%(1 - P9, P1%(1 - P9), 0) + 2)
+            Call LineupPositions(P9, I, skipLU%)
+            If C1 = 1 Then Exit For
+        Next I
 
-    If skipLU% = 1 Then GoTo 540
+    Loop Untiul skipLU% = 0
 
 End Sub
 
@@ -1215,7 +1217,7 @@ Sub LineupFromProfile (lineupFound%, P9, skipLineChange%)
             I$ = GetKeyPress$
         End If
         skipLineChange% = 1
-        'Goto 480
+
     Else
 
         If AP% = 1 And MP% = 0 And (U6 = 2 Or U6 = 1 And U9 = P9) Or I$ = "3" Then
@@ -2727,12 +2729,10 @@ End Sub
 
 Sub pbpLog (lineNbr%)
 
-    'Open "pbplog" For Output As #7
     Print #7, "Executing code from: "; lineNbr%
     Print #7, A$(0); " vs "; A$(1)
     Print #7, "B7%(P9, I) "; testIdx
     Print #7, "B9%(D, 1)  "; B9%(D, 1)
     Print #7,
-    'Close #7
 
 End Sub

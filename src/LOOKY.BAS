@@ -2,9 +2,9 @@ Sub LOOKY ()
 
     _Title "Full Count Baseball - View Stats"
 
-    DefInt A-Z
-
     ReDim menuChoices$(1 To 3)
+
+    menuExit = 0
 
     Do
 
@@ -59,6 +59,7 @@ Sub StatsOneTeam ()
         Cls
 
         JJ = 6
+
         Locate 6, 8: Color 15, 4
 
         'Print box top
@@ -158,11 +159,11 @@ Sub StatsOneTeam ()
                     Color 15, 4
                     Locate 3, 33
                     Print "ANY CHANGE (YN)";
-                    I$ = GetKeyPress$
-                Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+                    J$ = GetKeyPress$
+                Loop Until UCase$(J$) = "Y" Or UCase$(J$) = "N"
 
 
-                If UCase$(I$) = "N" Then
+                If UCase$(J$) = "N" Then
 
                     Color 15, 0
 
@@ -194,8 +195,10 @@ Sub StatsOneTeam ()
                     Call CSMsgBox("", 0, Pass)
                 Else
                     Call LoadTeamStats(Z$, totalGames%)
-                    Call ViewAndPrintOptions(Z$, A$, totalGames%)
+                    Call ViewAndPrintOptions(Z$, A$, totalGames%, menuExit)
 
+                    'We want to choose another team
+                    If menuExit = 1 Then I$ = "Y"
                 End If
 
             End If 'Done checking BO%
@@ -314,7 +317,7 @@ End Sub
 '     ViewAndPrintOptions Subroutine
 '----------------------------------------
 '...explanation...
-Sub ViewAndPrintOptions (statFile$, teamName$, totalGames%)
+Sub ViewAndPrintOptions (statFile$, teamName$, totalGames%, menuExit)
 
     Shared H%(), I%(), ratings%(), V%()
 
@@ -343,7 +346,7 @@ Sub ViewAndPrintOptions (statFile$, teamName$, totalGames%)
         If prompt$ <> Chr$(27) Then
 
             If X = 3 Or X = 4 Then
-                Call NewPrintStats(statFile$, teamName$, totalGames%, X, splitScreenChoice%)
+                Call NewPrintStats(statFile$, teamName$, totalGames%, X, splitScreenChoice%, menuExit)
             End If
 
             If X = 2 Then
@@ -402,7 +405,7 @@ Sub ViewAndPrintOptions (statFile$, teamName$, totalGames%)
 
             End If
 
-            Call ViewStatSummary(statFile$, teamName$, totalGames%, X, splitScreenChoice%)
+            Call ViewStatSummary(statFile$, teamName$, totalGames%, X, splitScreenChoice%, menuExit)
 
             Color 15, 0
 
@@ -438,11 +441,9 @@ Sub ViewAndPrintOptions (statFile$, teamName$, totalGames%)
 
     Loop Until UCase$(U$) = "N" Or prompt$ = Chr$(27)
 
-    'If prompt$ <> Chr$(27) Then
+    If prompt$ = Chr$(27) Then menuExit = 1
 
     'Call ResetStatPrompt (statFile$, ratings%())
-
-    'End If 'Done checking for ESC
 
     Cls
 
@@ -453,7 +454,7 @@ End Sub
 '       ViewStatSummary Subroutine
 '----------------------------------------
 '...explanation...
-Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%)
+Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, menuExit)
 
     Shared EW, EL, HW, HL
     Shared LTL, LTW, ORW, ORL
@@ -1140,7 +1141,7 @@ End Sub
 '       NewPrintStats Subroutine
 '----------------------------------------
 '...explanation...
-Sub NewPrintStats (statFile$, teamName$, totalGames%, printChoice, splitScreenChoice%)
+Sub NewPrintStats (statFile$, teamName$, totalGames%, printChoice, splitScreenChoice%, menuExit)
 
     Shared L2%, W2%
 
@@ -1160,12 +1161,19 @@ Sub NewPrintStats (statFile$, teamName$, totalGames%, printChoice, splitScreenCh
 
     ' *** NEW PRINT ROUTINE 6-24-90 ***
     If printChoice <> 3 Then
-        Wins = 0: L = 0
-        ORW = 0: ORL = 0
-        RW = 0: RL = 0
-        HW = 0: HL = 0
-        EW = 0: EL = 0
-        LTL = 0: LTW = 0
+        Wins = 0
+        L = 0
+        ORW = 0
+        ORL = 0
+        RW = 0
+        RL = 0
+        HW = 0
+        HL = 0
+        EW = 0
+        EL = 0
+        LTL = 0
+        LTW = 0
+        
         Cls
         LPrint "        SCHEDULE RESULTS FOR "; teamName$
         LPrint

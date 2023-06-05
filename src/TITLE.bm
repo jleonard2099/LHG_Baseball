@@ -160,7 +160,7 @@ Sub TITLE_SCHEDULER ()
 
     Locate 5, 1
 
-    Color , 0
+    Color 15, 0
 
 End Sub
 

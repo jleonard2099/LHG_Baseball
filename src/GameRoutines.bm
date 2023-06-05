@@ -142,24 +142,7 @@ Sub InitVar ()
         Next
     Next
 
-
-    F$ = ""
-    gameTime$ = ""
-    L$ = ""
-    PARK$ = ""
-    scheduleFile$ = ""
-    S$ = ""
-    W$ = ""
-    WI$ = ""
-    Y$ = ""
-    YY$ = ""
-
-    E! = 0
-    pbpDelay! = 0
-    WF! = 0
-    actualAttendance& = 0
-    avgAttendance& = 0
-
+    AP% = 0
     CGERA% = 0
     DH% = 0
     DR% = 0
@@ -179,33 +162,41 @@ Sub InitVar ()
     W% = 0
     WS% = 0
 
-    DB = 0
-    HR = 0
-    TR = 0
-    SB = 0
-
     D = 0
+    DB = 0
+    endGame = 1
+    endAllGames = 1
+    HR = 0
     P = 0
-    RE = 0
     RD = 0
+    RE = 0
+    SB = 0
+    statSpecial = 0
+    TR = 0
     U6 = 0
     U9 = 0
-
-    statSpecial = 0
     usingGfx = 0
 
-    Erase B1!, K9!
+    E! = 0
+    pbpDelay! = 0
+    WF! = 0
+
+    actualAttendance& = 0
+    avgAttendance& = 0
+
+    F$ = ""
+    gameTime$ = ""
+    L$ = ""
+    PARK$ = ""
+    scheduleFile$ = ""
+    S$ = ""
+    W$ = ""
+    WI$ = ""
+    Y$ = ""
+    YY$ = ""
 
     Erase BP, F
     Erase MON, VV, VV1
-
-    Erase A$, B$
-    Erase DB$, E$, EJ$
-    Erase G$, HR$
-    Erase IJ$, M$, N$, NN$
-    Erase P$, PARK$, player$
-    Erase Q3$, S$, SB$, TR$
-    Erase U$, YN$
 
     'Erase AP%
     Erase A5%, B%, B0%
@@ -218,12 +209,19 @@ Sub InitVar ()
     Erase L%, L0%, M%, MG%, NG%, O%
     Erase P%, P1%, P2%, P3%, P4%, P5%, P6%, P8%
     Erase PR%
-
     Erase inningScore%, S1%, S6%, S8%
     Erase SA%, SU%
     Erase T%, T3%, TS%, VA%, X0%
 
-    AP% = 0
+    Erase B1!, K9!
+
+    Erase A$, B$
+    Erase DB$, E$, EJ$
+    Erase G$, HR$
+    Erase IJ$, M$, N$, NN$
+    Erase P$, PARK$, player$
+    Erase Q3$, S$, SB$, TR$
+    Erase U$, YN$
 
     For P9 = 0 To 1
         For I3 = 0 To 21
@@ -867,31 +865,46 @@ Sub CREDITPUTOUT (I3, FB2P%, AST%, D)
     po% = I3 + 2: ' 1=1st 2=2nd 3=3rd 4=home
 
     If po% = 6 Then
+
         po% = 2
+		AST% = 0
+		I5 = B9%(D, po%)
+		I6 = 16
+		Call INCBATDF(D, I5, I6)
+
     Else
+
         If po% = 3 And FB2P% = 1 Then
+
             FB2P% = 0
             po% = 1
-            If po% = 1 Then I5 = P1%(D): I6 = 38: Call ADDPIT(D, I5, I6): GoTo 3418
+            If po% = 1 Then 
+				I5 = P1%(D)
+				I6 = 38
+				Call ADDPIT(D, I5, I6)
+			End If
+
         Else
-            If po% = 4 And AST% = 4 Then
-                po% = 6
-            Else
-                If po% = 4 And AST% = 6 Then
-                    po% = 4
-                End If
+
+            If po% = 4 Then 
+				If AST% = 4 Then
+					po% = 6
+				Else
+					If AST% = 6 Then
+						po% = 4
+					End If
+				End If
             End If
+
         End If
+
+		AST% = 0
+		I5 = B9%(D, po%)
+		I6 = 16
+		Call INCBATDF(D, I5, I6)
 
     End If
 
-    3417 '
-    AST% = 0
-    I5 = B9%(D, po%)
-    I6 = 16
-    Call INCBATDF(D, I5, I6)
-
-    3418 '
 End Sub
 
 '------------------------------
@@ -1022,7 +1035,6 @@ Sub DisplayRun (I2, P, X)
 
     End If
 
-    363 '
     Color 15, 0
 
 End Sub
@@ -1729,7 +1741,7 @@ Sub GROUNDERPBP (W%, D)
 
     Else
 
-        3760 '*** in front of plate ***
+		' *** in front of plate ***
         Call GETRPBP(25, 2870, Y$, D)
         Call STRIPRPBP(25, 2870, Y$, D)
         Call PBP(Y$)
@@ -2500,7 +2512,7 @@ Sub PINCHRUNNER (MS%, A1, S4%, I2, P, PR%, BC%, U%, D, MO)
                         If B%(P, MG%(P, I1), 21) = 0 Then
                             I1 = MG%(P, I1)
                             If B7%(P, J) = 1 Then
-                                8010 'PINCH RUNNING FOR THE PITCHER
+                                'PINCH RUNNING FOR THE PITCHER
                                 If MG%(P, 803) = 999 Then
                                     Call d100(RN)
                                     If P%(P, P1%(P), 31) <= MG%(P, 804) And INNING% >= MG%(P, 805) And RN <= MG%(P, 806) Then 8993
@@ -2511,7 +2523,7 @@ Sub PINCHRUNNER (MS%, A1, S4%, I2, P, PR%, BC%, U%, D, MO)
 
                             For I = 0 To 5
                                 If MG%(P, I * 4 + 779) = B3%(P, J) Then
-                                    8003 'FOUND A MATCH FOR THE RUNNER ON BASE
+                                    'FOUND A MATCH FOR THE RUNNER ON BASE
                                     Call d100(RN)
                                     If INNING% >= MG%(P, I * 4 + 780) And B%(P, MG%(P, I * 4 + 781), 21) = 0 And RN <= MG%(P, I * 4 + 782) Then B%(P, MG%(P, I * 4 + 781), 21) = 40 + J: GoTo 8993
                                     GoTo 8999
@@ -7580,14 +7592,19 @@ Sub SAVESTATS ()
 
             If AP%(1) < AP%(0) + AP%(2) Then
                 Kill "GAME82"
-                endGame = 1
+                endAllGames = 1
             Else
+
                 Open "GAME82" For Output As #2
+
                 Print #2, scheduleFile$
+
                 For I = 0 To 2:
                     Print #2, AP%(I)
                 Next
+
                 Close 2
+
             End If
 
         End If
@@ -9080,6 +9097,8 @@ Sub BOX2SPC (NM$)
         Next
     Next
 
+    Close #2
+    
 End Sub
 
 
@@ -9121,7 +9140,7 @@ Sub EndOfGame ()
 
         End If
 
-        If UCase$(I$) = "Y" Or AP = 1 Then
+        If UCase$(I$) = "Y" Or (AP = 1 and endAllGames <> 1) Then
             Cls
             Print "PLEASE WAIT ..."
             Call LOADER
@@ -9131,3 +9150,14 @@ Sub EndOfGame ()
 
 End Sub
 
+
+'------------------------------
+'        pbplog Function
+'------------------------------
+'...explanation
+Sub pbplog (lineNumber)
+
+    Print #7, "Called from line "; lineNumber
+    Print #7,
+
+End Sub

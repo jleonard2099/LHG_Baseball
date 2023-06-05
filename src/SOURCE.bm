@@ -927,7 +927,7 @@ Sub SOURCE ()
     Call WINDEX
 
     If H6% <= 4 Then
-        13200 ' *** hit by pitch ***
+        ' *** hit by pitch ***
         Call HITBYPITCH(S2%, D)
 
         13201 '
@@ -956,7 +956,7 @@ Sub SOURCE ()
 
     If H6% <= 6 Then
 
-        13210 ' *** balk ***
+        ' *** balk ***
         If S4% = 0 Then
             '13100 / *** fouled out of play ***
             Call FOULBALL
@@ -1148,7 +1148,403 @@ Sub SOURCE ()
 
             If H6% > E2% And B7%(P, B1!(P)) <> 1 Then E4% = 1
             If H6% > E3% And B7%(P, B1!(P)) = 1 Then E4% = 1
-            If E4% = 1 Then 14000
+
+            If E4% = 1 Then 
+
+                'balls hit to the air
+                Call d100(RN)
+                A5%(0) = 0
+                A5%(1) = 0
+                A5%(2) = 0
+                A5%(3) = 0
+
+                Select Case RN
+                
+                    Case 1 to 73
+                        ' *** FLY  OUTS ***
+                        Call GETOUTFIELDER(W%, P, I1, D)
+
+                        If B7%(P, B1!(P)) <> 1 Then
+                            I5 = B3%(P, B1!(P)): I6 = 0
+                            Call INCBATOFF(P, I5, I6)
+                        Else
+                            I5 = P1%(P): I6 = 23
+                            Call INCPITOFF(P, I5, I6)
+                        End If
+
+                        Call d100(RN)
+
+                        Select Case RN
+
+                            Case 1 to 17
+                                If RN <= 17 Then
+                                    14050 ' *** shallow fly ball ***
+                                    S2% = 19
+                                    Call WINDEX
+
+                                    X$ = C$(W%)
+                                    If Int(Rnd(1) * 100) <= 25 And W% = 7 Then X$ = "lcf"
+                                    If Int(Rnd(1) * 100) <= 25 And W% = 9 Then X$ = "rcf"
+
+                                    Call DELIVERY(D)
+
+                                    'What is this used for?
+                                    Call d100(RN)
+
+                                    Call GETRPBP(60, 1170, Y$, D)
+                                    Call STRIPRPBP(60, 1170, Y$, D)
+                                    Call PBP(Y$ + " " + X$)
+
+                                    Call FLDERR(F%, W%, D, I3, SB%, S2%, P)
+                                    If F% = 1 Then 13900
+                                    GoTo 14025
+
+                                End If
+
+                            Case 18 to 33
+                                ' *** deep fly out ***
+                                S2% = 17
+
+                                Call WINDEX
+                                Call LONGFLY(D, W%)
+
+                                Call FLDERR(F%, W%, D, I3, SB%, S2%, P)
+                                If F% = 1 Then 13900
+
+                                Call CREDITREGPO(W%, D)
+                                Call CAUGHTFLY(RN, S2%, D)
+
+                                O%(0) = O%(0) + 1
+                                O%(1) = O%(1) + 1
+                                I5 = P1%(D)
+                                I6 = 0
+
+                                Call ADDPIT(D, I5, I6)
+
+                                If O%(0) = 3 Then 13900
+
+                                If B0%(3, 0) <> 0 Then
+
+                                    A5%(3) = 1
+                                    I5 = P1%(D)
+                                    I6 = 16
+
+                                    Call ADDPIT(D, I5, I6)
+
+                                    If B7%(P, B1!(P)) = 1 Then
+                                        I5 = P1%(P)
+                                        I6 = 23
+                                        Call PITOFF(P, I5, I6)
+                                        I5 = P1%(P)
+                                        I6 = 41
+                                        Call INCPITOFF(P, I5, I6)
+                                    Else
+
+                                        I5 = B3%(P, B1!(P))
+                                        I6 = 0
+
+                                        Call BATOFF(P, I5, I6)
+                                        I5 = B3%(P, B1!(P))
+                                        I6 = 19
+                                        Call INCBATOFF(P, I5, I6)
+
+                                    End If
+
+                                End If
+
+                                14066 '
+                                If B0%(2, 0) <> 0 Then
+
+                                    I4 = (B%(P, B3%(P, B0%(2, 0)), 16) - 5) * 25
+                                    ZM = (B%(D, B9%(D, W%), 15) - 5) * 25
+                                    I4 = I4 - ZM
+
+                                    RN = Int(Rnd(1) * 1000) + 1
+
+                                    '-- These are ALL conditions for assigning the same value
+                                    If W% = 9 And S2% = 17 And RN <= 800 + I4 And P2 <> 2 Or W% = 9 And S2% = 18 And RN <= 400 + I4 And P2 <> 2 Or W% = 8 And S2% = 17 And RN <= 700 + I4 And P2 <> 2 Or W% = 8 And S2% = 18 And RN <= 350 + I4 And P2 <> 2 Or W% = 7 And S2% = 17 And RN <= 250 + I4 And P2 <> 2 Then A5%(2) = 1
+                                    If P2 = 2 And B%(P, B3%(P, B0%(2, 0)), 16) > 6 And W% = 9 And S2% = 17 And RN <= 400 + I4 Or P2 = 2 And B%(P, B3%(P, B0%(2, 0)), 16) > 6 And W% = 8 And S2% = 17 And RN <= 400 + I4 Then A5%(2) = 1
+
+                                    If A5%(2) <> 1 And S2% = 18 And P2 <> 2 And S4% < 6 Then
+
+                                        If (W% = 9 And RN > 800) Or (W% = 8 And RN > 840) Then
+                                            I8! = 3
+                                            LN% = 3308
+                                            If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8!, I9)
+                                        End If
+
+                                        If W% = 7 And P2 <> 2 And S4% < 6 And RN > 880 Then
+                                            I8! = 3
+                                            LN% = 3308
+                                            If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8!, I9)
+                                        End If
+
+                                    End If
+
+                                End If
+
+                                If B0%(1, 0) <> 0 Then
+                                    RN = Int(Rnd(1) * 1000) + 1
+                                    A5%(1) = 0
+                                    I3 = (B%(P, B3%(P, B0%(1, 0)), 16) - 5) * 25
+                                    I4 = (B%(D, B9%(D, W%), 15) - 5) * 25
+                                    J5 = I3 - I4
+
+                                    If S2% = 17 And P2 <> 2 And S4% = 1 And RN <= 100 + J5 Then
+                                        I8! = 2
+                                        LN% = 3308
+                                        If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8!, I9)
+                                    End If
+                                    I8! = 2
+                                    LN% = 3308
+                                End If
+
+                                Call ADVANCEMENT(P, D, S2%, F%, I3)
+
+                                GoTo 13900
+
+                            Case 34 to 100
+                                ' *** regular fly out ***
+                                S2% = 18
+                                Call WINDEX
+                                X$ = C$(W%)
+                                If Int(Rnd(1) * 100) <= 25 And W% = 7 Then X$ = "lcf"
+                                If Int(Rnd(1) * 100) <= 25 And W% = 9 Then X$ = "rcf"
+
+                                Call DELIVERY(D)
+                                Call d100(RN)
+
+                                range = 90
+                                min = 1070
+                                If (W% = 7 Or W% = 9) And RN <= 10 Then X$ = "": range = 10: min = 1160
+
+                                Call GETRPBP(range, min, Y$, D)
+                                Call STRIPRPBP(range, min, Y$, D)
+                                Call PBP(Y$ + " " + X$)
+
+                                Call FLDERR(F%, W%, D, I3, SB%, S2%, P)
+                                If F% = 1 Then 13900
+
+                                '--- where does this end?
+                                '--- can we turn into subroutine?
+                                14025 '
+                                Call CREDITREGPO(W%, D)
+                                Call CAUGHTFLY(RN, S2%, D)
+
+                                O%(0) = O%(0) + 1
+                                O%(1) = O%(1) + 1
+                                I5 = P1%(D)
+                                I6 = 0
+
+                                Call ADDPIT(D, I5, I6)
+
+                                If O%(0) = 3 Then 13900
+
+                                Call d100(RN)
+
+                                If S2% = 19 And S4% = 1 And RN <= 33 And P2 = 2 Or S2% = 19 And S4% = 5 And RN <= 33 Then
+                                    A5%(1) = 10
+                                    O%(0) = O%(0) + 1
+                                    O%(1) = O%(1) + 1
+
+                                    Call ADDPIT(D, I5, I6)
+
+                                    D3%(D) = D3%(D) + 1
+                                    DP%(D) = DP%(D) + 1
+
+                                    Call CREDITASSIST(W%, D)
+
+                                    GoTo 14009
+
+                                End If
+
+                                If B0%(3, 0) > 0 Then
+                                    I8! = 4
+                                    LN% = 3308
+                                    If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8!, I9)
+
+                                End If
+
+                                If I9 = 1 Then
+                                    I9 = 0
+                                    Call ADVANCEMENT(P, D, S2%, F%, I3)
+                                    GoTo 13900
+                                Else
+                                    GoTo 14066
+                                End If
+
+                        End Select
+
+                    Case 74 to 89
+
+                        ' infield popup
+                        Call GETINFIELDER(W%, P, I1, D, S2%, P2)
+                        S2% = 20
+                        Call WINDEX
+
+                        If W% = 1 Then W% = 2: player$(4) = B$(D, B9%(D, W%))
+                        If (W% = 2 Or W% = 5 Or W% = 3) And Int(Rnd(1) * 100) + 1 <= 30 Then fo% = 1
+
+                        If fo% = 0 And (S4% = 4 Or S4% = 7) And O%(0) < 2 Then Call PBP("INFIELD FLY RULE CALLED")
+                        If fo% = 1 And W% = 2 Then range = 24: min = 180
+                        If fo% = 1 And (W% = 3 Or W% = 4) Then range = 31: min = 210
+                        If fo% = 1 And (W% = 5 Or W% = 6) Then range = 31: min = 250
+                        If fo% <> 1 And W% = 2 Then range = 50: min = 400
+                        If fo% <> 1 And W% = 3 Then range = 60: min = 450
+                        If fo% <> 1 And W% = 5 Then range = 60: min = 510
+                        If fo% <> 1 And W% = 6 Then range = 60: min = 570
+                        If fo% <> 1 And W% = 4 Then range = 60: min = 630
+
+                        Call GETRPBP(range, min, Y$, D)
+                        Call STRIPRPBP(range, min, Y$, D)
+                        Call PBP(Y$)
+
+                        If fo% = 1 And W% = 2 Then range = 12: min = 321
+                        If fo% = 1 And (W% = 3 Or W% = 4) Then range = 25: min = 340
+                        If fo% = 1 And (W% = 5 Or W% = 6) Then range = 25: min = 370
+                        If fo% <> 1 Then range = 25: min = 690
+
+                        Call GETRPBP(range, min, Y$, D)
+                        Call STRIPRPBP(range, min, Y$, D)
+                        Call PBP(Y$)
+
+                        If B7%(P, B1!(P)) = 1 Then
+                            I5 = P1%(P)
+                            I6 = 23
+                            Call INCPITOFF(P, I5, I6)
+                        Else
+                            I5 = B3%(P, B1!(P))
+                            I6 = 0
+                            Call INCBATOFF(P, I5, I6)
+                        End If
+
+                        If S4% <> 4 Then
+
+                            If Int(Rnd(1) * 100) + 1 <= 25 And (L%(1, 13) = 11 Or L%(1, 13) = 8) Then Call PBP("fights the wind...")
+                            If Int(Rnd(1) * 100) + 1 <= 15 And (L%(1, 13) = 2 Or L%(1, 13) = 4 Or L%(1, 13) = 13 Or L%(1, 13) = 24) Then Call PBP("fights the lights...")
+
+                            If fo% <> 1 Then
+                                Call FLDERR(F%, W%, D, I3, SB%, S2%, P)
+                                If F% = 1 Then 13900
+                            End If
+
+                        End If
+
+                        fo% = 0
+
+                        Call PBP(player$(4) + " makes the catch")
+                        Call CREDITREGPO(W%, D)
+
+                        O%(0) = O%(0) + 1
+                        O%(1) = O%(1) + 1
+                        I5 = P1%(D)
+                        I6 = 0
+
+                        Call ADDPIT(D, I5, I6)
+
+                        GoTo 13900
+
+                    Case 90 to 100
+                        S2% = 21
+
+                        Call GETINFIELDER(W%, P, I1, D, S2%, P2)
+                        Call WINDEX
+                        Call DELIVERY(D)
+
+                        Call GETRPBP(42, 70, Y$, D)
+                        Call STRIPRPBP(42, 70, Y$, D)
+                        Call PBP(Y$)
+
+                        Call GETRPBP(34, 120, Y$, D)
+                        Call STRIPRPBP(34, 120, Y$, D)
+                        Call PBP(Y$)
+
+                        If B7%(P, B1!(P)) = 1 Then
+                            I5 = P1%(P)
+                            I6 = 23
+                            Call INCPITOFF(P, I5, I6)
+                        Else
+                            I5 = B3%(P, B1!(P))
+                            I6 = 0
+                            Call INCBATOFF(P, I5, I6)
+                        End If
+
+                        Call FLDERR(F%, W%, D, I3, SB%, S2%, P)
+                        If F% = 1 Then 13900
+
+                        O%(0) = O%(0) + 1
+                        O%(1) = O%(1) + 1
+
+                        Call CREDITREGPO(W%, D)
+                        I5 = P1%(D)
+                        I6 = 0
+
+                        Call ADDPIT(D, I5, I6)
+                        If O%(0) = 3 Then 13900
+
+                        Call d100(RN)
+
+                        If (S4% = 1 Or S4% = 5) And RN >= 80 Or (S4% = 1 Or S4% = 5) And P2 = 2 Then
+
+                            14012 'runner doubled off of 1st
+                            A5%(1) = 10
+                            O%(0) = O%(0) + 1
+                            O%(1) = O%(1) + 1
+
+                            Call ADDPIT(D, I5, I6)
+
+                            D3%(D) = D3%(D) + 1
+                            DP%(D) = DP%(D) + 1
+
+                            If W% <> 3 Then
+                                range = 10
+                                min = 160
+                            Else
+                                range = 10
+                                min = 170
+                            End If
+
+                            Call GETRPBP(range, min, Y$, D)
+                            Call STRIPRPBP(range, min, Y$, D)
+                            Call PBP(Y$)
+
+                            I3 = 1
+                            Call CREDITPUTOUT(I3, FB2P%, AST%, D)
+                            Call PBP(" --- DOUBLE PLAY ---")
+                            If W% <> 3 Then Call CREDITASSIST(W%, D)
+
+
+                        Else
+
+                            If (S4% = 4 Or S4% = 2) And RN >= 80 Or S4% = 4 And P2 = 2 Then
+
+                                'runner doubled off of 2nd
+                                A5%(2) = 10
+                                O%(0) = O%(0) + 1
+                                O%(1) = O%(1) + 1
+
+                                Call ADDPIT(D, I5, I6)
+
+                                D3%(D) = D3%(D) + 1
+                                DP%(D) = DP%(D) + 1
+                                I3 = 2
+
+                                Call CREDITPUTOUT(I3, FB2P%, AST%, D)
+                                Call PBP(" --- DOUBLE PLAY ---")
+                                Call CREDITASSIST(W%, D)
+
+                            End If
+
+                        End If
+
+                        14009 '
+                        Call ADVANCEMENT(P, D, S2%, F%, I3)
+
+                        GoTo 13900
+
+                End Select
+
+            End If
 
             S2% = 13
             Call GETINFIELDER(W%, P, I1, D, S2%, P2)
@@ -1692,9 +2088,7 @@ Sub SOURCE ()
     End If
 
 
-
     '----- NOODLE -----
-
 
     13530 ' *** HOME RUN S2%=10 ***
 
@@ -2268,410 +2662,6 @@ Sub SOURCE ()
     End If
 
     '----- NOODLE -----
-
-    14000 'balls hit to the air
-    Call d100(RN)
-    A5%(0) = 0
-    A5%(1) = 0
-    A5%(2) = 0
-    A5%(3) = 0
-
-    'Case 1 to 73
-    If RN <= 73 Then
-        '-- this is a longer area
-        GoTo 14020: ' flyout
-    End If
-
-    'Case 74 to 89
-    If RN <= 89 Then
-        ' infield popup
-        Call GETINFIELDER(W%, P, I1, D, S2%, P2)
-        S2% = 20
-        Call WINDEX
-
-        If W% = 1 Then W% = 2: player$(4) = B$(D, B9%(D, W%))
-        If (W% = 2 Or W% = 5 Or W% = 3) And Int(Rnd(1) * 100) + 1 <= 30 Then fo% = 1
-
-        If fo% = 0 And (S4% = 4 Or S4% = 7) And O%(0) < 2 Then Call PBP("INFIELD FLY RULE CALLED")
-        If fo% = 1 And W% = 2 Then range = 24: min = 180
-        If fo% = 1 And (W% = 3 Or W% = 4) Then range = 31: min = 210
-        If fo% = 1 And (W% = 5 Or W% = 6) Then range = 31: min = 250
-        If fo% <> 1 And W% = 2 Then range = 50: min = 400
-        If fo% <> 1 And W% = 3 Then range = 60: min = 450
-        If fo% <> 1 And W% = 5 Then range = 60: min = 510
-        If fo% <> 1 And W% = 6 Then range = 60: min = 570
-        If fo% <> 1 And W% = 4 Then range = 60: min = 630
-
-        Call GETRPBP(range, min, Y$, D)
-        Call STRIPRPBP(range, min, Y$, D)
-        Call PBP(Y$)
-
-        If fo% = 1 And W% = 2 Then range = 12: min = 321
-        If fo% = 1 And (W% = 3 Or W% = 4) Then range = 25: min = 340
-        If fo% = 1 And (W% = 5 Or W% = 6) Then range = 25: min = 370
-        If fo% <> 1 Then range = 25: min = 690
-
-        Call GETRPBP(range, min, Y$, D)
-        Call STRIPRPBP(range, min, Y$, D)
-        Call PBP(Y$)
-
-        If B7%(P, B1!(P)) = 1 Then
-            I5 = P1%(P)
-            I6 = 23
-            Call INCPITOFF(P, I5, I6)
-        Else
-            I5 = B3%(P, B1!(P))
-            I6 = 0
-            Call INCBATOFF(P, I5, I6)
-        End If
-
-        If S4% <> 4 Then
-
-            If Int(Rnd(1) * 100) + 1 <= 25 And (L%(1, 13) = 11 Or L%(1, 13) = 8) Then Call PBP("fights the wind...")
-            If Int(Rnd(1) * 100) + 1 <= 15 And (L%(1, 13) = 2 Or L%(1, 13) = 4 Or L%(1, 13) = 13 Or L%(1, 13) = 24) Then Call PBP("fights the lights...")
-
-            If fo% <> 1 Then
-                Call FLDERR(F%, W%, D, I3, SB%, S2%, P)
-                If F% = 1 Then 13900
-            End If
-
-        End If
-
-        fo% = 0
-
-        Call PBP(player$(4) + " makes the catch")
-        Call CREDITREGPO(W%, D)
-
-        O%(0) = O%(0) + 1
-        O%(1) = O%(1) + 1
-        I5 = P1%(D)
-        I6 = 0
-
-        Call ADDPIT(D, I5, I6)
-
-        GoTo 13900
-
-    End If
-
-    'Case 90 to 100
-    S2% = 21
-
-    Call GETINFIELDER(W%, P, I1, D, S2%, P2)
-    Call WINDEX
-    Call DELIVERY(D)
-
-    Call GETRPBP(42, 70, Y$, D)
-    Call STRIPRPBP(42, 70, Y$, D)
-    Call PBP(Y$)
-
-    Call GETRPBP(34, 120, Y$, D)
-    Call STRIPRPBP(34, 120, Y$, D)
-    Call PBP(Y$)
-
-    If B7%(P, B1!(P)) = 1 Then
-        I5 = P1%(P)
-        I6 = 23
-        Call INCPITOFF(P, I5, I6)
-    Else
-        I5 = B3%(P, B1!(P))
-        I6 = 0
-        Call INCBATOFF(P, I5, I6)
-    End If
-
-    Call FLDERR(F%, W%, D, I3, SB%, S2%, P)
-    If F% = 1 Then 13900
-
-    O%(0) = O%(0) + 1
-    O%(1) = O%(1) + 1
-
-    Call CREDITREGPO(W%, D)
-    I5 = P1%(D)
-    I6 = 0
-
-    Call ADDPIT(D, I5, I6)
-    If O%(0) = 3 Then 13900
-
-    Call d100(RN)
-
-    If (S4% = 1 Or S4% = 5) And RN >= 80 Or (S4% = 1 Or S4% = 5) And P2 = 2 Then
-
-        14012 'runner doubled off of 1st
-        A5%(1) = 10
-        O%(0) = O%(0) + 1
-        O%(1) = O%(1) + 1
-
-        Call ADDPIT(D, I5, I6)
-
-        D3%(D) = D3%(D) + 1
-        DP%(D) = DP%(D) + 1
-
-        If W% <> 3 Then
-            range = 10
-            min = 160
-        Else
-            range = 10
-            min = 170
-        End If
-
-        Call GETRPBP(range, min, Y$, D)
-        Call STRIPRPBP(range, min, Y$, D)
-        Call PBP(Y$)
-
-        I3 = 1
-        Call CREDITPUTOUT(I3, FB2P%, AST%, D)
-        Call PBP(" --- DOUBLE PLAY ---")
-        If W% <> 3 Then Call CREDITASSIST(W%, D)
-
-
-    Else
-
-        If (S4% = 4 Or S4% = 2) And RN >= 80 Or S4% = 4 And P2 = 2 Then
-
-            'runner doubled off of 2nd
-            A5%(2) = 10
-            O%(0) = O%(0) + 1
-            O%(1) = O%(1) + 1
-
-            Call ADDPIT(D, I5, I6)
-
-            D3%(D) = D3%(D) + 1
-            DP%(D) = DP%(D) + 1
-            I3 = 2
-
-            Call CREDITPUTOUT(I3, FB2P%, AST%, D)
-            Call PBP(" --- DOUBLE PLAY ---")
-            Call CREDITASSIST(W%, D)
-
-        End If
-
-    End If
-
-    14009 '
-    Call ADVANCEMENT(P, D, S2%, F%, I3)
-
-    GoTo 13900
-
-
-    '--------------------
-
-
-    14020 ' *** FLY  OUTS ***
-    Call GETOUTFIELDER(W%, P, I1, D)
-
-    If B7%(P, B1!(P)) <> 1 Then
-        I5 = B3%(P, B1!(P)): I6 = 0
-        Call INCBATOFF(P, I5, I6)
-    Else
-        I5 = P1%(P): I6 = 23
-        Call INCPITOFF(P, I5, I6)
-    End If
-
-    Call d100(RN)
-
-    'Case 1 to 17
-    If RN <= 17 Then
-        14050 ' *** shallow fly ball ***
-        S2% = 19
-        Call WINDEX
-
-        X$ = C$(W%)
-        If Int(Rnd(1) * 100) <= 25 And W% = 7 Then X$ = "lcf"
-        If Int(Rnd(1) * 100) <= 25 And W% = 9 Then X$ = "rcf"
-
-        Call DELIVERY(D)
-
-        'What is this used for?
-        Call d100(RN)
-
-        Call GETRPBP(60, 1170, Y$, D)
-        Call STRIPRPBP(60, 1170, Y$, D)
-        Call PBP(Y$ + " " + X$)
-
-        Call FLDERR(F%, W%, D, I3, SB%, S2%, P)
-        If F% = 1 Then 13900
-        GoTo 14025
-
-    End If
-
-    'Case 18 to 33
-    If RN <= 33 Then
-        ' *** deep fly out ***
-        S2% = 17
-
-        Call WINDEX
-        Call LONGFLY(D, W%)
-
-        Call FLDERR(F%, W%, D, I3, SB%, S2%, P)
-        If F% = 1 Then 13900
-
-        Call CREDITREGPO(W%, D)
-        Call CAUGHTFLY(RN, S2%, D)
-
-        O%(0) = O%(0) + 1
-        O%(1) = O%(1) + 1
-        I5 = P1%(D)
-        I6 = 0
-
-        Call ADDPIT(D, I5, I6)
-
-        If O%(0) = 3 Then 13900
-
-        If B0%(3, 0) <> 0 Then
-
-            A5%(3) = 1
-            I5 = P1%(D)
-            I6 = 16
-
-            Call ADDPIT(D, I5, I6)
-
-            If B7%(P, B1!(P)) = 1 Then
-                I5 = P1%(P)
-                I6 = 23
-                Call PITOFF(P, I5, I6)
-                I5 = P1%(P)
-                I6 = 41
-                Call INCPITOFF(P, I5, I6)
-                GoTo 14066
-            End If
-
-            I5 = B3%(P, B1!(P))
-            I6 = 0
-
-            Call BATOFF(P, I5, I6)
-            I5 = B3%(P, B1!(P))
-            I6 = 19
-            Call INCBATOFF(P, I5, I6)
-
-        End If
-
-        'ASSUMPTION: Somewhere in here is where it gets locked up
-        14066 '
-        If B0%(2, 0) <> 0 Then
-
-            I4 = (B%(P, B3%(P, B0%(2, 0)), 16) - 5) * 25
-            ZM = (B%(D, B9%(D, W%), 15) - 5) * 25
-            I4 = I4 - ZM
-
-            RN = Int(Rnd(1) * 1000) + 1
-
-            '-- These are ALL conditions for assigning the same value
-            If W% = 9 And S2% = 17 And RN <= 800 + I4 And P2 <> 2 Or W% = 9 And S2% = 18 And RN <= 400 + I4 And P2 <> 2 Or W% = 8 And S2% = 17 And RN <= 700 + I4 And P2 <> 2 Or W% = 8 And S2% = 18 And RN <= 350 + I4 And P2 <> 2 Or W% = 7 And S2% = 17 And RN <= 250 + I4 And P2 <> 2 Then A5%(2) = 1
-            If P2 = 2 And B%(P, B3%(P, B0%(2, 0)), 16) > 6 And W% = 9 And S2% = 17 And RN <= 400 + I4 Or P2 = 2 And B%(P, B3%(P, B0%(2, 0)), 16) > 6 And W% = 8 And S2% = 17 And RN <= 400 + I4 Then A5%(2) = 1
-
-            If A5%(2) <> 1 And S2% = 18 And P2 <> 2 And S4% < 6 Then
-
-                If (W% = 9 And RN > 800) Or (W% = 8 And RN > 840) Then
-                    I8! = 3
-                    LN% = 3308
-                    If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8!, I9)
-                End If
-
-                If W% = 7 And P2 <> 2 And S4% < 6 And RN > 880 Then
-                    I8! = 3
-                    LN% = 3308
-                    If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8!, I9)
-                End If
-
-            End If
-
-        End If
-
-        14072 '
-        If B0%(1, 0) <> 0 Then
-            RN = Int(Rnd(1) * 1000) + 1
-            A5%(1) = 0
-            I3 = (B%(P, B3%(P, B0%(1, 0)), 16) - 5) * 25
-            I4 = (B%(D, B9%(D, W%), 15) - 5) * 25
-            J5 = I3 - I4
-
-            If S2% = 17 And P2 <> 2 And S4% = 1 And RN <= 100 + J5 Then
-                I8! = 2
-                LN% = 3308
-                If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8!, I9)
-            End If
-            I8! = 2
-            LN% = 3308
-        End If
-
-        '--- Double-check this sometime
-        Call ADVANCEMENT(P, D, S2%, F%, I3)
-
-        GoTo 13900
-
-    End If
-
-
-    '--------------------
-
-
-    'Case 34 to 100
-    ' *** regular fly out ***
-    S2% = 18
-    Call WINDEX
-    X$ = C$(W%)
-    If Int(Rnd(1) * 100) <= 25 And W% = 7 Then X$ = "lcf"
-    If Int(Rnd(1) * 100) <= 25 And W% = 9 Then X$ = "rcf"
-
-    Call DELIVERY(D)
-    Call d100(RN)
-
-    range = 90
-    min = 1070
-    If (W% = 7 Or W% = 9) And RN <= 10 Then X$ = "": range = 10: min = 1160
-
-    Call GETRPBP(range, min, Y$, D)
-    Call STRIPRPBP(range, min, Y$, D)
-    Call PBP(Y$ + " " + X$)
-
-    Call FLDERR(F%, W%, D, I3, SB%, S2%, P)
-    If F% = 1 Then 13900
-
-    '--- where does this end?
-    '--- can we turn into subroutine?
-    14025 '
-    Call CREDITREGPO(W%, D)
-    Call CAUGHTFLY(RN, S2%, D)
-
-    O%(0) = O%(0) + 1
-    O%(1) = O%(1) + 1
-    I5 = P1%(D)
-    I6 = 0
-
-    Call ADDPIT(D, I5, I6)
-
-    If O%(0) = 3 Then 13900
-
-    Call d100(RN)
-
-    If S2% = 19 And S4% = 1 And RN <= 33 And P2 = 2 Or S2% = 19 And S4% = 5 And RN <= 33 Then
-        A5%(1) = 10
-        O%(0) = O%(0) + 1
-        O%(1) = O%(1) + 1
-        Call ADDPIT(D, I5, I6)
-        D3%(D) = D3%(D) + 1
-        DP%(D) = DP%(D) + 1
-        Call CREDITASSIST(W%, D)
-        GoTo 14009
-    End If
-
-    If B0%(3, 0) > 0 Then
-        I8! = 4
-        LN% = 3308
-        If F% = 0 Then Call TRYFOREXTRABASE(LN%, S2%, P2, Z2%, D, W%, SAH%, SB%, I8!, I9)
-
-    End If
-
-    If I9 = 1 Then
-        I9 = 0
-        Call ADVANCEMENT(P, D, S2%, F%, I3)
-        GoTo 13900
-    Else
-        GoTo 14066
-    End If
-
-
-    '--------------------
-
 
     14100 ' *** BUNT ROUTINE ***
     Call WINDEX
