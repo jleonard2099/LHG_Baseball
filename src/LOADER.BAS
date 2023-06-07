@@ -775,7 +775,7 @@ Sub StartingLineup (P9)
             If C1 = 1 Then Exit For
         Next I
 
-    Loop Untiul skipLU% = 0
+    Loop Until skipLU% = 0
 
 End Sub
 

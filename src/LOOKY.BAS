@@ -178,7 +178,7 @@ Sub StatsOneTeam ()
                     QQ = 8
 
                     For XX = 11 To 4 Step -1
-                        If Mid$(B$, XX, 1) = "_" The
+                        If Mid$(B$, XX, 1) = "_" Then
                             QQ = XX - 4
                         Else
                             Exit For
@@ -353,24 +353,18 @@ Sub ViewAndPrintOptions (statFile$, teamName$, totalGames%, menuExit)
                 Cls
             Else
                 'X = 1
-                Call TITLE_HEADER
+                Color , 0
+                Cls
 
-                Locate 1, 1
-                Print Tab(80);
-
-                Ycoord = Len(teamName$)
+                Color 12
+                header$ = "SCHEDULE RESULTS FOR " + teamName$
+                Ycoord = Len(header$)
                 Ycoord = Int((80 - Ycoord) / 2)
-                Locate , Ycoord
+                Locate 1, Ycoord
 
-                'Color 14
+                Print "SCHEDULE RESULTS FOR ";
                 Color ratings%(11), ratings%(12)
                 Print teamName$
-
-                Locate 25, 1: Print Tab(80);
-                Locate 2, 1
-                Color , 0
-
-                Cls
 
                 Color 15, 0
                 Color 14: Print Tab(6); "OPPONENT"; Tab(33); "WINNING PITCHER"; Tab(50); "LOSING PITCHER"; Tab(66); "INNINGS"
@@ -391,6 +385,14 @@ Sub ViewAndPrintOptions (statFile$, teamName$, totalGames%, menuExit)
                         End If
 
                         Cls
+
+                        Locate 1, Ycoord
+                        Color 12
+                        Print "SCHEDULE RESULTS FOR ";
+                        Color ratings%(11), ratings%(12)
+                        Print teamName$
+
+                        Color 15, 0
                         Color 14: Print Tab(6); "OPPONENT"; Tab(33); "WINNING PITCHER"; Tab(50); "LOSING PITCHER"; Tab(66); "INNINGS"
                         Color 15
 
@@ -473,6 +475,15 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
 
     Shared statH$(), L$(), PL$(), W$()
 
+    Ycoord = Len(teamName$)
+    Ycoord = Int((80 - Ycoord) / 2)
+    Locate 1, Ycoord
+
+    Color ratings%(11), ratings%(12)
+    Print teamName$
+    Print
+
+    Color 15, 0
     Locate , 20
     Color 14: Print "OVERALL RECORD ";
     Color 15: Print "("; Wins; "-"; Losses; ")"
@@ -830,6 +841,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
     Color 12, 0
     Print "    WON: "; W2%; "  LOST: "; L2%
     Color 14, 0
+    Print
     Print "  TEAM BATTING TOTALS"
     Color 15, 1
     Print "  AB    R    H  RBI  2B  3B  HR    BA   SLG   OBP   SO   BB  SB  CS"
@@ -986,6 +998,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
     Color 12, 0
     Print "    WON: "; W2%; "  LOST: "; L2%
     Color 14, 0
+    Print
     Print "  TEAM PITCHING TOTALS"
     Color 15, 4
     Print "  W   L  SV     IP    H   BB   SO   ERA   G  GS  CG  RUN   ER ShO HRA  DP"
@@ -1121,7 +1134,7 @@ Sub ReportsAllTeams ()
                         BP = 1 'this doesn't appear to be used
                         X = 3
 
-                        Call NewPrintStats(statFile$, teamName$, totalGames%, X, splitScreenChoice%)
+                        Call NewPrintStats(statFile$, teamName$, totalGames%, X, splitScreenChoice%, menuExit)
 
                     End If
 
@@ -1173,7 +1186,7 @@ Sub NewPrintStats (statFile$, teamName$, totalGames%, printChoice, splitScreenCh
         EL = 0
         LTL = 0
         LTW = 0
-        
+
         Cls
         LPrint "        SCHEDULE RESULTS FOR "; teamName$
         LPrint
@@ -1724,4 +1737,3 @@ Sub SelectTeam_LOOKY (numberTeams, yearNumber$)
     End If
 
 End Sub
-

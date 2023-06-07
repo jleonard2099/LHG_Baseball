@@ -7484,8 +7484,6 @@ Sub POSTGAME ()
 
     Loop Until UCase$(I$) = "N" Or (AP% = 1 And U6 = 2)
 
-    Call SAVESTATS
-
     'If we had special events
     If specialStat = 1 Then
 
@@ -7497,6 +7495,8 @@ Sub POSTGAME ()
         Call BOX2FILE(2, NM$)
 
     End If
+
+    Call SAVESTATS
 
     endGame = 0
     specialStat = 0
@@ -7896,7 +7896,7 @@ Sub COMPILESTATFILES (teamIdx)
     Y% = 0
     FILENAME$ = diskPaths$(1) + statFile$ + "S"
 
-    If (teamIdx(FILENAME$) Then
+    If _FileExists(FILENAME$) Then
 
         Open diskPaths$(1) + statFile$ + "S" For Input As #1
         Input #1, Y%
@@ -8032,7 +8032,7 @@ Sub BOXOPTIONS (outputChoice)
             End If
 
             'Includes a special option to send to printer when done
-            Call BOX2FILE(outputChoice)
+            Call BOX2FILE(outputChoice, NM$)
 
     End Select
 
@@ -8051,7 +8051,7 @@ End Sub
 '   send to printer, the file
 '   is also looped through to
 '   print, line-by-line
-Sub BOX2FILE (printChoice)
+Sub BOX2FILE (printChoice, NM$)
 
     Shared E%()
     Shared DB, HR, TR, SB
@@ -9096,6 +9096,8 @@ Sub BOX2SPC (NM$)
             If P8%(I, I1, 5) > E%(13) Then Print #2, P$(I, I1);: Print #2, Using " STRUCK OUT MORE THAN ## BATTER(S)"; E%(13)
         Next
     Next
+
+    Print #2, 
 
     Close #2
     
