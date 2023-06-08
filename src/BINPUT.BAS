@@ -2,8 +2,6 @@ Sub BINPUT ()
 
     _Title "Full Count Baseball - Team Input"
 
-    DefInt A-Z
-
     Shared ratings%(), statP0%(), statSS%()
 
     Shared statB$(), BP$(), statP$()
@@ -15,6 +13,7 @@ Sub BINPUT ()
     ReDim menuChoices$(1 To 9)
 
     Do
+
         Cls
         Color 15, 0
 
@@ -48,7 +47,9 @@ Sub BINPUT ()
         Color , 0
 
         If ExitCode% <> 27 Then
+
             Select Case Selection%
+
                 Case 1:
                     Call InputTeam(Selection%, YN$, T$, T)
 

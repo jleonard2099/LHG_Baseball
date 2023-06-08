@@ -2,8 +2,6 @@ Sub TRADE ()
 
     _Title "Full Count Baseball - Trade Players"
 
-    DefInt A-Z
-
     Dim yearNumbers$(0 To 1)
     ReDim menuChoices$(1 To 2)
 

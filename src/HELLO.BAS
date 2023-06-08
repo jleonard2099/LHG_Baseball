@@ -1,3 +1,4 @@
+$Debug
 
 Const GAME_VERSION$ = "6.67"
 Const MAX_TEAMS = 1000
@@ -206,6 +207,9 @@ pitcherEra$(5) = "1919 - 1932   "
 pitcherEra$(6) = "1909 - 1918   "
 pitcherEra$(7) = "1894 - 1908   "
 pitcherEra$(8) = "1876 - 1893   "
+
+progPT$(1) = "LHP"
+progPT$(0) = "RHP"
 
 
 '----------------------------------------

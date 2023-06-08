@@ -2,32 +2,46 @@ Sub CARLDR ()
 
     _Title "Full Count Baseball - Career Leaders"
 
-    DefInt A-Z
-
     Do
-        Color 15, 1
 
+        Color 15, 0
         Cls
 
-        Color 12: Print "CAREER LEADER MENU"
-        Color 14: Print "(1)  ";: Color 15: Print "UPDATE LEADERS": Print
-        Color 14: Print "(2)  ";: Color 15: Print "VIEW/PRINT CAREER LEADERS": Print
-        Color 14: Print "(3)  ";: Color 15: Print "RETURN TO UTILITIES MENU"
+        Call TITLE
 
-        Do
-            I$ = GetKeyPress$
-            I = Val(I$)
-        Loop Until I >= 1 And I <= 3 Or I$ = Chr$(27)
+        ReDim menuChoices$(1 To 3)
+        menuChoices$(1) = "EDIT AN EXISTING LEAGUE         "
+        menuChoices$(2) = "CREATE A NEW LEAGUE             "
+        menuChoices$(3) = "RETURN TO STANDINGS/LEADERS MENU"
+        Selection% = 1
+        Count% = 3
+        Start% = 1
+        ExitCode% = 3
+        FileFGColr% = 15: FileBGColr% = 1
+        HiLiteFGColr% = 0: HiLiteBGColr% = 7
+        Spacing% = 6
+        Row% = 7
 
-        If I$ <> Chr$(27) Then
-            Select Case I
+        menuWidth% = Len(menuChoices$(1))
+        Column% = (80 - menuWidth% - 2) / 2
+
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColr%, FileBGColr%)
+
+        _MouseShow "DEFAULT"
+        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+        _MouseHide
+
+        If ExitCode% <> 27 Then
+
+            Select Case Selection%
                 Case 1: Call UpdateLeaders
                 Case 2: Call ViewPrintLeaders
                 Case 3: Cls
             End Select
+
         End If
 
-    Loop Until I = 3 Or I$ = Chr$(27)
+    Loop Until Selection% = 3 Or ExitCode% = 27
 
 End Sub
 
@@ -48,20 +62,30 @@ Sub UpdateLeaders ()
 
     TMR1 = 2700
 
-    For I = 0 To 17: For I1 = 0 To 19: BL1!(I, I1) = 0: Next: Next
+    For I = 0 To 17:
+        For I1 = 0 To 19:
+            BL1!(I, I1) = 0
+        Next
+    Next
 
-    For I = 0 To 14: For I1 = 0 To 19: PL1!(I, I1) = 0: Next: Next
+    For I = 0 To 14:
+        For I1 = 0 To 19:
+            PL1!(I, I1) = 0
+        Next
+    Next
 
     '-- Initialize to 1000 because later we will assign
     '-- a value based on comparing
     '-- It seems we could still initialize to 0 and just compare to 1000 explicitly
-    For I1 = 0 To 20: PL1!(15, I1) = 1000: Next
+    For I1 = 0 To 20
+        PL1!(15, I1) = 1000
+    Next
 
     Do
         'Display list of files...
 
         Spec$ = diskPaths$(1) + "*.CAR"
-		Count% = FCount%(Spec$)
+        Count% = FCount%(Spec$)
 
         If Count% = 0 Then
             Locate 10, 8
@@ -140,8 +164,30 @@ Sub UpdateLeaders ()
                 Input #1, NB, NP
                 For I = 0 To 99: Input #1, careerB$(I): Next
                 For I = 0 To 79: Input #1, careerP$(I): Next
-                For J = 1 To 15: For I = 0 To 99: For I1 = O To 17: Input #1, BRS%(J, I, I1): Next I1: Locate 7, 35: TMR1 = TMR1 - 1: Color 9: Print Using "####"; TMR1: Next I: Next J
-                For J = 1 To 15: For I = 0 To 79: For I1 = 0 To 16: Input #1, PRS%(J, I, I1): Next I1: Locate 7, 35: TMR1 = TMR1 - 1: Color 9: Print Using "####"; TMR1: Next I: Next J
+
+                For J = 1 To 15:
+                    For I = 0 To 99:
+                        For I1 = O To 17:
+                            Input #1, BRS%(J, I, I1)
+                        Next I1
+                        Locate 7, 35
+                        TMR1 = TMR1 - 1
+                        Color 9
+                        Print Using "####"; TMR1
+                    Next I
+                Next J
+
+                For J = 1 To 15:
+                    For I = 0 To 79:
+                        For I1 = 0 To 16:
+                            Input #1, PRS%(J, I, I1)
+                        Next I1
+                        Locate 7, 35
+                        TMR1 = TMR1 - 1
+                        Color 9: Print Using "####"; TMR1
+                    Next I
+                Next J
+
                 Close #1
 
                 Locate 10: Color 14: Print "COMPUTING LEADER FILE . . . . . . PLEASE WAIT"
@@ -189,10 +235,15 @@ Sub UpdateLeaders ()
 
                         If BC(K, 1) / BC(K, 0) > BL1!(15, 19) Then
 
-                            BL1!(15, 19) = BC(K, 1) / BC(K, 0): BL0$(15, 19) = careerB$(K)
+                            BL1!(15, 19) = BC(K, 1) / BC(K, 0)
+                            BL0$(15, 19) = careerB$(K)
+
                             For I = 1 To 20
                                 For J = 20 To I Step -1
-                                    If BL1!(15, J - 1) < BL1!(15, J) Then Swap BL1!(15, J - 1), BL1!(15, J): Swap BL0$(15, J - 1), BL0$(15, J)
+                                    If BL1!(15, J - 1) < BL1!(15, J) Then
+                                        Swap BL1!(15, J - 1), BL1!(15, J)
+                                        Swap BL0$(15, J - 1), BL0$(15, J)
+                                    End If
                                 Next J
                             Next I
 
@@ -208,11 +259,15 @@ Sub UpdateLeaders ()
 
                         If (BC(K, 1) + BC(K, 4) + BC(K, 5) * 2 + BC(K, 6) * 3) / BC(K, 0) > BL1!(16, 19) Then
 
-                            BL1!(16, 19) = (BC(K, 1) + BC(K, 4) + BC(K, 5) * 2 + BC(K, 6) * 3) / BC(K, 0): BL0$(16, 19) = careerB$(K)
+                            BL1!(16, 19) = (BC(K, 1) + BC(K, 4) + BC(K, 5) * 2 + BC(K, 6) * 3) / BC(K, 0)
+                            BL0$(16, 19) = careerB$(K)
 
                             For I = 1 To 20
                                 For J = 20 To I Step -1
-                                    If BL1!(16, J - 1) < BL1!(16, J) Then Swap BL1!(16, J - 1), BL1!(16, J): Swap BL0$(16, J - 1), BL0$(16, J)
+                                    If BL1!(16, J - 1) < BL1!(16, J) Then
+                                        Swap BL1!(16, J - 1), BL1!(16, J)
+                                        Swap BL0$(16, J - 1), BL0$(16, J)
+                                    End If
                                 Next J
                             Next I
 
@@ -228,10 +283,15 @@ Sub UpdateLeaders ()
 
                         If (BC(K, 1) + BC(K, 7)) / (BC(K, 0) + BC(K, 7)) > BL1!(17, 19) Then
 
-                            BL1!(17, 19) = (BC(K, 1) + BC(K, 7)) / (BC(K, 0) + BC(K, 7)): BL0$(17, 19) = careerB$(K)
+                            BL1!(17, 19) = (BC(K, 1) + BC(K, 7)) / (BC(K, 0) + BC(K, 7))
+                            BL0$(17, 19) = careerB$(K)
+
                             For I = 1 To 20
                                 For J = 20 To I Step -1
-                                    If BL1!(17, J - 1) < BL1!(17, J) Then Swap BL1!(17, J - 1), BL1!(17, J): Swap BL0$(17, J - 1), BL0$(17, J)
+                                    If BL1!(17, J - 1) < BL1!(17, J) Then
+                                        Swap BL1!(17, J - 1), BL1!(17, J)
+                                        Swap BL0$(17, J - 1), BL0$(17, J)
+                                    End If
                                 Next J
                             Next I
 
@@ -247,10 +307,15 @@ Sub UpdateLeaders ()
 
                         If PC(K, X) > PL1!(X, 19) Then
 
-                            532 PL1!(X, 19) = PC(K, X): PL0$(X, 19) = careerP$(K)
+                            PL1!(X, 19) = PC(K, X)
+                            PL0$(X, 19) = careerP$(K)
+
                             For I = 1 To 20
                                 For J = 20 To I Step -1
-                                    If PL1!(X, J - 1) < PL1!(X, J) Then Swap PL1!(X, J - 1), PL1!(X, J): Swap PL0$(X, J - 1), PL0$(X, J)
+                                    If PL1!(X, J - 1) < PL1!(X, J) Then
+                                        Swap PL1!(X, J - 1), PL1!(X, J)
+                                        Swap PL0$(X, J - 1), PL0$(X, J)
+                                    End If
                                 Next J
                             Next I
                         End If
@@ -265,10 +330,15 @@ Sub UpdateLeaders ()
 
                         If ((PC(K, 3) * 9) / PC(K, 0)) * 3 < PL1!(15, 19) Then
 
-                            PL1!(15, 19) = ((PC(K, 3) * 9) / PC(K, 0)) * 3: PL0$(15, 19) = careerP$(K)
+                            PL1!(15, 19) = ((PC(K, 3) * 9) / PC(K, 0)) * 3
+                            PL0$(15, 19) = careerP$(K)
+
                             For I = 1 To 20
                                 For J = 20 To I Step -1
-                                    If PL1!(15, J) < PL1!(15, J - 1) Then Swap PL1!(15, J), PL1!(15, J - 1): Swap PL0$(15, J), PL0$(15, J - 1)
+                                    If PL1!(15, J) < PL1!(15, J - 1) Then
+                                        Swap PL1!(15, J), PL1!(15, J - 1)
+                                        Swap PL0$(15, J), PL0$(15, J - 1)
+                                    End If
                                 Next J
                             Next I
 
@@ -286,8 +356,19 @@ Sub UpdateLeaders ()
                 Next J
 
                 Open diskPaths$(1) + Left$(leaderFile$, JX) + ".TCL" For Output As #1
-                For I = 0 To 17: For I1 = 0 To 19: Write #1, BL1!(I, I1), BL0$(I, I1): Next: Next
-                For I = 0 To 15: For I1 = 0 To 19: Write #1, PL1!(I, I1), PL0$(I, I1): Next: Next
+
+                For I = 0 To 17:
+                    For I1 = 0 To 19:
+                        Write #1, BL1!(I, I1), BL0$(I, I1)
+                    Next
+                Next
+
+                For I = 0 To 15:
+                    For I1 = 0 To 19:
+                        Write #1, PL1!(I, I1), PL0$(I, I1)
+                    Next
+                Next
+
                 Close #1
 
             End If 'Done checking for ESC
@@ -313,7 +394,7 @@ Sub ViewPrintLeaders ()
     Do
         'Display list of files...
         Spec$ = diskPaths$(1) + "*.TCL"
-		Count% = FCount%(Spec$)
+        Count% = FCount%(Spec$)
 
         If Count% = 0 Then
             Locate 10, 8
@@ -735,3 +816,4 @@ Sub ViewLeaders_Screen ()
     I$ = GetKeyPress$
 
 End Sub
+

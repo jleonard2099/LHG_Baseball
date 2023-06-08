@@ -2,8 +2,6 @@ Sub SEELEAG ()
 
     _Title "Full Count Baseball - View League Results"
 
-    DefInt A-Z
-
     Shared BA$(), ER$()
     Shared cmplZ2$(), cmplZ3$()
 

@@ -2,8 +2,6 @@ Sub COMPARE ()
 
     _Title "Full Count Baseball - Compare Stats"
 
-    DefInt A-Z
-
     ReDim menuChoices$(1 To 2)
 
     Do

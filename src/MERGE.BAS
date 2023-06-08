@@ -25,6 +25,7 @@ Sub MERGE ()
         Column% = 25
 
         Call box0(7, 24, 11, 59, 2, 15, 1)
+
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
         _MouseHide

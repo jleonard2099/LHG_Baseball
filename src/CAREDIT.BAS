@@ -2,8 +2,6 @@ Sub CAREDIT ()
 
     _Title "Full Count Baseball - Edit Career Files"
 
-    DefInt A-Z
-
     Shared careerB$(), careerP$()
 
     Shared BRS%(), PRS%()

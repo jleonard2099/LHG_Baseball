@@ -2,9 +2,6 @@ Sub PRTLEAG ()
 
     _Title "Full Count Baseball - Print League Results"
 
-    DefInt A-Z
-
-    'Dim BA$(40), ER$(40), LF$(70), P$(298)
     Shared BA$(), ER$()
     Dim LF$(70), prtP$(298)
 

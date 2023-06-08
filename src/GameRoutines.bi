@@ -1,4 +1,3 @@
-DECLARE FUNCTION OUTFLDLOCATION$ (W%)
 
 Declare Sub ADDPIT (D, I5, I6)
 Declare Sub ADDSTTS (P, D)
@@ -161,5 +160,4 @@ Declare Sub WHOSON1ST (S4%)
 Declare Sub WILDPITCH (S2%, D)
 Declare Sub WINDEX ()
 
-DefInt A-Z
-
+DECLARE FUNCTION OUTFLDLOCATION$ (W%)

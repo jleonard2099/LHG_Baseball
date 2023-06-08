@@ -2,8 +2,6 @@ Sub CARVIEW ()
 
     _Title "Full Count Baseball - View Career Files"
 
-    DefInt A-Z
-
     Shared careerB$(), careerP$()
     Shared BRS%(), PRS%()
 

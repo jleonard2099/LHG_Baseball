@@ -2,8 +2,6 @@ Sub SINPUT ()
 
     _Title "Full Count Baseball - Stats Input"
 
-    DefInt A-Z
-
     ReDim menuChoices$(1 To 3)
 
     Do

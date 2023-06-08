@@ -2,8 +2,6 @@ Sub LEAGCMPL ()
 
     _Title "Full Count Baseball - Update League Stats"
 
-    DefInt A-Z
-
     Dim H1$(40), TM$(1 To 40)
 
     Dim ZM%(46)

@@ -2,8 +2,6 @@ Sub CREATE ()
 
     _Title "Full Count Baseball - Create League"
 
-    DefInt A-Z
-
     Shared Z1%()
     Shared Z1$(), Z2$()
 
@@ -11,85 +9,103 @@ Sub CREATE ()
     FG = 0
     BG = 7
 
-    Cls
-
-    Color 12: Print Tab(31); "LEAGUE EDITOR MENU": Print
-    Color 14: Print "(1)";: Color 15: Print " EDIT AN EXISTING LEAGUE": Print
-    Color 14: Print "(2)";: Color 15: Print " CREATE A NEW LEAGUE": Print
-    Color 14: Print "(3)";: Color 15: Print " RETURN TO STANDINGS/LEADERS MENU"
-
     Do
-        I$ = GetKeyPress$
-        I1 = Val(I$)
-    Loop Until I1 >= 1 And I1 <= 3 Or I$ = Chr$(27)
 
-    If I$ <> Chr$(27) Then
+        Color 15,0
+        Cls
 
-        For X = 1 To 40
-            Z1$(X) = "XXX"
-            Z2$(X) = "XXX"
-            Z1%(X) = -1
-        Next
+        Call TITLE
 
-        Select Case I1
+        ReDim menuChoices$(1 to 3)
+        menuChoices$(1) = "EDIT AN EXISTING LEAGUE         "
+        menuChoices$(2) = "CREATE A NEW LEAGUE             "
+        menuChoices$(3) = "RETURN TO STANDINGS/LEADERS MENU"
+        Selection% = 1
+        Count% = 3
+        Start% = 1
+        ExitCode% = 3
+        FileFGColr% = 15: FileBGColr% = 1
+        HiLiteFGColr% = 0: HiLiteBGColr% = 7
+        Spacing% = 6
+        Row% = 7
 
-            Case 1:
+        menuWidth% = Len(menuChoices$(1))
+        Column% = (80 - menuWidth% - 2) / 2
+        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColr%, FileBGColr%)
 
-                Call ChooseLeague(LG$)
+        _MouseShow "DEFAULT"
+        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+        _MouseHide
 
-                If LG$ <> "" Then
-                    Color 15, 1
-                    Call EditLeague(LG$)
-                End If
+        If ExitCode% <> 27 Then
 
-            Case 2:
+            For X = 1 To 40
+                Z1$(X) = "XXX"
+                Z2$(X) = "XXX"
+                Z1%(X) = -1
+            Next
 
-                Do
+            Select Case Selection%
 
-                    Color 15, 0
-                    Cls
-                    JJ = 7
-                    Locate 6, 8: Color 15, 1
-                    'Print box top
-                    Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+                Case 1:
 
-                    'Print box sides
-                    For II = 1 To JJ
-                        Locate 6 + II, 8
-                        Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-                    Next
-
-                    'Print box bottom
-                    Locate 7 + JJ, 8
-                    Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
-
-                    Locate 7, 32
-                    Locate , 12: Print "ENTER NAME FOR LEAGUE: ": Print
-                    Locate , 12: Print "THE NAME IS 8 CHARACTERS LONG WITH NO PERIODS OR"
-                    Locate , 12: Print "SPACES."
-                    Locate , 12: Print "SAMPLE NAMES ARE NL1990 AL56 1956AL NATIONAL"
-                    Locate 7, 37: Input LG$
+                    Call ChooseLeague(LG$)
 
                     If LG$ <> "" Then
-
-                        LG$ = Left$(LG$, 8)
-
-                        Do
-                            Locate 13, 12: Print "ANY CHANGE (YN) "
-                            I$ = GetKeyPress$
-                        Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
+                        Color 15, 1
+                        Call EditLeague(LG$)
                     End If
 
-                Loop Until UCase$(I$) = "N" Or LG$ <> ""
+                Case 2:
 
-                Call EditLeague(LG$)
+                    Do
 
-            Case 3: Cls '
+                        Color 15, 0
+                        Cls
+                        JJ = 7
+                        Locate 6, 8: Color 15, 1
+                        'Print box top
+                        Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
 
-        End Select
+                        'Print box sides
+                        For II = 1 To JJ
+                            Locate 6 + II, 8
+                            Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
+                        Next
 
-    End If
+                        'Print box bottom
+                        Locate 7 + JJ, 8
+                        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+
+                        Locate 7, 32
+                        Locate , 12: Print "ENTER NAME FOR LEAGUE: ": Print
+                        Locate , 12: Print "THE NAME IS 8 CHARACTERS LONG WITH NO PERIODS OR"
+                        Locate , 12: Print "SPACES."
+                        Locate , 12: Print "SAMPLE NAMES ARE NL1990 AL56 1956AL NATIONAL"
+                        Locate 7, 37: Input LG$
+
+                        If LG$ <> "" Then
+
+                            LG$ = Left$(LG$, 8)
+
+                            Do
+                                Locate 13, 12: Print "ANY CHANGE (YN) "
+                                I$ = GetKeyPress$
+                            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+                        End If
+
+                    Loop Until UCase$(I$) = "N" Or LG$ <> ""
+
+                    Call EditLeague(LG$)
+
+                Case 3: Cls '
+
+            End Select
+
+        End If
+
+    Loop Until Selection% = 3 Or ExitCode% = 27
 
 End Sub
 
@@ -106,7 +122,7 @@ Sub ChooseLeague (leagueFile$)
     Do
 
         Spec$ = diskPaths$(2) + "*.LIB"
-		Count% = FCount%(Spec$)
+        Count% = FCount%(Spec$)
 
         If Count% = 0 Then
             Locate 10, 8
@@ -411,40 +427,40 @@ Sub GetTeam_CREATE (yearNumber$, teamName$, teamIdx)
             Erase teamNames$
             numberTeams = 0
  
-			If Not _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
+            If Not _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
                 Cls
                 Print "ERROR:: UNABLE TO READ TEAM FILE": Print
                 BO% = 1
-			Else
+            Else
 
-				Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
+                Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
 
-				fileLength& = LOF(1)
+                fileLength& = LOF(1)
 
-				Field #1, 15 As Q$(0)
+                Field #1, 15 As Q$(0)
 
-				For I1 = 1 to fileLength& / 4342
+                For I1 = 1 to fileLength& / 4342
 
-					Get #1, I1
+                    Get #1, I1
 
-					For I2 = 1 To 15
-						If Left$(Q$(0), 2) = "XX" Or Left$(Q$(0), 1) = " " Or Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then nullTeam = 1: Exit For
-					Next I2
+                    For I2 = 1 To 15
+                        If Left$(Q$(0), 2) = "XX" Or Left$(Q$(0), 1) = " " Or Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then nullTeam = 1: Exit For
+                    Next I2
 
-					If nullTeam <> 1 Then
-						numberTeams = numberTeams + 1
-						teamNames$(numberTeams) = Q$(0)
-						teamIndex%(numberTeams) = I1
-					End If
+                    If nullTeam <> 1 Then
+                        numberTeams = numberTeams + 1
+                        teamNames$(numberTeams) = Q$(0)
+                        teamIndex%(numberTeams) = I1
+                    End If
 
-				Next I1
+                Next I1
 
-				Close 1
+                Close 1
 
-				Call SelectTeam_CREATE(yearNumber$, numberTeams, teamIdx)
+                Call SelectTeam_CREATE(yearNumber$, numberTeams, teamIdx)
 
-			End if
-			
+            End if
+            
         End If
 
         teamName$ = RTrim$(Q$(0))
@@ -502,7 +518,7 @@ Sub SelectTeam_CREATE (yearNumber$, numberTeams, teamIdx)
     If ExitCode% <> 27 Then
 
         teamIdx = teamIndex%(Selection%)
-		teamYear$ = RTrim$(yearNumber$)
+        teamYear$ = RTrim$(yearNumber$)
 
         Locate 2, 33
         Color 31: Print "LOADING..."

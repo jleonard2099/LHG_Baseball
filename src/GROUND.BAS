@@ -2,8 +2,6 @@ Sub GROUND ()
 
     _Title "Full Count Baseball - Groundball Calculations"
 
-    DefInt A-Z
-
     Shared draftB%(), ratings%(), draftP%()
     Shared statB$(), statP$()
 
@@ -15,13 +13,14 @@ Sub GROUND ()
     Dim BAP!, CH!, PD!
     Dim RHP!, SLP!
 
-    Color 15, 1
     FG = 0
     BG = 7
 
+    Color 15, 1
     Cls
 
-    Locate , 16: Print "SPECIFY LEAGUE STATS": Print
+    Locate , 16: Print "SPECIFY LEAGUE STATS"
+    Print
     Locate 7, 1: QPrint "League Batting Average ", 14, 1, -1
     Locate , 24: QPrint FUsing$(Str$(BP), "######", 1), FG, BG, -1
 
@@ -92,6 +91,7 @@ Sub GROUND ()
         CK = CVI(Q$(1843))
 
         For I = 0 To 22
+
             TB%(I) = draftB%(I, 6) + draftB%(I, 7) + 2 * draftB%(I, 8) + 3 * draftB%(I, 9)
 
             If draftB%(I, 4) = 0 Then
@@ -127,7 +127,6 @@ Sub GROUND ()
                 RHP! = draftP%(I, 7) / (draftP%(I, 10) / 900 * draftP%(I, 6))
                 RH%(I) = RHP! * 100
                 Print RH%(I)
-                'INT(draftP%(I,7)*900/(draftP%(I,10)*draftP%(I,6))*100)/100
 
                 DF = RH%(I) - PD!
                 CH! = Int(DF / 10) * 2
@@ -142,7 +141,6 @@ Sub GROUND ()
         Next I
 
         Color 15, 0
-
         Cls
 
         Print "BATTER         BA            SA            GA"
@@ -166,7 +164,7 @@ Sub GROUND ()
         Next
 
         Print "HIT ANY KEY TO CONTINUE";
-        U$ = GetKeyPress$
+        prompt$ = GetKeyPress$
 
         Cls
 
@@ -224,13 +222,14 @@ Sub GROUND ()
         LSet Q$(1841) = M$
         LSet Q$(1842) = NN$
         LSet Q$(1843) = MKI$(999)
+
         Put #1, teamIdx
+
         Close 1
 
-        Cls
 
         Do
-            '-- Locate x, 
+            Cls
             Print "EDIT ANOTHER TEAM (YN) ";
             I$ = GetKeyPress$
         Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
@@ -248,10 +247,13 @@ Sub GetTeam_GROUND (yearNumber$, numberTeams, teamName$, teamIdx)
     Shared ratings%()
 
     Do
-        Color 15, 0: Cls
+        Color 15, 0
+        Cls
+
         JJ = 7
         Locate 6, 8: Color 15, 4
-        Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";: For II = 1 To JJ: Locate 6 + II, 8
+        Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+        For II = 1 To JJ: Locate 6 + II, 8
         Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
         Locate 7 + JJ, 8
         Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
@@ -382,6 +384,7 @@ Sub SelectTeam_GROUND (yearNumber$, numberTeams, teamIdx)
         Next
 
         Field #1, 4280 As X$, 40 As Q$(1840), 15 As Q$(1841), 5 As Q$(1842), 2 As Q$(1843)
+
         Get #1, teamIdx
 
         For I = 1 To 13: ratings%(I) = CVI(Q$(I)): Next
@@ -389,16 +392,21 @@ Sub SelectTeam_GROUND (yearNumber$, numberTeams, teamIdx)
 		K9&(0) = CVS(Q$(14))
 
         For I = 0 To 22: statB$(I) = RTrim$(Q$(I * 43 + 15))
+
             For I1 = 0 To 41
                 draftB%(I, I1) = CVI(Q$(I * 43 + I1 + 16)): 'PRINT statB$(I),draftB%(I,I1)
             Next
+
         Next
 
         For I = 0 To 21
+
             statP$(I) = RTrim$(Q$(I * 38 + 1004))
+
             For I1 = 0 To 36
                 draftP%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
             Next
+
         Next
 
         Close 1

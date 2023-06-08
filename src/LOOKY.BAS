@@ -27,6 +27,7 @@ Sub LOOKY ()
         Column% = 22
 
         Call box0(6, 21, 10, 61, 2, 15, 1)
+
         _MouseShow "Default"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
@@ -358,9 +359,9 @@ Sub ViewAndPrintOptions (statFile$, teamName$, totalGames%, menuExit)
 
                 Color 12
                 header$ = "SCHEDULE RESULTS FOR " + teamName$
-                Ycoord = Len(header$)
-                Ycoord = Int((80 - Ycoord) / 2)
-                Locate 1, Ycoord
+                Xcoord = Len(header$)
+                Xcoord = Int((80 - Xcoord) / 2)
+                Locate 1, Xcoord
 
                 Print "SCHEDULE RESULTS FOR ";
                 Color ratings%(11), ratings%(12)
@@ -386,7 +387,7 @@ Sub ViewAndPrintOptions (statFile$, teamName$, totalGames%, menuExit)
 
                         Cls
 
-                        Locate 1, Ycoord
+                        Locate 1, Xcoord
                         Color 12
                         Print "SCHEDULE RESULTS FOR ";
                         Color ratings%(11), ratings%(12)
@@ -475,9 +476,9 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
 
     Shared statH$(), L$(), PL$(), W$()
 
-    Ycoord = Len(teamName$)
-    Ycoord = Int((80 - Ycoord) / 2)
-    Locate 1, Ycoord
+    Xcoord = Len(teamName$)
+    Xcoord = Int((80 - Xcoord) / 2)
+    Locate 1, Xcoord
 
     Color ratings%(11), ratings%(12)
     Print teamName$
@@ -513,9 +514,9 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
     Locate 1, 1
     Print Tab(80);
 
-    Ycoord = Len(teamName$)
-    Ycoord = Int((80 - Ycoord) / 2)
-    Locate , Ycoord
+    Xcoord = Len(teamName$)
+    Xcoord = Int((80 - Xcoord) / 2)
+    Locate , Xcoord
 
     'Color 14
     Color ratings%(11), ratings%(12)
@@ -627,7 +628,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
 
     Cls
 
-    Locate , Ycoord
+    Locate , Xcoord
     Color ratings%(11), ratings%(12)
     Print teamName$;
 
@@ -697,7 +698,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
 
     Cls
 
-    Locate , Ycoord
+    Locate , Xcoord
     Color ratings%(11), ratings%(12)
     Print teamName$;
 
@@ -789,7 +790,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
 
     Cls
 
-    Locate , Ycoord
+    Locate , Xcoord
     Color ratings%(11), ratings%(12)
     Print teamName$;
 
@@ -834,7 +835,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
 
     Cls
 
-    Locate , Ycoord
+    Locate , Xcoord
     Color ratings%(11), ratings%(12)
     Print teamName$;
 
@@ -912,7 +913,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
 
     Cls
 
-    Locate , Ycoord
+    Locate , Xcoord
     Color ratings%(11), ratings%(12)
     Print teamName$;
 
@@ -961,7 +962,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
 
     Cls
 
-    Locate , Ycoord
+    Locate , Xcoord
     Color ratings%(11), ratings%(12)
     Print teamName$;
 
@@ -991,7 +992,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
 
     Cls
 
-    Locate , Ycoord
+    Locate , Xcoord
     Color ratings%(11), ratings%(12)
     Print teamName$;
 

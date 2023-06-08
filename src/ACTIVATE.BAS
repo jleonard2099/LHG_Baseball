@@ -2,19 +2,25 @@ Sub ACTIVATE ()
 
     _Title "Full Count Baseball - Activate Players"
 
-    DefInt A-Z
-
     Shared ratings%()
 
 	Do
 
-		Color 15, 0: Cls
+		Color 15, 0
+        Cls
+
 		JJ = 7
+
 		Locate 6, 8: Color 15, 4
-		Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";: For II = 1 To JJ: Locate 6 + II, 8
-		Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
-		Locate 7 + JJ, 8
-		Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+		Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+        
+        For II = 1 To JJ: Locate 6 + II, 8
+		
+        Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
+		
+        Locate 7 + JJ, 8
+		
+        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
 		
 		Locate 7, 32
 		Locate , 12: Print "ENTER DISK ID: ": Print
@@ -22,6 +28,7 @@ Sub ACTIVATE ()
 		Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
 		Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
 		Locate 7, 27: Input NY$
+
 		If NY$ = "" And YN$ <> "" Then
 			Call SelectTeam_ACTIVATE(YN$, NTMS, T)
 		Else
@@ -70,7 +77,6 @@ Sub ChangePlayers (yearNumber$, teamName$, teamIdx)
     'CK = CVI(Q$(1843))
 
     Color 15, 0
-
     Cls
 
     Print "CHANGE BATTERS"
@@ -78,23 +84,30 @@ Sub ChangePlayers (yearNumber$, teamName$, teamIdx)
 
     Do
         For I = 0 To 10
+
             Color 15, 0
             Locate I + 5, 5: Print Using "## "; I + 1;
+
             If draftB%(I, 31) <> 0 Then Color ratings%(11), ratings%(12)
             Print statB$(I);
+
             Color 15, 0
             Print Tab(40);: Print Using "## "; I + 13;
+
             If draftB%(I + 12, 31) <> 0 Then Color ratings%(11), ratings%(12)
             Print statB$(I + 12): Color 15, 0
+
         Next
 
         Locate , 5: Print Using "## "; 12;
+
         If draftB%(11, 31) <> 0 Then Color ratings%(11), ratings%(12)
         Print statB$(11)
+
         Color 15, 0
         Print
-
-        Print "# TO CHANGE (1-23) (0 TO CONTINUE) ";: Input I
+        Print "# TO CHANGE (1-23) (0 TO CONTINUE) ";
+        Input I
 
         I = I - 1
 
@@ -107,21 +120,27 @@ Sub ChangePlayers (yearNumber$, teamName$, teamIdx)
     Loop Until I < 0
 
     Cls
-    Print "CHANGE PITCHERS": X% = 2
+    Print "CHANGE PITCHERS"
+    X% = 2
 
     Do
         For I = 0 To 10
             Locate I + 5, 5: Print Using "## "; I + 1;
+
             If draftP%(I, 34) <> 0 Then Color ratings%(11), ratings%(12)
             Print statP$(I);: Color 15, 0
+
             Print Tab(40);: Print Using "## "; I + 12;
+
             If draftP%(I + 11, 34) <> 0 Then Color ratings%(11), ratings%(12)
             Print statP$(I + 11): Color 15, 0
+
         Next
-        Print
 
         Print
-        Print "# TO CHANGE (1-22) (0 TO CONTINUE) ";: Input I
+        Print
+        Print "# TO CHANGE (1-22) (0 TO CONTINUE) ";
+        Input I
 
         I = I - 1
 
@@ -136,6 +155,7 @@ Sub ChangePlayers (yearNumber$, teamName$, teamIdx)
     Cls
 
 	teamYear$ = RTrim$(yearNumber$)
+
     Open diskPaths$(0) + "FCTEAMS." + teamYear$ For Random As #1 Len = 4342
 
     Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
@@ -214,18 +234,23 @@ Sub GetTeams_Activate (yearNumber$, numberTeams)
         Field #1, 15 As Q$(0)
 
         For I1 = 1 To fileLength& / 4342
+
             Get #1, I1
+
             For I2 = 1 To 15
                 If Left$(Q$(0), 2) = "XX" Or Left$(Q$(0), 1) = " " Or Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then nullTeam = 1: Exit For
             Next I2
+
             If nullTeam <> 1 Then
                 numberTeams = numberTeams + 1
                 teamNames$(numberTeams) = Q$(0)
                 teamIndex%(numberTeams) = I1
             End If
+
         Next I1
 		
         Close 1
+
     End If
 
 End Sub
@@ -288,6 +313,7 @@ Sub SelectTeam_ACTIVATE (yearNumber$, numberTeams, teamIdx)
         Next
 
         Field #1, 4280 As X$, 40 As Q$(1840), 15 As Q$(1841), 5 As Q$(1842), 2 As Q$(1843)
+
         Get #1, teamIdx
 
         For I = 1 To 13
@@ -298,16 +324,21 @@ Sub SelectTeam_ACTIVATE (yearNumber$, numberTeams, teamIdx)
 
         For I = 0 To 22:
             statB$(I) = RTrim$(Q$(I * 43 + 15))
+
             For I1 = 0 To 41
                 draftB%(I, I1) = CVI(Q$(I * 43 + I1 + 16))
             Next
+
         Next
 
         For I = 0 To 21
+
             statP$(I) = RTrim$(Q$(I * 38 + 1004))
+
             For I1 = 0 To 36
                 draftP%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
             Next
+
         Next
 
         Close 1
