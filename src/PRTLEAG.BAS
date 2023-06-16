@@ -1148,39 +1148,3 @@ Sub PRTLEAG ()
     Loop Until ExitCode% = 27 Or Count% = 0 Or I$ = "N"
 
 End Sub
-
-'   181 L = 8: IF LEN(D1$) < L THEN D1$ = D1$ + " ": GOTO 181
-'   191 L = 8: IF LEN(D2$) < L THEN D2$ = D2$ + " ": GOTO 191
-'   201 L = 8: IF LEN(D3$) < L THEN D3$ = D3$ + " ": GOTO 201
-'   211 L = 8: IF LEN(D4$) < L THEN D4$ = D4$ + " ": GOTO 211
-'   221 Return
-
-'   231 FOR P = 1 TO 5: prtP$(P) = "": IF NM$(CT, P, 1) = "*" THEN 261
-'   241 prtP$(P) = NM$(CT, P, 1): IF NM$(CT, P, 2) <> "*" THEN prtP$(P) = prtP$(P) + ", " + NM$(CT, P, 2)
-'   251 L = 22: GOSUB 271: J! = NM%(CT, P): W = 3: GOSUB 391
-'   261 NEXT P
-'   Return
-
-'   351 A$ = STR$(J): L = LEN(A$): A$ = RIGHT$(A$, L - 1)
-'   361 IF LEN(A$) < 3 THEN A$ = "0" + A$: GOTO 361
-'   371 A$ = " ." + RIGHT$(A$, 3)
-'   381 prtP$(P) = prtP$(P) + A$
-'   Return
-
-'2741 '
-'CP$ = "": L = LEN(LW$)
-'FOR Z = 1 TO L:
-'   ALP = ASC(MID$(LW$, Z, 1))
-'   IF ALP > 64 AND ALP < 96 THEN 
-'       CP$ = CP$ + CHR$(ALP + 32)
-'   Else
-'       CP$ = CP$ + CHR$(ALP)
-'   End If
-'NEXT Z
-'Return
-
-'2781 '
-'HZ = 1: VT = 24
-'LOCATE VT, HZ: PRINT Space$(26);
-'QK$=GetKeyPress$
-'Return

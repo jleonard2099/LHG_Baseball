@@ -38,8 +38,8 @@ Sub NEWLDR ()
             Select Case Selection%
                 Case 1: Call UpdateExpandedLeaders
                 Case 2: Call ViewExpandedLeaders
-                Case 3: Call NEWLDRST
-                Case 4: Call NEWLDRRC
+                Case 3: Call ExpandedStandings
+                Case 4: Call SeasonRecords
                 Case 5: Cls
             End Select
         End If

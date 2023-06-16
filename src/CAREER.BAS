@@ -319,7 +319,8 @@ Sub ViewTeamLeaders ()
                                 Print Tab(22); " ---"
                             End If
 
-                            Color 15: Locate 22: Print "HIT ANY KEY TO CONTINUE"
+                            Color 15
+                            Locate 22: Print "HIT ANY KEY TO CONTINUE"
                             I$ = GetKeyPress$
 
                             Cls

@@ -1,4 +1,4 @@
-Sub NEWLDRST ()
+Sub ExpandedStandings ()
 
     _Title "Full Count Baseball - League Standings"
 

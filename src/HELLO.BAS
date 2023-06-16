@@ -312,7 +312,9 @@ Sub Main_Menu (menuSelection%)
         Color , 0
 
         If ExitCode% <> 27 Then
+
             Select Case menuSelection%
+
                 Case 1: Call LOADER
                 Case 2: Call BINPUT
                 Case 3: Call PROGMAN
@@ -328,7 +330,9 @@ Sub Main_Menu (menuSelection%)
                     'Case 13: Call HDCOPY
                 Case 14: Call ConfigureDrives
                 Case 15: Cls
+
             End Select
+
         End If
 
     Loop Until menuSelection% = 15 Or ExitCode% = 27
@@ -461,7 +465,7 @@ Sub Replay_Menu ()
         Call TITLE
 
         ReDim menuChoices$(1 To 6)
-        menuChoices$(1) = "COMPARE COMPILED STATS VS. ACTUAL"
+        menuChoices$(1) = "COMPARE REPLAY STATS TO ACTUAL   "
         menuChoices$(2) = "MERGE TWO STAT FILES             "
         menuChoices$(3) = "VIEW TEAM HEAD TO HEAD RESULTS   "
         menuChoices$(4) = "CAREER FILE OPTIONS              "
@@ -476,17 +480,20 @@ Sub Replay_Menu ()
         Spacing% = 1
         Row% = 8
         Column% = 23
+
         Call box0(7, 22, 14, 56, 2, 15, 1)
+
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
+
         If ExitCode% <> 27 Then
             Select Case Selection%
                 Case 1: Call COMPARE
                 Case 2: Call MERGE
-                Case 3: Call REC
+                Case 3: Call HD2HD
                 Case 4: Call CAREER
                 Case 5: Call POSSRT
                 Case 6: Cls
@@ -575,11 +582,11 @@ End Sub
 '$INCLUDE: 'CREATE.BAS'
 '$INCLUDE: 'DRAFT.BAS'
 '$INCLUDE: 'GROUND.BAS'
+'$INCLUDE: 'HD2HD.BAS'
 '$INCLUDE: 'LEAGCMPL.BAS'
 '$INCLUDE: 'LOOKY.BAS'
 '$INCLUDE: 'MERGE.BAS'
 '$INCLUDE: 'NEWLDR.BAS'
-'$INCLUDE: 'NEWLDRRC.BAS'
 '$INCLUDE: 'NEWLDRST.BAS'
 '$INCLUDE: 'POSSRT.BAS'
 '$INCLUDE: 'POSCR.BAS'

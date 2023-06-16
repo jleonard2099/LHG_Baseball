@@ -1,33 +1,47 @@
-Sub REC ()
+Sub SeasonRecords ()
 
-    _Title "Full Count Baseball - Head-to-Head Stats"
+    _Title "Full Count Baseball - Season Records"
 
-    Cls
+    Shared BRC!(), BTYR!()
+    Shared PRC!(), PRYR!()
+    Shared TRC!(), TRC1!(), TRYR!(), TRYR1!()
+
+    Shared BRC$(), BRT$(), PRC$(), PRT$()
+    Shared TRC$(), TRC1$()
 
     ReDim menuChoices$(1 To 4)
 
+    'If Not _FileExists(diskPaths$(1) + "BASEBALL.REC") Then
+    '
+    '    Call CSMsgBox("UNABLE TO LOCATE RECORDS PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+    '    I$ = GetKeyPress$
+    '    Call CSMsgBox("", 0, Pass)
+    '
+    'Else
+
     Do
 
-        Color 15, 0
-
         Cls
+        Color 15, 0
 
         Call TITLE
 
-        menuChoices$(1) = "ANALYZE A TEAM'S RECORD                "
-        menuChoices$(2) = "ANALYZE ANOTHER TEAM IN THE SAME LEAGUE"
-        menuChoices$(3) = "SELECT A NEW TEAM AND LEAGUE           "
-        menuChoices$(4) = "RETURN TO MAIN MENU                    "
+        menuChoices$(1) = "UPDATE SEASON RECORDS"
+        menuChoices$(2) = "VIEW SEASON RECORDS  "
+        menuChoices$(3) = "PRINT SEASON RECORDS "
+        menuChoices$(4) = "RETURN TO MAIN MENU  "
         Selection% = 1
         Count% = 4
         Start% = 1
-        ExitCode% = 4
+        ExitCode% = 3
         FileFGColr% = 15: FileBGColr% = 1
         HiLiteFGColr% = 0: HiLiteBGColr% = 7
         Spacing% = 1
-        Row% = 7
-        Column% = 22
-        Call box0(6, 21, 11, 61, 2, 15, 1)
+        Row% = 8
+        menuWidth% = Len(menuChoices$(1))
+        Column% = (80 - menuWidth% - 2) / 2
+
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColr%, FileBGColr%)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
@@ -36,864 +50,906 @@ Sub REC ()
         Color , 0
 
         If ExitCode% <> 27 Then
-            Select Case Selection%
-                Case 1:
-                    Call AnalyzeTeamRecord(league$, 0)
 
-                Case 2:
-                    Call AnalyzeTeamRecord(league$, 1)
+            If _FileExists(diskPaths$(2) + "BASEBALL.REC") Then
 
-                Case 3:
-                    Call AnalyzeTeamRecord(league$, 0)
+                Open diskPaths$(2) + "BASEBALL.REC" For Input As #1
 
-                Case 4: Cls
-            End Select
+                For I = 1 To 32: Input #1, BRC!(I), BRC$(I), BRT$(I), BTYR!(I): Next
+                For I = 1 To 28: Input #1, PRC!(I), PRC$(I), PRT$(I), PRYR!(I): Next
+                For I = 0 To 24: Input #1, TRC!(I), TRC$(I), TRYR!(I): Next
+                For I = 0 To 24: Input #1, TRC1!(I), TRC1$(I), TRYR1!(I): Next
+
+                Close #1
+
+            End If
+
+            Call SelectLeague_REC(LGE$, menuExit%)
+
+            If menuExit% <> 27 Then
+
+                Select Case Selection%
+
+                    Case 1:
+                        Call UpdateRecords(LGE$)
+
+                    Case 2:
+                        Call ViewSeasonRecords(LGE$)
+
+                    Case 3:
+                        Call PrintSeasonRecords(LGE$)
+
+                End Select
+
+            End If
+
         End If
 
     Loop Until Selection% = 4 Or ExitCode% = 27
 
 End Sub
 
-'----------------------------------------
-'       GetTeam_REC Subroutine
-'----------------------------------------
-'...explanation...
-Sub GetTeam_REC (yearNumber$, numberTeams)
-
-    Shared ratings%()
-
-    Do
-        Color 15, 0: Cls
-        JJ = 7
-        Locate 6, 8: Color 15, 4
-        Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";: For II = 1 To JJ: Locate 6 + II, 8
-        Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
-        Locate 7 + JJ, 8
-        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
-
-        Locate 7, 32
-        Locate , 12: Print "ENTER DISK ID: ": Print
-        Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
-        Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
-        Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
-        Locate 7, 27: Input NY$
-        If NY$ = "" And yearNumber$ <> "" Then
-            Call SelectTeam_REC(yearNumber$, numberTeams)
-        Else
-            yearNumber$ = RTrim$(NY$)
-            Erase teamNames$
-            numberTeams = 0
-			
-            If _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
-
-                Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
-
-                fileLength& = LOF(1)
-
-                Field #1, 15 As Q$(0)
-
-                For I1 = 1 to fileLength& / 4342
-
-                    Get #1, I1
-
-                    For I2 = 1 To 15
-                        If Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then nullTeam = 1: Exit For
-                    Next I2
-
-                    If nullTeam <> 1 Then
-                        numberTeams = numberTeams + 1
-                        teamNames$(numberTeams) = Q$(0)
-                        teamIndex%(numberTeams) = I1
-                    End If
-
-                Next I1
-
-                Close 1
-
-                Call SelectTeam_REC(yearNumber$, numberTeams)
-
-            End If
-
-        End If
-
-        If BO% = 1 Then
-            BO% = 0
-        Else
-            T$ = RTrim$(Q$(0))
-
-            Locate 2, 33
-            Color ratings%(11), ratings%(12): Print T$
-
-            Do
-                Color 15, 4
-                Locate 3, 33: Print "ANY CHANGE (YN)";
-                I$ = GetKeyPress$
-            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
-        End If
-
-    Loop Until UCase$(I$) = "N" Or I$ = Chr$(27)
-
-End Sub
 
 '----------------------------------------
-'     SelectTeam_REC Subroutine
+'       UpdateRecords Subroutine
 '----------------------------------------
 '...explanation...
-Sub SelectTeam_REC (yearNumber$, numberTeams)
+Sub UpdateRecords (leagueFile$)
 
-    Shared ratings%()
+    Shared BK%(), PM%()
+    Shared BRC!(), BTYR!(), GM1!()
+    Shared PRC!(), PRYR!()
+    Shared TRC!(), TRC1!(), TRYR!(), TRYR1!()
+    Shared TT!(), TT1!()
 
-    Selection% = 1
-    Count% = numberTeams
-    Start% = 1
-    FileFGColr% = 15: FileBGColr% = 4
-    HiLiteFGColr% = 0: HiLiteBGColr% = 7
-    Rows% = 20
-    Columns% = 4
-    Spacing% = 6
-    Row% = 4
-    Column% = 1
-    Color , 4: Cls: Locate , 33: Color 14
-    Print "TEAM SELECTION": Color 15
-    Locate 25, 1: Color 14: Print "ESC";: Color 15
-    Print "-SELECT NEW ID  PGDN  PGUP  ";: Color 14
-    Print "ENTER";: Color 15: Print "-SELECTS TEAM";
+    Shared BRC$(), BRT$(), PRC$(), PRT$()
+    Shared leaderBL$(), leaderPL$()
+    Shared TMB$(), TMP$(), TRC$(), TRC1$()
 
-    _MouseShow "DEFAULT"
-    MAMenu teamNames$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
-    _MouseHide
+    Dim GM2(880)
 
-    If ExitCode% <> 27 Then
+    Dim TT$(40, 22), TT1$(40, 23)
 
-        T = teamIndex%(Selection%)
-		teamYear$ = RTrim$(yearNumber$)
+    Dim WW(40), LL(40)
 
-        Locate 2, 33: Color 31: Print "LOADING..."
-
-        If Not _FileExists(diskPaths$(0) + "FCTEAMS." + teamYear$) Then
-            BO% = 1
-            Locate 10, 8
-            Call CSMsgBox("NO TEAM FILES WERE FOUND MATCHING THIS ID.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-            I$ = GetKeyPress$
-            Call CSMsgBox("", 0, Pass)
-        Else
-            Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
-
-            Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
-
-            Get #1, T
-
-            For I = 1 To 13: ratings%(I) = CVI(Q$(I)): Next
-
-            Close 1
-
-        End If
-
-    Else
-        BO% = 1
-    End If
-
-End Sub
-
-'----------------------------------------
-'     AnalyzeTeamRecord Subroutine
-'----------------------------------------
-'...explanation...
-Sub AnalyzeTeamRecord (LG$, sameLeague)
-
-    Shared H%(), I%(), V%(), Z1%()
-    Shared HW%(), AW%(), HL(), AL(), R1%(), R2%(), R3%(), R4%()
-    Shared TR1%(), TR2%(), TR3%(), TR4%(), THW%(), THL%(), TAW%(), TAL%()
-
-    Shared DV$(), L$(), Z1$(), Z2$()
-
-    Dim O$(NUM_STATRECORDS), LP$(NUM_STATRECORDS), WP$(NUM_STATRECORDS)
-
-    Call GetTeam_REC(yearNumber$, numberTeams)
-
-    B$ = RTrim$(Q$(0))
-
-    For XX = 4 To 11
-        If Mid$(B$, XX, 1) = " " Or Mid$(B$, XX, 1) = "." Then Mid$(B$, XX, 1) = "_"
-    Next XX
-
-    QQ = 8
-
-    For XX = 11 To 4 Step -1
-        If Mid$(B$, XX, 1) = "_" Then
-            QQ = XX - 4
-        Else
-            Exit For
-        End If
-    Next XX
-
-    Z$ = Mid$(B$, 4, QQ) + "." + Left$(B$, 2)
-
-    ER = 0
+    AAG = 920
+    AAS = 880
+    AAT = 80
+    JB = 0
+    JP = 0
+    TMR% = 2360
+    TS = 0
 
     Cls
+    Input "ENTER SEASON YEAR (1991,1992)"; seasonYear
 
-    If Not _FileExists(diskPaths$(1) + Z$ + "S") Then
-        Locate 10, 8
-        Call CSMsgBox("NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+    Do
+        Locate 2
+        Input "IS THIS THE FINAL UPDATE FOR THE YEAR (Y/N)"; finalUpdate$
+    Loop Until UCase$(finalUpdate$) = "Y" Or UCase$(finalUpdate$) = "N"
+
+    Print
+    Print "ANY CHANGE (Y/N)"
+
+    Do
         I$ = GetKeyPress$
-        Call CSMsgBox("", 0, Pass)
-    Else
+    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
-        Open diskPaths$(1) + Z$ + "S" For Input As #1
-        Input #1, Y
-        For J = 1 To 162: Input #1, H%(J): Next
-        For J = 1 To 162: Input #1, O$(J): Next
-        For J = 1 To 162: Input #1, V%(J): Next
-        For J = 1 To 162: Input #1, L$(J): Next
-        For J = 1 To 162: Input #1, WP$(J): Next
-        For J = 1 To 162: Input #1, LP$(J): Next
-        For J = 1 To 162: Input #1, I%(J): Next
+    If _FileExists(diskPaths$(2) + "BASEBALL.REC") Then
+
+        Open diskPaths$(2) + "BASEBALL.REC" For Input As #1
+
+        Print "READING IN CURRENT RECORDS"
+
+        For I = 1 To 32: Input #1, BRC!(I), BRC$(I), BRT$(I), BTYR!(I): Next
+        For I = 1 To 28: Input #1, PRC!(I), PRC$(I), PRT$(I), PRYR!(I): Next
+        For I = 0 To 24: Input #1, TRC!(I), TRC$(I), TRYR!(I): Next
+        For I = 0 To 24: Input #1, TRC1!(I), TRC1$(I), TRYR1!(I): Next
+
         Close #1
 
-        Do
+    Else
+        PRC!(23) = 100
+        PRC!(25) = 100
+        BRC!(24) = 999
+        BRC!(25) = 999
+        BRC!(26) = 999
+        BRC!(27) = 999
+        BRC!(28) = 999
+        PRC!(27) = 100
+        TRC1!(24) = 100
+    End If
 
-            If sameLeague <> 1 Then
+    TMR% = 3680
 
-                'Select a new league!
-                Spec$ = diskPaths$(2) + "*.LIB"
-				Count% = FCount%(Spec$)
+    Open diskPaths$(2) + leagueFile$ + ".BAT" For Input As #1
 
-                If Count% = 0 Then
-                    Locate 10, 8
-                    Call CSMsgBox("NO LEAGUE FILES WERE FOUND.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-                    I$ = GetKeyPress$
-                    Call CSMsgBox("", 0, Pass)
-                Else
+    Input #1, JB, JP, D1$, D2$, D3$, D4$, LGF$, TS, TTS
 
-                    ReDim leagueFiles$(0 To Count%)
-                    For X = 1 To Count%
-                        leagueFiles$(X) = Space$(12)
-                    Next
-                    leagueFiles$(0) = Spec$
-                    Call ReadFile(leagueFiles$())
+    For I = 1 To 920:
+        Input #1, leaderBL$(I), TMB$(I), GM1!(I)
+        TMR% = TMR% - 1
+        Color 14
+        Locate 18, 45: Print Using "#####"; TMR%
+    Next I
 
-                    Do
-                        Color , 1
-                        Cls
+    For I = 1 To 920:
+        For I1 = 1 To 22
+            Input #1, BK%(I, I1)
+        Next I1
+        TMR% = TMR% - 1
+        Color 14
+    Locate 18, 45: Print Using "#####"; TMR%: Next I
+    Close 1
 
-                        Locate , 33
-                        Color 14
-                        Print "SELECT LEAGUE": Color 15
-                        Selection% = 1
-                        Start% = 1
-                        FileFGColr% = 15: FileBGColr% = 1
-                        HiLiteFGColr% = 0: HiLiteBGColr% = 7
-                        Rows% = 20
-                        Columns% = 4
-                        Spacing% = 6
-                        Row% = 4
-                        Column% = 1
-                        Locate 25, 1
-                        Color 14
-                        Print "ENTER";: Color 15
-                        Print "-SELECTS LEAGUE";
+    Open diskPaths$(2) + leagueFile$ + ".PIT" For Input As #1
 
-                        _MouseShow "DEFAULT"
-                        MAMenu leagueFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
-                        _MouseHide
+    Input #1, JB, JP, D1$, D2$, D3$, D4$, LGF$, TS, TTS
 
-                        If ExitCode% <> 27 Then
+    For I = 1 To 880:
+        Input #1, leaderPL$(I), TMP$(I), GM2(I)
+        TMR% = TMR% - 1
+        Color 14
+        Locate 18, 45: Print Using "#####"; TMR%
+    Next I
 
-                            Color 15, 1
-                            targetFile$ = leagueFiles$(Selection%)
-                            Locate 2, 33: Print targetFile$
+    For I = 1 To 880:
+        For I1 = 1 To 23:
+            Input #1, PM%(I, I1)
+        Next I1
+        TMR% = TMR% - 1
+        Color 14
+    Locate 18, 45: Print Using "#####"; TMR%: Next I
 
-                            Do
-                                Locate 3, 33: Print "ANY CHANGE (YN)";
-                                I$ = GetKeyPress$
-                            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+    Close 1
 
-                            Color 15, 0
+    Open diskPaths$(2) + leagueFile$ + ".TOT" For Input As #1
 
-                        End If
+    Input #1, JB, JP, D1$, D2$, D3$, D4$, LGF$, TS, TTS
 
-                    Loop Until UCase$(I$) = "N" Or ExitCode% = 27
+    For I = 1 To 40: Input #1, WW(I), LL(I): Next
 
-                    If ExitCode% <> 27 Then
-                        targetFile$ = RTrim$(targetFile$)
-                        LG$ = Left$(targetFile$, Len(targetFile$) - 4)
-                    End If
+    For I = 1 To 40:
+        For I1 = 0 To 21:
+            Input #1, TT!(I, I1), TT$(I, I1)
+        Next
+        TMR% = TMR% - 1
+        Color 14
+        Locate 18, 45: Print Using "#####"; TMR%
+    Next
 
-                End If 'Done checking for files
+    For I = 1 To 40:
+        For I1 = 0 To 22:
+            Input #1, TT1!(I, I1), TT1$(I, I1)
+        Next
+        TMR% = TMR% - 1
+        Color 14
+        Locate 18, 45: Print Using "#####"; TMR%
+    Next
 
-            End If 'done checking if new league or not
+    Close #1
 
-            If ExitCode% <> 27 Then
+    Locate 7: Print "CALCULATING BATTER RECORDS . . . ."
 
-                Color 15, 0
-                Cls
+    For I = 1 To 920
 
-                Do
-                    Locate 15, 10
-                    Color 12: Print "V";: Color 7: Print "iew or ";
-                    Color 12: Print "P";: Color 7: Print "rint"
-                    M$ = GetKeyPress$
-                Loop Until UCase$(M$) = "V" Or UCase$(M$) = "P"
+        For I1 = 1 To 20
 
-                If UCase$(M$) = "V" Then
-                    VPP = 1
-                Else
-                    VPP = 0
+            If BK%(I, I1) >= BRC!(I1) Then
+                BRC!(I1) = BK%(I, I1)
+                BRC$(I1) = leaderBL$(I)
+                BRT$(I1) = TMB$(I)
+                BTYR!(I1) = seasonYear
+            End If
+
+        Next I1
+
+        AAG = AAG - 1
+        Locate 7, 40: Print Using "###"; AAG
+
+    Next I
+
+    If finalUpdate$ = "Y" Then
+
+        For I = 1 To 920
+            If BK%(I, 1) + BK%(I, 8) >= GM1!(I) * 3.1 And BK%(I, 1) <> 0 Then
+                If BK%(I, 2) / BK%(I, 1) >= BRC!(21) Then
+                    BRC!(21) = BK%(I, 2) / BK%(I, 1)
+                    BRC$(21) = leaderBL$(I)
+                    BRT$(21) = TMB$(I)
+                    BTYR!(21) = seasonYear
                 End If
+            End If
+        Next I
 
-                Q$ = LG$ + ".LIB"
-
-                Cls
-
-                Open diskPaths$(2) + Q$ For Input As #3
-
-                Input #3, LG$: Input #3, D1$: Input #3, D2$: Input #3, D3$: Input #3, D4$
-
-                For X = 1 To 40
-                    Input #3, Z1$(X): Input #3, Z1%(X): Input #3, Z2$(X)
-                Next
-
-                Close #3
-
-                Locate 18, 18: Print "COMPUTING W/L RECORDS . . . PLEASE WAIT"
-
-                For Q = 1 To 40:
-                    HW%(Q) = 0
-                    AW%(Q) = 0
-                    AL%(Q) = 0
-                    HL%(Q) = 0
-                    R1%(Q) = 0
-                    R2%(Q) = 0
-                    R3%(Q) = 0
-                    R4%(Q) = 0
-                Next
-
-                For K = 1 To 4:
-                    THW%(K) = 0
-                    THL%(K) = 0
-                    TAW%(K) = 0
-                    TAL%(K) = 0
-                    TR1%(K) = 0
-                    TR2%(K) = 0
-                    TR3%(K) = 0
-                    TR4%(K) = 0
-                Next
-
-                For K = 1 To 40
-                    If Z1$(K) <> "XXX" Then
-                        For I = 1 to fileLength&
-                            If H%(I) > V%(I) And L$(I) = "A" And O$(I) = Z1$(K) Then AW%(K) = AW%(K) + 1
-                            If H%(I) > V%(I) And L$(I) = "H" And O$(I) = Z1$(K) Then HW%(K) = HW%(K) + 1
-                            If H%(I) < V%(I) And L$(I) = "A" And O$(I) = Z1$(K) Then AL%(K) = AL%(K) + 1
-                            If H%(I) < V%(I) And L$(I) = "H" And O$(I) = Z1$(K) Then HL%(K) = HL%(K) + 1
-                            If O$(I) = Z1$(K) And L$(I) = "H" Then R1%(K) = R1%(K) + H%(I)
-                            If O$(I) = Z1$(K) And L$(I) = "H" Then R2%(K) = R2%(K) + V%(I)
-                            If O$(I) = Z1$(K) And L$(I) = "A" Then R3%(K) = R3%(K) + H%(I)
-                            If O$(I) = Z1$(K) And L$(I) = "A" Then R4%(K) = R4%(K) + V%(I)
-                        Next I
-                    End If
-                Next K
-
-                RDD = 0
-
-                If VPP = 1 Then
-
-                    DV$(1) = D1$
-                    DV$(2) = D2$
-                    DV$(3) = D3$
-                    DV$(4) = D4$
-
-                    Do
-
-                        Call Records_Screen(B$)
-
-                        Do
-                            Locate 23: Color 15: Print "VIEW TEAM AGAIN (Y/N)"
-                            I$ = GetKeyPress$
-                        Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
-                        If UCase$(I$) = "Y" Then
-
-                            RDD = 0
-                            For K = 1 To 4
-                                THW%(K) = 0
-                                THL%(K) = 0
-                                TAW%(K) = 0
-                                TAL%(K) = 0
-                                TR1%(K) = 0
-                                TR2%(K) = 0
-                                TR3%(K) = 0
-                                TR4%(K) = 0
-                            Next
-                        End If
-
-                    Loop Until UCase$(I$) = "N"
-
-                Else
-
-                    Call Records_Printer(B$)
-
-                End If 'Done checking VPP
-
-            End If 'Done checking for ESC
-
-            'Keep letting user select files
-        Loop Until ExitCode% = 27 Or Count% = 0
-
-    End If 'Done checking for compiled stats
-
-End Sub
-
-'----------------------------------------
-'       Records_Screen Subroutine
-'----------------------------------------
-'...explanation...
-Sub Records_Screen (teamName$)
-
-    Shared HW%(), AW%(), HL%(), AL%()
-    Shared R1%(), R2%(), R3%(), R4%()
-    Shared ratings%()
-
-    Shared DV$(), Z1$()
-
-    'Dim TR1%(4), TR2%(4), TR3%(4), TR4%(4), THW%(4), THL%(4), TAW%(4), TAL%(4)
-    Shared TR1%(), TR2%(), TR3%(), TR4%(), THW%(), THL%(), TAW%(), TAL%()
-
-    Do
-        Cls
-        Locate 2, 35
-        Color ratings%(11), ratings%(12): Print teamName$
-        Color 3, 0
-
-        Locate 4
-        Print Tab(15); String$(7, 196); " HOME "; String$(7, 196); Tab(35); Chr$(194); String$(7, 196); " AWAY "; String$(9, 196); Tab(58); Chr$(194); String$(6, 196); " TOTALS "; String$(6, 196)
-        Locate 5
-        Print Tab(16); "W"; Tab(19); "L"; Tab(23); "PCT."; Tab(28); "RF"; Tab(32); "RA"; Tab(35); Chr$(179); Tab(38); "W"; Tab(41); "L"; Tab(45); "PCT."; Tab(50); "RF"; Tab(54); "RA"; Tab(58); Chr$(179); Tab(61); "W"; Tab(64); "L"; Tab(68); "PCT."; Tab(73); "RF"; Tab(77); "RA"
-
-        RDD = RDD + 1
-        If RDD = 1 Then DD = 1: EE = 10
-        If RDD = 2 Then DD = 11: EE = 20
-        If RDD = 3 Then DD = 21: EE = 30
-        If RDD = 4 Then DD = 31: EE = 40
-
-        If DV$(RDD) <> "XXX" And DV$(RDD) <> "" Then
-
-            Color 11: Print DV$(RDD);: Color 3: Print Tab(35); Chr$(179); Tab(58); Chr$(179)
-
-            For K = DD To EE
-
-                If Z1$(K) <> "XXX" And Z1$(K) <> teamName$ Then
-
-                    Color 15: Locate , 1: Print Left$(Z1$(K), 13);
-                    Color 7: Locate , 15: Print Using "##"; HW%(K);
-                    Locate , 18: Print Using "##"; HL%(K);
-
-                    If HW%(K) = HW%(K) + HL%(K) And HW%(K) <> 0 Then Locate , 21: Print "1.000";
-                    If HW%(K) = 0 Then Locate , 22: Print ".000";
-                    If HW%(K) > 0 And HW%(K) < HW%(K) + HL%(K) Then statPCT! = (HW%(K) / (HW%(K) + HL%(K))): Locate , 22: Print Using ".###"; statPCT!;
-
-                    Locate , 27: Print Using "###"; R1%(K);
-                    Locate , 31: Print Using "###"; R2%(K);
-                    Color 3: Print Tab(35); Chr$(179);
-                    Color 7: Locate , 37: Print Using "##"; HW%(K);
-                    Locate , 40: Print Using "##"; AL%(K);
-
-                    If HW%(K) = HW%(K) + AL%(K) And HW%(K) <> 0 Then Locate , 43: Print "1.000";
-                    If HW%(K) = 0 Then Locate , 44: Print ".000";
-                    If HW%(K) > 0 And HW%(K) < HW%(K) + AL%(K) Then statPCT! = (HW%(K) / (HW%(K) + AL%(K))): Locate , 44: Print Using ".###"; statPCT!;
-
-                    Locate , 49: Print Using "###"; R3%(K);
-                    Locate , 53: Print Using "###"; R4%(K);
-                    Color 3: Print Tab(58); Chr$(179);
-                    Color 7: Locate , 60: Print Using "##"; HW%(K) + HW%(K);
-                    Locate , 63: Print Using "##"; HL%(K) + AL%(K);
-
-                    If (HW%(K) + HW%(K)) = (HW%(K) + HW%(K) + HL%(K) + AL%(K)) And (HW%(K) + HW%(K)) <> 0 Then Locate , 66: Print "1.000";
-                    If (HW%(K) + HW%(K)) = 0 Then Locate , 67: Print ".000";
-                    If (HW%(K) + HW%(K)) > 0 And (HW%(K) + HW%(K)) < (HW%(K) + HW%(K) + HL%(K) + AL%(K)) Then statPCT! = ((HW%(K) + HW%(K)) / (HW%(K) + HW%(K) + HL%(K) + AL%(K))): Locate , 67: Print Using ".###"; statPCT!;
-
-                    Locate , 72: Print Using "###"; R1%(K) + R3%(K);
-                    Locate , 76: Print Using "###"; R2%(K) + R4%(K)
-                    Color 3: Print Tab(35); Chr$(179); Tab(58); Chr$(179);
-
-                    THW%(RDD) = THW%(RDD) + HW%(K)
-                    THL%(RDD) = THL%(RDD) + HL%(K)
-                    TAW%(RDD) = TAW%(RDD) + AW%(K)
-                    TAL%(RDD) = TAL%(RDD) + AL%(K)
-                    TR1%(RDD) = TR1%(RDD) + R1%(K)
-                    TR2%(RDD) = TR2%(RDD) + R2%(K)
-                    TR3%(RDD) = TR3%(RDD) + R3%(K)
-                    TR4%(RDD) = TR4%(RDD) + R4%(K)
-
+        For I = 1 To 920
+            If BK%(I, 1) + BK%(I, 8) >= GM1!(I) * 3.1 And BK%(I, 2) <> 0 Then
+                If (BK%(I, 2) + BK%(I, 5) + BK%(I, 6) * 2 + BK%(I, 7) * 3) / BK%(I, 1) >= BRC!(22) Then
+                    BRC!(22) = (BK%(I, 2) + BK%(I, 5) + BK%(I, 6) * 2 + BK%(I, 7) * 3) / BK%(I, 1)
+                    BRC$(22) = leaderBL$(I)
+                    BRT$(22) = TMB$(I)
+                    BTYR!(22) = seasonYear
                 End If
+            End If
+        Next I
 
-            Next K
+        For I = 1 To 920
+            If BK%(I, 1) + BK%(I, 8) >= GM1!(I) * 3.1 And BK%(I, 2) <> 0 Then
+                If (BK%(I, 2) + BK%(I, 8)) / (BK%(I, 1) + BK%(I, 8)) >= BRC!(23) Then
+                    BRC!(23) = (BK%(I, 2) + BK%(I, 8)) / (BK%(I, 1) + BK%(I, 8))
+                    BRC$(23) = leaderBL$(I)
+                    BRT$(23) = TMB$(I)
+                    BTYR!(23) = seasonYear
+                End If
+            End If
 
-            Print
+        Next I
 
-            Color 11: Locate , 5: Print "TOTALS";
-            Locate , 15: Print Using "##"; THW%(RDD);
-            Locate , 18: Print Using "##"; THL%(RDD);
+        For I = 1 To 920
+            If BK%(I, 1) + BK%(I, 8) >= GM1!(I) * 3.1 And BK%(I, 7) <> 0 Then
+                If BK%(I, 1) / BK%(I, 7) <= BRC!(24) Then
+                    BRC!(24) = BK%(I, 1) / BK%(I, 7)
+                    BRC$(24) = leaderBL$(I)
+                    BRT$(24) = TMB$(I)
+                    BTYR!(24) = seasonYear
+                End If
+            End If
+        Next I
 
-            If THW%(RDD) = THW%(RDD) + THL%(RDD) And THW%(RDD) <> 0 Then Locate , 21: Print "1.000";
-            If THW%(RDD) = 0 Then Locate , 22: Print ".000";
-            If THW%(RDD) > 0 And THW%(RDD) < THW%(RDD) + THL%(RDD) Then statPCT! = (THW%(RDD) / (THW%(RDD) + THL%(RDD))): Locate , 22: Print Using ".###"; statPCT!;
+        For I = 1 To 920
+            If BK%(I, 1) + BK%(I, 8) >= GM1!(I) * 3.1 And BK%(I, 9) <> 0 Then
+                If BK%(I, 1) / BK%(I, 9) <= BRC!(25) Then
+                    BRC!(25) = BK%(I, 1) / BK%(I, 9)
+                    BRC$(25) = leaderBL$(I)
+                    BRT$(25) = TMB$(I)
+                    BTYR!(25) = seasonYear
+                End If
+            End If
+        Next I
 
-            Locate , 27: Print Using "###"; TR1%(RDD);
-            Locate , 31: Print Using "###"; TR2%(RDD);
-            Color 3: Print Tab(35); Chr$(179);
-            Color 11: Locate , 37: Print Using "##"; TAW%(RDD);
-            Locate , 40: Print Using "##"; TAL%(RDD);
+        For I = 1 To 920
+            If BK%(I, 1) + BK%(I, 8) >= GM1!(I) * 3.1 And BK%(I, 8) <> 0 Then
+                If BK%(I, 1) / BK%(I, 8) > BRC!(26) Then
+                    BRC!(26) = BK%(I, 1) / BK%(I, 8)
+                    BRC$(26) = leaderBL$(I)
+                    BRT$(26) = TMB$(I)
+                    BTYR!(26) = seasonYear
+                End If
+            End If
+        Next I
 
-            If TAW%(RDD) = TAW%(RDD) + TAL%(RDD) And TAW%(RDD) <> 0 Then Locate , 43: Print "1.000";
-            If TAW%(RDD) = 0 Then Locate , 44: Print ".000";
-            If TAW%(RDD) > 0 And TAW%(RDD) < TAW%(RDD) + TAL%(RDD) Then statPCT! = (TAW%(RDD) / (TAW%(RDD) + TAL%(RDD))): Locate , 44: Print Using ".###"; statPCT!;
+        For I = 1 To 920
+            If BK%(I, 1) + BK%(I, 8) >= GM1!(I) * 3.1 And BK%(I, 4) <> 0 Then
+                If BK%(I, 1) / BK%(I, 4) <= BRC!(27) Then
+                    BRC!(27) = BK%(I, 1) / BK%(I, 4)
+                    BRC$(27) = leaderBL$(I)
+                    BRT$(27) = TMB$(I)
+                    BTYR!(27) = seasonYear
+                End If
+            End If
+        Next I
 
-            Locate , 49: Print Using "###"; TR3%(RDD);
-            Locate , 53: Print Using "###"; TR4%(RDD);
-            Color 3: Print Tab(58); Chr$(179);
-            Color 11: Locate , 59: Print Using "###"; THW%(RDD) + TAW%(RDD);
-            Locate , 62: Print Using "###"; THL%(RDD) + TAL%(RDD);
+        For I = 1 To 920
 
-            If THW%(RDD) + TAW%(RDD) = THW%(RDD) + THL%(RDD) + TAW%(RDD) + TAL%(RDD) And THW%(RDD) + TAW%(RDD) <> 0 Then Locate , 66: Print "1.000";
-            If THW%(RDD) + TAW%(RDD) = 0 Then Locate , 67: Print ".000";
-            If THW%(RDD) + TAW%(RDD) > 0 And THW%(RDD) + TAW%(RDD) < THW%(RDD) + TAW%(RDD) + THL%(RDD) + TAL%(RDD) Then statPCT! = (THW%(RDD) + TAW%(RDD)) / (THW%(RDD) + TAW%(RDD) + THL%(RDD) + TAL%(RDD)): Locate , 67: Print Using ".###"; statPCT!;
+            If BK%(I, 1) + BK%(I, 8) >= GM1!(I) * 3.1 And BK%(I, 3) <> 0 Then
+                If BK%(I, 1) / BK%(I, 3) <= BRC!(28) Then
+                    BRC!(28) = BK%(I, 1) / BK%(I, 3)
+                    BRC$(28) = leaderBL$(I)
+                    BRT$(28) = TMB$(I)
+                    BTYR!(28) = seasonYear
+                End If
+            End If
+        Next I
 
-            Locate , 72: Print Using "###"; TR1%(RDD) + TR3%(RDD);
-            Locate , 76: Print Using "###"; TR2%(RDD) + TR4%(RDD)
-            Locate 22, 5: Color 14: Input "HIT ENTER TO CONTINUE"; DUMMY$
+        For I = 1 To 920
+            If BK%(I, 1) + BK%(I, 8) >= GM1!(I) * 3.1 And BK%(I, 16) <> 0 Then
+                If BK%(I, 1) / BK%(I, 16) >= BRC!(29) Then
+                    BRC!(29) = BK%(I, 1) / BK%(I, 16)
+                    BRC$(29) = leaderBL$(I)
+                    BRT$(29) = TMB$(I)
+                    BTYR!(29) = seasonYear
+                End If
+            End If
+        Next I
+
+        For I = 1 To 920
+            If BK%(I, 21) + BK%(I, 22) >= BRC!(30) Then
+                BRC!(30) = BK%(I, 21) + BK%(I, 22)
+                BRC$(30) = leaderBL$(I)
+                BRT$(30) = TMB$(I)
+                BTYR!(30) = seasonYear
+            End If
+        Next I
+
+        For I = 1 To 920
+            If BK%(I, 22) >= BRC!(31) Then
+                BRC!(31) = BK%(I, 22)
+                BRC$(31) = leaderBL$(I)
+                BRT$(31) = TMB$(I)
+                BTYR!(31) = seasonYear
+            End If
+        Next I
+
+        For I = 1 To 920
+            If BK%(I, 21) + BK%(I, 22) <> 0 And BK%(I, 1) + BK%(I, 8) >= GM1!(I) * 2.1 Then
+                If BK%(I, 22) / (BK%(I, 21) + BK%(I, 22)) >= BRC!(32) Then
+                    BRC!(32) = BK%(I, 22) / (BK%(I, 21) + BK%(I, 22))
+                    BRC$(32) = leaderBL$(I)
+                    BRT$(32) = TMB$(I)
+                    BTYR!(32) = seasonYear
+                End If
+            End If
+        Next I
+
+    End If
+
+    Locate 8: Print "CALCULATING PITCHER RECORDS . . . ."
+
+    For I = 1 To 880
+        For I1 = 1 To 23
+            If PM%(I, I1) >= PRC!(I1) Then
+                PRC!(I1) = PM%(I, I1)
+                PRC$(I1) = leaderPL$(I)
+                PRT$(I1) = TMP$(I)
+                PRYR!(I1) = seasonYear
+            End If
+        Next I1
+
+        AAS = AAS - 1
+        Locate 8, 40: Print Using "###"; AAS
+    Next I
+
+    If finalUpdate$ = "Y" Then
+
+        For I = 1 To 880
+            If PM%(I, 18) <> 0 And PM%(I, 9) >= 25 Then
+                If PM%(I, 19) / PM%(I, 18) <= PRC!(24) Then
+                    PRC!(24) = PM%(I, 19) / PM%(I, 18)
+                    PRC$(24) = leaderPL$(I)
+                    PRT$(24) = TMP$(I)
+                    PRYR!(24) = seasonYear
+                End If
+            End If
+        Next I
+
+        For I = 1 To 880
+            If PM%(I, 1) / 3 >= GM2(I) And PM%(I, 21) <> 0 Then
+                If PM%(I, 21) / PM%(I, 9) < PRC!(25) Then
+                    PRC!(25) = PM%(I, 21) / PM%(I, 9)
+                    PRC$(25) = leaderPL$(I)
+                    PRT$(25) = TMP$(I)
+                    PRYR!(25) = seasonYear
+                End If
+            End If
+        Next I
+
+        'IF TXX = 1 THEN 2785
+        For I = 1 To 880
+            If PM%(I, 1) / 3 >= GM2(I) And PM%(I, 1) <> 0 Then
+                If (PM%(I, 4) * 9) / (PM%(I, 1) / 3) > PRC!(23) Then
+                    PRC!(23) = (PM%(I, 4) * 9) / (PM%(I, 1) / 3)
+                    PRC$(23) = leaderPL$(I)
+                    PRT$(23) = TMP$(I)
+                    PRYR!(23) = seasonYear
+                End If
+            End If
+        Next I
+
+        For I = 1 To 880
+            If PM%(I, 1) / 3 >= GM2(I) And PM%(I, 1) <> 0 Then
+                If (PM%(I, 5) * 9) / (PM%(I, 1) / 3) > PRC!(25) Then
+                    PRC!(25) = (PM%(I, 5) * 9) / (PM%(I, 1) / 3)
+                    PRC$(25) = leaderPL$(I)
+                    PRT$(25) = TMP$(I)
+                    PRYR!(25) = seasonYear
+                End If
+            End If
+        Next I
+
+        For I = 1 To 880
+            If PM%(I, 1) / 3 >= GM2(I) And PM%(I, 1) <> 0 Then
+                If (PM%(I, 6) * 9) / (PM%(I, 1) / 3) < PRC!(26) Then
+                    PRC!(26) = (PM%(I, 6) * 9) / (PM%(I, 1) / 3)
+                    PRC$(26) = leaderPL$(I)
+                    PRT$(26) = TMP$(I)
+                    PRYR!(26) = seasonYear
+                End If
+            End If
+        Next I
+
+        For I = 1 To 880
+            If PM%(I, 1) / 3 >= GM2(I) And PM%(I, 1) <> 0 Then
+                If (PM%(I, 2) * 9) / (PM%(I, 1) / 3) > PRC!(27) Then
+                    PRC!(27) = (PM%(I, 2) * 9) / (PM%(I, 1) / 3)
+                    PRC$(27) = leaderPL$(I)
+                    PRT$(27) = TMP$(I)
+                    PRYR!(27) = seasonYear
+                End If
+            End If
+        Next I
+
+        For I = 1 To 880
+            If PM%(I, 1) / 3 >= GM2(I) And PM%(I, 1) <> 0 Then
+                If (PM%(I, 14) * 9) / (PM%(I, 1) / 3) < PRC!(28) Then
+                    PRC!(28) = (PM%(I, 14) * 9) / (PM%(I, 1) / 3)
+                    PRC$(28) = leaderPL$(I)
+                    PRT$(28) = TMP$(I)
+                    PRYR!(28) = seasonYear
+                End If
+            End If
+        Next I
+
+    End If
+
+    Locate 9: Print "CALCULATING TEAM RECORDS . . . ."
+
+    For I = 1 To 40
+        For I1 = 0 To 21
+            If TT!(I, I1) > TRC!(I1) Then
+                TRC!(I1) = TT!(I, I1)
+                TRC$(I1) = TT$(I, I1)
+                TRYR!(I1) = seasonYear
+            End If
+        Next I1
+
+        AAT = AAT - 1
+        Locate 9, 40: Print Using "###"; AAT
+    Next I
+
+    If finalUpdate$ = "Y" Then
+        For I = 1 To 40
+            If TT!(I, 0) <> 0 Then
+                If TT!(I, 1) / TT!(I, 0) > TRC!(22) Then
+                    TRC!(22) = TT!(I, 1) / TT!(I, 0)
+                    TRC$(22) = TT$(I, 1)
+                    TRYR!(22) = seasonYear
+                End If
+            End If
+        Next I
+
+        For I = 1 To 40
+            If TT!(I, 0) <> 0 Then
+                If (TT!(I, 1) + TT!(I, 4) + (TT!(I, 5) * 2) + (TT!(I, 6) * 3)) / TT!(I, 0) > TRC!(23) Then
+                    TRC!(23) = (TT!(I, 1) + TT!(I, 4) + (TT!(I, 5) * 2) + (TT!(I, 6) * 3)) / TT!(I, 0)
+                    TRC$(23) = TT$(I, 1)
+                    TRYR!(23) = seasonYear
+                End If
+            End If
+        Next I
+
+        For I = 1 To 40
+            If TT!(I, 0) <> 0 Then
+                If (TT!(I, 1) + TT!(I, 7)) / (TT!(I, 0) + TT!(I, 7)) > TRC!(24) Then
+                    TRC!(24) = (TT!(I, 1) + TT!(I, 7)) / (TT!(I, 0) + TT!(I, 7))
+                    TRC$(24) = TT$(I, 1)
+                    TRYR!(24) = seasonYear
+                End If
+            End If
+        Next I
+
+    Else
+
+        For I = 1 To 40
+            For I1 = 0 To 22
+                If TT1!(I, I1) > TRC1!(I1) Then
+                    TRC1!(I1) = TT1!(I, I1)
+                    TRC1$(I1) = TT1$(I, I1)
+                    TRYR1!(I1) = seasonYear
+                End If
+            Next I1
+
+            AAT = AAT - 1
+            Locate 9, 40: Print Using "###"; AAT
+        Next I
+
+        If finalUpdate$ = "Y" Then
+
+            For I = 1 To 40
+                If TT1!(I, 17) <> 0 Then
+                    If TT1!(I, 18) / TT1!(I, 17) > TRC1!(23) Then
+                        TRC1!(23) = TT1!(I, 18) / TT1!(I, 17)
+                        TRC1$(23) = TT1$(I, 0)
+                        TRYR1!(23) = seasonYear
+                    End If
+                End If
+            Next I
+
+            'IF TXX = 1 THEN
+            For I = 1 To 40
+                If TT1!(I, 0) <> 0 Then
+                    If (TT1!(I, 3) * 9) / (TT1!(I, 0) / 3) < TRC1!(24) Then
+                        TRC1!(24) = (TT1!(I, 3) * 9) / (TT1!(I, 0) / 3)
+                        TRC1$(24) = TT1$(I, 0)
+                        TRYR1!(24) = seasonYear
+                    End If
+                End If
+            Next I
+
+        Else
+
+            Open diskPaths$(2) + "BASEBALL.REC" For Output As #1
+
+            For I = 1 To 32:
+                Write #1, BRC!(I), BRC$(I), BRT$(I), BTYR!(I)
+            Next
+
+            For I = 1 To 28:
+                Write #1, PRC!(I), PRC$(I), PRT$(I), PRYR!(I)
+            Next
+
+            For I = 0 To 24:
+                Write #1, TRC!(I), TRC$(I), TRYR!(I)
+            Next
+
+            For I = 0 To 24:
+                Write #1, TRC1!(I), TRC1$(I), TRYR1!(I)
+            Next
+
+            Close #1
 
         End If
 
-    Loop Until RDD = 4
+    End If 'Done checking for final update
+
+End Sub
+
+
+'----------------------------------------
+'       ViewSeasonRecords Subroutine
+'----------------------------------------
+'...explanation...
+Sub ViewSeasonRecords (leagueFile$)
+
+    Shared BRC!(), BTYR!(), PRC!(), PRYR!()
+    Shared TRC!(), TRC1!(), TRYR!(), TRYR1!()
+
+    Shared BRC$(), BRT$(), PRC$(), PRT$()
+    Shared TP0$(), TP1A$(), TP2A$(), TP3$()
+    Shared TRC$(), TRC1$()
+
+    Color 15, 4
 
     Cls
-    Locate 2, 35
-    Color ratings%(11), ratings%(12): Print teamName$
-    Color 3, 0
 
-    Locate 4
-    Print Tab(15); String$(7, 196); " HOME "; String$(7, 196); Tab(35); Chr$(194); String$(7, 196); " AWAY "; String$(9, 196); Tab(58); Chr$(194); String$(6, 196); " TOTALS "; String$(6, 196)
-    Locate 5
-    Print Tab(16); "W"; Tab(19); "L"; Tab(23); "PCT."; Tab(28); "RF"; Tab(32); "RA"; Tab(35); Chr$(179); Tab(38); "W"; Tab(41); "L"; Tab(45); "PCT."; Tab(50); "RF"; Tab(54); "RA"; Tab(58); Chr$(179); Tab(61); "W"; Tab(64); "L"; Tab(68); "PCT."; Tab(73); "RF"; Tab(77); "RA"
-
-    Color 11: Print "DIVISIONS";
-    Color 3: Print Tab(35); Chr$(179); Tab(58); Chr$(179)
-
-    For W = 1 To 4
-
-        If DV$(W) <> "XXX" And DV$(W) <> "" Then
-
-            Color 15: Locate , 1: Print DV$(W);
-            Color 7: Locate , 15: Print Using "##"; THW%(W);
-            Locate , 18: Print Using "##"; THL%(W);
-
-            If THW%(W) = THW%(W) + THL%(W) And THW%(W) <> 0 Then Locate , 21: Print "1.000"
-            If THW%(W) = 0 Then Locate , 22: Print ".000";
-            If THW%(W) > 0 And THW%(W) < THW%(W) + THL%(W) Then statPCT! = (THW%(W) / (THW%(W) + THL%(W))): Locate , 22: Print Using ".###"; statPCT!;
-
-            Locate , 27: Print Using "###"; TR1%(W);
-            Locate , 31: Print Using "###"; TR2%(W);
-            Color 3: Print Tab(35); Chr$(179);
-            Color 7: Locate , 37: Print Using "##"; TAW%(W);
-            Locate , 40: Print Using "##"; TAL%(W);
-
-            If TAW%(W) = TAW%(W) + TAL%(W) And TAW%(W) <> 0 Then Locate , 43: Print "1.000";
-            If TAW%(W) = 0 Then Locate , 44: Print ".000";
-            If TAW%(W) > 0 And TAW%(W) < TAW%(W) + TAL%(W) Then statPCT! = (TAW%(W) / (TAW%(W) + TAL%(W))): Locate , 44: Print Using ".###"; statPCT!;
-
-            Locate , 49: Print Using "###"; TR3%(W);
-            Locate , 53: Print Using "###"; TR4%(W);
-            Color 3: Print Tab(58); Chr$(179);
-            Color 7: Locate , 59: Print Using "###"; THW%(W) + TAW%(W);
-            Locate , 62: Print Using "###"; THL%(W) + TAL%(W);
-
-            If THW%(W) + TAW%(W) = THW%(W) + TAW%(W) + THL%(W) + TAL%(W) And THW%(W) + TAW%(W) <> 0 Then Locate , 66: Print "1.000";
-            If (THW%(W) + TAW%(W)) = 0 Then Locate , 67: Print ".000";
-            If (THW%(W) + TAW%(W)) > 0 And THW%(W) + TAW%(W) < THW%(W) + TAW%(W) + THL%(W) + TAL%(W) Then statPCT! = ((THW%(W) + TAW%(W)) / (THW%(W) + TAW%(W) + THL%(W) + TAL%(W))): Locate , 67: Print Using ".###"; statPCT!;
-
-            Locate , 72: Print Using "###"; TR1%(W) + TR3%(W);
-            Locate , 76: Print Using "###"; TR2%(W) + TR4%(W)
-            Color 3: Print Tab(35); Chr$(179); Tab(58); Chr$(179);
-
-        End If
-
-    Next W
-
-    THWW = 0
-    THLL = 0
-    TAWW = 0
-    TALL = 0
-
-    For I = 1 To 4
-        THWW = THWW + THW%(I)
-        THLL = THLL + THL%(I)
-        TAWW = TAWW + THW%(I)
-        TALL = TALL + TAL%(I)
-    Next
-
-    TR11 = 0
-    TR22 = 0
-    TR33 = 0
-    TR44 = 0
-
-    For I = 1 To 4
-        TR11 = TR11 + TR1%(I)
-        TR22 = TR22 + TR2%(I)
-        TR33 = TR33 + TR3%(I)
-        TR44 = TR44 + TR4%(I)
-    Next
-
+    Print leagueFile$; "  BATTING RECORDS"
     Print
+    Print "CATEGORY                   PLAYER         TEAM             RECORD      YEAR"
+    Print String$(75, 205)
 
-    Color 11: Locate , 3: Print "TOTALS";
-    Locate , 14: Print Using "###"; THWW;
-    Locate , 17: Print Using "###"; THLL;
+    For I = 1 To 15
+        Print TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(62); Using "####"; BRC!(I); Tab(71); BTYR!(I)
+    Next
 
-    If THWW = THWW + THLL And THWW <> 0 Then Locate , 21: Print "1.000";
-    If THWW = 0 Then Locate , 22: Print ".000";
-    If THWW > 0 And THWW < THWW + THLL Then statPCT! = THWW / (THWW + THLL): Locate , 22: Print Using ".###"; statPCT!;
+    Color 15
+    Locate 23, 5: Print "HIT ANY KEY TO CONTINUE"
+    I$ = GetKeyPress$
 
-    Locate , 27: Print Using "###"; TR11;
-    Locate , 31: Print Using "###"; TR22;
-    Color 3: Print Tab(35); Chr$(179);
-    Color 11: Locate , 36: Print Using "###"; TAWW;
-    Locate , 39: Print Using "###"; TALL;
+    Cls
 
-    If TAWW = TAWW + TALL And TAWW <> 0 Then Locate , 43: Print "1.000";
-    If TAWW = 0 Then Locate , 44: Print ".000";
-    If TAWW > 0 And TAWW < TAWW + TALL Then statPCT! = TAWW / (TAWW + TALL): Locate , 44: Print Using ".###"; statPCT!;
+    Print leagueFile$; "  BATTING RECORDS"
+    Print
+    Print "CATEGORY                   PLAYER         TEAM             RECORD      YEAR"
+    Print String$(75, 205)
 
-    Locate , 49: Print Using "###"; TR33;
-    Locate , 53: Print Using "###"; TR44;
-    Color 3: Print Tab(58); Chr$(179);
-    Color 11: Locate , 59: Print Using "###"; THWW + TAWW;
-    Locate , 62: Print Using "###"; THLL + TALL;
+    For I = 16 To 20
+        Print TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(62); Using "####"; BRC!(I); Tab(71); BTYR!(I)
+    Next
 
-    If THWW + TAWW = THWW + TAWW + THLL + TALL And THWW + TAWW <> 0 Then Locate , 66: Print "1.000";
-    If THWW + TAWW = 0 Then Locate , 67: Print ".000";
-    If THWW + TAWW > 0 And THWW + TAWW < THWW + TAWW + THLL + TALL Then statPCT! = (THWW + TAWW) / (THWW + TAWW + THLL + TALL): Locate , 67: Print Using ".###"; statPCT!;
+    For I = 21 To 23
+        Print TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(62); Using ".###"; BRC!(I);: Print Tab(71); Using "####"; BTYR!(I)
+    Next
 
-    Locate , 72: Print Using "###"; TR11 + TR33;
-    Locate , 76: Print Using "###"; TR22 + TR44
-    Locate 22, 5: Color 14: Input "HIT ENTER TO CONTINUE"; DUMMY$
+    For I = 24 To 29
+        Print TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(60); Using "###.#"; BRC!(I);: Print Tab(71); Using "####"; BTYR!(I)
+    Next
+
+    For I = 30 To 31
+        Print TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(62); Using "###"; BRC!(I);: Print Tab(71); Using "####"; BTYR!(I)
+    Next
+
+    Print TP0$(32); Tab(28); BRC$(32); Tab(43); BRT$(32); Tab(62); Using ".###"; BRC!(32);: Print Tab(71); Using "####"; BTYR!(32)
+
+    Color 15
+    Locate 23, 5: Print "HIT ANY KEY TO CONTINUE"
+    I$ = GetKeyPress$
+
+    Cls
+
+    Print leagueFile$; "  PITCHING RECORDS"
+    Print
+    Print "CATEGORY                   PLAYER         TEAM             RECORD      YEAR"
+    Print String$(75, 205)
+    Print TP1A$(1); Tab(28); PRC$(1); Tab(43); PRT$(1); Tab(61); Using "###"; Int(PRC!(1) / 3);
+
+    If PRC!(1) - Int(PRC!(1) / 3) * 3 > 0 Then Print ".";: Print Using "#"; PRC!(1) - (Int(PRC!(1) / 3) * 3); Else Print ".0";
+
+    Print Tab(72); Using "####"; PRYR!(1)
+
+    For I = 2 To 15
+        Print TP1A$(I); Tab(28); PRC$(I); Tab(43); PRT$(I); Tab(62); Using "####"; PRC!(I); Tab(72); PRYR!(I)
+    Next
+
+    Color 15
+    Locate 23, 5: Print "HIT ANY KEY TO CONTINUE"
+    I$ = GetKeyPress$
+
+    Cls
+
+    Print leagueFile$; "  PITCHING RECORDS"
+    Print
+    Print "CATEGORY                   PLAYER         TEAM             RECORD      YEAR"
+    Print String$(75, 205)
+
+    For I = 16 To 19
+        Print TP1A$(I); Tab(28); PRC$(I); Tab(43); PRT$(I); Tab(62); Using "####"; PRC!(I); Tab(72); PRYR!(I)
+    Next
+
+    Print TP1A$(20); Tab(28); PRC$(24); Tab(43); PRT$(24); Tab(62); Using ".###"; PRC!(24) * 100;: Print Tab(72); Using "####"; PRYR!(24)
+    Print TP1A$(21); Tab(28); PRC$(20); Tab(43); PRT$(20); Tab(62); Using "####"; PRC!(20); Tab(72); PRYR!(20)
+    Print TP1A$(22); Tab(28); PRC$(25); Tab(43); PRT$(25); Tab(61); Using "##.##"; PRC!(25);: Print Tab(72); Using "####"; PRYR!(25)
+    Print TP1A$(23); Tab(28); PRC$(22); Tab(43); PRT$(22); Tab(62); Using "####"; PRC!(22); Tab(72); PRYR!(22)
+    Print TP1A$(24); Tab(28); PRC$(23); Tab(43); PRT$(23); Tab(60); Using "###.##"; PRC!(23); Tab(72);
+    Print Using "####"; PRYR!(23)
+
+    For I = 25 To 28
+        Print TP1A$(I); Tab(28); PRC$(I); Tab(43); PRT$(I); Tab(61); Using "##.##"; PRC!(I);: Print Tab(72); Using "####"; PRYR!(I)
+    Next
+
+    Color 15
+    Locate 23, 5: Print "HIT ANY KEY TO CONTINUE"
+    I$ = GetKeyPress$
+
+    Color 14, 0
+    Cls
+
+    Print leagueFile$; "  TEAM RECORDS"
+    Print
+    Print "CATEGORY                        TEAM                        RECORD     YEAR"
+    Print String$(75, 205)
+
+    For I = 0 To 12
+        Print TP2A$(I); Tab(28); TRC$(I); Tab(62); Using "####"; TRC!(I); Tab(72); TRYR!(I)
+    Next
+
+    For I = 15 To 16
+        Print TP2A$(I - 2); Tab(28); TRC$(I); Tab(62); Using "####"; TRC!(I); Tab(72); TRYR!(I)
+    Next
+
+    Color 15
+    Locate 23, 5: Print "HIT ANY KEY TO CONTINUE"
+    I$ = GetKeyPress$
+
+    Cls
+
+    Print leagueFile$; "  TEAM RECORDS"
+    Print
+    Print "CATEGORY                        TEAM                        RECORD     YEAR"
+    Print String$(75, 205)
+
+    For I = 17 To 19
+        Print TP2A$(I - 2); Tab(28); TRC$(I); Tab(62); Using "####"; TRC!(I); Tab(72); TRYR!(I)
+    Next
+
+    For I = 22 To 24
+        Print TP2A$(I - 4); Tab(28); TRC$(I); Tab(62); Using ".###"; TRC!(I);: Print Tab(72); Using "####"; TRYR!(I)
+    Next
+
+    Print TP3$(0); Tab(28); TRC1$(0); Tab(60); Using "####"; Int(TRC1!(0) / 3);
+
+    If TRC1!(0) - Int(TRC1!(0) / 3) * 3 > 0 Then Print ".";: Print Using "#"; TRC1!(0) - (Int(TRC1!(0) / 3) * 3); Else Print ".0";
+
+    Print Tab(72); Using "####"; TRYR1!(0)
+
+    For I = 1 To 5
+        Print TP3$(I); Tab(28); TRC1$(I); Tab(62); Using "####"; TRC1!(I);: Print Tab(72); Using "####"; TRYR1!(I)
+    Next
+
+    For I = 10 To 12
+        Print TP3$(I - 4); Tab(28); TRC1$(I); Tab(62); Using "####"; TRC1!(I);: Print Tab(72); Using "####"; TRYR1!(I)
+    Next
+
+    Color 15
+    Locate 23, 5: Print "HIT ANY KEY TO CONTINUE"
+    I$ = GetKeyPress$
+
+    Cls
+
+    Print leagueFile$; "  TEAM RECORDS"
+    Print
+    Print "CATEGORY                        TEAM                        RECORD     YEAR"
+    Print String$(75, 205)
+
+    For I = 13 To 19
+        Print TP3$(I - 4); Tab(28); TRC1$(I); Tab(62); Using "####"; TRC1!(I);
+        Print Tab(72); Using "####"; TRYR1!(I)
+    Next
+
+    Print TP3$(16); Tab(28); TRC1$(21); Tab(62); Using "####"; TRC1!(21);: Print Tab(72); Using "####"; TRYR1!(21)
+    Print TP3$(17); Tab(28); TRC1$(23); Tab(62); Using ".###"; TRC1!(23);: Print Tab(72); Using "####"; TRYR1!(23)
+    Print TP3$(18); Tab(28); TRC1$(24); Tab(61); Using "##.##"; TRC1!(24);: Print Tab(72); Using "####"; TRYR1!(24)
+
+    Color 15
+    Locate 23, 5: Print "HIT ANY KEY TO CONTINUE"
+    I$ = GetKeyPress$
 
 End Sub
 
+
 '----------------------------------------
-'       Records_Printer Subroutine
+'       PrintSeasonRecords Subroutine
 '----------------------------------------
 '...explanation...
-Sub Records_Printer (teamName$)
+Sub PrintSeasonRecords (leagueFile$)
 
-    Shared HW%(), HW%(), HL%(), AL%(), R1%(), R2%(), R3%(), R4%()
+    Shared BRC!(), BTYR!(), PRC!(), PRYR!()
+    Shared TRC!(), TRC1!(), TRYR!(), TRYR1!()
 
-    Shared DV$(), Z1$()
+    Shared BRC$(), BRT$(), PRC$(), PRT$()
+    Shared TP0$(), TP1A$(), TP2A$(), TP3$()
+    Shared TRC$(), TRC1$()
 
-    DV$(1) = D1$
-    DV$(2) = D2$
-    DV$(3) = D3$
-    DV$(4) = D4$
-
-    LPrint Tab(5); teamName$
-    LPrint Tab(22); "------- HOME -------"; Tab(54); "------- AWAY -------"; Tab(86); "-------- TOTALS -------"
-    LPrint Tab(22); "W"; Tab(26); "L"; Tab(30); "PCT."; Tab(36); "RF"; Tab(40); "RA"; Tab(54); "W"; Tab(58); "L"; Tab(62); "PCT."; Tab(68); "RF"; Tab(72); "RA"; Tab(86); "W"; Tab(91); "L"; Tab(97); "PCT."; Tab(103); "RF"; Tab(107); "RA"
-
-    Do
-        RDD = RDD + 1
-
-        If RDD = 1 Then DD = 1: EE = 10
-        If RDD = 2 Then DD = 11: EE = 20
-        If RDD = 3 Then DD = 21: EE = 30
-        If RDD = 4 Then DD = 31: EE = 40
-
-        If DV$(RDD) <> "XXX" And DV$(RDD) <> "" Then
-
-            LPrint Tab(2); DV$(RDD)
-
-            For K = DD To EE
-
-                If Z1$(K) <> "XXX" And Z1$(K) <> T$ Then
-
-                    LPrint Z1$(K);
-                    LPrint Tab(21); Using "##"; HW%(K);
-                    LPrint Tab(25); Using "##"; HL%(K);
-
-                    If HW%(K) = HW%(K) + HL%(K) And HW%(K) <> 0 Then LPrint Tab(28); "1.000";
-                    If HW%(K) = 0 Then LPrint Tab(29); ".000";
-                    If HW%(K) > 0 And HW%(K) < HW%(K) + HL%(K) Then statPCT! = (HW%(K) / (HW%(K) + HL%(K))): LPrint Tab(29); Using ".###"; statPCT!;
-
-                    LPrint Tab(35); Using "###"; R1%(K);
-                    LPrint Tab(39); Using "###"; R2%(K);
-                    LPrint Tab(53); Using "##"; HW%(K);
-                    LPrint Tab(57); Using "##"; AL%(K);
-
-                    If HW%(K) = HW%(K) + AL%(K) And HW%(K) <> 0 Then LPrint Tab(60); "1.000";
-                    If HW%(K) = 0 Then LPrint Tab(61); ".000";
-                    If HW%(K) > 0 And HW%(K) < HW%(K) + AL%(K) Then statPCT! = (HW%(K) / (HW%(K) + AL%(K))): LPrint Tab(61); Using ".###"; statPCT!;
-
-                    LPrint Tab(67); Using "###"; R3%(K);
-                    LPrint Tab(71); Using "###"; R4%(K);
-                    LPrint Tab(85); Using "##"; HW%(K) + HW%(K);
-                    LPrint Tab(90); Using "##"; HL%(K) + AL%(K);
-
-                    If HW%(K) + HW%(K) = HW%(K) + HW%(K) + HL%(K) + AL%(K) And HW%(K) + HW%(K) <> 0 Then LPrint Tab(95); "1.000";
-                    If (HW%(K) + HW%(K)) = 0 Then LPrint Tab(96); ".000";
-                    If (HW%(K) + HW%(K)) > 0 And (HW%(K) + HW%(K)) < (HW%(K) + HW%(K) + HL%(K) + AL%(K)) Then statPCT! = ((HW%(K) + HW%(K)) / (HW%(K) + HW%(K) + HL%(K) + AL%(K))): LPrint Tab(96); Using ".###"; statPCT!;
-
-                    LPrint Tab(102); Using "###"; R1%(K) + R3%(K);
-                    LPrint Tab(106); Using "###"; R2%(K) + R4%(K)
-
-                    THW%(RDD) = THW%(RDD) + HW%(K)
-                    THL%(RDD) = THL%(RDD) + HL%(K)
-                    THW%(RDD) = THW%(RDD) + HW%(K)
-                    TAL%(RDD) = TAL%(RDD) + AL%(K)
-                    TR1%(RDD) = TR1%(RDD) + R1%(K)
-                    TR2%(RDD) = TR2%(RDD) + R2%(K)
-                    TR3%(RDD) = TR3%(RDD) + R3%(K)
-                    TR4%(RDD) = TR4%(RDD) + R4%(K)
-
-                End If
-
-            Next K
-
-            LPrint Tab(5); "TOTALS";
-            LPrint Tab(21); Using "##"; THW%(RDD);
-            LPrint Tab(25); Using "##"; THL%(RDD);
-
-            If THW%(RDD) = THW%(RDD) + THL%(RDD) And THW%(RDD) <> 0 Then LPrint Tab(28); "1.000";
-            If THW%(RDD) = 0 Then LPrint Tab(29); ".000";
-            If THW%(RDD) > 0 And THW%(RDD) < THW%(RDD) + THL%(RDD) Then statPCT! = (THW%(RDD) / (THW%(RDD) + THL%(RDD))): LPrint Tab(29); Using ".###"; statPCT!;
-
-            LPrint Tab(35); Using "###"; TR1%(RDD);
-            LPrint Tab(39); Using "###"; TR2%(RDD);
-            LPrint Tab(53); Using "##"; THW%(RDD);
-            LPrint Tab(57); Using "##"; TAL%(RDD);
-
-            If THW%(RDD) = THW%(RDD) + TAL%(RDD) And THW%(RDD) <> 0 Then LPrint Tab(60); "1.000";
-            If THW%(RDD) = 0 Then LPrint Tab(61); ".000";
-            If THW%(RDD) > 0 And THW%(RDD) < THW%(RDD) + TAL%(RDD) Then statPCT! = (THW%(RDD) / (THW%(RDD) + TAL%(RDD))): LPrint Tab(61); Using ".###"; statPCT!;
-
-            LPrint Tab(67); Using "###"; TR3%(RDD);
-            LPrint Tab(71); Using "###"; TR4%(RDD);
-            LPrint Tab(84); Using "###"; THW%(RDD) + THW%(RDD);
-            LPrint Tab(89); Using "###"; THL%(RDD) + TAL%(RDD);
-
-            If THW%(RDD) + THW%(RDD) = THW%(RDD) + THW%(RDD) + THL%(RDD) + TAL%(RDD) And THW%(RDD) + THW%(RDD) <> 0 Then LPrint Tab(95); "1.000";
-            If THW%(RDD) + THW%(RDD) = 0 Then LPrint Tab(96); ".000";
-            If THW%(RDD) + THW%(RDD) > 0 And THW%(RDD) + THW%(RDD) < THW%(RDD) + THW%(RDD) + THL%(RDD) + TAL%(RDD) Then statPCT! = ((THW%(RDD) + THW%(RDD)) / (THW%(RDD) + THW%(RDD) + THL%(RDD) + TAL%(RDD))): LPrint Tab(96); Using ".###"; statPCT!;
-
-            LPrint Tab(102); Using "###"; TR1%(RDD) + TR3%(RDD);
-            LPrint Tab(106); Using "###"; TR2%(RDD) + TR4%(RDD)
-            LPrint
-
-        End If
-
-    Loop Until RDD = 4
-
+    LPrint leagueFile$; "  BATTING RECORDS"
     LPrint
-    LPrint
-    LPrint
-    LPrint
-    LPrint Tab(22); "------- HOME -------"; Tab(54); "------- AWAY -------"; Tab(86); "-------- TOTALS -------"
-    LPrint Tab(22); "W"; Tab(26); "L"; Tab(30); "PCT."; Tab(36); "RF"; Tab(40); "RA"; Tab(54); "W"; Tab(58); "L"; Tab(62); "PCT."; Tab(68); "RF"; Tab(72); "RA"; Tab(86); "W"; Tab(91); "L"; Tab(97); "PCT."; Tab(103); "RF"; Tab(107); "RA"
+    LPrint "CATEGORY                   PLAYER         TEAM             RECORD      YEAR"
+    LPrint String$(75, 61)
 
-    Print
-
-    For W = 1 To 4
-
-        If DV$(W) <> "XXX" And DV$(W) <> "" Then
-
-            LPrint Tab(2); DV$(W);
-            LPrint Tab(21); Using "##"; THW%(W);
-            LPrint Tab(25); Using "##"; THL%(W);
-
-            If THW%(W) = THW%(W) + THL%(W) And THW%(W) <> 0 Then LPrint Tab(28); "1.000";
-            If THW%(W) = 0 Then LPrint Tab(29); ".000";
-            If THW%(W) > 0 And THW%(W) < THW%(W) + THL%(W) Then statPCT! = (THW%(W) / (THW%(W) + THL%(W))): LPrint Tab(29); Using ".###"; statPCT!;
-
-            LPrint Tab(35); Using "###"; TR1%(W);
-            LPrint Tab(39); Using "###"; TR2%(W);
-            LPrint Tab(53); Using "##"; THW%(W);
-            LPrint Tab(57); Using "##"; TAL%(W);
-
-            If THW%(W) = THW%(W) + TAL%(W) And THW%(W) <> 0 Then LPrint Tab(60); "1.000";
-            If THW%(W) = 0 Then LPrint Tab(61); ".000";
-            If THW%(W) > 0 And THW%(W) < THW%(W) + TAL%(W) Then statPCT! = (THW%(W) / (THW%(W) + TAL%(W))): LPrint Tab(61); Using ".###"; statPCT!;
-
-            LPrint Tab(67); Using "###"; TR3%(W);
-            LPrint Tab(71); Using "###"; TR4%(W);
-            LPrint Tab(84); Using "###"; THW%(W) + THW%(W);
-            LPrint Tab(89); Using "###"; THL%(W) + TAL%(W);
-
-            If THW%(W) + THW%(W) = THW%(W) + THW%(W) + THL%(W) + TAL%(W) And THW%(W) + THW%(W) <> 0 Then LPrint Tab(95); "1.000";
-            If (THW%(W) + THW%(W)) = 0 Then LPrint Tab(96); ".000";
-            If (THW%(W) + THW%(W)) > 0 And THW%(W) + THW%(W) < THW%(W) + THW%(W) + THL%(W) + TAL%(W) Then statPCT! = ((THW%(W) + THW%(W)) / (THW%(W) + THW%(W) + THL%(W) + TAL%(W))): LPrint Tab(96); Using ".###"; statPCT!;
-
-            LPrint Tab(102); Using "###"; TR1%(W) + TR3%(W);
-            LPrint Tab(106); Using "###"; TR2%(W) + TR4%(W)
-
-        End If
-
-    Next W
-
-    THWW = 0
-    THLL = 0
-    TAWW = 0
-    TALL = 0
-
-    For I = 1 To 4
-        THWW = THWW + THW%(I)
-        THLL = THLL + THL%(I)
-        TAWW = TAWW + THW%(I)
-        TALL = TALL + TAL%(I)
+    For I = 1 To 20
+        LPrint TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(62); Using "####"; BRC!(I); Tab(71); BTYR!(I)
     Next
 
-    TR11 = 0
-    TR22 = 0
-    TR33 = 0
-    TR44 = 0
-
-    For I = 1 To 4
-
-        TR11 = TR11 + TR1%(I)
-        TR22 = TR22 + TR2%(I)
-        TR33 = TR33 + TR3%(I)
-        TR44 = TR44 + TR4%(I)
-
+    For I = 21 To 23
+        LPrint TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(62); Using ".###"; BRC!(I);: LPrint Tab(71); Using "####"; BTYR!(I)
     Next
 
-    LPrint Tab(5); "TOTALS";
-    LPrint Tab(20); Using "###"; THWW;
-    LPrint Tab(24); Using "###"; THLL;
+    For I = 24 To 29
+        LPrint TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(60); Using "###.#"; BRC!(I);: LPrint Tab(71); Using "####"; BTYR!(I)
+    Next
 
-    If THWW = THWW + THLL And THWW <> 0 Then LPrint Tab(28); "1.000";
-    If THWW = 0 Then LPrint Tab(29); ".000";
-    If THWW > 0 And THWW < THWW + THLL Then statPCT! = THWW / (THWW + THLL): LPrint Tab(29); Using ".###"; statPCT!;
+    For I = 30 To 31
+        LPrint TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(62); Using "###"; BRC!(I);: LPrint Tab(71); Using "####"; BTYR!(I)
+    Next
 
-    LPrint Tab(35); Using "###"; TR11;
-    LPrint Tab(39); Using "###"; TR22;
-    LPrint Tab(52); Using "###"; TAWW;
-    LPrint Tab(56); Using "###"; TALL;
+    LPrint TP0$(32); Tab(28); BRC$(32); Tab(43); BRT$(32); Tab(62); Using ".###"; BRC!(32);: LPrint Tab(71); Using "####"; BTYR!(32)
+    LPrint Chr$(12)
 
-    If TAWW = TAWW + TALL And TAWW <> 0 Then LPrint Tab(60); "1.000";
-    If TAWW = 0 Then LPrint Tab(61); ".000";
-    If TAWW > 0 And TAWW < TAWW + TALL Then statPCT! = TAWW / (TAWW + TALL): LPrint Tab(61); Using ".###"; statPCT!;
+    LPrint leagueFile$; "  PITCHING RECORDS"
+    LPrint
+    LPrint "CATEGORY                   PLAYER         TEAM             RECORD      YEAR"
+    LPrint String$(75, 61)
+    LPrint TP1A$(1); Tab(28); PRC$(1); Tab(43); PRT$(1); Tab(61); Using "###"; Int(PRC!(1) / 3);
 
-    LPrint Tab(67); Using "###"; TR33;
-    LPrint Tab(71); Using "###"; TR44;
-    LPrint Tab(84); Using "###"; THWW + TAWW;
-    LPrint Tab(89); Using "###"; THLL + TALL;
+    If PRC!(1) - Int(PRC!(1) / 3) * 3 > 0 Then LPrint ".";: LPrint Using "#"; PRC!(1) - (Int(PRC!(1) / 3) * 3); Else LPrint ".0";
 
-    If THWW + TAWW = THWW + TAWW + THLL + TALL And THWW + TAWW <> 0 Then LPrint Tab(95); "1.000";
-    If THWW + TAWW = 0 Then LPrint Tab(96); ".000";
-    If THWW + TAWW > 0 And THWW + TAWW < THWW + TAWW + THLL + TALL Then statPCT! = (THWW + TAWW) / (THWW + TAWW + THLL + TALL): LPrint Tab(96); Using ".###"; statPCT!;
+    LPrint Tab(72); Using "####"; PRYR!(1)
 
-    LPrint Tab(102); Using "###"; TR11 + TR33;
-    LPrint Tab(106); Using "###"; TR22 + TR44
+    For I = 2 To 19
+        LPrint TP1A$(I); Tab(28); PRC$(I); Tab(43); PRT$(I); Tab(62); Using "####"; PRC!(I); Tab(72); PRYR!(I)
+    Next
+
+    LPrint TP1A$(20); Tab(28); PRC$(24); Tab(43); PRT$(24); Tab(62); Using ".###"; PRC!(24) * 100;: LPrint Tab(72); Using "####"; PRYR!(24)
+    LPrint TP1A$(21); Tab(28); PRC$(20); Tab(43); PRT$(20); Tab(62); Using "####"; PRC!(20); Tab(72); PRYR!(20)
+    LPrint TP1A$(22); Tab(28); PRC$(25); Tab(43); PRT$(25); Tab(61); Using "##.##"; PRC!(25);: LPrint Tab(72); Using "####"; PRYR!(25)
+    LPrint TP1A$(23); Tab(28); PRC$(22); Tab(43); PRT$(22); Tab(62); Using "####"; PRC!(22); Tab(72); PRYR!(22)
+    LPrint TP1A$(24); Tab(28); PRC$(23); Tab(43); PRT$(23); Tab(60); Using "###.##"; PRC!(23); Tab(72);
+
+    Print Using "####"; PRYR!(23)
+
+    For I = 25 To 28
+        LPrint TP1A$(I); Tab(28); PRC$(I); Tab(43); PRT$(I); Tab(61); Using "##.##"; PRC!(I);: LPrint Tab(72); Using "####"; PRYR!(I)
+    Next
+
+    LPrint Chr$(12)
+
+    LPrint leagueFile$; "  TEAM RECORDS"
+    LPrint
+    LPrint "CATEGORY                        TEAM                        RECORD     YEAR"
+    LPrint String$(75, 61)
+
+    For I = 0 To 12
+        LPrint TP2A$(I); Tab(28); TRC$(I); Tab(62); Using "####"; TRC!(I); Tab(72); TRYR!(I)
+    Next
+
+    For I = 15 To 19
+        LPrint TP2A$(I - 2); Tab(28); TRC$(I); Tab(62); Using "####"; TRC!(I); Tab(72); TRYR!(I)
+    Next
+
+    For I = 22 To 24
+        LPrint TP2A$(I - 4); Tab(28); TRC$(I); Tab(62); Using ".###"; TRC!(I);: LPrint Tab(72); Using "####"; TRYR!(I)
+    Next
+
+    LPrint TP3$(0); Tab(28); TRC1$(0); Tab(60); Using "####"; Int(TRC1!(0) / 3);
+
+    If TRC1!(0) - Int(TRC1!(0) / 3) * 3 > 0 Then LPrint ".";: LPrint Using "#"; TRC1!(0) - (Int(TRC1!(0) / 3) * 3); Else LPrint ".0";
+
+    LPrint Tab(72); Using "####"; TRYR1!(0)
+
+    For I = 1 To 5
+        LPrint TP3$(I); Tab(28); TRC1$(I); Tab(62); Using "####"; TRC1!(I);: LPrint Tab(72); Using "####"; TRYR1!(I)
+    Next
+
+    For I = 10 To 19
+        LPrint TP3$(I - 4); Tab(28); TRC1$(I); Tab(62); Using "####"; TRC1!(I);: LPrint Tab(72); Using "####"; TRYR1!(I)
+    Next
+
+    LPrint TP3$(16); Tab(28); TRC1$(21); Tab(62); Using "####"; TRC1!(21);: LPrint Tab(72); Using "####"; TRYR1!(21)
+    LPrint TP3$(17); Tab(28); TRC1$(23); Tab(62); Using ".###"; TRC1!(23);: LPrint Tab(72); Using "####"; TRYR1!(23)
+    LPrint TP3$(18); Tab(28); TRC1$(24); Tab(61); Using "##.##"; TRC1!(24);: LPrint Tab(72); Using "####"; TRYR1!(24)
 
     LPrint Chr$(12)
 
 End Sub
+
+
+'----------------------------------------
+'       SelectLeague_REC Subroutine
+'----------------------------------------
+'...explanation...
+Sub SelectLeague_REC (leagueFile$, ExitCode%)
+
+    Do
+
+        Spec$ = diskPaths$(2) + "*.BAT"
+        Count% = FCount%(Spec$)
+
+        If Count% <> 0 Then
+
+            ReDim batFiles$(0 To Count%)
+            For X = 1 To Count%
+                batFiles$(X) = Space$(12)
+            Next
+            batFiles$(0) = Spec$
+            Call ReadFile(batFiles$())
+
+            Do
+                Cls
+                Color , 1
+                Cls
+                Locate , 28
+                Color 14
+                Print "SELECT LEAGUE SEASON": Color 15
+                Selection% = 1
+                Start% = 1
+                FileFGColr% = 15: FileBGColr% = 1
+                HiLiteFGColr% = 0: HiLiteBGColr% = 7
+                Rows% = 20
+                Columns% = 4
+                Spacing% = 6
+                Row% = 4
+                Column% = 1
+                Locate 25, 1
+                Color 14
+                Print "ENTER";: Color 15
+                Print "-SELECTS SEASON";
+
+                _MouseShow "DEFAULT"
+                MAMenu batFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+                _MouseHide
+
+                If ExitCode% <> 27 Then
+
+                    Color 15, 1
+                    targetFile$ = batFiles$(Selection%)
+                    Locate 2, 33: Print targetFile$
+
+                    Do
+                        Locate 3, 33: Print "ANY CHANGE (YN)";
+                        I$ = GetKeyPress$
+                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+                    Color 15, 0
+
+                End If
+
+            Loop Until UCase$(I$) = "N" Or ExitCode% = 27
+
+            If ExitCode% <> 27 Then
+                targetFile$ = RTrim$(targetFile$)
+                leagueFile$ = Left$(targetFile$, Len(targetFile$) - 4)
+            End If
+
+        End If 'Done checking file count
+
+    Loop Until UCase$(I$) = "N" Or ExitCode% = 27 Or Count% = 0
+
+End Sub
+
