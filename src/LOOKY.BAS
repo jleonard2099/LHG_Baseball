@@ -23,10 +23,10 @@ Sub LOOKY ()
         FileFGColor% = 15: FileBGColor% = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
-        Row% = 7
+        Row% = 8
         Column% = 22
 
-        Call box0(6, 21, 10, 61, 2, 15, 1)
+        Call box0(7, 21, 11, 61, 2, 15, 1)
 
         _MouseShow "Default"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%

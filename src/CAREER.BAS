@@ -28,10 +28,10 @@ Sub CAREER ()
         FileFGColr% = 15: FileBGColr% = 1
         HiLiteFGColr% = 0: HiLiteBGColr% = 7
         Spacing% = 1
-        Row% = 7
+        Row% = 8
         Column% = 21
 
-        Call box0(6, 20, 14, 59, 2, 15, 1)
+        Call box0(7, 20, 15, 59, 2, 15, 1)
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
         _MouseHide

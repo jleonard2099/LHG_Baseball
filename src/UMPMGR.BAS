@@ -20,7 +20,7 @@ Sub UMPMGR ()
         FileFGColr% = 15: FileBGColr% = 1
         HiLiteFGColr% = 0: HiLiteBGColr% = 7
         Spacing% = 6
-        Row% = 7
+        Row% = 8
         Column% = 26
 
         Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColr%, FileBGColr%)

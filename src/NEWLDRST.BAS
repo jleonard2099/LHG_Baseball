@@ -34,9 +34,10 @@ Sub ExpandedStandings ()
         FileFGColr% = 15: FileBGColr% = 1
         HiLiteFGColr% = 0: HiLiteBGColr% = 7
         Spacing% = 1
-        Row% = 7
+        Row% = 8
         Column% = 27
-        Call box0(6, 26, 10, 56, 2, 15, 1)
+
+        Call box0(7, 26, 11, 56, 2, 15, 1)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
@@ -84,14 +85,19 @@ Sub UpdateLeagueStandings ()
 		Count% = FCount%(Spec$)
 
         If Count% = 0 Then
-            'No prompt to the user???
-            'Should use CSMsgBox
+            Locate 10, 8
+            Call CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 40, Pass)
+            I$ = GetKeyPress$
+            Call CSMsgBox("", 0, Pass)
         Else
             ReDim leagueFiles$(0 To Count%)
+
             For X = 1 To Count%
                 leagueFiles$(X) = Space$(12)
             Next
+
             leagueFiles$(0) = Spec$
+
             Call ReadFile(leagueFiles$())
 
             Do
@@ -163,8 +169,9 @@ Sub UpdateLeagueStandings ()
 
                         TML$(YY) = Z1$(KK)
 
-                        Locate 4
-                        Color 15: Print "COMPUTING RECORDS . . . . . PLEASE WAIT"
+                        Color 15, 0
+                        Cls
+                        Locate 5: Print "COMPUTING RECORDS . . . . . PLEASE WAIT"
 
                         test$ = Z1$(KK)
                         Open diskPaths$(1) + Z1$(KK) + "S" For Input As #1
@@ -254,9 +261,10 @@ Sub ViewPrintLeagueStandings ()
 		Count% = FCount%(Spec$)
 
         If Count% = 0 Then
-            'Exit
-            'Shouldn't we want user?
-            'Use CSMsgBox
+            Locate 10, 8
+            Call CSMsgBox("NO LEAGUE STANDINGS HAVE BEEN COMPILED PRESS ANY KEY TO RETURN TO MAIN MENU", 40, Pass)
+            I$ = GetKeyPress$
+            Call CSMsgBox("", 0, Pass)
         Else
             ReDim standingsFiles$(0 To Count%)
             For X = 1 To Count%

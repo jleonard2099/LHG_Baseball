@@ -24,9 +24,11 @@ Sub NEWLDR ()
         FileFGColr% = 15: FileBGColr% = 1
         HiLiteFGColr% = 0: HiLiteBGColr% = 7
         Spacing% = 1
-        Row% = 7
+        Row% = 8
+        menuWidth% = Len(menuChoices$(1))
         Column% = 23
-        Call box0(6, 22, 12, 60, 2, 15, 1)
+
+        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColr%, FileBGColr%)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
@@ -35,18 +37,30 @@ Sub NEWLDR ()
         Color , 0
 
         If ExitCode% <> 27 Then
+
             Select Case Selection%
-                Case 1: Call UpdateExpandedLeaders
-                Case 2: Call ViewExpandedLeaders
-                Case 3: Call ExpandedStandings
-                Case 4: Call SeasonRecords
-                Case 5: Cls
+
+                Case 1: 
+                    Call UpdateExpandedLeaders
+                    'Call ExpandedLeaders_Menu(leagueFile$)
+
+                Case 2: 
+                    Call ViewExpandedLeaders
+
+                Case 3: 
+                    Call ExpandedStandings
+
+                Case 4: 
+                    Call SeasonRecords
+
+                Case 5: 
+                    Cls
+
             End Select
+
         End If
 
     Loop Until Selection% = 5 Or ExitCode% = 27
-
-    '2355 Exit Sub
 
 End Sub
 
@@ -772,16 +786,23 @@ Sub UpdateExpandedLeaders ()
     Cls
 
     Spec$ = diskPaths$(2) + "*.TMS"
-	Count% = FCount%(Spec$)
+    Count% = FCount%(Spec$)
 
-    If Count% <> 0 Then
+    If Count% = 0 Then
+        Locate 10, 8
+        Call CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 40, Pass)
+        I$ = GetKeyPress$
+        Call CSMsgBox("", 0, Pass)    
+    Else
 
         ReDim leagueFiles$(0 To Count%)
+
         For X = 1 To Count%
             leagueFiles$(X) = Space$(12)
         Next
 
         leagueFiles$(0) = Spec$
+
         Call ReadFile(leagueFiles$())
 
         Do
@@ -976,7 +997,6 @@ End Sub
 '...explanation...
 Sub ExpandedLeaders_Menu (leagueFile$)
 
-    '70
     Do
         Cls
         Color 15, 0
@@ -994,9 +1014,10 @@ Sub ExpandedLeaders_Menu (leagueFile$)
         FileFGColr% = 15: FileBGColr% = 1
         HiLiteFGColr% = 0: HiLiteBGColr% = 7
         Spacing% = 1
-        Row% = 7
+        Row% = 8
         Column% = 30
-        Call box0(6, 29, 11, 51, 2, 15, 1)
+
+        Call box0(7, 29, 12, 51, 2, 15, 1)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
@@ -1036,7 +1057,7 @@ Sub ViewExpandedLeaders ()
         Cls
 
         Spec$ = diskPaths$(2) + "*.TMS"
-		Count% = FCount%(Spec$)
+        Count% = FCount%(Spec$)
 
         If Count% = 0 Then
             'This was not in the original code
@@ -1047,11 +1068,15 @@ Sub ViewExpandedLeaders ()
             I$ = GetKeyPress$
             Call CSMsgBox("", 0, Pass)
         Else
+
             ReDim leagueFiles$(0 To Count%)
+
             For X = 1 To Count%
                 leagueFiles$(X) = Space$(12)
             Next
+
             leagueFiles$(0) = Spec$
+
             Call ReadFile(leagueFiles$())
 
             Do

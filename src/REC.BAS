@@ -66,7 +66,7 @@ Sub SeasonRecords ()
 
             Call SelectLeague_REC(LGE$, menuExit%)
 
-            If menuExit% <> 27 Then
+            If menuExit% <> 27 And LGE$ <> "" Then
 
                 Select Case Selection%
 
@@ -149,6 +149,7 @@ Sub UpdateRecords (leagueFile$)
         Close #1
 
     Else
+
         PRC!(23) = 100
         PRC!(25) = 100
         BRC!(24) = 999
@@ -158,6 +159,7 @@ Sub UpdateRecords (leagueFile$)
         BRC!(28) = 999
         PRC!(27) = 100
         TRC1!(24) = 100
+
     End If
 
     TMR% = 3680
@@ -607,169 +609,307 @@ Sub ViewSeasonRecords (leagueFile$)
     Shared TP0$(), TP1A$(), TP2A$(), TP3$()
     Shared TRC$(), TRC1$()
 
-    Color 15, 4
+    Color 0, 0
 
     Cls
 
-    Print leagueFile$; "  BATTING RECORDS"
+    J = 20
+
+    Locate 1, 1
+    Color 15, 4
+    Print " " + Chr$(214); String$(73, 196); Chr$(183) + " ";
+
+    For II = 1 To J:
+        Locate 1 + II, 1
+        Color 15, 4
+        Print " " + Chr$(186); String$(73, 32); Chr$(186) + " ";
+        Color 7, 4: Print String$(2, 177)
+    Next
+
+    Locate 2 + J, 1
+    Color 15, 4
+    Print " " + Chr$(211); String$(73, 196); Chr$(189) + " ";
+    Color 7, 4: Print String$(2, 177)
+    Locate , 3: Print String$(77, 177)
+
+    Color 15
+    Locate 1
+    Print leagueFile$
+    Locate 2, 24
+    Print "******* BATTING RECORDS *******"
     Print
-    Print "CATEGORY                   PLAYER         TEAM             RECORD      YEAR"
-    Print String$(75, 205)
+    Locate , 4
+    Print "CATEGORY                   PLAYER         TEAM           RECORD   YEAR"
+
+    Color 7
 
     For I = 1 To 15
-        Print TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(62); Using "####"; BRC!(I); Tab(71); BTYR!(I)
+        Locate , 4
+        Print TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(62); Using "####"; BRC!(I);: Print Tab(70); Using "####"; BTYR!(I)
     Next
 
     Color 15
-    Locate 23, 5: Print "HIT ANY KEY TO CONTINUE"
+    Locate 22, 30: Print "HIT ANY KEY TO CONTINUE"
     I$ = GetKeyPress$
 
-    Cls
+    'Clear existing categories, leaving border
+    For I = 4 To 21:
+        Locate I, 4
+        Print Space$(72)
+    Next
 
-    Print leagueFile$; "  BATTING RECORDS"
+    Color 15
+    Locate 1
+    Print leagueFile$
+    Locate 2, 24
+    Print "******* BATTING RECORDS *******"
     Print
-    Print "CATEGORY                   PLAYER         TEAM             RECORD      YEAR"
-    Print String$(75, 205)
+    Locate , 4
+    Print "CATEGORY                   PLAYER         TEAM           RECORD   YEAR"
+
+    Color 7
 
     For I = 16 To 20
-        Print TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(62); Using "####"; BRC!(I); Tab(71); BTYR!(I)
+        Locate , 4
+        Print TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(62); Using "####"; BRC!(I);: Print Tab(70); Using "####"; BTYR!(I)
     Next
 
     For I = 21 To 23
-        Print TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(62); Using ".###"; BRC!(I);: Print Tab(71); Using "####"; BTYR!(I)
+        Locate , 4
+        Print TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(62); Using ".###"; BRC!(I);: Print Tab(70); Using "####"; BTYR!(I)
     Next
 
     For I = 24 To 29
-        Print TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(60); Using "###.#"; BRC!(I);: Print Tab(71); Using "####"; BTYR!(I)
+        Locate , 4
+        Print TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(60); Using "###.#"; BRC!(I);: Print Tab(70); Using "####"; BTYR!(I)
     Next
 
     For I = 30 To 31
-        Print TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(62); Using "###"; BRC!(I);: Print Tab(71); Using "####"; BTYR!(I)
+        Locate , 4
+        Print TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(62); Using "###"; BRC!(I);: Print Tab(70); Using "####"; BTYR!(I)
     Next
 
-    Print TP0$(32); Tab(28); BRC$(32); Tab(43); BRT$(32); Tab(62); Using ".###"; BRC!(32);: Print Tab(71); Using "####"; BTYR!(32)
+    Locate , 4
+    Print TP0$(32); Tab(28); BRC$(32); Tab(43); BRT$(32); Tab(62); Using ".###"; BRC!(32);: Print Tab(70); Using "####"; BTYR!(32)
 
     Color 15
-    Locate 23, 5: Print "HIT ANY KEY TO CONTINUE"
+    Locate 22, 30: Print "HIT ANY KEY TO CONTINUE"
     I$ = GetKeyPress$
 
+    Color 0, 0
     Cls
 
-    Print leagueFile$; "  PITCHING RECORDS"
+    J = 20
+
+    Locate 1, 1
+    Color 15, 1
+    Print " " + Chr$(214); String$(73, 196); Chr$(183) + " ";
+
+    For II = 1 To J:
+        Locate 1 + II, 1
+        Color 15, 1
+        Print " " + Chr$(186); String$(73, 32); Chr$(186) + " ";
+        Color 7, 1: Print String$(2, 177)
+    Next
+
+    Locate 2 + J, 1
+    Color 15, 1
+    Print " " + Chr$(211); String$(73, 196); Chr$(189) + " ";
+    Color 7, 1: Print String$(2, 177)
+    Locate , 3: Print String$(77, 177)
+
+    Color 15
+    Locate 1
+    Print leagueFile$
+    Locate 2, 24
+    Print "******* PITCHING RECORDS *******"
     Print
-    Print "CATEGORY                   PLAYER         TEAM             RECORD      YEAR"
-    Print String$(75, 205)
+    Locate , 4
+    Print "CATEGORY                   PLAYER         TEAM           RECORD   YEAR"
+
+    Color 7
+
+    Locate , 4
     Print TP1A$(1); Tab(28); PRC$(1); Tab(43); PRT$(1); Tab(61); Using "###"; Int(PRC!(1) / 3);
-
     If PRC!(1) - Int(PRC!(1) / 3) * 3 > 0 Then Print ".";: Print Using "#"; PRC!(1) - (Int(PRC!(1) / 3) * 3); Else Print ".0";
-
-    Print Tab(72); Using "####"; PRYR!(1)
+    Print Tab(70); Using "####"; PRYR!(1)
 
     For I = 2 To 15
-        Print TP1A$(I); Tab(28); PRC$(I); Tab(43); PRT$(I); Tab(62); Using "####"; PRC!(I); Tab(72); PRYR!(I)
+        Locate , 4
+        Print TP1A$(I); Tab(28); PRC$(I); Tab(43); PRT$(I); Tab(62); Using "####"; PRC!(I); Tab(70); PRYR!(I)
     Next
 
     Color 15
-    Locate 23, 5: Print "HIT ANY KEY TO CONTINUE"
+    Locate 22, 30: Print "HIT ANY KEY TO CONTINUE"
     I$ = GetKeyPress$
 
-    Cls
+    'Clear existing categories, leaving border
+    For I = 4 To 21:
+        Locate I, 4
+        Print Space$(72)
+    Next
 
-    Print leagueFile$; "  PITCHING RECORDS"
+    Locate 2, 24
+    Print "******* PITCHING RECORDS *******"
     Print
-    Print "CATEGORY                   PLAYER         TEAM             RECORD      YEAR"
-    Print String$(75, 205)
+    Locate , 4
+    Print "CATEGORY                   PLAYER         TEAM           RECORD   YEAR"
+
+    Color 7
 
     For I = 16 To 19
-        Print TP1A$(I); Tab(28); PRC$(I); Tab(43); PRT$(I); Tab(62); Using "####"; PRC!(I); Tab(72); PRYR!(I)
+        Locate , 4
+        Print TP1A$(I); Tab(28); PRC$(I); Tab(43); PRT$(I); Tab(62); Using "####"; PRC!(I);: Print Tab(70); Using "####"; PRYR!(I)
     Next
 
-    Print TP1A$(20); Tab(28); PRC$(24); Tab(43); PRT$(24); Tab(62); Using ".###"; PRC!(24) * 100;: Print Tab(72); Using "####"; PRYR!(24)
-    Print TP1A$(21); Tab(28); PRC$(20); Tab(43); PRT$(20); Tab(62); Using "####"; PRC!(20); Tab(72); PRYR!(20)
-    Print TP1A$(22); Tab(28); PRC$(25); Tab(43); PRT$(25); Tab(61); Using "##.##"; PRC!(25);: Print Tab(72); Using "####"; PRYR!(25)
-    Print TP1A$(23); Tab(28); PRC$(22); Tab(43); PRT$(22); Tab(62); Using "####"; PRC!(22); Tab(72); PRYR!(22)
-    Print TP1A$(24); Tab(28); PRC$(23); Tab(43); PRT$(23); Tab(60); Using "###.##"; PRC!(23); Tab(72);
-    Print Using "####"; PRYR!(23)
+    Locate , 4
+    Print TP1A$(20); Tab(28); PRC$(24); Tab(43); PRT$(24); Tab(62); Using ".###"; PRC!(24) * 100;: Print Tab(70); Using "####"; PRYR!(24)
+    Locate , 4
+    Print TP1A$(21); Tab(28); PRC$(20); Tab(43); PRT$(20); Tab(62); Using "####"; PRC!(20);: Print Tab(70); Using "####"; PRYR!(20)
+    Locate , 4
+    Print TP1A$(22); Tab(28); PRC$(25); Tab(43); PRT$(25); Tab(61); Using "##.##"; PRC!(25);: Print Tab(70); Using "####"; PRYR!(25)
+    Locate , 4
+    Print TP1A$(23); Tab(28); PRC$(22); Tab(43); PRT$(22); Tab(62); Using "####"; PRC!(22);: Print Tab(70); Using "####"; PRYR!(22)
+    Locate , 4
+    Print TP1A$(24); Tab(28); PRC$(23); Tab(43); PRT$(23); Tab(60); Using "###.##"; PRC!(23);: Print Tab(70); Using "####"; PRYR!(23)
 
     For I = 25 To 28
-        Print TP1A$(I); Tab(28); PRC$(I); Tab(43); PRT$(I); Tab(61); Using "##.##"; PRC!(I);: Print Tab(72); Using "####"; PRYR!(I)
+        Locate , 4
+        Print TP1A$(I); Tab(28); PRC$(I); Tab(43); PRT$(I); Tab(61); Using "##.##"; PRC!(I);: Print Tab(70); Using "####"; PRYR!(I)
     Next
 
     Color 15
-    Locate 23, 5: Print "HIT ANY KEY TO CONTINUE"
+    Locate 22, 30: Print "HIT ANY KEY TO CONTINUE"
     I$ = GetKeyPress$
 
-    Color 14, 0
+    Color 0, 0
     Cls
 
-    Print leagueFile$; "  TEAM RECORDS"
+    J = 20
+
+    Locate 1, 1
+    Color 14, 0
+    Print " " + Chr$(214); String$(73, 196); Chr$(183) + " ";
+
+    For II = 1 To J:
+        Locate 1 + II, 1
+        Color 14, 0
+        Print " " + Chr$(186); String$(73, 32); Chr$(186) + " ";
+        Color 7, 0: Print String$(2, 177)
+    Next
+
+    Locate 2 + J, 1
+    Color 14, 0
+    Print " " + Chr$(211); String$(73, 196); Chr$(189) + " ";
+    Color 7, 0: Print String$(2, 177)
+    Locate , 3: Print String$(77, 177)
+
+    Color 14
+    Locate 1
+    Print leagueFile$
+    Locate 2, 26
+    Print "******* TEAM RECORDS *******"
     Print
-    Print "CATEGORY                        TEAM                        RECORD     YEAR"
-    Print String$(75, 205)
+    Locate , 4
+    Print "CATEGORY                   PLAYER         TEAM           RECORD   YEAR"
+
+    Color 7
 
     For I = 0 To 12
-        Print TP2A$(I); Tab(28); TRC$(I); Tab(62); Using "####"; TRC!(I); Tab(72); TRYR!(I)
+        Locate , 4
+        Print TP2A$(I); Tab(28); TRC$(I); Tab(62); Using "####"; TRC!(I);: Print Tab(70); Using "####"; TRYR!(I)
     Next
 
     For I = 15 To 16
-        Print TP2A$(I - 2); Tab(28); TRC$(I); Tab(62); Using "####"; TRC!(I); Tab(72); TRYR!(I)
+        Locate , 4
+        Print TP2A$(I - 2); Tab(28); TRC$(I); Tab(62); Using "####"; TRC!(I);: Print Tab(70); Using "####"; TRYR!(I)
     Next
 
     Color 15
-    Locate 23, 5: Print "HIT ANY KEY TO CONTINUE"
+    Locate 22, 30: Print "HIT ANY KEY TO CONTINUE"
     I$ = GetKeyPress$
 
-    Cls
+    'Clear existing categories, leaving border
+    For I = 4 To 21:
+        Locate I, 4
+        Print Space$(72)
+    Next
 
-    Print leagueFile$; "  TEAM RECORDS"
+    Color 7
+    Locate 4
+
+    Color 14
+    Locate 1
+    Print leagueFile$
+    Locate 2, 26
+    Print "******* TEAM RECORDS *******"
     Print
-    Print "CATEGORY                        TEAM                        RECORD     YEAR"
-    Print String$(75, 205)
+    Locate , 4
+    Print "CATEGORY                   PLAYER         TEAM           RECORD   YEAR"
+
+    Color 7
 
     For I = 17 To 19
-        Print TP2A$(I - 2); Tab(28); TRC$(I); Tab(62); Using "####"; TRC!(I); Tab(72); TRYR!(I)
+        Locate , 4
+        Print TP2A$(I - 2); Tab(28); TRC$(I); Tab(62); Using "####"; TRC!(I);: Print Tab(70); Using "####"; TRYR!(I)
     Next
 
     For I = 22 To 24
-        Print TP2A$(I - 4); Tab(28); TRC$(I); Tab(62); Using ".###"; TRC!(I);: Print Tab(72); Using "####"; TRYR!(I)
+        Locate , 4
+        Print TP2A$(I - 4); Tab(28); TRC$(I); Tab(62); Using ".###"; TRC!(I);: Print Tab(70); Using "####"; TRYR!(I)
     Next
 
+    Locate , 4
     Print TP3$(0); Tab(28); TRC1$(0); Tab(60); Using "####"; Int(TRC1!(0) / 3);
-
     If TRC1!(0) - Int(TRC1!(0) / 3) * 3 > 0 Then Print ".";: Print Using "#"; TRC1!(0) - (Int(TRC1!(0) / 3) * 3); Else Print ".0";
-
-    Print Tab(72); Using "####"; TRYR1!(0)
+    Print Tab(70); Using "####"; TRYR1!(0)
 
     For I = 1 To 5
-        Print TP3$(I); Tab(28); TRC1$(I); Tab(62); Using "####"; TRC1!(I);: Print Tab(72); Using "####"; TRYR1!(I)
+        Locate , 4
+        Print TP3$(I); Tab(28); TRC1$(I); Tab(62); Using "####"; TRC1!(I);: Print Tab(70); Using "####"; TRYR1!(I)
     Next
 
     For I = 10 To 12
-        Print TP3$(I - 4); Tab(28); TRC1$(I); Tab(62); Using "####"; TRC1!(I);: Print Tab(72); Using "####"; TRYR1!(I)
+        Locate , 4
+        Print TP3$(I - 4); Tab(28); TRC1$(I); Tab(62); Using "####"; TRC1!(I);: Print Tab(70); Using "####"; TRYR1!(I)
     Next
 
     Color 15
-    Locate 23, 5: Print "HIT ANY KEY TO CONTINUE"
+    Locate 22, 30: Print "HIT ANY KEY TO CONTINUE"
     I$ = GetKeyPress$
 
-    Cls
-
-    Print leagueFile$; "  TEAM RECORDS"
-    Print
-    Print "CATEGORY                        TEAM                        RECORD     YEAR"
-    Print String$(75, 205)
-
-    For I = 13 To 19
-        Print TP3$(I - 4); Tab(28); TRC1$(I); Tab(62); Using "####"; TRC1!(I);
-        Print Tab(72); Using "####"; TRYR1!(I)
+    'Clear existing categories, leaving border
+    For I = 4 To 21:
+        Locate I, 4
+        Print Space$(72)
     Next
 
-    Print TP3$(16); Tab(28); TRC1$(21); Tab(62); Using "####"; TRC1!(21);: Print Tab(72); Using "####"; TRYR1!(21)
-    Print TP3$(17); Tab(28); TRC1$(23); Tab(62); Using ".###"; TRC1!(23);: Print Tab(72); Using "####"; TRYR1!(23)
-    Print TP3$(18); Tab(28); TRC1$(24); Tab(61); Using "##.##"; TRC1!(24);: Print Tab(72); Using "####"; TRYR1!(24)
+    Color 14
+    Locate 1
+    Print leagueFile$
+    Locate 2, 26
+    Print "******* TEAM RECORDS *******"
+    Print
+    Locate , 4
+    Print "CATEGORY                   PLAYER         TEAM           RECORD   YEAR"
+
+    Color 7
+
+    For I = 13 To 19
+        Locate , 4
+        Print TP3$(I - 4); Tab(28); TRC1$(I); Tab(62); Using "####"; TRC1!(I);
+        Print Tab(70); Using "####"; TRYR1!(I)
+    Next
+
+    Locate , 4
+    Print TP3$(16); Tab(28); TRC1$(21); Tab(62); Using "####"; TRC1!(21);: Print Tab(70); Using "####"; TRYR1!(21)
+    Locate , 4
+    Print TP3$(17); Tab(28); TRC1$(23); Tab(62); Using ".###"; TRC1!(23);: Print Tab(70); Using "####"; TRYR1!(23)
+    Locate , 4
+    Print TP3$(18); Tab(28); TRC1$(24); Tab(61); Using "##.##"; TRC1!(24);: Print Tab(70); Using "####"; TRYR1!(24)
 
     Color 15
-    Locate 23, 5: Print "HIT ANY KEY TO CONTINUE"
+    Locate 22, 30: Print "HIT ANY KEY TO CONTINUE"
     I$ = GetKeyPress$
 
 End Sub
@@ -794,22 +934,22 @@ Sub PrintSeasonRecords (leagueFile$)
     LPrint String$(75, 61)
 
     For I = 1 To 20
-        LPrint TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(62); Using "####"; BRC!(I); Tab(71); BTYR!(I)
+        LPrint TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(62); Using "####"; BRC!(I); Tab(66); BTYR!(I)
     Next
 
     For I = 21 To 23
-        LPrint TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(62); Using ".###"; BRC!(I);: LPrint Tab(71); Using "####"; BTYR!(I)
+        LPrint TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(62); Using ".###"; BRC!(I);: LPrint Tab(66); Using "####"; BTYR!(I)
     Next
 
     For I = 24 To 29
-        LPrint TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(60); Using "###.#"; BRC!(I);: LPrint Tab(71); Using "####"; BTYR!(I)
+        LPrint TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(60); Using "###.#"; BRC!(I);: LPrint Tab(66); Using "####"; BTYR!(I)
     Next
 
     For I = 30 To 31
-        LPrint TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(62); Using "###"; BRC!(I);: LPrint Tab(71); Using "####"; BTYR!(I)
+        LPrint TP0$(I); Tab(28); BRC$(I); Tab(43); BRT$(I); Tab(62); Using "###"; BRC!(I);: LPrint Tab(66); Using "####"; BTYR!(I)
     Next
 
-    LPrint TP0$(32); Tab(28); BRC$(32); Tab(43); BRT$(32); Tab(62); Using ".###"; BRC!(32);: LPrint Tab(71); Using "####"; BTYR!(32)
+    LPrint TP0$(32); Tab(28); BRC$(32); Tab(43); BRT$(32); Tab(62); Using ".###"; BRC!(32);: LPrint Tab(66); Using "####"; BTYR!(32)
     LPrint Chr$(12)
 
     LPrint leagueFile$; "  PITCHING RECORDS"
@@ -891,8 +1031,12 @@ Sub SelectLeague_REC (leagueFile$, ExitCode%)
         Spec$ = diskPaths$(2) + "*.BAT"
         Count% = FCount%(Spec$)
 
-        If Count% <> 0 Then
-
+        If Count% = 0 Then
+            Locate 10, 8
+            Call CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+            I$ = GetKeyPress$
+            Call CSMsgBox("", 0, Pass)
+        Else
             ReDim batFiles$(0 To Count%)
             For X = 1 To Count%
                 batFiles$(X) = Space$(12)

@@ -1,33 +1,55 @@
-Sub LEAGCMPL ()
+Sub COMPLEAG ()
 
     _Title "Full Count Baseball - Update League Stats"
 
-    Dim H1$(40), TM$(1 To 40)
-
-    Dim ZM%(46)
-
-    Dim O1(1 To 40), O2(1 To 40)
-
     Shared BAT%(), PIT%()
-    Shared cmplZ2$(), cmplZ3$()
-    Shared BA$(), ER$(), NM$()
+    Shared O1(), O2()
+
     Shared cmplZ1!(), DFT!(), JS!(), OFT!()
+
+    Shared BA$(), cmplTM$(), cmplZ2$(), cmplZ3$()
+    Shared ER$(), H1$(), NM$()
+
+    'Initialize values first
+    APP = 0
+
+    Erase cmplZ2$, cmplZ3$
+    Erase cmplZ1!
+
+    For Z = 1 To 40
+        DFT!(Z, 1) = 99.99
+    Next
+
+    For X = 120 To 139
+        cmplZ2$(X) = "*"
+        cmplZ3$(X) = "*"
+        cmplZ1!(X, 1) = 99.99
+        cmplZ1!(X, 2) = 0
+    Next X
+
+    For X = 239 To 258
+        cmplZ2$(X) = "*"
+        cmplZ3$(X) = "*"
+        cmplZ1!(X, 1) = 99.99
+        cmplZ1!(X, 2) = 99.99
+    Next X
+
+    C$ = ","
 
     Cls
 
-    APP = 0
-
     Do
         'Display list of files...
-
         Spec$ = diskPaths$(2) + "*.LIB"
-		Count% = FCount%(Spec$)
+        Count% = FCount%(Spec$)
 
         If Count% = 0 Then
+
             Locate 10, 8
             Call CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
             I$ = GetKeyPress$
             Call CSMsgBox("", 0, Pass)
+
         Else
 
             ReDim leagueFiles$(0 To Count%)
@@ -37,6 +59,7 @@ Sub LEAGCMPL ()
             Next
 
             leagueFiles$(0) = Spec$
+
             Call ReadFile(leagueFiles$())
 
             Do
@@ -76,7 +99,8 @@ Sub LEAGCMPL ()
                     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
                     Color 15, 0
-
+                Else
+                    BO% = 1
                 End If
 
             Loop Until UCase$(I$) = "N" Or ExitCode% = 27
@@ -85,211 +109,74 @@ Sub LEAGCMPL ()
 
                 targetFile$ = RTrim$(targetFile$)
                 WE$ = Left$(targetFile$, Len(targetFile$) - 4)
-                LH$ = Left$(WE$, 8)
-
-                'Initialize values first
-                C$ = ","
-
-                Erase cmplZ2$, cmplZ3$
-                Erase cmplZ1!
-
-                For Z = 1 To 40
-                    DFT!(Z, 1) = 99.99
-                Next
 
                 Cls
 
-                targetFile$ = LH$ + ".TMS"
+                Open diskPaths$(2) + WE$ + ".TMS" For Input As #2
 
-                Open diskPaths$(2) + targetFile$ For Input As #2
                 Input #2, LG$, D1$, D2$, D3$, D4$
+
                 For XW = 1 To 40
                     Input #2, H1$(XW)
+                    cmplTM$(XW) = H1$(XW)
                 Next
+
                 Close 2
-
-                Open diskPaths$(2) + targetFile$ For Input As #2
-                Input #2, LG$, D1$, D2$, D3$, D4$
-                For X = 1 To 40:
-                    Input #2, TM$(X)
-                Next
-                Close 2
-
-                For X = 120 To 139
-                    cmplZ2$(X) = "*"
-                    cmplZ3$(X) = "*"
-                    cmplZ1!(X, 1) = 99.99
-                    cmplZ1!(X, 2) = 0
-                Next X
-
-                For X = 239 To 258
-                    cmplZ2$(X) = "*"
-                    cmplZ3$(X) = "*"
-                    cmplZ1!(X, 1) = 99.99
-                    cmplZ1!(X, 2) = 99.99
-                Next X
 
                 For XW = 1 To 40
 
                     fullWins = 0
                     fullLosses = 0
 
-                    If H1$(XW) <> Chr$(42) And _FileExists(diskPaths$(1) + H1$(XW)) Then
-                        Print "FINDING "; H1$(XW); " STATS"
-                        fullWins = 0
-                        fullLosses = 0
-                        Open diskPaths$(1) + H1$(XW) For Input As #1
-                        Input #1, TN$, fullWins, fullLosses
-                    End If
+                    If H1$(XW) <> Chr$(42) Then
 
-                    L = Len(H1$(XW))
-                    WT$ = ""
+                        haveStats = FindStatsPro%(H1$(XW), TN$, fullWins, fullLosses)
 
-                    For X = 1 To L
-                        A = Asc(Mid$(H1$(XW), X, 1))
-                        WT$ = WT$ + Chr$(A)
-                    Next X
+                        If (haveStats) Then
 
-                    skipCheck = 0
+                            L = Len(H1$(XW))
+                            WT$ = ""
 
-                    For X = 1 To 40:
+                            For X = 1 To L
+                                A = Asc(Mid$(H1$(XW), X, 1))
+                                WT$ = WT$ + Chr$(A)
+                            Next X
 
-                        If TM$(X) = WT$ Then
+                            confGame = 0
 
-                            If O1(X) = fullWins And O2(X) = fullLosses Then
-                                skipCheck = 1
-                                Exit For
-                            Else
-                                O1(X) = fullWins
-                                O2(X) = fullLosses
-                            End If
+                            For X = 1 To 40:
+
+                                If cmplTM$(X) = WT$ Then
+
+                                    If O1(X) = fullWins And O2(X) = fullLosses Then
+                                        confGame = 1
+                                    Else
+                                        O1(X) = fullWins
+                                        O2(X) = fullLosses
+                                    End If
+
+                                    If (confGame) Then Exit For
+
+                                End If
+
+                            Next X
+
+                            If confGame <> 1 And _FileExists(diskPaths$(1) + H1$(XW)) Then
+
+                                Call ReadStatsLeague(H1$(XW), TN$, fullWins, fullLosses)
+                                Call CheckStatsLeague(H1$(XW), WT$)
+                                Call StatsByCategory(WT$, fullWins, fullLosses)
+
+                            End If 'Done checking if we need to skip
 
                         End If
 
-                    Next X
-
-                    If skipCheck <> 1 Then
-
-                        For K = 1 To 23
-                            Input #1, NM$(K), ZM%(K)
-                        Next
-
-                        For K = 25 To 46
-                            Input #1, NM$(K), ZM%(K)
-                        Next
-
-                        NM$(24) = "PITCHERS"
-
-                        For J = 1 To 23
-                            For K = 1 To 22
-                                Input #1, JS!(J, K)
-                            Next K
-                        Next J
-
-                        For J = 25 To 46
-                            For K = 1 To 42
-                                Input #1, JS!(J, K)
-                            Next K
-                        Next J
-
-                        For K = 1 To 24
-                            Input #1, BAT%(K)
-                        Next K
-
-                        For K = 1 To 23
-                            Input #1, PIT%(K)
-                        Next K
-
-                        Close #1
-
-                        For J = 1 To 23
-                            If JS!(J, 1) = 0 Then JS!(J, 1) = 1
-                            JS!(J, 17) = JS!(J, 13)
-                            JS!(J, 18) = JS!(J, 14)
-
-                            'Here is where AVG is assigned 0
-                            If (JS!(J, 8) + JS!(J, 1)) / (fullWins + fullLosses) < 3.1 Then
-                                JS!(J, 14) = 0
-                                JS!(J, 15) = 0
-                                JS!(J, 16) = 0
-                            Else
-                                JS!(J, 16) = JS!(J, 2) / JS!(J, 1)
-                                JS!(J, 14) = (JS!(J, 2) + JS!(J, 5) + 2 * JS!(J, 6) + 3 * JS!(J, 7)) / JS!(J, 1)
-                                JS!(J, 15) = (JS!(J, 2) + JS!(J, 8)) / (JS!(J, 1) + JS!(J, 8))
-                            End If
-                        Next
-
-                        For J = 25 To 46
-                            If JS!(J, 1) = 0 Or (JS!(J, 1) / 3) < (fullWins + fullLosses) Then
-                                JS!(J, 14) = 99.99
-                            Else
-                                JS!(J, 14) = JS!(J, 4) / JS!(J, 1) * 27
-                            End If
-                        Next
-
-                        Call CheckLeagueStats(H1$(XW), WT$)
-
-                    End If 'Done checking if we need to skip
-
-                    Close #1
+                    End If
 
                 Next XW
 
-                'Sort record by games won
-                For VV = 1 To 4
-
-                    AA = ((VV - 1) * 10) + 1
-                    ZZ = VV * 10
-
-                    For X = AA To ZZ - 1
-
-                        For Y = X + 1 To ZZ:
-
-                            diffX = O1(X) - O2(X)
-                            diffY = O1(Y) - O2(Y)
-
-                            If diffX <= diffY Then
-                                If diffX = diffY Then
-									If Not (O1(X) <= O1(Y) And O1(X) > O2(X)) Or Not (O1(X) >= O1(Y) And O1(X) < O2(X)) Then
-                                        Swap TM$(X), TM$(Y)
-                                        Swap O1(X), O1(Y)
-                                        Swap O2(X), O2(Y)
-                                    End If
-                                End If
-                            End If
-
-                        Next Y
-
-                    Next X
-
-                Next VV
-
-                Print "POSTING "; LG$; " LEADERS"
-
-                Open diskPaths$(2) + LH$ + ".LDR" For Output As #2
-
-                For X = 1 To 40: Write #2, TM$(X), O1(X), O2(X): Next
-
-                For X = 1 To 298
-                    Write #2, cmplZ2$(X), cmplZ3$(X), cmplZ1!(X, 1), cmplZ1!(X, 2)
-                Next
-
-                For X = 1 To 40:
-                    Write #2, BA$(X)
-                    For M = 1 To 14:
-                        Write #2, OFT!(X, M)
-                    Next
-                Next
-
-                For X = 1 To 40:
-                    Write #2, ER$(X)
-                    For M = 1 To 14:
-                        Write #2, DFT!(X, M)
-                    Next
-                Next
-
-                Write #2, APP
-                Close 2
+                Call SortLeaders
+                Call PostLeaders(LG$, WE$, APP)
 
             End If 'Done checking for ESC
 
@@ -298,15 +185,51 @@ Sub LEAGCMPL ()
         '...Until we press ESC
     Loop Until ExitCode% = 27 Or Count% = 0 Or I$ = "N"
 
-    '103 Exit Sub
-
 End Sub
 
+
 '----------------------------------------
-'      CheckLeagueStats Subroutine
+'         FindStatsPro Function
 '----------------------------------------
 '...explanation...
-Sub CheckLeagueStats (targetTeam$, WT$)
+Function FindStatsPro% (statFile$, TN$, fullWins, fullLosses)
+
+    If _FileExists(diskPaths$(1) + statFile$) Then
+
+        Open diskPaths$(1) + statFile$ For Input As #1
+
+        Input #1, TN$, fullWins, fullLosses
+
+        Close #1
+
+        Cls
+
+        Locate 4, 5
+
+        Color 15
+        Print "FINDING ";
+        Color 14
+        Print statFile$;
+        Color 15
+        Print " STATS            "
+
+        FindStatsPro% = 1
+
+    Else
+
+        Print "NO STATS FOUND FOR "; statFile$
+        FindStatsPro% = 0
+
+    End If
+
+End Function
+
+
+'----------------------------------------
+'      CheckStatsLeague Subroutine
+'----------------------------------------
+'...explanation...
+Sub CheckStatsLeague (targetTeam$, WT$)
 
     Dim PS$(40)
 
@@ -820,15 +743,180 @@ Sub CheckLeagueStats (targetTeam$, WT$)
 
     Next X
 
-    Call CheckMoreStats(WT$)
+End Sub
+
+
+'----------------------------------------
+'       ReadStatsLeague Subroutine
+'----------------------------------------
+'...explanation...
+Sub ReadStatsLeague (statFile$, TN$, fullWins, fullLosses)
+
+    Dim ZM%(46)
+
+    Shared BAT%(), PIT%()
+
+    Shared JS!()
+
+    Shared NM$()
+
+    Open (diskPaths$(1) + statFile$) For Input As #1
+
+    Input #1, TN$, fullWins, fullLosses
+
+    For K = 1 To 23
+        Input #1, NM$(K), ZM%(K)
+    Next
+
+    For K = 25 To 46
+        Input #1, NM$(K), ZM%(K)
+    Next
+
+    NM$(24) = "PITCHERS"
+
+    For J = 1 To 23
+        For K = 1 To 22
+            Input #1, JS!(J, K)
+        Next K
+    Next J
+
+    For J = 25 To 46
+        For K = 1 To 42
+            Input #1, JS!(J, K)
+        Next K
+    Next J
+
+    For K = 1 To 24
+        Input #1, BAT%(K)
+    Next K
+
+    For K = 1 To 23
+        Input #1, PIT%(K)
+    Next K
+
+    Close #1
+
+    For J = 1 To 23
+
+        If JS!(J, 1) = 0 Then JS!(J, 1) = 1
+
+        JS!(J, 17) = JS!(J, 13)
+        JS!(J, 18) = JS!(J, 14)
+
+        'Here is where AVG is assigned 0
+        If (JS!(J, 8) + JS!(J, 1)) / (fullWins + fullLosses) < 3.1 Then
+            JS!(J, 14) = 0
+            JS!(J, 15) = 0
+            JS!(J, 16) = 0
+        Else
+            JS!(J, 16) = JS!(J, 2) / JS!(J, 1)
+            JS!(J, 14) = (JS!(J, 2) + JS!(J, 5) + 2 * JS!(J, 6) + 3 * JS!(J, 7)) / JS!(J, 1)
+            JS!(J, 15) = (JS!(J, 2) + JS!(J, 8)) / (JS!(J, 1) + JS!(J, 8))
+        End If
+    Next
+
+    For J = 25 To 46
+        If JS!(J, 1) = 0 Or (JS!(J, 1) / 3) < (fullWins + fullLosses) Then
+            JS!(J, 14) = 99.99
+        Else
+            JS!(J, 14) = JS!(J, 4) / JS!(J, 1) * 27
+        End If
+    Next
 
 End Sub
 
+
 '----------------------------------------
-'      CheckMoreStats Subroutine
+'       SortLeaders Subroutine
 '----------------------------------------
 '...explanation...
-Sub CheckMoreStats (WT$)
+Sub SortLeaders
+
+    Shared O1(), O2()
+    Shared cmplTM$()
+
+    'Sort record by games won
+    For Z = 0 To 3
+
+        AA = (Z * 10) + 1
+        ZZ = (Z * 10) + 10
+
+        For X = AA To ZZ - 1
+
+            For Y = X + 1 To ZZ:
+
+                diffX = O1(X) - O2(X)
+                diffY = O1(Y) - O2(Y)
+
+                If diffX <= diffY Then
+                    If diffX <> diffY Then
+                        If Not (O1(X) <= O1(Y) And O1(X) > O2(X)) Or Not (O1(X) >= O1(Y) And O1(X) < O2(X)) Then
+                            Swap cmplTM$(X), cmplTM$(Y)
+                            Swap O1(X), O1(Y)
+                            Swap O2(X), O2(Y)
+                        End If
+                    End If
+                End If
+
+            Next Y
+
+        Next X
+
+    Next Z
+
+End Sub
+
+
+'----------------------------------------
+'       PostLeaders Subroutine
+'----------------------------------------
+Sub PostLeaders (LG$, WE$, APP)
+
+    Shared O1(), O2()
+
+    Shared cmplZ1!(), DFT!(), OFT!()
+
+    Shared BA$(), cmplZ2$(), cmplZ3$()
+    Shared ER$(), cmplTM$()
+
+    Print "POSTING "; LG$; " LEADERS"
+
+    Open diskPaths$(2) + WE$ + ".LDR" For Output As #2
+
+    For X = 1 To 40:
+        Write #2, cmplTM$(X), O1(X), O2(X)
+    Next
+
+    For X = 1 To 298
+        Write #2, cmplZ2$(X), cmplZ3$(X), cmplZ1!(X, 1), cmplZ1!(X, 2)
+    Next
+
+    For X = 1 To 40:
+        Write #2, BA$(X)
+        For M = 1 To 14:
+            Write #2, OFT!(X, M)
+        Next
+    Next
+
+    For X = 1 To 40:
+        Write #2, ER$(X)
+        For M = 1 To 14:
+            Write #2, DFT!(X, M)
+        Next
+    Next
+
+    Write #2, APP
+
+    Close 2
+
+End Sub
+
+
+'----------------------------------------
+'      StatsByCategory Subroutine
+'----------------------------------------
+'...explanation...
+Sub StatsByCategory (WT$, fullWins, fullLosses)
 
     Shared BAT%(), PIT%()
     Shared cmplZ2$(), cmplZ3$()
@@ -839,6 +927,7 @@ Sub CheckMoreStats (WT$)
     For X = 25 To 46
 
         If NM$(X) <> "XXX" Then
+
             Print "     CHECKING STATS OF "; NM$(X)
 
             If JS!(X, 14) <= cmplZ1!(139, 1) Then
@@ -1143,7 +1232,6 @@ Sub CheckMoreStats (WT$)
 
             End If
 
-            3512 '
             APP = APP + JS!(X, 9)
             For Z = 228 To 238
                 If cmplZ2$(Z) = NM$(X) And cmplZ3$(Z) = WT$ Then
@@ -1269,3 +1357,4 @@ Sub CheckMoreStats (WT$)
     End If
 
 End Sub
+

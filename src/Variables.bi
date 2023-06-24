@@ -142,14 +142,18 @@ Dim TP&(33)
 '----------------------------------------
 '   Used across LEAGCMPL routines
 '----------------------------------------
-Dim BA$(40), ER$(40)
-Dim cmplZ2$(298), cmplZ3$(298)
-Dim NM$(46)
-
 Dim BAT%(24), PIT%(23)
+Dim O1(1 To 40), O2(1 To 40)
+Dim Wins(40), Losses(40)
 
 Dim cmplZ1!(298, 2)
 Dim DFT!(40, 20), JS!(46, 42), OFT!(40, 20)
+Dim seeZ!(298), seeZ1!(298)
+
+Dim BA$(40), ER$(40), H1$(40)
+Dim cmplZ2$(298), cmplZ3$(298)
+Dim LF$(70), NM$(46), seeP$(298)
+Dim RT$(70), T$(40), cmplTM$(1 To 40)
 
 
 '----------------------------------------
@@ -240,7 +244,7 @@ Dim tradeB$(2, 23), tradeB1$(2, 23), tradeP$(2, 22), tradeP1$(2, 22)
 
 Dim tradeD0%(1), tradeD1%(1), L2%(1), TEAM%(1, 22)
 Dim tradeB%(2, 23, 79), tradeB0%(2, 22, 22), tradeB3%(2, 23)
-Dim teamIndexes(0 to 1), tradeL%(1, 14)
+Dim teamIndexes(0 To 1), tradeL%(1, 14)
 Dim tradeP%(2, 22, 88), tradeP0%(2, 22, 42), tradeP3%(2, 22)
 Dim tradeS(1), tradeSA%(1, 24), tradeSS%(1, 22, 6), tradeT1%(2, 23), tradeTS%(1, 11)
 Dim W2%(1)

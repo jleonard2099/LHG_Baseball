@@ -31,7 +31,7 @@ Sub DRAFT ()
         FileFGColr% = 15: FileBGColr% = 1
         HiLiteFGColr% = 0: HiLiteBGColr% = 7
         Spacing% = 6
-        Row% = 7
+        Row% = 8
 
         menuWidth% = Len(menuChoices$(1))
         Column% = (80 - menuWidth% - 2) / 2

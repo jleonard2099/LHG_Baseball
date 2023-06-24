@@ -19,10 +19,10 @@ Sub TRADE ()
         FileFGColr% = 15: FileBGColr% = 1
         HiLiteFGColr% = 0: HiLiteBGColr% = 7
         Spacing% = 1
-        Row% = 7
+        Row% = 8
         Column% = 24
 
-        Call box0(6, 23, 9, 56, 2, 15, 1)
+        Call box0(7, 23, 10, 56, 2, 15, 1)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%

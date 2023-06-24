@@ -3959,7 +3959,6 @@ Sub ExportManagerProfile ()
     End If
 
     If progMG%(0) <> 999 Then
-        ' NO MANAGER FILE WAS FOUND, THUS UNABLE TO EXPORT ONE
         Locate 10, 8
         Call CSMsgBox("NO MANAGER PROFILE EXISTS FOR THIS TEAM PRESS ANY KEY TO RETURN TO MAIN MENU", 40, Pass)
         I$ = GetKeyPress$
@@ -4008,19 +4007,22 @@ Sub ImportManagerProfile ()
     Spec$ = diskPaths$(0) + "*.MGR"
 	Count% = FCount%(Spec$)
 
-    ReDim managerFiles$(0 To Count%)
-
-    For X = 1 To Count%
-        managerFiles$(X) = Space$(12)
-    Next
-
-    managerFiles$(0) = Spec$
-
-    Call ReadFile(managerFiles$())
-
     If Count% = 0 Then
-        'Warn user of 0 count
+        Locate 10, 8
+        Call CSMsgBox("NO MANAGER PROFILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+        I$ = GetKeyPress$
+        Call CSMsgBox("", 0, Pass)
     Else
+
+        ReDim managerFiles$(0 To Count%)
+
+        For X = 1 To Count%
+            managerFiles$(X) = Space$(12)
+        Next
+
+        managerFiles$(0) = Spec$
+
+        Call ReadFile(managerFiles$())
 
         Do
 

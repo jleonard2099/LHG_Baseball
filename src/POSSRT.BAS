@@ -21,10 +21,10 @@ Sub POSSRT ()
         FileFGColr% = 15: FileBGColr% = 1
         HiLiteFGColr% = 0: HiLiteBGColr% = 7
         Spacing% = 1
-        Row% = 7
+        Row% = 8
         Column% = 22
 
-        Call box0(6, 21, 10, 52, 2, 15, 1)
+        Call box0(7, 21, 11, 52, 2, 15, 1)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%

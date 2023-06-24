@@ -23,10 +23,10 @@ Sub HD2HD ()
         FileFGColr% = 15: FileBGColr% = 1
         HiLiteFGColr% = 0: HiLiteBGColr% = 7
         Spacing% = 1
-        Row% = 7
+        Row% = 8
         Column% = 22
 
-        Call box0(6, 21, 11, 61, 2, 15, 1)
+        Call box0(7, 21, 12, 61, 2, 15, 1)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
@@ -808,12 +808,15 @@ Sub SelectLeague (targetFile$)
             I$ = GetKeyPress$
             Call CSMsgBox("", 0, Pass)
         Else
+
             ReDim leagueFiles$(0 To Count%)
+
             For X = 1 To Count%
                 leagueFiles$(X) = Space$(12)
             Next
 
             leagueFiles$(0) = Spec$
+
             Call ReadFile(leagueFiles$())
 
             Do

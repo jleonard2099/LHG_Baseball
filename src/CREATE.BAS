@@ -27,7 +27,7 @@ Sub CREATE ()
         FileFGColr% = 15: FileBGColr% = 1
         HiLiteFGColr% = 0: HiLiteBGColr% = 7
         Spacing% = 6
-        Row% = 7
+        Row% = 8
 
         menuWidth% = Len(menuChoices$(1))
         Column% = (80 - menuWidth% - 2) / 2
@@ -129,7 +129,6 @@ Sub ChooseLeague (leagueFile$)
             Call CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
             I$ = GetKeyPress$
             Call CSMsgBox("", 0, Pass)
-            'GoTo 50
         Else
             ReDim leagueFiles$(0 To Count%)
 

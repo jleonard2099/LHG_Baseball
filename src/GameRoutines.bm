@@ -867,10 +867,10 @@ Sub CREDITPUTOUT (I3, FB2P%, AST%, D)
     If po% = 6 Then
 
         po% = 2
-		AST% = 0
-		I5 = B9%(D, po%)
-		I6 = 16
-		Call INCBATDF(D, I5, I6)
+        AST% = 0
+        I5 = B9%(D, po%)
+        I6 = 16
+        Call INCBATDF(D, I5, I6)
 
     Else
 
@@ -879,29 +879,29 @@ Sub CREDITPUTOUT (I3, FB2P%, AST%, D)
             FB2P% = 0
             po% = 1
             If po% = 1 Then 
-				I5 = P1%(D)
-				I6 = 38
-				Call ADDPIT(D, I5, I6)
-			End If
+                I5 = P1%(D)
+                I6 = 38
+                Call ADDPIT(D, I5, I6)
+            End If
 
         Else
 
             If po% = 4 Then 
-				If AST% = 4 Then
-					po% = 6
-				Else
-					If AST% = 6 Then
-						po% = 4
-					End If
-				End If
+                If AST% = 4 Then
+                    po% = 6
+                Else
+                    If AST% = 6 Then
+                        po% = 4
+                    End If
+                End If
             End If
 
         End If
 
-		AST% = 0
-		I5 = B9%(D, po%)
-		I6 = 16
-		Call INCBATDF(D, I5, I6)
+        AST% = 0
+        I5 = B9%(D, po%)
+        I6 = 16
+        Call INCBATDF(D, I5, I6)
 
     End If
 
@@ -1741,7 +1741,7 @@ Sub GROUNDERPBP (W%, D)
 
     Else
 
-		' *** in front of plate ***
+        ' *** in front of plate ***
         Call GETRPBP(25, 2870, Y$, D)
         Call STRIPRPBP(25, 2870, Y$, D)
         Call PBP(Y$)
@@ -7738,19 +7738,31 @@ Sub COMPILESTATFILES (teamIdx)
     FILENAME$ = diskPaths$(1) + statFile$
 
     If _FileExists(FILENAME$) Then
+
         Open diskPaths$(1) + statFile$ For Input As #1
+
         Input #1, A$(teamIdx)
         Input #1, W2%
         Input #1, L2%
+
         For I = 0 To 22: Input #1, B$(teamIdx, I): Input #1, B2%(teamIdx, I): Next I
+
         For I = 0 To 21: Input #1, P$(teamIdx, I): Input #1, P3%(teamIdx, I): Next I
+
         For I = 0 To 22: For I1 = 0 To 21: Input #1, B6%(I, I1): Next I1: Next I
+
         For I = 0 To 21: For I1 = 0 To 41: Input #1, P0%(I, I1): Next I1: Next I
+
         Input #1, D0%(teamIdx)
+
         Input #1, D1%(teamIdx)
+
         For I = 0 To 21: Input #1, T%(I): Next I
+
         For I = 0 To 22: Input #1, P4%(I): Next I
+
         Close #1
+
     End If
 
     For I = 0 To 22
