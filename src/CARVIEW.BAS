@@ -5,15 +5,15 @@ Sub CARVIEW ()
     Shared careerB$(), careerP$()
     Shared BRS%(), PRS%()
 
-    Cls
-
     TMR = 2700
 
     Do
         'Display list of files...
+        Color 0, 0
+        Cls
 
         Spec$ = diskPaths$(1) + "*.CAR"
-		Count% = FCount%(Spec$)
+        Count% = FCount%(Spec$)
 
         If Count% = 0 Then
             Locate 10, 8
@@ -29,13 +29,12 @@ Sub CARVIEW ()
             Next
 
             careerFiles$(0) = Spec$
-
             Call ReadFile(careerFiles$())
 
             Do
-                Cls
                 Color , 1
                 Cls
+
                 Locate , 28
                 Color 14
                 Print "SELECT FILE TO VIEW": Color 15
@@ -76,15 +75,20 @@ Sub CARVIEW ()
 
             If ExitCode% <> 27 Then
 
+                targetFile$ = RTrim$(targetFile$)
+                Z$ = Left$(targetFile$, Len(targetFile$) - 4)
+
+                Color 15, 0
                 Cls
+
                 Locate 12, 10: Print "LOADING CAREER FILE . . . . PLEASE WAIT"
 
-                Z$ = RTrim$(targetFile$)
+                Open diskPaths$(1) + targetFile$ For Input As #2
 
-                Open diskPaths$(1) + Z$ For Input As #2
                 Input #2, NB, NP
 
                 For I = 0 To 99: Input #2, careerB$(I): Next
+
                 For I = 0 To 79: Input #2, careerP$(I): Next
 
                 For J = 1 To 15
@@ -112,6 +116,8 @@ Sub CARVIEW ()
 
                 Close #2
 
+                '----------
+
                 Color 15, 0
                 Cls
 
@@ -122,11 +128,15 @@ Sub CARVIEW ()
                     I$ = GetKeyPress$
                 Loop Until UCase$(I$) = "P" Or UCase$(I$) = "V"
 
-                If UCase$(I$) = "V" Then
-                    Call CareerToScreen(Z$)
-                Else
-                    Call CareerToPrinter(Z$)
-                End If
+                Select Case UCase$(I$)
+
+                    Case "P":
+                        Call CareerToPrinter(Z$)
+
+                    Case "V"
+                        Call CareerToScreen(Z$)
+
+                End Select
 
             End If 'Done checking for ESC
 
@@ -216,8 +226,9 @@ End Sub
 '...explanation...
 Sub PitcherTotals ()
 
-    Dim I2!, I3!, I4!
     Shared PRS%()
+
+    Dim I2!, I3!, I4!
 
     VV = PRS%(1, I, 15) + PRS%(2, I, 15) + PRS%(3, I, 15) + PRS%(4, I, 15) + PRS%(5, I, 15) + PRS%(6, I, 15) + PRS%(7, I, 15) + PRS%(8, I, 15) + PRS%(9, I, 15) + PRS%(10, I, 15) + PRS%(11, I, 15) + PRS%(12, I, 15) + PRS%(13, I, 15) + PRS%(14, I, 15) + PRS%(15, I, 15)
 
@@ -558,7 +569,9 @@ Sub CareerToScreen (careerFile$)
 
     Do
 
+        Color 15, 0
         Cls
+
         Color 7: Print "VIEW ";
         Color 12: Print "B";: Color 7: Print "ATTERS, ";
         Color 12: Print "P";: Color 7: Print "ITCHERS, ";
@@ -567,13 +580,19 @@ Sub CareerToScreen (careerFile$)
         I$ = GetKeyPress$
 
         Select Case UCase$(I$)
-            Case "B": Call ViewLeaders_Batters(careerFile$)
-            Case "P": Call ViewLeaders_Pitchers(careerFile$)
-            Case "R": Call ViewLeaders_Sequence(careerFile$)
-            Case "E": Cls 'Exit
+
+            Case "B":
+                Call ViewLeaders_Batters(careerFile$)
+
+            Case "P":
+                Call ViewLeaders_Pitchers(careerFile$)
+
+            Case "R":
+                Call ViewLeaders_Sequence(careerFile$)
+
         End Select
 
-    Loop Until UCase$(I$) = "E"
+    Loop Until UCase$(I$) = "E" Or UCase$(I$) = "X" Or I$ = Chr$(27)
 
 End Sub
 
@@ -591,19 +610,31 @@ Sub ViewLeaders_Batters (careerFile$)
     Color 12: Print careerFile$
 
     For I = 0 To 19
-        Color 11: Locate I + 2: Print Using "##"; I;: Print ".";: Color 7: Print Left$(careerB$(I), 12)
+        Color 11: Locate I + 2
+        Print Using "##"; I;
+        Print ".";
+        Color 7: Print Left$(careerB$(I), 12)
     Next
 
     For I = 20 To 39
-        Color 11: Locate I - 18, 21: Print Using "##"; I;: Print ".";: Color 7: Print Left$(careerB$(I), 12)
+        Color 11: Locate I - 18, 21
+        Print Using "##"; I;
+        Print ".";
+        Color 7: Print Left$(careerB$(I), 12)
     Next
 
     For I = 40 To 59
-        Color 11: Locate I - 38, 41: Print Using "##"; I;: Print ".";: Color 7: Print Left$(careerB$(I), 12)
+        Color 11: Locate I - 38, 41
+        Print Using "##"; I;
+        Print ".";
+        Color 7: Print Left$(careerB$(I), 12)
     Next
 
     For I = 60 To 79
-        Color 11: Locate I - 58, 61: Print Using "##"; I;: Print ".";: Color 7: Print Left$(careerB$(I), 12)
+        Color 11: Locate I - 58, 61
+        Print Using "##"; I;
+        Print ".";
+        Color 7: Print Left$(careerB$(I), 12)
     Next
 
     Print
@@ -611,9 +642,12 @@ Sub ViewLeaders_Batters (careerFile$)
 
     Cls
 
-    Color 11: Locate 1: Print careerFile$
-    Color 12: Locate 2: Print "BATTER     YEAR   G   AB   R   H 2B 3B HR RBI  BB  SO  SB CS  E  AVG  SLG   OB"
-    Locate 3: Color 15: Print Left$(careerB$(B9), 13);
+    Color 11
+    Locate 1: Print careerFile$
+    Color 12
+    Locate 2: Print "BATTER     YEAR   G   AB   R   H 2B 3B HR RBI  BB  SO  SB CS  E  AVG  SLG   OB"
+    Color 15
+    Locate 3: Print Left$(careerB$(B9), 13);
 
     VV = BRS%(1, B9, 16) + BRS%(2, B9, 16) + BRS%(3, B9, 16) + BRS%(4, B9, 16) + BRS%(5, B9, 16) + BRS%(6, B9, 16) + BRS%(7, B9, 16) + BRS%(8, B9, 16) + BRS%(9, B9, 16) + BRS%(10, B9, 16) + BRS%(11, B9, 16) + BRS%(12, B9, 16) + BRS%(13, B9, 16) + BRS%(14, B9, 16) + BRS%(15, B9, 16)
 
@@ -659,7 +693,19 @@ Sub ViewLeaders_Batters (careerFile$)
 
     VV = BRS%(1, B9, 16) + BRS%(2, B9, 16) + BRS%(3, B9, 16) + BRS%(4, B9, 16) + BRS%(5, B9, 16) + BRS%(6, B9, 16) + BRS%(7, B9, 16) + BRS%(8, B9, 16) + BRS%(9, B9, 16) + BRS%(10, B9, 16) + BRS%(11, B9, 16) + BRS%(12, B9, 16) + BRS%(13, B9, 16) + BRS%(14, B9, 16) + BRS%(15, B9, 16)
 
-    TT1 = 0: TT2 = 0: TT3 = 0: TT4 = 0: TT5 = 0: TT6 = 0: TT7 = 0: TT8 = 0: TT9 = 0: TT10 = 0: TT11 = 0: TT12 = 0: TT13 = 0
+    TT1 = 0
+    TT2 = 0
+    TT3 = 0
+    TT4 = 0
+    TT5 = 0
+    TT6 = 0
+    TT7 = 0
+    TT8 = 0
+    TT9 = 0
+    TT10 = 0
+    TT11 = 0
+    TT12 = 0
+    TT13 = 0
 
     For V = 0 To VV
 
@@ -740,19 +786,31 @@ Sub ViewLeaders_Pitchers (careerFile$)
     Color 12: Print careerFile$
 
     For I = 0 To 19
-        Color 11: Locate I + 2: Print Using "##"; I;: Print ".";: Color 7: Print Left$(careerP$(I), 12)
+        Color 11: Locate I + 2
+        Print Using "##"; I;
+        Print ".";
+        Color 7: Print Left$(careerP$(I), 12)
     Next
 
     For I = 20 To 39
-        Color 11: Locate I - 18, 21: Print Using "##"; I;: Print ".";: Color 7: Print Left$(careerP$(I), 12)
+        Color 11: Locate I - 18, 21
+        Print Using "##"; I;
+        Print ".";
+        Color 7: Print Left$(careerP$(I), 12)
     Next
 
     For I = 40 To 59
-        Color 11: Locate I - 38, 41: Print Using "##"; I;: Print ".";: Color 7: Print Left$(careerP$(I), 12)
+        Color 11: Locate I - 38, 41
+        Print Using "##"; I;
+        Print ".";
+        Color 7: Print Left$(careerP$(I), 12)
     Next
 
     For I = 60 To 79
-        Color 11: Locate I - 58, 61: Print Using "##"; I;: Print ".";: Color 7: Print Left$(careerP$(I), 12)
+        Color 11: Locate I - 58, 61
+        Print Using "##"; I;
+        Print ".";
+        Color 7: Print Left$(careerP$(I), 12)
     Next
 
     Print
@@ -761,10 +819,12 @@ Sub ViewLeaders_Pitchers (careerFile$)
 
     Cls
 
-    Color 11: Locate 1: Print careerFile$
-    Color 12: Locate 2: Print "PITCHER    YEAR  W  L  S   IP     H  BB  SO  ERA  G GS CG RUN  ER SHO HR DP"
-    Locate 3
-    Color 15: Print Left$(careerP$(B9), 13);
+    Color 11
+    Locate 1: Print careerFile$
+    Color 12
+    Locate 2: Print "PITCHER    YEAR  W  L  S   IP     H  BB  SO  ERA  G GS CG RUN  ER SHO HR DP"
+    Color 15
+    Locate 3: Print Left$(careerP$(B9), 13);
 
     VV = PRS%(1, B9, 15) + PRS%(2, B9, 15) + PRS%(3, B9, 15) + PRS%(4, B9, 15) + PRS%(5, B9, 15) + PRS%(6, B9, 15) + PRS%(7, B9, 15) + PRS%(8, B9, 15) + PRS%(9, B9, 15) + PRS%(10, B9, 15) + PRS%(11, B9, 15) + PRS%(12, B9, 15) + PRS%(13, B9, 15) + PRS%(14, B9, 15) + PRS%(15, B9, 15)
 
@@ -891,11 +951,38 @@ Sub ViewLeaders_Sequence (careerFile$)
     Shared careerB$(), careerP$()
 
     Do
+
         Cls
 
-        TT1 = 0: TT2 = 0: TT3 = 0: TT4 = 0: TT5 = 0: TT6 = 0: TT7 = 0: TT8 = 0: TT9 = 0: TT10 = 0: TT11 = 0: TT12 = 0
-        TT13 = 0: TT13 = 0: TT14 = 0: TT15 = 0: TT16 = 0: TT17 = 0: TT18 = 0: TT19 = 0: TT20 = 0: TT21 = 0: TT22 = 0
-        TT23 = 0: TT24 = 0: TT25 = 0: TT26 = 0: TT27 = 0: TT28 = 0
+        TT1 = 0
+        TT2 = 0
+        TT3 = 0
+        TT4 = 0
+        TT5 = 0
+        TT6 = 0
+        TT7 = 0
+        TT8 = 0
+        TT9 = 0
+        TT10 = 0
+        TT11 = 0
+        TT12 = 0
+        TT13 = 0
+        TT13 = 0
+        TT14 = 0
+        TT15 = 0
+        TT16 = 0
+        TT17 = 0
+        TT18 = 0
+        TT19 = 0
+        TT20 = 0
+        TT21 = 0
+        TT22 = 0
+        TT23 = 0
+        TT24 = 0
+        TT25 = 0
+        TT26 = 0
+        TT27 = 0
+        TT28 = 0
 
         Color 11
         Locate 1: Print careerFile$
@@ -906,13 +993,16 @@ Sub ViewLeaders_Sequence (careerFile$)
 
             If careerB$(I) <> "" And careerB$(I) <> "XXX" Then
 
-                Locate 3: Color 15: Print Left$(careerB$(I), 10);
+                Color 15
+                Locate 3: Print Left$(careerB$(I), 10);
 
                 VV = BRS%(1, I, 16) + BRS%(2, I, 16) + BRS%(3, I, 16) + BRS%(4, I, 16) + BRS%(5, I, 16) + BRS%(6, I, 16) + BRS%(7, I, 16) + BRS%(8, I, 16) + BRS%(9, I, 16) + BRS%(10, I, 16) + BRS%(11, I, 16) + BRS%(12, I, 16) + BRS%(13, I, 16) + BRS%(14, I, 16) + BRS%(15, I, 16)
 
                 For V = 1 To VV
 
-                    Color 7: Print Tab(11); BRS%(V, I, 17);
+                    Color 7
+                    Print Tab(11); BRS%(V, I, 17);
+
                     Print Tab(17); Using "###"; BRS%(V, I, 14);
                     Print Tab(22); Using "###"; BRS%(V, I, 0);
                     Print Tab(26); Using "###"; BRS%(V, I, 2);
@@ -960,8 +1050,19 @@ Sub ViewLeaders_Sequence (careerFile$)
 
                 Call BatterTotals
 
-                TT1 = 0: TT2 = 0: TT3 = 0: TT4 = 0: TT5 = 0: TT6 = 0: TT7 = 0: TT8 = 0: TT9 = 0: TT10 = 0: TT11 = 0: TT12 = 0: TT13 = 0
-
+                TT1 = 0
+                TT2 = 0
+                TT3 = 0
+                TT4 = 0
+                TT5 = 0
+                TT6 = 0
+                TT7 = 0
+                TT8 = 0
+                TT9 = 0
+                TT10 = 0
+                TT11 = 0
+                TT12 = 0
+                TT13 = 0
 
                 Do
                     Locate 10: Color 14
@@ -998,13 +1099,16 @@ Sub ViewLeaders_Sequence (careerFile$)
 
                 If careerP$(I) <> "" And careerP$(I) <> "XXX" Then
 
-                    Locate 3: Color 15: Print Left$(careerP$(I), 10);
+                    Color 15
+                    Locate 3: Print Left$(careerP$(I), 10);
 
                     VV = PRS%(1, I, 15) + PRS%(2, I, 15) + PRS%(3, I, 15) + PRS%(4, I, 15) + PRS%(5, I, 15) + PRS%(6, I, 15) + PRS%(7, I, 15) + PRS%(8, I, 15) + PRS%(9, I, 15) + PRS%(10, I, 15) + PRS%(11, I, 15) + PRS%(12, I, 15) + PRS%(13, I, 15) + PRS%(14, I, 15) + PRS%(15, I, 15)
 
                     For V = 1 To VV
 
-                        Color 7: Print Tab(11); PRS%(V, I, 16);
+                        Color 7
+                        Print Tab(11); PRS%(V, I, 16);
+
                         Print Tab(17); Using "##"; PRS%(V, I, 6);
                         Print Tab(20); Using "##"; PRS%(V, I, 7);
                         Print Tab(23); Using "##"; PRS%(V, I, 12);
@@ -1041,7 +1145,22 @@ Sub ViewLeaders_Sequence (careerFile$)
 
                     Call PitcherTotals
 
-                    TT13 = 0: TT14 = 0: TT15 = 0: TT16 = 0: TT17 = 0: TT18 = 0: TT19 = 0: TT20 = 0: TT21 = 0: TT22 = 0: TT23 = 0: TT24 = 0: TT25 = 0: TT26 = 0: TT27 = 0: TT28 = 0
+                    TT13 = 0
+                    TT14 = 0
+                    TT15 = 0
+                    TT16 = 0
+                    TT17 = 0
+                    TT18 = 0
+                    TT19 = 0
+                    TT20 = 0
+                    TT21 = 0
+                    TT22 = 0
+                    TT23 = 0
+                    TT24 = 0
+                    TT25 = 0
+                    TT26 = 0
+                    TT27 = 0
+                    TT28 = 0
 
                     Do
                         Locate 10: Color 14
@@ -1053,10 +1172,8 @@ Sub ViewLeaders_Sequence (careerFile$)
                             For T = 3 To 20: Locate T
                                 Print String$(76, " ")
                             Next
+
                         End If
-
-
-                        If I$ = Chr$(27) Then Exit For
 
                     Loop Until I$ = Chr$(27) Or I$ = Chr$(13)
 
@@ -1104,3 +1221,5 @@ Sub ViewLeaders_Sequence (careerFile$)
     Loop Until UCase$(I$) = "N" Or I$ = Chr$(27)
 
 End Sub
+
+

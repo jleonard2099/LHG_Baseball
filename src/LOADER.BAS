@@ -8,7 +8,7 @@ Sub LOADER
     Shared LGT$(), month$()
     Shared PT$(), pitcherEra$()
     Shared MO$(), UMP$()
-    Shared VI$(), WE$()
+    Shared VI$(), yesNo$()
     Shared SP%(), T1%(), U%()
 
     Shared scheduleFile$
@@ -151,7 +151,6 @@ Sub LOADER
         Do
             Color 15, 0
             Cls
-            'Color , 0
 
             Locate 3, 1
             Color 14: Print "(1) ";: Color 15: Print MO$(U6)
@@ -161,14 +160,14 @@ Sub LOADER
             Color 14: Print "(5) ";: Color 15: Print month$(MO%)
             Color 14: Print "(6) ";: Color 15: Print dayNight$(DN%)
             Color 14: Print "(7) ";: Color 15: Print "PROCEED TO TEAM SELECTION"
-            Color 14: Print "(8) ";: Color 15: Print "USE CLIMATE/WIND/TEMP DATA "; WE$(WE%)
-            Color 14: Print "(9) ";: Color 15: Print "USE INJURIES "; WE$(IJ%)
+            Color 14: Print "(8) ";: Color 15: Print "USE CLIMATE/WIND/TEMP DATA "; yesNo$(WE%)
+            Color 14: Print "(9) ";: Color 15: Print "USE INJURIES "; yesNo$(IJ%)
             Color 14: Print "(0) ";: Color 15: Print "SAVE SETTINGS AS DEFAULT"
-            Color 14: Print "(A) ";: Color 15: Print "USE LEFT/RIGHT SPLIT STATS "; WE$(LR%)
-            Color 14: Print "(B) ";: Color 15: Print "USE DAYS REST DATA FOR PITCHERS "; WE$(DR%)
-            Color 14: Print "(C) ";: Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE "; WE$(MP%)
+            Color 14: Print "(A) ";: Color 15: Print "USE LEFT/RIGHT SPLIT STATS "; yesNo$(LR%)
+            Color 14: Print "(B) ";: Color 15: Print "USE DAYS REST DATA FOR PITCHERS "; yesNo$(DR%)
+            Color 14: Print "(C) ";: Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE "; yesNo$(MP%)
             Color 14: Print "(D) ";: Color 15: Print Using "DISPLAY INTERVAL: #.# "; pbpDelay!
-            Color 14: Print "(E) ";: Color 15: Print "USE VGA SCREENS, IF ABLE: "; WE$(VG%)
+            Color 14: Print "(E) ";: Color 15: Print "USE VGA SCREENS, IF ABLE: "; yesNo$(VG%)
             Color 14: Print "(F) ";: Color 15: Print "PITCHER USAGE ERA: "; pitcherEra$(CGERA%)
 
             Do
@@ -205,7 +204,7 @@ Sub LOADER
 
                     Case 2:
                         U6 = U6 + 1
-                        If U6 > 2 Then U6 = 0
+                        If U6 > 3 Then U6 = 0
 
                     Case 3:
                         LGT = LGT + 1
@@ -259,7 +258,7 @@ Sub LOADER
 
             Else
 
-                Close #7
+                'Close #7
                 'End
                 'System
                 Exit Sub
@@ -728,7 +727,7 @@ Sub LOADER
 
     Call SOURCE
 
-    Close #7
+    'Close #7
     'End
     'System
 
@@ -1289,7 +1288,8 @@ Sub DHLineups (P9, reselect, LU%)
             Else
                 B%(P9, B3%(P9, I), 21) = 0
             End If
-
+            'Else
+            '
         End If
 
     Next I
@@ -1300,8 +1300,7 @@ Sub DHLineups (P9, reselect, LU%)
         Locate I, 59: Print Space$(21);
     Next
 
-    'Cls
-    ''Call pbplog(10959)
+    'Call pbpLog(10959)
     Call NEWLINES(P9)
 
     For I2 = 0 To 22:
@@ -1329,6 +1328,7 @@ End Sub
 Sub SelectBatters (batterFlag%, P9)
 
     Inotloop% = 99
+
     Call SHOWBATTERS(P9)
     Color 15, 0
     Locate 5, 59: Print "OPPOSING PITCHER"
@@ -1402,7 +1402,9 @@ Sub SelectBatters (batterFlag%, P9)
 
             'Assign field position
             Select Case UCase$(I$)
-                Case "Z": TG = 0: Call SHOWBATTERS(P9)
+                Case "Z":
+                    TG = 0
+                    Call SHOWBATTERS(P9)
 
                 Case "X":
                     For I3 = 0 To 22
@@ -1428,10 +1430,6 @@ Sub SelectBatters (batterFlag%, P9)
             Color 15, 0: Locate 5, 59: Print "OPPOSING PITCHER"
             Locate 6, 59: Print P$(1 - P9, P1%(1 - P9)); " "; B1$(P%(1 - P9, P1%(1 - P9), 0) + 2)
             Inotloop% = 0
-
-            '--- this is getting assigned always
-            '--- so what does this represent then???
-            '--- I created it!!!
             batterFlag% = 1
         End If 'Done checking for ESC
 
@@ -1839,9 +1837,8 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
 
     Shared BP(), F()
     Shared BB%()
-    Dim PS%(23, 1)
 
-    5000 ':*** COMPUTER DETERMINE LINEUPS ***
+    Dim PS%(23, 1)
 
     For I = 0 To 22
         If B$(P9, I) = "XXX" Then B%(P9, I, 21) = 98
@@ -1999,7 +1996,8 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
         Next I
 
         Call SortHitters(P9)
-        Call DHLineups(P9, reselect, LU%)
+
+        If DH% = 1 Then Call DHLineups(P9, reselect, LU%)
 
     End If 'done checking batterFlag
 
@@ -2190,13 +2188,14 @@ Sub LoadTeam_LOADER (teamIdx%, YN$, idx%)
     Next
 
     Field #1, 4280 As X$, 40 As Q2$(1840), 15 As Q2$(1841), 5 As Q2$(1842), 2 As Q2$(1843)
+
     Get #1, teamIdx%
 
     For I1 = 1 To 13
         L%(idx%, I1) = CVI(Q2$(I1))
     Next
 
-    If (L%(idx%, 11) = 7 Or L%(idx%, 11) = 15) And L%(idx%, 12) = 0 Then 
+    If (L%(idx%, 11) = 7 Or L%(idx%, 11) = 15) And L%(idx%, 12) = 0 Then
         L%(idx%, 11) = 0
         L%(idx%, 12) = 7
     End If
@@ -2204,6 +2203,7 @@ Sub LoadTeam_LOADER (teamIdx%, YN$, idx%)
     K9!(idx%) = CVS(Q2$(14))
 
     For I1 = 0 To 22:
+
         B$(idx%, I1) = Q2$(I1 * 43 + 15)
         B$(idx%, I1) = RTrim$(B$(idx%, I1))
 

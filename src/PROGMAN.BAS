@@ -703,7 +703,7 @@ Sub EditLineups (handRL%, targetTeam$, yearNumber$)
 
     Shared ratings%(), progMG%()
     Shared progPT$()
-    Shared progB3%(), progB7%(), progB9%()
+    Shared progB3%(), progB7%()
 
     Dim V1%(1)
 
@@ -947,7 +947,7 @@ Sub InputDeleteLineup (D%, yearNumber$)
 
         For I = 1 To 9
 
-            '--- work out conditions here for the loop
+            escPressed = 0
 
             Do
 
@@ -955,7 +955,6 @@ Sub InputDeleteLineup (D%, yearNumber$)
 
                 If UCase$(I$) <> "X" Then
 
-                    '--- We never assign a value to I
                     For J = 1 To 9
                         If J <> I And progB3%(J) <> I1 Or progB7%(J) <> 1 Then
                             If progB3%(J) = I1 And UCase$(I$) <> "P" Then Call GetLineupPosition(I1, I$)
@@ -1046,15 +1045,16 @@ Sub InputDeleteLineup (D%, yearNumber$)
                         End If
                     Next I1
 
-                    If C1 = 1 Then Exit For
+                    If C1 = 1 Then escPressed = 1
 
                 Else
                     ' "X" was pressed
-                    Exit For
-
+                    escPressed = 1
                 End If
 
-            Loop Until I1 >= 0 And I1 <= 22 Or UCase$(I$) = "X"
+            Loop Until I1 >= 0 And I1 <= 22 Or UCase$(I$) = "X" Or escPressed = 1
+
+            If escPressed = 1 Then Exit For
 
         Next I
 
@@ -1301,7 +1301,9 @@ Sub EditOneLineup (targetTeam$, yearNumber$)
         progB7%(I) = progMG%(101 + I + LN% * 21)
     Next
 
-    For I = 1 To 9: progB9%(progB7%(I)) = progB3%(I)
+    For I = 1 To 9: 
+    
+        progB9%(progB7%(I)) = progB3%(I)
 
         If progB7%(I) = 1 Then
             progB3%(I) = P1%: progB9%(1) = P1%
@@ -1311,7 +1313,9 @@ Sub EditOneLineup (targetTeam$, yearNumber$)
 
     Next I
 
-    For I = 10 To 22: Locate I, 59: Print Space$(21);: Next
+    For I = 10 To 22: 
+        Locate I, 59: Print Space$(21);
+    Next
 
     For I = 1 To 9
 
@@ -1333,7 +1337,8 @@ Sub EditOneLineup (targetTeam$, yearNumber$)
         Locate I2 + 2, 2
         For I3 = 1 To 9
             If progB3%(I3) = I2 And progB7%(I3) <> 1 Then
-                Print "*";: Color ratings%(11), ratings%(12): Print statB$(I2)
+                Print "*";
+                Color ratings%(11), ratings%(12): Print statB$(I2)
                 Color 15, 0
             End If
         Next I3

@@ -6,14 +6,14 @@ Sub CAREDIT ()
 
     Shared BRS%(), PRS%()
 
+    Color 0, 0
     Cls
     TMR = 2700
 
     Do
-    'Display list of files...
-
+        'Display list of files...
         Spec$ = diskPaths$(1) + "*.CAR"
-		Count% = FCount%(Spec$)
+        Count% = FCount%(Spec$)
 
         If Count% = 0 Then 
             Locate 10, 8
@@ -23,9 +23,11 @@ Sub CAREDIT ()
         Else
 
             ReDim careerFiles$(0 To Count%)
+
             For X = 1 To Count%
                 careerFiles$(X) = Space$(12)
             Next
+
             careerFiles$(0) = Spec$
             Call ReadFile(careerFiles$())
 
@@ -49,7 +51,7 @@ Sub CAREDIT ()
                 Locate 25, 1
                 Color 14
                 Print "ENTER";
-				Color 15
+                Color 15
                 Print "-SELECTS FILE";
 
                 _MouseShow "DEFAULT"
@@ -58,16 +60,16 @@ Sub CAREDIT ()
 
                 If ExitCode% <> 27 Then
 
-					Color 15, 1
+                    Color 15, 1
                     targetFile$ = careerFiles$(Selection%)
                     Locate 2, 33: Print targetFile$
 
-					Do
-						Locate 3, 33: Print "ANY CHANGE (YN)";
-						I$ = GetKeyPress$
-					Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+                    Do
+                        Locate 3, 33: Print "ANY CHANGE (YN)";
+                        I$ = GetKeyPress$
+                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
-					Color 15, 0
+                    Color 15, 0
 
                 End If
 
@@ -75,36 +77,66 @@ Sub CAREDIT ()
 
             If ExitCode% <> 27 Then
 
+                Color 15, 0
                 Cls
                 Locate 12, 10: Print "LOADING CAREER FILE . . . . PLEASE WAIT"
 
-                Z$ = RTrim$(targetFile$)
+                targetFile$ = RTrim$(targetFile$)
+                Z$ = Left$(targetFile$, Len(targetFile$) - 4)
 
-                Open diskPaths$(1) + Z$ For Input As #2
+                Open diskPaths$(1) + Z$ + ".CAR" For Input As #2
+
                 Input #2, NB, NP
+
                 For I = 0 To 99: Input #2, careerB$(I): Next
+
                 For I = 0 To 79: Input #2, careerP$(I): Next
-                For J = 1 To 15: For I = 0 To 99: For I1 = O To 17: Input #2, BRS%(J, I, I1): Next I1: Locate 12, 55: Color 3: TMR = TMR - 1: Print Using "####"; TMR: Next I: Next J
-                For J = 1 To 15: For I = 0 To 79: For I1 = 0 To 16: Input #2, PRS%(J, I, I1): Next I1: Locate 12, 55: Color 3: TMR = TMR - 1: Print Using "####"; TMR: Next I: Next J
+
+                For J = 1 To 15: 
+                    For I = 0 To 99: 
+                        For I1 = O To 17: 
+                            Input #2, BRS%(J, I, I1)
+                        Next I1
+                        Locate 12, 55: Color 3
+                        TMR = TMR - 1: Print Using "####"; TMR
+                    Next I
+                Next J
+
+                For J = 1 To 15: 
+                    For I = 0 To 79: 
+                        For I1 = 0 To 16: 
+                            Input #2, PRS%(J, I, I1)
+                        Next I1
+                        Locate 12, 55: Color 3
+                        TMR = TMR - 1: Print Using "####"; TMR
+                    Next I
+                Next J
 
                 Close #2
 
                 Do
                     Cls
+
                     Color 7: Print "EDIT ";
                     Color 12: Print "B";
                     Color 7: Print "ATTERS, ";
                     Color 12: Print "P";
                     Color 7: Print "ITCHERS, ";
                     Color 12: Print "U";
-					Color 7: Print "PDATE FILE, OR ";
-					Color 12: Print "E";: Color 7: Print "XIT WITHOUT UPDATING"
+                    Color 7: Print "PDATE FILE, OR ";
+                    Color 12: Print "E";
+                    Color 7: Print "XIT WITHOUT UPDATING"
+
                     I$ = GetKeyPress$
 
                     Select Case UCase$(I$)
+
                         Case "B": Call EditBatters (Z$)
+
                         Case "E", "X": '
+
                         Case "P": Call EditPitchers (Z$)
+
                         Case "U":
                             Cls
                             Color 15: Locate 12, 6: Print "SAVING UPDATED CAREER FILE . . . PLEASE WAIT"
@@ -116,9 +148,28 @@ Sub CAREDIT ()
                             Write #3, NB, NP
 
                             For I = 0 To 99: Write #3, careerB$(I): Next
+
                             For I = 0 To 79: Write #3, careerP$(I): Next
-                            For J = 1 To 15: For I = 0 To 99: For I1 = O To 17: Write #3, BRS%(J, I, I1): Next I1: Locate 12, 55: Color 3: TMR = TMR - 1: Print Using "####"; TMR: Next I: Next J
-                            For J = 1 To 15: For I = 0 To 79: For I1 = 0 To 16: Write #3, PRS%(J, I, I1): Next I1: Locate 12, 55: Color 3: TMR = TMR - 1: Print Using "####"; TMR: Next I: Next J
+
+                            For J = 1 To 15: 
+                                For I = 0 To 99: 
+                                    For I1 = O To 17: 
+                                        Write #3, BRS%(J, I, I1)
+                                    Next I1
+                                    Locate 12, 55: Color 3
+                                    TMR = TMR - 1: Print Using "####"; TMR
+                                Next I
+                            Next J
+
+                            For J = 1 To 15:
+                                For I = 0 To 79: 
+                                    For I1 = 0 To 16: 
+                                        Write #3, PRS%(J, I, I1)
+                                    Next I1
+                                    Locate 12, 55: Color 3
+                                    TMR = TMR - 1: Print Using "####"; TMR
+                                Next I
+                            Next J
 
                             Close #3
 
@@ -151,23 +202,34 @@ Sub EditBatters (careerFile$)
         Color 12: Print careerFile$
 
         For I = 0 To 19
-            Color 11: Locate I + 2, 1: Print Using "##"; I;: Print " ";: Color 7: Print Left$(careerB$(I), 12)
+            Color 11: Locate I + 2, 1
+            Print Using "##"; I;
+            Print " ";
+            Color 7: Print Left$(careerB$(I), 12)
         Next
 
         For I = 20 To 39
-            Color 11: Locate I - 18, 16: Print Using "##"; I;: Print " ";: Color 7: Print Left$(careerB$(I), 12)
+            Color 11: Locate I - 18, 16
+            Print Using "##"; I;: Print " ";: 
+            Color 7: Print Left$(careerB$(I), 12)
         Next
 
         For I = 40 To 59
-            Color 11: Locate I - 38, 32: Print Using "##"; I;: Print " ";: Color 7: Print Left$(careerB$(I), 12)
+            Color 11: Locate I - 38, 32
+            Print Using "##"; I;: Print " ";: 
+            Color 7: Print Left$(careerB$(I), 12)
         Next
 
         For I = 60 To 79
-            Color 11: Locate I - 58, 48: Print Using "##"; I;: Print " ";: Color 7: Print Left$(careerB$(I), 12)
+            Color 11: Locate I - 58, 48
+            Print Using "##"; I;: Print " ";: 
+            Color 7: Print Left$(careerB$(I), 12)
         Next
 
         For I = 80 To 99
-            Color 11: Locate I - 78, 64: Print Using "##"; I;: Print " ";: Color 7: Print Left$(careerB$(I), 12)
+            Color 11: Locate I - 78, 64
+            Print Using "##"; I;: Print " ";: 
+            Color 7: Print Left$(careerB$(I), 12)
         Next
 
         Print
@@ -253,19 +315,30 @@ Sub EditPitchers (careerFile$)
         Color 12: Print careerFile$
 
         For I = 0 To 19
-        Color 11: Locate I + 2, 1: Print Using "##"; I;: Print " ";: Color 7: Print Left$(careerP$(I), 15)
+            Color 11: Locate I + 2, 1
+            Print Using "##"; I;: Print " ";: 
+            Color 7: Print Left$(careerP$(I), 15)
         Next
 
         For I = 20 To 39
-        Color 11: Locate I - 18, 21: Print Using "##"; I;: Print " ";: Color 7: Print Left$(careerP$(I), 15)
+            Color 11: Locate I - 18, 21
+            Print Using "##"; I;
+            Print " ";: 
+            Color 7: Print Left$(careerP$(I), 15)
         Next
 
         For I = 40 To 59
-        Color 11: Locate I - 38, 41: Print Using "##"; I;: Print " ";: Color 7: Print Left$(careerP$(I), 15)
+            Color 11: Locate I - 38, 41
+            Print Using "##"; I;
+            Print " ";: 
+            Color 7: Print Left$(careerP$(I), 15)
         Next
 
         For I = 60 To 79
-        Color 11: Locate I - 58, 61: Print Using "##"; I;: Print " ";: Color 7: Print Left$(careerP$(I), 15)
+            Color 11: Locate I - 58, 61
+            Print Using "##"; I;
+            Print " ";: 
+            Color 7: Print Left$(careerP$(I), 15)
         Next
 
         Print
@@ -275,11 +348,13 @@ Sub EditPitchers (careerFile$)
         If B9 <> 100 Then
 
             If B9 < 79 Then
+
                 Cls
 
                 Locate 5, 20
                 Color 15: Print "PRINT CAREER STATS OF ";
-                Color 12: Print careerP$(B9);: Color 15: Print " BEFORE "
+                Color 12: Print careerP$(B9);
+                Color 15: Print " BEFORE "
                 Locate , 20: Print "DELETING THEM? (Y/N)"
 
                 Color 14
@@ -382,12 +457,17 @@ Sub PrintBatterStats (careerFile$, playerIdx)
 
         IF BRS%(V, B9, 0) > 0 THEN I2! = INT((BRS%(V, B9, 1) / BRS%(V, B9, 0) + .0005) * 1000): I3! = INT(((BRS%(V, B9, 1) + BRS%(V, B9, 4) + 2 * BRS%(V, B9, 5) + 3 * BRS%(V, B9, 6)) / BRS%(V, B9, 0) + .0005) * 1000): I4! = INT(((BRS%(V, B9, 1) + BRS%(V, B9, 7)) / (BRS%(V, B9, 7) + BRS%(V, B9, 0)) + .0005) * 1000)
         If BRS%(V, B9, 0) = 0 Or I2! = 0 Then LPrint Tab(107); ".000";
+
         If I2! > 0 And I2! < 100 Then LPrint Tab(107); ".0";: LPrint Using "##"; I2!;
         If I2! >= 100 Then LPrint Tab(107); ".";: LPrint Using "###"; I2!;
+
         If BRS%(V, B9, 0) = 0 Or I3! = 0 Then LPrint Tab(115); ".000";
+
         If I3! > 0 And I3! < 100 Then LPrint Tab(115); ".0";: LPrint Using "##"; I3!;
         If I3! >= 100 Then LPrint Tab(115); ".";: LPrint Using "###"; I3!;
+
         If BRS%(V, B9, 0) = 0 Or I4! = 0 Then LPrint Tab(123); ".000"
+
         If I4! > 0 And I4! < 100 Then LPrint Tab(123); ".";: LPrint Using "###"; I4!
         If I4! >= 100 Then LPrint Tab(123); ".";: LPrint Using "###"; I4!
 
@@ -427,19 +507,22 @@ Sub PrintBatterStats (careerFile$, playerIdx)
     LPrint Tab(94); Using "###"; TT12;
     LPrint Tab(100); Using "###"; TT13;
 
-    I2! = 0: If TT2 > 0 Then I2! = Int((TT4 / TT2 + .0005) * 1000)
+    I2! = 0
+    If TT2 > 0 Then I2! = Int((TT4 / TT2 + .0005) * 1000)
 
     If TT2 = 0 Or I2! = 0 Then LPrint Tab(107); ".000";
     If I2! > 0 And I2! < 100 Then LPrint Tab(107); ".0";: LPrint Using "##"; I2!;
     If I2! >= 100 Then LPrint Tab(107); ".";: LPrint Using "###"; I2!;
 
-    I3! = 0: I3! = Int(TT4 + TT5 + (2 * TT6) + (3 * TT7)) / ((TT2) + .0005) * 1000
+    I3! = 0
+    I3! = Int(TT4 + TT5 + (2 * TT6) + (3 * TT7)) / ((TT2) + .0005) * 1000
 
     If TT2 = 0 Or I3! = 0 Then LPrint Tab(115); ".000";
     If I3! > 0 And I3! < 100 Then LPrint Tab(115); ".0";: LPrint Using "##"; I3!;
     If I3! >= 100 Then LPrint Tab(115); ".";: LPrint Using "###"; I3!;
 
-    I4! = 0: If TT9 + TT2 > 0 Then I4! = Int(((TT4 + TT9) / (TT9 + TT2) + .0005) * 1000)
+    I4! = 0
+    If TT9 + TT2 > 0 Then I4! = Int(((TT4 + TT9) / (TT9 + TT2) + .0005) * 1000)
 
     If TT2 = 0 Or I4! = 0 Then LPrint Tab(123); ".000"
     If I4! > 0 And I4! < 100 Then LPrint Tab(123); ".";: LPrint Using "###"; I4!
@@ -504,6 +587,7 @@ Sub PrintPitcherStats (careerFile$, playerIdx)
 
         I2! = 0
         If PRS%(V, B9, 0) > 0 Then I2! = Int((((PRS%(V, B9, 3) * 9) / (PRS%(V, B9, 0) / 3)) + .0005) * 100)
+
         I3! = Int(I2! / 100)
         I4! = I2! - (I3! * 100)
 
@@ -598,7 +682,7 @@ Sub PrintPitcherStats (careerFile$, playerIdx)
     LPrint Tab(114); Using "####"; TT27;
     LPrint Tab(121); Using "###"; TT28
     
-	LPrint
+    LPrint
     LPrint Chr$(12)
 
 End Sub

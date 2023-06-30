@@ -66,7 +66,7 @@ Dim Shared teamIndex%(MAX_TEAMS)
 Dim dayNight$(0 To 1), DH$(1), DL$(1)
 Dim LGT$(2), month$(1 To 12)
 Dim pitcherEra$(8), MO$(0 To 3), UMP$(50)
-Dim VI$(1), WE$(1)
+Dim VI$(1), yesNo$(1)
 
 ' Umpire selection
 Dim U%(50)
@@ -249,7 +249,7 @@ Dim E%(13)
 Dim scheduleAP%(1), scheduleL%(13)
 Dim scheduleT%(34), scheduleZ1%(40)
 
-Dim modeAbbrev$(3), yesNo$(0 To 1)
+Dim modeAbbrev$(3)
 Dim scheduleH$(1 To 20), scheduleV$(1 To 20)
 Dim scheduleYN$(MAX_GAMES, 1)
 
@@ -344,7 +344,6 @@ Dim Shared IJ$(20), M$(1), N$(1), NN$(1)
 Dim Shared P$(1, 21), PARK$(99), PC$(4), player$(23)
 Dim Shared Q3$(100), S$(1), SB$(0 To 22), SC$(4), TR$(0 To 22)
 Dim Shared U$(4), WD$(10), X$(12), YN$(1)
-
 
 
 

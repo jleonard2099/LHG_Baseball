@@ -42,7 +42,7 @@ Sub InitVar ()
     Shared dayNight$(), DH$(), DL$()
     Shared LGT$(), month$(), pitcherEra$()
     Shared MO$(), PT$(), UMP$()
-    Shared VI$(), WE$()
+    Shared VI$(), yesNo$()
 
     normalFinish% = 0
 
@@ -94,8 +94,8 @@ Sub InitVar ()
     UMP$(1) = "NL"
     UMP$(2) = "NL"
 
-    WE$(0) = "YES"
-    WE$(1) = "NO "
+    yesNo$(0) = "YES"
+    yesNo$(1) = "NO "
 
     DL$(0) = "LEAGUE GAME    "
     DL$(1) = "EXHIBITION GAME"
@@ -165,7 +165,7 @@ Sub InitVar ()
     D = 0
     DB = 0
     endGame = 1
-    endAllGames = 1
+    endAllGames = 0
     HR = 0
     P = 0
     RD = 0
@@ -586,7 +586,7 @@ Sub DisplayBatter_Lineup (PG, P9)
 
     Locate , 16: Print "B   POS    G  AB 2B 3B HR RBI  BB  SO SRAB  SB CS G%  BA"
 
-    For lIdx = 2 To 13: Locate lIdx, 1: Print String$(78, 32): Next
+    For luIdx = 2 To 13: Locate luIdx, 1: Print String$(78, 32): Next
 
     Locate 2, 1
 
@@ -751,28 +751,28 @@ Sub CHANGELINEUP (P9, P)
     Color 2: Print " # LINEUP       PS  FA  OB"
     Color 15
 
-    For lIdx = 1 To 9:
+    For luIdx = 1 To 9:
 
         Locate , 1
-        If B1!(P9) = lIdx Then Print "*";
+        If B1!(P9) = luIdx Then Print "*";
 
-        Locate , 2: Print Using "#"; lIdx;
+        Locate , 2: Print Using "#"; luIdx;
         Locate , 4
 
-        If B7%(P9, lIdx) = 1 Then Print P$(P9, P1%(P9));
-        If B7%(P9, lIdx) <> 1 Then Print B$(P9, B3%(P9, lIdx));
-        If B7%(P9, lIdx) <> 0 And B7%(P9, lIdx) < 10 Then Locate , 20: Print B%(P9, B3%(P9, lIdx), 19);
+        If B7%(P9, luIdx) = 1 Then Print P$(P9, P1%(P9));
+        If B7%(P9, luIdx) <> 1 Then Print B$(P9, B3%(P9, luIdx));
+        If B7%(P9, luIdx) <> 0 And B7%(P9, luIdx) < 10 Then Locate , 20: Print B%(P9, B3%(P9, luIdx), 19);
 
-        Locate , 17: Print C$(B7%(P9, lIdx));
+        Locate , 17: Print C$(B7%(P9, luIdx));
         Locate , 25
 
         For I1 = 1 To 3
-            If B0%(I1, 0) = lIdx And P9 = P Then Color 3: Print I1;: Color 15
+            If B0%(I1, 0) = luIdx And P9 = P Then Color 3: Print I1;: Color 15
         Next I1
 
         Print " "
 
-    Next lIdx
+    Next luIdx
 
 End Sub
 
@@ -878,7 +878,7 @@ Sub CREDITPUTOUT (I3, FB2P%, AST%, D)
 
             FB2P% = 0
             po% = 1
-            If po% = 1 Then 
+            If po% = 1 Then
                 I5 = P1%(D)
                 I6 = 38
                 Call ADDPIT(D, I5, I6)
@@ -886,7 +886,7 @@ Sub CREDITPUTOUT (I3, FB2P%, AST%, D)
 
         Else
 
-            If po% = 4 Then 
+            If po% = 4 Then
                 If AST% = 4 Then
                     po% = 6
                 Else
@@ -968,33 +968,33 @@ Sub DisplayFielding_Lineup (PG, P9, TG)
     Locate 1, 16
     Color 14: Print "P1 FAVG A R   P2 FAVG A R   P3 FAVG A R   P4 FAVG A R      "
 
-    For lIdx = 2 To 13: Locate lIdx, 1: Print String$(78, 32): Next
+    For luIdx = 2 To 13: Locate luIdx, 1: Print String$(78, 32): Next
 
     Locate 2
 
     If PG = 0 Then AA = 0: BB = 12
     If PG = 1 Then AA = 13: BB = 22
 
-    For lIdx = AA To BB:
+    For luIdx = AA To BB:
 
-        If B%(P9, lIdx, 21) = 0 Then
+        If B%(P9, luIdx, 21) = 0 Then
             Color 2
-            If lIdx < 10 Then Print Using "#"; lIdx;
-            If lIdx > 9 Then Print X$(lIdx - 10);
+            If luIdx < 10 Then Print Using "#"; luIdx;
+            If luIdx > 9 Then Print X$(luIdx - 10);
 
             Color 15, 0
-            Print Tab(3); B$(P9, lIdx);
+            Print Tab(3); B$(P9, luIdx);
 
-            Locate , 17: If B%(P9, lIdx, 22) <> -1 Then Print Using "# #### # #"; B%(P9, lIdx, 22); B%(P9, lIdx, 26); B%(P9, lIdx, 33); B%(P9, lIdx, 34);
-            Locate , 31: If B%(P9, lIdx, 23) <> -1 Then Print Using "# #### # #"; B%(P9, lIdx, 23); B%(P9, lIdx, 27); B%(P9, lIdx, 35); B%(P9, lIdx, 36);
-            Locate , 45: If B%(P9, lIdx, 24) <> -1 Then Print Using "# #### # #"; B%(P9, lIdx, 24); B%(P9, lIdx, 28); B%(P9, lIdx, 37); B%(P9, lIdx, 38);
-            Locate , 59: If B%(P9, lIdx, 25) <> -1 Then Print Using "# #### # #"; B%(P9, lIdx, 25); B%(P9, lIdx, 29); B%(P9, lIdx, 39); B%(P9, lIdx, 40);
+            Locate , 17: If B%(P9, luIdx, 22) <> -1 Then Print Using "# #### # #"; B%(P9, luIdx, 22); B%(P9, luIdx, 26); B%(P9, luIdx, 33); B%(P9, luIdx, 34);
+            Locate , 31: If B%(P9, luIdx, 23) <> -1 Then Print Using "# #### # #"; B%(P9, luIdx, 23); B%(P9, luIdx, 27); B%(P9, luIdx, 35); B%(P9, luIdx, 36);
+            Locate , 45: If B%(P9, luIdx, 24) <> -1 Then Print Using "# #### # #"; B%(P9, luIdx, 24); B%(P9, luIdx, 28); B%(P9, luIdx, 37); B%(P9, luIdx, 38);
+            Locate , 59: If B%(P9, luIdx, 25) <> -1 Then Print Using "# #### # #"; B%(P9, luIdx, 25); B%(P9, luIdx, 29); B%(P9, luIdx, 39); B%(P9, luIdx, 40);
 
             Print
 
         End If
 
-    Next lIdx
+    Next luIdx
 
     TG = TG + 1
 
@@ -1264,7 +1264,6 @@ Sub FLDAVG (D, W%, I3)
 
     End If
 
-    4462 '
     If W% = 4 Or W% = 6 Then I3 = (B%(D, B9%(D, W%), 19)) * .995
     If W% = 5 Then I3 = (B%(D, B9%(D, W%), 19)) * .985
 
@@ -3535,7 +3534,7 @@ Sub OPTIONS ()
     Shared MO$()
 
     If usingGfx = 1 Then Cls: Screen 0
-    
+
     If U6 = 2 Then
         U6 = 3
     Else
@@ -9109,10 +9108,10 @@ Sub BOX2SPC (NM$)
         Next
     Next
 
-    Print #2, 
+    Print #2,
 
     Close #2
-    
+
 End Sub
 
 
@@ -9122,7 +9121,7 @@ End Sub
 ' ...explanation...
 Sub EndOfGame ()
 
-    'Close #7
+    Close #7
 
     Cls
 
@@ -9154,7 +9153,7 @@ Sub EndOfGame ()
 
         End If
 
-        If UCase$(I$) = "Y" Or (AP = 1 and endAllGames <> 1) Then
+        If UCase$(I$) = "Y" Or (AP = 1 And endAllGames <> 1) Then
             Cls
             Print "PLEASE WAIT ..."
             Call LOADER
@@ -9175,3 +9174,4 @@ Sub pbpLog (lineNumber)
     Print #7,
 
 End Sub
+

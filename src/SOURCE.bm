@@ -1149,7 +1149,7 @@ Sub SOURCE ()
             If H6% > E2% And B7%(P, B1!(P)) <> 1 Then E4% = 1
             If H6% > E3% And B7%(P, B1!(P)) = 1 Then E4% = 1
 
-            If E4% = 1 Then 
+            If E4% = 1 Then
 
                 'balls hit to the air
                 Call d100(RN)
@@ -1159,8 +1159,8 @@ Sub SOURCE ()
                 A5%(3) = 0
 
                 Select Case RN
-                
-                    Case 1 to 73
+
+                    Case 1 To 73
                         ' *** FLY  OUTS ***
                         Call GETOUTFIELDER(W%, P, I1, D)
 
@@ -1176,7 +1176,7 @@ Sub SOURCE ()
 
                         Select Case RN
 
-                            Case 1 to 17
+                            Case 1 To 17
                                 If RN <= 17 Then
                                     14050 ' *** shallow fly ball ***
                                     S2% = 19
@@ -1201,7 +1201,7 @@ Sub SOURCE ()
 
                                 End If
 
-                            Case 18 to 33
+                            Case 18 To 33
                                 ' *** deep fly out ***
                                 S2% = 17
 
@@ -1303,7 +1303,7 @@ Sub SOURCE ()
 
                                 GoTo 13900
 
-                            Case 34 to 100
+                            Case 34 To 100
                                 ' *** regular fly out ***
                                 S2% = 18
                                 Call WINDEX
@@ -1375,7 +1375,7 @@ Sub SOURCE ()
 
                         End Select
 
-                    Case 74 to 89
+                    Case 74 To 89
 
                         ' infield popup
                         Call GETINFIELDER(W%, P, I1, D, S2%, P2)
@@ -1444,7 +1444,7 @@ Sub SOURCE ()
 
                         GoTo 13900
 
-                    Case 90 to 100
+                    Case 90 To 100
                         S2% = 21
 
                         Call GETINFIELDER(W%, P, I1, D, S2%, P2)

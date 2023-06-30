@@ -55,7 +55,7 @@ Sub SCHEDULE ()
         If ExitCode% <> 27 Then
 
             Select Case Selection%
-			
+            
                 Case 1:
                     'number of games in schedule
                     scheduleAP%(0) = 0
@@ -238,7 +238,7 @@ Sub NewSchedule (scheduleFile$)
                 If MIN% < 10 Then TM$ = TM$ + "0" + Right$(Str$(MIN%), 1)
                 If MIN% >= 10 Then TM$ = TM$ + Right$(Str$(MIN%), 2)
 
-				'Time
+                'Time
                 TM$ = TM$ + I$
                 Print TM$;
 
@@ -269,7 +269,7 @@ Sub NewSchedule (scheduleFile$)
             Case "A":
                 ' *** ADD A GAME TO THE SCHEDULE ***
                 V$ = ""
-				H$ = ""
+                H$ = ""
 
                 'number of games in schedule
                 scheduleAP%(0) = scheduleAP%(0) + 1
@@ -380,7 +380,7 @@ Sub NewSchedule (scheduleFile$)
                     Do
                         Locate 13, 12: Print "ANY CHANGE (YN)"
                         I$ = GetKeyPress$
-					Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
+                    Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
 
                 Loop Until UCase$(I$) = "N"
 
@@ -403,18 +403,18 @@ Sub NewSchedule (scheduleFile$)
 
                 Open "TICKER" For Output As #2
                 For I = 1 To 32: 
-					For I1 = 0 To 1: 
-						For I2 = 1 To 14
-							Print #2, -1
-						Next
-					Next
-				Next
+                    For I1 = 0 To 1: 
+                        For I2 = 1 To 14
+                            Print #2, -1
+                        Next
+                    Next
+                Next
 
                 For I = 1 To 32: 
-					For I1 = 0 To 1: 
-						Print #2, "XXX"
-					Next
-				Next
+                    For I1 = 0 To 1: 
+                        Print #2, "XXX"
+                    Next
+                Next
 
                 For I = SG% To SG% + 31
                     Print #2, scheduleNG%(I, 12)
@@ -424,7 +424,7 @@ Sub NewSchedule (scheduleFile$)
 
                 Call LOADER
 
-				Call LoadScheduleInfo (scheduleFile$)
+                Call LoadScheduleInfo (scheduleFile$)
 
             Case "R":
                 ' *** RESET GAMES ***
@@ -491,20 +491,20 @@ Sub EditGame ()
     TM$ = Right$(Str$(HR%), 2) + ":"
 
     If MIN% < 10 Then 
-		TM$ = TM$ + "0" + Right$(Str$(MIN%), 1)
-	Else
-		TM$ = TM$ + Right$(Str$(MIN%), 2)
-	End If
+        TM$ = TM$ + "0" + Right$(Str$(MIN%), 1)
+    Else
+        TM$ = TM$ + Right$(Str$(MIN%), 2)
+    End If
 
     TM$ = TM$ + I$
     DT$ = Right$(Str$(scheduleNG%(targetGame%, 17)), 2) + "/"
     DYMO% = Val(Right$(Str$(scheduleNG%(targetGame%, 16)), 2))
 
     If DYMO% < 10 Then 
-		DYMO$ = "0" + Right$(Str$(scheduleNG%(targetGame%, 16)), 1)
-	Else
-		DYMO$ = Right$(Str$(scheduleNG%(targetGame%, 16)), 2)
-	End If
+        DYMO$ = "0" + Right$(Str$(scheduleNG%(targetGame%, 16)), 1)
+    Else
+        DYMO$ = Right$(Str$(scheduleNG%(targetGame%, 16)), 2)
+    End If
 
     DT$ = DT$ + DYMO$ + "/" + Right$(Str$(scheduleNG%(targetGame%, 18)), 2)
 
@@ -1051,7 +1051,7 @@ Sub BoxscoreMaintenance ()
 
                 Case 2:
                     Spec$ = diskPaths$(1) + "*.SPC"
-					Count% = FCount%(Spec$)
+                    Count% = FCount%(Spec$)
 
                     If Count% = 0 Then
                         Locate 10, 8
@@ -1263,67 +1263,71 @@ Sub ChangeGlobalSettings ()
         Print Tab(30); "GLOBAL SETTINGS FOR SCHEDULE"
 
         '-- Missing option for mode of play
-        'Locate 3, 2: Color 14: Print "(1) ";: Color 15: Print "TYPE OF GAME: "; MO$(U5%)
-        Locate 3, 2: Color 14: Print "(1) ";: Color 15: Print "DESIGNATED HITTER: "; yesNo$(DH%)
-        Locate 4, 2: Color 14: Print "(2) ";: Color 15: Print Using "DISPLAY PAUSE IN SECONDS: ##.#  "; displayPause! ' / 10
-        Locate 5, 2: Color 14: Print "(3) ";: Color 15: Print "USE WEATHER EFFECTS: "; yesNo$(1 - WE%)
-        Locate 6, 2: Color 14: Print "(4) ";: Color 15: Print "USE INJURIES "; yesNo$(1 - IJ%)
-        Locate 7, 2: Color 14: Print "(5) ";: Color 15: Print "USE LEFT/RIGHT SPLIT STATS "; yesNo$(1 - LR%)
-        Locate 8, 2: Color 14: Print "(6) ";: Color 15: Print "USE DAYS REST DATA FOR PITCHERS "; yesNo$(1 - DR%)
-        Locate 9, 2: Color 14: Print "(7) ";: Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE "; yesNo$(1 - MP%)
-        Locate 10, 2: Color 14: Print "(8) ";: Color 15: Print "USE VGA SCREENS, IF ABLE: "; yesNo$(1 - VG%)
-        Locate 11, 2: Color 14: Print "(9) ";: Color 15: Print "PITCHER ERA: "; pitcherEra$(PE%)
-        Locate 12, 2: Color 14: Print "(0) ";: Color 15: Print "ACCEPT GLOBAL SETTINGS"
+        Locate 3, 2: Color 14: Print "(1) ";: Color 15: Print "TYPE OF GAME: "; MO$(U5%)
+        Locate 4, 2: Color 14: Print "(2) ";: Color 15: Print "DESIGNATED HITTER: "; yesNo$(DH%)
+        Locate 5, 2: Color 14: Print "(3) ";: Color 15: Print Using "DISPLAY PAUSE IN SECONDS: ##.#  "; displayPause! ' / 10
+        Locate 6, 2: Color 14: Print "(4) ";: Color 15: Print "USE WEATHER EFFECTS: "; yesNo$(1 - WE%)
+        Locate 7, 2: Color 14: Print "(5) ";: Color 15: Print "USE INJURIES "; yesNo$(1 - IJ%)
+        Locate 8, 2: Color 14: Print "(6) ";: Color 15: Print "USE LEFT/RIGHT SPLIT STATS "; yesNo$(1 - LR%)
+        Locate 9, 2: Color 14: Print "(7) ";: Color 15: Print "USE DAYS REST DATA FOR PITCHERS "; yesNo$(1 - DR%)
+        Locate 10, 2: Color 14: Print "(8) ";: Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE "; yesNo$(1 - MP%)
+        Locate 11, 2: Color 14: Print "(9) ";: Color 15: Print "USE VGA SCREENS, IF ABLE: "; yesNo$(1 - VG%)
+        Locate 12, 2: Color 14: Print "(A) ";: Color 15: Print "PITCHER ERA: "; pitcherEra$(PE%)
+        Locate 13, 2: Color 14: Print "(0) ";: Color 15: Print "ACCEPT GLOBAL SETTINGS"
 
         Do
             I$ = GetKeyPress$
-            If UCase$(I$) = "A" Then I$ = "10"
             I = Val(I$)
+            If UCase$(I$) = "A" Then I = 10
         Loop Until I >= 0 And I <= 10
 
         Select Case I
 
-            Case 1: 
+            Case 1:
+                U5% = U5% + 1
+                If U5% > 3 Then U5% = 0
+
+            Case 2:
                 DH% = 1 - DH%
 
-            Case 2: 
+            Case 3:
                 Input "DISPLAY VARIABLE "; displayPause!
 
-            Case 3: 
+            Case 4:
                 WE% = 1 - WE%
 
-            Case 4: 
+            Case 5:
                 IJ% = 1 - IJ%
 
-            Case 5: 
+            Case 6:
                 LR% = 1 - LR%
 
-            Case 6: 
+            Case 7:
                 DR% = 1 - DR%
 
-            Case 7: 
+            Case 8:
                 MP% = 1 - MP%
 
-            Case 8: 
+            Case 9:
                 VG% = 1 - VG%
 
-            Case 9:
+            Case 10:
                 PE% = PE% + 1
                 If PE% > 8 Then PE% = 0
 
-            Case 9: '
+            Case 0: '
 
         End Select
 
     Loop Until I = 0
 
     For I = 1 To scheduleAP%(0)
-        '    scheduleNG%(I, 8) = U5
         scheduleNG%(I, 3) = DH%
         scheduleNG%(I, 4) = displayPause! * 10
         scheduleNG%(I, 5) = WE%
         scheduleNG%(I, 6) = IJ%
         scheduleNG%(I, 7) = LR%
+        scheduleNG%(I, 8) = U5%
         scheduleNG%(I, 9) = DR%
         scheduleNG%(I, 10) = MP%
         scheduleNG%(I, 11) = VG%
@@ -1339,9 +1343,9 @@ End Sub
 Sub LoadSchedule (targetFile$)
 
     Do
-		'Display list of files...		
-		Spec$ = diskPaths$(0) + "*.SCD"
-		Count% = FCount%(Spec$)
+        'Display list of files...       
+        Spec$ = diskPaths$(0) + "*.SCD"
+        Count% = FCount%(Spec$)
 
         If Count% = 0 Then
             Locate 10, 8
@@ -1350,7 +1354,7 @@ Sub LoadSchedule (targetFile$)
             Call CSMsgBox("", 0, Pass)
         Else
             ReDim scheduleFiles$(0 To Count%)
-			
+            
             For X = 1 To Count%
                 scheduleFiles$(X) = Space$(12)
             Next
@@ -1452,7 +1456,7 @@ Sub CheckTeam_Schedule (teamIdx, yearNumber$)
 
     Shared scheduleL%()
 
-	teamYear$ = RTrim$(yearNumber$)
+    teamYear$ = RTrim$(yearNumber$)
 
     Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #4 Len = 4342
 
@@ -1475,7 +1479,7 @@ End Sub
 Sub DeleteSchedules (fileChoice%, fileSpec$)
 
     Spec$ = diskPaths$(0) + fileSpec$
-	FileCount% = FCount%(Spec$)
+    FileCount% = FCount%(Spec$)
 
     If FileCount% = 0 Then
 
@@ -1502,17 +1506,17 @@ Sub DeleteSchedules (fileChoice%, fileSpec$)
 
         ReDim boxFiles$(0 To FileCount%)
 
-		For X = 1 To FileCount%
-			boxFiles$(X) = Space$(12)
-		Next
+        For X = 1 To FileCount%
+            boxFiles$(X) = Space$(12)
+        Next
 
-		boxFiles$(0) = fileSpec$
-		Call ReadFile(boxFiles$())
+        boxFiles$(0) = fileSpec$
+        Call ReadFile(boxFiles$())
 
-		For X = 1 To FileCount%
-			Kill (diskPaths$(1) + boxFiles$(X))
-			Locate 12, 34: Print "DELETING "; boxFiles$(X)
-		Next
+        For X = 1 To FileCount%
+            Kill (diskPaths$(1) + boxFiles$(X))
+            Locate 12, 34: Print "DELETING "; boxFiles$(X)
+        Next
 
     End If
 
@@ -1572,14 +1576,14 @@ Sub SelectScheduleFile (targetFile$, scheduleFiles$(), FileCount%, ExitCode%)
     If ExitCode% <> 27 Then
 
         targetFile$ = RTrim$(targetFile$)
-		
-		'-- This is where we strip the file extension
-		'-- If we remove this, we can drop the .SCD in the rest of the code
+        
+        '-- This is where we strip the file extension
+        '-- If we remove this, we can drop the .SCD in the rest of the code
         fileNoExt$ = Left$(targetFile$, Len(targetFile$) - 4)
         targetFile$ = fileNoExt$
         Color 15, 0
-		
-		Call LoadScheduleInfo (targetFile$)
+        
+        Call LoadScheduleInfo (targetFile$)
 
     End If
 
@@ -1595,48 +1599,48 @@ Sub LoadScheduleInfo (targetFile$)
     Shared BS%, NS%
 
     Shared scheduleAP%(), scheduleNG%()
-	Shared homeScores(), visitorScores()
+    Shared homeScores(), visitorScores()
     Shared scheduleYN$()
 
-	Open diskPaths$(0) + targetFile$ + ".SCD" For Random As #1 Len = 48
-	fileLength& = LOF(1)
+    Open diskPaths$(0) + targetFile$ + ".SCD" For Random As #1 Len = 48
+    fileLength& = LOF(1)
 
-	scheduleAP%(0) = fileLength& / 48
-	BS% = Int((scheduleAP%(0) - 1) / 20)
+    scheduleAP%(0) = fileLength& / 48
+    BS% = Int((scheduleAP%(0) - 1) / 20)
 
-	For X = 0 To 18
-		Field #1, X * 2 As X$, 2 As Q$(X + 1), 48 - 2 - 2 * X As X$
-	Next
+    For X = 0 To 18
+        Field #1, X * 2 As X$, 2 As Q$(X + 1), 48 - 2 - 2 * X As X$
+    Next
 
-	Field #1, 38 As X$, 2 As Q$(22), 2 As Q$(23), 3 As Q$(20), 3 As Q$(21)
+    Field #1, 38 As X$, 2 As Q$(22), 2 As Q$(23), 3 As Q$(20), 3 As Q$(21)
 
-	For I = 1 To scheduleAP%(0)
-		Get #1, I
+    For I = 1 To scheduleAP%(0)
+        Get #1, I
 
-		For X = 0 To 18
-			scheduleNG%(I, X) = CVI(Q$(X + 1))
-		Next
+        For X = 0 To 18
+            scheduleNG%(I, X) = CVI(Q$(X + 1))
+        Next
 
-		If scheduleNG%(I, 14) > 8 Then scheduleNG%(I, 14) = 0
+        If scheduleNG%(I, 14) > 8 Then scheduleNG%(I, 14) = 0
 
-		For X = 0 To 1
-			scheduleYN$(I, X) = RTrim$(Q$(20 + X))
-		Next
+        For X = 0 To 1
+            scheduleYN$(I, X) = RTrim$(Q$(20 + X))
+        Next
 
-		visitorScores(I) = CVI(Q$(22))
-		homeScores(I) = CVI(Q$(23))
+        visitorScores(I) = CVI(Q$(22))
+        homeScores(I) = CVI(Q$(23))
 
-		If scheduleNG%(I, 6) > 1 Then scheduleNG%(I, 6) = 1
-		If scheduleNG%(I, 7) > 1 Then scheduleNG%(I, 7) = 1
-		If scheduleNG%(I, 9) > 1 Then scheduleNG%(I, 9) = 1
-		If scheduleNG%(I, 10) > 1 Then scheduleNG%(I, 10) = 1
-		If scheduleNG%(I, 11) > 1 Then scheduleNG%(I, 11) = 1
+        If scheduleNG%(I, 6) > 1 Then scheduleNG%(I, 6) = 1
+        If scheduleNG%(I, 7) > 1 Then scheduleNG%(I, 7) = 1
+        If scheduleNG%(I, 9) > 1 Then scheduleNG%(I, 9) = 1
+        If scheduleNG%(I, 10) > 1 Then scheduleNG%(I, 10) = 1
+        If scheduleNG%(I, 11) > 1 Then scheduleNG%(I, 11) = 1
 
-	Next
+    Next
 
-	Close 1
-	
-	NS% = 0
+    Close 1
+    
+    NS% = 0
 
 End Sub
 
@@ -1681,7 +1685,7 @@ Sub CreateSeasonSchedule ()
         Do
 
             Spec$ = diskPaths$(2) + "*.LIB"
-			Count% = FCount%(Spec$)
+            Count% = FCount%(Spec$)
 
             If Count% = 0 Then
                 Locate 10, 8
