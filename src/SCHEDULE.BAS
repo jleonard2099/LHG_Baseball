@@ -20,7 +20,7 @@ Sub SCHEDULE ()
         Cls
 
         Call TITLE_SCHEDULER
-        Locate 16: Print
+        Locate 19
         Color 2
         Print "GENERATING A STANDARD SEASON SCHEDULE IS TO BE USED IN CONJUNCTION"
         Print "WITH THE STANDINGS AND LEAGUE LEADERS OPTIONS. YOU MUST ALREADY HAVE"

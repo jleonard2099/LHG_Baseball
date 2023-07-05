@@ -440,7 +440,6 @@ Sub Merge_FirstYear ()
 
     Dim TMR%
 
-    TMR% = 4175
     NB = -1
     NP = -1
 
@@ -515,6 +514,8 @@ Sub Merge_FirstYear ()
             Line Input "HIT ENTER TO CONTINUE"; DUMMY$
         Else
 
+			TMR% = 4175
+
             Locate 20, 5
             Color 15
             Print "MERGING CAREER STATS AND UPDATING CAREER LEADER FILE . . . . PLEASE WAIT"
@@ -528,21 +529,24 @@ Sub Merge_FirstYear ()
             For I = 0 To 22:
                 Input #1, careerB$(I)
                 Input #1, careerB1%(I)
-                Locate 21, 35: Color 9
+                Locate 21, 35
+				Color 9
                 TMR% = TMR% - 1: Print Using "####"; TMR%
             Next I
 
             For I = 0 To 21:
                 Input #1, careerP$(I)
                 Input #1, careerP1%(I)
-                Locate 21, 35: Color 9
+                Locate 21, 35
+				Color 9
                 TMR% = TMR% - 1: Print Using "####"; TMR%
             Next I
 
             For I = 0 To 22:
                 For I1 = 0 To 21:
                     Input #1, careerB0%(I, I1)
-                    Locate 21, 35: Color 9
+                    Locate 21, 35
+					Color 9
                     TMR% = TMR% - 1: Print Using "####"; TMR%
                 Next I1
             Next I
@@ -550,7 +554,8 @@ Sub Merge_FirstYear ()
             For I = 0 To 21:
                 For I1 = 0 To 41:
                     Input #1, careerP0%(I, I1)
-                    Locate 21, 35: Color 9
+					Locate 21, 35
+					Color 9
                     TMR% = TMR% - 1: Print Using "####"; TMR%
                 Next I1
             Next I
@@ -625,7 +630,8 @@ Sub Merge_FirstYear ()
                     For I1 = 0 To 17:
                         Write #1, BRS%(J, I, I1)
                     Next I1
-                    Locate 21, 35: Color 9
+					Locate 21, 35
+					Color 9
                     TMR% = TMR% - 1: Print Using "####"; TMR%
                 Next I
             Next J
@@ -635,7 +641,8 @@ Sub Merge_FirstYear ()
                     For I1 = 0 To 16:
                         Write #1, PRS%(J, I, I1)
                     Next I1
-                    Locate 21, 35: Color 9
+					Locate 21, 35
+					Color 9
                     TMR% = TMR% - 1: Print Using "####"; TMR%
                 Next I
             Next J
@@ -664,10 +671,10 @@ Sub Merge_AddYear ()
 
     Dim BR$(100), PR$(80)
 
-    Dim TMR%, TMR1%
+    Dim TMR1%, TMR2%
 
-    TMR% = 4175
-    TMR1% = 6875
+    TMR1% = 4175
+    TMR2% = 6875
 
     Do
 
@@ -805,8 +812,8 @@ Sub Merge_AddYear ()
 
         For I = 0 To 99: Input #1, careerB$(I): Next
         For I = 0 To 79: Input #1, careerP$(I): Next
-        For J = 1 To 15: For I = 0 To 99: For I1 = O To 17: Input #1, BRS%(J, I, I1): Next I1: Locate 21, 35: TMR1% = TMR1% - 1: Color 9: Print Using "####"; TMR1%: Next I: Next J
-        For J = 1 To 15: For I = 0 To 79: For I1 = 0 To 16: Input #1, PRS%(J, I, I1): Next I1: Locate 21, 35: TMR1% = TMR1% - 1: Color 9: Print Using "####"; TMR1%: Next I: Next J
+        For J = 1 To 15: For I = 0 To 99: For I1 = O To 17: Input #1, BRS%(J, I, I1): Next I1: Locate 21, 35: TMR2% = TMR2% - 1: Color 9: Print Using "####"; TMR2%: Next I: Next J
+        For J = 1 To 15: For I = 0 To 79: For I1 = 0 To 16: Input #1, PRS%(J, I, I1): Next I1: Locate 21, 35: TMR2% = TMR2% - 1: Color 9: Print Using "####"; TMR2%: Next I: Next J
 
         Close #1
 
@@ -828,16 +835,49 @@ Sub Merge_AddYear ()
         Input #1, W2%
         Input #1, L2%
 
-        For I = 0 To 22: Input #1, BR$(I): Input #1, careerB1%(I): Locate 21, 35: TMR% = TMR% - 1: Color 9: Print Using "####"; TMR%: Next I
-        For I = 0 To 21: Input #1, PR$(I): Input #1, careerP1%(I): Locate 21, 35: TMR% = TMR% - 1: Color 9: Print Using "####"; TMR%: Next I
-        For I = 0 To 22: For I1 = 0 To 21: Input #1, careerB0%(I, I1): Locate 21, 35: TMR% = TMR% - 1: Color 9: Print Using "####"; TMR%: Next I1: Next I
-        For I = 0 To 21: For I1 = 0 To 41: Input #1, careerP0%(I, I1): Locate 21, 35: TMR% = TMR% - 1: Color 9: Print Using "####"; TMR%: Next I1: Next I
+        For I = 0 To 22: 
+			Input #1, BR$(I)
+			Input #1, careerB1%(I)
+			Locate 21, 35
+			Color 9
+			TMR1% = TMR1% - 1: Print Using "####"; TMR1%
+		Next I
+        
+		For I = 0 To 21: 
+			Input #1, PR$(I)
+			Input #1, careerP1%(I)
+			Locate 21, 35
+			Color 9
+			TMR1% = TMR1% - 1: Print Using "####"; TMR1%
+		Next I
+        
+		For I = 0 To 22: 
+			For I1 = 0 To 21: 
+				Input #1, careerB0%(I, I1)
+				Locate 21, 35
+				Color 9
+				TMR1% = TMR1% - 1: Print Using "####"; TMR1%
+			Next I1
+		Next I
+        
+		For I = 0 To 21: 
+			For I1 = 0 To 41: 
+				Input #1, careerP0%(I, I1)
+				Locate 21, 35
+				Color 9
+				TMR1% = TMR1% - 1: Print Using "####"; TMR1%
+			Next I1
+		Next I
 
-        Input #1, D0%
-        Input #1, D1%
+        Input #1, D0%, D1%
 
-        For I = 0 To 21: Input #1, statT%(I): Next I
-        For I = 0 To 22: Input #1, statT1%(I): Next I
+        For I = 0 To 21: 
+			Input #1, statT%(I)
+		Next I
+        
+		For I = 0 To 22: 
+			Input #1, statT1%(I)
+		Next I
 
         Close #1
 
@@ -974,8 +1014,9 @@ Sub Merge_AddYear ()
                 For I1 = O To 17:
                     Write #1, BRS%(J, I, I1)
                 Next I1
-                Locate 21, 35: Color 9
-                TMR1% = TMR1% - 1: Print Using "####"; TMR1%
+				Locate 21, 35
+				Color 9
+                TMR2% = TMR2% - 1: Print Using "####"; TMR2%
             Next I
         Next J
 
@@ -984,8 +1025,9 @@ Sub Merge_AddYear ()
                 For I1 = 0 To 16:
                     Write #1, PRS%(J, I, I1)
                 Next I1
-                Locate 21, 35: Color 9
-                TMR1% = TMR1% - 1: Print Using "####"; TMR1%
+				Locate 21, 35
+				Color 9
+                TMR2% = TMR2% - 1: Print Using "####"; TMR2%
             Next I
         Next J
 

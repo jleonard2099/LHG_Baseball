@@ -323,13 +323,11 @@ Sub LeagueStatsToScreen (LG$, D1$, D2$)
                 seeP$(P) = PadRight$(T$(P), 12)
 
                 'Wins
-                J! = Wins(P)
-                seeP$(P) = seeP$(P) + Right$("     " + Str$(J!), 3)
+                seeP$(P) = seeP$(P) + Right$("     " + Str$(Wins(P)), 3)
                 seeP$(P) = PadRight$(seeP$(P), 16)
 
                 'Losses
-                J! = Losses(P)
-                seeP$(P) = seeP$(P) + Right$("     " + Str$(J!), 3)
+                seeP$(P) = seeP$(P) + Right$("     " + Str$(Losses(P)), 3)
                 seeP$(P) = PadRight$(seeP$(P), 21)
 
                 'PCT

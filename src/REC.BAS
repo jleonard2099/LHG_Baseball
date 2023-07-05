@@ -101,23 +101,23 @@ Sub UpdateRecords (leagueFile$)
     Shared PRC!(), PRYR!()
     Shared TRC!(), TRC1!(), TRYR!(), TRYR1!()
     Shared TT!(), TT1!()
+    Shared WW(), LL()
+
+    Shared GM2()
 
     Shared BRC$(), BRT$(), PRC$(), PRT$()
     Shared leaderBL$(), leaderPL$()
     Shared TMB$(), TMP$(), TRC$(), TRC1$()
 
-    Dim GM2(880)
-
     Dim TT$(40, 22), TT1$(40, 23)
-
-    Dim WW(40), LL(40)
 
     AAG = 920
     AAS = 880
     AAT = 80
+    TMR% = 2360
+
     JB = 0
     JP = 0
-    TMR% = 2360
     TS = 0
 
     Cls
@@ -170,18 +170,20 @@ Sub UpdateRecords (leagueFile$)
 
     For I = 1 To 920:
         Input #1, leaderBL$(I), TMB$(I), GM1!(I)
-        TMR% = TMR% - 1
         Color 14
-        Locate 18, 45: Print Using "#####"; TMR%
+		Locate 18, 45
+        TMR% = TMR% - 1: Print Using "#####"; TMR%
     Next I
 
     For I = 1 To 920:
         For I1 = 1 To 22
             Input #1, BK%(I, I1)
         Next I1
-        TMR% = TMR% - 1
         Color 14
-    Locate 18, 45: Print Using "#####"; TMR%: Next I
+		Locate 18, 45
+        TMR% = TMR% - 1: Print Using "#####"; TMR%
+	Next I
+
     Close 1
 
     Open diskPaths$(2) + leagueFile$ + ".PIT" For Input As #1
@@ -190,18 +192,20 @@ Sub UpdateRecords (leagueFile$)
 
     For I = 1 To 880:
         Input #1, leaderPL$(I), TMP$(I), GM2(I)
-        TMR% = TMR% - 1
         Color 14
-        Locate 18, 45: Print Using "#####"; TMR%
+        Locate 18, 45
+        TMR% = TMR% - 1
+		Print Using "#####"; TMR%
     Next I
 
     For I = 1 To 880:
         For I1 = 1 To 23:
             Input #1, PM%(I, I1)
         Next I1
-        TMR% = TMR% - 1
         Color 14
-    Locate 18, 45: Print Using "#####"; TMR%: Next I
+		Locate 18, 45
+        TMR% = TMR% - 1: Print Using "#####"; TMR%
+	Next I
 
     Close 1
 
@@ -215,18 +219,18 @@ Sub UpdateRecords (leagueFile$)
         For I1 = 0 To 21:
             Input #1, TT!(I, I1), TT$(I, I1)
         Next
-        TMR% = TMR% - 1
         Color 14
-        Locate 18, 45: Print Using "#####"; TMR%
+        Locate 18, 45
+        TMR% = TMR% - 1: Print Using "#####"; TMR%
     Next
 
     For I = 1 To 40:
         For I1 = 0 To 22:
             Input #1, TT1!(I, I1), TT1$(I, I1)
         Next
-        TMR% = TMR% - 1
         Color 14
-        Locate 18, 45: Print Using "#####"; TMR%
+        Locate 18, 45
+        TMR% = TMR% - 1: Print Using "#####"; TMR%
     Next
 
     Close #1

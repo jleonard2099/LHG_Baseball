@@ -95,6 +95,8 @@ Dim BRS%(15, 100, 17), PRS%(15, 80, 18)
 Dim careerB1%(100), careerB0%(100, 23)
 Dim careerP0%(80, 42), careerP1%(80)
 
+Dim WW(40), LL(40)
+
 Dim BLL!(15), PLL!(15)
 Dim BL1!(18, 20), PL1!(16, 21)
 
@@ -174,7 +176,7 @@ Dim BK%(1 To 920, 22), PM%(1 To 880, 23)
 Dim TYP!(1 To 920), TYP1!(1 To 920)
 Dim TT!(40, 22), TT1!(40, 23)
 
-Dim GM1!(920)
+Dim GM1!(920), GM2(880)
 
 'NEWLDRST
 Dim CLT!(40), CWS!(40), ELL!(40), EWW!(40)
@@ -319,4 +321,3 @@ Dim Shared IJ$(20), M$(1), N$(1), NN$(1)
 Dim Shared P$(1, 21), PARK$(99), PC$(4), player$(23)
 Dim Shared Q3$(100), S$(1), SB$(0 To 22), SC$(4), TR$(0 To 22)
 Dim Shared U$(4), WD$(10), X$(12), YN$(1)
-
