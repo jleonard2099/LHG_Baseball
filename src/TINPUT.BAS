@@ -1,4 +1,4 @@
-Sub BINPUT ()
+Sub TINPUT ()
 
     _Title "Full Count Baseball - Team Input"
 
@@ -24,10 +24,10 @@ Sub BINPUT ()
         menuChoices$(3) = "PRINT ACTUAL TEAM STATS    "
         menuChoices$(4) = "ENTER/EDIT UMPIRES         "
         menuChoices$(5) = "SWAP SPOTS ON A TEAM ROSTER"
-        menuChoices$(6) = "RETURN TO MAIN MENU        "
-        menuChoices$(7) = "CALCULATE BUNT RATINGS     "
-        menuChoices$(8) = "CALCULATE RUN RATINGS      "
-        menuChoices$(9) = "VIEW TEAM ROSTERS/RATINGS  "
+        menuChoices$(6) = "CALCULATE BUNT RATINGS     "
+        menuChoices$(7) = "CALCULATE RUN RATINGS      "
+        menuChoices$(8) = "VIEW TEAM ROSTERS/RATINGS  "
+        menuChoices$(9) = "RETURN TO MAIN MENU        "
         Selection% = 1
         Count% = 9
         Start% = 1
@@ -51,7 +51,8 @@ Sub BINPUT ()
             Select Case Selection%
 
                 Case 1:
-                    Call InputTeam(Selection%, YN$, T$, T)
+
+                    Call InputEditTeam(1, YN$, T$, T)
 
                     'Read from stat file
                     N$ = RTrim$(Q$(0))
@@ -70,38 +71,31 @@ Sub BINPUT ()
                         End If
                     Next xx
 
+                    'This is needed to create the .D file
+                    'that goes with the team, which uses
+                    'the stat file naming format
                     F$ = Mid$(N$, 4, QQ)
 
-                    Call SaveTeamFile(YN$, T$, F$, T)
+                    Call SaveTeamFile(1, YN$, T$, F$, T)
 
                 Case 2:
-                    Call GetTeam_BINPUT(YN$, NTMS, T)
-                    Color 15, 0
-                    T$ = RTrim$(Q$(0))
-                    Call InputTeam(Selection%, YN$, T$, T)
+                    Call GetTeam_BINPUT(T$, YN$, NTMS, T)
+                    Call InputEditTeam(2, YN$, T$, T)
+                    Call SaveTeamFile(0, YN$, T$, F$, T)
 
                 Case 3:
-                    Call GetTeam_BINPUT(YN$, NTMS, T)
-                    Color 15, 0
-                    T$ = RTrim$(Q$(0))
+                    Call GetTeam_BINPUT(T$, YN$, NTMS, T)
                     Call PrintTeamStats(T$, T)
 
                 Case 4:
                     Call UMPMGR
 
                 Case 5:
-                    Call GetTeam_BINPUT(YN$, NTMS, T)
-                    Color 15, 0
-                    T$ = RTrim$(Q$(0))
+                    Call GetTeam_BINPUT(T$, YN$, NTMS, T)
                     Call SwapSpots(YN$, T$, T)
 
                 Case 6:
-                    Cls
-
-                Case 7:
-                    Call GetTeam_BINPUT(YN$, NTMS, T)
-                    Color 15, 0
-                    T$ = RTrim$(Q$(0))
+                    Call GetTeam_BINPUT(T$, YN$, NTMS, T)
                     Call CalculateBuntRating
 
                     'Read from stat file
@@ -121,15 +115,15 @@ Sub BINPUT ()
                         End If
                     Next xx
 
+                    'This is needed to create the .D file
+                    'that goes with the team, which uses
+                    'the stat file naming format
                     F$ = Mid$(N$, 4, QQ)
 
-                    Call SaveTeamFile(YN$, T$, F$, T)
-                    'GoTo 1920
+                    Call SaveTeamFile(0, YN$, T$, F$, T)
 
-                Case 8:
-                    Call GetTeam_BINPUT(YN$, NTMS, T)
-                    Color 15, 0
-                    T$ = RTrim$(Q$(0))
+                Case 7:
+                    Call GetTeam_BINPUT(T$, YN$, NTMS, T)
                     Call CalculateRunRating
 
                     'Read from stat file
@@ -151,348 +145,28 @@ Sub BINPUT ()
 
                     F$ = Mid$(N$, 4, QQ)
 
-                    Call SaveTeamFile(YN$, T$, F$, T)
+                    Call SaveTeamFile(0, YN$, T$, F$, T)
 
-                Case 9:
-                    Call GetTeam_BINPUT(YN$, NTMS, T)
-                    Color 15, 0
-                    T$ = RTrim$(Q$(0))
-                    Call ViewRostersRatings(T$)
+                Case 8:
+                    Call GetTeam_BINPUT(T$, YN$, NTMS, T)
+                    Call ViewRoster(T$)
 
             End Select
 
         End If
 
-    Loop Until Selection% = 6 Or ExitCode% = 27
+    Loop Until Selection% = 9 Or ExitCode% = 27
 
     Cls
-    '88 Exit Sub
 
 End Sub
 
-'----------------------------------------
-'       GetTeam_BINPUT subroutine
-'----------------------------------------
-'...explanation...
-Sub GetTeam_BINPUT (yearNumber$, numberTeams, teamIdx)
-
-    Shared ratings%()
-
-    Do
-
-        Color 15, 0: Cls
-        JJ = 7
-        Locate 6, 8: Color 15, 4
-        Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";: For II = 1 To JJ: Locate 6 + II, 8
-        Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
-        Locate 7 + JJ, 8
-        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
-
-        Locate 7, 32
-        Locate , 12: Print "ENTER DISK ID: ": Print
-        Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
-        Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
-        Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
-        Locate 7, 27: Input NY$
-
-        If NY$ = "" And yearNumber$ <> "" Then
-            Call SelectTeam_BINPUT(yearNumber$, numberTeams, teamIdx)
-        Else
-            yearNumber$ = RTrim$(NY$)
-            Erase teamNames$
-            numberTeams = 0
-
-            If Not _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
-                Locate 10, 8
-                Call CSMsgBox("NO TEAMS MATCHING ID WERE FOUND... PRESS ANY KEY TO SELECT ANOTHER ID", 26, Pass)
-                I$ = GetKeyPress$
-                Call CSMsgBox("", 0, Pass)
-                BO% = 1
-            Else
-                Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
-
-                fileLength& = LOF(1)
-
-                Field #1, 15 As Q$(0)
-
-                For I1 = 1 to fileLength& / 4342
-                    Get #1, I1
-                    For I2 = 1 To 15
-                        If Left$(Q$(0), 2) = "XX" Or Left$(Q$(0), 1) = " " Or Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then nullTeam = 1: Exit For
-                    Next I2
-                    If nullTeam <> 1 Then
-                        numberTeams = numberTeams + 1
-                        teamNames$(numberTeams) = Q$(0)
-                        teamIndex%(numberTeams) = I1
-                    End If
-                Next I1
-                Close 1
-
-                Call SelectTeam_BINPUT(yearNumber$, numberTeams, teamIdx)
-
-            End If 'Done checking for file
-
-        End If 'Done checking input
-
-        If BO% = 1 Then
-            BO% = 0
-        Else
-            T$ = RTrim$(Q$(0))
-            Locate 2, 33
-            Color ratings%(11), ratings%(12): Print T$
-
-            Do
-                Color 15, 4
-                Locate 3, 33: Print "ANY CHANGE (YN)";
-                I$ = GetKeyPress$
-            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
-        End If
-
-    Loop Until UCase$(I$) = "N"
-
-End Sub
 
 '----------------------------------------
-'     SelectTeam_BINPUT subroutine
+'     ViewRoster subroutine
 '----------------------------------------
 '...explanation...
-Sub SelectTeam_BINPUT (yearNumber$, numberTeams, teamIdx)
-
-    Shared draftB%(), draftP%()
-    Shared inputDYS%(), inputINJ%(), ratings%()
-    Shared inputSA%(), inputTS%()
-
-    Shared statB$(), statP$()
-
-    Shared K9&()
-
-    ' Shared M$, NN$, S$
-    Shared CK
-
-    Selection% = 1
-    Count% = numberTeams
-    Start% = 1
-    FileFGColr% = 15: FileBGColr% = 4
-    HiLiteFGColr% = 0: HiLiteBGColr% = 7
-    Rows% = 20
-    Columns% = 4
-    Spacing% = 6
-    Row% = 4
-    Column% = 1
-    Color , 4: Cls: Locate , 33: Color 14
-    Print "TEAM SELECTION": Color 15
-    Locate 25, 1: Color 14: Print "ESC";: Color 15
-    Print "-SELECT NEW ID  PGDN  PGUP  ";: Color 14
-    Print "ENTER";: Color 15: Print "-SELECTS TEAM";
-
-    _MouseShow "DEFAULT"
-    MAMenu teamNames$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
-    _MouseHide
-
-    If ExitCode% <> 27 Then
-
-        teamIdx = teamIndex%(Selection%)
-		teamYear$ = RTRim$(yearNumber$)
-
-        Locate 2, 33: Color 31
-		Print "LOADING..."
-
-        Open diskPaths$(0) + "FCTEAMS." + teamYear$ For Random As #1 Len = 4342
-
-        Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14)
-
-        For I = 0 To 22
-            Field #1, 45 + I * 99 As X$, 15 As Q$(I * 43 + 15), 2 As Q$(I * 43 + 16), 2 As Q$(I * 43 + 17), 2 As Q$(I * 43 + 18), 2 As Q$(I * 43 + 19), 2 As Q$(I * 43 + 20), 2 As Q$(I * 43 + 21), 2 As Q$(I * 43 + 22), 2 As Q$(I * 43 + 23), 2 As Q$(I * 43 + 24), 2 As Q$(I * 43 + 25), 2 As Q$(I * 43 + 26)
-            Field #1, 82 + I * 99 As X$, 2 As Q$(I * 43 + 27), 2 As Q$(I * 43 + 28), 2 As Q$(I * 43 + 29), 2 As Q$(I * 43 + 30), 2 As Q$(I * 43 + 31), 2 As Q$(I * 43 + 32), 2 As Q$(I * 43 + 33), 2 As Q$(I * 43 + 34), 2 As Q$(I * 43 + 35), 2 As Q$(I * 43 + 36), 2 As Q$(I * 43 + 37), 2 As Q$(I * 43 + 38)
-            Field #1, 106 + I * 99 As X$, 2 As Q$(I * 43 + 39), 2 As Q$(I * 43 + 40), 2 As Q$(I * 43 + 41), 2 As Q$(I * 43 + 42), 2 As Q$(I * 43 + 43), 2 As Q$(I * 43 + 44), 2 As Q$(I * 43 + 45), 2 As Q$(I * 43 + 46), 2 As Q$(I * 43 + 47), 2 As Q$(I * 43 + 48), 2 As Q$(I * 43 + 49), 2 As Q$(I * 43 + 50)
-            Field #1, 130 + I * 99 As X$, 2 As Q$(I * 43 + 51), 2 As Q$(I * 43 + 52), 2 As Q$(I * 43 + 53), 2 As Q$(I * 43 + 54), 2 As Q$(I * 43 + 55), 2 As Q$(I * 43 + 56), 2 As Q$(I * 43 + 57)
-        Next
-
-        For I = 0 To 21
-            Field #1, 2322 + I * 89 As X$, 15 As Q$(I * 38 + 1004), 2 As Q$(I * 38 + 1005), 2 As Q$(I * 38 + 1006), 2 As Q$(I * 38 + 1007), 2 As Q$(I * 38 + 1008), 2 As Q$(I * 38 + 1009), 2 As Q$(I * 38 + 1010), 2 As Q$(I * 38 + 1011), 2 As Q$(I * 38 + 1012), 2 As Q$(I * 38 + 1013), 2 As Q$(I * 38 + 1014), 2 As Q$(I * 38 + 1015)
-            Field #1, 2359 + I * 89 As X$, 2 As Q$(I * 38 + 1016), 2 As Q$(I * 38 + 1017), 2 As Q$(I * 38 + 1018), 2 As Q$(I * 38 + 1019), 2 As Q$(I * 38 + 1020), 2 As Q$(I * 38 + 1021), 2 As Q$(I * 38 + 1022), 2 As Q$(I * 38 + 1023), 2 As Q$(I * 38 + 1024), 2 As Q$(I * 38 + 1025), 2 As Q$(I * 38 + 1026), 2 As Q$(I * 38 + 1027)
-            Field #1, 2383 + I * 89 As X$, 2 As Q$(I * 38 + 1028), 2 As Q$(I * 38 + 1029), 2 As Q$(I * 38 + 1030), 2 As Q$(I * 38 + 1031), 2 As Q$(I * 38 + 1032), 2 As Q$(I * 38 + 1033), 2 As Q$(I * 38 + 1034), 2 As Q$(I * 38 + 1035), 2 As Q$(I * 38 + 1036), 2 As Q$(I * 38 + 1037), 2 As Q$(I * 38 + 1038), 2 As Q$(I * 38 + 1039)
-            Field #1, 2407 + I * 89 As X$, 2 As Q$(I * 38 + 1040), 2 As Q$(I * 38 + 1041)
-        Next
-
-        Field #1, 4280 As X$, 40 As Q$(1840), 15 As Q$(1841), 5 As Q$(1842), 2 As Q$(1843)
-
-        Get #1, teamIdx
-
-        For I = 1 To 13: ratings%(I) = CVI(Q$(I)): Next
-
-        K9&(0) = CVS(Q$(14))
-
-        For I = 0 To 22: statB$(I) = RTrim$(Q$(I * 43 + 15))
-            For I1 = 0 To 41
-                draftB%(I, I1) = CVI(Q$(I * 43 + I1 + 16))
-            Next
-        Next
-
-        For I = 0 To 21
-            statP$(I) = RTrim$(Q$(I * 38 + 1004))
-            For I1 = 0 To 36
-                draftP%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
-            Next
-        Next
-
-        CK = CVI(Q$(1843))
-        Close 1
-
-        If _FileExists(diskPaths$(0) + "LR." + teamYear$) Then
-
-            Open diskPaths$(0) + "LR." + teamYear$ For Random As #1 Len = 4108
-
-            For X = 0 To 11
-                Field #1, X * 2 As X$, 2 As Q$(X + 1)
-            Next
-
-            For X = 0 To 22
-                For X1 = 1 To 14
-                    Field #1, 24 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(12 + X1 + X * 14)
-                Next
-            Next
-
-            For X = 0 To 21
-                For X1 = 1 To 14
-                    Field #1, 668 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(334 + X1 + X * 14)
-                Next
-            Next
-
-            For X = 0 To 21
-                For X1 = 1 To 14
-                    Field #1, 1284 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(642 + X1 + X * 14)
-                Next
-            Next
-
-            For X = 1 To 24
-                Field #1, 1900 + (X - 1) * 2 As X$, 2 As Q$(950 + X)
-            Next
-
-            For X = 0 To 22
-                For X1 = 1 To 24
-                    Field #1, 1948 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(975 + X1 + X * 24)
-                Next
-            Next
-
-            For X = 0 To 21
-                For X1 = 1 To 24
-                    Field #1, 3052 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(1528 + X1 + X * 24)
-                Next
-            Next
-
-            Get #1, T
-
-            For X = 0 To 11
-                inputTS%(X) = CVI(Q$(X + 1))
-            Next
-
-            For X = 0 To 22
-                For X1 = 1 To 14
-                    draftB%(X, X1 + 41) = CVI(Q$(12 + X1 + X * 14))
-                Next
-            Next
-
-            For X = 0 To 21
-                For X1 = 1 To 14
-                    draftP%(X, X1 + 36) = CVI(Q$(334 + X1 + X * 14))
-                Next
-            Next
-
-            For X = 0 To 21
-                For X1 = 1 To 14
-                    draftP%(X, X1 + 50) = CVI(Q$(642 + X1 + X * 14))
-                Next
-            Next
-
-            For X = 1 To 24
-                inputSA%(X) = CVI(Q$(X + 950))
-            Next
-
-            For X = 0 To 22
-                For X1 = 1 To 24
-                    draftB%(X, X1 + 55) = CVI(Q$(975 + X1 + X * 24))
-                Next
-            Next
-
-            For X = 0 To 21
-                For X1 = 1 To 24
-                    draftP%(X, X1 + 64) = CVI(Q$(1528 + X1 + X * 24))
-                Next
-            Next
-
-            Close 1
-
-            If inputTS%(0) <> 999 Then
-                For X = 0 To 22
-                    For X1 = 42 To 79
-                        draftB%(X, X1) = 0
-                    Next
-                Next
-
-                For X = 0 To 21
-                    For X1 = 37 To 88
-                        draftP%(X, X1) = 0
-                    Next
-                Next
-
-                For X = 1 To 24
-                    inputSA%(X) = 0
-                Next
-
-                For X = 0 To 11
-                    inputTS%(X) = 0
-                Next
-
-            End If
-
-        End If
-
-        'Read from stat file
-        N$ = RTrim$(Q$(0))
-
-        For xx = 4 To 11
-            If Mid$(N$, xx, 1) = " " Or Mid$(N$, xx, 1) = "." Then Mid$(N$, xx, 1) = "_"
-        Next xx
-
-        QQ = 8
-
-        For xx = 11 To 4 Step -1
-            If Mid$(N$, xx, 1) = "_" Then
-                QQ = xx - 4
-            Else
-                Exit For
-            End If
-        Next xx
-
-        targetFile$ = Mid$(N$, 4, QQ)
-        targetFile$ = targetFile$ + "." + Left$(N$, 2)
-
-        If _FileExists(diskPaths$(1) + targetFile$ + "D") Then
-
-            Open diskPaths$(1) + targetFile$ + "D" For Input As #1
-            For I1 = 0 To 22
-                Input #1, inputINJ%(I1)
-            Next
-            For I1 = 0 To 21
-                Input #1, inputDYS%(I1)
-            Next
-        End If
-
-        Close 1
-
-    Else
-        BO% = 1
-    End If
-
-End Sub
-
-'----------------------------------------
-'     ViewRostersRatings subroutine
-'----------------------------------------
-'...explanation...
-Sub ViewRostersRatings (targetTeam$)
+Sub ViewRoster (targetTeam$)
 
     Shared ERX!
 
@@ -543,26 +217,47 @@ Sub ViewRostersRatings (targetTeam$)
 
     Cls
 
-    Color 12: Locate 5, 10: Print targetTeam$
-    Color 3: Locate 7, 10: Print "LEAGUE BATTING AVG.";
-    Locate 7, 38: Color 7: Print Using "#####"; ratings%(1)
-    Color 3: Locate , 10: Print "LEAGUE STRIKE OUT AVG.";
-    Locate , 38: Color 7: Print Using "#####"; ratings%(2)
-    Color 3: Locate , 10: Print "LEAGUE BASE ON BALLS AVG.";
-    Locate , 38: Color 7: Print Using "#####"; ratings%(3)
-    Color 3: Locate , 10: Print "LEAGUE HOME RUN AVG.";
-    Locate , 38: Color 7: Print Using "#####"; ratings%(4)
-    Color 3: Locate , 10: Print "DOUBLE PLAYS AVG.";
-    Locate , 38: Color 7: Print Using "#####"; ratings%(5)
-    Color 3: Locate , 10: Print "PARK DOUBLE ADJ.";
-    Locate , 38: Color 7: Print Using "#####"; ratings%(6)
-    Color 3: Locate , 10: Print "PARK TRIPLE ADJ.";
-    Locate , 38: Color 7: Print Using "#####"; ratings%(7)
-    Color 3: Locate , 10: Print "PARK HOME RUN ADJ.";
-    Locate , 37: Color 7: Print Using "######"; K9&(0)
-    Color 3: Locate , 10: Print "PARK FOUL GROUND ADJ.";
-    Locate , 37: Color 7: Print Using "######"; ratings%(8)
-    Color 15: Locate 23, 10: Print "HIT ANY KEY TO CONTINUE"
+    Color 12
+    Locate 5, 10: Print targetTeam$
+    Color 3
+    Locate 7, 10: Print "LEAGUE BATTING AVG.";
+    Color 7
+    Locate 7, 38: Print Using "#####"; ratings%(1)
+    Color 3
+    Locate , 10: Print "LEAGUE STRIKE OUT AVG.";
+    Color 7
+    Locate , 38: Print Using "#####"; ratings%(2)
+    Color 3
+    Locate , 10: Print "LEAGUE BASE ON BALLS AVG.";
+    Color 7
+    Locate , 38: Print Using "#####"; ratings%(3)
+    Color 3
+    Locate , 10: Print "LEAGUE HOME RUN AVG.";
+    Color 7
+    Locate , 38: Print Using "#####"; ratings%(4)
+    Color 3
+    Locate , 10: Print "DOUBLE PLAYS AVG.";
+    Color 7
+    Locate , 38: Print Using "#####"; ratings%(5)
+    Color 3
+    Locate , 10: Print "PARK DOUBLE ADJ.";
+    Color 7
+    Locate , 38: Print Using "#####"; ratings%(6)
+    Color 3
+    Locate , 10: Print "PARK TRIPLE ADJ.";
+    Color 7
+    Locate , 38: Print Using "#####"; ratings%(7)
+    Color 3
+    Locate , 10: Print "PARK HOME RUN ADJ.";
+    Color 7
+    Locate , 37: Print Using "######"; K9&(0)
+    Color 3
+    Locate , 10: Print "PARK FOUL GROUND ADJ.";
+    Color 7
+    Locate , 37: Print Using "######"; ratings%(8)
+    Color 15
+    Locate 23, 10: Print "HIT ANY KEY TO CONTINUE"
+
     I$ = GetKeyPress$
 
     Do
@@ -570,13 +265,17 @@ Sub ViewRostersRatings (targetTeam$)
         Cls
         Color 12: Print "TEAM OPTIONS"
         Print
-        Color 14: Print "(1) ";: Color 15: Print "VIEW HITTERS"
+        Color 14: Print "(1) ";
+        Color 15: Print "VIEW HITTERS"
         Print
-        Color 14: Print "(2) ";: Color 15: Print "VIEW PITCHERS"
+        Color 14: Print "(2) ";
+        Color 15: Print "VIEW PITCHERS"
         Print
-        Color 14: Print "(3) ";: Color 15: Print "VIEW PITCHERS HITTING/FLDG STATS"
+        Color 14: Print "(3) ";
+        Color 15: Print "VIEW PITCHERS HITTING/FLDG STATS"
         Print
-        Color 14: Print "(4) ";: Color 15: Print "RETURN TO MAIN MENU"
+        Color 14: Print "(4) ";
+        Color 15: Print "RETURN TO MAIN MENU"
 
         Do
             I$ = GetKeyPress$
@@ -584,25 +283,36 @@ Sub ViewRostersRatings (targetTeam$)
         Loop Until I >= 1 And I <= 4
 
         Select Case I
-            Case 1: Call ViewHitters
-            Case 2: Call ViewPitchers
-            Case 3: Call ViewHittingFielding
-            Case 4: Cls '
-        End Select
 
-        ' --wrap it up here
+            Case 1:
+                Call ViewHitters
+
+            Case 2:
+                Call ViewPitchers
+
+            Case 3:
+                Call ViewHittingFielding
+
+        End Select
 
     Loop Until I = 4
 
 End Sub
 
 '----------------------------------------
-'           InputTeam subroutine
+'        InputEditTeam Subroutine
 '----------------------------------------
-'...explanation...
+'Steps user through screens for adjusting
+'team data and players
+'
+'NOTE: <ENTER> key is valued as 0 for when
+'a user is prompted to press keys to CONTINUE
+'This improvement over the original makes it
+'faster and easier to proceed through screens
+
 'inputAction% = 1: New Team
 'inputAction% = 2: Edit Team
-Sub InputTeam (inputAction%, yearNumber$, targetTeam$, teamIdx)
+Sub InputEditTeam (inputAction%, yearNumber$, targetTeam$, teamIdx)
 
     Shared draftB%(), draftP%()
     Shared ratings%(), inputSA%(), inputTS%()
@@ -668,9 +378,9 @@ Sub InputTeam (inputAction%, yearNumber$, targetTeam$, teamIdx)
         NN$ = RTrim$(Q$(1842))
     End If
 
-    Call EDITTEAM(yearNumber$, targetTeam$, NN$, S$, M$, teamIdx)
-    Call BATTEREDIT
-    Call PITCHEREDIT
+    Call EditTeamInfo(yearNumber$, targetTeam$, NN$, S$, M$, teamIdx)
+    Call EditBatter
+    Call EditPitcher
 
     Locate 10, 8
 
@@ -679,7 +389,7 @@ End Sub
 '----------------------------------------
 '        SaveTeamFile subroutine
 '----------------------------------------
-Sub SaveTeamFile (yearNumber$, targetTeam$, targetFile$, teamIdx)
+Sub SaveTeamFile (newID%, yearNumber$, targetTeam$, targetFile$, teamIdx)
 
     ' Shared M$, NN$, S$
 
@@ -701,9 +411,13 @@ Sub SaveTeamFile (yearNumber$, targetTeam$, targetFile$, teamIdx)
 
     Call CSMsgBox("SAVING TEAM FILES", 20, Pass)
 
-	teamYear$ = RTrim$(yearNumber$)
+    teamYear$ = RTrim$(yearNumber$)
 
     Open diskPaths$(0) + "FCTEAMS." + teamYear$ For Random As #1 Len = 4342
+
+    fileLength& = LOF(1)
+
+    If teamIdx = 0 Or newID% = 1 Then teamIdx = fileLength& / 4342 + 1
 
     Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14)
 
@@ -738,8 +452,10 @@ Sub SaveTeamFile (yearNumber$, targetTeam$, targetFile$, teamIdx)
         Next
     Next
 
-    For I = 0 To 21: LSet Q$(I * 38 + 1004) = statP$(I)
-        For I1 = 0 To 36: LSet Q$(I * 38 + I1 + 1005) = MKI$(draftP%(I, I1))
+    For I = 0 To 21:
+        LSet Q$(I * 38 + 1004) = statP$(I)
+        For I1 = 0 To 36:
+            LSet Q$(I * 38 + I1 + 1005) = MKI$(draftP%(I, I1))
         Next
     Next
 
@@ -880,7 +596,9 @@ Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
     TS = 0
 
     Do
+
         Cls
+
         Print "DOES "; targetTeam$; " HAVE COMPILED STATS (YN)";
         I$ = GetKeyPress$
     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
@@ -891,7 +609,9 @@ Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
     End If
 
     Do
+
         Cls
+
         Print "TEAM ROSTER FOR "; targetTeam$
 
         For I = 0 To 22
@@ -916,40 +636,78 @@ Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
         Loop Until I >= 1 And I <= 4
 
         Select Case I
+
             Case 1:
                 Call SwitchBatters
+
             Case 2:
                 Call SwitchPitchers
+
             Case 3:
+
                 If TS <> 0 Then
+
                     Cls
 
                     Open diskPaths$(1) + R$ For Output As #1
-                    Print #1, A$: Print #1, W2%: Print #1, L2%
-                    For I = 0 To 22: Print #1, BS$(I): Print #1, BS%(I): Next I
-                    For I = 0 To 21: Print #1, PS$(I): Print #1, PS%(I): Next I
-                    For I = 0 To 22: For I1 = 0 To 21: Print #1, statB0%(I, I1): Next I1: Next I
-                    For I = 0 To 21: For I1 = 0 To 41: Print #1, statP0%(I, I1): Next I1: Next I
+
+                    Print #1, A$
+                    Print #1, W2%
+                    Print #1, L2%
+
+                    For I = 0 To 22:
+                        Print #1, BS$(I)
+                        Print #1, BS%(I)
+                    Next I
+
+                    For I = 0 To 21:
+                        Print #1, PS$(I)
+                        Print #1, PS%(I)
+                    Next I
+
+                    For I = 0 To 22:
+                        For I1 = 0 To 21:
+                            Print #1, statB0%(I, I1)
+                        Next I1
+                    Next I
+
+                    For I = 0 To 21:
+                        For I1 = 0 To 41:
+                            Print #1, statP0%(I, I1)
+                        Next I1
+                    Next I
+
                     Print #1, D0%
+
                     Print #1, D1%
-                    For I = 0 To 21: Print #1, statT!(I): Next I
-                    For I = 0 To 22: Print #1, statT1!(I): Next I
+
+                    For I = 0 To 21:
+                        Print #1, statT!(I)
+                    Next I
+
+                    For I = 0 To 22:
+                        Print #1, statT1!(I)
+                    Next I
+
                     Close 1
 
                     If SS <> 0 Then
+
                         Open diskPaths$(1) + R$ + "R" For Output As #1
+
                         For I = 0 To 22
                             For I1 = 0 To 6
                                 Print #1, statSS%(I, I1)
                             Next I1
                         Next I
+
                         Close #1
+
                     End If
+
                 End If
 
-                Call SaveTeamFile(yearNumber$, targetTeam$, teamStatFile$, teamIdx)
-
-            Case 4: '
+                Call SaveTeamFile(0, yearNumber$, targetTeam$, teamStatFile$, teamIdx)
 
         End Select
 
@@ -996,36 +754,65 @@ Sub LoadTeam (targetTeam$, teamHasStats, SS, targetFile$)
         Call CSMsgBox("NO COMPILED STATS WERE FOUND... PRESS ANY KEY TO RETURN TO CONTINUE", 26, Pass)
         I$ = GetKeyPress$
         Call CSMsgBox("", 0, Pass)
-        teamHasStats = 0
     Else
 
         Open diskPaths$(1) + targetFile$ For Input As #1
 
-        Input #1, A$: Input #1, W2%: Input #1, L2%
+        Input #1, A$
+        Input #1, W2%
+        Input #1, L2%
 
-        For I = 0 To 22: Input #1, BS$(I): Input #1, BS%(I): Next I
-        For I = 0 To 21: Input #1, PS$(I): Input #1, PS%(I): Next I
-        For I = 0 To 22: For I1 = 0 To 21: Input #1, statB0%(I, I1): Next I1: Next I
-        For I = 0 To 21: For I1 = 0 To 41: Input #1, statP0%(I, I1): Next I1: Next I
+        For I = 0 To 22:
+            Input #1, BS$(I)
+            Input #1, BS%(I)
+        Next I
 
-        Input #1, D0%: Input #1, D1%
+        For I = 0 To 21:
+            Input #1, PS$(I)
+            Input #1, PS%(I)
+        Next I
 
-        For I = 0 To 21: Input #1, statT!(I): Next I
-        For I = 0 To 22: Input #1, statT1!(I): Next I
+        For I = 0 To 22:
+            For I1 = 0 To 21:
+                Input #1, statB0%(I, I1)
+            Next I1
+        Next I
+
+        For I = 0 To 21:
+            For I1 = 0 To 41:
+                Input #1, statP0%(I, I1)
+            Next I1
+        Next I
+
+        Input #1, D0%
+        Input #1, D1%
+
+        For I = 0 To 21:
+            Input #1, statT!(I)
+        Next I
+
+        For I = 0 To 22:
+            Input #1, statT1!(I)
+        Next I
 
         Close #1
 
         If Not _FileExists(diskPaths$(1) + targetFile$ + "R") Then
+
             SS = 0
+
         Else
+
             SS = 1
 
             Open diskPaths$(1) + targetFile$ + "R" For Input As #1
+
             For I = 0 To 22
                 For I1 = 0 To 6
                     Input #1, statSS%(I, I1)
                 Next I1
             Next I
+
             Close #1
 
         End If 'done checking for files
@@ -1069,11 +856,20 @@ Sub SwitchBatters ()
     Loop Until UCase$(I$) = "N"
 
     Swap statB$(I1 - 1), statB$(I2 - 1)
+
     Swap BS$(I1 - 1), BS$(I2 - 1)
 
-    For I = 0 To 79: Swap draftB%(I1 - 1, I), draftB%(I2 - 1, I): Next
-    For I = 0 To 21: Swap statB0%(I1 - 1, I), statB0%(I2 - 1, I): Next
-    For I = 0 To 6: Swap statSS%(I1 - 1, I), statSS%(I2 - 1, I): Next
+    For I = 0 To 79:
+        Swap draftB%(I1 - 1, I), draftB%(I2 - 1, I)
+    Next
+
+    For I = 0 To 21:
+        Swap statB0%(I1 - 1, I), statB0%(I2 - 1, I)
+    Next
+
+    For I = 0 To 6:
+        Swap statSS%(I1 - 1, I), statSS%(I2 - 1, I)
+    Next
 
     Swap BS%(I1 - 1), BS%(I2 - 1)
 
@@ -1089,7 +885,9 @@ Sub SwitchPitchers ()
     Shared statP$(), PS$()
 
     Do
-        For I = 16 To 19: Locate I, 50: Print Space$(27): Next
+        For I = 16 To 19:
+            Locate I, 50: Print Space$(27)
+        Next
 
         Do
             Locate 16, 50: Input "PITCHER #1 "; I1
@@ -1113,9 +911,13 @@ Sub SwitchPitchers ()
 
     Swap statP$(I1 - 1), statP$(I2 - 1): Swap PS$(I1 - 1), PS$(I2 - 1)
 
-    For I = 0 To 88: Swap draftP%(I1 - 1, I), draftP%(I2 - 1, I): Next
+    For I = 0 To 88:
+        Swap draftP%(I1 - 1, I), draftP%(I2 - 1, I)
+    Next
 
-    For I = 0 To 41: Swap statP0%(I1 - 1, I), statP0%(I2 - 1, I): Next
+    For I = 0 To 41:
+        Swap statP0%(I1 - 1, I), statP0%(I2 - 1, I)
+    Next
 
     Swap PS%(I1 - 1), PS%(I2 - 1)
 
@@ -1138,15 +940,14 @@ Sub PrintTeamStats (targetTeam$, teamIdx)
     NN$ = RTrim$(Q$(1842))
 
     LPrint "TEAM # "; teamIdx
-
     LPrint "TEAM NAME "; targetTeam$; Tab(30); "MANAGER: "; M$; Tab(50); "STADIUM: "; S$
 
-    LPrint: LPrint "LBA LSO LBB LHR DPG DBL TR    HR   FOUL PARK INFO"
+    LPrint
+    LPrint "LBA LSO LBB LHR DPG DBL TR    HR   FOUL PARK INFO"
 
     LPrint Using "### ### ### ### ### ### ### ###### ###  "; ratings%(1); ratings%(2); ratings%(3); ratings%(4); ratings%(5); ratings%(6); ratings%(7); K9&(0); ratings%(8);: LPrint BP$(ratings%(9)); " "; BP$(ratings%(10) + 2)
 
     LPrint
-
     LPrint "BATTER      B    G  AB   R   H DB TR HR RBI  BB  SO  SB CS RN B GA P1 FAV1 A R P2 FAV2 A R P3 FAV3 A R P4 FAV4 A R EBA BAVG"
 
     For I = 0 To 22
@@ -1351,19 +1152,25 @@ Sub CalculateBuntRating ()
     Cls
 
     For I = 0 To 21
+
         If statP$(I) <> "" And statP$(I) <> "XXX" Then
+
             PA = draftP%(I, 20) + draftP%(I, 27)
             If PA = 0 Then PA = 1
+
             OB! = (draftP%(I, 22) * 100 + PA / 2) / PA
             SLG! = (draftP%(I, 22) + draftP%(I, 23) + draftP%(I, 24) * 2 + draftP%(I, 25) * 3) * 100
             SLG2! = (SLG! + PA / 2) / PA
+
             R1! = (draftP%(I, 28) * 100 + PA / 2) / PA
             R1! = 11 - R1! ^ 2 / 25
             If R1! < 1 Then R1! = 1
             If R1! > 10 Then R1! = 10
+
             R2! = 11 - (SLG2! - OB!) / 25
             If R2! < 1 Then R2! = 1
             If R2! > 10 Then R2! = 10
+
             BUNT! = (R1! + R1! + R2!) / 3
             B1! = draftP%(I, 36) * 1000 / PA
 
@@ -1381,13 +1188,14 @@ Sub CalculateBuntRating ()
                 Case Is >= 36: BR = 10
             End Select
 
-            1961 '
             BUNT! = (BUNT! + BR) / 2
             If BUNT! < 1 Then BUNT! = 1
             If BUNT! > 9 Then BUNT! = 9
             draftP%(I, 32) = Int(BUNT! + .5)
             Print statP$(I); Tab(20); draftP%(I, 32)
+
         End If
+
     Next
 
     Locate 24, 1: Print "PRESS ANY KEY TO CONTINUE";
@@ -1396,45 +1204,51 @@ Sub CalculateBuntRating ()
 End Sub
 
 '----------------------------------------
-'       BATTEREDIT subroutine
+'       EditBatter subroutine
 '----------------------------------------
 '...explanation...
-Sub BATTEREDIT ()
+Sub EditBatter ()
 
     Shared statB$(), draftB%()
 
     Shared inputINJ%()
 
     Do
+
         Color 15, 0
         Cls
-        Print "EDIT/ENTER BATTERS"
-        X% = 2
-        For i = 0 To 10
-            Locate i + 5, 5
-            Print Using "##"; i + 1;: Print " "; statB$(i); Tab(40);
-            Print Using "##"; i + 13;: Print " "; statB$(i + 12)
+
+        Color 14
+        Print "EDIT / ENTER BATTERS"
+        Color 15
+
+        For I = 0 To 10
+            Locate I + 5, 5
+            Print Using "##"; I + 1;: Print " "; statB$(I); Tab(40);
+            Print Using "##"; I + 13;: Print " "; statB$(I + 12)
         Next
+
         Locate , 5: Print Using "##"; 12;: Print " "; statB$(11)
+
         Print
-        'FOR i = 0 TO 22
-        'FOR i1 = 22 TO 25
-        'IF (draftB%(i, i1) > 0 AND draftB%(i, i1 + 4) = 0) OR draftB%(i, 4) = 0 THEN PRINT statB$(i)
-        'NEXT
-        'NEXT
 
         Do
             Locate 22, 1
-            Print "# TO ENTER/EDIT (1-23) (0 TO CONTINUE) ";: Input i
-        Loop Until i >= 0 And i <= 23
+            Print "# TO ENTER/EDIT (1-23) (0 TO CONTINUE) ";: Input idx
+        Loop Until idx >= 0 And idx <= 23
 
-        If i <> 0 Then
+        If idx > 0 Then
 
-            i = i - 1
+            I = idx - 1
             ' INITIALIZE BATTER SCREEN
 
-            Color 15, 1: Cls
-            Locate 1, 30: Print "EDIT AND INPUT BATTERS"
+            Color 15, 1
+            Cls
+
+            Color 14
+            Locate 1, 30: Print "EDIT / INPUT BATTERS"
+            Color 15
+
             Locate 3, 1: Print "NAME:"
             Locate 3, 24: Print "BATS:"
             Locate 3, 36: Print "ACTIVE:"
@@ -1461,100 +1275,99 @@ Sub BATTEREDIT ()
             Locate 25, 13: Print "RHB vs RHP";
 
             ' INITIALIZE BATTER FIELDS
-            'Colr = 112
             FG = 0
             BG = 7
             Color FG, BG
 
-            Locate 3, 7: QPrint PadRight$(statB$(i), 15), FG, BG, -1
-            If draftB%(i, 0) = 2 Then BATS$ = "RP"
-            If draftB%(i, 0) = -2 Then BATS$ = "LP"
-            If draftB%(i, 0) = 1 Then BATS$ = "R"
-            If draftB%(i, 0) = -1 Then BATS$ = "L"
-            If draftB%(i, 0) = 0 Then BATS$ = "S"
+            Locate 3, 7: QPrint PadRight$(statB$(I), 15), FG, BG, -1
+            If draftB%(I, 0) = 2 Then BATS$ = "RP"
+            If draftB%(I, 0) = -2 Then BATS$ = "LP"
+            If draftB%(I, 0) = 1 Then BATS$ = "R"
+            If draftB%(I, 0) = -1 Then BATS$ = "L"
+            If draftB%(I, 0) = 0 Then BATS$ = "S"
 
             Locate 3, 30: QPrint PadRight$(BATS$, 2), FG, BG, -1
             ACT$ = "Y"
-            If draftB%(i, 31) = 1 Then ACT$ = "N"
-            Locate 3, 44: Print ACT$
+            If draftB%(I, 31) = 1 Then ACT$ = "N"
 
-            Locate 3, 62: Print Using "###"; inputINJ%(i)
-            Locate 6, 12: Print Using "###"; draftB%(i, 3)
-            Locate 6, 17: Print Using "###"; draftB%(i, 4)
-            Locate 6, 22: Print Using "###"; draftB%(i, 5)
-            Locate 6, 27: Print Using "###"; draftB%(i, 6)
-            Locate 6, 32: Print Using "##"; draftB%(i, 7)
-            Locate 6, 36: Print Using "##"; draftB%(i, 8)
-            Locate 6, 40: Print Using "##"; draftB%(i, 9)
-            Locate 6, 44: Print Using "###"; draftB%(i, 10)
-            Locate 6, 49: Print Using "###"; draftB%(i, 11)
-            Locate 6, 54: Print Using "###"; draftB%(i, 12)
-            Locate 6, 59: Print Using "###"; draftB%(i, 13)
-            Locate 6, 64: Print Using "##"; draftB%(i, 14)
-            Locate 6, 68: Print Using "##"; draftB%(i, 15)
-            Locate 7, 17: Print Using "###"; draftB%(i, 42)
-            Locate 7, 27: Print Using "###"; draftB%(i, 43)
-            Locate 7, 32: Print Using "##"; draftB%(i, 44)
-            Locate 7, 36: Print Using "##"; draftB%(i, 45)
-            Locate 7, 40: Print Using "##"; draftB%(i, 46)
-            Locate 7, 49: Print Using "###"; draftB%(i, 47)
-            Locate 7, 54: Print Using "###"; draftB%(i, 48)
-            Locate 8, 17: Print Using "###"; draftB%(i, 49)
-            Locate 8, 27: Print Using "###"; draftB%(i, 50)
-            Locate 8, 32: Print Using "##"; draftB%(i, 51)
-            Locate 8, 36: Print Using "##"; draftB%(i, 52)
-            Locate 8, 40: Print Using "##"; draftB%(i, 53)
-            Locate 8, 49: Print Using "###"; draftB%(i, 54)
-            Locate 8, 54: Print Using "###"; draftB%(i, 55)
-            Locate 12, 31: Print Using "##"; draftB%(i, 22)
-            Locate 12, 36: Print Using "####"; draftB%(i, 26)
-            Locate 12, 43: Print Using "#"; draftB%(i, 33)
-            Locate 12, 47: Print Using "#"; draftB%(i, 34)
-            Locate 13, 31: Print Using "##"; draftB%(i, 23)
-            Locate 13, 36: Print Using "####"; draftB%(i, 27)
-            Locate 13, 43: Print Using "#"; draftB%(i, 35)
-            Locate 13, 47: Print Using "#"; draftB%(i, 36)
-            Locate 14, 31: Print Using "##"; draftB%(i, 24)
-            Locate 14, 36: Print Using "####"; draftB%(i, 28)
-            Locate 14, 43: Print Using "#"; draftB%(i, 37)
-            Locate 14, 47: Print Using "#"; draftB%(i, 38)
-            Locate 15, 31: Print Using "##"; draftB%(i, 25)
-            Locate 15, 36: Print Using "####"; draftB%(i, 29)
-            Locate 15, 43: Print Using "#"; draftB%(i, 39)
-            Locate 15, 47: Print Using "#"; draftB%(i, 40)
-            Locate 17, 23: Print Using "#"; draftB%(i, 16)
-            Locate 17, 39: Print Using "#"; draftB%(i, 30)
-            Locate 17, 49: Print Using "##"; draftB%(i, 18)
-            Locate 17, 67: Print Using "###"; draftB%(i, 20)
-            Locate 22, 27: Print Using "###"; draftB%(i, 56)
-            Locate 22, 32: Print Using "###"; draftB%(i, 57)
-            Locate 22, 37: Print Using "###"; draftB%(i, 58)
-            Locate 22, 42: Print Using "###"; draftB%(i, 59)
-            Locate 22, 47: Print Using "###"; draftB%(i, 60)
-            Locate 22, 52: Print Using "###"; draftB%(i, 61)
-            Locate 23, 27: Print Using "###"; draftB%(i, 62)
-            Locate 23, 32: Print Using "###"; draftB%(i, 63)
-            Locate 23, 37: Print Using "###"; draftB%(i, 64)
-            Locate 23, 42: Print Using "###"; draftB%(i, 65)
-            Locate 23, 47: Print Using "###"; draftB%(i, 66)
-            Locate 23, 52: Print Using "###"; draftB%(i, 67)
-            Locate 24, 27: Print Using "###"; draftB%(i, 68);
-            Locate 24, 32: Print Using "###"; draftB%(i, 69);
-            Locate 24, 37: Print Using "###"; draftB%(i, 70);
-            Locate 24, 42: Print Using "###"; draftB%(i, 71);
-            Locate 24, 47: Print Using "###"; draftB%(i, 72);
-            Locate 24, 52: Print Using "###"; draftB%(i, 73);
-            Locate 25, 27: Print Using "###"; draftB%(i, 74);
-            Locate 25, 32: Print Using "###"; draftB%(i, 75);
-            Locate 25, 37: Print Using "###"; draftB%(i, 76);
-            Locate 25, 42: Print Using "###"; draftB%(i, 77);
-            Locate 25, 47: Print Using "###"; draftB%(i, 78);
-            Locate 25, 52: Print Using "###"; draftB%(i, 79);
+            Locate 3, 44: Print ACT$
+            Locate 3, 62: Print Using "###"; inputINJ%(I)
+            Locate 6, 12: Print Using "###"; draftB%(I, 3)
+            Locate 6, 17: Print Using "###"; draftB%(I, 4)
+            Locate 6, 22: Print Using "###"; draftB%(I, 5)
+            Locate 6, 27: Print Using "###"; draftB%(I, 6)
+            Locate 6, 32: Print Using "##"; draftB%(I, 7)
+            Locate 6, 36: Print Using "##"; draftB%(I, 8)
+            Locate 6, 40: Print Using "##"; draftB%(I, 9)
+            Locate 6, 44: Print Using "###"; draftB%(I, 10)
+            Locate 6, 49: Print Using "###"; draftB%(I, 11)
+            Locate 6, 54: Print Using "###"; draftB%(I, 12)
+            Locate 6, 59: Print Using "###"; draftB%(I, 13)
+            Locate 6, 64: Print Using "##"; draftB%(I, 14)
+            Locate 6, 68: Print Using "##"; draftB%(I, 15)
+            Locate 7, 17: Print Using "###"; draftB%(I, 42)
+            Locate 7, 27: Print Using "###"; draftB%(I, 43)
+            Locate 7, 32: Print Using "##"; draftB%(I, 44)
+            Locate 7, 36: Print Using "##"; draftB%(I, 45)
+            Locate 7, 40: Print Using "##"; draftB%(I, 46)
+            Locate 7, 49: Print Using "###"; draftB%(I, 47)
+            Locate 7, 54: Print Using "###"; draftB%(I, 48)
+            Locate 8, 17: Print Using "###"; draftB%(I, 49)
+            Locate 8, 27: Print Using "###"; draftB%(I, 50)
+            Locate 8, 32: Print Using "##"; draftB%(I, 51)
+            Locate 8, 36: Print Using "##"; draftB%(I, 52)
+            Locate 8, 40: Print Using "##"; draftB%(I, 53)
+            Locate 8, 49: Print Using "###"; draftB%(I, 54)
+            Locate 8, 54: Print Using "###"; draftB%(I, 55)
+            Locate 12, 31: Print Using "##"; draftB%(I, 22)
+            Locate 12, 36: Print Using "####"; draftB%(I, 26)
+            Locate 12, 43: Print Using "#"; draftB%(I, 33)
+            Locate 12, 47: Print Using "#"; draftB%(I, 34)
+            Locate 13, 31: Print Using "##"; draftB%(I, 23)
+            Locate 13, 36: Print Using "####"; draftB%(I, 27)
+            Locate 13, 43: Print Using "#"; draftB%(I, 35)
+            Locate 13, 47: Print Using "#"; draftB%(I, 36)
+            Locate 14, 31: Print Using "##"; draftB%(I, 24)
+            Locate 14, 36: Print Using "####"; draftB%(I, 28)
+            Locate 14, 43: Print Using "#"; draftB%(I, 37)
+            Locate 14, 47: Print Using "#"; draftB%(I, 38)
+            Locate 15, 31: Print Using "##"; draftB%(I, 25)
+            Locate 15, 36: Print Using "####"; draftB%(I, 29)
+            Locate 15, 43: Print Using "#"; draftB%(I, 39)
+            Locate 15, 47: Print Using "#"; draftB%(I, 40)
+            Locate 17, 23: Print Using "#"; draftB%(I, 16)
+            Locate 17, 39: Print Using "#"; draftB%(I, 30)
+            Locate 17, 49: Print Using "##"; draftB%(I, 18)
+            Locate 17, 67: Print Using "###"; draftB%(I, 20)
+            Locate 22, 27: Print Using "###"; draftB%(I, 56)
+            Locate 22, 32: Print Using "###"; draftB%(I, 57)
+            Locate 22, 37: Print Using "###"; draftB%(I, 58)
+            Locate 22, 42: Print Using "###"; draftB%(I, 59)
+            Locate 22, 47: Print Using "###"; draftB%(I, 60)
+            Locate 22, 52: Print Using "###"; draftB%(I, 61)
+            Locate 23, 27: Print Using "###"; draftB%(I, 62)
+            Locate 23, 32: Print Using "###"; draftB%(I, 63)
+            Locate 23, 37: Print Using "###"; draftB%(I, 64)
+            Locate 23, 42: Print Using "###"; draftB%(I, 65)
+            Locate 23, 47: Print Using "###"; draftB%(I, 66)
+            Locate 23, 52: Print Using "###"; draftB%(I, 67)
+            Locate 24, 27: Print Using "###"; draftB%(I, 68);
+            Locate 24, 32: Print Using "###"; draftB%(I, 69);
+            Locate 24, 37: Print Using "###"; draftB%(I, 70);
+            Locate 24, 42: Print Using "###"; draftB%(I, 71);
+            Locate 24, 47: Print Using "###"; draftB%(I, 72);
+            Locate 24, 52: Print Using "###"; draftB%(I, 73);
+            Locate 25, 27: Print Using "###"; draftB%(I, 74);
+            Locate 25, 32: Print Using "###"; draftB%(I, 75);
+            Locate 25, 37: Print Using "###"; draftB%(I, 76);
+            Locate 25, 42: Print Using "###"; draftB%(I, 77);
+            Locate 25, 47: Print Using "###"; draftB%(I, 78);
+            Locate 25, 52: Print Using "###"; draftB%(I, 79);
 
             BName:
             Locate 3, 7
             Max = 15
-            Call TextIn(statB$(i), Max, NumOnly, CapsOn, XCode, FG, BG)
+            Call TextIn(statB$(I), Max, NumOnly, CapsOn, XCode, FG, BG)
             If XCode = 1 GoTo BName:
             If XCode = 2 GoTo bDone
 
@@ -1575,290 +1388,290 @@ Sub BATTEREDIT ()
             BINJ:
             Locate 3, 62
             Max = 3
-            inj# = inputINJ%(i)
-            Call NumIn(inputINJ%(i), Max, XCode, FG, BG)
-            inputINJ%(i) = Int(inj#)
-            Locate 3, 62: Print Using "###"; inputINJ%(i)
+            inj# = inputINJ%(I)
+            Call NumIn(inputINJ%(I), Max, XCode, FG, BG)
+            inputINJ%(I) = Int(inj#)
+            Locate 3, 62: Print Using "###"; inputINJ%(I)
             If XCode = 1 GoTo BActive:
             If XCode = 2 GoTo bDone
 
             BGAMES:
             Locate 6, 12
             Max = 3
-            draftB# = draftB%(i, 3)
+            draftB# = draftB%(I, 3)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 3) = Int(draftB#)
-            Locate 6, 12: Print Using "###"; draftB%(i, 3)
+            draftB%(I, 3) = Int(draftB#)
+            Locate 6, 12: Print Using "###"; draftB%(I, 3)
             If XCode = 1 GoTo BINJ:
             If XCode = 2 GoTo bDone
 
             BAB:
             Locate 6, 17
             Max = 3
-            draftB# = draftB%(i, 4)
+            draftB# = draftB%(I, 4)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 4) = Int(draftB#)
-            Locate 6, 17: Print Using "###"; draftB%(i, 4)
+            draftB%(I, 4) = Int(draftB#)
+            Locate 6, 17: Print Using "###"; draftB%(I, 4)
             If XCode = 1 GoTo BGAMES:
             If XCode = 2 GoTo bDone
 
             BR:
             Locate 6, 22
             Max = 3
-            draftB# = draftB%(i, 5)
+            draftB# = draftB%(I, 5)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 5) = Int(draftB#)
-            Locate 6, 22: Print Using "###"; draftB%(i, 5)
+            draftB%(I, 5) = Int(draftB#)
+            Locate 6, 22: Print Using "###"; draftB%(I, 5)
             If XCode = 1 GoTo BAB:
             If XCode = 2 GoTo bDone
 
             BH:
             Locate 6, 27
             Max = 3
-            draftB# = draftB%(i, 6)
+            draftB# = draftB%(I, 6)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 6) = Int(draftB#)
-            Locate 6, 27: Print Using "###"; draftB%(i, 6)
+            draftB%(I, 6) = Int(draftB#)
+            Locate 6, 27: Print Using "###"; draftB%(I, 6)
             If XCode = 1 GoTo BR:
             If XCode = 2 GoTo bDone
 
             B2B:
             Locate 6, 32
             Max = 2
-            draftB# = draftB%(i, 7)
+            draftB# = draftB%(I, 7)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 7) = Int(draftB#)
-            Locate 6, 32: Print Using "##"; draftB%(i, 7)
+            draftB%(I, 7) = Int(draftB#)
+            Locate 6, 32: Print Using "##"; draftB%(I, 7)
             If XCode = 1 GoTo BH:
             If XCode = 2 GoTo bDone
 
             B3B:
             Locate 6, 36
             Max = 2
-            draftB# = draftB%(i, 8)
+            draftB# = draftB%(I, 8)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 8) = Int(draftB#)
-            Locate 6, 36: Print Using "##"; draftB%(i, 8)
+            draftB%(I, 8) = Int(draftB#)
+            Locate 6, 36: Print Using "##"; draftB%(I, 8)
             If XCode = 1 GoTo B2B:
             If XCode = 2 GoTo bDone
 
             bHR:
             Locate 6, 40
             Max = 2
-            draftB# = draftB%(i, 9)
+            draftB# = draftB%(I, 9)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 9) = Int(draftB#)
-            Locate 6, 40: Print Using "##"; draftB%(i, 9)
+            draftB%(I, 9) = Int(draftB#)
+            Locate 6, 40: Print Using "##"; draftB%(I, 9)
             If XCode = 1 GoTo B3B:
             If XCode = 2 GoTo bDone
 
             BRBI:
             Locate 6, 44
             Max = 3
-            draftB# = draftB%(i, 10)
+            draftB# = draftB%(I, 10)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 10) = Int(draftB#)
-            Locate 6, 44: Print Using "###"; draftB%(i, 10)
+            draftB%(I, 10) = Int(draftB#)
+            Locate 6, 44: Print Using "###"; draftB%(I, 10)
             If XCode = 1 GoTo bHR:
             If XCode = 2 GoTo bDone
 
             bBB:
             Locate 6, 49
             Max = 3
-            draftB# = draftB%(i, 11)
+            draftB# = draftB%(I, 11)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 11) = Int(draftB#)
-            Locate 6, 49: Print Using "###"; draftB%(i, 11)
+            draftB%(I, 11) = Int(draftB#)
+            Locate 6, 49: Print Using "###"; draftB%(I, 11)
             If XCode = 1 GoTo BRBI:
             If XCode = 2 GoTo bDone
 
             bKO:
             Locate 6, 54
             Max = 3
-            draftB# = draftB%(i, 12)
+            draftB# = draftB%(I, 12)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 12) = Int(draftB#)
-            Locate 6, 54: Print Using "###"; draftB%(i, 12)
+            draftB%(I, 12) = Int(draftB#)
+            Locate 6, 54: Print Using "###"; draftB%(I, 12)
             If XCode = 1 GoTo bBB:
             If XCode = 2 GoTo bDone
 
             bSB:
             Locate 6, 59
             Max = 3
-            draftB# = draftB%(i, 13)
+            draftB# = draftB%(I, 13)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 13) = Int(draftB#)
-            Locate 6, 59: Print Using "###"; draftB%(i, 13)
+            draftB%(I, 13) = Int(draftB#)
+            Locate 6, 59: Print Using "###"; draftB%(I, 13)
             If XCode = 1 GoTo bKO:
             If XCode = 2 GoTo bDone
 
             bCS:
             Locate 6, 64
             Max = 2
-            draftB# = draftB%(i, 14)
+            draftB# = draftB%(I, 14)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 14) = Int(draftB#)
-            Locate 6, 64: Print Using "##"; draftB%(i, 14)
+            draftB%(I, 14) = Int(draftB#)
+            Locate 6, 64: Print Using "##"; draftB%(I, 14)
             If XCode = 1 GoTo bSB:
             If XCode = 2 GoTo bDone
 
             BSH:
             Locate 6, 68
             Max = 2
-            draftB# = draftB%(i, 15)
+            draftB# = draftB%(I, 15)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 15) = Int(draftB#)
-            Locate 6, 68: Print Using "##"; draftB%(i, 15)
+            draftB%(I, 15) = Int(draftB#)
+            Locate 6, 68: Print Using "##"; draftB%(I, 15)
             If XCode = 1 GoTo bCS:
             If XCode = 2 GoTo bDone
 
             BLAB:
             Locate 7, 17
             Max = 3
-            draftB# = draftB%(i, 42)
+            draftB# = draftB%(I, 42)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 42) = Int(draftB#)
-            Locate 7, 17: Print Using "###"; draftB%(i, 42)
+            draftB%(I, 42) = Int(draftB#)
+            Locate 7, 17: Print Using "###"; draftB%(I, 42)
             If XCode = 1 GoTo BSH:
             If XCode = 2 GoTo bDone
 
             BLH:
             Locate 7, 27
             Max = 3
-            draftB# = draftB%(i, 43)
+            draftB# = draftB%(I, 43)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 43) = Int(draftB#)
-            Locate 7, 27: Print Using "###"; draftB%(i, 43)
+            draftB%(I, 43) = Int(draftB#)
+            Locate 7, 27: Print Using "###"; draftB%(I, 43)
             If XCode = 1 GoTo BLAB:
             If XCode = 2 GoTo bDone
 
             BL2B:
             Locate 7, 32
             Max = 2
-            draftB# = draftB%(i, 44)
+            draftB# = draftB%(I, 44)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 44) = Int(draftB#)
-            Locate 7, 32: Print Using "##"; draftB%(i, 44)
+            draftB%(I, 44) = Int(draftB#)
+            Locate 7, 32: Print Using "##"; draftB%(I, 44)
             If XCode = 1 GoTo BLH:
             If XCode = 2 GoTo bDone
 
             BL3B:
             Locate 7, 36
             Max = 2
-            draftB# = draftB%(i, 45)
+            draftB# = draftB%(I, 45)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 45) = Int(draftB#)
-            Locate 7, 36: Print Using "##"; draftB%(i, 45)
+            draftB%(I, 45) = Int(draftB#)
+            Locate 7, 36: Print Using "##"; draftB%(I, 45)
             If XCode = 1 GoTo BL2B:
             If XCode = 2 GoTo bDone
 
             BLHR:
             Locate 7, 40
             Max = 2
-            draftB# = draftB%(i, 46)
+            draftB# = draftB%(I, 46)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 46) = Int(draftB#)
-            Locate 7, 40: Print Using "##"; draftB%(i, 46)
+            draftB%(I, 46) = Int(draftB#)
+            Locate 7, 40: Print Using "##"; draftB%(I, 46)
             If XCode = 1 GoTo BL3B:
             If XCode = 2 GoTo bDone
 
             bLBB:
             Locate 7, 49
             Max = 3
-            draftB# = draftB%(i, 47)
+            draftB# = draftB%(I, 47)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 47) = Int(draftB#)
-            Locate 7, 49: Print Using "###"; draftB%(i, 47)
+            draftB%(I, 47) = Int(draftB#)
+            Locate 7, 49: Print Using "###"; draftB%(I, 47)
             If XCode = 1 GoTo BLHR:
             If XCode = 2 GoTo bDone
 
             BLKO:
             Locate 7, 54
             Max = 3
-            draftB# = draftB%(i, 48)
+            draftB# = draftB%(I, 48)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 48) = Int(draftB#)
-            Locate 7, 54: Print Using "###"; draftB%(i, 48)
+            draftB%(I, 48) = Int(draftB#)
+            Locate 7, 54: Print Using "###"; draftB%(I, 48)
             If XCode = 1 GoTo bLBB:
             If XCode = 2 GoTo bDone
 
             BRAB:
             Locate 8, 17
             Max = 3
-            draftB# = draftB%(i, 49)
+            draftB# = draftB%(I, 49)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 49) = Int(draftB#)
-            Locate 8, 17: Print Using "###"; draftB%(i, 49)
+            draftB%(I, 49) = Int(draftB#)
+            Locate 8, 17: Print Using "###"; draftB%(I, 49)
             If XCode = 1 GoTo BLKO:
             If XCode = 2 GoTo bDone
 
             BRH:
             Locate 8, 27
             Max = 3
-            draftB# = draftB%(i, 50)
+            draftB# = draftB%(I, 50)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 50) = Int(draftB#)
-            Locate 8, 27: Print Using "###"; draftB%(i, 50)
+            draftB%(I, 50) = Int(draftB#)
+            Locate 8, 27: Print Using "###"; draftB%(I, 50)
             If XCode = 1 GoTo BRAB:
             If XCode = 2 GoTo bDone
 
             BR2B:
             Locate 8, 32
             Max = 2
-            draftB# = draftB%(i, 51)
+            draftB# = draftB%(I, 51)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 51) = Int(draftB#)
-            Locate 8, 32: Print Using "##"; draftB%(i, 51)
+            draftB%(I, 51) = Int(draftB#)
+            Locate 8, 32: Print Using "##"; draftB%(I, 51)
             If XCode = 1 GoTo BRH:
             If XCode = 2 GoTo bDone
 
             BR3B:
             Locate 8, 36
             Max = 2
-            draftB# = draftB%(i, 52)
+            draftB# = draftB%(I, 52)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 52) = Int(draftB#)
-            Locate 8, 36: Print Using "##"; draftB%(i, 52)
+            draftB%(I, 52) = Int(draftB#)
+            Locate 8, 36: Print Using "##"; draftB%(I, 52)
             If XCode = 1 GoTo BR2B:
             If XCode = 2 GoTo bDone
 
             BRHR:
             Locate 8, 40
             Max = 2
-            draftB# = draftB%(i, 53)
+            draftB# = draftB%(I, 53)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 53) = Int(draftB#)
-            Locate 8, 40: Print Using "##"; draftB%(i, 53)
+            draftB%(I, 53) = Int(draftB#)
+            Locate 8, 40: Print Using "##"; draftB%(I, 53)
             If XCode = 1 GoTo BR3B:
             If XCode = 2 GoTo bDone
 
             bRBB:
             Locate 8, 49
             Max = 3
-            draftB# = draftB%(i, 54)
+            draftB# = draftB%(I, 54)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 54) = Int(draftB#)
-            Locate 8, 49: Print Using "###"; draftB%(i, 54)
+            draftB%(I, 54) = Int(draftB#)
+            Locate 8, 49: Print Using "###"; draftB%(I, 54)
             If XCode = 1 GoTo BRHR:
             If XCode = 2 GoTo bDone
 
             BRKO:
             Locate 8, 54
             Max = 3
-            draftB# = draftB%(i, 55)
+            draftB# = draftB%(I, 55)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 55) = Int(draftB#)
-            Locate 8, 54: Print Using "###"; draftB%(i, 55)
+            draftB%(I, 55) = Int(draftB#)
+            Locate 8, 54: Print Using "###"; draftB%(I, 55)
             If XCode = 1 GoTo bRBB:
             If XCode = 2 GoTo bDone
 
             BP1:
             Locate 12, 31
             Max = 2
-            draftB# = draftB%(i, 22)
+            draftB# = draftB%(I, 22)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 22) = Int(draftB#)
-            Locate 12, 31: Print Using "##"; draftB%(i, 22)
+            draftB%(I, 22) = Int(draftB#)
+            Locate 12, 31: Print Using "##"; draftB%(I, 22)
             If XCode = 1 GoTo BRKO:
             If XCode = 2 GoTo bDone
 
@@ -1867,430 +1680,430 @@ Sub BATTEREDIT ()
             BF1:
             Locate 12, 36
             Max = 4
-            draftB# = draftB%(i, 26)
+            draftB# = draftB%(I, 26)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 26) = Int(draftB#)
-            Locate 12, 36: Print Using "####"; draftB%(i, 26)
+            draftB%(I, 26) = Int(draftB#)
+            Locate 12, 36: Print Using "####"; draftB%(I, 26)
             If XCode = 1 GoTo BP1:
             If XCode = 2 GoTo bDone
 
             bA1:
             Locate 12, 43
             Max = 1
-            draftB# = draftB%(i, 33)
+            draftB# = draftB%(I, 33)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 33) = Int(draftB#)
-            Locate 12, 43: Print Using "#"; draftB%(i, 33)
+            draftB%(I, 33) = Int(draftB#)
+            Locate 12, 43: Print Using "#"; draftB%(I, 33)
             If XCode = 1 GoTo BF1:
             If XCode = 2 GoTo bDone
 
             BR1:
             Locate 12, 47
             Max = 1
-            draftB# = draftB%(i, 34)
+            draftB# = draftB%(I, 34)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 34) = Int(draftB#)
-            Locate 12, 47: Print Using "#"; draftB%(i, 34)
+            draftB%(I, 34) = Int(draftB#)
+            Locate 12, 47: Print Using "#"; draftB%(I, 34)
             If XCode = 1 GoTo bA1:
             If XCode = 2 GoTo bDone
 
             BP2:
             Locate 13, 31
             Max = 2
-            draftB# = draftB%(i, 23)
+            draftB# = draftB%(I, 23)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 23) = Int(draftB#)
-            Locate 13, 31: Print Using "##"; draftB%(i, 23)
+            draftB%(I, 23) = Int(draftB#)
+            Locate 13, 31: Print Using "##"; draftB%(I, 23)
             If XCode = 1 GoTo BR1:
             If XCode = 2 GoTo bDone
 
             BF2:
             Locate 13, 36
             Max = 4
-            draftB# = draftB%(i, 27)
+            draftB# = draftB%(I, 27)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 27) = Int(draftB#)
-            Locate 13, 36: Print Using "####"; draftB%(i, 27)
+            draftB%(I, 27) = Int(draftB#)
+            Locate 13, 36: Print Using "####"; draftB%(I, 27)
             If XCode = 1 GoTo BP2:
             If XCode = 2 GoTo bDone
 
             bA2:
             Locate 13, 43
             Max = 1
-            draftB# = draftB%(i, 35)
+            draftB# = draftB%(I, 35)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 35) = Int(draftB#)
-            Locate 13, 43: Print Using "#"; draftB%(i, 35)
+            draftB%(I, 35) = Int(draftB#)
+            Locate 13, 43: Print Using "#"; draftB%(I, 35)
             If XCode = 1 GoTo BF2:
             If XCode = 2 GoTo bDone
 
             BR2:
             Locate 13, 47
             Max = 1
-            draftB# = draftB%(i, 36)
+            draftB# = draftB%(I, 36)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 36) = Int(draftB#)
-            Locate 13, 47: Print Using "#"; draftB%(i, 36)
+            draftB%(I, 36) = Int(draftB#)
+            Locate 13, 47: Print Using "#"; draftB%(I, 36)
             If XCode = 1 GoTo bA2:
             If XCode = 2 GoTo bDone
 
             BP3:
             Locate 14, 31
             Max = 2
-            draftB# = draftB%(i, 24)
+            draftB# = draftB%(I, 24)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 24) = Int(draftB#)
-            Locate 14, 31: Print Using "##"; draftB%(i, 24)
+            draftB%(I, 24) = Int(draftB#)
+            Locate 14, 31: Print Using "##"; draftB%(I, 24)
             If XCode = 1 GoTo BR2:
             If XCode = 2 GoTo bDone
 
             BF3:
             Locate 14, 36
             Max = 4
-            draftB# = draftB%(i, 28)
+            draftB# = draftB%(I, 28)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 28) = Int(draftB#)
-            Locate 14, 36: Print Using "####"; draftB%(i, 28)
+            draftB%(I, 28) = Int(draftB#)
+            Locate 14, 36: Print Using "####"; draftB%(I, 28)
             If XCode = 1 GoTo BP3:
             If XCode = 2 GoTo bDone
 
             bA3:
             Locate 14, 43
             Max = 1
-            draftB# = draftB%(i, 37)
+            draftB# = draftB%(I, 37)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 37) = Int(draftB#)
-            Locate 14, 43: Print Using "#"; draftB%(i, 37)
+            draftB%(I, 37) = Int(draftB#)
+            Locate 14, 43: Print Using "#"; draftB%(I, 37)
             If XCode = 1 GoTo BF3:
             If XCode = 2 GoTo bDone
 
             BR3:
             Locate 14, 47
             Max = 1
-            draftB# = draftB%(i, 38)
+            draftB# = draftB%(I, 38)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 38) = Int(draftB#)
-            Locate 14, 47: Print Using "#"; draftB%(i, 38)
+            draftB%(I, 38) = Int(draftB#)
+            Locate 14, 47: Print Using "#"; draftB%(I, 38)
             If XCode = 1 GoTo bA3:
             If XCode = 2 GoTo bDone
 
             BP4:
             Locate 15, 31
             Max = 2
-            draftB# = draftB%(i, 25)
+            draftB# = draftB%(I, 25)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 25) = Int(draftB#)
-            Locate 15, 31: Print Using "##"; draftB%(i, 25)
+            draftB%(I, 25) = Int(draftB#)
+            Locate 15, 31: Print Using "##"; draftB%(I, 25)
             If XCode = 1 GoTo BR3:
             If XCode = 2 GoTo bDone
 
             BF4:
             Locate 15, 36
             Max = 4
-            draftB# = draftB%(i, 29)
+            draftB# = draftB%(I, 29)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 29) = Int(draftB#)
-            Locate 15, 36: Print Using "####"; draftB%(i, 29)
+            draftB%(I, 29) = Int(draftB#)
+            Locate 15, 36: Print Using "####"; draftB%(I, 29)
             If XCode = 1 GoTo BP4:
             If XCode = 2 GoTo bDone
 
             bA4:
             Locate 15, 43
             Max = 1
-            draftB# = draftB%(i, 39)
+            draftB# = draftB%(I, 39)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 39) = Int(draftB#)
-            Locate 15, 43: Print Using "#"; draftB%(i, 39)
+            draftB%(I, 39) = Int(draftB#)
+            Locate 15, 43: Print Using "#"; draftB%(I, 39)
             If XCode = 1 GoTo BF4:
             If XCode = 2 GoTo bDone
 
             bR4:
             Locate 15, 47
             Max = 1
-            draftB# = draftB%(i, 40)
+            draftB# = draftB%(I, 40)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 40) = Int(draftB#)
-            Locate 15, 47: Print Using "#"; draftB%(i, 40)
+            draftB%(I, 40) = Int(draftB#)
+            Locate 15, 47: Print Using "#"; draftB%(I, 40)
             If XCode = 1 GoTo bA4:
             If XCode = 2 GoTo bDone
 
             bRUN:
             Locate 17, 23
             Max = 1
-            draftB# = draftB%(i, 16)
+            draftB# = draftB%(I, 16)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 16) = Int(draftB#)
-            Locate 17, 23: Print Using "#"; draftB%(i, 16)
+            draftB%(I, 16) = Int(draftB#)
+            Locate 17, 23: Print Using "#"; draftB%(I, 16)
             If XCode = 1 GoTo bR4:
             If XCode = 2 GoTo bDone
 
             bBUNT:
             Locate 17, 39
             Max = 1
-            draftB# = draftB%(i, 30)
+            draftB# = draftB%(I, 30)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 30) = Int(draftB#)
-            Locate 17, 39: Print Using "#"; draftB%(i, 30)
+            draftB%(I, 30) = Int(draftB#)
+            Locate 17, 39: Print Using "#"; draftB%(I, 30)
             If XCode = 1 GoTo bRUN:
             If XCode = 2 GoTo bDone
 
             bGA:
             Locate 17, 49
             Max = 2
-            draftB# = draftB%(i, 18)
+            draftB# = draftB%(I, 18)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 18) = Int(draftB#)
-            Locate 17, 49: Print Using "##"; draftB%(i, 18)
+            draftB%(I, 18) = Int(draftB#)
+            Locate 17, 49: Print Using "##"; draftB%(I, 18)
             If XCode = 1 GoTo bBUNT:
             If XCode = 2 GoTo bDone
 
             bLA:
             Locate 17, 67
             Max = 3
-            draftB# = draftB%(i, 29)
+            draftB# = draftB%(I, 29)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 20) = Int(draftB#)
-            Locate 17, 67: Print Using "###"; draftB%(i, 20)
+            draftB%(I, 20) = Int(draftB#)
+            Locate 17, 67: Print Using "###"; draftB%(I, 20)
             If XCode = 1 GoTo bGA:
             If XCode = 2 GoTo bDone
 
             bLLBA:
             Locate 22, 27
             Max = 3
-            draftB# = draftB%(i, 56)
+            draftB# = draftB%(I, 56)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 56) = Int(draftB#)
-            Locate 22, 27: Print Using "###"; draftB%(i, 56)
+            draftB%(I, 56) = Int(draftB#)
+            Locate 22, 27: Print Using "###"; draftB%(I, 56)
             If XCode = 1 GoTo bLA:
             If XCode = 2 GoTo bDone
 
             bLL2B:
             Locate 22, 32
             Max = 3
-            draftB# = draftB%(i, 57)
+            draftB# = draftB%(I, 57)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 57) = Int(draftB#)
-            Locate 22, 32: Print Using "###"; draftB%(i, 57)
+            draftB%(I, 57) = Int(draftB#)
+            Locate 22, 32: Print Using "###"; draftB%(I, 57)
             If XCode = 1 GoTo bLLBA:
             If XCode = 2 GoTo bDone
 
             bLL3B:
             Locate 22, 37
             Max = 3
-            draftB# = draftB%(i, 58)
+            draftB# = draftB%(I, 58)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 58) = Int(draftB#)
-            Locate 22, 37: Print Using "###"; draftB%(i, 58)
+            draftB%(I, 58) = Int(draftB#)
+            Locate 22, 37: Print Using "###"; draftB%(I, 58)
             If XCode = 1 GoTo bLL2B:
             If XCode = 2 GoTo bDone
 
             bLLHR:
             Locate 22, 42
             Max = 3
-            draftB# = draftB%(i, 59)
+            draftB# = draftB%(I, 59)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 59) = Int(draftB#)
-            Locate 22, 42: Print Using "###"; draftB%(i, 59)
+            draftB%(I, 59) = Int(draftB#)
+            Locate 22, 42: Print Using "###"; draftB%(I, 59)
             If XCode = 1 GoTo bLL3B:
             If XCode = 2 GoTo bDone
 
             bLLBB:
             Locate 22, 47
             Max = 3
-            draftB# = draftB%(i, 60)
+            draftB# = draftB%(I, 60)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 60) = Int(draftB#)
-            Locate 22, 47: Print Using "###"; draftB%(i, 60)
+            draftB%(I, 60) = Int(draftB#)
+            Locate 22, 47: Print Using "###"; draftB%(I, 60)
             If XCode = 1 GoTo bLLHR:
             If XCode = 2 GoTo bDone
 
             bLLKO:
             Locate 22, 52
             Max = 3
-            draftB# = draftB%(i, 61)
+            draftB# = draftB%(I, 61)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 61) = Int(draftB#)
-            Locate 22, 52: Print Using "###"; draftB%(i, 61)
+            draftB%(I, 61) = Int(draftB#)
+            Locate 22, 52: Print Using "###"; draftB%(I, 61)
             If XCode = 1 GoTo bLLBB:
             If XCode = 2 GoTo bDone
 
             bLRBA:
             Locate 23, 27
             Max = 3
-            draftB# = draftB%(i, 62)
+            draftB# = draftB%(I, 62)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 62) = Int(draftB#)
-            Locate 23, 27: Print Using "###"; draftB%(i, 62)
+            draftB%(I, 62) = Int(draftB#)
+            Locate 23, 27: Print Using "###"; draftB%(I, 62)
             If XCode = 1 GoTo bLLKO:
             If XCode = 2 GoTo bDone
 
             bLR2B:
             Locate 23, 32
             Max = 3
-            draftB# = draftB%(i, 63)
+            draftB# = draftB%(I, 63)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 63) = Int(draftB#)
-            Locate 23, 32: Print Using "###"; draftB%(i, 63)
+            draftB%(I, 63) = Int(draftB#)
+            Locate 23, 32: Print Using "###"; draftB%(I, 63)
             If XCode = 1 GoTo bLRBA:
             If XCode = 2 GoTo bDone
 
             bLR3B:
             Locate 23, 37
             Max = 3
-            draftB# = draftB%(i, 64)
+            draftB# = draftB%(I, 64)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 64) = Int(draftB#)
-            Locate 23, 37: Print Using "###"; draftB%(i, 64)
+            draftB%(I, 64) = Int(draftB#)
+            Locate 23, 37: Print Using "###"; draftB%(I, 64)
             If XCode = 1 GoTo bLR2B:
             If XCode = 2 GoTo bDone
 
             bLRHR:
             Locate 23, 42
             Max = 3
-            draftB# = draftB%(i, 65)
+            draftB# = draftB%(I, 65)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 65) = Int(draftB#)
-            Locate 23, 42: Print Using "###"; draftB%(i, 65)
+            draftB%(I, 65) = Int(draftB#)
+            Locate 23, 42: Print Using "###"; draftB%(I, 65)
             If XCode = 1 GoTo bLR3B:
             If XCode = 2 GoTo bDone
 
             bLRBB:
             Locate 23, 47
             Max = 3
-            draftB# = draftB%(i, 66)
+            draftB# = draftB%(I, 66)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 66) = Int(draftB#)
-            Locate 23, 47: Print Using "###"; draftB%(i, 66)
+            draftB%(I, 66) = Int(draftB#)
+            Locate 23, 47: Print Using "###"; draftB%(I, 66)
             If XCode = 1 GoTo bLRHR:
             If XCode = 2 GoTo bDone
 
             bLRKO:
             Locate 23, 52
             Max = 3
-            draftB# = draftB%(i, 67)
+            draftB# = draftB%(I, 67)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 67) = Int(draftB#)
-            Locate 23, 52: Print Using "###"; draftB%(i, 67)
+            draftB%(I, 67) = Int(draftB#)
+            Locate 23, 52: Print Using "###"; draftB%(I, 67)
             If XCode = 1 GoTo bLRBB:
             If XCode = 2 GoTo bDone
 
             bRLBA:
             Locate 24, 27
             Max = 3
-            draftB# = draftB%(i, 68)
+            draftB# = draftB%(I, 68)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 68) = Int(draftB#)
-            Locate 24, 27: Print Using "###"; draftB%(i, 68);
+            draftB%(I, 68) = Int(draftB#)
+            Locate 24, 27: Print Using "###"; draftB%(I, 68);
             If XCode = 1 GoTo bLRKO:
             If XCode = 2 GoTo bDone
 
             bRL2B:
             Locate 24, 32
             Max = 3
-            draftB# = draftB%(i, 69)
+            draftB# = draftB%(I, 69)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 69) = Int(draftB#)
-            Locate 24, 32: Print Using "###"; draftB%(i, 69);
+            draftB%(I, 69) = Int(draftB#)
+            Locate 24, 32: Print Using "###"; draftB%(I, 69);
             If XCode = 1 GoTo bRLBA:
             If XCode = 2 GoTo bDone
 
             bRL3B:
             Locate 24, 37
             Max = 3
-            draftB# = draftB%(i, 70)
+            draftB# = draftB%(I, 70)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 70) = Int(draftB#)
-            Locate 24, 37: Print Using "###"; draftB%(i, 70);
+            draftB%(I, 70) = Int(draftB#)
+            Locate 24, 37: Print Using "###"; draftB%(I, 70);
             If XCode = 1 GoTo bRL2B:
             If XCode = 2 GoTo bDone
 
             bRLHR:
             Locate 24, 42
             Max = 3
-            draftB# = draftB%(i, 71)
+            draftB# = draftB%(I, 71)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 71) = Int(draftB#)
-            Locate 24, 42: Print Using "###"; draftB%(i, 71);
+            draftB%(I, 71) = Int(draftB#)
+            Locate 24, 42: Print Using "###"; draftB%(I, 71);
             If XCode = 1 GoTo bRL3B:
             If XCode = 2 GoTo bDone
 
             bRLBB:
             Locate 24, 47
             Max = 3
-            draftB# = draftB%(i, 72)
+            draftB# = draftB%(I, 72)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 72) = Int(draftB#)
-            Locate 24, 47: Print Using "###"; draftB%(i, 72);
+            draftB%(I, 72) = Int(draftB#)
+            Locate 24, 47: Print Using "###"; draftB%(I, 72);
             If XCode = 1 GoTo bRLHR:
             If XCode = 2 GoTo bDone
 
             bRLKO:
             Locate 24, 52
             Max = 3
-            draftB# = draftB%(i, 73)
+            draftB# = draftB%(I, 73)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 73) = Int(draftB#)
-            Locate 24, 52: Print Using "###"; draftB%(i, 73);
+            draftB%(I, 73) = Int(draftB#)
+            Locate 24, 52: Print Using "###"; draftB%(I, 73);
             If XCode = 1 GoTo bRLBB:
             If XCode = 2 GoTo bDone
 
             bRRBA:
             Locate 25, 27
             Max = 3
-            draftB# = draftB%(i, 74)
+            draftB# = draftB%(I, 74)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 74) = Int(draftB#)
-            Locate 25, 27: Print Using "###"; draftB%(i, 74);
+            draftB%(I, 74) = Int(draftB#)
+            Locate 25, 27: Print Using "###"; draftB%(I, 74);
             If XCode = 1 GoTo bRLKO:
             If XCode = 2 GoTo bDone
 
             bRR2B:
             Locate 25, 32
             Max = 3
-            draftB# = draftB%(i, 75)
+            draftB# = draftB%(I, 75)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 75) = Int(draftB#)
-            Locate 25, 32: Print Using "###"; draftB%(i, 75);
+            draftB%(I, 75) = Int(draftB#)
+            Locate 25, 32: Print Using "###"; draftB%(I, 75);
             If XCode = 1 GoTo bRRBA:
             If XCode = 2 GoTo bDone
 
             bRR3B:
             Locate 25, 37
             Max = 3
-            draftB# = draftB%(i, 76)
+            draftB# = draftB%(I, 76)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 76) = Int(draftB#)
-            Locate 25, 37: Print Using "###"; draftB%(i, 76);
+            draftB%(I, 76) = Int(draftB#)
+            Locate 25, 37: Print Using "###"; draftB%(I, 76);
             If XCode = 1 GoTo bRR2B:
             If XCode = 2 GoTo bDone
 
             bRRHR:
             Locate 25, 42
             Max = 3
-            draftB# = draftB%(i, 77)
+            draftB# = draftB%(I, 77)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 77) = Int(draftB#)
-            Locate 25, 42: Print Using "###"; draftB%(i, 77);
+            draftB%(I, 77) = Int(draftB#)
+            Locate 25, 42: Print Using "###"; draftB%(I, 77);
             If XCode = 1 GoTo bRR3B:
             If XCode = 2 GoTo bDone
 
             bRRBB:
             Locate 25, 47
             Max = 3
-            draftB# = draftB%(i, 78)
+            draftB# = draftB%(I, 78)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 78) = Int(draftB#)
-            Locate 25, 47: Print Using "###"; draftB%(i, 78);
+            draftB%(I, 78) = Int(draftB#)
+            Locate 25, 47: Print Using "###"; draftB%(I, 78);
             If XCode = 1 GoTo bRRHR:
             If XCode = 2 GoTo bDone
 
             bRRKO:
             Locate 25, 52
             Max = 3
-            draftB# = draftB%(i, 79)
+            draftB# = draftB%(I, 79)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            draftB%(i, 79) = Int(draftB#)
-            Locate 25, 52: Print Using "###"; draftB%(i, 79);
+            draftB%(I, 79) = Int(draftB#)
+            Locate 25, 52: Print Using "###"; draftB%(I, 79);
             If XCode = 1 GoTo bRRBB:
 
             bDone:
@@ -2304,28 +2117,28 @@ Sub BATTEREDIT ()
             If X$ = "N" GoTo BName
             If X$ <> "Y" GoTo bDone 'insist on either Y or N or up-arrow
 
-            draftB%(i, 0) = 0
+            draftB%(I, 0) = 0
             BATS$ = _Trim$(BATS$)
-            If UCase$(BATS$) = "L" Then draftB%(i, 0) = -1
-            If UCase$(BATS$) = "R" Then draftB%(i, 0) = 1
-            If UCase$(BATS$) = "LP" Then draftB%(i, 0) = -2
-            If UCase$(BATS$) = "RP" Then draftB%(i, 0) = 2
+            If UCase$(BATS$) = "L" Then draftB%(I, 0) = -1
+            If UCase$(BATS$) = "R" Then draftB%(I, 0) = 1
+            If UCase$(BATS$) = "LP" Then draftB%(I, 0) = -2
+            If UCase$(BATS$) = "RP" Then draftB%(I, 0) = 2
 
             ACT$ = _Trim$(ACT$)
-            draftB%(i, 31) = 0
-            If UCase$(ACT$) = "N" Then draftB%(i, 31) = 1
+            draftB%(I, 31) = 0
+            If UCase$(ACT$) = "N" Then draftB%(I, 31) = 1
 
         End If
 
-    Loop Until i = 0
+    Loop Until idx = 0
 
 End Sub
 
 '----------------------------------------
-'       EDITTEAM subroutine
+'       EditTeamInfo subroutine
 '----------------------------------------
 '...explanation...
-Sub EDITTEAM (YN$, T$, NN$, S$, M$, teamIdx)
+Sub EditTeamInfo (YN$, T$, NN$, S$, M$, teamIdx)
 
     Shared K9&()
     Shared ratings%(), inputSA%()
@@ -2335,88 +2148,72 @@ Sub EDITTEAM (YN$, T$, NN$, S$, M$, teamIdx)
         Color 15, 1
         Cls
 
+        Color 14
         Locate 1, 36: Print "TEAM DATA"
-        Locate 3, 1: Print "TEAM NUMBER:"
-        Locate 5, 1: Print "LEAGUE BATTING AVERAGE:"
-        Locate 6, 1: Print "LEAGUE STRIKEOUT %    :"
-        Locate 7, 1: Print "LEAGUE WALK PERCENTAGE:"
-        Locate 8, 1: Print "LEAGUE HOME RUN %     :"
-        Locate 10, 1: Print "DBL PLAYS/GAME X 100  :"
-        Locate 14, 1: Print "PARK NAME:"
-        Locate 15, 1: Print "PARK ID  :"
-        Locate 16, 1: Print "DOUBLES RATING  :"
-        Locate 17, 1: Print "TRIPLES RATING  :"
-        Locate 18, 1: Print "HOME RUN RATING :"
-        Locate 19, 1: Print "FOUL BALL RATING:"
-        Locate 21, 1: Print "OUTDOOR(0)/INDOOR(1):"
-        Locate 22, 1: Print "GRASS(0)/TURF(1)    :"
-        Locate 24, 1: Print "MANAGER :";
-        Locate 18, 29: Print "TEXT COLOR      :"
-        Locate 19, 29: Print "BACKGROUND COLOR:"
-        Locate 3, 25: Print "DISK ID:"
-        Locate 3, 44: Print "TEAM NAME:"
-        Locate 4, 44: Print "ABBREVIATION:"
-        Locate 6, 51: Print "SPLIT STATS LEAGUE DATA"
+        Color 15
+        Locate 3, 1: Print "TEAM NUMBER:"; teamidx
+        Locate 5, 1: Print "LEAGUE BATTING AVERAGE:"; ratings%(1)
+        Locate 6, 1: Print "LEAGUE STRIKEOUT %    :"; ratings%(2)
+        Locate 7, 1: Print "LEAGUE WALK PERCENTAGE:"; ratings%(3)
+        Locate 8, 1: Print "LEAGUE HOME RUN %     :"; ratings%(4)
+        Locate 10, 1: Print "DBL PLAYS/GAME X 100  :"; ratings%(5)
+        Locate 14, 1: Print "PARK NAME:"; S$
+        Locate 15, 1: Print "PARK ID  :"; ratings%(13)
+        Locate 16, 1: Print "DOUBLES RATING  :"; ratings%(6)
+        Locate 17, 1: Print "TRIPLES RATING  :"; ratings%(7)
+        Locate 18, 1: Print "HOME RUN RATING :"; K9&(0)
+        Locate 19, 1: Print "FOUL BALL RATING:"; ratings%(8)
+        Locate 21, 1: Print "OUTDOOR(0)/INDOOR(1):"; ratings%(9)
+        Locate 22, 1: Print "GRASS(0)/TURF(1)    :"; ratings%(10)
+        Locate 24, 1: Print "MANAGER :"; M$;
+        Locate 18, 29: Print "TEXT COLOR      :"; ratings%(11)
+        Locate 19, 29: Print "BACKGROUND COLOR:"; ratings%(12)
+        Locate 3, 25: Print "DISK ID:"; YN$
+        Locate 3, 44: Print "TEAM NAME: "; T$
+        Locate 4, 44: Print "TEAM NICKNAME:"; NN$
+        Locate 6, 51: Print "SPLIT STATS LEAGUE DATA"; ratings%()
+
         Locate 7, 50: Print "BAVG   K%  BB%  HR%  2B%  3B%"
         Locate 8, 38: Print "LHB vs LHP"
-        Locate 9, 38: Print "LHB vs RHP"
-        Locate 10, 38: Print "RHB vs LHP"
-        Locate 11, 38: Print "RHB vs RHP"
-
-        ' INITIALIZE THE FIELDS
-        FG = 0
-        BG = 7
-        Color FG, BG
-        'COLR = 112
-
-        Locate 3, 14: Print Using "###"; teamIdx
-        Locate 3, 33: Print YN$
-        Locate 3, 55: Print T$
-        Locate 4, 58: Print NN$
-
-        Locate 5, 25: Print Using "###"; ratings%(1)
-        Locate 6, 25: Print Using "###"; ratings%(2)
-        Locate 7, 25: Print Using "###"; ratings%(3)
-        Locate 8, 25: Print Using "###"; ratings%(4)
-        Locate 10, 25: Print Using "###"; ratings%(5)
-        Locate 14, 12: Print S$
-        Locate 15, 12: Print Using "###"; ratings%(13)
-        Locate 16, 19: Print Using "###"; ratings%(6)
-        Locate 17, 19: Print Using "###"; ratings%(7)
-        Locate 18, 19: Print Using "######"; K9&(0)
-        Locate 19, 19: Print Using "###"; ratings%(8)
-        Locate 21, 25: Print Using "#"; ratings%(9)
-        Locate 22, 25: Print Using "#"; ratings%(10)
-        Locate 24, 11: Print M$;
-        Locate 18, 46: Print Using "##"; ratings%(11)
-        Locate 19, 46: Print Using "##"; ratings%(12)
         Locate 8, 50: Print Using "###"; inputSA%(1)
         Locate 8, 55: Print Using "###"; inputSA%(2)
         Locate 8, 60: Print Using "###"; inputSA%(3)
         Locate 8, 65: Print Using "###"; inputSA%(4)
         Locate 8, 70: Print Using "###"; inputSA%(5)
         Locate 8, 75: Print Using "###"; inputSA%(6)
+
+        Locate 9, 38: Print "LHB vs RHP"
         Locate 9, 50: Print Using "###"; inputSA%(7)
         Locate 9, 55: Print Using "###"; inputSA%(8)
         Locate 9, 60: Print Using "###"; inputSA%(9)
         Locate 9, 65: Print Using "###"; inputSA%(10)
         Locate 9, 70: Print Using "###"; inputSA%(11)
         Locate 9, 75: Print Using "###"; inputSA%(12)
+
+        Locate 10, 38: Print "RHB vs LHP"
         Locate 10, 50: Print Using "###"; inputSA%(13)
         Locate 10, 55: Print Using "###"; inputSA%(14)
         Locate 10, 60: Print Using "###"; inputSA%(15)
         Locate 10, 65: Print Using "###"; inputSA%(16)
         Locate 10, 70: Print Using "###"; inputSA%(17)
         Locate 10, 75: Print Using "###"; inputSA%(18)
+
+
+        Locate 11, 38: Print "RHB vs RHP"
         Locate 11, 50: Print Using "###"; inputSA%(19)
         Locate 11, 55: Print Using "###"; inputSA%(20)
         Locate 11, 60: Print Using "###"; inputSA%(21)
         Locate 11, 65: Print Using "###"; inputSA%(22)
         Locate 11, 70: Print Using "###"; inputSA%(23)
         Locate 11, 75: Print Using "###"; inputSA%(24)
+
         Locate 25, 1: Print "ESC-WILL END EDITING";
 
         HR$ = _Trim$(Str$(K9&(0)))
+
+        FG = 0
+        BG = 7
+        Color FG, BG
 
         TeamNum:
         Locate 3, 14
@@ -2425,7 +2222,7 @@ Sub EDITTEAM (YN$, T$, NN$, S$, M$, teamIdx)
         Call NumIn(T#, Max, XCode, FG, BG)
         teamIdx = Int(T#)
         Locate 3, 14: Print Using "###"; teamIdx
-        If XCode = 1 GoTo TeamNum:
+        If XCode = 1 GoTo TeamNum
         If XCode = 2 GoTo Done
 
         DiskID:
@@ -2439,14 +2236,14 @@ Sub EDITTEAM (YN$, T$, NN$, S$, M$, teamIdx)
         Locate 3, 55
         Max = 15
         Call TextIn(T$, Max, NumOnly, CapsOn, XCode, FG, BG)
-        If XCode = 1 GoTo DiskID:
+        If XCode = 1 GoTo DiskID
         If XCode = 2 GoTo Done
 
         Abbrev:
-        Locate 4, 58
+        Locate 4, 59
         Max = 5
         Call TextIn(NN$, Max, NumOnly, CapsOn, XCode, FG, BG)
-        If XCode = 1 GoTo TeamName:
+        If XCode = 1 GoTo TeamName
         If XCode = 2 GoTo Done
 
         LgBA:
@@ -2456,7 +2253,7 @@ Sub EDITTEAM (YN$, T$, NN$, S$, M$, teamIdx)
         Call NumIn(L#, Max, XCode, FG, BG)
         ratings%(1) = Int(L#)
         Locate 5, 25: Print Using "###"; ratings%(1)
-        If XCode = 1 GoTo Abbrev:
+        If XCode = 1 GoTo Abbrev
         If XCode = 2 GoTo Done
 
         LgKO:
@@ -2466,7 +2263,7 @@ Sub EDITTEAM (YN$, T$, NN$, S$, M$, teamIdx)
         Call NumIn(L#, Max, XCode, FG, BG)
         ratings%(2) = Int(L#)
         Locate 6, 25: Print Using "###"; ratings%(2)
-        If XCode = 1 GoTo LgBA:
+        If XCode = 1 GoTo LgBA
         If XCode = 2 GoTo Done
 
         LgBB:
@@ -2554,22 +2351,22 @@ Sub EDITTEAM (YN$, T$, NN$, S$, M$, teamIdx)
         If XCode = 2 GoTo Done
 
         Outdoor:
-        Locate 21, 25
+        Locate 21, 23
         Max = 1
         L# = ratings%(9)
         Call NumIn(L#, Max, XCode, FG, BG)
         ratings%(9) = Int(L#)
-        Locate 21, 25: Print Using "#"; ratings%(9)
+        Locate 21, 23: Print Using "#"; ratings%(9)
         If XCode = 1 GoTo Foul:
         If XCode = 2 GoTo Done
 
         Grass:
-        Locate 22, 25
+        Locate 22, 23
         Max = 1
         L# = ratings%(10)
         Call NumIn(L#, Max, XCode, FG, BG)
         ratings%(10) = Int(L#)
-        Locate 22, 25: Print Using "#"; ratings%(10)
+        Locate 22, 23: Print Using "#"; ratings%(10)
         If XCode = 1 GoTo Outdoor:
         If XCode = 2 GoTo Done
 
@@ -2581,26 +2378,30 @@ Sub EDITTEAM (YN$, T$, NN$, S$, M$, teamIdx)
         If XCode = 2 GoTo Done
 
         Text:
-        Locate 18, 46
+        Locate 18, 47
         Max = 2
         L# = ratings%(11)
         Call NumIn(L#, Max, XCode, FG, BG)
         ratings%(11) = Int(L#)
-        Locate 18, 46: Print Using "##"; ratings%(11)
+        Locate 18, 47: Print Using "##"; ratings%(11)
         If XCode = 1 GoTo Manager:
         If XCode = 2 GoTo Done
 
         Bgrnd:
-        Locate 19, 46
+        Locate 19, 47
         Max = 2
         L# = ratings%(12)
         Call NumIn(L#, Max, XCode, FG, BG)
         ratings%(12) = Int(L#)
-        Locate 19, 46: Print Using "##"; ratings%(12)
+        Locate 19, 47: Print Using "##"; ratings%(12)
         If XCode = 1 GoTo Text:
         If XCode = 2 GoTo Done
 
-        Locate 20, 29: Color ratings%(11), ratings%(12): Print "SAMPLE TEXT": Color 0, 7
+        Locate 20, 29
+        Color 15, 1
+        Print "TEAM APPEARANCE: ";
+        Color ratings%(11), ratings%(12): Print T$
+        Color 0, 7
 
         LLBA:
         Locate 8, 50
@@ -2852,8 +2653,8 @@ Sub EDITTEAM (YN$, T$, NN$, S$, M$, teamIdx)
         ClearEOL 14, 1
         If XCode = 1 GoTo RRKO
 
-        If X$ = "N" Then GoTo TeamNum
-        If X$ <> "Y" GoTo Done 'insist on either Y or N or up-arrow
+        If UCase$(X$) = "N" Then GoTo TeamNum
+        If UCase$(X$) <> "Y" GoTo Done 'insist on either Y or N or up-arrow
 
         validData = 1
 
@@ -2877,39 +2678,43 @@ Sub EDITTEAM (YN$, T$, NN$, S$, M$, teamIdx)
 End Sub
 
 '----------------------------------------
-'       PITCHEREDIT subroutine
+'       EditPitcher subroutine
 '----------------------------------------
 '...explanation...
-Sub PITCHEREDIT ()
+Sub EditPitcher ()
 
     Shared statP$()
     Shared draftP%()
 
     Do
-        Color 15, 0:
+
+        Color 15, 0
         Cls
-        Print "EDIT/ENTER PITCHERS"
-        X% = 2
-        For i = 0 To 10
-            Locate i + 5, 5: Print Using "##"; i + 1;
-            Print " "; statP$(i); Tab(40);
-            Print Using "##"; i + 12;
-            Print " "; statP$(i + 11)
+        Color 14
+        Print "EDIT / ENTER PITCHERS"
+        Color 15
+
+        For I = 0 To 10
+            Locate I + 5, 5: Print Using "##"; I + 1;
+            Print " "; statP$(I); Tab(40);
+            Print Using "##"; I + 12;
+            Print " "; statP$(I + 11)
         Next
 
         Do
             Locate 22, 1
             Print "# TO EDIT/ENTER (1-22) (0 TO CONTINUE) ";
-            Input i
-        Loop Until i >= 0 And i <= 22
+            Input idx
+        Loop Until idx >= 0 And idx <= 22
 
-        If i > 0 Then
+        If idx > 0 Then
 
             'adjust value for 0 index array
-            i = i - 1
+            I = idx - 1
 
             ' INITIALIZE PITCHER SCREEN
-            Color 15, 1: Cls
+            Color 15, 1
+            Cls
             Locate 1, 1: Print "NAME:"
             Locate 1, 24: Print "THROWS:"
             Locate 1, 36: Print "ACTIVE:"
@@ -2945,22 +2750,22 @@ Sub PITCHEREDIT ()
             FG = 0
             BG = 7
 
-            Locate 1, 7: QPrint PadRight$(statP$(i), 15), FG, BG, -1
+            Locate 1, 7: QPrint PadRight$(statP$(I), 15), FG, BG, -1
 
             THROW$ = "R"
-            If draftP%(i, 0) = -1 Then THROW$ = "L"
+            If draftP%(I, 0) = -1 Then THROW$ = "L"
             Locate 1, 32: QPrint PadRight$(THROW$, 1), FG, BG, -1
 
             ACT$ = "Y"
-            If draftP%(i, 34) = 1 Then ACT$ = "N"
+            If draftP%(I, 34) = 1 Then ACT$ = "N"
             Locate 1, 44: QPrint PadRight$(ACT$, 1), FG, BG, -1
 
-            Call PITCHINIT(i, FG, BG)
+            Call PITCHINIT(I, FG, BG)
 
             PName:
             Locate 1, 7
             CapsOn = 0: NumOnly = 0: Max = 15
-            Call TextIn(statP$(i), Max, NumOnly, CapsOn, XCode, FG, BG)
+            Call TextIn(statP$(I), Max, NumOnly, CapsOn, XCode, FG, BG)
             If XCode = 1 GoTo PName:
             If XCode = 2 GoTo PDone
 
@@ -2981,860 +2786,860 @@ Sub PITCHEREDIT ()
             PINJ:
             Locate 1, 60
             Max = 3
-            draftP# = draftP%(i, 35)
+            draftP# = draftP%(I, 35)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 35) = Int(draftP#)
-            Locate 1, 60: Print Using "###"; draftP%(i, 35)
+            draftP%(I, 35) = Int(draftP#)
+            Locate 1, 60: Print Using "###"; draftP%(I, 35)
             If XCode = 1 GoTo PActive:
             If XCode = 2 GoTo PDone
 
             PHOLD:
             Locate 1, 78
             Max = 1
-            draftP# = draftP%(i, 18)
+            draftP# = draftP%(I, 18)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 18) = Int(draftP#)
-            Locate 1, 78: Print Using "#"; draftP%(i, 18)
+            draftP%(I, 18) = Int(draftP#)
+            Locate 1, 78: Print Using "#"; draftP%(I, 18)
             If XCode = 1 GoTo PINJ:
             If XCode = 2 GoTo PDone
 
             PWINS:
             Locate 5, 10
             Max = 2
-            draftP# = draftP%(i, 1)
+            draftP# = draftP%(I, 1)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 1) = Int(draftP#)
-            Locate 5, 10: Print Using "##"; draftP%(i, 1)
+            draftP%(I, 1) = Int(draftP#)
+            Locate 5, 10: Print Using "##"; draftP%(I, 1)
             If XCode = 1 GoTo PHOLD:
             If XCode = 2 GoTo PDone
 
             PLOSSES:
             Locate 5, 14
             Max = 2
-            draftP# = draftP%(i, 2)
+            draftP# = draftP%(I, 2)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 2) = Int(draftP#)
-            Locate 5, 14: Print Using "##"; draftP%(i, 2)
+            draftP%(I, 2) = Int(draftP#)
+            Locate 5, 14: Print Using "##"; draftP%(I, 2)
             If XCode = 1 GoTo PWINS:
             If XCode = 2 GoTo PDone
 
             PSAVES:
             Locate 5, 18
             Max = 2
-            draftP# = draftP%(i, 3)
+            draftP# = draftP%(I, 3)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 3) = Int(draftP#)
-            Locate 5, 18: Print Using "##"; draftP%(i, 3)
+            draftP%(I, 3) = Int(draftP#)
+            Locate 5, 18: Print Using "##"; draftP%(I, 3)
             If XCode = 1 GoTo PLOSSES:
             If XCode = 2 GoTo PDone
 
             PGAMES:
             Locate 5, 22
             Max = 3
-            draftP# = draftP%(i, 4)
+            draftP# = draftP%(I, 4)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 4) = Int(draftP#)
-            Locate 5, 22: Print Using "###"; draftP%(i, 4)
+            draftP%(I, 4) = Int(draftP#)
+            Locate 5, 22: Print Using "###"; draftP%(I, 4)
             If XCode = 1 GoTo PSAVES:
             If XCode = 2 GoTo PDone
 
             PSTARTS:
             Locate 5, 27
             Max = 2
-            draftP# = draftP%(i, 5)
+            draftP# = draftP%(I, 5)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 5) = Int(draftP#)
-            Locate 5, 27: Print Using "##"; draftP%(i, 5)
+            draftP%(I, 5) = Int(draftP#)
+            Locate 5, 27: Print Using "##"; draftP%(I, 5)
             If XCode = 1 GoTo PGAMES:
             If XCode = 2 GoTo PDone
 
             PCG:
             Locate 5, 31
             Max = 2
-            draftP# = draftP%(i, 16)
+            draftP# = draftP%(I, 16)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 16) = Int(draftP#)
-            Locate 5, 31: Print Using "##"; draftP%(i, 16)
+            draftP%(I, 16) = Int(draftP#)
+            Locate 5, 31: Print Using "##"; draftP%(I, 16)
             If XCode = 1 GoTo PSTARTS:
             If XCode = 2 GoTo PDone
 
             PIP:
             Locate 5, 35
             Max = 3
-            draftP# = draftP%(i, 6)
+            draftP# = draftP%(I, 6)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 6) = Int(draftP#)
-            Locate 5, 35: Print Using "###"; draftP%(i, 6)
+            draftP%(I, 6) = Int(draftP#)
+            Locate 5, 35: Print Using "###"; draftP%(I, 6)
             If XCode = 1 GoTo PCG:
             If XCode = 2 GoTo PDone
 
             PH:
             Locate 5, 40
             Max = 3
-            draftP# = draftP%(i, 7)
+            draftP# = draftP%(I, 7)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 7) = Int(draftP#)
-            Locate 5, 40: Print Using "###"; draftP%(i, 7)
+            draftP%(I, 7) = Int(draftP#)
+            Locate 5, 40: Print Using "###"; draftP%(I, 7)
             If XCode = 1 GoTo PIP:
             If XCode = 2 GoTo PDone
 
             PBB:
             Locate 5, 45
             Max = 3
-            draftP# = draftP%(i, 8)
+            draftP# = draftP%(I, 8)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 8) = Int(draftP#)
-            Locate 5, 45: Print Using "###"; draftP%(i, 8)
+            draftP%(I, 8) = Int(draftP#)
+            Locate 5, 45: Print Using "###"; draftP%(I, 8)
             If XCode = 1 GoTo PH:
             If XCode = 2 GoTo PDone
 
             PKO:
             Locate 5, 50
             Max = 3
-            draftP# = draftP%(i, 9)
+            draftP# = draftP%(I, 9)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 9) = Int(draftP#)
-            Locate 5, 50: Print Using "###"; draftP%(i, 9)
+            draftP%(I, 9) = Int(draftP#)
+            Locate 5, 50: Print Using "###"; draftP%(I, 9)
             If XCode = 1 GoTo PBB:
             If XCode = 2 GoTo PDone
 
             PWP:
             Locate 5, 55
             Max = 2
-            draftP# = draftP%(i, 33)
+            draftP# = draftP%(I, 33)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 33) = Int(draftP#)
-            Locate 5, 55: Print Using "##"; draftP%(i, 33)
+            draftP%(I, 33) = Int(draftP#)
+            Locate 5, 55: Print Using "##"; draftP%(I, 33)
             If XCode = 1 GoTo PKO:
             If XCode = 2 GoTo PDone
 
             PERA:
             Locate 5, 59
             Max = 4
-            draftP# = draftP%(i, 10)
+            draftP# = draftP%(I, 10)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 10) = Int(draftP#)
-            Locate 5, 59: Print Using "####"; draftP%(i, 10)
+            draftP%(I, 10) = Int(draftP#)
+            Locate 5, 59: Print Using "####"; draftP%(I, 10)
             If XCode = 1 GoTo PWP:
             If XCode = 2 GoTo PDone
 
             PHRA:
             Locate 5, 66
             Max = 2
-            draftP# = draftP%(i, 13)
+            draftP# = draftP%(I, 13)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 13) = Int(draftP#)
-            Locate 5, 66: Print Using "##"; draftP%(i, 13)
+            draftP%(I, 13) = Int(draftP#)
+            Locate 5, 66: Print Using "##"; draftP%(I, 13)
             If XCode = 1 GoTo PERA:
             If XCode = 2 GoTo PDone
 
             PGA:
             Locate 6, 32
             Max = 2
-            draftP# = draftP%(i, 12)
+            draftP# = draftP%(I, 12)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 12) = Int(draftP#)
-            Locate 6, 32: Print Using "##"; draftP%(i, 12)
+            draftP%(I, 12) = Int(draftP#)
+            Locate 6, 32: Print Using "##"; draftP%(I, 12)
             If XCode = 1 GoTo PHRA:
             If XCode = 2 GoTo PDone
 
             PLBA:
             Locate 6, 50
             Max = 3
-            draftP# = draftP%(i, 14)
+            draftP# = draftP%(I, 14)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 14) = Int(draftP#)
-            Locate 6, 50: Print Using "###"; draftP%(i, 14)
+            draftP%(I, 14) = Int(draftP#)
+            Locate 6, 50: Print Using "###"; draftP%(I, 14)
             If XCode = 1 GoTo PHRA:
             If XCode = 2 GoTo PDone
 
             PLAB:
             Locate 10, 25
             Max = 3
-            draftP# = draftP%(i, 51)
+            draftP# = draftP%(I, 51)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 51) = Int(draftP#)
-            Locate 10, 25: Print Using "###"; draftP%(i, 51)
+            draftP%(I, 51) = Int(draftP#)
+            Locate 10, 25: Print Using "###"; draftP%(I, 51)
             If XCode = 1 GoTo PLBA:
             If XCode = 2 GoTo PDone
 
             PLH:
             Locate 10, 30
             Max = 3
-            draftP# = draftP%(i, 52)
+            draftP# = draftP%(I, 52)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 52) = Int(draftP#)
-            Locate 10, 30: Print Using "###"; draftP%(i, 52)
+            draftP%(I, 52) = Int(draftP#)
+            Locate 10, 30: Print Using "###"; draftP%(I, 52)
             If XCode = 1 GoTo PLAB:
             If XCode = 2 GoTo PDone
 
             PL2B:
             Locate 10, 35
             Max = 2
-            draftP# = draftP%(i, 53)
+            draftP# = draftP%(I, 53)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 53) = Int(draftP#)
-            Locate 10, 35: Print Using "##"; draftP%(i, 53)
+            draftP%(I, 53) = Int(draftP#)
+            Locate 10, 35: Print Using "##"; draftP%(I, 53)
             If XCode = 1 GoTo PLH:
             If XCode = 2 GoTo PDone
 
             PL3B:
             Locate 10, 39
             Max = 2
-            draftP# = draftP%(i, 54)
+            draftP# = draftP%(I, 54)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 54) = Int(draftP#)
-            Locate 10, 39: Print Using "##"; draftP%(i, 54)
+            draftP%(I, 54) = Int(draftP#)
+            Locate 10, 39: Print Using "##"; draftP%(I, 54)
             If XCode = 1 GoTo PL2B:
             If XCode = 2 GoTo PDone
 
             PLHR:
             Locate 10, 43
             Max = 2
-            draftP# = draftP%(i, 55)
+            draftP# = draftP%(I, 55)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 55) = Int(draftP#)
-            Locate 10, 43: Print Using "##"; draftP%(i, 55)
+            draftP%(I, 55) = Int(draftP#)
+            Locate 10, 43: Print Using "##"; draftP%(I, 55)
             If XCode = 1 GoTo PL3B:
             If XCode = 2 GoTo PDone
 
             PLBB:
             Locate 10, 47
             Max = 3
-            draftP# = draftP%(i, 56)
+            draftP# = draftP%(I, 56)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 56) = Int(draftP#)
-            Locate 10, 47: Print Using "###"; draftP%(i, 56)
+            draftP%(I, 56) = Int(draftP#)
+            Locate 10, 47: Print Using "###"; draftP%(I, 56)
             If XCode = 1 GoTo PLHR:
             If XCode = 2 GoTo PDone
 
             PLKO:
             Locate 10, 52
             Max = 3
-            draftP# = draftP%(i, 57)
+            draftP# = draftP%(I, 57)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 57) = Int(draftP#)
-            Locate 10, 52: Print Using "###"; draftP%(i, 57)
+            draftP%(I, 57) = Int(draftP#)
+            Locate 10, 52: Print Using "###"; draftP%(I, 57)
             If XCode = 1 GoTo PLBB:
             If XCode = 2 GoTo PDone
 
             PRAB:
             Locate 11, 25
             Max = 3
-            draftP# = draftP%(i, 58)
+            draftP# = draftP%(I, 58)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 58) = Int(draftP#)
-            Locate 11, 25: Print Using "###"; draftP%(i, 58)
+            draftP%(I, 58) = Int(draftP#)
+            Locate 11, 25: Print Using "###"; draftP%(I, 58)
             If XCode = 1 GoTo PLKO:
             If XCode = 2 GoTo PDone
 
             PRH:
             Locate 11, 30
             Max = 3
-            draftP# = draftP%(i, 59)
+            draftP# = draftP%(I, 59)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 59) = Int(draftP#)
-            Locate 11, 30: Print Using "###"; draftP%(i, 59)
+            draftP%(I, 59) = Int(draftP#)
+            Locate 11, 30: Print Using "###"; draftP%(I, 59)
             If XCode = 1 GoTo PRAB:
             If XCode = 2 GoTo PDone
 
             PR2B:
             Locate 11, 35
             Max = 2
-            draftP# = draftP%(i, 60)
+            draftP# = draftP%(I, 60)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 60) = Int(draftP#)
-            Locate 11, 35: Print Using "##"; draftP%(i, 60)
+            draftP%(I, 60) = Int(draftP#)
+            Locate 11, 35: Print Using "##"; draftP%(I, 60)
             If XCode = 1 GoTo PRH:
             If XCode = 2 GoTo PDone
 
             PR3B:
             Locate 11, 39
             Max = 2
-            draftP# = draftP%(i, 61)
+            draftP# = draftP%(I, 61)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 61) = Int(draftP#)
-            Locate 11, 39: Print Using "##"; draftP%(i, 61)
+            draftP%(I, 61) = Int(draftP#)
+            Locate 11, 39: Print Using "##"; draftP%(I, 61)
             If XCode = 1 GoTo PR2B:
             If XCode = 2 GoTo PDone
 
             PRHR:
             Locate 11, 43
             Max = 2
-            draftP# = draftP%(i, 62)
+            draftP# = draftP%(I, 62)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 62) = Int(draftP#)
-            Locate 11, 43: Print Using "##"; draftP%(i, 62)
+            draftP%(I, 62) = Int(draftP#)
+            Locate 11, 43: Print Using "##"; draftP%(I, 62)
             If XCode = 1 GoTo PR3B:
             If XCode = 2 GoTo PDone
 
             PRBB:
             Locate 11, 47
             Max = 3
-            draftP# = draftP%(i, 63)
+            draftP# = draftP%(I, 63)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 63) = Int(draftP#)
-            Locate 11, 47: Print Using "###"; draftP%(i, 63)
+            draftP%(I, 63) = Int(draftP#)
+            Locate 11, 47: Print Using "###"; draftP%(I, 63)
             If XCode = 1 GoTo PRHR:
             If XCode = 2 GoTo PDone
 
             PRKO:
             Locate 11, 52
             Max = 3
-            draftP# = draftP%(i, 64)
+            draftP# = draftP%(I, 64)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 64) = Int(draftP#)
-            Locate 11, 52: Print Using "###"; draftP%(i, 64)
+            draftP%(I, 64) = Int(draftP#)
+            Locate 11, 52: Print Using "###"; draftP%(I, 64)
             If XCode = 1 GoTo PRBB:
             If XCode = 2 GoTo PDone
 
             PRUN:
             Locate 14, 20
             Max = 1
-            draftP# = draftP%(i, 31)
+            draftP# = draftP%(I, 31)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 31) = Int(draftP#)
-            Locate 14, 20: Print Using "#"; draftP%(i, 31)
+            draftP%(I, 31) = Int(draftP#)
+            Locate 14, 20: Print Using "#"; draftP%(I, 31)
             If XCode = 1 GoTo PRKO:
             If XCode = 2 GoTo PDone
 
             PBUNT:
             Locate 14, 36
             Max = 1
-            draftP# = draftP%(i, 32)
+            draftP# = draftP%(I, 32)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 32) = Int(draftP#)
-            Locate 14, 36: Print Using "#"; draftP%(i, 32)
+            draftP%(I, 32) = Int(draftP#)
+            Locate 14, 36: Print Using "#"; draftP%(I, 32)
             If XCode = 1 GoTo PRKO:
             If XCode = 2 GoTo PDone
 
             PBAVG:
             Locate 14, 52
             Max = 3
-            draftP# = draftP%(i, 11)
+            draftP# = draftP%(I, 11)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 11) = Int(draftP#)
-            Locate 14, 52: Print Using "###"; draftP%(i, 11)
+            draftP%(I, 11) = Int(draftP#)
+            Locate 14, 52: Print Using "###"; draftP%(I, 11)
             If XCode = 1 GoTo PBUNT:
             If XCode = 2 GoTo PDone
 
             PFAVG:
             Locate 14, 68
             Max = 4
-            draftP# = draftP%(i, 17)
+            draftP# = draftP%(I, 17)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 17) = Int(draftP#)
-            Locate 14, 68: Print Using "####"; draftP%(i, 17)
+            draftP%(I, 17) = Int(draftP#)
+            Locate 14, 68: Print Using "####"; draftP%(I, 17)
             If XCode = 1 GoTo PBAVG:
             If XCode = 2 GoTo PDone
 
             PBGAMES:
             Locate 16, 12
             Max = 3
-            draftP# = draftP%(i, 19)
+            draftP# = draftP%(I, 19)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 19) = Int(draftP#)
-            Locate 16, 12: Print Using "###"; draftP%(i, 19)
+            draftP%(I, 19) = Int(draftP#)
+            Locate 16, 12: Print Using "###"; draftP%(I, 19)
             If XCode = 1 GoTo PFAVG:
             If XCode = 2 GoTo PDone
 
             PAB:
             Locate 16, 17
             Max = 3
-            draftP# = draftP%(i, 20)
+            draftP# = draftP%(I, 20)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 20) = Int(draftP#)
-            Locate 16, 17: Print Using "###"; draftP%(i, 20)
+            draftP%(I, 20) = Int(draftP#)
+            Locate 16, 17: Print Using "###"; draftP%(I, 20)
             If XCode = 1 GoTo PBGAMES:
             If XCode = 2 GoTo PDone
 
             PR:
             Locate 16, 22
             Max = 3
-            draftP# = draftP%(i, 21)
+            draftP# = draftP%(I, 21)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 21) = Int(draftP#)
-            Locate 16, 22: Print Using "###"; draftP%(i, 21)
+            draftP%(I, 21) = Int(draftP#)
+            Locate 16, 22: Print Using "###"; draftP%(I, 21)
             If XCode = 1 GoTo PAB:
             If XCode = 2 GoTo PDone
 
             PBH:
             Locate 16, 27
             Max = 3
-            draftP# = draftP%(i, 22)
+            draftP# = draftP%(I, 22)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 22) = Int(draftP#)
-            Locate 16, 27: Print Using "###"; draftP%(i, 22)
+            draftP%(I, 22) = Int(draftP#)
+            Locate 16, 27: Print Using "###"; draftP%(I, 22)
             If XCode = 1 GoTo PR:
             If XCode = 2 GoTo PDone
 
             P2B:
             Locate 16, 32
             Max = 2
-            draftP# = draftP%(i, 23)
+            draftP# = draftP%(I, 23)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 23) = Int(draftP#)
-            Locate 16, 32: Print Using "##"; draftP%(i, 23)
+            draftP%(I, 23) = Int(draftP#)
+            Locate 16, 32: Print Using "##"; draftP%(I, 23)
             If XCode = 1 GoTo PBH:
             If XCode = 2 GoTo PDone
 
             P3B:
             Locate 16, 36
             Max = 2
-            draftP# = draftP%(i, 24)
+            draftP# = draftP%(I, 24)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 24) = Int(draftP#)
-            Locate 16, 36: Print Using "##"; draftP%(i, 24)
+            draftP%(I, 24) = Int(draftP#)
+            Locate 16, 36: Print Using "##"; draftP%(I, 24)
             If XCode = 1 GoTo P2B:
             If XCode = 2 GoTo PDone
 
             PHR:
             Locate 16, 40
             Max = 2
-            draftP# = draftP%(i, 25)
+            draftP# = draftP%(I, 25)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 25) = Int(draftP#)
-            Locate 16, 40: Print Using "##"; draftP%(i, 25)
+            draftP%(I, 25) = Int(draftP#)
+            Locate 16, 40: Print Using "##"; draftP%(I, 25)
             If XCode = 1 GoTo P3B:
             If XCode = 2 GoTo PDone
 
             PRBI:
             Locate 16, 44
             Max = 3
-            draftP# = draftP%(i, 26)
+            draftP# = draftP%(I, 26)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 26) = Int(draftP#)
-            Locate 16, 44: Print Using "###"; draftP%(i, 26)
+            draftP%(I, 26) = Int(draftP#)
+            Locate 16, 44: Print Using "###"; draftP%(I, 26)
             If XCode = 1 GoTo PHR:
             If XCode = 2 GoTo PDone
 
             PBBB:
             Locate 16, 49
             Max = 3
-            draftP# = draftP%(i, 27)
+            draftP# = draftP%(I, 27)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 27) = Int(draftP#)
-            Locate 16, 49: Print Using "###"; draftP%(i, 27)
+            draftP%(I, 27) = Int(draftP#)
+            Locate 16, 49: Print Using "###"; draftP%(I, 27)
             If XCode = 1 GoTo PRBI:
             If XCode = 2 GoTo PDone
 
             PBKO:
             Locate 16, 54
             Max = 3
-            draftP# = draftP%(i, 28)
+            draftP# = draftP%(I, 28)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 28) = Int(draftP#)
-            Locate 16, 54: Print Using "###"; draftP%(i, 28)
+            draftP%(I, 28) = Int(draftP#)
+            Locate 16, 54: Print Using "###"; draftP%(I, 28)
             If XCode = 1 GoTo PBBB:
             If XCode = 2 GoTo PDone
 
             PSB:
             Locate 16, 59
             Max = 3
-            draftP# = draftP%(i, 29)
+            draftP# = draftP%(I, 29)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 29) = Int(draftP#)
-            Locate 16, 59: Print Using "###"; draftP%(i, 29)
+            draftP%(I, 29) = Int(draftP#)
+            Locate 16, 59: Print Using "###"; draftP%(I, 29)
             If XCode = 1 GoTo PBKO:
             If XCode = 2 GoTo PDone
 
             PCS:
             Locate 16, 64
             Max = 2
-            draftP# = draftP%(i, 30)
+            draftP# = draftP%(I, 30)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 30) = Int(draftP#)
-            Locate 16, 64: Print Using "##"; draftP%(i, 30)
+            draftP%(I, 30) = Int(draftP#)
+            Locate 16, 64: Print Using "##"; draftP%(I, 30)
             If XCode = 1 GoTo PSB:
             If XCode = 2 GoTo PDone
 
             PSH:
             Locate 16, 68
             Max = 2
-            draftP# = draftP%(i, 36)
+            draftP# = draftP%(I, 36)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 36) = Int(draftP#)
-            Locate 16, 68: Print Using "##"; draftP%(i, 36)
+            draftP%(I, 36) = Int(draftP#)
+            Locate 16, 68: Print Using "##"; draftP%(I, 36)
             If XCode = 1 GoTo PCS:
             If XCode = 2 GoTo PDone
 
             PPLAB:
             Locate 17, 17
             Max = 3
-            draftP# = draftP%(i, 37)
+            draftP# = draftP%(I, 37)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 37) = Int(draftP#)
-            Locate 17, 17: Print Using "###"; draftP%(i, 37)
+            draftP%(I, 37) = Int(draftP#)
+            Locate 17, 17: Print Using "###"; draftP%(I, 37)
             If XCode = 1 GoTo PSH:
             If XCode = 2 GoTo PDone
 
             PPLH:
             Locate 17, 27
             Max = 3
-            draftP# = draftP%(i, 38)
+            draftP# = draftP%(I, 38)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 38) = Int(draftP#)
-            Locate 17, 27: Print Using "###"; draftP%(i, 38)
+            draftP%(I, 38) = Int(draftP#)
+            Locate 17, 27: Print Using "###"; draftP%(I, 38)
             If XCode = 1 GoTo PPLAB:
             If XCode = 2 GoTo PDone
 
             PPL2B:
             Locate 17, 32
             Max = 2
-            draftP# = draftP%(i, 39)
+            draftP# = draftP%(I, 39)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 39) = Int(draftP#)
-            Locate 17, 32: Print Using "##"; draftP%(i, 39)
+            draftP%(I, 39) = Int(draftP#)
+            Locate 17, 32: Print Using "##"; draftP%(I, 39)
             If XCode = 1 GoTo PPLH:
             If XCode = 2 GoTo PDone
 
             PPL3B:
             Locate 17, 36
             Max = 2
-            draftP# = draftP%(i, 40)
+            draftP# = draftP%(I, 40)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 40) = Int(draftP#)
-            Locate 17, 36: Print Using "##"; draftP%(i, 40)
+            draftP%(I, 40) = Int(draftP#)
+            Locate 17, 36: Print Using "##"; draftP%(I, 40)
             If XCode = 1 GoTo PPL2B:
             If XCode = 2 GoTo PDone
 
             PPLHR:
             Locate 17, 40
             Max = 2
-            draftP# = draftP%(i, 41)
+            draftP# = draftP%(I, 41)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 41) = Int(draftP#)
-            Locate 17, 40: Print Using "##"; draftP%(i, 41)
+            draftP%(I, 41) = Int(draftP#)
+            Locate 17, 40: Print Using "##"; draftP%(I, 41)
             If XCode = 1 GoTo PPL3B:
             If XCode = 2 GoTo PDone
 
             PPLBB:
             Locate 17, 49
             Max = 3
-            draftP# = draftP%(i, 42)
+            draftP# = draftP%(I, 42)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 42) = Int(draftP#)
-            Locate 17, 49: Print Using "###"; draftP%(i, 42)
+            draftP%(I, 42) = Int(draftP#)
+            Locate 17, 49: Print Using "###"; draftP%(I, 42)
             If XCode = 1 GoTo PPLHR:
             If XCode = 2 GoTo PDone
 
             PPLKO:
             Locate 17, 54
             Max = 3
-            draftP# = draftP%(i, 43)
+            draftP# = draftP%(I, 43)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 43) = Int(draftP#)
-            Locate 17, 54: Print Using "###"; draftP%(i, 43)
+            draftP%(I, 43) = Int(draftP#)
+            Locate 17, 54: Print Using "###"; draftP%(I, 43)
             If XCode = 1 GoTo PPLBB:
             If XCode = 2 GoTo PDone
 
             PPRAB:
             Locate 18, 17
             Max = 3
-            draftP# = draftP%(i, 44)
+            draftP# = draftP%(I, 44)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 44) = Int(draftP#)
-            Locate 18, 17: Print Using "###"; draftP%(i, 44)
+            draftP%(I, 44) = Int(draftP#)
+            Locate 18, 17: Print Using "###"; draftP%(I, 44)
             If XCode = 1 GoTo PPLKO:
             If XCode = 2 GoTo PDone
 
             PPRH:
             Locate 18, 27
             Max = 3
-            draftP# = draftP%(i, 45)
+            draftP# = draftP%(I, 45)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 45) = Int(draftP#)
-            Locate 18, 27: Print Using "###"; draftP%(i, 45)
+            draftP%(I, 45) = Int(draftP#)
+            Locate 18, 27: Print Using "###"; draftP%(I, 45)
             If XCode = 1 GoTo PPRAB:
             If XCode = 2 GoTo PDone
 
             PPR2B:
             Locate 18, 32
             Max = 2
-            draftP# = draftP%(i, 46)
+            draftP# = draftP%(I, 46)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 46) = Int(draftP#)
-            Locate 18, 32: Print Using "##"; draftP%(i, 46)
+            draftP%(I, 46) = Int(draftP#)
+            Locate 18, 32: Print Using "##"; draftP%(I, 46)
             If XCode = 1 GoTo PPRH:
             If XCode = 2 GoTo PDone
 
             PPR3B:
             Locate 18, 36
             Max = 2
-            draftP# = draftP%(i, 47)
+            draftP# = draftP%(I, 47)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 47) = Int(draftP#)
-            Locate 18, 36: Print Using "##"; draftP%(i, 47)
+            draftP%(I, 47) = Int(draftP#)
+            Locate 18, 36: Print Using "##"; draftP%(I, 47)
             If XCode = 1 GoTo PPR2B:
             If XCode = 2 GoTo PDone
 
             PPRHR:
             Locate 18, 40
             Max = 2
-            draftP# = draftP%(i, 48)
+            draftP# = draftP%(I, 48)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 48) = Int(draftP#)
-            Locate 18, 40: Print Using "##"; draftP%(i, 48)
+            draftP%(I, 48) = Int(draftP#)
+            Locate 18, 40: Print Using "##"; draftP%(I, 48)
             If XCode = 1 GoTo PPR3B:
             If XCode = 2 GoTo PDone
 
             PPRBB:
             Locate 18, 49
             Max = 3
-            draftP# = draftP%(i, 49)
+            draftP# = draftP%(I, 49)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 49) = Int(draftP#)
-            Locate 18, 49: Print Using "###"; draftP%(i, 49)
+            draftP%(I, 49) = Int(draftP#)
+            Locate 18, 49: Print Using "###"; draftP%(I, 49)
             If XCode = 1 GoTo PPRHR:
             If XCode = 2 GoTo PDone
 
             PPRKO:
             Locate 18, 54
             Max = 3
-            draftP# = draftP%(i, 50)
+            draftP# = draftP%(I, 50)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 50) = Int(draftP#)
-            Locate 18, 54: Print Using "###"; draftP%(i, 50)
+            draftP%(I, 50) = Int(draftP#)
+            Locate 18, 54: Print Using "###"; draftP%(I, 50)
             If XCode = 1 GoTo PPRBB:
             If XCode = 2 GoTo PDone
 
             PLLBA:
             Locate 22, 27
             Max = 3
-            draftP# = draftP%(i, 65)
+            draftP# = draftP%(I, 65)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 65) = Int(draftP#)
-            Locate 22, 27: Print Using "###"; draftP%(i, 65)
+            draftP%(I, 65) = Int(draftP#)
+            Locate 22, 27: Print Using "###"; draftP%(I, 65)
             If XCode = 1 GoTo PPRKO:
             If XCode = 2 GoTo PDone
 
             PLL2B:
             Locate 22, 32
             Max = 3
-            draftP# = draftP%(i, 66)
+            draftP# = draftP%(I, 66)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 66) = Int(draftP#)
-            Locate 22, 32: Print Using "###"; draftP%(i, 66)
+            draftP%(I, 66) = Int(draftP#)
+            Locate 22, 32: Print Using "###"; draftP%(I, 66)
             If XCode = 1 GoTo PLLBA:
             If XCode = 2 GoTo PDone
 
             PLL3B:
             Locate 22, 37
             Max = 3
-            draftP# = draftP%(i, 67)
+            draftP# = draftP%(I, 67)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 67) = Int(draftP#)
-            Locate 22, 37: Print Using "###"; draftP%(i, 67)
+            draftP%(I, 67) = Int(draftP#)
+            Locate 22, 37: Print Using "###"; draftP%(I, 67)
             If XCode = 1 GoTo PLL2B:
             If XCode = 2 GoTo PDone
 
             PLLHR:
             Locate 22, 42
             Max = 3
-            draftP# = draftP%(i, 68)
+            draftP# = draftP%(I, 68)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 68) = Int(draftP#)
-            Locate 22, 42: Print Using "###"; draftP%(i, 68)
+            draftP%(I, 68) = Int(draftP#)
+            Locate 22, 42: Print Using "###"; draftP%(I, 68)
             If XCode = 1 GoTo PLL3B:
             If XCode = 2 GoTo PDone
 
             PLLBB:
             Locate 22, 47
             Max = 3
-            draftP# = draftP%(i, 69)
+            draftP# = draftP%(I, 69)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 69) = Int(draftP#)
-            Locate 22, 47: Print Using "###"; draftP%(i, 69)
+            draftP%(I, 69) = Int(draftP#)
+            Locate 22, 47: Print Using "###"; draftP%(I, 69)
             If XCode = 1 GoTo PLLHR:
             If XCode = 2 GoTo PDone
 
             PLLKO:
             Locate 22, 52
             Max = 3
-            draftP# = draftP%(i, 70)
+            draftP# = draftP%(I, 70)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 70) = Int(draftP#)
-            Locate 22, 52: Print Using "###"; draftP%(i, 70)
+            draftP%(I, 70) = Int(draftP#)
+            Locate 22, 52: Print Using "###"; draftP%(I, 70)
             If XCode = 1 GoTo PLLBB:
             If XCode = 2 GoTo PDone
 
             PLRBA:
             Locate 23, 27
             Max = 3
-            draftP# = draftP%(i, 71)
+            draftP# = draftP%(I, 71)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 71) = Int(draftP#)
-            Locate 23, 27: Print Using "###"; draftP%(i, 71)
+            draftP%(I, 71) = Int(draftP#)
+            Locate 23, 27: Print Using "###"; draftP%(I, 71)
             If XCode = 1 GoTo PLLKO:
             If XCode = 2 GoTo PDone
 
             PLR2B:
             Locate 23, 32
             Max = 3
-            draftP# = draftP%(i, 72)
+            draftP# = draftP%(I, 72)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 72) = Int(draftP#)
-            Locate 23, 32: Print Using "###"; draftP%(i, 72)
+            draftP%(I, 72) = Int(draftP#)
+            Locate 23, 32: Print Using "###"; draftP%(I, 72)
             If XCode = 1 GoTo PLRBA:
             If XCode = 2 GoTo PDone
 
             PLR3B:
             Locate 23, 37
             Max = 3
-            draftP# = draftP%(i, 73)
+            draftP# = draftP%(I, 73)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 73) = Int(draftP#)
-            Locate 23, 37: Print Using "###"; draftP%(i, 73)
+            draftP%(I, 73) = Int(draftP#)
+            Locate 23, 37: Print Using "###"; draftP%(I, 73)
             If XCode = 1 GoTo PLR2B:
             If XCode = 2 GoTo PDone
 
             PLRHR:
             Locate 23, 42
             Max = 3
-            draftP# = draftP%(i, 74)
+            draftP# = draftP%(I, 74)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 74) = Int(draftP#)
-            Locate 23, 42: Print Using "###"; draftP%(i, 74)
+            draftP%(I, 74) = Int(draftP#)
+            Locate 23, 42: Print Using "###"; draftP%(I, 74)
             If XCode = 1 GoTo PLR3B:
             If XCode = 2 GoTo PDone
 
             PLRBB:
             Locate 23, 47
             Max = 3
-            draftP# = draftP%(i, 75)
+            draftP# = draftP%(I, 75)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 75) = Int(draftP#)
-            Locate 23, 47: Print Using "###"; draftP%(i, 75)
+            draftP%(I, 75) = Int(draftP#)
+            Locate 23, 47: Print Using "###"; draftP%(I, 75)
             If XCode = 1 GoTo PLRHR:
             If XCode = 2 GoTo PDone
 
             PLRKO:
             Locate 23, 52
             Max = 3
-            draftP# = draftP%(i, 76)
+            draftP# = draftP%(I, 76)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 76) = Int(draftP#)
-            Locate 23, 52: Print Using "###"; draftP%(i, 76)
+            draftP%(I, 76) = Int(draftP#)
+            Locate 23, 52: Print Using "###"; draftP%(I, 76)
             If XCode = 1 GoTo PLRBB:
             If XCode = 2 GoTo PDone
 
             PRLBA:
             Locate 24, 27
             Max = 3
-            draftP# = draftP%(i, 77)
+            draftP# = draftP%(I, 77)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 77) = Int(draftP#)
-            Locate 24, 27: Print Using "###"; draftP%(i, 77);
+            draftP%(I, 77) = Int(draftP#)
+            Locate 24, 27: Print Using "###"; draftP%(I, 77);
             If XCode = 1 GoTo PLRKO:
             If XCode = 2 GoTo PDone
 
             PRL2B:
             Locate 24, 32
             Max = 3
-            draftP# = draftP%(i, 78)
+            draftP# = draftP%(I, 78)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 78) = Int(draftP#)
-            Locate 24, 32: Print Using "###"; draftP%(i, 78);
+            draftP%(I, 78) = Int(draftP#)
+            Locate 24, 32: Print Using "###"; draftP%(I, 78);
             If XCode = 1 GoTo PRLBA:
             If XCode = 2 GoTo PDone
 
             PRL3B:
             Locate 24, 37
             Max = 3
-            draftP# = draftP%(i, 79)
+            draftP# = draftP%(I, 79)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 79) = Int(draftP#)
-            Locate 24, 37: Print Using "###"; draftP%(i, 79);
+            draftP%(I, 79) = Int(draftP#)
+            Locate 24, 37: Print Using "###"; draftP%(I, 79);
             If XCode = 1 GoTo PRL2B:
             If XCode = 2 GoTo PDone
 
             PRLHR:
             Locate 24, 42
             Max = 3
-            draftP# = draftP%(i, 80)
+            draftP# = draftP%(I, 80)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 80) = Int(draftP#)
-            Locate 24, 42: Print Using "###"; draftP%(i, 80);
+            draftP%(I, 80) = Int(draftP#)
+            Locate 24, 42: Print Using "###"; draftP%(I, 80);
             If XCode = 1 GoTo PRL3B:
             If XCode = 2 GoTo PDone
 
             PRLBB:
             Locate 24, 47
             Max = 3
-            draftP# = draftP%(i, 81)
+            draftP# = draftP%(I, 81)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 81) = Int(draftP#)
-            Locate 24, 47: Print Using "###"; draftP%(i, 81);
+            draftP%(I, 81) = Int(draftP#)
+            Locate 24, 47: Print Using "###"; draftP%(I, 81);
             If XCode = 1 GoTo PRLHR:
             If XCode = 2 GoTo PDone
 
             PRLKO:
             Locate 24, 52
             Max = 3
-            draftP# = draftP%(i, 82)
+            draftP# = draftP%(I, 82)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 82) = Int(draftP#)
-            Locate 24, 52: Print Using "###"; draftP%(i, 82);
+            draftP%(I, 82) = Int(draftP#)
+            Locate 24, 52: Print Using "###"; draftP%(I, 82);
             If XCode = 1 GoTo PRLBB:
             If XCode = 2 GoTo PDone
 
             PRRBA:
             Locate 25, 27
             Max = 3
-            draftP# = draftP%(i, 83)
+            draftP# = draftP%(I, 83)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 83) = Int(draftP#)
-            Locate 25, 27: Print Using "###"; draftP%(i, 83);
+            draftP%(I, 83) = Int(draftP#)
+            Locate 25, 27: Print Using "###"; draftP%(I, 83);
             If XCode = 1 GoTo PRLKO:
             If XCode = 2 GoTo PDone
 
             PRR2B:
             Locate 25, 32
             Max = 3
-            draftP# = draftP%(i, 84)
+            draftP# = draftP%(I, 84)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 84) = Int(draftP#)
-            Locate 25, 32: Print Using "###"; draftP%(i, 84);
+            draftP%(I, 84) = Int(draftP#)
+            Locate 25, 32: Print Using "###"; draftP%(I, 84);
             If XCode = 1 GoTo PRRBA:
             If XCode = 2 GoTo PDone
 
             PRR3B:
             Locate 25, 37
             Max = 3
-            draftP# = draftP%(i, 85)
+            draftP# = draftP%(I, 85)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 85) = Int(draftP#)
-            Locate 25, 37: Print Using "###"; draftP%(i, 85);
+            draftP%(I, 85) = Int(draftP#)
+            Locate 25, 37: Print Using "###"; draftP%(I, 85);
             If XCode = 1 GoTo PRR2B:
             If XCode = 2 GoTo PDone
 
             PRRHR:
             Locate 25, 42
             Max = 3
-            draftP# = draftP%(i, 86)
+            draftP# = draftP%(I, 86)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 86) = Int(draftP#)
-            Locate 25, 42: Print Using "###"; draftP%(i, 86);
+            draftP%(I, 86) = Int(draftP#)
+            Locate 25, 42: Print Using "###"; draftP%(I, 86);
             If XCode = 1 GoTo PRR3B:
             If XCode = 2 GoTo PDone
 
             PRRBB:
             Locate 25, 47
             Max = 3
-            draftP# = draftP%(i, 87)
+            draftP# = draftP%(I, 87)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 87) = Int(draftP#)
-            Locate 25, 47: Print Using "###"; draftP%(i, 87);
+            draftP%(I, 87) = Int(draftP#)
+            Locate 25, 47: Print Using "###"; draftP%(I, 87);
             If XCode = 1 GoTo PRRHR:
             If XCode = 2 GoTo PDone
 
             PRRKO:
             Locate 25, 52
             Max = 3
-            draftP# = draftP%(i, 88)
+            draftP# = draftP%(I, 88)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            draftP%(i, 88) = Int(draftP#)
-            Locate 25, 52: Print Using "###"; draftP%(i, 88);
+            draftP%(I, 88) = Int(draftP#)
+            Locate 25, 52: Print Using "###"; draftP%(I, 88);
             If XCode = 1 GoTo PRRBB:
 
             PDone:
@@ -3848,15 +3653,15 @@ Sub PITCHEREDIT ()
             If X$ = "N" GoTo PName
             If X$ <> "Y" GoTo PDone 'insist on either Y or N or up-arrow
 
-            draftP%(i, 0) = 1
-            If UCase$(_Trim$(THROW$)) = "L" Then draftP%(i, 0) = -1
+            draftP%(I, 0) = 1
+            If UCase$(_Trim$(THROW$)) = "L" Then draftP%(I, 0) = -1
 
-            draftP%(i, 34) = 0
-            If UCase$(_Trim$(ACT$)) = "N" Then draftP%(i, 34) = 1
+            draftP%(I, 34) = 0
+            If UCase$(_Trim$(ACT$)) = "N" Then draftP%(I, 34) = 1
 
         End If
 
-    Loop Until i = 0
+    Loop Until idx = 0
 
 End Sub
 
@@ -3960,7 +3765,7 @@ Sub PITCHINIT (i, FG, BG)
 End Sub
 
 '----------------------------------------
-'       VIEWHITTERS subroutine
+'       ViewHitters subroutine
 '----------------------------------------
 '...explanation...
 Sub ViewHitters ()
@@ -3970,32 +3775,57 @@ Sub ViewHitters ()
     Shared statI2!
 
     Do
+
         Cls
-        Color 14: Print "BATTER     B POS     G  AB   R   H DB TR HR RBI  BB  SO  SB CS GA  BAVG"
+
+        Color 12: Print T$
+        Color 14
+        Print "BATTER     B POS     G  AB   R   H DB TR HR RBI  BB  SO  SB CS GA  BAVG"
 
         For I = 0 To 22
+
             If I = 20 Then
                 Locate 23
                 Print "HIT ANY KEY TO CONTINUE"
                 I$ = GetKeyPress$
 
                 Cls
+
                 Color 12: Print T$
-                Color 14: Print "BATTER     B POS     G  AB   R   H DB TR HR RBI  BB  SO  SB CS GA  BAVG"
+                Color 14
+                Print "BATTER     B POS     G  AB   R   H DB TR HR RBI  BB  SO  SB CS GA  BAVG"
             End If
 
             Color 3
+
             If statB$(I) <> "XXX" Then
+
                 Print Left$(statB$(I), 10);
+
                 Color 7
 
-                If draftB%(I, 0) = -1 Then Print Tab(12); "L";
-                If draftB%(I, 0) = 0 Then Print Tab(12); "S";
-                If draftB%(I, 0) = 1 Then Print Tab(12); "R";
-                If draftB%(I, 0) = -2 Then Print Tab(12); "LP";
-                If draftB%(I, 0) = 2 Then Print Tab(12); "RP";
+                Select Case draftB%(I, 0)
 
-                Print Tab(14); Using "#"; draftB%(I, 22);: If draftB%(I, 23) <> -1 Then Print Using "#"; draftB%(I, 23);: If draftB%(I, 24) <> -1 Then Print Using "#"; draftB%(I, 24);: If draftB%(I, 25) <> -1 Then Print Using "#"; draftB%(I, 25);
+                    Case -2: Print Tab(12); "LP";
+                    Case -1: Print Tab(12); "L";
+                    Case 0: Print Tab(12); "S";
+                    Case 1: Print Tab(12); "R";
+                    Case 2: Print Tab(12); "RP";
+
+                End Select
+
+                Print Tab(14); Using "#"; draftB%(I, 22);
+
+                If draftB%(I, 23) <> -1 Then
+                    Print Using "#"; draftB%(I, 23);
+                    If draftB%(I, 24) <> -1 Then
+                        Print Using "#"; draftB%(I, 24);
+                        If draftB%(I, 25) <> -1 Then
+                            Print Using "#"; draftB%(I, 25);
+                        End If
+                    End If
+                End If
+
                 Print Tab(20); Using "###"; draftB%(I, 3);
                 Print Tab(24); Using "###"; draftB%(I, 4);
                 Print Tab(28); Using "###"; draftB%(I, 5);
@@ -4022,7 +3852,8 @@ Sub ViewHitters ()
         Next
 
         Print
-        Color 14: Print "TOTALS";
+        Color 14
+        Print "TOTALS";
         Locate , 23: Print Using "####    ####   ###    ###    ####    ###     .###"; TB%(1); TB%(3); TB%(5); TB%(7); TB%(9); TB%(11); TB%(3) / TB%(1)
         Locate , 27: Print Using "####   ####   ###     ###     ###"; TB%(2); TB%(4); TB%(6); TB%(8); TB%(10)
 
@@ -4035,8 +3866,8 @@ Sub ViewHitters ()
             Color 11
             Locate 20: Print "HIT TAB KEY FOR FIELDING STATS/ANY KEY TO CONTINUE"
             I$ = GetKeyPress$
-            'any key goes to options selection (EXIT SUB)
             'TAB goes back to previous screen
+            'any key goes to options selection (EXIT SUB)
         End If
 
     Loop Until I$ <> Chr$(9)
@@ -4053,24 +3884,32 @@ Sub ViewPitchers ()
     Shared draftP%(), inputTP%()
 
     Cls
+    
     Color 12: Print T$
-    Color 14: Print "PITCHER      T  W  L SV  G GS  IP   H  BB  SO  ERA  GA HR CG WP HLDR"
-    app = 0
+    Color 14
+    Print "PITCHER      T  W  L SV  G GS  IP   H  BB  SO  ERA  GA HR CG WP HLDR"
+
+    numberAppearances = 0
 
     For I = 0 To 21
+
         If I = 18 Then
+
             Locate 23: Print "HIT ANY KEY TO CONTINUE"
             I$ = GetKeyPress$
+
             Cls
+
             Color 12: Print T$
-            Color 14: Print "PITCHER      T  W  L SV  G GS  IP   H  BB  SO  ERA  GA HR CG WP HLDR"
+            Color 14
+            Print "PITCHER      T  W  L SV  G GS  IP   H  BB  SO  ERA  GA HR CG WP HLDR"
         End If
 
         Color 3
 
         If statP$(I) <> "XXX" Then
 
-            app = app + draftP%(I, 4)
+            numberAppearances = numberAppearances + draftP%(I, 4)
             Print Left$(statP$(I), 10);
 
             Color 7
@@ -4099,10 +3938,14 @@ Sub ViewPitchers ()
     Next
 
     Print
-    Color 14: Print "TOTALS";
-    Locate , 14: Print Using "####  ####      ####    ####     #.##    ###   ###"; inputTP%(1); inputTP%(3); inputTP%(6); inputTP%(8); (ERX! * 9) / inputTP%(6); inputTP%(13); inputTP%(33)
-    Locate , 17: Print Using "####      ###    ####    ####            ###"; inputTP%(2); inputTP%(5); inputTP%(7); inputTP%(9); inputTP%(16)
-    Print "TOTAL APPEARANCES: "; app
+    Color 14
+    Print "TOTALS";
+    Locate , 14
+    Print Using "####  ####      ####    ####     #.##    ###   ###"; inputTP%(1); inputTP%(3); inputTP%(6); inputTP%(8); (ERX! * 9) / inputTP%(6); inputTP%(13); inputTP%(33)
+    Locate , 17
+    Print Using "####      ###    ####    ####            ###"; inputTP%(2); inputTP%(5); inputTP%(7); inputTP%(9); inputTP%(16)
+
+    Print "TOTAL APPEARANCES: "; numberAppearances
 
     Color 11
     Locate 24: Print "HIT ANY KEY TO CONTINUE";
@@ -4120,12 +3963,17 @@ Sub ViewHittingFielding ()
     Shared statP$()
 
     Cls
-    Color 14: Print "PITCHER        G  AB   R   H DB TR HR RBI  BB  SO  SB CS BAVG  R B FAVG"
+
+    Color 14
+    Print "PITCHER        G  AB   R   H DB TR HR RBI  BB  SO  SB CS BAVG  R B FAVG"
 
     For I = 0 To 21
 
-        Color 3: Print Left$(statP$(I), 10);
-        Color 7: Print Tab(14); Using "###"; draftP%(I, 19);
+        Color 3
+        Print Left$(statP$(I), 10);
+
+        Color 7
+        Print Tab(14); Using "###"; draftP%(I, 19);
         Print Tab(18); Using "###"; draftP%(I, 20);
         Print Tab(22); Using "###"; draftP%(I, 21);
         Print Tab(26); Using "###"; draftP%(I, 22);
@@ -4143,11 +3991,12 @@ Sub ViewHittingFielding ()
             Print Tab(59); Using "#.###"; statPCT!;
         Else
             statI2! = 0
+
             '-- This is initialized as 1000
             '-- So when not given a value it calculates too large
             If draftP%(I, 20) > 0 Then statI2! = Int((draftP%(I, 22) / draftP%(I, 20) + .0005) * 1000)
-
             If draftP%(I, 20) = 0 Or statI2! = 0 Then Print Tab(59); ".000";
+
             If statI2! > 0 And statI2! < 100 Then Print Tab(59); ".0";: Print Tab(61); Using "##"; statI2!;
             If statI2! > 100 And statI2! < 1000 Then Print Tab(59); ".";: Print Tab(60); Using "###"; statI2!;
             'If statI2! >= 1000 Then Print Tab(59); Using "#.###"; statI2!
@@ -4161,7 +4010,8 @@ Sub ViewHittingFielding ()
 
     Next
 
-    Color 11: Locate 24: Print "HIT ANY KEY TO CONTINUE";
+    Color 11
+    Locate 24: Print "HIT ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
 End Sub
@@ -4176,19 +4026,28 @@ Sub FieldingStats ()
     Shared draftB%()
 
     Cls
-    Color 14: Print "BATTER       AVG ARM RGE  AVG ARM RGE  AVG ARM RGE  AVG ARM RGE RUN BUNT"
+
+    Color 14
+    Print "BATTER       AVG ARM RGE  AVG ARM RGE  AVG ARM RGE  AVG ARM RGE RUN BUNT"
 
     For I = 0 To 22
+
         If I = 20 Then
+
             Locate 23: Print "HIT ANY KEY TO CONTINUE"
             I$ = GetKeyPress$
 
             Cls
             Color 12: Print T$
-            Color 14: Print "BATTER       AVG ARM RGE  AVG ARM RGE  AVG ARM RGE  AVG ARM RGE RUN BUNT"
+
+            Color 14
+            Print "BATTER       AVG ARM RGE  AVG ARM RGE  AVG ARM RGE  AVG ARM RGE RUN BUNT"
+
         End If
 
-        Color 3: Print Left$(statB$(I), 10);
+        Color 3
+        Print Left$(statB$(I), 10);
+
         Color 7
         Print Tab(13); Using "####"; draftB%(I, 26);
         Print Tab(19); Using "#"; draftB%(I, 33);
@@ -4204,6 +4063,330 @@ Sub FieldingStats ()
         Print Tab(62); Using "#"; draftB%(I, 40);
         Print Tab(66); Using "#"; draftB%(I, 16);
         Print Tab(71); Using "#"; draftB%(I, 30)
-    Next
+
+    Next I
 
 End Sub
+
+
+'----------------------------------------
+'       GetTeam_BINPUT subroutine
+'----------------------------------------
+'...explanation...
+Sub GetTeam_BINPUT (T$, yearNumber$, numberTeams, teamIdx)
+
+    Shared ratings%()
+
+    Do
+
+        Color 15, 0
+        Cls
+
+        JJ = 7
+        Locate 6, 8: Color 15, 4
+        Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";: For II = 1 To JJ: Locate 6 + II, 8
+        Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
+        Locate 7 + JJ, 8
+        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+
+        Locate 7, 32
+        Locate , 12: Print "ENTER DISK ID: ": Print
+        Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
+        Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
+        Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
+        Locate 7, 27: Input NY$
+
+        If NY$ = "" And yearNumber$ <> "" Then
+            Call SelectTeam_BINPUT(yearNumber$, numberTeams, teamIdx)
+        Else
+            yearNumber$ = RTrim$(NY$)
+            Erase teamNames$
+            numberTeams = 0
+
+            If Not _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
+                Locate 10, 8
+                Call CSMsgBox("NO TEAMS MATCHING ID WERE FOUND... PRESS ANY KEY TO SELECT ANOTHER ID", 26, Pass)
+                I$ = GetKeyPress$
+                Call CSMsgBox("", 0, Pass)
+                BO% = 1
+            Else
+                Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
+
+                fileLength& = LOF(1)
+
+                Field #1, 15 As Q$(0)
+
+                For I1 = 1 To fileLength& / 4342
+                    Get #1, I1
+                    For I2 = 1 To 15
+                        If Left$(Q$(0), 2) = "XX" Or Left$(Q$(0), 1) = " " Or Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then nullTeam = 1: Exit For
+                    Next I2
+                    If nullTeam <> 1 Then
+                        numberTeams = numberTeams + 1
+                        teamNames$(numberTeams) = Q$(0)
+                        teamIndex%(numberTeams) = I1
+                    End If
+                Next I1
+                Close 1
+
+                Call SelectTeam_BINPUT(yearNumber$, numberTeams, teamIdx)
+
+            End If 'Done checking for file
+
+        End If 'Done checking input
+
+        If BO% = 1 Then
+            BO% = 0
+        Else
+            T$ = RTrim$(Q$(0))
+            Locate 2, 33
+            Color ratings%(11), ratings%(12): Print T$
+
+            Do
+                Color 15, 4
+                Locate 3, 33: Print "ANY CHANGE (YN)";
+                I$ = GetKeyPress$
+            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+        End If
+
+    Loop Until UCase$(I$) = "N"
+
+End Sub
+
+'----------------------------------------
+'     SelectTeam_BINPUT subroutine
+'----------------------------------------
+'...explanation...
+Sub SelectTeam_BINPUT (yearNumber$, numberTeams, teamIdx)
+
+    Shared draftB%(), draftP%()
+    Shared inputDYS%(), inputINJ%(), ratings%()
+    Shared inputSA%(), inputTS%()
+
+    Shared statB$(), statP$()
+
+    Shared K9&()
+
+    ' Shared M$, NN$, S$
+    Shared CK
+
+    Selection% = 1
+    Count% = numberTeams
+    Start% = 1
+    FileFGColr% = 15: FileBGColr% = 4
+    HiLiteFGColr% = 0: HiLiteBGColr% = 7
+    Rows% = 20
+    Columns% = 4
+    Spacing% = 6
+    Row% = 4
+    Column% = 1
+    Color , 4: Cls: Locate , 33: Color 14
+    Print "TEAM SELECTION": Color 15
+    Locate 25, 1: Color 14: Print "ESC";: Color 15
+    Print "-SELECT NEW ID  PGDN  PGUP  ";: Color 14
+    Print "ENTER";: Color 15: Print "-SELECTS TEAM";
+
+    _MouseShow "DEFAULT"
+    MAMenu teamNames$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+    _MouseHide
+
+    If ExitCode% <> 27 Then
+
+        teamIdx = teamIndex%(Selection%)
+        teamYear$ = RTrim$(yearNumber$)
+
+        Locate 2, 33: Color 31
+        Print "LOADING..."
+
+        Open diskPaths$(0) + "FCTEAMS." + teamYear$ For Random As #1 Len = 4342
+
+        Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14)
+
+        For I = 0 To 22
+            Field #1, 45 + I * 99 As X$, 15 As Q$(I * 43 + 15), 2 As Q$(I * 43 + 16), 2 As Q$(I * 43 + 17), 2 As Q$(I * 43 + 18), 2 As Q$(I * 43 + 19), 2 As Q$(I * 43 + 20), 2 As Q$(I * 43 + 21), 2 As Q$(I * 43 + 22), 2 As Q$(I * 43 + 23), 2 As Q$(I * 43 + 24), 2 As Q$(I * 43 + 25), 2 As Q$(I * 43 + 26)
+            Field #1, 82 + I * 99 As X$, 2 As Q$(I * 43 + 27), 2 As Q$(I * 43 + 28), 2 As Q$(I * 43 + 29), 2 As Q$(I * 43 + 30), 2 As Q$(I * 43 + 31), 2 As Q$(I * 43 + 32), 2 As Q$(I * 43 + 33), 2 As Q$(I * 43 + 34), 2 As Q$(I * 43 + 35), 2 As Q$(I * 43 + 36), 2 As Q$(I * 43 + 37), 2 As Q$(I * 43 + 38)
+            Field #1, 106 + I * 99 As X$, 2 As Q$(I * 43 + 39), 2 As Q$(I * 43 + 40), 2 As Q$(I * 43 + 41), 2 As Q$(I * 43 + 42), 2 As Q$(I * 43 + 43), 2 As Q$(I * 43 + 44), 2 As Q$(I * 43 + 45), 2 As Q$(I * 43 + 46), 2 As Q$(I * 43 + 47), 2 As Q$(I * 43 + 48), 2 As Q$(I * 43 + 49), 2 As Q$(I * 43 + 50)
+            Field #1, 130 + I * 99 As X$, 2 As Q$(I * 43 + 51), 2 As Q$(I * 43 + 52), 2 As Q$(I * 43 + 53), 2 As Q$(I * 43 + 54), 2 As Q$(I * 43 + 55), 2 As Q$(I * 43 + 56), 2 As Q$(I * 43 + 57)
+        Next
+
+        For I = 0 To 21
+            Field #1, 2322 + I * 89 As X$, 15 As Q$(I * 38 + 1004), 2 As Q$(I * 38 + 1005), 2 As Q$(I * 38 + 1006), 2 As Q$(I * 38 + 1007), 2 As Q$(I * 38 + 1008), 2 As Q$(I * 38 + 1009), 2 As Q$(I * 38 + 1010), 2 As Q$(I * 38 + 1011), 2 As Q$(I * 38 + 1012), 2 As Q$(I * 38 + 1013), 2 As Q$(I * 38 + 1014), 2 As Q$(I * 38 + 1015)
+            Field #1, 2359 + I * 89 As X$, 2 As Q$(I * 38 + 1016), 2 As Q$(I * 38 + 1017), 2 As Q$(I * 38 + 1018), 2 As Q$(I * 38 + 1019), 2 As Q$(I * 38 + 1020), 2 As Q$(I * 38 + 1021), 2 As Q$(I * 38 + 1022), 2 As Q$(I * 38 + 1023), 2 As Q$(I * 38 + 1024), 2 As Q$(I * 38 + 1025), 2 As Q$(I * 38 + 1026), 2 As Q$(I * 38 + 1027)
+            Field #1, 2383 + I * 89 As X$, 2 As Q$(I * 38 + 1028), 2 As Q$(I * 38 + 1029), 2 As Q$(I * 38 + 1030), 2 As Q$(I * 38 + 1031), 2 As Q$(I * 38 + 1032), 2 As Q$(I * 38 + 1033), 2 As Q$(I * 38 + 1034), 2 As Q$(I * 38 + 1035), 2 As Q$(I * 38 + 1036), 2 As Q$(I * 38 + 1037), 2 As Q$(I * 38 + 1038), 2 As Q$(I * 38 + 1039)
+            Field #1, 2407 + I * 89 As X$, 2 As Q$(I * 38 + 1040), 2 As Q$(I * 38 + 1041)
+        Next
+
+        Field #1, 4280 As X$, 40 As Q$(1840), 15 As Q$(1841), 5 As Q$(1842), 2 As Q$(1843)
+
+        Get #1, teamIdx
+
+        For I = 1 To 13: ratings%(I) = CVI(Q$(I)): Next
+
+        K9&(0) = CVS(Q$(14))
+
+        For I = 0 To 22: statB$(I) = RTrim$(Q$(I * 43 + 15))
+            For I1 = 0 To 41
+                draftB%(I, I1) = CVI(Q$(I * 43 + I1 + 16))
+            Next
+        Next
+
+        For I = 0 To 21
+            statP$(I) = RTrim$(Q$(I * 38 + 1004))
+            For I1 = 0 To 36
+                draftP%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
+            Next
+        Next
+
+        CK = CVI(Q$(1843))
+        Close 1
+
+        If _FileExists(diskPaths$(0) + "LR." + teamYear$) Then
+
+            Open diskPaths$(0) + "LR." + teamYear$ For Random As #1 Len = 4108
+
+            For X = 0 To 11
+                Field #1, X * 2 As X$, 2 As Q$(X + 1)
+            Next
+
+            For X = 0 To 22
+                For X1 = 1 To 14
+                    Field #1, 24 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(12 + X1 + X * 14)
+                Next
+            Next
+
+            For X = 0 To 21
+                For X1 = 1 To 14
+                    Field #1, 668 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(334 + X1 + X * 14)
+                Next
+            Next
+
+            For X = 0 To 21
+                For X1 = 1 To 14
+                    Field #1, 1284 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(642 + X1 + X * 14)
+                Next
+            Next
+
+            For X = 1 To 24
+                Field #1, 1900 + (X - 1) * 2 As X$, 2 As Q$(950 + X)
+            Next
+
+            For X = 0 To 22
+                For X1 = 1 To 24
+                    Field #1, 1948 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(975 + X1 + X * 24)
+                Next
+            Next
+
+            For X = 0 To 21
+                For X1 = 1 To 24
+                    Field #1, 3052 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(1528 + X1 + X * 24)
+                Next
+            Next
+
+            Get #1, T
+
+            For X = 0 To 11
+                inputTS%(X) = CVI(Q$(X + 1))
+            Next
+
+            For X = 0 To 22
+                For X1 = 1 To 14
+                    draftB%(X, X1 + 41) = CVI(Q$(12 + X1 + X * 14))
+                Next
+            Next
+
+            For X = 0 To 21
+                For X1 = 1 To 14
+                    draftP%(X, X1 + 36) = CVI(Q$(334 + X1 + X * 14))
+                Next
+            Next
+
+            For X = 0 To 21
+                For X1 = 1 To 14
+                    draftP%(X, X1 + 50) = CVI(Q$(642 + X1 + X * 14))
+                Next
+            Next
+
+            For X = 1 To 24
+                inputSA%(X) = CVI(Q$(X + 950))
+            Next
+
+            For X = 0 To 22
+                For X1 = 1 To 24
+                    draftB%(X, X1 + 55) = CVI(Q$(975 + X1 + X * 24))
+                Next
+            Next
+
+            For X = 0 To 21
+                For X1 = 1 To 24
+                    draftP%(X, X1 + 64) = CVI(Q$(1528 + X1 + X * 24))
+                Next
+            Next
+
+            Close 1
+
+            If inputTS%(0) <> 999 Then
+                For X = 0 To 22
+                    For X1 = 42 To 79
+                        draftB%(X, X1) = 0
+                    Next
+                Next
+
+                For X = 0 To 21
+                    For X1 = 37 To 88
+                        draftP%(X, X1) = 0
+                    Next
+                Next
+
+                For X = 1 To 24
+                    inputSA%(X) = 0
+                Next
+
+                For X = 0 To 11
+                    inputTS%(X) = 0
+                Next
+
+            End If
+
+        End If
+
+        'Read from stat file
+        N$ = RTrim$(Q$(0))
+
+        For xx = 4 To 11
+            If Mid$(N$, xx, 1) = " " Or Mid$(N$, xx, 1) = "." Then Mid$(N$, xx, 1) = "_"
+        Next xx
+
+        QQ = 8
+
+        For xx = 11 To 4 Step -1
+            If Mid$(N$, xx, 1) = "_" Then
+                QQ = xx - 4
+            Else
+                Exit For
+            End If
+        Next xx
+
+        targetFile$ = Mid$(N$, 4, QQ)
+        targetFile$ = targetFile$ + "." + Left$(N$, 2)
+
+        If _FileExists(diskPaths$(1) + targetFile$ + "D") Then
+
+            Open diskPaths$(1) + targetFile$ + "D" For Input As #1
+            For I1 = 0 To 22
+                Input #1, inputINJ%(I1)
+            Next
+            For I1 = 0 To 21
+                Input #1, inputDYS%(I1)
+            Next
+
+        End If
+
+        Close 1
+
+    Else
+        BO% = 1
+    End If
+
+End Sub
+

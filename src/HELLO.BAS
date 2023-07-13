@@ -316,7 +316,7 @@ Sub Main_Menu (menuSelection%)
             Select Case menuSelection%
 
                 Case 1: Call LOADER
-                Case 2: Call BINPUT
+                Case 2: Call TINPUT
                 Case 3: Call PROGMAN
                 Case 4: Call SCHEDULE
                 Case 5: Call DRAFT
@@ -586,7 +586,6 @@ End Sub
 '$INCLUDE: 'TITLE.bm'
 '$INCLUDE: 'ACTIVATE.BAS'
 '$INCLUDE: 'ALIGN.BAS'
-'$INCLUDE: 'BINPUT.BAS'
 '$INCLUDE: 'BLANK.BAS'
 '$INCLUDE: 'CAREDIT.BAS'
 '$INCLUDE: 'CARVIEW.BAS'
@@ -609,6 +608,7 @@ End Sub
 '$INCLUDE: 'SCHEDULE.BAS'
 '$INCLUDE: 'SEELEAG.BAS'
 '$INCLUDE: 'SINPUT.BAS'
+'$INCLUDE: 'TINPUT.BAS'
 '$INCLUDE: 'TRADE.BAS'
 '$INCLUDE: 'UMPMGR.BAS'
 
@@ -617,4 +617,3 @@ End Sub
 '$INCLUDE: 'GameRoutines_Gfx.bm'
 '$INCLUDE: 'LOADER.BAS'
 '$INCLUDE: 'SOURCE.bm'
-

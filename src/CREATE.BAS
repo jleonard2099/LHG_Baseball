@@ -1,13 +1,10 @@
 Sub CREATE ()
 
-    _Title "Full Count Baseball - Create League"
+    _Title "Full Count Baseball - Manage Leagues"
 
     Shared Z1%()
-    Shared Z1$(), Z2$()
 
-    'determine if the monitor is mono or color
-    FG = 0
-    BG = 7
+    Shared Z1$(), Z2$()
 
     Do
 
@@ -17,8 +14,8 @@ Sub CREATE ()
         Call TITLE
 
         ReDim menuChoices$(1 to 3)
-        menuChoices$(1) = "EDIT AN EXISTING LEAGUE         "
-        menuChoices$(2) = "CREATE A NEW LEAGUE             "
+        menuChoices$(1) = "CREATE / DEFINE NEW LEAGUES     "
+        menuChoices$(2) = "ADD / REVIEW LEAGUE MEMBERS     "
         menuChoices$(3) = "RETURN TO STANDINGS/LEADERS MENU"
         Selection% = 1
         Count% = 3
@@ -48,58 +45,12 @@ Sub CREATE ()
             Select Case Selection%
 
                 Case 1:
-
-                    Call ChooseLeague(LG$)
-
-                    If LG$ <> "" Then
-                        Color 15, 1
-                        Call EditLeague(LG$)
-                    End If
+                    Call DefineLeague(LG$, D1$, D2$, D3$, D4$)
+                    Call ReviewEditLeague(LG$, D1$, D2$, D3$, D4$)
 
                 Case 2:
-
-                    Do
-
-                        Color 15, 0
-                        Cls
-                        JJ = 7
-                        Locate 6, 8: Color 15, 1
-                        'Print box top
-                        Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
-
-                        'Print box sides
-                        For II = 1 To JJ
-                            Locate 6 + II, 8
-                            Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-                        Next
-
-                        'Print box bottom
-                        Locate 7 + JJ, 8
-                        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
-
-                        Locate 7, 32
-                        Locate , 12: Print "ENTER NAME FOR LEAGUE: ": Print
-                        Locate , 12: Print "THE NAME IS 8 CHARACTERS LONG WITH NO PERIODS OR"
-                        Locate , 12: Print "SPACES."
-                        Locate , 12: Print "SAMPLE NAMES ARE NL1990 AL56 1956AL NATIONAL"
-                        Locate 7, 37: Input LG$
-
-                        If LG$ <> "" Then
-
-                            LG$ = Left$(LG$, 8)
-
-                            Do
-                                Locate 13, 12: Print "ANY CHANGE (YN) "
-                                I$ = GetKeyPress$
-                            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
-                        End If
-
-                    Loop Until UCase$(I$) = "N" Or LG$ <> ""
-
-                    Call EditLeague(LG$)
-
-                Case 3: Cls '
+                    Call ChooseLeague(LG$)
+                    Call ReviewEditLeague(LG$, D1$, D2$, D3$, D4$)
 
             End Select
 
@@ -109,14 +60,120 @@ Sub CREATE ()
 
 End Sub
 
+
+'----------------------------------------
+'       DefineLeague Subroutine
+'----------------------------------------
+'...explanation...
+Sub DefineLeague(LG$, D1$, D2$, D3$, D4$)
+
+    Do
+
+        Color 15, 0
+        Cls
+
+        JJ = 7
+
+        Locate 6, 8: Color 15, 1
+
+        'Print box top
+        Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+
+        'Print box sides
+        For II = 1 To JJ
+            Locate 6 + II, 8
+            Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
+        Next
+
+        'Print box bottom
+        Locate 7 + JJ, 8
+        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+
+        Do
+
+            Locate 7, 32
+
+            Locate , 12: Print "ENTER NAME FOR LEAGUE: ": Print
+            Locate , 12: Print "THE NAME SHOULD HAVE NO PERIODS OR SPACES."
+            Locate , 12: Print "SAMPLE NAMES ARE NL1990 AL56 1956AL NATIONAL"
+            Locate 7, 37: Input LG$
+
+            If LG$ <> "" Then
+
+                Do
+                    Locate 13, 12: Print "ANY CHANGE (YN) "
+                    I$ = GetKeyPress$
+                Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+            End If
+
+        Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+    Loop Until UCase$(I$) = "N"
+
+    FG = 0
+    BG = 7
+
+    Cls
+    Color 15, 1
+    Locate 5, 1: QPrint "Name for Division 1 ", 14, 1, -1
+    Locate , 21: QPrint PadRight$(D1$, 8), FG, BG, -1
+    Locate 7, 1: QPrint "Name for Division 2 ", 14, 1, -1
+    Locate , 21: QPrint PadRight$(D2$, 8), FG, BG, -1
+    Locate 9, 1: QPrint "Name for Division 3 ", 14, 1, -1
+    Locate , 21: QPrint PadRight$(D3$, 8), FG, BG, -1
+    Locate 11, 1: QPrint "Name for Division 4 ", 14, 1, -1
+    Locate , 21: QPrint PadRight$(D4$, 8), FG, BG, -1
+
+    GetDiv1:
+    Locate 5, 21 'location of beginning of field
+    CapsOn = 0: NumOnly = 0: Max = 8 'specify field parameters
+    Call TextIn(D1$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+    If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
+    If XCode = 2 GoTo Done 'all done entering data
+
+    GetDiv2:
+    Locate 7, 21 'location of beginning of field
+    CapsOn = 0: NumOnly = 0: Max = 8 'specify field parameters
+    Call TextIn(D2$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+    If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
+    If XCode = 2 GoTo Done 'all done entering data
+
+    GetDiv3:
+    Locate 9, 21 'location of beginning of field
+    CapsOn = 0: NumOnly = 0: Max = 8 'specify field parameters
+    Call TextIn(D3$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+    If XCode = 1 GoTo GetDiv2: 'can't back up any more, stay here
+    If XCode = 2 GoTo Done 'all done entering data
+
+    GetDiv4:
+    Locate 11, 21 'location of beginning of field
+    CapsOn = 0: NumOnly = 0: Max = 8 'specify field parameters
+    Call TextIn(D4$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+    If XCode = 1 GoTo GetDiv3: 'can't back up any more, stay here
+
+    Done:
+    Locate 23, 1
+    Print "Is this okay? (Yes/No) ";
+    X$ = ""
+    Call YesNoB(X$, XCode, FG, BG)
+    Locate , 1
+    ClearEOL 14, 1
+    If XCode = 1 GoTo GetDiv4
+    If X$ = "N" GoTo GetDiv1
+    If X$ <> "Y" GoTo Done 'insist on either Y or N or up-arrow
+
+End Sub
+
+
 '----------------------------------------
 '      ChooseLeague Subroutine
 '----------------------------------------
 '...explanation...
-Sub ChooseLeague (leagueFile$)
+Sub ChooseLeague (league$)
 
-    Shared D1$, D2$, D3$, D4$
     Shared Z1%()
+
     Shared Z1$(), Z2$()
 
     Do
@@ -185,22 +242,7 @@ Sub ChooseLeague (leagueFile$)
             If ExitCode% <> 27 Then
 
                 targetFile$ = RTrim$(targetFile$)
-                leagueFile$ = Left$(targetFile$, Len(targetFile$) - 4)
-
-                Open diskPaths$(2) + leagueFile$ + ".LIB" For Input As #2
-                Input #2, leagueFile$
-                Input #2, D1$
-                Input #2, D2$
-                Input #2, D3$
-                Input #2, D4$
-
-                For X = 1 To 40
-                    Input #2, Z1$(X)
-                    Input #2, Z1%(X)
-                    Input #2, Z2$(X)
-                Next
-
-                Close 2
+                league$ = Left$(targetFile$, Len(targetFile$) - 4)
 
             End If 'Done checking for ESC
 
@@ -214,162 +256,160 @@ Sub ChooseLeague (leagueFile$)
 End Sub
 
 '----------------------------------------
-'       EditLeague Subroutine
+'       ReviewEditLeague Subroutine
 '----------------------------------------
 '...explanation...
-Sub EditLeague (LG$)
+Sub ReviewEditLeague (league$, D1$, D2$, D3$, D4$)
 
-    Shared D1$, D2$, D3$, D4$
-    Shared ratings%(), Z1%()
+    Shared Z1%()
+
     Shared Z1$(), Z2$()
 
-    FG = 0
-    BG = 7
+    If _FileExists (diskPaths$(2) + league$ + ".LIB") Then
 
-    Cls
-    Color 15, 1
-    Locate 5, 1: QPrint "Name for Division 1 ", 14, 1, -1
-    Locate , 21: QPrint PadRight$(D1$, 8), FG, BG, -1
-    Locate 7, 1: QPrint "Name for Division 2 ", 14, 1, -1
-    Locate , 21: QPrint PadRight$(D2$, 8), FG, BG, -1
-    Locate 9, 1: QPrint "Name for Division 3 ", 14, 1, -1
-    Locate , 21: QPrint PadRight$(D3$, 8), FG, BG, -1
-    Locate 11, 1: QPrint "Name for Division 4 ", 14, 1, -1
-    Locate , 21: QPrint PadRight$(D4$, 8), FG, BG, -1
+        Open diskPaths$(2) + league$ + ".LIB" For Input As #2
 
-    GetDiv1:
-    Locate 5, 21 'location of beginning of field
-    CapsOn = 0: NumOnly = 0: Max = 8 'specify field parameters
-    Call TextIn(D1$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
-    If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
-    If XCode = 2 GoTo Done 'all done entering data
+        Input #2, league$, D1$, D2$, D3$, D4$
 
-    GetDiv2:
-    Locate 7, 21 'location of beginning of field
-    CapsOn = 0: NumOnly = 0: Max = 8 'specify field parameters
-    Call TextIn(D2$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
-    If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
-    If XCode = 2 GoTo Done 'all done entering data
+        For X = 1 To 40
+            Input #2, Z1$(X)
+            Input #2, Z1%(X)
+            Input #2, Z2$(X)
+        Next
 
-    GetDiv3:
-    Locate 9, 21 'location of beginning of field
-    CapsOn = 0: NumOnly = 0: Max = 8 'specify field parameters
-    Call TextIn(D3$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
-    If XCode = 1 GoTo GetDiv2: 'can't back up any more, stay here
-    If XCode = 2 GoTo Done 'all done entering data
+        Close 2
 
-    GetDiv4:
-    Locate 11, 21 'location of beginning of field
-    CapsOn = 0: NumOnly = 0: Max = 8 'specify field parameters
-    Call TextIn(D4$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
-    If XCode = 1 GoTo GetDiv3: 'can't back up any more, stay here
-
-    Done:
-    Locate 23, 1
-    Print "Is this okay? (Yes/No) ";
-    X$ = ""
-    Call YesNoB(X$, XCode, FG, BG)
-    Locate , 1
-    ClearEOL 14, 1
-    If XCode = 1 GoTo GetDiv4
-    If X$ = "N" GoTo GetDiv1
-    If X$ <> "Y" GoTo Done 'insist on either Y or N or up-arrow
+    End If
 
     Do
-        220 '
+
         Color 14, 0
         Cls
+
         Print
-        Print "  "; LG$; " LEAGUE ": Print: Color 12
-        Locate , 4: Print D1$; Tab(24); D2$; Tab(44); D3$; Tab(64); D4$
+        Print "  "; league$; " LEAGUE "
+        Print
+
+        Color 12
+        Locate , 4
+        Print D1$; Tab(24); D2$; Tab(44); D3$; Tab(64); D4$
+        Print
 
         For I = 1 To 10
-            Color 2: Print Using "## "; I;: Color 15: Print Z1$(I);
-            Locate , 21: Color 2: Print Using "## "; I + 10;: Color 15: Print Z1$(I + 10);
-            Locate , 41: Color 2: Print Using "## "; I + 20;: Color 15: Print Z1$(I + 20);
-            Locate , 61: Color 2: Print Using "## "; I + 30;: Color 15: Print Z1$(I + 30)
+
+            Color 2
+            Print Using "## "; I;
+            Color 15: Print Z1$(I);
+
+            Locate , 21
+            Color 2: Print Using "## "; I + 10;
+            Color 15: Print Z1$(I + 10);
+
+            Locate , 41
+            Color 2: Print Using "## "; I + 20;
+            Color 15: Print Z1$(I + 20);
+
+            Locate , 61
+            Color 2: Print Using "## "; I + 30;
+            Color 15: Print Z1$(I + 30)
+
         Next I
 
         Do
-            Locate 19, 1
-            Color 14: Print "(1) ";: Color 15: Print "ADD A TEAM"
-            Color 14: Print "(2) ";: Color 15: Print "REMOVE A TEAM"
-            Color 14: Print "(3) ";: Color 15: Print "END AND SAVE SETTINGS"
-            I$ = GetKeyPress$
-        Loop Until Val(I$) >= 1 Or Val(I$) <= 3
 
-        If I$ <> "3" Then
+            Locate 21, 1
+
+            Color 14: Print "(1) ";
+            Color 15: Print "ADD A TEAM"
+            Color 14: Print "(2) ";
+            Color 15: Print "REMOVE A TEAM"
+            Color 14: Print "(3) ";
+            Color 15: Print "END AND SAVE LEAGUE"
+
+            I$ = GetKeyPress$
+            choice = Val(I$)
+        Loop Until choice >= 1 And choice <= 3
+
+        If choice <> 3 Then
+
             Do
-                Locate 20, 30: Print "SLOT # (1-40) ";
-                N = 1
+                Locate 22, 35
+                Print "SLOT # (1-40) ";
                 Input B
             Loop Until B >= 1 Or B <= 40
 
-            Select Case I$
+            If choice = 1 Then
+                'Add team
+                Call GetTeam_CREATE(Z1$(B), Z2$(B), Z1%(B))
+            Else
+                'Remove team
+                Z1$(B) = "XXX"
+            End If 
 
-                Case "1":
-                    Call GetTeam_CREATE(YN$, T1$, teamIdx)
-                    Z1$(B) = T1$
-                    Z2$(B) = YN$
-                    Z1%(B) = teamIdx
+        End If 'Done checking if ready to save
 
-                Case "2":
-                    Z1$(B) = "XXX"
+    Loop Until choice = 3
 
-            End Select 'Done making sure we don't act on a 4+
+    Call SaveLeague (league$, D1$, D2$, D3$, D4$)
 
-        Else
+End Sub
 
-            'Save settings
-            Cls
 
-            Open diskPaths$(2) + LG$ + ".LIB" For Output As #2
+'----------------------------------------
+'        SaveLeague Subroutine
+'----------------------------------------
+'...explanation...
+Sub SaveLeague (LG$, D1$, D2$, D3$, D4$)
 
-            Print #2, LG$
-            Print #2, D1$
-            Print #2, D2$
-            Print #2, D3$
-            Print #2, D4$
+    Shared Z1%()
 
-            For X = 1 To 40
-                Print #2, Z1$(X)
-                Print #2, Z1%(X)
-                Print #2, Z2$(X)
-            Next
+    Shared Z1$(), Z2$()
 
-            Close 2
+    Open diskPaths$(2) + LG$ + ".LIB" For Output As #2
 
-            For X = 1 To 40
+    Print #2, LG$
+    Print #2, D1$
+    Print #2, D2$
+    Print #2, D3
+    Print #2, D4$
 
-                If Z1$(X) <> "XXX" Then
-                    For D = 4 To 11
-                        If Mid$(Z1$(X), D, 1) = Chr$(32) Or Mid$(Z1$(X), D, 1) = "." Then Mid$(Z1$(X), D, 1) = "_"
-                    Next D
+    For X = 1 To 40
+        Print #2, Z1$(X)
+        Print #2, Z1%(X)
+        Print #2, Z2$(X)
+    Next
 
-                    QQ = 8
-                    For D = 11 To 4 Step -1
-                        If Mid$(Z1$(X), D, 1) = "_" Then
-                            QQ = D - 4
-                        Else
-                            Exit For
-                        End If
-                    Next D
+    Close 2
 
-                    L = Len(Z1$(X))
-                    YR$ = Left$(Z1$(X), 2)
-                    TM$ = Mid$(Z1$(X), 4, QQ)
-                    Z1$(X) = TM$ + "." + YR$
+    For X = 1 To 40
+
+        If Z1$(X) <> "XXX" Then
+
+            For D = 4 To 11
+                If Mid$(Z1$(X), D, 1) = Chr$(32) Or Mid$(Z1$(X), D, 1) = "." Then Mid$(Z1$(X), D, 1) = "_"
+            Next D
+
+            QQ = 8
+            For D = 11 To 4 Step -1
+                If Mid$(Z1$(X), D, 1) = "_" Then
+                    QQ = D - 4
                 Else
-                    Z1$(X) = Chr$(42)
+                    Exit For
                 End If
+            Next D
 
-            Next X
+            L = Len(Z1$(X))
+            YR$ = Left$(Z1$(X), 2)
+            TM$ = Mid$(Z1$(X), 4, QQ)
+            Z1$(X) = TM$ + "." + YR$
+        Else
+            Z1$(X) = Chr$(42)
+        End If
 
-        End If 'Done checking value of I$
-
-    Loop Until I$ = "3"
+    Next X
 
     Open diskPaths$(2) + LG$ + ".TMS" For Output As #2
+
     Write #2, LG$
     Write #2, D1$
     Write #2, D2$
@@ -381,23 +421,27 @@ Sub EditLeague (LG$)
     Next
 
     Close 2
-
+    
 
 End Sub
+
 
 '----------------------------------------
 '       GetTeam_CREATE Subroutine
 '----------------------------------------
 '...explanation...
-Sub GetTeam_CREATE (yearNumber$, teamName$, teamIdx)
+Sub GetTeam_CREATE (teamName$, yearNumber$, teamIdx)
 
     Shared ratings%()
 
     Do
-        '1440
+
         Color 15, 0: Cls
+
         JJ = 7
+
         Locate 6, 8: Color 15, 4
+
         'Print box top
         Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
 
@@ -412,6 +456,7 @@ Sub GetTeam_CREATE (yearNumber$, teamName$, teamIdx)
         Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
 
         Locate 7, 32
+
         Locate , 12: Print "ENTER DISK ID: ": Print
         Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
         Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
