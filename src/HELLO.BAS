@@ -9,13 +9,12 @@ Const MAX_CONFERENCES = 40
 Const TEAMS_PER_DIV = 15
 Const DIVS_PER_CONFERENCE = 2
 Const TEAMS_PER_CONFERENCE = 30
-Const TEAM_SIZE_BYTES = 4342
 
 Const NUM_STATRECORDS = 162
 
 DefInt A-Z
 
-'INCLUDE: 'FileTeamSelection.bi'
+'$INCLUDE: 'FileTeamSelection.bi'
 '$INCLUDE: 'KeyInput.bi'
 '$INCLUDE: 'QPProEqu.bi'
 '$INCLUDE: 'PadRight.bi'
@@ -425,8 +424,8 @@ Sub ConfigureDrives ()
     diskPaths$(3) = _Trim$(diskPaths$(3))
 
     Done:
-    Locate 23, 1
     Color 14, 1
+    Locate 23, 1
     Print "Is this okay? (Yes/No) ";
     X$ = ""
     Call YesNoB(X$, XCode, FG, BG)
@@ -577,7 +576,7 @@ Sub Leaders_Menu ()
 End Sub
 
 
-'INCLUDE: 'FileTeamSelection.bm'
+'$INCLUDE: 'FileTeamSelection.bm'
 '$INCLUDE: 'KeyInput.bm'
 '$INCLUDE: 'QPProEqu.bm'
 '$INCLUDE: 'PadRight.bm'
@@ -617,3 +616,4 @@ End Sub
 '$INCLUDE: 'GameRoutines_Gfx.bm'
 '$INCLUDE: 'LOADER.BAS'
 '$INCLUDE: 'SOURCE.bm'
+

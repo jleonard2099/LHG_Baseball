@@ -31,7 +31,7 @@ Function FCount% (dirSpec$)
             Case "[WINDOWS]":
                 Shell _Hide "dir /on /b " + dirSpec$ + " > " + TmpFile$
             Case "[LINUX]", "[MAC]", "[MACOSX]":
-                Shell _Hide "ls -A1 " + dirSpec$ + " | awk -F/ '{print $NF}' | sort | tee " + TmpFile$			
+                Shell _Hide "ls -A1 " + dirSpec$ + " | awk -F/ '{print $NF}' | sort | tee " + TmpFile$
         End Select
 
         Index% = 0
@@ -230,7 +230,7 @@ Function READDIR$ (dirSpec$)
             Case "[WINDOWS]":
                 Shell _Hide "dir /on /b " + dirSpec$ + " > " + TmpFile$
             Case "[LINUX]", "[MAC]", "[MACOSX]":
-                Shell _Hide "ls -A1 " + dirSpec$ + " | awk -F/ '{print $NF}' | sort | tee " + TmpFile$			
+                Shell _Hide "ls -A1 " + dirSpec$ + " | awk -F/ '{print $NF}' | sort | tee " + TmpFile$
         End Select
 
         Index% = 0
@@ -393,13 +393,14 @@ Sub ClearEOL (FGColor%, BGColor%)
     column% = Pos(0)
 
     'Start at the cursor position
-    Locate row% - 1, column%
+    'Locate row% - 1, column%
+    Locate row%, column%
 
     'Print all spaces
     '--If using OneColor:
     '--Color (Colr% And 15), ((Colr% And 240) / 16)
     Color FGColor%, BGColor%
-    Print Space$(80 - column%)
+    Print Space$(80 - column%);
 
 End Sub
 
@@ -1134,7 +1135,7 @@ Sub ReadFile (fileList$())
         Case "[WINDOWS]":
             Shell _Hide "dir /on /b " + dirSpec$ + " > " + TmpFile$
         Case "[LINUX]", "[MAC]", "[MACOSX]":
-			Shell _Hide "ls -A1 " + dirSpec$ + " | awk -F/ '{print $NF}' | sort | tee " + TmpFile$			
+            Shell _Hide "ls -A1 " + dirSpec$ + " | awk -F/ '{print $NF}' | sort | tee " + TmpFile$
     End Select
 
     dirEntry = 0
@@ -1445,7 +1446,8 @@ Sub YesNoB (YN$, ExitCode, FGColor%, BGColor%)
 
     X$ = YN$
     If X$ = "" Then X$ = " "
-    Color FGColor%, BGColor%: Print X$;
+    Color FGColor%, BGColor%
+    Print X$;
     Locate , Pos(0) - 1, 1
 
     YGetKey:
@@ -1476,7 +1478,8 @@ Sub YesNoB (YN$, ExitCode, FGColor%, BGColor%)
     YDone:
     If X$ > "Y" Then X$ = Chr$(Asc(X$) - 32) 'capitalize if necessary
     YN$ = X$
-    Color FGColor%, BGColor%: Print YN$
+    Color FGColor%, BGColor%
+    Print YN$;
 
     YD2:
     Locate , , 0

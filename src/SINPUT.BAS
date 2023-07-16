@@ -110,7 +110,7 @@ Sub ModifyTeamStats (Z$)
 
     Shared statB$(), statP$()
     Shared careerB0%(), careerP0%()
-    Shared ratings%()
+    Shared teamRatings%()
     Shared statB%(), statP%(), statT%(), statT1%()
 
     Open diskPaths$(1) + Z$ For Input As #1
@@ -863,7 +863,7 @@ End Sub
 '...explanation...
 Sub GetTeam_SINPUT (T$, yearNumber$, numberTeams)
 
-    Shared ratings%()
+    Shared teamRatings%()
 
     Do
         Color 15, 0
@@ -938,7 +938,7 @@ Sub GetTeam_SINPUT (T$, yearNumber$, numberTeams)
         Else
 
             Locate 2, 33
-            Color ratings%(11), ratings%(12): Print T$
+            Color teamRatings%(11), teamRatings%(12): Print T$
 
             Do
                 Color 15, 4
@@ -958,7 +958,7 @@ End Sub
 '...explanation...
 Sub SelectTeam_SINPUT (T$, yearNumber$, numberTeams)
 
-    Shared ratings%()
+    Shared teamRatings%()
 
     Selection% = 1
     Count% = numberTeams
@@ -996,7 +996,7 @@ Sub SelectTeam_SINPUT (T$, yearNumber$, numberTeams)
             T$ = RTrim$(Q$(0))
 
             For I = 1 To 13
-                ratings%(I) = CVI(Q$(I))
+                teamRatings%(I) = CVI(Q$(I))
             Next
 
             Close 1

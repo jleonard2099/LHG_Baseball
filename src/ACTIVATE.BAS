@@ -2,7 +2,7 @@ Sub ACTIVATE ()
 
     _Title "Full Count Baseball - Activate Players"
 
-    Shared ratings%()
+    Shared teamRatings%()
 
 	Do
 
@@ -43,7 +43,7 @@ Sub ACTIVATE ()
 		Else
 			Locate 2, 33
 			T$ = RTrim$(Q$(0))
-			Color ratings%(11), ratings%(12): Print T$
+			Color teamRatings%(11), teamRatings%(12): Print T$
 
 			Do
                 Color 15, 4
@@ -68,7 +68,7 @@ Sub ChangePlayers (yearNumber$, teamName$, teamIdx)
     Dim M$, NN$, S
 
     Shared K9&()
-    Shared draftB%(), ratings%(), draftP%()
+    Shared teamBatters%(), teamRatings%(), teamPitchers%()
     Shared statB$(), statP$()
 
     S$ = RTrim$(Q$(1840))
@@ -88,20 +88,20 @@ Sub ChangePlayers (yearNumber$, teamName$, teamIdx)
             Color 15, 0
             Locate I + 5, 5: Print Using "## "; I + 1;
 
-            If draftB%(I, 31) <> 0 Then Color ratings%(11), ratings%(12)
+            If teamBatters%(I, 31) <> 0 Then Color teamRatings%(11), teamRatings%(12)
             Print statB$(I);
 
             Color 15, 0
             Print Tab(40);: Print Using "## "; I + 13;
 
-            If draftB%(I + 12, 31) <> 0 Then Color ratings%(11), ratings%(12)
+            If teamBatters%(I + 12, 31) <> 0 Then Color teamRatings%(11), teamRatings%(12)
             Print statB$(I + 12): Color 15, 0
 
         Next
 
         Locate , 5: Print Using "## "; 12;
 
-        If draftB%(11, 31) <> 0 Then Color ratings%(11), ratings%(12)
+        If teamBatters%(11, 31) <> 0 Then Color teamRatings%(11), teamRatings%(12)
         Print statB$(11)
 
         Color 15, 0
@@ -114,7 +114,7 @@ Sub ChangePlayers (yearNumber$, teamName$, teamIdx)
         If I < 0 Or I > 22 Then
             X% = 0
         Else
-            draftB%(I, 31) = 1 - draftB%(I, 31)
+            teamBatters%(I, 31) = 1 - teamBatters%(I, 31)
         End If
 
     Loop Until I < 0
@@ -127,12 +127,12 @@ Sub ChangePlayers (yearNumber$, teamName$, teamIdx)
         For I = 0 To 10
             Locate I + 5, 5: Print Using "## "; I + 1;
 
-            If draftP%(I, 34) <> 0 Then Color ratings%(11), ratings%(12)
+            If teamPitchers%(I, 34) <> 0 Then Color teamRatings%(11), teamRatings%(12)
             Print statP$(I);: Color 15, 0
 
             Print Tab(40);: Print Using "## "; I + 12;
 
-            If draftP%(I + 11, 34) <> 0 Then Color ratings%(11), ratings%(12)
+            If teamPitchers%(I + 11, 34) <> 0 Then Color teamRatings%(11), teamRatings%(12)
             Print statP$(I + 11): Color 15, 0
 
         Next
@@ -147,7 +147,7 @@ Sub ChangePlayers (yearNumber$, teamName$, teamIdx)
         If I < 0 Or I > 21 Then
             X% = 0
         Else
-            draftP%(I, 34) = 1 - draftP%(I, 34)
+            teamPitchers%(I, 34) = 1 - teamPitchers%(I, 34)
         End If
 
     Loop Until I < 0
@@ -178,21 +178,21 @@ Sub ChangePlayers (yearNumber$, teamName$, teamIdx)
     LSet Q$(0) = teamName$
 
     For I = 1 To 13
-        LSet Q$(I) = MKI$(ratings%(I))
+        LSet Q$(I) = MKI$(teamRatings%(I))
     Next
 
     LSet Q$(14) = MKS$(K9&(0))
 
     For I = 0 To 22: LSet Q$(I * 43 + 15) = statB$(I)
         For I1 = 0 To 41
-            LSet Q$(I * 43 + I1 + 16) = MKI$(draftB%(I, I1))
+            LSet Q$(I * 43 + I1 + 16) = MKI$(teamBatters%(I, I1))
         Next
     Next
 
     For I = 0 To 21
         LSet Q$(I * 38 + 1004) = statP$(I)
         For I1 = 0 To 36
-            LSet Q$(I * 38 + I1 + 1005) = MKI$(draftP%(I, I1))
+            LSet Q$(I * 38 + I1 + 1005) = MKI$(teamPitchers%(I, I1))
         Next
     Next
 
@@ -262,7 +262,7 @@ End Sub
 Sub SelectTeam_ACTIVATE (yearNumber$, numberTeams, teamIdx)
 
     Shared K9&()
-    Shared draftB%(), ratings%(), draftP%()
+    Shared teamBatters%(), teamRatings%(), teamPitchers%()
     Shared statB$(), statP$()
 
     Selection% = 1
@@ -317,7 +317,7 @@ Sub SelectTeam_ACTIVATE (yearNumber$, numberTeams, teamIdx)
         Get #1, teamIdx
 
         For I = 1 To 13
-            ratings%(I) = CVI(Q$(I))
+            teamRatings%(I) = CVI(Q$(I))
         Next
 
         K9&(0) = CVS(Q$(14))
@@ -326,7 +326,7 @@ Sub SelectTeam_ACTIVATE (yearNumber$, numberTeams, teamIdx)
             statB$(I) = RTrim$(Q$(I * 43 + 15))
 
             For I1 = 0 To 41
-                draftB%(I, I1) = CVI(Q$(I * 43 + I1 + 16))
+                teamBatters%(I, I1) = CVI(Q$(I * 43 + I1 + 16))
             Next
 
         Next
@@ -336,7 +336,7 @@ Sub SelectTeam_ACTIVATE (yearNumber$, numberTeams, teamIdx)
             statP$(I) = RTrim$(Q$(I * 38 + 1004))
 
             For I1 = 0 To 36
-                draftP%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
+                teamPitchers%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
             Next
 
         Next

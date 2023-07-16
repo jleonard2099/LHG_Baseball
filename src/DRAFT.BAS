@@ -2,8 +2,8 @@ Sub DRAFT ()
 
     _Title "Full Count Baseball - Team Draft"
 
-    Shared draftB%(), draftB1%(), draftP%(), draftP1%()
-    Shared ratings%(), inputSA%(), SA1%(), inputTS%(), TS1%()
+    Shared teamBatters%(), draftB1%(), teamPitchers%(), draftP1%()
+    Shared teamRatings%(), inputSA%(), SA1%(), inputTS%(), TS1%()
 
     Shared K9&()
 
@@ -55,7 +55,7 @@ Sub DRAFT ()
                         statB$(I) = "XXX"
                         draftB1$(I) = "XXX"
                         For I1 = 0 To 79
-                            draftB%(I, I1) = 0
+                            teamBatters%(I, I1) = 0
                             draftB1%(I, I1) = 0
                         Next
                     Next
@@ -64,7 +64,7 @@ Sub DRAFT ()
                         statP$(I) = "XXX"
                         draftP1$(I) = "XXX"
                         For I1 = 0 To 88
-                            draftP%(I, I1) = 0
+                            teamPitchers%(I, I1) = 0
                             draftP1%(I, I1) = 0
                         Next
                     Next
@@ -104,7 +104,7 @@ End Sub
 Sub DraftNewTeam (draftYear$, teamName$)
 
     ' Shared T$()
-    Shared ratings%()
+    Shared teamRatings%()
     Shared K9&()
     Shared M$, NN$, Stadium$
 
@@ -116,25 +116,25 @@ Sub DraftNewTeam (draftYear$, teamName$)
 
         315 Locate 2: Input "1. DISK ID "; draftYear$: If C1 = 1 Then 415
         325 Locate 3: Input "2. TEAM NAME "; teamName$: If C1 = 1 Then 415
-        335 Locate 4: Input "3. LGE BA (WHL #) "; ratings%(1): If C1 = 1 Then 415
-        345 Locate 5: Input "4. LGE SO % (WHL #) "; ratings%(2): If C1 = 1 Then 415
-        355 Locate 6: Input "5. LGE BB % (WHL #) "; ratings%(3): If C1 = 1 Then 415
-        365 Locate 7: Input "6. LGE HR % (WHL #) "; ratings%(4): If C1 = 1 Then 415
-        375 Locate 8: Input "7. TM DP/G X 10 "; ratings%(5): If C1 = 1 Then 415
-        385 Locate 9: Input "8. PARK DOUBLE ADJUSTMENT (WHL #) "; ratings%(6): If C1 = 1 Then 415
-        395 Locate 10: Input "9. PARK TRIPLE ADJUSTMENT (WHL #) "; ratings%(7): If C1 = 1 Then 415
+        335 Locate 4: Input "3. LGE BA (WHL #) "; teamRatings%(1): If C1 = 1 Then 415
+        345 Locate 5: Input "4. LGE SO % (WHL #) "; teamRatings%(2): If C1 = 1 Then 415
+        355 Locate 6: Input "5. LGE BB % (WHL #) "; teamRatings%(3): If C1 = 1 Then 415
+        365 Locate 7: Input "6. LGE HR % (WHL #) "; teamRatings%(4): If C1 = 1 Then 415
+        375 Locate 8: Input "7. TM DP/G X 10 "; teamRatings%(5): If C1 = 1 Then 415
+        385 Locate 9: Input "8. PARK DOUBLE ADJUSTMENT (WHL #) "; teamRatings%(6): If C1 = 1 Then 415
+        395 Locate 10: Input "9. PARK TRIPLE ADJUSTMENT (WHL #) "; teamRatings%(7): If C1 = 1 Then 415
         405 Locate 11: Input "10. PARK HOME RUN ADJUSTMENT (WHL #) "; K9&(0): If C1 = 1 Then 415
-        406 Locate 12: Input "11. PARK FOUL GROUND ADJUSTMENT (WHL #) "; ratings%(8): If C1 = 1 Then 415
-        407 Locate 13: Input "12. OUTDOOR = 0 / INDOOR = 1 "; ratings%(9): If C1 = 1 Then 415
-        408 Locate 14: Input "13. GRASS = 0 / TURF = 1 "; ratings%(10): If C1 = 1 Then 415
+        406 Locate 12: Input "11. PARK FOUL GROUND ADJUSTMENT (WHL #) "; teamRatings%(8): If C1 = 1 Then 415
+        407 Locate 13: Input "12. OUTDOOR = 0 / INDOOR = 1 "; teamRatings%(9): If C1 = 1 Then 415
+        408 Locate 14: Input "13. GRASS = 0 / TURF = 1 "; teamRatings%(10): If C1 = 1 Then 415
         409 Locate 15: Input "14. STADIUM NAME "; S$: If C1 = 1 Then 415
-        410 Locate 16: Input "15. PARK ID NUMBER "; ratings%(13): If C1 = 1 Then 415
+        410 Locate 16: Input "15. PARK ID NUMBER "; teamRatings%(13): If C1 = 1 Then 415
         411 Locate 17: Input "16. MANAGER NAME "; M$: If C1 = 1 Then 415
-        412 Locate 18: Input "17. TEAM TEXT COLOR (0-15) "; ratings%(11): If C1 = 1 Then 415
-        413 Locate 19: Input "18. TEAM BACKGROUND (0-8) "; ratings%(12): If C1 = 1 Then 415
+        412 Locate 18: Input "17. TEAM TEXT COLOR (0-15) "; teamRatings%(11): If C1 = 1 Then 415
+        413 Locate 19: Input "18. TEAM BACKGROUND (0-8) "; teamRatings%(12): If C1 = 1 Then 415
         414 Locate 20: Input "19. TEAM ABBREVIATION "; NN$: If C1 = 1 Then 415
 
-        415 Locate 21, 1: Color ratings%(11), ratings%(12): Print "SAMPLE TEXT APPEARANCE": Color 15, 0
+        415 Locate 21, 1: Color teamRatings%(11), teamRatings%(12): Print "SAMPLE TEXT APPEARANCE": Color 15, 0
 
         C1 = 1
 
@@ -161,8 +161,8 @@ End Sub
 '...explanation...
 Sub DraftExistingTeam (teamYear$, teamName$, teamIdx)
 
-    Shared draftB%(), draftB1%(), draftP%(), draftP1%()
-    Shared ratings%(), inputSA%(), SA1%(), inputTS%(), TS1%()
+    Shared teamBatters%(), draftB1%(), teamPitchers%(), draftP1%()
+    Shared teamRatings%(), inputSA%(), SA1%(), inputTS%(), TS1%()
 
     Shared K9&()
 
@@ -237,7 +237,7 @@ Sub DraftExistingTeam (teamYear$, teamName$, teamIdx)
             BO% = 0
         Else
             Locate 2, 33
-            Color ratings%(11), ratings%(12): Print teamName$
+            Color teamRatings%(11), teamRatings%(12): Print teamName$
 
             Do
                 Color 15, 4
@@ -261,13 +261,13 @@ End Sub
 '...explanation...
 Sub DraftChoices (DNT, doneDrafting, teamName$, teamYears$(), teamIdx)
 
-    Shared ratings%()
+    Shared teamRatings%()
     Shared statB$(), statP$()
 
     Do
 
         Cls
-        Color ratings%(11), ratings%(12): Print teamName$;
+        Color teamRatings%(11), teamRatings%(12): Print teamName$;
         Color 15, 0
         Print "     (DRAFTING)"
         Print
@@ -370,8 +370,8 @@ End Sub
 '...explanation...
 Sub DraftPlayer (playerType, yearNumber$, draftPos)
 
-    Shared L1%(), draftB%(), draftB1%()
-    Shared inputSA%(), SA1%(), draftP%(), draftP1%()
+    Shared L1%(), teamBatters%(), draftB1%()
+    Shared inputSA%(), SA1%(), teamPitchers%(), draftP1%()
     Shared inputTS%(), TS1%()
 
     Shared statB$(), draftB1$(), draftP1$(), statP$()
@@ -511,7 +511,7 @@ Sub DraftPlayer (playerType, yearNumber$, draftPos)
         statB$(draftPos) = draftB1$(B1)
 
         For I = 0 To 79
-            draftB%(draftPos, I) = draftB1%(B1, I)
+            teamBatters%(draftPos, I) = draftB1%(B1, I)
         Next I
 
         If inputTS%(0) <> 999 And TS1%(0) = 999 Then
@@ -534,7 +534,7 @@ Sub DraftPlayer (playerType, yearNumber$, draftPos)
         statP$(P) = draftP1$(P1)
 
         For I = 0 To 88:
-            draftP%(P, I) = draftP1%(P1, I)
+            teamPitchers%(P, I) = draftP1%(P1, I)
         Next I
 
         If inputTS%(0) <> 999 And TS1%(0) = 999 Then
@@ -558,7 +558,7 @@ Sub SaveTeamDraft (DNT, yearNumber$, teamName$, teamIdx)
 
     Shared statB$(), statP$()
 
-    Shared ratings%(), inputSA%(), draftB%(), draftP%()
+    Shared teamRatings%(), inputSA%(), teamBatters%(), teamPitchers%()
     Shared inputTS%()
 
     Shared K9&()
@@ -597,7 +597,7 @@ Sub SaveTeamDraft (DNT, yearNumber$, teamName$, teamIdx)
     LSet Q$(0) = teamName$
 
     For I = 1 To 13:
-        LSet Q$(I) = MKI$(ratings%(I))
+        LSet Q$(I) = MKI$(teamRatings%(I))
     Next
 
     LSet Q$(14) = MKS$(K9&(0))
@@ -605,14 +605,14 @@ Sub SaveTeamDraft (DNT, yearNumber$, teamName$, teamIdx)
     For I = 0 To 22:
         LSet Q$(I * 43 + 15) = statB$(I)
         For I1 = 0 To 41:
-            LSet Q$(I * 43 + I1 + 16) = MKI$(draftB%(I, I1))
+            LSet Q$(I * 43 + I1 + 16) = MKI$(teamBatters%(I, I1))
         Next
     Next
 
     For I = 0 To 21:
         LSet Q$(I * 38 + 1004) = statP$(I)
         For I1 = 0 To 36:
-            LSet Q$(I * 38 + I1 + 1005) = MKI$(draftP%(I, I1))
+            LSet Q$(I * 38 + I1 + 1005) = MKI$(teamPitchers%(I, I1))
         Next
     Next
 
@@ -684,19 +684,19 @@ Sub SaveTeamDraft (DNT, yearNumber$, teamName$, teamIdx)
 
         For X = 0 To 22
             For X1 = 1 To 14
-                LSet Q$(12 + X1 + X * 14) = MKI$(draftB%(X, X1 + 41))
+                LSet Q$(12 + X1 + X * 14) = MKI$(teamBatters%(X, X1 + 41))
             Next
         Next
 
         For X = 0 To 21
             For X1 = 1 To 14
-                LSet Q$(334 + X1 + X * 14) = MKI$(draftP%(X, X1 + 36))
+                LSet Q$(334 + X1 + X * 14) = MKI$(teamPitchers%(X, X1 + 36))
             Next
         Next
 
         For X = 0 To 21
             For X1 = 1 To 14
-                LSet Q$(642 + X1 + X * 14) = MKI$(draftP%(X, X1 + 50))
+                LSet Q$(642 + X1 + X * 14) = MKI$(teamPitchers%(X, X1 + 50))
             Next
         Next
 
@@ -706,13 +706,13 @@ Sub SaveTeamDraft (DNT, yearNumber$, teamName$, teamIdx)
 
         For X = 0 To 22
             For X1 = 1 To 24
-                LSet Q$(975 + X1 + X * 24) = MKI$(draftB%(X, X1 + 55))
+                LSet Q$(975 + X1 + X * 24) = MKI$(teamBatters%(X, X1 + 55))
             Next
         Next
 
         For X = 0 To 21
             For X1 = 1 To 24
-                LSet Q$(1528 + X1 + X * 24) = MKI$(draftP%(X, X1 + 64))
+                LSet Q$(1528 + X1 + X * 24) = MKI$(teamPitchers%(X, X1 + 64))
             Next
         Next
 
@@ -767,8 +767,8 @@ Sub ReadTeam_A (yearNumber$, teamIdx)
 
     ' Shared M1$, NN1$, S1$
     Shared statB$(), statP$()
-    Shared ratings%()
-    Shared inputSA%(), draftB%(), draftP%(), inputTS%()
+    Shared teamRatings%()
+    Shared inputSA%(), teamBatters%(), teamPitchers%(), inputTS%()
 
     teamYear$ = RTrim$(yearNumber$)
 
@@ -795,21 +795,21 @@ Sub ReadTeam_A (yearNumber$, teamIdx)
     Get #1, teamIdx
 
     For I = 1 To 13:
-        ratings%(I) = CVI(Q$(I))
+        teamRatings%(I) = CVI(Q$(I))
     Next
 
     E6& = CVS(Q$(14))
 
     For I = 0 To 22: statB$(I) = RTrim$(Q$(I * 43 + 15))
         For I1 = 0 To 41
-            draftB%(I, I1) = CVI(Q$(I * 43 + I1 + 16))
+            teamBatters%(I, I1) = CVI(Q$(I * 43 + I1 + 16))
         Next
     Next
 
     For I = 0 To 21:
         statP$(I) = RTrim$(Q$(I * 38 + 1004))
         For I1 = 0 To 36:
-            draftP%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
+            teamPitchers%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
         Next
     Next
 
@@ -869,19 +869,19 @@ Sub ReadTeam_A (yearNumber$, teamIdx)
 
         For X = 0 To 22
             For X1 = 1 To 14
-                draftB%(X, X1 + 41) = CVI(Q$(12 + X1 + X * 14))
+                teamBatters%(X, X1 + 41) = CVI(Q$(12 + X1 + X * 14))
             Next
         Next
 
         For X = 0 To 21
             For X1 = 1 To 14
-                draftP%(X, X1 + 36) = CVI(Q$(334 + X1 + X * 14))
+                teamPitchers%(X, X1 + 36) = CVI(Q$(334 + X1 + X * 14))
             Next
         Next
 
         For X = 0 To 21
             For X1 = 1 To 14
-                draftP%(X, X1 + 50) = CVI(Q$(642 + X1 + X * 14))
+                teamPitchers%(X, X1 + 50) = CVI(Q$(642 + X1 + X * 14))
             Next
         Next
 
@@ -891,13 +891,13 @@ Sub ReadTeam_A (yearNumber$, teamIdx)
 
         For X = 0 To 22
             For X1 = 1 To 24
-                draftB%(X, X1 + 55) = CVI(Q$(975 + X1 + X * 24))
+                teamBatters%(X, X1 + 55) = CVI(Q$(975 + X1 + X * 24))
             Next
         Next
 
         For X = 0 To 21
             For X1 = 1 To 24
-                draftP%(X, X1 + 64) = CVI(Q$(1528 + X1 + X * 24))
+                teamPitchers%(X, X1 + 64) = CVI(Q$(1528 + X1 + X * 24))
             Next
         Next
 
@@ -907,13 +907,13 @@ Sub ReadTeam_A (yearNumber$, teamIdx)
 
             For X = 0 To 22
                 For X1 = 42 To 79
-                    draftB%(X, X1) = 0
+                    teamBatters%(X, X1) = 0
                 Next
             Next
 
             For X = 0 To 21
                 For X1 = 37 To 88
-                    draftP%(X, X1) = 0
+                    teamPitchers%(X, X1) = 0
                 Next
             Next
 

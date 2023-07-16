@@ -497,7 +497,7 @@ End Sub
 '...explanation...
 Sub GetDiskID_MERGE (A$)
 
-    Shared ratings%()
+    Shared teamRatings%()
 
     Do
 
@@ -577,7 +577,7 @@ Sub GetDiskID_MERGE (A$)
                 BO% = 0
             Else
                 Locate 2, 33
-                Color ratings%(11), ratings%(12): Print A$
+                Color teamRatings%(11), teamRatings%(12): Print A$
 
                 Do
                     Color 15, 4
@@ -603,7 +603,7 @@ End Sub
 '...explanation...
 Sub SelectTeam_MERGE (yearNumber$, numberTeams)
 
-    Shared ratings%()
+    Shared teamRatings%()
 
     Selection% = 1
     Count% = numberTeams
@@ -650,7 +650,7 @@ Sub SelectTeam_MERGE (yearNumber$, numberTeams)
             Get #1, T1
 
             For I = 1 To 13
-                ratings%(I) = CVI(Q$(I))
+                teamRatings%(I) = CVI(Q$(I))
             Next
 
             Close 1

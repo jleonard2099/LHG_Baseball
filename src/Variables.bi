@@ -3,6 +3,27 @@
 '----------------------------------------
 Dim opSysType$
 
+Dim Shared diskPaths$(0 To 3), Q$(0 To 2056), Q2$(0 To 2056)
+
+' *** Reading Team Data ***
+' -------------------------
+
+'-- transition away from this
+Dim Shared fileLength&
+
+Dim teamRatings%(1 To 13)
+Dim teamBatters%(0 To 22, 0 To 79), teamPitchers%(21, 88)
+
+Dim K9&(1)
+
+Dim Manager$, teamAbbrev$, Stadium$
+
+Dim Shared teamIndex%(MAX_TEAMS)
+
+Dim Shared teamNames$(MAX_TEAMS)
+
+' *** Reading Stat Data ***
+' -------------------------
 Dim statH$(NUM_STATRECORDS), statHR$(NUM_STATRECORDS)
 Dim HT$(NUM_STATRECORDS)
 
@@ -14,30 +35,17 @@ Dim H%(NUM_STATRECORDS), I%(NUM_STATRECORDS), V%(NUM_STATRECORDS)
 Dim HR%(NUM_STATRECORDS), IR%(NUM_STATRECORDS), VR%(NUM_STATRECORDS)
 Dim ING%(NUM_STATRECORDS)
 
-Dim Shared backToMenu, BO%, X%
+Dim statT%(0 To 21), statT1%(0 To 22), Z1%(40)
 
-Dim Shared fileLength&
-
-Dim Shared DT$, TM$
-
-Dim ratings%(1 To 13), Z1%(40)
-Dim statT%(0 To 21)
-Dim statT1%(0 To 22)
-
-Dim K9&(1)
-
+' *** Schedule Data ***
+' -------------------------
 Dim homeTeam$(MAX_GAMES), visitingTeam$(MAX_GAMES)
 Dim homeScores(MAX_GAMES), visitorScores(MAX_GAMES)
 
-Dim Shared R$(999)
-Dim statB$(0 To 22), statP$(0 To 21)
-Dim Z1$(40), Z2$(40)
+' *** Game Options ***
+' -------------------------
+Dim Shared DT$, TM$
 
-Dim Shared diskPaths$(0 To 3), Q$(0 To 2056), Q2$(0 To 2056)
-Dim Shared teamNames$(MAX_TEAMS)
-Dim Shared teamIndex%(MAX_TEAMS)
-
-' Game options
 Dim dayNight$(0 To 1), DH$(1), DL$(1)
 Dim LGT$(2), month$(1 To 12)
 Dim pitcherEra$(8), MO$(0 To 3), UMP$(50)
@@ -46,6 +54,13 @@ Dim VI$(1), yesNo$(1)
 ' Umpire selection
 Dim U%(50)
 
+' *** Miscellaneous Use ***
+' -------------------------
+Dim Shared backToMenu, BO%, X%
+
+Dim Shared R$(999)
+Dim statB$(0 To 22), statP$(0 To 21)
+Dim Z1$(40), Z2$(40)
 
 '----------------------------------------
 '  Used across ALIGN, MERGE routines
@@ -76,10 +91,9 @@ Dim draftTR(22), draftTR1(23)
 Dim draftB1$(22), draftP1$(22)
 
 Dim L1%(13)
-Dim draftB%(0 To 22, 0 To 79), draftB1%(22, 79)
-Dim draftP%(21, 88), draftP1%(21, 88)
+Dim draftB1%(22, 79)
+Dim draftP1%(21, 88)
 
-Dim Manager$, teamAbbrev$, Stadium$
 
 '----------------------------------------
 '  Used across CAREER,
@@ -118,7 +132,7 @@ Dim ERX!, statI2!
 Dim CK
 Dim EW, EL, HW, HL
 Dim LTL, LTW, ORW, ORL
-Dim RW, RL, Wins, L
+Dim parkHR, RW, RL, Wins, L
 
 Dim D0%, D1%, L2%, W2%
 
@@ -245,7 +259,8 @@ Dim tradeA$(1), A1$(1), tradeSA$(2)
 Dim tradeB$(2, 23), tradeB1$(2, 23), tradeP$(2, 22), tradeP1$(2, 22)
 
 Dim tradeD0%(1), tradeD1%(1), L2%(1), TEAM%(1, 22)
-Dim tradeB%(2, 23, 79), tradeB0%(2, 22, 22), tradeB3%(2, 23)
+'--> tradeB% = B%() for game
+Dim tradeB%(0 to 1, 0 to 22, 0 to 79), tradeB0%(2, 22, 22), tradeB3%(2, 23)
 Dim teamIndexes(0 To 1), tradeL%(1, 14)
 Dim tradeP%(2, 22, 88), tradeP0%(2, 22, 42), tradeP3%(2, 22)
 Dim tradeS(1), tradeSA%(1, 24), tradeSS%(1, 22, 6), tradeT1%(2, 23), tradeTS%(1, 11)
@@ -297,7 +312,7 @@ Dim Shared testIdx, dudVal
 
 Dim Shared MON(5, 14), VV(1), VV1(1)
 
-Dim Shared A5%(0 To 4), AP%(2), B%(0 To 1, 0 To 22, 80), B0%(0 To 3, 0 To 2)
+Dim Shared A5%(0 To 4), AP%(2), B%(0 To 1, 0 To 22, 0 to 79), B0%(0 To 3, 0 To 2)
 Dim Shared B1%(3, 1), B2%(1, 22), B3%(0 To 1, 0 To 9), B4%(1, 7, 9)
 'B3% --> active batters?
 

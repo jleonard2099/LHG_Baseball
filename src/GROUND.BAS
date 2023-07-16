@@ -2,7 +2,7 @@ Sub GROUND ()
 
     _Title "Full Count Baseball - Groundball Calculations"
 
-    Shared draftB%(), ratings%(), draftP%()
+    Shared teamBatters%(), teamRatings%(), teamPitchers%()
     Shared statB$(), statP$()
 
     Shared K9&()
@@ -65,6 +65,7 @@ Sub GROUND ()
     If XCode = 1 GoTo GetDiv3: 'can't back up any more, stay here
 
     Done:
+    Color 14, 1
     Locate 23, 1
     Print "Is this okay? (Yes/No) ";
     X$ = ""
@@ -92,16 +93,16 @@ Sub GROUND ()
 
         For I = 0 To 22
 
-            TB%(I) = draftB%(I, 6) + draftB%(I, 7) + 2 * draftB%(I, 8) + 3 * draftB%(I, 9)
+            TB%(I) = teamBatters%(I, 6) + teamBatters%(I, 7) + 2 * teamBatters%(I, 8) + 3 * teamBatters%(I, 9)
 
-            If draftB%(I, 4) = 0 Then
+            If teamBatters%(I, 4) = 0 Then
                 SP%(I) = 0
                 BA%(I) = 0
             Else
-                SLP! = TB%(I) / draftB%(I, 4)
+                SLP! = TB%(I) / teamBatters%(I, 4)
                 SP%(I) = SLP! * 1000
-                draftB%(I, 20) = BP
-                BAP! = draftB%(I, 6) / draftB%(I, 4)
+                teamBatters%(I, 20) = BP
+                BAP! = teamBatters%(I, 6) / teamBatters%(I, 4)
                 BA%(I) = BAP! * 1000
             End If
 
@@ -109,32 +110,32 @@ Sub GROUND ()
 
             DI = DP%(I) - MD
             CH! = Int(DI / 10)
-            draftB%(I, 18) = 52 - CH!
+            teamBatters%(I, 18) = 52 - CH!
 
-            If draftB%(I, 18) < 34 Then draftB%(I, 18) = 34
-            If draftB%(I, 18) > 64 Then draftB%(I, 18) = 64
+            If teamBatters%(I, 18) < 34 Then teamBatters%(I, 18) = 34
+            If teamBatters%(I, 18) > 64 Then teamBatters%(I, 18) = 64
 
         Next I
 
         For I = 0 To 21
 
-            If draftP%(I, 6) = 0 Or draftP%(I, 10) = 0 Then
-                draftP%(I, 12) = 52
+            If teamPitchers%(I, 6) = 0 Or teamPitchers%(I, 10) = 0 Then
+                teamPitchers%(I, 12) = 52
             Else
 
-                draftP%(I, 14) = BP
+                teamPitchers%(I, 14) = BP
 
-                RHP! = draftP%(I, 7) / (draftP%(I, 10) / 900 * draftP%(I, 6))
+                RHP! = teamPitchers%(I, 7) / (teamPitchers%(I, 10) / 900 * teamPitchers%(I, 6))
                 RH%(I) = RHP! * 100
                 Print RH%(I)
 
                 DF = RH%(I) - PD!
                 CH! = Int(DF / 10) * 2
-                draftP%(I, 12) = Int(CH! + 52)
+                teamPitchers%(I, 12) = Int(CH! + 52)
                 RH%(I) = RH%(I) / 10
 
-                If draftP%(I, 12) > 64 Then draftP%(I, 12) = 64
-                If draftP%(I, 12) < 34 Then draftP%(I, 12) = 34
+                If teamPitchers%(I, 12) > 64 Then teamPitchers%(I, 12) = 64
+                If teamPitchers%(I, 12) < 34 Then teamPitchers%(I, 12) = 34
 
             End If
 
@@ -147,7 +148,7 @@ Sub GROUND ()
 
         For I = 0 To 22
             If statB$(I) <> "" And statB$(I) <> "XXX" Then
-                Print statB$(I), BA%(I), SP%(I), draftB%(I, 18)
+                Print statB$(I), BA%(I), SP%(I), teamBatters%(I, 18)
             End If
         Next
 
@@ -159,7 +160,7 @@ Sub GROUND ()
 
         For I = 0 To 21
             If statP$(I) <> "" And statP$(I) <> "XXX" Then
-                Print statP$(I), , Int(RH%(I)) / 10, draftP%(I, 12)
+                Print statP$(I), , Int(RH%(I)) / 10, teamPitchers%(I, 12)
             End If
         Next
 
@@ -168,12 +169,12 @@ Sub GROUND ()
 
         Cls
 
-        '    ratings%(1)=267
-        '    ratings%(2)=228
-        '    ratings%(3)=94
-        '    ratings%(4)=100
-        '    ratings%(6)=99
-        '    ratings%(7)=99
+        '    teamRatings%(1)=267
+        '    teamRatings%(2)=228
+        '    teamRatings%(3)=94
+        '    teamRatings%(4)=100
+        '    teamRatings%(6)=99
+        '    teamRatings%(7)=99
         '    K9&(0)=99
 
         Open diskPaths$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342
@@ -199,7 +200,7 @@ Sub GROUND ()
         LSet Q$(0) = T$
 
         For I = 1 To 13:
-            LSet Q$(I) = MKI$(ratings%(I))
+            LSet Q$(I) = MKI$(teamRatings%(I))
         Next
 
         LSet Q$(14) = MKS$(K9&(0))
@@ -207,14 +208,14 @@ Sub GROUND ()
         For I = 0 To 22
             LSet Q$(I * 43 + 15) = statB$(I)
             For I1 = 0 To 41
-                LSet Q$(I * 43 + I1 + 16) = MKI$(draftB%(I, I1))
+                LSet Q$(I * 43 + I1 + 16) = MKI$(teamBatters%(I, I1))
             Next
         Next
 
         For I = 0 To 21
             LSet Q$(I * 38 + 1004) = statP$(I)
             For I1 = 0 To 36
-                LSet Q$(I * 38 + I1 + 1005) = MKI$(draftP%(I, I1))
+                LSet Q$(I * 38 + I1 + 1005) = MKI$(teamPitchers%(I, I1))
             Next
         Next
 
@@ -244,7 +245,7 @@ End Sub
 '...explanation...
 Sub GetTeam_GROUND (yearNumber$, numberTeams, teamName$, teamIdx)
 
-    Shared ratings%()
+    Shared teamRatings%()
 
     Do
         Color 15, 0
@@ -313,7 +314,7 @@ Sub GetTeam_GROUND (yearNumber$, numberTeams, teamName$, teamIdx)
             BO% = 0
         Else
             Locate 2, 33
-            Color ratings%(11), ratings%(12): Print teamName$
+            Color teamRatings%(11), teamRatings%(12): Print teamName$
 
             Do
                 Color 15, 4
@@ -333,7 +334,7 @@ End Sub
 '...explanation...
 Sub SelectTeam_GROUND (yearNumber$, numberTeams, teamIdx)
 
-    Shared draftB%(), ratings%(), draftP%()
+    Shared teamBatters%(), teamRatings%(), teamPitchers%()
     Shared statB$(), statP$()
     Shared K9&()
 
@@ -387,14 +388,14 @@ Sub SelectTeam_GROUND (yearNumber$, numberTeams, teamIdx)
 
         Get #1, teamIdx
 
-        For I = 1 To 13: ratings%(I) = CVI(Q$(I)): Next
+        For I = 1 To 13: teamRatings%(I) = CVI(Q$(I)): Next
 		
 		K9&(0) = CVS(Q$(14))
 
         For I = 0 To 22: statB$(I) = RTrim$(Q$(I * 43 + 15))
 
             For I1 = 0 To 41
-                draftB%(I, I1) = CVI(Q$(I * 43 + I1 + 16)): 'PRINT statB$(I),draftB%(I,I1)
+                teamBatters%(I, I1) = CVI(Q$(I * 43 + I1 + 16)): 'PRINT statB$(I),teamBatters%(I,I1)
             Next
 
         Next
@@ -404,7 +405,7 @@ Sub SelectTeam_GROUND (yearNumber$, numberTeams, teamIdx)
             statP$(I) = RTrim$(Q$(I * 38 + 1004))
 
             For I1 = 0 To 36
-                draftP%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
+                teamPitchers%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
             Next
 
         Next

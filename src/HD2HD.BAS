@@ -541,7 +541,7 @@ Sub Hd2Hd_Screen (teamName$)
 
     Shared HW%(), AW%(), HL%(), AL%()
     Shared R1%(), R2%(), R3%(), R4%()
-    Shared ratings%()
+    Shared teamRatings%()
 
     Shared DV$(), Z1$()
 
@@ -559,7 +559,7 @@ Sub Hd2Hd_Screen (teamName$)
         Cls
 
         Locate 2, 35
-        Color ratings%(11), ratings%(12): Print teamName$
+        Color teamRatings%(11), teamRatings%(12): Print teamName$
         Color 3, 0
 
         Locate 4
@@ -672,7 +672,7 @@ Sub Hd2Hd_Screen (teamName$)
     Cls
 
     Locate 2, 35
-    Color ratings%(11), ratings%(12): Print teamName$
+    Color teamRatings%(11), teamRatings%(12): Print teamName$
     Color 3, 0
 
     Locate 4
@@ -878,7 +878,7 @@ End Sub
 '...explanation...
 Sub GetTeam_HD2HD (yearNumber$, numberTeams, teamName$)
 
-    Shared ratings%()
+    Shared teamRatings%()
 
     Do
 
@@ -944,7 +944,7 @@ Sub GetTeam_HD2HD (yearNumber$, numberTeams, teamName$)
             teamName$ = RTrim$(Q$(0))
 
             Locate 2, 33
-            Color ratings%(11), ratings%(12): Print teamName$
+            Color teamRatings%(11), teamRatings%(12): Print teamName$
 
             Do
                 Color 15, 4
@@ -964,7 +964,7 @@ End Sub
 '...explanation...
 Sub SelectTeam_HD2HD (yearNumber$, numberTeams)
 
-    Shared ratings%()
+    Shared teamRatings%()
 
     Selection% = 1
     Count% = numberTeams
@@ -1006,7 +1006,7 @@ Sub SelectTeam_HD2HD (yearNumber$, numberTeams)
 
             Get #1, T
 
-            For I = 1 To 13: ratings%(I) = CVI(Q$(I)): Next
+            For I = 1 To 13: teamRatings%(I) = CVI(Q$(I)): Next
 
             Close 1
 

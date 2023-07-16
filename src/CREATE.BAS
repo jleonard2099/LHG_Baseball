@@ -153,6 +153,7 @@ Sub DefineLeague(LG$, D1$, D2$, D3$, D4$)
     If XCode = 1 GoTo GetDiv3: 'can't back up any more, stay here
 
     Done:
+    Color 14, 1
     Locate 23, 1
     Print "Is this okay? (Yes/No) ";
     X$ = ""
@@ -432,7 +433,7 @@ End Sub
 '...explanation...
 Sub GetTeam_CREATE (teamName$, yearNumber$, teamIdx)
 
-    Shared ratings%()
+    Shared teamRatings%()
 
     Do
 
@@ -513,7 +514,7 @@ Sub GetTeam_CREATE (teamName$, yearNumber$, teamIdx)
             BO% = 0
         Else
             Locate 2, 33
-            Color ratings%(11), ratings%(12): Print teamName$
+            Color teamRatings%(11), teamRatings%(12): Print teamName$
 
             Do
                 Color 15, 4
@@ -533,7 +534,7 @@ End Sub
 '...explanation...
 Sub SelectTeam_CREATE (yearNumber$, numberTeams, teamIdx)
 
-    Shared ratings%()
+    Shared teamRatings%()
 
     Selection% = 1
     Count% = numberTeams
@@ -573,7 +574,7 @@ Sub SelectTeam_CREATE (yearNumber$, numberTeams, teamIdx)
 
         Get #1, teamIdx
 
-        For I1 = 1 To 13: ratings%(I1) = CVI(Q$(I1)): Next
+        For I1 = 1 To 13: teamRatings%(I1) = CVI(Q$(I1)): Next
 
         Close 1
 

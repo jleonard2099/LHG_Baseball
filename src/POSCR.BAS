@@ -202,7 +202,7 @@ End Sub
 '...explanation...
 Sub GetTeam (yearNumber$, numberTeams, teamIndex%)
 
-    Shared ratings%()
+    Shared teamRatings%()
 
     Do
 
@@ -265,7 +265,7 @@ Sub GetTeam (yearNumber$, numberTeams, teamIndex%)
             BO% = 0
         Else
             Locate 2, 33
-            Color ratings%(11), ratings%(12): Print targetTeam$
+            Color teamRatings%(11), teamRatings%(12): Print targetTeam$
 
 			Do
 				Color 15, 4
@@ -326,7 +326,7 @@ Sub ReadTeam_POSCR (yearNumber$, teamIndex%)
 
     Shared K9&()
     Shared statB$(), statP$()
-    Shared draftB%(), ratings%(), draftP%()
+    Shared teamBatters%(), teamRatings%(), teamPitchers%()
 
     Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
 
@@ -350,21 +350,21 @@ Sub ReadTeam_POSCR (yearNumber$, teamIndex%)
 
     Get #1, teamIndex%
 
-    For I = 1 To 13: ratings%(I) = CVI(Q$(I)): Next
+    For I = 1 To 13: teamRatings%(I) = CVI(Q$(I)): Next
 
     K9&(0) = CVS(Q$(14))
 
     For I = 0 To 22:
         statB$(I) = RTrim$(Q$(I * 43 + 15))
         For I1 = 0 To 41:
-            draftB%(I, I1) = CVI(Q$(I * 43 + I1 + 16))
+            teamBatters%(I, I1) = CVI(Q$(I * 43 + I1 + 16))
         Next
     Next
 
     For I = 0 To 21:
         statP$(I) = RTrim$(Q$(I * 38 + 1004))
         For I1 = 0 To 36
-            draftP%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
+            teamPitchers%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
         Next
     Next
 

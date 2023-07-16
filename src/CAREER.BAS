@@ -366,7 +366,7 @@ Sub ViewPrintCareerRecords ()
                                 End If
 
                                 Color 15
-                                Locate 22: Print "HIT ANY KEY TO CONTINUE"
+                                Locate 23, 5: Print "HIT ANY KEY TO CONTINUE"
                                 I$ = GetKeyPress$
 
                                 Cls
@@ -452,9 +452,10 @@ Sub Merge_FirstYear ()
 
     Color 11
     Locate 15, 5
-    Input "ENTER NAME OF CAREER STAT FILE (MAX. - 8 CHARACTERS)"; careerFile$
+    Input "ENTER NAME OF CAREER STAT FILE "; careerFile$
 
-    careerFile$ = Left$(careerFile$, 8) + ".CAR"
+    careerFile$ = careerFile$ + ".CAR"
+
     For XX = 1 To Len(careerFile$)
         If Mid$(careerFile$, XX, 1) = " " Then Mid$(careerFile$, XX, 1) = "_"
     Next XX
@@ -1338,7 +1339,7 @@ End Sub
 '...explanation...
 Sub GetTeam_CAREER (teamIdx, A$)
 
-    Shared ratings%()
+    Shared teamRatings%()
 
     Do
 
@@ -1423,7 +1424,7 @@ Sub GetTeam_CAREER (teamIdx, A$)
                 BO% = 0
             Else
                 Locate 2, 33
-                Color ratings%(11), ratings%(12): Print A$
+                Color teamRatings%(11), teamRatings%(12): Print A$
 
                 Do
                     Color 15, 4
@@ -1450,7 +1451,7 @@ End Sub
 '...explanation...
 Sub SelectTeam_CAREER (yearNumber$, numberTeams, teamIdx%)
 
-    Shared ratings%()
+    Shared teamRatings%()
 
     Selection% = 1
     Count% = numberTeams
@@ -1497,7 +1498,7 @@ Sub SelectTeam_CAREER (yearNumber$, numberTeams, teamIdx%)
             Get #1, teamIdx
 
             For I = 1 To 13
-                ratings%(I) = CVI(Q$(I))
+                teamRatings%(I) = CVI(Q$(I))
             Next
 
             Close 1

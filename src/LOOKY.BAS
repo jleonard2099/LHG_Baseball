@@ -52,7 +52,7 @@ End Sub
 '...explanation...
 Sub StatsOneTeam ()
 
-    Shared ratings%()
+    Shared teamRatings%()
 
     Do
 
@@ -154,7 +154,7 @@ Sub StatsOneTeam ()
                 B$ = A$
 
                 Locate 2, 33: Color 15, 0
-                Color ratings%(11), ratings%(12): Print B$
+                Color teamRatings%(11), teamRatings%(12): Print B$
 
                 Do
                     Color 15, 4
@@ -320,7 +320,7 @@ End Sub
 '...explanation...
 Sub ViewAndPrintOptions (statFile$, teamName$, totalGames%, menuExit)
 
-    Shared H%(), I%(), ratings%(), V%()
+    Shared H%(), I%(), teamRatings%(), V%()
 
     Shared statH$(), L$(), PL$(), W$()
 
@@ -364,7 +364,7 @@ Sub ViewAndPrintOptions (statFile$, teamName$, totalGames%, menuExit)
                 Locate 1, Xcoord
 
                 Print "SCHEDULE RESULTS FOR ";
-                Color ratings%(11), ratings%(12)
+                Color teamRatings%(11), teamRatings%(12)
                 Print teamName$
 
                 Color 15, 0
@@ -390,7 +390,7 @@ Sub ViewAndPrintOptions (statFile$, teamName$, totalGames%, menuExit)
                         Locate 1, Xcoord
                         Color 12
                         Print "SCHEDULE RESULTS FOR ";
-                        Color ratings%(11), ratings%(12)
+                        Color teamRatings%(11), teamRatings%(12)
                         Print teamName$
 
                         Color 15, 0
@@ -415,7 +415,7 @@ Sub ViewAndPrintOptions (statFile$, teamName$, totalGames%, menuExit)
             Cls
             JJ = 1
             Locate 6, 8
-            Color ratings%(11), ratings%(12)
+            Color teamRatings%(11), teamRatings%(12)
 
             'Print box top
             Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
@@ -446,7 +446,7 @@ Sub ViewAndPrintOptions (statFile$, teamName$, totalGames%, menuExit)
 
     If prompt$ = Chr$(27) Then menuExit = 1
 
-    'Call ResetStatPrompt (statFile$, ratings%())
+    'Call ResetStatPrompt (statFile$, teamRatings%())
 
     Cls
 
@@ -465,13 +465,13 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
 
     Shared L2%, W2%
 
-    Shared ratings%()
+    Shared teamRatings%()
 
     Shared statB$(), statP$(), statSS%()
     Shared statT!(), statT1!()
 
     Shared statB%(), statB0%()
-    Shared H%(), I%(), ratings%(), V%()
+    Shared H%(), I%(), teamRatings%(), V%()
     Shared statP%(), statP0%()
 
     Shared statH$(), L$(), PL$(), W$()
@@ -480,7 +480,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
     Xcoord = Int((80 - Xcoord) / 2)
     Locate 1, Xcoord
 
-    Color ratings%(11), ratings%(12)
+    Color teamRatings%(11), teamRatings%(12)
     Print teamName$
     Print
 
@@ -519,7 +519,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
     Locate , Xcoord
 
     'Color 14
-    Color ratings%(11), ratings%(12)
+    Color teamRatings%(11), teamRatings%(12)
     Print teamName$;
 
     Color 12, 0
@@ -629,7 +629,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
     Cls
 
     Locate , Xcoord
-    Color ratings%(11), ratings%(12)
+    Color teamRatings%(11), teamRatings%(12)
     Print teamName$;
 
     Color 12, 0
@@ -699,7 +699,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
     Cls
 
     Locate , Xcoord
-    Color ratings%(11), ratings%(12)
+    Color teamRatings%(11), teamRatings%(12)
     Print teamName$;
 
     Color 12, 0
@@ -791,7 +791,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
     Cls
 
     Locate , Xcoord
-    Color ratings%(11), ratings%(12)
+    Color teamRatings%(11), teamRatings%(12)
     Print teamName$;
 
     Color 12, 0
@@ -836,7 +836,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
     Cls
 
     Locate , Xcoord
-    Color ratings%(11), ratings%(12)
+    Color teamRatings%(11), teamRatings%(12)
     Print teamName$;
 
     Color 12, 0
@@ -866,7 +866,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
     If splitScreenChoice% <> 0 Then
         ' DISPLAY SPLIT STATS
         Cls
-        Color ratings%(11), ratings%(12): Print teamName$;
+        Color teamRatings%(11), teamRatings%(12): Print teamName$;
         Locate 1, 15
         Color 14, 0
         Print "VS L  AB 2B 3B HR  BB   K   AVG  VS R  AB 2B 3B HR  BB   K   AVG"
@@ -914,7 +914,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
     Cls
 
     Locate , Xcoord
-    Color ratings%(11), ratings%(12)
+    Color teamRatings%(11), teamRatings%(12)
     Print teamName$;
 
     Color 12, 0
@@ -963,7 +963,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
     Cls
 
     Locate , Xcoord
-    Color ratings%(11), ratings%(12)
+    Color teamRatings%(11), teamRatings%(12)
     Print teamName$;
 
     Color 12, 0
@@ -993,7 +993,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
     Cls
 
     Locate , Xcoord
-    Color ratings%(11), ratings%(12)
+    Color teamRatings%(11), teamRatings%(12)
     Print teamName$;
 
     Color 12, 0
@@ -1330,7 +1330,8 @@ Sub NewPrintStats (statFile$, teamName$, totalGames%, printChoice, splitScreenCh
     For I = 0 To 21
 
         If statP$(I) <> "XXX" And statP$(I) <> "" Then
-            LPrint Left$(statP$(I), 10); Tab(12);: LPrint Using "###"; statP0%(I, 8);
+            LPrint Left$(statP$(I), 10); Tab(12);
+            LPrint Using "###"; statP0%(I, 8);
             LPrint Tab(16); Using "### ### ### ##"; statP0%(I, 23); statP0%(I, 25); statP0%(I, 24); statP0%(I, 27);
             LPrint Tab(31); Using "## ## ### ###"; statP0%(I, 28); statP0%(I, 29); statP0%(I, 26); statP0%(I, 30);
             LPrint Tab(45); Using "### ### ##"; statP0%(I, 31); statP0%(I, 32); statP0%(I, 33);
@@ -1597,13 +1598,13 @@ End Sub
 ' Prompts user with choice to reset stats
 ' If they chose so, and confirm, then
 ' it will proceed to delete the files.
-Sub ResetStatPrompt (statFile$, ratings%())
+Sub ResetStatPrompt (statFile$, teamRatings%())
 
     Cls
 
     JJ = 1
     Locate 6, 8
-    'Color ratings%(11), ratings%(12)
+    'Color teamRatings%(11), teamRatings%(12)
 
     'Print box top
     Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
@@ -1634,7 +1635,7 @@ Sub ResetStatPrompt (statFile$, ratings%())
         'Do
         JJ = 1
         Locate 6, 8
-        'Color ratings%(11), ratings%(12)
+        'Color teamRatings%(11), teamRatings%(12)
 
         'Print box top
         Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
@@ -1679,7 +1680,7 @@ End Sub
 '...explanation...
 Sub SelectTeam_LOOKY (numberTeams, yearNumber$)
 
-    Shared ratings%()
+    Shared teamRatings%()
 
     Selection% = 1
     Count% = numberTeams
@@ -1726,7 +1727,7 @@ Sub SelectTeam_LOOKY (numberTeams, yearNumber$)
             Get #1, T1
 
             For I = 1 To 13
-                ratings%(I) = CVI(Q$(I))
+                teamRatings%(I) = CVI(Q$(I))
             Next
 
             Close 1

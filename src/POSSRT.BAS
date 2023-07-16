@@ -246,7 +246,7 @@ Sub ViewSearchResults (PS, PS$, LGE$)
     Shared NN$
 
     Shared statB$(), TYN$()
-    Shared draftB%()
+    Shared teamBatters%()
 
     Dim TM(1 To 40)
     Dim A$(1 To 40), BB$(23)
@@ -278,10 +278,10 @@ Sub ViewSearchResults (PS, PS$, LGE$)
 
                 If statB$(I) <> "XXX" And statB$(I) <> "" Then
 
-                    If draftB%(I, 22) = PS Then I2 = 33
-                    If draftB%(I, 23) = PS Then I2 = 35
-                    If draftB%(I, 24) = PS Then I2 = 37
-                    If draftB%(I, 25) = PS Then I2 = 39
+                    If teamBatters%(I, 22) = PS Then I2 = 33
+                    If teamBatters%(I, 23) = PS Then I2 = 35
+                    If teamBatters%(I, 24) = PS Then I2 = 37
+                    If teamBatters%(I, 25) = PS Then I2 = 39
 
                     If I2 = 33 Or I2 = 35 Or I2 = 37 Or I2 = 39 Then
 
@@ -302,7 +302,7 @@ Sub ViewSearchResults (PS, PS$, LGE$)
 
                         End If
 
-                        If draftB%(I, 22) = PS Then
+                        If teamBatters%(I, 22) = PS Then
                             Color 12
                             Print Left$(statB$(I), 10);
                         Else
@@ -313,48 +313,48 @@ Sub ViewSearchResults (PS, PS$, LGE$)
                         Color 3
                         Print Tab(12); Left$(T$, 2); NN$;
 
-                        If draftB%(I, 0) = -1 Then BB$(I) = "L"
-                        If draftB%(I, 0) = 1 Then BB$(I) = "R"
-                        If draftB%(I, 0) = 0 Then BB$(I) = "S"
-                        If draftB%(I, 0) = 2 Then BB$(I) = "RP"
-                        If draftB%(I, 0) = -2 Then BB$(I) = "LP"
+                        If teamBatters%(I, 0) = -1 Then BB$(I) = "L"
+                        If teamBatters%(I, 0) = 1 Then BB$(I) = "R"
+                        If teamBatters%(I, 0) = 0 Then BB$(I) = "S"
+                        If teamBatters%(I, 0) = 2 Then BB$(I) = "RP"
+                        If teamBatters%(I, 0) = -2 Then BB$(I) = "LP"
 
-                        Color 7: Print Tab(19); BB$(I); Using "#"; draftB%(I, I2);
+                        Color 7: Print Tab(19); BB$(I); Using "#"; teamBatters%(I, I2);
 
-                        Print Tab(22); Using "###"; draftB%(I, 3);
-                        Print Tab(26); Using "###"; draftB%(I, 4);
-                        Print Tab(31); Using "###"; draftB%(I, 6);
-                        Print Tab(35); Using "##"; draftB%(I, 7);
-                        Print Tab(38); Using "##"; draftB%(I, 8);
-                        Print Tab(41); Using "##"; draftB%(I, 9);
-                        Print Tab(44); Using "###"; draftB%(I, 10);
-                        Print Tab(48); Using "###"; draftB%(I, 5);
-                        Print Tab(52); Using "###"; draftB%(I, 11);
-                        Print Tab(56); Using "###"; draftB%(I, 12);
-                        Print Tab(59); Using "###"; draftB%(I, 13);
-                        Print Tab(63); Using "##"; draftB%(I, 14);
+                        Print Tab(22); Using "###"; teamBatters%(I, 3);
+                        Print Tab(26); Using "###"; teamBatters%(I, 4);
+                        Print Tab(31); Using "###"; teamBatters%(I, 6);
+                        Print Tab(35); Using "##"; teamBatters%(I, 7);
+                        Print Tab(38); Using "##"; teamBatters%(I, 8);
+                        Print Tab(41); Using "##"; teamBatters%(I, 9);
+                        Print Tab(44); Using "###"; teamBatters%(I, 10);
+                        Print Tab(48); Using "###"; teamBatters%(I, 5);
+                        Print Tab(52); Using "###"; teamBatters%(I, 11);
+                        Print Tab(56); Using "###"; teamBatters%(I, 12);
+                        Print Tab(59); Using "###"; teamBatters%(I, 13);
+                        Print Tab(63); Using "##"; teamBatters%(I, 14);
 
                         I2 = 0
                         I3 = 0
                         I4 = 0
 
-                        If draftB%(I, 4) > 0 Then 
-                            I2 = Int((draftB%(I, 6) / draftB%(I, 4) + .0005) * 1000)
-                            I3 = Int(((draftB%(I, 6) + draftB%(I, 7) + 2 * draftB%(I, 8) + 3 * draftB%(I, 9)) / draftB%(I, 4) + .0005) * 1000)
-                            I4 = Int(((draftB%(I, 6) + draftB%(I, 11)) / (draftB%(I, 11) + draftB%(I, 4)) + .0005) * 1000)
+                        If teamBatters%(I, 4) > 0 Then 
+                            I2 = Int((teamBatters%(I, 6) / teamBatters%(I, 4) + .0005) * 1000)
+                            I3 = Int(((teamBatters%(I, 6) + teamBatters%(I, 7) + 2 * teamBatters%(I, 8) + 3 * teamBatters%(I, 9)) / teamBatters%(I, 4) + .0005) * 1000)
+                            I4 = Int(((teamBatters%(I, 6) + teamBatters%(I, 11)) / (teamBatters%(I, 11) + teamBatters%(I, 4)) + .0005) * 1000)
                         End if
 
-                        If draftB%(I, 4) = 0 Or I2 = 0 Then Print Tab(66); ".000";
+                        If teamBatters%(I, 4) = 0 Or I2 = 0 Then Print Tab(66); ".000";
 
                         If I2 > 0 And I2 < 100 Then Print Tab(66); ".0";: Print Using "##"; I2;
                         If I2 >= 100 Then Print Tab(66); ".";: Print Using "###"; I2;
 
-                        If draftB%(I, 4) = 0 Or I3 = 0 Then Print Tab(71); ".000";
+                        If teamBatters%(I, 4) = 0 Or I3 = 0 Then Print Tab(71); ".000";
 
                         If I3 > 0 And I3 < 100 Then Print Tab(71); ".0";: Print Using "##"; I3;
                         If I3 >= 100 Then Print Tab(71); ".";: Print Using "###"; I3;
 
-                        If draftB%(I, 4) = 0 Or I4 = 0 Then Print Tab(76); ".000";
+                        If teamBatters%(I, 4) = 0 Or I4 = 0 Then Print Tab(76); ".000";
 
                         If I4 > 0 And I4 < 100 Then Print Tab(76); ".0";: Print Using "##"; I4;
                         If I4 >= 100 Then Print Tab(76); ".";: Print Using "###"; I4
@@ -384,7 +384,7 @@ Sub PrintSearchResults (PS, PS$, LGE$)
     Shared SS
     Shared NN$
 
-    Shared draftB%()
+    Shared teamBatters%()
     Shared TYN$()
 
     Dim TM(40)
@@ -412,7 +412,7 @@ Sub PrintSearchResults (PS, PS$, LGE$)
 
                 If statB$(I) <> "XXX" And statB$(I) <> "" Then
 
-                    If draftB%(I, 22) = PS Or draftB%(I, 23) = PS Or draftB%(I, 24) = PS Or draftB%(I, 25) = PS Then
+                    If teamBatters%(I, 22) = PS Or teamBatters%(I, 23) = PS Or teamBatters%(I, 24) = PS Or teamBatters%(I, 25) = PS Then
 
                         SS = SS + 1
 
@@ -423,7 +423,7 @@ Sub PrintSearchResults (PS, PS$, LGE$)
                             LPrint "PLAYER               TEAM         T     G    W    L    SV    GS     IP    H    BB    SO    ERA    HR"
                         End If
 
-                        If draftB%(I, 22) = PS Then
+                        If teamBatters%(I, 22) = PS Then
                             LPrint statB$(I);
                         Else
                             LPrint Tab(3); statB$(I);
@@ -431,45 +431,45 @@ Sub PrintSearchResults (PS, PS$, LGE$)
 
                         LPrint Tab(16); Left$(T$, 2); NN$;
 
-                        If draftB%(I, 0) = -1 Then BB$(I) = "L"
-                        If draftB%(I, 0) = 1 Then BB$(I) = "R"
-                        If draftB%(I, 0) = 0 Then BB$(I) = "S"
+                        If teamBatters%(I, 0) = -1 Then BB$(I) = "L"
+                        If teamBatters%(I, 0) = 1 Then BB$(I) = "R"
+                        If teamBatters%(I, 0) = 0 Then BB$(I) = "S"
 
                         LPrint Tab(34); BB$(I);
-                        LPrint Tab(39); Using "###"; draftB%(I, 3);
-                        LPrint Tab(45); Using "###"; draftB%(I, 4);
-                        LPrint Tab(52); Using "###"; draftB%(I, 6);
-                        LPrint Tab(58); Using "##"; draftB%(I, 7);
-                        LPrint Tab(63); Using "##"; draftB%(I, 8);
-                        LPrint Tab(68); Using "##"; draftB%(I, 9);
-                        LPrint Tab(73); Using "###"; draftB%(I, 10);
-                        LPrint Tab(80); Using "###"; draftB%(I, 5);
-                        LPrint Tab(85); Using "###"; draftB%(I, 11);
-                        LPrint Tab(91); Using "###"; draftB%(I, 12);
-                        LPrint Tab(96); Using "###"; draftB%(I, 13);
-                        LPrint Tab(102); Using "##"; draftB%(I, 14);
+                        LPrint Tab(39); Using "###"; teamBatters%(I, 3);
+                        LPrint Tab(45); Using "###"; teamBatters%(I, 4);
+                        LPrint Tab(52); Using "###"; teamBatters%(I, 6);
+                        LPrint Tab(58); Using "##"; teamBatters%(I, 7);
+                        LPrint Tab(63); Using "##"; teamBatters%(I, 8);
+                        LPrint Tab(68); Using "##"; teamBatters%(I, 9);
+                        LPrint Tab(73); Using "###"; teamBatters%(I, 10);
+                        LPrint Tab(80); Using "###"; teamBatters%(I, 5);
+                        LPrint Tab(85); Using "###"; teamBatters%(I, 11);
+                        LPrint Tab(91); Using "###"; teamBatters%(I, 12);
+                        LPrint Tab(96); Using "###"; teamBatters%(I, 13);
+                        LPrint Tab(102); Using "##"; teamBatters%(I, 14);
 
                         I2 = 0
                         I3 = 0
                         I4 = 0
 
-                        If draftB%(I, 4) > 0 Then 
-                            I2 = Int((draftB%(I, 6) / draftB%(I, 4) + .0005) * 1000)
-                            I3 = Int(((draftB%(I, 6) + draftB%(I, 7) + 2 * draftB%(I, 8) + 3 * draftB%(I, 9)) / draftB%(I, 4) + .0005) * 1000)
-                            I4 = Int(((draftB%(I, 6) + draftB%(I, 11)) / (draftB%(I, 11) + draftB%(I, 4)) + .0005) * 1000)
+                        If teamBatters%(I, 4) > 0 Then 
+                            I2 = Int((teamBatters%(I, 6) / teamBatters%(I, 4) + .0005) * 1000)
+                            I3 = Int(((teamBatters%(I, 6) + teamBatters%(I, 7) + 2 * teamBatters%(I, 8) + 3 * teamBatters%(I, 9)) / teamBatters%(I, 4) + .0005) * 1000)
+                            I4 = Int(((teamBatters%(I, 6) + teamBatters%(I, 11)) / (teamBatters%(I, 11) + teamBatters%(I, 4)) + .0005) * 1000)
                         End If
 
-                        If draftB%(I, 4) = 0 Or I2 = 0 Then LPrint Tab(107); ".000";
+                        If teamBatters%(I, 4) = 0 Or I2 = 0 Then LPrint Tab(107); ".000";
 
                         If I2 > 0 And I2 < 100 Then LPrint Tab(107); ".0";: LPrint Using "##"; I2;
                         If I2 >= 100 Then LPrint Tab(107); ".";: LPrint Using "###"; I2;
 
-                        If draftB%(I, 4) = 0 Or I3 = 0 Then LPrint Tab(114); ".000";
+                        If teamBatters%(I, 4) = 0 Or I3 = 0 Then LPrint Tab(114); ".000";
 
                         If I3 > 0 And I3 < 100 Then LPrint Tab(114); ".0";: LPrint Using "##"; I3;
                         If I3 >= 100 Then LPrint Tab(114); ".";: LPrint Using "###"; I3;
 
-                        If draftB%(I, 4) = 0 Or I4 = 0 Then LPrint Tab(121); ".000";
+                        If teamBatters%(I, 4) = 0 Or I4 = 0 Then LPrint Tab(121); ".000";
 
                         If I4 > 0 And I4 < 100 Then LPrint Tab(121); ".0";: LPrint Using "##"; I4;
                         If I4 >= 100 Then LPrint Tab(121); ".";: LPrint Using "###"; I4
@@ -557,7 +557,7 @@ Sub Pitchers10_Games (PC, PPS$, LGE$)
     Shared NN$
 
     Shared statP$(), PB$(), TYN$()
-    Shared ratings%(), draftP%()
+    Shared teamRatings%(), teamPitchers%()
 
     Dim A$(1 To 40)
     Dim TM(40)
@@ -605,7 +605,7 @@ Sub Pitchers10_Games (PC, PPS$, LGE$)
 
                         If statP$(I) <> "XXX" And statP$(I) <> "" Then
 
-                            If PC = 1 And draftP%(I, 5) < PPS Or draftP%(I, 5) > PPS Then
+                            If PC = 1 And teamPitchers%(I, 5) < PPS Or teamPitchers%(I, 5) > PPS Then
                                 SS = SS + 1
 
                                 If SS = 19 Or SS = 37 Or SS = 55 Or SS = 73 Or SS = 91 Or SS = 109 Or SS = 127 Or SS = 145 Or SS = 163 Or SS = 181 Or SS = 199 Or SS = 217 Or SS = 235 Or SS = 253 Or SS = 271 Or SS = 289 Or SS = 307 Or SS = 325 Or SS = 343 Or SS = 361 Or SS = 379 Or SS = 397 Or SS = 415 Then
@@ -627,22 +627,22 @@ Sub Pitchers10_Games (PC, PPS$, LGE$)
                                 Color 12: Print Left$(statP$(I), 10);
                                 Color 3: Print Tab(12); Left$(T$, 2); NN$
 
-                                If draftP%(I, 0) = 1 Then PB$(I) = "R"
-                                If draftP%(I, 0) = -1 Then PB$(I) = "L"
+                                If teamPitchers%(I, 0) = 1 Then PB$(I) = "R"
+                                If teamPitchers%(I, 0) = -1 Then PB$(I) = "L"
 
                                 Color 7: Print Tab(22); PB$(I);
 
-                                Print Tab(25); Using "###"; draftP%(I, 4);
-                                Print Tab(30); Using "##"; draftP%(I, 1);
-                                Print Tab(34); Using "##"; draftP%(I, 2);
-                                Print Tab(39); Using "##"; draftP%(I, 3);
-                                Print Tab(43); Using "##"; draftP%(I, 5);
-                                Print Tab(47); Using "###"; draftP%(I, 6);
-                                Print Tab(52); Using "###"; draftP%(I, 7);
-                                Print Tab(56); Using "###"; draftP%(I, 8);
-                                Print Tab(61); Using "###"; draftP%(I, 9);
-                                Print Tab(65); Using "##.##"; draftP%(I, 10) / 100;
-                                Print Tab(73); Using "##"; draftP%(I, 13)
+                                Print Tab(25); Using "###"; teamPitchers%(I, 4);
+                                Print Tab(30); Using "##"; teamPitchers%(I, 1);
+                                Print Tab(34); Using "##"; teamPitchers%(I, 2);
+                                Print Tab(39); Using "##"; teamPitchers%(I, 3);
+                                Print Tab(43); Using "##"; teamPitchers%(I, 5);
+                                Print Tab(47); Using "###"; teamPitchers%(I, 6);
+                                Print Tab(52); Using "###"; teamPitchers%(I, 7);
+                                Print Tab(56); Using "###"; teamPitchers%(I, 8);
+                                Print Tab(61); Using "###"; teamPitchers%(I, 9);
+                                Print Tab(65); Using "##.##"; teamPitchers%(I, 10) / 100;
+                                Print Tab(73); Using "##"; teamPitchers%(I, 13)
 
                             End If
 
@@ -672,7 +672,7 @@ Sub PitchersHanded (THR, PPS$, LGE$)
     Shared NN$
 
     Shared statP$(), PB$(), TYN$()
-    Shared draftP%()
+    Shared teamPitchers%()
 
     Dim A$(1 To 40)
     Dim TM(40)
@@ -715,7 +715,7 @@ Sub PitchersHanded (THR, PPS$, LGE$)
 
                         If statP$(I) <> "XXX" And statP$(I) <> "" Then
 
-                            If THR = 1 And draftP%(I, 0) = 1 Or draftP%(I, 0) = -1 Then
+                            If THR = 1 And teamPitchers%(I, 0) = 1 Or teamPitchers%(I, 0) = -1 Then
 
                                 SS = SS + 1
 
@@ -736,22 +736,22 @@ Sub PitchersHanded (THR, PPS$, LGE$)
                                 Color 12: Print Left$(statP$(I), 10);
                                 Color 3: Print Tab(12); Left$(T$, 2); NN$;
 
-                                If draftP%(I, 0) = 1 Then PB$(I) = "R"
-                                If draftP%(I, 0) = -1 Then PB$(I) = "L"
+                                If teamPitchers%(I, 0) = 1 Then PB$(I) = "R"
+                                If teamPitchers%(I, 0) = -1 Then PB$(I) = "L"
 
                                 Color 7: Print Tab(22); PB$(I);
 
-                                Print Tab(25); Using "###"; draftP%(I, 4);
-                                Print Tab(30); Using "##"; draftP%(I, 1);
-                                Print Tab(34); Using "##"; draftP%(I, 2);
-                                Print Tab(39); Using "##"; draftP%(I, 3);
-                                Print Tab(43); Using "##"; draftP%(I, 5);
-                                Print Tab(47); Using "###"; draftP%(I, 6);
-                                Print Tab(52); Using "###"; draftP%(I, 7);
-                                Print Tab(56); Using "###"; draftP%(I, 8);
-                                Print Tab(61); Using "###"; draftP%(I, 9);
-                                Print Tab(65); Using "##.##"; draftP%(I, 10) / 100;
-                                Print Tab(73); Using "##"; draftP%(I, 13)
+                                Print Tab(25); Using "###"; teamPitchers%(I, 4);
+                                Print Tab(30); Using "##"; teamPitchers%(I, 1);
+                                Print Tab(34); Using "##"; teamPitchers%(I, 2);
+                                Print Tab(39); Using "##"; teamPitchers%(I, 3);
+                                Print Tab(43); Using "##"; teamPitchers%(I, 5);
+                                Print Tab(47); Using "###"; teamPitchers%(I, 6);
+                                Print Tab(52); Using "###"; teamPitchers%(I, 7);
+                                Print Tab(56); Using "###"; teamPitchers%(I, 8);
+                                Print Tab(61); Using "###"; teamPitchers%(I, 9);
+                                Print Tab(65); Using "##.##"; teamPitchers%(I, 10) / 100;
+                                Print Tab(73); Using "##"; teamPitchers%(I, 13)
 
                             End If
 
@@ -782,7 +782,7 @@ Sub PitchersHanded (THR, PPS$, LGE$)
                     For I = 0 To 21
                         If statP$(I) <> "XXX" And statP$(I) <> "" Then
 
-                            If THR = 1 And draftP%(I, 0) = 1 Or draftP%(I, 0) = -1 Then
+                            If THR = 1 And teamPitchers%(I, 0) = 1 Or teamPitchers%(I, 0) = -1 Then
 
                                 SS = SS + 1
 
@@ -796,22 +796,22 @@ Sub PitchersHanded (THR, PPS$, LGE$)
                                 LPrint statP$(I);
                                 LPrint Tab(19); Left$(T$, 2); NN$;
 
-                                If draftP%(I, 0) = 1 Then PB$(I) = "R"
+                                If teamPitchers%(I, 0) = 1 Then PB$(I) = "R"
 
-                                If draftP%(I, 0) = -1 Then PB$(I) = "L"
+                                If teamPitchers%(I, 0) = -1 Then PB$(I) = "L"
 
                                 LPrint Tab(35); PB$(I);
-                                LPrint Tab(39); Using "###"; draftP%(I, 4);
-                                LPrint Tab(45); Using "##"; draftP%(I, 1);
-                                LPrint Tab(50); Using "##"; draftP%(I, 2);
-                                LPrint Tab(56); Using "##"; draftP%(I, 3);
-                                LPrint Tab(62); Using "##"; draftP%(I, 5);
-                                LPrint Tab(68); Using "###"; draftP%(I, 6);
-                                LPrint Tab(73); Using "###"; draftP%(I, 7);
-                                LPrint Tab(79); Using "###"; draftP%(I, 8);
-                                LPrint Tab(85); Using "###"; draftP%(I, 9);
-                                LPrint Tab(90); Using "##.##"; draftP%(I, 10) / 100;
-                                LPrint Tab(99); Using "##"; draftP%(I, 13)
+                                LPrint Tab(39); Using "###"; teamPitchers%(I, 4);
+                                LPrint Tab(45); Using "##"; teamPitchers%(I, 1);
+                                LPrint Tab(50); Using "##"; teamPitchers%(I, 2);
+                                LPrint Tab(56); Using "##"; teamPitchers%(I, 3);
+                                LPrint Tab(62); Using "##"; teamPitchers%(I, 5);
+                                LPrint Tab(68); Using "###"; teamPitchers%(I, 6);
+                                LPrint Tab(73); Using "###"; teamPitchers%(I, 7);
+                                LPrint Tab(79); Using "###"; teamPitchers%(I, 8);
+                                LPrint Tab(85); Using "###"; teamPitchers%(I, 9);
+                                LPrint Tab(90); Using "##.##"; teamPitchers%(I, 10) / 100;
+                                LPrint Tab(99); Using "##"; teamPitchers%(I, 13)
 
                             End If
 
@@ -837,7 +837,7 @@ Sub ReadTeam_PosSrt (teamIndex%, yearNumber$)
 
     Shared K9&()
     Shared statB$(), statP$()
-    Shared draftB%(), ratings%(), draftP%()
+    Shared teamBatters%(), teamRatings%(), teamPitchers%()
 
     Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
 
@@ -861,20 +861,20 @@ Sub ReadTeam_PosSrt (teamIndex%, yearNumber$)
 
     Get #1, teamIndex%
 
-    For I = 1 To 13: ratings%(I) = CVI(Q$(I)): Next
+    For I = 1 To 13: teamRatings%(I) = CVI(Q$(I)): Next
 
     K9&(0) = CVS(Q$(14))
 
     For I = 0 To 22
         statB$(I) = RTrim$(Q$(I * 43 + 15))
         For I1 = 0 To 41
-            draftB%(I, I1) = CVI(Q$(I * 43 + I1 + 16))
+            teamBatters%(I, I1) = CVI(Q$(I * 43 + I1 + 16))
         Next
     Next
 
     For I = 0 To 21: statP$(I) = RTrim$(Q$(I * 38 + 1004))
         For I1 = 0 To 36:
-            draftP%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
+            teamPitchers%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
         Next
     Next
 
@@ -898,7 +898,7 @@ Sub Pitchers10_Print (PC, PPS$, LGE$)
     Shared NN$
 
     Shared statP$(), PB$(), TYN$()
-    Shared draftP%()
+    Shared teamPitchers%()
 
     Dim A$(1 To 40)
     Dim TM(40)
@@ -921,7 +921,7 @@ Sub Pitchers10_Print (PC, PPS$, LGE$)
 
                 If statP$(I) <> "XXX" And statP$(I) <> "" Then
 
-                    If PC = 1 And draftP%(I, 5) < PPS Or draftP%(I, 5) > PPS Then
+                    If PC = 1 And teamPitchers%(I, 5) < PPS Or teamPitchers%(I, 5) > PPS Then
 
                         SS = SS + 1
 
@@ -935,21 +935,21 @@ Sub Pitchers10_Print (PC, PPS$, LGE$)
                         LPrint statP$(I);
                         LPrint Tab(19); Left$(T$, 2); NN$;
 
-                        If draftP%(I, 0) = 1 Then PB$(I) = "R"
-                        If draftP%(I, 0) = -1 Then PB$(I) = "L"
+                        If teamPitchers%(I, 0) = 1 Then PB$(I) = "R"
+                        If teamPitchers%(I, 0) = -1 Then PB$(I) = "L"
 
                         LPrint Tab(35); PB$(I);
-                        LPrint Tab(39); Using "###"; draftP%(I, 4);
-                        LPrint Tab(45); Using "##"; draftP%(I, 1);
-                        LPrint Tab(50); Using "##"; draftP%(I, 2);
-                        LPrint Tab(56); Using "##"; draftP%(I, 3);
-                        LPrint Tab(62); Using "##"; draftP%(I, 5);
-                        LPrint Tab(68); Using "###"; draftP%(I, 6);
-                        LPrint Tab(73); Using "###"; draftP%(I, 7);
-                        LPrint Tab(79); Using "###"; draftP%(I, 8);
-                        LPrint Tab(85); Using "###"; draftP%(I, 9);
-                        LPrint Tab(90); Using "##.##"; draftP%(I, 10) / 100;
-                        LPrint Tab(99); Using "##"; draftP%(I, 13)
+                        LPrint Tab(39); Using "###"; teamPitchers%(I, 4);
+                        LPrint Tab(45); Using "##"; teamPitchers%(I, 1);
+                        LPrint Tab(50); Using "##"; teamPitchers%(I, 2);
+                        LPrint Tab(56); Using "##"; teamPitchers%(I, 3);
+                        LPrint Tab(62); Using "##"; teamPitchers%(I, 5);
+                        LPrint Tab(68); Using "###"; teamPitchers%(I, 6);
+                        LPrint Tab(73); Using "###"; teamPitchers%(I, 7);
+                        LPrint Tab(79); Using "###"; teamPitchers%(I, 8);
+                        LPrint Tab(85); Using "###"; teamPitchers%(I, 9);
+                        LPrint Tab(90); Using "##.##"; teamPitchers%(I, 10) / 100;
+                        LPrint Tab(99); Using "##"; teamPitchers%(I, 13)
                     End If
 
                 End If

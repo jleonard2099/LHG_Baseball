@@ -262,7 +262,7 @@ End Sub
 '...explanation...
 Sub AnalyzePlayerUsage (targetTeam$)
 
-    Shared AB%(), ratings%(), progMG%(), progB%()
+    Shared AB%(), teamRatings%(), progMG%(), progB%()
     Shared statB$(), progB1$(), mgrX$()
 
     Dim FRAC!
@@ -317,7 +317,7 @@ Sub AnalyzePlayerUsage (targetTeam$)
     Color 14
 
     Print "# ";
-    Color ratings%(11), ratings%(12): Print targetTeam$;
+    Color teamRatings%(11), teamRatings%(12): Print targetTeam$;
 
     Color 14, 0
 
@@ -372,7 +372,7 @@ End Sub
 Sub SelectPinchHitters (yearNumber$, targetTeam$)
 
     Shared statB$(), progB1$(), mgrX$()
-    Shared draftB%(), ratings%(), progMG%()
+    Shared teamBatters%(), teamRatings%(), progMG%()
 
     Do
         'SELECT PINCH HITTERS
@@ -389,7 +389,7 @@ Sub SelectPinchHitters (yearNumber$, targetTeam$)
         Cls
 
         Locate 1, 1
-        Print "# ";: Color ratings%(11), ratings%(12): Print targetTeam$;
+        Print "# ";: Color teamRatings%(11), teamRatings%(12): Print targetTeam$;
         Color 14, 0: Locate , 16: Print "B   AB  HR  RBI   AVG"
         I2 = 0
 
@@ -411,17 +411,17 @@ Sub SelectPinchHitters (yearNumber$, targetTeam$)
                 Color 15, 0
 
                 For I1 = 1 To 10
-                    If I = progMG%(I1 + 540) Then Color ratings%(11), ratings%(12)
+                    If I = progMG%(I1 + 540) Then Color teamRatings%(11), teamRatings%(12)
                 Next
 
                 Locate , 3: Print statB$(I);
 
                 Color 15, 0
-                Locate , 16: Print progB1$(draftB%(I, 0) + 2);
-                Locate , 17: Print Using "  ###  ##  ###"; draftB%(I, 4); draftB%(I, 9); draftB%(I, 10);
+                Locate , 16: Print progB1$(teamBatters%(I, 0) + 2);
+                Locate , 17: Print Using "  ###  ##  ###"; teamBatters%(I, 4); teamBatters%(I, 9); teamBatters%(I, 10);
 
-                If draftB%(I, 4) <> 0 Then Print Using "  .###"; draftB%(I, 6) / draftB%(I, 4);
-                If draftB%(I, 4) = 0 Then Print "  .---";
+                If teamBatters%(I, 4) <> 0 Then Print Using "  .###"; teamBatters%(I, 6) / teamBatters%(I, 4);
+                If teamBatters%(I, 4) = 0 Then Print "  .---";
 
             End If
 
@@ -517,7 +517,7 @@ End Sub
 Sub DefenseLateInning (yearNumber$, T$)
 
     Shared statB$(), mgrX$()
-    Shared ratings%(), progMG%(), progB%()
+    Shared teamRatings%(), progMG%(), progB%()
 
     Do
         'DEFENSIVE REPLACEMENTS
@@ -547,7 +547,7 @@ Sub DefenseLateInning (yearNumber$, T$)
         Cls
         Locate 1, 1
         Print "#";
-        Color ratings%(11), ratings%(12): Print T$;
+        Color teamRatings%(11), teamRatings%(12): Print T$;
         Locate , 17
         Print "1 FAVG 2 FAVG 3 FAVG 4 FAVG"
 
@@ -701,7 +701,7 @@ End Sub
 '...explanation...
 Sub EditLineups (handRL%, targetTeam$, yearNumber$)
 
-    Shared ratings%(), progMG%()
+    Shared teamRatings%(), progMG%()
     Shared progPT$()
     Shared progB3%(), progB7%()
 
@@ -711,7 +711,7 @@ Sub EditLineups (handRL%, targetTeam$, yearNumber$)
 
         Cls
         Locate 3, 1
-        Color ratings%(11), ratings%(12): Print targetTeam$;
+        Color teamRatings%(11), teamRatings%(12): Print targetTeam$;
         Color 15, 0
         Print " LINEUPS VS "; progPT$(handRL%)
         Print
@@ -855,11 +855,11 @@ End Sub
 Sub ViewLineup (targetTeam$)
 
     Shared statB$(), progB1$(), mgrX$()
-    Shared ratings%(), progB%()
+    Shared teamRatings%(), progB%()
 
     Cls
     Color 14: Print "#";
-    Color ratings%(11), ratings%(12): Print targetTeam$;
+    Color teamRatings%(11), teamRatings%(12): Print targetTeam$;
     Color 14, 0
     Locate , 15: Print "B  POS  AB  2B 3B HR  BB  SO SRA SB G%  BA"
     Locate 2
@@ -922,7 +922,7 @@ Sub InputDeleteLineup (D%, yearNumber$)
     Shared statB$(), progC$()
 
     Shared progB3%(), progB7%(), progB9%()
-    Shared ratings%(), progM%(), progB%()
+    Shared teamRatings%(), progM%(), progB%()
 
     Do
 
@@ -1031,7 +1031,7 @@ Sub InputDeleteLineup (D%, yearNumber$)
                     progM%(Val(I$)) = 1
 
                     Locate I1 + 2, 2: Print "*";
-                    Color ratings%(11), ratings%(12): Print statB$(I1)
+                    Color teamRatings%(11), teamRatings%(12): Print statB$(I1)
                     Color 15, 0
 
                     Locate 25, 1
@@ -1338,7 +1338,7 @@ Sub EditOneLineup (targetTeam$, yearNumber$)
         For I3 = 1 To 9
             If progB3%(I3) = I2 And progB7%(I3) <> 1 Then
                 Print "*";
-                Color ratings%(11), ratings%(12): Print statB$(I2)
+                Color teamRatings%(11), teamRatings%(12): Print statB$(I2)
                 Color 15, 0
             End If
         Next I3
@@ -1986,22 +1986,22 @@ End Sub
 '...explanation...
 Sub ShowPitcherInfo (targetTeam$)
 
-    Shared ratings%(), progMG%(), draftP%()
+    Shared teamRatings%(), progMG%(), teamPitchers%()
     Shared progB1$(), statP$(), mgrX$()
 
     Cls
 
     Locate 1, 1
     Print "#";
-    Color ratings%(11), ratings%(12): Print targetTeam$;
+    Color teamRatings%(11), teamRatings%(12): Print targetTeam$;
     Color 14, 0
     Locate , 16: Print "T   G GS   W- L   ERA"
 
     For I = 0 To 21
 
-        If statP$(I) = "XXX" Or Left$(statP$(I), 1) = " " Or statP$(I) = "" Then draftP%(I, 15) = 98
+        If statP$(I) = "XXX" Or Left$(statP$(I), 1) = " " Or statP$(I) = "" Then teamPitchers%(I, 15) = 98
 
-        If draftP%(I, 15) <> 1 And statP$(I) <> "XXX" Then
+        If teamPitchers%(I, 15) <> 1 And statP$(I) <> "XXX" Then
 
             Color 2, 0
 
@@ -2020,11 +2020,11 @@ Sub ShowPitcherInfo (targetTeam$)
             Locate , 3: Print statP$(I);
 
             Color 15, 0
-            Locate , 16: Print progB1$(draftP%(I, 0) + 2);
-            Locate , 17: Print Using " ### ##"; draftP%(I, 4); draftP%(I, 5);
-            Locate , 24: Print Using "  ##"; draftP%(I, 1);
+            Locate , 16: Print progB1$(teamPitchers%(I, 0) + 2);
+            Locate , 17: Print Using " ### ##"; teamPitchers%(I, 4); teamPitchers%(I, 5);
+            Locate , 24: Print Using "  ##"; teamPitchers%(I, 1);
             Print "-";
-            Print Using "## ##.##"; draftP%(I, 2); draftP%(I, 10) / 100
+            Print Using "## ##.##"; teamPitchers%(I, 2); teamPitchers%(I, 10) / 100
 
         End If
 
@@ -2241,7 +2241,7 @@ End Sub
 Sub ManagePitchingRotations (action%, targetTeam$)
 
     Shared statP$()
-    Shared progMG%(), draftP%()
+    Shared progMG%(), teamPitchers%()
 
     Dim GS%(21, 1)
 
@@ -2332,18 +2332,18 @@ Sub ManagePitchingRotations (action%, targetTeam$)
         Locate I + 17, 1
 
         If statP$(I) <> "XXX" Then
-            Print statP$(I); Tab(18); draftP%(I, 5);
+            Print statP$(I); Tab(18); teamPitchers%(I, 5);
         End If
 
         Locate , 25
         If statP$(I + 7) <> "XXX" Then
-            Print statP$(I + 7); Tab(43); draftP%(I + 7, 5);
+            Print statP$(I + 7); Tab(43); teamPitchers%(I + 7, 5);
         End If
 
         Locate , 50
 
         If statP$(I + 14) <> "XXX" Then
-            Print statP$(I + 14); Tab(68); draftP%(I + 14, 5)
+            Print statP$(I + 14); Tab(68); teamPitchers%(I + 14, 5)
         End If
 
     Next
@@ -2432,7 +2432,7 @@ Sub ManagePitchingRotations (action%, targetTeam$)
             If statP$(I) = "XXX" Then
                 GS%(I, 0) = 0: GS%(I, 1) = -1
             Else
-                GS%(I, 0) = draftP%(I, 5): GS%(I, 1) = I
+                GS%(I, 0) = teamPitchers%(I, 5): GS%(I, 1) = I
             End If
         Next
 
@@ -2487,7 +2487,7 @@ Sub ManagePitchingRotations (action%, targetTeam$)
     GS% = GS% * SL% / 162
 
     For I = 1 To progMG%(1)
-        progMG%(I + 12) = Int(draftP%(progMG%(I + 2), 5) * 100 / GS% + .5)
+        progMG%(I + 12) = Int(teamPitchers%(progMG%(I + 2), 5) * 100 / GS% + .5)
     Next
 
     SS% = 0
@@ -2495,14 +2495,14 @@ Sub ManagePitchingRotations (action%, targetTeam$)
     For I = 21 To 36
 
         If progMG%(I) >= 0 And progMG%(I) <= 21 Then
-            SS% = SS% + draftP%(progMG%(I), 5)
+            SS% = SS% + teamPitchers%(progMG%(I), 5)
         End If
 
     Next
 
     For I = 21 To 36
         If progMG%(I) >= 0 And progMG%(I) <= 21 Then
-            progMG%(I + 20) = Int(draftP%(progMG%(I), 5) * 100 / SS% + .5)
+            progMG%(I + 20) = Int(teamPitchers%(progMG%(I), 5) * 100 / SS% + .5)
         End If
     Next
 
@@ -2516,7 +2516,7 @@ End Sub
 '...explanation...
 Sub SetupMiddleRelievers (targetTeam$, yearNumber$)
 
-    Shared progMG%(), ratings%(), draftP%()
+    Shared progMG%(), teamRatings%(), teamPitchers%()
     Shared progB1$(), statP$(), mgrX$()
 
     Do
@@ -2537,14 +2537,14 @@ Sub SetupMiddleRelievers (targetTeam$, yearNumber$)
 
         For I = 0 To 21
             If statP$(I) <> "XXX" Then
-                RA% = RA% + draftP%(I, 4) - draftP%(I, 5) - draftP%(I, 3)
+                RA% = RA% + teamPitchers%(I, 4) - teamPitchers%(I, 5) - teamPitchers%(I, 3)
             End If
         Next
 
         Cls
         Locate 1, 1
         Print "#";
-        Color ratings%(11), ratings%(12): Print targetTeam$;
+        Color teamRatings%(11), teamRatings%(12): Print targetTeam$;
         Color 14, 0
         Locate , 16: Print "T   G GS   W- L %RA   ERA"
 
@@ -2561,16 +2561,16 @@ Sub SetupMiddleRelievers (targetTeam$, yearNumber$)
                 Color 15, 0
                 
                 For I1 = 1 To 10
-                    If I = progMG%(I1 + 60) Then Color ratings%(11), ratings%(12)
+                    If I = progMG%(I1 + 60) Then Color teamRatings%(11), teamRatings%(12)
                 Next
                 
                 Locate , 3: Print statP$(I);
                 Color 15, 0
-                Locate , 16: Print progB1$(draftP%(I, 0) + 2);
-                Locate , 17: Print Using " ### ##"; draftP%(I, 4); draftP%(I, 5);
-                Locate , 24: Print Using "  ##"; draftP%(I, 1);
+                Locate , 16: Print progB1$(teamPitchers%(I, 0) + 2);
+                Locate , 17: Print Using " ### ##"; teamPitchers%(I, 4); teamPitchers%(I, 5);
+                Locate , 24: Print Using "  ##"; teamPitchers%(I, 1);
                 Print "-";
-                Print Using "## ### ##.##"; draftP%(I, 2); (draftP%(I, 4) - draftP%(I, 5) - draftP%(I, 3)) / RA% * 100; draftP%(I, 10) / 100
+                Print Using "## ### ##.##"; teamPitchers%(I, 2); (teamPitchers%(I, 4) - teamPitchers%(I, 5) - teamPitchers%(I, 3)) / RA% * 100; teamPitchers%(I, 10) / 100
             End If
 
         Next I
@@ -2661,7 +2661,7 @@ End Sub
 Sub SetupRelievers (targetTeam$, yearNumber$)
 
     Shared progB1$(), statP$(), mgrX$()
-    Shared ratings%(), progMG%(), draftP%()
+    Shared teamRatings%(), progMG%(), teamPitchers%()
 
     Do
 
@@ -2679,7 +2679,7 @@ Sub SetupRelievers (targetTeam$, yearNumber$)
         Cls
         Locate 1, 1
         Print "#";
-        Color ratings%(11), ratings%(12): Print targetTeam$;
+        Color teamRatings%(11), teamRatings%(12): Print targetTeam$;
         Color 14, 0: Locate , 16: Print "T   G GS   W- L SV   ERA"
 
         For I = 0 To 21
@@ -2697,18 +2697,18 @@ Sub SetupRelievers (targetTeam$, yearNumber$)
                 Color 15, 0
 
                 For I1 = 1 To 6
-                    If I = progMG%(I1 + 80) Then Color ratings%(11), ratings%(12)
+                    If I = progMG%(I1 + 80) Then Color teamRatings%(11), teamRatings%(12)
                 Next
 
                 Locate , 3: Print statP$(I);
 
                 Color 15, 0
 
-                Locate , 16: Print progB1$(draftP%(I, 0) + 2);
-                Locate , 17: Print Using " ### ##"; draftP%(I, 4); draftP%(I, 5);
-                Locate , 24: Print Using "  ##"; draftP%(I, 1);
+                Locate , 16: Print progB1$(teamPitchers%(I, 0) + 2);
+                Locate , 17: Print Using " ### ##"; teamPitchers%(I, 4); teamPitchers%(I, 5);
+                Locate , 24: Print Using "  ##"; teamPitchers%(I, 1);
                 Print "-";
-                Print Using "## ### ##.##"; draftP%(I, 2); draftP%(I, 3); draftP%(I, 10) / 100
+                Print Using "## ### ##.##"; teamPitchers%(I, 2); teamPitchers%(I, 3); teamPitchers%(I, 10) / 100
             End If
         Next I
 
@@ -2806,7 +2806,7 @@ End Sub
 Sub SetupClosers (targetTeam$, yearNumber$)
 
     Shared progB1$(), statP$(), mgrX$()
-    Shared ratings%(), progMG%(), draftP%()
+    Shared teamRatings%(), progMG%(), teamPitchers%()
 
     Do
 
@@ -2818,7 +2818,7 @@ Sub SetupClosers (targetTeam$, yearNumber$)
 
         Cls
         Locate 1, 1
-        Print "#";: Color ratings%(11), ratings%(12): Print targetTeam$;
+        Print "#";: Color teamRatings%(11), teamRatings%(12): Print targetTeam$;
         Color 14, 0: Locate , 16: Print "T   G GS   W- L SV   ERA"
 
         For I = 0 To 21
@@ -2836,18 +2836,18 @@ Sub SetupClosers (targetTeam$, yearNumber$)
                 Color 15, 0
 
                 For I1 = 1 To 6
-                    If I = progMG%(I1 + 520) Then Color ratings%(11), ratings%(12)
+                    If I = progMG%(I1 + 520) Then Color teamRatings%(11), teamRatings%(12)
                 Next
 
                 Locate , 3: Print statP$(I);
 
                 Color 15, 0
 
-                Locate , 16: Print progB1$(draftP%(I, 0) + 2);
-                Locate , 17: Print Using " ### ##"; draftP%(I, 4); draftP%(I, 5);
-                Locate , 24: Print Using "  ##"; draftP%(I, 1);
+                Locate , 16: Print progB1$(teamPitchers%(I, 0) + 2);
+                Locate , 17: Print Using " ### ##"; teamPitchers%(I, 4); teamPitchers%(I, 5);
+                Locate , 24: Print Using "  ##"; teamPitchers%(I, 1);
                 Print "-";
-                Print Using "## ### ##.##"; draftP%(I, 2); draftP%(I, 3); draftP%(I, 10) / 100
+                Print Using "## ### ##.##"; teamPitchers%(I, 2); teamPitchers%(I, 3); teamPitchers%(I, 10) / 100
 
             End If
 
@@ -3657,7 +3657,7 @@ End Sub
 '...explanation...
 Sub PinchRunners (targetTeam$)
 
-    Shared ratings%(), progMG%(), progB%()
+    Shared teamRatings%(), progMG%(), progB%()
     Shared statB$(), mgrX$()
 
     Do
@@ -3679,7 +3679,7 @@ Sub PinchRunners (targetTeam$)
 
         Locate 1, 1
         Print "#";
-        Color ratings%(11), ratings%(12): Print targetTeam$;
+        Color teamRatings%(11), teamRatings%(12): Print targetTeam$;
         Locate , 16: Print "RUN RATING SB   CS"
         I1 = 0
 
@@ -3785,7 +3785,7 @@ End Sub
 Sub DefenseSubPinchRun (targetTeam$)
 
     Shared statB$(), mgrX$()
-    Shared ratings%(), progMG%(), progB%()
+    Shared teamRatings%(), progMG%(), progB%()
 
     Do
         'DEFENSIVE REPLACEMENTS
@@ -3797,7 +3797,7 @@ Sub DefenseSubPinchRun (targetTeam$)
         If progMG%(778) <> 999 Then progMG%(778) = 999: For I = 1 To 24: progMG%(I + 778) = -1: Next
 
         Locate 1, 1
-        Print "#";: Color ratings%(11), ratings%(12): Print targetTeam$;
+        Print "#";: Color teamRatings%(11), teamRatings%(12): Print targetTeam$;
         Locate , 17: Print "1 FAVG 2 FAVG 3 FAVG 4 FAVG"
 
         I1 = 0
@@ -4605,7 +4605,7 @@ End Sub
 '...explanation...
 Sub GetDiskYear (targetTeam$, yearNumber$, teamidx)
 
-    Shared ratings%()
+    Shared teamRatings%()
 
     Do
 
@@ -4668,7 +4668,7 @@ Sub GetDiskYear (targetTeam$, yearNumber$, teamidx)
         Else
 
             Locate 2, 33
-            Color ratings%(11), ratings%(12): Print targetTeam$
+            Color teamRatings%(11), teamRatings%(12): Print targetTeam$
 
             Do
                 Color 15, 4
@@ -4691,8 +4691,11 @@ End Sub
 Sub SelectTeam_PROGMAN (numberTeams, yearNumber$, T)
 
     Shared K9&()
-    Shared ratings%(), progB%(), draftP%()
+    Shared teamRatings%(), progB%(), teamPitchers%()
     Shared statB$(), statP$()
+
+    Shared CK
+    Shared Manager$, teamAbbrev$, Stadium$
 
     Dim PB$(23)
 
@@ -4745,7 +4748,7 @@ Sub SelectTeam_PROGMAN (numberTeams, yearNumber$, T)
 
             Get #1, T
 
-            For I = 1 To 13: ratings%(I) = CVI(Q$(I)): Next
+            For I = 1 To 13: teamRatings%(I) = CVI(Q$(I)): Next
 
             K9&(0) = CVS(Q$(14))
 
@@ -4763,13 +4766,13 @@ Sub SelectTeam_PROGMAN (numberTeams, yearNumber$, T)
             For I = 0 To 21:
                 statP$(I) = RTrim$(Q$(I * 38 + 1004))
                 For I1 = 0 To 36
-                    draftP%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
+                    teamPitchers%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
                 Next
             Next
 
-            S$ = RTrim$(Q$(1840))
-            M$ = RTrim$(Q$(1841))
-            NN$ = RTrim$(Q$(1842))
+            Stadium$ = RTrim$(Q$(1840))
+            Manager$ = RTrim$(Q$(1841))
+            teamAbbrev$ = RTrim$(Q$(1842))
             CK = CVI(Q$(1843))
 
             Close 1
