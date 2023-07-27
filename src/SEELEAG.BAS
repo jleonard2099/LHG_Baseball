@@ -265,8 +265,8 @@ Sub ReportFilePrompt_League (reportFile$)
 
         Locate 7, 32
         Locate , 12: Print "ENTER NAME FOR FILE: ": Print
-        Locate , 12: Print "THE NAME IS 8 CHARACTERS LONG WITH NO PERIODS OR"
-        Locate , 12: Print "SPACES. DO NOT ADD A FILE EXTENSION, THE PROGRAM"
+        Locate , 12: Print "THE NAME SHOULD HAVE NO PERIODS OR SPACES"
+        Locate , 12: Print "DO NOT ADD A FILE EXTENSION; THE PROGRAM"
         Locate , 12: Print "WILL AUTOMATICALLY ADD .RPT"
         Locate 7, 37: Input reportFile$
 

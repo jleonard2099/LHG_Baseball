@@ -230,9 +230,9 @@ Sub ViewPrintCareerRecords ()
                 Cls
 
                 targetFile$ = RTrim$(targetFile$)
-                ZZ$ = Left$(targetFile$, Len(targetFile$) - 4)
+                careerFile$ = Left$(targetFile$, Len(targetFile$) - 4)
 
-                Open diskPaths$(2) + ZZ$ For Input As #1
+                Open diskPaths$(2) + careerFile$ + ".CLD" For Input As #1
 
                 For I = 0 To 14: Input #1, BLYR%(I), BL$(I), BLL!(I): Next
 
@@ -452,44 +452,21 @@ Sub Merge_FirstYear ()
 
     Color 11
     Locate 15, 5
-    Input "ENTER NAME OF CAREER STAT FILE "; careerFile$
+    Input "ENTER NAME OF CAREER STAT FILE "; careerName$
 
-    careerFile$ = careerFile$ + ".CAR"
+    careerFile$ = careerName$ + ".CAR"
 
-    For XX = 1 To Len(careerFile$)
-        If Mid$(careerFile$, XX, 1) = " " Then Mid$(careerFile$, XX, 1) = "_"
-    Next XX
-
-    Call GetTeam_CAREER (ti, A$)
-    B$ = A$
-
-    For XX = 4 To 11:
-        If Mid$(B$, XX, 1) = " " Or Mid$(B$, XX, 1) = "." Then Mid$(B$, XX, 1) = "_"
-    Next XX
-
-    For XX = 12 To 14:
-        If Mid$(B$, XX, 2) = "ST" Then Mid$(B$, 9, 1) = "_": Mid$(B$, 10, 2) = "ST"
-    Next XX
-
-    QQ = 8
-
-    For XX = 11 To 4 Step -1:
-        If Mid$(B$, XX, 1) = "_" Then
-            QQ = XX - 4
-        Else
-            Exit For
-        End If
-    Next XX
-
-    statFile$ = Mid$(B$, 4, QQ) + "." + Left$(B$, 2)
-
-    Color 15, 0
+    Call ChooseTeam (YN$, NTMS, teamNbr, team$)
+    statFile$ = nameStatFile$(team$)
 
     Do
-        Cls
-        Locate 8, 25: Input "ENTER YEAR TO ADD (EX. - 1961)"; statYear
 
+        Color 15, 0
+        Cls
+
+        Locate 8, 25: Input "ENTER YEAR TO ADD (EX. - 1961)"; statYear
         Locate 9, 25: Print "ANY CHANGE (YN)"
+
         J$ = GetKeyPress$
 
     Loop Until UCase$(J$) = "Y" Or UCase$(J$) = "N" Or J$ = Chr$(27)
@@ -523,41 +500,41 @@ Sub Merge_FirstYear ()
 
             Open diskPaths$(1) + statFile$ For Input As #1
 
-            Input #1, A$
+            Input #1, team$
             Input #1, W2%
             Input #1, L2%
 
             For I = 0 To 22:
                 Input #1, careerB$(I)
                 Input #1, careerB1%(I)
-                Locate 21, 35
-				Color 9
-                TMR% = TMR% - 1: Print Using "####"; TMR%
+				Color 9: Locate 21, 35
+                TMR% = TMR% - 1
+                Print Using "####"; TMR%
             Next I
 
             For I = 0 To 21:
                 Input #1, careerP$(I)
                 Input #1, careerP1%(I)
-                Locate 21, 35
-				Color 9
-                TMR% = TMR% - 1: Print Using "####"; TMR%
+				Color 9: Locate 21, 35
+                TMR% = TMR% - 1
+                Print Using "####"; TMR%
             Next I
 
             For I = 0 To 22:
                 For I1 = 0 To 21:
                     Input #1, careerB0%(I, I1)
-                    Locate 21, 35
-					Color 9
-                    TMR% = TMR% - 1: Print Using "####"; TMR%
+                    Color 9: Locate 21, 35
+                    TMR% = TMR% - 1
+                    Print Using "####"; TMR%
                 Next I1
             Next I
 
             For I = 0 To 21:
                 For I1 = 0 To 41:
                     Input #1, careerP0%(I, I1)
-					Locate 21, 35
-					Color 9
-                    TMR% = TMR% - 1: Print Using "####"; TMR%
+                    Color 9: Locate 21, 35
+                    TMR% = TMR% - 1
+                    Print Using "####"; TMR%
                 Next I1
             Next I
 
@@ -631,9 +608,9 @@ Sub Merge_FirstYear ()
                     For I1 = 0 To 17:
                         Write #1, BRS%(J, I, I1)
                     Next I1
-					Locate 21, 35
-					Color 9
-                    TMR% = TMR% - 1: Print Using "####"; TMR%
+                    Color 9: Locate 21, 35
+                    TMR% = TMR% - 1
+                    Print Using "####"; TMR%
                 Next I
             Next J
 
@@ -642,9 +619,9 @@ Sub Merge_FirstYear ()
                     For I1 = 0 To 16:
                         Write #1, PRS%(J, I, I1)
                     Next I1
-					Locate 21, 35
-					Color 9
-                    TMR% = TMR% - 1: Print Using "####"; TMR%
+                    Color 9: Locate 21, 35
+                    TMR% = TMR% - 1
+                    Print Using "####"; TMR%
                 Next I
             Next J
 
@@ -748,7 +725,6 @@ Sub Merge_AddYear ()
 
                 If ExitCode% <> 27 Then
                     careerFile$ = RTrim$(careerFile$)
-                    Z$ = Left$(careerFile$, Len(careerFile$) - 4)
                 Else
                     Exit Sub
                 End If
@@ -756,30 +732,10 @@ Sub Merge_AddYear ()
             End If
 
             '...Until we press ESC
-        Loop Until ExitCode% = 27 Or Count% = 0 Or Z$ <> ""
+        Loop Until ExitCode% = 27 Or Count% = 0 Or careerFile$ <> ""
 
-        Call GetTeam_CAREER (ti, A$)
-        B$ = A$
-
-        For XX = 4 To 11:
-            If Mid$(B$, XX, 1) = " " Or Mid$(B$, XX, 1) = "." Then Mid$(B$, XX, 1) = "_"
-        Next XX
-
-        For XX = 12 To 14:
-            If Mid$(B$, XX, 2) = "ST" Then Mid$(B$, 9, 1) = "_": Mid$(B$, 10, 2) = "ST"
-        Next XX
-
-        QQ = 8
-
-        For XX = 11 To 4 Step -1:
-            If Mid$(B$, XX, 1) = "_" Then
-                QQ = XX - 4
-            Else
-                Exit For
-            End If
-        Next XX
-
-        statFile$ = Mid$(B$, 4, QQ) + "." + Left$(B$, 2)
+        Call ChooseTeam (YN$, NTMS, teamNbr, team$)
+        statFile$ = nameStatFile$(team$)
 
         Cls
         Locate 8, 25: Input "ENTER YEAR TO ADD (EX. - 1961)"; Y
@@ -811,10 +767,45 @@ Sub Merge_AddYear ()
 
         Input #1, NB, NP
 
-        For I = 0 To 99: Input #1, careerB$(I): Next
-        For I = 0 To 79: Input #1, careerP$(I): Next
-        For J = 1 To 15: For I = 0 To 99: For I1 = O To 17: Input #1, BRS%(J, I, I1): Next I1: Locate 21, 35: TMR2% = TMR2% - 1: Color 9: Print Using "####"; TMR2%: Next I: Next J
-        For J = 1 To 15: For I = 0 To 79: For I1 = 0 To 16: Input #1, PRS%(J, I, I1): Next I1: Locate 21, 35: TMR2% = TMR2% - 1: Color 9: Print Using "####"; TMR2%: Next I: Next J
+        For I = 0 To 99: 
+            Input #1, careerB$(I)
+        Next
+        
+        For I = 0 To 79: 
+            Input #1, careerP$(I)
+        Next
+        
+        For J = 1 To 15: 
+
+            For I = 0 To 99: 
+
+                For I1 = O To 17: 
+                    Input #1, BRS%(J, I, I1)
+                Next I1
+                
+                Locate 21, 35: Color 9
+                TMR2% = TMR2% - 1
+                Print Using "####"; TMR2%
+
+            Next I
+
+        Next J
+        
+        For J = 1 To 15: 
+
+            For I = 0 To 79: 
+                
+                For I1 = 0 To 16: 
+                    Input #1, PRS%(J, I, I1)
+                Next I1
+                
+                Locate 21, 35: Color 9
+                TMR2% = TMR2% - 1
+                Print Using "####"; TMR2%
+
+            Next I
+
+        Next J
 
         Close #1
 
@@ -832,24 +823,24 @@ Sub Merge_AddYear ()
     Else
         Open diskPaths$(1) + statFile$ For Input As #1
 
-        Input #1, A$
+        Input #1, team$
         Input #1, W2%
         Input #1, L2%
 
         For I = 0 To 22: 
 			Input #1, BR$(I)
 			Input #1, careerB1%(I)
-			Locate 21, 35
-			Color 9
-			TMR1% = TMR1% - 1: Print Using "####"; TMR1%
+            Color 9: Locate 21, 35
+			TMR1% = TMR1% - 1
+            Print Using "####"; TMR1%
 		Next I
         
 		For I = 0 To 21: 
 			Input #1, PR$(I)
 			Input #1, careerP1%(I)
-			Locate 21, 35
-			Color 9
-			TMR1% = TMR1% - 1: Print Using "####"; TMR1%
+            Color 9: Locate 21, 35
+			TMR1% = TMR1% - 1
+            Print Using "####"; TMR1%
 		Next I
         
 		For I = 0 To 22: 
@@ -864,9 +855,9 @@ Sub Merge_AddYear ()
 		For I = 0 To 21: 
 			For I1 = 0 To 41: 
 				Input #1, careerP0%(I, I1)
-				Locate 21, 35
-				Color 9
-				TMR1% = TMR1% - 1: Print Using "####"; TMR1%
+                Color 9: Locate 21, 35
+				TMR1% = TMR1% - 1
+                Print Using "####"; TMR1%
 			Next I1
 		Next I
 
@@ -1011,25 +1002,35 @@ Sub Merge_AddYear ()
         For I = 0 To 79: Write #1, careerP$(I): Next
 
         For J = 1 To 15:
+
             For I = 0 To 99:
+
                 For I1 = O To 17:
                     Write #1, BRS%(J, I, I1)
                 Next I1
-				Locate 21, 35
-				Color 9
-                TMR2% = TMR2% - 1: Print Using "####"; TMR2%
+
+				Color 9: Locate 21, 35
+                TMR2% = TMR2% - 1
+                Print Using "####"; TMR2%
+
             Next I
+
         Next J
 
         For J = 1 To 15:
+
             For I = 0 To 79:
+
                 For I1 = 0 To 16:
                     Write #1, PRS%(J, I, I1)
                 Next I1
-				Locate 21, 35
-				Color 9
-                TMR2% = TMR2% - 1: Print Using "####"; TMR2%
+
+				Color 9: Locate 21, 35
+                TMR2% = TMR2% - 1
+                Print Using "####"; TMR2%
+
             Next I
+
         Next J
 
         Close #1

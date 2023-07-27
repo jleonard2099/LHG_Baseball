@@ -1,4 +1,4 @@
-Sub SINPUT ()
+Sub EditStats ()
 
     _Title "Full Count Baseball - Stats Input"
 
@@ -33,11 +33,14 @@ Sub SINPUT ()
         Color , 0
 
         If ExitCode% <> 27 Then
+
             Select Case Selection%
-                Case 1: Call EditStatsSchedules(1)
-                Case 2: Call EditStatsSchedules(2)
-                Case 3: Cls
+
+                Case 1, 2: 
+                    Call EditStatsSchedules(Selection%)
+
             End Select
+
         End If
 
     Loop Until Selection% = 3 Or ExitCode% = 27
@@ -50,42 +53,21 @@ End Sub
 '...explanation...
 Sub EditStatsSchedules (action%)
 
-    Shared statB$(), statP$()
+    Shared batterNames$(), pitcherNames$()
     Shared statB%(), careerB0%()
     Shared statP%(), careerP0%()
     Shared statT%(), statT1%()
 
-    Call GetTeam_SINPUT(T$, yearNumber$, numberTeams)
-
-    statB$ = RTrim$(T$)
-
-    For XX = 4 To 11
-        If Mid$(statB$, XX, 1) = " " Or Mid$(statB$, XX, 1) = "." Then Mid$(statB$, XX, 1) = "_"
-    Next XX
-
-    For XX = 12 To 14
-        If Mid$(statB$, XX, 2) = "ST" Then Mid$(statB$, 9, 1) = "_": Mid$(statB$, 10, 2) = "ST"
-    Next XX
-
-    QQ = 8
-
-    For XX = 11 To 4 Step -1
-        If Mid$(statB$, XX, 1) = "_" Then
-            QQ = XX - 4
-        Else
-            Exit For
-        End If
-    Next XX
-
-    Z$ = Mid$(statB$, 4, QQ) + "." + Left$(statB$, 2)
+    Call ChooseTeam(YN$, NTMS, teamNbr, team$)    
+    statFile$ = nameStatFile$(team$)
 
     If action% = 2 Then
 
-        Call ChangeSchedule(Z$)
+        Call ChangeSchedule(statFile$)
 
     Else
         'action% = 1
-        If Not _FileExists(diskPaths$(1) + Z$) Then
+        If Not _FileExists(diskPaths$(1) + statFile$) Then
 
             Locate 10, 8
             Call CSMsgBox("NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
@@ -94,7 +76,7 @@ Sub EditStatsSchedules (action%)
 
         Else
 
-            Call ModifyTeamStats(Z$)
+            Call ModifyTeamStats(statFile$)
 
         End If
 
@@ -108,7 +90,7 @@ End Sub
 '...explanation...
 Sub ModifyTeamStats (Z$)
 
-    Shared statB$(), statP$()
+    Shared batterNames$(), pitcherNames$()
     Shared careerB0%(), careerP0%()
     Shared teamRatings%()
     Shared statB%(), statP%(), statT%(), statT1%()
@@ -119,9 +101,9 @@ Sub ModifyTeamStats (Z$)
     Input #1, W2%
     Input #1, L2%
 
-    For I = 0 To 22: Input #1, statB$(I): Input #1, statB%(I): Next I
+    For I = 0 To 22: Input #1, batterNames$(I): Input #1, statB%(I): Next I
 
-    For I = 0 To 21: Input #1, statP$(I): Input #1, statP%(I): Next I
+    For I = 0 To 21: Input #1, pitcherNames$(I): Input #1, statP%(I): Next I
 
     For I = 0 To 22: For I1 = 0 To 21: Input #1, careerB0%(I, I1): Next I1: Next I
 
@@ -350,9 +332,9 @@ Sub ModifyTeamStats (Z$)
 
     Print #1, L2%
 
-    For I = 0 To 22: Print #1, statB$(I): Print #1, statB%(I): Next I
+    For I = 0 To 22: Print #1, batterNames$(I): Print #1, statB%(I): Next I
 
-    For I = 0 To 21: Print #1, statP$(I): Print #1, statP%(I): Next I
+    For I = 0 To 21: Print #1, pitcherNames$(I): Print #1, statP%(I): Next I
 
     For I = 0 To 22: For I1 = 0 To 21: Print #1, careerB0%(I, I1): Next I1: Next I
 
@@ -375,7 +357,7 @@ End Sub
 '...explanation...
 Sub ChangeBatters (Z$)
 
-    Shared statB$()
+    Shared batterNames$()
     Shared careerB0%()
 
     Do
@@ -388,14 +370,14 @@ Sub ChangeBatters (Z$)
         For I = 0 To 10
             Locate I + 5, 5
             Print Using "##"; I + 1;
-            Print " "; statB$(I); Tab(40);
+            Print " "; batterNames$(I); Tab(40);
             Print Using "##"; I + 13;
-            Print " "; statB$(I + 12)
+            Print " "; batterNames$(I + 12)
         Next
 
         Locate , 5
         Print Using "##"; 12;
-        Print " "; statB$(11)
+        Print " "; batterNames$(11)
 
         Print
 
@@ -409,7 +391,7 @@ Sub ChangeBatters (Z$)
 
             Cls
 
-            Locate 1: Print "1. NAME "; statB$(I)
+            Locate 1: Print "1. NAME "; batterNames$(I)
             Locate 2: Print "2. AB "; careerB0%(I, 0)
             Locate 3: Print "3. RUNS "; careerB0%(I, 2)
             Locate 4: Print "4. HITS "; careerB0%(I, 1)
@@ -444,7 +426,7 @@ Sub ChangeBatters (Z$)
                 Select Case B9
 
                     Case 1
-                        Locate 1: Input "1. NAME "; statB$(I)
+                        Locate 1: Input "1. NAME "; batterNames$(I)
 
                     Case 2
                         Locate 2: Input "2. AB "; careerB0%(I, 0)
@@ -522,7 +504,7 @@ End Sub
 '...explanation...
 Sub ChangePitchers (D0%, D1%, L2%, W2%, Z$)
 
-    Shared statB$(), statP$()
+    Shared batterNames$(), pitcherNames$()
     Shared statB%(), careerB0%(), statP%(), careerP0%()
     Shared statT%(), statT1%()
 
@@ -536,8 +518,8 @@ Sub ChangePitchers (D0%, D1%, L2%, W2%, Z$)
 
         For I = 0 To 10
             Locate I + 5, 5: Print Using "##"; I + 1;
-            Print " "; statP$(I); Tab(40);
-            Print Using "##"; I + 12;: Print " "; statP$(I + 11)
+            Print " "; pitcherNames$(I); Tab(40);
+            Print Using "##"; I + 12;: Print " "; pitcherNames$(I + 11)
         Next
 
         Print
@@ -552,7 +534,7 @@ Sub ChangePitchers (D0%, D1%, L2%, W2%, Z$)
 
             Cls
 
-            Locate 1: Print "1. NAME "; statP$(idx)
+            Locate 1: Print "1. NAME "; pitcherNames$(idx)
             Locate 2: Print "2. WON "; careerP0%(idx, 6);
             Locate, 40: Print "23. QUALITY STARTS "; careerP0%(idx, 21)
             Locate 3: Print "3. LOST "; careerP0%(idx, 7);
@@ -605,7 +587,7 @@ Sub ChangePitchers (D0%, D1%, L2%, W2%, Z$)
                 Select Case B9
 
                     Case 1
-                        Locate 1: Input "1. NAME "; statP$(idx)
+                        Locate 1: Input "1. NAME "; pitcherNames$(idx)
 
                     Case 2
                         Locate 2: Input "2. WON "; careerP0%(idx, 6)
@@ -858,10 +840,10 @@ End Sub
 
 
 '----------------------------------------
-'       GetTeam_SINPUT Subroutine
+'       GetTeam_EditStats Subroutine
 '----------------------------------------
 '...explanation...
-Sub GetTeam_SINPUT (T$, yearNumber$, numberTeams)
+Sub GetTeam_EditStats (T$, yearNumber$, numberTeams)
 
     Shared teamRatings%()
 
@@ -885,7 +867,7 @@ Sub GetTeam_SINPUT (T$, yearNumber$, numberTeams)
         Locate 7, 27: Input NY$
 
         If NY$ = "" And yearNumber$ <> "" Then
-            Call SelectTeam_SINPUT(T$, yearNumber$, numberTeams)
+            Call SelectTeam_EditStats(T$, yearNumber$, numberTeams)
         Else
             yearNumber$ = RTrim$(NY$)
             Erase teamNames$
@@ -917,7 +899,7 @@ Sub GetTeam_SINPUT (T$, yearNumber$, numberTeams)
 
                 Close 1
 
-                Call SelectTeam_SINPUT(T$, yearNumber$, numberTeams)
+                Call SelectTeam_EditStats(T$, yearNumber$, numberTeams)
 
             Else
 
@@ -953,10 +935,10 @@ Sub GetTeam_SINPUT (T$, yearNumber$, numberTeams)
 End Sub
 
 '----------------------------------------
-'       SelectTeam_SINPUT Subroutine
+'       SelectTeam_EditStats Subroutine
 '----------------------------------------
 '...explanation...
-Sub SelectTeam_SINPUT (T$, yearNumber$, numberTeams)
+Sub SelectTeam_EditStats (T$, yearNumber$, numberTeams)
 
     Shared teamRatings%()
 

@@ -2,18 +2,20 @@ Sub CREATE ()
 
     _Title "Full Count Baseball - Manage Leagues"
 
+    Dim D1$, D2$, D3$, D4$
+
     Shared Z1%()
 
     Shared Z1$(), Z2$()
 
     Do
 
-        Color 15,0
+        Color 15, 0
         Cls
 
         Call TITLE
 
-        ReDim menuChoices$(1 to 3)
+        ReDim menuChoices$(1 To 3)
         menuChoices$(1) = "CREATE / DEFINE NEW LEAGUES     "
         menuChoices$(2) = "ADD / REVIEW LEAGUE MEMBERS     "
         menuChoices$(3) = "RETURN TO STANDINGS/LEADERS MENU"
@@ -28,7 +30,7 @@ Sub CREATE ()
 
         menuWidth% = Len(menuChoices$(1))
         Column% = (80 - menuWidth% - 2) / 2
-        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColr%, FileBGColr%)
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColr%, FileBGColr%)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
@@ -41,6 +43,11 @@ Sub CREATE ()
                 Z2$(X) = "XXX"
                 Z1%(X) = -1
             Next
+
+            D1$ = ""
+            D2$ = ""
+            D3$ = ""
+            D4$ = ""
 
             Select Case Selection%
 
@@ -65,7 +72,7 @@ End Sub
 '       DefineLeague Subroutine
 '----------------------------------------
 '...explanation...
-Sub DefineLeague(LG$, D1$, D2$, D3$, D4$)
+Sub DefineLeague (LG$, D1$, D2$, D3$, D4$)
 
     Do
 
@@ -266,7 +273,7 @@ Sub ReviewEditLeague (league$, D1$, D2$, D3$, D4$)
 
     Shared Z1$(), Z2$()
 
-    If _FileExists (diskPaths$(2) + league$ + ".LIB") Then
+    If _FileExists(diskPaths$(2) + league$ + ".LIB") Then
 
         Open diskPaths$(2) + league$ + ".LIB" For Input As #2
 
@@ -341,17 +348,17 @@ Sub ReviewEditLeague (league$, D1$, D2$, D3$, D4$)
 
             If choice = 1 Then
                 'Add team
-                Call GetTeam_CREATE(Z1$(B), Z2$(B), Z1%(B))
+                Call ChooseTeam(Z2$(B), NTMS, Z1%(B), Z1$(B))
             Else
                 'Remove team
                 Z1$(B) = "XXX"
-            End If 
+            End If
 
         End If 'Done checking if ready to save
 
     Loop Until choice = 3
 
-    Call SaveLeague (league$, D1$, D2$, D3$, D4$)
+    Call SaveLeague(league$, D1$, D2$, D3$, D4$)
 
 End Sub
 
@@ -371,7 +378,7 @@ Sub SaveLeague (LG$, D1$, D2$, D3$, D4$)
     Print #2, LG$
     Print #2, D1$
     Print #2, D2$
-    Print #2, D3
+    Print #2, D3$
     Print #2, D4$
 
     For X = 1 To 40
@@ -422,7 +429,7 @@ Sub SaveLeague (LG$, D1$, D2$, D3$, D4$)
     Next
 
     Close 2
-    
+
 
 End Sub
 
@@ -471,7 +478,7 @@ Sub GetTeam_CREATE (teamName$, yearNumber$, teamIdx)
             yearNumber$ = RTrim$(NY$)
             Erase teamNames$
             numberTeams = 0
- 
+
             If Not _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
                 Cls
                 Print "ERROR:: UNABLE TO READ TEAM FILE": Print
@@ -484,7 +491,7 @@ Sub GetTeam_CREATE (teamName$, yearNumber$, teamIdx)
 
                 Field #1, 15 As Q$(0)
 
-                For I1 = 1 to fileLength& / 4342
+                For I1 = 1 To fileLength& / 4342
 
                     Get #1, I1
 
@@ -504,8 +511,8 @@ Sub GetTeam_CREATE (teamName$, yearNumber$, teamIdx)
 
                 Call SelectTeam_CREATE(yearNumber$, numberTeams, teamIdx)
 
-            End if
-            
+            End If
+
         End If
 
         teamName$ = RTrim$(Q$(0))
@@ -585,3 +592,5 @@ Sub SelectTeam_CREATE (yearNumber$, numberTeams, teamIdx)
     End If
 
 End Sub
+
+

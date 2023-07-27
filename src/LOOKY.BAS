@@ -54,159 +54,24 @@ Sub StatsOneTeam ()
 
     Shared teamRatings%()
 
-    Do
+    Call ChooseTeam(YN$, NTMS, teamNbr, team$)
+    
+    If teamNbr <> 0 Then
 
         Color 15, 0
-        Cls
 
-        JJ = 6
+        statFile$ = nameStatFile$(team$)
 
-        Locate 6, 8: Color 15, 4
+        If Not _FileExists(diskPaths$(1) + statFile$) Then
+            Call CSMsgBox("UNABLE TO LOCATE COMPILED STATS FILE PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+            I$ = GetKeyPress$
+            Call CSMsgBox("", 0, Pass)
+        Else
+            Call LoadTeamStats(statFile$, totalGames%)
+            Call ViewAndPrintOptions(statFile$, team$, totalGames%, menuExit)
+        End If
 
-        'Print box top
-        Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
-
-        'Print box sides
-        For II = 1 To JJ
-            Locate 6 + II, 8
-            Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-        Next
-
-        'Print box bottom
-        Locate 7 + JJ, 8
-        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
-
-        Locate 7, 32
-
-        Locate , 12: Print "ENTER DISK ID: ": Print
-        Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
-        Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
-        Print
-        Locate , 12: Print "ESC TO RETURN TO MAIN MENU"
-
-        I$ = GetKeyPress$
-
-        Select Case UCase$(I$)
-            Case "E", Chr$(27): '
-        End Select
-
-        If I$ <> Chr$(27) And UCase$(I$) <> "E" Then
-
-            If I$ = Chr$(13) Then
-                Call SelectTeam_LOOKY(numberTeams, YN$)
-            Else
-                Locate 7, 27: Print I$
-                Locate 7, 28: Line Input NY$
-                NY$ = I$ + NY$
-                Color 15, 0
-
-                If NY$ = "" And YN$ <> "" Then
-                    Call SelectTeam_LOOKY(numberTeams, YN$)
-                Else
-                    YN$ = RTrim$(NY$)
-                    Erase teamNames$
-                    numberTeams = 0
-
-                    If Not _FileExists(diskPaths$(0) + "FCTEAMS." + YN$) Then
-                        BO% = 1
-                        Locate 10, 8
-                        Call CSMsgBox("NO TEAM FILES WERE FOUND MATCHING THIS ID.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-                        I$ = GetKeyPress$
-                        Call CSMsgBox("", 0, Pass)
-                    Else
-
-                        Open diskPaths$(0) + "FCTEAMS." + YN$ For Random As #1 Len = 4342
-
-                        fileLength& = LOF(1)
-
-                        Field #1, 15 As Q$(0)
-
-                        For I1 = 1 To fileLength& / 4342
-
-                            Get #1, I1
-
-                            For I2 = 1 To 15
-                                If Left$(Q$(0), 2) = "XX" Or Left$(Q$(0), 1) = " " Or Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then nullTeam = 1: Exit For
-                            Next I2
-
-                            If nullTeam <> 1 Then
-                                numberTeams = numberTeams + 1
-                                teamNames$(numberTeams) = Q$(0)
-                                teamIndex%(numberTeams) = I1
-                            End If
-
-                        Next I1
-
-                        Close 1
-
-                        Call SelectTeam_LOOKY(numberTeams, YN$)
-
-                    End If
-
-                End If
-
-            End If
-
-            If BO% = 1 Then
-                BO% = 0
-            Else
-                A$ = RTrim$(Q$(0))
-                B$ = A$
-
-                Locate 2, 33: Color 15, 0
-                Color teamRatings%(11), teamRatings%(12): Print B$
-
-                Do
-                    Color 15, 4
-                    Locate 3, 33
-                    Print "ANY CHANGE (YN)";
-                    J$ = GetKeyPress$
-                Loop Until UCase$(J$) = "Y" Or UCase$(J$) = "N"
-
-
-                If UCase$(J$) = "N" Then
-
-                    Color 15, 0
-
-                    For XX = 4 To 11:
-                        If Mid$(B$, XX, 1) = " " Or Mid$(B$, XX, 1) = "." Then Mid$(B$, XX, 1) = "_"
-                    Next XX
-
-                    For XX = 12 To 14:
-                        If Mid$(B$, XX, 2) = "ST" Then Mid$(B$, 9, 1) = "_": Mid$(B$, 10, 2) = "ST"
-                    Next XX
-
-                    QQ = 8
-
-                    For XX = 11 To 4 Step -1
-                        If Mid$(B$, XX, 1) = "_" Then
-                            QQ = XX - 4
-                        Else
-                            Exit For
-                        End If
-                    Next XX
-
-                    Z$ = Mid$(B$, 4, QQ) + "." + Left$(B$, 2)
-
-                End If 'Done checking if "N"
-
-                If Not _FileExists(diskPaths$(1) + Z$) Then
-                    Call CSMsgBox("UNABLE TO LOCATE COMPILED STATS FILE PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-                    I$ = GetKeyPress$
-                    Call CSMsgBox("", 0, Pass)
-                Else
-                    Call LoadTeamStats(Z$, totalGames%)
-                    Call ViewAndPrintOptions(Z$, A$, totalGames%, menuExit)
-
-                    'We want to choose another team
-                    If menuExit = 1 Then I$ = "Y"
-                End If
-
-            End If 'Done checking BO%
-
-        End If 'Done checking for ESC
-
-    Loop Until UCase$(I$) = "N" Or I$ = Chr$(27)
+    End If
 
 End Sub
 
@@ -218,9 +83,9 @@ Sub LoadTeamStats (statFile$, totalGames%)
 
     Shared EW, EL, HW, HL
     Shared LTL, LTW, ORW, ORL
-    Shared RW, RL, Wins, L
+    Shared RW, RL, Wins, Losses
 
-    Shared statB$(), statP$()
+    Shared batterNames$(), pitcherNames$()
     Shared statT!(), statT1!()
     Shared statB%(), statB0%()
     Shared statP%(), statP0%()
@@ -232,7 +97,7 @@ Sub LoadTeamStats (statFile$, totalGames%)
     Shared D0%, D1%, L2%, W2%
 
     Wins = 0
-    L = 0
+    Losses = 0
     RW = 0
     RL = 0
     ORW = 0
@@ -250,8 +115,8 @@ Sub LoadTeamStats (statFile$, totalGames%)
     Input #1, W2%
     Input #1, L2%
 
-    For I = 0 To 22: Input #1, statB$(I): Input #1, statB%(I): Next I
-    For I = 0 To 21: Input #1, statP$(I): Input #1, statP%(I): Next I
+    For I = 0 To 22: Input #1, batterNames$(I): Input #1, statB%(I): Next I
+    For I = 0 To 21: Input #1, pitcherNames$(I): Input #1, statP%(I): Next I
     For I = 0 To 22: For I1 = 0 To 21: Input #1, statB0%(I, I1): Next I1: Next I
     For I = 0 To 21: For I1 = 0 To 41: Input #1, statP0%(I, I1): Next I1: Next I
 
@@ -277,7 +142,9 @@ Sub LoadTeamStats (statFile$, totalGames%)
     End If
 
     Open diskPaths$(1) + statFile$ + "S" For Input As #1
+
     Input #1, totalGames%
+
     For I = 1 To NUM_STATRECORDS: Input #1, H%(I): Next I
     For I = 1 To NUM_STATRECORDS: Input #1, statH$(I): Next I
     For I = 1 To NUM_STATRECORDS: Input #1, V%(I): Next I
@@ -285,6 +152,7 @@ Sub LoadTeamStats (statFile$, totalGames%)
     For I = 1 To NUM_STATRECORDS: Input #1, W$(I): Next I
     For I = 1 To NUM_STATRECORDS: Input #1, L$(I): Next I
     For I = 1 To NUM_STATRECORDS: Input #1, I%(I): Next I
+
     Close #1
 
     For I = 1 To totalGames%
@@ -294,14 +162,14 @@ Sub LoadTeamStats (statFile$, totalGames%)
         If H%(I) > V%(I) And I%(I) > 9 Then EW = EW + 1
         If H%(I) > V%(I) And PL$(I) = "A" Then RW = RW + 1
         If H%(I) > V%(I) And PL$(I) = "H" Then HW = HW + 1
-        If V%(I) > H%(I) Then L = L + 1
+        If V%(I) > H%(I) Then Losses = Losses + 1
         If V%(I) > H%(I) And I%(I) > 9 Then EL = EL + 1
         If V%(I) > H%(I) And PL$(I) = "A" Then RL = RL + 1
         If V%(I) > H%(I) And PL$(I) = "H" Then HL = HL + 1
     Next I
 
     If totalGames% <= 10 Then
-        LTL = L
+        LTL = Losses
         LTW = Wins
     Else
         M = totalGames% - 9
@@ -324,127 +192,144 @@ Sub ViewAndPrintOptions (statFile$, teamName$, totalGames%, menuExit)
 
     Shared statH$(), L$(), PL$(), W$()
 
+    ReDim menuChoices$(1 To 4)
+
     Do
 
+        Color , 0
         Cls
-        Print
-        Print
 
-        '-- Setup a box menu here; centered (similar to "STATS TO SCREEN / STATS TO PRINTER"
-        Color 14: Print "(0) ";: Color 15: Print "VIEW SCHEDULE AND STATS"
-        Print
-        Color 14: Print "(1) ";: Color 15: Print "VIEW STATS ONLY"
-        Print
-        Color 14: Print "(2) ";: Color 15: Print "PRINT SCHEDULE AND STATS"
-        Print
-        Color 14: Print "(3) ";: Color 15: Print "PRINT STATS ONLY"
+        Call TITLE
 
-        Do
-            prompt$ = GetKeyPress$
-            X = Val(prompt$) + 1
-        Loop Until X >= 1 And X <= 4 Or prompt$ = Chr$(27)
+        menuChoices$(1) = "VIEW SCHEDULE AND STATS "
+        menuChoices$(2) = "VIEW STATS ONLY         "
+        menuChoices$(3) = "PRINT SCHEDULE AND STATS"
+        menuChoices$(4) = "PRINT STATS ONLY        "
 
-        If prompt$ <> Chr$(27) Then
+        Selection% = 1
+        Count% = 4
+        Start% = 1
+        ExitCode% = 3
+        FileFGColor% = 15: FileBGColor% = 1
+        HiLiteFGColor% = 0: HiLiteBGColor% = 7
+        Spacing% = 1
+        Row% = 8
+        Column% = 28
 
-            If X = 3 Or X = 4 Then
-                Call NewPrintStats(statFile$, teamName$, totalGames%, X, splitScreenChoice%, menuExit)
-            End If
+        Call box0(7, 27, 12, 52, 2, 15, 1)
 
-            If X = 2 Then
-                Cls
-            Else
-                'X = 1
-                Color , 0
-                Cls
+        _MouseShow "Default"
+        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        _MouseHide
 
-                Color 12
-                header$ = "SCHEDULE RESULTS FOR " + teamName$
-                Xcoord = Len(header$)
-                Xcoord = Int((80 - Xcoord) / 2)
-                Locate 1, Xcoord
+        If ExitCode% <> 27 Then
 
-                Print "SCHEDULE RESULTS FOR ";
-                Color teamRatings%(11), teamRatings%(12)
-                Print teamName$
+            Select Case Selection%
 
-                Color 15, 0
-                Color 14: Print Tab(6); "OPPONENT"; Tab(33); "WINNING PITCHER"; Tab(50); "LOSING PITCHER"; Tab(66); "INNINGS"
-                Color 15
+                Case 1
+                    Color , 0
+                    Cls
 
-                For I = 1 To totalGames%
+                    Color 12
+                    header$ = "SCHEDULE RESULTS FOR " + teamName$
+                    Xcoord = Len(header$)
+                    Xcoord = Int((80 - Xcoord) / 2)
+                    Locate 1, Xcoord
 
-                    'W$() = Winning Pitcher
-                    'L$() = Losing Pitcher
-                    'I%() = Innings
-                    Print Str$(H%(I)); Tab(6); Left$(statH$(I), 15); Tab(22); Str$(V%(I)); Tab(27); "("; PL$(I); ")"; Tab(33); W$(I); Tab(50); L$(I); Tab(66); I%(I)
+                    Print "SCHEDULE RESULTS FOR ";
+                    Color teamRatings%(11), teamRatings%(12)
+                    Print teamName$
 
-                    If (I Mod 20 = 0) Then
+                    Color 15, 0
+                    Color 14: Print Tab(6); "OPPONENT"; Tab(33); "WINNING PITCHER"; Tab(50); "LOSING PITCHER"; Tab(66); "INNINGS"
+                    Color 15
 
-                        If X = 1 Or X = 2 Then
-                            I$ = GetKeyPress$
+                    For I = 1 To totalGames%
+
+                        'W$() = Winning Pitcher
+                        'L$() = Losing Pitcher
+                        'I%() = Innings
+                        Print Str$(H%(I)); Tab(6); Left$(statH$(I), 15); Tab(22); Str$(V%(I)); Tab(27); "("; PL$(I); ")"; Tab(33); W$(I); Tab(50); L$(I); Tab(66); I%(I)
+
+                        If (I Mod 20 = 0) Then
+
+                            If X = 1 Or X = 2 Then
+                                I$ = GetKeyPress$
+                                Cls
+                            End If
+
                             Cls
+
+                            Locate 1, Xcoord
+                            Color 12
+                            Print "SCHEDULE RESULTS FOR ";
+                            Color teamRatings%(11), teamRatings%(12)
+                            Print teamName$
+
+                            Color 15, 0
+                            Color 14: Print Tab(6); "OPPONENT"; Tab(33); "WINNING PITCHER"; Tab(50); "LOSING PITCHER"; Tab(66); "INNINGS"
+                            Color 15
+
                         End If
 
-                        Cls
+                    Next
 
-                        Locate 1, Xcoord
-                        Color 12
-                        Print "SCHEDULE RESULTS FOR ";
-                        Color teamRatings%(11), teamRatings%(12)
-                        Print teamName$
+                    I$ = GetKeyPress$
 
-                        Color 15, 0
-                        Color 14: Print Tab(6); "OPPONENT"; Tab(33); "WINNING PITCHER"; Tab(50); "LOSING PITCHER"; Tab(66); "INNINGS"
-                        Color 15
+                Case 2:
+                    '
 
-                    End If
+                Case 3, 4
+                    Call NewPrintStats(statFile$, teamName$, totalGames%, Selection%, splitScreenChoice%, menuExit)
 
+            End Select
+
+            If Selection% <> 3 And Selection% <> 4 Then
+
+                Color 15, 0
+                Cls
+
+                Call ViewStatSummary(statFile$, teamName$, totalGames%, Selection%, splitScreenChoice%, menuExit)
+
+                Color 15, 0
+
+                Cls
+                JJ = 1
+                Locate 6, 8
+                Color teamRatings%(11), teamRatings%(12)
+
+                'Print box top
+                Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+
+                'Print box sides
+                For II = 1 To JJ
+                    Locate 6 + II, 8
+                    Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
                 Next
 
-                If X = 1 Or X = 2 Then
+                'Print box bottom
+                Locate 7 + JJ, 8
+                Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+
+                Do
+                    Locate 7
+                    U$ = "DISPLAY STATS AGAIN (YN)"
+                    Locate , (80 - Len(U$)) / 2
+                    Print U$
                     I$ = GetKeyPress$
-                    Cls
-                End If
+                Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+                Color 15, 0
 
             End If
 
-            Call ViewStatSummary(statFile$, teamName$, totalGames%, X, splitScreenChoice%, menuExit)
+        Else
 
-            Color 15, 0
-
-            Cls
-            JJ = 1
-            Locate 6, 8
-            Color teamRatings%(11), teamRatings%(12)
-
-            'Print box top
-            Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
-
-            'Print box sides
-            For II = 1 To JJ
-                Locate 6 + II, 8
-                Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-            Next
-
-            'Print box bottom
-            Locate 7 + JJ, 8
-            Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
-
-            Do
-                Locate 7
-                U$ = "DISPLAY STATS AGAIN (YN)"
-                Locate , (80 - Len(U$)) / 2
-                Print U$
-                I$ = GetKeyPress$
-            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
-            Color 15, 0
+            menuExit% = 1
 
         End If
 
-    Loop Until UCase$(U$) = "N" Or prompt$ = Chr$(27)
-
-    If prompt$ = Chr$(27) Then menuExit = 1
+    Loop Until Selection% = 5 Or ExitCode% = 27
 
     'Call ResetStatPrompt (statFile$, teamRatings%())
 
@@ -461,13 +346,13 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
 
     Shared EW, EL, HW, HL
     Shared LTL, LTW, ORW, ORL
-    Shared RW, RL, Wins, L
+    Shared RW, RL, Wins, Losses
 
     Shared L2%, W2%
 
     Shared teamRatings%()
 
-    Shared statB$(), statP$(), statSS%()
+    Shared batterNames$(), pitcherNames$(), statSS%()
     Shared statT!(), statT1!()
 
     Shared statB%(), statB0%()
@@ -504,10 +389,8 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
     Color 14: Print "ONE RUN GAMES  ";
     Color 15: Print "("; ORW; " -"; ORL; ")"
 
-    If X = 1 Or X = 2 Then
-        I$ = GetKeyPress$
-        Cls
-    End If
+    I$ = GetKeyPress$
+    Cls
 
     Call TITLE_HEADER
 
@@ -530,13 +413,13 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
 
     For I = 0 To 22
 
-        If statB$(I) <> "XXX" And statB$(I) <> "" Then
+        If batterNames$(I) <> "XXX" And batterNames$(I) <> "" Then
 
             Locate I + 3, 1
             Color 7
             If I / 2 = Int(I / 2) Then Color 15
 
-            Print Left$(statB$(I), 10);
+            Print Left$(batterNames$(I), 10);
 
             Locate , 11: Print Using "###"; statB0%(I, 0);
             Locate , 15: Print Using "###"; statB0%(I, 2);
@@ -624,7 +507,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
     Next I
 
     Locate 1, 1
-    If X = 1 Or X = 2 Then I$ = GetKeyPress$
+    I$ = GetKeyPress$
 
     Cls
 
@@ -639,7 +522,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
 
     For I = 0 To 22
 
-        If statB$(I) <> "XXX" And statB$(I) <> "" Then
+        If batterNames$(I) <> "XXX" And batterNames$(I) <> "" Then
 
             Locate I + 3, 1
 
@@ -647,7 +530,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
 
             If I / 2 = Int(I / 2) Then Color 15
 
-            Print Left$(statB$(I), 10);
+            Print Left$(batterNames$(I), 10);
             Locate , 12: Print Using "###"; statB0%(I, 14);
             Locate , 18: Print Using "##"; statB0%(I, 12);
             Locate , 22: Print Using "##"; statB0%(I, 13);
@@ -694,7 +577,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
 
     Next I
 
-    If X = 1 Or X = 2 Then I$ = GetKeyPress$
+    I$ = GetKeyPress$
 
     Cls
 
@@ -709,13 +592,13 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
 
     For I = 0 To 21
 
-        If statP$(I) <> "XXX" And statP$(I) <> "" Then
+        If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
 
             Color 7, 0
 
             If I / 2 = Int(I / 2) Then Color 15
 
-            Locate I + 3, 1: Print Left$(statP$(I), 10);
+            Locate I + 3, 1: Print Left$(pitcherNames$(I), 10);
             Locate , 11: Print Using "###"; statP0%(I, 23);
             Locate , 15: Print Using "###"; statP0%(I, 25);
             Locate , 19: Print Using "###"; statP0%(I, 24);
@@ -786,7 +669,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
     Next I
 
     Locate 1, 1
-    If X = 1 Or X = 2 Then I$ = GetKeyPress$
+    I$ = GetKeyPress$
 
     Cls
 
@@ -802,7 +685,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
 
     For I = 0 To 21
 
-        If statP$(I) <> "XXX" And statP$(I) <> "" Then
+        If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
 
             Locate I + 3, 1
 
@@ -810,7 +693,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
 
             If I / 2 = Int(I / 2) Then Color 15
 
-            Print Left$(statP$(I), 10);
+            Print Left$(pitcherNames$(I), 10);
             Locate , 12: Print Using "###"; statP0%(I, 8);
             Locate , 18: Print Using "##"; statP0%(I, 35);
             Locate , 22: Print Using "##"; statP0%(I, 36);
@@ -831,7 +714,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
     Next I
 
     Locate 1, 1
-    If X = 1 Or X = 2 Then I$ = GetKeyPress$
+    I$ = GetKeyPress$
 
     Cls
 
@@ -861,7 +744,8 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
     Locate , 20: If statT!(11) = 0 Then Print "1.000";
     If statT!(11) <> 0 Then Print Using " .###"; (statT!(16) + statT!(17)) / (statT!(16) + statT!(17) + statT!(11));
     Print Using " ### ### ####"; statT!(18); statT!(19); statT!(12)
-    If X = 0 Or X = 1 Then I$ = GetKeyPress$
+
+    I$ = GetKeyPress$
 
     If splitScreenChoice% <> 0 Then
         ' DISPLAY SPLIT STATS
@@ -875,9 +759,9 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
 
         For I = 0 To 22
 
-            If statB$(I) <> "XXX" And Left$(statB$(I), 1) <> " " And statB$(I) <> "" Then
+            If batterNames$(I) <> "XXX" And Left$(batterNames$(I), 1) <> " " And batterNames$(I) <> "" Then
 
-                Print statB$(I);
+                Print batterNames$(I);
                 '                        AB   2B 3B HR BB  K
                 Locate , 20: Print Using "### ## ## ## ### ### "; statSS%(I, 0); statSS%(I, 2); statSS%(I, 3); statSS%(I, 4); statSS%(I, 5); statSS%(I, 6);
 
@@ -907,7 +791,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
             End If
         Next I
 
-        If X = 1 Or X = 2 Then I$ = GetKeyPress$
+        I$ = GetKeyPress$
 
     End If
 
@@ -925,10 +809,10 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
     Color 15
 
     For I = 0 To 21
-        If statP$(I) <> "XXX" And statP$(I) <> "" Then
+        If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
             Locate I + 3, 1
             Color 7, 0: If I / 2 = Int(I / 2) Then Color 15
-            Print Left$(statP$(I), 10);
+            Print Left$(pitcherNames$(I), 10);
             Locate , 12: Print Using "##"; statP0%(I, 6);
             Locate , 15: Print Using "##"; statP0%(I, 7);
             Locate , 18: Print Using "##"; statP0%(I, 12);
@@ -958,7 +842,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
 
     Next I
 
-    If X = 0 Or X = 1 Then I$ = GetKeyPress$
+    I$ = GetKeyPress$
 
     Cls
 
@@ -972,10 +856,10 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
     Print "PITCHERS   BS HL  RI  RS   SUP GS QS  SH SF"
 
     For I = 0 To 21
-        If statP$(I) <> "XXX" And statP$(I) <> "" Then
+        If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
             Locate I + 3, 1
             Color 7, 0: If I / 2 = Int(I / 2) Then Color 15
-            Print Left$(statP$(I), 10);: Locate , 12
+            Print Left$(pitcherNames$(I), 10);: Locate , 12
             Print Using "## ## ### ### "; statP0%(I, 19); statP0%(I, 22); statP0%(I, 17); statP0%(I, 18);
             If statP0%(I, 9) > 0 Then
                 Print Using "##.## ## ##"; statP0%(I, 20) / statP0%(I, 9); statP0%(I, 9); statP0%(I, 21);
@@ -988,7 +872,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
 
     Locate 1, 1
 
-    If X = 1 Or X = 2 Then I$ = GetKeyPress$
+    I$ = GetKeyPress$
 
     Cls
 
@@ -1014,11 +898,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
     Color 15, 4: Print " BS   RI   RS   SUP  QS  SH  SF": Color 14, 0
     Print Using "### #### #### ##.## ### ### ###"; statT1!(19); statT1!(17); statT1!(18); statT!(2) / statT1!(9); statT1!(21); statT1!(15); statT1!(16)
 
-    If X = 1 Or X = 2 Then I$ = GetKeyPress$
-
-    Print
-
-    If X = 2 Then X = 0
+    I$ = GetKeyPress$
 
 End Sub
 
@@ -1032,7 +912,7 @@ Sub ReportsAllTeams ()
     Dim H1$(40)
     Shared D0%, D1%, L2%, W2%
 
-    Shared statB$(), statP$()
+    Shared batterNames$(), pitcherNames$()
     Shared statT!(), statT1!()
     Shared statB%(), statB0%()
     Shared statP%(), statP0%()
@@ -1123,8 +1003,8 @@ Sub ReportsAllTeams ()
                         Input #1, teamName$
                         Input #1, W2%
                         Input #1, L2%
-                        For I = 0 To 22: Input #1, statB$(I): Input #1, statB%(I): Next I
-                        For I = 0 To 21: Input #1, statP$(I): Input #1, statP%(I): Next I
+                        For I = 0 To 22: Input #1, batterNames$(I): Input #1, statB%(I): Next I
+                        For I = 0 To 21: Input #1, pitcherNames$(I): Input #1, statP%(I): Next I
                         For I = 0 To 22: For I1 = 0 To 21: Input #1, statB0%(I, I1): Next I1: Next I
                         For I = 0 To 21: For I1 = 0 To 41: Input #1, statP0%(I, I1): Next I1: Next I
                         Input #1, D0%: Input #1, D1%
@@ -1161,9 +1041,9 @@ Sub NewPrintStats (statFile$, teamName$, totalGames%, printChoice, splitScreenCh
 
     Shared EW, EL, HW, HL
     Shared LTL, LTW, ORW, ORL
-    Shared RW, RL, Wins, L
+    Shared RW, RL, Wins, Losses
 
-    Shared statB$(), statP$()
+    Shared batterNames$(), pitcherNames$()
     Shared statT!(), statT1!()
     Shared statB%(), statB0%()
     Shared statP%(), statP0%()
@@ -1176,7 +1056,7 @@ Sub NewPrintStats (statFile$, teamName$, totalGames%, printChoice, splitScreenCh
     ' *** NEW PRINT ROUTINE 6-24-90 ***
     If printChoice <> 3 Then
         Wins = 0
-        L = 0
+        Losses = 0
         ORW = 0
         ORL = 0
         RW = 0
@@ -1200,7 +1080,7 @@ Sub NewPrintStats (statFile$, teamName$, totalGames%, printChoice, splitScreenCh
 
         LPrint
         LPrint
-        LPrint Tab(20); "RECORD         ("; Str$(Wins); " -"; Str$(L); " )"
+        LPrint Tab(20); "RECORD         ("; Str$(Wins); " -"; Str$(Losses); " )"
         LPrint Tab(20); "HOME RECORD    ("; Str$(HW); " -"; Str$(HL); " )"
         LPrint Tab(20); "ROAD RECORD    ("; Str$(RW); " -"; Str$(RL); " )"
         LPrint Tab(20); "LAST 10 GAMES  ("; Str$(LTW); " -"; Str$(LTL); " )"
@@ -1215,8 +1095,8 @@ Sub NewPrintStats (statFile$, teamName$, totalGames%, printChoice, splitScreenCh
 
     For I = 0 To 22
 
-        If statB$(I) <> "XXX" And statB$(I) <> "" Then
-            LPrint Left$(statB$(I), 10); Tab(12);: LPrint Using "###"; statB0%(I, 14);
+        If batterNames$(I) <> "XXX" And batterNames$(I) <> "" Then
+            LPrint Left$(batterNames$(I), 10); Tab(12);: LPrint Using "###"; statB0%(I, 14);
             LPrint Tab(16); Using "### ### ### ##"; statB0%(I, 0); statB0%(I, 2); statB0%(I, 1); statB0%(I, 4);
             LPrint Tab(31); Using "## ## ### ###"; statB0%(I, 5); statB0%(I, 6); statB0%(I, 3); statB0%(I, 7);
             LPrint Tab(45); Using "### ### ##"; statB0%(I, 8); statB0%(I, 9); statB0%(I, 10);
@@ -1329,8 +1209,8 @@ Sub NewPrintStats (statFile$, teamName$, totalGames%, printChoice, splitScreenCh
 
     For I = 0 To 21
 
-        If statP$(I) <> "XXX" And statP$(I) <> "" Then
-            LPrint Left$(statP$(I), 10); Tab(12);
+        If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
+            LPrint Left$(pitcherNames$(I), 10); Tab(12);
             LPrint Using "###"; statP0%(I, 8);
             LPrint Tab(16); Using "### ### ### ##"; statP0%(I, 23); statP0%(I, 25); statP0%(I, 24); statP0%(I, 27);
             LPrint Tab(31); Using "## ## ### ###"; statP0%(I, 28); statP0%(I, 29); statP0%(I, 26); statP0%(I, 30);
@@ -1456,7 +1336,7 @@ Sub NewPrintStats (statFile$, teamName$, totalGames%, printChoice, splitScreenCh
     LPrint " OPPONENTS";: LPrint Left$(UU$, 4)
     LPrint
     LPrint
-    LPrint Tab(20); "RECORD         ("; Str$(Wins); " -"; Str$(L); " )"
+    LPrint Tab(20); "RECORD         ("; Str$(Wins); " -"; Str$(Losses); " )"
     LPrint Tab(20); "HOME RECORD    ("; Str$(HW); " -"; Str$(HL); " )"
     LPrint Tab(20); "ROAD RECORD    ("; Str$(RW); " -"; Str$(RL); " )"
     LPrint Tab(20); "LAST 10 GAMES  ("; Str$(LTW); " -"; Str$(LTL); " )"
@@ -1468,8 +1348,8 @@ Sub NewPrintStats (statFile$, teamName$, totalGames%, printChoice, splitScreenCh
 
     For I = 0 To 21
 
-        If statP$(I) <> "XXX" And statP$(I) <> "" Then
-            LPrint Left$(statP$(I), 10);
+        If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
+            LPrint Left$(pitcherNames$(I), 10);
             LPrint Tab(12);: LPrint Using "##"; statP0%(I, 6);
             LPrint Tab(15);: LPrint Using "##"; statP0%(I, 7);
             LPrint Tab(18);: LPrint Using "##"; statP0%(I, 12);
@@ -1543,8 +1423,8 @@ Sub NewPrintStats (statFile$, teamName$, totalGames%, printChoice, splitScreenCh
     LPrint "CATCHERS    SBA   CS   CS%"
 
     For I = 0 To 22
-        If statB$(I) <> "XXX" And statB$(I) <> "" And statB0%(I, 21) + statB0%(I, 20) <> 0 Then
-            LPrint Left$(statB$(I), 10); Tab(12); Using "###   ##   ###"; statB0%(I, 20) + statB0%(I, 21); statB0%(I, 21); statB0%(I, 21) / (statB0%(I, 20) + statB0%(I, 21)) * 100
+        If batterNames$(I) <> "XXX" And batterNames$(I) <> "" And statB0%(I, 21) + statB0%(I, 20) <> 0 Then
+            LPrint Left$(batterNames$(I), 10); Tab(12); Using "###   ##   ###"; statB0%(I, 20) + statB0%(I, 21); statB0%(I, 21); statB0%(I, 21) / (statB0%(I, 20) + statB0%(I, 21)) * 100
         End If
     Next
 
@@ -1555,8 +1435,8 @@ Sub NewPrintStats (statFile$, teamName$, totalGames%, printChoice, splitScreenCh
 
         For I = 0 To 22
 
-            If statB$(I) <> "XXX" And Left$(statB$(I), 1) <> " " And statB$(I) <> "" Then
-                LPrint statB$(I);
+            If batterNames$(I) <> "XXX" And Left$(batterNames$(I), 1) <> " " And batterNames$(I) <> "" Then
+                LPrint batterNames$(I);
                 LPrint Tab(20); Using "### ## ## ## ### ### "; statSS%(I, 0); statSS%(I, 2); statSS%(I, 3); statSS%(I, 4); statSS%(I, 5); statSS%(I, 6);
 
                 If statSS%(I, 0) = 0 Or statSS%(I, 1) = 0 Then
@@ -1739,3 +1619,4 @@ Sub SelectTeam_LOOKY (numberTeams, yearNumber$)
     End If
 
 End Sub
+

@@ -3,7 +3,7 @@ Sub ALIGN ()
     _Title "Full Count Baseball - Align Stats"
 
     Shared BR$(), PR$()
-    Shared statB$(), statP$()
+    Shared batterNames$(), pitcherNames$()
 
     Shared B0R%(), BR%()
     Shared P0R%(), draftPR%()
@@ -25,28 +25,9 @@ Sub ALIGN ()
             Locate 16, 5: Print Space$(55)
             Color 11
 
-            Call GetDiskID_ALIGN(A$)
-
-            statB$ = A$
-
-            For XX = 4 To 11:
-                If Mid$(statB$, XX, 1) = " " Or Mid$(statB$, XX, 1) = "." Then Mid$(statB$, XX, 1) = "_"
-            Next XX
-
-            For XX = 12 To 14:
-                If Mid$(statB$, XX, 2) = "ST" Then Mid$(statB$, 9, 1) = "_": Mid$(statB$, 10, 2) = "ST"
-            Next XX
-
-            QQ = 8
-            For XX = 11 To 4 Step -1:
-                If Mid$(statB$, XX, 1) = "_" Then
-                    QQ = XX - 4
-                Else
-                    Exit For
-                End If
-            Next XX
-
-            statFile$ = Mid$(statB$, 4, QQ) + "." + Left$(statB$, 2)
+            'Call GetDiskID_ALIGN(A$)
+            Call ChooseTeam (YN$, NTMS, teamNbr, team$)
+            statFile$ = nameStatFile$(team$)
 
             Color 12, 0
             Cls
@@ -55,6 +36,7 @@ Sub ALIGN ()
             If _FileExists(pathRoadStats$ + statFile$) Then
 
                 Open pathRoadStats$ + statFile$ For Input As #1
+
                 Input #1, AR$
                 Input #1, W2R%
                 Input #1, L2R%
@@ -84,19 +66,26 @@ Sub ALIGN ()
                 Input #1, DR0%
                 Input #1, DR1%
 
-                For I = 0 To 21: Input #1, draftTR(I): Next I
-                For I = 0 To 22: Input #1, draftTR1(I): Next I
+                For I = 0 To 21: 
+                    Input #1, draftTR(I)
+                Next I
+                
+                For I = 0 To 22: 
+                    Input #1, draftTR1(I)
+                Next I
 
                 Close #1
 
                 If _FileExists(pathRoadStats$ + statFile$ + "R") Then
 
                     Open pathRoadStats$ + statFile$ + "R" For Input As #1
+
                     For I = 0 To 22
                         For I1 = 0 To 6
                             Input #1, S0R%(I, I1)
                         Next
                     Next
+
                     Close #1
 
                 End If
@@ -110,12 +99,12 @@ Sub ALIGN ()
                     Input #1, L2%
 
                     For I = 0 To 22:
-                        Input #1, statB$(I)
+                        Input #1, batterNames$(I)
                         Input #1, mergeB%(I)
                     Next I
 
                     For I = 0 To 21:
-                        Input #1, statP$(I)
+                        Input #1, pitcherNames$(I)
                         Input #1, statP%(I)
                     Next I
                     For I = 0 To 22:
@@ -133,19 +122,26 @@ Sub ALIGN ()
                     Input #1, D0%
                     Input #1, D1%
 
-                    For I = 0 To 21: Input #1, statT%(I): Next I
-                    For I = 0 To 22: Input #1, statT1%(I): Next I
+                    For I = 0 To 21: 
+                        Input #1, statT%(I)
+                    Next I
+
+                    For I = 0 To 22: 
+                        Input #1, statT1%(I)
+                    Next I
 
                     Close #1
 
                     If _FileExists(pathCurrentStats$ + statFile$ + "R") Then
 
                         Open pathCurrentStats$ + statFile$ + "R" For Input As #1
+
                         For I = 0 To 22
                             For I1 = 0 To 6
                                 Input #1, S0%(I, I1)
                             Next
                         Next
+
                         Close #1
 
                         Call AlignStats(pathRoadStats$, statFile$)
@@ -167,7 +163,9 @@ Sub ALIGN ()
             Else
 
                 Cls
-                Locate 2, 10: Color 7
+
+                Locate 2, 10
+                Color 7
                 Print "NON-EXISTANT PATH OR INCORRECT FILE NAME!!!!"
                 Print
                 Locate , 10
@@ -188,7 +186,7 @@ End Sub
 '...explanation...
 Sub AlignStats (pathRoadStats$, statFile$)
 
-    Shared statB$(), statP$()
+    Shared batterNames$(), pitcherNames$()
 
     Shared BN$(), PN$()
     Shared B0N%(), BN%()
@@ -210,7 +208,7 @@ Sub AlignStats (pathRoadStats$, statFile$)
 
     For I = 0 To 22:
         Color 12: Locate I + 1, 1: Print Using "##"; I;
-        Print " ";: Color 15: Print Left$(statB$(I), 10);
+        Print " ";: Color 15: Print Left$(batterNames$(I), 10);
         Color 12: Print Tab(17); Using "##"; I;
         Print " ";
         Color 7: Print Left$(BR$(I), 10);
@@ -218,16 +216,16 @@ Sub AlignStats (pathRoadStats$, statFile$)
 
     For I = 0 To 21:
         Color 12: Locate I + 1, 48: Print Using "##"; I;
-        Print " ";: Color 15: Print Left$(statP$(I), 10);
+        Print " ";: Color 15: Print Left$(pitcherNames$(I), 10);
         Color 12: Print Tab(62); Using "##"; I;
         Print " ";
         Color 7: Print Left$(PR$(I), 10);
     Next
 
     Color 11
-	Locate 22: Line Input "HIT ENTER TO ALIGN"; DUMMY$
+    Locate 24, 31: Line Input "HIT ENTER TO ALIGN"; DUMMY$
     Color 11
-	Locate 22: Print "ALIGNING FILES . . .             "
+    Locate 24, 30: Print "ALIGNING FILES . . ."
 
     N = 0
 
@@ -235,7 +233,7 @@ Sub AlignStats (pathRoadStats$, statFile$)
 
         For J = 0 To 22
 
-            If UCase$(statB$(N)) = UCase$(BR$(J)) Then
+            If UCase$(batterNames$(N)) = UCase$(BR$(J)) Then
                 BN$(N) = BR$(J)
                 BN%(N) = BR%(J)
 
@@ -260,7 +258,7 @@ Sub AlignStats (pathRoadStats$, statFile$)
     Do
         For J = 0 To 21
 
-            If UCase$(statP$(N)) = UCase$(PR$(J)) Then
+            If UCase$(pitcherNames$(N)) = UCase$(PR$(J)) Then
 
                 PN$(N) = PR$(J)
                 PN%(N) = draftPR%(J)
@@ -281,14 +279,14 @@ Sub AlignStats (pathRoadStats$, statFile$)
 
     'Check batters
     For J = 0 To 22
-        If UCase$(BN$(J)) <> UCase$(statB$(J)) Then
+        If UCase$(BN$(J)) <> UCase$(batterNames$(J)) Then
             SEQ = SEQ + 1
         End If
     Next J
 
     'Check pitchers
     For J = 0 To 21
-        If UCase$(PN$(J)) <> UCase$(statP$(J)) Then
+        If UCase$(PN$(J)) <> UCase$(pitcherNames$(J)) Then
             SEQ = SEQ + 1
         End If
     Next J
@@ -315,7 +313,7 @@ End Sub
 '...explanation...
 Sub ReviewAndSaveAlignment (pathRoadStats$, statFile$)
 
-    Shared statB$(), statP$()
+    Shared batterNames$(), pitcherNames$()
 
     Shared draftTR(), draftTR1()
 
@@ -333,22 +331,22 @@ Sub ReviewAndSaveAlignment (pathRoadStats$, statFile$)
 
     For I = 0 To 22:
         Color 12: Locate I + 1, 1: Print Using "##"; I;
-        Print " ";: Color 15: Print Left$(statB$(I), 10);
+        Print " ";: Color 15: Print Left$(batterNames$(I), 10);
         Color 12: Print Tab(17); Using "##"; I;: Print " ";
         Color 7: Print Left$(BN$(I), 10);
     Next
 
     For I = 0 To 21:
         Color 12: Locate I + 1, 48: Print Using "##"; I;
-        Print " ";: Color 15: Print Left$(statP$(I), 10);
+        Print " ";: Color 15: Print Left$(pitcherNames$(I), 10);
         Color 12: Print Tab(62); Using "##"; I;: Print " ";
         Color 7: Print Left$(PN$(I), 10);
     Next
 
     Color 11
-	Locate 22: Line Input "HIT ENTER TO ALIGN"; DUMMY$
+    Locate 24, 31: Line Input "HIT ENTER TO ALIGN"; DUMMY$
     Color 11
-	Locate 22: Print "ALIGNING FILES . . .             "
+    Locate 24, 30: Print "ALIGNING FILES . . ."
 
     Open pathRoadStats$ + statFile$ For Output As #1
 
@@ -532,10 +530,10 @@ Sub SelectTeam_ALIGN (numberTeams, yearNumber$)
     If ExitCode% <> 27 Then
 
         T1 = teamIndex%(Selection%)
-		teamYear$ = RTrim$(yearNumber$)
-				
+        teamYear$ = RTrim$(yearNumber$)
+                
         Locate 2, 33: Color 31
-		Print "LOADING..."
+        Print "LOADING..."
 
         If Not _FileExists(diskPaths$(0) + "FCTEAMS." + teamYear$) Then
             BO% = 1

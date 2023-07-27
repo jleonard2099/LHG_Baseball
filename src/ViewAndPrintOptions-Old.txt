@@ -1,0 +1,137 @@
+'----------------------------------------
+'     ViewAndPrintOptions Subroutine
+'----------------------------------------
+'...explanation...
+Sub ViewAndPrintOptions (statFile$, teamName$, totalGames%, menuExit)
+
+    Shared H%(), I%(), teamRatings%(), V%()
+
+    Shared statH$(), L$(), PL$(), W$()
+
+    Do
+
+        Cls
+        Print
+        Print
+
+        '-- Setup a box menu here; centered (similar to "STATS TO SCREEN / STATS TO PRINTER"
+        Color 14: Print "(0) ";: Color 15: Print "VIEW SCHEDULE AND STATS"
+        Print
+        Color 14: Print "(1) ";: Color 15: Print "VIEW STATS ONLY"
+        Print
+        Color 14: Print "(2) ";: Color 15: Print "PRINT SCHEDULE AND STATS"
+        Print
+        Color 14: Print "(3) ";: Color 15: Print "PRINT STATS ONLY"
+
+        Do
+            prompt$ = GetKeyPress$
+            X = Val(prompt$) + 1
+        Loop Until X >= 1 And X <= 4 Or prompt$ = Chr$(27)
+
+        If prompt$ <> Chr$(27) Then
+
+            If X = 3 Or X = 4 Then
+                Call NewPrintStats(statFile$, teamName$, totalGames%, X, splitScreenChoice%, menuExit)
+            End If
+
+            If X = 2 Then
+                Cls
+            Else
+                'X = 1
+                Color , 0
+                Cls
+
+                Color 12
+                header$ = "SCHEDULE RESULTS FOR " + teamName$
+                Xcoord = Len(header$)
+                Xcoord = Int((80 - Xcoord) / 2)
+                Locate 1, Xcoord
+
+                Print "SCHEDULE RESULTS FOR ";
+                Color teamRatings%(11), teamRatings%(12)
+                Print teamName$
+
+                Color 15, 0
+                Color 14: Print Tab(6); "OPPONENT"; Tab(33); "WINNING PITCHER"; Tab(50); "LOSING PITCHER"; Tab(66); "INNINGS"
+                Color 15
+
+                For I = 1 To totalGames%
+
+                    'W$() = Winning Pitcher
+                    'L$() = Losing Pitcher
+                    'I%() = Innings
+                    Print Str$(H%(I)); Tab(6); Left$(statH$(I), 15); Tab(22); Str$(V%(I)); Tab(27); "("; PL$(I); ")"; Tab(33); W$(I); Tab(50); L$(I); Tab(66); I%(I)
+
+                    If (I Mod 20 = 0) Then
+
+                        If X = 1 Or X = 2 Then
+                            I$ = GetKeyPress$
+                            Cls
+                        End If
+
+                        Cls
+
+                        Locate 1, Xcoord
+                        Color 12
+                        Print "SCHEDULE RESULTS FOR ";
+                        Color teamRatings%(11), teamRatings%(12)
+                        Print teamName$
+
+                        Color 15, 0
+                        Color 14: Print Tab(6); "OPPONENT"; Tab(33); "WINNING PITCHER"; Tab(50); "LOSING PITCHER"; Tab(66); "INNINGS"
+                        Color 15
+
+                    End If
+
+                Next
+
+                If X = 1 Or X = 2 Then
+                    I$ = GetKeyPress$
+                    Cls
+                End If
+
+            End If
+
+            Call ViewStatSummary(statFile$, teamName$, totalGames%, X, splitScreenChoice%, menuExit)
+
+            Color 15, 0
+
+            Cls
+            JJ = 1
+            Locate 6, 8
+            Color teamRatings%(11), teamRatings%(12)
+
+            'Print box top
+            Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+
+            'Print box sides
+            For II = 1 To JJ
+                Locate 6 + II, 8
+                Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
+            Next
+
+            'Print box bottom
+            Locate 7 + JJ, 8
+            Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+
+            Do
+                Locate 7
+                U$ = "DISPLAY STATS AGAIN (YN)"
+                Locate , (80 - Len(U$)) / 2
+                Print U$
+                I$ = GetKeyPress$
+            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+            Color 15, 0
+
+        End If
+
+    Loop Until UCase$(U$) = "N" Or prompt$ = Chr$(27)
+
+    If prompt$ = Chr$(27) Then menuExit = 1
+
+    'Call ResetStatPrompt (statFile$, teamRatings%())
+
+    Cls
+
+End Sub

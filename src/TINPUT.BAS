@@ -44,104 +44,66 @@ Sub TINPUT ()
 
                 Case 1:
 
-                    Call InputEditTeam(1, YN$, T$, T)
-
-                    'Read from stat file
-                    N$ = T$
-
-                    For xx = 4 To 11
-                        If Mid$(N$, xx, 1) = " " Or Mid$(N$, xx, 1) = "." Then Mid$(N$, xx, 1) = "_"
-                    Next xx
-
-                    QQ = 8
-
-                    For xx = 11 To 4 Step -1
-                        If Mid$(N$, xx, 1) = "_" Then
-                            QQ = xx - 4
-                        Else
-                            Exit For
-                        End If
-                    Next xx
-
-                    'This is needed to create the .D file
-                    'that goes with the team, which uses
-                    'the stat file naming format
-                    F$ = Mid$(N$, 4, QQ)
-
-                    Call SaveTeamFile(1, YN$, T$, F$, T)
+                    Call InputEditTeam(1, YN$, team$, teamNbr)
+                    statFile$ = nameStatFile$(team$)
+                    Call SaveTeamFile(1, YN$, team$, statFile$, teamNbr)
 
                 Case 2:
-                    Call GetTeam_BINPUT(T$, YN$, NTMS, T)
-                    Call InputEditTeam(2, YN$, T$, T)
-                    Call SaveTeamFile(0, YN$, T$, F$, T)
+
+                    Call ChooseTeam (YN$, NTMS, teamNbr, team$)
+
+                    If teamNbr <> 0 Then
+                        Call InputEditTeam(2, YN$, team$, teamNbr)
+                        statFile$ = nameStatFile$(team$)
+                        Call SaveTeamFile(0, YN$, team$, statFile$, teamNbr)
+                    End If
 
                 Case 3:
-                    Call GetTeam_BINPUT(T$, YN$, NTMS, T)
-                    Call PrintTeamStats(T$, T)
+
+                    Call ChooseTeam (YN$, NTMS, teamNbr, team$)
+
+                    If teamNbr <> 0 Then
+                        Call PrintTeamStats(team$, teamNbr)
+                    End If
 
                 Case 4:
                     Call UMPMGR
 
                 Case 5:
-                    Call GetTeam_BINPUT(T$, YN$, NTMS, T)
-                    Call SwapSpots(YN$, T$, T)
+
+                    Call ChooseTeam (YN$, NTMS, teamNbr, team$)
+
+                    If teamNbr <> 0 Then
+                        Call SwapSpots(YN$, team$, teamNbr)
+                    End If
 
                 Case 6:
-                    Call GetTeam_BINPUT(T$, YN$, NTMS, T)
-                    Call CalculateBuntRating(T$)
 
-                    'Read from stat file
-                    N$ = RTrim$(Q$(0))
+                    Call ChooseTeam (YN$, NTMS, teamNbr, team$)
 
-                    For xx = 4 To 11
-                        If Mid$(N$, xx, 1) = " " Or Mid$(N$, xx, 1) = "." Then Mid$(N$, xx, 1) = "_"
-                    Next xx
-
-                    QQ = 8
-
-                    For xx = 11 To 4 Step -1
-                        If Mid$(N$, xx, 1) = "_" Then
-                            QQ = xx - 4
-                        Else
-                            Exit For
-                        End If
-                    Next xx
-
-                    'This is needed to create the .D file
-                    'that goes with the team, which uses
-                    'the stat file naming format
-                    F$ = Mid$(N$, 4, QQ)
-
-                    Call SaveTeamFile(0, YN$, T$, F$, T)
+                    If teamNbr <> 0 Then
+                        statFile$ = nameStatFile$(team$)
+                        Call CalculateBuntRating(team$)
+                        Call SaveTeamFile(0, YN$, team$, statFile$, teamNbr)
+                    End If
 
                 Case 7:
-                    Call GetTeam_BINPUT(T$, YN$, NTMS, T)
-                    Call CalculateRunRating(T$)
 
-                    'Read from stat file
-                    N$ = T$
+                    Call ChooseTeam (YN$, NTMS, teamNbr, team$)
 
-                    For xx = 4 To 11
-                        If Mid$(N$, xx, 1) = " " Or Mid$(N$, xx, 1) = "." Then Mid$(N$, xx, 1) = "_"
-                    Next xx
-
-                    QQ = 8
-
-                    For xx = 11 To 4 Step -1
-                        If Mid$(N$, xx, 1) = "_" Then
-                            QQ = xx - 4
-                        Else
-                            Exit For
-                        End If
-                    Next xx
-
-                    F$ = Mid$(N$, 4, QQ)
-
-                    Call SaveTeamFile(0, YN$, T$, F$, T)
+                    If teamNbr <> 0 Then
+                        statFile$ = nameStatFile$(team$)
+                        Call CalculateRunRating(team$)
+                        Call SaveTeamFile(0, YN$, team$, statFile$, teamNbr)
+                    End If
 
                 Case 8:
-                    Call GetTeam_BINPUT(T$, YN$, NTMS, T)
-                    Call ViewRoster(T$)
+
+                    Call ChooseTeam (YN$, NTMS, teamNbr, team$)
+
+                    If teamNbr <> 0 Then
+                        Call ViewRoster(team$)
+                    End If
 
             End Select
 
@@ -166,8 +128,8 @@ Sub ViewRoster (targetTeam$)
 
     Shared teamRatings%(), TB%(), inputTP%()
 
-    Shared statB$(), statP$()
-    Shared teamBatters%(), teamPitchers%()
+    Shared batterNames$(), pitcherNames$()
+    Shared batterRatings(), pitcherRatings()
 
     For K = 0 To 15
         TB%(K) = 0
@@ -179,24 +141,24 @@ Sub ViewRoster (targetTeam$)
 
     For K = 4 To 18:
         For I = 0 To 22
-            If statB$(I) <> "XXX" Then
-                TB%(K - 3) = TB%(K - 3) + teamBatters%(I, K)
+            If batterNames$(I) <> "XXX" Then
+                TB%(K - 3) = TB%(K - 3) + batterRatings(I, K)
             End If
         Next
     Next
 
     For K = 4 To 18:
         For I = 0 To 21
-            If statP$(I) <> "XXX" And teamPitchers%(I, 11) = 999 Then
-                TB%(K - 3) = TB%(K - 3) + teamPitchers%(I, K + 16)
+            If pitcherNames$(I) <> "XXX" And pitcherRatings(I, 11) = 999 Then
+                TB%(K - 3) = TB%(K - 3) + pitcherRatings(I, K + 16)
             End If
         Next
     Next
 
     For K = 1 To 33:
         For I = 0 To 21
-            If statP$(I) <> "XXX" Then
-                inputTP%(K) = inputTP%(K) + teamPitchers%(I, K)
+            If pitcherNames$(I) <> "XXX" Then
+                inputTP%(K) = inputTP%(K) + pitcherRatings(I, K)
             End If
         Next
     Next
@@ -204,8 +166,8 @@ Sub ViewRoster (targetTeam$)
     ERX! = 0
 
     For I = 0 To 21
-        If statP$(I) <> "XXX" Then
-            ERX! = ERX! + ((teamPitchers%(I, 6) / 9) * (teamPitchers%(I, 10) / 100))
+        If pitcherNames$(I) <> "XXX" Then
+            ERX! = ERX! + ((pitcherRatings(I, 6) / 9) * (pitcherRatings(I, 10) / 100))
         End If
     Next
 
@@ -310,10 +272,10 @@ End Sub
 'inputAction% = 2: Edit Team
 Sub InputEditTeam (inputAction%, yearNumber$, targetTeam$, teamIdx)
 
-    Shared teamBatters%(), teamPitchers%()
-    Shared teamRatings%(), inputSA%(), inputTS%()
+    Shared batterRatings(), pitcherRatings()
+    Shared teamRatings%(), teamSA%(), teamTS%()
 
-    Shared statB$(), statP$()
+    Shared batterNames$(), pitcherNames$()
 
     Shared CK, parkHR
     Shared Manager$, teamAbbrev$, Stadium$
@@ -332,16 +294,16 @@ Sub InputEditTeam (inputAction%, yearNumber$, targetTeam$, teamIdx)
         parkHR = 0
 
         For X = 0 To 22
-            statB$(X) = ""
+            batterNames$(X) = ""
             For X1 = 0 To 41
-                teamBatters%(X, X1) = 0
+                batterRatings(X, X1) = 0
             Next
         Next
 
         For X = 0 To 21
-            statP$(X) = ""
+            pitcherNames$(X) = ""
             For X1 = 0 To 36
-                teamPitchers%(X, X1) = 0
+                pitcherRatings(X, X1) = 0
             Next
         Next
 
@@ -352,27 +314,30 @@ Sub InputEditTeam (inputAction%, yearNumber$, targetTeam$, teamIdx)
 
         For X = 0 To 22
             For X1 = 42 To 79
-                teamBatters%(X, X1) = 0
+                batterRatings(X, X1) = 0
             Next
         Next
 
         For X = 0 To 21
             For X1 = 37 To 88
-                teamPitchers%(X, X1) = 0
+                pitcherRatings(X, X1) = 0
             Next
         Next
 
         For X = 1 To 24
-            inputSA%(X) = 0
+            teamSA%(X) = 0
         Next
 
         For X = 0 To 11
-            inputTS%(X) = 0
+            teamTS%(X) = 0
         Next
+
     Else
+
         Stadium$ = RTrim$(Q$(1840))
         Manager$ = RTrim$(Q$(1841))
         teamAbbrev$ = RTrim$(Q$(1842))
+
     End If
 
     Call EditTeamInfo(yearNumber$, targetTeam$, teamIdx)
@@ -393,10 +358,10 @@ Sub SaveTeamFile (newID%, yearNumber$, targetTeam$, targetFile$, teamIdx)
     Shared Manager$, teamAbbrev$, Stadium$
 
     Shared inputDYS%(), inputINJ%()
-    Shared teamBatters%(), teamPitchers%()
-    Shared teamRatings%(), inputSA%(), inputTS%()
+    Shared batterRatings(), pitcherRatings()
+    Shared teamRatings%(), teamSA%(), teamTS%()
 
-    Shared statB$(), statP$()
+    Shared batterNames$(), pitcherNames$()
 
     Cls
 
@@ -439,16 +404,16 @@ Sub SaveTeamFile (newID%, yearNumber$, targetTeam$, targetFile$, teamIdx)
     LSet Q$(14) = MKS$(parkHR)
 
     For I = 0 To 22:
-        LSet Q$(I * 43 + 15) = statB$(I)
+        LSet Q$(I * 43 + 15) = batterNames$(I)
         For I1 = 0 To 41:
-            LSet Q$(I * 43 + I1 + 16) = MKI$(teamBatters%(I, I1))
+            LSet Q$(I * 43 + I1 + 16) = MKI$(batterRatings(I, I1))
         Next
     Next
 
     For I = 0 To 21:
-        LSet Q$(I * 38 + 1004) = statP$(I)
+        LSet Q$(I * 38 + 1004) = pitcherNames$(I)
         For I1 = 0 To 36:
-            LSet Q$(I * 38 + I1 + 1005) = MKI$(teamPitchers%(I, I1))
+            LSet Q$(I * 38 + I1 + 1005) = MKI$(pitcherRatings(I, I1))
         Next
     Next
 
@@ -464,13 +429,15 @@ Sub SaveTeamFile (newID%, yearNumber$, targetTeam$, targetFile$, teamIdx)
     SCK = 0
 
     For I = 1 To 24
-        SCK = SCK + inputSA%(I)
+        SCK = SCK + teamSA%(I)
     Next
 
     If SCK > 0 Then
-        inputTS%(0) = 999
+
+        teamTS%(0) = 999
+
         For I = 1 To 11
-            inputTS%(I) = -1
+            teamTS%(I) = -1
         Next
 
         Open diskPaths$(0) + "LR." + yearNumber$ For Random As #1 Len = 4108
@@ -514,40 +481,40 @@ Sub SaveTeamFile (newID%, yearNumber$, targetTeam$, targetFile$, teamIdx)
         Next
 
         For X = 0 To 11
-            LSet Q$(X + 1) = MKI$(inputTS%(X))
+            LSet Q$(X + 1) = MKI$(teamTS%(X))
         Next
 
         For X = 0 To 22
             For X1 = 1 To 14
-                LSet Q$(12 + X1 + X * 14) = MKI$(teamBatters%(X, X1 + 41))
+                LSet Q$(12 + X1 + X * 14) = MKI$(batterRatings(X, X1 + 41))
             Next
         Next
 
         For X = 0 To 21
             For X1 = 1 To 14
-                LSet Q$(334 + X1 + X * 14) = MKI$(teamPitchers%(X, X1 + 36))
+                LSet Q$(334 + X1 + X * 14) = MKI$(pitcherRatings(X, X1 + 36))
             Next
         Next
 
         For X = 0 To 21
             For X1 = 1 To 14
-                LSet Q$(642 + X1 + X * 14) = MKI$(teamPitchers%(X, X1 + 50))
+                LSet Q$(642 + X1 + X * 14) = MKI$(pitcherRatings(X, X1 + 50))
             Next
         Next
 
         For X = 1 To 24
-            LSet Q$(X + 950) = MKI$(inputSA%(X))
+            LSet Q$(X + 950) = MKI$(teamSA%(X))
         Next
 
         For X = 0 To 22
             For X1 = 1 To 24
-                LSet Q$(975 + X1 + X * 24) = MKI$(teamBatters%(X, X1 + 55))
+                LSet Q$(975 + X1 + X * 24) = MKI$(batterRatings(X, X1 + 55))
             Next
         Next
 
         For X = 0 To 21
             For X1 = 1 To 24
-                LSet Q$(1528 + X1 + X * 24) = MKI$(teamPitchers%(X, X1 + 64))
+                LSet Q$(1528 + X1 + X * 24) = MKI$(pitcherRatings(X, X1 + 64))
             Next
         Next
 
@@ -578,7 +545,7 @@ End Sub
 '...explanation...
 Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
 
-    Shared statB$(), BS$(), statP$(), PS$()
+    Shared batterNames$(), BS$(), pitcherNames$(), PS$()
     Shared statB0%(), statP0%(), statSS%()
     Shared statT!(), statT1!()
 
@@ -617,7 +584,7 @@ Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
         For I = 0 To 22
             Locate I + 3, 1
             Print Using "## "; I + 1;
-            Print statB$(I);
+            Print batterNames$(I);
         Next
 
         Color 14
@@ -627,7 +594,7 @@ Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
         For I = 0 To 21
             Locate I + 3, 25
             Print Using "## "; I + 1;
-            Print statP$(I);
+            Print pitcherNames$(I);
         Next
 
         Color 15
@@ -724,7 +691,7 @@ End Sub
 '       LoadTeam subroutine
 '----------------------------------------
 '...explanation...
-Sub LoadTeam (targetTeam$, teamHasStats, SS, targetFile$)
+Sub LoadTeam (targetTeam$, teamHasStats, SS, statFile$)
 
     Shared BS%(), PS%(), statSS%()
     Shared statB0%(), statP0%()
@@ -733,35 +700,16 @@ Sub LoadTeam (targetTeam$, teamHasStats, SS, targetFile$)
 
     Shared statT!(), statT1!()
 
-    statFile$ = targetTeam$
+    statFile$ = nameStatFile$(targetTeam$)
 
-    Cls
-
-    For xx = 4 To 11
-        If Mid$(statFile$, xx, 1) = " " Or Mid$(statFile$, xx, 1) = "." Then Mid$(statFile$, xx, 1) = "_"
-    Next
-
-    QQ = 8
-
-    For xx = 11 To 4 Step -1
-        If Mid$(statFile$, xx, 1) = "_" Then
-            QQ = xx - 4
-        Else
-            Exit For
-        End If
-    Next xx
-
-    fileName$ = Mid$(statFile$, 4, QQ)
-    targetFile$ = fileName$ + "." + Left$(statFile$, 2)
-
-    If Not _FileExists(diskPaths$(1) + targetFile$) Then
+    If Not _FileExists(diskPaths$(1) + statFile$) Then
         Locate 10, 8
         Call CSMsgBox("NO COMPILED STATS WERE FOUND... PRESS ANY KEY TO RETURN TO CONTINUE", 26, Pass)
         I$ = GetKeyPress$
         Call CSMsgBox("", 0, Pass)
     Else
 
-        Open diskPaths$(1) + targetFile$ For Input As #1
+        Open diskPaths$(1) + statFile$ For Input As #1
 
         Input #1, A$
         Input #1, W2%
@@ -802,7 +750,7 @@ Sub LoadTeam (targetTeam$, teamHasStats, SS, targetFile$)
 
         Close #1
 
-        If Not _FileExists(diskPaths$(1) + targetFile$ + "R") Then
+        If Not _FileExists(diskPaths$(1) + statFile$ + "R") Then
 
             SS = 0
 
@@ -810,7 +758,7 @@ Sub LoadTeam (targetTeam$, teamHasStats, SS, targetFile$)
 
             SS = 1
 
-            Open diskPaths$(1) + targetFile$ + "R" For Input As #1
+            Open diskPaths$(1) + statFile$ + "R" For Input As #1
 
             For I = 0 To 22
                 For I1 = 0 To 6
@@ -832,8 +780,8 @@ End Sub
 '...explanation...
 Sub SwitchBatters ()
 
-    Shared statB$(), BS$()
-    Shared BS%(), teamBatters%(), statB0%(), statSS%()
+    Shared batterNames$(), BS$()
+    Shared BS%(), batterRatings(), statB0%(), statSS%()
 
     Do
         For I = 16 To 19:
@@ -846,14 +794,14 @@ Sub SwitchBatters ()
             Input "BATTER #1 "; I1
         Loop Until I1 >= 1 And I1 <= 23
 
-        Locate 16, 62: Print statB$(I1 - 1)
+        Locate 16, 62: Print batterNames$(I1 - 1)
 
         Do
             Locate 17, 50
             Input "BATTER #2 "; I2
         Loop Until I2 >= 1 And I2 <= 23
 
-        Locate 17, 62: Print statB$(I2 - 1)
+        Locate 17, 62: Print batterNames$(I2 - 1)
 
         Do
             Locate 18, 50
@@ -863,12 +811,12 @@ Sub SwitchBatters ()
 
     Loop Until UCase$(I$) = "N"
 
-    Swap statB$(I1 - 1), statB$(I2 - 1)
+    Swap batterNames$(I1 - 1), batterNames$(I2 - 1)
 
     Swap BS$(I1 - 1), BS$(I2 - 1)
 
     For I = 0 To 79:
-        Swap teamBatters%(I1 - 1, I), teamBatters%(I2 - 1, I)
+        Swap batterRatings(I1 - 1, I), batterRatings(I2 - 1, I)
     Next
 
     For I = 0 To 21:
@@ -889,8 +837,8 @@ End Sub
 '...explanation...
 Sub SwitchPitchers ()
 
-    Shared teamPitchers%(), statP0%(), PS%()
-    Shared statP$(), PS$()
+    Shared pitcherRatings(), statP0%(), PS%()
+    Shared pitcherNames$(), PS$()
 
     Do
         For I = 16 To 19:
@@ -901,13 +849,13 @@ Sub SwitchPitchers ()
             Locate 16, 50: Input "PITCHER #1 "; I1
         Loop Until I1 >= 1 And I1 <= 22
 
-        Locate 16, 63: Print statP$(I1 - 1)
+        Locate 16, 63: Print pitcherNames$(I1 - 1)
 
         Do
             Locate 17, 50: Input "PITCHER #2 "; I2
         Loop Until I1 >= 1 And I1 <= 22
 
-        Locate 17, 63: Print statP$(I2 - 1)
+        Locate 17, 63: Print pitcherNames$(I2 - 1)
 
         Do
             Locate 18, 50
@@ -917,10 +865,10 @@ Sub SwitchPitchers ()
 
     Loop Until UCase$(I$) = "N"
 
-    Swap statP$(I1 - 1), statP$(I2 - 1): Swap PS$(I1 - 1), PS$(I2 - 1)
+    Swap pitcherNames$(I1 - 1), pitcherNames$(I2 - 1): Swap PS$(I1 - 1), PS$(I2 - 1)
 
     For I = 0 To 88:
-        Swap teamPitchers%(I1 - 1, I), teamPitchers%(I2 - 1, I)
+        Swap pitcherRatings(I1 - 1, I), pitcherRatings(I2 - 1, I)
     Next
 
     For I = 0 To 41:
@@ -937,9 +885,9 @@ End Sub
 '...explanation...
 Sub PrintTeamStats (targetTeam$, teamIdx)
 
-    Shared statB$(), BP$(), statP$()
+    Shared batterNames$(), BP$(), pitcherNames$()
 
-    Shared teamBatters%(), teamPitchers%(), teamRatings%()
+    Shared batterRatings(), pitcherRatings(), teamRatings%()
 
     Shared CK, parkHR
     Shared Manager$, teamAbbrev$, Stadium$
@@ -957,39 +905,39 @@ Sub PrintTeamStats (targetTeam$, teamIdx)
 
     For I = 0 To 22
 
-        If statB$(I) <> "" And statB$(I) <> "XXX" Then
+        If batterNames$(I) <> "" And batterNames$(I) <> "XXX" Then
 
-            LPrint Left$(statB$(I), 12); Tab(13);
+            LPrint Left$(batterNames$(I), 12); Tab(13);
 
-            If teamBatters%(I, 0) = 0 Then LPrint "S  ";
-            If teamBatters%(I, 0) = -1 Then LPrint "L  ";
-            If teamBatters%(I, 0) = 1 Then LPrint "R  ";
-            If teamBatters%(I, 0) = -2 Then LPrint "LP ";
-            If teamBatters%(I, 0) = 2 Then LPrint "RP ";
+            If batterRatings(I, 0) = 0 Then LPrint "S  ";
+            If batterRatings(I, 0) = -1 Then LPrint "L  ";
+            If batterRatings(I, 0) = 1 Then LPrint "R  ";
+            If batterRatings(I, 0) = -2 Then LPrint "LP ";
+            If batterRatings(I, 0) = 2 Then LPrint "RP ";
 
-            LPrint Using "### ### ### ### ## ## ## ### ### ### ### ##  "; teamBatters%(I, 3); teamBatters%(I, 4); teamBatters%(I, 5); teamBatters%(I, 6); teamBatters%(I, 7); teamBatters%(I, 8); teamBatters%(I, 9); teamBatters%(I, 10); teamBatters%(I, 11); teamBatters%(I, 12); teamBatters%(I, 13); teamBatters%(I, 14);
+            LPrint Using "### ### ### ### ## ## ## ### ### ### ### ##  "; batterRatings(I, 3); batterRatings(I, 4); batterRatings(I, 5); batterRatings(I, 6); batterRatings(I, 7); batterRatings(I, 8); batterRatings(I, 9); batterRatings(I, 10); batterRatings(I, 11); batterRatings(I, 12); batterRatings(I, 13); batterRatings(I, 14);
 
-            LPrint Using "# "; teamBatters%(I, 16);: LPrint Using "# "; teamBatters%(I, 30);
+            LPrint Using "# "; batterRatings(I, 16);: LPrint Using "# "; batterRatings(I, 30);
 
-            LPrint Using "## ## #### # # "; teamBatters%(I, 18); teamBatters%(I, 22); teamBatters%(I, 26); teamBatters%(I, 33); teamBatters%(I, 34);
+            LPrint Using "## ## #### # # "; batterRatings(I, 18); batterRatings(I, 22); batterRatings(I, 26); batterRatings(I, 33); batterRatings(I, 34);
 
-            If teamBatters%(I, 23) >= 0 Then
-                LPrint Using "## #### # # "; teamBatters%(I, 23); teamBatters%(I, 27); teamBatters%(I, 35); teamBatters%(I, 36);
+            If batterRatings(I, 23) >= 0 Then
+                LPrint Using "## #### # # "; batterRatings(I, 23); batterRatings(I, 27); batterRatings(I, 35); batterRatings(I, 36);
             End If
 
-            If teamBatters%(I, 24) >= 0 Then
-                LPrint Using "## #### # # "; teamBatters%(I, 24); teamBatters%(I, 28); teamBatters%(I, 37); teamBatters%(I, 38);
+            If batterRatings(I, 24) >= 0 Then
+                LPrint Using "## #### # # "; batterRatings(I, 24); batterRatings(I, 28); batterRatings(I, 37); batterRatings(I, 38);
             End If
 
-            If teamBatters%(I, 25) >= 0 Then
-                LPrint Using "## #### # # "; teamBatters%(I, 25); teamBatters%(I, 29); teamBatters%(I, 39); teamBatters%(I, 40);
+            If batterRatings(I, 25) >= 0 Then
+                LPrint Using "## #### # # "; batterRatings(I, 25); batterRatings(I, 29); batterRatings(I, 39); batterRatings(I, 40);
             End If
 
-            LPrint Tab(116); Using "### "; teamBatters%(I, 20);
+            LPrint Tab(116); Using "### "; batterRatings(I, 20);
 
-            If teamBatters%(I, 4) <> 0 Then
-                Z% = teamBatters%(I, 6) / teamBatters%(I, 4) * 1000
-                LPrint Using " ###"; teamBatters%(I, 6) / teamBatters%(I, 4) * 1000
+            If batterRatings(I, 4) <> 0 Then
+                Z% = batterRatings(I, 6) / batterRatings(I, 4) * 1000
+                LPrint Using " ###"; batterRatings(I, 6) / batterRatings(I, 4) * 1000
             Else
                 LPrint " 000"
             End If
@@ -999,19 +947,19 @@ Sub PrintTeamStats (targetTeam$, teamIdx)
     Next I
 
     For I = 0 To 21
-        If statP$(I) <> "" And statP$(I) <> "XXX" Then
+        If pitcherNames$(I) <> "" And pitcherNames$(I) <> "XXX" Then
 
-            LPrint Left$(statP$(I), 12); Tab(13);
+            LPrint Left$(pitcherNames$(I), 12); Tab(13);
 
-            If teamPitchers%(I, 0) = 1 Then LPrint "R  ";
-            If teamPitchers%(I, 0) = -1 Then LPrint "L  ";
+            If pitcherRatings(I, 0) = 1 Then LPrint "R  ";
+            If pitcherRatings(I, 0) = -1 Then LPrint "L  ";
 
-            LPrint Using "### ### ### ### ## ## ## ### ### ### ### ## "; teamPitchers%(I, 19); teamPitchers%(I, 20); teamPitchers%(I, 21); teamPitchers%(I, 22); teamPitchers%(I, 23); teamPitchers%(I, 24); teamPitchers%(I, 25); teamPitchers%(I, 26); teamPitchers%(I, 27); teamPitchers%(I, 28); teamPitchers%(I, 29); teamPitchers%(I, 30);
+            LPrint Using "### ### ### ### ## ## ## ### ### ### ### ## "; pitcherRatings(I, 19); pitcherRatings(I, 20); pitcherRatings(I, 21); pitcherRatings(I, 22); pitcherRatings(I, 23); pitcherRatings(I, 24); pitcherRatings(I, 25); pitcherRatings(I, 26); pitcherRatings(I, 27); pitcherRatings(I, 28); pitcherRatings(I, 29); pitcherRatings(I, 30);
 
-            LPrint Using " # # 52  1 ####                                         ### "; teamPitchers%(I, 31); teamPitchers%(I, 32); teamPitchers%(I, 17); teamPitchers%(I, 14);
+            LPrint Using " # # 52  1 ####                                         ### "; pitcherRatings(I, 31); pitcherRatings(I, 32); pitcherRatings(I, 17); pitcherRatings(I, 14);
 
-            If teamPitchers%(I, 20) <> 0 Then
-                Z% = teamPitchers%(I, 22) / teamPitchers%(I, 20) * 1000: LPrint Using " ###"; teamPitchers%(I, 22) / teamPitchers%(I, 20) * 1000
+            If pitcherRatings(I, 20) <> 0 Then
+                Z% = pitcherRatings(I, 22) / pitcherRatings(I, 20) * 1000: LPrint Using " ###"; pitcherRatings(I, 22) / pitcherRatings(I, 20) * 1000
             Else
                 LPrint " 000"
             End If
@@ -1025,14 +973,14 @@ Sub PrintTeamStats (targetTeam$, teamIdx)
     LPrint "PITCHER     T  W  L  SV G  GS CG IP  H   BB  SO  ERA  GA HRA HOLD EBA"
 
     For I = 0 To 21
-        If statP$(I) <> "" And statP$(I) <> "XXX" Then
+        If pitcherNames$(I) <> "" And pitcherNames$(I) <> "XXX" Then
 
-            LPrint Mid$(statP$(I), 1, 12); Tab(13);
+            LPrint Mid$(pitcherNames$(I), 1, 12); Tab(13);
 
-            If teamPitchers%(I, 0) = 1 Then LPrint "R  ";
-            If teamPitchers%(I, 0) = -1 Then LPrint "L  ";
+            If pitcherRatings(I, 0) = 1 Then LPrint "R  ";
+            If pitcherRatings(I, 0) = -1 Then LPrint "L  ";
 
-            LPrint Using "## ## ## ## ## ## ### ### ### ### #.## ## ##   #   ###"; teamPitchers%(I, 1); teamPitchers%(I, 2); teamPitchers%(I, 3); teamPitchers%(I, 4); teamPitchers%(I, 5); teamPitchers%(I, 16); teamPitchers%(I, 6); teamPitchers%(I, 7); teamPitchers%(I, 8); teamPitchers%(I, 9); teamPitchers%(I, 10) / 100; teamPitchers%(I, 12); teamPitchers%(I, 13); teamPitchers%(I, 18); teamPitchers%(I, 14)
+            LPrint Using "## ## ## ## ## ## ### ### ### ### #.## ## ##   #   ###"; pitcherRatings(I, 1); pitcherRatings(I, 2); pitcherRatings(I, 3); pitcherRatings(I, 4); pitcherRatings(I, 5); pitcherRatings(I, 16); pitcherRatings(I, 6); pitcherRatings(I, 7); pitcherRatings(I, 8); pitcherRatings(I, 9); pitcherRatings(I, 10) / 100; pitcherRatings(I, 12); pitcherRatings(I, 13); pitcherRatings(I, 18); pitcherRatings(I, 14)
         End If
 
     Next I
@@ -1047,35 +995,35 @@ End Sub
 '...explanation...
 Sub CalculateRunRating (teamName$)
 
-    Shared statB$(), statP$()
-    Shared teamBatters%(), teamPitchers%()
+    Shared batterNames$(), pitcherNames$()
+    Shared batterRatings(), pitcherRatings()
 
     Color 15, 0
     Cls
 
     For I = 0 To 22
 
-        If statB$(I) <> "" And statB$(I) <> "XXX" Then
+        If batterNames$(I) <> "" And batterNames$(I) <> "XXX" Then
 
-            SPD = 200 * teamBatters%(I, 8) + teamBatters%(I, 13) * 100
+            SPD = 200 * batterRatings(I, 8) + batterRatings(I, 13) * 100
 
-            If teamBatters%(I, 6) + teamBatters%(I, 11) - teamBatters%(I, 7) - teamBatters%(I, 8) - teamBatters%(I, 9) = 0 Then
+            If batterRatings(I, 6) + batterRatings(I, 11) - batterRatings(I, 7) - batterRatings(I, 8) - batterRatings(I, 9) = 0 Then
                 RR = Int(Rnd(1) * 15) + 1
             Else
-                RR = Int(SPD / (teamBatters%(I, 6) + teamBatters%(I, 11) - teamBatters%(I, 7) - teamBatters%(I, 8) - teamBatters%(I, 9)) + .5)
+                RR = Int(SPD / (batterRatings(I, 6) + batterRatings(I, 11) - batterRatings(I, 7) - batterRatings(I, 8) - batterRatings(I, 9)) + .5)
                 RR = RR * 1.4
             End If
 
-            If RR <= 3 Then teamBatters%(I, 16) = 1
-            If RR > 3 And RR <= 5 Then teamBatters%(I, 16) = 2
-            If RR > 5 And RR <= 10 Then teamBatters%(I, 16) = 3
-            If RR > 10 And RR <= 15 Then teamBatters%(I, 16) = 4
-            If RR > 15 And RR <= 20 Then teamBatters%(I, 16) = 5
-            If RR > 20 And RR <= 25 Then teamBatters%(I, 16) = 6
-            If RR > 25 And RR <= 30 Then teamBatters%(I, 16) = 7
-            If RR > 30 And RR <= 40 Then teamBatters%(I, 16) = 8
-            If RR > 40 Then teamBatters%(I, 16) = 9
-            Print statB$(I); Tab(20); teamBatters%(I, 16)
+            If RR <= 3 Then batterRatings(I, 16) = 1
+            If RR > 3 And RR <= 5 Then batterRatings(I, 16) = 2
+            If RR > 5 And RR <= 10 Then batterRatings(I, 16) = 3
+            If RR > 10 And RR <= 15 Then batterRatings(I, 16) = 4
+            If RR > 15 And RR <= 20 Then batterRatings(I, 16) = 5
+            If RR > 20 And RR <= 25 Then batterRatings(I, 16) = 6
+            If RR > 25 And RR <= 30 Then batterRatings(I, 16) = 7
+            If RR > 30 And RR <= 40 Then batterRatings(I, 16) = 8
+            If RR > 40 Then batterRatings(I, 16) = 9
+            Print batterNames$(I); Tab(20); batterRatings(I, 16)
 
         End If
 
@@ -1088,16 +1036,16 @@ Sub CalculateRunRating (teamName$)
 
     For I = 0 To 21
 
-        If statP$(I) <> "" And statP$(I) <> "XXX" Then
+        If pitcherNames$(I) <> "" And pitcherNames$(I) <> "XXX" Then
             RR = Int(Rnd(1) * 20) + 1
             RR = RR * 1.4
 
-            If RR <= 4 Then teamPitchers%(I, 31) = 1
-            If RR > 4 And RR <= 8 Then teamPitchers%(I, 31) = 2
-            If RR > 8 And RR <= 12 Then teamPitchers%(I, 31) = 3
-            If RR > 12 And RR <= 16 Then teamPitchers%(I, 31) = 4
-            If RR > 16 Then teamPitchers%(I, 31) = 5
-            Print statP$(I); Tab(20); teamPitchers%(I, 31)
+            If RR <= 4 Then pitcherRatings(I, 31) = 1
+            If RR > 4 And RR <= 8 Then pitcherRatings(I, 31) = 2
+            If RR > 8 And RR <= 12 Then pitcherRatings(I, 31) = 3
+            If RR > 12 And RR <= 16 Then pitcherRatings(I, 31) = 4
+            If RR > 16 Then pitcherRatings(I, 31) = 5
+            Print pitcherNames$(I); Tab(20); pitcherRatings(I, 31)
         End If
 
     Next
@@ -1118,27 +1066,27 @@ Sub CalculateBuntRating (teamName$)
     Dim R1!, R2!, RR!
     Dim SLG!, SLG2!
 
-    Shared teamBatters%(), teamPitchers%()
-    Shared statB$(), statP$()
+    Shared batterRatings(), pitcherRatings()
+    Shared batterNames$(), pitcherNames$()
 
     Color 15, 0
     Cls
 
     For I = 0 To 22
 
-        If statB$(I) <> "" And statB$(I) <> "XXX" Then
+        If batterNames$(I) <> "" And batterNames$(I) <> "XXX" Then
 
-            PA = teamBatters%(I, 11) + teamBatters%(I, 4)
+            PA = batterRatings(I, 11) + batterRatings(I, 4)
             If PA = 0 Then PA = 1
-            OB! = (teamBatters%(I, 6) * 100 + PA / 2) / PA
-            SLG! = (teamBatters%(I, 6) + teamBatters%(I, 7) + teamBatters%(I, 8) * 2 + teamBatters%(I, 9) * 3) * 100
+            OB! = (batterRatings(I, 6) * 100 + PA / 2) / PA
+            SLG! = (batterRatings(I, 6) + batterRatings(I, 7) + batterRatings(I, 8) * 2 + batterRatings(I, 9) * 3) * 100
             SLG2! = (SLG! + PA / 2) / PA
-            R1! = (teamBatters%(I, 12) * 100 + PA / 2) / PA
+            R1! = (batterRatings(I, 12) * 100 + PA / 2) / PA
             R1! = 11 - R1! ^ 2 / 25
             R2! = 11 - (SLG2! - OB!) / 25
             BUNT! = (R1! + R1! + R2!) / 3
 
-            B1! = teamBatters%(I, 15) * 1000 / PA
+            B1! = batterRatings(I, 15) * 1000 / PA
 
             Select Case B1!
                 Case Is <= 0: BR = 1
@@ -1158,12 +1106,12 @@ Sub CalculateBuntRating (teamName$)
             BUNT! = (BUNT! + BR) / 2
             If BUNT! < 1 Then BUNT! = 1
             If BUNT! > 9 Then BUNT! = 9
-            teamBatters%(I, 30) = Int(BUNT! + .5)
+            batterRatings(I, 30) = Int(BUNT! + .5)
 
             If I < 22 Then
-                Print statB$(I); Tab(20); teamBatters%(I, 30)
+                Print batterNames$(I); Tab(20); batterRatings(I, 30)
             Else
-                Print statB$(I); Tab(20); teamBatters%(I, 30);
+                Print batterNames$(I); Tab(20); batterRatings(I, 30);
             End If
 
         End If
@@ -1177,16 +1125,16 @@ Sub CalculateBuntRating (teamName$)
 
     For I = 0 To 21
 
-        If statP$(I) <> "" And statP$(I) <> "XXX" Then
+        If pitcherNames$(I) <> "" And pitcherNames$(I) <> "XXX" Then
 
-            PA = teamPitchers%(I, 20) + teamPitchers%(I, 27)
+            PA = pitcherRatings(I, 20) + pitcherRatings(I, 27)
             If PA = 0 Then PA = 1
 
-            OB! = (teamPitchers%(I, 22) * 100 + PA / 2) / PA
-            SLG! = (teamPitchers%(I, 22) + teamPitchers%(I, 23) + teamPitchers%(I, 24) * 2 + teamPitchers%(I, 25) * 3) * 100
+            OB! = (pitcherRatings(I, 22) * 100 + PA / 2) / PA
+            SLG! = (pitcherRatings(I, 22) + pitcherRatings(I, 23) + pitcherRatings(I, 24) * 2 + pitcherRatings(I, 25) * 3) * 100
             SLG2! = (SLG! + PA / 2) / PA
 
-            R1! = (teamPitchers%(I, 28) * 100 + PA / 2) / PA
+            R1! = (pitcherRatings(I, 28) * 100 + PA / 2) / PA
             R1! = 11 - R1! ^ 2 / 25
             If R1! < 1 Then R1! = 1
             If R1! > 10 Then R1! = 10
@@ -1196,7 +1144,7 @@ Sub CalculateBuntRating (teamName$)
             If R2! > 10 Then R2! = 10
 
             BUNT! = (R1! + R1! + R2!) / 3
-            B1! = teamPitchers%(I, 36) * 1000 / PA
+            B1! = pitcherRatings(I, 36) * 1000 / PA
 
             Select Case B1!
                 Case Is <= 0: BR = 1
@@ -1215,8 +1163,8 @@ Sub CalculateBuntRating (teamName$)
             BUNT! = (BUNT! + BR) / 2
             If BUNT! < 1 Then BUNT! = 1
             If BUNT! > 9 Then BUNT! = 9
-            teamPitchers%(I, 32) = Int(BUNT! + .5)
-            Print statP$(I); Tab(20); teamPitchers%(I, 32)
+            pitcherRatings(I, 32) = Int(BUNT! + .5)
+            Print pitcherNames$(I); Tab(20); pitcherRatings(I, 32)
 
         End If
 
@@ -1233,7 +1181,7 @@ End Sub
 '...explanation...
 Sub EditBatter ()
 
-    Shared statB$(), teamBatters%()
+    Shared batterNames$(), batterRatings()
 
     Shared inputINJ%()
 
@@ -1248,11 +1196,11 @@ Sub EditBatter ()
 
         For I = 0 To 10
             Locate I + 5, 5
-            Print Using "##"; I + 1;: Print " "; statB$(I); Tab(40);
-            Print Using "##"; I + 13;: Print " "; statB$(I + 12)
+            Print Using "##"; I + 1;: Print " "; batterNames$(I); Tab(40);
+            Print Using "##"; I + 13;: Print " "; batterNames$(I + 12)
         Next
 
-        Locate , 5: Print Using "##"; 12;: Print " "; statB$(11)
+        Locate , 5: Print Using "##"; 12;: Print " "; batterNames$(11)
 
         Print
 
@@ -1303,95 +1251,95 @@ Sub EditBatter ()
             BG = 7
             Color FG, BG
 
-            Locate 3, 7: QPrint PadRight$(statB$(I), 15), FG, BG, -1
-            If teamBatters%(I, 0) = 2 Then BATS$ = "RP"
-            If teamBatters%(I, 0) = -2 Then BATS$ = "LP"
-            If teamBatters%(I, 0) = 1 Then BATS$ = "R"
-            If teamBatters%(I, 0) = -1 Then BATS$ = "L"
-            If teamBatters%(I, 0) = 0 Then BATS$ = "S"
+            Locate 3, 7: QPrint PadRight$(batterNames$(I), 15), FG, BG, -1
+            If batterRatings(I, 0) = 2 Then BATS$ = "RP"
+            If batterRatings(I, 0) = -2 Then BATS$ = "LP"
+            If batterRatings(I, 0) = 1 Then BATS$ = "R"
+            If batterRatings(I, 0) = -1 Then BATS$ = "L"
+            If batterRatings(I, 0) = 0 Then BATS$ = "S"
 
             Locate 3, 30: QPrint PadRight$(BATS$, 2), FG, BG, -1
             ACT$ = "Y"
-            If teamBatters%(I, 31) = 1 Then ACT$ = "N"
+            If batterRatings(I, 31) = 1 Then ACT$ = "N"
 
             Locate 3, 44: Print ACT$
             Locate 3, 62: Print Using "###"; inputINJ%(I)
-            Locate 6, 12: Print Using "###"; teamBatters%(I, 3)
-            Locate 6, 17: Print Using "###"; teamBatters%(I, 4)
-            Locate 6, 22: Print Using "###"; teamBatters%(I, 5)
-            Locate 6, 27: Print Using "###"; teamBatters%(I, 6)
-            Locate 6, 32: Print Using "##"; teamBatters%(I, 7)
-            Locate 6, 36: Print Using "##"; teamBatters%(I, 8)
-            Locate 6, 40: Print Using "##"; teamBatters%(I, 9)
-            Locate 6, 44: Print Using "###"; teamBatters%(I, 10)
-            Locate 6, 49: Print Using "###"; teamBatters%(I, 11)
-            Locate 6, 54: Print Using "###"; teamBatters%(I, 12)
-            Locate 6, 59: Print Using "###"; teamBatters%(I, 13)
-            Locate 6, 64: Print Using "##"; teamBatters%(I, 14)
-            Locate 6, 68: Print Using "##"; teamBatters%(I, 15)
-            Locate 7, 17: Print Using "###"; teamBatters%(I, 42)
-            Locate 7, 27: Print Using "###"; teamBatters%(I, 43)
-            Locate 7, 32: Print Using "##"; teamBatters%(I, 44)
-            Locate 7, 36: Print Using "##"; teamBatters%(I, 45)
-            Locate 7, 40: Print Using "##"; teamBatters%(I, 46)
-            Locate 7, 49: Print Using "###"; teamBatters%(I, 47)
-            Locate 7, 54: Print Using "###"; teamBatters%(I, 48)
-            Locate 8, 17: Print Using "###"; teamBatters%(I, 49)
-            Locate 8, 27: Print Using "###"; teamBatters%(I, 50)
-            Locate 8, 32: Print Using "##"; teamBatters%(I, 51)
-            Locate 8, 36: Print Using "##"; teamBatters%(I, 52)
-            Locate 8, 40: Print Using "##"; teamBatters%(I, 53)
-            Locate 8, 49: Print Using "###"; teamBatters%(I, 54)
-            Locate 8, 54: Print Using "###"; teamBatters%(I, 55)
-            Locate 12, 31: Print Using "##"; teamBatters%(I, 22)
-            Locate 12, 36: Print Using "####"; teamBatters%(I, 26)
-            Locate 12, 43: Print Using "#"; teamBatters%(I, 33)
-            Locate 12, 47: Print Using "#"; teamBatters%(I, 34)
-            Locate 13, 31: Print Using "##"; teamBatters%(I, 23)
-            Locate 13, 36: Print Using "####"; teamBatters%(I, 27)
-            Locate 13, 43: Print Using "#"; teamBatters%(I, 35)
-            Locate 13, 47: Print Using "#"; teamBatters%(I, 36)
-            Locate 14, 31: Print Using "##"; teamBatters%(I, 24)
-            Locate 14, 36: Print Using "####"; teamBatters%(I, 28)
-            Locate 14, 43: Print Using "#"; teamBatters%(I, 37)
-            Locate 14, 47: Print Using "#"; teamBatters%(I, 38)
-            Locate 15, 31: Print Using "##"; teamBatters%(I, 25)
-            Locate 15, 36: Print Using "####"; teamBatters%(I, 29)
-            Locate 15, 43: Print Using "#"; teamBatters%(I, 39)
-            Locate 15, 47: Print Using "#"; teamBatters%(I, 40)
-            Locate 17, 23: Print Using "#"; teamBatters%(I, 16)
-            Locate 17, 39: Print Using "#"; teamBatters%(I, 30)
-            Locate 17, 49: Print Using "##"; teamBatters%(I, 18)
-            Locate 17, 67: Print Using "###"; teamBatters%(I, 20)
-            Locate 21, 27: Print Using "###"; teamBatters%(I, 56)
-            Locate 21, 32: Print Using "###"; teamBatters%(I, 57)
-            Locate 21, 37: Print Using "###"; teamBatters%(I, 58)
-            Locate 21, 42: Print Using "###"; teamBatters%(I, 59)
-            Locate 21, 47: Print Using "###"; teamBatters%(I, 60)
-            Locate 21, 52: Print Using "###"; teamBatters%(I, 61)
-            Locate 22, 27: Print Using "###"; teamBatters%(I, 62)
-            Locate 22, 32: Print Using "###"; teamBatters%(I, 63)
-            Locate 22, 37: Print Using "###"; teamBatters%(I, 64)
-            Locate 22, 42: Print Using "###"; teamBatters%(I, 65)
-            Locate 22, 47: Print Using "###"; teamBatters%(I, 66)
-            Locate 22, 52: Print Using "###"; teamBatters%(I, 67)
-            Locate 23, 27: Print Using "###"; teamBatters%(I, 68);
-            Locate 23, 32: Print Using "###"; teamBatters%(I, 69);
-            Locate 23, 37: Print Using "###"; teamBatters%(I, 70);
-            Locate 23, 42: Print Using "###"; teamBatters%(I, 71);
-            Locate 23, 47: Print Using "###"; teamBatters%(I, 72);
-            Locate 23, 52: Print Using "###"; teamBatters%(I, 73);
-            Locate 24, 27: Print Using "###"; teamBatters%(I, 74);
-            Locate 24, 32: Print Using "###"; teamBatters%(I, 75);
-            Locate 24, 37: Print Using "###"; teamBatters%(I, 76);
-            Locate 24, 42: Print Using "###"; teamBatters%(I, 77);
-            Locate 24, 47: Print Using "###"; teamBatters%(I, 78);
-            Locate 24, 52: Print Using "###"; teamBatters%(I, 79);
+            Locate 6, 12: Print Using "###"; batterRatings(I, 3)
+            Locate 6, 17: Print Using "###"; batterRatings(I, 4)
+            Locate 6, 22: Print Using "###"; batterRatings(I, 5)
+            Locate 6, 27: Print Using "###"; batterRatings(I, 6)
+            Locate 6, 32: Print Using "##"; batterRatings(I, 7)
+            Locate 6, 36: Print Using "##"; batterRatings(I, 8)
+            Locate 6, 40: Print Using "##"; batterRatings(I, 9)
+            Locate 6, 44: Print Using "###"; batterRatings(I, 10)
+            Locate 6, 49: Print Using "###"; batterRatings(I, 11)
+            Locate 6, 54: Print Using "###"; batterRatings(I, 12)
+            Locate 6, 59: Print Using "###"; batterRatings(I, 13)
+            Locate 6, 64: Print Using "##"; batterRatings(I, 14)
+            Locate 6, 68: Print Using "##"; batterRatings(I, 15)
+            Locate 7, 17: Print Using "###"; batterRatings(I, 42)
+            Locate 7, 27: Print Using "###"; batterRatings(I, 43)
+            Locate 7, 32: Print Using "##"; batterRatings(I, 44)
+            Locate 7, 36: Print Using "##"; batterRatings(I, 45)
+            Locate 7, 40: Print Using "##"; batterRatings(I, 46)
+            Locate 7, 49: Print Using "###"; batterRatings(I, 47)
+            Locate 7, 54: Print Using "###"; batterRatings(I, 48)
+            Locate 8, 17: Print Using "###"; batterRatings(I, 49)
+            Locate 8, 27: Print Using "###"; batterRatings(I, 50)
+            Locate 8, 32: Print Using "##"; batterRatings(I, 51)
+            Locate 8, 36: Print Using "##"; batterRatings(I, 52)
+            Locate 8, 40: Print Using "##"; batterRatings(I, 53)
+            Locate 8, 49: Print Using "###"; batterRatings(I, 54)
+            Locate 8, 54: Print Using "###"; batterRatings(I, 55)
+            Locate 12, 31: Print Using "##"; batterRatings(I, 22)
+            Locate 12, 36: Print Using "####"; batterRatings(I, 26)
+            Locate 12, 43: Print Using "#"; batterRatings(I, 33)
+            Locate 12, 47: Print Using "#"; batterRatings(I, 34)
+            Locate 13, 31: Print Using "##"; batterRatings(I, 23)
+            Locate 13, 36: Print Using "####"; batterRatings(I, 27)
+            Locate 13, 43: Print Using "#"; batterRatings(I, 35)
+            Locate 13, 47: Print Using "#"; batterRatings(I, 36)
+            Locate 14, 31: Print Using "##"; batterRatings(I, 24)
+            Locate 14, 36: Print Using "####"; batterRatings(I, 28)
+            Locate 14, 43: Print Using "#"; batterRatings(I, 37)
+            Locate 14, 47: Print Using "#"; batterRatings(I, 38)
+            Locate 15, 31: Print Using "##"; batterRatings(I, 25)
+            Locate 15, 36: Print Using "####"; batterRatings(I, 29)
+            Locate 15, 43: Print Using "#"; batterRatings(I, 39)
+            Locate 15, 47: Print Using "#"; batterRatings(I, 40)
+            Locate 17, 23: Print Using "#"; batterRatings(I, 16)
+            Locate 17, 39: Print Using "#"; batterRatings(I, 30)
+            Locate 17, 49: Print Using "##"; batterRatings(I, 18)
+            Locate 17, 67: Print Using "###"; batterRatings(I, 20)
+            Locate 21, 27: Print Using "###"; batterRatings(I, 56)
+            Locate 21, 32: Print Using "###"; batterRatings(I, 57)
+            Locate 21, 37: Print Using "###"; batterRatings(I, 58)
+            Locate 21, 42: Print Using "###"; batterRatings(I, 59)
+            Locate 21, 47: Print Using "###"; batterRatings(I, 60)
+            Locate 21, 52: Print Using "###"; batterRatings(I, 61)
+            Locate 22, 27: Print Using "###"; batterRatings(I, 62)
+            Locate 22, 32: Print Using "###"; batterRatings(I, 63)
+            Locate 22, 37: Print Using "###"; batterRatings(I, 64)
+            Locate 22, 42: Print Using "###"; batterRatings(I, 65)
+            Locate 22, 47: Print Using "###"; batterRatings(I, 66)
+            Locate 22, 52: Print Using "###"; batterRatings(I, 67)
+            Locate 23, 27: Print Using "###"; batterRatings(I, 68);
+            Locate 23, 32: Print Using "###"; batterRatings(I, 69);
+            Locate 23, 37: Print Using "###"; batterRatings(I, 70);
+            Locate 23, 42: Print Using "###"; batterRatings(I, 71);
+            Locate 23, 47: Print Using "###"; batterRatings(I, 72);
+            Locate 23, 52: Print Using "###"; batterRatings(I, 73);
+            Locate 24, 27: Print Using "###"; batterRatings(I, 74);
+            Locate 24, 32: Print Using "###"; batterRatings(I, 75);
+            Locate 24, 37: Print Using "###"; batterRatings(I, 76);
+            Locate 24, 42: Print Using "###"; batterRatings(I, 77);
+            Locate 24, 47: Print Using "###"; batterRatings(I, 78);
+            Locate 24, 52: Print Using "###"; batterRatings(I, 79);
 
             BName:
             Locate 3, 7
             Max = 15
-            Call TextIn(statB$(I), Max, NumOnly, CapsOn, XCode, FG, BG)
+            Call TextIn(batterNames$(I), Max, NumOnly, CapsOn, XCode, FG, BG)
             If XCode = 1 GoTo BName:
             If XCode = 2 GoTo bDone
 
@@ -1422,280 +1370,280 @@ Sub EditBatter ()
             BGAMES:
             Locate 6, 12
             Max = 3
-            draftB# = teamBatters%(I, 3)
+            draftB# = batterRatings(I, 3)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 3) = Int(draftB#)
-            Locate 6, 12: Print Using "###"; teamBatters%(I, 3)
+            batterRatings(I, 3) = Int(draftB#)
+            Locate 6, 12: Print Using "###"; batterRatings(I, 3)
             If XCode = 1 GoTo BINJ:
             If XCode = 2 GoTo bDone
 
             BAB:
             Locate 6, 17
             Max = 3
-            draftB# = teamBatters%(I, 4)
+            draftB# = batterRatings(I, 4)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 4) = Int(draftB#)
-            Locate 6, 17: Print Using "###"; teamBatters%(I, 4)
+            batterRatings(I, 4) = Int(draftB#)
+            Locate 6, 17: Print Using "###"; batterRatings(I, 4)
             If XCode = 1 GoTo BGAMES:
             If XCode = 2 GoTo bDone
 
             BR:
             Locate 6, 22
             Max = 3
-            draftB# = teamBatters%(I, 5)
+            draftB# = batterRatings(I, 5)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 5) = Int(draftB#)
-            Locate 6, 22: Print Using "###"; teamBatters%(I, 5)
+            batterRatings(I, 5) = Int(draftB#)
+            Locate 6, 22: Print Using "###"; batterRatings(I, 5)
             If XCode = 1 GoTo BAB:
             If XCode = 2 GoTo bDone
 
             BH:
             Locate 6, 27
             Max = 3
-            draftB# = teamBatters%(I, 6)
+            draftB# = batterRatings(I, 6)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 6) = Int(draftB#)
-            Locate 6, 27: Print Using "###"; teamBatters%(I, 6)
+            batterRatings(I, 6) = Int(draftB#)
+            Locate 6, 27: Print Using "###"; batterRatings(I, 6)
             If XCode = 1 GoTo BR:
             If XCode = 2 GoTo bDone
 
             B2B:
             Locate 6, 32
             Max = 2
-            draftB# = teamBatters%(I, 7)
+            draftB# = batterRatings(I, 7)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 7) = Int(draftB#)
-            Locate 6, 32: Print Using "##"; teamBatters%(I, 7)
+            batterRatings(I, 7) = Int(draftB#)
+            Locate 6, 32: Print Using "##"; batterRatings(I, 7)
             If XCode = 1 GoTo BH:
             If XCode = 2 GoTo bDone
 
             B3B:
             Locate 6, 36
             Max = 2
-            draftB# = teamBatters%(I, 8)
+            draftB# = batterRatings(I, 8)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 8) = Int(draftB#)
-            Locate 6, 36: Print Using "##"; teamBatters%(I, 8)
+            batterRatings(I, 8) = Int(draftB#)
+            Locate 6, 36: Print Using "##"; batterRatings(I, 8)
             If XCode = 1 GoTo B2B:
             If XCode = 2 GoTo bDone
 
             bHR:
             Locate 6, 40
             Max = 2
-            draftB# = teamBatters%(I, 9)
+            draftB# = batterRatings(I, 9)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 9) = Int(draftB#)
-            Locate 6, 40: Print Using "##"; teamBatters%(I, 9)
+            batterRatings(I, 9) = Int(draftB#)
+            Locate 6, 40: Print Using "##"; batterRatings(I, 9)
             If XCode = 1 GoTo B3B:
             If XCode = 2 GoTo bDone
 
             BRBI:
             Locate 6, 44
             Max = 3
-            draftB# = teamBatters%(I, 10)
+            draftB# = batterRatings(I, 10)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 10) = Int(draftB#)
-            Locate 6, 44: Print Using "###"; teamBatters%(I, 10)
+            batterRatings(I, 10) = Int(draftB#)
+            Locate 6, 44: Print Using "###"; batterRatings(I, 10)
             If XCode = 1 GoTo bHR:
             If XCode = 2 GoTo bDone
 
             bBB:
             Locate 6, 49
             Max = 3
-            draftB# = teamBatters%(I, 11)
+            draftB# = batterRatings(I, 11)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 11) = Int(draftB#)
-            Locate 6, 49: Print Using "###"; teamBatters%(I, 11)
+            batterRatings(I, 11) = Int(draftB#)
+            Locate 6, 49: Print Using "###"; batterRatings(I, 11)
             If XCode = 1 GoTo BRBI:
             If XCode = 2 GoTo bDone
 
             bKO:
             Locate 6, 54
             Max = 3
-            draftB# = teamBatters%(I, 12)
+            draftB# = batterRatings(I, 12)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 12) = Int(draftB#)
-            Locate 6, 54: Print Using "###"; teamBatters%(I, 12)
+            batterRatings(I, 12) = Int(draftB#)
+            Locate 6, 54: Print Using "###"; batterRatings(I, 12)
             If XCode = 1 GoTo bBB:
             If XCode = 2 GoTo bDone
 
             bSB:
             Locate 6, 59
             Max = 3
-            draftB# = teamBatters%(I, 13)
+            draftB# = batterRatings(I, 13)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 13) = Int(draftB#)
-            Locate 6, 59: Print Using "###"; teamBatters%(I, 13)
+            batterRatings(I, 13) = Int(draftB#)
+            Locate 6, 59: Print Using "###"; batterRatings(I, 13)
             If XCode = 1 GoTo bKO:
             If XCode = 2 GoTo bDone
 
             bCS:
             Locate 6, 64
             Max = 2
-            draftB# = teamBatters%(I, 14)
+            draftB# = batterRatings(I, 14)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 14) = Int(draftB#)
-            Locate 6, 64: Print Using "##"; teamBatters%(I, 14)
+            batterRatings(I, 14) = Int(draftB#)
+            Locate 6, 64: Print Using "##"; batterRatings(I, 14)
             If XCode = 1 GoTo bSB:
             If XCode = 2 GoTo bDone
 
             BSH:
             Locate 6, 68
             Max = 2
-            draftB# = teamBatters%(I, 15)
+            draftB# = batterRatings(I, 15)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 15) = Int(draftB#)
-            Locate 6, 68: Print Using "##"; teamBatters%(I, 15)
+            batterRatings(I, 15) = Int(draftB#)
+            Locate 6, 68: Print Using "##"; batterRatings(I, 15)
             If XCode = 1 GoTo bCS:
             If XCode = 2 GoTo bDone
 
             BLAB:
             Locate 7, 17
             Max = 3
-            draftB# = teamBatters%(I, 42)
+            draftB# = batterRatings(I, 42)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 42) = Int(draftB#)
-            Locate 7, 17: Print Using "###"; teamBatters%(I, 42)
+            batterRatings(I, 42) = Int(draftB#)
+            Locate 7, 17: Print Using "###"; batterRatings(I, 42)
             If XCode = 1 GoTo BSH:
             If XCode = 2 GoTo bDone
 
             BLH:
             Locate 7, 27
             Max = 3
-            draftB# = teamBatters%(I, 43)
+            draftB# = batterRatings(I, 43)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 43) = Int(draftB#)
-            Locate 7, 27: Print Using "###"; teamBatters%(I, 43)
+            batterRatings(I, 43) = Int(draftB#)
+            Locate 7, 27: Print Using "###"; batterRatings(I, 43)
             If XCode = 1 GoTo BLAB:
             If XCode = 2 GoTo bDone
 
             BL2B:
             Locate 7, 32
             Max = 2
-            draftB# = teamBatters%(I, 44)
+            draftB# = batterRatings(I, 44)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 44) = Int(draftB#)
-            Locate 7, 32: Print Using "##"; teamBatters%(I, 44)
+            batterRatings(I, 44) = Int(draftB#)
+            Locate 7, 32: Print Using "##"; batterRatings(I, 44)
             If XCode = 1 GoTo BLH:
             If XCode = 2 GoTo bDone
 
             BL3B:
             Locate 7, 36
             Max = 2
-            draftB# = teamBatters%(I, 45)
+            draftB# = batterRatings(I, 45)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 45) = Int(draftB#)
-            Locate 7, 36: Print Using "##"; teamBatters%(I, 45)
+            batterRatings(I, 45) = Int(draftB#)
+            Locate 7, 36: Print Using "##"; batterRatings(I, 45)
             If XCode = 1 GoTo BL2B:
             If XCode = 2 GoTo bDone
 
             BLHR:
             Locate 7, 40
             Max = 2
-            draftB# = teamBatters%(I, 46)
+            draftB# = batterRatings(I, 46)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 46) = Int(draftB#)
-            Locate 7, 40: Print Using "##"; teamBatters%(I, 46)
+            batterRatings(I, 46) = Int(draftB#)
+            Locate 7, 40: Print Using "##"; batterRatings(I, 46)
             If XCode = 1 GoTo BL3B:
             If XCode = 2 GoTo bDone
 
             bLBB:
             Locate 7, 49
             Max = 3
-            draftB# = teamBatters%(I, 47)
+            draftB# = batterRatings(I, 47)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 47) = Int(draftB#)
-            Locate 7, 49: Print Using "###"; teamBatters%(I, 47)
+            batterRatings(I, 47) = Int(draftB#)
+            Locate 7, 49: Print Using "###"; batterRatings(I, 47)
             If XCode = 1 GoTo BLHR:
             If XCode = 2 GoTo bDone
 
             BLKO:
             Locate 7, 54
             Max = 3
-            draftB# = teamBatters%(I, 48)
+            draftB# = batterRatings(I, 48)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 48) = Int(draftB#)
-            Locate 7, 54: Print Using "###"; teamBatters%(I, 48)
+            batterRatings(I, 48) = Int(draftB#)
+            Locate 7, 54: Print Using "###"; batterRatings(I, 48)
             If XCode = 1 GoTo bLBB:
             If XCode = 2 GoTo bDone
 
             BRAB:
             Locate 8, 17
             Max = 3
-            draftB# = teamBatters%(I, 49)
+            draftB# = batterRatings(I, 49)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 49) = Int(draftB#)
-            Locate 8, 17: Print Using "###"; teamBatters%(I, 49)
+            batterRatings(I, 49) = Int(draftB#)
+            Locate 8, 17: Print Using "###"; batterRatings(I, 49)
             If XCode = 1 GoTo BLKO:
             If XCode = 2 GoTo bDone
 
             BRH:
             Locate 8, 27
             Max = 3
-            draftB# = teamBatters%(I, 50)
+            draftB# = batterRatings(I, 50)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 50) = Int(draftB#)
-            Locate 8, 27: Print Using "###"; teamBatters%(I, 50)
+            batterRatings(I, 50) = Int(draftB#)
+            Locate 8, 27: Print Using "###"; batterRatings(I, 50)
             If XCode = 1 GoTo BRAB:
             If XCode = 2 GoTo bDone
 
             BR2B:
             Locate 8, 32
             Max = 2
-            draftB# = teamBatters%(I, 51)
+            draftB# = batterRatings(I, 51)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 51) = Int(draftB#)
-            Locate 8, 32: Print Using "##"; teamBatters%(I, 51)
+            batterRatings(I, 51) = Int(draftB#)
+            Locate 8, 32: Print Using "##"; batterRatings(I, 51)
             If XCode = 1 GoTo BRH:
             If XCode = 2 GoTo bDone
 
             BR3B:
             Locate 8, 36
             Max = 2
-            draftB# = teamBatters%(I, 52)
+            draftB# = batterRatings(I, 52)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 52) = Int(draftB#)
-            Locate 8, 36: Print Using "##"; teamBatters%(I, 52)
+            batterRatings(I, 52) = Int(draftB#)
+            Locate 8, 36: Print Using "##"; batterRatings(I, 52)
             If XCode = 1 GoTo BR2B:
             If XCode = 2 GoTo bDone
 
             BRHR:
             Locate 8, 40
             Max = 2
-            draftB# = teamBatters%(I, 53)
+            draftB# = batterRatings(I, 53)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 53) = Int(draftB#)
-            Locate 8, 40: Print Using "##"; teamBatters%(I, 53)
+            batterRatings(I, 53) = Int(draftB#)
+            Locate 8, 40: Print Using "##"; batterRatings(I, 53)
             If XCode = 1 GoTo BR3B:
             If XCode = 2 GoTo bDone
 
             bRBB:
             Locate 8, 49
             Max = 3
-            draftB# = teamBatters%(I, 54)
+            draftB# = batterRatings(I, 54)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 54) = Int(draftB#)
-            Locate 8, 49: Print Using "###"; teamBatters%(I, 54)
+            batterRatings(I, 54) = Int(draftB#)
+            Locate 8, 49: Print Using "###"; batterRatings(I, 54)
             If XCode = 1 GoTo BRHR:
             If XCode = 2 GoTo bDone
 
             BRKO:
             Locate 8, 54
             Max = 3
-            draftB# = teamBatters%(I, 55)
+            draftB# = batterRatings(I, 55)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 55) = Int(draftB#)
-            Locate 8, 54: Print Using "###"; teamBatters%(I, 55)
+            batterRatings(I, 55) = Int(draftB#)
+            Locate 8, 54: Print Using "###"; batterRatings(I, 55)
             If XCode = 1 GoTo bRBB:
             If XCode = 2 GoTo bDone
 
             BP1:
             Locate 12, 31
             Max = 2
-            draftB# = teamBatters%(I, 22)
+            draftB# = batterRatings(I, 22)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 22) = Int(draftB#)
-            Locate 12, 31: Print Using "##"; teamBatters%(I, 22)
+            batterRatings(I, 22) = Int(draftB#)
+            Locate 12, 31: Print Using "##"; batterRatings(I, 22)
             If XCode = 1 GoTo BRKO:
             If XCode = 2 GoTo bDone
 
@@ -1704,430 +1652,430 @@ Sub EditBatter ()
             BF1:
             Locate 12, 36
             Max = 4
-            draftB# = teamBatters%(I, 26)
+            draftB# = batterRatings(I, 26)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 26) = Int(draftB#)
-            Locate 12, 36: Print Using "####"; teamBatters%(I, 26)
+            batterRatings(I, 26) = Int(draftB#)
+            Locate 12, 36: Print Using "####"; batterRatings(I, 26)
             If XCode = 1 GoTo BP1:
             If XCode = 2 GoTo bDone
 
             bA1:
             Locate 12, 43
             Max = 1
-            draftB# = teamBatters%(I, 33)
+            draftB# = batterRatings(I, 33)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 33) = Int(draftB#)
-            Locate 12, 43: Print Using "#"; teamBatters%(I, 33)
+            batterRatings(I, 33) = Int(draftB#)
+            Locate 12, 43: Print Using "#"; batterRatings(I, 33)
             If XCode = 1 GoTo BF1:
             If XCode = 2 GoTo bDone
 
             BR1:
             Locate 12, 47
             Max = 1
-            draftB# = teamBatters%(I, 34)
+            draftB# = batterRatings(I, 34)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 34) = Int(draftB#)
-            Locate 12, 47: Print Using "#"; teamBatters%(I, 34)
+            batterRatings(I, 34) = Int(draftB#)
+            Locate 12, 47: Print Using "#"; batterRatings(I, 34)
             If XCode = 1 GoTo bA1:
             If XCode = 2 GoTo bDone
 
             BP2:
             Locate 13, 31
             Max = 2
-            draftB# = teamBatters%(I, 23)
+            draftB# = batterRatings(I, 23)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 23) = Int(draftB#)
-            Locate 13, 31: Print Using "##"; teamBatters%(I, 23)
+            batterRatings(I, 23) = Int(draftB#)
+            Locate 13, 31: Print Using "##"; batterRatings(I, 23)
             If XCode = 1 GoTo BR1:
             If XCode = 2 GoTo bDone
 
             BF2:
             Locate 13, 36
             Max = 4
-            draftB# = teamBatters%(I, 27)
+            draftB# = batterRatings(I, 27)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 27) = Int(draftB#)
-            Locate 13, 36: Print Using "####"; teamBatters%(I, 27)
+            batterRatings(I, 27) = Int(draftB#)
+            Locate 13, 36: Print Using "####"; batterRatings(I, 27)
             If XCode = 1 GoTo BP2:
             If XCode = 2 GoTo bDone
 
             bA2:
             Locate 13, 43
             Max = 1
-            draftB# = teamBatters%(I, 35)
+            draftB# = batterRatings(I, 35)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 35) = Int(draftB#)
-            Locate 13, 43: Print Using "#"; teamBatters%(I, 35)
+            batterRatings(I, 35) = Int(draftB#)
+            Locate 13, 43: Print Using "#"; batterRatings(I, 35)
             If XCode = 1 GoTo BF2:
             If XCode = 2 GoTo bDone
 
             BR2:
             Locate 13, 47
             Max = 1
-            draftB# = teamBatters%(I, 36)
+            draftB# = batterRatings(I, 36)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 36) = Int(draftB#)
-            Locate 13, 47: Print Using "#"; teamBatters%(I, 36)
+            batterRatings(I, 36) = Int(draftB#)
+            Locate 13, 47: Print Using "#"; batterRatings(I, 36)
             If XCode = 1 GoTo bA2:
             If XCode = 2 GoTo bDone
 
             BP3:
             Locate 14, 31
             Max = 2
-            draftB# = teamBatters%(I, 24)
+            draftB# = batterRatings(I, 24)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 24) = Int(draftB#)
-            Locate 14, 31: Print Using "##"; teamBatters%(I, 24)
+            batterRatings(I, 24) = Int(draftB#)
+            Locate 14, 31: Print Using "##"; batterRatings(I, 24)
             If XCode = 1 GoTo BR2:
             If XCode = 2 GoTo bDone
 
             BF3:
             Locate 14, 36
             Max = 4
-            draftB# = teamBatters%(I, 28)
+            draftB# = batterRatings(I, 28)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 28) = Int(draftB#)
-            Locate 14, 36: Print Using "####"; teamBatters%(I, 28)
+            batterRatings(I, 28) = Int(draftB#)
+            Locate 14, 36: Print Using "####"; batterRatings(I, 28)
             If XCode = 1 GoTo BP3:
             If XCode = 2 GoTo bDone
 
             bA3:
             Locate 14, 43
             Max = 1
-            draftB# = teamBatters%(I, 37)
+            draftB# = batterRatings(I, 37)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 37) = Int(draftB#)
-            Locate 14, 43: Print Using "#"; teamBatters%(I, 37)
+            batterRatings(I, 37) = Int(draftB#)
+            Locate 14, 43: Print Using "#"; batterRatings(I, 37)
             If XCode = 1 GoTo BF3:
             If XCode = 2 GoTo bDone
 
             BR3:
             Locate 14, 47
             Max = 1
-            draftB# = teamBatters%(I, 38)
+            draftB# = batterRatings(I, 38)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 38) = Int(draftB#)
-            Locate 14, 47: Print Using "#"; teamBatters%(I, 38)
+            batterRatings(I, 38) = Int(draftB#)
+            Locate 14, 47: Print Using "#"; batterRatings(I, 38)
             If XCode = 1 GoTo bA3:
             If XCode = 2 GoTo bDone
 
             BP4:
             Locate 15, 31
             Max = 2
-            draftB# = teamBatters%(I, 25)
+            draftB# = batterRatings(I, 25)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 25) = Int(draftB#)
-            Locate 15, 31: Print Using "##"; teamBatters%(I, 25)
+            batterRatings(I, 25) = Int(draftB#)
+            Locate 15, 31: Print Using "##"; batterRatings(I, 25)
             If XCode = 1 GoTo BR3:
             If XCode = 2 GoTo bDone
 
             BF4:
             Locate 15, 36
             Max = 4
-            draftB# = teamBatters%(I, 29)
+            draftB# = batterRatings(I, 29)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 29) = Int(draftB#)
-            Locate 15, 36: Print Using "####"; teamBatters%(I, 29)
+            batterRatings(I, 29) = Int(draftB#)
+            Locate 15, 36: Print Using "####"; batterRatings(I, 29)
             If XCode = 1 GoTo BP4:
             If XCode = 2 GoTo bDone
 
             bA4:
             Locate 15, 43
             Max = 1
-            draftB# = teamBatters%(I, 39)
+            draftB# = batterRatings(I, 39)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 39) = Int(draftB#)
-            Locate 15, 43: Print Using "#"; teamBatters%(I, 39)
+            batterRatings(I, 39) = Int(draftB#)
+            Locate 15, 43: Print Using "#"; batterRatings(I, 39)
             If XCode = 1 GoTo BF4:
             If XCode = 2 GoTo bDone
 
             bR4:
             Locate 15, 47
             Max = 1
-            draftB# = teamBatters%(I, 40)
+            draftB# = batterRatings(I, 40)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 40) = Int(draftB#)
-            Locate 15, 47: Print Using "#"; teamBatters%(I, 40)
+            batterRatings(I, 40) = Int(draftB#)
+            Locate 15, 47: Print Using "#"; batterRatings(I, 40)
             If XCode = 1 GoTo bA4:
             If XCode = 2 GoTo bDone
 
             bRUN:
             Locate 17, 23
             Max = 1
-            draftB# = teamBatters%(I, 16)
+            draftB# = batterRatings(I, 16)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 16) = Int(draftB#)
-            Locate 17, 23: Print Using "#"; teamBatters%(I, 16)
+            batterRatings(I, 16) = Int(draftB#)
+            Locate 17, 23: Print Using "#"; batterRatings(I, 16)
             If XCode = 1 GoTo bR4:
             If XCode = 2 GoTo bDone
 
             bBUNT:
             Locate 17, 39
             Max = 1
-            draftB# = teamBatters%(I, 30)
+            draftB# = batterRatings(I, 30)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 30) = Int(draftB#)
-            Locate 17, 39: Print Using "#"; teamBatters%(I, 30)
+            batterRatings(I, 30) = Int(draftB#)
+            Locate 17, 39: Print Using "#"; batterRatings(I, 30)
             If XCode = 1 GoTo bRUN:
             If XCode = 2 GoTo bDone
 
             bGA:
             Locate 17, 49
             Max = 2
-            draftB# = teamBatters%(I, 18)
+            draftB# = batterRatings(I, 18)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 18) = Int(draftB#)
-            Locate 17, 49: Print Using "##"; teamBatters%(I, 18)
+            batterRatings(I, 18) = Int(draftB#)
+            Locate 17, 49: Print Using "##"; batterRatings(I, 18)
             If XCode = 1 GoTo bBUNT:
             If XCode = 2 GoTo bDone
 
             bLA:
             Locate 17, 67
             Max = 3
-            draftB# = teamBatters%(I, 29)
+            draftB# = batterRatings(I, 29)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 20) = Int(draftB#)
-            Locate 17, 67: Print Using "###"; teamBatters%(I, 20)
+            batterRatings(I, 20) = Int(draftB#)
+            Locate 17, 67: Print Using "###"; batterRatings(I, 20)
             If XCode = 1 GoTo bGA:
             If XCode = 2 GoTo bDone
 
             bLLBA:
             Locate 21, 27
             Max = 3
-            draftB# = teamBatters%(I, 56)
+            draftB# = batterRatings(I, 56)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 56) = Int(draftB#)
-            Locate 22, 27: Print Using "###"; teamBatters%(I, 56)
+            batterRatings(I, 56) = Int(draftB#)
+            Locate 22, 27: Print Using "###"; batterRatings(I, 56)
             If XCode = 1 GoTo bLA:
             If XCode = 2 GoTo bDone
 
             bLL2B:
             Locate 21, 32
             Max = 3
-            draftB# = teamBatters%(I, 57)
+            draftB# = batterRatings(I, 57)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 57) = Int(draftB#)
-            Locate 22, 32: Print Using "###"; teamBatters%(I, 57)
+            batterRatings(I, 57) = Int(draftB#)
+            Locate 22, 32: Print Using "###"; batterRatings(I, 57)
             If XCode = 1 GoTo bLLBA:
             If XCode = 2 GoTo bDone
 
             bLL3B:
             Locate 21, 37
             Max = 3
-            draftB# = teamBatters%(I, 58)
+            draftB# = batterRatings(I, 58)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 58) = Int(draftB#)
-            Locate 22, 37: Print Using "###"; teamBatters%(I, 58)
+            batterRatings(I, 58) = Int(draftB#)
+            Locate 22, 37: Print Using "###"; batterRatings(I, 58)
             If XCode = 1 GoTo bLL2B:
             If XCode = 2 GoTo bDone
 
             bLLHR:
             Locate 21, 42
             Max = 3
-            draftB# = teamBatters%(I, 59)
+            draftB# = batterRatings(I, 59)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 59) = Int(draftB#)
-            Locate 22, 42: Print Using "###"; teamBatters%(I, 59)
+            batterRatings(I, 59) = Int(draftB#)
+            Locate 22, 42: Print Using "###"; batterRatings(I, 59)
             If XCode = 1 GoTo bLL3B:
             If XCode = 2 GoTo bDone
 
             bLLBB:
             Locate 21, 47
             Max = 3
-            draftB# = teamBatters%(I, 60)
+            draftB# = batterRatings(I, 60)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 60) = Int(draftB#)
-            Locate 22, 47: Print Using "###"; teamBatters%(I, 60)
+            batterRatings(I, 60) = Int(draftB#)
+            Locate 22, 47: Print Using "###"; batterRatings(I, 60)
             If XCode = 1 GoTo bLLHR:
             If XCode = 2 GoTo bDone
 
             bLLKO:
             Locate 21, 52
             Max = 3
-            draftB# = teamBatters%(I, 61)
+            draftB# = batterRatings(I, 61)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 61) = Int(draftB#)
-            Locate 22, 52: Print Using "###"; teamBatters%(I, 61)
+            batterRatings(I, 61) = Int(draftB#)
+            Locate 22, 52: Print Using "###"; batterRatings(I, 61)
             If XCode = 1 GoTo bLLBB:
             If XCode = 2 GoTo bDone
 
             bLRBA:
             Locate 22, 27
             Max = 3
-            draftB# = teamBatters%(I, 62)
+            draftB# = batterRatings(I, 62)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 62) = Int(draftB#)
-            Locate 23, 27: Print Using "###"; teamBatters%(I, 62)
+            batterRatings(I, 62) = Int(draftB#)
+            Locate 23, 27: Print Using "###"; batterRatings(I, 62)
             If XCode = 1 GoTo bLLKO:
             If XCode = 2 GoTo bDone
 
             bLR2B:
             Locate 22, 32
             Max = 3
-            draftB# = teamBatters%(I, 63)
+            draftB# = batterRatings(I, 63)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 63) = Int(draftB#)
-            Locate 23, 32: Print Using "###"; teamBatters%(I, 63)
+            batterRatings(I, 63) = Int(draftB#)
+            Locate 23, 32: Print Using "###"; batterRatings(I, 63)
             If XCode = 1 GoTo bLRBA:
             If XCode = 2 GoTo bDone
 
             bLR3B:
             Locate 22, 37
             Max = 3
-            draftB# = teamBatters%(I, 64)
+            draftB# = batterRatings(I, 64)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 64) = Int(draftB#)
-            Locate 23, 37: Print Using "###"; teamBatters%(I, 64)
+            batterRatings(I, 64) = Int(draftB#)
+            Locate 23, 37: Print Using "###"; batterRatings(I, 64)
             If XCode = 1 GoTo bLR2B:
             If XCode = 2 GoTo bDone
 
             bLRHR:
             Locate 22, 42
             Max = 3
-            draftB# = teamBatters%(I, 65)
+            draftB# = batterRatings(I, 65)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 65) = Int(draftB#)
-            Locate 23, 42: Print Using "###"; teamBatters%(I, 65)
+            batterRatings(I, 65) = Int(draftB#)
+            Locate 23, 42: Print Using "###"; batterRatings(I, 65)
             If XCode = 1 GoTo bLR3B:
             If XCode = 2 GoTo bDone
 
             bLRBB:
             Locate 22, 47
             Max = 3
-            draftB# = teamBatters%(I, 66)
+            draftB# = batterRatings(I, 66)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 66) = Int(draftB#)
-            Locate 23, 47: Print Using "###"; teamBatters%(I, 66)
+            batterRatings(I, 66) = Int(draftB#)
+            Locate 23, 47: Print Using "###"; batterRatings(I, 66)
             If XCode = 1 GoTo bLRHR:
             If XCode = 2 GoTo bDone
 
             bLRKO:
             Locate 22, 52
             Max = 3
-            draftB# = teamBatters%(I, 67)
+            draftB# = batterRatings(I, 67)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 67) = Int(draftB#)
-            Locate 23, 52: Print Using "###"; teamBatters%(I, 67)
+            batterRatings(I, 67) = Int(draftB#)
+            Locate 23, 52: Print Using "###"; batterRatings(I, 67)
             If XCode = 1 GoTo bLRBB:
             If XCode = 2 GoTo bDone
 
             bRLBA:
             Locate 23, 27
             Max = 3
-            draftB# = teamBatters%(I, 68)
+            draftB# = batterRatings(I, 68)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 68) = Int(draftB#)
-            Locate 24, 27: Print Using "###"; teamBatters%(I, 68);
+            batterRatings(I, 68) = Int(draftB#)
+            Locate 24, 27: Print Using "###"; batterRatings(I, 68);
             If XCode = 1 GoTo bLRKO:
             If XCode = 2 GoTo bDone
 
             bRL2B:
             Locate 23, 32
             Max = 3
-            draftB# = teamBatters%(I, 69)
+            draftB# = batterRatings(I, 69)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 69) = Int(draftB#)
-            Locate 24, 32: Print Using "###"; teamBatters%(I, 69);
+            batterRatings(I, 69) = Int(draftB#)
+            Locate 24, 32: Print Using "###"; batterRatings(I, 69);
             If XCode = 1 GoTo bRLBA:
             If XCode = 2 GoTo bDone
 
             bRL3B:
             Locate 23, 37
             Max = 3
-            draftB# = teamBatters%(I, 70)
+            draftB# = batterRatings(I, 70)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 70) = Int(draftB#)
-            Locate 24, 37: Print Using "###"; teamBatters%(I, 70);
+            batterRatings(I, 70) = Int(draftB#)
+            Locate 24, 37: Print Using "###"; batterRatings(I, 70);
             If XCode = 1 GoTo bRL2B:
             If XCode = 2 GoTo bDone
 
             bRLHR:
             Locate 23, 42
             Max = 3
-            draftB# = teamBatters%(I, 71)
+            draftB# = batterRatings(I, 71)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 71) = Int(draftB#)
-            Locate 24, 42: Print Using "###"; teamBatters%(I, 71);
+            batterRatings(I, 71) = Int(draftB#)
+            Locate 24, 42: Print Using "###"; batterRatings(I, 71);
             If XCode = 1 GoTo bRL3B:
             If XCode = 2 GoTo bDone
 
             bRLBB:
             Locate 23, 47
             Max = 3
-            draftB# = teamBatters%(I, 72)
+            draftB# = batterRatings(I, 72)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 72) = Int(draftB#)
-            Locate 24, 47: Print Using "###"; teamBatters%(I, 72);
+            batterRatings(I, 72) = Int(draftB#)
+            Locate 24, 47: Print Using "###"; batterRatings(I, 72);
             If XCode = 1 GoTo bRLHR:
             If XCode = 2 GoTo bDone
 
             bRLKO:
             Locate 23, 52
             Max = 3
-            draftB# = teamBatters%(I, 73)
+            draftB# = batterRatings(I, 73)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 73) = Int(draftB#)
-            Locate 24, 52: Print Using "###"; teamBatters%(I, 73);
+            batterRatings(I, 73) = Int(draftB#)
+            Locate 24, 52: Print Using "###"; batterRatings(I, 73);
             If XCode = 1 GoTo bRLBB:
             If XCode = 2 GoTo bDone
 
             bRRBA:
             Locate 24, 27
             Max = 3
-            draftB# = teamBatters%(I, 74)
+            draftB# = batterRatings(I, 74)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 74) = Int(draftB#)
-            Locate 25, 27: Print Using "###"; teamBatters%(I, 74);
+            batterRatings(I, 74) = Int(draftB#)
+            Locate 25, 27: Print Using "###"; batterRatings(I, 74);
             If XCode = 1 GoTo bRLKO:
             If XCode = 2 GoTo bDone
 
             bRR2B:
             Locate 24, 32
             Max = 3
-            draftB# = teamBatters%(I, 75)
+            draftB# = batterRatings(I, 75)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 75) = Int(draftB#)
-            Locate 25, 32: Print Using "###"; teamBatters%(I, 75);
+            batterRatings(I, 75) = Int(draftB#)
+            Locate 25, 32: Print Using "###"; batterRatings(I, 75);
             If XCode = 1 GoTo bRRBA:
             If XCode = 2 GoTo bDone
 
             bRR3B:
             Locate 24, 37
             Max = 3
-            draftB# = teamBatters%(I, 76)
+            draftB# = batterRatings(I, 76)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 76) = Int(draftB#)
-            Locate 25, 37: Print Using "###"; teamBatters%(I, 76);
+            batterRatings(I, 76) = Int(draftB#)
+            Locate 25, 37: Print Using "###"; batterRatings(I, 76);
             If XCode = 1 GoTo bRR2B:
             If XCode = 2 GoTo bDone
 
             bRRHR:
             Locate 24, 42
             Max = 3
-            draftB# = teamBatters%(I, 77)
+            draftB# = batterRatings(I, 77)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 77) = Int(draftB#)
-            Locate 25, 42: Print Using "###"; teamBatters%(I, 77);
+            batterRatings(I, 77) = Int(draftB#)
+            Locate 25, 42: Print Using "###"; batterRatings(I, 77);
             If XCode = 1 GoTo bRR3B:
             If XCode = 2 GoTo bDone
 
             bRRBB:
             Locate 24, 47
             Max = 3
-            draftB# = teamBatters%(I, 78)
+            draftB# = batterRatings(I, 78)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 78) = Int(draftB#)
-            Locate 25, 47: Print Using "###"; teamBatters%(I, 78);
+            batterRatings(I, 78) = Int(draftB#)
+            Locate 25, 47: Print Using "###"; batterRatings(I, 78);
             If XCode = 1 GoTo bRRHR:
             If XCode = 2 GoTo bDone
 
             bRRKO:
             Locate 24, 52
             Max = 3
-            draftB# = teamBatters%(I, 79)
+            draftB# = batterRatings(I, 79)
             Call NumIn(draftB#, Max, XCode, FG, BG)
-            teamBatters%(I, 79) = Int(draftB#)
-            Locate 25, 52: Print Using "###"; teamBatters%(I, 79);
+            batterRatings(I, 79) = Int(draftB#)
+            Locate 25, 52: Print Using "###"; batterRatings(I, 79);
             If XCode = 1 GoTo bRRBB:
 
             bDone:
@@ -2141,16 +2089,16 @@ Sub EditBatter ()
             If X$ = "N" GoTo BName
             If X$ <> "Y" GoTo bDone 'insist on either Y or N or up-arrow
 
-            teamBatters%(I, 0) = 0
+            batterRatings(I, 0) = 0
             BATS$ = _Trim$(BATS$)
-            If UCase$(BATS$) = "L" Then teamBatters%(I, 0) = -1
-            If UCase$(BATS$) = "R" Then teamBatters%(I, 0) = 1
-            If UCase$(BATS$) = "LP" Then teamBatters%(I, 0) = -2
-            If UCase$(BATS$) = "RP" Then teamBatters%(I, 0) = 2
+            If UCase$(BATS$) = "L" Then batterRatings(I, 0) = -1
+            If UCase$(BATS$) = "R" Then batterRatings(I, 0) = 1
+            If UCase$(BATS$) = "LP" Then batterRatings(I, 0) = -2
+            If UCase$(BATS$) = "RP" Then batterRatings(I, 0) = 2
 
             ACT$ = _Trim$(ACT$)
-            teamBatters%(I, 31) = 0
-            If UCase$(ACT$) = "N" Then teamBatters%(I, 31) = 1
+            batterRatings(I, 31) = 0
+            If UCase$(ACT$) = "N" Then batterRatings(I, 31) = 1
 
         End If
 
@@ -2168,8 +2116,7 @@ Sub EditTeamInfo (YN$, T$, teamIdx)
 
     Shared Manager$, teamAbbrev$, Stadium$
 
-    Shared teamRatings%(), inputSA%()
-
+    Shared teamRatings%(), teamSA%()
 
     Do
 
@@ -2230,43 +2177,43 @@ Sub EditTeamInfo (YN$, T$, teamIdx)
         Locate 7, 50: Print "BAVG   K%  BB%  HR%  2B%  3B%"
         Locate 8, 38: Print "LHB vs LHP"
         Color 0, 7
-        Locate 8, 50: Print Using "###"; inputSA%(1)
-        Locate 8, 55: Print Using "###"; inputSA%(2)
-        Locate 8, 60: Print Using "###"; inputSA%(3)
-        Locate 8, 65: Print Using "###"; inputSA%(4)
-        Locate 8, 70: Print Using "###"; inputSA%(5)
-        Locate 8, 75: Print Using "###"; inputSA%(6)
+        Locate 8, 50: Print Using "###"; teamSA%(1)
+        Locate 8, 55: Print Using "###"; teamSA%(2)
+        Locate 8, 60: Print Using "###"; teamSA%(3)
+        Locate 8, 65: Print Using "###"; teamSA%(4)
+        Locate 8, 70: Print Using "###"; teamSA%(5)
+        Locate 8, 75: Print Using "###"; teamSA%(6)
         Color 15, 1
 
         Locate 9, 38: Print "LHB vs RHP"
         Color 0, 7
-        Locate 9, 50: Print Using "###"; inputSA%(7)
-        Locate 9, 55: Print Using "###"; inputSA%(8)
-        Locate 9, 60: Print Using "###"; inputSA%(9)
-        Locate 9, 65: Print Using "###"; inputSA%(10)
-        Locate 9, 70: Print Using "###"; inputSA%(11)
-        Locate 9, 75: Print Using "###"; inputSA%(12)
+        Locate 9, 50: Print Using "###"; teamSA%(7)
+        Locate 9, 55: Print Using "###"; teamSA%(8)
+        Locate 9, 60: Print Using "###"; teamSA%(9)
+        Locate 9, 65: Print Using "###"; teamSA%(10)
+        Locate 9, 70: Print Using "###"; teamSA%(11)
+        Locate 9, 75: Print Using "###"; teamSA%(12)
         Color 15, 1
 
         Locate 10, 38: Print "RHB vs LHP"
         Color 0, 7
-        Locate 10, 50: Print Using "###"; inputSA%(13)
-        Locate 10, 55: Print Using "###"; inputSA%(14)
-        Locate 10, 60: Print Using "###"; inputSA%(15)
-        Locate 10, 65: Print Using "###"; inputSA%(16)
-        Locate 10, 70: Print Using "###"; inputSA%(17)
-        Locate 10, 75: Print Using "###"; inputSA%(18)
+        Locate 10, 50: Print Using "###"; teamSA%(13)
+        Locate 10, 55: Print Using "###"; teamSA%(14)
+        Locate 10, 60: Print Using "###"; teamSA%(15)
+        Locate 10, 65: Print Using "###"; teamSA%(16)
+        Locate 10, 70: Print Using "###"; teamSA%(17)
+        Locate 10, 75: Print Using "###"; teamSA%(18)
         Color 15, 1
 
 
         Locate 11, 38: Print "RHB vs RHP"
         Color 0, 7
-        Locate 11, 50: Print Using "###"; inputSA%(19)
-        Locate 11, 55: Print Using "###"; inputSA%(20)
-        Locate 11, 60: Print Using "###"; inputSA%(21)
-        Locate 11, 65: Print Using "###"; inputSA%(22)
-        Locate 11, 70: Print Using "###"; inputSA%(23)
-        Locate 11, 75: Print Using "###"; inputSA%(24)
+        Locate 11, 50: Print Using "###"; teamSA%(19)
+        Locate 11, 55: Print Using "###"; teamSA%(20)
+        Locate 11, 60: Print Using "###"; teamSA%(21)
+        Locate 11, 65: Print Using "###"; teamSA%(22)
+        Locate 11, 70: Print Using "###"; teamSA%(23)
+        Locate 11, 75: Print Using "###"; teamSA%(24)
         Color 15, 1
 
         Locate 25, 1: Print "ESC-WILL END EDITING";
@@ -2469,240 +2416,240 @@ Sub EditTeamInfo (YN$, T$, teamIdx)
         LLBA:
         Locate 8, 50
         Max = 3
-        SA# = inputSA%(1)
-        Call NumIn(inputSA%(1), Max, XCode, FG, BG)
-        inputSA%(1) = Int(SA#)
-        Locate 8, 50: Print Using "###"; inputSA%(1)
+        SA# = teamSA%(1)
+        Call NumIn(teamSA%(1), Max, XCode, FG, BG)
+        teamSA%(1) = Int(SA#)
+        Locate 8, 50: Print Using "###"; teamSA%(1)
         If XCode = 1 GoTo Bgrnd:
         If XCode = 2 GoTo Done
 
         LL2B:
         Locate 8, 55
         Max = 3
-        SA# = inputSA%(2)
+        SA# = teamSA%(2)
         Call NumIn(SA#, Max, XCode, FG, BG)
-        inputSA%(2) = Int(SA#)
-        Locate 8, 55: Print Using "###"; inputSA%(2)
+        teamSA%(2) = Int(SA#)
+        Locate 8, 55: Print Using "###"; teamSA%(2)
         If XCode = 1 GoTo LLBA:
         If XCode = 2 GoTo Done
 
         LL3B:
         Locate 8, 60
         Max = 3
-        SA# = inputSA%(3)
+        SA# = teamSA%(3)
         Call NumIn(SA#, Max, XCode, FG, BG)
-        inputSA%(3) = Int(SA#)
-        Locate 8, 60: Print Using "###"; inputSA%(3)
+        teamSA%(3) = Int(SA#)
+        Locate 8, 60: Print Using "###"; teamSA%(3)
         If XCode = 1 GoTo LL2B:
         If XCode = 2 GoTo Done
 
         LLHR:
         Locate 8, 65
         Max = 3
-        SA# = inputSA%(4)
+        SA# = teamSA%(4)
         Call NumIn(SA#, Max, XCode, FG, BG)
-        inputSA%(4) = Int(SA#)
-        Locate 8, 65: Print Using "###"; inputSA%(4)
+        teamSA%(4) = Int(SA#)
+        Locate 8, 65: Print Using "###"; teamSA%(4)
         If XCode = 1 GoTo LL3B:
         If XCode = 2 GoTo Done
 
         LLBB:
         Locate 8, 70
         Max = 3
-        SA# = inputSA%(5)
+        SA# = teamSA%(5)
         Call NumIn(SA#, Max, XCode, FG, BG)
-        inputSA%(5) = Int(SA#)
-        Locate 8, 70: Print Using "###"; inputSA%(5)
+        teamSA%(5) = Int(SA#)
+        Locate 8, 70: Print Using "###"; teamSA%(5)
         If XCode = 1 GoTo LLHR:
         If XCode = 2 GoTo Done
 
         LLKO:
         Locate 8, 75
         Max = 3
-        SA# = inputSA%(6)
+        SA# = teamSA%(6)
         Call NumIn(SA#, Max, XCode, FG, BG)
-        inputSA%(6) = Int(SA#)
-        Locate 8, 75: Print Using "###"; inputSA%(6)
+        teamSA%(6) = Int(SA#)
+        Locate 8, 75: Print Using "###"; teamSA%(6)
         If XCode = 1 GoTo LLBB:
         If XCode = 2 GoTo Done
 
         LRBA:
         Locate 9, 50
         Max = 3
-        SA# = inputSA%(7)
+        SA# = teamSA%(7)
         Call NumIn(SA#, Max, XCode, FG, BG)
-        inputSA%(7) = Int(SA#)
-        Locate 9, 50: Print Using "###"; inputSA%(7)
+        teamSA%(7) = Int(SA#)
+        Locate 9, 50: Print Using "###"; teamSA%(7)
         If XCode = 1 GoTo LLKO:
         If XCode = 2 GoTo Done
 
         LR2B:
         Locate 9, 55
         Max = 3
-        SA# = inputSA%(8)
+        SA# = teamSA%(8)
         Call NumIn(SA#, Max, XCode, FG, BG)
-        inputSA%(8) = Int(SA#)
-        Locate 9, 55: Print Using "###"; inputSA%(8)
+        teamSA%(8) = Int(SA#)
+        Locate 9, 55: Print Using "###"; teamSA%(8)
         If XCode = 1 GoTo LRBA:
         If XCode = 2 GoTo Done
 
         LR3B:
         Locate 9, 60
         Max = 3
-        SA# = inputSA%(9)
+        SA# = teamSA%(9)
         Call NumIn(SA#, Max, XCode, FG, BG)
-        inputSA%(9) = Int(SA#)
-        Locate 9, 60: Print Using "###"; inputSA%(9)
+        teamSA%(9) = Int(SA#)
+        Locate 9, 60: Print Using "###"; teamSA%(9)
         If XCode = 1 GoTo LR2B:
         If XCode = 2 GoTo Done
 
         LRHR:
         Locate 9, 65
         Max = 3
-        SA# = inputSA%(10)
+        SA# = teamSA%(10)
         Call NumIn(SA#, Max, XCode, FG, BG)
-        inputSA%(10) = Int(SA#)
-        Locate 9, 65: Print Using "###"; inputSA%(10)
+        teamSA%(10) = Int(SA#)
+        Locate 9, 65: Print Using "###"; teamSA%(10)
         If XCode = 1 GoTo LR3B:
         If XCode = 2 GoTo Done
 
         LRBB:
         Locate 9, 70
         Max = 3
-        SA# = inputSA%(11)
+        SA# = teamSA%(11)
         Call NumIn(SA#, Max, XCode, FG, BG)
-        inputSA%(11) = Int(SA#)
-        Locate 9, 70: Print Using "###"; inputSA%(11)
+        teamSA%(11) = Int(SA#)
+        Locate 9, 70: Print Using "###"; teamSA%(11)
         If XCode = 1 GoTo LRHR:
         If XCode = 2 GoTo Done
 
         LRKO:
         Locate 9, 75
         Max = 3
-        SA# = inputSA%(12)
+        SA# = teamSA%(12)
         Call NumIn(SA#, Max, XCode, FG, BG)
-        inputSA%(12) = Int(SA#)
-        Locate 9, 75: Print Using "###"; inputSA%(12)
+        teamSA%(12) = Int(SA#)
+        Locate 9, 75: Print Using "###"; teamSA%(12)
         If XCode = 1 GoTo LRBB:
         If XCode = 2 GoTo Done
 
         RLBA:
         Locate 10, 50
         Max = 3
-        SA# = inputSA%(13)
+        SA# = teamSA%(13)
         Call NumIn(SA#, Max, XCode, FG, BG)
-        inputSA%(13) = Int(SA#)
-        Locate 10, 50: Print Using "###"; inputSA%(13)
+        teamSA%(13) = Int(SA#)
+        Locate 10, 50: Print Using "###"; teamSA%(13)
         If XCode = 1 GoTo LRKO:
         If XCode = 2 GoTo Done
 
         RL2B:
         Locate 10, 55
         Max = 3
-        SA# = inputSA%(14)
+        SA# = teamSA%(14)
         Call NumIn(SA#, Max, XCode, FG, BG)
-        inputSA%(14) = Int(SA#)
-        Locate 10, 55: Print Using "###"; inputSA%(14)
+        teamSA%(14) = Int(SA#)
+        Locate 10, 55: Print Using "###"; teamSA%(14)
         If XCode = 1 GoTo RLBA:
         If XCode = 2 GoTo Done
 
         RL3B:
         Locate 10, 60
         Max = 3
-        SA# = inputSA%(15)
+        SA# = teamSA%(15)
         Call NumIn(SA#, Max, XCode, FG, BG)
-        inputSA%(15) = Int(SA#)
-        Locate 10, 60: Print Using "###"; inputSA%(15)
+        teamSA%(15) = Int(SA#)
+        Locate 10, 60: Print Using "###"; teamSA%(15)
         If XCode = 1 GoTo RL2B:
         If XCode = 2 GoTo Done
 
         RLHR:
         Locate 10, 65
         Max = 3
-        SA# = inputSA%(16)
+        SA# = teamSA%(16)
         Call NumIn(SA#, Max, XCode, FG, BG)
-        inputSA%(16) = Int(SA#)
-        Locate 10, 65: Print Using "###"; inputSA%(16)
+        teamSA%(16) = Int(SA#)
+        Locate 10, 65: Print Using "###"; teamSA%(16)
         If XCode = 1 GoTo RL3B:
         If XCode = 2 GoTo Done
 
         RLBB:
         Locate 10, 70
         Max = 3
-        SA# = inputSA%(17)
+        SA# = teamSA%(17)
         Call NumIn(SA#, Max, XCode, FG, BG)
-        inputSA%(17) = Int(SA#)
-        Locate 10, 70: Print Using "###"; inputSA%(17)
+        teamSA%(17) = Int(SA#)
+        Locate 10, 70: Print Using "###"; teamSA%(17)
         If XCode = 1 GoTo RLHR:
         If XCode = 2 GoTo Done
 
         RLKO:
         Locate 10, 75
         Max = 3
-        SA# = inputSA%(18)
+        SA# = teamSA%(18)
         Call NumIn(SA#, Max, XCode, FG, BG)
-        inputSA%(18) = Int(SA#)
-        Locate 10, 75: Print Using "###"; inputSA%(18)
+        teamSA%(18) = Int(SA#)
+        Locate 10, 75: Print Using "###"; teamSA%(18)
         If XCode = 1 GoTo RLBB:
         If XCode = 2 GoTo Done
 
         RRBA:
         Locate 11, 50
         Max = 3
-        SA# = inputSA%(19)
+        SA# = teamSA%(19)
         Call NumIn(SA#, Max, XCode, FG, BG)
-        inputSA%(19) = Int(SA#)
-        Locate 11, 50: Print Using "###"; inputSA%(19)
+        teamSA%(19) = Int(SA#)
+        Locate 11, 50: Print Using "###"; teamSA%(19)
         If XCode = 1 GoTo RLKO:
         If XCode = 2 GoTo Done
 
         RR2B:
         Locate 11, 55
         Max = 3
-        SA# = inputSA%(20)
+        SA# = teamSA%(20)
         Call NumIn(SA#, Max, XCode, FG, BG)
-        inputSA%(20) = Int(SA#)
-        Locate 11, 55: Print Using "###"; inputSA%(20)
+        teamSA%(20) = Int(SA#)
+        Locate 11, 55: Print Using "###"; teamSA%(20)
         If XCode = 1 GoTo RRBA:
         If XCode = 2 GoTo Done
 
         RR3B:
         Locate 11, 60
         Max = 3
-        SA# = inputSA%(21)
+        SA# = teamSA%(21)
         Call NumIn(SA#, Max, XCode, FG, BG)
-        inputSA%(21) = Int(SA#)
-        Locate 11, 60: Print Using "###"; inputSA%(21)
+        teamSA%(21) = Int(SA#)
+        Locate 11, 60: Print Using "###"; teamSA%(21)
         If XCode = 1 GoTo RR2B:
         If XCode = 2 GoTo Done
 
         RRHR:
         Locate 11, 65
         Max = 3
-        SA# = inputSA%(22)
+        SA# = teamSA%(22)
         Call NumIn(SA#, Max, XCode, FG, BG)
-        inputSA%(22) = Int(SA#)
-        Locate 11, 65: Print Using "###"; inputSA%(22)
+        teamSA%(22) = Int(SA#)
+        Locate 11, 65: Print Using "###"; teamSA%(22)
         If XCode = 1 GoTo RR3B:
         If XCode = 2 GoTo Done
 
         RRBB:
         Locate 11, 70
         Max = 3
-        SA# = inputSA%(23)
+        SA# = teamSA%(23)
         Call NumIn(SA#, Max, XCode, FG, BG)
-        inputSA%(23) = Int(SA#)
-        Locate 11, 70: Print Using "###"; inputSA%(23)
+        teamSA%(23) = Int(SA#)
+        Locate 11, 70: Print Using "###"; teamSA%(23)
         If XCode = 1 GoTo RRHR:
         If XCode = 2 GoTo Done
 
         RRKO:
         Locate 11, 75
         Max = 3
-        SA# = inputSA%(24)
+        SA# = teamSA%(24)
         Call NumIn(SA#, Max, XCode, FG, BG)
-        inputSA%(24) = Int(SA#)
-        Locate 11, 75: Print Using "###"; inputSA%(24)
+        teamSA%(24) = Int(SA#)
+        Locate 11, 75: Print Using "###"; teamSA%(24)
         If XCode = 1 GoTo RRBB:
 
         Done:
@@ -2745,8 +2692,8 @@ End Sub
 '...explanation...
 Sub EditPitcher ()
 
-    Shared statP$()
-    Shared teamPitchers%()
+    Shared pitcherNames$()
+    Shared pitcherRatings()
 
     Do
 
@@ -2758,9 +2705,9 @@ Sub EditPitcher ()
 
         For I = 0 To 10
             Locate I + 5, 5: Print Using "##"; I + 1;
-            Print " "; statP$(I); Tab(40);
+            Print " "; pitcherNames$(I); Tab(40);
             Print Using "##"; I + 12;
-            Print " "; statP$(I + 11)
+            Print " "; pitcherNames$(I + 11)
         Next
 
         Do
@@ -2812,14 +2759,14 @@ Sub EditPitcher ()
             FG = 0
             BG = 7
 
-            Locate 1, 7: QPrint PadRight$(statP$(I), 15), FG, BG, -1
+            Locate 1, 7: QPrint PadRight$(pitcherNames$(I), 15), FG, BG, -1
 
             THROW$ = "R"
-            If teamPitchers%(I, 0) = -1 Then THROW$ = "L"
+            If pitcherRatings(I, 0) = -1 Then THROW$ = "L"
             Locate 1, 32: QPrint PadRight$(THROW$, 1), FG, BG, -1
 
             ACT$ = "Y"
-            If teamPitchers%(I, 34) = 1 Then ACT$ = "N"
+            If pitcherRatings(I, 34) = 1 Then ACT$ = "N"
             Locate 1, 44: QPrint PadRight$(ACT$, 1), FG, BG, -1
 
             Call PITCHINIT(I, FG, BG)
@@ -2827,7 +2774,7 @@ Sub EditPitcher ()
             PName:
             Locate 1, 7
             CapsOn = 0: NumOnly = 0: Max = 15
-            Call TextIn(statP$(I), Max, NumOnly, CapsOn, XCode, FG, BG)
+            Call TextIn(pitcherNames$(I), Max, NumOnly, CapsOn, XCode, FG, BG)
             If XCode = 1 GoTo PName:
             If XCode = 2 GoTo PDone
 
@@ -2848,860 +2795,860 @@ Sub EditPitcher ()
             PINJ:
             Locate 1, 60
             Max = 3
-            draftP# = teamPitchers%(I, 35)
+            draftP# = pitcherRatings(I, 35)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 35) = Int(draftP#)
-            Locate 1, 60: Print Using "###"; teamPitchers%(I, 35)
+            pitcherRatings(I, 35) = Int(draftP#)
+            Locate 1, 60: Print Using "###"; pitcherRatings(I, 35)
             If XCode = 1 GoTo PActive:
             If XCode = 2 GoTo PDone
 
             PHOLD:
             Locate 1, 78
             Max = 1
-            draftP# = teamPitchers%(I, 18)
+            draftP# = pitcherRatings(I, 18)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 18) = Int(draftP#)
-            Locate 1, 78: Print Using "#"; teamPitchers%(I, 18)
+            pitcherRatings(I, 18) = Int(draftP#)
+            Locate 1, 78: Print Using "#"; pitcherRatings(I, 18)
             If XCode = 1 GoTo PINJ:
             If XCode = 2 GoTo PDone
 
             PWINS:
             Locate 5, 10
             Max = 2
-            draftP# = teamPitchers%(I, 1)
+            draftP# = pitcherRatings(I, 1)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 1) = Int(draftP#)
-            Locate 5, 10: Print Using "##"; teamPitchers%(I, 1)
+            pitcherRatings(I, 1) = Int(draftP#)
+            Locate 5, 10: Print Using "##"; pitcherRatings(I, 1)
             If XCode = 1 GoTo PHOLD:
             If XCode = 2 GoTo PDone
 
             PLOSSES:
             Locate 5, 14
             Max = 2
-            draftP# = teamPitchers%(I, 2)
+            draftP# = pitcherRatings(I, 2)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 2) = Int(draftP#)
-            Locate 5, 14: Print Using "##"; teamPitchers%(I, 2)
+            pitcherRatings(I, 2) = Int(draftP#)
+            Locate 5, 14: Print Using "##"; pitcherRatings(I, 2)
             If XCode = 1 GoTo PWINS:
             If XCode = 2 GoTo PDone
 
             PSAVES:
             Locate 5, 18
             Max = 2
-            draftP# = teamPitchers%(I, 3)
+            draftP# = pitcherRatings(I, 3)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 3) = Int(draftP#)
-            Locate 5, 18: Print Using "##"; teamPitchers%(I, 3)
+            pitcherRatings(I, 3) = Int(draftP#)
+            Locate 5, 18: Print Using "##"; pitcherRatings(I, 3)
             If XCode = 1 GoTo PLOSSES:
             If XCode = 2 GoTo PDone
 
             PGAMES:
             Locate 5, 22
             Max = 3
-            draftP# = teamPitchers%(I, 4)
+            draftP# = pitcherRatings(I, 4)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 4) = Int(draftP#)
-            Locate 5, 22: Print Using "###"; teamPitchers%(I, 4)
+            pitcherRatings(I, 4) = Int(draftP#)
+            Locate 5, 22: Print Using "###"; pitcherRatings(I, 4)
             If XCode = 1 GoTo PSAVES:
             If XCode = 2 GoTo PDone
 
             PSTARTS:
             Locate 5, 27
             Max = 2
-            draftP# = teamPitchers%(I, 5)
+            draftP# = pitcherRatings(I, 5)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 5) = Int(draftP#)
-            Locate 5, 27: Print Using "##"; teamPitchers%(I, 5)
+            pitcherRatings(I, 5) = Int(draftP#)
+            Locate 5, 27: Print Using "##"; pitcherRatings(I, 5)
             If XCode = 1 GoTo PGAMES:
             If XCode = 2 GoTo PDone
 
             PCG:
             Locate 5, 31
             Max = 2
-            draftP# = teamPitchers%(I, 16)
+            draftP# = pitcherRatings(I, 16)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 16) = Int(draftP#)
-            Locate 5, 31: Print Using "##"; teamPitchers%(I, 16)
+            pitcherRatings(I, 16) = Int(draftP#)
+            Locate 5, 31: Print Using "##"; pitcherRatings(I, 16)
             If XCode = 1 GoTo PSTARTS:
             If XCode = 2 GoTo PDone
 
             PIP:
             Locate 5, 35
             Max = 3
-            draftP# = teamPitchers%(I, 6)
+            draftP# = pitcherRatings(I, 6)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 6) = Int(draftP#)
-            Locate 5, 35: Print Using "###"; teamPitchers%(I, 6)
+            pitcherRatings(I, 6) = Int(draftP#)
+            Locate 5, 35: Print Using "###"; pitcherRatings(I, 6)
             If XCode = 1 GoTo PCG:
             If XCode = 2 GoTo PDone
 
             PH:
             Locate 5, 40
             Max = 3
-            draftP# = teamPitchers%(I, 7)
+            draftP# = pitcherRatings(I, 7)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 7) = Int(draftP#)
-            Locate 5, 40: Print Using "###"; teamPitchers%(I, 7)
+            pitcherRatings(I, 7) = Int(draftP#)
+            Locate 5, 40: Print Using "###"; pitcherRatings(I, 7)
             If XCode = 1 GoTo PIP:
             If XCode = 2 GoTo PDone
 
             PBB:
             Locate 5, 45
             Max = 3
-            draftP# = teamPitchers%(I, 8)
+            draftP# = pitcherRatings(I, 8)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 8) = Int(draftP#)
-            Locate 5, 45: Print Using "###"; teamPitchers%(I, 8)
+            pitcherRatings(I, 8) = Int(draftP#)
+            Locate 5, 45: Print Using "###"; pitcherRatings(I, 8)
             If XCode = 1 GoTo PH:
             If XCode = 2 GoTo PDone
 
             PKO:
             Locate 5, 50
             Max = 3
-            draftP# = teamPitchers%(I, 9)
+            draftP# = pitcherRatings(I, 9)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 9) = Int(draftP#)
-            Locate 5, 50: Print Using "###"; teamPitchers%(I, 9)
+            pitcherRatings(I, 9) = Int(draftP#)
+            Locate 5, 50: Print Using "###"; pitcherRatings(I, 9)
             If XCode = 1 GoTo PBB:
             If XCode = 2 GoTo PDone
 
             PWP:
             Locate 5, 55
             Max = 2
-            draftP# = teamPitchers%(I, 33)
+            draftP# = pitcherRatings(I, 33)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 33) = Int(draftP#)
-            Locate 5, 55: Print Using "##"; teamPitchers%(I, 33)
+            pitcherRatings(I, 33) = Int(draftP#)
+            Locate 5, 55: Print Using "##"; pitcherRatings(I, 33)
             If XCode = 1 GoTo PKO:
             If XCode = 2 GoTo PDone
 
             PERA:
             Locate 5, 59
             Max = 4
-            draftP# = teamPitchers%(I, 10)
+            draftP# = pitcherRatings(I, 10)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 10) = Int(draftP#)
-            Locate 5, 59: Print Using "####"; teamPitchers%(I, 10)
+            pitcherRatings(I, 10) = Int(draftP#)
+            Locate 5, 59: Print Using "####"; pitcherRatings(I, 10)
             If XCode = 1 GoTo PWP:
             If XCode = 2 GoTo PDone
 
             PHRA:
             Locate 5, 66
             Max = 2
-            draftP# = teamPitchers%(I, 13)
+            draftP# = pitcherRatings(I, 13)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 13) = Int(draftP#)
-            Locate 5, 66: Print Using "##"; teamPitchers%(I, 13)
+            pitcherRatings(I, 13) = Int(draftP#)
+            Locate 5, 66: Print Using "##"; pitcherRatings(I, 13)
             If XCode = 1 GoTo PERA:
             If XCode = 2 GoTo PDone
 
             PGA:
             Locate 6, 32
             Max = 2
-            draftP# = teamPitchers%(I, 12)
+            draftP# = pitcherRatings(I, 12)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 12) = Int(draftP#)
-            Locate 6, 32: Print Using "##"; teamPitchers%(I, 12)
+            pitcherRatings(I, 12) = Int(draftP#)
+            Locate 6, 32: Print Using "##"; pitcherRatings(I, 12)
             If XCode = 1 GoTo PHRA:
             If XCode = 2 GoTo PDone
 
             PLBA:
             Locate 6, 50
             Max = 3
-            draftP# = teamPitchers%(I, 14)
+            draftP# = pitcherRatings(I, 14)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 14) = Int(draftP#)
-            Locate 6, 50: Print Using "###"; teamPitchers%(I, 14)
+            pitcherRatings(I, 14) = Int(draftP#)
+            Locate 6, 50: Print Using "###"; pitcherRatings(I, 14)
             If XCode = 1 GoTo PHRA:
             If XCode = 2 GoTo PDone
 
             PLAB:
             Locate 10, 25
             Max = 3
-            draftP# = teamPitchers%(I, 51)
+            draftP# = pitcherRatings(I, 51)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 51) = Int(draftP#)
-            Locate 10, 25: Print Using "###"; teamPitchers%(I, 51)
+            pitcherRatings(I, 51) = Int(draftP#)
+            Locate 10, 25: Print Using "###"; pitcherRatings(I, 51)
             If XCode = 1 GoTo PLBA:
             If XCode = 2 GoTo PDone
 
             PLH:
             Locate 10, 30
             Max = 3
-            draftP# = teamPitchers%(I, 52)
+            draftP# = pitcherRatings(I, 52)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 52) = Int(draftP#)
-            Locate 10, 30: Print Using "###"; teamPitchers%(I, 52)
+            pitcherRatings(I, 52) = Int(draftP#)
+            Locate 10, 30: Print Using "###"; pitcherRatings(I, 52)
             If XCode = 1 GoTo PLAB:
             If XCode = 2 GoTo PDone
 
             PL2B:
             Locate 10, 35
             Max = 2
-            draftP# = teamPitchers%(I, 53)
+            draftP# = pitcherRatings(I, 53)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 53) = Int(draftP#)
-            Locate 10, 35: Print Using "##"; teamPitchers%(I, 53)
+            pitcherRatings(I, 53) = Int(draftP#)
+            Locate 10, 35: Print Using "##"; pitcherRatings(I, 53)
             If XCode = 1 GoTo PLH:
             If XCode = 2 GoTo PDone
 
             PL3B:
             Locate 10, 39
             Max = 2
-            draftP# = teamPitchers%(I, 54)
+            draftP# = pitcherRatings(I, 54)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 54) = Int(draftP#)
-            Locate 10, 39: Print Using "##"; teamPitchers%(I, 54)
+            pitcherRatings(I, 54) = Int(draftP#)
+            Locate 10, 39: Print Using "##"; pitcherRatings(I, 54)
             If XCode = 1 GoTo PL2B:
             If XCode = 2 GoTo PDone
 
             PLHR:
             Locate 10, 43
             Max = 2
-            draftP# = teamPitchers%(I, 55)
+            draftP# = pitcherRatings(I, 55)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 55) = Int(draftP#)
-            Locate 10, 43: Print Using "##"; teamPitchers%(I, 55)
+            pitcherRatings(I, 55) = Int(draftP#)
+            Locate 10, 43: Print Using "##"; pitcherRatings(I, 55)
             If XCode = 1 GoTo PL3B:
             If XCode = 2 GoTo PDone
 
             PLBB:
             Locate 10, 47
             Max = 3
-            draftP# = teamPitchers%(I, 56)
+            draftP# = pitcherRatings(I, 56)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 56) = Int(draftP#)
-            Locate 10, 47: Print Using "###"; teamPitchers%(I, 56)
+            pitcherRatings(I, 56) = Int(draftP#)
+            Locate 10, 47: Print Using "###"; pitcherRatings(I, 56)
             If XCode = 1 GoTo PLHR:
             If XCode = 2 GoTo PDone
 
             PLKO:
             Locate 10, 52
             Max = 3
-            draftP# = teamPitchers%(I, 57)
+            draftP# = pitcherRatings(I, 57)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 57) = Int(draftP#)
-            Locate 10, 52: Print Using "###"; teamPitchers%(I, 57)
+            pitcherRatings(I, 57) = Int(draftP#)
+            Locate 10, 52: Print Using "###"; pitcherRatings(I, 57)
             If XCode = 1 GoTo PLBB:
             If XCode = 2 GoTo PDone
 
             PRAB:
             Locate 11, 25
             Max = 3
-            draftP# = teamPitchers%(I, 58)
+            draftP# = pitcherRatings(I, 58)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 58) = Int(draftP#)
-            Locate 11, 25: Print Using "###"; teamPitchers%(I, 58)
+            pitcherRatings(I, 58) = Int(draftP#)
+            Locate 11, 25: Print Using "###"; pitcherRatings(I, 58)
             If XCode = 1 GoTo PLKO:
             If XCode = 2 GoTo PDone
 
             PRH:
             Locate 11, 30
             Max = 3
-            draftP# = teamPitchers%(I, 59)
+            draftP# = pitcherRatings(I, 59)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 59) = Int(draftP#)
-            Locate 11, 30: Print Using "###"; teamPitchers%(I, 59)
+            pitcherRatings(I, 59) = Int(draftP#)
+            Locate 11, 30: Print Using "###"; pitcherRatings(I, 59)
             If XCode = 1 GoTo PRAB:
             If XCode = 2 GoTo PDone
 
             PR2B:
             Locate 11, 35
             Max = 2
-            draftP# = teamPitchers%(I, 60)
+            draftP# = pitcherRatings(I, 60)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 60) = Int(draftP#)
-            Locate 11, 35: Print Using "##"; teamPitchers%(I, 60)
+            pitcherRatings(I, 60) = Int(draftP#)
+            Locate 11, 35: Print Using "##"; pitcherRatings(I, 60)
             If XCode = 1 GoTo PRH:
             If XCode = 2 GoTo PDone
 
             PR3B:
             Locate 11, 39
             Max = 2
-            draftP# = teamPitchers%(I, 61)
+            draftP# = pitcherRatings(I, 61)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 61) = Int(draftP#)
-            Locate 11, 39: Print Using "##"; teamPitchers%(I, 61)
+            pitcherRatings(I, 61) = Int(draftP#)
+            Locate 11, 39: Print Using "##"; pitcherRatings(I, 61)
             If XCode = 1 GoTo PR2B:
             If XCode = 2 GoTo PDone
 
             PRHR:
             Locate 11, 43
             Max = 2
-            draftP# = teamPitchers%(I, 62)
+            draftP# = pitcherRatings(I, 62)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 62) = Int(draftP#)
-            Locate 11, 43: Print Using "##"; teamPitchers%(I, 62)
+            pitcherRatings(I, 62) = Int(draftP#)
+            Locate 11, 43: Print Using "##"; pitcherRatings(I, 62)
             If XCode = 1 GoTo PR3B:
             If XCode = 2 GoTo PDone
 
             PRBB:
             Locate 11, 47
             Max = 3
-            draftP# = teamPitchers%(I, 63)
+            draftP# = pitcherRatings(I, 63)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 63) = Int(draftP#)
-            Locate 11, 47: Print Using "###"; teamPitchers%(I, 63)
+            pitcherRatings(I, 63) = Int(draftP#)
+            Locate 11, 47: Print Using "###"; pitcherRatings(I, 63)
             If XCode = 1 GoTo PRHR:
             If XCode = 2 GoTo PDone
 
             PRKO:
             Locate 11, 52
             Max = 3
-            draftP# = teamPitchers%(I, 64)
+            draftP# = pitcherRatings(I, 64)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 64) = Int(draftP#)
-            Locate 11, 52: Print Using "###"; teamPitchers%(I, 64)
+            pitcherRatings(I, 64) = Int(draftP#)
+            Locate 11, 52: Print Using "###"; pitcherRatings(I, 64)
             If XCode = 1 GoTo PRBB:
             If XCode = 2 GoTo PDone
 
             PRUN:
             Locate 14, 20
             Max = 1
-            draftP# = teamPitchers%(I, 31)
+            draftP# = pitcherRatings(I, 31)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 31) = Int(draftP#)
-            Locate 14, 20: Print Using "#"; teamPitchers%(I, 31)
+            pitcherRatings(I, 31) = Int(draftP#)
+            Locate 14, 20: Print Using "#"; pitcherRatings(I, 31)
             If XCode = 1 GoTo PRKO:
             If XCode = 2 GoTo PDone
 
             PBUNT:
             Locate 14, 36
             Max = 1
-            draftP# = teamPitchers%(I, 32)
+            draftP# = pitcherRatings(I, 32)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 32) = Int(draftP#)
-            Locate 14, 36: Print Using "#"; teamPitchers%(I, 32)
+            pitcherRatings(I, 32) = Int(draftP#)
+            Locate 14, 36: Print Using "#"; pitcherRatings(I, 32)
             If XCode = 1 GoTo PRKO:
             If XCode = 2 GoTo PDone
 
             PBAVG:
             Locate 14, 52
             Max = 3
-            draftP# = teamPitchers%(I, 11)
+            draftP# = pitcherRatings(I, 11)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 11) = Int(draftP#)
-            Locate 14, 52: Print Using "###"; teamPitchers%(I, 11)
+            pitcherRatings(I, 11) = Int(draftP#)
+            Locate 14, 52: Print Using "###"; pitcherRatings(I, 11)
             If XCode = 1 GoTo PBUNT:
             If XCode = 2 GoTo PDone
 
             PFAVG:
             Locate 14, 68
             Max = 4
-            draftP# = teamPitchers%(I, 17)
+            draftP# = pitcherRatings(I, 17)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 17) = Int(draftP#)
-            Locate 14, 68: Print Using "####"; teamPitchers%(I, 17)
+            pitcherRatings(I, 17) = Int(draftP#)
+            Locate 14, 68: Print Using "####"; pitcherRatings(I, 17)
             If XCode = 1 GoTo PBAVG:
             If XCode = 2 GoTo PDone
 
             PBGAMES:
             Locate 16, 12
             Max = 3
-            draftP# = teamPitchers%(I, 19)
+            draftP# = pitcherRatings(I, 19)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 19) = Int(draftP#)
-            Locate 16, 12: Print Using "###"; teamPitchers%(I, 19)
+            pitcherRatings(I, 19) = Int(draftP#)
+            Locate 16, 12: Print Using "###"; pitcherRatings(I, 19)
             If XCode = 1 GoTo PFAVG:
             If XCode = 2 GoTo PDone
 
             PAB:
             Locate 16, 17
             Max = 3
-            draftP# = teamPitchers%(I, 20)
+            draftP# = pitcherRatings(I, 20)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 20) = Int(draftP#)
-            Locate 16, 17: Print Using "###"; teamPitchers%(I, 20)
+            pitcherRatings(I, 20) = Int(draftP#)
+            Locate 16, 17: Print Using "###"; pitcherRatings(I, 20)
             If XCode = 1 GoTo PBGAMES:
             If XCode = 2 GoTo PDone
 
             PR:
             Locate 16, 22
             Max = 3
-            draftP# = teamPitchers%(I, 21)
+            draftP# = pitcherRatings(I, 21)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 21) = Int(draftP#)
-            Locate 16, 22: Print Using "###"; teamPitchers%(I, 21)
+            pitcherRatings(I, 21) = Int(draftP#)
+            Locate 16, 22: Print Using "###"; pitcherRatings(I, 21)
             If XCode = 1 GoTo PAB:
             If XCode = 2 GoTo PDone
 
             PBH:
             Locate 16, 27
             Max = 3
-            draftP# = teamPitchers%(I, 22)
+            draftP# = pitcherRatings(I, 22)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 22) = Int(draftP#)
-            Locate 16, 27: Print Using "###"; teamPitchers%(I, 22)
+            pitcherRatings(I, 22) = Int(draftP#)
+            Locate 16, 27: Print Using "###"; pitcherRatings(I, 22)
             If XCode = 1 GoTo PR:
             If XCode = 2 GoTo PDone
 
             P2B:
             Locate 16, 32
             Max = 2
-            draftP# = teamPitchers%(I, 23)
+            draftP# = pitcherRatings(I, 23)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 23) = Int(draftP#)
-            Locate 16, 32: Print Using "##"; teamPitchers%(I, 23)
+            pitcherRatings(I, 23) = Int(draftP#)
+            Locate 16, 32: Print Using "##"; pitcherRatings(I, 23)
             If XCode = 1 GoTo PBH:
             If XCode = 2 GoTo PDone
 
             P3B:
             Locate 16, 36
             Max = 2
-            draftP# = teamPitchers%(I, 24)
+            draftP# = pitcherRatings(I, 24)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 24) = Int(draftP#)
-            Locate 16, 36: Print Using "##"; teamPitchers%(I, 24)
+            pitcherRatings(I, 24) = Int(draftP#)
+            Locate 16, 36: Print Using "##"; pitcherRatings(I, 24)
             If XCode = 1 GoTo P2B:
             If XCode = 2 GoTo PDone
 
             PHR:
             Locate 16, 40
             Max = 2
-            draftP# = teamPitchers%(I, 25)
+            draftP# = pitcherRatings(I, 25)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 25) = Int(draftP#)
-            Locate 16, 40: Print Using "##"; teamPitchers%(I, 25)
+            pitcherRatings(I, 25) = Int(draftP#)
+            Locate 16, 40: Print Using "##"; pitcherRatings(I, 25)
             If XCode = 1 GoTo P3B:
             If XCode = 2 GoTo PDone
 
             PRBI:
             Locate 16, 44
             Max = 3
-            draftP# = teamPitchers%(I, 26)
+            draftP# = pitcherRatings(I, 26)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 26) = Int(draftP#)
-            Locate 16, 44: Print Using "###"; teamPitchers%(I, 26)
+            pitcherRatings(I, 26) = Int(draftP#)
+            Locate 16, 44: Print Using "###"; pitcherRatings(I, 26)
             If XCode = 1 GoTo PHR:
             If XCode = 2 GoTo PDone
 
             PBBB:
             Locate 16, 49
             Max = 3
-            draftP# = teamPitchers%(I, 27)
+            draftP# = pitcherRatings(I, 27)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 27) = Int(draftP#)
-            Locate 16, 49: Print Using "###"; teamPitchers%(I, 27)
+            pitcherRatings(I, 27) = Int(draftP#)
+            Locate 16, 49: Print Using "###"; pitcherRatings(I, 27)
             If XCode = 1 GoTo PRBI:
             If XCode = 2 GoTo PDone
 
             PBKO:
             Locate 16, 54
             Max = 3
-            draftP# = teamPitchers%(I, 28)
+            draftP# = pitcherRatings(I, 28)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 28) = Int(draftP#)
-            Locate 16, 54: Print Using "###"; teamPitchers%(I, 28)
+            pitcherRatings(I, 28) = Int(draftP#)
+            Locate 16, 54: Print Using "###"; pitcherRatings(I, 28)
             If XCode = 1 GoTo PBBB:
             If XCode = 2 GoTo PDone
 
             PSB:
             Locate 16, 59
             Max = 3
-            draftP# = teamPitchers%(I, 29)
+            draftP# = pitcherRatings(I, 29)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 29) = Int(draftP#)
-            Locate 16, 59: Print Using "###"; teamPitchers%(I, 29)
+            pitcherRatings(I, 29) = Int(draftP#)
+            Locate 16, 59: Print Using "###"; pitcherRatings(I, 29)
             If XCode = 1 GoTo PBKO:
             If XCode = 2 GoTo PDone
 
             PCS:
             Locate 16, 64
             Max = 2
-            draftP# = teamPitchers%(I, 30)
+            draftP# = pitcherRatings(I, 30)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 30) = Int(draftP#)
-            Locate 16, 64: Print Using "##"; teamPitchers%(I, 30)
+            pitcherRatings(I, 30) = Int(draftP#)
+            Locate 16, 64: Print Using "##"; pitcherRatings(I, 30)
             If XCode = 1 GoTo PSB:
             If XCode = 2 GoTo PDone
 
             PSH:
             Locate 16, 68
             Max = 2
-            draftP# = teamPitchers%(I, 36)
+            draftP# = pitcherRatings(I, 36)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 36) = Int(draftP#)
-            Locate 16, 68: Print Using "##"; teamPitchers%(I, 36)
+            pitcherRatings(I, 36) = Int(draftP#)
+            Locate 16, 68: Print Using "##"; pitcherRatings(I, 36)
             If XCode = 1 GoTo PCS:
             If XCode = 2 GoTo PDone
 
             PPLAB:
             Locate 17, 17
             Max = 3
-            draftP# = teamPitchers%(I, 37)
+            draftP# = pitcherRatings(I, 37)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 37) = Int(draftP#)
-            Locate 17, 17: Print Using "###"; teamPitchers%(I, 37)
+            pitcherRatings(I, 37) = Int(draftP#)
+            Locate 17, 17: Print Using "###"; pitcherRatings(I, 37)
             If XCode = 1 GoTo PSH:
             If XCode = 2 GoTo PDone
 
             PPLH:
             Locate 17, 27
             Max = 3
-            draftP# = teamPitchers%(I, 38)
+            draftP# = pitcherRatings(I, 38)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 38) = Int(draftP#)
-            Locate 17, 27: Print Using "###"; teamPitchers%(I, 38)
+            pitcherRatings(I, 38) = Int(draftP#)
+            Locate 17, 27: Print Using "###"; pitcherRatings(I, 38)
             If XCode = 1 GoTo PPLAB:
             If XCode = 2 GoTo PDone
 
             PPL2B:
             Locate 17, 32
             Max = 2
-            draftP# = teamPitchers%(I, 39)
+            draftP# = pitcherRatings(I, 39)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 39) = Int(draftP#)
-            Locate 17, 32: Print Using "##"; teamPitchers%(I, 39)
+            pitcherRatings(I, 39) = Int(draftP#)
+            Locate 17, 32: Print Using "##"; pitcherRatings(I, 39)
             If XCode = 1 GoTo PPLH:
             If XCode = 2 GoTo PDone
 
             PPL3B:
             Locate 17, 36
             Max = 2
-            draftP# = teamPitchers%(I, 40)
+            draftP# = pitcherRatings(I, 40)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 40) = Int(draftP#)
-            Locate 17, 36: Print Using "##"; teamPitchers%(I, 40)
+            pitcherRatings(I, 40) = Int(draftP#)
+            Locate 17, 36: Print Using "##"; pitcherRatings(I, 40)
             If XCode = 1 GoTo PPL2B:
             If XCode = 2 GoTo PDone
 
             PPLHR:
             Locate 17, 40
             Max = 2
-            draftP# = teamPitchers%(I, 41)
+            draftP# = pitcherRatings(I, 41)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 41) = Int(draftP#)
-            Locate 17, 40: Print Using "##"; teamPitchers%(I, 41)
+            pitcherRatings(I, 41) = Int(draftP#)
+            Locate 17, 40: Print Using "##"; pitcherRatings(I, 41)
             If XCode = 1 GoTo PPL3B:
             If XCode = 2 GoTo PDone
 
             PPLBB:
             Locate 17, 49
             Max = 3
-            draftP# = teamPitchers%(I, 42)
+            draftP# = pitcherRatings(I, 42)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 42) = Int(draftP#)
-            Locate 17, 49: Print Using "###"; teamPitchers%(I, 42)
+            pitcherRatings(I, 42) = Int(draftP#)
+            Locate 17, 49: Print Using "###"; pitcherRatings(I, 42)
             If XCode = 1 GoTo PPLHR:
             If XCode = 2 GoTo PDone
 
             PPLKO:
             Locate 17, 54
             Max = 3
-            draftP# = teamPitchers%(I, 43)
+            draftP# = pitcherRatings(I, 43)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 43) = Int(draftP#)
-            Locate 17, 54: Print Using "###"; teamPitchers%(I, 43)
+            pitcherRatings(I, 43) = Int(draftP#)
+            Locate 17, 54: Print Using "###"; pitcherRatings(I, 43)
             If XCode = 1 GoTo PPLBB:
             If XCode = 2 GoTo PDone
 
             PPRAB:
             Locate 18, 17
             Max = 3
-            draftP# = teamPitchers%(I, 44)
+            draftP# = pitcherRatings(I, 44)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 44) = Int(draftP#)
-            Locate 18, 17: Print Using "###"; teamPitchers%(I, 44)
+            pitcherRatings(I, 44) = Int(draftP#)
+            Locate 18, 17: Print Using "###"; pitcherRatings(I, 44)
             If XCode = 1 GoTo PPLKO:
             If XCode = 2 GoTo PDone
 
             PPRH:
             Locate 18, 27
             Max = 3
-            draftP# = teamPitchers%(I, 45)
+            draftP# = pitcherRatings(I, 45)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 45) = Int(draftP#)
-            Locate 18, 27: Print Using "###"; teamPitchers%(I, 45)
+            pitcherRatings(I, 45) = Int(draftP#)
+            Locate 18, 27: Print Using "###"; pitcherRatings(I, 45)
             If XCode = 1 GoTo PPRAB:
             If XCode = 2 GoTo PDone
 
             PPR2B:
             Locate 18, 32
             Max = 2
-            draftP# = teamPitchers%(I, 46)
+            draftP# = pitcherRatings(I, 46)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 46) = Int(draftP#)
-            Locate 18, 32: Print Using "##"; teamPitchers%(I, 46)
+            pitcherRatings(I, 46) = Int(draftP#)
+            Locate 18, 32: Print Using "##"; pitcherRatings(I, 46)
             If XCode = 1 GoTo PPRH:
             If XCode = 2 GoTo PDone
 
             PPR3B:
             Locate 18, 36
             Max = 2
-            draftP# = teamPitchers%(I, 47)
+            draftP# = pitcherRatings(I, 47)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 47) = Int(draftP#)
-            Locate 18, 36: Print Using "##"; teamPitchers%(I, 47)
+            pitcherRatings(I, 47) = Int(draftP#)
+            Locate 18, 36: Print Using "##"; pitcherRatings(I, 47)
             If XCode = 1 GoTo PPR2B:
             If XCode = 2 GoTo PDone
 
             PPRHR:
             Locate 18, 40
             Max = 2
-            draftP# = teamPitchers%(I, 48)
+            draftP# = pitcherRatings(I, 48)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 48) = Int(draftP#)
-            Locate 18, 40: Print Using "##"; teamPitchers%(I, 48)
+            pitcherRatings(I, 48) = Int(draftP#)
+            Locate 18, 40: Print Using "##"; pitcherRatings(I, 48)
             If XCode = 1 GoTo PPR3B:
             If XCode = 2 GoTo PDone
 
             PPRBB:
             Locate 18, 49
             Max = 3
-            draftP# = teamPitchers%(I, 49)
+            draftP# = pitcherRatings(I, 49)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 49) = Int(draftP#)
-            Locate 18, 49: Print Using "###"; teamPitchers%(I, 49)
+            pitcherRatings(I, 49) = Int(draftP#)
+            Locate 18, 49: Print Using "###"; pitcherRatings(I, 49)
             If XCode = 1 GoTo PPRHR:
             If XCode = 2 GoTo PDone
 
             PPRKO:
             Locate 18, 54
             Max = 3
-            draftP# = teamPitchers%(I, 50)
+            draftP# = pitcherRatings(I, 50)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 50) = Int(draftP#)
-            Locate 18, 54: Print Using "###"; teamPitchers%(I, 50)
+            pitcherRatings(I, 50) = Int(draftP#)
+            Locate 18, 54: Print Using "###"; pitcherRatings(I, 50)
             If XCode = 1 GoTo PPRBB:
             If XCode = 2 GoTo PDone
 
             PLLBA:
             Locate 22, 27
             Max = 3
-            draftP# = teamPitchers%(I, 65)
+            draftP# = pitcherRatings(I, 65)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 65) = Int(draftP#)
-            Locate 22, 27: Print Using "###"; teamPitchers%(I, 65)
+            pitcherRatings(I, 65) = Int(draftP#)
+            Locate 22, 27: Print Using "###"; pitcherRatings(I, 65)
             If XCode = 1 GoTo PPRKO:
             If XCode = 2 GoTo PDone
 
             PLL2B:
             Locate 22, 32
             Max = 3
-            draftP# = teamPitchers%(I, 66)
+            draftP# = pitcherRatings(I, 66)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 66) = Int(draftP#)
-            Locate 22, 32: Print Using "###"; teamPitchers%(I, 66)
+            pitcherRatings(I, 66) = Int(draftP#)
+            Locate 22, 32: Print Using "###"; pitcherRatings(I, 66)
             If XCode = 1 GoTo PLLBA:
             If XCode = 2 GoTo PDone
 
             PLL3B:
             Locate 22, 37
             Max = 3
-            draftP# = teamPitchers%(I, 67)
+            draftP# = pitcherRatings(I, 67)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 67) = Int(draftP#)
-            Locate 22, 37: Print Using "###"; teamPitchers%(I, 67)
+            pitcherRatings(I, 67) = Int(draftP#)
+            Locate 22, 37: Print Using "###"; pitcherRatings(I, 67)
             If XCode = 1 GoTo PLL2B:
             If XCode = 2 GoTo PDone
 
             PLLHR:
             Locate 22, 42
             Max = 3
-            draftP# = teamPitchers%(I, 68)
+            draftP# = pitcherRatings(I, 68)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 68) = Int(draftP#)
-            Locate 22, 42: Print Using "###"; teamPitchers%(I, 68)
+            pitcherRatings(I, 68) = Int(draftP#)
+            Locate 22, 42: Print Using "###"; pitcherRatings(I, 68)
             If XCode = 1 GoTo PLL3B:
             If XCode = 2 GoTo PDone
 
             PLLBB:
             Locate 22, 47
             Max = 3
-            draftP# = teamPitchers%(I, 69)
+            draftP# = pitcherRatings(I, 69)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 69) = Int(draftP#)
-            Locate 22, 47: Print Using "###"; teamPitchers%(I, 69)
+            pitcherRatings(I, 69) = Int(draftP#)
+            Locate 22, 47: Print Using "###"; pitcherRatings(I, 69)
             If XCode = 1 GoTo PLLHR:
             If XCode = 2 GoTo PDone
 
             PLLKO:
             Locate 22, 52
             Max = 3
-            draftP# = teamPitchers%(I, 70)
+            draftP# = pitcherRatings(I, 70)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 70) = Int(draftP#)
-            Locate 22, 52: Print Using "###"; teamPitchers%(I, 70)
+            pitcherRatings(I, 70) = Int(draftP#)
+            Locate 22, 52: Print Using "###"; pitcherRatings(I, 70)
             If XCode = 1 GoTo PLLBB:
             If XCode = 2 GoTo PDone
 
             PLRBA:
             Locate 23, 27
             Max = 3
-            draftP# = teamPitchers%(I, 71)
+            draftP# = pitcherRatings(I, 71)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 71) = Int(draftP#)
-            Locate 23, 27: Print Using "###"; teamPitchers%(I, 71)
+            pitcherRatings(I, 71) = Int(draftP#)
+            Locate 23, 27: Print Using "###"; pitcherRatings(I, 71)
             If XCode = 1 GoTo PLLKO:
             If XCode = 2 GoTo PDone
 
             PLR2B:
             Locate 23, 32
             Max = 3
-            draftP# = teamPitchers%(I, 72)
+            draftP# = pitcherRatings(I, 72)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 72) = Int(draftP#)
-            Locate 23, 32: Print Using "###"; teamPitchers%(I, 72)
+            pitcherRatings(I, 72) = Int(draftP#)
+            Locate 23, 32: Print Using "###"; pitcherRatings(I, 72)
             If XCode = 1 GoTo PLRBA:
             If XCode = 2 GoTo PDone
 
             PLR3B:
             Locate 23, 37
             Max = 3
-            draftP# = teamPitchers%(I, 73)
+            draftP# = pitcherRatings(I, 73)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 73) = Int(draftP#)
-            Locate 23, 37: Print Using "###"; teamPitchers%(I, 73)
+            pitcherRatings(I, 73) = Int(draftP#)
+            Locate 23, 37: Print Using "###"; pitcherRatings(I, 73)
             If XCode = 1 GoTo PLR2B:
             If XCode = 2 GoTo PDone
 
             PLRHR:
             Locate 23, 42
             Max = 3
-            draftP# = teamPitchers%(I, 74)
+            draftP# = pitcherRatings(I, 74)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 74) = Int(draftP#)
-            Locate 23, 42: Print Using "###"; teamPitchers%(I, 74)
+            pitcherRatings(I, 74) = Int(draftP#)
+            Locate 23, 42: Print Using "###"; pitcherRatings(I, 74)
             If XCode = 1 GoTo PLR3B:
             If XCode = 2 GoTo PDone
 
             PLRBB:
             Locate 23, 47
             Max = 3
-            draftP# = teamPitchers%(I, 75)
+            draftP# = pitcherRatings(I, 75)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 75) = Int(draftP#)
-            Locate 23, 47: Print Using "###"; teamPitchers%(I, 75)
+            pitcherRatings(I, 75) = Int(draftP#)
+            Locate 23, 47: Print Using "###"; pitcherRatings(I, 75)
             If XCode = 1 GoTo PLRHR:
             If XCode = 2 GoTo PDone
 
             PLRKO:
             Locate 23, 52
             Max = 3
-            draftP# = teamPitchers%(I, 76)
+            draftP# = pitcherRatings(I, 76)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 76) = Int(draftP#)
-            Locate 23, 52: Print Using "###"; teamPitchers%(I, 76)
+            pitcherRatings(I, 76) = Int(draftP#)
+            Locate 23, 52: Print Using "###"; pitcherRatings(I, 76)
             If XCode = 1 GoTo PLRBB:
             If XCode = 2 GoTo PDone
 
             PRLBA:
             Locate 24, 27
             Max = 3
-            draftP# = teamPitchers%(I, 77)
+            draftP# = pitcherRatings(I, 77)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 77) = Int(draftP#)
-            Locate 24, 27: Print Using "###"; teamPitchers%(I, 77);
+            pitcherRatings(I, 77) = Int(draftP#)
+            Locate 24, 27: Print Using "###"; pitcherRatings(I, 77);
             If XCode = 1 GoTo PLRKO:
             If XCode = 2 GoTo PDone
 
             PRL2B:
             Locate 24, 32
             Max = 3
-            draftP# = teamPitchers%(I, 78)
+            draftP# = pitcherRatings(I, 78)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 78) = Int(draftP#)
-            Locate 24, 32: Print Using "###"; teamPitchers%(I, 78);
+            pitcherRatings(I, 78) = Int(draftP#)
+            Locate 24, 32: Print Using "###"; pitcherRatings(I, 78);
             If XCode = 1 GoTo PRLBA:
             If XCode = 2 GoTo PDone
 
             PRL3B:
             Locate 24, 37
             Max = 3
-            draftP# = teamPitchers%(I, 79)
+            draftP# = pitcherRatings(I, 79)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 79) = Int(draftP#)
-            Locate 24, 37: Print Using "###"; teamPitchers%(I, 79);
+            pitcherRatings(I, 79) = Int(draftP#)
+            Locate 24, 37: Print Using "###"; pitcherRatings(I, 79);
             If XCode = 1 GoTo PRL2B:
             If XCode = 2 GoTo PDone
 
             PRLHR:
             Locate 24, 42
             Max = 3
-            draftP# = teamPitchers%(I, 80)
+            draftP# = pitcherRatings(I, 80)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 80) = Int(draftP#)
-            Locate 24, 42: Print Using "###"; teamPitchers%(I, 80);
+            pitcherRatings(I, 80) = Int(draftP#)
+            Locate 24, 42: Print Using "###"; pitcherRatings(I, 80);
             If XCode = 1 GoTo PRL3B:
             If XCode = 2 GoTo PDone
 
             PRLBB:
             Locate 24, 47
             Max = 3
-            draftP# = teamPitchers%(I, 81)
+            draftP# = pitcherRatings(I, 81)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 81) = Int(draftP#)
-            Locate 24, 47: Print Using "###"; teamPitchers%(I, 81);
+            pitcherRatings(I, 81) = Int(draftP#)
+            Locate 24, 47: Print Using "###"; pitcherRatings(I, 81);
             If XCode = 1 GoTo PRLHR:
             If XCode = 2 GoTo PDone
 
             PRLKO:
             Locate 24, 52
             Max = 3
-            draftP# = teamPitchers%(I, 82)
+            draftP# = pitcherRatings(I, 82)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 82) = Int(draftP#)
-            Locate 24, 52: Print Using "###"; teamPitchers%(I, 82);
+            pitcherRatings(I, 82) = Int(draftP#)
+            Locate 24, 52: Print Using "###"; pitcherRatings(I, 82);
             If XCode = 1 GoTo PRLBB:
             If XCode = 2 GoTo PDone
 
             PRRBA:
             Locate 25, 27
             Max = 3
-            draftP# = teamPitchers%(I, 83)
+            draftP# = pitcherRatings(I, 83)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 83) = Int(draftP#)
-            Locate 25, 27: Print Using "###"; teamPitchers%(I, 83);
+            pitcherRatings(I, 83) = Int(draftP#)
+            Locate 25, 27: Print Using "###"; pitcherRatings(I, 83);
             If XCode = 1 GoTo PRLKO:
             If XCode = 2 GoTo PDone
 
             PRR2B:
             Locate 25, 32
             Max = 3
-            draftP# = teamPitchers%(I, 84)
+            draftP# = pitcherRatings(I, 84)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 84) = Int(draftP#)
-            Locate 25, 32: Print Using "###"; teamPitchers%(I, 84);
+            pitcherRatings(I, 84) = Int(draftP#)
+            Locate 25, 32: Print Using "###"; pitcherRatings(I, 84);
             If XCode = 1 GoTo PRRBA:
             If XCode = 2 GoTo PDone
 
             PRR3B:
             Locate 25, 37
             Max = 3
-            draftP# = teamPitchers%(I, 85)
+            draftP# = pitcherRatings(I, 85)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 85) = Int(draftP#)
-            Locate 25, 37: Print Using "###"; teamPitchers%(I, 85);
+            pitcherRatings(I, 85) = Int(draftP#)
+            Locate 25, 37: Print Using "###"; pitcherRatings(I, 85);
             If XCode = 1 GoTo PRR2B:
             If XCode = 2 GoTo PDone
 
             PRRHR:
             Locate 25, 42
             Max = 3
-            draftP# = teamPitchers%(I, 86)
+            draftP# = pitcherRatings(I, 86)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 86) = Int(draftP#)
-            Locate 25, 42: Print Using "###"; teamPitchers%(I, 86);
+            pitcherRatings(I, 86) = Int(draftP#)
+            Locate 25, 42: Print Using "###"; pitcherRatings(I, 86);
             If XCode = 1 GoTo PRR3B:
             If XCode = 2 GoTo PDone
 
             PRRBB:
             Locate 25, 47
             Max = 3
-            draftP# = teamPitchers%(I, 87)
+            draftP# = pitcherRatings(I, 87)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 87) = Int(draftP#)
-            Locate 25, 47: Print Using "###"; teamPitchers%(I, 87);
+            pitcherRatings(I, 87) = Int(draftP#)
+            Locate 25, 47: Print Using "###"; pitcherRatings(I, 87);
             If XCode = 1 GoTo PRRHR:
             If XCode = 2 GoTo PDone
 
             PRRKO:
             Locate 25, 52
             Max = 3
-            draftP# = teamPitchers%(I, 88)
+            draftP# = pitcherRatings(I, 88)
             Call NumIn(draftP#, Max, XCode, FG, BG)
-            teamPitchers%(I, 88) = Int(draftP#)
-            Locate 25, 52: Print Using "###"; teamPitchers%(I, 88);
+            pitcherRatings(I, 88) = Int(draftP#)
+            Locate 25, 52: Print Using "###"; pitcherRatings(I, 88);
             If XCode = 1 GoTo PRRBB:
 
             PDone:
@@ -3715,11 +3662,11 @@ Sub EditPitcher ()
             If X$ = "N" GoTo PName
             If X$ <> "Y" GoTo PDone 'insist on either Y or N or up-arrow
 
-            teamPitchers%(I, 0) = 1
-            If UCase$(_Trim$(THROW$)) = "L" Then teamPitchers%(I, 0) = -1
+            pitcherRatings(I, 0) = 1
+            If UCase$(_Trim$(THROW$)) = "L" Then pitcherRatings(I, 0) = -1
 
-            teamPitchers%(I, 34) = 0
-            If UCase$(_Trim$(ACT$)) = "N" Then teamPitchers%(I, 34) = 1
+            pitcherRatings(I, 34) = 0
+            If UCase$(_Trim$(ACT$)) = "N" Then pitcherRatings(I, 34) = 1
 
         End If
 
@@ -3733,96 +3680,96 @@ End Sub
 '...explanation...
 Sub PITCHINIT (i, FG, BG)
 
-    Shared teamPitchers%()
+    Shared pitcherRatings()
 
     Color FG, BG
 
-    Locate 1, 60: Print Using "###"; teamPitchers%(i, 35)
-    Locate 1, 78: Print Using "#"; teamPitchers%(i, 18)
-    Locate 5, 10: Print Using "##"; teamPitchers%(i, 1)
-    Locate 5, 14: Print Using "##"; teamPitchers%(i, 2)
-    Locate 5, 18: Print Using "##"; teamPitchers%(i, 3)
-    Locate 5, 22: Print Using "###"; teamPitchers%(i, 4)
-    Locate 5, 27: Print Using "##"; teamPitchers%(i, 5)
-    Locate 5, 31: Print Using "##"; teamPitchers%(i, 16)
-    Locate 5, 35: Print Using "###"; teamPitchers%(i, 6)
-    Locate 5, 40: Print Using "###"; teamPitchers%(i, 7)
-    Locate 5, 45: Print Using "###"; teamPitchers%(i, 8)
-    Locate 5, 50: Print Using "###"; teamPitchers%(i, 9)
-    Locate 5, 55: Print Using "##"; teamPitchers%(i, 33)
-    Locate 5, 59: Print Using "####"; teamPitchers%(i, 10)
-    Locate 5, 66: Print Using "##"; teamPitchers%(i, 13)
-    Locate 6, 32: Print Using "##"; teamPitchers%(i, 12)
-    Locate 6, 50: Print Using "###"; teamPitchers%(i, 14)
-    Locate 10, 25: Print Using "###"; teamPitchers%(i, 51)
-    Locate 10, 30: Print Using "###"; teamPitchers%(i, 52)
-    Locate 10, 35: Print Using "##"; teamPitchers%(i, 53)
-    Locate 10, 39: Print Using "##"; teamPitchers%(i, 54)
-    Locate 10, 43: Print Using "##"; teamPitchers%(i, 55)
-    Locate 10, 47: Print Using "###"; teamPitchers%(i, 56)
-    Locate 10, 52: Print Using "###"; teamPitchers%(i, 57)
-    Locate 11, 25: Print Using "###"; teamPitchers%(i, 58)
-    Locate 11, 30: Print Using "###"; teamPitchers%(i, 59)
-    Locate 11, 35: Print Using "##"; teamPitchers%(i, 60)
-    Locate 11, 39: Print Using "##"; teamPitchers%(i, 61)
-    Locate 11, 43: Print Using "##"; teamPitchers%(i, 62)
-    Locate 11, 47: Print Using "###"; teamPitchers%(i, 63)
-    Locate 11, 52: Print Using "###"; teamPitchers%(i, 64)
-    Locate 14, 20: Print Using "#"; teamPitchers%(i, 31)
-    Locate 14, 36: Print Using "#"; teamPitchers%(i, 32)
-    Locate 14, 52: Print Using "###"; teamPitchers%(i, 11)
-    Locate 14, 68: Print Using "####"; teamPitchers%(i, 17)
-    Locate 16, 12: Print Using "###"; teamPitchers%(i, 19)
-    Locate 16, 17: Print Using "###"; teamPitchers%(i, 20)
-    Locate 16, 22: Print Using "###"; teamPitchers%(i, 21)
-    Locate 16, 27: Print Using "###"; teamPitchers%(i, 22)
-    Locate 16, 32: Print Using "##"; teamPitchers%(i, 23)
-    Locate 16, 36: Print Using "##"; teamPitchers%(i, 24)
-    Locate 16, 40: Print Using "##"; teamPitchers%(i, 25)
-    Locate 16, 44: Print Using "###"; teamPitchers%(i, 26)
-    Locate 16, 49: Print Using "###"; teamPitchers%(i, 27)
-    Locate 16, 54: Print Using "###"; teamPitchers%(i, 28)
-    Locate 16, 59: Print Using "###"; teamPitchers%(i, 29)
-    Locate 16, 64: Print Using "##"; teamPitchers%(i, 30)
-    Locate 16, 68: Print Using "##"; teamPitchers%(i, 36)
-    Locate 17, 17: Print Using "###"; teamPitchers%(i, 37)
-    Locate 17, 27: Print Using "###"; teamPitchers%(i, 38)
-    Locate 17, 32: Print Using "##"; teamPitchers%(i, 39)
-    Locate 17, 36: Print Using "##"; teamPitchers%(i, 40)
-    Locate 17, 40: Print Using "##"; teamPitchers%(i, 41)
-    Locate 17, 49: Print Using "###"; teamPitchers%(i, 42)
-    Locate 17, 54: Print Using "###"; teamPitchers%(i, 43)
-    Locate 18, 17: Print Using "###"; teamPitchers%(i, 44)
-    Locate 18, 27: Print Using "###"; teamPitchers%(i, 45)
-    Locate 18, 32: Print Using "##"; teamPitchers%(i, 46)
-    Locate 18, 36: Print Using "##"; teamPitchers%(i, 47)
-    Locate 18, 40: Print Using "##"; teamPitchers%(i, 48)
-    Locate 18, 49: Print Using "###"; teamPitchers%(i, 49)
-    Locate 18, 54: Print Using "###"; teamPitchers%(i, 50)
-    Locate 22, 27: Print Using "###"; teamPitchers%(i, 65)
-    Locate 22, 32: Print Using "###"; teamPitchers%(i, 66)
-    Locate 22, 37: Print Using "###"; teamPitchers%(i, 67)
-    Locate 22, 42: Print Using "###"; teamPitchers%(i, 68)
-    Locate 22, 47: Print Using "###"; teamPitchers%(i, 69)
-    Locate 22, 52: Print Using "###"; teamPitchers%(i, 70)
-    Locate 23, 27: Print Using "###"; teamPitchers%(i, 71)
-    Locate 23, 32: Print Using "###"; teamPitchers%(i, 72)
-    Locate 23, 37: Print Using "###"; teamPitchers%(i, 73)
-    Locate 23, 42: Print Using "###"; teamPitchers%(i, 74)
-    Locate 23, 47: Print Using "###"; teamPitchers%(i, 75)
-    Locate 23, 52: Print Using "###"; teamPitchers%(i, 76)
-    Locate 24, 27: Print Using "###"; teamPitchers%(i, 77);
-    Locate 24, 32: Print Using "###"; teamPitchers%(i, 78);
-    Locate 24, 37: Print Using "###"; teamPitchers%(i, 79);
-    Locate 24, 42: Print Using "###"; teamPitchers%(i, 80);
-    Locate 24, 47: Print Using "###"; teamPitchers%(i, 81);
-    Locate 24, 52: Print Using "###"; teamPitchers%(i, 82);
-    Locate 25, 27: Print Using "###"; teamPitchers%(i, 83);
-    Locate 25, 32: Print Using "###"; teamPitchers%(i, 84);
-    Locate 25, 37: Print Using "###"; teamPitchers%(i, 85);
-    Locate 25, 42: Print Using "###"; teamPitchers%(i, 86);
-    Locate 25, 47: Print Using "###"; teamPitchers%(i, 87);
-    Locate 25, 52: Print Using "###"; teamPitchers%(i, 88);
+    Locate 1, 60: Print Using "###"; pitcherRatings(i, 35)
+    Locate 1, 78: Print Using "#"; pitcherRatings(i, 18)
+    Locate 5, 10: Print Using "##"; pitcherRatings(i, 1)
+    Locate 5, 14: Print Using "##"; pitcherRatings(i, 2)
+    Locate 5, 18: Print Using "##"; pitcherRatings(i, 3)
+    Locate 5, 22: Print Using "###"; pitcherRatings(i, 4)
+    Locate 5, 27: Print Using "##"; pitcherRatings(i, 5)
+    Locate 5, 31: Print Using "##"; pitcherRatings(i, 16)
+    Locate 5, 35: Print Using "###"; pitcherRatings(i, 6)
+    Locate 5, 40: Print Using "###"; pitcherRatings(i, 7)
+    Locate 5, 45: Print Using "###"; pitcherRatings(i, 8)
+    Locate 5, 50: Print Using "###"; pitcherRatings(i, 9)
+    Locate 5, 55: Print Using "##"; pitcherRatings(i, 33)
+    Locate 5, 59: Print Using "####"; pitcherRatings(i, 10)
+    Locate 5, 66: Print Using "##"; pitcherRatings(i, 13)
+    Locate 6, 32: Print Using "##"; pitcherRatings(i, 12)
+    Locate 6, 50: Print Using "###"; pitcherRatings(i, 14)
+    Locate 10, 25: Print Using "###"; pitcherRatings(i, 51)
+    Locate 10, 30: Print Using "###"; pitcherRatings(i, 52)
+    Locate 10, 35: Print Using "##"; pitcherRatings(i, 53)
+    Locate 10, 39: Print Using "##"; pitcherRatings(i, 54)
+    Locate 10, 43: Print Using "##"; pitcherRatings(i, 55)
+    Locate 10, 47: Print Using "###"; pitcherRatings(i, 56)
+    Locate 10, 52: Print Using "###"; pitcherRatings(i, 57)
+    Locate 11, 25: Print Using "###"; pitcherRatings(i, 58)
+    Locate 11, 30: Print Using "###"; pitcherRatings(i, 59)
+    Locate 11, 35: Print Using "##"; pitcherRatings(i, 60)
+    Locate 11, 39: Print Using "##"; pitcherRatings(i, 61)
+    Locate 11, 43: Print Using "##"; pitcherRatings(i, 62)
+    Locate 11, 47: Print Using "###"; pitcherRatings(i, 63)
+    Locate 11, 52: Print Using "###"; pitcherRatings(i, 64)
+    Locate 14, 20: Print Using "#"; pitcherRatings(i, 31)
+    Locate 14, 36: Print Using "#"; pitcherRatings(i, 32)
+    Locate 14, 52: Print Using "###"; pitcherRatings(i, 11)
+    Locate 14, 68: Print Using "####"; pitcherRatings(i, 17)
+    Locate 16, 12: Print Using "###"; pitcherRatings(i, 19)
+    Locate 16, 17: Print Using "###"; pitcherRatings(i, 20)
+    Locate 16, 22: Print Using "###"; pitcherRatings(i, 21)
+    Locate 16, 27: Print Using "###"; pitcherRatings(i, 22)
+    Locate 16, 32: Print Using "##"; pitcherRatings(i, 23)
+    Locate 16, 36: Print Using "##"; pitcherRatings(i, 24)
+    Locate 16, 40: Print Using "##"; pitcherRatings(i, 25)
+    Locate 16, 44: Print Using "###"; pitcherRatings(i, 26)
+    Locate 16, 49: Print Using "###"; pitcherRatings(i, 27)
+    Locate 16, 54: Print Using "###"; pitcherRatings(i, 28)
+    Locate 16, 59: Print Using "###"; pitcherRatings(i, 29)
+    Locate 16, 64: Print Using "##"; pitcherRatings(i, 30)
+    Locate 16, 68: Print Using "##"; pitcherRatings(i, 36)
+    Locate 17, 17: Print Using "###"; pitcherRatings(i, 37)
+    Locate 17, 27: Print Using "###"; pitcherRatings(i, 38)
+    Locate 17, 32: Print Using "##"; pitcherRatings(i, 39)
+    Locate 17, 36: Print Using "##"; pitcherRatings(i, 40)
+    Locate 17, 40: Print Using "##"; pitcherRatings(i, 41)
+    Locate 17, 49: Print Using "###"; pitcherRatings(i, 42)
+    Locate 17, 54: Print Using "###"; pitcherRatings(i, 43)
+    Locate 18, 17: Print Using "###"; pitcherRatings(i, 44)
+    Locate 18, 27: Print Using "###"; pitcherRatings(i, 45)
+    Locate 18, 32: Print Using "##"; pitcherRatings(i, 46)
+    Locate 18, 36: Print Using "##"; pitcherRatings(i, 47)
+    Locate 18, 40: Print Using "##"; pitcherRatings(i, 48)
+    Locate 18, 49: Print Using "###"; pitcherRatings(i, 49)
+    Locate 18, 54: Print Using "###"; pitcherRatings(i, 50)
+    Locate 22, 27: Print Using "###"; pitcherRatings(i, 65)
+    Locate 22, 32: Print Using "###"; pitcherRatings(i, 66)
+    Locate 22, 37: Print Using "###"; pitcherRatings(i, 67)
+    Locate 22, 42: Print Using "###"; pitcherRatings(i, 68)
+    Locate 22, 47: Print Using "###"; pitcherRatings(i, 69)
+    Locate 22, 52: Print Using "###"; pitcherRatings(i, 70)
+    Locate 23, 27: Print Using "###"; pitcherRatings(i, 71)
+    Locate 23, 32: Print Using "###"; pitcherRatings(i, 72)
+    Locate 23, 37: Print Using "###"; pitcherRatings(i, 73)
+    Locate 23, 42: Print Using "###"; pitcherRatings(i, 74)
+    Locate 23, 47: Print Using "###"; pitcherRatings(i, 75)
+    Locate 23, 52: Print Using "###"; pitcherRatings(i, 76)
+    Locate 24, 27: Print Using "###"; pitcherRatings(i, 77);
+    Locate 24, 32: Print Using "###"; pitcherRatings(i, 78);
+    Locate 24, 37: Print Using "###"; pitcherRatings(i, 79);
+    Locate 24, 42: Print Using "###"; pitcherRatings(i, 80);
+    Locate 24, 47: Print Using "###"; pitcherRatings(i, 81);
+    Locate 24, 52: Print Using "###"; pitcherRatings(i, 82);
+    Locate 25, 27: Print Using "###"; pitcherRatings(i, 83);
+    Locate 25, 32: Print Using "###"; pitcherRatings(i, 84);
+    Locate 25, 37: Print Using "###"; pitcherRatings(i, 85);
+    Locate 25, 42: Print Using "###"; pitcherRatings(i, 86);
+    Locate 25, 47: Print Using "###"; pitcherRatings(i, 87);
+    Locate 25, 52: Print Using "###"; pitcherRatings(i, 88);
 
 End Sub
 
@@ -3832,8 +3779,8 @@ End Sub
 '...explanation...
 Sub ViewHitters ()
 
-    Shared statB$()
-    Shared teamBatters%(), TB%()
+    Shared batterNames$()
+    Shared batterRatings(), TB%()
     Shared statI2!
 
     Do
@@ -3861,13 +3808,13 @@ Sub ViewHitters ()
 
             Color 3
 
-            If statB$(I) <> "XXX" Then
+            If batterNames$(I) <> "XXX" Then
 
-                Print Left$(statB$(I), 10);
+                Print Left$(batterNames$(I), 10);
 
                 Color 7
 
-                Select Case teamBatters%(I, 0)
+                Select Case batterRatings(I, 0)
 
                     Case -2: Print Tab(12); "LP";
                     Case -1: Print Tab(12); "L";
@@ -3877,36 +3824,36 @@ Sub ViewHitters ()
 
                 End Select
 
-                Print Tab(14); Using "#"; teamBatters%(I, 22);
+                Print Tab(14); Using "#"; batterRatings(I, 22);
 
-                If teamBatters%(I, 23) <> -1 Then
-                    Print Using "#"; teamBatters%(I, 23);
-                    If teamBatters%(I, 24) <> -1 Then
-                        Print Using "#"; teamBatters%(I, 24);
-                        If teamBatters%(I, 25) <> -1 Then
-                            Print Using "#"; teamBatters%(I, 25);
+                If batterRatings(I, 23) <> -1 Then
+                    Print Using "#"; batterRatings(I, 23);
+                    If batterRatings(I, 24) <> -1 Then
+                        Print Using "#"; batterRatings(I, 24);
+                        If batterRatings(I, 25) <> -1 Then
+                            Print Using "#"; batterRatings(I, 25);
                         End If
                     End If
                 End If
 
-                Print Tab(20); Using "###"; teamBatters%(I, 3);
-                Print Tab(24); Using "###"; teamBatters%(I, 4);
-                Print Tab(28); Using "###"; teamBatters%(I, 5);
-                Print Tab(32); Using "###"; teamBatters%(I, 6);
-                Print Tab(36); Using "##"; teamBatters%(I, 7);
-                Print Tab(39); Using "##"; teamBatters%(I, 8);
-                Print Tab(42); Using "##"; teamBatters%(I, 9);
-                Print Tab(45); Using "###"; teamBatters%(I, 10);
-                Print Tab(49); Using "###"; teamBatters%(I, 11);
-                Print Tab(53); Using "###"; teamBatters%(I, 12);
-                Print Tab(57); Using "###"; teamBatters%(I, 13);
-                Print Tab(61); Using "##"; teamBatters%(I, 14);
-                Print Tab(64); Using "##"; teamBatters%(I, 18);
+                Print Tab(20); Using "###"; batterRatings(I, 3);
+                Print Tab(24); Using "###"; batterRatings(I, 4);
+                Print Tab(28); Using "###"; batterRatings(I, 5);
+                Print Tab(32); Using "###"; batterRatings(I, 6);
+                Print Tab(36); Using "##"; batterRatings(I, 7);
+                Print Tab(39); Using "##"; batterRatings(I, 8);
+                Print Tab(42); Using "##"; batterRatings(I, 9);
+                Print Tab(45); Using "###"; batterRatings(I, 10);
+                Print Tab(49); Using "###"; batterRatings(I, 11);
+                Print Tab(53); Using "###"; batterRatings(I, 12);
+                Print Tab(57); Using "###"; batterRatings(I, 13);
+                Print Tab(61); Using "##"; batterRatings(I, 14);
+                Print Tab(64); Using "##"; batterRatings(I, 18);
 
                 statI2! = 0
 
-                If teamBatters%(I, 4) > 0 Then statI2! = Int((teamBatters%(I, 6) / teamBatters%(I, 4) + .0005) * 1000)
-                If teamBatters%(I, 4) = 0 Or statI2! = 0 Then Print Tab(68); ".000"
+                If batterRatings(I, 4) > 0 Then statI2! = Int((batterRatings(I, 6) / batterRatings(I, 4) + .0005) * 1000)
+                If batterRatings(I, 4) = 0 Or statI2! = 0 Then Print Tab(68); ".000"
                 If statI2! > 0 And statI2! < 100 Then Print Tab(68); ".0";: Print Tab(70); Using "##"; statI2!
                 If statI2! > 100 Then Print Tab(68); ".";: Print Tab(69); Using "###"; statI2!
 
@@ -3943,8 +3890,8 @@ End Sub
 '...explanation...
 Sub ViewPitchers ()
 
-    Shared statP$()
-    Shared teamPitchers%(), inputTP%()
+    Shared pitcherNames$()
+    Shared pitcherRatings(), inputTP%()
 
     Cls
 
@@ -3970,31 +3917,31 @@ Sub ViewPitchers ()
 
         Color 3
 
-        If statP$(I) <> "XXX" Then
+        If pitcherNames$(I) <> "XXX" Then
 
-            numberAppearances = numberAppearances + teamPitchers%(I, 4)
-            Print Left$(statP$(I), 10);
+            numberAppearances = numberAppearances + pitcherRatings(I, 4)
+            Print Left$(pitcherNames$(I), 10);
 
             Color 7
 
-            If teamPitchers%(I, 0) = -1 Then Print Tab(14); "L";
-            If teamPitchers%(I, 0) = 1 Then Print Tab(14); "R";
+            If pitcherRatings(I, 0) = -1 Then Print Tab(14); "L";
+            If pitcherRatings(I, 0) = 1 Then Print Tab(14); "R";
 
-            Print Tab(16); Using "##"; teamPitchers%(I, 1);
-            Print Tab(19); Using "##"; teamPitchers%(I, 2);
-            Print Tab(22); Using "##"; teamPitchers%(I, 3);
-            Print Tab(25); Using "##"; teamPitchers%(I, 4);
-            Print Tab(28); Using "##"; teamPitchers%(I, 5);
-            Print Tab(31); Using "###"; teamPitchers%(I, 6);
-            Print Tab(35); Using "###"; teamPitchers%(I, 7);
-            Print Tab(39); Using "###"; teamPitchers%(I, 8);
-            Print Tab(43); Using "###"; teamPitchers%(I, 9);
-            Print Tab(46); Using "##.##"; teamPitchers%(I, 10) / 100;
-            Print Tab(53); Using "##"; teamPitchers%(I, 12);
-            Print Tab(56); Using "##"; teamPitchers%(I, 13);
-            Print Tab(59); Using "##"; teamPitchers%(I, 16);
-            Print Tab(62); Using "##"; teamPitchers%(I, 33);
-            Print Tab(66); Using "##"; teamPitchers%(I, 18)
+            Print Tab(16); Using "##"; pitcherRatings(I, 1);
+            Print Tab(19); Using "##"; pitcherRatings(I, 2);
+            Print Tab(22); Using "##"; pitcherRatings(I, 3);
+            Print Tab(25); Using "##"; pitcherRatings(I, 4);
+            Print Tab(28); Using "##"; pitcherRatings(I, 5);
+            Print Tab(31); Using "###"; pitcherRatings(I, 6);
+            Print Tab(35); Using "###"; pitcherRatings(I, 7);
+            Print Tab(39); Using "###"; pitcherRatings(I, 8);
+            Print Tab(43); Using "###"; pitcherRatings(I, 9);
+            Print Tab(46); Using "##.##"; pitcherRatings(I, 10) / 100;
+            Print Tab(53); Using "##"; pitcherRatings(I, 12);
+            Print Tab(56); Using "##"; pitcherRatings(I, 13);
+            Print Tab(59); Using "##"; pitcherRatings(I, 16);
+            Print Tab(62); Using "##"; pitcherRatings(I, 33);
+            Print Tab(66); Using "##"; pitcherRatings(I, 18)
 
         End If
 
@@ -4022,8 +3969,8 @@ End Sub
 '...explanation...
 Sub ViewHittingFielding ()
 
-    Shared teamPitchers%()
-    Shared statP$()
+    Shared pitcherRatings()
+    Shared pitcherNames$()
 
     Cls
 
@@ -4033,32 +3980,32 @@ Sub ViewHittingFielding ()
     For I = 0 To 21
 
         Color 3
-        Print Left$(statP$(I), 10);
+        Print Left$(pitcherNames$(I), 10);
 
         Color 7
-        Print Tab(14); Using "###"; teamPitchers%(I, 19);
-        Print Tab(18); Using "###"; teamPitchers%(I, 20);
-        Print Tab(22); Using "###"; teamPitchers%(I, 21);
-        Print Tab(26); Using "###"; teamPitchers%(I, 22);
-        Print Tab(30); Using "##"; teamPitchers%(I, 23);
-        Print Tab(33); Using "##"; teamPitchers%(I, 24);
-        Print Tab(36); Using "##"; teamPitchers%(I, 25);
-        Print Tab(39); Using "###"; teamPitchers%(I, 26);
-        Print Tab(43); Using "###"; teamPitchers%(I, 27);
-        Print Tab(47); Using "###"; teamPitchers%(I, 28);
-        Print Tab(52); Using "##"; teamPitchers%(I, 29);
-        Print Tab(55); Using "##"; teamPitchers%(I, 30);
+        Print Tab(14); Using "###"; pitcherRatings(I, 19);
+        Print Tab(18); Using "###"; pitcherRatings(I, 20);
+        Print Tab(22); Using "###"; pitcherRatings(I, 21);
+        Print Tab(26); Using "###"; pitcherRatings(I, 22);
+        Print Tab(30); Using "##"; pitcherRatings(I, 23);
+        Print Tab(33); Using "##"; pitcherRatings(I, 24);
+        Print Tab(36); Using "##"; pitcherRatings(I, 25);
+        Print Tab(39); Using "###"; pitcherRatings(I, 26);
+        Print Tab(43); Using "###"; pitcherRatings(I, 27);
+        Print Tab(47); Using "###"; pitcherRatings(I, 28);
+        Print Tab(52); Using "##"; pitcherRatings(I, 29);
+        Print Tab(55); Using "##"; pitcherRatings(I, 30);
 
-        If teamPitchers%(I, 11) <> 999 Then
-            statPCT! = teamPitchers%(I, 11) / 1000
+        If pitcherRatings(I, 11) <> 999 Then
+            statPCT! = pitcherRatings(I, 11) / 1000
             Print Tab(59); Using "#.###"; statPCT!;
         Else
             statI2! = 0
 
             '-- This is initialized as 1000
             '-- So when not given a value it calculates too large
-            If teamPitchers%(I, 20) > 0 Then statI2! = Int((teamPitchers%(I, 22) / teamPitchers%(I, 20) + .0005) * 1000)
-            If teamPitchers%(I, 20) = 0 Or statI2! = 0 Then Print Tab(59); ".000";
+            If pitcherRatings(I, 20) > 0 Then statI2! = Int((pitcherRatings(I, 22) / pitcherRatings(I, 20) + .0005) * 1000)
+            If pitcherRatings(I, 20) = 0 Or statI2! = 0 Then Print Tab(59); ".000";
 
             If statI2! > 0 And statI2! < 100 Then Print Tab(59); ".0";: Print Tab(61); Using "##"; statI2!;
             If statI2! > 100 And statI2! < 1000 Then Print Tab(59); ".";: Print Tab(60); Using "###"; statI2!;
@@ -4067,9 +4014,9 @@ Sub ViewHittingFielding ()
 
         End If
 
-        Print Tab(64); Using "#"; teamPitchers%(I, 31);
-        Print Tab(66); Using "#"; teamPitchers%(I, 32);
-        Print Tab(68); Using "####"; teamPitchers%(I, 17)
+        Print Tab(64); Using "#"; pitcherRatings(I, 31);
+        Print Tab(66); Using "#"; pitcherRatings(I, 32);
+        Print Tab(68); Using "####"; pitcherRatings(I, 17)
 
     Next
 
@@ -4085,8 +4032,8 @@ End Sub
 '...explanation...
 Sub FieldingStats ()
 
-    Shared statB$()
-    Shared teamBatters%()
+    Shared batterNames$()
+    Shared batterRatings()
 
     Cls
 
@@ -4110,23 +4057,23 @@ Sub FieldingStats ()
         End If
 
         Color 3
-        Print Left$(statB$(I), 10);
+        Print Left$(batterNames$(I), 10);
 
         Color 7
-        Print Tab(13); Using "####"; teamBatters%(I, 26);
-        Print Tab(19); Using "#"; teamBatters%(I, 33);
-        Print Tab(23); Using "#"; teamBatters%(I, 34);
-        Print Tab(26); Using "####"; teamBatters%(I, 27);
-        Print Tab(32); Using "#"; teamBatters%(I, 35);
-        Print Tab(36); Using "#"; teamBatters%(I, 36);
-        Print Tab(39); Using "####"; teamBatters%(I, 28);
-        Print Tab(45); Using "#"; teamBatters%(I, 37);
-        Print Tab(49); Using "#"; teamBatters%(I, 38);
-        Print Tab(52); Using "####"; teamBatters%(I, 29);
-        Print Tab(58); Using "#"; teamBatters%(I, 39);
-        Print Tab(62); Using "#"; teamBatters%(I, 40);
-        Print Tab(66); Using "#"; teamBatters%(I, 16);
-        Print Tab(71); Using "#"; teamBatters%(I, 30)
+        Print Tab(13); Using "####"; batterRatings(I, 26);
+        Print Tab(19); Using "#"; batterRatings(I, 33);
+        Print Tab(23); Using "#"; batterRatings(I, 34);
+        Print Tab(26); Using "####"; batterRatings(I, 27);
+        Print Tab(32); Using "#"; batterRatings(I, 35);
+        Print Tab(36); Using "#"; batterRatings(I, 36);
+        Print Tab(39); Using "####"; batterRatings(I, 28);
+        Print Tab(45); Using "#"; batterRatings(I, 37);
+        Print Tab(49); Using "#"; batterRatings(I, 38);
+        Print Tab(52); Using "####"; batterRatings(I, 29);
+        Print Tab(58); Using "#"; batterRatings(I, 39);
+        Print Tab(62); Using "#"; batterRatings(I, 40);
+        Print Tab(66); Using "#"; batterRatings(I, 16);
+        Print Tab(71); Using "#"; batterRatings(I, 30)
 
     Next I
 
@@ -4224,11 +4171,11 @@ End Sub
 '...explanation...
 Sub SelectTeam_BINPUT (yearNumber$, numberTeams, teamIdx)
 
-    Shared teamBatters%(), teamPitchers%()
+    Shared batterRatings(), pitcherRatings()
     Shared inputDYS%(), inputINJ%(), teamRatings%()
-    Shared inputSA%(), inputTS%()
+    Shared teamSA%(), teamTS%()
 
-    Shared statB$(), statP$()
+    Shared batterNames$(), pitcherNames$()
 
     Shared CK, parkHR
 
@@ -4284,26 +4231,31 @@ Sub SelectTeam_BINPUT (yearNumber$, numberTeams, teamIdx)
 
         Get #1, teamIdx
 
-        For I = 1 To 13: teamRatings%(I) = CVI(Q$(I)): Next
+        For I = 1 To 13: 
+            teamRatings%(I) = CVI(Q$(I))
+        Next
 
         parkHR = CVS(Q$(14))
 
-        For I = 0 To 22: statB$(I) = RTrim$(Q$(I * 43 + 15))
+        For I = 0 To 22: 
+            batterNames$(I) = RTrim$(Q$(I * 43 + 15))
             For I1 = 0 To 41
-                teamBatters%(I, I1) = CVI(Q$(I * 43 + I1 + 16))
+                batterRatings(I, I1) = CVI(Q$(I * 43 + I1 + 16))
             Next
         Next
 
         For I = 0 To 21
-            statP$(I) = RTrim$(Q$(I * 38 + 1004))
+            pitcherNames$(I) = RTrim$(Q$(I * 38 + 1004))
             For I1 = 0 To 36
-                teamPitchers%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
+                pitcherRatings(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
             Next
         Next
 
         Stadium$ = RTrim$(Q$(1840))
         Manager$ = RTrim$(Q$(1841))
         teamAbbrev$ = RTrim$(Q$(1842))
+
+        '-- This is currently not used
         CK = CVI(Q$(1843))
 
         Close 1
@@ -4353,64 +4305,65 @@ Sub SelectTeam_BINPUT (yearNumber$, numberTeams, teamIdx)
             Get #1, teamIdx
 
             For X = 0 To 11
-                inputTS%(X) = CVI(Q$(X + 1))
+                teamTS%(X) = CVI(Q$(X + 1))
             Next
 
             For X = 0 To 22
                 For X1 = 1 To 14
-                    teamBatters%(X, X1 + 41) = CVI(Q$(12 + X1 + X * 14))
+                    batterRatings(X, X1 + 41) = CVI(Q$(12 + X1 + X * 14))
                 Next
             Next
 
             For X = 0 To 21
                 For X1 = 1 To 14
-                    teamPitchers%(X, X1 + 36) = CVI(Q$(334 + X1 + X * 14))
+                    pitcherRatings(X, X1 + 36) = CVI(Q$(334 + X1 + X * 14))
                 Next
             Next
 
             For X = 0 To 21
                 For X1 = 1 To 14
-                    teamPitchers%(X, X1 + 50) = CVI(Q$(642 + X1 + X * 14))
+                    pitcherRatings(X, X1 + 50) = CVI(Q$(642 + X1 + X * 14))
                 Next
             Next
 
             For X = 1 To 24
-                inputSA%(X) = CVI(Q$(X + 950))
+                teamSA%(X) = CVI(Q$(X + 950))
             Next
 
             For X = 0 To 22
                 For X1 = 1 To 24
-                    teamBatters%(X, X1 + 55) = CVI(Q$(975 + X1 + X * 24))
+                    batterRatings(X, X1 + 55) = CVI(Q$(975 + X1 + X * 24))
                 Next
             Next
 
             For X = 0 To 21
                 For X1 = 1 To 24
-                    teamPitchers%(X, X1 + 64) = CVI(Q$(1528 + X1 + X * 24))
+                    pitcherRatings(X, X1 + 64) = CVI(Q$(1528 + X1 + X * 24))
                 Next
             Next
 
             Close 1
 
-            If inputTS%(0) <> 999 Then
+            If teamTS%(0) <> 999 Then
+
                 For X = 0 To 22
                     For X1 = 42 To 79
-                        teamBatters%(X, X1) = 0
+                        batterRatings(X, X1) = 0
                     Next
                 Next
 
                 For X = 0 To 21
                     For X1 = 37 To 88
-                        teamPitchers%(X, X1) = 0
+                        pitcherRatings(X, X1) = 0
                     Next
                 Next
 
                 For X = 1 To 24
-                    inputSA%(X) = 0
+                    teamSA%(X) = 0
                 Next
 
                 For X = 0 To 11
-                    inputTS%(X) = 0
+                    teamTS%(X) = 0
                 Next
 
             End If
@@ -4419,27 +4372,11 @@ Sub SelectTeam_BINPUT (yearNumber$, numberTeams, teamIdx)
 
         'Read from stat file
         N$ = RTrim$(Q$(0))
+        statFile$ = nameStatFile$(N$)
 
-        For xx = 4 To 11
-            If Mid$(N$, xx, 1) = " " Or Mid$(N$, xx, 1) = "." Then Mid$(N$, xx, 1) = "_"
-        Next xx
+        If _FileExists(diskPaths$(1) + statFile$ + "D") Then
 
-        QQ = 8
-
-        For xx = 11 To 4 Step -1
-            If Mid$(N$, xx, 1) = "_" Then
-                QQ = xx - 4
-            Else
-                Exit For
-            End If
-        Next xx
-
-        targetFile$ = Mid$(N$, 4, QQ)
-        targetFile$ = targetFile$ + "." + Left$(N$, 2)
-
-        If _FileExists(diskPaths$(1) + targetFile$ + "D") Then
-
-            Open diskPaths$(1) + targetFile$ + "D" For Input As #1
+            Open diskPaths$(1) + statFile$ + "D" For Input As #1
             For I1 = 0 To 22
                 Input #1, inputINJ%(I1)
             Next

@@ -831,7 +831,7 @@ Sub UpdateExpandedLeaders (JB, JP, TS, TTS)
     Shared TT!(), TT1!()
     Shared WW(), LL()
 
-    Shared statB$(), leaderBL$(), statP$(), leaderPL$()
+    Shared batterNames$(), leaderBL$(), pitcherNames$(), leaderPL$()
     Shared TM$(), TMB$(), TMP$(), TT2$()
     Shared Z1$()
 
@@ -943,12 +943,12 @@ Sub UpdateExpandedLeaders (JB, JP, TS, TTS)
                         Input #1, L2%
 
                         For I = 0 To 22
-                            Input #1, statB$(I)
+                            Input #1, batterNames$(I)
                             Input #1, statB%(I)
                         Next I
 
                         For I = 0 To 21:
-                            Input #1, statP$(I)
+                            Input #1, pitcherNames$(I)
                             Input #1, statP%(I)
                         Next I
 
@@ -991,9 +991,9 @@ Sub UpdateExpandedLeaders (JB, JP, TS, TTS)
 
                         For I = 0 To 22
 
-                            If statB$(I) <> "XXX" Then
+                            If batterNames$(I) <> "XXX" Then
                                 JB = JB + 1
-                                leaderBL$(JB) = statB$(I)
+                                leaderBL$(JB) = batterNames$(I)
                                 TBN = TBN + 1
                                 TMB$(TBN) = A$
                                 GM1!(JB) = WW(YY) + LL(YY)
@@ -1003,9 +1003,9 @@ Sub UpdateExpandedLeaders (JB, JP, TS, TTS)
 
                         For I = 0 To 21
 
-                            If statP$(I) <> "XXX" Then
+                            If pitcherNames$(I) <> "XXX" Then
                                 JP = JP + 1
-                                leaderPL$(JP) = statP$(I)
+                                leaderPL$(JP) = pitcherNames$(I)
                                 TPN = TPN + 1
                                 TMP$(TPN) = A$
                                 GM2(JP) = WW(YY) + LL(YY)
@@ -1015,7 +1015,7 @@ Sub UpdateExpandedLeaders (JB, JP, TS, TTS)
 
                         For I = 0 To 22
 
-                            If statB$(I) <> "XXX" Then
+                            If batterNames$(I) <> "XXX" Then
 
                                 K = K + 1
                                 K1 = 0
@@ -1031,7 +1031,7 @@ Sub UpdateExpandedLeaders (JB, JP, TS, TTS)
 
                         For I = 0 To 21
 
-                            If statP$(I) <> "XXX" Then
+                            If pitcherNames$(I) <> "XXX" Then
 
                                 PK = PK + 1
                                 PK1 = 0

@@ -2,28 +2,33 @@ Sub PROGMAN ()
 
     _Title "Full Count Baseball - Programmable Manager"
 
-    Shared K9&()
-    Shared statB$(), progPT$(), yesNo$()
+    Shared parkHR_DRAFT&()
+    Shared batterNames$(), progPT$(), yesNo$()
     Shared MG%()
 
-    statB$(23) = "PITCHER"
+    batterNames$(23) = "PITCHER"
 
     ReDim menuChoices$(1 To 15)
 
     Cls
-    Print Tab(32);: Color 14, 4: Print "COMPUTER MANAGER": Color 15, 0
+    Print Tab(32);
+    Color 14, 4: Print "COMPUTER MANAGER"
+    Color 15, 0
     Print
     Print
-    Print "     THIS PROGRAM ALLOWS YOU TO CUSTOMIZE THE COMPUTER MANAGER'S"
+    Print Tab(11); "THIS PROGRAM ALLOWS YOU TO CUSTOMIZE THE COMPUTER MANAGER'S"
     Print
-    Print "     STRATEGY AND PLAYER USAGE FOR EACH INDIVIDUAL TEAM         "
+    Print Tab(15); "STRATEGY AND PLAYER USAGE FOR EACH INDIVIDUAL TEAM"
     Print
     Print
-    Print "                    PRESS ANY KEY TO CONTINUE                   "
+    Color 14
+    Print Tab(28); "PRESS ANY KEY TO CONTINUE"
+
     I$ = GetKeyPress$
 
     If I$ <> Chr$(27) Then
-        Call GetTeam_PROGMAN(T$, YN$)
+
+        Call GetManagerProfile(T$, YN$)
 
         Do
 
@@ -33,7 +38,8 @@ Sub PROGMAN ()
             Print
             Color 14, 4
             Print Tab(23);
-            Print "FULL COUNT PROGRAMMABLE MANAGER"
+            Print "FULL COUNT PROGRAMMABLE MANAGER";
+            Print Tab(80);
             Print
 
             ReDim menuChoices$(1 To 14)
@@ -78,7 +84,7 @@ Sub PROGMAN ()
                             progMG%(I) = -1
                         Next
 
-                        Call GetTeam_PROGMAN(T$, YN$)
+                        Call GetManagerProfile(T$, YN$)
 
                     Case 2
                         Call LineupStrategy(T$)
@@ -105,13 +111,13 @@ Sub PROGMAN ()
                         Call PinchRunStrategy(T$)
 
                     Case 10
-                        Call BASERUN(YN$)
+                        Call BASERUN(YN$, mgrNbr)
 
                     Case 11
                         Call ImportManagerProfile
 
                     Case 12
-                        Call ExportManagerProfile
+                        Call ExportManagerProfile(mgrNbr)
 
                     Case 13
                         Call PrintManagerProfile(T$)
@@ -263,7 +269,7 @@ End Sub
 Sub AnalyzePlayerUsage (targetTeam$)
 
     Shared AB%(), teamRatings%(), progMG%(), progB%()
-    Shared statB$(), progB1$(), mgrX$()
+    Shared batterNames$(), progB1$(), mgrX$()
 
     Dim FRAC!
 
@@ -330,7 +336,7 @@ Sub AnalyzePlayerUsage (targetTeam$)
 
         Locate , 1
 
-        If statB$(I) = "XXX" Or Left$(statB$(I), 1) = " " Or statB$(I) = "" Then
+        If batterNames$(I) = "XXX" Or Left$(batterNames$(I), 1) = " " Or batterNames$(I) = "" Then
             I1 = I1 + 1
         Else
             Color 2, 0
@@ -348,7 +354,7 @@ Sub AnalyzePlayerUsage (targetTeam$)
                 If progB%(I, 21) >= 98 Then Color 0, 7
             End If
 
-            Locate , 3: Print statB$(I);: Color 15, 0: Locate , 18: Print progB1$(progB%(I, 0) + 2);
+            Locate , 3: Print batterNames$(I);: Color 15, 0: Locate , 18: Print progB1$(progB%(I, 0) + 2);
             Locate , 21: If progB%(I, 22) <> -1 Then Print Using "#"; progB%(I, 22);
             Locate , 22: If progB%(I, 23) <> -1 Then Print Using "#"; progB%(I, 23);
             Locate , 23: If progB%(I, 24) <> -1 Then Print Using "#"; progB%(I, 24);
@@ -371,8 +377,8 @@ End Sub
 '...explanation...
 Sub SelectPinchHitters (yearNumber$, targetTeam$)
 
-    Shared statB$(), progB1$(), mgrX$()
-    Shared teamBatters%(), teamRatings%(), progMG%()
+    Shared batterNames$(), progB1$(), mgrX$()
+    Shared batterRatings(), teamRatings%(), progMG%()
 
     Do
         'SELECT PINCH HITTERS
@@ -395,7 +401,7 @@ Sub SelectPinchHitters (yearNumber$, targetTeam$)
 
         For I = 0 To 22
 
-            If statB$(I) = "XXX" Or Left$(statB$(I), 1) = " " Or statB$(I) = "" Then
+            If batterNames$(I) = "XXX" Or Left$(batterNames$(I), 1) = " " Or batterNames$(I) = "" Then
                 I2 = I2 + 1
             Else
 
@@ -414,14 +420,14 @@ Sub SelectPinchHitters (yearNumber$, targetTeam$)
                     If I = progMG%(I1 + 540) Then Color teamRatings%(11), teamRatings%(12)
                 Next
 
-                Locate , 3: Print statB$(I);
+                Locate , 3: Print batterNames$(I);
 
                 Color 15, 0
-                Locate , 16: Print progB1$(teamBatters%(I, 0) + 2);
-                Locate , 17: Print Using "  ###  ##  ###"; teamBatters%(I, 4); teamBatters%(I, 9); teamBatters%(I, 10);
+                Locate , 16: Print progB1$(batterRatings(I, 0) + 2);
+                Locate , 17: Print Using "  ###  ##  ###"; batterRatings(I, 4); batterRatings(I, 9); batterRatings(I, 10);
 
-                If teamBatters%(I, 4) <> 0 Then Print Using "  .###"; teamBatters%(I, 6) / teamBatters%(I, 4);
-                If teamBatters%(I, 4) = 0 Then Print "  .---";
+                If batterRatings(I, 4) <> 0 Then Print Using "  .###"; batterRatings(I, 6) / batterRatings(I, 4);
+                If batterRatings(I, 4) = 0 Then Print "  .---";
 
             End If
 
@@ -438,7 +444,7 @@ Sub SelectPinchHitters (yearNumber$, targetTeam$)
             If progMG%(I + 540) < 0 Then
                 Print
             Else
-                Print statB$(progMG%(I + 540))
+                Print batterNames$(progMG%(I + 540))
             End If
 
         Next
@@ -453,7 +459,7 @@ Sub SelectPinchHitters (yearNumber$, targetTeam$)
             If progMG%(I + 540) < 0 Then
                 Print
             Else
-                Print statB$(progMG%(I + 540))
+                Print batterNames$(progMG%(I + 540))
             End If
 
         Next
@@ -494,7 +500,7 @@ Sub SelectPinchHitters (yearNumber$, targetTeam$)
                 Call SelectPinchHitters(yearNumber$, targetTeam$)
 
             Case 11:
-                Call UpdateManagerFile(yearNumber$)
+                Call UpdateManagerFile(yearNumber$, mgrNbr)
 
             Case 12:
                 Do
@@ -516,7 +522,7 @@ End Sub
 '...explanation...
 Sub DefenseLateInning (yearNumber$, T$)
 
-    Shared statB$(), mgrX$()
+    Shared batterNames$(), mgrX$()
     Shared teamRatings%(), progMG%(), progB%()
 
     Do
@@ -557,7 +563,7 @@ Sub DefenseLateInning (yearNumber$, T$)
 
             Locate , 1
 
-            If statB$(I) = "XXX" Or Left$(statB$(I), 1) = " " Or statB$(I) = "" Then
+            If batterNames$(I) = "XXX" Or Left$(batterNames$(I), 1) = " " Or batterNames$(I) = "" Then
 
                 I1 = I1 + 1
 
@@ -569,7 +575,7 @@ Sub DefenseLateInning (yearNumber$, T$)
                 If I < 10 Then Print Using "#"; I;: Color 15, 0: If progB%(I, 21) >= 98 Then Color 0, 7
                 If I > 9 Then Print mgrX$(I - 10);: Color 15, 0: If progB%(I, 21) >= 98 Then Color 0, 7
 
-                Locate , 3: Print statB$(I);: Color 15, 0
+                Locate , 3: Print batterNames$(I);: Color 15, 0
                 Locate , 17: If progB%(I, 22) <> -1 Then Print Using "# ####"; progB%(I, 22); progB%(I, 26);
                 Locate , 24: If progB%(I, 23) <> -1 Then Print Using "# ####"; progB%(I, 23); progB%(I, 27);
                 Locate , 31: If progB%(I, 24) <> -1 Then Print Using "# ####"; progB%(I, 24); progB%(I, 28);
@@ -589,9 +595,9 @@ Sub DefenseLateInning (yearNumber$, T$)
             If progMG%(I + 560) < 0 Then
                 Print
             Else
-                Print Left$(statB$(progMG%(I + 560)), 10); Tab(59);
+                Print Left$(batterNames$(progMG%(I + 560)), 10); Tab(59);
                 Print Using "# "; progMG%(I + 576);
-                Print Left$(statB$(progMG%(I + 564)), 10); Tab(72); Using "### #"; progMG%(I + 568); progMG%(I + 572)
+                Print Left$(batterNames$(progMG%(I + 564)), 10); Tab(72); Using "### #"; progMG%(I + 568); progMG%(I + 572)
             End If
 
         Next
@@ -676,7 +682,7 @@ Sub DefenseLateInning (yearNumber$, T$)
                 progMG%(I + 572) = I1
 
             Case 5:
-                Call UpdateManagerFile(yearNumber$)
+                Call UpdateManagerFile(yearNumber$, mgrNbr)
 
             Case 6:
                 Do
@@ -854,7 +860,7 @@ End Sub
 '...explanation...
 Sub ViewLineup (targetTeam$)
 
-    Shared statB$(), progB1$(), mgrX$()
+    Shared batterNames$(), progB1$(), mgrX$()
     Shared teamRatings%(), progB%()
 
     Cls
@@ -868,7 +874,7 @@ Sub ViewLineup (targetTeam$)
 
         Locate , 1
 
-        If statB$(I) = "XXX" Or Left$(statB$(I), 1) = " " Or statB$(I) = "" Then
+        If batterNames$(I) = "XXX" Or Left$(batterNames$(I), 1) = " " Or batterNames$(I) = "" Then
             progB%(I, 21) = 98
         Else
 
@@ -877,7 +883,7 @@ Sub ViewLineup (targetTeam$)
             If I < 10 Then Print Using "#"; I;: Color 15, 0: If progB%(I, 21) >= 98 Then Color 0, 7
             If I > 9 Then Print mgrX$(I - 10);: Color 15, 0: If progB%(I, 21) >= 98 Then Color 0, 7
 
-            Locate , 3: Print statB$(I);
+            Locate , 3: Print batterNames$(I);
             Color 15, 0: Locate , 15: Print progB1$(progB%(I, 0) + 2);
             Locate , 18: If progB%(I, 22) <> -1 Then Print Using "#"; progB%(I, 22);
             Locate , 19: If progB%(I, 23) <> -1 Then Print Using "#"; progB%(I, 23);
@@ -919,7 +925,7 @@ End Sub
 '...explanation...
 Sub InputDeleteLineup (D%, yearNumber$)
 
-    Shared statB$(), progC$()
+    Shared batterNames$(), progC$()
 
     Shared progB3%(), progB7%(), progB9%()
     Shared teamRatings%(), progM%(), progB%()
@@ -976,7 +982,7 @@ Sub InputDeleteLineup (D%, yearNumber$)
                         Next J
 
                         progB3%(I) = P1%
-                        Print statB$(23);: progM%(Val(I$)) = 1
+                        Print batterNames$(23);: progM%(Val(I$)) = 1
 
                         Locate , 72
 
@@ -999,7 +1005,7 @@ Sub InputDeleteLineup (D%, yearNumber$)
                     End If
 
                     progB3%(I) = I1
-                    Print Using "# "; I;: Print statB$(progB3%(I));
+                    Print Using "# "; I;: Print batterNames$(progB3%(I));
 
                     Locate , 74
 
@@ -1031,7 +1037,7 @@ Sub InputDeleteLineup (D%, yearNumber$)
                     progM%(Val(I$)) = 1
 
                     Locate I1 + 2, 2: Print "*";
-                    Color teamRatings%(11), teamRatings%(12): Print statB$(I1)
+                    Color teamRatings%(11), teamRatings%(12): Print batterNames$(I1)
                     Color 15, 0
 
                     Locate 25, 1
@@ -1107,7 +1113,7 @@ End Sub
 '...explanation...
 Sub ChangeLineup_PROGMAN (yearNumber$, I$)
 
-    Shared statB$(), progC$()
+    Shared batterNames$(), progC$()
     Shared progB3%(), progB7%(), progB9%()
     Shared progM%(), progMG%(), progB%()
 
@@ -1168,8 +1174,8 @@ Sub ChangeLineup_PROGMAN (yearNumber$, I$)
                     Locate I + 7, 59
                     Print Using "# "; I;
 
-                    If progB7%(I) = 1 And I5 <> 66 Then Print statB$(23);
-                    If progB7%(I) <> 1 Then Print statB$(progB3%(I));
+                    If progB7%(I) = 1 And I5 <> 66 Then Print batterNames$(23);
+                    If progB7%(I) <> 1 Then Print batterNames$(progB3%(I));
 
                     Print Tab(74);
                     Print progC$(progB7%(I));
@@ -1213,8 +1219,8 @@ Sub ChangeLineup_PROGMAN (yearNumber$, I$)
 
                     Print Using "# "; I;
 
-                    If progB7%(I) = 1 And I5 <> 66 Then Print statB$(23);
-                    If progB7%(I) <> 1 Then Print statB$(progB3%(I));
+                    If progB7%(I) = 1 And I5 <> 66 Then Print batterNames$(23);
+                    If progB7%(I) <> 1 Then Print batterNames$(progB3%(I));
 
                     Print Tab(74);
                     Print progC$(progB7%(I));
@@ -1249,7 +1255,7 @@ Sub ChangeLineup_PROGMAN (yearNumber$, I$)
                 progMG%(120 + LN% * 21) = 999
                 progMG%(0) = 999
 
-                Call UpdateManagerFile(yearNumber$)
+                Call UpdateManagerFile(yearNumber$, mgrNbr)
 
                 For I = 1 To 9
                     If progB7%(I) = 1 Then
@@ -1269,7 +1275,7 @@ Sub ChangeLineup_PROGMAN (yearNumber$, I$)
             Case 1 TO 9
                 '-- What is B4%? 
                 '-- No sign of it anywhere so it's 0
-                Locate progB3%(I) + 2 - B4%, 2: Print " "; statB$(progB3%(I))
+                Locate progB3%(I) + 2 - B4%, 2: Print " "; batterNames$(progB3%(I))
 
         End Select
 
@@ -1283,7 +1289,7 @@ End Sub
 '...explanation...
 Sub EditOneLineup (targetTeam$, yearNumber$)
 
-    Shared statB$(), progC$()
+    Shared batterNames$(), progC$()
     Shared progB3%(), progB7%(), progB9%()
     Shared progM%(), progB%()
 
@@ -1323,8 +1329,8 @@ Sub EditOneLineup (targetTeam$, yearNumber$)
 
         Print Using "# "; I;
 
-        If progB7%(I) = 1 And I5 <> 66 Then Print statB$(23);
-        If progB7%(I) <> 1 Then Print statB$(progB3%(I));
+        If progB7%(I) = 1 And I5 <> 66 Then Print batterNames$(23);
+        If progB7%(I) <> 1 Then Print batterNames$(progB3%(I));
 
         Print Tab(74);
         Print progC$(progB7%(I));
@@ -1338,7 +1344,7 @@ Sub EditOneLineup (targetTeam$, yearNumber$)
         For I3 = 1 To 9
             If progB3%(I3) = I2 And progB7%(I3) <> 1 Then
                 Print "*";
-                Color teamRatings%(11), teamRatings%(12): Print statB$(I2)
+                Color teamRatings%(11), teamRatings%(12): Print batterNames$(I2)
                 Color 15, 0
             End If
         Next I3
@@ -1358,7 +1364,7 @@ End Sub
 '...explanation...
 Sub GetLineup (handRL%, targetTeam$)
 
-    Shared statB$(), progC$(), progPT$()
+    Shared batterNames$(), progC$(), progPT$()
     Shared progMG%()
 
     Cls
@@ -1391,7 +1397,7 @@ Sub GetLineup (handRL%, targetTeam$)
                     If progMG%(101 + I1 + (I + handRL% * 10) * 21) = 1 Then
                         Print "PITCHER";
                     Else
-                        Print Left$(statB$(progMG%(110 + I1 + (I + handRL% * 10) * 21)), 10);
+                        Print Left$(batterNames$(progMG%(110 + I1 + (I + handRL% * 10) * 21)), 10);
                     End If
 
                     Locate 2 + I1, 16 * I + 12
@@ -1431,7 +1437,7 @@ Sub GetLineup (handRL%, targetTeam$)
                     If progMG%(101 + I1 + (I + handRL% * 10) * 21) = 1 Then
                         Print "PITCHER";
                     Else
-                        Print Left$(statB$(progMG%(110 + I1 + (I + handRL% * 10) * 21)), 10);
+                        Print Left$(batterNames$(progMG%(110 + I1 + (I + handRL% * 10) * 21)), 10);
                     End If
 
                     Locate 13 + I1, 16 * (I - 5) + 12
@@ -1453,7 +1459,7 @@ End Sub
 '...explanation...
 Sub PrintManagerProfile (targetTeam$)
 
-    Shared statB$(), statP$(), yesNo$()
+    Shared batterNames$(), pitcherNames$(), yesNo$()
     Shared progMG%()
 
     ' PRINT MANAGER PROFILE
@@ -1502,7 +1508,7 @@ Sub PrintManagerProfile (targetTeam$)
         If progMG%(I + 2) < 0 Then
             LPrint
         Else
-            LPrint statP$(progMG%(I + 2)); Tab(30); progMG%(I + 12)
+            LPrint pitcherNames$(progMG%(I + 2)); Tab(30); progMG%(I + 12)
         End If
     Next
 
@@ -1514,7 +1520,7 @@ Sub PrintManagerProfile (targetTeam$)
         If progMG%(I) < 0 Then
             LPrint
         Else
-            LPrint statP$(progMG%(I)); Tab(30); progMG%(I + 20)
+            LPrint pitcherNames$(progMG%(I)); Tab(30); progMG%(I + 20)
         End If
     Next
 
@@ -1528,7 +1534,7 @@ Sub PrintManagerProfile (targetTeam$)
         If progMG%(I + 60) < 0 Then
             LPrint
         Else
-            LPrint statP$(progMG%(I + 60)); Tab(35); progMG%(I + 70)
+            LPrint pitcherNames$(progMG%(I + 60)); Tab(35); progMG%(I + 70)
         End If
 
     Next
@@ -1543,7 +1549,7 @@ Sub PrintManagerProfile (targetTeam$)
         If progMG%(I + 80) < 0 Then
             LPrint
         Else
-            LPrint statP$(progMG%(I + 80)); Tab(35); progMG%(I + 90)
+            LPrint pitcherNames$(progMG%(I + 80)); Tab(35); progMG%(I + 90)
         End If
 
     Next
@@ -1557,7 +1563,7 @@ Sub PrintManagerProfile (targetTeam$)
         If progMG%(I + 80) < 0 Then
             LPrint
         Else
-            LPrint statP$(progMG%(I + 80)); Tab(35); progMG%(I + 90)
+            LPrint pitcherNames$(progMG%(I + 80)); Tab(35); progMG%(I + 90)
         End If
 
     Next
@@ -1573,7 +1579,7 @@ Sub PrintManagerProfile (targetTeam$)
         If progMG%(I + 520) < 0 Then
             LPrint
         Else
-            LPrint statP$(progMG%(I + 520)); Tab(35); progMG%(I + 530)
+            LPrint pitcherNames$(progMG%(I + 520)); Tab(35); progMG%(I + 530)
         End If
 
     Next
@@ -1587,7 +1593,7 @@ Sub PrintManagerProfile (targetTeam$)
         If progMG%(I + 520) < 0 Then
             LPrint
         Else
-            LPrint statP$(progMG%(I + 520)); Tab(35); progMG%(I + 530)
+            LPrint pitcherNames$(progMG%(I + 520)); Tab(35); progMG%(I + 530)
         End If
 
     Next
@@ -1603,7 +1609,7 @@ Sub PrintManagerProfile (targetTeam$)
         If progMG%(I + 540) < 0 Then
             LPrint
         Else
-            LPrint statB$(progMG%(I + 540))
+            LPrint batterNames$(progMG%(I + 540))
         End If
 
     Next
@@ -1617,7 +1623,7 @@ Sub PrintManagerProfile (targetTeam$)
         If progMG%(I + 540) < 0 Then
             LPrint
         Else
-            LPrint statB$(progMG%(I + 540))
+            LPrint batterNames$(progMG%(I + 540))
         End If
 
     Next
@@ -1633,9 +1639,9 @@ Sub PrintManagerProfile (targetTeam$)
         If progMG%(I + 560) < 0 Then
             LPrint
         Else
-            LPrint Left$(statB$(progMG%(I + 560)), 10); Tab(19);
+            LPrint Left$(batterNames$(progMG%(I + 560)), 10); Tab(19);
             LPrint Using "# "; progMG%(I + 576);
-            LPrint Left$(statB$(progMG%(I + 564)), 10); Tab(32); Using "### #"; progMG%(I + 568); progMG%(I + 572)
+            LPrint Left$(batterNames$(progMG%(I + 564)), 10); Tab(32); Using "### #"; progMG%(I + 568); progMG%(I + 572)
         End If
 
     Next
@@ -1914,7 +1920,7 @@ Sub PrintManagerProfile (targetTeam$)
         If progMG%(I + 771) < 0 Then
             LPrint
         Else
-            LPrint statB$(progMG%(I + 771))
+            LPrint batterNames$(progMG%(I + 771))
         End If
     Next
 
@@ -1931,9 +1937,9 @@ Sub PrintManagerProfile (targetTeam$)
             If progMG%(I * 4 + 779) < 0 Then
                 LPrint
             Else
-                LPrint Left$(statB$(progMG%(I * 4 + 779)), 10); Tab(19);
+                LPrint Left$(batterNames$(progMG%(I * 4 + 779)), 10); Tab(19);
                 LPrint Using "## "; progMG%(I * 4 + 780);
-                LPrint Left$(statB$(progMG%(I * 4 + 781)), 10); Tab(33); Using "###"; progMG%(I * 4 + 782)
+                LPrint Left$(batterNames$(progMG%(I * 4 + 781)), 10); Tab(33); Using "###"; progMG%(I * 4 + 782)
             End If
         Next
     End If
@@ -1986,8 +1992,8 @@ End Sub
 '...explanation...
 Sub ShowPitcherInfo (targetTeam$)
 
-    Shared teamRatings%(), progMG%(), teamPitchers%()
-    Shared progB1$(), statP$(), mgrX$()
+    Shared teamRatings%(), progMG%(), pitcherRatings()
+    Shared progB1$(), pitcherNames$(), mgrX$()
 
     Cls
 
@@ -1999,9 +2005,9 @@ Sub ShowPitcherInfo (targetTeam$)
 
     For I = 0 To 21
 
-        If statP$(I) = "XXX" Or Left$(statP$(I), 1) = " " Or statP$(I) = "" Then teamPitchers%(I, 15) = 98
+        If pitcherNames$(I) = "XXX" Or Left$(pitcherNames$(I), 1) = " " Or pitcherNames$(I) = "" Then pitcherRatings(I, 15) = 98
 
-        If teamPitchers%(I, 15) <> 1 And statP$(I) <> "XXX" Then
+        If pitcherRatings(I, 15) <> 1 And pitcherNames$(I) <> "XXX" Then
 
             Color 2, 0
 
@@ -2017,14 +2023,14 @@ Sub ShowPitcherInfo (targetTeam$)
                 If I = progMG%(I1 + 2) Then Color 0, 7
             Next
 
-            Locate , 3: Print statP$(I);
+            Locate , 3: Print pitcherNames$(I);
 
             Color 15, 0
-            Locate , 16: Print progB1$(teamPitchers%(I, 0) + 2);
-            Locate , 17: Print Using " ### ##"; teamPitchers%(I, 4); teamPitchers%(I, 5);
-            Locate , 24: Print Using "  ##"; teamPitchers%(I, 1);
+            Locate , 16: Print progB1$(pitcherRatings(I, 0) + 2);
+            Locate , 17: Print Using " ### ##"; pitcherRatings(I, 4); pitcherRatings(I, 5);
+            Locate , 24: Print Using "  ##"; pitcherRatings(I, 1);
             Print "-";
-            Print Using "## ##.##"; teamPitchers%(I, 2); teamPitchers%(I, 10) / 100
+            Print Using "## ##.##"; pitcherRatings(I, 2); pitcherRatings(I, 10) / 100
 
         End If
 
@@ -2038,7 +2044,7 @@ End Sub
 '...explanation...
 Sub SpotStarters (targetTeam$, yearNumber$)
 
-    Shared statP$()
+    Shared pitcherNames$()
     Shared progMG%()
 
     Do
@@ -2057,15 +2063,23 @@ Sub SpotStarters (targetTeam$, yearNumber$)
             If progMG%(I) < 0 Then
                 Print
             Else
-                Print statP$(progMG%(I)); Tab(70); progMG%(I + 20)
+                Print pitcherNames$(progMG%(I)); Tab(70); progMG%(I + 20)
                 SS% = SS% + progMG%(I + 20)
             End If
 
         Next
 
         Locate 19, 40: Print "TOTAL MUST EQUAL 100"; Tab(70); SS%
-        Locate 20, 40: Print "(A)DD SPOT STARTER (E)DIT SPOT %"
-        Locate 21, 40: Print "(D)ELETE STARTER (S)AVE PROFILE"
+        Locate 20, 40
+        Color 15: Print "(A)";
+        Color 15: Print "DD SPOT STARTER ";
+        Color 15: Print "(E)";
+        Color 15: Print "DIT SPOT %"
+        Locate 21, 40
+        Color 15: Print "(D)";
+        Color 15: Print "ELETE STARTER ";
+        Color 15: Print "(S)";
+        Color 15: Print "AVE PROFILE"
 
         I$ = GetKeyPress$
 
@@ -2075,7 +2089,7 @@ Sub SpotStarters (targetTeam$, yearNumber$)
 
                 If SS% = 100 Then
                     progMG%(99) = 999
-                    Call UpdateManagerFile(yearNumber$)
+                    Call UpdateManagerFile(yearNumber$, mgrNbr)
                 End If
 
             Case "D":
@@ -2150,7 +2164,7 @@ End Sub
 Sub RotationParams (targetTeam$)
 
     Shared progMG%()
-    Shared statP$()
+    Shared pitcherNames$()
 
     Do
         4517 '
@@ -2167,7 +2181,7 @@ Sub RotationParams (targetTeam$)
             If progMG%(I + 2) < 0 Then
                 Print
             Else
-                Print statP$(progMG%(I + 2)); Tab(70); progMG%(I + 12)
+                Print pitcherNames$(progMG%(I + 2)); Tab(70); progMG%(I + 12)
             End If
 
         Next
@@ -2240,8 +2254,8 @@ End Sub
 '...explanation...
 Sub ManagePitchingRotations (action%, targetTeam$)
 
-    Shared statP$()
-    Shared progMG%(), teamPitchers%()
+    Shared pitcherNames$()
+    Shared progMG%(), pitcherRatings()
 
     Dim GS%(21, 1)
 
@@ -2275,14 +2289,18 @@ Sub ManagePitchingRotations (action%, targetTeam$)
     JJ = 1
     
     Locate 6, 8
+
     Color 15, 1
+
     Print " "; Chr$(201); String$(61, 205); Chr$(187); " ";
-    For II = 1 To JJ: 
+
+    For II = 1 To JJ:
         Locate 6 + II, 8
         Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
     Next
     
     Locate 7 + JJ, 8
+
     Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";
 
     Do
@@ -2331,19 +2349,19 @@ Sub ManagePitchingRotations (action%, targetTeam$)
 
         Locate I + 17, 1
 
-        If statP$(I) <> "XXX" Then
-            Print statP$(I); Tab(18); teamPitchers%(I, 5);
+        If pitcherNames$(I) <> "XXX" Then
+            Print pitcherNames$(I); Tab(18); pitcherRatings(I, 5);
         End If
 
         Locate , 25
-        If statP$(I + 7) <> "XXX" Then
-            Print statP$(I + 7); Tab(43); teamPitchers%(I + 7, 5);
+        If pitcherNames$(I + 7) <> "XXX" Then
+            Print pitcherNames$(I + 7); Tab(43); pitcherRatings(I + 7, 5);
         End If
 
         Locate , 50
 
-        If statP$(I + 14) <> "XXX" Then
-            Print statP$(I + 14); Tab(68); teamPitchers%(I + 14, 5)
+        If pitcherNames$(I + 14) <> "XXX" Then
+            Print pitcherNames$(I + 14); Tab(68); pitcherRatings(I + 14, 5)
         End If
 
     Next
@@ -2398,7 +2416,7 @@ Sub ManagePitchingRotations (action%, targetTeam$)
 
                 Loop Until I1 <= 21 And progMG%(3) <> I1 And progMG%(4) <> I1 And progMG%(5) <> I1 And progMG%(6) <> I1 And progMG%(7) <> I1
 
-                Locate 16, 59: Print statP$(I1)
+                Locate 16, 59: Print pitcherNames$(I1)
 
                 Do
                     Locate 17, 59:
@@ -2429,10 +2447,10 @@ Sub ManagePitchingRotations (action%, targetTeam$)
         CR% = 0
 
         For I = 0 To 21
-            If statP$(I) = "XXX" Then
+            If pitcherNames$(I) = "XXX" Then
                 GS%(I, 0) = 0: GS%(I, 1) = -1
             Else
-                GS%(I, 0) = teamPitchers%(I, 5): GS%(I, 1) = I
+                GS%(I, 0) = pitcherRatings(I, 5): GS%(I, 1) = I
             End If
         Next
 
@@ -2487,7 +2505,7 @@ Sub ManagePitchingRotations (action%, targetTeam$)
     GS% = GS% * SL% / 162
 
     For I = 1 To progMG%(1)
-        progMG%(I + 12) = Int(teamPitchers%(progMG%(I + 2), 5) * 100 / GS% + .5)
+        progMG%(I + 12) = Int(pitcherRatings(progMG%(I + 2), 5) * 100 / GS% + .5)
     Next
 
     SS% = 0
@@ -2495,14 +2513,14 @@ Sub ManagePitchingRotations (action%, targetTeam$)
     For I = 21 To 36
 
         If progMG%(I) >= 0 And progMG%(I) <= 21 Then
-            SS% = SS% + teamPitchers%(progMG%(I), 5)
+            SS% = SS% + pitcherRatings(progMG%(I), 5)
         End If
 
     Next
 
     For I = 21 To 36
         If progMG%(I) >= 0 And progMG%(I) <= 21 Then
-            progMG%(I + 20) = Int(teamPitchers%(progMG%(I), 5) * 100 / SS% + .5)
+            progMG%(I + 20) = Int(pitcherRatings(progMG%(I), 5) * 100 / SS% + .5)
         End If
     Next
 
@@ -2516,8 +2534,8 @@ End Sub
 '...explanation...
 Sub SetupMiddleRelievers (targetTeam$, yearNumber$)
 
-    Shared progMG%(), teamRatings%(), teamPitchers%()
-    Shared progB1$(), statP$(), mgrX$()
+    Shared progMG%(), teamRatings%(), pitcherRatings()
+    Shared progB1$(), pitcherNames$(), mgrX$()
 
     Do
 
@@ -2536,8 +2554,8 @@ Sub SetupMiddleRelievers (targetTeam$, yearNumber$)
         RA% = 0
 
         For I = 0 To 21
-            If statP$(I) <> "XXX" Then
-                RA% = RA% + teamPitchers%(I, 4) - teamPitchers%(I, 5) - teamPitchers%(I, 3)
+            If pitcherNames$(I) <> "XXX" Then
+                RA% = RA% + pitcherRatings(I, 4) - pitcherRatings(I, 5) - pitcherRatings(I, 3)
             End If
         Next
 
@@ -2550,7 +2568,7 @@ Sub SetupMiddleRelievers (targetTeam$, yearNumber$)
 
         For I = 0 To 21
 
-            If statP$(I) <> "XXX" And Left$(statP$(I), 1) <> " " And statP$(I) <> "" Then
+            If pitcherNames$(I) <> "XXX" And Left$(pitcherNames$(I), 1) <> " " And pitcherNames$(I) <> "" Then
 
                 Color 2, 0
                 If I <= 9 Then 
@@ -2564,13 +2582,13 @@ Sub SetupMiddleRelievers (targetTeam$, yearNumber$)
                     If I = progMG%(I1 + 60) Then Color teamRatings%(11), teamRatings%(12)
                 Next
                 
-                Locate , 3: Print statP$(I);
+                Locate , 3: Print pitcherNames$(I);
                 Color 15, 0
-                Locate , 16: Print progB1$(teamPitchers%(I, 0) + 2);
-                Locate , 17: Print Using " ### ##"; teamPitchers%(I, 4); teamPitchers%(I, 5);
-                Locate , 24: Print Using "  ##"; teamPitchers%(I, 1);
+                Locate , 16: Print progB1$(pitcherRatings(I, 0) + 2);
+                Locate , 17: Print Using " ### ##"; pitcherRatings(I, 4); pitcherRatings(I, 5);
+                Locate , 24: Print Using "  ##"; pitcherRatings(I, 1);
                 Print "-";
-                Print Using "## ### ##.##"; teamPitchers%(I, 2); (teamPitchers%(I, 4) - teamPitchers%(I, 5) - teamPitchers%(I, 3)) / RA% * 100; teamPitchers%(I, 10) / 100
+                Print Using "## ### ##.##"; pitcherRatings(I, 2); (pitcherRatings(I, 4) - pitcherRatings(I, 5) - pitcherRatings(I, 3)) / RA% * 100; pitcherRatings(I, 10) / 100
             End If
 
         Next I
@@ -2587,7 +2605,7 @@ Sub SetupMiddleRelievers (targetTeam$, yearNumber$)
             If progMG%(I + 60) < 0 Then
                 Print
             Else
-                Print statP$(progMG%(I + 60)); Tab(75); progMG%(I + 70)
+                Print pitcherNames$(progMG%(I + 60)); Tab(75); progMG%(I + 70)
             End If
 
         Next
@@ -2637,7 +2655,7 @@ Sub SetupMiddleRelievers (targetTeam$, yearNumber$)
                 Locate 16, 48: Print Space$(31)
 
             Case 11:
-                Call UpdateManagerFile(yearNumber$)
+                Call UpdateManagerFile(yearNumber$, mgrNbr)
 
             Case 12:
                 Do
@@ -2660,8 +2678,8 @@ End Sub
 '...explanation...
 Sub SetupRelievers (targetTeam$, yearNumber$)
 
-    Shared progB1$(), statP$(), mgrX$()
-    Shared teamRatings%(), progMG%(), teamPitchers%()
+    Shared progB1$(), pitcherNames$(), mgrX$()
+    Shared teamRatings%(), progMG%(), pitcherRatings()
 
     Do
 
@@ -2684,7 +2702,7 @@ Sub SetupRelievers (targetTeam$, yearNumber$)
 
         For I = 0 To 21
 
-            If statP$(I) <> "XXX" And Left$(statP$(I), 1) <> " " And statP$(I) <> "" Then
+            If pitcherNames$(I) <> "XXX" And Left$(pitcherNames$(I), 1) <> " " And pitcherNames$(I) <> "" Then
 
                 Color 2, 0
 
@@ -2700,15 +2718,15 @@ Sub SetupRelievers (targetTeam$, yearNumber$)
                     If I = progMG%(I1 + 80) Then Color teamRatings%(11), teamRatings%(12)
                 Next
 
-                Locate , 3: Print statP$(I);
+                Locate , 3: Print pitcherNames$(I);
 
                 Color 15, 0
 
-                Locate , 16: Print progB1$(teamPitchers%(I, 0) + 2);
-                Locate , 17: Print Using " ### ##"; teamPitchers%(I, 4); teamPitchers%(I, 5);
-                Locate , 24: Print Using "  ##"; teamPitchers%(I, 1);
+                Locate , 16: Print progB1$(pitcherRatings(I, 0) + 2);
+                Locate , 17: Print Using " ### ##"; pitcherRatings(I, 4); pitcherRatings(I, 5);
+                Locate , 24: Print Using "  ##"; pitcherRatings(I, 1);
                 Print "-";
-                Print Using "## ### ##.##"; teamPitchers%(I, 2); teamPitchers%(I, 3); teamPitchers%(I, 10) / 100
+                Print Using "## ### ##.##"; pitcherRatings(I, 2); pitcherRatings(I, 3); pitcherRatings(I, 10) / 100
             End If
         Next I
 
@@ -2723,7 +2741,7 @@ Sub SetupRelievers (targetTeam$, yearNumber$)
             If progMG%(I + 80) < 0 Then
                 Print
             Else
-                Print statP$(progMG%(I + 80)); Tab(75); progMG%(I + 90)
+                Print pitcherNames$(progMG%(I + 80)); Tab(75); progMG%(I + 90)
             End If
 
         Next
@@ -2738,7 +2756,7 @@ Sub SetupRelievers (targetTeam$, yearNumber$)
             If progMG%(I + 80) < 0 Then
                 Print
             Else
-                Print statP$(progMG%(I + 80)); Tab(75); progMG%(I + 90)
+                Print pitcherNames$(progMG%(I + 80)); Tab(75); progMG%(I + 90)
             End If
 
         Next
@@ -2785,7 +2803,7 @@ Sub SetupRelievers (targetTeam$, yearNumber$)
                 Locate 16, 48: Print Space$(31)
 
             Case 7:
-                Call UpdateManagerFile(yearNumber$)
+                Call UpdateManagerFile(yearNumber$, mgrNbr)
 
             Case 8:
                 Do
@@ -2805,8 +2823,8 @@ End Sub
 '...explanation...
 Sub SetupClosers (targetTeam$, yearNumber$)
 
-    Shared progB1$(), statP$(), mgrX$()
-    Shared teamRatings%(), progMG%(), teamPitchers%()
+    Shared progB1$(), pitcherNames$(), mgrX$()
+    Shared teamRatings%(), progMG%(), pitcherRatings()
 
     Do
 
@@ -2823,7 +2841,7 @@ Sub SetupClosers (targetTeam$, yearNumber$)
 
         For I = 0 To 21
 
-            If statP$(I) <> "XXX" And Left$(statP$(I), 1) <> " " And statP$(I) <> "" Then
+            If pitcherNames$(I) <> "XXX" And Left$(pitcherNames$(I), 1) <> " " And pitcherNames$(I) <> "" Then
 
                 Color 2, 0
 
@@ -2839,15 +2857,15 @@ Sub SetupClosers (targetTeam$, yearNumber$)
                     If I = progMG%(I1 + 520) Then Color teamRatings%(11), teamRatings%(12)
                 Next
 
-                Locate , 3: Print statP$(I);
+                Locate , 3: Print pitcherNames$(I);
 
                 Color 15, 0
 
-                Locate , 16: Print progB1$(teamPitchers%(I, 0) + 2);
-                Locate , 17: Print Using " ### ##"; teamPitchers%(I, 4); teamPitchers%(I, 5);
-                Locate , 24: Print Using "  ##"; teamPitchers%(I, 1);
+                Locate , 16: Print progB1$(pitcherRatings(I, 0) + 2);
+                Locate , 17: Print Using " ### ##"; pitcherRatings(I, 4); pitcherRatings(I, 5);
+                Locate , 24: Print Using "  ##"; pitcherRatings(I, 1);
                 Print "-";
-                Print Using "## ### ##.##"; teamPitchers%(I, 2); teamPitchers%(I, 3); teamPitchers%(I, 10) / 100
+                Print Using "## ### ##.##"; pitcherRatings(I, 2); pitcherRatings(I, 3); pitcherRatings(I, 10) / 100
 
             End If
 
@@ -2864,7 +2882,7 @@ Sub SetupClosers (targetTeam$, yearNumber$)
             If progMG%(I + 520) < 0 Then
                 Print
             Else
-                Print statP$(progMG%(I + 520)); Tab(75); progMG%(I + 530)
+                Print pitcherNames$(progMG%(I + 520)); Tab(75); progMG%(I + 530)
             End If
 
         Next
@@ -2878,7 +2896,7 @@ Sub SetupClosers (targetTeam$, yearNumber$)
             If progMG%(I + 520) < 0 Then
                 Print
             Else
-                Print statP$(progMG%(I + 520)); Tab(75); progMG%(I + 530)
+                Print pitcherNames$(progMG%(I + 520)); Tab(75); progMG%(I + 530)
             End If
         Next
 
@@ -2923,7 +2941,7 @@ Sub SetupClosers (targetTeam$, yearNumber$)
                 Locate 16, 48: Print Space$(31)
 
             Case 7:
-                Call UpdateManagerFile(yearNumber$)
+                Call UpdateManagerFile(yearNumber$, mgrNbr)
 
             Case 8:
 
@@ -3042,7 +3060,7 @@ Sub HittingStrategy (yearNumber$)
                     Loop Until I >= 1 And I <= 7
 
                     If I = 7 Then
-                        Call UpdateManagerFile(yearNumber$)
+                        Call UpdateManagerFile(yearNumber$, mgrNbr)
                     Else
                         I = I - 1
                         Locate 22, 1: Input "OUTS OR LESS        "; progMG%(I * 4 + 610)
@@ -3108,7 +3126,7 @@ Sub HittingStrategy (yearNumber$)
                     Loop Until I >= 1 And I <= 7
 
                     If I = 7 Then
-                        Call UpdateManagerFile(yearNumber$)
+                        Call UpdateManagerFile(yearNumber$, mgrNbr)
                     Else
                         I = I - 1
                         Locate 22, 1: Input "RUNS AHEAD OR LESS        "; progMG%(I * 6 + 635)
@@ -3192,7 +3210,7 @@ Sub HitAndRun (yearNumber$)
         Loop Until I >= 1 And I <= 7
 
         If I = 7 Then
-            Call UpdateManagerFile(yearNumber$)
+            Call UpdateManagerFile(yearNumber$, mgrNbr)
         Else
             I = I - 1
             Locate 22, 1: Input "RUNS AHEAD OR LESS        "; progMG%(I * 3 + 672)
@@ -3295,7 +3313,7 @@ Sub DefensiveStrategy (yearNumber$)
                     Loop Until I >= 1 And I <= 5
 
                     If I = 5 Then
-                        Call UpdateManagerFile(yearNumber$)
+                        Call UpdateManagerFile(yearNumber$, mgrNbr)
                     Else
                         I = I - 1
                         Locate 22, 1: Input "AT LEAST DOWN BY          "; progMG%(I * 4 + 691)
@@ -3343,7 +3361,7 @@ Sub DefensiveStrategy (yearNumber$)
                     Loop Until I >= 1 And I <= 4
 
                     If I = 4 Then
-                        Call UpdateManagerFile(yearNumber$)
+                        Call UpdateManagerFile(yearNumber$, mgrNbr)
                     Else
                         I = I - 1
                         Locate 22, 1: Input "BUNT RATING >=            "; progMG%(I * 2 + 708)
@@ -3361,17 +3379,17 @@ Sub DefensiveStrategy (yearNumber$)
                     End If
 
                     Locate 1, 20: Color 14, 2: Print "CORNERS IN VS HITTER IN SAC HIT SITUATION"
-					Color 15, 0: Print
+                    Color 15, 0: Print
                     Print "IF AHEAD BY  ";
-					Color 15, 1: Print " A ";
-					Color 15, 0: Print " RUNS OR LESS"
+                    Color 15, 1: Print " A ";
+                    Color 15, 0: Print " RUNS OR LESS"
                     Print "OR BEHIND BY NOT MORE THAN ";
-					Color 15, 1: Print " B ";
-					Color 15, 0: Print " RUNS"
+                    Color 15, 1: Print " B ";
+                    Color 15, 0: Print " RUNS"
                     Print "BUNT RATING >= ";
-					Color 15, 1: Print " C "
+                    Color 15, 1: Print " C "
                     Color 15, 1: Print " D ";
-					Color 15, 0: Print " % OF THE TIME"
+                    Color 15, 0: Print " % OF THE TIME"
 
                     Print Tab(32);
                     Color 14: Print "TABLE OF VALUES"
@@ -3390,7 +3408,7 @@ Sub DefensiveStrategy (yearNumber$)
                     Loop Until I >= 1 And I <= 5
 
                     If I = 5 Then
-                        Call UpdateManagerFile(yearNumber$)
+                        Call UpdateManagerFile(yearNumber$, mgrNbr)
                     Else
                         I = I - 1
                         Locate 22, 1: Input "AHEAD BY NOT MORE THAN    "; progMG%(I * 4 + 715)
@@ -3412,11 +3430,11 @@ Sub DefensiveStrategy (yearNumber$)
                     End If
 
                     Locate 1, 20: Color 14, 2: Print "CORNERS IN VS PITCHER IN SAC HIT SITUATION"
-					Color 15, 0: Print
+                    Color 15, 0: Print
                     Print "PITCHER'S BATTING AVERAGE LESS THAN OR EQUAL TO ";
-					Color 15, 1: Print " A "
+                    Color 15, 1: Print " A "
                     Color 15, 1: Print " B ";
-					Color 15, 0: Print " % OF THE TIME"
+                    Color 15, 0: Print " % OF THE TIME"
 
                     Print Tab(32);
                     Color 14: Print "TABLE OF VALUES"
@@ -3435,7 +3453,7 @@ Sub DefensiveStrategy (yearNumber$)
                     Loop Until I >= 1 And I <= 5
 
                     If I = 5 Then
-                        Call UpdateManagerFile(yearNumber$)
+                        Call UpdateManagerFile(yearNumber$, mgrNbr)
                     Else
                         I = I - 1
                         Locate 22, 1: Input "BATTING AVG LESS THAN     "; progMG%(I * 2 + 732)
@@ -3456,18 +3474,18 @@ Sub DefensiveStrategy (yearNumber$)
 
                     Locate 1, 20
                     Color 14, 2: Print "CORNERS IN VS HITTER IN SQUEEZE SITUATION"
-					Color 15, 0
+                    Color 15, 0
                     Print
                     Print "IF AHEAD BY  ";
-					Color 15, 1: Print " A ";
-					Color 15, 0: Print " RUNS OR LESS"
+                    Color 15, 1: Print " A ";
+                    Color 15, 0: Print " RUNS OR LESS"
                     Print "OR BEHIND BY NOT MORE THAN ";
-					Color 15, 1: Print " B ";
-					Color 15, 0: Print " RUNS"
+                    Color 15, 1: Print " B ";
+                    Color 15, 0: Print " RUNS"
                     Print "BUNT RATING >= ";
-					Color 15, 1: Print " C "
+                    Color 15, 1: Print " C "
                     Color 15, 1: Print " D ";
-					Color 15, 0: Print " % OF THE TIME"
+                    Color 15, 0: Print " % OF THE TIME"
 
                     Print Tab(32);
                     Color 14: Print "TABLE OF VALUES"
@@ -3484,7 +3502,7 @@ Sub DefensiveStrategy (yearNumber$)
                     Loop Until I >= 1 And I <= 3
 
                     If I = 3 Then
-                        Call UpdateManagerFile(yearNumber$)
+                        Call UpdateManagerFile(yearNumber$, mgrNbr)
                     Else
                         I = I - 1
                         Locate 22, 1: Input "AHEAD BY NOT MORE THAN    "; progMG%(I * 4 + 741)
@@ -3506,14 +3524,14 @@ Sub DefensiveStrategy (yearNumber$)
                     End If
 
                     Locate 1, 30: Color 14, 2: Print "GUARD LINES STRATEGY"
-					Color 15, 0: Print
+                    Color 15, 0: Print
                     Print "IF ";
-					Color 15, 1: Print " A ";
-					Color 15, 0: Print " RUNS AHEAD"
+                    Color 15, 1: Print " A ";
+                    Color 15, 0: Print " RUNS AHEAD"
                     Color 15, 1: Print " B ";
-					Color 15, 0: Print " INNING ON"
+                    Color 15, 0: Print " INNING ON"
                     Color 15, 1: Print " C ";
-					Color 15, 0: Print " % OF THE TIME"
+                    Color 15, 0: Print " % OF THE TIME"
 
                     Print Tab(32);
                     Color 14: Print "TABLE OF VALUES"
@@ -3529,7 +3547,7 @@ Sub DefensiveStrategy (yearNumber$)
                     Loop Until I >= 1 And I <= 3
 
                     If I = 3 Then
-                        Call UpdateManagerFile(yearNumber$)
+                        Call UpdateManagerFile(yearNumber$, mgrNbr)
                     Else
                         I = I - 1
                         Locate 22, 1: Input "RUNS AHEAD                "; progMG%(I * 3 + 750)
@@ -3636,7 +3654,7 @@ Sub PinchRunStrategy (targetTeam$)
                 Loop Until I >= 1 And I <= 3
 
                 If I = 3 Then
-                    Call UpdateManagerFile(yearNumber$)
+                    Call UpdateManagerFile(yearNumber$, mgrNbr)
                 Else
                     I = I - 1
                     Locate 22, 1: Input "RUN RATING <=             "; progMG%(I * 3 + 804)
@@ -3658,7 +3676,7 @@ End Sub
 Sub PinchRunners (targetTeam$)
 
     Shared teamRatings%(), progMG%(), progB%()
-    Shared statB$(), mgrX$()
+    Shared batterNames$(), mgrX$()
 
     Do
 
@@ -3686,7 +3704,7 @@ Sub PinchRunners (targetTeam$)
         For I = 0 To 22: 
             Locate , 1
 
-            If statB$(I) = "XXX" Or Left$(statB$(I), 1) = " " Or statB$(I) = "" Then
+            If batterNames$(I) = "XXX" Or Left$(batterNames$(I), 1) = " " Or batterNames$(I) = "" Then
                 I1 = I1 + 1
             Else
 
@@ -3705,7 +3723,7 @@ Sub PinchRunners (targetTeam$)
                     If progB%(I, 21) >= 98 Then Color 0, 7
                 End If
 
-                Locate , 3: Print statB$(I);: Color 15, 0
+                Locate , 3: Print batterNames$(I);: Color 15, 0
                 Locate , 17: Print Using "   #     ###  ###"; progB%(I, 16); progB%(I, 13); progB%(I, 14);
 
             End If
@@ -3722,7 +3740,7 @@ Sub PinchRunners (targetTeam$)
             If progMG%(I + 771) < 0 Then
                 Print
             Else
-                Print statB$(progMG%(I + 771))
+                Print batterNames$(progMG%(I + 771))
             End If
 
         Next
@@ -3762,7 +3780,7 @@ Sub PinchRunners (targetTeam$)
                 progMG%(I + 771) = I1
 
             Case 7:
-                Call UpdateManagerFile(yearNumber$)
+                Call UpdateManagerFile(yearNumber$, mgrNbr)
 
             Case 8:
                 Do
@@ -3784,7 +3802,7 @@ End Sub
 '...explanation...
 Sub DefenseSubPinchRun (targetTeam$)
 
-    Shared statB$(), mgrX$()
+    Shared batterNames$(), mgrX$()
     Shared teamRatings%(), progMG%(), progB%()
 
     Do
@@ -3804,7 +3822,7 @@ Sub DefenseSubPinchRun (targetTeam$)
 
         For I = 0 To 22: Locate , 1
 
-            If statB$(I) = "XXX" Or Left$(statB$(I), 1) = " " Or statB$(I) = "" Then
+            If batterNames$(I) = "XXX" Or Left$(batterNames$(I), 1) = " " Or batterNames$(I) = "" Then
                 I1 = I1 + 1
             Else
                 Locate I + 2 - I1, 1
@@ -3822,7 +3840,7 @@ Sub DefenseSubPinchRun (targetTeam$)
                 End If
 
                 Locate , 3
-                Print statB$(I);: Color 15, 0
+                Print batterNames$(I);: Color 15, 0
                 Locate , 17: If progB%(I, 22) <> -1 Then Print Using "# ####"; progB%(I, 22); progB%(I, 26);
                 Locate , 24: If progB%(I, 23) <> -1 Then Print Using "# ####"; progB%(I, 23); progB%(I, 27);
                 Locate , 31: If progB%(I, 24) <> -1 Then Print Using "# ####"; progB%(I, 24); progB%(I, 28);
@@ -3841,9 +3859,9 @@ Sub DefenseSubPinchRun (targetTeam$)
             If progMG%(I * 4 + 779) < 0 Then
                 Print
             Else
-                Print Left$(statB$(progMG%(I * 4 + 779)), 10); Tab(59);
+                Print Left$(batterNames$(progMG%(I * 4 + 779)), 10); Tab(59);
                 Print Using "## "; progMG%(I * 4 + 780);
-                Print Left$(statB$(progMG%(I * 4 + 781)), 10); Tab(73); Using "###"; progMG%(I * 4 + 782)
+                Print Left$(batterNames$(progMG%(I * 4 + 781)), 10); Tab(73); Using "###"; progMG%(I * 4 + 782)
             End If
 
         Next
@@ -3914,7 +3932,7 @@ Sub DefenseSubPinchRun (targetTeam$)
                 Loop Until progMG%(I * 4 + 782) >= 0 And progMG%(I * 4 + 782) <= 100
 
             Case 7:
-                Call UpdateManagerFile(yearNumber$)
+                Call UpdateManagerFile(yearNumber$, mgrNbr)
 
             Case 8:
 
@@ -3938,22 +3956,21 @@ End Sub
 '    ExportManagerProfile Subroutine
 '----------------------------------------
 '...explanation...
-Sub ExportManagerProfile ()
+Sub ExportManagerProfile (mgrNbr)
 
     Shared progMG%()
-    Shared mgr_idx%
 
-    Call GetDiskYear(T$, yearNumber$, mgr_idx%)
+    Call ChooseTeam(YN$, NTMS, mgrNbr, team$)
 
-    If _FileExists(diskPaths$(3) + "MGR." + yearNumber$) Then
+    If _FileExists(diskPaths$(3) + "MGR." + YN$) Then
 
-        Open diskPaths$(3) + "MGR." + yearNumber$ For Random As #2 Len = 2000
+        Open diskPaths$(3) + "MGR." + YN$ For Random As #2 Len = 2000
 
         For I = 0 To 999
             Field #2, I * 2 As Q$, 2 As R$(I), 2000 - I * 2 - 2 As Q$
         Next
 
-        Get #2, mgr_idx%
+        Get #2, mgrNbr
 
         For I = 0 To 999
             progMG%(I) = CVI(R$(I))
@@ -3969,18 +3986,26 @@ Sub ExportManagerProfile ()
         I$ = GetKeyPress$
         Call CSMsgBox("", 0, Pass)
     Else
+
         If PP% = 1 Then PP% = 0: Call PrintManagerProfile(T$)
 
         JJ = 5
+
         Locate 6, 8
+
         Color 15, 1
+
         Print " "; Chr$(201); String$(61, 205); Chr$(187); " ";
+
         For II = 1 To JJ: 
             Locate 6 + II, 8
             Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
         Next
+
         Locate 7 + JJ, 8
+
         Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";
+
         Locate 7
 
         Locate , 11: Input "ENTER 8 CHARACTER NAME FOR PROFILE"; profileFile$
@@ -4010,7 +4035,7 @@ Sub ImportManagerProfile ()
     Shared progMG%()
 
     Spec$ = diskPaths$(0) + "*.MGR"
-	Count% = FCount%(Spec$)
+    Count% = FCount%(Spec$)
 
     If Count% = 0 Then
         Locate 10, 8
@@ -4104,7 +4129,7 @@ Sub ImportManagerProfile ()
 
                     Close 1
 
-                    Call UpdateManagerFile(yearNumber$)
+                    Call UpdateManagerFile(yearNumber$, mgrNbr)
 
                 End If
 
@@ -4120,11 +4145,11 @@ End Sub
 '       UpdateManagerFile Subroutine
 '----------------------------------------
 '...explanation...
-Sub UpdateManagerFile (yearNumber$)
+Sub UpdateManagerFile (yearNumber$, mgrNbr)
 
     Shared R$()
     Shared progMG%()
-    Shared mgr_idx%
+    'Shared mgr_idx%
 
     progMG%(0) = 999
 
@@ -4140,7 +4165,7 @@ Sub UpdateManagerFile (yearNumber$)
             LSet R$(I) = MKI$(progMG%(I))
         Next
 
-        Put #2, mgr_idx%
+        Put #2, mgrNbr
 
         Close 2
 
@@ -4171,20 +4196,20 @@ Sub PHBATTER (yearNumber$)
         Print
         Print "PINCH HIT FOR THE BATTER FROM ";
         Color 15, 1: Print " A ";
-		Color 15, 0
+        Color 15, 0
         Print " INNING ON"
         Print "IF DOWN BY ";
         Color 15, 1: Print " B ";
-		Color 15, 0: Print " OR MORE RUNS AND"
+        Color 15, 0: Print " OR MORE RUNS AND"
         Color 15, 1: Print " C ";
-		Color 15, 0: Print " RUNNERS ON BASE AND"
+        Color 15, 0: Print " RUNNERS ON BASE AND"
         Print "SLUGGING PCT IS LESS THAN ";
         Color 15, 1: Print " D ";
-		Color 15, 0
+        Color 15, 0
         Print "AND BATTING AVERAGE IS LESS THAN ";
         Color 15, 1: Print " E "
         Print " F ";
-		Color 15, 0: Print " % OF THE TIME"
+        Color 15, 0: Print " % OF THE TIME"
         Print
         Print Tab(32);
         Color 14: Print "TABLE OF VALUES"
@@ -4206,7 +4231,7 @@ Sub PHBATTER (yearNumber$)
         Loop Until I >= 1 And I <= 4
 
         If I = 4 Then
-            Call UpdateManagerFile(yearNumber$)
+            Call UpdateManagerFile(yearNumber$, mgrNbr)
         Else
             I = I - 1
             Input "INNING TO BEGIN PINCH HITTING FOR POSITION PLAYERS "; progMG%(I * 6 + 848)
@@ -4244,19 +4269,19 @@ Sub PHPITCHER (yearNumber$)
         Print
         Print "PINCH HIT FOR THE PITCHER FROM ";
         Color 15, 1: Print " A ";
-		Color 15, 0
+        Color 15, 0
         Print " INNING ON"
         Print "IF DOWN BY ";
         Color 15, 1: Print " B ";
-		Color 15, 0: Print " OR MORE RUNS AND"
+        Color 15, 0: Print " OR MORE RUNS AND"
         Color 15, 1: Print " C ";
-		Color 15, 0: Print " OR MORE RUNNERS ON BASE AND"
+        Color 15, 0: Print " OR MORE RUNNERS ON BASE AND"
         Color 15, 1: Print " D ";
-		Color 15, 0
+        Color 15, 0
         Print " OUTS OR LESS AND PITCHERS BATTING AVERAGE IS LESS THAN ";
         Color 15, 1: Print " E "
         Print " F ";
-		Color 15, 0: Print " % OF THE TIME"
+        Color 15, 0: Print " % OF THE TIME"
         Print
 
         Print Tab(32);
@@ -4279,7 +4304,7 @@ Sub PHPITCHER (yearNumber$)
         Loop Until I >= 1 And I <= 4
 
         If I = 4 Then
-            Call UpdateManagerFile(yearNumber$)
+            Call UpdateManagerFile(yearNumber$, mgrNbr)
         Else
             I = I - 1
             Input "ENTER INNING TO BEGIN PINCH HITTING FOR PITCHER "; progMG%(I * 6 + 591)
@@ -4312,13 +4337,13 @@ Sub PITCHAROUND (yearNumber$)
         End If
 
         Locate 1, 30: Color 14, 2: Print "PITCH AROUND STRATEGY"
-		Color 15, 0: Print
+        Color 15, 0: Print
         Print "SLUGGING PCT >= ";
         Color 15, 1: Print " A "
         Color 15, 1: Print " B ";
-		Color 15, 0: Print " INNING ON"
+        Color 15, 0: Print " INNING ON"
         Color 15, 1: Print " C ";
-		Color 15, 0: Print " % OF THE TIME"
+        Color 15, 0: Print " % OF THE TIME"
 
         Print Tab(32);
         Color 14: Print "TABLE OF VALUES"
@@ -4336,7 +4361,7 @@ Sub PITCHAROUND (yearNumber$)
         Loop Until I >= 1 And I <= 4
 
         If I = 4 Then
-            Call UpdateManagerFile(yearNumber$)
+            Call UpdateManagerFile(yearNumber$, mgrNbr)
         Else
             I = I - 1
             Locate 22, 1: Input "SLUGGING PCT >=           "; progMG%(I * 3 + 757)
@@ -4376,29 +4401,29 @@ Sub Input_PITSTRAT (yearNumber$)
         If progMG%(588) > 9 Then progMG%(588) = 9
 
         Print Tab(31);: Color 14, 4: Print "CLOSING STRATEGY"
-		Color 15, 0
+        Color 15, 0
         Print
         Color 12: Print "STRATEGY                                        % OF TIME"
         Color 14: Print "(1) ";
-		Color 15: Print "INNING TO BEGIN CLOSING STRATEGY (8TH OR 9TH ON) "; progMG%(588)
+        Color 15: Print "INNING TO BEGIN CLOSING STRATEGY (8TH OR 9TH ON) "; progMG%(588)
         Color 14: Print "(2) ";
-		Color 15: Print "USE BOTH SETUP RELIEVER AND CLOSER "; yesNo$(progMG%(589))
+        Color 15: Print "USE BOTH SETUP RELIEVER AND CLOSER "; yesNo$(progMG%(589))
         Print
         Color 14: Print "SITUATIONS TO BRING IN CLOSER AND/OR SETUP MAN"
         Color 14: Print "(3) ";
-		Color 15: Print Using "START INNING IF SAVE OPPORTUNITY               ###"; progMG%(582)
+        Color 15: Print Using "START INNING IF SAVE OPPORTUNITY               ###"; progMG%(582)
         Color 14: Print "(4) ";
-		Color 15: Print Using "START INNING IF AHEAD                          ###"; progMG%(583)
+        Color 15: Print Using "START INNING IF AHEAD                          ###"; progMG%(583)
         Color 14: Print "(5) ";
-		Color 15: Print Using "START INNING IF TIED OR AHEAD                  ###"; progMG%(584)
+        Color 15: Print Using "START INNING IF TIED OR AHEAD                  ###"; progMG%(584)
         Color 14: Print "(6) ";
-		Color 15: Print Using "IF CURRENT PITCHER TIRED AND AHEAD             ###"; progMG%(585)
+        Color 15: Print Using "IF CURRENT PITCHER TIRED AND AHEAD             ###"; progMG%(585)
         Color 14: Print "(7) ";
-		Color 15: Print Using "IF CURRENT PITCHER TIRED AND TIED OR AHEAD     ###"; progMG%(586)
+        Color 15: Print Using "IF CURRENT PITCHER TIRED AND TIED OR AHEAD     ###"; progMG%(586)
         Color 14: Print "(8) ";
-		Color 15: Print Using "WHEN SAVE OPPORTUNITY OCCURS                   ###"; progMG%(587)
+        Color 15: Print Using "WHEN SAVE OPPORTUNITY OCCURS                   ###"; progMG%(587)
         Color 14: Print "(9) ";
-		Color 15: Print "ACCEPT CHOICES"
+        Color 15: Print "ACCEPT CHOICES"
 
         Do
             I$ = GetKeyPress$
@@ -4406,7 +4431,7 @@ Sub Input_PITSTRAT (yearNumber$)
         Loop Until I >= 1 And I <= 9
 
         If I = 9 Then
-            Call UpdateManagerFile(yearNumber$)
+            Call UpdateManagerFile(yearNumber$, mgrNbr)
         Else
             If I = 1 Then
                 Locate 21, 1: Input "ENTER INNING "; progMG%(588)
@@ -4444,13 +4469,13 @@ Sub THROWHOME (yearNumber$)
 
         Locate 1, 18
         Color 14, 2: Print "DON'T THROW HOME WITH RUNNER TRYING TO SCORE"
-		Color 15, 0
+        Color 15, 0
         Print
         Print "FROM ";
         Color 15, 1: Print " A ";
-		Color 15, 0: Print " INNING ON"
+        Color 15, 0: Print " INNING ON"
         Color 15, 1: Print " B ";
-		Color 15, 0: Print " OR MORE RUNS AHEAD"
+        Color 15, 0: Print " OR MORE RUNS AHEAD"
 
         Print Tab(32);
         Color 14: Print "TABLE OF VALUES"
@@ -4467,7 +4492,7 @@ Sub THROWHOME (yearNumber$)
         Loop Until I >= 1 And I <= 3
 
         If I = 3 Then
-            Call UpdateManagerFile(yearNumber$)
+            Call UpdateManagerFile(yearNumber$, mgrNbr)
         Else
             I = I - 1
 
@@ -4483,17 +4508,20 @@ End Sub
 '   BASERUN Subroutine
 '------------------------------
 ' ...explanation...
-Sub BASERUN (yearNumber$)
+Sub BASERUN (yearNumber$, mgrNbr)
 
     Shared R$()
     Shared progMG%()
-    Shared mgr_idx%
+    'Shared mgr_idx%
 
     Do
         'BASE RUNNING STRATEGY
         Cls
 
-        If progMG%(810) <> 999 Then progMG%(810) = 999: For I = 1 To 36: progMG%(810 + I) = 0: Next
+        If progMG%(810) <> 999 Then 
+            progMG%(810) = 99
+            For I = 1 To 36: progMG%(810 + I) = 0: Next
+        End If
 
         Locate 1, 30
         Color 14, 2: Print "BASE RUNNING STRATEGY"
@@ -4532,9 +4560,11 @@ Sub BASERUN (yearNumber$)
                 Field #2, J * 2 As Q$, 2 As R$(J), 2000 - J * 2 - 2 As Q$
             Next
 
-            For J = 0 To 999: LSet R$(J) = MKI$(progMG%(J)): Next
+            For J = 0 To 999: 
+                LSet R$(J) = MKI$(progMG%(J))
+            Next
 
-            Put #2, mgr_idx%
+            Put #2, mgrNbr
 
             Close 2
 
@@ -4554,17 +4584,15 @@ End Sub
 
 
 '----------------------------------------
-'       GetTeam_PROGMAN Subroutine
+'       GetManagerProfile Subroutine
 '----------------------------------------
 '...explanation...
-Sub GetTeam_PROGMAN (targetTeam$, yearNumber$)
+Sub GetManagerProfile (targetTeam$, yearNumber$)
 
     Shared progMG%()
-    Shared mgr_idx%
+    'Shared mgr_idx%
 
-    Cls
-
-    Call GetDiskYear(targetTeam$, yearNumber$, mgr_idx%)
+    Call ChooseTeam (yearNumber$, NTMS, mgrNbr, targetTeam$)
 
     Cls
 
@@ -4576,7 +4604,7 @@ Sub GetTeam_PROGMAN (targetTeam$, yearNumber$)
             Field #2, I * 2 As Q$, 2 As R$(I), 2000 - I * 2 - 2 As Q$
         Next
 
-        Get #2, mgr_idx%
+        Get #2, mgrNbr
 
         For I = 0 To 999
             progMG%(I) = CVI(R$(I))
@@ -4603,14 +4631,14 @@ End Sub
 '       GetDiskYear Subroutine
 '----------------------------------------
 '...explanation...
-Sub GetDiskYear (targetTeam$, yearNumber$, teamidx)
+Sub GetDiskYear (targetTeam$, yearNumber$, teamIdx)
 
     Shared teamRatings%()
 
     Do
 
         Color 15, 0
-		Cls
+        Cls
 
         JJ = 7
         Locate 6, 8: Color 15, 4
@@ -4628,11 +4656,11 @@ Sub GetDiskYear (targetTeam$, yearNumber$, teamidx)
         Locate 7, 27: Input NY$
 
         If NY$ = "" And yearNumber$ <> "" Then
-            Call SelectTeam_PROGMAN(numberTeams, yearNumber$, teamidx)
+            Call SelectTeam_PROGMAN(numberTeams, yearNumber$, teamIdx)
         Else
             yearNumber$ = RTrim$(NY$)
             Erase teamNames$
-			
+            
             Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
 
             fileLength& = LOF(1)
@@ -4657,7 +4685,7 @@ Sub GetDiskYear (targetTeam$, yearNumber$, teamidx)
 
             Close 1
 
-            Call SelectTeam_PROGMAN(numberTeams, yearNumber$, teamidx)
+            Call SelectTeam_PROGMAN(numberTeams, yearNumber$, teamIdx)
 
         End If
 
@@ -4690,9 +4718,9 @@ End Sub
 '...explanation...
 Sub SelectTeam_PROGMAN (numberTeams, yearNumber$, T)
 
-    Shared K9&()
-    Shared teamRatings%(), progB%(), teamPitchers%()
-    Shared statB$(), statP$()
+    Shared parkHR_DRAFT&()
+    Shared teamRatings%(), progB%(), pitcherRatings()
+    Shared batterNames$(), pitcherNames$()
 
     Shared CK
     Shared Manager$, teamAbbrev$, Stadium$
@@ -4718,15 +4746,15 @@ Sub SelectTeam_PROGMAN (numberTeams, yearNumber$, T)
 
     If ExitCode% <> 27 Then
         
-		T = teamIndex%(Selection%)
-		teamYear$ = RTrim$(yearNumber$)
+        T = teamIndex%(Selection%)
+        teamYear$ = RTrim$(yearNumber$)
 
         Locate 2, 33: Color 31
-		Print "LOADING..."
+        Print "LOADING..."
 
         If teamYear$ <> "" And _FileExists(diskPaths$(0) + "FCTEAMS." + teamYear$) Then
             
-			Open diskPaths$(0) + "FCTEAMS." + teamYear$ For Random As #1 Len = 4342
+            Open diskPaths$(0) + "FCTEAMS." + teamYear$ For Random As #1 Len = 4342
 
             Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
 
@@ -4750,10 +4778,10 @@ Sub SelectTeam_PROGMAN (numberTeams, yearNumber$, T)
 
             For I = 1 To 13: teamRatings%(I) = CVI(Q$(I)): Next
 
-            K9&(0) = CVS(Q$(14))
+            parkHR_DRAFT&(0) = CVS(Q$(14))
 
             For I = 0 To 22
-                statB$(I) = RTrim$(Q$(I * 43 + 15))
+                batterNames$(I) = RTrim$(Q$(I * 43 + 15))
                 For I1 = 0 To 41: progB%(I, I1) = CVI(Q$(I * 43 + I1 + 16))
                     If progB%(I, 0) = -1 Then PB$(I) = "L"
                     If progB%(I, 0) = 0 Then PB$(I) = "S"
@@ -4764,9 +4792,9 @@ Sub SelectTeam_PROGMAN (numberTeams, yearNumber$, T)
             Next
 
             For I = 0 To 21:
-                statP$(I) = RTrim$(Q$(I * 38 + 1004))
+                pitcherNames$(I) = RTrim$(Q$(I * 38 + 1004))
                 For I1 = 0 To 36
-                    teamPitchers%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
+                    pitcherRatings(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
                 Next
             Next
 

@@ -1,5 +1,5 @@
 '----------------------------------------
-' Used across more than one source file
+' Used in more than one source file
 '----------------------------------------
 Dim opSysType$
 
@@ -11,16 +11,24 @@ Dim Shared diskPaths$(0 To 3), Q$(0 To 2056), Q2$(0 To 2056)
 '-- transition away from this
 Dim Shared fileLength&
 
-Dim teamRatings%(1 To 13)
-Dim teamBatters%(0 To 22, 0 To 79), teamPitchers%(21, 88)
-
-Dim K9&(1)
+Dim Shared teamIndex%(MAX_TEAMS)
+Dim Shared teamNames$(MAX_TEAMS)
 
 Dim Manager$, teamAbbrev$, Stadium$
 
-Dim Shared teamIndex%(MAX_TEAMS)
+Dim teamRatings%(1 To 13)
+Dim batterRatings(0 To 22, 0 To 79), pitcherRatings(21, 88)
 
-Dim Shared teamNames$(MAX_TEAMS)
+'These are used for the LR. file
+'We currently don't know when or if it should be created
+'We only have code that opens it if it exists
+'Presumably this was the new way to load
+' LEFTY / RIGHTY, since the game code references that
+' it will perform those calculations the "old way"
+Dim teamSA%(24), teamTS%(11)
+
+Dim batterNames$(0 To 22), pitcherNames$(0 To 21)
+
 
 ' *** Reading Stat Data ***
 ' -------------------------
@@ -51,7 +59,6 @@ Dim LGT$(2), month$(1 To 12)
 Dim pitcherEra$(8), MO$(0 To 3), UMP$(50)
 Dim VI$(1), yesNo$(1)
 
-' Umpire selection
 Dim U%(50)
 
 ' *** Miscellaneous Use ***
@@ -59,11 +66,11 @@ Dim U%(50)
 Dim Shared backToMenu, BO%, X%
 
 Dim Shared R$(999)
-Dim statB$(0 To 22), statP$(0 To 21)
 Dim Z1$(40), Z2$(40)
 
+
 '----------------------------------------
-'  Used across ALIGN, MERGE routines
+'  Used in ALIGN / MERGE routines
 '----------------------------------------
 Dim Ycurr%, Yroad%
 Dim LR2%, WR2%
@@ -84,20 +91,9 @@ Dim S0R%(22, 6), S0%(22, 6), SR%(22, 6)
 
 Dim draftTR(22), draftTR1(23)
 
-'----------------------------------------
-'  Used across ACTIVATE,
-'   DRAFT routines
-'----------------------------------------
-Dim draftB1$(22), draftP1$(22)
-
-Dim L1%(13)
-Dim draftB1%(22, 79)
-Dim draftP1%(21, 88)
-
 
 '----------------------------------------
-'  Used across CAREER,
-'   CAREDIT, NEWLDR routines
+'  Used in CAREER / LEADER routines
 '----------------------------------------
 Dim BL$(15), careerPL$(15)
 Dim BL0$(18, 20), PL0$(80, 20)
@@ -114,68 +110,6 @@ Dim WW(40), LL(40)
 Dim BLL!(15), PLL!(15)
 Dim BL1!(18, 20), PL1!(16, 21)
 
-
-'----------------------------------------
-' Used across CREATE
-'----------------------------------------
-Dim D1$, D2$, D3$, D4$
-
-Dim createT%(34)
-
-'----------------------------------------
-' Used across LOOKY,
-'   BINPUT, other routines
-'----------------------------------------
-Dim ERX!, statI2!
-
-'These are integers
-Dim CK
-Dim EW, EL, HW, HL
-Dim LTL, LTW, ORW, ORL
-Dim parkHR, RW, RL, Wins, L
-
-Dim D0%, D1%, L2%, W2%
-
-Dim BP$(3), BS$(22), PS$(21)
-
-Dim statT!(22), statT1!(22)
-
-Dim BS%(22), inputDYS%(21)
-Dim statB0%(22, 40), statB%(23)
-Dim statP%(0 To 21), statP0%(22, 41)
-
-Dim inputINJ%(22), PS%(32), inputSA%(24), SA1%(24), inputTS%(11), TS1%(11)
-
-Dim statSS%(22, 6)
-Dim TB%(15), inputTP%(33)
-
-'----------------------------------------
-'   Used across COMPARE routines
-'----------------------------------------
-Dim compareB0%(22, 40), compareP0%(21, 41)
-Dim TP&(33)
-
-'----------------------------------------
-'   Used across LEAGCMPL routines
-'----------------------------------------
-Dim BAT%(24), PIT%(23)
-Dim O1(1 To 40), O2(1 To 40)
-Dim Wins(40), Losses(40)
-
-Dim cmplZ1!(298, 2)
-Dim DFT!(40, 20), JS!(46, 42), OFT!(40, 20)
-Dim seeZ!(298), seeZ1!(298)
-
-Dim BA$(40), ER$(40), H1$(40)
-Dim cmplZ2$(298), cmplZ3$(298)
-Dim LF$(70), NM$(46), seeP$(298)
-Dim RT$(70), T$(40), cmplTM$(1 To 40)
-
-
-'----------------------------------------
-'   Used across NEWLDR,
-'   NEWLDRST routines
-'----------------------------------------
 Dim leaderPL$(1 To 880)
 
 '-- corresponds to TP$, TP1$, TP2$
@@ -213,24 +147,112 @@ Dim TP0$(1 To 32), TP1A$(1 To 28), TP2A$(0 To 20), TP3$(0 To 18)
 
 
 '----------------------------------------
-' Used across PROGMAN routines
+'   Used in COMPARE routines
 '----------------------------------------
-Dim AB%(9)
-Dim progB%(22, 44), progB3%(0 To 9), progB7%(0 To 9), progB9%(0 To 9)
-Dim progM%(0 To 9), progMG%(1000)
+Dim compareB0%(22, 40), compareP0%(21, 41)
+Dim TP&(33)
 
-Dim progB1$(4), progC$(10), progPT$(1), mgrX$(0 To 21)
-
-Dim mgr_idx%
 
 '----------------------------------------
-' Used across POSSRT routines
+'   Used in COMPILE routines
 '----------------------------------------
-Dim SS
-Dim PB$(22), TYN$(40)
+Dim BAT%(24), PIT%(23)
+Dim O1(1 To 40), O2(1 To 40)
+Dim Wins(40), Losses(40)
+
+Dim cmplZ1!(298, 2)
+Dim DFT!(40, 20), JS!(46, 42), OFT!(40, 20)
+Dim seeZ!(298), seeZ1!(298)
+
+Dim BA$(40), ER$(40), H1$(40)
+Dim cmplZ2$(298), cmplZ3$(298)
+Dim LF$(70), NM$(46), seeP$(298)
+Dim RT$(70), T$(40), cmplTM$(1 To 40)
+
 
 '----------------------------------------
-' Used across SCHEDULE routines
+' Used in CREATE routines
+'----------------------------------------
+Dim D1$, D2$, D3$, D4$
+
+Dim createT%(34)
+
+'----------------------------------------
+'  Used for DRAFT routine
+'----------------------------------------
+Dim draftSA%(24), draftTS%(11)
+
+Dim batRat_DRAFT%(22, 79)
+Dim lgRat_DRAFT%(13)
+Dim pitRat_DRAFT%(21, 88)
+
+Dim parkHR_DRAFT&(1)
+
+Dim batNames_DRAFT$(22), pitNames_DRAFT$(22)
+
+
+'----------------------------------------
+' Used in TRADE routines
+'----------------------------------------
+Dim haveStats(1)
+
+' ** Team File **
+Dim batRat_TRADE(0 to 1, 0 to 22, 0 to 79)
+Dim pitRat_TRADE(2, 22, 88)
+Dim teamIndexes(0 To 1), tmRat_TRADE(1, 14)
+
+Dim batNam_TRADE$(2, 23), pitNam_TRADE$(2, 22)
+Dim mgrs_TRADE$(2), stads_TRADE$(2), tmAbbrev_TRADE$(2)
+
+
+' ** Stat File **
+Dim L2%(1), TEAM%(1, 22)
+
+Dim teams_TRADE$(1), A1$(1)
+Dim tradeB1$(2, 23), tradeP1$(2, 22)
+
+Dim tradeB0%(2, 22, 22), tradeB3%(2, 23)
+Dim tradeD0%(1), tradeD1%(1)
+
+Dim tradeP0%(2, 22, 42), tradeP3%(2, 22)
+Dim tradeSA%(1, 24), tradeSS%(1, 22, 6), tradeT1%(2, 23), tradeTS%(1, 11)
+
+Dim W2%(1)
+
+
+'----------------------------------------
+' Used in STAT / INPUT other routines
+'----------------------------------------
+Dim HW%(50), AW%(50), HL%(50), AL%(50), R1%(200), R2%(200), R3%(200), R4%(200)
+Dim THW%(4), TAW%(4), THL%(4), TAL%(4), TR1%(4), TR2%(4), TR3%(4), TR4%(4)
+
+Dim DV$(4)
+
+Dim ERX!, statI2!
+
+'These are integers
+Dim CK
+Dim EW, EL, HW, HL
+Dim LTL, LTW, ORW, ORL
+Dim parkHR, RW, RL, Wins, Losses
+
+Dim D0%, D1%, L2%, W2%
+
+Dim BP$(3), BS$(22), PS$(21)
+
+Dim statT!(22), statT1!(22)
+
+Dim BS%(22)
+DIm inputDYS%(21), inputINJ%(22), inputTP%(33)
+Dim PS%(32)
+Dim statB0%(22, 40), statB%(23)
+Dim statP%(0 To 21), statP0%(22, 41)
+Dim statSS%(22, 6)
+Dim TB%(15)
+
+
+'----------------------------------------
+' Used in SCHEDULE routines
 '----------------------------------------
 Dim BS%, NS%
 Dim N$
@@ -244,33 +266,27 @@ Dim modeAbbrev$(3)
 Dim scheduleH$(1 To 20), scheduleV$(1 To 20)
 Dim scheduleYN$(MAX_GAMES, 1)
 
-'----------------------------------------
-' Used across SINPUT routines
-'----------------------------------------
-Dim HW%(50), AW%(50), HL%(50), AL%(50), R1%(200), R2%(200), R3%(200), R4%(200)
-Dim THW%(4), TAW%(4), THL%(4), TAL%(4), TR1%(4), TR2%(4), TR3%(4), TR4%(4)
-
-Dim DV$(4)
 
 '----------------------------------------
-' Used across TRADE routines
+' Used in PROGMAN routines
 '----------------------------------------
-Dim tradeA$(1), A1$(1), tradeSA$(2)
-Dim tradeB$(2, 23), tradeB1$(2, 23), tradeP$(2, 22), tradeP1$(2, 22)
+Dim AB%(9)
+Dim progB%(22, 44), progB3%(0 To 9), progB7%(0 To 9), progB9%(0 To 9)
+Dim progM%(0 To 9), progMG%(1000)
 
-Dim tradeD0%(1), tradeD1%(1), L2%(1), TEAM%(1, 22)
-'--> tradeB% = B%() for game
-Dim tradeB%(0 to 1, 0 to 22, 0 to 79), tradeB0%(2, 22, 22), tradeB3%(2, 23)
-Dim teamIndexes(0 To 1), tradeL%(1, 14)
-Dim tradeP%(2, 22, 88), tradeP0%(2, 22, 42), tradeP3%(2, 22)
-Dim tradeS(1), tradeSA%(1, 24), tradeSS%(1, 22, 6), tradeT1%(2, 23), tradeTS%(1, 11)
-Dim W2%(1)
+Dim progB1$(4), progC$(10), progPT$(1), mgrX$(0 To 21)
 
-Dim Managers$(2), Stadiums$(2), teamAbbrevs$(2)
+Dim mgr_idx%
+
+'----------------------------------------
+' Used in POSSRT routines
+'----------------------------------------
+Dim SS
+Dim PB$(22), TYN$(40)
 
 
 '----------------------------------------
-' Used across Game Routines
+' Used in Game Routines
 '----------------------------------------
 
 'Used by POSTGAME
@@ -286,7 +302,7 @@ Dim T1%(0 To 1)
 
 Dim E!
 
-Dim PT$(1), SA$(0 To 1)
+Dim PT$(1)
 
 
 ' Shared / Global
@@ -309,10 +325,9 @@ Dim Shared F$, PARK$, S$, WI$, W$, L$
 'These are just for tracing values / troubleshooting
 Dim Shared testIdx, dudVal
 
-
 Dim Shared MON(5, 14), VV(1), VV1(1)
 
-Dim Shared A5%(0 To 4), AP%(2), B%(0 To 1, 0 To 22, 0 to 79), B0%(0 To 3, 0 To 2)
+Dim Shared A5%(0 To 4), AP%(2), B%(0 To 1, 0 To 22, 80), B0%(0 To 3, 0 To 2)
 Dim Shared B1%(3, 1), B2%(1, 22), B3%(0 To 1, 0 To 9), B4%(1, 7, 9)
 'B3% --> active batters?
 
@@ -332,7 +347,7 @@ Dim Shared B1!(9), K9!(1)
 Dim Shared A$(1), B$(0 To 1, 0 To 22), B1$(4), C$(11)
 Dim Shared DB$(0 To 22), E$(0 To 22), EJ$(20), F$(10)
 Dim Shared G$(10), H$(0 To 4), H0$(1), HR$(0 To 22)
-Dim Shared IJ$(20), M$(1), N$(1), NN$(1)
+Dim Shared IJ$(20), M$(1), NN$(1)
 Dim Shared P$(1, 21), PARK$(99), PC$(4), player$(23)
 Dim Shared Q3$(100), S$(1), SB$(0 To 22), SC$(4), TR$(0 To 22)
 Dim Shared U$(4), WD$(10), X$(12), YN$(1)

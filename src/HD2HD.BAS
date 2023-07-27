@@ -7,7 +7,6 @@ Sub HD2HD ()
     Do
 
         Color 15, 0
-
         Cls
 
         Call TITLE_UTILS
@@ -68,8 +67,10 @@ End Sub
 Sub Hd2Hd_League (LG$, sameLeague)
 
     Shared H%(), I%(), V%(), Z1%()
-    Shared HW%(), AW%(), HL(), AL(), R1%(), R2%(), R3%(), R4%()
-    Shared TR1%(), TR2%(), TR3%(), TR4%(), THW%(), THL%(), TAW%(), TAL%()
+    Shared HW%(), AW%(), HL(), AL()
+    Shared R1%(), R2%(), R3%(), R4%()
+    Shared TR1%(), TR2%(), TR3%(), TR4%()
+    Shared THW%(), THL%(), TAW%(), TAL%()
 
     Shared DV$(), L$(), Z1$(), Z2$()
 
@@ -79,38 +80,21 @@ Sub Hd2Hd_League (LG$, sameLeague)
 
     Do
 
-        Call GetTeam_HD2HD(yearNumber$, numberTeams, A$)
-
-        B$ = A$
-
-        For XX = 4 To 11
-            If Mid$(B$, XX, 1) = " " Or Mid$(B$, XX, 1) = "." Then Mid$(B$, XX, 1) = "_"
-        Next XX
-
-        QQ = 8
-
-        For XX = 11 To 4 Step -1
-            If Mid$(B$, XX, 1) = "_" Then
-                QQ = XX - 4
-            Else
-                Exit For
-            End If
-        Next XX
-
-        Z$ = Mid$(B$, 4, QQ) + "." + Left$(B$, 2)
+        Call ChooseTeam(YN$, NTMS, teamNbr, team$)
+        statFile$ = nameStatFile$(team$)
 
         Cls
 
-        If Not _FileExists(diskPaths$(1) + Z$ + "S") Then
+        If Not _FileExists(diskPaths$(1) + statFile$ + "S") Then
             Locate 10, 8
             Call CSMsgBox("NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
             I$ = GetKeyPress$
             Call CSMsgBox("", 0, Pass)
         End If
 
-    Loop Until _FileExists(diskPaths$(1) + Z$ + "S")
+    Loop Until _FileExists(diskPaths$(1) + statFile$ + "S")
 
-    Open diskPaths$(1) + Z$ + "S" For Input As #1
+    Open diskPaths$(1) + statFile$ + "S" For Input As #1
 
     Input #1, YY%
 
@@ -128,8 +112,7 @@ Sub Hd2Hd_League (LG$, sameLeague)
 
         If sameLeague <> 1 Then
 
-            Call SelectLeague(LG$)
-            targetFile$ = LG$
+            Call SelectLeague(targetFile$)
 
         End If 'done checking if new league or not
 
@@ -179,11 +162,9 @@ Sub Hd2Hd_League (LG$, sameLeague)
             VPP = 0
         End If
 
-        Q$ = LG$ + ".LIB"
-
         Cls
 
-        Open diskPaths$(2) + Q$ For Input As #3
+        Open diskPaths$(2) + targetFile$ + ".LIB" For Input As #3
 
         Input #3, LG$
         Input #3, D1$
@@ -689,7 +670,8 @@ Sub Hd2Hd_Screen (teamName$)
         If DV$(W) <> "XXX" And DV$(W) <> "" Then
 
             Color 15
-            Locate , 1: Print Left$(DV$(W), 15);
+            'We have to limit this to 14 because we start stats on column 15
+            Locate , 1: Print Left$(DV$(W), 14);
 
             Color 7
             Locate , 15: Print Using "##"; THW%(W);

@@ -465,7 +465,7 @@ Sub ViewPrintLeaders ()
                 If ExitCode% <> 27 Then
 
                     Color 15, 1
-                    targetFile$ = careerLeaderFiles$(Selection%)
+                    targetFile$ = RTrim$(careerLeaderFiles$(Selection%))
                     Locate 2, 33: Print targetFile$
 
                     Do
@@ -483,9 +483,7 @@ Sub ViewPrintLeaders ()
 
                 Cls
 
-                Z1$ = RTrim$(targetFile$)
-
-                Open diskPaths$(1) + Z1$ For Input As #1
+                Open diskPaths$(1) + targetFile$ For Input As #1
 
                 For I = 0 To 17: 
                     For I1 = 0 To 19: 

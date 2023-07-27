@@ -1,4 +1,4 @@
-Sub COMPLEAG ()
+Sub CompileLeague ()
 
     _Title "Full Count Baseball - Update League Stats"
 

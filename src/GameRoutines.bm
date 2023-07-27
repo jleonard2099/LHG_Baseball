@@ -218,7 +218,7 @@ Sub InitVar ()
     Erase A$, B$
     Erase DB$, E$, EJ$
     Erase G$, HR$
-    Erase IJ$, M$, N$, NN$
+    Erase IJ$, M$, NN$
     Erase P$, PARK$, player$
     Erase Q3$, S$, SB$, TR$
     Erase U$, YN$
@@ -2283,6 +2283,7 @@ Sub NEWPITCHER (pIdx, PPH, pz)
     Call PITSTAM(P9)
 
     For V0 = 1 To 9
+
         If B7%(D, V0) = 1 Or B7%(D, V0) = 10 Then
             B3%(D, V0) = P1%(D)
             B7%(D, V0) = 1
@@ -2292,8 +2293,10 @@ Sub NEWPITCHER (pIdx, PPH, pz)
             W6 = P9
             VV(P9) = V0
             VV1(P9) = V0
+            'Call pbpLog(4645)
             Call HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
         End If
+
     Next V0
 
     VV(P9) = 1
@@ -2317,6 +2320,7 @@ Sub NEWPITCHER (pIdx, PPH, pz)
 
     Call PBP(M$(D) + " is making a pitching change")
     Call DELAY
+    'Call pbpLog(4671)
     Call HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
 
     If usingGfx = 1 Then
@@ -2590,6 +2594,7 @@ Sub PINCHRUNNER (MS%, A1, S4%, I2, P, PR%, BC%, U%, D, MO)
             PR% = 1
 
             Call DELAY
+            'Call pbpLog(4945)
             Call HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
 
             If usingGfx = 1 Then
@@ -3048,7 +3053,7 @@ Sub PinchHitter (P, P9, W5, W6, idx)
     W6 = P9
     VV(P9) = B1!(P)
     VV1(P9) = B1!(P)
-
+    'Call pbpLog(5404)
     Call HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9!(), WF!)
 
     VV(P9) = 1
@@ -3125,11 +3130,19 @@ End Sub
 Sub PopUp_Batter (WK, M)
 
     If TS%(WK, 0) = 999 Then
+
         Locate 4, 56: Print "VS LHP  .000";
-        If B%(WK, M, 42) <> 0 Then statPCT! = B%(WK, M, 43) / B%(WK, M, 42): Locate 4, 64: Print Using ".###"; statPCT!
+        If B%(WK, M, 42) <> 0 Then 
+            statPCT! = B%(WK, M, 43) / B%(WK, M, 42)
+            Locate 4, 64: Print Using ".###"; statPCT!
+        End If
 
         Locate 5, 56: Print "VS RHP  .000";
-        If B%(WK, M, 49) <> 0 Then statPCT! = B%(WK, M, 50) / B%(WK, M, 49): Locate 5, 64: Print Using ".###"; statPCT!
+        If B%(WK, M, 49) <> 0 Then 
+            statPCT! = B%(WK, M, 50) / B%(WK, M, 49)
+            Locate 5, 64: Print Using ".###"; statPCT!
+        End If
+
     End If
 
     Locate 8, 6: Print "SEASON";
@@ -3206,17 +3219,30 @@ End Sub
 Sub PopUp_Pitcher (WK, M)
 
     Locate 14, 3
-    Color L%(WK, 11), L%(WK, 12): Print " "; Chr$(201); String$(71, 205); Chr$(187); " "
+    Color L%(WK, 11), L%(WK, 12)
+    
+    Print " "; Chr$(201); String$(71, 205); Chr$(187); " "
 
-    For X = 1 To 7: Locate , 3: Print " "; Chr$(186); String$(71, 32); Chr$(186); " ": Next
+    For X = 1 To 7: 
+        Locate , 3: Print " "; Chr$(186); String$(71, 32); Chr$(186); " "
+    Next
 
     Locate , 3: Print " "; Chr$(200); String$(71, 205); Chr$(188); " "
 
     If TS%(WK, 0) = 999 Then
+
         Locate 15, 56: Print "VS LHB  .000";
-        If P%(WK, M, 51) <> 0 Then statPCT! = P%(WK, M, 52) / P%(WK, M, 51): Locate 15, 64: Print Using ".###"; statPCT!
+        If P%(WK, M, 51) <> 0 Then 
+            statPCT! = P%(WK, M, 52) / P%(WK, M, 51)
+            Locate 15, 64: Print Using ".###"; statPCT!
+        End If
+
         Locate 16, 56: Print "VS RHB  .000";
-        If P%(WK, M, 58) <> 0 Then statPCT! = P%(WK, M, 59) / P%(WK, M, 58): Locate 16, 64: Print Using ".###"; statPCT!
+        If P%(WK, M, 58) <> 0 Then 
+            statPCT! = P%(WK, M, 59) / P%(WK, M, 58)
+            Locate 16, 64: Print Using ".###"; statPCT!
+        End If
+
     End If
 
     Locate 15, 6: Print "Stats for "; P$(WK, M)
@@ -3299,28 +3325,42 @@ Sub POPUPSTATS ()
 
     510 '
     If B7%(P, B1!(P)) = 1 And TS%(P, 0) = 999 Then
+
         Locate 4, 56: Print "VS LHP  .000";
-        If P%(P, P1%(P), 37) <> 0 Then statPCT! = P%(P, P1%(P), 38) / P%(P, P1%(P), 37): Locate 4, 64: Print Using ".###"; statPCT!
+        If P%(P, P1%(P), 37) <> 0 Then 
+            statPCT! = P%(P, P1%(P), 38) / P%(P, P1%(P), 37)
+            Locate 4, 64: Print Using ".###"; statPCT!
+        End If
 
         Locate 5, 56: Print "VS RHP  .000";
-        If P%(P, P1%(P), 44) <> 0 Then statPCT! = P%(P, P1%(P), 45) / P%(P, P1%(P), 44): Locate 5, 64: Print Using ".###"; statPCT!
+        If P%(P, P1%(P), 44) <> 0 Then 
+            statPCT! = P%(P, P1%(P), 45) / P%(P, P1%(P), 44)
+            Locate 5, 64: Print Using ".###"; statPCT!
+        End If
+
     End If
 
-    Locate 6, 3: Print " "; Chr$(204); String$(71, 205); Chr$(185); " "
-    Locate , 6: Print "          AVG   OBP   G  AB   R   H 2B 3B HR RBI  BB  SO  SB CS HS LS"
+    Locate 6, 3
+    Print " "; Chr$(204); String$(71, 205); Chr$(185); " "
+    
+    Locate , 6
+    Print "          AVG   OBP   G  AB   R   H 2B 3B HR RBI  BB  SO  SB CS HS LS"
 
     If B7%(P, B1!(P)) = 1 And P%(P, P1%(P), 11) <> 999 Then
 
         statPCT! = P%(P, P1%(P), 11) '/ 1000
-        Locate , 6: Print "SEASON";: Locate , 15: Print Using ".###"; statPCT!
+        Locate , 6: Print "SEASON";
+        Locate , 15: Print Using ".###"; statPCT!
 
     Else
 
         If B7%(P, B1!(P)) <> 1 Then
+
             WK = P
             M = J
             Call PopUp_Batter(WK, M)
             GoTo 621
+
         Else
 
             Locate , 6: Print "SEASON";: Locate , 15
@@ -3328,14 +3368,18 @@ Sub POPUPSTATS ()
             If P%(P, P1%(P), 20) = 0 Then
                 Print ".---  .---"
             Else
-                PRINT USING ".###  .### ### ### ### ### ## "; P%(P, P1%(P), 22) / P%(P, P1%(P), 20); (P%(P, P1%(P), 22) + P%(P, P1%(P), 27)) / (P%(P, P1%(P), 27) + P%(P, P1%(P), 20)); P%(P, P1%(P), 19); P%(P, P1%(P), 20); P%(P, P1%(P), 21); P%(P, P1%(P), 22);  _
-            P%(P, P1%(P), 23);
+                Print Using ".###  .### ### ### ### ### ## "; P%(P, P1%(P), 22) / P%(P, P1%(P), 20); (P%(P, P1%(P), 22) + P%(P, P1%(P), 27)) / (P%(P, P1%(P), 27) + P%(P, P1%(P), 20)); P%(P, P1%(P), 19); P%(P, P1%(P), 20); P%(P, P1%(P), 21); P%(P, P1%(P), 22); P%(P, P1%(P), 23);
                 Print Using "## ## ### ### ### ### ##"; P%(P, P1%(P), 24); P%(P, P1%(P), 25); P%(P, P1%(P), 26); P%(P, P1%(P), 27); P%(P, P1%(P), 28); P%(P, P1%(P), 29); P%(P, P1%(P), 30)
             End If
+
         End If
+
     End If
 
-    Locate , 6: Print "LEAGUE";: J = P1%(P)
+    Locate , 6: Print "LEAGUE";
+    
+    J = P1%(P)
+
     If P5%(P, J, 23) = 0 Or P5%(P, J, 24) = 0 Then
         Locate , 15: Print ".000";
     Else
@@ -3549,11 +3593,12 @@ Sub OPTIONS ()
         End If
     End If
 
-    170 Cls
+    Cls
 
     Do
-        171 '
-        Color , 0: Locate 3, 1
+
+        Color , 0
+        Locate 3, 1
         Color 14: Print "(1) ";
         Color 15: Print MO$(U6)
         Color 14: Print "(2) ";
@@ -3562,7 +3607,7 @@ Sub OPTIONS ()
         Color 15: Print "RETURN TO GAME PLAY"
 
         Do
-            183 Color 7, 0
+            Color 7, 0
             Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
             I$ = GetKeyPress$
             I = Val(I$)
@@ -3579,7 +3624,7 @@ Sub OPTIONS ()
 
     Loop Until I = 0
 
-    184 If U6 <> 0 Then
+    If U6 <> 0 Then
         If U6 = 3 Then
             U6 = 2
         Else
@@ -3595,33 +3640,8 @@ Sub OPTIONS ()
 
     If usingGfx = 1 Then Screen imageScreen&
 
-    185 '
 End Sub
 
-'------------------------------
-'   CONVNAME Subroutine
-'------------------------------
-' ...explanation...
-Sub CONVNAME (QQ, I)
-
-    N$(I) = A$(I)
-
-    For xx = 4 To 11
-        If Mid$(N$(I), xx, 1) = " " Or Mid$(N$(I), xx, 1) = "." Then Mid$(N$(I), xx, 1) = "_"
-    Next xx
-
-    QQ = 8
-
-    For xx = 11 To 4 Step -1
-        If Mid$(N$(I), xx, 1) = "_" Then
-            QQ = xx - 4
-        Else
-            Exit For
-        End If
-
-    Next xx
-
-End Sub
 
 '------------------------------
 '   DISPBAVG Subroutine
@@ -3707,21 +3727,24 @@ Sub GETSTATS ()
         Color 15, 0
         Cls
 
-        Call CONVNAME(QQ, I)
+        If _FileExists(diskPaths$(1) + statFile$) Then
 
-        statName$ = Mid$(N$(I), 4, QQ)
-        statFile$ = statName$ + "." + Left$(N$(I), 2)
-
-        FILENAME$ = diskPaths$(1) + statFile$
-
-        If _FileExists(FILENAME$) Then
             Open diskPaths$(1) + statFile$ For Input As #1
-            Input #1, A$: Input #1, W2%: Input #1, L2%
+
+            Input #1, A$
+            Input #1, W2%
+            Input #1, L2%
+
             For I1 = 0 To 22: Input #1, K$: Input #1, K%: Next I1
+
             For I1 = 0 To 21: Input #1, K$: Input #1, K%: Next I1
+
             For I1 = 0 To 22: For I2 = 0 To 21: Input #1, B5%(I, I1, I2): Next: Next
+
             For I1 = 0 To 21: For I2 = 0 To 41: Input #1, P5%(I, I1, I2): Next: Next
+
             Close #1
+
         End If
 
     Next I
@@ -3771,14 +3794,19 @@ Sub HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9
             If B7%(I, I3) <> 1 And II > 0 And I4 = 1 Then TY% = 3
             If B7%(I, I3) <> 1 And II = 0 And I4 = 1 Then TY% = 1
             If B7%(I, I3) <> 1 And II = 0 And I4 = -1 Then TY% = 2
+
             If TY% = 0 Or TY% = 1 Then PY% = 0
             If TY% = 2 Or TY% = 3 Then PY% = 1
             If TY% = 0 Or TY% = 2 Then BY% = 0
             If TY% = 1 Or TY% = 3 Then BY% = 1
 
-            If TS%(I1, 0) = 999 And P%(I1, P1%(I1), 89) <> 0 Then I6! = SA%(I1, TY% * 6 + 3) / 1000: I2! = P%(I1, P1%(I1), 56 + PY% * 7) * .9 / (P%(I1, P1%(I1), 51 + PY% * 7) + P%(I1, P1%(I1), 56 + PY% * 7) * .9)
+            If TS%(I1, 0) = 999 And P%(I1, P1%(I1), 89) <> 0 Then 
+                I6! = SA%(I1, TY% * 6 + 3) / 1000
+                I2! = P%(I1, P1%(I1), 56 + PY% * 7) * .9 / (P%(I1, P1%(I1), 51 + PY% * 7) + P%(I1, P1%(I1), 56 + PY% * 7) * .9)
+            End If
 
             If B7%(I, I3) = 1 Then
+
                 If P%(I, P1%(I), 11) <> 999 Then
                     I7! = .037
                 Else
@@ -3795,11 +3823,15 @@ Sub HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9
                             I7! = P%(I, P1%(I), 27) / (P%(I, P1%(I), 27) + P%(I, P1%(I), 20))
                         End If
                     End If
+
                 End If
+
             Else
+
                 If B%(I, B3%(I, I3), 4) + B%(I, B3%(I, I3), 11) = 0 Then
                     I7! = 0
                 Else
+
                     If TS%(I, 0) = 999 Then
                         If B%(I, B3%(I, I3), 47 + BY% * 7) + B%(I, B3%(I, I3), 42 + BY% * 7) = 0 Then
                             I7! = 0
@@ -3811,7 +3843,9 @@ Sub HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9
                     Else
                         I7! = B%(I, B3%(I, I3), 11) / (B%(I, B3%(I, I3), 4) + B%(I, B3%(I, I3), 11))
                     End If
+
                 End If
+
             End If
 
             223 '
@@ -3849,22 +3883,27 @@ Sub HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9
             If TY% = 1 Or TY% = 3 Then BY% = 1
 
             If TS%(I1, 0) = 999 And P%(I1, P1%(I1), 89) <> 0 Then
+
                 If P%(I1, P1%(I1), 51 + PY% * 7) - P%(I1, P1%(I1), 52 + PY% * 7) = 0 Then
                     I2! = 0
                 Else
                     I2! = P%(I1, P1%(I1), 57 + PY% * 7) / (P%(I1, P1%(I1), 51 + PY% * 7) - P%(I1, P1%(I1), 52 + PY% * 7))
                     I6! = SA%(I1, TY% * 6 + 2) / 1000
                 End If
+
             End If
 
             224 '
             If B7%(I, I3) = 1 Then
+
                 If P%(I, P1%(I), 11) <> 999 Then
                     I7! = .42
                 Else
+
                     If P%(I, P1%(I), 20) - P%(I, P1%(I), 22) = 0 Then
                         I7! = 0
                     Else
+
                         If TS%(I, 0) = 999 Then
                             If P%(I, P1%(I), 37 + BY% * 7) - P%(I, P1%(I), 38 + BY% * 7) = 0 Then
                                 I7! = 0
@@ -3876,13 +3915,19 @@ Sub HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9
                                 I7! = P%(I, P1%(I), 28) / (P%(I, P1%(I), 20) - P%(I, P1%(I), 22))
                             End If
                         End If
+
                     End If
+
                 End If
+
             Else
+
                 If B%(I, B3%(I, I3), 4) = 0 Or B%(I, B3%(I, I3), 4) - B%(I, B3%(I, I3), 6) = 0 Then
                     I7! = 0
                 Else
+
                     If TS%(I, 0) = 999 Then
+
                         If B%(I, B3%(I, I3), 80) <> 0 Then
                             If B%(I, B3%(I, I3), 42 + BY% * 7) - B%(I, B3%(I, I3), 43 + BY% * 7) = 0 Then
                                 I7! = 0
@@ -3893,7 +3938,9 @@ Sub HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9
                     Else
                         I7! = B%(I, B3%(I, I3), 12) / (B%(I, B3%(I, I3), 4) - B%(I, B3%(I, I3), 6))
                     End If
+
                 End If
+
             End If
 
             'IF I7!>=1 THEN I7%=.8
@@ -3934,6 +3981,7 @@ Sub HITTINGLINES '(L%(), P%(), P1%(), B7%(), B%(), VV(), VV1(), B3%(), B4%(), K9
             If TY% = 1 Or TY% = 3 Then BY% = 1
 
             If TS%(I1, 0) = 999 And P%(I1, P1%(I1), 89) <> 0 Then
+
                 I6! = P%(I1, P1%(I1), TY% * 6 + 65) / 1000
 
                 If P%(I1, P1%(I1), 51 + PY% * 7) = 0 Then
@@ -7648,40 +7696,26 @@ End Sub
 Sub COMPILESTATFILES (teamIdx)
 
     Shared HT$(), L$(), PL$()
-    Shared SA$(), W$()
+    Shared W$()
 
     Shared B6%(), D1%(), DYS%(), E%()
     Shared H%(), ING%(), P0%()
     Shared SS%(), SX%(), V%()
 
-    SA$(teamIdx) = A$(teamIdx)
+    statFile$ = nameStatFile$(A$(teamIdx))
 
-    For XX = 4 To 11
-        If Mid$(SA$(teamIdx), XX, 1) = " " Or Mid$(SA$(teamIdx), XX, 1) = "." Then Mid$(SA$(teamIdx), XX, 1) = "_"
-    Next XX
-
-    QQ = 8
-
-    For XX = 11 To 4 Step -1:
-        If Mid$(SA$(teamIdx), XX, 1) = "_" Then
-            QQ = XX - 4
-        Else
-            Exit For
-        End If
-    Next XX
-
-    statFile$ = Mid$(SA$(teamIdx), 4, QQ) + "." + Left$(SA$(teamIdx), 2)
-    FILENAME$ = diskPaths$(1) + statFile$ + "D"
-
-    If _FileExists(FILENAME$) Then
+    If _FileExists(diskPaths$(1) + statFile$ + "D") Then
 
         Open diskPaths$(1) + statFile$ + "D" For Input As #1
+
         For I1 = 0 To 22
             Input #1, INJ%(teamIdx, I1)
         Next
+
         For I1 = 0 To 21
             Input #1, DYS%(teamIdx, I1)
         Next
+
         Close 1
 
     End If
@@ -7716,6 +7750,7 @@ Sub COMPILESTATFILES (teamIdx)
                 If P8%(teamIdx, I1, 0) > 6 Then DYS%(teamIdx, I1) = Int(P8%(teamIdx, I1, 0) / 3) + 1 - 2
 
                 If MG%(teamIdx, 1) <= 0 Then DYS%(teamIdx, I1) = 3: GoTo 7667
+
                 If DYS%(teamIdx, I1) > MG%(teamIdx, 1) - 1 Then DYS%(teamIdx, I1) = MG%(teamIdx, 1) - 1
                 If DYS%(teamIdx, I1) < 0 Then DYS%(teamIdx, I1) = 0
 
@@ -7734,9 +7769,7 @@ Sub COMPILESTATFILES (teamIdx)
 
     End If
 
-    FILENAME$ = diskPaths$(1) + statFile$
-
-    If _FileExists(FILENAME$) Then
+    If _FileExists(diskPaths$(1) + statFile$) Then
 
         Open diskPaths$(1) + statFile$ For Input As #1
 
@@ -7858,29 +7891,33 @@ Sub COMPILESTATFILES (teamIdx)
     Print ">>>>>"
     Print "THE STATS ARE BEING SAVED UNDER": Print "THE FOLLOWING NAME ::: ";
     Color L%(teamIdx, 11), L%(teamIdx, 12): Print statFile$
+
     Color 15, 0
 
     Open diskPaths$(1) + statFile$ For Output As #1
+
     Print #1, A$(teamIdx)
     Print #1, W2%
     Print #1, L2%
+
     For I = 0 To 22: Print #1, B$(teamIdx, I): Print #1, B2%(teamIdx, I): Next I
     For I = 0 To 21: Print #1, P$(teamIdx, I): Print #1, P3%(teamIdx, I): Next I
     For I = 0 To 22: For I1 = 0 To 21: Print #1, B6%(I, I1): Next I1: Next I
     For I = 0 To 21: For I1 = 0 To 41: Print #1, P0%(I, I1): Next I1: Next I
+
     Print #1, D0%(teamIdx)
     Print #1, D1%(teamIdx)
+
     For I = 0 To 21: Print #1, T%(I): Next I
     For I = 0 To 22: Print #1, P4%(I): Next I
+
     Close #1
 
     Print "<<<<<"
     Print
     Print
 
-    FILENAME$ = diskPaths$(1) + statFile$ + "R"
-
-    If _FileExists(FILENAME$) Then
+    If _FileExists(diskPaths$(1) + statFile$ + "R") Then
         Open diskPaths$(1) + statFile$ + "R" For Input As #1
         For I = 0 To 22
             For I1 = 0 To 6
@@ -7905,9 +7942,8 @@ Sub COMPILESTATFILES (teamIdx)
     Close 1
 
     Y% = 0
-    FILENAME$ = diskPaths$(1) + statFile$ + "S"
 
-    If _FileExists(FILENAME$) Then
+    If _FileExists(diskPaths$(1) + statFile$ + "S") Then
 
         Open diskPaths$(1) + statFile$ + "S" For Input As #1
         Input #1, Y%
@@ -9169,9 +9205,8 @@ Sub pbpLog (lineNumber)
 
     Print #7, "Executing code from: "; lineNumber
     Print #7, A$(0); " vs "; A$(1)
-    Print #7, "B7%(P9, I) "; testIdx
-    Print #7, "B9%(D, 1)  "; B9%(D, 1)
+    Print #7, "VV(I) "; VV(I)
+    Print #7, "VV1(I)  "; VV1(I)
     Print #7,
 
 End Sub
-

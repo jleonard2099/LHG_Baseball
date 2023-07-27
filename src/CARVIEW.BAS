@@ -76,14 +76,14 @@ Sub CARVIEW ()
             If ExitCode% <> 27 Then
 
                 targetFile$ = RTrim$(targetFile$)
-                Z$ = Left$(targetFile$, Len(targetFile$) - 4)
+                careerFile$ = Left$(targetFile$, Len(targetFile$) - 4)
 
                 Color 15, 0
                 Cls
 
                 Locate 12, 10: Print "LOADING CAREER FILE . . . . PLEASE WAIT"
 
-                Open diskPaths$(1) + targetFile$ For Input As #2
+                Open diskPaths$(1) + careerFile$ + ".CAR" For Input As #2
 
                 Input #2, NB, NP
 
@@ -131,10 +131,10 @@ Sub CARVIEW ()
                 Select Case UCase$(I$)
 
                     Case "P":
-                        Call CareerToPrinter(Z$)
+                        Call CareerToPrinter(careerFile$)
 
                     Case "V"
-                        Call CareerToScreen(Z$)
+                        Call CareerToScreen(careerFile$)
 
                 End Select
 

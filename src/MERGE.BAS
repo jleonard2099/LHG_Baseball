@@ -56,7 +56,7 @@ Sub MergeStats ()
 
     Shared BR%(), draftPR%()
 
-    Shared statB$(), statP$()
+    Shared batterNames$(), pitcherNames$()
     Shared statH$(), statHR$()
     Shared L$(), LR$()
     Shared PL$(), PLR$(), PR$()
@@ -77,35 +77,15 @@ Sub MergeStats ()
 
         If UCase$(I$) = "N" And I$ <> Chr$(27) Then
 
-            Call GetDiskID_MERGE(A$)
-
-            statB$ = A$
-
-            For XX = 4 To 11:
-                If Mid$(statB$, XX, 1) = " " Or Mid$(statB$, XX, 1) = "." Then Mid$(statB$, XX, 1) = "_"
-            Next XX
-
-            For XX = 12 To 14:
-                If Mid$(statB$, XX, 2) = "ST" Then Mid$(statB$, 9, 1) = "_": Mid$(statB$, 10, 2) = "ST"
-            Next XX
-
-            QQ = 8
-            For XX = 11 To 4 Step -1:
-                If Mid$(statB$, XX, 1) = "_" Then
-                    QQ = XX - 4
-                Else
-                    Exit For
-                End If
-            Next XX
-
-            statFile$ = Mid$(statB$, 4, QQ) + "." + Left$(statB$, 2)
+            Call ChooseTeam(YN$, NTMS, teamNbr, team$)
+            statFile$ = nameStatFile$(team$)
 
 			Color , 0
             Cls
 
             Locate 10, 15: Print "ROAD STATS ARE ON DRIVE "; pathRoadStats$
             Locate , 15: Print "MASTER STATS ARE ON DRIVE "; pathCurrentStats$
-            Locate , 15: Print "TEAM TO MERGE STATS FOR IS "; A$
+            Locate , 15: Print "TEAM TO MERGE STATS FOR IS "; team$
 
             Do
                 Locate 14, 15: Print "ANY CHANGE (YN)"
@@ -117,7 +97,8 @@ Sub MergeStats ()
                 If _FileExists(pathRoadStats$ + statFile$) Then
 
                     Open pathRoadStats$ + statFile$ For Input As #1
-                    Input #1, A$
+
+                    Input #1, team$
                     Input #1, WR2%
                     Input #1, LR2%
 
@@ -133,17 +114,23 @@ Sub MergeStats ()
                     Close #1
 
                     If _FileExists(pathRoadStats$ + statFile$ + "R") Then
+
                         Open pathRoadStats$ + statFile$ + "R" For Input As #1
+
                         For I = 0 To 22
                             For I1 = 0 To 6
                                 Input #1, SR%(I, I1)
                             Next
                         Next
+
                         Close 1
+
                     End If
 
                     Open pathRoadStats$ + statFile$ + "S" For Input As #1
+
                     Input #1, Yroad%
+
                     For I = 1 To 162: Input #1, HR%(I): Next I
                     For I = 1 To 162: Input #1, statHR$(I): Next I
                     For I = 1 To 162: Input #1, VR%(I): Next I
@@ -151,22 +138,24 @@ Sub MergeStats ()
                     For I = 1 To 162: Input #1, WR$(I): Next I
                     For I = 1 To 162: Input #1, LR$(I): Next I
                     For I = 1 To 162: Input #1, IR%(I): Next I
+
                     Close #1
 
                     If _FileExists(pathCurrentStats$ + statFile$) Then
 
                         Open pathCurrentStats$ + statFile$ For Input As #1
-                        Input #1, A$
+
+                        Input #1, team$
                         Input #1, W2%
                         Input #1, L2%
 
                         For I = 0 To 22: 
-							Input #1, statB$(I)
+							Input #1, batterNames$(I)
 							Input #1, mergeB%(I)
 						Next I
                         
 						For I = 0 To 21: 
-							Input #1, statP$(I)
+							Input #1, pitcherNames$(I)
 							Input #1, mergeP%(I)
 						Next I
 
@@ -187,14 +176,19 @@ Sub MergeStats ()
                         Close #1
 
                         If _FileExists(pathCurrentStats$ + statFile$ + "R") Then
+
                             Open pathCurrentStats$ + statFile$ + "R" For Input As #1
+
                             For I = 0 To 22
                                 For I1 = 0 To 6: Input #1, S0%(I, I1): Next
 							Next
+
                             Close 1
+
                         End If
 
                         Open pathCurrentStats$ + statFile$ + "S" For Input As #1
+
                         Input #1, Ycurr%
 
                         For I = 1 To 162: Input #1, H%(I): Next I
@@ -204,18 +198,19 @@ Sub MergeStats ()
                         For I = 1 To 162: Input #1, W$(I): Next I
                         For I = 1 To 162: Input #1, L$(I): Next I
                         For I = 1 To 162: Input #1, I%(I): Next I
+
                         Close #1
 
                         SEQ = 0
 
                         For K = 0 To 22
-                            If UCase$(BR$(K)) <> UCase$(statB$(K)) Then
+                            If UCase$(BR$(K)) <> UCase$(batterNames$(K)) Then
                                 SEQ = SEQ + 1
                             End If
                         Next
 
                         For K = 0 To 21
-                            If UCase$(PR$(K)) <> UCase$(statP$(K)) Then
+                            If UCase$(PR$(K)) <> UCase$(pitcherNames$(K)) Then
                                 SEQ = SEQ + 1
                             End If
                         Next
@@ -309,7 +304,7 @@ Sub DoTheMerge (pathCurrentStats$, statFile$, B$)
 	Shared L2%, LR2%
     Shared W2%, WR2%
 
-    Shared statB$(), statP$()
+    Shared batterNames$(), pitcherNames$()
     Shared statH$(), statHR$()
     Shared L$(), LR$()
     Shared PL$(), PLR$()
@@ -366,12 +361,12 @@ Sub DoTheMerge (pathCurrentStats$, statFile$, B$)
 	Write #1, L2%
 
     For I = 0 To 22: 
-		Write #1, statB$(I)
+		Write #1, batterNames$(I)
 		Write #1, mergeB%(I)
 	Next I
     
 	For I = 0 To 21: 
-		Write #1, statP$(I)
+		Write #1, pitcherNames$(I)
 		Write #1, mergeP%(I)
 	Next I
 

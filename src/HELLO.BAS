@@ -321,7 +321,7 @@ Sub Main_Menu (menuSelection%)
                 Case 5: Call DRAFT
                 Case 6: Call TRADE
                 Case 7: Call LOOKY
-                Case 8: Call SINPUT
+                Case 8: Call EditStats
                 Case 9: Call Leaders_Menu
                 Case 10: Call Replay_Menu
                 Case 11: Call ACTIVATE
@@ -446,7 +446,6 @@ Sub ConfigureDrives ()
 
     Close #1
 
-    '620 GoTo 1
 End Sub
 
 
@@ -554,7 +553,7 @@ Sub Leaders_Menu ()
                     Call CREATE
 
                 Case 2:
-                    Call COMPLEAG
+                    Call CompileLeague
 
                 Case 3:
                     Call NEWLDR
@@ -616,4 +615,3 @@ End Sub
 '$INCLUDE: 'GameRoutines_Gfx.bm'
 '$INCLUDE: 'LOADER.BAS'
 '$INCLUDE: 'SOURCE.bm'
-

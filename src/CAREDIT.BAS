@@ -82,9 +82,9 @@ Sub CAREDIT ()
                 Locate 12, 10: Print "LOADING CAREER FILE . . . . PLEASE WAIT"
 
                 targetFile$ = RTrim$(targetFile$)
-                Z$ = Left$(targetFile$, Len(targetFile$) - 4)
+                careerFile$ = Left$(targetFile$, Len(targetFile$) - 4)
 
-                Open diskPaths$(1) + Z$ + ".CAR" For Input As #2
+                Open diskPaths$(1) + careerFile$ + ".CAR" For Input As #2
 
                 Input #2, NB, NP
 
@@ -131,11 +131,11 @@ Sub CAREDIT ()
 
                     Select Case UCase$(I$)
 
-                        Case "B": Call EditBatters (Z$)
+                        Case "B": Call EditBatters (careerFile$)
 
                         Case "E", "X": '
 
-                        Case "P": Call EditPitchers (Z$)
+                        Case "P": Call EditPitchers (careerFile$)
 
                         Case "U":
                             Cls
@@ -143,7 +143,7 @@ Sub CAREDIT ()
 
                             TMR = 2700
 
-                            Open diskPaths$(1) + Z$ For Output As #3
+                            Open diskPaths$(1) + careerFile$ For Output As #3
 
                             Write #3, NB, NP
 

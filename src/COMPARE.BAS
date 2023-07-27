@@ -5,218 +5,137 @@ Sub COMPARE ()
     Shared ERX!
 
     Shared compareB0%(), compareP0%()
-    Shared teamBatters%(), teamRatings%(), teamPitchers%(), TB%()
+    Shared batterRatings(), teamRatings%(), pitcherRatings(), TB%()
     Shared statT%(), statT1%()
 
     Shared TP&()
 
-    Shared statB$(), statP$()
+    Shared batterNames$(), pitcherNames$()
 
     Dim compareB1%(23), compareP1%(22)
 
-    Do
+    Call ChooseTeam(YN$, NTMS, teamNbr, team$)
+    statFile$ = nameStatFile$(team$)
+
+    If Not _FileExists(diskPaths$(1) + statFile$) Then
+        Locate 10, 8
+        Call CSMsgBox("NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+        I$ = GetKeyPress$
+        Call CSMsgBox("", 0, Pass)
+    Else
+
+        For K = 4 To 18:
+            For I = 0 To 22
+                TB%(K - 3) = TB%(K - 3) + batterRatings(I, K)
+            Next
+        Next
+
+        For K = 1 To 33
+            For I = 0 To 21
+                TP&(K) = TP&(K) + pitcherRatings(I, K)
+            Next
+        Next
+
+        ERX! = 0
+
+        For I = 0 To 21
+            ERX! = ERX! + ((pitcherRatings(I, 6) / 9) * (pitcherRatings(I, 10) / 100))
+        Next
+
+        For K = 4 To 14:
+            For I = 0 To 21
+                If pitcherRatings(I, 11) = 999 Then TB%(K - 3) = TB%(K - 3) + pitcherRatings(I, K + 16)
+            Next
+        Next
+
+        Open diskPaths$(1) + statFile$ For Input As #1
+
+        Input #1, team$
+        Input #1, W2%
+        Input #1, L2%
+
+        For I = 0 To 22:
+            Input #1, batterNames$(I)
+            Input #1, compareB1%(I)
+        Next I
+
+        For I = 0 To 21:
+            Input #1, pitcherNames$(I)
+            Input #1, compareP1%(I)
+        Next I
+
+        For I = 0 To 22:
+            For I1 = 0 To 21:
+                Input #1, compareB0%(I, I1)
+            Next I1
+        Next I
+
+        For I = 0 To 21:
+            For I1 = 0 To 41:
+                Input #1, compareP0%(I, I1)
+            Next I1
+        Next I
+
+        Input #1, D0%
+        Input #1, D1%
+
+        For I = 0 To 21: 
+            Input #1, statT%(I)
+        Next I
+        
+        For I = 0 To 22: 
+            Input #1, statT1%(I)
+        Next I
+
+        Close #1
 
         Color 15, 0
         Cls
 
-        JJ = 7
+        JJ = 4
 
-        Color 15, 4
-        Locate 6, 8
+        Locate 8, 8: Color 14, 1
 
-        Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+        Print " "; Chr$(201); String$(61, 205); Chr$(187); " ";
 
         For II = 1 To JJ:
-            Locate 6 + II, 8
+            Locate 8 + II, 8
             Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
         Next
 
-        Locate 7 + JJ, 8
+        Locate 9 + JJ, 8
 
-        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+        Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";
 
-        Locate 7, 32
-        Locate , 12: Print "ENTER DISK ID: ": Print
-        Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
-        Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
-        Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
-        Locate 7, 27: Input NY$
-        If NY$ = "" And yearNumber$ <> "" Then
-            Call SelectTeam_COMPARE(yearNumber$, numberTeams, T$)
-        Else
-            yearNumber$ = RTrim$(NY$)
-            Erase teamNames$
-            numberTeams = 0
+        Do
+            Locate 10
+            Color 7, 1
 
-            If Not _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
-                Locate 10, 8
-                Call CSMsgBox("NO TEAM FILES WERE FOUND MATCHING THIS ID.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-                I$ = GetKeyPress$
-                Call CSMsgBox("", 0, Pass)
-            Else
+            Locate , 30: Print "STATS TO ";
+            Color 15: Print "S";: Color 7: Print "CREEN"
+            Locate , 30: Print "STATS TO ";
+            Color 15: Print "P";: Color 7: Print "RINTER"
+            J$ = GetKeyPress$
 
-                Call ReadTeamData_COMPARE(yearNumber$, numberTeams)
-                Call SelectTeam_COMPARE(yearNumber$, numberTeams, T$)
+        Loop Until UCase$(J$) = "P" Or UCase$(J$) = "S" Or J$ = Chr$(27)
 
-            End If 'Done checking for teams file
+        backToMenu = 0
 
-        End If 'Done checking INPUT
+        If J$ <> Chr$(27) Then
 
-        If BO% = 1 Then
-            BO% = 0
-        Else
-            Locate 2, 33
-            Color teamRatings%(11), teamRatings%(12): Print T$
+            Select Case UCase$(J$)
 
-            Do
-                Color 15, 4
-                Locate 3, 33: Print "ANY CHANGE (YN)";
-                I$ = GetKeyPress$
-            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+                Case "P":
+                    Call Comparisons_Printer(team$)
+
+                Case "S":
+                    Call Comparisons_Screen(team$, backToMenu)
+
+            End Select
 
         End If
 
-        If UCase$(I$) = "N" Then
-
-            'Determine stat file for team
-            For XX = 4 To 11
-                If Mid$(T$, XX, 1) = " " Or Mid$(T$, XX, 1) = "." Then Mid$(T$, XX, 1) = "_"
-            Next XX
-
-            For XX = 12 To 14
-                If Mid$(T$, XX, 2) = "ST" Then Mid$(T$, 9, 1) = "_": Mid$(T$, 10, 2) = "ST"
-            Next XX
-
-            QQ = 8
-
-            For XX = 11 To 4 Step -1
-                If Mid$(T$, XX, 1) = "_" Then
-                    QQ = XX - 4
-                Else
-                    Exit For
-                End If
-            Next XX
-
-            Z$ = Mid$(T$, 4, QQ) + "." + Left$(T$, 2)
-
-            If Not _FileExists(diskPaths$(1) + Z$) Then
-                Locate 10, 8
-                Call CSMsgBox("NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-                I$ = GetKeyPress$
-                Call CSMsgBox("", 0, Pass)
-            Else
-
-                For K = 4 To 18:
-                    For I = 0 To 22
-                        TB%(K - 3) = TB%(K - 3) + teamBatters%(I, K)
-                    Next
-                Next
-
-                For K = 1 To 33
-                    For I = 0 To 21
-                        TP&(K) = TP&(K) + teamPitchers%(I, K)
-                    Next
-                Next
-
-                ERX! = 0
-
-                For I = 0 To 21
-                    ERX! = ERX! + ((teamPitchers%(I, 6) / 9) * (teamPitchers%(I, 10) / 100))
-                Next
-
-                For K = 4 To 14:
-                    For I = 0 To 21
-                        If teamPitchers%(I, 11) = 999 Then TB%(K - 3) = TB%(K - 3) + teamPitchers%(I, K + 16)
-                    Next
-                Next
-
-                Open diskPaths$(1) + Z$ For Input As #1
-
-                Input #1, A$:
-                Input #1, W2%
-                Input #1, L2%
-
-                For I = 0 To 22:
-                    Input #1, statB$(I)
-                    Input #1, compareB1%(I)
-                Next I
-
-                For I = 0 To 21:
-                    Input #1, statP$(I)
-                    Input #1, compareP1%(I)
-                Next I
-
-                For I = 0 To 22:
-                    For I1 = 0 To 21:
-                        Input #1, compareB0%(I, I1)
-                    Next I1
-                Next I
-
-                For I = 0 To 21:
-                    For I1 = 0 To 41:
-                        Input #1, compareP0%(I, I1)
-                    Next I1
-                Next I
-
-                Input #1, D0%
-                Input #1, D1%
-
-                For I = 0 To 21: Input #1, statT%(I): Next I
-                For I = 0 To 22: Input #1, statT1%(I): Next I
-
-                Close #1
-
-                Color 15, 0
-                Cls
-
-                JJ = 4
-
-                Locate 8, 8: Color 14, 1
-
-                Print " "; Chr$(201); String$(61, 205); Chr$(187); " ";
-
-                For II = 1 To JJ:
-                    Locate 8 + II, 8
-                    Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-                Next
-
-                Locate 9 + JJ, 8
-
-                Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";
-
-                Do
-                    Locate 10
-                    Color 7, 1
-
-                    Locate , 30: Print "STATS TO ";
-                    Color 15: Print "S";: Color 7: Print "CREEN"
-                    Locate , 30: Print "STATS TO ";
-                    Color 15: Print "P";: Color 7: Print "RINTER"
-                    J$ = GetKeyPress$
-
-                Loop Until UCase$(J$) = "P" Or UCase$(J$) = "S" Or J$ = Chr$(27)
-
-                backToMenu = 0
-
-                If J$ <> Chr$(27) Then
-
-                    Select Case UCase$(J$)
-
-                        Case "P":
-                            Call Comparisons_Printer(T$)
-
-                        Case "S":
-                            Call Comparisons_Screen(T$, backToMenu)
-
-                    End Select
-
-                End If
-
-            End If 'Done checking file count
-
-        End If 'Done checking for ESC
-
-    Loop Until (UCase$(I$) = "N" And backToMenu = 0) Or I$ = Chr$(27)
+    End If 'Done checking file count
 
 End Sub
 
@@ -226,8 +145,8 @@ End Sub
 '...explanation...
 Sub Comparisons_Printer (teamName$)
 
-    Shared statB$(), statP$()
-    Shared teamBatters%(), teamPitchers%()
+    Shared batterNames$(), pitcherNames$()
+    Shared batterRatings(), pitcherRatings()
     Shared compareB0%(), compareP0%()
 
     LPrint "STAT COMPARISONS FOR "; teamName$
@@ -253,38 +172,38 @@ Sub Comparisons_Printer (teamName$)
 
     For I = 0 To 22
 
-        If statB$(I) <> "XXX" And statB$(I) <> "END" And statB$(I) <> "" Then
-            LPrint Left$(statB$(I), 14);
+        If batterNames$(I) <> "XXX" And batterNames$(I) <> "END" And batterNames$(I) <> "" Then
+            LPrint Left$(batterNames$(I), 14);
             LPrint Tab(16); "Reg.";
-            LPrint Tab(21); Using "###"; teamBatters%(I, 3);
-            LPrint Tab(26); Using "###"; teamBatters%(I, 4);
-            LPrint Tab(31); Using "###"; teamBatters%(I, 5);
-            LPrint Tab(36); Using "###"; teamBatters%(I, 6);
-            LPrint Tab(42); Using "##"; teamBatters%(I, 7);
-            LPrint Tab(46); Using "##"; teamBatters%(I, 8);
-            LPrint Tab(50); Using "##"; teamBatters%(I, 9);
-            LPrint Tab(54); Using "###"; teamBatters%(I, 10);
-            LPrint Tab(59); Using "###"; teamBatters%(I, 11);
-            LPrint Tab(64); Using "#.###"; teamBatters%(I, 12);
-            LPrint Tab(69); Using "#.###"; teamBatters%(I, 13);
-            LPrint Tab(74); Using "#.###"; teamBatters%(I, 14);
+            LPrint Tab(21); Using "###"; batterRatings(I, 3);
+            LPrint Tab(26); Using "###"; batterRatings(I, 4);
+            LPrint Tab(31); Using "###"; batterRatings(I, 5);
+            LPrint Tab(36); Using "###"; batterRatings(I, 6);
+            LPrint Tab(42); Using "##"; batterRatings(I, 7);
+            LPrint Tab(46); Using "##"; batterRatings(I, 8);
+            LPrint Tab(50); Using "##"; batterRatings(I, 9);
+            LPrint Tab(54); Using "###"; batterRatings(I, 10);
+            LPrint Tab(59); Using "###"; batterRatings(I, 11);
+            LPrint Tab(64); Using "#.###"; batterRatings(I, 12);
+            LPrint Tab(69); Using "#.###"; batterRatings(I, 13);
+            LPrint Tab(74); Using "#.###"; batterRatings(I, 14);
 
             I2 = 0
             I3 = 0
             I4 = 0
 
-            If teamBatters%(I, 4) > 0 Then I2 = Int((teamBatters%(I, 6) / teamBatters%(I, 4) + .0005) * 1000): I3 = Int(((teamBatters%(I, 6) + teamBatters%(I, 7) + 2 * teamBatters%(I, 8) + 3 * teamBatters%(I, 9)) / teamBatters%(I, 4) + .0005) * 1000): I4 = Int(((teamBatters%(I, 6) + teamBatters%(I, 11)) / (teamBatters%(I, 11) + teamBatters%(I, 4)) + .0005) * 1000)
-            If teamBatters%(I, 4) = 0 Or I2 = 0 Then LPrint Tab(79); ".000";
+            If batterRatings(I, 4) > 0 Then I2 = Int((batterRatings(I, 6) / batterRatings(I, 4) + .0005) * 1000): I3 = Int(((batterRatings(I, 6) + batterRatings(I, 7) + 2 * batterRatings(I, 8) + 3 * batterRatings(I, 9)) / batterRatings(I, 4) + .0005) * 1000): I4 = Int(((batterRatings(I, 6) + batterRatings(I, 11)) / (batterRatings(I, 11) + batterRatings(I, 4)) + .0005) * 1000)
+            If batterRatings(I, 4) = 0 Or I2 = 0 Then LPrint Tab(79); ".000";
             If I2 > 0 And I2 < 100 Then LPrint Tab(79); ".0";: LPrint Using "##"; I2;
             If I2 >= 100 Then LPrint Tab(79); ".";: LPrint Using "###"; I2;
-            If teamBatters%(I, 4) = 0 Or I3 = 0 Then LPrint Tab(84); ".000";
+            If batterRatings(I, 4) = 0 Or I3 = 0 Then LPrint Tab(84); ".000";
             If I3 > 0 And I3 < 100 Then LPrint Tab(84); ".0";: LPrint Using "##"; I3;
             If I3 >= 100 Then LPrint Tab(84); ".";: LPrint Using "###"; I3;
-            If teamBatters%(I, 4) = 0 Or I4 = 0 Then LPrint Tab(90); ".000";
+            If batterRatings(I, 4) = 0 Or I4 = 0 Then LPrint Tab(90); ".000";
             If I4 > 0 And I4 < 100 Then LPrint Tab(90); ".0";: LPrint Using "##"; I4;
             If I4 >= 100 Then LPrint Tab(90); ".";: LPrint Using "###"; I4;
 
-            LPrint Tab(99); ".";: LPrint Using "###"; teamBatters%(I, 26)
+            LPrint Tab(99); ".";: LPrint Using "###"; batterRatings(I, 26)
             LPrint Tab(16); "Lge.";
             LPrint Tab(21); Using "###"; compareB0%(I, 14);
             LPrint Tab(26); Using "###"; compareB0%(I, 0);
@@ -348,30 +267,30 @@ Sub Comparisons_Printer (teamName$)
 
     For I = 0 To 21
 
-        If statP$(I) <> "XXX" And statP$(I) <> "END" And statP$(I) <> "" Then
+        If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "END" And pitcherNames$(I) <> "" Then
 
-            LPrint Left$(statP$(I), 14);
+            LPrint Left$(pitcherNames$(I), 14);
             LPrint Tab(18); "REG.";
-            LPrint Tab(25); Using "###"; teamPitchers%(I, 4);
-            LPrint Tab(31); Using "##"; teamPitchers%(I, 1);
-            LPrint Tab(36); Using "##"; teamPitchers%(I, 2);
-            LPrint Tab(41); Using "##"; teamPitchers%(I, 3);
-            LPrint Tab(45); Using "###.#"; teamPitchers%(I, 6);
-            LPrint Tab(52); Using "###"; teamPitchers%(I, 7);
-            LPrint Tab(56); Using "###"; teamPitchers%(I, 8);
-            LPrint Tab(61); Using "###"; teamPitchers%(I, 9);
-            LPrint Tab(66); Using "##.##"; (teamPitchers%(I, 10)) / 100;
-            LPrint Tab(73); Using "##"; teamPitchers%(I, 5);
-            LPrint Tab(79); Using "##"; teamPitchers%(I, 16);
+            LPrint Tab(25); Using "###"; pitcherRatings(I, 4);
+            LPrint Tab(31); Using "##"; pitcherRatings(I, 1);
+            LPrint Tab(36); Using "##"; pitcherRatings(I, 2);
+            LPrint Tab(41); Using "##"; pitcherRatings(I, 3);
+            LPrint Tab(45); Using "###.#"; pitcherRatings(I, 6);
+            LPrint Tab(52); Using "###"; pitcherRatings(I, 7);
+            LPrint Tab(56); Using "###"; pitcherRatings(I, 8);
+            LPrint Tab(61); Using "###"; pitcherRatings(I, 9);
+            LPrint Tab(66); Using "##.##"; (pitcherRatings(I, 10)) / 100;
+            LPrint Tab(73); Using "##"; pitcherRatings(I, 5);
+            LPrint Tab(79); Using "##"; pitcherRatings(I, 16);
 
-            If teamPitchers%(I, 6) = 0 Then LPrint Tab(85); " 0.00";
-            If teamPitchers%(I, 6) > 0 Then LPrint Tab(85); Using "##.##"; (teamPitchers%(I, 7) * 9) / teamPitchers%(I, 6);
-            If teamPitchers%(I, 6) = 0 Then LPrint Tab(93); " 0.00";
-            If teamPitchers%(I, 6) > 0 Then LPrint Tab(93); Using "##.##"; (teamPitchers%(I, 9) * 9) / teamPitchers%(I, 6);
-            If teamPitchers%(I, 6) = 0 Then LPrint Tab(100); " 0.00";
-            If teamPitchers%(I, 6) > 0 Then LPrint Tab(100); Using "##.##"; (teamPitchers%(I, 8) * 9) / teamPitchers%(I, 6);
+            If pitcherRatings(I, 6) = 0 Then LPrint Tab(85); " 0.00";
+            If pitcherRatings(I, 6) > 0 Then LPrint Tab(85); Using "##.##"; (pitcherRatings(I, 7) * 9) / pitcherRatings(I, 6);
+            If pitcherRatings(I, 6) = 0 Then LPrint Tab(93); " 0.00";
+            If pitcherRatings(I, 6) > 0 Then LPrint Tab(93); Using "##.##"; (pitcherRatings(I, 9) * 9) / pitcherRatings(I, 6);
+            If pitcherRatings(I, 6) = 0 Then LPrint Tab(100); " 0.00";
+            If pitcherRatings(I, 6) > 0 Then LPrint Tab(100); Using "##.##"; (pitcherRatings(I, 8) * 9) / pitcherRatings(I, 6);
 
-            LPrint Tab(109); Using "##"; teamPitchers%(I, 13)
+            LPrint Tab(109); Using "##"; pitcherRatings(I, 13)
             LPrint Tab(18); "LGE.";
             LPrint Tab(25); Using "###"; compareP0%(I, 8);
             LPrint Tab(31); Using "##"; compareP0%(I, 6);
@@ -454,23 +373,23 @@ End Sub
 '...explanation...
 Sub Comparisons_Screen (teamName$, backToMenu)
 
-    Shared statB$(), statP$()
-    Shared teamBatters%(), compareB0%()
-    Shared compareP0%(), teamPitchers%()
+    Shared batterNames$(), pitcherNames$()
+    Shared batterRatings(), compareB0%()
+    Shared compareP0%(), pitcherRatings()
 
     Call TeamComparison_Screen(teamName$)
 
     Do
 
         For I = 0 To 22
-            If Left$(statB$(I), 3) = "XXX" Then
-                statB$(I) = ""
+            If Left$(batterNames$(I), 3) = "XXX" Then
+                batterNames$(I) = ""
             End If
         Next
 
         For I = 0 To 21
-            If Left$(statP$(I), 3) = "XXX" Then
-                statP$(I) = ""
+            If Left$(pitcherNames$(I), 3) = "XXX" Then
+                pitcherNames$(I) = ""
             End If
         Next
 
@@ -485,28 +404,28 @@ Sub Comparisons_Screen (teamName$, backToMenu)
             Color 12
             Locate I + 4, 10: Print Using "##"; I + 1;
             Print ". ";
-            Color 7: Print Left$(statB$(I), 14)
+            Color 7: Print Left$(batterNames$(I), 14)
         Next
 
         For I = 17 To 22
             Color 12
             Locate I - 13, 30: Print Using "##"; I + 1;
             Print ". ";
-            Color 7: Print Left$(statB$(I), 14)
+            Color 7: Print Left$(batterNames$(I), 14)
         Next
 
         For I = 0 To 10
             Color 12
             Locate I + 10, 30: Print Using "##"; I + 24;
             Print ". ";
-            Color 3: Print Left$(statP$(I), 14)
+            Color 3: Print Left$(pitcherNames$(I), 14)
         Next
 
         For I = 11 To 21
             Color 12
             Locate I - 7, 50: Print Using "##"; I + 24;
             Print ". ";
-            Color 3: Print Left$(statP$(I), 14)
+            Color 3: Print Left$(pitcherNames$(I), 14)
         Next
 
         Color 12
@@ -591,10 +510,10 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                 Locate 2, 30
                 Color 15, 0: Print String$(40, 177)
 
-                If statB$(I) <> "XXX" And statB$(I) <> "END" And statB$(I) <> "" Then
+                If batterNames$(I) <> "XXX" And batterNames$(I) <> "END" And batterNames$(I) <> "" Then
 
                     265 '
-                    Select Case teamBatters%(I, 22)
+                    Select Case batterRatings(I, 22)
                         Case 2: PST$ = "Catcher"
                         Case 3: PST$ = "First Base"
                         Case 4: PST$ = "Second Base"
@@ -610,7 +529,7 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                     Color 15, 0
                     Locate 2, 30: Print String$(14, 177)
                     Color 10
-                    Locate 2, 30: Print Left$(statB$(I), 14);: Print " - ";: Print PST$
+                    Locate 2, 30: Print Left$(batterNames$(I), 14);: Print " - ";: Print PST$
 
                     Color 12
                     Locate 5, 2: Print "REGULAR "
@@ -655,73 +574,73 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                     Locate 15, 13: Print "FLD.PCT."
 
                     Color 1, 11
-                    Locate 5, 13: Print Using "###"; teamBatters%(I, 3);
+                    Locate 5, 13: Print Using "###"; batterRatings(I, 3);
 
-                    If teamBatters%(I, 4) = 0 Or teamBatters%(I, 5) = 0 Then Locate 11, 13: Print " ---.--"
-                    If teamBatters%(I, 4) > 0 And teamBatters%(I, 5) > 0 Then Locate 11, 13: Print Using "###.##"; teamBatters%(I, 4) / teamBatters%(I, 5)
+                    If batterRatings(I, 4) = 0 Or batterRatings(I, 5) = 0 Then Locate 11, 13: Print " ---.--"
+                    If batterRatings(I, 4) > 0 And batterRatings(I, 5) > 0 Then Locate 11, 13: Print Using "###.##"; batterRatings(I, 4) / batterRatings(I, 5)
 
-                    Locate 5, 16: Print Using "#####"; teamBatters%(I, 4)
+                    Locate 5, 16: Print Using "#####"; batterRatings(I, 4)
 
-                    If teamBatters%(I, 4) = 0 Or teamBatters%(I, 6) = 0 Then Locate 11, 19: Print " ---.--"
-                    If teamBatters%(I, 4) > 0 And teamBatters%(I, 6) > 0 Then Locate 11, 19: Print Using "####.##"; teamBatters%(I, 4) / teamBatters%(I, 6)
+                    If batterRatings(I, 4) = 0 Or batterRatings(I, 6) = 0 Then Locate 11, 19: Print " ---.--"
+                    If batterRatings(I, 4) > 0 And batterRatings(I, 6) > 0 Then Locate 11, 19: Print Using "####.##"; batterRatings(I, 4) / batterRatings(I, 6)
 
-                    Locate 5, 21: Print Using "####"; teamBatters%(I, 5)
+                    Locate 5, 21: Print Using "####"; batterRatings(I, 5)
 
-                    If teamBatters%(I, 4) = 0 Or teamBatters%(I, 7) = 0 Then Locate 11, 26: Print " ---.--"
-                    If teamBatters%(I, 4) > 0 And teamBatters%(I, 7) > 0 Then Locate 11, 26: Print Using "####.##"; teamBatters%(I, 4) / teamBatters%(I, 7)
+                    If batterRatings(I, 4) = 0 Or batterRatings(I, 7) = 0 Then Locate 11, 26: Print " ---.--"
+                    If batterRatings(I, 4) > 0 And batterRatings(I, 7) > 0 Then Locate 11, 26: Print Using "####.##"; batterRatings(I, 4) / batterRatings(I, 7)
 
-                    Locate 5, 25: Print Using "####"; teamBatters%(I, 6)
+                    Locate 5, 25: Print Using "####"; batterRatings(I, 6)
 
-                    If teamBatters%(I, 4) = 0 Or teamBatters%(I, 8) = 0 Then Locate 11, 33: Print " ---.--"
-                    If teamBatters%(I, 4) > 0 And teamBatters%(I, 8) > 0 Then Locate 11, 33: Print Using "####.##"; teamBatters%(I, 4) / teamBatters%(I, 8)
+                    If batterRatings(I, 4) = 0 Or batterRatings(I, 8) = 0 Then Locate 11, 33: Print " ---.--"
+                    If batterRatings(I, 4) > 0 And batterRatings(I, 8) > 0 Then Locate 11, 33: Print Using "####.##"; batterRatings(I, 4) / batterRatings(I, 8)
 
-                    Locate 5, 29: Print Using "####"; teamBatters%(I, 7)
+                    Locate 5, 29: Print Using "####"; batterRatings(I, 7)
 
-                    If teamBatters%(I, 4) = 0 Or teamBatters%(I, 9) = 0 Then Locate 11, 40: Print " ---.--"
-                    If teamBatters%(I, 4) > 0 And teamBatters%(I, 9) > 0 Then Locate 11, 40: Print Using "####.##"; teamBatters%(I, 4) / teamBatters%(I, 9)
+                    If batterRatings(I, 4) = 0 Or batterRatings(I, 9) = 0 Then Locate 11, 40: Print " ---.--"
+                    If batterRatings(I, 4) > 0 And batterRatings(I, 9) > 0 Then Locate 11, 40: Print Using "####.##"; batterRatings(I, 4) / batterRatings(I, 9)
 
-                    Locate 5, 33: Print Using "####"; teamBatters%(I, 8)
+                    Locate 5, 33: Print Using "####"; batterRatings(I, 8)
 
-                    If teamBatters%(I, 4) = 0 Or teamBatters%(I, 10) = 0 Then Locate 11, 47: Print " ---.--"
-                    If teamBatters%(I, 4) > 0 And teamBatters%(I, 10) > 0 Then Locate 11, 47: Print Using "####.##"; teamBatters%(I, 4) / teamBatters%(I, 10)
+                    If batterRatings(I, 4) = 0 Or batterRatings(I, 10) = 0 Then Locate 11, 47: Print " ---.--"
+                    If batterRatings(I, 4) > 0 And batterRatings(I, 10) > 0 Then Locate 11, 47: Print Using "####.##"; batterRatings(I, 4) / batterRatings(I, 10)
 
-                    Locate 5, 37: Print Using "####"; teamBatters%(I, 9)
+                    Locate 5, 37: Print Using "####"; batterRatings(I, 9)
 
-                    If teamBatters%(I, 4) = 0 Or teamBatters%(I, 11) = 0 Then Locate 11, 54: Print " ---.--"
-                    If teamBatters%(I, 4) > 0 And teamBatters%(I, 11) > 0 Then Locate 11, 54: Print Using "####.##"; teamBatters%(I, 4) / teamBatters%(I, 11)
+                    If batterRatings(I, 4) = 0 Or batterRatings(I, 11) = 0 Then Locate 11, 54: Print " ---.--"
+                    If batterRatings(I, 4) > 0 And batterRatings(I, 11) > 0 Then Locate 11, 54: Print Using "####.##"; batterRatings(I, 4) / batterRatings(I, 11)
 
-                    Locate 5, 41: Print Using "#####"; teamBatters%(I, 10)
+                    Locate 5, 41: Print Using "#####"; batterRatings(I, 10)
 
-                    If teamBatters%(I, 4) = 0 Or teamBatters%(I, 12) = 0 Then Locate 11, 61: Print " ---.--"
-                    If teamBatters%(I, 4) > 0 And teamBatters%(I, 12) > 0 Then Locate 11, 61: Print Using "####.##"; teamBatters%(I, 4) / teamBatters%(I, 12)
+                    If batterRatings(I, 4) = 0 Or batterRatings(I, 12) = 0 Then Locate 11, 61: Print " ---.--"
+                    If batterRatings(I, 4) > 0 And batterRatings(I, 12) > 0 Then Locate 11, 61: Print Using "####.##"; batterRatings(I, 4) / batterRatings(I, 12)
 
-                    Locate 5, 46: Print Using "####"; teamBatters%(I, 11)
-                    Locate 5, 50: Print Using "####"; teamBatters%(I, 12)
+                    Locate 5, 46: Print Using "####"; batterRatings(I, 11)
+                    Locate 5, 50: Print Using "####"; batterRatings(I, 12)
 
-                    If teamBatters%(I, 13) + teamBatters%(I, 14) = 0 Or teamBatters%(I, 13) = 0 Then Locate 11, 68: Print "    00% ";: Color 7, 0: Print String$(2, 177)
+                    If batterRatings(I, 13) + batterRatings(I, 14) = 0 Or batterRatings(I, 13) = 0 Then Locate 11, 68: Print "    00% ";: Color 7, 0: Print String$(2, 177)
 
-                    Color 1, 11: If teamBatters%(I, 13) > 0 And teamBatters%(I, 14) = 0 Then Locate 11, 68: Print "   100% ";: Color 7, 0: Print String$(2, 177)
-                    Color 1, 11: If teamBatters%(I, 13) > 0 And teamBatters%(I, 14) > 0 Then Locate 11, 68: Print "   ";: Print Using "###"; (teamBatters%(I, 13) / (teamBatters%(I, 13) + teamBatters%(I, 14))) * 100;: Print "% ";: Color 7, 0: Print String$(2, 177)
-                    Color 1, 11: Locate 5, 54: Print Using "####"; teamBatters%(I, 13)
-                    Locate 5, 58: Print Using "###"; teamBatters%(I, 14);: Print " "
+                    Color 1, 11: If batterRatings(I, 13) > 0 And batterRatings(I, 14) = 0 Then Locate 11, 68: Print "   100% ";: Color 7, 0: Print String$(2, 177)
+                    Color 1, 11: If batterRatings(I, 13) > 0 And batterRatings(I, 14) > 0 Then Locate 11, 68: Print "   ";: Print Using "###"; (batterRatings(I, 13) / (batterRatings(I, 13) + batterRatings(I, 14))) * 100;: Print "% ";: Color 7, 0: Print String$(2, 177)
+                    Color 1, 11: Locate 5, 54: Print Using "####"; batterRatings(I, 13)
+                    Locate 5, 58: Print Using "###"; batterRatings(I, 14);: Print " "
 
                     I2 = 0
                     I3 = 0
                     I4 = 0
 
-                    If teamBatters%(I, 4) > 0 Then I2 = Int((teamBatters%(I, 6) / teamBatters%(I, 4) + .0005) * 1000): I3 = Int(((teamBatters%(I, 6) + teamBatters%(I, 7) + 2 * teamBatters%(I, 8) + 3 * teamBatters%(I, 9)) / teamBatters%(I, 4) + .0005) * 1000): I4 = Int(((teamBatters%(I, 6) + teamBatters%(I, 11)) / (teamBatters%(I, 11) + teamBatters%(I, 4)) + .0005) * 1000)
-                    If teamBatters%(I, 4) = 0 Or I2 = 0 Then Locate 5, 62: Print ".000";: Print " "
+                    If batterRatings(I, 4) > 0 Then I2 = Int((batterRatings(I, 6) / batterRatings(I, 4) + .0005) * 1000): I3 = Int(((batterRatings(I, 6) + batterRatings(I, 7) + 2 * batterRatings(I, 8) + 3 * batterRatings(I, 9)) / batterRatings(I, 4) + .0005) * 1000): I4 = Int(((batterRatings(I, 6) + batterRatings(I, 11)) / (batterRatings(I, 11) + batterRatings(I, 4)) + .0005) * 1000)
+                    If batterRatings(I, 4) = 0 Or I2 = 0 Then Locate 5, 62: Print ".000";: Print " "
                     If I2 > 0 And I2 < 100 Then Locate 5, 62: Print ".0";: Print Using "##"; I2;: Print " "
                     If I2 >= 100 Then Locate 5, 62: Print ".";: Print Using "###"; I2;: Print " "
-                    If teamBatters%(I, 4) = 0 Or I3 = 0 Then Locate 5, 67: Print ".000";: Print " "
+                    If batterRatings(I, 4) = 0 Or I3 = 0 Then Locate 5, 67: Print ".000";: Print " "
                     If I3 > 0 And I3 < 100 Then Locate 5, 67: Print ".0";: Print Using "##"; I3;: Print " "
                     If I3 >= 100 Then Locate 5, 67: Print ".";: Print Using "###"; I3;: Print " "
-                    If teamBatters%(I, 4) = 0 Or I4 = 0 Then Locate 5, 72: Print ".000";: Color 7, 0: Print String$(2, 177)
+                    If batterRatings(I, 4) = 0 Or I4 = 0 Then Locate 5, 72: Print ".000";: Color 7, 0: Print String$(2, 177)
 
                     Color 1, 11: If I4 > 0 And I4 < 100 Then Locate 5, 72: Print ".0";: Print Using "##"; I4;: Color 7, 0: Print String$(2, 177)
                     Color 1, 11: If I4 >= 100 Then Locate 5, 72: Print ".";: Print Using "###"; I4;: Color 7, 0: Print String$(2, 177)
                     Color 7, 0: Locate 7, 15: Print String$(63, 177)
-                    Color 1, 11: Locate 16, 13: Print "  .";: Print Using "###"; teamBatters%(I, 26);: Print "  ";: Color 7, 0: Print String$(2, 177)
+                    Color 1, 11: Locate 16, 13: Print "  .";: Print Using "###"; batterRatings(I, 26);: Print "  ";: Color 7, 0: Print String$(2, 177)
                     Color 12: Locate 11, 2: Print "REGULAR "
                     Locate 12, 2: Print "LEAGUE  ";: Color 7, 0: Print String$(2, 177)
                     Locate 13, 4: Print String$(8, 177)
@@ -854,11 +773,11 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                 Next
 
                 For I = 0 To 21
-                    If statP$(I) <> "XXX" And statP$(I) <> "END" And statP$(I) <> "" Then
+                    If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "END" And pitcherNames$(I) <> "" Then
 
                         Color 11: Locate 2, 2: Print teamName$
                         Color 15, 0: Locate 2, 30: Print String$(14, 177)
-                        Color 13: Locate 2, 30: Print Left$(statP$(I), 14)
+                        Color 13: Locate 2, 30: Print Left$(pitcherNames$(I), 14)
                         Color 10: Locate 5, 2: Print "REGULAR "
                         Locate 6, 2: Print "LEAGUE  ";: Color 7, 0: Print String$(2, 177)
                         Locate 7, 4: Print String$(8, 177)
@@ -882,27 +801,27 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                         Print Tab(21); " SO/9IP ";:
                         Print Tab(29); " BB/9IP ";:
                         Print Tab(37); " HR ALL";:
-                        Color 14, 12: Locate 5, 14: Print Using "###"; teamPitchers%(I, 4);:
+                        Color 14, 12: Locate 5, 14: Print Using "###"; pitcherRatings(I, 4);:
 
-                        Locate , 17: Print Using "#####"; teamPitchers%(I, 1);:
-                        Locate , 22: Print Using "#####"; teamPitchers%(I, 2);:
-                        Locate , 27: Print Using "######"; teamPitchers%(I, 3);:
-                        Locate , 33: Print Using "#####.#"; teamPitchers%(I, 6);:
-                        Locate , 40: Print Using "#####"; teamPitchers%(I, 7);:
-                        Locate , 45: Print Using "######"; teamPitchers%(I, 8);:
-                        Locate , 51: Print Using "#####"; teamPitchers%(I, 9);:
-                        Locate , 56: Print Using "###.##"; (teamPitchers%(I, 10)) / 100;:
-                        Locate , 62: Print Using "####"; teamPitchers%(I, 5);:
-                        Locate , 66: Print Using "###"; teamPitchers%(I, 16);: Color 7, 0: Print String$(2, 177)
-                        Color 14, 12: If teamPitchers%(I, 6) = 0 Then Locate 10, 14: Print "  0.00";
+                        Locate , 17: Print Using "#####"; pitcherRatings(I, 1);:
+                        Locate , 22: Print Using "#####"; pitcherRatings(I, 2);:
+                        Locate , 27: Print Using "######"; pitcherRatings(I, 3);:
+                        Locate , 33: Print Using "#####.#"; pitcherRatings(I, 6);:
+                        Locate , 40: Print Using "#####"; pitcherRatings(I, 7);:
+                        Locate , 45: Print Using "######"; pitcherRatings(I, 8);:
+                        Locate , 51: Print Using "#####"; pitcherRatings(I, 9);:
+                        Locate , 56: Print Using "###.##"; (pitcherRatings(I, 10)) / 100;:
+                        Locate , 62: Print Using "####"; pitcherRatings(I, 5);:
+                        Locate , 66: Print Using "###"; pitcherRatings(I, 16);: Color 7, 0: Print String$(2, 177)
+                        Color 14, 12: If pitcherRatings(I, 6) = 0 Then Locate 10, 14: Print "  0.00";
 
-                        If teamPitchers%(I, 6) > 0 Then Locate 10, 14: Print Using "###.##"; (teamPitchers%(I, 7) * 9) / teamPitchers%(I, 6)
-                        If teamPitchers%(I, 6) = 0 Then Locate 10, 20: Print "    0.00";
-                        If teamPitchers%(I, 6) > 0 Then Locate 10, 20: Print Using "#####.##"; (teamPitchers%(I, 9) * 9) / teamPitchers%(I, 6)
-                        If teamPitchers%(I, 6) = 0 Then Locate 10, 28: Print "    0.00";
-                        If teamPitchers%(I, 6) > 0 Then Locate 10, 28: Print Using "#####.##"; (teamPitchers%(I, 8) * 9) / teamPitchers%(I, 6)
+                        If pitcherRatings(I, 6) > 0 Then Locate 10, 14: Print Using "###.##"; (pitcherRatings(I, 7) * 9) / pitcherRatings(I, 6)
+                        If pitcherRatings(I, 6) = 0 Then Locate 10, 20: Print "    0.00";
+                        If pitcherRatings(I, 6) > 0 Then Locate 10, 20: Print Using "#####.##"; (pitcherRatings(I, 9) * 9) / pitcherRatings(I, 6)
+                        If pitcherRatings(I, 6) = 0 Then Locate 10, 28: Print "    0.00";
+                        If pitcherRatings(I, 6) > 0 Then Locate 10, 28: Print Using "#####.##"; (pitcherRatings(I, 8) * 9) / pitcherRatings(I, 6)
 
-                        Locate 10, 36: Print Using "########"; teamPitchers%(I, 13);: Color 7, 0: Print String$(2, 177)
+                        Locate 10, 36: Print Using "########"; pitcherRatings(I, 13);: Color 7, 0: Print String$(2, 177)
                         Color 15, 12: Locate 6, 14: Print Using "###"; compareP0%(I, 8);:
                         Locate , 17: Print Using "#####"; compareP0%(I, 6);:
                         Locate , 22: Print Using "#####"; compareP0%(I, 7);:
@@ -1007,8 +926,8 @@ End Sub
 '...explanation...
 Sub TeamComparison_Printer (teamName$)
 
-    Shared statB$()
-    Shared teamBatters%(), compareB0%()
+    Shared batterNames$()
+    Shared batterRatings(), compareB0%()
 
     LPrint Chr$(12)
     LPrint "STAT COMPARISONS FOR "; teamName$
@@ -1028,30 +947,30 @@ Sub TeamComparison_Printer (teamName$)
 
     For I = 0 To 16
 
-        If statB$(I) <> "XXX" And statB$(I) = "END" And statB$(I) <> "" Then
+        If batterNames$(I) <> "XXX" And batterNames$(I) = "END" And batterNames$(I) <> "" Then
 
-            LPrint Left$(statB$(I), 14);
+            LPrint Left$(batterNames$(I), 14);
             LPrint Tab(16); "Reg.";
 
-            If teamBatters%(I, 4) = 0 Or teamBatters%(I, 5) = 0 Then LPrint Tab(21); "---.--";
-            If teamBatters%(I, 4) > 0 And teamBatters%(I, 5) > 0 Then LPrint Tab(21); Using "###.##"; teamBatters%(I, 4) / teamBatters%(I, 5);
-            If teamBatters%(I, 4) = 0 Or teamBatters%(I, 6) = 0 Then LPrint Tab(28); "---.--";
-            If teamBatters%(I, 4) > 0 And teamBatters%(I, 6) > 0 Then LPrint Tab(28); Using "###.##"; teamBatters%(I, 4) / teamBatters%(I, 6);
-            If teamBatters%(I, 4) = 0 Or teamBatters%(I, 7) = 0 Then LPrint Tab(36); "---.--";
-            If teamBatters%(I, 4) > 0 And teamBatters%(I, 7) > 0 Then LPrint Tab(36); Using "###.##"; teamBatters%(I, 4) / teamBatters%(I, 7);
-            If teamBatters%(I, 4) = 0 Or teamBatters%(I, 8) = 0 Then LPrint Tab(43); "---.--";
-            If teamBatters%(I, 4) > 0 And teamBatters%(I, 8) > 0 Then LPrint Tab(43); Using "###.##"; teamBatters%(I, 4) / teamBatters%(I, 8);
-            If teamBatters%(I, 4) = 0 Or teamBatters%(I, 9) = 0 Then LPrint Tab(50); "---.--";
-            If teamBatters%(I, 4) > 0 And teamBatters%(I, 9) > 0 Then LPrint Tab(50); Using "###.##"; teamBatters%(I, 4) / teamBatters%(I, 9);
-            If teamBatters%(I, 4) = 0 Or teamBatters%(I, 10) = 0 Then LPrint Tab(58); "---.--";
-            If teamBatters%(I, 4) > 0 And teamBatters%(I, 10) > 0 Then LPrint Tab(58); Using "###.##"; teamBatters%(I, 4) / teamBatters%(I, 10);
-            If teamBatters%(I, 4) = 0 Or teamBatters%(I, 11) = 0 Then LPrint Tab(64); "---.--";
-            If teamBatters%(I, 4) > 0 And teamBatters%(I, 11) > 0 Then LPrint Tab(64); Using "###.##"; teamBatters%(I, 4) / teamBatters%(I, 11);
-            If teamBatters%(I, 4) = 0 Or teamBatters%(I, 12) = 0 Then LPrint Tab(71); "---.--";
-            If teamBatters%(I, 4) > 0 And teamBatters%(I, 12) > 0 Then LPrint Tab(71); Using "###.##"; teamBatters%(I, 4) / teamBatters%(I, 12);
-            If teamBatters%(I, 13) + teamBatters%(I, 14) = 0 Or teamBatters%(I, 13) = 0 Then LPrint Tab(83); " 00%";
-            If teamBatters%(I, 13) > 0 And teamBatters%(I, 14) = 0 Then LPrint Tab(83); "100%";
-            If teamBatters%(I, 13) > 0 And teamBatters%(I, 14) > 0 Then LPrint Tab(83); Using "###"; (teamBatters%(I, 13) / (teamBatters%(I, 13) + teamBatters%(I, 14))) * 100;: LPrint Tab(86); "%"
+            If batterRatings(I, 4) = 0 Or batterRatings(I, 5) = 0 Then LPrint Tab(21); "---.--";
+            If batterRatings(I, 4) > 0 And batterRatings(I, 5) > 0 Then LPrint Tab(21); Using "###.##"; batterRatings(I, 4) / batterRatings(I, 5);
+            If batterRatings(I, 4) = 0 Or batterRatings(I, 6) = 0 Then LPrint Tab(28); "---.--";
+            If batterRatings(I, 4) > 0 And batterRatings(I, 6) > 0 Then LPrint Tab(28); Using "###.##"; batterRatings(I, 4) / batterRatings(I, 6);
+            If batterRatings(I, 4) = 0 Or batterRatings(I, 7) = 0 Then LPrint Tab(36); "---.--";
+            If batterRatings(I, 4) > 0 And batterRatings(I, 7) > 0 Then LPrint Tab(36); Using "###.##"; batterRatings(I, 4) / batterRatings(I, 7);
+            If batterRatings(I, 4) = 0 Or batterRatings(I, 8) = 0 Then LPrint Tab(43); "---.--";
+            If batterRatings(I, 4) > 0 And batterRatings(I, 8) > 0 Then LPrint Tab(43); Using "###.##"; batterRatings(I, 4) / batterRatings(I, 8);
+            If batterRatings(I, 4) = 0 Or batterRatings(I, 9) = 0 Then LPrint Tab(50); "---.--";
+            If batterRatings(I, 4) > 0 And batterRatings(I, 9) > 0 Then LPrint Tab(50); Using "###.##"; batterRatings(I, 4) / batterRatings(I, 9);
+            If batterRatings(I, 4) = 0 Or batterRatings(I, 10) = 0 Then LPrint Tab(58); "---.--";
+            If batterRatings(I, 4) > 0 And batterRatings(I, 10) > 0 Then LPrint Tab(58); Using "###.##"; batterRatings(I, 4) / batterRatings(I, 10);
+            If batterRatings(I, 4) = 0 Or batterRatings(I, 11) = 0 Then LPrint Tab(64); "---.--";
+            If batterRatings(I, 4) > 0 And batterRatings(I, 11) > 0 Then LPrint Tab(64); Using "###.##"; batterRatings(I, 4) / batterRatings(I, 11);
+            If batterRatings(I, 4) = 0 Or batterRatings(I, 12) = 0 Then LPrint Tab(71); "---.--";
+            If batterRatings(I, 4) > 0 And batterRatings(I, 12) > 0 Then LPrint Tab(71); Using "###.##"; batterRatings(I, 4) / batterRatings(I, 12);
+            If batterRatings(I, 13) + batterRatings(I, 14) = 0 Or batterRatings(I, 13) = 0 Then LPrint Tab(83); " 00%";
+            If batterRatings(I, 13) > 0 And batterRatings(I, 14) = 0 Then LPrint Tab(83); "100%";
+            If batterRatings(I, 13) > 0 And batterRatings(I, 14) > 0 Then LPrint Tab(83); Using "###"; (batterRatings(I, 13) / (batterRatings(I, 13) + batterRatings(I, 14))) * 100;: LPrint Tab(86); "%"
 
             LPrint Tab(16); "Leg.";
 
@@ -1088,9 +1007,9 @@ End Sub
 '...explanation...
 Sub SelectTeam_COMPARE (yearNumber$, numberTeams, T$)
 
-    Shared K9&()
-    Shared statB$(), statP$()
-    Shared teamBatters%(), teamRatings%(), teamPitchers%()
+    Shared parkHR_DRAFT&()
+    Shared batterNames$(), pitcherNames$()
+    Shared batterRatings(), teamRatings%(), pitcherRatings()
 
     Selection% = 1
     Count% = numberTeams
@@ -1151,19 +1070,19 @@ Sub SelectTeam_COMPARE (yearNumber$, numberTeams, T$)
                 teamRatings%(I) = CVI(Q$(I))
             Next
 
-            K9&(0) = CVS(Q$(14))
+            parkHR_DRAFT&(0) = CVS(Q$(14))
 
             For I = 0 To 22:
-                statB$(I) = RTrim$(Q$(I * 43 + 15))
+                batterNames$(I) = RTrim$(Q$(I * 43 + 15))
                 For I1 = 0 To 41:
-                    teamBatters%(I, I1) = CVI(Q$(I * 43 + I1 + 16))
+                    batterRatings(I, I1) = CVI(Q$(I * 43 + I1 + 16))
                 Next
             Next
 
             For I = 0 To 21:
-                statP$(I) = RTrim$(Q$(I * 38 + 1004))
+                pitcherNames$(I) = RTrim$(Q$(I * 38 + 1004))
                 For I1 = 0 To 36:
-                    teamPitchers%(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
+                    pitcherRatings(I, I1) = CVI(Q$(I * 38 + I1 + 1005))
                 Next
             Next
 
