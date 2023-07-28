@@ -91,7 +91,7 @@ Sub LoadTeamStats (statFile$, totalGames%)
     Shared statP%(), statP0%()
     Shared statSS%()
 
-    Shared statH$(), L$(), PL$(), W$()
+    Shared H$(), L$(), PL$(), W$()
     Shared H%(), I%(), V%()
 
     Shared D0%, D1%, L2%, W2%
@@ -146,7 +146,7 @@ Sub LoadTeamStats (statFile$, totalGames%)
     Input #1, totalGames%
 
     For I = 1 To NUM_STATRECORDS: Input #1, H%(I): Next I
-    For I = 1 To NUM_STATRECORDS: Input #1, statH$(I): Next I
+    For I = 1 To NUM_STATRECORDS: Input #1, H$(I): Next I
     For I = 1 To NUM_STATRECORDS: Input #1, V%(I): Next I
     For I = 1 To NUM_STATRECORDS: Input #1, PL$(I): Next I
     For I = 1 To NUM_STATRECORDS: Input #1, W$(I): Next I
@@ -190,7 +190,7 @@ Sub ViewAndPrintOptions (statFile$, teamName$, totalGames%, menuExit)
 
     Shared H%(), I%(), teamRatings%(), V%()
 
-    Shared statH$(), L$(), PL$(), W$()
+    Shared H$(), L$(), PL$(), W$()
 
     ReDim menuChoices$(1 To 4)
 
@@ -249,7 +249,7 @@ Sub ViewAndPrintOptions (statFile$, teamName$, totalGames%, menuExit)
                         'W$() = Winning Pitcher
                         'L$() = Losing Pitcher
                         'I%() = Innings
-                        Print Str$(H%(I)); Tab(6); Left$(statH$(I), 15); Tab(22); Str$(V%(I)); Tab(27); "("; PL$(I); ")"; Tab(33); W$(I); Tab(50); L$(I); Tab(66); I%(I)
+                        Print Str$(H%(I)); Tab(6); Left$(H$(I), 15); Tab(22); Str$(V%(I)); Tab(27); "("; PL$(I); ")"; Tab(33); W$(I); Tab(50); L$(I); Tab(66); I%(I)
 
                         If (I Mod 20 = 0) Then
 
@@ -359,7 +359,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
     Shared H%(), I%(), teamRatings%(), V%()
     Shared statP%(), statP0%()
 
-    Shared statH$(), L$(), PL$(), W$()
+    Shared H$(), L$(), PL$(), W$()
 
     Xcoord = Len(teamName$)
     Xcoord = Int((80 - Xcoord) / 2)
@@ -1048,7 +1048,7 @@ Sub NewPrintStats (statFile$, teamName$, totalGames%, printChoice, splitScreenCh
     Shared statB%(), statB0%()
     Shared statP%(), statP0%()
 
-    Shared statH$(), L$()
+    Shared H$(), L$()
     Shared PL$(), W$()
     Shared H%(), I%()
     Shared statSS%(), V%()
@@ -1075,7 +1075,7 @@ Sub NewPrintStats (statFile$, teamName$, totalGames%, printChoice, splitScreenCh
         LPrint Tab(6); "OPPONENT"; Tab(33); "WINNING PITCHER"; Tab(50); "LOSING PITCHER"; Tab(66); "INNINGS"
 
         For I = 1 To totalGames%
-            LPrint Str$(H%(I)); Tab(6); Left$(statH$(I), 15); Tab(22); Str$(V%(I)); Tab(27); "("; PL$(I); ")"; Tab(33); W$(I); Tab(50); L$(I); Tab(66); I%(I)
+            LPrint Str$(H%(I)); Tab(6); Left$(H$(I), 15); Tab(22); Str$(V%(I)); Tab(27); "("; PL$(I); ")"; Tab(33); W$(I); Tab(50); L$(I); Tab(66); I%(I)
         Next
 
         LPrint
@@ -1550,73 +1550,6 @@ Sub ResetStatPrompt (statFile$, teamRatings%())
         'Loop Until UCase$(I$) = "N"
 
     End If 'Done checking if reset stats
-
-End Sub
-
-
-'----------------------------------------
-'       SelectTeam_LOOKY Subroutine
-'----------------------------------------
-'...explanation...
-Sub SelectTeam_LOOKY (numberTeams, yearNumber$)
-
-    Shared teamRatings%()
-
-    Selection% = 1
-    Count% = numberTeams
-    Start% = 1
-    FileFGColor% = 15: FileBGColor% = 4
-    HiLiteFGColor% = 0: HiLiteBGColor% = 7
-    Rows% = 20
-    Columns% = 4
-    Spacing% = 6
-    Row% = 4
-    Column% = 1
-    Color , 4
-    Cls
-    Locate , 33: Color 14
-    Print "TEAM SELECTION": Color 15
-    Locate 25, 1: Color 14: Print "ESC";: Color 15
-    Print "-SELECT NEW ID  PGDN  PGUP  ";: Color 14
-    Print "ENTER";: Color 15: Print "-SELECTS TEAM";
-
-    _MouseShow "Default"
-    MAMenu teamNames$(), Selection%, Start%, Count%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Rows%, Columns%, Spacing%, Row%, Column%
-    _MouseHide
-
-    If ExitCode% <> 27 Then
-
-        T1 = teamIndex%(Selection%)
-        teamYear$ = RTrim$(yearNumber$)
-
-        Locate 2, 33: Color 31
-        Print "LOADING..."
-
-        If Not _FileExists(diskPaths$(0) + "FCTEAMS." + teamYear$) Then
-            BO% = 1
-            Locate 10, 8
-            Call CSMsgBox("NO TEAM FILES WERE FOUND MATCHING THIS ID.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-            I$ = GetKeyPress$
-            Call CSMsgBox("", 0, Pass)
-        Else
-
-            Open diskPaths$(0) + "FCTEAMS." + teamYear$ For Random As #1 Len = 4342
-
-            Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
-
-            Get #1, T1
-
-            For I = 1 To 13
-                teamRatings%(I) = CVI(Q$(I))
-            Next
-
-            Close 1
-
-        End If
-
-    Else
-        BO% = 1
-    End If
 
 End Sub
 

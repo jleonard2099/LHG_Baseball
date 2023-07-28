@@ -36,47 +36,47 @@ Sub LoadLRForTrade (teamYear$, tradeIdx)
     Shared batRat_TRADE(), pitRat_TRADE()
     Shared tradeSA%(), tradeTS%()
 
-    If _FileExists(diskPaths$(0) + "LR." + teamYear$) Then
+    If _FileExists(diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$) Then
 
         teamYear$ = RTrim$(teamYear$)
 
-        Open diskPaths$(0) + "LR." + teamYear$ For Random As #1 Len = 4108
+        Open diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$ For Random As #1 Len = DATA_SIZE_BYTES
 
         For X = 0 To 11
-            Field #1, X * 2 As X$, 2 As Q$(X + 1), 4108 - 2 - 2 * X As X$
+            Field #1, X * 2 As X$, 2 As Q$(X + 1), DATA_SIZE_BYTES - 2 - 2 * X As X$
         Next
 
         For X = 0 To 22
             For X1 = 1 To 14
-                Field #1, 24 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(12 + X1 + X * 14), 4108 - 2 - (24 + (X1 - 1) * 2 + X * 14 * 2) As X$
+                Field #1, 24 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(12 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (24 + (X1 - 1) * 2 + X * 14 * 2) As X$
             Next
         Next
 
         For X = 0 To 21
             For X1 = 1 To 14
-                Field #1, 668 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(334 + X1 + X * 14), 4108 - 2 - (668 + (X1 - 1) * 2 + X * 14 * 2) As X$
+                Field #1, 668 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(334 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (668 + (X1 - 1) * 2 + X * 14 * 2) As X$
             Next
         Next
 
         For X = 0 To 21
             For X1 = 1 To 14
-                Field #1, 1284 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(642 + X1 + X * 14), 4108 - 2 - (1284 + (X1 - 1) * 2 + X * 14 * 2) As X$
+                Field #1, 1284 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(642 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (1284 + (X1 - 1) * 2 + X * 14 * 2) As X$
             Next
         Next
 
         For X = 1 To 24
-            Field #1, 1900 + (X - 1) * 2 As X$, 2 As Q$(950 + X), 4108 - 2 - (X - 1) * 2 - 1900 As X$
+            Field #1, 1900 + (X - 1) * 2 As X$, 2 As Q$(950 + X), DATA_SIZE_BYTES - 2 - (X - 1) * 2 - 1900 As X$
         Next
 
         For X = 0 To 22
             For X1 = 1 To 24
-                Field #1, 1948 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(975 + X1 + X * 24), 4108 - 2 - (1948 + (X1 - 1) * 2 + X * 24 * 2) As X$
+                Field #1, 1948 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(975 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (1948 + (X1 - 1) * 2 + X * 24 * 2) As X$
             Next
         Next
 
         For X = 0 To 21
             For X1 = 1 To 24
-                Field #1, 3052 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(1528 + X1 + X * 24), 4108 - 2 - (3052 + (X1 - 1) * 2 + X * 24 * 2) As X$
+                Field #1, 3052 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(1528 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (3052 + (X1 - 1) * 2 + X * 24 * 2) As X$
             Next
         Next
 
@@ -701,7 +701,7 @@ Sub SaveTrades (yearNumbers$())
 
         teamYear$ = RTrim$(yearNumbers$(tradeIdx))
 
-        Open diskPaths$(0) + "FCTEAMS." + teamYear$ For Random As #1 Len = 4342
+        Open diskPaths$(0) + TEAM_FILE_NAME$ + "." + teamYear$ For Random As #1 Len = TEAM_SIZE_BYTES
 
         Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
 
@@ -774,43 +774,43 @@ Sub SaveTrades (yearNumbers$())
                 tradeTS%(tradeIdx, X) = -1
             Next
 
-            Open diskPaths$(0) + "LR." + yearNumbers$(tradeIdx) For Random As #1 Len = 4108
+            Open diskPaths$(0) + DATA_FILE_NAME$ + "." + yearNumbers$(tradeIdx) For Random As #1 Len = DATA_SIZE_BYTES
 
             For X = 0 To 11
-                Field #1, X * 2 As X$, 2 As Q$(X + 1), 4108 - 2 - 2 * X As X$
+                Field #1, X * 2 As X$, 2 As Q$(X + 1), DATA_SIZE_BYTES - 2 - 2 * X As X$
             Next
 
             For X = 0 To 22
                 For X1 = 1 To 14
-                    Field #1, 24 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(12 + X1 + X * 14), 4108 - 2 - (24 + (X1 - 1) * 2 + X * 14 * 2) As X$
+                    Field #1, 24 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(12 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (24 + (X1 - 1) * 2 + X * 14 * 2) As X$
                 Next
             Next
 
             For X = 0 To 21
                 For X1 = 1 To 14
-                    Field #1, 668 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(334 + X1 + X * 14), 4108 - 2 - (668 + (X1 - 1) * 2 + X * 14 * 2) As X$
+                    Field #1, 668 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(334 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (668 + (X1 - 1) * 2 + X * 14 * 2) As X$
                 Next
             Next
 
             For X = 0 To 21
                 For X1 = 1 To 14
-                    Field #1, 1284 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(642 + X1 + X * 14), 4108 - 2 - (1284 + (X1 - 1) * 2 + X * 14 * 2) As X$
+                    Field #1, 1284 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(642 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (1284 + (X1 - 1) * 2 + X * 14 * 2) As X$
                 Next
             Next
 
             For X = 1 To 24
-                Field #1, 1900 + (X - 1) * 2 As X$, 2 As Q$(950 + X), 4108 - 2 - (X - 1) * 2 - 1900 As X$
+                Field #1, 1900 + (X - 1) * 2 As X$, 2 As Q$(950 + X), DATA_SIZE_BYTES - 2 - (X - 1) * 2 - 1900 As X$
             Next
 
             For X = 0 To 22
                 For X1 = 1 To 24
-                    Field #1, 1948 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(975 + X1 + X * 24), 4108 - 2 - (1948 + (X1 - 1) * 2 + X * 24 * 2) As X$
+                    Field #1, 1948 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(975 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (1948 + (X1 - 1) * 2 + X * 24 * 2) As X$
                 Next
             Next
 
             For X = 0 To 21
                 For X1 = 1 To 24
-                    Field #1, 3052 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(1528 + X1 + X * 24), 4108 - 2 - (3052 + (X1 - 1) * 2 + X * 24 * 2) As X$
+                    Field #1, 3052 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(1528 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (3052 + (X1 - 1) * 2 + X * 24 * 2) As X$
                 Next
             Next
 
@@ -1485,7 +1485,7 @@ Sub ReadTradeTeam (teamYear$, targetTeam$, teamIdx, tradeIdx)
 
     Shared mgrs_TRADE$(), stads_TRADE$(), tmAbbrev_TRADE$()
 
-    Open diskPaths$(0) + "FCTEAMS." + teamYear$ For Random As #1 Len = 4342
+    Open diskPaths$(0) + TEAM_FILE_NAME$ + "." + teamYear$ For Random As #1 Len = TEAM_SIZE_BYTES
 
     Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
 

@@ -730,7 +730,7 @@ End Sub
 Sub ChangeSchedule (Z$)
 
     Shared H%(), I%(), V%()
-    Shared statH$(), L$(), PL$(), W$()
+    Shared H$(), L$(), PL$(), W$()
 
     statsFile$ = diskPaths$(1) + Z$ + "S"
 
@@ -747,7 +747,7 @@ Sub ChangeSchedule (Z$)
         Input #1, GAMES%
 
         For I = 1 To 162: Input #1, H%(I): Next
-        For I = 1 To 162: Input #1, statH$(I): Next
+        For I = 1 To 162: Input #1, H$(I): Next
         For I = 1 To 162: Input #1, V%(I): Next
         For I = 1 To 162: Input #1, PL$(I): Next
         For I = 1 To 162: Input #1, W$(I): Next
@@ -803,7 +803,7 @@ Sub ChangeSchedule (Z$)
 
             GAMES% = GAMES% + 1
             H%(GAMES%) = H%
-            statH$(GAMES%) = H$
+            H$(GAMES%) = H$
             V%(GAMES%) = V%
             PL$(GAMES%) = PL$
             W$(GAMES%) = W$
@@ -823,7 +823,7 @@ Sub ChangeSchedule (Z$)
         Print #1, GAMES%
 
         For I = 1 To 162: Print #1, H%(I): Next
-        For I = 1 To 162: Print #1, statH$(I): Next
+        For I = 1 To 162: Print #1, H$(I): Next
         For I = 1 To 162: Print #1, V%(I): Next
         For I = 1 To 162: Print #1, PL$(I): Next
         For I = 1 To 162: Print #1, W$(I): Next
@@ -835,162 +835,5 @@ Sub ChangeSchedule (Z$)
         Cls
 
     End If 'Done checking if file exiss
-
-End Sub
-
-
-'----------------------------------------
-'       GetTeam_EditStats Subroutine
-'----------------------------------------
-'...explanation...
-Sub GetTeam_EditStats (T$, yearNumber$, numberTeams)
-
-    Shared teamRatings%()
-
-    Do
-        Color 15, 0
-        Cls
-
-        JJ = 7
-
-        Locate 6, 8: Color 15, 4
-        Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";: For II = 1 To JJ: Locate 6 + II, 8
-        Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
-        Locate 7 + JJ, 8
-        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
-
-        Locate 7, 32
-        Locate , 12: Print "ENTER DISK ID: ": Print
-        Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
-        Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
-        Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
-        Locate 7, 27: Input NY$
-
-        If NY$ = "" And yearNumber$ <> "" Then
-            Call SelectTeam_EditStats(T$, yearNumber$, numberTeams)
-        Else
-            yearNumber$ = RTrim$(NY$)
-            Erase teamNames$
-            numberTeams = 0
-
-            If _FileExists(diskPaths$(0) + "FCTEAMS." + yearNumber$) Then
-
-                Open diskPaths$(0) + "FCTEAMS." + yearNumber$ For Random As #1 Len = 4342
-
-                fileLength& = LOF(1)
-
-                Field #1, 15 As Q$(0)
-
-                For I1 = 1 To fileLength& / 4342
-
-                    Get #1, I1
-
-                    For I2 = 1 To 15
-                        If Left$(Q$(0), 2) = "XX" Or Left$(Q$(0), 1) = " " Or Asc(Mid$(Q$(0), I2, 1)) < 32 Or Asc(Mid$(Q$(0), I2, 1)) > 123 Or UCase$(Left$(Q$(0), 3)) = "NOT" Or UCase$(Left$(Q$(0), 3)) = "UN" Then nullTeam = 1: Exit For
-                    Next I2
-
-                    If nullTeam <> 1 Then
-                        numberTeams = numberTeams + 1
-                        teamNames$(numberTeams) = Q$(0)
-                        teamIndex%(numberTeams) = I1
-                    End If
-
-                Next I1
-
-                Close 1
-
-                Call SelectTeam_EditStats(T$, yearNumber$, numberTeams)
-
-            Else
-
-                BO% = 1
-                Locate 10, 8
-                Call CSMsgBox("NO TEAM FILES WERE FOUND MATCHING THIS ID.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-                I$ = GetKeyPress$
-                Call CSMsgBox("", 0, Pass)
-
-            End If '
-
-        End If
-
-        T$ = RTrim$(Q$(0))
-
-        If BO% = 1 Then
-            BO% = 0
-        Else
-
-            Locate 2, 33
-            Color teamRatings%(11), teamRatings%(12): Print T$
-
-            Do
-                Color 15, 4
-                Locate 3, 33: Print "ANY CHANGE (YN)";
-                I$ = GetKeyPress$
-            Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
-
-        End If
-
-    Loop Until UCase$(I$) = "N" Or I$ = Chr$(27)
-
-End Sub
-
-'----------------------------------------
-'       SelectTeam_EditStats Subroutine
-'----------------------------------------
-'...explanation...
-Sub SelectTeam_EditStats (T$, yearNumber$, numberTeams)
-
-    Shared teamRatings%()
-
-    Selection% = 1
-    Count% = numberTeams
-    Start% = 1
-    FileFGColr% = 15: FileBGColr% = 4
-    HiLiteFGColr% = 0: HiLiteBGColr% = 7
-    Rows% = 20
-    Columns% = 4
-    Spacing% = 6
-    Row% = 4
-    Column% = 1
-    Color , 4: Cls: Locate , 33: Color 14: Print "TEAM SELECTION": Color 15
-    Locate 25, 1: Color 14: Print "ESC";: Color 15: Print "-SELECT NEW ID  PGDN  PGUP  ";: Color 14: Print "ENTER";: Color 15: Print "-SELECTS TEAM";
-
-    _MouseShow "DEFAULT"
-    MAMenu teamNames$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
-    _MouseHide
-
-    If ExitCode% <> 27 Then
-
-        T = teamIndex%(Selection%)
-        teamYear$ = RTrim$(yearNumber$)
-
-        Locate 2, 33: Color 31
-        Print "LOADING..."
-
-        If _FileExists(diskPaths$(0) + "FCTEAMS." + teamYear$) Then
-
-            Open diskPaths$(0) + "FCTEAMS." + teamYear$ For Random As #1 Len = 4342
-
-            Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
-
-            Get #1, T
-
-            T$ = RTrim$(Q$(0))
-
-            For I = 1 To 13
-                teamRatings%(I) = CVI(Q$(I))
-            Next
-
-            Close 1
-        Else
-            Locate 10, 8
-            Call CSMsgBox("NO TEAM FILES WERE FOUND MATCHING THIS ID.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-            I$ = GetKeyPress$
-            Call CSMsgBox("", 0, Pass)
-            BO% = 1
-        End If
-    Else
-        BO% = 1
-    End If
 
 End Sub

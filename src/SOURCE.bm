@@ -3422,8 +3422,8 @@ Sub SOURCE ()
     14828 '
     RN = Int(Rnd(1) * 11) + 1
     If TGTBASE% <> 4 Then
-        If RN = 1 Then F$ = B$(D, B9%(D, 2)) + " rifles it to " + H$(TGTBASE%)
-        If RN = 2 Then F$ = B$(D, B9%(D, 2)) + " fires it to " + H$(TGTBASE%)
+        If RN = 1 Then F$ = B$(D, B9%(D, 2)) + " rifles it to " + baseName$(TGTBASE%)
+        If RN = 2 Then F$ = B$(D, B9%(D, 2)) + " fires it to " + baseName$(TGTBASE%)
         If RN = 3 Then F$ = B$(D, B9%(D, 2)) + " unloads it"
         If RN = 4 Then F$ = B$(D, B9%(D, 2)) + " is up and firing"
         If RN = 5 Then F$ = B$(D, B9%(D, 2)) + " comes up firing"
@@ -3456,7 +3456,7 @@ Sub SOURCE ()
         End Select
 
         Call PBP(F$)
-        Call PBP("safe @ " + H$(TGTBASE%) + "!")
+        Call PBP("safe @ " + baseName$(TGTBASE%) + "!")
 
         B0%(TGTBASE% - 1, 2) = 0
         INFPOS% = 0
@@ -3497,7 +3497,7 @@ Sub SOURCE ()
             F$ = B$(D, B9%(D, 2)) + " nails " + player$(TGTBASE% - 1)
 
         Case 21 To 40
-            F$ = player$(TGTBASE% - 1) + " is pegged at " + H$(TGTBASE%)
+            F$ = player$(TGTBASE% - 1) + " is pegged at " + baseName$(TGTBASE%)
 
         Case 41 To 60
             F$ = "Great throw by " + B$(D, B9%(D, 2)) + "!!"

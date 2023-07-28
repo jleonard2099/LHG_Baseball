@@ -118,10 +118,10 @@ Sub InitVar ()
     B1$(3) = "R"
     B1$(4) = "RP"
 
-    H$(1) = "1b"
-    H$(2) = "2b"
-    H$(3) = "3b"
-    H$(4) = "home"
+    baseName$(1) = "1b"
+    baseName$(2) = "2b"
+    baseName$(3) = "3b"
+    baseName$(4) = "home"
 
     H0$(0) = " "
     H0$(1) = "H"
@@ -217,7 +217,7 @@ Sub InitVar ()
 
     Erase A$, B$
     Erase DB$, E$, EJ$
-    Erase G$, HR$
+    Erase G$, homeRuns$
     Erase IJ$, M$, NN$
     Erase P$, PARK$, player$
     Erase Q3$, S$, SB$, TR$
@@ -2457,9 +2457,9 @@ Sub PICKEDOFF (D, i)
 
     Call d100(RN)
     Select Case RN
-        Case 1 To 33: F$ = "NO, " + P$(D, P1%(D)) + " throws to " + H$(i - 1)
-        Case 34 To 66: F$ = "quick move to " + H$(i - 1)
-        Case 67 To 100: F$ = "pickoff throw to " + H$(i - 1)
+        Case 1 To 33: F$ = "NO, " + P$(D, P1%(D)) + " throws to " + baseName$(i - 1)
+        Case 34 To 66: F$ = "quick move to " + baseName$(i - 1)
+        Case 67 To 100: F$ = "pickoff throw to " + baseName$(i - 1)
     End Select
 
     Call PBP(F$)
@@ -3475,7 +3475,7 @@ End Sub
 ' ...explanation...
 Sub RecordOut (i, I3)
 
-    Call PBP(player$(i) + " out @ " + H$(I3))
+    Call PBP(player$(i) + " out @ " + baseName$(I3))
 
     B0%(i, 0) = 0
     B0%(i, 1) = 0: B0%(i, 2) = 0
@@ -5115,7 +5115,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, baseNbr!, I9)
         'We shouldn't still have a 0 value!
 
         If Not (U6 = 2 Or U6 = 1 And P = U9) Then
-            If S2% < 10 Then Call PBP(player$(baseNbr! - 1) + " try for " + H$(baseNbr!) + " (YN) ")
+            If S2% < 10 Then Call PBP(player$(baseNbr! - 1) + " try for " + baseName$(baseNbr!) + " (YN) ")
             If S2% > 10 Then Call PBP(player$(baseNbr! - 1) + " tag up (YN) ")
             Call PBP("against " + player$(4))
         End If
@@ -5149,7 +5149,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, baseNbr!, I9)
             F$ = player$(baseNbr! - 1) + " is "
 
             If S2% < 10 Then
-                Call PBP(F$ + "going for " + H$(baseNbr!))
+                Call PBP(F$ + "going for " + baseName$(baseNbr!))
             Else
                 'S2% >= 10
                 Call PBP(F$ + "tagging")
@@ -5158,7 +5158,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, baseNbr!, I9)
             If Not (S2% = 7 And baseNbr! = 2 Or S2% > 10 And S4% = 3) Then
 
                 If Not (U6 = 2 Or U6 = 1 And D = U9) Then
-                    Call PBP(player$(4) + " throw to " + H$(baseNbr!) + " (YN) ")
+                    Call PBP(player$(4) + " throw to " + baseName$(baseNbr!) + " (YN) ")
                 End If
 
                 Call d100(RN)
@@ -5360,7 +5360,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, baseNbr!, I9)
                 End If
 
                 3379 '
-                Call PBP(player$(baseNbr! - 1) + " is safe @ " + H$(baseNbr!))
+                Call PBP(player$(baseNbr! - 1) + " is safe @ " + baseName$(baseNbr!))
 
                 'sah% = safeAtHome ?
                 If baseNbr! = 4 Then sah% = 1
@@ -7025,7 +7025,7 @@ End Sub
 Sub CheckRecords ()
 
     Shared DB, HR, TR, SB
-    Shared DB$(), E$(), HR$(), SB$(), TR$()
+    Shared DB$(), E$(), homeRuns$(), SB$(), TR$()
 
     For I = 0 To 1:
         For I1 = 0 To 21:
@@ -7089,12 +7089,12 @@ Sub CheckRecords ()
             '        ***CHECKING HOME RUNS***
             If B8%(I, I1, 6) <> 0 Then
                 If B8%(I, I1, 6) = 1 Then
-                    HR$(HR) = B$(I, I1)
+                    homeRuns$(HR) = B$(I, I1)
                 Else
-                    HR$(HR) = B$(I, I1) + Str$(B8%(I, I1, 6))
+                    homeRuns$(HR) = B$(I, I1) + Str$(B8%(I, I1, 6))
                 End If
 
-                HR$(HR) = HR$(HR) + " (" + Right$(Str$(B5%(I, I1, 6)), (Len(Str$(B5%(I, I1, 6))) - 1)) + ")"
+                homeRuns$(HR) = homeRuns$(HR) + " (" + Right$(Str$(B5%(I, I1, 6)), (Len(Str$(B5%(I, I1, 6))) - 1)) + ")"
                 HR = HR + 1
 
             End If
@@ -7162,12 +7162,12 @@ Sub CheckRecords ()
             If P8%(I, I1, 29) <> 0 Then
 
                 If P8%(I, I1, 29) = 1 Then
-                    HR$(HR) = P$(I, I1)
+                    homeRuns$(HR) = P$(I, I1)
                 Else
-                    HR$(HR) = P$(I, I1) + Str$(P8%(I, I1, 29))
+                    homeRuns$(HR) = P$(I, I1) + Str$(P8%(I, I1, 29))
                 End If
 
-                HR$(HR) = HR$(HR) + " (" + Right$(Str$(P5%(I, I1, 29)), (Len(Str$(P5%(I, I1, 29))) - 1)) + ")"
+                homeRuns$(HR) = homeRuns$(HR) + " (" + Right$(Str$(P5%(I, I1, 29)), (Len(Str$(P5%(I, I1, 29))) - 1)) + ")"
                 HR = HR + 1
 
             End If
@@ -8432,7 +8432,7 @@ Sub BOX2FILE (printChoice, NM$)
     If HR = 0 Then
         Print #2, "NONE"
     Else
-        For X1 = 0 To (HR - 1): Print #2, HR$(X1); ",";: Next
+        For X1 = 0 To (HR - 1): Print #2, homeRuns$(X1); ",";: Next
         Print #2,
     End If
 
@@ -8502,7 +8502,7 @@ End Sub
 Sub BOX2SCREEN
 
     Shared DB, HR, TR, SB
-    Shared DB$(), E$(), HR$(), SB$(), TR$()
+    Shared DB$(), E$(), homeRuns$(), SB$(), TR$()
 
     Cls
 
@@ -9035,7 +9035,7 @@ Sub STATS2SCREEN
     If HR = 0 Then
         Print "none"
     Else
-        For X = 0 To (HR - 1): Print HR$(X); ",";: Next
+        For X = 0 To (HR - 1): Print homeRuns$(X); ",";: Next
         Print
     End If
 

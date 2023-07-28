@@ -4,35 +4,13 @@
 Dim opSysType$
 
 Dim Shared diskPaths$(0 To 3), Q$(0 To 2056), Q2$(0 To 2056)
-
-' *** Reading Team Data ***
-' -------------------------
-
-'-- transition away from this
-Dim Shared fileLength&
-
 Dim Shared teamIndex%(MAX_TEAMS)
 Dim Shared teamNames$(MAX_TEAMS)
-
-Dim Manager$, teamAbbrev$, Stadium$
-
-Dim teamRatings%(1 To 13)
-Dim batterRatings(0 To 22, 0 To 79), pitcherRatings(21, 88)
-
-'These are used for the LR. file
-'We currently don't know when or if it should be created
-'We only have code that opens it if it exists
-'Presumably this was the new way to load
-' LEFTY / RIGHTY, since the game code references that
-' it will perform those calculations the "old way"
-Dim teamSA%(24), teamTS%(11)
-
-Dim batterNames$(0 To 22), pitcherNames$(0 To 21)
 
 
 ' *** Reading Stat Data ***
 ' -------------------------
-Dim statH$(NUM_STATRECORDS), statHR$(NUM_STATRECORDS)
+Dim H$(NUM_STATRECORDS), HR$(NUM_STATRECORDS)
 Dim HT$(NUM_STATRECORDS)
 
 Dim L$(NUM_STATRECORDS), LR$(NUM_STATRECORDS)
@@ -259,7 +237,7 @@ Dim N$
 Dim scheduleNG%(MAX_GAMES, 18)
 
 Dim E%(13)
-Dim scheduleAP%(1), scheduleL%(13)
+Dim scheduleAP%(1)
 Dim scheduleT%(34), scheduleZ1%(40)
 
 Dim modeAbbrev$(3)
@@ -344,9 +322,9 @@ Dim Shared T%(22), T3%(22), TP%(11, 2), TS%(1, 11), VA%(26), X0%(1, 2, 23)
 
 Dim Shared B1!(9), K9!(1)
 
-Dim Shared A$(1), B$(0 To 1, 0 To 22), B1$(4), C$(11)
+Dim Shared A$(1), baseName$(0 To 4), B$(0 To 1, 0 To 22), B1$(4), C$(11)
 Dim Shared DB$(0 To 22), E$(0 To 22), EJ$(20), F$(10)
-Dim Shared G$(10), H$(0 To 4), H0$(1), HR$(0 To 22)
+Dim Shared G$(10), H0$(1), homeRuns$(0 To 22)
 Dim Shared IJ$(20), M$(1), NN$(1)
 Dim Shared P$(1, 21), PARK$(99), PC$(4), player$(23)
 Dim Shared Q3$(100), S$(1), SB$(0 To 22), SC$(4), TR$(0 To 22)

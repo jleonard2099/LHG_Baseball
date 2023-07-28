@@ -1041,10 +1041,10 @@ Sub SaveLineup (idx%)
 
         teamYear$ = RTrim$(YN$(idx%))
 
-        Open diskPaths$(3) + "MGR." + teamYear$ For Random As #2 Len = 2000
+        Open diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #2 Len = MGR_SIZE_BYTES
 
         For I = 0 To 999
-            Field #2, I * 2 As Q$, 2 As Q2$(I), 2000 - I * 2 - 2 As Q$
+            Field #2, I * 2 As Q$, 2 As Q2$(I), MGR_SIZE_BYTES - I * 2 - 2 As Q$
         Next
 
         For I = 0 To 999: LSet Q2$(I) = MKI$(MG%(idx%, I)): Next
@@ -2087,332 +2087,6 @@ Sub SomeCalculations (B, C, P9)
 End Sub
 
 
-
-
-'------------------------------
-' SelectGameTeam Subroutine
-'------------------------------
-' ...explanation...
-Sub SelectGameTeam (numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%, gameIdx)
-
-    Shared T1%()
-
-    If numberTeams > 0 Then
-
-        SELECTION% = 1
-        Count% = numberTeams
-        Start% = 1
-        FileFGColr% = 15: FileBGColr% = 4
-        HiLiteFGColr% = 0: HiLiteBGColr% = 7
-        Rows% = 20
-        Columns% = 4
-        Spacing% = 6
-        Row% = 4
-        Column% = 1
-
-        Color , 4
-        Cls
-        Color 14
-        Locate , 33: Print "TEAM SELECTION"
-        Locate 25, 1
-        Color 14: Print "ESC";: Color 15: Print "-SELECT NEW ID  PGDN  PGUP  ";
-        Color 14: Print "ENTER";: Color 15: Print "-SELECTS TEAM";
-
-        _MouseShow "DEFAULT"
-        MAMenu teamNames$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
-        _MouseHide
-
-        If ExitCode% <> 27 Then
-
-            selectedIdx = teamIndex%(SELECTION%)
-
-            'Locate 2, 33
-            'Color 31: Print "LOADING..."
-
-            Call ReadGameTeam(yearNumber$, teamName$, selectedIdx, gameIdx)
-
-        End If
-
-    End If
-
-End Sub
-
-'------------------------------
-'   ReadGameTeam Subroutine
-'------------------------------
-' ...explanation...
-Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
-
-    Shared MF%()
-    Dim DYS%(1, 21)
-
-    Open diskPaths$(0) + "FCTEAMS." + teamYear$ For Random As #1 Len = 4342
-
-    Field #1, 15 As Q2$(0), 2 As Q2$(1), 2 As Q2$(2), 2 As Q2$(3), 2 As Q2$(4), 2 As Q2$(5), 2 As Q2$(6), 2 As Q2$(7), 2 As Q2$(8), 2 As Q2$(9), 2 As Q2$(10), 2 As Q2$(11), 2 As Q2$(12), 2 As Q2$(13), 4 As Q2$(14), 4297 As X$
-
-    For A = 0 To 22
-        Field #1, 45 + A * 99 As X$, 15 As Q2$(A * 43 + 15), 2 As Q2$(A * 43 + 16), 2 As Q2$(A * 43 + 17), 2 As Q2$(A * 43 + 18), 2 As Q2$(A * 43 + 19), 2 As Q2$(A * 43 + 20), 2 As Q2$(A * 43 + 21), 2 As Q2$(A * 43 + 22), 2 As Q2$(A * 43 + 23), 2 As Q2$(A * 43 + 24), 2 As Q2$(A * 43 + 25), 2 As Q2$(A * 43 + 26), 4297 - 37 - A * 99 As X$
-        Field #1, 82 + A * 99 As X$, 2 As Q2$(A * 43 + 27), 2 As Q2$(A * 43 + 28), 2 As Q2$(A * 43 + 29), 2 As Q2$(A * 43 + 30), 2 As Q2$(A * 43 + 31), 2 As Q2$(A * 43 + 32), 2 As Q2$(A * 43 + 33), 2 As Q2$(A * 43 + 34), 2 As Q2$(A * 43 + 35), 2 As Q2$(A * 43 + 36), 2 As Q2$(A * 43 + 37), 2 As Q2$(A * 43 + 38), 4297 - 61 - A * 99 As X$
-        Field #1, 106 + A * 99 As X$, 2 As Q2$(A * 43 + 39), 2 As Q2$(A * 43 + 40), 2 As Q2$(A * 43 + 41), 2 As Q2$(A * 43 + 42), 2 As Q2$(A * 43 + 43), 2 As Q2$(A * 43 + 44), 2 As Q2$(A * 43 + 45), 2 As Q2$(A * 43 + 46), 2 As Q2$(A * 43 + 47), 2 As Q2$(A * 43 + 48), 2 As Q2$(A * 43 + 49), 2 As Q2$(A * 43 + 50), 4297 - 85 - A * 99 As X$
-        Field #1, 130 + A * 99 As X$, 2 As Q2$(A * 43 + 51), 2 As Q2$(A * 43 + 52), 2 As Q2$(A * 43 + 53), 2 As Q2$(A * 43 + 54), 2 As Q2$(A * 43 + 55), 2 As Q2$(A * 43 + 56), 2 As Q2$(A * 43 + 57), 4297 - 99 - A * 99 As X$
-    Next
-
-    For A = 0 To 21
-        Field #1, 2322 + A * 89 As X$, 15 As Q2$(A * 38 + 1004), 2 As Q2$(A * 38 + 1005), 2 As Q2$(A * 38 + 1006), 2 As Q2$(A * 38 + 1007), 2 As Q2$(A * 38 + 1008), 2 As Q2$(A * 38 + 1009), 2 As Q2$(A * 38 + 1010), 2 As Q2$(A * 38 + 1011), 2 As Q2$(A * 38 + 1012), 2 As Q2$(A * 38 + 1013), 2 As Q2$(A * 38 + 1014), 2 As Q2$(A * 38 + 1015), 2020 - 37 - A * 89 As X$
-        Field #1, 2359 + A * 89 As X$, 2 As Q2$(A * 38 + 1016), 2 As Q2$(A * 38 + 1017), 2 As Q2$(A * 38 + 1018), 2 As Q2$(A * 38 + 1019), 2 As Q2$(A * 38 + 1020), 2 As Q2$(A * 38 + 1021), 2 As Q2$(A * 38 + 1022), 2 As Q2$(A * 38 + 1023), 2 As Q2$(A * 38 + 1024), 2 As Q2$(A * 38 + 1025), 2 As Q2$(A * 38 + 1026), 2 As Q2$(A * 38 + 1027), 2020 - 61 - A * 89 As X$
-        Field #1, 2383 + A * 89 As X$, 2 As Q2$(A * 38 + 1028), 2 As Q2$(A * 38 + 1029), 2 As Q2$(A * 38 + 1030), 2 As Q2$(A * 38 + 1031), 2 As Q2$(A * 38 + 1032), 2 As Q2$(A * 38 + 1033), 2 As Q2$(A * 38 + 1034), 2 As Q2$(A * 38 + 1035), 2 As Q2$(A * 38 + 1036), 2 As Q2$(A * 38 + 1037), 2 As Q2$(A * 38 + 1038), 2 As Q2$(A * 38 + 1039), 2020 - 85 - A * 89 As X$
-        Field #1, 2407 + A * 89 As X$, 2 As Q2$(A * 38 + 1040), 2 As Q2$(A * 38 + 1041), 2020 - 89 - A * 89 As X$
-    Next
-
-    Field #1, 4280 As X$, 40 As Q2$(1840), 15 As Q2$(1841), 5 As Q2$(1842), 2 As Q2$(1843)
-
-    Get #1, teamIdx
-
-    For I1 = 1 To 13
-        L%(gameIdx, I1) = CVI(Q2$(I1))
-    Next
-
-    If (L%(gameIdx, 11) = 7 Or L%(gameIdx, 11) = 15) And L%(gameIdx, 12) = 0 Then
-        L%(gameIdx, 11) = 0
-        L%(gameIdx, 12) = 7
-    End If
-
-    K9!(gameIdx) = CVS(Q2$(14))
-
-    For I1 = 0 To 22:
-
-        B$(gameIdx, I1) = Q2$(I1 * 43 + 15)
-        B$(gameIdx, I1) = RTrim$(B$(gameIdx, I1))
-
-        For I2 = 0 To 41
-            B%(gameIdx, I1, I2) = CVI(Q2$(I1 * 43 + I2 + 16))
-        Next
-
-        If B%(gameIdx, I1, 31) <> 0 Then B%(gameIdx, I1, 21) = 99
-    Next
-
-    For I1 = 0 To 21: 
-        P$(gameIdx, I1) = Q2$(I1 * 38 + 1004)
-        P$(gameIdx, I1) = RTrim$(P$(gameIdx, I1))
-
-        For I2 = 0 To 36
-            P%(gameIdx, I1, I2) = CVI(Q2$(I1 * 38 + I2 + 1005))
-        Next
-
-        If P%(gameIdx, I1, 34) <> 0 Then P%(gameIdx, I1, 15) = 99
-        If P%(gameIdx, I1, 0) = 0 Then P%(gameIdx, I1, 0) = 1
-    Next
-
-    S$(gameIdx) = Q2$(1840)
-    M$(gameIdx) = Q2$(1841)
-    NN$(gameIdx) = Q2$(1842)
-    CK = CVI(Q2$(1843))
-
-    Close 1
-
-    For I1 = 0 To 22
-        ':check for 1934 season
-        If Val(Left$(A$(gameIdx), 2)) < 54 And Mid$(A$(gameIdx), 3, 1) = " " Then B%(gameIdx, I1, 30) = B%(gameIdx, I1, 30) * .75
-
-        For I2 = 22 To 25
-            If B%(gameIdx, I1, I2) <> -1 And B%(gameIdx, I1, I2) <> 0 And B%(gameIdx, I1, I2 + 4) = 0 Then B%(gameIdx, I1, I2 + 4) = 900
-        Next
-    Next
-
-    M$(gameIdx) = RTrim$(M$(gameIdx))
-    S$(gameIdx) = RTrim$(S$(gameIdx))
-    NN$(gameIdx) = RTrim$(NN$(gameIdx))
-
-    For X = 0 To 22
-        For X1 = 1 To 14
-            B%(gameIdx, X, X1 + 41) = 0
-        Next
-    Next
-
-    For X = 0 To 21
-        For X1 = 1 To 28
-            P%(gameIdx, X, X1 + 36) = 0
-        Next
-    Next
-
-    If LR% = 1 Then
-        TS%(gameIdx, 0) = -1
-    Else
-
-        If _FileExists(diskPaths$(0) + "LR." + teamYear$) Then
-
-            Open diskPaths$(0) + "LR." + teamYear$ For Random As #1 Len = 4108
-
-            For X = 0 To 11
-                Field #1, X * 2 As X$, 2 As Q2$(X + 1), 4108 - 2 - 2 * X As X$
-            Next
-
-            For X = 0 To 22
-                For X1 = 1 To 14
-                    Field #1, 24 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q2$(12 + X1 + X * 14), 4108 - 2 - (24 + (X1 - 1) * 2 + X * 14 * 2) As X$
-                Next
-            Next
-
-            For X = 0 To 21
-                For X1 = 1 To 14
-                    Field #1, 668 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q2$(334 + X1 + X * 14), 4108 - 2 - (668 + (X1 - 1) * 2 + X * 14 * 2) As X$
-                Next
-            Next
-
-            For X = 0 To 21
-                For X1 = 1 To 14
-                    Field #1, 1284 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q2$(642 + X1 + X * 14), 4108 - 2 - (1284 + (X1 - 1) * 2 + X * 14 * 2) As X$
-                Next
-            Next
-
-            For X = 1 To 24
-                Field #1, 1900 + (X - 1) * 2 As X$, 2 As Q2$(950 + X), 4108 - 2 - (X - 1) * 2 - 1900 As X$
-            Next
-
-            For X = 0 To 22
-                For X1 = 1 To 24
-                    Field #1, 1948 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q2$(975 + X1 + X * 24), 4108 - 2 - (1948 + (X1 - 1) * 2 + X * 24 * 2) As X$
-                Next
-            Next
-
-            For X = 0 To 21
-                For X1 = 1 To 24
-                    Field #1, 3052 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q2$(1528 + X1 + X * 24), 4108 - 2 - (3052 + (X1 - 1) * 2 + X * 24 * 2) As X$
-                Next
-            Next
-
-            Get #1, teamIdx
-
-            For X = 0 To 11
-                TS%(gameIdx, X) = CVI(Q2$(X + 1))
-            Next
-
-            For X = 0 To 22
-                For X1 = 1 To 14
-                    B%(gameIdx, X, X1 + 41) = CVI(Q2$(12 + X1 + X * 14))
-                Next
-            Next
-
-            For X = 0 To 21
-                For X1 = 1 To 14
-                    P%(gameIdx, X, X1 + 36) = CVI(Q2$(334 + X1 + X * 14))
-                Next
-            Next
-
-            For X = 0 To 21
-                For X1 = 1 To 14
-                    P%(gameIdx, X, X1 + 50) = CVI(Q2$(642 + X1 + X * 14))
-                Next
-            Next
-
-            For X = 1 To 24: 
-                SA%(gameIdx, X) = CVI(Q2$(X + 950))
-            Next
-
-            For X = 0 To 22
-                For X1 = 1 To 24
-                    B%(gameIdx, X, X1 + 55) = CVI(Q2$(975 + X1 + X * 24))
-                Next
-            Next
-
-            For X = 0 To 21
-                For X1 = 1 To 24
-                    P%(gameIdx, X, X1 + 64) = CVI(Q2$(1528 + X1 + X * 24))
-                Next
-            Next
-
-            Close 1
-
-            If TS%(gameIdx, 0) <> 999 Then TS%(gameIdx, 0) = -1
-
-        Else
-
-            TS%(gameIdx, 0) = -1
-
-        End If
-
-    End If
-
-    For X = 0 To 22
-
-        For X1 = 0 To 14
-            B%(gameIdx, X, 80) = B%(gameIdx, X, 80) + B%(gameIdx, X, X1 + 41)
-        Next
-
-    Next
-
-    For X = 0 To 21
-
-        For X1 = 0 To 14
-            P%(gameIdx, X, 89) = P%(gameIdx, X, 89) + P%(gameIdx, X, X1 + 50)
-        Next
-
-    Next
-
-    targetTeam$ = RTrim$(Q2$(0))
-
-    'Read in manager data
-    If _FileExists(diskPaths$(3) + "MGR." + teamYear$) Then
-
-        Open diskPaths$(3) + "MGR." + teamYear$ For Random As #2 Len = 2000
-
-        For X = 0 To 999
-            Field #2, X * 2 As Q2$, 2 As Q2$(X), 2000 - X * 2 - 2 As Q2$
-        Next
-
-        Get #2, teamIdx
-
-        For X = 0 To 999: MG%(gameIdx, X) = CVI(Q2$(X)): Next
-
-        Close 2
-    Else
-        MF%(gameIdx) = -1
-    End If
-
-    If MG%(gameIdx, 0) <> 999 Or MF%(gameIdx) = -1 Then
-        MF%(gameIdx) = -1
-        For X = 0 To 999:
-            MG%(gameIdx, X) = -1
-        Next
-    End If
-
-    statFile$ = nameStatFile$(A$(idx))
-
-    'Read in supplemental data
-    If _FileExists(diskPaths$(1) + statFile$ + "D") Then
-
-        Open diskPaths$(1) + statFile$ + "D" For Input As #1
-
-        For I1 = 0 To 22
-            Input #1, INJ%(gameIdx, I1)
-        Next
-
-        For I1 = 0 To 21
-            Input #1, DYS%(gameIdx, I1)
-        Next
-
-        Close 1
-
-        If IJ% <> 1 Then
-            For I1 = 0 To 22
-                If INJ%(gameIdx, I1) > 0 Then B%(gameIdx, I1, 21) = 99
-            Next
-        End If
-
-    End If
-
-    If DR% <> 1 Then
-
-        For I1 = 0 To 21
-            If DYS%(gameIdx, I1) <> 0 And DYS%(gameIdx, I1) < 90 Then
-                P%(gameIdx, I1, 35) = DYS%(gameIdx, I1)
-            End If
-        Next
-
-    End If
-
-End Sub
-
 '------------------------------
 '   SelectPitchers Subroutine
 '------------------------------
@@ -2560,10 +2234,10 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
 
             teamYear$ = RTrim$(YN$(idx%))
 
-            Open diskPaths$(3) + "MGR." + teamYear$ For Random As #2 Len = 2000
+            Open diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #2 Len = MGR_SIZE_BYTES
 
             For I = 0 To 999
-                Field #2, I * 2 As Q$, 2 As Q2$(I), 2000 - I * 2 - 2 As Q$
+                Field #2, I * 2 As Q$, 2 As Q2$(I), MGR_SIZE_BYTES - I * 2 - 2 As Q$
             Next
 
             For I = 0 To 999: LSet Q2$(I) = MKI$(MG%(idx%, I)): Next
@@ -2825,6 +2499,331 @@ Sub ChooseGameTeam (yearNumber$, numberTeams, chosenIdx, teamName$, gameIdx)
     Loop Until UCase$(J$) = "N" Or I$ = Chr$(27) 'Or J$ = Chr$(27)
 
     If I$ = Chr$(27) Or J$ = Chr$(27) Then chosenIdx = 0
+
+End Sub
+
+
+'------------------------------
+' SelectGameTeam Subroutine
+'------------------------------
+' ...explanation...
+Sub SelectGameTeam (numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%, gameIdx)
+
+    Shared T1%()
+
+    If numberTeams > 0 Then
+
+        SELECTION% = 1
+        Count% = numberTeams
+        Start% = 1
+        FileFGColr% = 15: FileBGColr% = 4
+        HiLiteFGColr% = 0: HiLiteBGColr% = 7
+        Rows% = 20
+        Columns% = 4
+        Spacing% = 6
+        Row% = 4
+        Column% = 1
+
+        Color , 4
+        Cls
+        Color 14
+        Locate , 33: Print "TEAM SELECTION"
+        Locate 25, 1
+        Color 14: Print "ESC";: Color 15: Print "-SELECT NEW ID  PGDN  PGUP  ";
+        Color 14: Print "ENTER";: Color 15: Print "-SELECTS TEAM";
+
+        _MouseShow "DEFAULT"
+        MAMenu teamNames$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+        _MouseHide
+
+        If ExitCode% <> 27 Then
+
+            selectedIdx = teamIndex%(SELECTION%)
+
+            'Locate 2, 33
+            'Color 31: Print "LOADING..."
+
+            Call ReadGameTeam(yearNumber$, teamName$, selectedIdx, gameIdx)
+
+        End If
+
+    End If
+
+End Sub
+
+'------------------------------
+'   ReadGameTeam Subroutine
+'------------------------------
+' ...explanation...
+Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
+
+    Shared MF%()
+    Dim DYS%(1, 21)
+
+    Open diskPaths$(0) + TEAM_FILE_NAME$ + "." + teamYear$ For Random As #1 Len = TEAM_SIZE_BYTES
+
+    Field #1, 15 As Q2$(0), 2 As Q2$(1), 2 As Q2$(2), 2 As Q2$(3), 2 As Q2$(4), 2 As Q2$(5), 2 As Q2$(6), 2 As Q2$(7), 2 As Q2$(8), 2 As Q2$(9), 2 As Q2$(10), 2 As Q2$(11), 2 As Q2$(12), 2 As Q2$(13), 4 As Q2$(14), 4297 As X$
+
+    For A = 0 To 22
+        Field #1, 45 + A * 99 As X$, 15 As Q2$(A * 43 + 15), 2 As Q2$(A * 43 + 16), 2 As Q2$(A * 43 + 17), 2 As Q2$(A * 43 + 18), 2 As Q2$(A * 43 + 19), 2 As Q2$(A * 43 + 20), 2 As Q2$(A * 43 + 21), 2 As Q2$(A * 43 + 22), 2 As Q2$(A * 43 + 23), 2 As Q2$(A * 43 + 24), 2 As Q2$(A * 43 + 25), 2 As Q2$(A * 43 + 26), 4297 - 37 - A * 99 As X$
+        Field #1, 82 + A * 99 As X$, 2 As Q2$(A * 43 + 27), 2 As Q2$(A * 43 + 28), 2 As Q2$(A * 43 + 29), 2 As Q2$(A * 43 + 30), 2 As Q2$(A * 43 + 31), 2 As Q2$(A * 43 + 32), 2 As Q2$(A * 43 + 33), 2 As Q2$(A * 43 + 34), 2 As Q2$(A * 43 + 35), 2 As Q2$(A * 43 + 36), 2 As Q2$(A * 43 + 37), 2 As Q2$(A * 43 + 38), 4297 - 61 - A * 99 As X$
+        Field #1, 106 + A * 99 As X$, 2 As Q2$(A * 43 + 39), 2 As Q2$(A * 43 + 40), 2 As Q2$(A * 43 + 41), 2 As Q2$(A * 43 + 42), 2 As Q2$(A * 43 + 43), 2 As Q2$(A * 43 + 44), 2 As Q2$(A * 43 + 45), 2 As Q2$(A * 43 + 46), 2 As Q2$(A * 43 + 47), 2 As Q2$(A * 43 + 48), 2 As Q2$(A * 43 + 49), 2 As Q2$(A * 43 + 50), 4297 - 85 - A * 99 As X$
+        Field #1, 130 + A * 99 As X$, 2 As Q2$(A * 43 + 51), 2 As Q2$(A * 43 + 52), 2 As Q2$(A * 43 + 53), 2 As Q2$(A * 43 + 54), 2 As Q2$(A * 43 + 55), 2 As Q2$(A * 43 + 56), 2 As Q2$(A * 43 + 57), 4297 - 99 - A * 99 As X$
+    Next
+
+    For A = 0 To 21
+        Field #1, 2322 + A * 89 As X$, 15 As Q2$(A * 38 + 1004), 2 As Q2$(A * 38 + 1005), 2 As Q2$(A * 38 + 1006), 2 As Q2$(A * 38 + 1007), 2 As Q2$(A * 38 + 1008), 2 As Q2$(A * 38 + 1009), 2 As Q2$(A * 38 + 1010), 2 As Q2$(A * 38 + 1011), 2 As Q2$(A * 38 + 1012), 2 As Q2$(A * 38 + 1013), 2 As Q2$(A * 38 + 1014), 2 As Q2$(A * 38 + 1015), 2020 - 37 - A * 89 As X$
+        Field #1, 2359 + A * 89 As X$, 2 As Q2$(A * 38 + 1016), 2 As Q2$(A * 38 + 1017), 2 As Q2$(A * 38 + 1018), 2 As Q2$(A * 38 + 1019), 2 As Q2$(A * 38 + 1020), 2 As Q2$(A * 38 + 1021), 2 As Q2$(A * 38 + 1022), 2 As Q2$(A * 38 + 1023), 2 As Q2$(A * 38 + 1024), 2 As Q2$(A * 38 + 1025), 2 As Q2$(A * 38 + 1026), 2 As Q2$(A * 38 + 1027), 2020 - 61 - A * 89 As X$
+        Field #1, 2383 + A * 89 As X$, 2 As Q2$(A * 38 + 1028), 2 As Q2$(A * 38 + 1029), 2 As Q2$(A * 38 + 1030), 2 As Q2$(A * 38 + 1031), 2 As Q2$(A * 38 + 1032), 2 As Q2$(A * 38 + 1033), 2 As Q2$(A * 38 + 1034), 2 As Q2$(A * 38 + 1035), 2 As Q2$(A * 38 + 1036), 2 As Q2$(A * 38 + 1037), 2 As Q2$(A * 38 + 1038), 2 As Q2$(A * 38 + 1039), 2020 - 85 - A * 89 As X$
+        Field #1, 2407 + A * 89 As X$, 2 As Q2$(A * 38 + 1040), 2 As Q2$(A * 38 + 1041), 2020 - 89 - A * 89 As X$
+    Next
+
+    Field #1, 4280 As X$, 40 As Q2$(1840), 15 As Q2$(1841), 5 As Q2$(1842), 2 As Q2$(1843)
+
+    Get #1, teamIdx
+
+    For I1 = 1 To 13
+        L%(gameIdx, I1) = CVI(Q2$(I1))
+    Next
+
+    If (L%(gameIdx, 11) = 7 Or L%(gameIdx, 11) = 15) And L%(gameIdx, 12) = 0 Then
+        L%(gameIdx, 11) = 0
+        L%(gameIdx, 12) = 7
+    End If
+
+    K9!(gameIdx) = CVS(Q2$(14))
+
+    For I1 = 0 To 22:
+
+        B$(gameIdx, I1) = Q2$(I1 * 43 + 15)
+        B$(gameIdx, I1) = RTrim$(B$(gameIdx, I1))
+
+        For I2 = 0 To 41
+            B%(gameIdx, I1, I2) = CVI(Q2$(I1 * 43 + I2 + 16))
+        Next
+
+        If B%(gameIdx, I1, 31) <> 0 Then B%(gameIdx, I1, 21) = 99
+    Next
+
+    For I1 = 0 To 21: 
+        P$(gameIdx, I1) = Q2$(I1 * 38 + 1004)
+        P$(gameIdx, I1) = RTrim$(P$(gameIdx, I1))
+
+        For I2 = 0 To 36
+            P%(gameIdx, I1, I2) = CVI(Q2$(I1 * 38 + I2 + 1005))
+        Next
+
+        If P%(gameIdx, I1, 34) <> 0 Then P%(gameIdx, I1, 15) = 99
+        If P%(gameIdx, I1, 0) = 0 Then P%(gameIdx, I1, 0) = 1
+    Next
+
+    S$(gameIdx) = Q2$(1840)
+    M$(gameIdx) = Q2$(1841)
+    NN$(gameIdx) = Q2$(1842)
+    CK = CVI(Q2$(1843))
+
+    Close 1
+
+    For I1 = 0 To 22
+        ':check for 1934 season
+        If Val(Left$(A$(gameIdx), 2)) < 54 And Mid$(A$(gameIdx), 3, 1) = " " Then B%(gameIdx, I1, 30) = B%(gameIdx, I1, 30) * .75
+
+        For I2 = 22 To 25
+            If B%(gameIdx, I1, I2) <> -1 And B%(gameIdx, I1, I2) <> 0 And B%(gameIdx, I1, I2 + 4) = 0 Then B%(gameIdx, I1, I2 + 4) = 900
+        Next
+    Next
+
+    M$(gameIdx) = RTrim$(M$(gameIdx))
+    S$(gameIdx) = RTrim$(S$(gameIdx))
+    NN$(gameIdx) = RTrim$(NN$(gameIdx))
+
+    For X = 0 To 22
+        For X1 = 1 To 14
+            B%(gameIdx, X, X1 + 41) = 0
+        Next
+    Next
+
+    For X = 0 To 21
+        For X1 = 1 To 28
+            P%(gameIdx, X, X1 + 36) = 0
+        Next
+    Next
+
+    If LR% = 1 Then
+        TS%(gameIdx, 0) = -1
+    Else
+
+        If _FileExists(diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$) Then
+
+            Open diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$ For Random As #1 Len = DATA_SIZE_BYTES
+
+            For X = 0 To 11
+                Field #1, X * 2 As X$, 2 As Q2$(X + 1), DATA_SIZE_BYTES - 2 - 2 * X As X$
+            Next
+
+            For X = 0 To 22
+                For X1 = 1 To 14
+                    Field #1, 24 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q2$(12 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (24 + (X1 - 1) * 2 + X * 14 * 2) As X$
+                Next
+            Next
+
+            For X = 0 To 21
+                For X1 = 1 To 14
+                    Field #1, 668 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q2$(334 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (668 + (X1 - 1) * 2 + X * 14 * 2) As X$
+                Next
+            Next
+
+            For X = 0 To 21
+                For X1 = 1 To 14
+                    Field #1, 1284 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q2$(642 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (1284 + (X1 - 1) * 2 + X * 14 * 2) As X$
+                Next
+            Next
+
+            For X = 1 To 24
+                Field #1, 1900 + (X - 1) * 2 As X$, 2 As Q2$(950 + X), DATA_SIZE_BYTES - 2 - (X - 1) * 2 - 1900 As X$
+            Next
+
+            For X = 0 To 22
+                For X1 = 1 To 24
+                    Field #1, 1948 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q2$(975 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (1948 + (X1 - 1) * 2 + X * 24 * 2) As X$
+                Next
+            Next
+
+            For X = 0 To 21
+                For X1 = 1 To 24
+                    Field #1, 3052 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q2$(1528 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (3052 + (X1 - 1) * 2 + X * 24 * 2) As X$
+                Next
+            Next
+
+            Get #1, teamIdx
+
+            For X = 0 To 11
+                TS%(gameIdx, X) = CVI(Q2$(X + 1))
+            Next
+
+            For X = 0 To 22
+                For X1 = 1 To 14
+                    B%(gameIdx, X, X1 + 41) = CVI(Q2$(12 + X1 + X * 14))
+                Next
+            Next
+
+            For X = 0 To 21
+                For X1 = 1 To 14
+                    P%(gameIdx, X, X1 + 36) = CVI(Q2$(334 + X1 + X * 14))
+                Next
+            Next
+
+            For X = 0 To 21
+                For X1 = 1 To 14
+                    P%(gameIdx, X, X1 + 50) = CVI(Q2$(642 + X1 + X * 14))
+                Next
+            Next
+
+            For X = 1 To 24: 
+                SA%(gameIdx, X) = CVI(Q2$(X + 950))
+            Next
+
+            For X = 0 To 22
+                For X1 = 1 To 24
+                    B%(gameIdx, X, X1 + 55) = CVI(Q2$(975 + X1 + X * 24))
+                Next
+            Next
+
+            For X = 0 To 21
+                For X1 = 1 To 24
+                    P%(gameIdx, X, X1 + 64) = CVI(Q2$(1528 + X1 + X * 24))
+                Next
+            Next
+
+            Close 1
+
+            If TS%(gameIdx, 0) <> 999 Then TS%(gameIdx, 0) = -1
+
+        Else
+
+            TS%(gameIdx, 0) = -1
+
+        End If
+
+    End If
+
+    For X = 0 To 22
+
+        For X1 = 0 To 14
+            B%(gameIdx, X, 80) = B%(gameIdx, X, 80) + B%(gameIdx, X, X1 + 41)
+        Next
+
+    Next
+
+    For X = 0 To 21
+
+        For X1 = 0 To 14
+            P%(gameIdx, X, 89) = P%(gameIdx, X, 89) + P%(gameIdx, X, X1 + 50)
+        Next
+
+    Next
+
+    targetTeam$ = RTrim$(Q2$(0))
+
+    'Read in manager data
+    If _FileExists(diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$) Then
+
+        Open diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #2 Len = MGR_SIZE_BYTES
+
+        For X = 0 To 999
+            Field #2, X * 2 As Q2$, 2 As Q2$(X), MGR_SIZE_BYTES - X * 2 - 2 As Q2$
+        Next
+
+        Get #2, teamIdx
+
+        For X = 0 To 999: MG%(gameIdx, X) = CVI(Q2$(X)): Next
+
+        Close 2
+    Else
+        MF%(gameIdx) = -1
+    End If
+
+    If MG%(gameIdx, 0) <> 999 Or MF%(gameIdx) = -1 Then
+        MF%(gameIdx) = -1
+        For X = 0 To 999:
+            MG%(gameIdx, X) = -1
+        Next
+    End If
+
+    statFile$ = nameStatFile$(A$(idx))
+
+    'Read in supplemental data
+    If _FileExists(diskPaths$(1) + statFile$ + "D") Then
+
+        Open diskPaths$(1) + statFile$ + "D" For Input As #1
+
+        For I1 = 0 To 22
+            Input #1, INJ%(gameIdx, I1)
+        Next
+
+        For I1 = 0 To 21
+            Input #1, DYS%(gameIdx, I1)
+        Next
+
+        Close 1
+
+        If IJ% <> 1 Then
+            For I1 = 0 To 22
+                If INJ%(gameIdx, I1) > 0 Then B%(gameIdx, I1, 21) = 99
+            Next
+        End If
+
+    End If
+
+    If DR% <> 1 Then
+
+        For I1 = 0 To 21
+            If DYS%(gameIdx, I1) <> 0 And DYS%(gameIdx, I1) < 90 Then
+                P%(gameIdx, I1, 35) = DYS%(gameIdx, I1)
+            End If
+        Next
+
+    End If
 
 End Sub
 
