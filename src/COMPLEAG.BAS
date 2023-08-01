@@ -36,154 +36,80 @@ Sub CompileLeague ()
 
     C$ = ","
 
-    Cls
+    leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", ExitCode%)
 
-    Do
-        'Display list of files...
-        Spec$ = diskPaths$(2) + "*.LIB"
-        Count% = FCount%(Spec$)
+    If ExitCode% <> 27 And ExitCode% <> 0 Then
 
-        If Count% = 0 Then
+        Color 15, 0
+        Cls
 
-            Locate 10, 8
-            Call CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-            I$ = GetKeyPress$
-            Call CSMsgBox("", 0, Pass)
+        Open diskPaths$(2) + leagStatFile$ + ".TMS" For Input As #2
 
-        Else
+        Input #2, LG$, D1$, D2$, D3$, D4$
 
-            ReDim leagueFiles$(0 To Count%)
+        For XW = 1 To 40
+            Input #2, H1$(XW)
+            cmplTM$(XW) = H1$(XW)
+        Next
 
-            For X = 1 To Count%
-                leagueFiles$(X) = Space$(12)
-            Next
+        Close 2
 
-            leagueFiles$(0) = Spec$
+        For XW = 1 To 40
 
-            Call ReadFile(leagueFiles$())
+            fullWins = 0
+            fullLosses = 0
 
-            Do
-                Cls
-                Color , 1
-                Cls
-                Locate , 28
-                Color 14
-                Print "SELECT LEAGUE TO COMPILE": Color 15
-                Selection% = 1
-                Start% = 1
-                FileFGColr% = 15: FileBGColr% = 1
-                HiLiteFGColr% = 0: HiLiteBGColr% = 7
-                Rows% = 20
-                Columns% = 4
-                Spacing% = 6
-                Row% = 4
-                Column% = 1
-                Locate 25, 1
-                Color 14
-                Print "ENTER";: Color 15
-                Print "-SELECTS LEAGUE";
+            If H1$(XW) <> Chr$(42) Then
 
-                _MouseShow "DEFAULT"
-                MAMenu leagueFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
-                _MouseHide
+                haveStats = FindStatsPro%(H1$(XW), TN$, fullWins, fullLosses)
 
-                If ExitCode% <> 27 Then
+                If (haveStats) Then
 
-                    Color 15, 1
-                    targetFile$ = leagueFiles$(Selection%)
-                    Locate 2, 33: Print targetFile$
+                    L = Len(H1$(XW))
+                    WT$ = ""
 
-                    Do
-                        Locate 3, 33: Print "ANY CHANGE (YN)";
-                        I$ = GetKeyPress$
-                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+                    For X = 1 To L
+                        A = Asc(Mid$(H1$(XW), X, 1))
+                        WT$ = WT$ + Chr$(A)
+                    Next X
 
-                    Color 15, 0
-                Else
-                    BO% = 1
-                End If
+                    confGame = 0
 
-            Loop Until UCase$(I$) = "N" Or ExitCode% = 27
+                    For X = 1 To 40:
 
-            If ExitCode% <> 27 Then
+                        If cmplTM$(X) = WT$ Then
 
-                targetFile$ = RTrim$(targetFile$)
-                WE$ = Left$(targetFile$, Len(targetFile$) - 4)
+                            If O1(X) = fullWins And O2(X) = fullLosses Then
+                                confGame = 1
+                            Else
+                                O1(X) = fullWins
+                                O2(X) = fullLosses
+                            End If
 
-                Cls
-
-                Open diskPaths$(2) + WE$ + ".TMS" For Input As #2
-
-                Input #2, LG$, D1$, D2$, D3$, D4$
-
-                For XW = 1 To 40
-                    Input #2, H1$(XW)
-                    cmplTM$(XW) = H1$(XW)
-                Next
-
-                Close 2
-
-                For XW = 1 To 40
-
-                    fullWins = 0
-                    fullLosses = 0
-
-                    If H1$(XW) <> Chr$(42) Then
-
-                        haveStats = FindStatsPro%(H1$(XW), TN$, fullWins, fullLosses)
-
-                        If (haveStats) Then
-
-                            L = Len(H1$(XW))
-                            WT$ = ""
-
-                            For X = 1 To L
-                                A = Asc(Mid$(H1$(XW), X, 1))
-                                WT$ = WT$ + Chr$(A)
-                            Next X
-
-                            confGame = 0
-
-                            For X = 1 To 40:
-
-                                If cmplTM$(X) = WT$ Then
-
-                                    If O1(X) = fullWins And O2(X) = fullLosses Then
-                                        confGame = 1
-                                    Else
-                                        O1(X) = fullWins
-                                        O2(X) = fullLosses
-                                    End If
-
-                                    If (confGame) Then Exit For
-
-                                End If
-
-                            Next X
-
-                            If confGame <> 1 And _FileExists(diskPaths$(1) + H1$(XW)) Then
-
-                                Call ReadStatsLeague(H1$(XW), TN$, fullWins, fullLosses)
-                                Call CheckStatsLeague(H1$(XW), WT$)
-                                Call StatsByCategory(WT$, fullWins, fullLosses)
-
-                            End If 'Done checking if we need to skip
+                            If (confGame) Then Exit For
 
                         End If
 
-                    End If
+                    Next X
 
-                Next XW
+                    If confGame <> 1 And _FileExists(diskPaths$(1) + H1$(XW)) Then
 
-                Call SortLeaders
-                Call PostLeaders(LG$, WE$, APP)
+                        Call ReadStatsLeague(H1$(XW), TN$, fullWins, fullLosses)
+                        Call CheckStatsLeague(H1$(XW), WT$)
+                        Call StatsByCategory(WT$, fullWins, fullLosses)
 
-            End If 'Done checking for ESC
+                    End If 'Done checking if we need to skip
 
-        End If 'Done checking for file count
+                End If
 
-        '...Until we press ESC
-    Loop Until ExitCode% = 27 Or Count% = 0 Or I$ = "N"
+            End If
+
+        Next XW
+
+        Call SortLeaders
+        Call PostLeaders(LG$, leagStatFile$, APP)
+
+    End If
 
 End Sub
 
@@ -202,6 +128,7 @@ Function FindStatsPro% (statFile$, TN$, fullWins, fullLosses)
 
         Close #1
 
+        Color 15, 0
         Cls
 
         Locate 4, 5
@@ -237,9 +164,13 @@ Sub CheckStatsLeague (targetTeam$, WT$)
     Shared cmplZ2$(), cmplZ3$()
     Shared cmplZ1!(), DFT!(), JS!(), OFT!()
 
+    Color 15, 0
+    Cls
+
+    'Color 12
     Print "CHECKING "; targetTeam$; " STATS"
 
-    Cls
+    Color 15
 
     For X = 1 To 23
 
@@ -876,7 +807,7 @@ End Sub
 '----------------------------------------
 '       PostLeaders Subroutine
 '----------------------------------------
-Sub PostLeaders (LG$, WE$, APP)
+Sub PostLeaders (leagueName$, leaderFile$, APP)
 
     Shared O1(), O2()
 
@@ -885,9 +816,11 @@ Sub PostLeaders (LG$, WE$, APP)
     Shared BA$(), cmplZ2$(), cmplZ3$()
     Shared ER$(), cmplTM$()
 
-    Print "POSTING "; LG$; " LEADERS"
+    Color 15, 0
 
-    Open diskPaths$(2) + WE$ + ".LDR" For Output As #2
+    Print "POSTING "; leagueName$; " LEADERS"
+
+    Open diskPaths$(2) + leaderFile$ + ".LDR" For Output As #2
 
     For X = 1 To 40:
         Write #2, cmplTM$(X), O1(X), O2(X)

@@ -21,6 +21,8 @@ DefInt A-Z
 '$INCLUDE: 'PadRight.bi'
 '$INCLUDE: 'Variables.bi'
 
+Dim TP$(0 To 31), TP1$(0 To 29), TP2$(0 To 39)
+
 ' For Utils
 '$INCLUDE: 'MainRoutines.bi'
 '$INCLUDE: 'TITLE.bi'
@@ -489,6 +491,7 @@ Sub Replay_Menu ()
         Color , 0
 
         If ExitCode% <> 27 Then
+
             Select Case Selection%
                 Case 1: Call COMPARE
                 Case 2: Call MERGE
@@ -497,6 +500,7 @@ Sub Replay_Menu ()
                 Case 5: Call POSSRT
                 Case 6: Cls
             End Select
+
         End If
 
     Loop Until Selection% = 6 Or ExitCode% = 27
@@ -616,3 +620,4 @@ End Sub
 '$INCLUDE: 'GameRoutines_Gfx.bm'
 '$INCLUDE: 'LOADER.BAS'
 '$INCLUDE: 'SOURCE.bm'
+

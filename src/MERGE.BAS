@@ -33,11 +33,13 @@ Sub MERGE ()
         Color , 0
 
         If ExitCode% <> 27 Then
+
             Select Case Selection%
                 Case 1: Call MergeStats
                 Case 2: Call ALIGN
                 Case 3: Cls
             End Select
+
         End If
 
     Loop Until Selection% = 3 Or ExitCode% = 27

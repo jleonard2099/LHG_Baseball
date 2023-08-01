@@ -84,175 +84,106 @@ Sub UpdateLeagueStandings ()
 
     Shared D1$, D2$, D3$, D4$
 
-    TMR% = 40
+    TMR = 40
 
-    Do
-        Cls
+    leagStatFile$ = ChooseFile$ (diskPaths$(2) + "*.TMS", "LEAGUE STATS", ExitCode%)
 
-        Spec$ = diskPaths$(2) + "*.TMS"
-        Count% = FCount%(Spec$)
+    If ExitCode% <> 27 And ExitCode% <> 0 Then
 
-        If Count% = 0 Then
-            Locate 10, 8
-            Call CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 40, Pass)
-            I$ = GetKeyPress$
-            Call CSMsgBox("", 0, Pass)
-        Else
-            ReDim leagueFiles$(0 To Count%)
+        Open diskPaths$(2) + leagStatFile$ + ".TMS" For Input As #2
 
-            For X = 1 To Count%
-                leagueFiles$(X) = Space$(12)
-            Next
+        Input #2, LGF$, D1$, D2$, D3$, D4$
 
-            leagueFiles$(0) = Spec$
+        For X = 1 To 40: Input #2, Z1$(X): Next
 
-            Call ReadFile(leagueFiles$())
+        Close 2
 
-            Do
+        YY = 0
 
+        For KK = 1 To 40
+
+            YY = YY + 1
+            Color 14
+            Locate 7, 20
+            TMR = TMR - 1: Print Using "###"; TMR
+
+            If Z1$(KK) <> "*" Then
+
+                TML$(YY) = Z1$(KK)
+
+                Color 15, 0
                 Cls
-                Color , 1
-                Cls
-                Locate , 28
-                Color 14
-                Print "SELECT LEAGUE TO UPDATE": Color 15
-                Selection% = 1
-                Start% = 1
-                FileFGColr% = 15: FileBGColr% = 1
-                HiLiteFGColr% = 0: HiLiteBGColr% = 7
-                Rows% = 20
-                Columns% = 4
-                Spacing% = 6
-                Row% = 4
-                Column% = 1
-                Locate 25, 1
-                Color 14
-                Print "ENTER";: Color 15
-                Print "-SELECTS LEAGUE";
 
-                _MouseShow "DEFAULT"
-                MAMenu leagueFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
-                _MouseHide
+                Locate 5: Print "COMPUTING RECORDS . . . . . PLEASE WAIT"
 
-                If ExitCode% <> 27 Then
+                If _FileExists(diskPaths$(1) + Z1$(KK) + "S") Then
 
-                    Color 15, 1
-                    targetFile$ = leagueFiles$(Selection%)
-                    Locate 2, 33: Print targetFile$
+                    Open diskPaths$(1) + Z1$(KK) + "S" For Input As #1
 
-                    Do
-                        Locate 3, 33: Print "ANY CHANGE (YN)";
-                        I$ = GetKeyPress$
-                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+                    Input #1, XX%
 
-                    Color 15, 0
+                    For I = 1 To 162: Input #1, H%(I): Next I
+                    For I = 1 To 162: Input #1, H$(I): Next I
+                    For I = 1 To 162: Input #1, V%(I): Next I
+                    For I = 1 To 162: Input #1, PL$(I): Next I
+                    For I = 1 To 162: Input #1, W$(I): Next I
+                    For I = 1 To 162: Input #1, L$(I): Next I
+                    For I = 1 To 162: Input #1, I%(I): Next I
+                    Close #1
+
+                    For I = 1 To XX%
+
+                        If H%(I) > V%(I) Then WW!(YY) = WW!(YY) + 1
+                        If H%(I) > V%(I) And I%(I) > 9 Then EWW!(YY) = EWW!(YY) + 1
+                        If H%(I) > V%(I) And PL$(I) = "A" Then RWW!(YY) = RWW!(YY) + 1
+                        If H%(I) > V%(I) And PL$(I) = "H" Then HWW!(YY) = HWW!(YY) + 1
+                        If V%(I) > H%(I) Then LL!(YY) = LL!(YY) + 1
+                        If V%(I) > H%(I) And I%(I) > 9 Then ELL!(YY) = ELL!(YY) + 1
+                        If V%(I) > H%(I) And PL$(I) = "A" Then RLL!(YY) = RLL!(YY) + 1
+                        If V%(I) > H%(I) And PL$(I) = "H" Then HLL!(YY) = HLL!(YY) + 1
+                        If H%(I) > V%(I) Then LWS!(YY) = LWS!(YY) + 1: LLS!(YY) = 0
+                        If LWS!(YY) > TWS!(YY) Then TWS!(YY) = LWS!(YY)
+                        If H%(I) < V%(I) Then LLS!(YY) = LLS!(YY) + 1: LWS!(YY) = 0
+                        If LLS!(YY) > TLS!(YY) Then TLS!(YY) = LLS!(YY)
+
+                        If H%(I) <= V%(I) Then
+                            If H%(I) < V%(I) Then
+                                CLT!(YY) = CLT!(YY) + 1: CWS!(YY) = 0
+                            Else
+                                CWS!(YY) = CWS!(YY) + 1: CLT!(YY) = 0
+                            End If
+                        End If
+
+                    Next I
+
+                    If XX% <= 10 Then
+                        LTL!(YY) = LL!(YY): LTW!(YY) = WW!(YY)
+                    Else
+                        M = XX% - 9
+
+                        For J = M To XX%
+                            If H%(J) > V%(J) Then LTW!(YY) = LTW!(YY) + 1
+                            If V%(J) > H%(J) Then LTL!(YY) = LTL!(YY) + 1
+                        Next J
+                    End If
 
                 End If
 
-            Loop Until UCase$(I$) = "N" Or ExitCode% = 27
+            End If 'Done checking for '*'
 
-            If ExitCode% <> 27 Then
-                targetFile$ = RTrim$(targetFile$)
-                LG$ = Left$(targetFile$, Len(targetFile$) - 4)
+        Next KK
 
-                Open diskPaths$(2) + LG$ + ".TMS" For Input As #2
+        Open diskPaths$(2) + leagStatFile$ + ".STD" For Output As #1
 
-                Input #2, LGF$, D1$, D2$, D3$, D4$
+        Write #1, LGF$, D1$, D2$, D3$, D4$
 
-                For X = 1 To 40: Input #2, Z1$(X): Next
+        For I = 1 To 40:
+            Write #1, TML$(I), WW!(I), LL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
+        Next
 
-                Close 2
+        Close #1
 
-                YY = 0
-
-                For KK = 1 To 40
-
-                    YY = YY + 1
-                    Color 14
-                    Locate 7, 20
-                    TMR% = TMR% - 1: Print Using "###"; TMR%
-
-                    If Z1$(KK) <> "*" Then
-
-                        TML$(YY) = Z1$(KK)
-
-                        Color 15, 0
-                        Cls
-
-                        Locate 5: Print "COMPUTING RECORDS . . . . . PLEASE WAIT"
-
-                        If _FileExists(diskPaths$(1) + Z1$(KK) + "S") Then
-
-                            Open diskPaths$(1) + Z1$(KK) + "S" For Input As #1
-
-                            Input #1, XX%
-
-                            For I = 1 To 162: Input #1, H%(I): Next I
-                            For I = 1 To 162: Input #1, H$(I): Next I
-                            For I = 1 To 162: Input #1, V%(I): Next I
-                            For I = 1 To 162: Input #1, PL$(I): Next I
-                            For I = 1 To 162: Input #1, W$(I): Next I
-                            For I = 1 To 162: Input #1, L$(I): Next I
-                            For I = 1 To 162: Input #1, I%(I): Next I
-                            Close #1
-
-                            For I = 1 To XX%
-
-                                If H%(I) > V%(I) Then WW!(YY) = WW!(YY) + 1
-                                If H%(I) > V%(I) And I%(I) > 9 Then EWW!(YY) = EWW!(YY) + 1
-                                If H%(I) > V%(I) And PL$(I) = "A" Then RWW!(YY) = RWW!(YY) + 1
-                                If H%(I) > V%(I) And PL$(I) = "H" Then HWW!(YY) = HWW!(YY) + 1
-                                If V%(I) > H%(I) Then LL!(YY) = LL!(YY) + 1
-                                If V%(I) > H%(I) And I%(I) > 9 Then ELL!(YY) = ELL!(YY) + 1
-                                If V%(I) > H%(I) And PL$(I) = "A" Then RLL!(YY) = RLL!(YY) + 1
-                                If V%(I) > H%(I) And PL$(I) = "H" Then HLL!(YY) = HLL!(YY) + 1
-                                If H%(I) > V%(I) Then LWS!(YY) = LWS!(YY) + 1: LLS!(YY) = 0
-                                If LWS!(YY) > TWS!(YY) Then TWS!(YY) = LWS!(YY)
-                                If H%(I) < V%(I) Then LLS!(YY) = LLS!(YY) + 1: LWS!(YY) = 0
-                                If LLS!(YY) > TLS!(YY) Then TLS!(YY) = LLS!(YY)
-
-                                If H%(I) <= V%(I) Then
-                                    If H%(I) < V%(I) Then
-                                        CLT!(YY) = CLT!(YY) + 1: CWS!(YY) = 0
-                                    Else
-                                        CWS!(YY) = CWS!(YY) + 1: CLT!(YY) = 0
-                                    End If
-                                End If
-
-                            Next I
-
-                            If XX% <= 10 Then
-                                LTL!(YY) = LL!(YY): LTW!(YY) = WW!(YY)
-                            Else
-                                M = XX% - 9
-
-                                For J = M To XX%
-                                    If H%(J) > V%(J) Then LTW!(YY) = LTW!(YY) + 1
-                                    If V%(J) > H%(J) Then LTL!(YY) = LTL!(YY) + 1
-                                Next J
-                            End If
-
-                        End If
-
-                    End If 'Done checking for '*'
-
-                Next KK
-
-                Open diskPaths$(2) + LG$ + ".STD" For Output As #1
-
-                Write #1, LGF$, D1$, D2$, D3$, D4$
-
-                For I = 1 To 40:
-                    Write #1, TML$(I), WW!(I), LL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
-                Next
-
-                Close #1
-
-            End If
-
-        End If 'Done checking file count
-
-    Loop Until Count% = 0 Or ExitCode% = 27 Or I$ = "N"
+    End If
 
 End Sub
 
@@ -271,113 +202,44 @@ Sub NewStandingOptions ()
 
     Shared D1$, D2$, D3$, D4$
 
-    Do
+    standingsFile$ = ChooseFile$ (diskPaths$(2) + "*.STD", "LEAGUE STANDINGS", ExitCode%)
 
+    If ExitCode% <> 27 And ExitCode% <> 0 Then
+
+        Open diskPaths$(2) + standingsFile$ + ".STD" For Input As #1
+
+        Input #1, LGF$, D1$, D2$, D3$, D4$
+
+        For I = 1 To 40:
+            Input #1, TML$(I), WW!(I), LL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
+        Next
+
+        Close #1
+
+        Color 15, 0
         Cls
-        Color , 0
 
-        Spec$ = diskPaths$(2) + "*.STD"
-        Count% = FCount%(Spec$)
+        Do
+            Locate 15, 10
+            Color 12: Print "V";: Color 7: Print "iew or ";
+            Color 12: Print "P";: Color 7: Print "rint"
+            A$ = GetKeyPress$
+        Loop Until UCase$(A$) = "P" Or UCase$(A$) = "V"
 
-        If Count% = 0 Then
-            Locate 10, 8
-            Call CSMsgBox("NO LEAGUE STANDINGS HAVE BEEN COMPILED PRESS ANY KEY TO RETURN TO MAIN MENU", 40, Pass)
-            I$ = GetKeyPress$
-            Call CSMsgBox("", 0, Pass)
-        Else
-            ReDim standingsFiles$(0 To Count%)
+        Select Case UCase$(A$)
 
-            For X = 1 To Count%
-                standingsFiles$(X) = Space$(12)
-            Next
+            Case "V":
+                Call ViewNewStandings(LGF$)
 
-            standingsFiles$(0) = Spec$
-            Call ReadFile(standingsFiles$())
+            Case "P":
+                Call PrintNewStandings(LGF$)
 
-            Do
-                Color , 1
-                Cls
+        End Select
 
-                Locate , 28
-                Color 14
-                Print "SELECT LEAGUE TO VIEW": Color 15
-                Selection% = 1
-                Start% = 1
-                FileFGColr% = 15: FileBGColr% = 1
-                HiLiteFGColr% = 0: HiLiteBGColr% = 7
-                Rows% = 20
-                Columns% = 4
-                Spacing% = 6
-                Row% = 4
-                Column% = 1
-                Locate 25, 1
-                Color 14
-                Print "ENTER";: Color 15
-                Print "-SELECTS LEAGUE";
-
-                _MouseShow "DEFAULT"
-                MAMenu standingsFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
-                _MouseHide
-
-                If ExitCode% <> 27 Then
-
-                    Color 15, 1
-                    targetFile$ = standingsFiles$(Selection%)
-                    Locate 2, 33: Print targetFile$
-
-                    Do
-                        Locate 3, 33: Print "ANY CHANGE (YN)";
-                        I$ = GetKeyPress$
-                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
-                    Color 15, 0
-
-                End If
-
-            Loop Until UCase$(I$) = "N" Or ExitCode% = 27
-
-            If ExitCode% <> 27 Then
-
-                targetFile$ = RTrim$(targetFile$)
-                LGS$ = Left$(targetFile$, Len(targetFile$) - 4)
-
-                Open diskPaths$(2) + LGS$ + ".STD" For Input As #1
-
-                Input #1, LGF$, D1$, D2$, D3$, D4$
-
-                For I = 1 To 40:
-                    Input #1, TML$(I), WW!(I), LL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
-                Next
-
-                Close #1
-
-                Color 15, 0
-                Cls
-
-                Do
-                    Locate 15, 10
-                    Color 12: Print "V";: Color 7: Print "iew or ";
-                    Color 12: Print "P";: Color 7: Print "rint"
-                    A$ = GetKeyPress$
-                Loop Until UCase$(A$) = "P" Or UCase$(A$) = "V"
-
-                Select Case UCase$(A$)
-
-                    Case "V":
-                        Call ViewNewStandings(LGF$)
-
-                    Case "P":
-                        Call PrintNewStandings(LG$)
-
-                End Select
-
-            End If 'Done checking for ESC
-
-        End If 'Done checking count of files
-
-    Loop Until UCase$(A$) = "P" Or UCase$(A$) = "V" Or ExitCode% = 27
+    End If 'Done checking for ESC
 
 End Sub
+
 
 '----------------------------------------
 '       ViewNewStandings Subroutine

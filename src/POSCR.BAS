@@ -13,16 +13,26 @@ Sub POSCR ()
 			Cls
 
             JJ = 7
-            Locate 6, 8: Color 15, 1
-            Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";: For II = 1 To JJ: Locate 6 + II, 8
-            Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";: Next
+
+            Locate 6, 8
+			
+			Color 15, 1
+            
+			Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+			
+			For II = 1 To JJ: 
+				Locate 6 + II, 8
+				Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
+			Next
+
             Locate 7 + JJ, 8
+
             Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
 			
 			Locate 7, 32
 
             Locate , 12: Print "ENTER NAME FOR POSITION FILE: ": Print
-			Locate , 12: Print "THE NAME SHOULD HAVE NO PERIODS OR SPACES"
+			Locate , 12: Print "THE NAME SHOULD HAVE NO PERIODS OR SPECIAL CHARACTERS"
 			Locate , 12: Print "DO NOT ADD A FILE EXTENSION; THE PROGRAM"
             Locate , 12: Print "WILL AUTOMATICALLY ADD .POS"
             Locate , 12: Print "SAMPLE NAMES ARE AL-1965, DRAFT, ETC"

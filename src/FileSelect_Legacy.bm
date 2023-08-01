@@ -1,0 +1,352 @@
+'----------------------------------------
+'      ChooseLeague Subroutine
+'----------------------------------------
+'...explanation...
+Sub ChooseLeague (league$)
+
+    Shared Z1%()
+
+    Shared Z1$(), Z2$()
+
+    Do
+
+        Spec$ = diskPaths$(2) + "*.LIB"
+        Count% = FCount%(Spec$)
+
+        If Count% = 0 Then
+            Locate 10, 8
+            Call CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+            I$ = GetKeyPress$
+            Call CSMsgBox("", 0, Pass)
+        Else
+            ReDim leagueFiles$(0 To Count%)
+
+            For X = 1 To Count%
+                leagueFiles$(X) = Space$(12)
+            Next
+
+            leagueFiles$(0) = Spec$
+
+            Call ReadFile(leagueFiles$())
+
+            Do
+                Cls
+                Color , 1
+                Cls
+                Locate , 28
+                Color 14
+                Print "SELECT LEAGUE TO SCHEDULE": Color 15
+                Selection% = 1
+                Start% = 1
+                FileFGColr% = 15: FileBGColr% = 1
+                HiLiteFGColr% = 0: HiLiteBGColr% = 7
+                Rows% = 20
+                Columns% = 4
+                Spacing% = 6
+                Row% = 4
+                Column% = 1
+                Locate 25, 1
+                Color 14
+                Print "ENTER";: Color 15
+                Print "-SELECTS LEAGUE";
+
+                _MouseShow "DEFAULT"
+                MAMenu leagueFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+                _MouseHide
+
+                If ExitCode% <> 27 Then
+
+                    Color 15, 1
+                    targetFile$ = leagueFiles$(Selection%)
+                    Locate 2, 33: Print targetFile$
+
+                    Do
+                        Locate 3, 33: Print "ANY CHANGE (YN)";
+                        I$ = GetKeyPress$
+                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+                    Color 15, 0
+
+                End If
+
+            Loop Until UCase$(I$) = "N" Or ExitCode% = 27
+
+            If ExitCode% <> 27 And ExitCode% <> 0 Then
+
+                targetFile$ = RTrim$(targetFile$)
+                league$ = Left$(targetFile$, Len(targetFile$) - 4)
+
+            End If 'Done checking for ESC
+
+        End If 'Done checking for files
+
+    Loop Until UCase$(I$) = "N" Or ExitCode% = 27 Or Count% = 0
+
+    Color 15, 0
+    Cls
+
+End Sub
+
+
+'----------------------------------------
+'        SelectLeague Subroutine
+'----------------------------------------
+'...explanation...
+Sub SelectLeague (targetFile$)
+
+    Do
+
+        Spec$ = diskPaths$(2) + "*.LIB"
+        Count% = FCount%(Spec$)
+
+        If Count% = 0 Then
+            Locate 10, 8
+            Call CSMsgBox("NO LEAGUE FILES WERE FOUND.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+            I$ = GetKeyPress$
+            Call CSMsgBox("", 0, Pass)
+        Else
+
+            ReDim leagueFiles$(0 To Count%)
+
+            For X = 1 To Count%
+                leagueFiles$(X) = Space$(12)
+            Next
+
+            leagueFiles$(0) = Spec$
+
+            Call ReadFile(leagueFiles$())
+
+            Do
+                Color , 1
+                Cls
+
+                Locate , 33
+                Color 14
+                Print "SELECT LEAGUE": Color 15
+                Selection% = 1
+                Start% = 1
+                FileFGColr% = 15: FileBGColr% = 1
+                HiLiteFGColr% = 0: HiLiteBGColr% = 7
+                Rows% = 20
+                Columns% = 4
+                Spacing% = 6
+                Row% = 4
+                Column% = 1
+                Locate 25, 1
+                Color 14
+                Print "ENTER";: Color 15
+                Print "-SELECTS LEAGUE";
+
+                _MouseShow "DEFAULT"
+                MAMenu leagueFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+                _MouseHide
+
+                If ExitCode% <> 27 Then
+
+                    Color 15, 1
+                    targetFile$ = leagueFiles$(Selection%)
+                    Locate 2, 33: Print targetFile$
+
+                    Do
+                        Locate 3, 33: Print "ANY CHANGE (YN)";
+                        I$ = GetKeyPress$
+                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+                    Color 15, 0
+
+                End If
+
+            Loop Until UCase$(I$) = "N" Or ExitCode% = 27
+
+            If ExitCode% <> 27 And ExitCode% <> 0 Then
+                targetFile$ = Left$(RTrim$(targetFile$), Len(targetFile$) - 4)
+            End If
+
+        End If
+
+    Loop Until ExitCode% = 27 Or Count% = 0 Or UCase$(I$) = "N"
+
+End Sub
+
+
+'----------------------------------------
+'       LoadSchedule SubRoutine
+'----------------------------------------
+'...explanation...
+Sub LoadSchedule (targetFile$)
+
+    Do
+        'Display list of files...       
+        Spec$ = diskPaths$(0) + "*.SCD"
+        Count% = FCount%(Spec$)
+
+        If Count% = 0 Then
+            Locate 10, 8
+            Call CSMsgBox("NO SCHEDULE FILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+            I$ = GetKeyPress$
+            Call CSMsgBox("", 0, Pass)
+        Else
+            ReDim scheduleFiles$(0 To Count%)
+            
+            For X = 1 To Count%
+                scheduleFiles$(X) = Space$(12)
+            Next
+
+            scheduleFiles$(0) = Spec$
+            Call ReadFile(scheduleFiles$())
+            Call SelectScheduleFile(targetFile$, scheduleFiles$(), Count%, menuExit%)
+
+        End If
+
+    Loop Until Count% = 0 Or targetFile$ <> "" Or menuExit% = 27
+
+End Sub
+
+
+'----------------------------------------
+'     SelectScheduleFile SubRoutine
+'----------------------------------------
+'...explanation...
+Sub SelectScheduleFile (targetFile$, scheduleFiles$(), FileCount%, ExitCode%)
+
+    Do
+        Cls
+        Color , 1
+        Cls
+        Locate , 28
+        Color 14
+        Print "SELECT SCHEDULE TO VIEW"
+        Color 15
+        Selection% = 1
+        Start% = 1
+        FileFGColr% = 15: FileBGColr% = 1
+        HiLiteFGColr% = 0: HiLiteBGColr% = 7
+        Rows% = 20
+        Columns% = 4
+        Spacing% = 6
+        Row% = 4
+        Column% = 1
+        Locate 25, 1
+        Color 14
+        Print "ESC";: Color 15
+        Print "-SELECT NEW ID  PGDN  PGUP  ";: Color 14
+        Print "ENTER";: Color 15
+        Print "-SELECTS SCHEDULE";
+
+        _MouseShow "DEFAULT"
+        MAMenu scheduleFiles$(), Selection%, Start%, FileCount%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+        _MouseHide
+
+        If ExitCode% <> 27 Then
+        
+            Color 15, 1
+            targetFile$ = RTrim$(scheduleFiles$(Selection%))
+            Locate 2, 33: Print targetFile$
+
+            Do
+                Locate 3, 33: Print "ANY CHANGE (YN)";
+                I$ = GetKeyPress$
+            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+            Color 15, 0
+
+        End If
+
+    Loop Until ExitCode% = 27 Or UCase$(I$) = "N"
+
+    If ExitCode% <> 27 And ExitCode% <> 0 Then
+
+        targetFile$ = RTrim$(targetFile$)
+        
+        '-- This is where we strip the file extension
+        '-- If we remove this, we can drop the .SCD in the rest of the code
+        fileNoExt$ = Left$(targetFile$, Len(targetFile$) - 4)
+        targetFile$ = fileNoExt$
+        Color 15, 0
+        
+        Call LoadScheduleInfo (targetFile$)
+
+    End If
+
+End Sub
+
+
+'----------------------------------------
+'       SelectLeague_REC Subroutine
+'----------------------------------------
+'...explanation...
+Sub SelectLeague_REC (leagueFile$, ExitCode%)
+
+    
+
+    Do
+
+        Spec$ = diskPaths$(2) + "*.BAT"
+        Count% = FCount%(Spec$)
+
+        If Count% = 0 Then
+            Locate 10, 8
+            Call CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+            I$ = GetKeyPress$
+            Call CSMsgBox("", 0, Pass)
+        Else
+            ReDim batFiles$(0 To Count%)
+            For X = 1 To Count%
+                batFiles$(X) = Space$(12)
+            Next
+            batFiles$(0) = Spec$
+            Call ReadFile(batFiles$())
+
+            Do
+                Cls
+                Color , 1
+                Cls
+                Locate , 28
+                Color 14
+                Print "SELECT LEAGUE SEASON": Color 15
+                Selection% = 1
+                Start% = 1
+                FileFGColr% = 15: FileBGColr% = 1
+                HiLiteFGColr% = 0: HiLiteBGColr% = 7
+                Rows% = 20
+                Columns% = 4
+                Spacing% = 6
+                Row% = 4
+                Column% = 1
+                Locate 25, 1
+                Color 14
+                Print "ENTER";: Color 15
+                Print "-SELECTS SEASON";
+
+                _MouseShow "DEFAULT"
+                MAMenu batFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+                _MouseHide
+
+                If ExitCode% <> 27 Then
+
+                    Color 15, 1
+                    targetFile$ = batFiles$(Selection%)
+                    Locate 2, 33: Print targetFile$
+
+                    Do
+                        Locate 3, 33: Print "ANY CHANGE (YN)";
+                        I$ = GetKeyPress$
+                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+                    Color 15, 0
+
+                End If
+
+            Loop Until UCase$(I$) = "N" Or ExitCode% = 27
+
+            If ExitCode% <> 27 And ExitCode% <> 0 Then
+                targetFile$ = RTrim$(targetFile$)
+                leagueFile$ = Left$(targetFile$, Len(targetFile$) - 4)
+            End If
+
+        End If 'Done checking file count
+
+    Loop Until UCase$(I$) = "N" Or ExitCode% = 27 Or Count% = 0
+
+End Sub
+

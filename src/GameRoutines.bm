@@ -7610,10 +7610,10 @@ Sub SAVESTATS ()
 
         If _FileExists("GAME82") Then
 
-            Open diskPaths$(0) + scheduleFile$ For Random As #1 Len = 48
+            Open diskPaths$(0) + scheduleFile$ For Random As #1 Len = SCHEDULE_SIZE_BYTES
 
             For X = 0 To 18
-                Field #1, X * 2 As X$, 2 As player$(X + 1), 48 - 2 - 2 * X As X$
+                Field #1, X * 2 As X$, 2 As player$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
             Next
 
             Field #1, 38 As X$, 2 As player$(22), 2 As player$(23), 3 As player$(20), 3 As player$(21)

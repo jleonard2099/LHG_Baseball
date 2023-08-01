@@ -110,188 +110,188 @@ Sub Hd2Hd_League (LG$, sameLeague)
 
     Do
 
-        If sameLeague <> 1 Then
+        If sameLeague <> 1 Then leagueFile$ = ChooseFile$ (diskPaths$(2) + "*.LIB", "LEAGUE", ExitCode%)
 
-            Call SelectLeague(targetFile$)
+        If (sameLeague <> 1 And ExitCode% <> 27 And ExitCode% <> 0) Or sameLeague = 1 Then
 
-        End If 'done checking if new league or not
+            Color 7, 0
+            Cls
 
-        Color 7, 0
-        Cls
+            J = 5
 
-        J = 5
+            Locate 8, 8
+            Color 15, 1
 
-        Locate 8, 8
-        Color 15, 1
+            'Print box top
+            Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
 
-        'Print box top
-        Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+            'Print box sides
+            For II = 1 To J
+                Locate 8 + II, 8
+                Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
+            Next
 
-        'Print box sides
-        For II = 1 To J
-            Locate 8 + II, 8
-            Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-        Next
+            'Print box bottom
+            Locate 9 + J, 8
+            Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
 
-        'Print box bottom
-        Locate 9 + J, 8
-        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+            Locate 7, 32
 
-        Locate 7, 32
+            Do
+                Locate 10
+                Color 7, 1
 
-        Do
-            Locate 10
-            Color 7, 1
+                Locate , 30: Print "STATS TO ";
+                Color 15: Print "S";: Color 7: Print "CREEN"
+                Locate , 30: Print "STATS TO ";
+                Color 15: Print "P";: Color 7: Print "RINTER"
+                Locate , 30: Print "STATS TO ";
+                Color 15: Print "F";: Color 7: Print "ILE"
 
-            Locate , 30: Print "STATS TO ";
-            Color 15: Print "S";: Color 7: Print "CREEN"
-            Locate , 30: Print "STATS TO ";
-            Color 15: Print "P";: Color 7: Print "RINTER"
-            Locate , 30: Print "STATS TO ";
-            Color 15: Print "F";: Color 7: Print "ILE"
+                J$ = GetKeyPress$
 
-            J$ = GetKeyPress$
+                Color 14, 0
 
-            Color 14, 0
+            Loop Until UCase$(J$) = "F" Or UCase$(J$) = "P" Or UCase$(J$) = "S"
 
-        Loop Until UCase$(J$) = "F" Or UCase$(J$) = "P" Or UCase$(J$) = "S"
-
-        If UCase$(J$) = "S" Then
-            VPP = 1
-        Else
-            VPP = 0
-        End If
-
-        Cls
-
-        Open diskPaths$(2) + targetFile$ + ".LIB" For Input As #3
-
-        Input #3, LG$
-        Input #3, D1$
-        Input #3, D2$
-        Input #3, D3$
-        Input #3, D4$
-
-        For X = 1 To 40
-            Input #3, Z1$(X)
-            Input #3, Z1%(X)
-            Input #3, Z2$(X)
-        Next
-
-        Close #3
-
-        Color 15
-        Locate 18, 18: Print "COMPUTING W/L/T RECORDS . . . PLEASE WAIT"
-
-        'Initialization for 1st league
-        For Q = 1 To 40:
-            HW%(Q) = 0
-            AW%(Q) = 0
-            AL%(Q) = 0
-            HL%(Q) = 0
-            R1%(Q) = 0
-            R2%(Q) = 0
-            R3%(Q) = 0
-            R4%(Q) = 0
-        Next
-
-        For K = 1 To 4:
-            THW%(K) = 0
-            THL%(K) = 0
-            TAW%(K) = 0
-            TAL%(K) = 0
-            TR1%(K) = 0
-            TR2%(K) = 0
-            TR3%(K) = 0
-            TR4%(K) = 0
-        Next
-
-        'Calculations for 1st league
-        For K = 1 To 40
-
-            If Z1$(K) <> "XXX" Then
-
-                For I = 1 To YY%
-                    If H%(I) > V%(I) And L$(I) = "A" And O$(I) = Z1$(K) Then AW%(K) = AW%(K) + 1
-                    If H%(I) > V%(I) And L$(I) = "H" And O$(I) = Z1$(K) Then HW%(K) = HW%(K) + 1
-                    If H%(I) < V%(I) And L$(I) = "A" And O$(I) = Z1$(K) Then AL%(K) = AL%(K) + 1
-                    If H%(I) < V%(I) And L$(I) = "H" And O$(I) = Z1$(K) Then HL%(K) = HL%(K) + 1
-                    If O$(I) = Z1$(K) And L$(I) = "H" Then R1%(K) = R1%(K) + H%(I)
-                    If O$(I) = Z1$(K) And L$(I) = "H" Then R2%(K) = R2%(K) + V%(I)
-                    If O$(I) = Z1$(K) And L$(I) = "A" Then R3%(K) = R3%(K) + H%(I)
-                    If O$(I) = Z1$(K) And L$(I) = "A" Then R4%(K) = R4%(K) + V%(I)
-
-                Next I
-
+            If UCase$(J$) = "S" Then
+                VPP = 1
+            Else
+                VPP = 0
             End If
 
-        Next K
+            Cls
 
-        'Generate output
-        If VPP = 0 Then
+            Open diskPaths$(2) + leagueFile$ + ".LIB" For Input As #3
 
-            Call Hd2Hd_Printer(B$)
+            Input #3, LG$
+            Input #3, D1$
+            Input #3, D2$
+            Input #3, D3$
+            Input #3, D4$
 
-        Else
+            For X = 1 To 40
+                Input #3, Z1$(X)
+                Input #3, Z1%(X)
+                Input #3, Z2$(X)
+            Next
 
-            Call Hd2Hd_Screen(B$)
+            Close #3
 
-        End If 'Done checking VPP
+            Color 15
+            Locate 18, 18: Print "COMPUTING W/L/T RECORDS . . . PLEASE WAIT"
 
-        Cls
+            'Initialization for 1st league
+            For Q = 1 To 40:
+                HW%(Q) = 0
+                AW%(Q) = 0
+                AL%(Q) = 0
+                HL%(Q) = 0
+                R1%(Q) = 0
+                R2%(Q) = 0
+                R3%(Q) = 0
+                R4%(Q) = 0
+            Next
 
-        Call TITLE_UTILS
+            For K = 1 To 4:
+                THW%(K) = 0
+                THL%(K) = 0
+                TAW%(K) = 0
+                TAL%(K) = 0
+                TR1%(K) = 0
+                TR2%(K) = 0
+                TR3%(K) = 0
+                TR4%(K) = 0
+            Next
 
-        J = 6
+            'Calculations for 1st league
+            For K = 1 To 40
 
-        Locate 8, 8: Color 15, 1
-        'Print box top
-        Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+                If Z1$(K) <> "XXX" Then
 
-        'Print box sides
-        For II = 1 To J
-            Locate 8 + II, 8
-            Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-        Next
+                    For I = 1 To YY%
+                        If H%(I) > V%(I) And L$(I) = "A" And O$(I) = Z1$(K) Then AW%(K) = AW%(K) + 1
+                        If H%(I) > V%(I) And L$(I) = "H" And O$(I) = Z1$(K) Then HW%(K) = HW%(K) + 1
+                        If H%(I) < V%(I) And L$(I) = "A" And O$(I) = Z1$(K) Then AL%(K) = AL%(K) + 1
+                        If H%(I) < V%(I) And L$(I) = "H" And O$(I) = Z1$(K) Then HL%(K) = HL%(K) + 1
+                        If O$(I) = Z1$(K) And L$(I) = "H" Then R1%(K) = R1%(K) + H%(I)
+                        If O$(I) = Z1$(K) And L$(I) = "H" Then R2%(K) = R2%(K) + V%(I)
+                        If O$(I) = Z1$(K) And L$(I) = "A" Then R3%(K) = R3%(K) + H%(I)
+                        If O$(I) = Z1$(K) And L$(I) = "A" Then R4%(K) = R4%(K) + V%(I)
 
-        'Print box bottom
-        Locate 9 + J, 8
-        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
-        Locate 10, 15
+                    Next I
 
-        Color 3: Locate , 25: Print "SELECT OPTION:"
-        Color 7: Locate , 25: Print "VIEW ";
-        Color 15: Print "S";
-        Color 7: Print "AME TEAM AGAIN"
-        Locate , 25: Color 15: Print "R";
-        Color 7: Print "ETURN TO MAIN MENU"
+                End If
 
-        Do
+            Next K
 
-            I$ = GetKeyPress$
+            'Generate output
+            If VPP = 0 Then
 
-            Select Case UCase$(I$)
+                Call Hd2Hd_Printer(B$)
 
-                Case "S"
+            Else
 
-                    RDD = 0
+                Call Hd2Hd_Screen(B$)
 
-                    For K = 1 To 4
-                        THW%(K) = 0
-                        THL%(K) = 0
-                        TAW%(K) = 0
-                        TAL%(K) = 0
-                        TR1%(K) = 0
-                        TR2%(K) = 0
-                        TR3%(K) = 0
-                        TR4%(K) = 0
-                    Next
+            End If 'Done checking VPP
 
-            End Select
+            Cls
 
-        Loop Until UCase$(I$) = "S" Or UCase$(I$) = "R" Or I$ = Chr$(27)
+            Call TITLE_UTILS
 
-    Loop Until UCase$(I$) = "R" Or I$ = Chr$(27)
+            J = 6
+
+            Locate 8, 8: Color 15, 1
+            'Print box top
+            Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+
+            'Print box sides
+            For II = 1 To J
+                Locate 8 + II, 8
+                Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
+            Next
+
+            'Print box bottom
+            Locate 9 + J, 8
+            Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+            Locate 10, 15
+
+            Color 3: Locate , 25: Print "SELECT OPTION:"
+            Color 7: Locate , 25: Print "VIEW ";
+            Color 15: Print "S";
+            Color 7: Print "AME TEAM AGAIN"
+            Locate , 25: Color 15: Print "R";
+            Color 7: Print "ETURN TO MAIN MENU"
+
+            Do
+
+                I$ = GetKeyPress$
+
+                Select Case UCase$(I$)
+
+                    Case "S"
+
+                        RDD = 0
+
+                        For K = 1 To 4
+                            THW%(K) = 0
+                            THL%(K) = 0
+                            TAW%(K) = 0
+                            TAL%(K) = 0
+                            TR1%(K) = 0
+                            TR2%(K) = 0
+                            TR3%(K) = 0
+                            TR4%(K) = 0
+                        Next
+
+                End Select
+
+            Loop Until UCase$(I$) = "S" Or UCase$(I$) = "R" Or I$ = Chr$(27) Or ExitCode% = 27
+
+        End If
+
+    Loop Until UCase$(I$) = "R" Or I$ = Chr$(27) Or ExitCode% = 27
 
 End Sub
 
@@ -769,86 +769,5 @@ Sub Hd2Hd_Screen (teamName$)
     Color 14
     Locate 23, 5: Print "HIT ANY KEY TO CONTINUE"
     I$ = GetKeyPress$
-
-End Sub
-
-
-'----------------------------------------
-'        SelectLeague Subroutine
-'----------------------------------------
-'...explanation...
-Sub SelectLeague (targetFile$)
-
-    Do
-
-        Spec$ = diskPaths$(2) + "*.LIB"
-        Count% = FCount%(Spec$)
-
-        If Count% = 0 Then
-            Locate 10, 8
-            Call CSMsgBox("NO LEAGUE FILES WERE FOUND.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-            I$ = GetKeyPress$
-            Call CSMsgBox("", 0, Pass)
-        Else
-
-            ReDim leagueFiles$(0 To Count%)
-
-            For X = 1 To Count%
-                leagueFiles$(X) = Space$(12)
-            Next
-
-            leagueFiles$(0) = Spec$
-
-            Call ReadFile(leagueFiles$())
-
-            Do
-                Color , 1
-                Cls
-
-                Locate , 33
-                Color 14
-                Print "SELECT LEAGUE": Color 15
-                Selection% = 1
-                Start% = 1
-                FileFGColr% = 15: FileBGColr% = 1
-                HiLiteFGColr% = 0: HiLiteBGColr% = 7
-                Rows% = 20
-                Columns% = 4
-                Spacing% = 6
-                Row% = 4
-                Column% = 1
-                Locate 25, 1
-                Color 14
-                Print "ENTER";: Color 15
-                Print "-SELECTS LEAGUE";
-
-                _MouseShow "DEFAULT"
-                MAMenu leagueFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
-                _MouseHide
-
-                If ExitCode% <> 27 Then
-
-                    Color 15, 1
-                    targetFile$ = leagueFiles$(Selection%)
-                    Locate 2, 33: Print targetFile$
-
-                    Do
-                        Locate 3, 33: Print "ANY CHANGE (YN)";
-                        I$ = GetKeyPress$
-                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
-                    Color 15, 0
-
-                End If
-
-            Loop Until UCase$(I$) = "N" Or ExitCode% = 27
-
-            If ExitCode% <> 27 Then
-                targetFile$ = Left$(RTrim$(targetFile$), Len(targetFile$) - 4)
-            End If
-
-        End If
-
-    Loop Until ExitCode% = 27 Or Count% = 0 Or UCase$(I$) = "N"
 
 End Sub

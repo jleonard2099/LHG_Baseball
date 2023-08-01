@@ -4034,110 +4034,50 @@ Sub ImportManagerProfile ()
 
     Shared progMG%()
 
-    Spec$ = diskPaths$(0) + "*.MGR"
-    Count% = FCount%(Spec$)
+    managerFile$ = ChooseFile$ (diskPaths$(0) + "*.MGR", "MANAGER", ExitCode%)
 
-    If Count% = 0 Then
-        Locate 10, 8
-        Call CSMsgBox("NO MANAGER PROFILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-        I$ = GetKeyPress$
-        Call CSMsgBox("", 0, Pass)
-    Else
+    If ExitCode% <> 27 And ExitCode% <> 0 Then
 
-        ReDim managerFiles$(0 To Count%)
+        L% = 0
 
-        For X = 1 To Count%
-            managerFiles$(X) = Space$(12)
+        JJ = 5
+        Locate 6, 8
+        Color 15, 1
+        Print " "; Chr$(201); String$(61, 205); Chr$(187); " ";
+        For II = 1 To JJ: 
+            Locate 6 + II, 8
+            Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
         Next
-
-        managerFiles$(0) = Spec$
-
-        Call ReadFile(managerFiles$())
+        Locate 7 + JJ, 8
+        Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";
 
         Do
+            Locate 7, 11
+            Print "IMPORT STRATEGY PERCENTAGES ONLY (YN)"
+            A$ = GetKeyPress$
+        Loop Until UCase$(A$) = "Y" Or UCase$(A$) = "N"
 
-            Color , 1
-            Cls
-            Locate , 28: Color 14
-            Print "SELECT PROFILE TO IMPORT": Color 15
-            Selection% = 1
-            Start% = 1
-            FileFGColr% = 15: FileBGColr% = 1
-            HiLiteFGColr% = 0: HiLiteBGColr% = 7
-            Rows% = 20
-            Columns% = 4
-            Spacing% = 6
-            Row% = 4
-            Column% = 1
-            Locate 25, 1
-            Color 14
-            Print "ENTER";: Color 15
-            Print "-SELECTS PROFILE";
+        If UCase$(A$) = "Y" Then L% = 1
 
-            _MouseShow "DEFAULT"
-            MAMenu managerFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
-            _MouseHide
+        Open diskPaths$(0) + managerFile$ + ".MGR" For Input As #1
 
-            If ExitCode% <> 27 Then
+        If L% = 0 Then 
+            For I = 0 To 999: Input #1, progMG%(I): Next
+        End If
 
-                Color 15, 1
-                targetFile$ = managerFiles$(Selection%)
-                Locate 2, 33: Print targetFile$
+        If L% = 1 Then
+            For I = 0 To 580: Input #1, L%: Next
+            For I = 581 To 769: Input #1, progMG%(I): Next
+            For I = 770 To 802: Input #1, L%: Next
+            For I = 803 To 999: Input #1, progMG%(I): Next
+        End If
 
-                Do
-                    Locate 3, 33: Print "ANY CHANGE (YN)";
-                    I$ = GetKeyPress$
-                Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+        Close 1
 
-                Color 15, 0
+        Call UpdateManagerFile(yearNumber$, mgrNbr)
 
-                If UCase$(I$) = "N" Then
+    End If
 
-                    L% = 0
-
-                    JJ = 5
-                    Locate 6, 8
-                    Color 15, 1
-                    Print " "; Chr$(201); String$(61, 205); Chr$(187); " ";
-                    For II = 1 To JJ: 
-                        Locate 6 + II, 8
-                        Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-                    Next
-                    Locate 7 + JJ, 8
-                    Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";
-
-                    Do
-                        Locate 7, 11
-                        Print "IMPORT STRATEGY PERCENTAGES ONLY (YN)"
-                        A$ = GetKeyPress$
-                    Loop Until UCase$(A$) = "Y" Or UCase$(A$) = "N"
-
-                    If UCase$(A$) = "Y" Then L% = 1
-
-                    Open diskPaths$(0) + targetFile$ For Input As #1
-
-                    If L% = 0 Then 
-                        For I = 0 To 999: Input #1, progMG%(I): Next
-                    End If
-
-                    If L% = 1 Then
-                        For I = 0 To 580: Input #1, L%: Next
-                        For I = 581 To 769: Input #1, progMG%(I): Next
-                        For I = 770 To 802: Input #1, L%: Next
-                        For I = 803 To 999: Input #1, progMG%(I): Next
-                    End If
-
-                    Close 1
-
-                    Call UpdateManagerFile(yearNumber$, mgrNbr)
-
-                End If
-
-            End If 'Done checking for ESC
-
-        Loop Until UCase$(I$) = "N"
-
-    End If 'Done checking for 0 file count
 
 End Sub
 

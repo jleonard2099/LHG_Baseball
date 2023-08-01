@@ -57,182 +57,116 @@ End Sub
 Sub SearchPlayers ()
 
     Cls
-    Spec$ = diskPaths$(0) + "*.POS"
-    Count% = FCount%(Spec$)
 
-    If Count% = 0 Then
-        Locate 10, 8
-        Call CSMsgBox("NO POSITION FILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-        I$ = GetKeyPress$
-        Call CSMsgBox("", 0, Pass)
-    Else
+    positionFile$ = ChooseFile$ (diskPaths$(0) + "*.POS", "POSITION", ExitCode%)
 
-        ReDim positionFiles$(0 To Count%)
-
-        For X = 1 To Count%
-            positionFiles$(X) = Space$(12)
-        Next
-
-        positionFiles$(0) = Spec$
-
-        Call ReadFile(positionFiles$())
+    If ExitCode% <> 27 And ExitCode% <> 0 Then
 
         Do
-            Color , 1
+
             Cls
 
+            SS = 0
+
+            Color 11: Locate 5, 30: Print "S E L E C T"
+
+            Locate 7, 28
+            Color 12: Print "0. ";
+            Color 7: Print "Catchers"
             Locate , 28
-            Color 14
-            Print "SELECT FILE TO VIEW": Color 15
-            Selection% = 1
-            Start% = 1
-            FileFGColr% = 15: FileBGColr% = 1
-            HiLiteFGColr% = 0: HiLiteBGColr% = 7
-            Rows% = 20
-            Columns% = 4
-            Spacing% = 6
-            Row% = 4
-            Column% = 1
-            Locate 25, 1
-            Color 14
-            Print "ENTER";: Color 15
-            Print "-SELECTS FILE";
-
-            _MouseShow "DEFAULT"
-            MAMenu positionFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
-            _MouseHide
-
-            If ExitCode% <> 27 Then
-
-                Color 15, 1
-                targetFile$ = positionFiles$(Selection%)
-                Locate 2, 33: Print targetFile$
-
-                Do
-                    Locate 3, 33: Print "ANY CHANGE (YN)";
-                    I$ = GetKeyPress$
-                Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
-                Color 15, 0
-
-            End If
-
-        Loop Until UCase$(I$) = "N" Or ExitCode% = 27
-
-        If ExitCode% <> 27 Then
-
-            LGE$ = RTrim$(targetFile$)
+            Color 12: Print "1. ";
+            Color 7: Print "First Basemen"
+            Locate , 28
+            Color 12: Print "2. ";
+            Color 7: Print "Second Basemen"
+            Locate , 28
+            Color 12: Print "3. ";
+            Color 7: Print "Shortstops"
+            Locate , 28
+            Color 12: Print "4. ";
+            Color 7: Print "Third Basemen"
+            Locate , 28
+            Color 12: Print "5. ";
+            Color 7: Print "Left Fielders"
+            Locate , 28
+            Color 12: Print "6. ";
+            Color 7: Print "Center Fielders"
+            Locate , 28
+            Color 12: Print "7. ";
+            Color 7: Print "Right Fielders"
+            Locate , 28
+            Color 12: Print "8. ";
+            Color 7: Print "Pitchers"
+            Locate , 28
+            Color 12: Print "9. ";
+            Color 7: Print "Return To Main Menu"
 
             Do
+                Z$ = GetKeyPress$
+                Z = Val(Z$)
+            Loop Until Z >= 0 And Z <= 9 Or Z$ = Chr$(27)
 
-                Cls
+            If Z$ <> Chr$(27) Then
 
-                SS = 0
+                Select Case Z
+                    Case 0
+                        PS = 2
+                        PS$ = "CATCHERS"
+                    Case 1
+                        PS = 3
+                        PS$ = "FIRST BASEMEN"
+                    Case 2
+                        PS = 4
+                        PS$ = "SECOND BASEMEN"
+                    Case 3
+                        PS = 6
+                        PS$ = "SHORTSTOPS"
+                    Case 4
+                        PS = 5
+                        PS$ = "THIRD BASEMEN"
+                    Case 5
+                        PS = 7
+                        PS$ = "LEFT FIELDERS"
+                    Case 6
+                        PS = 8
+                        PS$ = "CENTER FIELDERS"
+                    Case 7
+                        PS = 9
+                        PS$ = "RIGHT FIELDERS"
+                    Case 8:
+                        PS = 1
+                        Call SortPitchers(positionFile$)
+                    Case 9:
+                        Cls '
 
-                Color 11: Locate 5, 30: Print "S E L E C T"
+                End Select
 
-                Locate 7, 28
-                Color 12: Print "0. ";
-                Color 7: Print "Catchers"
-                Locate , 28
-                Color 12: Print "1. ";
-                Color 7: Print "First Basemen"
-                Locate , 28
-                Color 12: Print "2. ";
-                Color 7: Print "Second Basemen"
-                Locate , 28
-                Color 12: Print "3. ";
-                Color 7: Print "Shortstops"
-                Locate , 28
-                Color 12: Print "4. ";
-                Color 7: Print "Third Basemen"
-                Locate , 28
-                Color 12: Print "5. ";
-                Color 7: Print "Left Fielders"
-                Locate , 28
-                Color 12: Print "6. ";
-                Color 7: Print "Center Fielders"
-                Locate , 28
-                Color 12: Print "7. ";
-                Color 7: Print "Right Fielders"
-                Locate , 28
-                Color 12: Print "8. ";
-                Color 7: Print "Pitchers"
-                Locate , 28
-                Color 12: Print "9. ";
-                Color 7: Print "Return To Main Menu"
+                If Z <> 9 Then
 
-                Do
-                    Z$ = GetKeyPress$
-                    Z = Val(Z$)
-                Loop Until Z >= 0 And Z <= 9 Or Z$ = Chr$(27)
+                    Color 15, 0
+                    Cls
 
-                If Z$ <> Chr$(27) Then
+                    Do
+                        Locate 18, 28
+                        Color 12: Print "V";
+                        Color 7: Print "iew or ";
+                        Color 12: Print "P";
+                        Color 7: Print "rint"
+                        I$ = GetKeyPress$
+                    Loop Until UCase$(I$) = "P" Or UCase$(I$) = "V"
 
-                    Select Case Z
-                        Case 0
-                            PS = 2
-                            PS$ = "CATCHERS"
-                        Case 1
-                            PS = 3
-                            PS$ = "FIRST BASEMEN"
-                        Case 2
-                            PS = 4
-                            PS$ = "SECOND BASEMEN"
-                        Case 3
-                            PS = 6
-                            PS$ = "SHORTSTOPS"
-                        Case 4
-                            PS = 5
-                            PS$ = "THIRD BASEMEN"
-                        Case 5
-                            PS = 7
-                            PS$ = "LEFT FIELDERS"
-                        Case 6
-                            PS = 8
-                            PS$ = "CENTER FIELDERS"
-                        Case 7
-                            PS = 9
-                            PS$ = "RIGHT FIELDERS"
-                        Case 8:
-                            PS = 1
-                            Call SortPitchers(LGE$)
-                        Case 9:
-                            Cls '
-
+                    Select Case UCase$(I$)
+                        Case "P": Call PrintSearchResults(PS, PS$, positionFile$)
+                        Case "V": Call ViewSearchResults(PS, PS$, positionFile$)
                     End Select
 
-                    If Z <> 9 Then
+                End If 'Done looking for Z = 9
 
-                        Color 15, 0
-                        Cls
+            End If 'Done checking for ESC
 
-                        Do
-                            Locate 18, 28
-                            Color 12: Print "V";
-                            Color 7: Print "iew or ";
-                            Color 12: Print "P";
-                            Color 7: Print "rint"
-                            I$ = GetKeyPress$
-                        Loop Until UCase$(I$) = "P" Or UCase$(I$) = "V"
+        Loop Until Z = 9
 
-                        Select Case UCase$(I$)
-                            Case "P": Call PrintSearchResults(PS, PS$, LGE$)
-                            Case "V": Call ViewSearchResults(PS, PS$, LGE$)
-                        End Select
-
-                    End If 'Done looking for Z = 9
-
-                End If 'Done checking for ESC
-
-            Loop Until Z = 9
-
-        End If 'Done checking for ESC
-
-    End If
-
-    '...Until we press ESC
-    'Loop Until ExitCode% = 27 Or Count% = 0 Or I$ = "N"
+    End If 'Done checking for ESC
 
 End Sub
 
@@ -240,7 +174,7 @@ End Sub
 '      ViewSearchResults Subroutine
 '----------------------------------------
 '...explanation...
-Sub ViewSearchResults (PS, PS$, LGE$)
+Sub ViewSearchResults (PS, PS$, positionFile$)
 
     Shared SS
     Shared NN$
@@ -251,7 +185,7 @@ Sub ViewSearchResults (PS, PS$, LGE$)
     Dim TM(1 To 40)
     Dim A$(1 To 40), BB$(23)
 
-    Open diskPaths$(0) + LGE$ For Input As #1
+    Open diskPaths$(0) + positionFile$ + ".POS" For Input As #1
 
     For J = 1 To 40
         Input #1, TM(J), A$(J), TYN$(J)
@@ -377,7 +311,7 @@ End Sub
 '      PrintSearchResults Subroutine
 '----------------------------------------
 '...explanation...
-Sub PrintSearchResults (PS, PS$, LGE$)
+Sub PrintSearchResults (PS, PS$, positionFile$)
 
     Shared SS
     Shared NN$
@@ -388,7 +322,7 @@ Sub PrintSearchResults (PS, PS$, LGE$)
     Dim TM(40)
     Dim A$(1 To 40), BB$(23)
 
-    Open diskPaths$(0) + LGE$ For Input As #1
+    Open diskPaths$(0) + positionFile$ + ".POS" For Input As #1
 
     For J = 1 To 40:
         Input #1, TM(J), A$(J), TYN$(J)
@@ -490,7 +424,7 @@ End Sub
 '       SortPitchers Subroutine
 '----------------------------------------
 '...explanation...
-Sub SortPitchers (LGE$)
+Sub SortPitchers (positionFile$)
 
     SS = 0
 
@@ -523,23 +457,23 @@ Sub SortPitchers (LGE$)
             PPS = 10
             PC = 1
             PPS$ = "PITCHERS WITH LESS THAN 10 GAMES STARTED"
-            Call Pitchers10_Games(PC, PPS$, LGE$)
+            Call Pitchers10_Games(PC, PPS$, positionFile$)
 
         Case 2:
             PPS = 10
             PC = 2
             PPS$ = "PITCHERS WITH MORE THAN 10 GAMES STARTED"
-            Call Pitchers10_Games(PC, PPS$, LGE$)
+            Call Pitchers10_Games(PC, PPS$, positionFile$)
 
         Case 3:
             THR = 1
             PPS$ = "RIGHT-HANDED PITCHERS"
-            Call PitchersHanded(THR, PPS$, LGE$)
+            Call PitchersHanded(THR, PPS$, positionFile$)
 
         Case 4:
             THR = 2
             PPS$ = "LEFT-HANDED PITCHERS"
-            Call PitchersHanded(THR, PPS$, LGE$)
+            Call PitchersHanded(THR, PPS$, positionFile$)
 
     End Select
 
@@ -549,7 +483,7 @@ End Sub
 '      Pitchers10_Games Subroutine
 '----------------------------------------
 '...explanation...
-Sub Pitchers10_Games (PC, PPS$, LGE$)
+Sub Pitchers10_Games (PC, PPS$, positionFile$)
 
     Shared SS
     Shared NN$
@@ -575,11 +509,11 @@ Sub Pitchers10_Games (PC, PPS$, LGE$)
     Select Case UCase$(I$)
 
         Case "P":
-            Call Pitchers10_Print(PC, PPS$, LGE$)
+            Call Pitchers10_Print(PC, PPS$, positionFile$)
 
         Case "V":
 
-            Open diskPaths$(0) + LGE$ For Input As #1
+            Open diskPaths$(0) + positionFile$ + ".POS" For Input As #1
 
             For J = 1 To 40:
                 Input #1, TM(J), A$(J), TYN$(J)
@@ -664,7 +598,7 @@ End Sub
 '    PitchersHanded Subroutine
 '----------------------------------------
 '...explanation...
-Sub PitchersHanded (THR, PPS$, LGE$)
+Sub PitchersHanded (THR, PPS$, positionFile$)
 
     Shared SS
     Shared NN$
@@ -685,7 +619,7 @@ Sub PitchersHanded (THR, PPS$, LGE$)
         I$ = GetKeyPress$
     Loop Until UCase$(I$) = "P" Or UCase$(I$) = "V"
 
-    Open diskPaths$(0) + LGE$ For Input As #1
+    Open diskPaths$(0) + positionFile$ + ".POS" For Input As #1
 
     For J = 1 To 40
         Input #1, TM(J), A$(J), TYN$(J)
@@ -832,7 +766,7 @@ End Sub
 '       Pitchers10_Print Subroutine
 '----------------------------------------
 '...explanation...
-Sub Pitchers10_Print (PC, PPS$, LGE$)
+Sub Pitchers10_Print (PC, PPS$, positionFile$)
 
     Shared SS
     Shared NN$
@@ -843,8 +777,12 @@ Sub Pitchers10_Print (PC, PPS$, LGE$)
     Dim A$(1 To 40)
     Dim TM(40)
 
-    Open diskPaths$(0) + LGE$ For Input As #1
-    For J = 1 To 40: Input #1, TM(J), A$(J), TYN$(J): Next
+    Open diskPaths$(0) + positionFile$ + ".POS" For Input As #1
+    
+    For J = 1 To 40: 
+        Input #1, TM(J), A$(J), TYN$(J)
+    Next
+    
     Close #1
 
     LPrint Tab(50); PPS$

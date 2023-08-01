@@ -76,7 +76,7 @@ Dim draftTR(22), draftTR1(23)
 Dim BL$(15), careerPL$(15)
 Dim BL0$(18, 20), PL0$(80, 20)
 
-Dim careerB$(100), careerP$(80)
+Dim careerB$(0 To 99), careerP$(0 To 79)
 
 Dim BLYR%(15), PLYR%(15)
 Dim BRS%(15, 100, 17), PRS%(15, 80, 18)
@@ -93,7 +93,7 @@ Dim leaderPL$(1 To 880)
 '-- corresponds to TP$, TP1$, TP2$
 Dim TM$(40, 22), TMP$(1 To 880)
 
-Dim TP$(0 To 31), TP1$(0 To 29), TP2$(0 To 39)
+'Dim TP$(0 To 31), TP1$(0 To 29), TP2$(0 To 39)
 
 Dim leaderBL$(1 To 920), TMB$(1 To 920), TMM$(1 To 920), TPP$(1 To 920), TT2$(40, 23), TYY$(1 To 920)
 

@@ -1,0 +1,5 @@
+Declare Sub ChooseLeague (league$)
+Declare Sub SelectLeague (targetFile$)
+Declare Sub LoadSchedule (targetFile$)
+Declare Sub SelectLeague_REC (leagueFile$, ExitCode%)
+Declare Sub SelectScheduleFile (targetFile$, scheduleFiles$(), FileCount%, ExitCode%)

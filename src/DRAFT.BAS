@@ -330,7 +330,7 @@ Sub ChooseDestTeam (yearNumber$, numberTeams, chosenIdx, teamName$, draftIdx)
 
                 Call SelectDraftTeam(numberTeams, yearNumber$, chosenIdx, teamName$, ExitCode%, 0)
 
-                If ExitCode% <> 27 Then
+                If ExitCode% <> 27 And chosenIdx <> 0 Then
 
                     Do
                         Locate 2, 33
@@ -857,7 +857,7 @@ Sub ChooseSourceTeam (yearNumber$, numberTeams, chosenIdx, teamName$, draftIdx)
 
                 Call SelectDraftTeam(numberTeams, yearNumber$, chosenIdx, teamName$, ExitCode%, draftIdx)
 
-                If ExitCode% <> 27 Then
+                If ExitCode% <> 27 And chosenIdx <> 0 Then
 
                     Do
                         Locate 2, 33

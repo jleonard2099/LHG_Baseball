@@ -1,7 +1,13 @@
-'------------------------------
-'   ChooseTeam Subroutine
-'------------------------------
-'...explanation...
+'----------------------------------------
+'          ChooseTeam Subroutine
+'----------------------------------------
+'Provides dialog for user to select teams
+' from a previously populated team file.
+'The focus of this routine is to accept
+' a disk ID from the user. It then relies
+' on separate subroutines to assist with
+' actually choosing the team, and also
+' reading in data for the chosen team
 Sub ChooseTeam (yearNumber$, numberTeams, chosenIdx, teamName$)
 
     Shared teamRatings%()
@@ -107,11 +113,12 @@ Sub ChooseTeam (yearNumber$, numberTeams, chosenIdx, teamName$)
                 If ExitCode% <> 27 And numberTeams <> 0 Then
 
                     Do
-                        Locate 2, 33
+                        YCoord = Int((80 - Len(teamName$)) / 2)
+                        Locate 2, YCoord
                         Color teamRatings%(11), teamRatings%(12): Print teamName$
 
                         Color 15, 4
-                        Locate 3, 33: Print "ANY CHANGE? (YN)";
+                        Locate 3, 32: Print "ANY CHANGE? (Y/N)";
 
                         J$ = GetKeyPress$
 
@@ -130,10 +137,15 @@ Sub ChooseTeam (yearNumber$, numberTeams, chosenIdx, teamName$)
 End Sub
 
 
-'------------------------------
-'   SelectTeam Subroutine
-'------------------------------
-'...explanation...
+'----------------------------------------
+'          SelectTeam Subroutine
+'----------------------------------------
+'Presents selection menu of all teams 
+' found in the target "disk" file. 
+'The focus of this routine is confirming 
+' a team choice. It then relies on 
+' another subroutine to read in data 
+' from the selected team.
 Sub SelectTeam (numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%)
 
     'Shared teamNames$()
@@ -180,10 +192,14 @@ Sub SelectTeam (numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%)
 End Sub
 
 
-'------------------------------
-'     ReadTeam Subroutine
-'------------------------------
-'...explanation...
+'----------------------------------------
+'           ReadTeam Subroutine
+'----------------------------------------
+'Reads in all data for the selected team, 
+' given it's index in the team file. 
+'This routine is highly customized TO
+' the specific game for which it has
+' been included for.
 Sub ReadTeam (teamYear$, targetTeam$, teamIdx)
 
     Shared batterRatings(), pitcherRatings()
@@ -258,10 +274,16 @@ Sub ReadTeam (teamYear$, targetTeam$, teamIdx)
 End Sub
 
 
-'------------------------------
-'   ReadExtraData Subroutine
-'------------------------------
-'...explanation...
+'----------------------------------------
+'        ReadExtraData Subroutine
+'----------------------------------------
+'Reads in extra data for the selected team, 
+' given it's index in the team file. 
+'This extra file usually includes info.
+' related to stadiums, coaches, etc.
+'This routine is highly customized TO
+' the specific game for which it has
+' been included for.
 Sub ReadExtraData (teamYear$, targetTeam$, teamIdx)
 
     Shared teamSA%(), teamTS%()
@@ -379,10 +401,18 @@ Sub ReadExtraData (teamYear$, targetTeam$, teamIdx)
 
 End Sub
 
-'------------------------------
-'   nameStatFile$ Function
-'------------------------------
-'...explanation...
+'----------------------------------------
+'         nameStatFile$ Function
+'----------------------------------------
+'Helps create uniquely named file to 
+' store a team's stats.
+'
+'There are 2 main changes done in order
+' to accomodate this:
+' 1) Replaces invalid characters with _
+' 2) If "ST" is the name, shortens the
+'    prefix. This helps with college
+'    teams (ARKANSAS vs ARKANSAS ST)
 Function nameStatFile$ (teamName$)
 
     teamPrefix$ = teamName$
@@ -420,11 +450,27 @@ Function nameStatFile$ (teamName$)
 
 End Function
 
-'------------------------------
-'   ChooseFile$ Function
-'------------------------------
-'...explanation...
+
+'----------------------------------------
+'        ChooseFile$ Function
+'----------------------------------------
+'Shows user a file selection menu, based
+' on the file spec parameter passed.
+'
+'fileSpec$ - file specification to load 
+'            should include base path.
+'
+' EXAMPLE - C:\Temp\*.tmp
+'
+'fileDesc$ - brief description of the 
+'            type of file
+'
+' RETURNS - base name of chosen file 
+'            (that is, without extension)
 Function ChooseFile$ (fileSpec$, fileDesc$, ExitCode%)
+
+    descLength = Len(fileDesc$)
+
     Do
         'Display list of files...
 
@@ -432,6 +478,7 @@ Function ChooseFile$ (fileSpec$, fileDesc$, ExitCode%)
 
         If Count% = 0 Then
 
+            Locate 10, 8
             zeroCountMsg$ = "NO " + fileDesc$ + " FILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU"
 
             Call CSMsgBox(zeroCountMsg$, 20, Pass)
@@ -442,21 +489,24 @@ Function ChooseFile$ (fileSpec$, fileDesc$, ExitCode%)
 
             ReDim foundFiles$(0 To Count%)
 
-            For X = 1 To Count%
+            'For X = 1 To Count%
                 '8 char's filename + 4 char's (. + ext)
-                foundFiles$(X) = Space$(12)
-            Next
+                'foundFiles$(X) = Space$(12)
+            'Next
 
             foundFiles$(0) = fileSpec$
             Call ReadFile(foundFiles$())
 
             Do
 
+                XCoord = Int((80 - (descLength + 12)) / 2)
+
                 Color , 1
                 Cls
-                Locate , 28
+                Locate , XCoord
                 Color 14
-                Print "SELECT "; fileDesc$; " TO UPDATE": Color 15
+                Print "SELECT "; fileDesc$; " FILE"
+                Color 15
                 Selection% = 1
                 START% = 1
                 FileFGColr% = 15: FileBGColr% = 1
@@ -468,8 +518,13 @@ Function ChooseFile$ (fileSpec$, fileDesc$, ExitCode%)
                 Column% = 1
                 Locate 25, 1
                 Color 14
-                Print "ENTER";: Color 15
+                Print "ENTER";
+                Color 15
                 Print "-SELECTS "; fileDesc$;
+                Color 14
+                Locate , 55
+                Print "HIT ESCAPE KEY TO EXIT";
+                Color 15
 
                 _MouseShow "DEFAULT"
                 MAMenu foundFiles$(), Selection%, START%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
@@ -478,13 +533,14 @@ Function ChooseFile$ (fileSpec$, fileDesc$, ExitCode%)
                 If ExitCode% <> 27 Then
 
                     Color 15, 1
-                    targetFile$ = foundFiles$(Selection%)
-                    Locate 2, 33
+                    targetFile$ = RTrim$(foundFiles$(Selection%))
+                    XCoord = Int((80 - Len(targetFile$))/2)
+                    Locate 2, XCoord
                     Print targetFile$
 
                     Do
-                        Locate , 33
-                        Print "ANY CHANGE (YN)";
+                        Locate , 31
+                        Print "ANY CHANGE (Y/N)?";
                         I$ = GetKeyPress$
                     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 

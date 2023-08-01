@@ -6,183 +6,114 @@ Sub CAREDIT ()
 
     Shared BRS%(), PRS%()
 
-    Color 0, 0
+    Color 15, 0
     Cls
-    TMR = 2700
 
-    Do
-        'Display list of files...
-        Spec$ = diskPaths$(1) + "*.CAR"
-        Count% = FCount%(Spec$)
+    careerFile$ = ChooseFile$ (diskPaths$(1) + "*.CAR", "CAREER", ExitCode%)
 
-        If Count% = 0 Then 
-            Locate 10, 8
-            Call CSMsgBox("NO CAREER FILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+    If ExitCode% <> 27 And ExitCode% <> 0 Then
+
+        TMR = 2700
+
+        Color 15, 0
+        Cls
+        Locate 12, 10: Print "LOADING CAREER FILE . . . . PLEASE WAIT"
+
+        Open diskPaths$(1) + careerFile$ + ".CAR" For Input As #2
+
+        Input #2, NB, NP
+
+        For I = 0 To 99: Input #2, careerB$(I): Next
+
+        For I = 0 To 79: Input #2, careerP$(I): Next
+
+        For J = 1 To 15: 
+            For I = 0 To 99: 
+                For I1 = O To 17: 
+                    Input #2, BRS%(J, I, I1)
+                Next I1
+                Locate 12, 55: Color 3
+                TMR = TMR - 1: Print Using "####"; TMR
+            Next I
+        Next J
+
+        For J = 1 To 15: 
+            For I = 0 To 79: 
+                For I1 = 0 To 16: 
+                    Input #2, PRS%(J, I, I1)
+                Next I1
+                Locate 12, 55: Color 3
+                TMR = TMR - 1: Print Using "####"; TMR
+            Next I
+        Next J
+
+        Close #2
+
+        Do
+            Cls
+
+            Color 7: Print "EDIT ";
+            Color 12: Print "B";
+            Color 7: Print "ATTERS, ";
+            Color 12: Print "P";
+            Color 7: Print "ITCHERS, ";
+            Color 12: Print "U";
+            Color 7: Print "PDATE CARER FILE, OR ";
+            Color 12: Print "E";
+            Color 7: Print "XIT WITHOUT UPDATING"
+
             I$ = GetKeyPress$
-            Call CSMsgBox("", 0, Pass)
-        Else
 
-            ReDim careerFiles$(0 To Count%)
+            Select Case UCase$(I$)
 
-            For X = 1 To Count%
-                careerFiles$(X) = Space$(12)
-            Next
+                Case "B": Call EditBatters (careerFile$)
 
-            careerFiles$(0) = Spec$
-            Call ReadFile(careerFiles$())
+                Case "E", "X": '
 
-            Do
+                Case "P": Call EditPitchers (careerFile$)
 
-                Cls
-                Color , 1
-                Cls
-                Locate , 28
-                Color 14
-                Print "SELECT FILE TO EDIT": Color 15
-                Selection% = 1
-                Start% = 1
-                FileFGColr% = 15: FileBGColr% = 1
-                HiLiteFGColr% = 0: HiLiteBGColr% = 7
-                Rows% = 20
-                Columns% = 4
-                Spacing% = 6
-                Row% = 4
-                Column% = 1
-                Locate 25, 1
-                Color 14
-                Print "ENTER";
-                Color 15
-                Print "-SELECTS FILE";
-
-                _MouseShow "DEFAULT"
-                MAMenu careerFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
-                _MouseHide
-
-                If ExitCode% <> 27 Then
-
-                    Color 15, 1
-                    targetFile$ = careerFiles$(Selection%)
-                    Locate 2, 33: Print targetFile$
-
-                    Do
-                        Locate 3, 33: Print "ANY CHANGE (YN)";
-                        I$ = GetKeyPress$
-                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
-                    Color 15, 0
-
-                End If
-
-            Loop Until UCase$(I$) = "N" Or ExitCode% = 27
-
-            If ExitCode% <> 27 Then
-
-                Color 15, 0
-                Cls
-                Locate 12, 10: Print "LOADING CAREER FILE . . . . PLEASE WAIT"
-
-                targetFile$ = RTrim$(targetFile$)
-                careerFile$ = Left$(targetFile$, Len(targetFile$) - 4)
-
-                Open diskPaths$(1) + careerFile$ + ".CAR" For Input As #2
-
-                Input #2, NB, NP
-
-                For I = 0 To 99: Input #2, careerB$(I): Next
-
-                For I = 0 To 79: Input #2, careerP$(I): Next
-
-                For J = 1 To 15: 
-                    For I = 0 To 99: 
-                        For I1 = O To 17: 
-                            Input #2, BRS%(J, I, I1)
-                        Next I1
-                        Locate 12, 55: Color 3
-                        TMR = TMR - 1: Print Using "####"; TMR
-                    Next I
-                Next J
-
-                For J = 1 To 15: 
-                    For I = 0 To 79: 
-                        For I1 = 0 To 16: 
-                            Input #2, PRS%(J, I, I1)
-                        Next I1
-                        Locate 12, 55: Color 3
-                        TMR = TMR - 1: Print Using "####"; TMR
-                    Next I
-                Next J
-
-                Close #2
-
-                Do
+                Case "U":
                     Cls
+                    Color 15
+                    Locate 12, 6: Print "SAVING UPDATED CAREER FILE . . . PLEASE WAIT"
 
-                    Color 7: Print "EDIT ";
-                    Color 12: Print "B";
-                    Color 7: Print "ATTERS, ";
-                    Color 12: Print "P";
-                    Color 7: Print "ITCHERS, ";
-                    Color 12: Print "U";
-                    Color 7: Print "PDATE FILE, OR ";
-                    Color 12: Print "E";
-                    Color 7: Print "XIT WITHOUT UPDATING"
+                    TMR = 2700
 
-                    I$ = GetKeyPress$
+                    Open diskPaths$(1) + careerFile$ + ".CAR" For Output As #3
 
-                    Select Case UCase$(I$)
+                    Write #3, NB, NP
 
-                        Case "B": Call EditBatters (careerFile$)
+                    For I = 0 To 99: Write #3, careerB$(I): Next
 
-                        Case "E", "X": '
+                    For I = 0 To 79: Write #3, careerP$(I): Next
 
-                        Case "P": Call EditPitchers (careerFile$)
+                    For J = 1 To 15: 
+                        For I = 0 To 99: 
+                            For I1 = O To 17: 
+                                Write #3, BRS%(J, I, I1)
+                            Next I1
+                            Locate 12, 55: Color 3
+                            TMR = TMR - 1: Print Using "####"; TMR
+                        Next I
+                    Next J
 
-                        Case "U":
-                            Cls
-                            Color 15: Locate 12, 6: Print "SAVING UPDATED CAREER FILE . . . PLEASE WAIT"
+                    For J = 1 To 15:
+                        For I = 0 To 79: 
+                            For I1 = 0 To 16: 
+                                Write #3, PRS%(J, I, I1)
+                            Next I1
+                            Locate 12, 55: Color 3
+                            TMR = TMR - 1: Print Using "####"; TMR
+                        Next I
+                    Next J
 
-                            TMR = 2700
+                    Close #3
 
-                            Open diskPaths$(1) + careerFile$ For Output As #3
+            End Select
 
-                            Write #3, NB, NP
+        Loop Until UCase$(I$) = "E" Or UCase$(I$) = "X"
 
-                            For I = 0 To 99: Write #3, careerB$(I): Next
-
-                            For I = 0 To 79: Write #3, careerP$(I): Next
-
-                            For J = 1 To 15: 
-                                For I = 0 To 99: 
-                                    For I1 = O To 17: 
-                                        Write #3, BRS%(J, I, I1)
-                                    Next I1
-                                    Locate 12, 55: Color 3
-                                    TMR = TMR - 1: Print Using "####"; TMR
-                                Next I
-                            Next J
-
-                            For J = 1 To 15:
-                                For I = 0 To 79: 
-                                    For I1 = 0 To 16: 
-                                        Write #3, PRS%(J, I, I1)
-                                    Next I1
-                                    Locate 12, 55: Color 3
-                                    TMR = TMR - 1: Print Using "####"; TMR
-                                Next I
-                            Next J
-
-                            Close #3
-
-                    End Select
-
-                Loop Until UCase$(I$) = "E" Or UCase$(I$) = "X"
-
-            End If
-
-        End If 'Done checking file count
-
-    '...Until we press ESC
-    Loop Until ExitCode% = 27 Or Count% = 0
+    End If
 
 End Sub
 

@@ -35,11 +35,13 @@ Sub LOOKY ()
         Color , 0
 
         If ExitCode% <> 27 Then
+
             Select Case Selection%
                 Case 1: Call StatsOneTeam
                 Case 2: Call ReportsAllTeams
                 Case 3: Cls
             End Select
+
         End If
 
     Loop Until Selection% = 3 Or ExitCode% = 27
@@ -55,7 +57,7 @@ Sub StatsOneTeam ()
     Shared teamRatings%()
 
     Call ChooseTeam(YN$, NTMS, teamNbr, team$)
-    
+
     If teamNbr <> 0 Then
 
         Color 15, 0
@@ -917,116 +919,54 @@ Sub ReportsAllTeams ()
     Shared statB%(), statB0%()
     Shared statP%(), statP0%()
 
-    Do
-        'Display list of files...
+    leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", ExitCode%)
 
-        Cls
+    If ExitCode% <> 27 And ExitCode% <> 0 Then
 
-        Spec$ = diskPaths$(2) + "*.TMS"
-        Count = FCount%(Spec$)
+        Open diskPaths$(2) + leagStatFile$ + ".TMS" For Input As #2
 
-        If Count = 0 Then
-            Locate 10, 8
-            Call CSMsgBox("NO LEAGUE FILES WERE FOUND ...  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-            I$ = GetKeyPress$
-            Call CSMsgBox("", 0, Pass)
-        Else
-            ReDim leagueFiles$(0 To Count)
-            For X = 1 To Count
-                leagueFiles$(X) = Space$(12)
-            Next
-            leagueFiles$(0) = Spec$
-            Call ReadFile(leagueFiles$())
+        Input #2, LG$, D1$, D2$, D3$, D4$
 
-            Do
-                Cls
-                Color , 1
-                Cls
-                Locate , 28
-                Color 14
-                Print "SELECT LEAGUE TO PRINT": Color 15
-                Selection% = 1
-                Start% = 1
-                FileFGColor% = 15: FileBGColor% = 1
-                HiLiteFGColor% = 0: HiLiteBGColor% = 7
-                Rows% = 20
-                Columns% = 4
-                Spacing% = 6
-                Row% = 4
-                Column% = 1
-                Locate 25, 1
-                Color 14
-                Print "ENTER";: Color 15
-                Print "-SELECTS LEAGUE";
+        For XW = 1 To 40
+            Input #2, H1$(XW)
+        Next
 
-                _MouseShow "Default"
-                MAMenu leagueFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Rows%, Columns%, Spacing%, Row%, Column%
-                _MouseHide
+        Close 2
 
-                If ExitCode% <> 27 Then
+        For XW = 1 To 40
 
-                    Color 15, 1
-                    targetFile$ = leagueFiles$(Selection%)
-                    Locate 2, 33: Print targetFile$
+            If _FileExists(diskPaths$(1) + H1$(XW)) Then
 
-                    Do
-                        Locate 3, 33: Print "ANY CHANGE (YN)";
-                        I$ = GetKeyPress$
-                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+                Open diskPaths$(1) + H1$(XW) For Input As #1
 
-                    Color 15, 0
+                Input #1, teamName$
+                Input #1, W2%
+                Input #1, L2%
 
-                End If
+                For I = 0 To 22: Input #1, batterNames$(I): Input #1, statB%(I): Next I
+                For I = 0 To 21: Input #1, pitcherNames$(I): Input #1, statP%(I): Next I
+                For I = 0 To 22: For I1 = 0 To 21: Input #1, statB0%(I, I1): Next I1: Next I
+                For I = 0 To 21: For I1 = 0 To 41: Input #1, statP0%(I, I1): Next I1: Next I
 
-            Loop Until UCase$(I$) = "N" Or ExitCode% = 27
+                Input #1, D0%
+                Input #1, D1%
 
-            If ExitCode% <> 27 Then
+                For I = 0 To 21: Input #1, statT!(I): Next I
+                For I = 0 To 22: Input #1, statT1!(I): Next I
 
-                targetFile$ = RTrim$(targetFile$)
-                LH$ = Left$(targetFile$, Len(targetFile$) - 4)
+                Close #1
 
-                Open diskPaths$(2) + LH$ + ".TMS" For Input As #2
+                BP = 1 'this doesn't appear to be used
+                X = 3
 
-                Input #2, LG$, D1$, D2$, D3$, D4$
+                Call NewPrintStats(statFile$, teamName$, totalGames%, X, splitScreenChoice%, menuExit)
 
-                For XW = 1 To 40
-                    Input #2, H1$(XW)
-                Next
+            End If
 
-                Close 2
+        Next
 
-                For XW = 1 To 40
+    End If 'Done checking for ESC
 
-                    If _FileExists(diskPaths$(1) + H1$(XW)) Then
-
-                        Open diskPaths$(1) + H1$(XW) For Input As #1
-                        Input #1, teamName$
-                        Input #1, W2%
-                        Input #1, L2%
-                        For I = 0 To 22: Input #1, batterNames$(I): Input #1, statB%(I): Next I
-                        For I = 0 To 21: Input #1, pitcherNames$(I): Input #1, statP%(I): Next I
-                        For I = 0 To 22: For I1 = 0 To 21: Input #1, statB0%(I, I1): Next I1: Next I
-                        For I = 0 To 21: For I1 = 0 To 41: Input #1, statP0%(I, I1): Next I1: Next I
-                        Input #1, D0%: Input #1, D1%
-                        For I = 0 To 21: Input #1, statT!(I): Next I
-                        For I = 0 To 22: Input #1, statT1!(I): Next I
-                        Close #1
-
-                        BP = 1 'this doesn't appear to be used
-                        X = 3
-
-                        Call NewPrintStats(statFile$, teamName$, totalGames%, X, splitScreenChoice%, menuExit)
-
-                    End If
-
-                Next
-
-            End If 'Done checking for ESC
-
-        End If 'Done checking file count
-
-        '...Until we press ESC
-    Loop Until ExitCode% = 27 Or Count% = 0 Or I$ = "N"
 
 End Sub
 

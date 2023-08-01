@@ -41,10 +41,14 @@ Sub NEWLDR ()
 
                 Case 1:
                     Call UpdateExpandedLeaders(JB, JP, TS, TTS)
-                    'Call ExpandedLeaders_Menu(leagueFile$)
+                    'Call ExpandedLeaders_Menu(leagStatFile$)
 
                 Case 2:
-                    Call ViewExpandedLeaders
+                    leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", ExitCode%)
+
+                    If ExitCode% <> 27 And ExitCode% <> 0 Then
+                        Call ExpandedLeaders_Menu(leagStatFile$, JB, JP, TS, TTS)
+                    End If
 
                 Case 3:
                     Call ExpandedStandings
@@ -64,7 +68,7 @@ End Sub
 '      ViewBattingLeaders Subroutine
 '----------------------------------------
 '...explanation...
-Sub ViewBattingLeaders (leagueFile$, JB, JP, TS, TTS)
+Sub ViewBattingLeaders (leaderFile$, JB, JP, TS, TTS)
 
     Shared BK%()
     Shared leaderBL$(), TMB$(), TMM$()
@@ -74,18 +78,18 @@ Sub ViewBattingLeaders (leagueFile$, JB, JP, TS, TTS)
 
     Shared D1$, D2$, D3$, D4$
 
-    TMR% = 1840
+    TMR = 1840
 
-    Open diskPaths$(2) + leagueFile$ + ".BAT" For Input As #1
+    Open diskPaths$(2) + leaderFile$ + ".BAT" For Input As #1
 
     Input #1, JB, JP
-    Input #1, D1$, D2$, D3$, D4$, leagueFile$
+    Input #1, D1$, D2$, D3$, D4$, leaderFile$
     Input #1, TS, TTS
 
     For I = 1 To 920:
         Input #1, leaderBL$(I), TMB$(I), GM1!(I)
         Color 14: Locate 18, 45
-        TMR% = TMR% - 1: Print Using "#####"; TMR%
+        TMR = TMR - 1: Print Using "#####"; TMR
     Next I
 
     For I = 1 To 920:
@@ -93,18 +97,20 @@ Sub ViewBattingLeaders (leagueFile$, JB, JP, TS, TTS)
             Input #1, BK%(I, I1)
         Next I1
         Color 14: Locate 18, 45
-        TMR% = TMR% - 1: Print Using "#####"; TMR%
+        TMR = TMR - 1: Print Using "#####"; TMR
     Next I
 
     Close 1
 
     Do
 
-        Color , 0
+        Color 15, 0
         Cls
-        Print
-        Print
-        Print
+        'Print
+        'Print
+        'Print
+
+        Color 15, 12
 
         J = 19
 
@@ -112,7 +118,7 @@ Sub ViewBattingLeaders (leagueFile$, JB, JP, TS, TTS)
         Print " " + Chr$(214); String$(66, 196); Chr$(183) + " ";
 
         For II = 1 To J:
-            Locate 1 + II, 4
+            Locate 2 + II, 4
             Print " " + Chr$(186); String$(66, 32); Chr$(186) + " ";
         Next
 
@@ -378,14 +384,14 @@ Sub PrintLeaders (TVN, maxRecords, B9)
 
         Select Case TVN
 
-            Case 1: 
-				LPrint Tab(58); Using "#####"; TYP!(W)
+            Case 1:
+                LPrint Tab(58); Using "#####"; TYP!(W)
 
-            Case 2: 
-				LPrint Tab(58); Using ".###"; TYP!(W)
+            Case 2:
+                LPrint Tab(58); Using ".###"; TYP!(W)
 
-            Case 3: 
-				LPrint Tab(58); Using "###.##"; TYP!(W)
+            Case 3:
+                LPrint Tab(58); Using "###.##"; TYP!(W)
 
         End Select
 
@@ -417,9 +423,9 @@ Sub DisplayBattingLeaders (TVN, maxRecords, categoryId)
 
             If W <> 0 And (W Mod 20 = 0) Then
 
-				Color 14
-				Locate 22: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
-				Color 15
+                Color 14
+                Locate 22: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
+                Color 15
 
                 I$ = GetKeyPress$
 
@@ -462,9 +468,9 @@ Sub DisplayBattingLeaders (TVN, maxRecords, categoryId)
 
         If userExit% <> 1 Then
 
-			Color 14
-			Locate 22: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
-			Color 15
+            Color 14
+            Locate 22: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
+            Color 15
 
             If I$ <> Chr$(27) Then
 
@@ -489,7 +495,7 @@ End Sub
 '      ViewPitchingLeaders Subroutine
 '----------------------------------------
 '...explanation...
-Sub ViewPitchingLeaders (leagueFile$, JB, JP, TS, TTS)
+Sub ViewPitchingLeaders (leaderFile$, JB, JP, TS, TTS)
 
     Shared leaderPL$()
     Shared TMM$(), TMP$(), TP1$(), TPP$()
@@ -501,18 +507,18 @@ Sub ViewPitchingLeaders (leagueFile$, JB, JP, TS, TTS)
     ReDim GM2(880)
     Dim TYP2(920)
 
-    TMR% = 1760
+    TMR = 1760
 
-    Open diskPaths$(2) + leagueFile$ + ".PIT" For Input As #1
+    Open diskPaths$(2) + leaderFile$ + ".PIT" For Input As #1
 
     Input #1, JB, JP
-    Input #1, D1$, D2$, D3$, D4$, leagueFile$
+    Input #1, D1$, D2$, D3$, D4$, leaderFile$
     Input #1, TS, TTS
 
     For I = 1 To 880:
         Input #1, leaderPL$(I), TMP$(I), GM2(I)
         Color 14: Locate 18, 45
-        TMR% = TMR% - 1: Print Using "#####"; TMR%
+        TMR = TMR - 1: Print Using "#####"; TMR
     Next I
 
     For I = 1 To 880:
@@ -520,19 +526,17 @@ Sub ViewPitchingLeaders (leagueFile$, JB, JP, TS, TTS)
             Input #1, PM%(I, I1)
         Next I1
         Color 14: Locate 18, 45
-        TMR% = TMR% - 1: Print Using "#####"; TMR%
+        TMR = TMR - 1: Print Using "#####"; TMR
     Next I
 
     Close 1
 
     Do
 
-        Color , 0
+        Color 15, 0
         Cls
-        Print
-        Print
-        Print
-        Print
+
+        Color 15, 10
 
         J = 20
 
@@ -540,7 +544,7 @@ Sub ViewPitchingLeaders (leagueFile$, JB, JP, TS, TTS)
         Print " " + Chr$(214); String$(66, 196); Chr$(183) + " ";
 
         For II = 1 To J:
-            Locate 1 + II, 4
+            Locate 2 + II, 4
             Print " " + Chr$(186); String$(66, 32); Chr$(186) + " ";
         Next
 
@@ -665,12 +669,12 @@ Sub ViewPitchingLeaders (leagueFile$, JB, JP, TS, TTS)
 
                             If PM%(I, X1) <> 0 Then
                                 TPP$(PPP) = leaderPL$(I)
-								TMM$(PPP) = TMP$(I)
-								TYP!(PPP) = 0
+                                TMM$(PPP) = TMP$(I)
+                                TYP!(PPP) = 0
                             Else
                                 TPP$(PPP) = leaderPL$(I)
-								TMM$(PPP) = TMP$(I)
-								TYP!(PPP) = PM%(I, X1) / PM%(I, X)
+                                TMM$(PPP) = TMP$(I)
+                                TYP!(PPP) = PM%(I, X1) / PM%(I, X)
                             End If
                         End If
                     Next
@@ -686,12 +690,12 @@ Sub ViewPitchingLeaders (leagueFile$, JB, JP, TS, TTS)
 
                             If PM%(I, X) = 0 Or PM%(I, X1) = 0 Then
                                 TPP$(PPP) = leaderPL$(I)
-								TMM$(PPP) = TMP$(I)
-								TYP!(PPP) = 0
+                                TMM$(PPP) = TMP$(I)
+                                TYP!(PPP) = 0
                             Else
                                 TPP$(PPP) = leaderPL$(I)
-								TMM$(PPP) = TMP$(I)
-								TYP!(PPP) = (PM%(I, X1) * 9) / (PM%(I, X) / 3)
+                                TMM$(PPP) = TMP$(I)
+                                TYP!(PPP) = (PM%(I, X1) * 9) / (PM%(I, X) / 3)
                             End If
                         End If
 
@@ -706,8 +710,8 @@ Sub ViewPitchingLeaders (leagueFile$, JB, JP, TS, TTS)
                             PPP = PPP + 1
                             Locate 1, 5: Print "CHANGING PLAYER "; PPP
                             TPP$(PPP) = leaderPL$(I)
-							TMM$(PPP) = TMP$(I)
-							TYP!(PPP) = PM%(I, X1) / PM%(I, X)
+                            TMM$(PPP) = TMP$(I)
+                            TYP!(PPP) = PM%(I, X1) / PM%(I, X)
                         End If
                     Next
 
@@ -754,9 +758,9 @@ Sub DisplayPitchingLeaders (TVN, maxRecords, categoryId)
 
             If W <> 0 And (W Mod 20 = 0) Then
 
-				Color 14
-				Locate 22: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
-				Color 15
+                Color 14
+                Locate 22: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
+                Color 15
 
                 I$ = GetKeyPress$
 
@@ -789,9 +793,9 @@ Sub DisplayPitchingLeaders (TVN, maxRecords, categoryId)
 
         If userExit% <> 1 Then
 
-			Color 14
-			Locate 22: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
-			Color 15
+            Color 14
+            Locate 22: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
+            Color 15
 
             I$ = GetKeyPress$
 
@@ -837,227 +841,159 @@ Sub UpdateExpandedLeaders (JB, JP, TS, TTS)
 
     Shared D1$, D2$, D3$, D4$
 
+    Color 15, 0
     Cls
 
-    Spec$ = diskPaths$(2) + "*.TMS"
-    Count% = FCount%(Spec$)
+    leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE", ExitCode%)
 
-    If Count% = 0 Then
-        Locate 10, 8
-        Call CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 40, Pass)
-        I$ = GetKeyPress$
-        Call CSMsgBox("", 0, Pass)
-    Else
+    If ExitCode% <> 27 And ExitCode% <> 0 Then
 
-        ReDim leagueFiles$(0 To Count%)
+        Open diskPaths$(2) + leagStatFile$ + ".TMS" For Input As #2
 
-        For X = 1 To Count%
-            leagueFiles$(X) = Space$(12)
-        Next
+        Input #2, league$
+        Input #2, D1$
+        Input #2, D2$
+        Input #2, D3$
+        Input #2, D4$
 
-        leagueFiles$(0) = Spec$
+        For X = 1 To 40: Input #2, Z1$(X): Next
 
-        Call ReadFile(leagueFiles$())
-
-        Do
-
-            Color , 1
-            Cls
-
-            Locate , 28
-            Color 14
-            Print "SELECT LEAGUE TO UPDATE": Color 15
-            Selection% = 1
-            Start% = 1
-            FileFGColr% = 15: FileBGColr% = 1
-            HiLiteFGColr% = 0: HiLiteBGColr% = 7
-            Rows% = 20
-            Columns% = 4
-            Spacing% = 6
-            Row% = 4
-            Column% = 1
-            Locate 25, 1
-            Color 14
-            Print "ENTER";: Color 15
-            Print "-SELECTS LEAGUE";
-
-            _MouseShow "DEFAULT"
-            MAMenu leagueFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
-            _MouseHide
-
-            If ExitCode% <> 27 Then
-
-                Color 15, 1
-                targetFile$ = leagueFiles$(Selection%)
-                Locate 2, 33: Print targetFile$
-
-                Do
-                    Locate 3, 33: Print "ANY CHANGE (YN)";
-                    I$ = GetKeyPress$
-                Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
-                Color 15, 0
-
-            End If
-
-        Loop Until UCase$(I$) = "N" Or ExitCode% = 27
+        Close 2
 
         Color 15, 0
+        Cls
 
-        If ExitCode% <> 27 Then
+        For KK = 1 To 40:
 
-            targetFile$ = RTrim$(targetFile$)
-            league$ = Left$(targetFile$, Len(targetFile$) - 4)
-            leagueFile$ = league$
+            YY = YY + 1
 
-            Open diskPaths$(2) + league$ + ".TMS" For Input As #2
+            If Z1$(KK) <> "*" Then
 
-            Input #2, leagueFile$
-            Input #2, D1$
-            Input #2, D2$
-            Input #2, D3$
-            Input #2, D4$
+                If _FileExists(diskPaths$(1) + Z1$(KK)) Then
 
-            For X = 1 To 40: Input #2, Z1$(X): Next
+                    teamStat$ = Z1$(KK)
+                    Print "CONVERTING STAT FILE OF "; teamStat$
 
-            Close 2
+                    Open diskPaths$(1) + teamStat$ For Input As #1
 
-            Color 15, 0
-            Cls
+                    Input #1, A$
+                    Input #1, W2%
+                    Input #1, L2%
 
-            For KK = 1 To 40:
+                    For I = 0 To 22
+                        Input #1, batterNames$(I)
+                        Input #1, statB%(I)
+                    Next I
 
-                YY = YY + 1
+                    For I = 0 To 21:
+                        Input #1, pitcherNames$(I)
+                        Input #1, statP%(I)
+                    Next I
 
-                If Z1$(KK) <> "*" Then
+                    For I = 0 To 22
+                        For I1 = 0 To 21
+                            Input #1, careerB0%(I, I1)
+                        Next I1
+                    Next I
 
-                    If _FileExists(diskPaths$(1) + Z1$(KK)) Then
+                    For I = 0 To 21
+                        For I1 = 0 To 41
+                            Input #1, careerP0%(I, I1)
+                        Next I1
+                    Next I
 
-                        teamStat$ = Z1$(KK)
-                        Print "CONVERTING STAT FILE OF "; teamStat$
+                    Input #1, D0%
+                    Input #1, D1%
 
-                        Open diskPaths$(1) + teamStat$ For Input As #1
+                    For I = 0 To 21: Input #1, statT%(I): Next I
+                    For I = 0 To 22: Input #1, statT1%(I): Next I
 
-                        Input #1, A$
-                        Input #1, W2%
-                        Input #1, L2%
+                    Close #1
 
-                        For I = 0 To 22
-                            Input #1, batterNames$(I)
-                            Input #1, statB%(I)
-                        Next I
+                    WW(YY) = W2%
+                    LL(YY) = L2%
 
-                        For I = 0 To 21:
-                            Input #1, pitcherNames$(I)
-                            Input #1, statP%(I)
-                        Next I
+                    TS = TS + 1
 
-                        For I = 0 To 22
+                    For I = 0 To 21
+                        TT!(TS, I) = statT%(I)
+                        TM$(TS, I) = A$
+                    Next
+
+                    TTS = TTS + 1
+
+                    For I = 0 To 22
+                        TT1!(TTS, I) = statT1%(I)
+                        TT2$(TTS, I) = A$
+                    Next
+
+                    For I = 0 To 22
+
+                        If batterNames$(I) <> "XXX" Then
+                            JB = JB + 1
+                            leaderBL$(JB) = batterNames$(I)
+                            TBN = TBN + 1
+                            TMB$(TBN) = A$
+                            GM1!(JB) = WW(YY) + LL(YY)
+                        End If
+
+                    Next I
+
+                    For I = 0 To 21
+
+                        If pitcherNames$(I) <> "XXX" Then
+                            JP = JP + 1
+                            leaderPL$(JP) = pitcherNames$(I)
+                            TPN = TPN + 1
+                            TMP$(TPN) = A$
+                            GM2(JP) = WW(YY) + LL(YY)
+                        End If
+
+                    Next I
+
+                    For I = 0 To 22
+
+                        If batterNames$(I) <> "XXX" Then
+
+                            K = K + 1
+                            K1 = 0
+
                             For I1 = 0 To 21
-                                Input #1, careerB0%(I, I1)
+                                K1 = K1 + 1
+                                BK%(K, K1) = careerB0%(I, I1)
                             Next I1
-                        Next I
 
-                        For I = 0 To 21
-                            For I1 = 0 To 41
-                                Input #1, careerP0%(I, I1)
+                        End If
+
+                    Next I
+
+                    For I = 0 To 21
+
+                        If pitcherNames$(I) <> "XXX" Then
+
+                            PK = PK + 1
+                            PK1 = 0
+
+                            For I1 = 0 To 22
+                                PK1 = PK1 + 1
+                                PM%(PK, PK1) = careerP0%(I, I1)
                             Next I1
-                        Next I
 
-                        Input #1, D0%
-                        Input #1, D1%
+                        End If
 
-                        For I = 0 To 21: Input #1, statT%(I): Next I
-                        For I = 0 To 22: Input #1, statT1%(I): Next I
+                    Next I
 
-                        Close #1
+                End If 'Done checking if file exists
 
-                        WW(YY) = W2%
-                        LL(YY) = L2%
+            End If 'Done checking for "XXX"
 
-                        TS = TS + 1
+        Next KK
 
-                        For I = 0 To 21
-                            TT!(TS, I) = statT%(I)
-                            TM$(TS, I) = A$
-                        Next
+        Call SAVELEADER(leagStatFile$, league$, JB, JP, TS, TTS)
 
-                        TTS = TTS + 1
+        Call ExpandedLeaders_Menu(leagStatFile$, JB, JP, TS, TTS)
 
-                        For I = 0 To 22
-                            TT1!(TTS, I) = statT1%(I)
-                            TT2$(TTS, I) = A$
-                        Next
-
-                        For I = 0 To 22
-
-                            If batterNames$(I) <> "XXX" Then
-                                JB = JB + 1
-                                leaderBL$(JB) = batterNames$(I)
-                                TBN = TBN + 1
-                                TMB$(TBN) = A$
-                                GM1!(JB) = WW(YY) + LL(YY)
-                            End If
-
-                        Next I
-
-                        For I = 0 To 21
-
-                            If pitcherNames$(I) <> "XXX" Then
-                                JP = JP + 1
-                                leaderPL$(JP) = pitcherNames$(I)
-                                TPN = TPN + 1
-                                TMP$(TPN) = A$
-                                GM2(JP) = WW(YY) + LL(YY)
-                            End If
-
-                        Next I
-
-                        For I = 0 To 22
-
-                            If batterNames$(I) <> "XXX" Then
-
-                                K = K + 1
-                                K1 = 0
-
-                                For I1 = 0 To 21
-                                    K1 = K1 + 1
-                                    BK%(K, K1) = careerB0%(I, I1)
-                                Next I1
-
-                            End If
-
-                        Next I
-
-                        For I = 0 To 21
-
-                            If pitcherNames$(I) <> "XXX" Then
-
-                                PK = PK + 1
-                                PK1 = 0
-
-                                For I1 = 0 To 22
-                                    PK1 = PK1 + 1
-                                    PM%(PK, PK1) = careerP0%(I, I1)
-                                Next I1
-
-                            End If
-
-                        Next I
-
-                    End If 'Done checking if file exists
-
-                End If 'Done checking for "XXX"
-
-            Next KK
-
-            Call SAVELEADER(league$, leagueFile$, JB, JP, TS, TTS)
-
-            Call ExpandedLeaders_Menu(leagueFile$, JB, JP, TS, TTS)
-
-        End If 'Done checking for ESC
-
-    End If 'Done checking file count
+    End If 'Done checking for ESC
 
 End Sub
 
@@ -1065,7 +1001,7 @@ End Sub
 '      ExpandedLeaders_Menu Subroutine
 '----------------------------------------
 '...explanation...
-Sub ExpandedLeaders_Menu (leagueFile$, JB, JP, TS, TTS)
+Sub ExpandedLeaders_Menu (leaderFile$, JB, JP, TS, TTS)
 
     Do
         Cls
@@ -1098,13 +1034,13 @@ Sub ExpandedLeaders_Menu (leagueFile$, JB, JP, TS, TTS)
         If ExitCode% <> 27 Then
             Select Case Selection%
                 Case 1:
-                    Call ViewBattingLeaders(leagueFile$, JB, JP, TS, TTS)
+                    Call ViewBattingLeaders(leaderFile$, JB, JP, TS, TTS)
 
                 Case 2:
-                    Call ViewPitchingLeaders(leagueFile$, JB, JP, TS, TTS)
+                    Call ViewPitchingLeaders(leaderFile$, JB, JP, TS, TTS)
 
                 Case 3:
-                    Call ViewTeamLeaders(leagueFile$, JB, JP, TS, TTS)
+                    Call ViewTeamLeaders(leaderFile$, JB, JP, TS, TTS)
 
                 Case 4: Cls '
             End Select
@@ -1116,99 +1052,12 @@ Sub ExpandedLeaders_Menu (leagueFile$, JB, JP, TS, TTS)
 
 End Sub
 
-'----------------------------------------
-'     ViewExpandedLeaders Subroutine
-'----------------------------------------
-'...explanation...
-Sub ViewExpandedLeaders ()
-
-    Do
-
-        Cls
-
-        Spec$ = diskPaths$(2) + "*.TMS"
-        Count% = FCount%(Spec$)
-
-        If Count% = 0 Then
-            'This was not in the original code
-            'I'm assuming because this technically
-            'should be impossible as the files get
-            'created right before presenting the menu
-            Call CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-            I$ = GetKeyPress$
-            Call CSMsgBox("", 0, Pass)
-        Else
-
-            ReDim leagueFiles$(0 To Count%)
-
-            For X = 1 To Count%
-                leagueFiles$(X) = Space$(12)
-            Next
-
-            leagueFiles$(0) = Spec$
-
-            Call ReadFile(leagueFiles$())
-
-            Do
-                Cls
-                Color , 1
-                Cls
-                Locate , 28
-                Color 14
-                Print "SELECT LEAGUE TO VIEW": Color 15
-                Selection% = 1
-                Start% = 1
-                FileFGColr% = 15: FileBGColr% = 1
-                HiLiteFGColr% = 0: HiLiteBGColr% = 7
-                Rows% = 20
-                Columns% = 4
-                Spacing% = 6
-                Row% = 4
-                Column% = 1
-                Locate 25, 1
-                Color 14
-                Print "ENTER";: Color 15
-                Print "-SELECTS LEAGUE";
-
-                _MouseShow "DEFAULT"
-                MAMenu leagueFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
-                _MouseHide
-
-                If ExitCode% <> 27 Then
-
-                    Color 15, 1
-                    targetFile$ = leagueFiles$(Selection%)
-                    Locate 2, 33: Print targetFile$
-
-                    Do
-                        Locate 3, 33: Print "ANY CHANGE (YN)";
-                        I$ = GetKeyPress$
-                    Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
-
-                    Color 15, 0
-
-                End If
-
-            Loop Until UCase$(I$) = "N" Or ExitCode% = 27
-
-            If ExitCode% <> 27 Then
-                targetFile$ = RTrim$(targetFile$)
-                league$ = Left$(targetFile$, Len(targetFile$) - 4)
-                leagueFile$ = league$
-                Call ExpandedLeaders_Menu(leagueFile$, JB, JP, TS, TTS)
-            End If
-
-        End If
-
-    Loop Until Count% = 0 Or UCase$(I$) = "N" Or ExitCode% = 27
-
-End Sub
 
 '----------------------------------------
 '     ViewTeamLeaders Subroutine
 '----------------------------------------
 '...explanation...
-Sub ViewTeamLeaders (leagueFile$, JB, JP, TS, TTS)
+Sub ViewTeamLeaders (leaderFile$, JB, JP, TS, TTS)
 
     Shared WW(), LL()
 
@@ -1220,13 +1069,13 @@ Sub ViewTeamLeaders (leagueFile$, JB, JP, TS, TTS)
 
     Shared D1$, D2$, D3$, D4$
 
-    Open diskPaths$(2) + leagueFile$ + ".TOT" For Input As #1
+    Open diskPaths$(2) + leaderFile$ + ".TOT" For Input As #1
 
     Input #1, JB, JP
-    Input #1, D1$, D2$, D3$, D4$, leagueFile$
+    Input #1, D1$, D2$, D3$, D4$, leaderFile$
     Input #1, TS, TTS
 
-    TMR% = 120
+    TMR = 120
 
     For I = 1 To 40:
         Input #1, WW(I), LL(I)
@@ -1237,7 +1086,7 @@ Sub ViewTeamLeaders (leagueFile$, JB, JP, TS, TTS)
             Input #1, TT!(I, I1), TM$(I, I1)
         Next
         Color 14: Locate 18, 45:
-        TMR% = TMR% - 1: Print Using "#####"; TMR%
+        TMR = TMR - 1: Print Using "#####"; TMR
     Next
 
     For I = 1 To 40:
@@ -1245,7 +1094,7 @@ Sub ViewTeamLeaders (leagueFile$, JB, JP, TS, TTS)
             Input #1, TT1!(I, I1), TT2$(I, I1)
         Next
         Color 14: Locate 18, 45
-        TMR% = TMR% - 1: Print Using "#####"; TMR%
+        TMR = TMR - 1: Print Using "#####"; TMR
     Next
 
     Close #1
@@ -1521,11 +1370,11 @@ Sub DisplayTeamView (XX, screenType, printOrView%, TVN, maxRecords, categoryId)
 
                     Select Case TVN
 
-                        Case 1: 
-							LPrint Tab(32); Using "#####"; TYP!(W)
+                        Case 1:
+                            LPrint Tab(32); Using "#####"; TYP!(W)
 
-                        Case 2: 
-							LPrint Tab(33); Using ".###"; TYP!(W)
+                        Case 2:
+                            LPrint Tab(33); Using ".###"; TYP!(W)
 
                     End Select
 
@@ -1554,15 +1403,15 @@ Sub DisplayTeamView (XX, screenType, printOrView%, TVN, maxRecords, categoryId)
 
                     Select Case TVN
 
-                        Case 1: 
-							LPrint Tab(32); Using "#####"; TYP!(W);
-							LPrint ".";: LPrint Using "#"; TYP1!(W)
+                        Case 1:
+                            LPrint Tab(32); Using "#####"; TYP!(W);
+                            LPrint ".";: LPrint Using "#"; TYP1!(W)
 
-                        Case 2: 
-							LPrint Tab(32); Using "#####"; TYP!(W)
+                        Case 2:
+                            LPrint Tab(32); Using "#####"; TYP!(W)
 
-                        Case 3: 
-							LPrint Tab(32); Using "##.##"; TYP!(W)
+                        Case 3:
+                            LPrint Tab(32); Using "##.##"; TYP!(W)
 
                     End Select
 
@@ -1597,9 +1446,9 @@ Sub LeagueTotals_A_Screen (XX, TVN, maxRecords)
 
             If W <> 0 And (W Mod 20 = 0) Then
 
-				Color 14
-				Locate 22: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
-				Color 15
+                Color 14
+                Locate 22: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
+                Color 15
 
                 I$ = GetKeyPress$
 
@@ -1635,9 +1484,9 @@ Sub LeagueTotals_A_Screen (XX, TVN, maxRecords)
 
         Next W
 
-		Color 14
-		Locate 22: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
-		Color 15
+        Color 14
+        Locate 22: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
+        Color 15
 
         I$ = GetKeyPress$
 
@@ -1678,9 +1527,9 @@ Sub LeagueTotals_B_Screen (XX, TVN, maxRecords)
 
             If W <> 0 And (W Mod 20 = 0) Then
 
-				Color 14
-				Locate 22: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
-				Color 15
+                Color 14
+                Locate 22: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
+                Color 15
 
                 I$ = GetKeyPress$
 
@@ -1721,9 +1570,9 @@ Sub LeagueTotals_B_Screen (XX, TVN, maxRecords)
 
         Next W
 
-		Color 14
-		Locate 22: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
-		Color 15
+        Color 14
+        Locate 22: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
+        Color 15
 
         I$ = GetKeyPress$
 
@@ -1815,17 +1664,17 @@ Sub PrintViewReselect (userOpt$)
     J = 4
 
     Locate 9, 15
-	Color 15, 0
-	
-	Print " " + Chr$(214); String$(40, 196); Chr$(183) + " ";
+    Color 15, 0
+
+    Print " " + Chr$(214); String$(40, 196); Chr$(183) + " ";
 
     For II = 1 To J
         Locate 9 + II, 15: Print " " + Chr$(186); String$(40, 32); Chr$(186) + " ";
     Next
 
     Locate 10 + J, 15
-	Print " " + Chr$(211); String$(40, 196); Chr$(189) + " ";
-	Locate 10, 10
+    Print " " + Chr$(211); String$(40, 196); Chr$(189) + " ";
+    Locate 10, 10
 
     Color 12
     Locate , 30: Print "SELECT OPTION:"
@@ -1966,7 +1815,7 @@ End Sub
 '----------------------------------------
 ' Compiles leader files for the expanded
 ' standings modules (.BAT, .PIT, .TOT)
-Sub SAVELEADER (league$, leagueFile$, JB, JP, TS, TTS)
+Sub SAVELEADER (leaderFile$, league$, JB, JP, TS, TTS)
 
     Shared BK%(), PM%()
     Shared GM2()
@@ -1982,17 +1831,17 @@ Sub SAVELEADER (league$, leagueFile$, JB, JP, TS, TTS)
 
     Print "SAVING LEADER FILES . . . . PLEASE WAIT"
 
-    Open diskPaths$(2) + league$ + ".BAT" For Output As #1
+    Open diskPaths$(2) + leaderFile$ + ".BAT" For Output As #1
 
     Write #1, JB, JP
-    Write #1, D1$, D2$, D3$, D4$, leagueFile$
+    Write #1, D1$, D2$, D3$, D4$, league$
     Write #1, TS, TTS
 
     For I = 1 To 920:
         Write #1, leaderBL$(I), TMB$(I), GM1!(I)
         Color 14
         Locate 18, 45
-        TMR% = TMR% - 1: Print Using "#####"; TMR%
+        TMR = TMR - 1: Print Using "#####"; TMR
     Next I
 
     For I = 1 To 920:
@@ -2001,22 +1850,22 @@ Sub SAVELEADER (league$, leagueFile$, JB, JP, TS, TTS)
         Next I1
         Color 14
         Locate 18, 45
-        TMR% = TMR% - 1: Print Using "#####"; TMR%
+        TMR = TMR - 1: Print Using "#####"; TMR
     Next I
 
     Close 1
 
-    Open diskPaths$(2) + league$ + ".PIT" For Output As #1
+    Open diskPaths$(2) + leaderFile$ + ".PIT" For Output As #1
 
     Write #1, JB, JP
-    Write #1, D1$, D2$, D3$, D4$, leagueFile$
+    Write #1, D1$, D2$, D3$, D4$, league$
     Write #1, TS, TTS
 
     For I = 1 To 880
         Write #1, leaderPL$(I), TMP$(I), GM2(I)
         Color 14
         Locate 18, 45
-        TMR% = TMR% - 1: Print Using "#####"; TMR%
+        TMR = TMR - 1: Print Using "#####"; TMR
     Next I
 
     For I = 1 To 880:
@@ -2025,14 +1874,14 @@ Sub SAVELEADER (league$, leagueFile$, JB, JP, TS, TTS)
         Next I1
         Color 14
         Locate 18, 45
-        TMR% = TMR% - 1: Print Using "#####"; TMR%
+        TMR = TMR - 1: Print Using "#####"; TMR
     Next I
 
     Close 1
 
-    Open diskPaths$(2) + league$ + ".TOT" For Output As #1
+    Open diskPaths$(2) + leaderFile$ + ".TOT" For Output As #1
 
-    Write #1, JB, JP, D1$, D2$, D3$, D4$, leagueFile$, TS, TTS
+    Write #1, JB, JP, D1$, D2$, D3$, D4$, league$, TS, TTS
 
     For I = 1 To 40:
         Write #1, WW(I), LL(I)
@@ -2044,7 +1893,7 @@ Sub SAVELEADER (league$, leagueFile$, JB, JP, TS, TTS)
         Next
         Color 14
         Locate 18, 45
-        TMR% = TMR% - 1: Print Using "#####"; TMR%
+        TMR = TMR - 1: Print Using "#####"; TMR
     Next
 
     For I = 1 To 40:
@@ -2053,10 +1902,11 @@ Sub SAVELEADER (league$, leagueFile$, JB, JP, TS, TTS)
         Next
         Color 14
         Locate 18, 45
-        TMR% = TMR% - 1: Print Using "#####"; TMR%
+        TMR = TMR - 1: Print Using "#####"; TMR
     Next
 
     Close #1
 
 End Sub
+
 

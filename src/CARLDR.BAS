@@ -35,13 +35,13 @@ Sub CARLDR ()
 
             Select Case Selection%
 
-                Case 1: 
+                Case 1:
                     Call UpdateLeaders
 
-                Case 2: 
+                Case 2:
                     Call ViewPrintLeaders
 
-                Case 3: 
+                Case 3:
                     Cls
 
             End Select
@@ -88,319 +88,250 @@ Sub UpdateLeaders ()
         PL1!(15, I1) = 1000
     Next
 
-    Do
-        'Display list of files...
+    careerFile$ = ChooseFile$(diskPaths$(1) + "*.CAR", "CAREER", ExitCode%)
 
-        Spec$ = diskPaths$(1) + "*.CAR"
-        Count% = FCount%(Spec$)
+    If ExitCode% <> 27 And ExitCode% <> 0 Then
 
-        If Count% = 0 Then
-            Locate 10, 8
-            Call CSMsgBox("NO CAREER FILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-            I$ = GetKeyPress$
-            Call CSMsgBox("", 0, Pass)
-        Else
-            ReDim careerFiles$(0 To Count%)
-            For X = 1 To Count%
-                careerFiles$(X) = Space$(12)
-            Next
-            careerFiles$(0) = Spec$
-            Call ReadFile(careerFiles$())
+        Cls
+
+        Do
+
+            Locate 3
+            Input "ENTER NUMBER OF AT BATS TO QUALIFY"; N1
+            Locate 4
+            Input "ENTER NUMBER OF INNINGS PITCHED TO QUALIFY"; N2
 
             Do
-                Cls
-                Color , 1
-                Cls
-                Locate , 28
-                Color 14
-                Print "SELECT FILE TO VIEW": Color 15
-                Selection% = 1
-                Start% = 1
-                FileFGColr% = 15: FileBGColr% = 1
-                HiLiteFGColr% = 0: HiLiteBGColr% = 7
-                Rows% = 20
-                Columns% = 4
-                Spacing% = 6
-                Row% = 4
-                Column% = 1
-                Locate 25, 1
-                Color 14
-                Print "ENTER";: Color 15
-                Print "-SELECTS FILE";
+                Locate 5: Print "ANY CHANGE (Y/N)"
+                I$ = GetKeyPress$
+            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
-                _MouseShow "DEFAULT"
-                MAMenu careerFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
-                _MouseHide
+        Loop Until UCase$(I$) = "N"
 
-                If ExitCode% <> 27 Then
+        Open diskPaths$(1) + careerFile$ + ".CAR" For Input As #1
 
-                    Color 15, 1
-                    targetFile$ = careerFiles$(Selection%)
-                    Locate 2, 33: Print targetFile$
+        Input #1, NB, NP
 
-                    Do
-                        Locate 3, 33: Print "ANY CHANGE (YN)";
-                        I$ = GetKeyPress$
-                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+        For I = 0 To 99:
+            Input #1, careerB$(I)
+        Next
 
-                    Color 15, 0
+        For I = 0 To 79:
+            Input #1, careerP$(I)
+        Next
+
+        For J = 1 To 15:
+
+            For I = 0 To 99:
+
+                For I1 = O To 17:
+                    Input #1, BRS%(J, I, I1)
+                Next I1
+
+                Locate 7, 35
+                TMR1 = TMR1 - 1
+                Color 9
+                Print Using "####"; TMR1
+
+            Next I
+
+        Next J
+
+        For J = 1 To 15:
+
+            For I = 0 To 79:
+
+                For I1 = 0 To 16:
+                    Input #1, PRS%(J, I, I1)
+                Next I1
+
+                Locate 7, 35
+                TMR1 = TMR1 - 1
+                Color 9: Print Using "####"; TMR1
+
+            Next I
+
+        Next J
+
+        Close #1
+
+        Color 14
+
+        Locate 10: Print "COMPUTING LEADER FILE . . . . . . PLEASE WAIT"
+
+        For I = 0 To 99
+            For I1 = 0 To 14
+                For J = 1 To 15
+                    BC(I, I1) = BC(I, I1) + BRS%(J, I, I1)
+                Next
+            Next
+        Next
+
+        For I = 0 To 79
+            For I1 = 0 To 16
+                For J = 1 To 15
+                    PC(I, I1) = PC(I, I1) + PRS%(J, I, I1)
+                Next
+            Next
+        Next
+
+        For K = 0 To 99
+
+            For X = 0 To 14
+
+                If BC(K, X) > BL1!(X, 19) Then
+
+                    BL1!(X, 19) = BC(K, X)
+                    BL0$(X, 19) = careerB$(K)
+
+                    For I = 1 To 20
+                        For J = 20 To I Step -1
+                            If BL1!(X, J - 1) < BL1!(X, J) Then Swap BL1!(X, J - 1), BL1!(X, J): Swap BL0$(X, J - 1), BL0$(X, J)
+                        Next J
+                    Next I
 
                 End If
 
-            Loop Until UCase$(I$) = "N" Or ExitCode% = 27
+            Next X
 
-            If ExitCode% <> 27 Then
+        Next K
 
-                leaderFile$ = RTrim$(targetFile$)
+        For K = 0 To 99
 
-                Cls
+            If BC(K, 0) < N1 Or BC(K, 0) = 0 Then
 
-                Do
+                If BC(K, 1) / BC(K, 0) > BL1!(15, 19) Then
 
-                    Locate 3
-                    Input "ENTER NUMBER OF AT BATS TO QUALIFY"; N1
-                    Locate 4
-                    Input "ENTER NUMBER OF INNINGS PITCHED TO QUALIFY"; N2
+                    BL1!(15, 19) = BC(K, 1) / BC(K, 0)
+                    BL0$(15, 19) = careerB$(K)
 
-                    Do
-                        Locate 5: Print "ANY CHANGE (Y/N)"
-                        I$ = GetKeyPress$
-                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
-                Loop Until UCase$(I$) = "N"
-
-                Open diskPaths$(1) + leaderFile$ For Input As #1
-
-                Input #1, NB, NP
-
-                For I = 0 To 99: Input #1, careerB$(I): Next
-                For I = 0 To 79: Input #1, careerP$(I): Next
-
-                For J = 1 To 15:
-
-                    For I = 0 To 99:
-
-                        For I1 = O To 17:
-                            Input #1, BRS%(J, I, I1)
-                        Next I1
-
-                        Locate 7, 35
-                        TMR1 = TMR1 - 1
-                        Color 9
-                        Print Using "####"; TMR1
-
+                    For I = 1 To 20
+                        For J = 20 To I Step -1
+                            If BL1!(15, J - 1) < BL1!(15, J) Then
+                                Swap BL1!(15, J - 1), BL1!(15, J)
+                                Swap BL0$(15, J - 1), BL0$(15, J)
+                            End If
+                        Next J
                     Next I
 
-                Next J
+                End If
 
-                For J = 1 To 15:
+            End If
 
-                    For I = 0 To 79:
+        Next K
 
-                        For I1 = 0 To 16:
-                            Input #1, PRS%(J, I, I1)
-                        Next I1
+        For K = 0 To 99
 
-                        Locate 7, 35
-                        TMR1 = TMR1 - 1
-                        Color 9: Print Using "####"; TMR1
+            If BC(K, 0) < N1 Or BC(K, 0) = 0 Then
 
+                If (BC(K, 1) + BC(K, 4) + BC(K, 5) * 2 + BC(K, 6) * 3) / BC(K, 0) > BL1!(16, 19) Then
+
+                    BL1!(16, 19) = (BC(K, 1) + BC(K, 4) + BC(K, 5) * 2 + BC(K, 6) * 3) / BC(K, 0)
+                    BL0$(16, 19) = careerB$(K)
+
+                    For I = 1 To 20
+                        For J = 20 To I Step -1
+                            If BL1!(16, J - 1) < BL1!(16, J) Then
+                                Swap BL1!(16, J - 1), BL1!(16, J)
+                                Swap BL0$(16, J - 1), BL0$(16, J)
+                            End If
+                        Next J
                     Next I
 
-                Next J
+                End If
 
-                Close #1
+            End If
 
-                Color 14
+        Next K
 
-                Locate 10: Print "COMPUTING LEADER FILE . . . . . . PLEASE WAIT"
+        For K = 0 To 99
 
-                For I = 0 To 99
-                    For I1 = 0 To 14
-                        For J = 1 To 15
-                            BC(I, I1) = BC(I, I1) + BRS%(J, I, I1)
-                        Next
-                    Next
-                Next
+            If Not (BC(K, 0) < N1 Or BC(K, 0) + BC(K, 7) = 0) Then
 
-                For I = 0 To 79
-                    For I1 = 0 To 16
-                        For J = 1 To 15
-                            PC(I, I1) = PC(I, I1) + PRS%(J, I, I1)
-                        Next
-                    Next
-                Next
+                If (BC(K, 1) + BC(K, 7)) / (BC(K, 0) + BC(K, 7)) > BL1!(17, 19) Then
 
-                For K = 0 To 99
+                    BL1!(17, 19) = (BC(K, 1) + BC(K, 7)) / (BC(K, 0) + BC(K, 7))
+                    BL0$(17, 19) = careerB$(K)
 
-                    For X = 0 To 14
+                    For I = 1 To 20
+                        For J = 20 To I Step -1
+                            If BL1!(17, J - 1) < BL1!(17, J) Then
+                                Swap BL1!(17, J - 1), BL1!(17, J)
+                                Swap BL0$(17, J - 1), BL0$(17, J)
+                            End If
+                        Next J
+                    Next I
 
-                        If BC(K, X) > BL1!(X, 19) Then
+                End If
 
-                            BL1!(X, 19) = BC(K, X)
-                            BL0$(X, 19) = careerB$(K)
+            End If
 
-                            For I = 1 To 20
-                                For J = 20 To I Step -1
-                                    If BL1!(X, J - 1) < BL1!(X, J) Then Swap BL1!(X, J - 1), BL1!(X, J): Swap BL0$(X, J - 1), BL0$(X, J)
-                                Next J
-                            Next I
+        Next K
 
-                        End If
+        For K = 0 To 79
 
-                    Next X
+            For X = 0 To 14
 
-                Next K
+                If PC(K, X) > PL1!(X, 19) Then
 
-                For K = 0 To 99
+                    PL1!(X, 19) = PC(K, X)
+                    PL0$(X, 19) = careerP$(K)
 
-                    If BC(K, 0) < N1 Or BC(K, 0) = 0 Then
+                    For I = 1 To 20
+                        For J = 20 To I Step -1
+                            If PL1!(X, J - 1) < PL1!(X, J) Then
+                                Swap PL1!(X, J - 1), PL1!(X, J)
+                                Swap PL0$(X, J - 1), PL0$(X, J)
+                            End If
+                        Next J
+                    Next I
+                End If
 
-                        If BC(K, 1) / BC(K, 0) > BL1!(15, 19) Then
+            Next X
 
-                            BL1!(15, 19) = BC(K, 1) / BC(K, 0)
-                            BL0$(15, 19) = careerB$(K)
+        Next K
 
-                            For I = 1 To 20
-                                For J = 20 To I Step -1
-                                    If BL1!(15, J - 1) < BL1!(15, J) Then
-                                        Swap BL1!(15, J - 1), BL1!(15, J)
-                                        Swap BL0$(15, J - 1), BL0$(15, J)
-                                    End If
-                                Next J
-                            Next I
+        For K = 0 To 79
 
-                        End If
+            If Not (PC(K, 0) < N2 * 3 Or PC(K, 0) = 0) Then
 
-                    End If
+                If ((PC(K, 3) * 9) / PC(K, 0)) * 3 < PL1!(15, 19) Then
 
-                Next K
+                    PL1!(15, 19) = ((PC(K, 3) * 9) / PC(K, 0)) * 3
+                    PL0$(15, 19) = careerP$(K)
 
-                For K = 0 To 99
+                    For I = 1 To 20
+                        For J = 20 To I Step -1
+                            If PL1!(15, J) < PL1!(15, J - 1) Then
+                                Swap PL1!(15, J), PL1!(15, J - 1)
+                                Swap PL0$(15, J), PL0$(15, J - 1)
+                            End If
+                        Next J
+                    Next I
 
-                    If BC(K, 0) < N1 Or BC(K, 0) = 0 Then
+                End If
 
-                        If (BC(K, 1) + BC(K, 4) + BC(K, 5) * 2 + BC(K, 6) * 3) / BC(K, 0) > BL1!(16, 19) Then
+            End If
 
-                            BL1!(16, 19) = (BC(K, 1) + BC(K, 4) + BC(K, 5) * 2 + BC(K, 6) * 3) / BC(K, 0)
-                            BL0$(16, 19) = careerB$(K)
+        Next K
 
-                            For I = 1 To 20
-                                For J = 20 To I Step -1
-                                    If BL1!(16, J - 1) < BL1!(16, J) Then
-                                        Swap BL1!(16, J - 1), BL1!(16, J)
-                                        Swap BL0$(16, J - 1), BL0$(16, J)
-                                    End If
-                                Next J
-                            Next I
+        Open diskPaths$(1) + careerFile$ + ".TCL" For Output As #1
 
-                        End If
+        For I = 0 To 17:
+            For I1 = 0 To 19:
+                Write #1, BL1!(I, I1), BL0$(I, I1)
+            Next
+        Next
 
-                    End If
+        For I = 0 To 15:
+            For I1 = 0 To 19:
+                Write #1, PL1!(I, I1), PL0$(I, I1)
+            Next
+        Next
 
-                Next K
+        Close #1
 
-                For K = 0 To 99
-
-                    If Not (BC(K, 0) < N1 Or BC(K, 0) + BC(K, 7) = 0) Then
-
-                        If (BC(K, 1) + BC(K, 7)) / (BC(K, 0) + BC(K, 7)) > BL1!(17, 19) Then
-
-                            BL1!(17, 19) = (BC(K, 1) + BC(K, 7)) / (BC(K, 0) + BC(K, 7))
-                            BL0$(17, 19) = careerB$(K)
-
-                            For I = 1 To 20
-                                For J = 20 To I Step -1
-                                    If BL1!(17, J - 1) < BL1!(17, J) Then
-                                        Swap BL1!(17, J - 1), BL1!(17, J)
-                                        Swap BL0$(17, J - 1), BL0$(17, J)
-                                    End If
-                                Next J
-                            Next I
-
-                        End If
-
-                    End If
-
-                Next K
-
-                For K = 0 To 79
-
-                    For X = 0 To 14
-
-                        If PC(K, X) > PL1!(X, 19) Then
-
-                            PL1!(X, 19) = PC(K, X)
-                            PL0$(X, 19) = careerP$(K)
-
-                            For I = 1 To 20
-                                For J = 20 To I Step -1
-                                    If PL1!(X, J - 1) < PL1!(X, J) Then
-                                        Swap PL1!(X, J - 1), PL1!(X, J)
-                                        Swap PL0$(X, J - 1), PL0$(X, J)
-                                    End If
-                                Next J
-                            Next I
-                        End If
-
-                    Next X
-
-                Next K
-
-                For K = 0 To 79
-
-                    If Not (PC(K, 0) < N2 * 3 Or PC(K, 0) = 0) Then
-
-                        If ((PC(K, 3) * 9) / PC(K, 0)) * 3 < PL1!(15, 19) Then
-
-                            PL1!(15, 19) = ((PC(K, 3) * 9) / PC(K, 0)) * 3
-                            PL0$(15, 19) = careerP$(K)
-
-                            For I = 1 To 20
-                                For J = 20 To I Step -1
-                                    If PL1!(15, J) < PL1!(15, J - 1) Then
-                                        Swap PL1!(15, J), PL1!(15, J - 1)
-                                        Swap PL0$(15, J), PL0$(15, J - 1)
-                                    End If
-                                Next J
-                            Next I
-
-                        End If
-
-                    End If
-
-                Next K
-
-                D = 0
-
-                For J = 0 To 8
-                    D = D + 1
-                    X$ = Mid$(leaderFile$, D, 1)
-                    If X$ = "." Then JX = D - 1
-                Next J
-
-                Open diskPaths$(1) + Left$(leaderFile$, JX) + ".TCL" For Output As #1
-
-                For I = 0 To 17:
-                    For I1 = 0 To 19:
-                        Write #1, BL1!(I, I1), BL0$(I, I1)
-                    Next
-                Next
-
-                For I = 0 To 15:
-                    For I1 = 0 To 19:
-                        Write #1, PL1!(I, I1), PL0$(I, I1)
-                    Next
-                Next
-
-                Close #1
-
-            End If 'Done checking for ESC
-
-        End If 'Done checking file count
-
-        '...Until we press ESC
-    Loop Until ExitCode% = 27 Or Count% = 0
+    End If 'Done checking for ESC
 
 End Sub
 
@@ -415,115 +346,49 @@ Sub ViewPrintLeaders ()
 
     Cls
 
-    Do
-        'Display list of files...
-        Spec$ = diskPaths$(1) + "*.TCL"
-        Count% = FCount%(Spec$)
+    leaderFile$ = ChooseFile$(diskPaths$(1) + "*.TCL", "LEADER", ExitCode%)
 
-        If Count% = 0 Then
-            Locate 10, 8
-            Call CSMsgBox("NO CAREER LEADER FILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-            I$ = GetKeyPress$
-            Call CSMsgBox("", 0, Pass)
-        Else
+    If ExitCode% <> 27 And ExitCode% <> 0 Then
 
-            ReDim careerLeaderFiles$(0 To Count%)
+        Color 15, 0
+        Cls
 
-            For X = 1 To Count%
-                careerLeaderFiles$(X) = Space$(12)
+        Open diskPaths$(1) + leaderFile$ + ".TCL" For Input As #1
+
+        For I = 0 To 17:
+            For I1 = 0 To 19:
+                Input #1, BL1!(I, I1), BL0$(I, I1)
             Next
+        Next
 
-            careerLeaderFiles$(0) = Spec$
+        For I = 0 To 15:
+            For I1 = 0 To 19:
+                Input #1, PL1!(I, I1), PL0$(I, I1)
+            Next
+        Next
 
-            Call ReadFile(careerLeaderFiles$())
+        Close #1
 
-            Do
-                Cls
-                Color , 1
-                Cls
-                Locate , 28
-                Color 14
-                Print "SELECT FILE TO VIEW": Color 15
-                Selection% = 1
-                Start% = 1
-                FileFGColr% = 15: FileBGColr% = 1
-                HiLiteFGColr% = 0: HiLiteBGColr% = 7
-                Rows% = 20
-                Columns% = 4
-                Spacing% = 6
-                Row% = 4
-                Column% = 1
-                Locate 25, 1
-                Color 14
-                Print "ENTER";: Color 15
-                Print "-SELECTS FILE";
+        Color 15, 0
 
-                _MouseShow "DEFAULT"
-                MAMenu careerLeaderFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
-                _MouseHide
+        Cls
 
-                If ExitCode% <> 27 Then
+        Do
+            Locate 15, 10
+            Color 12: Print "V";
+            Color 7: Print "iew or ";
+            Color 12: Print "P";
+            Color 7: Print "rint"
+            J$ = GetKeyPress$
+        Loop Until UCase$(J$) = "P" Or UCase$(J$) = "V"
 
-                    Color 15, 1
-                    targetFile$ = RTrim$(careerLeaderFiles$(Selection%))
-                    Locate 2, 33: Print targetFile$
+        If UCase$(J$) = "P" Then
+            Call PrintLeaders_Screen
+        Else
+            Call ViewLeaders_Screen
+        End If
 
-                    Do
-                        Locate 3, 33: Print "ANY CHANGE (YN)";
-                        I$ = GetKeyPress$
-                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
-                    Color 15, 0
-
-                End If
-
-            Loop Until UCase$(I$) = "N"
-
-            If ExitCode% <> 27 Then
-
-                Cls
-
-                Open diskPaths$(1) + targetFile$ For Input As #1
-
-                For I = 0 To 17: 
-                    For I1 = 0 To 19: 
-                        Input #1, BL1!(I, I1), BL0$(I, I1)
-                    Next
-                Next
-
-                For I = 0 To 15: 
-                    For I1 = 0 To 19: 
-                        Input #1, PL1!(I, I1), PL0$(I, I1)
-                    Next
-                Next
-
-                Close #1
-
-                Color 15, 0
-
-                Cls
-
-                Do
-                    Locate 15, 10
-                    Color 12: Print "V";
-                    Color 7: Print "iew or ";
-                    Color 12: Print "P";
-                    Color 7: Print "rint"
-                    J$ = GetKeyPress$
-                Loop Until UCase$(J$) = "P" Or UCase$(J$) = "V"
-
-                If UCase$(J$) = "P" Then
-                    Call PrintLeaders_Screen
-                Else
-                    Call ViewLeaders_Screen
-                End If
-
-            End If 'Done checking for ESC
-
-        End If 'Done checking file count
-
-        '...Until we press ESC
-    Loop Until ExitCode% = 27 Or Count% = 0 Or UCase$(I$) = "N"
+    End If 'Done checking for ESC
 
 End Sub
 
@@ -648,15 +513,16 @@ Sub ViewLeaders_Screen ()
         Color 3
         Locate I + 2: Print Using "##"; I + 1;: Print ". ";
         Color 15: Print BL0$(0, I);
-        Color 14: Print Tab(20); Using "####"; BL1!(0, I);:
-        
+        Print Tab(20); Using "####"; BL1!(0, I);:
+
         Color 3
         Print Tab(40); Using "##"; I + 1;: Print ". ";
         Color 15: Print BL0$(1, I);
-        Color 14: Print Tab(60); Using "####"; BL1!(1, I)
+        Print Tab(60); Using "####"; BL1!(1, I)
     Next
 
-    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    Locate 23, 22
+    Color 14: Print "HIT ANY KEY TO CONTINUE"
     I$ = GetKeyPress$
 
     Cls
@@ -667,14 +533,15 @@ Sub ViewLeaders_Screen ()
         Color 3
         Locate I + 2: Print Using "##"; I + 1;: Print ". ";
         Color 15: Print BL0$(2, I);
-        Color 14: Print Tab(20); Using "####"; BL1!(2, I);:
+        Print Tab(20); Using "####"; BL1!(2, I);:
         Color 3
         Print Tab(40); Using "##"; I + 1;: Print ". ";
         Color 15: Print BL0$(3, I);
-        Color 14: Print Tab(60); Using "####"; BL1!(3, I)
+        Print Tab(60); Using "####"; BL1!(3, I)
     Next
 
-    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    Locate 23, 22
+    Color 14: Print "HIT ANY KEY TO CONTINUE"
     I$ = GetKeyPress$
 
     Cls
@@ -685,14 +552,15 @@ Sub ViewLeaders_Screen ()
         Color 3
         Locate I + 2: Print Using "##"; I + 1;: Print ". ";
         Color 15: Print BL0$(4, I);
-        Color 14: Print Tab(20); Using "####"; BL1!(4, I);:
+        Print Tab(20); Using "####"; BL1!(4, I);:
         Color 3
         Print Tab(40); Using "##"; I + 1;: Print ". ";
         Color 15: Print BL0$(5, I);
-        Color 14: Print Tab(60); Using "####"; BL1!(5, I)
+        Print Tab(60); Using "####"; BL1!(5, I)
     Next
 
-    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    Locate 23, 22
+    Color 14: Print "HIT ANY KEY TO CONTINUE"
     I$ = GetKeyPress$
 
     Cls
@@ -703,14 +571,15 @@ Sub ViewLeaders_Screen ()
         Color 3
         Locate I + 2: Print Using "##"; I + 1;: Print ". ";
         Color 15: Print BL0$(6, I);
-        Color 14: Print Tab(20); Using "####"; BL1!(6, I);:
+        Print Tab(20); Using "####"; BL1!(6, I);:
         Color 3
         Print Tab(40); Using "##"; I + 1;: Print ". ";
         Color 15: Print BL0$(7, I);
-        Color 14: Print Tab(60); Using "####"; BL1!(7, I)
+        Print Tab(60); Using "####"; BL1!(7, I)
     Next
 
-    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    Locate 23, 22
+    Color 14: Print "HIT ANY KEY TO CONTINUE"
     I$ = GetKeyPress$
 
     Cls
@@ -721,14 +590,15 @@ Sub ViewLeaders_Screen ()
         Color 3
         Locate I + 2: Print Using "##"; I + 1;: Print ". ";
         Color 15: Print BL0$(8, I);
-        Color 14: Print Tab(20); Using "####"; BL1!(8, I);:
+        Print Tab(20); Using "####"; BL1!(8, I);:
         Color 3
         Print Tab(40); Using "##"; I + 1;: Print ". ";
         Color 15: Print BL0$(9, I);
-        Color 14: Print Tab(60); Using "####"; BL1!(9, I)
+        Print Tab(60); Using "####"; BL1!(9, I)
     Next
 
-    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    Locate 23, 22
+    Color 14: Print "HIT ANY KEY TO CONTINUE"
     I$ = GetKeyPress$
 
     Cls
@@ -739,14 +609,15 @@ Sub ViewLeaders_Screen ()
         Color 3
         Locate I + 2: Print Using "##"; I + 1;: Print ". ";
         Color 15: Print BL0$(10, I);
-        Color 14: Print Tab(20); Using "####"; BL1!(10, I);:
+        Print Tab(20); Using "####"; BL1!(10, I);:
         Color 3
         Print Tab(40); Using "##"; I + 1;: Print ". ";
         Color 15: Print BL0$(11, I);
-        Color 14: Print Tab(60); Using "####"; BL1!(11, I)
+        Print Tab(60); Using "####"; BL1!(11, I)
     Next
 
-    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    Locate 23, 22
+    Color 14: Print "HIT ANY KEY TO CONTINUE"
     I$ = GetKeyPress$
 
     Cls
@@ -755,14 +626,15 @@ Sub ViewLeaders_Screen ()
         Color 3
         Locate I + 2: Print Using "##"; I + 1;: Print ". ";
         Color 15: Print BL0$(14, I);
-        Color 14: Print Tab(20); Using "####"; BL1!(14, I);:
+        Print Tab(20); Using "####"; BL1!(14, I);:
         Color 3
         Print Tab(40); Using "##"; I + 1;: Print ". ";
         Color 15: Print BL0$(15, I);
-        Color 14: Print Tab(60); Using "#.###"; BL1!(15, I)
+        Print Tab(60); Using "#.###"; BL1!(15, I)
     Next
 
-    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    Locate 23, 22
+    Color 14: Print "HIT ANY KEY TO CONTINUE"
     I$ = GetKeyPress$
 
     Cls
@@ -771,14 +643,15 @@ Sub ViewLeaders_Screen ()
         Color 3
         Locate I + 2: Print Using "##"; I + 1;: Print ". ";
         Color 15: Print BL0$(16, I);
-        Color 14: Print Tab(20); Using "#.###"; BL1!(16, I);:
+        Print Tab(20); Using "#.###"; BL1!(16, I);:
         Color 3
         Print Tab(40); Using "##"; I + 1;: Print ". ";
         Color 15: Print BL0$(17, I);
-        Color 14: Print Tab(60); Using "#.###"; BL1!(17, I)
+        Print Tab(60); Using "#.###"; BL1!(17, I)
     Next
 
-    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    Locate 23, 22
+    Color 14: Print "HIT ANY KEY TO CONTINUE"
     I$ = GetKeyPress$
 
     Cls
@@ -787,14 +660,15 @@ Sub ViewLeaders_Screen ()
         Color 3
         Locate I + 2: Print Using "##"; I + 1;: Print ". ";
         Color 15: Print PL0$(0, I);
-        Color 14: Print Tab(18); Using "###"; Int(PL1!(0, I) / 3);: If PL1!(O, I) - (Int(PL1!(O, I) / 3) * 3) > 0 Then Print ".";: Print Using "#"; PL1!(O, I) - (Int(PL1!(O, I) / 3) * 3);:
+        Print Tab(18); Using "###"; Int(PL1!(0, I) / 3);: If PL1!(O, I) - (Int(PL1!(O, I) / 3) * 3) > 0 Then Print ".";: Print Using "#"; PL1!(O, I) - (Int(PL1!(O, I) / 3) * 3);:
         Color 3
         Print Tab(40); Using "##"; I + 1;: Print ". ";
         Color 15: Print PL0$(1, I);
-        Color 14: Print Tab(60); Using "####"; PL1!(1, I)
+        Print Tab(60); Using "####"; PL1!(1, I)
     Next
 
-    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    Locate 23, 22
+    Color 14: Print "HIT ANY KEY TO CONTINUE"
     I$ = GetKeyPress$
 
     Cls
@@ -803,14 +677,15 @@ Sub ViewLeaders_Screen ()
         Color 3
         Locate I + 2: Print Using "##"; I + 1;: Print ". ";
         Color 15: Print PL0$(2, I);
-        Color 14: Print Tab(20); Using "####"; PL1!(2, I);:
+        Print Tab(20); Using "####"; PL1!(2, I);:
         Color 3
         Print Tab(40); Using "##"; I + 1;: Print ". ";
         Color 15: Print PL0$(3, I);
-        Color 14: Print Tab(60); Using "####"; PL1!(3, I)
+        Print Tab(60); Using "####"; PL1!(3, I)
     Next
 
-    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    Locate 23, 22
+    Color 14: Print "HIT ANY KEY TO CONTINUE"
     I$ = GetKeyPress$
 
     Cls
@@ -819,14 +694,15 @@ Sub ViewLeaders_Screen ()
         Color 3
         Locate I + 2: Print Using "##"; I + 1;: Print ". ";
         Color 15: Print PL0$(4, I);
-        Color 14: Print Tab(20); Using "####"; PL1!(4, I);:
+        Print Tab(20); Using "####"; PL1!(4, I);:
         Color 3
         Print Tab(40); Using "##"; I + 1;: Print ". ";
         Color 15: Print PL0$(5, I);
-        Color 14: Print Tab(60); Using "####"; PL1!(5, I)
+        Print Tab(60); Using "####"; PL1!(5, I)
     Next
 
-    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    Locate 23, 22
+    Color 14: Print "HIT ANY KEY TO CONTINUE"
     I$ = GetKeyPress$
 
     Cls
@@ -835,14 +711,15 @@ Sub ViewLeaders_Screen ()
         Color 3
         Locate I + 2: Print Using "##"; I + 1;: Print ". ";
         Color 15: Print PL0$(6, I);
-        Color 14: Print Tab(20); Using "####"; PL1!(6, I);:
+        Print Tab(20); Using "####"; PL1!(6, I);:
         Color 3
         Print Tab(40); Using "##"; I + 1;: Print ". ";
         Color 15: Print PL0$(7, I);
-        Color 14: Print Tab(60); Using "####"; PL1!(7, I)
+        Print Tab(60); Using "####"; PL1!(7, I)
     Next
 
-    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    Locate 23, 22
+    Color 14: Print "HIT ANY KEY TO CONTINUE"
     I$ = GetKeyPress$
 
     Cls
@@ -851,14 +728,15 @@ Sub ViewLeaders_Screen ()
         Color 3
         Locate I + 2: Print Using "##"; I + 1;: Print ". ";
         Color 15: Print PL0$(8, I);
-        Color 14: Print Tab(20); Using "####"; PL1!(8, I);:
+        Print Tab(20); Using "####"; PL1!(8, I);:
         Color 3
         Print Tab(40); Using "##"; I + 1;: Print ". ";
         Color 15: Print PL0$(9, I);
-        Color 14: Print Tab(60); Using "####"; PL1!(9, I)
+        Print Tab(60); Using "####"; PL1!(9, I)
     Next
 
-    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    Locate 23, 22
+    Color 14: Print "HIT ANY KEY TO CONTINUE"
     I$ = GetKeyPress$
 
     Cls
@@ -867,14 +745,15 @@ Sub ViewLeaders_Screen ()
         Color 3
         Locate I + 2: Print Using "##"; I + 1;: Print ". ";
         Color 15: Print PL0$(10, I);
-        Color 14: Print Tab(20); Using "####"; PL1!(10, I);:
+        Print Tab(20); Using "####"; PL1!(10, I);:
         Color 3
         Print Tab(40); Using "##"; I + 1;: Print ". ";
         Color 15: Print PL0$(11, I);
-        Color 14: Print Tab(60); Using "####"; PL1!(11, I)
+        Print Tab(60); Using "####"; PL1!(11, I)
     Next
 
-    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    Locate 23, 22
+    Color 14: Print "HIT ANY KEY TO CONTINUE"
     I$ = GetKeyPress$
 
     Cls
@@ -883,14 +762,15 @@ Sub ViewLeaders_Screen ()
         Color 3
         Locate I + 2: Print Using "##"; I + 1;: Print ". ";
         Color 15: Print PL0$(12, I);
-        Color 14: Print Tab(20); Using "####"; PL1!(12, I);:
+        Print Tab(20); Using "####"; PL1!(12, I);:
         Color 3
         Print Tab(40); Using "##"; I + 1;: Print ". ";
         Color 15: Print PL0$(13, I);
-        Color 14: Print Tab(60); Using "####"; PL1!(13, I)
+        Print Tab(60); Using "####"; PL1!(13, I)
     Next
 
-    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    Locate 23, 22
+    Color 14: Print "HIT ANY KEY TO CONTINUE"
     I$ = GetKeyPress$
 
     Cls
@@ -899,12 +779,10 @@ Sub ViewLeaders_Screen ()
         Color 3
         Locate I + 2: Print Using "##"; I + 1;: Print ". ";
         Color 15: Print PL0$(14, I);
-        Color 14: Print Tab(20); Using "####"; PL1!(14, I);
+        Print Tab(20); Using "####"; PL1!(14, I);
         Color 3
         Print Tab(40); Using "##"; I + 1;: Print ". ";
         Color 15: Print PL0$(15, I);
-
-        Color 14
         If PL1!(15, I) = 1000 Then
             Print Tab(58); Using "###.##"; 0.0
         Else
@@ -912,8 +790,10 @@ Sub ViewLeaders_Screen ()
         End If
     Next
 
-    Locate 23, 22: Color 15: Print "HIT ANY KEY TO CONTINUE"
+    Locate 23, 22
+    Color 14: Print "HIT ANY KEY TO CONTINUE"
     I$ = GetKeyPress$
 
 End Sub
+
 

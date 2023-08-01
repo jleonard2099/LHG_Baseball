@@ -64,20 +64,20 @@ Sub SeasonRecords ()
 
             End If
 
-            Call SelectLeague_REC(LGE$, menuExit%)
+            leagueFile$ = ChooseFile$ (diskPaths$(2) + "*.BAT", "LEAGUE", ExitCode%)
 
-            If menuExit% <> 27 And LGE$ <> "" Then
+            If menuExit% <> 27 And leagueFile$ <> "" Then
 
                 Select Case Selection%
 
                     Case 1:
-                        Call UpdateRecords(LGE$)
+                        Call UpdateRecords(leagueFile$)
 
                     Case 2:
-                        Call ViewSeasonRecords(LGE$)
+                        Call ViewSeasonRecords(leagueFile$)
 
                     Case 3:
-                        Call PrintSeasonRecords(LGE$)
+                        Call PrintSeasonRecords(leagueFile$)
 
                 End Select
 
@@ -114,7 +114,7 @@ Sub UpdateRecords (leagueFile$)
     AAG = 920
     AAS = 880
     AAT = 80
-    TMR% = 2360
+    TMR = 2360
 
     JB = 0
     JP = 0
@@ -162,7 +162,7 @@ Sub UpdateRecords (leagueFile$)
 
     End If
 
-    TMR% = 3680
+    TMR = 3680
 
     Open diskPaths$(2) + leagueFile$ + ".BAT" For Input As #1
 
@@ -172,7 +172,7 @@ Sub UpdateRecords (leagueFile$)
         Input #1, leaderBL$(I), TMB$(I), GM1!(I)
         Color 14
 		Locate 18, 45
-        TMR% = TMR% - 1: Print Using "#####"; TMR%
+        TMR = TMR - 1: Print Using "#####"; TMR
     Next I
 
     For I = 1 To 920:
@@ -181,7 +181,7 @@ Sub UpdateRecords (leagueFile$)
         Next I1
         Color 14
 		Locate 18, 45
-        TMR% = TMR% - 1: Print Using "#####"; TMR%
+        TMR = TMR - 1: Print Using "#####"; TMR
 	Next I
 
     Close 1
@@ -194,8 +194,8 @@ Sub UpdateRecords (leagueFile$)
         Input #1, leaderPL$(I), TMP$(I), GM2(I)
         Color 14
         Locate 18, 45
-        TMR% = TMR% - 1
-		Print Using "#####"; TMR%
+        TMR = TMR - 1
+		Print Using "#####"; TMR
     Next I
 
     For I = 1 To 880:
@@ -204,7 +204,7 @@ Sub UpdateRecords (leagueFile$)
         Next I1
         Color 14
 		Locate 18, 45
-        TMR% = TMR% - 1: Print Using "#####"; TMR%
+        TMR = TMR - 1: Print Using "#####"; TMR
 	Next I
 
     Close 1
@@ -221,7 +221,7 @@ Sub UpdateRecords (leagueFile$)
         Next
         Color 14
         Locate 18, 45
-        TMR% = TMR% - 1: Print Using "#####"; TMR%
+        TMR = TMR - 1: Print Using "#####"; TMR
     Next
 
     For I = 1 To 40:
@@ -230,7 +230,7 @@ Sub UpdateRecords (leagueFile$)
         Next
         Color 14
         Locate 18, 45
-        TMR% = TMR% - 1: Print Using "#####"; TMR%
+        TMR = TMR - 1: Print Using "#####"; TMR
     Next
 
     Close #1
@@ -1022,82 +1022,3 @@ Sub PrintSeasonRecords (leagueFile$)
     LPrint Chr$(12)
 
 End Sub
-
-
-'----------------------------------------
-'       SelectLeague_REC Subroutine
-'----------------------------------------
-'...explanation...
-Sub SelectLeague_REC (leagueFile$, ExitCode%)
-
-    Do
-
-        Spec$ = diskPaths$(2) + "*.BAT"
-        Count% = FCount%(Spec$)
-
-        If Count% = 0 Then
-            Locate 10, 8
-            Call CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-            I$ = GetKeyPress$
-            Call CSMsgBox("", 0, Pass)
-        Else
-            ReDim batFiles$(0 To Count%)
-            For X = 1 To Count%
-                batFiles$(X) = Space$(12)
-            Next
-            batFiles$(0) = Spec$
-            Call ReadFile(batFiles$())
-
-            Do
-                Cls
-                Color , 1
-                Cls
-                Locate , 28
-                Color 14
-                Print "SELECT LEAGUE SEASON": Color 15
-                Selection% = 1
-                Start% = 1
-                FileFGColr% = 15: FileBGColr% = 1
-                HiLiteFGColr% = 0: HiLiteBGColr% = 7
-                Rows% = 20
-                Columns% = 4
-                Spacing% = 6
-                Row% = 4
-                Column% = 1
-                Locate 25, 1
-                Color 14
-                Print "ENTER";: Color 15
-                Print "-SELECTS SEASON";
-
-                _MouseShow "DEFAULT"
-                MAMenu batFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
-                _MouseHide
-
-                If ExitCode% <> 27 Then
-
-                    Color 15, 1
-                    targetFile$ = batFiles$(Selection%)
-                    Locate 2, 33: Print targetFile$
-
-                    Do
-                        Locate 3, 33: Print "ANY CHANGE (YN)";
-                        I$ = GetKeyPress$
-                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
-                    Color 15, 0
-
-                End If
-
-            Loop Until UCase$(I$) = "N" Or ExitCode% = 27
-
-            If ExitCode% <> 27 Then
-                targetFile$ = RTrim$(targetFile$)
-                leagueFile$ = Left$(targetFile$, Len(targetFile$) - 4)
-            End If
-
-        End If 'Done checking file count
-
-    Loop Until UCase$(I$) = "N" Or ExitCode% = 27 Or Count% = 0
-
-End Sub
-

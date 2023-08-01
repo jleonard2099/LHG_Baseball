@@ -56,8 +56,11 @@ Sub CREATE ()
                     Call ReviewEditLeague(LG$, D1$, D2$, D3$, D4$)
 
                 Case 2:
-                    Call ChooseLeague(LG$)
-                    Call ReviewEditLeague(LG$, D1$, D2$, D3$, D4$)
+                    LG$ = ChooseFile$ (diskPaths$(2) + "*.LIB", "LEAGUE", ExitCode%)
+
+                    If ExitCode% <> 27 And ExitCode% <> 0 Then
+                        Call ReviewEditLeague(LG$, D1$, D2$, D3$, D4$)
+                    End If
 
             End Select
 
@@ -72,7 +75,7 @@ End Sub
 '       DefineLeague Subroutine
 '----------------------------------------
 '...explanation...
-Sub DefineLeague (LG$, D1$, D2$, D3$, D4$)
+Sub DefineLeague (league$, D1$, D2$, D3$, D4$)
 
     Do
 
@@ -98,14 +101,15 @@ Sub DefineLeague (LG$, D1$, D2$, D3$, D4$)
 
         Do
 
-            Locate 7, 32
+            Locate 7, 
 
-            Locate , 12: Print "ENTER NAME FOR LEAGUE: ": Print
-            Locate , 12: Print "THE NAME SHOULD HAVE NO PERIODS OR SPACES."
+            Locate , 12: Print "ENTER NAME FOR LEAGUE: "
+            Print
+            Locate , 12: Print "THE NAME SHOULD HAVE NO PERIODS OR SPECIAL CHARACTERS"
             Locate , 12: Print "SAMPLE NAMES ARE NL1990 AL56 1956AL NATIONAL"
-            Locate 7, 37: Input LG$
+            Locate 7, 33: Input league$
 
-            If LG$ <> "" Then
+            If league$ <> "" Then
 
                 Do
                     Locate 13, 12: Print "ANY CHANGE (YN) "
@@ -124,38 +128,38 @@ Sub DefineLeague (LG$, D1$, D2$, D3$, D4$)
     Cls
     Color 15, 1
     Locate 5, 1: QPrint "Name for Division 1 ", 14, 1, -1
-    Locate , 21: QPrint PadRight$(D1$, 8), FG, BG, -1
+    Locate , 21: QPrint PadRight$(D1$, 20), FG, BG, -1
     Locate 7, 1: QPrint "Name for Division 2 ", 14, 1, -1
-    Locate , 21: QPrint PadRight$(D2$, 8), FG, BG, -1
+    Locate , 21: QPrint PadRight$(D2$, 20), FG, BG, -1
     Locate 9, 1: QPrint "Name for Division 3 ", 14, 1, -1
-    Locate , 21: QPrint PadRight$(D3$, 8), FG, BG, -1
+    Locate , 21: QPrint PadRight$(D3$, 20), FG, BG, -1
     Locate 11, 1: QPrint "Name for Division 4 ", 14, 1, -1
-    Locate , 21: QPrint PadRight$(D4$, 8), FG, BG, -1
+    Locate , 21: QPrint PadRight$(D4$, 20), FG, BG, -1
 
     GetDiv1:
     Locate 5, 21 'location of beginning of field
-    CapsOn = 0: NumOnly = 0: Max = 8 'specify field parameters
+    CapsOn = 0: NumOnly = 0: Max = 20 'specify field parameters
     Call TextIn(D1$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
     If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
     If XCode = 2 GoTo Done 'all done entering data
 
     GetDiv2:
     Locate 7, 21 'location of beginning of field
-    CapsOn = 0: NumOnly = 0: Max = 8 'specify field parameters
+    CapsOn = 0: NumOnly = 0: Max = 20 'specify field parameters
     Call TextIn(D2$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
     If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
     If XCode = 2 GoTo Done 'all done entering data
 
     GetDiv3:
     Locate 9, 21 'location of beginning of field
-    CapsOn = 0: NumOnly = 0: Max = 8 'specify field parameters
+    CapsOn = 0: NumOnly = 0: Max = 20 'specify field parameters
     Call TextIn(D3$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
     If XCode = 1 GoTo GetDiv2: 'can't back up any more, stay here
     If XCode = 2 GoTo Done 'all done entering data
 
     GetDiv4:
     Locate 11, 21 'location of beginning of field
-    CapsOn = 0: NumOnly = 0: Max = 8 'specify field parameters
+    CapsOn = 0: NumOnly = 0: Max = 20 'specify field parameters
     Call TextIn(D4$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
     If XCode = 1 GoTo GetDiv3: 'can't back up any more, stay here
 
@@ -173,95 +177,6 @@ Sub DefineLeague (LG$, D1$, D2$, D3$, D4$)
 
 End Sub
 
-
-'----------------------------------------
-'      ChooseLeague Subroutine
-'----------------------------------------
-'...explanation...
-Sub ChooseLeague (league$)
-
-    Shared Z1%()
-
-    Shared Z1$(), Z2$()
-
-    Do
-
-        Spec$ = diskPaths$(2) + "*.LIB"
-        Count% = FCount%(Spec$)
-
-        If Count% = 0 Then
-            Locate 10, 8
-            Call CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-            I$ = GetKeyPress$
-            Call CSMsgBox("", 0, Pass)
-        Else
-            ReDim leagueFiles$(0 To Count%)
-
-            For X = 1 To Count%
-                leagueFiles$(X) = Space$(12)
-            Next
-
-            leagueFiles$(0) = Spec$
-
-            Call ReadFile(leagueFiles$())
-
-            Do
-                Cls
-                Color , 1
-                Cls
-                Locate , 28
-                Color 14
-                Print "SELECT LEAGUE TO SCHEDULE": Color 15
-                Selection% = 1
-                Start% = 1
-                FileFGColr% = 15: FileBGColr% = 1
-                HiLiteFGColr% = 0: HiLiteBGColr% = 7
-                Rows% = 20
-                Columns% = 4
-                Spacing% = 6
-                Row% = 4
-                Column% = 1
-                Locate 25, 1
-                Color 14
-                Print "ENTER";: Color 15
-                Print "-SELECTS LEAGUE";
-
-                _MouseShow "DEFAULT"
-                MAMenu leagueFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
-                _MouseHide
-
-                If ExitCode% <> 27 Then
-
-                    Color 15, 1
-                    targetFile$ = leagueFiles$(Selection%)
-                    Locate 2, 33: Print targetFile$
-
-                    Do
-                        Locate 3, 33: Print "ANY CHANGE (YN)";
-                        I$ = GetKeyPress$
-                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
-                    Color 15, 0
-
-                End If
-
-            Loop Until UCase$(I$) = "N" Or ExitCode% = 27
-
-            If ExitCode% <> 27 Then
-
-                targetFile$ = RTrim$(targetFile$)
-                league$ = Left$(targetFile$, Len(targetFile$) - 4)
-
-            End If 'Done checking for ESC
-
-        End If 'Done checking for files
-
-    Loop Until UCase$(I$) = "N" Or ExitCode% = 27 Or Count% = 0
-
-    Color 15, 0
-    Cls
-
-End Sub
 
 '----------------------------------------
 '       ReviewEditLeague Subroutine
@@ -367,15 +282,15 @@ End Sub
 '        SaveLeague Subroutine
 '----------------------------------------
 '...explanation...
-Sub SaveLeague (LG$, D1$, D2$, D3$, D4$)
+Sub SaveLeague (league$, D1$, D2$, D3$, D4$)
 
     Shared Z1%()
 
     Shared Z1$(), Z2$()
 
-    Open diskPaths$(2) + LG$ + ".LIB" For Output As #2
+    Open diskPaths$(2) + league$ + ".LIB" For Output As #2
 
-    Print #2, LG$
+    Print #2, league$
     Print #2, D1$
     Print #2, D2$
     Print #2, D3$
@@ -416,9 +331,9 @@ Sub SaveLeague (LG$, D1$, D2$, D3$, D4$)
 
     Next X
 
-    Open diskPaths$(2) + LG$ + ".TMS" For Output As #2
+    Open diskPaths$(2) + league$ + ".TMS" For Output As #2
 
-    Write #2, LG$
+    Write #2, league$
     Write #2, D1$
     Write #2, D2$
     Write #2, D3$

@@ -621,7 +621,7 @@ Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
 
                     Cls
 
-                    Open diskPaths$(1) + R$ For Output As #1
+                    Open diskPaths$(1) + teamStatFile$ For Output As #1
 
                     Print #1, A$
                     Print #1, W2%
@@ -665,7 +665,7 @@ Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
 
                     If SS <> 0 Then
 
-                        Open diskPaths$(1) + R$ + "R" For Output As #1
+                        Open diskPaths$(1) + teamStatFile$ + "R" For Output As #1
 
                         For I = 0 To 22
                             For I1 = 0 To 6

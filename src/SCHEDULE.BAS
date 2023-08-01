@@ -86,7 +86,7 @@ Sub SCHEDULE ()
 
                         Locate 7, 32
                         Locate , 12: Print "ENTER NAME FOR SCHEDULE: ": Print
-                        Locate , 12: Print "THE NAME SHOULD HAVE NO PERIODS OR SPACES"
+                        Locate , 12: Print "THE NAME SHOULD HAVE NO PERIODS OR SPECIAL CHARACTERS"
                         Locate , 12: Print "DO NOT ADD A FILE EXTENSION; THE PROGRAM"
                         Locate , 12: Print "WILL AUTOMATICALLY ADD .SCD"
                         Locate , 12: Print "SAMPLE NAMES ARE ARKANSAS, LSU-68, IU76, ETC."
@@ -108,10 +108,13 @@ Sub SCHEDULE ()
                     Call NewSchedule(scheduleFile$)
 
                 Case 2 To 5:
-                    'Have the user pick a schedule
-                    Call LoadSchedule(scheduleFile$)
 
-                    If scheduleFile$ <> "" Then
+                    scheduleFile$ = ChooseFile$ (diskPaths$(0) + "*.SCD", "SCHEDULE", ExitCode%)
+
+                    If ExitCode% <> 27 And ExitCode% <> 0 Then
+
+                        Call LoadScheduleInfo (scheduleFile$)
+
                         Cls
 
                         'Extract / Change / Global
@@ -708,7 +711,7 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
                 Do
                     Locate 7, 32
                     Locate , 12: Print "ENTER NAME FOR SUB-SCHEDULE: ": Print
-                    Locate , 12: Print "THE NAME SHOULD HAVE NO PERIODS OR SPACES"
+                    Locate , 12: Print "THE NAME SHOULD HAVE NO PERIODS OR SPECIAL CHARACTERS"
                     Locate , 12: Print "DO NOT ADD A FILE EXTENSION; THE PROGRAM"
                     Locate , 12: Print "WILL AUTOMATICALLY ADD .SCD"
                     Locate , 12: Print "SAMPLE NAMES ARE INDIANA, BOS68, CHI-76, ETC      "
@@ -893,6 +896,7 @@ Sub EditParameters ()
 
 End Sub
 
+
 '----------------------------------------
 '    BoxscoreMaintenance SubRoutine
 '----------------------------------------
@@ -919,6 +923,8 @@ Sub BoxscoreMaintenance ()
 
     Do
 
+        Color 15, 0
+
         Call TITLE_SCHEDULER
 
         Call box0(7, 15, 14, 65, 2, 15, 1)
@@ -930,74 +936,17 @@ Sub BoxscoreMaintenance ()
         If ExitCode% <> 27 Then
 
             Select Case Selection%
+
                 Case 1:
                     Call EditParameters
 
                 Case 2:
-                    Spec$ = diskPaths$(1) + "*.SPC"
-                    Count% = FCount%(Spec$)
-
-                    If Count% = 0 Then
-                        Locate 10, 8
-                        Call CSMsgBox("NO SPECIAL EVENTS BOXSCORES WERE FOUND PRESS ANY KEY TO RETURN TO MENU", 26, Pass)
-                        I$ = GetKeyPress$
-                        Call CSMsgBox("", 0, Pass)
-                    Else
-                        ReDim boxFiles$(0 To Count%)
-                        For X = 1 To Count%
-                            boxFiles$(X) = Space$(12)
-                        Next
-
-                        boxFiles$(0) = Spec$
-                        Call ReadFile(boxFiles$())
-
-                        Do
-                            Cls
-                            Color , 1
-                            Cls
-                            Locate , 28
-                            Color 14
-                            Print "SELECT BOXSCORE TO VIEW": Color 15
-                            Selection% = 1
-                            Start% = 1
-                            FileFGColr% = 15: FileBGColr% = 1
-                            HiLiteFGColr% = 0: HiLiteBGColr% = 7
-                            Rows% = 20
-                            Columns% = 4
-                            Spacing% = 6
-                            Row% = 4
-                            Column% = 1
-                            Locate 25, 1
-                            Color 14
-                            Print "ENTER";: Color 15
-                            Print "-SELECTS BOXSCORE";
-
-                            _MouseShow "DEFAULT"
-                            MAMenu boxFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
-                            _MouseHide
-
-                            If ExitCode% <> 27 Then
-                                Color 15, 1
-                                targetFile$ = boxFiles$(Selection%)
-                                Locate 2, 33: Print targetFile$
-
-                                Do
-                                    Locate 3, 33: Print "ANY CHANGE (YN)";
-                                    I$ = GetKeyPress$
-                                Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
-                                Color 15, 0
-
-                                If UCase$(I$) = "N" Then
-                                    boxName$ = diskPaths$(1) + targetFile$
-                                    'ReDim array$(500) 'holds the main editor string array
-                                End If
-
-                            End If
-
-                        Loop Until UCase$(I$) = "N" Or ExitCode% = 27
-
-                    End If 'Done checking for file count
+                    boxscoreFile$ = ChooseFile$ (diskPaths$(1) + "*.SPC", "BOXSCORE", ExitCode%)
+                    
+                    If ExitCode% <> 27 And ExitCode% <> 0 Then
+                        boxName$ = diskPaths$(1) + boxscoreFile$
+                        'ReDim array$(500) 'holds the main editor string array
+                    End If
 
                 Case 3
                     Spec$ = diskPaths$(1) + "BOX*."
@@ -1220,39 +1169,6 @@ Sub ChangeGlobalSettings ()
 
 End Sub
 
-'----------------------------------------
-'       LoadSchedule SubRoutine
-'----------------------------------------
-'...explanation...
-Sub LoadSchedule (targetFile$)
-
-    Do
-        'Display list of files...       
-        Spec$ = diskPaths$(0) + "*.SCD"
-        Count% = FCount%(Spec$)
-
-        If Count% = 0 Then
-            Locate 10, 8
-            Call CSMsgBox("NO SCHEDULE FILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-            I$ = GetKeyPress$
-            Call CSMsgBox("", 0, Pass)
-        Else
-            ReDim scheduleFiles$(0 To Count%)
-            
-            For X = 1 To Count%
-                scheduleFiles$(X) = Space$(12)
-            Next
-
-            scheduleFiles$(0) = Spec$
-            Call ReadFile(scheduleFiles$())
-            Call SelectScheduleFile(targetFile$, scheduleFiles$(), Count%, menuExit%)
-
-        End If
-
-    Loop Until Count% = 0 Or targetFile$ <> "" Or menuExit% = 27
-
-End Sub
-
 
 '----------------------------------------
 '       DeleteSchedules SubRoutine
@@ -1299,73 +1215,6 @@ Sub DeleteSchedules (fileChoice%, fileSpec$)
             Kill (diskPaths$(1) + boxFiles$(X))
             Locate 12, 34: Print "DELETING "; boxFiles$(X)
         Next
-
-    End If
-
-End Sub
-
-
-'----------------------------------------
-'     SelectScheduleFile SubRoutine
-'----------------------------------------
-'...explanation...
-Sub SelectScheduleFile (targetFile$, scheduleFiles$(), FileCount%, ExitCode%)
-
-    Do
-        Cls
-        Color , 1
-        Cls
-        Locate , 28
-        Color 14
-        Print "SELECT SCHEDULE TO VIEW"
-        Color 15
-        Selection% = 1
-        Start% = 1
-        FileFGColr% = 15: FileBGColr% = 1
-        HiLiteFGColr% = 0: HiLiteBGColr% = 7
-        Rows% = 20
-        Columns% = 4
-        Spacing% = 6
-        Row% = 4
-        Column% = 1
-        Locate 25, 1
-        Color 14
-        Print "ESC";: Color 15
-        Print "-SELECT NEW ID  PGDN  PGUP  ";: Color 14
-        Print "ENTER";: Color 15
-        Print "-SELECTS SCHEDULE";
-
-        _MouseShow "DEFAULT"
-        MAMenu scheduleFiles$(), Selection%, Start%, FileCount%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
-        _MouseHide
-
-        If ExitCode% <> 27 Then
-            Color 15, 1
-            targetFile$ = RTrim$(scheduleFiles$(Selection%))
-            Locate 2, 33: Print targetFile$
-
-            Do
-                Locate 3, 33: Print "ANY CHANGE (YN)";
-                I$ = GetKeyPress$
-            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
-            Color 15, 0
-
-        End If
-
-    Loop Until ExitCode% = 27 Or UCase$(I$) = "N"
-
-    If ExitCode% <> 27 Then
-
-        targetFile$ = RTrim$(targetFile$)
-        
-        '-- This is where we strip the file extension
-        '-- If we remove this, we can drop the .SCD in the rest of the code
-        fileNoExt$ = Left$(targetFile$, Len(targetFile$) - 4)
-        targetFile$ = fileNoExt$
-        Color 15, 0
-        
-        Call LoadScheduleInfo (targetFile$)
 
     End If
 
@@ -1464,241 +1313,183 @@ Sub CreateSeasonSchedule ()
 
     If choice% <> 4 Then
 
-        Do
+        leagueFile$ = ChooseFile$ (diskPaths$(2) + "*.LIB", "LEAGUE", ExitCode%)
 
-            Spec$ = diskPaths$(2) + "*.LIB"
-            Count% = FCount%(Spec$)
+        If ExitCode% <> 27 And ExitCode% <> 0 Then
 
-            If Count% = 0 Then
-                Locate 10, 8
-                Call CSMsgBox("NO LEAGUE FILES WERE FOUND PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-                I$ = GetKeyPress$
-                Call CSMsgBox("", 0, Pass)
-            Else
+            Open diskPaths$(2) + leagueFile$ + ".LIB" For Input As #2
 
-                ReDim leagueFiles$(0 To Count%)
+            Input #2, LG$
+            Input #2, D1$
+            Input #2, D2$
+            Input #2, D3$
+            Input #2, D4$
 
-                For X = 1 To Count%
-                    leagueFiles$(X) = Space$(12)
+            For X = 1 To 40
+                Input #2, Z1$(X)
+                Input #2, scheduleZ1%(X)
+                Input #2, Z2$(X)
+            Next
+
+            Close 2
+
+            Select Case choice%
+                Case 0: scxFile$ = "154TEMP.SCX"
+                Case 1: scxFile$ = "162TENTM.SCX"
+                Case 2: scxFile$ = "16212TM.SCX"
+                Case 3: scxFile$ = "16214TM.SCX"
+            End Select
+
+            Open scxFile$ For Random As #1 Len = SCHEDULE_SIZE_BYTES
+            fileLength& = LOF(1)
+            scheduleAP%(0) = fileLength& / SCHEDULE_SIZE_BYTES
+
+            BS% = Int((scheduleAP%(0) - 1) / 20)
+
+            For X = 0 To 18
+                Field #1, X * 2 As X$, 2 As Q$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
+            Next
+
+            Field #1, 38 As X$, 2 As Q$(22), 2 As Q$(23), 3 As Q$(20), 3 As Q$(21)
+
+            For I = 1 To scheduleAP%(0)
+                Get #1, I
+                For X = 0 To 18: scheduleNG%(I, X) = CVI(Q$(X + 1)): Next
+                For X = 0 To 1: scheduleYN$(I, X) = RTrim$(Q$(20 + X)): Next
+
+                visitorScores(I) = CVI(Q$(22))
+                homeScores(I) = CVI(Q$(23))
+
+                If scheduleNG%(I, 14) > 8 Then scheduleNG%(I, 14) = 0
+                If scheduleNG%(I, 6) > 1 Then scheduleNG%(I, 6) = 1
+                If scheduleNG%(I, 7) > 1 Then scheduleNG%(I, 7) = 1
+                If scheduleNG%(I, 9) > 1 Then scheduleNG%(I, 9) = 1
+                If scheduleNG%(I, 10) > 1 Then scheduleNG%(I, 10) = 1
+                If scheduleNG%(I, 11) > 1 Then scheduleNG%(I, 11) = 1
+            Next
+
+            Close 1
+
+            Call ChangeGlobalSettings
+
+            Do
+                Color 15, 0
+                Cls
+
+                JJ = 7
+
+                Locate 6, 8: Color 15, 1
+
+                'Print box top
+                Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+
+                'Print box sides
+                For II = 1 To JJ
+                    Locate 6 + II, 8
+                    Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
                 Next
 
-                leagueFiles$(0) = Spec$
+                'Print box bottom
+                Locate 7 + JJ, 8
+                Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
 
-                Call ReadFile(leagueFiles$())
+                Locate 7, 32
+                Locate , 12: Print "ENTER NAME FOR SCHEDULE: ": Print
+                Locate , 12: Print "THE NAME SHOULD HAVE NO PERIODS OR SPECIAL CHARACTERS"
+                Locate , 12: Print "DO NOT ADD A FILE EXTENSION; THE PROGRAM"
+                Locate , 12: Print "WILL AUTOMATICALLY ADD .SCD"
+                Locate , 12: Print "SAMPLE NAMES ARE MONTREAL, STL68, NY76, CIN90, ETC"
+                Locate 7, 37: Input scxFile$
 
-                Do
-                    Cls
-                    Color , 1
-                    Cls
-                    Locate , 28
-                    Color 14
-                    Print "SELECT LEAGUE TO SCHEDULE": Color 15
-                    Selection% = 1
-                    Start% = 1
-                    FileFGColr% = 15: FileBGColr% = 1
-                    HiLiteFGColr% = 0: HiLiteBGColr% = 7
-                    Rows% = 20
-                    Columns% = 4
-                    Spacing% = 6
-                    Row% = 4
-                    Column% = 1
-                    Locate 25, 1
-                    Color 14
-                    Print "ENTER";: Color 15
-                    Print "-SELECTS LEAGUE";
-
-                    _MouseShow "DEFAULT"
-                    MAMenu leagueFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
-                    _MouseHide
-
-                    If ExitCode% <> 27 Then
-                        leagueFile$ = leagueFiles$(Selection%)
-                        Color 15, 1
-                        Locate 2, 33: Print leagueFile$
-
-                        Do
-                            Locate 3, 33: Print "ANY CHANGE? (YN)";
-                            I$ = GetKeyPress$
-                        Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
-                        Color 15, 0
-
-                    End If
-
-                Loop Until UCase$(I$) = "N" Or ExitCode% = 27
-
-                If ExitCode% <> 27 Then
-
-                    Open diskPaths$(2) + leagueFile$ For Input As #2
-                    Input #2, LG$
-                    Input #2, D1$: Input #2, D2$: Input #2, D3$: Input #2, D4$
-                    For X = 1 To 40
-                        Input #2, Z1$(X): Input #2, scheduleZ1%(X): Input #2, Z2$(X)
-                    Next
-                    Close 2
-
-                    Select Case choice%
-                        Case 0: scxFile$ = "154TEMP.SCX"
-                        Case 1: scxFile$ = "162TENTM.SCX"
-                        Case 2: scxFile$ = "16212TM.SCX"
-                        Case 3: scxFile$ = "16214TM.SCX"
-                    End Select
-
-                    Open scxFile$ For Random As #1 Len = SCHEDULE_SIZE_BYTES
-                    fileLength& = LOF(1)
-                    scheduleAP%(0) = fileLength& / SCHEDULE_SIZE_BYTES
-
-                    BS% = Int((scheduleAP%(0) - 1) / 20)
-
-                    For X = 0 To 18
-                        Field #1, X * 2 As X$, 2 As Q$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
-                    Next
-
-                    Field #1, 38 As X$, 2 As Q$(22), 2 As Q$(23), 3 As Q$(20), 3 As Q$(21)
-
-                    For I = 1 To scheduleAP%(0)
-                        Get #1, I
-                        For X = 0 To 18: scheduleNG%(I, X) = CVI(Q$(X + 1)): Next
-                        For X = 0 To 1: scheduleYN$(I, X) = RTrim$(Q$(20 + X)): Next
-
-                        visitorScores(I) = CVI(Q$(22))
-                        homeScores(I) = CVI(Q$(23))
-
-                        If scheduleNG%(I, 14) > 8 Then scheduleNG%(I, 14) = 0
-                        If scheduleNG%(I, 6) > 1 Then scheduleNG%(I, 6) = 1
-                        If scheduleNG%(I, 7) > 1 Then scheduleNG%(I, 7) = 1
-                        If scheduleNG%(I, 9) > 1 Then scheduleNG%(I, 9) = 1
-                        If scheduleNG%(I, 10) > 1 Then scheduleNG%(I, 10) = 1
-                        If scheduleNG%(I, 11) > 1 Then scheduleNG%(I, 11) = 1
-                    Next
-
-                    Close 1
-
-                    Call ChangeGlobalSettings
+                If scxFile$ <> "" Then
 
                     Do
-                        Color 15, 0
-                        Cls
+                        Locate 13, 12
+                        Print "ANY CHANGE (YN) "
+                        I$ = GetKeyPress$
+                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
-                        JJ = 7
+                End If
 
-                        Locate 6, 8: Color 15, 1
+            Loop Until UCase$(I$) = "N" And scxFile$ <> ""
 
-                        'Print box top
-                        Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+            Color 15, 0
 
-                        'Print box sides
-                        For II = 1 To JJ
-                            Locate 6 + II, 8
-                            Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-                        Next
+            For I = 1 To 20
+                Print scheduleZ1%(I), Z2$(I)
+            Next
 
-                        'Print box bottom
-                        Locate 7 + JJ, 8
-                        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+            For I = 1 To scheduleAP%(0)
+                Print "GAME"; I
+                Print scheduleNG%(I, 0), scheduleYN$(I, 0)
+                Print scheduleNG%(I, 1), scheduleYN$(I, 1)
 
-                        Locate 7, 32
-                        Locate , 12: Print "ENTER NAME FOR SCHEDULE: ": Print
-                        Locate , 12: Print "THE NAME SHOULD HAVE NO PERIODS OR SPACES"
-                        Locate , 12: Print "DO NOT ADD A FILE EXTENSION; THE PROGRAM"
-                        Locate , 12: Print "WILL AUTOMATICALLY ADD .SCD"
-                        Locate , 12: Print "SAMPLE NAMES ARE MONTREAL, STL68, NY76, CIN90, ETC"
-                        Locate 7, 37: Input scxFile$
-
-                        If scxFile$ <> "" Then
-
-                            Do
-                                Locate 13, 12
-                                Print "ANY CHANGE (YN) "
-                                I$ = GetKeyPress$
-                            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
+                Select Case choice%
+                    Case 0 To 1:
+                        X = scheduleNG%(I, 0)
+                        scheduleNG%(I, 0) = scheduleZ1%(X)
+                        scheduleYN$(I, 0) = Z2$(X)
+                        X = scheduleNG%(I, 1)
+                        scheduleNG%(I, 1) = scheduleZ1%(X)
+                        scheduleYN$(I, 1) = Z2$(X)
+                    Case 2:
+                        If scheduleNG%(I, 0) <= 6 Then
+                            X = scheduleNG%(I, 0)
+                            Print X
+                            scheduleNG%(I, 0) = scheduleZ1%(X)
+                            scheduleYN$(I, 0) = Z2$(X)
+                        Else
+                            X = scheduleNG%(I, 0)
+                            Print X
+                            scheduleNG%(I, 0) = scheduleZ1%(X + 4)
+                            scheduleYN$(I, 0) = Z2$(X + 4)
                         End If
 
-                    Loop Until UCase$(I$) = "N" And scxFile$ <> ""
+                        If scheduleNG%(I, 1) <= 6 Then
+                            X = scheduleNG%(I, 1)
+                            Print X
+                            scheduleNG%(I, 1) = scheduleZ1%(X)
+                            scheduleYN$(I, 1) = Z2$(X)
+                        Else
+                            X = scheduleNG%(I, 1)
+                            Print X
+                            scheduleNG%(I, 1) = scheduleZ1%(X + 4)
+                            scheduleYN$(I, 1) = Z2$(X + 4)
+                        End If
 
-                    Color 15, 0
+                    Case 3:
+                        If scheduleNG%(I, 0) <= 7 Then
+                            X = scheduleNG%(I, 0)
+                            scheduleNG%(I, 0) = scheduleZ1%(X)
+                            scheduleYN$(I, 0) = Z2$(X)
+                        Else
+                            X = scheduleNG%(I, 0)
+                            scheduleNG%(I, 0) = scheduleZ1%(X + 3)
+                            scheduleYN$(I, 0) = Z2$(X + 3)
+                        End If
 
-                    For I = 1 To 20
-                        Print scheduleZ1%(I), Z2$(I)
-                    Next
+                        If scheduleNG%(I, 1) <= 7 Then
+                            X = scheduleNG%(I, 1)
+                            scheduleNG%(I, 1) = scheduleZ1%(X)
+                            scheduleYN$(I, 1) = Z2$(X)
+                        Else
+                            X = scheduleNG%(I, 1)
+                            scheduleNG%(I, 1) = scheduleZ1%(X + 3)
+                            scheduleYN$(I, 1) = Z2$(X + 3)
+                        End If
 
-                    For I = 1 To scheduleAP%(0)
-                        Print "GAME"; I
-                        Print scheduleNG%(I, 0), scheduleYN$(I, 0)
-                        Print scheduleNG%(I, 1), scheduleYN$(I, 1)
+                End Select
 
-                        Select Case choice%
-                            Case 0 To 1:
-                                X = scheduleNG%(I, 0)
-                                scheduleNG%(I, 0) = scheduleZ1%(X)
-                                scheduleYN$(I, 0) = Z2$(X)
-                                X = scheduleNG%(I, 1)
-                                scheduleNG%(I, 1) = scheduleZ1%(X)
-                                scheduleYN$(I, 1) = Z2$(X)
-                            Case 2:
-                                If scheduleNG%(I, 0) <= 6 Then
-                                    X = scheduleNG%(I, 0)
-                                    Print X
-                                    scheduleNG%(I, 0) = scheduleZ1%(X)
-                                    scheduleYN$(I, 0) = Z2$(X)
-                                Else
-                                    X = scheduleNG%(I, 0)
-                                    Print X
-                                    scheduleNG%(I, 0) = scheduleZ1%(X + 4)
-                                    scheduleYN$(I, 0) = Z2$(X + 4)
-                                End If
+                Print "GAME"; I
+                Print scheduleNG%(I, 0), scheduleYN$(I, 0)
+                Print scheduleNG%(I, 1), scheduleYN$(I, 1)
+            Next 'done looping through games
 
-                                If scheduleNG%(I, 1) <= 6 Then
-                                    X = scheduleNG%(I, 1)
-                                    Print X
-                                    scheduleNG%(I, 1) = scheduleZ1%(X)
-                                    scheduleYN$(I, 1) = Z2$(X)
-                                Else
-                                    X = scheduleNG%(I, 1)
-                                    Print X
-                                    scheduleNG%(I, 1) = scheduleZ1%(X + 4)
-                                    scheduleYN$(I, 1) = Z2$(X + 4)
-                                End If
+            Call SaveScheduleFile(scxFile$)
 
-                            Case 3:
-                                If scheduleNG%(I, 0) <= 7 Then
-                                    X = scheduleNG%(I, 0)
-                                    scheduleNG%(I, 0) = scheduleZ1%(X)
-                                    scheduleYN$(I, 0) = Z2$(X)
-                                Else
-                                    X = scheduleNG%(I, 0)
-                                    scheduleNG%(I, 0) = scheduleZ1%(X + 3)
-                                    scheduleYN$(I, 0) = Z2$(X + 3)
-                                End If
+        End If 'Done checking for ESC
 
-                                If scheduleNG%(I, 1) <= 7 Then
-                                    X = scheduleNG%(I, 1)
-                                    scheduleNG%(I, 1) = scheduleZ1%(X)
-                                    scheduleYN$(I, 1) = Z2$(X)
-                                Else
-                                    X = scheduleNG%(I, 1)
-                                    scheduleNG%(I, 1) = scheduleZ1%(X + 3)
-                                    scheduleYN$(I, 1) = Z2$(X + 3)
-                                End If
-
-                        End Select
-
-                        Print "GAME"; I
-                        Print scheduleNG%(I, 0), scheduleYN$(I, 0)
-                        Print scheduleNG%(I, 1), scheduleYN$(I, 1)
-                    Next 'done looping through games
-
-                    Call SaveScheduleFile(scxFile$)
-
-                End If 'Done checking for ESC
-
-            End If 'Done checking for count = 0
-
-            '...Until we press ESC
-        Loop Until ExitCode% = 27 Or Count% = 0
-
-    End If 'Done checking for exit
+    End If 'Done checking for count = 0
 
 End Sub
 

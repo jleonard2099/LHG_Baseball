@@ -25,22 +25,29 @@ Sub LOADER
     '----------------------------------------
 
     If Not _FileExists("DEV.BAS") Then
+
         Open "DEV.BAS" For Output As #1
+
         For I = 0 To 3
             Print #1, _CWD$ + "\"
         Next
+
         Close 1
+
     End If
 
     Open "DEV.BAS" For Input As #1
+
     For I = 0 To 3
         Input #1, diskPaths$(I)
     Next
+
     Close 1
 
-
     If Not _FileExists("DEFERA") Then
+
         Open "DEFERA" For Output As #1
+
         For I = 1 To 4:
             Print #1, 0
         Next
@@ -52,6 +59,7 @@ Sub LOADER
         Next
 
         Close 1
+
     End If
 
     Open "DEFERA" For Input As #1
@@ -84,10 +92,10 @@ Sub LOADER
 
         Close 2
 
-        Open diskPaths$(0) + scheduleFile$ For Random As #1 Len = 48
+        Open diskPaths$(0) + scheduleFile$ For Random As #1 Len = SCHEDULE_SIZE_BYTES
 
         For X = 0 To 18
-            Field #1, X * 2 As X$, 2 As Q2$(X + 1), 48 - 2 - 2 * X As X$
+            Field #1, X * 2 As X$, 2 As Q2$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
         Next
 
         Field #1, 38 As X$, 2 As Q2$(22), 2 As Q2$(23), 3 As Q2$(20), 3 As Q2$(21)
