@@ -55,7 +55,7 @@ _MouseHide
 	IF ExitCode% = 27 THEN END
 	targetFile$ = leagueFiles$(SELECTION%)
 	LOCATE 2, 33: PRINT targetFile$
-LOCATE , 33: PRINT "ANY CHANGE (YN)";
+LOCATE , 33: PRINT "ANY CHANGE? (Y/N)";
 	COLOR 15, 0
 3910 I$ = GetKeyPress$
 	IF UCASE$(I$) = "Y" THEN 1310

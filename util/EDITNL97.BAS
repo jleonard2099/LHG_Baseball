@@ -467,7 +467,7 @@ RETURN
 182 IF BO% = 1 THEN BO% = 0: GOTO 1445
 
 183 LOCATE 2, 33: COLOR 15, 0: COLOR L%(11), L%(12): PRINT T$: COLOR 15, 4
-	LOCATE , 33: PRINT "ANY CHANGE (YN)";
+	LOCATE , 33: PRINT "ANY CHANGE? (Y/N)";
 	I$GetKeyPress$
 	IF UCASE$(I$) = "Y" THEN 1445
 	COLOR 15, 0
@@ -719,7 +719,7 @@ RETURN
 
 3110 LOCATE 17, 60: PRINT B$(I2 - 1)
 
-3115 LOCATE 18, 50: PRINT "ANY CHANGE (YN)";
+3115 LOCATE 18, 50: PRINT "ANY CHANGE? (Y/N)";
 3116 I$ = GetKeyPress$
 
 3117 IF UCASE$(I$) = "Y" THEN 3100
@@ -749,7 +749,7 @@ RETURN
 
 3210 LOCATE 17, 60: PRINT P$(I2 - 1)
 
-3215 LOCATE 18, 50: PRINT "ANY CHANGE (YN)";
+3215 LOCATE 18, 50: PRINT "ANY CHANGE? (Y/N)";
 3216 I$ = GetKeyPress$
 
 3217 IF UCASE$(I$) = "Y" THEN 3200
@@ -1156,9 +1156,9 @@ CLOSE #1
 
 
 
-'------------------------------
+'----------------------------------------
 '      PadRight Function
-'------------------------------
+'----------------------------------------
 ' Pads string to the right with spaces
 Function PadRight$ (X$, Length)
     PadRight$ = X$ + Space$(Length - Len(X$)) 'for display only
@@ -1169,9 +1169,9 @@ FUNCTION PadRight$ (X$, Length)
 END FUNCTION
 
 
-'------------------------------
+'----------------------------------------
 '      TITLE Subroutine
-'------------------------------
+'----------------------------------------
 ' Displays window title / game copyright
 SUB TITLE ()
 	COLOR , 0: KEY OFF: CLS

@@ -1,3 +1,9 @@
+'----------------------------------------
+'            GROUND Subroutine
+'----------------------------------------
+'This subroutine provides a quick interface
+'for the user to modify ground ball and 
+'flyout calculations from the relevant params.
 Sub GROUND ()
 
     _Title "Full Count Baseball - Groundball Calculations"
@@ -221,7 +227,7 @@ Sub GROUND ()
 
             Do
                 Cls
-                Print "EDIT ANOTHER TEAM (YN) ";
+                Print "EDIT ANOTHER TEAM? (Y/N) ";
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 

@@ -1,3 +1,10 @@
+'----------------------------------------
+'           CAREDIT Subroutine
+'----------------------------------------
+'This routine allows the user to choose a
+'career file, then loads in the stats and 
+'gives the users options for editing and 
+'saving the file.
 Sub CAREDIT ()
 
     _Title "Full Count Baseball - Edit Career Files"
@@ -28,23 +35,35 @@ Sub CAREDIT ()
         For I = 0 To 79: Input #2, careerP$(I): Next
 
         For J = 1 To 15: 
+
             For I = 0 To 99: 
+
                 For I1 = O To 17: 
                     Input #2, BRS%(J, I, I1)
                 Next I1
-                Locate 12, 55: Color 3
+
+                Color 3
+                Locate 12, 38
                 TMR = TMR - 1: Print Using "####"; TMR
+
             Next I
+
         Next J
 
         For J = 1 To 15: 
+
             For I = 0 To 79: 
+
                 For I1 = 0 To 16: 
                     Input #2, PRS%(J, I, I1)
                 Next I1
-                Locate 12, 55: Color 3
+
+                Color 3
+                Locate 12, 38
                 TMR = TMR - 1: Print Using "####"; TMR
+
             Next I
+
         Next J
 
         Close #2
@@ -88,23 +107,35 @@ Sub CAREDIT ()
                     For I = 0 To 79: Write #3, careerP$(I): Next
 
                     For J = 1 To 15: 
+
                         For I = 0 To 99: 
+
                             For I1 = O To 17: 
                                 Write #3, BRS%(J, I, I1)
                             Next I1
-                            Locate 12, 55: Color 3
+
+                            Color 3
+                            Locate 12, 38
                             TMR = TMR - 1: Print Using "####"; TMR
+
                         Next I
+
                     Next J
 
                     For J = 1 To 15:
+
                         For I = 0 To 79: 
+
                             For I1 = 0 To 16: 
                                 Write #3, PRS%(J, I, I1)
                             Next I1
-                            Locate 12, 55: Color 3
+
+                            Color 3
+                            Locate 12, 38
                             TMR = TMR - 1: Print Using "####"; TMR
+
                         Next I
+
                     Next J
 
                     Close #3
@@ -118,9 +149,12 @@ Sub CAREDIT ()
 End Sub
 
 '----------------------------------------
-'       EditBatters Subroutine
+'         EditBatters Subroutine
 '----------------------------------------
-'...explanation...
+'This routine gives the user a choice of
+'batters to edit from the career stats,
+'then presents options for handling them
+'before deletions or edits are processed.
 Sub EditBatters (careerFile$)
 
     Shared careerB$()
@@ -170,11 +204,14 @@ Sub EditBatters (careerFile$)
         If B9 <> 100 Then
 
             If B9 < 99 Then 
+
                 Cls
-                Locate 5, 20
-                Color 15: Print "PRINT CAREER STATS OF ";
-                Color 12: Print careerB$(B9);: Color 15: Print " BEFORE "
-                Locate , 20: Print "DELETING THEM? (Y/N)"
+
+                Color 15
+                Locate 5, 20: Print "PRINT CAREER STATS OF ";
+                Color 12: Print careerB$(B9)
+                Color 15
+                Locate , 20: Print "BEFORE DELETING THEM? (Y/N)"
 
                 Color 14
                 Print
@@ -232,9 +269,12 @@ Sub EditBatters (careerFile$)
 End Sub
 
 '----------------------------------------
-'       EditPitchers Subroutine
+'         EditPitchers Subroutine
 '----------------------------------------
-'...explanation...
+'This routine gives the user a choice of
+'pitchers to edit from the career stats,
+'then presents options for handling them
+'before deletions or edits are processed.
 Sub EditPitchers (careerFile$)
 
     Shared careerP$()
@@ -282,11 +322,11 @@ Sub EditPitchers (careerFile$)
 
                 Cls
 
-                Locate 5, 20
-                Color 15: Print "PRINT CAREER STATS OF ";
-                Color 12: Print careerP$(B9);
-                Color 15: Print " BEFORE "
-                Locate , 20: Print "DELETING THEM? (Y/N)"
+                Color 15
+                Locate 5, 20: Print "PRINT CAREER STATS OF ";
+                Color 12: Print careerB$(B9)
+                Color 15
+                Locate , 20: Print "BEFORE DELETING THEM? (Y/N)"
 
                 Color 14
                 Print
@@ -347,7 +387,8 @@ End Sub
 '----------------------------------------
 '      PrintBatterStats Subroutine
 '----------------------------------------
-'...explanation...
+'This routine formats and prints career 
+'stats associated with the team's batters.
 Sub PrintBatterStats (careerFile$, playerIdx)
 
     Dim I2!, I3!, I4!
@@ -459,8 +500,8 @@ Sub PrintBatterStats (careerFile$, playerIdx)
     If I4! > 0 And I4! < 100 Then LPrint Tab(123); ".";: LPrint Using "###"; I4!
     If I4! >= 100 Then LPrint Tab(123); ".";: LPrint Using "###"; I4!
 
-    '-- Why is this important?
-    '-- Do we use this elsewhere?
+    'Why is this important?
+    'Only being scoped to this routine, wouldn't these stats be 0 each time it's called?
     TT1 = 0
     TT2 = 0
     TT3 = 0
@@ -483,7 +524,8 @@ End Sub
 '----------------------------------------
 '      PrintPitcherStats Subroutine
 '----------------------------------------
-'...explanation...
+'This routine formats and prints career 
+'stats associated with the team's pitchers.
 Sub PrintPitcherStats (careerFile$, playerIdx)
 
     Dim I2!, I3!, I4!

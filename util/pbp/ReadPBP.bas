@@ -40,9 +40,9 @@ Resume Next ' moves program to code following the error.
 
 
 
-'------------------------------
-'   GETRPBP Subroutine
-'------------------------------
+'----------------------------------------
+'           GETRPBP Subroutine
+'----------------------------------------
 ' ...explanation...
 Sub GETRPBP (pbpIdx%, pbpString$)
     Open "REVISED.PBP" For Random As #1 Len = 44

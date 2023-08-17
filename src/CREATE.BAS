@@ -1,3 +1,9 @@
+'----------------------------------------
+'           CREATE Subroutine
+'----------------------------------------
+'This subroutine provides a menu for the
+'user to choose options related to the
+'creation and editing of leagues
 Sub CREATE ()
 
     _Title "Full Count Baseball - Manage Leagues"
@@ -52,14 +58,14 @@ Sub CREATE ()
             Select Case Selection%
 
                 Case 1:
-                    Call DefineLeague(LG$, D1$, D2$, D3$, D4$)
-                    Call ReviewEditLeague(LG$, D1$, D2$, D3$, D4$)
+                    Call DefineLeague(league$, D1$, D2$, D3$, D4$)
+                    Call ReviewEditLeague(league$, D1$, D2$, D3$, D4$)
 
                 Case 2:
-                    LG$ = ChooseFile$ (diskPaths$(2) + "*.LIB", "LEAGUE", ExitCode%)
+                    league$ = ChooseFile$ (diskPaths$(2) + "*.LIB", "LEAGUE", ExitCode%)
 
                     If ExitCode% <> 27 And ExitCode% <> 0 Then
-                        Call ReviewEditLeague(LG$, D1$, D2$, D3$, D4$)
+                        Call ReviewEditLeague(league$, D1$, D2$, D3$, D4$)
                     End If
 
             End Select
@@ -74,7 +80,9 @@ End Sub
 '----------------------------------------
 '       DefineLeague Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine assists the user with the
+'input of paramters related to the league's
+'general naming and setup
 Sub DefineLeague (league$, D1$, D2$, D3$, D4$)
 
     Do
@@ -112,7 +120,7 @@ Sub DefineLeague (league$, D1$, D2$, D3$, D4$)
             If league$ <> "" Then
 
                 Do
-                    Locate 13, 12: Print "ANY CHANGE (YN) "
+                    Locate 13, 12: Print "ANY CHANGE? (Y/N) "
                     I$ = GetKeyPress$
                 Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -179,9 +187,11 @@ End Sub
 
 
 '----------------------------------------
-'       ReviewEditLeague Subroutine
+'      ReviewEditLeague Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine provides an interface to
+'the user allowing them to choose / clear
+'teams from the league definition.
 Sub ReviewEditLeague (league$, D1$, D2$, D3$, D4$)
 
     Shared Z1%()
@@ -281,7 +291,9 @@ End Sub
 '----------------------------------------
 '        SaveLeague Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine writes the league team
+'memberships and definition to each of
+'the corresponding files (.LIB, .TMS)
 Sub SaveLeague (league$, D1$, D2$, D3$, D4$)
 
     Shared Z1%()

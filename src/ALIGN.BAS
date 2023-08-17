@@ -1,3 +1,12 @@
+'----------------------------------------
+'             ALIGN Subroutine
+'----------------------------------------
+'This routine presents a menu / interface
+'that assists the user with aligning 
+'player names in separate stat files. 
+'(ie, Road Vs. Local) This should be done 
+'before merging stats, since player name 
+'entry may not be consistent.
 Sub ALIGN ()
 
     _Title "Full Count Baseball - Align Stats"
@@ -25,7 +34,6 @@ Sub ALIGN ()
             Locate 16, 5: Print Space$(55)
             Color 11
 
-            'Call GetDiskID_ALIGN(A$)
             Call ChooseTeam (YN$, NTMS, teamNbr, team$)
             statFile$ = nameStatFile$(team$)
 
@@ -107,6 +115,7 @@ Sub ALIGN ()
                         Input #1, pitcherNames$(I)
                         Input #1, statP%(I)
                     Next I
+
                     For I = 0 To 22:
                         For I1 = 0 To 21:
                             Input #1, draftB0%(I, I1)
@@ -150,7 +159,9 @@ Sub ALIGN ()
                     Else
 
                         Cls
-                        Locate 2, 10: Color 7
+
+                        Color 7
+                        Locate 2, 10
                         Print "NON-EXISTANT PATH OR INCORRECT FILE NAME!!!!"
                         Print
                         Locate , 10
@@ -164,8 +175,8 @@ Sub ALIGN ()
 
                 Cls
 
-                Locate 2, 10
                 Color 7
+                Locate 2, 10
                 Print "NON-EXISTANT PATH OR INCORRECT FILE NAME!!!!"
                 Print
                 Locate , 10
@@ -183,7 +194,11 @@ End Sub
 '----------------------------------------
 '         AlignStats Subroutine
 '----------------------------------------
-'...explanation...
+'This routine presents the user with a 
+'summary of the statistics in each file.
+'It then performs the alignment before 
+'presenting the user a chance to review 
+'the results.
 Sub AlignStats (pathRoadStats$, statFile$)
 
     Shared batterNames$(), pitcherNames$()
@@ -207,16 +222,20 @@ Sub AlignStats (pathRoadStats$, statFile$)
     Color 7: Print " ROAD"
 
     For I = 0 To 22:
-        Color 12: Locate I + 1, 1: Print Using "##"; I;
-        Print " ";: Color 15: Print Left$(batterNames$(I), 10);
+        Color 12
+        Locate I + 1, 1: Print Using "##"; I;
+        Print " ";
+        Color 15: Print Left$(batterNames$(I), 10);
         Color 12: Print Tab(17); Using "##"; I;
         Print " ";
         Color 7: Print Left$(BR$(I), 10);
     Next
 
     For I = 0 To 21:
-        Color 12: Locate I + 1, 48: Print Using "##"; I;
-        Print " ";: Color 15: Print Left$(pitcherNames$(I), 10);
+        Color 12
+        Locate I + 1, 48: Print Using "##"; I;
+        Print " ";
+        Color 15: Print Left$(pitcherNames$(I), 10);
         Color 12: Print Tab(62); Using "##"; I;
         Print " ";
         Color 7: Print Left$(PR$(I), 10);
@@ -224,7 +243,6 @@ Sub AlignStats (pathRoadStats$, statFile$)
 
     Color 11
     Locate 24, 31: Line Input "HIT ENTER TO ALIGN"; DUMMY$
-    Color 11
     Locate 24, 30: Print "ALIGNING FILES . . ."
 
     N = 0
@@ -234,6 +252,7 @@ Sub AlignStats (pathRoadStats$, statFile$)
         For J = 0 To 22
 
             If UCase$(batterNames$(N)) = UCase$(BR$(J)) Then
+
                 BN$(N) = BR$(J)
                 BN%(N) = BR%(J)
 
@@ -295,12 +314,13 @@ Sub AlignStats (pathRoadStats$, statFile$)
         Call ReviewAndSaveAlignment(pathRoadStats$, statFile$)
     Else
 
-        Locate 20
         Color 14
+        Locate 20
         Print "WARNING !! - - ROAD STAT FILE CONTAINS PLAYERS NOT IN EXISTING STATS.  YOU MUST"
         Print "CHANGE ROAD STAT FILE USING OPTION #6 ON GAME MENU BEFORE ATTEMPTING STAT MERGE."
+        Color 13
         Locate 23, 30
-        Color 13: Line Input "HIT ENTER TO CONTINUE"; DUMMY$
+        Line Input "HIT ENTER TO CONTINUE"; DUMMY$
 
     End If 'Done checking SEQ
 
@@ -310,7 +330,9 @@ End Sub
 '----------------------------------------
 '    ReviewAndSaveAlignment Subroutine
 '----------------------------------------
-'...explanation...
+'This routine displays the results of the 
+'player name alignment, then gives the end
+'user a chance to actually save the results 
 Sub ReviewAndSaveAlignment (pathRoadStats$, statFile$)
 
     Shared batterNames$(), pitcherNames$()
@@ -337,15 +359,17 @@ Sub ReviewAndSaveAlignment (pathRoadStats$, statFile$)
     Next
 
     For I = 0 To 21:
-        Color 12: Locate I + 1, 48: Print Using "##"; I;
-        Print " ";: Color 15: Print Left$(pitcherNames$(I), 10);
-        Color 12: Print Tab(62); Using "##"; I;: Print " ";
+        Color 12
+        Locate I + 1, 48: Print Using "##"; I;
+        Print " ";
+        Color 15: Print Left$(pitcherNames$(I), 10);
+        Color 12: Print Tab(62); Using "##"; I;
+        Print " ";
         Color 7: Print Left$(PN$(I), 10);
     Next
 
     Color 11
     Locate 24, 31: Line Input "HIT ENTER TO ALIGN"; DUMMY$
-    Color 11
     Locate 24, 30: Print "ALIGNING FILES . . ."
 
     Open pathRoadStats$ + statFile$ For Output As #1
@@ -355,31 +379,38 @@ Sub ReviewAndSaveAlignment (pathRoadStats$, statFile$)
     Write #1, L2R%
 
     For I = 0 To 22: Write #1, BN$(I): Write #1, BN%(I): Next I
+
     For I = 0 To 21: Write #1, PN$(I): Write #1, PN%(I): Next I
+
     For I = 0 To 22: For I1 = 0 To 21: Write #1, B0N%(I, I1): Next I1: Next I
+
     For I = 0 To 21: For I1 = 0 To 41: Write #1, P0N%(I, I1): Next I1: Next I
 
     Write #1, DR0%
     Write #1, DR1%
+
     For I = 0 To 21: Write #1, draftTR(I): Next I
+
     For I = 0 To 22: Write #1, draftTR1(I): Next I
 
     Close #1
 
     Open pathRoadStats$ + statFile$ + "R" For Output As #1
+
     For I = 0 To 22
         For I1 = 0 To 6
             Print #1, S0N%(I, I1)
         Next
     Next
+
     Close 1
 
     Cls
 
     Locate 8, 20: Print "RE-ALIGNMENT COMPLETED"
-    Print
+    Color 12
     Locate 12, 20
-    Color 12: Line Input "HIT ENTER TO CONTINUE"; DUMMY$
+    Line Input "HIT ENTER TO CONTINUE"; DUMMY$
 
     Cls
 

@@ -11,7 +11,7 @@ Sub ChooseLeague (league$)
     Do
 
         Spec$ = diskPaths$(2) + "*.LIB"
-        Count% = FCount%(Spec$)
+        Count% = FileCount%(Spec$)
 
         If Count% = 0 Then
             Locate 10, 8
@@ -61,7 +61,7 @@ Sub ChooseLeague (league$)
                     Locate 2, 33: Print targetFile$
 
                     Do
-                        Locate 3, 33: Print "ANY CHANGE (YN)";
+                        Locate 3, 33: Print "ANY CHANGE? (Y/N)";
                         I$ = GetKeyPress$
                     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -97,7 +97,7 @@ Sub SelectLeague (targetFile$)
     Do
 
         Spec$ = diskPaths$(2) + "*.LIB"
-        Count% = FCount%(Spec$)
+        Count% = FileCount%(Spec$)
 
         If Count% = 0 Then
             Locate 10, 8
@@ -148,7 +148,7 @@ Sub SelectLeague (targetFile$)
                     Locate 2, 33: Print targetFile$
 
                     Do
-                        Locate 3, 33: Print "ANY CHANGE (YN)";
+                        Locate 3, 33: Print "ANY CHANGE? (Y/N)";
                         I$ = GetKeyPress$
                     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -178,7 +178,7 @@ Sub LoadSchedule (targetFile$)
     Do
         'Display list of files...       
         Spec$ = diskPaths$(0) + "*.SCD"
-        Count% = FCount%(Spec$)
+        Count% = FileCount%(Spec$)
 
         If Count% = 0 Then
             Locate 10, 8
@@ -207,7 +207,7 @@ End Sub
 '     SelectScheduleFile SubRoutine
 '----------------------------------------
 '...explanation...
-Sub SelectScheduleFile (targetFile$, scheduleFiles$(), FileCount%, ExitCode%)
+Sub SelectScheduleFile (targetFile$, scheduleFiles$(), Count%, ExitCode%)
 
     Do
         Cls
@@ -234,7 +234,7 @@ Sub SelectScheduleFile (targetFile$, scheduleFiles$(), FileCount%, ExitCode%)
         Print "-SELECTS SCHEDULE";
 
         _MouseShow "DEFAULT"
-        MAMenu scheduleFiles$(), Selection%, Start%, FileCount%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+        MAMenu scheduleFiles$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
         _MouseHide
 
         If ExitCode% <> 27 Then
@@ -244,7 +244,7 @@ Sub SelectScheduleFile (targetFile$, scheduleFiles$(), FileCount%, ExitCode%)
             Locate 2, 33: Print targetFile$
 
             Do
-                Locate 3, 33: Print "ANY CHANGE (YN)";
+                Locate 3, 33: Print "ANY CHANGE? (Y/N)";
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -282,7 +282,7 @@ Sub SelectLeague_REC (leagueFile$, ExitCode%)
     Do
 
         Spec$ = diskPaths$(2) + "*.BAT"
-        Count% = FCount%(Spec$)
+        Count% = FileCount%(Spec$)
 
         If Count% = 0 Then
             Locate 10, 8
@@ -329,7 +329,7 @@ Sub SelectLeague_REC (leagueFile$, ExitCode%)
                     Locate 2, 33: Print targetFile$
 
                     Do
-                        Locate 3, 33: Print "ANY CHANGE (YN)";
+                        Locate 3, 33: Print "ANY CHANGE? (Y/N)";
                         I$ = GetKeyPress$
                     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 

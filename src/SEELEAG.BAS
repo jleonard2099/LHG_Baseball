@@ -1,3 +1,10 @@
+'----------------------------------------
+'           SEELEAG Subroutine
+'----------------------------------------
+'This subroutine lets the user choose a 
+'league stat file to view, then calls
+'other routines to both load the Stats
+'and then provide options for display
 Sub SEELEAG ()
 
     _Title "Full Count Baseball - View League Stats"
@@ -6,8 +13,8 @@ Sub SEELEAG ()
 
     If ExitCode% <> 27 And ExitCode% <> 0 Then
 
-        Call LoadLeaderFiles(LG$, D1$, D2$, leaderFile$)
-        Call StatOptions(LG$, D1$, D2$)
+        Call LoadLeaderFiles(league$, D1$, D2$, leaderFile$)
+        Call StatOptions(league$, D1$, D2$)
 
     End If
 
@@ -17,8 +24,9 @@ End Sub
 '----------------------------------------
 '       LoadLeaderFiles Subroutine
 '----------------------------------------
-'...explanation...
-Sub LoadLeaderFiles (LG$, D1$, D2$, targetFile$)
+'This subroutine loads the league stats
+'from the file into several arrays
+Sub LoadLeaderFiles (league$, D1$, D2$, targetFile$)
 
     Shared Wins(), Losses()
 
@@ -30,7 +38,7 @@ Sub LoadLeaderFiles (LG$, D1$, D2$, targetFile$)
 
     Open diskPaths$(2) + targetFile$ + ".TMS" For Input As #2
 
-    Input #2, LG$, D1$, D2$, D3$, D4$
+    Input #2, league$, D1$, D2$, D3$, D4$
 
     Close 2
 
@@ -73,8 +81,10 @@ End Sub
 '----------------------------------------
 '         StatOptions Subroutine
 '----------------------------------------
-'...explanation...
-Sub StatOptions (LG$, D1$, D2$)
+'This subroutine gives the user various
+'options for viewing the previously loaded
+'stats, and then calls routines for each
+Sub StatOptions (league$, D1$, D2$)
 
     Do
 
@@ -124,13 +134,13 @@ Sub StatOptions (LG$, D1$, D2$)
 
                 Case "F":
                     'Call ReportFilePrompt_League(SF$)
-                    'Call SavePrintLeagueStats(LG$, D1$, D2$, 1)
+                    'Call SavePrintLeagueStats(league$, D1$, D2$, 1)
 
                 Case "P":
-                    Call SavePrintLeagueStats(LG$, D1$, D2$, 0)
+                    Call SavePrintLeagueStats(league$, D1$, D2$, 0)
 
                 Case "S":
-                    Call LeagueStatsToScreen(LG$, D1$, D2$)
+                    Call LeagueStatsToScreen(league$, D1$, D2$)
 
             End Select
 
@@ -156,7 +166,7 @@ Sub StatOptions (LG$, D1$, D2$)
             Do
                 Color 15, 1
                 Locate 8
-                U$ = "VIEW LEAGUE STATS AGAIN (YN)"
+                U$ = "VIEW LEAGUE STATS AGAIN? (Y/N)"
                 Locate , (80 - Len(U$)) / 2
                 Print U$
                 Color 15, 0
@@ -173,7 +183,8 @@ End Sub
 '----------------------------------------
 '   ReportFilePrompt_League Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine prompts the user for
+'the name of the report file to be saved
 Sub ReportFilePrompt_League (reportFile$)
 
     Do
@@ -205,7 +216,7 @@ Sub ReportFilePrompt_League (reportFile$)
         Locate 7, 37: Input reportFile$
 
         If reportFile$ <> "" Then
-            Locate 13, 12: Print "ANY CHANGE (YN) "
+            Locate 13, 12: Print "ANY CHANGE? (Y/N) "
             I$ = GetKeyPress$
         End If
 
@@ -219,8 +230,10 @@ End Sub
 '----------------------------------------
 '      LeagueStatsToScreen Subroutine
 '----------------------------------------
-'...explanation...
-Sub LeagueStatsToScreen (LG$, D1$, D2$)
+'This subroutine formats the previously
+'loaded stats and outputs them to the end
+'user display.
+Sub LeagueStatsToScreen (league$, D1$, D2$)
 
     Shared Wins(), Losses()
 
@@ -319,7 +332,7 @@ Sub LeagueStatsToScreen (LG$, D1$, D2$)
     Cls
 
     Color 12
-    Print "                        "; LG$; " LEAGUE STANDINGS"
+    Print "                        "; league$; " LEAGUE STANDINGS"
     Print
     Color 14
 
@@ -1223,8 +1236,15 @@ End Sub
 '----------------------------------------
 '      SavePrintLeagueStats Subroutine
 '----------------------------------------
-'...explanation...
-Sub SavePrintLeagueStats (LG$, D1$, D2$, destination)
+'This subroutine formats the previously
+'loaded stats and outputs them to a file.
+'This file can then be looped through to 
+'send to the default printer
+
+'Destination
+'   1 = File
+'   !1 = Printer (creates file and prints it)
+Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
     Shared Wins(), Losses()
 
@@ -1481,7 +1501,7 @@ Sub SavePrintLeagueStats (LG$, D1$, D2$, destination)
 
     Cls
 
-    LF$(1) = "    " + LG$ + " LEAGUE STANDINGS AS OF " + Date$
+    LF$(1) = "    " + league$ + " LEAGUE STANDINGS AS OF " + Date$
     LF$(3) = "    " + D1$ + "      W   L   PCT   GB"
 
     For P = 1 To 10:

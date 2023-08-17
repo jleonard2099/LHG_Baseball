@@ -1,3 +1,9 @@
+'----------------------------------------
+'            HD2HD Subroutine
+'----------------------------------------
+'This subroutine presents the user a menu
+'of basic options for viewing Head-to-Head 
+'team comparisons.
 Sub HD2HD ()
 
     _Title "Full Count Baseball - Head-to-Head Stats"
@@ -63,7 +69,10 @@ End Sub
 '----------------------------------------
 '     Hd2Hd_League Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine reads in stats from the
+'selected team and then presents the user 
+'a menu of options for viewing Head-to-Head 
+'team comparisons.
 Sub Hd2Hd_League (LG$, sameLeague)
 
     Shared H%(), I%(), V%(), Z1%()
@@ -86,10 +95,15 @@ Sub Hd2Hd_League (LG$, sameLeague)
         Cls
 
         If Not _FileExists(diskPaths$(1) + statFile$ + "S") Then
-            Locate 10, 8
-            Call CSMsgBox("NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-            I$ = GetKeyPress$
+
+            MsgText$ = "NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU"
+            BoxWidth = 24
+            BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+            Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+            Call CSMsgBox(MsgText$, BoxWidth, Pass)
+            K$ = GetKeyPress$
             Call CSMsgBox("", 0, Pass)
+
         End If
 
     Loop Until _FileExists(diskPaths$(1) + statFile$ + "S")
@@ -299,7 +313,8 @@ End Sub
 '----------------------------------------
 '       Hd2Hd_Printer Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine outputs the calculated 
+'comparison values to the default printer
 Sub Hd2Hd_Printer (teamName$)
 
     Shared HW%(), HW%(), HL%(), AL%(), R1%(), R2%(), R3%(), R4%()
@@ -517,7 +532,8 @@ End Sub
 '----------------------------------------
 '       Hd2Hd_Screen Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine outputs the calculated 
+'comparison values to the end user display
 Sub Hd2Hd_Screen (teamName$)
 
     Shared HW%(), AW%(), HL%(), AL%()

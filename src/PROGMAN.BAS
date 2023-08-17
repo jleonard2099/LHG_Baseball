@@ -1,3 +1,9 @@
+'----------------------------------------
+'           PROGMAN Subroutine
+'----------------------------------------
+'This subroutine serves as a menu for the
+'end user options to adjust / create a
+'custom manager profile.
 Sub PROGMAN ()
 
     _Title "Full Count Baseball - Programmable Manager"
@@ -99,7 +105,7 @@ Sub PROGMAN ()
                         Call DefenseLateInning(YN$, T$)
 
                     Case 6
-                        Call Input_PITSTRAT(YN$)
+                        Call InputPitchStrat(YN$)
 
                     Case 7
                         Call HittingStrategy(YN$)
@@ -138,7 +144,8 @@ End Sub
 '----------------------------------------
 '    RotationReliefMenu Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine gives the user a menu for
+'choosing pitching rotations and relievers.
 Sub RotationReliefMenu (targetTeam$)
 
     Do
@@ -203,11 +210,11 @@ Sub RotationReliefMenu (targetTeam$)
 End Sub
 
 
-
 '----------------------------------------
 '       LineupStrategy Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine gives the user a menu for
+'choosing and analyzing a lineup strategy
 Sub LineupStrategy (targetTeam$)
 
     Do
@@ -265,7 +272,8 @@ End Sub
 '----------------------------------------
 '       AnalyzePlayerUsage Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine evaluates the usage of a
+'player's recorded stats against the profile.
 Sub AnalyzePlayerUsage (targetTeam$)
 
     Shared AB%(), teamRatings%(), progMG%(), progB%()
@@ -374,7 +382,8 @@ End Sub
 '----------------------------------------
 '     SelectPinchHitters Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine gives the user a choice of
+'pinch hitters to assign to the select profile.
 Sub SelectPinchHitters (yearNumber$, targetTeam$)
 
     Shared batterNames$(), progB1$(), mgrX$()
@@ -519,7 +528,8 @@ End Sub
 '----------------------------------------
 '    DefenseLateInning Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine walks the user through a
+'defensive strategy for late innings.
 Sub DefenseLateInning (yearNumber$, T$)
 
     Shared batterNames$(), mgrX$()
@@ -589,6 +599,7 @@ Sub DefenseLateInning (yearNumber$, T$)
         Print "# PLAYER     P SUBSTITUTE  %  RA"
 
         For I = 1 To 4
+
             Locate , 46
             Print Using "# "; I;
 
@@ -704,7 +715,8 @@ End Sub
 '----------------------------------------
 '       EditLineups Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine serves as a menu for the
+'user to choose and review their lineups.
 Sub EditLineups (handRL%, targetTeam$, yearNumber$)
 
     Shared teamRatings%(), progMG%()
@@ -783,7 +795,7 @@ Sub EditLineups (handRL%, targetTeam$, yearNumber$)
 
                     Do
                         Locate 12, 1
-                        Print "IS A DH TO BE USED IN THIS LINEUP (YN)"
+                        Print "IS A DH TO BE USED IN THIS LINEUP? (Y/N)"
                         I$ = GetKeyPress$
                     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -857,7 +869,8 @@ End Sub
 '----------------------------------------
 '       ViewLineup Subroutine
 '----------------------------------------
-'...explanation...
+'This routine loads the lineup from a select
+'profile and displays it to the screen
 Sub ViewLineup (targetTeam$)
 
     Shared batterNames$(), progB1$(), mgrX$()
@@ -922,7 +935,8 @@ End Sub
 '----------------------------------------
 '       InputDeleteLineup Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine lets you reivew a line-
+'up and make changes.
 Sub InputDeleteLineup (D%, yearNumber$)
 
     Shared batterNames$(), progC$()
@@ -1073,9 +1087,11 @@ Sub InputDeleteLineup (D%, yearNumber$)
 End Sub
 
 '----------------------------------------
-'       GetLineupPosition Subroutine
+'      GetLineupPosition Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine returns a numerical value
+'associated with the alphabetical characters
+'in a lineup.
 Sub GetLineupPosition (I1, I$)
 
     Locate I + 7, 59
@@ -1107,10 +1123,13 @@ Sub GetLineupPosition (I1, I$)
 
 End Sub
 
+
 '----------------------------------------
-'        ChangeLineup_PROGMAN Subroutine
+'    ChangeLineup_PROGMAN Subroutine
 '----------------------------------------
-'...explanation...
+'This routine lets the user select a line-
+'up and determine how often it should be
+'used.
 Sub ChangeLineup_PROGMAN (yearNumber$, I$)
 
     Shared batterNames$(), progC$()
@@ -1284,9 +1303,11 @@ Sub ChangeLineup_PROGMAN (yearNumber$, I$)
 End Sub
 
 '----------------------------------------
-'          EditLineup Subroutine
+'        EditOneLineup Subroutine
 '----------------------------------------
-'...explanation...
+'This Subroutine lets the user view one
+'pre-configured lineup and work through
+'making changes.
 Sub EditOneLineup (targetTeam$, yearNumber$)
 
     Shared batterNames$(), progC$()
@@ -1361,7 +1382,8 @@ End Sub
 '----------------------------------------
 '         GetLineup Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine prints a summary of the
+'lineups found during the search.
 Sub GetLineup (handRL%, targetTeam$)
 
     Shared batterNames$(), progC$(), progPT$()
@@ -1456,7 +1478,9 @@ End Sub
 '----------------------------------------
 '     PrintManagerProfile Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine reviews all existing items
+'in the manager profile and prints a summary
+'of the strategy to the default printer.
 Sub PrintManagerProfile (targetTeam$)
 
     Shared batterNames$(), pitcherNames$(), yesNo$()
@@ -1989,7 +2013,8 @@ End Sub
 '----------------------------------------
 '       ShowPitcherInfo Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine displays the information
+'for the team's pitchers.
 Sub ShowPitcherInfo (targetTeam$)
 
     Shared teamRatings%(), progMG%(), pitcherRatings()
@@ -2038,10 +2063,12 @@ Sub ShowPitcherInfo (targetTeam$)
 
 End Sub
 
+
 '----------------------------------------
 '       SpotStarters Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine gives the user a menu for
+'editing and adjusting spot starters.
 Sub SpotStarters (targetTeam$, yearNumber$)
 
     Shared pitcherNames$()
@@ -2160,14 +2187,16 @@ End Sub
 '----------------------------------------
 '       RotationParams Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine lets the user choose the
+'parameters (size / type / frequency) for
+'the pitching rotation.
 Sub RotationParams (targetTeam$)
 
     Shared progMG%()
     Shared pitcherNames$()
 
     Do
-        4517 '
+
         Call ShowPitcherInfo(targetTeam$)
 
         Locate 1, 40: Print "(0) SIZE OF ROTATION IS "; progMG%(1)
@@ -2251,7 +2280,8 @@ End Sub
 '----------------------------------------
 '      PitchingRotations Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine lets the user configure
+'all details of a pitching rotation.
 Sub ManagePitchingRotations (action%, targetTeam$)
 
     Shared pitcherNames$()
@@ -2272,266 +2302,270 @@ Sub ManagePitchingRotations (action%, targetTeam$)
             '4600
             Do
                 Cls
-                Print "ERROR::: ROTATION FILE NOT FOUND"
+                Print "ERROR:: ROTATION NOT FOUND"
                 Print
-                Print "DO YOU WANT TO ENTER A ROTATION (YN)"
+                Print "DO YOU WANT TO ENTER A ROTATION? (Y/N)"
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
-            If UCase$(I$) = "N" Then Exit Sub
 
         End If 'Done checking if 999
 
     End If 'Done for action = 2
 
-    'Enter Rotation
-    I = 1
-    JJ = 1
-    
-    Locate 6, 8
+    If UCase$(I$) = "Y" Or progMG%(99) = 999 Then 
 
-    Color 15, 1
 
-    Print " "; Chr$(201); String$(61, 205); Chr$(187); " ";
+        'Enter Rotation
+        I = 1
+        JJ = 1
+        
+        Locate 6, 8
 
-    For II = 1 To JJ:
-        Locate 6 + II, 8
-        Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-    Next
-    
-    Locate 7 + JJ, 8
+        Color 15, 1
 
-    Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";
+        Print " "; Chr$(201); String$(61, 205); Chr$(187); " ";
 
-    Do
-        Locate 7
-        U$ = "COMPUTER DETERMINE ROTATION (YN) "
-        Locate , (80 - Len(U$)) / 2
-        Print U$
+        For II = 1 To JJ:
+            Locate 6 + II, 8
+            Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
+        Next
+        
+        Locate 7 + JJ, 8
+
+        Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";
+
+        Do
+            Locate 7
+            U$ = "COMPUTER DETERMINE ROTATION? (Y/N) "
+            Locate , (80 - Len(U$)) / 2
+            Print U$
+            Print
+            I$ = GetKeyPress$
+        Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+        Color 15, 0
+
+        If UCase$(I$) = "Y" Then CR% = 1
+
+        'Adjust this as necessary
+        Locate 13,
+        Input "SEASON LENGTH (154, 162 ,ETC.)"; SL%
+
+        Cls
+        Print Tab(20); "SELECT SIZE OF YOUR PITCHING ROTATION"
         Print
-        I$ = GetKeyPress$
-    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+        Color 14: Print "(1) ";
+        Color 15: Print "MAN ROTATION    ";
+        Color 14: Print "(4) ";
+        Color 15: Print "MAN ROTATION"
 
-    Color 15, 0
+        Color 14: Print "(2) ";
+        Color 15: Print "MAN ROTATION    ";
+        Color 14: Print "(5) ";
+        Color 15: Print "MAN ROTATION"
+        Color 14: Print "(3) ";
+        Color 15: Print "MAN ROTATION"
+        Print
+        Print "       YOU MAY CONSIDER THE FOLLOWING GUIDELINES:"
+        Print "MAX GAMES STARTED BY ANY PITCHER           ROTATION SIZE"
+        Print "          32                                    5"
+        Print "          41                                    4"
+        Print "          54                                    3"
+        Print "          75                                    2"
+        Print "         ALL                                    1"
+        Print
+        Print "ALL PITCHERS AND GAMES STARTED"
 
-    If UCase$(I$) = "Y" Then CR% = 1
+        For I = 0 To 6
 
-    'Adjust this as necessary
-    Locate 13,
-    Input "SEASON LENGTH (154, 162 ,ETC.)"; SL%
+            Locate I + 17, 1
 
-    Cls
-    Print Tab(20); "SELECT SIZE OF YOUR PITCHING ROTATION"
-    Print
-    Color 14: Print "(1) ";
-    Color 15: Print "MAN ROTATION    ";
-    Color 14: Print "(4) ";
-    Color 15: Print "MAN ROTATION"
+            If pitcherNames$(I) <> "XXX" Then
+                Print pitcherNames$(I); Tab(18); pitcherRatings(I, 5);
+            End If
 
-    Color 14: Print "(2) ";
-    Color 15: Print "MAN ROTATION    ";
-    Color 14: Print "(5) ";
-    Color 15: Print "MAN ROTATION"
-    Color 14: Print "(3) ";
-    Color 15: Print "MAN ROTATION"
-    Print
-    Print "       YOU MAY CONSIDER THE FOLLOWING GUIDELINES:"
-    Print "MAX GAMES STARTED BY ANY PITCHER           ROTATION SIZE"
-    Print "          32                                    5"
-    Print "          41                                    4"
-    Print "          54                                    3"
-    Print "          75                                    2"
-    Print "         ALL                                    1"
-    Print
-    Print "ALL PITCHERS AND GAMES STARTED"
+            Locate , 25
+            If pitcherNames$(I + 7) <> "XXX" Then
+                Print pitcherNames$(I + 7); Tab(43); pitcherRatings(I + 7, 5);
+            End If
 
-    For I = 0 To 6
+            Locate , 50
 
-        Locate I + 17, 1
+            If pitcherNames$(I + 14) <> "XXX" Then
+                Print pitcherNames$(I + 14); Tab(68); pitcherRatings(I + 14, 5)
+            End If
 
-        If pitcherNames$(I) <> "XXX" Then
-            Print pitcherNames$(I); Tab(18); pitcherRatings(I, 5);
-        End If
+        Next
 
-        Locate , 25
-        If pitcherNames$(I + 7) <> "XXX" Then
-            Print pitcherNames$(I + 7); Tab(43); pitcherRatings(I + 7, 5);
-        End If
+        Do
+            I$ = GetKeyPress$
+            I = Val(I$)
+        Loop Until I >= 1 And I <= 5
 
-        Locate , 50
+        progMG%(1) = I
+        progMG%(2) = 0
 
-        If pitcherNames$(I + 14) <> "XXX" Then
-            Print pitcherNames$(I + 14); Tab(68); pitcherRatings(I + 14, 5)
-        End If
+        For I = 3 To 36
+            progMG%(I) = -1
+        Next
 
-    Next
+        For I = 41 To 56
+            progMG%(I) = 0
+        Next
 
-    Do
-        I$ = GetKeyPress$
-        I = Val(I$)
-    Loop Until I >= 1 And I <= 5
+        progMG%(0) = 999
 
-    progMG%(1) = I
-    progMG%(2) = 0
+        If CR% <> 1 Then
 
-    For I = 3 To 36
-        progMG%(I) = -1
-    Next
+            'I% = 99
+            Call ShowPitcherInfo(targetTeam$)
 
-    For I = 41 To 56
-        progMG%(I) = 0
-    Next
-
-    progMG%(0) = 999
-
-    If CR% <> 1 Then
-
-        'I% = 99
-        Call ShowPitcherInfo(targetTeam$)
-
-        For I = 0 To progMG%(1) - 1
-
-            Do
-                Locate 15, 59: Print "STARTER "; I + 1
+            For I = 0 To progMG%(1) - 1
 
                 Do
-                    I$ = GetKeyPress$
-                    Select Case UCase$(I$)
-                        Case "A": I$ = "10"
-                        Case "B": I$ = "11"
-                        Case "C": I$ = "12"
-                        Case "D": I$ = "13"
-                        Case "E": I$ = "14"
-                        Case "F": I$ = "15"
-                        Case "G": I$ = "16"
-                        Case "H": I$ = "17"
-                        Case "I": I$ = "18"
-                        Case "J": I$ = "19"
-                        Case "K": I$ = "20"
-                        Case "L": I$ = "21"
-                        Case "M": I$ = "22"
-                    End Select
+                    Locate 15, 59: Print "STARTER "; I + 1
 
-                    I1 = Val(I$)
+                    Do
+                        I$ = GetKeyPress$
+                        Select Case UCase$(I$)
+                            Case "A": I$ = "10"
+                            Case "B": I$ = "11"
+                            Case "C": I$ = "12"
+                            Case "D": I$ = "13"
+                            Case "E": I$ = "14"
+                            Case "F": I$ = "15"
+                            Case "G": I$ = "16"
+                            Case "H": I$ = "17"
+                            Case "I": I$ = "18"
+                            Case "J": I$ = "19"
+                            Case "K": I$ = "20"
+                            Case "L": I$ = "21"
+                            Case "M": I$ = "22"
+                        End Select
 
-                Loop Until I1 <= 21 And progMG%(3) <> I1 And progMG%(4) <> I1 And progMG%(5) <> I1 And progMG%(6) <> I1 And progMG%(7) <> I1
+                        I1 = Val(I$)
 
-                Locate 16, 59: Print pitcherNames$(I1)
+                    Loop Until I1 <= 21 And progMG%(3) <> I1 And progMG%(4) <> I1 And progMG%(5) <> I1 And progMG%(6) <> I1 And progMG%(7) <> I1
 
-                Do
-                    Locate 17, 59:
-                    Print "ANY CHANGE (YN)";
-                    I$ = GetKeyPress$
-                Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+                    Locate 16, 59: Print pitcherNames$(I1)
 
-                If UCase$(I$) = "Y" Then
-                    For I2 = 15 To 17
-                        Locate I2, 59
-                        Print Space$(17)
-                    Next
-                End If
-            Loop Until UCase$(I$) = "N"
+                    Do
+                        Locate 17, 59:
+                        Print "ANY CHANGE? (Y/N)";
+                        I$ = GetKeyPress$
+                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
-            progMG%(I + 3) = I1
+                    If UCase$(I$) = "Y" Then
+                        For I2 = 15 To 17
+                            Locate I2, 59
+                            Print Space$(17)
+                        Next
+                    End If
+                Loop Until UCase$(I$) = "N"
 
-            For I2 = 15 To 17
-                Locate I2, 59
-                Print Space$(18)
+                progMG%(I + 3) = I1
+
+                For I2 = 15 To 17
+                    Locate I2, 59
+                    Print Space$(18)
+                Next
+
             Next
 
-        Next
+        Else
 
-    Else
+            'COMPUTER SET ROTATION
+            CR% = 0
 
-        'COMPUTER SET ROTATION
-        CR% = 0
-
-        For I = 0 To 21
-            If pitcherNames$(I) = "XXX" Then
-                GS%(I, 0) = 0: GS%(I, 1) = -1
-            Else
-                GS%(I, 0) = pitcherRatings(I, 5): GS%(I, 1) = I
-            End If
-        Next
-
-        For Z = 0 To 20
-
-            For Z1 = Z + 1 To 21
-                If GS%(Z, 0) < GS%(Z1, 0) Then
-                    Swap GS%(Z, 0), GS%(Z1, 0): Swap GS%(Z, 1), GS%(Z1, 1)
+            For I = 0 To 21
+                If pitcherNames$(I) = "XXX" Then
+                    GS%(I, 0) = 0: GS%(I, 1) = -1
+                Else
+                    GS%(I, 0) = pitcherRatings(I, 5): GS%(I, 1) = I
                 End If
-            Next Z1
+            Next
 
-        Next Z
+            For Z = 0 To 20
 
-        For I = 0 To progMG%(1) - 1
-            progMG%(I + 3) = GS%(I, 1)
+                For Z1 = Z + 1 To 21
+                    If GS%(Z, 0) < GS%(Z1, 0) Then
+                        Swap GS%(Z, 0), GS%(Z1, 0): Swap GS%(Z, 1), GS%(Z1, 1)
+                    End If
+                Next Z1
+
+            Next Z
+
+            For I = 0 To progMG%(1) - 1
+                progMG%(I + 3) = GS%(I, 1)
+            Next
+
+            I1 = 0
+
+            For I = progMG%(1) To 21
+                I1 = I1 + 1
+                If GS%(I, 0) <> 0 Then
+                    progMG%(I1 + 20) = GS%(I, 1)
+                Else
+                    Exit For
+                End If
+            Next
+
+        End If 'Done checking value of CR
+
+        I1 = I1 - 1
+
+        Select Case progMG%(1)
+            Case 1:
+                progMG%(13) = 100
+                Call RotationParams(targetTeam$)
+
+            Case 2:
+                GS% = 75
+
+            Case 3:
+                GS% = 54
+
+            Case 4:
+                GS% = 41
+
+            Case 5:
+                GS% = 32
+        
+        End Select
+
+        GS% = GS% * SL% / 162
+
+        For I = 1 To progMG%(1)
+            progMG%(I + 12) = Int(pitcherRatings(progMG%(I + 2), 5) * 100 / GS% + .5)
         Next
 
-        I1 = 0
+        SS% = 0
 
-        For I = progMG%(1) To 21
-            I1 = I1 + 1
-            If GS%(I, 0) <> 0 Then
-                progMG%(I1 + 20) = GS%(I, 1)
-            Else
-                Exit For
+        For I = 21 To 36
+
+            If progMG%(I) >= 0 And progMG%(I) <= 21 Then
+                SS% = SS% + pitcherRatings(progMG%(I), 5)
+            End If
+
+        Next
+
+        For I = 21 To 36
+            If progMG%(I) >= 0 And progMG%(I) <= 21 Then
+                progMG%(I + 20) = Int(pitcherRatings(progMG%(I), 5) * 100 / SS% + .5)
             End If
         Next
 
-    End If 'Done checking value of CR
+        Call RotationParams(targetTeam$)
 
-    I1 = I1 - 1
-
-    Select Case progMG%(1)
-        Case 1:
-            progMG%(13) = 100
-            Call RotationParams(targetTeam$)
-
-        Case 2:
-            GS% = 75
-
-        Case 3:
-            GS% = 54
-
-        Case 4:
-            GS% = 41
-
-        Case 5:
-            GS% = 32
-    
-    End Select
-
-    GS% = GS% * SL% / 162
-
-    For I = 1 To progMG%(1)
-        progMG%(I + 12) = Int(pitcherRatings(progMG%(I + 2), 5) * 100 / GS% + .5)
-    Next
-
-    SS% = 0
-
-    For I = 21 To 36
-
-        If progMG%(I) >= 0 And progMG%(I) <= 21 Then
-            SS% = SS% + pitcherRatings(progMG%(I), 5)
-        End If
-
-    Next
-
-    For I = 21 To 36
-        If progMG%(I) >= 0 And progMG%(I) <= 21 Then
-            progMG%(I + 20) = Int(pitcherRatings(progMG%(I), 5) * 100 / SS% + .5)
-        End If
-    Next
-
-    Call RotationParams(targetTeam$)
+    End If
 
 End Sub
 
 '----------------------------------------
 '    SetupMiddleRelievers Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine helps the users with the
+'assignment of middle relievers.
 Sub SetupMiddleRelievers (targetTeam$, yearNumber$)
 
     Shared progMG%(), teamRatings%(), pitcherRatings()
@@ -2675,7 +2709,8 @@ End Sub
 '----------------------------------------
 '       SetupRelievers Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine helps the users with the
+'assignment of relievers.
 Sub SetupRelievers (targetTeam$, yearNumber$)
 
     Shared progB1$(), pitcherNames$(), mgrX$()
@@ -2820,7 +2855,8 @@ End Sub
 '----------------------------------------
 '       SetupClosers Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine helps the users with the
+'assignment of closers.
 Sub SetupClosers (targetTeam$, yearNumber$)
 
     Shared progB1$(), pitcherNames$(), mgrX$()
@@ -2961,7 +2997,9 @@ End Sub
 '----------------------------------------
 '       HittingStrategy Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine gives the user a series of
+'menu options for configuring a hitting
+'strategy for the manager.
 Sub HittingStrategy (yearNumber$)
 
     Shared progMG%()
@@ -3155,7 +3193,9 @@ End Sub
 '----------------------------------------
 '       HitAndRun Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine gives the user a series of
+'menu options for configuring a hit and run
+'strategy for the manager.
 Sub HitAndRun (yearNumber$)
 
     Shared progMG%()
@@ -3227,7 +3267,9 @@ End Sub
 '----------------------------------------
 '      DefensiveStrategy Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine gives the user a series of
+'menu options for configuring a defensive
+'strategy for the manager.
 Sub DefensiveStrategy (yearNumber$)
 
     Shared progMG%()
@@ -3573,7 +3615,9 @@ End Sub
 '----------------------------------------
 '       PinchRunStrategy Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine gives the user a series of
+'menu options for configuring a pinch and run
+'strategy for the manager.
 Sub PinchRunStrategy (targetTeam$)
 
     Shared progMG%()
@@ -3669,10 +3713,12 @@ Sub PinchRunStrategy (targetTeam$)
 
 End Sub
 
+
 '----------------------------------------
 '       PinchRunners Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine assists the user with the
+'setup of pinch runners
 Sub PinchRunners (targetTeam$)
 
     Shared teamRatings%(), progMG%(), progB%()
@@ -3799,7 +3845,8 @@ End Sub
 '----------------------------------------
 '       DefenseSubPinchRun Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine assists the user with the
+'setup of defensive subs for pinch runners
 Sub DefenseSubPinchRun (targetTeam$)
 
     Shared batterNames$(), mgrX$()
@@ -3955,7 +4002,9 @@ End Sub
 '----------------------------------------
 '    ExportManagerProfile Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine exports the current manager
+'profile to an output file. If this is a new
+'manager profile, it prompts for a name.
 Sub ExportManagerProfile (mgrNbr)
 
     Shared progMG%()
@@ -3964,7 +4013,7 @@ Sub ExportManagerProfile (mgrNbr)
 
     If _FileExists(diskPaths$(3) + MGR_FILE_NAME$ + "." + YN$) Then
 
-        Open diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #2 Len = MGR_SIZE_BYTES
+        Open diskPaths$(3) + MGR_FILE_NAME$ + "." + YN$ For Random As #2 Len = MGR_SIZE_BYTES
 
         For I = 0 To 999
             Field #2, I * 2 As Q$, 2 As R$(I), MGR_SIZE_BYTES - I * 2 - 2 As Q$
@@ -3981,10 +4030,15 @@ Sub ExportManagerProfile (mgrNbr)
     End If
 
     If progMG%(0) <> 999 Then
-        Locate 10, 8
-        Call CSMsgBox("NO MANAGER PROFILE EXISTS FOR THIS TEAM PRESS ANY KEY TO RETURN TO MAIN MENU", 40, Pass)
-        I$ = GetKeyPress$
-        Call CSMsgBox("", 0, Pass)
+
+		MsgText$ = "NO MANAGER PROFILE EXISTS FOR THIS TEAM PRESS ANY KEY TO RETURN TO MAIN MENU"
+		BoxWidth = 20
+		BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+		Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+		Call CSMsgBox(MsgText$, BoxWidth, Pass)
+		I$ = GetKeyPress$
+		Call CSMsgBox("", 0, Pass)
+
     Else
 
         If PP% = 1 Then PP% = 0: Call PrintManagerProfile(T$)
@@ -4026,10 +4080,13 @@ Sub ExportManagerProfile (mgrNbr)
 
 End Sub
 
+
 '----------------------------------------
 '    ImportManagerProfile Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine lets the user choose an
+'existing manager profile to be loaded
+'so it can be modified / tweaked.
 Sub ImportManagerProfile ()
 
     Shared progMG%()
@@ -4041,19 +4098,24 @@ Sub ImportManagerProfile ()
         L% = 0
 
         JJ = 5
+
         Locate 6, 8
         Color 15, 1
+
         Print " "; Chr$(201); String$(61, 205); Chr$(187); " ";
+
         For II = 1 To JJ: 
             Locate 6 + II, 8
             Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
         Next
+
         Locate 7 + JJ, 8
+
         Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";
 
         Do
             Locate 7, 11
-            Print "IMPORT STRATEGY PERCENTAGES ONLY (YN)"
+            Print "IMPORT STRATEGY PERCENTAGES ONLY? (Y/N)"
             A$ = GetKeyPress$
         Loop Until UCase$(A$) = "Y" Or UCase$(A$) = "N"
 
@@ -4084,7 +4146,9 @@ End Sub
 '----------------------------------------
 '       UpdateManagerFile Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine opens the target manager
+'file and updates it to include the data
+'that has been modified so far.
 Sub UpdateManagerFile (yearNumber$, mgrNbr)
 
     Shared R$()
@@ -4093,7 +4157,17 @@ Sub UpdateManagerFile (yearNumber$, mgrNbr)
 
     progMG%(0) = 999
 
-    If _FileExists(diskPaths$(3) + MGR_FILE_NAME$ + "." + yearNumber$) Then
+    If Not _FileExists(diskPaths$(3) + MGR_FILE_NAME$ + "." + yearNumber$) Then
+
+		MsgText$ = "NO MANAGER FILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU"
+		BoxWidth = 20
+		BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+		Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+		Call CSMsgBox(MsgText$, BoxWidth, Pass)
+		I$ = GetKeyPress$
+		Call CSMsgBox("", 0, Pass)
+
+    Else
 
         Open diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #2 Len = MGR_SIZE_BYTES
 
@@ -4113,10 +4187,12 @@ Sub UpdateManagerFile (yearNumber$, mgrNbr)
 
 End Sub
 
+
 '----------------------------------------
 '           PHBATTER Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine helps the user choose a
+'pinch hit for the batter.
 Sub PHBATTER (yearNumber$)
 
     Shared progMG%()
@@ -4186,10 +4262,12 @@ Sub PHBATTER (yearNumber$)
 
 End Sub
 
+
 '----------------------------------------
 '           PHPITCHER Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine helps the user choose a
+'pinch hit for the pitcher.
 Sub PHPITCHER (yearNumber$)
 
     Shared progMG%()
@@ -4262,7 +4340,8 @@ End Sub
 '----------------------------------------
 '           PITCHAROUND Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine helps the user choose a
+'pitch around strategy.
 Sub PITCHAROUND (yearNumber$)
 
     Shared progMG%()
@@ -4313,11 +4392,14 @@ Sub PITCHAROUND (yearNumber$)
 
 End Sub
 
+
 '----------------------------------------
-'           Input_PITSTRAT Subroutine
+'       InputPitchStrat Subroutine
 '----------------------------------------
-'...explanation...
-Sub Input_PITSTRAT (yearNumber$)
+'This subroutine gives the user a number of
+'options to essentially configure a closing
+'strategy. 
+Sub InputPitchStrat (yearNumber$)
 
     Shared progMG%()
     Shared yesNo$()
@@ -4391,10 +4473,13 @@ Sub Input_PITSTRAT (yearNumber$)
 
 End Sub
 
+
 '----------------------------------------
 '           THROWHOME Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine configures the desired
+'manager settings for determining when to
+'throw home.
 Sub THROWHOME (yearNumber$)
 
     Shared progMG%()
@@ -4444,10 +4529,11 @@ Sub THROWHOME (yearNumber$)
 
 End Sub
 
-'------------------------------
-'   BASERUN Subroutine
-'------------------------------
-' ...explanation...
+'----------------------------------------
+'           BASERUN Subroutine
+'----------------------------------------
+'This subroutine helps the user choose a
+'base running strategy.
 Sub BASERUN (yearNumber$, mgrNbr)
 
     Shared R$()
@@ -4526,7 +4612,9 @@ End Sub
 '----------------------------------------
 '       GetManagerProfile Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine lets the user choose an
+'existing team, then looks for and attempts
+'to load the corresponding manager profile.
 Sub GetManagerProfile (targetTeam$, yearNumber$)
 
     Shared progMG%()
@@ -4565,4 +4653,3 @@ Sub GetManagerProfile (targetTeam$, yearNumber$)
     End If
 
 End Sub
-

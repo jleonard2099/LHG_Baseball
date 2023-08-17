@@ -1,3 +1,8 @@
+'----------------------------------------
+'           UMPMGR Subroutine
+'----------------------------------------
+'This subroutine gives the user options for 
+'working with umpire files.
 Sub UMPMGR ()
 
     _Title "Full Count Baseball - Umpire Manager"
@@ -45,10 +50,12 @@ Sub UMPMGR ()
 
 End Sub
 
+
 '----------------------------------------
 '       EnterUmpireFile Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine assists the user with
+'creating a specific umpire file.
 Sub EnterUmpireFile ()
 
     Dim U$(50), U%(50)
@@ -95,7 +102,8 @@ End Sub
 '----------------------------------------
 '       EditUmpireFile Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine assists the user with
+'editing specific umpires in the file.
 Sub EditUmpireFile ()
 
     Dim U$(50), U%(50)

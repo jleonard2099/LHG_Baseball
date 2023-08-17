@@ -1,3 +1,10 @@
+'----------------------------------------
+'            LOADER Subroutine
+'----------------------------------------
+'This subroutine is used to setup all of
+'the parameters for a baseball game.
+'This involves loading parameters, teams,
+'rotations, linesup and a park.
 Sub LOADER
 
     _Title "Full Count Baseball v" + GAME_VERSION$ + " - PLAY BALL!"
@@ -121,24 +128,9 @@ Sub LOADER
 
 
     If AP% = 1 Then
-        'Setup variables for auto-play
-        U6 = NG%(8)
-        DH% = NG%(3)
-        pbpDelay! = NG%(4) / 10
-        MO% = NG%(17)
-        WE% = NG%(5)
-        VG% = NG%(11)
-        IJ% = NG%(6)
-        LR% = NG%(7)
-        DR% = NG%(9)
-        MP% = NG%(10)
-        CGERA% = NG%(14)
 
-        DN% = 1
-        If NG%(15) < 1600 Then DN% = 0
+        Call AUTOSETUP
 
-        'At this point we can skip the
-        'option selection below
     Else
 
         170 '
@@ -173,9 +165,7 @@ Sub LOADER
 
                 I$ = GetKeyPress$
 
-                If I$ <> Chr$(27) Then Call LetterToNumber(I$)
-
-                I = Val(I$)
+                If I$ <> Chr$(27) Then Call LetterToNumber(I$, I)
 
             Loop Until I >= 0 And I <= 16 Or I$ = Chr$(27) Or UCase$(I$) = "Q"
 
@@ -285,8 +275,15 @@ Sub LOADER
     '-------------------------
     ' Determine umpires
     '-------------------------
-    If _FileExists(diskPaths$(0) + "UMPIRES." + UMP$(LGT)) Then
+    If Not _FileExists(diskPaths$(0) + "UMPIRES." + UMP$(LGT)) Then
 
+        'Assign generic umpire names if we don't have any
+        U$(1) = "RHODES"
+        U$(2) = "WINBERRY"
+        U$(3) = "TIPPETT"
+        U$(4) = "MILLER"
+
+    Else
         YU = 0
 
         Open diskPaths$(0) + "UMPIRES." + UMP$(LGT) For Input As #1
@@ -310,20 +307,19 @@ Sub LOADER
         Else
             'Randomly assign umpires
             Do
+
                 While (UMP$(YU) = "" Or YU = YM)
                     YU = Int(Rnd(1) * 50) + 1
                 Wend
 
-                U$(YV) = UMP$(YU): YM = YU: YV = YV + 1
+                U$(YV) = UMP$(YU)
+                YM = YU
+                YV = YV + 1
+
             Loop Until YV >= 5
 
         End If
-    Else
-        'Assign generic umpire names if we don't have any
-        U$(1) = "RHODES"
-        U$(2) = "WINBERRY"
-        U$(3) = "TIPPETT"
-        U$(4) = "MILLER"
+
     End If
 
     '-------------------------
@@ -377,8 +373,8 @@ Sub LOADER
         cancelPitchers% = 0
 
         Call SelectPitchers(P9, cancelPitchers%, computerRotations%)
-
         Call PitchingStarter(P9)
+
         If Inotloop% <= 5 And S6%(P9, 0) - S6%(1 - P9, 0) > 0 Then P2%(P9) = P1%(P9)
 
         S8%(P9, 0) = Int(((P%(P9, P1%(P9), 8) + P%(P9, P1%(P9), 7)) / P%(P9, P1%(P9), 4)) + .5)
@@ -682,10 +678,13 @@ Sub LOADER
 
 End Sub
 
-'------------------------------
-'   StartingLineup Subroutine
-'------------------------------
-' ...explanation...
+
+'----------------------------------------
+'       StartingLineup Subroutine
+'----------------------------------------
+'This subroutine displays the existing
+'lineup options and calls a routine TO
+'let the user select the lineup
 Sub StartingLineup (P9)
 
     skipLU% = 0
@@ -733,10 +732,13 @@ Sub StartingLineup (P9)
 
 End Sub
 
-'------------------------------
-'  LineupPositions Subroutine
-'------------------------------
-' ...explanation...
+
+'----------------------------------------
+'       LineupPositions Subroutine
+'----------------------------------------
+'This subroutine works with the user to
+'help them select fielding positions for
+'each place in the lineup
 Sub LineupPositions (teamIdx, posIdx, skipLU%)
 
     'Do
@@ -771,25 +773,20 @@ Sub LineupPositions (teamIdx, posIdx, skipLU%)
 
     Else
 
-        Call LetterToNumber(I$)
-        I1 = Val(I$)
+        Call LetterToNumber(I$, I1)
 
         If UCase$(I$) <> "X" Then
 
-            '590
             For J = 1 To 9
                 If Not (J = posIdx Or (B3%(teamIdx, J) = I1 And B7%(teamIdx, J) = 1)) Then
                     If B3%(teamIdx, J) = I1 And UCase$(I$) <> "P" Then GoTo 560 'skip1% = 1
                 End If
             Next J
 
-            '620
             If Not (DH% = 1 And UCase$(I$) = "P") Or Not (B%(teamIdx, I1, 21) <> 0 And UCase$(I$) <> "P") Then
 
-                '640
                 If UCase$(I$) = "P" Then
 
-                    '760
                     For J = 1 To 9
                         If J <> posIdx Then
                             If B3%(teamIdx, J) = P1%(teamIdx) And B7%(teamIdx, J) = 1 Then skip2% = 1
@@ -797,7 +794,7 @@ Sub LineupPositions (teamIdx, posIdx, skipLU%)
                     Next J
 
                     If skip2% <> 1 Then
-                        '790
+
                         B3%(teamIdx, posIdx) = P1%(teamIdx)
                         Print P$(teamIdx, P1%(teamIdx));
                         M%(I1) = 1
@@ -808,7 +805,6 @@ Sub LineupPositions (teamIdx, posIdx, skipLU%)
                         B9%(teamIdx, 1) = P1%(teamIdx)
                         M%(1) = 1
 
-                        '1370
                         Locate 25, 1
 
                         For I0 = 0 To 9
@@ -837,7 +833,6 @@ Sub LineupPositions (teamIdx, posIdx, skipLU%)
 
                 Else
 
-                    '650
                     B3%(teamIdx, posIdx) = I1
                     Print Using "# "; posIdx;
                     Print B$(teamIdx, B3%(teamIdx, posIdx));
@@ -907,13 +902,15 @@ Sub LineupPositions (teamIdx, posIdx, skipLU%)
 
 End Sub
 
-'------------------------------
-' ChangeLineup_PreGame Subroutine
-'------------------------------
-' ...explanation...
+
+'----------------------------------------
+'    ChangeLineup_PreGame Subroutine
+'----------------------------------------
+'This routine gives the user a chance to
+'make adjustments to the lineup before
+'they start the game.
 Sub ChangeLineup_PreGame (P9, reselect)
 
-    850 '
     Do
 
         C1 = 1
@@ -987,7 +984,6 @@ Sub ChangeLineup_PreGame (P9, reselect)
                 Locate B3%(P9, I) + 2 - B4%, 2
                 Print " "; B$(P9, B3%(P9, I))
 
-                'GoTo 560
                 Call LineupPositions(P9, I, skipLU%)
 
         End Select
@@ -996,10 +992,14 @@ Sub ChangeLineup_PreGame (P9, reselect)
 
 End Sub
 
-'------------------------------
-'     SaveLineup Subroutine
-'------------------------------
-' ...explanation...
+
+'----------------------------------------
+'         SaveLineup Subroutine
+'----------------------------------------
+'This routine saves the lineup that has
+'been generated to the manager profile for
+'the team. It also gives the user a chance
+'to assign a frequency to it. 
 Sub SaveLineup (idx%)
 
     Shared MF%(), T1%()
@@ -1009,7 +1009,7 @@ Sub SaveLineup (idx%)
     Else
         Do
             Locate 25, 1: Print Space$(74);
-            Locate 25, 1: Print "SAVE THIS LINE UP (YN) ";
+            Locate 25, 1: Print "SAVE THIS LINE UP? (Y/N) ";
             I$ = GetKeyPress$
         Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -1065,10 +1065,11 @@ Sub SaveLineup (idx%)
 
 End Sub
 
-'------------------------------
-'  SearchForLineup Subroutine
-'------------------------------
-' ...explanation...
+'----------------------------------------
+'       SearchForLineup Subroutine
+'----------------------------------------
+'This routines searches for an existing
+'lineup from the manager profiles.
 Sub SearchForLineup (P9)
 
     Shared PT$()
@@ -1145,12 +1146,14 @@ Sub SearchForLineup (P9)
 
 End Sub
 
-'------------------------------
-' LineupFromProfile Subroutine
-'------------------------------
-' ...explanation...
+
+'----------------------------------------
+'      LineupFromProfile Subroutine
+'----------------------------------------
+'This subroutine attempts to load a selected
+'lineup from the manager profile and presents
+'a summary of it, if found.
 Sub LineupFromProfile (lineupFound%, P9, skipLineChange%)
-    '1830
 
     lineupFound% = 0
     PCT% = 0
@@ -1227,10 +1230,12 @@ Sub LineupFromProfile (lineupFound%, P9, skipLineChange%)
 
 End Sub
 
-'------------------------------
+'----------------------------------------
 '   LineupSummary Subroutine
-'------------------------------
-' ...explanation...
+'----------------------------------------
+'This subroutine displays a summary of the 
+'starting lineup before allowing the user 
+'to make any adjustemts.
 Sub LineupSummary (P9, reselect, LU%)
 
     For I = 1 To 9:
@@ -1247,8 +1252,7 @@ Sub LineupSummary (P9, reselect, LU%)
             Else
                 B%(P9, B3%(P9, I), 21) = 0
             End If
-            'Else
-            '
+
         End If
 
     Next I
@@ -1281,14 +1285,16 @@ Sub LineupSummary (P9, reselect, LU%)
 
     Call ChangeLineup_PreGame(P9, reselect)
 
-    'End If
-
 End Sub
 
-'------------------------------
-' SelectBatters Subroutine
-'------------------------------
-' ...explanation...
+
+'----------------------------------------
+'        SelectBatters Subroutine
+'----------------------------------------
+'This subroutine lets you choose the batters
+'for the game. It interfaces with various
+'other routines to show you different types
+'of batter stats to help you with your choices.
 Sub SelectBatters (batterFlag%, P9)
 
     Inotloop% = 99
@@ -1363,7 +1369,7 @@ Sub SelectBatters (batterFlag%, P9)
         Else
             'Not TAB / ESC
             'Deteremine index of batter chosen
-            Call LetterToNumber(I$)
+            Call LetterToNumber(I$, I1)
 
             'Assign field position
             Select Case UCase$(I$)
@@ -1381,7 +1387,6 @@ Sub SelectBatters (batterFlag%, P9)
                     Next I3
 
                 Case Else:
-                    I1 = Val(I$)
                     If I1 >= 0 And I1 <= 22 Then
                         B%(P9, I1, 21) = 99
                         Locate I1 + 2, 3: Color 0, 7: Print B$(P9, I1);
@@ -1407,10 +1412,12 @@ Sub SelectBatters (batterFlag%, P9)
 
 End Sub
 
-'------------------------------
-'   SelectStadium Subroutine
-'------------------------------
-' ...explanation...
+'----------------------------------------
+'        SelectStadium Subroutine
+'----------------------------------------
+'This subroutine assists the user with the
+'choice of any of the pre-created graphics
+'for the stadiums.
 Sub SelectStadium ()
 
     Do
@@ -1530,7 +1537,7 @@ Sub SelectStadium ()
             'No autoplay
             Do
                 Locate 10, 11
-                Print "SELECT A DIFFERENT STADIUM (YN)"
+                Print "SELECT A DIFFERENT STADIUM? (Y/N)"
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -1574,7 +1581,7 @@ Sub SelectStadium ()
                                 Locate 10, 8
                                 Print "STADIUM GRAPHIC NOT AVAILABLE"
                                 Locate , 8: Print "USE SELECTED PARK RATINGS WITH"
-                                Locate , 8: Print "GENERIC DISPLAY (YN)"
+                                Locate , 8: Print "GENERIC DISPLAY? (Y/N)"
                                 J$ = GetKeyPress$
                             Loop Until UCase$(J$) = "Y" Or UCase$(J$) = "N"
 
@@ -1599,10 +1606,13 @@ Sub SelectStadium ()
 
 End Sub
 
-'------------------------------
-' PitchingRotations Subroutine
-'------------------------------
-' ...explanation...
+
+'----------------------------------------
+'      PitchingRotations Subroutine
+'----------------------------------------
+'This subroutine guides the user through
+'the various ways that pitching rotations
+'can be configured for the game.
 Sub PitchingRotations (computerRotations%, P9)
 
     Dim gamesStarted%(21, 1)
@@ -1699,16 +1709,13 @@ Sub PitchingRotations (computerRotations%, P9)
 
                 Do
                     I$ = GetKeyPress$
-                    Call LetterToNumber(I$)
-
-                    I1 = Val(I$)
-
+                    Call LetterToNumber(I$, I1)
                 Loop Until I1 <= 21 And MG%(P9, 3) <> I1 And MG%(P9, 4) <> I1 And MG%(P9, 5) <> I1 And MG%(P9, 6) <> I1 And MG%(P9, 7) <> I1
 
                 Locate 16, 59: Print P$(P9, I1)
 
                 Do
-                    Locate 17, 59: Print "ANY CHANGE (YN)";
+                    Locate 17, 59: Print "ANY CHANGE? (Y/N)";
                     J$ = GetKeyPress$
                 Loop Until UCase$(J$) = "Y" Or UCase$(J$) = "N"
 
@@ -1799,10 +1806,14 @@ Sub PitchingRotations (computerRotations%, P9)
 
 End Sub
 
-'------------------------------
-'  ComputerLineups Subroutine
-'------------------------------
-' ...explanation...
+
+'----------------------------------------
+'       ComputerLineups Subroutine
+'----------------------------------------
+'This subroutine is built with the logic
+'to automatically select batters, before
+'presenting the user a final summary of the
+'results.
 Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
 
     Shared BP(), F()
@@ -1973,10 +1984,13 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
 
 End Sub
 
-'------------------------------
-'   SortHitters Subroutine
-'------------------------------
-' ...explanation...
+
+'----------------------------------------
+'         SortHitters Subroutine
+'----------------------------------------
+'This subroutine is used to perform a sort
+'on all the hitters before presenting the
+'lineup summary to the user.
 Sub SortHitters (P9)
 
     Shared BP()
@@ -2017,14 +2031,17 @@ Sub SortHitters (P9)
 
 End Sub
 
-'------------------------------
-' SomeCalculations Subroutine
-'------------------------------
-' I literally have no clue
-' what this routine does.
-' It was used so often but
-' does not have any context
-' hinting to it's purpose.
+
+'----------------------------------------
+'      SomeCalculations Subroutine
+'----------------------------------------
+'I literally have no clue what this sub-
+'routine does. It has very little context 
+'that hints to it's purpose.
+'It is only called by the routine I've
+'named "SortHitters", and likely DOES
+'some of the actual sorting as it's 
+'called after each lineup position.
 Sub SomeCalculations (B, C, P9)
 
     Shared BP(), F()
@@ -2095,10 +2112,12 @@ Sub SomeCalculations (B, C, P9)
 End Sub
 
 
-'------------------------------
-'   SelectPitchers Subroutine
-'------------------------------
-' ...explanation...
+'----------------------------------------
+'       SelectPitchers Subroutine
+'----------------------------------------
+'This subroutine walks the user through
+'all available options for selecting a
+'rotation of pitchers.
 Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
 
     Shared MF%(), SP%(), T1%()
@@ -2107,7 +2126,6 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
     Inotloop% = 99
     skipDisablePitchers% = 0
 
-    'GoSub 1520
     Call PrintPitcherInfo(idx%)
 
     Locate 15, 57: Print "0-MANUALLY PICK STARTER"
@@ -2147,9 +2165,9 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
                     Else
                         'This should instead go to automatic disable of rotations???
                         Cls
-                        Print "ERROR::: ROTATION NOT FOUND"
+                        Print "ERROR:: ROTATION NOT FOUND"
                         Print
-                        Print "ENTER A ROTATION (YN)"
+                        Print "DO YOU WANT TO ENTER A ROTATION? (Y/N)"
 
                         Do
                             I$ = GetKeyPress$
@@ -2164,7 +2182,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
                         If UCase$(I$) = "N" Then
                             skipDisablePitchers% = 1
                         Else
-                            Print "COMPUTER SET ROTATION (YN) ";
+                            Print "COMPUTER SET ROTATION? (Y/N) ";
 
                             Do
                                 I$ = GetKeyPress$
@@ -2186,7 +2204,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
 
                 Do
                     Cls
-                    Print "COMPUTER SET ROTATION (YN) ";
+                    Print "COMPUTER SET ROTATION? (Y/N) ";
                     I$ = GetKeyPress$
                 Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -2204,7 +2222,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
             'Next
 
             Do
-                RN = Int(Rnd(1) * 100) + 1
+                Call d100(RN)
 
                 P%(idx%, MG%(idx%, MG%(idx%, 2) + 3), 15) = 0
 
@@ -2213,7 +2231,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
                     doneAutoDisable% = 1
                 Else
 
-                    RN = Int(Rnd(1) * 100) + 1
+                    Call d100(RN)
                     SP% = 0
 
                     For I = 21 To 36
@@ -2277,7 +2295,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
 
                 If I$ <> Chr$(27) And UCase$(I$) <> "Z" Then
 
-                    Call LetterToNumber(I$)
+                    Call LetterToNumber(I$, I1)
 
                     Select Case UCase$(I$)
                         Case "Y":
@@ -2295,10 +2313,8 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
                             Next I3
 
                         Case Else:
-                            I1 = Val(I$)
                             If I1 <= 21 Then
-                                'If a pitcher was selected,
-                                'disable them
+                                'If a pitcher was selected, disable them
                                 If P%(idx%, I1, 15) = 0 Then
                                     P%(idx%, I1, 15) = 99: Locate I1 + 2, 3: Color 0, 7: Print P$(idx%, I1): Color 15, 0
                                 Else
@@ -2331,10 +2347,12 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
 
 End Sub
 
-'------------------------------
-' PrintPitcherInfo Subroutine
-'------------------------------
-' ...explanation...
+
+'----------------------------------------
+'      PrintPitcherInfo Subroutine
+'----------------------------------------
+'This routine outputs the information for
+'the target pitcher to the display.
 Sub PrintPitcherInfo (idx%)
 
     '1520
@@ -2379,10 +2397,75 @@ Sub PrintPitcherInfo (idx%)
 End Sub
 
 
-'------------------------------
-'   ChooseGameTeam Subroutine
-'------------------------------
-'...explanation...
+'----------------------------------------
+'        PitchingStarter routine
+'----------------------------------------
+'This subroutine works with the user to
+'choose a starting pitcher. The choices
+'will have already been printed to the
+'screen from other routines.
+Sub PitchingStarter (idx%)
+
+    Shared SP%()
+
+    Do
+
+        Locate 19, 58: Print "SELECT STARTER"
+
+        If SP%(idx%) <> -1 Then
+            I1 = SP%(idx%)
+        Else
+
+            Do
+                I$ = GetKeyPress$
+                Call LetterToNumber(I$, I1)
+            Loop Until I1 <= 21 And P%(idx%, I1, 15) <= 0
+
+        End If
+
+        Locate 20, 58
+        Print P$(idx%, I1); " "; B1$(P%(idx%, I1, 0) + 2)
+
+        Print
+
+        If Not (AP% = 1 And (U6 = 2 Or U6 = 1 And U9 = idx%)) Then
+
+            Do
+                Locate 21, 58: Print "ANY CHANGE? (Y/N)"
+                I$ = GetKeyPress$
+            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+            If UCase$(I$) = "Y" Then
+                Locate 20, 58
+                Print Space$(16)
+                SP%(idx%) = -1
+            End If
+
+        Else
+
+            I$ = "N"
+
+        End If
+
+    Loop Until UCase$(I$) = "N"
+
+    P1%(idx%) = I1
+    P6%(idx%) = 1
+    P%(idx%, I1, 15) = P6%(idx%)
+
+    S8%(idx%, 0) = Int(((P%(idx%, P1%(idx%), 8) + P%(idx%, P1%(idx%), 7)) / P%(idx%, P1%(idx%), 4)) + .5)
+    S8%(idx%, 1) = 3
+
+    If P6%(idx%) > 1 Then S8%(idx%, 1) = 0
+
+End Sub
+
+
+'----------------------------------------
+'       ChooseGameTeam Subroutine
+'----------------------------------------
+'This subroutine provides interface for 
+'choosing a team for the game
 Sub ChooseGameTeam (yearNumber$, numberTeams, chosenIdx, teamName$, gameIdx)
 
     'Shared teamNames$()
@@ -2441,11 +2524,14 @@ Sub ChooseGameTeam (yearNumber$, numberTeams, chosenIdx, teamName$, gameIdx)
 
                     If Not _FileExists(diskPaths$(0) + TEAM_FILE_NAME$ + "." + yearNumber$) Then
 
-                        Locate 10, 8
-
-                        Call CSMsgBox("NO TEAMS WERE FOUND MATCHING THAT ID... PRESS ANY KEY TO SELECT ANOTHER ID", 20, Pass)
+                        MsgText$ = "NO TEAM FILES WERE FOUND MATCHING THIS ID. PRESS ANY KEY TO RETURN TO MAIN MENU"
+                        BoxWidth = 20
+                        BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+                        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+                        Call CSMsgBox(MsgText$, BoxWidth, Pass)
                         I$ = GetKeyPress$
                         Call CSMsgBox("", 0, Pass)
+                        Exit Sub
 
                     Else
 
@@ -2492,7 +2578,7 @@ Sub ChooseGameTeam (yearNumber$, numberTeams, chosenIdx, teamName$, gameIdx)
                         Color L%(Idx, 11), L%(Idx, 12): Print teamName$
 
                         Color 15, 4
-                        Locate 3, 33: Print "ANY CHANGE? (YN)";
+                        Locate 3, 32: Print "ANY CHANGE? (Y/N)";
 
                         J$ = GetKeyPress$
 
@@ -2511,10 +2597,12 @@ Sub ChooseGameTeam (yearNumber$, numberTeams, chosenIdx, teamName$, gameIdx)
 End Sub
 
 
-'------------------------------
-' SelectGameTeam Subroutine
-'------------------------------
-' ...explanation...
+'----------------------------------------
+'       SelectGameTeam Subroutine
+'----------------------------------------
+'This subroutine provides an interface for
+'selecting a team from the list loaded by
+'the disk ID.
 Sub SelectGameTeam (numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%, gameIdx)
 
     Shared T1%()
@@ -2559,10 +2647,13 @@ Sub SelectGameTeam (numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%,
 
 End Sub
 
-'------------------------------
-'   ReadGameTeam Subroutine
-'------------------------------
-' ...explanation...
+
+'----------------------------------------
+'        ReadGameTeam Subroutine
+'----------------------------------------
+'This subroutine reads in the data for the
+'selected tema into each of the data arrays
+'needed by the game.
 Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
 
     Shared MF%()
@@ -2658,11 +2749,17 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
     Next
 
     If LR% = 1 Then
+
         TS%(gameIdx, 0) = -1
+
     Else
 
-        If _FileExists(diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$) Then
+        If Not _FileExists(diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$) Then
 
+            TS%(gameIdx, 0) = -1
+
+        Else
+        
             Open diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$ For Random As #1 Len = DATA_SIZE_BYTES
 
             For X = 0 To 11
@@ -2747,10 +2844,6 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
 
             If TS%(gameIdx, 0) <> 999 Then TS%(gameIdx, 0) = -1
 
-        Else
-
-            TS%(gameIdx, 0) = -1
-
         End If
 
     End If
@@ -2774,7 +2867,11 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
     targetTeam$ = RTrim$(Q2$(0))
 
     'Read in manager data
-    If _FileExists(diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$) Then
+    If Not _FileExists(diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$) Then
+
+        MF%(gameIdx) = -1
+    
+    Else
 
         Open diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #2 Len = MGR_SIZE_BYTES
 
@@ -2787,15 +2884,17 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
         For X = 0 To 999: MG%(gameIdx, X) = CVI(Q2$(X)): Next
 
         Close 2
-    Else
-        MF%(gameIdx) = -1
+
     End If
 
     If MG%(gameIdx, 0) <> 999 Or MF%(gameIdx) = -1 Then
+
         MF%(gameIdx) = -1
+
         For X = 0 To 999:
             MG%(gameIdx, X) = -1
         Next
+
     End If
 
     statFile$ = nameStatFile$(A$(idx))
@@ -2834,4 +2933,3 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
     End If
 
 End Sub
-

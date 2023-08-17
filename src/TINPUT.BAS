@@ -1,3 +1,9 @@
+'----------------------------------------
+'           TINPUT Subroutine
+'----------------------------------------
+'This subroutine provodes the user with
+'several options for managing a team and
+'it's roster.
 Sub TINPUT ()
 
     _Title "Full Count Baseball - Team Input"
@@ -117,9 +123,12 @@ End Sub
 
 
 '----------------------------------------
-'     ViewRoster subroutine
+'         ViewRoster subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine formats and displays the
+'general stats for a team, then provides
+'a menu for choosing options to display
+'various aspects of the roster
 Sub ViewRoster (targetTeam$)
 
     Shared ERX!
@@ -243,10 +252,10 @@ Sub ViewRoster (targetTeam$)
         Select Case I
 
             Case 1:
-                Call ViewHitters
+                Call ViewHitters (T$)
 
             Case 2:
-                Call ViewPitchers
+                Call ViewPitchers (T$)
 
             Case 3:
                 Call ViewHittingFielding
@@ -260,8 +269,8 @@ End Sub
 '----------------------------------------
 '        InputEditTeam Subroutine
 '----------------------------------------
-'Steps user through screens for adjusting
-'team data and players
+'This subroutine steps user through screens 
+'for adjusting team data and players
 '
 'NOTE: <ENTER> key is valued as 0 for when
 'a user is prompted to press keys to CONTINUE
@@ -351,6 +360,9 @@ End Sub
 '----------------------------------------
 '        SaveTeamFile subroutine
 '----------------------------------------
+'This subroutine saves the modifed team
+'data (from corresponding arrays) to an
+'appropriate spot in the select team file
 Sub SaveTeamFile (newID%, yearNumber$, targetTeam$, targetFile$, teamIdx)
 
     Shared CK, parkHR
@@ -539,10 +551,14 @@ Sub SaveTeamFile (newID%, yearNumber$, targetTeam$, targetFile$, teamIdx)
 
 End Sub
 
+
 '----------------------------------------
 '       SwapSpots subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine is used to allow the user
+'an opportunity to switch default positions
+'on the team roster. It then will call the
+'correct routine to actually swap the info.
 Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
 
     Shared batterNames$(), BS$(), pitcherNames$(), PS$()
@@ -561,7 +577,7 @@ Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
 
         Cls
 
-        Print "DOES "; targetTeam$; " HAVE COMPILED STATS (YN)";
+        Print "DOES "; targetTeam$; " HAVE COMPILED STATS? (Y/N)";
         I$ = GetKeyPress$
     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -687,10 +703,13 @@ Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
 
 End Sub
 
+
 '----------------------------------------
-'       LoadTeam subroutine
+'           LoadTeam subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine looks for and loads the
+'corresponding stat files for the chosen
+'team.
 Sub LoadTeam (targetTeam$, teamHasStats, SS, statFile$)
 
     Shared BS%(), PS%(), statSS%()
@@ -703,10 +722,15 @@ Sub LoadTeam (targetTeam$, teamHasStats, SS, statFile$)
     statFile$ = nameStatFile$(targetTeam$)
 
     If Not _FileExists(diskPaths$(1) + statFile$) Then
-        Locate 10, 8
-        Call CSMsgBox("NO COMPILED STATS WERE FOUND... PRESS ANY KEY TO RETURN TO CONTINUE", 26, Pass)
+
+        MsgText$ = "NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU"
+        BoxWidth = 24
+        BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+        Call CSMsgBox(MsgText$, BoxWidth, Pass)
         I$ = GetKeyPress$
         Call CSMsgBox("", 0, Pass)
+
     Else
 
         Open diskPaths$(1) + statFile$ For Input As #1
@@ -774,10 +798,13 @@ Sub LoadTeam (targetTeam$, teamHasStats, SS, statFile$)
 
 End Sub
 
+
 '----------------------------------------
 '       SwitchBatters subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine gives the user a simple
+'interface for switching batters on the
+'full team roster
 Sub SwitchBatters ()
 
     Shared batterNames$(), BS$()
@@ -805,7 +832,7 @@ Sub SwitchBatters ()
 
         Do
             Locate 18, 50
-            Print "ANY CHANGE (YN)";
+            Print "ANY CHANGE? (Y/N)";
             I$ = GetKeyPress$
         Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -831,10 +858,13 @@ Sub SwitchBatters ()
 
 End Sub
 
+
 '----------------------------------------
-'       SwitchBatters subroutine
+'       SwitchPitchers subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine gives the user a simple
+'interface for switching pitchers on the
+'full team roster
 Sub SwitchPitchers ()
 
     Shared pitcherRatings(), statP0%(), PS%()
@@ -859,7 +889,7 @@ Sub SwitchPitchers ()
 
         Do
             Locate 18, 50
-            Print "ANY CHANGE (YN)";
+            Print "ANY CHANGE? (Y/N)";
             I$ = GetKeyPress$
         Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -879,10 +909,13 @@ Sub SwitchPitchers ()
 
 End Sub
 
+
 '----------------------------------------
 '       PrintTeamStats subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine formats and outputs the
+'previously loaded team stat data and sends
+'it to the default printer
 Sub PrintTeamStats (targetTeam$, teamIdx)
 
     Shared batterNames$(), BP$(), pitcherNames$()
@@ -989,10 +1022,13 @@ Sub PrintTeamStats (targetTeam$, teamIdx)
 
 End Sub
 
+
 '----------------------------------------
 '     CalculateRunRating subroutine
 '----------------------------------------
-'...explanation...
+'This subroutien gives the user a quick
+'overview of run ratings and a means by
+'which to review them
 Sub CalculateRunRating (teamName$)
 
     Shared batterNames$(), pitcherNames$()
@@ -1055,10 +1091,13 @@ Sub CalculateRunRating (teamName$)
 
 End Sub
 
+
 '----------------------------------------
 '     CalculateBuntRating subroutine
 '----------------------------------------
-'...explanation...
+'This subroutien gives the user a quick
+'overview of bunt ratings and a means by
+'which to review them
 Sub CalculateBuntRating (teamName$)
 
     Dim B1!, BUNT!
@@ -1102,7 +1141,6 @@ Sub CalculateBuntRating (teamName$)
                 Case Is >= 36: BR = 10
             End Select
 
-            1921 '
             BUNT! = (BUNT! + BR) / 2
             If BUNT! < 1 Then BUNT! = 1
             If BUNT! > 9 Then BUNT! = 9
@@ -1176,9 +1214,10 @@ Sub CalculateBuntRating (teamName$)
 End Sub
 
 '----------------------------------------
-'       EditBatter subroutine
+'         EditBatter subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine gives the user an interface
+'specifically for modifying team batters
 Sub EditBatter ()
 
     Shared batterNames$(), batterRatings()
@@ -2106,10 +2145,12 @@ Sub EditBatter ()
 
 End Sub
 
+
 '----------------------------------------
-'       EditTeamInfo subroutine
+'        EditTeamInfo subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine gives the user an interface
+'specifically for modifying team ratings
 Sub EditTeamInfo (YN$, T$, teamIdx)
 
     Shared CK, parkHR
@@ -2686,10 +2727,12 @@ Sub EditTeamInfo (YN$, T$, teamIdx)
 
 End Sub
 
+
 '----------------------------------------
-'       EditPitcher subroutine
+'         EditPitcher subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine gives the user an interface
+'specifically for modifying team pitchers
 Sub EditPitcher ()
 
     Shared pitcherNames$()
@@ -3677,7 +3720,9 @@ End Sub
 '----------------------------------------
 '       PITCHINIT subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine simply summarizes all of
+'the initial pitcher ratings using a very
+'complex on-screen layout.
 Sub PITCHINIT (i, FG, BG)
 
     Shared pitcherRatings()
@@ -3776,8 +3821,11 @@ End Sub
 '----------------------------------------
 '       ViewHitters subroutine
 '----------------------------------------
-'...explanation...
-Sub ViewHitters ()
+'This subroutine give the user a summary
+'of each hitter and gives them an oppor-
+'tunity to view corresponding fielding
+'stats
+Sub ViewHitters (teamName$)
 
     Shared batterNames$()
     Shared batterRatings(), TB%()
@@ -3787,7 +3835,7 @@ Sub ViewHitters ()
 
         Cls
 
-        Color 12: Print T$
+        Color 12: Print teamName$
         Color 14
         Print "BATTER     B POS     G  AB   R   H DB TR HR RBI  BB  SO  SB CS GA  BAVG"
 
@@ -3801,7 +3849,7 @@ Sub ViewHitters ()
 
                 Cls
 
-                Color 12: Print T$
+                Color 12: Print teamName$
                 Color 14
                 Print "BATTER     B POS     G  AB   R   H DB TR HR RBI  BB  SO  SB CS GA  BAVG"
             End If
@@ -3872,7 +3920,7 @@ Sub ViewHitters ()
         I$ = GetKeyPress$
 
         If I$ = Chr$(9) Then
-            Call FieldingStats
+            Call FieldingStats (teamName$)
             Color 11
             Locate 20: Print "HIT TAB KEY FOR FIELDING STATS/ANY KEY TO CONTINUE"
             I$ = GetKeyPress$
@@ -3884,18 +3932,20 @@ Sub ViewHitters ()
 
 End Sub
 
+
 '----------------------------------------
 '       ViewPitchers subroutine
 '----------------------------------------
-'...explanation...
-Sub ViewPitchers ()
+'This subroutine give the user a summary
+'of each team pitcher.
+Sub ViewPitchers (teamName$)
 
     Shared pitcherNames$()
     Shared pitcherRatings(), inputTP%()
 
     Cls
 
-    Color 12: Print T$
+    Color 12: Print teamName$
     Color 14
     Print "PITCHER      T  W  L SV  G GS  IP   H  BB  SO  ERA  GA HR CG WP HLDR"
 
@@ -3910,7 +3960,7 @@ Sub ViewPitchers ()
 
             Cls
 
-            Color 12: Print T$
+            Color 12: Print teamName$
             Color 14
             Print "PITCHER      T  W  L SV  G GS  IP   H  BB  SO  ERA  GA HR CG WP HLDR"
         End If
@@ -3963,10 +4013,13 @@ Sub ViewPitchers ()
 
 End Sub
 
+
 '----------------------------------------
 '     ViewHittingFielding subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine give the user a summary
+'of fielding and hitting stats for each
+'team pitcher.
 Sub ViewHittingFielding ()
 
     Shared pitcherRatings()
@@ -4026,11 +4079,13 @@ Sub ViewHittingFielding ()
 
 End Sub
 
+
 '----------------------------------------
 '       FieldingStats Subroutine
 '----------------------------------------
-'...explanation...
-Sub FieldingStats ()
+'This subroutine give the user a summary
+'of field stats for each batter.
+Sub FieldingStats (teamName$)
 
     Shared batterNames$()
     Shared batterRatings()
@@ -4050,7 +4105,7 @@ Sub FieldingStats ()
 
             Cls
 
-            Color 12: Print T$
+            Color 12: Print teamName$
             Color 14
             Print "BATTER       AVG ARM RGE  AVG ARM RGE  AVG ARM RGE  AVG ARM RGE RUN BUNT"
 

@@ -1,3 +1,9 @@
+'----------------------------------------
+'          CAREER Subroutine
+'----------------------------------------
+'This routine gives the user a menu from 
+'which they can choose several options
+'for managing career files
 Sub CAREER ()
 
     _Title "Full Count Baseball - Career Stats"
@@ -68,9 +74,13 @@ End Sub
 
 
 '----------------------------------------
-'      CreateCareerFile Subroutine
+'       CreateCareerFile Subroutine
 '----------------------------------------
-'...explanation...
+'This routine assists the user with the
+'creation of a team's first career file.
+'This naturally means it will guide them 
+'through also adding the first year's
+'stats to the file.
 Sub CreateCareerFile ()
 
     Do
@@ -106,9 +116,255 @@ End Sub
 
 
 '----------------------------------------
-'      ViewPrintCareerRecords Subroutine
+'        MergeFirstYear Subroutine
 '----------------------------------------
-'...explanation...
+'This routine actually prompts the user for 
+'parameters to be used for merging the first
+'year's worth of stats to the career file
+Sub MergeFirstYear ()
+
+    Shared careerB$(), careerP$()
+
+    Shared careerB0%(), careerB1%(), BRS%()
+    Shared careerP0%(), careerP1%(), PRS%()
+
+    Shared statT%(), statT1%()
+
+    Dim TMR
+
+    NB = -1
+    NP = -1
+
+    Do
+
+        Cls
+
+        For J = 15 To 18:
+            Locate J
+            Print Space$(68)
+        Next
+
+        Color 11
+        Locate 15, 5
+        Input "ENTER NAME OF CAREER STAT FILE "; careerFile$
+
+        Call ChooseTeam(YN$, NTMS, teamNbr, team$)
+
+        If teamNbr <> 0 Then
+
+            statFile$ = nameStatFile$(team$)
+
+            Do
+
+                Color 15, 0
+                Cls
+
+                Locate 8, 25: Input "ENTER YEAR TO ADD (EX. - 1961)"; statYear
+                Locate 9, 25: Print "ANY CHANGE? (Y/N)"
+
+                J$ = GetKeyPress$
+
+            Loop Until UCase$(J$) = "Y" Or UCase$(J$) = "N" Or J$ = Chr$(27)
+
+            If UCase$(J$) = "N" Then
+
+                VV = 1
+
+                Do
+                    Locate , 5
+                    Print "IS THIS THE FINAL UPDATE FOR THE CURRENT SEASON? (Y/N)"
+                    K$ = GetKeyPress$
+                Loop Until UCase$(K$) = "Y" Or UCase$(K$) = "N" Or K$ = Chr$(27)
+
+                If UCase$(K$) = "Y" Then finalUpdate% = 1 Else finalUpdate% = 0
+
+                If Not _FileExists(diskPaths$(1) + statFile$) Then
+
+                    MsgText$ = "NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU"
+                    BoxWidth = 24
+                    BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+                    Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+                    Call CSMsgBox(MsgText$, BoxWidth, Pass)
+                    I$ = GetKeyPress$
+                    Call CSMsgBox("", 0, Pass)
+
+                Else
+
+                    Locate 20, 5
+                    Color 15
+                    Print "MERGING CAREER STATS AND UPDATING CAREER LEADER FILE . . . . PLEASE WAIT"
+
+                    TMR = 4175
+
+                    Open diskPaths$(1) + statFile$ For Input As #1
+
+                    Input #1, team$
+                    Input #1, W2%
+                    Input #1, L2%
+
+                    For I = 0 To 22:
+                        Input #1, careerB$(I)
+                        Input #1, careerB1%(I)
+                        Color 9
+                        Locate 21, 38
+                        TMR = TMR - 1
+                        Print Using "####"; TMR
+                    Next I
+
+                    For I = 0 To 21:
+                        Input #1, careerP$(I)
+                        Input #1, careerP1%(I)
+                        Color 9
+                        Locate 21, 38
+                        TMR = TMR - 1
+                        Print Using "####"; TMR
+                    Next I
+
+                    For I = 0 To 22:
+
+                        For I1 = 0 To 21:
+                            Input #1, careerB0%(I, I1)
+                            Color 9
+                            Locate 21, 38
+                            TMR = TMR - 1
+                            Print Using "####"; TMR
+                        Next I1
+
+                    Next I
+
+                    For I = 0 To 21:
+
+                        For I1 = 0 To 41:
+                            Input #1, careerP0%(I, I1)
+                            Color 9
+                            Locate 21, 38
+                            TMR = TMR - 1
+                            Print Using "####"; TMR
+                        Next I1
+
+                    Next I
+
+                    Input #1, D0%
+                    Input #1, D1%
+
+                    For I = 0 To 21:
+                        Input #1, statT%(I)
+                    Next I
+
+                    For I = 0 To 22:
+                        Input #1, statT1%(I)
+                    Next I
+
+                    Close #1
+
+                    For I = 0 To 99
+
+                        N = 1
+
+                        If careerB$(I) = "END" Or careerB$(I) = "XXX" Or careerB$(I) = "" Then
+                            careerB$(I) = ""
+                        Else
+                            NB = NB + 1
+                        End If
+
+                        For J = 0 To 15:
+                            BRS%(N, I, J) = careerB0%(I, J)
+                        Next J
+
+                        BRS%(N, I, 16) = 1
+                        BRS%(N, I, 17) = statYear
+
+                    Next I
+
+                    For I = 0 To 79
+
+                        If careerP$(I) = "END" Or careerP$(I) = "XXX" Or careerP$(I) = "" Then
+                            careerP$(I) = ""
+                        Else
+                            NP = NP + 1
+                        End If
+
+                        For J = 0 To 14
+                            PRS%(N, I, J) = careerP0%(I, J)
+                        Next J
+
+                        PRS%(N, I, 15) = 1
+                        PRS%(N, I, 16) = statYear
+
+                    Next I
+
+                    If finalUpdate% = 1 Then Call UpdateCareerLeaders(careerFile$)
+
+                    Locate 20, 5
+                    Color 15: Print "MERGING CAREER STATS AND UPDATING CAREER LEADER FILE . . . . PLEASE WAIT"
+
+                    Open diskPaths$(1) + careerFile$ + ".CAR" For Output As #1
+
+                    Write #1, NB, NP
+
+                    For I = 0 To 99:
+                        Write #1, careerB$(I)
+                    Next
+
+                    For I = 0 To 79:
+                        Write #1, careerP$(I)
+                    Next
+
+                    For J = 1 To 15:
+
+                        For I = 0 To 99:
+
+                            For I1 = 0 To 17:
+                                Write #1, BRS%(J, I, I1)
+                            Next I1
+
+                            Color 9
+                            Locate 21, 38
+                            TMR = TMR - 1
+                            Print Using "####"; TMR
+
+                        Next I
+
+                    Next J
+
+                    For J = 1 To 15:
+
+                        For I = 0 To 79:
+
+                            For I1 = 0 To 16:
+                                Write #1, PRS%(J, I, I1)
+                            Next I1
+
+                            Color 9
+                            Locate 21, 38
+                            TMR = TMR - 1
+                            Print Using "####"; TMR
+
+                        Next I
+
+                    Next J
+
+                    Close #1
+
+                End If 'Done checking for stat file
+
+            End If 'Done checking for changes
+
+        End If 'Done checking if team was chosen
+
+    Loop Until UCase$(J$) = "N"
+
+End Sub
+
+
+'----------------------------------------
+'    ViewPrintCareerRecords Subroutine
+'----------------------------------------
+'This routine loads in leader records from
+'the .CLD file (which were compiled from  
+'the career file). It then gives the user
+'an option to View or Print results, AND
+'formats the results for them as directed.
 Sub ViewPrintCareerRecords ()
 
     Shared BLL!(), PLL!()
@@ -125,9 +381,13 @@ Sub ViewPrintCareerRecords ()
 
         Open diskPaths$(2) + recordFile$ + ".CLD" For Input As #1
 
-        For I = 0 To 14: Input #1, BLYR%(I), BL$(I), BLL!(I): Next
+        For I = 0 To 14: 
+            Input #1, BLYR%(I), BL$(I), BLL!(I)
+        Next
 
-        For I = 0 To 14: Input #1, PLYR%(I), careerPL$(I), PLL!(I): Next
+        For I = 0 To 14: 
+            Input #1, PLYR%(I), careerPL$(I), PLL!(I)
+        Next
 
         Close #1
 
@@ -296,7 +556,7 @@ Sub ViewPrintCareerRecords ()
                         Color 15
 
                         Do
-                            Locate 22: Print "VIEW AGAIN (Y/N)"
+                            Locate 22: Print "VIEW AGAIN? (Y/N)"
                             I$ = GetKeyPress$
                         Loop Until UCase$(I$) = "N" Or I$ = Chr$(27)
 
@@ -312,229 +572,14 @@ End Sub
 
 
 '----------------------------------------
-'      MergeFirstYear Subroutine
+'       MergeCareerFiles Subroutine
 '----------------------------------------
-'...explanation...
-Sub MergeFirstYear ()
-
-    Shared careerB$(), careerP$()
-
-    Shared careerB0%(), careerB1%(), BRS%()
-    Shared careerP0%(), careerP1%(), PRS%()
-
-    'Dim statT%(0 to 21), statT1%(0 to 22)
-    Shared statT%(), statT1%()
-
-    Dim TMR
-
-    NB = -1
-    NP = -1
-
-    Do
-
-        Cls
-
-        For J = 15 To 18:
-            Locate J
-            Print Space$(68)
-        Next
-
-        Color 11
-        Locate 15, 5
-        Input "ENTER NAME OF CAREER STAT FILE "; careerFile$
-
-        Call ChooseTeam(YN$, NTMS, teamNbr, team$)
-
-        If teamNbr <> 0 Then
-
-            statFile$ = nameStatFile$(team$)
-
-            Do
-
-                Color 15, 0
-                Cls
-
-                Locate 8, 25: Input "ENTER YEAR TO ADD (EX. - 1961)"; statYear
-                Locate 9, 25: Print "ANY CHANGE (YN)"
-
-                J$ = GetKeyPress$
-
-            Loop Until UCase$(J$) = "Y" Or UCase$(J$) = "N" Or J$ = Chr$(27)
-
-            If UCase$(J$) = "N" Then
-
-                VV = 1
-
-                Do
-                    Locate , 5
-                    Print "IS THIS THE FINAL UPDATE FOR THE CURRENT SEASON? (Y/N)"
-                    K$ = GetKeyPress$
-                Loop Until UCase$(K$) = "Y" Or UCase$(K$) = "N" Or K$ = Chr$(27)
-
-                If UCase$(K$) = "Y" Then finalUpdate% = 1 Else finalUpdate% = 0
-
-                If Not _FileExists(diskPaths$(1) + statFile$) Then
-
-                    Locate 10, 18
-                    Call CSMsgBox("NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, PASS)
-                    I$ = GetKeyPress$
-                    Call CSMsgBox("", 0, PASS)
-
-                Else
-
-                    Locate 20, 5
-                    Color 15
-                    Print "MERGING CAREER STATS AND UPDATING CAREER LEADER FILE . . . . PLEASE WAIT"
-
-                    TMR = 4175
-
-                    Open diskPaths$(1) + statFile$ For Input As #1
-
-                    Input #1, team$
-                    Input #1, W2%
-                    Input #1, L2%
-
-                    For I = 0 To 22:
-                        Input #1, careerB$(I)
-                        Input #1, careerB1%(I)
-                        Color 9: Locate 21, 35
-                        TMR = TMR - 1
-                        Print Using "####"; TMR
-                    Next I
-
-                    For I = 0 To 21:
-                        Input #1, careerP$(I)
-                        Input #1, careerP1%(I)
-                        Color 9: Locate 21, 35
-                        TMR = TMR - 1
-                        Print Using "####"; TMR
-                    Next I
-
-                    For I = 0 To 22:
-                        For I1 = 0 To 21:
-                            Input #1, careerB0%(I, I1)
-                            Color 9: Locate 21, 35
-                            TMR = TMR - 1
-                            Print Using "####"; TMR
-                        Next I1
-                    Next I
-
-                    For I = 0 To 21:
-                        For I1 = 0 To 41:
-                            Input #1, careerP0%(I, I1)
-                            Color 9: Locate 21, 35
-                            TMR = TMR - 1
-                            Print Using "####"; TMR
-                        Next I1
-                    Next I
-
-                    Input #1, D0%
-                    Input #1, D1%
-
-                    For I = 0 To 21:
-                        Input #1, statT%(I)
-                    Next I
-
-                    For I = 0 To 22:
-                        Input #1, statT1%(I)
-                    Next I
-
-                    Close #1
-
-                    For I = 0 To 99
-
-                        N = 1
-
-                        If careerB$(I) = "END" Or careerB$(I) = "XXX" Or careerB$(I) = "" Then
-                            careerB$(I) = ""
-                        Else
-                            NB = NB + 1
-                        End If
-
-                        For J = 0 To 15:
-                            BRS%(N, I, J) = careerB0%(I, J)
-                        Next J
-
-                        BRS%(N, I, 16) = 1
-                        BRS%(N, I, 17) = statYear
-
-                    Next I
-
-                    For I = 0 To 79
-
-                        If careerP$(I) = "END" Or careerP$(I) = "XXX" Or careerP$(I) = "" Then
-                            careerP$(I) = ""
-                        Else
-                            NP = NP + 1
-                        End If
-
-                        For J = 0 To 14
-                            PRS%(N, I, J) = careerP0%(I, J)
-                        Next J
-
-                        PRS%(N, I, 15) = 1
-                        PRS%(N, I, 16) = statYear
-
-                    Next I
-
-                    If finalUpdate% = 1 Then Call UpdateCareerLeaders(careerFile$)
-
-                    Locate 20, 5
-                    Color 15: Print "MERGING CAREER STATS AND UPDATING CAREER LEADER FILE . . . . PLEASE WAIT"
-
-                    Open diskPaths$(1) + careerFile$ + ".CAR" For Output As #1
-
-                    Write #1, NB, NP
-
-                    For I = 0 To 99:
-                        Write #1, careerB$(I)
-                    Next
-
-                    For I = 0 To 79:
-                        Write #1, careerP$(I)
-                    Next
-
-                    For J = 1 To 15:
-                        For I = 0 To 99:
-                            For I1 = 0 To 17:
-                                Write #1, BRS%(J, I, I1)
-                            Next I1
-                            Color 9: Locate 21, 35
-                            TMR = TMR - 1
-                            Print Using "####"; TMR
-                        Next I
-                    Next J
-
-                    For J = 1 To 15:
-                        For I = 0 To 79:
-                            For I1 = 0 To 16:
-                                Write #1, PRS%(J, I, I1)
-                            Next I1
-                            Color 9: Locate 21, 35
-                            TMR = TMR - 1
-                            Print Using "####"; TMR
-                        Next I
-
-                    Next J
-
-                    Close #1
-
-                End If 'Done checking for stat file
-
-            End If 'Done checking for changes
-
-        End If 'Done checking if team was chosen
-
-    Loop Until UCase$(I$) = "N" Or UCase$(J$) = "N"
-
-End Sub
-
-
-'----------------------------------------
-'     MergeCareerFiles Subroutine
-'----------------------------------------
-'... explain here ...
+'This routine assists thet user with the
+'addition of career stats from any extra 
+'season years that have been compiled.
 Sub MergeCareerFiles ()
+
+    _Title "Full Count Baseball - Update Career Files"
 
     Do
         Color 14, 0
@@ -577,13 +622,20 @@ Sub MergeCareerFiles ()
             Call ChooseTeam(YN$, NTMS, teamNbr, team$)
             statFile$ = nameStatFile$(team$)
 
-            If _FileExists(diskPaths$(1) + statFile$) Then
-                Call MergeAddYear(careerFile$, statFile$)
-            Else
-                Locate 10, 18
-                Call CSMsgBox("NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+            If Not (_FileExists(diskPaths$(1) + statFile$)) Then
+
+                MsgText$ = "NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU"
+                BoxWidth = 24
+                BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+                Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+                Call CSMsgBox(MsgText$, BoxWidth, Pass)
                 I$ = GetKeyPress$
                 Call CSMsgBox("", 0, Pass)
+
+            Else
+
+                Call MergeAddYear(careerFile$, statFile$)
+
             End If
 
         End If
@@ -595,9 +647,14 @@ End Sub
 
 
 '----------------------------------------
-'      MergeAddYear Subroutine
+'         MergeAddYear Subroutine
 '----------------------------------------
-'...explanation...
+'This routine actually prompts the user
+'for parameters for the team / year to
+'be updated. It then loads the existing 
+'career stats, adds the team's stats to 
+'them, then overwrites the career file 
+'with the new values. 
 Sub MergeAddYear (selectedFile$, statFile$)
 
     Shared careerB$(), careerP$()
@@ -622,7 +679,7 @@ Sub MergeAddYear (selectedFile$, statFile$)
 
     Do
         Locate 8, 25: Input "ENTER YEAR TO ADD (EX. - 1961)"; statYear
-        Locate 9, 25: Print "ANY CHANGE (YN)"
+        Locate 9, 25: Print "ANY CHANGE? (Y/N)"
         J$ = GetKeyPress$
     Loop Until UCase$(J$) = "Y" Or UCase$(J$) = "N"
 
@@ -909,7 +966,10 @@ End Sub
 '----------------------------------------
 '     UpdateCareerLeaders Subroutine
 '----------------------------------------
-'...explanation...
+'This routine reads in any existing career 
+'leader files (.CLD), adds the new stats,
+'and then saves the changes back to the
+'career leader file (.CLD)
 Sub UpdateCareerLeaders (recordFile$)
 
     Dim AVG!, SLG!, OBP!, EV!

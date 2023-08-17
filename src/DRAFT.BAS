@@ -1,3 +1,8 @@
+'----------------------------------------
+'            DRAFT Subroutine
+'----------------------------------------
+'This subroutine presents a menu to the
+'user with choices for drafting players.
 Sub DRAFT ()
 
     _Title "Full Count Baseball - Team Draft"
@@ -78,7 +83,7 @@ Sub DRAFT ()
                         draftSA%(I) = 0
                     Next
 
-                    Call DraftNewTeam(draftYN$(0), T$)
+                    Call NewTeamParameters(draftYN$(0), T$)
                     Call DraftChoices(draftNew, done, T$, draftYN$(), idx)
 
                 Case 2:
@@ -97,10 +102,12 @@ Sub DRAFT ()
 End Sub
 
 '----------------------------------------
-'       DraftNewTeam Subroutine
+'      NewTeamParameters Subroutine
 '----------------------------------------
-'...explanation...
-Sub DraftNewTeam (draftYear$, teamName$)
+'This subroutine prompts the user for the
+'minimum required parameters to create a 
+'new team that players will be drafted to.
+Sub NewTeamParameters (draftYear$, teamName$)
 
     ' Shared T$()
     Shared teamRatings%()
@@ -227,140 +234,15 @@ End Sub
 
 
 '----------------------------------------
-'     ChooseDestTeam Subroutine
-'----------------------------------------
-'...explanation...
-Sub ChooseDestTeam (yearNumber$, numberTeams, chosenIdx, teamName$, draftIdx)
-
-    Shared teamRatings%()
-
-    Shared previousYear$
-
-    Do
-
-        Color 15, 0
-        Cls
-
-        JJ = 7
-
-        Locate 6, 8
-        Color 15, 4
-
-        Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
-
-        For II = 1 To JJ
-            Locate 6 + II, 8
-            Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-        Next
-
-        Locate 7 + JJ, 8
-        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
-
-        Locate 7, 32
-
-        Locate , 12: Print "ENTER DISK ID: "
-        Print
-        Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
-        Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
-        Print
-        Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
-
-        I$ = GetKeyPress$
-
-        If I$ <> Chr$(27) Then
-
-            If I$ <> Chr$(13) Then
-
-                Locate 7, 27: Print I$
-                Locate 7, 28: Line Input NY$
-                NY$ = I$ + NY$
-                Color 15, 0
-
-                If Not (NY$ = "" And yearNumber$ <> "") Then
-
-                    yearNumber$ = RTrim$(NY$)
-                    Erase teamNames$
-                    numberTeams = 0
-
-                    Cls
-
-                    If Not _FileExists(diskPaths$(0) + TEAM_FILE_NAME$ + "." + yearNumber$) Then
-
-                        Locate 10, 8
-
-                        Call CSMsgBox("NO TEAMS WERE FOUND MATCHING THAT ID... PRESS ANY KEY TO SELECT ANOTHER ID", 20, Pass)
-                        I$ = GetKeyPress$
-                        Call CSMsgBox("", 0, Pass)
-
-                    Else
-
-                        Open diskPaths$(0) + TEAM_FILE_NAME$ + "." + yearNumber$ For Random As #1 Len = TEAM_SIZE_BYTES
-
-                        fileLength& = LOF(1)
-
-                        Field #1, 15 As Q$(0)
-
-                        numberTeams = fileLength& / TEAM_SIZE_BYTES
-
-                        For teamIdx = 1 To numberTeams
-                            Get #1, teamIdx
-                            'numberTeams = numberTeams + 1
-                            teamNames$(teamIdx) = Q$(0)
-                            teamIndex%(teamIdx) = teamIdx
-                        Next teamIdx
-
-                        Close 1
-
-                    End If 'Done checking if file exists
-
-                End If 'Done checking for blank year number
-
-                previousYear$ = yearNumber$
-
-            Else
-
-                yearNumber$ = previousYear$
-
-            End If 'Done checking for ENTER key
-
-            'Locate 2, 33
-            'Color 31: Print "LOADING..."
-
-            Do
-
-                Call SelectDraftTeam(numberTeams, yearNumber$, chosenIdx, teamName$, ExitCode%, 0)
-
-                If ExitCode% <> 27 And chosenIdx <> 0 Then
-
-                    Do
-                        Locate 2, 33
-                        Color lgRat_DRAFT%(11), lgRat_DRAFT%(12): Print teamName$
-
-                        Color 15, 4
-                        Locate 3, 33: Print "ANY CHANGE? (YN)";
-
-                        J$ = GetKeyPress$
-
-                    Loop Until J$ = Chr$(27) Or UCase$(J$) = "Y" Or UCase$(J$) = "N"
-
-                End If
-
-            Loop Until ExitCode% = 27 Or J$ = Chr$(27) Or UCase$(J$) = "N"
-
-        End If 'Done checking for ESC
-
-    Loop Until UCase$(J$) = "N" Or I$ = Chr$(27) 'Or J$ = Chr$(27)
-
-    If I$ = Chr$(27) Or J$ = Chr$(27) Then chosenIdx = 0
-
-
-End Sub
-
-
-'----------------------------------------
 '       DraftChoices Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine provides an interface the 
+'user can operate to choose their draft
+'selections.
+'
+'draftNew
+'  0 = Existing Team
+'  1 = New Team
 Sub DraftChoices (draftNew, doneDrafting, teamName$, teamYears$(), teamIdx)
 
     Shared teamRatings%()
@@ -457,7 +339,7 @@ Sub DraftChoices (draftNew, doneDrafting, teamName$, teamYears$(), teamIdx)
 
     Locate 7
 
-    U$ = "DRAFT ANOTHER TEAM (YN)"
+    U$ = "DRAFT ANOTHER TEAM? (Y/N)"
 
     Do
         Locate 7, (80 - Len(U$)) / 2
@@ -477,7 +359,9 @@ End Sub
 '----------------------------------------
 '       DraftPlayer Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine provides the end user an
+'interface for choosing the player to be
+'traded, depending on the position type.
 '
 'playerType
 '   1 = Batter
@@ -580,7 +464,13 @@ End Sub
 '----------------------------------------
 '       SaveTeamDraft Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine updates the source team
+'with the newly assigned player / stat 
+'values after the draft.
+'
+'draftNew
+'  0 = Existing Team
+'  1 = New Team
 Sub SaveTeamDraft (draftNew, yearNumber$, teamName$, teamIdx)
 
     Shared batterNames$(), pitcherNames$()
@@ -753,10 +643,145 @@ End Sub
 
 
 '----------------------------------------
+'     ChooseDestTeam Subroutine
+'----------------------------------------
+'This subroutine provides interface for 
+'choosing the team to draft players to
+Sub ChooseDestTeam (yearNumber$, numberTeams, chosenIdx, teamName$, draftIdx)
+
+    Shared teamRatings%()
+
+    Shared previousYear$
+
+    Do
+
+        Color 15, 0
+        Cls
+
+        JJ = 7
+
+        Locate 6, 8
+        Color 15, 4
+
+        Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+
+        For II = 1 To JJ
+            Locate 6 + II, 8
+            Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
+        Next
+
+        Locate 7 + JJ, 8
+        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+
+        Locate 7, 32
+
+        Locate , 12: Print "ENTER DISK ID: "
+        Print
+        Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
+        Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
+        Print
+        Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
+
+        I$ = GetKeyPress$
+
+        If I$ <> Chr$(27) Then
+
+            If I$ <> Chr$(13) Then
+
+                Locate 7, 27: Print I$
+                Locate 7, 28: Line Input NY$
+                NY$ = I$ + NY$
+                Color 15, 0
+
+                If Not (NY$ = "" And yearNumber$ <> "") Then
+
+                    yearNumber$ = RTrim$(NY$)
+                    Erase teamNames$
+                    numberTeams = 0
+
+                    Cls
+
+                    If Not _FileExists(diskPaths$(0) + TEAM_FILE_NAME$ + "." + yearNumber$) Then
+
+                        MsgText$ = "NO TEAM FILES WERE FOUND MATCHING THIS ID. PRESS ANY KEY TO RETURN TO MAIN MENU"
+                        BoxWidth = 20
+                        BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+                        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+                        Call CSMsgBox(MsgText$, BoxWidth, Pass)
+                        I$ = GetKeyPress$
+                        Call CSMsgBox("", 0, Pass)
+                        Exit Sub
+
+                    Else
+
+                        Open diskPaths$(0) + TEAM_FILE_NAME$ + "." + yearNumber$ For Random As #1 Len = TEAM_SIZE_BYTES
+
+                        fileLength& = LOF(1)
+
+                        Field #1, 15 As Q$(0)
+
+                        numberTeams = fileLength& / TEAM_SIZE_BYTES
+
+                        For teamIdx = 1 To numberTeams
+                            Get #1, teamIdx
+                            'numberTeams = numberTeams + 1
+                            teamNames$(teamIdx) = Q$(0)
+                            teamIndex%(teamIdx) = teamIdx
+                        Next teamIdx
+
+                        Close 1
+
+                    End If 'Done checking if file exists
+
+                End If 'Done checking for blank year number
+
+                previousYear$ = yearNumber$
+
+            Else
+
+                yearNumber$ = previousYear$
+
+            End If 'Done checking for ENTER key
+
+            'Locate 2, 33
+            'Color 31: Print "LOADING..."
+
+            Do
+
+                Call SelectDraftTeam(numberTeams, yearNumber$, chosenIdx, teamName$, ExitCode%, 0)
+
+                If ExitCode% <> 27 And chosenIdx <> 0 Then
+
+                    Do
+                        Locate 2, 33
+                        Color lgRat_DRAFT%(11), lgRat_DRAFT%(12): Print teamName$
+
+                        Color 15, 4
+                        Locate 3, 32: Print "ANY CHANGE? (Y/N)";
+
+                        J$ = GetKeyPress$
+
+                    Loop Until J$ = Chr$(27) Or UCase$(J$) = "Y" Or UCase$(J$) = "N"
+
+                End If
+
+            Loop Until ExitCode% = 27 Or J$ = Chr$(27) Or UCase$(J$) = "N"
+
+        End If 'Done checking for ESC
+
+    Loop Until UCase$(J$) = "N" Or I$ = Chr$(27) 'Or J$ = Chr$(27)
+
+    If I$ = Chr$(27) Or J$ = Chr$(27) Then chosenIdx = 0
+
+
+End Sub
+
+
+'----------------------------------------
 '       ChooseSourceTeam SubRoutine
 '----------------------------------------
-'Provides interface for choosing the
-'team to draft players from
+'This subroutine provides interface for 
+'choosing the team to draft players from
 Sub ChooseSourceTeam (yearNumber$, numberTeams, chosenIdx, teamName$, draftIdx)
 
     Shared lgRat_DRAFT%()
@@ -813,11 +838,14 @@ Sub ChooseSourceTeam (yearNumber$, numberTeams, chosenIdx, teamName$, draftIdx)
 
                     If Not _FileExists(diskPaths$(0) + TEAM_FILE_NAME$ + "." + yearNumber$) Then
 
-                        Locate 10, 8
-
-                        Call CSMsgBox("NO TEAMS WERE FOUND MATCHING THAT ID... PRESS ANY KEY TO SELECT ANOTHER ID", 20, Pass)
+                        MsgText$ = "NO TEAM FILES WERE FOUND MATCHING THIS ID. PRESS ANY KEY TO RETURN TO MAIN MENU"
+                        BoxWidth = 20
+                        BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+                        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+                        Call CSMsgBox(MsgText$, BoxWidth, Pass)
                         I$ = GetKeyPress$
                         Call CSMsgBox("", 0, Pass)
+                        Exit Sub
 
                     Else
 
@@ -864,7 +892,7 @@ Sub ChooseSourceTeam (yearNumber$, numberTeams, chosenIdx, teamName$, draftIdx)
                         Color lgRat_DRAFT%(11), lgRat_DRAFT%(12): Print teamName$
 
                         Color 15, 4
-                        Locate 3, 33: Print "ANY CHANGE? (YN)";
+                        Locate 3, 32: Print "ANY CHANGE? (Y/N)";
 
                         J$ = GetKeyPress$
 
@@ -886,8 +914,9 @@ End Sub
 '----------------------------------------
 '       SelectDraftTeam SubRoutine
 '----------------------------------------
-'Provides interface for selecting the
-'team to draft players from
+'This subroutine provides an interface for 
+'selecting a team from the list of available
+'ones.
 Sub SelectDraftTeam (numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%, draftIdx)
 
     If numberTeams > 0 Then
@@ -938,8 +967,8 @@ End Sub
 '----------------------------------------
 '       ReadDestTeam SubRoutine
 '----------------------------------------
-'Reads team data into arrays for the
-'selected team
+'This subroutine reads team data into 
+'arrays for the team we are drafting from
 Sub ReadDestTeam (teamYear$, targetTeam$, teamIdx)
 
     Shared batterRatings(), pitcherRatings()
@@ -1005,7 +1034,17 @@ Sub ReadDestTeam (teamYear$, targetTeam$, teamIdx)
 
     Close 1
 
-    If _FileExists(diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$) Then
+    If Not _FileExists(diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$) Then
+
+		MsgText$ = "WARNING!!! NO DATA FILE WAS FOUND FOR THIS TEAM. PRESS ANY KEY TO CONTINUE"
+		BoxWidth = 20
+		BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+		Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+		Call CSMsgBox(MsgText$, BoxWidth, Pass)
+		I$ = GetKeyPress$
+		Call CSMsgBox("", 0, Pass)
+
+    Else
 
         Open diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$ For Random As #1 Len = DATA_SIZE_BYTES
 
@@ -1120,7 +1159,8 @@ End Sub
 '----------------------------------------
 '        ReadSourceTeam Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine reads team data into 
+'arrays for the team we are drafting to
 Sub ReadSourceTeam (yearNumber$, targetTeam$, teamIdx)
 
     Shared batRat_DRAFT%(), lgRat_DRAFT%()
@@ -1185,7 +1225,17 @@ Sub ReadSourceTeam (yearNumber$, targetTeam$, teamIdx)
 
     Close 1
 
-    If _FileExists(diskPaths$(0) + DATA_FILE_NAME$ + "." + yearNumber$) Then
+    If Not _FileExists(diskPaths$(0) + DATA_FILE_NAME$ + "." + yearNumber$) Then
+
+		MsgText$ = "WARNING!!! NO DATA FILE WAS FOUND FOR THIS TEAM. PRESS ANY KEY TO CONTINUE"
+		BoxWidth = 20
+		BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+		Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+		Call CSMsgBox(MsgText$, BoxWidth, Pass)
+		I$ = GetKeyPress$
+		Call CSMsgBox("", 0, Pass)
+
+    Else
 
         Open diskPaths$(0) + DATA_FILE_NAME$ + "." + yearNumber$ For Random As #1 Len = DATA_SIZE_BYTES
 

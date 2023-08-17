@@ -66,11 +66,14 @@ Sub ChooseTeam (yearNumber$, numberTeams, chosenIdx, teamName$)
 
                     If Not _FileExists(diskPaths$(0) + TEAM_FILE_NAME$ + "." + yearNumber$) Then
 
-                        Locate 10, 8
-
-                        Call CSMsgBox("NO TEAMS WERE FOUND MATCHING THAT ID... PRESS ANY KEY TO SELECT ANOTHER ID", 20, Pass)
+                        MsgText$ = "NO TEAM FILES WERE FOUND MATCHING THIS ID. PRESS ANY KEY TO RETURN TO MAIN MENU"
+                        BoxWidth = 20
+                        BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+                        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+                        Call CSMsgBox(MsgText$, BoxWidth, Pass)
                         I$ = GetKeyPress$
                         Call CSMsgBox("", 0, Pass)
+                        Exit Sub
 
                     Else
 
@@ -289,7 +292,17 @@ Sub ReadExtraData (teamYear$, targetTeam$, teamIdx)
     Shared teamSA%(), teamTS%()
     Shared batterRatings(), pitcherRatings()
 
-    If _FileExists(diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$) Then
+    If Not _FileExists(diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$) Then
+
+		MsgText$ = "WARNING!!! NO DATA FILE WAS FOUND FOR THIS TEAM. PRESS ANY KEY TO CONTINUE"
+		BoxWidth = 20
+		BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+		Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+		Call CSMsgBox(MsgText$, BoxWidth, Pass)
+		I$ = GetKeyPress$
+		Call CSMsgBox("", 0, Pass)
+
+    Else
 
         Open diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$ For Random As #1 Len = DATA_SIZE_BYTES
 
@@ -474,7 +487,7 @@ Function ChooseFile$ (fileSpec$, fileDesc$, ExitCode%)
     Do
         'Display list of files...
 
-        Count% = FCount%(fileSpec$)
+        Count% = FileCount%(fileSpec$)
 
         If Count% = 0 Then
 
@@ -540,7 +553,7 @@ Function ChooseFile$ (fileSpec$, fileDesc$, ExitCode%)
 
                     Do
                         Locate , 31
-                        Print "ANY CHANGE (Y/N)?";
+                        Print "ANY CHANGE? (Y/N)?";
                         I$ = GetKeyPress$
                     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 

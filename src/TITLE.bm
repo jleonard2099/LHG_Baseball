@@ -1,6 +1,6 @@
-'------------------------------
-'   TITLE_CAREER Subroutine
-'------------------------------
+'----------------------------------------
+'        TITLE_CAREER Subroutine
+'----------------------------------------
 ' Displays window title / game copyright
 Sub TITLE_CAREER ()
 
@@ -58,9 +58,9 @@ Sub TITLE_EDITSTATS (titleType, subtitle$)
 
 End Sub
 
-'------------------------------
-'   TITLE_HEADER Subroutine
-'------------------------------
+'----------------------------------------
+'       TITLE_HEADER Subroutine
+'----------------------------------------
 ' Displays window title / game copyright
 Sub TITLE_HEADER ()
 
@@ -81,9 +81,9 @@ Sub TITLE_HEADER ()
 
 End Sub
 
-'------------------------------
-'   TITLE_LEADERS Subroutine
-'------------------------------
+'----------------------------------------
+'        TITLE_LEADERS Subroutine
+'----------------------------------------
 ' Displays window title / game copyright
 Sub TITLE_LEADERS
 
@@ -107,9 +107,9 @@ Sub TITLE_LEADERS
 
 End Sub
 
-'------------------------------
-'   TITLE_MERGE Subroutine
-'------------------------------
+'----------------------------------------
+'         TITLE_MERGE Subroutine
+'----------------------------------------
 ' Displays window title / game copyright
 Sub TITLE_MERGE ()
 
@@ -134,9 +134,9 @@ Sub TITLE_MERGE ()
 
 End Sub
 
-'------------------------------
-'  TITLE_SCHEDULER Subroutine
-'------------------------------
+'----------------------------------------
+'      TITLE_SCHEDULER Subroutine
+'----------------------------------------
 ' Displays window title / game copyright
 Sub TITLE_SCHEDULER ()
 
@@ -164,9 +164,9 @@ Sub TITLE_SCHEDULER ()
 
 End Sub
 
-'------------------------------
-'    TITLE_STATS Subroutine
-'------------------------------
+'----------------------------------------
+'      TITLE_STATS Subroutine
+'----------------------------------------
 ' Displays window title / game copyright
 Sub TITLE_STATS ()
 
@@ -192,7 +192,7 @@ Sub TITLE_STATS ()
 End Sub
 
 '----------------------------------------
-'       TITLE_STAT_HEADER Subroutine
+'      TITLE_STAT_HEADER Subroutine
 '----------------------------------------
 '... explain here ...
 Sub TITLE_STAT_HEADER (header$)
@@ -218,9 +218,9 @@ Sub TITLE_STAT_HEADER (header$)
 
 End Sub
 
-'------------------------------
-'    TITLE_TOURN Subroutine
-'------------------------------
+'----------------------------------------
+'         TITLE_TOURN Subroutine
+'----------------------------------------
 ' Displays window title / game copyright
 Sub TITLE_TOURN ()
     
@@ -253,9 +253,9 @@ Sub TITLE_TOURN ()
 
 End Sub
 
-'------------------------------
-'    TITLE_UTILS  Subroutine
-'------------------------------
+'----------------------------------------
+'         TITLE_UTILS Subroutine
+'----------------------------------------
 ' Displays window title / game copyright
 SUB TITLE_UTILS ()
 
@@ -280,9 +280,9 @@ SUB TITLE_UTILS ()
 
 End Sub
 
-'------------------------------
-'      TITLE Subroutine
-'------------------------------
+'----------------------------------------
+'            TITLE Subroutine
+'----------------------------------------
 ' Displays window title / game copyright
 Sub TITLE ()
 

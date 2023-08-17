@@ -1,7 +1,7 @@
 '-----------------------------------
 ' FCount Copycat Function
 '-----------------------------------
-Function FCount% (dirSpec$)
+Function FileCount% (dirSpec$)
 
     'ListMAX is the max # of files the function
     'can process. The value chosen was used for
@@ -60,7 +60,7 @@ Function FCount% (dirSpec$)
         Kill TmpFile$
 
         ' Shared variable can return the file count
-        If emptyFile% = 0 Then FCount% = Index%
+        If emptyFile% = 0 Then FileCount% = Index%
 
     End If
 

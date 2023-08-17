@@ -1,3 +1,8 @@
+'----------------------------------------
+'           NEWLDRST Subroutine
+'----------------------------------------
+'This subroutine presents the user options
+'for navigating the "Expanded" standings 
 Sub ExpandedStandings ()
 
     _Title "Full Count Baseball - League Standings"
@@ -63,9 +68,13 @@ Sub ExpandedStandings ()
 End Sub
 
 '----------------------------------------
-'   UpdateLeagueStandings Subroutine
+'    UpdateLeagueStandings Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine lets the user select a
+'league (.TMS file) and reads in the stats 
+'for that league. It then calculates the
+'standings for that league and writes a 
+'corresponding .STD file.
 Sub UpdateLeagueStandings ()
 
     Shared CLT!(), CWS!()
@@ -92,7 +101,7 @@ Sub UpdateLeagueStandings ()
 
         Open diskPaths$(2) + leagStatFile$ + ".TMS" For Input As #2
 
-        Input #2, LGF$, D1$, D2$, D3$, D4$
+        Input #2, league$, D1$, D2$, D3$, D4$
 
         For X = 1 To 40: Input #2, Z1$(X): Next
 
@@ -104,7 +113,7 @@ Sub UpdateLeagueStandings ()
 
             YY = YY + 1
             Color 14
-            Locate 7, 20
+            Locate 7, 38
             TMR = TMR - 1: Print Using "###"; TMR
 
             If Z1$(KK) <> "*" Then
@@ -123,12 +132,19 @@ Sub UpdateLeagueStandings ()
                     Input #1, XX%
 
                     For I = 1 To 162: Input #1, H%(I): Next I
+
                     For I = 1 To 162: Input #1, H$(I): Next I
+
                     For I = 1 To 162: Input #1, V%(I): Next I
+
                     For I = 1 To 162: Input #1, PL$(I): Next I
+
                     For I = 1 To 162: Input #1, W$(I): Next I
+
                     For I = 1 To 162: Input #1, L$(I): Next I
+
                     For I = 1 To 162: Input #1, I%(I): Next I
+
                     Close #1
 
                     For I = 1 To XX%
@@ -175,7 +191,7 @@ Sub UpdateLeagueStandings ()
 
         Open diskPaths$(2) + leagStatFile$ + ".STD" For Output As #1
 
-        Write #1, LGF$, D1$, D2$, D3$, D4$
+        Write #1, league$, D1$, D2$, D3$, D4$
 
         For I = 1 To 40:
             Write #1, TML$(I), WW!(I), LL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
@@ -190,7 +206,10 @@ End Sub
 '----------------------------------------
 '   NewStandingOptions Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine lets you choose a prev-
+'iously compiled Standings file (.STD)
+'and then prompts the user for display
+'options.
 Sub NewStandingOptions ()
 
     Shared CLT!(), CWS!()
@@ -208,7 +227,7 @@ Sub NewStandingOptions ()
 
         Open diskPaths$(2) + standingsFile$ + ".STD" For Input As #1
 
-        Input #1, LGF$, D1$, D2$, D3$, D4$
+        Input #1, league$, D1$, D2$, D3$, D4$
 
         For I = 1 To 40:
             Input #1, TML$(I), WW!(I), LL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
@@ -229,10 +248,10 @@ Sub NewStandingOptions ()
         Select Case UCase$(A$)
 
             Case "V":
-                Call ViewNewStandings(LGF$)
+                Call ViewNewStandings(league$)
 
             Case "P":
-                Call PrintNewStandings(LGF$)
+                Call PrintNewStandings(league$)
 
         End Select
 
@@ -244,8 +263,10 @@ End Sub
 '----------------------------------------
 '       ViewNewStandings Subroutine
 '----------------------------------------
-'...explanation...
-Sub ViewNewStandings (LGF$)
+'This subroutine sorts the expanded league
+'standings and outputs them to the user
+'display in a formatted view
+Sub ViewNewStandings (league$)
 
     Shared CLT!(), CWS!()
     Shared ELL!(), EWW!(), HLL!(), HWW!()
@@ -268,7 +289,7 @@ Sub ViewNewStandings (LGF$)
         Cls
 
         Color 11
-        Locate 1, 35: Print LGF$
+        Locate 1, 35: Print league$
         Color 14
         Locate 2: Print Tab(16); "                      MAG.  L  L   C  C   HOME  ROAD  X-IN  L-10"
         Locate 3
@@ -345,8 +366,10 @@ End Sub
 '----------------------------------------
 '       PrintNewStandings Subroutine
 '----------------------------------------
-'...explanation...
-Sub PrintNewStandings (LGF$)
+'This subroutine sorts the expanded league
+'standings and outputs them to the default
+'printer in a formatted view
+Sub PrintNewStandings (league$)
 
     Shared CLT!(), CWS!()
     Shared ELL!(), EWW!(), HLL!(), HWW!()
@@ -359,7 +382,7 @@ Sub PrintNewStandings (LGF$)
 
     MJ = 0
 
-    LPrint Tab(35); LGF$
+    LPrint Tab(35); league$
 
     For NT = 1 To 4
 
@@ -438,7 +461,12 @@ End Sub
 '----------------------------------------
 '         SortStandings Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine simply sorts the league
+'standings records so that teams that are
+'leading can be displayed first.
+'This sorting is only done on the arrays
+'holding the standing data, so no changes
+'are permanent to the underlying files.
 Sub SortStandings (AA, ZZ)
 
     Shared CLT!(), CWS!()

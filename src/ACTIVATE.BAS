@@ -1,3 +1,9 @@
+'----------------------------------------
+'           ACTIVATE Subroutine
+'----------------------------------------
+'This routine presents a menu / interface
+'that assists the user with changing the
+'status of players on a team roster.
 Sub ACTIVATE ()
 
     _Title "Full Count Baseball - Activate Players"

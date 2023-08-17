@@ -1,3 +1,7 @@
+'----------------------------------------
+'
+'----------------------------------------
+'
 Sub SeasonRecords ()
 
     _Title "Full Count Baseball - Season Records"
@@ -13,9 +17,13 @@ Sub SeasonRecords ()
 
     'If Not _FileExists(diskPaths$(1) + "BASEBALL.REC") Then
     '
-    '    Call CSMsgBox("UNABLE TO LOCATE RECORDS PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-    '    I$ = GetKeyPress$
-    '    Call CSMsgBox("", 0, Pass)
+	'	MsgText$ = "UNABLE TO LOCATE RECORDS PRESS ANY KEY TO RETURN TO MAIN MENU"
+    '    BoxWidth = 24
+	'	BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+	'	Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+	'	Call CSMsgBox(MsgText$, BoxWidth, Pass)
+	'	I$ = GetKeyPress$
+	'	Call CSMsgBox("", 0, Pass)
     '
     'Else
 
@@ -125,17 +133,29 @@ Sub UpdateRecords (leagueFile$)
 
     Do
         Locate 2
-        Input "IS THIS THE FINAL UPDATE FOR THE YEAR (Y/N)"; finalUpdate$
+        Input "IS THIS THE FINAL UPDATE FOR THE YEAR? (Y/N)"; finalUpdate$
     Loop Until UCase$(finalUpdate$) = "Y" Or UCase$(finalUpdate$) = "N"
 
     Print
-    Print "ANY CHANGE (Y/N)"
+    Print "ANY CHANGE? (Y/N)"
 
     Do
         I$ = GetKeyPress$
     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
-    If _FileExists(diskPaths$(2) + "BASEBALL.REC") Then
+    If Not _FileExists(diskPaths$(2) + "BASEBALL.REC") Then
+
+        PRC!(23) = 100
+        PRC!(25) = 100
+        BRC!(24) = 999
+        BRC!(25) = 999
+        BRC!(26) = 999
+        BRC!(27) = 999
+        BRC!(28) = 999
+        PRC!(27) = 100
+        TRC1!(24) = 100
+
+    Else
 
         Open diskPaths$(2) + "BASEBALL.REC" For Input As #1
 
@@ -148,18 +168,6 @@ Sub UpdateRecords (leagueFile$)
 
         Close #1
 
-    Else
-
-        PRC!(23) = 100
-        PRC!(25) = 100
-        BRC!(24) = 999
-        BRC!(25) = 999
-        BRC!(26) = 999
-        BRC!(27) = 999
-        BRC!(28) = 999
-        PRC!(27) = 100
-        TRC1!(24) = 100
-
     End If
 
     TMR = 3680
@@ -171,7 +179,7 @@ Sub UpdateRecords (leagueFile$)
     For I = 1 To 920:
         Input #1, leaderBL$(I), TMB$(I), GM1!(I)
         Color 14
-		Locate 18, 45
+		Locate 18, 38
         TMR = TMR - 1: Print Using "#####"; TMR
     Next I
 
@@ -180,7 +188,7 @@ Sub UpdateRecords (leagueFile$)
             Input #1, BK%(I, I1)
         Next I1
         Color 14
-		Locate 18, 45
+		Locate 18, 38
         TMR = TMR - 1: Print Using "#####"; TMR
 	Next I
 
@@ -193,18 +201,21 @@ Sub UpdateRecords (leagueFile$)
     For I = 1 To 880:
         Input #1, leaderPL$(I), TMP$(I), GM2(I)
         Color 14
-        Locate 18, 45
+		Locate 18, 38
         TMR = TMR - 1
 		Print Using "#####"; TMR
     Next I
 
     For I = 1 To 880:
+
         For I1 = 1 To 23:
             Input #1, PM%(I, I1)
         Next I1
+
         Color 14
-		Locate 18, 45
+		Locate 18, 38
         TMR = TMR - 1: Print Using "#####"; TMR
+
 	Next I
 
     Close 1
@@ -216,21 +227,27 @@ Sub UpdateRecords (leagueFile$)
     For I = 1 To 40: Input #1, WW(I), LL(I): Next
 
     For I = 1 To 40:
+
         For I1 = 0 To 21:
             Input #1, TT!(I, I1), TT$(I, I1)
         Next
+
         Color 14
-        Locate 18, 45
+		Locate 18, 38
         TMR = TMR - 1: Print Using "#####"; TMR
+
     Next
 
     For I = 1 To 40:
+
         For I1 = 0 To 22:
             Input #1, TT1!(I, I1), TT1$(I, I1)
         Next
+
         Color 14
         Locate 18, 45
         TMR = TMR - 1: Print Using "#####"; TMR
+
     Next
 
     Close #1

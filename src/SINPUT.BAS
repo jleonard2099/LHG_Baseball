@@ -1,3 +1,8 @@
+'----------------------------------------
+'          EditStats Subroutine
+'----------------------------------------
+'This subroutine presents a menu of options
+'for the user to edit replay stats.
 Sub EditStats ()
 
     _Title "Full Count Baseball - Stats Input"
@@ -47,10 +52,14 @@ Sub EditStats ()
 
 End Sub
 
+
 '----------------------------------------
 '     EditStatsSchedules Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine lets the user pick a team
+'and then calls the corresponding routine
+'for the user to edit Stats or Schedule
+'Results.
 Sub EditStatsSchedules (action%)
 
     Shared batterNames$(), pitcherNames$()
@@ -69,8 +78,11 @@ Sub EditStatsSchedules (action%)
         'action% = 1
         If Not _FileExists(diskPaths$(1) + statFile$) Then
 
-            Locate 10, 8
-            Call CSMsgBox("NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+            MsgText$ = "NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU"
+            BoxWidth = 24
+            BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+            Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+            Call CSMsgBox(MsgText$, BoxWidth, Pass)
             I$ = GetKeyPress$
             Call CSMsgBox("", 0, Pass)
 
@@ -87,7 +99,9 @@ End Sub
 '----------------------------------------
 '       ModifyTeamStats Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine inputs stats from the
+'chosen stat file and then gives the user
+'an interface for modifying the stats.
 Sub ModifyTeamStats (Z$)
 
     Shared batterNames$(), pitcherNames$()
@@ -354,7 +368,9 @@ End Sub
 '----------------------------------------
 '     ChangeBatters Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine gives the user an inter-
+'face for specifically changing stats for
+'team batters.
 Sub ChangeBatters (Z$)
 
     Shared batterNames$()
@@ -501,7 +517,9 @@ End Sub
 '----------------------------------------
 '    ChangePitchers Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine gives the user an inter-
+'face for specifically changing stats for
+'team pitchers.
 Sub ChangePitchers (D0%, D1%, L2%, W2%, Z$)
 
     Shared batterNames$(), pitcherNames$()
@@ -726,7 +744,10 @@ End Sub
 '----------------------------------------
 '    ChangeSchedule Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine inputs stats from the
+'chosen Stat Schedule file and then gives 
+'the user an interface for modifying the 
+'schedule results.
 Sub ChangeSchedule (Z$)
 
     Shared H%(), I%(), V%()
@@ -735,11 +756,17 @@ Sub ChangeSchedule (Z$)
     statsFile$ = diskPaths$(1) + Z$ + "S"
 
     If Not _FileExists(statsFile$) Then
-        Locate 10, 8
-        Call CSMsgBox("NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-        I$ = GetKeyPress$
-        Call CSMsgBox("", 0, Pass)
+
+		MsgText$ = "NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU"
+		BoxWidth = 24
+		BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+		Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+		Call CSMsgBox(MsgText$, BoxWidth, Pass)
+		K$ = GetKeyPress$
+		Call CSMsgBox("", 0, Pass)
+
     Else
+
         Cls
 
         Open statsFile$ For Input As #1
@@ -767,13 +794,10 @@ Sub ChangeSchedule (Z$)
             Locate 6, 1: Print "6. LOSING PITCHER "; L$
             Locate 7, 1: Print "7. NUMBER OF INNINGS "; I%
 
-            1057 C1 = 1
-
-            1100 '
             Do
                 Locate 9, 1: Print "ENTER # TO CHANGE (1-7) OR 0 TO CONTINUE"
-                I$ = GetKeyPress$
-                D = Val(I$)
+                J$ = GetKeyPress$
+                D = Val(J$)
 
                 Select Case D
                     Case 1:
@@ -811,7 +835,7 @@ Sub ChangeSchedule (Z$)
             I%(GAMES%) = I%
 
             Do
-                Print "ADD ANOTHER GAME (YN)";
+                Print "ADD ANOTHER GAME? (Y/N)";
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 

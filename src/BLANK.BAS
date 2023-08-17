@@ -1,6 +1,12 @@
+'----------------------------------------
+'            BLANK Subroutine
+'----------------------------------------
+'This routine assists the user in choosing
+'a league, and then proceeds to delete all 
+'stats files for all the associated teams
 Sub BLANK ()
 
-    _Title "Full Count Baseball - Delete League Stats"
+    _Title "Full Count Baseball - Erase League Stats"
 
     Dim H1$(40)
 
@@ -8,9 +14,11 @@ Sub BLANK ()
 
     If ExitCode% <> 27 And ExitCode% <> 0 Then
 
-        Cls
-        Locate 10, 8
-        Call CSMsgBox("WARNING!!!::: THIS WILL ERASE ALL COMPILED STATS FOR THIS LEAGUE. IF YOU STILL WISH TO ERASE ALL STATS, HIT 'Y' FOR YES", 26, Pass)
+        MsgText$ = "WARNING!!! THIS WILL ERASE ALL COMPILED STATS FOR THIS LEAGUE. IF YOU STILL WISH TO ERASE ALL STATS, HIT 'Y' FOR YES"
+        BoxWidth = 27
+        BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+        Call CSMsgBox(MsgText$, BoxWidth, Pass)
         A$ = GetKeyPress$
         Call CSMsgBox("", 0, Pass)
 
@@ -18,7 +26,7 @@ Sub BLANK ()
 
             Open diskPaths$(2) + leagueFile$ + ".TMS" For Input As #2
 
-            Input #2, LG$, D1$, D2$, D3$, D4$
+            Input #2, league$, D1$, D2$, D3$, D4$
 
             For XW = 1 To 40
                 Input #2, H1$(XW)

@@ -1,3 +1,9 @@
+'----------------------------------------
+'            CARLDR Subroutine
+'----------------------------------------
+'This routine provides a menu for the user
+'that allows them to Update and View the
+'Career leaders for a specific team
 Sub CARLDR ()
 
     _Title "Full Count Baseball - Career Leaders"
@@ -39,7 +45,7 @@ Sub CARLDR ()
                     Call UpdateLeaders
 
                 Case 2:
-                    Call ViewPrintLeaders
+                    Call CareerLeaderOptions
 
                 Case 3:
                     Cls
@@ -55,7 +61,11 @@ End Sub
 '----------------------------------------
 '       UpdateLeaders Subroutine
 '----------------------------------------
-'...explanation...
+'This routine reads in the current stats, 
+'calculates the latest values (based on
+'the criteria given) and then creates /
+'overwrites the TCL file with the newest
+'calculated values.
 Sub UpdateLeaders ()
 
     Dim BC(100, 18), PC(80, 17)
@@ -102,7 +112,7 @@ Sub UpdateLeaders ()
             Input "ENTER NUMBER OF INNINGS PITCHED TO QUALIFY"; N2
 
             Do
-                Locate 5: Print "ANY CHANGE (Y/N)"
+                Locate 5: Print "ANY CHANGE? (Y/N)"
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -128,10 +138,9 @@ Sub UpdateLeaders ()
                     Input #1, BRS%(J, I, I1)
                 Next I1
 
-                Locate 7, 35
-                TMR1 = TMR1 - 1
                 Color 9
-                Print Using "####"; TMR1
+                Locate 7, 38
+                TMR1 = TMR1 - 1: Print Using "####"; TMR1
 
             Next I
 
@@ -145,9 +154,9 @@ Sub UpdateLeaders ()
                     Input #1, PRS%(J, I, I1)
                 Next I1
 
-                Locate 7, 35
-                TMR1 = TMR1 - 1
-                Color 9: Print Using "####"; TMR1
+                Color 9
+                Locate 7, 38
+                TMR1 = TMR1 - 1: Print Using "####"; TMR1
 
             Next I
 
@@ -336,10 +345,12 @@ Sub UpdateLeaders ()
 End Sub
 
 '----------------------------------------
-'       ViewPrintLeaders Subroutine
+'     CareerLeaderOptions Subroutine
 '----------------------------------------
-'...explanation...
-Sub ViewPrintLeaders ()
+'This routine reads in previously compiled
+'career stats (.TCL file) and then provides
+'the user options to print or view the stats.
+Sub CareerLeaderOptions ()
 
     Shared BL1!(), PL1!()
     Shared BL0$(), PL0$()
@@ -383,9 +394,9 @@ Sub ViewPrintLeaders ()
         Loop Until UCase$(J$) = "P" Or UCase$(J$) = "V"
 
         If UCase$(J$) = "P" Then
-            Call PrintLeaders_Screen
+            Call PrintCareerLeaders
         Else
-            Call ViewLeaders_Screen
+            Call ViewCareerLeaders
         End If
 
     End If 'Done checking for ESC
@@ -393,10 +404,12 @@ Sub ViewPrintLeaders ()
 End Sub
 
 '----------------------------------------
-'       PrintLeaders_Screen Subroutine
+'       PrintCareerLeaders Subroutine
 '----------------------------------------
-'...explanation...
-Sub PrintLeaders_Screen ()
+'This routine sends formatted career stats 
+'(loaded from the .TCL file) to the user's 
+'default printer
+Sub PrintCareerLeaders ()
 
     Shared BL0$(), PL0$()
     Shared BL1!(), PL1!()
@@ -497,10 +510,12 @@ Sub PrintLeaders_Screen ()
 End Sub
 
 '----------------------------------------
-'     ViewLeaders_Screen Subroutine
+'      ViewCareerLeaders Subroutine
 '----------------------------------------
-'...explanation...
-Sub ViewLeaders_Screen ()
+'This routine displays formatted career 
+'stats (loaded from the .TCL file) to the 
+'primary screen
+Sub ViewCareerLeaders ()
 
     Shared BL0$(), PL0$()
     Shared BL1!(), PL1!()
@@ -511,12 +526,14 @@ Sub ViewLeaders_Screen ()
     Print Tab(5); "AT BATS                                HITS"
     For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;: Print ". ";
+        Locate I + 2: Print Using "##"; I + 1;
+        Print ". ";
         Color 15: Print BL0$(0, I);
         Print Tab(20); Using "####"; BL1!(0, I);:
 
         Color 3
-        Print Tab(40); Using "##"; I + 1;: Print ". ";
+        Print Tab(40); Using "##"; I + 1;
+        Print ". ";
         Color 15: Print BL0$(1, I);
         Print Tab(60); Using "####"; BL1!(1, I)
     Next
@@ -531,11 +548,13 @@ Sub ViewLeaders_Screen ()
     Print Tab(5); "RUNS SCORED                            RBI'S"
     For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;: Print ". ";
+        Locate I + 2: Print Using "##"; I + 1;
+        Print ". ";
         Color 15: Print BL0$(2, I);
         Print Tab(20); Using "####"; BL1!(2, I);:
         Color 3
-        Print Tab(40); Using "##"; I + 1;: Print ". ";
+        Print Tab(40); Using "##"; I + 1;
+        Print ". ";
         Color 15: Print BL0$(3, I);
         Print Tab(60); Using "####"; BL1!(3, I)
     Next
@@ -550,11 +569,13 @@ Sub ViewLeaders_Screen ()
     Print Tab(5); "DOUBLES                                TRIPLES"
     For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;: Print ". ";
+        Locate I + 2: Print Using "##"; I + 1;
+        Print ". ";
         Color 15: Print BL0$(4, I);
         Print Tab(20); Using "####"; BL1!(4, I);:
         Color 3
-        Print Tab(40); Using "##"; I + 1;: Print ". ";
+        Print Tab(40); Using "##"; I + 1;
+        Print ". ";
         Color 15: Print BL0$(5, I);
         Print Tab(60); Using "####"; BL1!(5, I)
     Next
@@ -569,11 +590,13 @@ Sub ViewLeaders_Screen ()
     Print Tab(5); "HOME RUNS                              WALKS"
     For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;: Print ". ";
+        Locate I + 2: Print Using "##"; I + 1;
+        Print ". ";
         Color 15: Print BL0$(6, I);
         Print Tab(20); Using "####"; BL1!(6, I);:
         Color 3
-        Print Tab(40); Using "##"; I + 1;: Print ". ";
+        Print Tab(40); Using "##"; I + 1;
+        Print ". ";
         Color 15: Print BL0$(7, I);
         Print Tab(60); Using "####"; BL1!(7, I)
     Next
@@ -588,11 +611,13 @@ Sub ViewLeaders_Screen ()
     Print Tab(5); "STRIKE OUTS                            STOLEN BASES"
     For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;: Print ". ";
+        Locate I + 2: Print Using "##"; I + 1;
+        Print ". ";
         Color 15: Print BL0$(8, I);
         Print Tab(20); Using "####"; BL1!(8, I);:
         Color 3
-        Print Tab(40); Using "##"; I + 1;: Print ". ";
+        Print Tab(40); Using "##"; I + 1;
+        Print ". ";
         Color 15: Print BL0$(9, I);
         Print Tab(60); Using "####"; BL1!(9, I)
     Next
@@ -607,11 +632,13 @@ Sub ViewLeaders_Screen ()
     Print Tab(5); "CAUGHT STEALING                        ERRORS"
     For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;: Print ". ";
+        Locate I + 2: Print Using "##"; I + 1;
+        Print ". ";
         Color 15: Print BL0$(10, I);
         Print Tab(20); Using "####"; BL1!(10, I);:
         Color 3
-        Print Tab(40); Using "##"; I + 1;: Print ". ";
+        Print Tab(40); Using "##"; I + 1;
+        Print ". ";
         Color 15: Print BL0$(11, I);
         Print Tab(60); Using "####"; BL1!(11, I)
     Next
@@ -624,11 +651,13 @@ Sub ViewLeaders_Screen ()
     Color 12: Print Tab(5); "GAMES PLAYED                           BATTING AVERAGE"
     For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;: Print ". ";
+        Locate I + 2: Print Using "##"; I + 1;
+        Print ". ";
         Color 15: Print BL0$(14, I);
         Print Tab(20); Using "####"; BL1!(14, I);:
         Color 3
-        Print Tab(40); Using "##"; I + 1;: Print ". ";
+        Print Tab(40); Using "##"; I + 1;
+        Print ". ";
         Color 15: Print BL0$(15, I);
         Print Tab(60); Using "#.###"; BL1!(15, I)
     Next
@@ -641,11 +670,13 @@ Sub ViewLeaders_Screen ()
     Color 12: Print Tab(5); "SLUGGING PCT.                          ON-BASE PCT."
     For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;: Print ". ";
+        Locate I + 2: Print Using "##"; I + 1;
+        Print ". ";
         Color 15: Print BL0$(16, I);
         Print Tab(20); Using "#.###"; BL1!(16, I);:
         Color 3
-        Print Tab(40); Using "##"; I + 1;: Print ". ";
+        Print Tab(40); Using "##"; I + 1;
+        Print ". ";
         Color 15: Print BL0$(17, I);
         Print Tab(60); Using "#.###"; BL1!(17, I)
     Next
@@ -658,11 +689,14 @@ Sub ViewLeaders_Screen ()
     Color 12: Print Tab(5); "INNINGS PITCHED                        HITS ALLOWED"
     For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;: Print ". ";
+        Locate I + 2: Print Using "##"; I + 1;
+        Print ". ";
         Color 15: Print PL0$(0, I);
-        Print Tab(18); Using "###"; Int(PL1!(0, I) / 3);: If PL1!(O, I) - (Int(PL1!(O, I) / 3) * 3) > 0 Then Print ".";: Print Using "#"; PL1!(O, I) - (Int(PL1!(O, I) / 3) * 3);:
+        Print Tab(18); Using "###"; Int(PL1!(0, I) / 3);
+        If PL1!(O, I) - (Int(PL1!(O, I) / 3) * 3) > 0 Then Print ".";: Print Using "#"; PL1!(O, I) - (Int(PL1!(O, I) / 3) * 3);:
         Color 3
-        Print Tab(40); Using "##"; I + 1;: Print ". ";
+        Print Tab(40); Using "##"; I + 1;
+        Print ". ";
         Color 15: Print PL0$(1, I);
         Print Tab(60); Using "####"; PL1!(1, I)
     Next
@@ -675,11 +709,13 @@ Sub ViewLeaders_Screen ()
     Color 12: Print Tab(5); "RUNS ALLOWED                           EARNED RUNS ALLOWED"
     For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;: Print ". ";
+        Locate I + 2: Print Using "##"; I + 1;
+        Print ". ";
         Color 15: Print PL0$(2, I);
         Print Tab(20); Using "####"; PL1!(2, I);:
         Color 3
-        Print Tab(40); Using "##"; I + 1;: Print ". ";
+        Print Tab(40); Using "##"; I + 1;
+        Print ". ";
         Color 15: Print PL0$(3, I);
         Print Tab(60); Using "####"; PL1!(3, I)
     Next
@@ -692,11 +728,13 @@ Sub ViewLeaders_Screen ()
     Color 12: Print Tab(5); "WALKS                                  STRIKEOUTS"
     For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;: Print ". ";
+        Locate I + 2: Print Using "##"; I + 1;
+        Print ". ";
         Color 15: Print PL0$(4, I);
         Print Tab(20); Using "####"; PL1!(4, I);:
         Color 3
-        Print Tab(40); Using "##"; I + 1;: Print ". ";
+        Print Tab(40); Using "##"; I + 1;
+        Print ". ";
         Color 15: Print PL0$(5, I);
         Print Tab(60); Using "####"; PL1!(5, I)
     Next
@@ -709,11 +747,13 @@ Sub ViewLeaders_Screen ()
     Color 12: Print Tab(5); "WINS                                   LOSSES"
     For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;: Print ". ";
+        Locate I + 2: Print Using "##"; I + 1;
+        Print ". ";
         Color 15: Print PL0$(6, I);
         Print Tab(20); Using "####"; PL1!(6, I);:
         Color 3
-        Print Tab(40); Using "##"; I + 1;: Print ". ";
+        Print Tab(40); Using "##"; I + 1;
+        Print ". ";
         Color 15: Print PL0$(7, I);
         Print Tab(60); Using "####"; PL1!(7, I)
     Next
@@ -726,11 +766,13 @@ Sub ViewLeaders_Screen ()
     Color 12: Print Tab(5); "GAMES                                  GAMES STARTED"
     For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;: Print ". ";
+        Locate I + 2: Print Using "##"; I + 1;
+        Print ". ";
         Color 15: Print PL0$(8, I);
         Print Tab(20); Using "####"; PL1!(8, I);:
         Color 3
-        Print Tab(40); Using "##"; I + 1;: Print ". ";
+        Print Tab(40); Using "##"; I + 1;
+        Print ". ";
         Color 15: Print PL0$(9, I);
         Print Tab(60); Using "####"; PL1!(9, I)
     Next
@@ -743,11 +785,13 @@ Sub ViewLeaders_Screen ()
     Color 12: Print Tab(5); "COMPLETE GAMES                         SHUTOUTS"
     For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;: Print ". ";
+        Locate I + 2: Print Using "##"; I + 1;
+        Print ". ";
         Color 15: Print PL0$(10, I);
         Print Tab(20); Using "####"; PL1!(10, I);:
         Color 3
-        Print Tab(40); Using "##"; I + 1;: Print ". ";
+        Print Tab(40); Using "##"; I + 1;
+        Print ". ";
         Color 15: Print PL0$(11, I);
         Print Tab(60); Using "####"; PL1!(11, I)
     Next
@@ -760,11 +804,13 @@ Sub ViewLeaders_Screen ()
     Color 12: Print Tab(5); "SAVES                                  DOUBLE PLAYS THROWN"
     For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;: Print ". ";
+        Locate I + 2: Print Using "##"; I + 1;
+        Print ". ";
         Color 15: Print PL0$(12, I);
         Print Tab(20); Using "####"; PL1!(12, I);:
         Color 3
-        Print Tab(40); Using "##"; I + 1;: Print ". ";
+        Print Tab(40); Using "##"; I + 1;
+        Print ". ";
         Color 15: Print PL0$(13, I);
         Print Tab(60); Using "####"; PL1!(13, I)
     Next
@@ -777,11 +823,13 @@ Sub ViewLeaders_Screen ()
     Color 12: Print Tab(5); "HOME RUNS ALLOWED                     EARNED RUN AVERAGE"
     For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;: Print ". ";
+        Locate I + 2: Print Using "##"; I + 1;
+        Print ". ";
         Color 15: Print PL0$(14, I);
         Print Tab(20); Using "####"; PL1!(14, I);
         Color 3
-        Print Tab(40); Using "##"; I + 1;: Print ". ";
+        Print Tab(40); Using "##"; I + 1;
+        Print ". ";
         Color 15: Print PL0$(15, I);
         If PL1!(15, I) = 1000 Then
             Print Tab(58); Using "###.##"; 0.0

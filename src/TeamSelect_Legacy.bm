@@ -93,7 +93,7 @@ Sub GetDiskID_ALIGN (A$)
 
                 Do
                     Color 15, 4
-                    Locate 3, 33: Print "ANY CHANGE (YN)";
+                    Locate 3, 33: Print "ANY CHANGE? (Y/N)";
                     I$ = GetKeyPress$
                 Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -400,7 +400,7 @@ Sub GetTeam_CREATE (teamName$, yearNumber$, teamIdx)
 
             Do
                 Color 15, 4
-                Locate 3, 33: Print "ANY CHANGE (YN)";
+                Locate 3, 33: Print "ANY CHANGE? (Y/N)";
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -545,7 +545,7 @@ Sub GetTeam_HD2HD (yearNumber$, numberTeams, teamName$)
 
             Do
                 Color 15, 4
-                Locate 3, 33: Print "ANY CHANGE (YN)";
+                Locate 3, 33: Print "ANY CHANGE? (Y/N)";
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -711,7 +711,7 @@ Sub GetTeam_CAREER (teamIdx, A$)
 
                 Do
                     Color 15, 4
-                    Locate 3, 33: Print "ANY CHANGE (YN)";
+                    Locate 3, 33: Print "ANY CHANGE? (Y/N)";
                     I$ = GetKeyPress$
                 Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -868,7 +868,7 @@ Sub GetTeam (yearNumber$, numberTeams, teamIndex%)
 
 			Do
 				Color 15, 4
-				Locate 3, 33: Print "ANY CHANGE (YN)";
+				Locate 3, 33: Print "ANY CHANGE? (Y/N)";
 				I$ = GetKeyPress$
 			Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -1350,7 +1350,7 @@ Sub GetTeam_EditStats (T$, yearNumber$, numberTeams)
 
             Do
                 Color 15, 4
-                Locate 3, 33: Print "ANY CHANGE (YN)";
+                Locate 3, 33: Print "ANY CHANGE? (Y/N)";
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
 
@@ -1512,7 +1512,7 @@ Sub GetDiskID_MERGE (A$)
 
                 Do
                     Color 15, 4
-                    Locate 3, 33: Print "ANY CHANGE (YN)";
+                    Locate 3, 33: Print "ANY CHANGE? (Y/N)";
                     I$ = GetKeyPress$
                 Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -1669,7 +1669,7 @@ Sub GetDiskYear (targetTeam$, yearNumber$, teamIdx)
 
             Do
                 Color 15, 4
-                Locate 3, 33: Print "ANY CHANGE (YN)";
+                Locate 3, 33: Print "ANY CHANGE? (Y/N)";
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -1864,7 +1864,7 @@ Sub GetTeam_BINPUT (T$, yearNumber$, numberTeams, teamIdx)
 
             Do
                 Color 15, 4
-                Locate 3, 33: Print "ANY CHANGE (YN)";
+                Locate 3, 33: Print "ANY CHANGE? (Y/N)";
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -2182,7 +2182,7 @@ Sub GetTeam_GROUND (yearNumber$, numberTeams, teamName$, teamIdx)
 
             Do
                 Color 15, 4
-                Locate 3, 33: Print "ANY CHANGE (YN)";
+                Locate 3, 33: Print "ANY CHANGE? (Y/N)";
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 

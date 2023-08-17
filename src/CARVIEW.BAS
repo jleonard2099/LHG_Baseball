@@ -1,3 +1,9 @@
+'----------------------------------------
+'           CARVIEW Subroutine
+'----------------------------------------
+'This routine loads in an existing career 
+'file (.CAR) and gives the user options
+'for viewing / printing the results
 Sub CARVIEW ()
 
     _Title "Full Count Baseball - View Careers"
@@ -32,10 +38,9 @@ Sub CARVIEW ()
                     Input #2, BRS%(J, I, I1)
                 Next I1
 
-                TMR = TMR - 1
-
-                Locate 12, 52
-                Color 5: Print Using "####"; TMR
+                Color 5
+                Locate 12, 38
+                TMR = TMR - 1: Print Using "####"; TMR
 
             Next I
 
@@ -51,10 +56,10 @@ Sub CARVIEW ()
 
                 Next I1
 
-                TMR = TMR - 1
+                Color 5
+                Locate 12, 38
 
-                Locate 12, 52
-                Color 5: Print Using "####"; TMR
+                TMR = TMR - 1: Print Using "####"; TMR
 
             Next I
 
@@ -86,156 +91,12 @@ Sub CARVIEW ()
 
 End Sub
 
-'----------------------------------------
-'       BatterTotals Subroutine
-'----------------------------------------
-'...explanation...
-Sub BatterTotals ()
-
-    Dim I2!, I3!, I4!
-    Shared BRS%()
-
-    VV = BRS%(1, I, 16) + BRS%(2, I, 16) + BRS%(3, I, 16) + BRS%(4, I, 16) + BRS%(5, I, 16) + BRS%(6, I, 16) + BRS%(7, I, 16) + BRS%(8, I, 16) + BRS%(9, I, 16) + BRS%(10, I, 16) + BRS%(11, I, 16) + BRS%(12, I, 16) + BRS%(13, I, 16) + BRS%(14, I, 16) + BRS%(15, I, 16)
-
-    For V = 0 To VV
-
-        TT1 = TT1 + BRS%(V, I, 14)
-        TT3 = TT3 + BRS%(V, I, 2)
-        TT5 = TT5 + BRS%(V, I, 4)
-        TT7 = TT7 + BRS%(V, I, 6)
-        TT9 = TT9 + BRS%(V, I, 7)
-        TT11 = TT11 + BRS%(V, I, 9)
-        TT13 = TT13 + BRS%(V, I, 11)
-        TT2 = TT2 + BRS%(V, I, 0)
-        TT4 = TT4 + BRS%(V, I, 1)
-        TT6 = TT6 + BRS%(V, I, 5)
-        TT8 = TT8 + BRS%(V, I, 3)
-        TT10 = TT10 + BRS%(V, I, 8)
-        TT12 = TT12 + BRS%(V, I, 10)
-
-    Next V
-
-    Print
-    Color 3
-
-    Print Tab(16); Using "####"; TT1;
-    Print Tab(25); Using "####"; TT3;
-    Print Tab(33); Using "###"; TT5;
-    Print Tab(38); Using "####"; TT7;
-    Print Tab(46); Using "####"; TT9;
-    Print Tab(54); Using "####"; TT11;
-    Print Tab(61); Using "###"; TT13;
-
-    I3! = 0
-    I3! = Int(TT4 + TT5 + (2 * TT6) + (3 * TT7)) / ((TT2) + .0005) * 1000
-
-    If TT2 = 0 Or I3! = O Then Locate , 70: Print ".000"
-    If I3! > 0 And I3! < 100 Then Locate , 70: Print ".0";: Print Using "##"; I3!
-    If I3! >= 100 Then Locate , 70: Print ".";: Print Using "###"; I3!
-
-    Print "TOTALS";
-
-    Print Tab(14); Using "##"; VV;
-    Print Tab(21); Using "####"; TT2;
-    Print Tab(29); Using "####"; TT4;
-    Print Tab(36); Using "###"; TT6;
-    Print Tab(42); Using "####"; TT8;
-    Print Tab(50); Using "####"; TT10;
-    Print Tab(58); Using "###"; TT12;
-
-    I2 = 0
-
-    If TT2 > 0 Then I2 = Int((TT4 / TT2 + .0005) * 1000)
-    If TT2 = 0 Or I2 = 0 Then Locate , 65: Print ".000";
-    If I2 > 0 And I2 < 100 Then Locate , 65: Print ".0";: Print Using "##"; I2;
-    If I2 >= 100 Then Locate , 65: Print ".";: Print Using "###"; I2;
-
-    I4! = 0
-
-    If TT9 + TT2 > 0 Then I4! = Int(((TT4 + TT9) / (TT9 + TT2) + .0005) * 1000)
-    If TT2 = 0 Or I4! = 0 Then Locate , 75: Print ".000"
-    If I4! > 0 And I4! < 100 Then Locate , 75: Print ".0";: Print Using "##"; I4!
-    If I4! >= 100 Then Locate , 75: Print ".";: Print Using "###"; I4!
-
-End Sub
 
 '----------------------------------------
-'       PitcherTotals Subroutine
+'       CareerToPrinter Subroutine
 '----------------------------------------
-'...explanation...
-Sub PitcherTotals ()
-
-    Shared PRS%()
-
-    Dim I2!, I3!, I4!
-
-    VV = PRS%(1, I, 15) + PRS%(2, I, 15) + PRS%(3, I, 15) + PRS%(4, I, 15) + PRS%(5, I, 15) + PRS%(6, I, 15) + PRS%(7, I, 15) + PRS%(8, I, 15) + PRS%(9, I, 15) + PRS%(10, I, 15) + PRS%(11, I, 15) + PRS%(12, I, 15) + PRS%(13, I, 15) + PRS%(14, I, 15) + PRS%(15, I, 15)
-
-    For V = 0 To VV
-
-        TT13 = TT13 + PRS%(V, I, 6)
-        TT15 = TT15 + PRS%(V, I, 12)
-        TT17 = TT17 + PRS%(V, I, 1)
-        TT19 = TT19 + PRS%(V, I, 5)
-        TT21 = TT21 + PRS%(V, I, 8)
-        TT23 = TT23 + PRS%(V, I, 10)
-        TT25 = TT25 + PRS%(V, I, 3)
-        TT27 = TT27 + PRS%(V, I, 14)
-        TT14 = TT14 + PRS%(V, I, 7)
-        TT16 = TT16 + PRS%(V, I, 0)
-        TT18 = TT18 + PRS%(V, I, 4)
-        TT20 = TT20
-        TT22 = TT22 + PRS%(V, I, 9)
-        TT24 = TT24 + PRS%(V, I, 2)
-        TT26 = TT26 + PRS%(V, I, 11)
-        TT28 = TT28 + PRS%(V, I, 13)
-
-    Next V
-
-    Print
-    Color 3
-
-    Print Tab(16); Using "###"; TT13;
-    Print Tab(22); Using "###"; TT15;
-    Print Tab(32); Using "####"; TT17;
-    Print Tab(40); Using "####"; TT19;
-    Print Tab(49); Using "###"; TT21;
-    Print Tab(55); Using "###"; TT23;
-    Print Tab(62); Using "####"; TT25;
-    Print Tab(69); Using "####"; TT27
-    Print "TOTALS";
-    Print Tab(13); Using "###"; VV;
-    Print Tab(19); Using "###"; TT14;
-    Print Tab(27); Using "###"; Int(TT16 / 3);
-
-    If TT16 - (Int(TT16 / 3) * 3) > 0 Then Print ".";: Print Using "#"; TT16 - (Int(TT16 / 3) * 3);
-
-    Print Tab(37); Using "###"; TT18;
-
-    I2! = 0
-    If TT16 > 0 Then I2! = Int((((TT25 * 9) / (TT16 / 3)) + .0005) * 100)
-
-    I3! = Int(I2! / 100)
-    I4! = I2! - (I3! * 100)
-
-    If TT16 = 0 Or I2! = 0 Then Locate , 44: Print " 0.00";
-    If TT16 > 0 And I2! > 0 And I2! <= 999 Then Locate , 44: Print Using "##"; I3!;: Print ".";
-    If TT16 > 0 And I2! >= 1000 Then Locate , 44: Print Using "##"; I3!;: Print ".";
-    If TT16 > 0 And I4! = 0 And I2! > 0 Then Print "00";
-    If TT16 > 0 And I4! > 0 And I4! < 10 And I2! > 0 Then Print "0";: Print Using "#"; I4!;
-    If TT16 > 0 And I4! >= 10 And I2! > 0 Then Print Using "##"; I4!;
-
-    Print Tab(51); Using "####"; TT22;
-    Print Tab(59); Using "###"; TT24;
-    Print Tab(66); Using "####"; TT26;
-    Print Tab(73); Using "###"; TT28
-
-End Sub
-
-'----------------------------------------
-'     CareerToPrinter Subroutine
-'----------------------------------------
-'...explanation...
+'Formats results of Career stats and sends
+'to the user's default printer
 Sub CareerToPrinter (careerFile$)
 
     Dim I2!, I3!, I4!
@@ -304,7 +165,6 @@ Sub CareerToPrinter (careerFile$)
 
             Next V
 
-            1600 '
             VV = BRS%(1, I, 16) + BRS%(2, I, 16) + BRS%(3, I, 16) + BRS%(4, I, 16) + BRS%(5, I, 16) + BRS%(6, I, 16) + BRS%(7, I, 16) + BRS%(8, I, 16) + BRS%(9, I, 16) + BRS%(10, I, 16) + BRS%(11, I, 16) + BRS%(12, I, 16) + BRS%(13, I, 16) + BRS%(14, I, 16) + BRS%(15, I, 16)
 
             For V = 0 To VV
@@ -430,7 +290,6 @@ Sub CareerToPrinter (careerFile$)
 
         End If 'Done checking for terminal characters
 
-        1700 '
         VV = PRS%(1, I, 15) + PRS%(2, I, 15) + PRS%(3, I, 15) + PRS%(4, I, 15) + PRS%(5, I, 15) + PRS%(6, I, 15) + PRS%(7, I, 15) + PRS%(8, I, 15) + PRS%(9, I, 15) + PRS%(10, I, 15) + PRS%(11, I, 15) + PRS%(12, I, 15) + PRS%(13, I, 15) + PRS%(14, I, 15) + PRS%(15, I, 15)
 
         For V = 0 To VV
@@ -501,10 +360,15 @@ Sub CareerToPrinter (careerFile$)
 End Sub
 
 '----------------------------------------
-'     CareerToScreen Subroutine
+'        CareerToScreen Subroutine
 '----------------------------------------
-'...explanation...
+'This routine gives the user different 
+'categories of stats related to the roster.
+'It then calls a supplemental routine for 
+'each  that will format those stats and 
+'send them to the display screen
 Sub CareerToScreen (careerFile$)
+
 
     Do
 
@@ -538,7 +402,8 @@ End Sub
 '----------------------------------------
 '     ViewLeaders_Batters Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine will display batter stats
+'from the team's career file
 Sub ViewLeaders_Batters (careerFile$)
 
     Dim I2!, I3!, I4!
@@ -546,6 +411,7 @@ Sub ViewLeaders_Batters (careerFile$)
     Shared BRS%()
 
     Cls
+    
     Color 12: Print careerFile$
 
     For I = 0 To 19
@@ -714,7 +580,8 @@ End Sub
 '----------------------------------------
 '     ViewLeaders_Pitchers Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine will display pitcher stats
+'from the team's career file
 Sub ViewLeaders_Pitchers (careerFile$)
 
     Dim I2!, I3!, I4!
@@ -812,7 +679,22 @@ Sub ViewLeaders_Pitchers (careerFile$)
 
     VV = PRS%(1, B9, 15) + PRS%(2, B9, 15) + PRS%(3, B9, 15) + PRS%(4, B9, 15) + PRS%(5, B9, 15) + PRS%(6, B9, 15) + PRS%(7, B9, 15) + PRS%(8, B9, 15) + PRS%(9, B9, 15) + PRS%(10, B9, 15) + PRS%(11, B9, 15) + PRS%(12, B9, 15) + PRS%(13, B9, 15) + PRS%(14, B9, 15) + PRS%(15, B9, 15)
 
-    TT13 = 0: TT14 = 0: TT15 = 0: TT16 = 0: TT17 = 0: TT18 = 0: TT19 = 0: TT20 = 0: TT21 = 0: TT22 = 0: TT23 = 0: TT24 = 0: TT25 = 0: TT26 = 0: TT27 = 0: TT28 = 0
+    TT13 = 0
+    TT14 = 0
+    TT15 = 0
+    TT16 = 0
+    TT17 = 0
+    TT18 = 0
+    TT19 = 0
+    TT20 = 0
+    TT21 = 0
+    TT22 = 0
+    TT23 = 0
+    TT24 = 0
+    TT25 = 0
+    TT26 = 0
+    TT27 = 0
+    TT28 = 0
 
     For V = 0 To VV
 
@@ -882,7 +764,8 @@ End Sub
 '----------------------------------------
 '     ViewLeaders_Sequence Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine will display players from 
+'the team's career file, in sequence
 Sub ViewLeaders_Sequence (careerFile$)
 
     Dim I2!, I3!, I4!
@@ -1146,7 +1029,7 @@ Sub ViewLeaders_Sequence (careerFile$)
 
                 Do
                     Locate 7
-                    U$ = "DISPLAY STATS AGAIN (YN)"
+                    U$ = "DISPLAY STATS AGAIN? (Y/N)"
                     Locate , (80 - Len(U$)) / 2
                     Print U$
                     I$ = GetKeyPress$
@@ -1162,3 +1045,150 @@ Sub ViewLeaders_Sequence (careerFile$)
 End Sub
 
 
+'----------------------------------------
+'       BatterTotals Subroutine
+'----------------------------------------
+'This subroutine will calculate the career
+'totals for batters
+Sub BatterTotals ()
+
+    Dim I2!, I3!, I4!
+    Shared BRS%()
+
+    VV = BRS%(1, I, 16) + BRS%(2, I, 16) + BRS%(3, I, 16) + BRS%(4, I, 16) + BRS%(5, I, 16) + BRS%(6, I, 16) + BRS%(7, I, 16) + BRS%(8, I, 16) + BRS%(9, I, 16) + BRS%(10, I, 16) + BRS%(11, I, 16) + BRS%(12, I, 16) + BRS%(13, I, 16) + BRS%(14, I, 16) + BRS%(15, I, 16)
+
+    For V = 0 To VV
+
+        TT1 = TT1 + BRS%(V, I, 14)
+        TT3 = TT3 + BRS%(V, I, 2)
+        TT5 = TT5 + BRS%(V, I, 4)
+        TT7 = TT7 + BRS%(V, I, 6)
+        TT9 = TT9 + BRS%(V, I, 7)
+        TT11 = TT11 + BRS%(V, I, 9)
+        TT13 = TT13 + BRS%(V, I, 11)
+        TT2 = TT2 + BRS%(V, I, 0)
+        TT4 = TT4 + BRS%(V, I, 1)
+        TT6 = TT6 + BRS%(V, I, 5)
+        TT8 = TT8 + BRS%(V, I, 3)
+        TT10 = TT10 + BRS%(V, I, 8)
+        TT12 = TT12 + BRS%(V, I, 10)
+
+    Next V
+
+    Print
+    Color 3
+
+    Print Tab(16); Using "####"; TT1;
+    Print Tab(25); Using "####"; TT3;
+    Print Tab(33); Using "###"; TT5;
+    Print Tab(38); Using "####"; TT7;
+    Print Tab(46); Using "####"; TT9;
+    Print Tab(54); Using "####"; TT11;
+    Print Tab(61); Using "###"; TT13;
+
+    I3! = 0
+    I3! = Int(TT4 + TT5 + (2 * TT6) + (3 * TT7)) / ((TT2) + .0005) * 1000
+
+    If TT2 = 0 Or I3! = O Then Locate , 70: Print ".000"
+    If I3! > 0 And I3! < 100 Then Locate , 70: Print ".0";: Print Using "##"; I3!
+    If I3! >= 100 Then Locate , 70: Print ".";: Print Using "###"; I3!
+
+    Print "TOTALS";
+
+    Print Tab(14); Using "##"; VV;
+    Print Tab(21); Using "####"; TT2;
+    Print Tab(29); Using "####"; TT4;
+    Print Tab(36); Using "###"; TT6;
+    Print Tab(42); Using "####"; TT8;
+    Print Tab(50); Using "####"; TT10;
+    Print Tab(58); Using "###"; TT12;
+
+    I2 = 0
+
+    If TT2 > 0 Then I2 = Int((TT4 / TT2 + .0005) * 1000)
+    If TT2 = 0 Or I2 = 0 Then Locate , 65: Print ".000";
+    If I2 > 0 And I2 < 100 Then Locate , 65: Print ".0";: Print Using "##"; I2;
+    If I2 >= 100 Then Locate , 65: Print ".";: Print Using "###"; I2;
+
+    I4! = 0
+
+    If TT9 + TT2 > 0 Then I4! = Int(((TT4 + TT9) / (TT9 + TT2) + .0005) * 1000)
+    If TT2 = 0 Or I4! = 0 Then Locate , 75: Print ".000"
+    If I4! > 0 And I4! < 100 Then Locate , 75: Print ".0";: Print Using "##"; I4!
+    If I4! >= 100 Then Locate , 75: Print ".";: Print Using "###"; I4!
+
+End Sub
+
+'----------------------------------------
+'       PitcherTotals Subroutine
+'----------------------------------------
+'This subroutine will calculate the career
+'totals for pitchers
+Sub PitcherTotals ()
+
+    Shared PRS%()
+
+    Dim I2!, I3!, I4!
+
+    VV = PRS%(1, I, 15) + PRS%(2, I, 15) + PRS%(3, I, 15) + PRS%(4, I, 15) + PRS%(5, I, 15) + PRS%(6, I, 15) + PRS%(7, I, 15) + PRS%(8, I, 15) + PRS%(9, I, 15) + PRS%(10, I, 15) + PRS%(11, I, 15) + PRS%(12, I, 15) + PRS%(13, I, 15) + PRS%(14, I, 15) + PRS%(15, I, 15)
+
+    For V = 0 To VV
+
+        TT13 = TT13 + PRS%(V, I, 6)
+        TT15 = TT15 + PRS%(V, I, 12)
+        TT17 = TT17 + PRS%(V, I, 1)
+        TT19 = TT19 + PRS%(V, I, 5)
+        TT21 = TT21 + PRS%(V, I, 8)
+        TT23 = TT23 + PRS%(V, I, 10)
+        TT25 = TT25 + PRS%(V, I, 3)
+        TT27 = TT27 + PRS%(V, I, 14)
+        TT14 = TT14 + PRS%(V, I, 7)
+        TT16 = TT16 + PRS%(V, I, 0)
+        TT18 = TT18 + PRS%(V, I, 4)
+        TT20 = TT20
+        TT22 = TT22 + PRS%(V, I, 9)
+        TT24 = TT24 + PRS%(V, I, 2)
+        TT26 = TT26 + PRS%(V, I, 11)
+        TT28 = TT28 + PRS%(V, I, 13)
+
+    Next V
+
+    Print
+    Color 3
+
+    Print Tab(16); Using "###"; TT13;
+    Print Tab(22); Using "###"; TT15;
+    Print Tab(32); Using "####"; TT17;
+    Print Tab(40); Using "####"; TT19;
+    Print Tab(49); Using "###"; TT21;
+    Print Tab(55); Using "###"; TT23;
+    Print Tab(62); Using "####"; TT25;
+    Print Tab(69); Using "####"; TT27
+    Print "TOTALS";
+    Print Tab(13); Using "###"; VV;
+    Print Tab(19); Using "###"; TT14;
+    Print Tab(27); Using "###"; Int(TT16 / 3);
+
+    If TT16 - (Int(TT16 / 3) * 3) > 0 Then Print ".";: Print Using "#"; TT16 - (Int(TT16 / 3) * 3);
+
+    Print Tab(37); Using "###"; TT18;
+
+    I2! = 0
+    If TT16 > 0 Then I2! = Int((((TT25 * 9) / (TT16 / 3)) + .0005) * 100)
+
+    I3! = Int(I2! / 100)
+    I4! = I2! - (I3! * 100)
+
+    If TT16 = 0 Or I2! = 0 Then Locate , 44: Print " 0.00";
+    If TT16 > 0 And I2! > 0 And I2! <= 999 Then Locate , 44: Print Using "##"; I3!;: Print ".";
+    If TT16 > 0 And I2! >= 1000 Then Locate , 44: Print Using "##"; I3!;: Print ".";
+    If TT16 > 0 And I4! = 0 And I2! > 0 Then Print "00";
+    If TT16 > 0 And I4! > 0 And I4! < 10 And I2! > 0 Then Print "0";: Print Using "#"; I4!;
+    If TT16 > 0 And I4! >= 10 And I2! > 0 Then Print Using "##"; I4!;
+
+    Print Tab(51); Using "####"; TT22;
+    Print Tab(59); Using "###"; TT24;
+    Print Tab(66); Using "####"; TT26;
+    Print Tab(73); Using "###"; TT28
+
+End Sub

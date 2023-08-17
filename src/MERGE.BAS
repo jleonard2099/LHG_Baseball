@@ -1,3 +1,8 @@
+'----------------------------------------
+'            MERGE Subroutine
+'----------------------------------------
+'This subroutine gives the user options
+'for aligning / merging stat files
 Sub MERGE ()
 
     _Title "Full Count Baseball - Merge Stats"
@@ -35,9 +40,13 @@ Sub MERGE ()
         If ExitCode% <> 27 Then
 
             Select Case Selection%
-                Case 1: Call MergeStats
-                Case 2: Call ALIGN
-                Case 3: Cls
+
+                Case 1: 
+                    Call MergeStats
+
+                Case 2: 
+                    Call ALIGN
+
             End Select
 
         End If
@@ -49,7 +58,12 @@ End Sub
 '----------------------------------------
 '          MergeStats Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine determines the parameters
+'for the road and existing stat files that
+'can be merged. It then reads in all stat
+'files, checks for player sequence, and then
+'calls a supporting routine to actually
+'perform the merge
 Sub MergeStats ()
 
     Dim BR$(22)
@@ -90,7 +104,7 @@ Sub MergeStats ()
             Locate , 15: Print "TEAM TO MERGE STATS FOR IS "; team$
 
             Do
-                Locate 14, 15: Print "ANY CHANGE (YN)"
+                Locate 14, 15: Print "ANY CHANGE? (Y/N)"
                 J$ = GetKeyPress$
             Loop Until UCase$(J$) = "Y" Or UCase$(J$) = "N"
 
@@ -253,7 +267,7 @@ Sub MergeStats ()
                             Print
                             Locate , 10: Line Input "HIT ENTER TO RE-ENTER INFORMATION"; DUMMY$
                             Locate , 10
-                            Print "TRY AGAIN (YN) "
+                            Print "TRY AGAIN? (Y/N) "
                             I$ = GetKeyPress$
                         Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -275,7 +289,7 @@ Sub MergeStats ()
 
                     Do
                         Locate , 10
-                        Print "TRY AGAIN (YN) "
+                        Print "TRY AGAIN? (Y/N) "
                         I$ = GetKeyPress$
                     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -299,7 +313,10 @@ End Sub
 '----------------------------------------
 '       DoTheMerge Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine literally adds the stat
+'values together from each file and then
+'overwrites the current file with the
+'newly aggregated results.
 Sub DoTheMerge (pathCurrentStats$, statFile$, B$)
 
 	Shared Ycurr%, Yroad%
@@ -335,7 +352,8 @@ Sub DoTheMerge (pathCurrentStats$, statFile$, B$)
     W2% = W2% + WR2%
 	L2% = L2% + LR2%
 
-    Locate 18, 20: Color 12: Print "MERGING STAT FILE AND SCHEDULE RESULTS . . . ."
+    Color 12
+    Locate 18, 20: Print "MERGING STAT FILE AND SCHEDULE RESULTS . . . ."
 
     For I = 0 To 22
         For I1 = 0 To 6
@@ -397,14 +415,23 @@ Sub DoTheMerge (pathCurrentStats$, statFile$, B$)
     Close 1
 
     Open pathCurrentStats$ + statFile$ + "S" For Output As #1
+
     Write #1, Ycurr%
+
     For I = 1 To 162: Write #1, H%(I): Next I
+
     For I = 1 To 162: Write #1, H$(I): Next I
+
     For I = 1 To 162: Write #1, V%(I): Next I
+
     For I = 1 To 162: Write #1, PL$(I): Next I
+
     For I = 1 To 162: Write #1, W$(I): Next I
+
     For I = 1 To 162: Write #1, L$(I): Next I
+
     For I = 1 To 162: Write #1, I%(I): Next I
+
     Close #1
 
     Y = 0
@@ -417,7 +444,9 @@ End Sub
 '----------------------------------------
 '       GetMergePaths Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine assists the user with the
+'entry of the separate paths to be used 
+'for the merge / align process.
 Sub GetMergePaths (pathCurrentStats$, pathRoadStats$, promptResponse$)
 
     Shared opSysType$
@@ -459,7 +488,7 @@ Sub GetMergePaths (pathCurrentStats$, pathRoadStats$, promptResponse$)
         Line Input "CURRENT STATS:  "; pathCurrentStats$
 
         Color 14
-        Locate 13, 5: Print "ANY CHANGE (Y/N)"
+        Locate 13, 5: Print "ANY CHANGE? (Y/N)"
         promptResponse$ = GetKeyPress$
 
     Loop Until UCase$(promptResponse$) = "N" Or promptResponse$ = Chr$(27)

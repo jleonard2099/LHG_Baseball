@@ -1,3 +1,7 @@
+'----------------------------------------
+'
+'----------------------------------------
+'
 Sub POSCR ()
 
     _Title "Full Count Baseball - Create Position Search"
@@ -41,7 +45,7 @@ Sub POSCR ()
             If LGE$ <> "" Then
 
                 Do
-                    Locate 13, 12: Print "ANY CHANGE (YN) "
+                    Locate 13, 12: Print "ANY CHANGE? (Y/N) "
                     I$ = GetKeyPress$
                 Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -192,7 +196,7 @@ Sub POSCR ()
 
 			Do
 				Locate 22
-				Print "ENTER ANOTHER TEAM (Y/N)"
+				Print "ENTER ANOTHER TEAM? (Y/N)"
 				I$ = GetKeyPress$
 			Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
 

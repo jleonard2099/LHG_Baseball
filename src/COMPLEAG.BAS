@@ -1,3 +1,11 @@
+'----------------------------------------
+'        CompileLeague SubRoutine
+'----------------------------------------
+'This subroutine reads in existing records,
+'looks for stats matching each team in the
+'league, and then relies on subroutines to
+'read stats and compare to any existing
+'leaders and records
 Sub CompileLeague ()
 
     _Title "Full Count Baseball - Update League Stats"
@@ -45,7 +53,7 @@ Sub CompileLeague ()
 
         Open diskPaths$(2) + leagStatFile$ + ".TMS" For Input As #2
 
-        Input #2, LG$, D1$, D2$, D3$, D4$
+        Input #2, league$, D1$, D2$, D3$, D4$
 
         For XW = 1 To 40
             Input #2, H1$(XW)
@@ -107,7 +115,7 @@ Sub CompileLeague ()
         Next XW
 
         Call SortLeaders
-        Call PostLeaders(LG$, leagStatFile$, APP)
+        Call PostLeaders(league$, leagStatFile$, APP)
 
     End If
 
@@ -120,7 +128,12 @@ End Sub
 '...explanation...
 Function FindStatsPro% (statFile$, TN$, fullWins, fullLosses)
 
-    If _FileExists(diskPaths$(1) + statFile$) Then
+    If Not _FileExists(diskPaths$(1) + statFile$) Then
+
+        Print "NO STATS FOUND FOR "; statFile$
+        FindStatsPro% = 0
+
+    Else
 
         Open diskPaths$(1) + statFile$ For Input As #1
 
@@ -142,20 +155,97 @@ Function FindStatsPro% (statFile$, TN$, fullWins, fullLosses)
 
         FindStatsPro% = 1
 
-    Else
-
-        Print "NO STATS FOUND FOR "; statFile$
-        FindStatsPro% = 0
-
     End If
 
 End Function
 
 
 '----------------------------------------
+'       ReadStatsLeague Subroutine
+'----------------------------------------
+'This subroutine reads stats in for a 
+'single team in the league
+Sub ReadStatsLeague (statFile$, TN$, fullWins, fullLosses)
+
+    Dim ZM%(46)
+
+    Shared BAT%(), PIT%()
+
+    Shared JS!()
+
+    Shared NM$()
+
+    Open (diskPaths$(1) + statFile$) For Input As #1
+
+    Input #1, TN$, fullWins, fullLosses
+
+    For K = 1 To 23
+        Input #1, NM$(K), ZM%(K)
+    Next
+
+    For K = 25 To 46
+        Input #1, NM$(K), ZM%(K)
+    Next
+
+    NM$(24) = "PITCHERS"
+
+    For J = 1 To 23
+        For K = 1 To 22
+            Input #1, JS!(J, K)
+        Next K
+    Next J
+
+    For J = 25 To 46
+        For K = 1 To 42
+            Input #1, JS!(J, K)
+        Next K
+    Next J
+
+    For K = 1 To 24
+        Input #1, BAT%(K)
+    Next K
+
+    For K = 1 To 23
+        Input #1, PIT%(K)
+    Next K
+
+    Close #1
+
+    For J = 1 To 23
+
+        If JS!(J, 1) = 0 Then JS!(J, 1) = 1
+
+        JS!(J, 17) = JS!(J, 13)
+        JS!(J, 18) = JS!(J, 14)
+
+        'Here is where AVG is assigned 0
+        If (JS!(J, 8) + JS!(J, 1)) / (fullWins + fullLosses) < 3.1 Then
+            JS!(J, 14) = 0
+            JS!(J, 15) = 0
+            JS!(J, 16) = 0
+        Else
+            JS!(J, 16) = JS!(J, 2) / JS!(J, 1)
+            JS!(J, 14) = (JS!(J, 2) + JS!(J, 5) + 2 * JS!(J, 6) + 3 * JS!(J, 7)) / JS!(J, 1)
+            JS!(J, 15) = (JS!(J, 2) + JS!(J, 8)) / (JS!(J, 1) + JS!(J, 8))
+        End If
+    Next
+
+    For J = 25 To 46
+        If JS!(J, 1) = 0 Or (JS!(J, 1) / 3) < (fullWins + fullLosses) Then
+            JS!(J, 14) = 99.99
+        Else
+            JS!(J, 14) = JS!(J, 4) / JS!(J, 1) * 27
+        End If
+    Next
+
+End Sub
+
+
+'----------------------------------------
 '      CheckStatsLeague Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine compares pre-loaded stats
+'to existing leaders and updates as needed
 Sub CheckStatsLeague (targetTeam$, WT$)
 
     Dim PS$(40)
@@ -678,183 +768,11 @@ End Sub
 
 
 '----------------------------------------
-'       ReadStatsLeague Subroutine
-'----------------------------------------
-'...explanation...
-Sub ReadStatsLeague (statFile$, TN$, fullWins, fullLosses)
-
-    Dim ZM%(46)
-
-    Shared BAT%(), PIT%()
-
-    Shared JS!()
-
-    Shared NM$()
-
-    Open (diskPaths$(1) + statFile$) For Input As #1
-
-    Input #1, TN$, fullWins, fullLosses
-
-    For K = 1 To 23
-        Input #1, NM$(K), ZM%(K)
-    Next
-
-    For K = 25 To 46
-        Input #1, NM$(K), ZM%(K)
-    Next
-
-    NM$(24) = "PITCHERS"
-
-    For J = 1 To 23
-        For K = 1 To 22
-            Input #1, JS!(J, K)
-        Next K
-    Next J
-
-    For J = 25 To 46
-        For K = 1 To 42
-            Input #1, JS!(J, K)
-        Next K
-    Next J
-
-    For K = 1 To 24
-        Input #1, BAT%(K)
-    Next K
-
-    For K = 1 To 23
-        Input #1, PIT%(K)
-    Next K
-
-    Close #1
-
-    For J = 1 To 23
-
-        If JS!(J, 1) = 0 Then JS!(J, 1) = 1
-
-        JS!(J, 17) = JS!(J, 13)
-        JS!(J, 18) = JS!(J, 14)
-
-        'Here is where AVG is assigned 0
-        If (JS!(J, 8) + JS!(J, 1)) / (fullWins + fullLosses) < 3.1 Then
-            JS!(J, 14) = 0
-            JS!(J, 15) = 0
-            JS!(J, 16) = 0
-        Else
-            JS!(J, 16) = JS!(J, 2) / JS!(J, 1)
-            JS!(J, 14) = (JS!(J, 2) + JS!(J, 5) + 2 * JS!(J, 6) + 3 * JS!(J, 7)) / JS!(J, 1)
-            JS!(J, 15) = (JS!(J, 2) + JS!(J, 8)) / (JS!(J, 1) + JS!(J, 8))
-        End If
-    Next
-
-    For J = 25 To 46
-        If JS!(J, 1) = 0 Or (JS!(J, 1) / 3) < (fullWins + fullLosses) Then
-            JS!(J, 14) = 99.99
-        Else
-            JS!(J, 14) = JS!(J, 4) / JS!(J, 1) * 27
-        End If
-    Next
-
-End Sub
-
-
-'----------------------------------------
-'       SortLeaders Subroutine
-'----------------------------------------
-'...explanation...
-Sub SortLeaders
-
-    Shared O1(), O2()
-    Shared cmplTM$()
-
-    'Sort record by games won
-    For Z = 0 To 3
-
-        AA = (Z * 10) + 1
-        ZZ = (Z * 10) + 10
-
-        For X = AA To ZZ - 1
-
-            For Y = X + 1 To ZZ:
-
-                diffX = O1(X) - O2(X)
-                diffY = O1(Y) - O2(Y)
-
-                If diffX <= diffY Then
-
-                    If diffX <> diffY Then
-
-                        If Not (O1(X) <= O1(Y) And O1(X) > O2(X)) Or Not (O1(X) >= O1(Y) And O1(X) < O2(X)) Then
-
-                            Swap cmplTM$(X), cmplTM$(Y)
-                            Swap O1(X), O1(Y)
-                            Swap O2(X), O2(Y)
-
-                        End If
-
-                    End If
-
-                End If
-
-            Next Y
-
-        Next X
-
-    Next Z
-
-End Sub
-
-
-'----------------------------------------
-'       PostLeaders Subroutine
-'----------------------------------------
-Sub PostLeaders (leagueName$, leaderFile$, APP)
-
-    Shared O1(), O2()
-
-    Shared cmplZ1!(), DFT!(), OFT!()
-
-    Shared BA$(), cmplZ2$(), cmplZ3$()
-    Shared ER$(), cmplTM$()
-
-    Color 15, 0
-
-    Print "POSTING "; leagueName$; " LEADERS"
-
-    Open diskPaths$(2) + leaderFile$ + ".LDR" For Output As #2
-
-    For X = 1 To 40:
-        Write #2, cmplTM$(X), O1(X), O2(X)
-    Next
-
-    For X = 1 To 298
-        Write #2, cmplZ2$(X), cmplZ3$(X), cmplZ1!(X, 1), cmplZ1!(X, 2)
-    Next
-
-    For X = 1 To 40:
-        Write #2, BA$(X)
-        For M = 1 To 14:
-            Write #2, OFT!(X, M)
-        Next
-    Next
-
-    For X = 1 To 40:
-        Write #2, ER$(X)
-        For M = 1 To 14:
-            Write #2, DFT!(X, M)
-        Next
-    Next
-
-    Write #2, APP
-
-    Close 2
-
-End Sub
-
-
-'----------------------------------------
 '      StatsByCategory Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine compares all pre-loaded 
+'stats to each of the record categories to 
+'see if any should be updated
 Sub StatsByCategory (WT$, fullWins, fullLosses)
 
     Shared BAT%(), PIT%()
@@ -1297,3 +1215,100 @@ Sub StatsByCategory (WT$, fullWins, fullLosses)
 
 End Sub
 
+
+'----------------------------------------
+'       SortLeaders Subroutine
+'----------------------------------------
+'This subroutine sorts the leaders in the
+'target league
+Sub SortLeaders
+
+    Shared O1(), O2()
+    Shared cmplTM$()
+
+    'Sort record by games won
+    For Z = 0 To 3
+
+        AA = (Z * 10) + 1
+        ZZ = (Z * 10) + 10
+
+        For X = AA To ZZ - 1
+
+            For Y = X + 1 To ZZ:
+
+                diffX = O1(X) - O2(X)
+                diffY = O1(Y) - O2(Y)
+
+                If diffX <= diffY Then
+
+                    If diffX <> diffY Then
+
+                        If Not (O1(X) <= O1(Y) And O1(X) > O2(X)) Or Not (O1(X) >= O1(Y) And O1(X) < O2(X)) Then
+
+                            Swap cmplTM$(X), cmplTM$(Y)
+                            Swap O1(X), O1(Y)
+                            Swap O2(X), O2(Y)
+
+                        End If
+
+                    End If
+
+                End If
+
+            Next Y
+
+        Next X
+
+    Next Z
+
+End Sub
+
+
+'----------------------------------------
+'       PostLeaders Subroutine
+'----------------------------------------
+'This subroutine opens the existing leader
+'and record files for the league, and 
+'writes the updated stats to the file
+Sub PostLeaders (league$, leaderFile$, APP)
+
+    Shared O1(), O2()
+
+    Shared cmplZ1!(), DFT!(), OFT!()
+
+    Shared BA$(), cmplZ2$(), cmplZ3$()
+    Shared ER$(), cmplTM$()
+
+    Color 15, 0
+
+    Print "POSTING "; league$; " LEADERS"
+
+    Open diskPaths$(2) + leaderFile$ + ".LDR" For Output As #2
+
+    For X = 1 To 40:
+        Write #2, cmplTM$(X), O1(X), O2(X)
+    Next
+
+    For X = 1 To 298
+        Write #2, cmplZ2$(X), cmplZ3$(X), cmplZ1!(X, 1), cmplZ1!(X, 2)
+    Next
+
+    For X = 1 To 40:
+        Write #2, BA$(X)
+        For M = 1 To 14:
+            Write #2, OFT!(X, M)
+        Next
+    Next
+
+    For X = 1 To 40:
+        Write #2, ER$(X)
+        For M = 1 To 14:
+            Write #2, DFT!(X, M)
+        Next
+    Next
+
+    Write #2, APP
+
+    Close 2
+
+End Sub

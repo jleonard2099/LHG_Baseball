@@ -1,3 +1,9 @@
+'----------------------------------------
+'           COMPARE Subroutine
+'----------------------------------------
+'This subroutine loads in existing stats
+'for a team and provides different options 
+'to the end user for formatting stats 
 Sub COMPARE ()
 
     _Title "Full Count Baseball - Stats Comparison"
@@ -18,10 +24,15 @@ Sub COMPARE ()
     statFile$ = nameStatFile$(team$)
 
     If Not _FileExists(diskPaths$(1) + statFile$) Then
-        Locate 10, 8
-        Call CSMsgBox("NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
-        I$ = GetKeyPress$
-        Call CSMsgBox("", 0, Pass)
+
+		MsgText$ = "NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU"
+		BoxWidth = 24
+		BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+		Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+		Call CSMsgBox(MsgText$, BoxWidth, Pass)
+		I$ = GetKeyPress$
+		Call CSMsgBox("", 0, Pass)
+
     Else
 
         For K = 4 To 18:
@@ -139,10 +150,12 @@ Sub COMPARE ()
 
 End Sub
 
+
 '----------------------------------------
-'   Comparisons_Printer Subroutine
+'     Comparisons_Printer Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine formats team stats for
+'output to the default printer
 Sub Comparisons_Printer (teamName$)
 
     Shared batterNames$(), pitcherNames$()
@@ -370,7 +383,10 @@ End Sub
 '----------------------------------------
 '     Comparisons_Screen Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine provides a brief menu of
+'player comparisons that can be done, and 
+'then formats stats for those options for
+'use with the user display
 Sub Comparisons_Screen (teamName$, backToMenu)
 
     Shared batterNames$(), pitcherNames$()
@@ -512,7 +528,6 @@ Sub Comparisons_Screen (teamName$, backToMenu)
 
                 If batterNames$(I) <> "XXX" And batterNames$(I) <> "END" And batterNames$(I) <> "" Then
 
-                    265 '
                     Select Case batterRatings(I, 22)
                         Case 2: PST$ = "Catcher"
                         Case 3: PST$ = "First Base"
@@ -923,7 +938,9 @@ End Sub
 '----------------------------------------
 '   TeamComparison_Printer Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine focuses on the formatting
+'of team stats for comparison. The stats
+'are output to the default printer
 Sub TeamComparison_Printer (teamName$)
 
     Shared batterNames$()
@@ -1004,7 +1021,9 @@ End Sub
 '----------------------------------------
 '   TeamComparison_Screen Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine focuses on the formatting
+'of team stats for comparison. The stats
+'are output to the end user display
 Sub TeamComparison_Screen (teamName$)
 
     Shared teamRatings%(), TB%()

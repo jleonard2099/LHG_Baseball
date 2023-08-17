@@ -1,6 +1,6 @@
-'------------------------------
-'      PadRight Function
-'------------------------------
+'----------------------------------------
+'           PadRight Function
+'----------------------------------------
 ' Pads string to the right with spaces
 Function PadRight$ (X$, Length)
     PadRight$ = X$ + Space$(Length - Len(X$)) 'for display only

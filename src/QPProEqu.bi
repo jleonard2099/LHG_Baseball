@@ -1,4 +1,4 @@
-DECLARE FUNCTION FCount% (dirSpec$)
+DECLARE FUNCTION FileCount% (dirSpec$)
 DECLARE FUNCTION FUsing$ (Number$, Image$, Typ%)
 DECLARE FUNCTION FileSize& (FileName$)
 DECLARE FUNCTION MGetKey (Row%, Col%)

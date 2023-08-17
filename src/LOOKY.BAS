@@ -1,3 +1,9 @@
+'----------------------------------------
+'            LOOKY Subroutine
+'----------------------------------------
+'This subroutine guides the user through
+'choosing a team file and then calls other
+'routines to load and view the stats
 Sub LOOKY ()
 
     _Title "Full Count Baseball - View Stats"
@@ -65,12 +71,20 @@ Sub StatsOneTeam ()
         statFile$ = nameStatFile$(team$)
 
         If Not _FileExists(diskPaths$(1) + statFile$) Then
-            Call CSMsgBox("UNABLE TO LOCATE COMPILED STATS FILE PRESS ANY KEY TO RETURN TO MAIN MENU", 26, Pass)
+
+            MsgText$ = "NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU"
+            BoxWidth = 24
+            BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+            Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+            Call CSMsgBox(MsgText$, BoxWidth, Pass)
             I$ = GetKeyPress$
             Call CSMsgBox("", 0, Pass)
+            
         Else
+
             Call LoadTeamStats(statFile$, totalGames%)
             Call ViewAndPrintOptions(statFile$, team$, totalGames%, menuExit)
+
         End If
 
     End If
@@ -80,7 +94,8 @@ End Sub
 '----------------------------------------
 '        LoadTeamStats Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine loads the selected team's 
+'stats into arrays
 Sub LoadTeamStats (statFile$, totalGames%)
 
     Shared EW, EL, HW, HL
@@ -130,17 +145,25 @@ Sub LoadTeamStats (statFile$, totalGames%)
 
     Close #1
 
-    If _FileExists(diskPaths$(1) + statFile$ + "R") Then
+    If Not _FileExists(diskPaths$(1) + statFile$ + "R") Then
+
+        SS% = 0
+
+    Else
+
         SS% = 1
+
         Open diskPaths$(1) + statFile$ + "R" For Input As #1
+
         For I = 0 To 22
             For I1 = 0 To 6
                 Input #1, statSS%(I, I1)
             Next I1
+
         Next I
+
         Close #1
-    Else
-        SS% = 0
+
     End If
 
     Open diskPaths$(1) + statFile$ + "S" For Input As #1
@@ -187,7 +210,9 @@ End Sub
 '----------------------------------------
 '     ViewAndPrintOptions Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine gives the user available
+'options for what parts of the stat summary
+'to print / view
 Sub ViewAndPrintOptions (statFile$, teamName$, totalGames%, menuExit)
 
     Shared H%(), I%(), teamRatings%(), V%()
@@ -315,7 +340,7 @@ Sub ViewAndPrintOptions (statFile$, teamName$, totalGames%, menuExit)
 
                 Do
                     Locate 7
-                    U$ = "DISPLAY STATS AGAIN (YN)"
+                    U$ = "DISPLAY STATS AGAIN? (Y/N)"
                     Locate , (80 - Len(U$)) / 2
                     Print U$
                     I$ = GetKeyPress$
@@ -343,7 +368,10 @@ End Sub
 '----------------------------------------
 '       ViewStatSummary Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine formats and outputs the 
+'selected team's record to the display,
+'then provides routines for output of
+'the other stat categories
 Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, menuExit)
 
     Shared EW, EL, HW, HL
@@ -908,7 +936,8 @@ End Sub
 '----------------------------------------
 '       ReportsAllTeams Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine generates a stat report
+'for each team in the chosen league.
 Sub ReportsAllTeams ()
 
     Dim H1$(40)
@@ -925,7 +954,7 @@ Sub ReportsAllTeams ()
 
         Open diskPaths$(2) + leagStatFile$ + ".TMS" For Input As #2
 
-        Input #2, LG$, D1$, D2$, D3$, D4$
+        Input #2, league$, D1$, D2$, D3$, D4$
 
         For XW = 1 To 40
             Input #2, H1$(XW)
@@ -974,7 +1003,9 @@ End Sub
 '----------------------------------------
 '       NewPrintStats Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine formats and outputs the 
+'team's schedule results and stats to the 
+'default printer
 Sub NewPrintStats (statFile$, teamName$, totalGames%, printChoice, splitScreenChoice%, menuExit)
 
     Shared L2%, W2%
@@ -1415,9 +1446,10 @@ End Sub
 '----------------------------------------
 '       ResetStatPrompt Subroutine
 '----------------------------------------
-' Prompts user with choice to reset stats
-' If they chose so, and confirm, then
-' it will proceed to delete the files.
+'This subroutine prompts the user with 
+'a choice to reset stats. If they chose, 
+'and confirm, it will then proceed to 
+'delete the files.
 Sub ResetStatPrompt (statFile$, teamRatings%())
 
     Cls
@@ -1442,7 +1474,7 @@ Sub ResetStatPrompt (statFile$, teamRatings%())
     Locate 7
 
     Do
-        U$ = "RESET COMPILED STATS TO 0 (YN)"
+        U$ = "RESET COMPILED STATS TO 0? (Y/N)"
         Locate , (80 - Len(U$)) / 2
         Print U$
         I$ = GetKeyPress$
@@ -1473,7 +1505,7 @@ Sub ResetStatPrompt (statFile$, teamRatings%())
         Locate 7
 
         Do
-            U$ = "ARE YOU SURE (YN)"
+            U$ = "ARE YOU SURE? (Y/N)"
             Locate , (80 - Len(U$)) / 2
             Print U$
             I$ = GetKeyPress$
@@ -1492,4 +1524,3 @@ Sub ResetStatPrompt (statFile$, teamRatings%())
     End If 'Done checking if reset stats
 
 End Sub
-

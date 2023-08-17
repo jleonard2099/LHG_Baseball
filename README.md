@@ -38,7 +38,7 @@ Code now compiles in a modern environment and has been mostly re-factored. All k
 
 All code features have  been thoroughly tested with known bugs documented (including those from the original game - that I am aware of) and being worked on.
 
-Code is currently in the stage of being optimized, documented and cleaned up.
+Code has been documented and made consistent and clean. It is currently in the stage of being optimized for improvements in logic.
 
 ## Road Map ##
 ### Phase 1 ###
