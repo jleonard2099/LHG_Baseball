@@ -32,9 +32,9 @@ Dim homeScores(MAX_GAMES), visitorScores(MAX_GAMES)
 ' -------------------------
 Dim Shared DT$, TM$
 
-Dim dayNight$(0 To 1), DH$(1), DL$(1)
-Dim LGT$(2), month$(1 To 12)
-Dim pitcherEra$(8), MO$(0 To 3), UMP$(50)
+Dim dayNight$(0 To 1), desigHitOpt$(1), gameType$(1)
+Dim leagueType$(2), month$(1 To 12)
+Dim pitcherEra$(8), playMode$(0 To 3), UMP$(50)
 Dim VI$(1), yesNo$(1)
 
 Dim U%(50)
@@ -201,8 +201,8 @@ Dim W2%(1)
 '----------------------------------------
 ' Used in STAT / INPUT other routines
 '----------------------------------------
-Dim HW%(50), AW%(50), HL%(50), AL%(50), R1%(200), R2%(200), R3%(200), R4%(200)
-Dim THW%(4), TAW%(4), THL%(4), TAL%(4), TR1%(4), TR2%(4), TR3%(4), TR4%(4)
+Dim HW%(50), AW%(50), HL(50), AL(50), R1%(200), R2%(200), R3%(200), R4%(200)
+Dim THW%(4), TAW%(4), THL(4), TAL(4), TR1%(4), TR2%(4), TR3%(4), TR4%(4)
 
 Dim DV$(4)
 
@@ -284,48 +284,48 @@ Dim PT$(1)
 
 
 ' Shared / Global
-Dim Shared AP%, CGERA%, DH%, DR%, D
-Dim Shared EJ%, FontColAdj%, H6%, IJ%, IJL%, INNING%, Inotloop%
-Dim Shared LYN%, NLF%, normalFinish%, PB%, PC%
+Dim Shared AP%, desigHit, D
+Dim Shared EJ%, H6%, IJL%, INNING%, Inotloop%
+Dim Shared LYN%, PB%, PC%
 Dim Shared SC%, TA%, TP%, W%, WS%
 
-Dim Shared endGame, endAllGames, MON
-Dim Shared P, RE, RD, U6, U9, usingGfx
+Dim Shared compTeam, endGame, endAllGames, FontColAdj, gameLoc
+Dim Shared monitorType, noLUFound, normalFinish
+Dim Shared P, pitchEraOpt, playerOpt, RE, RD
+Dim Shared usingGfx, useInj, useRest
 
 Dim Shared pbpDelay!, WF!
 
-Dim Shared actualAttendance&, avgAttendance&, gameTime$
+Dim Shared actualAttendance&, avgAttendance&
 
-Dim Shared NM$, Y$, YY$
-Dim Shared F$, PARK$, S$, WI$, W$, L$
+Dim Shared F$, gameTime$, L$, NM$, PARK$
+Dim Shared S$, WI$, W$, Y$, YY$
 
+Dim Shared batRating(0 To 1, 0 To 22, 80), inningScore(1, 26)
+Dim Shared MON(5, 14), tmRat_GAME(1, 13)
+Dim Shared VV(1), VV1(1)
 
-'These are just for tracing values / troubleshooting
-Dim Shared testIdx, dudVal
-
-Dim Shared MON(5, 14), VV(1), VV1(1)
-
-Dim Shared A5%(0 To 4), AP%(2), B%(0 To 1, 0 To 22, 80), B0%(0 To 3, 0 To 2)
+Dim Shared A5%(0 To 4), schedGame(2), B0%(0 To 3, 0 To 2)
 Dim Shared B1%(3, 1), B2%(1, 22), B3%(0 To 1, 0 To 9), B4%(1, 7, 9)
 'B3% --> active batters?
-
 Dim Shared B5%(0 To 1, 0 To 22, 0 To 21), B7%(0 To 1, 0 To 9), B8%(0 To 1, 0 To 22, 0 To 21), B9%(1, 10), BT%(1, 9, 9)
 Dim Shared CF%(9, 2), CSS%(1, 22, 6), D0%(1), D3%(1), DP%(1), GK%(1), H0%(1)
-Dim Shared INJ%(0 To 1, 0 To 22), L%(1, 13), L0%(1), LB%(9, 1)
+Dim Shared INJ%(0 To 1, 0 To 22), L0%(1), LB%(9, 1)
 Dim Shared M%(9), MG%(0 To 1, 999), NG%(18), O%(1)
-Dim Shared P%(0 To 1, 0 To 21, 0 To 89), P1%(0 To 1), P2%(1), P3%(1, 21), P4%(22), P5%(1, 21, 41), P6%(1), P8%(1, 21, 41)
+Dim Shared pitchRating(0 To 1, 0 To 21, 0 To 89), P1%(0 To 1), P2%(1), P3%(1, 21), P4%(22), P5%(1, 21, 41), P6%(1), P8%(1, 21, 41)
 Dim Shared PR%(24)
 
-Dim Shared inningScore%(1, 26), S1%(1), S6%(1, 2), S8%(1, 1)
+Dim Shared S1%(1), S6%(1, 2), S8%(1, 1)
 Dim Shared SA%(1, 24), SO%(5, 2), SU%(1, 1)
 Dim Shared T%(22), T3%(22), TP%(11, 2), TS%(1, 11), VA%(26), X0%(1, 2, 23)
 
-Dim Shared B1!(9), K9!(1)
+Dim Shared B1!(9), parkHRVals!(1)
 
-Dim Shared A$(1), baseName$(0 To 4), B$(0 To 1, 0 To 22), B1$(4), C$(11)
+Dim Shared A$(1), baseName$(0 To 4), batters$(0 To 1, 0 To 22), B1$(4), C$(11)
 Dim Shared DB$(0 To 22), E$(0 To 22), EJ$(20), F$(10)
-Dim Shared G$(10), H0$(1), homeRuns$(0 To 22)
-Dim Shared IJ$(20), M$(1), NN$(1)
-Dim Shared P$(1, 21), PARK$(99), PC$(4), player$(23)
-Dim Shared Q3$(100), S$(1), SB$(0 To 22), SC$(4), TR$(0 To 22)
+Dim Shared G$(10), gameManagers$(1), gameStadiums$(1)
+Dim Shared H0$(1), homeRuns$(0 To 22), IJ$(20)
+Dim Shared PARK$(99), pitchers$(1, 21), PC$(4), player$(23)
+Dim Shared Q3$(100), SB$(0 To 22), SC$(4)
+Dim Shared teamAbbreviatons$(1), TR$(0 To 22)
 Dim Shared U$(4), WD$(10), X$(12), YN$(1)

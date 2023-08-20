@@ -1,10 +1,10 @@
 '----------------------------------------
-'   MAINSCREEN_G routine
+'          MAINSCREEN_G routine
 '----------------------------------------
 ' ...explanation...
 Sub MAINSCREEN_G (D, p, BC%, U%, MO)
 
-    _PutImage (29 * FontColAdj%, 400)-Step(24 * FontColAdj%, 16), backupScreen&, imageScreen&, (29 * FontColAdj%, 400)-Step(24 * FontColAdj%, 16)
+    _PutImage (29 * FontColAdj, 400)-Step(24 * FontColAdj, 16), backupScreen&, imageScreen&, (29 * FontColAdj, 400)-Step(24 * FontColAdj, 16)
 
     'Printing white on black
     Color 4294967295
@@ -13,18 +13,18 @@ Sub MAINSCREEN_G (D, p, BC%, U%, MO)
     '-----
 
     'Pitcher Name
-    pitcher$ = Left$(P$(D, P1%(D)), 14)
+    pitcher$ = Left$(pitchers$(D, P1%(D)), 14)
     PrintOnGfx 65, 26, " " + pitcher$, imageScreen&
 
     '-- Why is this not Pitch Count / Strikes ???
 
     'Wins
-    FORMATTED$ = FUsing$(Str$(P%(D, P1%(D), 1)), "##", 1)
+    FORMATTED$ = FUsing$(Str$(pitchRating(D, P1%(D), 1)), "##", 1)
     pStats$ = FORMATTED$ + "-"
     'Losses
-    FORMATTED$ = FUsing$(Str$(P%(D, P1%(D), 2)), "##", 1)
+    FORMATTED$ = FUsing$(Str$(pitchRating(D, P1%(D), 2)), "##", 1)
     '                                              ERA
-    pStats$ = pStats$ + FORMATTED$ + " " + FUsing$(Str$(P%(D, P1%(D), 10) / 100), "##.##", 1)
+    pStats$ = pStats$ + FORMATTED$ + " " + FUsing$(Str$(pitchRating(D, P1%(D), 10) / 100), "##.##", 1)
 
     'Pitcher Stats
     PrintOnGfx 66, 27, pStats$, imageScreen&
@@ -47,14 +47,14 @@ Sub MAINSCREEN_G (D, p, BC%, U%, MO)
     J = B3%(p, B1!(p))
 
     If B7%(p, B1!(p)) = 1 Then
-        X$ = P$(p, P1%(p))
+        X$ = pitchers$(p, P1%(p))
         'We're going to use this in just a bit
         'We'll be printing it with more space
         player$ = X$
         X$ = PadRight$(X$, 11)
         Call PITPLACEMENT(p, X$)
     Else
-        X$ = B$(p, J)
+        X$ = batters$(p, J)
         'We're going to use this in just a bit
         'We'll be printing it with more space
         player$ = X$
@@ -64,15 +64,15 @@ Sub MAINSCREEN_G (D, p, BC%, U%, MO)
         _PrintMode _KeepBackground , imageScreen&
         Color 4294967295
 
-        bpj = B%(p, J, 0)
-        pdd = P%(D, P1%(D), 0)
+        bpj = batRating(p, J, 0)
+        pdd = pitchRating(D, P1%(D), 0)
 
-        If B%(p, J, 0) < 0 Or B%(p, J, 0) = 0 And P%(D, P1%(D), 0) > 0 Then
+        If batRating(p, J, 0) < 0 Or batRating(p, J, 0) = 0 And pitchRating(D, P1%(D), 0) > 0 Then
             'Batter Name - Right of Plate
             PrintOnGfx 41, 25, Left$(X$, 11), imageScreen&
         End If
 
-        If B%(p, J, 0) > 0 Or B%(p, J, 0) = 0 And P%(D, P1%(D), 0) < 0 Then
+        If batRating(p, J, 0) > 0 Or batRating(p, J, 0) = 0 And pitchRating(D, P1%(D), 0) < 0 Then
             'Batter Name - Left of Plate
             PrintOnGfx 30, 25, Left$(X$, 11), imageScreen&
         End If
@@ -92,18 +92,18 @@ Sub MAINSCREEN_G (D, p, BC%, U%, MO)
 
     If B7%(p, B1!(p)) <> 1 Then
         'Batter Stats - Hitter
-        If B%(p, J, 4) = 0 Then
+        If batRating(p, J, 4) = 0 Then
             PrintOnGfx 65, 24, ".000  0  0   0", imageScreen&
         Else
             'AVG
-            bAvg! = B%(p, J, 6) / B%(p, J, 4)
+            bAvg! = batRating(p, J, 6) / batRating(p, J, 4)
             If bAvg! = 0 Then
                 PrintOnGfx 65, 24, ".000  0  0   0", imageScreen&
             Else
-                bb = B%(p, J, 11)
+                bb = batRating(p, J, 11)
                 pStats$ = "." + FUsing$(Str$(bAvg! * 1000), "###", 1)
                 '                                 HR                                         BB                                            K
-                pStats$ = pStats$ + " " + FUsing$(Str$(B%(p, J, 9)), "##", 1) + " " + FUsing$(Str$(B%(p, J, 11)), "###", 1) + " " + FUsing$(Str$(B%(p, J, 12)), "###", 1)
+                pStats$ = pStats$ + " " + FUsing$(Str$(batRating(p, J, 9)), "##", 1) + " " + FUsing$(Str$(batRating(p, J, 11)), "###", 1) + " " + FUsing$(Str$(batRating(p, J, 12)), "###", 1)
                 PrintOnGfx 65, 24, pStats$, imageScreen&
             End If
 
@@ -112,27 +112,27 @@ Sub MAINSCREEN_G (D, p, BC%, U%, MO)
     Else
 
         'Batter Stats - Pitcher
-        If P%(p, P1%(p), 11) <> 999 Then
+        If pitchRating(p, P1%(p), 11) <> 999 Then
             If pAvg! = 0 Then
                 pStats$ = ".000"
             Else
-                pAvg! = P%(p, P1%(p), 11)
+                pAvg! = pitchRating(p, P1%(p), 11)
                 pStats$ = "." + FUsing$(Str$(pAvg! * 1000), "###", 1)
             End If
             PrintOnGfx 65, 24, pStats$ + "           ", imageScreen&
         Else
-            If P%(p, P1%(p), 20) = 0 Then
+            If pitchRating(p, P1%(p), 20) = 0 Then
                 PrintOnGfx 65, 24, ".000  0   0   0", imageScreen&
             Else
                 'AVG
-                pAvg! = P%(p, P1%(p), 22) / P%(p, P1%(p), 20)
+                pAvg! = pitchRating(p, P1%(p), 22) / pitchRating(p, P1%(p), 20)
 
                 If pAvg! = 0 Then
                     PrintOnGfx 65, 24, ".000  0   0   0", imageScreen&
                 Else
                     pStats$ = FUsing$(Str$(pAvg! * 1000), ".###", 1)
                     '                                 HR                                                BB                                         K
-                    pStats$ = pStats$ + " " + FUsing$(Str$(P%(p, P1%(p), 25)), "##", 1) + " " + FUsing$(Str$(P%(p, P1%(p), 27)), "###", 1) + " " + FUsing$(Str$(P%(p, P1%(p), 28)), "###", 1)
+                    pStats$ = pStats$ + " " + FUsing$(Str$(pitchRating(p, P1%(p), 25)), "##", 1) + " " + FUsing$(Str$(pitchRating(p, P1%(p), 27)), "###", 1) + " " + FUsing$(Str$(pitchRating(p, P1%(p), 28)), "###", 1)
                     PrintOnGfx 65, 24, pStats$, imageScreen&
 
                 End If
@@ -163,7 +163,7 @@ Sub MAINSCREEN_G (D, p, BC%, U%, MO)
     PrintOnGfx 63, 29, Str$(O%(0)), imageScreen&
 
     'Infield
-    _PutImage (52 * FontColAdj%, 416)-Step(13 * FontColAdj%, 16), backupScreen&, imageScreen&, (52 * FontColAdj%, 416)-Step(13 * FontColAdj%, 16)
+    _PutImage (52 * FontColAdj, 416)-Step(13 * FontColAdj, 16), backupScreen&, imageScreen&, (52 * FontColAdj, 416)-Step(13 * FontColAdj, 16)
 
     infStatus$ = "INF:"
     Select Case INFPOS%
@@ -206,7 +206,7 @@ Sub MAINSCREEN_G (D, p, BC%, U%, MO)
 End Sub
 
 '----------------------------------------
-'   DisplayRun_G Subroutine
+'        DisplayRun_G Subroutine
 '----------------------------------------
 ' ...explanation...
 Sub DisplayRun_G (I2, p, X)
@@ -216,15 +216,15 @@ Sub DisplayRun_G (I2, p, X)
     Select Case I2
         '1st Base Runner
         Case 1:
-            '_PutImage (54 * FontColAdj%, 336)-Step(11 * FontColAdj%, 32), backupScreen&, imageScreen&, (54 * FontColAdj%, 336)-Step(11 * FontColAdj%, 32)
-            _PutImage (54 * FontColAdj%, 336)-Step(14 * FontColAdj%, 16), backupScreen&, imageScreen&, (54 * FontColAdj%, 336)-Step(14 * FontColAdj%, 16)
-            _PutImage (54 * FontColAdj%, 352)-Step(11 * FontColAdj%, 16), backupScreen&, imageScreen&, (54 * FontColAdj%, 352)-Step(11 * FontColAdj%, 16)
+            '_PutImage (54 * FontColAdj, 336)-Step(11 * FontColAdj, 32), backupScreen&, imageScreen&, (54 * FontColAdj, 336)-Step(11 * FontColAdj, 32)
+            _PutImage (54 * FontColAdj, 336)-Step(14 * FontColAdj, 16), backupScreen&, imageScreen&, (54 * FontColAdj, 336)-Step(14 * FontColAdj, 16)
+            _PutImage (54 * FontColAdj, 352)-Step(11 * FontColAdj, 16), backupScreen&, imageScreen&, (54 * FontColAdj, 352)-Step(11 * FontColAdj, 16)
 
             '2nd Base Runner
-        Case 2: _PutImage (35 * FontColAdj%, 304)-Step(14 * FontColAdj%, 32), backupScreen&, imageScreen&, (35 * FontColAdj%, 304)-Step(14 * FontColAdj%, 32)
+        Case 2: _PutImage (35 * FontColAdj, 304)-Step(14 * FontColAdj, 32), backupScreen&, imageScreen&, (35 * FontColAdj, 304)-Step(14 * FontColAdj, 32)
 
             '3rd Base Runner
-        Case 3: _PutImage (15 * FontColAdj%, 336)-Step(14 * FontColAdj%, 32), backupScreen&, imageScreen&, (15 * FontColAdj%, 336)-Step(14 * FontColAdj%, 32)
+        Case 3: _PutImage (15 * FontColAdj, 336)-Step(14 * FontColAdj, 32), backupScreen&, imageScreen&, (15 * FontColAdj, 336)-Step(14 * FontColAdj, 32)
 
     End Select
 
@@ -240,23 +240,23 @@ Sub DisplayRun_G (I2, p, X)
         Color 4294967295
 
         If B7%(p, J) = 1 Then
-            If P%(p, P1%(p), 11) <> 999 Then
-                runner$ = P$(p, P1%(p))
+            If pitchRating(p, P1%(p), 11) <> 999 Then
+                runner$ = pitchers$(p, P1%(p))
                 runner$ = PadRight(runner$, 11)
                 PrintOnGfx X, Y - 1, runner$, imageScreen&
                 PrintOnGfx X, Y, "1/  0", imageScreen&
             Else
-                runner$ = P$(p, P1%(p))
+                runner$ = pitchers$(p, P1%(p))
                 runner$ = PadRight(runner$, 11)
                 PrintOnGfx X, Y - 1, runner$, imageScreen&
-                runStats$ = FUsing$(Str$(P%(p, P1%(p), 31)), "#", 1) + "/" + FUsing$(Str$(P%(p, P1%(p), 29)), "###", 1)
+                runStats$ = FUsing$(Str$(pitchRating(p, P1%(p), 31)), "#", 1) + "/" + FUsing$(Str$(pitchRating(p, P1%(p), 29)), "###", 1)
                 PrintOnGfx X, Y, runStats$, imageScreen&
             End If
         Else
-            runner$ = B$(p, B3%(p, J))
+            runner$ = batters$(p, B3%(p, J))
             runner$ = PadRight(runner$, 11)
             PrintOnGfx X, Y - 1, runner$, imageScreen&
-            runStats$ = FUsing$(Str$(B%(p, B3%(p, J), 16)), "#", 1) + "/" + FUsing$(Str$(B%(p, B3%(p, J), 13)), "###", 1)
+            runStats$ = FUsing$(Str$(batRating(p, B3%(p, J), 16)), "#", 1) + "/" + FUsing$(Str$(batRating(p, B3%(p, J), 13)), "###", 1)
             PrintOnGfx X, Y, runStats$, imageScreen&
 
             'Printing white on black
@@ -268,7 +268,7 @@ Sub DisplayRun_G (I2, p, X)
 End Sub
 
 '----------------------------------------
-'   DisplayBallField_Gfx Subroutine
+'    DisplayBallField_Gfx Subroutine
 '----------------------------------------
 ' ...explanation...
 Sub DisplayBallField_Gfx (BC%, p, U%, D)
@@ -305,11 +305,11 @@ Sub DisplayBallField_Gfx (BC%, p, U%, D)
     For I = 0 To 1
 
         'Print inning score
-        PrintOnGfx 15, I + 28, Left$(A$(I), 3) + NN$(I), imageScreen&
+        PrintOnGfx 15, I + 28, Left$(A$(I), 3) + teamAbbreviatons$(I), imageScreen&
 
         For I2 = inningStart% To inningEnd%
-            If p = 0 And I = 0 And I2 > INNING% - 1 And inningScore%(I, INNING%) = 0 Or p = 0 And I = 0 And I2 > INNING% And inningScore%(I, INNING%) > 0 Or p = 1 And I2 > INNING% And I = 0 Then Exit For
-            If p = 0 And I = 1 And I2 > INNING% - 1 Or p = 1 And I = 1 And inningScore%(I, INNING%) = 0 And I2 > INNING% - 1 Or p = 1 And I = 1 And inningScore%(I, INNING%) > 0 And I2 > INNING% Then Exit For
+            If p = 0 And I = 0 And I2 > INNING% - 1 And inningScore(I, INNING%) = 0 Or p = 0 And I = 0 And I2 > INNING% And inningScore(I, INNING%) > 0 Or p = 1 And I2 > INNING% And I = 0 Then Exit For
+            If p = 0 And I = 1 And I2 > INNING% - 1 Or p = 1 And I = 1 And inningScore(I, INNING%) = 0 And I2 > INNING% - 1 Or p = 1 And I = 1 And inningScore(I, INNING%) > 0 And I2 > INNING% Then Exit For
             Call INNDISP_G(I2, I)
         Next I2
 
@@ -333,33 +333,33 @@ Sub DisplayBallField_Gfx (BC%, p, U%, D)
     Next I
 
     'Center Field
-    _PutImage (36 * FontColAdj%, 224)-Step(13 * FontColAdj%, 32), backupScreen&, imageScreen&, (36 * FontColAdj%, 224)-Step(13 * FontColAdj%, 32)
+    _PutImage (36 * FontColAdj, 224)-Step(13 * FontColAdj, 32), backupScreen&, imageScreen&, (36 * FontColAdj, 224)-Step(13 * FontColAdj, 32)
 
     'Left Field
-    _PutImage (7 * FontColAdj%, 256)-Step(16 * FontColAdj%, 32), backupScreen&, imageScreen&, (7 * FontColAdj%, 256)-Step(16 * FontColAdj%, 32)
+    _PutImage (7 * FontColAdj, 256)-Step(16 * FontColAdj, 32), backupScreen&, imageScreen&, (7 * FontColAdj, 256)-Step(16 * FontColAdj, 32)
 
     'Right Field
-    _PutImage (64 * FontColAdj%, 256)-Step(16 * FontColAdj%, 32), backupScreen&, imageScreen&, (64 * FontColAdj%, 256)-Step(16 * FontColAdj%, 32)
+    _PutImage (64 * FontColAdj, 256)-Step(16 * FontColAdj, 32), backupScreen&, imageScreen&, (64 * FontColAdj, 256)-Step(16 * FontColAdj, 32)
 
     'Short Stop
-    _PutImage (28 * FontColAdj%, 272)-Step(12 * FontColAdj%, 32), backupScreen&, imageScreen&, (28 * FontColAdj%, 272)-Step(12 * FontColAdj%, 32)
+    _PutImage (28 * FontColAdj, 272)-Step(12 * FontColAdj, 32), backupScreen&, imageScreen&, (28 * FontColAdj, 272)-Step(12 * FontColAdj, 32)
 
     '2nd Base
-    _PutImage (46 * FontColAdj%, 272)-Step(13 * FontColAdj%, 32), backupScreen&, imageScreen&, (46 * FontColAdj%, 272)-Step(13 * FontColAdj%, 32)
+    _PutImage (46 * FontColAdj, 272)-Step(13 * FontColAdj, 32), backupScreen&, imageScreen&, (46 * FontColAdj, 272)-Step(13 * FontColAdj, 32)
 
     '3rd Base
-    _PutImage (13 * FontColAdj%, 304)-Step(12 * FontColAdj%, 32), backupScreen&, imageScreen&, (13 * FontColAdj%, 304)-Step(12 * FontColAdj%, 32)
+    _PutImage (13 * FontColAdj, 304)-Step(12 * FontColAdj, 32), backupScreen&, imageScreen&, (13 * FontColAdj, 304)-Step(12 * FontColAdj, 32)
 
     '1st Base
-    _PutImage (61 * FontColAdj%, 304)-Step(12 * FontColAdj%, 32), backupScreen&, imageScreen&, (61 * FontColAdj%, 304)-Step(12 * FontColAdj%, 32)
+    _PutImage (61 * FontColAdj, 304)-Step(12 * FontColAdj, 32), backupScreen&, imageScreen&, (61 * FontColAdj, 304)-Step(12 * FontColAdj, 32)
 
     'Pitcher
-    _PutImage (35 * FontColAdj%, 336)-Step(13 * FontColAdj%, 32), backupScreen&, imageScreen&, (35 * FontColAdj%, 336)-Step(13 * FontColAdj%, 32)
+    _PutImage (35 * FontColAdj, 336)-Step(13 * FontColAdj, 32), backupScreen&, imageScreen&, (35 * FontColAdj, 336)-Step(13 * FontColAdj, 32)
 
     'Catcher
-    _PutImage (35 * FontColAdj%, 416)-Step(13 * FontColAdj%, 32), backupScreen&, imageScreen&, (35 * FontColAdj%, 416)-Step(13 * FontColAdj%, 32)
+    _PutImage (35 * FontColAdj, 416)-Step(13 * FontColAdj, 32), backupScreen&, imageScreen&, (35 * FontColAdj, 416)-Step(13 * FontColAdj, 32)
 
-    player$ = Left$(B$(D, B9%(D, 8)), 11)
+    player$ = Left$(batters$(D, B9%(D, 8)), 11)
     player$ = PadRight(player$, 11)
 
     'Print all positions around the diamond
@@ -372,158 +372,158 @@ Sub DisplayBallField_Gfx (BC%, p, U%, D)
     PrintOnGfx 36, 14, player$, imageScreen&
 
     'Center Field Stats
-    If B%(D, B9%(D, 8), 19) = 1000 Then
+    If batRating(D, B9%(D, 8), 19) = 1000 Then
         fldPct$ = "1.000"
     Else
-        If B%(D, B9%(D, 8), 19) = 0 Then
+        If batRating(D, B9%(D, 8), 19) = 0 Then
             fldPct$ = " .000"
         Else
-            fldPct$ = "." + FUsing$(Str$(B%(D, B9%(D, 8), 19)), "###", 1)
+            fldPct$ = "." + FUsing$(Str$(batRating(D, B9%(D, 8), 19)), "###", 1)
         End If
     End If
 
-    player$ = "A" + FUsing$(Str$(B%(D, B9%(D, 8), 15)), "#", 1) + " R" + FUsing$(Str$(B%(D, B9%(D, 8), 17)), "#", 1) + " F" + fldPct$
+    player$ = "A" + FUsing$(Str$(batRating(D, B9%(D, 8), 15)), "#", 1) + " R" + FUsing$(Str$(batRating(D, B9%(D, 8), 17)), "#", 1) + " F" + fldPct$
     PrintOnGfx 36, 15, player$, imageScreen&
 
     'Left Field Name
-    player$ = Left$(B$(D, B9%(D, 7)), 10)
+    player$ = Left$(batters$(D, B9%(D, 7)), 10)
     player$ = PadRight(player$, 10)
     PrintOnGfx 7, 16, player$, imageScreen&
 
     'Left Field Stats
-    If B%(D, B9%(D, 7), 19) = 1000 Then
+    If batRating(D, B9%(D, 7), 19) = 1000 Then
         fldPct$ = "1.000"
     Else
-        If B%(D, B9%(D, 7), 19) = 0 Then
+        If batRating(D, B9%(D, 7), 19) = 0 Then
             fldPct$ = " .000"
         Else
-            fldPct$ = "." + FUsing$(Str$(B%(D, B9%(D, 7), 19)), "###", 1)
+            fldPct$ = "." + FUsing$(Str$(batRating(D, B9%(D, 7), 19)), "###", 1)
         End If
     End If
 
-    player$ = "A" + FUsing$(Str$(B%(D, B9%(D, 7), 15)), "#", 1) + " R" + FUsing$(Str$(B%(D, B9%(D, 7), 17)), "#", 1) + " F" + fldPct$
+    player$ = "A" + FUsing$(Str$(batRating(D, B9%(D, 7), 15)), "#", 1) + " R" + FUsing$(Str$(batRating(D, B9%(D, 7), 17)), "#", 1) + " F" + fldPct$
     PrintOnGfx 7, 17, player$, imageScreen&
 
     'Right Field Name
-    player$ = Left$(B$(D, B9%(D, 9)), 10)
+    player$ = Left$(batters$(D, B9%(D, 9)), 10)
     player$ = PadRight(player$, 10)
     PrintOnGfx 64, 16, player$, imageScreen&
 
     'Right Field Stats
-    If B%(D, B9%(D, 9), 19) = 1000 Then
+    If batRating(D, B9%(D, 9), 19) = 1000 Then
         fldPct$ = "1.000"
     Else
-        If B%(D, B9%(D, 9), 19) = 0 Then
+        If batRating(D, B9%(D, 9), 19) = 0 Then
             fldPct$ = " .000"
         Else
-            fldPct$ = "." + FUsing$(Str$(B%(D, B9%(D, 9), 19)), "###", 1)
+            fldPct$ = "." + FUsing$(Str$(batRating(D, B9%(D, 9), 19)), "###", 1)
         End If
     End If
 
-    player$ = "A" + FUsing$(Str$(B%(D, B9%(D, 9), 15)), "#", 1) + " R" + FUsing$(Str$(B%(D, B9%(D, 9), 17)), "#", 1) + " F" + fldPct$
+    player$ = "A" + FUsing$(Str$(batRating(D, B9%(D, 9), 15)), "#", 1) + " R" + FUsing$(Str$(batRating(D, B9%(D, 9), 17)), "#", 1) + " F" + fldPct$
     PrintOnGfx 64, 17, player$, imageScreen&
 
     'Short Stop Name
-    player$ = Left$(B$(D, B9%(D, 6)), 10)
+    player$ = Left$(batters$(D, B9%(D, 6)), 10)
     player$ = PadRight(player$, 10)
     PrintOnGfx 28, 17, player$, imageScreen&
 
     'Short Stop Stats
-    If B%(D, B9%(D, 6), 19) = 1000 Then
+    If batRating(D, B9%(D, 6), 19) = 1000 Then
         fldPct$ = "1.000"
     Else
-        If B%(D, B9%(D, 6), 19) = 0 Then
+        If batRating(D, B9%(D, 6), 19) = 0 Then
             fldPct$ = " .000"
         Else
-            fldPct$ = "." + FUsing$(Str$(B%(D, B9%(D, 6), 19)), "###", 1)
+            fldPct$ = "." + FUsing$(Str$(batRating(D, B9%(D, 6), 19)), "###", 1)
         End If
     End If
 
-    player$ = "R" + FUsing$(Str$(B%(D, B9%(D, 6), 17)), "#", 1) + " F" + fldPct$
+    player$ = "R" + FUsing$(Str$(batRating(D, B9%(D, 6), 17)), "#", 1) + " F" + fldPct$
     PrintOnGfx 28, 18, player$, imageScreen&
 
     '2nd Base Name
-    player$ = Left$(B$(D, B9%(D, 4)), 10)
+    player$ = Left$(batters$(D, B9%(D, 4)), 10)
     player$ = PadRight(player$, 10)
     PrintOnGfx 46, 17, player$, imageScreen&
 
     '2nd Base Stats
-    If B%(D, B9%(D, 4), 19) = 1000 Then
+    If batRating(D, B9%(D, 4), 19) = 1000 Then
         fldPct$ = "1.000"
     Else
-        If B%(D, B9%(D, 4), 19) = 0 Then
+        If batRating(D, B9%(D, 4), 19) = 0 Then
             fldPct$ = " .000"
         Else
-            fldPct$ = "." + FUsing$(Str$(B%(D, B9%(D, 4), 19)), "###", 1)
+            fldPct$ = "." + FUsing$(Str$(batRating(D, B9%(D, 4), 19)), "###", 1)
         End If
     End If
 
-    player$ = "R" + FUsing$(Str$(B%(D, B9%(D, 4), 17)), "#", 1) + " F" + fldPct$
+    player$ = "R" + FUsing$(Str$(batRating(D, B9%(D, 4), 17)), "#", 1) + " F" + fldPct$
     PrintOnGfx 46, 18, player$, imageScreen&
 
     '3rd Base Name
-    player$ = Left$(B$(D, B9%(D, 5)), 10)
+    player$ = Left$(batters$(D, B9%(D, 5)), 10)
     player$ = PadRight(player$, 10)
     PrintOnGfx 13, 19, player$, imageScreen&
 
     '3rd Base Stats
-    If B%(D, B9%(D, 5), 19) = 1000 Then
+    If batRating(D, B9%(D, 5), 19) = 1000 Then
         fldPct$ = "1.000"
     Else
-        If B%(D, B9%(D, 5), 19) = 0 Then
+        If batRating(D, B9%(D, 5), 19) = 0 Then
             fldPct$ = " .000"
         Else
 
-            fldPct$ = "." + FUsing$(Str$(B%(D, B9%(D, 5), 19)), "###", 1)
+            fldPct$ = "." + FUsing$(Str$(batRating(D, B9%(D, 5), 19)), "###", 1)
         End If
     End If
 
-    player$ = "R" + FUsing$(Str$(B%(D, B9%(D, 5), 17)), "#", 1) + " F" + fldPct$
+    player$ = "R" + FUsing$(Str$(batRating(D, B9%(D, 5), 17)), "#", 1) + " F" + fldPct$
     PrintOnGfx 13, 20, player$, imageScreen&
 
     '1st Base Name
-    player$ = Left$(B$(D, B9%(D, 3)), 10)
+    player$ = Left$(batters$(D, B9%(D, 3)), 10)
     player$ = PadRight(player$, 10)
     PrintOnGfx 61, 19, player$, imageScreen&
 
     '1st Base Stats
-    If B%(D, B9%(D, 1), 19) = 1000 Then
+    If batRating(D, B9%(D, 1), 19) = 1000 Then
         fldPct$ = "1.000"
     Else
-        If B%(D, B9%(D, 1), 19) = 0 Then
+        If batRating(D, B9%(D, 1), 19) = 0 Then
             fldPct$ = " .000"
         Else
-            fldPct$ = "." + FUsing$(Str$(B%(D, B9%(D, 1), 19)), "###", 1)
+            fldPct$ = "." + FUsing$(Str$(batRating(D, B9%(D, 1), 19)), "###", 1)
         End If
     End If
 
-    player$ = "R" + FUsing$(Str$(B%(D, B9%(D, 3), 17)), "#", 1) + " F" + fldPct$
+    player$ = "R" + FUsing$(Str$(batRating(D, B9%(D, 3), 17)), "#", 1) + " F" + fldPct$
     PrintOnGfx 61, 20, player$, imageScreen&
 
     'Pitcher Name
-    player$ = "[" + B1$(P%(D, P1%(D), 0) + 2) + "] " + Left$(P$(D, P1%(D)), 10)
+    player$ = "[" + B1$(pitchRating(D, P1%(D), 0) + 2) + "] " + Left$(pitchers$(D, P1%(D)), 10)
     player$ = PadRight(player$, 10)
     PrintOnGfx 35, 21, player$, imageScreen&
 
     'Pitcher Stats
-    If P%(D, P1%(D), 17) = 1000 Then
+    If pitchRating(D, P1%(D), 17) = 1000 Then
         fldPct$ = "1.000"
     Else
-        If P%(D, P1%(D), 17) = 0 Then
+        If pitchRating(D, P1%(D), 17) = 0 Then
             fldPct$ = " .000"
         Else
-            fldPct$ = "." + FUsing$(Str$(P%(D, P1%(D), 17)), "###", 1)
+            fldPct$ = "." + FUsing$(Str$(pitchRating(D, P1%(D), 17)), "###", 1)
         End If
     End If
 
-    player$ = "H" + FUsing$(Str$(P%(D, P1%(D), 18)), "#", 1) + " F" + fldPct$
+    player$ = "H" + FUsing$(Str$(pitchRating(D, P1%(D), 18)), "#", 1) + " F" + fldPct$
     'was column 39 previously
     PrintOnGfx 35, 22, player$, imageScreen&
 
     'Catcher Name
-    player$ = Left$(B$(D, B9%(D, 2)), 10)
+    player$ = Left$(batters$(D, B9%(D, 2)), 10)
     player$ = PadRight(player$, 10)
-    player$ = player$ + "A" + FUsing$(Str$(B%(D, B9%(D, 2), 15)), "#", 1)
+    player$ = player$ + "A" + FUsing$(Str$(batRating(D, B9%(D, 2), 15)), "#", 1)
     PrintOnGfx 35, 26, player$, imageScreen&
 
     'Printing white on black
@@ -533,12 +533,12 @@ Sub DisplayBallField_Gfx (BC%, p, U%, D)
 End Sub
 
 '----------------------------------------
-'   HOLDSTATUS_G Subroutine
+'        HOLDSTATUS_G Subroutine
 '----------------------------------------
 ' ...explanation...
 Sub HOLDSTATUS_G (H0%)
 
-    _PutImage (53 * FontColAdj%, 400)-Step(12 * FontColAdj%, 16), backupScreen&, imageScreen&, (53 * FontColAdj%, 400)-Step(12 * FontColAdj%, 16)
+    _PutImage (53 * FontColAdj, 400)-Step(12 * FontColAdj, 16), backupScreen&, imageScreen&, (53 * FontColAdj, 400)-Step(12 * FontColAdj, 16)
 
     rhStatus$ = "RUNNERS:"
     'Can this only be 0 | 1???
@@ -557,7 +557,7 @@ Sub HOLDSTATUS_G (H0%)
 End Sub
 
 '----------------------------------------
-'   INNDISP_G Subroutine
+'          INNDISP_G Subroutine
 '----------------------------------------
 ' ...explanation...
 Sub INNDISP_G (currInning, teamLine)
@@ -572,7 +572,7 @@ Sub INNDISP_G (currInning, teamLine)
     If currInning > 21 And currInning < 25 Then L = 3 * (currInning - 18) + 8
     If currInning > 24 And currInning < 28 Then L = 3 * (currInning - 18) + 9
 
-    FORMATTED$ = FUsing$(Str$(inningScore%(teamLine, currInning)), "##", 1)
+    FORMATTED$ = FUsing$(Str$(inningScore(teamLine, currInning)), "##", 1)
     PrintOnGfx L + 13, teamLine + 28, FORMATTED$, imageScreen&
 
 End Sub
@@ -596,63 +596,63 @@ Sub LOADSCREEN ()
     'Backup several areas of image where player text will go
 
     'Play-by-Play box
-    _PutImage (20 * FontColAdj%, 48)-Step(44 * FontColAdj%, 144), imageScreen&, backupScreen&, (20 * FontColAdj%, 48)-Step(44 * FontColAdj%, 144)
+    _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 144), imageScreen&, backupScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 144)
 
     'Runners Hold section
-    _PutImage (53 * FontColAdj%, 400)-Step(12 * FontColAdj%, 16), imageScreen&, backupScreen&, (53 * FontColAdj%, 400)-Step(12 * FontColAdj%, 16)
+    _PutImage (53 * FontColAdj, 400)-Step(12 * FontColAdj, 16), imageScreen&, backupScreen&, (53 * FontColAdj, 400)-Step(12 * FontColAdj, 16)
 
     'Infield
-    _PutImage (52 * FontColAdj%, 416)-Step(14 * FontColAdj%, 16), imageScreen&, backupScreen&, (52 * FontColAdj%, 416)-Step(14 * FontColAdj%, 16)
+    _PutImage (52 * FontColAdj, 416)-Step(14 * FontColAdj, 16), imageScreen&, backupScreen&, (52 * FontColAdj, 416)-Step(14 * FontColAdj, 16)
 
     'Center Field
-    _PutImage (36 * FontColAdj%, 224)-Step(13 * FontColAdj%, 32), imageScreen&, backupScreen&, (36 * FontColAdj%, 224)-Step(13 * FontColAdj%, 32)
+    _PutImage (36 * FontColAdj, 224)-Step(13 * FontColAdj, 32), imageScreen&, backupScreen&, (36 * FontColAdj, 224)-Step(13 * FontColAdj, 32)
 
     'Left Field
-    _PutImage (7 * FontColAdj%, 256)-Step(16 * FontColAdj%, 32), imageScreen&, backupScreen&, (7 * FontColAdj%, 256)-Step(16 * FontColAdj%, 32)
+    _PutImage (7 * FontColAdj, 256)-Step(16 * FontColAdj, 32), imageScreen&, backupScreen&, (7 * FontColAdj, 256)-Step(16 * FontColAdj, 32)
 
     'Right Field
-    _PutImage (64 * FontColAdj%, 256)-Step(16 * FontColAdj%, 32), imageScreen&, backupScreen&, (64 * FontColAdj%, 256)-Step(16 * FontColAdj%, 32)
+    _PutImage (64 * FontColAdj, 256)-Step(16 * FontColAdj, 32), imageScreen&, backupScreen&, (64 * FontColAdj, 256)-Step(16 * FontColAdj, 32)
 
     'Short Stop
-    _PutImage (28 * FontColAdj%, 272)-Step(12 * FontColAdj%, 32), imageScreen&, backupScreen&, (28 * FontColAdj%, 272)-Step(12 * FontColAdj%, 32)
+    _PutImage (28 * FontColAdj, 272)-Step(12 * FontColAdj, 32), imageScreen&, backupScreen&, (28 * FontColAdj, 272)-Step(12 * FontColAdj, 32)
 
     '2nd Base
-    _PutImage (46 * FontColAdj%, 272)-Step(13 * FontColAdj%, 32), imageScreen&, backupScreen&, (46 * FontColAdj%, 272)-Step(13 * FontColAdj%, 32)
+    _PutImage (46 * FontColAdj, 272)-Step(13 * FontColAdj, 32), imageScreen&, backupScreen&, (46 * FontColAdj, 272)-Step(13 * FontColAdj, 32)
 
     '3rd Base
-    _PutImage (13 * FontColAdj%, 304)-Step(12 * FontColAdj%, 32), imageScreen&, backupScreen&, (13 * FontColAdj%, 304)-Step(12 * FontColAdj%, 32)
+    _PutImage (13 * FontColAdj, 304)-Step(12 * FontColAdj, 32), imageScreen&, backupScreen&, (13 * FontColAdj, 304)-Step(12 * FontColAdj, 32)
 
     '1st Base
-    _PutImage (61 * FontColAdj%, 304)-Step(12 * FontColAdj%, 32), imageScreen&, backupScreen&, (61 * FontColAdj%, 304)-Step(12 * FontColAdj%, 32)
+    _PutImage (61 * FontColAdj, 304)-Step(12 * FontColAdj, 32), imageScreen&, backupScreen&, (61 * FontColAdj, 304)-Step(12 * FontColAdj, 32)
 
     'Pitcher
-    _PutImage (35 * FontColAdj%, 336)-Step(13 * FontColAdj%, 32), imageScreen&, backupScreen&, (35 * FontColAdj%, 336)-Step(13 * FontColAdj%, 32)
+    _PutImage (35 * FontColAdj, 336)-Step(13 * FontColAdj, 32), imageScreen&, backupScreen&, (35 * FontColAdj, 336)-Step(13 * FontColAdj, 32)
 
     'Catcher
-    _PutImage (35 * FontColAdj%, 416)-Step(13 * FontColAdj%, 16), imageScreen&, backupScreen&, (35 * FontColAdj%, 416)-Step(13 * FontColAdj%, 16)
+    _PutImage (35 * FontColAdj, 416)-Step(13 * FontColAdj, 16), imageScreen&, backupScreen&, (35 * FontColAdj, 416)-Step(13 * FontColAdj, 16)
 
     '2nd Base Runner
-    _PutImage (37 * FontColAdj%, 304)-Step(14 * FontColAdj%, 32), imageScreen&, backupScreen&, (37 * FontColAdj%, 304)-Step(14 * FontColAdj%, 32)
+    _PutImage (37 * FontColAdj, 304)-Step(14 * FontColAdj, 32), imageScreen&, backupScreen&, (37 * FontColAdj, 304)-Step(14 * FontColAdj, 32)
 
     '3rd Base Runner
-    _PutImage (15 * FontColAdj%, 336)-Step(14 * FontColAdj%, 32), imageScreen&, backupScreen&, (15 * FontColAdj%, 336)-Step(14 * FontColAdj%, 32)
+    _PutImage (15 * FontColAdj, 336)-Step(14 * FontColAdj, 32), imageScreen&, backupScreen&, (15 * FontColAdj, 336)-Step(14 * FontColAdj, 32)
 
     '1st Base Runner Name
-    _PutImage (54 * FontColAdj%, 336)-Step(14 * FontColAdj%, 16), imageScreen&, backupScreen&, (54 * FontColAdj%, 336)-Step(14 * FontColAdj%, 16)
+    _PutImage (54 * FontColAdj, 336)-Step(14 * FontColAdj, 16), imageScreen&, backupScreen&, (54 * FontColAdj, 336)-Step(14 * FontColAdj, 16)
     '1st Base Runner Stats
-    _PutImage (54 * FontColAdj%, 352)-Step(11 * FontColAdj%, 16), imageScreen&, backupScreen&, (54 * FontColAdj%, 352)-Step(11 * FontColAdj%, 16)
+    _PutImage (54 * FontColAdj, 352)-Step(11 * FontColAdj, 16), imageScreen&, backupScreen&, (54 * FontColAdj, 352)-Step(11 * FontColAdj, 16)
 
     'Batter - Right
-    _PutImage (30 * FontColAdj%, 400)-Step(23 * FontColAdj%, 16), imageScreen&, backupScreen&, (30 * FontColAdj%, 400)-Step(23 * FontColAdj%, 16)
+    _PutImage (30 * FontColAdj, 400)-Step(23 * FontColAdj, 16), imageScreen&, backupScreen&, (30 * FontColAdj, 400)-Step(23 * FontColAdj, 16)
 
     'Commands for Human Play
-    _PutImage (1 * FontColAdj%, 304)-Step(14 * FontColAdj%, 176), imageScreen&, backupScreen&, (1 * FontColAdj%, 304)-Step(14 * FontColAdj%, 176)
+    _PutImage (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176), imageScreen&, backupScreen&, (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176)
 
 End Sub
 
 
 '----------------------------------------
-'   PrintOnGfx Subroutine
+'         PrintOnGfx Subroutine
 '----------------------------------------
 ' ...explanation...
 Sub PrintOnGfx (Col%, Row%, Text$, tgtScrn&)

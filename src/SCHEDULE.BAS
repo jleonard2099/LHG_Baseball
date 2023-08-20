@@ -542,7 +542,7 @@ Sub NewGame (visitor$, home$, YN$, NTMS, gameIndex%)
 
     Shared scheduleNG%()
     
-    Shared MO$(), pitcherEra$(), yesNo$()
+    Shared playMode$(), pitcherEra$(), yesNo$()
 
     Do
 
@@ -551,7 +551,7 @@ Sub NewGame (visitor$, home$, YN$, NTMS, gameIndex%)
         Color 2: Print Tab(29); "SELECT GAME OPTIONS"
         Print
 
-        Locate 2, 2: Color 14: Print "(1) ";: Color 15: Print MO$(scheduleNG%(gameIndex%, 8))
+        Locate 2, 2: Color 14: Print "(1) ";: Color 15: Print playMode$(scheduleNG%(gameIndex%, 8))
         Locate 3, 2: Color 14: Print "(2) ";: Color 15: Print "VISITING TEAM: "; visitor$
         Locate 4, 2: Color 14: Print "(3) ";: Color 15: Print "HOME TEAM: "; home$
         Locate 5, 2: Color 14: Print "(4) ";: Color 15: Print "DESIGNATED HITTER: "; yesNo$(scheduleNG%(gameIndex%, 3))
@@ -1111,7 +1111,7 @@ Sub ChangeGlobalSettings ()
 
     Shared scheduleAP%(), scheduleNG%()
 
-    Shared MO$(), pitcherEra$()
+    Shared playMode$(), pitcherEra$()
     Shared yesNo$()
 
     Dim displayPause!
@@ -1126,7 +1126,7 @@ Sub ChangeGlobalSettings ()
         Print Tab(30); "GLOBAL SETTINGS FOR SCHEDULE"
 
         '-- Missing option for mode of play
-        Locate 3, 2: Color 14: Print "(1) ";: Color 15: Print "TYPE OF GAME: "; MO$(U5%)
+        Locate 3, 2: Color 14: Print "(1) ";: Color 15: Print "TYPE OF GAME: "; playMode$(U5%)
         Locate 4, 2: Color 14: Print "(2) ";: Color 15: Print "DESIGNATED HITTER: "; yesNo$(DH%)
         Locate 5, 2: Color 14: Print "(3) ";: Color 15: Print Using "DISPLAY PAUSE IN SECONDS: ##.#  "; displayPause! ' / 10
         Locate 6, 2: Color 14: Print "(4) ";: Color 15: Print "USE WEATHER EFFECTS: "; yesNo$(1 - WE%)
