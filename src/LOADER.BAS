@@ -2,7 +2,7 @@
 '            LOADER Subroutine
 '----------------------------------------
 'This subroutine is used to setup all of
-'the parameters for a baseball game.
+'the parameters for a baseball game.C$(
 'This involves loading parameters, teams,
 'rotations, linesup and a park.
 Sub LOADER
@@ -14,7 +14,7 @@ Sub LOADER
     Shared dayNight$(), desigHitOpt$(), gameType$()
     Shared leagueType$(), month$()
     Shared PT$(), pitcherEra$()
-    Shared playMode$(), UMP$()
+    Shared playMode$(), UMP$(), M%()
     Shared VI$(), yesNo$()
     Shared SP%(), T1%(), U%()
 
@@ -872,9 +872,13 @@ Sub LineupPositions (teamIdx, posIdx, skipLU%)
                         Color 15, 0
 
                         Locate 25, 1
+
                         For I1 = 0 To 9
+
                             If desigHit <> 0 Or I1 <> 0 Then
+
                                 If desigHit <> 1 Or I1 <> 1 Then
+
                                     Locate 24, (I1 * 3) + 1
                                     If M%(I1) = 0 Then Print C$(I1); "  ";
                                     If M%(I1) = 1 Then Print "   ";
@@ -882,8 +886,11 @@ Sub LineupPositions (teamIdx, posIdx, skipLU%)
                                     Locate 25, (I1 * 3) + 1
                                     If M%(I1) = 0 Then Print I1; "  ";
                                     If M%(I1) = 1 Then Print "   ";
+
                                 End If
+
                             End If
+
                         Next I1
 
                     End If

@@ -93,7 +93,7 @@ Dim leaderPL$(1 To 880)
 '-- corresponds to TP$, TP1$, TP2$
 Dim TM$(40, 22), TMP$(1 To 880)
 
-'Dim TP$(0 To 31), TP1$(0 To 29), TP2$(0 To 39)
+Dim TP$(0 To 31), TP1$(0 To 29), TP2$(0 To 39)
 
 Dim leaderBL$(1 To 920), TMB$(1 To 920), TMM$(1 To 920), TPP$(1 To 920), TT2$(40, 23), TYY$(1 To 920)
 
@@ -249,10 +249,9 @@ Dim scheduleYN$(MAX_GAMES, 1)
 ' Used in PROGMAN routines
 '----------------------------------------
 Dim AB%(9)
-Dim progB%(22, 44), progB3%(0 To 9), progB7%(0 To 9), progB9%(0 To 9)
-Dim progM%(0 To 9), progMG%(1000)
-
-Dim progB1$(4), progC$(10), progPT$(1), mgrX$(0 To 21)
+Dim progB3%(0 To 9), progB7%(0 To 9), progB9%(0 To 9)
+Dim progB1$(4), progPT$(1), mgrX$(0 To 21)
+'Dim progM%(0 To 9), progMG%(1000)
 
 Dim mgr_idx%
 
