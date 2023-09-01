@@ -44,7 +44,7 @@ Dim U%(50)
 Dim Shared backToMenu, BO%, X%
 
 Dim Shared R$(999)
-Dim Z1$(40), Z2$(40)
+Dim Z1$(1 to 40), Z2$(40)
 
 
 '----------------------------------------
@@ -236,7 +236,7 @@ Dim BS%, NS%
 Dim N$
 Dim scheduleNG%(MAX_GAMES, 18)
 
-Dim E%(13)
+Dim eventSettings(13)
 Dim scheduleAP%(1)
 Dim scheduleT%(34), scheduleZ1%(40)
 

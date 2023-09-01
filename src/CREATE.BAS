@@ -62,9 +62,9 @@ Sub CREATE ()
                     Call ReviewEditLeague(league$, D1$, D2$, D3$, D4$)
 
                 Case 2:
-                    league$ = ChooseFile$ (diskPaths$(2) + "*.LIB", "LEAGUE", ExitCode%)
+                    league$ = ChooseFile$ (diskPaths$(2) + "*.LIB", "LEAGUE", FileExit%)
 
-                    If ExitCode% <> 27 And ExitCode% <> 0 Then
+                    If FileExit% <> 27 And FileExit% <> 0 Then
                         Call ReviewEditLeague(league$, D1$, D2$, D3$, D4$)
                     End If
 
@@ -90,22 +90,7 @@ Sub DefineLeague (league$, D1$, D2$, D3$, D4$)
         Color 15, 0
         Cls
 
-        JJ = 7
-
-        Locate 6, 8: Color 15, 1
-
-        'Print box top
-        Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
-
-        'Print box sides
-        For II = 1 To JJ
-            Locate 6 + II, 8
-            Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-        Next
-
-        'Print box bottom
-        Locate 7 + JJ, 8
-        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+        Call MenuBox (6, 8, 61, 7, 15, 1)
 
         Do
 

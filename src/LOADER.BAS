@@ -2485,20 +2485,7 @@ Sub ChooseGameTeam (yearNumber$, numberTeams, chosenIdx, teamName$, gameIdx)
         Color 15, 0
         Cls
 
-        JJ = 7
-
-        Locate 6, 8
-        Color 15, 4
-
-        Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
-
-        For II = 1 To JJ
-            Locate 6 + II, 8
-            Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-        Next
-
-        Locate 7 + JJ, 8
-        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+        Call MenuBox (6, 8, 61, 7, 15, 4)
 
         Locate 7, 32
 

@@ -1,7 +1,7 @@
 '----------------------------------------
 '           UMPMGR Subroutine
 '----------------------------------------
-'This subroutine gives the user options for 
+'This subroutine gives the user options for
 'working with umpire files.
 Sub UMPMGR ()
 
@@ -15,9 +15,9 @@ Sub UMPMGR ()
         Call TITLE
 
         ReDim menuChoices$(1 to 3)
-        menuChoices$(1) = "ENTER A NEW UMPIRE FILE   "
-        menuChoices$(2) = "EDIT EXISTING UMPIRE FILE "
-        menuChoices$(3) = "RETURN TO MAIN MENU       "
+        menuChoices$(1) = "ENTER A NEW UMPIRE FILE  "
+        menuChoices$(2) = "EDIT EXISTING UMPIRE FILE"
+        menuChoices$(3) = "RETURN TO MAIN MENU      "
         Selection% = 1
         Count% = 3
         Start% = 1
@@ -28,7 +28,7 @@ Sub UMPMGR ()
         Row% = 8
         Column% = 26
 
-        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColr%, FileBGColr%)
+        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+25, 2, FileFGColr%, FileBGColr%)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
@@ -68,6 +68,7 @@ Sub EnterUmpireFile ()
 
         If UCase$(U$(X)) = "END" Then
             Erase U$
+            Exit For
         Else
             Input "ENTER RATING (0-9) "; U%(X)
         End If
@@ -79,23 +80,27 @@ Sub EnterUmpireFile ()
         Print "IS THIS UMPIRING CREW (1)-AL OR (2)-NL ??"
         I$ = GetKeyPress$
         I = Val(I$)
-    Loop Until I >= 1 And I <= 2
+    Loop Until I >= 1 And I <= 2 Or I$ = Chr$(27)
 
-    If I = 1 Then LG$ = "AL" Else LG$ = "NL"
+    If I$ <> Chr$(27) Then
 
-    Open diskPaths$(0) + "UMPIRES." + LG$ For Output As #1
+        If I = 1 Then LG$ = "AL" Else LG$ = "NL"
 
-    For X = 1 To 50:
-        Print #1, U$(X)
-        Print #1, U%(X)
-    Next
+        Open diskPaths$(0) + "UMPIRES." + LG$ For Output As #1
 
-    Close #1
+        For X = 1 To 50:
+            Print #1, U$(X)
+            Print #1, U%(X)
+        Next
 
-    For X = 1 To 50: 
-        U$(X) = ""
-        U%(X) = 5
-    Next
+        Close #1
+
+        For X = 1 To 50:
+            U$(X) = ""
+            U%(X) = 5
+        Next
+
+    End If
 
 End Sub
 

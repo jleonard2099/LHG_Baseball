@@ -50,9 +50,9 @@ Sub NEWLDR ()
                     'Call ExpandedLeaders_Menu(leagStatFile$)
 
                 Case 2:
-                    leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", ExitCode%)
+                    leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", FileExit%)
 
-                    If ExitCode% <> 27 And ExitCode% <> 0 Then
+                    If FileExit% <> 27 And FileExit% <> 0 Then
                         Call ExpandedLeaders_Menu(leagStatFile$, JB, JP, TS, TTS)
                     End If
 
@@ -389,6 +389,7 @@ End Sub
 Sub ExpandedLeaders_Menu (leaderFile$, JB, JP, TS, TTS)
 
     Do
+
         Cls
         Color 15, 0
 
@@ -431,13 +432,9 @@ Sub ExpandedLeaders_Menu (leaderFile$, JB, JP, TS, TTS)
 
             End Select
 
-        Else
-
-            Selection% = 4
-
         End If
 
-    Loop Until Selection% = 4
+    Loop Until Selection% = 4 Or ExitCode% = 27
 
 End Sub
 

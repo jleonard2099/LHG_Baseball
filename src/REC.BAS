@@ -72,9 +72,9 @@ Sub SeasonRecords ()
 
             End If
 
-            leagueFile$ = ChooseFile$ (diskPaths$(2) + "*.BAT", "LEAGUE", ExitCode%)
+            leagueFile$ = ChooseFile$ (diskPaths$(2) + "*.BAT", "LEAGUE", FileExit%)
 
-            If menuExit% <> 27 And leagueFile$ <> "" Then
+            If FileExit% <> 27 And leagueFile$ <> "" Then
 
                 Select Case Selection%
 

@@ -310,9 +310,9 @@ End Sub
 '----------------------------------------
 '           TEAMBOX Subroutine
 '----------------------------------------
-'This subroutine draws an ASCII box using 
-'team colors. The box starts at row 6 and 
-'is approx. 60 char's wide. When done, the 
+'This subroutine draws an ASCII box using
+'team colors. The box starts at row 6 and
+'is approx. 60 char's wide. When done, the
 'cursor is set at the first printable row
 'and column inside the box.
 Sub TEAMBOX (boxHeight, teamIdx)
@@ -341,9 +341,9 @@ End Sub
 '----------------------------------------
 '         FRAMEOPTION Subroutine
 '----------------------------------------
-'This subroutine draws an ASCII box using 
-'team colors. The box starts at row 8 and 
-'is approx. 60 char's wide. When done, the 
+'This subroutine draws an ASCII box using
+'team colors. The box starts at row 8 and
+'is approx. 60 char's wide. When done, the
 'cursor is set at the first printable row
 'and column inside the box.
 Sub FRAMEOPTION (boxHeight, teamIdx)
@@ -7247,19 +7247,19 @@ End Sub
 'a corresponding "special" box score
 Sub EVENTS (specialCount, specialStat)
 
-    Shared E%()
+    Shared eventSettings()
 
     If _FileExists("EVENTS.BOX") Then
 
         Open "EVENTS.BOX" For Input As #1
         For X = 1 To 13
-            Input #1, E%(X)
+            Input #1, eventSettings(X)
         Next
         Close 1
 
         checkSpecial% = 0
 
-        If INNING% > E%(1) Or S6%(1, 0) < E%(2) Or S6%(0, 0) < E%(2) Or S6%(1, 0) > E%(3) Or S6%(0, 0) > E%(3) Or S6%(1, 1) > E%(5) Or S6%(0, 1) > E%(5) Or S6%(1, 1) < E%(4) Or S6%(0, 1) < E%(4) Then
+        If INNING% > eventSettings(1) Or S6%(1, 0) < eventSettings(2) Or S6%(0, 0) < eventSettings(2) Or S6%(1, 0) > eventSettings(3) Or S6%(0, 0) > eventSettings(3) Or S6%(1, 1) > eventSettings(5) Or S6%(0, 1) > eventSettings(5) Or S6%(1, 1) < eventSettings(4) Or S6%(0, 1) < eventSettings(4) Then
             checkSpecial% = 1
         Else
 
@@ -7267,7 +7267,7 @@ Sub EVENTS (specialCount, specialStat)
 
                 For I1 = 0 To 22
 
-                    If B8%(I, I1, 1) > E%(6) Or B8%(I, I1, 2) > E%(7) Or B8%(I, I1, 3) > E%(8) Or B8%(I, I1, 4) > E%(9) Or B8%(I, I1, 5) > E%(10) Or B8%(I, I1, 6) > E%(11) Or B8%(I, I1, 9) > E%(12) Then
+                    If B8%(I, I1, 1) > eventSettings(6) Or B8%(I, I1, 2) > eventSettings(7) Or B8%(I, I1, 3) > eventSettings(8) Or B8%(I, I1, 4) > eventSettings(9) Or B8%(I, I1, 5) > eventSettings(10) Or B8%(I, I1, 6) > eventSettings(11) Or B8%(I, I1, 9) > eventSettings(12) Then
                         checkSpecial% = 1
                         Exit For
                     End If
@@ -7284,7 +7284,7 @@ Sub EVENTS (specialCount, specialStat)
 
                     For I1 = 0 To 21
 
-                        If P8%(I, I1, 5) > E%(13) Then
+                        If P8%(I, I1, 5) > eventSettings(13) Then
                             checkSpecial% = 1
                             Exit For
                         End If
@@ -7900,7 +7900,7 @@ Sub COMPILESTATFILES (teamIdx)
     Shared HT$(), L$(), PL$()
     Shared W$()
 
-    Shared B6%(), D1%(), DYS%(), E%()
+    Shared B6%(), D1%(), DYS%(), eventSettings()
     Shared H%(), ING%(), P0%()
     Shared SS%(), SX%(), V%()
 
@@ -8307,7 +8307,7 @@ End Sub
 'it to print each line.
 Sub BOX2FILE (printChoice, NM$)
 
-    Shared E%()
+    Shared eventSettings()
     Shared DB, HR, TR, SB
 
     Dim BK$
@@ -9315,34 +9315,34 @@ End Sub
 'information to a boxscore file
 Sub BOX2SPC (NM$)
 
-    Shared E%()
+    Shared eventSettings()
 
     Open diskPaths$(1) + NM$ For Append As #2
 
     Print #2,
 
-    If INNING% > E%(1) Then Print #2, Using "MORE THAN ## INNINGS"; E%(1)
+    If INNING% > eventSettings(1) Then Print #2, Using "MORE THAN ## INNINGS"; eventSettings(1)
 
-    If S6%(1, 0) < E%(2) Then Print #2, A$(1);: Print #2, Using " SCORED LESS THAN ## RUN(S)"; E%(2)
-    If S6%(0, 0) < E%(2) Then Print #2, A$(0);: Print #2, Using " SCORED LESS THAN ## RUN(S)"; E%(2)
-    If S6%(1, 0) > E%(3) Then Print #2, A$(1);: Print #2, Using " SCORED MORE THAN ## RUN(S)"; E%(3)
-    If S6%(0, 0) > E%(3) Then Print #2, A$(0);: Print #2, Using " SCORED MORE THAN ## RUN(S)"; E%(3)
-    If S6%(1, 1) > E%(5) Then Print #2, A$(1);: Print #2, Using " HAD MORE THAN ## HIT%(S)"; E%(5)
-    If S6%(0, 1) > E%(5) Then Print #2, A$(0);: Print #2, Using " HAD MORE THAN ## HIT%(S)"; E%(5)
-    If S6%(1, 1) < E%(4) Then Print #2, A$(1);: Print #2, Using " HAD LESS THAN ## HIT%(S)"; E%(4)
-    If S6%(0, 1) < E%(4) Then Print #2, A$(0);: Print #2, Using " HAD LESS THAN ## HIT%(S)S"; E%(4)
+    If S6%(1, 0) < eventSettings(2) Then Print #2, A$(1);: Print #2, Using " SCORED LESS THAN ## RUN(S)"; eventSettings(2)
+    If S6%(0, 0) < eventSettings(2) Then Print #2, A$(0);: Print #2, Using " SCORED LESS THAN ## RUN(S)"; eventSettings(2)
+    If S6%(1, 0) > eventSettings(3) Then Print #2, A$(1);: Print #2, Using " SCORED MORE THAN ## RUN(S)"; eventSettings(3)
+    If S6%(0, 0) > eventSettings(3) Then Print #2, A$(0);: Print #2, Using " SCORED MORE THAN ## RUN(S)"; eventSettings(3)
+    If S6%(1, 1) > eventSettings(5) Then Print #2, A$(1);: Print #2, Using " HAD MORE THAN ## HIT%(S)"; eventSettings(5)
+    If S6%(0, 1) > eventSettings(5) Then Print #2, A$(0);: Print #2, Using " HAD MORE THAN ## HIT%(S)"; eventSettings(5)
+    If S6%(1, 1) < eventSettings(4) Then Print #2, A$(1);: Print #2, Using " HAD LESS THAN ## HIT%(S)"; eventSettings(4)
+    If S6%(0, 1) < eventSettings(4) Then Print #2, A$(0);: Print #2, Using " HAD LESS THAN ## HIT%(S)S"; eventSettings(4)
 
     For I = 0 To 1
 
         For I1 = 0 To 22
 
-            If B8%(I, I1, 1) > E%(6) Then Print #2, batters$(I, I1);: Print #2, Using " HAD MORE THAN ## HIT%(S)"; E%(6)
-            If B8%(I, I1, 2) > E%(7) Then Print #2, batters$(I, I1);: Print #2, Using " SCORED MORE THAN ## RUN(S)"; E%(7)
-            If B8%(I, I1, 3) > E%(8) Then Print #2, batters$(I, I1);: Print #2, Using " HAD MORE THAN ## RBI(S)"; E%(8)
-            If B8%(I, I1, 4) > E%(9) Then Print #2, batters$(I, I1);: Print #2, Using " HIT MORE THAN ## DOUBLES(S)"; E%(9)
-            If B8%(I, I1, 5) > E%(10) Then Print #2, batters$(I, I1);: Print #2, Using " HIT MORE THAN ## TRIPLE(S)"; E%(10)
-            If B8%(I, I1, 6) > E%(11) Then Print #2, batters$(I, I1);: Print #2, Using " HOMERED MORE THAN ## TIME(S)"; E%(11)
-            If B8%(I, I1, 9) > E%(12) Then Print #2, batters$(I, I1);: Print #2, Using " STOLE MORE THAN ## BASE(S)"; E%(12)
+            If B8%(I, I1, 1) > eventSettings(6) Then Print #2, batters$(I, I1);: Print #2, Using " HAD MORE THAN ## HIT%(S)"; eventSettings(6)
+            If B8%(I, I1, 2) > eventSettings(7) Then Print #2, batters$(I, I1);: Print #2, Using " SCORED MORE THAN ## RUN(S)"; eventSettings(7)
+            If B8%(I, I1, 3) > eventSettings(8) Then Print #2, batters$(I, I1);: Print #2, Using " HAD MORE THAN ## RBI(S)"; eventSettings(8)
+            If B8%(I, I1, 4) > eventSettings(9) Then Print #2, batters$(I, I1);: Print #2, Using " HIT MORE THAN ## DOUBLES(S)"; eventSettings(9)
+            If B8%(I, I1, 5) > eventSettings(10) Then Print #2, batters$(I, I1);: Print #2, Using " HIT MORE THAN ## TRIPLE(S)"; eventSettings(10)
+            If B8%(I, I1, 6) > eventSettings(11) Then Print #2, batters$(I, I1);: Print #2, Using " HOMERED MORE THAN ## TIME(S)"; eventSettings(11)
+            If B8%(I, I1, 9) > eventSettings(12) Then Print #2, batters$(I, I1);: Print #2, Using " STOLE MORE THAN ## BASE(S)"; eventSettings(12)
 
         Next
 
@@ -9350,7 +9350,7 @@ Sub BOX2SPC (NM$)
 
     For I = 0 To 1
         For I1 = 0 To 21
-            If P8%(I, I1, 5) > E%(13) Then Print #2, pitchers$(I, I1);: Print #2, Using " STRUCK OUT MORE THAN ## BATTER(S)"; E%(13)
+            If P8%(I, I1, 5) > eventSettings(13) Then Print #2, pitchers$(I, I1);: Print #2, Using " STRUCK OUT MORE THAN ## BATTER(S)"; eventSettings(13)
         Next
     Next
 

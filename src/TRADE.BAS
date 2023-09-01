@@ -2,7 +2,7 @@
 '            TRADE Subroutine
 '----------------------------------------
 'This subroutine relies on several other
-'routines to proceed through the general 
+'routines to proceed through the general
 'steps for trading players.
 'First, 2 teams are chosen and their Stats
 'are loaded.
@@ -22,18 +22,23 @@ Sub TRADE ()
 
     tradeIdx = 0
     Call ChooseTradeTeam(yearNumbers$(tradeIdx), NTMS, teamNbr, teams_TRADE$(tradeIdx), tradeIdx)
-    teamIndexes(tradeIdx) = teamNbr
-    Call LoadLRForTrade(yearNumbers$(tradeIdx), tradeIdx)
-    Call LoadStatsForTrade(yearNumbers$(), tradeIdx)
+    If teamNbr > 0 Then
 
-    tradeIdx = 1
-    Call ChooseTradeTeam(yearNumbers$(tradeIdx), NTMS, teamNbr, teams_TRADE$(tradeIdx), tradeIdx)
-    teamIndexes(tradeIdx) = teamNbr
-    'Call LoadStatsForTrade(yearNumbers$(), tradeIdx)
+        teamIndexes(tradeIdx) = teamNbr
 
-    'Teams / Stats are loaded
-    Call ContinueTrade(yearNumbers$(), tradeIdx)
-    
+        Call LoadLRForTrade(yearNumbers$(tradeIdx), tradeIdx)
+        Call LoadStatsForTrade(yearNumbers$(), tradeIdx)
+
+        tradeIdx = 1
+        Call ChooseTradeTeam(yearNumbers$(tradeIdx), NTMS, teamNbr, teams_TRADE$(tradeIdx), tradeIdx)
+        teamIndexes(tradeIdx) = teamNbr
+        'Call LoadStatsForTrade(yearNumbers$(), tradeIdx)
+
+        'Teams / Stats are loaded
+        Call ContinueTrade(yearNumbers$(), tradeIdx)
+
+    End If
+
 End Sub
 
 
@@ -48,13 +53,13 @@ Sub LoadLRForTrade (teamYear$, tradeIdx)
 
     If Not _FileExists(diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$) Then
 
-		MsgText$ = "WARNING!!! NO DATA FILE WAS FOUND FOR THIS TEAM. PRESS ANY KEY TO CONTINUE"
-		BoxWidth = 20
-		BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-		Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
-		Call CSMsgBox(MsgText$, BoxWidth, Pass)
-		I$ = GetKeyPress$
-		Call CSMsgBox("", 0, Pass)
+        MsgText$ = "WARNING!!! NO DATA FILE WAS FOUND FOR THIS TEAM. PRESS ANY KEY TO CONTINUE"
+        BoxWidth = 20
+        BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+        Call CSMsgBox(MsgText$, BoxWidth, Pass)
+        I$ = GetKeyPress$
+        Call CSMsgBox("", 0, Pass)
 
     Else
 
@@ -1349,19 +1354,7 @@ Sub ChooseTradeTeam (yearNumber$, numberTeams, chosenIdx, teamName$, tradeIdx)
         Color 15, 0
         Cls
 
-        JJ = 7
-
-        Locate 6, 8
-        Color 15, 4
-        
-        Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
-
-        For II = 1 To JJ: Locate 6 + II, 8
-            Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-        Next
-
-        Locate 7 + JJ, 8
-        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+        Call MenuBox (6, 8, 61, 7, 15, 4)
 
         Locate 7, 32
         Locate , 12

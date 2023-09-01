@@ -1,0 +1,29 @@
+'----------------------------------------
+'           MenuBox Subroutine
+'----------------------------------------
+'This subroutine draws a box in mode 0
+'at the starting row / column. 
+'	width% - width of the box (inside the lines)
+'	height% - height of the box (inside the lines)
+'	FGColor% - color of box lines
+'	BGColor% - color of box area
+Sub MenuBox (StartRow%, StartCol%, width%, height%, FGColor%, BGColor%)
+
+	'						 JJ
+	'Call MenuBox (6, 8, 61, 7, 15, 1)
+
+	Locate StartRow%, StartCol%
+
+	Color FGColor%, BGColor%
+
+	Print " " + Chr$(214); String$(width%, 196); Chr$(183) + " ";
+
+	For II = 1 To height%
+		Locate StartRow% + II, StartCol%
+		Print " " + Chr$(186); String$(width%, 32); Chr$(186) + " ";
+	Next
+
+	Locate StartRow% + height% + 1, StartCol%
+	Print " " + Chr$(211); String$(width%, 196); Chr$(189) + " ";
+
+End Sub

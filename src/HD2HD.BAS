@@ -131,27 +131,12 @@ Sub Hd2Hd_League (LG$, sameLeague)
             Color 7, 0
             Cls
 
-            J = 5
-
-            Locate 8, 8
-            Color 15, 1
-
-            'Print box top
-            Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
-
-            'Print box sides
-            For II = 1 To J
-                Locate 8 + II, 8
-                Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-            Next
-
-            'Print box bottom
-            Locate 9 + J, 8
-            Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+            Call MenuBox (8, 8, 61, 5, 15, 1)
 
             Locate 7, 32
 
             Do
+
                 Locate 10
                 Color 7, 1
 
@@ -241,45 +226,28 @@ Sub Hd2Hd_League (LG$, sameLeague)
 
             'Generate output
             If VPP = 0 Then
-
                 Call Hd2Hd_Printer(B$)
-
             Else
-
                 Call Hd2Hd_Screen(B$)
-
             End If 'Done checking VPP
 
             Cls
 
             Call TITLE_UTILS
 
-            J = 6
-
-            Locate 8, 8: Color 15, 1
-            'Print box top
-            Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
-
-            'Print box sides
-            For II = 1 To J
-                Locate 8 + II, 8
-                Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-            Next
-
-            'Print box bottom
-            Locate 9 + J, 8
-            Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
-            Locate 10, 15
-
-            Color 3: Locate , 25: Print "SELECT OPTION:"
-            Color 7: Locate , 25: Print "VIEW ";
-            Color 15: Print "S";
-            Color 7: Print "AME TEAM AGAIN"
-            Locate , 25: Color 15: Print "R";
-            Color 7: Print "ETURN TO MAIN MENU"
+            Call MenuBox (8, 8, 61, 6, 15, 1)
 
             Do
 
+                Locate 10, 15
+
+                Color 3: Locate , 25: Print "SELECT OPTION:"
+                Color 7: Locate , 25: Print "VIEW ";
+                Color 15: Print "S";
+                Color 7: Print "AME TEAM AGAIN"
+                Locate , 25: Color 15: Print "R";
+                Color 7: Print "ETURN TO MAIN MENU"
+     
                 I$ = GetKeyPress$
 
                 Select Case UCase$(I$)

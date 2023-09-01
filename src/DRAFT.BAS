@@ -58,30 +58,18 @@ Sub DRAFT ()
                     For I = 0 To 22
                         batterNames$(I) = "XXX"
                         batNames_DRAFT$(I) = "XXX"
-                        For I1 = 0 To 79
-                            batterRatings(I, I1) = 0
-                            batRat_DRAFT%(I, I1) = 0
-                        Next
                     Next
+
+                    Erase batterRatings, batRat_DRAFT%
 
                     For I = 0 To 21
                         pitcherNames$(I) = "XXX"
                         pitNames_DRAFT$(I) = "XXX"
-                        For I1 = 0 To 88
-                            pitcherRatings(I, I1) = 0
-                            pitRat_DRAFT%(I, I1) = 0
-                        Next
                     Next
 
-                    For I = 0 To 11
-                        teamTS%(I) = 0
-                        (I) = 0
-                    Next
+                    Erase pitcherRatings, pitRat_DRAFT%
 
-                    For I = 1 To 24
-                        teamSA%(I) = 0
-                        draftSA%(I) = 0
-                    Next
+                    Erase teamTS%, draftTS%, teamSA%, draftSA%
 
                     Call NewTeamParameters(draftYN$(0), T$)
                     Call DraftChoices(draftNew, done, T$, draftYN$(), idx)
@@ -89,7 +77,7 @@ Sub DRAFT ()
                 Case 2:
                     draftNew = 0
                     Call ChooseDestTeam(draftYN$(0), NTMS, idx, T$, 0)
-                    Call DraftChoices(draftNew, done, T$, draftYN$(), idx)
+                    If idx > 0 Then Call DraftChoices(draftNew, done, T$, draftYN$(), idx)
 
             End Select
 
@@ -105,7 +93,7 @@ End Sub
 '      NewTeamParameters Subroutine
 '----------------------------------------
 'This subroutine prompts the user for the
-'minimum required parameters to create a 
+'minimum required parameters to create a
 'new team that players will be drafted to.
 Sub NewTeamParameters (draftYear$, teamName$)
 
@@ -236,7 +224,7 @@ End Sub
 '----------------------------------------
 '       DraftChoices Subroutine
 '----------------------------------------
-'This subroutine provides an interface the 
+'This subroutine provides an interface the
 'user can operate to choose their draft
 'selections.
 '
@@ -465,7 +453,7 @@ End Sub
 '       SaveTeamDraft Subroutine
 '----------------------------------------
 'This subroutine updates the source team
-'with the newly assigned player / stat 
+'with the newly assigned player / stat
 'values after the draft.
 '
 'draftNew
@@ -645,7 +633,7 @@ End Sub
 '----------------------------------------
 '     ChooseDestTeam Subroutine
 '----------------------------------------
-'This subroutine provides interface for 
+'This subroutine provides interface for
 'choosing the team to draft players to
 Sub ChooseDestTeam (yearNumber$, numberTeams, chosenIdx, teamName$, draftIdx)
 
@@ -658,20 +646,7 @@ Sub ChooseDestTeam (yearNumber$, numberTeams, chosenIdx, teamName$, draftIdx)
         Color 15, 0
         Cls
 
-        JJ = 7
-
-        Locate 6, 8
-        Color 15, 4
-
-        Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
-
-        For II = 1 To JJ
-            Locate 6 + II, 8
-            Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-        Next
-
-        Locate 7 + JJ, 8
-        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+        Call MenuBox(6, 8, 61, 7, 15, 4)
 
         Locate 7, 32
 
@@ -780,7 +755,7 @@ End Sub
 '----------------------------------------
 '       ChooseSourceTeam SubRoutine
 '----------------------------------------
-'This subroutine provides interface for 
+'This subroutine provides interface for
 'choosing the team to draft players from
 Sub ChooseSourceTeam (yearNumber$, numberTeams, chosenIdx, teamName$, draftIdx)
 
@@ -793,20 +768,7 @@ Sub ChooseSourceTeam (yearNumber$, numberTeams, chosenIdx, teamName$, draftIdx)
         Color 15, 0
         Cls
 
-        JJ = 7
-
-        Locate 6, 8
-        Color 15, 4
-
-        Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
-
-        For II = 1 To JJ
-            Locate 6 + II, 8
-            Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-        Next
-
-        Locate 7 + JJ, 8
-        Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+        Call MenuBox(6, 8, 61, 7, 15, 4)
 
         Locate 7, 32
 
@@ -914,7 +876,7 @@ End Sub
 '----------------------------------------
 '       SelectDraftTeam SubRoutine
 '----------------------------------------
-'This subroutine provides an interface for 
+'This subroutine provides an interface for
 'selecting a team from the list of available
 'ones.
 Sub SelectDraftTeam (numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%, draftIdx)
@@ -967,13 +929,13 @@ End Sub
 '----------------------------------------
 '       ReadDestTeam SubRoutine
 '----------------------------------------
-'This subroutine reads team data into 
+'This subroutine reads team data into
 'arrays for the team we are drafting from
 Sub ReadDestTeam (teamYear$, targetTeam$, teamIdx)
 
     Shared batterRatings(), pitcherRatings()
     Shared teamRatings%()
-    
+
     Shared teamSA%(), teamTS%()
 
     Shared parkHR_DRAFT&()
@@ -1036,13 +998,13 @@ Sub ReadDestTeam (teamYear$, targetTeam$, teamIdx)
 
     If Not _FileExists(diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$) Then
 
-		MsgText$ = "WARNING!!! NO DATA FILE WAS FOUND FOR THIS TEAM. PRESS ANY KEY TO CONTINUE"
-		BoxWidth = 20
-		BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-		Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
-		Call CSMsgBox(MsgText$, BoxWidth, Pass)
-		I$ = GetKeyPress$
-		Call CSMsgBox("", 0, Pass)
+        MsgText$ = "WARNING!!! NO DATA FILE WAS FOUND FOR THIS TEAM. PRESS ANY KEY TO CONTINUE"
+        BoxWidth = 20
+        BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+        Call CSMsgBox(MsgText$, BoxWidth, Pass)
+        I$ = GetKeyPress$
+        Call CSMsgBox("", 0, Pass)
 
     Else
 
@@ -1159,7 +1121,7 @@ End Sub
 '----------------------------------------
 '        ReadSourceTeam Subroutine
 '----------------------------------------
-'This subroutine reads team data into 
+'This subroutine reads team data into
 'arrays for the team we are drafting to
 Sub ReadSourceTeam (yearNumber$, targetTeam$, teamIdx)
 
@@ -1171,9 +1133,9 @@ Sub ReadSourceTeam (yearNumber$, targetTeam$, teamIdx)
     Shared parkHR_DRAFT&()
 
     Shared batNames_DRAFT$(), pitNames_DRAFT$()
-    
+
     Dim srcTmAbbrev$, srcTmStadium$, srcTmManager$
-    
+
     Open diskPaths$(0) + TEAM_FILE_NAME$ + "." + yearNumber$ For Random As #1 Len = TEAM_SIZE_BYTES
 
     Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
@@ -1204,7 +1166,7 @@ Sub ReadSourceTeam (yearNumber$, targetTeam$, teamIdx)
 
     parkHR_DRAFT&(1) = CVS(Q$(14))
 
-    For I = 0 To 22: 
+    For I = 0 To 22:
         batNames_DRAFT$(I) = RTrim$(Q$(I * 43 + 15))
         For I1 = 0 To 41
             batRat_DRAFT%(I, I1) = CVI(Q$(I * 43 + I1 + 16))
@@ -1227,13 +1189,13 @@ Sub ReadSourceTeam (yearNumber$, targetTeam$, teamIdx)
 
     If Not _FileExists(diskPaths$(0) + DATA_FILE_NAME$ + "." + yearNumber$) Then
 
-		MsgText$ = "WARNING!!! NO DATA FILE WAS FOUND FOR THIS TEAM. PRESS ANY KEY TO CONTINUE"
-		BoxWidth = 20
-		BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-		Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
-		Call CSMsgBox(MsgText$, BoxWidth, Pass)
-		I$ = GetKeyPress$
-		Call CSMsgBox("", 0, Pass)
+        MsgText$ = "WARNING!!! NO DATA FILE WAS FOUND FOR THIS TEAM. PRESS ANY KEY TO CONTINUE"
+        BoxWidth = 20
+        BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+        Call CSMsgBox(MsgText$, BoxWidth, Pass)
+        I$ = GetKeyPress$
+        Call CSMsgBox("", 0, Pass)
 
     Else
 
