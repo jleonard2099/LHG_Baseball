@@ -33,28 +33,28 @@ Sub SCHEDULE ()
         Print "WITH THE STANDINGS AND LEAGUE LEADERS OPTIONS. YOU MUST ALREADY HAVE"
         Print "CREATED AN APPROPRIATE LEAGUE FOR THIS OPTION TO PROPERLY FUNCTION."
 
-        menuChoices$(1) = "ENTER A NEW SCHEDULE                             "
-        menuChoices$(2) = "RETRIEVE/EDIT/PLAY AN EXISTING SCHEDULE          "
-        menuChoices$(3) = "EXTRACT ONE TEAM'S SCHEDULE FROM LEAGUE SCHEDULE "
-        menuChoices$(4) = "CHANGE THE MODE OF PLAY FOR A TEAM IN A SCHEDULE "
-        menuChoices$(5) = "MAKE GLOBAL CHANGES TO A SCHEDULE                "
-        menuChoices$(6) = "GENERATE A STANDARD SEASON SCHEDULE              "
-        menuChoices$(7) = "BOXSCORE MAINTENANCE / SAVE BOXSCORE PARAMETERS  "
-        menuChoices$(8) = "EXIT AUTO SCHEDULER TO FULL COUNT MENU           "
+        menuChoices$(1) = "ENTER A NEW SCHEDULE                            "
+        menuChoices$(2) = "RETRIEVE / EDIT / PLAY AN EXISTING SCHEDULE     "
+        menuChoices$(3) = "EXTRACT ONE TEAM'S SCHEDULE FROM LEAGUE SCHEDULE"
+        menuChoices$(4) = "CHANGE THE MODE OF PLAY FOR A TEAM IN A SCHEDULE"
+        menuChoices$(5) = "MAKE GLOBAL CHANGES TO A SCHEDULE               "
+        menuChoices$(6) = "GENERATE A STANDARD SEASON SCHEDULE             "
+        menuChoices$(7) = "BOXSCORE MAINTENANCE / SAVE BOXSCORE PARAMETERS "
+        menuChoices$(8) = "EXIT AUTO SCHEDULER TO FULL COUNT MENU          "
         Selection% = 1
         Count% = 8
         Start% = 1
         ExitCode% = 8
-        FileFGColr% = 15: FileBGColr% = 1
-        HiLiteFGColr% = 0: HiLiteBGColr% = 7
+        FileFGColor% = 15: FileBGColor% = 1
+        HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 8
         Column% = 16
 
-        Call box0(7, 15, 16, 65, 2, 15, 1)
+        Call box0(7, 15, 17, 64, 2, 15, 1)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
@@ -900,8 +900,8 @@ Sub BoxscoreMaintenance ()
     Count% = 6
     Start% = 1
     ExitCode% = 6
-    FileFGColr% = 15: FileBGColr% = 1
-    HiLiteFGColr% = 0: HiLiteBGColr% = 7
+    FileFGColor% = 15: FileBGColor% = 1
+    HiLiteFGColor% = 0: HiLiteBGColor% = 7
     Spacing% = 1
     Row% = 8
     Column% = 16
@@ -915,7 +915,7 @@ Sub BoxscoreMaintenance ()
         Call box0(7, 15, 14, 65, 2, 15, 1)
         
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         If ExitCode% <> 27 Then

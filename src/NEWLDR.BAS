@@ -8,7 +8,7 @@ Sub NEWLDR ()
 
     _Title "Full Count Baseball - Expanded Leaders / Standings"
 
-    ReDim menuChoices$(1 To 5)
+    ReDim menuChoices$(1 To 4)
 
     Do
 
@@ -20,23 +20,22 @@ Sub NEWLDR ()
         menuChoices$(1) = "UPDATE EXPANDED LEAGUE LEADER FILES  "
         menuChoices$(2) = "VIEW EXPANDED LEAGUE LEADER FILES    "
         menuChoices$(3) = "UPDATE/VIEW EXPANDED LEAGUE STANDINGS"
-        menuChoices$(4) = "UPDATE/VIEW SEASON RECORDS           "
-        menuChoices$(5) = "RETURN TO LEAGUE LEADER MAIN MENU    "
+        menuChoices$(4) = "RETURN TO LEAGUE LEADER MAIN MENU    "
         Selection% = 1
-        Count% = 5
+        Count% = 4
         Start% = 1
-        ExitCode% = 5
-        FileFGColr% = 15: FileBGColr% = 1
-        HiLiteFGColr% = 0: HiLiteBGColr% = 7
+        ExitCode% = 4
+        FileFGColor% = 15: FileBGColor% = 1
+        HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 8
         menuWidth% = Len(menuChoices$(1))
         Column% = 23
 
-        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColr%, FileBGColr%)
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor%, FileBGColor%)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
@@ -59,14 +58,11 @@ Sub NEWLDR ()
                 Case 3:
                     Call ExpandedStandings
 
-                Case 4:
-                    Call SeasonRecords
-
             End Select
 
         End If
 
-    Loop Until Selection% = 5 Or ExitCode% = 27
+    Loop Until Selection% = 4 Or ExitCode% = 27
 
 End Sub
 
@@ -403,8 +399,8 @@ Sub ExpandedLeaders_Menu (leaderFile$, JB, JP, TS, TTS)
         Count% = 4
         Start% = 1
         ExitCode% = 4
-        FileFGColr% = 15: FileBGColr% = 1
-        HiLiteFGColr% = 0: HiLiteBGColr% = 7
+        FileFGColor% = 15: FileBGColor% = 1
+        HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 8
         Column% = 30
@@ -412,7 +408,7 @@ Sub ExpandedLeaders_Menu (leaderFile$, JB, JP, TS, TTS)
         Call box0(7, 29, 12, 51, 2, 15, 1)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0

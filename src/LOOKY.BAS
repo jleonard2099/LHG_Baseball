@@ -19,9 +19,9 @@ Sub LOOKY ()
 
         Call TITLE
 
-        menuChoices$(1) = "VIEW/PRINT COMPILED STATS FOR ONE TEAM "
-        menuChoices$(2) = "PRINT REPORTS FOR ALL TEAMS IN A LEAGUE"
-        menuChoices$(3) = "RETURN TO MAIN MENU                    "
+        menuChoices$(1) = "VIEW / PRINT COMPILED STATS FOR ONE TEAM"
+        menuChoices$(2) = "PRINT REPORTS FOR ALL TEAMS IN A LEAGUE "
+        menuChoices$(3) = "RETURN TO MAIN MENU                     "
         Selection% = 1
         Count% = 3
         Start% = 1
@@ -30,9 +30,9 @@ Sub LOOKY ()
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 8
-        Column% = 22
+        Column% = 20
 
-        Call box0(7, 21, 11, 61, 2, 15, 1)
+        Call box0(7, 19, 11, 60, 2, 15, 1)
 
         _MouseShow "Default"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%

@@ -38,106 +38,110 @@ Sub PROGMAN ()
 
         Call GetManagerProfile(T$, YN$, mgrNbr)
 
-        Do
+        If mgrNbr > 0 Then
 
-            Color 15, 1
-            Cls
+            Do
 
-            Print
-            Color 14, 4
-            Print Tab(23);
-            Print "FULL COUNT PROGRAMMABLE MANAGER";
-            Print Tab(80);
-            Print
+                Color 15, 1
+                Cls
 
-            ReDim menuChoices$(1 To 14)
-            menuChoices$(1) = "SELECT NEW TEAM TO EDIT                                  "
-            menuChoices$(2) = "SELECT/CHANGE LINEUPS                                    "
-            menuChoices$(3) = "SELECT/CHANGE ROTATIONS/RELIEVERS                        "
-            menuChoices$(4) = "SELECT/CHANGE PINCH HITTERS                              "
-            menuChoices$(5) = "SELECT/CHANGE DEFENSIVE REPLACEMENTS (8TH AND 9TH INNING)"
-            menuChoices$(6) = "SELECT/CHANGE CLOSING STRATEGY                           "
-            menuChoices$(7) = "SELECT/CHANGE HITTING STRATEGY                           "
-            menuChoices$(8) = "SELECT/CHANGE DEFENSIVE STRATEGY                         "
-            menuChoices$(9) = "SELECT/CHANGE PINCH RUNNING STRATEGY                     "
-            menuChoices$(10) = "SELECT/CHANGE BASE RUNNING STRATEGY                      "
-            menuChoices$(11) = "IMPORT MANAGERIAL PROFILE                                "
-            menuChoices$(12) = "EXPORT MANAGERIAL PROFILE                                "
-            menuChoices$(13) = "PRINT MANAGERIAL PROFILE                                 "
-            menuChoices$(14) = "RETURN TO GAME MENU                                      "
-            Selection% = 1
-            Count% = 14
-            Start% = 1
-            ExitCode% = 14
-            FileFGColr% = 15: FileBGColr% = 1
-            HiLiteFGColr% = 0: HiLiteBGColr% = 7
-            Spacing% = 1
-            Row% = 5
-            Column% = 10
+                Print
+                Color 14, 4
+                Print Tab(23);
+                Print "FULL COUNT PROGRAMMABLE MANAGER";
+                Print Tab(80);
+                Print
 
-            Call box0(4, 9, 19, 70, 2, 15, 1)
+                ReDim menuChoices$(1 To 14)
+                menuChoices$(1) = "SELECT NEW TEAM TO EDIT                                  "
+                menuChoices$(2) = "SELECT / CHANGE LINEUPS                                  "
+                menuChoices$(3) = "SELECT / CHANGE ROTATIONS/RELIEVERS                      "
+                menuChoices$(4) = "SELECT / CHANGE PINCH HITTERS                            "
+                menuChoices$(5) = "SELECT / CHANGE DEFENSIVE REPLACEMENTS (8TH - 9TH INNING)"
+                menuChoices$(6) = "SELECT / CHANGE CLOSING STRATEGY                         "
+                menuChoices$(7) = "SELECT / CHANGE HITTING STRATEGY                         "
+                menuChoices$(8) = "SELECT / CHANGE DEFENSIVE STRATEGY                       "
+                menuChoices$(9) = "SELECT / CHANGE PINCH RUNNING STRATEGY                   "
+                menuChoices$(10) = "SELECT / CHANGE BASE RUNNING STRATEGY                    "
+                menuChoices$(11) = "IMPORT MANAGERIAL PROFILE                                "
+                menuChoices$(12) = "EXPORT MANAGERIAL PROFILE                                "
+                menuChoices$(13) = "PRINT MANAGERIAL PROFILE                                 "
+                menuChoices$(14) = "RETURN TO GAME MENU                                      "
+                Selection% = 1
+                Count% = 14
+                Start% = 1
+                ExitCode% = 14
+                FileFGColor% = 15: FileBGColor% = 1
+                HiLiteFGColor% = 0: HiLiteBGColor% = 7
+                Spacing% = 1
+                Row% = 5
+                Column% = 10
 
-            _MouseShow "DEFAULT"
-            MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
-            _MouseHide
+                Call box0(4, 9, 19, 70, 2, 15, 1)
 
-            Color , 0
+                _MouseShow "DEFAULT"
+                MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+                _MouseHide
 
-            If ExitCode% <> 27 Then
+                Color , 0
 
-                Select Case Selection%
+                If ExitCode% <> 27 Then
 
-                    Case 1
-                        For I = 1 To 999:
-                            progMG%(I) = -1
-                        Next
+                    Select Case Selection%
 
-                        Call GetManagerProfile(T$, YN$, mgrNbr)
+                        Case 1
+                            For I = 1 To 999:
+                                progMG%(I) = -1
+                            Next
 
-                    Case 2
-                        Call LineupStrategy(YN$, T$)
+                            Call GetManagerProfile(T$, YN$, mgrNbr)
 
-                    Case 3
-                        Call RotationReliefMenu(YN$, T$, mgrNbr)
+                        Case 2
+                            Call LineupStrategy(YN$, T$)
 
-                    Case 4
-                        Call SelectPinchHitters(YN$, T$, mgrNbr)
+                        Case 3
+                            Call RotationReliefMenu(YN$, T$, mgrNbr)
 
-                    Case 5
-                        Call DefenseLateInning(YN$, T$, mgrNbr)
+                        Case 4
+                            Call SelectPinchHitters(YN$, T$, mgrNbr)
 
-                    Case 6
-                        Call InputPitchStrat(YN$, mgrNbr)
+                        Case 5
+                            Call DefenseLateInning(YN$, T$, mgrNbr)
 
-                    Case 7
-                        Call HittingStrategy(YN$, mgrNbr)
+                        Case 6
+                            Call InputPitchStrat(YN$, mgrNbr)
 
-                    Case 8
-                        Call DefensiveStrategy(YN$, mgrNbr)
+                        Case 7
+                            Call HittingStrategy(YN$, mgrNbr)
 
-                    Case 9
-                        Call PinchRunStrategy(YN$, T$, mgrNbr)
+                        Case 8
+                            Call DefensiveStrategy(YN$, mgrNbr)
 
-                    Case 10
-                        Call BASERUN(YN$, mgrNbr)
+                        Case 9
+                            Call PinchRunStrategy(YN$, T$, mgrNbr)
 
-                    Case 11
-                        Call ImportManagerProfile(YN$, mgrNbr)
+                        Case 10
+                            Call BASERUN(YN$, mgrNbr)
 
-                    Case 12
-                        Call ExportManagerProfile(mgrNbr)
+                        Case 11
+                            Call ImportManagerProfile(YN$, mgrNbr)
 
-                    Case 13
-                        Call PrintManagerProfile(T$)
+                        Case 12
+                            Call ExportManagerProfile(mgrNbr)
 
-                    Case 14
-                        Cls '
+                        Case 13
+                            Call PrintManagerProfile(T$)
 
-                End Select
+                        Case 14
+                            Cls '
 
-            End If
+                    End Select
 
-        Loop Until Selection% = 14 Or ExitCode% = 27
+                End If
+
+            Loop Until Selection% = 14 Or ExitCode% = 27
+
+        End If
 
     End If 'Done checking for ESC
 
@@ -164,23 +168,23 @@ Sub RotationReliefMenu (yearNumber$, targetTeam$, mgrNbr)
         ReDim menuChoices$(1 To 6)
         menuChoices$(1) = "INPUT A NEW STARTING PITCHING ROTATION     "
         menuChoices$(2) = "EDIT AN EXISTING STARTING PITCHING ROTATION"
-        menuChoices$(3) = "SELECT/EDIT MIDDLE RELIEVERS               "
-        menuChoices$(4) = "SELECT/EDIT SET-UP MEN                     "
-        menuChoices$(5) = "SELECT/EDIT CLOSERS                        "
+        menuChoices$(3) = "SELECT / EDIT MIDDLE RELIEVERS             "
+        menuChoices$(4) = "SELECT / EDIT SET-UP MEN                   "
+        menuChoices$(5) = "SELECT / EDIT CLOSERS                      "
         menuChoices$(6) = "RETURN TO MAIN MENU                        "
         Selection% = 1
         Count% = 6
         Start% = 1
         ExitCode% = 6
-        FileFGColr% = 15: FileBGColr% = 1
-        HiLiteFGColr% = 0: HiLiteBGColr% = 7
+        FileFGColor% = 15: FileBGColor% = 1
+        HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 5
         Column% = 19
         Call box0(4, 18, 11, 62, 2, 15, 1)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
@@ -228,16 +232,16 @@ Sub LineupStrategy (yearNumber$, targetTeam$)
         Print
         Color 15, 0
         ReDim menuChoices$(1 To 4)
-        menuChoices$(1) = "SELECT/CHANGE/DISPLAY LINEUPS VS. RHP                  "
-        menuChoices$(2) = "SELECT/CHANGE/DISPLAY LINEUPS VS. LHP                  "
+        menuChoices$(1) = "SELECT / CHANGE / DISPLAY LINEUPS VS. RHP              "
+        menuChoices$(2) = "SELECT / CHANGE / DISPLAY LINEUPS VS. LHP              "
         menuChoices$(3) = "ANALYZE PLAYER USAGE ACCORDING TO YOUR LINEUPS SELECTED"
         menuChoices$(4) = "RETURN TO TOP MENU                                     "
         Selection% = 1
         Count% = 4
         Start% = 1
         ExitCode% = 4
-        FileFGColr% = 15: FileBGColr% = 1
-        HiLiteFGColr% = 0: HiLiteBGColr% = 7
+        FileFGColor% = 15: FileBGColor% = 1
+        HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 5
         Column% = 13
@@ -245,7 +249,7 @@ Sub LineupStrategy (yearNumber$, targetTeam$)
         Call box0(4, 12, 9, 68, 2, 15, 1)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
@@ -744,8 +748,8 @@ Sub EditLineups (handRL%, targetTeam$, yearNumber$)
         Count% = 4
         Start% = 1
         ExitCode% = 4
-        FileFGColr% = 15: FileBGColr% = 1
-        HiLiteFGColr% = 0: HiLiteBGColr% = 7
+        FileFGColor% = 15: FileBGColor% = 1
+        HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 5
         Column% = 13
@@ -753,7 +757,7 @@ Sub EditLineups (handRL%, targetTeam$, yearNumber$)
         Call box0(4, 12, 9, 43, 2, 15, 1)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         If ExitCode% <> 27 And Selection% <> 4 Then
@@ -3068,8 +3072,8 @@ Sub HittingStrategy (yearNumber$, mgrNbr)
         Count% = 6
         Start% = 1
         ExitCode% = 6
-        FileFGColr% = 15: FileBGColr% = 1
-        HiLiteFGColr% = 0: HiLiteBGColr% = 7
+        FileFGColor% = 15: FileBGColor% = 1
+        HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 5
         Column% = 13
@@ -3077,7 +3081,7 @@ Sub HittingStrategy (yearNumber$, mgrNbr)
         Call box0(4, 12, 11, 58, 2, 15, 1)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
@@ -3344,8 +3348,8 @@ Sub DefensiveStrategy (yearNumber$, mgrNbr)
         Count% = 9
         Start% = 1
         ExitCode% = 9
-        FileFGColr% = 15: FileBGColr% = 1
-        HiLiteFGColr% = 0: HiLiteBGColr% = 7
+        FileFGColor% = 15: FileBGColor% = 1
+        HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 5
         Column% = 18
@@ -3353,7 +3357,7 @@ Sub DefensiveStrategy (yearNumber$, mgrNbr)
         Call box0(4, 17, 14, 63, 2, 15, 1)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
@@ -3689,8 +3693,8 @@ Sub PinchRunStrategy (yearNumber$, targetTeam$, mgrNbr)
         Count% = 4
         Start% = 1
         ExitCode% = 4
-        FileFGColr% = 15: FileBGColr% = 1
-        HiLiteFGColr% = 0: HiLiteBGColr% = 7
+        FileFGColor% = 15: FileBGColor% = 1
+        HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 5
         Column% = 13
@@ -3698,7 +3702,7 @@ Sub PinchRunStrategy (yearNumber$, targetTeam$, mgrNbr)
         Call box0(4, 12, 9, 67, 2, 15, 1)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0

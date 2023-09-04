@@ -17,19 +17,19 @@ Sub CAREER ()
 
         Call TITLE_CAREER
 
-        menuChoices$(1) = "CREATE AND MERGE INITIAL CAREER STATS"
-        menuChoices$(2) = "MERGE / UPDATE CAREER STATS          "
-        menuChoices$(3) = "VIEW / PRINT CAREER STATS            "
-        menuChoices$(4) = "EDIT CAREER STATS                    "
-        menuChoices$(5) = "VIEW / PRINT CAREER RECORDS          "
-        menuChoices$(6) = "UPDATE TEAM CAREER LEADERS           "
-        menuChoices$(7) = "RETURN TO MAIN MENU                  "
+        menuChoices$(1) = "CREATE AND MERGE INITIAL STAT FILE"
+        menuChoices$(2) = "MERGE / UPDATE CAREER STATS       "
+        menuChoices$(3) = "VIEW / PRINT CAREER STATS         "
+        menuChoices$(4) = "EDIT CAREER STATS                 "
+        menuChoices$(5) = "VIEW / PRINT CAREER RECORDS       "
+        menuChoices$(6) = "UPDATE TEAM CAREER LEADERS        "
+        menuChoices$(7) = "RETURN TO MAIN MENU               "
         Selection% = 1
         Count% = 7
         Start% = 1
         ExitCode% = 7
-        FileFGColr% = 15: FileBGColr% = 1
-        HiLiteFGColr% = 0: HiLiteBGColr% = 7
+        FileFGColor% = 15: FileBGColor% = 1
+        HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 8
         Column% = 21
@@ -37,7 +37,7 @@ Sub CAREER ()
         Call box0(7, 20, 15, 59, 2, 15, 1)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0

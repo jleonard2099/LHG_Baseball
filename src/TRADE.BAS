@@ -1476,8 +1476,8 @@ Sub SelectTradeTeam(numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%,
         Selection% = 1
         Count% = numberTeams
         Start% = 1
-        FileFGColr% = 15: FileBGColr% = 4
-        HiLiteFGColr% = 0: HiLiteBGColr% = 7
+        FileFGColor% = 15: FileBGColor% = 4
+        HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Rows% = 20
         Columns% = 4
         Spacing% = 6
@@ -1493,7 +1493,7 @@ Sub SelectTradeTeam(numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%,
         Color 14: Print "ENTER";: Color 15: Print "-SELECTS TEAM";
 
         _MouseShow "DEFAULT"
-        MAMenu teamNames$(), Selection%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+        MAMenu teamNames$(), Selection%, Start%, Count%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Rows%, Columns%, Spacing%, Row%, Column%
         _MouseHide
 
         If ExitCode% <> 27 Then

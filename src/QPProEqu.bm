@@ -321,7 +321,7 @@ Sub box0 (ULRow%, ULCol%, LRRow%, LRCol%, Char%, FGColor%, BGColor%)
             lrCorner$ = Chr$(Char%)
     End Select
 
-    'SplitColor Colr%, FGColor%, BGColor% 'split color into FG and BG
+    'SplitColor Color%, FGColor%, BGColor% 'split color into FG and BG
 
     Color FGColor%, BGColor%
 
@@ -339,7 +339,7 @@ Sub box0 (ULRow%, ULCol%, LRRow%, LRCol%, Char%, FGColor%, BGColor%)
     Locate LRRow%, ULCol%
     Print llCorner$ + String$(LRCol% - ULCol%, Asc(horizontal$)) + lrCorner$
 
-    'Color Colr%,
+    'Color Color%,
 
 End Sub
 
@@ -398,7 +398,7 @@ Sub ClearEOL (FGColor%, BGColor%)
 
     'Print all spaces
     '--If using OneColor:
-    '--Color (Colr% And 15), ((Colr% And 240) / 16)
+    '--Color (Color% And 15), ((Color% And 240) / 16)
     Color FGColor%, BGColor%
     Print Space$(80 - column%);
 
@@ -896,7 +896,7 @@ Sub MQPrint (X$, FGColor%, BGColor%)
     _MouseHide
     H = Pos(0): V = CsrLin 'save cursor position
     '--If using OneColor:
-    '--Color (Colr% And 15), ((Colr% And 240) / 16)
+    '--Color (Color% And 15), ((Color% And 240) / 16)
     Color FGColor%, BGColor%
     Print X$;
     Locate V, H
@@ -1108,7 +1108,7 @@ Sub QPrint (X$, FGColor%, BGColor%, Page%)
 
     'The actual printing
     '--If using OneColor:
-    '--Color (Colr% And 15), ((Colr% And 240) / 16)
+    '--Color (Color% And 15), ((Color% And 240) / 16)
     Color FGColor%, BGColor%
     Print X$;
 
@@ -1492,10 +1492,10 @@ End Sub
 Sub Lts2Menu (Item$(), Prompt$(), Choice%, FGColor%, BGColor%)
     'Item$() and Prompt$() have one dimension
     'Choice% is the value returned, or zero if Escape is pressed
-    'Colr% is the packed color to use for the display
+    'Color% is the packed color to use for the display
     '
-    'NOTE: The foreground and background portions of Colr% are reversed for
-    '      the highlighted item.  Also, a new color is derived from Colr%
+    'NOTE: The foreground and background portions of Color% are reversed for
+    '      the highlighted item.  Also, a new color is derived from Color%
     '      for the prompt message - change this to suit by searching for
     '      the string "prompt color".
     '
@@ -1506,7 +1506,7 @@ Sub Lts2Menu (Item$(), Prompt$(), Choice%, FGColor%, BGColor%)
 
     Locate , , 0 'turn off the cursor
 
-    'SplitColor Colr%, FGColor%, BGColor% 'split color into FG and BG
+    'SplitColor Color%, FGColor%, BGColor% 'split color into FG and BG
     ReDim ScrBuf%(0 To 159)
     TRow% = CsrLin
 

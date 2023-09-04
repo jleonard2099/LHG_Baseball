@@ -16,23 +16,23 @@ Sub MERGE ()
 
         Call TITLE_MERGE
 
-        menuChoices$(1) = "MERGE STATISTICAL FILES           "
-        menuChoices$(2) = "ALIGN STATISTICAL FILES           "
-        menuChoices$(3) = "EXIT TO MAIN MENU                 "
+        menuChoices$(1) = "MERGE STATISTICAL FILES"
+        menuChoices$(2) = "ALIGN STATISTICAL FILES"
+        menuChoices$(3) = "EXIT TO MAIN MENU      "
         Selection% = 1
         Count% = 3
         Start% = 1
         ExitCode% = 3
-        FileFGColr% = 15: FileBGColr% = 1
-        HiLiteFGColr% = 0: HiLiteBGColr% = 7
+        FileFGColor% = 15: FileBGColor% = 1
+        HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 8
-        Column% = 25
+        Column% = 29
 
-        Call box0(7, 24, 11, 59, 2, 15, 1)
+        Call box0(7, 27, 11, 51, 2, 15, 1)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0

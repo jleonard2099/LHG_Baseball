@@ -52,15 +52,15 @@ CLOSE #1
 	Count% = 9
 	Start% = 1
 	SCANCODE% = 9
-	FileFGColr% = 15:FileBGColr% = 1
-	HiLiteFGColr% = 0:HiLiteBGColr% = 7
+	FileFGColor% = 15:FileBGColor% = 1
+	HiLiteFGColor% = 0:HiLiteBGColor% = 7
 	Spacing% = 1
 	Row% = 6
 	Column% = 25
 
 CALL box0(5, 24, 15, 52, 2,  15, 1)	
 _MouseShow "DEFAULT"
-MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+MMenuVert menuItems$(), SELECTION%, Start%, SCANCODE%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
 _MouseHide
 
 	COLOR , 0
@@ -288,8 +288,8 @@ CLOSE 1
 1102 SELECTION% = 1
 	Count% = NT
 	Start% = 1
-	FileFGColr% = 15:FileBGColr% = 4
-	HiLiteFGColr% = 0:HiLiteBGColr% = 7
+	FileFGColor% = 15:FileBGColor% = 4
+	HiLiteFGColor% = 0:HiLiteBGColor% = 7
 	Rows% = 20
 	Columns% = 4
 	Spacing% = 6
@@ -299,7 +299,7 @@ CLOSE 1
 	LOCATE 25, 1: COLOR 14: PRINT "ESC"; : COLOR 15: PRINT "-SELECT NEW ID  PGDN  PGUP  "; : COLOR 14: PRINT "ENTER"; : COLOR 15: PRINT "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-MAMenu teamNames$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu teamNames$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 	IF ExitCode% = 27 THEN BO% = 1: RETURN

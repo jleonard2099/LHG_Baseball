@@ -20,7 +20,7 @@ Sub TINPUT ()
         menuChoices$(1) = "INPUT A NEW TEAM           "
         menuChoices$(2) = "EDIT AN EXISTING TEAM      "
         menuChoices$(3) = "PRINT ACTUAL TEAM STATS    "
-        menuChoices$(4) = "ENTER/EDIT UMPIRES         "
+        menuChoices$(4) = "ENTER / EDIT UMPIRES       "
         menuChoices$(5) = "SWAP SPOTS ON A TEAM ROSTER"
         menuChoices$(6) = "CALCULATE BUNT RATINGS     "
         menuChoices$(7) = "CALCULATE RUN RATINGS      "
@@ -30,8 +30,8 @@ Sub TINPUT ()
         Count% = 9
         Start% = 1
         ExitCode% = 9
-        FileFGColr% = 15: FileBGColr% = 1
-        HiLiteFGColr% = 0: HiLiteBGColr% = 7
+        FileFGColor% = 15: FileBGColor% = 1
+        HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 8
         Column% = 25
@@ -39,7 +39,7 @@ Sub TINPUT ()
         Call box0(7, 24, 17, 52, 2, 15, 1)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColr%, FileBGColr%, HiLiteFGColr%, HiLiteBGColr%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
