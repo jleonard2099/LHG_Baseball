@@ -14,7 +14,7 @@ Sub UMPMGR ()
 
         Call TITLE
 
-        ReDim menuChoices$(1 to 3)
+        ReDim menuChoices$(1 To 3)
         menuChoices$(1) = "ENTER A NEW UMPIRE FILE  "
         menuChoices$(2) = "EDIT EXISTING UMPIRE FILE"
         menuChoices$(3) = "RETURN TO MAIN MENU      "
@@ -28,7 +28,7 @@ Sub UMPMGR ()
         Row% = 8
         Column% = 26
 
-        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+25, 2, FileFGColor%, FileBGColor%)
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + 25, 2, FileFGColor%, FileBGColor%)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
@@ -37,7 +37,7 @@ Sub UMPMGR ()
         Color , 0
 
         If ExitCode% <> 27 Then
-        
+
             Select Case Selection%
                 Case 1: Call EnterUmpireFile
                 Case 2: Call EditUmpireFile
@@ -58,19 +58,19 @@ End Sub
 'creating a specific umpire file.
 Sub EnterUmpireFile ()
 
-    Dim U$(50), U%(50)
+    Dim umpireNames$(50), umpRating(50)
 
     For X = 1 To 50
 
         Cls
         Print "UMPIRE #"; X
-        Input "ENTER UMPIRE NAME (END TO QUIT) "; U$(X)
+        Input "ENTER UMPIRE NAME (END TO QUIT) "; umpireNames$(X)
 
-        If UCase$(U$(X)) = "END" Then
+        If UCase$(umpireNames$(X)) = "END" Then
             Erase U$
             Exit For
         Else
-            Input "ENTER RATING (0-9) "; U%(X)
+            Input "ENTER RATING (0-9) "; umpRating(X)
         End If
 
     Next
@@ -89,15 +89,15 @@ Sub EnterUmpireFile ()
         Open diskPaths$(0) + "UMPIRES." + LG$ For Output As #1
 
         For X = 1 To 50:
-            Print #1, U$(X)
-            Print #1, U%(X)
+            Print #1, umpireNames$(X)
+            Print #1, umpRating(X)
         Next
 
         Close #1
 
         For X = 1 To 50:
-            U$(X) = ""
-            U%(X) = 5
+            umpireNames$(X) = ""
+            umpRating(X) = 5
         Next
 
     End If
@@ -111,7 +111,7 @@ End Sub
 'editing specific umpires in the file.
 Sub EditUmpireFile ()
 
-    Dim U$(50), U%(50)
+    Dim umpireNames$(50), umpRating(50)
 
     Cls
 
@@ -128,11 +128,11 @@ Sub EditUmpireFile ()
 
         Open diskPaths$(0) + "UMPIRES." + LG$ For Input As #1
 
-        For X = 1 To 50: 
-            Input #1, U$(X)
-            Input #1, U%(X)
+        For X = 1 To 50:
+            Input #1, umpireNames$(X)
+            Input #1, umpRating(X)
         Next
-        
+
         Close #1
 
     End If
@@ -142,15 +142,15 @@ Sub EditUmpireFile ()
     For I = 1 To 10
 
         Locate I + 5, 1
-        Print Using "##"; I;: Print " "; U$(I);
+        Print Using "##"; I;: Print " "; umpireNames$(I);
         Locate , 17
-        Print Using "##"; I + 10;: Print " "; U$(I + 10);
+        Print Using "##"; I + 10;: Print " "; umpireNames$(I + 10);
         Locate , 33
-        Print Using "##"; I + 20;: Print " "; U$(I + 20);
+        Print Using "##"; I + 20;: Print " "; umpireNames$(I + 20);
         Locate , 50
-        Print Using "##"; I + 30;: Print " "; U$(I + 30);
+        Print Using "##"; I + 30;: Print " "; umpireNames$(I + 30);
         Locate , 67
-        Print Using "##"; I + 40;: Print " "; U$(I + 40)
+        Print Using "##"; I + 40;: Print " "; umpireNames$(I + 40)
     Next
 
     Do
@@ -164,8 +164,8 @@ Sub EditUmpireFile ()
         Cls
         Locate 1, 30: Print "UMPIRE-"; I
         Locate , 1
-        Locate 1: Print "1. NAME "; U$(I)
-        Locate 2: Print "2. RATING "; U%(I)
+        Locate 1: Print "1. NAME "; umpireNames$(I)
+        Locate 2: Print "2. RATING "; umpRating(I)
         C1 = 1
 
         Do
@@ -176,13 +176,13 @@ Sub EditUmpireFile ()
 
             Select Case B9
 
-                Case 1: 
+                Case 1:
                     Locate 1
-                    Input "1. NAME "; U$(I)
+                    Input "1. NAME "; umpireNames$(I)
 
-                Case 2: 
+                Case 2:
                     Locate 2
-                    Input "2. RATING "; U%(I)
+                    Input "2. RATING "; umpRating(I)
 
             End Select
 
@@ -191,3 +191,4 @@ Sub EditUmpireFile ()
     End If
 
 End Sub
+
