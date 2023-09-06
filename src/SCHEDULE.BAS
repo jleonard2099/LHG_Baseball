@@ -764,6 +764,7 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
                                 Locate 1, 1: Print numberGames% + 1; " MATCHES"
 
                                 Open diskPaths$(0) + subSchedFile$ + ".SCD" For Random As #1 Len = SCHEDULE_SIZE_BYTES
+
                                 fileLength& = LOF(1)
 
                                 numberGames% = fileLength& / SCHEDULE_SIZE_BYTES
@@ -1239,6 +1240,7 @@ Sub LoadScheduleInfo (targetFile$)
     Shared scheduleYN$()
 
     Open diskPaths$(0) + targetFile$ + ".SCD" For Random As #1 Len = SCHEDULE_SIZE_BYTES
+
     fileLength& = LOF(1)
 
     scheduleAP%(0) = fileLength& / SCHEDULE_SIZE_BYTES
@@ -1351,9 +1353,10 @@ Sub CreateSeasonSchedule ()
             End Select
 
             Open scxFile$ For Random As #1 Len = SCHEDULE_SIZE_BYTES
-            fileLength& = LOF(1)
-            scheduleAP%(0) = fileLength& / SCHEDULE_SIZE_BYTES
 
+            fileLength& = LOF(1)
+
+            scheduleAP%(0) = fileLength& / SCHEDULE_SIZE_BYTES
             BS% = Int((scheduleAP%(0) - 1) / 20)
 
             For X = 0 To 18

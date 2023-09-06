@@ -136,7 +136,7 @@ Sub LOADER
         170 '
         Call INFO
 
-        gameLoc = 1
+        If gameLoc = 0 Then gameLoc = 1
 
         Do
             Color 15, 0
