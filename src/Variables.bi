@@ -283,7 +283,7 @@ Dim PT$(1)
 
 
 ' Shared / Global
-Dim Shared AP%, desigHit, D
+Dim Shared autoPlay, desigHit, D
 Dim Shared EJ%, H6%, IJL%, INNING%, Inotloop%
 Dim Shared LYN%, PB%, PC%
 Dim Shared SC%, TA%, TP%, W%, WS%

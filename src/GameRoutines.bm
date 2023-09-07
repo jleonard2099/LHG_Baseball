@@ -7759,7 +7759,7 @@ Sub SAVESTATS ()
     Color 15, 0
     Cls
 
-    If AP <> 1 Then
+    If autoPlay <> 1 Then
 
         Call TEAMBOX(1, 1)
 
@@ -7800,7 +7800,7 @@ Sub SAVESTATS ()
         BN% = 1
     End If
 
-    If UCase$(I$) = "Y" Or AP = 1 Then
+    If UCase$(I$) = "Y" Or autoPlay = 1 Then
 
         For PX = 0 To 1
             For I = 0 To 21
@@ -9387,7 +9387,7 @@ Sub EndOfGame ()
         ' Prompt to play another game
         Cls
 
-        If AP <> 1 Then
+        If autoPlay <> 1 Then
 
             'Using Home Team's color for the box
             Call TEAMBOX(1, 1)
@@ -9403,7 +9403,7 @@ Sub EndOfGame ()
 
         End If
 
-        If UCase$(I$) = "Y" Or (AP = 1 And endAllGames <> 1) Then
+        If UCase$(I$) = "Y" Or (autoPlay = 1 And endAllGames <> 1) Then
             Cls
             Print "PLEASE WAIT ..."
             Call LOADER
@@ -9432,3 +9432,4 @@ Sub pbpLog (lineNumber)
     Print #7,
 
 End Sub
+

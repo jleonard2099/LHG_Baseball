@@ -43,71 +43,71 @@ Sub LOADER
 
     End If
 
-    Open "DEV.BAS" For Input As #1
+    Open "DEV.BAS" For Input As #2
 
     For I = 0 To 3
-        Input #1, diskPaths$(I)
+        Input #2, diskPaths$(I)
     Next
 
-    Close 1
+    Close 2
 
     If Not _FileExists("DEFERA") Then
 
-        Open "DEFERA" For Output As #1
+        Open "DEFERA" For Output As #3
 
         For I = 1 To 4:
-            Print #1, 0
+            Print #3, 0
         Next
 
-        Print #1, 4
+        Print #3, 4
 
         For I = 6 To 14:
-            Print #1, 0
+            Print #3, 0
         Next
 
         Close 1
 
     End If
 
-    Open "DEFERA" For Input As #1
-    Input #1, playerOpt
-    Input #1, leagueOpt
-    Input #1, desigHit
-    Input #1, gameTypeOpt
-    Input #1, gameMonth
-    Input #1, dayOrNight
-    Input #1, useWeather
-    Input #1, useInj
-    Input #1, useLRSplit
-    Input #1, useRest
-    Input #1, useMgrProf
-    Input #1, pbpDelay!
-    Input #1, useVGA
-    Input #1, pitchEraOpt
-    Close 1
+    Open "DEFERA" For Input As #4
+    Input #4, playerOpt
+    Input #4, leagueOpt
+    Input #4, desigHit
+    Input #4, gameTypeOpt
+    Input #4, gameMonth
+    Input #4, dayOrNight
+    Input #4, useWeather
+    Input #4, useInj
+    Input #4, useLRSplit
+    Input #4, useRest
+    Input #4, useMgrProf
+    Input #4, pbpDelay!
+    Input #4, useVGA
+    Input #4, pitchEraOpt
+    Close 4
 
     'Load game in-progress, if there is one
     If _FileExists("GAME82") Then
 
-        Open "GAME82" For Input As #2
+        Open "GAME82" For Input As #5
 
-        Input #2, scheduleFile$
+        Input #5, scheduleFile$
 
         For I = 0 To 2:
-            Input #2, schedGame(I)
+            Input #5, schedGame(I)
         Next
 
-        Close 2
+        Close #5
 
-        Open diskPaths$(0) + scheduleFile$ For Random As #1 Len = SCHEDULE_SIZE_BYTES
+        Open diskPaths$(0) + scheduleFile$ For Random As #6 Len = SCHEDULE_SIZE_BYTES
 
         For X = 0 To 18
-            Field #1, X * 2 As X$, 2 As Q2$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
+            Field #6, X * 2 As X$, 2 As Q2$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
         Next
 
-        Field #1, 38 As X$, 2 As Q2$(22), 2 As Q2$(23), 3 As Q2$(20), 3 As Q2$(21)
+        Field #6, 38 As X$, 2 As Q2$(22), 2 As Q2$(23), 3 As Q2$(20), 3 As Q2$(21)
 
-        Get #1, schedGame(0) + schedGame(2)
+        Get #6, schedGame(0) + schedGame(2)
 
         For X = 0 To 18
             NG%(X) = CVI(Q2$(X + 1))
@@ -120,7 +120,7 @@ Sub LOADER
         VS% = CVI(Q2$(22))
         HS% = CVI(Q2$(23))
 
-        Close #1
+        Close #6
 
         autoPlay = 1
 
@@ -173,22 +173,22 @@ Sub LOADER
 
                 Select Case I + 1
                     Case 1:
-                        Open "DEFERA" For Output As #1
-                        Print #1, playerOpt
-                        Print #1, leagueOpt
-                        Print #1, desigHit
-                        Print #1, gameTypeOpt
-                        Print #1, gameMonth
-                        Print #1, dayOrNight
-                        Print #1, useWeather
-                        Print #1, useInj
-                        Print #1, useLRSplit
-                        Print #1, useRest
-                        Print #1, useMgrProf
-                        Print #1, pbpDelay!
-                        Print #1, useVGA
-                        Print #1, pitchEraOpt
-                        Close 1
+                        Open "DEFERA" For Output As #7
+                        Print #7, playerOpt
+                        Print #7, leagueOpt
+                        Print #7, desigHit
+                        Print #7, gameTypeOpt
+                        Print #7, gameMonth
+                        Print #7, dayOrNight
+                        Print #7, useWeather
+                        Print #7, useInj
+                        Print #7, useLRSplit
+                        Print #7, useRest
+                        Print #7, useMgrProf
+                        Print #7, pbpDelay!
+                        Print #7, useVGA
+                        Print #7, pitchEraOpt
+                        Close #7
 
                     Case 2:
                         playerOpt = playerOpt + 1
@@ -286,13 +286,14 @@ Sub LOADER
     Else
         YU = 0
 
-        Open diskPaths$(0) + "UMPIRES." + UMP$(leagueOpt) For Input As #1
+        Open diskPaths$(0) + "UMPIRES." + UMP$(leagueOpt) For Input As #8
+
         For I1 = 1 To 50
-            Input #1, UMP$(I1)
-            Input #1, U%(I1)
+            Input #8, UMP$(I1)
+            Input #8, U%(I1)
         Next
 
-        Close #1
+        Close #8
 
         For I1 = 1 To 50
             If UMP$(I1) <> "" Then YU = YU + 1
@@ -337,7 +338,7 @@ Sub LOADER
         Else
 
             Call INFO
-            Call ChooseGameTeam (YN$(Idx), NTMS, T1%(Idx), A$(Idx), Idx)
+            Call ChooseGameTeam(YN$(Idx), NTMS, T1%(Idx), A$(Idx), Idx)
             Color 15, 0
 
         End If 'Done checking for autoplay
@@ -1006,7 +1007,7 @@ End Sub
 'This routine saves the lineup that has
 'been generated to the manager profile for
 'the team. It also gives the user a chance
-'to assign a frequency to it. 
+'to assign a frequency to it.
 Sub SaveLineup (idx%)
 
     Shared MF%(), T1%()
@@ -1056,17 +1057,17 @@ Sub SaveLineup (idx%)
 
         teamYear$ = RTrim$(YN$(idx%))
 
-        Open diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #2 Len = MGR_SIZE_BYTES
+        Open diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #9 Len = MGR_SIZE_BYTES
 
         For I = 0 To 999
-            Field #2, I * 2 As Q$, 2 As Q2$(I), MGR_SIZE_BYTES - I * 2 - 2 As Q$
+            Field #9, I * 2 As Q$, 2 As Q2$(I), MGR_SIZE_BYTES - I * 2 - 2 As Q$
         Next
 
         For I = 0 To 999: LSet Q2$(I) = MKI$(MG%(idx%, I)): Next
 
-        Put #2, T1%(idx%)
+        Put #9, T1%(idx%)
 
-        Close 2
+        Close 9
 
     End If
 
@@ -1240,8 +1241,8 @@ End Sub
 '----------------------------------------
 '   LineupSummary Subroutine
 '----------------------------------------
-'This subroutine displays a summary of the 
-'starting lineup before allowing the user 
+'This subroutine displays a summary of the
+'starting lineup before allowing the user
 'to make any adjustemts.
 Sub LineupSummary (P9, reselect, LU%)
 
@@ -2043,11 +2044,11 @@ End Sub
 '      SomeCalculations Subroutine
 '----------------------------------------
 'I literally have no clue what this sub-
-'routine does. It has very little context 
+'routine does. It has very little context
 'that hints to it's purpose.
 'It is only called by the routine I've
 'named "SortHitters", and likely DOES
-'some of the actual sorting as it's 
+'some of the actual sorting as it's
 'called after each lineup position.
 Sub SomeCalculations (B, C, P9)
 
@@ -2155,6 +2156,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
     If I$ <> Chr$(27) Then
 
         Select Case I
+
             Case 0:
                 'manual pick starter means we are
                 'not going to disable anyone, but
@@ -2267,17 +2269,17 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
 
             teamYear$ = RTrim$(YN$(idx%))
 
-            Open diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #2 Len = MGR_SIZE_BYTES
+            Open diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #1 Len = MGR_SIZE_BYTES
 
             For I = 0 To 999
-                Field #2, I * 2 As Q$, 2 As Q2$(I), MGR_SIZE_BYTES - I * 2 - 2 As Q$
+                Field #1, I * 2 As Q$, 2 As Q2$(I), MGR_SIZE_BYTES - I * 2 - 2 As Q$
             Next
 
             For I = 0 To 999: LSet Q2$(I) = MKI$(MG%(idx%, I)): Next
 
-            Put #2, T1%(idx%)
+            Put #1, T1%(idx%)
 
-            Close 2
+            Close #1
 
         End If
 
@@ -2471,7 +2473,7 @@ End Sub
 '----------------------------------------
 '       ChooseGameTeam Subroutine
 '----------------------------------------
-'This subroutine provides interface for 
+'This subroutine provides interface for
 'choosing a team for the game
 Sub ChooseGameTeam (yearNumber$, numberTeams, chosenIdx, teamName$, gameIdx)
 
@@ -2485,7 +2487,7 @@ Sub ChooseGameTeam (yearNumber$, numberTeams, chosenIdx, teamName$, gameIdx)
         Color 15, 0
         Cls
 
-        Call MenuBox (6, 8, 61, 7, 15, 4)
+        Call MenuBox(6, 8, 61, 7, 15, 4)
 
         Locate 7, 32
 
@@ -2544,7 +2546,7 @@ Sub ChooseGameTeam (yearNumber$, numberTeams, chosenIdx, teamName$, gameIdx)
                             teamIndex%(teamIdx) = teamIdx
                         Next teamIdx
 
-                        Close 1
+                        Close #1
 
                         previousYear$ = yearNumber$
 
@@ -2696,7 +2698,7 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
         If batRating(gameIdx, I1, 31) <> 0 Then batRating(gameIdx, I1, 21) = 99
     Next
 
-    For I1 = 0 To 21: 
+    For I1 = 0 To 21:
         pitchers$(gameIdx, I1) = Q2$(I1 * 38 + 1004)
         pitchers$(gameIdx, I1) = RTrim$(pitchers$(gameIdx, I1))
 
@@ -2747,48 +2749,48 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
             TS%(gameIdx, 0) = -1
 
         Else
-        
-            Open diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$ For Random As #1 Len = DATA_SIZE_BYTES
+
+            Open diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$ For Random As #2 Len = DATA_SIZE_BYTES
 
             For X = 0 To 11
-                Field #1, X * 2 As X$, 2 As Q2$(X + 1), DATA_SIZE_BYTES - 2 - 2 * X As X$
+                Field #2, X * 2 As X$, 2 As Q2$(X + 1), DATA_SIZE_BYTES - 2 - 2 * X As X$
             Next
 
             For X = 0 To 22
                 For X1 = 1 To 14
-                    Field #1, 24 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q2$(12 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (24 + (X1 - 1) * 2 + X * 14 * 2) As X$
+                    Field #2, 24 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q2$(12 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (24 + (X1 - 1) * 2 + X * 14 * 2) As X$
                 Next
             Next
 
             For X = 0 To 21
                 For X1 = 1 To 14
-                    Field #1, 668 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q2$(334 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (668 + (X1 - 1) * 2 + X * 14 * 2) As X$
+                    Field #2, 668 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q2$(334 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (668 + (X1 - 1) * 2 + X * 14 * 2) As X$
                 Next
             Next
 
             For X = 0 To 21
                 For X1 = 1 To 14
-                    Field #1, 1284 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q2$(642 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (1284 + (X1 - 1) * 2 + X * 14 * 2) As X$
+                    Field #2, 1284 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q2$(642 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (1284 + (X1 - 1) * 2 + X * 14 * 2) As X$
                 Next
             Next
 
             For X = 1 To 24
-                Field #1, 1900 + (X - 1) * 2 As X$, 2 As Q2$(950 + X), DATA_SIZE_BYTES - 2 - (X - 1) * 2 - 1900 As X$
+                Field #2, 1900 + (X - 1) * 2 As X$, 2 As Q2$(950 + X), DATA_SIZE_BYTES - 2 - (X - 1) * 2 - 1900 As X$
             Next
 
             For X = 0 To 22
                 For X1 = 1 To 24
-                    Field #1, 1948 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q2$(975 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (1948 + (X1 - 1) * 2 + X * 24 * 2) As X$
+                    Field #2, 1948 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q2$(975 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (1948 + (X1 - 1) * 2 + X * 24 * 2) As X$
                 Next
             Next
 
             For X = 0 To 21
                 For X1 = 1 To 24
-                    Field #1, 3052 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q2$(1528 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (3052 + (X1 - 1) * 2 + X * 24 * 2) As X$
+                    Field #2, 3052 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q2$(1528 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (3052 + (X1 - 1) * 2 + X * 24 * 2) As X$
                 Next
             Next
 
-            Get #1, teamIdx
+            Get #2, teamIdx
 
             For X = 0 To 11
                 TS%(gameIdx, X) = CVI(Q2$(X + 1))
@@ -2812,7 +2814,7 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
                 Next
             Next
 
-            For X = 1 To 24: 
+            For X = 1 To 24:
                 SA%(gameIdx, X) = CVI(Q2$(X + 950))
             Next
 
@@ -2828,7 +2830,7 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
                 Next
             Next
 
-            Close 1
+            Close 2
 
             If TS%(gameIdx, 0) <> 999 Then TS%(gameIdx, 0) = -1
 
@@ -2858,20 +2860,20 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
     If Not _FileExists(diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$) Then
 
         MF%(gameIdx) = -1
-    
+
     Else
 
-        Open diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #2 Len = MGR_SIZE_BYTES
+        Open diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #3 Len = MGR_SIZE_BYTES
 
         For X = 0 To 999
-            Field #2, X * 2 As Q2$, 2 As Q2$(X), MGR_SIZE_BYTES - X * 2 - 2 As Q2$
+            Field #3, X * 2 As Q2$, 2 As Q2$(X), MGR_SIZE_BYTES - X * 2 - 2 As Q2$
         Next
 
-        Get #2, teamIdx
+        Get #3, teamIdx
 
         For X = 0 To 999: MG%(gameIdx, X) = CVI(Q2$(X)): Next
 
-        Close 2
+        Close 3
 
     End If
 
@@ -2890,17 +2892,17 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
     'Read in supplemental data
     If _FileExists(diskPaths$(1) + statFile$ + "D") Then
 
-        Open diskPaths$(1) + statFile$ + "D" For Input As #1
+        Open diskPaths$(1) + statFile$ + "D" For Input As #4
 
         For I1 = 0 To 22
-            Input #1, INJ%(gameIdx, I1)
+            Input #4, INJ%(gameIdx, I1)
         Next
 
         For I1 = 0 To 21
-            Input #1, DYS%(gameIdx, I1)
+            Input #4, DYS%(gameIdx, I1)
         Next
 
-        Close 1
+        Close #4
 
         If useInj <> 1 Then
             For I1 = 0 To 22
@@ -2921,3 +2923,4 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
     End If
 
 End Sub
+

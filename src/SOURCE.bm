@@ -787,7 +787,7 @@ Sub SOURCE ()
     ' yet for the game's logic.
     '================================================================================
 
-    '----- NOOgameTypeOptE -----
+    '----- NOODLE -----
 
     12000 ' BRANCH FOR RARE PLAYS
     Call RAREPLAYS(H6%, H7%, IP%)
@@ -893,7 +893,7 @@ Sub SOURCE ()
 
     GoTo 15052
 
-    '----- NOOgameTypeOptE -----
+    '----- NOODLE -----
 
     13050 '
     Call d100(RN)
@@ -2083,7 +2083,7 @@ Sub SOURCE ()
     End If
 
 
-    '----- NOOgameTypeOptE -----
+    '----- NOODLE -----
 
     13530 '
     ' *** HOME RUN S2%=10 ***
@@ -2245,7 +2245,7 @@ Sub SOURCE ()
     GoTo 13900
 
 
-    '----- NOOgameTypeOptE -----
+    '----- NOODLE -----
 
 
     13634 '
@@ -2310,7 +2310,7 @@ Sub SOURCE ()
     GoTo 13900
 
 
-    '----- NOOgameTypeOptE -----
+    '----- NOODLE -----
 
 
     13650 '
@@ -2651,7 +2651,7 @@ Sub SOURCE ()
         GoTo 15050
     End If
 
-    '----- NOOgameTypeOptE -----
+    '----- NOODLE -----
 
     14100 ' *** BUNT ROUTINE ***
     Call WINDEX
@@ -3689,7 +3689,7 @@ Sub SOURCE ()
                 Do
 
                     I$ = GetKeyPress$
-                    If UCase$(I$) = "Z" Then 
+                    If UCase$(I$) = "Z" Then
                         GoTo 15500
                     Else
                         Call LetterToNumber(I$, I1)
@@ -3874,8 +3874,8 @@ Sub SOURCE ()
             If Asc(I$) = 9 And TG = 1 Then TG = 0: Call DisplayBatter_Lineup(PG, P9): GoTo 15547
             If UCase$(I$) = "Z" Then 15500
             I1 = Val(I$)
-            
-            If I1 = 2 Then 
+
+            If I1 = 2 Then
 
                 15567 '
                 Do
@@ -3906,9 +3906,9 @@ Sub SOURCE ()
                 Call REPLACEMENTS(I7%, I8%, I9%)
 
                 GoTo 15540
-            
+
             End If
-            
+
             If I1 = 3 Then 15550
             If D2 = 6 Then 15550
             I2 = B1!(P): GoTo 15555
@@ -3995,7 +3995,7 @@ Sub SOURCE ()
 
     GoTo 15540
 
-    '----- NOOgameTypeOptE -----
+    '----- NOODLE -----
 
     '----------------------------------------
     ' Print final score and run post game
@@ -4351,7 +4351,7 @@ Sub SOURCE ()
     GoTo 15055
 
 
-    '----- NOOgameTypeOptE -----
+    '----- NOODLE -----
 
 
     18909 'GET A PINCH HITTER FOR A POSITION PLAYER
@@ -4491,7 +4491,7 @@ Sub SOURCE ()
 
     GoTo 18941
 
-    '----- NOOgameTypeOptE -----
+    '----- NOODLE -----
 
     18930 'GET A PINCH HITTER FOR THE PITCHER
 
@@ -4704,7 +4704,7 @@ Sub SOURCE ()
         GoTo 15067
     End If
 
-    '----- NOOgameTypeOptE -----
+    '----- NOODLE -----
 
     18969 '
     If O%(0) >= 1 And INNING% >= 7 Then
