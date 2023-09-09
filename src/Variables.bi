@@ -44,7 +44,7 @@ Dim U%(50)
 Dim Shared backToMenu, BO%, X%
 
 Dim Shared R$(999)
-Dim Z1$(1 to 40), Z2$(40)
+Dim Z1$(1 To 40), Z2$(40)
 
 
 '----------------------------------------
@@ -251,7 +251,7 @@ Dim scheduleYN$(MAX_GAMES, 1)
 Dim AB%(9)
 Dim progB3%(0 To 9), progB7%(0 To 9), progB9%(0 To 9)
 Dim progB1$(4), progPT$(1), mgrX$(0 To 21)
-'Dim progM%(0 To 9), progMG%(1000)
+Dim progM%(0 To 9), progMG%(1000)
 
 Dim mgr_idx%
 
@@ -290,7 +290,7 @@ Dim Shared SC%, TA%, TP%, W%, WS%
 
 Dim Shared compTeam, endGame, endAllGames, FontColAdj, gameLoc
 Dim Shared monitorType, noLUFound, normalFinish
-Dim Shared P, pitchEraOpt, playerOpt, RE, RD
+'Dim Shared P, pitchEraOpt, playerOpt, RE, RD
 Dim Shared usingGfx, useInj, useRest
 
 Dim Shared pbpDelay!, WF!
@@ -310,7 +310,7 @@ Dim Shared B1%(3, 1), B2%(1, 22), B3%(0 To 1, 0 To 9), B4%(1, 7, 9)
 Dim Shared B5%(0 To 1, 0 To 22, 0 To 21), B7%(0 To 1, 0 To 9), B8%(0 To 1, 0 To 22, 0 To 21), B9%(1, 10), BT%(1, 9, 9)
 Dim Shared CF%(9, 2), CSS%(1, 22, 6), D0%(1), D3%(1), DP%(1), GK%(1), H0%(1)
 Dim Shared INJ%(0 To 1, 0 To 22), L0%(1), LB%(9, 1)
-Dim Shared M%(9), MG%(0 To 1, 999), NG%(18), O%(1)
+'Dim Shared M%(9), MG%(0 To 1, 999), NG%(18), O%(1)
 Dim Shared pitchRating(0 To 1, 0 To 21, 0 To 89), P1%(0 To 1), P2%(1), P3%(1, 21), P4%(22), P5%(1, 21, 41), P6%(1), P8%(1, 21, 41)
 Dim Shared PR%(24)
 
@@ -320,9 +320,9 @@ Dim Shared T%(22), T3%(22), TP%(11, 2), TS%(1, 11), VA%(26), X0%(1, 2, 23)
 
 Dim Shared B1!(9), parkHRVals!(1)
 
-Dim Shared A$(1), baseName$(0 To 4), batters$(0 To 1, 0 To 22), B1$(4), C$(11)
+Dim Shared baseName$(0 To 4), batters$(0 To 1, 0 To 22), B1$(4), C$(11)
 Dim Shared DB$(0 To 22), E$(0 To 22), EJ$(20), F$(10)
-Dim Shared G$(10), gameManagers$(1), gameStadiums$(1)
+Dim Shared G$(10), gameManagers$(1), gameStadiums$(1), gameTeams$(1)
 Dim Shared H0$(1), homeRuns$(0 To 22), IJ$(20)
 Dim Shared PARK$(99), pitchers$(1, 21), PC$(4), player$(23)
 Dim Shared Q3$(100), SB$(0 To 22), SC$(4)

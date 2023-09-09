@@ -22,7 +22,8 @@ DefInt A-Z
 '$INCLUDE: 'PadRight.bi'
 '$INCLUDE: 'Variables.bi'
 
-Dim progM%(0 To 9), progMG%(1000)
+Dim Shared P, pitchEraOpt, playerOpt, RE, RD
+Dim Shared M%(9), MG%(0 To 1, 999), NG%(18), O%(1)
 
 ' For Utils
 '$INCLUDE: 'MainRoutines.bi'
@@ -267,8 +268,8 @@ Errhandler:
 Open "errlog" For Append As #9
 Print #9, "Error #"; Err; "on program file line"; _ErrorLine
 If _FileExists("GAME82") Then
-    Print #9, "Schedule game # "; Using "###"; AP%(0) + AP%(2)
-    Print #9, A$(0) + " vs. " + A$(1)
+    Print #9, "Schedule game # "; Using "###"; schedGame(0) + schedGame(2)
+    Print #9, gameTeams$(0) + " vs. " + gameTeams$(1)
 End If
 Print #9,
 Close #9

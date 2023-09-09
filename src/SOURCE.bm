@@ -61,7 +61,7 @@ Sub SOURCE ()
     P = 1 - P
     D = 1 - P
 
-    If INNING% = 7 And tmRat_GAME(1, 13) = 8 And P = 1 And Val(Left$(A$(1), 2)) > 75 Then
+    If INNING% = 7 And tmRat_GAME(1, 13) = 8 And P = 1 And Val(Left$(gameTeams$(1), 2)) > 75 Then
         Call WINDEX
         Call PBP("ALL RIGHT..."): Call PBP("LEMME HEAR YA..."): Call PBP("A ONE, A TWO...")
     End If
@@ -305,7 +305,7 @@ Sub SOURCE ()
         ' DEFENSE OPTIONS MENU
         '----------------------------------------
         15081 '
-        F$ = PadRight$(Left$(A$(D), 3) + teamAbbreviatons$(D), 8)
+        F$ = PadRight$(Left$(gameTeams$(D), 3) + teamAbbreviatons$(D), 8)
 
         'Call WINDEX
 
@@ -606,7 +606,7 @@ Sub SOURCE ()
 
             _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 144), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 144)
 
-            F$ = PadRight$(Left$(A$(P), 3) + teamAbbreviatons$(P), 8)
+            F$ = PadRight$(Left$(gameTeams$(P), 3) + teamAbbreviatons$(P), 8)
 
             If usingGfx = 1 Then
                 'Printing black on background
@@ -636,7 +636,7 @@ Sub SOURCE ()
 
             Else
                 Color 14, 0
-                Print A$(P); " SELECT:"
+                Print gameTeams$(P); " SELECT:"
                 Print " 1- HIT AWAY      D-DETAILED STATS"
                 Print " 2- HIT AND RUN   S-BATTER/PITCHER STATS"
                 Print " 3- STEAL         L-DISPLAY LINEUPS"
@@ -4006,9 +4006,9 @@ Sub SOURCE ()
     'Locate 22, 1
     'Print winning team and score
     If S6%(0, 0) > S6%(1, 0) Then
-        Call PBP(A$(0) + " defeats " + A$(1) + Str$(S6%(0, 0)) + " TO" + Str$(S6%(1, 0)) + "!")
+        Call PBP(gameTeams$(0) + " defeats " + gameTeams$(1) + Str$(S6%(0, 0)) + " TO" + Str$(S6%(1, 0)) + "!")
     Else
-        Call PBP(A$(1) + " defeats " + A$(0) + Str$(S6%(1, 0)) + " TO" + Str$(S6%(0, 0)) + "!")
+        Call PBP(gameTeams$(1) + " defeats " + gameTeams$(0) + Str$(S6%(1, 0)) + " TO" + Str$(S6%(0, 0)) + "!")
     End If
 
     normalFinish = 1

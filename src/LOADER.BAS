@@ -16,7 +16,7 @@ Sub LOADER
     Shared PT$(), pitcherEra$()
     Shared playMode$(), UMP$(), M%()
     Shared VI$(), yesNo$()
-    Shared SP%(), T1%(), U%()
+    Shared T1%(), U%()
 
     Shared scheduleFile$
 
@@ -333,13 +333,13 @@ Sub LOADER
 
             T1%(Idx) = NG%(Idx)
             YN$ = YN$(Idx)
-            Call ReadGameTeam(YN$, A$(Idx), T1%(Idx), Idx)
+            Call ReadGameTeam(YN$, gameTeams$(Idx), T1%(Idx), Idx)
             YN$(Idx) = YN$
 
         Else
 
             Call INFO
-            Call ChooseGameTeam(YN$(Idx), NTMS, T1%(Idx), A$(Idx), Idx)
+            Call ChooseGameTeam(YN$(Idx), NTMS, T1%(Idx), gameTeams$(Idx), Idx)
             Color 15, 0
 
         End If 'Done checking for autoplay
@@ -358,9 +358,9 @@ Sub LOADER
 
     '    Color 14: Print "WHICH TEAM DOES COMPUTER MANAGE ?"
     '    Print
-    '    Color 15: Print "(0) ";: Color tmRat_GAME(0, 11), tmRat_GAME(0, 12): Print A$(0): Color 7, 0
+    '    Color 15: Print "(0) ";: Color tmRat_GAME(0, 11), tmRat_GAME(0, 12): Print gameTeams$(0): Color 7, 0
     '    Print
-    '    Color 15: Print "(1) ";: Color tmRat_GAME(1, 11), tmRat_GAME(1, 12): Print A$(1): Color 7, 0
+    '    Color 15: Print "(1) ";: Color tmRat_GAME(1, 11), tmRat_GAME(1, 12): Print gameTeams$(1): Color 7, 0
 
     '    Do
     '        I$ = GetKeyPress$
@@ -400,7 +400,7 @@ Sub LOADER
             Call INFO
 
             Locate 3, 1
-            Color tmRat_GAME(P9, 11), tmRat_GAME(P9, 12): Print A$(P9): Color 7, 0
+            Color tmRat_GAME(P9, 11), tmRat_GAME(P9, 12): Print gameTeams$(P9): Color 7, 0
             Print
             Color 14: Print "(0) ";: Color 15: Print "INPUT A LINEUP MANUALLY"
             Print
@@ -647,13 +647,13 @@ Sub LOADER
 
     S$ = PARK$
 
-    I1 = Val(Left$(A$(0), 2))
-    I2 = Val(Left$(A$(1), 2))
+    I1 = Val(Left$(gameTeams$(0), 2))
+    I2 = Val(Left$(gameTeams$(1), 2))
 
-    If Val(Left$(A$(0), 3)) = 211 Then I1 = 201
-    If Val(Left$(A$(0), 3)) = 200 Then I1 = 200
-    If Val(Left$(A$(1), 3)) = 200 Then I2 = 200
-    If Val(Left$(A$(1), 3)) = 211 Then I2 = 201
+    If Val(Left$(gameTeams$(0), 3)) = 211 Then I1 = 201
+    If Val(Left$(gameTeams$(0), 3)) = 200 Then I1 = 200
+    If Val(Left$(gameTeams$(1), 3)) = 200 Then I2 = 200
+    If Val(Left$(gameTeams$(1), 3)) = 211 Then I2 = 201
 
     If pitchEraOpt > 2 Then S8%(1, 1) = 4: S8%(0, 1) = 4
     If pitchEraOpt > 3 Then S8%(1, 1) = 5: S8%(0, 1) = 5
@@ -2144,25 +2144,29 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
     If autoPlay = 1 And (playerOpt = 2 Or playerOpt = 1 And compTeam = idx%) Then
         'For automated games, use preset rotation
         'This will end up being computer-generated
-        I = 1
+        choice = 1
+
     Else
+
         Do
             I$ = GetKeyPress$
             If I$ <> Chr$(27) Then
-                I = Val(I$)
+                choice = Val(I$)
             End If
-        Loop Until I >= 0 And I <= 2 Or I$ = Chr$(27)
+        Loop Until choice >= 0 And choice <= 2 Or I$ = Chr$(27)
+
     End If
 
     If I$ <> Chr$(27) Then
 
-        Select Case I
+        Select Case choice
 
             Case 0:
                 'manual pick starter means we are
                 'not going to disable anyone, but
                 'just simply pick 1 pitcher
                 skipDisablePitchers = 1
+                SP%(idx%) = -1
 
             Case 1:
                 'Pre-Set Rotation
@@ -2244,16 +2248,21 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
                     Call d100(RN)
                     SP% = 0
 
-                    For I = 21 To 36
-                        If MG%(idx%, I) <> -1 And MG%(idx%, I) >= 0 And MG%(idx%, I) <= 21 Then
-                            SP% = SP% + MG%(idx%, I + 20)
-                            If RN <= SP% And MG%(idx%, I) <> -1 Then
-                                pitchRating(idx%, MG%(idx%, I), 15) = 0
-                                SP%(idx%) = MG%(idx%, I)
+                    For J = 21 To 36
+
+                        If MG%(idx%, J) <> -1 And MG%(idx%, J) >= 0 And MG%(idx%, J) <= 21 Then
+
+                            SP% = SP% + MG%(idx%, J + 20)
+
+                            If RN <= SP% And MG%(idx%, J) <> -1 Then
+                                pitchRating(idx%, MG%(idx%, J), 15) = 0
+                                SP%(idx%) = MG%(idx%, J)
                                 doneAutoDisable% = 1
                                 Exit For
                             End If
+
                         End If
+
                     Next
 
                 End If
@@ -2367,7 +2376,7 @@ Sub PrintPitcherInfo (idx%)
 
     '1520
     Cls
-    Print "#";: Color tmRat_GAME(idx%, 11), tmRat_GAME(idx%, 12): Print A$(idx%);
+    Print "#";: Color tmRat_GAME(idx%, 11), tmRat_GAME(idx%, 12): Print gameTeams$(idx%);
     Color 14, 0: Locate , 16
     Print "T  IP   H  G  GS DR  BB  SO   W- L   ERA"
 
@@ -2423,7 +2432,9 @@ Sub PitchingStarter (idx%)
         Locate 19, 58: Print "SELECT STARTER"
 
         If SP%(idx%) <> -1 Then
+
             I1 = SP%(idx%)
+
         Else
 
             Do
@@ -2434,6 +2445,7 @@ Sub PitchingStarter (idx%)
         End If
 
         Locate 20, 58
+
         Print pitchers$(idx%, I1); " "; B1$(pitchRating(idx%, I1, 0) + 2)
 
         Print
@@ -2720,7 +2732,7 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
 
     For I1 = 0 To 22
         'check for 1934 season
-        If Val(Left$(A$(gameIdx), 2)) < 54 And Mid$(A$(gameIdx), 3, 1) = " " Then batRating(gameIdx, I1, 30) = batRating(gameIdx, I1, 30) * .75
+        If Val(Left$(gameTeams$(gameIdx), 2)) < 54 And Mid$(gameTeams$(gameIdx), 3, 1) = " " Then batRating(gameIdx, I1, 30) = batRating(gameIdx, I1, 30) * .75
 
         For I2 = 22 To 25
             If batRating(gameIdx, I1, I2) <> -1 And batRating(gameIdx, I1, I2) <> 0 And batRating(gameIdx, I1, I2 + 4) = 0 Then batRating(gameIdx, I1, I2 + 4) = 900
@@ -2888,7 +2900,7 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
 
     End If
 
-    statFile$ = nameStatFile$(A$(idx))
+    statFile$ = nameStatFile$(gameTeams$(idx))
 
     'Read in supplemental data
     If _FileExists(diskPaths$(1) + statFile$ + "D") Then

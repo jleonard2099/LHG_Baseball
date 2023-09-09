@@ -305,7 +305,7 @@ Sub DisplayBallField_Gfx (BC%, p, U%, D)
     For I = 0 To 1
 
         'Print inning score
-        PrintOnGfx 15, I + 28, Left$(A$(I), 3) + teamAbbreviatons$(I), imageScreen&
+        PrintOnGfx 15, I + 28, Left$(gameTeams$(I), 3) + teamAbbreviatons$(I), imageScreen&
 
         For I2 = inningStart% To inningEnd%
             If p = 0 And I = 0 And I2 > INNING% - 1 And inningScore(I, INNING%) = 0 Or p = 0 And I = 0 And I2 > INNING% And inningScore(I, INNING%) > 0 Or p = 1 And I2 > INNING% And I = 0 Then Exit For

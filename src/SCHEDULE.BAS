@@ -51,7 +51,7 @@ Sub SCHEDULE ()
         Row% = 8
         Column% = 16
 
-        Call box0(7, 15, 17, 64, 2, 15, 1)
+        Call box0(7, 15, 16, 64, 2, 15, 1)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
