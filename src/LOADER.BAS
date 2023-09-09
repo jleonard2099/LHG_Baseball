@@ -39,7 +39,7 @@ Sub LOADER
             Print #1, _CWD$ + "\"
         Next
 
-        Close 1
+        Close #1
 
     End If
 
@@ -49,7 +49,7 @@ Sub LOADER
         Input #2, diskPaths$(I)
     Next
 
-    Close 2
+    Close #2
 
     If Not _FileExists("DEFERA") Then
 
@@ -65,7 +65,7 @@ Sub LOADER
             Print #3, 0
         Next
 
-        Close 1
+        Close #3
 
     End If
 
@@ -84,7 +84,7 @@ Sub LOADER
     Input #4, pbpDelay!
     Input #4, useVGA
     Input #4, pitchEraOpt
-    Close 4
+    Close #4
 
     'Load game in-progress, if there is one
     If _FileExists("GAME82") Then
@@ -172,6 +172,7 @@ Sub LOADER
             If I$ <> Chr$(27) And UCase$(I$) <> "Q" Then
 
                 Select Case I + 1
+
                     Case 1:
                         Open "DEFERA" For Output As #7
                         Print #7, playerOpt

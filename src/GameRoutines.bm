@@ -286,7 +286,7 @@ Sub LetterToNumber (promptval$, J)
 
     J = Val(promptVal$)
 
-    Select Case UCase$(I$)
+    Select Case UCase$(promptVal$)
     
         Case "A": J = 10
         Case "B": J = 11
