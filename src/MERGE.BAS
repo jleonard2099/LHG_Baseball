@@ -147,13 +147,13 @@ Sub MergeStats ()
 
                     Input #1, Yroad%
 
-                    For I = 1 To 162: Input #1, HR%(I): Next I
-                    For I = 1 To 162: Input #1, HR$(I): Next I
-                    For I = 1 To 162: Input #1, VR%(I): Next I
-                    For I = 1 To 162: Input #1, PLR$(I): Next I
-                    For I = 1 To 162: Input #1, WR$(I): Next I
-                    For I = 1 To 162: Input #1, LR$(I): Next I
-                    For I = 1 To 162: Input #1, IR%(I): Next I
+                    For I = 1 To NUM_STATRECORDS: Input #1, HR%(I): Next I
+                    For I = 1 To NUM_STATRECORDS: Input #1, HR$(I): Next I
+                    For I = 1 To NUM_STATRECORDS: Input #1, VR%(I): Next I
+                    For I = 1 To NUM_STATRECORDS: Input #1, PLR$(I): Next I
+                    For I = 1 To NUM_STATRECORDS: Input #1, WR$(I): Next I
+                    For I = 1 To NUM_STATRECORDS: Input #1, LR$(I): Next I
+                    For I = 1 To NUM_STATRECORDS: Input #1, IR%(I): Next I
 
                     Close #1
 
@@ -207,13 +207,13 @@ Sub MergeStats ()
 
                         Input #1, Ycurr%
 
-                        For I = 1 To 162: Input #1, H%(I): Next I
-                        For I = 1 To 162: Input #1, H$(I): Next I
-                        For I = 1 To 162: Input #1, V%(I): Next I
-                        For I = 1 To 162: Input #1, PL$(I): Next I
-                        For I = 1 To 162: Input #1, W$(I): Next I
-                        For I = 1 To 162: Input #1, L$(I): Next I
-                        For I = 1 To 162: Input #1, I%(I): Next I
+                        For I = 1 To NUM_STATRECORDS: Input #1, H%(I): Next I
+                        For I = 1 To NUM_STATRECORDS: Input #1, H$(I): Next I
+                        For I = 1 To NUM_STATRECORDS: Input #1, V%(I): Next I
+                        For I = 1 To NUM_STATRECORDS: Input #1, PL$(I): Next I
+                        For I = 1 To NUM_STATRECORDS: Input #1, W$(I): Next I
+                        For I = 1 To NUM_STATRECORDS: Input #1, L$(I): Next I
+                        For I = 1 To NUM_STATRECORDS: Input #1, I%(I): Next I
 
                         Close #1
 
@@ -418,19 +418,19 @@ Sub DoTheMerge (pathCurrentStats$, statFile$, B$)
 
     Write #1, Ycurr%
 
-    For I = 1 To 162: Write #1, H%(I): Next I
+    For I = 1 To NUM_STATRECORDS: Write #1, H%(I): Next I
 
-    For I = 1 To 162: Write #1, H$(I): Next I
+    For I = 1 To NUM_STATRECORDS: Write #1, H$(I): Next I
 
-    For I = 1 To 162: Write #1, V%(I): Next I
+    For I = 1 To NUM_STATRECORDS: Write #1, V%(I): Next I
 
-    For I = 1 To 162: Write #1, PL$(I): Next I
+    For I = 1 To NUM_STATRECORDS: Write #1, PL$(I): Next I
 
-    For I = 1 To 162: Write #1, W$(I): Next I
+    For I = 1 To NUM_STATRECORDS: Write #1, W$(I): Next I
 
-    For I = 1 To 162: Write #1, L$(I): Next I
+    For I = 1 To NUM_STATRECORDS: Write #1, L$(I): Next I
 
-    For I = 1 To 162: Write #1, I%(I): Next I
+    For I = 1 To NUM_STATRECORDS: Write #1, I%(I): Next I
 
     Close #1
 

@@ -15,7 +15,7 @@ Sub SeasonRecords ()
     Shared BRC$(), BRT$(), PRC$(), PRT$()
     Shared TRC$(), TRC1$()
 
-    ReDim menuChoices$(1 To 4)
+    ReDim menuChoices$(1 To 5)
 
     'If Not _FileExists(diskPaths$(1) + "BASEBALL.REC") Then
     '
@@ -39,9 +39,10 @@ Sub SeasonRecords ()
         menuChoices$(1) = "UPDATE SEASON RECORDS"
         menuChoices$(2) = "VIEW SEASON RECORDS  "
         menuChoices$(3) = "PRINT SEASON RECORDS "
-        menuChoices$(4) = "RETURN TO MAIN MENU  "
+        menuChoices$(4) = "DELETE SEASON RECORDS"
+        menuChoices$(5) = "RETURN TO MAIN MENU  "
         Selection% = 1
-        Count% = 4
+        Count% = 5
         Start% = 1
         ExitCode% = 3
         FileFGColor% = 15: FileBGColor% = 1
@@ -89,13 +90,16 @@ Sub SeasonRecords ()
                     Case 3:
                         Call PrintSeasonRecords(leagueFile$)
 
+                    Case 4
+                        If _FileExists(diskPaths$(1) + "BASEBALL.REC") Then Kill diskPaths$(1) + "BASEBALL.REC"
+
                 End Select
 
             End If
 
         End If
 
-    Loop Until Selection% = 4 Or ExitCode% = 27
+    Loop Until Selection% = 5 Or ExitCode% = 27
 
 End Sub
 
@@ -135,7 +139,7 @@ Sub UpdateRecords (leagueFile$)
 
     Do
         Locate 2
-        Input "IS THIS THE FINAL UPDATE FOR THE YEAR? (Y/N)"; finalUpdate$
+        Input "WOULD YOU LIKE TO POST SEASON LEADERS? (Y/N)"; finalUpdate$
     Loop Until UCase$(finalUpdate$) = "Y" Or UCase$(finalUpdate$) = "N"
 
     Print

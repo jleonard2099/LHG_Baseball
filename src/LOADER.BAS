@@ -143,22 +143,38 @@ Sub LOADER
             Cls
 
             Locate 3, 1
-            Color 14: Print "(1) ";: Color 15: Print playMode$(playerOpt)
-            Color 14: Print "(2) ";: Color 15: Print leagueType$(leagueOpt)
-            Color 14: Print "(3) ";: Color 15: Print desigHitOpt$(desigHit)
-            Color 14: Print "(4) ";: Color 15: Print gameType$(gameTypeOpt)
-            Color 14: Print "(5) ";: Color 15: Print month$(gameMonth)
-            Color 14: Print "(6) ";: Color 15: Print dayNight$(dayOrNight)
-            Color 14: Print "(7) ";: Color 15: Print "PROCEED TO TEAM SELECTION"
-            Color 14: Print "(8) ";: Color 15: Print "USE CLIMATE/WIND/TEMP DATA "; yesNo$(useWeather)
-            Color 14: Print "(9) ";: Color 15: Print "USE INJURIES "; yesNo$(useInj)
-            Color 14: Print "(0) ";: Color 15: Print "SAVE SETTINGS AS DEFAULT"
-            Color 14: Print "(A) ";: Color 15: Print "USE LEFT/RIGHT SPLIT STATS "; yesNo$(useLRSplit)
-            Color 14: Print "(B) ";: Color 15: Print "USE DAYS REST DATA FOR PITCHERS "; yesNo$(useRest)
-            Color 14: Print "(C) ";: Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE "; yesNo$(useMgrProf)
-            Color 14: Print "(D) ";: Color 15: Print Using "DISPLAY INTERVAL: #.# "; pbpDelay!
-            Color 14: Print "(E) ";: Color 15: Print "USE VGA SCREENS, IF ABLE: "; yesNo$(useVGA)
-            Color 14: Print "(F) ";: Color 15: Print "PITCHER USAGE ERA: "; pitcherEra$(pitchEraOpt)
+            Color 14: Print "(1) ";
+            Color 15: Print playMode$(playerOpt)
+            Color 14: Print "(2) ";
+            Color 15: Print leagueType$(leagueOpt)
+            Color 14: Print "(3) ";
+            Color 15: Print desigHitOpt$(desigHit)
+            Color 14: Print "(4) ";
+            Color 15: Print gameType$(gameTypeOpt)
+            Color 14: Print "(5) ";
+            Color 15: Print month$(gameMonth)
+            Color 14: Print "(6) ";
+            Color 15: Print dayNight$(dayOrNight)
+            Color 14: Print "(7) ";
+            Color 15: Print "PROCEED TO TEAM SELECTION"
+            Color 14: Print "(8) ";
+            Color 15: Print "USE CLIMATE/WIND/TEMP DATA "; yesNo$(useWeather)
+            Color 14: Print "(9) ";
+            Color 15: Print "USE INJURIES "; yesNo$(useInj)
+            Color 14: Print "(0) ";
+            Color 15: Print "SAVE SETTINGS AS DEFAULT"
+            Color 14: Print "(A) ";
+            Color 15: Print "USE LEFT/RIGHT SPLIT STATS "; yesNo$(useLRSplit)
+            Color 14: Print "(B) ";
+            Color 15: Print "USE DAYS REST DATA FOR PITCHERS "; yesNo$(useRest)
+            Color 14: Print "(C) ";
+            Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE "; yesNo$(useMgrProf)
+            Color 14: Print "(D) ";
+            Color 15: Print Using "PLAY-BY-PLAY DELAY (SECS): ##.# "; pbpDelay!
+            Color 14: Print "(E) ";
+            Color 15: Print "USE VGA SCREENS, IF ABLE: "; yesNo$(useVGA)
+            Color 14: Print "(F) ";
+            Color 15: Print "PITCHER USAGE ERA: "; pitcherEra$(pitchEraOpt)
 
             Do
                 Color 7, 0
@@ -258,6 +274,11 @@ Sub LOADER
 
     End If
 
+    '----------------------------------------
+    '    AUTO-DETERMINE OTHER OPTIONS
+    '----------------------------------------
+
+    ' Determine computer team
     Select Case playerOpt
 
         Case 1:
@@ -269,6 +290,12 @@ Sub LOADER
             playerOpt = 2
 
     End Select
+
+    'At this point, the value of playerOpt has been changed.
+    'It now represents the following values:
+    '   0 = Human
+    '   1 = Computer Team
+    '   2 = PC vs. PC
 
     YV = 1
     YM = 0
@@ -2129,7 +2156,7 @@ End Sub
 'rotation of pitchers.
 Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
 
-    Shared MF%(), SP%(), T1%()
+    Shared MF%(), startPitcher(), T1%()
 
     ' *** PITCHING ROTATIONS ***
     Inotloop% = 99
@@ -2166,7 +2193,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
                 'not going to disable anyone, but
                 'just simply pick 1 pitcher
                 skipDisablePitchers = 1
-                SP%(idx%) = -1
+                startPitcher(idx%) = -1
 
             Case 1:
                 'Pre-Set Rotation
@@ -2241,7 +2268,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
                 pitchRating(idx%, MG%(idx%, MG%(idx%, 2) + 3), 15) = 0
 
                 If RN <= MG%(idx%, MG%(idx%, 2) + 10 + 3) Or MG%(idx%, MG%(idx%, 2) + 10 + 3) = 0 Then
-                    SP%(idx%) = MG%(idx%, MG%(idx%, 2) + 3)
+                    startPitcher(idx%) = MG%(idx%, MG%(idx%, 2) + 3)
                     doneAutoDisable% = 1
                 Else
 
@@ -2256,7 +2283,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
 
                             If RN <= SP% And MG%(idx%, J) <> -1 Then
                                 pitchRating(idx%, MG%(idx%, J), 15) = 0
-                                SP%(idx%) = MG%(idx%, J)
+                                startPitcher(idx%) = MG%(idx%, J)
                                 doneAutoDisable% = 1
                                 Exit For
                             End If
@@ -2400,7 +2427,9 @@ Sub PrintPitcherInfo (idx%)
             Color 15, 0
 
             Locate , 16: Print B1$(pitchRating(idx%, I, 0) + 2);
+            '                          IP  H   G   GS DR BB  SO
             Locate , 17: Print Using " ### ### ### ## ## ### ###"; pitchRating(idx%, I, 6); pitchRating(idx%, I, 7); pitchRating(idx%, I, 4); pitchRating(idx%, I, 5); pitchRating(idx%, I, 35); pitchRating(idx%, I, 8); pitchRating(idx%, I, 9);
+            '                           W                                                       L  ERA
             Locate , 43: Print Using "  ##"; pitchRating(idx%, I, 1);: Print "-";: Print Using "## ##.##"; pitchRating(idx%, I, 2); pitchRating(idx%, I, 10) / 100
         End If
 
@@ -2425,15 +2454,15 @@ End Sub
 'screen from other routines.
 Sub PitchingStarter (idx%)
 
-    Shared SP%()
+    Shared startPitcher()
 
     Do
 
         Locate 19, 58: Print "SELECT STARTER"
 
-        If SP%(idx%) <> -1 Then
+        If startPitcher(idx%) <> -1 Then
 
-            I1 = SP%(idx%)
+            I1 = startPitcher(idx%)
 
         Else
 
@@ -2460,7 +2489,7 @@ Sub PitchingStarter (idx%)
             If UCase$(I$) = "Y" Then
                 Locate 20, 58
                 Print Space$(16)
-                SP%(idx%) = -1
+                startPitcher(idx%) = -1
             End If
 
         Else

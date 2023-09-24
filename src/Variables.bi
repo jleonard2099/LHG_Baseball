@@ -274,7 +274,7 @@ Dim B6%(22, 21), BB%(0 To 9)
 Dim D1%(1), DYS%(0 To 1, 0 To 21)
 
 Dim MF%(1), P0%(0 To 21, 0 To 41)
-Dim SP%(1), SS%(0 To 22, 0 To 6), SX%(0 To 1)
+Dim startPitcher(1), SS%(0 To 22, 0 To 6), SX%(0 To 1)
 Dim T1%(0 To 1)
 
 Dim E!
@@ -290,7 +290,7 @@ Dim Shared SC%, TA%, TP%, W%, WS%
 
 Dim Shared compTeam, endGame, endAllGames, FontColAdj, gameLoc
 Dim Shared monitorType, noLUFound, normalFinish
-'Dim Shared P, pitchEraOpt, playerOpt, RE, RD
+Dim Shared P, pitchEraOpt, playerOpt, RE, RD
 Dim Shared usingGfx, useInj, useRest
 
 Dim Shared pbpDelay!, WF!
@@ -310,7 +310,7 @@ Dim Shared B1%(3, 1), B2%(1, 22), B3%(0 To 1, 0 To 9), B4%(1, 7, 9)
 Dim Shared B5%(0 To 1, 0 To 22, 0 To 21), B7%(0 To 1, 0 To 9), B8%(0 To 1, 0 To 22, 0 To 21), B9%(1, 10), BT%(1, 9, 9)
 Dim Shared CF%(9, 2), CSS%(1, 22, 6), D0%(1), D3%(1), DP%(1), GK%(1), H0%(1)
 Dim Shared INJ%(0 To 1, 0 To 22), L0%(1), LB%(9, 1)
-'Dim Shared M%(9), MG%(0 To 1, 999), NG%(18), O%(1)
+Dim Shared M%(9), MG%(0 To 1, 999), NG%(18), O%(1)
 Dim Shared pitchRating(0 To 1, 0 To 21, 0 To 89), P1%(0 To 1), P2%(1), P3%(1, 21), P4%(22), P5%(1, 21, 41), P6%(1), P8%(1, 21, 41)
 Dim Shared PR%(24)
 

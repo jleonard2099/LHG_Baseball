@@ -112,13 +112,13 @@ Sub Hd2Hd_League (LG$, sameLeague)
 
     Input #1, YY%
 
-    For J = 1 To 162: Input #1, H%(J): Next
-    For J = 1 To 162: Input #1, O$(J): Next
-    For J = 1 To 162: Input #1, V%(J): Next
-    For J = 1 To 162: Input #1, L$(J): Next
-    For J = 1 To 162: Input #1, WP$(J): Next
-    For J = 1 To 162: Input #1, LP$(J): Next
-    For J = 1 To 162: Input #1, I%(J): Next
+    For J = 1 To NUM_STATRECORDS: Input #1, H%(J): Next
+    For J = 1 To NUM_STATRECORDS: Input #1, O$(J): Next
+    For J = 1 To NUM_STATRECORDS: Input #1, V%(J): Next
+    For J = 1 To NUM_STATRECORDS: Input #1, L$(J): Next
+    For J = 1 To NUM_STATRECORDS: Input #1, WP$(J): Next
+    For J = 1 To NUM_STATRECORDS: Input #1, LP$(J): Next
+    For J = 1 To NUM_STATRECORDS: Input #1, I%(J): Next
 
     Close #1
 

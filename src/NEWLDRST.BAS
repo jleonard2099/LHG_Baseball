@@ -131,19 +131,19 @@ Sub UpdateLeagueStandings ()
 
                     Input #1, XX%
 
-                    For I = 1 To 162: Input #1, H%(I): Next I
+                    For I = 1 To NUM_STATRECORDS: Input #1, H%(I): Next I
 
-                    For I = 1 To 162: Input #1, H$(I): Next I
+                    For I = 1 To NUM_STATRECORDS: Input #1, H$(I): Next I
 
-                    For I = 1 To 162: Input #1, V%(I): Next I
+                    For I = 1 To NUM_STATRECORDS: Input #1, V%(I): Next I
 
-                    For I = 1 To 162: Input #1, PL$(I): Next I
+                    For I = 1 To NUM_STATRECORDS: Input #1, PL$(I): Next I
 
-                    For I = 1 To 162: Input #1, W$(I): Next I
+                    For I = 1 To NUM_STATRECORDS: Input #1, W$(I): Next I
 
-                    For I = 1 To 162: Input #1, L$(I): Next I
+                    For I = 1 To NUM_STATRECORDS: Input #1, L$(I): Next I
 
-                    For I = 1 To 162: Input #1, I%(I): Next I
+                    For I = 1 To NUM_STATRECORDS: Input #1, I%(I): Next I
 
                     Close #1
 

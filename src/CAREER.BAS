@@ -172,7 +172,7 @@ Sub MergeFirstYear ()
 
                 Do
                     Locate , 5
-                    Print "IS THIS THE FINAL UPDATE FOR THE CURRENT SEASON? (Y/N)"
+                    Print "WOULD YOU LIKE TO POST CAREER LEADERS? (Y/N)"
                     K$ = GetKeyPress$
                 Loop Until UCase$(K$) = "Y" Or UCase$(K$) = "N" Or K$ = Chr$(27)
 
@@ -192,7 +192,7 @@ Sub MergeFirstYear ()
 
                     Locate 20, 5
                     Color 15
-                    Print "MERGING CAREER STATS AND UPDATING CAREER LEADER FILE . . . . PLEASE WAIT"
+                    Print "MERGING AND UPDATING CAREER STATS . . . . PLEASE WAIT"
 
                     TMR = 4175
 
@@ -296,7 +296,7 @@ Sub MergeFirstYear ()
                     If finalUpdate% = 1 Then Call UpdateCareerLeaders(careerFile$)
 
                     Locate 20, 5
-                    Color 15: Print "MERGING CAREER STATS AND UPDATING CAREER LEADER FILE . . . . PLEASE WAIT"
+                    Color 15: Print "MERGING AND UPDATING CAREER STATS . . . . PLEASE WAIT"
 
                     Open diskPaths$(1) + careerFile$ + ".CAR" For Output As #1
 
@@ -687,7 +687,7 @@ Sub MergeAddYear (selectedFile$, statFile$)
 
         Do
             Locate , 5
-            Print "IS THIS THE FINAL UPDATE FOR THE CURRENT SEASON? (Y/N)"
+            Print "WOULD YOU LIKE TO POST CAREER LEADERS? (Y/N)"
             K$ = GetKeyPress$
             finalUpdate$ = UCase$(K$)
         Loop Until finalUpdate$ = "Y" Or finalUpdate$ = "N" Or K$ = Chr$(27)
@@ -695,7 +695,7 @@ Sub MergeAddYear (selectedFile$, statFile$)
         If finalUpdate$ = "Y" Then finalupdate% = 1 Else finalupdate% = 0
 
         Locate 20, 5
-        Print "LOADING CAREER STATS AND LEADER FILE . . . . PLEASE WAIT"
+        Print "LOADING CAREER STATS . . . . PLEASE WAIT"
 
         Open diskPaths$(1) + selectedFile$ + ".CAR" For Input As #1
 

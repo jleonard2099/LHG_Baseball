@@ -1,0 +1,26 @@
+
+This file is not a license, but an acknowledgement where licensing information
+is not known.
+
+The text editor used for viewing and modifying box scores is a stripped-down 
+version of QB-Write from what was once UnderWARE Labs. Other aliases for this 
+creator are as follows:
+- Lester Schramm
+- Steelcharm
+- UWLabs
+
+The modified code for the editor is technically not to be distributed per it's
+original agreement terms from the 80's. To date, I have not been able to find 
+contact information for this author to ask for formal permission to distribute 
+the code. The author was briefly active at some BASIC forums in 2008. At the 
+time, it appears downloads of all his programs were still being offered but the
+website was being retired. I would suspect and/or anticipate his approval of me
+using a modified version of his code for purposes it serves in these games 
+(the original editor used relied heavily on custom assembly routines and code).
+
+Given that I have no other solution to fit my very specific needs, I felt it 
+respectful and prudent to at least credit the author since, I intend to include 
+the code and rely on it for this effort. I kindly ask if there is any way to 
+contact the author, please let me know at support@lhgames.net. I am willing to 
+support the work in any way that would seem fit, eventhough it does not seem 
+the individual profits from it to this day.

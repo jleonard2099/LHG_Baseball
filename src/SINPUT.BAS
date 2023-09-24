@@ -773,13 +773,13 @@ Sub ChangeSchedule (Z$)
 
         Input #1, GAMES%
 
-        For I = 1 To 162: Input #1, H%(I): Next
-        For I = 1 To 162: Input #1, H$(I): Next
-        For I = 1 To 162: Input #1, V%(I): Next
-        For I = 1 To 162: Input #1, PL$(I): Next
-        For I = 1 To 162: Input #1, W$(I): Next
-        For I = 1 To 162: Input #1, L$(I): Next
-        For I = 1 To 162: Input #1, I%(I): Next
+        For I = 1 To NUM_STATRECORDS: Input #1, H%(I): Next
+        For I = 1 To NUM_STATRECORDS: Input #1, H$(I): Next
+        For I = 1 To NUM_STATRECORDS: Input #1, V%(I): Next
+        For I = 1 To NUM_STATRECORDS: Input #1, PL$(I): Next
+        For I = 1 To NUM_STATRECORDS: Input #1, W$(I): Next
+        For I = 1 To NUM_STATRECORDS: Input #1, L$(I): Next
+        For I = 1 To NUM_STATRECORDS: Input #1, I%(I): Next
 
         Close 1
 
@@ -846,13 +846,13 @@ Sub ChangeSchedule (Z$)
 
         Print #1, GAMES%
 
-        For I = 1 To 162: Print #1, H%(I): Next
-        For I = 1 To 162: Print #1, H$(I): Next
-        For I = 1 To 162: Print #1, V%(I): Next
-        For I = 1 To 162: Print #1, PL$(I): Next
-        For I = 1 To 162: Print #1, W$(I): Next
-        For I = 1 To 162: Print #1, L$(I): Next
-        For I = 1 To 162: Print #1, I%(I): Next
+        For I = 1 To NUM_STATRECORDS: Print #1, H%(I): Next
+        For I = 1 To NUM_STATRECORDS: Print #1, H$(I): Next
+        For I = 1 To NUM_STATRECORDS: Print #1, V%(I): Next
+        For I = 1 To NUM_STATRECORDS: Print #1, PL$(I): Next
+        For I = 1 To NUM_STATRECORDS: Print #1, W$(I): Next
+        For I = 1 To NUM_STATRECORDS: Print #1, L$(I): Next
+        For I = 1 To NUM_STATRECORDS: Print #1, I%(I): Next
 
         Close 1
 

@@ -1,7 +1,7 @@
 '----------------------------------------
 '           NEWLDR Subroutine
 '----------------------------------------
-'This subroutine provides the user a menu 
+'This subroutine provides the user a menu
 'for viewing stats compiled for the new
 '"Expanded" Stats/Standings screens
 Sub NEWLDR ()
@@ -72,12 +72,14 @@ End Sub
 '----------------------------------------
 'This subroutine reads in the league stats
 'from the .TMS file. It then relies on other
-'routines to calculate the expanded stats, 
+'routines to calculate the expanded stats,
 'write them to a file and present a categ-
 'orized menu to use for reviewing them
 Sub ViewExpandedStats (JB, JP, TS, TTS)
 
     Shared D1$, D2$, D3$, D4$
+
+    Shared Z1$()
 
     Color 15, 0
     Cls
@@ -94,11 +96,13 @@ Sub ViewExpandedStats (JB, JP, TS, TTS)
         Input #2, D3$
         Input #2, D4$
 
-        For X = 1 To 40: Input #2, Z1$(X): Next
+        For X = 1 To 40:
+            Input #2, Z1$(X)
+        Next
 
-        Close 2
+        Close #2
 
-        Call UpdateExpandedLeaders (JB, JP, TS, TTS)
+        Call UpdateExpandedLeaders(JB, JP, TS, TTS)
 
         Call SAVELEADER(leagStatFile$, league$, JB, JP, TS, TTS)
 
@@ -112,7 +116,7 @@ End Sub
 '----------------------------------------
 '    UpdateExpandedLeaders Subroutine
 '----------------------------------------
-'This subroutine calculates the expanded 
+'This subroutine calculates the expanded
 'stats from those previously read in to
 'a variety of arrays.
 Sub UpdateExpandedLeaders (JB, JP, TS, TTS)
@@ -177,9 +181,13 @@ Sub UpdateExpandedLeaders (JB, JP, TS, TTS)
                 Input #1, D0%
                 Input #1, D1%
 
-                For I = 0 To 21: Input #1, statT%(I): Next I
+                For I = 0 To 21:
+                    Input #1, statT%(I)
+                Next I
 
-                For I = 0 To 22: Input #1, statT1%(I): Next I
+                For I = 0 To 22:
+                    Input #1, statT1%(I)
+                Next I
 
                 Close #1
 
@@ -268,9 +276,9 @@ End Sub
 '----------------------------------------
 '        SAVELEADER Subroutine
 '----------------------------------------
-'This subroutine compiles the leader files 
-'(.BAT, .PIT, and .TOT) for the expanded 
-'standings modules 
+'This subroutine compiles the leader files
+'(.BAT, .PIT, and .TOT) for the expanded
+'standings modules
 Sub SAVELEADER (leaderFile$, league$, JB, JP, TS, TTS)
 
     Shared BK%(), PM%()
@@ -1086,7 +1094,7 @@ End Sub
 '----------------------------------------
 '   DisplayPitchingLeaders Subroutine
 '----------------------------------------
-'This subroutine displays expanded pitching 
+'This subroutine displays expanded pitching
 'stat categories on the end user display
 Sub DisplayPitchingLeaders (TVN, maxRecords, categoryId)
 
@@ -1149,7 +1157,7 @@ Sub DisplayPitchingLeaders (TVN, maxRecords, categoryId)
 
                 Locate 22: Print Space$(64)
                 Color 14
-                
+
                 Do
                     Locate 22
                     Print "VIEW AGAIN? (Y/N)"
@@ -1168,8 +1176,8 @@ End Sub
 '----------------------------------------
 '     ViewTeamLeaders Subroutine
 '----------------------------------------
-'This subroutine lets the user choose team 
-'player stat categories and relies on other 
+'This subroutine lets the user choose team
+'player stat categories and relies on other
 'routines to sort and display the results.
 Sub ViewTeamLeaders (leaderFile$, JB, JP, TS, TTS)
 
@@ -1460,7 +1468,7 @@ End Sub
 '----------------------------------------
 '       DisplayTeamView Subroutine
 '----------------------------------------
-'This subroutine uses several different 
+'This subroutine uses several different
 'routines to display team total stats
 Sub DisplayTeamView (XX, screenType, printOrView%, TVN, maxRecords, categoryId)
 
@@ -2002,3 +2010,4 @@ Sub GetListLength (printOrView%, listLength, maxItems)
     End If
 
 End Sub
+

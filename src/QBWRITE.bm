@@ -1,0 +1,710 @@
+
+Sub QBWRITE (FFName$)
+
+    Screen 0
+
+    Color 15, 0
+    Cls
+
+    StartTime = Val(Right$(Time$, 2)) + 70
+
+    PageNo = 1 '          from "carrying" keystrokes
+    NoOfPages = 1
+
+    t5$ = String$(31, " ")
+    ReDim TmpDoc$(32)
+    ReDim Doc$(32)
+
+
+    ReNewIt:
+    ReDim Text$(25) 'only displays 21 lines of text
+    row = 2 'row position
+    col = 1 'column position
+    BackUp = 0 'flags backspace position 0 lets cursor goto pos 1
+    '      1 lets cursor goto previous line end
+    InsertMode = 0 '0 = overstrike  1 = insert
+    IMode$ = "Overwrite" 'string for status bar
+
+
+    KHome$ = Chr$(0) + Chr$(71) 'Define special keys
+    KEnd$ = Chr$(0) + Chr$(79)
+    KDel$ = Chr$(0) + Chr$(83)
+    KPgUp$ = Chr$(0) + Chr$(73)
+    KPgDn$ = Chr$(0) + Chr$(81)
+    KUp$ = Chr$(0) + Chr$(72)
+    KDn$ = Chr$(0) + Chr$(80)
+    KLft$ = Chr$(0) + Chr$(75)
+    KRit$ = Chr$(0) + Chr$(77)
+    KIns$ = Chr$(0) + Chr$(82)
+    KF1$ = Chr$(0) + Chr$(59)
+    KF2$ = Chr$(0) + Chr$(60)
+    KF3$ = Chr$(0) + Chr$(61)
+    KF4$ = Chr$(0) + Chr$(62)
+    KF5$ = Chr$(0) + Chr$(63)
+    KF6$ = Chr$(0) + Chr$(64)
+    KF7$ = Chr$(0) + Chr$(65)
+    KF8$ = Chr$(0) + Chr$(66)
+    KF9$ = Chr$(0) + Chr$(67)
+    KF10$ = Chr$(0) + Chr$(68)
+    KF11$ = Chr$(0) + Chr$(133)
+    KF12$ = Chr$(0) + Chr$(134)
+
+
+    InitScreen:
+    KEY Off
+
+    Color 7, 0
+    Cls
+
+    Locate 2, 1, 0
+
+    For x = 2 To 23
+        Locate x, 1, 0: Print String$(80, " ")
+    Next x
+
+    Timer On ' <======================<<< here's the timer
+
+    Locate 2, 1, 1, 1, 31
+
+    '------------------------------------------------
+    '               ----- Key input loop ---
+
+    _Title "Edit File - " + FFName$
+
+    Call OpenAFile(FFName$)
+
+    GoSub StatusBar
+
+    EnterDo: 'ALL the text work is done inside this loop
+
+    Do
+        keystroke$ = InKey$
+        If keystroke$ = Chr$(0) + Chr$(84) Then keystroke$ = ""
+        If InsertMode = 1 Then Locate row, col, 1, 7, 31
+        If InsertMode = 0 Then Locate row, col, 1, 1, 31
+        If keystroke$ = Chr$(27) Then Exit Do
+        If keystroke$ <> "" Then GoSub CheckKeys: GoSub StatusBar: LastTime = 0
+    Loop
+
+    GoTo EndItNow
+
+
+    '---------------------------------------------------
+    '               -- Print Document --
+    PrintTheDoc:
+    Color 8, 15
+
+    Locate 7, 20, 0: Print Chr$(201); String$(38, 205); Chr$(187)
+
+    For x = 8 To 10
+        Locate x, 20: Print Chr$(186); String$(38, " "); Chr$(186)
+    Next x
+
+    Locate 11, 20: Print Chr$(200); String$(38, 205); Chr$(188)
+
+    Color 0: Locate 9, 23, 0: Print "Printing document, please wait..."
+
+    LastTime = 0
+    Sleep 1
+    LPrint
+
+    For x = 1 To UBound(Doc$, 1)
+
+        LPrint Doc$(x)
+
+        If PrintMode = 2 Then
+            Select Case x
+                Case 31, 62, 93, 124, 155, 186, 217, 248
+                    LPrint: LPrint
+                Case 279, 310, 341, 372, 403, 434, 465, 496, 527
+                    LPrint: LPrint
+                Case 558, 589, 620, 651, 682, 713, 744, 775
+                    LPrint: LPrint
+            End Select
+        End If
+
+        If PrintMode <> 2 Then
+            Select Case x
+                Case 62, 124, 186, 248
+                    LPrint: LPrint: LPrint: LPrint
+                Case 310, 372, 434, 496
+                    LPrint: LPrint: LPrint: LPrint
+                Case 558, 620, 682, 744
+                    LPrint: LPrint: LPrint: LPrint
+            End Select
+        End If
+
+    Next x
+
+    Color 7, 0
+
+    For x = 6 To 14
+        Locate x, 20: Print String$(40, " ")
+        Locate x, 1, 0: Print Text$(x)
+    Next x
+
+    LastTime = 0
+
+    Return
+
+
+    '---------------------------------------------------
+    '               ----- Select keystroke ----
+    CheckKeys:
+
+    Select Case keystroke$
+
+        Case KF1$
+            GoTo HelpBar
+
+        Case KF2$
+            GoSub PrintTheDoc: Return
+
+        Case KF3$
+            Call SaveIt(FFName$)
+            For x = 5 To 13
+                Locate x, 1, 0: Print Text$(x)
+            Next x
+            Return
+
+        Case KF4$
+            GoTo MoreHelp
+
+        Case KPgUp$
+            If PageNo > 1 Then
+                Locate 2, 1, 0
+                PageNo = PageNo - 1
+
+                For x = 2 To 23: Print String$(80, " "): Next x
+
+                FileLine = ((PageNo - 1) * 21) + 1
+
+                For x = 2 To 23
+                    Text$(x) = Doc$(FileLine)
+                    FileLine = FileLine + 1
+                    Locate x, 1, 0: Print Text$(x)
+                Next x
+
+            Else For t = 1800 To 1000 Step -600: Sound t, .5: Next t
+            End If
+
+            Return
+
+        Case KPgDn$
+            If PageNo < NoOfPages Then
+
+                Locate 2, 1, 0
+
+                For x = 2 To 23: Print String$(80, " "): Next x
+                FileLine = (PageNo * 21) + 1
+
+                For x = 2 To 23
+                    Text$(x) = Doc$(FileLine)
+                    FileLine = FileLine + 1
+                    Locate x, 1, 0: Print Text$(x)
+                Next x
+
+                PageNo = PageNo + 1
+            Else For t = 1800 To 1000 Step -600: Sound t, .5: Next t
+            End If
+
+            Return
+
+        Case KIns$
+            If InsertMode = 0 Then InsertMode = 1: IMode$ = "Insert    ": Return
+            If InsertMode = 1 Then InsertMode = 0: IMode$ = "Overwrite": Return
+
+        Case KDel$
+            If Len(Text$(row)) < 1 Or col > Len(Text$(row)) Then
+                For t = 1800 To 1000 Step -600: Sound t, .5: Next t: Return
+            End If
+
+            If col <= Len(Text$(row)) Then
+                b$ = Left$(Text$(row), col - 1)
+                c$ = Right$(Text$(row), Len(Text$(row)) - col)
+                Text$(row) = b$ + c$
+                Locate row, 1, 0: Print Text$(row); String$(80 - Len(Text$(row)), " ")
+                Locate row, col, 0: Return
+            End If
+
+        Case KLft$
+            If col > 1 Then
+                col = col - 1
+                Locate row, col, 0
+                Return
+            End If
+
+        Case KRit$
+            If col < 80 Then
+                col = col + 1
+                Locate row, col, 0
+                Return
+            End If
+
+        Case KUp$
+            If row > 3 Then
+                row = row - 1
+                Locate row, col, 0
+                Return
+            End If
+
+        Case KDn$
+            If row < 23 Then
+                row = row + 1
+                Locate row, col, 0
+                Return
+            End If
+
+        Case KEnd$
+            col = Len(Text$(row)) + 1
+            If col = 0 Then col = 1
+            If col > 80 Then col = 80
+            Locate row, col, 0
+            Return
+
+        Case Chr$(13)
+            If row > 22 And PageNo < NoOfPages Then Beep: Return
+
+            If row > 22 And PageNo = NoOfPages Then
+
+                ReDim TmpDoc$(FLNo + 22)
+
+                If PageNo > 1 Then
+                    For x = 1 To FLNo
+                        TmpDoc$(x) = Doc$(x)
+                    Next x
+                Else
+                    For x = 3 To 22
+                        TmpDoc$(x - 2) = Text$(x)
+                    Next x
+                End If
+
+                count = 3
+                ReDim Doc$(FLNo + 22)
+
+                For x = 1 To UBound(TmpDoc$, 1)
+                    Doc$(x) = TmpDoc$(x)
+                Next x
+
+                Locate 2, 1, 0
+
+                For x = 2 To 23: Print String$(80, " "): Next x
+
+                PageNo = PageNo + 1
+                NoOfPages = NoOfPages + 1
+                row = 3: col = 1
+                Locate row, col, 0
+                ReDim Text$(25)
+                Return
+
+            End If
+
+            row = row + 1
+            col = 1
+            Locate row, col, 0
+
+        Case Chr$(9) 'tab
+            If col > 74 Then For t = 1800 To 1000 Step -600: Sound t, .5: Next t: Return
+
+            If col > Len(Text$(row)) Then
+                col = (Int(col / 5) * 5) + 5
+                Text$(row) = Text$(row) + "     "
+                Text$(row) = Left$(Text$(row), col - 1)
+                Locate row, 1, 0: Print Text$(row)
+                Locate row, col, 0
+                Return
+            End If
+
+            b$ = Left$(Text$(row), col - 1)
+            c$ = Right$(Text$(row), Len(Text$(row)) - (col - 1))
+            c = 5 - (col Mod 5)
+            col = (Int(col / 5) * 5) + 5
+            c$ = String$(c, " ") + c$
+            Text$(row) = b$ + c$
+            If Len(Text$(row)) > 80 Then Text$(row) = Left$(Text$(row), 80)
+            Locate row, 1, 0: Print Text$(row)
+            Locate row, col, 0
+            Return
+
+        Case Chr$(8) 'backspace
+            If col < Len(Text$(row)) Then GoTo BKSPC
+            col = col - 1
+
+            If col < 1 Then
+                row = row - 1
+                col = Len(Text$(row)) + 1
+                If col = 0 Then col = 1
+                If col >= 80 Then
+                    Text$(row) = Left$(Text$(row), 79)
+                    col = 80
+                End If
+                Text$(row + 1) = ""
+                Locate row + 1, 1, 0: Print " "
+            End If
+
+            If row = 1 Then row = 2: col = 1: For t = 1800 To 1000 Step -600: Sound t, .5: Next t: Return
+
+            If col >= 1 Then
+                Text$(row) = Left$(Text$(row), col - 1)
+            End If
+
+            Locate row, 1, 0: Print Text$(row); " "
+            Locate row, col, 0
+
+        Case KHome$
+            StartPos = 0
+
+            For q = 1 To Len(Text$(row))
+                FirstLtr = InStr(q, Text$(row), " ")
+                If FirstLtr <> q Then Exit For
+                StartPos = FirstLtr
+            Next
+
+            col = StartPos + 1
+            Locate row, col, 0
+
+        Case Else
+            'The actual "editing" part
+
+            If Len(keystroke$) > 1 Then
+                'special keys (2 chars like Fn / Pg) not implemented
+                For t = 1800 To 1000 Step -600
+                    Sound t, .5
+                Next t
+                Return
+            End If
+
+            If col > Len(Text$(row)) Then
+                Text$(row) = Text$(row) + String$(col - Len(Text$(row)) - 1, " ")
+            End If
+
+            If col < Len(Text$(row)) Then GoTo InsOvr
+
+            Text$(row) = Text$(row) + keystroke$
+
+            Locate row, 1, 0: Print Text$(row)
+            col = col + 1
+
+            If col > 80 And row < 24 Then col = 1: row = row + 1
+
+            If col > 79 And row > 23 Then
+                col = 23
+                For t = 1800 To 1000 Step -600: Sound t, .5: Next t
+                Text$(row) = Left$(Text$(row), 79)
+                Return
+            End If
+
+            Locate row, col, 0
+
+    End Select
+
+    LastTime = 0
+
+    Return
+
+
+    '------------------------------
+    '    --- Insert or Overwrite ---
+    InsOvr:
+    If InsertMode = 0 Then
+        b$ = Left$(Text$(row), col - 1)
+        c$ = Right$(Text$(row), Len(Text$(row)) - (col - 0))
+        Text$(row) = b$ + keystroke$ + c$
+        Locate row, 1, 0: Print Text$(row)
+        col = col + 1
+        Locate row, col, 0
+        Return
+    End If
+
+    If InsertMode = 1 Then
+        b$ = Left$(Text$(row), col - 1)
+        c$ = Right$(Text$(row), Len(Text$(row)) - (col - 1))
+        Text$(row) = b$ + keystroke$ + c$
+        If Len(Text$(row)) > 80 Then Text$(row) = Left$(Text$(row), 80)
+        Locate row, 1, 0: Print Text$(row)
+        col = col + 1
+        Locate row, col, 0
+    End If
+
+    Return
+
+
+    '-----------------------------------
+    '       --- Backspace from inside line ---
+    BKSPC:
+    If col = 1 Then
+        For t = 1800 To 1000 Step -600
+            Sound t, .5
+        Next t
+        Return
+    End If
+
+    b$ = Left$(Text$(row), col - 2)
+    c$ = Right$(Text$(row), Len(Text$(row)) - (col - 1))
+    Text$(row) = b$ + c$
+    Locate row, 1, 0: Print Text$(row) + " "
+    col = col - 1
+    Locate row, col, 0
+    GoTo EnterDo
+
+
+
+    '-------------------------------------------
+    '     ---- Status bar Update ------
+    StatusBar:
+
+    LastTime = 0
+
+    FLNo = ((PageNo - 1) * 21) + (row - 2)
+
+    Color 15, 0
+    Locate 1, 3, 0: Print "Page:"; PageNo; "/"; NoOfPages
+    Locate 1, 20, 0: Print "Line:"; FLNo
+    Locate 1, 32, 0: Print "Col:"; col
+    Locate 1, 42, 0: Print "Cusor: "; IMode$
+    Locate 1, 65, 0: Print "Line Len:"; Len(Text$(row))
+
+    Locate 25, 1
+    Print " ESC - Quit    F1 - Help    F2 - Print File    F3 - Save File"; Tab(79);
+
+    Color 7, 0
+    Doc$(FLNo) = Text$(row)
+    Locate row, col, 0
+
+    Return
+
+
+    '---------------------------------------------
+    HelpBar:
+    Color 8, 15
+    Locate 1, 1, 0: Print String$(160, " ")
+    Locate 1, 8, 0: Print "= This Menu     [Ins]  = Insert text in line  [Del] = Delete 1 character"
+    Locate 2, 8, 0: Print "= Print Options [End]  = Cursor to text end"
+    Locate 2, 8, 0: Print "= File Options  [Home] = Cusor to line start      [F4] = List More...    "
+    Color 0
+    Locate 1, 3, 0: Print "[F1]": Locate 1, 24: Print "[Ins]"
+    Locate 2, 3, 0: Print "[F2]": Locate 2, 24: Print "[End]"
+    Locate 2, 1, 0: Print "  [F3] ": Locate 2, 24: Print "[Home]"
+    Locate 1, 53: Print " [Del]": Locate 2, 56, 0: Print "  [F4]"
+
+    Do
+        keystroke$ = InKey$
+        If keystroke$ <> "" Then If keystroke$ = Chr$(0) + Chr$(62) Then GoTo MoreHelp
+        If keystroke$ = " " Then Exit Do
+        If keystroke$ = Chr$(27) Then Exit Do
+        If keystroke$ = Chr$(13) Then Exit Do
+    Loop
+
+    LastTime = 0
+    GoTo EndHelp
+
+
+    MoreHelp:
+    Color 0, 15
+    Locate 1, 1, 0: Print String$(160, " ")
+    Color 0
+    Locate 1, 3, 0: Print "Other supported keys:"
+    Color 8
+    Locate 2, 3: Print "[Backspace] = Backup 1 and delete  [Tab] = Tabs text upto 5 spaces"
+    Locate 2, 3: Print "[Enter] = Carriage return          "
+    Color 0
+    Locate 2, 3: Print "[Backspace]": Locate 2, 38: Print "[Tab]"
+    Locate 2, 1: Print "  [Enter]": Locate 2, 38, 0: Print "[Caps], [Shift], ["; Chr$(24);
+    Print "], ["; Chr$(25); "], ["; Chr$(26); "], ["; Chr$(27); "]        "
+
+    Do
+        keystroke$ = InKey$
+        If keystroke$ = " " Then Exit Do
+        If keystroke$ = Chr$(27) Then Exit Do
+        If keystroke$ = Chr$(13) Then Exit Do
+    Loop
+
+    EndHelp:
+    Color 8, 15
+    Locate 1, 1, 0: Print String$(160, " ")
+    Locate 1, 2, 0: Print Date$
+    Color 8, 15
+    Locate 1, 60: Print " Press [Esc] to Exit "
+    GoSub StatusBar
+    Locate 2, 1, 0: Print String$(80, " ")
+    Color 7, 0: Locate 2, 1, 0: Print Doc$(((PageNo - 1) * 21) + 1)
+    LastTime = 0
+
+    GoTo EnterDo
+
+
+    '---------------------------------------------
+    '       --- End Program w/ optional return ---
+    EndItNow:
+    Color 8, 15
+    Locate 8, 23, 0: Print "ษออออออออออออออออออออออออออออออออออป"
+    For x = 9 To 11
+        Locate x, 23: Print "บ                                  บ"
+    Next x
+    Locate 12, 23, 0: Print "ศออออออออออออออออออออออออออออออออออผ"
+    Color 0
+    Locate 9, 26, 0: Print "ALL UNSAVED WORK WILL BE LOST!"
+    Color 8
+    Locate 11, 28, 0: Print "Exit Now?  [ Yes ]  [ No  ]"
+    Color 0
+    Locate 11, 41, 0: Print "Y"
+    Locate 11, 50, 0: Print "N"
+
+    Do
+        keystroke$ = UCase$(InKey$)
+        If keystroke$ = "Y" Then GoTo QuitRoutine
+        If keystroke$ = "N" Then Exit Do
+        If keystroke$ = Chr$(27) Then Exit Do
+    Loop
+
+    Color 7, 0
+
+    For x = 7 To 13
+        Locate x, 1, 0: Print String$(80, " ")
+        Locate x, 1, 0: Print Text$(x)
+    Next x
+
+    GoSub StatusBar
+    LastTime = 0
+    GoTo EnterDo
+
+
+    '------------------------ program ended --------------------------------------
+    QuitRoutine:
+    Cls
+    Timer Off
+
+    '---------------------------------------------------------------------------------
+    '       ------------- Error Trapping Routine -----------------
+End Sub
+
+
+
+Sub SaveIt (FFName$)
+
+    LastTime = 0
+
+    If _FileExists(FFName$) Then Kill FFName$ 'DEL the existing file to rewrite
+
+    ' Scan last lines of file for characters & remove last blank lines to
+    ' Keep files from having extra "blank" lines on the last page.
+
+    For x = UBound(Doc$, 1) To 1 Step -1
+
+        If Len(Doc$(x)) > 0 Then
+
+            Do While w < 80
+                w = w + 1
+                y = InStr(w, Doc$(x), Chr$(0))
+                If y <> w Then Exit For
+            Loop
+
+        End If
+
+    Next x
+
+    If x >= 1 Then
+
+        Open FFName$ For Output As #1 'Keeps quotes off files
+
+        For w = 1 To x 'Loop to last line with text on it
+
+            'lineLength = Len(Doc$(w))
+            'NbrSpaces = 80 - lineLength 'Count the trailing blanks for nuls
+
+            'New$ = Doc$(w) + Chr$(13)
+            'New$ adds a CR to each line
+            ' Below, New$ could also either:
+            ' -- place nul characters after each lin
+            '+ String$(NbrSpaces, 0)
+            ' -- pad each line with spaces to at least 80
+            '+ Space$(NbrSpaces)
+
+            'Print #1, New$
+            Print #1, Doc$(w)
+
+        Next w
+
+        Close
+
+    Else
+
+        Color 0
+        Locate 8, 27: Print "                           "
+        Locate 9, 27: Print " There is no text to save. "
+        Color 16
+        Locate 11, 27: Print "       Returning...        "
+        Locate 10, 27: Print "                           "
+        Locate 12, 27: Print "                           "
+        Color 7, 0
+        Sleep 2
+        LastTime = 0
+        For x = 2 To 23
+            Locate x, 1: Print Text$(x)
+        Next x
+
+    End If
+
+    EndOfSub:
+    LastTime = 0
+    Color 7, 0
+    For x = 5 To 13
+        Locate x, 25: Print String$(32, " ")
+    Next x
+
+End Sub
+
+
+
+Sub OpenAFile (FFName$)
+
+    count = 0
+    NoOfPages = 0
+
+    Open FFName$ For Input As #1
+
+    Do While Not EOF(1)
+        Line Input #1, keystroke$
+        count = count + 1
+    Loop
+
+    Close #1
+
+    FullPg = Int(count / 21)
+    ExtraLines = count Mod 21
+
+    If ExtraLines > 0 Then
+        NoOfPages = FullPg + 1
+    Else NoOfPages = FullPg
+    End If
+
+    DocLen = (NoOfPages * 21) + 1
+    ReDim Doc$(DocLen)
+    ReDim Text$(25)
+    count = 1
+
+    Open FFName$ For Input As #1
+
+    Do While Not EOF(1)
+        Line Input #1, keystroke$
+        Doc$(count) = keystroke$
+        If count < 22 Then Text$(count + 2) = keystroke$
+        count = count + 1
+    Loop
+
+    Close #1
+
+    count = 1: PageNo = 1
+    Color 7, 0
+
+    For x = 2 To 23
+        Locate x, 1, 0: Print String$(80, " ")
+        Locate x, 1, 0: Print Text$(x)
+    Next x
+
+    Color 7, 0
+    For x = 5 To 13
+        Locate x, 25: Print String$(32, " ")
+    Next x
+
+End Sub

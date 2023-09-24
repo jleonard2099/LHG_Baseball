@@ -10,22 +10,21 @@ Const TEAMS_PER_DIV = 15
 Const DIVS_PER_CONFERENCE = 2
 Const TEAMS_PER_CONFERENCE = 30
 
-Const SCHEDULE_SIZE_BYTES = 48
 Const NUM_STATRECORDS = 162
+Const SCHEDULE_SIZE_BYTES = 48
 
 DefInt A-Z
 
-'$INCLUDE: 'BoxRoutines.bi'
-'$INCLUDE: 'FileTeamSelection.bi'
+' General purpose
 '$INCLUDE: 'KeyInput.bi'
 '$INCLUDE: 'QPProEqu.bi'
 '$INCLUDE: 'PadRight.bi'
-'$INCLUDE: 'Variables.bi'
-
-Dim Shared P, pitchEraOpt, playerOpt, RE, RD
-Dim Shared M%(9), MG%(0 To 1, 999), NG%(18), O%(1)
+'$INCLUDE: 'QBWRITE.bi'
 
 ' For Utils
+'$INCLUDE: 'BoxRoutines.bi'
+'$INCLUDE: 'FileTeamSelection.bi'
+'$INCLUDE: 'Variables.bi'
 '$INCLUDE: 'MainRoutines.bi'
 '$INCLUDE: 'TITLE.bi'
 
@@ -594,13 +593,13 @@ Sub Leaders_Menu ()
 
                 Case 5:
                     Call SeasonRecords
-                    
+
                 Case 6:
                     Call NEWLDR
 
                 Case 7:
                     Call BLANK
-                
+
             End Select
 
         End If
@@ -610,13 +609,15 @@ Sub Leaders_Menu ()
 End Sub
 
 
-'$INCLUDE: 'BoxRoutines.bm'
-'$INCLUDE: 'FileTeamSelection.bm'
+' General purpose
 '$INCLUDE: 'KeyInput.bm'
 '$INCLUDE: 'QPProEqu.bm'
 '$INCLUDE: 'PadRight.bm'
+'$INCLUDE: 'QBWRITE.bm'
 
 ' For Utils
+'$INCLUDE: 'BoxRoutines.bm'
+'$INCLUDE: 'FileTeamSelection.bm'
 '$INCLUDE: 'TITLE.bm'
 '$INCLUDE: 'ACTIVATE.BAS'
 '$INCLUDE: 'ALIGN.BAS'

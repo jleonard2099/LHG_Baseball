@@ -11,10 +11,13 @@ Sub SCHEDULE ()
     ReDim menuChoices$(1 To 8)
 
     Shared NS%
+    
     Shared scheduleAP%(), scheduleNG%()
 
     _Title "Full Count Baseball - Scheduler"
 
+    '--- Pay close attention to this and consider the "why"
+    '--- I think this is setting defaults - much like we want to do!
     scheduleNG%(0, 8) = 0
     scheduleNG%(0, 3) = 1
     scheduleNG%(0, 7) = 0
@@ -291,13 +294,14 @@ Sub NewSchedule (scheduleFile$)
 
             Case "B":
                 'ReDim array$(500) 'holds the main editor string array
-                'Do
-                '   Locate 23, 1: Print "ENTER GAME # TO GO TO        "
-                '   Locate 23, 1: Input "ENTER GAME # TO GO TO "; targetGame%
-                'Loop Until targetGame% >= 1 And targetGame% <= scheduleAP%(0)
-                'NS% = Int((targetGame% - 1) / 20)
-                'BN$ = diskPaths$(1) + "box" + Mid$(Str$(targetGame%, 2, Len(Str$(targetGame%))
-                'Call EditBoxscore (BN$)
+                Do
+                   Locate 23, 1: Print "ENTER GAME # TO GO TO        "
+                   Locate 23, 1: Input "ENTER GAME # TO GO TO "; targetGame%
+                Loop Until targetGame% >= 1 And targetGame% <= scheduleAP%(0)
+                NS% = Int((targetGame%- 1) / 20)
+                boxName$ = diskPaths$(1) + "BOX" + Mid$( Str$(targetGame%), 2, Len(Str$(targetGame%)) )
+                Call EditBoxscore (boxName$)
+                Color 15, 0
 
             Case "D":
                 ' *** DELETE A GAME FROM THE SCHEDULE ***
@@ -524,7 +528,7 @@ Sub NewGame (visitor$, home$, YN$, NTMS, gameIndex%)
         Locate 3, 2: Color 14: Print "(2) ";: Color 15: Print "VISITING TEAM: "; visitor$
         Locate 4, 2: Color 14: Print "(3) ";: Color 15: Print "HOME TEAM: "; home$
         Locate 5, 2: Color 14: Print "(4) ";: Color 15: Print "DESIGNATED HITTER: "; yesNo$(scheduleNG%(gameIndex%, 3))
-        Locate 6, 2: Color 14: Print "(5) ";: Color 15: Print Using "DISPLAY PAUSE IN SECONDS: ##.#  "; scheduleNG%(gameIndex%, 4) / 10
+        Locate 6, 2: Color 14: Print "(5) ";: Color 15: Print Using "PLAY-BY-PLAY DELAY (SECS): ##.#  "; scheduleNG%(gameIndex%, 4) / 10
         Locate 7, 2: Color 14: Print "(6) ";: Color 15: Print "GAME DATE (XX-XX-XX) "; DT$; "   "
         Locate 8, 2: Color 14: Print "(7) ";: Color 15: Print "GAME TIME (XX:XXP) "; TM$; "   "
         Locate 9, 2: Color 14: Print "(8) ";: Color 15: Print "USE WEATHER EFFECTS: "; yesNo$(1 - scheduleNG%(gameIndex%, 5))
@@ -669,7 +673,6 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
     Select Case scheduleAction%
 
         Case 5
-            ' GLOBAL SETTINGS FOR A SCHEDULE
             Call ChangeGlobalSettings
             Call SaveScheduleFile(scheduleFile$)
             Call NewSchedule(scheduleFile$)
@@ -741,7 +744,7 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
                         Loop Until C$ = "0" Or C$ = "1"
 
                         Print
-                        Input "ENTER DISPLAY PAUSE FOR THESE GAMES "; displayPause!
+                        Input "ENTER PLAY-BY-PLAY DELAY FOR THESE GAMES "; displayPause!
 
                     End If
 
@@ -929,9 +932,9 @@ Sub BoxscoreMaintenance ()
                 Case 2:
                     boxscoreFile$ = ChooseFile$ (diskPaths$(1) + "*.SPC", "BOXSCORE", ExitCode%)
                     
-                    If ExitCode% <> 27 And ExitCode% <> 0 Then
+                    If ExitCode% <> 27 And ExitCode% <> 0 And boxscoreFile$ <> "" Then
                         boxName$ = diskPaths$(1) + boxscoreFile$
-                        'ReDim array$(500) 'holds the main editor string array
+                        Call EditBoxscore (boxName$)
                     End If
 
                 Case 3
@@ -1078,27 +1081,47 @@ Sub ChangeGlobalSettings ()
 
     Dim displayPause!
 
+    ' GLOBAL SETTINGS FOR A SCHEDULE
+    playerOpt = 3
+    desigHit = 0
+    useWeather = 1
+    useInj = 1
+    useLRSplit = 1
+    useRest = 1
+    useMgrProf = 1
+    useVGA = 1
+    pitchEraOpt = 0
+
     DT$ = "04-04-93"
     TM$ = "07:30P"
 
-    ' GLOBAL SETTINGS FOR A SCHEDULE
     Do
         Color 15, 0
         Cls
         Print Tab(30); "GLOBAL SETTINGS FOR SCHEDULE"
 
-        '-- Missing option for mode of play
-        Locate 3, 2: Color 14: Print "(1) ";: Color 15: Print "TYPE OF GAME: "; playMode$(U5%)
-        Locate 4, 2: Color 14: Print "(2) ";: Color 15: Print "DESIGNATED HITTER: "; yesNo$(DH%)
-        Locate 5, 2: Color 14: Print "(3) ";: Color 15: Print Using "DISPLAY PAUSE IN SECONDS: ##.#  "; displayPause! ' / 10
-        Locate 6, 2: Color 14: Print "(4) ";: Color 15: Print "USE WEATHER EFFECTS: "; yesNo$(1 - WE%)
-        Locate 7, 2: Color 14: Print "(5) ";: Color 15: Print "USE INJURIES "; yesNo$(1 - IJ%)
-        Locate 8, 2: Color 14: Print "(6) ";: Color 15: Print "USE LEFT/RIGHT SPLIT STATS "; yesNo$(1 - LR%)
-        Locate 9, 2: Color 14: Print "(7) ";: Color 15: Print "USE DAYS REST DATA FOR PITCHERS "; yesNo$(1 - DR%)
-        Locate 10, 2: Color 14: Print "(8) ";: Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE "; yesNo$(1 - MP%)
-        Locate 11, 2: Color 14: Print "(9) ";: Color 15: Print "USE VGA SCREENS, IF ABLE: "; yesNo$(1 - VG%)
-        Locate 12, 2: Color 14: Print "(A) ";: Color 15: Print "PITCHER ERA: "; pitcherEra$(PE%)
-        Locate 13, 2: Color 14: Print "(0) ";: Color 15: Print "ACCEPT GLOBAL SETTINGS"
+        Locate 3, 2: Color 14: Print "(1) ";
+        Color 15: Print "TYPE OF GAME: "; playMode$(playerOpt)
+        Locate 5, 2: Color 14: Print "(2) ";
+        Color 15: Print Using "PLAY-BY-PLAY DELAY (SECS): ##.#  "; displayPause! ' / 10
+        Locate 4, 2: Color 14: Print "(3) ";
+        Color 15: Print "DESIGNATED HITTER: "; yesNo$(desigHit)
+        Locate 6, 2: Color 14: Print "(4) ";
+        Color 15: Print "USE WEATHER EFFECTS: "; yesNo$(useWeather)
+        Locate 7, 2: Color 14: Print "(5) ";
+        Color 15: Print "USE INJURIES "; yesNo$(useInj)
+        Locate 8, 2: Color 14: Print "(6) ";
+        Color 15: Print "USE LEFT/RIGHT SPLIT STATS "; yesNo$(useLRSplit)
+        Locate 9, 2: Color 14: Print "(7) ";
+        Color 15: Print "USE DAYS REST DATA FOR PITCHERS "; yesNo$(useRest)
+        Locate 10, 2: Color 14: Print "(8) ";
+        Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE "; yesNo$(useMgrProf)
+        Locate 11, 2: Color 14: Print "(9) ";
+        Color 15: Print "USE VGA SCREENS, IF ABLE: "; yesNo$(useVGA)
+        Locate 12, 2: Color 14: Print "(A) ";
+        Color 15: Print "PITCHER ERA: "; pitcherEra$(pitchEraOpt)
+        Locate 13, 2: Color 14: Print "(0) ";
+        Color 15: Print "ACCEPT GLOBAL SETTINGS"
 
         Do
             I$ = GetKeyPress$
@@ -1109,36 +1132,36 @@ Sub ChangeGlobalSettings ()
         Select Case I
 
             Case 1:
-                U5% = U5% + 1
-                If U5% > 3 Then U5% = 0
+                playerOpt = playerOpt + 1
+                If playerOpt > 3 Then playerOpt = 0
 
             Case 2:
-                DH% = 1 - DH%
-
-            Case 3:
                 Input "DISPLAY VARIABLE "; displayPause!
 
+            Case 3:
+                desigHit = 1 - desigHit
+
             Case 4:
-                WE% = 1 - WE%
+                useWeather = 1 - useWeather
 
             Case 5:
-                IJ% = 1 - IJ%
+                useInj = 1 - useInj
 
             Case 6:
-                LR% = 1 - LR%
+                useLRSplit = 1 - useLRSplit
 
             Case 7:
-                DR% = 1 - DR%
+                useRest = 1 - useRest
 
             Case 8:
-                MP% = 1 - MP%
+                useMgrProf = 1 - useMgrProf
 
             Case 9:
-                VG% = 1 - VG%
+                useVGA = 1 - useVGA
 
             Case 10:
-                PE% = PE% + 1
-                If PE% > 8 Then PE% = 0
+                pitchEraOpt = pitchEraOpt + 1
+                If pitchEraOpt > 8 Then pitchEraOpt = 0
 
             Case 0: '
 
@@ -1147,16 +1170,16 @@ Sub ChangeGlobalSettings ()
     Loop Until I = 0
 
     For I = 1 To scheduleAP%(0)
-        scheduleNG%(I, 3) = DH%
+        scheduleNG%(I, 3) = desigHit
         scheduleNG%(I, 4) = displayPause! * 10
-        scheduleNG%(I, 5) = WE%
-        scheduleNG%(I, 6) = IJ%
-        scheduleNG%(I, 7) = LR%
-        scheduleNG%(I, 8) = U5%
-        scheduleNG%(I, 9) = DR%
-        scheduleNG%(I, 10) = MP%
-        scheduleNG%(I, 11) = VG%
-        scheduleNG%(I, 14) = PE%
+        scheduleNG%(I, 5) = useWeather
+        scheduleNG%(I, 6) = useInj
+        scheduleNG%(I, 7) = useLRSplit
+        scheduleNG%(I, 8) = playerOpt
+        scheduleNG%(I, 9) = useRest
+        scheduleNG%(I, 10) = useMgrProf
+        scheduleNG%(I, 11) = useVGA
+        scheduleNG%(I, 14) = pitchEraOpt
     Next
 
 End Sub
@@ -1518,11 +1541,8 @@ End Sub
 'boxscores in their favorite text editor.
 Sub EditBoxscore (boxName$)
 
-    F2$ = Chr$(0) + Chr$(60) 'extended code for the F2 function key
-    F3$ = Chr$(0) + Chr$(61) 'extended code for the F3 function key
-
     If Not _FileExists(boxName$) Then
-    
+
         MsgText$ = "BOXSCORE DOES NOT EXIST PRESS ANY KEY TO RETURN TO MAIN MENU"
         BoxWidth = 24
         BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
@@ -1533,63 +1553,7 @@ Sub EditBoxscore (boxName$)
 
     Else
 
-        Open boxName$ For Input As #1
-        CURLINE = 1
-        While Not EOF(1)
-            Line Input #1, array$(CURLINE)
-            CURLINE = CURLINE + 1
-        Wend
-        Close #1
-
-        Cls '  show how QEdit saves the screen
-
-        Color 15, 0 'print instructions on bottom of screen
-        Locate 25, 1
-        Print " ESC - Quit    F1 - Help    F2 - Print Boxscore   F3 - Save Boxscore"; Tab(79);
-
-        '----- fill in editing parameters
-        Select Case Monitor% 'determine the monitor type
-            Case 3, 5, 7, 9, 10, 12 'CGA, EGA, VGA monitors
-                Ed.AColor = 23 'white on blue
-            Case Else 'all other monitors
-                Ed.AColor = 7 'white on black
-        End Select
-        Ed.Wrap = 0 'word wrap at column 65 (use 0 for to disable word wrap)
-        Ed.Frame = 0 'frame code (1 = show ruler line & scroll bars, 0 = don't)
-        Ed.Rows = 24 'number of text lines to display on the screen (3 - 25)
-        Ed.Wide = 80 'width of the active screen (10 - 80)
-        Ed.HTab = 4 'set tab stops to 4 spaces
-        Locate 1, 1 'locate the upper left corner of the edit window frame
-        Action = 1 'Action 1 to save underlying screen and
-        '  display text, operate in polled mode
-
-        '----- main loop for editing
-        Do
-            '----- call QEdit in polled mode
-            'CALL QEdit(array$(), Ky$, Action, Ed)
-            '----- F2 function key pressed? - change margin
-            If Ky$ = F2$ Then: For I = 1 To CURLINE - 1: LPrint array$(I): Next
-            If Ky$ = F3$ Then
-                Open BN$ For Output As #1
-                For I = 1 To CURLINE - 1
-                    Print #1, array$(I)
-                Next
-                Close 1
-
-                MsgText$ = "REVISED BOXSCORE HAS BEEN SAVED... PRESS ANY KEY TO CONTINUE"
-                BoxWidth = 18
-                BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-                Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
-                Call CSMsgBox(MsgText$, BoxWidth, Pass)
-                I$ = GetKeyPress$
-                Call CSMsgBox("", 0, Pass)
-
-            End If
-
-        Loop Until Ky$ = Chr$(27) 'keep calling QEdit until Esc is pressed
-
-        '----- call QEdit again with an Action flag of 5 to restore the screen
-        'CALL QEdit(array$(), Ky$, 5, Ed)
+        Call QBWRITE (boxName$)
 
     End If
 
