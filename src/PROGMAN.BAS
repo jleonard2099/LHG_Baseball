@@ -75,9 +75,10 @@ Sub PROGMAN ()
                 HiLiteFGColor% = 0: HiLiteBGColor% = 7
                 Spacing% = 1
                 Row% = 5
-                Column% = 10
+                menuWidth% = Len(menuChoices$(1))
+                Column% = (80 - menuWidth% - 2) / 2
 
-                Call box0(4, 9, 19, 70, 2, 15, 1)
+                Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
 
                 _MouseShow "DEFAULT"
                 MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
@@ -180,8 +181,10 @@ Sub RotationReliefMenu (yearNumber$, targetTeam$, mgrNbr)
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 5
-        Column% = 19
-        Call box0(4, 18, 11, 62, 2, 15, 1)
+        menuWidth% = Len(menuChoices$(1))
+        Column% = (80 - menuWidth% - 2) / 2
+
+        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
@@ -211,7 +214,7 @@ Sub RotationReliefMenu (yearNumber$, targetTeam$, mgrNbr)
 
         End If
 
-    Loop Until Selection% = 6
+    Loop Until Selection% = 6 Or ExitCode% = 27
 
 End Sub
 
@@ -244,9 +247,10 @@ Sub LineupStrategy (yearNumber$, targetTeam$)
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 5
-        Column% = 13
+        menuWidth% = Len(menuChoices$(1))
+        Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(4, 12, 9, 68, 2, 15, 1)
+        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
@@ -752,9 +756,10 @@ Sub EditLineups (handRL%, targetTeam$, yearNumber$)
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 5
-        Column% = 13
+        menuWidth% = Len(menuChoices$(1))
+        Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(4, 12, 9, 43, 2, 15, 1)
+        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
@@ -3076,9 +3081,10 @@ Sub HittingStrategy (yearNumber$, mgrNbr)
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 5
-        Column% = 13
+        menuWidth% = Len(menuChoices$(1))
+        Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(4, 12, 11, 58, 2, 15, 1)
+        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
@@ -3352,9 +3358,10 @@ Sub DefensiveStrategy (yearNumber$, mgrNbr)
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 5
-        Column% = 18
+        menuWidth% = Len(menuChoices$(1))
+        Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(4, 17, 14, 63, 2, 15, 1)
+        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
@@ -3697,9 +3704,10 @@ Sub PinchRunStrategy (yearNumber$, targetTeam$, mgrNbr)
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 5
-        Column% = 13
+        menuWidth% = Len(menuChoices$(1))
+        Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(4, 12, 9, 67, 2, 15, 1)
+        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%

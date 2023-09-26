@@ -30,9 +30,10 @@ Sub NEWLDR ()
         Spacing% = 1
         Row% = 8
         menuWidth% = Len(menuChoices$(1))
-        Column% = 23
+        menuWidth% = Len(menuChoices$(1))
+        Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor%, FileBGColor%)
+        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
@@ -411,9 +412,10 @@ Sub ExpandedLeaders_Menu (leaderFile$, JB, JP, TS, TTS)
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 8
-        Column% = 30
+        menuWidth% = Len(menuChoices$(1))
+        Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(7, 29, 12, 51, 2, 15, 1)
+        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%

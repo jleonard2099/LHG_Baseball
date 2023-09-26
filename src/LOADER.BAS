@@ -1593,9 +1593,11 @@ Sub SelectStadium ()
                     HiLiteFGCouseLRSplit = 0: HiLiteBGCouseLRSplit = 7
                     Spacing% = 1
                     Row% = 5
-                    Column% = 10
+                    menuWidth% = Len(menuChoices$(1))
+                    Column% = (80 - menuWidth% - 2) / 2
 
-                    Call box0(4, 9, 20, 38, 2, 15, 1)
+                    Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
+
                     _MouseShow "Default"
                     MAMenu PARK$(), Selection%, Start%, Count%, ExitCode%, FileFGCouseLRSplit, FileBGCouseLRSplit, HiLiteFGCouseLRSplit, HiLiteBGCouseLRSplit, 15, 1, 1, Row%, Column%
                     _MouseHide

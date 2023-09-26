@@ -254,7 +254,7 @@ Do
 
     Call Main_Menu(Selection%)
 
-Loop Until Selection% = 15
+Loop Until Selection% = 14
 
 End
 
@@ -313,10 +313,12 @@ Sub Main_Menu (menuSelection%)
         FileFGColor% = 15: FileBGColor% = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
-        Row% = 7
-        Column% = 24
+        Row% = 8
+        menuWidth% = Len(menuChoices$(1))
+        Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(6, 23, 21, 56, 2, 15, 1)
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor%, FileBGColor%)
+
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), menuSelection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
@@ -347,7 +349,7 @@ Sub Main_Menu (menuSelection%)
 
     Loop Until menuSelection% = 14 Or ExitCode% = 27
 
-    If ExitCode% = 27 Then menuSelection% = 15
+    If ExitCode% = 27 Then menuSelection% = 14
 
 End Sub
 
@@ -493,9 +495,10 @@ Sub Replay_Menu ()
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 8
-        Column% = 23
+        menuWidth% = Len(menuChoices$(1))
+        Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(7, 22, 14, 57, 2, 15, 1)
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor%, FileBGColor%)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
@@ -565,9 +568,10 @@ Sub Leaders_Menu ()
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 8
-        Column% = 21
+        menuWidth% = Len(menuChoices$(1))
+        Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(7, 20, 16, 58, 2, 15, 1)
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor%, FileBGColor%)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%

@@ -270,6 +270,7 @@ End Function
 '-----------------------------------
 ' NOT IMPLEMENTED
 Sub AddInt (AElement, Value, NumEls)
+
 End Sub
 
 ' ------------------------------------------------------------
@@ -362,7 +363,7 @@ Sub CapNum ()
     Locate 25, 69 'Position to print status msg
 
     If CapStatus Then
-        Print " CAP " 'White on Black
+        Print " CAP "; 'White on Black
     Else
         Print Space$(5) 'Print or erase message
     End If
@@ -374,13 +375,14 @@ Sub CapNum ()
     Locate 25, 75 'Position to print status msg
 
     If NumStatus Then 'Print or erase message
-        Print " NUM "
+        Print " NUM ";
     Else
         Print Space$(5)
     End If
 
     QCapNumExit:
     Locate V, H 'Restore cursor position
+
 End Sub
 
 '-----------------------------------
@@ -418,6 +420,7 @@ Sub Comline (NumArgs%, Args$(), MaxArgs%)
     ' Go through the command line a character at a time
 
     For I = 1 To L
+
         C$ = Mid$(Cl$, I, 1)
         ' Test for character being a blank or a tab
         If (C$ <> " " And C$ <> Chr$(9)) Then
@@ -437,6 +440,7 @@ Sub Comline (NumArgs%, Args$(), MaxArgs%)
             ' Set "Not in an argument" flag to FALSE
             IN = FALSE
         End If
+
     Next I
 
 End Sub
@@ -884,16 +888,20 @@ End Sub
 ' MPaintBox Copycat Subroutine
 '-----------------------------------
 Sub MPaintBox (ULRow%, ULCol%, LRRow%, LRCol%, Colr%)
+
     _MouseHide
 
     _MouseShow "DEFAULT"
+
 End Sub
 
 '-----------------------------------
 ' MQPrint Copycat Subroutine
 '-----------------------------------
 Sub MQPrint (X$, FGColor%, BGColor%)
+
     _MouseHide
+
     H = Pos(0): V = CsrLin 'save cursor position
     '--If using OneColor:
     '--Color (Color% And 15), ((Color% And 240) / 16)
@@ -901,15 +909,19 @@ Sub MQPrint (X$, FGColor%, BGColor%)
     Print X$;
     Locate V, H
     _MouseShow "DEFAULT"
+
 End Sub
 
 '-----------------------------------
 ' QuickSort Subroutine
 '-----------------------------------
 Sub QuickSort (start As Integer, finish As Integer, array() As Single)
+
     Dim Hi As Integer, Lo As Integer, Middle As Single
+
     Hi = finish: Lo = start
     Middle = array((Lo + Hi) / 2) 'find middle of array
+
     Do
         Do While array(Lo) < Middle: Lo = Lo + 1: Loop
         Do While array(Hi) > Middle: Hi = Hi - 1: Loop
@@ -918,8 +930,10 @@ Sub QuickSort (start As Integer, finish As Integer, array() As Single)
             Lo = Lo + 1: Hi = Hi - 1
         End If 'If homework, you will fail
     Loop Until Lo > Hi
+
     If Hi > start Then Call QuickSort(start, Hi, array())
     If Lo < finish Then Call QuickSort(Lo, finish, array())
+
 End Sub
 
 '-----------------------------------
@@ -1114,6 +1128,7 @@ Sub QPrint (X$, FGColor%, BGColor%, Page%)
 
     'Restore cursor position
     Locate V, H
+
 End Sub
 
 '-----------------------------------
@@ -1661,4 +1676,3 @@ Sub Lts2Menu (Item$(), Prompt$(), Choice%, FGColor%, BGColor%)
     Erase Break%, ScrBuf%
 
 End Sub
-

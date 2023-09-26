@@ -26,9 +26,10 @@ Sub UMPMGR ()
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 6
         Row% = 8
-        Column% = 26
+        menuWidth% = Len(menuChoices$(1))
+        Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + 25, 2, FileFGColor%, FileBGColor%)
+        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
@@ -41,12 +42,11 @@ Sub UMPMGR ()
             Select Case Selection%
                 Case 1: Call EnterUmpireFile
                 Case 2: Call EditUmpireFile
-                Case 3: Cls '
             End Select
 
         End If
 
-    Loop Until Selection% = 3
+    Loop Until Selection% = 3 Or ExitCode% = 27
 
 End Sub
 

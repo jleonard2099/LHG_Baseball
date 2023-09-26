@@ -30,9 +30,10 @@ Sub LOOKY ()
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 8
-        Column% = 20
+        menuWidth% = Len(menuChoices$(1))
+        Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(7, 19, 11, 60, 2, 15, 1)
+        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
 
         _MouseShow "Default"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
@@ -241,9 +242,10 @@ Sub ViewAndPrintOptions (statFile$, teamName$, totalGames%, menuExit)
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 8
-        Column% = 28
+        menuWidth% = Len(menuChoices$(1))
+        Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(7, 27, 12, 52, 2, 15, 1)
+        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
 
         _MouseShow "Default"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
@@ -411,7 +413,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
     I$ = GetKeyPress$
     Cls
 
-    Call TITLE_HEADER
+    Call TITLE_STATS
 
     Locate 1, 1
     Print Tab(80);
