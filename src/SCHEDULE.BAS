@@ -294,7 +294,6 @@ Sub NewSchedule (scheduleFile$)
                 Call EditGame
 
             Case "B":
-                'ReDim array$(500) 'holds the main editor string array
                 Do
                    Locate 23, 1: Print "ENTER GAME # TO GO TO        "
                    Locate 23, 1: Input "ENTER GAME # TO GO TO "; targetGame%

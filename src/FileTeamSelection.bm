@@ -553,7 +553,7 @@ Function ChooseFile$ (fileSpec$, fileDesc$, ExitCode%)
 
                     Do
                         Locate , 31
-                        Print "ANY CHANGE? (Y/N)?";
+                        Print "ANY CHANGE? (Y/N)";
                         I$ = GetKeyPress$
                     Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 

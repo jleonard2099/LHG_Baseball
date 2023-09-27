@@ -8,7 +8,20 @@ Sub NEWLDR ()
 
     _Title "Full Count Baseball - Expanded Leaders / Standings"
 
-    ReDim menuChoices$(1 To 4)
+    ReDim menuChoices$(1 To 5)
+
+    Shared CLT!(), CWS!()
+    Shared ELL!(), EWW!(), HLL!(), HWW!()
+    Shared LL!(), LLS!(), LTL!(), LTW!(), LWS!()
+    Shared RLL!(), RWW!(), TLS!(), TWS!(), WW!()
+
+    Shared TML$(), Z1$()
+
+    Shared D1$, D2$, D3$, D4$
+
+    Erase CWS!, CLT!
+    Erase LLS!, LWS!
+    Erase TLS!, TWS!
 
     Do
 
@@ -17,14 +30,15 @@ Sub NEWLDR ()
 
         Call TITLE
 
-        menuChoices$(1) = "UPDATE EXPANDED LEAGUE LEADER FILES  "
-        menuChoices$(2) = "VIEW EXPANDED LEAGUE LEADER FILES    "
-        menuChoices$(3) = "UPDATE/VIEW EXPANDED LEAGUE STANDINGS"
-        menuChoices$(4) = "RETURN TO LEAGUE LEADER MAIN MENU    "
+        menuChoices$(1) = "UPDATE EXPANDED LEAGUE LEADER FILES   "
+        menuChoices$(2) = "VIEW EXPANDED LEAGUE LEADER FILES     "
+        menuChoices$(3) = "UPDATE EXPANDED LEAGUE STANDINGS      "
+        menuChoices$(4) = "VIEW / PRINT EXPANDED LEAGUE STANDINGS"
+        menuChoices$(5) = "RETURN TO LEAGUE LEADER MAIN MENU     "
         Selection% = 1
-        Count% = 4
+        Count% = 5
         Start% = 1
-        ExitCode% = 4
+        ExitCode% = 5
         FileFGColor% = 15: FileBGColor% = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
@@ -46,24 +60,69 @@ Sub NEWLDR ()
             Select Case Selection%
 
                 Case 1:
-                    Call ViewExpandedStats(JB, JP, TS, TTS)
-                    'Call ExpandedLeaders_Menu(leagStatFile$)
-
-                Case 2:
                     leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", FileExit%)
 
                     If FileExit% <> 27 And FileExit% <> 0 Then
-                        Call ExpandedLeaders_Menu(leagStatFile$, JB, JP, TS, TTS)
+
+                        For X = 1 To 40
+                            Z1$(X) = "XXX"
+                        Next
+
+                        Open diskPaths$(2) + leagStatFile$ + ".TMS" For Input As #2
+
+                        Input #2, league$, D1$, D2$, D3$, D4$
+
+                        For X = 1 To 40: 
+                            Input #2, Z1$(X)
+                        Next
+
+                        Close #2
+
+                        Call UpdateExpandedLeaders(JB, JP, TS, TTS)
+                        Call SAVELEADER(leagStatFile$, league$, JB, JP, TS, TTS)
+
                     End If
 
-                Case 3:
-                    Call ExpandedStandings
+                Case 2:
+                    leaderFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", FileExit%)
+
+                    If FileExit% <> 27 And FileExit% <> 0 Then
+                        Call ExpandedLeaders_Menu(leaderFile$, JB, JP, TS, TTS)
+                    End If
+
+                Case 3: 
+                    leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", FileExit%)
+
+                    If FileExit% <> 27 And FileExit% <> 0 Then
+                        Color 15, 0
+                        Cls
+                        Call UpdateLeagueStandings(league$)
+                    End If
+
+                Case 4:
+                    standingsFile$ = ChooseFile$ (diskPaths$(2) + "*.STD", "LEAGUE STANDINGS", FileExit%)
+
+                    If FileExit% <> 27 And FileExit% <> 0 Then
+
+                        Open diskPaths$(2) + standingsFile$ + ".STD" For Input As #1
+
+                        Input #1, league$, D1$, D2$, D3$, D4$
+
+                        For I = 1 To 40:
+                            Input #1, TML$(I), WW!(I), LL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
+                        Next
+
+                        Close #1
+
+                        Call NewStandingOptions
+
+                    End If
 
             End Select
 
         End If
 
-    Loop Until Selection% = 4 Or ExitCode% = 27
+    Loop Until Selection% = 5 Or ExitCode% = 27
 
 End Sub
 
@@ -303,10 +362,13 @@ Sub SAVELEADER (leaderFile$, league$, JB, JP, TS, TTS)
     Write #1, TS, TTS
 
     For I = 1 To 920:
+
         Write #1, leaderBL$(I), TMB$(I), GM1!(I)
+
         Color 14
         Locate 18, 45
         TMR = TMR - 1: Print Using "#####"; TMR
+
     Next I
 
     For I = 1 To 920:
@@ -330,19 +392,25 @@ Sub SAVELEADER (leaderFile$, league$, JB, JP, TS, TTS)
     Write #1, TS, TTS
 
     For I = 1 To 880
+
         Write #1, leaderPL$(I), TMP$(I), GM2(I)
+
         Color 14
         Locate 18, 45
         TMR = TMR - 1: Print Using "#####"; TMR
+
     Next I
 
     For I = 1 To 880:
+
         For I1 = 1 To 23:
             Write #1, PM%(I, I1)
         Next I1
+
         Color 14
         Locate 18, 45
         TMR = TMR - 1: Print Using "#####"; TMR
+
     Next I
 
     Close 1
@@ -371,6 +439,124 @@ Sub SAVELEADER (leaderFile$, league$, JB, JP, TS, TTS)
 
         For I1 = 0 To 22:
             Write #1, TT1!(I, I1), TT2$(I, I1)
+        Next
+
+        Color 14
+        Locate 18, 45
+        TMR = TMR - 1: Print Using "#####"; TMR
+
+    Next
+
+    Close #1
+
+End Sub
+
+
+'----------------------------------------
+'        READLEADER Subroutine
+'----------------------------------------
+'This subroutine reads in the leader files 
+'(.LDS) for the expanded standings modules 
+Sub READLEADER (leaderFile$, league$, JB, JP, TS, TTS)
+
+    Shared BK%(), PM%()
+    Shared GM2()
+
+    Shared GM1!()
+    Shared TT!(), TT1!()
+    Shared WW(), LL()
+
+    Shared leaderBL$(), leaderPL$()
+    Shared TM$(), TMB$(), TMP$(), TT2$()
+
+    Shared D1$, D2$, D3$, D4$
+
+    'Print "READING LEADER FILES . . . . PLEASE WAIT"
+
+    Open diskPaths$(2) + leaderFile$ + ".BAT" For Input As #1
+
+    Input #1, JB, JP
+    Input #1, D1$, D2$, D3$, D4$, league$
+    Input #1, TS, TTS
+
+    For I = 1 To 920:
+
+        Input #1, leaderBL$(I), TMB$(I), GM1!(I)
+
+        Color 14
+        Locate 18, 45
+        TMR = TMR - 1: Print Using "#####"; TMR
+
+    Next I
+
+    For I = 1 To 920:
+
+        For I1 = 1 To 22:
+            Input #1, BK%(I, I1)
+        Next I1
+
+        Color 14
+        Locate 18, 45
+        TMR = TMR - 1: Print Using "#####"; TMR
+
+    Next I
+
+    Close 1
+
+    Open diskPaths$(2) + leaderFile$ + ".PIT" For Input As #1
+
+    Input #1, JB, JP
+    Input #1, D1$, D2$, D3$, D4$, league$
+    Input #1, TS, TTS
+
+    For I = 1 To 880
+
+        Input #1, leaderPL$(I), TMP$(I), GM2(I)
+
+        Color 14
+        Locate 18, 45
+        TMR = TMR - 1: Print Using "#####"; TMR
+
+    Next I
+
+    For I = 1 To 880:
+
+        For I1 = 1 To 23:
+            Input #1, PM%(I, I1)
+        Next I1
+
+        Color 14
+        Locate 18, 45
+        TMR = TMR - 1: Print Using "#####"; TMR
+
+    Next I
+
+    Close 1
+
+    Open diskPaths$(2) + leaderFile$ + ".TOT" For Input As #1
+
+    Input #1, JB, JP, D1$, D2$, D3$, D4$, league$, TS, TTS
+
+    For I = 1 To 40:
+        Input #1, WW(I), LL(I)
+    Next
+
+    For I = 1 To 40:
+
+        For I1 = 0 To 21:
+            Input #1, TT!(I, I1), TM$(I, I1)
+        Next
+
+        Color 14
+        Locate 18, 45
+        TMR = TMR - 1: Print Using "#####"; TMR
+
+    Next
+
+    For I = 1 To 40:
+
+        For I1 = 0 To 22:
+            Input #1, TT1!(I, I1), TT2$(I, I1)
         Next
 
         Color 14
@@ -473,10 +659,13 @@ Sub ViewBattingLeaders (leaderFile$, JB, JP, TS, TTS)
     Input #1, TS, TTS
 
     For I = 1 To 920:
+
         Input #1, leaderBL$(I), TMB$(I), GM1!(I)
+
         Color 14
         Locate 18, 38
         TMR = TMR - 1: Print Using "#####"; TMR
+
     Next I
 
     For I = 1 To 920:

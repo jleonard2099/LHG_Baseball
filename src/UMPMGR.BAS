@@ -77,7 +77,7 @@ Sub EnterUmpireFile ()
 
     Do
         Cls
-        Print "IS THIS UMPIRING CREW (1)-AL OR (2)-NL ??"
+        Print "IS THIS UMPIRING CREW (1)-AL OR (2)-NL ?"
         I$ = GetKeyPress$
         I = Val(I$)
     Loop Until I >= 1 And I <= 2 Or I$ = Chr$(27)
@@ -115,7 +115,7 @@ Sub EditUmpireFile ()
 
     Cls
 
-    Print "IS THIS UMPIRING CREW (1)-AL OR (2)-NL ??"
+    Print "IS THIS UMPIRING CREW (1)-AL OR (2)-NL ?"
 
     Do
         I$ = GetKeyPress$

@@ -2,23 +2,23 @@
 '           NEWLDRST Subroutine
 '----------------------------------------
 'This subroutine presents the user options
-'for navigating the "Expanded" standings 
+'for navigating the "Expanded" standings
 Sub ExpandedStandings ()
 
     _Title "Full Count Baseball - League Standings"
 
     Shared CLT!(), CWS!()
-    Shared LLS!(), LWS!()
-    Shared TLS!(), TWS!()
+    Shared ELL!(), EWW!(), HLL!(), HWW!()
+    Shared LL!(), LLS!(), LTL!(), LTW!(), LWS!()
+    Shared RLL!(), RWW!(), TLS!(), TWS!(), WW!()
 
-    For I = 1 To 40:
-        TWS!(I) = 0
-        TLS!(I) = 0
-        LWS!(I) = 0
-        LLS!(I) = 0
-        CWS!(I) = 0
-        CLT!(I) = 0
-    Next
+    Shared TML$(), Z1$()
+
+    Shared D1$, D2$, D3$, D4$
+
+    Erase CLT!, CWS!
+    ERase LLS!, LWS!
+    Erase TLS!, TWS!
 
     ReDim menuChoices$(1 To 3)
 
@@ -56,10 +56,32 @@ Sub ExpandedStandings ()
             Select Case Selection%
 
                 Case 1:
-                    Call UpdateLeagueStandings
+                    leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", FileExit%)
+
+                    If FileExit% <> 27 And FileExit% <> 0 Then
+                        Color 15, 0
+                        Cls
+                        Call UpdateLeagueStandings(league$)
+                    End If
 
                 Case 2:
-                    Call NewStandingOptions
+                    standingsFile$ = ChooseFile$ (diskPaths$(2) + "*.STD", "LEAGUE STANDINGS", FileExit%)
+
+                    If FileExit% <> 27 And FileExit% <> 0 Then
+
+                        Open diskPaths$(2) + standingsFile$ + ".STD" For Input As #1
+
+                        Input #1, league$, D1$, D2$, D3$, D4$
+
+                        For I = 1 To 40:
+                            Input #1, TML$(I), WW!(I), LL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
+                        Next
+
+                        Close #1
+
+                        Call NewStandingOptions
+
+                    End If
 
             End Select
         End If
@@ -76,7 +98,7 @@ End Sub
 'for that league. It then calculates the
 'standings for that league and writes a 
 'corresponding .STD file.
-Sub UpdateLeagueStandings ()
+Sub UpdateLeagueStandings (league$)
 
     Shared CLT!(), CWS!()
     Shared ELL!(), EWW!() 
@@ -96,111 +118,100 @@ Sub UpdateLeagueStandings ()
 
     TMR = 40
 
-    leagStatFile$ = ChooseFile$ (diskPaths$(2) + "*.TMS", "LEAGUE STATS", ExitCode%)
+    currRecord = 0
 
-    If ExitCode% <> 27 And ExitCode% <> 0 Then
+    For KK = 1 To 40
 
-        Open diskPaths$(2) + leagStatFile$ + ".TMS" For Input As #2
+        currRecord = currRecord + 1
+        Color 14
+        Locate 7, 38
+        TMR = TMR - 1: Print Using "###"; TMR
 
-        Input #2, league$, D1$, D2$, D3$, D4$
+        If Z1$(KK) <> "*" Then
 
-        For X = 1 To 40: Input #2, Z1$(X): Next
+            TML$(currRecord) = Z1$(KK)
 
-        Close 2
+            Color 15, 0
+            Cls
 
-        YY = 0
+            Locate 5: Print "COMPUTING RECORDS . . . . . PLEASE WAIT"
 
-        For KK = 1 To 40
+            If _FileExists(diskPaths$(1) + Z1$(KK) + "S") Then
 
-            YY = YY + 1
-            Color 14
-            Locate 7, 38
-            TMR = TMR - 1: Print Using "###"; TMR
+                Open diskPaths$(1) + Z1$(KK) + "S" For Input As #1
 
-            If Z1$(KK) <> "*" Then
+                Input #1, XX%
 
-                TML$(YY) = Z1$(KK)
+                For I = 1 To NUM_STATRECORDS: Input #1, H%(I): Next I
 
-                Color 15, 0
-                Cls
+                For I = 1 To NUM_STATRECORDS: Input #1, H$(I): Next I
 
-                Locate 5: Print "COMPUTING RECORDS . . . . . PLEASE WAIT"
+                For I = 1 To NUM_STATRECORDS: Input #1, V%(I): Next I
 
-                If _FileExists(diskPaths$(1) + Z1$(KK) + "S") Then
+                For I = 1 To NUM_STATRECORDS: Input #1, PL$(I): Next I
 
-                    Open diskPaths$(1) + Z1$(KK) + "S" For Input As #1
+                For I = 1 To NUM_STATRECORDS: Input #1, W$(I): Next I
 
-                    Input #1, XX%
+                For I = 1 To NUM_STATRECORDS: Input #1, L$(I): Next I
 
-                    For I = 1 To NUM_STATRECORDS: Input #1, H%(I): Next I
+                For I = 1 To NUM_STATRECORDS: Input #1, I%(I): Next I
 
-                    For I = 1 To NUM_STATRECORDS: Input #1, H$(I): Next I
+                Close #1
 
-                    For I = 1 To NUM_STATRECORDS: Input #1, V%(I): Next I
+                For I = 1 To XX%
 
-                    For I = 1 To NUM_STATRECORDS: Input #1, PL$(I): Next I
+                    If H%(I) > V%(I) Then WW!(currRecord) = WW!(currRecord) + 1
+                    If H%(I) > V%(I) And I%(I) > 9 Then EWW!(currRecord) = EWW!(currRecord) + 1
+                    If H%(I) > V%(I) And PL$(I) = "A" Then RWW!(currRecord) = RWW!(currRecord) + 1
+                    If H%(I) > V%(I) And PL$(I) = "H" Then HWW!(currRecord) = HWW!(currRecord) + 1
+                    If V%(I) > H%(I) Then LL!(currRecord) = LL!(currRecord) + 1
+                    If V%(I) > H%(I) And I%(I) > 9 Then ELL!(currRecord) = ELL!(currRecord) + 1
+                    If V%(I) > H%(I) And PL$(I) = "A" Then RLL!(currRecord) = RLL!(currRecord) + 1
+                    If V%(I) > H%(I) And PL$(I) = "H" Then HLL!(currRecord) = HLL!(currRecord) + 1
+                    If H%(I) > V%(I) Then LWS!(currRecord) = LWS!(currRecord) + 1: LLS!(currRecord) = 0
+                    If LWS!(currRecord) > TWS!(currRecord) Then TWS!(currRecord) = LWS!(currRecord)
+                    If H%(I) < V%(I) Then LLS!(currRecord) = LLS!(currRecord) + 1: LWS!(currRecord) = 0
+                    If LLS!(currRecord) > TLS!(currRecord) Then TLS!(currRecord) = LLS!(currRecord)
 
-                    For I = 1 To NUM_STATRECORDS: Input #1, W$(I): Next I
-
-                    For I = 1 To NUM_STATRECORDS: Input #1, L$(I): Next I
-
-                    For I = 1 To NUM_STATRECORDS: Input #1, I%(I): Next I
-
-                    Close #1
-
-                    For I = 1 To XX%
-
-                        If H%(I) > V%(I) Then WW!(YY) = WW!(YY) + 1
-                        If H%(I) > V%(I) And I%(I) > 9 Then EWW!(YY) = EWW!(YY) + 1
-                        If H%(I) > V%(I) And PL$(I) = "A" Then RWW!(YY) = RWW!(YY) + 1
-                        If H%(I) > V%(I) And PL$(I) = "H" Then HWW!(YY) = HWW!(YY) + 1
-                        If V%(I) > H%(I) Then LL!(YY) = LL!(YY) + 1
-                        If V%(I) > H%(I) And I%(I) > 9 Then ELL!(YY) = ELL!(YY) + 1
-                        If V%(I) > H%(I) And PL$(I) = "A" Then RLL!(YY) = RLL!(YY) + 1
-                        If V%(I) > H%(I) And PL$(I) = "H" Then HLL!(YY) = HLL!(YY) + 1
-                        If H%(I) > V%(I) Then LWS!(YY) = LWS!(YY) + 1: LLS!(YY) = 0
-                        If LWS!(YY) > TWS!(YY) Then TWS!(YY) = LWS!(YY)
-                        If H%(I) < V%(I) Then LLS!(YY) = LLS!(YY) + 1: LWS!(YY) = 0
-                        If LLS!(YY) > TLS!(YY) Then TLS!(YY) = LLS!(YY)
-
-                        If H%(I) <= V%(I) Then
-                            If H%(I) < V%(I) Then
-                                CLT!(YY) = CLT!(YY) + 1: CWS!(YY) = 0
-                            Else
-                                CWS!(YY) = CWS!(YY) + 1: CLT!(YY) = 0
-                            End If
+                    If H%(I) <= V%(I) Then
+                        If H%(I) < V%(I) Then
+                            CLT!(currRecord) = CLT!(currRecord) + 1
+                            CWS!(currRecord) = 0
+                        Else
+                            CWS!(currRecord) = CWS!(currRecord) + 1
+                            CLT!(currRecord) = 0
                         End If
-
-                    Next I
-
-                    If XX% <= 10 Then
-                        LTL!(YY) = LL!(YY): LTW!(YY) = WW!(YY)
-                    Else
-                        M = XX% - 9
-
-                        For J = M To XX%
-                            If H%(J) > V%(J) Then LTW!(YY) = LTW!(YY) + 1
-                            If V%(J) > H%(J) Then LTL!(YY) = LTL!(YY) + 1
-                        Next J
                     End If
 
+                Next I
+
+                If XX% <= 10 Then
+                    LTL!(currRecord) = LL!(currRecord)
+                    LTW!(currRecord) = WW!(currRecord)
+                Else
+                    M = XX% - 9
+
+                    For J = M To XX%
+                        If H%(J) > V%(J) Then LTW!(currRecord) = LTW!(currRecord) + 1
+                        If V%(J) > H%(J) Then LTL!(currRecord) = LTL!(currRecord) + 1
+                    Next J
                 End If
 
-            End If 'Done checking for '*'
+            End If
 
-        Next KK
+        End If 'Done checking for '*'
 
-        Open diskPaths$(2) + leagStatFile$ + ".STD" For Output As #1
+    Next KK
 
-        Write #1, league$, D1$, D2$, D3$, D4$
+    Open diskPaths$(2) + league$ + ".STD" For Output As #1
 
-        For I = 1 To 40:
-            Write #1, TML$(I), WW!(I), LL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
-        Next
+    Write #1, league$, D1$, D2$, D3$, D4$
 
-        Close #1
+    For I = 1 To 40:
+        Write #1, TML$(I), WW!(I), LL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
+    Next
 
-    End If
+    Close #1
 
 End Sub
 
@@ -222,41 +233,26 @@ Sub NewStandingOptions ()
 
     Shared D1$, D2$, D3$, D4$
 
-    standingsFile$ = ChooseFile$ (diskPaths$(2) + "*.STD", "LEAGUE STANDINGS", ExitCode%)
+    _Title "Full Count Baseball - League Standings"
 
-    If ExitCode% <> 27 And ExitCode% <> 0 Then
+    Cls
+    
+    Do
+        Locate 15, 10
+        Color 12: Print "V";: Color 7: Print "iew or ";
+        Color 12: Print "P";: Color 7: Print "rint"
+        A$ = GetKeyPress$
+    Loop Until UCase$(A$) = "P" Or UCase$(A$) = "V"
 
-        Open diskPaths$(2) + standingsFile$ + ".STD" For Input As #1
+    Select Case UCase$(A$)
 
-        Input #1, league$, D1$, D2$, D3$, D4$
+        Case "V":
+            Call ViewNewStandings(league$)
 
-        For I = 1 To 40:
-            Input #1, TML$(I), WW!(I), LL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
-        Next
+        Case "P":
+            Call PrintNewStandings(league$)
 
-        Close #1
-
-        Color 15, 0
-        Cls
-
-        Do
-            Locate 15, 10
-            Color 12: Print "V";: Color 7: Print "iew or ";
-            Color 12: Print "P";: Color 7: Print "rint"
-            A$ = GetKeyPress$
-        Loop Until UCase$(A$) = "P" Or UCase$(A$) = "V"
-
-        Select Case UCase$(A$)
-
-            Case "V":
-                Call ViewNewStandings(league$)
-
-            Case "P":
-                Call PrintNewStandings(league$)
-
-        End Select
-
-    End If 'Done checking for ESC
+    End Select
 
 End Sub
 
