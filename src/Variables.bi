@@ -144,7 +144,7 @@ Dim seeZ!(298), seeZ1!(298)
 
 Dim BA$(40), ER$(40), H1$(40)
 Dim cmplZ2$(298), cmplZ3$(298)
-Dim LF$(70), NM$(46), seeP$(298)
+'Dim LF$(70), NM$(46), seeP$(298)
 Dim RT$(70), T$(40), cmplTM$(1 To 40)
 
 

@@ -102,9 +102,9 @@ Sub CompileLeague ()
 
                     If confGame <> 1 And _FileExists(diskPaths$(1) + H1$(XW)) Then
 
-                        Call ReadStatsLeague(H1$(XW), TN$, fullWins, fullLosses)
-                        Call CheckStatsLeague(H1$(XW), WT$)
-                        Call StatsByCategory(WT$, fullWins, fullLosses)
+                        Call ReadStatsLeague(H1$(XW), TN$, totalGames)
+                        Call CheckStatsLeague(H1$(XW), WT$, totalGames)
+                        Call StatsByCategory(WT$, totalGames)
 
                     End If 'Done checking if we need to skip
 
@@ -165,7 +165,7 @@ End Function
 '----------------------------------------
 'This subroutine reads stats in for a 
 'single team in the league
-Sub ReadStatsLeague (statFile$, TN$, fullWins, fullLosses)
+Sub ReadStatsLeague (statFile$, TN$, totalGames)
 
     Dim ZM%(46)
 
@@ -211,6 +211,9 @@ Sub ReadStatsLeague (statFile$, TN$, fullWins, fullLosses)
 
     Close #1
 
+    totalGames = fullWins + fullLosses
+
+    'Extra calculations for batters
     For J = 1 To 23
 
         If JS!(J, 1) = 0 Then JS!(J, 1) = 1
@@ -218,8 +221,10 @@ Sub ReadStatsLeague (statFile$, TN$, fullWins, fullLosses)
         JS!(J, 17) = JS!(J, 13)
         JS!(J, 18) = JS!(J, 14)
 
-        'Here is where AVG is assigned 0
-        If (JS!(J, 8) + JS!(J, 1)) / (fullWins + fullLosses) < 3.1 Then
+        ' Must have 3.1 Min At Bats / Game
+        '-- Previously compared to 2.5
+        '-- Header for Viewing Leader says 3.1
+        If (JS!(J, 8) + JS!(J, 1)) / totalGames < 3.1 Then
             JS!(J, 14) = 0
             JS!(J, 15) = 0
             JS!(J, 16) = 0
@@ -228,14 +233,19 @@ Sub ReadStatsLeague (statFile$, TN$, fullWins, fullLosses)
             JS!(J, 14) = (JS!(J, 2) + JS!(J, 5) + 2 * JS!(J, 6) + 3 * JS!(J, 7)) / JS!(J, 1)
             JS!(J, 15) = (JS!(J, 2) + JS!(J, 8)) / (JS!(J, 1) + JS!(J, 8))
         End If
+
     Next
 
+    'Must have 1 IP / Game
+    '(JS!(J, 1) / 3) = IP
     For J = 25 To 46
-        If JS!(J, 1) = 0 Or (JS!(J, 1) / 3) < (fullWins + fullLosses) Then
+
+        If JS!(J, 1) = 0 Or (JS!(J, 1) / 3) < totalGames Then
             JS!(J, 14) = 99.99
         Else
             JS!(J, 14) = JS!(J, 4) / JS!(J, 1) * 27
         End If
+
     Next
 
 End Sub
@@ -246,7 +256,7 @@ End Sub
 '----------------------------------------
 'This subroutine compares pre-loaded stats
 'to existing leaders and updates as needed
-Sub CheckStatsLeague (targetTeam$, WT$)
+Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
 
     Dim PS$(40)
 
@@ -272,6 +282,7 @@ Sub CheckStatsLeague (targetTeam$, WT$)
 
             skipIF = 0
 
+            'Batting Avg
             For Y = 1 To 20
 
                 If cmplZ2$(Y) = NM$(X) And cmplZ3$(Y) = WT$ Then
@@ -279,7 +290,10 @@ Sub CheckStatsLeague (targetTeam$, WT$)
                     cmplZ1!(Y, 1) = JS!(X, 13)
                     cmplZ1!(Y, 2) = JS!(X, 1)
 
-                    If cmplZ1!(Y, 2) < 2.5 * (fullWins + fullLosses) Then
+                ' Must have 3.1 Min At Bats / Game
+                '-- Previously compared to 2.5
+                '-- Header for Viewing Leader says 3.1
+                If cmplZ1!(Y, 2) < 3.1 * totalGames Then
                         cmplZ2$(Y) = "*"
                         cmplZ3$(Y) = "*"
                         cmplZ1!(Y, 1) = 0
@@ -326,7 +340,10 @@ Sub CheckStatsLeague (targetTeam$, WT$)
             End If
 
             3318 '
-            If (JS!(X, 8) + JS!(X, 1)) / (fullWins + fullLosses) >= 3.1 Then
+            ' Must have 3.1 Min At Bats / Game
+            '-- Previously compared to 2.5
+            '-- Header for Viewing Leader says 3.1
+            If (JS!(X, 8) + JS!(X, 1)) / totalGames >= 3.1 Then
 
                 If JS!(X, 16) <> 0 And JS!(X, 16) <= cmplZ1!(258, 1) Then
 
@@ -352,6 +369,7 @@ Sub CheckStatsLeague (targetTeam$, WT$)
             End If
 
             3320 '
+            'Slugging Pct
             For Y = 99 To 108
 
                 If cmplZ2$(Y) = NM$(X) And cmplZ3$(Y) = WT$ Then
@@ -359,7 +377,10 @@ Sub CheckStatsLeague (targetTeam$, WT$)
                     cmplZ1!(Y, 1) = JS!(X, 14)
                     cmplZ1!(Y, 2) = JS!(X, 1)
 
-                    If cmplZ1!(Y, 2) < (fullWins + fullLosses) * 2.5 Then
+                    ' Must have 3.1 Min At Bats / Game
+                    '-- Previously compared to 2.5
+                    '-- Header for Viewing Leader says 3.1
+                    If cmplZ1!(Y, 2) < totalGames * 3.1 Then
                         cmplZ2$(Y) = "*"
                         cmplZ3$(Y) = "*"
                         cmplZ1!(Y, 1) = 0
@@ -367,6 +388,7 @@ Sub CheckStatsLeague (targetTeam$, WT$)
                     End If
 
                     For Y = 99 To 107
+
                         For Z = Y + 1 To 108
                             If cmplZ1!(Y, 1) < cmplZ1!(Z, 1) Then
                                 Swap cmplZ2$(Y), cmplZ2$(Z)
@@ -376,6 +398,7 @@ Sub CheckStatsLeague (targetTeam$, WT$)
                                 Next Z1
                             End If
                         Next Z
+
                     Next Y
 
                     GoTo 3325
@@ -394,7 +417,10 @@ Sub CheckStatsLeague (targetTeam$, WT$)
                 cmplZ1!(Y, 1) = JS!(X, 14)
                 cmplZ1!(Y, 2) = JS!(X, 1)
 
-                If cmplZ1!(Y, 2) < (fullWins + fullLosses) * 2.5 Then
+                ' Must have 3.1 Min At Bats / Game
+                '-- Previously compared to 2.5
+                '-- Header for Viewing Leader says 3.1
+                If cmplZ1!(Y, 2) < totalGames * 3.1 Then
                     cmplZ2$(Y) = "*"
                     cmplZ3$(Y) = "*"
                     cmplZ1!(Y, 1) = 0
@@ -416,6 +442,7 @@ Sub CheckStatsLeague (targetTeam$, WT$)
             End If
 
             3325 '
+            'On Base Pct
             For Y = 110 To 119
 
                 If cmplZ2$(Y) = NM$(X) And cmplZ3$(Y) = WT$ Then
@@ -423,7 +450,10 @@ Sub CheckStatsLeague (targetTeam$, WT$)
                     cmplZ1!(Y, 1) = JS!(X, 15)
                     cmplZ1!(Y, 2) = JS!(X, 1)
 
-                    If cmplZ1!(Y, 2) < (fullWins + fullLosses) * 2.5 Then
+                    ' Must have 3.1 Min PA / Game
+                    '-- Previously compared to 2.5
+                    '-- When viewing leaders, header says Min 3.1
+                    If cmplZ1!(Y, 2) < totalGames * 3.1 Then
                         cmplZ2$(Y) = "*"
                         cmplZ3$(Y) = "*"
                         cmplZ1!(Y, 1) = 0
@@ -459,7 +489,10 @@ Sub CheckStatsLeague (targetTeam$, WT$)
                 cmplZ1!(Y, 1) = JS!(X, 15)
                 cmplZ1!(Y, 2) = JS!(X, 1)
 
-                If cmplZ1!(Y, 2) < (fullWins + fullLosses) * 2.5 Then
+                ' Must have 3.1 Min PA / Game
+                '-- Previously compared to 2.5
+                '-- When viewing leaders, header says Min 3.1
+                If cmplZ1!(Y, 2) < totalGames * 3.1 Then
                     cmplZ2$(Y) = "*"
                     cmplZ3$(Y) = "*"
                     cmplZ1!(Y, 1) = 0
@@ -509,6 +542,7 @@ Sub CheckStatsLeague (targetTeam$, WT$)
 
             End If
 
+            'Division 4
             For Z = 32 To 42
 
                 If cmplZ2$(Z) = NM$(X) And cmplZ3$(Z) = WT$ Then
@@ -678,6 +712,7 @@ Sub CheckStatsLeague (targetTeam$, WT$)
         End If 'Done checking for XXX / terminating chars
 
         3414 '
+        'Base on Balls
         For Z = 217 To 227
 
             If cmplZ2$(Z) = NM$(X) And cmplZ3$(Z) = WT$ Then
@@ -705,11 +740,14 @@ Sub CheckStatsLeague (targetTeam$, WT$)
             Next Z
         End If
 
+        'Hitting Streak
         For Z = 279 To 288
+
             If cmplZ2$(Z) = NM$(X) And cmplZ3$(Z) = WT$ Then
                 cmplZ1!(Z, 1) = JS!(X, 17)
                 GoTo 3615
             End If
+
         Next Z
 
         If JS!(X, 17) > cmplZ1!(288, 1) Then
@@ -733,12 +771,14 @@ Sub CheckStatsLeague (targetTeam$, WT$)
 
         End If
 
+        'Longest Hitting Streak
         For Z = 289 To 298
             3621 '
             If cmplZ2$(Z) = NM$(X) And cmplZ3$(Z) = WT$ Then
                 cmplZ1!(Z, 1) = JS!(X, 18)
                 GoTo 3625
             End If
+
         Next Z
 
         If JS!(X, 18) > cmplZ1!(298, 1) Then
@@ -773,7 +813,7 @@ End Sub
 'This subroutine compares all pre-loaded 
 'stats to each of the record categories to 
 'see if any should be updated
-Sub StatsByCategory (WT$, fullWins, fullLosses)
+Sub StatsByCategory (WT$, totalGames)
 
     Shared BAT%(), PIT%()
     Shared cmplZ2$(), cmplZ3$()
@@ -781,6 +821,7 @@ Sub StatsByCategory (WT$, fullWins, fullLosses)
     Shared cmplZ1!(), DFT!(), JS!(), OFT!()
 
     3415 '
+    'All Pitchers
     For X = 25 To 46
 
         If NM$(X) <> "XXX" Then
@@ -808,7 +849,8 @@ Sub StatsByCategory (WT$, fullWins, fullLosses)
 
             End If
 
-            If JS!(X, 1) / 3 >= (fullWins + fullLosses) And JS!(X, 1) <> 0 Then
+            'Must have at least 1 IP / Game
+            If (JS!(X, 1) / 3) >= totalGames And JS!(X, 1) <> 0 Then
 
                 If JS!(X, 14) < 99.9 And JS!(X, 14) >= cmplZ1!(278, 1) Then
 

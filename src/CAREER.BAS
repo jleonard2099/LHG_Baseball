@@ -22,7 +22,7 @@ Sub CAREER ()
         menuChoices$(3) = "VIEW / PRINT CAREER STATS         "
         menuChoices$(4) = "EDIT CAREER STATS                 "
         menuChoices$(5) = "VIEW / PRINT CAREER RECORDS       "
-        menuChoices$(6) = "UPDATE TEAM CAREER LEADERS        "
+        menuChoices$(6) = "UPDATE / VIEW TEAM CAREER LEADERS "
         menuChoices$(7) = "RETURN TO MAIN MENU               "
         Selection% = 1
         Count% = 7

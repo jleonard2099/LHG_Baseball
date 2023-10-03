@@ -46,9 +46,6 @@ Sub CARLDR ()
                 Case 2:
                     Call CareerLeaderOptions
 
-                Case 3:
-                    Cls
-
             End Select
 
         End If
@@ -90,9 +87,10 @@ Sub UpdateLeaders ()
         Next
     Next
 
-    '-- Initialize to 1000 because later we will assign
-    '-- a value based on comparing
-    '-- It seems we could still initialize to 0 and just compare to 1000 explicitly
+    '-- Initialize to 1000 because later we assign
+    '-- values based on comparison. (ie, looking 
+    '-- for lowest values. Nothing will ever be
+    '-- lower than 0 if we don't have something here.
     For I1 = 0 To 20
         PL1!(15, I1) = 1000
     Next

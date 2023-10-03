@@ -7,20 +7,19 @@ Sub TITLE_CAREER ()
     Color 12, 1
 
     Locate 1, 1
-    Print Tab(80);
-    Locate , 22
+    Print Tab(80); " ";
 
     Color 14
+    Locate , 23
     Print "FULL COUNT BASEBALL: CAREER STATS"
 
     Locate 24, 1
-    Print Tab(80);
-    Locate , 1
+    Print Tab(80); " ";
 
-    Print "LANCE HAFFNER/SHANNON LYNN 1991"; Tab(70); Left$(Time$, 5);
+    Locate , 1
+    Print "    LANCE HAFFNER/SHANNON LYNN 1991"; Tab(70); Left$(Time$, 5);
 
     Locate 4, 1
-
     Color 1, 0
 
 End Sub
@@ -29,31 +28,33 @@ End Sub
 '       TITLE_EDITSTATS Subroutine
 '----------------------------------------
 ' Displays window title / game copyright
-Sub TITLE_EDITSTATS (titleType, subtitle$)
+Sub TITLE_EDITSTATS ()
+'Sub Title_EDITSTATS (titleType, subtitle$)
 
     Color 12, 1
 
     Locate 1, 1
-    Print Tab(80);
+    Print Tab(80); " ";
 
-    If (titleType = 1) Then
-        Locate , 28
-        Color 14
-        Print "EDIT COMPILED STATISTICS"
-    Else
-        Locate , Int(80 - Len(X$)) / 2
-        Color 14
-        Print subtitle$
-    End If
+    Color 14
+    Locate , 28
+    Print "EDIT COMPILED STATISTICS"
+
+    'If (titleType = 1) Then
+    '    Locate , 28
+    '    Print "EDIT COMPILED STATISTICS"
+    'Else
+    '    Locate , Int(80 - Len(X$)) / 2
+    '    Print subtitle$
+    'End If
 
     Locate 24, 1
-    Print Tab(80);
-    Locate , 1
-    
-    Print "SHANNON LYNN 1991"; Tab(70); Left$(Time$, 5);
-    
-    Locate 4, 1
+    Print Tab(80); " ";
 
+    Locate , 1
+    Print "    SHANNON LYNN 1991"; Tab(70); Left$(Time$, 5);
+
+    Locate 4, 1
     Color 15, 0
 
 End Sub
@@ -68,15 +69,14 @@ Sub TITLE_HEADER ()
     Cls
 
     Color 12, 1
-    Locate 1, 1
-    Print Tab(80);
-    Locate , 23
 
-    Color 12
+    Locate 1, 1
+    Print Tab(80); " ";
+
+    Locate , 23
     Print "FULL COUNT BASEBALL V" + GAME_VERSION$
 
     Locate 3, 1
-
     Color 2, 0
 
 End Sub
@@ -90,19 +90,19 @@ Sub TITLE_LEADERS
     Color 12, 1
 
     Locate 1, 1
-    Print Tab(80);
-    Locate , 26
+    Print Tab(80); " ";
 
     Color 14
+    Locate , 26
     Print "FULL COUNT BASEBALL LEADERS"
 
     Locate 24, 1
-    Print Tab(80);
+    Print Tab(80); " ";
+
     Locate , 1
+    Print "    ROD DAHLBERG/SHANNON LYNN 1991"; Tab(70); Left$(Time$, 5);
 
-    Print "ROD DAHLBERG/SHANNON LYNN 1991"; Tab(70); Left$(Time$, 5);
     Locate 4, 1
-
     Color 2, 0
 
 End Sub
@@ -116,20 +116,19 @@ Sub TITLE_MERGE ()
     Color 12, 1
 
     Locate 1, 1
-    Print Tab(80);
-    Locate , 26
+    Print Tab(80); " ";
 
     Color 14
+    Locate , 27
     Print "FULL COUNT BASEBALL: MERGE"
 
     Locate 24, 1
-    Print Tab(80);
-    Locate , 1
+    Print Tab(80); " ";
 
-    Print "LANCE HAFFNER/SHANNON LYNN 1991"; Tab(70); Left$(Time$, 5);
+    Locate , 1
+    Print "    LANCE HAFFNER/SHANNON LYNN 1991"; Tab(70); Left$(Time$, 5);
 
     Locate 4, 1
-
     Color 1, 0
 
 End Sub
@@ -146,20 +145,19 @@ Sub TITLE_SCHEDULER ()
     Color 12, 1
 
     Locate 1, 1
-    Print Tab(80);
-    Locate , 33
+    Print Tab(80); " ";
 
     Color 14
+    Locate , 33
     Print "AUTO SCHEDULER"
 
     Locate 24, 1
-    Print Tab(80);
-    Locate , 1
+    Print Tab(80); " ";
 
-    Print "LANCE HAFFNER/SHANNON LYNN 1987-1995";
+    Locate , 1
+    Print "    LANCE HAFFNER/SHANNON LYNN 1987-1995"; Tab(70); Left$(Time$, 5);
 
     Locate 5, 1
-
     Color 15, 0
 
 End Sub
@@ -170,23 +168,21 @@ End Sub
 ' Displays window title / game copyright
 Sub TITLE_STATS ()
 
-    Color 12, 1
+    Color 14, 1
 
     Locate 1, 1
-    Print Tab(80);
-    Locate , 26
+    Print Tab(80); " ";
 
-    Color 14
+    Locate , 25
     Print "FULL COUNT BASEBALL STATISTICS"
 
     Locate 24, 1
-    Print Tab(80);
-    Locate , 1
+    Print Tab(80); " ";
 
-    Print "LANCE HAFFNER/SHANNON LYNN 1991"; Tab(70); Left$(Time$, 5);
+    Locate , 1
+    Print "    LANCE HAFFNER/SHANNON LYNN 1991"; Tab(70); Left$(Time$, 5);
 
     Locate 4, 1
-
     Color 2, 0
 
 End Sub
@@ -200,20 +196,19 @@ Sub TITLE_STAT_HEADER (header$)
     Color 12, 1
     
     Locate 1, 1
-    Print Tab(80);
-    Locate , Int(80 - Len(header$)) / 2
-    
+    Print Tab(80); " ";
+
     Color 14
+    Locate , Int(80 - Len(header$)) / 2
     Print header$
     
     Locate 24, 1
-    Print Tab(80);
-    Locate , 1
-    
-    Print "LANCE HAFFNER/SHANNON LYNN 1991"; Tab(70); Left$(Time$, 5);
+    Print Tab(80); " ";
+
+    Locate , 1    
+    Print "    LANCE HAFFNER/SHANNON LYNN 1991"; Tab(70); Left$(Time$, 5);
     
     Locate 4, 1
-    
     Color 15, 0
 
 End Sub
@@ -230,24 +225,22 @@ Sub TITLE_TOURN ()
     Color 12, 1
     
     Locate 1, 1
-    Print Tab(80);
-    Locate , 16
-    
+    Print Tab(80); " ";
+
     Color 12
+    Locate , 20
     Print "FULL COUNT BASEBALL TOURNAMENT SCHEDULER"
     
     Locate 24, 1
-    Print Tab(80);
-    Locate , 1
-    
-    Print "LANCE HAFFNER/SHANNON LYNN 1987-1994";
-    
-    Locate 3, 1
-    Color 2, 0
+    Print Tab(80); " ";
 
-    Color 15
+    Locate , 1    
+    Print "    LANCE HAFFNER/SHANNON LYNN 1987-1994";
+
+    Color 15, 0
+    Locate 3, 1
     Print "        PROGRAMMED BY LANCE HAFFNER, SHANNON LYNN AND JASON LEONARD"
-    Print "            FOR TECHNICAL SUPPORT, CONTACT SUPPORT@LHGAMES.NET"
+    Print "            FOR TECHNICAL SUPPORT, CONTACT support@LHGames.net"
 
     Color 10
 
@@ -262,21 +255,19 @@ Sub TITLE_UTILS ()
     Color 12, 1
     
     Locate 1, 1
-    Print Tab(80);
-    Locate , 26
-    
+    Print Tab(80); " ";
+
     Color 14
+    Locate , 25
     Print "FULL COUNT BASEBALL UTILITIES"
     
     Locate 24, 1
-    Print Tab(80);
-    Locate , 1
-    
-    Print "LANCE HAFFNER/SHANNON LYNN 1991"; Tab(70); Left$(Time$, 5);
+    Print Tab(80); " ";
+
+    Locate , 1    
+    Print "    LANCE HAFFNER/SHANNON LYNN 1991"; Tab(70); Left$(Time$, 5);
 
     Locate 4, 1
-
-    Color 2, 0
 
 End Sub
 
@@ -292,30 +283,28 @@ Sub TITLE ()
 
     Cls
 
-    Color 12, 1
-
     'Header
     Locate 1, 1
-    Print Tab(80);
-    Locate , 28
+    Print Tab(80); " ";
 
     Color 12
+    Locate , 27
     Print "FULL COUNT BASEBALL V" + GAME_VERSION$
 
     'Footer
     Locate 24, 1
-    Print Tab(80);
-    Locate , 1
+    Print Tab(80); " ";
 
     Color 12, 1
-    Print "LANCE HAFFNER/SHANNON LYNN 1986-1999"; Tab(75); Left$(Time$, 5);
+    Locate , 1
+    Print "    LANCE HAFFNER/SHANNON LYNN 1986-1999"; Tab(75); Left$(Time$, 5);
 
     'Contact
-    Locate 3, 1
     Color 15, 0
+    Locate 3, 1
     Print "           PROGRAMMED BY LANCE HAFFNER, SHANNON LYNN AND JASON LEONARD"
-    Print "               FOR TECHNICAL SUPPORT, CONTACT SUPPORT@LHGAMES.NET"
-    Print "          LANCE HAFFNER GAMES ON THE INTERNET AT HTTP://WWW.LHGAMES.NET"
+    Print "               FOR TECHNICAL SUPPORT, CONTACT support@LHGames.net"
+    Print "          LANCE HAFFNER GAMES ON THE INTERNET AT https://www.LHGames.net"
 
     Color 10
 
