@@ -284,6 +284,7 @@ Sub TITLE ()
     Cls
 
     'Header
+    Color , 1
     Locate 1, 1
     Print Tab(80); " ";
 

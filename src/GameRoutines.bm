@@ -176,7 +176,7 @@ Sub InitVar ()
     SB = 0
     statSpecial = 0
     TR = 0
-    playerOpt = 0
+    playerMode = 0
     compTeam = 0
     usingGfx = 0
 
@@ -254,7 +254,7 @@ End Sub
 Sub AUTOSETUP
 
     'Setup variables for auto-play
-    playerOpt = NG%(8)
+    playerMode = NG%(8)
     desigHit = NG%(3)
     pbpDelay! = NG%(4) / 10
     gameMonth = NG%(17)
@@ -400,6 +400,84 @@ End Sub
 
 
 '----------------------------------------
+'         RevisedPBP Subroutine
+'----------------------------------------
+'This subroutine opens the play-by-play
+'file and replaces any shortcut text with
+'the corresponding positions, players, etc.
+
+'This works only as long as the PBP file
+'structure stays fixed.
+'pbpIdx% = the index to grab from the file
+'The range of indexes is fixed throughout
+'the code depending on context
+Sub RevisedPBP (range%, minIdx%, Y$, D)
+
+	badString% = 0
+
+	Do
+
+		'Get a new PBP string to use
+		pbpIdx% = Int(Rnd(1) * range%) + minIdx%
+
+		Open "REVISED.PBP" For Random As #1 Len = 44
+		Field #1, 44 As YY$
+		Get #1, pbpIdx%
+		Y$ = _Trim$(YY$)
+		Close# 1
+	
+		stringPosition% = 1
+
+		Do
+
+			test = Asc(Mid$(Y$, stringPosition%, 1))
+
+			'If it is a non-printable character (corrupt data)
+			If test > 122 Or test < 32 Then
+				'Get a new PBP string to use
+				stringPosition% = 1
+				Call GETRPBP(range%, minIdx%, Y$, D)
+			Else
+				stringPosition% = stringPosition% + 1
+			End If
+
+		Loop Until stringPosition% = Len(Y$)
+
+    Loop Until badString% <> 1
+
+	If TGTBASE% = 3 Then
+		IF Left$(Y$, 2) = "Q1" Then Y$ = "Q2 " + Right$(Y$, Len(Y$) - 3)
+		If Right$(Y$, 2) = "Q1" Then Y$ = Left$(Y$, Len(Y$) - 2) + "Q2"
+	End If
+
+	If Left$(Y$, 2) = "BB" Then Y$ = Q$(0) + Right$(Y$, Len(Y$) - 2)
+	If Left$(Y$, 2) = "Q1" Then Y$ = Q$(1) + Right$(Y$, Len(Y$) - 2)
+	If Left$(Y$, 2) = "Q2" Then Y$ = Q$(2) + Right$(Y$, Len(Y$) - 2)
+	If Left$(Y$, 2) = "PP" Then Y$ = P$(D, P1%(D)) + Right$(Y$, Len(Y$) - 2)
+	If Left$(Y$, 2) = "UU" Then Y$ = U$(1) + Right$(Y$, Len(Y$) - 2)
+	If Left$(Y$, 2) = "XX" Then Y$ = B$(D, B9%(D, 5)) + " and " + B$(D, B9%(D, 6)) + Right$(Y$, Len(Y$) - 2)
+	If Left$(Y$, 2) = "TT" Then Y$ = B$(D, B9%(D, 5)) + Right$(Y$, Len(Y$) - 2)
+	If Left$(Y$, 2) = "FB" Then Y$ = B$(D, B9%(D, 3)) + Right$(Y$, Len(Y$) - 2)
+	If Left$(Y$, 2) = "YY" Then Y$ = B$(D, B9%(D, 4)) + " and " + B$(D, B9%(D, 3)) + Right$(Y$, Len(Y$) - 2)
+	If Left$(Y$, 2) = "ZZ" Then Y$ = B$(D, B9%(D, 4)) + " and " + B$(D, B9%(D, 6)) + Right$(Y$, Len(Y$) - 2)
+	If Left$(Y$, 2) = "Q4" Then Y$ = Q$(4) + Right$(Y$, Len(Y$) - 2)
+
+	If Right$(Y$, 3) = " PP" Then Y$ = Left$(Y$, Len(Y$) - 2) + P$(D, P1%(D))
+	If Right$(Y$, 3) = " BB" Then Y$ = Left$(Y$, Len(Y$) - 2) + Q$(0)
+	If Right$(Y$, 2) = "Q1" Then Y$ = Left$(Y$, Len(Y$) - 2) + Q$(1)
+	If Right$(Y$, 2) = "Q2" Then Y$ = Left$(Y$, Len(Y$) - 2) + Q$(2)
+	If Right$(Y$, 2) = "UU" Then Y$ = Left$(Y$, Len(Y$) - 2) + U$(1)
+	If Right$(Y$, 2) = "Q4" Then Y$ = Left$(Y$, Len(Y$) - 2) + Q$(4)
+	If Right$(Y$, 3) = " TT" Then Y$ = Left$(Y$, Len(Y$) - 2) + B$(D, B9%(D, 5))
+	If Right$(Y$, 2) = "FB" Then Y$ = Left$(Y$, Len(Y$) - 2) + B$(D, B9%(D, 3))
+	If Right$(Y$, 3) = " XX" Then Y$ = Left$(Y$, Len(Y$) - 2) + B$(D, B9%(D, 5)) + " and " + B$(D, B9%(D, 6))
+	If Right$(Y$, 2) = "YY" Then Y$ = Left$(Y$, Len(Y$) - 2) + B$(D, B9%(D, 3)) + " and " + B$(D, B9%(D, 4))
+	If Right$(Y$, 3) = " ZZ" Then Y$ = Left$(Y$, Len(Y$) - 2) + B$(D, B9%(D, 6)) + " and " + B$(D, B9%(D, 4))
+
+End Sub
+
+
+'----------------------------------------
 '           GETRPBP Subroutine
 '----------------------------------------
 'This subroutine opens the play-by-play
@@ -416,12 +494,14 @@ Sub GETRPBP (range%, minIdx%, Y$, D)
     pbpIdx% = Int(Rnd(1) * range%) + minIdx%
 
     Open "REVISED.PBP" For Random As #1 Len = 44
-    Field #1, 44 As YY$
-    Get #1, pbpIdx%
-    Y$ = _Trim$(YY$)
-    Close 1
 
-    'Y$ = _Trim$(YYY$(pbpIdx%))
+    Field #1, 44 As YY$
+
+    Get #1, pbpIdx%
+
+    Y$ = _Trim$(YY$)
+
+    Close #1
 
     If TGTBASE% = 3 And Left$(Y$, 2) = "Q1" Then Y$ = "Q2 " + Right$(Y$, Len(Y$) - 3)
     If TGTBASE% = 3 And Right$(Y$, 2) = "Q1" Then Y$ = Left$(Y$, Len(Y$) - 2) + "Q2"
@@ -1396,9 +1476,9 @@ End Sub
 'who has been ejected or injured. In add-
 'ition to calculations, it calls a routine
 'that prompts the user for replacements.
-Sub EJECTIONINJURY (playerOpt, P, compTeam, D, po%, P9, W5, W6)
+Sub EJECTIONINJURY (playerMode, P, compTeam, D, po%, P9, W5, W6)
 
-    If Not (playerOpt = 2 Or playerOpt = 1 And P <> compTeam) Then
+    If Not (playerMode = 2 Or playerMode = 1 And P <> compTeam) Then
         F$ = "You must replace " + batters$(D, B9%(D, po%))
         Call PBP(F$)
     Else
@@ -2135,7 +2215,7 @@ End Sub
 'who has been ejected or injured.
 Sub INJPIT (P, D, IP%, PPH)
 
-    If playerOpt = 2 Or playerOpt = 1 And P <> compTeam Then
+    If playerMode = 2 Or playerMode = 1 And P <> compTeam Then
         IP% = 1
         Call RELIEVERS(PPH, pz)
     Else
@@ -2152,7 +2232,7 @@ End Sub
 'It then calls the necessary routines to
 'hangameTypeOpte the associated variables / game'
 'mechanics.
-Sub INJURYLENGTH (IJL%, D, po%, playerOpt, P, compTeam, P9, W5, W6)
+Sub INJURYLENGTH (IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
     doneLength = 0
 
@@ -2213,7 +2293,7 @@ Sub INJURYLENGTH (IJL%, D, po%, playerOpt, P, compTeam, P9, W5, W6)
 
     Call DELAY
     Call DELAY
-    Call EJECTIONINJURY(playerOpt, P, compTeam, D, po%, P9, W5, W6)
+    Call EJECTIONINJURY(playerMode, P, compTeam, D, po%, P9, W5, W6)
 
 End Sub
 
@@ -3248,7 +3328,7 @@ End Sub
 ' Offensive Player Ejected/Injured
 Sub PLYRHRT (P, P9, W5, W6, BC%, U%, D, MO)
 
-    If Not (playerOpt = 2 Or playerOpt = 1 And P = compTeam) Then
+    If Not (playerMode = 2 Or playerMode = 1 And P = compTeam) Then
 
         Call PBP("You must replace " + player$(0) + " with a pinch-hitter")
 
@@ -3878,15 +3958,15 @@ Sub OPTIONS ()
 
     If usingGfx = 1 Then Cls: Screen 0
 
-    If playerOpt = 2 Then
-        playerOpt = 3
+    If playerMode = 2 Then
+        playerMode = 3
     Else
-        If playerOpt = 1 Then
+        If playerMode = 1 Then
             If compTeam = 1 Then
-                playerOpt = 2
+                playerMode = 2
             Else
                 If compTeam = 0 Then
-                    playerOpt = 1
+                    playerMode = 1
                 End If
             End If
         End If
@@ -3899,7 +3979,7 @@ Sub OPTIONS ()
         Color , 0
         Locate 3, 1
         Color 14: Print "(1) ";
-        Color 15: Print playMode$(playerOpt)
+        Color 15: Print playMode$(playerMode)
         Color 14: Print "(2) ";
         Color 15: Print Using "PLAY-BY-PLAY DELAY: #.# "; pbpDelay!
         Color 14: Print "<ENTER> ";
@@ -3916,22 +3996,22 @@ Sub OPTIONS ()
         Loop Until I >= 0 And I <= 2
 
         If I <> 0 Then
-            If I = 1 Then playerOpt = playerOpt + 1
-            If playerOpt > 3 Then playerOpt = 0
+            If I = 1 Then playerMode = playerMode + 1
+            If playerMode > 3 Then playerMode = 0
             If I = 2 Then Locate 4, 22: Input pbpDelay!
         End If
 
     Loop Until I = 0
 
-    If playerOpt <> 0 Then
-        If playerOpt = 3 Then
-            playerOpt = 2
+    If playerMode <> 0 Then
+        If playerMode = 3 Then
+            playerMode = 2
         Else
-            If playerOpt = 2 Then
-                playerOpt = 1
+            If playerMode = 2 Then
+                playerMode = 1
                 compTeam = 1
             Else
-                playerOpt = 1
+                playerMode = 1
                 compTeam = 0
             End If
         End If
@@ -5099,7 +5179,7 @@ End Sub
 
 Sub SQUEEZECHOICE (SH)
 
-    If playerOpt = 2 Or playerOpt = 1 And P = compTeam Then
+    If playerMode = 2 Or playerMode = 1 And P = compTeam Then
         SH = 2
     Else
         Locate 15, 1
@@ -5461,7 +5541,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, baseNbr!, I9)
     If baseNbr! <> 0 Then
         'We shouldn't still have a 0 value!
 
-        If Not (playerOpt = 2 Or playerOpt = 1 And P = compTeam) Then
+        If Not (playerMode = 2 Or playerMode = 1 And P = compTeam) Then
             If S2% < 10 Then Call PBP(player$(baseNbr! - 1) + " try for " + baseName$(baseNbr!) + "? (Y/N) ")
             If S2% > 10 Then Call PBP(player$(baseNbr! - 1) + " tag up? (Y/N) ")
             Call PBP("against " + player$(4))
@@ -5470,7 +5550,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, baseNbr!, I9)
         I$ = "N"
         A1 = S6%(P, 0) - S6%(D, 0)
 
-        If (playerOpt = 2 Or playerOpt = 1 And P = compTeam) Then
+        If (playerMode = 2 Or playerMode = 1 And P = compTeam) Then
             If A1 > -2 And A1 < 2 And S2% <> 19 Then
                 I$ = "Y"
             Else
@@ -5485,7 +5565,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, baseNbr!, I9)
         End If
 
         skipThrow% = 0
-        If Not (playerOpt = 2 Or playerOpt = 1 And P = compTeam) Then
+        If Not (playerMode = 2 Or playerMode = 1 And P = compTeam) Then
             I$ = GetKeyPress$
         End If
 
@@ -5503,13 +5583,13 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, W%, sah%, SB%, baseNbr!, I9)
 
             If Not (S2% = 7 And baseNbr! = 2 Or S2% > 10 And S4% = 3) Then
 
-                If Not (playerOpt = 2 Or playerOpt = 1 And D = compTeam) Then
+                If Not (playerMode = 2 Or playerMode = 1 And D = compTeam) Then
                     Call PBP(player$(4) + " throw to " + baseName$(baseNbr!) + "? (Y/N) ")
                 End If
 
                 Call d100(RN)
 
-                If (playerOpt = 2 Or playerOpt = 1 And D = compTeam) Then
+                If (playerMode = 2 Or playerMode = 1 And D = compTeam) Then
                     If MG%(D, 766) = 999 And baseNbr! = 4 Then
                         If INNING% >= MG%(D, 767) And MG%(D, 767) <> 0 And MG%(D, 768) <= S6%(D, 0) - S6%(P, 0) Then I$ = "N"
                         If INNING% >= MG%(D, 769) And MG%(D, 769) <> 0 And MG%(D, 770) <= S6%(D, 0) - S6%(P, 0) Then I$ = "N"
@@ -5993,7 +6073,7 @@ Sub WHICHRUNNER (i, S4%, D5)
             Call PBP("2 - " + pitchers$(P, P1%(P)))
         End If
 
-        If playerOpt = 2 Or playerOpt = 1 And P <> compTeam Then
+        If playerMode = 2 Or playerMode = 1 And P <> compTeam Then
             D5 = Int(Rnd(1) * 2) + 1
             i$ = Str$(D5)
         Else
@@ -6131,7 +6211,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 po% = 2
 
-                Call EJECTIONINJURY(playerOpt, P, compTeam, D, po%, P9, W5, W6)
+                Call EJECTIONINJURY(playerMode, P, compTeam, D, po%, P9, W5, W6)
 
             Case 2 To 3
 
@@ -6208,11 +6288,11 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 po% = 2
 
-                Call EJECTIONINJURY(playerOpt, P, compTeam, D, po%, P9, W5, W6)
+                Call EJECTIONINJURY(playerMode, P, compTeam, D, po%, P9, W5, W6)
 
                 po% = 3
 
-                Call EJECTIONINJURY(playerOpt, P, compTeam, D, po%, P9, W5, W6)
+                Call EJECTIONINJURY(playerMode, P, compTeam, D, po%, P9, W5, W6)
                 Call INJPIT(P, D, IP%, PPH)
 
             Case 6 To 7
@@ -6403,7 +6483,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 po% = 2
 
-                Call INJURYLENGTH(IJL%, D, po%, playerOpt, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 H6% = 1
 
@@ -6415,7 +6495,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 po% = 3
 
-                Call INJURYLENGTH(IJL%, D, po%, playerOpt, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 H6% = 1
 
@@ -6426,7 +6506,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 po% = 4
 
-                Call INJURYLENGTH(IJL%, D, po%, playerOpt, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 H6% = 1
 
@@ -6438,7 +6518,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 po% = 5
 
-                Call INJURYLENGTH(IJL%, D, po%, playerOpt, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 H6% = 1
 
@@ -6452,7 +6532,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 po% = 6
 
-                Call INJURYLENGTH(IJL%, D, po%, playerOpt, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 H6% = 1
 
@@ -6485,7 +6565,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 po% = op%
 
-                Call INJURYLENGTH(IJL%, D, po%, playerOpt, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 H6% = 5
 
@@ -6527,7 +6607,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 po% = 8
 
-                Call INJURYLENGTH(IJL%, D, po%, playerOpt, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 H6% = 5
 
@@ -6563,7 +6643,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 po% = 9
 
-                Call INJURYLENGTH(IJL%, D, po%, playerOpt, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 H6% = 5
 
@@ -6601,7 +6681,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 po% = op%
 
-                Call INJURYLENGTH(IJL%, D, po%, playerOpt, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 H6% = 5
 
@@ -6616,7 +6696,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 po% = 2
 
-                Call INJURYLENGTH(IJL%, D, po%, playerOpt, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 H6% = 1
 
@@ -6652,10 +6732,10 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 Call WINDEX
 
                 po% = hi1
-                Call INJURYLENGTH(IJL%, D, po%, playerOpt, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 po% = hi2
-                Call INJURYLENGTH(IJL%, D, po%, playerOpt, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 H6% = 5
 
@@ -6674,7 +6754,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 Call PBP(batters$(D, B9%(D, 5)) + " is down and injured")
 
                 po% = 5
-                Call INJURYLENGTH(IJL%, D, po%, playerOpt, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 H6% = 1
 
@@ -6706,10 +6786,10 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 Call WINDEX
 
                 po% = 7
-                Call INJURYLENGTH(IJL%, D, po%, playerOpt, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 po% = 8
-                Call INJURYLENGTH(IJL%, D, po%, playerOpt, P, compTeam, P9, W5, W6): H6% = 5
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6): H6% = 5
 
             Case 71 To 85
 
@@ -6761,7 +6841,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                     Call SCOREBOARD
                     Call WINDEX
                     Call PBP(batters$(D, B9%(D, po%)) + " is down and injured")
-                    Call INJURYLENGTH(IJL%, D, po%, playerOpt, P, compTeam, P9, W5, W6): H6% = 5
+                    Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6): H6% = 5
 
                 End If
 
@@ -7320,7 +7400,7 @@ End Sub
 Sub FoundSpecial (specialCount, specialStat)
 
     'Beep
-    Spec$ = diskPaths$(1) + "*.SPC"
+    Spec$ = diskPaths$(1) + "*.BSS"
     specialCount = FileCount%(Spec$)
     specialCount = specialCount + 1
     specialStat = 1
@@ -7689,7 +7769,7 @@ Sub POSTGAME ()
         Color 14: Print "(2) ";
         Color 15: Print "STATS TO TEXT FILE"
 
-        If autoPlay = 1 And playerOpt = 2 Then
+        If autoPlay = 1 And playerMode = 2 Then
             X = 2
         Else
             Do
@@ -7707,7 +7787,7 @@ Sub POSTGAME ()
         Color 15, 0
         Cls
 
-        If Not (autoPlay = 1 And playerOpt = 2) Then
+        If Not (autoPlay = 1 And playerMode = 2) Then
 
             Do
                 'Using Home Team's color for the box
@@ -7721,12 +7801,12 @@ Sub POSTGAME ()
 
         End If
 
-    Loop Until UCase$(I$) = "N" Or (autoPlay = 1 And playerOpt = 2)
+    Loop Until UCase$(I$) = "N" Or (autoPlay = 1 And playerMode = 2)
 
     'If we had special events
     If specialStat = 1 Then
 
-        NM$ = "BOX" + Mid$(Str$(specialCount), 2, Len(Str$(specialCount))) + ".SPC"
+        NM$ = "BOXSCORE" + Mid$(Str$(specialCount), 2, Len(Str$(specialCount))) + ".BSS"
 
         'Append special events
         Call BOX2SPC(NM$)
@@ -8274,6 +8354,7 @@ Sub BOXOPTIONS (outputChoice)
     Shared scheduleFile$
 
     Select Case outputChoice
+
         Case 0:
             Call BOX2SCREEN
 
@@ -8286,10 +8367,10 @@ Sub BOXOPTIONS (outputChoice)
                 If autoPlay <> 1 Then
                     Cls
                     Print "ENTER 8-CHARACTER FILENAME FOR BOXSCORE (NO SPACES OR PERIODS)";: Input NM$
-                    NM$ = NM$ + ".SPC"
+                    NM$ = NM$ + ".BSS"
                 Else
-                    ' NM$ = "BOXSCORE." + MID$(STR$(schedGame(0) + schedGame(2)), 2, LEN(STR$(schedGame(0) + schedGame(2))))
-                    NM$ = "BOX" + Mid$(Str$(schedGame(0) + schedGame(2)), 2, Len(Str$(schedGame(0) + schedGame(2))))
+                    'ScheduleName_GameXXX.BS
+                    NM$ = Mid$(scheduleFile$, 1, Len(scheduleFile$) - 4) + "_GAME" + Mid$(Str$(schedGame(0) + schedGame(2)), 2, Len(Str$(schedGame(0) + schedGame(2)))) + ".BS"
                 End If
 
             End If
@@ -8742,7 +8823,7 @@ Sub BOX2SCREEN
 
     Call ScoreSummary
 
-    If autoPlay <> 1 Or playerOpt <> 2 Then
+    If autoPlay <> 1 Or playerMode <> 2 Then
         Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
         I$ = GetKeyPress$
     End If
@@ -9095,7 +9176,7 @@ Sub STATS2SCREEN
 
         Print
 
-        If autoPlay <> 1 Or playerOpt <> 2 Then
+        If autoPlay <> 1 Or playerMode <> 2 Then
             Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
             I$ = GetKeyPress$
         End If
@@ -9202,7 +9283,7 @@ Sub STATS2SCREEN
         Print Using "## ##  ## ## ##"; T3%(1); T3%(2); T3%(3); T3%(4); T3%(5)
         Print
 
-        If autoPlay <> 1 Or playerOpt <> 2 Then
+        If autoPlay <> 1 Or playerMode <> 2 Then
             Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
             I$ = GetKeyPress$
         End If
@@ -9309,7 +9390,7 @@ Sub STATS2SCREEN
     Color 14, 0: Print "PRECIPITATION: ";
     Color 15, 0: Print PC$(PC%)
 
-    If autoPlay <> 1 Or playerOpt <> 2 Then
+    If autoPlay <> 1 Or playerMode <> 2 Then
         Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
         I$ = GetKeyPress$
     End If

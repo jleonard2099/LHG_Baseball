@@ -1,7 +1,7 @@
 '----------------------------------------
 '           SEELEAG Subroutine
 '----------------------------------------
-'This subroutine lets the user choose a 
+'This subroutine lets the user choose a
 'league stat file to view, then calls
 'other routines to both load the Stats
 'and then provide options for display
@@ -9,7 +9,7 @@ Sub SEELEAG ()
 
     _Title "Full Count Baseball - View League Stats"
 
-    leaderFile$ = ChooseFile$ (diskPaths$(2) + "*.LDR", "LEADER", ExitCode%)
+    leaderFile$ = ChooseFile$(diskPaths$(2) + "*.LDR", "LEADER", ExitCode%)
 
     If ExitCode% <> 27 And ExitCode% <> 0 Then
 
@@ -57,16 +57,16 @@ Sub LoadLeaderFiles (league$, D1$, D2$, targetFile$)
 
     For X = 1 To 298: Input #2, cmplZ2$(X), cmplZ3$(X), seeZ!(X), seeZ1!(X): Next
 
-    For X = 1 To 40: 
+    For X = 1 To 40:
         Input #2, BA$(X)
-        For M = 1 To 14: 
+        For M = 1 To 14:
             Input #2, OFT!(X, M)
         Next
     Next
 
-    For X = 1 To 40: 
+    For X = 1 To 40:
         Input #2, ER$(X)
-        For M = 1 To 14: 
+        For M = 1 To 14:
             Input #2, DFT!(X, M)
         Next
     Next
@@ -93,7 +93,7 @@ Sub StatOptions (league$, D1$, D2$)
 
         Do
 
-			Call MenuBox (8, 8, 61, 5, 15, 1)
+            Call MenuBox(8, 8, 61, 5, 15, 1)
 
             Locate 7, 32
 
@@ -178,7 +178,7 @@ Sub ReportFilePrompt_League (reportFile$)
         Color 15, 0
         Cls
 
-        Call MenuBox (6, 8, 61, 7, 15, 1)
+        Call MenuBox(6, 8, 61, 7, 15, 1)
 
         Locate 7, 32
         Locate , 12: Print "ENTER NAME FOR FILE: ": Print
@@ -224,6 +224,11 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
     RT = 0
 
+    '------------------------------
+    '          STANDINGS
+    '------------------------------
+
+    'Cycle through divisions
     For O = 1 To 4
 
         first = ((O - 1) * 10) + 1
@@ -301,16 +306,22 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     Next O
 
     '-----
+
     Cls
 
     Color 12
     Print "                        "; league$; " LEAGUE STANDINGS"
     Print
-    Color 14
 
+    '------------------------------
+    ' Division 1 Standings
+    '------------------------------
+    Color 14
     Locate 3, 1
+
     If D1$ = "" Then D1$ = Space$(8)
     Print "    " + D1$ + "      W   L   PCT   GB"
+
     Color 15
 
     For P = 1 To 10
@@ -326,11 +337,17 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     Print
 
     RT = 0
-    Color 14
 
+    '------------------------------
+    ' Division 3 Standings
+    '------------------------------
+
+    Color 14
     Locate 15, 1
+
     If D3$ = "" Then D3$ = Space$(8)
     Print "    " + D3$ + "      W   L   PCT   GB"
+
     Color 15
 
     For P = 21 To 30
@@ -344,11 +361,17 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     Next P
 
     RT = 0
-    Color 14
 
+    '------------------------------
+    ' Division 2 Standings
+    '------------------------------
+
+    Color 14
     Locate 3, 41
+
     If D2$ = "" Then D2$ = Space$(8)
     Print "    " + D2$ + "      W   L   PCT   GB"
+
     Color 15
 
     For P = 11 To 20
@@ -364,11 +387,16 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     Print
 
     RT = 0
-    Color 14
 
+    '------------------------------
+    ' Division 4 Standings
+    '------------------------------
+    Color 14
     Locate 15, 41
+
     If D4$ = "" Then D4$ = Space$(8)
     Print "    " + D4$ + "      W   L   PCT   GB"
+
     Color 15
 
     For P = 31 To 40
@@ -388,6 +416,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     QK$ = GetKeyPress$
     '-----
 
+    '------------------------------
+    ' String Constants
+    '------------------------------
+
     AB$ = Str$(Int(AB))
     TD = IP - 3 * IG
     AB$ = Right$(AB$, Len(AB$) - 1)
@@ -395,6 +427,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
     IG$ = Str$(IP)
     IP$ = Right$(IG$, Len(IG$) - 1)
+
+    '------------------------------
+    '        BATTING LEADERS
+    '------------------------------
 
     For P = 1 To 19
 
@@ -444,6 +480,7 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
     Next P
 
+
     Cls
 
     Color 14
@@ -459,6 +496,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     Next
 
     Print
+
+    '------------------------------
+    '             HITS
+    '------------------------------
 
     For P = 21 To 30
 
@@ -491,7 +532,11 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     Next P
     Print
 
-    '-----
+
+    '------------------------------
+    '           DOUBLES
+    '------------------------------
+
     For P = 32 To 41
 
         seeP$(P) = ""
@@ -515,7 +560,11 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
         Print "      "; seeP$(P)
     Next P
 
-    '-----
+
+    '------------------------------
+    '           TRIPLES
+    '------------------------------
+
     For P = 43 To 52
 
         seeP$(P) = ""
@@ -543,7 +592,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
     Print
 
-    '-----
+    '------------------------------
+    '           HOME RUNS
+    '------------------------------
+
     For P = 54 To 63
         seeP$(P) = ""
 
@@ -558,9 +610,9 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
     Next P
 
-    Locate 13, 52
+    Locate 13, 40
     Color 14
-    Print "   HOME RUNS"
+    Print "      HOME RUNS"
     Color 15
 
     For P = 54 To 63:
@@ -574,6 +626,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     Color 15
     QK$ = GetKeyPress$
     '-----
+
+    '------------------------------
+    '             RUNS
+    '------------------------------
 
     For P = 65 To 73
 
@@ -601,7 +657,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
     Print
 
-    '-----
+    '------------------------------
+    '             RBIs
+    '------------------------------
+
     For P = 76 To 84:
 
         seeP$(P) = ""
@@ -622,12 +681,15 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     Print "      RUNS BATTED IN"
     Color 15
 
-    '-----
     For P = 76 To 84:
         Print "      "; seeP$(P)
     Next P
 
-    '-----
+
+    '------------------------------
+    '         STOLEN BASES
+    '------------------------------
+
     For P = 87 To 96
 
         seeP$(P) = ""
@@ -649,10 +711,15 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     Color 15
 
     For P = 87 To 96:
-        Locate (P - 85), 40: Print "      "; seeP$(P)
+        Locate (P - 85), 40
+        Print "      "; seeP$(P)
     Next P
 
-    '-----
+
+    '------------------------------
+    '         SLUGGING PCT
+    '------------------------------
+
     For P = 98 To 107:
 
         seeP$(P) = ""
@@ -711,6 +778,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     QK$ = GetKeyPress$
     '-----
 
+    '------------------------------
+    '         ON BASE PCT
+    '------------------------------
+
     For P = 110 To 119
 
         seeP$(P) = ""
@@ -766,7 +837,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
     Print
 
-    '-----
+    '------------------------------
+    '     BASE ON BALLS (WALK)
+    '------------------------------
+
     For P = 217 To 226
 
         seeP$(P) = ""
@@ -783,16 +857,17 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     Next P
 
 
-    Locate 1, 41
+    Locate 1, 40
     Color 14
-    Print "BASE ON BALLS"
+    Print " BASE ON BALLS"
     Color 15
 
     For P = 217 To 226:
         Locate (P - 215), 41: Print seeP$(P)
     Next P
 
-    '-----
+    '------------------------------
+
     Locate 13, 1
     Color 14
     Print "      CURRENT HITTING STREAK"
@@ -803,13 +878,14 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
         Print Left$(cmplZ2$(P), 13) + ", " + cmplZ3$(P); Tab(34); Using "###"; seeZ!(P)
     Next P
 
-    Locate 13, 41
+    Locate 13, 40
     Color 14
-    Print "LONGEST HITTING STREAK"
+    Print " LONGEST HITTING STREAK"
     Color 15
 
     For P = 289 To 298
-        Locate , 41: Print Left$(cmplZ2$(P), 13) + ", " + cmplZ3$(P); Tab(67); Using "###"; seeZ!(P)
+        Locate , 41
+        Print Left$(cmplZ2$(P), 13) + ", " + cmplZ3$(P); Tab(67); Using "###"; seeZ!(P)
     Next P
 
     '-----
@@ -818,6 +894,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     Color 15
     QK$ = GetKeyPress$
     '-----
+
+    '------------------------------
+    '         ERA LEADERS
+    '------------------------------
 
     For P = 120 To 138
 
@@ -849,7 +929,6 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
     Next P
 
-    '-----
 
     Cls
 
@@ -870,6 +949,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     Color 15
     QK$ = GetKeyPress$
     '-----
+
+    '------------------------------
+    '       PITCHING RECORD
+    '------------------------------
 
     For P = 140 To 149
 
@@ -902,7 +985,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
     Print
 
-    '-----
+    '------------------------------
+    '           VICTORIES
+    '------------------------------
+
     For P = 151 To 160
         seeP$(P) = ""
 
@@ -921,9 +1007,14 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     Print "      VICTORIES"
     Color 15
 
-    For P = 151 To 160: Print "      "; seeP$(P): Next P
+    For P = 151 To 160:
+        Print "      "; seeP$(P)
+    Next P
 
-    '-----
+    '------------------------------
+    '       INNINGS PITCHED
+    '------------------------------
+
     For P = 162 To 171
 
         seeP$(P) = ""
@@ -944,9 +1035,14 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     Print "      INNINGS PITCHED"
     Color 15
 
-    For P = 162 To 171: Locate (P - 160), 40: Print "      "; seeP$(P): Next P
+    For P = 162 To 171:
+        Locate (P - 160), 40: Print "      "; seeP$(P)
+    Next P
 
-    '-----
+    '------------------------------
+    '          STRIKEOUTS
+    '------------------------------
+
     For P = 173 To 182
 
         seeP$(P) = ""
@@ -981,7 +1077,12 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     QK$ = GetKeyPress$
     '-----
 
+    '------------------------------
+    '          FULL GAMES
+    '------------------------------
+
     For P = 184 To 193
+
         seeP$(P) = ""
 
         If cmplZ2$(P) <> "" Then
@@ -995,7 +1096,6 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
     Next P
 
-    '-----
     Cls
 
     Color 14
@@ -1008,8 +1108,12 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
     Print
 
-    '-----
+    '------------------------------
+    '           SHUTOUTS
+    '------------------------------
+
     For P = 195 To 204
+
         seeP$(P) = ""
 
         If cmplZ2$(P) <> "" Then
@@ -1031,7 +1135,9 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
         Print "      "; seeP$(P)
     Next P
 
-    '-----
+    '------------------------------
+    '            SAVES
+    '------------------------------
     For P = 206 To 215
 
         seeP$(P) = ""
@@ -1057,7 +1163,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
         Print "      "; seeP$(P)
     Next P
 
-    '-----
+    '------------------------------
+    '         APPEARANCES
+    '------------------------------
+
     Locate 13, 40
     Color 14
     Print "      APPEARANCES    "
@@ -1210,7 +1319,7 @@ End Sub
 '----------------------------------------
 'This subroutine formats the previously
 'loaded stats and outputs them to a file.
-'This file can then be looped through to 
+'This file can then be looped through to
 'send to the default printer
 
 'Destination
@@ -1294,6 +1403,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
     Next P
 
+    '-----
+
     D1 = Wins(11) - Losses(11)
 
     For P = 11 To 20:
@@ -1353,6 +1464,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
     Next P
 
+    '-----
+
     D1 = Wins(21) - Losses(21)
 
     For P = 21 To 30
@@ -1411,6 +1524,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
         End If
 
     Next P
+
+    '-----
 
     D1 = Wins(31) - Losses(31)
 
@@ -1473,6 +1588,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
     Cls
 
+    '-----
+
     LF$(1) = "    " + league$ + " LEAGUE STANDINGS AS OF " + Date$
     LF$(3) = "    " + D1$ + "      W   L   PCT   GB"
 
@@ -1528,6 +1645,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
     Next P
 
+    '-----
+
     For P = 2 To 26
 
         If Len(LF$(P)) < 38 Then
@@ -1544,6 +1663,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
         LPrint LF$(X); RT$(X)
     Next
 
+    '-----
+
     AB = Int(AB)
     AB$ = Str$(AB)
     TD = IP - 3 * IG
@@ -1555,7 +1676,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     IG$ = Right$(IG$, Len(IG$) - 1)
     IP$ = IG$
 
-    '-- need to evaluate here --
+    '-----
+
     For P = 1 To 20
 
         seeP$(P) = ""
@@ -1590,6 +1712,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
     LF$(47) = " "
 
+    '-----
+
     For P = 239 To 258
 
         seeP$(P) = ""
@@ -1622,6 +1746,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
         RT$(P - 211) = "   " + seeP$(P)
     Next
 
+    '-----
+
     RT$(47) = " "
 
     For P = 27 To 47
@@ -1639,6 +1765,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     For X = 27 To 47:
         LPrint LF$(X); RT$(X)
     Next
+
+    '-----
 
     For P = 21 To 30
 
@@ -1668,6 +1796,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
         LF$(P + 29) = "   " + seeP$(P)
     Next P
 
+    '-----
+
     For P = 32 To 41
 
         seeP$(P) = ""
@@ -1696,6 +1826,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
         RT$(P + 18) = "       " + seeP$(P)
     Next P
 
+    '-----
+
     For P = 49 To 59
 
         While Len(LF$(P)) < 35
@@ -1713,6 +1845,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next
 
     LPrint Chr$(12)
+
+    '-----
 
     For P = 43 To 52
 
@@ -1745,6 +1879,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
     LF$(12) = " "
 
+    '-----
+
     For P = 54 To 63:
 
         seeP$(P) = ""
@@ -1775,6 +1911,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
     RT$(12) = " "
 
+    '-----
+
     For P = 1 To 12
 
         While Len(LF$(P)) < 35
@@ -1790,6 +1928,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     For X = 1 To 12:
         LPrint LF$(X); RT$(X)
     Next
+
+    '-----
 
     For P = 65 To 73
 
@@ -1816,6 +1956,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
         LF$(P - 51) = "   " + seeP$(P)
     Next P
     LF$(23) = " "
+
+    '-----
 
     For P = 76 To 84
 
@@ -1845,6 +1987,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
     RT$(23) = " "
 
+    '-----
+
     For P = 13 To 23
 
         While Len(LF$(P)) < 35
@@ -1860,6 +2004,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     For X = 13 To 23:
         LPrint LF$(X); RT$(X)
     Next
+
+    '-----
 
     For P = 87 To 96
 
@@ -1889,6 +2035,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
     LF$(35) = " "
 
+    '-----
+
     For P = 99 To 108
 
         seeP$(P) = ""
@@ -1915,6 +2063,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
     RT$(35) = " "
 
+    '-----
+
     For P = 24 To 35
 
         While Len(LF$(P)) < 35
@@ -1931,6 +2081,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
         LPrint LF$(X); RT$(X)
     Next
 
+    '-----
+
     For P = 110 To 119
 
         seeP$(P) = ""
@@ -1945,7 +2097,6 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
             Wend
 
             J! = seeZ!(P)
-
             J! = Int(1000 * J! + .5)
             If J! = 1000 Then seeP$(P) = seeP$(P) + "1.000 "
         End If
@@ -1957,6 +2108,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
         LF$(P - 73) = "   " + seeP$(P)
     Next P
     LF$(47) = " "
+
+    '-----
 
     For P = 217 To 226
 
@@ -1986,6 +2139,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
     RT$(47) = " "
 
+    '-----
+
     For P = 36 To 47
 
         While Len(LF$(P)) < 35
@@ -2001,6 +2156,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     For X = 36 To 47
         LPrint LF$(X); RT$(X)
     Next
+
+    '-----
 
     For P = 279 To 288
 
@@ -2027,6 +2184,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     LF$(48) = "   CURRENT HITTING STREAK"
 
     For P = 279 To 288: LF$(P - 230) = "   " + seeP$(P): Next P
+
+    '-----
 
     For P = 289 To 298:
 
@@ -2055,6 +2214,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
         RT$(P - 240) = "       " + seeP$(P)
     Next P
 
+    '-----
+
     For P = 48 To 58
 
         While Len(LF$(P)) < 35
@@ -2072,6 +2233,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next
 
     LPrint Chr$(12)
+
+    '-----
 
     For P = 121 To 139
 
@@ -2116,6 +2279,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
         RT$(P - 93) = "    " + seeP$(P)
     Next
 
+    '-----
+
     For P = 140 To 149
 
         seeP$(P) = ""
@@ -2150,6 +2315,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next
     LF$(59) = " "
 
+    '-----
+
     For P = 151 To 160: seeP$(P) = ""
 
         If cmplZ2$(P) <> "*" Then
@@ -2176,6 +2343,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
     RT$(59) = " "
 
+    '-----
+
     For P = 48 To 59
 
         While Len(LF$(P)) < 35
@@ -2193,6 +2362,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next
 
     LPrint Chr$(12)
+
+    '-----
 
     For P = 162 To 171
 
@@ -2222,6 +2393,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
     LF$(12) = " "
 
+    '-----
+
     For P = 173 To 182:
 
         seeP$(P) = ""
@@ -2244,6 +2417,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
     Next P
 
+    '-----
+
     RT$(1) = "     STRIKEOUTS"
     For P = 173 To 182:
         RT$(P - 171) = "     " + seeP$(P)
@@ -2263,6 +2438,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
 
     For X = 1 To 12: LPrint LF$(X); RT$(X): Next
+
+    '-----
 
     For P = 184 To 193
 
@@ -2292,6 +2469,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
     LF$(24) = " "
 
+    '-----
+
     For P = 195 To 204: seeP$(P) = ""
 
         If cmplZ2$(P) <> "*" Then
@@ -2318,6 +2497,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
     RT$(24) = " "
 
+    '-----
+
     For P = 13 To 24
 
         While Len(LF$(P)) < 35
@@ -2333,6 +2514,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     For X = 13 To 24:
         LPrint LF$(X); RT$(X)
     Next
+
+    '-----
 
     For P = 206 To 215
 
@@ -2364,6 +2547,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     LF$(36) = " "
     RT$(25) = "     APPEARANCES"
 
+    '-----
+
     For P = 228 To 237
 
         seeP$(P) = ""
@@ -2390,6 +2575,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
     RT$(36) = " "
 
+    '-----
+
     For P = 25 To 36
 
         While Len(LF$(P)) < 35
@@ -2405,6 +2592,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     For X = 25 To 36:
         LPrint LF$(X); RT$(X)
     Next
+
+    '-----
 
     LPrint Chr$(12)
     LPrint "                 CLUB BATTING   "

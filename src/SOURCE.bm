@@ -153,7 +153,7 @@ Sub SOURCE ()
 
     A1 = S6%(D, 0) - S6%(P, 0)
 
-    If Not (MG%(D, 560) <> 999 Or INNING% < 8 Or playerOpt = 0 Or playerOpt = 1 And P = compTeam) Then
+    If Not (MG%(D, 560) <> 999 Or INNING% < 8 Or playerMode = 0 Or playerMode = 1 And P = compTeam) Then
 
         For IJ0% = 1 To 4
 
@@ -213,7 +213,7 @@ Sub SOURCE ()
 
     End If
 
-    If B9%(D, 1) = 99 And playerOpt = 0 Or B9%(D, 1) = 99 And playerOpt = 1 And compTeam = 1 - D Then
+    If B9%(D, 1) = 99 And playerMode = 0 Or B9%(D, 1) = 99 And playerMode = 1 And compTeam = 1 - D Then
         '----- move stuff here -----
         GoTo 14900
     End If
@@ -290,7 +290,7 @@ Sub SOURCE ()
         F% = 0
 
         15080 '
-        If (playerOpt = 2 Or playerOpt = 1 And P <> compTeam) Then 18700
+        If (playerMode = 2 Or playerMode = 1 And P <> compTeam) Then 18700
 
         If S4% = 1 Or S4% = 5 Then
             H0% = 1
@@ -495,7 +495,7 @@ Sub SOURCE ()
     15085 '
     Do
 
-        If (playerOpt = 2 Or playerOpt = 1 And P = compTeam) Then
+        If (playerMode = 2 Or playerMode = 1 And P = compTeam) Then
 
             JM = B3%(P, B1!(P))
 
@@ -3026,7 +3026,7 @@ Sub SOURCE ()
             Call PBP("Looks like a close play at " + J3$ + "!!")
             Call PBP("1- Throw to " + J3$ + " 2- Throw to 1st")
 
-            If playerOpt = 2 Or playerOpt = 1 And P <> compTeam Then
+            If playerMode = 2 Or playerMode = 1 And P <> compTeam Then
                 I$ = "1"
             Else
                 Do
@@ -3379,7 +3379,7 @@ Sub SOURCE ()
     If SH% = 1 Then
         I9 = Int(Rnd(1) * 1000) + 1
     Else
-        If playerOpt = 2 Or playerOpt = 1 And P <> compTeam Then
+        If playerMode = 2 Or playerMode = 1 And P <> compTeam Then
             I$ = "Y"
         Else
             Call PBP("Throw to 2B? (Y/N) ")
@@ -3536,7 +3536,7 @@ Sub SOURCE ()
     If AA < 20 Or S4% <> 5 Or B7%(P, B0%(3, 0)) = 1 Then 15051
     Call WINDEX
 
-    If playerOpt = 2 Or playerOpt = 1 And P = compTeam Then
+    If playerMode = 2 Or playerMode = 1 And P = compTeam Then
         I$ = "N"
     Else
         Call PBP("TRY TO STEAL HOME? (Y/N)")
@@ -4013,7 +4013,7 @@ Sub SOURCE ()
 
     normalFinish = 1
 
-    If autoPlay <> 1 Or playerOpt <> 2 Then
+    If autoPlay <> 1 Or playerMode <> 2 Then
         If pbpDelay! = 0 Then pbpDelay! = 0.1
         'Delay of 0 will not present the text
         'But we want to be sure the user sees it

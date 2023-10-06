@@ -413,7 +413,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
     I$ = GetKeyPress$
     Cls
 
-    Call TITLE_STATS
+    'Call TITLE_STATS
 
     Locate 1, 1
     Print Tab(80);

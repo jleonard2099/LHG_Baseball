@@ -282,17 +282,19 @@ Sub LOADER
     Select Case playerOpt
 
         Case 1:
+            playerMode = 1
             compTeam = 0
+
         Case 2:
-            playerOpt = 1
+            playerMode = 1
             compTeam = 1
+
         Case 3:
-            playerOpt = 2
+            playerMode = 2
 
     End Select
 
-    'At this point, the value of playerOpt has been changed.
-    'It now represents the following values:
+    'playerMode represents the following values:
     '   0 = Human
     '   1 = Computer Team
     '   2 = PC vs. PC
@@ -378,7 +380,7 @@ Sub LOADER
     '-------------------------
 
     'Determine which team PC will play
-    'If playerOpt = 1 And autoPlay <> 1 Then
+    'If playerMode = 1 And autoPlay <> 1 Then
 
     'If not doing autoplay...
     '    Call INFO
@@ -449,7 +451,7 @@ Sub LOADER
 
                 Else
 
-                    If (playerOpt = 2 Or playerOpt = 1 And compTeam = P9) Then
+                    If (playerMode = 2 Or playerMode = 1 And compTeam = P9) Then
                         If useMgrProf = 0 Then
                             I$ = "1"
                         Else
@@ -637,7 +639,7 @@ Sub LOADER
         Next I1
     Next I
 
-    Call SelectStadium
+    Call SelectStadium(useVGA)
 
     Call GETWEATHER(WD%, WS%, gameMonth, WF!, SC%, TP%, RD)
 
@@ -699,7 +701,23 @@ Sub LOADER
         usingGfx = 0
     End If
 
-    Call SOURCE
+
+    '--- we need to check for Revised.pbp
+    If _FileExists("revised.pbp") Then
+
+        Call SOURCE
+
+    Else
+
+        MsgText$ = "ERROR!!! PLAY-BY-PLAY SOURCE FILE NOT FOUND. CHECK THAT THE FILE 'REVISED.PBP' EXISTS AND IS READ-ONLY."
+        BoxWidth = 22
+        BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+        Call CSMsgBox(MsgText$, BoxWidth, Pass)
+        A$ = GetKeyPress$
+        Call CSMsgBox("", 0, Pass)
+
+    End If
 
     'Close #7
     'End
@@ -954,7 +972,7 @@ Sub ChangeLineup_PreGame (P9, reselect)
         Color 14: Print "(1-9) CHANGE 0-NONE (R)ESELECT LINEUP (P)OSITION SWAP (L)INEUP SWAP";
         Color 15, 0
 
-        If autoPlay = 1 And (playerOpt = 2 Or playerOpt = 1 And compTeam = P9) Then
+        If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = P9) Then
             I$ = "0"
         Else
             I$ = GetKeyPress$
@@ -1040,7 +1058,7 @@ Sub SaveLineup (idx%)
 
     Shared MF%(), T1%()
 
-    If autoPlay = 1 And (playerOpt = 2 Or playerOpt = 1 And compTeam = idx%) Then
+    If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = idx%) Then
         I$ = "N"
     Else
         Do
@@ -1218,7 +1236,7 @@ Sub LineupFromProfile (lineupFound%, P9, skipLineChange%)
 
     Else
 
-        If autoPlay = 1 And useMgrProf = 0 And (playerOpt = 2 Or playerOpt = 1 And compTeam = P9) Or I$ = "3" Then
+        If autoPlay = 1 And useMgrProf = 0 And (playerMode = 2 Or playerMode = 1 And compTeam = P9) Or I$ = "3" Then
 
             RN = Int(Rnd(1) * PCT%) + 1
             PCT% = 0
@@ -1350,7 +1368,7 @@ Sub SelectBatters (batterFlag%, P9)
         Locate , 59: Print "X-REACTIVATE ALL"
         Locate , 59: Print "<TAB>-BAT/FIELD/SPLIT"
 
-        If autoPlay = 1 And (playerOpt = 2 Or playerOpt = 1 And compTeam = P9) Then
+        If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = P9) Then
             'Autoplay = auto-select
             I$ = "Z"
             batterFlag% = 1
@@ -1454,7 +1472,7 @@ End Sub
 'This subroutine assists the user with the
 'choice of any of the pre-created graphics
 'for the stadiums.
-Sub SelectStadium ()
+Sub SelectStadium (useVGA)
 
     Do
         'SELECT A DIFFERENT STADIUM
@@ -1468,7 +1486,7 @@ Sub SelectStadium ()
         PARK$(8) = "WRIGLEY FIELD               "
         PARK$(9) = "DODGER STADIUM              "
         PARK$(10) = "OLYMPIC STADIUM             "
-        PARK$(11) = "CANgameTypeOptESTICK PARK            "
+        PARK$(11) = "CANDLESTICK PARK            "
         PARK$(13) = "SEATTLE KINGDOME            "
         PARK$(12) = "CLEVELAND MUNICIPAL STADIUM "
         PARK$(14) = "SHEA STADIUM                "
@@ -1561,15 +1579,19 @@ Sub SelectStadium ()
         Locate , 11: Print PARK$(tmRat_GAME(1, 13))
 
         Locate , 11
-        '99 is the Generic Park
+
         If _FileExists(".\parks\" + PARK$) Then
             Print "GRAPHIC EXISTS"
         Else
+            '99 is the Generic Park
             Print "GRAPHIC NOT AVAILABLE"
             PARK$ = "99N.PNG"
         End If
 
+        'We may have checked if the file associated with the park
+        'exists, but we haven't checked if any graphics exist at all
         If autoPlay <> 1 Then
+
             'No autoplay
             Do
                 Locate 10, 11
@@ -1596,7 +1618,7 @@ Sub SelectStadium ()
                     menuWidth% = Len(menuChoices$(1))
                     Column% = (80 - menuWidth% - 2) / 2
 
-                    Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
+                    Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor%, FileBGColor%)
 
                     _MouseShow "Default"
                     MAMenu PARK$(), Selection%, Start%, Count%, ExitCode%, FileFGCouseLRSplit, FileBGCouseLRSplit, HiLiteFGCouseLRSplit, HiLiteBGCouseLRSplit, 15, 1, 1, Row%, Column%
@@ -1639,6 +1661,14 @@ Sub SelectStadium ()
             End If
 
         End If 'Done checking auto play
+
+        'We are set for autoplay, and checked if the stadium
+        'graphic exists for the park, but not if the generic
+        'stadium graphic exists. We would only be in this
+        'position if no graphics exist at all!
+
+        'So instead, let's switch to regular mode
+        If Not _FileExists(".\parks\" + PARK$) Then useVGA = 1
 
     Loop Until B0% = 0 Or UCase$(I$) = "N" Or ExitCode% = 27
 
@@ -1692,7 +1722,7 @@ Sub PitchingRotations (computerRotations%, P9)
 
     Next
 
-    If autoPlay = 1 And (playerOpt = 2 Or playerOpt = 1 And compTeam = P9) Then
+    If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = P9) Then
         '   4685
         gamesStarted = 0
 
@@ -2170,7 +2200,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
     Locate 16, 57: Print "1-USE PRE-SET ROTATION"
     Locate 17, 57: Print "2-ENTER A NEW ROTATION"
 
-    If autoPlay = 1 And (playerOpt = 2 Or playerOpt = 1 And compTeam = idx%) Then
+    If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = idx%) Then
         'For automated games, use preset rotation
         'This will end up being computer-generated
         choice = 1
@@ -2203,7 +2233,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
 
                 If MF%(idx%) = -1 Or MG%(idx%, 99) <> 999 Then
 
-                    If autoPlay = 1 And (playerOpt = 2 Or playerOpt = 1 And compTeam = idx%) Then
+                    If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = idx%) Then
                         computerRotations% = 1
                     Else
                         'This should instead go to automatic disable of rotations???
@@ -2333,7 +2363,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
             Locate , 58: Print "Z-CONTINUE"
             Locate , 58: Print "X-ACTIVATE ALL PITCHERS"
 
-            If autoPlay = 1 And (playerOpt = 2 Or playerOpt = 1 And compTeam = idx%) Then
+            If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = idx%) Then
                 I$ = "Z"
             End If
 
@@ -2481,7 +2511,7 @@ Sub PitchingStarter (idx%)
 
         Print
 
-        If Not (autoPlay = 1 And (playerOpt = 2 Or playerOpt = 1 And compTeam = idx%)) Then
+        If Not (autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = idx%)) Then
 
             Do
                 Locate 21, 58: Print "ANY CHANGE? (Y/N)"
@@ -2542,6 +2572,7 @@ Sub ChooseGameTeam (yearNumber$, numberTeams, chosenIdx, teamName$, gameIdx)
         Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
         Print
         Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
+        Locate 8,
 
         I$ = GetKeyPress$
 
@@ -2549,8 +2580,8 @@ Sub ChooseGameTeam (yearNumber$, numberTeams, chosenIdx, teamName$, gameIdx)
 
             If I$ <> Chr$(13) Then
 
-                Locate 7, 27: Print I$
-                Locate 7, 28: Line Input NY$
+                Locate 8, 27: Print I$
+                Locate 8, 28: Line Input NY$
                 NY$ = I$ + NY$
                 Color 15, 0
 

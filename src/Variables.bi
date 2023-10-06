@@ -144,7 +144,7 @@ Dim seeZ!(298), seeZ1!(298)
 
 Dim BA$(40), ER$(40), H1$(40)
 Dim cmplZ2$(298), cmplZ3$(298)
-'Dim LF$(70), NM$(46), seeP$(298)
+Dim LF$(70), NM$(46), seeP$(298)
 Dim RT$(70), T$(40), cmplTM$(1 To 40)
 
 
@@ -265,6 +265,7 @@ Dim PB$(22), TYN$(40)
 '----------------------------------------
 ' Used in Game Routines
 '----------------------------------------
+Dim scheduleFile$
 
 'Used by POSTGAME
 Dim DB, HR, TR, SB, PPH
@@ -290,7 +291,7 @@ Dim Shared SC%, TA%, TP%, W%, WS%
 
 Dim Shared compTeam, endGame, endAllGames, FontColAdj, gameLoc
 Dim Shared monitorType, noLUFound, normalFinish
-Dim Shared P, pitchEraOpt, playerOpt, RE, RD
+Dim Shared P, pitchEraOpt, playerMode, playerOpt, RE, RD
 Dim Shared usingGfx, useInj, useRest
 
 Dim Shared pbpDelay!, WF!
@@ -326,5 +327,5 @@ Dim Shared G$(10), gameManagers$(1), gameStadiums$(1), gameTeams$(1)
 Dim Shared H0$(1), homeRuns$(0 To 22), IJ$(20)
 Dim Shared PARK$(99), pitchers$(1, 21), PC$(4), player$(23)
 Dim Shared Q3$(100), SB$(0 To 22), SC$(4)
-Dim Shared teamAbbreviatons$(1), TR$(0 To 22)
+'Dim Shared teamAbbreviatons$(0 to 1), TR$(0 To 22)
 Dim Shared U$(4), WD$(10), X$(12), YN$(1)

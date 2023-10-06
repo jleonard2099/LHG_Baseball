@@ -16,14 +16,6 @@ Sub SCHEDULE ()
 
     _Title "Full Count Baseball - Scheduler"
 
-    '--- Pay close attention to this and consider the "why"
-    '--- I think this is setting defaults - much like we want to do!
-    scheduleNG%(0, 8) = 0
-    scheduleNG%(0, 3) = 1
-    scheduleNG%(0, 7) = 0
-    scheduleNG%(0, 2) = 1
-    scheduleNG%(0, 14) = 4
-
     Do
 
         Color 7, 0
@@ -299,7 +291,8 @@ Sub NewSchedule (scheduleFile$)
                    Locate 23, 1: Input "ENTER GAME # TO GO TO "; targetGame%
                 Loop Until targetGame% >= 1 And targetGame% <= scheduleAP%(0)
                 NS% = Int((targetGame%- 1) / 20)
-                boxName$ = diskPaths$(1) + "BOX" + Mid$( Str$(targetGame%), 2, Len(Str$(targetGame%)) )
+
+                boxName$ = diskPaths$(1) + scheduleFile$ + "_GAME" + Mid$(Str$(targetGame%), 2, Len(Str$(targetGame%))) + ".BS"
                 Call EditBoxscore (boxName$)
                 Color 15, 0
 
@@ -931,7 +924,7 @@ Sub BoxscoreMaintenance ()
                     Call EditParameters
 
                 Case 2:
-                    boxscoreFile$ = ChooseFile$ (diskPaths$(1) + "*.SPC", "BOXSCORE", ExitCode%)
+                    boxscoreFile$ = ChooseFile$ (diskPaths$(1) + "*.BSS", "BOXSCORE", ExitCode%)
                     
                     If ExitCode% <> 27 And ExitCode% <> 0 And boxscoreFile$ <> "" Then
                         boxName$ = diskPaths$(1) + boxscoreFile$
@@ -939,22 +932,25 @@ Sub BoxscoreMaintenance ()
                     End If
 
                 Case 3
-                    Spec$ = diskPaths$(1) + "BOX*."
+                    Spec$ = diskPaths$(1) + "*.BS"
                     Call DeleteBoxscores(Selection%, Spec$)
 
                 Case 4
+                    Spec$ = diskPaths$(1) + "*.BSS"
+                    Call DeleteBoxscores(Selection%, Spec$)
+
                     Spec$ = diskPaths$(1) + "*.SPC"
                     Call DeleteBoxscores(Selection%, Spec$)
 
                 Case 5:
+                    Spec$ = diskPaths$(1) + "*.BSS"
+                    Call DeleteBoxscores(Selection%, Spec$)
+
                     Spec$ = diskPaths$(1) + "*.SPC"
                     Call DeleteBoxscores(Selection%, Spec$)
 
-                    Spec$ = diskPaths$(1) + "BOX*."
+                    Spec$ = diskPaths$(1) + "*.BS"
                     Call DeleteBoxscores(Selection%, Spec$)
-
-                Case 6:
-                    Cls
 
             End Select
 
@@ -1083,17 +1079,32 @@ Sub ChangeGlobalSettings ()
     Dim displayPause!
 
     ' GLOBAL SETTINGS FOR A SCHEDULE
-    playerOpt = 3
-    desigHit = 0
-    useWeather = 1
-    useInj = 1
-    useLRSplit = 1
-    useRest = 1
-    useMgrProf = 1
-    useVGA = 1
-    pitchEraOpt = 0
+    ' The code below would use default values based on the most recent rules
+    'playerOpt = 3
+    'desigHit = 0
+    'useWeather = 1
+    'useInj = 1
+    'useLRSplit = 1
+    'useRest = 1
+    'useMgrProf = 1
+    'useVGA = 1
+    'pitchEraOpt = 0
 
-    DT$ = "04-04-93"
+    'This code will assign defaults based on the first game in the schedule.
+    'Usually when I want to change global settings, I want to keep most
+    'settings in the schedule the same.
+    desigHit = scheduleNG%(0, 3)
+    displayPause! = scheduleNG%(0, 4) / 10
+    useWeather = scheduleNG%(0, 5)
+    useInj = scheduleNG%(0, 6)
+    useLRSplit = scheduleNG%(0, 7)
+    playerOpt = scheduleNG%(0, 8)
+    useRest = scheduleNG%(0, 9)
+    useMgrProf = scheduleNG%(0, 10)
+    useVGA = scheduleNG%(0, 11)
+    pitchEraOpt = scheduleNG%(0, 14)
+
+    DT$ = "04-04-23"
     TM$ = "07:30P"
 
     Do

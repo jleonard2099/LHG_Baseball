@@ -21,8 +21,10 @@ Sub MAINSCREEN_G (D, p, BC%, U%, MO)
     'Wins
     FORMATTED$ = FUsing$(Str$(pitchRating(D, P1%(D), 1)), "##", 1)
     pStats$ = FORMATTED$ + "-"
+
     'Losses
     FORMATTED$ = FUsing$(Str$(pitchRating(D, P1%(D), 2)), "##", 1)
+
     '                                              ERA
     pStats$ = pStats$ + FORMATTED$ + " " + FUsing$(Str$(pitchRating(D, P1%(D), 10) / 100), "##.##", 1)
 
@@ -42,6 +44,7 @@ Sub MAINSCREEN_G (D, p, BC%, U%, MO)
 
     '                                      H                                            BB                                                      K
     pStats$ = pStats$ + " " + FUsing$(Str$(P8%(D, P1%(D), 1)), "##", 1) + " " + FUsing$(Str$(P8%(D, P1%(D), 4)), "###", 1) + " " + FUsing$(Str$(P8%(D, P1%(D), 5)), "###", 1)
+
     PrintOnGfx 65, 29, pStats$, imageScreen&
 
     J = B3%(p, B1!(p))
