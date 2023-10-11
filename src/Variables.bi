@@ -34,8 +34,9 @@ Dim Shared DT$, TM$
 
 Dim dayNight$(0 To 1), desigHitOpt$(1), gameType$(1)
 Dim leagueType$(2), month$(1 To 12)
-Dim pitcherEra$(8), playMode$(0 To 3), UMP$(50)
-Dim VI$(1), yesNo$(1)
+Dim pitcherEra$(8), playMode$(0 To 3)
+Dim teamIndicator$(1), UMP$(50)
+Dim yesNo$(1), yesNoText$(1)
 
 Dim U%(50)
 
@@ -266,6 +267,8 @@ Dim PB$(22), TYN$(40)
 ' Used in Game Routines
 '----------------------------------------
 Dim scheduleFile$
+Dim actualAttendance&, avgAttendance&
+
 
 'Used by POSTGAME
 Dim DB, HR, TR, SB, PPH
@@ -292,11 +295,9 @@ Dim Shared SC%, TA%, TP%, W%, WS%
 Dim Shared compTeam, endGame, endAllGames, FontColAdj, gameLoc
 Dim Shared monitorType, noLUFound, normalFinish
 Dim Shared P, pitchEraOpt, playerMode, playerOpt, RE, RD
-Dim Shared usingGfx, useInj, useRest
+Dim Shared useInj, useRest, useVGA
 
 Dim Shared pbpDelay!, WF!
-
-Dim Shared actualAttendance&, avgAttendance&
 
 Dim Shared F$, gameTime$, L$, NM$, PARK$
 Dim Shared S$, WI$, W$, Y$, YY$

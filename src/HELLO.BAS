@@ -1,6 +1,6 @@
 $Debug
 
-Const GAME_VERSION$ = "6.67"
+Const GAME_VERSION$ = "6.97"
 Const MAX_TEAMS = 1000
 Const MAX_GAMES = 1500
 Const MAX_FILES = 10240
@@ -195,14 +195,6 @@ modeAbbrev$(1) = "CV"
 modeAbbrev$(2) = "CH"
 modeAbbrev$(3) = "CC"
 
-playMode$(0) = "HUMAN OPPONENT           "
-playMode$(1) = "COMPUTER IS VISITING TEAM"
-playMode$(2) = "COMPUTER IS HOME TEAM    "
-playMode$(3) = "COMPUTER VS COMPUTER     "
-
-yesNo$(0) = "N"
-yesNo$(1) = "Y"
-
 pitcherEra$(0) = "1980 - PRESENT"
 pitcherEra$(1) = "1973 - 1979   "
 pitcherEra$(2) = "1955 - 1972   "
@@ -213,8 +205,19 @@ pitcherEra$(6) = "1909 - 1918   "
 pitcherEra$(7) = "1894 - 1908   "
 pitcherEra$(8) = "1876 - 1893   "
 
+playMode$(0) = "HUMAN OPPONENT           "
+playMode$(1) = "COMPUTER IS VISITING TEAM"
+playMode$(2) = "COMPUTER IS HOME TEAM    "
+playMode$(3) = "COMPUTER VS COMPUTER     "
+
 progPT$(1) = "LHP"
 progPT$(0) = "RHP"
+
+yesNoText$(0) = "NO "
+yesNoText$(1) = "YES"
+
+yesNo$(0) = "N"
+yesNo$(1) = "Y"
 
 
 '----------------------------------------

@@ -11,7 +11,7 @@ Sub SCHEDULE ()
     ReDim menuChoices$(1 To 8)
 
     Shared NS%
-    
+
     Shared scheduleAP%(), scheduleNG%()
 
     _Title "Full Count Baseball - Scheduler"
@@ -508,30 +508,63 @@ Sub NewGame (visitor$, home$, YN$, NTMS, gameIndex%)
 
     Shared scheduleNG%()
     
-    Shared playMode$(), pitcherEra$(), yesNo$()
+    Shared playMode$(), pitcherEra$(), yesNoText$()
 
     Do
 
         ' ** Enter New Game **
         Cls
-        Color 2: Print Tab(29); "SELECT GAME OPTIONS"
-        Print
 
-        Locate 2, 2: Color 14: Print "(1) ";: Color 15: Print playMode$(scheduleNG%(gameIndex%, 8))
-        Locate 3, 2: Color 14: Print "(2) ";: Color 15: Print "VISITING TEAM: "; visitor$
-        Locate 4, 2: Color 14: Print "(3) ";: Color 15: Print "HOME TEAM: "; home$
-        Locate 5, 2: Color 14: Print "(4) ";: Color 15: Print "DESIGNATED HITTER: "; yesNo$(scheduleNG%(gameIndex%, 3))
-        Locate 6, 2: Color 14: Print "(5) ";: Color 15: Print Using "PLAY-BY-PLAY DELAY (SECS): ##.#  "; scheduleNG%(gameIndex%, 4) / 10
-        Locate 7, 2: Color 14: Print "(6) ";: Color 15: Print "GAME DATE (XX-XX-XX) "; DT$; "   "
-        Locate 8, 2: Color 14: Print "(7) ";: Color 15: Print "GAME TIME (XX:XXP) "; TM$; "   "
-        Locate 9, 2: Color 14: Print "(8) ";: Color 15: Print "USE WEATHER EFFECTS: "; yesNo$(1 - scheduleNG%(gameIndex%, 5))
-        Locate 10, 2: Color 14: Print "(9) ";: Color 15: Print "USE INJURIES "; yesNo$(1 - scheduleNG%(gameIndex%, 6))
-        Locate 11, 2: Color 14: Print "(A) ";: Color 15: Print "USE LEFT/RIGHT SPLIT STATS "; yesNo$(1 - scheduleNG%(gameIndex%, 7))
-        Locate 12, 2: Color 14: Print "(B) ";: Color 15: Print "USE DAYS REST DATA FOR PITCHERS "; yesNo$(1 - scheduleNG%(gameIndex%, 9))
-        Locate 13, 2: Color 14: Print "(C) ";: Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE "; yesNo$(1 - scheduleNG%(gameIndex%, 10))
-        Locate 14, 2: Color 14: Print "(D) ";: Color 15: Print "USE VGA SCREENS, IF ABLE: "; yesNo$(1 - scheduleNG%(gameIndex%, 11))
-        Locate 15, 2: Color 14: Print "(E) ";: Color 15: Print "PITCHER ERA : "; pitcherEra$(scheduleNG%(gameIndex%, 14))
-        Locate 16, 2: Color 14: Print "(0) ";: Color 15: Print "ACCEPT SETTINGS"
+        Color 2
+        Print Tab(29); "SELECT OPENING OPTIONS"
+
+        Locate 2, 2: Color 14
+        Print "(1) ";
+        Color 15: Print playMode$(scheduleNG%(gameIndex%, 8))
+        Locate 3, 2: Color 14
+        Print "(2) ";
+        Color 15: Print "VISITING TEAM: "; visitor$
+        Locate 4, 2: Color 14
+        Print "(3) ";
+        Color 15: Print "HOME TEAM: "; home$
+        'Nothing is done for "League Type" (AL vs. NL) ??
+        Locate 5, 2: Color 14
+        Print "(4) ";
+        Color 15: Print "GAME DATE (XX-XX-XX)  "; DT$; "   "
+        'Nothing is done for "Game Type"; it's assumed to be regular season?
+        Locate 6, 2: Color 14
+        Print "(5) ";
+        Color 15: Print "GAME TIME (XX:XXP)  "; TM$; "   "
+        Locate 7, 2: Color 14
+        Print "(6) ";
+        Color 15: Print Using "PLAY-BY-PLAY DELAY (SECS): ##.#"; scheduleNG%(gameIndex%, 4) / 10
+        Locate 8, 2: Color 14
+        Print "(7) ";
+        Color 15: Print "DESIGNATED HITTER: "; yesNoText$(scheduleNG%(gameIndex%, 3))
+        Locate 9, 2: Color 14
+        Print "(8) ";
+        Color 15: Print "USE INJURIES: "; yesNoText$(scheduleNG%(gameIndex%, 6))
+        Locate 10, 2: Color 14
+        Print "(9) ";
+        Color 15: Print "USE LEFT/RIGHT SPLIT STATS: "; yesNoText$(scheduleNG%(gameIndex%, 7))
+        Locate 11, 2: Color 14
+        Print "(A) ";
+        Color 15: Print "USE DAYS REST DATA FOR PITCHERS: "; yesNoText$(scheduleNG%(gameIndex%, 9))
+        Locate 12, 2: Color 14
+        Print "(B) ";
+        Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE: "; yesNoText$(scheduleNG%(gameIndex%, 10))
+        Locate 13, 2: Color 14
+        Print "(C) ";
+        Color 15: Print "USE WEATHER EFFECTS: "; yesNoText$(scheduleNG%(gameIndex%, 5))
+        Locate 14, 2: Color 14
+        Print "(D) ";
+        Color 15: Print "USE VGA SCREENS, IF ABLE: "; yesNoText$(scheduleNG%(gameIndex%, 11))
+        Locate 15, 2: Color 14
+        Print "(E) ";
+        Color 15: Print "PITCHER ERA: "; pitcherEra$(scheduleNG%(gameIndex%, 14))
+        Locate 17, 2: Color 14
+        Print "(0) ";
+        Color 15: Print "ACCEPT SETTINGS"
 
         Do
             I$ = GetKeyPress$
@@ -575,34 +608,34 @@ Sub NewGame (visitor$, home$, YN$, NTMS, gameIndex%)
                     End If
 
                 Case 4:
-                    scheduleNG%(gameIndex%, 3) = 1 - scheduleNG%(gameIndex%, 3)
+                    Locate 5, 26: Input DT$
 
                 Case 5:
+                    Locate 6, 24: Input TM$
+
+                Case 6:
                     Locate 7, 32: Input displayPause!
                     scheduleNG%(gameIndex%, 4) = displayPause! * 10
 
-                Case 6:
-                    Locate 11, 27: Input DT$
-
                 Case 7:
-                    Locate 12, 25: Input TM$
+                    scheduleNG%(gameIndex%, 3) = 1 - scheduleNG%(gameIndex%, 3)
 
                 Case 8:
-                    scheduleNG%(gameIndex%, 5) = 1 - scheduleNG%(gameIndex%, 5)
+                    scheduleNG%(gameIndex%, 6) = 1 - scheduleNG%(gameIndex%, 6)
 
                 Case 9:
-                    scheduleNG%(gameIndex%, 6) = 1 - scheduleNG%(gameIndex%, 6)
+                    scheduleNG%(gameIndex%, 7) = 1 - scheduleNG%(gameIndex%, 7)
 
                 Case 10: ' Back to beginning of loop
 
                 Case 11:
-                    scheduleNG%(gameIndex%, 7) = 1 - scheduleNG%(gameIndex%, 7)
-
-                Case 12:
                     scheduleNG%(gameIndex%, 9) = 1 - scheduleNG%(gameIndex%, 9)
 
-                Case 13:
+                Case 12:
                     scheduleNG%(gameIndex%, 10) = 1 - scheduleNG%(gameIndex%, 10)
+
+                Case 13:
+                    scheduleNG%(gameIndex%, 5) = 1 - scheduleNG%(gameIndex%, 5)
 
                 Case 14:
                     scheduleNG%(gameIndex%, 11) = 1 - scheduleNG%(gameIndex%, 11)
@@ -1074,7 +1107,7 @@ Sub ChangeGlobalSettings ()
     Shared scheduleAP%(), scheduleNG%()
 
     Shared playMode$(), pitcherEra$()
-    Shared yesNo$()
+    Shared yesNoText$()
 
     Dim displayPause!
 
@@ -1117,19 +1150,19 @@ Sub ChangeGlobalSettings ()
         Locate 5, 2: Color 14: Print "(2) ";
         Color 15: Print Using "PLAY-BY-PLAY DELAY (SECS): ##.#  "; displayPause! ' / 10
         Locate 4, 2: Color 14: Print "(3) ";
-        Color 15: Print "DESIGNATED HITTER: "; yesNo$(desigHit)
+        Color 15: Print "DESIGNATED HITTER: "; yesNoText$(desigHit)
         Locate 6, 2: Color 14: Print "(4) ";
-        Color 15: Print "USE WEATHER EFFECTS: "; yesNo$(useWeather)
+        Color 15: Print "USE WEATHER EFFECTS: "; yesNoText$(useWeather)
         Locate 7, 2: Color 14: Print "(5) ";
-        Color 15: Print "USE INJURIES "; yesNo$(useInj)
+        Color 15: Print "USE INJURIES "; yesNoText$(useInj)
         Locate 8, 2: Color 14: Print "(6) ";
-        Color 15: Print "USE LEFT/RIGHT SPLIT STATS "; yesNo$(useLRSplit)
+        Color 15: Print "USE LEFT/RIGHT SPLIT STATS "; yesNoText$(useLRSplit)
         Locate 9, 2: Color 14: Print "(7) ";
-        Color 15: Print "USE DAYS REST DATA FOR PITCHERS "; yesNo$(useRest)
+        Color 15: Print "USE DAYS REST DATA FOR PITCHERS "; yesNoText$(useRest)
         Locate 10, 2: Color 14: Print "(8) ";
-        Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE "; yesNo$(useMgrProf)
+        Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE "; yesNoText$(useMgrProf)
         Locate 11, 2: Color 14: Print "(9) ";
-        Color 15: Print "USE VGA SCREENS, IF ABLE: "; yesNo$(useVGA)
+        Color 15: Print "USE VGA SCREENS, IF ABLE: "; yesNoText$(useVGA)
         Locate 12, 2: Color 14: Print "(A) ";
         Color 15: Print "PITCHER ERA: "; pitcherEra$(pitchEraOpt)
         Locate 13, 2: Color 14: Print "(0) ";

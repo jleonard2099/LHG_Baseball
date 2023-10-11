@@ -7,6 +7,8 @@
 'rotations, linesup and a park.
 Sub LOADER
 
+    Shared actualAttendance&, avgAttendance&
+
     _Title "Full Count Baseball v" + GAME_VERSION$ + " - PLAY BALL!"
 
     'Open "pbplog" For Output As #7
@@ -15,7 +17,7 @@ Sub LOADER
     Shared leagueType$(), month$()
     Shared PT$(), pitcherEra$()
     Shared playMode$(), UMP$(), M%()
-    Shared VI$(), yesNo$()
+    Shared teamIndicator$(), yesNoText$()
     Shared T1%(), U%()
 
     Shared scheduleFile$
@@ -131,6 +133,13 @@ Sub LOADER
 
         Call AUTOSETUP
 
+        For Idx = 0 To 1
+            T1%(Idx) = NG%(Idx)
+            YN$ = YN$(Idx)
+            Call ReadGameTeam(YN$, gameTeams$(Idx), T1%(Idx), Idx)
+            YN$(Idx) = YN$
+        Next Idx
+
     Else
 
         170 '
@@ -139,42 +148,69 @@ Sub LOADER
         If gameLoc = 0 Then gameLoc = 1
 
         Do
+
             Color 15, 0
             Cls
 
-            Locate 3, 1
-            Color 14: Print "(1) ";
+            Color 2
+            Print Tab(29); "SELECT OPENING OPTIONS"
+
+            Locate 2, 2: Color 14
+            Print "(1) ";
             Color 15: Print playMode$(playerOpt)
-            Color 14: Print "(2) ";
-            Color 15: Print leagueType$(leagueOpt)
-            Color 14: Print "(3) ";
-            Color 15: Print desigHitOpt$(desigHit)
-            Color 14: Print "(4) ";
-            Color 15: Print gameType$(gameTypeOpt)
-            Color 14: Print "(5) ";
-            Color 15: Print month$(gameMonth)
-            Color 14: Print "(6) ";
-            Color 15: Print dayNight$(dayOrNight)
-            Color 14: Print "(7) ";
-            Color 15: Print "PROCEED TO TEAM SELECTION"
-            Color 14: Print "(8) ";
-            Color 15: Print "USE CLIMATE/WIND/TEMP DATA "; yesNo$(useWeather)
-            Color 14: Print "(9) ";
-            Color 15: Print "USE INJURIES "; yesNo$(useInj)
-            Color 14: Print "(0) ";
+            Locate 3, 2: Color 14
+            Print "(2) ";
+            Color 15: Print "VISITING TEAM: ";
+            Color tmRat_GAME(0, 11), tmRat_GAME(0, 12): Print gameTeams$(0)
+            Locate 4, 2: Color 14, 0
+            Print "(3) ";
+            Color 15: Print "HOME TEAM: ";
+            Color tmRat_GAME(1, 11), tmRat_GAME(1, 12): Print gameTeams$(1)
+            Locate 5, 2: Color 14, 0
+            Print "(4) ";
+            Color 15: Print "LEAGUE TYPE: "; leagueType$(leagueOpt)
+            Locate 6, 2: Color 14
+            Print "(5) ";
+            Color 15: Print "DESIGNATED HITTER: "; desigHitOpt$(desigHit)
+            Locate 7, 2: Color 14
+            Print "(6) ";
+            Color 15: Print "GAME TYPE: "; gameType$(gameTypeOpt)
+            Locate 8, 2: Color 14
+            Print "(7) ";
+            Color 15: Print "MONTH: "; month$(gameMonth)
+            Locate 9, 2: Color 14
+            Print "(8) ";
+            Color 15: Print "TIME OF DAY: "; dayNight$(dayOrNight)
+            Locate 10, 2: Color 14
+            Print "(9) ";
+            Color 15: Print "START GAME"
+            Locate 11, 2: Color 14
+            Print "(0) ";
             Color 15: Print "SAVE SETTINGS AS DEFAULT"
-            Color 14: Print "(A) ";
-            Color 15: Print "USE LEFT/RIGHT SPLIT STATS "; yesNo$(useLRSplit)
-            Color 14: Print "(B) ";
-            Color 15: Print "USE DAYS REST DATA FOR PITCHERS "; yesNo$(useRest)
-            Color 14: Print "(C) ";
-            Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE "; yesNo$(useMgrProf)
-            Color 14: Print "(D) ";
+            Locate 12, 2: Color 14
+            Print "(A) ";
             Color 15: Print Using "PLAY-BY-PLAY DELAY (SECS): ##.# "; pbpDelay!
-            Color 14: Print "(E) ";
-            Color 15: Print "USE VGA SCREENS, IF ABLE: "; yesNo$(useVGA)
-            Color 14: Print "(F) ";
-            Color 15: Print "PITCHER USAGE ERA: "; pitcherEra$(pitchEraOpt)
+            Locate 13, 2: Color 14
+            Print "(B) ";
+            Color 15: Print "USE INJURIES: "; yesNoText$(useInj)
+            Locate 14, 2: Color 14
+            Print "(C) ";
+            Color 15: Print "USE LEFT/RIGHT SPLIT STATS: "; yesNoText$(useLRSplit)
+            Locate 15, 2: Color 14
+            Print "(D) ";
+            Color 15: Print "USE DAYS REST DATA FOR PITCHERS: "; yesNoText$(useRest)
+            Locate 16, 2: Color 14
+            Print "(E) ";
+            Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE: "; yesNoText$(useMgrProf)
+            Locate 17, 2: Color 14
+            Print "(F) ";
+            Color 15: Print "USE WEATHER EFFECTS: "; yesNoText$(useWeather)
+            Locate 18, 2: Color 14
+            Print "(G) ";
+            Color 15: Print "USE VGA SCREENS, IF ABLE: "; yesNoText$(useVGA)
+            Locate 19, 2: Color 14
+            Print "(H) ";
+            Color 15: Print "PITCHER ERA: "; pitcherEra$(pitchEraOpt)
 
             Do
                 Color 7, 0
@@ -183,13 +219,13 @@ Sub LOADER
 
                 If I$ <> Chr$(27) Then Call LetterToNumber(I$, I)
 
-            Loop Until I >= 0 And I <= 16 Or I$ = Chr$(27) Or UCase$(I$) = "Q"
+            Loop Until I >= 0 And I <= 17 Or I$ = Chr$(27) Or UCase$(I$) = "Q"
 
             If I$ <> Chr$(27) And UCase$(I$) <> "Q" Then
 
-                Select Case I + 1
+                Select Case I
 
-                    Case 1:
+                    Case 0:
                         Open "DEFERA" For Output As #7
                         Print #7, playerOpt
                         Print #7, leagueOpt
@@ -207,55 +243,64 @@ Sub LOADER
                         Print #7, pitchEraOpt
                         Close #7
 
-                    Case 2:
+                    Case 1:
                         playerOpt = playerOpt + 1
                         If playerOpt > 3 Then playerOpt = 0
 
+                    Case 2:
+                        Call ChooseGameTeam(YN$(0), NTMS, T1%(0), gameTeams$(0), 0)
+                        Color 15, 0
+
                     Case 3:
+                        Call ChooseGameTeam(YN$(1), NTMS, T1%(1), gameTeams$(1), 1)
+                        Color 15, 0
+
+                    Case 4:
                         leagueOpt = leagueOpt + 1
                         If leagueOpt > 2 Then leagueOpt = 0
 
-                    Case 4:
+                    Case 5:
                         desigHit = 1 - desigHit
 
-                    Case 5:
+                    Case 6:
                         gameTypeOpt = 1 - gameTypeOpt
 
-                    Case 6:
+                    Case 7:
                         gameMonth = gameMonth + 1
                         If gameMonth > 10 Then gameMonth = 4
                         Locate 7, 4: Print BK$
 
-                    Case 7:
+                    Case 8:
                         dayOrNight = 1 - dayOrNight
                         Locate 8, 4
                         Print BK$
 
-                    Case 8:
+                    Case 9:
                         '
 
-                    Case 9:
-                        useWeather = 1 - useWeather
-
                     Case 10:
-                        useInj = 1 - useInj
+                        Locate 12, 32
+                        Input pbpDelay!
 
                     Case 11:
-                        useLRSplit = 1 - useLRSplit
+                        useInj = 1 - useInj
 
                     Case 12:
-                        useRest = 1 - useRest
+                        useLRSplit = 1 - useLRSplit
 
                     Case 13:
-                        useMgrProf = 1 - useMgrProf
+                        useRest = 1 - useRest
 
                     Case 14:
-                        Locate 16, 22: Input pbpDelay!
+                        useMgrProf = 1 - useMgrProf
 
                     Case 15:
-                        useVGA = 1 - useVGA
+                        useWeather = 1 - useWeather
 
                     Case 16:
+                        useVGA = 1 - useVGA
+
+                    Case 17:
                         pitchEraOpt = pitchEraOpt + 1
                         If pitchEraOpt > 8 Then pitchEraOpt = 0
 
@@ -270,8 +315,53 @@ Sub LOADER
 
             End If
 
-        Loop Until I$ = "7"
+        Loop Until (I = 9 And gameTeams$(0) <> "" And gameTeams$(1) <> "") Or I$ = Chr$(27) Or UCase$(I$) = "Q"
 
+        If I$ <> Chr$(27) And UCase$(I$) <> "Q" Then
+            'TICKER PROMPT
+        Else
+
+            'End
+            'System
+            'Exit Sub
+
+        End If
+
+    End If
+
+    'Determine attendance
+
+    ' ** the original game generated random attendance from 5,000 to 59,000
+    ' ** Attendannce hasn't been as low as 5,000 since early 1900,
+    ' ** and almost never 59,000 except for significant events
+    'https://www.baseball-reference.com/leagues/majors/misc.shtml
+    If gameLoc = 2 Or avgAttendance& = 0 Then
+        'Get assumed year of home team
+        YR% = GetTeamYear%(gameTeams$(1))
+
+        Select Case YR%
+
+            Case Is <= 1900
+            'Random # from 500 to 3,000
+                actualAttendance& = Int(Rnd(1) * 2500) + 500
+
+            Case 1901 - 1945
+            'Random # from 4,000 to 10,000
+                actualAttendance& = Int(Rnd(1) * 6000) + 4000
+
+            Case Is >= 1946
+            'Random # from 15,000 to 30,000
+                actualAttendance& = Int(Rnd(1) * 15000) + 15000
+
+        End Select
+
+    Else
+        'Random % +/- 10,000 of team's average
+        ' ** this was added by me (Jason) to reflect
+        ' ** how other games calculate attendance.
+        ' ** Previously the source was not using the
+        ' ** averages read in from PARKS.DBF
+        actualAttendance& = avgAttendance& + Int(Rnd(1) * 20000) - 10000
     End If
 
     '----------------------------------------
@@ -354,28 +444,6 @@ Sub LOADER
     End If
 
     '-------------------------
-    ' Team Selection
-    '-------------------------
-    For Idx = 0 To 1
-
-        If autoPlay = 1 Then
-
-            T1%(Idx) = NG%(Idx)
-            YN$ = YN$(Idx)
-            Call ReadGameTeam(YN$, gameTeams$(Idx), T1%(Idx), Idx)
-            YN$(Idx) = YN$
-
-        Else
-
-            Call INFO
-            Call ChooseGameTeam(YN$(Idx), NTMS, T1%(Idx), gameTeams$(Idx), Idx)
-            Color 15, 0
-
-        End If 'Done checking for autoplay
-
-    Next Idx
-
-    '-------------------------
     ' Team Mgmt + Lineups
     '-------------------------
 
@@ -452,7 +520,7 @@ Sub LOADER
                 Else
 
                     If (playerMode = 2 Or playerMode = 1 And compTeam = P9) Then
-                        If useMgrProf = 0 Then
+                        If useMgrProf = 1 Then
                             I$ = "1"
                         Else
                             I$ = "2"
@@ -535,27 +603,6 @@ Sub LOADER
         Loop Until noLineups = 0 And reselect = 0
 
     Next P9
-
-    'Determine attendance
-    '-- note this currently does not take home field
-    '-- advantage into play, nor is this info.
-    '-- available for each team. Rather it is for
-    '-- each park. This is a different approach in
-    '-- comparison to other games, but not necessarily
-    '-- a bad idea. Currently these calculations don't
-    '-- seem an accurate way to do anything
-    ' ** this was added by me (Jason) to reflect
-    ' ** how other games calculate attendance.
-    ' ** the original game only performed the
-    ' ** calculation from 5 to 60 thousand,
-    ' ** despite reading in data from PARKS.DBF
-    If gameLoc = 2 Or avgAttendance& = 0 Then
-        actualAttendance& = Int(Rnd(1) * 55) + 5
-        actualAttendance& = actualAttendance& * 1000
-    Else
-        actualAttendance& = Int(Rnd(1) * 2000) + avgAttendance& - 1000
-    End If
-
 
     '-------------------------
     ' Ready to Play
@@ -681,12 +728,20 @@ Sub LOADER
 
     If Val(Left$(gameTeams$(0), 3)) = 211 Then I1 = 201
     If Val(Left$(gameTeams$(0), 3)) = 200 Then I1 = 200
+
     If Val(Left$(gameTeams$(1), 3)) = 200 Then I2 = 200
     If Val(Left$(gameTeams$(1), 3)) = 211 Then I2 = 201
 
+    ' = 3
     If pitchEraOpt > 2 Then S8%(1, 1) = 4: S8%(0, 1) = 4
+    
+    ' = 4 to 6
     If pitchEraOpt > 3 Then S8%(1, 1) = 5: S8%(0, 1) = 5
+    
+    ' = 7
     If pitchEraOpt = 7 Then S8%(1, 1) = 7: S8%(0, 1) = 7
+    
+    ' >= 8
     If pitchEraOpt >= 8 Then S8%(1, 1) = 99: S8%(0, 1) = 99
 
     Call GETSTATS
@@ -694,13 +749,6 @@ Sub LOADER
 
     W5 = 0
     W6 = 1
-
-    If (monitorType = 6 Or monitorType = 7 Or monitorType = 12) And useVGA = 0 Then
-        usingGfx = 1
-    Else
-        usingGfx = 0
-    End If
-
 
     '--- we need to check for Revised.pbp
     If _FileExists("revised.pbp") Then
@@ -1236,8 +1284,9 @@ Sub LineupFromProfile (lineupFound%, P9, skipLineChange%)
 
     Else
 
-        If autoPlay = 1 And useMgrProf = 0 And (playerMode = 2 Or playerMode = 1 And compTeam = P9) Or I$ = "3" Then
+        If autoPlay = 1 And useMgrProf = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = P9) Or I$ = "3" Then
 
+            'Create automated lineup
             RN = Int(Rnd(1) * PCT%) + 1
             PCT% = 0
 
@@ -1611,8 +1660,8 @@ Sub SelectStadium (useVGA)
                     Selection% = 1
                     Count% = 15
                     ExitCode% = 99
-                    FileFGCouseLRSplit = 15: FileBGCouseLRSplit = 1
-                    HiLiteFGCouseLRSplit = 0: HiLiteBGCouseLRSplit = 7
+                    FileFGColor = 15: FileBGColor = 1
+                    HiLiteFGColor = 0: HiLiteBGColor = 7
                     Spacing% = 1
                     Row% = 5
                     menuWidth% = Len(menuChoices$(1))
@@ -1621,7 +1670,7 @@ Sub SelectStadium (useVGA)
                     Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor%, FileBGColor%)
 
                     _MouseShow "Default"
-                    MAMenu PARK$(), Selection%, Start%, Count%, ExitCode%, FileFGCouseLRSplit, FileBGCouseLRSplit, HiLiteFGCouseLRSplit, HiLiteBGCouseLRSplit, 15, 1, 1, Row%, Column%
+                    MAMenu PARK$(), Selection%, Start%, Count%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor, HiLiteBGColor, 15, 1, 1, Row%, Column%
                     _MouseHide
 
                     Color , 0
@@ -1668,7 +1717,7 @@ Sub SelectStadium (useVGA)
         'position if no graphics exist at all!
 
         'So instead, let's switch to regular mode
-        If Not _FileExists(".\parks\" + PARK$) Then useVGA = 1
+        If Not _FileExists(".\parks\" + PARK$) Then useVGA = 0
 
     Loop Until B0% = 0 Or UCase$(I$) = "N" Or ExitCode% = 27
 
@@ -2378,7 +2427,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
                     Select Case UCase$(I$)
                         Case "Y":
                             ':GRANT DAY OFF
-                            If useRest <> 1 Then
+                            If useRest = 1 Then
                                 For I1 = 0 To 21
                                     If pitchRating(idx%, I1, 35) > 0 Then pitchRating(idx%, I1, 35) = pitchRating(idx%, I1, 35) - 1
                                 Next
@@ -2542,460 +2591,3 @@ Sub PitchingStarter (idx%)
     If P6%(idx%) > 1 Then S8%(idx%, 1) = 0
 
 End Sub
-
-
-'----------------------------------------
-'       ChooseGameTeam Subroutine
-'----------------------------------------
-'This subroutine provides interface for
-'choosing a team for the game
-Sub ChooseGameTeam (yearNumber$, numberTeams, chosenIdx, teamName$, gameIdx)
-
-    'Shared teamNames$()
-    Shared VI$()
-
-    Shared previousYear$
-
-    Do
-
-        Color 15, 0
-        Cls
-
-        Call MenuBox(6, 8, 61, 7, 15, 4)
-
-        Locate 7, 32
-
-        Locate , 12: Print VI$(gameIdx)
-        Locate , 12: Print "ENTER DISK ID: "
-        Print
-        Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
-        Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
-        Print
-        Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
-        Locate 8,
-
-        I$ = GetKeyPress$
-
-        If I$ <> Chr$(27) Then
-
-            If I$ <> Chr$(13) Then
-
-                Locate 8, 27: Print I$
-                Locate 8, 28: Line Input NY$
-                NY$ = I$ + NY$
-                Color 15, 0
-
-                If Not (NY$ = "" And yearNumber$ <> "") Then
-
-                    yearNumber$ = RTrim$(NY$)
-                    Erase teamNames$
-                    numberTeams = 0
-
-                    Cls
-
-                    If Not _FileExists(diskPaths$(0) + TEAM_FILE_NAME$ + "." + yearNumber$) Then
-
-                        MsgText$ = "NO TEAM FILES WERE FOUND MATCHING THIS ID. PRESS ANY KEY TO RETURN TO MAIN MENU"
-                        BoxWidth = 20
-                        BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-                        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
-                        Call CSMsgBox(MsgText$, BoxWidth, Pass)
-                        I$ = GetKeyPress$
-                        Call CSMsgBox("", 0, Pass)
-                        Exit Sub
-
-                    Else
-
-                        Open diskPaths$(0) + TEAM_FILE_NAME$ + "." + yearNumber$ For Random As #1 Len = TEAM_SIZE_BYTES
-
-                        fileLength& = LOF(1)
-
-                        Field #1, 15 As Q$(0)
-
-                        numberTeams = fileLength& / TEAM_SIZE_BYTES
-
-                        For teamIdx = 1 To numberTeams
-                            Get #1, teamIdx
-                            'numberTeams = numberTeams + 1
-                            teamNames$(teamIdx) = Q$(0)
-                            teamIndex%(teamIdx) = teamIdx
-                        Next teamIdx
-
-                        Close #1
-
-                        previousYear$ = yearNumber$
-
-                    End If 'Done checking if file exists
-
-                End If 'Done checking for blank year number
-
-            Else
-
-                yearNumber$ = previousYear$
-
-            End If 'Done checking for ENTER key
-
-            'Locate 2, 33
-            'Color 31: Print "LOADING..."
-
-            Do
-
-                Call SelectGameTeam(numberTeams, yearNumber$, chosenIdx, teamName$, ExitCode%, gameIdx)
-
-                If ExitCode% <> 27 And numberTeams <> 0 Then
-
-                    Do
-                        Locate 2, 33
-                        Color tmRat_GAME(gameIdx, 11), tmRat_GAME(gameIdx, 12): Print teamName$
-
-                        Color 15, 4
-                        Locate 3, 32: Print "ANY CHANGE? (Y/N)";
-
-                        J$ = GetKeyPress$
-
-                    Loop Until J$ = Chr$(27) Or UCase$(J$) = "Y" Or UCase$(J$) = "N"
-
-                End If
-
-            Loop Until ExitCode% = 27 Or J$ = Chr$(27) Or UCase$(J$) = "N"
-
-        End If 'Done checking for ESC
-
-    Loop Until UCase$(J$) = "N" Or I$ = Chr$(27) 'Or J$ = Chr$(27)
-
-    If I$ = Chr$(27) Or J$ = Chr$(27) Then chosenIdx = 0
-
-End Sub
-
-
-'----------------------------------------
-'       SelectGameTeam Subroutine
-'----------------------------------------
-'This subroutine provides an interface for
-'selecting a team from the list loaded by
-'the disk ID.
-Sub SelectGameTeam (numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%, gameIdx)
-
-    If numberTeams > 0 Then
-
-        SELECTION% = 1
-        Count% = numberTeams
-        Start% = 1
-        FileFGCouseLRSplit = 15: FileBGCouseLRSplit = 4
-        HiLiteFGCouseLRSplit = 0: HiLiteBGCouseLRSplit = 7
-        Rows% = 20
-        Columns% = 4
-        Spacing% = 6
-        Row% = 4
-        Column% = 1
-
-        Color , 4
-        Cls
-        Color 14
-        Locate , 33: Print "TEAM SELECTION"
-        Locate 25, 1
-        Color 14: Print "ESC";: Color 15: Print "-SELECT NEW ID  PGDN  PGUP  ";
-        Color 14: Print "ENTER";: Color 15: Print "-SELECTS TEAM";
-
-        _MouseShow "DEFAULT"
-        MAMenu teamNames$(), SELECTION%, Start%, Count%, ExitCode%, FileFGCouseLRSplit, FileBGCouseLRSplit, HiLiteFGCouseLRSplit, HiLiteBGCouseLRSplit, Rows%, Columns%, Spacing%, Row%, Column%
-        _MouseHide
-
-        If ExitCode% <> 27 Then
-
-            selectedIdx = teamIndex%(SELECTION%)
-
-            'Locate 2, 33
-            'Color 31: Print "LOADING..."
-
-            Call ReadGameTeam(yearNumber$, teamName$, selectedIdx, gameIdx)
-
-        End If
-
-    End If
-
-End Sub
-
-
-'----------------------------------------
-'        ReadGameTeam Subroutine
-'----------------------------------------
-'This subroutine reads in the data for the
-'selected tema into each of the data arrays
-'needed by the game.
-Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
-
-    Shared MF%()
-
-    Dim DYS%(1, 21)
-
-    Open diskPaths$(0) + TEAM_FILE_NAME$ + "." + teamYear$ For Random As #1 Len = TEAM_SIZE_BYTES
-
-    Field #1, 15 As Q2$(0), 2 As Q2$(1), 2 As Q2$(2), 2 As Q2$(3), 2 As Q2$(4), 2 As Q2$(5), 2 As Q2$(6), 2 As Q2$(7), 2 As Q2$(8), 2 As Q2$(9), 2 As Q2$(10), 2 As Q2$(11), 2 As Q2$(12), 2 As Q2$(13), 4 As Q2$(14), 4297 As X$
-
-    For A = 0 To 22
-        Field #1, 45 + A * 99 As X$, 15 As Q2$(A * 43 + 15), 2 As Q2$(A * 43 + 16), 2 As Q2$(A * 43 + 17), 2 As Q2$(A * 43 + 18), 2 As Q2$(A * 43 + 19), 2 As Q2$(A * 43 + 20), 2 As Q2$(A * 43 + 21), 2 As Q2$(A * 43 + 22), 2 As Q2$(A * 43 + 23), 2 As Q2$(A * 43 + 24), 2 As Q2$(A * 43 + 25), 2 As Q2$(A * 43 + 26), 4297 - 37 - A * 99 As X$
-        Field #1, 82 + A * 99 As X$, 2 As Q2$(A * 43 + 27), 2 As Q2$(A * 43 + 28), 2 As Q2$(A * 43 + 29), 2 As Q2$(A * 43 + 30), 2 As Q2$(A * 43 + 31), 2 As Q2$(A * 43 + 32), 2 As Q2$(A * 43 + 33), 2 As Q2$(A * 43 + 34), 2 As Q2$(A * 43 + 35), 2 As Q2$(A * 43 + 36), 2 As Q2$(A * 43 + 37), 2 As Q2$(A * 43 + 38), 4297 - 61 - A * 99 As X$
-        Field #1, 106 + A * 99 As X$, 2 As Q2$(A * 43 + 39), 2 As Q2$(A * 43 + 40), 2 As Q2$(A * 43 + 41), 2 As Q2$(A * 43 + 42), 2 As Q2$(A * 43 + 43), 2 As Q2$(A * 43 + 44), 2 As Q2$(A * 43 + 45), 2 As Q2$(A * 43 + 46), 2 As Q2$(A * 43 + 47), 2 As Q2$(A * 43 + 48), 2 As Q2$(A * 43 + 49), 2 As Q2$(A * 43 + 50), 4297 - 85 - A * 99 As X$
-        Field #1, 130 + A * 99 As X$, 2 As Q2$(A * 43 + 51), 2 As Q2$(A * 43 + 52), 2 As Q2$(A * 43 + 53), 2 As Q2$(A * 43 + 54), 2 As Q2$(A * 43 + 55), 2 As Q2$(A * 43 + 56), 2 As Q2$(A * 43 + 57), 4297 - 99 - A * 99 As X$
-    Next
-
-    For A = 0 To 21
-        Field #1, 2322 + A * 89 As X$, 15 As Q2$(A * 38 + 1004), 2 As Q2$(A * 38 + 1005), 2 As Q2$(A * 38 + 1006), 2 As Q2$(A * 38 + 1007), 2 As Q2$(A * 38 + 1008), 2 As Q2$(A * 38 + 1009), 2 As Q2$(A * 38 + 1010), 2 As Q2$(A * 38 + 1011), 2 As Q2$(A * 38 + 1012), 2 As Q2$(A * 38 + 1013), 2 As Q2$(A * 38 + 1014), 2 As Q2$(A * 38 + 1015), 2020 - 37 - A * 89 As X$
-        Field #1, 2359 + A * 89 As X$, 2 As Q2$(A * 38 + 1016), 2 As Q2$(A * 38 + 1017), 2 As Q2$(A * 38 + 1018), 2 As Q2$(A * 38 + 1019), 2 As Q2$(A * 38 + 1020), 2 As Q2$(A * 38 + 1021), 2 As Q2$(A * 38 + 1022), 2 As Q2$(A * 38 + 1023), 2 As Q2$(A * 38 + 1024), 2 As Q2$(A * 38 + 1025), 2 As Q2$(A * 38 + 1026), 2 As Q2$(A * 38 + 1027), 2020 - 61 - A * 89 As X$
-        Field #1, 2383 + A * 89 As X$, 2 As Q2$(A * 38 + 1028), 2 As Q2$(A * 38 + 1029), 2 As Q2$(A * 38 + 1030), 2 As Q2$(A * 38 + 1031), 2 As Q2$(A * 38 + 1032), 2 As Q2$(A * 38 + 1033), 2 As Q2$(A * 38 + 1034), 2 As Q2$(A * 38 + 1035), 2 As Q2$(A * 38 + 1036), 2 As Q2$(A * 38 + 1037), 2 As Q2$(A * 38 + 1038), 2 As Q2$(A * 38 + 1039), 2020 - 85 - A * 89 As X$
-        Field #1, 2407 + A * 89 As X$, 2 As Q2$(A * 38 + 1040), 2 As Q2$(A * 38 + 1041), 2020 - 89 - A * 89 As X$
-    Next
-
-    Field #1, 4280 As X$, 40 As Q2$(1840), 15 As Q2$(1841), 5 As Q2$(1842), 2 As Q2$(1843)
-
-    Get #1, teamIdx
-
-    For I1 = 1 To 13
-        tmRat_GAME(gameIdx, I1) = CVI(Q2$(I1))
-    Next
-
-    If (tmRat_GAME(gameIdx, 11) = 7 Or tmRat_GAME(gameIdx, 11) = 15) And tmRat_GAME(gameIdx, 12) = 0 Then
-        tmRat_GAME(gameIdx, 11) = 0
-        tmRat_GAME(gameIdx, 12) = 7
-    End If
-
-    parkHRVals!(gameIdx) = CVS(Q2$(14))
-
-    For I1 = 0 To 22:
-
-        batters$(gameIdx, I1) = RTrim$(Q2$(I1 * 43 + 15))
-
-        For I2 = 0 To 41
-            batRating(gameIdx, I1, I2) = CVI(Q2$(I1 * 43 + I2 + 16))
-        Next
-
-        If batRating(gameIdx, I1, 31) <> 0 Then batRating(gameIdx, I1, 21) = 99
-    Next
-
-    For I1 = 0 To 21:
-        pitchers$(gameIdx, I1) = Q2$(I1 * 38 + 1004)
-        pitchers$(gameIdx, I1) = RTrim$(pitchers$(gameIdx, I1))
-
-        For I2 = 0 To 36
-            pitchRating(gameIdx, I1, I2) = CVI(Q2$(I1 * 38 + I2 + 1005))
-        Next
-
-        If pitchRating(gameIdx, I1, 34) <> 0 Then pitchRating(gameIdx, I1, 15) = 99
-        If pitchRating(gameIdx, I1, 0) = 0 Then pitchRating(gameIdx, I1, 0) = 1
-    Next
-
-    gameStadiums$(gameIdx) = RTrim$(Q2$(1840))
-    gameManagers$(gameIdx) = RTrim$(Q2$(1841))
-    teamAbbreviatons$(gameIdx) = RTrim$(Q2$(1842))
-    CK = CVI(Q2$(1843))
-
-    Close 1
-
-    For I1 = 0 To 22
-        'check for 1934 season
-        If Val(Left$(gameTeams$(gameIdx), 2)) < 54 And Mid$(gameTeams$(gameIdx), 3, 1) = " " Then batRating(gameIdx, I1, 30) = batRating(gameIdx, I1, 30) * .75
-
-        For I2 = 22 To 25
-            If batRating(gameIdx, I1, I2) <> -1 And batRating(gameIdx, I1, I2) <> 0 And batRating(gameIdx, I1, I2 + 4) = 0 Then batRating(gameIdx, I1, I2 + 4) = 900
-        Next
-    Next
-
-    For X = 0 To 22
-        For X1 = 1 To 14
-            batRating(gameIdx, X, X1 + 41) = 0
-        Next
-    Next
-
-    For X = 0 To 21
-        For X1 = 1 To 28
-            pitchRating(gameIdx, X, X1 + 36) = 0
-        Next
-    Next
-
-    If useLRSplit = 1 Then
-
-        TS%(gameIdx, 0) = -1
-
-    Else
-
-        If Not _FileExists(diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$) Then
-
-            TS%(gameIdx, 0) = -1
-
-        Else
-
-            Open diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$ For Random As #2 Len = DATA_SIZE_BYTES
-
-            For X = 0 To 11
-                Field #2, X * 2 As X$, 2 As Q2$(X + 1), DATA_SIZE_BYTES - 2 - 2 * X As X$
-            Next
-
-            For X = 0 To 22
-                For X1 = 1 To 14
-                    Field #2, 24 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q2$(12 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (24 + (X1 - 1) * 2 + X * 14 * 2) As X$
-                Next
-            Next
-
-            For X = 0 To 21
-                For X1 = 1 To 14
-                    Field #2, 668 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q2$(334 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (668 + (X1 - 1) * 2 + X * 14 * 2) As X$
-                Next
-            Next
-
-            For X = 0 To 21
-                For X1 = 1 To 14
-                    Field #2, 1284 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q2$(642 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (1284 + (X1 - 1) * 2 + X * 14 * 2) As X$
-                Next
-            Next
-
-            For X = 1 To 24
-                Field #2, 1900 + (X - 1) * 2 As X$, 2 As Q2$(950 + X), DATA_SIZE_BYTES - 2 - (X - 1) * 2 - 1900 As X$
-            Next
-
-            For X = 0 To 22
-                For X1 = 1 To 24
-                    Field #2, 1948 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q2$(975 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (1948 + (X1 - 1) * 2 + X * 24 * 2) As X$
-                Next
-            Next
-
-            For X = 0 To 21
-                For X1 = 1 To 24
-                    Field #2, 3052 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q2$(1528 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (3052 + (X1 - 1) * 2 + X * 24 * 2) As X$
-                Next
-            Next
-
-            Get #2, teamIdx
-
-            For X = 0 To 11
-                TS%(gameIdx, X) = CVI(Q2$(X + 1))
-            Next
-
-            For X = 0 To 22
-                For X1 = 1 To 14
-                    batRating(gameIdx, X, X1 + 41) = CVI(Q2$(12 + X1 + X * 14))
-                Next
-            Next
-
-            For X = 0 To 21
-                For X1 = 1 To 14
-                    pitchRating(gameIdx, X, X1 + 36) = CVI(Q2$(334 + X1 + X * 14))
-                Next
-            Next
-
-            For X = 0 To 21
-                For X1 = 1 To 14
-                    pitchRating(gameIdx, X, X1 + 50) = CVI(Q2$(642 + X1 + X * 14))
-                Next
-            Next
-
-            For X = 1 To 24:
-                SA%(gameIdx, X) = CVI(Q2$(X + 950))
-            Next
-
-            For X = 0 To 22
-                For X1 = 1 To 24
-                    batRating(gameIdx, X, X1 + 55) = CVI(Q2$(975 + X1 + X * 24))
-                Next
-            Next
-
-            For X = 0 To 21
-                For X1 = 1 To 24
-                    pitchRating(gameIdx, X, X1 + 64) = CVI(Q2$(1528 + X1 + X * 24))
-                Next
-            Next
-
-            Close 2
-
-            If TS%(gameIdx, 0) <> 999 Then TS%(gameIdx, 0) = -1
-
-        End If
-
-    End If
-
-    For X = 0 To 22
-
-        For X1 = 0 To 14
-            batRating(gameIdx, X, 80) = batRating(gameIdx, X, 80) + batRating(gameIdx, X, X1 + 41)
-        Next
-
-    Next
-
-    For X = 0 To 21
-
-        For X1 = 0 To 14
-            pitchRating(gameIdx, X, 89) = pitchRating(gameIdx, X, 89) + pitchRating(gameIdx, X, X1 + 50)
-        Next
-
-    Next
-
-    targetTeam$ = RTrim$(Q2$(0))
-
-    'Read in manager data
-    If Not _FileExists(diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$) Then
-
-        MF%(gameIdx) = -1
-
-    Else
-
-        Open diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #3 Len = MGR_SIZE_BYTES
-
-        For X = 0 To 999
-            Field #3, X * 2 As Q2$, 2 As Q2$(X), MGR_SIZE_BYTES - X * 2 - 2 As Q2$
-        Next
-
-        Get #3, teamIdx
-
-        For X = 0 To 999: MG%(gameIdx, X) = CVI(Q2$(X)): Next
-
-        Close 3
-
-    End If
-
-    If MG%(gameIdx, 0) <> 999 Or MF%(gameIdx) = -1 Then
-
-        MF%(gameIdx) = -1
-
-        For X = 0 To 999:
-            MG%(gameIdx, X) = -1
-        Next
-
-    End If
-
-    statFile$ = nameStatFile$(gameTeams$(idx))
-
-    'Read in supplemental data
-    If _FileExists(diskPaths$(1) + statFile$ + "D") Then
-
-        Open diskPaths$(1) + statFile$ + "D" For Input As #4
-
-        For I1 = 0 To 22
-            Input #4, INJ%(gameIdx, I1)
-        Next
-
-        For I1 = 0 To 21
-            Input #4, DYS%(gameIdx, I1)
-        Next
-
-        Close #4
-
-        If useInj <> 1 Then
-            For I1 = 0 To 22
-                If INJ%(gameIdx, I1) > 0 Then batRating(gameIdx, I1, 21) = 99
-            Next
-        End If
-
-    End If
-
-    If useRest <> 1 Then
-
-        For I1 = 0 To 21
-            If DYS%(gameIdx, I1) <> 0 And DYS%(gameIdx, I1) < 90 Then
-                pitchRating(gameIdx, I1, 35) = DYS%(gameIdx, I1)
-            End If
-        Next
-
-    End If
-
-End Sub
-
