@@ -1126,14 +1126,14 @@ Sub ChangeGlobalSettings ()
     'This code will assign defaults based on the first game in the schedule.
     'Usually when I want to change global settings, I want to keep most
     'settings in the schedule the same.
+    playerOpt = scheduleNG%(0, 8)
     desigHit = scheduleNG%(0, 3)
     displayPause! = scheduleNG%(0, 4) / 10
-    useWeather = scheduleNG%(0, 5)
     useInj = scheduleNG%(0, 6)
-    useLRSplit = scheduleNG%(0, 7)
-    playerOpt = scheduleNG%(0, 8)
     useRest = scheduleNG%(0, 9)
+    useLRSplit = scheduleNG%(0, 7)
     useMgrProf = scheduleNG%(0, 10)
+    useWeather = scheduleNG%(0, 5)
     useVGA = scheduleNG%(0, 11)
     pitchEraOpt = scheduleNG%(0, 14)
 
@@ -1145,27 +1145,38 @@ Sub ChangeGlobalSettings ()
         Cls
         Print Tab(30); "GLOBAL SETTINGS FOR SCHEDULE"
 
-        Locate 3, 2: Color 14: Print "(1) ";
-        Color 15: Print "TYPE OF GAME: "; playMode$(playerOpt)
-        Locate 5, 2: Color 14: Print "(2) ";
-        Color 15: Print Using "PLAY-BY-PLAY DELAY (SECS): ##.#  "; displayPause! ' / 10
-        Locate 4, 2: Color 14: Print "(3) ";
+        Locate 3, 2: Color 14
+        Print "(1) ";
+        Color 15: Print "GAME PLAY: "; playMode$(playerOpt)
+        Locate 4, 2: Color 14
+        Print "(2) ";
         Color 15: Print "DESIGNATED HITTER: "; yesNoText$(desigHit)
-        Locate 6, 2: Color 14: Print "(4) ";
+        Locate 5, 2: Color 14
+        Print "(3) ";
+        Color 15: Print Using "PLAY-BY-PLAY DELAY (SECS): ##.#  "; displayPause! ' / 10
+        Locate 6, 2: Color 14
+        Print "(4) ";
+        Color 15: Print "USE INJURIES: "; yesNoText$(useInj)
+        Locate 7, 2: Color 14
+        Print "(5) ";
+        Color 15: Print "USE DAYS REST DATA FOR PITCHERS: "; yesNoText$(useRest)
+        Locate 8, 2: Color 14
+        Print "(6) ";
+        Color 15: Print "USE LEFT/RIGHT SPLIT STATS: "; yesNoText$(useLRSplit)
+        Locate 9, 2: Color 14
+        Print "(7) ";
+        Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE: "; yesNoText$(useMgrProf)
+        Locate 10, 2: Color 14
+        Print "(8) ";
         Color 15: Print "USE WEATHER EFFECTS: "; yesNoText$(useWeather)
-        Locate 7, 2: Color 14: Print "(5) ";
-        Color 15: Print "USE INJURIES "; yesNoText$(useInj)
-        Locate 8, 2: Color 14: Print "(6) ";
-        Color 15: Print "USE LEFT/RIGHT SPLIT STATS "; yesNoText$(useLRSplit)
-        Locate 9, 2: Color 14: Print "(7) ";
-        Color 15: Print "USE DAYS REST DATA FOR PITCHERS "; yesNoText$(useRest)
-        Locate 10, 2: Color 14: Print "(8) ";
-        Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE "; yesNoText$(useMgrProf)
-        Locate 11, 2: Color 14: Print "(9) ";
+        Locate 11, 2: Color 14
+        Print "(9) ";
         Color 15: Print "USE VGA SCREENS, IF ABLE: "; yesNoText$(useVGA)
-        Locate 12, 2: Color 14: Print "(A) ";
+        Locate 12, 2: Color 14
+        Print "(A) ";
         Color 15: Print "PITCHER ERA: "; pitcherEra$(pitchEraOpt)
-        Locate 13, 2: Color 14: Print "(0) ";
+        Locate 14, 2: Color 14
+        Print "(0) ";
         Color 15: Print "ACCEPT GLOBAL SETTINGS"
 
         Do
@@ -1181,25 +1192,26 @@ Sub ChangeGlobalSettings ()
                 If playerOpt > 3 Then playerOpt = 0
 
             Case 2:
-                Input "DISPLAY VARIABLE "; displayPause!
-
-            Case 3:
                 desigHit = 1 - desigHit
 
+            Case 3:
+                Locate 4, 32: Input displayPause!
+                'Input "DISPLAY VARIABLE "; displayPause!
+
             Case 4:
-                useWeather = 1 - useWeather
+                useInj = 1 - useInj
 
             Case 5:
-                useInj = 1 - useInj
+                useRest = 1 - useRest
 
             Case 6:
                 useLRSplit = 1 - useLRSplit
 
             Case 7:
-                useRest = 1 - useRest
+                useMgrProf = 1 - useMgrProf
 
             Case 8:
-                useMgrProf = 1 - useMgrProf
+                useWeather = 1 - useWeather
 
             Case 9:
                 useVGA = 1 - useVGA

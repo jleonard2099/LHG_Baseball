@@ -11,8 +11,6 @@ Sub LOADER
 
     _Title "Full Count Baseball v" + GAME_VERSION$ + " - PLAY BALL!"
 
-    'Open "pbplog" For Output As #7
-
     Shared dayNight$(), desigHitOpt$(), gameType$()
     Shared leagueType$(), month$()
     Shared PT$(), pitcherEra$()
@@ -101,6 +99,10 @@ Sub LOADER
 
         Close #5
 
+        'currGame = schedGame(0) + schedGame(2)
+
+        'Open "pbplog" + Str$(currGame) For Append As #11
+
         Open diskPaths$(0) + scheduleFile$ For Random As #6 Len = SCHEDULE_SIZE_BYTES
 
         For X = 0 To 18
@@ -125,6 +127,10 @@ Sub LOADER
         Close #6
 
         autoPlay = 1
+
+    Else
+    
+        'Open "pbplog" For Output As #11
 
     End If
 
@@ -1366,7 +1372,6 @@ Sub LineupSummary (P9, reselect, LU%)
         Locate I, 59: Print Space$(21);
     Next
 
-    'Call pbpLog(10959)
     Call NEWLINES(P9)
 
     For I2 = 0 To 22:

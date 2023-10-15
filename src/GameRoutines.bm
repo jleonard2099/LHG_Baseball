@@ -2609,7 +2609,6 @@ Sub NEWPITCHER (pIdx, PPH, pz)
             W6 = P9
             VV(P9) = V0
             VV1(P9) = V0
-            'Call pbpLog(4645)
             Call HITTINGLINES '(tmRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
         End If
 
@@ -2636,7 +2635,6 @@ Sub NEWPITCHER (pIdx, PPH, pz)
 
     Call PBP(gameManagers$(D) + " is making a pitching change")
     Call DELAY
-    'Call pbpLog(4671)
     Call HITTINGLINES '(tmRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
 
     If useVGA = 1 Then
@@ -2912,7 +2910,6 @@ Sub PINCHRUNNER (MS%, A1, S4%, I2, P, PR%, BC%, U%, D, MO)
             PR% = 1
 
             Call DELAY
-            'Call pbpLog(4945)
             Call HITTINGLINES '(tmRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
 
             If useVGA = 1 Then
@@ -3409,7 +3406,6 @@ Sub PinchHitter (P, P9, W5, W6, idx)
     W6 = P9
     VV(P9) = B1!(P)
     VV1(P9) = B1!(P)
-    'Call pbpLog(5404)
     Call HITTINGLINES '(tmRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
 
     VV(P9) = 1
@@ -9517,11 +9513,9 @@ End Function
 'issues are happening in a game.
 Sub pbpLog (lineNumber)
 
-    Print #7, "Executing code from: "; lineNumber
-    Print #7, gameTeams$(0); " vs "; gameTeams$(1)
-    Print #7, "VV(I) "; VV(I)
-    Print #7, "VV1(I)  "; VV1(I)
-    Print #7,
+    Print #11, "Executing code from: "; lineNumber
+    Print #11, gameTeams$(0); " vs "; gameTeams$(1)
+    Print #11,
 
 End Sub
 
