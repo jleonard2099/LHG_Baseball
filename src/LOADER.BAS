@@ -14,7 +14,7 @@ Sub LOADER
     Shared dayNight$(), desigHitOpt$(), gameType$()
     Shared leagueType$(), month$()
     Shared PT$(), pitcherEra$()
-    Shared playMode$(), UMP$(), M%()
+    Shared playMode$(), UMP$() ', M%()
     Shared teamIndicator$(), yesNoText$()
     Shared T1%(), U%()
 
@@ -793,9 +793,7 @@ Sub StartingLineup (P9)
     Do
         'track assigned positions
         '   0 = unassigned
-        For I = 0 To 9:
-            M%(I) = 0
-        Next I
+        Erase M%
 
         Locate 25, 1
 
@@ -854,8 +852,9 @@ Sub LineupPositions (teamIdx, posIdx, skipLU%)
 
     If I$ = Chr$(27) Then
 
+        Erase M%
+
         For J = 1 To 9
-            M%(J) = 0
             B7%(teamIdx, J) = -1
             B3%(teamIdx, J) = -1
         Next
@@ -1050,17 +1049,17 @@ Sub ChangeLineup_PreGame (P9, reselect)
                             If B7%(P9, I) <> 1 Then
                                 batRating(P9, B3%(P9, I), 21) = 1
                             End If
-
-                            M%(I) = 0
                         Next I
-
-                        M%(0) = 0
+                        
+                        Erase M%
 
                         C1 = 0
 
                     Case "R", Chr$(27):
+
+                        Erase M%
+
                         For J = 1 To 9
-                            M%(J) = 0
                             B7%(P9, J) = -1
                             B3%(P9, J) = -1
                         Next
@@ -1163,7 +1162,9 @@ Sub SaveLineup (idx%)
             Field #9, I * 2 As Q$, 2 As Q2$(I), MGR_SIZE_BYTES - I * 2 - 2 As Q$
         Next
 
-        For I = 0 To 999: LSet Q2$(I) = MKI$(MG%(idx%, I)): Next
+        For I = 0 To 999: 
+            LSet Q2$(I) = MKI$(MG%(idx%, I))
+        Next
 
         Put #9, T1%(idx%)
 
@@ -1429,11 +1430,12 @@ Sub SelectBatters (batterFlag%, P9)
         Else
             I$ = GetKeyPress$
 
-            'HangameTypeOpte ESC
+            'Handle ESC
             If I$ = Chr$(27) Then
 
+                Erase M%
+
                 For J = 1 To 9
-                    M%(J) = 0
                     B7%(P9, J) = -1
                     B3%(P9, J) = -1
                 Next
@@ -1955,11 +1957,7 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
             Locate I, 59: Print Space$(21);
         Next
 
-        For I = 1 To 9:
-            F(I) = 0
-            BP(I) = 0
-            BB%(I) = -1
-        Next
+        Erase F, BP, BB%
 
         M = 0
 
@@ -2081,7 +2079,12 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
                 noLineups = 1
                 'reselect = 1
 
-                For J = 1 To 9: M%(J) = 0: B7%(P9, J) = -1: B3%(P9, J) = -1: Next
+                Erase M%
+
+                For J = 1 To 9: 
+                    B7%(P9, J) = -1
+                    B3%(P9, J) = -1
+                Next
 
                 C1 = 0
 

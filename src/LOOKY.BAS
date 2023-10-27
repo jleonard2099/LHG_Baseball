@@ -133,16 +133,38 @@ Sub LoadTeamStats (statFile$, totalGames%)
     Input #1, W2%
     Input #1, L2%
 
-    For I = 0 To 22: Input #1, batterNames$(I): Input #1, statB%(I): Next I
-    For I = 0 To 21: Input #1, pitcherNames$(I): Input #1, statP%(I): Next I
-    For I = 0 To 22: For I1 = 0 To 21: Input #1, statB0%(I, I1): Next I1: Next I
-    For I = 0 To 21: For I1 = 0 To 41: Input #1, statP0%(I, I1): Next I1: Next I
+    For I = 0 To 22: 
+        Input #1, batterNames$(I)
+        Input #1, statB%(I)
+    Next I
+    
+    For I = 0 To 21: 
+        Input #1, pitcherNames$(I)
+        Input #1, statP%(I)
+    Next I
+    
+    For I = 0 To 22: 
+        For I1 = 0 To 21: 
+            Input #1, statB0%(I, I1)
+        Next I1
+    Next I
+    
+    For I = 0 To 21: 
+        For I1 = 0 To 41: 
+            Input #1, statP0%(I, I1)
+        Next I1
+    Next I
 
     Input #1, D0%
     Input #1, D1%
 
-    For I = 0 To 21: Input #1, statT!(I): Next I
-    For I = 0 To 22: Input #1, statT1!(I): Next I
+    For I = 0 To 21: 
+        Input #1, statT!(I)
+    Next I
+
+    For I = 0 To 22: 
+        Input #1, statT1!(I)
+    Next I
 
     Close #1
 
@@ -963,16 +985,38 @@ Sub ReportsAllTeams ()
                 Input #1, W2%
                 Input #1, L2%
 
-                For I = 0 To 22: Input #1, batterNames$(I): Input #1, statB%(I): Next I
-                For I = 0 To 21: Input #1, pitcherNames$(I): Input #1, statP%(I): Next I
-                For I = 0 To 22: For I1 = 0 To 21: Input #1, statB0%(I, I1): Next I1: Next I
-                For I = 0 To 21: For I1 = 0 To 41: Input #1, statP0%(I, I1): Next I1: Next I
+                For I = 0 To 22: 
+                    Input #1, batterNames$(I)
+                    Input #1, statB%(I)
+                Next I
+
+                For I = 0 To 21: 
+                    Input #1, pitcherNames$(I)
+                    Input #1, statP%(I)
+                Next I
+
+                For I = 0 To 22: 
+                    For I1 = 0 To 21: 
+                        Input #1, statB0%(I, I1)
+                    Next I1
+                Next I
+
+                For I = 0 To 21: 
+                    For I1 = 0 To 41: 
+                        Input #1, statP0%(I, I1)
+                    Next I1
+                Next I
 
                 Input #1, D0%
                 Input #1, D1%
 
-                For I = 0 To 21: Input #1, statT!(I): Next I
-                For I = 0 To 22: Input #1, statT1!(I): Next I
+                For I = 0 To 21: 
+                    Input #1, statT!(I)
+                Next I
+                
+                For I = 0 To 22: 
+                    Input #1, statT1!(I)
+                Next I
 
                 Close #1
 

@@ -713,15 +713,16 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
                 Call MenuBox (6, 8, 61, 8, 15, 1)
 
                 Do
+
                     Locate 7, 32
+
                     Locate , 12: Print "ENTER NAME FOR SUB-SCHEDULE: "
                     Print
                     Locate , 12: Print "THE NAME SHOULD HAVE NO PERIODS OR SPECIAL CHARACTERS"
                     Locate , 12: Print "DO NOT ADD A FILE EXTENSION; THE PROGRAM"
                     Locate , 12: Print "WILL AUTOMATICALLY ADD .SCD"
                     Locate , 12: Print "SAMPLE NAMES ARE INDIANA, BOS68, CHI-76, ETC      "
-
-                    Locate 7, 37: Input subSchedFile$
+                    Locate 7, 40: Input subSchedFile$
 
                     If subSchedFile$ <> "" Then
 
@@ -1126,16 +1127,16 @@ Sub ChangeGlobalSettings ()
     'This code will assign defaults based on the first game in the schedule.
     'Usually when I want to change global settings, I want to keep most
     'settings in the schedule the same.
-    playerOpt = scheduleNG%(0, 8)
-    desigHit = scheduleNG%(0, 3)
-    displayPause! = scheduleNG%(0, 4) / 10
-    useInj = scheduleNG%(0, 6)
-    useRest = scheduleNG%(0, 9)
-    useLRSplit = scheduleNG%(0, 7)
-    useMgrProf = scheduleNG%(0, 10)
-    useWeather = scheduleNG%(0, 5)
-    useVGA = scheduleNG%(0, 11)
-    pitchEraOpt = scheduleNG%(0, 14)
+    playerOpt = scheduleNG%(1, 8)
+    desigHit = scheduleNG%(1, 3)
+    displayPause! = scheduleNG%(1, 4) / 10
+    useInj = scheduleNG%(1, 6)
+    useRest = scheduleNG%(1, 9)
+    useLRSplit = scheduleNG%(1, 7)
+    useMgrProf = scheduleNG%(1, 10)
+    useWeather = scheduleNG%(1, 5)
+    useVGA = scheduleNG%(1, 11)
+    pitchEraOpt = scheduleNG%(1, 14)
 
     DT$ = "04-04-23"
     TM$ = "07:30P"

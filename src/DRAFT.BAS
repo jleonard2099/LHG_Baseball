@@ -1103,13 +1103,8 @@ Sub ReadDestTeam (teamYear$, targetTeam$, teamIdx)
                 Next
             Next
 
-            For X = 1 To 24
-                teamSA%(X) = 0
-            Next
+            Erase teamSA%, teamTS%
 
-            For X = 0 To 11
-                teamTS%(X) = 0
-            Next
         End If
 
     End If 'Done checking for file exists
@@ -1294,13 +1289,7 @@ Sub ReadSourceTeam (yearNumber$, targetTeam$, teamIdx)
                 Next
             Next
 
-            For X = 1 To 24
-                draftSA%(X) = 0
-            Next
-
-            For X = 0 To 11
-                draftTS%(X) = 0
-            Next
+            Erase draftSA%, draftTS%
 
         End If
 

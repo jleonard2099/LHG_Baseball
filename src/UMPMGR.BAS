@@ -95,8 +95,9 @@ Sub EnterUmpireFile ()
 
         Close #1
 
+        Erase umpireNames$
+
         For X = 1 To 50:
-            umpireNames$(X) = ""
             umpRating(X) = 5
         Next
 

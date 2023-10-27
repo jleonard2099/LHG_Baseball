@@ -400,13 +400,7 @@ Sub ReadExtraData (teamYear$, targetTeam$, teamIdx)
                 Next
             Next
 
-            For X = 1 To 24
-                teamSA%(X) = 0
-            Next
-
-            For X = 0 To 11
-                teamTS%(X) = 0
-            Next
+            Erase teamSA%, teamTS%
 
         End If
 

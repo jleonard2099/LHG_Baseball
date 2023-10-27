@@ -190,7 +190,8 @@ End Sub
 '----------------------------------------
 '      TITLE_STAT_HEADER Subroutine
 '----------------------------------------
-'... explain here ...
+'Displays header only for working with
+'stat routines
 Sub TITLE_STAT_HEADER (header$)
 
     Color 12, 1

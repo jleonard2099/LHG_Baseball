@@ -75,17 +75,7 @@ Sub UpdateLeaders ()
 
     TMR1 = 2700
 
-    For I = 0 To 17:
-        For I1 = 0 To 19:
-            BL1!(I, I1) = 0
-        Next
-    Next
-
-    For I = 0 To 14:
-        For I1 = 0 To 19:
-            PL1!(I, I1) = 0
-        Next
-    Next
+    Erase BL1!, PL1!
 
     '-- Initialize to 1000 because later we assign
     '-- values based on comparison. (ie, looking 

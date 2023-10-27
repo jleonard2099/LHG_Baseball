@@ -182,27 +182,9 @@ Sub Hd2Hd_League (LG$, sameLeague)
             Locate 18, 18: Print "COMPUTING W/L/T RECORDS . . . PLEASE WAIT"
 
             'Initialization for 1st league
-            For Q = 1 To 40:
-                HW%(Q) = 0
-                AW%(Q) = 0
-                AL%(Q) = 0
-                HL%(Q) = 0
-                R1%(Q) = 0
-                R2%(Q) = 0
-                R3%(Q) = 0
-                R4%(Q) = 0
-            Next
+            Erase HL%, HW%, AL%, AW%, R1%, R2%, R3%, R4%
 
-            For K = 1 To 4:
-                THW%(K) = 0
-                THL%(K) = 0
-                TAW%(K) = 0
-                TAL%(K) = 0
-                TR1%(K) = 0
-                TR2%(K) = 0
-                TR3%(K) = 0
-                TR4%(K) = 0
-            Next
+            Erase THL%, THW%, TAL%, TAW%, TR1%, TR2%, TR3%, TR4%
 
             'Calculations for 1st league
             For K = 1 To 40
@@ -256,17 +238,8 @@ Sub Hd2Hd_League (LG$, sameLeague)
                     Case "S"
 
                         RDD = 0
-
-                        For K = 1 To 4
-                            THW%(K) = 0
-                            THL%(K) = 0
-                            TAW%(K) = 0
-                            TAL%(K) = 0
-                            TR1%(K) = 0
-                            TR2%(K) = 0
-                            TR3%(K) = 0
-                            TR4%(K) = 0
-                        Next
+                        
+                        Erase THL%, THW%, TAL%, TAW%, TR1%, TR2%, TR3%, TR4%
 
                 End Select
 

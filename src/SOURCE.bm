@@ -32,22 +32,13 @@ Sub SOURCE ()
 
     F% = 0
 
-    For I = 0 To 1
-        O%(I) = 0
-    Next I
-
+    Erase O%
 
     L0%(P) = L0%(P) + MO
     MO = 0
     H0% = 0
 
-    For I = 1 To 3
-        For I1 = 0 To 1
-            B0%(I, I1) = 0
-            B1%(I, I1) = 0
-        Next I1
-        B0%(I, 2) = 0
-    Next I
+    Erase B0%, B1%
 
     S4% = 0
 

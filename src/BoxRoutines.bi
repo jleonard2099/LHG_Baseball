@@ -1,1 +1,1 @@
-Declare Sub MenuBox (StartRow%, StartCol%, width%, height%, FGColor%, BGColor%)
+Declare Sub MenuBox (StartRow%, StartCol%, boxWidth%, boxHeight%, FGColor%, BGColor%)

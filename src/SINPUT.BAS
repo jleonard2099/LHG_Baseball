@@ -116,13 +116,27 @@ Sub ModifyTeamStats (Z$)
     Input #1, W2%
     Input #1, L2%
 
-    For I = 0 To 22: Input #1, batterNames$(I): Input #1, statB%(I): Next I
+    For I = 0 To 22: 
+        Input #1, batterNames$(I)
+        Input #1, statB%(I)
+    Next I
 
-    For I = 0 To 21: Input #1, pitcherNames$(I): Input #1, statP%(I): Next I
+    For I = 0 To 21: 
+        Input #1, pitcherNames$(I)
+        Input #1, statP%(I)
+    Next I
 
-    For I = 0 To 22: For I1 = 0 To 21: Input #1, careerB0%(I, I1): Next I1: Next I
+    For I = 0 To 22: 
+        For I1 = 0 To 21: 
+            Input #1, careerB0%(I, I1)
+        Next I1
+    Next I
 
-    For I = 0 To 21: For I1 = 0 To 41: Input #1, careerP0%(I, I1): Next I1: Next I
+    For I = 0 To 21: 
+        For I1 = 0 To 41: 
+            Input #1, careerP0%(I, I1)
+        Next I1
+    Next I
 
     Input #1, D0%
     Input #1, D1%
@@ -166,6 +180,7 @@ Sub ModifyTeamStats (Z$)
     Do
 
         Do
+
             Locate 23, 1
             Input "# TO CHANGE (0 TO CONTINUE) "; B9
         Loop Until B9 >= 0 And B9 <= 19
@@ -342,24 +357,40 @@ Sub ModifyTeamStats (Z$)
     Open diskPaths$(1) + Z$ For Output As #1
 
     Print #1, A$
-
     Print #1, W2%
-
     Print #1, L2%
 
-    For I = 0 To 22: Print #1, batterNames$(I): Print #1, statB%(I): Next I
+    For I = 0 To 22: 
+        Print #1, batterNames$(I)
+        Print #1, statB%(I)
+    Next I
 
-    For I = 0 To 21: Print #1, pitcherNames$(I): Print #1, statP%(I): Next I
+    For I = 0 To 21: 
+        Print #1, pitcherNames$(I)
+        Print #1, statP%(I)
+    Next I
 
-    For I = 0 To 22: For I1 = 0 To 21: Print #1, careerB0%(I, I1): Next I1: Next I
+    For I = 0 To 22: 
+        For I1 = 0 To 21: 
+            Print #1, careerB0%(I, I1)
+        Next I1
+    Next I
 
-    For I = 0 To 21: For I1 = 0 To 41: Print #1, careerP0%(I, I1): Next I1: Next I
+    For I = 0 To 21: 
+        For I1 = 0 To 41: 
+            Print #1, careerP0%(I, I1)
+        Next I1
+    Next I
 
     Print #1, D0%: Print #1, D1%
 
-    For I = 0 To 21: Print #1, statT%(I): Next I
+    For I = 0 To 21: 
+        Print #1, statT%(I)
+    Next I
 
-    For I = 0 To 22: Print #1, statT1%(I): Next I
+    For I = 0 To 22: 
+        Print #1, statT1%(I)
+    Next I
 
     Close #1
 
@@ -367,7 +398,7 @@ End Sub
 
 
 '----------------------------------------
-'     ChangeBatters Subroutine
+'        ChangeBatters Subroutine
 '----------------------------------------
 'This subroutine gives the user an inter-
 'face for specifically changing stats for
@@ -407,6 +438,7 @@ Sub ChangeBatters (Z$)
             I = I - 1
 
             Cls
+            Call TITLE_STAT_HEADER(X$)
 
             Locate 1: Print "1. NAME "; batterNames$(I)
             Locate 2: Print "2. AB "; careerB0%(I, 0)
@@ -516,7 +548,7 @@ Sub ChangeBatters (Z$)
 End Sub
 
 '----------------------------------------
-'    ChangePitchers Subroutine
+'       ChangePitchers Subroutine
 '----------------------------------------
 'This subroutine gives the user an inter-
 'face for specifically changing stats for
@@ -552,6 +584,7 @@ Sub ChangePitchers (D0%, D1%, L2%, W2%, Z$)
             idx = pitcher - 1
 
             Cls
+            Call TITLE_STAT_HEADER(X$)
 
             Locate 1: Print "1. NAME "; pitcherNames$(idx)
             Locate 2: Print "2. WON "; careerP0%(idx, 6);
@@ -592,7 +625,7 @@ Sub ChangePitchers (D0%, D1%, L2%, W2%, Z$)
             Locate , 40: Print "40. A "; careerP0%(idx, 39)
             Locate 20: Print "20. RI SCORED "; careerP0%(idx, 18);
             Locate , 40: Print "41. SH "; careerP0%(idx, 40)
-            Locate 21: Print "21. BLOWN SAVES "; careerP0%(idx, 19)
+            Locate 21: Print "21. BLOWN SAVES "; careerP0%(idx, 19);
             Locate , 40: Print "42. SF "; careerP0%(idx, 41)
             Locate 22: Print "22. RUN SUPPORT "; careerP0%(idx, 20)
 
@@ -743,7 +776,7 @@ End Sub
 
 
 '----------------------------------------
-'    ChangeSchedule Subroutine
+'       ChangeSchedule Subroutine
 '----------------------------------------
 'This subroutine inputs stats from the
 'chosen Stat Schedule file and then gives 

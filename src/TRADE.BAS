@@ -161,13 +161,7 @@ Sub LoadLRForTrade (teamYear$, tradeIdx)
                 Next
             Next
 
-            For X = 1 To 24
-                tradeSA%(tradeIdx, X) = 0
-            Next
-
-            For X = 0 To 11
-                tradeTS%(tradeIdx, X) = 0
-            Next
+            Erase tradeSA%, tradeTS%
 
         End If
 

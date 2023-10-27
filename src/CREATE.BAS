@@ -83,7 +83,7 @@ End Sub
 'This subroutine assists the user with the
 'input of paramters related to the league's
 'general naming and setup
-Sub DefineLeague (league$, D1$, D2$, D3$, D4$)
+Sub DefineLeague (league$, div1$, div2$, div3$, div4$)
 
     Do
 
@@ -120,40 +120,41 @@ Sub DefineLeague (league$, D1$, D2$, D3$, D4$)
 
     Cls
     Color 15, 1
+    
     Locate 5, 1: QPrint "Name for Division 1 ", 14, 1, -1
-    Locate , 21: QPrint PadRight$(D1$, 20), FG, BG, -1
+    Locate , 21: QPrint PadRight$(div1$, 50), FG, BG, -1
     Locate 7, 1: QPrint "Name for Division 2 ", 14, 1, -1
-    Locate , 21: QPrint PadRight$(D2$, 20), FG, BG, -1
+    Locate , 21: QPrint PadRight$(div2$, 50), FG, BG, -1
     Locate 9, 1: QPrint "Name for Division 3 ", 14, 1, -1
-    Locate , 21: QPrint PadRight$(D3$, 20), FG, BG, -1
+    Locate , 21: QPrint PadRight$(div3$, 50), FG, BG, -1
     Locate 11, 1: QPrint "Name for Division 4 ", 14, 1, -1
-    Locate , 21: QPrint PadRight$(D4$, 20), FG, BG, -1
+    Locate , 21: QPrint PadRight$(div4$, 50), FG, BG, -1
 
     GetDiv1:
     Locate 5, 21 'location of beginning of field
-    CapsOn = 0: NumOnly = 0: Max = 20 'specify field parameters
-    Call TextIn(D1$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+    CapsOn = 0: NumOnly = 0: Max = 50 'specify field parameters
+    Call TextIn(div1$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
     If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
     If XCode = 2 GoTo Done 'all done entering data
 
     GetDiv2:
     Locate 7, 21 'location of beginning of field
-    CapsOn = 0: NumOnly = 0: Max = 20 'specify field parameters
-    Call TextIn(D2$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+    CapsOn = 0: NumOnly = 0: Max = 50 'specify field parameters
+    Call TextIn(div2$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
     If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
     If XCode = 2 GoTo Done 'all done entering data
 
     GetDiv3:
     Locate 9, 21 'location of beginning of field
-    CapsOn = 0: NumOnly = 0: Max = 20 'specify field parameters
-    Call TextIn(D3$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+    CapsOn = 0: NumOnly = 0: Max = 50 'specify field parameters
+    Call TextIn(div3$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
     If XCode = 1 GoTo GetDiv2: 'can't back up any more, stay here
     If XCode = 2 GoTo Done 'all done entering data
 
     GetDiv4:
     Locate 11, 21 'location of beginning of field
-    CapsOn = 0: NumOnly = 0: Max = 20 'specify field parameters
-    Call TextIn(D4$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+    CapsOn = 0: NumOnly = 0: Max = 50 'specify field parameters
+    Call TextIn(div4$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
     If XCode = 1 GoTo GetDiv3: 'can't back up any more, stay here
 
     Done:
@@ -177,7 +178,7 @@ End Sub
 'This subroutine provides an interface to
 'the user allowing them to choose / clear
 'teams from the league definition.
-Sub ReviewEditLeague (league$, D1$, D2$, D3$, D4$)
+Sub ReviewEditLeague (league$, div1$, div2$, div3$, div4$)
 
     Shared Z1%()
 
@@ -187,7 +188,7 @@ Sub ReviewEditLeague (league$, D1$, D2$, D3$, D4$)
 
         Open diskPaths$(2) + league$ + ".LIB" For Input As #2
 
-        Input #2, league$, D1$, D2$, D3$, D4$
+        Input #2, league$, div1$, div2$, div3$, div4$
 
         For X = 1 To 40
             Input #2, Z1$(X)
@@ -210,7 +211,7 @@ Sub ReviewEditLeague (league$, D1$, D2$, D3$, D4$)
 
         Color 12
         Locate , 4
-        Print D1$; Tab(24); D2$; Tab(44); D3$; Tab(64); D4$
+        Print div1$; Tab(24); div2$; Tab(44); div3$; Tab(64); div4$
         Print
 
         For I = 1 To 10
@@ -268,7 +269,7 @@ Sub ReviewEditLeague (league$, D1$, D2$, D3$, D4$)
 
     Loop Until choice = 3
 
-    Call SaveLeague(league$, D1$, D2$, D3$, D4$)
+    Call SaveLeague(league$, div1$, div2$, div3$, div4$)
 
 End Sub
 
@@ -279,7 +280,7 @@ End Sub
 'This subroutine writes the league team
 'memberships and definition to each of
 'the corresponding files (.LIB, .TMS)
-Sub SaveLeague (league$, D1$, D2$, D3$, D4$)
+Sub SaveLeague (league$, div1$, div2$, div3$, div4$)
 
     Shared Z1%()
 
@@ -288,10 +289,10 @@ Sub SaveLeague (league$, D1$, D2$, D3$, D4$)
     Open diskPaths$(2) + league$ + ".LIB" For Output As #2
 
     Print #2, league$
-    Print #2, D1$
-    Print #2, D2$
-    Print #2, D3$
-    Print #2, D4$
+    Print #2, div1$
+    Print #2, div2$
+    Print #2, div3$
+    Print #2, div4$
 
     For X = 1 To 40
         Print #2, Z1$(X)
@@ -331,10 +332,10 @@ Sub SaveLeague (league$, D1$, D2$, D3$, D4$)
     Open diskPaths$(2) + league$ + ".TMS" For Output As #2
 
     Write #2, league$
-    Write #2, D1$
-    Write #2, D2$
-    Write #2, D3$
-    Write #2, D4$
+    Write #2, div1$
+    Write #2, div2$
+    Write #2, div3$
+    Write #2, div4$
 
     For X = 1 To 40
         Write #2, Z1$(X)

@@ -138,7 +138,6 @@ Sub InitVar ()
 
     For I = 0 To 1
         For J = 1 To 9
-            M%(J) = 0
             B7%(I, J) = -1
             B3%(I, J) = -1
         Next
@@ -857,9 +856,7 @@ Sub ADVANCEMENT (P, D, S2%, F%, I3)
 
     If F% = 0 And O%(1) < 3 Then Call ADJRUNNERS(S2%, P)
 
-    For idx = 0 To 3:
-        A5%(idx) = 0
-    Next idx
+    Erase A5%
 
 End Sub
 
@@ -2222,7 +2219,7 @@ End Sub
 'This subroutine calculates injury length
 'and displays the information to the user.
 'It then calls the necessary routines to
-'hangameTypeOpte the associated variables / game'
+'Handle the associated variables / game'
 'mechanics.
 Sub INJURYLENGTH (IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
@@ -3838,7 +3835,8 @@ Sub RecordOut (i, I3)
     Call PBP(player$(i) + " out @ " + baseName$(I3))
 
     B0%(i, 0) = 0
-    B0%(i, 1) = 0: B0%(i, 2) = 0
+    B0%(i, 1) = 0
+    B0%(i, 2) = 0
     player$(i) = ""
 
 End Sub
@@ -3926,8 +3924,16 @@ Sub RecordRun (sah%, i, D, F%, PQ, S2%, W%, INFPOS%)
 
     Call d100(RN0)
     If inningScore(P, INNING%) = 4 And RN0 <= 25 Then Call PBP("They're tearin' up the peapatch!")
-    If INNING% >= 9 And P = 1 And S6%(P, 0) - S6%(D, 0) = 1 And F% = 0 And O%(1) < 3 And S2% <> 10 Then Call CHARGERUN(D, i)
-    If INNING% >= 9 And P = 1 And S6%(P, 0) - S6%(D, 0) = 1 And S2% <> 10 Then A5%(0) = 0: A5%(1) = 0: A5%(2) = 0: A5%(3) = 0
+    If INNING% >= 9 And P = 1 And S6%(P, 0) - S6%(D, 0) = 1 then
+        If F% = 0 And O%(1) < 3 And S2% <> 10 Then Call CHARGERUN(D, i)
+        If S2% <> 10 Then 
+            A5%(0) = 0
+            A5%(1) = 0
+            A5%(2) = 0
+            A5%(3) = 0
+        End If
+    End If
+    
 End Sub
 
 
@@ -8265,41 +8271,12 @@ Sub COMPILESTATFILES (teamIdx)
 
     numberGames = 0
 
-    For I = 0 To 22:
-        For I1 = 0 To 21:
-            B6%(I, I1) = 0
-        Next
-    Next
-
-    For I = 0 To 22:
-        For I1 = 0 To 6:
-            SS%(I, I1) = 0
-        Next
-    Next
-
-    For I = 0 To 21:
-        For I1 = 0 To 41:
-            P0%(I, I1) = 0:
-        Next
-    Next
+    Erase B2%, B6%, P3%, P4%
+    Erase SS%, P0%, T%
 
     W2% = 0
     L2% = 0
 
-    For I = 0 To 21: T%(I) = 0: Next I
-    For I = 0 To 22: P4%(I) = 0: Next I
-
-    For I = 0 To 1:
-        For I1 = 0 To 22:
-            B2%(I, I1) = 0
-        Next
-    Next
-
-    For I = 0 To 1:
-        For I1 = 0 To 21:
-            P3%(I, I1) = 0:
-        Next
-    Next
 
 End Sub
 
@@ -9480,15 +9457,16 @@ End Sub
 
 
 '----------------------------------------
-'      GetTeamYear Function
+'          GetTeamYear Function
 '----------------------------------------
 'This subroutine determines the 4-digit
 'team year from the team loaded by the
 'file. It uses the 2 digit year to make
 'assumptions. (00 to 24 are year 2000.)
-'This limit was chosen because most replays
-'are likely going to cover years after
-'1925.
+'Replays from 00 to 24 are much more
+'likely to be intended for 2000's than 
+'1900's. It's also safe to consider that 
+'86 to 99 would be much more likely to be 1900's
 Function GetTeamYear% (yearFromName$)
 
     teamYear% = Val(yearFromName$)

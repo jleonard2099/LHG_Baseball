@@ -963,9 +963,7 @@ Sub InputDeleteLineup (D%, yearNumber$)
 
     Do
 
-        For I = 0 To 9:
-            progM%(I) = 0
-        Next I
+        Erase progM%
 
         Locate 25, 1
 
@@ -1196,8 +1194,9 @@ Sub ChangeLineup_PROGMAN (yearNumber$, I$)
 
             Case "R":
 
+                Erase progM%
+
                 For J = 1 To 9:
-                    progM%(J) = 0
                     progB7%(J) = -1
                     progB3%(J) = -1
                 Next

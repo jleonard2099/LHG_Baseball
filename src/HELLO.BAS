@@ -1,6 +1,6 @@
 $Debug
 
-Const GAME_VERSION$ = "6.97"
+Const GAME_VERSION$ = "6.91"
 Const MAX_TEAMS = 1000
 Const MAX_GAMES = 1500
 Const MAX_FILES = 10240
@@ -25,7 +25,6 @@ DefInt A-Z
 '$INCLUDE: 'BoxRoutines.bi'
 '$INCLUDE: 'FileTeamSelection.bi'
 '$INCLUDE: 'Variables.bi'
-Dim Shared teamAbbreviatons$(0 To 1), TR$(0 To 22)
 
 '$INCLUDE: 'MainRoutines.bi'
 '$INCLUDE: 'TITLE.bi'
@@ -259,7 +258,7 @@ Do
 
     Call Main_Menu(Selection%)
 
-Loop Until Selection% = 14
+Loop Until Selection% = 10
 
 End
 
@@ -292,29 +291,24 @@ Sub Main_Menu (menuSelection%)
 
         Call TITLE
 
-        ReDim menuChoices$(1 To 14)
+        ReDim menuChoices$(1 To 10)
 
-        menuChoices$(1) = "PLAY A GAME                     "
-        menuChoices$(2) = "ENTER NEW/CHANGE EXISTING TEAMS "
-        'menuChoices$(2) = "INPUT A NEW TEAM                "
-        'menuChoices$(3) = "EDIT AN EXISTING TEAM           "
-        menuChoices$(3) = "PROGRAMMABLE MANAGER            "
-        menuChoices$(4) = "DRAFT TO NEW / EXISTING TEAM    "
-        menuChoices$(5) = "TRADE PLAYERS                   "
-        menuChoices$(6) = "ACTIVATE / DEACTIVATE PLAYERS   "
-        menuChoices$(7) = "GROUNDBALL / FLYOUT CALCS       "
-        menuChoices$(8) = "MODIFY REPLAY STATS             "
-        menuChoices$(9) = "REPLAY STATISTICS AND REPORTS   "
-        menuChoices$(10) = "LEADERS / STANDINGS / RECORDS   "
-        menuChoices$(11) = "SCHEDULER / AUTOPLAY / BOXSCORES"
-        menuChoices$(12) = "HARD DRIVE INSTALLATION         "
-        menuChoices$(13) = "CONFIGURE DRIVES FOR TEAMS,STATS"
-        menuChoices$(14) = "EXIT TO DOS                     "
+        menuChoices$(1) = "PLAY SINGLE GAME                "
+        menuChoices$(2) = "TEAM MANAGEMENT / ORGANIZATION  "
+        menuChoices$(3) = "REPLAY STATISTICS AND REPORTS   "
+        menuChoices$(4) = "LEADERS / STANDINGS / RECORDS   "
+        menuChoices$(5) = "SCHEDULER / AUTOPLAY / BOXSCORES"
+        menuChoices$(6) = "GROUND / FLY / RUN / BUNT CALC. "
+        menuChoices$(7) = "MANAGE UMPIRES                  "
+        menuChoices$(8) = "PROGRAMMABLE MANAGER            "
+        'menuChoices$(9) = "HARD DRIVE INSTALLATION         "
+        menuChoices$(9) = "CONFIGURE DRIVES FOR TEAMS,STATS"
+        menuChoices$(10) = "EXIT TO DOS                     "
 
         Selection% = 1
-        Count% = 14
+        Count% = 10
         Start% = 1
-        ExitCode% = 14
+        ExitCode% = 10
         FileFGColor% = 15: FileBGColor% = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
@@ -334,27 +328,40 @@ Sub Main_Menu (menuSelection%)
 
             Select Case menuSelection%
 
-                Case 1: Call LOADER
-                Case 2: Call TINPUT
-                Case 3: Call PROGMAN
-                Case 4: Call DRAFT
-                Case 5: Call TRADE
-                Case 6: Call ACTIVATE
-                Case 7: Call GROUND
-                Case 8: Call EditStats
-                Case 9: Call Replay_Menu
-                Case 10: Call Leaders_Menu
-                Case 11: Call SCHEDULE
-                    'Case 12: Call HDCOPY
-                Case 13: Call ConfigureDrives
+                Case 1:
+                    Call LOADER
+
+                Case 2:
+                    Call TeamMgt_Menu
+
+                Case 3:
+                    Call Replay_Menu
+
+                Case 4:
+                    Call Leaders_Menu
+
+                Case 5:
+                    Call SCHEDULE
+
+                Case 6:
+                    Call Calculations_Menu
+ 
+                Case 7:
+                    Call UMPMGR
+
+                Case 8:
+                    Call PROGMAN
+
+                Case 9:
+                    Call ConfigureDrives
 
             End Select
 
         End If
 
-    Loop Until menuSelection% = 14 Or ExitCode% = 27
+    Loop Until menuSelection% = 10 Or ExitCode% = 27
 
-    If ExitCode% = 27 Then menuSelection% = 14
+    If ExitCode% = 27 Then menuSelection% = 10
 
 End Sub
 
@@ -472,9 +479,115 @@ End Sub
 
 
 '----------------------------------------
+'        TeamMgmt_Menu Subroutine
+'----------------------------------------
+'This subroutine provodes the user with
+'several options for managing a team and
+'it's roster.
+Sub TeamMgt_Menu ()
+
+    _Title "Full Count Baseball - Team Input"
+
+    Do
+
+        Cls
+
+        Call TITLE
+
+        ReDim menuChoices$(1 To 9)
+
+        menuChoices$(1) = "INPUT A NEW TEAM             "
+        menuChoices$(2) = "EDIT AN EXISTING TEAM        "
+        menuChoices$(3) = "PRINT TEAM ROSTER / STATS    "
+        menuChoices$(4) = "VIEW TEAM ROSTER / REPORT    "
+        menuChoices$(5) = "DRAFT TO NEW / EXISTING TEAM "
+        menuChoices$(6) = "TRADE PLAYERS                "
+        menuChoices$(7) = "ACTIVATE / DEACTIVATE PLAYERS"
+        menuChoices$(8) = "SWAP SPOTS ON A TEAM ROSTER  "
+        menuChoices$(9) = "RETURN TO MAIN MENU          "
+        Selection% = 1
+        Count% = 9
+        Start% = 1
+        ExitCode% = 9
+        FileFGColor% = 15: FileBGColor% = 1
+        HiLiteFGColor% = 0: HiLiteBGColor% = 7
+        Spacing% = 1
+        Row% = 8
+        menuWidth% = Len(menuChoices$(1))
+        Column% = (80 - menuWidth% - 2) / 2
+
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor%, FileBGColor%)
+
+        _MouseShow "DEFAULT"
+        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        _MouseHide
+
+        Color , 0
+
+        If ExitCode% <> 27 Then
+
+            Select Case Selection%
+
+                Case 1:
+                    Call InputEditTeam(1, YN$, team$, teamNbr)
+                    statFile$ = nameStatFile$(team$)
+                    Call SaveTeamFile(1, YN$, team$, statFile$, teamNbr)
+
+                Case 2:
+                    Call ChooseTeam(YN$, NTMS, teamNbr, team$)
+
+                    If teamNbr <> 0 Then
+                        Call InputEditTeam(2, YN$, team$, teamNbr)
+                        statFile$ = nameStatFile$(team$)
+                        Call SaveTeamFile(0, YN$, team$, statFile$, teamNbr)
+                    End If
+
+                Case 3:
+                    Call ChooseTeam(YN$, NTMS, teamNbr, team$)
+
+                    If teamNbr <> 0 Then
+                        Call PrintTeamStats(team$, teamNbr)
+                    End If
+
+                Case 4:
+                    Call ChooseTeam(YN$, NTMS, teamNbr, team$)
+
+                    If teamNbr <> 0 Then
+                        Call ViewRoster(team$)
+                    End If
+
+                Case 5:
+                    Call DRAFT
+
+                Case 6:
+                    Call TRADE
+
+                Case 7:
+                    Call ACTIVATE
+
+                Case 8:
+                    Call ChooseTeam(YN$, NTMS, teamNbr, team$)
+
+                    If teamNbr <> 0 Then
+                        Call SwapSpots(YN$, team$, teamNbr)
+                    End If
+
+            End Select
+
+        End If
+
+    Loop Until menuSelection% = 9 Or ExitCode% = 27
+        
+End Sub
+
+
+'----------------------------------------
 '         Replay_Menu Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine provodes the user with
+'several options for managing replay
+'data, from statistics to reports and
+'team careers
 Sub Replay_Menu ()
 
     Do
@@ -484,18 +597,19 @@ Sub Replay_Menu ()
 
         Call TITLE
 
-        ReDim menuChoices$(1 To 6)
+        ReDim menuChoices$(1 To 7)
 
         menuChoices$(1) = "VIEW / PRINT COMPILED STATS       "
         menuChoices$(2) = "ENCYCLOPEDIA / TEAM REPLAY OPTIONS"
         menuChoices$(3) = "COMPARE REPLAY STATS TO ACTUAL    "
-        menuChoices$(4) = "MERGE SEPARATE STATISTICAL FILES  "
-        menuChoices$(5) = "SORT PLAYERS BY POSITION          "
-        menuChoices$(6) = "RETURN TO MAIN MENU               "
+        menuChoices$(4) = "MODIFY REPLAY STATS               "
+        menuChoices$(5) = "MERGE SEPARATE STATISTICAL FILES  "
+        menuChoices$(6) = "SORT PLAYERS BY POSITION          "
+        menuChoices$(7) = "RETURN TO MAIN MENU               "
         Selection% = 1
-        Count% = 6
+        Count% = 7
         Start% = 1
-        ExitCode% = 6
+        ExitCode% = 7
         FileFGColor% = 15: FileBGColor% = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
@@ -525,16 +639,19 @@ Sub Replay_Menu ()
                     Call COMPARE
 
                 Case 4:
-                    Call MERGE
+                    Call EditStats
 
                 Case 5:
+                    Call MERGE
+
+                Case 6:
                     Call POSSRT
 
             End Select
 
         End If
 
-    Loop Until Selection% = 6 Or ExitCode% = 27
+    Loop Until Selection% = 7 Or ExitCode% = 27
 
 End Sub
 
@@ -615,6 +732,81 @@ Sub Leaders_Menu ()
 
     Loop Until Selection% = 8 Or ExitCode% = 27
 
+End Sub
+
+
+'----------------------------------------
+'        Calculations_Menu Subroutine
+'----------------------------------------
+'This subroutine provodes the user with
+'several options for managing a team and
+'it's roster.
+Sub Calculations_Menu ()
+
+    _Title "Full Count Baseball - Team Input"
+
+    Do
+
+        Cls
+
+        Call TITLE
+
+        ReDim menuChoices$(1 To 4)
+
+        menuChoices$(1) = "GROUNDBALL / FLYOUT CALCS"
+        menuChoices$(2) = "CALCULATE BUNT RATINGS   "
+        menuChoices$(3) = "CALCULATE RUN RATINGS    "
+        menuChoices$(4) = "RETURN TO MAIN MENU      "
+        Selection% = 1
+        Count% = 4
+        Start% = 1
+        ExitCode% = 4
+        FileFGColor% = 15: FileBGColor% = 1
+        HiLiteFGColor% = 0: HiLiteBGColor% = 7
+        Spacing% = 1
+        Row% = 8
+        menuWidth% = Len(menuChoices$(1))
+        Column% = (80 - menuWidth% - 2) / 2
+
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor%, FileBGColor%)
+
+        _MouseShow "DEFAULT"
+        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        _MouseHide
+
+        Color , 0
+
+        If ExitCode% <> 27 Then
+
+            Select Case Selection%
+
+                Case 1:
+                    Call GROUND
+
+                Case 2:
+                    Call ChooseTeam(YN$, NTMS, teamNbr, team$)
+
+                    If teamNbr <> 0 Then
+                        statFile$ = nameStatFile$(team$)
+                        Call CalculateBuntRating(team$)
+                        Call SaveTeamFile(0, YN$, team$, statFile$, teamNbr)
+                    End If
+
+                Case 3:
+                    Call ChooseTeam(YN$, NTMS, teamNbr, team$)
+
+                    If teamNbr <> 0 Then
+                        statFile$ = nameStatFile$(team$)
+                        Call CalculateRunRating(team$)
+                        Call SaveTeamFile(0, YN$, team$, statFile$, teamNbr)
+                    End If
+
+            End Select
+
+        End If
+
+    Loop Until menuSelection% = 4 Or ExitCode% = 27
+        
 End Sub
 
 

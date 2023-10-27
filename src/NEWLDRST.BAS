@@ -160,14 +160,20 @@ Sub UpdateLeagueStandings (league$)
 
                 For I = 1 To XX%
 
-                    If H%(I) > V%(I) Then WW!(currRecord) = WW!(currRecord) + 1
-                    If H%(I) > V%(I) And I%(I) > 9 Then EWW!(currRecord) = EWW!(currRecord) + 1
-                    If H%(I) > V%(I) And PL$(I) = "A" Then RWW!(currRecord) = RWW!(currRecord) + 1
-                    If H%(I) > V%(I) And PL$(I) = "H" Then HWW!(currRecord) = HWW!(currRecord) + 1
-                    If V%(I) > H%(I) Then LL!(currRecord) = LL!(currRecord) + 1
-                    If V%(I) > H%(I) And I%(I) > 9 Then ELL!(currRecord) = ELL!(currRecord) + 1
-                    If V%(I) > H%(I) And PL$(I) = "A" Then RLL!(currRecord) = RLL!(currRecord) + 1
-                    If V%(I) > H%(I) And PL$(I) = "H" Then HLL!(currRecord) = HLL!(currRecord) + 1
+                    If H%(I) > V%(I) Then 
+                        WW!(currRecord) = WW!(currRecord) + 1
+                        If I%(I) > 9 Then EWW!(currRecord) = EWW!(currRecord) + 1
+                        If PL$(I) = "A" Then RWW!(currRecord) = RWW!(currRecord) + 1
+                        If PL$(I) = "H" Then HWW!(currRecord) = HWW!(currRecord) + 1
+                    End If
+
+                    If V%(I) > H%(I) Then 
+                        LL!(currRecord) = LL!(currRecord) + 1
+                        If I%(I) > 9 Then ELL!(currRecord) = ELL!(currRecord) + 1
+                        If PL$(I) = "H" Then HLL!(currRecord) = HLL!(currRecord) + 1
+                        If PL$(I) = "A" Then RLL!(currRecord) = RLL!(currRecord) + 1
+                    End If
+
                     If H%(I) > V%(I) Then LWS!(currRecord) = LWS!(currRecord) + 1: LLS!(currRecord) = 0
                     If LWS!(currRecord) > TWS!(currRecord) Then TWS!(currRecord) = LWS!(currRecord)
                     If H%(I) < V%(I) Then LLS!(currRecord) = LLS!(currRecord) + 1: LWS!(currRecord) = 0

@@ -2,28 +2,28 @@
 '           MenuBox Subroutine
 '----------------------------------------
 'This subroutine draws a box in mode 0
-'at the starting row / column. 
-'	width% - width of the box (inside the lines)
-'	height% - height of the box (inside the lines)
-'	FGColor% - color of box lines
-'	BGColor% - color of box area
-Sub MenuBox (StartRow%, StartCol%, width%, height%, FGColor%, BGColor%)
+'at the starting row / column.
+'   width% - width of the box (inside the lines)
+'   height% - height of the box (inside the lines)
+'   FGColor% - color of box lines
+'   BGColor% - color of box area
+Sub MenuBox (StartRow%, StartCol%, boxWidth%, boxHeight%, FGColor%, BGColor%)
 
-	'						 JJ
-	'Call MenuBox (6, 8, 61, 7, 15, 1)
+    '                        JJ
+    'Call MenuBox (6, 8, 61, 7, 15, 1)
 
-	Locate StartRow%, StartCol%
+    Locate StartRow%, StartCol%
 
-	Color FGColor%, BGColor%
+    Color FGColor%, BGColor%
 
-	Print " " + Chr$(214); String$(width%, 196); Chr$(183) + " ";
+    Print " " + Chr$(214); String$(boxWidth%, 196); Chr$(183) + " ";
 
-	For II = 1 To height%
-		Locate StartRow% + II, StartCol%
-		Print " " + Chr$(186); String$(width%, 32); Chr$(186) + " ";
-	Next
+    For II = 1 To boxHeight%
+        Locate StartRow% + II, StartCol%
+        Print " " + Chr$(186); String$(boxWidth%, 32); Chr$(186) + " ";
+    Next
 
-	Locate StartRow% + height% + 1, StartCol%
-	Print " " + Chr$(211); String$(width%, 196); Chr$(189) + " ";
+    Locate StartRow% + boxHeight% + 1, StartCol%
+    Print " " + Chr$(211); String$(boxWidth%, 196); Chr$(189) + " ";
 
 End Sub

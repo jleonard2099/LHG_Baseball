@@ -1,111 +1,139 @@
-'$INCLUDE: 'KeyInput.BI'
+Sub HDCOPY ()
 
-_Title "Full Count Baseball - x"
-$ExeIcon:'./lhg_fcbase.ico'
-_Icon	
-_AllowFullScreen
+	_Title "Full Count Baseball - Hard Drive Installation"
 
-10 KEY OFF:COLOR 0,7:CLS:PN$="BASEBALL"
+	KEY OFF
+	COLOR 0,7
+	
+	CLS
+	
+	PN$="BASEBALL"
+	
+	Do
 
-20 LOCATE 1,1:COLOR ,1:COLOR 15,1
-	PRINT STRING$(80,32);
-	U$="HARD DISK INSTALLATION PROGRAM"
-	LOCATE 1,(80-LEN(U$))/2
-	COLOR 15,1:PRINT U$
-	JJ=7
-	LOCATE 6,8:COLOR 15,1
-	PRINT " ";CHR$(201) STRING$(61,205);CHR$(187)" ";
-	FOR II=1 TO JJ:LOCATE 6+II,8
-	PRINT " º"; STRING$(61,32); "º ";:NEXT
-	LOCATE 7+JJ,8
-	PRINT " ";CHR$(200) STRING$(61,205); CHR$(188)" " ;:LOCATE 8,32
-	LOCATE ,12:PRINT "ENTER LETTER OF DRIVE YOU WISH TO INSTALL FROM: ";
+		LOCATE 1,1		
+		COLOR 15,1
+		PRINT STRING$(80,32);
+		U$="HARD DISK INSTALLATION PROGRAM"
+		LOCATE 1,(80-LEN(U$))/2
+		PRINT U$
 
-26 I$=GetKeyPress$
-	S$=I$:PRINT S$+":"
-	LOCATE ,12:PRINT "ENTER HARD DRIVE LETTER TO INSTALL TO: ";
+		Call MenuBox (6, 8, 61, 7, 15, 1)
+		
+		LOCATE ,12:PRINT "ENTER LETTER OF DRIVE YOU WISH TO INSTALL FROM: ";
 
-31 I$=GetKeyPress$
-	D$=I$:PRINT D$+":"
-	LOCATE ,12:INPUT "SUBDIRECTORY NAME TO INSTALL TO: ";NN$
-	IF NN$="" THEN NN$=PN$
-	LOCATE ,12:PRINT "FILES WILL BE COPIED TO "D$+":\"+NN$
-	LOCATE ,12:PRINT "ANY CHANGE? (Y/N) "
+		S$=GetKeyPress$
+		PRINT S$+":"
 
-22 I$=GetKeyPress$
-	IF UCASE$(I$)="Y" THEN 20
+		LOCATE ,12:PRINT "ENTER HARD DRIVE LETTER TO INSTALL TO: ";
 
-45 ON ERROR GOTO 1005
+		D$=GetKeyPress$
+		PRINT D$+":"
+
+		LOCATE ,12
+		INPUT "SUBDIRECTORY NAME TO INSTALL TO: ";NN$
+		
+		IF NN$="" THEN NN$=PN$
+		
+		LOCATE ,12
+		PRINT "FILES WILL BE COPIED TO "D$+":\"+NN$
+		
+		LOCATE ,12
+		PRINT "ANY CHANGE? (Y/N) "
+
+		I$=GetKeyPress$
+	
+	Loop Until UCASE$(I$)="N"
+
+	If Not _FileExists(D$+":\"+NN$) Then
+		MKDIR D$+":\"+NN$
+	End If
+
 	CHDIR D$+":\"+NN$
-	ON ERROR GOTO 0
-	GOTO 51
 
-51 GOSUB 2000
-	LOCATE ,12
+	Call MenuBox (16, 8, 61, 1, 15, 1)
+	
+	LOCATE 17, 12
 	U$="COPYING FILES TO "+D$+":\"+NN$
 	LOCATE ,(80-LEN(U$))/2
 	PRINT U$
-	SHELL "ECHO OFF"
-	SHELL "COPY "+S$+":*.* "+D$+":\"+NN$+" >NUL:"
-	CHDIR S$+":\"
-	CHDIR D$+":\"+NN$
 
-100 ON ERROR GOTO 0
+	'SHELL "ECHO OFF"
+	'SHELL "COPY "+S$+":*.* "+D$+":\"+NN$+" >NUL:"
+	'CHDIR S$+":\"
+	'CHDIR D$+":\"+NN$
 
-66 GOSUB 2000
-	SHELL "COPY "+S$+":*.* "+D$+":\"+NN$+" >NUL:"
-OPEN D$+":\"+NN$+"\DEV.BAS" FOR OUTPUT AS #2
-	PRINT #2,D$+":\"+NN$+"\"
-	PRINT #2,D$+":\"+NN$+"\"
-	PRINT #2,D$+":\"+NN$+"\"
-	PRINT #2,D$+":\"+NN$+"\"
-CLOSE 2
+	Do
 
-80 GOSUB 2000
-	LOCATE 17,12
-	U$="INSTALL ANOTHER DISK? (Y/N)"
-	LOCATE ,(80-LEN(U$))/2
-	PRINT U$
-	GOSUB 4091
+		Call MenuBox (16, 8, 61, 1, 15, 1)
+		
+		LOCATE 17, 12
 
-82 IF UCASE$(I$)<>"Y" THEN 90
-	GOSUB 2000
-	LOCATE 17,12
-	U$="INSERT DISK AND HIT ANY KEY"
-	LOCATE ,(80-LEN(U$))/2
-	PRINT U$
-	GOSUB 4091
-	GOTO 66
+		'SHELL "COPY "+S$+":*.* "+D$+":\"+NN$+" >NUL:"
 
-90 GOSUB 2000
+		Call MenuBox (16, 8, 61, 1, 15, 1)
+		
+		LOCATE 17, 12
+
+		U$="INSTALL ANOTHER DISK? (Y/N)"
+		LOCATE ,(80-LEN(U$))/2
+		PRINT U$
+
+		Do
+			I$=GetKeyPress$
+		Loop Until UCASE$(I$) = "N" Or UCASE$(I$) = "Y"
+
+		IF UCASE$(I$) = "N" THEN
+
+			Call MenuBox (16, 8, 61, 1, 15, 1)
+			LOCATE 17,12
+			U$="INSERT DISK AND HIT ANY KEY"
+			LOCATE ,(80-LEN(U$))/2
+			PRINT U$
+
+			I$=GetKeyPress$
+
+		End If
+
+	Loop Until UCase$(I$) = "Y"
+
+	Do
+	
+		Call MenuBox (6, 8, 61, 7, 15, 1)
+
+		LOCATE 17,12
+		U$="INSERT TEAMS DISK IN DRIVE "+S$+":"+" AND HIT ANY KEY"
+		LOCATE ,(80-LEN(U$))/2
+		PRINT U$
+
+		I$=GetKeyPress
+
+		'SHELL "COPY "+S$+":FCTEAMS.* "+D$+":\"+NN$
+
+		Call MenuBox (16, 8, 61, 1, 15, 1)
+
+		LOCATE 17,12
+		U$="INSTALL ANOTHER TEAMS DISK? (Y/N)"
+		LOCATE ,(80-LEN(U$))/2
+		PRINT U$
+
+	Loop Until UCase$(I$) = "N"
+
+	'OPEN D$+":\"+NN$+"\DEV.BAS" FOR OUTPUT AS #2
+	'PRINT #2,D$+":\"+NN$+"\"
+	'PRINT #2,D$+":\"+NN$+"\"
+	'PRINT #2,D$+":\"+NN$+"\"
+	'PRINT #2,D$+":\"+NN$+"\"
+	'CLOSE 2
+
+	Call MenuBox (16, 8, 61, 1, 15, 1)
 	LOCATE 17,12
 	U$="INSTALLATION IS COMPLETE! TO START PROGRAM, TYPE HELLO"
 	LOCATE ,(80-LEN(U$))/2
 	PRINT U$
+
 	LOCATE 20,1
-	SHELL "ECHO ON"
 
-105 END
+	'SHELL "ECHO ON"
 
-1005 MKDIR D$+":\"+NN$
-	CHDIR D$+":\"+NN$
-	RESUME 51
-
-2000 JJ=1
-	LOCATE 16,8:COLOR 15,4
-	PRINT " ";CHR$(201) STRING$(61,205);CHR$(187)" ";
-	FOR II=1 TO JJ:LOCATE 16+II,8
-	PRINT " º"; STRING$(61,32); "º ";:NEXT
-	LOCATE 17+JJ,8
-	PRINT " ";CHR$(200) STRING$(61,205); CHR$(188)" " ;:LOCATE 17
-	RETURN
-	COLOR 15,1
-
-4091 I$=GetKeyPress$
-4092 RETURN
-
-5000 CLOSE 1
-	CHDIR D$+":\"+NN$
-	RESUME 100
-
-'$INCLUDE: 'KeyInput.BM'
+End Sub

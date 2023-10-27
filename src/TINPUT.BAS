@@ -1,129 +1,4 @@
 '----------------------------------------
-'           TINPUT Subroutine
-'----------------------------------------
-'This subroutine provodes the user with
-'several options for managing a team and
-'it's roster.
-Sub TINPUT ()
-
-    _Title "Full Count Baseball - Team Input"
-
-    ReDim menuChoices$(1 To 9)
-
-    Do
-
-        Cls
-        Color 15, 0
-
-        Call TITLE
-
-        menuChoices$(1) = "INPUT A NEW TEAM           "
-        menuChoices$(2) = "EDIT AN EXISTING TEAM      "
-        menuChoices$(3) = "PRINT ACTUAL TEAM STATS    "
-        menuChoices$(4) = "ENTER / EDIT UMPIRES       "
-        menuChoices$(5) = "SWAP SPOTS ON A TEAM ROSTER"
-        menuChoices$(6) = "CALCULATE BUNT RATINGS     "
-        menuChoices$(7) = "CALCULATE RUN RATINGS      "
-        menuChoices$(8) = "VIEW TEAM ROSTERS/RATINGS  "
-        menuChoices$(9) = "RETURN TO MAIN MENU        "
-        Selection% = 1
-        Count% = 9
-        Start% = 1
-        ExitCode% = 9
-        FileFGColor% = 15: FileBGColor% = 1
-        HiLiteFGColor% = 0: HiLiteBGColor% = 7
-        Spacing% = 1
-        Row% = 8
-        menuWidth% = Len(menuChoices$(1))
-        Column% = (80 - menuWidth% - 2) / 2
-
-        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
-
-        _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
-        _MouseHide
-
-        Color , 0
-
-        If ExitCode% <> 27 Then
-
-            Select Case Selection%
-
-                Case 1:
-
-                    Call InputEditTeam(1, YN$, team$, teamNbr)
-                    statFile$ = nameStatFile$(team$)
-                    Call SaveTeamFile(1, YN$, team$, statFile$, teamNbr)
-
-                Case 2:
-
-                    Call ChooseTeam (YN$, NTMS, teamNbr, team$)
-
-                    If teamNbr <> 0 Then
-                        Call InputEditTeam(2, YN$, team$, teamNbr)
-                        statFile$ = nameStatFile$(team$)
-                        Call SaveTeamFile(0, YN$, team$, statFile$, teamNbr)
-                    End If
-
-                Case 3:
-
-                    Call ChooseTeam (YN$, NTMS, teamNbr, team$)
-
-                    If teamNbr <> 0 Then
-                        Call PrintTeamStats(team$, teamNbr)
-                    End If
-
-                Case 4:
-                    Call UMPMGR
-
-                Case 5:
-
-                    Call ChooseTeam (YN$, NTMS, teamNbr, team$)
-
-                    If teamNbr <> 0 Then
-                        Call SwapSpots(YN$, team$, teamNbr)
-                    End If
-
-                Case 6:
-
-                    Call ChooseTeam (YN$, NTMS, teamNbr, team$)
-
-                    If teamNbr <> 0 Then
-                        statFile$ = nameStatFile$(team$)
-                        Call CalculateBuntRating(team$)
-                        Call SaveTeamFile(0, YN$, team$, statFile$, teamNbr)
-                    End If
-
-                Case 7:
-
-                    Call ChooseTeam (YN$, NTMS, teamNbr, team$)
-
-                    If teamNbr <> 0 Then
-                        statFile$ = nameStatFile$(team$)
-                        Call CalculateRunRating(team$)
-                        Call SaveTeamFile(0, YN$, team$, statFile$, teamNbr)
-                    End If
-
-                Case 8:
-
-                    Call ChooseTeam (YN$, NTMS, teamNbr, team$)
-
-                    If teamNbr <> 0 Then
-                        Call ViewRoster(team$)
-                    End If
-
-            End Select
-
-        End If
-
-    Loop Until Selection% = 9 Or ExitCode% = 27
-
-    Cls
-
-End Sub
-
-
-'----------------------------------------
 '         ViewRoster subroutine
 '----------------------------------------
 'This subroutine formats and displays the
@@ -141,13 +16,7 @@ Sub ViewRoster (targetTeam$)
     Shared batterNames$(), pitcherNames$()
     Shared batterRatings(), pitcherRatings()
 
-    For K = 0 To 15
-        TB%(K) = 0
-    Next
-
-    For K = 0 To 33
-        inputTP%(K) = 0
-    Next
+    Erase TB%, inputTP%
 
     For K = 4 To 18:
         For I = 0 To 22
@@ -303,44 +172,15 @@ Sub InputEditTeam (inputAction%, yearNumber$, targetTeam$, teamIdx)
 
         parkHR = 0
 
-        For X = 0 To 22
-            batterNames$(X) = ""
-            For X1 = 0 To 41
-                batterRatings(X, X1) = 0
-            Next
-        Next
+        Erase batterRatings, pitcherRatings
+        Erase teamSA%, teamTS%
 
-        For X = 0 To 21
-            pitcherNames$(X) = ""
-            For X1 = 0 To 36
-                pitcherRatings(X, X1) = 0
-            Next
-        Next
+        Erase batterNames$, pitcherNames$
 
         Stadium$ = ""
         Manager$ = ""
         teamAbbrev$ = ""
         CK = 0
-
-        For X = 0 To 22
-            For X1 = 42 To 79
-                batterRatings(X, X1) = 0
-            Next
-        Next
-
-        For X = 0 To 21
-            For X1 = 37 To 88
-                pitcherRatings(X, X1) = 0
-            Next
-        Next
-
-        For X = 1 To 24
-            teamSA%(X) = 0
-        Next
-
-        For X = 0 To 11
-            teamTS%(X) = 0
-        Next
 
     Else
 
