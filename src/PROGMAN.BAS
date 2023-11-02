@@ -9,7 +9,7 @@ Sub PROGMAN ()
     _Title "Full Count Baseball - Programmable Manager"
 
     Shared parkHR_DRAFT&()
-    Shared batterNames$(), progPT$(), yesNo$()
+    Shared batterNames$(), PT$(), yesNo$()
     Shared progMG%()
 
 
@@ -730,7 +730,7 @@ End Sub
 Sub EditLineups (handRL%, targetTeam$, yearNumber$)
 
     Shared teamRatings%(), progMG%()
-    Shared progPT$()
+    Shared PT$()
     Shared progB3%(), progB7%()
 
     Dim V1%(1)
@@ -741,7 +741,7 @@ Sub EditLineups (handRL%, targetTeam$, yearNumber$)
         Locate 3, 1
         Color teamRatings%(11), teamRatings%(12): Print targetTeam$;
         Color 15, 0
-        Print " LINEUPS VS "; progPT$(handRL%)
+        Print " LINEUPS VS "; PT$(handRL%)
         Print
         ReDim menuChoices$(1 To 4)
         menuChoices$(1) = "INPUT A NEW LINEUP            "
@@ -777,7 +777,7 @@ Sub EditLineups (handRL%, targetTeam$, yearNumber$)
                 If lineupChoice% = 2 Or lineupChoice% = 3 Then
 
                     'Get a lineup
-                    Call GetLineup(handRL%, targetTeam$)
+                    Call GetLineup(handRL%)
 
                     LF% = 0
 
@@ -847,7 +847,7 @@ Sub EditLineups (handRL%, targetTeam$, yearNumber$)
 
                     Call ViewLineup(targetTeam$)
 
-                    Locate 6, 64: Print "VS " + progPT$(handRL%)
+                    Locate 6, 64: Print "VS " + PT$(handRL%)
                     Locate 7, 61: Print Using "LINEUP ##   POS"; LN% - handRL% * 10
 
                     For I = 10 To 22:
@@ -1431,13 +1431,13 @@ End Sub
 '----------------------------------------
 'This subroutine prints a summary of the
 'lineups found during the search.
-Sub GetLineup (handRL%, targetTeam$)
+Sub GetLineup (handRL%)
 
-    Shared batterNames$(), C$(), progPT$()
+    Shared batterNames$(), C$(), PT$()
     Shared progMG%()
 
     Cls
-    Color 12: Print Tab(30); "LINEUPS FOUND VS. "; progPT$(handRL%)
+    Color 12: Print Tab(30); "LINEUPS FOUND VS. "; PT$(handRL%)
     Color 14
     Print " #0    "; progMG%(100 + (0 + handRL% * 10) * 21); "%";
     Locate , 17: Print " #1    "; progMG%(100 + (1 + handRL% * 10) * 21); "%";
@@ -1549,7 +1549,7 @@ Sub PrintManagerProfile (targetTeam$)
     If LF% = 0 Then
         LPrint "NO LINEUPS VS RHP "
     Else
-        Call GetLineup(handRL%, targetTeam$)
+        Call GetLineup(handRL%)
         _PrintImage 0
         'CALL PRTSC0 (1)
     End If
@@ -1564,7 +1564,7 @@ Sub PrintManagerProfile (targetTeam$)
     If LF% = 0 Then
         LPrint "NO LINEUPS VS LHP "
     Else
-        Call GetLineup(handRL%, targetTeam$)
+        Call GetLineup(handRL%)
         _PrintImage 0
         'CALL PRTSC0 (1)
     End If
@@ -2367,22 +2367,8 @@ Sub ManagePitchingRotations (action%, targetTeam$, mgrNbr)
 
         'Enter Rotation
         I = 1
-        JJ = 1
 
-        Locate 6, 8
-
-        Color 15, 1
-
-        Print " "; Chr$(201); String$(61, 205); Chr$(187); " ";
-
-        For II = 1 To JJ:
-            Locate 6 + II, 8
-            Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-        Next
-
-        Locate 7 + JJ, 8
-
-        Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";
+        Call box0 (6, 8, 8, 70, 2, 15, 1)
 
         Do
             Locate 7
@@ -3717,7 +3703,7 @@ Sub PinchRunStrategy (yearNumber$, targetTeam$, mgrNbr)
         Select Case Selection%
 
             Case 1:
-                Call PinchRunners(yearNumber$, targetTeam$, mgrNbr)
+                Call PinchRunnerOptions(yearNumber$, targetTeam$, mgrNbr)
 
             Case 2:
                 Call DefenseSubPinchRun(yearNumber$, targetTeam$, mgrNbr)
@@ -3773,11 +3759,11 @@ End Sub
 
 
 '----------------------------------------
-'       PinchRunners Subroutine
+'     PinchRunnerOptions Subroutine
 '----------------------------------------
 'This subroutine assists the user with the
 'setup of pinch runners
-Sub PinchRunners (yearNumber$, targetTeam$, mgrNbr)
+Sub PinchRunnerOptions (yearNumber$, targetTeam$, mgrNbr)
 
     Shared teamRatings%(), progMG%(), batterRatings()
     Shared batterNames$(), mgrX$()
@@ -4101,22 +4087,7 @@ Sub ExportManagerProfile (mgrNbr)
 
         If PP% = 1 Then PP% = 0: Call PrintManagerProfile(T$)
 
-        JJ = 5
-
-        Locate 6, 8
-
-        Color 15, 1
-
-        Print " "; Chr$(201); String$(61, 205); Chr$(187); " ";
-
-        For II = 1 To JJ:
-            Locate 6 + II, 8
-            Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-        Next
-
-        Locate 7 + JJ, 8
-
-        Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";
+        Call box0 (6, 8, 12, 70, 2, 15, 1)
 
         Locate 7
 
@@ -4155,21 +4126,7 @@ Sub ImportManagerProfile (yearNumber$, mgrNbr)
 
         L% = 0
 
-        JJ = 5
-
-        Locate 6, 8
-        Color 15, 1
-
-        Print " "; Chr$(201); String$(61, 205); Chr$(187); " ";
-
-        For II = 1 To JJ:
-            Locate 6 + II, 8
-            Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-        Next
-
-        Locate 7 + JJ, 8
-
-        Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";
+        Call box0 (6, 8, 12, 70, 2, 15, 1)
 
         Do
             Locate 7, 11
@@ -4211,7 +4168,6 @@ Sub UpdateManagerFile (teamYear$, mgrNbr)
 
     Shared R$()
     Shared progMG%()
-    'Shared mgr_idx%
 
     progMG%(0) = 999
 
@@ -4579,11 +4535,10 @@ End Sub
 '----------------------------------------
 'This subroutine helps the user choose a
 'base running strategy.
-Sub BASERUN (yearNumber$, mgrNbr)
+Sub BASERUN (teamYear$, mgrNbr)
 
     Shared R$()
     Shared progMG%()
-    'Shared mgr_idx%
 
     'BASE RUNNING STRATEGY
     Cls
@@ -4664,7 +4619,6 @@ End Sub
 Sub GetManagerProfile (targetTeam$, yearNumber$, mgrNbr)
 
     Shared progMG%()
-    'Shared mgr_idx%
 
     Call ChooseTeam(yearNumber$, NTMS, mgrNbr, targetTeam$)
 

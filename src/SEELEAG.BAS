@@ -33,7 +33,7 @@ Sub LoadLeaderFiles (league$, D1$, D2$, targetFile$)
     Shared DFT!(), OFT!()
     Shared seeZ!(), seeZ1!()
 
-    Shared BA$(), cmplZ2$(), cmplZ3$(), ER$()
+    Shared BA$(), compileZ2$(), compileZ3$(), ER$()
     Shared LF$(), seeP$(), RT$(), T$()
 
     Open diskPaths$(2) + targetFile$ + ".TMS" For Input As #2
@@ -55,7 +55,7 @@ Sub LoadLeaderFiles (league$, D1$, D2$, targetFile$)
 
     For X = 1 To 40: Input #2, T$(X), Wins(X), Losses(X): Next
 
-    For X = 1 To 298: Input #2, cmplZ2$(X), cmplZ3$(X), seeZ!(X), seeZ1!(X): Next
+    For X = 1 To 298: Input #2, compileZ2$(X), compileZ3$(X), seeZ!(X), seeZ1!(X): Next
 
     For X = 1 To 40:
         Input #2, BA$(X)
@@ -133,21 +133,7 @@ Sub StatOptions (league$, D1$, D2$)
             Color 15, 0
             Cls
 
-            JJ = 4
-
-            Locate 6, 8
-            Color 15, 1
-
-            Print " "; Chr$(201); String$(61, 205); Chr$(187); " ";
-
-            For II = 1 To JJ:
-                Locate 6 + II, 8
-                Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-            Next
-
-            Locate 7 + JJ, 8
-
-            Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";
+            Call box0 (6, 8, 11, 70, 2, 15, 1)
 
             Do
                 Color 15, 1
@@ -212,7 +198,7 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     Shared DFT!(), OFT!()
     Shared seeZ!(), seeZ1!()
 
-    Shared BA$(), cmplZ2$(), cmplZ3$(), ER$()
+    Shared BA$(), compileZ2$(), compileZ3$(), ER$()
     Shared LF$(), seeP$(), RT$(), T$()
 
     Dim J!, ATBATS!, INNINGS!
@@ -436,11 +422,11 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "*" Then
+        If compileZ2$(P) <> "*" Then
 
-            seeP$(P) = Left$(cmplZ2$(P), 13)
-            If cmplZ3$(P) <> "*" Then
-                seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = Left$(compileZ2$(P), 13)
+            If compileZ3$(P) <> "*" Then
+                seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
             End If
 
             seeP$(P) = PadRight$(seeP$(P), 26)
@@ -489,9 +475,9 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     Color 15
 
     For P = 1 To 19
-        Print cmplZ2$(P) + ", " + cmplZ3$(P); Tab(28); Using "#.###  ###"; seeZ!(P); seeZ1!(P);
+        Print compileZ2$(P) + ", " + compileZ3$(P); Tab(28); Using "#.###  ###"; seeZ!(P); seeZ1!(P);
 
-        Print Tab(41); cmplZ2$(P + 238) + ", " + cmplZ3$(P + 238); Tab(69);
+        Print Tab(41); compileZ2$(P + 238) + ", " + compileZ3$(P + 238); Tab(69);
         Print Using "#.###  ###"; seeZ!(P + 238); seeZ1!(P + 238)
     Next
 
@@ -505,10 +491,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "" Then
+        If compileZ2$(P) <> "" Then
 
-            seeP$(P) = Left$(cmplZ2$(P), 13)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = Left$(compileZ2$(P), 13)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
             seeP$(P) = PadRight$(seeP$(P), 26)
             seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
 
@@ -541,10 +527,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "" Then
+        If compileZ2$(P) <> "" Then
 
-            seeP$(P) = Left$(cmplZ2$(P), 13)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = Left$(compileZ2$(P), 13)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
             seeP$(P) = PadRight$(seeP$(P), 26)
             seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
 
@@ -569,10 +555,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "" Then
+        If compileZ2$(P) <> "" Then
 
-            seeP$(P) = Left$(cmplZ2$(P), 13)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = Left$(compileZ2$(P), 13)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
             seeP$(P) = PadRight$(seeP$(P), 26)
             seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
 
@@ -599,10 +585,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     For P = 54 To 63
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "" Then
+        If compileZ2$(P) <> "" Then
 
-            seeP$(P) = Left$(cmplZ2$(P), 13)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = Left$(compileZ2$(P), 13)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
             seeP$(P) = PadRight$(seeP$(P), 26)
             seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
 
@@ -635,10 +621,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "" Then
+        If compileZ2$(P) <> "" Then
 
-            seeP$(P) = Left$(cmplZ2$(P), 13)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = Left$(compileZ2$(P), 13)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
             seeP$(P) = PadRight$(seeP$(P), 26)
             seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
 
@@ -665,10 +651,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "" Then
+        If compileZ2$(P) <> "" Then
 
-            seeP$(P) = Left$(cmplZ2$(P), 13)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = Left$(compileZ2$(P), 13)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
             seeP$(P) = PadRight$(seeP$(P), 26)
             seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
 
@@ -694,10 +680,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "" Then
+        If compileZ2$(P) <> "" Then
 
-            seeP$(P) = Left$(cmplZ2$(P), 13)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = Left$(compileZ2$(P), 13)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
             seeP$(P) = PadRight$(seeP$(P), 26)
             seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
 
@@ -724,10 +710,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "" Then
+        If compileZ2$(P) <> "" Then
 
-            seeP$(P) = Left$(cmplZ2$(P), 13)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = Left$(compileZ2$(P), 13)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
             seeP$(P) = PadRight$(seeP$(P), 26)
 
             J! = Int(1000 * seeZ!(P) + .5)
@@ -786,10 +772,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "" Then
+        If compileZ2$(P) <> "" Then
 
-            seeP$(P) = Left$(cmplZ2$(P), 13)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = Left$(compileZ2$(P), 13)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
             seeP$(P) = PadRight$(seeP$(P), 26)
 
             J! = Int(1000 * seeZ!(P) + .5)
@@ -845,10 +831,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "" Then
+        If compileZ2$(P) <> "" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
             seeP$(P) = PadRight$(seeP$(P), 26)
             seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
 
@@ -875,7 +861,7 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
     For P = 279 To 288
         Print "      ";
-        Print Left$(cmplZ2$(P), 13) + ", " + cmplZ3$(P); Tab(34); Using "###"; seeZ!(P)
+        Print Left$(compileZ2$(P), 13) + ", " + compileZ3$(P); Tab(34); Using "###"; seeZ!(P)
     Next P
 
     Locate 13, 40
@@ -885,7 +871,7 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
     For P = 289 To 298
         Locate , 41
-        Print Left$(cmplZ2$(P), 13) + ", " + cmplZ3$(P); Tab(67); Using "###"; seeZ!(P)
+        Print Left$(compileZ2$(P), 13) + ", " + compileZ3$(P); Tab(67); Using "###"; seeZ!(P)
     Next P
 
     '-----
@@ -903,10 +889,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "" Then
+        If compileZ2$(P) <> "" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
             seeP$(P) = PadRight$(seeP$(P), 26)
 
             J! = Int(100 * seeZ!(P) + .5)
@@ -938,9 +924,9 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     Color 15
 
     For P = 121 To 139
-        Print cmplZ2$(P) + ", " + cmplZ3$(P); Tab(30); Using "#.##  ###"; seeZ!(P); seeZ1!(P);
+        Print compileZ2$(P) + ", " + compileZ3$(P); Tab(30); Using "#.##  ###"; seeZ!(P); seeZ1!(P);
         Print Tab(41);
-        Print cmplZ2$(P + 138) + ", " + cmplZ3$(P + 138); Tab(70); Using "##.## ###"; seeZ!(P + 138); seeZ1!(P + 138)
+        Print compileZ2$(P + 138) + ", " + compileZ3$(P + 138); Tab(70); Using "##.## ###"; seeZ!(P + 138); seeZ1!(P + 138)
     Next
 
     '-----
@@ -960,9 +946,9 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
         If seeZ!(P) <> seeZ!(150) Or seeZ1!(P) <> seeZ1!(150) Then
 
-            seeP$(P) = seeP$(P) + cmplZ2$(P)
+            seeP$(P) = seeP$(P) + compileZ2$(P)
 
-            If cmplZ3$(P) <> "" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            If compileZ3$(P) <> "" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
 
             seeP$(P) = PadRight$(seeP$(P), 26)
             seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 2)
@@ -992,10 +978,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     For P = 151 To 160
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "*" Then
+        If compileZ2$(P) <> "*" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
             seeP$(P) = PadRight$(seeP$(P), 26)
             seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
 
@@ -1019,10 +1005,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "" Then
+        If compileZ2$(P) <> "" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
             seeP$(P) = PadRight$(seeP$(P), 26)
             seeP$(P) = seeP$(P) + Right$("     " + Str$(Int(seeZ!(P))), 3)
 
@@ -1047,10 +1033,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "" Then
+        If compileZ2$(P) <> "" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
 
             seeP$(P) = PadRight$(seeP$(P), 26)
 
@@ -1085,10 +1071,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "" Then
+        If compileZ2$(P) <> "" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
             seeP$(P) = PadRight$(seeP$(P), 26)
             seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
 
@@ -1116,10 +1102,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "" Then
+        If compileZ2$(P) <> "" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
             seeP$(P) = PadRight$(seeP$(P), 26)
             seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
 
@@ -1142,10 +1128,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "" Then
+        If compileZ2$(P) <> "" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
             seeP$(P) = PadRight$(seeP$(P), 26)
             seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
 
@@ -1175,10 +1161,10 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     For P = 228 To 237
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "" Then
+        If compileZ2$(P) <> "" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
             seeP$(P) = PadRight$(seeP$(P), 26)
             seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
 
@@ -1322,6 +1308,8 @@ End Sub
 'This file can then be looped through to
 'send to the default printer
 
+'-- Currently this appears to be sending to printer as well
+
 'Destination
 '   1 = File
 '   !1 = Printer (creates file and prints it)
@@ -1332,7 +1320,7 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Shared DFT!(), OFT!()
     Shared seeZ!(), seeZ1!()
 
-    Shared BA$(), cmplZ2$(), cmplZ3$(), ER$()
+    Shared BA$(), compileZ2$(), compileZ3$(), ER$()
     Shared LF$(), seeP$(), RT$(), T$()
 
     'If destination <> 1 Then
@@ -1660,7 +1648,7 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
 
     For X = 1 To 26
-        LPrint LF$(X); RT$(X)
+        'LPrint LF$(X); RT$(X)
     Next
 
     '-----
@@ -1682,10 +1670,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "*" Then
+        If compileZ2$(P) <> "*" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
 
             While Len(seeP$(P)) < 27
                 seeP$(P) = seeP$(P) + " "
@@ -1718,10 +1706,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "*" Then
+        If compileZ2$(P) <> "*" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
 
             While Len(seeP$(P)) < 27
                 seeP$(P) = seeP$(P) + " "
@@ -1763,7 +1751,7 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
 
     For X = 27 To 47:
-        LPrint LF$(X); RT$(X)
+        'LPrint LF$(X); RT$(X)
     Next
 
     '-----
@@ -1772,10 +1760,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "*" Then
+        If compileZ2$(P) <> "*" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
 
             While Len(seeP$(P)) < 28
                 seeP$(P) = seeP$(P) + " "
@@ -1802,10 +1790,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "*" Then
+        If compileZ2$(P) <> "*" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
 
             While Len(seeP$(P)) < 28
                 seeP$(P) = seeP$(P) + " "
@@ -1841,10 +1829,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
 
     For X = 49 To 59:
-        LPrint LF$(X); RT$(X)
+        'LPrint LF$(X); RT$(X)
     Next
 
-    LPrint Chr$(12)
+    'LPrint Chr$(12)
 
     '-----
 
@@ -1852,10 +1840,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "*" Then
+        If compileZ2$(P) <> "*" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
 
             While Len(seeP$(P)) < 28
                 seeP$(P) = seeP$(P) + " "
@@ -1885,10 +1873,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "*" Then
+        If compileZ2$(P) <> "*" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
 
             While Len(seeP$(P)) < 28
                 seeP$(P) = seeP$(P) + " "
@@ -1926,7 +1914,7 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
 
     For X = 1 To 12:
-        LPrint LF$(X); RT$(X)
+        'LPrint LF$(X); RT$(X)
     Next
 
     '-----
@@ -1935,8 +1923,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "*" Then
-            seeP$(P) = cmplZ2$(P): If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+        If compileZ2$(P) <> "*" Then
+            seeP$(P) = compileZ2$(P): If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
 
             While Len(seeP$(P)) < 28
                 seeP$(P) = seeP$(P) + " "
@@ -1963,10 +1951,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "*" Then
+        If compileZ2$(P) <> "*" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
 
             While Len(seeP$(P)) < 28
                 seeP$(P) = seeP$(P) + " "
@@ -2002,7 +1990,7 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
 
     For X = 13 To 23:
-        LPrint LF$(X); RT$(X)
+        'LPrint LF$(X); RT$(X)
     Next
 
     '-----
@@ -2011,10 +1999,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "*" Then
+        If compileZ2$(P) <> "*" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
 
             While Len(seeP$(P)) < 28
                 seeP$(P) = seeP$(P) + " "
@@ -2041,10 +2029,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "*" Then
+        If compileZ2$(P) <> "*" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
 
             While Len(seeP$(P)) < 28
                 seeP$(P) = seeP$(P) + " "
@@ -2078,7 +2066,7 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
 
     For X = 24 To 35:
-        LPrint LF$(X); RT$(X)
+        'LPrint LF$(X); RT$(X)
     Next
 
     '-----
@@ -2087,10 +2075,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "*" Then
+        If compileZ2$(P) <> "*" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
 
             While Len(seeP$(P)) < 28
                 seeP$(P) = seeP$(P) + " "
@@ -2115,10 +2103,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "*" Then
+        If compileZ2$(P) <> "*" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
 
             While Len(seeP$(P)) < 28
                 seeP$(P) = seeP$(P) + " "
@@ -2154,7 +2142,7 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
 
     For X = 36 To 47
-        LPrint LF$(X); RT$(X)
+        'LPrint LF$(X); RT$(X)
     Next
 
     '-----
@@ -2163,10 +2151,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "*" Then
+        If compileZ2$(P) <> "*" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
 
             While Len(seeP$(P)) < 28
                 seeP$(P) = seeP$(P) + " "
@@ -2191,10 +2179,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "*" Then
+        If compileZ2$(P) <> "*" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
 
             While Len(seeP$(P)) < 28
                 seeP$(P) = seeP$(P) + " "
@@ -2229,10 +2217,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
 
     For X = 48 To 58:
-        LPrint LF$(X); RT$(X)
+        'LPrint LF$(X); RT$(X)
     Next
 
-    LPrint Chr$(12)
+    'LPrint Chr$(12)
 
     '-----
 
@@ -2240,10 +2228,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "*" Then
+        If compileZ2$(P) <> "*" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
 
             While Len(seeP$(P)) < 24
                 seeP$(P) = seeP$(P) + " "
@@ -2287,8 +2275,8 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
         If seeZ!(P) <> seeZ!(150) Or seeZ1!(P) <> seeZ1!(150) Then
 
-            seeP$(P) = seeP$(P) + cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = seeP$(P) + compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
 
             While Len(seeP$(P)) < 23
                 seeP$(P) = seeP$(P) + " "
@@ -2319,10 +2307,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
     For P = 151 To 160: seeP$(P) = ""
 
-        If cmplZ2$(P) <> "*" Then
+        If compileZ2$(P) <> "*" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
 
             While Len(seeP$(P)) < 24
                 seeP$(P) = seeP$(P) + " "
@@ -2358,10 +2346,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
 
     For X = 48 To 59:
-        LPrint LF$(X); RT$(X)
+        'LPrint LF$(X); RT$(X)
     Next
 
-    LPrint Chr$(12)
+    'LPrint Chr$(12)
 
     '-----
 
@@ -2369,10 +2357,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "*" Then
+        If compileZ2$(P) <> "*" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
 
             While Len(seeP$(P)) < 24
                 seeP$(P) = seeP$(P) + " "
@@ -2399,10 +2387,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "*" Then
+        If compileZ2$(P) <> "*" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
 
             While Len(seeP$(P)) < 24
                 seeP$(P) = seeP$(P) + " "
@@ -2437,7 +2425,9 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
     Next P
 
-    For X = 1 To 12: LPrint LF$(X); RT$(X): Next
+    For X = 1 To 12: 
+        'LPrint LF$(X); RT$(X)
+    Next
 
     '-----
 
@@ -2445,10 +2435,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "*" Then
+        If compileZ2$(P) <> "*" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
 
             While Len(seeP$(P)) < 24
                 seeP$(P) = seeP$(P) + " "
@@ -2473,10 +2463,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
     For P = 195 To 204: seeP$(P) = ""
 
-        If cmplZ2$(P) <> "*" Then
+        If compileZ2$(P) <> "*" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
 
             While Len(seeP$(P)) < 24
                 seeP$(P) = seeP$(P) + " "
@@ -2512,7 +2502,7 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
 
     For X = 13 To 24:
-        LPrint LF$(X); RT$(X)
+        'LPrint LF$(X); RT$(X)
     Next
 
     '-----
@@ -2521,9 +2511,9 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "*" Then
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+        If compileZ2$(P) <> "*" Then
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
 
             While Len(seeP$(P)) < 24
                 seeP$(P) = seeP$(P) + " "
@@ -2553,10 +2543,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
         seeP$(P) = ""
 
-        If cmplZ2$(P) <> "*" Then
+        If compileZ2$(P) <> "*" Then
 
-            seeP$(P) = cmplZ2$(P)
-            If cmplZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + cmplZ3$(P)
+            seeP$(P) = compileZ2$(P)
+            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
 
             While Len(seeP$(P)) < 24
                 seeP$(P) = seeP$(P) + " "
@@ -2590,46 +2580,46 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
 
     For X = 25 To 36:
-        LPrint LF$(X); RT$(X)
+        'LPrint LF$(X); RT$(X)
     Next
 
     '-----
 
-    LPrint Chr$(12)
-    LPrint "                 CLUB BATTING   "
-    LPrint
-    LPrint "CLUB     AVG   AB    R    H   2B   3B  HR  RBI  BB   SO   SB   CS  E"
+    'LPrint Chr$(12)
+    'LPrint "                 CLUB BATTING   "
+    'LPrint
+    'LPrint "CLUB     AVG   AB    R    H   2B   3B  HR  RBI  BB   SO   SB   CS  E"
 
     For X = 1 To 40
 
         If BA$(X) <> "" And Left$(BA$(X), 1) <> "*" And BA$(X) <> "*" Then
-            LPrint Left$(BA$(X), 11); Tab(13);
+            'LPrint Left$(BA$(X), 11); Tab(13);
             OFT!(X, 1) = Int(OFT!(X, 1) * 1000) / 1000
-            LPrint Using ".###"; OFT!(X, 1);
-            LPrint Tab(18); OFT!(X, 3); Tab(24); OFT!(X, 5); Tab(29); Str$(OFT!(X, 4)); Tab(34); OFT!(X, 7); Tab(39); OFT!(X, 8); Tab(43); Str$(OFT!(X, 9)); Tab(47); OFT!(X, 6); Tab(52); OFT!(X, 10);
-            LPrint Tab(57); OFT!(X, 11); Tab(62); OFT!(X, 12); Tab(67); OFT!(X, 13); Tab(72); OFT!(X, 14)
+            'LPrint Using ".###"; OFT!(X, 1);
+            'LPrint Tab(18); OFT!(X, 3); Tab(24); OFT!(X, 5); Tab(29); Str$(OFT!(X, 4)); Tab(34); OFT!(X, 7); Tab(39); OFT!(X, 8); Tab(43); Str$(OFT!(X, 9)); Tab(47); OFT!(X, 6); Tab(52); OFT!(X, 10);
+            'LPrint Tab(57); OFT!(X, 11); Tab(62); OFT!(X, 12); Tab(67); OFT!(X, 13); Tab(72); OFT!(X, 14)
         End If
 
     Next
 
-    LPrint Chr$(12)
-    LPrint "                 CLUB PITCHING  "
-    LPrint
-    LPrint "CLUB     ERA  G    CG SHO  SV  IP    H    R   ER   BB   SO    "
+    'LPrint Chr$(12)
+    'LPrint "                 CLUB PITCHING  "
+    'LPrint
+    'LPrint "CLUB     ERA  G    CG SHO  SV  IP    H    R   ER   BB   SO    "
 
     For X = 1 To 40
 
         If ER$(X) <> "" And ER$(X) <> "*" Then
-            LPrint Left$(ER$(X), 11); Tab(13);
+            'LPrint Left$(ER$(X), 11); Tab(13);
             DFT!(X, 1) = Int(DFT!(X, 1) * 100) / 100
-            LPrint Using "##.##"; DFT!(X, 1);
-            LPrint Tab(18); DFT!(X, 11); Tab(23); DFT!(X, 12); Tab(27); DFT!(X, 13); Tab(31); DFT!(X, 14); Tab(35); Str$(CInt(DFT!(X, 2) / 3)); Tab(40); Str$(DFT!(X, 3)); Tab(45); DFT!(X, 4); Tab(50); DFT!(X, 5);
-            LPrint Tab(55); DFT!(X, 6); Tab(60); DFT!(X, 7)
+            'LPrint Using "##.##"; DFT!(X, 1);
+            'LPrint Tab(18); DFT!(X, 11); Tab(23); DFT!(X, 12); Tab(27); DFT!(X, 13); Tab(31); DFT!(X, 14); Tab(35); Str$(CInt(DFT!(X, 2) / 3)); Tab(40); Str$(DFT!(X, 3)); Tab(45); DFT!(X, 4); Tab(50); DFT!(X, 5);
+            'LPrint Tab(55); DFT!(X, 6); Tab(60); DFT!(X, 7)
         End If
 
     Next
 
-    LPrint Chr$(12)
+    'LPrint Chr$(12)
 
     'Print the file we created
     'If destination <> 1 Then

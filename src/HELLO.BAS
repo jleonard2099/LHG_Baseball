@@ -209,8 +209,8 @@ playMode$(1) = "COMPUTER IS VISITING TEAM"
 playMode$(2) = "COMPUTER IS HOME TEAM    "
 playMode$(3) = "COMPUTER VS COMPUTER     "
 
-progPT$(1) = "LHP"
-progPT$(0) = "RHP"
+PT$(1) = "LHP"
+PT$(0) = "RHP"
 
 yesNoText$(0) = "NO "
 yesNoText$(1) = "YES"
@@ -788,7 +788,7 @@ Sub Calculations_Menu ()
 
                     If teamNbr <> 0 Then
                         statFile$ = nameStatFile$(team$)
-                        Call CalculateBuntRating(team$)
+                        Call CalculateBuntRating
                         Call SaveTeamFile(0, YN$, team$, statFile$, teamNbr)
                     End If
 
@@ -797,7 +797,7 @@ Sub Calculations_Menu ()
 
                     If teamNbr <> 0 Then
                         statFile$ = nameStatFile$(team$)
-                        Call CalculateRunRating(team$)
+                        Call CalculateRunRating
                         Call SaveTeamFile(0, YN$, team$, statFile$, teamNbr)
                     End If
 
@@ -806,7 +806,7 @@ Sub Calculations_Menu ()
         End If
 
     Loop Until menuSelection% = 4 Or ExitCode% = 27
-        
+
 End Sub
 
 

@@ -76,7 +76,7 @@ End Sub
 'team comparisons.
 Sub Hd2Hd_League (LG$, sameLeague)
 
-    Shared H%(), I%(), V%(), Z1%()
+    Shared H%(), I%(), V%(), statZ1%()
     Shared HW%(), AW%(), HL(), AL()
     Shared R1%(), R2%(), R3%(), R4%()
     Shared TR1%(), TR2%(), TR3%(), TR4%()
@@ -172,7 +172,7 @@ Sub Hd2Hd_League (LG$, sameLeague)
 
             For X = 1 To 40
                 Input #3, Z1$(X)
-                Input #3, Z1%(X)
+                Input #3, statZ1%(X)
                 Input #3, Z2$(X)
             Next
 

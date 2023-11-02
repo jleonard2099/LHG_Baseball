@@ -822,7 +822,7 @@ Sub StartingLineup (P9)
             Color 15, 0
             Locate 5, 59: Print "OPPOSING PITCHER"
             Locate , 59: Print pitchers$(1 - P9, P1%(1 - P9)); " "; B1$(pitchRating(1 - P9, P1%(1 - P9), 0) + 2)
-            Call LineupPositions(P9, I, skipLU%)
+            Call LineupPositions(P9, I)
             If C1 = 1 Then Exit For
 
         Next I
@@ -838,7 +838,7 @@ End Sub
 'This subroutine works with the user to
 'help them select fielding positions for
 'each place in the lineup
-Sub LineupPositions (teamIdx, posIdx, skipLU%)
+Sub LineupPositions (teamIdx, posIdx)
 
     'Do
 
@@ -1091,7 +1091,7 @@ Sub ChangeLineup_PreGame (P9, reselect)
                 Locate B3%(P9, I) + 2 - B4%, 2
                 Print " "; batters$(P9, B3%(P9, I))
 
-                Call LineupPositions(P9, I, skipLU%)
+                Call LineupPositions(P9, I)
 
         End Select
 

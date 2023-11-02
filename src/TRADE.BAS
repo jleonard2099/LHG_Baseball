@@ -18,8 +18,6 @@ Sub TRADE ()
 
     Shared teams_TRADE$()
 
-    ReDim menuChoices$(1 To 2)
-
     tradeIdx = 0
     Call ChooseTradeTeam(yearNumbers$(tradeIdx), NTMS, teamNbr, teams_TRADE$(tradeIdx), tradeIdx)
     If teamNbr > 0 Then
@@ -35,7 +33,7 @@ Sub TRADE ()
         'Call LoadStatsForTrade(yearNumbers$(), tradeIdx)
 
         'Teams / Stats are loaded
-        Call ContinueTrade(yearNumbers$(), tradeIdx)
+        Call ContinueTrade(yearNumbers$())
 
     End If
 
@@ -298,7 +296,7 @@ End Sub
 'a menu for choosing players to trade. It
 'relies on separate routines to summarize
 'the trade and then save the changes.
-Sub ContinueTrade (yearNumbers$(), destIdx)
+Sub ContinueTrade (yearNumbers$())
 
     Shared teams_TRADE$(), A1$()
     Shared tradeB1$(), tradeP1$()

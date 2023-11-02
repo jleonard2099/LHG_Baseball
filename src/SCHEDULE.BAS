@@ -694,7 +694,6 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
     Shared scheduleYN$()
 
     Shared teamRatings%()
-    Shared scheduleT%(), scheduleZ1%()
 
     Select Case scheduleAction%
 
@@ -1378,7 +1377,7 @@ Sub CreateSeasonSchedule ()
     Shared BS%
 
     Shared scheduleAP%(), homeScores(), visitorScores()
-    Shared scheduleNG%(), scheduleZ1%()
+    Shared scheduleNG%(), statZ1%()
     Shared scheduleYN$(), Z1$(), Z2$()
 
     Call TITLE_SCHEDULER
@@ -1420,7 +1419,7 @@ Sub CreateSeasonSchedule ()
 
             For X = 1 To 40
                 Input #2, Z1$(X)
-                Input #2, scheduleZ1%(X)
+                Input #2, statZ1%(X)
                 Input #2, Z2$(X)
             Next
 
@@ -1503,7 +1502,7 @@ Sub CreateSeasonSchedule ()
             Color 15, 0
 
             For I = 1 To 20
-                Print scheduleZ1%(I), Z2$(I)
+                Print statZ1%(I), Z2$(I)
             Next
 
             For I = 1 To scheduleAP%(0)
@@ -1516,55 +1515,55 @@ Sub CreateSeasonSchedule ()
 
                     Case 0 To 1:
                         X = scheduleNG%(I, 0)
-                        scheduleNG%(I, 0) = scheduleZ1%(X)
+                        scheduleNG%(I, 0) = statZ1%(X)
                         scheduleYN$(I, 0) = Z2$(X)
                         X = scheduleNG%(I, 1)
-                        scheduleNG%(I, 1) = scheduleZ1%(X)
+                        scheduleNG%(I, 1) = statZ1%(X)
                         scheduleYN$(I, 1) = Z2$(X)
 
                     Case 2:
                         If scheduleNG%(I, 0) <= 6 Then
                             X = scheduleNG%(I, 0)
                             Print X
-                            scheduleNG%(I, 0) = scheduleZ1%(X)
+                            scheduleNG%(I, 0) = statZ1%(X)
                             scheduleYN$(I, 0) = Z2$(X)
                         Else
                             X = scheduleNG%(I, 0)
                             Print X
-                            scheduleNG%(I, 0) = scheduleZ1%(X + 4)
+                            scheduleNG%(I, 0) = statZ1%(X + 4)
                             scheduleYN$(I, 0) = Z2$(X + 4)
                         End If
 
                         If scheduleNG%(I, 1) <= 6 Then
                             X = scheduleNG%(I, 1)
                             Print X
-                            scheduleNG%(I, 1) = scheduleZ1%(X)
+                            scheduleNG%(I, 1) = statZ1%(X)
                             scheduleYN$(I, 1) = Z2$(X)
                         Else
                             X = scheduleNG%(I, 1)
                             Print X
-                            scheduleNG%(I, 1) = scheduleZ1%(X + 4)
+                            scheduleNG%(I, 1) = statZ1%(X + 4)
                             scheduleYN$(I, 1) = Z2$(X + 4)
                         End If
 
                     Case 3:
                         If scheduleNG%(I, 0) <= 7 Then
                             X = scheduleNG%(I, 0)
-                            scheduleNG%(I, 0) = scheduleZ1%(X)
+                            scheduleNG%(I, 0) = statZ1%(X)
                             scheduleYN$(I, 0) = Z2$(X)
                         Else
                             X = scheduleNG%(I, 0)
-                            scheduleNG%(I, 0) = scheduleZ1%(X + 3)
+                            scheduleNG%(I, 0) = statZ1%(X + 3)
                             scheduleYN$(I, 0) = Z2$(X + 3)
                         End If
 
                         If scheduleNG%(I, 1) <= 7 Then
                             X = scheduleNG%(I, 1)
-                            scheduleNG%(I, 1) = scheduleZ1%(X)
+                            scheduleNG%(I, 1) = statZ1%(X)
                             scheduleYN$(I, 1) = Z2$(X)
                         Else
                             X = scheduleNG%(I, 1)
-                            scheduleNG%(I, 1) = scheduleZ1%(X + 3)
+                            scheduleNG%(I, 1) = statZ1%(X + 3)
                             scheduleYN$(I, 1) = Z2$(X + 3)
                         End If
 

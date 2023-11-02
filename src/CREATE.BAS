@@ -10,7 +10,7 @@ Sub CREATE ()
 
     Dim D1$, D2$, D3$, D4$
 
-    Shared Z1%()
+    Shared statZ1%()
 
     Shared Z1$(), Z2$()
 
@@ -47,7 +47,7 @@ Sub CREATE ()
             For X = 1 To 40
                 Z1$(X) = "XXX"
                 Z2$(X) = "XXX"
-                Z1%(X) = -1
+                statZ1%(X) = -1
             Next
 
             D1$ = ""
@@ -180,7 +180,7 @@ End Sub
 'teams from the league definition.
 Sub ReviewEditLeague (league$, div1$, div2$, div3$, div4$)
 
-    Shared Z1%()
+    Shared statZ1%()
 
     Shared Z1$(), Z2$()
 
@@ -192,7 +192,7 @@ Sub ReviewEditLeague (league$, div1$, div2$, div3$, div4$)
 
         For X = 1 To 40
             Input #2, Z1$(X)
-            Input #2, Z1%(X)
+            Input #2, statZ1%(X)
             Input #2, Z2$(X)
         Next
 
@@ -259,7 +259,7 @@ Sub ReviewEditLeague (league$, div1$, div2$, div3$, div4$)
 
             If choice = 1 Then
                 'Add team
-                Call ChooseTeam(Z2$(B), NTMS, Z1%(B), Z1$(B))
+                Call ChooseTeam(Z2$(B), NTMS, statZ1%(B), Z1$(B))
             Else
                 'Remove team
                 Z1$(B) = "XXX"
@@ -282,7 +282,7 @@ End Sub
 'the corresponding files (.LIB, .TMS)
 Sub SaveLeague (league$, div1$, div2$, div3$, div4$)
 
-    Shared Z1%()
+    Shared statZ1%()
 
     Shared Z1$(), Z2$()
 
@@ -296,7 +296,7 @@ Sub SaveLeague (league$, div1$, div2$, div3$, div4$)
 
     For X = 1 To 40
         Print #2, Z1$(X)
-        Print #2, Z1%(X)
+        Print #2, statZ1%(X)
         Print #2, Z2$(X)
     Next
 

@@ -135,7 +135,7 @@ End Sub
 'routines to calculate the expanded stats,
 'write them to a file and present a categ-
 'orized menu to use for reviewing them
-Sub ViewExpandedStats (JB, JP, TS, TTS)
+Sub ViewExpandedStats (JB, JP, tStats, ttStats)
 
     Shared D1$, D2$, D3$, D4$
 
@@ -162,11 +162,11 @@ Sub ViewExpandedStats (JB, JP, TS, TTS)
 
         Close #2
 
-        Call UpdateExpandedLeaders(JB, JP, TS, TTS)
+        Call UpdateExpandedLeaders(JB, JP, tStats, ttStats)
 
-        Call SAVELEADER(leagStatFile$, league$, JB, JP, TS, TTS)
+        Call SAVELEADER(leagStatFile$, league$, JB, JP, tStats, ttStats)
 
-        Call ExpandedLeaders_Menu(leagStatFile$, JB, JP, TS, TTS)
+        Call ExpandedLeaders_Menu(leagStatFile$, JB, JP, tStats, ttStats)
 
     End If 'Done checking for ESC
 
@@ -179,7 +179,7 @@ End Sub
 'This subroutine calculates the expanded
 'stats from those previously read in to
 'a variety of arrays.
-Sub UpdateExpandedLeaders (JB, JP, TS, TTS)
+Sub UpdateExpandedLeaders (JB, JP, tStats, ttStats)
 
     Shared GM2()
 
@@ -190,7 +190,7 @@ Sub UpdateExpandedLeaders (JB, JP, TS, TTS)
     Shared statT%(), statT1%()
 
     Shared TT!(), TT1!()
-    Shared WW(), LL()
+    Shared Wins(), Losses()
 
     Shared batterNames$(), leaderBL$(), pitcherNames$(), leaderPL$()
     Shared TM$(), TMB$(), TMP$(), TT2$()
@@ -251,21 +251,21 @@ Sub UpdateExpandedLeaders (JB, JP, TS, TTS)
 
                 Close #1
 
-                WW(YY) = W2%
-                LL(YY) = L2%
+                Wins(YY) = W2%
+                Losses(YY) = L2%
 
-                TS = TS + 1
+                tStats = tStats + 1
 
                 For I = 0 To 21
-                    TT!(TS, I) = statT%(I)
-                    TM$(TS, I) = A$
+                    TT!(tStats, I) = statT%(I)
+                    TM$(tStats, I) = A$
                 Next
 
-                TTS = TTS + 1
+                ttStats = ttStats + 1
 
                 For I = 0 To 22
-                    TT1!(TTS, I) = statT1%(I)
-                    TT2$(TTS, I) = A$
+                    TT1!(ttStats, I) = statT1%(I)
+                    TT2$(ttStats, I) = A$
                 Next
 
                 For I = 0 To 22
@@ -275,7 +275,7 @@ Sub UpdateExpandedLeaders (JB, JP, TS, TTS)
                         leaderBL$(JB) = batterNames$(I)
                         TBN = TBN + 1
                         TMB$(TBN) = A$
-                        GM1!(JB) = WW(YY) + LL(YY)
+                        GM1!(JB) = Wins(YY) + Losses(YY)
                     End If
 
                 Next I
@@ -287,7 +287,7 @@ Sub UpdateExpandedLeaders (JB, JP, TS, TTS)
                         leaderPL$(JP) = pitcherNames$(I)
                         TPN = TPN + 1
                         TMP$(TPN) = A$
-                        GM2(JP) = WW(YY) + LL(YY)
+                        GM2(JP) = Wins(YY) + Losses(YY)
                     End If
 
                 Next I
@@ -339,14 +339,14 @@ End Sub
 'This subroutine compiles the leader files
 '(.BAT, .PIT, and .TOT) for the expanded
 'standings modules
-Sub SAVELEADER (leaderFile$, league$, JB, JP, TS, TTS)
+Sub SAVELEADER (leaderFile$, league$, JB, JP, tStats, ttStats)
 
     Shared BK%(), PM%()
     Shared GM2()
 
     Shared GM1!()
     Shared TT!(), TT1!()
-    Shared WW(), LL()
+    Shared Wins(), Losses()
 
     Shared leaderBL$(), leaderPL$()
     Shared TM$(), TMB$(), TMP$(), TT2$()
@@ -359,7 +359,7 @@ Sub SAVELEADER (leaderFile$, league$, JB, JP, TS, TTS)
 
     Write #1, JB, JP
     Write #1, D1$, D2$, D3$, D4$, league$
-    Write #1, TS, TTS
+    Write #1, tStats, ttStats
 
     For I = 1 To 920:
 
@@ -389,7 +389,7 @@ Sub SAVELEADER (leaderFile$, league$, JB, JP, TS, TTS)
 
     Write #1, JB, JP
     Write #1, D1$, D2$, D3$, D4$, league$
-    Write #1, TS, TTS
+    Write #1, tStats, ttStats
 
     For I = 1 To 880
 
@@ -417,10 +417,10 @@ Sub SAVELEADER (leaderFile$, league$, JB, JP, TS, TTS)
 
     Open diskPaths$(2) + leaderFile$ + ".TOT" For Output As #1
 
-    Write #1, JB, JP, D1$, D2$, D3$, D4$, league$, TS, TTS
+    Write #1, JB, JP, D1$, D2$, D3$, D4$, league$, tStats, ttStats
 
     For I = 1 To 40:
-        Write #1, WW(I), LL(I)
+        Write #1, Wins(I), Losses(I)
     Next
 
     For I = 1 To 40:
@@ -457,14 +457,14 @@ End Sub
 '----------------------------------------
 'This subroutine reads in the leader files 
 '(.LDS) for the expanded standings modules 
-Sub READLEADER (leaderFile$, league$, JB, JP, TS, TTS)
+Sub READLEADER (leaderFile$, league$, JB, JP, tStats, ttStats)
 
     Shared BK%(), PM%()
     Shared GM2()
 
     Shared GM1!()
     Shared TT!(), TT1!()
-    Shared WW(), LL()
+    Shared Wins(), Losses()
 
     Shared leaderBL$(), leaderPL$()
     Shared TM$(), TMB$(), TMP$(), TT2$()
@@ -477,7 +477,7 @@ Sub READLEADER (leaderFile$, league$, JB, JP, TS, TTS)
 
     Input #1, JB, JP
     Input #1, D1$, D2$, D3$, D4$, league$
-    Input #1, TS, TTS
+    Input #1, tStats, ttStats
 
     For I = 1 To 920:
 
@@ -507,7 +507,7 @@ Sub READLEADER (leaderFile$, league$, JB, JP, TS, TTS)
 
     Input #1, JB, JP
     Input #1, D1$, D2$, D3$, D4$, league$
-    Input #1, TS, TTS
+    Input #1, tStats, ttStats
 
     For I = 1 To 880
 
@@ -535,10 +535,10 @@ Sub READLEADER (leaderFile$, league$, JB, JP, TS, TTS)
 
     Open diskPaths$(2) + leaderFile$ + ".TOT" For Input As #1
 
-    Input #1, JB, JP, D1$, D2$, D3$, D4$, league$, TS, TTS
+    Input #1, JB, JP, D1$, D2$, D3$, D4$, league$, tStats, ttStats
 
     For I = 1 To 40:
-        Input #1, WW(I), LL(I)
+        Input #1, Wins(I), Losses(I)
     Next
 
     For I = 1 To 40:
@@ -577,7 +577,7 @@ End Sub
 'menu for viewing expanded leaders. It then
 'relies on various subroutines for the end
 'user display of those statistics.
-Sub ExpandedLeaders_Menu (leaderFile$, JB, JP, TS, TTS)
+Sub ExpandedLeaders_Menu (leaderFile$, JB, JP, tStats, ttStats)
 
     Do
 
@@ -614,13 +614,13 @@ Sub ExpandedLeaders_Menu (leaderFile$, JB, JP, TS, TTS)
             Select Case Selection%
 
                 Case 1:
-                    Call ViewBattingLeaders(leaderFile$, JB, JP, TS, TTS)
+                    Call ViewBattingLeaders(leaderFile$, JB, JP, tStats, ttStats)
 
                 Case 2:
-                    Call ViewPitchingLeaders(leaderFile$, JB, JP, TS, TTS)
+                    Call ViewPitchingLeaders(leaderFile$, JB, JP, tStats, ttStats)
 
                 Case 3:
-                    Call ViewTeamLeaders(leaderFile$, JB, JP, TS, TTS)
+                    Call ViewTeamLeaders(leaderFile$, JB, JP, tStats, ttStats)
 
             End Select
 
@@ -640,7 +640,7 @@ End Sub
 'displaying batting stat categories.
 'Separate routines are used to sort and
 'display the calculated stats.
-Sub ViewBattingLeaders (leaderFile$, JB, JP, TS, TTS)
+Sub ViewBattingLeaders (leaderFile$, JB, JP, tStats, ttStats)
 
     Shared BK%()
     Shared leaderBL$(), TMB$(), TMM$()
@@ -656,7 +656,7 @@ Sub ViewBattingLeaders (leaderFile$, JB, JP, TS, TTS)
 
     Input #1, JB, JP
     Input #1, D1$, D2$, D3$, D4$, leaderFile$
-    Input #1, TS, TTS
+    Input #1, tStats, ttStats
 
     For I = 1 To 920:
 
@@ -1033,7 +1033,7 @@ End Sub
 'displaying pitching stat categories.
 'Separate routines are used to sort and
 'display the calculated stats.
-Sub ViewPitchingLeaders (leaderFile$, JB, JP, TS, TTS)
+Sub ViewPitchingLeaders (leaderFile$, JB, JP, tStats, ttStats)
 
     Shared leaderPL$()
     Shared TMM$(), TMP$(), TP1$(), TPP$()
@@ -1051,7 +1051,7 @@ Sub ViewPitchingLeaders (leaderFile$, JB, JP, TS, TTS)
 
     Input #1, JB, JP
     Input #1, D1$, D2$, D3$, D4$, leaderFile$
-    Input #1, TS, TTS
+    Input #1, tStats, ttStats
 
     For I = 1 To 880:
         Input #1, leaderPL$(I), TMP$(I), GM2(I)
@@ -1370,9 +1370,9 @@ End Sub
 'This subroutine lets the user choose team
 'player stat categories and relies on other
 'routines to sort and display the results.
-Sub ViewTeamLeaders (leaderFile$, JB, JP, TS, TTS)
+Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
 
-    Shared WW(), LL()
+    Shared Wins(), Losses()
 
     Shared TT!(), TT1!()
     Shared TYP!(), TYP1!()
@@ -1386,12 +1386,12 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, TS, TTS)
 
     Input #1, JB, JP
     Input #1, D1$, D2$, D3$, D4$, leaderFile$
-    Input #1, TS, TTS
+    Input #1, tStats, ttStats
 
     TMR = 120
 
     For I = 1 To 40:
-        Input #1, WW(I), LL(I)
+        Input #1, Wins(I), Losses(I)
     Next
 
     For I = 1 To 40:
@@ -1513,39 +1513,39 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, TS, TTS)
             Select Case categoryId
 
                 Case 0 To 13, 17, 18:
-                    For I = 1 To TS
+                    For I = 1 To tStats
                         TMM$(I) = TM$(I, X)
                         TYP!(I) = TT!(I, X)
                     Next
 
-                    Call SortTeam(TS, stpl, JX)
+                    Call SortTeam(tStats, stpl, JX)
 
                     TVN = 1
-                    maxRecords = TS
+                    maxRecords = tStats
                     screenType = 0
 
                 Case 14
-                    For I = 1 To TS
+                    For I = 1 To tStats
                         TMM$(I) = TM$(I, X)
                         TYP!(I) = TT!(I, X1) / TT!(I, X)
                     Next
 
-                    Call SortTeam(TS, stpl, JX)
+                    Call SortTeam(tStats, stpl, JX)
 
                     TVN = 2
-                    maxRecords = TS
+                    maxRecords = tStats
                     screenType = 0
 
                 Case 15
-                    For I = 1 To TS
+                    For I = 1 To tStats
                         TMM$(I) = TM$(I, X)
                         TYP!(I) = (TT!(I, X1) + TT!(I, X2) + (TT!(I, X3) * 2) + (TT!(I, X4) * 3)) / TT!(I, X)
                     Next
 
-                    Call SortTeam(TS, stpl, JX)
+                    Call SortTeam(tStats, stpl, JX)
 
                     TVN = 2
-                    maxRecords = TS
+                    maxRecords = tStats
                     screenType = 0
 
                 Case 16
@@ -1554,10 +1554,10 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, TS, TTS)
                         TYP!(I) = (TT!(I, X1) + TT!(I, X2)) / (TT!(I, X) + TT!(I, X2))
                     Next
 
-                    Call SortTeam(TS, stpl, JX)
+                    Call SortTeam(tStats, stpl, JX)
 
                     TVN = 2
-                    maxRecords = TS
+                    maxRecords = tStats
                     screenType = 0
 
                 Case 19
@@ -1566,22 +1566,22 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, TS, TTS)
                         TYP!(I) = (TT!(I, X) + TT!(I, X1)) / (TT!(I, X) + TT!(I, X1) + TT!(I, X2))
                     Next
 
-                    Call SortTeam(TS, stpl, JX)
+                    Call SortTeam(tStats, stpl, JX)
 
                     TVN = 2
-                    maxRecords = TS
+                    maxRecords = tStats
                     screenType = 0
 
                 Case 20
-                    For I = 1 To TTS
+                    For I = 1 To ttStats
                         TMM$(I) = TT2$(I, X)
                         TYP!(I) = TT1!(I, X)
                     Next
 
-                    For I = 2 To TTS
+                    For I = 2 To ttStats
                         stpl = stpl + 1
                         Locate 5, 5: Print "sorting team "; stpl
-                        For J = TTS To I Step -1
+                        For J = ttStats To I Step -1
 
                             If JX = 1 Then
                                 If TYP!(J - 1) < TYP!(J) Then Swap TMM$(J - 1), TMM$(J): Swap TYP!(J - 1), TYP!(J)
@@ -1592,29 +1592,29 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, TS, TTS)
                         Next J
                     Next I
 
-                    For I = 1 To TTS
+                    For I = 1 To ttStats
                         TYP!(I) = (Int(TYP!(I) / 3))
                         TYP1!(I) = TYP!(I) - (Int(TYP!(I) / 3) * 3)
                     Next
 
                     TVN = 1
-                    maxRecords = TTS
+                    maxRecords = ttStats
                     screenType = 1
 
                 Case 21 To 32, 34, 35, 37, 38
-                    For I = 1 To TTS
+                    For I = 1 To ttStats
                         TMM$(I) = TT2$(I, X)
                         TYP!(I) = TT1!(I, X)
                     Next
 
-                    Call SortTeam(TTS, stpl, JX)
+                    Call SortTeam(ttStats, stpl, JX)
 
                     TVN = 2
-                    maxRecords = TTS
+                    maxRecords = ttStats
                     screenType = 1
 
                 Case 33
-                    For I = 1 To TTS
+                    For I = 1 To ttStats
                         TMM$(I) = TT2$(I, X)
                         If TT1!(I, X) = 0 Then
                             TYP!(I) = 0
@@ -1623,22 +1623,22 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, TS, TTS)
                         End If
                     Next
 
-                    Call SortTeam(TTS, stpl, JX)
+                    Call SortTeam(ttStats, stpl, JX)
 
                     TVN = 3
-                    maxRecords = TTS
+                    maxRecords = ttStats
                     screenType = 1
 
                 Case 36
-                    For I = 1 To TTS
+                    For I = 1 To ttStats
                         TMM$(I) = TT2$(I, X)
                         TYP!(I) = (TT1!(I, X1) * 9) / (TT1!(I, X) / 3)
                     Next
 
-                    Call SortTeam(TTS, stpl, JX)
+                    Call SortTeam(ttStats, stpl, JX)
 
                     TVN = 3
-                    maxRecords = TTS
+                    maxRecords = ttStats
                     screenType = 1
 
                 Case 39
@@ -1646,7 +1646,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, TS, TTS)
             End Select
 
             If categoryId <> 39 Then
-                Call DisplayTeamView(XX, screenType, printOrView%, TVN, maxRecords, categoryId)
+                Call DisplayTeamView(XX, screenType, printOrView%, TVN, maxRecords)
             End If
 
         Loop Until categoryId >= 0 Or categoryId <= 39
@@ -1661,7 +1661,7 @@ End Sub
 '----------------------------------------
 'This subroutine uses several different
 'routines to display team total stats
-Sub DisplayTeamView (XX, screenType, printOrView%, TVN, maxRecords, categoryId)
+Sub DisplayTeamView (XX, screenType, printOrView%, TVN, maxRecords)
 
     Shared TYP!(), TYP1!()
 

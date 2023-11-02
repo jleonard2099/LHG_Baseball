@@ -115,7 +115,7 @@ Sub UpdateRecords (leagueFile$)
     Shared PRC!(), PRYR!()
     Shared TRC!(), TRC1!(), TRYR!(), TRYR1!()
     Shared TT!(), TT1!()
-    Shared WW(), LL()
+    Shared Wins(), Losses()
 
     Shared GM2()
 
@@ -230,7 +230,7 @@ Sub UpdateRecords (leagueFile$)
 
     Input #1, JB, JP, D1$, D2$, D3$, D4$, LGF$, TS, TTS
 
-    For I = 1 To 40: Input #1, WW(I), LL(I): Next
+    For I = 1 To 40: Input #1, Wins(I), Losses(I): Next
 
     For I = 1 To 40:
 

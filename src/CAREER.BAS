@@ -177,7 +177,7 @@ Sub MergeFirstYear ()
                     K$ = GetKeyPress$
                 Loop Until UCase$(K$) = "Y" Or UCase$(K$) = "N" Or K$ = Chr$(27)
 
-                If UCase$(K$) = "Y" Then finalUpdate% = 1 Else finalUpdate% = 0
+                If UCase$(K$) = "Y" Then doPostLeaders = 1 Else doPostLeaders = 0
 
                 If Not _FileExists(diskPaths$(1) + statFile$) Then
 
@@ -294,7 +294,7 @@ Sub MergeFirstYear ()
 
                     Next I
 
-                    If finalUpdate% = 1 Then Call UpdateCareerLeaders(careerFile$)
+                    If doPostLeaders = 1 Then Call UpdateCareerLeaders(careerFile$)
 
                     Locate 20, 5
                     Color 15: Print "MERGING AND UPDATING CAREER STATS . . . . PLEASE WAIT"
@@ -371,7 +371,7 @@ Sub ViewPrintCareerRecords ()
     Shared BLL!(), PLL!()
     Shared BLYR%(), PLYR%()
 
-    Shared BL$(), careerPL$()
+    Shared careerBL$(), careerPL$()
 
     recordFile$ = ChooseFile$(diskPaths$(2) + "*.CLD", "CAREER RECORD", ExitCode%)
 
@@ -383,7 +383,7 @@ Sub ViewPrintCareerRecords ()
         Open diskPaths$(2) + recordFile$ + ".CLD" For Input As #1
 
         For I = 0 To 14: 
-            Input #1, BLYR%(I), BL$(I), BLL!(I)
+            Input #1, BLYR%(I), careerBL$(I), BLL!(I)
         Next
 
         For I = 0 To 14: 
@@ -411,37 +411,37 @@ Sub ViewPrintCareerRecords ()
 
                     LPrint "CATEGORY           RECORD           PLAYER              YEAR"
                     LPrint
-                    LPrint "AT BATS";: LPrint Tab(23); Using "###"; BLL!(0);: LPrint Tab(37); BL$(0);: LPrint Tab(56); BLYR%(0)
-                    LPrint "RUNS SCORED";: LPrint Tab(23); Using "###"; BLL!(1);: LPrint Tab(37); BL$(1);: LPrint Tab(56); BLYR%(1)
-                    LPrint "HITS";: LPrint Tab(23); Using "###"; BLL!(2);: LPrint Tab(37); BL$(2);: LPrint Tab(56); BLYR%(2)
-                    LPrint "DOUBLES";: LPrint Tab(23); Using "###"; BLL!(3);: LPrint Tab(37); BL$(3);: LPrint Tab(56); BLYR%(3)
-                    LPrint "TRIPLES";: LPrint Tab(23); Using "###"; BLL!(4);: LPrint Tab(37); BL$(4);: LPrint Tab(56); BLYR%(4)
-                    LPrint "HOME RUNS";: LPrint Tab(23); Using "###"; BLL!(5);: LPrint Tab(37); BL$(5);: LPrint Tab(56); BLYR%(5)
-                    LPrint "RUNS BATTED IN";: LPrint Tab(23); Using "###"; BLL!(6);: LPrint Tab(37); BL$(6);: LPrint Tab(56); BLYR%(6)
-                    LPrint "WALKS";: LPrint Tab(23); Using "###"; BLL!(7);: LPrint Tab(37); BL$(7);: LPrint Tab(56); BLYR%(7)
-                    LPrint "STRIKEOUTS";: LPrint Tab(23); Using "###"; BLL!(8);: LPrint Tab(37); BL$(8);: LPrint Tab(56); BLYR%(8)
-                    LPrint "STEALS";: LPrint Tab(23); Using "###"; BLL!(9);: LPrint Tab(37); BL$(9);: LPrint Tab(56); BLYR%(9)
-                    LPrint "CAUGHT STEALING";: LPrint Tab(23); Using "###"; BLL!(10);: LPrint Tab(37); BL$(10);: LPrint Tab(56); BLYR%(10)
-                    LPrint "ERRORS";: LPrint Tab(23); Using "###"; BLL!(11);: LPrint Tab(37); BL$(11);: LPrint Tab(56); BLYR%(11)
+                    LPrint "AT BATS";: LPrint Tab(23); Using "###"; BLL!(0);: LPrint Tab(37); careerBL$(0);: LPrint Tab(56); BLYR%(0)
+                    LPrint "RUNS SCORED";: LPrint Tab(23); Using "###"; BLL!(1);: LPrint Tab(37); careerBL$(1);: LPrint Tab(56); BLYR%(1)
+                    LPrint "HITS";: LPrint Tab(23); Using "###"; BLL!(2);: LPrint Tab(37); careerBL$(2);: LPrint Tab(56); BLYR%(2)
+                    LPrint "DOUBLES";: LPrint Tab(23); Using "###"; BLL!(3);: LPrint Tab(37); careerBL$(3);: LPrint Tab(56); BLYR%(3)
+                    LPrint "TRIPLES";: LPrint Tab(23); Using "###"; BLL!(4);: LPrint Tab(37); careerBL$(4);: LPrint Tab(56); BLYR%(4)
+                    LPrint "HOME RUNS";: LPrint Tab(23); Using "###"; BLL!(5);: LPrint Tab(37); careerBL$(5);: LPrint Tab(56); BLYR%(5)
+                    LPrint "RUNS BATTED IN";: LPrint Tab(23); Using "###"; BLL!(6);: LPrint Tab(37); careerBL$(6);: LPrint Tab(56); BLYR%(6)
+                    LPrint "WALKS";: LPrint Tab(23); Using "###"; BLL!(7);: LPrint Tab(37); careerBL$(7);: LPrint Tab(56); BLYR%(7)
+                    LPrint "STRIKEOUTS";: LPrint Tab(23); Using "###"; BLL!(8);: LPrint Tab(37); careerBL$(8);: LPrint Tab(56); BLYR%(8)
+                    LPrint "STEALS";: LPrint Tab(23); Using "###"; BLL!(9);: LPrint Tab(37); careerBL$(9);: LPrint Tab(56); BLYR%(9)
+                    LPrint "CAUGHT STEALING";: LPrint Tab(23); Using "###"; BLL!(10);: LPrint Tab(37); careerBL$(10);: LPrint Tab(56); BLYR%(10)
+                    LPrint "ERRORS";: LPrint Tab(23); Using "###"; BLL!(11);: LPrint Tab(37); careerBL$(11);: LPrint Tab(56); BLYR%(11)
 
                     LPrint "BATTING AVERAGE";
 
                     If BLL!(12) > 0 Then
-                        LPrint Tab(22); Using ".###"; BLL!(12);: LPrint Tab(37); BL$(12);: LPrint Tab(56); BLYR%(12)
+                        LPrint Tab(22); Using ".###"; BLL!(12);: LPrint Tab(37); careerBL$(12);: LPrint Tab(56); BLYR%(12)
                     Else
                         LPrint Tab(22); " ---"
                     End If
 
                     LPrint "SLUGGING PCT.";
                     If BLL!(13) > 0 Then
-                        LPrint Tab(22); Using "#.###"; BLL!(13);: LPrint Tab(37); BL$(13);: LPrint Tab(56); BLYR%(13)
+                        LPrint Tab(22); Using "#.###"; BLL!(13);: LPrint Tab(37); careerBL$(13);: LPrint Tab(56); BLYR%(13)
                     Else
                         LPrint Tab(22); " ---"
                     End If
 
                     LPrint "ON BASE PCT.";
                     If BLL!(14) > 0 Then
-                        LPrint Tab(22); Using "#.###"; BLL!(14);: LPrint Tab(37); BL$(14);: LPrint Tab(56); BLYR%(14)
+                        LPrint Tab(22); Using "#.###"; BLL!(14);: LPrint Tab(37); careerBL$(14);: LPrint Tab(56); BLYR%(14)
                     Else
                         LPrint Tab(22); " ---"
                     End If
@@ -483,36 +483,36 @@ Sub ViewPrintCareerRecords ()
                         Color 12: Print "CATEGORY           RECORD           PLAYER              YEAR"
                         Print
 
-                        Color 3: Print "AT BATS";: Color 7: Print Tab(23); Using "###"; BLL!(0);: Print Tab(37); BL$(0);: Print Tab(56); BLYR%(0)
-                        Color 3: Print "RUNS SCORED";: Color 7: Print Tab(23); Using "###"; BLL!(1);: Print Tab(37); BL$(1);: Print Tab(56); BLYR%(1)
-                        Color 3: Print "HITS";: Color 7: Print Tab(23); Using "###"; BLL!(2);: Print Tab(37); BL$(2);: Print Tab(56); BLYR%(2)
-                        Color 3: Print "DOUBLES";: Color 7: Print Tab(23); Using "###"; BLL!(3);: Print Tab(37); BL$(3);: Print Tab(56); BLYR%(3)
-                        Color 3: Print "TRIPLES";: Color 7: Print Tab(23); Using "###"; BLL!(4);: Print Tab(37); BL$(4);: Print Tab(56); BLYR%(4)
-                        Color 3: Print "HOME RUNS";: Color 7: Print Tab(23); Using "###"; BLL!(5);: Print Tab(37); BL$(5);: Print Tab(56); BLYR%(5)
-                        Color 3: Print "RUNS BATTED IN";: Color 7: Print Tab(23); Using "###"; BLL!(6);: Print Tab(37); BL$(6);: Print Tab(56); BLYR%(6)
-                        Color 3: Print "WALKS";: Color 7: Print Tab(23); Using "###"; BLL!(7);: Print Tab(37); BL$(7);: Print Tab(56); BLYR%(7)
-                        Color 3: Print "STRIKEOUTS";: Color 7: Print Tab(23); Using "###"; BLL!(8);: Print Tab(37); BL$(8);: Print Tab(56); BLYR%(8)
-                        Color 3: Print "STEALS";: Color 7: Print Tab(23); Using "###"; BLL!(9);: Print Tab(37); BL$(9);: Print Tab(56); BLYR%(9)
-                        Color 3: Print "CAUGHT STEALING";: Color 7: Print Tab(23); Using "###"; BLL!(10);: Print Tab(37); BL$(10);: Print Tab(56); BLYR%(10)
-                        Color 3: Print "ERRORS";: Color 7: Print Tab(23); Using "###"; BLL!(11);: Print Tab(37); BL$(11);: Print Tab(56); BLYR%(11)
+                        Color 3: Print "AT BATS";: Color 7: Print Tab(23); Using "###"; BLL!(0);: Print Tab(37); careerBL$(0);: Print Tab(56); BLYR%(0)
+                        Color 3: Print "RUNS SCORED";: Color 7: Print Tab(23); Using "###"; BLL!(1);: Print Tab(37); careerBL$(1);: Print Tab(56); BLYR%(1)
+                        Color 3: Print "HITS";: Color 7: Print Tab(23); Using "###"; BLL!(2);: Print Tab(37); careerBL$(2);: Print Tab(56); BLYR%(2)
+                        Color 3: Print "DOUBLES";: Color 7: Print Tab(23); Using "###"; BLL!(3);: Print Tab(37); careerBL$(3);: Print Tab(56); BLYR%(3)
+                        Color 3: Print "TRIPLES";: Color 7: Print Tab(23); Using "###"; BLL!(4);: Print Tab(37); careerBL$(4);: Print Tab(56); BLYR%(4)
+                        Color 3: Print "HOME RUNS";: Color 7: Print Tab(23); Using "###"; BLL!(5);: Print Tab(37); careerBL$(5);: Print Tab(56); BLYR%(5)
+                        Color 3: Print "RUNS BATTED IN";: Color 7: Print Tab(23); Using "###"; BLL!(6);: Print Tab(37); careerBL$(6);: Print Tab(56); BLYR%(6)
+                        Color 3: Print "WALKS";: Color 7: Print Tab(23); Using "###"; BLL!(7);: Print Tab(37); careerBL$(7);: Print Tab(56); BLYR%(7)
+                        Color 3: Print "STRIKEOUTS";: Color 7: Print Tab(23); Using "###"; BLL!(8);: Print Tab(37); careerBL$(8);: Print Tab(56); BLYR%(8)
+                        Color 3: Print "STEALS";: Color 7: Print Tab(23); Using "###"; BLL!(9);: Print Tab(37); careerBL$(9);: Print Tab(56); BLYR%(9)
+                        Color 3: Print "CAUGHT STEALING";: Color 7: Print Tab(23); Using "###"; BLL!(10);: Print Tab(37); careerBL$(10);: Print Tab(56); BLYR%(10)
+                        Color 3: Print "ERRORS";: Color 7: Print Tab(23); Using "###"; BLL!(11);: Print Tab(37); careerBL$(11);: Print Tab(56); BLYR%(11)
                         Color 3: Print "BATTING AVERAGE";: Color 7
 
                         If BLL!(12) > 0 Then
-                            Print Tab(22); Using ".###"; BLL!(12);: Print Tab(37); BL$(12);: Print Tab(56); BLYR%(12)
+                            Print Tab(22); Using ".###"; BLL!(12);: Print Tab(37); careerBL$(12);: Print Tab(56); BLYR%(12)
                         Else
                             Print Tab(22); " ---"
                         End If
 
                         Color 3: Print "SLUGGING PCT.";: Color 7:
                         If BLL!(13) > 0 Then
-                            Print Tab(22); Using "#.###"; BLL!(13);: Print Tab(37); BL$(13);: Print Tab(56); BLYR%(13)
+                            Print Tab(22); Using "#.###"; BLL!(13);: Print Tab(37); careerBL$(13);: Print Tab(56); BLYR%(13)
                         Else
                             Print Tab(22); " ---"
                         End If
 
                         Color 3: Print "ON BASE PCT.";: Color 7:
                         If BLL!(13) > 0 Then
-                            Print Tab(22); Using "#.###"; BLL!(14);: Print Tab(37); BL$(14);: Print Tab(56); BLYR%(14)
+                            Print Tab(22); Using "#.###"; BLL!(14);: Print Tab(37); careerBL$(14);: Print Tab(56); BLYR%(14)
                         Else
                             Print Tab(22); " ---"
                         End If
@@ -693,7 +693,7 @@ Sub MergeAddYear (selectedFile$, statFile$)
             finalUpdate$ = UCase$(K$)
         Loop Until finalUpdate$ = "Y" Or finalUpdate$ = "N" Or K$ = Chr$(27)
 
-        If finalUpdate$ = "Y" Then finalupdate% = 1 Else finalupdate% = 0
+        If finalUpdate$ = "Y" Then doPostLeaders = 1 Else doPostLeaders = 0
 
         Locate 20, 5
         Print "LOADING CAREER STATS . . . . PLEASE WAIT"
@@ -913,7 +913,7 @@ Sub MergeAddYear (selectedFile$, statFile$)
 
         Next I
 
-        If finalupdate% = 1 Then Call UpdateCareerLeaders(selectedFile$)
+        If doPostLeaders = 1 Then Call UpdateCareerLeaders(selectedFile$)
 
         Locate 20, 5
         Print "MERGING CAREER STATS . . . . PLEASE WAIT"
@@ -980,7 +980,7 @@ Sub UpdateCareerLeaders (recordFile$)
     Shared BLYR%(), PLYR%()
 
     Shared careerB$(), careerP$()
-    Shared BL$(), careerPL$()
+    Shared careerBL$(), careerPL$()
 
     Shared BRS%(), PRS%()
 
@@ -989,7 +989,7 @@ Sub UpdateCareerLeaders (recordFile$)
         Open diskPaths$(2) + recordFile$ + ".CLD" For Input As #1
 
         For I = 0 To 14:
-            Input #1, BLYR%(I), BL$(I), BLL!(I)
+            Input #1, BLYR%(I), careerBL$(I), BLL!(I)
         Next
 
         For I = 0 To 14:
@@ -1011,71 +1011,71 @@ Sub UpdateCareerLeaders (recordFile$)
 
                     If BRS%(J, I, 0) > BLL!(0) Then
                         BLL!(0) = BRS%(J, I, 0)
-                        BL$(0) = careerB$(I)
+                        careerBL$(0) = careerB$(I)
                         BLYR%(0) = BRS%(J, I, 17)
                     End If
 
                     If BRS%(J, I, 2) > BLL!(1) Then
                         BLL!(1) = BRS%(J, I, 2)
-                        BL$(1) = careerB$(I)
+                        careerBL$(1) = careerB$(I)
                         BLYR%(1) = BRS%(J, I, 17)
                     End If
 
                     If BRS%(J, I, 1) > BLL!(2) Then
                         BLL!(2) = BRS%(J, I, 1)
-                        BL$(2) = careerB$(I)
+                        careerBL$(2) = careerB$(I)
                         BLYR%(2) = BRS%(J, I, 17)
                     End If
 
                     If BRS%(J, I, 4) > BLL!(3) Then
                         BLL!(3) = BRS%(J, I, 4)
-                        BL$(3) = careerB$(I)
+                        careerBL$(3) = careerB$(I)
                         BLYR%(3) = BRS%(J, I, 17)
                     End If
 
                     If BRS%(J, I, 5) > BLL!(4) Then
                         BLL!(4) = BRS%(J, I, 5)
-                        BL$(4) = careerB$(I)
+                        careerBL$(4) = careerB$(I)
                         BLYR%(4) = BRS%(J, I, 17)
                     End If
 
                     If BRS%(J, I, 6) > BLL!(5) Then
                         BLL!(5) = BRS%(J, I, 6)
-                        BL$(5) = careerB$(I)
+                        careerBL$(5) = careerB$(I)
                         BLYR%(5) = BRS%(J, I, 17)
                     End If
 
                     If BRS%(J, I, 3) > BLL!(6) Then
-                        BLL!(6) = BRS%(J, I, 3): BL$(6) = careerB$(I): BLYR%(6) = BRS%(J, I, 17)
+                        BLL!(6) = BRS%(J, I, 3): careerBL$(6) = careerB$(I): BLYR%(6) = BRS%(J, I, 17)
                     End If
 
                     If BRS%(J, I, 7) > BLL!(7) Then
                         BLL!(7) = BRS%(J, I, 7)
-                        BL$(7) = careerB$(I)
+                        careerBL$(7) = careerB$(I)
                         BLYR%(7) = BRS%(J, I, 17)
                     End If
 
                     If BRS%(J, I, 8) > BLL!(8) Then
                         BLL!(8) = BRS%(J, I, 8)
-                        BL$(8) = careerB$(I)
+                        careerBL$(8) = careerB$(I)
                         BLYR%(8) = BRS%(J, I, 17)
                     End If
 
                     If BRS%(J, I, 9) > BLL!(9) Then
                         BLL!(9) = BRS%(J, I, 9)
-                        BL$(9) = careerB$(I)
+                        careerBL$(9) = careerB$(I)
                         BLYR%(9) = BRS%(J, I, 17)
                     Else
                         If BRS%(J, I, 10) > BLL!(10) Then
                             BLL!(10) = BRS%(J, I, 10)
-                            BL$(10) = careerB$(I)
+                            careerBL$(10) = careerB$(I)
                             BLYR%(10) = BRS%(J, I, 17)
                         End If
                     End If
 
                     If BRS%(J, I, 11) > BLL!(11) Then
                         BLL!(11) = BRS%(J, I, 11)
-                        BL$(11) = careerB$(I)
+                        careerBL$(11) = careerB$(I)
                         BLYR%(11) = BRS%(J, I, 17)
                     End If
 
@@ -1084,7 +1084,7 @@ Sub UpdateCareerLeaders (recordFile$)
 
                         If AVG! > BLL!(12) Then
                             BLL!(12) = AVG!
-                            BL$(12) = careerB$(I)
+                            careerBL$(12) = careerB$(I)
                             BLYR%(12) = BRS%(J, I, 17)
                         End If
 
@@ -1094,7 +1094,7 @@ Sub UpdateCareerLeaders (recordFile$)
                         SLG! = (BRS%(J, I, 1) + BRS%(J, I, 4) + BRS%(J, I, 5) * 2 + BRS%(J, I, 6) * 3) / BRS%(J, I, 0)
                         If SLG! > BLL!(13) Then
                             BLL!(13) = SLG!
-                            BL$(13) = careerB$(I)
+                            careerBL$(13) = careerB$(I)
                             BLYR%(13) = BRS%(J, I, 17)
                         End If
                     End If
@@ -1106,7 +1106,7 @@ Sub UpdateCareerLeaders (recordFile$)
                         test! = BLL!(14)
                         If OBP! > BLL!(14) Then
                             BLL!(14) = OBP!
-                            BL$(14) = careerB$(I)
+                            careerBL$(14) = careerB$(I)
                             BLYR%(14) = BRS%(J, I, 17)
                         End If
 
@@ -1234,7 +1234,7 @@ Sub UpdateCareerLeaders (recordFile$)
     Open diskPaths$(2) + recordFile$ + ".CLD" For Output As #1
 
     For I = 0 To 14:
-        Write #1, BLYR%(I), BL$(I), BLL!(I)
+        Write #1, BLYR%(I), careerBL$(I), BLL!(I)
     Next
 
     For I = 0 To 14:

@@ -349,9 +349,9 @@ Sub ModifyTeamStats (Z$)
 
     Loop Until B9 = 0
 
-    Call ChangeBatters(Z$)
+    Call ChangeBatters
 
-    Call ChangePitchers(D0%, D1%, L2%, W2%, Z$)
+    Call ChangePitchers
 
     ' Save the File
     Open diskPaths$(1) + Z$ For Output As #1
@@ -403,7 +403,7 @@ End Sub
 'This subroutine gives the user an inter-
 'face for specifically changing stats for
 'team batters.
-Sub ChangeBatters (Z$)
+Sub ChangeBatters ()
 
     Shared batterNames$()
     Shared careerB0%()
@@ -553,7 +553,7 @@ End Sub
 'This subroutine gives the user an inter-
 'face for specifically changing stats for
 'team pitchers.
-Sub ChangePitchers (D0%, D1%, L2%, W2%, Z$)
+Sub ChangePitchers ()
 
     Shared batterNames$(), pitcherNames$()
     Shared statB%(), careerB0%(), statP%(), careerP0%()
@@ -791,13 +791,13 @@ Sub ChangeSchedule (Z$)
 
     If Not _FileExists(statsFile$) Then
 
-		MsgText$ = "NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU"
-		BoxWidth = 24
-		BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-		Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
-		Call CSMsgBox(MsgText$, BoxWidth, Pass)
-		K$ = GetKeyPress$
-		Call CSMsgBox("", 0, Pass)
+        MsgText$ = "NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU"
+        BoxWidth = 24
+        BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+        Call CSMsgBox(MsgText$, BoxWidth, Pass)
+        K$ = GetKeyPress$
+        Call CSMsgBox("", 0, Pass)
 
     Else
 

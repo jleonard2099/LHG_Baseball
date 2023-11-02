@@ -15,8 +15,6 @@ Sub DRAFT ()
     Shared batterNames$(), batNames_DRAFT$()
     Shared pitcherNames$(), pitNames_DRAFT$()
 
-    Dim numberTeams
-
     Dim draftYN$(0 To 1)
 
     ReDim menuChoices$(1 To 3)
@@ -75,7 +73,7 @@ Sub DRAFT ()
 
                 Case 2:
                     draftNew = 0
-                    Call ChooseDestTeam(draftYN$(0), NTMS, idx, T$, 0)
+                    Call ChooseDestTeam(draftYN$(0), NTMS, idx, T$)
                     If idx > 0 Then Call DraftChoices(draftNew, done, T$, draftYN$(), idx)
 
             End Select
@@ -287,7 +285,7 @@ Sub DraftChoices (draftNew, doneDrafting, teamName$, teamYears$(), teamIdx)
                     Loop Until B >= 0 And B <= 22
 
                     Call ChooseSourceTeam(teamYear$, NTMS, teamIdx, teamName$, 1)
-                    Call DraftPlayer(1, teamYears$(1), B)
+                    Call DraftPlayer(1, B)
 
                 Case 2:
                     Do
@@ -296,7 +294,7 @@ Sub DraftChoices (draftNew, doneDrafting, teamName$, teamYears$(), teamIdx)
                     Loop Until P >= 0 And P <= 21
 
                     Call ChooseSourceTeam(teamYear$, NTMS, teamIdx, teamName$, 1)
-                    Call DraftPlayer(2, teamYears$(1), B)
+                    Call DraftPlayer(2, B)
 
                 Case 3:
                     Call SaveTeamDraft(draftNew, teamYears$(0), teamName$, teamIdx)
@@ -309,20 +307,7 @@ Sub DraftChoices (draftNew, doneDrafting, teamName$, teamYears$(), teamIdx)
 
     Cls
 
-    JJ = 1
-
-    Locate 6, 8
-    Color 15, 1
-
-    Print " "; Chr$(201); String$(61, 205); Chr$(187); " ";
-
-    For II = 1 To JJ
-        Locate 6 + II, 8
-        Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
-    Next
-
-    Locate 7 + JJ, 8
-    Print " "; Chr$(200); String$(61, 205); Chr$(188); " ";
+    Call box0 (6, 8, 8, 70, 2, 15, 1)
 
     Locate 7
 
@@ -353,7 +338,7 @@ End Sub
 'playerType
 '   1 = Batter
 '   2 = Pitcher
-Sub DraftPlayer (playerType, yearNumber$, draftPos)
+Sub DraftPlayer (playerType, draftPos)
 
     Shared batterRatings(), batRat_DRAFT%()
     Shared draftSA%(), draftTS%(), lgRat_DRAFT%()
@@ -634,7 +619,7 @@ End Sub
 '----------------------------------------
 'This subroutine provides interface for
 'choosing the team to draft players to
-Sub ChooseDestTeam (yearNumber$, numberTeams, chosenIdx, teamName$, draftIdx)
+Sub ChooseDestTeam (yearNumber$, numberTeams, chosenIdx, teamName$)
 
     Shared teamRatings%()
 

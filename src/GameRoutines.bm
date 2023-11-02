@@ -201,7 +201,7 @@ Sub InitVar ()
     Erase INJ%
     Erase L0%, M%, MG%, NG%, O%
     Erase P1%, P2%, P3%, P4%, P5%, P6%, P8%
-    Erase PR%
+    'Erase PR%
     Erase inningScore, S1%, S6%, S8%
     Erase SA%, SU%, startPitcher
     Erase T%, T3%, TS%, VA%, X0%
@@ -2724,16 +2724,16 @@ Sub OUTFIELDERR ()
 End Sub
 
 '----------------------------------------
-'       OUTFLgameTypeOptOCATION Subroutine
+'       OUTFLDLOCATION Subroutine
 '----------------------------------------
 'This function returns the location of an
 'outfielder. (LCF vs RCF)
-Function OUTFLgameTypeOptOCATION$ (W%)
+Function OUTFLDLOCATION$ (W%)
 
     Call d100(RN)
 
-    If W% = 7 Or W% = 8 And RN > 50 Then OUTFLgameTypeOptOCATION$ = "lcf"
-    If W% = 9 Or W% = 8 And RN <= 50 Then OUTFLgameTypeOptOCATION$ = "rcf"
+    If W% = 7 Or W% = 8 And RN > 50 Then OUTFLDLOCATION$ = "lcf"
+    If W% = 9 Or W% = 8 And RN <= 50 Then OUTFLDLOCATION$ = "rcf"
 
 End Function
 
@@ -2806,6 +2806,8 @@ End Sub
 ' ...explanation...
 Sub PINCHRUNNER (MS%, A1, S4%, I2, P, PR%, BC%, U%, D, MO)
 
+    Dim pinchRunners(24)
+
     ' *** CHECK FOR PINCH RUNNER ***
     i0% = 0
 
@@ -2868,7 +2870,10 @@ Sub PINCHRUNNER (MS%, A1, S4%, I2, P, PR%, BC%, U%, D, MO)
                     For I2 = 22 To 25
                         If batRating(P, I, I2) <> -1 And batRating(P, I, I2) = B7%(P, J) And B7%(P, J) <> 1 Then I1 = I
                     Next
-                    If batRating(P, I, 16) > 5 Then PR%(i0%) = I: i0% = i0% + 1
+                    If batRating(P, I, 16) > 5 Then 
+                        pinchRunners(i0%) = I
+                        i0% = i0% + 1
+                    End If
                 End If
             Next
 
@@ -2876,7 +2881,7 @@ Sub PINCHRUNNER (MS%, A1, S4%, I2, P, PR%, BC%, U%, D, MO)
             If B7%(P, J) <> 1 Then batRating(P, I1, 21) = 40 + J
 
             RN = Int(Rnd(1) * i0%)
-            I1 = PR%(RN)
+            I1 = pinchRunners(RN)
 
             8993 '
             I2 = J
@@ -3200,7 +3205,14 @@ Sub PITSTRAT (PPH, pz)
 
     For pIdx = I1 To I1 + 2
         If MG%(D, pIdx) >= 0 And pitchRating(D, MG%(D, pIdx), 15) = 0 Then I2 = I2 + MG%(D, pIdx + 10)
-        If I3 <= I2 Then V0 = MG%(D, pIdx): MG%(D, pIdx) = -1: pIdx = V0: Call NEWPITCHER(pIdx, PPH, pz): SU%(D, 0) = -1: GoTo 8195
+        If I3 <= I2 Then 
+            V0 = MG%(D, pIdx)
+            MG%(D, pIdx) = -1
+            pIdx = V0
+            Call NEWPITCHER(pIdx, PPH, pz)
+            SU%(D, 0) = -1
+            GoTo 8195
+        End If
     Next
     'NO SETUP MAN FOUND
     'GOTO 8195
@@ -3219,7 +3231,14 @@ Sub PITSTRAT (PPH, pz)
 
     For pIdx = I1 To I1 + 2
         If MG%(D, pIdx) >= 0 And pitchRating(D, MG%(D, pIdx), 15) = 0 Then I2 = I2 + MG%(D, pIdx + 10)
-        If I3 <= I2 Then V0 = MG%(D, pIdx): MG%(D, pIdx) = -1: pIdx = V0: Call NEWPITCHER(pIdx, PPH, pz): SU%(D, 1) = -1: GoTo 8195
+        If I3 <= I2 Then 
+            V0 = MG%(D, pIdx)
+            MG%(D, pIdx) = -1
+            pIdx = V0
+            Call NEWPITCHER(pIdx, PPH, pz)
+            SU%(D, 1) = -1
+            GoTo 8195
+        End If
     Next
 
     'NO CLOSER FOUND
@@ -3254,25 +3273,25 @@ Sub PITSWAP (i)
 
     If i = 4 Then
         V = 3
-        Call SOMESTATS(V, P, F%, D)
+        Call SOMESTATS(V, P, F%)
         V = 2
-        Call SOMESTATS(V, P, F%, D)
+        Call SOMESTATS(V, P, F%)
         V = 1
-        Call SOMESTATS(V, P, F%, D)
+        Call SOMESTATS(V, P, F%)
     End If
 
     If i = 3 Then
         V = 2
-        Call SOMESTATS(V, P, F%, D)
+        Call SOMESTATS(V, P, F%)
         V = 1
-        Call SOMESTATS(V, P, F%, D)
+        Call SOMESTATS(V, P, F%)
     End If
 
     If i = 2 Then
         V = 2
-        Call SOMESTATS(V, P, F%, D)
+        Call SOMESTATS(V, P, F%)
         V = 1
-        Call SOMESTATS(V, P, F%, D)
+        Call SOMESTATS(V, P, F%)
     End If
 
 End Sub
@@ -3810,7 +3829,7 @@ End Sub
 '           PUTOUT Subroutine
 '----------------------------------------
 ' ...explanation...
-Sub PUTOUT (i, D, P)
+Sub PUTOUT (i, P)
 
     If B7%(P, B0%(i - 1, 0)) = 1 Then
         I5 = P1%(P)
@@ -5007,7 +5026,7 @@ End Sub
 '          SOMESTATS Subroutine
 '----------------------------------------
 ' ...explanation...
-Sub SOMESTATS (V, P, F%, D)
+Sub SOMESTATS (V, P, F%)
 
     If B0%(V, 0) > 0 And F% = 0 Then
 
@@ -7961,8 +7980,8 @@ Sub COMPILESTATFILES (teamIdx)
     Shared W$()
 
     Shared B6%(), D1%(), DYS%(), eventSettings()
-    Shared H%(), ING%(), P0%()
-    Shared SS%(), SX%(), V%()
+    Shared H%(), ING%(), statP0%()
+    Shared statSS%(), SX%(), V%()
 
     statFile$ = nameStatFile$(gameTeams$(teamIdx))
 
@@ -8045,7 +8064,7 @@ Sub COMPILESTATFILES (teamIdx)
 
         For I = 0 To 22: For I1 = 0 To 21: Input #1, B6%(I, I1): Next I1: Next I
 
-        For I = 0 To 21: For I1 = 0 To 41: Input #1, P0%(I, I1): Next I1: Next I
+        For I = 0 To 21: For I1 = 0 To 41: Input #1, statP0%(I, I1): Next I1: Next I
 
         Input #1, D0%(teamIdx)
 
@@ -8089,24 +8108,24 @@ Sub COMPILESTATFILES (teamIdx)
     For I = 0 To 21
 
         For I1 = 23 To 34
-            P0%(I, I1) = P0%(I, I1) + P8%(teamIdx, I, I1)
+            statP0%(I, I1) = statP0%(I, I1) + P8%(teamIdx, I, I1)
             T%(I1 - 23) = T%(I1 - 23) + P8%(teamIdx, I, I1)
         Next I1
 
         If P8%(teamIdx, I, 23) > 0 Then
             If P8%(teamIdx, I, 24) = 0 Then
-                P0%(I, 35) = 0
+                statP0%(I, 35) = 0
             Else
-                P0%(I, 35) = P0%(I, 35) + 1
+                statP0%(I, 35) = statP0%(I, 35) + 1
             End If
         End If
 
         For I1 = 37 To 41
-            P0%(I, I1) = P0%(I, I1) + P8%(teamIdx, I, I1)
+            statP0%(I, I1) = statP0%(I, I1) + P8%(teamIdx, I, I1)
             T%(I1 - 22) = T%(I1 - 22) + P8%(teamIdx, I, I1)
         Next I1
 
-        If P0%(I, 35) >= P0%(I, 36) Then P0%(I, 36) = P0%(I, 35)
+        If statP0%(I, 35) >= statP0%(I, 36) Then statP0%(I, 36) = statP0%(I, 35)
 
     Next I
 
@@ -8118,28 +8137,28 @@ Sub COMPILESTATFILES (teamIdx)
         P3%(teamIdx, I) = pitchRating(teamIdx, I, 6)
 
         For I1 = 0 To 5
-            P0%(I, I1) = P0%(I, I1) + P8%(teamIdx, I, I1)
+            statP0%(I, I1) = statP0%(I, I1) + P8%(teamIdx, I, I1)
             P4%(I1) = P4%(I1) + P8%(teamIdx, I, I1)
         Next I1
 
         For I1 = 13 To 22:
-            P0%(I, I1) = P0%(I, I1) + P8%(teamIdx, I, I1)
+            statP0%(I, I1) = statP0%(I, I1) + P8%(teamIdx, I, I1)
             P4%(I1) = P4%(I1) + P8%(teamIdx, I, I1)
         Next I1
 
     Next I
 
-    If S6%(teamIdx, 0) - S6%(1 - teamIdx, 0) > 0 Then P0%(P2%(teamIdx), 6) = P0%(P2%(teamIdx), 6) + 1
-    If S6%(teamIdx, 0) - S6%(1 - teamIdx, 0) < 0 Then P0%(P2%(teamIdx), 7) = P0%(P2%(teamIdx), 7) + 1
-    If S6%(teamIdx, 0) - S6%(1 - teamIdx, 0) > 0 And S1%(teamIdx) >= 0 Then P0%(S1%(teamIdx), 12) = P0%(S1%(teamIdx), 12) + 1: P4%(12) = P4%(12) + 1
+    If S6%(teamIdx, 0) - S6%(1 - teamIdx, 0) > 0 Then statP0%(P2%(teamIdx), 6) = statP0%(P2%(teamIdx), 6) + 1
+    If S6%(teamIdx, 0) - S6%(1 - teamIdx, 0) < 0 Then statP0%(P2%(teamIdx), 7) = statP0%(P2%(teamIdx), 7) + 1
+    If S6%(teamIdx, 0) - S6%(1 - teamIdx, 0) > 0 And S1%(teamIdx) >= 0 Then statP0%(S1%(teamIdx), 12) = statP0%(S1%(teamIdx), 12) + 1: P4%(12) = P4%(12) + 1
 
     For I = 0 To 21
-        If pitchRating(teamIdx, I, 15) <> 0 Then P0%(I, 8) = P0%(I, 8) + 1: P4%(8) = P4%(8) + 1
-        If INNING% = P8%(teamIdx, I, 0) Then P0%(I, 10) = P0%(I, 10) + 1: P4%(10) = P4%(10) + 1
-        If INNING% = P8%(teamIdx, I, 0) And S6%(1 - teamIdx, 0) = 0 Then P0%(I, 11) = P0%(I, 11) + 1: P4%(11) = P4%(11) + 1
+        If pitchRating(teamIdx, I, 15) <> 0 Then statP0%(I, 8) = statP0%(I, 8) + 1: P4%(8) = P4%(8) + 1
+        If INNING% = P8%(teamIdx, I, 0) Then statP0%(I, 10) = statP0%(I, 10) + 1: P4%(10) = P4%(10) + 1
+        If INNING% = P8%(teamIdx, I, 0) And S6%(1 - teamIdx, 0) = 0 Then statP0%(I, 11) = statP0%(I, 11) + 1: P4%(11) = P4%(11) + 1
     Next I
 
-    P0%(SX%(teamIdx), 9) = P0%(SX%(teamIdx), 9) + 1
+    statP0%(SX%(teamIdx), 9) = statP0%(SX%(teamIdx), 9) + 1
     P4%(9) = P4%(9) + 1
 
     D0%(teamIdx) = D0%(teamIdx) + D3%(teamIdx)
@@ -8165,7 +8184,7 @@ Sub COMPILESTATFILES (teamIdx)
     For I = 0 To 22: Print #1, batters$(teamIdx, I): Print #1, B2%(teamIdx, I): Next I
     For I = 0 To 21: Print #1, pitchers$(teamIdx, I): Print #1, P3%(teamIdx, I): Next I
     For I = 0 To 22: For I1 = 0 To 21: Print #1, B6%(I, I1): Next I1: Next I
-    For I = 0 To 21: For I1 = 0 To 41: Print #1, P0%(I, I1): Next I1: Next I
+    For I = 0 To 21: For I1 = 0 To 41: Print #1, statP0%(I, I1): Next I1: Next I
 
     Print #1, D0%(teamIdx)
     Print #1, D1%(teamIdx)
@@ -8185,7 +8204,7 @@ Sub COMPILESTATFILES (teamIdx)
 
         For I = 0 To 22
             For I1 = 0 To 6
-                Input #1, SS%(I, I1)
+                Input #1, statSS%(I, I1)
             Next
         Next
 
@@ -8195,7 +8214,7 @@ Sub COMPILESTATFILES (teamIdx)
 
     For I = 0 To 22
         For I1 = 0 To 6
-            SS%(I, I1) = SS%(I, I1) + CSS%(teamIdx, I, I1)
+            statSS%(I, I1) = statSS%(I, I1) + CSS%(teamIdx, I, I1)
         Next
     Next
 
@@ -8203,7 +8222,7 @@ Sub COMPILESTATFILES (teamIdx)
 
     For I = 0 To 22
         For I1 = 0 To 6
-            Print #1, SS%(I, I1)
+            Print #1, statSS%(I, I1)
         Next
     Next
 
@@ -8272,7 +8291,7 @@ Sub COMPILESTATFILES (teamIdx)
     numberGames = 0
 
     Erase B2%, B6%, P3%, P4%
-    Erase SS%, P0%, T%
+    Erase statSS%, statP0%, T%
 
     W2% = 0
     L2% = 0

@@ -285,6 +285,7 @@ Sub box0 (ULRow%, ULCol%, LRRow%, LRCol%, Char%, FGColor%, BGColor%)
     'If Char% is assigned to any other value, that ASCII character will be used for the entire box.
 
     Select Case Char%
+
         Case 1:
             ulCorner$ = Chr$(218)
             horizontal$ = Chr$(196)

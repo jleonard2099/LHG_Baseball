@@ -1771,14 +1771,14 @@ Sub SOURCE ()
 
                     Case 26 To 50
                         Call LDRIVE(X$)
-                        Call PBP(player$(0) + " " + X$ + " one to the gap in " + OUTFLgameTypeOptOCATION$(W%))
+                        Call PBP(player$(0) + " " + X$ + " one to the gap in " + OUTFLDLOCATION$(W%))
 
                     Case 51 To 60
-                        Call PBP(player$(0) + " hits a sinking liner into " + OUTFLgameTypeOptOCATION$(W%))
+                        Call PBP(player$(0) + " hits a sinking liner into " + OUTFLDLOCATION$(W%))
                         Call PBP("It goes to the wall")
 
                     Case 61 To 75
-                        Call PBP(player$(0) + " lines one to the alley in " + OUTFLgameTypeOptOCATION$(W%))
+                        Call PBP(player$(0) + " lines one to the alley in " + OUTFLDLOCATION$(W%))
 
                     Case 76 To 85
                         If (W% = 7 Or W% = 9) Then
@@ -1798,7 +1798,7 @@ Sub SOURCE ()
                         Call PBP(player$(0) + " " + X$ + " a blue darter into " + C$(W%))
 
                     Case 93 To 100
-                        Call PBP(player$(0) + " lines one to " + OUTFLgameTypeOptOCATION$(W%))
+                        Call PBP(player$(0) + " lines one to " + OUTFLDLOCATION$(W%))
                         Call PBP("It's down and to the wall!")
 
                 End Select
@@ -3299,7 +3299,7 @@ Sub SOURCE ()
 
         O%(0) = O%(0) + 1
         O%(1) = O%(1) + 1
-        Call PUTOUT(TGTBASE%, D, P)
+        Call PUTOUT(TGTBASE%, P)
         Call ADVANCEMENT(P, D, S2%, F%, I3)
         Call CREDITPUTOUT(I3, FB2P%, AST%, D)
 

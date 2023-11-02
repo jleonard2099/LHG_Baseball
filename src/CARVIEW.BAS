@@ -1038,7 +1038,7 @@ End Sub
 'totals for batters
 Sub BatterTotals ()
 
-    Dim I2!, I3!, I4!
+    Dim I3!, I4!
     Shared BRS%()
 
     VV = BRS%(1, I, 16) + BRS%(2, I, 16) + BRS%(3, I, 16) + BRS%(4, I, 16) + BRS%(5, I, 16) + BRS%(6, I, 16) + BRS%(7, I, 16) + BRS%(8, I, 16) + BRS%(9, I, 16) + BRS%(10, I, 16) + BRS%(11, I, 16) + BRS%(12, I, 16) + BRS%(13, I, 16) + BRS%(14, I, 16) + BRS%(15, I, 16)

@@ -101,7 +101,7 @@ Sub LoadTeamStats (statFile$, totalGames%)
 
     Shared EW, EL, HW, HL
     Shared LTL, LTW, ORW, ORL
-    Shared RW, RL, Wins, Losses
+    Shared RW, RL, totalWins, totalLosses
 
     Shared batterNames$(), pitcherNames$()
     Shared statT!(), statT1!()
@@ -114,8 +114,8 @@ Sub LoadTeamStats (statFile$, totalGames%)
 
     Shared D0%, D1%, L2%, W2%
 
-    Wins = 0
-    Losses = 0
+    totalWins = 0
+    totalLosses = 0
     RW = 0
     RL = 0
     ORW = 0
@@ -206,19 +206,19 @@ Sub LoadTeamStats (statFile$, totalGames%)
     For I = 1 To totalGames%
         If Abs(H%(I) - V%(I)) = 1 And H%(I) > V%(I) Then ORW = ORW + 1
         If Abs(H%(I) - V%(I)) = 1 And H%(I) < V%(I) Then ORL = ORL + 1
-        If H%(I) > V%(I) Then Wins = Wins + 1
+        If H%(I) > V%(I) Then totalWins = totalWins + 1
         If H%(I) > V%(I) And I%(I) > 9 Then EW = EW + 1
         If H%(I) > V%(I) And PL$(I) = "A" Then RW = RW + 1
         If H%(I) > V%(I) And PL$(I) = "H" Then HW = HW + 1
-        If V%(I) > H%(I) Then Losses = Losses + 1
+        If V%(I) > H%(I) Then totalLosses = totalLosses + 1
         If V%(I) > H%(I) And I%(I) > 9 Then EL = EL + 1
         If V%(I) > H%(I) And PL$(I) = "A" Then RL = RL + 1
         If V%(I) > H%(I) And PL$(I) = "H" Then HL = HL + 1
     Next I
 
     If totalGames% <= 10 Then
-        LTL = Losses
-        LTW = Wins
+        LTL = totalLosses
+        LTW = totalWins
     Else
         M = totalGames% - 9
         For J = M To totalGames%
@@ -331,7 +331,7 @@ Sub ViewAndPrintOptions (statFile$, teamName$, totalGames%, menuExit)
                     '
 
                 Case 3, 4
-                    Call NewPrintStats(statFile$, teamName$, totalGames%, Selection%, splitScreenChoice%, menuExit)
+                    Call NewPrintStats(statFile$, teamName$, totalGames%, Selection%, splitScreenChoice%)
 
             End Select
 
@@ -340,7 +340,7 @@ Sub ViewAndPrintOptions (statFile$, teamName$, totalGames%, menuExit)
                 Color 15, 0
                 Cls
 
-                Call ViewStatSummary(statFile$, teamName$, totalGames%, Selection%, splitScreenChoice%, menuExit)
+                Call ViewStatSummary(statFile$, teamName$, splitScreenChoice%)
 
                 Color 15, 0
 
@@ -385,11 +385,11 @@ End Sub
 'selected team's record to the display,
 'then provides routines for output of
 'the other stat categories
-Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, menuExit)
+Sub ViewStatSummary (statFile$, teamName$, splitScreenChoice%)
 
     Shared EW, EL, HW, HL
     Shared LTL, LTW, ORW, ORL
-    Shared RW, RL, Wins, Losses
+    Shared RW, RL, totalWins, totalLosses
 
     Shared L2%, W2%
 
@@ -415,7 +415,7 @@ Sub ViewStatSummary (statFile$, teamName$, totalGames%, X, splitScreenChoice%, m
     Color 15, 0
     Locate , 20
     Color 14: Print "OVERALL RECORD ";
-    Color 15: Print "("; Wins; "-"; Losses; ")"
+    Color 15: Print "("; totalWins; "-"; totalLosses; ")"
     Locate , 20
     Color 14: Print "HOME RECORD    ";
     Color 15: Print "("; HW; "-"; HL; ")"
@@ -1023,7 +1023,7 @@ Sub ReportsAllTeams ()
                 BP = 1 'this doesn't appear to be used
                 X = 3
 
-                Call NewPrintStats(statFile$, teamName$, totalGames%, X, splitScreenChoice%, menuExit)
+                Call NewPrintStats(statFile$, teamName$, totalGames%, X, splitScreenChoice%)
 
             End If
 
@@ -1041,13 +1041,13 @@ End Sub
 'This subroutine formats and outputs the 
 'team's schedule results and stats to the 
 'default printer
-Sub NewPrintStats (statFile$, teamName$, totalGames%, printChoice, splitScreenChoice%, menuExit)
+Sub NewPrintStats (statFile$, teamName$, totalGames%, printChoice, splitScreenChoice%)
 
     Shared L2%, W2%
 
     Shared EW, EL, HW, HL
     Shared LTL, LTW, ORW, ORL
-    Shared RW, RL, Wins, Losses
+    Shared RW, RL, totalWins, totalLosses
 
     Shared batterNames$(), pitcherNames$()
     Shared statT!(), statT1!()
@@ -1061,8 +1061,8 @@ Sub NewPrintStats (statFile$, teamName$, totalGames%, printChoice, splitScreenCh
 
     ' *** NEW PRINT ROUTINE 6-24-90 ***
     If printChoice <> 3 Then
-        Wins = 0
-        Losses = 0
+        totalWins = 0
+        totalLosses = 0
         ORW = 0
         ORL = 0
         RW = 0
@@ -1086,7 +1086,7 @@ Sub NewPrintStats (statFile$, teamName$, totalGames%, printChoice, splitScreenCh
 
         LPrint
         LPrint
-        LPrint Tab(20); "RECORD         ("; Str$(Wins); " -"; Str$(Losses); " )"
+        LPrint Tab(20); "RECORD         ("; Str$(totalWins); " -"; Str$(totalLosses); " )"
         LPrint Tab(20); "HOME RECORD    ("; Str$(HW); " -"; Str$(HL); " )"
         LPrint Tab(20); "ROAD RECORD    ("; Str$(RW); " -"; Str$(RL); " )"
         LPrint Tab(20); "LAST 10 GAMES  ("; Str$(LTW); " -"; Str$(LTL); " )"
@@ -1342,7 +1342,7 @@ Sub NewPrintStats (statFile$, teamName$, totalGames%, printChoice, splitScreenCh
     LPrint " OPPONENTS";: LPrint Left$(UU$, 4)
     LPrint
     LPrint
-    LPrint Tab(20); "RECORD         ("; Str$(Wins); " -"; Str$(Losses); " )"
+    LPrint Tab(20); "RECORD         ("; Str$(totalWins); " -"; Str$(totalLosses); " )"
     LPrint Tab(20); "HOME RECORD    ("; Str$(HW); " -"; Str$(HL); " )"
     LPrint Tab(20); "ROAD RECORD    ("; Str$(RW); " -"; Str$(RL); " )"
     LPrint Tab(20); "LAST 10 GAMES  ("; Str$(LTW); " -"; Str$(LTL); " )"

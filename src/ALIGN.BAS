@@ -15,11 +15,11 @@ Sub ALIGN ()
     Shared batterNames$(), pitcherNames$()
 
     Shared B0R%(), BR%()
-    Shared P0R%(), draftPR%()
+    Shared P0R%(), PR%()
 
     Shared draftTR(), draftTR1()
 
-    Shared draftB0%(), mergeB%()
+    Shared statB0%(), statB%()
     Shared S0R%(), S0%()
     Shared statP%(), statP0%()
     Shared statT%(), statT1%()
@@ -56,7 +56,7 @@ Sub ALIGN ()
 
                 For I = 0 To 21:
                     Input #1, PR$(I)
-                    Input #1, draftPR%(I)
+                    Input #1, PR%(I)
                 Next I
 
                 For I = 0 To 22:
@@ -108,7 +108,7 @@ Sub ALIGN ()
 
                     For I = 0 To 22:
                         Input #1, batterNames$(I)
-                        Input #1, mergeB%(I)
+                        Input #1, statB%(I)
                     Next I
 
                     For I = 0 To 21:
@@ -118,7 +118,7 @@ Sub ALIGN ()
 
                     For I = 0 To 22:
                         For I1 = 0 To 21:
-                            Input #1, draftB0%(I, I1)
+                            Input #1, statB0%(I, I1)
                         Next I1
                     Next I
 
@@ -209,7 +209,7 @@ Sub AlignStats (pathRoadStats$, statFile$)
     Shared S0N%()
 
     Shared BR$(), PR$()
-    Shared draftPR%()
+    Shared PR%()
     Shared B0R%(), BR%()
     Shared P0R%(), S0R%()
 
@@ -280,7 +280,7 @@ Sub AlignStats (pathRoadStats$, statFile$)
             If UCase$(pitcherNames$(N)) = UCase$(PR$(J)) Then
 
                 PN$(N) = PR$(J)
-                PN%(N) = draftPR%(J)
+                PN%(N) = PR%(J)
 
                 For K = 0 To 41
                     P0N%(N, K) = P0R%(J, K)

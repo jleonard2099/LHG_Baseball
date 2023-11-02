@@ -424,7 +424,7 @@ Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
 
     If UCase$(I$) = "Y" Then
         TS = 1
-        Call LoadTeam(targetTeam$, TS, SS, teamStatFile$)
+        Call LoadTeam(targetTeam$, SS, teamStatFile$)
     End If
 
     Do
@@ -551,7 +551,7 @@ End Sub
 'This subroutine looks for and loads the
 'corresponding stat files for the chosen
 'team.
-Sub LoadTeam (targetTeam$, teamHasStats, SS, statFile$)
+Sub LoadTeam (targetTeam$, SS, statFile$)
 
     Shared BS%(), PS%(), statSS%()
     Shared statB0%(), statP0%()
@@ -870,7 +870,7 @@ End Sub
 'This subroutien gives the user a quick
 'overview of run ratings and a means by
 'which to review them
-Sub CalculateRunRating (teamName$)
+Sub CalculateRunRating ()
 
     Shared batterNames$(), pitcherNames$()
     Shared batterRatings(), pitcherRatings()
@@ -891,15 +891,38 @@ Sub CalculateRunRating (teamName$)
                 RR = RR * 1.4
             End If
 
-            If RR <= 3 Then batterRatings(I, 16) = 1
-            If RR > 3 And RR <= 5 Then batterRatings(I, 16) = 2
-            If RR > 5 And RR <= 10 Then batterRatings(I, 16) = 3
-            If RR > 10 And RR <= 15 Then batterRatings(I, 16) = 4
-            If RR > 15 And RR <= 20 Then batterRatings(I, 16) = 5
-            If RR > 20 And RR <= 25 Then batterRatings(I, 16) = 6
-            If RR > 25 And RR <= 30 Then batterRatings(I, 16) = 7
-            If RR > 30 And RR <= 40 Then batterRatings(I, 16) = 8
-            If RR > 40 Then batterRatings(I, 16) = 9
+            Select Case RR
+
+                Case Is <= 3
+                    batterRatings(I, 16) = 1
+
+                Case 4, 5
+                    batterRatings(I, 16) = 2
+            
+                Case 6 to 10
+                    batterRatings(I, 16) = 3
+            
+                Case 11 to 15 
+                    batterRatings(I, 16) = 4
+            
+                Case 16 to 20 
+                    batterRatings(I, 16) = 5
+            
+                Case 21 to 25
+                    batterRatings(I, 16) = 6
+            
+                Case 26 to 30
+                    batterRatings(I, 16) = 7
+            
+                Case 31 to 40 
+                    batterRatings(I, 16) = 8
+            
+                Case Else
+                '40+
+                    batterRatings(I, 16) = 9
+
+            End Select
+
             Print batterNames$(I); Tab(20); batterRatings(I, 16)
 
         End If
@@ -939,11 +962,11 @@ End Sub
 'This subroutien gives the user a quick
 'overview of bunt ratings and a means by
 'which to review them
-Sub CalculateBuntRating (teamName$)
+Sub CalculateBuntRating ()
 
     Dim B1!, BUNT!
     Dim OB!
-    Dim R1!, R2!, RR!
+    Dim R1!, R2!
     Dim SLG!, SLG2!
 
     Shared batterRatings(), pitcherRatings()
