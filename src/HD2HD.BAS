@@ -2,7 +2,7 @@
 '            HD2HD Subroutine
 '----------------------------------------
 'This subroutine presents the user a menu
-'of basic options for viewing Head-to-Head 
+'of basic options for viewing Head-to-Head
 'team comparisons.
 Sub HD2HD ()
 
@@ -77,8 +77,9 @@ End Sub
 Sub Hd2Hd_League (LG$, sameLeague)
 
     Shared H%(), I%(), V%(), statZ1%()
-    Shared HW%(), AW%(), HL(), AL()
-    Shared R1%(), R2%(), R3%(), R4%()
+    Shared awayLosses(), awayWins()
+    Shared homeLosses(), homeWins()
+    Shared statR1%(), statR2%(), statR3%(), statR4%()
     Shared TR1%(), TR2%(), TR3%(), TR4%()
     Shared THW%(), THL%(), TAW%(), TAL%()
 
@@ -182,7 +183,8 @@ Sub Hd2Hd_League (LG$, sameLeague)
             Locate 18, 18: Print "COMPUTING W/L/T RECORDS . . . PLEASE WAIT"
 
             'Initialization for 1st league
-            Erase HL%, HW%, AL%, AW%, R1%, R2%, R3%, R4%
+            Erase homeLosses, homeWins, awayLosses, awayWins
+            Erase statR1%, statR2%, statR3%, statR4%
 
             Erase THL%, THW%, TAL%, TAW%, TR1%, TR2%, TR3%, TR4%
 
@@ -192,14 +194,14 @@ Sub Hd2Hd_League (LG$, sameLeague)
                 If Z1$(K) <> "XXX" Then
 
                     For I = 1 To YY%
-                        If H%(I) > V%(I) And L$(I) = "A" And O$(I) = Z1$(K) Then AW%(K) = AW%(K) + 1
-                        If H%(I) > V%(I) And L$(I) = "H" And O$(I) = Z1$(K) Then HW%(K) = HW%(K) + 1
-                        If H%(I) < V%(I) And L$(I) = "A" And O$(I) = Z1$(K) Then AL%(K) = AL%(K) + 1
-                        If H%(I) < V%(I) And L$(I) = "H" And O$(I) = Z1$(K) Then HL%(K) = HL%(K) + 1
-                        If O$(I) = Z1$(K) And L$(I) = "H" Then R1%(K) = R1%(K) + H%(I)
-                        If O$(I) = Z1$(K) And L$(I) = "H" Then R2%(K) = R2%(K) + V%(I)
-                        If O$(I) = Z1$(K) And L$(I) = "A" Then R3%(K) = R3%(K) + H%(I)
-                        If O$(I) = Z1$(K) And L$(I) = "A" Then R4%(K) = R4%(K) + V%(I)
+                        If H%(I) > V%(I) And L$(I) = "A" And O$(I) = Z1$(K) Then awayWins(K) = awayWins(K) + 1
+                        If H%(I) > V%(I) And L$(I) = "H" And O$(I) = Z1$(K) Then homeWins(K) = homeWins(K) + 1
+                        If H%(I) < V%(I) And L$(I) = "A" And O$(I) = Z1$(K) Then awayLosses(K) = awayLosses(K) + 1
+                        If H%(I) < V%(I) And L$(I) = "H" And O$(I) = Z1$(K) Then homeLosses(K) = homeLosses(K) + 1
+                        If O$(I) = Z1$(K) And L$(I) = "H" Then statR1%(K) = statR1%(K) + H%(I)
+                        If O$(I) = Z1$(K) And L$(I) = "H" Then statR2%(K) = statR2%(K) + V%(I)
+                        If O$(I) = Z1$(K) And L$(I) = "A" Then statR3%(K) = statR3%(K) + H%(I)
+                        If O$(I) = Z1$(K) And L$(I) = "A" Then statR4%(K) = statR4%(K) + V%(I)
 
                     Next I
 
@@ -259,7 +261,8 @@ End Sub
 'comparison values to the default printer
 Sub Hd2Hd_Printer (teamName$)
 
-    Shared HW%(), HW%(), HL%(), AL%(), R1%(), R2%(), R3%(), R4%()
+    Shared awayLosses(), awayWins(), homeWins(), homeLosses()
+    Shared statR1%(), statR2%(), statR3%(), statR4%(), TAW%(), THW%()
 
     Shared DV$(), Z1$()
 
@@ -292,42 +295,42 @@ Sub Hd2Hd_Printer (teamName$)
                 If Z1$(K) <> "XXX" And Z1$(K) <> T$ Then
 
                     LPrint Z1$(K);
-                    LPrint Tab(21); Using "##"; HW%(K);
-                    LPrint Tab(25); Using "##"; HL%(K);
+                    LPrint Tab(21); Using "##"; homeWins(K);
+                    LPrint Tab(25); Using "##"; homeLosses(K);
 
-                    If HW%(K) = HW%(K) + HL%(K) And HW%(K) <> 0 Then LPrint Tab(28); "1.000";
-                    If HW%(K) = 0 Then LPrint Tab(29); ".000";
-                    If HW%(K) > 0 And HW%(K) < HW%(K) + HL%(K) Then statPCT! = (HW%(K) / (HW%(K) + HL%(K))): LPrint Tab(29); Using ".###"; statPCT!;
+                    If homeWins(K) = homeWins(K) + homeLosses(K) And homeWins(K) <> 0 Then LPrint Tab(28); "1.000";
+                    If homeWins(K) = 0 Then LPrint Tab(29); ".000";
+                    If homeWins(K) > 0 And homeWins(K) < homeWins(K) + homeLosses(K) Then statPCT! = (homeWins(K) / (homeWins(K) + homeLosses(K))): LPrint Tab(29); Using ".###"; statPCT!;
 
-                    LPrint Tab(35); Using "###"; R1%(K);
-                    LPrint Tab(39); Using "###"; R2%(K);
-                    LPrint Tab(53); Using "##"; HW%(K);
-                    LPrint Tab(57); Using "##"; AL%(K);
+                    LPrint Tab(35); Using "###"; statR1%(K);
+                    LPrint Tab(39); Using "###"; statR2%(K);
+                    LPrint Tab(53); Using "##"; homeWins(K);
+                    LPrint Tab(57); Using "##"; awayLosses(K);
 
-                    If HW%(K) = HW%(K) + AL%(K) And HW%(K) <> 0 Then LPrint Tab(60); "1.000";
-                    If HW%(K) = 0 Then LPrint Tab(61); ".000";
-                    If HW%(K) > 0 And HW%(K) < HW%(K) + AL%(K) Then statPCT! = (HW%(K) / (HW%(K) + AL%(K))): LPrint Tab(61); Using ".###"; statPCT!;
+                    If homeWins(K) = homeWins(K) + awayLosses(K) And homeWins(K) <> 0 Then LPrint Tab(60); "1.000";
+                    If homeWins(K) = 0 Then LPrint Tab(61); ".000";
+                    If homeWins(K) > 0 And homeWins(K) < homeWins(K) + awayLosses(K) Then statPCT! = (homeWins(K) / (homeWins(K) + awayLosses(K))): LPrint Tab(61); Using ".###"; statPCT!;
 
-                    LPrint Tab(67); Using "###"; R3%(K);
-                    LPrint Tab(71); Using "###"; R4%(K);
-                    LPrint Tab(85); Using "##"; HW%(K) + HW%(K);
-                    LPrint Tab(90); Using "##"; HL%(K) + AL%(K);
+                    LPrint Tab(67); Using "###"; statR3%(K);
+                    LPrint Tab(71); Using "###"; statR4%(K);
+                    LPrint Tab(85); Using "##"; homeWins(K) + homeWins(K);
+                    LPrint Tab(90); Using "##"; homeLosses(K) + awayLosses(K);
 
-                    If HW%(K) + HW%(K) = HW%(K) + HW%(K) + HL%(K) + AL%(K) And HW%(K) + HW%(K) <> 0 Then LPrint Tab(95); "1.000";
-                    If (HW%(K) + HW%(K)) = 0 Then LPrint Tab(96); ".000";
-                    If (HW%(K) + HW%(K)) > 0 And (HW%(K) + HW%(K)) < (HW%(K) + HW%(K) + HL%(K) + AL%(K)) Then statPCT! = ((HW%(K) + HW%(K)) / (HW%(K) + HW%(K) + HL%(K) + AL%(K))): LPrint Tab(96); Using ".###"; statPCT!;
+                    If homeWins(K) + homeWins(K) = homeWins(K) + homeWins(K) + homeLosses(K) + awayLosses(K) And homeWins(K) + homeWins(K) <> 0 Then LPrint Tab(95); "1.000";
+                    If (homeWins(K) + homeWins(K)) = 0 Then LPrint Tab(96); ".000";
+                    If (homeWins(K) + homeWins(K)) > 0 And (homeWins(K) + homeWins(K)) < (homeWins(K) + homeWins(K) + homeLosses(K) + awayLosses(K)) Then statPCT! = ((homeWins(K) + homeWins(K)) / (homeWins(K) + homeWins(K) + homeLosses(K) + awayLosses(K))): LPrint Tab(96); Using ".###"; statPCT!;
 
-                    LPrint Tab(102); Using "###"; R1%(K) + R3%(K);
-                    LPrint Tab(106); Using "###"; R2%(K) + R4%(K)
+                    LPrint Tab(102); Using "###"; statR1%(K) + statR3%(K);
+                    LPrint Tab(106); Using "###"; statR2%(K) + statR4%(K)
 
-                    THW%(RDD) = THW%(RDD) + HW%(K)
-                    THL%(RDD) = THL%(RDD) + HL%(K)
-                    THW%(RDD) = THW%(RDD) + HW%(K)
-                    TAL%(RDD) = TAL%(RDD) + AL%(K)
-                    TR1%(RDD) = TR1%(RDD) + R1%(K)
-                    TR2%(RDD) = TR2%(RDD) + R2%(K)
-                    TR3%(RDD) = TR3%(RDD) + R3%(K)
-                    TR4%(RDD) = TR4%(RDD) + R4%(K)
+                    THW%(RDD) = THW%(RDD) + homeWins(K)
+                    THL%(RDD) = THL%(RDD) + homeLosses(K)
+                    TAW%(RDD) = TAW%(RDD) + awayWins(K)
+                    TAL%(RDD) = TAL%(RDD) + awayLosses(K)
+                    TR1%(RDD) = TR1%(RDD) + statR1%(K)
+                    TR2%(RDD) = TR2%(RDD) + statR2%(K)
+                    TR3%(RDD) = TR3%(RDD) + statR3%(K)
+                    TR4%(RDD) = TR4%(RDD) + statR4%(K)
 
                 End If
 
@@ -343,21 +346,21 @@ Sub Hd2Hd_Printer (teamName$)
 
             LPrint Tab(35); Using "###"; TR1%(RDD);
             LPrint Tab(39); Using "###"; TR2%(RDD);
-            LPrint Tab(53); Using "##"; THW%(RDD);
+            LPrint Tab(53); Using "##"; TAW%(RDD);
             LPrint Tab(57); Using "##"; TAL%(RDD);
 
-            If THW%(RDD) = THW%(RDD) + TAL%(RDD) And THW%(RDD) <> 0 Then LPrint Tab(60); "1.000";
-            If THW%(RDD) = 0 Then LPrint Tab(61); ".000";
-            If THW%(RDD) > 0 And THW%(RDD) < THW%(RDD) + TAL%(RDD) Then statPCT! = (THW%(RDD) / (THW%(RDD) + TAL%(RDD))): LPrint Tab(61); Using ".###"; statPCT!;
+            If TAW%(RDD) = TAW%(RDD) + TAL%(RDD) And TAW%(RDD) <> 0 Then LPrint Tab(60); "1.000";
+            If TAW%(RDD) = 0 Then LPrint Tab(61); ".000";
+            If TAW%(RDD) > 0 And TAW%(RDD) < TAW%(RDD) + TAL%(RDD) Then statPCT! = (TAW%(RDD) / (TAW%(RDD) + TAL%(RDD))): LPrint Tab(61); Using ".###"; statPCT!;
 
             LPrint Tab(67); Using "###"; TR3%(RDD);
             LPrint Tab(71); Using "###"; TR4%(RDD);
-            LPrint Tab(84); Using "###"; THW%(RDD) + THW%(RDD);
+            LPrint Tab(84); Using "###"; THW%(RDD) + TAW%(RDD);
             LPrint Tab(89); Using "###"; THL%(RDD) + TAL%(RDD);
 
-            If THW%(RDD) + THW%(RDD) = THW%(RDD) + THW%(RDD) + THL%(RDD) + TAL%(RDD) And THW%(RDD) + THW%(RDD) <> 0 Then LPrint Tab(95); "1.000";
-            If THW%(RDD) + THW%(RDD) = 0 Then LPrint Tab(96); ".000";
-            If THW%(RDD) + THW%(RDD) > 0 And THW%(RDD) + THW%(RDD) < THW%(RDD) + THW%(RDD) + THL%(RDD) + TAL%(RDD) Then statPCT! = ((THW%(RDD) + THW%(RDD)) / (THW%(RDD) + THW%(RDD) + THL%(RDD) + TAL%(RDD))): LPrint Tab(96); Using ".###"; statPCT!;
+            If THW%(RDD) + TAW%(RDD) = THW%(RDD) + TAW%(RDD) + THL%(RDD) + TAL%(RDD) And THW%(RDD) + TAW%(RDD) <> 0 Then LPrint Tab(95); "1.000";
+            If THW%(RDD) + TAW%(RDD) = 0 Then LPrint Tab(96); ".000";
+            If THW%(RDD) + TAW%(RDD) > 0 And THW%(RDD) + TAW%(RDD) < THW%(RDD) + TAW%(RDD) + THL%(RDD) + TAL%(RDD) Then statPCT! = ((THW%(RDD) + TAW%(RDD)) / (THW%(RDD) + TAW%(RDD) + THL%(RDD) + TAL%(RDD))): LPrint Tab(96); Using ".###"; statPCT!;
 
             LPrint Tab(102); Using "###"; TR1%(RDD) + TR3%(RDD);
             LPrint Tab(106); Using "###"; TR2%(RDD) + TR4%(RDD)
@@ -421,7 +424,7 @@ Sub Hd2Hd_Printer (teamName$)
     For I = 1 To 4
         THWW = THWW + THW%(I)
         THLL = THLL + THL%(I)
-        TAWW = TAWW + THW%(I)
+        TAWW = TAWW + TAW%(I)
         TALL = TALL + TAL%(I)
     Next
 
@@ -478,8 +481,8 @@ End Sub
 'comparison values to the end user display
 Sub Hd2Hd_Screen (teamName$)
 
-    Shared HW%(), AW%(), HL%(), AL%()
-    Shared R1%(), R2%(), R3%(), R4%()
+    Shared homeWins(), awayWins(), homeLosses(), awayLosses()
+    Shared statR1%(), statR2%(), statR3%(), statR4%()
     Shared teamRatings%()
 
     Shared DV$(), Z1$()
@@ -526,44 +529,58 @@ Sub Hd2Hd_Screen (teamName$)
                 Locate , 1: Print Left$(Z1$(K), 13);
 
                 Color 7
-                Locate , 15: Print Using "##"; HW%(K);
-                Locate , 18: Print Using "##"; HL%(K);
-                If HW%(K) = HW%(K) + HL%(K) And HW%(K) <> 0 Then Locate , 21: Print "1.000";
-                If HW%(K) = 0 Then Locate , 22: Print ".000";
-                If HW%(K) > 0 And HW%(K) < HW%(K) + HL%(K) Then statPCT! = (HW%(K) / (HW%(K) + HL%(K))): Locate , 22: Print Using ".###"; statPCT!;
-                Locate , 27: Print Using "###"; R1%(K);
-                Locate , 31: Print Using "###"; R2%(K);
+                
+                Locate , 15: Print Using "##"; homeWins(K);
+                Locate , 18: Print Using "##"; homeLosses(K);
+                
+                If homeWins(K) = homeWins(K) + homeLosses(K) And homeWins(K) <> 0 Then Locate , 21: Print "1.000";
+                If homeWins(K) = 0 Then Locate , 22: Print ".000";
+                If homeWins(K) > 0 And homeWins(K) < homeWins(K) + homeLosses(K) Then statPCT! = (homeWins(K) / (homeWins(K) + homeLosses(K))): Locate , 22: Print Using ".###"; statPCT!;
+                
+                Locate , 27: Print Using "###"; statR1%(K);
+                Locate , 31: Print Using "###"; statR2%(K);
 
-                Color 3: Print Tab(35); Chr$(179);
-
-                Color 7
-                Locate , 37: Print Using "##"; HW%(K);
-                Locate , 40: Print Using "##"; AL%(K);
-                If HW%(K) = HW%(K) + AL%(K) And HW%(K) <> 0 Then Locate , 43: Print "1.000";
-                If HW%(K) = 0 Then Locate , 44: Print ".000";
-                If HW%(K) > 0 And HW%(K) < HW%(K) + AL%(K) Then statPCT! = (HW%(K) / (HW%(K) + AL%(K))): Locate , 44: Print Using ".###"; statPCT!;
-                Locate , 49: Print Using "###"; R3%(K);
-                Locate , 53: Print Using "###"; R4%(K);
-
-                Color 3: Print Tab(58); Chr$(179);
+                Color 3
+                Print Tab(35); Chr$(179);
 
                 Color 7
-                Locate , 60: Print Using "##"; HW%(K) + HW%(K);
-                Locate , 63: Print Using "##"; HL%(K) + AL%(K);
-                If (HW%(K) + HW%(K)) = (HW%(K) + HW%(K) + HL%(K) + AL%(K)) And (HW%(K) + HW%(K)) <> 0 Then Locate , 66: Print "1.000";
-                If (HW%(K) + HW%(K)) = 0 Then Locate , 67: Print ".000";
-                If (HW%(K) + HW%(K)) > 0 And (HW%(K) + HW%(K)) < (HW%(K) + HW%(K) + HL%(K) + AL%(K)) Then statPCT! = ((HW%(K) + HW%(K)) / (HW%(K) + HW%(K) + HL%(K) + AL%(K))): Locate , 67: Print Using ".###"; statPCT!;
-                Locate , 72: Print Using "###"; R1%(K) + R3%(K);
-                Locate , 76: Print Using "###"; R2%(K) + R4%(K)
-                Color 3: Print Tab(35); Chr$(179); Tab(58); Chr$(179);
-                THW%(RDD) = THW%(RDD) + HW%(K)
-                THL%(RDD) = THL%(RDD) + HL%(K)
-                TAW%(RDD) = TAW%(RDD) + AW%(K)
-                TAL%(RDD) = TAL%(RDD) + AL%(K)
-                TR1%(RDD) = TR1%(RDD) + R1%(K)
-                TR2%(RDD) = TR2%(RDD) + R2%(K)
-                TR3%(RDD) = TR3%(RDD) + R3%(K)
-                TR4%(RDD) = TR4%(RDD) + R4%(K)
+                
+                Locate , 37: Print Using "##"; homeWins(K);
+                Locate , 40: Print Using "##"; awayLosses(K);
+                
+                If homeWins(K) = homeWins(K) + awayLosses(K) And homeWins(K) <> 0 Then Locate , 43: Print "1.000";
+                If homeWins(K) = 0 Then Locate , 44: Print ".000";
+                If homeWins(K) > 0 And homeWins(K) < homeWins(K) + awayLosses(K) Then statPCT! = (homeWins(K) / (homeWins(K) + awayLosses(K))): Locate , 44: Print Using ".###"; statPCT!;
+                
+                Locate , 49: Print Using "###"; statR3%(K);
+                Locate , 53: Print Using "###"; statR4%(K);
+
+                Color 3
+                Print Tab(58); Chr$(179);
+
+                Color 7
+                
+                Locate , 60: Print Using "##"; homeWins(K) + homeWins(K);
+                Locate , 63: Print Using "##"; homeLosses(K) + awayLosses(K);
+                
+                If (homeWins(K) + homeWins(K)) = (homeWins(K) + homeWins(K) + homeLosses(K) + awayLosses(K)) And (homeWins(K) + homeWins(K)) <> 0 Then Locate , 66: Print "1.000";
+                If (homeWins(K) + homeWins(K)) = 0 Then Locate , 67: Print ".000";
+                If (homeWins(K) + homeWins(K)) > 0 And (homeWins(K) + homeWins(K)) < (homeWins(K) + homeWins(K) + homeLosses(K) + awayLosses(K)) Then statPCT! = ((homeWins(K) + homeWins(K)) / (homeWins(K) + homeWins(K) + homeLosses(K) + awayLosses(K))): Locate , 67: Print Using ".###"; statPCT!;
+                
+                Locate , 72: Print Using "###"; statR1%(K) + statR3%(K);
+                Locate , 76: Print Using "###"; statR2%(K) + statR4%(K)
+
+                Color 3
+                Print Tab(35); Chr$(179); Tab(58); Chr$(179);
+
+                THW%(RDD) = THW%(RDD) + homeWins(K)
+                THL%(RDD) = THL%(RDD) + homeLosses(K)
+                TAW%(RDD) = TAW%(RDD) + awayWins(K)
+                TAL%(RDD) = TAL%(RDD) + awayLosses(K)
+                TR1%(RDD) = TR1%(RDD) + statR1%(K)
+                TR2%(RDD) = TR2%(RDD) + statR2%(K)
+                TR3%(RDD) = TR3%(RDD) + statR3%(K)
+                TR4%(RDD) = TR4%(RDD) + statR4%(K)
 
             End If
 
@@ -572,33 +589,44 @@ Sub Hd2Hd_Screen (teamName$)
         Print
 
         Color 11
+
         Locate , 5: Print "TOTALS";
         Locate , 15: Print Using "##"; THW%(RDD);
         Locate , 18: Print Using "##"; THL%(RDD);
+
         If THW%(RDD) = THW%(RDD) + THL%(RDD) And THW%(RDD) <> 0 Then Locate , 21: Print "1.000";
         If THW%(RDD) = 0 Then Locate , 22: Print ".000";
         If THW%(RDD) > 0 And THW%(RDD) < THW%(RDD) + THL%(RDD) Then statPCT! = (THW%(RDD) / (THW%(RDD) + THL%(RDD))): Locate , 22: Print Using ".###"; statPCT!;
+
         Locate , 27: Print Using "###"; TR1%(RDD);
         Locate , 31: Print Using "###"; TR2%(RDD);
 
-        Color 3: Print Tab(35); Chr$(179);
+        Color 3
+        Print Tab(35); Chr$(179);
 
         Color 11
         Locate , 37: Print Using "##"; TAW%(RDD);
         Locate , 40: Print Using "##"; TAL%(RDD);
+
         If TAW%(RDD) = TAW%(RDD) + TAL%(RDD) And TAW%(RDD) <> 0 Then Locate , 43: Print "1.000";
         If TAW%(RDD) = 0 Then Locate , 44: Print ".000";
         If TAW%(RDD) > 0 And TAW%(RDD) < TAW%(RDD) + TAL%(RDD) Then statPCT! = (TAW%(RDD) / (TAW%(RDD) + TAL%(RDD))): Locate , 44: Print Using ".###"; statPCT!;
+
         Locate , 49: Print Using "###"; TR3%(RDD);
         Locate , 53: Print Using "###"; TR4%(RDD);
-        Color 3: Print Tab(58); Chr$(179);
+        
+        Color 3
+        Print Tab(58); Chr$(179);
 
         Color 11
+        
         Locate , 59: Print Using "###"; THW%(RDD) + TAW%(RDD);
         Locate , 62: Print Using "###"; THL%(RDD) + TAL%(RDD);
+        
         If THW%(RDD) + TAW%(RDD) = THW%(RDD) + THL%(RDD) + TAW%(RDD) + TAL%(RDD) And THW%(RDD) + TAW%(RDD) <> 0 Then Locate , 66: Print "1.000";
         If THW%(RDD) + TAW%(RDD) = 0 Then Locate , 67: Print ".000";
         If THW%(RDD) + TAW%(RDD) > 0 And THW%(RDD) + TAW%(RDD) < THW%(RDD) + TAW%(RDD) + THL%(RDD) + TAL%(RDD) Then statPCT! = (THW%(RDD) + TAW%(RDD)) / (THW%(RDD) + TAW%(RDD) + THL%(RDD) + TAL%(RDD)): Locate , 67: Print Using ".###"; statPCT!;
+        
         Locate , 72: Print Using "###"; TR1%(RDD) + TR3%(RDD);
         Locate , 76: Print Using "###"; TR2%(RDD) + TR4%(RDD)
 
@@ -632,22 +660,29 @@ Sub Hd2Hd_Screen (teamName$)
             Locate , 1: Print Left$(DV$(W), 14);
 
             Color 7
+
             Locate , 15: Print Using "##"; THW%(W);
             Locate , 18: Print Using "##"; THL%(W);
+
             If THW%(W) = THW%(W) + THL%(W) And THW%(W) <> 0 Then Locate , 21: Print "1.000"
             If THW%(W) = 0 Then Locate , 22: Print ".000";
             If THW%(W) > 0 And THW%(W) < THW%(W) + THL%(W) Then statPCT! = (THW%(W) / (THW%(W) + THL%(W))): Locate , 22: Print Using ".###"; statPCT!;
+
             Locate , 27: Print Using "###"; TR1%(W);
             Locate , 31: Print Using "###"; TR2%(W);
 
-            Color 3: Print Tab(35); Chr$(179);
+            Color 3
+            Print Tab(35); Chr$(179);
 
             Color 7
+
             Locate , 37: Print Using "##"; TAW%(W);
             Locate , 40: Print Using "##"; TAL%(W);
+
             If TAW%(W) = TAW%(W) + TAL%(W) And TAW%(W) <> 0 Then Locate , 43: Print "1.000";
             If TAW%(W) = 0 Then Locate , 44: Print ".000";
             If TAW%(W) > 0 And TAW%(W) < TAW%(W) + TAL%(W) Then statPCT! = (TAW%(W) / (TAW%(W) + TAL%(W))): Locate , 44: Print Using ".###"; statPCT!;
+
             Locate , 49: Print Using "###"; TR3%(W);
             Locate , 53: Print Using "###"; TR4%(W);
 
@@ -656,12 +691,16 @@ Sub Hd2Hd_Screen (teamName$)
             Color 7
             Locate , 59: Print Using "###"; THW%(W) + TAW%(W);
             Locate , 62: Print Using "###"; THL%(W) + TAL%(W);
+
             If THW%(W) + TAW%(W) = THW%(W) + TAW%(W) + THL%(W) + TAL%(W) And THW%(W) + TAW%(W) <> 0 Then Locate , 66: Print "1.000";
             If (THW%(W) + TAW%(W)) = 0 Then Locate , 67: Print ".000";
             If (THW%(W) + TAW%(W)) > 0 And THW%(W) + TAW%(W) < THW%(W) + TAW%(W) + THL%(W) + TAL%(W) Then statPCT! = ((THW%(W) + TAW%(W)) / (THW%(W) + TAW%(W) + THL%(W) + TAL%(W))): Locate , 67: Print Using ".###"; statPCT!;
+
             Locate , 72: Print Using "###"; TR1%(W) + TR3%(W);
             Locate , 76: Print Using "###"; TR2%(W) + TR4%(W)
-            Color 3: Print Tab(35); Chr$(179); Tab(58); Chr$(179);
+
+            Color 3
+            Print Tab(35); Chr$(179); Tab(58); Chr$(179);
 
         End If
 

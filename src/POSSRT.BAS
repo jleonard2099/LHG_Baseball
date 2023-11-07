@@ -1,12 +1,16 @@
 '----------------------------------------
-'
+'          POSSRT Subroutine
 '----------------------------------------
-'
+'This subroutine serves as a menu for the
+'end user to manage files that help find
+'and review players by position
 Sub POSSRT ()
 
     _Title "Full Count Baseball - Sort By Position"
 
     ReDim menuChoices$(1 To 3)
+
+    Shared currPosition
 
     Do
 
@@ -58,7 +62,10 @@ End Sub
 '----------------------------------------
 '       SearchPlayers Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine gives users a menu to
+'pick a position and then also the option
+'to view or print results. The corresponding
+'routine is then called based on the pick.
 Sub SearchPlayers ()
 
     Cls
@@ -71,7 +78,7 @@ Sub SearchPlayers ()
 
             Cls
 
-            SS = 0
+            currPosition = 0
 
             Color 11: Locate 5, 30: Print "S E L E C T"
 
@@ -161,8 +168,13 @@ Sub SearchPlayers ()
                     Loop Until UCase$(I$) = "P" Or UCase$(I$) = "V"
 
                     Select Case UCase$(I$)
-                        Case "P": Call PrintSearchResults(PS, PS$, positionFile$)
-                        Case "V": Call ViewSearchResults(PS, PS$, positionFile$)
+                        
+                        Case "P": 
+                            Call PrintSearchResults(PS, PS$, positionFile$)
+                        
+                        Case "V": 
+                            Call ViewSearchResults(PS, PS$, positionFile$)
+                    
                     End Select
 
                 End If 'Done looking for Z = 9
@@ -178,10 +190,11 @@ End Sub
 '----------------------------------------
 '      ViewSearchResults Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine displays the results of
+'the search parameters to the default display
 Sub ViewSearchResults (PS, PS$, positionFile$)
 
-    Shared SS
+    Shared currPosition
     Shared NN$
 
     Shared batterNames$(), TYN$()
@@ -222,9 +235,9 @@ Sub ViewSearchResults (PS, PS$, positionFile$)
 
                     If I2 = 33 Or I2 = 35 Or I2 = 37 Or I2 = 39 Then
 
-                        SS = SS + 1
+                        currPosition = currPosition + 1
 
-                        If (SS Mod 19 = 1) Then
+                        If (currPosition Mod 19 = 1) Then
 
                             Locate 23
                             Color 14: Print "HIT ANY KEY TO CONTINUE"
@@ -315,10 +328,11 @@ End Sub
 '----------------------------------------
 '      PrintSearchResults Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine displays the results of
+'the search parameters to the default printer
 Sub PrintSearchResults (PS, PS$, positionFile$)
 
-    Shared SS
+    Shared currPosition
     Shared NN$
 
     Shared batterRatings()
@@ -351,9 +365,9 @@ Sub PrintSearchResults (PS, PS$, positionFile$)
 
                     If batterRatings(I, 22) = PS Or batterRatings(I, 23) = PS Or batterRatings(I, 24) = PS Or batterRatings(I, 25) = PS Then
 
-                        SS = SS + 1
+                        currPosition = currPosition + 1
 
-                        If (SS Mod 50 = 1) Then
+                        If (currPosition Mod 50 = 1) Then
                             LPrint Chr$(12)
                             LPrint Tab(50); PPS$
                             LPrint
@@ -428,10 +442,13 @@ End Sub
 '----------------------------------------
 '       SortPitchers Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine gives the user more options
+'for filtering their search results further
 Sub SortPitchers (positionFile$)
 
-    SS = 0
+    Shared currPosition
+
+    currPosition = 0
 
     Cls
 
@@ -487,10 +504,11 @@ End Sub
 '----------------------------------------
 '      Pitchers10_Games Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine handles the display of
+'pitchers based on # of games played
 Sub Pitchers10_Games (PC, PPS$, positionFile$)
 
-    Shared SS
+    Shared currPosition
     Shared NN$
 
     Shared pitcherNames$(), PB$(), TYN$()
@@ -543,9 +561,10 @@ Sub Pitchers10_Games (PC, PPS$, positionFile$)
                         If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
 
                             If PC = 1 And pitcherRatings(I, 5) < PPS Or pitcherRatings(I, 5) > PPS Then
-                                SS = SS + 1
 
-                                If SS = 19 Or SS = 37 Or SS = 55 Or SS = 73 Or SS = 91 Or SS = 109 Or SS = 127 Or SS = 145 Or SS = 163 Or SS = 181 Or SS = 199 Or SS = 217 Or SS = 235 Or SS = 253 Or SS = 271 Or SS = 289 Or SS = 307 Or SS = 325 Or SS = 343 Or SS = 361 Or SS = 379 Or SS = 397 Or SS = 415 Then
+                                currPosition = currPosition + 1
+
+                                If (currPosition Mod 18 = 1) Then
 
                                     Locate 23
                                     Color 14: Print "HIT ANY KEY TO CONTINUE"
@@ -602,10 +621,11 @@ End Sub
 '----------------------------------------
 '    PitchersHanded Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine handles the display of
+'pitchers based on right/left handedness
 Sub PitchersHanded (THR, PPS$, positionFile$)
 
-    Shared SS
+    Shared currPosition
     Shared NN$
 
     Shared pitcherNames$(), PB$(), TYN$()
@@ -654,9 +674,9 @@ Sub PitchersHanded (THR, PPS$, positionFile$)
 
                             If THR = 1 And pitcherRatings(I, 0) = 1 Or pitcherRatings(I, 0) = -1 Then
 
-                                SS = SS + 1
+                                currPosition = currPosition + 1
 
-                                If (SS Mod 19 = 1) Then
+                                If (currPosition Mod 19 = 1) Then
                                     Color 14
                                     Locate 23: Print "HIT ANY KEY TO CONTINUE"
                                     I$ = GetKeyPress$
@@ -721,9 +741,9 @@ Sub PitchersHanded (THR, PPS$, positionFile$)
 
                             If THR = 1 And pitcherRatings(I, 0) = 1 Or pitcherRatings(I, 0) = -1 Then
 
-                                SS = SS + 1
+                                currPosition = currPosition + 1
 
-                                If (SS Mod 50 = 1) Then
+                                If (currPosition Mod 50 = 1) Then
                                     LPrint Chr$(12)
                                     LPrint Tab(50); PPS$
                                     LPrint
@@ -770,10 +790,11 @@ End Sub
 '----------------------------------------
 '       Pitchers10_Print Subroutine
 '----------------------------------------
-'...explanation...
+'This subroutine sends the pitcher info.
+'based on games to the default printer
 Sub Pitchers10_Print (PC, PPS$, positionFile$)
 
-    Shared SS
+    Shared currPosition
     Shared NN$
 
     Shared pitcherNames$(), PB$(), TYN$()
@@ -806,9 +827,9 @@ Sub Pitchers10_Print (PC, PPS$, positionFile$)
 
                     If PC = 1 And pitcherRatings(I, 5) < PPS Or pitcherRatings(I, 5) > PPS Then
 
-                        SS = SS + 1
+                        currPosition = currPosition + 1
 
-                        If (SS Mod 50 = 1) Then
+                        If (currPosition Mod 50 = 1) Then
                             LPrint Chr$(12)
                             LPrint Tab(50); PPS$
                             LPrint

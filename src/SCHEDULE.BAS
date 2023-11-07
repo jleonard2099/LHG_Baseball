@@ -146,7 +146,6 @@ End Sub
 Sub NewSchedule (scheduleFile$)
 
     Shared BS%, NS%
-    Shared N$
 
     Shared homeScores(), visitorScores()
     Shared scheduleAP%(), scheduleNG%()
@@ -200,13 +199,13 @@ Sub NewSchedule (scheduleFile$)
 
                 T1 = scheduleNG%(X + NS% * 20, 0)
                 YN$ = scheduleYN$(X + NS% * 20, 0)
-                Call ReadTeam (YN$, N$, T1)
-                scheduleV$(X) = N$
+                Call ReadTeam (YN$, team$, T1)
+                scheduleV$(X) = team$
 
                 T1 = scheduleNG%(X + NS% * 20, 1)
                 YN$ = scheduleYN$(X + NS% * 20, 1)
-                Call ReadTeam (YN$, N$, T1)
-                scheduleH$(X) = N$
+                Call ReadTeam (YN$, team$, T1)
+                scheduleH$(X) = team$
 
                 'Game number
                 Print Using "####  "; X + NS% * 20;
@@ -502,7 +501,6 @@ Sub NewGame (visitor$, home$, YN$, NTMS, gameIndex%)
 
     Dim displayPause!
 
-    Shared N$
     Shared scheduleH$(), scheduleV$()
     Shared scheduleYN$()
 
@@ -685,8 +683,6 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
     'scheduleAction% = 5: "MAKE GLOBAL CHANGES TO A SCHEDULE
     Dim displayPause!
 
-    Shared N$
-
     Shared homeScores(), visitorScores()
 
     Shared scheduleAP%()
@@ -746,7 +742,7 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
 
             If I$ <> Chr$(27) Or scheduleAction% = 4 Then
 
-                Call ChooseTeam (YN$, numberTeams, T1, N$)
+                Call ChooseTeam (YN$, numberTeams, T1, team$)
 
                 If T1 <> 0 Then
 
@@ -756,7 +752,7 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
                     'Change mode of play
                     If scheduleAction% = 4 Then
 
-                        Color teamRatings%(11), teamRatings%(12): Print N$;
+                        Color teamRatings%(11), teamRatings%(12): Print team$;
                         Color 15, 0
                         Print " IS TO BE:"
                         Print
@@ -855,7 +851,7 @@ Sub EditParameters ()
     Color 14
     Print "PARAMETERS FOR SAVING SPECIAL EVENTS BOXSCORES"
 
-    X% = 2: Color 15
+    Color 15
 
     Print " 1. IF INNINGS ARE OVER "; E%(1)
     Print " 2. A TEAM'S RUNS LESS THAN "; E%(2)

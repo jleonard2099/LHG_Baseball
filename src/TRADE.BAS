@@ -182,9 +182,9 @@ Sub LoadStatsForTrade (yearNumbers$(), sourceIdx)
     Shared teams_TRADE$(), A1$()
     Shared tradeB1$(), tradeP1$()
 
-    Shared tradeD0%(), tradeD1%(), tmRat_TRADE(), L2%()
+    Shared tradeD0%(), tradeD1%(), tmRat_TRADE(), tradeL2%()
     Shared TEAM%(), tradeT1%(), tradeP0%(), tradeP3%()
-    Shared tradeB0%(), tradeB3%(), tradeSS%(), W2%()
+    Shared tradeB0%(), tradeB3%(), tradeSS%(), tradeW2%()
 
     Shared haveStats()
 
@@ -216,8 +216,8 @@ Sub LoadStatsForTrade (yearNumbers$(), sourceIdx)
             Open diskPaths$(1) + statFile$ For Input As #1
 
             Input #1, A1$(sourceIdx)
-            Input #1, W2%(sourceIdx)
-            Input #1, L2%(sourceIdx)
+            Input #1, tradeW2%(sourceIdx)
+            Input #1, tradeL2%(sourceIdx)
 
             For I1 = 0 To 22:
                 Input #1, tradeB1$(sourceIdx, I1)
@@ -301,9 +301,9 @@ Sub ContinueTrade (yearNumbers$())
     Shared teams_TRADE$(), A1$()
     Shared tradeB1$(), tradeP1$()
 
-    Shared tradeD0%(), tradeD1%(), tmRat_TRADE(), L2%()
+    Shared tradeD0%(), tradeD1%(), tmRat_TRADE(), tradeL2%()
     Shared TEAM%(), tradeT1%(), tradeP0%(), tradeP3%()
-    Shared tradeB0%(), tradeB3%(), tradeSS%(), W2%()
+    Shared tradeB0%(), tradeB3%(), tradeSS%(), tradeW2%()
 
     Shared haveStats()
 
@@ -718,12 +718,12 @@ Sub SaveTrades (yearNumbers$())
     Shared batNam_TRADE$(), pitNam_TRADE$()
     Shared tradeB1$(), tradeP1$()
 
-    Shared tradeD0%(), tradeD1%(), tmRat_TRADE(), L2%()
+    Shared tradeD0%(), tradeD1%(), tmRat_TRADE(), tradeL2%()
     Shared haveStats(), TEAM%()
     Shared batRat_TRADE(), tradeB0%(), tradeB3%()
     Shared pitRat_TRADE(), tradeP0%(), tradeP3%()
     Shared tradeSA%(), tradeSS%(), tradeT1%(), tradeTS%()
-    Shared teamIndexes(), W2%()
+    Shared teamIndexes(), tradeW2%()
 
     Shared mgrs_TRADE$(), stads_TRADE$(), tmAbbrev_TRADE$()
 
@@ -905,8 +905,8 @@ Sub SaveTrades (yearNumbers$())
             Open diskPaths$(1) + statFile$ For Output As #1
 
             Print #1, A1$(I)
-            Print #1, W2%(I)
-            Print #1, L2%(I)
+            Print #1, tradeW2%(I)
+            Print #1, tradeL2%(I)
 
             For I1 = 0 To 22:
                 Print #1, tradeB1$(I, I1)

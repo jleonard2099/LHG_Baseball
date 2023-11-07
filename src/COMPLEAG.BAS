@@ -15,7 +15,7 @@ Sub CompileLeague ()
 
     Shared compileZ1!(), DFT!(), JS!(), OFT!()
 
-    Shared BA$(), compileTM$(), compileZ2$(), compileZ3$()
+    Shared BA$(), compileTeams$(), compileZ2$(), compileZ3$()
     Shared ER$(), H1$(), NM$()
 
     'Initialize values first
@@ -57,7 +57,7 @@ Sub CompileLeague ()
 
         For XW = 1 To 40
             Input #2, H1$(XW)
-            compileTM$(XW) = H1$(XW)
+            compileTeams$(XW) = H1$(XW)
         Next
 
         Close 2
@@ -85,7 +85,7 @@ Sub CompileLeague ()
 
                     For X = 1 To 40:
 
-                        If compileTM$(X) = WT$ Then
+                        If compileTeams$(X) = WT$ Then
 
                             If O1(X) = fullWins And O2(X) = fullLosses Then
                                 confGame = 1
@@ -1266,7 +1266,7 @@ End Sub
 Sub SortLeaders
 
     Shared O1(), O2()
-    Shared compileTM$()
+    Shared compileTeams$()
 
     'Sort record by games won
     For Z = 0 To 3
@@ -1287,7 +1287,7 @@ Sub SortLeaders
 
                         If Not (O1(X) <= O1(Y) And O1(X) > O2(X)) Or Not (O1(X) >= O1(Y) And O1(X) < O2(X)) Then
 
-                            Swap compileTM$(X), compileTM$(Y)
+                            Swap compileTeams$(X), compileTeams$(Y)
                             Swap O1(X), O1(Y)
                             Swap O2(X), O2(Y)
 
@@ -1319,7 +1319,7 @@ Sub PostLeaders (league$, leaderFile$, APP)
     Shared compileZ1!(), DFT!(), OFT!()
 
     Shared BA$(), compileZ2$(), compileZ3$()
-    Shared ER$(), compileTM$()
+    Shared ER$(), compileTeams$()
 
     Color 15, 0
 
@@ -1328,7 +1328,7 @@ Sub PostLeaders (league$, leaderFile$, APP)
     Open diskPaths$(2) + leaderFile$ + ".LDR" For Output As #2
 
     For X = 1 To 40:
-        Write #2, compileTM$(X), O1(X), O2(X)
+        Write #2, compileTeams$(X), O1(X), O2(X)
     Next
 
     For X = 1 To 298

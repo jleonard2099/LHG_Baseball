@@ -9,7 +9,7 @@ Sub ExpandedStandings ()
 
     Shared CLT!(), CWS!()
     Shared ELL!(), EWW!(), HLL!(), HWW!()
-    Shared LL!(), LLS!(), LTL!(), LTW!(), LWS!()
+    Shared expLL!(), LLS!(), LTL!(), LTW!(), LWS!()
     Shared RLL!(), RWW!(), TLS!(), TWS!(), WW!()
 
     Shared TML$(), Z1$()
@@ -74,7 +74,7 @@ Sub ExpandedStandings ()
                         Input #1, league$, D1$, D2$, D3$, D4$
 
                         For I = 1 To 40:
-                            Input #1, TML$(I), WW!(I), LL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
+                            Input #1, TML$(I), WW!(I), expLL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
                         Next
 
                         Close #1
@@ -103,7 +103,7 @@ Sub UpdateLeagueStandings (league$)
     Shared CLT!(), CWS!()
     Shared ELL!(), EWW!() 
     Shared HLL!(), HWW!()
-    Shared LL!(), LTW!(), LTL!()
+    Shared expLL!(), LTW!(), LTL!()
     Shared LLS!(), LWS!()
     Shared RLL!(), RWW!()
     Shared TLS!(), TWS!(), WW!()
@@ -168,7 +168,7 @@ Sub UpdateLeagueStandings (league$)
                     End If
 
                     If V%(I) > H%(I) Then 
-                        LL!(currRecord) = LL!(currRecord) + 1
+                        expLL!(currRecord) = expLL!(currRecord) + 1
                         If I%(I) > 9 Then ELL!(currRecord) = ELL!(currRecord) + 1
                         If PL$(I) = "H" Then HLL!(currRecord) = HLL!(currRecord) + 1
                         If PL$(I) = "A" Then RLL!(currRecord) = RLL!(currRecord) + 1
@@ -192,7 +192,7 @@ Sub UpdateLeagueStandings (league$)
                 Next I
 
                 If XX% <= 10 Then
-                    LTL!(currRecord) = LL!(currRecord)
+                    LTL!(currRecord) = expLL!(currRecord)
                     LTW!(currRecord) = WW!(currRecord)
                 Else
                     M = XX% - 9
@@ -214,7 +214,7 @@ Sub UpdateLeagueStandings (league$)
     Write #1, league$, D1$, D2$, D3$, D4$
 
     For I = 1 To 40:
-        Write #1, TML$(I), WW!(I), LL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
+        Write #1, TML$(I), WW!(I), expLL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
     Next
 
     Close #1
@@ -232,7 +232,7 @@ Sub NewStandingOptions ()
 
     Shared CLT!(), CWS!()
     Shared ELL!(), EWW!(), HLL!(), HWW!()
-    Shared LL!(), LLS!(), LTL!(), LTW!(), LWS!()
+    Shared expLL!(), LLS!(), LTL!(), LTW!(), LWS!()
     Shared RLL!(), RWW!(), TLS!(), TWS!(), WW!()
 
     Shared TML$(), Z1$()
@@ -273,7 +273,7 @@ Sub ViewNewStandings (league$)
 
     Shared CLT!(), CWS!()
     Shared ELL!(), EWW!(), HLL!(), HWW!()
-    Shared LL!(), LLS!(), LTL!(), LTW!(), LWS!()
+    Shared expLL!(), LLS!(), LTL!(), LTW!(), LWS!()
     Shared RLL!(), RWW!(), TLS!(), TWS!(), WW!()
 
     Shared TML$()
@@ -313,28 +313,28 @@ Sub ViewNewStandings (league$)
                 Color 15
 
                 'G / W / L
-                Print Tab(14); Using "###"; WW!(I) + LL!(I); Tab(18);
+                Print Tab(14); Using "###"; WW!(I) + expLL!(I); Tab(18);
                 Print Using "###"; WW!(I); Tab(22);
-                Print Using "###"; LL!(I);
+                Print Using "###"; expLL!(I);
 
                 ' PCT
-                If LL!(I) = 0 And LL!(I) + WW!(I) <> 0 Then
+                If expLL!(I) = 0 And expLL!(I) + WW!(I) <> 0 Then
                     Print Tab(26); "1.000";
                 Else
                     If WW!(I) = 0 Then
                         Print Tab(27); ".000";
                     Else
-                        If WW!(I) + LL!(I) <> 0 Then
-                            wlPCT! = WW!(I) / (WW!(I) + LL!(I))
+                        If WW!(I) + expLL!(I) <> 0 Then
+                            wlPCT! = WW!(I) / (WW!(I) + expLL!(I))
                             Print Tab(27); Using ".###"; wlPCT!;
                         Else
-                            If WW!(I) + LL!(I) = 0 Then Print Tab(27); ".000";
+                            If WW!(I) + expLL!(I) = 0 Then Print Tab(27); ".000";
                         End If
                     End If
                 End If
 
                 ' GB
-                calcGB! = ((WW!(AA) - WW!(I)) + (LL!(I) - LL!(AA))) / 2
+                calcGB! = ((WW!(AA) - WW!(I)) + (expLL!(I) - expLL!(AA))) / 2
                 If calcGB! = 0 Then
                     Print Tab(32); " ---";
                 Else
@@ -352,7 +352,7 @@ Sub ViewNewStandings (league$)
         Next
 
         'MAG #
-        MJ = 163 - WW!(AA) - LL!(AA + 1)
+        MJ = 163 - WW!(AA) - expLL!(AA + 1)
         If MJ < 0 Then MJ = 0
 
         Locate 4, 38
@@ -376,7 +376,7 @@ Sub PrintNewStandings (league$)
 
     Shared CLT!(), CWS!()
     Shared ELL!(), EWW!(), HLL!(), HWW!()
-    Shared LL!(), LLS!(), LTL!(), LTW!(), LWS!()
+    Shared expLL!(), LLS!(), LTL!(), LTW!(), LWS!()
     Shared RLL!(), RWW!(), TLS!(), TWS!(), WW!()
 
     Shared TML$()
@@ -408,35 +408,35 @@ Sub PrintNewStandings (league$)
             If TML$(I) <> "" And TML$(I) <> "*" Then
 
                 LPrint TML$(I);
-                LPrint Tab(14); Using "###"; WW!(I) + LL!(I); Tab(18);
+                LPrint Tab(14); Using "###"; WW!(I) + expLL!(I); Tab(18);
                 LPrint Using "###"; WW!(I); Tab(22);
-                LPrint Using "###"; LL!(I);
+                LPrint Using "###"; expLL!(I);
 
                 'PCT
-                If LL!(I) = 0 And LL!(I) + WW!(I) <> 0 Then
+                If expLL!(I) = 0 And expLL!(I) + WW!(I) <> 0 Then
                     LPrint Tab(26); "1.000";
                 Else
                     If WW!(I) = 0 Then
                         LPrint Tab(27); ".000";
                     Else
-                        If WW!(I) + LL!(I) = 0 Then
+                        If WW!(I) + expLL!(I) = 0 Then
                             LPrint Tab(27); ".000";
                         Else
-                            wlPCT! = WW!(I) / (WW!(I) + LL!(I))
+                            wlPCT! = WW!(I) / (WW!(I) + expLL!(I))
                             LPrint Tab(27); Using ".###"; wlPCT!;
                         End If
                     End If
                 End If
 
                 'GB
-                If ((WW!(AA) - WW!(I)) + (LL!(I) - LL!(AA))) / 2 = 0 Then
+                If ((WW!(AA) - WW!(I)) + (expLL!(I) - expLL!(AA))) / 2 = 0 Then
                     LPrint Tab(32); " ---";
                 Else
-                    LPrint Tab(32); Using "##.#"; ((WW!(NT * 10 - 9) - WW!(I)) + (LL!(I) - LL!(NT * 10 - 9))) / 2;
+                    LPrint Tab(32); Using "##.#"; ((WW!(NT * 10 - 9) - WW!(I)) + (expLL!(I) - expLL!(NT * 10 - 9))) / 2;
                 End If
 
                 If I = AA Then
-                    MJ = 163 - WW!(AA) - LL!(AA + 1)
+                    MJ = 163 - WW!(AA) - expLL!(AA + 1)
                     If MJ < 0 Then MJ = 0
                     LPrint Tab(38); Using "###"; MJ
                 End If
@@ -474,7 +474,7 @@ Sub SortStandings (AA, ZZ)
 
     Shared CLT!(), CWS!()
     Shared ELL!(), EWW!(), HLL!(), HWW!()
-    Shared LL!(), LLS!(), LTL!(), LTW!(), LWS!()
+    Shared expLL!(), LLS!(), LTL!(), LTW!(), LWS!()
     Shared RLL!(), RWW!(), TLS!(), TWS!(), WW!()
 
     Shared TML$()
@@ -483,14 +483,14 @@ Sub SortStandings (AA, ZZ)
 
         For Y = X + 1 To ZZ
 
-            diffX = WW!(X) - LL!(X)
-            diffY = WW!(Y) - LL!(Y)
+            diffX = WW!(X) - expLL!(X)
+            diffY = WW!(Y) - expLL!(Y)
 
             If diffX <= diffY Then
 
                 If diffX <> diffY Then
 
-                    If Not (WW!(X) <= WW!(Y) And WW!(X) > LL!(X)) Or Not (WW!(X) >= WW!(Y) And WW!(X) < LL!(X)) Then
+                    If Not (WW!(X) <= WW!(Y) And WW!(X) > expLL!(X)) Or Not (WW!(X) >= WW!(Y) And WW!(X) < expLL!(X)) Then
 
                         Swap TML$(X), TML$(Y)
                         Swap TWS!(X), TWS!(Y)
@@ -498,7 +498,7 @@ Sub SortStandings (AA, ZZ)
                         Swap CWS!(X), CWS!(Y)
                         Swap CLT!(X), CLT!(Y)
                         Swap WW!(X), WW!(Y)
-                        Swap LL!(X), LL!(Y)
+                        Swap expLL!(X), expLL!(Y)
                         Swap EWW!(X), EWW!(Y)
                         Swap ELL!(X), ELL!(Y)
                         Swap HLL!(X), HLL!(Y)

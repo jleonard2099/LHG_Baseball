@@ -22,7 +22,6 @@ Sub ACTIVATE ()
         Cls
 
         Print "CHANGE BATTERS"
-        X% = 2
 
         Do
 
@@ -52,19 +51,16 @@ Sub ACTIVATE ()
             Print "# TO CHANGE (1-23) (0 TO CONTINUE) ";
             Input I
 
-            I = I - 1
+            idx = I - 1
 
-            If I < 0 Or I > 22 Then
-                X% = 0
-            Else
-                batterRatings(I, 31) = 1 - batterRatings(I, 31)
+            If idx >= 0 And idx <= 22 Then
+                batterRatings(idx, 31) = 1 - batterRatings(idx, 31)
             End If
 
-        Loop Until I < 0
+        Loop Until I = 0
 
         Cls
         Print "CHANGE PITCHERS"
-        X% = 2
 
         Do
 
@@ -87,15 +83,13 @@ Sub ACTIVATE ()
             Print "# TO CHANGE (1-22) (0 TO CONTINUE) ";
             Input I
 
-            I = I - 1
+            idx = I - 1
 
-            If I < 0 Or I > 21 Then
-                X% = 0
-            Else
+            If idx >= 0 And idx <= 21 Then
                 pitcherRatings(I, 34) = 1 - pitcherRatings(I, 34)
             End If
 
-        Loop Until I < 0
+        Loop Until I = 0
 
         Cls
 

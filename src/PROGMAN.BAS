@@ -287,7 +287,7 @@ End Sub
 Sub AnalyzePlayerUsage (targetTeam$)
 
     Shared AB%(), teamRatings%(), progMG%(), batterRatings()
-    Shared batterNames$(), progB1$(), mgrX$()
+    Shared batterNames$(), progB1$()
 
     Dim FRAC!
 
@@ -367,7 +367,7 @@ Sub AnalyzePlayerUsage (targetTeam$)
             End If
 
             If I > 9 Then
-                Print mgrX$(I - 10);
+                Print alpha$(I - 10);
                 Color 15, 0
                 If batterRatings(I, 21) >= 98 Then Color 0, 7
             End If
@@ -396,7 +396,7 @@ End Sub
 'pinch hitters to assign to the select profile.
 Sub SelectPinchHitters (yearNumber$, targetTeam$, mgrNbr)
 
-    Shared batterNames$(), progB1$(), mgrX$()
+    Shared batterNames$(), progB1$()
     Shared batterRatings(), teamRatings%(), progMG%()
 
     Do
@@ -430,7 +430,7 @@ Sub SelectPinchHitters (yearNumber$, targetTeam$, mgrNbr)
                 If I <= 9 Then
                     Print Using "#"; I;
                 Else
-                    Print mgrX$(I - 10);
+                    Print alpha$(I - 10);
                 End If
 
                 Color 15, 0
@@ -542,7 +542,7 @@ End Sub
 'defensive strategy for late innings.
 Sub DefenseLateInning (yearNumber$, T$, mgrNbr)
 
-    Shared batterNames$(), mgrX$()
+    Shared batterNames$()
     Shared teamRatings%(), progMG%(), batterRatings()
 
     Do
@@ -593,7 +593,7 @@ Sub DefenseLateInning (yearNumber$, T$, mgrNbr)
                 Color 2, 0
 
                 If I < 10 Then Print Using "#"; I;: Color 15, 0: If batterRatings(I, 21) >= 98 Then Color 0, 7
-                If I > 9 Then Print mgrX$(I - 10);: Color 15, 0: If batterRatings(I, 21) >= 98 Then Color 0, 7
+                If I > 9 Then Print alpha$(I - 10);: Color 15, 0: If batterRatings(I, 21) >= 98 Then Color 0, 7
 
                 Locate , 3: Print batterNames$(I);: Color 15, 0
                 Locate , 17: If batterRatings(I, 22) <> -1 Then Print Using "# ####"; batterRatings(I, 22); batterRatings(I, 26);
@@ -889,7 +889,7 @@ End Sub
 'profile and displays it to the screen
 Sub ViewLineup (targetTeam$)
 
-    Shared batterNames$(), progB1$(), mgrX$()
+    Shared batterNames$(), progB1$()
     Shared teamRatings%(), batterRatings()
 
     Cls
@@ -910,7 +910,7 @@ Sub ViewLineup (targetTeam$)
             Color 2, 0
 
             If I < 10 Then Print Using "#"; I;: Color 15, 0: If batterRatings(I, 21) >= 98 Then Color 0, 7
-            If I > 9 Then Print mgrX$(I - 10);: Color 15, 0: If batterRatings(I, 21) >= 98 Then Color 0, 7
+            If I > 9 Then Print alpha$(I - 10);: Color 15, 0: If batterRatings(I, 21) >= 98 Then Color 0, 7
 
             Locate , 3: Print batterNames$(I);
             Color 15, 0
@@ -956,7 +956,7 @@ End Sub
 'up and make changes.
 Sub InputDeleteLineup (D%, yearNumber$)
 
-    Shared batterNames$(), C$()
+    Shared batterNames$()
 
     Shared progB3%(), progB7%(), progB9%()
     Shared teamRatings%(), progM%(), batterRatings()
@@ -974,7 +974,7 @@ Sub InputDeleteLineup (D%, yearNumber$)
                 If D% <> 1 Or I1 <> 1 Then
 
                     Locate 24, (I1 * 3) + 1
-                    If progM%(I1) = 0 Then Print C$(I1); " ";
+                    If progM%(I1) = 0 Then Print fieldPos$(I1); " ";
                     If progM%(I1) = 1 Then Print I1; " ";
 
                     Locate 25, (I1 * 3) + 1
@@ -1036,7 +1036,7 @@ Sub InputDeleteLineup (D%, yearNumber$)
                                 If D% <> 1 Or I1 <> 1 Then
 
                                     Locate 24, (I1 * 3) + 1
-                                    If progM%(I1) = 0 Then Print C$(I1); " ";
+                                    If progM%(I1) = 0 Then Print fieldPos$(I1); " ";
                                     If progM%(I1) = 1 Then Print I1; " ";
 
                                     Locate 25, (I1 * 3) + 1
@@ -1079,7 +1079,7 @@ Sub InputDeleteLineup (D%, yearNumber$)
                     If D% = 0 And Val(I$) = 0 Or UCase$(I$) = "X" Then Call GetLineupPosition(I1, I$)
 
                     lu_idx = Val(I$)
-                    Print C$(lu_idx);
+                    Print fieldPos$(lu_idx);
 
                     progB7%(I) = lu_idx
                     progB9%(progB7%(I)) = progB3%(I)
@@ -1098,7 +1098,7 @@ Sub InputDeleteLineup (D%, yearNumber$)
                             If D% <> 1 Or I1 <> 1 Then
 
                                 Locate 24, (I1 * 3) + 1
-                                If progM%(I1) = 0 Then Print C$(I1); " ";
+                                If progM%(I1) = 0 Then Print fieldPos$(I1); " ";
                                 If progM%(I1) = 1 Then Print I1; " ";
 
                                 Locate 25, (I1 * 3) + 1
@@ -1178,7 +1178,7 @@ End Sub
 'used.
 Sub ChangeLineup_PROGMAN (yearNumber$, I$)
 
-    Shared batterNames$(), C$()
+    Shared batterNames$()
     Shared progB3%(), progB7%(), progB9%()
     Shared progM%(), progMG%(), batterRatings()
 
@@ -1244,7 +1244,7 @@ Sub ChangeLineup_PROGMAN (yearNumber$, I$)
                     If progB7%(I) <> 1 Then Print batterNames$(progB3%(I));
 
                     Print Tab(74);
-                    Print C$(progB7%(I));
+                    Print fieldPos$(progB7%(I));
 
                 Next I
 
@@ -1289,7 +1289,7 @@ Sub ChangeLineup_PROGMAN (yearNumber$, I$)
                     If progB7%(I) <> 1 Then Print batterNames$(progB3%(I));
 
                     Print Tab(74);
-                    Print C$(progB7%(I));
+                    Print fieldPos$(progB7%(I));
 
                 Next I
 
@@ -1357,7 +1357,7 @@ End Sub
 'making changes.
 Sub EditOneLineup (targetTeam$, yearNumber$)
 
-    Shared batterNames$(), C$()
+    Shared batterNames$(), fieldPos$()
     Shared progB3%(), progB7%(), progB9%()
     Shared progM%(), batterRatings()
 
@@ -1401,7 +1401,7 @@ Sub EditOneLineup (targetTeam$, yearNumber$)
         If progB7%(I) <> 1 Then Print batterNames$(progB3%(I));
 
         Print Tab(74);
-        Print C$(progB7%(I));
+        Print fieldPos$(progB7%(I));
 
     Next I
 
@@ -1433,7 +1433,7 @@ End Sub
 'lineups found during the search.
 Sub GetLineup (handRL%)
 
-    Shared batterNames$(), C$(), PT$()
+    Shared batterNames$(), fieldPos$(), PT$()
     Shared progMG%()
 
     Cls
@@ -1470,7 +1470,7 @@ Sub GetLineup (handRL%)
                     End If
 
                     Locate 2 + I1, 16 * I + 12
-                    Print C$(progMG%(101 + I1 + (I + handRL% * 10) * 21))
+                    Print fieldPos$(progMG%(101 + I1 + (I + handRL% * 10) * 21))
 
                 End If
 
@@ -1510,7 +1510,7 @@ Sub GetLineup (handRL%)
                     End If
 
                     Locate 13 + I1, 16 * (I - 5) + 12
-                    Print C$(progMG%(101 + I1 + (I + handRL% * 10) * 21))
+                    Print fieldPos$(progMG%(101 + I1 + (I + handRL% * 10) * 21))
 
                 End If
 
@@ -2065,7 +2065,7 @@ End Sub
 Sub ShowPitcherInfo (targetTeam$)
 
     Shared teamRatings%(), progMG%(), pitcherRatings()
-    Shared progB1$(), pitcherNames$(), mgrX$()
+    Shared progB1$(), pitcherNames$()
 
     Cls
 
@@ -2086,7 +2086,7 @@ Sub ShowPitcherInfo (targetTeam$)
             If I <= 9 Then
                 Print Using "#"; I;
             Else
-                Print mgrX$(I - 10);
+                Print alpha$(I - 10);
             End If
 
             Color 15, 0
@@ -2605,7 +2605,7 @@ End Sub
 Sub SetupMiddleRelievers (targetTeam$, yearNumber$, mgrNbr)
 
     Shared progMG%(), teamRatings%(), pitcherRatings()
-    Shared progB1$(), pitcherNames$(), mgrX$()
+    Shared progB1$(), pitcherNames$()
 
     Do
 
@@ -2644,7 +2644,7 @@ Sub SetupMiddleRelievers (targetTeam$, yearNumber$, mgrNbr)
                 If I <= 9 Then
                     Print Using "#"; I;
                 Else
-                    Print mgrX$(I - 10);
+                    Print alpha$(I - 10);
                 End If
                 Color 15, 0
 
@@ -2749,7 +2749,7 @@ End Sub
 'assignment of relievers.
 Sub SetupRelievers (targetTeam$, yearNumber$, mgrNbr)
 
-    Shared progB1$(), pitcherNames$(), mgrX$()
+    Shared progB1$(), pitcherNames$()
     Shared teamRatings%(), progMG%(), pitcherRatings()
 
     Do
@@ -2780,7 +2780,7 @@ Sub SetupRelievers (targetTeam$, yearNumber$, mgrNbr)
                 If I <= 9 Then
                     Print Using "#"; I;
                 Else
-                    Print mgrX$(I - 10);
+                    Print alpha$(I - 10);
                 End If
 
                 Color 15, 0
@@ -2898,7 +2898,7 @@ End Sub
 'assignment of closers.
 Sub SetupClosers (targetTeam$, yearNumber$, mgrNbr)
 
-    Shared progB1$(), pitcherNames$(), mgrX$()
+    Shared progB1$(), pitcherNames$()
     Shared teamRatings%(), progMG%(), pitcherRatings()
 
     Do
@@ -2923,7 +2923,7 @@ Sub SetupClosers (targetTeam$, yearNumber$, mgrNbr)
                 If I <= 9 Then
                     Print Using "#"; I;
                 Else
-                    Print mgrX$(I - 10);
+                    Print alpha$(I - 10);
                 End If
 
                 Color 15, 0
@@ -3766,7 +3766,7 @@ End Sub
 Sub PinchRunnerOptions (yearNumber$, targetTeam$, mgrNbr)
 
     Shared teamRatings%(), progMG%(), batterRatings()
-    Shared batterNames$(), mgrX$()
+    Shared batterNames$()
 
     Do
 
@@ -3808,7 +3808,7 @@ Sub PinchRunnerOptions (yearNumber$, targetTeam$, mgrNbr)
                 End If
 
                 If I > 9 Then
-                    Print mgrX$(I - 10);
+                    Print alpha$(I - 10);
                     Color 15, 0
                     If batterRatings(I, 21) >= 98 Then Color 0, 7
                 End If
@@ -3893,7 +3893,7 @@ End Sub
 'setup of defensive subs for pinch runners
 Sub DefenseSubPinchRun (yearNumber$, targetTeam$, mgrNbr)
 
-    Shared batterNames$(), mgrX$()
+    Shared batterNames$()
     Shared teamRatings%(), progMG%(), batterRatings()
 
     Do
@@ -3925,7 +3925,7 @@ Sub DefenseSubPinchRun (yearNumber$, targetTeam$, mgrNbr)
                     If batterRatings(I, 21) >= 98 Then Color 0, 7
                 End If
                 If I > 9 Then
-                    Print mgrX$(I - 10);
+                    Print alpha$(I - 10);
                     Color 15, 0
                     If batterRatings(I, 21) >= 98 Then Color 0, 7
                 End If
@@ -4060,13 +4060,13 @@ Sub ExportManagerProfile (mgrNbr)
         Open diskPaths$(3) + MGR_FILE_NAME$ + "." + YN$ For Random As #2 Len = MGR_SIZE_BYTES
 
         For I = 0 To 999
-            Field #2, I * 2 As Q$, 2 As R$(I), MGR_SIZE_BYTES - I * 2 - 2 As Q$
+            Field #2, I * 2 As Q$, 2 As progR$(I), MGR_SIZE_BYTES - I * 2 - 2 As Q$
         Next
 
         Get #2, mgrNbr
 
         For I = 0 To 999
-            progMG%(I) = CVI(R$(I))
+            progMG%(I) = CVI(progR$(I))
         Next
 
         Close 2
@@ -4166,7 +4166,7 @@ End Sub
 'that has been modified so far.
 Sub UpdateManagerFile (teamYear$, mgrNbr)
 
-    Shared R$()
+    Shared progR$()
     Shared progMG%()
 
     progMG%(0) = 999
@@ -4174,11 +4174,11 @@ Sub UpdateManagerFile (teamYear$, mgrNbr)
     Open diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #2 Len = MGR_SIZE_BYTES
 
     For I = 0 To 999
-        Field #2, I * 2 As Q$, 2 As R$(I), MGR_SIZE_BYTES - I * 2 - 2 As Q$
+        Field #2, I * 2 As Q$, 2 As progR$(I), MGR_SIZE_BYTES - I * 2 - 2 As Q$
     Next
 
     For I = 0 To 999
-        LSet R$(I) = MKI$(progMG%(I))
+        LSet progR$(I) = MKI$(progMG%(I))
     Next
 
     Put #2, mgrNbr
@@ -4537,7 +4537,7 @@ End Sub
 'base running strategy.
 Sub BASERUN (teamYear$, mgrNbr)
 
-    Shared R$()
+    Shared progR$()
     Shared progMG%()
 
     'BASE RUNNING STRATEGY
@@ -4584,11 +4584,11 @@ Sub BASERUN (teamYear$, mgrNbr)
             Open diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #2 Len = MGR_SIZE_BYTES
 
             For J = 0 To 999
-                Field #2, J * 2 As Q$, 2 As R$(J), MGR_SIZE_BYTES - J * 2 - 2 As Q$
+                Field #2, J * 2 As Q$, 2 As progR$(J), MGR_SIZE_BYTES - J * 2 - 2 As Q$
             Next
 
             For J = 0 To 999:
-                LSet R$(J) = MKI$(progMG%(J))
+                LSet progR$(J) = MKI$(progMG%(J))
             Next
 
             Put #2, mgrNbr
@@ -4629,13 +4629,13 @@ Sub GetManagerProfile (targetTeam$, yearNumber$, mgrNbr)
         Open diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #2 Len = MGR_SIZE_BYTES
 
         For I = 0 To 999
-            Field #2, I * 2 As Q$, 2 As R$(I), MGR_SIZE_BYTES - I * 2 - 2 As Q$
+            Field #2, I * 2 As Q$, 2 As progR$(I), MGR_SIZE_BYTES - I * 2 - 2 As Q$
         Next
 
         Get #2, mgrNbr
 
         For I = 0 To 999
-            progMG%(I) = CVI(R$(I))
+            progMG%(I) = CVI(progR$(I))
         Next
 
         Close 2

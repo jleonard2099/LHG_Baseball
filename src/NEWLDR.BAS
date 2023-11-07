@@ -12,7 +12,7 @@ Sub NEWLDR ()
 
     Shared CLT!(), CWS!()
     Shared ELL!(), EWW!(), HLL!(), HWW!()
-    Shared LL!(), LLS!(), LTL!(), LTW!(), LWS!()
+    Shared expLL!(), LLS!(), LTL!(), LTW!(), LWS!()
     Shared RLL!(), RWW!(), TLS!(), TWS!(), WW!()
 
     Shared TML$(), Z1$()
@@ -109,7 +109,7 @@ Sub NEWLDR ()
                         Input #1, league$, D1$, D2$, D3$, D4$
 
                         For I = 1 To 40:
-                            Input #1, TML$(I), WW!(I), LL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
+                            Input #1, TML$(I), WW!(I), expLL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
                         Next
 
                         Close #1
@@ -193,7 +193,7 @@ Sub UpdateExpandedLeaders (JB, JP, tStats, ttStats)
     Shared Wins(), Losses()
 
     Shared batterNames$(), leaderBL$(), pitcherNames$(), leaderPL$()
-    Shared TM$(), TMB$(), TMP$(), TT2$()
+    Shared leaderTeams$(), TMB$(), TMP$(), TT2$()
     Shared Z1$()
 
     Color 15, 0
@@ -212,7 +212,7 @@ Sub UpdateExpandedLeaders (JB, JP, tStats, ttStats)
 
                 Open diskPaths$(1) + teamStat$ For Input As #1
 
-                Input #1, A$
+                Input #1, teamName$
                 Input #1, W2%
                 Input #1, L2%
 
@@ -258,14 +258,14 @@ Sub UpdateExpandedLeaders (JB, JP, tStats, ttStats)
 
                 For I = 0 To 21
                     TT!(tStats, I) = statT%(I)
-                    TM$(tStats, I) = A$
+                    leaderTeams$(tStats, I) = teamName$
                 Next
 
                 ttStats = ttStats + 1
 
                 For I = 0 To 22
                     TT1!(ttStats, I) = statT1%(I)
-                    TT2$(ttStats, I) = A$
+                    TT2$(ttStats, I) = teamName$
                 Next
 
                 For I = 0 To 22
@@ -274,7 +274,7 @@ Sub UpdateExpandedLeaders (JB, JP, tStats, ttStats)
                         JB = JB + 1
                         leaderBL$(JB) = batterNames$(I)
                         TBN = TBN + 1
-                        TMB$(TBN) = A$
+                        TMB$(TBN) = teamName$
                         GM1!(JB) = Wins(YY) + Losses(YY)
                     End If
 
@@ -286,7 +286,7 @@ Sub UpdateExpandedLeaders (JB, JP, tStats, ttStats)
                         JP = JP + 1
                         leaderPL$(JP) = pitcherNames$(I)
                         TPN = TPN + 1
-                        TMP$(TPN) = A$
+                        TMP$(TPN) = teamName$
                         GM2(JP) = Wins(YY) + Losses(YY)
                     End If
 
@@ -349,7 +349,7 @@ Sub SAVELEADER (leaderFile$, league$, JB, JP, tStats, ttStats)
     Shared Wins(), Losses()
 
     Shared leaderBL$(), leaderPL$()
-    Shared TM$(), TMB$(), TMP$(), TT2$()
+    Shared leaderTeams$(), TMB$(), TMP$(), TT2$()
 
     Shared D1$, D2$, D3$, D4$
 
@@ -426,7 +426,7 @@ Sub SAVELEADER (leaderFile$, league$, JB, JP, tStats, ttStats)
     For I = 1 To 40:
 
         For I1 = 0 To 21:
-            Write #1, TT!(I, I1), TM$(I, I1)
+            Write #1, TT!(I, I1), leaderTeams$(I, I1)
         Next
 
         Color 14
@@ -467,7 +467,7 @@ Sub READLEADER (leaderFile$, league$, JB, JP, tStats, ttStats)
     Shared Wins(), Losses()
 
     Shared leaderBL$(), leaderPL$()
-    Shared TM$(), TMB$(), TMP$(), TT2$()
+    Shared leaderTeams$(), TMB$(), TMP$(), TT2$()
 
     Shared D1$, D2$, D3$, D4$
 
@@ -544,7 +544,7 @@ Sub READLEADER (leaderFile$, league$, JB, JP, tStats, ttStats)
     For I = 1 To 40:
 
         For I1 = 0 To 21:
-            Input #1, TT!(I, I1), TM$(I, I1)
+            Input #1, TT!(I, I1), leaderTeams$(I, I1)
         Next
 
         Color 14
@@ -1377,7 +1377,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
     Shared TT!(), TT1!()
     Shared TYP!(), TYP1!()
 
-    Shared TM$(), TMM$()
+    Shared leaderTeams$(), TMM$()
     Shared TP$(), TP2$(), TT2$()
 
     Shared D1$, D2$, D3$, D4$
@@ -1397,7 +1397,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
     For I = 1 To 40:
 
         For I1 = 0 To 21:
-            Input #1, TT!(I, I1), TM$(I, I1)
+            Input #1, TT!(I, I1), leaderTeams$(I, I1)
         Next
 
         Color 14
@@ -1514,7 +1514,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
 
                 Case 0 To 13, 17, 18:
                     For I = 1 To tStats
-                        TMM$(I) = TM$(I, X)
+                        TMM$(I) = leaderTeams$(I, X)
                         TYP!(I) = TT!(I, X)
                     Next
 
@@ -1526,7 +1526,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
 
                 Case 14
                     For I = 1 To tStats
-                        TMM$(I) = TM$(I, X)
+                        TMM$(I) = leaderTeams$(I, X)
                         TYP!(I) = TT!(I, X1) / TT!(I, X)
                     Next
 
@@ -1538,7 +1538,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
 
                 Case 15
                     For I = 1 To tStats
-                        TMM$(I) = TM$(I, X)
+                        TMM$(I) = leaderTeams$(I, X)
                         TYP!(I) = (TT!(I, X1) + TT!(I, X2) + (TT!(I, X3) * 2) + (TT!(I, X4) * 3)) / TT!(I, X)
                     Next
 
@@ -1550,7 +1550,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
 
                 Case 16
                     For I = 1 To maxRecords
-                        TMM$(I) = TM$(I, X)
+                        TMM$(I) = leaderTeams$(I, X)
                         TYP!(I) = (TT!(I, X1) + TT!(I, X2)) / (TT!(I, X) + TT!(I, X2))
                     Next
 
@@ -1562,7 +1562,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
 
                 Case 19
                     For I = 1 To maxRecords
-                        TMM$(I) = TM$(I, X)
+                        TMM$(I) = leaderTeams$(I, X)
                         TYP!(I) = (TT!(I, X) + TT!(I, X1)) / (TT!(I, X) + TT!(I, X1) + TT!(I, X2))
                     Next
 

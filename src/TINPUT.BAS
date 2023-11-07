@@ -403,6 +403,8 @@ End Sub
 Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
 
     Shared batterNames$(), BS$(), pitcherNames$(), PS$()
+
+    Shared inputBS%()
     Shared statB0%(), statP0%(), statSS%()
     Shared statT!(), statT1!()
 
@@ -486,7 +488,7 @@ Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
 
                     For I = 0 To 22:
                         Print #1, BS$(I)
-                        Print #1, BS%(I)
+                        Print #1, inputBS%(I)
                     Next I
 
                     For I = 0 To 21:
@@ -553,7 +555,7 @@ End Sub
 'team.
 Sub LoadTeam (targetTeam$, SS, statFile$)
 
-    Shared BS%(), PS%(), statSS%()
+    Shared inputBS%(), PS%(), statSS%()
     Shared statB0%(), statP0%()
 
     Shared BS$(), PS$()
@@ -582,7 +584,7 @@ Sub LoadTeam (targetTeam$, SS, statFile$)
 
         For I = 0 To 22:
             Input #1, BS$(I)
-            Input #1, BS%(I)
+            Input #1, inputBS%(I)
         Next I
 
         For I = 0 To 21:
@@ -649,7 +651,7 @@ End Sub
 Sub SwitchBatters ()
 
     Shared batterNames$(), BS$()
-    Shared BS%(), batterRatings(), statB0%(), statSS%()
+    Shared inputBS%(), batterRatings(), statB0%(), statSS%()
 
     Do
         For I = 16 To 19:
@@ -695,7 +697,7 @@ Sub SwitchBatters ()
         Swap statSS%(I1 - 1, I), statSS%(I2 - 1, I)
     Next
 
-    Swap BS%(I1 - 1), BS%(I2 - 1)
+    Swap inputBS%(I1 - 1), inputBS%(I2 - 1)
 
 End Sub
 

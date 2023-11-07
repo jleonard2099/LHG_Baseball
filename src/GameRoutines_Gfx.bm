@@ -163,7 +163,7 @@ Sub MAINSCREEN_G (D, p, BC%, U%, MO)
     PrintOnGfx 63, 28, Str$(U%), imageScreen&
 
     'Outs
-    PrintOnGfx 63, 29, Str$(O%(0)), imageScreen&
+    PrintOnGfx 63, 29, Str$(nbrOuts(0)), imageScreen&
 
     'Infield
     _PutImage (52 * FontColAdj, 416)-Step(13 * FontColAdj, 16), backupScreen&, imageScreen&, (52 * FontColAdj, 416)-Step(13 * FontColAdj, 16)
@@ -190,10 +190,10 @@ Sub MAINSCREEN_G (D, p, BC%, U%, MO)
     X = 37
     Call DisplayRun_G(I2, p, X)
 
-    If O%(0) <> 3 Then MO = 0
+    If nbrOuts(0) <> 3 Then MO = 0
 
     For WK = 1 To 3
-        If B0%(WK, 0) > 0 Then MO = MO + 1
+        If gameB0%(WK, 0) > 0 Then MO = MO + 1
     Next
 
     'RUNNER AT THIRD
@@ -231,7 +231,7 @@ Sub DisplayRun_G (I2, p, X)
 
     End Select
 
-    J = B0%(I2, 0)
+    J = gameB0%(I2, 0)
 
     If J <> 0 Then
 
@@ -281,8 +281,8 @@ Sub DisplayBallField_Gfx (BC%, p, U%, D)
     inningStart% = 1
     inningEnd% = 9
 
-    If INNING% > 9 Then X% = 10: inningStart% = 18
-    If INNING% > 18 Then X% = 19: inningEnd% = 27
+    If INNING% > 9 Then inningStart% = 18
+    If INNING% > 18 Then inningEnd% = 27
 
     'Print Batter / Pitcher box
     '----------------------------------------
@@ -328,7 +328,7 @@ Sub DisplayBallField_Gfx (BC%, p, U%, D)
             FORMATTED$ = FORMATTED$ + "S" + Str$(U%)
         Else
             'Outs
-            FORMATTED$ = FORMATTED$ + "O" + Str$(O%(0))
+            FORMATTED$ = FORMATTED$ + "O" + Str$(nbrOuts(0))
         End If
 
         PrintOnGfx 53, I + 28, FORMATTED$, imageScreen&

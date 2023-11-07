@@ -34,7 +34,7 @@ Sub LoadLeaderFiles (league$, D1$, D2$, targetFile$)
     Shared seeZ!(), seeZ1!()
 
     Shared BA$(), compileZ2$(), compileZ3$(), ER$()
-    Shared LF$(), seeP$(), RT$(), T$()
+    Shared LF$(), seeP$(), RT$(), seeT$()
 
     Open diskPaths$(2) + targetFile$ + ".TMS" For Input As #2
 
@@ -53,7 +53,7 @@ Sub LoadLeaderFiles (league$, D1$, D2$, targetFile$)
 
     Open diskPaths$(2) + targetFile$ + ".LDR" For Input As #2
 
-    For X = 1 To 40: Input #2, T$(X), Wins(X), Losses(X): Next
+    For X = 1 To 40: Input #2, seeT$(X), Wins(X), Losses(X): Next
 
     For X = 1 To 298: Input #2, compileZ2$(X), compileZ3$(X), seeZ!(X), seeZ1!(X): Next
 
@@ -199,7 +199,7 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     Shared seeZ!(), seeZ1!()
 
     Shared BA$(), compileZ2$(), compileZ3$(), ER$()
-    Shared LF$(), seeP$(), RT$(), T$()
+    Shared LF$(), seeP$(), RT$(), seeT$()
 
     Dim J!, ATBATS!, INNINGS!
 
@@ -224,13 +224,13 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
 
         For P = first To last
 
-            If T$(P) = "*" Then
+            If seeT$(P) = "*" Then
 
                 seeP$(P) = ""
 
             Else
 
-                seeP$(P) = PadRight$(T$(P), 12)
+                seeP$(P) = PadRight$(seeT$(P), 12)
 
                 'Wins
                 seeP$(P) = seeP$(P) + Right$("     " + Str$(Wins(P)), 3)
@@ -1321,7 +1321,7 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Shared seeZ!(), seeZ1!()
 
     Shared BA$(), compileZ2$(), compileZ3$(), ER$()
-    Shared LF$(), seeP$(), RT$(), T$()
+    Shared LF$(), seeP$(), RT$(), seeT$()
 
     'If destination <> 1 Then
     '    Open "REPORT" For Output As #2
@@ -1334,11 +1334,11 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
     For P = 1 To 10:
 
-        If T$(P) = "*" Then
+        If seeT$(P) = "*" Then
             seeP$(P) = ""
         Else
 
-            seeP$(P) = T$(P)
+            seeP$(P) = seeT$(P)
 
             While Len(seeP$(P)) < 12
                 seeP$(P) = seeP$(P) + " "
@@ -1397,11 +1397,11 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
     For P = 11 To 20:
 
-        If T$(P) = "*" Then
+        If seeT$(P) = "*" Then
             seeP$(P) = ""
         Else
 
-            seeP$(P) = T$(P)
+            seeP$(P) = seeT$(P)
 
             While Len(seeP$(P)) < 12
                 seeP$(P) = seeP$(P) + " "
@@ -1458,10 +1458,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
     For P = 21 To 30
 
-        If T$(P) = "*" Then
+        If seeT$(P) = "*" Then
             seeP$(P) = ""
         Else
-            seeP$(P) = T$(P)
+            seeP$(P) = seeT$(P)
 
             While Len(seeP$(P)) < 12
                 seeP$(P) = seeP$(P) + " "
@@ -1519,10 +1519,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
     For P = 31 To 40
 
-        If T$(P) = "*" Then
+        If seeT$(P) = "*" Then
             seeP$(P) = ""
         Else
-            seeP$(P) = T$(P)
+            seeP$(P) = seeT$(P)
 
             While Len(seeP$(P)) < 12
                 seeP$(P) = seeP$(P) + " "
