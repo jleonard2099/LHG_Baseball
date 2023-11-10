@@ -55,8 +55,6 @@ Sub InitVar ()
     'still just 80 column width; so 80x8 = 640
     FontColAdj = 8
 
-    monitorType = 12 'Monitor%
-
     teamIndicator$(0) = "VISITING TEAM"
     teamIndicator$(1) = "HOME TEAM"
 
@@ -144,7 +142,6 @@ Sub InitVar ()
         Next
     Next
 
-    autoPlay = 0
     EJ% = 0
     H6% = 0
     IJL% = 0
@@ -155,11 +152,11 @@ Sub InitVar ()
     PB% = 0
     PC% = 0
     SC% = 0
-    TA% = 0
     gameTemp = 0
     gameW% = 0
     WS% = 0
 
+    autoPlay = 0
     D = 0
     DB = 0
     endGame = 1
@@ -192,7 +189,6 @@ Sub InitVar ()
     Erase BP, F, MON, pitchRating
     Erase tmRat_GAME, VV, VV1
 
-    'Erase AP%
     Erase A5%, batRating, gameB0%
     Erase B1%, B2%, B3%, B4%
     Erase B5%, B7%, B8%, B9%, BT%
@@ -203,7 +199,7 @@ Sub InitVar ()
 
     Erase inningScore, S1%, S6%, S8%
     Erase SU%, startPitcher
-    Erase statT%, T3%, TS%, VA%, X0%
+    Erase statT%, T3%, TS%, X0%
 
     Erase B1!, parkHRVals!
 
@@ -212,7 +208,7 @@ Sub InitVar ()
     Erase homeRuns$, IJ$
     Erase PARK$, pitchers$, player$
     Erase Q3$, SB$
-    Erase teamAbbreviatons$, TR$, U$, YN$
+    Erase teamAbbreviatons$, TR$, umpireName$, YN$
 
     For P9 = 0 To 1
         For I3 = 0 To 21

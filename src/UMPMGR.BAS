@@ -67,7 +67,7 @@ Sub EnterUmpireFile ()
         Input "ENTER UMPIRE NAME (END TO QUIT) "; umpireNames$(X)
 
         If UCase$(umpireNames$(X)) = "END" Then
-            Erase U$
+            Erase umpireNames$
             Exit For
         Else
             Input "ENTER RATING (0-9) "; umpRating(X)
