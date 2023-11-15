@@ -187,7 +187,7 @@ Sub UpdateExpandedLeaders (JB, JP, tStats, ttStats)
 
     Shared BK%(), careerB0%(), statB%()
     Shared careerP0%(), statP%(), PM%()
-    Shared statT%(), statT1%()
+    Shared statT0%(), statT1%()
 
     Shared TT!(), TT1!()
     Shared Wins(), Losses()
@@ -242,7 +242,7 @@ Sub UpdateExpandedLeaders (JB, JP, tStats, ttStats)
                 Input #1, D1%
 
                 For I = 0 To 21:
-                    Input #1, statT%(I)
+                    Input #1, statT0%(I)
                 Next I
 
                 For I = 0 To 22:
@@ -257,7 +257,7 @@ Sub UpdateExpandedLeaders (JB, JP, tStats, ttStats)
                 tStats = tStats + 1
 
                 For I = 0 To 21
-                    TT!(tStats, I) = statT%(I)
+                    TT!(tStats, I) = statT0%(I)
                     leaderTeams$(tStats, I) = teamName$
                 Next
 

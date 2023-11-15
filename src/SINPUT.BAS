@@ -66,7 +66,7 @@ Sub EditStatsSchedules (action%)
     Shared batterNames$(), pitcherNames$()
     Shared statB%(), careerB0%()
     Shared statP%(), careerP0%()
-    Shared statT%(), statT1%()
+    Shared statT0%(), statT1%()
 
     Call ChooseTeam(YN$, NTMS, teamNbr, team$)    
     statFile$ = nameStatFile$(team$)
@@ -108,7 +108,7 @@ Sub ModifyTeamStats (Z$)
     Shared batterNames$(), pitcherNames$()
     Shared careerB0%(), careerP0%()
     Shared teamRatings%()
-    Shared statB%(), statP%(), statT%(), statT1%()
+    Shared statB%(), statP%(), statT0%(), statT1%()
 
     Open diskPaths$(1) + Z$ For Input As #1
 
@@ -141,7 +141,7 @@ Sub ModifyTeamStats (Z$)
     Input #1, D0%
     Input #1, D1%
 
-    For I = 0 To 21: Input #1, statT%(I): Next I
+    For I = 0 To 21: Input #1, statT0%(I): Next I
 
     For I = 0 To 22: Input #1, statT1%(I): Next I
 
@@ -158,24 +158,24 @@ Sub ModifyTeamStats (Z$)
 
     Locate 2, 1
     Print "1. TEAM NAME (EX. ST_LOUIS.64) "; Z$
-    Print "2. TM AB "; statT%(0)
-    Print "3. TM RUNS "; statT%(2)
-    Print "4. TM HITS "; statT%(1)
-    Print "5. TM DBL "; statT%(4)
-    Print "6. TM TRPL "; statT%(5)
-    Print "7. TM HR "; statT%(6)
-    Print "8. TM RBI "; statT%(3)
-    Print "9. TM BB "; statT%(7)
-    Print "10. TM SO "; statT%(8)
-    Print "11. TM ERR "; statT%(11)
-    Print "12. TM SB "; statT%(9)
-    Print "13. TM CS "; statT%(10)
-    Print "14. TM PO "; statT%(16)
-    Print "15. TM A  "; statT%(17)
-    Print "16. TM SH "; statT%(18)
-    Print "17. TM SF "; statT%(19)
-    Print "18. TM GIDP "; statT%(15)
-    Print "19. TM LOB "; statT%(12)
+    Print "2. TM AB "; statT0%(0)
+    Print "3. TM RUNS "; statT0%(2)
+    Print "4. TM HITS "; statT0%(1)
+    Print "5. TM DBL "; statT0%(4)
+    Print "6. TM TRPL "; statT0%(5)
+    Print "7. TM HR "; statT0%(6)
+    Print "8. TM RBI "; statT0%(3)
+    Print "9. TM BB "; statT0%(7)
+    Print "10. TM SO "; statT0%(8)
+    Print "11. TM ERR "; statT0%(11)
+    Print "12. TM SB "; statT0%(9)
+    Print "13. TM CS "; statT0%(10)
+    Print "14. TM PO "; statT0%(16)
+    Print "15. TM A  "; statT0%(17)
+    Print "16. TM SH "; statT0%(18)
+    Print "17. TM SF "; statT0%(19)
+    Print "18. TM GIDP "; statT0%(15)
+    Print "19. TM LOB "; statT0%(12)
 
     Do
 
@@ -191,58 +191,58 @@ Sub ModifyTeamStats (Z$)
                 Locate 2: Input "1. TEAM NAME (EX. ST_LOUIS.64) "; Z$
 
             Case 2
-                Locate 3: Input "2. TM AB "; statT%(0)
+                Locate 3: Input "2. TM AB "; statT0%(0)
 
             Case 3
-                Locate 4: Input "3. TM RUNS "; statT%(2)
+                Locate 4: Input "3. TM RUNS "; statT0%(2)
 
             Case 4
-                Locate 5: Input "4. TM HITS "; statT%(1)
+                Locate 5: Input "4. TM HITS "; statT0%(1)
 
             Case 5
-                Locate 6: Input "5. TM DBL "; statT%(4)
+                Locate 6: Input "5. TM DBL "; statT0%(4)
 
             Case 6
-                Locate 7: Input "6. TM TRPL "; statT%(5)
+                Locate 7: Input "6. TM TRPL "; statT0%(5)
 
             Case 7
-                Locate 8: Input "7. TM HR "; statT%(6)
+                Locate 8: Input "7. TM HR "; statT0%(6)
 
             Case 8
-                Locate 9: Input "8. TM RBI "; statT%(3)
+                Locate 9: Input "8. TM RBI "; statT0%(3)
 
             Case 9
-                Locate 10: Input "9. TM BB "; statT%(7)
+                Locate 10: Input "9. TM BB "; statT0%(7)
 
             Case 10
-                Locate 11: Input "10. TM SO "; statT%(8)
+                Locate 11: Input "10. TM SO "; statT0%(8)
 
             Case 11
-                Locate 12: Input "11. TM ERR "; statT%(11)
+                Locate 12: Input "11. TM ERR "; statT0%(11)
 
             Case 12
-                Locate 13: Input "12. TM SB "; statT%(9)
+                Locate 13: Input "12. TM SB "; statT0%(9)
 
             Case 13
-                Locate 14: Input "13. TM CS "; statT%(10)
+                Locate 14: Input "13. TM CS "; statT0%(10)
 
             Case 14
-                Locate 15: Input "14. TM PO "; statT%(16)
+                Locate 15: Input "14. TM PO "; statT0%(16)
 
             Case 15
-                Locate 16: Input "15. TM A  "; statT%(17)
+                Locate 16: Input "15. TM A  "; statT0%(17)
 
             Case 16
-                Locate 17: Input "16. TM SH "; statT%(18)
+                Locate 17: Input "16. TM SH "; statT0%(18)
 
             Case 17
-                Locate 18: Input "17. TM SF "; statT%(19)
+                Locate 18: Input "17. TM SF "; statT0%(19)
 
             Case 18
-                Locate 19: Input "18. TM GIDP "; statT%(15)
+                Locate 19: Input "18. TM GIDP "; statT0%(15)
 
             Case 19
-                Locate 20: Input "19. TM LOB "; statT%(12)
+                Locate 20: Input "19. TM LOB "; statT0%(12)
 
         End Select
 
@@ -385,7 +385,7 @@ Sub ModifyTeamStats (Z$)
     Print #1, D0%: Print #1, D1%
 
     For I = 0 To 21: 
-        Print #1, statT%(I)
+        Print #1, statT0%(I)
     Next I
 
     For I = 0 To 22: 
@@ -557,7 +557,7 @@ Sub ChangePitchers ()
 
     Shared batterNames$(), pitcherNames$()
     Shared statB%(), careerB0%(), statP%(), careerP0%()
-    Shared statT%(), statT1%()
+    Shared statT0%(), statT1%()
 
     Do
 
@@ -784,8 +784,8 @@ End Sub
 'schedule results.
 Sub ChangeSchedule (Z$)
 
-    Shared H%(), I%(), V%()
-    Shared H$(), L$(), PL$(), W$()
+    Shared teamScore(), nbrInnings(), oppScore()
+    Shared oppName$(), losePitcher$(), locIndicator$(), winPitcher$()
 
     statsFile$ = diskPaths$(1) + Z$ + "S"
 
@@ -805,28 +805,48 @@ Sub ChangeSchedule (Z$)
 
         Open statsFile$ For Input As #1
 
-        Input #1, GAMES%
+        Input #1, nbrGames
 
-        For I = 1 To NUM_STATRECORDS: Input #1, H%(I): Next
-        For I = 1 To NUM_STATRECORDS: Input #1, H$(I): Next
-        For I = 1 To NUM_STATRECORDS: Input #1, V%(I): Next
-        For I = 1 To NUM_STATRECORDS: Input #1, PL$(I): Next
-        For I = 1 To NUM_STATRECORDS: Input #1, W$(I): Next
-        For I = 1 To NUM_STATRECORDS: Input #1, L$(I): Next
-        For I = 1 To NUM_STATRECORDS: Input #1, I%(I): Next
+        For I = 1 To MAX_SCHED_STATS: 
+            Input #1, teamScore(I)
+        Next I
+
+        For I = 1 To MAX_SCHED_STATS: 
+            Input #1, oppName$(I)
+        Next I
+
+        For I = 1 To MAX_SCHED_STATS: 
+            Input #1, oppScore(I)
+        Next I
+
+        For I = 1 To MAX_SCHED_STATS: 
+            Input #1, locIndicator$(I)
+        Next I
+
+        For I = 1 To MAX_SCHED_STATS: 
+            Input #1, winPitcher$(I)
+        Next I
+
+        For I = 1 To MAX_SCHED_STATS: 
+            Input #1, losePitcher$(I)
+        Next I
+
+        For I = 1 To MAX_SCHED_STATS: 
+            Input #1, nbrInnings(I)
+        Next I
 
         Close 1
 
         Cls
 
         Do
-            Locate 1, 1: Print "1. SCORE FOR "; Z$; " "; H%
-            Locate 2, 1: Print "2. OPPONENT'S NAME "; H$
-            Locate 3, 1: Print "3. OPPONENT'S SCORE "; V%
-            Locate 4, 1: Print "4. (H)OME OR (A)WAY "; PL$
-            Locate 5, 1: Print "5. WINNING PITCHER "; W$
-            Locate 6, 1: Print "6. LOSING PITCHER "; L$
-            Locate 7, 1: Print "7. NUMBER OF INNINGS "; I%
+            Locate 1, 1: Print "1. SCORE FOR "; Z$; " "; homeScore
+            Locate 2, 1: Print "2. OPPONENT'S NAME "; oppTeam$
+            Locate 3, 1: Print "3. OPPONENT'S SCORE "; oppPts
+            Locate 4, 1: Print "4. (H)OME OR (A)WAY "; homeOrAway$
+            Locate 5, 1: Print "5. WINNING PITCHER "; winPitch$
+            Locate 6, 1: Print "6. LOSING PITCHER "; losePitch$
+            Locate 7, 1: Print "7. NUMBER OF INNINGS "; numInn
 
             Do
                 Locate 9, 1: Print "ENTER # TO CHANGE (1-7) OR 0 TO CONTINUE"
@@ -835,38 +855,38 @@ Sub ChangeSchedule (Z$)
 
                 Select Case D
                     Case 1:
-                        Locate 1, 1: Print "1. SCORE FOR "; Z$; " ";: Input H%
+                        Locate 1, 1: Print "1. SCORE FOR "; Z$; " ";: Input homeScore
 
                     Case 2:
-                        Locate 2, 1: Print "2. OPPONENT'S NAME ";: Input H$
+                        Locate 2, 1: Print "2. OPPONENT'S NAME ";: Input oppTeam$
 
                     Case 3:
-                        Locate 3, 1: Print "3. OPPONENT'S SCORE ";: Input V%
+                        Locate 3, 1: Print "3. OPPONENT'S SCORE ";: Input oppPts
 
                     Case 4:
-                        Locate 4, 1: Print "4. (H)OME OR (A)WAY ";: Input PL$
+                        Locate 4, 1: Print "4. (H)OME OR (A)WAY ";: Input homeOrAway$
 
                     Case 5:
-                        Locate 5, 1: Print "5. WINNING PITCHER ";: Input W$
+                        Locate 5, 1: Print "5. WINNING PITCHER ";: Input winPitch$
 
                     Case 6:
-                        Locate 6, 1: Print "6. LOSING PITCHER ";: Input L$
+                        Locate 6, 1: Print "6. LOSING PITCHER ";: Input losePitch$
 
                     Case 7:
-                        Locate 7, 1: Print "7. NUMBER OF INNINGS ";: Input I%
+                        Locate 7, 1: Print "7. NUMBER OF INNINGS ";: Input numInn
 
                 End Select
 
             Loop Until D >= 0 And D <= 7
 
-            GAMES% = GAMES% + 1
-            H%(GAMES%) = H%
-            H$(GAMES%) = H$
-            V%(GAMES%) = V%
-            PL$(GAMES%) = PL$
-            W$(GAMES%) = W$
-            L$(GAMES%) = L$
-            I%(GAMES%) = I%
+            nbrGames = nbrGames + 1
+            teamScore(nbrGames) = homeScore
+            oppName$(nbrGames) = oppTeam$
+            oppScore(nbrGames) = oppPts
+            locIndicator$(nbrGames) = homeOrAway$
+            winPitcher$(nbrGames) = winPitch$
+            losePitcher$(nbrGames) = losePitch$
+            nbrInnings(nbrGames) = numInn
 
             Do
                 Print "ADD ANOTHER GAME? (Y/N)";
@@ -878,15 +898,15 @@ Sub ChangeSchedule (Z$)
         'Save changes
         Open diskPaths$(1) + Z$ + "S" For Output As #1
 
-        Print #1, GAMES%
+        Print #1, nbrGames
 
-        For I = 1 To NUM_STATRECORDS: Print #1, H%(I): Next
-        For I = 1 To NUM_STATRECORDS: Print #1, H$(I): Next
-        For I = 1 To NUM_STATRECORDS: Print #1, V%(I): Next
-        For I = 1 To NUM_STATRECORDS: Print #1, PL$(I): Next
-        For I = 1 To NUM_STATRECORDS: Print #1, W$(I): Next
-        For I = 1 To NUM_STATRECORDS: Print #1, L$(I): Next
-        For I = 1 To NUM_STATRECORDS: Print #1, I%(I): Next
+        For I = 1 To MAX_SCHED_STATS: Print #1, teamScore(I): Next
+        For I = 1 To MAX_SCHED_STATS: Print #1, oppName$(I): Next
+        For I = 1 To MAX_SCHED_STATS: Print #1, oppScore(I): Next
+        For I = 1 To MAX_SCHED_STATS: Print #1, locIndicator$(I): Next
+        For I = 1 To MAX_SCHED_STATS: Print #1, winPitcher$(I): Next
+        For I = 1 To MAX_SCHED_STATS: Print #1, losePitcher$(I): Next
+        For I = 1 To MAX_SCHED_STATS: Print #1, nbrInnings(I): Next
 
         Close 1
 

@@ -183,7 +183,7 @@ Sub MAINSCREEN_G (D, p, BC%, U%, MO)
     'Printing white on black
     Color 4294967295
     _PrintMode _FillBackground , imageScreen&
-    Call HOLDSTATUS_G(runnerHeld)
+    Call HOLDSTATUS_G(H0%)
 
     'RUNNER AT SECOND
     I2 = 2
@@ -316,12 +316,12 @@ Sub DisplayBallField_Gfx (BC%, p, U%, D)
             Call INNDISP_G(I2, I)
         Next I2
 
-        R% = gameScore(I, 0)
-        H% = gameScore(I, 1)
-        E% = gameScore(I, 2)
+        R% = S6%(I, 0)
+        H% = S6%(I, 1)
+        E% = S6%(I, 2)
 
         '                         R                                         H                                                      E
-        FORMATTED$ = FUsing$(Str$(gameScore(I, 0)), "##", 1) + " " + FUsing$(Str$(gameScore(I, 1)), "##", 1) + " " + FUsing$(Str$(gameScore(I, 2)), "##", 1) + " "
+        FORMATTED$ = FUsing$(Str$(S6%(I, 0)), "##", 1) + " " + FUsing$(Str$(S6%(I, 1)), "##", 1) + " " + FUsing$(Str$(S6%(I, 2)), "##", 1) + " "
 
         If I = 0 Then
             'Strikes
@@ -504,7 +504,7 @@ Sub DisplayBallField_Gfx (BC%, p, U%, D)
     PrintOnGfx 61, 20, player$, imageScreen&
 
     'Pitcher Name
-    player$ = "[" + handed$(pitchRating(D, P1%(D), 0) + 2) + "] " + Left$(pitchers$(D, P1%(D)), 10)
+    player$ = "[" + B1$(pitchRating(D, P1%(D), 0) + 2) + "] " + Left$(pitchers$(D, P1%(D)), 10)
     player$ = PadRight(player$, 10)
     PrintOnGfx 35, 21, player$, imageScreen&
 
@@ -539,17 +539,14 @@ End Sub
 '        HOLDSTATUS_G Subroutine
 '----------------------------------------
 ' ...explanation...
-Sub HOLDSTATUS_G (runnerHeld)
+Sub HOLDSTATUS_G (H0%)
 
     _PutImage (53 * FontColAdj, 400)-Step(12 * FontColAdj, 16), backupScreen&, imageScreen&, (53 * FontColAdj, 400)-Step(12 * FontColAdj, 16)
 
     rhStatus$ = "RUNNERS:"
-
-    If runnerHeld = 0 Then
-        rhStatus$ = rhStatus$ + "    "
-    Else
-        rhStatus$ = rhStatus$ + "HELD"
-    End If
+    'Can this only be 0 | 1???
+    If H0% = 0 Then rhStatus$ = rhStatus$ + "    "
+    If H0% = 1 Then rhStatus$ = rhStatus$ + "HELD"
 
     'Printing black on background
     _PrintMode _KeepBackground , imageScreen&

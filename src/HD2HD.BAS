@@ -76,18 +76,16 @@ End Sub
 'team comparisons.
 Sub Hd2Hd_League (LG$, sameLeague)
 
-    Shared H%(), I%(), V%(), statZ1%()
+    Shared teamScore(), nbrInnings(), oppScore(), statZ1%()
     Shared awayLosses(), awayWins()
     Shared homeLosses(), homeWins()
     Shared statR1%(), statR2%(), statR3%(), statR4%()
     Shared TR1%(), TR2%(), TR3%(), TR4%()
     Shared THW%(), THL%(), TAW%(), TAL%()
 
-    Shared DV$(), L$(), Z1$(), Z2$()
+    Shared DV$(), losePitcher$(), Z1$(), Z2$()
 
     Shared D1$, D2$, D3$, D4$
-
-    Dim O$(NUM_STATRECORDS), LP$(NUM_STATRECORDS), WP$(NUM_STATRECORDS)
 
     Do
 
@@ -112,15 +110,35 @@ Sub Hd2Hd_League (LG$, sameLeague)
 
     Open diskPaths$(1) + statFile$ + "S" For Input As #1
 
-    Input #1, YY%
+    Input #1, nbrGames
 
-    For J = 1 To NUM_STATRECORDS: Input #1, H%(J): Next
-    For J = 1 To NUM_STATRECORDS: Input #1, O$(J): Next
-    For J = 1 To NUM_STATRECORDS: Input #1, V%(J): Next
-    For J = 1 To NUM_STATRECORDS: Input #1, L$(J): Next
-    For J = 1 To NUM_STATRECORDS: Input #1, WP$(J): Next
-    For J = 1 To NUM_STATRECORDS: Input #1, LP$(J): Next
-    For J = 1 To NUM_STATRECORDS: Input #1, I%(J): Next
+    For I = 1 To MAX_SCHED_STATS: 
+        Input #1, teamScore(I)
+    Next I
+
+    For I = 1 To MAX_SCHED_STATS: 
+        Input #1, oppName$(I)
+    Next I
+
+    For I = 1 To MAX_SCHED_STATS: 
+        Input #1, oppScore(I)
+    Next I
+
+    For I = 1 To MAX_SCHED_STATS: 
+        Input #1, locIndicator$(I)
+    Next I
+
+    For I = 1 To MAX_SCHED_STATS: 
+        Input #1, winPitcher$(I)
+    Next I
+
+    For I = 1 To MAX_SCHED_STATS: 
+        Input #1, losePitcher$(I)
+    Next I
+
+    For I = 1 To MAX_SCHED_STATS: 
+        Input #1, nbrInnings(I)
+    Next I
 
     Close #1
 
@@ -143,11 +161,14 @@ Sub Hd2Hd_League (LG$, sameLeague)
                 Color 7, 1
 
                 Locate , 30: Print "STATS TO ";
-                Color 15: Print "S";: Color 7: Print "CREEN"
+                Color 15: Print "S";
+                Color 7: Print "CREEN"
                 Locate , 30: Print "STATS TO ";
-                Color 15: Print "P";: Color 7: Print "RINTER"
+                Color 15: Print "P";
+                Color 7: Print "RINTER"
                 Locate , 30: Print "STATS TO ";
-                Color 15: Print "F";: Color 7: Print "ILE"
+                Color 15: Print "F";
+                Color 7: Print "ILE"
 
                 J$ = GetKeyPress$
 
@@ -193,15 +214,15 @@ Sub Hd2Hd_League (LG$, sameLeague)
 
                 If Z1$(K) <> "XXX" Then
 
-                    For I = 1 To YY%
-                        If H%(I) > V%(I) And L$(I) = "A" And O$(I) = Z1$(K) Then awayWins(K) = awayWins(K) + 1
-                        If H%(I) > V%(I) And L$(I) = "H" And O$(I) = Z1$(K) Then homeWins(K) = homeWins(K) + 1
-                        If H%(I) < V%(I) And L$(I) = "A" And O$(I) = Z1$(K) Then awayLosses(K) = awayLosses(K) + 1
-                        If H%(I) < V%(I) And L$(I) = "H" And O$(I) = Z1$(K) Then homeLosses(K) = homeLosses(K) + 1
-                        If O$(I) = Z1$(K) And L$(I) = "H" Then statR1%(K) = statR1%(K) + H%(I)
-                        If O$(I) = Z1$(K) And L$(I) = "H" Then statR2%(K) = statR2%(K) + V%(I)
-                        If O$(I) = Z1$(K) And L$(I) = "A" Then statR3%(K) = statR3%(K) + H%(I)
-                        If O$(I) = Z1$(K) And L$(I) = "A" Then statR4%(K) = statR4%(K) + V%(I)
+                    For I = 1 To nbrGames
+                        If teamScore(I) > oppScore(I) And losePitcher$(I) = "A" And oppName$(I) = Z1$(K) Then awayWins(K) = awayWins(K) + 1
+                        If teamScore(I) > oppScore(I) And losePitcher$(I) = "H" And oppName$(I) = Z1$(K) Then homeWins(K) = homeWins(K) + 1
+                        If teamScore(I) < oppScore(I) And losePitcher$(I) = "A" And oppName$(I) = Z1$(K) Then awayLosses(K) = awayLosses(K) + 1
+                        If teamScore(I) < oppScore(I) And losePitcher$(I) = "H" And oppName$(I) = Z1$(K) Then homeLosses(K) = homeLosses(K) + 1
+                        If oppName$(I) = Z1$(K) And losePitcher$(I) = "H" Then statR1%(K) = statR1%(K) + teamScore(I)
+                        If oppName$(I) = Z1$(K) And losePitcher$(I) = "H" Then statR2%(K) = statR2%(K) + oppScore(I)
+                        If oppName$(I) = Z1$(K) And losePitcher$(I) = "A" Then statR3%(K) = statR3%(K) + teamScore(I)
+                        If oppName$(I) = Z1$(K) And losePitcher$(I) = "A" Then statR4%(K) = statR4%(K) + oppScore(I)
 
                     Next I
 

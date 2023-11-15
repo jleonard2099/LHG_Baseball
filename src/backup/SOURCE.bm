@@ -37,7 +37,7 @@ Sub SOURCE ()
     Erase gameB0%, B1%
 
     F% = 0
-    runnerHeld = 0
+    H0% = 0
     S4% = 0
 
     L0%(P) = L0%(P) + MO
@@ -59,40 +59,32 @@ Sub SOURCE ()
 
     'Check scores / innings
     '------------------------------
-    If INNING% > 9 And D = 1 And gameScore(1, 0) <> gameScore(0, 0) Or INNING% = 28 Or INNING% >= 9 And P = 1 And gameScore(P, 0) - gameScore(D, 0) > 0 Then
+    If INNING% > 9 And D = 1 And S6%(1, 0) <> S6%(0, 0) Or INNING% = 28 Or INNING% >= 9 And P = 1 And S6%(P, 0) - S6%(D, 0) > 0 Then
         'After 9th inning, score not tied, etc..
         'End of game!
         GoTo 18500
     End If
 
-    If rainDelay = 1 And INNING% >= rainStart And rainStart >= 6 And (gameScore(1, 0) > gameScore(0, 0) And P = 1 Or gameScore(0, 0) > gameScore(1, 0) And P = 0) Then
-
+    If rainyDay = 1 And INNING% >= rainStartInning And rainStartInning >= 6 And (S6%(1, 0) > S6%(0, 0) And P = 1 Or S6%(0, 0) > S6%(1, 0) And P = 0) Then
         Cls
-
         If useVGA = 0 Then Screen 0
-
         Print "THIS GAME HAS BEEN CALLED ON ACCOUNT OF RAIN!!!"
         Print "ALL RECORDS ARE OFFICIAL!!"
         Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
-
         I$ = GetKeyPress$
 
         'End of game!
         GoTo 18500
-
     End If
 
-    If rainDelay = 1 And P = 0 And INNING% = 4 Then
-
+    If rainyDay = 1 And P = 0 And INNING% = 4 Then
         Call PBP("THE RAIN IS FALLING A LITTLE MORE STEADILY")
         Call PBP("THIS GAME MAY NOT GO 9!")
         I$ = GetKeyPress$
-
     End If
 
     'Game is not over - show the field
     If useVGA = 1 Then
-
         '-- Here, we restore the non-negative value
         '-- of B9%() to prevent an error
         B9%(D, 1) = b9d1
@@ -150,7 +142,7 @@ Sub SOURCE ()
 
     Next
 
-    A1 = gameScore(D, 0) - gameScore(P, 0)
+    A1 = S6%(D, 0) - S6%(P, 0)
 
     If Not (MG%(D, 560) <> 999 Or INNING% < 8 Or playerMode = 0 Or playerMode = 1 And P = compTeam) Then
 
@@ -242,7 +234,7 @@ Sub SOURCE ()
     D2 = 0
 
     ' Game over - there's a winner
-    If INNING% >= 9 And P = 1 And gameScore(P, 0) - gameScore(D, 0) > 0 Then
+    If INNING% >= 9 And P = 1 And S6%(P, 0) - S6%(D, 0) > 0 Then
         GoTo 18500
     End If
 
@@ -272,19 +264,19 @@ Sub SOURCE ()
         'Print total score
         If useVGA = 1 Then
 
-            FORMATTED$ = FUsing$(Str$(gameScore(I0, 0)), "##", 1)
+            FORMATTED$ = FUsing$(Str$(S6%(I0, 0)), "##", 1)
             PrintOnGfx 53, I0 + 28, FORMATTED$, imageScreen&
 
-            FORMATTED$ = FUsing$(Str$(gameScore(D, 2)), "##", 1)
+            FORMATTED$ = FUsing$(Str$(S6%(D, 2)), "##", 1)
             'PrintOnGfx 59, 1 - I0 + 28, FORMATTED$, imageScreen&
             PrintOnGfx 59, D + 28, FORMATTED$, imageScreen&
 
         Else
 
             Locate I0 + 2, 40
-            Print Using "##"; gameScore(I0, 0);
+            Print Using "##"; S6%(I0, 0);
             Locate D + 2, 46
-            Print Using "##"; gameScore(D, 2);
+            Print Using "##"; S6%(D, 2);
             Color 15, 0
 
         End If
@@ -298,11 +290,11 @@ Sub SOURCE ()
         End If
 
         If S4% = 1 Or S4% = 5 Then
-            runnerHeld = 1
+            H0% = 1
             If useVGA = 1 Then
-                Call HOLDSTATUS_G(runnerHeld)
+                Call HOLDSTATUS_G(H0%)
             Else
-                Call HOLDSTATUS(runnerHeld)
+                Call HOLDSTATUS(H0%)
             End If
         End If
 
@@ -434,12 +426,12 @@ Sub SOURCE ()
 
         If UCase$(I$) = "H" Then
 
-            runnerHeld = 1 - runnerHeld
+            H0% = 1 - H0%
 
             If useVGA = 1 Then
-                Call HOLDSTATUS_G(runnerHeld)
+                Call HOLDSTATUS_G(H0%)
             Else
-                Call HOLDSTATUS(runnerHeld)
+                Call HOLDSTATUS(H0%)
             End If
 
             GoTo 15081
@@ -529,7 +521,7 @@ Sub SOURCE ()
 
             If PPH <> 1 Then
 
-                A1 = gameScore(P, 0) - gameScore(D, 0)
+                A1 = S6%(P, 0) - S6%(D, 0)
 
                 If B7%(P, B1!(P)) <> 1 Then
 
@@ -610,7 +602,7 @@ Sub SOURCE ()
 
                         Else
 
-                            If INNING% > 4 And INNING% < 7 And A1 < -2 And gameScore(P, 0) > 0 Then 18930
+                            If INNING% > 4 And INNING% < 7 And A1 < -2 And S6%(P, 0) > 0 Then 18930
                             If INNING% > 4 And INNING% < 7 And A1 < -3 Then 18930
                             If INNING% > 6 And A1 < 0 Or A1 = 0 And INNING% > 6 And INNING% < 9 And S4% > 1 Then 18930
                             If A1 = 0 And INNING% >= 9 And S4% > 0 Or A1 = 0 And INNING% >= 9 And nbrOuts(0) = 0 Then 18930
@@ -823,10 +815,7 @@ Sub SOURCE ()
     12000 ' BRANCH FOR RARE PLAYS
     Call RAREPLAYS(H6%, H7%, IP%)
 
-    If IP% = 1 Then
-        IP% = 0
-        Call RELIEVERS(PPH, pz)
-    End If
+    If IP% = 1 Then IP% = 0: Call RELIEVERS(PPH, pz)
 
     '-- It appears the following lines get executed
     '-- almost no matter what value H6% is.
@@ -933,7 +922,7 @@ Sub SOURCE ()
     13050 '
     Call d100(RN)
 
-    If (((precipType = 1 Or precipType = 2 Or precipType = 3) And RN = 2) Or (rainDelay = 1 And RN <= 5)) And INNING% >= 2 And gameDelayed = 0 Then
+    If (((precipType = 1 Or precipType = 2 Or precipType = 3) And RN = 2) Or (rainyDay = 1 And RN <= 5)) And INNING% >= 2 And gameDelayed = 0 Then
         H7% = 20
         H6% = 21
         GoTo 12000
@@ -1655,56 +1644,11 @@ Sub SOURCE ()
 
             End If
 
-            If S4% = 7 And gameW% = 1 Then
-                Call CREDITASSIST(gameW%, D)
-                TB = 9
-                gameW% = 2
-                Call PBP("He throws home")
-                A5%(3) = 11
-                A5%(1) = 0
-                A5%(2) = 0
-                A5%(0) = 0: GoTo 13634
-            End If
-
-            If S4% = 5 And gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 7 And nbrOuts(0) = 0 And INFPOS% > 0 And gameW% = 5 Or S4% = 5 And gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 7 And nbrOuts(0) = 0 And INFPOS% > 0 And gameW% = 3 Then
-                GoTo 13650
-            End If
-
-            If S4% = 7 And INFPOS% > 0 And (gameW% = 5 Or gameW% = 3) Then
-                Call CREDITASSIST(gameW%, D)
-                TB = 9: gameW% = 2
-                Call PBP("He fires it home")
-                A5%(3) = 11
-                A5%(1) = 0
-                A5%(2) = 0
-                A5%(0) = 0
-                GoTo 13634
-            End If
-
-            If S4% = 7 And INFPOS% = 2 And gameW% = 4 Then
-                Call CREDITASSIST(gameW%, D)
-                TB = 9
-                gameW% = 2
-                Call PBP("He throws home for the force")
-                A5%(3) = 11
-                A5%(1) = 0
-                A5%(2) = 0
-                A5%(0) = 0
-                GoTo 13634
-            End If
-
-            If S4% = 7 And INFPOS% = 2 And gameW% = 6 Then
-                Call CREDITASSIST(gameW%, D)
-                TB = 9
-                gameW% = 2
-                Call PBP("He goes home with it")
-                A5%(3) = 11
-                A5%(1) = 0
-                A5%(2) = 0
-                A5%(0) = 0
-                GoTo 13634
-            End If
-
+            If S4% = 7 And gameW% = 1 Then Call CREDITASSIST(gameW%, D): TB = 9: gameW% = 2: Call PBP("He throws home"): A5%(3) = 11: A5%(1) = 0: A5%(2) = 0: A5%(0) = 0: GoTo 13634
+            If S4% = 5 And S6%(P, 0) - S6%(D, 0) >= 0 And INNING% > 7 And nbrOuts(0) = 0 And INFPOS% > 0 And gameW% = 5 Or S4% = 5 And S6%(P, 0) - S6%(D, 0) >= 0 And INNING% > 7 And nbrOuts(0) = 0 And INFPOS% > 0 And gameW% = 3 Then 13650
+            If S4% = 7 And INFPOS% > 0 And (gameW% = 5 Or gameW% = 3) Then Call CREDITASSIST(gameW%, D): TB = 9: gameW% = 2: Call PBP("He fires it home"): A5%(3) = 11: A5%(1) = 0: A5%(2) = 0: A5%(0) = 0: GoTo 13634
+            If S4% = 7 And INFPOS% = 2 And gameW% = 4 Then Call CREDITASSIST(gameW%, D): TB = 9: gameW% = 2: Call PBP("He throws home for the force"): A5%(3) = 11: A5%(1) = 0: A5%(2) = 0: A5%(0) = 0: GoTo 13634
+            If S4% = 7 And INFPOS% = 2 And gameW% = 6 Then Call CREDITASSIST(gameW%, D): TB = 9: gameW% = 2: Call PBP("He goes home with it"): A5%(3) = 11: A5%(1) = 0: A5%(2) = 0: A5%(0) = 0: GoTo 13634
 
             If gameW% <= 4 Then
                 Call CREDITASSIST(gameW%, D)
@@ -1924,10 +1868,7 @@ Sub SOURCE ()
 
             Call PBP(pbpString$)
 
-            For I = 0 To 3:
-                A5%(I) = 2
-            Next I
-
+            For I = 0 To 3: A5%(I) = 2: Next I
             '-- wtf?
             A5%(3) = 1
 
@@ -2337,7 +2278,7 @@ Sub SOURCE ()
     13634 '
     I5 = P1%(D)
     I6 = 0
-    3
+3
     Call ADDPIT(D, I5, I6)
 
     nbrOuts(0) = nbrOuts(0) + 1
@@ -2589,7 +2530,7 @@ Sub SOURCE ()
             If gameW% = 5 And RN <= 83 And INFPOS% = 0 Then A5%(3) = 1: ' WAS 50
             If gameW% = 5 And RN <= 10 And INFPOS% > 0 Then A5%(3) = 1
 
-            If gameW% = 5 And RN < 5 And INFPOS% < 2 And S4% = 2 And gameScore(P, 0) - gameScore(D, 0) > -2 Or gameW% = 5 And RN < 5 And INFPOS% < 2 And S4% = 6 And A5%(3) = 1 And gameScore(P, 0) - gameScore(D, 0) > -2 Then
+            If gameW% = 5 And RN < 5 And INFPOS% < 2 And S4% = 2 And S6%(P, 0) - S6%(D, 0) > -2 Or gameW% = 5 And RN < 5 And INFPOS% < 2 And S4% = 6 And A5%(3) = 1 And S6%(P, 0) - S6%(D, 0) > -2 Then
                 A5%(2) = 11
                 A5%(0) = 1
                 Call PBP("NO, he's going to third")
@@ -2598,7 +2539,7 @@ Sub SOURCE ()
             If gameW% = 6 And RN <= 20 And INFPOS% < 2 Then A5%(2) = 1
             If gameW% = 6 And RN <= 92 And INFPOS% < 2 Then A5%(3) = 1
             If gameW% = 6 And RN <= 5 And INFPOS% = 2 Then A5%(3) = 1
-            If gameW% = 6 And RN < 6 And INFPOS% < 2 And S4% = 2 And gameScore(P, 0) - gameScore(D, 0) > -2 Or gameW% = 6 And RN < 6 And INFPOS% < 2 And S4% = 6 And A5%(3) = 1 And gameScore(P, 0) - gameScore(D, 0) > -2 Then A5%(2) = 11: A5%(0) = 1: Call PBP("NO, he's going to third")
+            If gameW% = 6 And RN < 6 And INFPOS% < 2 And S4% = 2 And S6%(P, 0) - S6%(D, 0) > -2 Or gameW% = 6 And RN < 6 And INFPOS% < 2 And S4% = 6 And A5%(3) = 1 And S6%(P, 0) - S6%(D, 0) > -2 Then A5%(2) = 11: A5%(0) = 1: Call PBP("NO, he's going to third")
             If gameW% = 4 And RN <= 90 And INFPOS% < 2 Then A5%(2) = 1
             If gameW% = 4 And RN <= 90 And INFPOS% < 2 Then A5%(3) = 1
             If gameW% = 4 And RN <= 65 And INFPOS% = 2 Then A5%(2) = 1
@@ -2619,7 +2560,7 @@ Sub SOURCE ()
 
     13725 '
     If S4% <> 4 And S4% <> 7 Then
-        If gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 6 And nbrOuts(0) = 0 And INFPOS% > 0 And gameW% = 5 Or gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 6 And nbrOuts(0) = 0 And INFPOS% > 0 And gameW% = 3 Then
+        If S6%(P, 0) - S6%(D, 0) >= 0 And INNING% > 6 And nbrOuts(0) = 0 And INFPOS% > 0 And gameW% = 5 Or S6%(P, 0) - S6%(D, 0) >= 0 And INNING% > 6 And nbrOuts(0) = 0 And INFPOS% > 0 And gameW% = 3 Then
 
             A5%(3) = 11
 
@@ -2724,7 +2665,7 @@ Sub SOURCE ()
     If useVGA = 1 Then _PutImage (17 * FontColAdj, 128)-Step(46 * FontColAdj, 80), backupScreen&, imageScreen&, (17 * FontColAdj, 128)-Step(46 * FontColAdj, 80)
 
     DPC% = 0
-    runnerHeld = 0
+    H0% = 0
     INFPOS% = 0
     F% = 0
     H0%(0) = 0
@@ -3375,7 +3316,7 @@ Sub SOURCE ()
     14813 '
     If B7%(P, gameB0%(TGTBASE% - 1, 0)) = 1 Then Q0 = 100
 
-    Call STEAL3RD(TGTBASE%, AA, Q0, runnerHeld, D) ' *** SUCCESS OF 3B STEAL ***
+    Call STEAL3RD(TGTBASE%, AA, Q0, H0%, D) ' *** SUCCESS OF 3B STEAL ***
 
     If pitchRating(D, P1%(D), 0) = 1 And TGTBASE% = 2 Then CHANCE% = CHANCE% + 25: Q0 = Q0 + 10
     If pitchRating(D, P1%(D), 0) = -1 And TGTBASE% = 2 Then CHANCE% = CHANCE% - 50: Q0 = Q0 - 30
@@ -3817,7 +3758,7 @@ Sub SOURCE ()
                 Loop Until I1 <= 21 And pitchRating(P9, I1, 15) <= 0
 
                 Locate 23, 1: Print String$(78, 32)
-                Locate 23, 1: Print "YOU CHOSE "; pitchers$(P9, I1); " "; handed$(pitchRating(P9, I1, 0) + 2); " - ";
+                Locate 23, 1: Print "YOU CHOSE "; pitchers$(P9, I1); " "; B1$(pitchRating(P9, I1, 0) + 2); " - ";
 
                 Print "ARE YOU SURE? (Y/N)";
                 I$ = GetKeyPress$
@@ -4140,11 +4081,13 @@ Sub SOURCE ()
 
     normalFinish = 1
 
+    'Close #11
+
     'Print winning team and score
-    If gameScore(0, 0) > gameScore(1, 0) Then
-        Call PBP(gameTeams$(0) + " defeats " + gameTeams$(1) + Str$(gameScore(0, 0)) + " TO" + Str$(gameScore(1, 0)) + "!")
+    If S6%(0, 0) > S6%(1, 0) Then
+        Call PBP(gameTeams$(0) + " defeats " + gameTeams$(1) + Str$(S6%(0, 0)) + " TO" + Str$(S6%(1, 0)) + "!")
     Else
-        Call PBP(gameTeams$(1) + " defeats " + gameTeams$(0) + Str$(gameScore(1, 0)) + " TO" + Str$(gameScore(0, 0)) + "!")
+        Call PBP(gameTeams$(1) + " defeats " + gameTeams$(0) + Str$(S6%(1, 0)) + " TO" + Str$(S6%(0, 0)) + "!")
     End If
 
     If autoPlay <> 1 Or playerMode <> 2 Then
@@ -4171,14 +4114,14 @@ Sub SOURCE ()
 
     '-- This can join the code above as there's only one branch to it
     18700 '
-    runnerHeld = 0
+    H0% = 0
     If useVGA = 1 Then
-        Call HOLDSTATUS_G(runnerHeld)
+        Call HOLDSTATUS_G(H0%)
     Else
-        Call HOLDSTATUS(runnerHeld)
+        Call HOLDSTATUS(H0%)
     End If
 
-    A1 = gameScore(D, 0) - gameScore(P, 0)
+    A1 = S6%(D, 0) - S6%(P, 0)
 
     If Not (A1 > 1 Or S4% = 3 Or S4% >= 6) Then
 
@@ -4194,11 +4137,11 @@ Sub SOURCE ()
                 If B7%(P, J) <> 1 Then
 
                     If B7%(P, J) <> 1 And batRating(P, B3%(P, J), 13) >= 10 Then
-                        runnerHeld = 1
+                        H0% = 1
                         If useVGA = 1 Then
-                            Call HOLDSTATUS_G(runnerHeld)
+                            Call HOLDSTATUS_G(H0%)
                         Else
-                            Call HOLDSTATUS(runnerHeld)
+                            Call HOLDSTATUS(H0%)
                         End If
                     End If
 
@@ -4216,7 +4159,7 @@ Sub SOURCE ()
 
     If pz = 1 Then pz = 0: GoTo 15055
 
-    A1 = gameScore(D, 0) - gameScore(P, 0)
+    A1 = S6%(D, 0) - S6%(P, 0)
     Call d100(RN)
 
     If Not (INNING% < 9 Or CZ%(D) = -1 Or MG%(D, 581) = 999) Then
@@ -4231,11 +4174,11 @@ Sub SOURCE ()
 
             Else
 
-                If gameScore(P, 0) = 0 And pitchRating(D, P1%(D), 5) > 0 And RN <= Int(pitchRating(D, P1%(D), 16) / pitchRating(D, P1%(D), 5) * 100 + .5) + 10 Then 18725
+                If S6%(P, 0) = 0 And pitchRating(D, P1%(D), 5) > 0 And RN <= Int(pitchRating(D, P1%(D), 16) / pitchRating(D, P1%(D), 5) * 100 + .5) + 10 Then 18725
                 If pitchRating(D, P1%(D), 5) > 0 And RN <= Int(pitchRating(D, P1%(D), 16) / pitchRating(D, P1%(D), 5) * 100 + .5) Then 18725
                 Call d100(RN0)
-                If pitchEraOpt > 0 And INNING% > 7 And gameScore(D, 0) > gameScore(P, 0) And pitchRating(D, P1%(D), 1) > 0 And P6%(D) = 1 And Int(pitchRating(D, P1%(D), 16) / pitchRating(D, P1%(D), 1) * 100 + .5) <= 100 And RN0 <= Int(pitchRating(D, P1%(D), 16) / pitchRating(D, P1%(D), 1) * 100 + .5) Then 18725
-                If pitchEraOpt > 0 And INNING% > 7 And (gameScore(D, 0) >= gameScore(P, 0) Or gameScore(P, 0) - gameScore(D, 0) <= 2) And pitchRating(D, P1%(D), 1) > 0 And P6%(D) = 1 And Int(pitchRating(D, P1%(D), 16) / pitchRating(D, P1%(D), 1) * 100 + .5) >= 100 Then 18725
+                If pitchEraOpt > 0 And INNING% > 7 And S6%(D, 0) > S6%(P, 0) And pitchRating(D, P1%(D), 1) > 0 And P6%(D) = 1 And Int(pitchRating(D, P1%(D), 16) / pitchRating(D, P1%(D), 1) * 100 + .5) <= 100 And RN0 <= Int(pitchRating(D, P1%(D), 16) / pitchRating(D, P1%(D), 1) * 100 + .5) Then 18725
+                If pitchEraOpt > 0 And INNING% > 7 And (S6%(D, 0) >= S6%(P, 0) Or S6%(P, 0) - S6%(D, 0) <= 2) And pitchRating(D, P1%(D), 1) > 0 And P6%(D) = 1 And Int(pitchRating(D, P1%(D), 16) / pitchRating(D, P1%(D), 1) * 100 + .5) >= 100 Then 18725
                 If pitchEraOpt >= 8 Then 18725
 
                 GK%(D) = 1
@@ -4426,7 +4369,7 @@ Sub SOURCE ()
 
         End If
 
-        A1 = gameScore(D, 0) - gameScore(P, 0)
+        A1 = S6%(D, 0) - S6%(P, 0)
 
         If A1 >= -1 And A1 <= 1 And INNING% >= 8 And (S4% = 3 Or S4% >= 5) And nbrOuts(0) < 2 Then
             INFPOS% = 2
@@ -4638,7 +4581,7 @@ Sub SOURCE ()
         J% = 0
         GP% = 0
 
-        If (pitchEraOpt > 1 And INNING% < 4) Or (pitchEraOpt > 2 And INNING% < 7) Or (pitchEraOpt > 3 And INNING% < 9) Or (pitchEraOpt >= 8) Or (pitchEraOpt > 0 And INNING% > 7 And gameScore(P, 0) > gameScore(D, 0) And pitchRating(P, P1%(P), 1) > 0 And P6%(P) = 1 And Int(pitchRating(P, P1%(P), 16) / pitchRating(P, P1%(P), 1) * 100 + .5) <= 100 And RN0 <= Int(pitchRating(P, P1%(P), 16) / pitchRating(P, P1%(P), 1) * 100 + .5)) Or (pitchEraOpt > 0 And INNING% > 7 And (gameScore(P, 0) >= gameScore(D, 0) Or gameScore(D, 0) - gameScore(P, 0) <= 2) And pitchRating(P, P1%(P), 1) > 0 And P6%(P) = 1 And Int(pitchRating(P, P1%(P), 16) / pitchRating(P, P1%(P), 1) * 100 + .5) >= 100) Then skipLoop = 1
+        If (pitchEraOpt > 1 And INNING% < 4) Or (pitchEraOpt > 2 And INNING% < 7) Or (pitchEraOpt > 3 And INNING% < 9) Or (pitchEraOpt >= 8) Or (pitchEraOpt > 0 And INNING% > 7 And S6%(P, 0) > S6%(D, 0) And pitchRating(P, P1%(P), 1) > 0 And P6%(P) = 1 And Int(pitchRating(P, P1%(P), 16) / pitchRating(P, P1%(P), 1) * 100 + .5) <= 100 And RN0 <= Int(pitchRating(P, P1%(P), 16) / pitchRating(P, P1%(P), 1) * 100 + .5)) Or (pitchEraOpt > 0 And INNING% > 7 And (S6%(P, 0) >= S6%(D, 0) Or S6%(D, 0) - S6%(P, 0) <= 2) And pitchRating(P, P1%(P), 1) > 0 And P6%(P) = 1 And Int(pitchRating(P, P1%(P), 16) / pitchRating(P, P1%(P), 1) * 100 + .5) >= 100) Then skipLoop = 1
 
         If skipLoop = 0 Then
 

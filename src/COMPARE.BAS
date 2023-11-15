@@ -12,7 +12,7 @@ Sub COMPARE ()
 
     Shared statB0%(), statP0%()
     Shared batterRatings(), teamRatings%(), pitcherRatings(), TB%()
-    Shared statT%(), statT1%()
+    Shared statT0%(), statT1%()
 
     Shared TP&()
 
@@ -91,7 +91,7 @@ Sub COMPARE ()
         Input #1, D1%
 
         For I = 0 To 21: 
-            Input #1, statT%(I)
+            Input #1, statT0%(I)
         Next I
         
         For I = 0 To 22: 
@@ -1216,7 +1216,7 @@ End Sub
 Sub TeamComparison_Screen (teamName$)
 
     Shared teamRatings%(), TB%()
-    Shared statT%(), statT1%()
+    Shared statT0%(), statT1%()
     Shared TP&()
 
     Shared ERX!
@@ -1316,26 +1316,26 @@ Sub TeamComparison_Screen (teamName$)
     Print String$(2, 177)
 
     Color 14, 11
-    Locate 5, 13: Print Using "####"; statT%(0);
-    Locate , 17: Print Using "####"; statT%(2);
-    Locate , 21: Print Using "#####"; statT%(1);
-    Locate , 26: Print Using "####"; statT%(4);
-    Locate , 30: Print Using "####"; statT%(5);
-    Locate , 34: Print Using "####"; statT%(6);
-    Locate , 38: Print Using "#####"; statT%(3);
-    Locate , 43: Print Using "####"; statT%(7);
-    Locate , 47: Print Using "#####"; statT%(8);
-    Locate , 52: Print Using "####"; statT%(9);
-    Locate , 56: Print Using "####"; statT%(10);
+    Locate 5, 13: Print Using "####"; statT0%(0);
+    Locate , 17: Print Using "####"; statT0%(2);
+    Locate , 21: Print Using "#####"; statT0%(1);
+    Locate , 26: Print Using "####"; statT0%(4);
+    Locate , 30: Print Using "####"; statT0%(5);
+    Locate , 34: Print Using "####"; statT0%(6);
+    Locate , 38: Print Using "#####"; statT0%(3);
+    Locate , 43: Print Using "####"; statT0%(7);
+    Locate , 47: Print Using "#####"; statT0%(8);
+    Locate , 52: Print Using "####"; statT0%(9);
+    Locate , 56: Print Using "####"; statT0%(10);
     Print " ";
 
-    statPCT! = statT%(1) / statT%(0)
+    statPCT! = statT0%(1) / statT0%(0)
     Locate , 61: Print Using ".###"; statPCT!;: Print " ";
 
-    statPCT! = (statT%(1) + statT%(4) + statT%(5) * 2 + statT%(6) * 3) / statT%(0)
+    statPCT! = (statT0%(1) + statT0%(4) + statT0%(5) * 2 + statT0%(6) * 3) / statT0%(0)
     Locate , 66: Print Using ".###"; statPCT!;: Print " ";
 
-    statPCT! = (statT%(1) + statT%(7)) / (statT%(0) + statT%(7))
+    statPCT! = (statT0%(1) + statT0%(7)) / (statT0%(0) + statT0%(7))
     Locate , 71: Print Using ".###"; statPCT!;
 
     Color 7, 0
@@ -1369,24 +1369,24 @@ Sub TeamComparison_Screen (teamName$)
 
     Color 14, 11
 
-    If statT%(2) = 0 Then Locate 11, 13: Print " ---.--";
-    If statT%(2) > 0 Then Locate 11, 13: Print Using "###.##"; statT%(0) / statT%(2);
-    If statT%(1) = 0 Then Locate , 18: Print " ---.--";
-    If statT%(1) > 0 Then Locate , 18: Print Using "#####.##"; statT%(0) / statT%(1);
-    If statT%(4) = 0 Then Locate , 26: Print " ---.--";
-    If statT%(4) > 0 Then Locate , 26: Print Using "####.##"; statT%(0) / statT%(4);
-    If statT%(5) = 0 Then Locate , 33: Print " ---.--";
-    If statT%(5) > 0 Then Locate , 33: Print Using "####.##"; statT%(0) / statT%(5);
-    If statT%(6) = 0 Then Locate , 40: Print " ---.--";
-    If statT%(6) > 0 Then Locate , 40: Print Using "####.##"; statT%(0) / statT%(6);
-    If statT%(3) = 0 Then Locate , 47: Print " ---.--";
-    If statT%(3) > 0 Then Locate , 47: Print Using "####.##"; statT%(0) / statT%(3);
-    If statT%(7) = 0 Then Locate , 54: Print " ---.--";
-    If statT%(7) > 0 Then Locate , 54: Print Using "####.##"; statT%(0) / statT%(7);
-    If statT%(8) = 0 Then Locate , 61: Print " ---.--";
-    If statT%(8) > 0 Then Locate , 61: Print Using "####.##"; statT%(0) / statT%(8);
-    If statT%(9) = 0 Then Locate , 68: Print " ---.--";
-    If statT%(9) > 0 Then Locate , 68: Print Using "####.##"; statT%(9) / (statT%(9) + statT%(10));
+    If statT0%(2) = 0 Then Locate 11, 13: Print " ---.--";
+    If statT0%(2) > 0 Then Locate 11, 13: Print Using "###.##"; statT0%(0) / statT0%(2);
+    If statT0%(1) = 0 Then Locate , 18: Print " ---.--";
+    If statT0%(1) > 0 Then Locate , 18: Print Using "#####.##"; statT0%(0) / statT0%(1);
+    If statT0%(4) = 0 Then Locate , 26: Print " ---.--";
+    If statT0%(4) > 0 Then Locate , 26: Print Using "####.##"; statT0%(0) / statT0%(4);
+    If statT0%(5) = 0 Then Locate , 33: Print " ---.--";
+    If statT0%(5) > 0 Then Locate , 33: Print Using "####.##"; statT0%(0) / statT0%(5);
+    If statT0%(6) = 0 Then Locate , 40: Print " ---.--";
+    If statT0%(6) > 0 Then Locate , 40: Print Using "####.##"; statT0%(0) / statT0%(6);
+    If statT0%(3) = 0 Then Locate , 47: Print " ---.--";
+    If statT0%(3) > 0 Then Locate , 47: Print Using "####.##"; statT0%(0) / statT0%(3);
+    If statT0%(7) = 0 Then Locate , 54: Print " ---.--";
+    If statT0%(7) > 0 Then Locate , 54: Print Using "####.##"; statT0%(0) / statT0%(7);
+    If statT0%(8) = 0 Then Locate , 61: Print " ---.--";
+    If statT0%(8) > 0 Then Locate , 61: Print Using "####.##"; statT0%(0) / statT0%(8);
+    If statT0%(9) = 0 Then Locate , 68: Print " ---.--";
+    If statT0%(9) > 0 Then Locate , 68: Print Using "####.##"; statT0%(9) / (statT0%(9) + statT0%(10));
     Print " ";
 
     Color 7, 0

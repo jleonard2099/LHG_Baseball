@@ -22,7 +22,7 @@ Sub ALIGN ()
     Shared statB0%(), statB%()
     Shared S0R%(), S0%()
     Shared statP%(), statP0%()
-    Shared statT%(), statT1%()
+    Shared statT0%(), statT1%()
 
     Do
 
@@ -132,7 +132,7 @@ Sub ALIGN ()
                     Input #1, D1%
 
                     For I = 0 To 21: 
-                        Input #1, statT%(I)
+                        Input #1, statT0%(I)
                     Next I
 
                     For I = 0 To 22: 

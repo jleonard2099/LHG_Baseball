@@ -406,7 +406,7 @@ Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
 
     Shared inputBS%()
     Shared statB0%(), statP0%(), statSS%()
-    Shared statT!(), statT1!()
+    Shared statT0!(), statT1!()
 
     Shared D0%, D1%
 
@@ -513,7 +513,7 @@ Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
                     Print #1, D1%
 
                     For I = 0 To 21:
-                        Print #1, statT!(I)
+                        Print #1, statT0!(I)
                     Next I
 
                     For I = 0 To 22:
@@ -560,7 +560,7 @@ Sub LoadTeam (targetTeam$, SS, statFile$)
 
     Shared BS$(), PS$()
 
-    Shared statT!(), statT1!()
+    Shared statT0!(), statT1!()
 
     statFile$ = nameStatFile$(targetTeam$)
 
@@ -608,7 +608,7 @@ Sub LoadTeam (targetTeam$, SS, statFile$)
         Input #1, D1%
 
         For I = 0 To 21:
-            Input #1, statT!(I)
+            Input #1, statT0!(I)
         Next I
 
         For I = 0 To 22:
@@ -939,6 +939,7 @@ Sub CalculateRunRating ()
     For I = 0 To 21
 
         If pitcherNames$(I) <> "" And pitcherNames$(I) <> "XXX" Then
+
             RR = Int(Rnd(1) * 20) + 1
             RR = RR * 1.4
 
@@ -947,7 +948,9 @@ Sub CalculateRunRating ()
             If RR > 8 And RR <= 12 Then pitcherRatings(I, 31) = 3
             If RR > 12 And RR <= 16 Then pitcherRatings(I, 31) = 4
             If RR > 16 Then pitcherRatings(I, 31) = 5
+
             Print pitcherNames$(I); Tab(20); pitcherRatings(I, 31)
+
         End If
 
     Next

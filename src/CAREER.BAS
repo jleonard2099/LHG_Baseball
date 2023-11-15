@@ -129,7 +129,7 @@ Sub MergeFirstYear ()
     Shared careerB0%(), careerB1%(), BRS%()
     Shared careerP0%(), careerP1%(), PRS%()
 
-    Shared statT%(), statT1%()
+    Shared statT0%(), statT1%()
 
     Dim TMR
 
@@ -249,7 +249,7 @@ Sub MergeFirstYear ()
                     Input #1, D1%
 
                     For I = 0 To 21:
-                        Input #1, statT%(I)
+                        Input #1, statT0%(I)
                     Next I
 
                     For I = 0 To 22:
@@ -663,8 +663,8 @@ Sub MergeAddYear (selectedFile$, statFile$)
     Shared careerB0%(), careerB1%(), BRS%()
     Shared careerP0%(), careerP1%(), PRS%()
 
-    'Dim statT%(0 to 21), statT1%(0 to 22)
-    Shared statT%(), statT1%()
+    'Dim statT0%(0 to 21), statT1%(0 to 22)
+    Shared statT0%(), statT1%()
 
     Dim BR$(100), PR$(80)
 
@@ -790,7 +790,7 @@ Sub MergeAddYear (selectedFile$, statFile$)
         Input #1, D0%, D1%
 
         For I = 0 To 21:
-            Input #1, statT%(I)
+            Input #1, statT0%(I)
         Next I
 
         For I = 0 To 22:

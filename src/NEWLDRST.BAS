@@ -111,8 +111,8 @@ Sub UpdateLeagueStandings (league$)
     Shared TML$(), Z1$()
 
     'These are just read in and written back
-    Shared H%(), I%(), V%()
-    Shared H$(), L$(), PL$(), W$()
+    Shared teamScore(), nbrInnings(), oppScore()
+    Shared oppName$(), losePitcher$(), locIndicator$(), winPitcher$()
 
     Shared D1$, D2$, D3$, D4$
 
@@ -140,47 +140,60 @@ Sub UpdateLeagueStandings (league$)
 
                 Open diskPaths$(1) + Z1$(KK) + "S" For Input As #1
 
-                Input #1, XX%
+                Input #1, nbrGames
 
-                For I = 1 To NUM_STATRECORDS: Input #1, H%(I): Next I
+                For I = 1 To MAX_SCHED_STATS: 
+                    Input #1, teamScore(I)
+                Next I
 
-                For I = 1 To NUM_STATRECORDS: Input #1, H$(I): Next I
+                For I = 1 To MAX_SCHED_STATS: 
+                    Input #1, oppName$(I)
+                Next I
 
-                For I = 1 To NUM_STATRECORDS: Input #1, V%(I): Next I
+                For I = 1 To MAX_SCHED_STATS: 
+                    Input #1, oppScore(I)
+                Next I
 
-                For I = 1 To NUM_STATRECORDS: Input #1, PL$(I): Next I
+                For I = 1 To MAX_SCHED_STATS: 
+                    Input #1, locIndicator$(I)
+                Next I
 
-                For I = 1 To NUM_STATRECORDS: Input #1, W$(I): Next I
+                For I = 1 To MAX_SCHED_STATS: 
+                    Input #1, winPitcher$(I)
+                Next I
 
-                For I = 1 To NUM_STATRECORDS: Input #1, L$(I): Next I
+                For I = 1 To MAX_SCHED_STATS: 
+                    Input #1, losePitcher$(I)
+                Next I
 
-                For I = 1 To NUM_STATRECORDS: Input #1, I%(I): Next I
-
+                For I = 1 To MAX_SCHED_STATS: 
+                    Input #1, nbrInnings(I)
+                Next I
                 Close #1
 
-                For I = 1 To XX%
+                For I = 1 To nbrGames
 
-                    If H%(I) > V%(I) Then 
+                    If teamScore(I) > oppScore(I) Then 
                         WW!(currRecord) = WW!(currRecord) + 1
-                        If I%(I) > 9 Then EWW!(currRecord) = EWW!(currRecord) + 1
-                        If PL$(I) = "A" Then RWW!(currRecord) = RWW!(currRecord) + 1
-                        If PL$(I) = "H" Then HWW!(currRecord) = HWW!(currRecord) + 1
+                        If nbrInnings(I) > 9 Then EWW!(currRecord) = EWW!(currRecord) + 1
+                        If locIndicator$(I) = "A" Then RWW!(currRecord) = RWW!(currRecord) + 1
+                        If locIndicator$(I) = "H" Then HWW!(currRecord) = HWW!(currRecord) + 1
                     End If
 
-                    If V%(I) > H%(I) Then 
+                    If oppScore(I) > teamScore(I) Then 
                         expLL!(currRecord) = expLL!(currRecord) + 1
-                        If I%(I) > 9 Then ELL!(currRecord) = ELL!(currRecord) + 1
-                        If PL$(I) = "H" Then HLL!(currRecord) = HLL!(currRecord) + 1
-                        If PL$(I) = "A" Then RLL!(currRecord) = RLL!(currRecord) + 1
+                        If nbrInnings(I) > 9 Then ELL!(currRecord) = ELL!(currRecord) + 1
+                        If locIndicator$(I) = "H" Then HLL!(currRecord) = HLL!(currRecord) + 1
+                        If locIndicator$(I) = "A" Then RLL!(currRecord) = RLL!(currRecord) + 1
                     End If
 
-                    If H%(I) > V%(I) Then LWS!(currRecord) = LWS!(currRecord) + 1: LLS!(currRecord) = 0
+                    If teamScore(I) > oppScore(I) Then LWS!(currRecord) = LWS!(currRecord) + 1: LLS!(currRecord) = 0
                     If LWS!(currRecord) > TWS!(currRecord) Then TWS!(currRecord) = LWS!(currRecord)
-                    If H%(I) < V%(I) Then LLS!(currRecord) = LLS!(currRecord) + 1: LWS!(currRecord) = 0
+                    If teamScore(I) < oppScore(I) Then LLS!(currRecord) = LLS!(currRecord) + 1: LWS!(currRecord) = 0
                     If LLS!(currRecord) > TLS!(currRecord) Then TLS!(currRecord) = LLS!(currRecord)
 
-                    If H%(I) <= V%(I) Then
-                        If H%(I) < V%(I) Then
+                    If teamScore(I) <= oppScore(I) Then
+                        If teamScore(I) < oppScore(I) Then
                             CLT!(currRecord) = CLT!(currRecord) + 1
                             CWS!(currRecord) = 0
                         Else
@@ -191,15 +204,15 @@ Sub UpdateLeagueStandings (league$)
 
                 Next I
 
-                If XX% <= 10 Then
+                If nbrGames <= 10 Then
                     LTL!(currRecord) = expLL!(currRecord)
                     LTW!(currRecord) = WW!(currRecord)
                 Else
-                    M = XX% - 9
+                    M = nbrGames - 9
 
-                    For J = M To XX%
-                        If H%(J) > V%(J) Then LTW!(currRecord) = LTW!(currRecord) + 1
-                        If V%(J) > H%(J) Then LTL!(currRecord) = LTL!(currRecord) + 1
+                    For J = M To nbrGames
+                        If teamScore(J) > oppScore(J) Then LTW!(currRecord) = LTW!(currRecord) + 1
+                        If oppScore(J) > teamScore(J) Then LTL!(currRecord) = LTL!(currRecord) + 1
                     Next J
                 End If
 

@@ -69,22 +69,22 @@ Sub MergeStats ()
 
     Dim BR$(22)
 
-	Shared Ycurr%, Yroad%
+	Shared nbrGamesCurr, nbrGamesRoad
 
     Shared BR%(), PR%()
 
     Shared batterNames$(), pitcherNames$()
-    Shared H$(), HR$()
-    Shared L$(), LR$()
-    Shared PL$(), PLR$(), PR$()
-    Shared W$(), WR$()
+    Shared oppName$(), HR$()
+    Shared losePitcher$(), LR$()
+    Shared locIndicator$(), PLR$(), PR$()
+    Shared winPitcher$(), WR$()
 
     Shared statB%(), statB0%(), B0R%()
-    Shared H%(), HR%(), I%(), IR%()
+    Shared teamScore(), HR%(), nbrInnings(), IR%()
     Shared statP%(), statP0%(), P0R%()
     Shared S0%(), SR%()
-    Shared statT%(), statT1%()
-    Shared V%(), VR%()
+    Shared statT0%(), statT1%()
+    Shared oppScore(), VR%()
 
     Shared draftTR(), draftTR1()
 
@@ -146,15 +146,15 @@ Sub MergeStats ()
 
                     Open pathRoadStats$ + statFile$ + "S" For Input As #1
 
-                    Input #1, Yroad%
+                    Input #1, nbrGamesRoad
 
-                    For I = 1 To NUM_STATRECORDS: Input #1, HR%(I): Next I
-                    For I = 1 To NUM_STATRECORDS: Input #1, HR$(I): Next I
-                    For I = 1 To NUM_STATRECORDS: Input #1, VR%(I): Next I
-                    For I = 1 To NUM_STATRECORDS: Input #1, PLR$(I): Next I
-                    For I = 1 To NUM_STATRECORDS: Input #1, WR$(I): Next I
-                    For I = 1 To NUM_STATRECORDS: Input #1, LR$(I): Next I
-                    For I = 1 To NUM_STATRECORDS: Input #1, IR%(I): Next I
+                    For I = 1 To MAX_SCHED_STATS: Input #1, HR%(I): Next I
+                    For I = 1 To MAX_SCHED_STATS: Input #1, HR$(I): Next I
+                    For I = 1 To MAX_SCHED_STATS: Input #1, VR%(I): Next I
+                    For I = 1 To MAX_SCHED_STATS: Input #1, PLR$(I): Next I
+                    For I = 1 To MAX_SCHED_STATS: Input #1, WR$(I): Next I
+                    For I = 1 To MAX_SCHED_STATS: Input #1, LR$(I): Next I
+                    For I = 1 To MAX_SCHED_STATS: Input #1, IR%(I): Next I
 
                     Close #1
 
@@ -177,18 +177,27 @@ Sub MergeStats ()
 						Next I
 
                         For I = 0 To 22: 
-							For I1 = 0 To 21: Input #1, statB0%(I, I1): Next I1
+							For I1 = 0 To 21: 
+                                Input #1, statB0%(I, I1)
+                            Next I1
 						Next I
                         
 						For I = 0 To 21: 
-							For I1 = 0 To 41: Input #1, statP0%(I, I1): Next I1
+							For I1 = 0 To 41: 
+                                Input #1, statP0%(I, I1)
+                            Next I1
 						Next I
 
                         Input #1, D0%
 						Input #1, D1%
                         
-						For I = 0 To 21: Input #1, statT%(I): Next I
-                        For I = 0 To 22: Input #1, statT1%(I): Next I
+						For I = 0 To 21: 
+                            Input #1, statT0%(I)
+                        Next I
+                        
+                        For I = 0 To 22: 
+                            Input #1, statT1%(I)
+                        Next I
 
                         Close #1
 
@@ -206,15 +215,35 @@ Sub MergeStats ()
 
                         Open pathCurrentStats$ + statFile$ + "S" For Input As #1
 
-                        Input #1, Ycurr%
+                        Input #1, nbrGamesCurr
 
-                        For I = 1 To NUM_STATRECORDS: Input #1, H%(I): Next I
-                        For I = 1 To NUM_STATRECORDS: Input #1, H$(I): Next I
-                        For I = 1 To NUM_STATRECORDS: Input #1, V%(I): Next I
-                        For I = 1 To NUM_STATRECORDS: Input #1, PL$(I): Next I
-                        For I = 1 To NUM_STATRECORDS: Input #1, W$(I): Next I
-                        For I = 1 To NUM_STATRECORDS: Input #1, L$(I): Next I
-                        For I = 1 To NUM_STATRECORDS: Input #1, I%(I): Next I
+                        For I = 1 To MAX_SCHED_STATS: 
+                            Input #1, teamScore(I)
+                        Next I
+
+                        For I = 1 To MAX_SCHED_STATS: 
+                            Input #1, oppName$(I)
+                        Next I
+
+                        For I = 1 To MAX_SCHED_STATS: 
+                            Input #1, oppScore(I)
+                        Next I
+
+                        For I = 1 To MAX_SCHED_STATS: 
+                            Input #1, locIndicator$(I)
+                        Next I
+
+                        For I = 1 To MAX_SCHED_STATS: 
+                            Input #1, winPitcher$(I)
+                        Next I
+
+                        For I = 1 To MAX_SCHED_STATS: 
+                            Input #1, losePitcher$(I)
+                        Next I
+
+                        For I = 1 To MAX_SCHED_STATS: 
+                            Input #1, nbrInnings(I)
+                        Next I
 
                         Close #1
 
@@ -320,34 +349,34 @@ End Sub
 'newly aggregated results.
 Sub DoTheMerge (pathCurrentStats$, statFile$, B$)
 
-	Shared Ycurr%, Yroad%
+	Shared nbrGamesCurr, nbrGamesRoad
 	Shared L2%, LR2%
     Shared W2%, WR2%
 
     Shared batterNames$(), pitcherNames$()
-    Shared H$(), HR$()
-    Shared L$(), LR$()
-    Shared PL$(), PLR$()
-    Shared W$(), WR$()
+    Shared oppName$(), HR$()
+    Shared losePitcher$(), LR$()
+    Shared locIndicator$(), PLR$()
+    Shared winPitcher$(), WR$()
 
     Shared statB%(), statB0%(), B0R%()
-    Shared H%(), HR%(), I%(), IR%()
+    Shared teamScore(), HR%(), nbrInnings(), IR%()
     Shared statP%(), statP0%(), P0R%()
-    Shared statT%(), statT1%()
+    Shared statT0%(), statT1%()
     Shared S0%(), SR%()
-    Shared V%(), VR%()
+    Shared oppScore(), VR%()
 
     Shared draftTR(), draftTR1()
 
-    For K = 1 to Yroad%
-        Ycurr% = Ycurr% + 1
-        H%(Ycurr%) = HR%(K)
-        H$(Ycurr%) = HR$(K)
-        V%(Ycurr%) = VR%(K)
-        PL$(Ycurr%) = PLR$(K)
-        W$(Ycurr%) = WR$(K)
-        L$(Ycurr%) = LR$(K)
-        I%(Ycurr%) = IR%(K)
+    For K = 1 to nbrGamesRoad
+        nbrGamesCurr = nbrGamesCurr + 1
+        teamScore(nbrGamesCurr) = HR%(K)
+        oppName$(nbrGamesCurr) = HR$(K)
+        oppScore(nbrGamesCurr) = VR%(K)
+        locIndicator$(nbrGamesCurr) = PLR$(K)
+        winPitcher$(nbrGamesCurr) = WR$(K)
+        losePitcher$(nbrGamesCurr) = LR$(K)
+        nbrInnings(nbrGamesCurr) = IR%(K)
     Next
 
     W2% = W2% + WR2%
@@ -373,7 +402,7 @@ Sub DoTheMerge (pathCurrentStats$, statFile$, B$)
     D0% = D0% + DR0%
 	D1% = D1% + DR1%
 
-    For I = 0 To 21: statT%(I) = statT%(I) + draftTR(I): Next
+    For I = 0 To 21: statT0%(I) = statT0%(I) + draftTR(I): Next
     For I = 0 To 22: statT1%(I) = statT1%(I) + draftTR1(I): Next
 
     Open pathCurrentStats$ + statFile$ For Output As #1
@@ -402,7 +431,7 @@ Sub DoTheMerge (pathCurrentStats$, statFile$, B$)
     Write #1, D0%
 	Write #1, D1%
 
-    For I = 0 To 21: Write #1, statT%(I): Next I
+    For I = 0 To 21: Write #1, statT0%(I): Next I
     For I = 0 To 22: Write #1, statT1%(I): Next I
 
     Close #1
@@ -417,21 +446,21 @@ Sub DoTheMerge (pathCurrentStats$, statFile$, B$)
 
     Open pathCurrentStats$ + statFile$ + "S" For Output As #1
 
-    Write #1, Ycurr%
+    Write #1, nbrGamesCurr
 
-    For I = 1 To NUM_STATRECORDS: Write #1, H%(I): Next I
+    For I = 1 To MAX_SCHED_STATS: Write #1, teamScore(I): Next I
 
-    For I = 1 To NUM_STATRECORDS: Write #1, H$(I): Next I
+    For I = 1 To MAX_SCHED_STATS: Write #1, oppName$(I): Next I
 
-    For I = 1 To NUM_STATRECORDS: Write #1, V%(I): Next I
+    For I = 1 To MAX_SCHED_STATS: Write #1, oppScore(I): Next I
 
-    For I = 1 To NUM_STATRECORDS: Write #1, PL$(I): Next I
+    For I = 1 To MAX_SCHED_STATS: Write #1, locIndicator$(I): Next I
 
-    For I = 1 To NUM_STATRECORDS: Write #1, W$(I): Next I
+    For I = 1 To MAX_SCHED_STATS: Write #1, winPitcher$(I): Next I
 
-    For I = 1 To NUM_STATRECORDS: Write #1, L$(I): Next I
+    For I = 1 To MAX_SCHED_STATS: Write #1, losePitcher$(I): Next I
 
-    For I = 1 To NUM_STATRECORDS: Write #1, I%(I): Next I
+    For I = 1 To MAX_SCHED_STATS: Write #1, nbrInnings(I): Next I
 
     Close #1
 

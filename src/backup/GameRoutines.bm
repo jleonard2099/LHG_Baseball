@@ -19,7 +19,8 @@ Sub INFO ()
     Print Tab(80);
     Locate , 1
     Print "    LANCE HAFFNER 1986-2000"; Tab(70); Left$(Time$, 5);
-    Locate 3, 1: Color , 0
+    Locate 3, 1
+    Color , 0
 
 End Sub
 
@@ -32,21 +33,23 @@ End Sub
 ' in from file or assigned elsewhere
 Sub InitVar ()
 
-    Shared scheduleFile$
-    Shared actualAttendance&, avgAttendance&
-    Shared teamIndicator$()
-
     Shared DB, HR, TR, SB
+
     Shared E!
 
-    Shared BP(), F()
-    Shared BB%(), gameT1%(), MF%()
+    Shared actualAttendance&, avgAttendance&
+
+    Shared scheduleFile$
+
+    Shared BB%(), BP(), F()
+    Shared gameT1%(), MF%()
     Shared nbrInnings(), oppScore()
     Shared startPitcher(), statT0%(), SU()
     Shared teamScore()
 
     Shared dayNight$(), desigHitOpt$(), gameType$()
     Shared leagueType$(), locIndicator$()
+    Shared losePitcher$(), winPitcher$()
     Shared month$(), oppName$(), pitcherEra$()
     Shared playMode$(), PT$(), umpireName$()
     Shared teamIndicator$()
@@ -83,10 +86,10 @@ Sub InitVar ()
     skyCond$(3) = "OVERCAST"
     skyCond$(4) = "DOME"
 
-    precip$(1) = "THUNDERSTORMS"
-    precip$(2) = "SHOWERS"
-    precip$(3) = "DRIZZLE"
-    precip$(4) = "NONE"
+    PC$(1) = "THUNDERSTORMS"
+    PC$(2) = "SHOWERS"
+    PC$(3) = "DRIZZLE"
+    PC$(4) = "NONE"
 
     leagueType$(0) = "AL GAME         "
     leagueType$(1) = "NL GAME         "
@@ -114,13 +117,19 @@ Sub InitVar ()
     dayNight$(0) = "AFTERNOON"
     dayNight$(1) = "NIGHT"
 
+    B1$(0) = "LP"
+    B1$(1) = "L"
+    B1$(2) = "S"
+    B1$(3) = "R"
+    B1$(4) = "RP"
+
     baseName$(1) = "1b"
     baseName$(2) = "2b"
     baseName$(3) = "3b"
     baseName$(4) = "home"
 
-    heldStatus$(0) = " "
-    heldStatus$(1) = "H"
+    H0$(0) = " "
+    H0$(1) = "H"
 
     P = 1
 
@@ -139,33 +148,32 @@ Sub InitVar ()
         Next
     Next
 
-    ejectCnt = 0
-    H6% = 0
-    injCount = 0
-    Inotloop% = 0
-    INNING% = 1
-    LYN% = 0
-    noLUFound = 0
-    pbpLine = 0
-    precipType = 0
-    skyType = 0
-    gameTemp = 0
-    gameW% = 0
-    windSpeed = 0
-
     autoPlay = 0
+    compTeam = 0
     D = 0
     DB = 0
-    endGame = 1
+    ejectCnt = 0
     endAllGames = 0
+    endGame = 1
+    gameTemp = 0
+    gameW% = 0
+    H6% = 0
     HR = 0
+    IJL% = 0
+    INNING% = 1
+    Inotloop% = 0
+    LYN% = 0
+    noLUFound = 0
     P = 0
-    rainDelay = 0
-    rainStart = 0
+    PB% = 0
+    PC% = 0
+    rainyDay = 0
+    rainStartInning = 0
     SB = 0
+    SC% = 0
     statSpecial = 0
     TR = 0
-    compTeam = 0
+    WS% = 0
 
     E! = 0
     WF! = 0
@@ -190,24 +198,25 @@ Sub InitVar ()
     Erase B1%, B2%, B3%, B4%
     Erase B5%, B7%, B8%, B9%, BT%
     Erase BB%, CSS%, gameD0%, D3%, DP%
-    Erase gameSA%, gameScore, gameT1%, GK%
-    Erase H0%, INJ%, inningScore
+    Erase gameSA%, gameT1%, GK%, H0%, INJ%, inningScore
     Erase L0%, gameM%, MF%, MG%
     Erase NG%, nbrInnings, nbrOuts
     Erase oppScore
     Erase P1%, P2%, P3%, P4%, P5%, P6%, P8%
-    Erase S1%, S8%, startPitcher, statT0%, SU%
-    Erase teamScore, T3%, TS%, X0%
+    Erase S1%, S6%, S8%
+    Erase SU%, startPitcher, statT0%
+    Erase T3%, teamScore, TS%, X0%
 
     Erase B1!, parkHRVals!
 
-    Erase batters$, diskIDs$, doublesPlayer$
-    Erase eventDesc$, ejections$
-    Erase gameManagers$, gameStadiums$, gameTeams$
-    Erase homeRuns$, injPlayers$, locIndicator$, oppName$
-    Erase PARK$, pitchers$, player$, pbpStrings$
-    Erase Q3$, stolenBases$
-    Erase teamAbbreviatons$, triplesPlayer$, umpireName$
+    Erase batters$, DB$, diskIDs$, eventDesc$, ejections$
+    Erase G$, gameManagers$, gameStadiums$, gameTeams$
+    Erase homeRuns$, IJ$
+    Erase locIndicator$, oppName$
+    Erase losePitcher$, winPitcher$
+    Erase PARK$, pitchers$, player$
+    Erase Q3$, SB$
+    Erase teamAbbreviatons$, TR$, umpireName$
 
     For P9 = 0 To 1
         For I3 = 0 To 21
@@ -400,7 +409,7 @@ Sub GetPBPString (range%, minIdx%, fileString$, D)
 
     Do
 
-        badString = 0
+        badString% = 0
 
         'Get a new PBP string to use
         pbpIdx% = Int(Rnd(1) * range%) + minIdx%
@@ -421,14 +430,14 @@ Sub GetPBPString (range%, minIdx%, fileString$, D)
             If test > 122 Or test < 32 Then
                 'Get a new PBP string to use
                 stringPosition% = 1
-                badString = 1
+                badString% = 1
             Else
                 stringPosition% = stringPosition% + 1
             End If
 
-        Loop Until stringPosition% = Len(fileString$) Or badString = 1
+        Loop Until stringPosition% = Len(fileString$) Or badString% = 1
 
-    Loop Until stringPosition% = Len(fileString$) Or badString = 0
+    Loop Until stringPosition% = Len(fileString$) Or badString% = 0
 
     If TGTBASE% = 3 Then
         If Left$(fileString$, 2) = "Q1" Then fileString$ = "Q2 " + Right$(fileString$, Len(fileString$) - 3)
@@ -579,20 +588,20 @@ Sub PBP (pbpString$)
         pbpString$ = PadRight(pbpString$, 44)
         pbpString$ = Left$(pbpString$, 44)
 
-        pbpLine = pbpLine + 1
+        PB% = PB% + 1
 
-        ' Put PBP text in a slot for line pbpLine
-        If pbpLine < 9 Then pbpStrings$(pbpLine) = pbpString$
+        ' Put PBP text in a slot for line PB%
+        If PB% < 9 Then G$(PB%) = pbpString$
 
         ' Or we're past line 8, move all slots down
         ' to make room
-        If pbpLine > 8 Then
+        If PB% > 8 Then
 
             For I9 = 1 To 7
-                pbpStrings$(I9) = pbpStrings$(I9 + 1)
+                G$(I9) = G$(I9 + 1)
             Next
 
-            pbpStrings$(8) = pbpString$
+            G$(8) = pbpString$
 
         End If
 
@@ -602,10 +611,10 @@ Sub PBP (pbpString$)
             If useVGA = 1 Then
                 Color 4294967295
                 _PrintMode _FillBackground , imageScreen&
-                PrintOnGfx 20, I9 + 3, pbpStrings$(I9), imageScreen&
+                PrintOnGfx 20, I9 + 3, G$(I9), imageScreen&
             Else
                 Locate 14 + I9, 1
-                Print pbpStrings$(I9)
+                Print G$(I9)
             End If
 
         Next
@@ -705,10 +714,7 @@ Sub ADJRUNNERS (S2%, P)
                 I3 = 3
                 Call CLEARBASE(idx)
             Case 12
-                If B1%(3, 0) = 0 Then
-                    I3 = 4
-                    Call CLEARBASE(idx)
-                End If
+                If B1%(3, 0) = 0 Then I3 = 4: Call CLEARBASE(idx)
         End Select
 
     End If
@@ -901,7 +907,7 @@ Sub DisplayBatter_Lineup (PG, P9)
 
             Color 15, 0
 
-            Print Tab(3); batters$(P9, idx); Tab(17); handed$(batRating(P9, idx, 0) + 2);
+            Print Tab(3); batters$(P9, idx); Tab(17); B1$(batRating(P9, idx, 0) + 2);
 
             For xx = 20 To 23
                 Print Tab(xx);: If batRating(P9, idx, xx + 2) <> -1 Then Print Using "#"; batRating(P9, idx, xx + 2);
@@ -1100,7 +1106,7 @@ End Sub
 ' ...explanation...
 Sub CHECKSAVE (D, P, S4%)
 
-    I3 = gameScore(D, 0) - gameScore(P, 0)
+    I3 = S6%(D, 0) - S6%(P, 0)
     S1%(D) = -1
 
     If I3 >= 1 Then
@@ -1642,7 +1648,7 @@ Sub DisplayBallField (nbrBalls, P, nbrStrikes, D)
             Call INNDISP(I2, team)
         Next I2
 
-        Locate , 40: Print Using "## ## ## "; gameScore(team, 0); gameScore(team, 1); gameScore(team, 2);
+        Locate , 40: Print Using "## ## ## "; S6%(team, 0); S6%(team, 1); S6%(team, 2);
 
         Color 1: Print Chr$(179);
         Color 15
@@ -1652,7 +1658,7 @@ Sub DisplayBallField (nbrBalls, P, nbrStrikes, D)
             Color 14: Print nbrStrikes;
             Color 1: Print Chr$(179);
             Color 15: Print "SKY:  ";
-            Color 14: Print skyCond$(skyType)
+            Color 14: Print skyCond$(SC%)
         Else
             Print " OUT:   ";
             Color 14: Print nbrOuts(0);
@@ -1770,7 +1776,7 @@ Sub DisplayBallField (nbrBalls, P, nbrStrikes, D)
     Locate 17, 78: Print Chr$(219);
 
     'Pitcher Name
-    Locate 17, 55: Print "["; handed$(pitchRating(D, P1%(D), 0) + 2); "] "; Left$(pitchers$(D, P1%(D)), 10)
+    Locate 17, 55: Print "["; B1$(pitchRating(D, P1%(D), 0) + 2); "] "; Left$(pitchers$(D, P1%(D)), 10)
 
     'Pitcher Stats
     Color 15, 2
@@ -1968,7 +1974,7 @@ Sub FLDERR (F%, gameW%, D, I3, SB%, S2%, P)
 
         End If
 
-        gameScore(D, 2) = gameScore(D, 2) + 1
+        S6%(D, 2) = S6%(D, 2) + 1
 
         Call ADVANCEMENT(P, D, S2%, F%, I3)
 
@@ -2168,12 +2174,12 @@ End Sub
 '----------------------------------------
 'This subroutine displays the hold status
 'of the infield for traditional text mode.
-Sub HOLDSTATUS (runnerHeld)
+Sub HOLDSTATUS (H0%)
 
     Locate 17, 77
 
     Color 15, 2
-    Print heldStatus$(runnerHeld)
+    Print H0$(H0%)
     Color , 0
 
 End Sub
@@ -2271,12 +2277,12 @@ End Sub
 'It then calls the necessary routines to
 'Handle the associated variables / game'
 'mechanics.
-Sub INJURYLENGTH (injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
+Sub INJURYLENGTH (IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
     doneLength = 0
 
-    injCount = injCount + 1
-    injPlayers$(injCount) = batters$(D, B9%(D, po%))
+    IJL% = IJL% + 1
+    IJ$(IJL%) = batters$(D, B9%(D, po%))
 
     pbpString$ = batters$(D, B9%(D, po%)) + " is injured!"
     Call PBP(pbpString$)
@@ -2438,7 +2444,7 @@ Sub MAINSCREEN (D, P, nbrBalls, nbrStrikes, MO)
     Locate 10, 1
 
     Color tmRat_GAME(D, 11), tmRat_GAME(D, 12)
-    Print pitchers$(D, P1%(D)); " "; handed$(pitchRating(D, P1%(D), 0) + 2)
+    Print pitchers$(D, P1%(D)); " "; B1$(pitchRating(D, P1%(D), 0) + 2)
 
     Color 15, 0
 
@@ -2475,11 +2481,11 @@ Sub MAINSCREEN (D, P, nbrBalls, nbrStrikes, MO)
 
     If B7%(P, B1!(P)) = 1 Then
         X$ = pitchers$(P, P1%(P))
-        Print X$; " "; handed$(pitchRating(P, P1%(P), 0) + 2);
+        Print X$; " "; B1$(pitchRating(P, P1%(P), 0) + 2);
         Call PITPLACEMENT(P, X$)
     Else
         X$ = batters$(P, J)
-        Print X$; " "; handed$(batRating(P, J, 0) + 2);
+        Print X$; " "; B1$(batRating(P, J, 0) + 2);
         If batRating(P, J, 0) < 0 Or batRating(P, J, 0) = 0 And pitchRating(D, P1%(D), 0) > 0 Then Locate 21, 64
         X = Len(X$)
         If batRating(P, J, 0) > 0 Or batRating(P, J, 0) = 0 And pitchRating(D, P1%(D), 0) < 0 Then Locate 21, 51 + 10 - X
@@ -2544,7 +2550,7 @@ Sub MAINSCREEN (D, P, nbrBalls, nbrStrikes, MO)
         Case 2: Print "INFIELD IN"
     End Select
 
-    Call HOLDSTATUS(runnerHeld)
+    Call HOLDSTATUS(H0%)
 
     Locate 13, 58
     Color 15, 2: Print Tab(68);
@@ -2600,7 +2606,7 @@ Sub WINDEX ()
     If pbpDelay! > 0 Then
 
 
-        pbpLine = 0
+        PB% = 0
 
         If useVGA = 1 Then
 
@@ -2622,7 +2628,7 @@ Sub WINDEX ()
 
         End If
 
-        Erase pbpStrings$
+        Erase G$
 
     End If
 
@@ -3051,7 +3057,7 @@ Sub PITDISP (P9)
             Color 15, 0
 
             Locate , 3: Print pitchers$(P9, pIdx);
-            Locate , 18: Print handed$(pitchRating(P9, pIdx, 0) + 2);
+            Locate , 18: Print B1$(pitchRating(P9, pIdx, 0) + 2);
 
             Print Using " ### ### ### ## ## ## ## ### ### ##"; pitchRating(P9, pIdx, 6); pitchRating(P9, pIdx, 7); pitchRating(P9, pIdx, 4); pitchRating(P9, pIdx, 5); pitchRating(P9, pIdx, 16); pitchRating(P9, pIdx, 3); pitchRating(P9, pIdx, 13); pitchRating(P9, pIdx, 8); pitchRating(P9, pIdx, 9); pitchRating(P9, pIdx, 1);
             Print "-";
@@ -3145,7 +3151,7 @@ Sub PITSTAM (P9)
         End If
     End If
 
-    If INNING% <= 5 And gameScore(P9, 0) - gameScore(1 - P9, 0) > 0 Then P2%(P9) = P1%(P9)
+    If INNING% <= 5 And S6%(P9, 0) - S6%(1 - P9, 0) > 0 Then P2%(P9) = P1%(P9)
 
 End Sub
 
@@ -3159,7 +3165,7 @@ Sub PITSTRAT (PPH, pz)
 
     Shared SU()
 
-    A1 = gameScore(D, 0) - gameScore(P, 0)
+    A1 = S6%(D, 0) - S6%(P, 0)
 
     pz = 0
 
@@ -3506,7 +3512,7 @@ Sub PopUp_Lineup ()
             Locate , 12 + J * 26
             If B7%(J, X) = 1 Then
 
-                Print handed$(pitchRating(J, P1%(J), 0) + 2); Tab(14 + J * 26); Left$(pitchers$(J, P1%(J)), 10); " P"; Tab(28 + J * 26);
+                Print B1$(pitchRating(J, P1%(J), 0) + 2); Tab(14 + J * 26); Left$(pitchers$(J, P1%(J)), 10); " P"; Tab(28 + J * 26);
 
                 If pitchRating(J, P1%(J), 11) <> 999 Then
                     Print " ."; Using "###"; pitchRating(J, P1%(J), 11) '/ 1000
@@ -3526,7 +3532,7 @@ Sub PopUp_Lineup ()
 
             Else
 
-                Print handed$(batRating(J, B3%(J, X), 0) + 2); Tab(14 + J * 26); Left$(batters$(J, B3%(J, X)), 10); " "; fieldPos$(B7%(J, X)); Tab(28 + J * 26);
+                Print B1$(batRating(J, B3%(J, X), 0) + 2); Tab(14 + J * 26); Left$(batters$(J, B3%(J, X)), 10); " "; fieldPos$(B7%(J, X)); Tab(28 + J * 26);
 
                 If batRating(J, B3%(J, X), 4) = 0 Then
                     Print " .000"
@@ -3677,19 +3683,14 @@ Sub PopUp_Pitcher (WK, M)
     End If
 
     Locate 15, 6: Print "Stats for "; pitchers$(WK, M)
-    Locate , 6: Print "THROWS: "; handed$(pitchRating(WK, M, 0) + 2); "    ";
-    Print Using "G/A%: ##     HOLD: #"; pitchRating(WK, M, 12); pitchRating(WK, M, 18)
-    Locate , 3
-    Print " "; Chr$(204); String$(71, 205); Chr$(185); " "
-    Locate , 6
-    Print "          W  L SV   ERA  G GS CG   IP    H  BB  SO   R  ER HR"
+    Locate , 6: Print "THROWS: "; B1$(pitchRating(WK, M, 0) + 2); "    ";: Print Using "G/A%: ##     HOLD: #"; pitchRating(WK, M, 12); pitchRating(WK, M, 18)
+    Locate , 3: Print " "; Chr$(204); String$(71, 205); Chr$(185); " "
+    Locate , 6: Print "          W  L SV   ERA  G GS CG   IP    H  BB  SO   R  ER HR"
 
-    Locate , 6: Print "SEASON   ";
-    Print Using "## ## ## ##.## ## ## ## ###   ### "; pitchRating(WK, M, 1); pitchRating(WK, M, 2); pitchRating(WK, M, 3); pitchRating(WK, M, 10) / 100; pitchRating(WK, M, 4); pitchRating(WK, M, 5); pitchRating(WK, M, 16); pitchRating(WK, M, 6); pitchRating(WK, M, 7);
+    Locate , 6: Print "SEASON   ";: Print Using "## ## ## ##.## ## ## ## ###   ### "; pitchRating(WK, M, 1); pitchRating(WK, M, 2); pitchRating(WK, M, 3); pitchRating(WK, M, 10) / 100; pitchRating(WK, M, 4); pitchRating(WK, M, 5); pitchRating(WK, M, 16); pitchRating(WK, M, 6); pitchRating(WK, M, 7);
     Print Using "### ###         ##"; pitchRating(WK, M, 8); pitchRating(WK, M, 9); pitchRating(WK, M, 13)
 
-    Locate , 6: Print "LEAGUE   ";
-    Print Using "## ## ## "; P5%(WK, M, 6); P5%(WK, M, 7); P5%(WK, M, 12);
+    Locate , 6: Print "LEAGUE   ";: Print Using "## ## ## "; P5%(WK, M, 6); P5%(WK, M, 7); P5%(WK, M, 12);
 
     If P5%(WK, M, 3) = 0 Or P5%(WK, M, 0) = 0 Then
         Print " 0.00";
@@ -3707,10 +3708,7 @@ Sub PopUp_Pitcher (WK, M)
     End If
 
     Print Using " ### ### ### ### ### ##"; P5%(WK, M, 1); P5%(WK, M, 4); P5%(WK, M, 5); P5%(WK, M, 2); P5%(WK, M, 3); P5%(WK, M, 14)
-
-    Locate , 6: Print "GAME     ";
-    Print Using "## ## ## "; P8%(WK, M, 6); P8%(WK, M, 7); P8%(WK, M, 12);
-
+    Locate , 6: Print "GAME     ";: Print Using "## ## ## "; P8%(WK, M, 6); P8%(WK, M, 7); P8%(WK, M, 12);
     If P8%(WK, M, 3) = 0 Or P8%(WK, M, 0) = 0 Then
         Print " 0.00";
     Else
@@ -3758,12 +3756,11 @@ Sub POPUPSTATS ()
         If pitchRating(P, P1%(P), 11) <> 999 Then
             Print pitchers$(P, P1%(P))
         Else
-            Print pitchers$(P, P1%(P))
-            Locate , 6: Print "BATS: "; handed$(pitchRating(P, P1%(P), 0) + 2); "    ";: Print Using "G/A%: ##       BUNT: #       RUN: #"; 52; pitchRating(P, P1%(P), 32); pitchRating(P, P1%(P), 31):
+            Print pitchers$(P, P1%(P)): Locate , 6: Print "BATS: "; B1$(pitchRating(P, P1%(P), 0) + 2); "    ";: Print Using "G/A%: ##       BUNT: #       RUN: #"; 52; pitchRating(P, P1%(P), 32); pitchRating(P, P1%(P), 31):
         End If
     Else
         Print batters$(P, J)
-        Locate , 6: Print "BATS: "; handed$(batRating(P, J, 0) + 2); "    ";: Print Using "G/A%: ##       BUNT: #       RUN: #"; batRating(P, J, 18); batRating(P, J, 30); batRating(P, J, 16)
+        Locate , 6: Print "BATS: "; B1$(batRating(P, J, 0) + 2); "    ";: Print Using "G/A%: ##       BUNT: #       RUN: #"; batRating(P, J, 18); batRating(P, J, 30); batRating(P, J, 16)
     End If
 
     If B7%(P, B1!(P)) = 1 And TS%(P, 0) = 999 Then
@@ -3982,15 +3979,15 @@ Sub RecordRun (sah%, i, D, F%, PQ, S2%, gameW%, INFPOS%)
     End If
 
     inningScore(P, INNING%) = inningScore(P, INNING%) + 1
-    gameScore(P, 0) = gameScore(P, 0) + 1
+    S6%(P, 0) = S6%(P, 0) + 1
 
-    If gameScore(P, 0) - gameScore(D, 0) = 1 Then
+    If S6%(P, 0) - S6%(D, 0) = 1 Then
         P2%(D) = gameB0%(i, 1)
         P2%(P) = P1%(P)
         S1%(1) = -1
         S1%(0) = -1
     Else
-        If gameScore(P, 0) - gameScore(D, 0) = 0 And S1%(D) <> -1 Then
+        If S6%(P, 0) - S6%(D, 0) = 0 And S1%(D) <> -1 Then
             I5 = P1%(D)
             I6 = 19
             Call ADDPIT(D, I5, I6)
@@ -4005,7 +4002,7 @@ Sub RecordRun (sah%, i, D, F%, PQ, S2%, gameW%, INFPOS%)
 
     Call d100(RN0)
     If inningScore(P, INNING%) = 4 And RN0 <= 25 Then Call PBP("They're tearin' up the peapatch!")
-    If INNING% >= 9 And P = 1 And gameScore(P, 0) - gameScore(D, 0) = 1 Then
+    If INNING% >= 9 And P = 1 And S6%(P, 0) - S6%(D, 0) = 1 Then
         If F% = 0 And nbrOuts(1) < 3 And S2% <> 10 Then Call CHARGERUN(D, i)
         If S2% <> 10 Then
             A5%(0) = 0
@@ -4045,7 +4042,7 @@ Sub DISPBAVG (D)
 
         If B7%(P, X) = 1 Then
 
-            Print handed$(pitchRating(P, P1%(P), 0) + 2); Tab(25); Left$(pitchers$(P, P1%(P)), 10); " P"; Tab(39);
+            Print B1$(pitchRating(P, P1%(P), 0) + 2); Tab(25); Left$(pitchers$(P, P1%(P)), 10); " P"; Tab(39);
 
             If pitchRating(P, P1%(P), 11) <> 999 Then
                 If pitchRating(P, P1%(P), 11) = 0 Then
@@ -4072,7 +4069,7 @@ Sub DISPBAVG (D)
 
         Else
 
-            Print handed$(batRating(P, B3%(P, X), 0) + 2); Tab(25); Left$(batters$(P, B3%(P, X)), 10); " "; fieldPos$(B7%(P, X)); Tab(39);
+            Print B1$(batRating(P, B3%(P, X), 0) + 2); Tab(25); Left$(batters$(P, B3%(P, X)), 10); " "; fieldPos$(B7%(P, X)); Tab(39);
 
             If batRating(P, B3%(P, X), 4) = 0 Then
                 Print " .000"
@@ -4779,7 +4776,7 @@ Sub RELIEVERS (PPH, pz)
         pz = 0
     Else
         I2 = 0
-        A1 = gameScore(D, 0) - gameScore(P, 0)
+        A1 = S6%(D, 0) - S6%(P, 0)
 
         For rIdx = 0 To 21
 
@@ -4841,10 +4838,7 @@ Sub RELIEVERS (PPH, pz)
         Next rIdx
 
         For rIdx = 0 To 21
-            If pitchRating(D, rIdx, 15) = 0 And pitchers$(D, rIdx) <> "XXX" Then
-                Call NEWPITCHER(rIdx, PPH, pz)
-                Exit For
-            End If
+            If pitchRating(D, rIdx, 15) = 0 And pitchers$(D, rIdx) <> "XXX" Then Call NEWPITCHER(rIdx, PPH, pz): Exit For
         Next rIdx
 
     End If
@@ -4914,15 +4908,15 @@ End Sub
 'hit counter on the scoreboard only.
 Sub SCOREBOARD ()
 
-    gameScore(P, 1) = gameScore(P, 1) + 1
+    S6%(P, 1) = S6%(P, 1) + 1
 
     If useVGA = 0 Then
         Color 14, 0
         Locate P + 2, 43
-        Print Using "##"; gameScore(P, 1);
+        Print Using "##"; S6%(P, 1);
         Color 15, 0
     Else
-        FORMATTED$ = FUsing$(Str$(gameScore(P, 1)), "##", 1)
+        FORMATTED$ = FUsing$(Str$(S6%(P, 1)), "##", 1)
         PrintOnGfx 56, P + 28, FORMATTED$, imageScreen&
     End If
 
@@ -5150,7 +5144,7 @@ End Sub
 '----------------------------------------
 'This subroutine handles the attempt of
 'a runner to steal 3rd base.
-Sub STEAL3RD (TGTBASE%, AA, Q0, runnerHeld, D)
+Sub STEAL3RD (TGTBASE%, AA, Q0, H0%, D)
 
     If TGTBASE% = 3 Then
         ' *** SUCCESS OF 3B STEAL ***
@@ -5163,11 +5157,11 @@ Sub STEAL3RD (TGTBASE%, AA, Q0, runnerHeld, D)
 
     If TGTBASE% = 4 Then Q0 = Q0 * .5
 
-    If runnerHeld = 0 Then
-        'Runner not held
+    ' *** H0%=0, runner not held ***
+    If H0% = 0 Then
         Q0 = Q0 + 50
     Else
-        'Runner is held
+        ' *** H0% = 1, runner is held ***
         Q0 = Q0 - ((pitchRating(D, P1%(D), 18) - 5) * 25): ' - 50
     End If
 
@@ -5497,7 +5491,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, gameW%, sah%, SB%, baseNbr!, I9)
         End If
 
         I$ = "N"
-        A1 = gameScore(P, 0) - gameScore(D, 0)
+        A1 = S6%(P, 0) - S6%(D, 0)
 
         If (playerMode = 2 Or playerMode = 1 And P = compTeam) Then
             If A1 > -2 And A1 < 2 And S2% <> 19 Then
@@ -5540,8 +5534,8 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, gameW%, sah%, SB%, baseNbr!, I9)
 
                 If (playerMode = 2 Or playerMode = 1 And D = compTeam) Then
                     If MG%(D, 766) = 999 And baseNbr! = 4 Then
-                        If INNING% >= MG%(D, 767) And MG%(D, 767) <> 0 And MG%(D, 768) <= gameScore(D, 0) - gameScore(P, 0) Then I$ = "N"
-                        If INNING% >= MG%(D, 769) And MG%(D, 769) <> 0 And MG%(D, 770) <= gameScore(D, 0) - gameScore(P, 0) Then I$ = "N"
+                        If INNING% >= MG%(D, 767) And MG%(D, 767) <> 0 And MG%(D, 768) <= S6%(D, 0) - S6%(P, 0) Then I$ = "N"
+                        If INNING% >= MG%(D, 769) And MG%(D, 769) <> 0 And MG%(D, 770) <= S6%(D, 0) - S6%(P, 0) Then I$ = "N"
                     Else
                         I$ = "Y"
                     End If
@@ -5625,7 +5619,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, gameW%, sah%, SB%, baseNbr!, I9)
                         3371 '
                         Call d100(I5)
 
-                        A1 = gameScore(P, 0) - gameScore(D, 0)
+                        A1 = S6%(P, 0) - S6%(D, 0)
 
                         If Not (A1 < -2 Or A1 < 0 And INNING% > 8) Then
 
@@ -5871,7 +5865,7 @@ Sub VIEWTEAM ()
                             Print " "; Chr$(200); String$(71, 205); Chr$(188); " "
 
                             Locate 4, 6: Print "Stats for "; batters$(WK, M)
-                            Locate , 6: Print "BATS: "; handed$(batRating(WK, M, 0) + 2); "    ";: Print Using "G/A%: ##       BUNT: #       RUN: #"; batRating(WK, M, 18); batRating(WK, M, 30); batRating(WK, M, 16)
+                            Locate , 6: Print "BATS: "; B1$(batRating(WK, M, 0) + 2); "    ";: Print Using "G/A%: ##       BUNT: #       RUN: #"; batRating(WK, M, 18); batRating(WK, M, 30); batRating(WK, M, 16)
                             Locate , 3: Print " "; Chr$(204); String$(71, 205); Chr$(185); " "
                             Locate , 6: Print "          AVG   OBP   G  AB   R   H 2B 3B HR RBI  BB  SO  SB CS HS LS"
 
@@ -6325,7 +6319,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 Call WINDEX
 
-                If rainDelay = 0 And (precipType = 0 Or precipType = 4) Then
+                If rainyDay = 0 And (PC% = 0 Or PC% = 4) Then
                     Call PBP(player$(0) + " fouls the pitch out of play")
                 Else
                     tm = Int(Rnd(1) * 59) + 2
@@ -6432,7 +6426,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 po% = 2
 
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 H6% = 1
 
@@ -6444,7 +6438,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 po% = 3
 
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 H6% = 1
 
@@ -6455,7 +6449,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 po% = 4
 
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 H6% = 1
 
@@ -6467,7 +6461,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 po% = 5
 
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 H6% = 1
 
@@ -6481,7 +6475,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 po% = 6
 
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 H6% = 1
 
@@ -6514,7 +6508,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 po% = op%
 
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 H6% = 5
 
@@ -6556,7 +6550,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 po% = 8
 
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 H6% = 5
 
@@ -6592,7 +6586,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 po% = 9
 
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 H6% = 5
 
@@ -6630,7 +6624,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 po% = op%
 
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 H6% = 5
 
@@ -6645,7 +6639,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 po% = 2
 
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 H6% = 1
 
@@ -6681,10 +6675,10 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 Call WINDEX
 
                 po% = hi1
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 po% = hi2
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 H6% = 5
 
@@ -6703,7 +6697,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 Call PBP(batters$(D, B9%(D, 5)) + " is down and injured")
 
                 po% = 5
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 H6% = 1
 
@@ -6735,10 +6729,10 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 Call WINDEX
 
                 po% = 7
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6)
 
                 po% = 8
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6): H6% = 5
+                Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6): H6% = 5
 
             Case 71 To 85
 
@@ -6790,7 +6784,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                     Call SCOREBOARD
                     Call WINDEX
                     Call PBP(batters$(D, B9%(D, po%)) + " is down and injured")
-                    Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6): H6% = 5
+                    Call INJURYLENGTH(IJL%, D, po%, playerMode, P, compTeam, P9, W5, W6): H6% = 5
 
                 End If
 
@@ -6851,10 +6845,10 @@ Sub WEATHER ()
         Locate , 11: Print "WIND: NONE"
     Else
         Locate , 11: Print "TEMPERATURE: "; gameTemp
-        Locate , 11: Print "SKY CONDITIONS: "; skyCond$(skyType)
-        windSpeed = Int(Rnd(1) * 15) + 7
+        Locate , 11: Print "SKY CONDITIONS: "; skyCond$(SC%)
+        WS% = Int(Rnd(1) * 15) + 7
         Locate , 11: Print "WIND: "; wind$
-        Locate , 11: Print "PRECIPITATION: "; precip$(precipType)
+        Locate , 11: Print "PRECIPITATION: "; PC$(PC%)
     End If
 
     Color 15, 0
@@ -6887,7 +6881,7 @@ End Sub
 'This subroutine opens the PARKS.DBF file
 'to read in attendance data, wind factor,
 'weather and other ballpark calculations.
-Sub GETWEATHER (windDir, windSpeed, gameMonth, WF!, skyType, gameTemp, rainDelay)
+Sub GETWEATHER (windDir, WS%, gameMonth, WF!, SC%, gameTemp, rainyDay)
 
     Shared avgAttendance&
 
@@ -6974,41 +6968,35 @@ Sub GETWEATHER (windDir, windSpeed, gameMonth, WF!, skyType, gameTemp, rainDelay
         If RN <= SUM Then Exit For
     Next
 
-    If I = 10 Then windSpeed = Int(Rnd(1) * 10)
-    If I = 11 Then windSpeed = Int(Rnd(1) * 5) + 10
-    If I = 12 Then windSpeed = Int(Rnd(1) * 5) + 15
-    If I = 13 Then windSpeed = Int(Rnd(1) * 10) + 20
+    If I = 10 Then WS% = Int(Rnd(1) * 10)
+    If I = 11 Then WS% = Int(Rnd(1) * 5) + 10
+    If I = 12 Then WS% = Int(Rnd(1) * 5) + 15
+    If I = 13 Then WS% = Int(Rnd(1) * 10) + 20
 
     WF! = 1
 
-    If windDir > 3 And windDir < 7 And windSpeed >= 15 Then WF! = 1 - WINFAC / 100
-    If windDir > 6 And windDir < 10 And windSpeed >= 15 Then WF! = 1 + WINFAC / 100
+    If windDir > 3 And windDir < 7 And WS% >= 15 Then WF! = 1 - WINFAC / 100
+    If windDir > 6 And windDir < 10 And WS% >= 15 Then WF! = 1 + WINFAC / 100
 
-    precipType = 4
-    skyType = Int(Rnd(1) * 2) + 1
+    PC% = 4
+    SC% = Int(Rnd(1) * 2) + 1
 
     Call d100(RN0)
 
     If RN0 <= MON(SM%, 14) Then
 
-        precipType = Int(Rnd(1) * 3) + 1
-        skyType = 3
+        PC% = Int(Rnd(1) * 3) + 1
+        SC% = 3
 
         Call d100(RN)
-        If RN <= 5 Then
-
-            rainDelay = 1
-
-            'rainStart is an inning from 6 to 8
-            rainStart = Int(Rnd(1) * 3) + 6
+        If RN <= 5 Then 
+            rainyDay = 1
+            rainStartInning = Int(Rnd(1) * 3) + 6
         End If
 
     End If
 
-    If tmRat_GAME(1, 13) = 2 Or tmRat_GAME(1, 13) = 4 Or tmRat_GAME(1, 13) = 10 Or tmRat_GAME(1, 13) = 13 Or tmRat_GAME(1, 13) = 24 Then
-        precipType = 4
-        skyType = 4
-    End If
+    If tmRat_GAME(1, 13) = 2 Or tmRat_GAME(1, 13) = 4 Or tmRat_GAME(1, 13) = 10 Or tmRat_GAME(1, 13) = 13 Or tmRat_GAME(1, 13) = 24 Then PC% = 4: SC% = 4
 
 End Sub
 
@@ -7055,7 +7043,7 @@ Sub NEWLINES (P9)
 
     For I = 1 To 9
 
-        Call PositionCursor(I)
+        Call POSITION(I)
 
         Print Using "# "; I;
 
@@ -7077,12 +7065,12 @@ End Sub
 
 
 '----------------------------------------
-'          PositionCursor Subroutine
+'          POSITION Subroutine
 '----------------------------------------
 ' This subroutine "positions" the cursor
 'on the screen at the appropriate row
 'in order to print out the line positions.
-Sub PositionCursor (I)
+Sub POSITION (I)
 
     Locate I + 7, 59
 
@@ -7156,7 +7144,7 @@ Sub SHOWBATTERS (P9)
             'Name / Position
             Locate , 3: Print batters$(P9, I);
             Color 15, 0
-            Locate , 15: Print handed$(batRating(P9, I, 0) + 2);
+            Locate , 15: Print B1$(batRating(P9, I, 0) + 2);
 
             Locate , 18: If batRating(P9, I, 22) <> -1 Then Print Using "#"; batRating(P9, I, 22);
             Locate , 19: If batRating(P9, I, 23) <> -1 Then Print Using "#"; batRating(P9, I, 23);
@@ -7417,7 +7405,7 @@ Sub EVENTS (specialCount, specialStat)
 
         checkSpecial% = 0
 
-        If INNING% > eventSettings(1) Or gameScore(1, 0) < eventSettings(2) Or gameScore(0, 0) < eventSettings(2) Or gameScore(1, 0) > eventSettings(3) Or gameScore(0, 0) > eventSettings(3) Or gameScore(1, 1) > eventSettings(5) Or gameScore(0, 1) > eventSettings(5) Or gameScore(1, 1) < eventSettings(4) Or gameScore(0, 1) < eventSettings(4) Then
+        If INNING% > eventSettings(1) Or S6%(1, 0) < eventSettings(2) Or S6%(0, 0) < eventSettings(2) Or S6%(1, 0) > eventSettings(3) Or S6%(0, 0) > eventSettings(3) Or S6%(1, 1) > eventSettings(5) Or S6%(0, 1) > eventSettings(5) Or S6%(1, 1) < eventSettings(4) Or S6%(0, 1) < eventSettings(4) Then
             checkSpecial% = 1
         Else
 
@@ -7495,8 +7483,7 @@ Sub CheckRecords ()
 
     Shared DB, HR, TR, SB
     Shared allEvents
-    Shared doublesPlayer$(), eventDesc$(), homeRuns$()
-    Shared stolenBases$(), triplesPlayer$()
+    Shared DB$(), eventDesc$(), homeRuns$(), SB$(), TR$()
 
     For I = 0 To 1:
         For I1 = 0 To 21:
@@ -7537,12 +7524,12 @@ Sub CheckRecords ()
             '        ***CHECKING DOUBLES***
             If B8%(I, I1, 4) <> 0 Then
                 If B8%(I, I1, 4) = 1 Then
-                    doublesPlayer$(DB) = batters$(I, I1)
+                    DB$(DB) = batters$(I, I1)
                 Else
-                    doublesPlayer$(DB) = batters$(I, I1) + Str$(B8%(I, I1, 4))
+                    DB$(DB) = batters$(I, I1) + Str$(B8%(I, I1, 4))
                 End If
 
-                doublesPlayer$(DB) = doublesPlayer$(DB) + " (" + Right$(Str$(B5%(I, I1, 4)), (Len(Str$(B5%(I, I1, 4))) - 1)) + ")"
+                DB$(DB) = DB$(DB) + " (" + Right$(Str$(B5%(I, I1, 4)), (Len(Str$(B5%(I, I1, 4))) - 1)) + ")"
                 DB = DB + 1
 
             End If
@@ -7550,12 +7537,12 @@ Sub CheckRecords ()
             '        ***CHECKING TRIPLES***
             If B8%(I, I1, 5) <> 0 Then
                 If B8%(I, I1, 5) = 1 Then
-                    triplesPlayer$(TR) = batters$(I, I1)
+                    TR$(TR) = batters$(I, I1)
                 Else
-                    triplesPlayer$(TR) = batters$(I, I1) + Str$(B8%(I, I1, 5))
+                    TR$(TR) = batters$(I, I1) + Str$(B8%(I, I1, 5))
                 End If
 
-                triplesPlayer$(TR) = triplesPlayer$(TR) + " (" + Right$(Str$(B5%(I, I1, 5)), (Len(Str$(B5%(I, I1, 5))) - 1)) + ")"
+                TR$(TR) = TR$(TR) + " (" + Right$(Str$(B5%(I, I1, 5)), (Len(Str$(B5%(I, I1, 5))) - 1)) + ")"
                 TR = TR + 1
 
             End If
@@ -7575,15 +7562,11 @@ Sub CheckRecords ()
 
             '        ***CHECKING STOLEN BASES ***
             If B8%(I, I1, 9) <> 0 Then
-
                 If B8%(I, I1, 9) = 1 Then
-                    stolenBases$(SB) = batters$(I, I1) + " (" + Right$(Str$(B5%(I, I1, 9)), (Len(Str$(B5%(I, I1, 9))) - 1)) + ")"
+                    SB$(SB) = batters$(I, I1) + " (" + Right$(Str$(B5%(I, I1, 9)), (Len(Str$(B5%(I, I1, 9))) - 1)) + ")": SB = SB + 1
                 Else
-                    stolenBases$(SB) = batters$(I, I1) + Str$(B8%(I, I1, 9)) + " (" + Right$(Str$(B5%(I, I1, 9)), (Len(Str$(B5%(I, I1, 9))) - 1)) + ")"
+                    SB$(SB) = batters$(I, I1) + Str$(B8%(I, I1, 9)) + " (" + Right$(Str$(B5%(I, I1, 9)), (Len(Str$(B5%(I, I1, 9))) - 1)) + ")": SB = SB + 1
                 End If
-
-                SB = SB + 1
-
             End If
 
         Next I1
@@ -7611,12 +7594,12 @@ Sub CheckRecords ()
             If P8%(I, I1, 27) <> 0 Then
 
                 If P8%(I, I1, 27) = 1 Then
-                    doublesPlayer$(DB) = pitchers$(I, I1)
+                    DB$(DB) = pitchers$(I, I1)
                 Else
-                    doublesPlayer$(DB) = pitchers$(I, I1) + Str$(P8%(I, I1, 27))
+                    DB$(DB) = pitchers$(I, I1) + Str$(P8%(I, I1, 27))
                 End If
 
-                doublesPlayer$(DB) = doublesPlayer$(DB) + " (" + Right$(Str$(P5%(I, I1, 27)), (Len(Str$(P5%(I, I1, 27))) - 1)) + ")"
+                DB$(DB) = DB$(DB) + " (" + Right$(Str$(P5%(I, I1, 27)), (Len(Str$(P5%(I, I1, 27))) - 1)) + ")"
                 DB = DB + 1
 
             End If
@@ -7625,13 +7608,13 @@ Sub CheckRecords ()
             If P8%(I, I1, 28) <> 0 Then
 
                 If P8%(I, I1, 28) = 1 Then
-                    triplesPlayer$(TR) = pitchers$(I, I1)
+                    TR$(TR) = pitchers$(I, I1)
                 Else
-                    triplesPlayer$(TR) = pitchers$(I, I1) + Str$(P8%(I, I1, 28))
+                    TR$(TR) = pitchers$(I, I1) + Str$(P8%(I, I1, 28))
                 End If
 
                 'Error #9 = index ???
-                triplesPlayer$(TR) = triplesPlayer$(TR) + " (" + Right$(Str$(P5%(I, I1, 28)), (Len(Str$(P5%(I, I1, 28))) - 1)) + ")"
+                TR$(TR) = TR$(TR) + " (" + Right$(Str$(P5%(I, I1, 28)), (Len(Str$(P5%(I, I1, 28))) - 1)) + ")"
                 TR = TR + 1
 
             End If
@@ -7652,15 +7635,13 @@ Sub CheckRecords ()
 
             '        ***CHECKING STOLEN BASES ***
             If P8%(I, I1, 32) <> 0 Then
-
                 If P8%(I, I1, 32) = 1 Then
-                    stolenBases$(SB) = pitchers$(I, I1) + " (" + Right$(Str$(P5%(I, I1, 32)), (Len(Str$(P5%(I, I1, 32))) - 1)) + ")"
+                    SB$(SB) = pitchers$(I, I1) + " (" + Right$(Str$(P5%(I, I1, 32)), (Len(Str$(P5%(I, I1, 32))) - 1)) + ")"
+                    SB = SB + 1
                 Else
-                    stolenBases$(SB) = pitchers$(I, I1) + Str$(P8%(I, I1, 32)) + " (" + Right$(Str$(P5%(I, I1, 32)), (Len(Str$(P5%(I, I1, 32))) - 1)) + ")"
+                    SB$(SB) = pitchers$(I, I1) + Str$(P8%(I, I1, 32)) + " (" + Right$(Str$(P5%(I, I1, 32)), (Len(Str$(P5%(I, I1, 32))) - 1)) + ")"
+                    SB = SB + 1
                 End If
-
-                SB = SB + 1
-
             End If
 
         Next I1
@@ -7838,7 +7819,7 @@ Sub POSTGAME ()
     Do
         I3 = 0
 
-        If gameScore(1, 0) - gameScore(0, 0) > 0 Then I3 = 1
+        If S6%(1, 0) - S6%(0, 0) > 0 Then I3 = 1
         If P2%(I3) <> P1%(I3) And S1%(I3) = -1 And P8%(I3, P1%(I3), 0) >= 9 And P8%(I3, P1%(I3), 0) <= 12 And P6%(I3) > 0 And P8%(I3, P1%(I3), 3) < 3 Then S1%(I3) = P1%(I3)
         If P2%(I3) = S1%(I3) Then S1%(I3) = -1
 
@@ -7997,8 +7978,8 @@ Sub SAVESTATS ()
                 LSet player$(20 + X) = diskIDs$(X)
             Next
 
-            LSet player$(22) = MKI$(gameScore(0, 0))
-            LSet player$(23) = MKI$(gameScore(1, 0))
+            LSet player$(22) = MKI$(S6%(0, 0))
+            LSet player$(23) = MKI$(S6%(1, 0))
 
             Put #1, schedGame(0) + schedGame(2)
 
@@ -8067,12 +8048,13 @@ End Sub
 'the stats generated for a completed game.
 Sub COMPILESTATFILES (teamIdx)
 
-    Shared oppName$(), losePitcher$(), locIndicator$()
-    Shared winPitcher$()
+    Shared losePitcher$(), winPitcher$()
+    Shared oppName$(), locIndicator$()
 
-    Shared B6%(), gameD1%(), DYS%(), eventSettings()
-    Shared teamScore(), nbrInnings(), statP0%()
-    Shared statSS%(), statT0%(), SX%(), oppScore()
+    Shared B6%(), DYS%(), eventSettings()
+    Shared gameD1%(), nbrInnings()
+    Shared teamScore(), oppScore()
+    Shared statP0%(), statSS%(), statT0%(), SX%()
 
     statFile$ = nameStatFile$(gameTeams$(teamIdx))
 
@@ -8149,21 +8131,39 @@ Sub COMPILESTATFILES (teamIdx)
         Input #1, W2%
         Input #1, L2%
 
-        For I = 0 To 22: Input #1, batters$(teamIdx, I): Input #1, B2%(teamIdx, I): Next I
+        For I = 0 To 22: 
+            Input #1, batters$(teamIdx, I)
+            Input #1, B2%(teamIdx, I)
+        Next I
 
-        For I = 0 To 21: Input #1, pitchers$(teamIdx, I): Input #1, P3%(teamIdx, I): Next I
+        For I = 0 To 21: 
+            Input #1, pitchers$(teamIdx, I)
+            Input #1, P3%(teamIdx, I)
+        Next I
 
-        For I = 0 To 22: For I1 = 0 To 21: Input #1, B6%(I, I1): Next I1: Next I
+        For I = 0 To 22: 
+            For I1 = 0 To 21: 
+                Input #1, B6%(I, I1)
+            Next I1
+        Next I
 
-        For I = 0 To 21: For I1 = 0 To 41: Input #1, statP0%(I, I1): Next I1: Next I
+        For I = 0 To 21: 
+            For I1 = 0 To 41: 
+                Input #1, statP0%(I, I1)
+            Next I1
+        Next I
 
         Input #1, gameD0%(teamIdx)
 
         Input #1, gameD1%(teamIdx)
 
-        For I = 0 To 21: Input #1, statT0%(I): Next I
+        For I = 0 To 21: 
+            Input #1, statT0%(I)
+        Next I
 
-        For I = 0 To 22: Input #1, P4%(I): Next I
+        For I = 0 To 22: 
+            Input #1, P4%(I)
+        Next I
 
         Close #1
 
@@ -8240,14 +8240,14 @@ Sub COMPILESTATFILES (teamIdx)
 
     Next I
 
-    If gameScore(teamIdx, 0) - gameScore(1 - teamIdx, 0) > 0 Then statP0%(P2%(teamIdx), 6) = statP0%(P2%(teamIdx), 6) + 1
-    If gameScore(teamIdx, 0) - gameScore(1 - teamIdx, 0) < 0 Then statP0%(P2%(teamIdx), 7) = statP0%(P2%(teamIdx), 7) + 1
-    If gameScore(teamIdx, 0) - gameScore(1 - teamIdx, 0) > 0 And S1%(teamIdx) >= 0 Then statP0%(S1%(teamIdx), 12) = statP0%(S1%(teamIdx), 12) + 1: P4%(12) = P4%(12) + 1
+    If S6%(teamIdx, 0) - S6%(1 - teamIdx, 0) > 0 Then statP0%(P2%(teamIdx), 6) = statP0%(P2%(teamIdx), 6) + 1
+    If S6%(teamIdx, 0) - S6%(1 - teamIdx, 0) < 0 Then statP0%(P2%(teamIdx), 7) = statP0%(P2%(teamIdx), 7) + 1
+    If S6%(teamIdx, 0) - S6%(1 - teamIdx, 0) > 0 And S1%(teamIdx) >= 0 Then statP0%(S1%(teamIdx), 12) = statP0%(S1%(teamIdx), 12) + 1: P4%(12) = P4%(12) + 1
 
     For I = 0 To 21
         If pitchRating(teamIdx, I, 15) <> 0 Then statP0%(I, 8) = statP0%(I, 8) + 1: P4%(8) = P4%(8) + 1
         If INNING% = P8%(teamIdx, I, 0) Then statP0%(I, 10) = statP0%(I, 10) + 1: P4%(10) = P4%(10) + 1
-        If INNING% = P8%(teamIdx, I, 0) And gameScore(1 - teamIdx, 0) = 0 Then statP0%(I, 11) = statP0%(I, 11) + 1: P4%(11) = P4%(11) + 1
+        If INNING% = P8%(teamIdx, I, 0) And S6%(1 - teamIdx, 0) = 0 Then statP0%(I, 11) = statP0%(I, 11) + 1: P4%(11) = P4%(11) + 1
     Next I
 
     statP0%(SX%(teamIdx), 9) = statP0%(SX%(teamIdx), 9) + 1
@@ -8256,13 +8256,16 @@ Sub COMPILESTATFILES (teamIdx)
     gameD0%(teamIdx) = gameD0%(teamIdx) + D3%(teamIdx)
     gameD1%(teamIdx) = gameD1%(teamIdx) + D3%(1 - teamIdx)
 
-    If gameScore(teamIdx, 0) - gameScore(1 - teamIdx, 0) > 0 Then W2% = W2% + 1
-    If gameScore(teamIdx, 0) - gameScore(1 - teamIdx, 0) < 0 Then L2% = L2% + 1
+    If S6%(teamIdx, 0) - S6%(1 - teamIdx, 0) > 0 Then W2% = W2% + 1
+    If S6%(teamIdx, 0) - S6%(1 - teamIdx, 0) < 0 Then L2% = L2% + 1
 
+    Cls 
+    
     Color 15, 0
 
     Print ">>>>>"
-    Print "THE STATS ARE BEING SAVED UNDER": Print "THE FOLLOWING NAME ::: ";
+    Print "THE STATS ARE BEING SAVED UNDER"
+    Print "THE FOLLOWING NAME ::: ";
     Color tmRat_GAME(teamIdx, 11), tmRat_GAME(teamIdx, 12): Print statFile$
 
     Color 15, 0
@@ -8273,22 +8276,42 @@ Sub COMPILESTATFILES (teamIdx)
     Print #1, W2%
     Print #1, L2%
 
-    For I = 0 To 22: Print #1, batters$(teamIdx, I): Print #1, B2%(teamIdx, I): Next I
-    For I = 0 To 21: Print #1, pitchers$(teamIdx, I): Print #1, P3%(teamIdx, I): Next I
-    For I = 0 To 22: For I1 = 0 To 21: Print #1, B6%(I, I1): Next I1: Next I
-    For I = 0 To 21: For I1 = 0 To 41: Print #1, statP0%(I, I1): Next I1: Next I
+    For I = 0 To 22: 
+        Print #1, batters$(teamIdx, I)
+        Print #1, B2%(teamIdx, I)
+    Next I
+    
+    For I = 0 To 21: 
+        Print #1, pitchers$(teamIdx, I)
+        Print #1, P3%(teamIdx, I)
+    Next I
+    
+    For I = 0 To 22: 
+        For I1 = 0 To 21: 
+            Print #1, B6%(I, I1)
+        Next I1
+    Next I
+    
+    For I = 0 To 21: 
+        For I1 = 0 To 41: 
+            Print #1, statP0%(I, I1)
+        Next I1
+    Next I
 
     Print #1, gameD0%(teamIdx)
     Print #1, gameD1%(teamIdx)
 
-    For I = 0 To 21: Print #1, statT0%(I): Next I
-    For I = 0 To 22: Print #1, P4%(I): Next I
+    For I = 0 To 21: 
+        Print #1, statT0%(I)
+    Next I
+    
+    For I = 0 To 22: 
+        Print #1, P4%(I)
+    Next I
 
     Close #1
 
     Print "<<<<<"
-    Print
-    Print
 
     If _FileExists(diskPaths$(1) + statFile$ + "R") Then
 
@@ -8328,31 +8351,31 @@ Sub COMPILESTATFILES (teamIdx)
 
         Input #1, numberGames
 
-        For I = 1 To MAX_SCHED_STATS:
+        For I = 1 To MAX_SCHED_STATS: 
             Input #1, teamScore(I)
         Next I
-
-        For I = 1 To MAX_SCHED_STATS:
+        
+        For I = 1 To MAX_SCHED_STATS: 
             Input #1, oppName$(I)
         Next I
-
-        For I = 1 To MAX_SCHED_STATS:
+        
+        For I = 1 To MAX_SCHED_STATS: 
             Input #1, oppScore(I)
         Next I
-
-        For I = 1 To MAX_SCHED_STATS:
+        
+        For I = 1 To MAX_SCHED_STATS
             Input #1, locIndicator$(I)
         Next I
-
-        For I = 1 To MAX_SCHED_STATS:
+        
+        For I = 1 To MAX_SCHED_STATS: 
             Input #1, winPitcher$(I)
         Next I
-
-        For I = 1 To MAX_SCHED_STATS:
+        
+        For I = 1 To MAX_SCHED_STATS: 
             Input #1, losePitcher$(I)
         Next I
-
-        For I = 1 To MAX_SCHED_STATS:
+        
+        For I = 1 To MAX_SCHED_STATS: 
             Input #1, nbrInnings(I)
         Next I
 
@@ -8373,9 +8396,9 @@ Sub COMPILESTATFILES (teamIdx)
     End If
 
     If numberGames < MAX_SCHED_STATS Then numberGames = numberGames + 1
-    teamScore(numberGames) = gameScore(teamIdx, 0)
+    teamScore(numberGames) = S6%(teamIdx, 0)
     oppName$(numberGames) = gameTeams$(1 - teamIdx)
-    oppScore(numberGames) = gameScore(1 - teamIdx, 0)
+    oppScore(numberGames) = S6%(1 - teamIdx, 0)
     winPitcher$(numberGames) = gameW$
     losePitcher$(numberGames) = gameL$
     nbrInnings(numberGames) = LYN%
@@ -8390,31 +8413,31 @@ Sub COMPILESTATFILES (teamIdx)
 
     Print #1, numberGames
 
-    For I = 1 To MAX_SCHED_STATS:
+    For I = 1 To MAX_SCHED_STATS: 
         Print #1, teamScore(I)
     Next I
 
-    For I = 1 To MAX_SCHED_STATS:
+    For I = 1 To MAX_SCHED_STATS: 
         Print #1, oppName$(I)
     Next I
 
-    For I = 1 To MAX_SCHED_STATS:
+    For I = 1 To MAX_SCHED_STATS: 
         Print #1, oppScore(I)
     Next I
 
-    For I = 1 To MAX_SCHED_STATS:
+    For I = 1 To MAX_SCHED_STATS: 
         Print #1, locIndicator$(I)
     Next I
 
-    For I = 1 To MAX_SCHED_STATS:
+    For I = 1 To MAX_SCHED_STATS: 
         Print #1, winPitcher$(I)
     Next I
 
-    For I = 1 To MAX_SCHED_STATS:
+    For I = 1 To MAX_SCHED_STATS: 
         Print #1, losePitcher$(I)
     Next I
 
-    For I = 1 To MAX_SCHED_STATS:
+    For I = 1 To MAX_SCHED_STATS: 
         Print #1, nbrInnings(I)
     Next I
 
@@ -8422,12 +8445,16 @@ Sub COMPILESTATFILES (teamIdx)
 
     numberGames = 0
 
-    Erase B2%, B6%, P3%, P4%
+    Erase B2%, B6%, nbrInnings
+    Erase oppScore, P3%, P4%
     Erase statSS%, statP0%, statT0%
+    Erase teamScore
+
+    Erase locIndicator$, oppName$
+    Erase losePitcher$, winPitcher$
 
     W2% = 0
     L2% = 0
-
 
 End Sub
 
@@ -8533,15 +8560,15 @@ Sub BOX2FILE (printChoice, boxName$)
             For I2 = 1 To INNING%
                 Call InningPrintFile(I2)
                 If I = 0 Then Print #2, Using "##"; inningScore(I, I2);
-                If I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = INNING% And inningScore(1, INNING%) = 0 Then Print #2, " X";
-                If I = 1 And gameScore(1, 0) < gameScore(0, 0) And I2 = INNING% Or I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = INNING% And inningScore(1, INNING%) > 0 Then Print #2, Using "##"; inningScore(I, I2);
+                If I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = INNING% And inningScore(1, INNING%) = 0 Then Print #2, " X";
+                If I = 1 And S6%(1, 0) < S6%(0, 0) And I2 = INNING% Or I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = INNING% And inningScore(1, INNING%) > 0 Then Print #2, Using "##"; inningScore(I, I2);
                 If I = 1 And I2 < INNING% Then Print #2, Using "##"; inningScore(I, I2);
             Next I2
 
             Print #2, " -";
-            Print #2, Using " ##"; gameScore(I, 0);
-            Print #2, Using " ##"; gameScore(I, 1);
-            Print #2, Using " #"; gameScore(I, 2)
+            Print #2, Using " ##"; S6%(I, 0);
+            Print #2, Using " ##"; S6%(I, 1);
+            Print #2, Using " #"; S6%(I, 2)
 
         Next I
 
@@ -8556,16 +8583,16 @@ Sub BOX2FILE (printChoice, boxName$)
             For I2 = 1 To 9
                 Call InningPrintFile(I2)
                 If I = 0 Then Print #2, Using "##"; inningScore(I, I2);
-                If I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = 9 And inningScore(1, 9) = 0 Then Print #2, " X";
-                If I = 1 And gameScore(1, 0) < gameScore(0, 0) And I2 = 9 Or I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = 9 And inningScore(1, 9) > 0 Then Print #2, Using "##"; inningScore(I, I2);
+                If I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = 9 And inningScore(1, 9) = 0 Then Print #2, " X";
+                If I = 1 And S6%(1, 0) < S6%(0, 0) And I2 = 9 Or I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = 9 And inningScore(1, 9) > 0 Then Print #2, Using "##"; inningScore(I, I2);
                 If I = 1 And I2 < 9 Then Print #2, Using "##"; inningScore(I, I2);
             Next I2
 
             If INNING% = 10 Then Print #2, "   ";
             Print #2, " -";
-            Print #2, Using " ##"; gameScore(I, 0);
-            Print #2, Using " ##"; gameScore(I, 1);
-            Print #2, Using " #"; gameScore(I, 2)
+            Print #2, Using " ##"; S6%(I, 0);
+            Print #2, Using " ##"; S6%(I, 1);
+            Print #2, Using " #"; S6%(I, 2)
 
         Next I
 
@@ -8594,9 +8621,9 @@ Sub BOX2FILE (printChoice, boxName$)
             If (INNING% Mod 3 = 0) Then Print #2, " "
 
             Print #2, " -";
-            Print #2, Using " ##"; gameScore(I, 0);
-            Print #2, Using " ##"; gameScore(I, 1);
-            Print #2, Using " #"; gameScore(I, 2)
+            Print #2, Using " ##"; S6%(I, 0);
+            Print #2, Using " ##"; S6%(I, 1);
+            Print #2, Using " #"; S6%(I, 2)
 
         Next I
 
@@ -8634,9 +8661,9 @@ Sub BOX2FILE (printChoice, boxName$)
             Next I2
 
             Print #2, " -";
-            Print #2, Using " ##"; gameScore(I, 0);
-            Print #2, Using " ##"; gameScore(I, 1);
-            Print #2, Using " #"; gameScore(I, 2)
+            Print #2, Using " ##"; S6%(I, 0);
+            Print #2, Using " ##"; S6%(I, 1);
+            Print #2, Using " #"; S6%(I, 2)
 
         Next I
 
@@ -8735,14 +8762,14 @@ Sub BOX2FILE (printChoice, boxName$)
 
                     I4 = 1 - I: Print #2, pitchers$(I, I2); " ";
 
-                    If P2%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then
+                    If P2%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then
                         Print #2, "(W,"; Right$(Str$(P5%(I, I2, 6) + 1), (Len(Str$(P5%(I, I2, 6) + 1)) - 1)); "-"; Right$(Str$(P5%(I, I2, 7)), (Len(Str$(P5%(I, I2, 7))) - 1)); ")";
                         gameW$ = pitchers$(I, I2)
                     End If
 
-                    If S1%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then Print #2, "(S,"; Right$(Str$(P5%(I, I2, 12) + 1), (Len(Str$(P5%(I, I2, 12) + 1)) - 1)); ")";
+                    If S1%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then Print #2, "(S,"; Right$(Str$(P5%(I, I2, 12) + 1), (Len(Str$(P5%(I, I2, 12) + 1)) - 1)); ")";
 
-                    If P2%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) < 0 Then
+                    If P2%(I) = I2 And S6%(I, 0) - S6%(I4, 0) < 0 Then
                         Print #2, "(L,"; Right$(Str$(P5%(I, I2, 6) + 0), (Len(Str$(P5%(I, I2, 6) + 0)) - 1)); "-"; Right$(Str$(P5%(I, I2, 7) + 1), (Len(Str$(P5%(I, I2, 7) + 1)) - 1)); ")";
                         gameL$ = pitchers$(I, I2)
                     End If
@@ -8772,9 +8799,9 @@ Sub BOX2FILE (printChoice, boxName$)
                         End If
                     End If
 
-                    If P2%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then Print #2, Using "## "; P5%(I, I2, 6) + 1; Else Print #2, Using "## "; P5%(I, I2, 6);
-                    If P2%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) < 0 Then Print #2, Using "## "; P5%(I, I2, 7) + 1; Else Print #2, Using "## "; P5%(I, I2, 7);
-                    If S1%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then Print #2, Using "## "; P5%(I, I2, 12) + 1; Else Print #2, Using "## "; P5%(I, I2, 12);
+                    If P2%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then Print #2, Using "## "; P5%(I, I2, 6) + 1; Else Print #2, Using "## "; P5%(I, I2, 6);
+                    If P2%(I) = I2 And S6%(I, 0) - S6%(I4, 0) < 0 Then Print #2, Using "## "; P5%(I, I2, 7) + 1; Else Print #2, Using "## "; P5%(I, I2, 7);
+                    If S1%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then Print #2, Using "## "; P5%(I, I2, 12) + 1; Else Print #2, Using "## "; P5%(I, I2, 12);
 
                     Print #2, Using "###"; P5%(I, I2, 5)
 
@@ -8815,7 +8842,7 @@ Sub BOX2FILE (printChoice, boxName$)
     If DB = 0 Then
         Print #2, "NONE"
     Else
-        For X1 = 0 To (DB - 1): Print #2, doublesPlayer$(X1); ",";: Next
+        For X1 = 0 To (DB - 1): Print #2, DB$(X1); ",";: Next
         Print #2,
     End If
 
@@ -8823,7 +8850,7 @@ Sub BOX2FILE (printChoice, boxName$)
     If TR = 0 Then
         Print #2, "NONE"
     Else
-        For X1 = 0 To (TR - 1): Print #2, triplesPlayer$(X1); ",";: Next
+        For X1 = 0 To (TR - 1): Print #2, TR$(X1); ",";: Next
         Print #2,
     End If
 
@@ -8841,9 +8868,7 @@ Sub BOX2FILE (printChoice, boxName$)
     If SB = 0 Then
         Print #2, "NONE"
     Else
-        For X1 = 0 To (SB - 1):
-            Print #2, stolenBases$(X1); ",";
-        Next
+        For X1 = 0 To (SB - 1): Print #2, SB$(X1); ",";: Next
         Print #2,
     End If
 
@@ -8855,12 +8880,10 @@ Sub BOX2FILE (printChoice, boxName$)
     Print #2,
     Print #2, "INJURIES-";
 
-    If injCount = 0 Then
+    If IJL% = 0 Then
         Print #2, "none"
     Else
-        For X1 = 1 To injCount
-            Print #2, injPlayers$(X1); ",";
-        Next
+        For X1 = 1 To IJL%: Print #2, IJ$(X1); ",";: Next
         Print #2,
     End If
 
@@ -8869,7 +8892,7 @@ Sub BOX2FILE (printChoice, boxName$)
     If ejectCnt = 0 Then
         Print #2, "none"
     Else
-        For X1 = 1 To ejectCnt:
+        For X1 = 1 To ejectCnt: 
             Print #2, ejections$(X1); ",";
         Next
         Print #2,
@@ -8878,8 +8901,8 @@ Sub BOX2FILE (printChoice, boxName$)
     pweath:
     Print #2, "TEMPERATURE:"; gameTemp
     Print #2, "WIND: "; wind$
-    Print #2, "SKY: "; skyCond$(skyType)
-    Print #2, "PRECIPITATION: "; precip$(precipType)
+    Print #2, "SKY: "; skyCond$(SC%)
+    Print #2, "PRECIPITATION: "; PC$(PC%)
 
     If printChoice = 1 Then Print #2, Chr$(12)
 
@@ -8909,8 +8932,7 @@ End Sub
 Sub BOX2SCREEN
 
     Shared DB, HR, TR, SB
-    Shared doublesPlayer$(), eventDesc$(), homeRuns$()
-    Shared stolenBases$(), triplesPlayer$()
+    Shared DB$(), eventDesc$(), homeRuns$(), SB$(), TR$()
 
     Cls
 
@@ -8972,16 +8994,16 @@ Sub ScoreSummary
             For I2 = 1 To INNING%
                 Call InningPrintBox(I2)
                 If I = 0 Then Print Using "##"; inningScore(I, I2);
-                If I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = INNING% And inningScore(1, INNING%) = 0 Then Print , " X";
-                If I = 1 And gameScore(1, 0) < gameScore(0, 0) And I2 = INNING% Or I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = INNING% And inningScore(1, INNING%) > 0 Then Print Using "##"; inningScore(I, I2);
+                If I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = INNING% And inningScore(1, INNING%) = 0 Then Print , " X";
+                If I = 1 And S6%(1, 0) < S6%(0, 0) And I2 = INNING% Or I = 1 And S6%(1, 0) > S6%(0, 0) And I2 = INNING% And inningScore(1, INNING%) > 0 Then Print Using "##"; inningScore(I, I2);
                 If I = 1 And I2 < INNING% Then Print Using "##"; inningScore(I, I2);
 
             Next I2
 
             Print " -";
-            Print Using "## "; gameScore(I, 0);
-            Print Using "## "; gameScore(I, 1);
-            Print Using "#"; gameScore(I, 2)
+            Print Using "## "; S6%(I, 0);
+            Print Using "## "; S6%(I, 1);
+            Print Using "#"; S6%(I, 2)
 
         Next I
 
@@ -9019,9 +9041,9 @@ Sub ScoreSummary
                 Print " -";
             End If
 
-            Print Using "## "; gameScore(I, 0);
-            Print Using "## "; gameScore(I, 1);
-            Print Using "#"; gameScore(I, 2)
+            Print Using "## "; S6%(I, 0);
+            Print Using "## "; S6%(I, 1);
+            Print Using "#"; S6%(I, 2)
 
         Next I
 
@@ -9078,9 +9100,9 @@ Sub ScoreSummary
             Next I2
 
             Print " - ";
-            Print Using "## "; gameScore(I, 0);
-            Print Using "## "; gameScore(I, 1);
-            Print Using "#"; gameScore(I, 2)
+            Print Using "## "; S6%(I, 0);
+            Print Using "## "; S6%(I, 1);
+            Print Using "#"; S6%(I, 2)
 
         Next I
 
@@ -9162,9 +9184,9 @@ Sub ScoreSummary
             Next I2
 
             Print " -";
-            Print Using "## "; gameScore(I, 0);
-            Print Using "## "; gameScore(I, 1);
-            Print Using "#"; gameScore(I, 2)
+            Print Using "## "; S6%(I, 0);
+            Print Using "## "; S6%(I, 1);
+            Print Using "#"; S6%(I, 2)
 
         Next I
 
@@ -9320,14 +9342,14 @@ Sub STATS2SCREEN
                     Locate , 1
                     Print pitchers$(I, I2); " ";
 
-                    If P2%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then
+                    If P2%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then
                         Print "(W,"; Right$(Str$(P5%(I, I2, 6) + 1), (Len(Str$(P5%(I, I2, 6) + 1)) - 1)); "-"; Right$(Str$(P5%(I, I2, 7)), (Len(Str$(P5%(I, I2, 7))) - 1)); ")";
                         gameW$ = pitchers$(I, I2)
                     End If
 
-                    If S1%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then Print "(S,"; Right$(Str$(P5%(I, I2, 12) + 1), (Len(Str$(P5%(I, I2, 12) + 1)) - 1)); ")";
+                    If S1%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then Print "(S,"; Right$(Str$(P5%(I, I2, 12) + 1), (Len(Str$(P5%(I, I2, 12) + 1)) - 1)); ")";
 
-                    If P2%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) < 0 Then
+                    If P2%(I) = I2 And S6%(I, 0) - S6%(I4, 0) < 0 Then
                         Print "(L,"; Right$(Str$(P5%(I, I2, 6) + 0), (Len(Str$(P5%(I, I2, 6) + 0)) - 1)); "-"; Right$(Str$(P5%(I, I2, 7) + 1), (Len(Str$(P5%(I, I2, 7) + 1)) - 1)); ")";
                         gameL$ = pitchers$(I, I2)
                     End If
@@ -9359,9 +9381,9 @@ Sub STATS2SCREEN
                         End If
                     End If
 
-                    If P2%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then Print Using "## "; P5%(I, I2, 6) + 1; Else Print Using "## "; P5%(I, I2, 6);
-                    If P2%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) < 0 Then Print Using "## "; P5%(I, I2, 7) + 1; Else Print Using "## "; P5%(I, I2, 7);
-                    If S1%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then Print Using "## "; P5%(I, I2, 12) + 1; Else Print Using "## "; P5%(I, I2, 12);
+                    If P2%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then Print Using "## "; P5%(I, I2, 6) + 1; Else Print Using "## "; P5%(I, I2, 6);
+                    If P2%(I) = I2 And S6%(I, 0) - S6%(I4, 0) < 0 Then Print Using "## "; P5%(I, I2, 7) + 1; Else Print Using "## "; P5%(I, I2, 7);
+                    If S1%(I) = I2 And S6%(I, 0) - S6%(I4, 0) > 0 Then Print Using "## "; P5%(I, I2, 12) + 1; Else Print Using "## "; P5%(I, I2, 12);
 
                     Print Using "###"; P5%(I, I2, 5)
 
@@ -9428,7 +9450,7 @@ Sub STATS2SCREEN
     If DB = 0 Then
         Print "none"
     Else
-        For X = 0 To (DB - 1): Print doublesPlayer$(X); ",";: Next
+        For X = 0 To (DB - 1): Print DB$(X); ",";: Next
         Print
     End If
 
@@ -9438,7 +9460,7 @@ Sub STATS2SCREEN
     If TR = 0 Then
         Print "none"
     Else
-        For X = 0 To (TR - 1): Print triplesPlayer$(X); ",";: Next
+        For X = 0 To (TR - 1): Print TR$(X); ",";: Next
         Print
     End If
 
@@ -9457,9 +9479,7 @@ Sub STATS2SCREEN
     If SB = 0 Then
         Print "none"
     Else
-        For X = 0 To (SB - 1):
-            Print stolenBases$(X); ",";
-        Next
+        For X = 0 To (SB - 1): Print SB$(X); ",";: Next
         Print
     End If
 
@@ -9470,12 +9490,10 @@ Sub STATS2SCREEN
     Color 14, 0: Print "INJURIES-";
     Color 15, 0
 
-    If injCount = 0 Then
+    If IJL% = 0 Then
         Print "none"
     Else
-        For X = 1 To injCount:
-            Print injPlayers$(X); ",";
-        Next
+        For X = 1 To IJL%: Print IJ$(X); ",";: Next
         Print
     End If
 
@@ -9486,7 +9504,7 @@ Sub STATS2SCREEN
     If ejectCnt = 0 Then
         Print "none"
     Else
-        For X = 1 To ejectCnt:
+        For X = 1 To ejectCnt: 
             Print ejections$(X); ",";
         Next
         Print
@@ -9505,9 +9523,9 @@ Sub STATS2SCREEN
     Color 14, 0: Print "WIND: ";
     Color 15, 0: Print wind$
     Color 14, 0: Print "SKY: ";
-    Color 15, 0: Print skyCond$(skyType)
+    Color 15, 0: Print skyCond$(SC%)
     Color 14, 0: Print "PRECIPITATION: ";
-    Color 15, 0: Print precip$(precipType)
+    Color 15, 0: Print PC$(PC%)
 
     If autoPlay <> 1 Or playerMode <> 2 Then
         Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
@@ -9532,84 +9550,26 @@ Sub BOX2SPC (boxName$)
 
     If INNING% > eventSettings(1) Then Print #2, Using "MORE THAN ## INNINGS"; eventSettings(1)
 
-    If gameScore(1, 0) < eventSettings(2) Then
-        Print #2, gameTeams$(1);
-        Print #2, Using " SCORED LESS THAN ## RUN(S)"; eventSettings(2)
-    End If
-
-    If gameScore(0, 0) < eventSettings(2) Then
-        Print #2, gameTeams$(0);
-        Print #2, Using " SCORED LESS THAN ## RUN(S)"; eventSettings(2)
-    End If
-
-    If gameScore(1, 0) > eventSettings(3) Then
-        Print #2, gameTeams$(1);
-        Print #2, Using " SCORED MORE THAN ## RUN(S)"; eventSettings(3)
-    End If
-
-    If gameScore(0, 0) > eventSettings(3) Then
-        Print #2, gameTeams$(0);
-        Print #2, Using " SCORED MORE THAN ## RUN(S)"; eventSettings(3)
-    End If
-
-    If gameScore(1, 1) > eventSettings(5) Then
-        Print #2, gameTeams$(1);
-        Print #2, Using " HAD MORE THAN ## HIT%(S)"; eventSettings(5)
-    End If
-
-    If gameScore(0, 1) > eventSettings(5) Then
-        Print #2, gameTeams$(0);
-        Print #2, Using " HAD MORE THAN ## HIT%(S)"; eventSettings(5)
-    End If
-
-    If gameScore(1, 1) < eventSettings(4) Then
-        Print #2, gameTeams$(1);
-        Print #2, Using " HAD LESS THAN ## HIT%(S)"; eventSettings(4)
-    End If
-
-    If gameScore(0, 1) < eventSettings(4) Then
-        Print #2, gameTeams$(0);
-        Print #2, Using " HAD LESS THAN ## HIT%(S)"; eventSettings(4)
-    End If
+    If S6%(1, 0) < eventSettings(2) Then Print #2, gameTeams$(1);: Print #2, Using " SCORED LESS THAN ## RUN(S)"; eventSettings(2)
+    If S6%(0, 0) < eventSettings(2) Then Print #2, gameTeams$(0);: Print #2, Using " SCORED LESS THAN ## RUN(S)"; eventSettings(2)
+    If S6%(1, 0) > eventSettings(3) Then Print #2, gameTeams$(1);: Print #2, Using " SCORED MORE THAN ## RUN(S)"; eventSettings(3)
+    If S6%(0, 0) > eventSettings(3) Then Print #2, gameTeams$(0);: Print #2, Using " SCORED MORE THAN ## RUN(S)"; eventSettings(3)
+    If S6%(1, 1) > eventSettings(5) Then Print #2, gameTeams$(1);: Print #2, Using " HAD MORE THAN ## HIT%(S)"; eventSettings(5)
+    If S6%(0, 1) > eventSettings(5) Then Print #2, gameTeams$(0);: Print #2, Using " HAD MORE THAN ## HIT%(S)"; eventSettings(5)
+    If S6%(1, 1) < eventSettings(4) Then Print #2, gameTeams$(1);: Print #2, Using " HAD LESS THAN ## HIT%(S)"; eventSettings(4)
+    If S6%(0, 1) < eventSettings(4) Then Print #2, gameTeams$(0);: Print #2, Using " HAD LESS THAN ## HIT%(S)"; eventSettings(4)
 
     For I = 0 To 1
 
         For I1 = 0 To 22
 
-            If B8%(I, I1, 1) > eventSettings(6) Then
-                Print #2, batters$(I, I1);
-                Print #2, Using " HAD MORE THAN ## HIT%(S)"; eventSettings(6)
-            End If
-
-            If B8%(I, I1, 2) > eventSettings(7) Then
-                Print #2, batters$(I, I1);
-                Print #2, Using " SCORED MORE THAN ## RUN(S)"; eventSettings(7)
-            End If
-
-            If B8%(I, I1, 3) > eventSettings(8) Then
-                Print #2, batters$(I, I1);
-                Print #2, Using " HAD MORE THAN ## RBI(S)"; eventSettings(8)
-            End If
-
-            If B8%(I, I1, 4) > eventSettings(9) Then
-                Print #2, batters$(I, I1);
-                Print #2, Using " HIT MORE THAN ## DOUBLES(S)"; eventSettings(9)
-            End If
-
-            If B8%(I, I1, 5) > eventSettings(10) Then
-                Print #2, batters$(I, I1);
-                Print #2, Using " HIT MORE THAN ## TRIPLE(S)"; eventSettings(10)
-            End If
-
-            If B8%(I, I1, 6) > eventSettings(11) Then
-                Print #2, batters$(I, I1);
-                Print #2, Using " HOMERED MORE THAN ## TIME(S)"; eventSettings(11)
-            End If
-
-            If B8%(I, I1, 9) > eventSettings(12) Then
-                Print #2, batters$(I, I1);
-                Print #2, Using " STOLE MORE THAN ## BASE(S)"; eventSettings(12)
-            End If
+            If B8%(I, I1, 1) > eventSettings(6) Then Print #2, batters$(I, I1);: Print #2, Using " HAD MORE THAN ## HIT%(S)"; eventSettings(6)
+            If B8%(I, I1, 2) > eventSettings(7) Then Print #2, batters$(I, I1);: Print #2, Using " SCORED MORE THAN ## RUN(S)"; eventSettings(7)
+            If B8%(I, I1, 3) > eventSettings(8) Then Print #2, batters$(I, I1);: Print #2, Using " HAD MORE THAN ## RBI(S)"; eventSettings(8)
+            If B8%(I, I1, 4) > eventSettings(9) Then Print #2, batters$(I, I1);: Print #2, Using " HIT MORE THAN ## DOUBLES(S)"; eventSettings(9)
+            If B8%(I, I1, 5) > eventSettings(10) Then Print #2, batters$(I, I1);: Print #2, Using " HIT MORE THAN ## TRIPLE(S)"; eventSettings(10)
+            If B8%(I, I1, 6) > eventSettings(11) Then Print #2, batters$(I, I1);: Print #2, Using " HOMERED MORE THAN ## TIME(S)"; eventSettings(11)
+            If B8%(I, I1, 9) > eventSettings(12) Then Print #2, batters$(I, I1);: Print #2, Using " STOLE MORE THAN ## BASE(S)"; eventSettings(12)
 
         Next
 
@@ -9617,10 +9577,7 @@ Sub BOX2SPC (boxName$)
 
     For I = 0 To 1
         For I1 = 0 To 21
-            If P8%(I, I1, 5) > eventSettings(13) Then
-                Print #2, pitchers$(I, I1);
-                Print #2, Using " STRUCK OUT MORE THAN ## BATTER(S)"; eventSettings(13)
-            End If
+            If P8%(I, I1, 5) > eventSettings(13) Then Print #2, pitchers$(I, I1);: Print #2, Using " STRUCK OUT MORE THAN ## BATTER(S)"; eventSettings(13)
         Next
     Next
 
@@ -9641,7 +9598,7 @@ End Sub
 'should be started.
 Sub EndOfGame ()
 
-    'Close #11
+    Close #7
 
     Cls
 
@@ -9863,7 +9820,7 @@ Sub SelectGameTeam (numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%,
         Start% = 1
         FileFGColor = 15: FileBGColor = 4
         HiLiteFGColor = 0: HiLiteBGColor = 7
-        Rows = 20
+        Rows% = 20
         Columns% = 4
         Spacing% = 6
         Row% = 4

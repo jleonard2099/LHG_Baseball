@@ -3,7 +3,7 @@
 '----------------------------------------
 Dim opSysType$
 
-Dim Shared diskPaths$(0 To 3), Q$(0 To 2056), Q2$(0 To 2056), Q3$(100)
+Dim Shared diskPaths$(0 To 3), Q$(0 To 2056), Q2$(0 To 2056)
 Dim Shared teamIndex%(MAX_TEAMS)
 Dim Shared teamNames$(MAX_TEAMS)
 
@@ -28,10 +28,11 @@ Dim PLR$(MAX_SCHED_STATS), WR$(MAX_SCHED_STATS)
 Dim HR%(MAX_SCHED_STATS), IR%(MAX_SCHED_STATS), VR%(MAX_SCHED_STATS)
 
 
+
 ' *** Schedule Data ***
 ' -------------------------
-'Dim homeTeam$(MAX_GAMES), visitingTeam$(MAX_GAMES)
-Dim homeScores(MAX_GAMES), visitorScores(MAX_GAMES)
+'Dim homeTeam$(MAX_SCHEDULE_GAMES), visitingTeam$(MAX_SCHEDULE_GAMES)
+Dim homeScores(MAX_SCHEDULE_GAMES), visitorScores(MAX_SCHEDULE_GAMES)
 
 ' *** Game Options ***
 ' -------------------------
@@ -221,14 +222,14 @@ Dim BP$(3), BS$(22), PS$(21)
 '----------------------------------------
 Dim BS%, NS%
 
-Dim scheduleNG%(MAX_GAMES, 18)
+Dim scheduleNG%(MAX_SCHEDULE_GAMES, 18)
 
 Dim eventSettings(1 To 13)
 Dim scheduleAP%(1)
 
 Dim modeAbbrev$(3)
 Dim scheduleH$(1 To 20), scheduleV$(1 To 20)
-Dim scheduleYN$(MAX_GAMES, 1)
+Dim scheduleYN$(MAX_SCHEDULE_GAMES, 1)
 
 
 '----------------------------------------
@@ -258,34 +259,39 @@ Dim PB$(22), TYN$(40)
 Dim scheduleFile$
 Dim actualAttendance&, avgAttendance&
 
+'Used temporarily for troubleshooting
+Dim E!, JJ!, R!, SE!, Q1!, QQ!
 
 'Used by POSTGAME
 Dim DB, HR, TR, SB
 Dim eventNbr
-Dim BP(0 To 9), F(0 To 9)
+Dim BP(1 To 9), F(1 To 9)
 
-Dim B6%(22, 21), BB%(0 To 9)
+Dim B6%(22, 21), BB%(1 To 9), assigned(1 To 9)
 Dim gameD1%(1), DYS%(0 To 1, 0 To 21)
 
 Dim gameTP%(0 To 11, 0 To 2), MF%(1)
 Dim startPitcher(1), SX%(0 To 1)
 Dim gameT1%(0 To 1)
 
-Dim E!
-
 Dim grounderDir$(10), PT$(1)
 
 
 ' Shared / Global
-Dim Shared badString%, EJ%, gameW%, H6%
+Dim Shared badString%, gameW%, H6%
 Dim Shared IJL%, INNING%, Inotloop%, LYN%
-Dim Shared PB%, PC%, SC%, WS%
 
 Dim Shared autoPlay, compTeam, desigHit, D
-Dim Shared endGame, endAllGames, FontColAdj
-Dim Shared gameLoc, gameTemp, noLUFound, normalFinish
-Dim Shared P, PPH, pitchEraOpt, playerMode, playerOpt
-Dim Shared RE, RD, useInj, useRest, useVGA
+Dim Shared endGame, endAllGames, ejectCnt, FontColAdj
+Dim Shared gameDelayed, gameLoc, gameTemp
+Dim Shared noLUFound, normalFinish
+Dim Shared P, PPH, pbpLine, pitchEraOpt, playerMode, playerOpt
+Dim Shared precipType, rainyDay, rainStartInning
+Dim Shared skyType, useInj, useRest, useVGA
+Dim Shared windSpeed
+
+'-- Delete the row below when done
+Dim Shared testB, testJ, testL, testT, testU, testP9
 
 Dim Shared pbpDelay!, WF!
 
@@ -300,26 +306,27 @@ Dim Shared nbrOuts(1)
 Dim SU(1, 1)
 
 Dim Shared A5%(0 To 3)
-Dim Shared B1%(3, 1), B2%(1, 22), B3%(0 To 1, 0 To 9), B4%(1, 7, 9), B5%(0 To 1, 0 To 22, 0 To 21)
-Dim Shared B7%(0 To 1, 0 To 9), B8%(0 To 1, 0 To 22, 0 To 21), B9%(1, 10), BT%(0 To 1, 1 To 9, 1 To 9)
+Dim Shared B1%(3, 1), B2%(1, 22), B3%(0 To 1, 0 To 9), B4%(1, 7, 9)
+'B3% --> active batters?
+Dim Shared B5%(0 To 1, 0 To 22, 0 To 21), B7%(0 To 1, 1 To 9), B8%(0 To 1, 0 To 22, 0 To 21), B9%(1, 10), BT%(0 To 1, 1 To 9, 1 To 9)
 Dim Shared CF%(0 To 9, 0 To 2), CSS%(1, 22, 6), D3%(1), DP%(1)
-Dim Shared gameB0%(0 To 3, 0 To 2), gameD0%(1), gameM%(0 To 9), gameSA%(1, 24), gameScore(1, 2)
+Dim Shared gameB0%(0 To 3, 0 To 2), gameD0%(1), gameM%(0 To 9), gameSA%(1, 24)
 Dim Shared GK%(1), H0%(1), INJ%(0 To 1, 0 To 22), L0%(1), LB%(9, 1)
 Dim Shared MG%(0 To 1, 999), NG%(18)
 Dim Shared P1%(0 To 1), P2%(1), P3%(1, 21), P4%(0 To 22)
 Dim Shared P5%(1, 21, 41), P6%(1), P8%(0 To 1, 0 To 21, 0 To 41)
-Dim Shared S1%(1), S8%(1, 1), SO%(0 To 5, 0 To 2)
+Dim Shared S1%(1), S6%(1, 2), S8%(1, 1), SO%(0 To 5, 0 To 2)
 Dim Shared T3%(22), TS%(1, 11), X0%(1, 2, 23), YR%(1)
 
 Dim Shared B1!(9), parkHRVals!(1)
 
-Dim Shared alpha$(12), baseName$(0 To 4), batters$(0 To 1, 0 To 22), B1$(4)
-Dim Shared diskIDs$(1), doublesPlayer$(0 To 22), ejections$(20), eventDesc$(0 To 22)
-Dim Shared fieldPos$(0 To 11)
+Dim Shared alpha$(12)
+Dim Shared baseName$(0 To 4), batters$(0 To 1, 0 To 22), B1$(4)
+Dim Shared DB$(0 To 22), diskIDs$(1), ejections$(20), eventDesc$(0 To 22)
+Dim Shared fieldPos$(0 To 11), G$(10)
 Dim Shared gameManagers$(1), gameStadiums$(1), gameTeams$(1), gameUmpire$(4)
-Dim Shared heldStatus$(1), homeRuns$(0 To 22), injPlayers$(20)
-Dim Shared PARK$(99), pitchers$(1, 21), precip$(4), player$(23), pbpStrings$(10)
-Dim Shared skyCond$(4), stolenBases$(0 To 22)
-Dim Shared teamAbbreviatons$(0 To 1), triplesPlayer$(0 To 22)
+Dim Shared H0$(1), homeRuns$(0 To 22), IJ$(20)
+Dim Shared PARK$(99), pitchers$(1, 21), player$(23), precip$(4)
+Dim Shared Q3$(100), SB$(0 To 22), skyCond$(4)
+Dim Shared teamAbbreviatons$(0 To 1), TR$(0 To 22)
 Dim Shared windDirection$(10)
-
