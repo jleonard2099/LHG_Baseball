@@ -761,7 +761,7 @@ End Sub
 'it to the default printer
 Sub PrintTeamStats (targetTeam$, teamIdx)
 
-    Shared batterNames$(), BP$(), pitcherNames$()
+    Shared batterNames$(), parkType$(), pitcherNames$()
 
     Shared batterRatings(), pitcherRatings(), teamRatings%()
 
@@ -774,7 +774,7 @@ Sub PrintTeamStats (targetTeam$, teamIdx)
     LPrint
     LPrint "LBA LSO LBB LHR DPG DBL TR    HR   FOUL PARK INFO"
 
-    LPrint Using "### ### ### ### ### ### ### ###### ###  "; teamRatings%(1); teamRatings%(2); teamRatings%(3); teamRatings%(4); teamRatings%(5); teamRatings%(6); teamRatings%(7); parkHR; teamRatings%(8);: LPrint BP$(teamRatings%(9)); " "; BP$(teamRatings%(10) + 2)
+    LPrint Using "### ### ### ### ### ### ### ###### ###  "; teamRatings%(1); teamRatings%(2); teamRatings%(3); teamRatings%(4); teamRatings%(5); teamRatings%(6); teamRatings%(7); parkHR; teamRatings%(8);: LPrint parkType$(teamRatings%(9)); " "; parkType$(teamRatings%(10) + 2)
 
     LPrint
     LPrint "BATTER      B    G  AB   R   H DB TR HR RBI  BB  SO  SB CS RN B GA P1 FAV1 A R P2 FAV2 A R P3 FAV3 A R P4 FAV4 A R EBA BAVG"

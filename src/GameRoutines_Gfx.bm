@@ -2,7 +2,7 @@
 '          MAINSCREEN_G routine
 '----------------------------------------
 ' ...explanation...
-Sub MAINSCREEN_G (D, p, BC%, U%, MO)
+Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
 
     _PutImage (29 * FontColAdj, 400)-Step(24 * FontColAdj, 16), backupScreen&, imageScreen&, (29 * FontColAdj, 400)-Step(24 * FontColAdj, 16)
 
@@ -160,7 +160,7 @@ Sub MAINSCREEN_G (D, p, BC%, U%, MO)
     PrintOnGfx 63, 27, Str$(BC%), imageScreen&
 
     'Strikes
-    PrintOnGfx 63, 28, Str$(U%), imageScreen&
+    PrintOnGfx 63, 28, Str$(nbrStrikes), imageScreen&
 
     'Outs
     PrintOnGfx 63, 29, Str$(nbrOuts(0)), imageScreen&
@@ -274,7 +274,7 @@ End Sub
 '    DisplayBallField_Gfx Subroutine
 '----------------------------------------
 ' ...explanation...
-Sub DisplayBallField_Gfx (BC%, p, U%, D)
+Sub DisplayBallField_Gfx (BC%, p, nbrStrikes, D)
 
     ReDim FORMATTED$(0 To 2)
 
@@ -325,7 +325,7 @@ Sub DisplayBallField_Gfx (BC%, p, U%, D)
 
         If I = 0 Then
             'Strikes
-            FORMATTED$ = FORMATTED$ + "S" + Str$(U%)
+            FORMATTED$ = FORMATTED$ + "S" + Str$(nbrStrikes)
         Else
             'Outs
             FORMATTED$ = FORMATTED$ + "O" + Str$(nbrOuts(0))
@@ -668,4 +668,3 @@ Sub PrintOnGfx (Col%, Row%, Text$, tgtScrn&)
     _PrintString (PrintCol%, PrintRow%), Text$, tgtScrn&
 
 End Sub
-

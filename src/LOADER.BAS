@@ -100,7 +100,7 @@ Sub LOADER
         Close #5
 
         currGame = schedGame(0) + schedGame(2)
-        'Open "pbplog" + Str$(currGame) For Append As #11
+        Open "pbplog" + Str$(currGame) For Append As #11
 
         Open diskPaths$(0) + scheduleFile$ For Random As #6 Len = SCHEDULE_SIZE_BYTES
 
@@ -129,7 +129,7 @@ Sub LOADER
 
     Else
 
-        'Open "pbplog" For Output As #11
+        Open "pbplog" For Output As #11
 
     End If
 
@@ -1105,7 +1105,7 @@ End Sub
 'to assign a frequency to it.
 Sub SaveLineup (idx%)
 
-    Shared MF%(), gameT1%()
+    Shared mgrFile(), gameT1%()
 
     If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = idx%) Then
         I$ = "N"
@@ -1148,7 +1148,7 @@ Sub SaveLineup (idx%)
         'idx% = P9
         MG%(idx%, 99) = 999
         MG%(idx%, 0) = 999
-        MF%(idx%) = 0
+        mgrFile(idx%) = 0
 
         teamYear$ = RTrim$(diskIDs$(idx%))
 
@@ -1464,7 +1464,7 @@ Sub SelectBatters (batterFlag%, P9)
         ' Check if user pressed Tab
         If Asc(I$) = 9 Then TG = TG + 1
 
-        If TG > 2 Or TG = 2 And TS%(P9, 0) <> 999 Then TG = 0
+        If TG > 2 Or TG = 2 And gameTS%(P9, 0) <> 999 Then TG = 0
 
         If Asc(I$) = 9 Then
             '   Update display after TAB
@@ -2336,7 +2336,7 @@ End Sub
 'rotation of pitchers.
 Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
 
-    Shared gameT1%(), MF%(), startPitcher()
+    Shared gameT1%(), mgrFile(), startPitcher()
 
     ' *** PITCHING ROTATIONS ***
     Inotloop% = 99
@@ -2379,7 +2379,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
                 'Pre-Set Rotation
                 Cls
 
-                If MF%(idx%) = -1 Or MG%(idx%, 99) <> 999 Then
+                If mgrFile(idx%) = -1 Or MG%(idx%, 99) <> 999 Then
 
                     If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = idx%) Then
                         computerRotations% = 1
@@ -2482,7 +2482,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
 
             MG%(idx%, 99) = 999
             MG%(idx%, 0) = 999
-            MF%(idx%) = 0
+            mgrFile(idx%) = 0
 
             teamYear$ = RTrim$(diskIDs$(idx%))
 

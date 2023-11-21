@@ -195,6 +195,7 @@ Dim tradeW2%(1)
 ' Used in STAT / INPUT other routines
 '----------------------------------------
 Dim inputBS%(22)
+'DYS% = days rest; INJ% = injury status
 Dim inputDYS%(21), inputINJ%(22), inputTP%(33)
 Dim PS%(32), TB%(15)
 
@@ -214,7 +215,7 @@ Dim parkHR, RW, RL, totalWins, totalLosses
 
 Dim D0%, D1%, L2%, W2%
 
-Dim BP$(3), BS$(22), PS$(21)
+Dim parkType$(3), BS$(22), PS$(21)
 
 '----------------------------------------
 ' Used in SCHEDULE routines
@@ -265,11 +266,11 @@ Dim eventNbr
 Dim BP(0 To 9), F(0 To 9)
 
 Dim B6%(22, 21), BB%(0 To 9)
-Dim gameD1%(1), DYS%(0 To 1, 0 To 21)
+Dim gameD1%(1), daysRest(0 To 1, 0 To 21)
 
-Dim gameTP%(0 To 11, 0 To 2), MF%(1)
+Dim gameT1%(0 To 1), gameTP%(0 To 11, 0 To 2)
+Dim mgrFile(1)
 Dim startPitcher(1), SX%(0 To 1)
-Dim gameT1%(0 To 1)
 
 Dim E!
 
@@ -281,11 +282,13 @@ Dim Shared badString%, EJ%, gameW%, H6%
 Dim Shared IJL%, INNING%, Inotloop%, LYN%
 Dim Shared PB%, PC%, SC%, WS%
 
-Dim Shared autoPlay, compTeam, desigHit, D
+Dim Shared autoPlay, BV, compTeam, desigHit, D
 Dim Shared endGame, endAllGames, FontColAdj
-Dim Shared gameLoc, gameTemp, noLUFound, normalFinish
-Dim Shared P, PPH, pitchEraOpt, playerMode, playerOpt
+Dim Shared gameLoc, gameTemp
+Dim Shared nbrStrikes, noLUFound, normalFinish
+Dim Shared P, pbpLine, PPH, pitchEraOpt, playerMode, playerOpt
 Dim Shared RE, RD, useInj, useRest, useVGA
+Dim Shared strikeoutRating
 
 Dim Shared pbpDelay!, WF!
 
@@ -299,21 +302,21 @@ Dim Shared nbrOuts(1)
 
 Dim SU(1, 1)
 
-Dim Shared A5%(0 To 3)
+Dim Shared A5%(0 To 3), assigned(1 To 9)
 Dim Shared B1%(3, 1), B2%(1, 22), B3%(0 To 1, 0 To 9), B4%(1, 7, 9), B5%(0 To 1, 0 To 22, 0 To 21)
 Dim Shared B7%(0 To 1, 0 To 9), B8%(0 To 1, 0 To 22, 0 To 21), B9%(1, 10), BT%(0 To 1, 1 To 9, 1 To 9)
 Dim Shared CF%(0 To 9, 0 To 2), CSS%(1, 22, 6), D3%(1), DP%(1)
 Dim Shared gameB0%(0 To 3, 0 To 2), gameD0%(1), gameM%(0 To 9), gameSA%(1, 24), gameScore(1, 2)
-Dim Shared GK%(1), H0%(1), INJ%(0 To 1, 0 To 22), L0%(1), LB%(9, 1)
+Dim Shared GK%(1), H0%(1), injuryStatus(0 To 1, 0 To 22), L0%(1), LB%(9, 1)
 Dim Shared MG%(0 To 1, 999), NG%(18)
 Dim Shared P1%(0 To 1), P2%(1), P3%(1, 21), P4%(0 To 22)
 Dim Shared P5%(1, 21, 41), P6%(1), P8%(0 To 1, 0 To 21, 0 To 41)
 Dim Shared S1%(1), S8%(1, 1), SO%(0 To 5, 0 To 2)
-Dim Shared T3%(22), TS%(1, 11), X0%(1, 2, 23), YR%(1)
+Dim Shared T3%(22), gameTS%(1, 11), X0%(1, 2, 23), YR%(1)
 
 Dim Shared B1!(9), parkHRVals!(1)
 
-Dim Shared alpha$(12), baseName$(0 To 4), batters$(0 To 1, 0 To 22), B1$(4)
+Dim Shared alpha$(12), baseName$(0 To 4), batters$(0 To 1, 0 To 22), handed$(4)
 Dim Shared diskIDs$(1), doublesPlayer$(0 To 22), ejections$(20), eventDesc$(0 To 22)
 Dim Shared fieldPos$(0 To 11)
 Dim Shared gameManagers$(1), gameStadiums$(1), gameTeams$(1), gameUmpire$(4)
@@ -322,4 +325,3 @@ Dim Shared PARK$(99), pitchers$(1, 21), precip$(4), player$(23), pbpStrings$(10)
 Dim Shared skyCond$(4), stolenBases$(0 To 22)
 Dim Shared teamAbbreviatons$(0 To 1), triplesPlayer$(0 To 22)
 Dim Shared windDirection$(10)
-
