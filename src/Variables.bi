@@ -9,7 +9,7 @@ Dim Shared teamNames$(MAX_TEAMS)
 
 
 ' *** Reading Stat Data ***
-' -------------------------
+' -------------------------                                                                                                                   3
 Dim nbrInnings(MAX_SCHED_STATS), teamScore(MAX_SCHED_STATS), oppScore(MAX_SCHED_STATS)
 
 Dim losePitcher$(MAX_SCHED_STATS), winPitcher$(MAX_SCHED_STATS)
@@ -30,8 +30,8 @@ Dim HR%(MAX_SCHED_STATS), IR%(MAX_SCHED_STATS), VR%(MAX_SCHED_STATS)
 
 ' *** Schedule Data ***
 ' -------------------------
-'Dim homeTeam$(MAX_GAMES), visitingTeam$(MAX_GAMES)
-Dim homeScores(MAX_GAMES), visitorScores(MAX_GAMES)
+'Dim homeTeam$(MAX_SCHEDULE_GAMES), visitingTeam$(MAX_SCHEDULE_GAMES)
+Dim homeScores(MAX_SCHEDULE_GAMES), visitorScores(MAX_SCHEDULE_GAMES)
 
 ' *** Game Options ***
 ' -------------------------
@@ -222,14 +222,14 @@ Dim parkType$(3), BS$(22), PS$(21)
 '----------------------------------------
 Dim BS%, NS%
 
-Dim scheduleNG%(MAX_GAMES, 18)
+Dim scheduleNG%(MAX_SCHEDULE_GAMES, 18)
 
 Dim eventSettings(1 To 13)
 Dim scheduleAP%(1)
 
 Dim modeAbbrev$(3)
 Dim scheduleH$(1 To 20), scheduleV$(1 To 20)
-Dim scheduleYN$(MAX_GAMES, 1)
+Dim scheduleYN$(MAX_SCHEDULE_GAMES, 1)
 
 
 '----------------------------------------
@@ -296,7 +296,7 @@ Dim Shared boxName$, fileString$, gameTime$, gameL$, gameW$
 Dim Shared PARK$, pbpString$, wind$, YY$
 
 Dim Shared batRating(0 To 1, 0 To 22, 80), CZ%(0 To 1), inningScore(1, 26)
-Dim Shared MON(5, 14), pitchRating(0 To 1, 0 To 21, 0 To 89)
+Dim Shared MON(5, 14), pitchEff(0 To 1, 0 To 1), pitchRating(0 To 1, 0 To 21, 0 To 89)
 Dim Shared schedGame(2), tmRat_GAME(1, 13), VV(1), VV1(1)
 Dim Shared nbrOuts(1)
 

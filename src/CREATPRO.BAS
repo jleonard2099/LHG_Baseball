@@ -1,10 +1,10 @@
 '----------------------------------------
-'           CREATE Subroutine
+'          CREATPRO Subroutine
 '----------------------------------------
 'This subroutine provides a menu for the
 'user to choose options related to the
 'creation and editing of leagues
-Sub CREATE ()
+Sub CREATPRO ()
 
     _Title "Full Count Baseball - Manage Leagues"
 
@@ -36,7 +36,7 @@ Sub CREATE ()
         menuWidth% = Len(menuChoices$(1))
         Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor%, FileBGColor%)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
@@ -62,7 +62,7 @@ Sub CREATE ()
                     Call ReviewEditLeague(league$, D1$, D2$, D3$, D4$)
 
                 Case 2:
-                    league$ = ChooseFile$ (diskPaths$(2) + "*.LIB", "LEAGUE", FileExit%)
+                    league$ = ChooseFile$(diskPaths$(2) + "*.LIB", "LEAGUE", FileExit%)
 
                     If FileExit% <> 27 And FileExit% <> 0 Then
                         Call ReviewEditLeague(league$, D1$, D2$, D3$, D4$)
@@ -90,11 +90,11 @@ Sub DefineLeague (league$, div1$, div2$, div3$, div4$)
         Color 15, 0
         Cls
 
-        Call MenuBox (6, 8, 61, 7, 15, 1)
+        Call MenuBox(6, 8, 61, 7, 15, 1)
 
         Do
 
-            Locate 7, 
+            Locate 7,
 
             Locate , 12: Print "ENTER NAME FOR LEAGUE: "
             Print
@@ -120,7 +120,7 @@ Sub DefineLeague (league$, div1$, div2$, div3$, div4$)
 
     Cls
     Color 15, 1
-    
+
     Locate 5, 1: QPrint "Name for Division 1 ", 14, 1, -1
     Locate , 21: QPrint PadRight$(div1$, 50), FG, BG, -1
     Locate 7, 1: QPrint "Name for Division 2 ", 14, 1, -1
@@ -305,24 +305,7 @@ Sub SaveLeague (league$, div1$, div2$, div3$, div4$)
     For X = 1 To 40
 
         If Z1$(X) <> "XXX" Then
-
-            For D = 4 To 11
-                If Mid$(Z1$(X), D, 1) = Chr$(32) Or Mid$(Z1$(X), D, 1) = "." Then Mid$(Z1$(X), D, 1) = "_"
-            Next D
-
-            QQ = 8
-            For D = 11 To 4 Step -1
-                If Mid$(Z1$(X), D, 1) = "_" Then
-                    QQ = D - 4
-                Else
-                    Exit For
-                End If
-            Next D
-
-            L = Len(Z1$(X))
-            YR$ = Left$(Z1$(X), 2)
-            TM$ = Mid$(Z1$(X), 4, QQ)
-            Z1$(X) = TM$ + "." + YR$
+            Z1$(X) = nameStatFile$(Z1$(X))
         Else
             Z1$(X) = Chr$(42)
         End If
@@ -345,3 +328,5 @@ Sub SaveLeague (league$, div1$, div2$, div3$, div4$)
 
 
 End Sub
+
+

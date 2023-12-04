@@ -194,10 +194,9 @@ Sub InitVar ()
     Erase VV, VV1
 
     Erase A5%, gameB0%
-    Erase B1%, B2%, B3%, B4%
-    Erase B5%, B7%, B8%, B9%, BT%
-    Erase BB%, CSS%, gameD0%, D3%, DP%
-    Erase gameScore, gameT1%, GK%
+    Erase B1%, B2%, B4%, B5%, B8%, B9%
+    Erase BT%, BB%, CSS%, D3%, DP%
+    Erase gameD0%, gameScore, gameT1%, GK%
     Erase H0%, inningScore
     Erase L0%, gameM%, mgrFile, MG%
     Erase NG%, nbrInnings, nbrOuts
@@ -7915,7 +7914,8 @@ Sub POSTGAME ()
     'If we had special events
     If specialStat = 1 Then
 
-        boxName$ = "BOXSCORE" + Mid$(Str$(specialCount), 2, Len(Str$(specialCount))) + ".BSS"
+        boxName$ = "BOX" + Mid$(Str$(specialCount), 2, Len(Str$(specialCount))) + ".SPC"
+        'boxName$ = "BOXSCORE" + Mid$(Str$(specialCount), 2, Len(Str$(specialCount))) + ".BSS"
 
         'Append special events
         Call BOX2SPC(boxName$)
@@ -8487,11 +8487,14 @@ Sub BOXOPTIONS (outputChoice)
                 'File = prompt | auto-create
                 If autoPlay <> 1 Then
                     Cls
-                    Print "ENTER 8-CHARACTER FILENAME FOR BOXSCORE (NO SPACES OR PERIODS)";: Input boxName$
-                    boxName$ = boxName$ + ".BSS"
+                    Print "ENTER 8-CHARACTER FILENAME FOR BOXSCORE (NO SPACES OR PERIODS)";
+                    Input boxName$
+                    boxName$ = boxName$ + ".SPC"
+                    'boxName$ = boxName$ + ".BSS"
                 Else
                     'ScheduleName_GameXXX.BS
-                    boxName$ = Mid$(scheduleFile$, 1, Len(scheduleFile$) - 4) + "_GAME" + Mid$(Str$(schedGame(0) + schedGame(2)), 2, Len(Str$(schedGame(0) + schedGame(2)))) + ".BS"
+                    boxName$ = "BOX" + Mid$(Str$(schedGame(0) + schedGame(2)), 2, Len(Str$(schedGame(0) + schedGame(2))))
+                    'boxName$ = Mid$(scheduleFile$, 1, Len(scheduleFile$) - 4) + "_GAME" + Mid$(Str$(schedGame(0) + schedGame(2)), 2, Len(Str$(schedGame(0) + schedGame(2)))) + ".BS"
                 End If
 
             End If
@@ -10202,3 +10205,4 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
     End If
 
 End Sub
+

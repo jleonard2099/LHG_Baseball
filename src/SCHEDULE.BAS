@@ -157,31 +157,51 @@ Sub NewSchedule (scheduleFile$)
     Do
 
         Cls
-        Locate 23, 1: Color , 1: Print Tab(80);
         
         Locate 23, 1
-        Color 13: Print "MA";: Color 14: Print "-MODE OF PLAY  ";
-        Color 13: Print "WEA";: Color 14: Print "-USE WEATHER";
-        Color 11: Print " G";: Color 14: Print "-GOTO GAME";
-        Color 11: Print " B";: Color 14: Print "-BOXSCORE OPTIONS"
+        Color , 1: Print Tab(80);        
+        Locate 23, 1
+        Color 13: Print "MA";
+        Color 14: Print "-MODE OF PLAY  ";
+        Color 13: Print "WEA";
+        Color 14: Print "-USE WEATHER";
+        Color 11: Print " G";
+        Color 14: Print "-GOTO GAME";
+        Color 11: Print " B";
+        Color 14: Print "-BOXSCORE OPTIONS"
 
-        Locate 24, 1: Color , 1: Print Tab(80);: Locate 24, 1
-        Color 11: Print "C";: Color 14: Print "-SAVE AND CONTINUE  ";
-        Color 11: Print "A";: Color 14: Print "-ADD A GAME  ";
-        Color 11: Print "D";: Color 14: Print "-DELETE A GAME  ";
-        Color 11: Print "E";: Color 14: Print "-EDIT A GAME  ";
+        Locate 24, 1
+        Color , 1: Print Tab(80);
+        Locate 24, 1
+        Color 11: Print "C";
+        Color 14: Print "-SAVE AND CONTINUE  ";
+        Color 11: Print "A";
+        Color 14: Print "-ADD A GAME  ";
+        Color 11: Print "D";
+        Color 14: Print "-DELETE A GAME  ";
+        Color 11: Print "E";
+        Color 14: Print "-EDIT A GAME  ";
         Color 11: Print "PGUP  PGDN";
 
-        Locate 25, 1: Color , 1: Print Tab(80);: Locate 25, 1
-        Color 11: Print "S";: Color 14: Print "-SORT GAMES  ";
-        Color 11: Print "P";: Color 14: Print "-PLAY GAMES   ";
-        Color 11: Print "X";: Color 14: Print "-SAVE AND EXIT  ";
-        Color 11: Print "Q";: Color 14: Print "-QUIT  ";
-        Color 11: Print "R";: Color 14: Print "-RESET SCORES";
+        Locate 25, 1
+        Color , 1: Print Tab(80);
+        Locate 25, 1
+        Color 11: Print "S";
+        Color 14: Print "-SORT GAMES  ";
+        Color 11: Print "P";
+        Color 14: Print "-PLAY GAMES   ";
+        Color 11: Print "X";
+        Color 14: Print "-SAVE AND EXIT  ";
+        Color 11: Print "Q";
+        Color 14: Print "-QUIT  ";
+        Color 11: Print "R";
+        Color 14: Print "-RESET SCORES";
 
         Locate 1, 1: Print Tab(80);
         Locate 1, 1: Print scheduleFile$
-        Locate 1, 33: Color 14: Print "AUTO SCHEDULER"
+        Locate 1, 33
+        
+        Color 14: Print "AUTO SCHEDULER"
 
         Color 15, 0
 
@@ -243,10 +263,15 @@ Sub NewSchedule (scheduleFile$)
                 Locate , 67: Print modeAbbrev$(scheduleNG%(X + NS% * 20, 8));
 
                 'DH
-                Locate , 72: If scheduleNG%(X + NS% * 20, 3) = 1 Then Print "Y";: Else Print "N";
+                Locate , 72: If scheduleNG%(X + NS% * 20, 3) = 1 Then
+                    Print "Y";
+                Else
+                    Print "N";
+                End If
 
                 'Weather
-                Locate , 75: Print yesNo$(1 - scheduleNG%(X + NS% * 20, 5))
+                Locate , 75: Print yesNo$(scheduleNG%(X + NS% * 20, 5))
+
             End If
 
         Next
@@ -291,7 +316,9 @@ Sub NewSchedule (scheduleFile$)
                 Loop Until targetGame% >= 1 And targetGame% <= scheduleAP%(0)
                 NS% = Int((targetGame%- 1) / 20)
 
-                boxName$ = diskPaths$(1) + scheduleFile$ + "_GAME" + Mid$(Str$(targetGame%), 2, Len(Str$(targetGame%))) + ".BS"
+                boxName$ = diskPaths$(1) + "BOX" + Mid$(Str$(targetGame%), 2, Len(Str$(targetGame%)))
+                'boxName$ = diskPaths$(1) + scheduleFile$ + "_GAME" + Mid$(Str$(targetGame%), 2, Len(Str$(targetGame%))) + ".BS"
+
                 Call EditBoxscore (boxName$)
                 Color 15, 0
 
@@ -953,15 +980,17 @@ Sub BoxscoreMaintenance ()
                     Call EditParameters
 
                 Case 2:
-                    boxscoreFile$ = ChooseFile$ (diskPaths$(1) + "*.BSS", "BOXSCORE", ExitCode%)
-                    
+                    boxscoreFile$ = ChooseFile$(diskPaths$(1) + "*.SPC", "BOXSCORE", ExitCode%)
+                    'boxscoreFile$ = ChooseFile$(diskPaths$(1) + "*.BSS", "BOXSCORE", ExitCode%)
+
                     If ExitCode% <> 27 And ExitCode% <> 0 And boxscoreFile$ <> "" Then
                         boxName$ = diskPaths$(1) + boxscoreFile$
                         Call EditBoxscore (boxName$)
                     End If
 
                 Case 3
-                    Spec$ = diskPaths$(1) + "*.BS"
+                    Spec$ = diskPaths$(1) + "BOX*."
+                    'Spec$ = diskPaths$(1) + "*.BS"
                     Call DeleteBoxscores(Selection%, Spec$)
 
                 Case 4
@@ -978,7 +1007,8 @@ Sub BoxscoreMaintenance ()
                     Spec$ = diskPaths$(1) + "*.SPC"
                     Call DeleteBoxscores(Selection%, Spec$)
 
-                    Spec$ = diskPaths$(1) + "*.BS"
+                    Spec$ = diskPaths$(1) + "BOX*."
+                    'Spec$ = diskPaths$(1) + "*.BS"
                     Call DeleteBoxscores(Selection%, Spec$)
 
             End Select
@@ -1042,7 +1072,7 @@ End Sub
 'date / time.
 Sub SortSchedule ()
 
-    Dim schedDates&(MAX_GAMES)
+    Dim schedDates&(MAX_SCHEDULE_GAMES)
     Dim D&, M&, Y&
 
     Shared homeScores(), visitorScores()
@@ -1063,28 +1093,45 @@ Sub SortSchedule ()
     Next
 
     For Z = 1 To scheduleAP%(0) - 1
+
         For Z1 = Z + 1 To scheduleAP%(0)
+
             Locate 1, 1: Print Z, Z1
+
             If scheduleNG%(Z, 12) > scheduleNG%(Z1, 12) Then
-                For I = 0 To 18: Swap scheduleNG%(Z, I), scheduleNG%(Z1, I): Next
-                For I = 0 To 1: Swap scheduleYN$(Z, I), scheduleYN$(Z1, I): Next
+                For I = 0 To 18: 
+                    Swap scheduleNG%(Z, I), scheduleNG%(Z1, I)
+                Next
+                For I = 0 To 1: 
+                    Swap scheduleYN$(Z, I), scheduleYN$(Z1, I)
+                Next
                 Swap schedDates&(Z), schedDates&(Z1)
                 Swap visitorScores(Z), visitorScores(Z1)
                 Swap homeScores(Z), homeScores(Z1)
             End If
+
         Next Z1
+
     Next Z
 
     For Z = 1 To scheduleAP%(0) - 1
+
         For Z1 = Z + 1 To scheduleAP%(0)
+
             If schedDates&(Z) > schedDates&(Z1) Then
-                For I = 0 To 18: Swap scheduleNG%(Z, I), scheduleNG%(Z1, I): Next
-                For I = 0 To 1: Swap scheduleYN$(Z, I), scheduleYN$(Z1, I): Next
+                For I = 0 To 18: 
+                    Swap scheduleNG%(Z, I), scheduleNG%(Z1, I)
+                Next
+                For I = 0 To 1: 
+                    Swap scheduleYN$(Z, I), scheduleYN$(Z1, I)
+                Next
                 Swap schedDates&(Z), schedDates&(Z1)
                 Swap visitorScores(Z), visitorScores(Z1)
                 Swap homeScores(Z), homeScores(Z1)
             End If
+
         Next Z1
+
     Next Z
 
 End Sub

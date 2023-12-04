@@ -481,10 +481,10 @@ Sub LOADER
 
         If Inotloop% <= 5 And gameScore(P9, 0) - gameScore(1 - P9, 0) > 0 Then P2%(P9) = P1%(P9)
 
-        S8%(P9, 0) = Int(((pitchRating(P9, P1%(P9), 8) + pitchRating(P9, P1%(P9), 7)) / pitchRating(P9, P1%(P9), 4)) + .5)
-        S8%(P9, 1) = 3
+        pitchEff(P9, 0) = Int(((pitchRating(P9, P1%(P9), 8) + pitchRating(P9, P1%(P9), 7)) / pitchRating(P9, P1%(P9), 4)) + .5)
+        pitchEff(P9, 1) = 3
 
-        If P6%(P9) > 1 Then S8%(P9, 1) = 0
+        If P6%(P9) > 1 Then pitchEff(P9, 1) = 0
 
         'I'm not sure why we go back only
         'if ESC was pressed during pitcher select
@@ -735,17 +735,33 @@ Sub LOADER
     If Val(Left$(gameTeams$(1), 3)) = 200 Then I2 = 200
     If Val(Left$(gameTeams$(1), 3)) = 211 Then I2 = 201
 
-    ' = 3
-    If pitchEraOpt > 2 Then S8%(1, 1) = 4: S8%(0, 1) = 4
+    '1955 - Present
+    'pitchEff(0, 1) = calculated from Walks + Hits / Game
+    'pitchEff(1, 1) = 3
 
-    ' = 4 to 6
-    If pitchEraOpt > 3 Then S8%(1, 1) = 5: S8%(0, 1) = 5
+    Select Case pitchEraOpt
 
-    ' = 7
-    If pitchEraOpt = 7 Then S8%(1, 1) = 7: S8%(0, 1) = 7
+        Case 3
+            '1946-1954
+            pitchEff(0, 1) = 4
+            pitchEff(1, 1) = 4
 
-    ' >= 8
-    If pitchEraOpt >= 8 Then S8%(1, 1) = 99: S8%(0, 1) = 99
+        Case 4 To 6
+            '1909 to 1945
+            pitchEff(0, 1) = 5
+            pitchEff(1, 1) = 5
+
+        Case 7
+            '1894 to 1908
+            pitchEff(0, 1) = 7
+            pitchEff(1, 1) = 7
+
+        Case Is >= 8
+            '1876-1893
+            pitchEff(0, 1) = 99
+            pitchEff(1, 1) = 99
+
+    End Select
 
     Call GETSTATS
     Call DISPBAVG(D)
@@ -938,8 +954,8 @@ Sub LineupPositions (teamIdx, posIdx)
 
                     680 '
                     'Input fielding position
-                    'If desigHit = 0 Then firstSlot = 0 Else firstSlot = 1
-                    firstSlot = 1 'pitcher
+                    'If desigHit = 1 Then firstSlot = 1 Else firstSlot = 0
+                    firstSlot = 1
 
                     Do
                         J$ = GetKeyPress$
@@ -1873,7 +1889,8 @@ Sub PitchingRotations (computerRotations%, P9)
                 gamesStarted%(I, 0) = 0
                 gamesStarted%(I, 1) = -1
             Else
-                gamesStarted%(I, 0) = pitchRating(P9, I, 5): gamesStarted%(I, 1) = I
+                gamesStarted%(I, 0) = pitchRating(P9, I, 5)
+                gamesStarted%(I, 1) = I
             End If
         Next
 
@@ -2684,10 +2701,10 @@ Sub PitchingStarter (idx%)
     P6%(idx%) = 1
     pitchRating(idx%, I1, 15) = P6%(idx%)
 
-    S8%(idx%, 0) = Int(((pitchRating(idx%, P1%(idx%), 8) + pitchRating(idx%, P1%(idx%), 7)) / pitchRating(idx%, P1%(idx%), 4)) + .5)
-    S8%(idx%, 1) = 3
+    pitchEff(idx%, 0) = Int(((pitchRating(idx%, P1%(idx%), 8) + pitchRating(idx%, P1%(idx%), 7)) / pitchRating(idx%, P1%(idx%), 4)) + .5)
+    pitchEff(idx%, 1) = 3
 
-    If P6%(idx%) > 1 Then S8%(idx%, 1) = 0
+    If P6%(idx%) > 1 Then pitchEff(idx%, 1) = 0
 
 End Sub
 
