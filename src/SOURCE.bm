@@ -1765,7 +1765,7 @@ Sub SOURCE ()
             'Strikeout!
             13601 '
             Call WINDEX
-            Call pbpLog(2994)
+            'Call pbpLog(2994)
             Call STRIKEOUT(nbrStrikes, D)
 
             gameW% = 2

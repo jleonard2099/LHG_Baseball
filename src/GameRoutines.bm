@@ -9666,7 +9666,7 @@ End Sub
 'should be started.
 Sub EndOfGame ()
 
-    Close #11
+    'Close #11
 
     Cls
 
