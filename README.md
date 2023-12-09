@@ -36,9 +36,11 @@ Bugs and/or feature requests can be submitted using GitHub (see the "Issues" tab
 ## Current ##
 Code now compiles in a modern environment and has been mostly re-factored. All known GUI bugs have been fixed, menu navigation is improved and code was consolidated into a single EXE to speed up game play. First successful compiles have been completed in Linux / Mac OS, so builds should be available for major distros with the next release.
 
-All code features have  been thoroughly tested with known bugs documented (including those from the original game - that I am aware of) and being worked on.
+All code features have been thoroughly tested with known bugs documented (including those from the original game - that I am aware of) and being worked on.
 
-Code has been documented and made consistent and clean. It is currently in the stage of being optimized for improvements in logic.
+Code has been documented everywhere possible and cleaned up - including   global file and team selection routine. Game code is consistent in flow and naming across eacch sport.
+
+Improvements in logic and variable names have been made to code and error messages and handling are now more consistent.
 
 ## Road Map ##
 ### Phase 1 ###
@@ -47,15 +49,7 @@ This phase will get the games available to the general public in a steady and re
 
 ### Phase 2 ###
 This phase will start to identify these as new games, and involve these short and simple goals:
-- Update standards for code
-	- Make wording of menus and options consistent for all products
-	- variable names, config files, etc.
-	- document purpose of functions
-- Improve file, path and error handling to provide helpful messages
-- Iimprove code efficiency and consistency
-	- Make subroutines for all repeated code
-	- Global Team Selection routine 
-	- Consistent operation for the same functions in each game
+**Completed.**
 
 ### Phase 3 ###
 This final phase will involve the following:
