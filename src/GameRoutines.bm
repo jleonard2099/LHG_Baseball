@@ -183,12 +183,12 @@ Sub InitVar ()
     YY$ = ""
 
     'These are used to load team data
-    'Erase gameSA%, gameTS%, injuryStatus
+    Erase gameSA%, gameTS%, injuryStatus
     'Erase batRating, mgrFile
-    'Erase pitchRating, tmRat_GAME
+    Erase pitchRating, tmRat_GAME
     'Erase batters$
     'Erase gameManagers$, gameStadiums$
-    'Erase pitchers$, teamAbbreviatons$,
+    'Erase pitchers$, teamAbbreviatons$
 
     Erase BP, F, MON
     Erase VV, VV1
