@@ -19,7 +19,8 @@ Sub INFO ()
     Print Tab(80);
     Locate , 1
     Print "    LANCE HAFFNER 1986-2000"; Tab(70); Left$(Time$, 5);
-    Locate 3, 1: Color , 0
+    Locate 3, 1
+    Color , 0
 
 End Sub
 
@@ -7496,8 +7497,10 @@ End Sub
 'boxscore about to be created.
 Sub FoundSpecial (specialCount, specialStat)
 
-    'Beep
-    Spec$ = diskPaths$(1) + "*.BSS"
+    'Get count of SPC files to determine
+    'number to assign next one
+    'Spec$ = diskPaths$(1) + "*.BSS"
+    Spec$ = diskPaths$(1) + "*.SPC"
     specialCount = FileCount%(Spec$)
     specialCount = specialCount + 1
     specialStat = 1

@@ -325,3 +325,4 @@ Dim Shared PARK$(99), pitchers$(1, 21), precip$(4), player$(23), pbpStrings$(10)
 Dim Shared skyCond$(4), stolenBases$(0 To 22)
 Dim Shared teamAbbreviatons$(0 To 1), triplesPlayer$(0 To 22)
 Dim Shared windDirection$(10)
+

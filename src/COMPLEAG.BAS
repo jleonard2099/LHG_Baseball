@@ -18,6 +18,7 @@ Sub CompileLeague ()
     Shared BA$(), compileTeams$(), compileZ2$(), compileZ3$()
     Shared ER$(), H1$(), NM$()
 
+
     'Initialize values first
     APP = 0
 
@@ -94,9 +95,9 @@ Sub CompileLeague ()
                                 O2(X) = fullLosses
                             End If
 
-                            If (confGame) Then Exit For
-
                         End If
+
+                        If (confGame) Then Exit For
 
                     Next X
 
@@ -163,7 +164,7 @@ End Function
 '----------------------------------------
 '       ReadStatsLeague Subroutine
 '----------------------------------------
-'This subroutine reads stats in for a 
+'This subroutine reads stats in for a
 'single team in the league
 Sub ReadStatsLeague (statFile$, TN$, totalGames)
 
@@ -174,6 +175,10 @@ Sub ReadStatsLeague (statFile$, TN$, totalGames)
     Shared JS!()
 
     Shared NM$()
+
+    Erase NM$
+    Erase JS!
+    Erase BAT%, PIT%
 
     Open (diskPaths$(1) + statFile$) For Input As #1
 
@@ -290,10 +295,10 @@ Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
                     compileZ1!(Y, 1) = JS!(X, 13)
                     compileZ1!(Y, 2) = JS!(X, 1)
 
-                ' Must have 3.1 Min At Bats / Game
-                '-- Previously compared to 2.5
-                '-- Header for Viewing Leader says 3.1
-                If compileZ1!(Y, 2) < 3.1 * totalGames Then
+                    ' Must have 3.1 Min At Bats / Game
+                    '-- Previously compared to 2.5
+                    '-- Header for Viewing Leader says 3.1
+                    If compileZ1!(Y, 2) < 3.1 * totalGames Then
                         compileZ2$(Y) = "*"
                         compileZ3$(Y) = "*"
                         compileZ1!(Y, 1) = 0
@@ -810,8 +815,8 @@ End Sub
 '----------------------------------------
 '      StatsByCategory Subroutine
 '----------------------------------------
-'This subroutine compares all pre-loaded 
-'stats to each of the record categories to 
+'This subroutine compares all pre-loaded
+'stats to each of the record categories to
 'see if any should be updated
 Sub StatsByCategory (WT$, totalGames)
 
@@ -1216,7 +1221,9 @@ Sub StatsByCategory (WT$, totalGames)
 
         If ER$(Z) = WT$ Then
             DFT!(Z, 1) = PIT%(4) / PIT%(1) * 27
-            For M = 2 To 14: DFT!(Z, M) = PIT%(M - 1): Next M
+            For M = 2 To 14:
+                DFT!(Z, M) = PIT%(M - 1)
+            Next M
             GoTo 3555
         End If
 
@@ -1310,7 +1317,7 @@ End Sub
 '       PostLeaders Subroutine
 '----------------------------------------
 'This subroutine opens the existing leader
-'and record files for the league, and 
+'and record files for the league, and
 'writes the updated stats to the file
 Sub PostLeaders (league$, leaderFile$, APP)
 
@@ -1354,3 +1361,4 @@ Sub PostLeaders (league$, leaderFile$, APP)
     Close 2
 
 End Sub
+
