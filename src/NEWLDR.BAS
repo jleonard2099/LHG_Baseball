@@ -96,7 +96,7 @@ Sub NEWLDR ()
                     If FileExit% <> 27 And FileExit% <> 0 Then
                         Color 15, 0
                         Cls
-                        Call UpdateLeagueStandings(league$)
+                        Call UpdateLeagueStandings(leagStatFile$)
                     End If
 
                 Case 4:

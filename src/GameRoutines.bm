@@ -584,6 +584,7 @@ Sub PBP (pbpString$)
         'this is the width of the PBP window
         pbpString$ = PadRight(pbpString$, 44)
         pbpString$ = Left$(pbpString$, 44)
+        'Print #11, pbpString$
 
         pbpLine = pbpLine + 1
 
@@ -8174,13 +8175,27 @@ Sub COMPILESTATFILES (teamIdx)
         Input #1, W2%
         Input #1, L2%
 
-        For I = 0 To 22: Input #1, batters$(teamIdx, I): Input #1, B2%(teamIdx, I): Next I
+        For I = 0 To 22: 
+            Input #1, batters$(teamIdx, I)
+            Input #1, B2%(teamIdx, I)
+        Next I
 
-        For I = 0 To 21: Input #1, pitchers$(teamIdx, I): Input #1, P3%(teamIdx, I): Next I
+        For I = 0 To 21: 
+            Input #1, pitchers$(teamIdx, I)
+            Input #1, P3%(teamIdx, I)
+        Next I
 
-        For I = 0 To 22: For I1 = 0 To 21: Input #1, B6%(I, I1): Next I1: Next I
+        For I = 0 To 22: 
+            For I1 = 0 To 21: 
+                Input #1, B6%(I, I1)
+            Next I1
+        Next I
 
-        For I = 0 To 21: For I1 = 0 To 41: Input #1, statP0%(I, I1): Next I1: Next I
+        For I = 0 To 21: 
+            For I1 = 0 To 41: 
+                Input #1, statP0%(I, I1)
+            Next I1
+        Next I
 
         Input #1, gameD0%(teamIdx)
 
@@ -8298,16 +8313,38 @@ Sub COMPILESTATFILES (teamIdx)
     Print #1, W2%
     Print #1, L2%
 
-    For I = 0 To 22: Print #1, batters$(teamIdx, I): Print #1, B2%(teamIdx, I): Next I
-    For I = 0 To 21: Print #1, pitchers$(teamIdx, I): Print #1, P3%(teamIdx, I): Next I
-    For I = 0 To 22: For I1 = 0 To 21: Print #1, B6%(I, I1): Next I1: Next I
-    For I = 0 To 21: For I1 = 0 To 41: Print #1, statP0%(I, I1): Next I1: Next I
+    For I = 0 To 22: 
+        Print #1, batters$(teamIdx, I)
+        Print #1, B2%(teamIdx, I)
+    Next I
+    
+    For I = 0 To 21: 
+        Print #1, pitchers$(teamIdx, I)
+        Print #1, P3%(teamIdx, I)
+    Next I
+    
+    For I = 0 To 22: 
+        For I1 = 0 To 21: 
+            Print #1, B6%(I, I1)
+        Next I1
+    Next I
+    
+    For I = 0 To 21: 
+        For I1 = 0 To 41: 
+            Print #1, statP0%(I, I1)
+        Next I1
+    Next I
 
     Print #1, gameD0%(teamIdx)
     Print #1, gameD1%(teamIdx)
 
-    For I = 0 To 21: Print #1, statT0%(I): Next I
-    For I = 0 To 22: Print #1, P4%(I): Next I
+    For I = 0 To 21: 
+        Print #1, statT0%(I)
+    Next I
+    
+    For I = 0 To 22: 
+        Print #1, P4%(I)
+    Next I
 
     Close #1
 
@@ -8398,6 +8435,7 @@ Sub COMPILESTATFILES (teamIdx)
     End If
 
     If numberGames < MAX_SCHED_STATS Then numberGames = numberGames + 1
+    
     teamScore(numberGames) = gameScore(teamIdx, 0)
     oppName$(numberGames) = gameTeams$(1 - teamIdx)
     oppScore(numberGames) = gameScore(1 - teamIdx, 0)
@@ -9749,7 +9787,6 @@ Sub pbpLog (lineNumber)
 
     Print #11, "Executing code from: "; lineNumber
     Print #11, gameTeams$(0); " vs "; gameTeams$(1)
-    Print #11, "H6%     - "; H6%
     Print #11, "Rating  - "; strikeoutRating
     Print #11, "Strikes - "; nbrStrikes
     Print #11,

@@ -110,17 +110,6 @@ Dim RLL!(40), RWW!(40), TLS!(40), TWS!(40), WW!(40)
 
 Dim TML$(40)
 
-'NEWLDRRC
-Dim BRC!(32), BTYR!(32), PRC!(29), PRYR!(29)
-Dim TRC!(24), TRC1!(25), TRYR!(24), TRYR1!(25)
-
-Dim BRC$(32), BRT$(32), PRC$(29), PRT$(29)
-Dim TRC$(24), TRC1$(25)
-
-'-- corresponds to
-'   TP$,            TP1$,           TP2$,           TP3$ (no change)
-Dim TP0$(1 To 32), TP1A$(1 To 28), TP2A$(0 To 20), TP3$(0 To 18)
-
 
 '----------------------------------------
 '   Used in COMPARE routines
@@ -157,6 +146,18 @@ Dim pitRat_DRAFT%(21, 88)
 Dim parkHR_DRAFT&(1)
 
 Dim batNames_DRAFT$(22), pitNames_DRAFT$(22)
+
+
+'----------------------------------------
+' Used in RECORDS routines
+'----------------------------------------
+Dim batRecVal!(32), batRecYr!(32), pitRecVal!(29), pitRecYr!(29)
+Dim teamRecAVal!(24), teamRecBVal!(25), teamRecAYr!(24), teamRecBYr!(25)
+
+Dim batRecPlyr$(32), batRecTeam$(32), pitRecPlyr$(29), pitRecTeam$(29)
+Dim batRecCategory$(1 To 32), pitRecCategory$(1 To 28)
+Dim teamRecACategory$(0 To 20), teamRecBCategory$(0 To 18)
+Dim teamRecATeam$(24), teamRecBTeam$(25)
 
 
 '----------------------------------------

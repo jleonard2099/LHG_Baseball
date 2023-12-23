@@ -18,7 +18,6 @@ Sub CompileLeague ()
     Shared BA$(), compileTeams$(), compileZ2$(), compileZ3$()
     Shared ER$(), H1$(), NM$()
 
-
     'Initialize values first
     APP = 0
 
@@ -127,7 +126,7 @@ End Sub
 '         FindStatsPro Function
 '----------------------------------------
 '...explanation...
-Function FindStatsPro% (statFile$, TN$, fullWins, fullLosses)
+Function FindStatsPro% (statFile$, teamName$, fullWins, fullLosses)
 
     If Not _FileExists(diskPaths$(1) + statFile$) Then
 
@@ -138,7 +137,7 @@ Function FindStatsPro% (statFile$, TN$, fullWins, fullLosses)
 
         Open diskPaths$(1) + statFile$ For Input As #1
 
-        Input #1, TN$, fullWins, fullLosses
+        Input #1, teamName$, fullWins, fullLosses
 
         Close #1
 

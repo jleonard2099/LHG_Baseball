@@ -99,7 +99,8 @@ Sub LOADER
 
         Close #5
 
-        currGame = schedGame(0) + schedGame(2)
+        'currGame = schedGame(0) + schedGame(2)
+
         'Open "pbplog" + Str$(currGame) For Append As #11
 
         Open diskPaths$(0) + scheduleFile$ For Random As #6 Len = SCHEDULE_SIZE_BYTES
