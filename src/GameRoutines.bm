@@ -245,7 +245,7 @@ End Sub
 Sub AUTOSETUP
 
     'Setup variables for auto-play
-    playerMode = NG%(8)
+    playerOpt = NG%(8)
     desigHit = NG%(3)
     pbpDelay! = NG%(4) / 10
     gameMonth = NG%(17)
