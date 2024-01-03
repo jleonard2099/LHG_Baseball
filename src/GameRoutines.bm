@@ -139,33 +139,33 @@ Sub InitVar ()
         Next
     Next
 
+    D = 0
+    P = 1
+
+    autoPlay = 0
+    compTeam = 0
+    DB = 0
     ejectCnt = 0
+    endAllGames = 0
+    endGame = 1
+    gameTemp = 0
+    gameW% = 0
     H6% = 0
+    HR = 0
     injCount = 0
+    INNING% = 0
     Inotloop% = 0
-    INNING% = 1
     LYN% = 0
     noLUFound = 0
     pbpLine = 0
     precipType = 0
-    skyType = 0
-    gameTemp = 0
-    gameW% = 0
-    windSpeed = 0
-
-    autoPlay = 0
-    D = 0
-    DB = 0
-    endGame = 1
-    endAllGames = 0
-    HR = 0
-    P = 0
     rainDelay = 0
     rainStart = 0
     SB = 0
+    skyType = 0
     statSpecial = 0
     TR = 0
-    compTeam = 0
+    windSpeed = 0
 
     E! = 0
     WF! = 0
