@@ -304,10 +304,10 @@ Sub NewSchedule (scheduleFile$)
 
                 DT$ = "04-04-93"
                 TM$ = "07:30P"
-                Call NewGame(V$, H$, YN$, NTMS, targetGame%)
+                Call NewGame(V$, H$, YN$, DT$, TM$, NTMS, targetGame%)
 
             Case "E"
-                Call EditGame
+                Call EditGame(DT$, TM$)
 
             Case "B":
                 Do
@@ -462,14 +462,12 @@ End Sub
 'calls the NewGame routine to essentially
 'display the existing parameters and allow
 'them to be modified
-Sub EditGame ()
+Sub EditGame (DT$, TM$)
 
     Shared scheduleAP%()
     Shared scheduleH$(), scheduleV$()
     Shared scheduleYN$()
     Shared scheduleNG%()
-
-    Dim DT$, TM$
 
     ' *** EDIT A GAME ***
     Do
@@ -487,12 +485,16 @@ Sub EditGame ()
         YN$ = scheduleYN$(targetGame% - Int(targetGame% / 20) * 20, 0)
     End If
 
-    I$ = "A"
     HR% = Int(scheduleNG%(targetGame%, 15) / 100)
     MIN% = scheduleNG%(targetGame%, 15) - HR% * 100
 
-    If HR% = 12 Then I$ = "P"
-    If HR% > 12 Then HR% = HR% - 12: I$ = "P"
+    If HR% >= 12 Then
+        I$ = "P"
+        If HR% > 12 Then HR% = HR% - 12
+    Else
+        I$ = "A"
+    End If
+
     TM$ = Right$(Str$(HR%), 2) + ":"
 
     If MIN% < 10 Then 
@@ -513,7 +515,7 @@ Sub EditGame ()
 
     DT$ = DT$ + DYMO$ + "/" + Right$(Str$(scheduleNG%(targetGame%, 18)), 2)
 
-    Call NewGame(V$, H$, YN$, NTMS, targetGame%)
+    Call NewGame(V$, H$, YN$, DT$, TM$, NTMS, targetGame%)
 
 End Sub
 
@@ -524,7 +526,7 @@ End Sub
 'This subroutine gives the user an interface
 'for editing and choosing options for the
 'specified game in the schedule
-Sub NewGame (visitor$, home$, YN$, NTMS, gameIndex%)
+Sub NewGame (visitor$, home$, YN$, DT$, TM$, NTMS, gameIndex%)
 
     Dim displayPause!
 
@@ -538,6 +540,7 @@ Sub NewGame (visitor$, home$, YN$, NTMS, gameIndex%)
     Do
 
         ' ** Enter New Game **
+        Color 15, 0
         Cls
 
         Color 2
@@ -555,11 +558,11 @@ Sub NewGame (visitor$, home$, YN$, NTMS, gameIndex%)
         'Nothing is done for "League Type" (AL vs. NL) ??
         Locate 5, 2: Color 14
         Print "(4) ";
-        Color 15: Print "GAME DATE (XX-XX-XX)  "; DT$; "   "
+        Color 15: Print "GAME DATE (XX-XX-XX)  "; DT$
         'Nothing is done for "Game Type"; it's assumed to be regular season?
         Locate 6, 2: Color 14
         Print "(5) ";
-        Color 15: Print "GAME TIME (XX:XXP)  "; TM$; "   "
+        Color 15: Print "GAME TIME (XX:XXP)    "; TM$
         Locate 7, 2: Color 14
         Print "(6) ";
         Color 15: Print Using "PLAY-BY-PLAY DELAY (SECS): ##.#"; scheduleNG%(gameIndex%, 4) / 10
@@ -636,7 +639,8 @@ Sub NewGame (visitor$, home$, YN$, NTMS, gameIndex%)
                     Locate 5, 26: Input DT$
 
                 Case 5:
-                    Locate 6, 24: Input TM$
+                    Locate 6, 26: Print "        "
+                    Locate 6, 26: Input TM$
 
                 Case 6:
                     Locate 7, 32: Input displayPause!
@@ -675,13 +679,21 @@ Sub NewGame (visitor$, home$, YN$, NTMS, gameIndex%)
 
         If visitor$ <> "" And home$ <> "" And TM$ <> "" And DT$ <> "" Then
 
-            I$ = Right$(TM$, 1)
-            TM$ = Left$(TM$, Len(TM$) - 1)
-            MIN% = Val(Right$(TM$, 2))
-            TM$ = Left$(TM$, Len(TM$) - 3)
-            HR% = Val(TM$)
+            meridian$ = Right$(TM$, 1)
+            fullTime$ = Left$(TM$, Len(TM$) - 1)
+            MIN% = Val(Right$(fullTime$, 2))
+            hourString$ = Left$(fullTime$, Len(fullTime$) - 3)
+            HR% = Val(hourString$)
 
-            If UCase$(I$) = "P" And HR% < 12 Then HR% = HR% + 12
+            If HR% < 10 Then
+                TM$ = " " + TM$
+            End If
+
+            If UCase$(meridian$) = "P" And HR% < 12 Then
+                'If user typed in PM, we are storing as military time
+                'We don't check that military time may have been used
+                HR% = HR% + 12
+            End If
 
             scheduleNG%(gameIndex%, 15) = HR% * 100 + MIN%
             scheduleNG%(gameIndex%, 17) = Val(Left$(DT$, 2))
@@ -985,7 +997,7 @@ Sub BoxscoreMaintenance ()
 
                     If ExitCode% <> 27 And ExitCode% <> 0 And boxscoreFile$ <> "" Then
                         boxName$ = diskPaths$(1) + boxscoreFile$
-                        Call EditBoxscore (boxName$)
+                        Call EditBoxscore(boxName$ + ".SPC")
                     End If
 
                 Case 3

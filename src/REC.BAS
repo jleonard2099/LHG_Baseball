@@ -139,7 +139,7 @@ Sub UpdateRecords (leagueFile$)
 
     Do
         Locate 2
-        Input "WOULD YOU LIKE TO POST SEASON LEADERS? (Y/N)"; finalUpdate$
+        Input "WOULD YOU LIKE TO POST SEASON RECORDS? (Y/N)"; finalUpdate$
     Loop Until UCase$(finalUpdate$) = "Y" Or UCase$(finalUpdate$) = "N"
 
     Print
