@@ -21,8 +21,10 @@ Sub CompileLeague ()
     'Initialize values first
     APP = 0
 
+    Erase BA$, ER$
     Erase compileZ2$, compileZ3$
     Erase compileZ1!
+    Erase DFT!, OFT!
 
     For Z = 1 To 40
         DFT!(Z, 1) = 99.99
@@ -1190,10 +1192,11 @@ Sub StatsByCategory (WT$, totalGames)
 
         OFT!(40, 1) = BAT%(4) / BAT%(3)
 
-        For M = 3 To 14: OFT!(40, M) = BAT%(M): Next M
+        For M = 3 To 14: 
+            OFT!(40, M) = BAT%(M)
+        Next M
 
         BA$(40) = WT$
-        'BA$(40) = WT$
 
         3535 '
         For Z = 1 To 39
@@ -1215,7 +1218,9 @@ Sub StatsByCategory (WT$, totalGames)
         Next Z
 
         For Z = 1 To 40
-            If OFT!(Z, 1) = OFT!(40, 1) Then BA$(Z) = "*": BA$(Z) = "*"
+            If OFT!(Z, 1) = OFT!(40, 1) Then 
+                BA$(Z) = "*"
+            End If
         Next Z
 
     End If
