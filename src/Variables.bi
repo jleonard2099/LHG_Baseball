@@ -210,9 +210,17 @@ Dim DV$(4)
 Dim ERX!, statI2!
 
 Dim CK
-Dim EW, EL, HW, HL
-Dim LTL, LTW, ORW, ORL
-Dim parkHR, RW, RL, totalWins, totalLosses
+Dim parkHR
+
+'Extra Inning Games
+Dim EW, EL
+Dim homeWins, homeLosses
+'Last 10 Games
+Dim LTL, LTW
+'One Run Games
+Dim ORW, ORL
+Dim roadWins, roadLosses
+Dim totalWins, totalLosses
 
 Dim D0%, D1%, L2%, W2%
 

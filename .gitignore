@@ -19,3 +19,5 @@ src/parks/*.*
 src/errlog
 src/REVISED.PBP
 src/*.SCX
+bin/GAME82
+bin/TICKER

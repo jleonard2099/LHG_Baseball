@@ -280,7 +280,10 @@ Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
 
         If NM$(X) <> "XXX" Then
 
-            Print "     CHECKING STATS OF "; NM$(X)
+            'Color 14
+            Print "CHECKING STATS OF ";
+            Color 15
+            Print NM$(X)
 
             PS$(X) = WT$
 
@@ -830,7 +833,10 @@ Sub StatsByCategory (WT$, totalGames)
 
         If NM$(X) <> "XXX" Then
 
-            Print "     CHECKING STATS OF "; NM$(X)
+            'Color 14
+            Print "CHECKING STATS OF ";
+            Color 15
+            Print NM$(X)
 
             If JS!(X, 14) <= compileZ1!(139, 1) Then
 

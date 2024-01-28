@@ -99,9 +99,11 @@ End Sub
 'stats into arrays
 Sub LoadTeamStats (statFile$, nbrGames)
 
-    Shared EW, EL, HW, HL
+    Shared EW, EL
+    Shared homeWins, homeLosses
     Shared LTL, LTW, ORW, ORL
-    Shared RW, RL, totalWins, totalLosses
+    Shared roadWins, roadLosses
+    Shared totalWins, totalLosses
 
     Shared batterNames$(), pitcherNames$()
     Shared statT0!(), statT1!()
@@ -116,12 +118,12 @@ Sub LoadTeamStats (statFile$, nbrGames)
 
     totalWins = 0
     totalLosses = 0
-    RW = 0
-    RL = 0
+    roadWins = 0
+    roadLosses = 0
     ORW = 0
     ORL = 0
-    HW = 0
-    HL = 0
+    homeWins = 0
+    homeLosses = 0
     EW = 0
     EL = 0
     LTL = 0
@@ -228,12 +230,12 @@ Sub LoadTeamStats (statFile$, nbrGames)
         If Abs(teamScore(I) - oppScore(I)) = 1 And teamScore(I) < oppScore(I) Then ORL = ORL + 1
         If teamScore(I) > oppScore(I) Then totalWins = totalWins + 1
         If teamScore(I) > oppScore(I) And nbrInnings(I) > 9 Then EW = EW + 1
-        If teamScore(I) > oppScore(I) And locIndicator$(I) = "A" Then RW = RW + 1
-        If teamScore(I) > oppScore(I) And locIndicator$(I) = "H" Then HW = HW + 1
+        If teamScore(I) > oppScore(I) And locIndicator$(I) = "A" Then roadWins = roadWins + 1
+        If teamScore(I) > oppScore(I) And locIndicator$(I) = "H" Then homeWins = homeWins + 1
         If oppScore(I) > teamScore(I) Then totalLosses = totalLosses + 1
         If oppScore(I) > teamScore(I) And nbrInnings(I) > 9 Then EL = EL + 1
-        If oppScore(I) > teamScore(I) And locIndicator$(I) = "A" Then RL = RL + 1
-        If oppScore(I) > teamScore(I) And locIndicator$(I) = "H" Then HL = HL + 1
+        If oppScore(I) > teamScore(I) And locIndicator$(I) = "A" Then roadLosses = roadLosses + 1
+        If oppScore(I) > teamScore(I) And locIndicator$(I) = "H" Then homeLosses = homeLosses + 1
     Next I
 
     If nbrGames <= 10 Then
@@ -407,9 +409,11 @@ End Sub
 'the other stat categories
 Sub ViewStatSummary (statFile$, teamName$, splitScreenChoice%)
 
-    Shared EW, EL, HW, HL
+    Shared EW, EL
+    Shared homeWins, homeLosses
     Shared LTL, LTW, ORW, ORL
-    Shared RW, RL, totalWins, totalLosses
+    Shared roadWins, roadLosses
+    Shared totalWins, totalLosses
 
     Shared L2%, W2%
 
@@ -438,10 +442,10 @@ Sub ViewStatSummary (statFile$, teamName$, splitScreenChoice%)
     Color 15: Print "("; totalWins; "-"; totalLosses; ")"
     Locate , 20
     Color 14: Print "HOME RECORD    ";
-    Color 15: Print "("; HW; "-"; HL; ")"
+    Color 15: Print "("; homeWins; "-"; homeLosses; ")"
     Locate , 20
     Color 14: Print "ROAD RECORD    ";
-    Color 15: Print "("; RW; "-"; RL; ")"
+    Color 15: Print "("; roadWins; "-"; roadLosses; ")"
     Locate , 20
     Color 14: Print "LAST 10 GAMES  ";
     Color 15: Print "("; LTW; " -"; LTL; ")"
@@ -1065,9 +1069,11 @@ Sub NewPrintStats (statFile$, teamName$, nbrGames, printChoice, splitScreenChoic
 
     Shared L2%, W2%
 
-    Shared EW, EL, HW, HL
+    Shared EW, EL
+    Shared homeWins, homeLosses
     Shared LTL, LTW, ORW, ORL
-    Shared RW, RL, totalWins, totalLosses
+    Shared roadWins, roadLosses
+    Shared totalWins, totalLosses
 
     Shared batterNames$(), pitcherNames$()
     Shared statT0!(), statT1!()
@@ -1085,10 +1091,10 @@ Sub NewPrintStats (statFile$, teamName$, nbrGames, printChoice, splitScreenChoic
         totalLosses = 0
         ORW = 0
         ORL = 0
-        RW = 0
-        RL = 0
-        HW = 0
-        HL = 0
+        roadWins = 0
+        roadLosses = 0
+        homeWins = 0
+        homeLosses = 0
         EW = 0
         EL = 0
         LTL = 0
@@ -1107,8 +1113,8 @@ Sub NewPrintStats (statFile$, teamName$, nbrGames, printChoice, splitScreenChoic
         LPrint
         LPrint
         LPrint Tab(20); "RECORD         ("; Str$(totalWins); " -"; Str$(totalLosses); " )"
-        LPrint Tab(20); "HOME RECORD    ("; Str$(HW); " -"; Str$(HL); " )"
-        LPrint Tab(20); "ROAD RECORD    ("; Str$(RW); " -"; Str$(RL); " )"
+        LPrint Tab(20); "HOME RECORD    ("; Str$(homeWins); " -"; Str$(homeLosses); " )"
+        LPrint Tab(20); "ROAD RECORD    ("; Str$(roadWins); " -"; Str$(roadLosses); " )"
         LPrint Tab(20); "LAST 10 GAMES  ("; Str$(LTW); " -"; Str$(LTL); " )"
         LPrint Tab(20); "EXTRA INNINGS  ("; Str$(EW); " -"; Str$(EL); " )"
         LPrint Tab(20); "ONE RUN GAMES  ("; Str$(ORW); " -"; Str$(ORL); " )"
@@ -1363,8 +1369,8 @@ Sub NewPrintStats (statFile$, teamName$, nbrGames, printChoice, splitScreenChoic
     LPrint
     LPrint
     LPrint Tab(20); "RECORD         ("; Str$(totalWins); " -"; Str$(totalLosses); " )"
-    LPrint Tab(20); "HOME RECORD    ("; Str$(HW); " -"; Str$(HL); " )"
-    LPrint Tab(20); "ROAD RECORD    ("; Str$(RW); " -"; Str$(RL); " )"
+    LPrint Tab(20); "HOME RECORD    ("; Str$(homeWins); " -"; Str$(homeLosses); " )"
+    LPrint Tab(20); "ROAD RECORD    ("; Str$(roadWins); " -"; Str$(roadLosses); " )"
     LPrint Tab(20); "LAST 10 GAMES  ("; Str$(LTW); " -"; Str$(LTL); " )"
     LPrint Tab(20); "EXTRA INNINGS  ("; Str$(EW); " -"; Str$(EL); " )"
     LPrint Tab(20); "ONE RUN GAMES  ("; Str$(ORW); " -"; Str$(ORL); " )"

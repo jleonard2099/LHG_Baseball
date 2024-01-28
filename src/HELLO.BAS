@@ -747,7 +747,7 @@ Sub Leaders_Menu ()
             Select Case Selection%
 
                 Case 1:
-                    Call CREATPRO
+                    Call CREATLEAG
 
                 Case 2:
                     Call CompileLeague
@@ -870,7 +870,7 @@ End Sub
 '$INCLUDE: 'CARLDR.BAS'
 '$INCLUDE: 'COMPARE.BAS'
 '$INCLUDE: 'COMPLEAG.BAS'
-'$INCLUDE: 'CREATPRO.BAS'
+'$INCLUDE: 'CREATLEAG.BAS'
 '$INCLUDE: 'DRAFT.BAS'
 '$INCLUDE: 'GROUND.BAS'
 '$INCLUDE: 'HD2HD.BAS'

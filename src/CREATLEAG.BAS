@@ -1,10 +1,10 @@
 '----------------------------------------
-'          CREATPRO Subroutine
+'          CREATLEAG Subroutine
 '----------------------------------------
 'This subroutine provides a menu for the
 'user to choose options related to the
 'creation and editing of leagues
-Sub CREATPRO ()
+Sub CREATLEAG ()
 
     _Title "Full Count Baseball - Manage Leagues"
 
@@ -14,6 +14,8 @@ Sub CREATPRO ()
 
     Shared Z1$(), Z2$()
 
+    ReDim menuChoices$(1 To 3)
+
     Do
 
         Color 15, 0
@@ -21,7 +23,6 @@ Sub CREATPRO ()
 
         Call TITLE
 
-        ReDim menuChoices$(1 To 3)
         menuChoices$(1) = "CREATE / DEFINE NEW LEAGUES     "
         menuChoices$(2) = "ADD / REVIEW LEAGUE MEMBERS     "
         menuChoices$(3) = "RETURN TO STANDINGS/LEADERS MENU"
