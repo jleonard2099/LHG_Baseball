@@ -16,7 +16,7 @@ Sub CompileLeague ()
     Shared compileZ1!(), DFT!(), JS!(), OFT!()
 
     Shared BA$(), compileTeams$(), compileZ2$(), compileZ3$()
-    Shared ER$(), H1$(), NM$()
+    Shared ER$(), statFiles$(), NM$()
 
     'Initialize values first
     APP = 0
@@ -58,8 +58,8 @@ Sub CompileLeague ()
         Input #2, league$, D1$, D2$, D3$, D4$
 
         For XW = 1 To 40
-            Input #2, H1$(XW)
-            compileTeams$(XW) = H1$(XW)
+            Input #2, statFiles$(XW)
+            compileTeams$(XW) = statFiles$(XW)
         Next
 
         Close 2
@@ -69,17 +69,17 @@ Sub CompileLeague ()
             fullWins = 0
             fullLosses = 0
 
-            If H1$(XW) <> Chr$(42) Then
+            If statFiles$(XW) <> Chr$(42) Then
 
-                haveStats = FindStatsPro%(H1$(XW), TN$, fullWins, fullLosses)
+                haveStats = FindStatsPro%(statFiles$(XW), TN$, fullWins, fullLosses)
 
                 If (haveStats) Then
 
-                    L = Len(H1$(XW))
+                    L = Len(statFiles$(XW))
                     WT$ = ""
 
                     For X = 1 To L
-                        A = Asc(Mid$(H1$(XW), X, 1))
+                        A = Asc(Mid$(statFiles$(XW), X, 1))
                         WT$ = WT$ + Chr$(A)
                     Next X
 
@@ -102,11 +102,11 @@ Sub CompileLeague ()
 
                     Next X
 
-                    If confGame <> 1 And _FileExists(diskPaths$(1) + H1$(XW)) Then
+                    If confGame <> 1 And _FileExists(diskPaths$(1) + statFiles$(XW)) Then
 
-                        Call ReadStatsLeague(H1$(XW), TN$, totalGames)
-                        Call CheckStatsLeague(H1$(XW), WT$, totalGames)
-                        Call StatsByCategory(WT$, totalGames)
+                        Call ReadStatsLeague(statFiles$(XW), TN$, totalGames)
+                        Call CheckStatsLeague(statFiles$(XW), WT$, totalGames)
+                        Call CalcStatTotals(WT$, totalGames)
 
                     End If 'Done checking if we need to skip
 
@@ -817,12 +817,12 @@ End Sub
 
 
 '----------------------------------------
-'      StatsByCategory Subroutine
+'      CalcStatTotals Subroutine
 '----------------------------------------
 'This subroutine compares all pre-loaded
 'stats to each of the record categories to
 'see if any should be updated
-Sub StatsByCategory (WT$, totalGames)
+Sub CalcStatTotals (WT$, totalGames)
 
     Shared BAT%(), PIT%()
     Shared compileZ2$(), compileZ3$()

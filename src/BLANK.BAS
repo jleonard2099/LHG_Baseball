@@ -8,7 +8,7 @@ Sub BLANK ()
 
     _Title "Full Count Baseball - Erase League Stats"
 
-    Dim H1$(40)
+    Dim statFiles$(40)
 
     leagueFile$ = ChooseFile$ (diskPaths$(2) + "*.LIB", "LEAGUE", ExitCode%)
 
@@ -29,16 +29,16 @@ Sub BLANK ()
             Input #2, league$, D1$, D2$, D3$, D4$
 
             For XW = 1 To 40
-                Input #2, H1$(XW)
+                Input #2, statFiles$(XW)
             Next
 
             Close 2
 
             For XW = 1 To 40
 
-                If H1$(XW) <> Chr$(42) Then
-                    statFile$ = diskPaths$(1) + H1$(XW)
-                    Print "DELETING "; H1$(XW); " STATS"
+                If statFiles$(XW) <> Chr$(42) Then
+                    statFile$ = diskPaths$(1) + statFiles$(XW)
+                    Print "DELETING "; statFiles$(XW); " STATS"
                     If _FileExists (statFile$) Then Kill statFile$
                     If _FileExists (statFile$ + "R") Then Kill statFile$ + "R"
                     If _FileExists (statFile$ + "S") Then Kill statFile$ + "S"

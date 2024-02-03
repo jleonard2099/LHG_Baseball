@@ -977,7 +977,7 @@ End Sub
 'for each team in the chosen league.
 Sub ReportsAllTeams ()
 
-    Dim H1$(40)
+    Dim statFiles$(40)
     Shared D0%, D1%, L2%, W2%
 
     Shared batterNames$(), pitcherNames$()
@@ -994,16 +994,16 @@ Sub ReportsAllTeams ()
         Input #2, league$, D1$, D2$, D3$, D4$
 
         For XW = 1 To 40
-            Input #2, H1$(XW)
+            Input #2, statFiles$(XW)
         Next
 
         Close 2
 
         For XW = 1 To 40
 
-            If _FileExists(diskPaths$(1) + H1$(XW)) Then
+            If _FileExists(diskPaths$(1) + statFiles$(XW)) Then
 
-                Open diskPaths$(1) + H1$(XW) For Input As #1
+                Open diskPaths$(1) + statFiles$(XW) For Input As #1
 
                 Input #1, teamName$
                 Input #1, W2%

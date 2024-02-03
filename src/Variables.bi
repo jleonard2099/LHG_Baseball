@@ -128,7 +128,7 @@ Dim compileZ1!(298, 2)
 Dim DFT!(40, 20), JS!(46, 42), OFT!(40, 20)
 Dim seeZ!(298), seeZ1!(298)
 
-Dim BA$(40), ER$(40), H1$(40)
+Dim BA$(40), ER$(40), statFiles$(40)
 Dim compileZ2$(298), compileZ3$(298)
 Dim LF$(70), NM$(46), seeP$(298)
 Dim RT$(70), seeT$(40), compileTeams$(1 To 40)
