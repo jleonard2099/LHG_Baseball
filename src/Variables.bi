@@ -92,7 +92,7 @@ Dim BL1!(18, 20), PL1!(16, 21)
 Dim leaderBL$(1 To 920), leaderPL$(1 To 880)
 
 Dim leaderTeams$(40, 22), TMP$(1 To 880)
-Dim TP$(0 To 31), TP1$(0 To 29), TP2$(0 To 39)
+Dim expBatCategory$(0 To 31), expPitCategory$(0 To 29), batIndCategory$(0 To 39)
 Dim TMB$(1 To 920), TMM$(1 To 920), TPP$(1 To 920), TT2$(40, 23)
 
 Dim BK%(1 To 920, 22), PM%(1 To 880, 23)
@@ -155,8 +155,8 @@ Dim batRecVal!(32), batRecYr!(32), pitRecVal!(29), pitRecYr!(29)
 Dim teamRecAVal!(24), teamRecBVal!(25), teamRecAYr!(24), teamRecBYr!(25)
 
 Dim batRecPlyr$(32), batRecTeam$(32), pitRecPlyr$(29), pitRecTeam$(29)
-Dim batRecCategory$(1 To 32), pitRecCategory$(1 To 28)
-Dim teamRecACategory$(0 To 20), teamRecBCategory$(0 To 18)
+Dim batIndCategory$(1 To 32), pitIndCategory$(1 To 28)
+Dim batTeamCategory$(0 To 20), pitTeamCategory$(0 To 18)
 Dim teamRecATeam$(24), teamRecBTeam$(25)
 
 
@@ -277,7 +277,7 @@ Dim BP(0 To 9), F(0 To 9)
 Dim B6%(22, 21), BB%(0 To 9)
 Dim gameD1%(1), daysRest(0 To 1, 0 To 21)
 
-Dim gameT1%(0 To 1), gameTP%(0 To 11, 0 To 2)
+Dim gameT1%(0 To 1), triplePlayAdj(0 To 11, 0 To 2)
 Dim mgrFile(1)
 Dim startPitcher(1), SX%(0 To 1)
 

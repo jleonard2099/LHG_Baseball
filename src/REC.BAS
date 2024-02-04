@@ -666,7 +666,7 @@ Sub ViewSeasonRecords (leagueFile$)
     Shared teamRecAVal!(), teamRecBVal!(), teamRecAYr!(), teamRecBYr!()
 
     Shared batRecPlyr$(), batRecTeam$(), pitRecPlyr$(), pitRecTeam$()
-    Shared batRecCategory$(), pitRecCategory$(), teamRecACategory$(), teamRecBCategory$()
+    Shared batIndCategory$(), pitIndCategory$(), batTeamCategory$(), pitTeamCategory$()
     Shared teamRecATeam$(), teamRecBTeam$()
 
     Color 0, 0
@@ -705,7 +705,7 @@ Sub ViewSeasonRecords (leagueFile$)
 
     For I = 1 To 15
         Locate , 4
-        Print batRecCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(62); Using "####"; batRecVal!(I);: Print Tab(70); Using "####"; batRecYr!(I)
+        Print batIndCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(62); Using "####"; batRecVal!(I);: Print Tab(70); Using "####"; batRecYr!(I)
     Next
 
     Color 15
@@ -731,26 +731,26 @@ Sub ViewSeasonRecords (leagueFile$)
 
     For I = 16 To 20
         Locate , 4
-        Print batRecCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(62); Using "####"; batRecVal!(I);: Print Tab(70); Using "####"; batRecYr!(I)
+        Print batIndCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(62); Using "####"; batRecVal!(I);: Print Tab(70); Using "####"; batRecYr!(I)
     Next
 
     For I = 21 To 23
         Locate , 4
-        Print batRecCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(62); Using ".###"; batRecVal!(I);: Print Tab(70); Using "####"; batRecYr!(I)
+        Print batIndCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(62); Using ".###"; batRecVal!(I);: Print Tab(70); Using "####"; batRecYr!(I)
     Next
 
     For I = 24 To 29
         Locate , 4
-        Print batRecCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(60); Using "###.#"; batRecVal!(I);: Print Tab(70); Using "####"; batRecYr!(I)
+        Print batIndCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(60); Using "###.#"; batRecVal!(I);: Print Tab(70); Using "####"; batRecYr!(I)
     Next
 
     For I = 30 To 31
         Locate , 4
-        Print batRecCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(62); Using "###"; batRecVal!(I);: Print Tab(70); Using "####"; batRecYr!(I)
+        Print batIndCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(62); Using "###"; batRecVal!(I);: Print Tab(70); Using "####"; batRecYr!(I)
     Next
 
     Locate , 4
-    Print batRecCategory$(32); Tab(28); batRecPlyr$(32); Tab(43); batRecTeam$(32); Tab(62); Using ".###"; batRecVal!(32);: Print Tab(70); Using "####"; batRecYr!(32)
+    Print batIndCategory$(32); Tab(28); batRecPlyr$(32); Tab(43); batRecTeam$(32); Tab(62); Using ".###"; batRecVal!(32);: Print Tab(70); Using "####"; batRecYr!(32)
 
     Color 15
     Locate 22, 30: Print "HIT ANY KEY TO CONTINUE"
@@ -790,13 +790,13 @@ Sub ViewSeasonRecords (leagueFile$)
     Color 7
 
     Locate , 4
-    Print pitRecCategory$(1); Tab(28); pitRecPlyr$(1); Tab(43); pitRecTeam$(1); Tab(61); Using "###"; Int(pitRecVal!(1) / 3);
+    Print pitIndCategory$(1); Tab(28); pitRecPlyr$(1); Tab(43); pitRecTeam$(1); Tab(61); Using "###"; Int(pitRecVal!(1) / 3);
     If pitRecVal!(1) - Int(pitRecVal!(1) / 3) * 3 > 0 Then Print ".";: Print Using "#"; pitRecVal!(1) - (Int(pitRecVal!(1) / 3) * 3); Else Print ".0";
     Print Tab(70); Using "####"; pitRecYr!(1)
 
     For I = 2 To 15
         Locate , 4
-        Print pitRecCategory$(I); Tab(28); pitRecPlyr$(I); Tab(43); pitRecTeam$(I); Tab(62); Using "####"; pitRecVal!(I); Tab(70); pitRecYr!(I)
+        Print pitIndCategory$(I); Tab(28); pitRecPlyr$(I); Tab(43); pitRecTeam$(I); Tab(62); Using "####"; pitRecVal!(I); Tab(70); pitRecYr!(I)
     Next
 
     Color 15
@@ -819,23 +819,23 @@ Sub ViewSeasonRecords (leagueFile$)
 
     For I = 16 To 19
         Locate , 4
-        Print pitRecCategory$(I); Tab(28); pitRecPlyr$(I); Tab(43); pitRecTeam$(I); Tab(62); Using "####"; pitRecVal!(I);: Print Tab(70); Using "####"; pitRecYr!(I)
+        Print pitIndCategory$(I); Tab(28); pitRecPlyr$(I); Tab(43); pitRecTeam$(I); Tab(62); Using "####"; pitRecVal!(I);: Print Tab(70); Using "####"; pitRecYr!(I)
     Next
 
     Locate , 4
-    Print pitRecCategory$(20); Tab(28); pitRecPlyr$(24); Tab(43); pitRecTeam$(24); Tab(62); Using ".###"; pitRecVal!(24) * 100;: Print Tab(70); Using "####"; pitRecYr!(24)
+    Print pitIndCategory$(20); Tab(28); pitRecPlyr$(24); Tab(43); pitRecTeam$(24); Tab(62); Using ".###"; pitRecVal!(24) * 100;: Print Tab(70); Using "####"; pitRecYr!(24)
     Locate , 4
-    Print pitRecCategory$(21); Tab(28); pitRecPlyr$(20); Tab(43); pitRecTeam$(20); Tab(62); Using "####"; pitRecVal!(20);: Print Tab(70); Using "####"; pitRecYr!(20)
+    Print pitIndCategory$(21); Tab(28); pitRecPlyr$(20); Tab(43); pitRecTeam$(20); Tab(62); Using "####"; pitRecVal!(20);: Print Tab(70); Using "####"; pitRecYr!(20)
     Locate , 4
-    Print pitRecCategory$(22); Tab(28); pitRecPlyr$(25); Tab(43); pitRecTeam$(25); Tab(61); Using "##.##"; pitRecVal!(25);: Print Tab(70); Using "####"; pitRecYr!(25)
+    Print pitIndCategory$(22); Tab(28); pitRecPlyr$(25); Tab(43); pitRecTeam$(25); Tab(61); Using "##.##"; pitRecVal!(25);: Print Tab(70); Using "####"; pitRecYr!(25)
     Locate , 4
-    Print pitRecCategory$(23); Tab(28); pitRecPlyr$(22); Tab(43); pitRecTeam$(22); Tab(62); Using "####"; pitRecVal!(22);: Print Tab(70); Using "####"; pitRecYr!(22)
+    Print pitIndCategory$(23); Tab(28); pitRecPlyr$(22); Tab(43); pitRecTeam$(22); Tab(62); Using "####"; pitRecVal!(22);: Print Tab(70); Using "####"; pitRecYr!(22)
     Locate , 4
-    Print pitRecCategory$(24); Tab(28); pitRecPlyr$(23); Tab(43); pitRecTeam$(23); Tab(60); Using "###.##"; pitRecVal!(23);: Print Tab(70); Using "####"; pitRecYr!(23)
+    Print pitIndCategory$(24); Tab(28); pitRecPlyr$(23); Tab(43); pitRecTeam$(23); Tab(60); Using "###.##"; pitRecVal!(23);: Print Tab(70); Using "####"; pitRecYr!(23)
 
     For I = 25 To 28
         Locate , 4
-        Print pitRecCategory$(I); Tab(28); pitRecPlyr$(I); Tab(43); pitRecTeam$(I); Tab(61); Using "##.##"; pitRecVal!(I);: Print Tab(70); Using "####"; pitRecYr!(I)
+        Print pitIndCategory$(I); Tab(28); pitRecPlyr$(I); Tab(43); pitRecTeam$(I); Tab(61); Using "##.##"; pitRecVal!(I);: Print Tab(70); Using "####"; pitRecYr!(I)
     Next
 
     Color 15
@@ -877,12 +877,12 @@ Sub ViewSeasonRecords (leagueFile$)
 
     For I = 0 To 12
         Locate , 4
-        Print teamRecACategory$(I); Tab(28); teamRecATeam$(I); Tab(62); Using "####"; teamRecAVal!(I);: Print Tab(70); Using "####"; teamRecAYr!(I)
+        Print batTeamCategory$(I); Tab(28); teamRecATeam$(I); Tab(62); Using "####"; teamRecAVal!(I);: Print Tab(70); Using "####"; teamRecAYr!(I)
     Next
 
     For I = 15 To 16
         Locate , 4
-        Print teamRecACategory$(I - 2); Tab(28); teamRecATeam$(I); Tab(62); Using "####"; teamRecAVal!(I);: Print Tab(70); Using "####"; teamRecAYr!(I)
+        Print batTeamCategory$(I - 2); Tab(28); teamRecATeam$(I); Tab(62); Using "####"; teamRecAVal!(I);: Print Tab(70); Using "####"; teamRecAYr!(I)
     Next
 
     Color 15
@@ -911,27 +911,27 @@ Sub ViewSeasonRecords (leagueFile$)
 
     For I = 17 To 19
         Locate , 4
-        Print teamRecACategory$(I - 2); Tab(28); teamRecATeam$(I); Tab(62); Using "####"; teamRecAVal!(I);: Print Tab(70); Using "####"; teamRecAYr!(I)
+        Print batTeamCategory$(I - 2); Tab(28); teamRecATeam$(I); Tab(62); Using "####"; teamRecAVal!(I);: Print Tab(70); Using "####"; teamRecAYr!(I)
     Next
 
     For I = 22 To 24
         Locate , 4
-        Print teamRecACategory$(I - 4); Tab(28); teamRecATeam$(I); Tab(62); Using ".###"; teamRecAVal!(I);: Print Tab(70); Using "####"; teamRecAYr!(I)
+        Print batTeamCategory$(I - 4); Tab(28); teamRecATeam$(I); Tab(62); Using ".###"; teamRecAVal!(I);: Print Tab(70); Using "####"; teamRecAYr!(I)
     Next
 
     Locate , 4
-    Print teamRecBCategory$(0); Tab(28); teamRecBTeam$(0); Tab(60); Using "####"; Int(teamRecBVal!(0) / 3);
+    Print pitTeamCategory$(0); Tab(28); teamRecBTeam$(0); Tab(60); Using "####"; Int(teamRecBVal!(0) / 3);
     If teamRecBVal!(0) - Int(teamRecBVal!(0) / 3) * 3 > 0 Then Print ".";: Print Using "#"; teamRecBVal!(0) - (Int(teamRecBVal!(0) / 3) * 3); Else Print ".0";
     Print Tab(70); Using "####"; teamRecBYr!(0)
 
     For I = 1 To 5
         Locate , 4
-        Print teamRecBCategory$(I); Tab(28); teamRecBTeam$(I); Tab(62); Using "####"; teamRecBVal!(I);: Print Tab(70); Using "####"; teamRecBYr!(I)
+        Print pitTeamCategory$(I); Tab(28); teamRecBTeam$(I); Tab(62); Using "####"; teamRecBVal!(I);: Print Tab(70); Using "####"; teamRecBYr!(I)
     Next
 
     For I = 10 To 12
         Locate , 4
-        Print teamRecBCategory$(I - 4); Tab(28); teamRecBTeam$(I); Tab(62); Using "####"; teamRecBVal!(I);: Print Tab(70); Using "####"; teamRecBYr!(I)
+        Print pitTeamCategory$(I - 4); Tab(28); teamRecBTeam$(I); Tab(62); Using "####"; teamRecBVal!(I);: Print Tab(70); Using "####"; teamRecBYr!(I)
     Next
 
     Color 15
@@ -957,16 +957,16 @@ Sub ViewSeasonRecords (leagueFile$)
 
     For I = 13 To 19
         Locate , 4
-        Print teamRecBCategory$(I - 4); Tab(28); teamRecBTeam$(I); Tab(62); Using "####"; teamRecBVal!(I);
+        Print pitTeamCategory$(I - 4); Tab(28); teamRecBTeam$(I); Tab(62); Using "####"; teamRecBVal!(I);
         Print Tab(70); Using "####"; teamRecBYr!(I)
     Next
 
     Locate , 4
-    Print teamRecBCategory$(16); Tab(28); teamRecBTeam$(21); Tab(62); Using "####"; teamRecBVal!(21);: Print Tab(70); Using "####"; teamRecBYr!(21)
+    Print pitTeamCategory$(16); Tab(28); teamRecBTeam$(21); Tab(62); Using "####"; teamRecBVal!(21);: Print Tab(70); Using "####"; teamRecBYr!(21)
     Locate , 4
-    Print teamRecBCategory$(17); Tab(28); teamRecBTeam$(23); Tab(62); Using ".###"; teamRecBVal!(23);: Print Tab(70); Using "####"; teamRecBYr!(23)
+    Print pitTeamCategory$(17); Tab(28); teamRecBTeam$(23); Tab(62); Using ".###"; teamRecBVal!(23);: Print Tab(70); Using "####"; teamRecBYr!(23)
     Locate , 4
-    Print teamRecBCategory$(18); Tab(28); teamRecBTeam$(24); Tab(61); Using "##.##"; teamRecBVal!(24);: Print Tab(70); Using "####"; teamRecBYr!(24)
+    Print pitTeamCategory$(18); Tab(28); teamRecBTeam$(24); Tab(61); Using "##.##"; teamRecBVal!(24);: Print Tab(70); Using "####"; teamRecBYr!(24)
 
     Color 15
     Locate 22, 30: Print "HIT ANY KEY TO CONTINUE"
@@ -985,7 +985,7 @@ Sub PrintSeasonRecords (leagueFile$)
     Shared teamRecAVal!(), teamRecBVal!(), teamRecAYr!(), teamRecBYr!()
 
     Shared batRecPlyr$(), batRecTeam$(), pitRecPlyr$(), pitRecTeam$()
-    Shared batRecCategory$(), pitRecCategory$(), teamRecACategory$(), teamRecBCategory$()
+    Shared batIndCategory$(), pitIndCategory$(), batTeamCategory$(), pitTeamCategory$()
     Shared teamRecATeam$(), teamRecBTeam$()
 
     LPrint leagueFile$; "  BATTING RECORDS"
@@ -994,48 +994,48 @@ Sub PrintSeasonRecords (leagueFile$)
     LPrint String$(75, 61)
 
     For I = 1 To 20
-        LPrint batRecCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(62); Using "####"; batRecVal!(I); Tab(66); batRecYr!(I)
+        LPrint batIndCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(62); Using "####"; batRecVal!(I); Tab(66); batRecYr!(I)
     Next
 
     For I = 21 To 23
-        LPrint batRecCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(62); Using ".###"; batRecVal!(I);: LPrint Tab(66); Using "####"; batRecYr!(I)
+        LPrint batIndCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(62); Using ".###"; batRecVal!(I);: LPrint Tab(66); Using "####"; batRecYr!(I)
     Next
 
     For I = 24 To 29
-        LPrint batRecCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(60); Using "###.#"; batRecVal!(I);: LPrint Tab(66); Using "####"; batRecYr!(I)
+        LPrint batIndCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(60); Using "###.#"; batRecVal!(I);: LPrint Tab(66); Using "####"; batRecYr!(I)
     Next
 
     For I = 30 To 31
-        LPrint batRecCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(62); Using "###"; batRecVal!(I);: LPrint Tab(66); Using "####"; batRecYr!(I)
+        LPrint batIndCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(62); Using "###"; batRecVal!(I);: LPrint Tab(66); Using "####"; batRecYr!(I)
     Next
 
-    LPrint batRecCategory$(32); Tab(28); batRecPlyr$(32); Tab(43); batRecTeam$(32); Tab(62); Using ".###"; batRecVal!(32);: LPrint Tab(66); Using "####"; batRecYr!(32)
+    LPrint batIndCategory$(32); Tab(28); batRecPlyr$(32); Tab(43); batRecTeam$(32); Tab(62); Using ".###"; batRecVal!(32);: LPrint Tab(66); Using "####"; batRecYr!(32)
     LPrint Chr$(12)
 
     LPrint leagueFile$; "  PITCHING RECORDS"
     LPrint
     LPrint "CATEGORY                   PLAYER         TEAM             RECORD      YEAR"
     LPrint String$(75, 61)
-    LPrint pitRecCategory$(1); Tab(28); pitRecPlyr$(1); Tab(43); pitRecTeam$(1); Tab(61); Using "###"; Int(pitRecVal!(1) / 3);
+    LPrint pitIndCategory$(1); Tab(28); pitRecPlyr$(1); Tab(43); pitRecTeam$(1); Tab(61); Using "###"; Int(pitRecVal!(1) / 3);
 
     If pitRecVal!(1) - Int(pitRecVal!(1) / 3) * 3 > 0 Then LPrint ".";: LPrint Using "#"; pitRecVal!(1) - (Int(pitRecVal!(1) / 3) * 3); Else LPrint ".0";
 
     LPrint Tab(72); Using "####"; pitRecYr!(1)
 
     For I = 2 To 19
-        LPrint pitRecCategory$(I); Tab(28); pitRecPlyr$(I); Tab(43); pitRecTeam$(I); Tab(62); Using "####"; pitRecVal!(I); Tab(72); pitRecYr!(I)
+        LPrint pitIndCategory$(I); Tab(28); pitRecPlyr$(I); Tab(43); pitRecTeam$(I); Tab(62); Using "####"; pitRecVal!(I); Tab(72); pitRecYr!(I)
     Next
 
-    LPrint pitRecCategory$(20); Tab(28); pitRecPlyr$(24); Tab(43); pitRecTeam$(24); Tab(62); Using ".###"; pitRecVal!(24) * 100;: LPrint Tab(72); Using "####"; pitRecYr!(24)
-    LPrint pitRecCategory$(21); Tab(28); pitRecPlyr$(20); Tab(43); pitRecTeam$(20); Tab(62); Using "####"; pitRecVal!(20); Tab(72); pitRecYr!(20)
-    LPrint pitRecCategory$(22); Tab(28); pitRecPlyr$(25); Tab(43); pitRecTeam$(25); Tab(61); Using "##.##"; pitRecVal!(25);: LPrint Tab(72); Using "####"; pitRecYr!(25)
-    LPrint pitRecCategory$(23); Tab(28); pitRecPlyr$(22); Tab(43); pitRecTeam$(22); Tab(62); Using "####"; pitRecVal!(22); Tab(72); pitRecYr!(22)
-    LPrint pitRecCategory$(24); Tab(28); pitRecPlyr$(23); Tab(43); pitRecTeam$(23); Tab(60); Using "###.##"; pitRecVal!(23); Tab(72);
+    LPrint pitIndCategory$(20); Tab(28); pitRecPlyr$(24); Tab(43); pitRecTeam$(24); Tab(62); Using ".###"; pitRecVal!(24) * 100;: LPrint Tab(72); Using "####"; pitRecYr!(24)
+    LPrint pitIndCategory$(21); Tab(28); pitRecPlyr$(20); Tab(43); pitRecTeam$(20); Tab(62); Using "####"; pitRecVal!(20); Tab(72); pitRecYr!(20)
+    LPrint pitIndCategory$(22); Tab(28); pitRecPlyr$(25); Tab(43); pitRecTeam$(25); Tab(61); Using "##.##"; pitRecVal!(25);: LPrint Tab(72); Using "####"; pitRecYr!(25)
+    LPrint pitIndCategory$(23); Tab(28); pitRecPlyr$(22); Tab(43); pitRecTeam$(22); Tab(62); Using "####"; pitRecVal!(22); Tab(72); pitRecYr!(22)
+    LPrint pitIndCategory$(24); Tab(28); pitRecPlyr$(23); Tab(43); pitRecTeam$(23); Tab(60); Using "###.##"; pitRecVal!(23); Tab(72);
 
     Print Using "####"; pitRecYr!(23)
 
     For I = 25 To 28
-        LPrint pitRecCategory$(I); Tab(28); pitRecPlyr$(I); Tab(43); pitRecTeam$(I); Tab(61); Using "##.##"; pitRecVal!(I);: LPrint Tab(72); Using "####"; pitRecYr!(I)
+        LPrint pitIndCategory$(I); Tab(28); pitRecPlyr$(I); Tab(43); pitRecTeam$(I); Tab(61); Using "##.##"; pitRecVal!(I);: LPrint Tab(72); Using "####"; pitRecYr!(I)
     Next
 
     LPrint Chr$(12)
@@ -1046,34 +1046,34 @@ Sub PrintSeasonRecords (leagueFile$)
     LPrint String$(75, 61)
 
     For I = 0 To 12
-        LPrint teamRecACategory$(I); Tab(28); teamRecATeam$(I); Tab(62); Using "####"; teamRecAVal!(I); Tab(72); teamRecAYr!(I)
+        LPrint batTeamCategory$(I); Tab(28); teamRecATeam$(I); Tab(62); Using "####"; teamRecAVal!(I); Tab(72); teamRecAYr!(I)
     Next
 
     For I = 15 To 19
-        LPrint teamRecACategory$(I - 2); Tab(28); teamRecATeam$(I); Tab(62); Using "####"; teamRecAVal!(I); Tab(72); teamRecAYr!(I)
+        LPrint batTeamCategory$(I - 2); Tab(28); teamRecATeam$(I); Tab(62); Using "####"; teamRecAVal!(I); Tab(72); teamRecAYr!(I)
     Next
 
     For I = 22 To 24
-        LPrint teamRecACategory$(I - 4); Tab(28); teamRecATeam$(I); Tab(62); Using ".###"; teamRecAVal!(I);: LPrint Tab(72); Using "####"; teamRecAYr!(I)
+        LPrint batTeamCategory$(I - 4); Tab(28); teamRecATeam$(I); Tab(62); Using ".###"; teamRecAVal!(I);: LPrint Tab(72); Using "####"; teamRecAYr!(I)
     Next
 
-    LPrint teamRecBCategory$(0); Tab(28); teamRecBTeam$(0); Tab(60); Using "####"; Int(teamRecBVal!(0) / 3);
+    LPrint pitTeamCategory$(0); Tab(28); teamRecBTeam$(0); Tab(60); Using "####"; Int(teamRecBVal!(0) / 3);
 
     If teamRecBVal!(0) - Int(teamRecBVal!(0) / 3) * 3 > 0 Then LPrint ".";: LPrint Using "#"; teamRecBVal!(0) - (Int(teamRecBVal!(0) / 3) * 3); Else LPrint ".0";
 
     LPrint Tab(72); Using "####"; teamRecBYr!(0)
 
     For I = 1 To 5
-        LPrint teamRecBCategory$(I); Tab(28); teamRecBTeam$(I); Tab(62); Using "####"; teamRecBVal!(I);: LPrint Tab(72); Using "####"; teamRecBYr!(I)
+        LPrint pitTeamCategory$(I); Tab(28); teamRecBTeam$(I); Tab(62); Using "####"; teamRecBVal!(I);: LPrint Tab(72); Using "####"; teamRecBYr!(I)
     Next
 
     For I = 10 To 19
-        LPrint teamRecBCategory$(I - 4); Tab(28); teamRecBTeam$(I); Tab(62); Using "####"; teamRecBVal!(I);: LPrint Tab(72); Using "####"; teamRecBYr!(I)
+        LPrint pitTeamCategory$(I - 4); Tab(28); teamRecBTeam$(I); Tab(62); Using "####"; teamRecBVal!(I);: LPrint Tab(72); Using "####"; teamRecBYr!(I)
     Next
 
-    LPrint teamRecBCategory$(16); Tab(28); teamRecBTeam$(21); Tab(62); Using "####"; teamRecBVal!(21);: LPrint Tab(72); Using "####"; teamRecBYr!(21)
-    LPrint teamRecBCategory$(17); Tab(28); teamRecBTeam$(23); Tab(62); Using ".###"; teamRecBVal!(23);: LPrint Tab(72); Using "####"; teamRecBYr!(23)
-    LPrint teamRecBCategory$(18); Tab(28); teamRecBTeam$(24); Tab(61); Using "##.##"; teamRecBVal!(24);: LPrint Tab(72); Using "####"; teamRecBYr!(24)
+    LPrint pitTeamCategory$(16); Tab(28); teamRecBTeam$(21); Tab(62); Using "####"; teamRecBVal!(21);: LPrint Tab(72); Using "####"; teamRecBYr!(21)
+    LPrint pitTeamCategory$(17); Tab(28); teamRecBTeam$(23); Tab(62); Using ".###"; teamRecBVal!(23);: LPrint Tab(72); Using "####"; teamRecBYr!(23)
+    LPrint pitTeamCategory$(18); Tab(28); teamRecBTeam$(24); Tab(61); Using "##.##"; teamRecBVal!(24);: LPrint Tab(72); Using "####"; teamRecBYr!(24)
 
     LPrint Chr$(12)
 

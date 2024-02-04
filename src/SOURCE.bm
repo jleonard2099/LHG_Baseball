@@ -16,7 +16,7 @@ Sub SOURCE ()
 
     Shared grounderDir$()
 
-    Shared gameTP%(), SU()
+    Shared triplePlayAdj(), SU()
 
     Call HITTINGLINES '(tmRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
 
@@ -3298,7 +3298,7 @@ Sub SOURCE ()
             Call d100(RN)
 
             For I = 0 To 2
-                If RN <= gameTP%(RR, I) Then Exit For
+                If RN <= triplePlayAdj(RR, I) Then Exit For
             Next
 
             'This I has to do with the above For-Next

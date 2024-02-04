@@ -116,7 +116,7 @@ Sub CompileLeague ()
 
         Next XW
 
-        Call SortLeaders
+        Call SortStandingsLeague
         Call PostLeaders(league$, leagStatFile$, APP)
 
     End If
@@ -1276,11 +1276,12 @@ End Sub
 
 
 '----------------------------------------
-'       SortLeaders Subroutine
+'     SortStandingsLeague Subroutine
 '----------------------------------------
 'This subroutine sorts the leaders in the
-'target league
-Sub SortLeaders
+'target league. Currently setup using a 
+'bubble sort algorithm.
+Sub SortStandingsLeague
 
     Shared O1(), O2()
     Shared compileTeams$()

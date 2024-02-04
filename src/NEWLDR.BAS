@@ -644,7 +644,7 @@ Sub ViewBattingLeaders (leaderFile$, JB, JP, tStats, ttStats)
 
     Shared BK%()
     Shared leaderBL$(), TMB$(), TMM$()
-    Shared TP$(), TPP$()
+    Shared expBatCategory$(), TPP$()
     Shared TYP!()
     Shared GM1!()
 
@@ -711,12 +711,12 @@ Sub ViewBattingLeaders (leaderFile$, JB, JP, tStats, ttStats)
                 Color 14
                 Locate I + 3, 8: Print Using "##"; I;
                 Print " ";
-                Color 0: Print TP$(I);
+                Color 0: Print expBatCategory$(I);
                 Color 14
                 Print Tab(40); Using "##"; I + 16;
                 Print " ";
                 Color 0
-                Print TP$(I + 16)
+                Print expBatCategory$(I + 16)
             Next
 
             Print
@@ -941,7 +941,7 @@ End Sub
 Sub DisplayBattingLeaders (TVN, maxRecords, categoryId)
 
     Shared TYP!()
-    Shared TMM$(), TP$(), TPP$()
+    Shared TMM$(), expBatCategory$(), TPP$()
 
     userExit% = 0
 
@@ -949,7 +949,7 @@ Sub DisplayBattingLeaders (TVN, maxRecords, categoryId)
 
         Color 14, 0
         Cls
-        Print "     PLAYER                  TEAM                     "; TP$(categoryId)
+        Print "     PLAYER                  TEAM                     "; expBatCategory$(categoryId)
 
         For W = 1 To maxRecords
 
@@ -963,7 +963,7 @@ Sub DisplayBattingLeaders (TVN, maxRecords, categoryId)
 
                 If I$ <> Chr$(27) Then
                     Cls
-                    Color 14: Print "     PLAYER                  TEAM                     "; TP$(categoryId)
+                    Color 14: Print "     PLAYER                  TEAM                     "; expBatCategory$(categoryId)
                 Else
                     userExit% = 1
                 End If
@@ -1036,7 +1036,7 @@ End Sub
 Sub ViewPitchingLeaders (leaderFile$, JB, JP, tStats, ttStats)
 
     Shared leaderPL$()
-    Shared TMM$(), TMP$(), TP1$(), TPP$()
+    Shared TMM$(), TMP$(), expPitCategory$(), TPP$()
     Shared TYP!(), TYP1!()
     Shared PM%()
 
@@ -1099,10 +1099,10 @@ Sub ViewPitchingLeaders (leaderFile$, JB, JP, tStats, ttStats)
             For I = 0 To 14:
                 Color 14: Locate I + 3, 8: Print Using "##"; I;
                 Print " ";
-                Color 0: Print TP1$(I);
+                Color 0: Print expPitCategory$(I);
                 Color 14: Print Tab(40); Using "##"; I + 15;
                 Print " ";
-                Color 0: Print TP1$(I + 15)
+                Color 0: Print expPitCategory$(I + 15)
             Next
 
             Print
@@ -1289,7 +1289,7 @@ End Sub
 'stat categories on the end user display
 Sub DisplayPitchingLeaders (TVN, maxRecords, categoryId)
 
-    Shared TMM$(), TP1$(), TPP$()
+    Shared TMM$(), expPitCategory$(), TPP$()
     Shared TYP!(), TYP1!()
 
     userExit% = 0
@@ -1297,7 +1297,7 @@ Sub DisplayPitchingLeaders (TVN, maxRecords, categoryId)
     Do
         Color 14, 0
         Cls
-        Print "     PLAYER                  TEAM                     "; TP1$(categoryId)
+        Print "     PLAYER                  TEAM                     "; expPitCategory$(categoryId)
 
         For W = 1 To maxRecords
 
@@ -1311,7 +1311,7 @@ Sub DisplayPitchingLeaders (TVN, maxRecords, categoryId)
 
                 If I$ <> Chr$(27) Then
                     Cls
-                    Color 14: Print "     PLAYER                  TEAM                     "; TP1$(categoryId)
+                    Color 14: Print "     PLAYER                  TEAM                     "; expPitCategory$(categoryId)
                 Else
                     userExit% = 1
                 End If
@@ -1378,7 +1378,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
     Shared TYP!(), TYP1!()
 
     Shared leaderTeams$(), TMM$()
-    Shared TP$(), TP2$(), TT2$()
+    Shared expBatCategory$(), batIndCategory$(), TT2$()
 
     Shared D1$, D2$, D3$, D4$
 
@@ -1445,7 +1445,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
             Locate I + 2, 8
             Print Using "##"; I;
             Print " ";
-            Color 0: Print TP2$(I)
+            Color 0: Print batIndCategory$(I)
         Next
 
         For I = 20 To 39:
@@ -1453,7 +1453,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
             Locate I - 18, 40
             Print Tab(40); Using "##"; I;
             Print " ";
-            Color 0: Print TP2$(I)
+            Color 0: Print batIndCategory$(I)
         Next
 
         Do
@@ -1666,7 +1666,7 @@ Sub DisplayTeamView (XX, screenType, printOrView%, TVN, maxRecords)
     Shared TYP!(), TYP1!()
 
     Shared TMM$()
-    Shared TP$(), TP1$()
+    Shared expBatCategory$(), expPitCategory$()
 
     If screenType = 0 Then
 
@@ -1679,7 +1679,7 @@ Sub DisplayTeamView (XX, screenType, printOrView%, TVN, maxRecords)
 
                 Color 0, 15
 
-                LPrint "     TEAM                     "; TP$(XX)
+                LPrint "     TEAM                     "; expBatCategory$(XX)
 
                 For W = 1 To maxRecords
 
@@ -1716,7 +1716,7 @@ Sub DisplayTeamView (XX, screenType, printOrView%, TVN, maxRecords)
             Case 2:
                 Color 0, 15
 
-                LPrint "     TEAM                     "; TP1$(XX)
+                LPrint "     TEAM                     "; expPitCategory$(XX)
 
                 LPrint Using "###"; W;
                 LPrint " ";
@@ -1759,14 +1759,14 @@ End Sub
 Sub LeagueTotals_A_Screen (XX, TVN, maxRecords)
 
     Shared TYP!()
-    Shared TMM$(), TP2$()
+    Shared TMM$(), batIndCategory$()
 
     Do
 
         Color 14, 0
         Cls
 
-        Print "     TEAM                     "; TP2$(XX)
+        Print "     TEAM                     "; batIndCategory$(XX)
 
         For W = 1 To maxRecords
 
@@ -1781,7 +1781,7 @@ Sub LeagueTotals_A_Screen (XX, TVN, maxRecords)
                 If I$ <> Chr$(27) Then
                     Cls
                     Color 14
-                    Print "     TEAM                     "; TP2$(XX)
+                    Print "     TEAM                     "; batIndCategory$(XX)
                 Else
                     Exit Sub
                 End If
@@ -1842,7 +1842,7 @@ End Sub
 'numbers they are intended to output.
 Sub LeagueTotals_B_Screen (XX, TVN, maxRecords)
 
-    Shared TMM$(), TP2$()
+    Shared TMM$(), batIndCategory$()
     Shared TYP!(), TYP1!()
 
     Do
@@ -1850,7 +1850,7 @@ Sub LeagueTotals_B_Screen (XX, TVN, maxRecords)
         Color 14, 0
         Cls
 
-        Print "     TEAM                     "; TP2$(XX)
+        Print "     TEAM                     "; batIndCategory$(XX)
 
         For W = 1 To maxRecords
 
@@ -1865,7 +1865,7 @@ Sub LeagueTotals_B_Screen (XX, TVN, maxRecords)
                 If I$ <> Chr$(27) Then
                     Cls
                     Color 14
-                    Print "     TEAM                     "; TP2$(XX)
+                    Print "     TEAM                     "; batIndCategory$(XX)
                 Else
                     Exit Sub
                 End If
@@ -2114,18 +2114,18 @@ Sub PrintLeaders (TVN, maxRecords, B9)
     Shared TYP!()
 
     Shared TMM$()
-    Shared TP$(), TPP$()
+    Shared expBatCategory$(), TPP$()
 
     Color 0, 15
     Cls
 
-    LPrint "     PLAYER                  TEAM                     "; TP$(B9)
+    LPrint "     PLAYER                  TEAM                     "; expBatCategory$(B9)
 
     For W = 1 To maxRecords
 
         If W <> 0 And (W Mod 50 = 0) Then
             LPrint Chr$(12)
-            LPrint "     PLAYER                  TEAM                     "; TP$(B9)
+            LPrint "     PLAYER                  TEAM                     "; expBatCategory$(B9)
         End If
 
         LPrint Using "###"; W;

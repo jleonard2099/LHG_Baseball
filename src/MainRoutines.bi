@@ -163,7 +163,7 @@ Declare Sub SetupClosers (targetTeam$, yearNumber$, mgrNbr)
 Declare Sub SetupMiddleRelievers (targetTeam$, yearNumber$, mgrNbr)
 Declare Sub SetupRelievers (targetTeam$, yearNumber$, mgrNbr)
 Declare Sub ShowPitcherInfo (targetTeam$)
-Declare Sub SortLeaders
+Declare Sub SortStandingsLeague
 Declare Sub SortOptions (printOrView%, sortType%)
 Declare Sub SortPitchers (positionFile$)
 Declare Sub SortPlayer (PPP, stpl, sortType%)
