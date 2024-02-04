@@ -92,7 +92,7 @@ Dim BL1!(18, 20), PL1!(16, 21)
 Dim leaderBL$(1 To 920), leaderPL$(1 To 880)
 
 Dim leaderTeams$(40, 22), TMP$(1 To 880)
-Dim expBatCategory$(0 To 31), expPitCategory$(0 To 29), batIndCategory$(0 To 39)
+Dim expBatCategory$(0 To 31), expPitCategory$(0 To 29), expTeamCategory$(0 To 39)
 Dim TMB$(1 To 920), TMM$(1 To 920), TPP$(1 To 920), TT2$(40, 23)
 
 Dim BK%(1 To 920, 22), PM%(1 To 880, 23)

@@ -1378,7 +1378,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
     Shared TYP!(), TYP1!()
 
     Shared leaderTeams$(), TMM$()
-    Shared expBatCategory$(), batIndCategory$(), TT2$()
+    Shared expBatCategory$(), expTeamCategory$(), TT2$()
 
     Shared D1$, D2$, D3$, D4$
 
@@ -1445,7 +1445,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
             Locate I + 2, 8
             Print Using "##"; I;
             Print " ";
-            Color 0: Print batIndCategory$(I)
+            Color 0: Print expTeamCategory$(I)
         Next
 
         For I = 20 To 39:
@@ -1453,7 +1453,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
             Locate I - 18, 40
             Print Tab(40); Using "##"; I;
             Print " ";
-            Color 0: Print batIndCategory$(I)
+            Color 0: Print expTeamCategory$(I)
         Next
 
         Do
@@ -1759,14 +1759,14 @@ End Sub
 Sub LeagueTotals_A_Screen (XX, TVN, maxRecords)
 
     Shared TYP!()
-    Shared TMM$(), batIndCategory$()
+    Shared TMM$(), expTeamCategory$()
 
     Do
 
         Color 14, 0
         Cls
 
-        Print "     TEAM                     "; batIndCategory$(XX)
+        Print "     TEAM                     "; expTeamCategory$(XX)
 
         For W = 1 To maxRecords
 
@@ -1781,7 +1781,7 @@ Sub LeagueTotals_A_Screen (XX, TVN, maxRecords)
                 If I$ <> Chr$(27) Then
                     Cls
                     Color 14
-                    Print "     TEAM                     "; batIndCategory$(XX)
+                    Print "     TEAM                     "; expTeamCategory$(XX)
                 Else
                     Exit Sub
                 End If
@@ -1842,7 +1842,7 @@ End Sub
 'numbers they are intended to output.
 Sub LeagueTotals_B_Screen (XX, TVN, maxRecords)
 
-    Shared TMM$(), batIndCategory$()
+    Shared TMM$(), expTeamCategory$()
     Shared TYP!(), TYP1!()
 
     Do
@@ -1850,7 +1850,7 @@ Sub LeagueTotals_B_Screen (XX, TVN, maxRecords)
         Color 14, 0
         Cls
 
-        Print "     TEAM                     "; batIndCategory$(XX)
+        Print "     TEAM                     "; expTeamCategory$(XX)
 
         For W = 1 To maxRecords
 
@@ -1865,7 +1865,7 @@ Sub LeagueTotals_B_Screen (XX, TVN, maxRecords)
                 If I$ <> Chr$(27) Then
                     Cls
                     Color 14
-                    Print "     TEAM                     "; batIndCategory$(XX)
+                    Print "     TEAM                     "; expTeamCategory$(XX)
                 Else
                     Exit Sub
                 End If
