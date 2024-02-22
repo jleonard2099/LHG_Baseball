@@ -186,7 +186,7 @@ Sub InitVar ()
     'These are used to load team data
     Erase gameSA%, gameTS%, injuryStatus
     'Erase batRating, mgrFile
-    Erase pitchRating, tmRat_GAME
+    Erase pitchRating, teamRat_GAME
     'Erase batters$
     'Erase gameManagers$, gameStadiums$
     'Erase pitchers$, teamAbbreviatons$
@@ -312,7 +312,7 @@ End Sub
 Sub TEAMBOX (boxHeight, teamIdx)
 
     Locate 6, 8
-    Color tmRat_GAME(teamIdx, 11), tmRat_GAME(teamIdx, 12)
+    Color teamRat_GAME(teamIdx, 11), teamRat_GAME(teamIdx, 12)
 
     'Print box top
     Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
@@ -343,7 +343,7 @@ End Sub
 Sub FRAMEOPTION (boxHeight, teamIdx)
 
     Locate 8, 8
-    Color tmRat_GAME(teamIdx, 11), tmRat_GAME(teamIdx, 12)
+    Color teamRat_GAME(teamIdx, 11), teamRat_GAME(teamIdx, 12)
 
     'Print box top
     Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
@@ -880,7 +880,7 @@ Sub DisplayBatter_Lineup (PG, P9)
     Locate 1, 1
 
     Color 14: Print "#";
-    Color tmRat_GAME(P9, 11), tmRat_GAME(P9, 12): Print gameTeams$(P9);
+    Color teamRat_GAME(P9, 11), teamRat_GAME(P9, 12): Print gameTeams$(P9);
 
     Color 14, 0
 
@@ -1016,7 +1016,7 @@ Sub CAUGHTFLY (i, S2%, D)
                 Call GetPBPString(60, 1230, fileString$, D)
                 Call PBP(player$(4) + " " + fileString$)
             Else
-                If tmRat_GAME(1, 13) = 37 Then Call PBP("he climbs the terrace")
+                If teamRat_GAME(1, 13) = 37 Then Call PBP("he climbs the terrace")
                 Call GetPBPString(20, 1290, fileString$, D)
                 Call PBP(fileString$)
             End If
@@ -1315,7 +1315,7 @@ Sub DisplayRun (I2, P, X)
 
     If J <> 0 Then
 
-        Color tmRat_GAME(P, 11), tmRat_GAME(P, 12)
+        Color teamRat_GAME(P, 11), teamRat_GAME(P, 12)
 
         If B7%(P, J) = 1 And pitchRating(P, P1%(P), 11) <> 999 Then
 
@@ -1638,7 +1638,7 @@ Sub DisplayBallField (nbrBalls, P, nbrStrikes, D)
     For team = 0 To 1:
 
         Locate team + 2
-        Color tmRat_GAME(team, 11), tmRat_GAME(team, 12)
+        Color teamRat_GAME(team, 11), teamRat_GAME(team, 12)
         Print Left$(gameTeams$(team), 3); teamAbbreviatons$(team);
 
         Color 14, 0
@@ -1684,7 +1684,7 @@ Sub DisplayBallField (nbrBalls, P, nbrStrikes, D)
     Next
 
     'CF Name
-    Color tmRat_GAME(D, 11), tmRat_GAME(D, 12)
+    Color teamRat_GAME(D, 11), teamRat_GAME(D, 12)
     Locate 5, 58: Print Left$(batters$(D, B9%(D, 8)), 10)
 
     'CF Stats
@@ -1698,7 +1698,7 @@ Sub DisplayBallField (nbrBalls, P, nbrStrikes, D)
     Locate 7, 59: Print "FA:" + fldPct$
 
     'RF / LF Names
-    Color tmRat_GAME(D, 11), tmRat_GAME(D, 12)
+    Color teamRat_GAME(D, 11), teamRat_GAME(D, 12)
     Locate 6, 46: Print Left$(batters$(D, B9%(D, 7)), 10);
     Locate , 70: Print Left$(batters$(D, B9%(D, 9)), 10)
 
@@ -1722,7 +1722,7 @@ Sub DisplayBallField (nbrBalls, P, nbrStrikes, D)
     Locate 8, 71: Print "FA:" + fldPct$
 
     'SS / 2B Names
-    Color tmRat_GAME(D, 11), tmRat_GAME(D, 12)
+    Color teamRat_GAME(D, 11), teamRat_GAME(D, 12)
     Locate 10, 49: Print Left$(batters$(D, B9%(D, 6)), 10);
     Locate , 68: Print Left$(batters$(D, B9%(D, 4)), 10)
 
@@ -1749,7 +1749,7 @@ Sub DisplayBallField (nbrBalls, P, nbrStrikes, D)
     Locate 12, 62: Print Chr$(219);
 
     '1B / 3B Names
-    Color tmRat_GAME(D, 11), tmRat_GAME(D, 12)
+    Color teamRat_GAME(D, 11), teamRat_GAME(D, 12)
     Locate 14, 46: Print Left$(batters$(D, B9%(D, 5)), 10);
     Locate , 70: Print Left$(batters$(D, B9%(D, 3)), 10)
 
@@ -1793,7 +1793,7 @@ Sub DisplayBallField (nbrBalls, P, nbrStrikes, D)
     Locate 21, 62: Print Chr$(219)
 
     'Catcher Name
-    Color tmRat_GAME(D, 11), tmRat_GAME(D, 12):
+    Color teamRat_GAME(D, 11), teamRat_GAME(D, 12):
     Locate 23, 58: Print Left$(batters$(D, B9%(D, 2)), 10)
 
     'Catcher Stats
@@ -2411,7 +2411,7 @@ Sub LONGFLY (D, gameW%)
 
         Call d100(RN)
 
-        If Not ((tmRat_GAME(1, 13) = 21 Or tmRat_GAME(1, 13) = 27) And gameW% = 7) Then
+        If Not ((teamRat_GAME(1, 13) = 21 Or teamRat_GAME(1, 13) = 27) And gameW% = 7) Then
 
             Select Case RN
                 Case 1 To 5: Call PBP(player$(4) + " leaps")
@@ -2446,7 +2446,7 @@ Sub MAINSCREEN (D, P, nbrBalls, nbrStrikes, MO)
 
     Locate 10, 1
 
-    Color tmRat_GAME(D, 11), tmRat_GAME(D, 12)
+    Color teamRat_GAME(D, 11), teamRat_GAME(D, 12)
     Print pitchers$(D, P1%(D)); " "; handed$(pitchRating(D, P1%(D), 0) + 2)
 
     Color 15, 0
@@ -2480,7 +2480,7 @@ Sub MAINSCREEN (D, P, nbrBalls, nbrStrikes, MO)
     Print Using " ##  ## ##"; P8%(D, P1%(D), 1); P8%(D, P1%(D), 4); P8%(D, P1%(D), 5)
     Locate 5, 1
     J = B3%(P, B1!(P))
-    Color tmRat_GAME(P, 11), tmRat_GAME(P, 12)
+    Color teamRat_GAME(P, 11), teamRat_GAME(P, 12)
 
     If B7%(P, B1!(P)) = 1 Then
         X$ = pitchers$(P, P1%(P))
@@ -2665,7 +2665,7 @@ Sub NEWPITCHER (pIdx, PPH, pz)
             W6 = P9
             VV(P9) = V0
             VV1(P9) = V0
-            Call HITTINGLINES '(tmRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+            Call HITTINGLINES '(teamRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
         End If
 
     Next V0
@@ -2691,7 +2691,7 @@ Sub NEWPITCHER (pIdx, PPH, pz)
 
     Call PBP(gameManagers$(D) + " is making a pitching change")
     Call DELAY
-    Call HITTINGLINES '(tmRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+    Call HITTINGLINES '(teamRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
 
     If useVGA = 1 Then
         Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
@@ -2971,7 +2971,7 @@ Sub PINCHRUNNER (MS%, A1, S4%, I2, P, PR%, nbrBalls, nbrStrikes, D, MO)
             PR% = 1
 
             Call DELAY
-            Call HITTINGLINES '(tmRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+            Call HITTINGLINES '(teamRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
 
             If useVGA = 1 Then
                 Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
@@ -3042,7 +3042,7 @@ Sub PITDISP (P9)
 
     Color 14, 0
     Print "#";
-    Color tmRat_GAME(P9, 11), tmRat_GAME(P9, 12): Print gameTeams$(P9);
+    Color teamRat_GAME(P9, 11), teamRat_GAME(P9, 12): Print gameTeams$(P9);
     Color 14, 0
     Print " T  IP   H   G GS CG SV HR  BB  SO  W- L   ERA  H G%"
 
@@ -3484,7 +3484,7 @@ Sub PinchHitter (P, P9, W5, W6, idx)
     W6 = P9
     VV(P9) = B1!(P)
     VV1(P9) = B1!(P)
-    Call HITTINGLINES '(tmRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+    Call HITTINGLINES '(teamRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
 
     VV(P9) = 1
     VV1(P9) = 9
@@ -3659,7 +3659,7 @@ End Sub
 Sub PopUp_Pitcher (WK, M)
 
     Locate 14, 3
-    Color tmRat_GAME(WK, 11), tmRat_GAME(WK, 12)
+    Color teamRat_GAME(WK, 11), teamRat_GAME(WK, 12)
 
     Print " "; Chr$(201); String$(71, 205); Chr$(187); " "
 
@@ -3753,7 +3753,7 @@ Sub POPUPSTATS ()
     J = B3%(P, B1!(P))
 
     'Stats for Active Batter
-    Locate 3, 3: Color tmRat_GAME(P, 11), tmRat_GAME(P, 12): Print " "; Chr$(201); String$(71, 205); Chr$(187); " "
+    Locate 3, 3: Color teamRat_GAME(P, 11), teamRat_GAME(P, 12): Print " "; Chr$(201); String$(71, 205); Chr$(187); " "
 
     For X = 1 To 7:
         Locate , 3: Print " "; Chr$(186); String$(71, 32); Chr$(186); " "
@@ -4107,7 +4107,7 @@ End Sub
 '        HITTINGLINES Subroutine
 '----------------------------------------
 ' ...explanation...
-Sub HITTINGLINES '(tmRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+Sub HITTINGLINES '(teamRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
 
     Randomize Timer
 
@@ -4123,7 +4123,7 @@ Sub HITTINGLINES '(tmRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(),
         'CALCULATE BASE ON BALLS PERCENTAGES
         For I3 = VV(I) To VV1(I)
 
-            I6! = tmRat_GAME(I1, 3) / 1000
+            I6! = teamRat_GAME(I1, 3) / 1000
 
             If pitchRating(I1, P1%(I1), 6) * 3 * .94 + pitchRating(I1, P1%(I1), 7) + pitchRating(I1, P1%(I1), 8) = 0 Then
                 I2! = 0
@@ -4214,7 +4214,7 @@ Sub HITTINGLINES '(tmRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(),
                 I2! = pitchRating(I1, P1%(I1), 9) / ((pitchRating(I1, P1%(I1), 6) * 3) * .94)
             End If
 
-            I6! = tmRat_GAME(I1, 2) / 1000
+            I6! = teamRat_GAME(I1, 2) / 1000
 
             II = batRating(I, B3%(I, I3), 0)
             I4 = pitchRating(I1, P1%(I1), 0)
@@ -4301,7 +4301,7 @@ Sub HITTINGLINES '(tmRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(),
         ' CALCULATE THE BATTING AVERAGE
         For I3 = VV(I) To VV1(I)
 
-            I2! = tmRat_GAME(I1, 1) / 1000
+            I2! = teamRat_GAME(I1, 1) / 1000
             I6! = pitchRating(I1, P1%(I1), 14) / 1000
 
             If pitchRating(I1, P1%(I1), 6) + pitchRating(I1, P1%(I1), 7) = 0 Then
@@ -4400,12 +4400,12 @@ Sub HITTINGLINES '(tmRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(),
 
             End If
 
-            I2! = tmRat_GAME(I, 1) / 1000
+            I2! = teamRat_GAME(I, 1) / 1000
             If gameTS%(I, 0) = 999 And batRating(I, B3%(I, I3), 80) <> 0 Then I2! = gameSA%(I, TY% * 6 + 1) / 1000
             Call NORMALIZE(I7!, I2!, I6!, K8!)
 
             I7! = K8! / 1000
-            I6! = tmRat_GAME(I, 1) / 1000
+            I6! = teamRat_GAME(I, 1) / 1000
 
             If gameTS%(I, 0) = 999 And batRating(I, B3%(I, I3), 80) <> 0 Then I6! = gameSA%(I, TY% * 6 + 1) / 1000
 
@@ -4439,12 +4439,12 @@ Sub HITTINGLINES '(tmRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(),
             If TY% = 1 Or TY% = 3 Then BY% = 1
 
             If B7%(I, I3) = 1 And pitchRating(I, P1%(I), 11) <> 999 Then
-                B4%(I, 1, I3) = (130 * (i9! * 1000)) / tmRat_GAME(I1, 1)
-                B4%(I, 2, I3) = (19 * (i9! * 1000)) / tmRat_GAME(I1, 1)
+                B4%(I, 1, I3) = (130 * (i9! * 1000)) / teamRat_GAME(I1, 1)
+                B4%(I, 2, I3) = (19 * (i9! * 1000)) / teamRat_GAME(I1, 1)
                 B4%(I, 3, I3) = 37
             Else
 
-                E2! = (i9! * 1000) / tmRat_GAME(I1, 1)
+                E2! = (i9! * 1000) / teamRat_GAME(I1, 1)
 
                 If gameTS%(I1, 0) = 999 Then E2! = (i9! * 1000) / gameSA%(I1, TY% * 6 + 1)
 
@@ -4472,7 +4472,7 @@ Sub HITTINGLINES '(tmRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(),
             End If
 
             235 '
-            I6! = tmRat_GAME(I1, 4) / 1000
+            I6! = teamRat_GAME(I1, 4) / 1000
             I7! = B4%(I, 3, I3) / 1000
             I2! = 0
 
@@ -4538,12 +4538,12 @@ Sub HITTINGLINES '(tmRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(),
 
             For I2 = VV(I) To VV1(I)
                 If I = 1 Then
-                    B4%(I, 1, I2) = Int(B4%(I, 1, I2) * (tmRat_GAME(I, 6) / 100) + .5)
-                    B4%(I, 2, I2) = Int(B4%(I, 2, I2) * (tmRat_GAME(I, 7) / 100) + .5)
+                    B4%(I, 1, I2) = Int(B4%(I, 1, I2) * (teamRat_GAME(I, 6) / 100) + .5)
+                    B4%(I, 2, I2) = Int(B4%(I, 2, I2) * (teamRat_GAME(I, 7) / 100) + .5)
                 Else
                     'I <> 1
-                    B4%(I, 1, I2) = Int(B4%(I, 1, I2) * (tmRat_GAME(I1, 6) / 100) * ((200 - tmRat_GAME(I, 6)) / 100) + .5)
-                    B4%(I, 2, I2) = Int(B4%(I, 2, I2) * (tmRat_GAME(I1, 7) / 100) * ((200 - tmRat_GAME(I, 7)) / 100) + .5)
+                    B4%(I, 1, I2) = Int(B4%(I, 1, I2) * (teamRat_GAME(I1, 6) / 100) * ((200 - teamRat_GAME(I, 6)) / 100) + .5)
+                    B4%(I, 2, I2) = Int(B4%(I, 2, I2) * (teamRat_GAME(I1, 7) / 100) * ((200 - teamRat_GAME(I, 7)) / 100) + .5)
                 End If
 
                 If parkHRVals!(I) > 1000 Then I3! = 100: I6! = Int(parkHRVals!(I) / 1000) * WF!: I7! = (parkHRVals!(I) - Int((parkHRVals!(I) / 1000)) * 1000) * WF!
@@ -4938,6 +4938,46 @@ Sub SCOREBOARD ()
     End If
 
 End Sub
+
+
+'----------------------------------------
+'         ColorChange Subroutine
+'----------------------------------------
+'This routine checks to see if both teams
+'have conflicting primary colors. 
+'If so, it will substitute the secondary 
+'color with white/grey and reverse them.
+'In essence, it's the digital equivalent 
+'of assigning an alternate jersey color.
+Sub ColorChange ()
+
+    If teamRat_GAME(1, 11) = 15 And teamRat_GAME(1, 12) = 4 Then 
+        teamRat_GAME(1, 11) = 4
+        teamRat_GAME(1, 12) = 7
+    End If
+
+    If teamRat_GAME(1, 11) = 15 And teamRat_GAME(1, 12) = 1 Then 
+        teamRat_GAME(1, 11) = 1
+        teamRat_GAME(1, 12) = 7
+    End If
+
+    If teamRat_GAME(1, 11) = 0 And teamRat_GAME(1, 12) = 4 Then 
+        teamRat_GAME(1, 11) = 12
+        teamRat_GAME(1, 12) = 0
+    End If
+
+    If teamRat_GAME(1, 11) = 1 And teamRat_GAME(1, 12) = 7 Then 
+        teamRat_GAME(1, 11) = 15
+        teamRat_GAME(1, 12) = 1
+    End If
+
+    If teamRat_GAME(1, 11) = 4 And teamRat_GAME(1, 12) = 7 Then 
+        teamRat_GAME(1, 11) = 15
+        teamRat_GAME(1, 12) = 4
+    End If
+
+End Sub
+
 
 '----------------------------------------
 '        SECOND2FIRST Subroutine
@@ -5826,9 +5866,9 @@ Sub VIEWTEAM ()
         Color 12: Print Tab(20); "SELECT TEAM TO VIEW DETAILED STATS FOR:"
         Print
         Print
-        Color 14, 0: Print "(0) ";: Color tmRat_GAME(0, 11), tmRat_GAME(0, 12): Print gameTeams$(0)
+        Color 14, 0: Print "(0) ";: Color teamRat_GAME(0, 11), teamRat_GAME(0, 12): Print gameTeams$(0)
         Print
-        Color 14, 0: Print "(1) ";: Color tmRat_GAME(1, 11), tmRat_GAME(1, 12): Print gameTeams$(1)
+        Color 14, 0: Print "(1) ";: Color teamRat_GAME(1, 11), teamRat_GAME(1, 12): Print gameTeams$(1)
         Print
         Color 14, 0: Print "(2) ";: Color 15: Print "RETURN TO PLAY"
 
@@ -5886,7 +5926,7 @@ Sub VIEWTEAM ()
                         If M <> 23 Then
 
                             Locate 3, 3
-                            Color tmRat_GAME(WK, 11), tmRat_GAME(WK, 12): Print " "; Chr$(201); String$(71, 205); Chr$(187); " "
+                            Color teamRat_GAME(WK, 11), teamRat_GAME(WK, 12): Print " "; Chr$(201); String$(71, 205); Chr$(187); " "
 
                             For X = 1 To 7: Locate , 3: Print " "; Chr$(186); String$(71, 32); Chr$(186); " ": Next
 
@@ -5975,12 +6015,12 @@ Sub WALLDOUBLE (HW%, gameW%)
 
             Select Case RN
                 Case 1 To 25
-                    If (tmRat_GAME(1, 13) = 8 Or tmRat_GAME(1, 13) = 40) Then pbpString$ = "It's off the ivy!"
+                    If (teamRat_GAME(1, 13) = 8 Or teamRat_GAME(1, 13) = 40) Then pbpString$ = "It's off the ivy!"
                 Case 26 To 50
-                    If tmRat_GAME(1, 13) = 21 And gameW% = 7 Then pbpString$ = "It hits off the Green Monster!"
+                    If teamRat_GAME(1, 13) = 21 And gameW% = 7 Then pbpString$ = "It hits off the Green Monster!"
             End Select
 
-            If tmRat_GAME(1, 13) = 27 And gameW% = 7 Then
+            If teamRat_GAME(1, 13) = 27 And gameW% = 7 Then
                 pbpString$ = "It hits off the screen!"
             Else
                 pbpString$ = "It's off the wall"
@@ -6006,10 +6046,10 @@ Sub WALLDOUBLE (HW%, gameW%)
             End If
 
         Case Else
-            If RN <= 25 And tmRat_GAME(1, 13) = 21 Then
+            If RN <= 25 And teamRat_GAME(1, 13) = 21 Then
                 pbpString$ = "It's off the Green Monster!"
             Else
-                If tmRat_GAME(1, 13) = 27 And gameW% = 7 Then
+                If teamRat_GAME(1, 13) = 27 And gameW% = 7 Then
                     pbpString$ = "It's off the screen..."
                 Else
                     pbpString$ = "It's off the top of the wall..."
@@ -6376,7 +6416,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 Select Case s4%
                     Case 0
-                        If tmRat_GAME(1, 13) = 14 Then
+                        If teamRat_GAME(1, 13) = 14 Then
                             Call PBP(player$(0) + " steps out of the box as a jet passes over")
                         Else
                             Call PBP(gameUmpire$(1) + " calls time to get some new baseballs")
@@ -6868,7 +6908,7 @@ Sub WEATHER ()
 
     Call FRAMEOPTION(5, 1)
 
-    If tmRat_GAME(1, 9) = 1 Then
+    If teamRat_GAME(1, 9) = 1 Then
         Locate , 11: Print "TEMPERATURE: 70"
         Locate , 11: Print "WEATHER: DOME"
         Locate , 11: Print "WIND: NONE"
@@ -6914,10 +6954,10 @@ Sub GETWEATHER (windDir, windSpeed, gameMonth, WF!, skyType, gameTemp, rainDelay
 
     Shared avgAttendance&
 
-    If tmRat_GAME(1, 13) > 82 Then
+    If teamRat_GAME(1, 13) > 82 Then
         ID = Int(Rnd(1) * 79) + 1
     Else
-        ID = tmRat_GAME(1, 13)
+        ID = teamRat_GAME(1, 13)
     End If
 
     'The layout of the PARKS.DB file is as follows:
@@ -7028,7 +7068,7 @@ Sub GETWEATHER (windDir, windSpeed, gameMonth, WF!, skyType, gameTemp, rainDelay
 
     End If
 
-    If tmRat_GAME(1, 13) = 2 Or tmRat_GAME(1, 13) = 4 Or tmRat_GAME(1, 13) = 10 Or tmRat_GAME(1, 13) = 13 Or tmRat_GAME(1, 13) = 24 Then
+    If teamRat_GAME(1, 13) = 2 Or teamRat_GAME(1, 13) = 4 Or teamRat_GAME(1, 13) = 10 Or teamRat_GAME(1, 13) = 13 Or teamRat_GAME(1, 13) = 24 Then
         precipType = 4
         skyType = 4
     End If
@@ -7155,7 +7195,7 @@ Sub SHOWBATTERS (P9)
 
     Color 14
     Print "#";
-    Color tmRat_GAME(P9, 11), tmRat_GAME(P9, 12): Print gameTeams$(P9);
+    Color teamRat_GAME(P9, 11), teamRat_GAME(P9, 12): Print gameTeams$(P9);
 
     Color 14, 0
 
@@ -7976,11 +8016,11 @@ Sub SAVESTATS ()
             Color 15: Print "BOTH TEAMS"
             Print
             Color 14: Print "(1) ";
-            Color tmRat_GAME(0, 11), tmRat_GAME(0, 12): Print gameTeams$(0); " ONLY"
+            Color teamRat_GAME(0, 11), teamRat_GAME(0, 12): Print gameTeams$(0); " ONLY"
             Color , 0
             Print
             Color 14: Print "(2) ";
-            Color tmRat_GAME(1, 11), tmRat_GAME(1, 12): Print gameTeams$(1); " ONLY"
+            Color teamRat_GAME(1, 11), teamRat_GAME(1, 12): Print gameTeams$(1); " ONLY"
             Color 15, 0
             Print
 
@@ -8303,7 +8343,7 @@ Sub COMPILESTATFILES (teamIdx)
 
     Print ">>>>>"
     Print "THE STATS ARE BEING SAVED UNDER": Print "THE FOLLOWING NAME ::: ";
-    Color tmRat_GAME(teamIdx, 11), tmRat_GAME(teamIdx, 12): Print statFile$
+    Color teamRat_GAME(teamIdx, 11), teamRat_GAME(teamIdx, 12): Print statFile$
 
     Color 15, 0
 
@@ -9031,7 +9071,7 @@ Sub ScoreSummary
 
         For I = 0 To 1
 
-            Color tmRat_GAME(I, 11), tmRat_GAME(I, 12)
+            Color teamRat_GAME(I, 11), teamRat_GAME(I, 12)
             Print gameTeams$(I);
             Color 15, 0
 
@@ -9070,7 +9110,7 @@ Sub ScoreSummary
 
         For I = 0 To 1
 
-            Color tmRat_GAME(I, 11), tmRat_GAME(I, 12)
+            Color teamRat_GAME(I, 11), teamRat_GAME(I, 12)
             Print gameTeams$(I);
             Color 15, 0
 
@@ -9106,7 +9146,7 @@ Sub ScoreSummary
 
         For I = 0 To 1
 
-            Color tmRat_GAME(I, 11), tmRat_GAME(I, 12)
+            Color teamRat_GAME(I, 11), teamRat_GAME(I, 12)
             Print gameTeams$(I);
             Color 15, 0
 
@@ -9134,7 +9174,7 @@ Sub ScoreSummary
 
         For I = 0 To 1
 
-            Color tmRat_GAME(I, 11), tmRat_GAME(I, 12)
+            Color teamRat_GAME(I, 11), teamRat_GAME(I, 12)
             Print gameTeams$(I);
             Color 15, 0
 
@@ -9165,7 +9205,7 @@ Sub ScoreSummary
 
         For I = 0 To 1
 
-            Color tmRat_GAME(I, 11), tmRat_GAME(I, 12)
+            Color teamRat_GAME(I, 11), teamRat_GAME(I, 12)
             Print gameTeams$(I);
 
             Color 15, 0
@@ -9193,7 +9233,7 @@ Sub ScoreSummary
 
         For I = 0 To 1
 
-            Color tmRat_GAME(I, 11), tmRat_GAME(I, 12)
+            Color teamRat_GAME(I, 11), teamRat_GAME(I, 12)
             Print gameTeams$(I);
             Color 15, 0
 
@@ -9218,7 +9258,7 @@ Sub ScoreSummary
 
         For I = 0 To 1
 
-            Color tmRat_GAME(I, 11), tmRat_GAME(I, 12)
+            Color teamRat_GAME(I, 11), teamRat_GAME(I, 12)
             Print gameTeams$(I);
             Color 15, 0
 
@@ -9253,7 +9293,7 @@ Sub STATS2SCREEN
 
     For I = 0 To 1
 
-        Color tmRat_GAME(I, 11), tmRat_GAME(I, 12)
+        Color teamRat_GAME(I, 11), teamRat_GAME(I, 12)
         Print gameTeams$(I);
         Color 14, 0
         Locate , 18: Print "AB R H BI 2 3 HR K W SB CS E PO  A      BA   HR  RBI"
@@ -9371,7 +9411,7 @@ Sub STATS2SCREEN
 
         Cls
 
-        Color tmRat_GAME(I, 11), tmRat_GAME(I, 12)
+        Color teamRat_GAME(I, 11), teamRat_GAME(I, 12)
         Print gameTeams$(I);
 
         Color 14, 0: Locate , 23
@@ -9894,7 +9934,7 @@ Sub ChooseGameTeam (yearNumber$, numberTeams, chosenIdx, teamName$, gameIdx)
 
                     Do
                         Locate 2, 33
-                        Color tmRat_GAME(gameIdx, 11), tmRat_GAME(gameIdx, 12): Print teamName$
+                        Color teamRat_GAME(gameIdx, 11), teamRat_GAME(gameIdx, 12): Print teamName$
 
                         Color 15, 4
                         Locate 3, 32: Print "ANY CHANGE? (Y/N)";
@@ -9998,12 +10038,12 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
     Get #1, teamIdx
 
     For I1 = 1 To 13
-        tmRat_GAME(gameIdx, I1) = CVI(Q2$(I1))
+        teamRat_GAME(gameIdx, I1) = CVI(Q2$(I1))
     Next
 
-    If (tmRat_GAME(gameIdx, 11) = 7 Or tmRat_GAME(gameIdx, 11) = 15) And tmRat_GAME(gameIdx, 12) = 0 Then
-        tmRat_GAME(gameIdx, 11) = 0
-        tmRat_GAME(gameIdx, 12) = 7
+    If (teamRat_GAME(gameIdx, 11) = 7 Or teamRat_GAME(gameIdx, 11) = 15) And teamRat_GAME(gameIdx, 12) = 0 Then
+        teamRat_GAME(gameIdx, 11) = 0
+        teamRat_GAME(gameIdx, 12) = 7
     End If
 
     parkHRVals!(gameIdx) = CVS(Q2$(14))

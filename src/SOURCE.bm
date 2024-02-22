@@ -18,7 +18,7 @@ Sub SOURCE ()
 
     Shared triplePlayAdj(), SU()
 
-    Call HITTINGLINES '(tmRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+    Call HITTINGLINES '(teamRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
 
     If useVGA = 1 Then Call LOADSCREEN
 
@@ -52,7 +52,7 @@ Sub SOURCE ()
     P = 1 - P
     D = 1 - P
 
-    If INNING% = 7 And tmRat_GAME(1, 13) = 8 And P = 1 And Val(Left$(gameTeams$(1), 2)) > 75 Then
+    If INNING% = 7 And teamRat_GAME(1, 13) = 8 And P = 1 And Val(Left$(gameTeams$(1), 2)) > 75 Then
         Call WINDEX
         Call PBP("ALL RIGHT..."): Call PBP("LEMME HEAR YA..."): Call PBP("A ONE, A TWO...")
     End If
@@ -133,7 +133,7 @@ Sub SOURCE ()
             Next
 
             '14955  ---> this is it's own routine used often
-            Call HITTINGLINES '(tmRat_GAME(), p%(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+            Call HITTINGLINES '(teamRat_GAME(), p%(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
 
             If useVGA = 1 Then
                 Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
@@ -191,7 +191,7 @@ Sub SOURCE ()
                         End If
                     Next
 
-                    Call HITTINGLINES '(tmRat_GAME(), p%(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+                    Call HITTINGLINES '(teamRat_GAME(), p%(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
 
                     If useVGA = 1 Then
                         Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
@@ -864,7 +864,7 @@ Sub SOURCE ()
     '10 to 24
     If H6% <= 4 Or H6% > 5 And H6% < 9 Or H6% >= 10 And H6% <= 24 Then
 
-        Call HITTINGLINES '(tmRat_GAME(), p%(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+        Call HITTINGLINES '(teamRat_GAME(), p%(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
 
         If useVGA = 1 Then
             Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
@@ -882,7 +882,7 @@ Sub SOURCE ()
     '25 to 29
     If H6% = 5 Or H6% >= 25 And H6% <= 29 Then
 
-        Call HITTINGLINES '(tmRat_GAME(), p%(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+        Call HITTINGLINES '(teamRat_GAME(), p%(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
 
         If useVGA = 1 Then
             Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
@@ -899,7 +899,7 @@ Sub SOURCE ()
     '9
     If H6% = 9 Then
 
-        Call HITTINGLINES '(tmRat_GAME(), p%(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+        Call HITTINGLINES '(teamRat_GAME(), p%(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
 
         If useVGA = 1 Then
             Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
@@ -918,7 +918,7 @@ Sub SOURCE ()
     '45
     If H6% = 45 Then
 
-        Call HITTINGLINES '(tmRat_GAME(), p%(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+        Call HITTINGLINES '(teamRat_GAME(), p%(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
 
         If useVGA = 1 Then
             Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
@@ -934,7 +934,7 @@ Sub SOURCE ()
 
     '30 to 44
     '46+ ???
-    Call HITTINGLINES '(tmRat_GAME(), p%(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+    Call HITTINGLINES '(teamRat_GAME(), p%(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
 
     If useVGA = 1 Then
         Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
@@ -1492,8 +1492,8 @@ Sub SOURCE ()
                         If S4% <> 4 Then
 
                             Call d100(RN0)
-                            If RN0 <= 25 And (tmRat_GAME(1, 13) = 11 Or tmRat_GAME(1, 13) = 8) Then Call PBP("fights the wind...")
-                            If RN0 <= 15 And (tmRat_GAME(1, 13) = 2 Or tmRat_GAME(1, 13) = 4 Or tmRat_GAME(1, 13) = 13 Or tmRat_GAME(1, 13) = 24) Then Call PBP("fights the lights...")
+                            If RN0 <= 25 And (teamRat_GAME(1, 13) = 11 Or teamRat_GAME(1, 13) = 8) Then Call PBP("fights the wind...")
+                            If RN0 <= 15 And (teamRat_GAME(1, 13) = 2 Or teamRat_GAME(1, 13) = 4 Or teamRat_GAME(1, 13) = 13 Or teamRat_GAME(1, 13) = 24) Then Call PBP("fights the lights...")
 
                             If fo% <> 1 Then
                                 Call FLDERR(F%, gameW%, D, I3, SB%, S2%, P)
@@ -1655,7 +1655,7 @@ Sub SOURCE ()
             If nbrOuts(0) = 2 Or S4% = 0 Or S4% = 2 Or S4% = 3 Or S4% = 6 Then 13650
 
             H6% = Int(Rnd(1) * 1000) + 1
-            E2% = ((tmRat_GAME(D, 5) - 80) * 4)
+            E2% = ((teamRat_GAME(D, 5) - 80) * 4)
             E3% = ((5 - batRating(P, B3%(P, B1!(P)), 16)) * 9)
 
             If (gameW% = 2 And H6% > 250 + E2% + E3%) Or (H6% > 490 + E2% + E3%) Or P2 = 2 Then 13650
@@ -2090,7 +2090,7 @@ Sub SOURCE ()
                 Else
 
                     Call LONGFLY(D, gameW%)
-                    If gameW% = 7 And tmRat_GAME(1, 13) = 27 Then
+                    If gameW% = 7 And teamRat_GAME(1, 13) = 27 Then
                         ad$ = "screen"
                     Else
                         ad$ = "wall"
@@ -2243,19 +2243,19 @@ Sub SOURCE ()
 
         Call d100(RN)
 
-        If RN <= 5 And tmRat_GAME(1, 13) = 8 And gameW% = 7 Then Call PBP("THAT'S OUT OF THE PARK"): Call PBP("ON WAVELAND AVENUE!!!"): pbpString$ = "HOME RUN...HOLY COW!!!": GoTo 13543
-        If RN <= 15 And tmRat_GAME(1, 13) = 8 And gameW% = 7 Then Call PBP("IT'S GONE"): pbpString$ = "LAST SEEN BOUNCING DOWN WAVELAND AVENUE!!!": GoTo 13543
+        If RN <= 5 And teamRat_GAME(1, 13) = 8 And gameW% = 7 Then Call PBP("THAT'S OUT OF THE PARK"): Call PBP("ON WAVELAND AVENUE!!!"): pbpString$ = "HOME RUN...HOLY COW!!!": GoTo 13543
+        If RN <= 15 And teamRat_GAME(1, 13) = 8 And gameW% = 7 Then Call PBP("IT'S GONE"): pbpString$ = "LAST SEEN BOUNCING DOWN WAVELAND AVENUE!!!": GoTo 13543
         If RN <= 25 Then
 
             '13580
-            If tmRat_GAME(1, 13) = 21 And gameW% = 7 Then Call PBP("IT CLEARS THE GREEN MONSTER!!"): pbpString$ = "HOME RUN!!!": GoTo 13543
-            If tmRat_GAME(1, 13) = 27 And gameW% = 7 Then Call PBP("IT CLEARS THE SCREEN!!"): pbpString$ = "HOME RUN!!!": GoTo 13543
-            If tmRat_GAME(1, 13) = 33 And P = 1 Then Call PBP("ADIOS!! THAT'S A HOME RUN!!"): pbpString$ = "THE BUSCH EAGLE FLAPS ITS WINGS": GoTo 13543
-            If tmRat_GAME(1, 13) = 25 And P = 1 Then Call PBP("IT'S OUT OF HERE FOR A HOMER!!!"): pbpString$ = "THERE GOES THE EXPLODING SCOREBOARD!": GoTo 13543
-            If tmRat_GAME(1, 13) = 7 And gameW% = 9 Then Call PBP("IT CLEARS THE WAGON GATE!!"): pbpString$ = "THAT'S A HOME RUN!!": GoTo 13543
-            If tmRat_GAME(1, 13) = 7 And P = 1 Then Call PBP("ADIOS!! THAT'S A HOME RUN!!"): pbpString$ = "THERE GO THE CANNONS!!": GoTo 13543
-            If tmRat_GAME(1, 13) = 8 Or tmRat_GAME(1, 13) = 40 Then pbpString$ = "IT CLEARS THE IVY FOR A HOME RUN!!": GoTo 13543
-            If tmRat_GAME(1, 13) = 23 And (gameW% = 7 Or gameW% = 9) Then Call PBP("IT'S LONG, IT'S LONG, IT'S GONE!!"): pbpString$ = "THAT ONE'S IN THE UPPER DECK": GoTo 13543
+            If teamRat_GAME(1, 13) = 21 And gameW% = 7 Then Call PBP("IT CLEARS THE GREEN MONSTER!!"): pbpString$ = "HOME RUN!!!": GoTo 13543
+            If teamRat_GAME(1, 13) = 27 And gameW% = 7 Then Call PBP("IT CLEARS THE SCREEN!!"): pbpString$ = "HOME RUN!!!": GoTo 13543
+            If teamRat_GAME(1, 13) = 33 And P = 1 Then Call PBP("ADIOS!! THAT'S A HOME RUN!!"): pbpString$ = "THE BUSCH EAGLE FLAPS ITS WINGS": GoTo 13543
+            If teamRat_GAME(1, 13) = 25 And P = 1 Then Call PBP("IT'S OUT OF HERE FOR A HOMER!!!"): pbpString$ = "THERE GOES THE EXPLODING SCOREBOARD!": GoTo 13543
+            If teamRat_GAME(1, 13) = 7 And gameW% = 9 Then Call PBP("IT CLEARS THE WAGON GATE!!"): pbpString$ = "THAT'S A HOME RUN!!": GoTo 13543
+            If teamRat_GAME(1, 13) = 7 And P = 1 Then Call PBP("ADIOS!! THAT'S A HOME RUN!!"): pbpString$ = "THERE GO THE CANNONS!!": GoTo 13543
+            If teamRat_GAME(1, 13) = 8 Or teamRat_GAME(1, 13) = 40 Then pbpString$ = "IT CLEARS THE IVY FOR A HOME RUN!!": GoTo 13543
+            If teamRat_GAME(1, 13) = 23 And (gameW% = 7 Or gameW% = 9) Then Call PBP("IT'S LONG, IT'S LONG, IT'S GONE!!"): pbpString$ = "THAT ONE'S IN THE UPPER DECK": GoTo 13543
 
             '13545
             Call d100(RN)
@@ -2795,7 +2795,7 @@ Sub SOURCE ()
     If BR <= 1 Then BR = 1
 
     For I = 1 To 9:
-        If RN <= BT%(tmRat_GAME(1, 10), BR, I) Then Exit For
+        If RN <= BT%(teamRat_GAME(1, 10), BR, I) Then Exit For
     Next
 
     WW% = Int(Rnd(1) * 10)
@@ -3289,8 +3289,8 @@ Sub SOURCE ()
 
             If gameW% = 1 Then RR = 3
             If gameW% <> 1 Then RR = batRating(D, B9%(D, gameW%), 17)
-            If INFPOS% > 0 And S4% <> 0 Then RR = RR + 1 + tmRat_GAME(1, 10)
-            If INFPOS% > 0 And S4% = 0 Then RR = RR + tmRat_GAME(1, 10)
+            If INFPOS% > 0 And S4% <> 0 Then RR = RR + 1 + teamRat_GAME(1, 10)
+            If INFPOS% > 0 And S4% = 0 Then RR = RR + teamRat_GAME(1, 10)
             If INFPOS% = 0 And S4% = 0 Then RR = RR - 1
             If RR > 11 Then RR = 11
             If RR < 0 Then RR = 0
@@ -3920,7 +3920,7 @@ Sub SOURCE ()
             W6 = W5
             VV(P9) = 1
             VV1(P9) = 9
-            Call HITTINGLINES '(tmRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+            Call HITTINGLINES '(teamRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
 
             P9 = 1 - P9
 
@@ -3998,7 +3998,7 @@ Sub SOURCE ()
                                 W6 = D
                                 VV(D) = V0
                                 VV1(D) = V0
-                                Call HITTINGLINES '(tmRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+                                Call HITTINGLINES '(teamRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
                             End If
                             VV(D) = 1
                             VV1(D) = 9
@@ -4020,7 +4020,7 @@ Sub SOURCE ()
                                 B9%(D, 1) = P1%(D)
                                 VV(D) = V0
                                 VV1(D) = V0
-                                Call HITTINGLINES '(tmRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+                                Call HITTINGLINES '(teamRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
                             End If
                         Next V0
 
@@ -4054,7 +4054,7 @@ Sub SOURCE ()
                     VV(D) = V0
                     VV1(D) = V0
 
-                    Call HITTINGLINES '(tmRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+                    Call HITTINGLINES '(teamRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
 
                     VV(D) = 1
                     VV1(D) = 9
@@ -4214,7 +4214,7 @@ Sub SOURCE ()
             I9% = I1
 
             Call REPLACEMENTS(I7%, I8%, I9%)
-            Call HITTINGLINES '(tmRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+            Call HITTINGLINES '(teamRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
 
             VV(P9) = 1
             VV1(P9) = 9
@@ -4800,7 +4800,7 @@ Sub SOURCE ()
             W6 = P9
             VV(P9) = B1!(P)
             VV1(P9) = B1!(P)
-            Call HITTINGLINES '(tmRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+            Call HITTINGLINES '(teamRat_GAME(), pitchRating(), P1%(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
 
             If useVGA = 1 Then
                 Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)

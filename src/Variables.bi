@@ -168,7 +168,7 @@ Dim haveStats(1)
 ' ** Team File **
 Dim batRat_TRADE(0 To 1, 0 To 22, 0 To 79)
 Dim pitRat_TRADE(2, 22, 88)
-Dim teamIndexes(0 To 1), tmRat_TRADE(1, 14)
+Dim teamIndexes(0 To 1), teamRat_TRADE(1, 14)
 
 Dim batNam_TRADE$(2, 23), pitNam_TRADE$(2, 22)
 Dim mgrs_TRADE$(2), stads_TRADE$(2), tmAbbrev_TRADE$(2)
@@ -306,7 +306,7 @@ Dim Shared PARK$, pbpString$, wind$, YY$
 
 Dim Shared batRating(0 To 1, 0 To 22, 80), CZ%(0 To 1), inningScore(1, 26)
 Dim Shared MON(5, 14), pitchEff(0 To 1, 0 To 1), pitchRating(0 To 1, 0 To 21, 0 To 89)
-Dim Shared schedGame(2), tmRat_GAME(1, 13), VV(1), VV1(1)
+Dim Shared schedGame(2), teamRat_GAME(1, 13), VV(1), VV1(1)
 Dim Shared nbrOuts(1)
 
 Dim SU(1, 1)

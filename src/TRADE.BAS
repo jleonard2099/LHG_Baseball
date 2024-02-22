@@ -182,7 +182,7 @@ Sub LoadStatsForTrade (yearNumbers$(), sourceIdx)
     Shared teams_TRADE$(), A1$()
     Shared tradeB1$(), tradeP1$()
 
-    Shared tradeD0%(), tradeD1%(), tmRat_TRADE(), tradeL2%()
+    Shared tradeD0%(), tradeD1%(), teamRat_TRADE(), tradeL2%()
     Shared TEAM%(), tradeT1%(), tradeP0%(), tradeP3%()
     Shared tradeB0%(), tradeB3%(), tradeSS%(), tradeW2%()
 
@@ -197,7 +197,7 @@ Sub LoadStatsForTrade (yearNumbers$(), sourceIdx)
         Cls
 
         Print "DOES ";
-        Color tmRat_TRADE(sourceIdx, 11), tmRat_TRADE(sourceIdx, 12): Print teams_TRADE$(sourceIdx);
+        Color teamRat_TRADE(sourceIdx, 11), teamRat_TRADE(sourceIdx, 12): Print teams_TRADE$(sourceIdx);
         Color 15, 0
         Print " HAVE SAVED STATS? (Y/N)"
         I$ = GetKeyPress$
@@ -301,7 +301,7 @@ Sub ContinueTrade (yearNumbers$())
     Shared teams_TRADE$(), A1$()
     Shared tradeB1$(), tradeP1$()
 
-    Shared tradeD0%(), tradeD1%(), tmRat_TRADE(), tradeL2%()
+    Shared tradeD0%(), tradeD1%(), teamRat_TRADE(), tradeL2%()
     Shared TEAM%(), tradeT1%(), tradeP0%(), tradeP3%()
     Shared tradeB0%(), tradeB3%(), tradeSS%(), tradeW2%()
 
@@ -401,7 +401,7 @@ Sub TradeBatters ()
 
     Shared teams_TRADE$(), tradeB1$(), batNam_TRADE$()
 
-    Shared batRat_TRADE(), tradeB0%(), tradeB3%(), tmRat_TRADE()
+    Shared batRat_TRADE(), tradeB0%(), tradeB3%(), teamRat_TRADE()
     Shared tradeSA%(), tradeSS%(), tradeTS%()
 
     Shared haveStats()
@@ -410,22 +410,22 @@ Sub TradeBatters ()
 
     For I = 0 To 16:
         Locate I + 2, 4
-        Color , tmRat_TRADE(0, 12): Print Space$(15)
+        Color , teamRat_TRADE(0, 12): Print Space$(15)
     Next
 
     For I = 0 To 5:
         Locate I + 2, 24
-        Color , tmRat_TRADE(0, 12): Print Space$(15)
+        Color , teamRat_TRADE(0, 12): Print Space$(15)
     Next
 
     For I = 0 To 16:
         Locate I + 2, 44
-        Color , tmRat_TRADE(1, 12): Print Space$(15)
+        Color , teamRat_TRADE(1, 12): Print Space$(15)
     Next
 
     For I = 0 To 5:
         Locate I + 2, 64
-        Color , tmRat_TRADE(1, 12): Print Space$(15)
+        Color , teamRat_TRADE(1, 12): Print Space$(15)
     Next
 
     Color 15, 0
@@ -435,21 +435,21 @@ Sub TradeBatters ()
     For I = 0 To 16
         Color 15, 0
         Print Using "##"; I;: Print " ";
-        Color tmRat_TRADE(0, 11), tmRat_TRADE(0, 12): Print batNam_TRADE$(0, I);
+        Color teamRat_TRADE(0, 11), teamRat_TRADE(0, 12): Print batNam_TRADE$(0, I);
         Color 15, 0
         Locate , 40
         Print Using "##"; I;: Print " ";
-        Color tmRat_TRADE(1, 11), tmRat_TRADE(1, 12): Print batNam_TRADE$(1, I)
+        Color teamRat_TRADE(1, 11), teamRat_TRADE(1, 12): Print batNam_TRADE$(1, I)
     Next I
 
     For I = 17 To 22
         Color 15, 0
         Locate I - 15, 20: Print Using "##"; I;: Print " ";
-        Color tmRat_TRADE(0, 11), tmRat_TRADE(0, 12): Print batNam_TRADE$(0, I);
+        Color teamRat_TRADE(0, 11), teamRat_TRADE(0, 12): Print batNam_TRADE$(0, I);
         Color 15, 0
         Locate , 60
         Print Using "##"; I;: Print " ";
-        Color tmRat_TRADE(1, 11), tmRat_TRADE(1, 12): Print batNam_TRADE$(1, I)
+        Color teamRat_TRADE(1, 11), teamRat_TRADE(1, 12): Print batNam_TRADE$(1, I)
     Next I
 
     Do
@@ -563,7 +563,7 @@ End Sub
 Sub TradePitchers ()
 
     Shared teams_TRADE$(), batNam_TRADE$(), tradeP1$()
-    Shared tmRat_TRADE(), tradeP0%(), pitRat_TRADE(), tradeP3%()
+    Shared teamRat_TRADE(), tradeP0%(), pitRat_TRADE(), tradeP3%()
     Shared tradeSA%(), tradeTS%()
     Shared haveStats()
 
@@ -571,22 +571,22 @@ Sub TradePitchers ()
 
     For I = 0 To 11:
         Locate I + 2, 4:
-        Color , tmRat_TRADE(0, 12): Print Space$(15)
+        Color , teamRat_TRADE(0, 12): Print Space$(15)
     Next
 
     For I = 0 To 10:
         Locate I + 2, 24:
-        Color , tmRat_TRADE(0, 12): Print Space$(15)
+        Color , teamRat_TRADE(0, 12): Print Space$(15)
     Next
 
     For I = 0 To 11:
         Locate I + 2, 44:
-        Color , tmRat_TRADE(1, 12): Print Space$(15)
+        Color , teamRat_TRADE(1, 12): Print Space$(15)
     Next
 
     For I = 0 To 10:
         Locate I + 2, 64:
-        Color , tmRat_TRADE(1, 12): Print Space$(15)
+        Color , teamRat_TRADE(1, 12): Print Space$(15)
     Next
 
     Color 15, 0: Locate 1: Print teams_TRADE$(0);: Locate , 40: Print teams_TRADE$(1)
@@ -594,22 +594,22 @@ Sub TradePitchers ()
     For I = 0 To 11
         Color 15, 0
         Print Using "##"; I;: Print " ";
-        Color tmRat_TRADE(0, 11), tmRat_TRADE(0, 12): Print batNam_TRADE$(0, I);
+        Color teamRat_TRADE(0, 11), teamRat_TRADE(0, 12): Print batNam_TRADE$(0, I);
         Locate , 40
         Color 15, 0
         Print Using "##"; I;: Print " ";
-        Color tmRat_TRADE(1, 11), tmRat_TRADE(1, 12): Print batNam_TRADE$(1, I)
+        Color teamRat_TRADE(1, 11), teamRat_TRADE(1, 12): Print batNam_TRADE$(1, I)
     Next I
 
     For I = 12 To 21
         Color 15, 0
         Locate I - 10, 20: Print Using "##"; I;: Print "  ";
-        Color tmRat_TRADE(0, 11), tmRat_TRADE(0, 12): Print batNam_TRADE$(0, I);
+        Color teamRat_TRADE(0, 11), teamRat_TRADE(0, 12): Print batNam_TRADE$(0, I);
         Locate I - 10, 40
         Locate , 60
         Color 15, 0
         Print Using "##"; I;: Print "  ";
-        Color tmRat_TRADE(1, 11), tmRat_TRADE(1, 12): Print batNam_TRADE$(1, I)
+        Color teamRat_TRADE(1, 11), teamRat_TRADE(1, 12): Print batNam_TRADE$(1, I)
     Next I
 
     Do
@@ -718,7 +718,7 @@ Sub SaveTrades (yearNumbers$())
     Shared batNam_TRADE$(), pitNam_TRADE$()
     Shared tradeB1$(), tradeP1$()
 
-    Shared tradeD0%(), tradeD1%(), tmRat_TRADE(), tradeL2%()
+    Shared tradeD0%(), tradeD1%(), teamRat_TRADE(), tradeL2%()
     Shared haveStats(), TEAM%()
     Shared batRat_TRADE(), tradeB0%(), tradeB3%()
     Shared pitRat_TRADE(), tradeP0%(), tradeP3%()
@@ -760,7 +760,7 @@ Sub SaveTrades (yearNumbers$())
         LSet Q$(0) = teams_TRADE$(tradeIdx)
 
         For J = 1 To 13:
-            LSet Q$(J) = MKI$(tmRat_TRADE(tradeIdx, J))
+            LSet Q$(J) = MKI$(teamRat_TRADE(tradeIdx, J))
         Next
 
         LSet Q$(14) = MKS$(parkHR_DRAFT&(tradeIdx))
@@ -963,7 +963,7 @@ End Sub
 Sub TradeSummary_Batters (p1idx, p2idx)
 
     Shared teams_TRADE$(), batNam_TRADE$()
-    Shared tmRat_TRADE(), batRat_TRADE(), tradeB0%()
+    Shared teamRat_TRADE(), batRat_TRADE(), tradeB0%()
 
     Dim progC$(9), plateX$(4)
 
@@ -985,9 +985,9 @@ Sub TradeSummary_Batters (p1idx, p2idx)
     progC$(9) = "RF"
 
     Cls
-    Color tmRat_TRADE(0, 11), tmRat_TRADE(0, 12): Print teams_TRADE$(0);
+    Color teamRat_TRADE(0, 11), teamRat_TRADE(0, 12): Print teams_TRADE$(0);
     Locate , 41
-    Color tmRat_TRADE(1, 11), tmRat_TRADE(1, 12): Print teams_TRADE$(1)
+    Color teamRat_TRADE(1, 11), teamRat_TRADE(1, 12): Print teams_TRADE$(1)
 
     Color 15, 0
     Print batNam_TRADE$(0, p1idx); " "; plateX$(batRat_TRADE(0, p1idx, 0) + 2); " "; progC$(batRat_TRADE(0, p1idx, 22));
@@ -1225,7 +1225,7 @@ End Sub
 Sub TradeSummary_Pitchers (p1idx, p2idx)
 
     Shared teams_TRADE$(), batNam_TRADE$()
-    Shared tmRat_TRADE(), pitRat_TRADE(), tradeP0%()
+    Shared teamRat_TRADE(), pitRat_TRADE(), tradeP0%()
     Dim plateX$(4)
 
     plateX$(0) = "LP"
@@ -1236,9 +1236,9 @@ Sub TradeSummary_Pitchers (p1idx, p2idx)
 
     '905
     Cls
-    Color tmRat_TRADE(0, 11), tmRat_TRADE(0, 12): Print teams_TRADE$(0);
+    Color teamRat_TRADE(0, 11), teamRat_TRADE(0, 12): Print teams_TRADE$(0);
     Locate , 41
-    Color tmRat_TRADE(1, 11), tmRat_TRADE(1, 12): Print teams_TRADE$(1)
+    Color teamRat_TRADE(1, 11), teamRat_TRADE(1, 12): Print teams_TRADE$(1)
     Color 15, 0
 
     Locate , 1: Print batNam_TRADE$(0, p1idx); " "; plateX$(pitRat_TRADE(0, p1idx, 0) + 2);
@@ -1337,7 +1337,7 @@ End Sub
 'choosing the team to trade players from
 Sub ChooseTradeTeam (yearNumber$, numberTeams, chosenIdx, teamName$, tradeIdx)
 
-    Shared tmRat_TRADE()
+    Shared teamRat_TRADE()
 
     Shared previousYear$
 
@@ -1434,7 +1434,7 @@ Sub ChooseTradeTeam (yearNumber$, numberTeams, chosenIdx, teamName$, tradeIdx)
 
                     Do
                         Locate 2, 33
-                        Color tmRat_TRADE(tradeIdx, 11), tmRat_TRADE(tradeIdx, 12): Print teamName$
+                        Color teamRat_TRADE(tradeIdx, 11), teamRat_TRADE(tradeIdx, 12): Print teamName$
 
                         Color 15, 4
                         Locate 3, 32: Print "ANY CHANGE? (Y/N)";
@@ -1512,7 +1512,7 @@ End Sub
 Sub ReadTradeTeam (teamYear$, targetTeam$, teamIdx, tradeIdx)
 
     Shared batRat_TRADE(), pitRat_TRADE()
-    Shared tmRat_TRADE()
+    Shared teamRat_TRADE()
 
     Shared parkHR_DRAFT&()
 
@@ -1545,7 +1545,7 @@ Sub ReadTradeTeam (teamYear$, targetTeam$, teamIdx, tradeIdx)
     targetTeam$ = RTrim$(Q$(0))
 
     For I1 = 1 To 13: 
-        tmRat_TRADE(tradeIdx, I1) = CVI(Q$(I1))
+        teamRat_TRADE(tradeIdx, I1) = CVI(Q$(I1))
     Next
 
     parkHR_DRAFT&(tradeIdx) = CVS(Q$(14))

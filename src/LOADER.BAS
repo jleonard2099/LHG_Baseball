@@ -167,11 +167,11 @@ Sub LOADER
             Locate 3, 2: Color 14
             Print "(2) ";
             Color 15: Print "VISITING TEAM: ";
-            Color tmRat_GAME(0, 11), tmRat_GAME(0, 12): Print gameTeams$(0)
+            Color teamRat_GAME(0, 11), teamRat_GAME(0, 12): Print gameTeams$(0)
             Locate 4, 2: Color 14, 0
             Print "(3) ";
             Color 15: Print "HOME TEAM: ";
-            Color tmRat_GAME(1, 11), tmRat_GAME(1, 12): Print gameTeams$(1)
+            Color teamRat_GAME(1, 11), teamRat_GAME(1, 12): Print gameTeams$(1)
             Locate 5, 2: Color 14, 0
             Print "(4) ";
             Color 15: Print "LEAGUE TYPE: "; leagueType$(leagueOpt)
@@ -461,9 +461,9 @@ Sub LOADER
 
     '    Color 14: Print "WHICH TEAM DOES COMPUTER MANAGE ?"
     '    Print
-    '    Color 15: Print "(0) ";: Color tmRat_GAME(0, 11), tmRat_GAME(0, 12): Print gameTeams$(0): Color 7, 0
+    '    Color 15: Print "(0) ";: Color teamRat_GAME(0, 11), teamRat_GAME(0, 12): Print gameTeams$(0): Color 7, 0
     '    Print
-    '    Color 15: Print "(1) ";: Color tmRat_GAME(1, 11), tmRat_GAME(1, 12): Print gameTeams$(1): Color 7, 0
+    '    Color 15: Print "(1) ";: Color teamRat_GAME(1, 11), teamRat_GAME(1, 12): Print gameTeams$(1): Color 7, 0
 
     '    Do
     '        I$ = GetKeyPress$
@@ -503,7 +503,7 @@ Sub LOADER
             Call INFO
 
             Locate 3, 1
-            Color tmRat_GAME(P9, 11), tmRat_GAME(P9, 12): Print gameTeams$(P9): Color 7, 0
+            Color teamRat_GAME(P9, 11), teamRat_GAME(P9, 12): Print gameTeams$(P9): Color 7, 0
             Print
             Color 14: Print "(0) ";: Color 15: Print "INPUT A LINEUP MANUALLY"
             Print
@@ -701,7 +701,7 @@ Sub LOADER
     Call TEAMBOX(5, 1)
 
     Locate , 11: Print "CONDITIONS AT "; gameStadiums$(1)
-    If tmRat_GAME(1, 9) = 1 Then
+    If teamRat_GAME(1, 9) = 1 Then
         Locate , 11: Print "TEMPERATURE: 70"
         Locate , 11: Print "WEATHER: DOME"
         Locate , 11: Print "WIND: NONE"
@@ -981,7 +981,7 @@ Sub LineupPositions (teamIdx, posIdx)
                         'Highlight the player we selected
                         Locate I1 + 2, 2: Print "*";
 
-                        Color tmRat_GAME(teamIdx, 11), tmRat_GAME(teamIdx, 12)
+                        Color teamRat_GAME(teamIdx, 11), teamRat_GAME(teamIdx, 12)
                         Print batters$(teamIdx, I1)
                         Color 15, 0
 
@@ -1398,7 +1398,7 @@ Sub LineupSummary (P9, reselect, LU%)
         For I3 = 1 To 9
             If B3%(P9, I3) = I2 And B7%(P9, I3) <> 1 Then
                 Print "*";
-                Color tmRat_GAME(P9, 11), tmRat_GAME(P9, 12)
+                Color teamRat_GAME(P9, 11), teamRat_GAME(P9, 12)
                 Print batters$(P9, I2)
                 Color 15, 0
             End If
@@ -1639,7 +1639,7 @@ Sub SelectStadium (useVGA)
         Call TEAMBOX(5, 1)
 
         'Determine park from the team data
-        PARK$ = Right$(Str$(tmRat_GAME(1, 13)), Len(Str$(tmRat_GAME(1, 13))) - 1)
+        PARK$ = Right$(Str$(teamRat_GAME(1, 13)), Len(Str$(teamRat_GAME(1, 13))) - 1)
 
         If dayOrNight = 0 Then
             '0 = daytime
@@ -1651,7 +1651,7 @@ Sub SelectStadium (useVGA)
 
         'Display detected park
         Locate 7, 11: Print "CURRENT PARK IS:"
-        Locate , 11: Print PARK$(tmRat_GAME(1, 13))
+        Locate , 11: Print PARK$(teamRat_GAME(1, 13))
 
         Locate , 11
 
@@ -1709,7 +1709,7 @@ Sub SelectStadium (useVGA)
 
                         If _FileExists(".\parks\" + PARK$) Then
                             foundPark% = 1
-                            tmRat_GAME(1, 13) = Selection%
+                            teamRat_GAME(1, 13) = Selection%
                             gameStadiums$(1) = PARK$(Selection%)
                         Else
                             Do
@@ -1721,7 +1721,7 @@ Sub SelectStadium (useVGA)
                             Loop Until UCase$(J$) = "Y" Or UCase$(J$) = "N"
 
                             If I$ = "Y" Then
-                                tmRat_GAME(1, 13) = Selection%: gameStadiums$(1) = PARK$(Selection%)
+                                teamRat_GAME(1, 13) = Selection%: gameStadiums$(1) = PARK$(Selection%)
                                 If dayOrNight = 0 Then PARK$ = "99D.PNG" Else PARK$ = "99N.PNG"
                             End If
 
@@ -2601,7 +2601,7 @@ Sub PrintPitcherInfo (idx%)
 
     '1520
     Cls
-    Print "#";: Color tmRat_GAME(idx%, 11), tmRat_GAME(idx%, 12): Print gameTeams$(idx%);
+    Print "#";: Color teamRat_GAME(idx%, 11), teamRat_GAME(idx%, 12): Print gameTeams$(idx%);
     Color 14, 0: Locate , 16
     Print "T  IP   H  G  GS DR  BB  SO   W- L   ERA"
 
