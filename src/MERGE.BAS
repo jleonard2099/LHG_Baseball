@@ -94,6 +94,7 @@ Sub MergeStats ()
 
         If UCase$(I$) = "N" And I$ <> Chr$(27) Then
 
+            teamNbr = 0
             Call ChooseTeam(YN$, NTMS, teamNbr, team$)
             statFile$ = nameStatFile$(team$)
 

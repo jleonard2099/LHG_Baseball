@@ -14,6 +14,7 @@ Sub ACTIVATE ()
 
     Shared Manager$, teamAbbrev$, Stadium$
 
+    teamNbr = 0
     Call ChooseTeam (YN$, NTMS, teamNbr, team$)
 
     If teamNbr <> 0 Then

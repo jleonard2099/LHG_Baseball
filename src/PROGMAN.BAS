@@ -4053,6 +4053,7 @@ Sub ExportManagerProfile (mgrNbr)
 
     Shared progMG%()
 
+    teamNbr = 0
     Call ChooseTeam(YN$, NTMS, mgrNbr, team$)
 
     If _FileExists(diskPaths$(3) + MGR_FILE_NAME$ + "." + YN$) Then
@@ -4620,6 +4621,7 @@ Sub GetManagerProfile (targetTeam$, yearNumber$, mgrNbr)
 
     Shared progMG%()
 
+    teamNbr = 0
     Call ChooseTeam(yearNumber$, NTMS, mgrNbr, targetTeam$)
 
     Cls

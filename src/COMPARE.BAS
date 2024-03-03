@@ -20,6 +20,7 @@ Sub COMPARE ()
 
     Dim compareB1%(23), compareP1%(22)
 
+    teamNbr = 0
     Call ChooseTeam(YN$, NTMS, teamNbr, team$)
     statFile$ = nameStatFile$(team$)
 

@@ -1368,14 +1368,32 @@ Sub ChooseTradeTeam (yearNumber$, numberTeams, chosenIdx, teamName$, tradeIdx)
 
             If I$ <> Chr$(13) Then
 
-                Locate 7, 38: Print I$
-                Locate 7, 39: Line Input NY$
-                NY$ = I$ + NY$
-                Color 15, 0
+                Locate 7, 27: Print I$;
 
-                If Not (NY$ = "" And yearNumber$ <> "") Then
+                NY$ = ""
 
-                    yearNumber$ = RTrim$(NY$)
+                Do Until NY$ = Chr$(13)
+
+                    NY$ = GetKeyPress$
+
+                    If NY$ = Chr$(8) And Len(I$) >= 1 Then
+                        col% = Pos(0)
+                        I$ = Left$(I$, (Len(I$) - 1))
+                        Locate , col% - 1
+                        Print " ";
+                        Locate , col% - 1
+                    Else
+                        I$ = I$ + NY$
+                        Print NY$;
+                    End If
+
+                Loop
+
+                I$ = Left$(I$, (Len(I$) - 1))
+
+                If Not (I$ = "" And yearNumber$ <> "") Then
+
+                    yearNumber$ = RTrim$(I$)
                     Erase teamNames$
                     numberTeams = 0
 
@@ -1457,7 +1475,7 @@ End Sub
 
 
 '----------------------------------------
-'     SelectTeam_TRADE Subroutine
+'       SelectTradeTeam Subroutine
 '----------------------------------------
 'This subroutine provides an interface for 
 'selecting the team to trade players from
@@ -1481,8 +1499,10 @@ Sub SelectTradeTeam(numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%,
         Color 14
         Locate , 33: Print "TEAM SELECTION"
         Locate 25, 1
-        Color 14: Print "ESC";: Color 15: Print "-SELECT NEW ID  PGDN  PGUP  ";
-        Color 14: Print "ENTER";: Color 15: Print "-SELECTS TEAM";
+        Color 14: Print "ESC";
+        Color 15: Print "-SELECT NEW ID  PGDN  PGUP  ";
+        Color 14: Print "ENTER";
+        Color 15: Print "-SELECTS TEAM";
 
         _MouseShow "DEFAULT"
         MAMenu teamNames$(), Selection%, Start%, Count%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Rows%, Columns%, Spacing%, Row%, Column%
@@ -1492,8 +1512,8 @@ Sub SelectTradeTeam(numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%,
 
             selectedIdx = teamIndex%(Selection%)
 
-            Locate 2, 33: Color 3
-            Print "LOADING.."
+            'Locate 2, 33
+            'Color 31: Print "LOADING..."
 
             Call ReadTradeTeam(yearNumber$, teamName$, selectedIdx, tradeIdx)
                  

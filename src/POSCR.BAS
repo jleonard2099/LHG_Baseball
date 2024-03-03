@@ -47,6 +47,7 @@ Sub POSCR ()
         Color 15, 0
         Cls
 
+        teamNbr = 0
 		Call ChooseTeam (YN$, NTMS, teamNbr, team$)
 
 		If teamNbr <> 0 Then

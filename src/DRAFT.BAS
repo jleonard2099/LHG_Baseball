@@ -647,14 +647,32 @@ Sub ChooseDestTeam (yearNumber$, numberTeams, chosenIdx, teamName$)
 
             If I$ <> Chr$(13) Then
 
-                Locate 7, 27: Print I$
-                Locate 7, 28: Line Input NY$
-                NY$ = I$ + NY$
-                Color 15, 0
+                Locate 7, 27: Print I$;
 
-                If Not (NY$ = "" And yearNumber$ <> "") Then
+                NY$ = ""
 
-                    yearNumber$ = RTrim$(NY$)
+                Do Until NY$ = Chr$(13)
+
+                    NY$ = GetKeyPress$
+
+                    If NY$ = Chr$(8) And Len(I$) >= 1 Then
+                        col% = Pos(0)
+                        I$ = Left$(I$, (Len(I$) - 1))
+                        Locate , col% - 1
+                        Print " ";
+                        Locate , col% - 1
+                    Else
+                        I$ = I$ + NY$
+                        Print NY$;
+                    End If
+
+                Loop
+
+                I$ = Left$(I$, (Len(I$) - 1))
+
+                If Not (I$ = "" And yearNumber$ <> "") Then
+
+                    yearNumber$ = RTrim$(I$)
                     Erase teamNames$
                     numberTeams = 0
 
@@ -884,8 +902,10 @@ Sub SelectDraftTeam (numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%
         'Didn't this have a designator ?!?!
         Locate , 33: Print "TEAM SELECTION"
         Locate 25, 1
-        Color 14: Print "ESC";: Color 15: Print "-SELECT NEW ID  PGDN  PGUP  ";
-        Color 14: Print "ENTER";: Color 15: Print "-SELECTS TEAM";
+        Color 14: Print "ESC";
+        Color 15: Print "-SELECT NEW ID  PGDN  PGUP  ";
+        Color 14: Print "ENTER";
+        Color 15: Print "-SELECTS TEAM";
 
         _MouseShow "DEFAULT"
         MAMenu teamNames$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Rows%, Columns%, Spacing%, Row%, Column%
@@ -895,8 +915,8 @@ Sub SelectDraftTeam (numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%
 
             selectedIdx = teamIndex%(SELECTION%)
 
-            Locate 2, 33: Color 3
-            Print "LOADING.."
+            'Locate 2, 33
+            'Color 31: Print "LOADING..."
 
             If draftIdx = 0 Then
                 Call ReadDestTeam(yearNumber$, teamName$, selectedIdx)

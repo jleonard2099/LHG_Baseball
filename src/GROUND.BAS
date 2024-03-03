@@ -92,6 +92,7 @@ Sub GROUND ()
 
         Cls
 
+        teamNbr = 0
         Call ChooseTeam (YN$, NTMS, teamNbr, team$)
 
         If teamNbr <> 0 Then

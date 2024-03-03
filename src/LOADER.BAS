@@ -395,6 +395,8 @@ Sub LOADER
     '   1 = Computer Team
     '   2 = PC vs. PC
 
+    If teamRat_GAME(0, 11) = teamRat_GAME(1, 11) And teamRat_GAME(0, 12) = teamRat_GAME(1, 12) Then Call ColorChange
+
     YV = 1
     YM = 0
 

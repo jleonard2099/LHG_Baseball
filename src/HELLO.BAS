@@ -575,6 +575,7 @@ Sub TeamMgt_Menu ()
                     Call SaveTeamFile(1, YN$, team$, statFile$, teamNbr)
 
                 Case 2:
+                    teamNbr = 0
                     Call ChooseTeam(YN$, NTMS, teamNbr, team$)
 
                     If teamNbr <> 0 Then
@@ -584,6 +585,7 @@ Sub TeamMgt_Menu ()
                     End If
 
                 Case 3:
+                    teamNbr = 0
                     Call ChooseTeam(YN$, NTMS, teamNbr, team$)
 
                     If teamNbr <> 0 Then
@@ -591,6 +593,7 @@ Sub TeamMgt_Menu ()
                     End If
 
                 Case 4:
+                    teamNbr = 0
                     Call ChooseTeam(YN$, NTMS, teamNbr, team$)
 
                     If teamNbr <> 0 Then
@@ -607,6 +610,7 @@ Sub TeamMgt_Menu ()
                     Call ACTIVATE
 
                 Case 8:
+                    teamNbr = 0
                     Call ChooseTeam(YN$, NTMS, teamNbr, team$)
 
                     If teamNbr <> 0 Then
@@ -825,6 +829,7 @@ Sub Calculations_Menu ()
                     Call GROUND
 
                 Case 2:
+                    teamNbr = 0
                     Call ChooseTeam(YN$, NTMS, teamNbr, team$)
 
                     If teamNbr <> 0 Then
@@ -834,6 +839,7 @@ Sub Calculations_Menu ()
                     End If
 
                 Case 3:
+                    teamNbr = 0
                     Call ChooseTeam(YN$, NTMS, teamNbr, team$)
 
                     If teamNbr <> 0 Then

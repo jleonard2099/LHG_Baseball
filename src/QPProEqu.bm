@@ -732,32 +732,39 @@ Sub MAMenu (menuChoices$(), Selected%, Start%, Count%, ScanCode%, ItemFGColor%, 
 
     Select Case UserIn$
 
-        Case Chr$(0) + Chr$(80) '*** Down arrow pressed ***
+        Case Chr$(0) + Chr$(80) 
+        '*** Down arrow pressed ***
 
             If Selected% < numberItems% Then Selected% = Selected% + 1
 
-        Case Chr$(0) + Chr$(72) '*** Up arrow pressed ***
+        Case Chr$(0) + Chr$(72) 
+        '*** Up arrow pressed ***
 
             If Selected% - 1 <> 0 Then Selected% = Selected% - 1
 
-        Case Chr$(0) + Chr$(75) '*** Left arrow pressed ***
+        Case Chr$(0) + Chr$(75) 
+        '*** Left arrow pressed ***
 
             If Selected% > NumRows% Then Selected% = Selected% - NumRows%
 
-        Case Chr$(0) + Chr$(77) '*** Right arrow pressed ***
+        Case Chr$(0) + Chr$(77) 
+        '*** Right arrow pressed ***
 
             If Selected% < (TotalColsData% - 1) * NumRows% + 1 Then Selected% = Selected% + NumRows%
             If Selected% > Count% Then Selected% = Count%
 
-        Case Chr$(0) + Chr$(71) '*** Home pressed ***
+        Case Chr$(0) + Chr$(71) 
+        '*** Home pressed ***
 
             Selected% = 1
 
-        Case Chr$(0) + Chr$(79) '*** End pressed ***
+        Case Chr$(0) + Chr$(79) 
+        '*** End pressed ***
 
             Selected% = Count%
 
-        Case Chr$(0) + Chr$(73) '*** Page Up pressed ***
+        Case Chr$(0) + Chr$(73) 
+        '*** Page Up pressed ***
 
             If Selected% > maxItemsPerScreen% Then
                 Selected% = Selected% - maxItemsPerScreen%
@@ -765,7 +772,8 @@ Sub MAMenu (menuChoices$(), Selected%, Start%, Count%, ScanCode%, ItemFGColor%, 
                 Selected% = 1
             End If
 
-        Case Chr$(0) + Chr$(81) '*** Page Down pressed ***
+        Case Chr$(0) + Chr$(81) 
+        '*** Page Down pressed ***
 
             If Selected% < Count% - maxItemsPerScreen% Then
                 Selected% = Selected% + maxItemsPerScreen%
@@ -784,6 +792,7 @@ Sub MAMenu (menuChoices$(), Selected%, Start%, Count%, ScanCode%, ItemFGColor%, 
                     Exit For
                 End If
             Next currentItem
+
     End Select
 
     Return

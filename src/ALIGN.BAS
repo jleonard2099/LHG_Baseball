@@ -34,6 +34,7 @@ Sub ALIGN ()
             Locate 16, 5: Print Space$(55)
             Color 11
 
+            teamNbr = 0
             Call ChooseTeam (YN$, NTMS, teamNbr, team$)
             statFile$ = nameStatFile$(team$)
 

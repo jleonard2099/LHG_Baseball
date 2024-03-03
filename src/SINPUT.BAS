@@ -68,6 +68,7 @@ Sub EditStatsSchedules (action%)
     Shared statP%(), careerP0%()
     Shared statT0%(), statT1%()
 
+    teamNbr = 0
     Call ChooseTeam(YN$, NTMS, teamNbr, team$)    
     statFile$ = nameStatFile$(team$)
 

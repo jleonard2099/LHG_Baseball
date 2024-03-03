@@ -63,6 +63,7 @@ Sub StatsOneTeam ()
 
     Shared teamRatings%()
 
+    teamNbr = 0
     Call ChooseTeam(YN$, NTMS, teamNbr, team$)
 
     If teamNbr <> 0 Then
@@ -71,7 +72,7 @@ Sub StatsOneTeam ()
 
         statFile$ = nameStatFile$(team$)
 
-        If Not _FileExists(diskPaths$(1) + statFile$) And teamNbr > 0 Then
+        If Not _FileExists(diskPaths$(1) + statFile$) Then
 
             MsgText$ = "NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU"
             BoxWidth = 24
