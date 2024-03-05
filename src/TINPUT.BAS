@@ -204,7 +204,7 @@ End Sub
 'This subroutine saves the modifed team
 'data (from corresponding arrays) to an
 'appropriate spot in the select team file
-Sub SaveTeamFile (newID%, yearNumber$, targetTeam$, targetFile$, teamIdx)
+Sub SaveTeamFile (newID, yearNumber$, targetTeam$, targetFile$, teamIdx)
 
     Shared CK, parkHR
 
@@ -228,7 +228,7 @@ Sub SaveTeamFile (newID%, yearNumber$, targetTeam$, targetFile$, teamIdx)
 
     fileLength& = LOF(1)
 
-    If teamIdx = 0 Or newID% = 1 Then teamIdx = fileLength& / TEAM_SIZE_BYTES + 1
+    If teamIdx = 0 Or newID = 1 Then teamIdx = fileLength& / TEAM_SIZE_BYTES + 1
 
     Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14)
 

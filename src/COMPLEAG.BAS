@@ -167,7 +167,7 @@ End Function
 '----------------------------------------
 'This subroutine reads stats in for a
 'single team in the league
-Sub ReadStatsLeague (statFile$, TN$, totalGames)
+Sub ReadStatsLeague (statFile$, teamName$, totalGames)
 
     Dim ZM%(46)
 
@@ -183,7 +183,7 @@ Sub ReadStatsLeague (statFile$, TN$, totalGames)
 
     Open (diskPaths$(1) + statFile$) For Input As #1
 
-    Input #1, TN$, fullWins, fullLosses
+    Input #1, teamName$, fullWins, fullLosses
 
     For K = 1 To 23
         Input #1, NM$(K), ZM%(K)

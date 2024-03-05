@@ -724,6 +724,7 @@ Sub ViewBattingLeaders (leaderFile$, JB, JP, tStats, ttStats)
 
             stpl = 0
             PPP = 0
+            newCategory = 0
 
             Select Case B9
                 Case 0: X = 1
@@ -762,9 +763,9 @@ Sub ViewBattingLeaders (leaderFile$, JB, JP, tStats, ttStats)
 
         Loop Until B9 >= 0 And B9 <= 31
 
-        If B9 <> 31 Then
+        If B9 <> 31 And newCategory = 0 Then
 
-            Call SortOptions(printOrView%, JX)
+            Call SortOptions(printOrView, sortType, newCategory)
 
             Cls
             PPP = 0
@@ -784,7 +785,7 @@ Sub ViewBattingLeaders (leaderFile$, JB, JP, tStats, ttStats)
 
                     Next I
 
-                    Call SortPlayer(PPP, stpl, JX)
+                    Call SortPlayer(PPP, stpl, sortType)
                     TVN = 1
 
                 Case 20:
@@ -800,7 +801,7 @@ Sub ViewBattingLeaders (leaderFile$, JB, JP, tStats, ttStats)
 
                     Next I
 
-                    Call SortPlayer(PPP, stpl, JX)
+                    Call SortPlayer(PPP, stpl, sortType)
                     TVN = 2
 
                 Case 21:
@@ -823,7 +824,7 @@ Sub ViewBattingLeaders (leaderFile$, JB, JP, tStats, ttStats)
 
                     Next I
 
-                    Call SortPlayer(PPP, stpl, JX)
+                    Call SortPlayer(PPP, stpl, sortType)
                     TVN = 2
 
                 Case 22:
@@ -846,7 +847,7 @@ Sub ViewBattingLeaders (leaderFile$, JB, JP, tStats, ttStats)
                         End If
                     Next I
 
-                    Call SortPlayer(PPP, stpl, JX)
+                    Call SortPlayer(PPP, stpl, sortType)
                     TVN = 2
 
                 Case 23:
@@ -867,7 +868,7 @@ Sub ViewBattingLeaders (leaderFile$, JB, JP, tStats, ttStats)
                         End If
                     Next I
 
-                    Call SortPlayer(PPP, stpl, JX)
+                    Call SortPlayer(PPP, stpl, sortType)
                     TVN = 2
 
                 Case 24 To 29:
@@ -888,7 +889,7 @@ Sub ViewBattingLeaders (leaderFile$, JB, JP, tStats, ttStats)
 
                     Next I
 
-                    Call SortPlayer(PPP, stpl, JX)
+                    Call SortPlayer(PPP, stpl, sortType)
                     TVN = 3
 
                 Case 30:
@@ -908,20 +909,20 @@ Sub ViewBattingLeaders (leaderFile$, JB, JP, tStats, ttStats)
                         End If
                     Next I
 
-                    Call SortPlayer(PPP, stpl, JX)
+                    Call SortPlayer(PPP, stpl, sortType)
                     TVN = 2
 
             End Select
 
             QW = PPP
 
-            Select Case printOrView%
+            Select Case printOrView
 
                 Case 1:
                     Call DisplayBattingLeaders(TVN, QW, B9)
 
                 Case 2:
-                    Call GetListLength(printOrView%, QW, LG)
+                    Call GetListLength(printOrView, QW, LG)
                     Call PrintLeaders(TVN, LG, B9)
 
             End Select
@@ -1150,7 +1151,7 @@ Sub ViewPitchingLeaders (leaderFile$, JB, JP, tStats, ttStats)
 
         If categoryId <> 29 Then
 
-            Call SortOptions(printOrView%, JX)
+            Call SortOptions(printOrView, sortType, newCategory)
 
             Cls
             PPP = 0
@@ -1173,10 +1174,10 @@ Sub ViewPitchingLeaders (leaderFile$, JB, JP, tStats, ttStats)
                         Locate 5, 5: Print "sorting player "; stpl
                         For J = PPP To I Step -1
 
-                            If JX = 1 Then
+                            If sortType = 1 Then
                                 If TYP2(J - 1) < TYP2(J) Then Swap TPP$(J - 1), TPP$(J): Swap TMM$(J - 1), TMM$(J): Swap TYP2(J - 1), TYP2(J)
                             Else
-                                'JX = 2
+                                'sortType = 2
                                 If TYP2(J - 1) > TYP2(J) Then Swap TPP$(J - 1), TPP$(J): Swap TMM$(J - 1), TMM$(J): Swap TYP2(J - 1), TYP2(J)
                             End If
                         Next J
@@ -1201,7 +1202,7 @@ Sub ViewPitchingLeaders (leaderFile$, JB, JP, tStats, ttStats)
                         End If
                     Next I
 
-                    Call SortPlayer(PPP, stpl, JX)
+                    Call SortPlayer(PPP, stpl, sortType)
                     TVN = 2
 
                 Case 18:
@@ -1222,7 +1223,7 @@ Sub ViewPitchingLeaders (leaderFile$, JB, JP, tStats, ttStats)
                         End If
                     Next
 
-                    Call SortPlayer(PPP, stpl, JX)
+                    Call SortPlayer(PPP, stpl, sortType)
                     TVN = 4
 
                 Case 21 To 25:
@@ -1244,7 +1245,7 @@ Sub ViewPitchingLeaders (leaderFile$, JB, JP, tStats, ttStats)
 
                     Next
 
-                    Call SortPlayer(PPP, stpl, JX)
+                    Call SortPlayer(PPP, stpl, sortType)
                     TVN = 3
 
                 Case 28:
@@ -1258,19 +1259,19 @@ Sub ViewPitchingLeaders (leaderFile$, JB, JP, tStats, ttStats)
                         End If
                     Next
 
-                    Call SortPlayer(PPP, stpl, JX)
+                    Call SortPlayer(PPP, stpl, sortType)
                     TVN = 3
 
             End Select
 
             QW = PPP
 
-            Select Case printOrView%
+            Select Case printOrView
 
                 Case 1
                     Call DisplayPitchingLeaders(TVN, QW, categoryId)
                 Case 2
-                    Call GetListLength(printOrView%, QW, LG)
+                    Call GetListLength(printOrView, QW, LG)
                     Call PrintLeaders(TVN, LG, B9)
 
             End Select
@@ -1506,7 +1507,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
             End Select
 
             If categoryId <> 39 Then
-                Call SortOptions(printOrView%, JX)
+                Call SortOptions(printOrView, sortType, newCategory)
                 Cls
             End If
 
@@ -1518,7 +1519,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
                         TYP!(I) = TT!(I, X)
                     Next
 
-                    Call SortTeam(tStats, stpl, JX)
+                    Call SortTeam(tStats, stpl, sortType)
 
                     TVN = 1
                     maxRecords = tStats
@@ -1530,7 +1531,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
                         TYP!(I) = TT!(I, X1) / TT!(I, X)
                     Next
 
-                    Call SortTeam(tStats, stpl, JX)
+                    Call SortTeam(tStats, stpl, sortType)
 
                     TVN = 2
                     maxRecords = tStats
@@ -1542,7 +1543,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
                         TYP!(I) = (TT!(I, X1) + TT!(I, X2) + (TT!(I, X3) * 2) + (TT!(I, X4) * 3)) / TT!(I, X)
                     Next
 
-                    Call SortTeam(tStats, stpl, JX)
+                    Call SortTeam(tStats, stpl, sortType)
 
                     TVN = 2
                     maxRecords = tStats
@@ -1554,7 +1555,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
                         TYP!(I) = (TT!(I, X1) + TT!(I, X2)) / (TT!(I, X) + TT!(I, X2))
                     Next
 
-                    Call SortTeam(tStats, stpl, JX)
+                    Call SortTeam(tStats, stpl, sortType)
 
                     TVN = 2
                     maxRecords = tStats
@@ -1566,7 +1567,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
                         TYP!(I) = (TT!(I, X) + TT!(I, X1)) / (TT!(I, X) + TT!(I, X1) + TT!(I, X2))
                     Next
 
-                    Call SortTeam(tStats, stpl, JX)
+                    Call SortTeam(tStats, stpl, sortType)
 
                     TVN = 2
                     maxRecords = tStats
@@ -1583,10 +1584,10 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
                         Locate 5, 5: Print "sorting team "; stpl
                         For J = ttStats To I Step -1
 
-                            If JX = 1 Then
+                            If sortType = 1 Then
                                 If TYP!(J - 1) < TYP!(J) Then Swap TMM$(J - 1), TMM$(J): Swap TYP!(J - 1), TYP!(J)
                             Else
-                                'JX = 2
+                                'sortType = 2
                                 If TYP!(J - 1) > TYP!(J) Then Swap TMM$(J - 1), TMM$(J): Swap TYP!(J - 1), TYP!(J)
                             End If
                         Next J
@@ -1607,7 +1608,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
                         TYP!(I) = TT1!(I, X)
                     Next
 
-                    Call SortTeam(ttStats, stpl, JX)
+                    Call SortTeam(ttStats, stpl, sortType)
 
                     TVN = 2
                     maxRecords = ttStats
@@ -1623,7 +1624,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
                         End If
                     Next
 
-                    Call SortTeam(ttStats, stpl, JX)
+                    Call SortTeam(ttStats, stpl, sortType)
 
                     TVN = 3
                     maxRecords = ttStats
@@ -1635,7 +1636,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
                         TYP!(I) = (TT1!(I, X1) * 9) / (TT1!(I, X) / 3)
                     Next
 
-                    Call SortTeam(ttStats, stpl, JX)
+                    Call SortTeam(ttStats, stpl, sortType)
 
                     TVN = 3
                     maxRecords = ttStats
@@ -1646,7 +1647,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
             End Select
 
             If categoryId <> 39 Then
-                Call DisplayTeamView(XX, screenType, printOrView%, TVN, maxRecords)
+                Call DisplayTeamView(XX, screenType, printOrView, TVN, maxRecords)
             End If
 
         Loop Until categoryId >= 0 Or categoryId <= 39
@@ -1661,7 +1662,7 @@ End Sub
 '----------------------------------------
 'This subroutine uses several different
 'routines to display team total stats
-Sub DisplayTeamView (XX, screenType, printOrView%, TVN, maxRecords)
+Sub DisplayTeamView (XX, screenType, printOrView, TVN, maxRecords)
 
     Shared TYP!(), TYP1!()
 
@@ -1670,7 +1671,7 @@ Sub DisplayTeamView (XX, screenType, printOrView%, TVN, maxRecords)
 
     If screenType = 0 Then
 
-        Select Case printOrView%
+        Select Case printOrView
 
             Case 1:
                 Call LeagueTotals_A_Screen(XX, TVN, maxRecords)
@@ -1708,7 +1709,7 @@ Sub DisplayTeamView (XX, screenType, printOrView%, TVN, maxRecords)
 
     Else
 
-        Select Case printOrView%
+        Select Case printOrView
 
             Case 1:
                 Call LeagueTotals_B_Screen(XX, TVN, maxRecords)
@@ -1930,31 +1931,40 @@ End Sub
 'different sort options available in the
 '"expanded" stats menus.
 
-'sortType%
+'sortType
 '   1: Sort HIGH to LOW
 '   2: Sort LOW to HIGH
-Sub SortOptions (printOrView%, sortType%)
+Sub SortOptions (printOrView, sortType, reselect)
 
     Do
 
         J = 6
 
-        Locate 8, 8
-        Color 15, 1: Print " " + Chr$(214); String$(57, 196); Chr$(183) + " ";
+        Locate 8, 8: Color 15, 1
+        Print " " + Chr$(214); String$(57, 196); Chr$(183) + " ";
+
         For II = 1 To J
-            Locate 8 + II, 8: Print " " + Chr$(186); String$(57, 32); Chr$(186) + " ";
+            Locate 8 + II, 8
+            Print " " + Chr$(186); String$(57, 32); Chr$(186) + " ";
         Next
+
         Locate 9 + J, 8
         Print " " + Chr$(211); String$(57, 196); Chr$(189) + " ";
         Locate 10, 15
 
         Color 3
-        Locate , 30: Print "SELECT OPTION:"
-        Locate , 30: Color 15: Print "H";: Color 7: Print "IGHEST TO LOWEST"
-        Locate , 30: Color 15: Print "L";: Color 7: Print "OWEST TO HIGHEST"
-        Locate , 30: Color 15: Print "R";: Color 7: Print "E-SELECT CATEGORY"
 
-        I$ = GetKeyPress$
+        Locate , 30: Print "SELECT OPTION:"
+        Locate , 30: Color 15: Print "H";
+        Color 7: Print "IGHEST TO LOWEST"
+        Locate , 30: Color 15: Print "L";
+        Color 7: Print "OWEST TO HIGHEST"
+        Locate , 30: Color 15: Print "R";
+        Color 7: Print "E-SELECT CATEGORY"
+
+        Do
+            I$ = GetKeyPress$
+        Loop Until UCase$(I$) = "H" Or UCase$(I$) = "L" Or UCase$(I$) = "R"
 
         Select Case UCase$(I$)
 
@@ -1962,29 +1972,36 @@ Sub SortOptions (printOrView%, sortType%)
                 Call PrintViewReselect(I2$)
 
                 Select Case UCase$(I2$)
-                    Case "P": printOrView% = 2
-                    Case "V": printOrView% = 1
+                    Case "P": 
+                        printOrView = 2
+                    Case "V": 
+                        printOrView = 1
                     Case "R":
+                        reselect = 1
                 End Select
 
-                sortType% = 1
+                sortType = 1
 
             Case "L":
                 Call PrintViewReselect(I2$)
 
                 Select Case UCase$(I2$)
-                    Case "P": printOrView% = 2
-                    Case "V": printOrView% = 1
+                    Case "P": 
+                        printOrView = 2
+                    Case "V": 
+                        printOrView = 1
                     Case "R":
+                        reselect = 1
                 End Select
 
-                sortType% = 2
+                sortType = 2
 
-            Case "R": Cls '
+            Case "R", Chr$(27):
+                reselect = 1
 
         End Select
 
-    Loop Until UCase$(I$) = "H" Or UCase$(I$) = "L" Or UCase$(I$) = "R"
+    Loop Until UCase$(I2$) <> "R" Or UCase$(I$) = "R"
 
 End Sub
 
@@ -2030,7 +2047,7 @@ End Sub
 '----------------------------------------
 'This subroutine sorts the players involved
 'in the chosen stat category
-Sub SortPlayer (PPP, stpl, sortType%)
+Sub SortPlayer (PPP, stpl, sortType)
 
     Shared TMM$(), TPP$()
     Shared TYP!()
@@ -2043,7 +2060,7 @@ Sub SortPlayer (PPP, stpl, sortType%)
 
         For J = PPP To I Step -1
 
-            If sortType% = 1 Then
+            If sortType = 1 Then
                 If TYP!(J - 1) < TYP!(J) Then
                     Swap TYP!(J - 1), TYP!(J)
                     Swap TPP$(J - 1), TPP$(J)
@@ -2051,7 +2068,7 @@ Sub SortPlayer (PPP, stpl, sortType%)
                 End If
             End If
 
-            If sortType% = 2 Then
+            If sortType = 2 Then
                 If TYP!(J - 1) > TYP!(J) Then
                     Swap TYP!(J - 1), TYP!(J)
                     Swap TPP$(J - 1), TPP$(J)
@@ -2071,7 +2088,7 @@ End Sub
 '----------------------------------------
 'This subroutine sorts the teams involved
 'in the chosen stat category
-Sub SortTeam (sortMax, stpl, sortType%)
+Sub SortTeam (sortMax, stpl, sortType)
 
     Shared TYP!()
     Shared TMM$()
@@ -2084,14 +2101,14 @@ Sub SortTeam (sortMax, stpl, sortType%)
 
         For J = sortMax To I Step -1
 
-            If sortType% = 1 Then
+            If sortType = 1 Then
                 If TYP!(J - 1) < TYP!(J) Then
                     Swap TYP!(J - 1), TYP!(J)
                     Swap TMM$(J - 1), TMM$(J)
                 End If
             End If
 
-            If sortType% = 2 Then
+            If sortType = 2 Then
                 If TYP!(J - 1) > TYP!(J) Then
                     Swap TYP!(J - 1), TYP!(J)
                     Swap TMM$(J - 1), TMM$(J)
@@ -2162,12 +2179,12 @@ End Sub
 'helps the user have a custom view of the
 'categories without needing to page through
 'every result.
-Sub GetListLength (printOrView%, listLength, maxItems)
+Sub GetListLength (printOrView, listLength, maxItems)
 
     Color , 0
     Cls
 
-    If printOrView% <> 1 Then
+    If printOrView <> 1 Then
 
         Do
             Color , 0
