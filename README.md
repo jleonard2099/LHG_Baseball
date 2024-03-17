@@ -75,6 +75,7 @@ Contact me directly if interested in contributing. Only considering people who s
 - [Save icons created by Those Icons - Flaticon](https://www.flaticon.com/free-icons/save)
 - [File explorer icons created by juicy_fish - Flaticon](https://www.flaticon.com/free-icons/file-explorer)
 - I am responsible for maintaining / updating most of the code and will spend equal effort cleaning up code as improving it
+- Randy Dudley, the original author of the LOOKY subroutine, for his crazy attention to detail and testing all my work
 - Jason Lamb, for lending his expertise in BASIC to helping me learn some standards and rewriting the menu functions.
 - Lance Haffner, for his hard work over 2 decades giving people endless hours of playable sports games and making dreams come true.
 - [Lance Haffner Sports Sims](https://www.facebook.com/groups/115923978469802) Facebook group admin Philip Lupi, for his hard work keeping Lance's games alive and active with fans old and new.
