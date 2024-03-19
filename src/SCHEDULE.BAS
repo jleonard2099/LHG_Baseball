@@ -101,7 +101,7 @@ Sub SCHEDULE ()
                 Case 2 To 5:
                     Do
                         'Have the user pick a schedule
-                        scheduleFile$ = ChooseFile$ (diskPaths$(3) + "*.SCD", "SCHEDULE", FileExit%)
+                        scheduleFile$ = ChooseFile$ (diskPaths$(1) + "*.SCD", "SCHEDULE", FileExit%)
 
                         If FileExit% <> 27 And FileExit% <> 0 Then
 
@@ -829,7 +829,7 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
                                 'Write matching games
                                 Locate 1, 1: Print numberGames + 1; " MATCHES"
 
-                                Open diskPaths$(3) + subSchedFile$ + ".SCD" For Random As #1 Len = SCHEDULE_SIZE_BYTES
+                                Open diskPaths$(1) + subSchedFile$ + ".SCD" For Random As #1 Len = SCHEDULE_SIZE_BYTES
 
                                 fileLength& = LOF(1)
 
@@ -1094,9 +1094,9 @@ Sub SaveScheduleFile (saveFile$)
     Shared scheduleAP%(), scheduleNG%()
     Shared scheduleYN$()
 
-    If _FileExists(diskPaths$(3) + saveFile$ + ".SCD") Then Kill diskPaths$(3) + saveFile$ + ".SCD"
+    If _FileExists(diskPaths$(1) + saveFile$ + ".SCD") Then Kill diskPaths$(1) + saveFile$ + ".SCD"
 
-    Open diskPaths$(3) + saveFile$ + ".SCD" For Random As #1 Len = SCHEDULE_SIZE_BYTES
+    Open diskPaths$(1) + saveFile$ + ".SCD" For Random As #1 Len = SCHEDULE_SIZE_BYTES
 
     For X = 0 To 18
         Field #1, X * 2 As X$, 2 As Q$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
@@ -1424,7 +1424,7 @@ Sub LoadScheduleInfo (targetFile$)
     Shared homeScores(), visitorScores()
     Shared scheduleYN$()
 
-    Open diskPaths$(3) + targetFile$ + ".SCD" For Random As #1 Len = SCHEDULE_SIZE_BYTES
+    Open diskPaths$(1) + targetFile$ + ".SCD" For Random As #1 Len = SCHEDULE_SIZE_BYTES
 
     fileLength& = LOF(1)
 
