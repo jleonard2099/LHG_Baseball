@@ -45,7 +45,7 @@ Sub CREATLEAG ()
 
         If ExitCode% <> 27 Then
 
-            For X = 1 To 40
+            For X = 1 To MAX_CONFERENCES
                 Z1$(X) = "XXX"
                 Z2$(X) = "XXX"
                 statZ1%(X) = -1
@@ -63,11 +63,15 @@ Sub CREATLEAG ()
                     Call ReviewEditLeague(league$, D1$, D2$, D3$, D4$)
 
                 Case 2:
-                    league$ = ChooseFile$(diskPaths$(2) + "*.LIB", "LEAGUE", FileExit%)
+                    Do
 
-                    If FileExit% <> 27 And FileExit% <> 0 Then
-                        Call ReviewEditLeague(league$, D1$, D2$, D3$, D4$)
-                    End If
+                        league$ = ChooseFile$(diskPaths$(2) + "*.LIB", "LEAGUE", FileExit%)
+
+                        If FileExit% <> 27 And FileExit% <> 0 Then
+                            Call ReviewEditLeague(league$, D1$, D2$, D3$, D4$)
+                        End If
+
+                    Loop Until FileExit% = 27 Or FileExit% = 0
 
             End Select
 
@@ -191,7 +195,7 @@ Sub ReviewEditLeague (league$, div1$, div2$, div3$, div4$)
 
         Input #2, league$, div1$, div2$, div3$, div4$
 
-        For X = 1 To 40
+        For X = 1 To MAX_CONFERENCES
             Input #2, Z1$(X)
             Input #2, statZ1%(X)
             Input #2, Z2$(X)
@@ -296,7 +300,7 @@ Sub SaveLeague (league$, div1$, div2$, div3$, div4$)
     Print #2, div3$
     Print #2, div4$
 
-    For X = 1 To 40
+    For X = 1 To MAX_CONFERENCES
         Print #2, Z1$(X)
         Print #2, statZ1%(X)
         Print #2, Z2$(X)
@@ -304,7 +308,7 @@ Sub SaveLeague (league$, div1$, div2$, div3$, div4$)
 
     Close 2
 
-    For X = 1 To 40
+    For X = 1 To MAX_CONFERENCES
 
         If Z1$(X) <> "XXX" Then
             Z1$(X) = nameStatFile$(Z1$(X))
@@ -322,7 +326,7 @@ Sub SaveLeague (league$, div1$, div2$, div3$, div4$)
     Write #2, div3$
     Write #2, div4$
 
-    For X = 1 To 40
+    For X = 1 To MAX_CONFERENCES
         Write #2, Z1$(X)
     Next
 

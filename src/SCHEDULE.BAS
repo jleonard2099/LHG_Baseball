@@ -99,26 +99,29 @@ Sub SCHEDULE ()
                     Call NewSchedule(scheduleFile$)
 
                 Case 2 To 5:
+                    Do
+                        'Have the user pick a schedule
+                        scheduleFile$ = ChooseFile$ (diskPaths$(3) + "*.SCD", "SCHEDULE", FileExit%)
 
-                    scheduleFile$ = ChooseFile$ (diskPaths$(0) + "*.SCD", "SCHEDULE", FileExit%)
+                        If FileExit% <> 27 And FileExit% <> 0 Then
 
-                    If FileExit% <> 27 And FileExit% <> 0 Then
+                            Call LoadScheduleInfo (scheduleFile$)
 
-                        Call LoadScheduleInfo (scheduleFile$)
+                            Cls
 
-                        Cls
+                            'Extract / Change / Global
+                            If Selection% >= 3 And Selection% <= 5 Then
+                                Call ExtractSchedule(Selection%, scheduleFile$)
+                                If Selection% >= 4 Then Call SaveScheduleFile(scheduleFile$)
+                            Else
+                                'Retrieve / Edit / Play Schedule
+                                Color 15, 0
+                                Call NewSchedule(scheduleFile$)
+                            End If
 
-                        'Extract / Change / Global
-                        If Selection% >= 3 And Selection% <= 5 Then
-                            Call ExtractSchedule(Selection%, scheduleFile$)
-                            If Selection% >= 4 Then Call SaveScheduleFile(scheduleFile$)
-                        Else
-                            'Retrieve / Edit / Play Schedule
-                            Color 15, 0
-                            Call NewSchedule(scheduleFile$)
                         End If
 
-                    End If
+                    Loop Until FileExit% = 27 Or FileExit% = 0
 
                 Case 6:
                     'Generate schedule
@@ -153,6 +156,9 @@ Sub NewSchedule (scheduleFile$)
     Shared scheduleYN$()
 
     Shared modeAbbrev$(), yesNo$()
+
+    DT$ = "04-01-23"
+    TM$ = "07:30P"
 
     Do
 
@@ -302,8 +308,6 @@ Sub NewSchedule (scheduleFile$)
                     scheduleYN$(targetGame%, X) = scheduleYN$(targetGame% - 1, X)
                 Next
 
-                DT$ = "04-01-23"
-                TM$ = "07:30P"
                 Call NewGame(V$, H$, YN$, DT$, TM$, NTMS, targetGame%)
 
             Case "E"
@@ -433,7 +437,7 @@ Sub NewSchedule (scheduleFile$)
                     scheduleNG%(I, 13) = 0
                 Next
 
-            Case Chr$(0) + Chr$(81), Chr$(0) + Chr$(73)
+            Case Chr$(0) + Chr$(81), Chr$(0) + Chr$(77)
                 ' *** PAGE DOWN | RIGHT ARROW ***
                 If NS% >= BS% Then
                     NS% = BS%
@@ -825,7 +829,7 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
                                 'Write matching games
                                 Locate 1, 1: Print numberGames + 1; " MATCHES"
 
-                                Open diskPaths$(0) + subSchedFile$ + ".SCD" For Random As #1 Len = SCHEDULE_SIZE_BYTES
+                                Open diskPaths$(3) + subSchedFile$ + ".SCD" For Random As #1 Len = SCHEDULE_SIZE_BYTES
 
                                 fileLength& = LOF(1)
 
@@ -913,19 +917,70 @@ Sub EditParameters ()
 
         Select Case B9
 
-            Case 1: Locate 2: Input " 1. IF INNINGS ARE OVER "; E%(1)
-            Case 2: Locate 3: Input " 2. A TEAM'S RUNS LESS THAN "; E%(2)
-            Case 3: Locate 4: Input " 3. A TEAM'S RUNS MORE THAN "; E%(3)
-            Case 4: Locate 5: Input " 4. A TEAM'S HITS LESS THAN "; E%(4)
-            Case 5: Locate 6: Input " 5. A TEAM'S HITS MORE THAN "; E%(5)
-            Case 6: Locate 7: Input " 6. BATTER'S HITS MORE THAN "; E%(6)
-            Case 7: Locate 8: Input " 7. BATTER'S RUNS MORE THAN "; E%(7)
-            Case 8: Locate 9: Input " 8. BATTER'S RBI'S MORE THAN "; E%(8)
-            Case 9: Locate 10: Input " 9. BATTER'S 2B'S MORE THAN "; E%(9)
-            Case 10: Locate 11: Input "10. BATTER'S 3B'S MORE THAN "; E%(10)
-            Case 11: Locate 12: Input "11. BATTER'S HR'S MORE THAN "; E%(11)
-            Case 12: Locate 13: Input "12. BATTER'S SB'S MORE THAN "; E%(12)
-            Case 13: Locate 14: Input "13. PITCHER'S K'S MORE THAN "; E%(13)
+            Case 1: 
+                Locate 2, 24: Print Space$(10)
+                Locate 2, 1: Input " 1. IF INNINGS ARE OVER"; E%(1)
+                Locate 2, 24: Print " "
+
+            Case 2: 
+                Locate 3, 28: Print Space$(10)
+                Locate 3, 1: Input " 2. A TEAM'S RUNS LESS THAN"; E%(2)
+                Locate 3, 28: Print " "
+
+            Case 3: 
+                Locate 4, 28: Print Space$(10)
+                Locate 4, 1: Input " 3. A TEAM'S RUNS MORE THAN"; E%(3)
+                Locate 4, 28: Print " "
+
+            Case 4: 
+                Locate 5, 28: Print Space$(10)
+                Locate 5, 1: Input " 4. A TEAM'S HITS LESS THAN"; E%(4)
+                Locate 5, 28: Print " "
+
+            Case 5: 
+                Locate 6, 28: Print Space$(10)
+                Locate 6, 1: Input " 5. A TEAM'S HITS MORE THAN"; E%(5)
+                Locate 6, 28: Print " "
+
+            Case 6: 
+                Locate 7, 28: Print Space$(10)
+                Locate 7, 1: Input " 6. BATTER'S HITS MORE THAN"; E%(6)
+                Locate 7, 28: Print " "
+
+            Case 7: 
+                Locate 8, 28: Print Space$(10)
+                Locate 8, 1: Input " 7. BATTER'S RUNS MORE THAN"; E%(7)
+                Locate 8, 28: Print " "
+
+            Case 8: 
+                Locate 9, 29: Print Space$(10)
+                Locate 9, 1: Input " 8. BATTER'S RBI'S MORE THAN"; E%(8)
+                Locate 9, 29: Print " "
+
+            Case 9: 
+                Locate 10, 28: Print Space$(10)
+                Locate 10, 1: Input " 9. BATTER'S 2B'S MORE THAN"; E%(9)
+                Locate 10, 28: Print " "
+
+            Case 10: 
+                Locate 11, 28: Print Space$(10)
+                Locate 11, 1: Input "10. BATTER'S 3B'S MORE THAN"; E%(10)
+                Locate 11, 28: Print " "
+
+            Case 11: 
+                Locate 12, 28: Print Space$(10)
+                Locate 12, 1: Input "11. BATTER'S HR'S MORE THAN"; E%(11)
+                Locate 12, 28: Print " "
+
+            Case 12: 
+                Locate 13, 28: Print Space$(10)
+                Locate 13, 1: Input "12. BATTER'S SB'S MORE THAN"; E%(12)
+                Locate 13, 28: Print " "
+
+            Case 13:
+                Locate 14, 28: Print Space$(10)
+                Locate 14, 1: Input "13. PITCHER'S K'S MORE THAN"; E%(13)
+                Locate 14, 28: Print " "
 
         End Select
 
@@ -1039,9 +1094,9 @@ Sub SaveScheduleFile (saveFile$)
     Shared scheduleAP%(), scheduleNG%()
     Shared scheduleYN$()
 
-    If _FileExists(diskPaths$(0) + saveFile$ + ".SCD") Then Kill diskPaths$(0) + saveFile$ + ".SCD"
+    If _FileExists(diskPaths$(3) + saveFile$ + ".SCD") Then Kill diskPaths$(3) + saveFile$ + ".SCD"
 
-    Open diskPaths$(0) + saveFile$ + ".SCD" For Random As #1 Len = SCHEDULE_SIZE_BYTES
+    Open diskPaths$(3) + saveFile$ + ".SCD" For Random As #1 Len = SCHEDULE_SIZE_BYTES
 
     For X = 0 To 18
         Field #1, X * 2 As X$, 2 As Q$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
@@ -1369,7 +1424,7 @@ Sub LoadScheduleInfo (targetFile$)
     Shared homeScores(), visitorScores()
     Shared scheduleYN$()
 
-    Open diskPaths$(0) + targetFile$ + ".SCD" For Random As #1 Len = SCHEDULE_SIZE_BYTES
+    Open diskPaths$(3) + targetFile$ + ".SCD" For Random As #1 Len = SCHEDULE_SIZE_BYTES
 
     fileLength& = LOF(1)
 
@@ -1467,7 +1522,7 @@ Sub CreateSeasonSchedule ()
             Input #2, D3$
             Input #2, D4$
 
-            For X = 1 To 40
+            For X = 1 To MAX_CONFERENCES
                 Input #2, Z1$(X)
                 Input #2, statZ1%(X)
                 Input #2, Z2$(X)

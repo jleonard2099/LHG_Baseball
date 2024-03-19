@@ -29,7 +29,7 @@ Function FileCount% (dirSpec$)
 
         Select Case osSpec$
             Case "[WINDOWS]":
-                Shell _Hide "dir /on /b " + dirSpec$ + " > " + TmpFile$
+                Shell _Hide "dir /on /b " + Chr$(34) + dirSpec$ + Chr$(34) + " > " + TmpFile$
             Case "[LINUX]", "[MAC]", "[MACOSX]":
                 Shell _Hide "ls -A1 " + dirSpec$ + " | awk -F/ '{print $NF}' | sort | tee " + TmpFile$
         End Select
@@ -228,7 +228,7 @@ Function READDIR$ (dirSpec$)
 
         Select Case osSpec$
             Case "[WINDOWS]":
-                Shell _Hide "dir /on /b " + dirSpec$ + " > " + TmpFile$
+                Shell _Hide "dir /on /b " + Chr$(34) + dirSpec$ + Chr$(34) + " > " + TmpFile$
             Case "[LINUX]", "[MAC]", "[MACOSX]":
                 Shell _Hide "ls -A1 " + dirSpec$ + " | awk -F/ '{print $NF}' | sort | tee " + TmpFile$
         End Select
@@ -285,7 +285,6 @@ Sub box0 (ULRow%, ULCol%, LRRow%, LRCol%, Char%, FGColor%, BGColor%)
     'If Char% is assigned to any other value, that ASCII character will be used for the entire box.
 
     Select Case Char%
-
         Case 1:
             ulCorner$ = Chr$(218)
             horizontal$ = Chr$(196)
@@ -389,7 +388,7 @@ End Sub
 '-----------------------------------
 ' ClearEOL Copycat Subroutine
 '-----------------------------------
-Sub ClearEOL (FGColor%, BGColor%)
+Sub ClearEOL (FGColor&, BGColor&)
     'Operate from cursor position,
     '  without moving it
     row% = CsrLin
@@ -402,7 +401,7 @@ Sub ClearEOL (FGColor%, BGColor%)
     'Print all spaces
     '--If using OneColor:
     '--Color (Color% And 15), ((Color% And 240) / 16)
-    Color FGColor%, BGColor%
+    Color FGColor&, BGColor&
     Print Space$(80 - column%);
 
 End Sub
@@ -732,39 +731,39 @@ Sub MAMenu (menuChoices$(), Selected%, Start%, Count%, ScanCode%, ItemFGColor%, 
 
     Select Case UserIn$
 
-        Case Chr$(0) + Chr$(80) 
-        '*** Down arrow pressed ***
+        Case Chr$(0) + Chr$(80)
+            '*** Down arrow pressed ***
 
             If Selected% < numberItems% Then Selected% = Selected% + 1
 
-        Case Chr$(0) + Chr$(72) 
-        '*** Up arrow pressed ***
+        Case Chr$(0) + Chr$(72)
+            '*** Up arrow pressed ***
 
             If Selected% - 1 <> 0 Then Selected% = Selected% - 1
 
-        Case Chr$(0) + Chr$(75) 
-        '*** Left arrow pressed ***
+        Case Chr$(0) + Chr$(75)
+            '*** Left arrow pressed ***
 
             If Selected% > NumRows% Then Selected% = Selected% - NumRows%
 
-        Case Chr$(0) + Chr$(77) 
-        '*** Right arrow pressed ***
+        Case Chr$(0) + Chr$(77)
+            '*** Right arrow pressed ***
 
             If Selected% < (TotalColsData% - 1) * NumRows% + 1 Then Selected% = Selected% + NumRows%
             If Selected% > Count% Then Selected% = Count%
 
-        Case Chr$(0) + Chr$(71) 
-        '*** Home pressed ***
+        Case Chr$(0) + Chr$(71)
+            '*** Home pressed ***
 
             Selected% = 1
 
-        Case Chr$(0) + Chr$(79) 
-        '*** End pressed ***
+        Case Chr$(0) + Chr$(79)
+            '*** End pressed ***
 
             Selected% = Count%
 
-        Case Chr$(0) + Chr$(73) 
-        '*** Page Up pressed ***
+        Case Chr$(0) + Chr$(73)
+            '*** Page Up pressed ***
 
             If Selected% > maxItemsPerScreen% Then
                 Selected% = Selected% - maxItemsPerScreen%
@@ -772,8 +771,8 @@ Sub MAMenu (menuChoices$(), Selected%, Start%, Count%, ScanCode%, ItemFGColor%, 
                 Selected% = 1
             End If
 
-        Case Chr$(0) + Chr$(81) 
-        '*** Page Down pressed ***
+        Case Chr$(0) + Chr$(81)
+            '*** Page Down pressed ***
 
             If Selected% < Count% - maxItemsPerScreen% Then
                 Selected% = Selected% + maxItemsPerScreen%
@@ -908,14 +907,14 @@ End Sub
 '-----------------------------------
 ' MQPrint Copycat Subroutine
 '-----------------------------------
-Sub MQPrint (X$, FGColor%, BGColor%)
+Sub MQPrint (X$, FGColor&, BGColor&)
 
     _MouseHide
 
     H = Pos(0): V = CsrLin 'save cursor position
     '--If using OneColor:
     '--Color (Color% And 15), ((Color% And 240) / 16)
-    Color FGColor%, BGColor%
+    Color FGColor&, BGColor&
     Print X$;
     Locate V, H
     _MouseShow "DEFAULT"
@@ -970,7 +969,7 @@ Sub NumIn (Number#, Max, XCode, FGColor%, BGColor%)
         Curpo = Max - ALength + 2 '  first digit
     End If
 
-    Call QPrint(X$, FGColor%, BGColor%, -1) 'print it
+    Call QPrint(X$, FGColor&, BGColor&, -1) 'print it
     Locate , Pos(0) + Max - ALength + 1, 1 'locate and turn on the cursor
 
     NGetKey:
@@ -1067,7 +1066,7 @@ Sub NumIn (Number#, Max, XCode, FGColor%, BGColor%)
 
         NSpaceOkay:
         Mid$(X$, Curpo, 1) = " " 'assign a space to the string
-        Call QPrint(" ", FGColor%, BGColor%, -1) 'print a space
+        Call QPrint(" ", FGColor&, BGColor&, -1) 'print a space
         Locate , Pos(0) + 1 'advance the cursor
         Curpo = Curpo + 1 'update Curpo
         GoTo NGetKey
@@ -1077,7 +1076,7 @@ Sub NumIn (Number#, Max, XCode, FGColor%, BGColor%)
     If A$ < "0" Or A$ > "9" GoTo NGetKey 'invalid character
 
     NNumericOkay:
-    Call QPrint(A$, FGColor%, BGColor%, -1) 'print the digit
+    Call QPrint(A$, FGColor&, BGColor&, -1) 'print the digit
     If Insrt GoTo NHandleInsert 'special treatment for insert
     Mid$(X$, Curpo, 1) = A$ 'assign new digit
     Curpo = Curpo + 1 'show the cursor being forward
@@ -1089,12 +1088,12 @@ Sub NumIn (Number#, Max, XCode, FGColor%, BGColor%)
 
     For A = 1 To Max - 1 'slide all characters left one
         Mid$(X$, A, 1) = Mid$(X$, A + 1, 1)
-        QPrint Mid$(X$, A, 1), FGColor%, BGColor%, -1 'and reprint them in new place
+        QPrint Mid$(X$, A, 1), FGColor&, BGColor&, -1 'and reprint them in new place
         Locate , Pos(0) + 1
     Next
 
     Mid$(X$, Curpo, 1) = A$ 'assign the digit
-    Call QPrint(A$, FGColor%, BGColor%, -1)
+    Call QPrint(A$, FGColor&, BGColor&, -1)
     If Asc(X$) = 32 GoTo NGetKey 'field not full, get another
     GoTo NRight 'field full, do a cursor right
 
@@ -1115,7 +1114,7 @@ End Sub
 '-----------------------------------
 ' QPrint Copycat Subroutine
 '-----------------------------------
-Sub QPrint (X$, FGColor%, BGColor%, Page%)
+Sub QPrint (X$, FGColor&, BGColor&, Page%)
     ' X$
     ' The string to print
 
@@ -1133,7 +1132,7 @@ Sub QPrint (X$, FGColor%, BGColor%, Page%)
     'The actual printing
     '--If using OneColor:
     '--Color (Color% And 15), ((Color% And 240) / 16)
-    Color FGColor%, BGColor%
+    Color FGColor&, BGColor&
     Print X$;
 
     'Restore cursor position
@@ -1158,7 +1157,7 @@ Sub ReadFile (fileList$())
 
     Select Case osSpec$
         Case "[WINDOWS]":
-            Shell _Hide "dir /on /b " + dirSpec$ + " > " + TmpFile$
+            Shell _Hide "dir /on /b " + Chr$(34) + dirSpec$ + Chr$(34) + " > " + TmpFile$
         Case "[LINUX]", "[MAC]", "[MACOSX]":
             Shell _Hide "ls -A1 " + dirSpec$ + " | awk -F/ '{print $NF}' | sort | tee " + TmpFile$
     End Select
@@ -1195,7 +1194,7 @@ End Sub
 '-----------------------------------
 ' Text Input Subroutine
 '-----------------------------------
-Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode%, FGColor%, BGColor%)
+Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode%, FGColor&, BGColor&)
 
     TInitialize:
     Clr = 0 'Determine monitor type
@@ -1215,7 +1214,7 @@ Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode%, FGColor%, BGColor%)
     X$ = X$ + Space$(Max% - Length) 'Pad with trailing spaces
 
     Locate , , 1 'Toggle the cursor
-    Call QPrint(X$, FGColor%, BGColor%, -1)
+    Call QPrint(X$, FGColor&, BGColor&, -1)
     ' Locate , , 1  'Toggle the cursor
 
     GoSub TInsertOff 'Set cursor size according to display
@@ -1296,7 +1295,7 @@ Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode%, FGColor%, BGColor%)
 
     'slide all characters left one position, add a trailing space and re-print
     Mid$(X$, CursorPos) = Mid$(X$, CursorPos + 1) + " "
-    Call QPrint(Mid$(X$, CursorPos), FGColor%, BGColor%, -1)
+    Call QPrint(Mid$(X$, CursorPos), FGColor&, BGColor&, -1)
 
     Length = Length - 1 'show string as one character shorter
     GoTo TGetKey
@@ -1355,7 +1354,7 @@ Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode%, FGColor%, BGColor%)
     TCtrlEnd:
     If CursorPos > Length GoTo TGetKey 'cursor is past the end, ignore
 
-    Call QPrint(Space$(Length - CursorPos + 1), FGColor%, BGColor%, -1) 'blank from cursor to the end
+    Call QPrint(Space$(Length - CursorPos + 1), FGColor&, BGColor&, -1) 'blank from cursor to the end
     Mid$(X$, CursorPos) = Space$(Length - CursorPos + 1) 'clear that part of the string
     Length = CursorPos - 1 'show the length being at the cursor
     GoTo TGetKey 'get another keypress
@@ -1381,7 +1380,7 @@ Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode%, FGColor%, BGColor%)
         End If
     End If
 
-    Call QPrint(A$, FGColor%, BGColor%, -1) 'print character
+    Call QPrint(A$, FGColor&, BGColor&, -1) 'print character
     Locate , Pos(0) + 1
     CursorPos = CursorPos + 1 'show cursor being ahead
 
@@ -1403,7 +1402,7 @@ Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode%, FGColor%, BGColor%)
     Mid$(X$, CursorPos) = Temp$ 'move characters one position ahead
 
     Mid$(X$, CursorPos - 1, 1) = A$ 'assign the current character
-    Call QPrint(Mid$(X$, CursorPos, Length - CursorPos + 1), FGColor%, BGColor%, -1) 're-print X$
+    Call QPrint(Mid$(X$, CursorPos, Length - CursorPos + 1), FGColor&, BGColor&, -1) 're-print X$
 
     If Length = Max% GoTo TEnter 'field complete, handle as Enter key
     GoTo TGetKey
@@ -1445,7 +1444,7 @@ End Sub
 '-----------------------------------
 ' Yes / No Input Routine
 '-----------------------------------
-Sub YesNoB (YN$, ExitCode, FGColor%, BGColor%)
+Sub YesNoB (YN$, ExitCode, FGColor&, BGColor&)
     '********** YESNOB.BAS - BASIC yes/no input subprogram
 
     'Copyright (c) 1987 Ethan Winer
@@ -1471,7 +1470,7 @@ Sub YesNoB (YN$, ExitCode, FGColor%, BGColor%)
 
     X$ = YN$
     If X$ = "" Then X$ = " "
-    Color FGColor%, BGColor%
+    Color FGColor&, BGColor&
     Print X$;
     Locate , Pos(0) - 1, 1
 
@@ -1503,7 +1502,7 @@ Sub YesNoB (YN$, ExitCode, FGColor%, BGColor%)
     YDone:
     If X$ > "Y" Then X$ = Chr$(Asc(X$) - 32) 'capitalize if necessary
     YN$ = X$
-    Color FGColor%, BGColor%
+    Color FGColor&, BGColor&
     Print YN$;
 
     YD2:
@@ -1609,7 +1608,7 @@ Sub Lts2Menu (Item$(), Prompt$(), Choice%, FGColor%, BGColor%)
             Locate , Break%(X%) '  locate to the correct column
         End If
 
-        QPrint Space$(1) + Item$(X%) + Space$(1), C_FG%, C_BG%, -1
+        QPrint Space$(1) + Item$(X%) + Space$(1), C_FG&, C_BG&, -1
         X% = X% + 1 'advance to the next item
     Loop Until Break%(X%) < -1
 
@@ -1686,3 +1685,4 @@ Sub Lts2Menu (Item$(), Prompt$(), Choice%, FGColor%, BGColor%)
     Erase Break%, ScrBuf%
 
 End Sub
+

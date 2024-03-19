@@ -60,63 +60,75 @@ Sub NEWLDR ()
             Select Case Selection%
 
                 Case 1:
-                    leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", FileExit%)
+                    Do
+                        leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", FileExit%)
 
-                    If FileExit% <> 27 And FileExit% <> 0 Then
+                        If FileExit% <> 27 And FileExit% <> 0 Then
 
-                        For X = 1 To 40
-                            Z1$(X) = "XXX"
-                        Next
+                            For X = 1 To MAX_CONFERENCES
+                                Z1$(X) = "XXX"
+                            Next
 
-                        Open diskPaths$(2) + leagStatFile$ + ".TMS" For Input As #2
+                            Open diskPaths$(2) + leagStatFile$ + ".TMS" For Input As #2
 
-                        Input #2, league$, D1$, D2$, D3$, D4$
+                            Input #2, league$, D1$, D2$, D3$, D4$
 
-                        For X = 1 To 40: 
-                            Input #2, Z1$(X)
-                        Next
+                            For X = 1 To MAX_CONFERENCES
+                                Input #2, Z1$(X)
+                            Next
 
-                        Close #2
+                            Close #2
 
-                        Call UpdateExpandedLeaders(JB, JP, TS, TTS)
-                        Call SAVELEADER(leagStatFile$, league$, JB, JP, TS, TTS)
+                            Call UpdateExpandedLeaders(JB, JP, TS, TTS)
+                            Call SAVELEADER(leagStatFile$, league$, JB, JP, TS, TTS)
 
-                    End If
+                        End If
+
+                    Loop Until FileExit% = 27 Or FileExit% = 0
 
                 Case 2:
-                    leaderFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", FileExit%)
+                    Do
+                        leaderFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", FileExit%)
 
-                    If FileExit% <> 27 And FileExit% <> 0 Then
-                        Call ExpandedLeaders_Menu(leaderFile$, JB, JP, TS, TTS)
-                    End If
+                        If FileExit% <> 27 And FileExit% <> 0 Then
+                            Call ExpandedLeaders_Menu(leaderFile$, JB, JP, TS, TTS)
+                        End If
+
+                    Loop Until FileExit% = 27 Or FileExit% = 0
 
                 Case 3: 
-                    leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", FileExit%)
+                    Do
+                        leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", FileExit%)
 
-                    If FileExit% <> 27 And FileExit% <> 0 Then
-                        Color 15, 0
-                        Cls
-                        Call UpdateLeagueStandings(leagStatFile$)
-                    End If
+                        If FileExit% <> 27 And FileExit% <> 0 Then
+                            Color 15, 0
+                            Cls
+                            Call UpdateLeagueStandings(leagStatFile$)
+                        End If
+
+                    Loop Until FileExit% = 27 Or FileExit% = 0
 
                 Case 4:
-                    standingsFile$ = ChooseFile$ (diskPaths$(2) + "*.STD", "LEAGUE STANDINGS", FileExit%)
+                    Do
+                        standingsFile$ = ChooseFile$ (diskPaths$(2) + "*.STD", "LEAGUE STANDINGS", FileExit%)
 
-                    If FileExit% <> 27 And FileExit% <> 0 Then
+                        If FileExit% <> 27 And FileExit% <> 0 Then
 
-                        Open diskPaths$(2) + standingsFile$ + ".STD" For Input As #1
+                            Open diskPaths$(2) + standingsFile$ + ".STD" For Input As #1
 
-                        Input #1, league$, D1$, D2$, D3$, D4$
+                            Input #1, league$, D1$, D2$, D3$, D4$
 
-                        For I = 1 To 40:
-                            Input #1, TML$(I), WW!(I), expLL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
-                        Next
+                            For I = 1 To MAX_CONFERENCES
+                                Input #1, TML$(I), WW!(I), expLL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
+                            Next
 
-                        Close #1
+                            Close #1
 
-                        Call NewStandingOptions
+                            Call NewStandingOptions
 
-                    End If
+                        End If
+
+                    Loop Until FileExit% = 27 Or FileExit% = 0
 
             End Select
 
@@ -199,7 +211,7 @@ Sub UpdateExpandedLeaders (JB, JP, tStats, ttStats)
     Color 15, 0
     Cls
 
-    For KK = 1 To 40:
+    For KK = 1 To MAX_CONFERENCES
 
         YY = YY + 1
 
@@ -419,11 +431,11 @@ Sub SAVELEADER (leaderFile$, league$, JB, JP, tStats, ttStats)
 
     Write #1, JB, JP, D1$, D2$, D3$, D4$, league$, tStats, ttStats
 
-    For I = 1 To 40:
+    For I = 1 To MAX_CONFERENCES
         Write #1, Wins(I), Losses(I)
     Next
 
-    For I = 1 To 40:
+    For I = 1 To MAX_CONFERENCES
 
         For I1 = 0 To 21:
             Write #1, TT!(I, I1), leaderTeams$(I, I1)
@@ -435,7 +447,7 @@ Sub SAVELEADER (leaderFile$, league$, JB, JP, tStats, ttStats)
 
     Next
 
-    For I = 1 To 40:
+    For I = 1 To MAX_CONFERENCES
 
         For I1 = 0 To 22:
             Write #1, TT1!(I, I1), TT2$(I, I1)
@@ -537,11 +549,11 @@ Sub READLEADER (leaderFile$, league$, JB, JP, tStats, ttStats)
 
     Input #1, JB, JP, D1$, D2$, D3$, D4$, league$, tStats, ttStats
 
-    For I = 1 To 40:
+    For I = 1 To MAX_CONFERENCES
         Input #1, Wins(I), Losses(I)
     Next
 
-    For I = 1 To 40:
+    For I = 1 To MAX_CONFERENCES
 
         For I1 = 0 To 21:
             Input #1, TT!(I, I1), leaderTeams$(I, I1)
@@ -553,7 +565,7 @@ Sub READLEADER (leaderFile$, league$, JB, JP, tStats, ttStats)
 
     Next
 
-    For I = 1 To 40:
+    For I = 1 To MAX_CONFERENCES
 
         For I1 = 0 To 22:
             Input #1, TT1!(I, I1), TT2$(I, I1)
@@ -1391,11 +1403,11 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
 
     TMR = 120
 
-    For I = 1 To 40:
+    For I = 1 To MAX_CONFERENCES
         Input #1, Wins(I), Losses(I)
     Next
 
-    For I = 1 To 40:
+    For I = 1 To MAX_CONFERENCES
 
         For I1 = 0 To 21:
             Input #1, TT!(I, I1), leaderTeams$(I, I1)
@@ -1407,7 +1419,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
 
     Next
 
-    For I = 1 To 40:
+    For I = 1 To MAX_CONFERENCES
 
         For I1 = 0 To 22:
             Input #1, TT1!(I, I1), TT2$(I, I1)

@@ -56,32 +56,38 @@ Sub ExpandedStandings ()
             Select Case Selection%
 
                 Case 1:
-                    leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", FileExit%)
+                    Do
+                        leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", FileExit%)
 
-                    If FileExit% <> 27 And FileExit% <> 0 Then
-                        Color 15, 0
-                        Cls
-                        Call UpdateLeagueStandings(leagStatFile$)
-                    End If
+                        If FileExit% <> 27 And FileExit% <> 0 Then
+                            Color 15, 0
+                            Cls
+                            Call UpdateLeagueStandings(leagStatFile$)
+                        End If
+
+                    Loop Until FileExit% = 27 Or FileExit% = 0
 
                 Case 2:
-                    standingsFile$ = ChooseFile$ (diskPaths$(2) + "*.STD", "LEAGUE STANDINGS", FileExit%)
+                    Do
+                        standingsFile$ = ChooseFile$ (diskPaths$(2) + "*.STD", "LEAGUE STANDINGS", FileExit%)
 
-                    If FileExit% <> 27 And FileExit% <> 0 Then
+                        If FileExit% <> 27 And FileExit% <> 0 Then
 
-                        Open diskPaths$(2) + standingsFile$ + ".STD" For Input As #1
+                            Open diskPaths$(2) + standingsFile$ + ".STD" For Input As #1
 
-                        Input #1, league$, D1$, D2$, D3$, D4$
+                            Input #1, league$, D1$, D2$, D3$, D4$
 
-                        For I = 1 To 40:
-                            Input #1, TML$(I), WW!(I), expLL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
-                        Next
+                            For I = 1 To MAX_CONFERENCES
+                                Input #1, TML$(I), WW!(I), expLL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
+                            Next
 
-                        Close #1
+                            Close #1
 
-                        Call NewStandingOptions
+                            Call NewStandingOptions
 
-                    End If
+                        End If
+
+                    Loop Until FileExit% = 27 Or FileExit% = 0
 
             End Select
         End If
@@ -120,7 +126,7 @@ Sub UpdateLeagueStandings (league$)
 
     currRecord = 0
 
-    For KK = 1 To 40
+    For KK = 1 To MAX_CONFERENCES
 
         currRecord = currRecord + 1
         Color 14
@@ -226,7 +232,7 @@ Sub UpdateLeagueStandings (league$)
 
     Write #1, league$, D1$, D2$, D3$, D4$
 
-    For I = 1 To 40:
+    For I = 1 To MAX_CONFERENCES
         Write #1, TML$(I), WW!(I), expLL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
     Next
 
