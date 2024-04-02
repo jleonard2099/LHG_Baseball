@@ -320,8 +320,8 @@ Sub NewSchedule (scheduleFile$)
                 Loop Until targetGame% >= 1 And targetGame% <= scheduleAP%(0)
                 NS% = Int((targetGame%- 1) / 20)
 
-                boxName$ = diskPaths$(1) + scheduleFile$ + "_GAME" + Mid$(Str$(targetGame%), 2, Len(Str$(targetGame%))) + ".BS"
-                'boxName$ = diskPaths$(1) + "BOX" + Mid$(Str$(targetGame%), 2, Len(Str$(targetGame%)))
+                'boxName$ = diskPaths$(1) + scheduleFile$ + "_GAME" + Mid$(Str$(targetGame%), 2, Len(Str$(targetGame%))) + ".BS"
+                boxName$ = diskPaths$(1) + "BOX" + Mid$(Str$(targetGame%), 2, Len(Str$(targetGame%)))
 
                 Call EditBoxscore (boxName$)
                 Color 15, 0
@@ -1045,28 +1045,28 @@ Sub BoxscoreMaintenance ()
                     Call EditParameters
 
                 Case 2:
-                    boxscoreFile$ = ChooseFile$(diskPaths$(1) + "*.BSS", "BOXSCORE", ExitCode%)
-                    'boxscoreFile$ = ChooseFile$(diskPaths$(1) + "*.SPC", "BOXSCORE", ExitCode%)
+                    'boxscoreFile$ = ChooseFile$(diskPaths$(1) + "*.BSS", "BOXSCORE", ExitCode%)
+                    boxscoreFile$ = ChooseFile$(diskPaths$(1) + "*.SPC", "BOXSCORE", ExitCode%)
 
                     If ExitCode% <> 27 And ExitCode% <> 0 And boxscoreFile$ <> "" Then
                         boxName$ = diskPaths$(1) + boxscoreFile$
-                        Call EditBoxscore(boxName$ + ".BSS")
-                        'Call EditBoxscore(boxName$ + ".SPC")
+                        'Call EditBoxscore(boxName$ + ".BSS")
+                        Call EditBoxscore(boxName$ + ".SPC")
                     End If
 
                 Case 3
-                    Spec$ = diskPaths$(1) + "*.BS"
-                    'Spec$ = diskPaths$(1) + "BOX*."
+                    'Spec$ = diskPaths$(1) + "*.BS"
+                    Spec$ = diskPaths$(1) + "BOX*."
                     Call DeleteBoxscores(Selection%, Spec$)
 
                 Case 4
-                    Spec$ = diskPaths$(1) + "*.BSS"
-                    'Spec$ = diskPaths$(1) + "*.SPC"
+                    'Spec$ = diskPaths$(1) + "*.BSS"
+                    Spec$ = diskPaths$(1) + "*.SPC"
                     Call DeleteBoxscores(Selection%, Spec$)
 
                 Case 5:
-                    Spec$ = diskPaths$(1) + "*.BS"
-                    'Spec$ = diskPaths$(1) + "BOX*."
+                    'Spec$ = diskPaths$(1) + "*.BS"
+                    Spec$ = diskPaths$(1) + "BOX*."
                     Call DeleteBoxscores(Selection%, Spec$)
 
                     Spec$ = diskPaths$(1) + "*.BSS"
