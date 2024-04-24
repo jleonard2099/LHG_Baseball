@@ -5,16 +5,16 @@
 'for navigating the "Expanded" standings
 Sub ExpandedStandings ()
 
-    _Title "Full Count Baseball - League Standings"
+    _Title "Full Count Baseball - Expanded Leaders / Standings"
 
     Shared CLT!(), CWS!()
     Shared ELL!(), EWW!(), HLL!(), HWW!()
-    Shared expLL!(), LLS!(), LTL!(), LTW!(), LWS!()
+    Shared expLL!(), LLS!(), lastTenLosses!(), lastTenWins!(), LWS!()
     Shared RLL!(), RWW!(), TLS!(), TWS!(), WW!()
 
     Shared TML$(), Z1$()
 
-    Shared D1$, D2$, D3$, D4$
+    Shared div1Name$, div2Name$, div3Name$, div4Name$
 
     Erase CLT!, CWS!
     ERase LLS!, LWS!
@@ -29,9 +29,9 @@ Sub ExpandedStandings ()
 
         Call TITLE
 
-        menuChoices$(1) = "UPDATE LEAGUE STANDINGS      "
-        menuChoices$(2) = "VIEW / PRINT LEAGUE STANDINGS"
-        menuChoices$(3) = "RETURN TO MAIN MENU          "
+        menuChoices$(1) = "UPDATE EXPANDED LEAGUE STANDINGS      "
+        menuChoices$(2) = "VIEW / PRINT EXPANDED LEAGUE STANDINGS"
+        menuChoices$(3) = "RETURN TO MAIN MENU                   "
         Selection% = 1
         Count% = 3
         Start% = 1
@@ -56,32 +56,78 @@ Sub ExpandedStandings ()
             Select Case Selection%
 
                 Case 1:
-                    leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", FileExit%)
+                    Do
+                        leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", FileExit%)
 
-                    If FileExit% <> 27 And FileExit% <> 0 Then
-                        Color 15, 0
-                        Cls
-                        Call UpdateLeagueStandings(leagStatFile$)
-                    End If
+                        If FileExit% <> 27 And FileExit% <> 0 Then
+                            Color 15, 0
+                            Cls
+                            Call UpdateExpandedStandings(leagStatFile$)
+                        End If
+
+                    Loop Until FileExit% = 27 Or FileExit% = 0
 
                 Case 2:
-                    standingsFile$ = ChooseFile$ (diskPaths$(2) + "*.STD", "LEAGUE STANDINGS", FileExit%)
+                    Do
+                        standingsFile$ = ChooseFile$ (diskPaths$(2) + "*.STD", "LEAGUE STANDINGS", FileExit%)
 
-                    If FileExit% <> 27 And FileExit% <> 0 Then
+                        If FileExit% <> 27 And FileExit% <> 0 Then
 
-                        Open diskPaths$(2) + standingsFile$ + ".STD" For Input As #1
+                            Open diskPaths$(2) + standingsFile$ + ".STD" For Input As #1
 
-                        Input #1, league$, D1$, D2$, D3$, D4$
+                            Input #1, league$, div1Name$, div2Name$, div3Name$, div4Name$
 
-                        For I = 1 To 40:
-                            Input #1, TML$(I), WW!(I), expLL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
-                        Next
+                            For I = 1 To TEAMS_PER_LEAGUE
+                                Input #1, TML$(I), WW!(I), expLL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), lastTenWins!(I), lastTenLosses!(I)
+                            Next
 
-                        Close #1
+                            Close #1
 
-                        Call NewStandingOptions
+                            Color 15, 0
+                            Cls
 
-                    End If
+                            Call MenuBox(8, 25, 24, 5, 15, 1)
+
+                            Do
+
+                                Locate 10, 32
+                                Color 7, 1
+
+                                Locate , 32: Print "SEND TO ";
+                                Color 15: Print "F";
+                                Color 7: Print "ILE"
+                                Locate , 32: Print "SEND TO ";
+                                Color 15: Print "P";
+                                Color 7: Print "RINTER"
+                                Locate , 32: Print "SEND TO ";
+                                Color 15: Print "S";
+                                Color 7: Print "CREEN"
+
+                                I$ = GetKeyPress$
+
+                                Color 14, 0
+
+                            Loop Until UCase$(I$) = "F" Or UCase$(I$) = "P" Or UCase$(I$) = "S"
+
+                            Select Case UCase$(I$)
+
+                                Case "F"
+                                    userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                                    If userFile$ <> "" Then
+                                        Call NewStandings_Report(0, userFile$, league$)
+                                    End If
+
+                                Case "P"
+                                    Call NewStandings_Report(1, "REPORT", league$)
+
+                                Case "S":
+                                    Call NewStandings_Screen(league$)
+
+                            End Select
+
+                        End If
+
+                    Loop Until FileExit% = 27 Or FileExit% = 0
 
             End Select
         End If
@@ -90,20 +136,21 @@ Sub ExpandedStandings ()
 
 End Sub
 
+
 '----------------------------------------
-'    UpdateLeagueStandings Subroutine
+'    UpdateExpandedStandings Subroutine
 '----------------------------------------
 'This subroutine lets the user select a
 'league (.TMS file) and reads in the stats 
 'for that league. It then calculates the
 'standings for that league and writes a 
 'corresponding .STD file.
-Sub UpdateLeagueStandings (league$)
+Sub UpdateExpandedStandings (league$)
 
     Shared CLT!(), CWS!()
     Shared ELL!(), EWW!() 
     Shared HLL!(), HWW!()
-    Shared expLL!(), LTW!(), LTL!()
+    Shared expLL!(), lastTenWins!(), lastTenLosses!()
     Shared LLS!(), LWS!()
     Shared RLL!(), RWW!()
     Shared TLS!(), TWS!(), WW!()
@@ -114,13 +161,13 @@ Sub UpdateLeagueStandings (league$)
     Shared teamScore(), nbrInnings(), oppScore()
     Shared oppName$(), losePitcher$(), locIndicator$(), winPitcher$()
 
-    Shared D1$, D2$, D3$, D4$
+    Shared div1Name$, div2Name$, div3Name$, div4Name$
 
     TMR = 40
 
     currRecord = 0
 
-    For KK = 1 To 40
+    For KK = 1 To TEAMS_PER_LEAGUE
 
         currRecord = currRecord + 1
         Color 14
@@ -205,14 +252,14 @@ Sub UpdateLeagueStandings (league$)
                 Next I
 
                 If nbrGames <= 10 Then
-                    LTL!(currRecord) = expLL!(currRecord)
-                    LTW!(currRecord) = WW!(currRecord)
+                    lastTenLosses!(currRecord) = expLL!(currRecord)
+                    lastTenWins!(currRecord) = WW!(currRecord)
                 Else
                     M = nbrGames - 9
 
                     For J = M To nbrGames
-                        If teamScore(J) > oppScore(J) Then LTW!(currRecord) = LTW!(currRecord) + 1
-                        If oppScore(J) > teamScore(J) Then LTL!(currRecord) = LTL!(currRecord) + 1
+                        If teamScore(J) > oppScore(J) Then lastTenWins!(currRecord) = lastTenWins!(currRecord) + 1
+                        If oppScore(J) > teamScore(J) Then lastTenLosses!(currRecord) = lastTenLosses!(currRecord) + 1
                     Next J
                 End If
 
@@ -224,80 +271,39 @@ Sub UpdateLeagueStandings (league$)
 
     Open diskPaths$(2) + league$ + ".STD" For Output As #1
 
-    Write #1, league$, D1$, D2$, D3$, D4$
+    Write #1, league$, div1Name$, div2Name$, div3Name$, div4Name$
 
-    For I = 1 To 40:
-        Write #1, TML$(I), WW!(I), expLL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
+    For I = 1 To TEAMS_PER_LEAGUE
+        Write #1, TML$(I), WW!(I), expLL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), lastTenWins!(I), lastTenLosses!(I)
     Next
 
     Close #1
 
 End Sub
 
-'----------------------------------------
-'   NewStandingOptions Subroutine
-'----------------------------------------
-'This subroutine lets you choose a prev-
-'iously compiled Standings file (.STD)
-'and then prompts the user for display
-'options.
-Sub NewStandingOptions ()
-
-    Shared CLT!(), CWS!()
-    Shared ELL!(), EWW!(), HLL!(), HWW!()
-    Shared expLL!(), LLS!(), LTL!(), LTW!(), LWS!()
-    Shared RLL!(), RWW!(), TLS!(), TWS!(), WW!()
-
-    Shared TML$(), Z1$()
-
-    Shared D1$, D2$, D3$, D4$
-
-    _Title "Full Count Baseball - League Standings"
-
-    Cls
-    
-    Do
-        Locate 15, 10
-        Color 12: Print "V";: Color 7: Print "iew or ";
-        Color 12: Print "P";: Color 7: Print "rint"
-        A$ = GetKeyPress$
-    Loop Until UCase$(A$) = "P" Or UCase$(A$) = "V"
-
-    Select Case UCase$(A$)
-
-        Case "V":
-            Call ViewNewStandings(league$)
-
-        Case "P":
-            Call PrintNewStandings(league$)
-
-    End Select
-
-End Sub
-
 
 '----------------------------------------
-'       ViewNewStandings Subroutine
+'       NewStandings_Screen Subroutine
 '----------------------------------------
 'This subroutine sorts the expanded league
 'standings and outputs them to the user
 'display in a formatted view
-Sub ViewNewStandings (league$)
+Sub NewStandings_Screen (league$)
 
     Shared CLT!(), CWS!()
     Shared ELL!(), EWW!(), HLL!(), HWW!()
-    Shared expLL!(), LLS!(), LTL!(), LTW!(), LWS!()
+    Shared expLL!(), LLS!(), lastTenLosses!(), lastTenWins!(), LWS!()
     Shared RLL!(), RWW!(), TLS!(), TWS!(), WW!()
 
     Shared TML$()
 
-    Shared D1$, D2$, D3$, D4$
+    Shared div1Name$, div2Name$, div3Name$, div4Name$
 
     MJ = 0
 
     For NT = 1 To 4
 
-        AA = (NT * 10) - 9
+        AA = ((NT - 1) * 10) + 1
         ZZ = NT * 10
 
         Call SortStandings(AA, ZZ)
@@ -310,10 +316,21 @@ Sub ViewNewStandings (league$)
         Locate 2: Print Tab(16); "                      MAG.  L  L   C  C   HOME  ROAD  X-IN  L-10"
         Locate 3
 
-        If NT = 1 Then Print D1$;
-        If NT = 2 Then Print D2$;
-        If NT = 3 Then Print D3$;
-        If NT = 4 Then Print D4$;
+        Select Case NT
+
+            Case 1
+                Print #1, div1Name$;
+
+            Case 2
+                Print #1, div2Name$;
+
+            Case 3
+                Print #1, div3Name$;
+
+            Case 4
+                Print #1, div4Name$;
+
+        End Select
 
         Print Tab(16); "G   W   L   PCT   GB   #    WS LS  WS LS  W- L  W- L  W- L  W- L"
 
@@ -358,7 +375,7 @@ Sub ViewNewStandings (league$)
                 Print Tab(57); Using "##"; HWW!(I);: Print Tab(60); Using "##"; HLL!(I);
                 Print Tab(63); Using "##"; RWW!(I);: Print Tab(66); Using "##"; RLL!(I);
                 Print Tab(69); Using "##"; EWW!(I);: Print Tab(72); Using "##"; ELL!(I);
-                Print Tab(75); Using "##"; LTW!(I);: Print Tab(78); Using "##"; LTL!(I)
+                Print Tab(75); Using "##"; lastTenWins!(I);: Print Tab(78); Using "##"; lastTenLosses!(I)
 
             End If
 
@@ -380,96 +397,127 @@ Sub ViewNewStandings (league$)
 End Sub
 
 '----------------------------------------
-'       PrintNewStandings Subroutine
+'       NewStandings_Report Subroutine
 '----------------------------------------
 'This subroutine sorts the expanded league
 'standings and outputs them to the default
 'printer in a formatted view
-Sub PrintNewStandings (league$)
+Sub NewStandings_Report (printDest, destFile$, league$)
 
     Shared CLT!(), CWS!()
     Shared ELL!(), EWW!(), HLL!(), HWW!()
-    Shared expLL!(), LLS!(), LTL!(), LTW!(), LWS!()
+    Shared expLL!(), LLS!(), lastTenLosses!(), lastTenWins!(), LWS!()
     Shared RLL!(), RWW!(), TLS!(), TWS!(), WW!()
 
     Shared TML$()
 
-    Shared D1$, D2$, D3$, D4$
+    Shared div1Name$, div2Name$, div3Name$, div4Name$
 
     MJ = 0
 
-    LPrint Tab(35); league$
+	Color 15, 0
+	Cls
+
+	Open destFile$ For Output As #1
+
+    Print #1, Tab(35); league$
 
     For NT = 1 To 4
 
-        AA = NT * 10 - 9
+        AA = ((NT - 1) * 10) + 1
         ZZ = NT * 10
 
         Call SortStandings(AA, ZZ)
 
-        LPrint Tab(16); "                      MAG.  L  L   C  C   HOME  ROAD  X-IN  L-10"
+        Print #1, Tab(16); "                      MAG.  L  L   C  C   HOME  ROAD  X-IN  L-10"
 
-        If NT = 1 Then LPrint D1$;
-        If NT = 2 Then LPrint D2$;
-        If NT = 3 Then LPrint D3$;
-        If NT = 4 Then LPrint D4$;
+        Select Case NT
 
-        LPrint Tab(16); "G   W   L   PCT   GB   #    WS LS  WS LS  W- L  W- L  W- L  W- L"
+            Case 1
+                Print #1, div1Name$;
+
+            Case 2
+                Print #1, div2Name$;
+
+            Case 3
+                Print #1, div3Name$;
+
+            Case 4
+                Print #1, div4Name$;
+
+        End Select
+
+        Print #1, Tab(16); "G   W   L   PCT   GB   #    WS LS  WS LS  W- L  W- L  W- L  W- L"
 
         For I = AA To ZZ
 
             If TML$(I) <> "" And TML$(I) <> "*" Then
 
-                LPrint TML$(I);
-                LPrint Tab(14); Using "###"; WW!(I) + expLL!(I); Tab(18);
-                LPrint Using "###"; WW!(I); Tab(22);
-                LPrint Using "###"; expLL!(I);
+                Print #1, TML$(I);
+                Print #1, Tab(14); Using "###"; WW!(I) + expLL!(I); Tab(18);
+                Print #1, Using "###"; WW!(I); Tab(22);
+                Print #1, Using "###"; expLL!(I);
 
                 'PCT
                 If expLL!(I) = 0 And expLL!(I) + WW!(I) <> 0 Then
-                    LPrint Tab(26); "1.000";
+                    Print #1, Tab(26); "1.000";
                 Else
                     If WW!(I) = 0 Then
-                        LPrint Tab(27); ".000";
+                        Print #1, Tab(27); ".000";
                     Else
                         If WW!(I) + expLL!(I) = 0 Then
-                            LPrint Tab(27); ".000";
+                            Print #1, Tab(27); ".000";
                         Else
                             wlPCT! = WW!(I) / (WW!(I) + expLL!(I))
-                            LPrint Tab(27); Using ".###"; wlPCT!;
+                            Print #1, Tab(27); Using ".###"; wlPCT!;
                         End If
                     End If
                 End If
 
                 'GB
                 If ((WW!(AA) - WW!(I)) + (expLL!(I) - expLL!(AA))) / 2 = 0 Then
-                    LPrint Tab(32); " ---";
+                    Print #1, Tab(32); " ---";
                 Else
-                    LPrint Tab(32); Using "##.#"; ((WW!(NT * 10 - 9) - WW!(I)) + (expLL!(I) - expLL!(NT * 10 - 9))) / 2;
+                    Print #1, Tab(32); Using "##.#"; ((WW!(NT * 10 - 9) - WW!(I)) + (expLL!(I) - expLL!(NT * 10 - 9))) / 2;
                 End If
 
                 If I = AA Then
                     MJ = 163 - WW!(AA) - expLL!(AA + 1)
                     If MJ < 0 Then MJ = 0
-                    LPrint Tab(38); Using "###"; MJ
+                    Print #1, Tab(38); Using "###"; MJ
                 End If
 
-                LPrint Tab(44); Using "##"; TWS!(I); Tab(47); TLS!(I); Tab(51); CWS!(I); Tab(54); CLT!(I);
-                LPrint Tab(57); Using "##"; HWW!(I);: LPrint Tab(60); Using "##"; HLL!(I);
-                LPrint Tab(63); Using "##"; RWW!(I);: LPrint Tab(66); Using "##"; RLL!(I);
-                LPrint Tab(69); Using "##"; EWW!(I);: LPrint Tab(72); Using "##"; ELL!(I);
-                LPrint Tab(75); Using "##"; LTW!(I);: LPrint Tab(78); Using "##"; LTL!(I)
+                Print #1, Tab(44); Using "##"; TWS!(I); Tab(47); TLS!(I); Tab(51); CWS!(I); Tab(54); CLT!(I);
+                Print #1, Tab(57); Using "##"; HWW!(I);: Print #1, Tab(60); Using "##"; HLL!(I);
+                Print #1, Tab(63); Using "##"; RWW!(I);: Print #1, Tab(66); Using "##"; RLL!(I);
+                Print #1, Tab(69); Using "##"; EWW!(I);: Print #1, Tab(72); Using "##"; ELL!(I);
+                Print #1, Tab(75); Using "##"; lastTenWins!(I);: Print #1, Tab(78); Using "##"; lastTenLosses!(I)
 
             End If
 
         Next
 
-        LPrint
-        LPrint
+        Print #1,
+        Print #1,
 
     Next NT
 
-    LPrint Chr$(12)
+	If printDest = 1 Then
+
+		Open destFile$ For Input As #2
+
+		Do While Not EOF(2)
+			Line Input #2, X$
+			LPrint X$
+		Loop
+
+		Close #2
+
+		LPrint Chr$(12)
+
+		Kill destFile$
+
+	End If
 
 End Sub
 
@@ -487,7 +535,7 @@ Sub SortStandings (AA, ZZ)
 
     Shared CLT!(), CWS!()
     Shared ELL!(), EWW!(), HLL!(), HWW!()
-    Shared expLL!(), LLS!(), LTL!(), LTW!(), LWS!()
+    Shared expLL!(), LLS!(), lastTenLosses!(), lastTenWins!(), LWS!()
     Shared RLL!(), RWW!(), TLS!(), TWS!(), WW!()
 
     Shared TML$()
@@ -518,8 +566,8 @@ Sub SortStandings (AA, ZZ)
                         Swap RLL!(X), RLL!(Y)
                         Swap HWW!(X), HWW!(Y)
                         Swap RWW!(X), RWW!(Y)
-                        Swap LTL!(X), LTL!(Y)
-                        Swap LTW!(X), LTW!(Y)
+                        Swap lastTenLosses!(X), lastTenLosses!(Y)
+                        Swap lastTenWins!(X), lastTenWins!(Y)
 
                     End If
 

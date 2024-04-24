@@ -60,7 +60,7 @@ Sub CAREER ()
                     Call CAREDIT
 
                 Case 5:
-                    Call ViewPrintCareerRecords
+                    Call ReviewCareerRecords
 
                 Case 6:
                     Call CARLDR
@@ -161,8 +161,8 @@ Sub MergeFirstYear ()
                 Color 15, 0
                 Cls
 
-                Locate 8, 25: Input "ENTER YEAR TO ADD (EX. - 1961)"; statYear
-                Locate 9, 25: Print "ANY CHANGE? (Y/N)"
+                Locate 8, 22: Input "ENTER YEAR TO ADD (EX. - 1961)"; statYear
+                Locate 9, 22: Print "ANY CHANGE? (Y/N)"
 
                 J$ = GetKeyPress$
 
@@ -360,14 +360,14 @@ End Sub
 
 
 '----------------------------------------
-'    ViewPrintCareerRecords Subroutine
+'    ReviewCareerRecords Subroutine
 '----------------------------------------
 'This routine loads in leader records from
 'the .CLD file (which were compiled from  
 'the career file). It then gives the user
 'an option to View or Print results, AND
 'formats the results for them as directed.
-Sub ViewPrintCareerRecords ()
+Sub ReviewCareerRecords ()
 
     Shared BLL!(), PLL!()
     Shared BLYR%(), PLYR%()
@@ -393,182 +393,328 @@ Sub ViewPrintCareerRecords ()
 
         Close #1
 
+        Color 15, 0
+        Cls
+
+        Call MenuBox(8, 25, 24, 5, 15, 1)
+
         Do
-            Color 15, 0
-            Cls
 
-            Do
-                Locate 15, 10
-                Color 12: Print "V";: Color 7: Print "iew or ";
-                Color 12: Print "P";: Color 7: Print "rint"
-                I$ = GetKeyPress$
-            Loop Until UCase$(I$) = "P" Or UCase$(I$) = "V" Or I$ = Chr$(27)
+            Locate 10, 32
+            Color 7, 1
 
-            Select Case UCase$(I$)
+            Locate , 32: Print "SEND TO ";
+            Color 15: Print "F";
+            Color 7: Print "ILE"
+            Locate , 32: Print "SEND TO ";
+            Color 15: Print "P";
+            Color 7: Print "RINTER"
+            Locate , 32: Print "SEND TO ";
+            Color 15: Print "S";
+            Color 7: Print "CREEN"
 
-                Case "P":
+            I$ = GetKeyPress$
 
-                    Color 0, 15
+            Color 14, 0
 
-                    LPrint "CATEGORY           RECORD           PLAYER              YEAR"
-                    LPrint
-                    LPrint "AT BATS";: LPrint Tab(23); Using "###"; BLL!(0);: LPrint Tab(37); careerBL$(0);: LPrint Tab(56); BLYR%(0)
-                    LPrint "RUNS SCORED";: LPrint Tab(23); Using "###"; BLL!(1);: LPrint Tab(37); careerBL$(1);: LPrint Tab(56); BLYR%(1)
-                    LPrint "HITS";: LPrint Tab(23); Using "###"; BLL!(2);: LPrint Tab(37); careerBL$(2);: LPrint Tab(56); BLYR%(2)
-                    LPrint "DOUBLES";: LPrint Tab(23); Using "###"; BLL!(3);: LPrint Tab(37); careerBL$(3);: LPrint Tab(56); BLYR%(3)
-                    LPrint "TRIPLES";: LPrint Tab(23); Using "###"; BLL!(4);: LPrint Tab(37); careerBL$(4);: LPrint Tab(56); BLYR%(4)
-                    LPrint "HOME RUNS";: LPrint Tab(23); Using "###"; BLL!(5);: LPrint Tab(37); careerBL$(5);: LPrint Tab(56); BLYR%(5)
-                    LPrint "RUNS BATTED IN";: LPrint Tab(23); Using "###"; BLL!(6);: LPrint Tab(37); careerBL$(6);: LPrint Tab(56); BLYR%(6)
-                    LPrint "WALKS";: LPrint Tab(23); Using "###"; BLL!(7);: LPrint Tab(37); careerBL$(7);: LPrint Tab(56); BLYR%(7)
-                    LPrint "STRIKEOUTS";: LPrint Tab(23); Using "###"; BLL!(8);: LPrint Tab(37); careerBL$(8);: LPrint Tab(56); BLYR%(8)
-                    LPrint "STEALS";: LPrint Tab(23); Using "###"; BLL!(9);: LPrint Tab(37); careerBL$(9);: LPrint Tab(56); BLYR%(9)
-                    LPrint "CAUGHT STEALING";: LPrint Tab(23); Using "###"; BLL!(10);: LPrint Tab(37); careerBL$(10);: LPrint Tab(56); BLYR%(10)
-                    LPrint "ERRORS";: LPrint Tab(23); Using "###"; BLL!(11);: LPrint Tab(37); careerBL$(11);: LPrint Tab(56); BLYR%(11)
+        Loop Until UCase$(I$) = "F" Or UCase$(I$) = "P" Or UCase$(I$) = "S"
 
-                    LPrint "BATTING AVERAGE";
+        Select Case UCase$(I$)
+
+            Case "F"
+                userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Career","*.txt","Text File")
+                If userFile$ <> "" Then
+                    Call CareerRecords_Report(0, userFile$)
+                End If
+
+            Case "P"
+                Call CareerRecords_Report(1, "CAREER")
+
+            Case "S":
+
+                Do
+                    Color 15, 0
+                    Cls
+
+                    Color 12: Print "CATEGORY           RECORD           PLAYER              YEAR"
+                    Print
+
+                    Color 3: Print "AT BATS";: Color 7: Print Tab(23); Using "###"; BLL!(0);: Print Tab(37); careerBL$(0);: Print Tab(56); BLYR%(0)
+                    Color 3: Print "RUNS SCORED";: Color 7: Print Tab(23); Using "###"; BLL!(1);: Print Tab(37); careerBL$(1);: Print Tab(56); BLYR%(1)
+                    Color 3: Print "HITS";: Color 7: Print Tab(23); Using "###"; BLL!(2);: Print Tab(37); careerBL$(2);: Print Tab(56); BLYR%(2)
+                    Color 3: Print "DOUBLES";: Color 7: Print Tab(23); Using "###"; BLL!(3);: Print Tab(37); careerBL$(3);: Print Tab(56); BLYR%(3)
+                    Color 3: Print "TRIPLES";: Color 7: Print Tab(23); Using "###"; BLL!(4);: Print Tab(37); careerBL$(4);: Print Tab(56); BLYR%(4)
+                    Color 3: Print "HOME RUNS";: Color 7: Print Tab(23); Using "###"; BLL!(5);: Print Tab(37); careerBL$(5);: Print Tab(56); BLYR%(5)
+                    Color 3: Print "RUNS BATTED IN";: Color 7: Print Tab(23); Using "###"; BLL!(6);: Print Tab(37); careerBL$(6);: Print Tab(56); BLYR%(6)
+                    Color 3: Print "WALKS";: Color 7: Print Tab(23); Using "###"; BLL!(7);: Print Tab(37); careerBL$(7);: Print Tab(56); BLYR%(7)
+                    Color 3: Print "STRIKEOUTS";: Color 7: Print Tab(23); Using "###"; BLL!(8);: Print Tab(37); careerBL$(8);: Print Tab(56); BLYR%(8)
+                    Color 3: Print "STEALS";: Color 7: Print Tab(23); Using "###"; BLL!(9);: Print Tab(37); careerBL$(9);: Print Tab(56); BLYR%(9)
+                    Color 3: Print "CAUGHT STEALING";: Color 7: Print Tab(23); Using "###"; BLL!(10);: Print Tab(37); careerBL$(10);: Print Tab(56); BLYR%(10)
+                    Color 3: Print "ERRORS";: Color 7: Print Tab(23); Using "###"; BLL!(11);: Print Tab(37); careerBL$(11);: Print Tab(56); BLYR%(11)
+                    Color 3: Print "BATTING AVERAGE";: Color 7
 
                     If BLL!(12) > 0 Then
-                        LPrint Tab(22); Using ".###"; BLL!(12);: LPrint Tab(37); careerBL$(12);: LPrint Tab(56); BLYR%(12)
+                        Print Tab(22); Using ".###"; BLL!(12);: Print Tab(37); careerBL$(12);: Print Tab(56); BLYR%(12)
                     Else
-                        LPrint Tab(22); " ---"
+                        Print Tab(22); " ---"
                     End If
 
-                    LPrint "SLUGGING PCT.";
+                    Color 3: Print "SLUGGING PCT.";: Color 7:
                     If BLL!(13) > 0 Then
-                        LPrint Tab(22); Using "#.###"; BLL!(13);: LPrint Tab(37); careerBL$(13);: LPrint Tab(56); BLYR%(13)
+                        Print Tab(22); Using "#.###"; BLL!(13);: Print Tab(37); careerBL$(13);: Print Tab(56); BLYR%(13)
                     Else
-                        LPrint Tab(22); " ---"
+                        Print Tab(22); " ---"
                     End If
 
-                    LPrint "ON BASE PCT.";
-                    If BLL!(14) > 0 Then
-                        LPrint Tab(22); Using "#.###"; BLL!(14);: LPrint Tab(37); careerBL$(14);: LPrint Tab(56); BLYR%(14)
+                    Color 3: Print "ON BASE PCT.";: Color 7:
+                    If BLL!(13) > 0 Then
+                        Print Tab(22); Using "#.###"; BLL!(14);: Print Tab(37); careerBL$(14);: Print Tab(56); BLYR%(14)
                     Else
-                        LPrint Tab(22); " ---"
+                        Print Tab(22); " ---"
                     End If
 
-                    LPrint "WINS";: LPrint Tab(23); Using "###"; PLL!(0);: LPrint Tab(37); careerPL$(0);: LPrint Tab(56); PLYR%(0)
-                    LPrint "LOSSES";: LPrint Tab(23); Using "###"; PLL!(1);: LPrint Tab(37); careerPL$(1);: LPrint Tab(56); PLYR%(1)
-                    LPrint "SAVES";: LPrint Tab(23); Using "###"; PLL!(2);: LPrint Tab(37); careerPL$(2);: LPrint Tab(56); PLYR%(2)
-                    LPrint "INNINGS PITCHED";: LPrint Tab(23); Using "###"; PLL!(3);:
+                    Color 15
+                    Locate 23, 5: Print "HIT ANY KEY TO CONTINUE"
+                    I$ = GetKeyPress$
 
-                    If PLL!(3) - (Int(PLL!(3) / 3) * 3) > 0 Then LPrint ".";: LPrint Using "#"; PLL!(3) - (Int(PLL!(3) / 3) * 3);:
+                    Cls
 
-                    LPrint Tab(37); careerPL$(3);: LPrint Tab(56); PLYR%(3)
-                    LPrint "HITS ALLOWED";: LPrint Tab(23); Using "###"; PLL!(4);: LPrint Tab(37); careerPL$(4);: LPrint Tab(56); PLYR%(4)
-                    LPrint "WALKS";: LPrint Tab(23); Using "###"; PLL!(5);: LPrint Tab(37); careerPL$(5);: LPrint Tab(56); PLYR%(5)
-                    LPrint "STRIKOUTS";: LPrint Tab(23); Using "###"; PLL!(6);: LPrint Tab(37); careerPL$(6);: LPrint Tab(56); PLYR%(6)
+                    Color 12: Print "CATEGORY           RECORD           PLAYER              YEAR"
 
-                    LPrint "EARNED RUN AVERAGE";:
+                    Print
+
+                    Color 3: Print "WINS";: Color 7: Print Tab(23); Using "###"; PLL!(0);: Print Tab(37); careerPL$(0);: Print Tab(56); PLYR%(0)
+                    Color 3: Print "LOSSES";: Color 7: Print Tab(23); Using "###"; PLL!(1);: Print Tab(37); careerPL$(1);: Print Tab(56); PLYR%(1)
+                    Color 3: Print "SAVES";: Color 7: Print Tab(23); Using "###"; PLL!(2);: Print Tab(37); careerPL$(2);: Print Tab(56); PLYR%(2)
+                    Color 3: Print "INNINGS PITCHED";: Color 7: Print Tab(23); Using "###"; PLL!(3);:
+
+                    If PLL!(3) - (Int(PLL!(3) / 3) * 3) > 0 Then Print ".";: Print Using "#"; PLL!(3) - (Int(PLL!(3) / 3) * 3);:
+
+                    Print Tab(37); careerPL$(3);: Print Tab(56); PLYR%(3)
+                    Color 3: Print "HITS ALLOWED";: Color 7: Print Tab(23); Using "###"; PLL!(4);: Print Tab(37); careerPL$(4);: Print Tab(56); PLYR%(4)
+                    Color 3: Print "WALKS";: Color 7: Print Tab(23); Using "###"; PLL!(5);: Print Tab(37); careerPL$(5);: Print Tab(56); PLYR%(5)
+                    Color 3: Print "STRIKOUTS";: Color 7: Print Tab(23); Using "###"; PLL!(6);: Print Tab(37); careerPL$(6);: Print Tab(56); PLYR%(6)
+
+                    Color 3: Print "EARNED RUN AVERAGE";: Color 7
                     If PLL!(7) > 0 Then
-                        LPrint Tab(22); Using "##.##"; PLL!(7);: LPrint Tab(37); careerPL$(7);: LPrint Tab(56); PLYR%(7)
+                        Print Tab(22); Using "##.##"; PLL!(7);: Print Tab(37); careerPL$(7);: Print Tab(56); PLYR%(7)
                     Else
-                        LPrint Tab(22); " ---"
+                        Print Tab(22); " ---"
                     End If
 
-                    LPrint "GAMES";: LPrint Tab(23); Using "###"; PLL!(8);: LPrint Tab(37); careerPL$(8);: LPrint Tab(56); PLYR%(8)
-                    LPrint "COMPLETE GAMES";: LPrint Tab(23); Using "###"; PLL!(9);: LPrint Tab(37); careerPL$(9);: LPrint Tab(56); PLYR%(9)
-                    LPrint "RUNS ALLOWED";: LPrint Tab(23); Using "###"; PLL!(10);: LPrint Tab(37); careerPL$(10);: LPrint Tab(56); PLYR%(10)
-                    LPrint "EARNED RUNS ALLOWED";: LPrint Tab(23); Using "###"; PLL!(11);: LPrint Tab(37); careerPL$(11);: LPrint Tab(56); PLYR%(11)
-                    LPrint "SHUTOUTS";: LPrint Tab(23); Using "###"; PLL!(12);: LPrint Tab(37); careerPL$(12);: LPrint Tab(56); PLYR%(12)
-                    LPrint "HOME RUNS ALLOWED";: LPrint Tab(23); Using "###"; PLL!(13);: LPrint Tab(37); careerPL$(13);: LPrint Tab(56); PLYR%(13)
-                    LPrint "DOUBLE PLAYS";: LPrint Tab(23); Using "###"; PLL!(14);: LPrint Tab(37); careerPL$(14);: LPrint Tab(56); PLYR%(14)
-                    LPrint Chr$(12)
+                    Color 3: Print "GAMES";: Color 7: Print Tab(23); Using "###"; PLL!(8);: Print Tab(37); careerPL$(8);: Print Tab(56); PLYR%(8)
+                    Color 3: Print "COMPLETE GAMES";: Color 7: Print Tab(23); Using "###"; PLL!(9);: Print Tab(37); careerPL$(9);: Print Tab(56); PLYR%(9)
+                    Color 3: Print "RUNS ALLOWED";: Color 7: Print Tab(23); Using "###"; PLL!(10);: Print Tab(37); careerPL$(10);: Print Tab(56); PLYR%(10)
+                    Color 3: Print "EARNED RUNS ALLOWED";: Color 7: Print Tab(23); Using "###"; PLL!(11);: Print Tab(37); careerPL$(11);: Print Tab(56); PLYR%(11)
+                    Color 3: Print "SHUTOUTS";: Color 7: Print Tab(23); Using "###"; PLL!(12);: Print Tab(37); careerPL$(12);: Print Tab(56); PLYR%(12)
+                    Color 3: Print "HOME RUNS ALLOWED";: Color 7: Print Tab(23); Using "###"; PLL!(13);: Print Tab(37); careerPL$(13);: Print Tab(56); PLYR%(13)
+                    Color 3: Print "DOUBLE PLAYS";: Color 7: Print Tab(23); Using "###"; PLL!(14);: Print Tab(37); careerPL$(14);: Print Tab(56); PLYR%(14)
 
-                Case "V":
+                    Color 15
 
                     Do
-                        Color 15, 0
-                        Cls
-
-                        Color 12: Print "CATEGORY           RECORD           PLAYER              YEAR"
-                        Print
-
-                        Color 3: Print "AT BATS";: Color 7: Print Tab(23); Using "###"; BLL!(0);: Print Tab(37); careerBL$(0);: Print Tab(56); BLYR%(0)
-                        Color 3: Print "RUNS SCORED";: Color 7: Print Tab(23); Using "###"; BLL!(1);: Print Tab(37); careerBL$(1);: Print Tab(56); BLYR%(1)
-                        Color 3: Print "HITS";: Color 7: Print Tab(23); Using "###"; BLL!(2);: Print Tab(37); careerBL$(2);: Print Tab(56); BLYR%(2)
-                        Color 3: Print "DOUBLES";: Color 7: Print Tab(23); Using "###"; BLL!(3);: Print Tab(37); careerBL$(3);: Print Tab(56); BLYR%(3)
-                        Color 3: Print "TRIPLES";: Color 7: Print Tab(23); Using "###"; BLL!(4);: Print Tab(37); careerBL$(4);: Print Tab(56); BLYR%(4)
-                        Color 3: Print "HOME RUNS";: Color 7: Print Tab(23); Using "###"; BLL!(5);: Print Tab(37); careerBL$(5);: Print Tab(56); BLYR%(5)
-                        Color 3: Print "RUNS BATTED IN";: Color 7: Print Tab(23); Using "###"; BLL!(6);: Print Tab(37); careerBL$(6);: Print Tab(56); BLYR%(6)
-                        Color 3: Print "WALKS";: Color 7: Print Tab(23); Using "###"; BLL!(7);: Print Tab(37); careerBL$(7);: Print Tab(56); BLYR%(7)
-                        Color 3: Print "STRIKEOUTS";: Color 7: Print Tab(23); Using "###"; BLL!(8);: Print Tab(37); careerBL$(8);: Print Tab(56); BLYR%(8)
-                        Color 3: Print "STEALS";: Color 7: Print Tab(23); Using "###"; BLL!(9);: Print Tab(37); careerBL$(9);: Print Tab(56); BLYR%(9)
-                        Color 3: Print "CAUGHT STEALING";: Color 7: Print Tab(23); Using "###"; BLL!(10);: Print Tab(37); careerBL$(10);: Print Tab(56); BLYR%(10)
-                        Color 3: Print "ERRORS";: Color 7: Print Tab(23); Using "###"; BLL!(11);: Print Tab(37); careerBL$(11);: Print Tab(56); BLYR%(11)
-                        Color 3: Print "BATTING AVERAGE";: Color 7
-
-                        If BLL!(12) > 0 Then
-                            Print Tab(22); Using ".###"; BLL!(12);: Print Tab(37); careerBL$(12);: Print Tab(56); BLYR%(12)
-                        Else
-                            Print Tab(22); " ---"
-                        End If
-
-                        Color 3: Print "SLUGGING PCT.";: Color 7:
-                        If BLL!(13) > 0 Then
-                            Print Tab(22); Using "#.###"; BLL!(13);: Print Tab(37); careerBL$(13);: Print Tab(56); BLYR%(13)
-                        Else
-                            Print Tab(22); " ---"
-                        End If
-
-                        Color 3: Print "ON BASE PCT.";: Color 7:
-                        If BLL!(13) > 0 Then
-                            Print Tab(22); Using "#.###"; BLL!(14);: Print Tab(37); careerBL$(14);: Print Tab(56); BLYR%(14)
-                        Else
-                            Print Tab(22); " ---"
-                        End If
-
-                        Color 15
-                        Locate 23, 5: Print "HIT ANY KEY TO CONTINUE"
+                        Locate 22: Print "VIEW AGAIN? (Y/N)"
                         I$ = GetKeyPress$
-
-                        Cls
-
-                        Color 12: Print "CATEGORY           RECORD           PLAYER              YEAR"
-
-                        Print
-
-                        Color 3: Print "WINS";: Color 7: Print Tab(23); Using "###"; PLL!(0);: Print Tab(37); careerPL$(0);: Print Tab(56); PLYR%(0)
-                        Color 3: Print "LOSSES";: Color 7: Print Tab(23); Using "###"; PLL!(1);: Print Tab(37); careerPL$(1);: Print Tab(56); PLYR%(1)
-                        Color 3: Print "SAVES";: Color 7: Print Tab(23); Using "###"; PLL!(2);: Print Tab(37); careerPL$(2);: Print Tab(56); PLYR%(2)
-                        Color 3: Print "INNINGS PITCHED";: Color 7: Print Tab(23); Using "###"; PLL!(3);:
-
-                        If PLL!(3) - (Int(PLL!(3) / 3) * 3) > 0 Then Print ".";: Print Using "#"; PLL!(3) - (Int(PLL!(3) / 3) * 3);:
-
-                        Print Tab(37); careerPL$(3);: Print Tab(56); PLYR%(3)
-                        Color 3: Print "HITS ALLOWED";: Color 7: Print Tab(23); Using "###"; PLL!(4);: Print Tab(37); careerPL$(4);: Print Tab(56); PLYR%(4)
-                        Color 3: Print "WALKS";: Color 7: Print Tab(23); Using "###"; PLL!(5);: Print Tab(37); careerPL$(5);: Print Tab(56); PLYR%(5)
-                        Color 3: Print "STRIKOUTS";: Color 7: Print Tab(23); Using "###"; PLL!(6);: Print Tab(37); careerPL$(6);: Print Tab(56); PLYR%(6)
-
-                        Color 3: Print "EARNED RUN AVERAGE";: Color 7
-                        If PLL!(7) > 0 Then
-                            Print Tab(22); Using "##.##"; PLL!(7);: Print Tab(37); careerPL$(7);: Print Tab(56); PLYR%(7)
-                        Else
-                            Print Tab(22); " ---"
-                        End If
-
-                        Color 3: Print "GAMES";: Color 7: Print Tab(23); Using "###"; PLL!(8);: Print Tab(37); careerPL$(8);: Print Tab(56); PLYR%(8)
-                        Color 3: Print "COMPLETE GAMES";: Color 7: Print Tab(23); Using "###"; PLL!(9);: Print Tab(37); careerPL$(9);: Print Tab(56); PLYR%(9)
-                        Color 3: Print "RUNS ALLOWED";: Color 7: Print Tab(23); Using "###"; PLL!(10);: Print Tab(37); careerPL$(10);: Print Tab(56); PLYR%(10)
-                        Color 3: Print "EARNED RUNS ALLOWED";: Color 7: Print Tab(23); Using "###"; PLL!(11);: Print Tab(37); careerPL$(11);: Print Tab(56); PLYR%(11)
-                        Color 3: Print "SHUTOUTS";: Color 7: Print Tab(23); Using "###"; PLL!(12);: Print Tab(37); careerPL$(12);: Print Tab(56); PLYR%(12)
-                        Color 3: Print "HOME RUNS ALLOWED";: Color 7: Print Tab(23); Using "###"; PLL!(13);: Print Tab(37); careerPL$(13);: Print Tab(56); PLYR%(13)
-                        Color 3: Print "DOUBLE PLAYS";: Color 7: Print Tab(23); Using "###"; PLL!(14);: Print Tab(37); careerPL$(14);: Print Tab(56); PLYR%(14)
-
-                        Color 15
-
-                        Do
-                            Locate 22: Print "VIEW AGAIN? (Y/N)"
-                            I$ = GetKeyPress$
-                        Loop Until UCase$(I$) = "N" Or I$ = Chr$(27)
-
                     Loop Until UCase$(I$) = "N" Or I$ = Chr$(27)
 
-            End Select
+                Loop Until UCase$(I$) = "N" Or I$ = Chr$(27)
 
-        Loop Until UCase$(I$) = "V" Or UCase$(I$) = "P" Or I$ = Chr$(27)
+        End Select
 
     End If 'Done checking ESC
+
+End Sub
+
+
+'----------------------------------------
+'    CareerRecords_Report Subroutine
+'----------------------------------------
+'This routine formats career records for
+'output to either a file or printer, as
+'specified by the user. All operations
+'involve creating a file first, that can
+'then be looped through if sending to 
+'printer
+Sub CareerRecords_Report (printDest, destFile$)
+
+    Shared BLL!(), PLL!()
+    Shared BLYR%(), PLYR%()
+
+    Shared careerBL$(), careerPL$()
+
+	Color 15, 0
+	Cls
+
+	Open destFile$ For Output As #1
+
+    Print #1, "CATEGORY           RECORD           PLAYER              YEAR"
+    Print #1,
+    Print #1, "AT BATS";
+    Print #1, Tab(23); Using "###"; BLL!(0);
+    Print #1, Tab(37); careerBL$(0);
+    Print #1, Tab(56); BLYR%(0)
+    Print #1, "RUNS SCORED";
+    Print #1, Tab(23); Using "###"; BLL!(1);
+    Print #1, Tab(37); careerBL$(1);
+    Print #1, Tab(56); BLYR%(1)
+    Print #1, "HITS";
+    Print #1, Tab(23); Using "###"; BLL!(2);
+    Print #1, Tab(37); careerBL$(2);
+    Print #1, Tab(56); BLYR%(2)
+    Print #1, "DOUBLES";
+    Print #1, Tab(23); Using "###"; BLL!(3);
+    Print #1, Tab(37); careerBL$(3);
+    Print #1, Tab(56); BLYR%(3)
+    Print #1, "TRIPLES";
+    Print #1, Tab(23); Using "###"; BLL!(4);
+    Print #1, Tab(37); careerBL$(4);
+    Print #1, Tab(56); BLYR%(4)
+    Print #1, "HOME RUNS";
+    Print #1, Tab(23); Using "###"; BLL!(5);
+    Print #1, Tab(37); careerBL$(5);
+    Print #1, Tab(56); BLYR%(5)
+    Print #1, "RUNS BATTED IN";
+    Print #1, Tab(23); Using "###"; BLL!(6);
+    Print #1, Tab(37); careerBL$(6);
+    Print #1, Tab(56); BLYR%(6)
+    Print #1, "WALKS";
+    Print #1, Tab(23); Using "###"; BLL!(7);
+    Print #1, Tab(37); careerBL$(7);
+    Print #1, Tab(56); BLYR%(7)
+    Print #1, "STRIKEOUTS";
+    Print #1, Tab(23); Using "###"; BLL!(8);
+    Print #1, Tab(37); careerBL$(8);
+    Print #1, Tab(56); BLYR%(8)
+    Print #1, "STEALS";
+    Print #1, Tab(23); Using "###"; BLL!(9);
+    Print #1, Tab(37); careerBL$(9);
+    Print #1, Tab(56); BLYR%(9)
+    Print #1, "CAUGHT STEALING";
+    Print #1, Tab(23); Using "###"; BLL!(10);
+    Print #1, Tab(37); careerBL$(10);
+    Print #1, Tab(56); BLYR%(10)
+    Print #1, "ERRORS";
+    Print #1, Tab(23); Using "###"; BLL!(11);
+    Print #1, Tab(37); careerBL$(11);
+    Print #1, Tab(56); BLYR%(11)
+
+    Print #1, "BATTING AVERAGE";
+
+    If BLL!(12) > 0 Then
+        Print #1, Tab(22); Using ".###"; BLL!(12);
+        Print #1, Tab(37); careerBL$(12);
+        Print #1, Tab(56); BLYR%(12)
+    Else
+        Print #1, Tab(22); " ---"
+    End If
+
+    Print #1, "SLUGGING PCT.";
+    If BLL!(13) > 0 Then
+        Print #1, Tab(22); Using "#.###"; BLL!(13);
+        Print #1, Tab(37); careerBL$(13);
+        Print #1, Tab(56); BLYR%(13)
+    Else
+        Print #1, Tab(22); " ---"
+    End If
+
+    Print #1, "ON BASE PCT.";
+    If BLL!(14) > 0 Then
+        Print #1, Tab(22); Using "#.###"; BLL!(14);
+        Print #1, Tab(37); careerBL$(14);
+        Print #1, Tab(56); BLYR%(14)
+    Else
+        Print #1, Tab(22); " ---"
+    End If
+
+    Print #1, "WINS";
+    Print #1, Tab(23); Using "###"; PLL!(0);
+    Print #1, Tab(37); careerPL$(0);
+    Print #1, Tab(56); PLYR%(0)
+    Print #1, "LOSSES";
+    Print #1, Tab(23); Using "###"; PLL!(1);
+    Print #1, Tab(37); careerPL$(1);
+    Print #1, Tab(56); PLYR%(1)
+    Print #1, "SAVES";
+    Print #1, Tab(23); Using "###"; PLL!(2);
+    Print #1, Tab(37); careerPL$(2);
+    Print #1, Tab(56); PLYR%(2)
+    Print #1, "INNINGS PITCHED";
+    Print #1, Tab(23); Using "###"; PLL!(3);:
+
+    If PLL!(3) - (Int(PLL!(3) / 3) * 3) > 0 Then 
+        Print #1, ".";
+        Print #1, Using "#"; PLL!(3) - (Int(PLL!(3) / 3) * 3);:
+    End If
+
+    Print #1, Tab(37); careerPL$(3);
+    Print #1, Tab(56); PLYR%(3)
+    Print #1, "HITS ALLOWED";
+    Print #1, Tab(23); Using "###"; PLL!(4);
+    Print #1, Tab(37); careerPL$(4);
+    Print #1, Tab(56); PLYR%(4)
+    Print #1, "WALKS";
+    Print #1, Tab(23); Using "###"; PLL!(5);
+    Print #1, Tab(37); careerPL$(5);
+    Print #1, Tab(56); PLYR%(5)
+    Print #1, "STRIKOUTS";
+    Print #1, Tab(23); Using "###"; PLL!(6);
+    Print #1, Tab(37); careerPL$(6);
+    Print #1, Tab(56); PLYR%(6)
+
+    Print #1, "EARNED RUN AVERAGE";:
+    If PLL!(7) > 0 Then
+        Print #1, Tab(22); Using "##.##"; PLL!(7);
+        Print #1, Tab(37); careerPL$(7);
+        Print #1, Tab(56); PLYR%(7)
+    Else
+        Print #1, Tab(22); " ---"
+    End If
+
+    Print #1, "GAMES";
+    Print #1, Tab(23); Using "###"; PLL!(8);
+    Print #1, Tab(37); careerPL$(8);
+    Print #1, Tab(56); PLYR%(8)
+    Print #1, "COMPLETE GAMES";
+    Print #1, Tab(23); Using "###"; PLL!(9);
+    Print #1, Tab(37); careerPL$(9);
+    Print #1, Tab(56); PLYR%(9)
+    Print #1, "RUNS ALLOWED";
+    Print #1, Tab(23); Using "###"; PLL!(10);
+    Print #1, Tab(37); careerPL$(10);
+    Print #1, Tab(56); PLYR%(10)
+    Print #1, "EARNED RUNS ALLOWED";
+    Print #1, Tab(23); Using "###"; PLL!(11);
+    Print #1, Tab(37); careerPL$(11);
+    Print #1, Tab(56); PLYR%(11)
+    Print #1, "SHUTOUTS";
+    Print #1, Tab(23); Using "###"; PLL!(12);
+    Print #1, Tab(37); careerPL$(12);
+    Print #1, Tab(56); PLYR%(12)
+    Print #1, "HOME RUNS ALLOWED";
+    Print #1, Tab(23); Using "###"; PLL!(13);
+    Print #1, Tab(37); careerPL$(13);
+    Print #1, Tab(56); PLYR%(13)
+    Print #1, "DOUBLE PLAYS";
+    Print #1, Tab(23); Using "###"; PLL!(14);
+    Print #1, Tab(37); careerPL$(14);
+    Print #1, Tab(56); PLYR%(14)
+
+	If printDest = 1 Then
+
+		Open destFile$ For Input As #2
+
+		Do While Not EOF(2)
+			Line Input #2, X$
+			LPrint X$
+		Loop
+
+		Close #2
+
+		LPrint Chr$(12)
+
+		Kill destFile$
+
+	End If
 
 End Sub
 
@@ -681,8 +827,8 @@ Sub MergeAddYear (selectedFile$, statFile$)
     VV = 0
 
     Do
-        Locate 8, 25: Input "ENTER YEAR TO ADD (EX. - 1961)"; statYear
-        Locate 9, 25: Print "ANY CHANGE? (Y/N)"
+        Locate 8, 22: Input "ENTER YEAR TO ADD (EX. - 1961)"; statYear
+        Locate 9, 22: Print "ANY CHANGE? (Y/N)"
         J$ = GetKeyPress$
     Loop Until UCase$(J$) = "Y" Or UCase$(J$) = "N"
 

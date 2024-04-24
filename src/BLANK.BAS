@@ -8,9 +8,9 @@ Sub BLANK ()
 
     _Title "Full Count Baseball - Erase League Stats"
 
-    Dim statFiles$(40)
+    Dim statFiles$(TEAMS_PER_LEAGUE)
 
-    leagueFile$ = ChooseFile$ (diskPaths$(2) + "*.LIB", "LEAGUE", ExitCode%)
+    leagueFile$ = ChooseFile$ (diskPaths$(2) + "*.TMI", "LEAGUE", ExitCode%)
 
     If ExitCode% <> 27 And ExitCode% <> 0 Then
 
@@ -26,15 +26,15 @@ Sub BLANK ()
 
             Open diskPaths$(2) + leagueFile$ + ".TMS" For Input As #2
 
-            Input #2, league$, D1$, D2$, D3$, D4$
+            Input #2, league$, div1Name$, div2Name$, div3Name$, div4Name$
 
-            For XW = 1 To 40
+            For XW = 1 To TEAMS_PER_LEAGUE
                 Input #2, statFiles$(XW)
             Next
 
             Close 2
 
-            For XW = 1 To 40
+            For XW = 1 To TEAMS_PER_LEAGUE
 
                 If statFiles$(XW) <> Chr$(42) Then
                     statFile$ = diskPaths$(1) + statFiles$(XW)

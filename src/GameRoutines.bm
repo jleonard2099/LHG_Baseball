@@ -9,14 +9,14 @@ Sub INFO ()
 
     Color , 1
     Locate 1, 1
-    Print Tab(80);
+    Print Tab(80); " ";
 
     Locate , 33
     Color 14
     Print "GAME OPTIONS MENU"
 
     Locate 24, 1
-    Print Tab(80);
+    Print Tab(80); " ";
     Locate , 1
     Print "    LANCE HAFFNER 1986-2000"; Tab(70); Left$(Time$, 5);
     Locate 3, 1
@@ -364,17 +364,29 @@ End Sub
 
 
 '----------------------------------------
-'            d100 Subroutine
+'         Rolld100 Subroutine
 '----------------------------------------
 'This subroutine assigns a random number
 'between 1 and 100 to the variable that
 'it is called with
-Sub d100 (randNumVar)
+Sub Rolld100 (randNumVar)
 
     randNumVar = Int(Rnd(1) * 100) + 1
 
 End Sub
 
+
+'----------------------------------------
+'            d100 Subroutine
+'----------------------------------------
+'This subroutine assigns a random number
+'between 1 and 100 to the variable that
+'it is called with
+Function d100% ()
+
+    d100% = Int(Rnd(1) * 100) + 1
+
+End Sub
 
 
 '----------------------------------------
@@ -1006,7 +1018,7 @@ End Sub
 ' ...explanation...
 Sub CAUGHTFLY (i, S2%, D)
 
-    Call d100(RN)
+    Call Rolld100(RN)
 
     Select Case RN
 
@@ -1241,7 +1253,7 @@ End Sub
 'a pitch delivery.
 Sub DELIVERY (D)
 
-    Call d100(RN)
+    Call Rolld100(RN)
 
     If RN <= 20 Then
 
@@ -1352,7 +1364,7 @@ End Sub
 'for a double-play.
 Sub DPPBP ()
 
-    Call d100(RN)
+    Call Rolld100(RN)
 
     Select Case RN
         Case 1 To 19: pbpString$ = "may be a double play ball"
@@ -1392,13 +1404,13 @@ End Sub
 Sub DPRELAY ()
 
     If A5%(0) = 11 Then
-        Call d100(RN)
+        Call Rolld100(RN)
 
         If RN <= 10 Then
             Call PBP("Give me the Hoover!")
         Else
 
-            Call d100(RN)
+            Call Rolld100(RN)
 
             Select Case RN
                 Case 1 To 8: pbpString$ = "over to 1st..."
@@ -1435,7 +1447,7 @@ End Sub
 'Double-play safe ?!?!
 Sub DPSAFE ()
 
-    Call d100(RN)
+    Call Rolld100(RN)
 
     pbpString$ = ""
 
@@ -1900,7 +1912,7 @@ Sub FLDERR (F%, gameW%, D, I3, SB%, S2%, P)
         If S2% = 8 Or S2% = 9 Or S2% >= 22 Or S2% = 16 Then I1 = 1
         If S2% >= 12 And S2% <= 14 And rand = 1 Or S2% = 15 Then I1 = 1
 
-        Call d100(RN)
+        Call Rolld100(RN)
 
         If I1 = 1 And gameW% = 1 And S2% = 16 Then pbpString$ = "*** WILD PICK OFF THROW BY" + " " + player$(4) + " ***"
         If I1 = 1 And RN <= 50 Then pbpString$ = "*** THROWING ERROR ON" + " " + player$(4) + " ***"
@@ -1933,7 +1945,7 @@ Sub FLDERR (F%, gameW%, D, I3, SB%, S2%, P)
 
         Else
 
-            Call d100(RN)
+            Call Rolld100(RN)
             A5%(0) = 1
             A5%(1) = 1
             A5%(2) = 1
@@ -2032,7 +2044,7 @@ Sub GETINFIELDER (gameW%, P, I1, D, S2%, P2)
 
     Call GETFIELDER(gameW%, P, I1, D)
 
-    Call d100(RN)
+    Call Rolld100(RN)
 
     If I1 = 1 Then gameW% = 3
     If I1 = 1 And RN <= 92 Then gameW% = 4
@@ -2063,7 +2075,7 @@ Sub GETOUTFIELDER (gameW%, P, I1, D)
 
     Call GETFIELDER(gameW%, P, I1, D)
 
-    Call d100(RN)
+    Call Rolld100(RN)
 
     If I1 = 1 Then gameW% = 7
     If I1 = 1 And RN <= 50 Then gameW% = 9
@@ -2086,7 +2098,7 @@ Sub GROUNDERPBP (gameW%, D)
 
     If gameW% <> 2 Then
 
-        Call d100(RN)
+        Call Rolld100(RN)
 
         range = 140
         min = 1930
@@ -2144,7 +2156,7 @@ Sub HITS2GAP (gameW%, P, I1, D)
 
     Call GETFIELDER(gameW%, P, I1, D)
 
-    Call d100(RN)
+    Call Rolld100(RN)
 
     If I1 = 1 Then
         'should be 6 to 15 ?
@@ -2373,7 +2385,7 @@ End Sub
 'drive.
 Sub LDRIVE (X$)
 
-    Call d100(RN)
+    Call Rolld100(RN)
 
     Select Case RN
         Case 1 To 20: X$ = "rips"
@@ -2409,7 +2421,7 @@ Sub LONGFLY (D, gameW%)
         Call GetPBPString(50, 1370, fileString$, D)
         Call PBP(fileString$)
 
-        Call d100(RN)
+        Call Rolld100(RN)
 
         If Not ((teamRat_GAME(1, 13) = 21 Or teamRat_GAME(1, 13) = 27) And gameW% = 7) Then
 
@@ -2685,7 +2697,7 @@ Sub NEWPITCHER (pIdx, PPH, pz)
 
     Locate 15, 1
 
-    Call d100(RN)
+    Call Rolld100(RN)
 
     If RN <= 50 Then Call PBP("Hold the phone...")
 
@@ -2739,7 +2751,7 @@ Sub OUTATFIRST (gameW%, D, fbun%, FB2P%)
 
     Call PITCHERNAME(gameW%, D)
     Call GROUNDERS(gameW%, D)
-    Call d100(RN)
+    Call Rolld100(RN)
 
     If gameW% = 3 And RN <= 94 Then
         Call PBP("he takes it to the bag unassisted")
@@ -2768,7 +2780,7 @@ End Sub
 'for an outfield error.
 Sub OUTFIELDERR ()
 
-    Call d100(RN)
+    Call Rolld100(RN)
 
     Select Case RN
         Case 1 To 20: pbpString$ = player$(4) + " can't find it"
@@ -2789,7 +2801,7 @@ End Sub
 'outfielder. (LCF vs RCF)
 Function OUTFLDLOCATION$ (gameW%)
 
-    Call d100(RN)
+    Call Rolld100(RN)
 
     If gameW% = 7 Or gameW% = 8 And RN > 50 Then OUTFLDLOCATION$ = "lcf"
     If gameW% = 9 Or gameW% = 8 And RN <= 50 Then OUTFLDLOCATION$ = "rcf"
@@ -2805,7 +2817,7 @@ Sub OUTFLDNAME (gameW%, D)
 
     gameW% = 9
 
-    Call d100(RN)
+    Call Rolld100(RN)
 
     Select Case RN
         Case 1 To 5: gameW% = 7
@@ -2829,7 +2841,7 @@ Sub PICKEDOFF (D, i)
     Call WINDEX
     Call DELIVERY(D)
 
-    Call d100(RN)
+    Call Rolld100(RN)
     Select Case RN
         Case 1 To 33: pbpString$ = "NO, " + pitchers$(D, P1%(D)) + " throws to " + baseName$(i - 1)
         Case 34 To 66: pbpString$ = "quick move to " + baseName$(i - 1)
@@ -2838,7 +2850,7 @@ Sub PICKEDOFF (D, i)
 
     Call PBP(pbpString$)
 
-    Call d100(RN)
+    Call Rolld100(RN)
 
     If RN <= 50 Then
         pbpString$ = player$(i - 1) + " is picked off base!"
@@ -2848,7 +2860,7 @@ Sub PICKEDOFF (D, i)
 
     Call PBP(pbpString$)
 
-    Call d100(RN)
+    Call Rolld100(RN)
 
     Select Case RN
         Case 1 To 25: pbpString$ = "he can't believe it"
@@ -2893,7 +2905,7 @@ Sub PINCHRUNNER (MS%, A1, S4%, I2, P, PR%, nbrBalls, nbrStrikes, D, MO)
                             If B7%(P, J) = 1 Then
                                 'PINCH RUNNING FOR THE PITCHER
                                 If MG%(P, 803) = 999 Then
-                                    Call d100(RN)
+                                    Call Rolld100(RN)
                                     If pitchRating(P, P1%(P), 31) <= MG%(P, 804) And INNING% >= MG%(P, 805) And RN <= MG%(P, 806) Then 8993
                                     If pitchRating(P, P1%(P), 31) <= MG%(P, 807) And INNING% >= MG%(P, 808) And RN <= MG%(P, 809) Then 8993
                                     GoTo 8999
@@ -2903,7 +2915,7 @@ Sub PINCHRUNNER (MS%, A1, S4%, I2, P, PR%, nbrBalls, nbrStrikes, D, MO)
                             For I = 0 To 5
                                 If MG%(P, I * 4 + 779) = B3%(P, J) Then
                                     'FOUND A MATCH FOR THE RUNNER ON BASE
-                                    Call d100(RN)
+                                    Call Rolld100(RN)
                                     If INNING% >= MG%(P, I * 4 + 780) And batRating(P, MG%(P, I * 4 + 781), 21) = 0 And RN <= MG%(P, I * 4 + 782) Then batRating(P, MG%(P, I * 4 + 781), 21) = 40 + J: GoTo 8993
                                     GoTo 8999
                                 End If
@@ -3019,7 +3031,7 @@ Sub PITCHOUT (S4%, TGTBASE%, Q0)
 
     If S4% <> 5 And TGTBASE% = 2 Then
 
-        Call d100(PJ)
+        Call Rolld100(PJ)
 
         If PJ <= 8 Then
             Call PBP("...PITCH OUT!!!")
@@ -4012,7 +4024,7 @@ Sub RecordRun (sah%, i, D, F%, PQ, S2%, gameW%, INFPOS%)
     gameB0%(i, 2) = 0
     player$(i) = ""
 
-    Call d100(RN0)
+    Call Rolld100(RN0)
     If inningScore(P, INNING%) = 4 And RN0 <= 25 Then Call PBP("They're tearin' up the peapatch!")
     If INNING% >= 9 And P = 1 And gameScore(P, 0) - gameScore(D, 0) = 1 Then
         If F% = 0 And nbrOuts(1) < 3 And S2% <> 10 Then Call CHARGERUN(D, i)
@@ -4619,8 +4631,8 @@ Sub BASEONBALLS (S2%, D2, D, P)
 
     Call WINDEX
 
-    Call d100(BV)
-    Call d100(RN)
+    Call Rolld100(BV)
+    Call Rolld100(RN)
 
     If D2 = 2 Then
 
@@ -4646,7 +4658,7 @@ Sub BASEONBALLS (S2%, D2, D, P)
 
     End If
 
-    Call d100(RN)
+    Call Rolld100(RN)
 
     '-- Where does s4 get a value???
     If s4% = 7 And RN <= 30 Then Call PBP("that forces a run in")
@@ -4704,7 +4716,7 @@ Sub HITBYPITCH (S2%, D)
     Call GetPBPString(20, 760, fileString$, D)
     Call PBP(fileString$)
 
-    Call d100(RN)
+    Call Rolld100(RN)
 
     If RN <= 50 And s4% = 7 Then Call PBP("tough way to get an RBI")
 
@@ -4719,7 +4731,7 @@ Sub WILDPITCH (S2%, D)
     S2% = 6
     ruleAsWild = 0
 
-    Call d100(RN)
+    Call Rolld100(RN)
 
     Select Case RN
 
@@ -4763,7 +4775,7 @@ Sub WILDPITCH (S2%, D)
 
     If ruleAsWild = 1 Then
 
-        Call d100(RN)
+        Call Rolld100(RN)
 
         Select Case RN
             Case 1 To 33: pbpString$ = "It's ruled a wild pitch"
@@ -5005,7 +5017,7 @@ Sub SINGLEPBP (S2%, D, gameW%)
 
     Else
         Call DELIVERY(D)
-        Call d100(RN)
+        Call Rolld100(RN)
 
         If S2% = 12 Then
             Call PBP(player$(0) + " beats out an infield single")
@@ -5072,7 +5084,7 @@ Sub SINGLEROUTINE (gameW%, P, I1, D, S2%, P2)
 
     If S2% <> 12 And gameB0%(2, 0) <> 0 Then
 
-        Call d100(H6%)
+        Call Rolld100(H6%)
 
         If B7%(P, gameB0%(2, 0)) <> 1 Then
             BR% = batRating(P, B3%(P, gameB0%(2, 0)), 16)
@@ -5104,7 +5116,7 @@ Sub SINGLEROUTINE (gameW%, P, I1, D, S2%, P2)
 
     If Not (gameB0%(1, 0) = 0 Or S2% = 12 Or gameB0%(2, 0) > 0 And A5%(2) = 1) Then
 
-        Call d100(H6%)
+        Call Rolld100(H6%)
 
         BR% = batRating(P, B3%(P, gameB0%(1, 0)), 16)
 
@@ -5247,7 +5259,7 @@ Sub STEALCHANCE (AA, I2, TGTBASE%, CHANCE%)
         Case Else: DD = .3
     End Select
 
-    TT = CC + BB - (BB * DD) ' *** TOTAL CHANCES TO STEAL 3RD
+    TT = CC + BB - (BB * DD) ' *** TOtotAwayLosses CHANCES TO STEAL 3RD
     RR = (TT * .19) * 1.4 ' *** "      "      "   "     "  1 OUT
     SS = (TT * .56) * 1.4 ' ***                            0 OUT
     GG = RR + SS ' ***                           (0,1 OUT)
@@ -5292,7 +5304,7 @@ Sub STRIKEOUT (nbrStrikes, D)
     Else
 
         BV = Int(Rnd(1) * 100)
-        Call d100(RN)
+        Call Rolld100(RN)
 
         If RN <= 20 Then Call PBP("FULL COUNT...")
 
@@ -5318,7 +5330,7 @@ Sub STRIKEOUT (nbrStrikes, D)
             Call PBP(gameManagers$(P) + " is barking from the dugout!!")
         End If
 
-        Call d100(RN)
+        Call Rolld100(RN)
         If RN <= 25 Then
             range = 40
             min = 890
@@ -5335,7 +5347,7 @@ Sub STRIKEOUT (nbrStrikes, D)
     Call GetPBPString(40, 1010, fileString$, D)
     Call PBP(fileString$)
 
-    Call d100(RN)
+    Call Rolld100(RN)
 
     Select Case RN
 
@@ -5455,7 +5467,7 @@ Sub TIRING (P9)
 
     If S8%(P9, 0) <= P8%(P9, P1%(P9), 4) + P8%(P9, P1%(P9), 1) And S8%(P9, 1) <= P8%(P9, P1%(P9), 2) Then
 
-        Call d100(RN)
+        Call Rolld100(RN)
 
         If S8%(P9, 1) > 0 And INNING% < 6 Or S8%(P9, 1) = 0 And P8%(P9, P1%(P9), 4) + P8%(P9, P1%(P9), 1) > 4 Then
             If RN <= 50 Then
@@ -5534,7 +5546,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, gameW%, sah%, SB%, baseNbr!, I9)
     Else
 
         baseNbr! = 0
-        Call d100(H6%)
+        Call Rolld100(H6%)
 
         'Determine which base we're stealing
         If S2% = 8 And gameB0%(2, 0) > 0 And H6% < 6 And gameB0%(3, 0) = 0 And batRating(P, B3%(P, gameB0%(2, 0)), 8) > 0 Then baseNbr! = 3
@@ -5599,7 +5611,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, gameW%, sah%, SB%, baseNbr!, I9)
                     Call PBP(player$(4) + " throw to " + baseName$(baseNbr!) + "? (Y/N) ")
                 End If
 
-                Call d100(RN)
+                Call Rolld100(RN)
 
                 If (playerMode = 2 Or playerMode = 1 And D = compTeam) Then
                     If MG%(D, 766) = 999 And baseNbr! = 4 Then
@@ -5652,7 +5664,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, gameW%, sah%, SB%, baseNbr!, I9)
                         I5 = P1%(D)
                         I6 = 0
                         Call ADDPIT(D, I5, I6)
-                        Call d100(RN)
+                        Call Rolld100(RN)
 
                         Select Case RN
                             Case 1 To 4
@@ -5686,7 +5698,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, gameW%, sah%, SB%, baseNbr!, I9)
                         If nbrOuts(0) = 3 Or S2% > 10 Then Exit Sub
 
                         3371 '
-                        Call d100(I5)
+                        Call Rolld100(I5)
 
                         A1 = gameScore(P, 0) - gameScore(D, 0)
 
@@ -5707,7 +5719,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, gameW%, sah%, SB%, baseNbr!, I9)
                             End If
 
                             ' *** RUNNER ON 1ST GUNNED AT 2ND ON THROW TO HOME OR 3RD ***
-                            Call d100(I5)
+                            Call Rolld100(I5)
 
                             If baseNbr! - 1 > 1 And I5 <= 15 And gameB0%(1, 0) > 0 And A5%(2) <> 11 Then
                                 Call CREDITASSIST(gameW%, D)
@@ -5722,7 +5734,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, gameW%, sah%, SB%, baseNbr!, I9)
                                 Call ADDPIT(D, I5, I6)
                             End If
 
-                            Call d100(I5)
+                            Call Rolld100(I5)
 
                             If gameB0%(2, 0) > 0 And baseNbr! - 1 > 2 And A5%(2) <> 11 And I5 > (80 - batRating(P, B3%(P, gameB0%(2, 0)), 16) * 2) And I9 = 0 Then
                                 A5%(2) = 1
@@ -5738,7 +5750,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, gameW%, sah%, SB%, baseNbr!, I9)
                                 Call PBP("He's in there!")
                             Else
 
-                                Call d100(I5)
+                                Call Rolld100(I5)
 
                                 If gameB0%(1, 0) > 0 And baseNbr! - 1 > 1 And I5 > (80 - batRating(P, B3%(P, gameB0%(1, 0)), 16) * 2) And I9 = 0 And A5%(1) <> 11 Then
                                     A5%(1) = 1
@@ -5762,7 +5774,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, gameW%, sah%, SB%, baseNbr!, I9)
 
                 If I9 <> 1 Then
 
-                    Call d100(RN)
+                    Call Rolld100(RN)
 
                     Select Case RN
                         Case 1 To 4:
@@ -6002,8 +6014,8 @@ End Sub
 'text for a double off the wall
 Sub WALLDOUBLE (HW%, gameW%)
 
-    Call d100(BV)
-    Call d100(RN)
+    Call Rolld100(BV)
+    Call Rolld100(RN)
 
     Select Case BV
 
@@ -6169,7 +6181,7 @@ End Sub
 'for a foul ball
 Sub FOULBALL ()
 
-    Call d100(RN)
+    Call Rolld100(RN)
 
     If RN <= 50 Then
         Call GetPBPString(20, 3130, fileString$, D)
@@ -6203,7 +6215,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
     Else
 
         Call WINDEX
-        Call d100(H6%)
+        Call Rolld100(H6%)
 
         Select Case H6%
 
@@ -6998,7 +7010,7 @@ Sub GETWEATHER (windDir, windSpeed, gameMonth, WF!, skyType, gameTemp, rainDelay
 
     SM% = gameMonth - 4
 
-    Call d100(RN0)
+    Call Rolld100(RN0)
 
     If RN0 <= 50 Then
         gameTemp = MON(SM%, 0) + Int(Rnd(1) * MON(SM%, 1) + 1)
@@ -7050,14 +7062,14 @@ Sub GETWEATHER (windDir, windSpeed, gameMonth, WF!, skyType, gameTemp, rainDelay
     precipType = 4
     skyType = Int(Rnd(1) * 2) + 1
 
-    Call d100(RN0)
+    Call Rolld100(RN0)
 
     If RN0 <= MON(SM%, 14) Then
 
         precipType = Int(Rnd(1) * 3) + 1
         skyType = 3
 
-        Call d100(RN)
+        Call Rolld100(RN)
         If RN <= 5 Then
 
             rainDelay = 1
@@ -8045,7 +8057,7 @@ Sub SAVESTATS ()
 
         If _FileExists("GAME82") Then
 
-            Open diskPaths$(0) + scheduleFile$ For Random As #1 Len = SCHEDULE_SIZE_BYTES
+            Open diskPaths$(3) + scheduleFile$ For Random As #1 Len = SCHEDULE_SIZE_BYTES
 
             For X = 0 To 18
                 Field #1, X * 2 As X$, 2 As player$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
@@ -8819,7 +8831,7 @@ Sub BOX2FILE (printChoice, boxName$)
             Next
         Next
 
-        Print #2, "TOTALS"; Tab(17); T3%(0); Tab(22); T3%(1); Tab(27); T3%(4);
+        Print #2, "TOtotAwayLossesS"; Tab(17); T3%(0); Tab(22); T3%(1); Tab(27); T3%(4);
         Print #2, Tab(32); T3%(6); Tab(36); T3%(7); Tab(42);
         Print #2, T3%(10); Tab(46); T3%(16); Tab(50); T3%(17)
         Print #2, Tab(20); T3%(2); Tab(24); T3%(3); Tab(29);
@@ -8893,7 +8905,7 @@ Sub BOX2FILE (printChoice, boxName$)
 
         Next I1
 
-        Print #2, "TOTALS"; Tab(28);
+        Print #2, "TOtotAwayLossesS"; Tab(28);
         Print #2, Using "##"; Int(T3%(0) / 3);
 
         If T3%(0) - (Int(T3%(0) / 3) * 3) > 0 Then Print #2, ".";: Print #2, Using "#"; T3%(0) - (Int(T3%(0) / 3) * 3);
@@ -9375,7 +9387,7 @@ Sub STATS2SCREEN
 
         Next
 
-        Color 14, 0: Print "TOTALS";
+        Color 14, 0: Print "TOtotAwayLossesS";
         Color 15, 0
         Locate , 17: Print T3%(0);
         Locate , 22: Print T3%(1);
@@ -9481,7 +9493,7 @@ Sub STATS2SCREEN
         Next I1
 
         Color 14, 0
-        Print "TOTALS";
+        Print "TOtotAwayLossesS";
         Color 15, 0
 
         Locate , 30
@@ -9868,7 +9880,7 @@ Sub ChooseGameTeam (yearNumber$, numberTeams, chosenIdx, teamName$, gameIdx)
 
             If I$ <> Chr$(13) Then
 
-                Locate 7, 27: Print I$;
+                Locate 8, 27: Print I$;
 
                 NY$ = ""
 
@@ -10239,13 +10251,13 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
     targetTeam$ = RTrim$(Q2$(0))
 
     'Read in manager data
-    If Not _FileExists(diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$) Then
+    If Not _FileExists(diskPaths$(4) + MGR_FILE_NAME$ + "." + teamYear$) Then
 
         mgrFile(gameIdx) = -1
 
     Else
 
-        Open diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #3 Len = MGR_SIZE_BYTES
+        Open diskPaths$(4) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #3 Len = MGR_SIZE_BYTES
 
         For X = 0 To 999
             Field #3, X * 2 As Q2$, 2 As Q2$(X), MGR_SIZE_BYTES - X * 2 - 2 As Q2$

@@ -12,12 +12,11 @@ Sub NEWLDR ()
 
     Shared CLT!(), CWS!()
     Shared ELL!(), EWW!(), HLL!(), HWW!()
-    Shared expLL!(), LLS!(), LTL!(), LTW!(), LWS!()
-    Shared RLL!(), RWW!(), TLS!(), TWS!(), WW!()
+    Shared expLL!(), LLS!(), lastTenLosses!(), lastTenWins!(), LWS!()\7    Shared RLL!(), RWW!(), TLS!(), TWS!(), WW!()
 
     Shared TML$(), Z1$()
 
-    Shared D1$, D2$, D3$, D4$
+    Shared div1Name$, div2Name$, div3Name$, div4Name$
 
     Erase CWS!, CLT!
     Erase LLS!, LWS!
@@ -60,63 +59,115 @@ Sub NEWLDR ()
             Select Case Selection%
 
                 Case 1:
-                    leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", FileExit%)
+                    Do
+                        leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", FileExit%)
 
-                    If FileExit% <> 27 And FileExit% <> 0 Then
+                        If FileExit% <> 27 And FileExit% <> 0 Then
 
-                        For X = 1 To 40
-                            Z1$(X) = "XXX"
-                        Next
+                            For X = 1 To TEAMS_PER_LEAGUE
+                                Z1$(X) = "XXX"
+                            Next
 
-                        Open diskPaths$(2) + leagStatFile$ + ".TMS" For Input As #2
+                            Open diskPaths$(2) + leagStatFile$ + ".TMS" For Input As #2
 
-                        Input #2, league$, D1$, D2$, D3$, D4$
+                            Input #2, league$, div1Name$, div2Name$, div3Name$, div4Name$
 
-                        For X = 1 To 40: 
-                            Input #2, Z1$(X)
-                        Next
+                            For X = 1 To TEAMS_PER_LEAGUE
+                                Input #2, Z1$(X)
+                            Next
 
-                        Close #2
+                            Close #2
 
-                        Call UpdateExpandedLeaders(JB, JP, TS, TTS)
-                        Call SAVELEADER(leagStatFile$, league$, JB, JP, TS, TTS)
+                            Call UpdateExpandedLeaders(JB, JP, TS, TTS)
+                            Call SAVELEADER(leagStatFile$, league$, JB, JP, TS, TTS)
 
-                    End If
+                        End If
+
+                    Loop Until FileExit% = 27 Or FileExit% = 0
 
                 Case 2:
-                    leaderFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", FileExit%)
+                    Do
+                        leaderFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", FileExit%)
 
-                    If FileExit% <> 27 And FileExit% <> 0 Then
-                        Call ExpandedLeaders_Menu(leaderFile$, JB, JP, TS, TTS)
-                    End If
+                        If FileExit% <> 27 And FileExit% <> 0 Then
+                            Call ExpandedLeaders_Menu(leaderFile$, JB, JP, TS, TTS)
+                        End If
+
+                    Loop Until FileExit% = 27 Or FileExit% = 0
 
                 Case 3: 
-                    leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", FileExit%)
+                    Do
+                        leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", FileExit%)
 
-                    If FileExit% <> 27 And FileExit% <> 0 Then
-                        Color 15, 0
-                        Cls
-                        Call UpdateLeagueStandings(leagStatFile$)
-                    End If
+                        If FileExit% <> 27 And FileExit% <> 0 Then
+                            Color 15, 0
+                            Cls
+                            Call UpdateExpandedStandings(leagStatFile$)
+                        End If
+
+                    Loop Until FileExit% = 27 Or FileExit% = 0
 
                 Case 4:
-                    standingsFile$ = ChooseFile$ (diskPaths$(2) + "*.STD", "LEAGUE STANDINGS", FileExit%)
+                    Do
+                        standingsFile$ = ChooseFile$ (diskPaths$(2) + "*.STD", "LEAGUE STANDINGS", FileExit%)
 
-                    If FileExit% <> 27 And FileExit% <> 0 Then
+                        If FileExit% <> 27 And FileExit% <> 0 Then
 
-                        Open diskPaths$(2) + standingsFile$ + ".STD" For Input As #1
+                            Open diskPaths$(2) + standingsFile$ + ".STD" For Input As #1
 
-                        Input #1, league$, D1$, D2$, D3$, D4$
+                            Input #1, league$, div1Name$, div2Name$, div3Name$, div4Name$
 
-                        For I = 1 To 40:
-                            Input #1, TML$(I), WW!(I), expLL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), LTW!(I), LTL!(I)
-                        Next
+                            For I = 1 To TEAMS_PER_LEAGUE
+                                Input #1, TML$(I), WW!(I), expLL!(I), TWS!(I), TLS!(I), CWS!(I), CLT!(I), HWW!(I), HLL!(I), RWW!(I), RLL!(I), EWW!(I), ELL!(I), lastTenWins!(I), lastTenLosses!(I)
+                            Next
 
-                        Close #1
+                            Close #1
 
-                        Call NewStandingOptions
+                            Color 15, 0
+                            Cls
 
-                    End If
+                            Call MenuBox(8, 25, 24, 5, 15, 1)
+
+                            Do
+
+                                Locate 10, 32
+                                Color 7, 1
+
+                                Locate , 32: Print "SEND TO ";
+                                Color 15: Print "F";
+                                Color 7: Print "ILE"
+                                Locate , 32: Print "SEND TO ";
+                                Color 15: Print "P";
+                                Color 7: Print "RINTER"
+                                Locate , 32: Print "SEND TO ";
+                                Color 15: Print "S";
+                                Color 7: Print "CREEN"
+
+                                I$ = GetKeyPress$
+
+                                Color 14, 0
+
+                            Loop Until UCase$(I$) = "F" Or UCase$(I$) = "P" Or UCase$(I$) = "S"
+
+                            Select Case UCase$(I$)
+
+                                Case "F"
+                                    userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                                    If userFile$ <> "" Then
+                                        Call NewStandings_Report(0, userFile$, league$)
+                                    End If
+
+                                Case "P"
+                                    Call NewStandings_Report(1, "REPORT", league$)
+
+                                Case "S":
+                                    Call NewStandings_Screen(league$)
+
+                            End Select
+
+                        End If
+
+                    Loop Until FileExit% = 27 Or FileExit% = 0
 
             End Select
 
@@ -137,7 +188,7 @@ End Sub
 'orized menu to use for reviewing them
 Sub ViewExpandedStats (JB, JP, tStats, ttStats)
 
-    Shared D1$, D2$, D3$, D4$
+    Shared div1Name$, div2Name$, div3Name$, div4Name$
 
     Shared Z1$()
 
@@ -151,10 +202,10 @@ Sub ViewExpandedStats (JB, JP, tStats, ttStats)
         Open diskPaths$(2) + leagStatFile$ + ".TMS" For Input As #2
 
         Input #2, league$
-        Input #2, D1$
-        Input #2, D2$
-        Input #2, D3$
-        Input #2, D4$
+        Input #2, div1Name$
+        Input #2, div2Name$
+        Input #2, div3Name$
+        Input #2, div4Name$
 
         For X = 1 To 40:
             Input #2, Z1$(X)
@@ -199,7 +250,7 @@ Sub UpdateExpandedLeaders (JB, JP, tStats, ttStats)
     Color 15, 0
     Cls
 
-    For KK = 1 To 40:
+    For KK = 1 To TEAMS_PER_LEAGUE
 
         YY = YY + 1
 
@@ -351,14 +402,14 @@ Sub SAVELEADER (leaderFile$, league$, JB, JP, tStats, ttStats)
     Shared leaderBL$(), leaderPL$()
     Shared leaderTeams$(), TMB$(), TMP$(), TT2$()
 
-    Shared D1$, D2$, D3$, D4$
+    Shared div1Name$, div2Name$, div3Name$, div4Name$
 
     Print "SAVING LEADER FILES . . . . PLEASE WAIT"
 
     Open diskPaths$(2) + leaderFile$ + ".BAT" For Output As #1
 
     Write #1, JB, JP
-    Write #1, D1$, D2$, D3$, D4$, league$
+    Write #1, div1Name$, div2Name$, div3Name$, div4Name$, league$
     Write #1, tStats, ttStats
 
     For I = 1 To 920:
@@ -388,7 +439,7 @@ Sub SAVELEADER (leaderFile$, league$, JB, JP, tStats, ttStats)
     Open diskPaths$(2) + leaderFile$ + ".PIT" For Output As #1
 
     Write #1, JB, JP
-    Write #1, D1$, D2$, D3$, D4$, league$
+    Write #1, div1Name$, div2Name$, div3Name$, div4Name$, league$
     Write #1, tStats, ttStats
 
     For I = 1 To 880
@@ -417,13 +468,13 @@ Sub SAVELEADER (leaderFile$, league$, JB, JP, tStats, ttStats)
 
     Open diskPaths$(2) + leaderFile$ + ".TOT" For Output As #1
 
-    Write #1, JB, JP, D1$, D2$, D3$, D4$, league$, tStats, ttStats
+    Write #1, JB, JP, div1Name$, div2Name$, div3Name$, div4Name$, league$, tStats, ttStats
 
-    For I = 1 To 40:
+    For I = 1 To TEAMS_PER_LEAGUE
         Write #1, Wins(I), Losses(I)
     Next
 
-    For I = 1 To 40:
+    For I = 1 To TEAMS_PER_LEAGUE
 
         For I1 = 0 To 21:
             Write #1, TT!(I, I1), leaderTeams$(I, I1)
@@ -435,7 +486,7 @@ Sub SAVELEADER (leaderFile$, league$, JB, JP, tStats, ttStats)
 
     Next
 
-    For I = 1 To 40:
+    For I = 1 To TEAMS_PER_LEAGUE
 
         For I1 = 0 To 22:
             Write #1, TT1!(I, I1), TT2$(I, I1)
@@ -469,14 +520,14 @@ Sub READLEADER (leaderFile$, league$, JB, JP, tStats, ttStats)
     Shared leaderBL$(), leaderPL$()
     Shared leaderTeams$(), TMB$(), TMP$(), TT2$()
 
-    Shared D1$, D2$, D3$, D4$
+    Shared div1Name$, div2Name$, div3Name$, div4Name$
 
     'Print "READING LEADER FILES . . . . PLEASE WAIT"
 
     Open diskPaths$(2) + leaderFile$ + ".BAT" For Input As #1
 
     Input #1, JB, JP
-    Input #1, D1$, D2$, D3$, D4$, league$
+    Input #1, div1Name$, div2Name$, div3Name$, div4Name$, league$
     Input #1, tStats, ttStats
 
     For I = 1 To 920:
@@ -506,7 +557,7 @@ Sub READLEADER (leaderFile$, league$, JB, JP, tStats, ttStats)
     Open diskPaths$(2) + leaderFile$ + ".PIT" For Input As #1
 
     Input #1, JB, JP
-    Input #1, D1$, D2$, D3$, D4$, league$
+    Input #1, div1Name$, div2Name$, div3Name$, div4Name$, league$
     Input #1, tStats, ttStats
 
     For I = 1 To 880
@@ -535,13 +586,13 @@ Sub READLEADER (leaderFile$, league$, JB, JP, tStats, ttStats)
 
     Open diskPaths$(2) + leaderFile$ + ".TOT" For Input As #1
 
-    Input #1, JB, JP, D1$, D2$, D3$, D4$, league$, tStats, ttStats
+    Input #1, JB, JP, div1Name$, div2Name$, div3Name$, div4Name$, league$, tStats, ttStats
 
-    For I = 1 To 40:
+    For I = 1 To TEAMS_PER_LEAGUE
         Input #1, Wins(I), Losses(I)
     Next
 
-    For I = 1 To 40:
+    For I = 1 To TEAMS_PER_LEAGUE
 
         For I1 = 0 To 21:
             Input #1, TT!(I, I1), leaderTeams$(I, I1)
@@ -553,7 +604,7 @@ Sub READLEADER (leaderFile$, league$, JB, JP, tStats, ttStats)
 
     Next
 
-    For I = 1 To 40:
+    For I = 1 To TEAMS_PER_LEAGUE
 
         For I1 = 0 To 22:
             Input #1, TT1!(I, I1), TT2$(I, I1)
@@ -588,7 +639,7 @@ Sub ExpandedLeaders_Menu (leaderFile$, JB, JP, tStats, ttStats)
         ReDim menuChoices$(1 To 4)
         menuChoices$(1) = "VIEW BATTING LEADERS "
         menuChoices$(2) = "VIEW PITCHING LEADERS"
-        menuChoices$(3) = "VIEW TEAM TOTALS     "
+        menuChoices$(3) = "VIEW TEAM TOtotAwayLossesS     "
         menuChoices$(4) = "RETURN TO MAIN MENU  "
         Selection% = 1
         Count% = 4
@@ -648,14 +699,14 @@ Sub ViewBattingLeaders (leaderFile$, JB, JP, tStats, ttStats)
     Shared TYP!()
     Shared GM1!()
 
-    Shared D1$, D2$, D3$, D4$
+    Shared div1Name$, div2Name$, div3Name$, div4Name$
 
     TMR = 1840
 
     Open diskPaths$(2) + leaderFile$ + ".BAT" For Input As #1
 
     Input #1, JB, JP
-    Input #1, D1$, D2$, D3$, D4$, leaderFile$
+    Input #1, div1Name$, div2Name$, div3Name$, div4Name$, leaderFile$
     Input #1, tStats, ttStats
 
     For I = 1 To 920:
@@ -707,6 +758,7 @@ Sub ViewBattingLeaders (leaderFile$, JB, JP, tStats, ttStats)
         Locate 10, 15
 
         Do
+        
             For I = 0 To 15
                 Color 14
                 Locate I + 3, 8: Print Using "##"; I;
@@ -923,7 +975,42 @@ Sub ViewBattingLeaders (leaderFile$, JB, JP, tStats, ttStats)
 
                 Case 2:
                     Call GetListLength(printOrView, QW, LG)
-                    Call PrintLeaders(TVN, LG, B9)
+                    
+                    Color 15, 0
+                    Cls
+
+                    Call MenuBox(8, 25, 24, 5, 15, 1)
+
+                    Do
+
+                        Locate 10, 32
+                        Color 7, 1
+
+                        Locate , 32: Print "SEND TO ";
+                        Color 15: Print "F";
+                        Color 7: Print "ILE"
+                        Locate , 32: Print "SEND TO ";
+                        Color 15: Print "P";
+                        Color 7: Print "RINTER"
+
+                        I$ = GetKeyPress$
+
+                        Color 14, 0
+
+                    Loop Until UCase$(I$) = "F" Or UCase$(I$) = "P"
+
+                    Select Case UCase$(I$)
+
+                        Case "F"
+                            userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                            If userFile$ <> "" Then
+                                Call PrintLeaders(0, userFile$, TVN, LG, B9)
+                            End If
+
+                        Case "P"
+                            Call PrintLeaders(1, "REPORT", TVN, LG, B9)
+
+                    End Select
 
             End Select
 
@@ -1041,7 +1128,7 @@ Sub ViewPitchingLeaders (leaderFile$, JB, JP, tStats, ttStats)
     Shared TYP!(), TYP1!()
     Shared PM%()
 
-    Shared D1$, D2$, D3$, D4$
+    Shared div1Name$, div2Name$, div3Name$, div4Name$
 
     ReDim GM2(880)
     Dim TYP2(920)
@@ -1051,7 +1138,7 @@ Sub ViewPitchingLeaders (leaderFile$, JB, JP, tStats, ttStats)
     Open diskPaths$(2) + leaderFile$ + ".PIT" For Input As #1
 
     Input #1, JB, JP
-    Input #1, D1$, D2$, D3$, D4$, leaderFile$
+    Input #1, div1Name$, div2Name$, div3Name$, div4Name$, leaderFile$
     Input #1, tStats, ttStats
 
     For I = 1 To 880:
@@ -1381,21 +1468,21 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
     Shared leaderTeams$(), TMM$()
     Shared expBatCategory$(), expTeamCategory$(), TT2$()
 
-    Shared D1$, D2$, D3$, D4$
+    Shared div1Name$, div2Name$, div3Name$, div4Name$
 
     Open diskPaths$(2) + leaderFile$ + ".TOT" For Input As #1
 
     Input #1, JB, JP
-    Input #1, D1$, D2$, D3$, D4$, leaderFile$
+    Input #1, div1Name$, div2Name$, div3Name$, div4Name$, leaderFile$
     Input #1, tStats, ttStats
 
     TMR = 120
 
-    For I = 1 To 40:
+    For I = 1 To TEAMS_PER_LEAGUE
         Input #1, Wins(I), Losses(I)
     Next
 
-    For I = 1 To 40:
+    For I = 1 To TEAMS_PER_LEAGUE
 
         For I1 = 0 To 21:
             Input #1, TT!(I, I1), leaderTeams$(I, I1)
@@ -1407,7 +1494,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, tStats, ttStats)
 
     Next
 
-    For I = 1 To 40:
+    For I = 1 To TEAMS_PER_LEAGUE
 
         For I1 = 0 To 22:
             Input #1, TT1!(I, I1), TT2$(I, I1)
@@ -1678,32 +1765,87 @@ Sub DisplayTeamView (XX, screenType, printOrView, TVN, maxRecords)
 
             Case 2:
 
-                Color 0, 15
+                Color 15, 0
+                Cls
 
-                LPrint "     TEAM                     "; expBatCategory$(XX)
+                Call MenuBox(8, 25, 24, 5, 15, 1)
+
+                Do
+
+                    Locate 10, 32
+                    Color 7, 1
+
+                    Locate , 32: Print "SEND TO ";
+                    Color 15: Print "F";
+                    Color 7: Print "ILE"
+                    Locate , 32: Print "SEND TO ";
+                    Color 15: Print "P";
+                    Color 7: Print "RINTER"
+
+                    I$ = GetKeyPress$
+
+                    Color 14, 0
+
+                Loop Until UCase$(I$) = "F" Or UCase$(I$) = "P"
+
+                Select Case UCase$(I$)
+
+                    Case "F"
+                        userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                        If userFile$ <> "" Then
+                            printDest = 0
+                        End If
+
+                    Case "P"
+                        printDest = 1
+                        userFile$ = "REPORT"
+
+                End Select
+
+                Color 15, 0
+                Cls
+
+                Open destFile$ For Output As #1
+
+                Print #1, "     TEAM                     "; expBatCategory$(XX)
 
                 For W = 1 To maxRecords
 
                     Color 12
-                    LPrint Using "###"; W;
-                    LPrint " ";
+                    Print #1, Using "###"; W;
+                    Print #1, " ";
                     Color 3
-                    LPrint TMM$(W);
+                    Print #1, TMM$(W);
                     Color 15
 
                     Select Case TVN
 
                         Case 1:
-                            LPrint Tab(32); Using "#####"; TYP!(W)
+                            Print #1, Tab(32); Using "#####"; TYP!(W)
 
                         Case 2:
-                            LPrint Tab(33); Using ".###"; TYP!(W)
+                            Print #1, Tab(33); Using ".###"; TYP!(W)
 
                     End Select
 
                 Next W
 
-                LPrint Chr$(12)
+                If printDest = 1 Then
+
+                    Open destFile$ For Input As #2
+
+                    Do While Not EOF(2)
+                        Line Input #2, X$
+                        LPrint X$
+                    Loop
+
+                    Close #2
+
+                    LPrint Chr$(12)
+
+                    Kill destFile$
+
+                End If
 
         End Select
 
@@ -1715,33 +1857,90 @@ Sub DisplayTeamView (XX, screenType, printOrView, TVN, maxRecords)
                 Call LeagueTotals_B_Screen(XX, TVN, maxRecords)
 
             Case 2:
-                Color 0, 15
 
-                LPrint "     TEAM                     "; expPitCategory$(XX)
+                Color 15, 0
+                Cls
 
-                LPrint Using "###"; W;
-                LPrint " ";
-                LPrint TMM$(W);:
+                Call MenuBox(8, 25, 24, 5, 15, 1)
+
+                Do
+
+                    Locate 10, 32
+                    Color 7, 1
+
+                    Locate , 32: Print "SEND TO ";
+                    Color 15: Print "F";
+                    Color 7: Print "ILE"
+                    Locate , 32: Print "SEND TO ";
+                    Color 15: Print "P";
+                    Color 7: Print "RINTER"
+
+                    I$ = GetKeyPress$
+
+                    Color 14, 0
+
+                Loop Until UCase$(I$) = "F" Or UCase$(I$) = "P"
+
+                Select Case UCase$(I$)
+
+                    Case "F"
+                        userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                        If userFile$ <> "" Then
+                            printDest = 0
+                        End If
+
+                    Case "P"
+                        printDest = 1
+                        userFile$ = "REPORT"
+
+                End Select
+
+                Color 15, 0
+                Cls
+
+                Open destFile$ For Output As #1
+
+                Print #1, "     TEAM                     "; expPitCategory$(XX)
+
+                Print #1, Using "###"; W;
+                Print #1, " ";
+                Print #1, TMM$(W);:
 
                 For W = 1 To maxRecords
 
                     Select Case TVN
 
                         Case 1:
-                            LPrint Tab(32); Using "#####"; TYP!(W);
-                            LPrint ".";: LPrint Using "#"; TYP1!(W)
+                            Print #1, Tab(32); Using "#####"; TYP!(W);
+                            Print #1, ".";: Print #1, Using "#"; TYP1!(W)
 
                         Case 2:
-                            LPrint Tab(32); Using "#####"; TYP!(W)
+                            Print #1, Tab(32); Using "#####"; TYP!(W)
 
                         Case 3:
-                            LPrint Tab(32); Using "##.##"; TYP!(W)
+                            Print #1, Tab(32); Using "##.##"; TYP!(W)
 
                     End Select
 
                 Next W
 
-                LPrint Chr$(12)
+                If printDest = 1 Then
+
+                    Open destFile$ For Input As #2
+
+                    Do While Not EOF(2)
+                        Line Input #2, X$
+                        LPrint, X$
+                    Loop
+
+                    Close #2
+
+                    LPrint Chr$(12)
+
+                    Kill destFile$
+
+                End If
+
 
         End Select
 
@@ -2116,56 +2315,72 @@ Sub SortTeam (sortMax, stpl, sortType)
             End If
 
         Next J
+
     Next I
 
 End Sub
 
 
 '----------------------------------------
-'     PrintLeaders Subroutine
+'        PrintLeaders Subroutine
 '----------------------------------------
 'This subroutine displays individual player
 'stat categories to the default printer
-Sub PrintLeaders (TVN, maxRecords, B9)
+Sub PrintLeaders (printDest, destFile$, TVN, maxRecords, categoryID)
 
-    Shared TYP!()
+    Shared TYP!() 
+    Shared expBatCategory$(), TMM$(), TPP$()
 
-    Shared TMM$()
-    Shared expBatCategory$(), TPP$()
+	Color 15, 0
+	Cls
 
-    Color 0, 15
-    Cls
+	Open destFile$ For Output As #1
 
-    LPrint "     PLAYER                  TEAM                     "; expBatCategory$(B9)
+    Print #1, "     PLAYER                  TEAM                     "; expBatCategory$(categoryID)
 
     For W = 1 To maxRecords
 
         If W <> 0 And (W Mod 50 = 0) Then
-            LPrint Chr$(12)
-            LPrint "     PLAYER                  TEAM                     "; expBatCategory$(B9)
+            Print #1, Chr$(12)
+            Print #1, "     PLAYER                  TEAM                     "; expBatCategory$(categoryID)
         End If
 
-        LPrint Using "###"; W;
-        LPrint " ";
-        LPrint TPP$(W);
-        LPrint Tab(25); TMM$(W);
+        Print #1, Using "###"; W;
+        Print #1, " ";
+        Print #1, TPP$(W);
+        Print #1, Tab(25); TMM$(W);
 
         Select Case TVN
 
             Case 1:
-                LPrint Tab(58); Using "#####"; TYP!(W)
+                Print #1, Tab(58); Using "#####"; TYP!(W)
 
             Case 2:
-                LPrint Tab(58); Using ".###"; TYP!(W)
+                Print #1, Tab(58); Using ".###"; TYP!(W)
 
             Case 3:
-                LPrint Tab(58); Using "###.##"; TYP!(W)
+                Print #1, Tab(58); Using "###.##"; TYP!(W)
 
         End Select
 
     Next W
 
-    LPrint Chr$(12)
+	If printDest = 1 Then
+
+		Open destFile$ For Input As #2
+
+		Do While Not EOF(2)
+			Line Input #2, X$
+			Print #1, X$
+		Loop
+
+		Close #2
+
+		Print #1, Chr$(12)
+
+		Kill destFile$
+
+	End If
 
 End Sub
 

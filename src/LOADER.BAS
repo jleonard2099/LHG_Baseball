@@ -103,7 +103,7 @@ Sub LOADER
 
         'Open "pbplog" + Str$(currGame) For Append As #11
 
-        Open diskPaths$(0) + scheduleFile$ For Random As #6 Len = SCHEDULE_SIZE_BYTES
+        Open diskPaths$(3) + scheduleFile$ For Random As #6 Len = SCHEDULE_SIZE_BYTES
 
         For X = 0 To 18
             Field #6, X * 2 As X$, 2 As Q2$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
@@ -592,7 +592,7 @@ Sub LOADER
             End Select
 
             If I$ <> Chr$(27) Then
-                'We didn't ESC so we have to move forward
+                'We didn't ESC so we have to move foneRunWinsard
 
                 If skipLineChange% <> 1 Then
                     Color 15, 0
@@ -1171,7 +1171,7 @@ Sub SaveLineup (idx%)
 
         teamYear$ = RTrim$(diskIDs$(idx%))
 
-        Open diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #9 Len = MGR_SIZE_BYTES
+        Open diskPaths$(4) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #9 Len = MGR_SIZE_BYTES
 
         For I = 0 To 999
             Field #9, I * 2 As Q$, 2 As Q2$(I), MGR_SIZE_BYTES - I * 2 - 2 As Q$
@@ -2463,7 +2463,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
             'Next
 
             Do
-                Call d100(RN)
+                Call Rolld100(RN)
 
                 pitchRating(idx%, MG%(idx%, MG%(idx%, 2) + 3), 15) = 0
 
@@ -2472,7 +2472,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
                     doneAutoDisable% = 1
                 Else
 
-                    Call d100(RN)
+                    Call Rolld100(RN)
                     SP% = 0
 
                     For J = 21 To 36
@@ -2506,7 +2506,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
 
             teamYear$ = RTrim$(diskIDs$(idx%))
 
-            Open diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #1 Len = MGR_SIZE_BYTES
+            Open diskPaths$(4) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #1 Len = MGR_SIZE_BYTES
 
             For I = 0 To 999
                 Field #1, I * 2 As Q$, 2 As Q2$(I), MGR_SIZE_BYTES - I * 2 - 2 As Q$

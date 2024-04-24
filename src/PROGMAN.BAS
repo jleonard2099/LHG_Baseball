@@ -49,7 +49,7 @@ Sub PROGMAN ()
                 Color 14, 4
                 Print Tab(23);
                 Print "FULL COUNT PROGRAMMABLE MANAGER";
-                Print Tab(80);
+                Print Tab(80); " ";
                 Print
 
                 ReDim menuChoices$(1 To 14)
@@ -131,7 +131,43 @@ Sub PROGMAN ()
                             Call ExportManagerProfile(mgrNbr)
 
                         Case 13
-                            Call PrintManagerProfile(T$)
+                            Color 15, 0
+                            Cls
+
+                            Call MenuBox(8, 25, 24, 5, 15, 1)
+
+                            Do
+
+                                Locate 10
+                                Color 7, 1
+
+                                Locate , 32: Print "SEND TO ";
+                                Color 15: Print "F";
+                                Color 7: Print "ILE"
+                                Locate , 32: Print "SEND TO ";
+                                Color 15: Print "P";
+                                Color 7: Print "RINTER"
+
+                                J$ = GetKeyPress$
+
+                            Loop Until UCase$(J$) = "F" Or UCase$(J$) = "P" Or J$ = Chr$(27)
+
+                            If J$ <> Chr$(27) Then
+
+                                Select Case UCase$(J$)
+
+                                    Case "F":
+                                        userFile$ = _SAVEFILEDIALOG$("Save Profile Reprort",_CWD$ + "\Manager Profile","*.txt","Text File")
+                                        If userFile$ <> "" Then
+                                            Call PrintManagerProfile(0, userFile$, T$)
+                                        End If
+
+                                    Case "P":
+                                        Call PrintManagerProfile(1, "MGR_PROFILE", T$)
+
+                                End Select
+
+                            End If
 
                         Case 14
                             Cls '
@@ -1528,14 +1564,18 @@ End Sub
 'This subroutine reviews all existing items
 'in the manager profile and prints a summary
 'of the strategy to the default printer.
-Sub PrintManagerProfile (targetTeam$)
+Sub PrintManagerProfile (printDest, destFile$, targetTeam$)
 
     Shared batterNames$(), pitcherNames$(), yesNo$()
     Shared progMG%()
 
-    ' PRINT MANAGER PROFILE
-    LPrint "MANAGERIAL PROFILE FOR "; targetTeam$
-    LPrint
+	Color 15, 0
+	Cls
+
+	Open destFile$ For Output As #1
+
+    Print #1,  "MANAGERIAL PROFILE FOR "; targetTeam$
+    Print #1, 
 
     '0 = right hand
     '1 = left hand
@@ -1543,15 +1583,16 @@ Sub PrintManagerProfile (targetTeam$)
     LF% = 0
 
     For I = 0 To 9
-        If progMG%(120 + (I + handRL% * 10) * 21) = 999 Then LF% = LF% + 1
+        If progMG%(120 + (I + handRL% * 10) * 21) = 999 Then 
+            LF% = LF% + 1
+        End If
     Next
 
     If LF% = 0 Then
-        LPrint "NO LINEUPS VS RHP "
+        Print #1,  "NO LINEUPS VS RHP "
     Else
         Call GetLineup(handRL%)
         _PrintImage 0
-        'CALL PRTSC0 (1)
     End If
 
     handRL% = 1
@@ -1562,498 +1603,517 @@ Sub PrintManagerProfile (targetTeam$)
     Next
 
     If LF% = 0 Then
-        LPrint "NO LINEUPS VS LHP "
+        Print #1,  "NO LINEUPS VS LHP "
     Else
         Call GetLineup(handRL%)
         _PrintImage 0
-        'CALL PRTSC0 (1)
     End If
 
-    LPrint
-    If progMG%(99) <> 999 Then LPrint "NO STARTING PITCHING ROTATION DEFINED"
-    LPrint "SIZE OF ROTATION IS "; progMG%(1); " MAN"
-    LPrint "    STARTING ROTATION     % STARTS"
+    Print #1, 
+    If progMG%(99) <> 999 Then 
+        Print #1,  "NO STARTING PITCHING ROTATION DEFINED"
+    End If
+
+    Print #1,  "SIZE OF ROTATION IS "; progMG%(1); " MAN"
+    Print #1,  "    STARTING ROTATION     % STARTS"
 
     For I = 1 To progMG%(1)
-        LPrint Using "(#) "; I;
+        Print #1,  Using "(#) "; I;
         If progMG%(I + 2) < 0 Then
-            LPrint
+            Print #1, 
         Else
-            LPrint pitcherNames$(progMG%(I + 2)); Tab(30); progMG%(I + 12)
+            Print #1,  pitcherNames$(progMG%(I + 2)); Tab(30); progMG%(I + 12)
         End If
     Next
 
-    LPrint
-    LPrint "     SPOT STARTERS         % USED"
+    Print #1, 
+    Print #1,  "     SPOT STARTERS         % USED"
 
     For I = 21 To 36
-        LPrint Using "(##) "; I - 20;
+        Print #1,  Using "(##) "; I - 20;
         If progMG%(I) < 0 Then
-            LPrint
+            Print #1, 
         Else
-            LPrint pitcherNames$(progMG%(I)); Tab(30); progMG%(I + 20)
+            Print #1,  pitcherNames$(progMG%(I)); Tab(30); progMG%(I + 20)
         End If
     Next
 
-    LPrint
-    LPrint "  MIDDLE RELIEVERS      % APPEAR"
+    Print #1, 
+    Print #1,  "  MIDDLE RELIEVERS      % APPEAR"
 
     For I = 1 To 10
 
-        LPrint Using "(##) "; I;
+        Print #1,  Using "(##) "; I;
 
         If progMG%(I + 60) < 0 Then
-            LPrint
+            Print #1, 
         Else
-            LPrint pitcherNames$(progMG%(I + 60)); Tab(35); progMG%(I + 70)
+            Print #1,  pitcherNames$(progMG%(I + 60)); Tab(35); progMG%(I + 70)
         End If
 
     Next
 
-    LPrint
-    LPrint "  SET-UP RELIEVERS      % APPEAR"
-    LPrint "   -----  VS LEFT  -------      "
+    Print #1, 
+    Print #1,  "  SET-UP RELIEVERS      % APPEAR"
+    Print #1,  "   -----  VS LEFT  -------      "
 
     For I = 1 To 3
-        LPrint Using "(##) "; I;
+        Print #1,  Using "(##) "; I;
 
         If progMG%(I + 80) < 0 Then
-            LPrint
+            Print #1, 
         Else
-            LPrint pitcherNames$(progMG%(I + 80)); Tab(35); progMG%(I + 90)
+            Print #1,  pitcherNames$(progMG%(I + 80)); Tab(35); progMG%(I + 90)
         End If
 
     Next
 
-    LPrint "   -----  VS RIGHT  -------      "
+    Print #1,  "   -----  VS RIGHT  -------      "
 
     For I = 4 To 6
 
-        LPrint Using "(##) "; I;
+        Print #1,  Using "(##) "; I;
 
         If progMG%(I + 80) < 0 Then
-            LPrint
+            Print #1, 
         Else
-            LPrint pitcherNames$(progMG%(I + 80)); Tab(35); progMG%(I + 90)
+            Print #1,  pitcherNames$(progMG%(I + 80)); Tab(35); progMG%(I + 90)
         End If
 
     Next
 
-    LPrint
-    LPrint "          CLOSERS       % APPEAR"
-    LPrint "   -----  VS LEFT  -------      "
+    Print #1, 
+    Print #1,  "          CLOSERS       % APPEAR"
+    Print #1,  "   -----  VS LEFT  -------      "
 
     For I = 1 To 3
 
-        LPrint Using "(##) "; I;
+        Print #1,  Using "(##) "; I;
 
         If progMG%(I + 520) < 0 Then
-            LPrint
+            Print #1, 
         Else
-            LPrint pitcherNames$(progMG%(I + 520)); Tab(35); progMG%(I + 530)
+            Print #1,  pitcherNames$(progMG%(I + 520)); Tab(35); progMG%(I + 530)
         End If
 
     Next
 
-    LPrint "   -----  VS RIGHT  -------      "
+    Print #1,  "   -----  VS RIGHT  -------      "
 
     For I = 4 To 6
 
-        LPrint Using "(##) "; I;
+        Print #1,  Using "(##) "; I;
 
         If progMG%(I + 520) < 0 Then
-            LPrint
+            Print #1, 
         Else
-            LPrint pitcherNames$(progMG%(I + 520)); Tab(35); progMG%(I + 530)
+            Print #1,  pitcherNames$(progMG%(I + 520)); Tab(35); progMG%(I + 530)
         End If
 
     Next
 
-    LPrint
-    LPrint "  PINCH HITTERS        "
-    LPrint "  ---- VS LHP  ----"
+    Print #1, 
+    Print #1,  "  PINCH HITTERS        "
+    Print #1,  "  ---- VS LHP  ----"
 
     For I = 1 To 5
 
-        LPrint Using "(##) "; I;
+        Print #1,  Using "(##) "; I;
 
         If progMG%(I + 540) < 0 Then
-            LPrint
+            Print #1, 
         Else
-            LPrint batterNames$(progMG%(I + 540))
+            Print #1,  batterNames$(progMG%(I + 540))
         End If
 
     Next
 
-    LPrint "  ---- VS RHP  ----"
+    Print #1,  "  ---- VS RHP  ----"
 
     For I = 6 To 10
 
-        LPrint Using "(##) "; I;
+        Print #1,  Using "(##) "; I;
 
         If progMG%(I + 540) < 0 Then
-            LPrint
+            Print #1, 
         Else
-            LPrint batterNames$(progMG%(I + 540))
+            Print #1,  batterNames$(progMG%(I + 540))
         End If
 
     Next
 
-    LPrint
-    LPrint "DEFENSIVE REPLACEMENTS"
-    LPrint "# PLAYER     P SUBSTITUTE  %  RA"
+    Print #1, 
+    Print #1,  "DEFENSIVE REPLACEMENTS"
+    Print #1,  "# PLAYER     P SUBSTITUTE  %  RA"
 
     For I = 1 To 4
 
-        LPrint Using "# "; I;
+        Print #1,  Using "# "; I;
 
         If progMG%(I + 560) < 0 Then
-            LPrint
+            Print #1, 
         Else
-            LPrint Left$(batterNames$(progMG%(I + 560)), 10); Tab(19);
-            LPrint Using "# "; progMG%(I + 576);
-            LPrint Left$(batterNames$(progMG%(I + 564)), 10); Tab(32); Using "### #"; progMG%(I + 568); progMG%(I + 572)
+            Print #1,  Left$(batterNames$(progMG%(I + 560)), 10); Tab(19);
+            Print #1,  Using "# "; progMG%(I + 576);
+            Print #1,  Left$(batterNames$(progMG%(I + 564)), 10); Tab(32); Using "### #"; progMG%(I + 568); progMG%(I + 572)
         End If
 
     Next
 
-    LPrint
+    Print #1, 
 
     If progMG%(581) <> 999 Then
-        LPrint "NO CLOSING STRATEGY HAS BEEN DEFINED": LPrint:
+        Print #1,  "NO CLOSING STRATEGY HAS BEEN DEFINED": Print #1, :
     Else
-        LPrint Tab(31); "CLOSING STRATEGY"
-        LPrint
-        LPrint "STRATEGY                                        % OF TIME"
-        LPrint "(1) INNING TO BEGIN CLOSING STRATEGY (8TH OR 9TH ON) "; progMG%(588)
-        LPrint "(2) USE BOTH SETUP RELIEVER AND CLOSER "; yesNo$(progMG%(589)): LPrint
-        LPrint "SITUATIONS TO BRING IN CLOSER AND/OR SETUP MAN"
-        LPrint "(3) ";: LPrint Using "START INNING IF SAVE OPPORTUNITY               ###"; progMG%(582)
-        LPrint "(4) ";: LPrint Using "START INNING IF AHEAD                          ###"; progMG%(583)
-        LPrint "(5) ";: LPrint Using "START INNING IF TIED OR AHEAD                  ###"; progMG%(584)
-        LPrint "(6) ";: LPrint Using "IF CURRENT PITCHER TIRED AND AHEAD             ###"; progMG%(585)
-        LPrint "(7) ";: LPrint Using "IF CURRENT PITCHER TIRED AND TIED OR AHEAD     ###"; progMG%(586)
-        LPrint "(8) ";: LPrint Using "WHEN SAVE OPPORTUNITY OCCURS                   ###"; progMG%(587)
+        Print #1,  Tab(31); "CLOSING STRATEGY"
+        Print #1, 
+        Print #1,  "STRATEGY                                        % OF TIME"
+        Print #1,  "(1) INNING TO BEGIN CLOSING STRATEGY (8TH OR 9TH ON) "; progMG%(588)
+        Print #1,  "(2) USE BOTH SETUP RELIEVER AND CLOSER "; yesNo$(progMG%(589)): Print #1, 
+        Print #1,  "SITUATIONS TO BRING IN CLOSER AND/OR SETUP MAN"
+        Print #1,  "(3) ";: Print #1,  Using "START INNING IF SAVE OPPORTUNITY               ###"; progMG%(582)
+        Print #1,  "(4) ";: Print #1,  Using "START INNING IF AHEAD                          ###"; progMG%(583)
+        Print #1,  "(5) ";: Print #1,  Using "START INNING IF TIED OR AHEAD                  ###"; progMG%(584)
+        Print #1,  "(6) ";: Print #1,  Using "IF CURRENT PITCHER TIRED AND AHEAD             ###"; progMG%(585)
+        Print #1,  "(7) ";: Print #1,  Using "IF CURRENT PITCHER TIRED AND TIED OR AHEAD     ###"; progMG%(586)
+        Print #1,  "(8) ";: Print #1,  Using "WHEN SAVE OPPORTUNITY OCCURS                   ###"; progMG%(587)
     End If
 
-    LPrint
+    Print #1, 
 
     If progMG%(590) <> 999 Then
-        LPrint "NO PINCH HITTING FOR THE PITCHER STRATEGY DEFINED"
+        Print #1,  "NO PINCH HITTING FOR THE PITCHER STRATEGY DEFINED"
     Else
-        LPrint Tab(26); "PINCH HITTING FOR THE PITCHER"
-        LPrint
-        LPrint "PINCH HIT FOR THE PITCHER FROM 'A' INNING ON"
-        LPrint "IF DOWN BY 'B' OR MORE RUNS AND"
-        LPrint "'C' OR MORE RUNNERS ON BASE AND"
-        LPrint "'D' OUTS OR LESS AND PITCHERS BATTING AVERAGE IS LESS THAN 'E'"
-        LPrint "'F' % OF THE TIME"
-        LPrint Tab(32); "TABLE OF VALUES"
-        LPrint "SCENARIO        A      B      C      D     E     F"
+        Print #1,  Tab(26); "PINCH HITTING FOR THE PITCHER"
+        Print #1, 
+        Print #1,  "PINCH HIT FOR THE PITCHER FROM 'A' INNING ON"
+        Print #1,  "IF DOWN BY 'B' OR MORE RUNS AND"
+        Print #1,  "'C' OR MORE RUNNERS ON BASE AND"
+        Print #1,  "'D' OUTS OR LESS AND PITCHERS BATTING AVERAGE IS LESS THAN 'E'"
+        Print #1,  "'F' % OF THE TIME"
+        Print #1,  Tab(32); "TABLE OF VALUES"
+        Print #1,  "SCENARIO        A      B      C      D     E     F"
 
         For I = 0 To 2
-            LPrint Using "   #           ##     ##      #      #    ###   ###"; I + 1; progMG%(I * 6 + 591); progMG%(I * 6 + 592); progMG%(I * 6 + 593); progMG%(I * 6 + 594); progMG%(I * 6 + 595); progMG%(I * 6 + 596)
+            Print #1,  Using "   #           ##     ##      #      #    ###   ###"; I + 1; progMG%(I * 6 + 591); progMG%(I * 6 + 592); progMG%(I * 6 + 593); progMG%(I * 6 + 594); progMG%(I * 6 + 595); progMG%(I * 6 + 596)
         Next
 
     End If
 
-    LPrint
+    Print #1, 
 
     If progMG%(609) <> 999 Then
-        LPrint "NO BUNTING STRATEGY DEFINED FOR THE PITCHER"
+        Print #1,  "NO BUNTING STRATEGY DEFINED FOR THE PITCHER"
     Else
-        LPrint "SACRIFICE BUNTING FOR THE PITCHER": LPrint
-        LPrint "'A' OUTS OR LESS"
-        LPrint "IF 'B' OR LESS RUNS AHEAD AND"
-        LPrint "'C' OR LESS RUNS BEHIND"
-        LPrint "'D' % OF THE TIME"
-        LPrint Tab(32); "TABLE OF VALUES"
-        LPrint "SCENARIO                       A      B     C      D"
-        LPrint "1 - 7TH INNING OR LESS         "; Using "#     ##    ##     ###"; progMG%(610); progMG%(611); progMG%(612); progMG%(613)
-        LPrint "    RUNNER ON 1ST           "
-        LPrint "2 - 8TH INNING ON              "; Using "#     ##    ##     ###"; progMG%(614); progMG%(615); progMG%(616); progMG%(617)
-        LPrint "    RUNNER ON 1ST           "
-        LPrint "3 - 7TH INNING OR LESS         "; Using "#     ##    ##     ###"; progMG%(618); progMG%(619); progMG%(620); progMG%(621)
-        LPrint "    RUNNER ON 2ND           "
-        LPrint "4 - 8TH INNING ON              "; Using "#     ##    ##     ###"; progMG%(622); progMG%(623); progMG%(624); progMG%(625)
-        LPrint "    RUNNER ON 2ND           "
-        LPrint "5 - 7TH INNING OR LESS         "; Using "#     ##    ##     ###"; progMG%(626); progMG%(627); progMG%(628); progMG%(629)
-        LPrint "    RUNNERS ON 1ST AND 2ND  "
-        LPrint "6 - 8TH INNING ON              "; Using "#     ##    ##     ###"; progMG%(630); progMG%(631); progMG%(632); progMG%(633)
-        LPrint "    RUNNERS ON 1ST AND 2ND  "
+        Print #1,  "SACRIFICE BUNTING FOR THE PITCHER": Print #1, 
+        Print #1,  "'A' OUTS OR LESS"
+        Print #1,  "IF 'B' OR LESS RUNS AHEAD AND"
+        Print #1,  "'C' OR LESS RUNS BEHIND"
+        Print #1,  "'D' % OF THE TIME"
+        Print #1,  Tab(32); "TABLE OF VALUES"
+        Print #1,  "SCENARIO                       A      B     C      D"
+        Print #1,  "1 - 7TH INNING OR LESS         "; Using "#     ##    ##     ###"; progMG%(610); progMG%(611); progMG%(612); progMG%(613)
+        Print #1,  "    RUNNER ON 1ST           "
+        Print #1,  "2 - 8TH INNING ON              "; Using "#     ##    ##     ###"; progMG%(614); progMG%(615); progMG%(616); progMG%(617)
+        Print #1,  "    RUNNER ON 1ST           "
+        Print #1,  "3 - 7TH INNING OR LESS         "; Using "#     ##    ##     ###"; progMG%(618); progMG%(619); progMG%(620); progMG%(621)
+        Print #1,  "    RUNNER ON 2ND           "
+        Print #1,  "4 - 8TH INNING ON              "; Using "#     ##    ##     ###"; progMG%(622); progMG%(623); progMG%(624); progMG%(625)
+        Print #1,  "    RUNNER ON 2ND           "
+        Print #1,  "5 - 7TH INNING OR LESS         "; Using "#     ##    ##     ###"; progMG%(626); progMG%(627); progMG%(628); progMG%(629)
+        Print #1,  "    RUNNERS ON 1ST AND 2ND  "
+        Print #1,  "6 - 8TH INNING ON              "; Using "#     ##    ##     ###"; progMG%(630); progMG%(631); progMG%(632); progMG%(633)
+        Print #1,  "    RUNNERS ON 1ST AND 2ND  "
     End If
 
-    LPrint
+    Print #1, 
 
     If progMG%(634) <> 999 Then
-        LPrint "NO BUNTING STRATEGY DEFINED FOR POSITION PLAYERS"
+        Print #1,  "NO BUNTING STRATEGY DEFINED FOR POSITION PLAYERS"
     Else
-        LPrint "SACRIFICE BUNTING FOR THE POSITION PLAYERS": LPrint
-        LPrint "IF 'A' OR LESS RUNS AHEAD AND"
-        LPrint "'B' OR LESS RUNS BEHIND"
-        LPrint "BATTING AVERAGE IS LESS THAN 'C' AND SLUGGING PCT IS LESS THAN 'D'"
-        LPrint "PITCHERS ERA LESS THAN 'E' , 'F' % OF THE TIME"
-        LPrint Tab(32); "TABLE OF VALUES"
-        LPrint "SCENARIO                        A     B      C      D      E     F"
-        LPrint "1 - 7TH INNING OR LESS         "; Using "##    ##    ###    ###    ###   ###"; progMG%(635); progMG%(636); progMG%(637); progMG%(638); progMG%(639); progMG%(640)
-        LPrint "    0 OUTS, RUNNER ON 1ST"
-        LPrint "2 - 7TH INNING OR LESS         "; Using "##    ##    ###    ###    ###   ###"; progMG%(641); progMG%(642); progMG%(643); progMG%(644); progMG%(645); progMG%(646)
-        LPrint "    0 OUTS, RUNNER ON 2ND"
-        LPrint "3 - 7TH INNING OR LESS         "; Using "##    ##    ###    ###    ###   ###"; progMG%(647); progMG%(648); progMG%(649); progMG%(650); progMG%(651); progMG%(652)
-        LPrint "    0 OUTS, RUNNERS 1ST AND 2ND"
-        LPrint "4 - 8TH INNING ON              "; Using "##    ##    ###    ###    ###   ###"; progMG%(653); progMG%(654); progMG%(655); progMG%(656); progMG%(657); progMG%(658)
-        LPrint "    0 OUTS, RUNNER ON 1ST"
-        LPrint "5 - 8TH INNING ON              "; Using "##    ##    ###    ###    ###   ###"; progMG%(659); progMG%(660); progMG%(661); progMG%(662); progMG%(663); progMG%(664)
-        LPrint "    0 OUTS, RUNNER ON 2ND"
-        LPrint "6 - 8TH INNING ON              "; Using "##    ##    ###    ###    ###   ###"; progMG%(665); progMG%(666); progMG%(667); progMG%(668); progMG%(669); progMG%(670)
-        LPrint "    0 OUTS, RUNNERS ON 1ST AND 2ND"
+        Print #1,  "SACRIFICE BUNTING FOR THE POSITION PLAYERS": Print #1, 
+        Print #1,  "IF 'A' OR LESS RUNS AHEAD AND"
+        Print #1,  "'B' OR LESS RUNS BEHIND"
+        Print #1,  "BATTING AVERAGE IS LESS THAN 'C' AND SLUGGING PCT IS LESS THAN 'D'"
+        Print #1,  "PITCHERS ERA LESS THAN 'E' , 'F' % OF THE TIME"
+        Print #1,  Tab(32); "TABLE OF VALUES"
+        Print #1,  "SCENARIO                        A     B      C      D      E     F"
+        Print #1,  "1 - 7TH INNING OR LESS         "; Using "##    ##    ###    ###    ###   ###"; progMG%(635); progMG%(636); progMG%(637); progMG%(638); progMG%(639); progMG%(640)
+        Print #1,  "    0 OUTS, RUNNER ON 1ST"
+        Print #1,  "2 - 7TH INNING OR LESS         "; Using "##    ##    ###    ###    ###   ###"; progMG%(641); progMG%(642); progMG%(643); progMG%(644); progMG%(645); progMG%(646)
+        Print #1,  "    0 OUTS, RUNNER ON 2ND"
+        Print #1,  "3 - 7TH INNING OR LESS         "; Using "##    ##    ###    ###    ###   ###"; progMG%(647); progMG%(648); progMG%(649); progMG%(650); progMG%(651); progMG%(652)
+        Print #1,  "    0 OUTS, RUNNERS 1ST AND 2ND"
+        Print #1,  "4 - 8TH INNING ON              "; Using "##    ##    ###    ###    ###   ###"; progMG%(653); progMG%(654); progMG%(655); progMG%(656); progMG%(657); progMG%(658)
+        Print #1,  "    0 OUTS, RUNNER ON 1ST"
+        Print #1,  "5 - 8TH INNING ON              "; Using "##    ##    ###    ###    ###   ###"; progMG%(659); progMG%(660); progMG%(661); progMG%(662); progMG%(663); progMG%(664)
+        Print #1,  "    0 OUTS, RUNNER ON 2ND"
+        Print #1,  "6 - 8TH INNING ON              "; Using "##    ##    ###    ###    ###   ###"; progMG%(665); progMG%(666); progMG%(667); progMG%(668); progMG%(669); progMG%(670)
+        Print #1,  "    0 OUTS, RUNNERS ON 1ST AND 2ND"
     End If
 
-    LPrint
+    Print #1, 
 
     If progMG%(671) <> 999 Then
-        LPrint "NO HIT AND RUN STRATEGY DEFINED"
+        Print #1,  "NO HIT AND RUN STRATEGY DEFINED"
     Else
-        LPrint "HIT AND RUN STRATEGY": LPrint
-        LPrint "IF 'A' OR LESS RUNS AHEAD AND"
-        LPrint "'B' OR LESS RUNS BEHIND"
-        LPrint "'C' % OF THE TIME"
-        LPrint "'D' AB PER STRIKEOUT"
-        LPrint " SLUGGING PCT LESS THAN OR EQUAL TO 'E'"
-        LPrint Tab(32); "TABLE OF VALUES"
-        LPrint "    SCENARIO                          A     B      C   D    E"
-        LPrint "1 - 0 OUTS, RUNNER ON 1ST            "; Using "##    ##    ###  ##  ###"; progMG%(672); progMG%(673); progMG%(674); progMG%(866); progMG%(872)
-        LPrint "2 - 1 OUT, RUNNER ON 1ST             "; Using "##    ##    ###  ##  ###"; progMG%(675); progMG%(676); progMG%(677); progMG%(867); progMG%(873)
-        LPrint "3 - 0 OUTS, RUNNERS ON 1ST AND 3RD   "; Using "##    ##    ###  ##  ###"; progMG%(678); progMG%(679); progMG%(680); progMG%(868); progMG%(874)
-        LPrint "4 - 1 OUT, RUNNERS ON 1ST AND 3RD    "; Using "##    ##    ###  ##  ###"; progMG%(681); progMG%(682); progMG%(683); progMG%(869); progMG%(875)
-        LPrint "5 - 0 OUTS, RUNNERS ON 1ST AND 2ND   "; Using "##    ##    ###  ##  ###"; progMG%(684); progMG%(685); progMG%(686); progMG%(870); progMG%(876)
-        LPrint "6 - 1 OUT, RUNNERS ON 1ST AND 2ND    "; Using "##    ##    ###  ##  ###"; progMG%(687); progMG%(688); progMG%(689); progMG%(871); progMG%(877)
+        Print #1,  "HIT AND RUN STRATEGY": Print #1, 
+        Print #1,  "IF 'A' OR LESS RUNS AHEAD AND"
+        Print #1,  "'B' OR LESS RUNS BEHIND"
+        Print #1,  "'C' % OF THE TIME"
+        Print #1,  "'D' AB PER STRIKEOUT"
+        Print #1,  " SLUGGING PCT LESS THAN OR EQUAL TO 'E'"
+        Print #1,  Tab(32); "TABLE OF VALUES"
+        Print #1,  "    SCENARIO                          A     B      C   D    E"
+        Print #1,  "1 - 0 OUTS, RUNNER ON 1ST            "; Using "##    ##    ###  ##  ###"; progMG%(672); progMG%(673); progMG%(674); progMG%(866); progMG%(872)
+        Print #1,  "2 - 1 OUT, RUNNER ON 1ST             "; Using "##    ##    ###  ##  ###"; progMG%(675); progMG%(676); progMG%(677); progMG%(867); progMG%(873)
+        Print #1,  "3 - 0 OUTS, RUNNERS ON 1ST AND 3RD   "; Using "##    ##    ###  ##  ###"; progMG%(678); progMG%(679); progMG%(680); progMG%(868); progMG%(874)
+        Print #1,  "4 - 1 OUT, RUNNERS ON 1ST AND 3RD    "; Using "##    ##    ###  ##  ###"; progMG%(681); progMG%(682); progMG%(683); progMG%(869); progMG%(875)
+        Print #1,  "5 - 0 OUTS, RUNNERS ON 1ST AND 2ND   "; Using "##    ##    ###  ##  ###"; progMG%(684); progMG%(685); progMG%(686); progMG%(870); progMG%(876)
+        Print #1,  "6 - 1 OUT, RUNNERS ON 1ST AND 2ND    "; Using "##    ##    ###  ##  ###"; progMG%(687); progMG%(688); progMG%(689); progMG%(871); progMG%(877)
     End If
 
-    LPrint
+    Print #1, 
 
     If progMG%(847) <> 999 Then
-        LPrint "NO CRITERIA DEFINED FOR PINCH HITTING FOR THE BATTER"
+        Print #1,  "NO CRITERIA DEFINED FOR PINCH HITTING FOR THE BATTER"
     Else
-        LPrint "PINCH HITTING FOR THE BATTER"
-        LPrint
-        LPrint "PINCH HIT FOR THE BATTER FROM 'A' INNING ON"
-        LPrint "IF DOWN BY 'B' OR MORE RUNS AND"
-        LPrint "'C' RUNNERS ON BASE AND"
-        LPrint "SLUGGING PCT IS LESS THAN 'D'"
-        LPrint "AND BATTING AVERAGE IS LESS THAN 'E'"
-        LPrint "'F' % OF THE TIME"
-        LPrint
-        LPrint Tab(32); "TABLE OF VALUES"
-        LPrint "SCENARIO        A      B      C      D       E     F"
+        Print #1,  "PINCH HITTING FOR THE BATTER"
+        Print #1, 
+        Print #1,  "PINCH HIT FOR THE BATTER FROM 'A' INNING ON"
+        Print #1,  "IF DOWN BY 'B' OR MORE RUNS AND"
+        Print #1,  "'C' RUNNERS ON BASE AND"
+        Print #1,  "SLUGGING PCT IS LESS THAN 'D'"
+        Print #1,  "AND BATTING AVERAGE IS LESS THAN 'E'"
+        Print #1,  "'F' % OF THE TIME"
+        Print #1, 
+        Print #1,  Tab(32); "TABLE OF VALUES"
+        Print #1,  "SCENARIO        A      B      C      D       E     F"
 
         For I = 0 To 2
-            LPrint Using "   #           ##     ##      #     ###    ###   ###"; I + 1; progMG%(I * 6 + 848); progMG%(I * 6 + 849); progMG%(I * 6 + 850); progMG%(I * 6 + 851); progMG%(I * 6 + 852); progMG%(I * 6 + 853)
+            Print #1,  Using "   #           ##     ##      #     ###    ###   ###"; I + 1; progMG%(I * 6 + 848); progMG%(I * 6 + 849); progMG%(I * 6 + 850); progMG%(I * 6 + 851); progMG%(I * 6 + 852); progMG%(I * 6 + 853)
         Next
 
     End If
 
-    LPrint
+    Print #1, 
 
     If progMG%(690) <> 999 Then
-        LPrint "NO STRATEGY DEFINED FOR INFIELD IN WITH 3RD BASE OCCUPIED"
+        Print #1,  "NO STRATEGY DEFINED FOR INFIELD IN WITH 3RD BASE OCCUPIED"
     Else
-        LPrint "INFIELD IN WITH 3RD BASE OCCUPIED": LPrint
-        LPrint "IF DOWN BY 'A' RUNS"
-        LPrint "AND NOT MORE THAN 'B' RUNS"
-        LPrint "FROM 'C' INNING ON"
-        LPrint "'D' % OF THE TIME"
-        LPrint Tab(32); "TABLE OF VALUES"
-        LPrint "SCENARIO                              A     B   C     D"
-        LPrint "1 - 0 OUTS                           "; Using "##    ##   #   ###"; progMG%(691); progMG%(692); progMG%(693); progMG%(694)
-        LPrint "2 - 0 OUTS                           "; Using "##    ##   #   ###"; progMG%(695); progMG%(696); progMG%(697); progMG%(698)
-        LPrint "3 - <2 OUTS, RUNNER ON 1ST           "; Using "##    ##   #   ###"; progMG%(699); progMG%(700); progMG%(701); progMG%(702)
-        LPrint "4 - <2 OUTS, RUNNER ON 1ST           "; Using "##    ##   #   ###"; progMG%(703); progMG%(704); progMG%(705); progMG%(706)
+        Print #1,  "INFIELD IN WITH 3RD BASE OCCUPIED": Print #1, 
+        Print #1,  "IF DOWN BY 'A' RUNS"
+        Print #1,  "AND NOT MORE THAN 'B' RUNS"
+        Print #1,  "FROM 'C' INNING ON"
+        Print #1,  "'D' % OF THE TIME"
+        Print #1,  Tab(32); "TABLE OF VALUES"
+        Print #1,  "SCENARIO                              A     B   C     D"
+        Print #1,  "1 - 0 OUTS                           "; Using "##    ##   #   ###"; progMG%(691); progMG%(692); progMG%(693); progMG%(694)
+        Print #1,  "2 - 0 OUTS                           "; Using "##    ##   #   ###"; progMG%(695); progMG%(696); progMG%(697); progMG%(698)
+        Print #1,  "3 - <2 OUTS, RUNNER ON 1ST           "; Using "##    ##   #   ###"; progMG%(699); progMG%(700); progMG%(701); progMG%(702)
+        Print #1,  "4 - <2 OUTS, RUNNER ON 1ST           "; Using "##    ##   #   ###"; progMG%(703); progMG%(704); progMG%(705); progMG%(706)
     End If
 
-    LPrint
+    Print #1, 
 
     Cls
 
     If progMG%(707) <> 999 Then
-        LPrint "NO STRATEGY DEFINED FOR CORNERS IN VS HITTER WHO MIGHT BUNT FOR A HIT"
+        Print #1,  "NO STRATEGY DEFINED FOR CORNERS IN VS HITTER WHO MIGHT BUNT FOR A HIT"
     Else
-        LPrint "CORNERS IN VS HITTER WHO MIGHT BUNT FOR A HIT": LPrint
-        LPrint "IF BUNT RATING IS >= 'A'"
-        LPrint "'B' % OF THE TIME"
-        LPrint Tab(32); "TABLE OF VALUES"
-        LPrint "      A      B"
-        LPrint Using "(1)  ##    ###"; progMG%(708); progMG%(709)
-        LPrint Using "(2)  ##    ###"; progMG%(710); progMG%(711)
-        LPrint Using "(3)  ##    ###"; progMG%(712); progMG%(713)
+        Print #1,  "CORNERS IN VS HITTER WHO MIGHT BUNT FOR A HIT": Print #1, 
+        Print #1,  "IF BUNT RATING IS >= 'A'"
+        Print #1,  "'B' % OF THE TIME"
+        Print #1,  Tab(32); "TABLE OF VALUES"
+        Print #1,  "      A      B"
+        Print #1,  Using "(1)  ##    ###"; progMG%(708); progMG%(709)
+        Print #1,  Using "(2)  ##    ###"; progMG%(710); progMG%(711)
+        Print #1,  Using "(3)  ##    ###"; progMG%(712); progMG%(713)
     End If
 
-    LPrint
+    Print #1, 
 
     If progMG%(714) <> 999 Then
-        LPrint "NO STRATEGY DEFINED FOR CORNERS IN VS HITTER IN SAC HIT SITUATION"
+        Print #1,  "NO STRATEGY DEFINED FOR CORNERS IN VS HITTER IN SAC HIT SITUATION"
     Else
-        LPrint "CORNERS IN VS HITTER IN SAC HIT SITUATION": LPrint
-        LPrint "IF AHEAD BY  'A' RUNS OR LESS"
-        LPrint "OR BEHIND BY NOT MORE THAN 'B' RUNS"
-        LPrint "BUNT RATING >= 'C'"
-        LPrint "'D' % OF THE TIME"
-        LPrint Tab(32); "TABLE OF VALUES"
-        LPrint "SCENARIO                              A     B   C     D"
-        LPrint "1 - 0 OUTS, RUNNER ON 1ST            "; Using "##    ##   #   ###"; progMG%(715); progMG%(716); progMG%(717); progMG%(718)
-        LPrint "2 - 0 OUTS, RUNNER ON 1ST            "; Using "##    ##   #   ###"; progMG%(719); progMG%(720); progMG%(721); progMG%(722)
-        LPrint "3 - 0 OUTS, RUNNER ON 1ST AND 2ND    "; Using "##    ##   #   ###"; progMG%(723); progMG%(724); progMG%(725); progMG%(726)
-        LPrint "4 - 0 OUTS, RUNNER ON 1ST AND 2ND    "; Using "##    ##   #   ###"; progMG%(727); progMG%(728); progMG%(729); progMG%(730)
+        Print #1,  "CORNERS IN VS HITTER IN SAC HIT SITUATION": Print #1, 
+        Print #1,  "IF AHEAD BY  'A' RUNS OR LESS"
+        Print #1,  "OR BEHIND BY NOT MORE THAN 'B' RUNS"
+        Print #1,  "BUNT RATING >= 'C'"
+        Print #1,  "'D' % OF THE TIME"
+        Print #1,  Tab(32); "TABLE OF VALUES"
+        Print #1,  "SCENARIO                              A     B   C     D"
+        Print #1,  "1 - 0 OUTS, RUNNER ON 1ST            "; Using "##    ##   #   ###"; progMG%(715); progMG%(716); progMG%(717); progMG%(718)
+        Print #1,  "2 - 0 OUTS, RUNNER ON 1ST            "; Using "##    ##   #   ###"; progMG%(719); progMG%(720); progMG%(721); progMG%(722)
+        Print #1,  "3 - 0 OUTS, RUNNER ON 1ST AND 2ND    "; Using "##    ##   #   ###"; progMG%(723); progMG%(724); progMG%(725); progMG%(726)
+        Print #1,  "4 - 0 OUTS, RUNNER ON 1ST AND 2ND    "; Using "##    ##   #   ###"; progMG%(727); progMG%(728); progMG%(729); progMG%(730)
     End If
 
-    LPrint
+    Print #1, 
 
     If progMG%(731) <> 999 Then
-        LPrint "NO STRATEGY DEFINED FOR CORNERS IN VS PITCHER IN SAC HIT SITUATION"
+        Print #1,  "NO STRATEGY DEFINED FOR CORNERS IN VS PITCHER IN SAC HIT SITUATION"
     Else
-        LPrint "CORNERS IN VS PITCHER IN SAC HIT SITUATION": LPrint
-        LPrint "PITCHER'S BATTING AVERAGE LESS THAN OR EQUAL TO 'A'"
-        LPrint "'B' % OF THE TIME"
-        LPrint Tab(32); "TABLE OF VALUES"
-        LPrint "SCENARIO                                  A      B"
-        LPrint "1 - <= 1 OUT, RUNNER ON 1ST              "; Using "###   ###"; progMG%(732); progMG%(733)
-        LPrint "2 - <= 1 OUT, RUNNER ON 1ST              "; Using "###   ###"; progMG%(734); progMG%(735)
-        LPrint "3 - 0 OUTS, RUNNER ON 1ST AND 2ND OR 2ND "; Using "###   ###"; progMG%(736); progMG%(737)
-        LPrint "4 - 0 OUTS, RUNNER ON 1ST AND 2ND OR 2ND "; Using "###   ###"; progMG%(738); progMG%(739)
+        Print #1,  "CORNERS IN VS PITCHER IN SAC HIT SITUATION": Print #1, 
+        Print #1,  "PITCHER'S BATTING AVERAGE LESS THAN OR EQUAL TO 'A'"
+        Print #1,  "'B' % OF THE TIME"
+        Print #1,  Tab(32); "TABLE OF VALUES"
+        Print #1,  "SCENARIO                                  A      B"
+        Print #1,  "1 - <= 1 OUT, RUNNER ON 1ST              "; Using "###   ###"; progMG%(732); progMG%(733)
+        Print #1,  "2 - <= 1 OUT, RUNNER ON 1ST              "; Using "###   ###"; progMG%(734); progMG%(735)
+        Print #1,  "3 - 0 OUTS, RUNNER ON 1ST AND 2ND OR 2ND "; Using "###   ###"; progMG%(736); progMG%(737)
+        Print #1,  "4 - 0 OUTS, RUNNER ON 1ST AND 2ND OR 2ND "; Using "###   ###"; progMG%(738); progMG%(739)
     End If
 
-    LPrint
+    Print #1, 
 
     If progMG%(740) <> 999 Then
-        LPrint "NO STRATEGY DEFINED FOR CORNERS IN VS HITTER IN SQUEEZE SITUATION"
+        Print #1,  "NO STRATEGY DEFINED FOR CORNERS IN VS HITTER IN SQUEEZE SITUATION"
     Else
-        LPrint "CORNERS IN VS HITTER IN SQUEEZE SITUATION": LPrint
-        LPrint "IF AHEAD BY  'A' RUNS OR LESS"
-        LPrint "OR BEHIND BY NOT MORE THAN 'B' RUNS"
-        LPrint "BUNT RATING >= 'C'"
-        LPrint "'D' % OF THE TIME"
-        LPrint Tab(32); "TABLE OF VALUES"
-        LPrint "SCENARIO                              A     B   C     D"
-        LPrint "1 - 0 OUT, RUNNER ON 3RD             "; Using "##    ##   #   ###"; progMG%(741); progMG%(742); progMG%(743); progMG%(744)
-        LPrint "2 - 1 OUT, RUNNER ON 3RD             "; Using "##    ##   #   ###"; progMG%(745); progMG%(746); progMG%(747); progMG%(748)
+        Print #1,  "CORNERS IN VS HITTER IN SQUEEZE SITUATION": Print #1, 
+        Print #1,  "IF AHEAD BY  'A' RUNS OR LESS"
+        Print #1,  "OR BEHIND BY NOT MORE THAN 'B' RUNS"
+        Print #1,  "BUNT RATING >= 'C'"
+        Print #1,  "'D' % OF THE TIME"
+        Print #1,  Tab(32); "TABLE OF VALUES"
+        Print #1,  "SCENARIO                              A     B   C     D"
+        Print #1,  "1 - 0 OUT, RUNNER ON 3RD             "; Using "##    ##   #   ###"; progMG%(741); progMG%(742); progMG%(743); progMG%(744)
+        Print #1,  "2 - 1 OUT, RUNNER ON 3RD             "; Using "##    ##   #   ###"; progMG%(745); progMG%(746); progMG%(747); progMG%(748)
     End If
 
-    LPrint
+    Print #1, 
 
     If progMG%(749) <> 999 Then
-        LPrint "NO STRATEGY DEFINED FOR GUARDING THE LINES"
+        Print #1,  "NO STRATEGY DEFINED FOR GUARDING THE LINES"
     Else
-        LPrint "GUARD LINES STRATEGY": LPrint
-        LPrint "IF 'A' RUNS AHEAD"
-        LPrint "'B' INNING ON"
-        LPrint "'C' % OF THE TIME"
-        LPrint Tab(32); "TABLE OF VALUES"
-        LPrint "     A     B      C"
-        LPrint "1 - "; Using "##    ##    ###"; progMG%(750); progMG%(751); progMG%(752)
-        LPrint "2 - "; Using "##    ##    ###"; progMG%(753); progMG%(754); progMG%(755)
+        Print #1,  "GUARD LINES STRATEGY": Print #1, 
+        Print #1,  "IF 'A' RUNS AHEAD"
+        Print #1,  "'B' INNING ON"
+        Print #1,  "'C' % OF THE TIME"
+        Print #1,  Tab(32); "TABLE OF VALUES"
+        Print #1,  "     A     B      C"
+        Print #1,  "1 - "; Using "##    ##    ###"; progMG%(750); progMG%(751); progMG%(752)
+        Print #1,  "2 - "; Using "##    ##    ###"; progMG%(753); progMG%(754); progMG%(755)
     End If
 
-    LPrint
+    Print #1, 
 
     If progMG%(756) <> 999 Then
-        LPrint "NO STRATEGY DEFINED FOR PITCHING AROUND HITTERS"
+        Print #1,  "NO STRATEGY DEFINED FOR PITCHING AROUND HITTERS"
     Else
-        LPrint "PITCH AROUND STRATEGY": LPrint
-        LPrint "SLUGGING PCT >= 'A'"
-        LPrint "'B' INNING ON"
-        LPrint "'C' % OF THE TIME"
-        LPrint Tab(32); "TABLE OF VALUES"
-        LPrint "SCENARIO                                               A     B      C"
-        LPrint "1 - 1ST BASE OPEN, BATTER NOT TYING OR WINNING RUN   "; Using "###    ##    ###"; progMG%(757); progMG%(758); progMG%(759)
-        LPrint "2 - 1ST BASE OPEN, BATTER NOT TYING OR WINNING RUN   "; Using "###    ##    ###"; progMG%(760); progMG%(761); progMG%(762)
-        LPrint "3 - 1ST BASE OPEN, BATTER NOT TYING OR WINNING RUN   "; Using "###    ##    ###"; progMG%(763); progMG%(764); progMG%(765)
+        Print #1,  "PITCH AROUND STRATEGY": Print #1, 
+        Print #1,  "SLUGGING PCT >= 'A'"
+        Print #1,  "'B' INNING ON"
+        Print #1,  "'C' % OF THE TIME"
+        Print #1,  Tab(32); "TABLE OF VALUES"
+        Print #1,  "SCENARIO                                               A     B      C"
+        Print #1,  "1 - 1ST BASE OPEN, BATTER NOT TYING OR WINNING RUN   "; Using "###    ##    ###"; progMG%(757); progMG%(758); progMG%(759)
+        Print #1,  "2 - 1ST BASE OPEN, BATTER NOT TYING OR WINNING RUN   "; Using "###    ##    ###"; progMG%(760); progMG%(761); progMG%(762)
+        Print #1,  "3 - 1ST BASE OPEN, BATTER NOT TYING OR WINNING RUN   "; Using "###    ##    ###"; progMG%(763); progMG%(764); progMG%(765)
     End If
 
-    LPrint
+    Print #1, 
 
     If progMG%(766) <> 999 Then
-        LPrint "NO STRATEGY DEFINED FOR THROWING TO THE PLATE"
+        Print #1,  "NO STRATEGY DEFINED FOR THROWING TO THE PLATE"
     Else
-        LPrint "DON'T THROW HOME WITH RUNNER TRYING TO SCORE": LPrint
-        LPrint "FROM 'A' INNING ON"
-        LPrint "'B' OR MORE RUNS AHEAD"
-        LPrint Tab(32); "TABLE OF VALUES"
-        LPrint "      A      B"
-        LPrint Using "(1)  ##    ###"; progMG%(767); progMG%(768)
-        LPrint Using "(2)  ##    ###"; progMG%(769); progMG%(770)
+        Print #1,  "DON'T THROW HOME WITH RUNNER TRYING TO SCORE": Print #1, 
+        Print #1,  "FROM 'A' INNING ON"
+        Print #1,  "'B' OR MORE RUNS AHEAD"
+        Print #1,  Tab(32); "TABLE OF VALUES"
+        Print #1,  "      A      B"
+        Print #1,  Using "(1)  ##    ###"; progMG%(767); progMG%(768)
+        Print #1,  Using "(2)  ##    ###"; progMG%(769); progMG%(770)
     End If
 
-    LPrint
-    LPrint "# PINCH RUNNER"
+    Print #1, 
+    Print #1,  "# PINCH RUNNER"
 
     For I = 1 To 6
-        LPrint Using "# "; I;
+        Print #1,  Using "# "; I;
         If progMG%(I + 771) < 0 Then
-            LPrint
+            Print #1, 
         Else
-            LPrint batterNames$(progMG%(I + 771))
+            Print #1,  batterNames$(progMG%(I + 771))
         End If
     Next
 
-    LPrint
-    LPrint "DEFENSIVE SUBS FOR PINCH RUNNERS"
-    LPrint "SCORE TIED OR DOWN BY ONE RUN"
+    Print #1, 
+    Print #1,  "DEFENSIVE SUBS FOR PINCH RUNNERS"
+    Print #1,  "SCORE TIED OR DOWN BY ONE RUN"
 
     If progMG%(778) <> 999 Then
-        LPrint "NO SUBS DEFINED"
+        Print #1,  "NO SUBS DEFINED"
     Else
-        LPrint "# PLAYER     I  SUBSTITUTE  %"
+        Print #1,  "# PLAYER     I  SUBSTITUTE  %"
         For I = 0 To 5
-            LPrint Using "# "; I + 1;
+            Print #1,  Using "# "; I + 1;
             If progMG%(I * 4 + 779) < 0 Then
-                LPrint
+                Print #1, 
             Else
-                LPrint Left$(batterNames$(progMG%(I * 4 + 779)), 10); Tab(19);
-                LPrint Using "## "; progMG%(I * 4 + 780);
-                LPrint Left$(batterNames$(progMG%(I * 4 + 781)), 10); Tab(33); Using "###"; progMG%(I * 4 + 782)
+                Print #1,  Left$(batterNames$(progMG%(I * 4 + 779)), 10); Tab(19);
+                Print #1,  Using "## "; progMG%(I * 4 + 780);
+                Print #1,  Left$(batterNames$(progMG%(I * 4 + 781)), 10); Tab(33); Using "###"; progMG%(I * 4 + 782)
             End If
         Next
     End If
 
-    LPrint
+    Print #1, 
 
     If progMG%(803) <> 999 Then
-        LPrint "NO STRATEGY DEFINED TO PINCH RUN FOR PITCHER"
+        Print #1,  "NO STRATEGY DEFINED TO PINCH RUN FOR PITCHER"
     Else
-        LPrint "PINCH RUN FOR PITCHER": LPrint
-        LPrint "RUN RATING <= 'A'"
-        LPrint "'B' INNING ON"
-        LPrint "'C' % OF THE TIME"
-        LPrint Tab(32); "TABLE OF VALUES"
-        LPrint "SCENARIO                A     B      C"
-        LPrint "1 - TIED OR DOWN BY 1 "; Using "###    ##    ###"; progMG%(804); progMG%(805); progMG%(806)
-        LPrint "2 - TIED OR DOWN BY 1 "; Using "###    ##    ###"; progMG%(807); progMG%(808); progMG%(809)
+        Print #1,  "PINCH RUN FOR PITCHER": Print #1, 
+        Print #1,  "RUN RATING <= 'A'"
+        Print #1,  "'B' INNING ON"
+        Print #1,  "'C' % OF THE TIME"
+        Print #1,  Tab(32); "TABLE OF VALUES"
+        Print #1,  "SCENARIO                A     B      C"
+        Print #1,  "1 - TIED OR DOWN BY 1 "; Using "###    ##    ###"; progMG%(804); progMG%(805); progMG%(806)
+        Print #1,  "2 - TIED OR DOWN BY 1 "; Using "###    ##    ###"; progMG%(807); progMG%(808); progMG%(809)
     End If
 
-    LPrint
+    Print #1, 
 
     If progMG%(810) <> 999 Then
-        LPrint "NO BASE RUNNING STRATEGY DEFINED"
+        Print #1,  "NO BASE RUNNING STRATEGY DEFINED"
     Else
-        LPrint "BASE RUNNING STRATEGY": LPrint
-        LPrint Tab(32); "TABLE OF VALUES"
-        LPrint "SCENARIO                            %       %          %          %"
-        LPrint "                                  SAFE    NORMAL   AGGRESSIVE   TOTAL"
-        LPrint " 1 - INNING 1-3, WHEN AHEAD       "; Using "###     ###        ###          ###"; progMG%(811); progMG%(812); progMG%(813); progMG%(811) + progMG%(812) + progMG%(813)
-        LPrint " 2 - INNING 1-3, WHEN TIED        "; Using "###     ###        ###          ###"; progMG%(814); progMG%(815); progMG%(816); progMG%(816) + progMG%(815) + progMG%(814)
-        LPrint " 3 - INNING 1-3, WHEN BEHIND      "; Using "###     ###        ###          ###"; progMG%(817); progMG%(818); progMG%(819); progMG%(819) + progMG%(818) + progMG%(817)
-        LPrint " 4 - INNING 4-6, WHEN AHEAD       "; Using "###     ###        ###          ###"; progMG%(820); progMG%(821); progMG%(822); progMG%(820) + progMG%(821) + progMG%(822)
-        LPrint " 5 - INNING 4-6, WHEN TIED        "; Using "###     ###        ###          ###"; progMG%(823); progMG%(824); progMG%(825); progMG%(823) + progMG%(824) + progMG%(825)
-        LPrint " 6 - INNING 4-6, WHEN BEHIND      "; Using "###     ###        ###          ###"; progMG%(826); progMG%(827); progMG%(828); progMG%(826) + progMG%(827) + progMG%(828)
-        LPrint " 7 - INNING 7-9, WHEN AHEAD       "; Using "###     ###        ###          ###"; progMG%(829); progMG%(830); progMG%(831); progMG%(829) + progMG%(830) + progMG%(831)
-        LPrint " 8 - INNING 7-9, WHEN TIED        "; Using "###     ###        ###          ###"; progMG%(832); progMG%(833); progMG%(834); progMG%(832) + progMG%(833) + progMG%(834)
-        LPrint " 9 - INNING 7-9, WHEN BEHIND      "; Using "###     ###        ###          ###"; progMG%(835); progMG%(836); progMG%(837); progMG%(835) + progMG%(836) + progMG%(837)
-        LPrint "10 - INNING 9- , WHEN AHEAD       "; Using "###     ###        ###          ###"; progMG%(838); progMG%(839); progMG%(840); progMG%(838) + progMG%(839) + progMG%(840)
-        LPrint "11 - INNING 9- , WHEN TIED        "; Using "###     ###        ###          ###"; progMG%(841); progMG%(842); progMG%(843); progMG%(841) + progMG%(842) + progMG%(843)
-        LPrint "12 - INNING 9- , WHEN BEHIND      "; Using "###     ###        ###          ###"; progMG%(844); progMG%(845); progMG%(846); progMG%(844) + progMG%(845) + progMG%(846)
+        Print #1,  "BASE RUNNING STRATEGY": Print #1, 
+        Print #1,  Tab(32); "TABLE OF VALUES"
+        Print #1,  "SCENARIO                            %       %          %          %"
+        Print #1,  "                                  SAFE    NORMAL   AGGRESSIVE   TOtotAwayLosses"
+        Print #1,  " 1 - INNING 1-3, WHEN AHEAD       "; Using "###     ###        ###          ###"; progMG%(811); progMG%(812); progMG%(813); progMG%(811) + progMG%(812) + progMG%(813)
+        Print #1,  " 2 - INNING 1-3, WHEN TIED        "; Using "###     ###        ###          ###"; progMG%(814); progMG%(815); progMG%(816); progMG%(816) + progMG%(815) + progMG%(814)
+        Print #1,  " 3 - INNING 1-3, WHEN BEHIND      "; Using "###     ###        ###          ###"; progMG%(817); progMG%(818); progMG%(819); progMG%(819) + progMG%(818) + progMG%(817)
+        Print #1,  " 4 - INNING 4-6, WHEN AHEAD       "; Using "###     ###        ###          ###"; progMG%(820); progMG%(821); progMG%(822); progMG%(820) + progMG%(821) + progMG%(822)
+        Print #1,  " 5 - INNING 4-6, WHEN TIED        "; Using "###     ###        ###          ###"; progMG%(823); progMG%(824); progMG%(825); progMG%(823) + progMG%(824) + progMG%(825)
+        Print #1,  " 6 - INNING 4-6, WHEN BEHIND      "; Using "###     ###        ###          ###"; progMG%(826); progMG%(827); progMG%(828); progMG%(826) + progMG%(827) + progMG%(828)
+        Print #1,  " 7 - INNING 7-9, WHEN AHEAD       "; Using "###     ###        ###          ###"; progMG%(829); progMG%(830); progMG%(831); progMG%(829) + progMG%(830) + progMG%(831)
+        Print #1,  " 8 - INNING 7-9, WHEN TIED        "; Using "###     ###        ###          ###"; progMG%(832); progMG%(833); progMG%(834); progMG%(832) + progMG%(833) + progMG%(834)
+        Print #1,  " 9 - INNING 7-9, WHEN BEHIND      "; Using "###     ###        ###          ###"; progMG%(835); progMG%(836); progMG%(837); progMG%(835) + progMG%(836) + progMG%(837)
+        Print #1,  "10 - INNING 9- , WHEN AHEAD       "; Using "###     ###        ###          ###"; progMG%(838); progMG%(839); progMG%(840); progMG%(838) + progMG%(839) + progMG%(840)
+        Print #1,  "11 - INNING 9- , WHEN TIED        "; Using "###     ###        ###          ###"; progMG%(841); progMG%(842); progMG%(843); progMG%(841) + progMG%(842) + progMG%(843)
+        Print #1,  "12 - INNING 9- , WHEN BEHIND      "; Using "###     ###        ###          ###"; progMG%(844); progMG%(845); progMG%(846); progMG%(844) + progMG%(845) + progMG%(846)
     End If
 
-    LPrint
+	Close #1
+	
+	If printDest = 1 Then
+
+		Open destFile$ For Input As #2
+
+		Do While Not EOF(2)
+			Line Input #2, X$
+			LPrint X$
+		Loop
+
+		Close #2
+
+		LPrint Chr$(12)
+
+		Kill destFile$
+
+	End If
 
 End Sub
 
@@ -2143,7 +2203,7 @@ Sub SpotStarters (targetTeam$, yearNumber$, mgrNbr)
 
         Next
 
-        Locate 19, 40: Print "TOTAL MUST EQUAL 100"; Tab(70); SS%
+        Locate 19, 40: Print "TOtotAwayLosses MUST EQUAL 100"; Tab(70); SS%
         Locate 20, 40
         Color 15: Print "(A)";
         Color 15: Print "DD SPOT STARTER ";
@@ -4056,9 +4116,9 @@ Sub ExportManagerProfile (mgrNbr)
     teamNbr = 0
     Call ChooseTeam(YN$, NTMS, mgrNbr, team$)
 
-    If _FileExists(diskPaths$(3) + MGR_FILE_NAME$ + "." + YN$) Then
+    If _FileExists(diskPaths$(4) + MGR_FILE_NAME$ + "." + YN$) Then
 
-        Open diskPaths$(3) + MGR_FILE_NAME$ + "." + YN$ For Random As #2 Len = MGR_SIZE_BYTES
+        Open diskPaths$(4) + MGR_FILE_NAME$ + "." + YN$ For Random As #2 Len = MGR_SIZE_BYTES
 
         For I = 0 To 999
             Field #2, I * 2 As Q$, 2 As progR$(I), MGR_SIZE_BYTES - I * 2 - 2 As Q$
@@ -4172,7 +4232,7 @@ Sub UpdateManagerFile (teamYear$, mgrNbr)
 
     progMG%(0) = 999
 
-    Open diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #2 Len = MGR_SIZE_BYTES
+    Open diskPaths$(4) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #2 Len = MGR_SIZE_BYTES
 
     For I = 0 To 999
         Field #2, I * 2 As Q$, 2 As progR$(I), MGR_SIZE_BYTES - I * 2 - 2 As Q$
@@ -4561,7 +4621,7 @@ Sub BASERUN (teamYear$, mgrNbr)
 
         Print "SCENARIO                            %       %          %          %"
         Color 15
-        Print "                                  SAFE    NORMAL   AGGRESSIVE   TOTAL"
+        Print "                                  SAFE    NORMAL   AGGRESSIVE   TOtotAwayLosses"
         Print " 1 - INNING 1-3, WHEN AHEAD       "; Using "###     ###        ###          ###"; progMG%(811); progMG%(812); progMG%(813); progMG%(811) + progMG%(812) + progMG%(813)
         Print " 2 - INNING 1-3, WHEN TIED        "; Using "###     ###        ###          ###"; progMG%(814); progMG%(815); progMG%(816); progMG%(816) + progMG%(815) + progMG%(814)
         Print " 3 - INNING 1-3, WHEN BEHIND      "; Using "###     ###        ###          ###"; progMG%(817); progMG%(818); progMG%(819); progMG%(819) + progMG%(818) + progMG%(817)
@@ -4582,7 +4642,7 @@ Sub BASERUN (teamYear$, mgrNbr)
 
         If I = 13 Then
 
-            Open diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #2 Len = MGR_SIZE_BYTES
+            Open diskPaths$(4) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #2 Len = MGR_SIZE_BYTES
 
             For J = 0 To 999
                 Field #2, J * 2 As Q$, 2 As progR$(J), MGR_SIZE_BYTES - J * 2 - 2 As Q$
@@ -4626,9 +4686,9 @@ Sub GetManagerProfile (targetTeam$, yearNumber$, mgrNbr)
 
     Cls
 
-    If _FileExists(diskPaths$(3) + MGR_FILE_NAME$ + "." + yearNumber$) Then
+    If _FileExists(diskPaths$(4) + MGR_FILE_NAME$ + "." + yearNumber$) Then
 
-        Open diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #2 Len = MGR_SIZE_BYTES
+        Open diskPaths$(4) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #2 Len = MGR_SIZE_BYTES
 
         For I = 0 To 999
             Field #2, I * 2 As Q$, 2 As progR$(I), MGR_SIZE_BYTES - I * 2 - 2 As Q$

@@ -1,0 +1,811 @@
+'----------------------------------------
+'       ConfigureDrives Subroutine
+'----------------------------------------
+'Walks user through setup of folders and
+'drives for organizing their files.
+Sub ConfigureDrives ()
+
+    Shared opSysType$
+
+    Dim BG, FG As Long
+
+    _MouseShow
+
+    confDriveScreen& = _NewImage(640, 480, 32)
+
+    Screen confDriveScreen&
+    browseImage& = _LoadImage("search.png", 32)
+    saveImage& = _LoadImage("floppy-disk.png", 32)
+
+    Open "DEV.BAS" For Input As #2
+
+    For I = 0 To 3
+        Input #2, diskPaths$(I)
+    Next
+
+    Close #2
+
+    For I = 0 To 3
+        diskPaths$(I) = Left$(diskPaths$(I), Len(diskPaths$(I)) - 1)
+    Next
+
+    'White on Blue
+    Color White, Blue
+    Cls
+
+    '_PrintMode _FillBackground , confDriveScreen&
+
+    _PrintString (16 * 8, 1), "SPECIFY PATHS FOR YOUR TEAMS AND COMPILED STATS", confDriveScreen&
+    _PrintString (30 * 8, 21), "PATHNAME EXAMPLES", confDriveScreen&
+
+    Select Case opSysType$
+        Case "[WINDOWS]":
+            _PrintString (30 * 8, 4 * 10), "A:", confDriveScreen&
+            _PrintString (30 * 8, 6 * 10), "C:\COLBB\TEAMS", confDriveScreen&
+        Case "[LINUX]":
+            _PrintString (30 * 8, 4 * 10), "/mnt/floppy", confDriveScreen&
+            _PrintString (30 * 8, 6 * 10), "/usr/bin/colbb/teams", confDriveScreen&
+        Case "[MAC]", "[MACOSX]":
+            _PrintString (30 * 8, 4 * 10), "/Volumes/floppy", confDriveScreen&
+            _PrintString (30 * 8, 6 * 10), "/Applications/colbb/teams", confDriveScreen&
+    End Select
+
+
+    Color Yellow, Blue
+    Locate 7, 1: Print "Path for Teams "
+    Color Black, DarkGray: Print PadRight$(diskPaths$(0), 80)
+    _PutImage (580, 130)-(612, 162), browseImage&, confDriveScreen&
+
+    Color Yellow, Blue
+    Locate 11, 1: Print "Path for Stats "
+    Color Black, DarkGray: Print PadRight$(diskPaths$(1), 80)
+    _PutImage (580, 195)-(612, 227), browseImage&, confDriveScreen&
+
+    Color Yellow, Blue
+    Locate 15, 1: Print "Path for Leaders "
+    Color Black, DarkGray: Locate 16, 1: Print PadRight$(diskPaths$(2), 80)
+    _PutImage (580, 260)-(612, 292), browseImage&, confDriveScreen&
+
+    Color Yellow, Blue
+    Locate 19, 1: Print "Path for Schedules "
+    Color Black, DarkGray: Locate 20, 1: Print PadRight$(diskPaths$(3), 80)
+    _PutImage (580, 325)-(612, 357), browseImage&, confDriveScreen&
+
+    Color Yellow, Blue
+    Locate 28, 37: Print "S A V E";
+    _PutImage (304, 390)-(336, 422), saveImage&, confDriveScreen&
+
+
+    Do
+
+        K$ = UCase$(InKey$)
+
+        Do
+
+            b = _MouseButton(1)
+
+            If _MouseButton(1) = -1 Then
+
+                If _MouseX >= 580 And _MouseX <= 612 And _MouseY >= 130 And _MouseY <= 162 Then
+
+                    Do
+                        I = _MouseInput
+                    Loop Until Not _MouseButton(1)
+
+                    userFolder$ = _SelectFolderDialog$("Select a path for teams files", _CWD$ + "\Teams")
+                    If userFolder$ <> "" Then diskPaths$(0) = userFolder$
+                    Color Black, DarkGray
+                    Locate 8, 1: Print PadRight$(diskPaths$(0), 80)
+
+                End If
+
+                If _MouseX >= 580 And _MouseX <= 612 And _MouseY >= 195 And _MouseY <= 227 Then
+
+                    Do
+                        I = _MouseInput
+                    Loop Until Not _MouseButton(1)
+
+                    userFolder$ = _SelectFolderDialog$("Select a path for stats files", _CWD$ + "\Stats")
+                    If userFolder$ <> "" Then diskPaths$(1) = userFolder$
+                    Color Black, DarkGray
+                    Locate 12, 1: Print PadRight$(diskPaths$(1), 80)
+
+                End If
+
+                If _MouseX >= 580 And _MouseX <= 612 And _MouseY >= 260 And _MouseY <= 292 Then
+
+                    Do
+                        I = _MouseInput
+                    Loop Until Not _MouseButton(1)
+
+                    userFolder$ = _SelectFolderDialog$("Select a path for leaders files", _CWD$ + "\Leaders")
+                    If userFolder$ <> "" Then diskPaths$(2) = userFolder$
+                    Color Black, DarkGray
+                    Locate 16, 1: Print PadRight$(diskPaths$(2), 80)
+
+                End If
+
+                If _MouseX >= 580 And _MouseX <= 612 And _MouseY >= 325 And _MouseY <= 357 Then
+
+                    Do
+                        I = _MouseInput
+                    Loop Until Not _MouseButton(1)
+
+                    userFolder$ = _SelectFolderDialog$("Select a path for schedules files", _CWD$ + "\Schedules")
+                    If userFolder$ <> "" Then diskPaths$(3) = userFolder$
+                    Color Black, DarkGray
+                    Locate 20, 1: Print PadRight$(diskPaths$(3), 80)
+
+                End If
+
+                If _MouseX >= 304 And _MouseX <= 336 And _MouseY >= 390 And _MouseY <= 422 Then
+                    'Mouse clicked inside button area
+                    Do
+                        I = _MouseInput
+                    Loop Until Not _MouseButton(1)
+                    GoTo Save:
+
+                End If
+
+
+            End If
+
+        Loop While _MouseInput
+
+        If K$ = Chr$(9) Then
+
+            FG = Black
+            BG = DarkGray
+
+            GetDiv1:
+            Locate 8, 1 'location of beginning of field
+            CapsOn = 0
+            NumOnly = 0
+            Max = 80
+            Call TextIn(diskPaths$(0), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+            If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
+            If XCode = 2 GoTo Done 'all done entering data
+            diskPaths$(0) = _Trim$(diskPaths$(0))
+
+            GetDiv2:
+            Locate 12, 1 'location of beginning of field
+            CapsOn = 0
+            NumOnly = 0
+            Max = 80
+            Call TextIn(diskPaths$(1), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+            If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
+            If XCode = 2 GoTo Done 'all done entering data
+            diskPaths$(1) = _Trim$(diskPaths$(1))
+
+            GetDiv3:
+            Locate 16, 1 'location of beginning of field
+            CapsOn = 0
+            NumOnly = 0
+            Max = 80
+            Call TextIn(diskPaths$(2), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+            If XCode = 1 Then GoTo GetDiv2: 'can't back up any more, stay here
+            If XCode = 2 Then GoTo Done 'all done entering data
+            diskPaths$(2) = _Trim$(diskPaths$(2))
+
+            GetDiv4:
+            Locate 20, 1 'location of beginning of field
+            CapsOn = 0
+            NumOnly = 0
+            Max = 80
+            Call TextIn(diskPaths$(3), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+            If XCode = 1 GoTo GetDiv3: 'can't back up any more, stay here
+            diskPaths$(3) = _Trim$(diskPaths$(3))
+
+        End If
+
+        If K$ = "Q" Or K$ = Chr$(27) Or K$ = Chr$(13) Then GoTo Done
+
+    Loop
+
+
+    Done:
+    Color Yellow, 1
+    Locate 24, 1
+    Print "Is this okay? (Y/N) ";
+    X$ = ""
+    Call YesNoB(X$, XCode, FG, BG)
+    Locate , 1
+    ClearEOL 14, 1
+    If XCode = 1 GoTo GetDiv4
+    If X$ = "N" GoTo GetDiv1
+    If X$ <> "Y" GoTo Done 'insist on either Y or N or up-arrow
+
+    Save:
+    Open "DEV.BAS" For Output As #1
+
+    For R = 0 To 3:
+
+        Select Case opSysType$
+            Case "[WINDOWS]": diskPaths$(R) = diskPaths$(R) + "\"
+            Case "[MAC]", "[MACOSX]", "[LINUX]": diskPaths$(R) = diskPaths$(R) + "/"
+        End Select
+
+        Print #1, diskPaths$(R)
+
+    Next R
+
+    Close #1
+
+    _MouseHide
+
+    Screen 0
+
+End Sub
+
+
+'----------------------------------------
+'    ConfigureDrives_Base Subroutine
+'----------------------------------------
+'Walks user through setup of folders and
+'drives for organizing their files.
+Sub ConfigureDrives_Base ()
+
+    Shared opSysType$
+
+    Dim BG, FG As Long
+
+    _MouseShow
+
+    confDriveScreen& = _NewImage(640, 480, 32)
+
+    Screen confDriveScreen&
+    browseImage& = _LoadImage("search.png", 32)
+    saveImage& = _LoadImage("floppy-disk.png", 32)
+
+    Open "DEV.BAS" For Input As #2
+
+    For I = 0 To 4
+        Input #2, diskPaths$(I)
+    Next
+
+    Close #2
+
+    For I = 0 To 4
+        diskPaths$(I) = Left$(diskPaths$(I), Len(diskPaths$(I)) - 1)
+    Next
+
+    'White on Blue
+    Color White, Blue
+    Cls
+
+    '_PrintMode _FillBackground , confDriveScreen&
+
+    _PrintString (16 * 8, 1), "SPECIFY PATHS FOR YOUR TEAMS AND COMPILED STATS", confDriveScreen&
+    _PrintString (30 * 8, 21), "PATHNAME EXAMPLES", confDriveScreen&
+
+    Select Case opSysType$
+        Case "[WINDOWS]":
+            _PrintString (30 * 8, 4 * 10), "A:", confDriveScreen&
+            _PrintString (30 * 8, 6 * 10), "C:\COLBB\TEAMS", confDriveScreen&
+        Case "[LINUX]":
+            _PrintString (30 * 8, 4 * 10), "/mnt/floppy", confDriveScreen&
+            _PrintString (30 * 8, 6 * 10), "/usr/bin/colbb/teams", confDriveScreen&
+        Case "[MAC]", "[MACOSX]":
+            _PrintString (30 * 8, 4 * 10), "/Volumes/floppy", confDriveScreen&
+            _PrintString (30 * 8, 6 * 10), "/Applications/colbb/teams", confDriveScreen&
+    End Select
+
+
+    Color Yellow, Blue
+    Locate 7, 1: Print "Path for Teams "
+    Color Black, DarkGray: Print PadRight$(diskPaths$(0), 80)
+    _PutImage (580, 130)-(612, 162), browseImage&, confDriveScreen&
+
+    Color Yellow, Blue
+    Locate 11, 1: Print "Path for Stats "
+    Color Black, DarkGray: Print PadRight$(diskPaths$(1), 80)
+    _PutImage (580, 195)-(612, 227), browseImage&, confDriveScreen&
+
+    Color Yellow, Blue
+    Locate 15, 1: Print "Path for Leaders "
+    Color Black, DarkGray: Locate 16, 1: Print PadRight$(diskPaths$(2), 80)
+    _PutImage (580, 260)-(612, 292), browseImage&, confDriveScreen&
+
+    Color Yellow, Blue
+    Locate 19, 1: Print "Path for Schedules "
+    Color Black, DarkGray: Locate 20, 1: Print PadRight$(diskPaths$(3), 80)
+    _PutImage (580, 325)-(612, 357), browseImage&, confDriveScreen&
+
+    Color Yellow, Blue
+    Locate 23, 1: Print "Path for Profiles "
+    Color Black, DarkGray: Locate 24, 1: Print PadRight$(diskPaths$(4), 80)
+    _PutImage (580, 390)-(612, 422), browseImage&, confDriveScreen&
+
+    Color Yellow, Blue
+    Locate 30, 37: Print "S A V E";
+    _PutImage (304, 430)-(336, 462), saveImage&, confDriveScreen&
+
+
+    Do
+
+        K$ = UCase$(InKey$)
+
+        Do
+
+            b = _MouseButton(1)
+
+            If _MouseButton(1) = -1 Then
+
+                If _MouseX >= 580 And _MouseX <= 612 And _MouseY >= 130 And _MouseY <= 162 Then
+
+                    Do
+                        I = _MouseInput
+                    Loop Until Not _MouseButton(1)
+
+                    userFolder$ = _SelectFolderDialog$("Select a path for teams files", _CWD$ + "\Teams")
+                    If userFolder$ <> "" Then diskPaths$(0) = userFolder$
+                    Color Black, DarkGray
+                    Locate 8, 1: Print PadRight$(diskPaths$(0), 80)
+
+                End If
+
+                If _MouseX >= 580 And _MouseX <= 612 And _MouseY >= 195 And _MouseY <= 227 Then
+
+                    Do
+                        I = _MouseInput
+                    Loop Until Not _MouseButton(1)
+
+                    userFolder$ = _SelectFolderDialog$("Select a path for stats files", _CWD$ + "\Stats")
+                    If userFolder$ <> "" Then diskPaths$(1) = userFolder$
+                    Color Black, DarkGray
+                    Locate 12, 1: Print PadRight$(diskPaths$(1), 80)
+
+                End If
+
+                If _MouseX >= 580 And _MouseX <= 612 And _MouseY >= 260 And _MouseY <= 292 Then
+
+                    Do
+                        I = _MouseInput
+                    Loop Until Not _MouseButton(1)
+
+                    userFolder$ = _SelectFolderDialog$("Select a path for leaders files", _CWD$ + "\Leaders")
+                    If userFolder$ <> "" Then diskPaths$(2) = userFolder$
+                    Color Black, DarkGray
+                    Locate 16, 1: Print PadRight$(diskPaths$(2), 80)
+
+                End If
+
+                If _MouseX >= 580 And _MouseX <= 612 And _MouseY >= 325 And _MouseY <= 357 Then
+
+                    Do
+                        I = _MouseInput
+                    Loop Until Not _MouseButton(1)
+
+                    userFolder$ = _SelectFolderDialog$("Select a path for schedules files", _CWD$ + "\Schedules")
+                    If userFolder$ <> "" Then diskPaths$(3) = userFolder$
+                    Color Black, DarkGray
+                    Locate 20, 1: Print PadRight$(diskPaths$(3), 80)
+
+                End If
+
+                If _MouseX >= 580 And _MouseX <= 612 And _MouseY >= 390 And _MouseY <= 422 Then
+
+                    Do
+                        I = _MouseInput
+                    Loop Until Not _MouseButton(1)
+
+                    userFolder$ = _SelectFolderDialog$("Select a path for profile files", _CWD$ + "\Profiles")
+                    If userFolder$ <> "" Then diskPaths$(4) = userFolder$
+                    Color Black, DarkGray
+                    Locate 24, 1: Print PadRight$(diskPaths$(4), 80)
+
+                End If
+
+                If _MouseX >= 304 And _MouseX <= 336 And _MouseY >= 430 And _MouseY <= 462 Then
+                    'Mouse clicked inside button area
+                    Do
+                        I = _MouseInput
+                    Loop Until Not _MouseButton(1)
+                    GoTo Save:
+
+                End If
+
+
+            End If
+
+        Loop While _MouseInput
+
+        If K$ = Chr$(9) Then
+
+            FG = Black
+            BG = DarkGray
+
+            GetDiv1:
+            Locate 8, 1 'location of beginning of field
+            CapsOn = 0
+            NumOnly = 0
+            Max = 80
+            Call TextIn(diskPaths$(0), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+            If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
+            If XCode = 2 GoTo Done 'all done entering data
+            diskPaths$(0) = _Trim$(diskPaths$(0))
+
+            GetDiv2:
+            Locate 12, 1 'location of beginning of field
+            CapsOn = 0
+            NumOnly = 0
+            Max = 80
+            Call TextIn(diskPaths$(1), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+            If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
+            If XCode = 2 GoTo Done 'all done entering data
+            diskPaths$(1) = _Trim$(diskPaths$(1))
+
+            GetDiv3:
+            Locate 16, 1 'location of beginning of field
+            CapsOn = 0
+            NumOnly = 0
+            Max = 80
+            Call TextIn(diskPaths$(2), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+            If XCode = 1 Then GoTo GetDiv2: 'can't back up any more, stay here
+            If XCode = 2 Then GoTo Done 'all done entering data
+            diskPaths$(2) = _Trim$(diskPaths$(2))
+
+            GetDiv4:
+            Locate 20, 1 'location of beginning of field
+            CapsOn = 0
+            NumOnly = 0
+            Max = 80
+            Call TextIn(diskPaths$(3), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+            If XCode = 1 GoTo GetDiv3: 'can't back up any more, stay here
+            diskPaths$(3) = _Trim$(diskPaths$(3))
+
+            GetDiv5:
+            Locate 24, 1 'location of beginning of field
+            CapsOn = 0
+            NumOnly = 0
+            Max = 80
+            Call TextIn(diskPaths$(4), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+            If XCode = 1 GoTo GetDiv4: 'can't back up any more, stay here
+            diskPaths$(4) = _Trim$(diskPaths$(4))
+
+        End If
+
+        If K$ = "Q" Or K$ = Chr$(27) Or K$ = Chr$(13) Then GoTo Done
+
+    Loop
+
+
+    Done:
+    Color Yellow, 1
+    Locate 24, 1
+    Print "Is this okay? (Y/N) ";
+    X$ = ""
+    Call YesNoB(X$, XCode, FG, BG)
+    Locate , 1
+    ClearEOL 14, 1
+    If XCode = 1 GoTo GetDiv4
+    If X$ = "N" GoTo GetDiv1
+    If X$ <> "Y" GoTo Done 'insist on either Y or N or up-arrow
+
+    Save:
+    Open "DEV.BAS" For Output As #1
+
+    For R = 0 To 4:
+
+        Select Case opSysType$
+            Case "[WINDOWS]": diskPaths$(R) = diskPaths$(R) + "\"
+            Case "[MAC]", "[MACOSX]", "[LINUX]": diskPaths$(R) = diskPaths$(R) + "/"
+        End Select
+
+        Print #1, diskPaths$(R)
+
+    Next R
+
+    Close #1
+
+    _MouseHide
+
+    Screen 0
+
+End Sub
+
+
+'----------------------------------------
+'  ConfigureDrivesLegacy_BB Subroutine
+'----------------------------------------
+'Walks user through setup of folders and
+'drives for organizing their files.
+Sub ConfigureDrivesLegacy_BB ()
+
+    Shared opSysType$
+
+    Color 15, 1
+    FG = 0
+    BG = 7
+
+    For I = 0 To 2
+        diskPaths$(I) = Left$(diskPaths$(I), Len(diskPaths$(I)) - 1)
+    Next
+
+    Cls
+
+    Locate , 16: Print "SPECIFY PATHS FOR YOUR TEAMS AND COMPILED STATS"
+    Print
+    Locate , 31: Print "PATHNAME EXAMPLES:"
+    Select Case opSysType$
+        Case "[WINDOWS]":
+            Locate , 31: Print "A:"
+            Locate , 31: Print "C:\COLBB\TEAMS"
+        Case "[LINUX]":
+            Locate , 31: Print "/mnt/floppy"
+            Locate , 31: Print "/usr/bin/colbb/teams"
+        Case "[MAC]", "[MACOSX]":
+            Locate , 31: Print "/Volumes/floppy"
+            Locate , 31: Print "/Applications/colbb/teams"
+    End Select
+
+    Print
+    Locate 7, 1: QPrint "Path for Teams ", 14, 1, -1
+    Locate , 16: QPrint PadRight$(diskPaths$(0), 61), FG, BG, -1
+    Locate 9, 1: QPrint "Path for Stats ", 14, 1, -1
+    Locate , 16: QPrint PadRight$(diskPaths$(1), 61), FG, BG, -1
+
+    GetDiv1:
+    Locate 7, 16 'location of beginning of field
+    CapsOn = 0
+    NumOnly = 0
+    Max = 50
+    Call TextIn(diskPaths$(0), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+    If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
+    If XCode = 2 GoTo Done 'all done entering data
+    diskPaths$(0) = _Trim$(diskPaths$(0))
+
+    GetDiv2:
+    Locate 9, 16 'location of beginning of field
+    CapsOn = 0
+    NumOnly = 0
+    Max = 50
+    Call TextIn(diskPaths$(1), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+    If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
+    If XCode = 2 GoTo Done 'all done entering data
+    diskPaths$(1) = _Trim$(diskPaths$(1))
+
+    Done:
+    Color 14, 1
+    Locate 23, 1
+    Print "Is this okay? (Yes/No) ";
+    X$ = ""
+    Call YesNoB(X$, XCode, FG, BG)
+    Locate , 1
+    ClearEOL 14, 1
+    If XCode = 1 GoTo GetDiv2
+    If X$ = "N" GoTo GetDiv1
+    If X$ <> "Y" GoTo Done 'insist on either Y or N or up-arrow
+
+    Open "DEV.BAS" For Output As #1
+
+    For R = 0 To 1:
+
+        Select Case opSysType$
+            Case "[WINDOWS]": diskPaths$(R) = diskPaths$(R) + "\"
+            Case "[MAC]", "[MACOSX]", "[LINUX]": diskPaths$(R) = diskPaths$(R) + "/"
+        End Select
+
+        Print #1, diskPaths$(R)
+
+    Next R
+
+    Close #1
+
+End Sub
+
+
+
+'----------------------------------------
+'  ConfigureDrivesLegacy_Foot Subroutine
+'----------------------------------------
+'Walks user through setup of folders and
+'drives for organizing their files.
+Sub ConfigureDrivesLegacy_Foot ()
+
+    Shared opSysType$
+
+    Color 15, 1
+    FG = 0
+    BG = 7
+
+    For I = 0 To 2
+        diskPaths$(I) = Left$(diskPaths$(I), Len(diskPaths$(I)) - 1)
+    Next
+
+    Cls
+
+    Locate , 16: Print "SPECIFY PATHS FOR YOUR TEAMS AND COMPILED STATS"
+    Print
+    Locate , 31: Print "PATHNAME EXAMPLES:"
+    Select Case opSysType$
+        Case "[WINDOWS]":
+            Locate , 31: Print "A:"
+            Locate , 31: Print "C:\COLBB\TEAMS"
+        Case "[LINUX]":
+            Locate , 31: Print "/mnt/floppy"
+            Locate , 31: Print "/usr/bin/colbb/teams"
+        Case "[MAC]", "[MACOSX]":
+            Locate , 31: Print "/Volumes/floppy"
+            Locate , 31: Print "/Applications/colbb/teams"
+    End Select
+
+    Print
+    Locate 7, 1: QPrint "Path for Teams ", 14, 1, -1
+    Locate , 16: QPrint PadRight$(diskPaths$(0), 61), FG, BG, -1
+    Locate 9, 1: QPrint "Path for Stats ", 14, 1, -1
+    Locate , 16: QPrint PadRight$(diskPaths$(1), 61), FG, BG, -1
+    Locate 11, 1: QPrint "Path for Leaders ", 14, 1, -1
+    Locate , 18: QPrint PadRight$(diskPaths$(2), 59), FG, BG, -1
+
+    GetDiv1:
+    Locate 7, 16 'location of beginning of field
+    CapsOn = 0
+    NumOnly = 0
+    Max = 50
+    Call TextIn(diskPaths$(0), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+    If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
+    If XCode = 2 GoTo Done 'all done entering data
+    diskPaths$(0) = _Trim$(diskPaths$(0))
+
+    GetDiv2:
+    Locate 9, 16 'location of beginning of field
+    CapsOn = 0
+    NumOnly = 0
+    Max = 50
+    Call TextIn(diskPaths$(1), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+    If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
+    If XCode = 2 GoTo Done 'all done entering data
+    diskPaths$(1) = _Trim$(diskPaths$(1))
+
+    GetDiv3:
+    Locate 11, 18 'location of beginning of field
+    CapsOn = 0
+    NumOnly = 0
+    Max = 50
+    Call TextIn(diskPaths$(2), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+    If XCode = 1 Then GoTo GetDiv2: 'can't back up any more, stay here
+    If XCode = 2 Then GoTo Done 'all done entering data
+    diskPaths$(2) = _Trim$(diskPaths$(2))
+
+    Done:
+    Color 14, 1
+    Locate 23, 1
+    Print "Is this okay? (Yes/No) ";
+    X$ = ""
+    Call YesNoB(X$, XCode, FG, BG)
+    Locate , 1
+    ClearEOL 14, 1
+    If XCode = 1 GoTo GetDiv3
+    If X$ = "N" GoTo GetDiv1
+    If X$ <> "Y" GoTo Done 'insist on either Y or N or up-arrow
+
+    Open "DEV.BAS" For Output As #1
+
+    For R = 0 To 2:
+
+        Select Case opSysType$
+            Case "[WINDOWS]": diskPaths$(R) = diskPaths$(R) + "\"
+            Case "[MAC]", "[MACOSX]", "[LINUX]": diskPaths$(R) = diskPaths$(R) + "/"
+        End Select
+
+        Print #1, diskPaths$(R)
+
+    Next R
+
+    Close #1
+
+End Sub
+
+
+'----------------------------------------
+'  ConfigureDrivesLegacy_Base Subroutine
+'----------------------------------------
+'Walks user through setup of folders and
+'drives for organizing their files.
+Sub ConfigureDrivesLegacy_Baseball ()
+
+    Shared opSysType$
+
+    Color 15, 1
+    FG = 0
+    BG = 7
+
+    For I = 0 To 3
+        diskPaths$(I) = Left$(diskPaths$(I), Len(diskPaths$(I)) - 1)
+    Next
+
+    Cls
+
+    Locate , 16: Print "SPECIFY PATHS FOR YOUR TEAMS AND COMPILED STATS"
+    Print
+    Locate , 31: Print "PATHNAME EXAMPLES:"
+    Select Case opSysType$
+        Case "[WINDOWS]":
+            Locate , 31: Print "A:"
+            Locate , 31: Print "C:\COLBB\TEAMS"
+        Case "[LINUX]":
+            Locate , 31: Print "/mnt/floppy"
+            Locate , 31: Print "/usr/bin/colbb/teams"
+        Case "[MAC]", "[MACOSX]":
+            Locate , 31: Print "/Volumes/floppy"
+            Locate , 31: Print "/Applications/colbb/teams"
+    End Select
+
+    Print
+    Locate 7, 1: QPrint "Path for Teams ", 14, 1, -1
+    Locate , 16: QPrint PadRight$(diskPaths$(0), 61), FG, BG, -1
+    Locate 9, 1: QPrint "Path for Stats ", 14, 1, -1
+    Locate , 16: QPrint PadRight$(diskPaths$(1), 61), FG, BG, -1
+    Locate 11, 1: QPrint "Path for Leaders ", 14, 1, -1
+    Locate , 18: QPrint PadRight$(diskPaths$(2), 59), FG, BG, -1
+    Locate 13, 1: QPrint "Path for Profiles ", 14, 1, -1
+    Locate , 19: QPrint PadRight$(diskPaths$(3), 58), FG, BG, -1
+
+    GetDiv1:
+    Locate 7, 16 'location of beginning of field
+    CapsOn = 0
+    NumOnly = 0
+    Max = 50
+    Call TextIn(diskPaths$(0), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+    If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
+    If XCode = 2 GoTo Done 'all done entering data
+    diskPaths$(0) = _Trim$(diskPaths$(0))
+
+    GetDiv2:
+    Locate 9, 16 'location of beginning of field
+    CapsOn = 0
+    NumOnly = 0
+    Max = 50
+    Call TextIn(diskPaths$(1), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+    If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
+    If XCode = 2 GoTo Done 'all done entering data
+    diskPaths$(1) = _Trim$(diskPaths$(1))
+
+    GetDiv3:
+    Locate 11, 18 'location of beginning of field
+    CapsOn = 0
+    NumOnly = 0
+    Max = 50
+    Call TextIn(diskPaths$(2), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+    If XCode = 1 Then GoTo GetDiv2: 'can't back up any more, stay here
+    If XCode = 2 Then GoTo Done 'all done entering data
+    diskPaths$(2) = _Trim$(diskPaths$(2))
+
+    GetDiv4:
+    Locate 13, 20 'location of beginning of field
+    CapsOn = 0
+    NumOnly = 0
+    Max = 50
+    Call TextIn(diskPaths$(3), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+    If XCode = 1 GoTo GetDiv3: 'can't back up any more, stay here
+    diskPaths$(3) = _Trim$(diskPaths$(3))
+
+    Done:
+    Color 14, 1
+    Locate 23, 1
+    Print "Is this okay? (Yes/No) ";
+    X$ = ""
+    Call YesNoB(X$, XCode, FG, BG)
+    Locate , 1
+    ClearEOL 14, 1
+    If XCode = 1 GoTo GetDiv4
+    If X$ = "N" GoTo GetDiv1
+    If X$ <> "Y" GoTo Done 'insist on either Y or N or up-arrow
+
+    Open "DEV.BAS" For Output As #1
+
+    For R = 0 To 3:
+
+        Select Case opSysType$
+            Case "[WINDOWS]": diskPaths$(R) = diskPaths$(R) + "\"
+            Case "[MAC]", "[MACOSX]", "[LINUX]": diskPaths$(R) = diskPaths$(R) + "/"
+        End Select
+
+        Print #1, diskPaths$(R)
+
+    Next R
+
+    Close #1
+
+End Sub

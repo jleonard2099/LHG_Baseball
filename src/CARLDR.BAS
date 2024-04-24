@@ -368,23 +368,46 @@ Sub CareerLeaderOptions ()
         Close #1
 
         Color 15, 0
-
         Cls
 
-        Do
-            Locate 15, 10
-            Color 12: Print "V";
-            Color 7: Print "iew or ";
-            Color 12: Print "P";
-            Color 7: Print "rint"
-            J$ = GetKeyPress$
-        Loop Until UCase$(J$) = "P" Or UCase$(J$) = "V"
+        Call MenuBox(8, 25, 24, 5, 15, 1)
 
-        If UCase$(J$) = "P" Then
-            Call PrintCareerLeaders
-        Else
-            Call ViewCareerLeaders
-        End If
+        Do
+
+            Locate 10, 32
+            Color 7, 1
+
+            Locate , 32: Print "SEND TO ";
+            Color 15: Print "F";
+            Color 7: Print "ILE"
+            Locate , 32: Print "SEND TO ";
+            Color 15: Print "P";
+            Color 7: Print "RINTER"
+            Locate , 32: Print "SEND TO ";
+            Color 15: Print "S";
+            Color 7: Print "CREEN"
+
+            I$ = GetKeyPress$
+
+            Color 14, 0
+
+        Loop Until UCase$(I$) = "F" Or UCase$(I$) = "P" Or UCase$(I$) = "S"
+
+        Select Case UCase$(I$)
+
+            Case "F"
+                userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                If userFile$ <> "" Then
+                    Call PrintCareerLeaders(0, userFile$)
+                End If
+
+            Case "P"
+                Call PrintCareerLeaders(1, "REPORT")
+                
+            Case "S"
+                Call ViewCareerLeaders
+
+        End Select
 
     End If 'Done checking for ESC
 
@@ -396,103 +419,125 @@ End Sub
 'This routine sends formatted career stats 
 '(loaded from the .TCL file) to the user's 
 'default printer
-Sub PrintCareerLeaders ()
+Sub PrintCareerLeaders (printDest, destFile$)
 
     Shared BL0$(), PL0$()
     Shared BL1!(), PL1!()
 
-    LPrint Tab(5); "AT BATS"; Tab(29); "HITS"; Tab(54); "RUNS SCORED"; Tab(79); "RBI'S"; Tab(104); "DOUBLES"
+	Color 15, 0
+	Cls
+
+	Open destFile$ For Output As #1
+
+    Print #1, Tab(5); "AT BATS"; Tab(29); "HITS"; Tab(54); "RUNS SCORED"; Tab(79); "RBI'S"; Tab(104); "DOUBLES"
 
     For I = 0 To 19
-        LPrint Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(0, I);: LPrint Tab(18); Using "####"; BL1!(0, I);
-        LPrint Tab(25); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(1, I);: LPrint Tab(43); Using "####"; BL1!(1, I);
-        LPrint Tab(50); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(2, I);: LPrint Tab(68); Using "####"; BL1!(2, I);
-        LPrint Tab(75); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(3, I);: LPrint Tab(93); Using "####"; BL1!(3, I);
-        LPrint Tab(100); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(4, I);: LPrint Tab(118); Using "####"; BL1!(4, I)
+        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(0, I);: Print #1, Tab(18); Using "####"; BL1!(0, I);
+        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(1, I);: Print #1, Tab(43); Using "####"; BL1!(1, I);
+        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(2, I);: Print #1, Tab(68); Using "####"; BL1!(2, I);
+        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(3, I);: Print #1, Tab(93); Using "####"; BL1!(3, I);
+        Print #1, Tab(100); Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(4, I);: Print #1, Tab(118); Using "####"; BL1!(4, I)
     Next
 
-    LPrint
-    LPrint
-    LPrint Tab(5); "TRIPLES"; Tab(29); "HOME RUNS"; Tab(54); "WALKS"; Tab(79); "STRIKE OUTS"; Tab(104); "STOLEN BASES"
+    Print #1,
+    Print #1,
+    Print #1, Tab(5); "TRIPLES"; Tab(29); "HOME RUNS"; Tab(54); "WALKS"; Tab(79); "STRIKE OUTS"; Tab(104); "STOLEN BASES"
 
     For I = 0 To 19
-        LPrint Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(5, I);: LPrint Tab(18); Using "####"; BL1!(5, I);
-        LPrint Tab(25); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(6, I);: LPrint Tab(43); Using "####"; BL1!(6, I);
-        LPrint Tab(50); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(7, I);: LPrint Tab(68); Using "####"; BL1!(7, I);
-        LPrint Tab(75); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(8, I);: LPrint Tab(93); Using "####"; BL1!(8, I);
-        LPrint Tab(100); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(9, I);: LPrint Tab(118); Using "####"; BL1!(9, I)
+        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(5, I);: Print #1, Tab(18); Using "####"; BL1!(5, I);
+        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(6, I);: Print #1, Tab(43); Using "####"; BL1!(6, I);
+        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(7, I);: Print #1, Tab(68); Using "####"; BL1!(7, I);
+        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(8, I);: Print #1, Tab(93); Using "####"; BL1!(8, I);
+        Print #1, Tab(100); Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(9, I);: Print #1, Tab(118); Using "####"; BL1!(9, I)
     Next
 
-    LPrint Chr$(12)
+    Print #1, Chr$(12)
 
-    LPrint
-    LPrint
-    LPrint Tab(5); "CAUGHT STEALING"; Tab(29); "ERRORS"; Tab(54); "GAMES PLAYED"; Tab(79); "BATTING AVERAGE"; Tab(104); "SLUGGING PCT."
+    Print #1,
+    Print #1,
+    Print #1, Tab(5); "CAUGHT STEALING"; Tab(29); "ERRORS"; Tab(54); "GAMES PLAYED"; Tab(79); "BATTING AVERAGE"; Tab(104); "SLUGGING PCT."
 
     For I = 0 To 19
-        LPrint Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(10, I);: LPrint Tab(18); Using "####"; BL1!(10, I);
-        LPrint Tab(25); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(11, I);: LPrint Tab(43); Using "####"; BL1!(11, I);
-        LPrint Tab(50); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(14, I);: LPrint Tab(68); Using "####"; BL1!(14, I);
-        LPrint Tab(75); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(15, I);: LPrint Tab(93); Using "#.###"; BL1!(15, I);
-        LPrint Tab(100); Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(16, I);: LPrint Tab(118); Using "#.###"; BL1!(16, I)
+        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(10, I);: Print #1, Tab(18); Using "####"; BL1!(10, I);
+        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(11, I);: Print #1, Tab(43); Using "####"; BL1!(11, I);
+        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(14, I);: Print #1, Tab(68); Using "####"; BL1!(14, I);
+        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(15, I);: Print #1, Tab(93); Using "#.###"; BL1!(15, I);
+        Print #1, Tab(100); Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(16, I);: Print #1, Tab(118); Using "#.###"; BL1!(16, I)
     Next
 
-    LPrint
-    LPrint
-    LPrint Tab(5); "ON-BASE PCT."; Tab(29); "INNINGS PITCHED"; Tab(54); "HITS ALLOWED"; Tab(79); "RUNS ALLOWED"; Tab(104); "EARNED RUNS ALLOWED"
+    Print #1,
+    Print #1,
+    Print #1, Tab(5); "ON-BASE PCT."; Tab(29); "INNINGS PITCHED"; Tab(54); "HITS ALLOWED"; Tab(79); "RUNS ALLOWED"; Tab(104); "EARNED RUNS ALLOWED"
 
     For I = 0 To 19
-        LPrint Using "##"; I + 1;: LPrint ". ";: LPrint BL0$(17, I);: LPrint Tab(18); Using "#.###"; BL1!(17, I);
-        LPrint Tab(25); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(0, I);: LPrint Tab(43); Using "###"; Int(PL1!(0, I) / 3);: If PL1!(O, I) - (Int(PL1!(O, I) / 3) * 3) > 0 Then LPrint ".";: LPrint Using "#"; PL1!(O, I) - (Int(PL1!(O, I) / 3) * 3);
-        LPrint Tab(50); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(1, I);: LPrint Tab(68); Using "####"; PL1!(1, I);
-        LPrint Tab(75); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(2, I);: LPrint Tab(93); Using "####"; PL1!(2, I);
-        LPrint Tab(100); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(3, I);: LPrint Tab(118); Using "####"; PL1!(3, I)
+        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(17, I);: Print #1, Tab(18); Using "#.###"; BL1!(17, I);
+        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(0, I);: Print #1, Tab(43); Using "###"; Int(PL1!(0, I) / 3);: If PL1!(O, I) - (Int(PL1!(O, I) / 3) * 3) > 0 Then Print #1, ".";: Print #1, Using "#"; PL1!(O, I) - (Int(PL1!(O, I) / 3) * 3);
+        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(1, I);: Print #1, Tab(68); Using "####"; PL1!(1, I);
+        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(2, I);: Print #1, Tab(93); Using "####"; PL1!(2, I);
+        Print #1, Tab(100); Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(3, I);: Print #1, Tab(118); Using "####"; PL1!(3, I)
     Next
 
-    LPrint Chr$(12)
+    Print #1, Chr$(12)
 
-    LPrint
-    LPrint
-    LPrint Tab(5); "WALKS"; Tab(29); "STRIKEOUTS"; Tab(54); "WINS"; Tab(79); "LOSSES"; Tab(104); "GAMES"
+    Print #1,
+    Print #1,
+    Print #1, Tab(5); "WALKS"; Tab(29); "STRIKEOUTS"; Tab(54); "WINS"; Tab(79); "LOSSES"; Tab(104); "GAMES"
 
     For I = 0 To 19
-        LPrint Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(4, I);: LPrint Tab(18); Using "####"; PL1!(4, I);
-        LPrint Tab(25); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(5, I);: LPrint Tab(43); Using "####"; PL1!(5, I);
-        LPrint Tab(50); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(6, I);: LPrint Tab(68); Using "####"; PL1!(6, I);
-        LPrint Tab(75); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(7, I);: LPrint Tab(93); Using "####"; PL1!(7, I);
-        LPrint Tab(100); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(8, I);: LPrint Tab(118); Using "####"; PL1!(8, I)
+        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(4, I);: Print #1, Tab(18); Using "####"; PL1!(4, I);
+        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(5, I);: Print #1, Tab(43); Using "####"; PL1!(5, I);
+        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(6, I);: Print #1, Tab(68); Using "####"; PL1!(6, I);
+        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(7, I);: Print #1, Tab(93); Using "####"; PL1!(7, I);
+        Print #1, Tab(100); Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(8, I);: Print #1, Tab(118); Using "####"; PL1!(8, I)
     Next
 
-    LPrint
-    LPrint
-    LPrint Tab(5); "GAMES STARTED"; Tab(29); "COMPLETE GAMES"; Tab(54); "SHUTOUTS"; Tab(79); "SAVES"; Tab(104); "DOUBLE PLAYS THROWN"
+    Print #1,
+    Print #1,
+    Print #1, Tab(5); "GAMES STARTED"; Tab(29); "COMPLETE GAMES"; Tab(54); "SHUTOUTS"; Tab(79); "SAVES"; Tab(104); "DOUBLE PLAYS THROWN"
 
     For I = 0 To 19
-        LPrint Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(9, I);: LPrint Tab(18); Using "####"; PL1!(9, I);
-        LPrint Tab(25); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(10, I);: LPrint Tab(43); Using "####"; PL1!(10, I);
-        LPrint Tab(50); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(11, I);: LPrint Tab(68); Using "####"; PL1!(11, I);
-        LPrint Tab(75); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(12, I);: LPrint Tab(93); Using "####"; PL1!(12, I);
-        LPrint Tab(100); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(13, I);: LPrint Tab(118); Using "####"; PL1!(13, I)
+        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(9, I);: Print #1, Tab(18); Using "####"; PL1!(9, I);
+        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(10, I);: Print #1, Tab(43); Using "####"; PL1!(10, I);
+        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(11, I);: Print #1, Tab(68); Using "####"; PL1!(11, I);
+        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(12, I);: Print #1, Tab(93); Using "####"; PL1!(12, I);
+        Print #1, Tab(100); Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(13, I);: Print #1, Tab(118); Using "####"; PL1!(13, I)
     Next
 
-    LPrint Chr$(12)
+    Print #1, Chr$(12)
 
-    LPrint
-    LPrint
-    LPrint Tab(5); "HOME RUNS ALLOWED"; Tab(29); "EARNED RUN AVERAGE"
+    Print #1,
+    Print #1,
+    Print #1, Tab(5); "HOME RUNS ALLOWED"; Tab(29); "EARNED RUN AVERAGE"
 
     For I = 0 To 19
-        LPrint Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(14, I);: LPrint Tab(20); Using "####"; PL1!(14, I);
-        LPrint Tab(25); Using "##"; I + 1;: LPrint ". ";: LPrint PL0$(15, I);
+        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(14, I);: Print #1, Tab(20); Using "####"; PL1!(14, I);
+        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(15, I);
         If PL1!(15, I) = 1000 Then
-            LPrint Tab(43); Using "###.##"; 0.0
+            Print #1, Tab(43); Using "###.##"; 0.0
         Else
-            LPrint Tab(43); Using "###.##"; PL1!(15, I)
+            Print #1, Tab(43); Using "###.##"; PL1!(15, I)
         End If
 
     Next
 
-    LPrint Chr$(12)
+    Print #1, Chr$(12)
+
+	If printDest = 1 Then
+
+		Open destFile$ For Input As #2
+
+		Do While Not EOF(2)
+			Line Input #2, X$
+			LPrint X$
+		Loop
+
+		Close #2
+
+		LPrint Chr$(12)
+
+		Kill destFile$
+
+	End If
 
 End Sub
 

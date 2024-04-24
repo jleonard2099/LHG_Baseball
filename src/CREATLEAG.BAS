@@ -8,7 +8,7 @@ Sub CREATLEAG ()
 
     _Title "Full Count Baseball - Manage Leagues"
 
-    Dim D1$, D2$, D3$, D4$
+    Dim div1Name$, div2Name$, div3Name$, div4Name$
 
     Shared statZ1%()
 
@@ -45,29 +45,33 @@ Sub CREATLEAG ()
 
         If ExitCode% <> 27 Then
 
-            For X = 1 To 40
+            For X = 1 To TEAMS_PER_LEAGUE
                 Z1$(X) = "XXX"
                 Z2$(X) = "XXX"
                 statZ1%(X) = -1
             Next
 
-            D1$ = ""
-            D2$ = ""
-            D3$ = ""
-            D4$ = ""
+            div1Name$ = ""
+            div2Name$ = ""
+            div3Name$ = ""
+            div4Name$ = ""
 
             Select Case Selection%
 
                 Case 1:
-                    Call DefineLeague(league$, D1$, D2$, D3$, D4$)
-                    Call ReviewEditLeague(league$, D1$, D2$, D3$, D4$)
+                    Call DefineLeague(league$, div1Name$, div2Name$, div3Name$, div4Name$)
+                    Call ReviewEditLeague(league$, div1Name$, div2Name$, div3Name$, div4Name$)
 
                 Case 2:
-                    league$ = ChooseFile$(diskPaths$(2) + "*.LIB", "LEAGUE", FileExit%)
+                    Do
 
-                    If FileExit% <> 27 And FileExit% <> 0 Then
-                        Call ReviewEditLeague(league$, D1$, D2$, D3$, D4$)
-                    End If
+                        league$ = ChooseFile$(diskPaths$(2) + "*.TMI", "LEAGUE", FileExit%)
+
+                        If FileExit% <> 27 And FileExit% <> 0 Then
+                            Call ReviewEditLeague(league$, div1Name$, div2Name$, div3Name$, div4Name$)
+                        End If
+
+                    Loop Until FileExit% = 27 Or FileExit% = 0
 
             End Select
 
@@ -185,13 +189,13 @@ Sub ReviewEditLeague (league$, div1$, div2$, div3$, div4$)
 
     Shared Z1$(), Z2$()
 
-    If _FileExists(diskPaths$(2) + league$ + ".LIB") Then
+    If _FileExists(diskPaths$(2) + league$ + ".TMI") Then
 
-        Open diskPaths$(2) + league$ + ".LIB" For Input As #2
+        Open diskPaths$(2) + league$ + ".TMI" For Input As #2
 
         Input #2, league$, div1$, div2$, div3$, div4$
 
-        For X = 1 To 40
+        For X = 1 To TEAMS_PER_LEAGUE
             Input #2, Z1$(X)
             Input #2, statZ1%(X)
             Input #2, Z2$(X)
@@ -281,14 +285,14 @@ End Sub
 '----------------------------------------
 'This subroutine writes the league team
 'memberships and definition to each of
-'the corresponding files (.LIB, .TMS)
+'the corresponding files (.TMI, .TMS)
 Sub SaveLeague (league$, div1$, div2$, div3$, div4$)
 
     Shared statZ1%()
 
     Shared Z1$(), Z2$()
 
-    Open diskPaths$(2) + league$ + ".LIB" For Output As #2
+    Open diskPaths$(2) + league$ + ".TMI" For Output As #2
 
     Print #2, league$
     Print #2, div1$
@@ -296,7 +300,7 @@ Sub SaveLeague (league$, div1$, div2$, div3$, div4$)
     Print #2, div3$
     Print #2, div4$
 
-    For X = 1 To 40
+    For X = 1 To TEAMS_PER_LEAGUE
         Print #2, Z1$(X)
         Print #2, statZ1%(X)
         Print #2, Z2$(X)
@@ -304,7 +308,7 @@ Sub SaveLeague (league$, div1$, div2$, div3$, div4$)
 
     Close 2
 
-    For X = 1 To 40
+    For X = 1 To TEAMS_PER_LEAGUE
 
         If Z1$(X) <> "XXX" Then
             Z1$(X) = nameStatFile$(Z1$(X))
@@ -322,7 +326,7 @@ Sub SaveLeague (league$, div1$, div2$, div3$, div4$)
     Write #2, div3$
     Write #2, div4$
 
-    For X = 1 To 40
+    For X = 1 To TEAMS_PER_LEAGUE
         Write #2, Z1$(X)
     Next
 

@@ -158,7 +158,7 @@ Sub SOURCE ()
 
             If MG%(D, 560 + IJ0%) <> -1 And batRating(D, MG%(D, 564 + IJ0%), 21) = 0 Then
 
-                Call d100(RN)
+                Call Rolld100(RN)
 
                 If B9%(D, MG%(D, 576 + IJ0%)) = MG%(D, 560 + IJ0%) And RN <= MG%(D, 568 + IJ0%) And A1 >= MG%(D, 572 + IJ0%) Then
 
@@ -536,7 +536,7 @@ Sub SOURCE ()
                     If MG%(P, 847) = 999 Then
 
                         'PH FOR POS PLAYER CASES
-                        Call d100(RN)
+                        Call Rolld100(RN)
                         MOB% = 0
 
                         For I = 1 To 3
@@ -582,7 +582,7 @@ Sub SOURCE ()
                         If MG%(P, 590) = 999 Then
 
                             'PH FOR PITCHER WITH PROFILE
-                            Call d100(RN)
+                            Call Rolld100(RN)
 
                             MOB% = 0
 
@@ -726,7 +726,7 @@ Sub SOURCE ()
 
             Call WINDEX
 
-            Call d100(RN)
+            Call Rolld100(RN)
 
             If P2 = 4 Or (P2 = 1 And RN <= 50) Then 13050
 
@@ -752,7 +752,7 @@ Sub SOURCE ()
     '-- this is related to the PICKEDOFF routine and it's immediate aftermath
     If S4% = 4 Then I = 3 Else I = 2
 
-    Call d100(I3)
+    Call Rolld100(I3)
 
     If I3 < 6 Then
 
@@ -950,7 +950,7 @@ Sub SOURCE ()
 
 
     13050 '
-    Call d100(RN)
+    Call Rolld100(RN)
 
     If (((precipType = 1 Or precipType = 2 Or precipType = 3) And RN = 2) Or (rainDelay = 1 And RN <= 5)) And INNING% >= 2 And gameDelayed = 0 Then
         H7% = 20
@@ -1014,7 +1014,7 @@ Sub SOURCE ()
 
             Call WINDEX
 
-            Call d100(RN)
+            Call Rolld100(RN)
             rndUmp = Int(Rnd(1) * 4) + 1
 
             Select Case RN
@@ -1064,7 +1064,7 @@ Sub SOURCE ()
         Call WINDEX
         Call DELIVERY(D)
 
-        Call d100(RN2)
+        Call Rolld100(RN2)
         If RN2 <= 50 Then
             Call PBP("pitch gets by " + batters$(D, B9%(D, 2)))
         Else
@@ -1217,7 +1217,7 @@ Sub SOURCE ()
         If H6% > B4%(P, 4, B1!(P)) Then
 
             ' *** ground ball for out ***
-            Call d100(H6%)
+            Call Rolld100(H6%)
 
             E2% = batRating(P, B3%(P, B1!(P)), 18) + pitchRating(D, P1%(D), 12) - 52
             E3% = 23 + pitchRating(D, P1%(D), 12)
@@ -1229,7 +1229,7 @@ Sub SOURCE ()
             If E4% = 1 Then
 
                 'balls hit to the air
-                Call d100(RN)
+                Call Rolld100(RN)
                 A5%(0) = 0
                 A5%(1) = 0
                 A5%(2) = 0
@@ -1249,7 +1249,7 @@ Sub SOURCE ()
                             Call INCPITOFF(P, I5, I6)
                         End If
 
-                        Call d100(RN)
+                        Call Rolld100(RN)
 
                         Select Case RN
 
@@ -1266,7 +1266,7 @@ Sub SOURCE ()
                                     Call DELIVERY(D)
 
                                     'What is this used for?
-                                    Call d100(RN)
+                                    Call Rolld100(RN)
 
                                     Call GetPBPString(60, 1170, Y$, D)
                                     Call PBP(Y$ + " " + X$)
@@ -1386,7 +1386,7 @@ Sub SOURCE ()
                                 If Int(Rnd(1) * 100) <= 25 And gameW% = 9 Then X$ = "rcf"
 
                                 Call DELIVERY(D)
-                                Call d100(RN)
+                                Call Rolld100(RN)
 
                                 range = 90
                                 min = 1070
@@ -1412,7 +1412,7 @@ Sub SOURCE ()
                                 Call ADDPIT(D, I5, I6)
                                 If nbrOuts(0) = 3 Then 13900
 
-                                Call d100(RN)
+                                Call Rolld100(RN)
 
                                 If S2% = 19 And S4% = 1 And RN <= 33 And P2 = 2 Or S2% = 19 And S4% = 5 And RN <= 33 Then
                                     A5%(1) = 10
@@ -1453,7 +1453,7 @@ Sub SOURCE ()
                         Call GETINFIELDER(gameW%, P, I1, D, S2%, P2)
                         S2% = 20
                         Call WINDEX
-                        Call d100(RN0)
+                        Call Rolld100(RN0)
 
                         If gameW% = 1 Then gameW% = 2: player$(4) = batters$(D, B9%(D, gameW%))
                         If (gameW% = 2 Or gameW% = 5 Or gameW% = 3) And RN0 <= 30 Then fo% = 1
@@ -1491,7 +1491,7 @@ Sub SOURCE ()
 
                         If S4% <> 4 Then
 
-                            Call d100(RN0)
+                            Call Rolld100(RN0)
                             If RN0 <= 25 And (teamRat_GAME(1, 13) = 11 Or teamRat_GAME(1, 13) = 8) Then Call PBP("fights the wind...")
                             If RN0 <= 15 And (teamRat_GAME(1, 13) = 2 Or teamRat_GAME(1, 13) = 4 Or teamRat_GAME(1, 13) = 13 Or teamRat_GAME(1, 13) = 24) Then Call PBP("fights the lights...")
 
@@ -1551,7 +1551,7 @@ Sub SOURCE ()
                         Call ADDPIT(D, I5, I6)
                         If nbrOuts(0) = 3 Then 13900
 
-                        Call d100(RN)
+                        Call Rolld100(RN)
 
                         If (S4% = 1 Or S4% = 5) And RN >= 80 Or (S4% = 1 Or S4% = 5) And P2 = 2 Then
 
@@ -1631,7 +1631,7 @@ Sub SOURCE ()
                 End If
             End If
 
-            Call d100(RN)
+            Call Rolld100(RN)
 
             If (S4% = 1 Or S4% = 4 Or ((S4% = 7 Or S4% = 5) And INFPOS% < 2)) And nbrOuts(0) <= 1 And RN <= 50 Then
                 DPC% = 1
@@ -1819,7 +1819,7 @@ Sub SOURCE ()
                 B8%(D, B9%(D, 2), 16) = B8%(D, B9%(D, 2), 16) - 1
                 B5%(D, B9%(D, 2), 16) = B5%(D, B9%(D, 2), 16) - 1
 
-                Call d100(I1)
+                Call Rolld100(I1)
 
                 If I1 < 77 Then
 
@@ -1902,7 +1902,7 @@ Sub SOURCE ()
 
             Else
 
-                Call d100(RN)
+                Call Rolld100(RN)
 
                 Select Case RN
 
@@ -1948,7 +1948,7 @@ Sub SOURCE ()
             End If
 
             HW% = 0
-            Call d100(RN0)
+            Call Rolld100(RN0)
 
             If RN0 <= 80 Then
                 pbpString$ = "Double!!"
@@ -1967,7 +1967,7 @@ Sub SOURCE ()
 
             If gameB0%(1, 0) <> 0 Then
 
-                Call d100(H6%)
+                Call Rolld100(H6%)
                 BR% = batRating(P, B3%(P, gameB0%(1, 0)), 16)
 
                 If B7%(P, gameB0%(1, 0)) = 1 Then BR% = pitchRating(P, P1%(P), 31)
@@ -2036,7 +2036,7 @@ Sub SOURCE ()
 
             Call ADDPIT(D, I5, I6)
 
-            Call d100(RN)
+            Call Rolld100(RN)
 
             If RN <= 30 Then
 
@@ -2058,7 +2058,7 @@ Sub SOURCE ()
                 Call GetPBPString(40, 3050, Y$, D)
                 Call PBP(Y$)
 
-                Call d100(RN)
+                Call Rolld100(RN)
                 If RN <= 90 Then
                     pbpString$ = "Triple!!"
                 Else
@@ -2069,11 +2069,11 @@ Sub SOURCE ()
 
             Else
 
-                Call d100(RN)
+                Call Rolld100(RN)
 
                 If RN <= 10 And gameW% <> 8 Then
 
-                    Call d100(RN)
+                    Call Rolld100(RN)
                     X$ = "1st"
                     If gameW% = 7 Then X$ = "3rd"
 
@@ -2096,8 +2096,8 @@ Sub SOURCE ()
                         ad$ = "wall"
                     End If
 
-                    Call d100(BV)
-                    Call d100(RN)
+                    Call Rolld100(BV)
+                    Call Rolld100(RN)
                     Select Case RN
                         Case 1 To 20
                             pbpString$ = "It one-hops the " + ad$ + "..."
@@ -2115,7 +2115,7 @@ Sub SOURCE ()
 
                     Call PBP(pbpString$)
 
-                    Call d100(RN)
+                    Call Rolld100(RN)
                     If RN <= 90 Then
                         pbpString$ = "Triple!!"
                     Else
@@ -2166,7 +2166,7 @@ Sub SOURCE ()
         End If
 
         13063 '
-        Call d100(H6%)
+        Call Rolld100(H6%)
         S2% = 7
 
         If B7%(P, B1!(P)) = 1 Or H7% <= SN Then
@@ -2235,13 +2235,13 @@ Sub SOURCE ()
         Call INCPITOFF(P, I5, I6)
     End If
 
-    Call d100(RN)
+    Call Rolld100(RN)
 
     If RN <= 80 Then
 
         Call LONGFLY(D, gameW%)
 
-        Call d100(RN)
+        Call Rolld100(RN)
 
         If RN <= 5 And teamRat_GAME(1, 13) = 8 And gameW% = 7 Then Call PBP("THAT'S OUT OF THE PARK"): Call PBP("ON WAVELAND AVENUE!!!"): pbpString$ = "HOME RUN...HOLY COW!!!": GoTo 13543
         If RN <= 15 And teamRat_GAME(1, 13) = 8 And gameW% = 7 Then Call PBP("IT'S GONE"): pbpString$ = "LAST SEEN BOUNCING DOWN WAVELAND AVENUE!!!": GoTo 13543
@@ -2258,7 +2258,7 @@ Sub SOURCE ()
             If teamRat_GAME(1, 13) = 23 And (gameW% = 7 Or gameW% = 9) Then Call PBP("IT'S LONG, IT'S LONG, IT'S GONE!!"): pbpString$ = "THAT ONE'S IN THE UPPER DECK": GoTo 13543
 
             '13545
-            Call d100(RN)
+            Call Rolld100(RN)
             Select Case RN
                 Case 1 To 7
                     pbpString$ = "GOODBYE!! IT'S A HOME RUN!!"
@@ -2311,7 +2311,7 @@ Sub SOURCE ()
 
     Else
 
-        Call d100(RN)
+        Call Rolld100(RN)
 
         If RN <= 20 And (gameW% = 7 Or gameW% = 9) Then
 
@@ -2413,7 +2413,7 @@ Sub SOURCE ()
     Call ADDPIT(D, I5, I6)
     Call ADVANCEMENT(P, D, S2%, F%, I3)
     Call CREDITPUTOUT(I3, FB2P%, AST%, D)
-    Call d100(RN)
+    Call Rolld100(RN)
 
     DPC% = 0
     If RN <= 80 Then
@@ -2511,7 +2511,7 @@ Sub SOURCE ()
 
         Else
 
-            Call d100(RN)
+            Call Rolld100(RN)
 
             If gameW% = 3 Then
 
@@ -2580,7 +2580,7 @@ Sub SOURCE ()
 
     Else
 
-        Call d100(RN)
+        Call Rolld100(RN)
         If (RN <= 90 And P2 <> 2 Or S4% = 0) Or (RN <= 10 And P2 = 2) Then
 
             S2% = 14
@@ -2591,7 +2591,7 @@ Sub SOURCE ()
                 GoTo 13693
             End If
 
-            Call d100(RN)
+            Call Rolld100(RN)
 
             A5%(0) = 1
             A5%(1) = 1
@@ -2616,7 +2616,7 @@ Sub SOURCE ()
         If Not (S4% = 1 Or S4% = 4 Or S4% = 5 Or S4% = 7) Then
 
             13693 '
-            Call d100(RN)
+            Call Rolld100(RN)
             A5%(1) = 0
             A5%(2) = 0
             A5%(3) = 0
@@ -2680,7 +2680,7 @@ Sub SOURCE ()
         Else
             If S4% = 7 Then
 
-                Call d100(RN)
+                Call Rolld100(RN)
                 A5%(1) = 11
                 A5%(2) = 1
                 A5%(3) = 1
@@ -2783,7 +2783,7 @@ Sub SOURCE ()
 
     If (S4% = 3 Or S4% > 4) And nbrOuts(0) < 2 Then Call SQUEEZECHOICE(SH)
 
-    Call d100(RN)
+    Call Rolld100(RN)
 
     If B7%(P, B1!(P)) = 1 Then
         BR = pitchRating(P, P1%(P), 32)
@@ -2805,7 +2805,7 @@ Sub SOURCE ()
     If WW% > 7 Then gameW% = 2
     Call GETFIELDNAME(gameW%, D)
 
-    Call d100(RN)
+    Call Rolld100(RN)
 
     If RN <= 52 Then 14175
 
@@ -3037,7 +3037,7 @@ Sub SOURCE ()
                     Call INCBATOFF(P, I5, I6)
                 End If
 
-                Call d100(RN)
+                Call Rolld100(RN)
 
                 If S4% = 5 And SH = 2 And RN > 98 Or RN > 97 Then
                     S2% = -12
@@ -3072,7 +3072,7 @@ Sub SOURCE ()
 
         Case 5
             14150 'C@3
-            Call d100(RN)
+            Call Rolld100(RN)
             If B7%(P, B1!(P)) = 1 Then
                 RR = 2
             Else
@@ -3174,7 +3174,7 @@ Sub SOURCE ()
 
             If I5 = 2 Then 14141
 
-            Call d100(RN)
+            Call Rolld100(RN)
 
             For I = 0 To 1
                 If RN <= LB%(RR, I) Then Exit For
@@ -3207,7 +3207,7 @@ Sub SOURCE ()
 
         Case 7
             'FLKSO
-            Call d100(RN)
+            Call Rolld100(RN)
 
             If pitchRating(D, P1%(D), 6) = 0 Then
                 BR = 0
@@ -3237,7 +3237,7 @@ Sub SOURCE ()
 
                     Call WINDEX
 
-                    Call d100(RN)
+                    Call Rolld100(RN)
                     pbpString$ = player$(0) + " "
                     If RN <= 13 Or SH = 1 And RN <= 42 Then pbpString$ = pbpString$ + "misses the pitch"
                     If RN > 13 And RN <= 42 And SH <> 1 Then pbpString$ = pbpString$ + "takes a called strike"
@@ -3295,7 +3295,7 @@ Sub SOURCE ()
             If RR > 11 Then RR = 11
             If RR < 0 Then RR = 0
 
-            Call d100(RN)
+            Call Rolld100(RN)
 
             For I = 0 To 2
                 If RN <= triplePlayAdj(RR, I) Then Exit For
@@ -3323,7 +3323,7 @@ Sub SOURCE ()
             nbrStrikes = nbrStrikes + 1
 
             Call WINDEX
-            Call d100(RN)
+            Call Rolld100(RN)
 
             pbpString$ = player$(0) + " "
             If RN <= 13 Or SH = 1 And RN <= 42 Then pbpString$ = pbpString$ + "misses the pitch"
@@ -3471,7 +3471,7 @@ Sub SOURCE ()
 
     gameB0%(TGTBASE% - 1, 2) = gameB0%(TGTBASE% - 1, 2) + 1
 
-    Call d100(I4)
+    Call Rolld100(I4)
 
     If I4 <= gameB0%(TGTBASE% - 1, 2) Then
 
@@ -3599,7 +3599,7 @@ Sub SOURCE ()
     If Not (gameB0%(TGTBASE% - 1, 2) = 18 And I9 > Q0 Or gameB0%(TGTBASE% - 1, 2) > 18 And I9 > Q0 - 200) Then
 
         14829
-        Call d100(RN)
+        Call Rolld100(RN)
         Select Case RN
             Case 1 To 20: pbpString$ = "He beats the throw!"
             Case 21 To 40: pbpString$ = "He's in there!"
@@ -3648,7 +3648,7 @@ Sub SOURCE ()
 
     End If
 
-    Call d100(RN)
+    Call Rolld100(RN)
 
     Select Case RN
         Case 1 To 20
@@ -4313,7 +4313,7 @@ Sub SOURCE ()
     If pz = 1 Then pz = 0: GoTo 15055
 
     A1 = gameScore(D, 0) - gameScore(P, 0)
-    Call d100(RN)
+    Call Rolld100(RN)
 
     If Not (INNING% < 9 Or CZ%(D) = -1 Or MG%(D, 581) = 999) Then
 
@@ -4322,14 +4322,14 @@ Sub SOURCE ()
         If A1 <= 3 And A1 >= 0 Then
 
             If P6%(D) <> 1 Then
-                Call d100(RN)
+                Call Rolld100(RN)
                 If RN <= 80 And pitchRating(D, P1%(D), 3) < 15 Then GK%(D) = 1
 
             Else
 
                 If gameScore(P, 0) = 0 And pitchRating(D, P1%(D), 5) > 0 And RN <= Int(pitchRating(D, P1%(D), 16) / pitchRating(D, P1%(D), 5) * 100 + .5) + 10 Then 18725
                 If pitchRating(D, P1%(D), 5) > 0 And RN <= Int(pitchRating(D, P1%(D), 16) / pitchRating(D, P1%(D), 5) * 100 + .5) Then 18725
-                Call d100(RN0)
+                Call Rolld100(RN0)
                 If pitchEraOpt > 0 And INNING% > 7 And gameScore(D, 0) > gameScore(P, 0) And pitchRating(D, P1%(D), 1) > 0 And P6%(D) = 1 And Int(pitchRating(D, P1%(D), 16) / pitchRating(D, P1%(D), 1) * 100 + .5) <= 100 And RN0 <= Int(pitchRating(D, P1%(D), 16) / pitchRating(D, P1%(D), 1) * 100 + .5) Then 18725
                 If pitchEraOpt > 0 And INNING% > 7 And (gameScore(D, 0) >= gameScore(P, 0) Or gameScore(P, 0) - gameScore(D, 0) <= 2) And pitchRating(D, P1%(D), 1) > 0 And P6%(D) = 1 And Int(pitchRating(D, P1%(D), 16) / pitchRating(D, P1%(D), 1) * 100 + .5) >= 100 Then 18725
                 If pitchEraOpt >= 8 Then 18725
@@ -4374,7 +4374,7 @@ Sub SOURCE ()
             If Not (S4% < 3 Or S4% = 4) Then
 
                 ' PROFILE INFIELD IN WITH 3RD OCCUPIED
-                Call d100(RN)
+                Call Rolld100(RN)
                 If nbrOuts(0) = 0 And A1 >= MG%(D, 691) * -1 And A1 <= MG%(D, 692) * -1 And INNING% >= MG%(D, 693) And RN <= MG%(D, 694) Then INFPOS% = 2: D2 = 3: GoTo 15055
                 If nbrOuts(0) = 0 And A1 >= MG%(D, 695) * -1 And A1 <= MG%(D, 696) * -1 And INNING% >= MG%(D, 697) And RN <= MG%(D, 698) Then INFPOS% = 2: D2 = 3: GoTo 15055
                 If nbrOuts(0) = 1 And (S4% = 5 Or S4% = 7) And A1 >= MG%(D, 699) * -1 And A1 <= MG%(D, 700) * -1 And INNING% >= MG%(D, 701) And RN <= MG%(D, 702) Then INFPOS% = 2: D2 = 3: GoTo 15055
@@ -4389,7 +4389,7 @@ Sub SOURCE ()
             If S4% = 0 Then
 
                 ' PROFILE CORNERS IN AGAINST A BUNT HIT
-                Call d100(RN)
+                Call Rolld100(RN)
                 If BR >= MG%(D, 708) And RN <= MG%(D, 709) Or BR >= MG%(D, 710) And RN <= MG%(D, 711) Or BR >= MG%(D, 712) And RN <= MG%(D, 713) Then
                     INFPOS% = 1
                     D2 = 4
@@ -4407,7 +4407,7 @@ Sub SOURCE ()
                 If Not (S4% <> 1 And S4% <> 4) Then
 
                     ' PROFILE CORNERS IN VS HITTER IN SAC BUNT SITUATION
-                    Call d100(RN)
+                    Call Rolld100(RN)
                     If A1 <= MG%(D, 715) And A1 >= MG%(D, 716) * -1 And S4% = 1 And BR >= MG%(D, 717) And RN <= MG%(D, 718) Then
                         INFPOS% = 1
                         D2 = 4
@@ -4440,7 +4440,7 @@ Sub SOURCE ()
             If Not (S4% <> 1 And S4% <> 2 And S4% <> 4) Then
 
                 ' PROFILE CORNERS IN VS A PITCHER IN SAC BUNT SITUATION
-                Call d100(RN)
+                Call Rolld100(RN)
 
                 If I7! <= MG%(D, 732) And RN <= MG%(D, 733) And S4% = 1 And nbrOuts(0) <= 1 Then
                     INFPOS% = 1
@@ -4475,7 +4475,7 @@ Sub SOURCE ()
             If Not (nbrOuts(0) = 2 Or S4% <> 3 And S4% < 5) Then
 
                 ' PROFILE CORNERS IN FOR A SQUEEZE
-                Call d100(RN)
+                Call Rolld100(RN)
                 If nbrOuts(0) = 0 And A1 <= MG%(D, 741) And A1 >= MG%(D, 742) And BR >= MG%(D, 743) And RN <= MG%(D, 744) Then
                     INFPOS% = 1
                     D2 = 4
@@ -4504,7 +4504,7 @@ Sub SOURCE ()
 
                 If A1 + MOB% + 1 < 0 Then
                     ' BATTER NOT TYING OR WINNING RUN
-                    Call d100(RN)
+                    Call Rolld100(RN)
 
                     If batRating(P, B3%(P, B1!(P)), 4) = 0 Then
                         I7! = 0
@@ -4841,14 +4841,14 @@ Sub SOURCE ()
         End If
 
 
-        Call d100(RN)
+        Call Rolld100(RN)
         If S4% = 0 And (INFPOS% > 0 And RN <= 5 Or INFPOS% = 0 And RN <= 5) And BR > 8 Then
             P2 = 4
             GoTo 14100
         End If
 
         ' MANAGER PROFILE TO HIT AND RUN
-        Call d100(RN)
+        Call Rolld100(RN)
         If Not (S4% = 0 Or MG%(P, 671) <> 999 Or B7%(P, B1!(P)) = 1) Then
             If batRating(P, B3%(P, B1!(P)), 4) = 0 Then I7! = 0 Else I7! = Int((batRating(P, B3%(P, B1!(P)), 6) + batRating(P, B3%(P, B1!(P)), 7) + batRating(P, B3%(P, B1!(P)), 8) * 2 + batRating(P, B3%(P, B1!(P)), 9) * 3) / batRating(P, B3%(P, B1!(P)), 4) * 1000 + .5)
             If batRating(P, B3%(P, B1!(P)), 12) = 0 Then I6! = 0 Else I6! = Int(batRating(P, B3%(P, B1!(P)), 4) / batRating(P, B3%(P, B1!(P)), 12) + .5)
@@ -4867,7 +4867,7 @@ Sub SOURCE ()
 
             If Not (S4% <> 1 And S4% <> 2 And S4% <> 4) Then
 
-                Call d100(RN)
+                Call Rolld100(RN)
 
                 If S4% = 1 And INNING% <= 7 And MG%(P, 610) >= nbrOuts(0) And A1 <= MG%(P, 611) And A1 >= MG%(P, 612) * -1 And RN <= MG%(P, 613) Then 18970
                 If S4% = 1 And INNING% > 7 And MG%(P, 614) >= nbrOuts(0) And A1 <= MG%(P, 615) And A1 >= MG%(P, 616) * -1 And RN <= MG%(P, 617) Then 18970
@@ -4892,7 +4892,7 @@ Sub SOURCE ()
                 I6! = Int((batRating(P, B3%(P, B1!(P)), 6) + batRating(P, B3%(P, B1!(P)), 7) + batRating(P, B3%(P, B1!(P)), 8) * 2 + batRating(P, B3%(P, B1!(P)), 9) * 3) / batRating(P, B3%(P, B1!(P)), 4) * 1000 + .5)
             End If
 
-            Call d100(RN)
+            Call Rolld100(RN)
             If S4% = 1 And INNING% <= 7 And A1 <= MG%(P, 635) And A1 >= MG%(P, 636) * -1 And I7! <= MG%(P, 637) And I6! <= MG%(P, 638) And pitchRating(D, P1%(D), 10) <= MG%(P, 639) And RN <= MG%(P, 640) Then 18970
             If S4% = 2 And INNING% <= 7 And A1 <= MG%(P, 641) And A1 >= MG%(P, 642) * -1 And I7! <= MG%(P, 643) And I6! <= MG%(P, 644) And pitchRating(D, P1%(D), 10) <= MG%(P, 645) And RN <= MG%(P, 646) Then 18970
             If S4% = 4 And INNING% <= 7 And A1 <= MG%(P, 647) And A1 >= MG%(P, 648) * -1 And I7! <= MG%(P, 649) And I6! <= MG%(P, 650) And pitchRating(D, P1%(D), 10) <= MG%(P, 651) And RN <= MG%(P, 652) Then 18970
@@ -4941,7 +4941,7 @@ Sub SOURCE ()
     PPH = 0
     PR% = 0
 
-    Call d100(RN0)
+    Call Rolld100(RN0)
 
     If nbrOuts(0) = 2 Or B4%(P, 4, B1!(P)) > 100 Or S4% = 0 Or S4% = 7 Or S4% = 6 Or S4% = 3 Or S4% = 2 Or A1 < -3 Or RN0 > 20 Then
         GoTo 15064

@@ -5,7 +5,7 @@
 'for a team and provides different options
 'to the end user for formatting stats
 Sub COMPARE ()
-
+    
     _Title "Full Count Baseball - Stats Comparison"
 
     Shared ERX!
@@ -20,177 +20,205 @@ Sub COMPARE ()
 
     Dim compareB1%(23), compareP1%(22)
 
-    teamNbr = 0
-    Call ChooseTeam(YN$, NTMS, teamNbr, team$)
-    statFile$ = nameStatFile$(team$)
+    Do
 
-    If Not _FileExists(diskPaths$(1) + statFile$) Then
+        teamNbr = 0
+        Call ChooseTeam(YN$, NTMS, teamNbr, team$)
 
-        MsgText$ = "NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU"
-        BoxWidth = 24
-        BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
-        Call CSMsgBox(MsgText$, BoxWidth, Pass)
-        I$ = GetKeyPress$
-        Call CSMsgBox("", 0, Pass)
-
-    Else
-
-        For K = 4 To 18:
-            For I = 0 To 22
-                TB%(K - 3) = TB%(K - 3) + batterRatings(I, K)
-            Next
-        Next
-
-        For K = 1 To 33
-            For I = 0 To 21
-                TP&(K) = TP&(K) + pitcherRatings(I, K)
-            Next
-        Next
-
-        ERX! = 0
-
-        For I = 0 To 21
-            ERX! = ERX! + ((pitcherRatings(I, 6) / 9) * (pitcherRatings(I, 10) / 100))
-        Next
-
-        For K = 4 To 14:
-            For I = 0 To 21
-                If pitcherRatings(I, 11) = 999 Then TB%(K - 3) = TB%(K - 3) + pitcherRatings(I, K + 16)
-            Next
-        Next
-
-        Open diskPaths$(1) + statFile$ For Input As #1
-
-        Input #1, team$
-        Input #1, W2%
-        Input #1, L2%
-
-        For I = 0 To 22:
-            Input #1, batterNames$(I)
-            Input #1, compareB1%(I)
-        Next I
-
-        For I = 0 To 21:
-            Input #1, pitcherNames$(I)
-            Input #1, compareP1%(I)
-        Next I
-
-        For I = 0 To 22:
-            For I1 = 0 To 21:
-                Input #1, statB0%(I, I1)
-            Next I1
-        Next I
-
-        For I = 0 To 21:
-            For I1 = 0 To 41:
-                Input #1, statP0%(I, I1)
-            Next I1
-        Next I
-
-        Input #1, D0%
-        Input #1, D1%
-
-        For I = 0 To 21: 
-            Input #1, statT0%(I)
-        Next I
+        If teamNbr <> 0 Then
         
-        For I = 0 To 22: 
-            Input #1, statT1%(I)
-        Next I
+            haveStats = 1
 
-        Close #1
+            statFile$ = nameStatFile$(team$)
 
-        Color 15, 0
-        Cls
+            If Not _FileExists(diskPaths$(1) + statFile$) Then
 
-        Call box0 (8, 8, 13, 70, 2, 15, 1)
+                haveStats = 0
 
-        Do
-            Locate 10
-            Color 7, 1
+                MsgText$ = "NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU"
+                BoxWidth = 24
+                BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+                Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+                Call CSMsgBox(MsgText$, BoxWidth, Pass)
+                I$ = GetKeyPress$
+                Call CSMsgBox("", 0, Pass)
 
-            Locate , 30: Print "STATS TO ";
-            Color 15: Print "S";
-            Color 7: Print "CREEN"
-            Locate , 30: Print "STATS TO ";
-            Color 15: Print "P";
-            Color 7: Print "RINTER"
-            J$ = GetKeyPress$
+            Else
 
-        Loop Until UCase$(J$) = "P" Or UCase$(J$) = "S" Or J$ = Chr$(27)
+                For K = 4 To 18:
+                    For I = 0 To 22
+                        TB%(K - 3) = TB%(K - 3) + batterRatings(I, K)
+                    Next
+                Next
 
-        backToMenu = 0
+                For K = 1 To 33
+                    For I = 0 To 21
+                        TP&(K) = TP&(K) + pitcherRatings(I, K)
+                    Next
+                Next
 
-        If J$ <> Chr$(27) Then
+                ERX! = 0
 
-            Select Case UCase$(J$)
+                For I = 0 To 21
+                    ERX! = ERX! + ((pitcherRatings(I, 6) / 9) * (pitcherRatings(I, 10) / 100))
+                Next
 
-                Case "P":
-                    Call Comparisons_Printer(team$)
+                For K = 4 To 14:
+                    For I = 0 To 21
+                        If pitcherRatings(I, 11) = 999 Then TB%(K - 3) = TB%(K - 3) + pitcherRatings(I, K + 16)
+                    Next
+                Next
 
-                Case "S":
-                    Call Comparisons_Screen(team$, backToMenu)
+                Open diskPaths$(1) + statFile$ For Input As #1
 
-            End Select
+                Input #1, team$
+                Input #1, W2%
+                Input #1, L2%
 
-        End If
+                For I = 0 To 22:
+                    Input #1, batterNames$(I)
+                    Input #1, compareB1%(I)
+                Next I
 
-    End If 'Done checking file count
+                For I = 0 To 21:
+                    Input #1, pitcherNames$(I)
+                    Input #1, compareP1%(I)
+                Next I
+
+                For I = 0 To 22:
+                    For I1 = 0 To 21:
+                        Input #1, statB0%(I, I1)
+                    Next I1
+                Next I
+
+                For I = 0 To 21:
+                    For I1 = 0 To 41:
+                        Input #1, statP0%(I, I1)
+                    Next I1
+                Next I
+
+                Input #1, D0%
+                Input #1, D1%
+
+                For I = 0 To 21: 
+                    Input #1, statT0%(I)
+                Next I
+                
+                For I = 0 To 22: 
+                    Input #1, statT1%(I)
+                Next I
+
+                Close #1
+
+                Color 15, 0
+                Cls
+
+                Call MenuBox(8, 25, 24, 5, 15, 1)
+
+                Do
+
+                    Locate 10
+                    Color 7, 1
+
+                    Locate , 32: Print "SEND TO ";
+                    Color 15: Print "F";
+                    Color 7: Print "ILE"
+                    Locate , 32: Print "SEND TO ";
+                    Color 15: Print "P";
+                    Color 7: Print "RINTER"
+                    Locate , 32: Print "SEND TO ";
+                    Color 15: Print "S";
+                    Color 7: Print "CREEN"
+                    J$ = GetKeyPress$
+
+                Loop Until UCase$(J$) = "F" Or UCase$(J$) = "P" Or UCase$(J$) = "S" Or J$ = Chr$(27)
+
+                backToMenu = 0
+
+                If J$ <> Chr$(27) Then
+
+                    Select Case UCase$(J$)
+
+                        Case "F":
+                            userFile$ = _SAVEFILEDIALOG$("Save Comparison Report",_CWD$ + "\Comparison","*.txt","Text File")
+                            If userFile$ <> "" Then
+                                Call Comparisons_Report(0, userFile$, team$)
+                            End If
+
+                        Case "P":
+                            Call Comparisons_Report(1, "COMPARISON", team$)
+
+                        Case "S":
+                            Call Comparisons_Screen(team$, backToMenu)
+
+                    End Select
+
+                End If
+
+            End If 'Done checking for valid stat file
+            
+        End If 'Done checking for valid team
+
+    Loop Until backToMenu = 0 Or J$ = Chr$(27) Or teamNbr = 0 Or haveStats = 0
 
 End Sub
 
 
 '----------------------------------------
-'     Comparisons_Printer Subroutine
+'     Comparisons_Report Subroutine
 '----------------------------------------
 'This subroutine formats team stats for
 'output to the default printer
-Sub Comparisons_Printer (teamName$)
+Sub Comparisons_Report (printDest, destFile$, teamName$)
 
     Shared batterNames$(), pitcherNames$()
     Shared batterRatings(), pitcherRatings()
     Shared statB0%(), statP0%()
 
-    LPrint "STAT COMPARISONS FOR "; teamName$
-    LPrint
-    LPrint
-    LPrint "BATTER";
-    LPrint Tab(21); "  G";
-    LPrint Tab(26); " AB";
-    LPrint Tab(31); "  R";
-    LPrint Tab(36); "  H";
-    LPrint Tab(41); " 2B";
-    LPrint Tab(45); " 3B";
-    LPrint Tab(49); " HR";
-    LPrint Tab(54); "RBI";
-    LPrint Tab(59); " BB";
-    LPrint Tab(64); " SO";
-    LPrint Tab(69); " SB";
-    LPrint Tab(74); " CS";
-    LPrint Tab(79); "AVG";
-    LPrint Tab(85); "SLG";
-    LPrint Tab(91); "OBP";
-    LPrint Tab(97); "FLD.PCT"
+    Color 15, 0
+    Cls
+
+    Open destFile$ For Output As #1
+
+    Print #1, "STAT COMPARISONS FOR "; teamName$
+    Print #1, 
+    Print #1, 
+    Print #1, "BATTER";
+    Print #1, Tab(21); "  G";
+    Print #1, Tab(26); " AB";
+    Print #1, Tab(31); "  R";
+    Print #1, Tab(36); "  H";
+    Print #1, Tab(41); " 2B";
+    Print #1, Tab(45); " 3B";
+    Print #1, Tab(49); " HR";
+    Print #1, Tab(54); "RBI";
+    Print #1, Tab(59); " BB";
+    Print #1, Tab(64); " SO";
+    Print #1, Tab(69); " SB";
+    Print #1, Tab(74); " CS";
+    Print #1, Tab(79); "AVG";
+    Print #1, Tab(85); "SLG";
+    Print #1, Tab(91); "OBP";
+    Print #1, Tab(97); "FLD.PCT"
 
     For I = 0 To 22
 
         If batterNames$(I) <> "XXX" And batterNames$(I) <> "END" And batterNames$(I) <> "" Then
 
-            LPrint Left$(batterNames$(I), 14);
-            LPrint Tab(16); "REG.";
-            LPrint Tab(21); Using "###"; batterRatings(I, 3);
-            LPrint Tab(26); Using "###"; batterRatings(I, 4);
-            LPrint Tab(31); Using "###"; batterRatings(I, 5);
-            LPrint Tab(36); Using "###"; batterRatings(I, 6);
-            LPrint Tab(42); Using "##"; batterRatings(I, 7);
-            LPrint Tab(46); Using "##"; batterRatings(I, 8);
-            LPrint Tab(50); Using "##"; batterRatings(I, 9);
-            LPrint Tab(54); Using "###"; batterRatings(I, 10);
-            LPrint Tab(59); Using "###"; batterRatings(I, 11);
-            LPrint Tab(64); Using "#.###"; batterRatings(I, 12);
-            LPrint Tab(69); Using "#.###"; batterRatings(I, 13);
-            LPrint Tab(74); Using "#.###"; batterRatings(I, 14);
+            Print #1, Left$(batterNames$(I), 14);
+            Print #1, Tab(16); "REG.";
+            Print #1, Tab(21); Using "###"; batterRatings(I, 3);
+            Print #1, Tab(26); Using "###"; batterRatings(I, 4);
+            Print #1, Tab(31); Using "###"; batterRatings(I, 5);
+            Print #1, Tab(36); Using "###"; batterRatings(I, 6);
+            Print #1, Tab(42); Using "##"; batterRatings(I, 7);
+            Print #1, Tab(46); Using "##"; batterRatings(I, 8);
+            Print #1, Tab(50); Using "##"; batterRatings(I, 9);
+            Print #1, Tab(54); Using "###"; batterRatings(I, 10);
+            Print #1, Tab(59); Using "###"; batterRatings(I, 11);
+            Print #1, Tab(64); Using "#.###"; batterRatings(I, 12);
+            Print #1, Tab(69); Using "#.###"; batterRatings(I, 13);
+            Print #1, Tab(74); Using "#.###"; batterRatings(I, 14);
 
             I2 = 0
             I3 = 0
@@ -201,35 +229,57 @@ Sub Comparisons_Printer (teamName$)
                 I3 = Int(((batterRatings(I, 6) + batterRatings(I, 7) + 2 * batterRatings(I, 8) + 3 * batterRatings(I, 9)) / batterRatings(I, 4) + .0005) * 1000)
                 I4 = Int(((batterRatings(I, 6) + batterRatings(I, 11)) / (batterRatings(I, 11) + batterRatings(I, 4)) + .0005) * 1000)
             End If
-            If batterRatings(I, 4) = 0 Or I2 = 0 Then LPrint Tab(79); ".000";
+ 
+           If batterRatings(I, 4) = 0 Or I2 = 0 Then 
+                Print #1, Tab(79); ".000";
+            End If
 
-            If I2 > 0 And I2 < 100 Then LPrint Tab(79); ".0";: LPrint Using "##"; I2;
-            If I2 >= 100 Then LPrint Tab(79); ".";: LPrint Using "###"; I2;
+            If I2 > 0 And I2 < 100 Then 
+                Print #1, Tab(79); ".0";
+                Print #1, Using "##"; I2;
+            End If
 
-            If batterRatings(I, 4) = 0 Or I3 = 0 Then LPrint Tab(84); ".000";
+            If I2 >= 100 Then 
+                Print #1, Tab(79); Using ".###"; I2;
+            End If
 
-            If I3 > 0 And I3 < 100 Then LPrint Tab(84); ".0";: LPrint Using "##"; I3;
-            If I3 >= 100 Then LPrint Tab(84); ".";: LPrint Using "###"; I3;
+            If batterRatings(I, 4) = 0 Or I3 = 0 Then Print #1, Tab(84); ".000";
 
-            If batterRatings(I, 4) = 0 Or I4 = 0 Then LPrint Tab(90); ".000";
+            If I3 > 0 And I3 < 100 Then 
+                Print #1, Tab(84); ".0";
+                Print #1, Using "##"; I3;
+            End If
 
-            If I4 > 0 And I4 < 100 Then LPrint Tab(90); ".0";: LPrint Using "##"; I4;
-            If I4 >= 100 Then LPrint Tab(90); ".";: LPrint Using "###"; I4;
+            If I3 >= 100 Then 
+                Print #1, Tab(84); Using ".###"; I3;
+            End If
 
-            LPrint Tab(99); ".";: LPrint Using "###"; batterRatings(I, 26)
-            LPrint Tab(16); "LGE.";
-            LPrint Tab(21); Using "###"; statB0%(I, 14);
-            LPrint Tab(26); Using "###"; statB0%(I, 0);
-            LPrint Tab(31); Using "###"; statB0%(I, 2);
-            LPrint Tab(36); Using "###"; statB0%(I, 1);
-            LPrint Tab(42); Using "##"; statB0%(I, 4);
-            LPrint Tab(46); Using "##"; statB0%(I, 5);
-            LPrint Tab(50); Using "##"; statB0%(I, 6);
-            LPrint Tab(54); Using "###"; statB0%(I, 3);
-            LPrint Tab(59); Using "###"; statB0%(I, 7);
-            LPrint Tab(64); Using "###"; statB0%(I, 8);
-            LPrint Tab(69); Using "###"; statB0%(I, 9);
-            LPrint Tab(74); Using "###"; statB0%(I, 10);
+            If batterRatings(I, 4) = 0 Or I4 = 0 Then Print #1, Tab(90); ".000";
+
+            If I4 > 0 And I4 < 100 Then 
+                Print #1, Tab(90); ".0";
+                Print #1, Using "##"; I4;
+            End If
+
+            If I4 >= 100 Then 
+                Print #1, Tab(90); ".";
+                Print #1, Using "###"; I4;
+            End If
+
+            Print #1, Tab(99); Using ".###"; batterRatings(I, 26)
+            Print #1, Tab(16); "LGE.";
+            Print #1, Tab(21); Using "###"; statB0%(I, 14);
+            Print #1, Tab(26); Using "###"; statB0%(I, 0);
+            Print #1, Tab(31); Using "###"; statB0%(I, 2);
+            Print #1, Tab(36); Using "###"; statB0%(I, 1);
+            Print #1, Tab(42); Using "##"; statB0%(I, 4);
+            Print #1, Tab(46); Using "##"; statB0%(I, 5);
+            Print #1, Tab(50); Using "##"; statB0%(I, 6);
+            Print #1, Tab(54); Using "###"; statB0%(I, 3);
+            Print #1, Tab(59); Using "###"; statB0%(I, 7);
+            Print #1, Tab(64); Using "###"; statB0%(I, 8);
+            Print #1, Tab(69); Using "###"; statB0%(I, 9);
+            Print #1, Tab(74); Using "###"; statB0%(I, 10);
 
             I2 = 0
             I3 = 0
@@ -241,154 +291,288 @@ Sub Comparisons_Printer (teamName$)
                 I4 = Int(((statB0%(I, 1) + statB0%(I, 7)) / (statB0%(I, 7) + statB0%(I, 0)) + .0005) * 1000)
             End If
 
-            If statB0%(I, 0) = 0 Or I2 = 0 Then LPrint Tab(79); ".000";
+            If statB0%(I, 0) = 0 Or I2 = 0 Then 
+                Print #1, Tab(79); ".000";
+            End If
 
-            If I2 > 0 And I2 < 100 Then LPrint Tab(79); ".0";: LPrint Using "##"; I2;
-            If I2 >= 100 Then LPrint Tab(79); ".";: LPrint Using "###"; I2;
+            If I2 > 0 And I2 < 100 Then 
+                Print #1, Tab(79); ".0";
+                Print #1, Using "##"; I2;
+            End If
+            If I2 >= 100 Then 
+                Print #1, Tab(79); Using ".###"; I2;
+            End If
 
-            If statB0%(I, 0) = 0 Or I3 = 0 Then LPrint Tab(84); ".000";
+            If statB0%(I, 0) = 0 Or I3 = 0 Then 
+                Print #1, Tab(84); ".000";
+            End If
 
-            If I3 > 0 And I3 < 100 Then LPrint Tab(84); ".0";: LPrint Using "##"; I3;
-            If I3 >= 100 Then LPrint Tab(84); ".";: LPrint Using "###"; I3;
+            If I3 > 0 And I3 < 100 Then 
+                Print #1, Tab(84); ".0";
+                Print #1, Using "##"; I3;
+            End If
 
-            If statB0%(I, 0) = 0 Or I4 = 0 Then LPrint Tab(90); ".000";
+            If I3 >= 100 Then 
+                Print #1, Tab(84); Using ".###"; I3;
+            End If
 
-            If I4 > 0 And I4 < 100 Then LPrint Tab(90); ".0";: LPrint Using "##"; I4;
-            If I4 >= 100 Then LPrint Tab(90); ".";: LPrint Using "###"; I4;
+            If statB0%(I, 0) = 0 Or I4 = 0 Then 
+                Print #1, Tab(90); ".000";
+            End If
 
-            If statB0%(I, 16) = 0 And statB0%(I, 17) = 0 Then I5 = 0 Else I5 = ((statB0%(I, 16) + statB0%(I, 17)) / (statB0%(I, 16) + statB0%(I, 17) + statB0%(I, 11))) * 1000
+            If I4 > 0 And I4 < 100 Then 
+                Print #1, Tab(90); ".0";: Print #1, Using "##"; I4;
+            End If
 
-            If I5 = 0 Then LPrint Tab(99); ".000  "
-            If I5 > 0 And I5 < 1000 Then LPrint Tab(99); ".";: LPrint Using "###"; I5
-            If I5 = 1000 Then LPrint Tab(98); Using "#"; I5 / 1000;: LPrint ".000  "
+            If I4 >= 100 Then 
+                Print #1, Tab(90); Using ".###"; I4;
+            End If
 
-            LPrint
+            If statB0%(I, 16) = 0 And statB0%(I, 17) = 0 Then 
+                I5 = 0 
+            Else 
+                I5 = ((statB0%(I, 16) + statB0%(I, 17)) / (statB0%(I, 16) + statB0%(I, 17) + statB0%(I, 11))) * 1000
+            End If
+
+            If I5 = 0 Then 
+                Print #1, Tab(99); ".000  "
+            End If
+            If I5 > 0 And I5 < 1000 Then 
+                Print #1, Tab(99); Using ".###"; I5
+            End If
+            If I5 = 1000 Then 
+                Print #1, Tab(98); Using "#"; I5 / 1000;
+                Print #1, ".000  "
+            End If
+
+            Print #1, 
 
         End If
 
     Next I
 
-    Call TeamComparison_Printer(teamName$)
+    Call TeamComparison_Report(teamName$)
 
-    LPrint Chr$(12)
-    LPrint "STAT COMPARISONS FOR "; teamName$
-    LPrint
-    LPrint
-    LPrint "PITCHER";
-    LPrint Tab(25); "  G";
-    LPrint Tab(30); "  W";
-    LPrint Tab(35); "  L";
-    LPrint Tab(40); " SV";
-    LPrint Tab(47); " IP";
-    LPrint Tab(52); "  H";
-    LPrint Tab(56); " BB";
-    LPrint Tab(61); " SO";
-    LPrint Tab(67); "ERA";
-    LPrint Tab(72); " GS";
-    LPrint Tab(78); " CG";
-    LPrint Tab(85); "H/9IP";
-    LPrint Tab(92); "SO/9IP";
-    LPrint Tab(99); "BB/9IP";
-    LPrint Tab(107); "HR ALL."
+    Print #1, Chr$(12)
+    Print #1, "STAT COMPARISONS FOR "; teamName$
+    Print #1, 
+    Print #1, 
+    Print #1, "PITCHER";
+    Print #1, Tab(25); "  G";
+    Print #1, Tab(30); "  W";
+    Print #1, Tab(35); "  L";
+    Print #1, Tab(40); " SV";
+    Print #1, Tab(47); " IP";
+    Print #1, Tab(52); "  H";
+    Print #1, Tab(56); " BB";
+    Print #1, Tab(61); " SO";
+    Print #1, Tab(67); "ERA";
+    Print #1, Tab(72); " GS";
+    Print #1, Tab(78); " CG";
+    Print #1, Tab(85); "H/9IP";
+    Print #1, Tab(92); "SO/9IP";
+    Print #1, Tab(99); "BB/9IP";
+    Print #1, Tab(107); "HR ALL."
 
     For I = 0 To 21
 
         If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "END" And pitcherNames$(I) <> "" Then
 
-            LPrint Left$(pitcherNames$(I), 14);
-            LPrint Tab(18); "REG.";
-            LPrint Tab(25); Using "###"; pitcherRatings(I, 4);
-            LPrint Tab(31); Using "##"; pitcherRatings(I, 1);
-            LPrint Tab(36); Using "##"; pitcherRatings(I, 2);
-            LPrint Tab(41); Using "##"; pitcherRatings(I, 3);
-            LPrint Tab(45); Using "###.#"; pitcherRatings(I, 6);
-            LPrint Tab(52); Using "###"; pitcherRatings(I, 7);
-            LPrint Tab(56); Using "###"; pitcherRatings(I, 8);
-            LPrint Tab(61); Using "###"; pitcherRatings(I, 9);
-            LPrint Tab(66); Using "##.##"; (pitcherRatings(I, 10)) / 100;
-            LPrint Tab(73); Using "##"; pitcherRatings(I, 5);
-            LPrint Tab(79); Using "##"; pitcherRatings(I, 16);
+            Print #1, Left$(pitcherNames$(I), 14);
+            Print #1, Tab(18); "REG.";
+            Print #1, Tab(25); Using "###"; pitcherRatings(I, 4);
+            Print #1, Tab(31); Using "##"; pitcherRatings(I, 1);
+            Print #1, Tab(36); Using "##"; pitcherRatings(I, 2);
+            Print #1, Tab(41); Using "##"; pitcherRatings(I, 3);
+            Print #1, Tab(45); Using "###.#"; pitcherRatings(I, 6);
+            Print #1, Tab(52); Using "###"; pitcherRatings(I, 7);
+            Print #1, Tab(56); Using "###"; pitcherRatings(I, 8);
+            Print #1, Tab(61); Using "###"; pitcherRatings(I, 9);
+            Print #1, Tab(66); Using "##.##"; (pitcherRatings(I, 10)) / 100;
+            Print #1, Tab(73); Using "##"; pitcherRatings(I, 5);
+            Print #1, Tab(79); Using "##"; pitcherRatings(I, 16);
 
-            If pitcherRatings(I, 6) = 0 Then LPrint Tab(85); " 0.00";
-            If pitcherRatings(I, 6) > 0 Then LPrint Tab(85); Using "##.##"; (pitcherRatings(I, 7) * 9) / pitcherRatings(I, 6);
-            If pitcherRatings(I, 6) = 0 Then LPrint Tab(93); " 0.00";
-            If pitcherRatings(I, 6) > 0 Then LPrint Tab(93); Using "##.##"; (pitcherRatings(I, 9) * 9) / pitcherRatings(I, 6);
-            If pitcherRatings(I, 6) = 0 Then LPrint Tab(100); " 0.00";
-            If pitcherRatings(I, 6) > 0 Then LPrint Tab(100); Using "##.##"; (pitcherRatings(I, 8) * 9) / pitcherRatings(I, 6);
+            If pitcherRatings(I, 6) = 0 Then 
+                Print #1, Tab(85); " 0.00";
+            End If
+            If pitcherRatings(I, 6) > 0 Then 
+                Print #1, Tab(85); Using "##.##"; (pitcherRatings(I, 7) * 9) / pitcherRatings(I, 6);
+            End If
+            If pitcherRatings(I, 6) = 0 Then 
+                Print #1, Tab(93); " 0.00";
+            End If
+            If pitcherRatings(I, 6) > 0 Then 
+                Print #1, Tab(93); Using "##.##"; (pitcherRatings(I, 9) * 9) / pitcherRatings(I, 6);
+            End If
+            If pitcherRatings(I, 6) = 0 Then 
+                Print #1, Tab(100); " 0.00";
+            End If
+            If pitcherRatings(I, 6) > 0 Then 
+                Print #1, Tab(100); Using "##.##"; (pitcherRatings(I, 8) * 9) / pitcherRatings(I, 6);
+            End If
 
-            LPrint Tab(109); Using "##"; pitcherRatings(I, 13)
-            LPrint Tab(18); "LGE.";
-            LPrint Tab(25); Using "###"; statP0%(I, 8);
-            LPrint Tab(31); Using "##"; statP0%(I, 6);
-            LPrint Tab(36); Using "##"; statP0%(I, 7);
-            LPrint Tab(41); Using "##"; statP0%(I, 12);
-            LPrint Tab(45); Using "###"; Int(statP0%(I, 0) / 3);
+            Print #1, Tab(109); Using "##"; pitcherRatings(I, 13)
+            Print #1, Tab(18); "LGE.";
+            Print #1, Tab(25); Using "###"; statP0%(I, 8);
+            Print #1, Tab(31); Using "##"; statP0%(I, 6);
+            Print #1, Tab(36); Using "##"; statP0%(I, 7);
+            Print #1, Tab(41); Using "##"; statP0%(I, 12);
+            Print #1, Tab(45); Using "###"; Int(statP0%(I, 0) / 3);
 
-            If statP0%(I, 0) - (Int(statP0%(I, 0) / 3) * 3) > 0 Then LPrint ".";: LPrint Using "#"; statP0%(I, 0) - (Int(statP0%(I, 0) / 3) * 3);
+            If statP0%(I, 0) - (Int(statP0%(I, 0) / 3) * 3) > 0 Then 
+                Print #1, ".";
+                Print #1, Using "#"; statP0%(I, 0) - (Int(statP0%(I, 0) / 3) * 3);
+            End If
 
-            LPrint Tab(52); Using "###"; statP0%(I, 1);
-            LPrint Tab(56); Using "###"; statP0%(I, 4);
-            LPrint Tab(61); Using "###"; statP0%(I, 5);
+            Print #1, Tab(52); Using "###"; statP0%(I, 1);
+            Print #1, Tab(56); Using "###"; statP0%(I, 4);
+            Print #1, Tab(61); Using "###"; statP0%(I, 5);
 
-            I2 = 0
-            If statP0%(I, 0) > 0 Then I2 = Int((((statP0%(I, 3) * 9) / (statP0%(I, 0) / 3)) + .0005) * 100)
+            If statP0%(I, 0) > 0 Then 
+                I2 = Int((((statP0%(I, 3) * 9) / (statP0%(I, 0) / 3)) + .0005) * 100)
+            Else
+                I2 = 0
+            End If
+
             I3 = Int(I2 / 100)
             I4 = I2 - (I3 * 100)
 
-            If statP0%(I, 0) = 0 Or I2 = 0 Then LPrint Tab(66); " 0.00";
-            If statP0%(I, 0) > 0 And I2 > 0 And I2 <= 999 Then LPrint Tab(66); Using "##"; I3;: LPrint ".";
-            If statP0%(I, 0) > 0 And I2 >= 1000 Then LPrint Tab(66); Using "##"; I3;: LPrint ".";
-            If statP0%(I, 0) > 0 And I4 = 0 And I2 > 0 Then LPrint "00";
-            If statP0%(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then LPrint "0";: LPrint Using "#"; I4;
-            If statP0%(I, 0) > 0 And I4 >= 10 And I2 > 0 Then LPrint Using "##"; I4;
+            If statP0%(I, 0) = 0 Or I2 = 0 Then 
+                Print #1, Tab(66); " 0.00";
+            End If
+            If statP0%(I, 0) > 0 And I2 > 0 And I2 <= 999 Then 
+                Print #1, Tab(66); Using "##"; I3;
+                Print #1, ".";
+            End If
+            If statP0%(I, 0) > 0 And I2 >= 1000 Then 
+                Print #1, Tab(66); Using "##"; I3;
+                Print #1, ".";
+            End If
+            If statP0%(I, 0) > 0 And I4 = 0 And I2 > 0 Then 
+                Print #1, "00";
+            End If
+            If statP0%(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then 
+                Print #1, "0";
+                Print #1, Using "#"; I4;
+            End If
+            If statP0%(I, 0) > 0 And I4 >= 10 And I2 > 0 Then 
+                Print #1, Using "##"; I4;
+            End If
 
-            LPrint Tab(73); Using "##"; statP0%(I, 9);
-            LPrint Tab(79); Using "##"; statP0%(I, 10);
+            Print #1, Tab(73); Using "##"; statP0%(I, 9);
+            Print #1, Tab(79); Using "##"; statP0%(I, 10);
 
-            I2 = 0
-            If statP0%(I, 0) > 0 Then I2 = Int((((statP0%(I, 1) * 9) / (statP0%(I, 0) / 3)) + .0005) * 100)
+            If statP0%(I, 0) > 0 Then 
+                I2 = Int((((statP0%(I, 1) * 9) / (statP0%(I, 0) / 3)) + .0005) * 100)
+            Else
+                I2 = 0
+            End If
+
             I3 = Int(I2 / 100)
             I4 = I2 - (I3 * 100)
 
-            If statP0%(I, 0) = 0 Or I2 = 0 Then LPrint Tab(85); " 0.00";
-            If statP0%(I, 0) > 0 And I2 > 0 And I2 <= 999 Then LPrint Tab(85); Using "##"; I3;: LPrint ".";
-            If statP0%(I, 0) > 0 And I2 >= 1000 Then LPrint Tab(85); Using "##"; I3;: LPrint ".";
-            If statP0%(I, 0) > 0 And I4 = 0 And I2 > 0 Then LPrint "00";
-            If statP0%(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then LPrint "0";: LPrint Using "#"; I4;
-            If statP0%(I, 0) > 0 And I4 >= 10 And I2 > 0 Then LPrint Using "##"; I4;
+            If statP0%(I, 0) = 0 Or I2 = 0 Then 
+                Print #1, Tab(85); " 0.00";
+            End If
+            If statP0%(I, 0) > 0 And I2 > 0 And I2 <= 999 Then 
+                Print #1, Tab(85); Using "##"; I3;
+                Print #1, ".";
+            End If
+            If statP0%(I, 0) > 0 And I2 >= 1000 Then 
+                Print #1, Tab(85); Using "##"; I3;
+                Print #1, ".";
+            End If
+            If statP0%(I, 0) > 0 And I4 = 0 And I2 > 0 Then 
+                Print #1, "00";
+            End If
+            If statP0%(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then 
+                Print #1, "0";
+                Print #1, Using "#"; I4;
+            End If
+            If statP0%(I, 0) > 0 And I4 >= 10 And I2 > 0 Then 
+                Print #1, Using "##"; I4;
+            End If
 
             I2 = 0
             If statP0%(I, 0) > 0 Then I2 = Int((((statP0%(I, 5) * 9) / (statP0%(I, 0) / 3)) + .0005) * 100)
             I3 = Int(I2 / 100)
             I4 = I2 - (I3 * 100)
 
-            If statP0%(I, 0) = 0 Or I2 = 0 Then LPrint Tab(93); " 0.00";
-            If statP0%(I, 0) > 0 And I2 > 0 And I2 <= 999 Then LPrint Tab(93); Using "##"; I3;: LPrint ".";
-            If statP0%(I, 0) > 0 And I2 >= 1000 Then LPrint Tab(93); Using "##"; I3;: LPrint ".";
-            If statP0%(I, 0) > 0 And I4 = 0 And I2 > 0 Then LPrint "00";
-            If statP0%(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then LPrint "0";: LPrint Using "#"; I4;
-            If statP0%(I, 0) > 0 And I4 >= 10 And I2 > 0 Then LPrint Using "##"; I4;
+            If statP0%(I, 0) = 0 Or I2 = 0 Then 
+                Print #1, Tab(93); " 0.00";
+            End If
+            If statP0%(I, 0) > 0 And I2 > 0 And I2 <= 999 Then 
+                Print #1, Tab(93); Using "##"; I3;
+                Print #1, ".";
+            End If
+            If statP0%(I, 0) > 0 And I2 >= 1000 Then 
+                Print #1, Tab(93); Using "##"; I3;
+                Print #1, ".";
+            End If
+            If statP0%(I, 0) > 0 And I4 = 0 And I2 > 0 Then 
+                Print #1, "00";
+            End If
+            If statP0%(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then 
+                Print #1, "0";
+                Print #1, Using "#"; I4;
+            End If
+            If statP0%(I, 0) > 0 And I4 >= 10 And I2 > 0 Then 
+                Print #1, Using "##"; I4;
+            End If
 
-            I2 = 0
-            If statP0%(I, 0) > 0 Then I2 = Int((((statP0%(I, 4) * 9) / (statP0%(I, 0) / 3)) + .0005) * 100)
+            If statP0%(I, 0) > 0 Then 
+                I2 = Int((((statP0%(I, 4) * 9) / (statP0%(I, 0) / 3)) + .0005) * 100)
+            Else
+                I2 = 0
+            End If
+            
             I3 = Int(I2 / 100)
             I4 = I2 - (I3 * 100)
 
-            If statP0%(I, 0) = 0 Or I2 = 0 Then LPrint Tab(100); " 0.00";
-            If statP0%(I, 0) > 0 And I2 > 0 And I2 <= 999 Then LPrint Tab(100); Using "##"; I3;: LPrint ".";
-            If statP0%(I, 0) > 0 And I2 >= 1000 Then LPrint Tab(100); Using "##"; I3;: LPrint ".";
-            If statP0%(I, 0) > 0 And I4 = 0 And I2 > 0 Then LPrint "00";
-            If statP0%(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then LPrint "0";: LPrint Using "#"; I4;
-            If statP0%(I, 0) > 0 And I4 >= 10 And I2 > 0 Then LPrint Using "##"; I4;
+            If statP0%(I, 0) = 0 Or I2 = 0 Then 
+                Print #1, Tab(100); " 0.00";
+            End If
+            If statP0%(I, 0) > 0 And I2 > 0 And I2 <= 999 Then
+                Print #1, Tab(100); Using "##"; I3;: Print #1, ".";
+            End If
+            If statP0%(I, 0) > 0 And I2 >= 1000 Then
+                Print #1, Tab(100); Using "##"; I3;: Print #1, ".";
+            End If
+            If statP0%(I, 0) > 0 And I4 = 0 And I2 > 0 Then 
+                Print #1, "00";
+            End If
+            If statP0%(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then 
+                Print #1, "0";: Print #1, Using "#"; I4;
+            End If
+            If statP0%(I, 0) > 0 And I4 >= 10 And I2 > 0 Then 
+                Print #1, Using "##"; I4;
+            End If
 
-            LPrint Tab(109); Using "##"; statP0%(I, 14)
-            LPrint
+            Print #1, Tab(109); Using "##"; statP0%(I, 14)
+            Print #1, 
 
         End If
 
     Next
 
-    LPrint Chr$(12)
+    Close #1
+
+    If printDest = 1 Then
+
+        Open destFile$ For Input As #2
+
+        Do While Not EOF(2)
+            Line Input #2, X$
+            LPrint X$
+        Loop
+
+        Close #2
+
+        LPrint Chr$(12)
+
+        Kill destFile$
+
+    End If
 
 End Sub
 
@@ -473,7 +657,8 @@ Sub Comparisons_Screen (teamName$, backToMenu)
         Do
 
             Color 15
-            Locate 23, 30: Input "ENTER # TO VIEW "; B9
+            Locate 23, 30
+            Input "ENTER # TO VIEW "; B9
 
             startI = 0
 
@@ -609,43 +794,75 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                     Color 1, 11
                     Locate 5, 13: Print Using "###"; batterRatings(I, 3);
 
-                    If batterRatings(I, 4) = 0 Or batterRatings(I, 5) = 0 Then Locate 11, 13: Print " ---.--"
-                    If batterRatings(I, 4) > 0 And batterRatings(I, 5) > 0 Then Locate 11, 13: Print Using "###.##"; batterRatings(I, 4) / batterRatings(I, 5)
+                    If batterRatings(I, 4) = 0 Or batterRatings(I, 5) = 0 Then 
+                        Locate 11, 13: Print " ---.--"
+                    End If
+                    If batterRatings(I, 4) > 0 And batterRatings(I, 5) > 0 Then 
+                        Locate 11, 13: Print Using "###.##"; batterRatings(I, 4) / batterRatings(I, 5)
+                    End If
 
                     Locate 5, 16: Print Using "#####"; batterRatings(I, 4)
 
-                    If batterRatings(I, 4) = 0 Or batterRatings(I, 6) = 0 Then Locate 11, 19: Print " ---.--"
-                    If batterRatings(I, 4) > 0 And batterRatings(I, 6) > 0 Then Locate 11, 19: Print Using "####.##"; batterRatings(I, 4) / batterRatings(I, 6)
+                    If batterRatings(I, 4) = 0 Or batterRatings(I, 6) = 0 Then 
+                        Locate 11, 19: Print " ---.--"
+                    End If
+                    If batterRatings(I, 4) > 0 And batterRatings(I, 6) > 0 Then 
+                        Locate 11, 19: Print Using "####.##"; batterRatings(I, 4) / batterRatings(I, 6)
+                    End If
 
                     Locate 5, 21: Print Using "####"; batterRatings(I, 5)
 
-                    If batterRatings(I, 4) = 0 Or batterRatings(I, 7) = 0 Then Locate 11, 26: Print " ---.--"
-                    If batterRatings(I, 4) > 0 And batterRatings(I, 7) > 0 Then Locate 11, 26: Print Using "####.##"; batterRatings(I, 4) / batterRatings(I, 7)
+                    If batterRatings(I, 4) = 0 Or batterRatings(I, 7) = 0 Then 
+                        Locate 11, 26: Print " ---.--"
+                    End If
+                    If batterRatings(I, 4) > 0 And batterRatings(I, 7) > 0 Then
+                        Locate 11, 26: Print Using "####.##"; batterRatings(I, 4) / batterRatings(I, 7)
+                    End If
 
                     Locate 5, 25: Print Using "####"; batterRatings(I, 6)
 
-                    If batterRatings(I, 4) = 0 Or batterRatings(I, 8) = 0 Then Locate 11, 33: Print " ---.--"
-                    If batterRatings(I, 4) > 0 And batterRatings(I, 8) > 0 Then Locate 11, 33: Print Using "####.##"; batterRatings(I, 4) / batterRatings(I, 8)
+                    If batterRatings(I, 4) = 0 Or batterRatings(I, 8) = 0 Then 
+                        Locate 11, 33: Print " ---.--"
+                    End If
+                    If batterRatings(I, 4) > 0 And batterRatings(I, 8) > 0 Then 
+                        Locate 11, 33: Print Using "####.##"; batterRatings(I, 4) / batterRatings(I, 8)
+                    End If
 
                     Locate 5, 29: Print Using "####"; batterRatings(I, 7)
 
-                    If batterRatings(I, 4) = 0 Or batterRatings(I, 9) = 0 Then Locate 11, 40: Print " ---.--"
-                    If batterRatings(I, 4) > 0 And batterRatings(I, 9) > 0 Then Locate 11, 40: Print Using "####.##"; batterRatings(I, 4) / batterRatings(I, 9)
+                    If batterRatings(I, 4) = 0 Or batterRatings(I, 9) = 0 Then 
+                        Locate 11, 40: Print " ---.--"
+                    End If
+                    If batterRatings(I, 4) > 0 And batterRatings(I, 9) > 0 Then 
+                        Locate 11, 40: Print Using "####.##"; batterRatings(I, 4) / batterRatings(I, 9)
+                    End If
 
                     Locate 5, 33: Print Using "####"; batterRatings(I, 8)
 
-                    If batterRatings(I, 4) = 0 Or batterRatings(I, 10) = 0 Then Locate 11, 47: Print " ---.--"
-                    If batterRatings(I, 4) > 0 And batterRatings(I, 10) > 0 Then Locate 11, 47: Print Using "####.##"; batterRatings(I, 4) / batterRatings(I, 10)
+                    If batterRatings(I, 4) = 0 Or batterRatings(I, 10) = 0 Then
+                        Locate 11, 47: Print " ---.--"
+                    End If
+                    If batterRatings(I, 4) > 0 And batterRatings(I, 10) > 0 Then 
+                        Locate 11, 47: Print Using "####.##"; batterRatings(I, 4) / batterRatings(I, 10)
+                    End If
 
                     Locate 5, 37: Print Using "####"; batterRatings(I, 9)
 
-                    If batterRatings(I, 4) = 0 Or batterRatings(I, 11) = 0 Then Locate 11, 54: Print " ---.--"
-                    If batterRatings(I, 4) > 0 And batterRatings(I, 11) > 0 Then Locate 11, 54: Print Using "####.##"; batterRatings(I, 4) / batterRatings(I, 11)
+                    If batterRatings(I, 4) = 0 Or batterRatings(I, 11) = 0 Then
+                        Locate 11, 54: Print " ---.--"
+                    End If
+                    If batterRatings(I, 4) > 0 And batterRatings(I, 11) > 0 Then
+                        Locate 11, 54: Print Using "####.##"; batterRatings(I, 4) / batterRatings(I, 11)
+                    End If
 
                     Locate 5, 41: Print Using "#####"; batterRatings(I, 10)
 
-                    If batterRatings(I, 4) = 0 Or batterRatings(I, 12) = 0 Then Locate 11, 61: Print " ---.--"
-                    If batterRatings(I, 4) > 0 And batterRatings(I, 12) > 0 Then Locate 11, 61: Print Using "####.##"; batterRatings(I, 4) / batterRatings(I, 12)
+                    If batterRatings(I, 4) = 0 Or batterRatings(I, 12) = 0 Then
+                        Locate 11, 61: Print " ---.--"
+                    End If
+                    If batterRatings(I, 4) > 0 And batterRatings(I, 12) > 0 Then 
+                        Locate 11, 61: Print Using "####.##"; batterRatings(I, 4) / batterRatings(I, 12)
+                    End If
 
                     Locate 5, 46: Print Using "####"; batterRatings(I, 11)
                     Locate 5, 50: Print Using "####"; batterRatings(I, 12)
@@ -757,43 +974,75 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                     Color 14, 11
                     Locate 6, 13: Print Using "###"; statB0%(I, 14);
 
-                    If statB0%(I, 0) = 0 Or statB0%(I, 2) = 0 Then Locate 12, 13: Print "---.--"
-                    If statB0%(I, 0) > 0 And statB0%(I, 2) > 0 Then Locate 12, 13: Print Using "###.##"; statB0%(I, 0) / statB0%(I, 2)
+                    If statB0%(I, 0) = 0 Or statB0%(I, 2) = 0 Then 
+                        Locate 12, 13: Print "---.--"
+                    End If
+                    If statB0%(I, 0) > 0 And statB0%(I, 2) > 0 Then 
+                        Locate 12, 13: Print Using "###.##"; statB0%(I, 0) / statB0%(I, 2)
+                    End If
 
                     Locate 6, 16: Print Using "#####"; statB0%(I, 0)
 
-                    If statB0%(I, 0) = 0 Or statB0%(I, 1) = 0 Then Locate 12, 19: Print " ---.--"
-                    If statB0%(I, 0) > 0 And statB0%(I, 1) > 0 Then Locate 12, 19: Print Using "####.##"; statB0%(I, 0) / statB0%(I, 1)
+                    If statB0%(I, 0) = 0 Or statB0%(I, 1) = 0 Then 
+                        Locate 12, 19: Print " ---.--"
+                    End If
+                    If statB0%(I, 0) > 0 And statB0%(I, 1) > 0 Then 
+                        Locate 12, 19: Print Using "####.##"; statB0%(I, 0) / statB0%(I, 1)
+                    End If
 
                     Locate 6, 21: Print Using "####"; statB0%(I, 2)
 
-                    If statB0%(I, 0) = 0 Or statB0%(I, 4) = 0 Then Locate 12, 26: Print " ---.--"
-                    If statB0%(I, 0) > 0 And statB0%(I, 4) > 0 Then Locate 12, 26: Print Using "####.##"; statB0%(I, 0) / statB0%(I, 4)
+                    If statB0%(I, 0) = 0 Or statB0%(I, 4) = 0 Then 
+                        Locate 12, 26: Print " ---.--"
+                    End If
+                    If statB0%(I, 0) > 0 And statB0%(I, 4) > 0 Then 
+                        Locate 12, 26: Print Using "####.##"; statB0%(I, 0) / statB0%(I, 4)
+                    End If
 
                     Locate 6, 25: Print Using "####"; statB0%(I, 1)
 
-                    If statB0%(I, 0) = 0 Or statB0%(I, 5) = 0 Then Locate 12, 33: Print " ---.--"
-                    If statB0%(I, 0) > 0 And statB0%(I, 5) > 0 Then Locate 12, 33: Print Using "####.##"; statB0%(I, 0) / statB0%(I, 5)
+                    If statB0%(I, 0) = 0 Or statB0%(I, 5) = 0 Then 
+                        Locate 12, 33: Print " ---.--"
+                    End If
+                    If statB0%(I, 0) > 0 And statB0%(I, 5) > 0 Then 
+                        Locate 12, 33: Print Using "####.##"; statB0%(I, 0) / statB0%(I, 5)
+                    End If
 
                     Locate 6, 29: Print Using "####"; statB0%(I, 4)
 
-                    If statB0%(I, 0) = 0 Or statB0%(I, 6) = 0 Then Locate 12, 40: Print " ---.--"
-                    If statB0%(I, 0) > 0 And statB0%(I, 6) > 0 Then Locate 12, 40: Print Using "####.##"; statB0%(I, 0) / statB0%(I, 6)
+                    If statB0%(I, 0) = 0 Or statB0%(I, 6) = 0 Then 
+                        Locate 12, 40: Print " ---.--"
+                    End If
+                    If statB0%(I, 0) > 0 And statB0%(I, 6) > 0 Then 
+                        Locate 12, 40: Print Using "####.##"; statB0%(I, 0) / statB0%(I, 6)
+                    End If
 
                     Locate 6, 33: Print Using "####"; statB0%(I, 5)
 
-                    If statB0%(I, 0) = 0 Or statB0%(I, 3) = 0 Then Locate 12, 47: Print " ---.--"
-                    If statB0%(I, 0) > 0 And statB0%(I, 3) > 0 Then Locate 12, 47: Print Using "####.##"; statB0%(I, 0) / statB0%(I, 3)
+                    If statB0%(I, 0) = 0 Or statB0%(I, 3) = 0 Then 
+                        Locate 12, 47: Print " ---.--"
+                    End If
+                    If statB0%(I, 0) > 0 And statB0%(I, 3) > 0 Then 
+                        Locate 12, 47: Print Using "####.##"; statB0%(I, 0) / statB0%(I, 3)
+                    End If
 
                     Locate 6, 37: Print Using "####"; statB0%(I, 6)
 
-                    If statB0%(I, 0) = 0 Or statB0%(I, 7) = 0 Then Locate 12, 54: Print " ---.--"
-                    If statB0%(I, 0) > 0 And statB0%(I, 7) > 0 Then Locate 12, 54: Print Using "####.##"; statB0%(I, 0) / statB0%(I, 7)
+                    If statB0%(I, 0) = 0 Or statB0%(I, 7) = 0 Then 
+                        Locate 12, 54: Print " ---.--"
+                    End If
+                    If statB0%(I, 0) > 0 And statB0%(I, 7) > 0 Then 
+                        Locate 12, 54: Print Using "####.##"; statB0%(I, 0) / statB0%(I, 7)
+                    End If
 
                     Locate 6, 41: Print Using "#####"; statB0%(I, 3)
 
-                    If statB0%(I, 0) = 0 Or statB0%(I, 8) = 0 Then Locate 12, 61: Print " ---.--"
-                    If statB0%(I, 0) > 0 And statB0%(I, 8) > 0 Then Locate 12, 61: Print Using "####.##"; statB0%(I, 0) / statB0%(I, 8)
+                    If statB0%(I, 0) = 0 Or statB0%(I, 8) = 0 Then 
+                        Locate 12, 61: Print " ---.--"
+                    End If
+                    If statB0%(I, 0) > 0 And statB0%(I, 8) > 0 Then 
+                        Locate 12, 61: Print Using "####.##"; statB0%(I, 0) / statB0%(I, 8)
+                    End If
 
                     Locate 6, 46: Print Using "####"; statB0%(I, 7)
                     Locate 6, 50: Print Using "####"; statB0%(I, 8)
@@ -831,17 +1080,31 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                         I4 = Int(((statB0%(I, 1) + statB0%(I, 7)) / (statB0%(I, 7) + statB0%(I, 0)) + .0005) * 1000)
                     End If
 
-                    If statB0%(I, 0) = 0 Or I2 = 0 Then Locate 6, 62: Print ".000";: Print " "
+                    If statB0%(I, 0) = 0 Or I2 = 0 Then 
+                        Locate 6, 62: Print ".000";: Print " "
+                    End If
 
-                    If I2 > 0 And I2 < 100 Then Locate 6, 62: Print ".0";: Print Using "##"; I2;: Print " "
-                    If I2 >= 100 Then Locate 6, 62: Print ".";: Print Using "###"; I2;: Print " "
+                    If I2 > 0 And I2 < 100 Then 
+                        Locate 6, 62: Print ".0";: Print Using "##"; I2;: Print " "
+                    End If
+                    If I2 >= 100 Then 
+                        Locate 6, 62: Print ".";: Print Using "###"; I2;: Print " "
+                    End If
 
-                    If statB0%(I, 0) = 0 Or I3 = 0 Then Locate 6, 67: Print ".000";: Print " "
+                    If statB0%(I, 0) = 0 Or I3 = 0 Then 
+                        Locate 6, 67: Print ".000";: Print " "
+                    End If
 
-                    If I3 > 0 And I3 < 100 Then Locate 6, 67: Print ".0";: Print Using "##"; I3;: Print " "
-                    If I3 >= 100 Then Locate 6, 67: Print ".";: Print Using "###"; I3;: Print " "
+                    If I3 > 0 And I3 < 100 Then 
+                        Locate 6, 67: Print ".0";: Print Using "##"; I3;: Print " "
+                    End If
+                    If I3 >= 100 Then 
+                        Locate 6, 67: Print ".";: Print Using "###"; I3;: Print " "
+                    End If
 
-                    If statB0%(I, 0) = 0 Or I4 = 0 Then Locate 6, 72: Print ".000";: Color 7, 0: Print String$(2, 177)
+                    If statB0%(I, 0) = 0 Or I4 = 0 Then 
+                        Locate 6, 72: Print ".000";: Color 7, 0: Print String$(2, 177)
+                    End If
 
                     Color 14, 11
                     If I4 > 0 And I4 < 100 Then 
@@ -1003,16 +1266,32 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                         Locate , 51: Print Using "#####"; pitcherRatings(I, 9);:
                         Locate , 56: Print Using "###.##"; (pitcherRatings(I, 10)) / 100;:
                         Locate , 62: Print Using "####"; pitcherRatings(I, 5);:
-                        Locate , 66: Print Using "###"; pitcherRatings(I, 16);: Color 7, 0: Print String$(2, 177)
+                        Locate , 66: Print Using "###"; pitcherRatings(I, 16);
+                        
+                        Color 7, 0: Print String$(2, 177)
 
                         Color 14, 12
                         
-                        If pitcherRatings(I, 6) = 0 Then Locate 10, 14: Print "  0.00";
-                        If pitcherRatings(I, 6) > 0 Then Locate 10, 14: Print Using "###.##"; (pitcherRatings(I, 7) * 9) / pitcherRatings(I, 6)
-                        If pitcherRatings(I, 6) = 0 Then Locate 10, 20: Print "    0.00";
-                        If pitcherRatings(I, 6) > 0 Then Locate 10, 20: Print Using "#####.##"; (pitcherRatings(I, 9) * 9) / pitcherRatings(I, 6)
-                        If pitcherRatings(I, 6) = 0 Then Locate 10, 28: Print "    0.00";
-                        If pitcherRatings(I, 6) > 0 Then Locate 10, 28: Print Using "#####.##"; (pitcherRatings(I, 8) * 9) / pitcherRatings(I, 6)
+                        If pitcherRatings(I, 6) = 0 Then 
+                            Locate 10, 14: Print "  0.00";
+                        End If
+                        If pitcherRatings(I, 6) > 0 Then 
+                            Locate 10, 14: Print Using "###.##"; (pitcherRatings(I, 7) * 9) / pitcherRatings(I, 6)
+                        End If
+
+                        If pitcherRatings(I, 6) = 0 Then 
+                            Locate 10, 20: Print "    0.00";
+                        End If
+                        If pitcherRatings(I, 6) > 0 Then 
+                            Locate 10, 20: Print Using "#####.##"; (pitcherRatings(I, 9) * 9) / pitcherRatings(I, 6)
+                        End If
+
+                        If pitcherRatings(I, 6) = 0 Then 
+                            Locate 10, 28: Print "    0.00";
+                        End If
+                        If pitcherRatings(I, 6) > 0 Then 
+                            Locate 10, 28: Print Using "#####.##"; (pitcherRatings(I, 8) * 9) / pitcherRatings(I, 6)
+                        End If
 
                         Locate 10, 36
                         Print Using "########"; pitcherRatings(I, 13);: Color 7, 0: Print String$(2, 177)
@@ -1024,24 +1303,45 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                         Locate , 27: Print Using "######"; statP0%(I, 12);:
                         Locate , 33: Print Using "#####"; Int(statP0%(I, 0) / 3);
 
-                        If statP0%(I, 0) - (Int(statP0%(I, 0) / 3) * 3) = 0 Then Print ".0";
-                        If statP0%(I, 0) - (Int(statP0%(I, 0) / 3) * 3) > 0 Then Print ".";: Print Using "#"; statP0%(I, 0) - (Int(statP0%(I, 0) / 3) * 3);
+                        If statP0%(I, 0) - (Int(statP0%(I, 0) / 3) * 3) = 0 Then
+							Print ".0";
+                        End If
+                        If statP0%(I, 0) - (Int(statP0%(I, 0) / 3) * 3) > 0 Then
+							Print ".";: Print Using "#"; statP0%(I, 0) - (Int(statP0%(I, 0) / 3) * 3);
+                        End If
 
                         Locate , 40: Print Using "#####"; statP0%(I, 1);:
                         Locate , 45: Print Using "######"; statP0%(I, 4);:
                         Locate , 51: Print Using "#####"; statP0%(I, 5);:
 
-                        I2 = 0
-                        If statP0%(I, 0) > 0 Then I2 = Int((((statP0%(I, 3) * 9) / (statP0%(I, 0) / 3)) + .0005) * 100)
+                        If statP0%(I, 0) > 0 Then 
+                            I2 = Int((((statP0%(I, 3) * 9) / (statP0%(I, 0) / 3)) + .0005) * 100)
+                        Else
+                            I2 = 0
+                        End If
+                        
                         I3 = Int(I2 / 100)
                         I4 = I2 - (I3 * 100)
 
-                        If statP0%(I, 0) = 0 Or I2 = 0 Then Locate 6, 56: Print "  0.00";
-                        If statP0%(I, 0) > 0 And I2 > 0 And I2 <= 999 Then Locate 6, 56: Print Using "###"; I3;: Print ".";
-                        If statP0%(I, 0) > 0 And I2 >= 1000 Then Locate 6, 56: Print Using "###"; I3;: Print ".";
-                        If statP0%(I, 0) > 0 And I4 = 0 And I2 > 0 Then Print "00";
-                        If statP0%(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then Print "0";: Print Using "#"; I4;
-                        If statP0%(I, 0) > 0 And I4 >= 10 And I2 > 0 Then Print Using "##"; I4;
+                        If statP0%(I, 0) = 0 Or I2 = 0 Then 
+                            Locate 6, 56: Print "  0.00";
+                        End If
+                        If statP0%(I, 0) > 0 And I2 > 0 And I2 <= 999 Then 
+                            Locate 6, 56: Print Using "###"; I3;: Print ".";
+                        End If
+                        If statP0%(I, 0) > 0 And I2 >= 1000 Then 
+                            Locate 6, 56: Print Using "###"; I3;: Print ".";
+                        End If
+                        
+                        If statP0%(I, 0) > 0 And I4 = 0 And I2 > 0 Then
+							Print "00";
+                        End If
+                        If statP0%(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then
+							Print "0";: Print Using "#"; I4;
+                        End If
+                        If statP0%(I, 0) > 0 And I4 >= 10 And I2 > 0 Then
+							Print Using "##"; I4;
+                        End If
 
                         Locate 6, 62
                         Print Using "####"; statP0%(I, 9);
@@ -1057,36 +1357,76 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                         I3 = Int(I2 / 100)
                         I4 = I2 - (I3 * 100)
 
-                        If statP0%(I, 0) = 0 Or I2 = 0 Then Locate 11, 14: Print "  0.00";
-                        If statP0%(I, 0) > 0 And I2 > 0 And I2 <= 999 Then Locate 11, 14: Print Using "###"; I3;: Print ".";
-                        If statP0%(I, 0) > 0 And I2 >= 1000 Then Locate 11, 14: Print Using "###"; I3;: Print ".";
-                        If statP0%(I, 0) > 0 And I4 = 0 And I2 > 0 Then Print "00";
-                        If statP0%(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then Print "0";: Print Using "#"; I4;
-                        If statP0%(I, 0) > 0 And I4 >= 10 And I2 > 0 Then Print Using "##"; I4;
+                        If statP0%(I, 0) = 0 Or I2 = 0 Then 
+                            Locate 11, 14: Print "  0.00";
+                        End If
+                        If statP0%(I, 0) > 0 And I2 > 0 And I2 <= 999 Then 
+                            Locate 11, 14: Print Using "###"; I3;: Print ".";
+                        End If
+                        If statP0%(I, 0) > 0 And I2 >= 1000 Then 
+                            Locate 11, 14: Print Using "###"; I3;: Print ".";
+                        End If
+                        If statP0%(I, 0) > 0 And I4 = 0 And I2 > 0 Then
+							Print "00";
+                        End If
+                        If statP0%(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then
+							Print "0";: Print Using "#"; I4;
+                        End If
+                        If statP0%(I, 0) > 0 And I4 >= 10 And I2 > 0 Then
+							Print Using "##"; I4;
+                        End If
 
                         I2 = 0
                         If statP0%(I, 0) > 0 Then I2 = Int((((statP0%(I, 5) * 9) / (statP0%(I, 0) / 3)) + .0005) * 100)
                         I3 = Int(I2 / 100)
                         I4 = I2 - (I3 * 100)
 
-                        If statP0%(I, 0) = 0 Or I2 = 0 Then Locate 11, 20: Print "    0.00";
-                        If statP0%(I, 0) > 0 And I2 > 0 And I2 <= 999 Then Locate 11, 20: Print Using "#####"; I3;: Print ".";
-                        If statP0%(I, 0) > 0 And I2 >= 1000 Then Locate 11, 20: Print Using "#####"; I3;: Print ".";
-                        If statP0%(I, 0) > 0 And I4 = 0 And I2 > 0 Then Print "00";
-                        If statP0%(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then Print "0";: Print Using "#"; I4;
-                        If statP0%(I, 0) > 0 And I4 >= 10 And I2 > 0 Then Print Using "##"; I4;
+                        If statP0%(I, 0) = 0 Or I2 = 0 Then 
+                            Locate 11, 20: Print "    0.00";
+                        End If
+                        If statP0%(I, 0) > 0 And I2 > 0 And I2 <= 999 Then 
+                            Locate 11, 20: Print Using "#####"; I3;: Print ".";
+                        End If
+                        If statP0%(I, 0) > 0 And I2 >= 1000 Then 
+                            Locate 11, 20: Print Using "#####"; I3;: Print ".";
+                        End If
+                        If statP0%(I, 0) > 0 And I4 = 0 And I2 > 0 Then
+							Print "00";
+                        End If
+                        If statP0%(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then
+							Print "0";: Print Using "#"; I4;
+                        End If
+                        If statP0%(I, 0) > 0 And I4 >= 10 And I2 > 0 Then
+							Print Using "##"; I4;
+                        End If
 
-                        I2 = 0
-                        If statP0%(I, 0) > 0 Then I2 = Int((((statP0%(I, 4) * 9) / (statP0%(I, 0) / 3)) + .0005) * 100)
+                        If statP0%(I, 0) > 0 Then
+                            I2 = Int((((statP0%(I, 4) * 9) / (statP0%(I, 0) / 3)) + .0005) * 100)
+                        Else
+                            I2 = 0
+                        End If
                         I3 = Int(I2 / 100)
                         I4 = I2 - (I3 * 100)
 
-                        If statP0%(I, 0) = 0 Or I2 = 0 Then Locate 11, 28: Print "    0.00";
-                        If statP0%(I, 0) > 0 And I2 > 0 And I2 <= 999 Then Locate 11, 28: Print Using "#####"; I3;: Print ".";
-                        If statP0%(I, 0) > 0 And I2 >= 1000 Then Locate 11, 28: Print Using "#####"; I3;: Print ".";
-                        If statP0%(I, 0) > 0 And I4 = 0 And I2 > 0 Then Print "00";
-                        If statP0%(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then Print "0";: Print Using "#"; I4;
-                        If statP0%(I, 0) > 0 And I4 >= 10 And I2 > 0 Then Print Using "##"; I4;
+                        If statP0%(I, 0) = 0 Or I2 = 0 Then 
+                            Locate 11, 28: Print "    0.00";
+                        End If
+                        If statP0%(I, 0) > 0 And I2 > 0 And I2 <= 999 Then 
+                            Locate 11, 28: Print Using "#####"; I3;: Print ".";
+                        End If
+
+                        If statP0%(I, 0) > 0 And I2 >= 1000 Then 
+                            Locate 11, 28: Print Using "#####"; I3;: Print ".";
+                        End If
+                        If statP0%(I, 0) > 0 And I4 = 0 And I2 > 0 Then
+							Print "00";
+                        End If
+                        If statP0%(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then
+							Print "0";: Print Using "#"; I4;
+                        End If
+                        If statP0%(I, 0) > 0 And I4 >= 10 And I2 > 0 Then
+							Print Using "##"; I4;
+                        End If
 
                         Locate 11, 36
                         Print Using "########"; statP0%(I, 14);
@@ -1126,80 +1466,175 @@ End Sub
 
 
 '----------------------------------------
-'   TeamComparison_Printer Subroutine
+'   TeamComparison_Report Subroutine
 '----------------------------------------
 'This subroutine focuses on the formatting
 'of team stats for comparison. The stats
 'are output to the default printer
-Sub TeamComparison_Printer (teamName$)
+Sub TeamComparison_Report (printDest, destFile$, teamName$)
 
     Shared batterNames$()
     Shared batterRatings(), statB0%()
 
-    LPrint Chr$(12)
-    LPrint "STAT COMPARISONS FOR "; teamName$
-    LPrint
-    LPrint
-    LPrint Tab(20); " [ - - - - - - - - - - AT BATS PER - - - - - - - - - - - ]"
-    LPrint "BATTER";
-    LPrint Tab(26); "R";
-    LPrint Tab(33); "H";
-    LPrint Tab(40); "2B";
-    LPrint Tab(47); "3B";
-    LPrint Tab(54); "HR";
-    LPrint Tab(61); "RBI";
-    LPrint Tab(68); "BB";
-    LPrint Tab(75); "SO";
-    LPrint Tab(79); "SUCCESS % - SB"
+    Print #1, Chr$(12)
+    Print #1, "STAT COMPARISONS FOR "; teamName$
+    Print #1, 
+    Print #1, 
+    Print #1, Tab(20); " [ - - - - - - - - - - AT BATS PER - - - - - - - - - - - ]"
+    Print #1, "BATTER";
+    Print #1, Tab(26); "R";
+    Print #1, Tab(33); "H";
+    Print #1, Tab(40); "2B";
+    Print #1, Tab(47); "3B";
+    Print #1, Tab(54); "HR";
+    Print #1, Tab(61); "RBI";
+    Print #1, Tab(68); "BB";
+    Print #1, Tab(75); "SO";
+    Print #1, Tab(79); "SUCCESS % - SB"
 
     For I = 0 To 16
 
         If batterNames$(I) <> "XXX" And batterNames$(I) = "END" And batterNames$(I) <> "" Then
 
-            LPrint Left$(batterNames$(I), 14);
-            LPrint Tab(16); "REG.";
+            Print #1, Left$(batterNames$(I), 14);
+            Print #1, Tab(16); "REG.";
 
-            If batterRatings(I, 4) = 0 Or batterRatings(I, 5) = 0 Then LPrint Tab(21); "---.--";
-            If batterRatings(I, 4) > 0 And batterRatings(I, 5) > 0 Then LPrint Tab(21); Using "###.##"; batterRatings(I, 4) / batterRatings(I, 5);
-            If batterRatings(I, 4) = 0 Or batterRatings(I, 6) = 0 Then LPrint Tab(28); "---.--";
-            If batterRatings(I, 4) > 0 And batterRatings(I, 6) > 0 Then LPrint Tab(28); Using "###.##"; batterRatings(I, 4) / batterRatings(I, 6);
-            If batterRatings(I, 4) = 0 Or batterRatings(I, 7) = 0 Then LPrint Tab(36); "---.--";
-            If batterRatings(I, 4) > 0 And batterRatings(I, 7) > 0 Then LPrint Tab(36); Using "###.##"; batterRatings(I, 4) / batterRatings(I, 7);
-            If batterRatings(I, 4) = 0 Or batterRatings(I, 8) = 0 Then LPrint Tab(43); "---.--";
-            If batterRatings(I, 4) > 0 And batterRatings(I, 8) > 0 Then LPrint Tab(43); Using "###.##"; batterRatings(I, 4) / batterRatings(I, 8);
-            If batterRatings(I, 4) = 0 Or batterRatings(I, 9) = 0 Then LPrint Tab(50); "---.--";
-            If batterRatings(I, 4) > 0 And batterRatings(I, 9) > 0 Then LPrint Tab(50); Using "###.##"; batterRatings(I, 4) / batterRatings(I, 9);
-            If batterRatings(I, 4) = 0 Or batterRatings(I, 10) = 0 Then LPrint Tab(58); "---.--";
-            If batterRatings(I, 4) > 0 And batterRatings(I, 10) > 0 Then LPrint Tab(58); Using "###.##"; batterRatings(I, 4) / batterRatings(I, 10);
-            If batterRatings(I, 4) = 0 Or batterRatings(I, 11) = 0 Then LPrint Tab(64); "---.--";
-            If batterRatings(I, 4) > 0 And batterRatings(I, 11) > 0 Then LPrint Tab(64); Using "###.##"; batterRatings(I, 4) / batterRatings(I, 11);
-            If batterRatings(I, 4) = 0 Or batterRatings(I, 12) = 0 Then LPrint Tab(71); "---.--";
-            If batterRatings(I, 4) > 0 And batterRatings(I, 12) > 0 Then LPrint Tab(71); Using "###.##"; batterRatings(I, 4) / batterRatings(I, 12);
-            If batterRatings(I, 13) + batterRatings(I, 14) = 0 Or batterRatings(I, 13) = 0 Then LPrint Tab(83); " 00%";
-            If batterRatings(I, 13) > 0 And batterRatings(I, 14) = 0 Then LPrint Tab(83); "100%";
-            If batterRatings(I, 13) > 0 And batterRatings(I, 14) > 0 Then LPrint Tab(83); Using "###"; (batterRatings(I, 13) / (batterRatings(I, 13) + batterRatings(I, 14))) * 100;: LPrint Tab(86); "%"
+            If batterRatings(I, 4) = 0 Or batterRatings(I, 5) = 0 Then 
+                Print #1, Tab(21); "---.--";
+            End If
+            If batterRatings(I, 4) > 0 And batterRatings(I, 5) > 0 Then 
+                Print #1, Tab(21); Using "###.##"; batterRatings(I, 4) / batterRatings(I, 5);
+            End If
 
-            LPrint Tab(16); "LGE.";
+            If batterRatings(I, 4) = 0 Or batterRatings(I, 6) = 0 Then
+                Print #1, Tab(28); "---.--";
+            End If
+            If batterRatings(I, 4) > 0 And batterRatings(I, 6) > 0 Then 
+                Print #1, Tab(28); Using "###.##"; batterRatings(I, 4) / batterRatings(I, 6);
+            End If
 
-            If statB0%(I, 0) = 0 Or statB0%(I, 2) = 0 Then LPrint Tab(21); "---.--";
-            If statB0%(I, 0) > 0 And statB0%(I, 2) > 0 Then LPrint Tab(21); Using "###.##"; statB0%(I, 0) / statB0%(I, 2);
-            If statB0%(I, 0) = 0 Or statB0%(I, 1) = 0 Then LPrint Tab(28); "---.--";
-            If statB0%(I, 0) > 0 And statB0%(I, 1) > 0 Then LPrint Tab(28); Using "###.##"; statB0%(I, 0) / statB0%(I, 1);
-            If statB0%(I, 0) = 0 Or statB0%(I, 4) = 0 Then LPrint Tab(36); "---.--";
-            If statB0%(I, 0) > 0 And statB0%(I, 4) > 0 Then LPrint Tab(36); Using "###.##"; statB0%(I, 0) / statB0%(I, 4);
-            If statB0%(I, 0) = 0 Or statB0%(I, 5) = 0 Then LPrint Tab(43); "---.--";
-            If statB0%(I, 0) > 0 And statB0%(I, 5) > 0 Then LPrint Tab(43); Using "###.##"; statB0%(I, 0) / statB0%(I, 5);
-            If statB0%(I, 0) = 0 Or statB0%(I, 6) = 0 Then LPrint Tab(50); "---.--";
-            If statB0%(I, 0) > 0 And statB0%(I, 6) > 0 Then LPrint Tab(50); Using "###.##"; statB0%(I, 0) / statB0%(I, 6);
-            If statB0%(I, 0) = 0 Or statB0%(I, 3) = 0 Then LPrint Tab(58); "---.--";
-            If statB0%(I, 0) > 0 And statB0%(I, 3) > 0 Then LPrint Tab(58); Using "###.##"; statB0%(I, 0) / statB0%(I, 3);
-            If statB0%(I, 0) = 0 Or statB0%(I, 7) = 0 Then LPrint Tab(64); "---.--";
-            If statB0%(I, 0) > 0 And statB0%(I, 7) > 0 Then LPrint Tab(64); Using "###.##"; statB0%(I, 0) / statB0%(I, 7);
-            If statB0%(I, 0) = 0 Or statB0%(I, 8) = 0 Then LPrint Tab(71); "---.--";
-            If statB0%(I, 0) > 0 And statB0%(I, 8) > 0 Then LPrint Tab(71); Using "###.##"; statB0%(I, 0) / statB0%(I, 8);
-            If statB0%(I, 9) + statB0%(I, 10) = 0 Or statB0%(I, 9) = 0 Then LPrint Tab(83); " 00%"
-            If statB0%(I, 9) > 0 And statB0%(I, 10) = 0 Then LPrint Tab(83); "100%"
-            If statB0%(I, 9) > 0 And statB0%(I, 10) > 0 Then LPrint Tab(83); Using "###"; (statB0%(I, 9) / (statB0%(I, 10) + statB0%(I, 9))) * 100;: LPrint Tab(86); "%"
+            If batterRatings(I, 4) = 0 Or batterRatings(I, 7) = 0 Then
+                Print #1, Tab(36); "---.--";
+            End If
+            If batterRatings(I, 4) > 0 And batterRatings(I, 7) > 0 Then
+                Print #1, Tab(36); Using "###.##"; batterRatings(I, 4) / batterRatings(I, 7);
+            End If
+
+            If batterRatings(I, 4) = 0 Or batterRatings(I, 8) = 0 Then 
+                Print #1, Tab(43); "---.--";
+            End If
+            If batterRatings(I, 4) > 0 And batterRatings(I, 8) > 0 Then 
+                Print #1, Tab(43); Using "###.##"; batterRatings(I, 4) / batterRatings(I, 8);
+            End If
+
+            If batterRatings(I, 4) = 0 Or batterRatings(I, 9) = 0 Then 
+                Print #1, Tab(50); "---.--";
+            End If
+            If batterRatings(I, 4) > 0 And batterRatings(I, 9) > 0 Then
+                Print #1, Tab(50); Using "###.##"; batterRatings(I, 4) / batterRatings(I, 9);
+            End If
+
+            If batterRatings(I, 4) = 0 Or batterRatings(I, 10) = 0 Then 
+                Print #1, Tab(58); "---.--";
+            End If
+            If batterRatings(I, 4) > 0 And batterRatings(I, 10) > 0 Then 
+                Print #1, Tab(58); Using "###.##"; batterRatings(I, 4) / batterRatings(I, 10);
+            End If
+
+            If batterRatings(I, 4) = 0 Or batterRatings(I, 11) = 0 Then 
+                Print #1, Tab(64); "---.--";
+            End If
+            If batterRatings(I, 4) > 0 And batterRatings(I, 11) > 0 Then 
+                Print #1, Tab(64); Using "###.##"; batterRatings(I, 4) / batterRatings(I, 11);
+            End If
+
+            If batterRatings(I, 4) = 0 Or batterRatings(I, 12) = 0 Then 
+                Print #1, Tab(71); "---.--";
+            End If
+            If batterRatings(I, 4) > 0 And batterRatings(I, 12) > 0 Then 
+                Print #1, Tab(71); Using "###.##"; batterRatings(I, 4) / batterRatings(I, 12);
+            End If
+
+            If batterRatings(I, 13) + batterRatings(I, 14) = 0 Or batterRatings(I, 13) = 0 Then 
+                Print #1, Tab(83); " 00%";
+            End If
+            If batterRatings(I, 13) > 0 And batterRatings(I, 14) = 0 Then
+                Print #1, Tab(83); "100%";
+            End If
+            If batterRatings(I, 13) > 0 And batterRatings(I, 14) > 0 Then 
+                Print #1, Tab(83); Using "###"; (batterRatings(I, 13) / (batterRatings(I, 13) + batterRatings(I, 14))) * 100;
+                Print #1, Tab(86); "%"
+            End If
+
+            Print #1, Tab(16); "LGE.";
+
+            If statB0%(I, 0) = 0 Or statB0%(I, 2) = 0 Then
+                Print #1, Tab(21); "---.--";
+            End If
+            If statB0%(I, 0) > 0 And statB0%(I, 2) > 0 Then 
+                Print #1, Tab(21); Using "###.##"; statB0%(I, 0) / statB0%(I, 2);
+            End If
+
+            If statB0%(I, 0) = 0 Or statB0%(I, 1) = 0 Then 
+                Print #1, Tab(28); "---.--";
+            End If
+            If statB0%(I, 0) > 0 And statB0%(I, 1) > 0 Then 
+                Print #1, Tab(28); Using "###.##"; statB0%(I, 0) / statB0%(I, 1);
+            End If
+
+            If statB0%(I, 0) = 0 Or statB0%(I, 4) = 0 Then 
+                Print #1, Tab(36); "---.--";
+            End If
+            If statB0%(I, 0) > 0 And statB0%(I, 4) > 0 Then 
+                Print #1, Tab(36); Using "###.##"; statB0%(I, 0) / statB0%(I, 4);
+            End If
+
+            If statB0%(I, 0) = 0 Or statB0%(I, 5) = 0 Then 
+                Print #1, Tab(43); "---.--";
+            End If
+            If statB0%(I, 0) > 0 And statB0%(I, 5) > 0 Then
+                Print #1, Tab(43); Using "###.##"; statB0%(I, 0) / statB0%(I, 5);
+            End If
+
+            If statB0%(I, 0) = 0 Or statB0%(I, 6) = 0 Then 
+                Print #1, Tab(50); "---.--";
+            End If
+            If statB0%(I, 0) > 0 And statB0%(I, 6) > 0 Then 
+                Print #1, Tab(50); Using "###.##"; statB0%(I, 0) / statB0%(I, 6);
+            End If
+
+            If statB0%(I, 0) = 0 Or statB0%(I, 3) = 0 Then 
+                Print #1, Tab(58); "---.--";
+            End If
+            If statB0%(I, 0) > 0 And statB0%(I, 3) > 0 Then
+                Print #1, Tab(58); Using "###.##"; statB0%(I, 0) / statB0%(I, 3);
+            End If
+
+            If statB0%(I, 0) = 0 Or statB0%(I, 7) = 0 Then 
+                Print #1, Tab(64); "---.--";
+            End If
+            If statB0%(I, 0) > 0 And statB0%(I, 7) > 0 Then 
+                Print #1, Tab(64); Using "###.##"; statB0%(I, 0) / statB0%(I, 7);
+            End If
+
+            If statB0%(I, 0) = 0 Or statB0%(I, 8) = 0 Then 
+                Print #1, Tab(71); "---.--";
+            End If
+            If statB0%(I, 0) > 0 And statB0%(I, 8) > 0 Then 
+                Print #1, Tab(71); Using "###.##"; statB0%(I, 0) / statB0%(I, 8);
+            End If
+
+            If statB0%(I, 9) + statB0%(I, 10) = 0 Or statB0%(I, 9) = 0 Then 
+                Print #1, Tab(83); " 00%"
+            End If
+
+            If statB0%(I, 9) > 0 And statB0%(I, 10) = 0 Then 
+                Print #1, Tab(83); "100%"
+            End If
+            If statB0%(I, 9) > 0 And statB0%(I, 10) > 0 Then 
+                Print #1, Tab(83); Using "###"; (statB0%(I, 9) / (statB0%(I, 10) + statB0%(I, 9))) * 100;
+                Print #1, Tab(86); "%"
+            End If
 
         End If
 
@@ -1345,24 +1780,79 @@ Sub TeamComparison_Screen (teamName$)
     Locate , 15: Print String$(62, 177)
 
     Color 1, 11
-    If TB%(2) = 0 Then Locate 10, 13: Print " ---.--";
-    If TB%(2) > 0 Then Locate 10, 13: Print Using "###.##"; TB%(1) / TB%(2);
-    If TB%(3) = 0 Then Locate , 18: Print " ---.--";
-    If TB%(3) > 0 Then Locate , 18: Print Using "#####.##"; TB%(1) / TB%(3);
-    If TB%(4) = 0 Then Locate , 26: Print " ---.--";
-    If TB%(4) > 0 Then Locate , 26: Print Using "####.##"; TB%(1) / TB%(4);
-    If TB%(5) = 0 Then Locate , 33: Print " ---.--";
-    If TB%(5) > 0 Then Locate , 33: Print Using "####.##"; TB%(1) / TB%(5);
-    If TB%(6) = 0 Then Locate , 40: Print " ---.--";
-    If TB%(6) > 0 Then Locate , 40: Print Using "####.##"; TB%(1) / TB%(6);
-    If TB%(7) = 0 Then Locate , 47: Print " ---.--";
-    If TB%(7) > 0 Then Locate , 47: Print Using "####.##"; TB%(1) / TB%(7);
-    If TB%(8) = 0 Then Locate , 54: Print " ---.--";
-    If TB%(8) > 0 Then Locate , 54: Print Using "####.##"; TB%(1) / TB%(8);
-    If TB%(9) = 0 Then Locate , 61: Print " ---.--";
-    If TB%(9) > 0 Then Locate , 61: Print Using "####.##"; TB%(1) / TB%(9);
-    If TB%(10) = 0 Then Locate , 68: Print " ---.--";
-    If TB%(10) > 0 Then Locate , 68: Print Using "####.##"; TB%(10) / (TB%(10) + TB%(11));
+    
+    Locate 10, 13
+    If TB%(2) = 0 Then
+		Print " ---.--";
+    End If
+    If TB%(2) > 0 Then
+		Print Using "###.##"; TB%(1) / TB%(2);
+    End If
+
+    Locate , 18
+    If TB%(3) = 0 Then
+		Print " ---.--";
+    End If
+    If TB%(3) > 0 Then
+		Print Using "#####.##"; TB%(1) / TB%(3);
+    End If
+
+    Locate , 26
+    If TB%(4) = 0 Then
+		Print " ---.--";
+    End If
+    If TB%(4) > 0 Then
+		Print Using "####.##"; TB%(1) / TB%(4);
+    End If
+
+    Locate , 33
+    If TB%(5) = 0 Then
+		Print " ---.--";
+    End If
+    If TB%(5) > 0 Then
+		Print Using "####.##"; TB%(1) / TB%(5);
+    End If
+
+    Locate , 40
+    If TB%(6) = 0 Then
+		Print " ---.--";
+    End If
+    If TB%(6) > 0 Then
+		Print Using "####.##"; TB%(1) / TB%(6);
+    End If
+
+    Locate , 47
+    If TB%(7) = 0 Then
+		Print " ---.--";
+    End If
+    If TB%(7) > 0 Then
+		Print Using "####.##"; TB%(1) / TB%(7);
+    End If
+
+    Locate , 54
+    If TB%(8) = 0 Then
+		Print " ---.--";
+    End If
+    If TB%(8) > 0 Then
+		Print Using "####.##"; TB%(1) / TB%(8);
+    End If
+
+    Locate , 61
+    If TB%(9) = 0 Then
+		Print " ---.--";
+    End If
+    If TB%(9) > 0 Then
+		Print Using "####.##"; TB%(1) / TB%(9);
+    End If
+
+    Locate , 68
+    If TB%(10) = 0 Then
+		Print " ---.--";
+    End If
+    If TB%(10) > 0 Then
+		Print Using "####.##"; TB%(10) / (TB%(10) + TB%(11));
+    End If
+
     Print " ";
 
     Color 7, 0
@@ -1370,25 +1860,77 @@ Sub TeamComparison_Screen (teamName$)
 
     Color 14, 11
 
-    If statT0%(2) = 0 Then Locate 11, 13: Print " ---.--";
-    If statT0%(2) > 0 Then Locate 11, 13: Print Using "###.##"; statT0%(0) / statT0%(2);
-    If statT0%(1) = 0 Then Locate , 18: Print " ---.--";
-    If statT0%(1) > 0 Then Locate , 18: Print Using "#####.##"; statT0%(0) / statT0%(1);
-    If statT0%(4) = 0 Then Locate , 26: Print " ---.--";
-    If statT0%(4) > 0 Then Locate , 26: Print Using "####.##"; statT0%(0) / statT0%(4);
-    If statT0%(5) = 0 Then Locate , 33: Print " ---.--";
-    If statT0%(5) > 0 Then Locate , 33: Print Using "####.##"; statT0%(0) / statT0%(5);
-    If statT0%(6) = 0 Then Locate , 40: Print " ---.--";
-    If statT0%(6) > 0 Then Locate , 40: Print Using "####.##"; statT0%(0) / statT0%(6);
-    If statT0%(3) = 0 Then Locate , 47: Print " ---.--";
-    If statT0%(3) > 0 Then Locate , 47: Print Using "####.##"; statT0%(0) / statT0%(3);
-    If statT0%(7) = 0 Then Locate , 54: Print " ---.--";
-    If statT0%(7) > 0 Then Locate , 54: Print Using "####.##"; statT0%(0) / statT0%(7);
-    If statT0%(8) = 0 Then Locate , 61: Print " ---.--";
-    If statT0%(8) > 0 Then Locate , 61: Print Using "####.##"; statT0%(0) / statT0%(8);
-    If statT0%(9) = 0 Then Locate , 68: Print " ---.--";
-    If statT0%(9) > 0 Then Locate , 68: Print Using "####.##"; statT0%(9) / (statT0%(9) + statT0%(10));
-    Print " ";
+    Locate 11, 13
+    If statT0%(2) = 0 Then
+		Print " ---.--";
+    End If
+    If statT0%(2) > 0 Then
+		Print Using "###.##"; statT0%(0) / statT0%(2);
+    End If
+    
+    Locate , 18
+    If statT0%(1) = 0 Then
+		Print " ---.--";
+    End If
+    If statT0%(1) > 0 Then
+		Print Using "#####.##"; statT0%(0) / statT0%(1);
+    End If
+
+    Locate , 26
+    If statT0%(4) = 0 Then
+		Print " ---.--";
+    End If
+    If statT0%(4) > 0 Then
+		Print Using "####.##"; statT0%(0) / statT0%(4);
+    End If
+
+    Locate , 33
+    If statT0%(5) = 0 Then
+		Print " ---.--";
+    End If
+    If statT0%(5) > 0 Then
+		Print Using "####.##"; statT0%(0) / statT0%(5);
+    End If
+
+    Locate , 40
+    If statT0%(6) = 0 Then
+		Print " ---.--";
+    End If
+    If statT0%(6) > 0 Then
+		Print Using "####.##"; statT0%(0) / statT0%(6);
+    End If
+
+    Locate , 47
+    If statT0%(3) = 0 Then
+		Print " ---.--";
+    End If
+    If statT0%(3) > 0 Then
+		Print Using "####.##"; statT0%(0) / statT0%(3);
+    End If
+
+    Locate , 54
+    If statT0%(7) = 0 Then
+		Print " ---.--";
+    End If
+    If statT0%(7) > 0 Then
+		Print Using "####.##"; statT0%(0) / statT0%(7);
+    End If
+
+    Locate , 61
+    If statT0%(8) = 0 Then
+		Print " ---.--";
+    End If
+    If statT0%(8) > 0 Then
+		Print Using "####.##"; statT0%(0) / statT0%(8);
+    End If
+
+    Locate , 68
+    If statT0%(9) = 0 Then
+		Print " ---.--";
+    End If
+    If statT0%(9) > 0 Then
+		Print Using "####.## "; statT0%(9) / (statT0%(9) + statT0%(10));
+    End If
 
     Color 7, 0
     

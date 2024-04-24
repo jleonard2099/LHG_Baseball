@@ -13,8 +13,8 @@ Sub SEELEAG ()
 
     If ExitCode% <> 27 And ExitCode% <> 0 Then
 
-        Call LoadLeaderFiles(league$, D1$, D2$, leaderFile$)
-        Call StatOptions(league$, D1$, D2$)
+        Call LoadLeaderFiles(league$, div1Name$, div2Name$, leaderFile$)
+        Call StatOptions(league$, div1Name$, div2Name$)
 
     End If
 
@@ -26,7 +26,7 @@ End Sub
 '----------------------------------------
 'This subroutine loads the league stats
 'from the file into several arrays
-Sub LoadLeaderFiles (league$, D1$, D2$, targetFile$)
+Sub LoadLeaderFiles (league$, div1Name$, div2Name$, targetFile$)
 
     Shared Wins(), Losses()
 
@@ -38,14 +38,14 @@ Sub LoadLeaderFiles (league$, D1$, D2$, targetFile$)
 
     Open diskPaths$(2) + targetFile$ + ".TMS" For Input As #2
 
-    Input #2, league$, D1$, D2$, D3$, D4$
+    Input #2, league$, div1Name$, div2Name$, div3Name$, div4Name$
 
     Close 2
 
-    D1$ = PadRight$(D1$, 8)
-    D2$ = PadRight$(D2$, 8)
-    D3$ = PadRight$(D3$, 8)
-    D4$ = PadRight$(D4$, 8)
+    div1Name$ = PadRight$(div1Name$, 8)
+    div2Name$ = PadRight$(div2Name$, 8)
+    div3Name$ = PadRight$(div3Name$, 8)
+    div4Name$ = PadRight$(div4Name$, 8)
 
     Cls
 
@@ -53,18 +53,22 @@ Sub LoadLeaderFiles (league$, D1$, D2$, targetFile$)
 
     Open diskPaths$(2) + targetFile$ + ".LDR" For Input As #2
 
-    For X = 1 To 40: Input #2, seeT$(X), Wins(X), Losses(X): Next
+    For X = 1 To TEAMS_PER_LEAGUE
+        Input #2, seeT$(X), Wins(X), Losses(X)
+    Next
 
-    For X = 1 To 298: Input #2, compileZ2$(X), compileZ3$(X), seeZ!(X), seeZ1!(X): Next
+    For X = 1 To 298: 
+        Input #2, compileZ2$(X), compileZ3$(X), seeZ!(X), seeZ1!(X)
+    Next
 
-    For X = 1 To 40:
+    For X = 1 To TEAMS_PER_LEAGUE
         Input #2, BA$(X)
         For M = 1 To 14:
             Input #2, OFT!(X, M)
         Next
     Next
 
-    For X = 1 To 40:
+    For X = 1 To TEAMS_PER_LEAGUE
         Input #2, ER$(X)
         For M = 1 To 14:
             Input #2, DFT!(X, M)
@@ -84,49 +88,50 @@ End Sub
 'This subroutine gives the user various
 'options for viewing the previously loaded
 'stats, and then calls routines for each
-Sub StatOptions (league$, D1$, D2$)
+Sub StatOptions (league$, div1Name$, div2Name$)
 
     Do
 
         Cls
         Call TITLE_STATS
 
+        Call MenuBox(8, 25, 24, 5, 15, 1)
+
         Do
-
-            Call MenuBox(8, 8, 61, 5, 15, 1)
-
-            Locate 7, 32
 
             Locate 10
             Color 7, 1
 
-            Locate , 30: Print "STATS TO ";
-            Color 15: Print "S";: Color 7: Print "CREEN"
-
-            Locate , 30: Print "STATS TO ";
-            Color 15: Print "P";: Color 7: Print "RINTER"
-
-            Locate , 30: Print "STATS TO ";
-            Color 15: Print "F";: Color 7: Print "ILE"
+            Locate , 32: Print "SEND TO ";
+            Color 15: Print "F";
+            Color 7: Print "ILE"
+            Locate , 32: Print "SEND TO ";
+            Color 15: Print "P";
+            Color 7: Print "RINTER"
+            Locate , 32: Print "SEND TO ";
+            Color 15: Print "S";
+            Color 7: Print "CREEN"
 
             I$ = GetKeyPress$
             Color 14, 0
 
-        Loop Until UCase$(I$) = "S" Or UCase$(I$) = "P" Or UCase$(I$) = "F" Or I$ = Chr$(27)
+        Loop Until UCase$(I$) = "F" Or UCase$(I$) = "P" Or UCase$(I$) = "S" Or I$ = Chr$(27)
 
         If I$ <> Chr$(27) Then
 
             Select Case UCase$(I$)
 
                 Case "F":
-                    'Call ReportFilePrompt_League(SF$)
-                    'Call SavePrintLeagueStats(league$, D1$, D2$, 1)
+                    userFile$ = _SAVEFILEDIALOG$("Save League Report",_CWD$ + "\Report","*.txt","Text File")
+                    If userFile$ <> "" Then
+                        Call LeagueStats_Report(league$, div1Name$, div2Name$, 0, userFile$)
+                    End If
 
                 Case "P":
-                    Call SavePrintLeagueStats(league$, D1$, D2$, 0)
+                    Call LeagueStats_Report(league$, div1Name$, div2Name$, 1, "REPORT")
 
                 Case "S":
-                    Call LeagueStatsToScreen(league$, D1$, D2$)
+                    Call LeagueStats_Screen(league$, div1Name$, div2Name$)
 
             End Select
 
@@ -147,51 +152,18 @@ Sub StatOptions (league$, D1$, D2$)
 
         End If
 
-    Loop Until UCase$(A$) = "N" Or A$ = Chr$(27)
+    Loop Until UCase$(A$) = "N" Or A$ = Chr$(27) Or I$ = Chr$(27)
 
 End Sub
 
 
 '----------------------------------------
-'   ReportFilePrompt_League Subroutine
-'----------------------------------------
-'This subroutine prompts the user for
-'the name of the report file to be saved
-Sub ReportFilePrompt_League (reportFile$)
-
-    Do
-
-        Color 15, 0
-        Cls
-
-        Call MenuBox(6, 8, 61, 7, 15, 1)
-
-        Locate 7, 32
-        Locate , 12: Print "ENTER NAME FOR FILE: ": Print
-        Locate , 12: Print "THE NAME SHOULD HAVE NO PERIODS OR SPECIAL CHARACTERS"
-        Locate , 12: Print "DO NOT ADD A FILE EXTENSION; THE PROGRAM"
-        Locate , 12: Print "WILL AUTOMATICALLY ADD .RPT"
-        Locate 7, 37: Input reportFile$
-
-        If reportFile$ <> "" Then
-            Locate 13, 12: Print "ANY CHANGE? (Y/N) "
-            I$ = GetKeyPress$
-        End If
-
-    Loop Until UCase$(I$) = "N" And reportFile$ <> ""
-
-    Color 15, 0
-
-End Sub
-
-
-'----------------------------------------
-'      LeagueStatsToScreen Subroutine
+'      LeagueStats_Screen Subroutine
 '----------------------------------------
 'This subroutine formats the previously
 'loaded stats and outputs them to the end
 'user display.
-Sub LeagueStatsToScreen (league$, D1$, D2$)
+Sub LeagueStats_Screen (league$, div1Name$, div2Name$)
 
     Shared Wins(), Losses()
 
@@ -305,8 +277,8 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     Color 14
     Locate 3, 1
 
-    If D1$ = "" Then D1$ = Space$(8)
-    Print "    " + D1$ + "      W   L   PCT   GB"
+    If div1Name$ = "" Then div1Name$ = Space$(8)
+    Print "    " + div1Name$ + "      W   L   PCT   GB"
 
     Color 15
 
@@ -331,8 +303,8 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     Color 14
     Locate 15, 1
 
-    If D3$ = "" Then D3$ = Space$(8)
-    Print "    " + D3$ + "      W   L   PCT   GB"
+    If div3Name$ = "" Then div3Name$ = Space$(8)
+    Print "    " + div3Name$ + "      W   L   PCT   GB"
 
     Color 15
 
@@ -355,8 +327,8 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     Color 14
     Locate 3, 41
 
-    If D2$ = "" Then D2$ = Space$(8)
-    Print "    " + D2$ + "      W   L   PCT   GB"
+    If div2Name$ = "" Then div2Name$ = Space$(8)
+    Print "    " + div2Name$ + "      W   L   PCT   GB"
 
     Color 15
 
@@ -380,8 +352,8 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     Color 14
     Locate 15, 41
 
-    If D4$ = "" Then D4$ = Space$(8)
-    Print "    " + D4$ + "      W   L   PCT   GB"
+    If div4Name$ = "" Then div4Name$ = Space$(8)
+    Print "    " + div4Name$ + "      W   L   PCT   GB"
 
     Color 15
 
@@ -1206,7 +1178,7 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     CS = 0
     E = 0
 
-    For X = 1 To 40
+    For X = 1 To TEAMS_PER_LEAGUE
 
         If BA$(X) <> "" And BA$(X) <> "*" Then
             Print Left$(BA$(X), 11); Tab(13);
@@ -1234,7 +1206,7 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     End If
 
     Print
-    Print "LG TOTALS"; Tab(13); Using "#.###"; statCalc!;
+    Print "LG TOtotAwayLossesS"; Tab(13); Using "#.###"; statCalc!;
 
     '                      AB    R    H   2B   3B  HR   RBI   BB   SO  SB  CS   E"
     Print Tab(18); Using "     ###       ###      ###        ###      ###      ###"; R; B2; HR; BB; SB; E
@@ -1260,7 +1232,7 @@ Sub LeagueStatsToScreen (league$, D1$, D2$)
     G = 0
     IP = 0
 
-    For X = 1 To 40
+    For X = 1 To TEAMS_PER_LEAGUE
 
         If ER$(X) <> "" And ER$(X) <> "*" Then
 
@@ -1301,19 +1273,13 @@ End Sub
 
 
 '----------------------------------------
-'      SavePrintLeagueStats Subroutine
+'      LeagueStats_Report Subroutine
 '----------------------------------------
 'This subroutine formats the previously
 'loaded stats and outputs them to a file.
 'This file can then be looped through to
 'send to the default printer
-
-'-- Currently this appears to be sending to printer as well
-
-'Destination
-'   1 = File
-'   !1 = Printer (creates file and prints it)
-Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
+Sub LeagueStats_Report (league$, div1Name$, div2Name$, printDest, destFile$)
 
     Shared Wins(), Losses()
 
@@ -1323,14 +1289,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Shared BA$(), compileZ2$(), compileZ3$(), ER$()
     Shared LF$(), seeP$(), RT$(), seeT$()
 
-    'If destination <> 1 Then
-    '    Open "REPORT" For Output As #2
-    'Else
-    '    Open statFile$ + ".RPT" For Output As #2
-    'End If
+	Color 15, 0
+	Cls
 
-    'Color 0, 15
-    'Cls
+	Open destFile$ For Output As #1
 
     For P = 1 To 10:
 
@@ -1437,8 +1399,11 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
                 seeP$(P) = seeP$(P) + " "
             Wend
 
-            D = Wins(P) - Losses(P): D = D1 - D: BK$ = Str$(Int(D / 2)): If D = 0 Then BK$ = "---"
+            D = Wins(P) - Losses(P)
+            D = D1 - D
+            BK$ = Str$(Int(D / 2))
 
+            If D = 0 Then BK$ = "---"
             If D = 1 Then BK$ = "  "
             If D > 19 Then
                 L = Len(BK$)
@@ -1579,7 +1544,7 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     '-----
 
     LF$(1) = "    " + league$ + " LEAGUE STANDINGS AS OF " + Date$
-    LF$(3) = "    " + D1$ + "      W   L   PCT   GB"
+    LF$(3) = "    " + div1Name$ + "      W   L   PCT   GB"
 
     For P = 1 To 10:
 
@@ -1593,7 +1558,7 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
     RT = 0
 
-    LF$(15) = "    " + D3$ + "      W   L   PCT   GB"
+    LF$(15) = "    " + div3Name$ + "      W   L   PCT   GB"
 
     For P = 21 To 30:
 
@@ -1607,7 +1572,7 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
     RT = 0
 
-    RT$(3) = "    " + D2$ + "      W   L   PCT   GB"
+    RT$(3) = "    " + div2Name$ + "      W   L   PCT   GB"
 
     For P = 11 To 20
 
@@ -1621,7 +1586,7 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
 
     RT = 0
 
-    RT$(15) = "    " + D4$ + "      W   L   PCT   GB"
+    RT$(15) = "    " + div4Name$ + "      W   L   PCT   GB"
 
     For P = 31 To 40
 
@@ -1648,7 +1613,7 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
 
     For X = 1 To 26
-        'LPrint LF$(X); RT$(X)
+        Print #1, LF$(X); RT$(X)
     Next
 
     '-----
@@ -1751,7 +1716,7 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
 
     For X = 27 To 47:
-        'LPrint LF$(X); RT$(X)
+        Print #1, LF$(X); RT$(X)
     Next
 
     '-----
@@ -1829,10 +1794,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
 
     For X = 49 To 59:
-        'LPrint LF$(X); RT$(X)
+        Print #1, LF$(X); RT$(X)
     Next
 
-    'LPrint Chr$(12)
+    Print #1, Chr$(12)
 
     '-----
 
@@ -1914,7 +1879,7 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
 
     For X = 1 To 12:
-        'LPrint LF$(X); RT$(X)
+        Print #1, LF$(X); RT$(X)
     Next
 
     '-----
@@ -1990,7 +1955,7 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
 
     For X = 13 To 23:
-        'LPrint LF$(X); RT$(X)
+        Print #1, LF$(X); RT$(X)
     Next
 
     '-----
@@ -2066,7 +2031,7 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
 
     For X = 24 To 35:
-        'LPrint LF$(X); RT$(X)
+        Print #1, LF$(X); RT$(X)
     Next
 
     '-----
@@ -2142,7 +2107,7 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
 
     For X = 36 To 47
-        'LPrint LF$(X); RT$(X)
+        Print #1, LF$(X); RT$(X)
     Next
 
     '-----
@@ -2217,10 +2182,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
 
     For X = 48 To 58:
-        'LPrint LF$(X); RT$(X)
+        Print #1, LF$(X); RT$(X)
     Next
 
-    'LPrint Chr$(12)
+    Print #1, Chr$(12)
 
     '-----
 
@@ -2346,10 +2311,10 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
 
     For X = 48 To 59:
-        'LPrint LF$(X); RT$(X)
+        Print #1, LF$(X); RT$(X)
     Next
 
-    'LPrint Chr$(12)
+    Print #1, Chr$(12)
 
     '-----
 
@@ -2426,7 +2391,7 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
 
     For X = 1 To 12: 
-        'LPrint LF$(X); RT$(X)
+        Print #1, LF$(X); RT$(X)
     Next
 
     '-----
@@ -2502,7 +2467,7 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
 
     For X = 13 To 24:
-        'LPrint LF$(X); RT$(X)
+        Print #1, LF$(X); RT$(X)
     Next
 
     '-----
@@ -2580,62 +2545,64 @@ Sub SavePrintLeagueStats (league$, D1$, D2$, destination)
     Next P
 
     For X = 25 To 36:
-        'LPrint LF$(X); RT$(X)
+        Print #1, LF$(X); RT$(X)
     Next
 
     '-----
 
-    'LPrint Chr$(12)
-    'LPrint "                 CLUB BATTING   "
-    'LPrint
-    'LPrint "CLUB     AVG   AB    R    H   2B   3B  HR  RBI  BB   SO   SB   CS  E"
+    Print #1, Chr$(12)
+    Print #1, "                 CLUB BATTING   "
+    Print #1,
+    Print #1, "CLUB     AVG   AB    R    H   2B   3B  HR  RBI  BB   SO   SB   CS  E"
 
-    For X = 1 To 40
+    For X = 1 To TEAMS_PER_LEAGUE
 
         If BA$(X) <> "" And Left$(BA$(X), 1) <> "*" And BA$(X) <> "*" Then
-            'LPrint Left$(BA$(X), 11); Tab(13);
+            Print #1, Left$(BA$(X), 11); Tab(13);
             OFT!(X, 1) = Int(OFT!(X, 1) * 1000) / 1000
-            'LPrint Using ".###"; OFT!(X, 1);
-            'LPrint Tab(18); OFT!(X, 3); Tab(24); OFT!(X, 5); Tab(29); Str$(OFT!(X, 4)); Tab(34); OFT!(X, 7); Tab(39); OFT!(X, 8); Tab(43); Str$(OFT!(X, 9)); Tab(47); OFT!(X, 6); Tab(52); OFT!(X, 10);
-            'LPrint Tab(57); OFT!(X, 11); Tab(62); OFT!(X, 12); Tab(67); OFT!(X, 13); Tab(72); OFT!(X, 14)
+            Print #1, Using ".###"; OFT!(X, 1);
+            Print #1, Tab(18); OFT!(X, 3); Tab(24); OFT!(X, 5); Tab(29); Str$(OFT!(X, 4)); Tab(34); OFT!(X, 7); Tab(39); OFT!(X, 8); Tab(43); Str$(OFT!(X, 9)); Tab(47); OFT!(X, 6); Tab(52); OFT!(X, 10);
+            Print #1, Tab(57); OFT!(X, 11); Tab(62); OFT!(X, 12); Tab(67); OFT!(X, 13); Tab(72); OFT!(X, 14)
         End If
 
     Next
 
-    'LPrint Chr$(12)
-    'LPrint "                 CLUB PITCHING  "
-    'LPrint
-    'LPrint "CLUB     ERA  G    CG SHO  SV  IP    H    R   ER   BB   SO    "
+    Print #1, Chr$(12)
+    Print #1, "                 CLUB PITCHING  "
+    Print #1,
+    Print #1, "CLUB     ERA  G    CG SHO  SV  IP    H    R   ER   BB   SO    "
 
-    For X = 1 To 40
+    For X = 1 To TEAMS_PER_LEAGUE
 
         If ER$(X) <> "" And ER$(X) <> "*" Then
-            'LPrint Left$(ER$(X), 11); Tab(13);
+
+            Print #1, Left$(ER$(X), 11); Tab(13);
+
             DFT!(X, 1) = Int(DFT!(X, 1) * 100) / 100
-            'LPrint Using "##.##"; DFT!(X, 1);
-            'LPrint Tab(18); DFT!(X, 11); Tab(23); DFT!(X, 12); Tab(27); DFT!(X, 13); Tab(31); DFT!(X, 14); Tab(35); Str$(CInt(DFT!(X, 2) / 3)); Tab(40); Str$(DFT!(X, 3)); Tab(45); DFT!(X, 4); Tab(50); DFT!(X, 5);
-            'LPrint Tab(55); DFT!(X, 6); Tab(60); DFT!(X, 7)
+            Print #1, Using "##.##"; DFT!(X, 1);
+            Print #1, Tab(18); DFT!(X, 11); Tab(23); DFT!(X, 12); Tab(27); DFT!(X, 13); Tab(31); DFT!(X, 14); Tab(35); Str$(CInt(DFT!(X, 2) / 3)); Tab(40); Str$(DFT!(X, 3)); Tab(45); DFT!(X, 4); Tab(50); DFT!(X, 5);
+            Print #1, Tab(55); DFT!(X, 6); Tab(60); DFT!(X, 7)
+
         End If
 
     Next
 
-    'LPrint Chr$(12)
+	If printDest = 1 Then
 
-    'Print the file we created
-    'If destination <> 1 Then
+		Open destFile$ For Input As #2
 
-    '    Open "REPORT" For Input As #2
+		Do While Not EOF(2)
+			Line Input #2, X$
+			LPrint X$
+		Loop
 
-    '    Do While Not EOF(2)
-    '        Line Input #2, X$
-    '        LPrint X$
-    '    Loop
+		Close #2
 
-    '    Close 2
+		LPrint Chr$(12)
 
-    '   LPrint Chr$(12)
+		Kill destFile$
 
-    'End If
+	End If
 
 End Sub
 

@@ -68,13 +68,13 @@ Sub DRAFT ()
 
                     Erase teamTS%, draftTS%, teamSA%, draftSA%
 
-                    Call NewTeamParameters(draftYN$(0), T$)
-                    Call DraftChoices(draftNew, done, T$, draftYN$(), idx)
+                    Call NewTeamParameters(draftYN$(0), team$)
+                    Call DraftChoices(draftNew, done, team$, draftYN$(), teamNbr)
 
                 Case 2:
                     draftNew = 0
-                    Call ChooseDestTeam(draftYN$(0), NTMS, idx, T$)
-                    If idx > 0 Then Call DraftChoices(draftNew, done, T$, draftYN$(), idx)
+                    Call ChooseDestTeam(draftYN$(0), NTMS, teamNbr, team$)
+                    If teamNbr > 0 Then Call DraftChoices(draftNew, done, team$, draftYN$(), teamNbr)
 
             End Select
 
@@ -105,15 +105,15 @@ Sub NewTeamParameters (draftYear$, teamName$)
     Cls
     Print "INPUT TEAM INFORMATION"
 
-    Locate 3: Input "1. DISK ID "; draftYear$
-    Locate 4: Input "2. TEAM NAME "; teamName$
-    Locate 5: Input "3. TEAM ABBREVIATION "; teamAbbrev$
-    Locate 6: Input "4. LGE BA "; teamRatings%(1)
-    Locate 7: Input "5. LGE SO % "; teamRatings%(2)
-    Locate 8: Input "6. LGE BB % "; teamRatings%(3)
-    Locate 9: Input "7. LGE HR % "; teamRatings%(4)
-    Locate 10: Input "8. TM DP/G X 10 "; teamRatings%(5)
-    Locate 11: Input "9. PARK DOUBLE ADJUSTMENT "; teamRatings%(6)
+    Locate 3: Input " 1. DISK ID "; draftYear$
+    Locate 4: Input " 2. TEAM NAME "; teamName$
+    Locate 5: Input " 3. TEAM ABBREVIATION "; teamAbbrev$
+    Locate 6: Input " 4. LGE BA "; teamRatings%(1)
+    Locate 7: Input " 5. LGE SO % "; teamRatings%(2)
+    Locate 8: Input " 6. LGE BB % "; teamRatings%(3)
+    Locate 9: Input " 7. LGE HR % "; teamRatings%(4)
+    Locate 10: Input " 8. TM DP/G X 10 "; teamRatings%(5)
+    Locate 11: Input " 9. PARK DOUBLE ADJUSTMENT "; teamRatings%(6)
     Locate 12: Input "10. PARK TRIPLE ADJUSTMENT "; teamRatings%(7)
     Locate 13: Input "11. PARK HOME RUN ADJUSTMENT "; parkHR_DRAFT&(0)
     Locate 14: Input "12. PARK FOUL GROUND ADJUSTMENT "; teamRatings%(8)
@@ -122,19 +122,21 @@ Sub NewTeamParameters (draftYear$, teamName$)
     Locate 17: Input "15. STADIUM NAME "; Stadium$
     Locate 18: Input "16. PARK ID NUMBER "; teamRatings%(13)
     Locate 19: Input "17. MANAGER NAME "; Manager$
-    Locate 20: Input "18. TEAM TEXT COLOR (0-15) "; teamRatings%(11)
-    Locate 21: Input "19. TEAM BACKGROUND (0-8) "; teamRatings%(12)
+    Locate 20: Input "18. TEXT COLOR (0-15) "; teamRatings%(11)
+    Locate 21: Input "19. BACKGROUND COLOR (0-7) "; teamRatings%(12)
 
-    Locate 22, 1
-    Color teamRatings%(11), teamRatings%(12)
-    Print "TEAM APPEARANCE: ";
-    Print teamName$ + " " + teamAbbrev$
-    Color 15, 0
+    If teamRatings%(11) >= 0 And teamRatings%(12) >= 0 Then
+        Locate 22, 1
+        Print "TEAM APPEARANCE: ";
+        Color teamRatings%(11), teamRatings%(12)
+        Print teamName$ + " " + teamAbbrev$
+        Color 15, 0
+    End If
 
     Do
 
         Do
-            Locate 24
+            Locate 23, 25
             Input "# TO CHANGE (0 TO CONTINUE) "; B9
         Loop Until B9 >= 0 And B9 <= 19
 
@@ -143,73 +145,118 @@ Sub NewTeamParameters (draftYear$, teamName$)
             Select Case B9
 
                 Case 1
-                    Locate 3: Input "1. DISK ID "; draftYear$
+                    Locate 3, 13: Print Space$(10)
+                    Locate 3, 1: Input " 1. DISK ID "; draftYear$
+                    Locate 3, 13: Print " "
 
                 Case 2
-                    Locate 4: Input "2. TEAM NAME "; teamName$
+                    Locate 4, 1: Input " 2. TEAM NAME "; teamName$
+                    Locate 4, 15: Print " "
 
                 Case 3
-                    Locate 5: Input "3. TEAM ABBREVIATION "; NN$
+                    Locate 5, 1: Input " 3. TEAM ABBREVIATION "; teamAbbrev$
+                    Locate 5, 23: Print " "
 
                 Case 4
-                    Locate 6: Input "4. LGE BA "; teamRatings%(1)
+                    Locate 6, 12: Print Space$(10)
+                    Locate 6, 1: Input " 4. LGE BA "; teamRatings%(1)
+                    Locate 6, 12: Print " "
 
                 Case 5
-                    Locate 7: Input "5. LGE SO % "; teamRatings%(2)
+                    Locate 7, 14: Print Space$(10)
+                    Locate 7, 1: Input " 5. LGE SO % "; teamRatings%(2)
+                    Locate 7, 14: Print " "
 
                 Case 6
-                    Locate 8: Input "6. LGE BB % "; teamRatings%(3)
+                    Locate 8, 14: Print Space$(10)
+                    Locate 8, 1: Input " 6. LGE BB % "; teamRatings%(3)
+                    Locate 8, 14: Print " "
 
                 Case 7
-                    Locate 9: Input "7. LGE HR % "; teamRatings%(4)
+                    Locate 9, 14: Print Space$(10)
+                    Locate 9, 1: Input " 7. LGE HR % "; teamRatings%(4)
+                    Locate 9, 14: Print " "
 
                 Case 8
-                    Locate 10: Input "8. TM DP/G X 10 "; teamRatings%(5)
+                    Locate 10, 18: Print Space$(10)
+                    Locate 10, 1: Input " 8. TM DP/G X 10 "; teamRatings%(5)
+                    Locate 10, 18: Print " "
 
                 Case 9
-                    Locate 11: Input "9. PARK DOUBLE ADJUSTMENT "; teamRatings%(6)
+                    Locate 11, 28: Print Space$(10)
+                    Locate 11, 1: Input " 9. PARK DOUBLE ADJUSTMENT "; teamRatings%(6)
+                    Locate 11, 28: Print " "
 
                 Case 10
-                    Locate 12: Input "10. PARK TRIPLE ADJUSTMENT "; teamRatings%(7)
+                    Locate 12, 28: Print Space$(10)
+                    Locate 12, 1: Input "10. PARK TRIPLE ADJUSTMENT "; teamRatings%(7)
+                    Locate 12, 28: Print " "
 
                 Case 11
-                    Locate 13: Input "11. PARK HOME RUN ADJUSTMENT "; parkHR_DRAFT&(0)
+                    Locate 13, 30: Print Space$(10)
+                    Locate 13, 1: Input "11. PARK HOME RUN ADJUSTMENT "; parkHR_DRAFT&(0)
+                    Locate 13, 30: Print " "
 
                 Case 12
-                    Locate 14: Input "12. PARK FOUL GROUND ADJUSTMENT "; teamRatings%(8)
+                    Locate 14, 33: Print Space$(10)
+                    Locate 14, 1: Input "12. PARK FOUL GROUND ADJUSTMENT "; teamRatings%(8)
+                    Locate 14, 33: Print " "
 
                 Case 13
-                    Locate 15: Input "13. OUTDOOR = 0 / INDOOR = 1 "; teamRatings%(9)
+                    Locate 15, 30: Print Space$(10)
+                    Locate 15, 1: Input "13. OUTDOOR = 0 / INDOOR = 1 "; teamRatings%(9)
+                    Locate 15, 30: Print " "
 
                 Case 14
-                    Locate 16: Input "14. GRASS = 0 / TURF = 1 "; teamRatings%(10)
+                    Locate 16, 26: Print Space$(10)
+                    Locate 16, 1: Input "14. GRASS = 0 / TURF = 1 "; teamRatings%(10)
+                    Locate 16, 26: Print " "
 
                 Case 15
-                    Locate 17: Input "15. STADIUM NAME "; Stadium$
+                    Locate 17, 18: Print Space$(10)
+                    Locate 17, 1: Input "15. STADIUM NAME "; Stadium$
+                    Locate 17, 18: Print " "
 
                 Case 16
-                    Locate 18: Input "16. PARK ID NUMBER "; teamRatings%(13)
+                    Locate 18, 20: Print Space$(10)
+                    Locate 18, 1: Input "16. PARK ID NUMBER "; teamRatings%(13)
+                    Locate 18, 20: Print " "
 
                 Case 17
-                    Locate 19: Input "17. MANAGER NAME "; Manager$
+                    Locate 19, 18: Print Space$(10)
+                    Locate 19, 1: Input "17. MANAGER NAME "; Manager$
+                    Locate 19, 18: Print " "
 
                 Case 18
-                    Locate 20: Input "18. TEAM TEXT COLOR (0-15) "; teamRatings%(11)
-                    Locate 22, 1
-                    Color teamRatings%(11), teamRatings%(12)
-                    Print "TEAM APPEARANCE: ";
-                    Print teamName$ + " " + teamAbbrev$
-                    Color 15, 0
+                    Locate 20, 23: Print Space$(10)
+                    Locate 20, 1: Input "18. TEXT COLOR (0-15) "; teamRatings%(11)
+                    Locate 20, 23: Print " "
+
+                    If teamRatings%(11) >= 0 And teamRatings%(12) >= 0 Then
+                        Locate 22, 1
+                        Print "TEAM APPEARANCE: ";
+                        Color teamRatings%(11), teamRatings%(12)
+                        Print RTrim$(teamName$) + " " + RTrim$(teamAbbrev$)
+                        Color 15, 0
+                    End If
 
                 Case 19
-                    Locate 21: Input "19. TEAM BACKGROUND (0-8) "; teamRatings%(12)
-                    Locate 22, 1
-                    Color teamRatings%(11), teamRatings%(12)
-                    Print "TEAM APPEARANCE: ";
-                    Print teamName$ + " " + teamAbbrev$
-                    Color 15, 0
+                    Locate 21, 28: Print Space$(10)
+                    Locate 21, 1: Input "19. BACKGROUND COLOR (0-7) "; teamRatings%(12)
+                    Locate 21, 28: Print " "
+
+                    If teamRatings%(11) >= 0 And teamRatings%(12) >= 0 Then
+                        Locate 22, 1
+                        Print "TEAM APPEARANCE: ";
+                        Color teamRatings%(11), teamRatings%(12)
+                        Print RTrim$(teamName$) + " " + RTrim$(teamAbbrev$)
+                        Color 15, 0
+                    End If
 
             End Select
+
+            Locate 23, 53
+            Print Space$(10)
 
         End If
 
@@ -341,7 +388,7 @@ End Sub
 Sub DraftPlayer (playerType, draftPos)
 
     Shared batterRatings(), batRat_DRAFT%()
-    Shared draftSA%(), draftTS%(), lgRat_DRAFT%()
+    Shared draftSA%(), draftTS%(), teamRat_DRAFT()
     Shared pitcherRatings(), pitRat_DRAFT%()
     Shared teamSA%(), teamTS%()
 
@@ -351,7 +398,7 @@ Sub DraftPlayer (playerType, draftPos)
     Color 15, 0
     Cls
 
-    Color lgRat_DRAFT%(11), lgRat_DRAFT%(12): Print T1$
+    Color teamRat_DRAFT(11), teamRat_DRAFT(12): Print T1$
     Color 15, 0
 
     Print
@@ -731,7 +778,7 @@ Sub ChooseDestTeam (yearNumber$, numberTeams, chosenIdx, teamName$)
 
                     Do
                         Locate 2, 33
-                        Color lgRat_DRAFT%(11), lgRat_DRAFT%(12): Print teamName$
+                        Color teamRat_DRAFT(11), teamRat_DRAFT(12): Print teamName$
 
                         Color 15, 4
                         Locate 3, 32: Print "ANY CHANGE? (Y/N)";
@@ -750,7 +797,6 @@ Sub ChooseDestTeam (yearNumber$, numberTeams, chosenIdx, teamName$)
 
     If I$ = Chr$(27) Or J$ = Chr$(27) Then chosenIdx = 0
 
-
 End Sub
 
 
@@ -761,7 +807,7 @@ End Sub
 'choosing the team to draft players from
 Sub ChooseSourceTeam (yearNumber$, numberTeams, chosenIdx, teamName$, draftIdx)
 
-    Shared lgRat_DRAFT%()
+    Shared teamRat_DRAFT()
 
     Shared previousYear$
 
@@ -853,7 +899,7 @@ Sub ChooseSourceTeam (yearNumber$, numberTeams, chosenIdx, teamName$, draftIdx)
 
                     Do
                         Locate 2, 33
-                        Color lgRat_DRAFT%(11), lgRat_DRAFT%(12): Print teamName$
+                        Color teamRat_DRAFT(11), teamRat_DRAFT(12): Print teamName$
 
                         Color 15, 4
                         Locate 3, 32: Print "ANY CHANGE? (Y/N)";
@@ -899,8 +945,7 @@ Sub SelectDraftTeam (numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%
         Color , 4
         Cls
         Color 14
-        'Didn't this have a designator ?!?!
-        Locate , 33: Print "TEAM SELECTION"
+        Locate , 33: Print "TEAM " + draftIdx + " SELECTION"
         Locate 25, 1
         Color 14: Print "ESC";
         Color 15: Print "-SELECT NEW ID  PGDN  PGUP  ";
@@ -970,7 +1015,7 @@ Sub ReadDestTeam (teamYear$, targetTeam$, teamIdx)
 
     Get #1, teamIdx
 
-    targetTeam$ = _Trim$(Q$(0))
+    targetTeam$ = RTrim$(Q$(0))
 
     For I = 1 To 13:
         teamRatings%(I) = CVI(Q$(I))
@@ -1124,7 +1169,7 @@ End Sub
 'arrays for the team we are drafting to
 Sub ReadSourceTeam (yearNumber$, targetTeam$, teamIdx)
 
-    Shared batRat_DRAFT%(), lgRat_DRAFT%()
+    Shared batRat_DRAFT%(), teamRat_DRAFT()
     Shared pitRat_DRAFT%()
 
     Shared draftSA%(), draftTS%()
@@ -1160,7 +1205,7 @@ Sub ReadSourceTeam (yearNumber$, targetTeam$, teamIdx)
     targetTeam$ = RTrim$(Q$(0))
 
     For I = 1 To 13:
-        lgRat_DRAFT%(I) = CVI(Q$(I))
+        teamRat_DRAFT(I) = CVI(Q$(I))
     Next
 
     parkHR_DRAFT&(1) = CVS(Q$(14))
@@ -1301,4 +1346,3 @@ Sub ReadSourceTeam (yearNumber$, targetTeam$, teamIdx)
     End If 'Done checking for file exists
 
 End Sub
-

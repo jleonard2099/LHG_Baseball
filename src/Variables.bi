@@ -3,7 +3,7 @@
 '----------------------------------------
 Dim opSysType$
 
-Dim Shared diskPaths$(0 To 3), Q$(0 To 2056), Q2$(0 To 2056), Q3$(100)
+Dim Shared diskPaths$(0 To 4), Q$(0 To 2056), Q2$(0 To 2056), Q3$(100)
 Dim Shared teamIndex%(MAX_TEAMS)
 Dim Shared teamNames$(MAX_TEAMS)
 
@@ -11,7 +11,6 @@ Dim Shared teamNames$(MAX_TEAMS)
 ' *** Reading Stat Data ***
 ' -------------------------                                                                                                                   3
 Dim nbrInnings(MAX_SCHED_STATS), teamScore(MAX_SCHED_STATS), oppScore(MAX_SCHED_STATS)
-
 Dim losePitcher$(MAX_SCHED_STATS), winPitcher$(MAX_SCHED_STATS)
 Dim locIndicator$(MAX_SCHED_STATS), oppName$(MAX_SCHED_STATS)
 
@@ -105,7 +104,7 @@ Dim GM1!(920), GM2(880)
 'NEWLDRST
 Dim CLT!(40), CWS!(40), ELL!(40), EWW!(40)
 Dim HLL!(40), HWW!(40), LLS!(40), LWS!(40)
-Dim expLL!(40), LTW!(40), LTL!(40)
+Dim expLL!(40), lastTenWins!(40), lastTenLosses!(40)
 Dim RLL!(40), RWW!(40), TLS!(40), TWS!(40), WW!(40)
 
 Dim TML$(40)
@@ -140,7 +139,7 @@ Dim RT$(70), seeT$(40), compileTeams$(1 To 40)
 Dim draftSA%(24), draftTS%(11)
 
 Dim batRat_DRAFT%(22, 79)
-Dim lgRat_DRAFT%(13)
+Dim teamRat_DRAFT(13)
 Dim pitRat_DRAFT%(21, 88)
 
 Dim parkHR_DRAFT&(1)
@@ -152,12 +151,12 @@ Dim batNames_DRAFT$(22), pitNames_DRAFT$(22)
 ' Used in RECORDS routines
 '----------------------------------------
 Dim batRecVal!(32), batRecYr!(32), pitRecVal!(29), pitRecYr!(29)
-Dim teamRecAVal!(24), teamRecBVal!(25), teamRecAYr!(24), teamRecBYr!(25)
+Dim batRecTmVal!(24), pitRecTmVal!(25), batRecTmYr!(24), pitRecTmYr!(25)
 
 Dim batRecPlyr$(32), batRecTeam$(32), pitRecPlyr$(29), pitRecTeam$(29)
 Dim batIndCategory$(1 To 32), pitIndCategory$(1 To 28)
 Dim batTeamCategory$(0 To 20), pitTeamCategory$(0 To 18)
-Dim teamRecATeam$(24), teamRecBTeam$(25)
+Dim batRecTmDesc$(24), pitRecTmDesc$(25)
 
 
 '----------------------------------------
@@ -200,10 +199,14 @@ Dim inputBS%(22)
 Dim inputDYS%(21), inputINJ%(22), inputTP%(33)
 Dim PS%(32), TB%(15)
 
-Dim homeWins(50), awayWins(50), homeLosses(50), awayLosses(50)
-Dim THW%(4), TAW%(4), THL(4), TAL(4)
-Dim statR1%(200), statR2%(200), statR3%(200), statR4%(200)
-Dim TR1%(4), TR2%(4), TR3%(4), TR4%(4)
+Dim homeWins(50), awayWins(50)
+Dim homeLosses(50), awayLosses(50)
+Dim totHomeWin(4), totAwayWin(4)
+Dim totHomeLosses(4), totAwayLosses(4)
+Dim homeScoreTeam(200), homeScoreOpp(200)
+Dim awayScoreTeam(200), awayScoreOpp(200)
+Dim totHomeScoreTeam(4), totHomeScoreOpp(4)
+DIm totAwayScoreTeam(4), totAwayScoreOpp(4)
 
 Dim DV$(4)
 
@@ -213,12 +216,12 @@ Dim CK
 Dim parkHR
 
 'Extra Inning Games
-Dim EW, EL
+Dim extraInnWins, extraInnLosses
 Dim homeWins, homeLosses
 'Last 10 Games
-Dim LTL, LTW
+Dim lastTenLosses, lastTenWins
 'One Run Games
-Dim ORW, ORL
+Dim oneRunWins, oneRunLosses
 Dim roadWins, roadLosses
 Dim totalWins, totalLosses
 
@@ -259,7 +262,9 @@ Dim progM%(0 To 9)
 ' Used in POSSRT routines
 '----------------------------------------
 Dim currPosition
+Dim A$(TEAMS_PER_LEAGUE)
 Dim PB$(22), TYN$(40)
+Dim TM(TEAMS_PER_LEAGUE)
 
 
 '----------------------------------------

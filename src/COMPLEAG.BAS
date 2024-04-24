@@ -26,7 +26,7 @@ Sub CompileLeague ()
     Erase compileZ1!
     Erase DFT!, OFT!
 
-    For Z = 1 To 40
+    For Z = 1 To TEAMS_PER_LEAGUE
         DFT!(Z, 1) = 99.99
     Next
 
@@ -55,16 +55,16 @@ Sub CompileLeague ()
 
         Open diskPaths$(2) + leagStatFile$ + ".TMS" For Input As #2
 
-        Input #2, league$, D1$, D2$, D3$, D4$
+        Input #2, league$, div1Name$, div2Name$, div3Name$, div4Name$
 
-        For XW = 1 To 40
+        For XW = 1 To TEAMS_PER_LEAGUE
             Input #2, statFiles$(XW)
             compileTeams$(XW) = statFiles$(XW)
         Next
 
         Close 2
 
-        For XW = 1 To 40
+        For XW = 1 To TEAMS_PER_LEAGUE
 
             fullWins = 0
             fullLosses = 0
@@ -85,7 +85,7 @@ Sub CompileLeague ()
 
                     confGame = 0
 
-                    For X = 1 To 40:
+                    For X = 1 To TEAMS_PER_LEAGUE:
 
                         If compileTeams$(X) = WT$ Then
 
@@ -264,7 +264,7 @@ End Sub
 'to existing leaders and updates as needed
 Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
 
-    Dim PS$(40)
+    Dim PS$(TEAMS_PER_LEAGUE)
 
     Shared NM$()
     Shared compileZ2$(), compileZ3$()
@@ -1176,7 +1176,7 @@ Sub CalcStatTotals (WT$, totalGames)
     Next X
 
     3530 '
-    For Z = 1 To 40:
+    For Z = 1 To TEAMS_PER_LEAGUE
 
         If BAT%(3) = 0 Then BAT%(3) = 1
 
@@ -1217,7 +1217,7 @@ Sub CalcStatTotals (WT$, totalGames)
 
         Next Z
 
-        For Z = 1 To 40
+        For Z = 1 To TEAMS_PER_LEAGUE
             If OFT!(Z, 1) = OFT!(40, 1) Then 
                 BA$(Z) = "*"
             End If
@@ -1225,7 +1225,7 @@ Sub CalcStatTotals (WT$, totalGames)
 
     End If
 
-    For Z = 1 To 40
+    For Z = 1 To TEAMS_PER_LEAGUE
 
         If PIT%(1) = 0 Then PIT%(1) = 1: PIT%(4) = 3
 
@@ -1266,7 +1266,7 @@ Sub CalcStatTotals (WT$, totalGames)
 
         Next Z
 
-        For Z = 1 To 40:
+        For Z = 1 To TEAMS_PER_LEAGUE
             If DFT!(Z, 1) = DFT!(40, 1) Then ER$(Z) = "*": ER$(Z) = "*"
         Next Z
 
@@ -1345,7 +1345,7 @@ Sub PostLeaders (league$, leaderFile$, APP)
 
     Open diskPaths$(2) + leaderFile$ + ".LDR" For Output As #2
 
-    For X = 1 To 40:
+    For X = 1 To TEAMS_PER_LEAGUE
         Write #2, compileTeams$(X), O1(X), O2(X)
     Next
 
@@ -1353,14 +1353,14 @@ Sub PostLeaders (league$, leaderFile$, APP)
         Write #2, compileZ2$(X), compileZ3$(X), compileZ1!(X, 1), compileZ1!(X, 2)
     Next
 
-    For X = 1 To 40:
+    For X = 1 To TEAMS_PER_LEAGUE
         Write #2, BA$(X)
         For M = 1 To 14:
             Write #2, OFT!(X, M)
         Next
     Next
 
-    For X = 1 To 40:
+    For X = 1 To TEAMS_PER_LEAGUE
         Write #2, ER$(X)
         For M = 1 To 14:
             Write #2, DFT!(X, M)

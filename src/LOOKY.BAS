@@ -100,9 +100,9 @@ End Sub
 'stats into arrays
 Sub LoadTeamStats (statFile$, nbrGames)
 
-    Shared EW, EL
+    Shared extraInnWins, extraInnLosses
     Shared homeWins, homeLosses
-    Shared LTL, LTW, ORW, ORL
+    Shared lastTenLosses, lastTenWins, oneRunWins, oneRunLosses
     Shared roadWins, roadLosses
     Shared totalWins, totalLosses
 
@@ -121,14 +121,14 @@ Sub LoadTeamStats (statFile$, nbrGames)
     totalLosses = 0
     roadWins = 0
     roadLosses = 0
-    ORW = 0
-    ORL = 0
+    oneRunWins = 0
+    oneRunLosses = 0
     homeWins = 0
     homeLosses = 0
-    EW = 0
-    EL = 0
-    LTL = 0
-    LTW = 0
+    extraInnWins = 0
+    extraInnLosses = 0
+    lastTenLosses = 0
+    lastTenWins = 0
 
     Open diskPaths$(1) + statFile$ For Input As #1
 
@@ -227,26 +227,34 @@ Sub LoadTeamStats (statFile$, nbrGames)
     Close #1
 
     For I = 1 To nbrGames
-        If Abs(teamScore(I) - oppScore(I)) = 1 And teamScore(I) > oppScore(I) Then ORW = ORW + 1
-        If Abs(teamScore(I) - oppScore(I)) = 1 And teamScore(I) < oppScore(I) Then ORL = ORL + 1
+
+        If Abs(teamScore(I) - oppScore(I)) = 1 And teamScore(I) > oppScore(I) Then oneRunWins = oneRunWins + 1
+        If Abs(teamScore(I) - oppScore(I)) = 1 And teamScore(I) < oppScore(I) Then oneRunLosses = oneRunLosses + 1
+
         If teamScore(I) > oppScore(I) Then totalWins = totalWins + 1
-        If teamScore(I) > oppScore(I) And nbrInnings(I) > 9 Then EW = EW + 1
+        If teamScore(I) > oppScore(I) And nbrInnings(I) > 9 Then extraInnWins = extraInnWins + 1
         If teamScore(I) > oppScore(I) And locIndicator$(I) = "A" Then roadWins = roadWins + 1
         If teamScore(I) > oppScore(I) And locIndicator$(I) = "H" Then homeWins = homeWins + 1
+
         If oppScore(I) > teamScore(I) Then totalLosses = totalLosses + 1
-        If oppScore(I) > teamScore(I) And nbrInnings(I) > 9 Then EL = EL + 1
+        If oppScore(I) > teamScore(I) And nbrInnings(I) > 9 Then extraInnLosses = extraInnLosses + 1
         If oppScore(I) > teamScore(I) And locIndicator$(I) = "A" Then roadLosses = roadLosses + 1
         If oppScore(I) > teamScore(I) And locIndicator$(I) = "H" Then homeLosses = homeLosses + 1
+
     Next I
 
     If nbrGames <= 10 Then
-        LTL = totalLosses
-        LTW = totalWins
+
+        lastTenLosses = totalLosses
+        lastTenWins = totalWins
+
     Else
+
         M = nbrGames - 9
+
         For J = M To nbrGames
-            If teamScore(J) > oppScore(J) Then LTW = LTW + 1
-            If oppScore(J) > teamScore(J) Then LTL = LTL + 1
+            If teamScore(J) > oppScore(J) Then lastTenWins = lastTenWins + 1
+            If oppScore(J) > teamScore(J) Then lastTenLosses = lastTenLosses + 1
         Next J
 
     End If
@@ -320,9 +328,6 @@ Sub ViewAndPrintOptions (statFile$, teamName$, nbrGames, menuExit)
 
                     For I = 1 To nbrGames
 
-                        'winPitcher$() = Winning Pitcher
-                        'losePitcher$() = Losing Pitcher
-                        'nbrInnings() = Innings
                         Print Str$(teamScore(I)); Tab(6); Left$(oppName$(I), 15); Tab(22); Str$(oppScore(I)); Tab(27); "("; locIndicator$(I); ")"; Tab(33); winPitcher$(I); Tab(50); losePitcher$(I); Tab(66); nbrInnings(I)
 
                         If (I Mod 20 = 0) Then
@@ -354,7 +359,42 @@ Sub ViewAndPrintOptions (statFile$, teamName$, nbrGames, menuExit)
                     '
 
                 Case 3, 4
-                    Call NewPrintStats(statFile$, teamName$, nbrGames, Selection%, splitScreenChoice%)
+                
+                    Color 15, 0
+                    Cls
+
+                    Call MenuBox(8, 25, 24, 5, 15, 1)
+
+                    Do
+
+                        Locate 10, 32
+                        Color 7, 1
+
+                        Locate , 32: Print "SEND TO ";
+                        Color 15: Print "F";
+                        Color 7: Print "ILE"
+                        Locate , 32: Print "SEND TO ";
+                        Color 15: Print "P";
+                        Color 7: Print "RINTER"
+
+                        I$ = GetKeyPress$
+
+                        Color 14, 0
+
+                    Loop Until UCase$(I$) = "F" Or UCase$(I$) = "P"
+
+                    Select Case UCase$(I$)
+
+                        Case "F"
+                            userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                            If userFile$ <> "" Then
+                                Call NewPrintStats(0, userFile$, statFile$, teamName$, nbrGames, Selection%, splitStatChoice)
+                            End If
+
+                        Case "P"
+                            Call NewPrintStats(1, "REPORT", statFile$, teamName$, nbrGames, Selection%, splitStatChoice)
+
+                    End Select
 
             End Select
 
@@ -363,7 +403,7 @@ Sub ViewAndPrintOptions (statFile$, teamName$, nbrGames, menuExit)
                 Color 15, 0
                 Cls
 
-                Call ViewStatSummary(statFile$, teamName$, splitScreenChoice%)
+                Call ViewStatSummary(statFile$, teamName$, splitStatChoice)
 
                 Color 15, 0
 
@@ -408,11 +448,11 @@ End Sub
 'selected team's record to the display,
 'then provides routines for output of
 'the other stat categories
-Sub ViewStatSummary (statFile$, teamName$, splitScreenChoice%)
+Sub ViewStatSummary (statFile$, teamName$, splitStatChoice)
 
-    Shared EW, EL
+    Shared extraInnWins, extraInnLosses
     Shared homeWins, homeLosses
-    Shared LTL, LTW, ORW, ORL
+    Shared lastTenLosses, lastTenWins, oneRunWins, oneRunLosses
     Shared roadWins, roadLosses
     Shared totalWins, totalLosses
 
@@ -449,13 +489,13 @@ Sub ViewStatSummary (statFile$, teamName$, splitScreenChoice%)
     Color 15: Print "("; roadWins; "-"; roadLosses; ")"
     Locate , 20
     Color 14: Print "LAST 10 GAMES  ";
-    Color 15: Print "("; LTW; " -"; LTL; ")"
+    Color 15: Print "("; lastTenWins; " -"; lastTenLosses; ")"
     Locate , 20
     Color 14: Print "EXTRA INNINGS  ";
-    Color 15: Print "("; EW; " -"; EL; ")"
+    Color 15: Print "("; extraInnWins; " -"; extraInnLosses; ")"
     Locate , 20
     Color 14: Print "ONE RUN GAMES  ";
-    Color 15: Print "("; ORW; " -"; ORL; ")"
+    Color 15: Print "("; oneRunWins; " -"; oneRunLosses; ")"
 
     I$ = GetKeyPress$
     Cls
@@ -463,7 +503,7 @@ Sub ViewStatSummary (statFile$, teamName$, splitScreenChoice%)
     'Call TITLE_STATS
 
     Locate 1, 1
-    Print Tab(80);
+    Print Tab(80); " ";
 
     Xcoord = Len(teamName$)
     Xcoord = Int((80 - Xcoord) / 2)
@@ -604,12 +644,13 @@ Sub ViewStatSummary (statFile$, teamName$, splitScreenChoice%)
             Locate , 22: Print Using "##"; statB0%(I, 13);
             Locate , 27: Print Using "##"; statB0%(I, 15);
 
-            RQ$ = Right$(statFile$, 2)
+            RQ = Val(Right$(statFile$, 2))
             RT = 60
-            RQ = Val(RQ$)
             If RQ > RT Then
+                '# games afer 1960
                 QT = 162
             Else
+                '# games before 1960
                 QT = 154
             End If
 
@@ -794,7 +835,7 @@ Sub ViewStatSummary (statFile$, teamName$, splitScreenChoice%)
     Print "    WON: "; W2%; "  LOST: "; L2%
     Color 14, 0
     Print
-    Print "  TEAM BATTING TOTALS"
+    Print "  TEAM BATTING TOtotAwayLossesS"
     Color 15, 1
     Print "  AB    R    H  RBI  2B  3B  HR    BA   SLG   OBP   SO   BB  SB  CS"
     Color 14, 0
@@ -815,7 +856,7 @@ Sub ViewStatSummary (statFile$, teamName$, splitScreenChoice%)
 
     I$ = GetKeyPress$
 
-    If splitScreenChoice% <> 0 Then
+    If splitStatChoice <> 0 Then
         ' DISPLAY SPLIT STATS
         Cls
         Color teamRatings%(11), teamRatings%(12): Print teamName$;
@@ -952,7 +993,7 @@ Sub ViewStatSummary (statFile$, teamName$, splitScreenChoice%)
     Print "    WON: "; W2%; "  LOST: "; L2%
     Color 14, 0
     Print
-    Print "  TEAM PITCHING TOTALS"
+    Print "  TEAM PITCHING TOtotAwayLossesS"
     Color 15, 4
     Print "  W   L  SV     IP    H   BB   SO   ERA   G  GS  CG  RUN   ER ShO HRA  DP"
     Color 14, 0
@@ -992,15 +1033,15 @@ Sub ReportsAllTeams ()
 
         Open diskPaths$(2) + leagStatFile$ + ".TMS" For Input As #2
 
-        Input #2, league$, D1$, D2$, D3$, D4$
+        Input #2, league$, div1Name$, div2Name$, div3Name$, div4Name$
 
-        For XW = 1 To 40
+        For XW = 1 To TEAMS_PER_LEAGUE
             Input #2, statFiles$(XW)
         Next
 
         Close 2
 
-        For XW = 1 To 40
+        For XW = 1 To TEAMS_PER_LEAGUE
 
             If _FileExists(diskPaths$(1) + statFiles$(XW)) Then
 
@@ -1045,10 +1086,44 @@ Sub ReportsAllTeams ()
 
                 Close #1
 
-                BP = 1 'this doesn't appear to be used
-                X = 3
+                Color 15, 0
+                Cls
 
-                Call NewPrintStats(statFile$, teamName$, nbrGames, X, splitScreenChoice%)
+                Call MenuBox(8, 25, 24, 5, 15, 1)
+
+                Do
+
+                    Locate 10, 32
+                    Color 7, 1
+
+                    Locate , 32: Print "SEND TO ";
+                    Color 15: Print "F";
+                    Color 7: Print "ILE"
+                    Locate , 32: Print "SEND TO ";
+                    Color 15: Print "P";
+                    Color 7: Print "RINTER"
+                    Locate , 32: Print "SEND TO ";
+                    Color 15: Print "S";
+                    Color 7: Print "CREEN"
+
+                    I$ = GetKeyPress$
+
+                    Color 14, 0
+
+                Loop Until UCase$(I$) = "F" Or UCase$(I$) = "P"
+
+                Select Case UCase$(I$)
+
+                    Case "F"
+                        userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                        If userFile$ <> "" Then
+                            Call NewPrintStats(0, userFile$, statFiles$(XW), teamName$, nbrGames, 3, splitStatChoice)
+                        End If
+
+                    Case "P"
+                        Call NewPrintStats(1, "REPORT", statFiles$(XW), teamName$, nbrGames, 3, splitStatChoice)
+
+                End Select
 
             End If
 
@@ -1066,13 +1141,13 @@ End Sub
 'This subroutine formats and outputs the 
 'team's schedule results and stats to the 
 'default printer
-Sub NewPrintStats (statFile$, teamName$, nbrGames, printChoice, splitScreenChoice%)
+Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printChoice, splitStatChoice)
 
     Shared L2%, W2%
 
-    Shared EW, EL
+    Shared extraInnWins, extraInnLosses
     Shared homeWins, homeLosses
-    Shared LTL, LTW, ORW, ORL
+    Shared lastTenLosses, lastTenWins, oneRunWins, oneRunLosses
     Shared roadWins, roadLosses
     Shared totalWins, totalLosses
 
@@ -1086,20 +1161,31 @@ Sub NewPrintStats (statFile$, teamName$, nbrGames, printChoice, splitScreenChoic
     Shared teamScore(), nbrInnings()
     Shared statSS%(), oppScore()
 
+    RQ = Val(Right$(statFiles$(XW), 2))
+    RT = 60
+    If RQ > RT Then
+        '# games afer 1960
+        QT = 162
+    Else
+        '# games before 1960
+        QT = 154
+    End If
+
+
     ' *** NEW PRINT ROUTINE 6-24-90 ***
     If printChoice <> 3 Then
         totalWins = 0
         totalLosses = 0
-        ORW = 0
-        ORL = 0
+        oneRunWins = 0
+        oneRunLosses = 0
         roadWins = 0
         roadLosses = 0
         homeWins = 0
         homeLosses = 0
-        EW = 0
-        EL = 0
-        LTL = 0
-        LTW = 0
+        extraInnWins = 0
+        extraInnLosses = 0
+        lastTenLosses = 0
+        lastTenWins = 0
 
         Cls
         LPrint "        SCHEDULE RESULTS FOR "; teamName$
@@ -1116,9 +1202,9 @@ Sub NewPrintStats (statFile$, teamName$, nbrGames, printChoice, splitScreenChoic
         LPrint Tab(20); "RECORD         ("; Str$(totalWins); " -"; Str$(totalLosses); " )"
         LPrint Tab(20); "HOME RECORD    ("; Str$(homeWins); " -"; Str$(homeLosses); " )"
         LPrint Tab(20); "ROAD RECORD    ("; Str$(roadWins); " -"; Str$(roadLosses); " )"
-        LPrint Tab(20); "LAST 10 GAMES  ("; Str$(LTW); " -"; Str$(LTL); " )"
-        LPrint Tab(20); "EXTRA INNINGS  ("; Str$(EW); " -"; Str$(EL); " )"
-        LPrint Tab(20); "ONE RUN GAMES  ("; Str$(ORW); " -"; Str$(ORL); " )"
+        LPrint Tab(20); "LAST 10 GAMES  ("; Str$(lastTenWins); " -"; Str$(lastTenLosses); " )"
+        LPrint Tab(20); "EXTRA INNINGS  ("; Str$(extraInnWins); " -"; Str$(extraInnLosses); " )"
+        LPrint Tab(20); "ONE RUN GAMES  ("; Str$(oneRunWins); " -"; Str$(oneRunLosses); " )"
         LPrint Chr$(12)
 
     End If
@@ -1195,16 +1281,6 @@ Sub NewPrintStats (statFile$, teamName$, nbrGames, printChoice, splitScreenChoic
             End If
 
             LPrint Tab(87);
-
-            RQ$ = Right$(statFile$, 2)
-            RT = 60
-            RQ = Val(RQ$)
-
-            If RQ > RT Then
-                QT = 162
-            Else
-                QT = 154
-            End If
 
             If statB%(I) > 0 And (Int((((statB%(I) + 0) / QT) * (statT1!(9) + 1)) + .5) - (statB0%(I, 0) + 0)) > 0 Then
                 LPrint Using "###"; Int((((statB%(I) + 0) / QT) * (statT1!(9) + 1)) + .5) - (statB0%(I, 0) + 0);
@@ -1327,7 +1403,7 @@ Sub NewPrintStats (statFile$, teamName$, nbrGames, printChoice, splitScreenChoic
 
     Next
 
-    LPrint " ": LPrint "TOTALS";
+    LPrint " ": LPrint "TOtotAwayLossesS";
     LPrint Tab(12);: LPrint Using "###"; nbrGames;
     LPrint Tab(19);: LPrint Using "####"; statT0!(2);
     LPrint Tab(27);: LPrint Using "###"; statT0!(4);
@@ -1372,9 +1448,9 @@ Sub NewPrintStats (statFile$, teamName$, nbrGames, printChoice, splitScreenChoic
     LPrint Tab(20); "RECORD         ("; Str$(totalWins); " -"; Str$(totalLosses); " )"
     LPrint Tab(20); "HOME RECORD    ("; Str$(homeWins); " -"; Str$(homeLosses); " )"
     LPrint Tab(20); "ROAD RECORD    ("; Str$(roadWins); " -"; Str$(roadLosses); " )"
-    LPrint Tab(20); "LAST 10 GAMES  ("; Str$(LTW); " -"; Str$(LTL); " )"
-    LPrint Tab(20); "EXTRA INNINGS  ("; Str$(EW); " -"; Str$(EL); " )"
-    LPrint Tab(20); "ONE RUN GAMES  ("; Str$(ORW); " -"; Str$(ORL); " )"
+    LPrint Tab(20); "LAST 10 GAMES  ("; Str$(lastTenWins); " -"; Str$(lastTenLosses); " )"
+    LPrint Tab(20); "EXTRA INNINGS  ("; Str$(extraInnWins); " -"; Str$(extraInnLosses); " )"
+    LPrint Tab(20); "ONE RUN GAMES  ("; Str$(oneRunWins); " -"; Str$(oneRunLosses); " )"
     LPrint Chr$(12)
     LPrint teamName$; "    WON: "; W2%; " LOST: "; L2%
     LPrint "PITCHERS    W  L SV  IP     H  BB  SO  ERA    G GS CG RUN  ER ShO HR DP %RIP SH SF  RI RIS BS   SUP QS"
@@ -1431,7 +1507,7 @@ Sub NewPrintStats (statFile$, teamName$, nbrGames, printChoice, splitScreenChoic
     Next
 
     LPrint
-    LPrint "TOTALS";
+    LPrint "TOtotAwayLossesS";
     LPrint Tab(18);: LPrint Using "##"; statT1!(12);
     LPrint Tab(26);: LPrint Using "####"; statT1!(1);
     LPrint Tab(34);: LPrint Using "####"; statT1!(5);
@@ -1461,7 +1537,7 @@ Sub NewPrintStats (statFile$, teamName$, nbrGames, printChoice, splitScreenChoic
         End If
     Next
 
-    If splitScreenChoice% <> 0 Then
+    If splitStatChoice <> 0 Then
         'DISPLAY SPLIT STATS
         LPrint teamName$;
         LPrint Tab(15); "VS L  AB 2B 3B HR  BB   K   AVG  VS R  AB 2B 3B HR  BB   K   AVG"
