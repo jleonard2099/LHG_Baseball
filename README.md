@@ -29,7 +29,7 @@ Run Hello.exe to start with the main game menu.
 Teams files will not be included at this time. However, if you're nice enough, the people at the [Haffner Files Facebook group](https://www.facebook.com/groups/183455342454939) will be glad to help you.
 
 ### Support ###
-Contact me at my [profile page](https://github.com/jleonard2099/jleonard2099/tree/main) for now.
+Contact support@lhgames.net with inquiries for now.
 Bugs and/or feature requests can be submitted using GitHub (see the "Issues" tab at the top of page). This will be the easiest way for me to implement ideas.
 
 # Project Status #
@@ -38,9 +38,9 @@ Code now compiles in a modern environment and has been mostly re-factored. All k
 
 All code features have been thoroughly tested with known bugs documented (including those from the original game - that I am aware of) and being worked on.
 
-Code has been documented everywhere possible and cleaned up - including   global file and team selection routine. Game code is consistent in flow and naming across eacch sport.
+Code has been documented everywhere possible and cleaned up - including   global file and team selection routine. Game code is consistent in flow and naming across eacch sport. Improvements in logic and variable names have been made to code and error messages and handling are now more consistent.
 
-Improvements in logic and variable names have been made to code and error messages and handling are now more consistent.
+A few accuracy improvements have been made and support files have been created. Some user interface improvements are under way. 
 
 ## Road Map ##
 ### Phase 1 ###
@@ -72,7 +72,10 @@ Contact me directly if interested in contributing. Only considering people who s
 ### Authors / Acknowledgment ###
 - [Manual images created by Cool Clips](http://search.coolclips.com/)
 - [Game icons created by Joseph Gan (Icon-Icons)](https://icon-icons.com/users/XHgnBHIfJk0ZlajSy0A0x/icon-sets/)
+- [Save icons created by Those Icons - Flaticon](https://www.flaticon.com/free-icons/save)
+- [File explorer icons created by juicy_fish - Flaticon](https://www.flaticon.com/free-icons/file-explorer)
 - I am responsible for maintaining / updating most of the code and will spend equal effort cleaning up code as improving it
+- Randy Dudley, the original author of the LOOKY subroutine, for his crazy attention to detail and testing all my work
 - Jason Lamb, for lending his expertise in BASIC to helping me learn some standards and rewriting the menu functions.
 - Lance Haffner, for his hard work over 2 decades giving people endless hours of playable sports games and making dreams come true.
 - [Lance Haffner Sports Sims](https://www.facebook.com/groups/115923978469802) Facebook group admin Philip Lupi, for his hard work keeping Lance's games alive and active with fans old and new.
