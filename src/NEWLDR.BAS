@@ -12,7 +12,8 @@ Sub NEWLDR ()
 
     Shared CLT!(), CWS!()
     Shared ELL!(), EWW!(), HLL!(), HWW!()
-    Shared expLL!(), LLS!(), lastTenLosses!(), lastTenWins!(), LWS!()\7    Shared RLL!(), RWW!(), TLS!(), TWS!(), WW!()
+    Shared expLL!(), LLS!(), lastTenLosses!(), lastTenWins!(), LWS!()
+    Shared RLL!(), RWW!(), TLS!(), TWS!(), WW!()
 
     Shared TML$(), Z1$()
 
@@ -122,48 +123,28 @@ Sub NEWLDR ()
                             Next
 
                             Close #1
+                            
+                            userKey$ = GetOutputOptions$
 
-                            Color 15, 0
-                            Cls
+                            If userKey$ <> Chr$(27) Then
 
-                            Call MenuBox(8, 25, 24, 5, 15, 1)
+                                Select Case userKey$
 
-                            Do
+                                    Case "F"
+                                        userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                                        If userFile$ <> "" Then
+                                            Call NewStandings_Report(0, userFile$, league$)
+                                        End If
 
-                                Locate 10, 32
-                                Color 7, 1
+                                    Case "P"
+                                        Call NewStandings_Report(1, "REPORT", league$)
 
-                                Locate , 32: Print "SEND TO ";
-                                Color 15: Print "F";
-                                Color 7: Print "ILE"
-                                Locate , 32: Print "SEND TO ";
-                                Color 15: Print "P";
-                                Color 7: Print "RINTER"
-                                Locate , 32: Print "SEND TO ";
-                                Color 15: Print "S";
-                                Color 7: Print "CREEN"
+                                    Case "S":
+                                        Call NewStandings_Screen(league$)
 
-                                I$ = GetKeyPress$
-
-                                Color 14, 0
-
-                            Loop Until UCase$(I$) = "F" Or UCase$(I$) = "P" Or UCase$(I$) = "S"
-
-                            Select Case UCase$(I$)
-
-                                Case "F"
-                                    userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
-                                    If userFile$ <> "" Then
-                                        Call NewStandings_Report(0, userFile$, league$)
-                                    End If
-
-                                Case "P"
-                                    Call NewStandings_Report(1, "REPORT", league$)
-
-                                Case "S":
-                                    Call NewStandings_Screen(league$)
-
-                            End Select
+                                End Select
+                                
+                            End If
 
                         End If
 
@@ -976,41 +957,24 @@ Sub ViewBattingLeaders (leaderFile$, JB, JP, tStats, ttStats)
                 Case 2:
                     Call GetListLength(printOrView, QW, LG)
                     
-                    Color 15, 0
-                    Cls
+                    userKey$ = GetPrintOptions$
 
-                    Call MenuBox(8, 25, 24, 5, 15, 1)
+                    If userKey$ <> Chr$(27) Then
 
-                    Do
+                        Select Case userKey$
 
-                        Locate 10, 32
-                        Color 7, 1
+                            Case "F"
+                                userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                                If userFile$ <> "" Then
+                                    Call PrintLeaders(0, userFile$, TVN, LG, B9)
+                                End If
 
-                        Locate , 32: Print "SEND TO ";
-                        Color 15: Print "F";
-                        Color 7: Print "ILE"
-                        Locate , 32: Print "SEND TO ";
-                        Color 15: Print "P";
-                        Color 7: Print "RINTER"
+                            Case "P"
+                                Call PrintLeaders(1, "REPORT", TVN, LG, B9)
 
-                        I$ = GetKeyPress$
-
-                        Color 14, 0
-
-                    Loop Until UCase$(I$) = "F" Or UCase$(I$) = "P"
-
-                    Select Case UCase$(I$)
-
-                        Case "F"
-                            userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
-                            If userFile$ <> "" Then
-                                Call PrintLeaders(0, userFile$, TVN, LG, B9)
-                            End If
-
-                        Case "P"
-                            Call PrintLeaders(1, "REPORT", TVN, LG, B9)
-
-                    End Select
+                        End Select
+                        
+                    End If
 
             End Select
 
@@ -1359,7 +1323,42 @@ Sub ViewPitchingLeaders (leaderFile$, JB, JP, tStats, ttStats)
                     Call DisplayPitchingLeaders(TVN, QW, categoryId)
                 Case 2
                     Call GetListLength(printOrView, QW, LG)
-                    Call PrintLeaders(TVN, LG, B9)
+
+                    Color 15, 0
+                    Cls
+
+                    Call MenuBox(8, 25, 24, 5, 15, 1)
+
+                    Do
+
+                        Locate 10, 32
+                        Color 7, 1
+
+                        Locate , 32: Print "SEND TO ";
+                        Color 15: Print "F";
+                        Color 7: Print "ILE"
+                        Locate , 32: Print "SEND TO ";
+                        Color 15: Print "P";
+                        Color 7: Print "RINTER"
+
+                        I$ = GetKeyPress$
+
+                        Color 14, 0
+
+                    Loop Until UCase$(I$) = "F" Or UCase$(I$) = "P"
+
+                    Select Case UCase$(I$)
+
+                        Case "F"
+                            userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                            If userFile$ <> "" Then
+                                Call PrintLeaders(0, userFile$, TVN, LG, B9)
+                            End If
+
+                        Case "P"
+                            Call PrintLeaders(1, "REPORT", TVN, LG, B9)
+
+                    End Select
 
             End Select
 
@@ -2331,10 +2330,10 @@ Sub PrintLeaders (printDest, destFile$, TVN, maxRecords, categoryID)
     Shared TYP!() 
     Shared expBatCategory$(), TMM$(), TPP$()
 
-	Color 15, 0
-	Cls
+    Color 15, 0
+    Cls
 
-	Open destFile$ For Output As #1
+    Open destFile$ For Output As #1
 
     Print #1, "     PLAYER                  TEAM                     "; expBatCategory$(categoryID)
 
@@ -2365,22 +2364,22 @@ Sub PrintLeaders (printDest, destFile$, TVN, maxRecords, categoryID)
 
     Next W
 
-	If printDest = 1 Then
+    If printDest = 1 Then
 
-		Open destFile$ For Input As #2
+        Open destFile$ For Input As #2
 
-		Do While Not EOF(2)
-			Line Input #2, X$
-			Print #1, X$
-		Loop
+        Do While Not EOF(2)
+            Line Input #2, X$
+            Print #1, X$
+        Loop
 
-		Close #2
+        Close #2
 
-		Print #1, Chr$(12)
+        Print #1, Chr$(12)
 
-		Kill destFile$
+        Kill destFile$
 
-	End If
+    End If
 
 End Sub
 

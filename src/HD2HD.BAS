@@ -79,7 +79,7 @@ Sub Hd2HdPro_League ()
     Shared homeLosses(), homeWins()
     Shared homeScoreTeam(), homeScoreOpp(), awayScoreTeam(), awayScoreOpp()
     Shared totHomeScoreTeam(), totHomeScoreOpp(), totAwayScoreTeam(), totAwayScoreOpp()
-    Shared totHomeWin(), totHomeLoss(), totAwayWin(), totAwayLoss()
+    Shared totHomeWin(), totHomeLosses(), totAwayWin(), totAwayLosses()
 
     Shared DV$(), locIndicator$(), losePitcher$(), oppName$()
     Shared winPitcher$(), Z1$(), Z2$()
@@ -160,47 +160,27 @@ Sub Hd2HdPro_League ()
 
         End If 'Done checking for new team
 
-        Color 7, 0
-        Cls
+        'Color 7, 0
+        'Cls
 
         If teamNbr > 0 And ExitCode% <> 27 And ExitCode% <> 0 Then
 
-            Call MenuBox(8, 25, 24, 5, 15, 1)
+            userKey$ = GetOutputOptions$
 
-            Do
+            If userKey$ <> Chr$(27) Then
 
-                Locate 10
-                Color 7, 1
+                Select Case userKey$
 
-                Locate , 32: Print "SEND TO ";
-                Color 15: Print "F";
-                Color 7: Print "ILE"
-                Locate , 32: Print "SEND TO ";
-                Color 15: Print "P";
-                Color 7: Print "RINTER"
-                Locate , 32: Print "SEND TO ";
-                Color 15: Print "S";
-                Color 7: Print "CREEN"
+                    Case "F"                   
+                        printChoice = 0
+                        VPP = 0
+                    Case "P"
+                        printChoice = 1
+                        VPP = 0
+                    Case "S"
+                        VPP = 1
 
-                J$ = GetKeyPress$
-
-                Color 14, 0
-
-            Loop Until UCase$(J$) = "F" Or UCase$(J$) = "P" Or UCase$(J$) = "S" Or J$ = Chr$(27)
-
-            If J$ <> Chr$(27) Then
-
-                If UCase$(J$) = "F" Then
-                    printChoice = 0
-                End If
-                If UCase$(J$) = "P" Then
-                    printChoice = 1
-                End If
-                If UCase$(J$) = "S" Then
-                    VPP = 1
-                Else
-                    VPP = 0
-                End If
+                End Select
 
                 'Haven't checked that file exists
                 Open diskPaths$(2) + leagueFile$ + ".TMI" For Input As #3
@@ -226,7 +206,7 @@ Sub Hd2HdPro_League ()
                 'Initialization for 1st league
                 Erase awayLosses, awayWins, homeLosses, homeWins
                 Erase homeScoreTeam, homeScoreOpp, awayScoreTeam, awayScoreOpp
-                Erase totHomeLoss, totHomeWin, totAwayLoss, totAwayWin
+                Erase totHomeLosses, totHomeWin, totAwayLosses, totAwayWin
                 Erase totHomeScoreTeam, totHomeScoreOpp, totAwayScoreTeam, totAwayScoreOpp
 
                 'Calculations for 1st league
@@ -321,12 +301,12 @@ Sub Hd2HdPro_League ()
                             RDD = 0
 
                             'Re-initialize for the next loop
-                            Erase totAwayLoss, totAwayWin, totHomeLoss, totHomeWin
+                            Erase totAwayLosses, totAwayWin, totHomeLosses, totHomeWin
                             Erase totHomeScoreTeam, totHomeScoreOpp, totAwayScoreTeam, totAwayScoreOpp
 
                     End Select
 
-                Loop Until UCase$(K$) = "A" Or UCase$(K$) = "R" Or UCase$(K$) = "S" Or K$ = Chr$(27) Or J$ = Chr$(27)
+                Loop Until UCase$(K$) = "A" Or UCase$(K$) = "R" Or UCase$(K$) = "S" Or K$ = Chr$(27)
 
             End If 'Done checking for stats file
 
@@ -372,8 +352,8 @@ Sub Hd2HdPro_Report (teamName$, printDest)
     Do
 
         Print #1, Tab(5); teamName$
-        Print #1, Tab(22); "------- HOME -------"; Tab(54); "------- AWAY -------"; Tab(86); "-------- TOtotAwayLossesS -------"
-        'Print #1, Tab(15); String$(7, 196); " HOME "; String$(7, 196); Tab(35); Chr$(194); String$(7, 196); " AWAY "; String$(9, 196); Tab(58); Chr$(194); String$(6, 196); " TOtotAwayLossesS "; String$(6, 196)
+        Print #1, Tab(22); "------- HOME -------"; Tab(54); "------- AWAY -------"; Tab(86); "-------- TOtotAwayLossesesS -------"
+        'Print #1, Tab(15); String$(7, 196); " HOME "; String$(7, 196); Tab(35); Chr$(194); String$(7, 196); " AWAY "; String$(9, 196); Tab(58); Chr$(194); String$(6, 196); " TOtotAwayLossesesS "; String$(6, 196)
         Print #1, Tab(22); "W"; Tab(26); "L"; Tab(30); "PCT."; Tab(36); "RF"; Tab(40); "RA"; Tab(54); "W"; Tab(58); "L"; Tab(62); "PCT."; Tab(68); "RF"; Tab(72); "RA"; Tab(86); "W"; Tab(91); "L"; Tab(97); "PCT."; Tab(103); "RF"; Tab(107); "RA"
         'Print #1, Tab(16); "W"; Tab(19); "L"; Tab(23); "PCT."; Tab(28); "RF"; Tab(32); "RA"; Tab(35); Chr$(179); Tab(38); "W"; Tab(41); "L"; Tab(45); "PCT."; Tab(50); "RF"; Tab(54); "RA"; Tab(58); Chr$(179); Tab(61); "W"; Tab(64); "L"; Tab(68); "PCT."; Tab(73); "RF"; Tab(77); "RA"
 
@@ -392,8 +372,12 @@ Sub Hd2HdPro_Report (teamName$, printDest)
                 Print #1, Tab(21); Using "##"; homeWins(K);
                 Print #1, Tab(25); Using "##"; homeLosses(K);
 
-                If homeWins(K) = homeWins(K) + homeLosses(K) And homeWins(K) <> 0 Then Print #1, Tab(28); "1.000";
-                If homeWins(K) = 0 Then Print #1, Tab(29); ".000";
+                If homeWins(K) = homeWins(K) + homeLosses(K) And homeWins(K) <> 0 Then 
+                    Print #1, Tab(28); "1.000";
+                End If
+                If homeWins(K) = 0 Then 
+                    Print #1, Tab(29); ".000";
+                End If
                 If homeWins(K) > 0 And homeWins(K) < homeWins(K) + homeLosses(K) Then
                     statPCT! = (homeWins(K) / (homeWins(K) + homeLosses(K)))
                     Print #1, Tab(29); Using ".###"; statPCT!;
@@ -404,8 +388,12 @@ Sub Hd2HdPro_Report (teamName$, printDest)
                 Print #1, Tab(53); Using "##"; homeWins(K);
                 Print #1, Tab(57); Using "##"; awayLosses(K);
 
-                If homeWins(K) = homeWins(K) + awayLosses(K) And homeWins(K) <> 0 Then Print #1, Tab(60); "1.000";
-                If homeWins(K) = 0 Then Print #1, Tab(61); ".000";
+                If homeWins(K) = homeWins(K) + awayLosses(K) And homeWins(K) <> 0 Then 
+                    Print #1, Tab(60); "1.000";
+                End If
+                If homeWins(K) = 0 Then 
+                    Print #1, Tab(61); ".000";
+                End If
                 If homeWins(K) > 0 And homeWins(K) < homeWins(K) + awayLosses(K) Then
                     statPCT! = (homeWins(K) / (homeWins(K) + awayLosses(K)))
                     Print #1, Tab(61); Using ".###"; statPCT!;
@@ -416,8 +404,12 @@ Sub Hd2HdPro_Report (teamName$, printDest)
                 Print #1, Tab(85); Using "##"; homeWins(K) + homeWins(K);
                 Print #1, Tab(90); Using "##"; homeLosses(K) + awayLosses(K);
 
-                If homeWins(K) + homeWins(K) = homeWins(K) + homeWins(K) + homeLosses(K) + awayLosses(K) And homeWins(K) + homeWins(K) <> 0 Then Print #1, Tab(95); "1.000";
-                If (homeWins(K) + homeWins(K)) = 0 Then Print #1, Tab(96); ".000";
+                If homeWins(K) + homeWins(K) = homeWins(K) + homeWins(K) + homeLosses(K) + awayLosses(K) And homeWins(K) + homeWins(K) <> 0 Then 
+                    Print #1, Tab(95); "1.000";
+                End If
+                If (homeWins(K) + homeWins(K)) = 0 Then 
+                    Print #1, Tab(96); ".000";
+                End If
                 If (homeWins(K) + homeWins(K)) > 0 And (homeWins(K) + homeWins(K)) < (homeWins(K) + homeWins(K) + homeLosses(K) + awayLosses(K)) Then
                     statPCT! = ((homeWins(K) + homeWins(K)) / (homeWins(K) + homeWins(K) + homeLosses(K) + awayLosses(K)))
                     Print #1, Tab(96); Using ".###"; statPCT!;
@@ -427,9 +419,9 @@ Sub Hd2HdPro_Report (teamName$, printDest)
                 Print #1, Tab(106); Using "###"; homeScoreOpp(K) + awayScoreOpp(K)
 
                 totHomeWin(RDD) = totHomeWin(RDD) + homeWins(K)
-                totHomeLoss(RDD) = totHomeLoss(RDD) + homeLosses(K)
+                totHomeLosses(RDD) = totHomeLosses(RDD) + homeLosses(K)
                 totAwayWin(RDD) = totAwayWin(RDD) + awayWins(K)
-                totAwayLoss(RDD) = totAwayLoss(RDD) + awayLosses(K)
+                totAwayLosses(RDD) = totAwayLosses(RDD) + awayLosses(K)
                 totHomeScoreTeam(RDD) = totHomeScoreTeam(RDD) + homeScoreTeam(K)
                 totHomeScoreOpp(RDD) = totHomeScoreOpp(RDD) + homeScoreOpp(K)
                 totAwayScoreTeam(RDD) = totAwayScoreTeam(RDD) + awayScoreTeam(K)
@@ -439,38 +431,50 @@ Sub Hd2HdPro_Report (teamName$, printDest)
 
         Next K
 
-        Print #1, Tab(5); "TOtotAwayLossesS";
+        Print #1, Tab(5); "TOtotAwayLossesesS";
         Print #1, Tab(21); Using "##"; totHomeWin(RDD);
-        Print #1, Tab(25); Using "##"; totHomeLoss(RDD);
+        Print #1, Tab(25); Using "##"; totHomeLosses(RDD);
 
-        If totHomeWin(RDD) = totHomeWin(RDD) + totHomeLoss(RDD) And totHomeWin(RDD) <> 0 Then Print #1, Tab(28); "1.000";
-        If totHomeWin(RDD) = 0 Then Print #1, Tab(29); ".000";
-        If totHomeWin(RDD) > 0 And totHomeWin(RDD) < totHomeWin(RDD) + totHomeLoss(RDD) Then
-            statPCT! = (totHomeWin(RDD) / (totHomeWin(RDD) + totHomeLoss(RDD)))
+        If totHomeWin(RDD) = totHomeWin(RDD) + totHomeLosses(RDD) And totHomeWin(RDD) <> 0 Then 
+            Print #1, Tab(28); "1.000";
+        End If
+        If totHomeWin(RDD) = 0 Then 
+            Print #1, Tab(29); ".000";
+        End If
+        If totHomeWin(RDD) > 0 And totHomeWin(RDD) < totHomeWin(RDD) + totHomeLosses(RDD) Then
+            statPCT! = (totHomeWin(RDD) / (totHomeWin(RDD) + totHomeLosses(RDD)))
             Print #1, Tab(29); Using ".###"; statPCT!;
         End If
 
         Print #1, Tab(35); Using "###"; totHomeScoreTeam(RDD);
         Print #1, Tab(39); Using "###"; totHomeScoreOpp(RDD);
         Print #1, Tab(53); Using "##"; totAwayWin(RDD);
-        Print #1, Tab(57); Using "##"; totAwayLoss(RDD);
+        Print #1, Tab(57); Using "##"; totAwayLosses(RDD);
 
-        If totAwayWin(RDD) = totAwayWin(RDD) + totAwayLoss(RDD) And totAwayWin(RDD) <> 0 Then Print #1, Tab(60); "1.000";
-        If totAwayWin(RDD) = 0 Then Print #1, Tab(61); ".000";
-        If totAwayWin(RDD) > 0 And totAwayWin(RDD) < totAwayWin(RDD) + totAwayLoss(RDD) Then
-            statPCT! = (totAwayWin(RDD) / (totAwayWin(RDD) + totAwayLoss(RDD)))
+        If totAwayWin(RDD) = totAwayWin(RDD) + totAwayLosses(RDD) And totAwayWin(RDD) <> 0 Then 
+            Print #1, Tab(60); "1.000";
+        End If
+        If totAwayWin(RDD) = 0 Then 
+            Print #1, Tab(61); ".000";
+        End If
+        If totAwayWin(RDD) > 0 And totAwayWin(RDD) < totAwayWin(RDD) + totAwayLosses(RDD) Then
+            statPCT! = (totAwayWin(RDD) / (totAwayWin(RDD) + totAwayLosses(RDD)))
             Print #1, Tab(61); Using ".###"; statPCT!;
         End If
 
         Print #1, Tab(67); Using "###"; totAwayScoreTeam(RDD);
         Print #1, Tab(71); Using "###"; totAwayScoreOpp(RDD);
         Print #1, Tab(84); Using "###"; totHomeWin(RDD) + totAwayWin(RDD);
-        Print #1, Tab(89); Using "###"; totHomeLoss(RDD) + totAwayLoss(RDD);
+        Print #1, Tab(89); Using "###"; totHomeLosses(RDD) + totAwayLosses(RDD);
 
-        If totHomeWin(RDD) + totAwayWin(RDD) = totHomeWin(RDD) + totAwayWin(RDD) + totHomeLoss(RDD) + totAwayLoss(RDD) And totHomeWin(RDD) + totAwayWin(RDD) <> 0 Then Print #1, Tab(95); "1.000";
-        If totHomeWin(RDD) + totAwayWin(RDD) = 0 Then Print #1, Tab(96); ".000";
-        If totHomeWin(RDD) + totAwayWin(RDD) > 0 And totHomeWin(RDD) + totAwayWin(RDD) < totHomeWin(RDD) + totAwayWin(RDD) + totHomeLoss(RDD) + totAwayLoss(RDD) Then
-            statPCT! = ((totHomeWin(RDD) + totAwayWin(RDD)) / (totHomeWin(RDD) + totAwayWin(RDD) + totHomeLoss(RDD) + totAwayLoss(RDD)))
+        If totHomeWin(RDD) + totAwayWin(RDD) = totHomeWin(RDD) + totAwayWin(RDD) + totHomeLosses(RDD) + totAwayLosses(RDD) And totHomeWin(RDD) + totAwayWin(RDD) <> 0 Then 
+            Print #1, Tab(95); "1.000";
+        End If
+        If totHomeWin(RDD) + totAwayWin(RDD) = 0 Then 
+            Print #1, Tab(96); ".000";
+        End If
+        If totHomeWin(RDD) + totAwayWin(RDD) > 0 And totHomeWin(RDD) + totAwayWin(RDD) < totHomeWin(RDD) + totAwayWin(RDD) + totHomeLosses(RDD) + totAwayLosses(RDD) Then
+            statPCT! = ((totHomeWin(RDD) + totAwayWin(RDD)) / (totHomeWin(RDD) + totAwayWin(RDD) + totHomeLosses(RDD) + totAwayLosses(RDD)))
             Print #1, Tab(96); Using ".###"; statPCT!;
         End If
 
@@ -486,7 +490,7 @@ Sub Hd2HdPro_Report (teamName$, printDest)
     Print #1,
     Print #1,
     Print #1,
-    Print #1, Tab(22); "------- HOME -------"; Tab(54); "------- AWAY -------"; Tab(86); "-------- TOtotAwayLossesS -------"
+    Print #1, Tab(22); "------- HOME -------"; Tab(54); "------- AWAY -------"; Tab(86); "-------- TOtotAwayLossesesS -------"
     Print #1, Tab(22); "W"; Tab(26); "L"; Tab(30); "PCT."; Tab(36); "RF"; Tab(40); "RA"; Tab(54); "W"; Tab(58); "L"; Tab(62); "PCT."; Tab(68); "RF"; Tab(72); "RA"; Tab(86); "W"; Tab(91); "L"; Tab(97); "PCT."; Tab(103); "RF"; Tab(107); "RA"
 
     Print
@@ -497,36 +501,48 @@ Sub Hd2HdPro_Report (teamName$, printDest)
 
             Print #1, Tab(2); DV$(W);
             Print #1, Tab(21); Using "##"; totHomeWin(W);
-            Print #1, Tab(25); Using "##"; totHomeLoss(W);
+            Print #1, Tab(25); Using "##"; totHomeLosses(W);
 
-            If totHomeWin(W) = totHomeWin(W) + totHomeLoss(W) And totHomeWin(W) <> 0 Then Print #1, Tab(28); "1.000";
-            If totHomeWin(W) = 0 Then Print #1, Tab(29); ".000";
-            If totHomeWin(W) > 0 And totHomeWin(W) < totHomeWin(W) + totHomeLoss(W) Then
-                statPCT! = (totHomeWin(W) / (totHomeWin(W) + totHomeLoss(W)))
+            If totHomeWin(W) = totHomeWin(W) + totHomeLosses(W) And totHomeWin(W) <> 0 Then 
+                Print #1, Tab(28); "1.000";
+            End If
+            If totHomeWin(W) = 0 Then 
+                Print #1, Tab(29); ".000";
+            End If
+            If totHomeWin(W) > 0 And totHomeWin(W) < totHomeWin(W) + totHomeLosses(W) Then
+                statPCT! = (totHomeWin(W) / (totHomeWin(W) + totHomeLosses(W)))
                 Print #1, Tab(29); Using ".###"; statPCT!;
             End If
 
             Print #1, Tab(35); Using "###"; totHomeScoreTeam(W);
             Print #1, Tab(39); Using "###"; totHomeScoreOpp(W);
             Print #1, Tab(53); Using "##"; totHomeWin(W);
-            Print #1, Tab(57); Using "##"; totAwayLoss(W);
+            Print #1, Tab(57); Using "##"; totAwayLosses(W);
 
-            If totHomeWin(W) = totHomeWin(W) + totAwayLoss(W) And totHomeWin(W) <> 0 Then Print #1, Tab(60); "1.000";
-            If totHomeWin(W) = 0 Then Print #1, Tab(61); ".000";
-            If totHomeWin(W) > 0 And totHomeWin(W) < totHomeWin(W) + totAwayLoss(W) Then
-                statPCT! = (totHomeWin(W) / (totHomeWin(W) + totAwayLoss(W)))
+            If totHomeWin(W) = totHomeWin(W) + totAwayLosses(W) And totHomeWin(W) <> 0 Then 
+                Print #1, Tab(60); "1.000";
+            End If
+            If totHomeWin(W) = 0 Then 
+                Print #1, Tab(61); ".000";
+            End If
+            If totHomeWin(W) > 0 And totHomeWin(W) < totHomeWin(W) + totAwayLosses(W) Then
+                statPCT! = (totHomeWin(W) / (totHomeWin(W) + totAwayLosses(W)))
                 Print #1, Tab(61); Using ".###"; statPCT!;
             End If
 
             Print #1, Tab(67); Using "###"; totAwayScoreTeam(W);
             Print #1, Tab(71); Using "###"; totAwayScoreOpp(W);
             Print #1, Tab(84); Using "###"; totHomeWin(W) + totHomeWin(W);
-            Print #1, Tab(89); Using "###"; totHomeLoss(W) + totAwayLoss(W);
+            Print #1, Tab(89); Using "###"; totHomeLosses(W) + totAwayLosses(W);
 
-            If totHomeWin(W) + totHomeWin(W) = totHomeWin(W) + totHomeWin(W) + totHomeLoss(W) + totAwayLoss(W) And totHomeWin(W) + totHomeWin(W) <> 0 Then Print #1, Tab(95); "1.000";
-            If (totHomeWin(W) + totHomeWin(W)) = 0 Then Print #1, Tab(96); ".000";
-            If (totHomeWin(W) + totHomeWin(W)) > 0 And totHomeWin(W) + totHomeWin(W) < totHomeWin(W) + totHomeWin(W) + totHomeLoss(W) + totAwayLoss(W) Then
-                statPCT! = ((totHomeWin(W) + totHomeWin(W)) / (totHomeWin(W) + totHomeWin(W) + totHomeLoss(W) + totAwayLoss(W)))
+            If totHomeWin(W) + totHomeWin(W) = totHomeWin(W) + totHomeWin(W) + totHomeLosses(W) + totAwayLosses(W) And totHomeWin(W) + totHomeWin(W) <> 0 Then 
+                Print #1, Tab(95); "1.000";
+            End If
+            If (totHomeWin(W) + totHomeWin(W)) = 0 Then 
+                Print #1, Tab(96); ".000";
+            End If
+            If (totHomeWin(W) + totHomeWin(W)) > 0 And totHomeWin(W) + totHomeWin(W) < totHomeWin(W) + totHomeWin(W) + totHomeLosses(W) + totAwayLosses(W) Then
+                statPCT! = ((totHomeWin(W) + totHomeWin(W)) / (totHomeWin(W) + totHomeWin(W) + totHomeLosses(W) + totAwayLosses(W)))
                 Print #1, Tab(96); Using ".###"; statPCT!;
             End If
 
@@ -538,15 +554,15 @@ Sub Hd2HdPro_Report (teamName$, printDest)
     Next W
 
     THWW = 0
-    totHomeLossesL = 0
+    totHomeLossesesL = 0
     TAWW = 0
-    totAwayLossesL = 0
+    totAwayLossesesL = 0
 
     For I = 1 To 4
         THWW = THWW + totHomeWin(I)
-        totHomeLossesL = totHomeLossesL + totHomeLoss(I)
+        totHomeLossesesL = totHomeLossesesL + totHomeLosses(I)
         TAWW = TAWW + totAwayWin(I)
-        totAwayLossesL = totAwayLossesL + totAwayLoss(I)
+        totAwayLossesesL = totAwayLossesesL + totAwayLosses(I)
     Next
 
     TR11 = 0
@@ -561,38 +577,50 @@ Sub Hd2HdPro_Report (teamName$, printDest)
         TR44 = TR44 + totAwayScoreOpp(I)
     Next
 
-    Print #1, Tab(5); "TOtotAwayLossesS";
+    Print #1, Tab(5); "TOtotAwayLossesesS";
     Print #1, Tab(20); Using "###"; THWW;
-    Print #1, Tab(24); Using "###"; totHomeLossesL;
+    Print #1, Tab(24); Using "###"; totHomeLossesesL;
 
-    If THWW = THWW + totHomeLossesL And THWW <> 0 Then Print #1, Tab(28); "1.000";
-    If THWW = 0 Then Print #1, Tab(29); ".000";
-    If THWW > 0 And THWW < THWW + totHomeLossesL Then
-        statPCT! = THWW / (THWW + totHomeLossesL)
+    If THWW = THWW + totHomeLossesesL And THWW <> 0 Then 
+        Print #1, Tab(28); "1.000";
+    End If
+    If THWW = 0 Then 
+        Print #1, Tab(29); ".000";
+    End If
+    If THWW > 0 And THWW < THWW + totHomeLossesesL Then
+        statPCT! = THWW / (THWW + totHomeLossesesL)
         Print #1, Tab(29); Using ".###"; statPCT!;
     End If
 
     Print #1, Tab(35); Using "###"; TR11;
     Print #1, Tab(39); Using "###"; TR22;
     Print #1, Tab(52); Using "###"; TAWW;
-    Print #1, Tab(56); Using "###"; totAwayLossesL;
+    Print #1, Tab(56); Using "###"; totAwayLossesesL;
 
-    If TAWW = TAWW + totAwayLossesL And TAWW <> 0 Then Print #1, Tab(60); "1.000";
-    If TAWW = 0 Then Print #1, Tab(61); ".000";
-    If TAWW > 0 And TAWW < TAWW + totAwayLossesL Then
-        statPCT! = TAWW / (TAWW + totAwayLossesL)
+    If TAWW = TAWW + totAwayLossesesL And TAWW <> 0 Then 
+        Print #1, Tab(60); "1.000";
+    End If
+    If TAWW = 0 Then 
+        Print #1, Tab(61); ".000";
+    End If
+    If TAWW > 0 And TAWW < TAWW + totAwayLossesesL Then
+        statPCT! = TAWW / (TAWW + totAwayLossesesL)
         Print #1, Tab(61); Using ".###"; statPCT!;
     End If
 
     Print #1, Tab(67); Using "###"; TR33;
     Print #1, Tab(71); Using "###"; TR44;
     Print #1, Tab(84); Using "###"; THWW + TAWW;
-    Print #1, Tab(89); Using "###"; totHomeLossesL + totAwayLossesL;
+    Print #1, Tab(89); Using "###"; totHomeLossesesL + totAwayLossesesL;
 
-    If THWW + TAWW = THWW + TAWW + totHomeLossesL + totAwayLossesL And THWW + TAWW <> 0 Then Print #1, Tab(95); "1.000";
-    If THWW + TAWW = 0 Then Print #1, Tab(96); ".000";
-    If THWW + TAWW > 0 And THWW + TAWW < THWW + TAWW + totHomeLossesL + totAwayLossesL Then
-        statPCT! = (THWW + TAWW) / (THWW + TAWW + totHomeLossesL + totAwayLossesL)
+    If THWW + TAWW = THWW + TAWW + totHomeLossesesL + totAwayLossesesL And THWW + TAWW <> 0 Then 
+        Print #1, Tab(95); "1.000";
+    End If
+    If THWW + TAWW = 0 Then 
+        Print #1, Tab(96); ".000";
+    End If
+    If THWW + TAWW > 0 And THWW + TAWW < THWW + TAWW + totHomeLossesesL + totAwayLossesesL Then
+        statPCT! = (THWW + TAWW) / (THWW + TAWW + totHomeLossesesL + totAwayLossesesL)
         Print #1, Tab(96); Using ".###"; statPCT!;
     End If
 
@@ -632,7 +660,7 @@ Sub Hd2HdPro_Screen (teamName$)
 
     Shared DV$(), Z1$()
 
-    Shared totHomeScoreTeam(), totHomeScoreOpp(), totAwayScoreTeam(), totAwayScoreOpp(), totHomeWin(), totHomeLoss(), totAwayWin(), totAwayLoss()
+    Shared totHomeScoreTeam(), totHomeScoreOpp(), totAwayScoreTeam(), totAwayScoreOpp(), totHomeWin(), totHomeLosses(), totAwayWin(), totAwayLosses()
 
     Shared div1Name$, div2Name$, div3Name$, div4Name$
 
@@ -652,7 +680,7 @@ Sub Hd2HdPro_Screen (teamName$)
         Color 3, 0
 
         Locate 4
-        Print Tab(15); String$(7, 196); " HOME "; String$(7, 196); Tab(35); Chr$(194); String$(7, 196); " AWAY "; String$(9, 196); Tab(58); Chr$(194); String$(6, 196); " TOtotAwayLossesS "; String$(6, 196)
+        Print Tab(15); String$(7, 196); " HOME "; String$(7, 196); Tab(35); Chr$(194); String$(7, 196); " AWAY "; String$(9, 196); Tab(58); Chr$(194); String$(6, 196); " TOtotAwayLossesesS "; String$(6, 196)
         Locate 5
         Print Tab(16); "W"; Tab(19); "L"; Tab(23); "PCT."; Tab(28); "RF"; Tab(32); "RA"; Tab(35); Chr$(179); Tab(38); "W"; Tab(41); "L"; Tab(45); "PCT."; Tab(50); "RF"; Tab(54); "RA"; Tab(58); Chr$(179); Tab(61); "W"; Tab(64); "L"; Tab(68); "PCT."; Tab(73); "RF"; Tab(77); "RA"
 
@@ -676,8 +704,12 @@ Sub Hd2HdPro_Screen (teamName$)
                 Locate , 15: Print Using "##"; homeWins(K);
                 Locate , 18: Print Using "##"; homeLosses(K);
 
-                If homeWins(K) = homeWins(K) + homeLosses(K) And homeWins(K) <> 0 Then Locate , 21: Print "1.000";
-                If homeWins(K) = 0 Then Locate , 22: Print ".000";
+                If homeWins(K) = homeWins(K) + homeLosses(K) And homeWins(K) <> 0 Then 
+                    Locate , 21: Print "1.000";
+                End If
+                If homeWins(K) = 0 Then 
+                    Locate , 22: Print ".000";
+                End If
                 If homeWins(K) > 0 And homeWins(K) < homeWins(K) + homeLosses(K) Then
                     statPCT! = (homeWins(K) / (homeWins(K) + homeLosses(K)))
                     Locate , 22: Print Using ".###"; statPCT!;
@@ -694,8 +726,12 @@ Sub Hd2HdPro_Screen (teamName$)
                 Locate , 37: Print Using "##"; homeWins(K);
                 Locate , 40: Print Using "##"; awayLosses(K);
 
-                If homeWins(K) = homeWins(K) + awayLosses(K) And homeWins(K) <> 0 Then Locate , 43: Print "1.000";
-                If homeWins(K) = 0 Then Locate , 44: Print ".000";
+                If homeWins(K) = homeWins(K) + awayLosses(K) And homeWins(K) <> 0 Then
+                    Locate , 43: Print "1.000";
+                End If
+                If homeWins(K) = 0 Then 
+                    Locate , 44: Print ".000";
+                End If
                 If homeWins(K) > 0 And homeWins(K) < homeWins(K) + awayLosses(K) Then
                     statPCT! = (homeWins(K) / (homeWins(K) + awayLosses(K)))
                     Locate , 44: Print Using ".###"; statPCT!;
@@ -712,8 +748,12 @@ Sub Hd2HdPro_Screen (teamName$)
                 Locate , 60: Print Using "##"; homeWins(K) + homeWins(K);
                 Locate , 63: Print Using "##"; homeLosses(K) + awayLosses(K);
 
-                If (homeWins(K) + homeWins(K)) = (homeWins(K) + homeWins(K) + homeLosses(K) + awayLosses(K)) And (homeWins(K) + homeWins(K)) <> 0 Then Locate , 66: Print "1.000";
-                If (homeWins(K) + homeWins(K)) = 0 Then Locate , 67: Print ".000";
+                If (homeWins(K) + homeWins(K)) = (homeWins(K) + homeWins(K) + homeLosses(K) + awayLosses(K)) And (homeWins(K) + homeWins(K)) <> 0 Then 
+                    Locate , 66: Print "1.000";
+                End If
+                If (homeWins(K) + homeWins(K)) = 0 Then 
+                    Locate , 67: Print ".000";
+                End If
                 If (homeWins(K) + homeWins(K)) > 0 And (homeWins(K) + homeWins(K)) < (homeWins(K) + homeWins(K) + homeLosses(K) + awayLosses(K)) Then
                     statPCT! = ((homeWins(K) + homeWins(K)) / (homeWins(K) + homeWins(K) + homeLosses(K) + awayLosses(K)))
                     Locate , 67: Print Using ".###"; statPCT!;
@@ -726,9 +766,9 @@ Sub Hd2HdPro_Screen (teamName$)
                 Print Tab(35); Chr$(179); Tab(58); Chr$(179);
 
                 totHomeWin(RDD) = totHomeWin(RDD) + homeWins(K)
-                totHomeLoss(RDD) = totHomeLoss(RDD) + homeLosses(K)
+                totHomeLosses(RDD) = totHomeLosses(RDD) + homeLosses(K)
                 totAwayWin(RDD) = totAwayWin(RDD) + awayWins(K)
-                totAwayLoss(RDD) = totAwayLoss(RDD) + awayLosses(K)
+                totAwayLosses(RDD) = totAwayLosses(RDD) + awayLosses(K)
                 totHomeScoreTeam(RDD) = totHomeScoreTeam(RDD) + homeScoreTeam(K)
                 totHomeScoreOpp(RDD) = totHomeScoreOpp(RDD) + homeScoreOpp(K)
                 totAwayScoreTeam(RDD) = totAwayScoreTeam(RDD) + awayScoreTeam(K)
@@ -742,14 +782,18 @@ Sub Hd2HdPro_Screen (teamName$)
 
         Color 11
 
-        Locate , 5: Print "TOtotAwayLossesS";
+        Locate , 5: Print "TOtotAwayLossesesS";
         Locate , 15: Print Using "##"; totHomeWin(RDD);
-        Locate , 18: Print Using "##"; totHomeLoss(RDD);
+        Locate , 18: Print Using "##"; totHomeLosses(RDD);
 
-        If totHomeWin(RDD) = totHomeWin(RDD) + totHomeLoss(RDD) And totHomeWin(RDD) <> 0 Then Locate , 21: Print "1.000";
-        If totHomeWin(RDD) = 0 Then Locate , 22: Print ".000";
-        If totHomeWin(RDD) > 0 And totHomeWin(RDD) < totHomeWin(RDD) + totHomeLoss(RDD) Then
-            statPCT! = (totHomeWin(RDD) / (totHomeWin(RDD) + totHomeLoss(RDD)))
+        If totHomeWin(RDD) = totHomeWin(RDD) + totHomeLosses(RDD) And totHomeWin(RDD) <> 0 Then 
+            Locate , 21: Print "1.000";
+        End If
+        If totHomeWin(RDD) = 0 Then 
+            Locate , 22: Print ".000";
+        End If
+        If totHomeWin(RDD) > 0 And totHomeWin(RDD) < totHomeWin(RDD) + totHomeLosses(RDD) Then
+            statPCT! = (totHomeWin(RDD) / (totHomeWin(RDD) + totHomeLosses(RDD)))
             Locate , 22: Print Using ".###"; statPCT!;
         End If
 
@@ -761,12 +805,16 @@ Sub Hd2HdPro_Screen (teamName$)
 
         Color 11
         Locate , 37: Print Using "##"; totAwayWin(RDD);
-        Locate , 40: Print Using "##"; totAwayLoss(RDD);
+        Locate , 40: Print Using "##"; totAwayLosses(RDD);
 
-        If totAwayWin(RDD) = totAwayWin(RDD) + totAwayLoss(RDD) And totAwayWin(RDD) <> 0 Then Locate , 43: Print "1.000";
-        If totAwayWin(RDD) = 0 Then Locate , 44: Print ".000";
-        If totAwayWin(RDD) > 0 And totAwayWin(RDD) < totAwayWin(RDD) + totAwayLoss(RDD) Then
-            statPCT! = (totAwayWin(RDD) / (totAwayWin(RDD) + totAwayLoss(RDD)))
+        If totAwayWin(RDD) = totAwayWin(RDD) + totAwayLosses(RDD) And totAwayWin(RDD) <> 0 Then 
+            Locate , 43: Print "1.000";
+        End If
+        If totAwayWin(RDD) = 0 Then 
+            Locate , 44: Print ".000";
+        End If
+        If totAwayWin(RDD) > 0 And totAwayWin(RDD) < totAwayWin(RDD) + totAwayLosses(RDD) Then
+            statPCT! = (totAwayWin(RDD) / (totAwayWin(RDD) + totAwayLosses(RDD)))
             Locate , 44: Print Using ".###"; statPCT!;
         End If
 
@@ -779,12 +827,16 @@ Sub Hd2HdPro_Screen (teamName$)
         Color 11
 
         Locate , 59: Print Using "###"; totHomeWin(RDD) + totAwayWin(RDD);
-        Locate , 62: Print Using "###"; totHomeLoss(RDD) + totAwayLoss(RDD);
+        Locate , 62: Print Using "###"; totHomeLosses(RDD) + totAwayLosses(RDD);
 
-        If totHomeWin(RDD) + totAwayWin(RDD) = totHomeWin(RDD) + totHomeLoss(RDD) + totAwayWin(RDD) + totAwayLoss(RDD) And totHomeWin(RDD) + totAwayWin(RDD) <> 0 Then Locate , 66: Print "1.000";
-        If totHomeWin(RDD) + totAwayWin(RDD) = 0 Then Locate , 67: Print ".000";
-        If totHomeWin(RDD) + totAwayWin(RDD) > 0 And totHomeWin(RDD) + totAwayWin(RDD) < totHomeWin(RDD) + totAwayWin(RDD) + totHomeLoss(RDD) + totAwayLoss(RDD) Then
-            statPCT! = (totHomeWin(RDD) + totAwayWin(RDD)) / (totHomeWin(RDD) + totAwayWin(RDD) + totHomeLoss(RDD) + totAwayLoss(RDD))
+        If totHomeWin(RDD) + totAwayWin(RDD) = totHomeWin(RDD) + totHomeLosses(RDD) + totAwayWin(RDD) + totAwayLosses(RDD) And totHomeWin(RDD) + totAwayWin(RDD) <> 0 Then 
+            Locate , 66: Print "1.000";
+        End If
+        If totHomeWin(RDD) + totAwayWin(RDD) = 0 Then 
+            Locate , 67: Print ".000";
+        End If
+        If totHomeWin(RDD) + totAwayWin(RDD) > 0 And totHomeWin(RDD) + totAwayWin(RDD) < totHomeWin(RDD) + totAwayWin(RDD) + totHomeLosses(RDD) + totAwayLosses(RDD) Then
+            statPCT! = (totHomeWin(RDD) + totAwayWin(RDD)) / (totHomeWin(RDD) + totAwayWin(RDD) + totHomeLosses(RDD) + totAwayLosses(RDD))
             Locate , 67: Print Using ".###"; statPCT!;
         End If
 
@@ -807,7 +859,7 @@ Sub Hd2HdPro_Screen (teamName$)
     Color 3, 0
 
     Locate 4
-    Print Tab(15); String$(7, 196); " HOME "; String$(7, 196); Tab(35); Chr$(194); String$(7, 196); " AWAY "; String$(9, 196); Tab(58); Chr$(194); String$(6, 196); " TOtotAwayLossesS "; String$(6, 196)
+    Print Tab(15); String$(7, 196); " HOME "; String$(7, 196); Tab(35); Chr$(194); String$(7, 196); " AWAY "; String$(9, 196); Tab(58); Chr$(194); String$(6, 196); " TOtotAwayLossesesS "; String$(6, 196)
     Locate 5
     Print Tab(16); "W"; Tab(19); "L"; Tab(23); "PCT."; Tab(28); "RF"; Tab(32); "RA"; Tab(35); Chr$(179); Tab(38); "W"; Tab(41); "L"; Tab(45); "PCT."; Tab(50); "RF"; Tab(54); "RA"; Tab(58); Chr$(179); Tab(61); "W"; Tab(64); "L"; Tab(68); "PCT."; Tab(73); "RF"; Tab(77); "RA"
 
@@ -826,12 +878,16 @@ Sub Hd2HdPro_Screen (teamName$)
             Color 7
 
             Locate , 15: Print Using "##"; totHomeWin(W);
-            Locate , 18: Print Using "##"; totHomeLoss(W);
+            Locate , 18: Print Using "##"; totHomeLosses(W);
 
-            If totHomeWin(W) = totHomeWin(W) + totHomeLoss(W) And totHomeWin(W) <> 0 Then Locate , 21: Print "1.000";
-            If totHomeWin(W) = 0 Then Locate , 22: Print ".000";
-            If totHomeWin(W) > 0 And totHomeWin(W) < totHomeWin(W) + totHomeLoss(W) Then
-                statPCT! = (totHomeWin(W) / (totHomeWin(W) + totHomeLoss(W)))
+            If totHomeWin(W) = totHomeWin(W) + totHomeLosses(W) And totHomeWin(W) <> 0 Then 
+                Locate , 21: Print "1.000";
+            End If
+            If totHomeWin(W) = 0 Then 
+                Locate , 22: Print ".000";
+            End If
+            If totHomeWin(W) > 0 And totHomeWin(W) < totHomeWin(W) + totHomeLosses(W) Then
+                statPCT! = (totHomeWin(W) / (totHomeWin(W) + totHomeLosses(W)))
                 Locate , 22: Print Using ".###"; statPCT!;
             End If
 
@@ -844,12 +900,16 @@ Sub Hd2HdPro_Screen (teamName$)
             Color 7
 
             Locate , 37: Print Using "##"; totAwayWin(W);
-            Locate , 40: Print Using "##"; totAwayLoss(W);
+            Locate , 40: Print Using "##"; totAwayLosses(W);
 
-            If totAwayWin(W) = totAwayWin(W) + totAwayLoss(W) And totAwayWin(W) <> 0 Then Locate , 43: Print "1.000";
-            If totAwayWin(W) = 0 Then Locate , 44: Print ".000";
-            If totAwayWin(W) > 0 And totAwayWin(W) < totAwayWin(W) + totAwayLoss(W) Then
-                statPCT! = (totAwayWin(W) / (totAwayWin(W) + totAwayLoss(W)))
+            If totAwayWin(W) = totAwayWin(W) + totAwayLosses(W) And totAwayWin(W) <> 0 Then 
+                Locate , 43: Print "1.000";
+            End If
+            If totAwayWin(W) = 0 Then 
+                Locate , 44: Print ".000";
+            End If
+            If totAwayWin(W) > 0 And totAwayWin(W) < totAwayWin(W) + totAwayLosses(W) Then
+                statPCT! = (totAwayWin(W) / (totAwayWin(W) + totAwayLosses(W)))
                 Locate , 44: Print Using ".###"; statPCT!;
             End If
 
@@ -860,12 +920,16 @@ Sub Hd2HdPro_Screen (teamName$)
 
             Color 7
             Locate , 59: Print Using "###"; totHomeWin(W) + totAwayWin(W);
-            Locate , 62: Print Using "###"; totHomeLoss(W) + totAwayLoss(W);
+            Locate , 62: Print Using "###"; totHomeLosses(W) + totAwayLosses(W);
 
-            If totHomeWin(W) + totAwayWin(W) = totHomeWin(W) + totAwayWin(W) + totHomeLoss(W) + totAwayLoss(W) And totHomeWin(W) + totAwayWin(W) <> 0 Then Locate , 66: Print "1.000";
-            If (totHomeWin(W) + totAwayWin(W)) = 0 Then Locate , 67: Print ".000";
-            If (totHomeWin(W) + totAwayWin(W)) > 0 And totHomeWin(W) + totAwayWin(W) < totHomeWin(W) + totAwayWin(W) + totHomeLoss(W) + totAwayLoss(W) Then
-                statPCT! = ((totHomeWin(W) + totAwayWin(W)) / (totHomeWin(W) + totAwayWin(W) + totHomeLoss(W) + totAwayLoss(W)))
+            If totHomeWin(W) + totAwayWin(W) = totHomeWin(W) + totAwayWin(W) + totHomeLosses(W) + totAwayLosses(W) And totHomeWin(W) + totAwayWin(W) <> 0 Then 
+                Locate , 66: Print "1.000";
+            End If
+            If (totHomeWin(W) + totAwayWin(W)) = 0 Then 
+                Locate , 67: Print ".000";
+            End If
+            If (totHomeWin(W) + totAwayWin(W)) > 0 And totHomeWin(W) + totAwayWin(W) < totHomeWin(W) + totAwayWin(W) + totHomeLosses(W) + totAwayLosses(W) Then
+                statPCT! = ((totHomeWin(W) + totAwayWin(W)) / (totHomeWin(W) + totAwayWin(W) + totHomeLosses(W) + totAwayLosses(W)))
                 Locate , 67: Print Using ".###"; statPCT!;
             End If
 
@@ -880,15 +944,15 @@ Sub Hd2HdPro_Screen (teamName$)
     Next W
 
     THWW = 0
-    totHomeLossesL = 0
+    totHomeLossesesL = 0
     TAWW = 0
-    totAwayLossesL = 0
+    totAwayLossesesL = 0
 
     For I = 1 To DIVS_PER_LEAGUE
         THWW = THWW + totHomeWin(I)
-        totHomeLossesL = totHomeLossesL + totHomeLoss(I)
+        totHomeLossesesL = totHomeLossesesL + totHomeLosses(I)
         TAWW = TAWW + totHomeWin(I)
-        totAwayLossesL = totAwayLossesL + totAwayLoss(I)
+        totAwayLossesesL = totAwayLossesesL + totAwayLosses(I)
     Next
 
     TR11 = 0
@@ -905,14 +969,18 @@ Sub Hd2HdPro_Screen (teamName$)
 
     Print
 
-    Color 11: Locate , 3: Print "TOtotAwayLossesS";
+    Color 11: Locate , 3: Print "TOtotAwayLossesesS";
     Locate , 14: Print Using "###"; THWW;
-    Locate , 17: Print Using "###"; totHomeLossesL;
+    Locate , 17: Print Using "###"; totHomeLossesesL;
 
-    If THWW = THWW + totHomeLossesL And THWW <> 0 Then Locate , 21: Print "1.000";
-    If THWW = 0 Then Locate , 22: Print ".000";
-    If THWW > 0 And THWW < THWW + totHomeLossesL Then
-        statPCT! = THWW / (THWW + totHomeLossesL)
+    If THWW = THWW + totHomeLossesesL And THWW <> 0 Then 
+        Locate , 21: Print "1.000";
+    End If
+    If THWW = 0 Then 
+        Locate , 22: Print ".000";
+    End If
+    If THWW > 0 And THWW < THWW + totHomeLossesesL Then
+        statPCT! = THWW / (THWW + totHomeLossesesL)
         Locate , 22: Print Using ".###"; statPCT!;
     End If
 
@@ -920,12 +988,16 @@ Sub Hd2HdPro_Screen (teamName$)
     Locate , 31: Print Using "###"; TR22;
     Color 3: Print Tab(35); Chr$(179);
     Color 11: Locate , 36: Print Using "###"; TAWW;
-    Locate , 39: Print Using "###"; totAwayLossesL;
+    Locate , 39: Print Using "###"; totAwayLossesesL;
 
-    If TAWW = TAWW + totAwayLossesL And TAWW <> 0 Then Locate , 43: Print "1.000";
-    If TAWW = 0 Then Locate , 44: Print ".000";
-    If TAWW > 0 And TAWW < TAWW + totAwayLossesL Then
-        statPCT! = TAWW / (TAWW + totAwayLossesL)
+    If TAWW = TAWW + totAwayLossesesL And TAWW <> 0 Then 
+        Locate , 43: Print "1.000";
+    End If
+    If TAWW = 0 Then 
+        Locate , 44: Print ".000";
+    End If
+    If TAWW > 0 And TAWW < TAWW + totAwayLossesesL Then
+        statPCT! = TAWW / (TAWW + totAwayLossesesL)
         Locate , 44: Print Using ".###"; statPCT!;
     End If
 
@@ -933,12 +1005,16 @@ Sub Hd2HdPro_Screen (teamName$)
     Locate , 53: Print Using "###"; TR44;
     Color 3: Print Tab(58); Chr$(179);
     Color 11: Locate , 59: Print Using "###"; THWW + TAWW;
-    Locate , 62: Print Using "###"; totHomeLossesL + totAwayLossesL;
+    Locate , 62: Print Using "###"; totHomeLossesesL + totAwayLossesesL;
 
-    If THWW + TAWW = THWW + TAWW + totHomeLossesL + totAwayLossesL And THWW + TAWW <> 0 Then Locate , 66: Print "1.000";
-    If THWW + TAWW = 0 Then Locate , 67: Print ".000";
-    If THWW + TAWW > 0 And THWW + TAWW < THWW + TAWW + totHomeLossesL + totAwayLossesL Then
-        statPCT! = (THWW + TAWW) / (THWW + TAWW + totHomeLossesL + totAwayLossesL)
+    If THWW + TAWW = THWW + TAWW + totHomeLossesesL + totAwayLossesesL And THWW + TAWW <> 0 Then 
+        Locate , 66: Print "1.000";
+    End If
+    If THWW + TAWW = 0 Then 
+        Locate , 67: Print ".000";
+    End If
+    If THWW + TAWW > 0 And THWW + TAWW < THWW + TAWW + totHomeLossesesL + totAwayLossesesL Then
+        statPCT! = (THWW + TAWW) / (THWW + TAWW + totHomeLossesesL + totAwayLossesesL)
         Locate , 67: Print Using ".###"; statPCT!;
     End If
 
@@ -951,5 +1027,3 @@ Sub Hd2HdPro_Screen (teamName$)
     I$ = GetKeyPress$
 
 End Sub
-
-

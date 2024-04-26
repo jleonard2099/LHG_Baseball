@@ -359,42 +359,24 @@ Sub ViewAndPrintOptions (statFile$, teamName$, nbrGames, menuExit)
                     '
 
                 Case 3, 4
-                
-                    Color 15, 0
-                    Cls
+                    userKey$ = GetPrintOptions$
 
-                    Call MenuBox(8, 25, 24, 5, 15, 1)
+                    If userKey$ <> Chr$(27) Then
 
-                    Do
+                        Select Case userKey$
 
-                        Locate 10, 32
-                        Color 7, 1
+                            Case "F"
+                                userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                                If userFile$ <> "" Then
+                                    Call NewPrintStats(0, userFile$, statFile$, teamName$, nbrGames, Selection%, splitStatChoice)
+                                End If
 
-                        Locate , 32: Print "SEND TO ";
-                        Color 15: Print "F";
-                        Color 7: Print "ILE"
-                        Locate , 32: Print "SEND TO ";
-                        Color 15: Print "P";
-                        Color 7: Print "RINTER"
+                            Case "P"
+                                Call NewPrintStats(1, "REPORT", statFile$, teamName$, nbrGames, Selection%, splitStatChoice)
 
-                        I$ = GetKeyPress$
-
-                        Color 14, 0
-
-                    Loop Until UCase$(I$) = "F" Or UCase$(I$) = "P"
-
-                    Select Case UCase$(I$)
-
-                        Case "F"
-                            userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
-                            If userFile$ <> "" Then
-                                Call NewPrintStats(0, userFile$, statFile$, teamName$, nbrGames, Selection%, splitStatChoice)
-                            End If
-
-                        Case "P"
-                            Call NewPrintStats(1, "REPORT", statFile$, teamName$, nbrGames, Selection%, splitStatChoice)
-
-                    End Select
+                        End Select
+                        
+                    End If
 
             End Select
 
@@ -1086,44 +1068,24 @@ Sub ReportsAllTeams ()
 
                 Close #1
 
-                Color 15, 0
-                Cls
+                userKey$ = GetPrintOptions$
 
-                Call MenuBox(8, 25, 24, 5, 15, 1)
+                If userKey$ <> Chr$(27) Then
 
-                Do
+                    Select Case userKey$
 
-                    Locate 10, 32
-                    Color 7, 1
+                        Case "F"
+                            userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                            If userFile$ <> "" Then
+                                Call NewPrintStats(0, userFile$, statFiles$(XW), teamName$, nbrGames, 3, splitStatChoice)
+                            End If
 
-                    Locate , 32: Print "SEND TO ";
-                    Color 15: Print "F";
-                    Color 7: Print "ILE"
-                    Locate , 32: Print "SEND TO ";
-                    Color 15: Print "P";
-                    Color 7: Print "RINTER"
-                    Locate , 32: Print "SEND TO ";
-                    Color 15: Print "S";
-                    Color 7: Print "CREEN"
+                        Case "P"
+                            Call NewPrintStats(1, "REPORT", statFiles$(XW), teamName$, nbrGames, 3, splitStatChoice)
 
-                    I$ = GetKeyPress$
-
-                    Color 14, 0
-
-                Loop Until UCase$(I$) = "F" Or UCase$(I$) = "P"
-
-                Select Case UCase$(I$)
-
-                    Case "F"
-                        userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
-                        If userFile$ <> "" Then
-                            Call NewPrintStats(0, userFile$, statFiles$(XW), teamName$, nbrGames, 3, splitStatChoice)
-                        End If
-
-                    Case "P"
-                        Call NewPrintStats(1, "REPORT", statFiles$(XW), teamName$, nbrGames, 3, splitStatChoice)
-
-                End Select
+                    End Select
+                    
+                End If
 
             End If
 

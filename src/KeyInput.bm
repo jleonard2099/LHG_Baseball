@@ -1,16 +1,84 @@
 
 Function GetKeyPress$ Static
+
     Do
         k$ = InKey$
     Loop Until k$ <> ""
+
     GetKeyPress$ = k$
+
 End Function
 
 
 Function GetKeyCode% Static
+
     Do
         k$ = InKey$
     Loop Until k$ <> ""
+
     GetKeyCode% = CVI(k$ + Chr$(0))
+
 End Function
 
+
+Function GetPrintOptions$ Static
+
+	Color 15, 0
+	Cls
+
+	Call MenuBox(8, 25, 24, 5, 15, 1)
+
+	Do
+
+		Locate 10, 32
+		Color 7, 1
+
+		Locate , 32: Print "SEND TO ";
+		Color 15: Print "F";
+		Color 7: Print "ILE"
+		Locate , 32: Print "SEND TO ";
+		Color 15: Print "P";
+		Color 7: Print "RINTER"
+
+		I$ = GetKeyPress$
+
+		Color 14, 0
+
+	Loop Until UCase$(I$) = "F" Or UCase$(I$) = "P" Or UCase$(I$) = Chr$(27)
+
+	GetPrintOptions$ = UCase$(I$)
+
+End Function
+
+
+Function GetOutputOptions$ Static
+
+	Color 15, 0
+	Cls
+
+	Call MenuBox(8, 25, 24, 5, 15, 1)
+
+	Do
+
+		Locate 10, 32
+		Color 7, 1
+
+		Locate , 32: Print "SEND TO ";
+		Color 15: Print "F";
+		Color 7: Print "ILE"
+		Locate , 32: Print "SEND TO ";
+		Color 15: Print "P";
+		Color 7: Print "RINTER"
+		Locate , 32: Print "SEND TO ";
+		Color 15: Print "S";
+		Color 7: Print "CREEN"
+
+		I$ = GetKeyPress$
+
+		Color 14, 0
+
+	Loop Until UCase$(I$) = "F" Or UCase$(I$) = "P" Or UCase$(I$) = "S" Or UCase$(I$) = Chr$(27)
+
+	GetOutputOptions$ = UCase$(I$)
+
+End Function

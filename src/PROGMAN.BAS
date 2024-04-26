@@ -131,30 +131,11 @@ Sub PROGMAN ()
                             Call ExportManagerProfile(mgrNbr)
 
                         Case 13
-                            Color 15, 0
-                            Cls
+                            userKey$ = GetPrintOptions$
 
-                            Call MenuBox(8, 25, 24, 5, 15, 1)
+                            If userKey$ <> Chr$(27) Then
 
-                            Do
-
-                                Locate 10
-                                Color 7, 1
-
-                                Locate , 32: Print "SEND TO ";
-                                Color 15: Print "F";
-                                Color 7: Print "ILE"
-                                Locate , 32: Print "SEND TO ";
-                                Color 15: Print "P";
-                                Color 7: Print "RINTER"
-
-                                J$ = GetKeyPress$
-
-                            Loop Until UCase$(J$) = "F" Or UCase$(J$) = "P" Or J$ = Chr$(27)
-
-                            If J$ <> Chr$(27) Then
-
-                                Select Case UCase$(J$)
+                                Select Case userKey$
 
                                     Case "F":
                                         userFile$ = _SAVEFILEDIALOG$("Save Profile Reprort",_CWD$ + "\Manager Profile","*.txt","Text File")
@@ -1569,10 +1550,10 @@ Sub PrintManagerProfile (printDest, destFile$, targetTeam$)
     Shared batterNames$(), pitcherNames$(), yesNo$()
     Shared progMG%()
 
-	Color 15, 0
-	Cls
+    Color 15, 0
+    Cls
 
-	Open destFile$ For Output As #1
+    Open destFile$ For Output As #1
 
     Print #1,  "MANAGERIAL PROFILE FOR "; targetTeam$
     Print #1, 
@@ -2096,24 +2077,24 @@ Sub PrintManagerProfile (printDest, destFile$, targetTeam$)
         Print #1,  "12 - INNING 9- , WHEN BEHIND      "; Using "###     ###        ###          ###"; progMG%(844); progMG%(845); progMG%(846); progMG%(844) + progMG%(845) + progMG%(846)
     End If
 
-	Close #1
-	
-	If printDest = 1 Then
+    Close #1
+    
+    If printDest = 1 Then
 
-		Open destFile$ For Input As #2
+        Open destFile$ For Input As #2
 
-		Do While Not EOF(2)
-			Line Input #2, X$
-			LPrint X$
-		Loop
+        Do While Not EOF(2)
+            Line Input #2, X$
+            LPrint X$
+        Loop
 
-		Close #2
+        Close #2
 
-		LPrint Chr$(12)
+        LPrint Chr$(12)
 
-		Kill destFile$
+        Kill destFile$
 
-	End If
+    End If
 
 End Sub
 
@@ -4146,7 +4127,29 @@ Sub ExportManagerProfile (mgrNbr)
 
     Else
 
-        If PP% = 1 Then PP% = 0: Call PrintManagerProfile(T$)
+        If PP% = 1 Then
+            PP% = 0
+
+            userKey$ = GetPrintOptions$
+
+            If userKey$ <> Chr$(27) Then
+
+                Select Case userKey$
+
+                    Case "F"
+                        userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                        If userFile$ <> "" Then
+                            Call PrintManagerProfile(0, userFile$, T$)
+                        End If
+
+                    Case "P"
+                        Call PrintManagerProfile(1, "REPORT", T$)
+
+                End Select
+                
+            End If
+
+        End If
 
         Call box0 (6, 8, 12, 70, 2, 15, 1)
 

@@ -23,9 +23,9 @@ Sub CREATLEAG ()
 
         Call TITLE
 
-        menuChoices$(1) = "CREATE / DEFINE NEW LEAGUES     "
-        menuChoices$(2) = "ADD / REVIEW LEAGUE MEMBERS     "
-        menuChoices$(3) = "RETURN TO STANDINGS/LEADERS MENU"
+        menuChoices$(1) = "CREATE A LEAGUE       "
+        menuChoices$(2) = "MANAGE LEAGUE MEMBERS "
+        menuChoices$(3) = "RETURN TO LEADERS MENU"
         Selection% = 1
         Count% = 3
         Start% = 1

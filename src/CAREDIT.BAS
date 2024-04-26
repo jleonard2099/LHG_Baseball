@@ -2,8 +2,8 @@
 '           CAREDIT Subroutine
 '----------------------------------------
 'This routine allows the user to choose a
-'career file, then loads in the stats and 
-'gives the users options for editing and 
+'career file, then loads in the stats and
+'gives the users options for editing and
 'saving the file.
 Sub CAREDIT ()
 
@@ -224,9 +224,33 @@ Sub EditBatters (careerFile$)
                     I$ = GetKeyPress$
 
                     Select Case UCase$(I$)
-                        Case "Y": Call PrintBatterStats (careerFile$, B9)
-                        Case "N": Cls
-                        Case "E": Exit Sub
+
+                        Case "Y":
+                            userKey$ = GetPrintOptions$
+
+                            If userKey$ <> Chr$(27) Then
+
+                                Select Case userKey$
+
+                                    Case "F"
+                                        userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                                        If userFile$ <> "" Then
+                                            Call PrintBatterStats (0, userFile$, careerFile$, B9)
+                                        End If
+
+                                    Case "P"
+                                        Call PrintBatterStats (1, "REPORT", careerFile$, B9)
+
+                                End Select
+                                
+                            End If
+
+                        Case "N":
+                            Cls
+
+                        Case "E":
+                            Exit Sub
+
                     End Select
 
                 Loop Until UCase$(I$) = "N"
@@ -339,9 +363,33 @@ Sub EditPitchers (careerFile$)
                     I$ = GetKeyPress$
 
                     Select Case UCase$(I$)
-                        Case "Y": Call PrintPitcherStats (careerFile$, B9)
-                        Case "N": Cls
-                        Case "E": Exit Sub
+
+                        Case "Y":
+                            userKey$ = GetPrintOptions$
+
+                            If userKey$ <> Chr$(27) Then
+
+                                Select Case userKey$
+
+                                    Case "F"
+                                        userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                                        If userFile$ <> "" Then
+                                            Call PrintPitcherStats(0, userFile$, careerFile$, B9)
+                                        End If
+
+                                    Case "P"
+                                        Call PrintPitcherStats(1, "REPORT", careerFile$, B9)
+
+                                End Select
+                                
+                            End If
+
+                        Case "N":
+                            Cls
+
+                        Case "E":
+                            Exit Sub
+
                     End Select
 
                 Loop Until UCase$(I$) = "N"
@@ -398,10 +446,10 @@ Sub PrintBatterStats (printDest, destFile$, careerFile$, playerIdx)
 
     B9 = playerIdx
 
-	Color 15, 0
-	Cls
+    Color 15, 0
+    Cls
 
-	Open destFile$ For Output As #1
+    Open destFile$ For Output As #1
 
     Print #1, careerFile$
 
@@ -523,24 +571,24 @@ Sub PrintBatterStats (printDest, destFile$, careerFile$, playerIdx)
 
     Print #1,
 
-	Close #1
-	
-	If printDest = 1 Then
+    Close #1
+    
+    If printDest = 1 Then
 
-		Open destFile$ For Input As #2
+        Open destFile$ For Input As #2
 
-		Do While Not EOF(2)
-			Line Input #2, X$
-			LPrint X$
-		Loop
+        Do While Not EOF(2)
+            Line Input #2, X$
+            LPrint X$
+        Loop
 
-		Close #2
+        Close #2
 
-		LPrint Chr$(12)
+        LPrint Chr$(12)
 
-		Kill destFile$
+        Kill destFile$
 
-	End If
+    End If
 
 End Sub
 
@@ -559,10 +607,10 @@ Sub PrintPitcherStats (printDest, destFile$, careerFile$, playerIdx)
 
     B9 = playerIdx
 
-	Color 15, 0
-	Cls
+    Color 15, 0
+    Cls
 
-	Open destFile$ For Output As #1
+    Open destFile$ For Output As #1
 
     Print #1, careerFile$
 
@@ -685,23 +733,23 @@ Sub PrintPitcherStats (printDest, destFile$, careerFile$, playerIdx)
     
     Print #1, 
 
-	Close #1
-	
-	If printDest = 1 Then
+    Close #1
+    
+    If printDest = 1 Then
 
-		Open destFile$ For Input As #2
+        Open destFile$ For Input As #2
 
-		Do While Not EOF(2)
-			Line Input #2, X$
-			LPrint X$
-		Loop
+        Do While Not EOF(2)
+            Line Input #2, X$
+            LPrint X$
+        Loop
 
-		Close #2
+        Close #2
 
-		LPrint Chr$(12)
+        LPrint Chr$(12)
 
-		Kill destFile$
+        Kill destFile$
 
-	End If
+    End If
 
 End Sub

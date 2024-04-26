@@ -367,47 +367,27 @@ Sub CareerLeaderOptions ()
 
         Close #1
 
-        Color 15, 0
-        Cls
+        userKey$ = GetOutputOptions$
 
-        Call MenuBox(8, 25, 24, 5, 15, 1)
+        If userKey$ <> Chr$(27) Then
 
-        Do
+            Select Case userKey$
 
-            Locate 10, 32
-            Color 7, 1
+                Case "F"
+                    userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                    If userFile$ <> "" Then
+                        Call PrintCareerLeaders(0, userFile$)
+                    End If
 
-            Locate , 32: Print "SEND TO ";
-            Color 15: Print "F";
-            Color 7: Print "ILE"
-            Locate , 32: Print "SEND TO ";
-            Color 15: Print "P";
-            Color 7: Print "RINTER"
-            Locate , 32: Print "SEND TO ";
-            Color 15: Print "S";
-            Color 7: Print "CREEN"
+                Case "P"
+                    Call PrintCareerLeaders(1, "REPORT")
+                    
+                Case "S"
+                    Call ViewCareerLeaders
 
-            I$ = GetKeyPress$
-
-            Color 14, 0
-
-        Loop Until UCase$(I$) = "F" Or UCase$(I$) = "P" Or UCase$(I$) = "S"
-
-        Select Case UCase$(I$)
-
-            Case "F"
-                userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
-                If userFile$ <> "" Then
-                    Call PrintCareerLeaders(0, userFile$)
-                End If
-
-            Case "P"
-                Call PrintCareerLeaders(1, "REPORT")
-                
-            Case "S"
-                Call ViewCareerLeaders
-
-        End Select
+            End Select
+            
+        End If
 
     End If 'Done checking for ESC
 

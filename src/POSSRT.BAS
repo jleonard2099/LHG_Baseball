@@ -166,47 +166,27 @@ Sub SearchPlayers ()
 
                     Close #1
 
-                    Color 15, 0
-                    Cls
+                    userKey$ = GetOutputOptions$
 
-                    Call MenuBox(8, 25, 24, 5, 15, 1)
+                    If userKey$ <> Chr$(27) Then
 
-                    Do
-
-                        Locate 10, 32
-                        Color 7, 1
-
-                        Locate , 32: Print "SEND TO ";
-                        Color 15: Print "F";
-                        Color 7: Print "ILE"
-                        Locate , 32: Print "SEND TO ";
-                        Color 15: Print "P";
-                        Color 7: Print "RINTER"
-                        Locate , 32: Print "SEND TO ";
-                        Color 15: Print "S";
-                        Color 7: Print "CREEN"
-
-                        I$ = GetKeyPress$
-
-                        Color 14, 0
-                
-                    Loop Until UCase$(I$) = "F" Or UCase$(I$) = "P" Or UCase$(I$) = "S"
-
-                    Select Case UCase$(I$)
+                        Select Case userKey$
                         
-                        Case "F"
-                            userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
-                            If userFile$ <> "" Then
-                                Call Call SearchResults_Report(0, userFile$, PS, PS$, positionFile$)
-                            End If
+                            Case "F"
+                                userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                                If userFile$ <> "" Then
+                                    Call SearchResults_Report(0, userFile$, PS, PS$, positionFile$)
+                                End If
 
-                        Case "P"
-                            Call SearchResults_Report(1, "REPORT", PS, PS$, positionFile$)
+                            Case "P"
+                                Call SearchResults_Report(1, "REPORT", PS, PS$, positionFile$)
 
-                        Case "S": 
-                            Call ViewSearchResults(PS, PS$, positionFile$)
-                    
-                    End Select
+                            Case "S": 
+                                Call ViewSearchResults(PS, PS$, positionFile$)
+                        
+                        End Select
+                        
+                    End If
 
                 End If 'Done looking for Z = 9
 
@@ -366,10 +346,10 @@ Sub SearchResults_Report (printDest, destFile$, posnType, posnDesc$, positionFil
     
     Dim BB$(23)
 
-	Color 15, 0
-	Cls
+    Color 15, 0
+    Cls
 
-	Open destFile$ For Output As #1
+    Open destFile$ For Output As #1
 
     Print #1,  Tab(55); posnDesc$
     Print #1, 
@@ -457,22 +437,22 @@ Sub SearchResults_Report (printDest, destFile$, posnType, posnDesc$, positionFil
 
     Next J
 
-	If printDest = 1 Then
+    If printDest = 1 Then
 
-		Open destFile$ For Input As #2
+        Open destFile$ For Input As #2
 
-		Do While Not EOF(2)
-			Line Input #2, X$
-			LPrint X$
-		Loop
+        Do While Not EOF(2)
+            Line Input #2, X$
+            LPrint X$
+        Loop
 
-		Close #2
+        Close #2
 
-		LPrint Chr$(12)
+        LPrint Chr$(12)
 
-		Kill destFile$
+        Kill destFile$
 
-	End If
+    End If
 
 End Sub
 
@@ -553,117 +533,96 @@ Sub Pitchers10_Games (PC, pitchPosnDesc$, positionFile$)
     Shared TM()
     Shared teamRatings%(), pitcherRatings()
 
+    userKey$ = GetOutputOptions$
 
-	Color 15, 0
-	Cls
+    If userKey$ <> Chr$(27) Then
 
-	Call MenuBox(8, 25, 24, 5, 15, 1)
+        Select Case userKey$
 
-	Do
+            Case "F"
+                userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                If userFile$ <> "" Then
+                    Call Pitchers10_Print(0, userFile$, PC, pitchPosnDesc$, positionFile$)
+                End If
 
-		Locate 10, 32
-		Color 7, 1
+            Case "P":
+                Call Pitchers10_Print(1, "REPORT", PC, pitchPosnDesc$, positionFile$)
 
-		Locate , 32: Print "SEND TO ";
-		Color 15: Print "F";
-		Color 7: Print "ILE"
-		Locate , 32: Print "SEND TO ";
-		Color 15: Print "P";
-		Color 7: Print "RINTER"
-		Locate , 32: Print "SEND TO ";
-		Color 15: Print "S";
-		Color 7: Print "CREEN"
+            Case "S":
 
-		I$ = GetKeyPress$
+                Cls
+                Color 15
+                Locate 1, 20: Print pitchPosnDesc$
 
-		Color 14, 0
+                Locate 3: Color 11: Print "PLAYER     TEAM      T    G   W   L   SV  GS   IP   H   BB   SO   ERA   HR"
 
-	Loop Until UCase$(I$) = "F" Or UCase$(I$) = "P" Or UCase$(I$) = "S"
+                For J = 1 To TEAMS_PER_LEAGUE
 
-    Select Case UCase$(I$)
+                    If TM(J) <> 0 Then
 
-		Case "F"
-			userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
-			If userFile$ <> "" Then
-				Call Pitchers10_Print(0, userFile$, PC, pitchPosnDesc$, positionFile$)
-			End If
+                        Call ReadTeam(TYN$(J), T$, TM(J))
 
-        Case "P":
-            Call Pitchers10_Print(1, "REPORT", PC, pitchPosnDesc$, positionFile$)
+                        For I = 0 To 21
 
-        Case "S":
+                            If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
 
-            Cls
-            Color 15
-            Locate 1, 20: Print pitchPosnDesc$
+                                If PC = 1 And pitcherRatings(I, 5) < PPS Or pitcherRatings(I, 5) > PPS Then
 
-            Locate 3: Color 11: Print "PLAYER     TEAM      T    G   W   L   SV  GS   IP   H   BB   SO   ERA   HR"
+                                    currPosition = currPosition + 1
 
-            For J = 1 To TEAMS_PER_LEAGUE
+                                    If (currPosition Mod 18 = 1) Then
 
-                If TM(J) <> 0 Then
+                                        Locate 23
+                                        Color 14: Print "HIT ANY KEY TO CONTINUE"
+                                        I$ = GetKeyPress$
 
-                    Call ReadTeam(TYN$(J), T$, TM(J))
+                                        Cls
 
-                    For I = 0 To 21
+                                        Color 15
+                                        Locate 1, 20: Print pitchPosnDesc$
 
-                        If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
+                                        Color 11
+                                        Locate 3: Print "PLAYER     TEAM      T    G   W   L   SV  GS   IP   H   BB   SO   ERA   HR"
 
-                            If PC = 1 And pitcherRatings(I, 5) < PPS Or pitcherRatings(I, 5) > PPS Then
+                                    End If
 
-                                currPosition = currPosition + 1
+                                    Color 12: Print Left$(pitcherNames$(I), 10);
+                                    Color 3: Print Tab(12); Left$(T$, 2); NN$
 
-                                If (currPosition Mod 18 = 1) Then
+                                    If pitcherRatings(I, 0) = 1 Then PB$(I) = "R"
+                                    If pitcherRatings(I, 0) = -1 Then PB$(I) = "L"
 
-                                    Locate 23
-                                    Color 14: Print "HIT ANY KEY TO CONTINUE"
-                                    I$ = GetKeyPress$
+                                    Color 7: Print Tab(22); PB$(I);
 
-                                    Cls
-
-                                    Color 15
-                                    Locate 1, 20: Print pitchPosnDesc$
-
-                                    Color 11
-                                    Locate 3: Print "PLAYER     TEAM      T    G   W   L   SV  GS   IP   H   BB   SO   ERA   HR"
+                                    Print Tab(25); Using "###"; pitcherRatings(I, 4);
+                                    Print Tab(30); Using "##"; pitcherRatings(I, 1);
+                                    Print Tab(34); Using "##"; pitcherRatings(I, 2);
+                                    Print Tab(39); Using "##"; pitcherRatings(I, 3);
+                                    Print Tab(43); Using "##"; pitcherRatings(I, 5);
+                                    Print Tab(47); Using "###"; pitcherRatings(I, 6);
+                                    Print Tab(52); Using "###"; pitcherRatings(I, 7);
+                                    Print Tab(56); Using "###"; pitcherRatings(I, 8);
+                                    Print Tab(61); Using "###"; pitcherRatings(I, 9);
+                                    Print Tab(65); Using "##.##"; pitcherRatings(I, 10) / 100;
+                                    Print Tab(73); Using "##"; pitcherRatings(I, 13)
 
                                 End If
 
-                                Color 12: Print Left$(pitcherNames$(I), 10);
-                                Color 3: Print Tab(12); Left$(T$, 2); NN$
-
-                                If pitcherRatings(I, 0) = 1 Then PB$(I) = "R"
-                                If pitcherRatings(I, 0) = -1 Then PB$(I) = "L"
-
-                                Color 7: Print Tab(22); PB$(I);
-
-                                Print Tab(25); Using "###"; pitcherRatings(I, 4);
-                                Print Tab(30); Using "##"; pitcherRatings(I, 1);
-                                Print Tab(34); Using "##"; pitcherRatings(I, 2);
-                                Print Tab(39); Using "##"; pitcherRatings(I, 3);
-                                Print Tab(43); Using "##"; pitcherRatings(I, 5);
-                                Print Tab(47); Using "###"; pitcherRatings(I, 6);
-                                Print Tab(52); Using "###"; pitcherRatings(I, 7);
-                                Print Tab(56); Using "###"; pitcherRatings(I, 8);
-                                Print Tab(61); Using "###"; pitcherRatings(I, 9);
-                                Print Tab(65); Using "##.##"; pitcherRatings(I, 10) / 100;
-                                Print Tab(73); Using "##"; pitcherRatings(I, 13)
-
                             End If
 
-                        End If
+                        Next I
 
-                    Next I
+                    End If
 
-                End If
+                Next J
 
-            Next J
+                Locate 23
+                Color 14: Print "END OF FILE - - - HIT ANY KEY TO CONTINUE"
+                I$ = GetKeyPress$
 
-            Locate 23
-            Color 14: Print "END OF FILE - - - HIT ANY KEY TO CONTINUE"
-            I$ = GetKeyPress$
-
-    End Select
+        End Select
+        
+    End If
 
 End Sub
 
@@ -683,114 +642,94 @@ Sub PitchersHanded (THR, pitchPosnDesc$, positionFile$)
     Shared pitcherRatings()
     Shared TM()
 
-	Color 15, 0
-	Cls
+    userKey$ = GetPrintOptions$
 
-	Call MenuBox(8, 25, 24, 5, 15, 1)
+    If userKey$ <> Chr$(27) Then
 
-	Do
+        Select Case userKey$
 
-		Locate 10, 32
-		Color 7, 1
+            Case "S":
+                Cls
+                Color 15
+                Locate 1, 35: Print pitchPosnDesc$
 
-		Locate , 32: Print "SEND TO ";
-		Color 15: Print "F";
-		Color 7: Print "ILE"
-		Locate , 32: Print "SEND TO ";
-		Color 15: Print "P";
-		Color 7: Print "RINTER"
-		Locate , 32: Print "SEND TO ";
-		Color 15: Print "S";
-		Color 7: Print "CREEN"
+                Color 11:
+                Locate 3: Print "PLAYER     TEAM      T    G   W   L   SV  GS   IP   H   BB   SO   ERA   HR"
 
-		I$ = GetKeyPress$
+                For J = 1 To TEAMS_PER_LEAGUE
 
-		Color 14, 0
+                    If TM(J) <> 0 Then
 
-	Loop Until UCase$(I$) = "F" Or UCase$(I$) = "P" Or UCase$(I$) = "S"
+                        Call ReadTeam(TYN$(J), T$, TM(J))
 
-    Select Case UCase$(I$)
+                        For I = 0 To 21
 
-        Case "S":
-            Cls
-            Color 15
-            Locate 1, 35: Print pitchPosnDesc$
+                            If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
 
-            Color 11:
-            Locate 3: Print "PLAYER     TEAM      T    G   W   L   SV  GS   IP   H   BB   SO   ERA   HR"
+                                If THR = 1 And pitcherRatings(I, 0) = 1 Or pitcherRatings(I, 0) = -1 Then
 
-            For J = 1 To TEAMS_PER_LEAGUE
+                                    currPosition = currPosition + 1
 
-                If TM(J) <> 0 Then
+                                    If (currPosition Mod 19 = 1) Then
+                                        Color 14
+                                        Locate 23: Print "HIT ANY KEY TO CONTINUE"
+                                        I$ = GetKeyPress$
 
-                    Call ReadTeam(TYN$(J), T$, TM(J))
+                                        Cls
 
-                    For I = 0 To 21
+                                        Color 15
+                                        Locate 1, 20: Print pitchPosnDesc$
 
-                        If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
+                                        Color 11
+                                        Locate 3: Print "PLAYER     TEAM      T    G   W   L   SV  GS   IP   H   BB   SO   ERA   HR"
+                                    End If
 
-                            If THR = 1 And pitcherRatings(I, 0) = 1 Or pitcherRatings(I, 0) = -1 Then
+                                    Color 12: Print Left$(pitcherNames$(I), 10);
+                                    Color 3: Print Tab(12); Left$(T$, 2); NN$;
 
-                                currPosition = currPosition + 1
+                                    If pitcherRatings(I, 0) = 1 Then PB$(I) = "R"
+                                    If pitcherRatings(I, 0) = -1 Then PB$(I) = "L"
 
-                                If (currPosition Mod 19 = 1) Then
-                                    Color 14
-                                    Locate 23: Print "HIT ANY KEY TO CONTINUE"
-                                    I$ = GetKeyPress$
+                                    Color 7: Print Tab(22); PB$(I);
 
-                                    Cls
+                                    Print Tab(25); Using "###"; pitcherRatings(I, 4);
+                                    Print Tab(30); Using "##"; pitcherRatings(I, 1);
+                                    Print Tab(34); Using "##"; pitcherRatings(I, 2);
+                                    Print Tab(39); Using "##"; pitcherRatings(I, 3);
+                                    Print Tab(43); Using "##"; pitcherRatings(I, 5);
+                                    Print Tab(47); Using "###"; pitcherRatings(I, 6);
+                                    Print Tab(52); Using "###"; pitcherRatings(I, 7);
+                                    Print Tab(56); Using "###"; pitcherRatings(I, 8);
+                                    Print Tab(61); Using "###"; pitcherRatings(I, 9);
+                                    Print Tab(65); Using "##.##"; pitcherRatings(I, 10) / 100;
+                                    Print Tab(73); Using "##"; pitcherRatings(I, 13)
 
-                                    Color 15
-                                    Locate 1, 20: Print pitchPosnDesc$
-
-                                    Color 11
-                                    Locate 3: Print "PLAYER     TEAM      T    G   W   L   SV  GS   IP   H   BB   SO   ERA   HR"
                                 End If
-
-                                Color 12: Print Left$(pitcherNames$(I), 10);
-                                Color 3: Print Tab(12); Left$(T$, 2); NN$;
-
-                                If pitcherRatings(I, 0) = 1 Then PB$(I) = "R"
-                                If pitcherRatings(I, 0) = -1 Then PB$(I) = "L"
-
-                                Color 7: Print Tab(22); PB$(I);
-
-                                Print Tab(25); Using "###"; pitcherRatings(I, 4);
-                                Print Tab(30); Using "##"; pitcherRatings(I, 1);
-                                Print Tab(34); Using "##"; pitcherRatings(I, 2);
-                                Print Tab(39); Using "##"; pitcherRatings(I, 3);
-                                Print Tab(43); Using "##"; pitcherRatings(I, 5);
-                                Print Tab(47); Using "###"; pitcherRatings(I, 6);
-                                Print Tab(52); Using "###"; pitcherRatings(I, 7);
-                                Print Tab(56); Using "###"; pitcherRatings(I, 8);
-                                Print Tab(61); Using "###"; pitcherRatings(I, 9);
-                                Print Tab(65); Using "##.##"; pitcherRatings(I, 10) / 100;
-                                Print Tab(73); Using "##"; pitcherRatings(I, 13)
 
                             End If
 
-                        End If
+                        Next I
 
-                    Next I
+                    End If
 
+                Next J
+
+                Color 14
+                Locate 23: Print "END OF FILE - - - HIT ANY KEY TO CONTINUE"
+                I$ = GetKeyPress$
+
+            Case "F"
+                userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                If userFile$ <> "" Then
+                    Call PitchersHanded_Print (0, userFile$, pitchPosnDesc$)
                 End If
 
-            Next J
-
-            Color 14
-            Locate 23: Print "END OF FILE - - - HIT ANY KEY TO CONTINUE"
-            I$ = GetKeyPress$
-
-		Case "F"
-			userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
-			If userFile$ <> "" Then
-                Call PitchersHanded_Print (0, userFile$, pitchPosnDesc$)
-			End If
-
-		Case "P"
-            Call PitchersHanded_Print (1, "REPORT", pitchPosnDesc$)
+            Case "P"
+                Call PitchersHanded_Print (1, "REPORT", pitchPosnDesc$)
+            
+        End Select
         
-    End Select
+    End If
 
 End Sub
 
@@ -907,11 +846,11 @@ Sub Pitchers10_Print (printDest, destFile$, PC, pitchPosnDesc$, positionFile$)
 
     Shared TM()
 
-	Color 15, 0
-	Cls
+    Color 15, 0
+    Cls
 
-	Open destFile$ For Output As #1
-	
+    Open destFile$ For Output As #1
+    
     Print #1,  Tab(50); pitchPosnDesc$
     Print #1, 
     Print #1,  "PLAYER               TEAM         T     G    W    L    SV    GS     IP    H    BB    SO    ERA    HR"
@@ -965,22 +904,22 @@ Sub Pitchers10_Print (printDest, destFile$, PC, pitchPosnDesc$, positionFile$)
 
     Next J
 
-	If printDest = 1 Then
+    If printDest = 1 Then
 
-		Open destFile$ For Input As #2
+        Open destFile$ For Input As #2
 
-		Do While Not EOF(2)
-			Line Input #2, X$
-			LPrint X$
-		Loop
+        Do While Not EOF(2)
+            Line Input #2, X$
+            LPrint X$
+        Loop
 
-		Close #2
+        Close #2
 
-		LPrint Chr$(12)
+        LPrint Chr$(12)
 
-		Kill destFile$
+        Kill destFile$
 
-	End If
+    End If
 
 End Sub
 

@@ -1497,7 +1497,7 @@ Sub SelectTradeTeam(numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%,
         Color , 4
         Cls
         Color 14
-        Locate , 33: Print "TEAM " + tradeIdx + " SELECTION"
+        Locate , 33: Print "TEAM"; tradeIdx; "SELECTION"
         Locate 25, 1
         Color 14: Print "ESC";
         Color 15: Print "-SELECT NEW ID  PGDN  PGUP  ";

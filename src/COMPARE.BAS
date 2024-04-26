@@ -110,34 +110,13 @@ Sub COMPARE ()
 
                 Close #1
 
-                Color 15, 0
-                Cls
+                userKey$ = GetOutputOptions$
 
-                Call MenuBox(8, 25, 24, 5, 15, 1)
+                If userKey$ <> Chr$(27) Then
 
-                Do
+                    backToMenu = 0
 
-                    Locate 10
-                    Color 7, 1
-
-                    Locate , 32: Print "SEND TO ";
-                    Color 15: Print "F";
-                    Color 7: Print "ILE"
-                    Locate , 32: Print "SEND TO ";
-                    Color 15: Print "P";
-                    Color 7: Print "RINTER"
-                    Locate , 32: Print "SEND TO ";
-                    Color 15: Print "S";
-                    Color 7: Print "CREEN"
-                    J$ = GetKeyPress$
-
-                Loop Until UCase$(J$) = "F" Or UCase$(J$) = "P" Or UCase$(J$) = "S" Or J$ = Chr$(27)
-
-                backToMenu = 0
-
-                If J$ <> Chr$(27) Then
-
-                    Select Case UCase$(J$)
+                    Select Case userKey$
 
                         Case "F":
                             userFile$ = _SAVEFILEDIALOG$("Save Comparison Report",_CWD$ + "\Comparison","*.txt","Text File")
@@ -159,7 +138,7 @@ Sub COMPARE ()
             
         End If 'Done checking for valid team
 
-    Loop Until backToMenu = 0 Or J$ = Chr$(27) Or teamNbr = 0 Or haveStats = 0
+    Loop Until backToMenu = 0 Or userKey$ = Chr$(27) Or teamNbr = 0 Or haveStats = 0
 
 End Sub
 
@@ -1304,10 +1283,10 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                         Locate , 33: Print Using "#####"; Int(statP0%(I, 0) / 3);
 
                         If statP0%(I, 0) - (Int(statP0%(I, 0) / 3) * 3) = 0 Then
-							Print ".0";
+                            Print ".0";
                         End If
                         If statP0%(I, 0) - (Int(statP0%(I, 0) / 3) * 3) > 0 Then
-							Print ".";: Print Using "#"; statP0%(I, 0) - (Int(statP0%(I, 0) / 3) * 3);
+                            Print ".";: Print Using "#"; statP0%(I, 0) - (Int(statP0%(I, 0) / 3) * 3);
                         End If
 
                         Locate , 40: Print Using "#####"; statP0%(I, 1);:
@@ -1334,13 +1313,13 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                         End If
                         
                         If statP0%(I, 0) > 0 And I4 = 0 And I2 > 0 Then
-							Print "00";
+                            Print "00";
                         End If
                         If statP0%(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then
-							Print "0";: Print Using "#"; I4;
+                            Print "0";: Print Using "#"; I4;
                         End If
                         If statP0%(I, 0) > 0 And I4 >= 10 And I2 > 0 Then
-							Print Using "##"; I4;
+                            Print Using "##"; I4;
                         End If
 
                         Locate 6, 62
@@ -1367,13 +1346,13 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                             Locate 11, 14: Print Using "###"; I3;: Print ".";
                         End If
                         If statP0%(I, 0) > 0 And I4 = 0 And I2 > 0 Then
-							Print "00";
+                            Print "00";
                         End If
                         If statP0%(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then
-							Print "0";: Print Using "#"; I4;
+                            Print "0";: Print Using "#"; I4;
                         End If
                         If statP0%(I, 0) > 0 And I4 >= 10 And I2 > 0 Then
-							Print Using "##"; I4;
+                            Print Using "##"; I4;
                         End If
 
                         I2 = 0
@@ -1391,13 +1370,13 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                             Locate 11, 20: Print Using "#####"; I3;: Print ".";
                         End If
                         If statP0%(I, 0) > 0 And I4 = 0 And I2 > 0 Then
-							Print "00";
+                            Print "00";
                         End If
                         If statP0%(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then
-							Print "0";: Print Using "#"; I4;
+                            Print "0";: Print Using "#"; I4;
                         End If
                         If statP0%(I, 0) > 0 And I4 >= 10 And I2 > 0 Then
-							Print Using "##"; I4;
+                            Print Using "##"; I4;
                         End If
 
                         If statP0%(I, 0) > 0 Then
@@ -1419,13 +1398,13 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                             Locate 11, 28: Print Using "#####"; I3;: Print ".";
                         End If
                         If statP0%(I, 0) > 0 And I4 = 0 And I2 > 0 Then
-							Print "00";
+                            Print "00";
                         End If
                         If statP0%(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then
-							Print "0";: Print Using "#"; I4;
+                            Print "0";: Print Using "#"; I4;
                         End If
                         If statP0%(I, 0) > 0 And I4 >= 10 And I2 > 0 Then
-							Print Using "##"; I4;
+                            Print Using "##"; I4;
                         End If
 
                         Locate 11, 36
@@ -1471,7 +1450,7 @@ End Sub
 'This subroutine focuses on the formatting
 'of team stats for comparison. The stats
 'are output to the default printer
-Sub TeamComparison_Report (printDest, destFile$, teamName$)
+Sub TeamComparison_Report (teamName$)
 
     Shared batterNames$()
     Shared batterRatings(), statB0%()
@@ -1783,74 +1762,74 @@ Sub TeamComparison_Screen (teamName$)
     
     Locate 10, 13
     If TB%(2) = 0 Then
-		Print " ---.--";
+        Print " ---.--";
     End If
     If TB%(2) > 0 Then
-		Print Using "###.##"; TB%(1) / TB%(2);
+        Print Using "###.##"; TB%(1) / TB%(2);
     End If
 
     Locate , 18
     If TB%(3) = 0 Then
-		Print " ---.--";
+        Print " ---.--";
     End If
     If TB%(3) > 0 Then
-		Print Using "#####.##"; TB%(1) / TB%(3);
+        Print Using "#####.##"; TB%(1) / TB%(3);
     End If
 
     Locate , 26
     If TB%(4) = 0 Then
-		Print " ---.--";
+        Print " ---.--";
     End If
     If TB%(4) > 0 Then
-		Print Using "####.##"; TB%(1) / TB%(4);
+        Print Using "####.##"; TB%(1) / TB%(4);
     End If
 
     Locate , 33
     If TB%(5) = 0 Then
-		Print " ---.--";
+        Print " ---.--";
     End If
     If TB%(5) > 0 Then
-		Print Using "####.##"; TB%(1) / TB%(5);
+        Print Using "####.##"; TB%(1) / TB%(5);
     End If
 
     Locate , 40
     If TB%(6) = 0 Then
-		Print " ---.--";
+        Print " ---.--";
     End If
     If TB%(6) > 0 Then
-		Print Using "####.##"; TB%(1) / TB%(6);
+        Print Using "####.##"; TB%(1) / TB%(6);
     End If
 
     Locate , 47
     If TB%(7) = 0 Then
-		Print " ---.--";
+        Print " ---.--";
     End If
     If TB%(7) > 0 Then
-		Print Using "####.##"; TB%(1) / TB%(7);
+        Print Using "####.##"; TB%(1) / TB%(7);
     End If
 
     Locate , 54
     If TB%(8) = 0 Then
-		Print " ---.--";
+        Print " ---.--";
     End If
     If TB%(8) > 0 Then
-		Print Using "####.##"; TB%(1) / TB%(8);
+        Print Using "####.##"; TB%(1) / TB%(8);
     End If
 
     Locate , 61
     If TB%(9) = 0 Then
-		Print " ---.--";
+        Print " ---.--";
     End If
     If TB%(9) > 0 Then
-		Print Using "####.##"; TB%(1) / TB%(9);
+        Print Using "####.##"; TB%(1) / TB%(9);
     End If
 
     Locate , 68
     If TB%(10) = 0 Then
-		Print " ---.--";
+        Print " ---.--";
     End If
     If TB%(10) > 0 Then
-		Print Using "####.##"; TB%(10) / (TB%(10) + TB%(11));
+        Print Using "####.##"; TB%(10) / (TB%(10) + TB%(11));
     End If
 
     Print " ";
@@ -1862,74 +1841,74 @@ Sub TeamComparison_Screen (teamName$)
 
     Locate 11, 13
     If statT0%(2) = 0 Then
-		Print " ---.--";
+        Print " ---.--";
     End If
     If statT0%(2) > 0 Then
-		Print Using "###.##"; statT0%(0) / statT0%(2);
+        Print Using "###.##"; statT0%(0) / statT0%(2);
     End If
     
     Locate , 18
     If statT0%(1) = 0 Then
-		Print " ---.--";
+        Print " ---.--";
     End If
     If statT0%(1) > 0 Then
-		Print Using "#####.##"; statT0%(0) / statT0%(1);
+        Print Using "#####.##"; statT0%(0) / statT0%(1);
     End If
 
     Locate , 26
     If statT0%(4) = 0 Then
-		Print " ---.--";
+        Print " ---.--";
     End If
     If statT0%(4) > 0 Then
-		Print Using "####.##"; statT0%(0) / statT0%(4);
+        Print Using "####.##"; statT0%(0) / statT0%(4);
     End If
 
     Locate , 33
     If statT0%(5) = 0 Then
-		Print " ---.--";
+        Print " ---.--";
     End If
     If statT0%(5) > 0 Then
-		Print Using "####.##"; statT0%(0) / statT0%(5);
+        Print Using "####.##"; statT0%(0) / statT0%(5);
     End If
 
     Locate , 40
     If statT0%(6) = 0 Then
-		Print " ---.--";
+        Print " ---.--";
     End If
     If statT0%(6) > 0 Then
-		Print Using "####.##"; statT0%(0) / statT0%(6);
+        Print Using "####.##"; statT0%(0) / statT0%(6);
     End If
 
     Locate , 47
     If statT0%(3) = 0 Then
-		Print " ---.--";
+        Print " ---.--";
     End If
     If statT0%(3) > 0 Then
-		Print Using "####.##"; statT0%(0) / statT0%(3);
+        Print Using "####.##"; statT0%(0) / statT0%(3);
     End If
 
     Locate , 54
     If statT0%(7) = 0 Then
-		Print " ---.--";
+        Print " ---.--";
     End If
     If statT0%(7) > 0 Then
-		Print Using "####.##"; statT0%(0) / statT0%(7);
+        Print Using "####.##"; statT0%(0) / statT0%(7);
     End If
 
     Locate , 61
     If statT0%(8) = 0 Then
-		Print " ---.--";
+        Print " ---.--";
     End If
     If statT0%(8) > 0 Then
-		Print Using "####.##"; statT0%(0) / statT0%(8);
+        Print Using "####.##"; statT0%(0) / statT0%(8);
     End If
 
     Locate , 68
     If statT0%(9) = 0 Then
-		Print " ---.--";
+        Print " ---.--";
     End If
     If statT0%(9) > 0 Then
-		Print Using "####.## "; statT0%(9) / (statT0%(9) + statT0%(10));
+        Print Using "####.## "; statT0%(9) / (statT0%(9) + statT0%(10));
     End If
 
     Color 7, 0

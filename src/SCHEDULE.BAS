@@ -22,7 +22,7 @@ Sub SCHEDULE ()
         Cls
 
         Call TITLE_SCHEDULER
-        Locate 19
+        Locate 3, 1
         Color 2
         Print "GENERATING A SEASON SCHEDULE MUST BE USED IN CONJUNCTION WITH"
         Print "STANDINGS AND LEAGUE LEADERS OPTIONS. YOU MUST ALREADY HAVE CREATED"

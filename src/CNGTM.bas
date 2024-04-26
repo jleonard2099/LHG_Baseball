@@ -61,41 +61,24 @@ Sub CNGTM (userChoice)
                         Call SaveTeamFile(0, YN$, team$, statFile$, teamNbr)
 
                     Case 2:
-                        Color 15, 0
-                        Cls
+                        userKey$ = GetPrintOptions$
 
-                        Call MenuBox(8, 25, 24, 5, 15, 1)
+                        If userKey$ <> Chr$(27) Then
 
-                        Do
+                            Select Case userKey$
 
-                            Locate 10, 32
-                            Color 7, 1
+                                Case "F"
+                                    userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                                    If userFile$ <> "" Then
+                                        Call PrintTeamStats(0, userFile$, team$)
+                                    End If
 
-                            Locate , 32: Print "SEND TO ";
-                            Color 15: Print "F";
-                            Color 7: Print "ILE"
-                            Locate , 32: Print "SEND TO ";
-                            Color 15: Print "P";
-                            Color 7: Print "RINTER"
+                                Case "P"
+                                    Call PrintTeamStats(1, "REPORT", team$)
 
-                            I$ = GetKeyPress$
-
-                            Color 14, 0
-
-                        Loop Until UCase$(I$) = "F" Or UCase$(I$) = "P"
-
-                        Select Case UCase$(I$)
-
-                            Case "F"
-                                userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
-                                If userFile$ <> "" Then
-                                    Call PrintTeamStats(0, userFile$, team$)
-                                End If
-
-                            Case "P"
-                                Call PrintTeamStats(1, "REPORT", team$)
-
-                        End Select
+                            End Select
+                            
+                        End If
 
                     Case 3:
                         Call ViewRoster(team$)
