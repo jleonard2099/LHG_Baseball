@@ -8063,7 +8063,7 @@ Sub SAVESTATS ()
                 Field #1, X * 2 As X$, 2 As player$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
             Next
 
-            Field #1, 38 As X$, 2 As player$(22), 2 As player$(23), 3 As player$(20), 3 As player$(21)
+            Field #1, 38 As X$, 2 As player$(22), 2 As player$(23), 5 As player$(20), 5 As player$(21)
 
             NG%(13) = 1
 

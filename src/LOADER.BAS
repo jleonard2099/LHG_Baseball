@@ -109,7 +109,7 @@ Sub LOADER
             Field #6, X * 2 As X$, 2 As Q2$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
         Next
 
-        Field #6, 38 As X$, 2 As Q2$(22), 2 As Q2$(23), 3 As Q2$(20), 3 As Q2$(21)
+        Field #6, 38 As X$, 2 As Q2$(22), 2 As Q2$(23), 5 As Q2$(20), 5 As Q2$(21)
 
         Get #6, schedGame(0) + schedGame(2)
 
