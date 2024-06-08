@@ -28,14 +28,14 @@ Sub SCHEDULE ()
         Print "STANDINGS AND LEAGUE LEADERS OPTIONS. YOU MUST ALREADY HAVE CREATED"
         Print "AN APPROPRIATE LEAGUE FOR THIS OPTION TO FUNCTION."
 
-        menuChoices$(1) = "ENTER A NEW SCHEDULE                    "
-        menuChoices$(2) = "REVIEW / EDIT AN EXISTING SCHEDULE      "
-        menuChoices$(3) = "EXTRACT TEAM SCHEDULE FROM LEAGUE       "
-        menuChoices$(4) = "CHANGE TEAM'S MODE OF PLAY IN A SCHEDULE"
-        menuChoices$(5) = "MAKE GLOBAL CHANGES TO A SCHEDULE       "
-        menuChoices$(6) = "GENERATE A STANDARD SEASON SCHEDULE     "
-        menuChoices$(7) = "BOXSCORE MAINTENANCE / PARAMETERS       "
-        menuChoices$(8) = "RETURN TO FULL COUNT BB MENU            "
+        menuChoices$(1) = "ENTER A NEW SCHEDULE              "
+        menuChoices$(2) = "PLAY / EDIT AN EXISTING SCHEDULE  "
+        menuChoices$(3) = "EXTRACT TEAM SCHEDULE             "
+        menuChoices$(4) = "CHANGE TEAM CONTROL FOR A SCHEDULE"
+        menuChoices$(5) = "MAKE GLOBAL CHANGES TO A SCHEDULE "
+        menuChoices$(6) = "GENERATE A SEASON SCHEDULE        "
+        menuChoices$(7) = "BOXSCORE MAINTENANCE / PARAMETERS "
+        menuChoices$(8) = "RETURN TO FULL COUNT BB MENU      "
         Selection% = 1
         Count% = 8
         Start% = 1
@@ -691,8 +691,8 @@ End Sub
 'then writes the changes back to the orig-
 'inal schedule file.
 Sub ExtractSchedule (scheduleAction%, scheduleFile$)
-    'scheduleAction% = 3: "EXTRACT ONE TEAM'S SCHEDULE FROM LEAGUE SCHEDULE
-    'scheduleAction% = 4: "CHANGE THE MODE OF PLAY FOR A TEAM IN A SCHEDULE
+    'scheduleAction% = 3: "EXTRACT ONE TEAM'S SCHEDULE
+    'scheduleAction% = 4: "CHANGE THE MODE OF PLAY FOR A TEAM
     'scheduleAction% = 5: "MAKE GLOBAL CHANGES TO A SCHEDULE
     Dim displayPause!
 
@@ -717,10 +717,10 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
                 subSchedFile$ = _InputBox$("Schedule File Name","Enter name for schedule file")
             End If
 
-            If scheduleAction% = 4 Or subSchedFile$ <> "" Then
+            If scheduleAction% = 4 And subSchedFile$ <> "" Then
 
                 T1 = 0
-                Call ChooseTeam (YN$, numberTeams, T1, team$)
+                Call ChooseTeam (YN$, numberTeams, T1, teamName$)
 
                 If T1 <> 0 Then
 
@@ -730,13 +730,19 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
                     'Change mode of play
                     If scheduleAction% = 4 Then
 
-                        Color teamRatings%(11), teamRatings%(12): Print team$;
+                        Color teamRatings%(11), teamRatings%(12): Print teamName$;
                         Color 15, 0
                         Print " IS TO BE:"
                         Print
-                        Print "(0) MANUALLY CONTROLLED"
+                        Color 12
+                        Print "(0)";
+                        Color 15
+                        Print " MANUALLY CONTROLLED"
                         Print
-                        Print "(1) COMPUTER CONTROLLED"
+                        Color 12
+                        Print "(1)";
+                        Color 15
+                        Print " COMPUTER CONTROLLED"
 
                         Do
                             C$ = GetKeyPress$
@@ -756,9 +762,18 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
                         If T1 = scheduleNG%(I, 0) And YN$ = scheduleYN$(I, 0) Or T1 = scheduleNG%(I, 1) And YN$ = scheduleYN$(I, 1) Then
 
                             ' CHANGE SETTINGS FOR A TEAM
-                            If T1 = scheduleNG%(I, 0) And YN$ = scheduleYN$(I, 0) Then scheduleNG%(I, 8) = 2
-                            If T1 = scheduleNG%(I, 1) And YN$ = scheduleYN$(I, 1) Then scheduleNG%(I, 8) = 1
-                            If (T1 = scheduleNG%(I, 0) And YN$ = scheduleYN$(I, 0) Or T1 = scheduleNG%(I, 1) And YN$ = scheduleYN$(I, 1)) And I1 = 1 And scheduleAction% = 4 Then scheduleNG%(I, 8) = 3
+                            If T1 = scheduleNG%(I, 0) And YN$ = scheduleYN$(I, 0) Then 
+                                scheduleNG%(I, 8) = 2
+                            End If
+
+                            If T1 = scheduleNG%(I, 1) And YN$ = scheduleYN$(I, 1) Then 
+                                scheduleNG%(I, 8) = 1
+                            End If
+
+                            If (T1 = scheduleNG%(I, 0) And YN$ = scheduleYN$(I, 0) Or T1 = scheduleNG%(I, 1) And YN$ = scheduleYN$(I, 1)) And I1 = 1 And scheduleAction% = 4 Then
+                                scheduleNG%(I, 8) = 3
+                            End If
+
                             scheduleNG%(I, 4) = displayPause! * 10
 
                             'Extract only
@@ -769,7 +784,6 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
                                 Open diskPaths$(3) + subSchedFile$ + ".SCD" For Random As #1 Len = SCHEDULE_SIZE_BYTES
 
                                 fileLength& = LOF(1)
-
                                 numberGames = fileLength& / SCHEDULE_SIZE_BYTES
 
                                 For X = 0 To 18
@@ -992,22 +1006,22 @@ Sub BoxscoreMaintenance ()
                     End If
 
                 Case 3
-                    'Spec$ = diskPaths$(1) + "BOX*."
                     Spec$ = diskPaths$(1) + "*.BS"
+                    'Spec$ = diskPaths$(1) + "BOX*."
                     Call DeleteBoxscores(Selection%, Spec$)
 
                 Case 4
-                    'Spec$ = diskPaths$(1) + "*.SPC"
                     Spec$ = diskPaths$(1) + "*.BSS"
+                    'Spec$ = diskPaths$(1) + "*.SPC"
                     Call DeleteBoxscores(Selection%, Spec$)
 
                 Case 5:
-                    'Spec$ = diskPaths$(1) + "BOX*."
                     Spec$ = diskPaths$(1) + "*.BS"
+                    'Spec$ = diskPaths$(1) + "BOX*."
                     Call DeleteBoxscores(Selection%, Spec$)
 
-                    'Spec$ = diskPaths$(1) + "*.SPC"
                     Spec$ = diskPaths$(1) + "*.BSS"
+                    'Spec$ = diskPaths$(1) + "*.SPC"
                     Call DeleteBoxscores(Selection%, Spec$)
 
             End Select
@@ -1364,7 +1378,6 @@ Sub LoadScheduleInfo (targetFile$)
     Open diskPaths$(3) + targetFile$ + ".SCD" For Random As #1 Len = SCHEDULE_SIZE_BYTES
 
     fileLength& = LOF(1)
-
     scheduleAP%(0) = fileLength& / SCHEDULE_SIZE_BYTES
     BS% = Int((scheduleAP%(0) - 1) / 20)
 
@@ -1375,6 +1388,7 @@ Sub LoadScheduleInfo (targetFile$)
     Field #1, 38 As X$, 2 As Q$(22), 2 As Q$(23), 5 As Q$(20), 5 As Q$(21)
 
     For I = 1 To scheduleAP%(0)
+    
         Get #1, I
 
         For X = 0 To 18

@@ -18,7 +18,7 @@ Sub INFO ()
     Locate 24, 1
     Print Tab(80); " ";
     Locate , 1
-    Print "    LANCE HAFFNER 1986-2000"; Tab(70); Left$(Time$, 5);
+    Print "    LANCE HAFFNER / JASON LEONARD  1986-2024"; Tab(70); Left$(Time$, 5);
     Locate 3, 1
     Color , 0
 

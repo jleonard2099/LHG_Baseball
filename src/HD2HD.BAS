@@ -347,9 +347,11 @@ Sub Hd2HdPro_Report (teamName$, printDest)
 
     Open destFile$ For Output As #1
 
-    RDD = 1
+    div = 0
 
     Do
+
+        RDD = div + 1
 
         Print #1, Tab(5); teamName$
         Print #1, Tab(22); "------- HOME -------"; Tab(54); "------- AWAY -------"; Tab(86); "-------- TOtotAwayLossesesS -------"
@@ -482,9 +484,9 @@ Sub Hd2HdPro_Report (teamName$, printDest)
         Print #1, Tab(106); Using "###"; totHomeScoreOpp(RDD) + totAwayScoreOpp(RDD)
         Print #1,
 
-        RDD = RDD + 1
+        div = div + 1
 
-    Loop Until RDD > DIVS_PER_LEAGUE Or DV$(RDD) = "XXX" Or DV$(RDD) = ""
+    Loop Until div > DIVS_PER_LEAGUE Or DV$(div) = "XXX" Or DV$(div) = ""
 
     Print #1,
     Print #1,
@@ -669,9 +671,11 @@ Sub Hd2HdPro_Screen (teamName$)
     DV$(3) = div3Name$
     DV$(4) = div4Name$
 
-    RDD = 1
+    div = 0
 
     Do
+
+        RDD = div + 1
 
         Cls
 
@@ -848,9 +852,9 @@ Sub Hd2HdPro_Screen (teamName$)
 
         I$ = GetKeyPress$
 
-        RDD = RDD + 1
+        div = div + 1
 
-    Loop Until RDD > DIVS_PER_LEAGUE Or DV$(RDD) = "XXX" Or DV$(RDD) = ""
+    Loop Until div > DIVS_PER_LEAGUE Or DV$(div) = "XXX" Or DV$(div) = ""
 
     Cls
 
