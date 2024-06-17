@@ -169,6 +169,7 @@ Declare Sub WILDPITCH (S2%, D)
 Declare Sub WINDEX ()
 Declare Sub pbpLog (lineNumber)
 
+Declare Function CheckString% (targetString$)
 Declare Function d100% ()
 Declare Function GetTeamYear% (yearFromName$)
-DECLARE FUNCTION OUTFLDLOCATION$ (gameW%)
+Declare Function OUTFLDLOCATION$ (gameW%)

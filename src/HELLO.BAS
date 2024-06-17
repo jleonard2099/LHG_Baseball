@@ -141,11 +141,6 @@ For I = 0 To 3:
     Read parkType$(I)
 Next
 
-Data A,B,C,D,E,F,G,H,I,J,K,L,M
-For I = 0 To 12:
-    Read alpha$(I)
-Next
-
 'Data to read in to variables
 Data first,second,third,short
 For I = 3 To 6
