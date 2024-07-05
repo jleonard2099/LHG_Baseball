@@ -1644,7 +1644,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
                     Case 38: X = 16: XX = 38
                 End Select
 
-                If categoryId <> 39 Then
+                If categoryId < 39 And categoryID >= 0 Then
                     Call SortOptions(printOrView, sortType, newCategory)
                     Cls
                 End If
@@ -1784,7 +1784,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
 
                 End Select
 
-                If categoryId <> 39 Then
+                If categoryId < 39 And categoryID >= 0 Then
                     Call DisplayTeamView(XX, screenType, printOrView, TVN, maxRecords)
                 End If
 
