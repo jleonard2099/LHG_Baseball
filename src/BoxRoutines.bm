@@ -9,9 +9,6 @@
 '   BGColor% - color of box area
 Sub MenuBox (StartRow%, StartCol%, boxWidth%, boxHeight%, FGColor%, BGColor%)
 
-    '                        JJ
-    'Call MenuBox (6, 8, 61, 7, 15, 1)
-
     Locate StartRow%, StartCol%
 
     Color FGColor%, BGColor%
@@ -27,3 +24,107 @@ Sub MenuBox (StartRow%, StartCol%, boxWidth%, boxHeight%, FGColor%, BGColor%)
     Print " " + Chr$(211); String$(boxWidth%, 196); Chr$(189) + " ";
 
 End Sub
+
+
+'----------------------------------------
+'          ShadowBox Subroutine
+'----------------------------------------
+'This subroutine draws a box in mode 0
+'at the starting row / column.
+'It is given a slight drop shadow effect
+'in addition to this.
+'   boxWidth% - width of the box (inside the lines)
+'   boxHeight% - height of the box (inside the lines)
+'   FGColor% - color of box lines
+'   BGColor% - color of box area
+Sub ShadowBox (StartRow%, StartCol%, boxWidth%, boxHeight%, FGColor%, BGColor%)
+
+    Locate StartRow%, StartCol%
+
+    Color FGColor%, BGColor%
+
+    Print " " + Chr$(214); String$(boxWidth%, 196); Chr$(183) + " ";
+
+    For II = 1 To boxHeight%
+        Color FGColor%, BGColor%
+        Locate StartRow% + II, StartCol%
+        Print " " + Chr$(186); String$(boxWidth%, 32); Chr$(186) + " ";
+        Color 7, FGColor%: Print String$(2, 177)
+    Next
+
+    Color FGColor%, BGColor%
+
+    Locate StartRow% + boxHeight% + 1, StartCol%
+    Print " " + Chr$(211); String$(boxWidth%, 196); Chr$(189) + " ";
+
+    Color 7, FGColor%
+    Print String$(2, 177)
+    Locate , StartCol% + 2
+    Print String$(boxWidth% + 4, 177)
+
+    Color FGColor%
+
+End Sub
+
+
+'----------------------------------------
+'          OPTIONBOX Subroutine
+'----------------------------------------
+'This subroutine draws an ASCII box in grey.
+'The box starts at row 8 and is approx. 60
+'char's wide. When done, the cursor is set
+'at the first printable row and column
+'inside the box.
+Sub OPTIONBOX (J)
+
+    PCopy 0, 1
+    Screen , , 1, 1
+
+    Locate 8, 8
+    Color 0, 7
+
+    'Print box top
+    Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+
+    'Print box sides
+    For II = 1 To J
+        Locate 8 + II, 8
+        Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
+    Next
+
+    'Print box bottom
+    Locate 9 + J, 8
+    Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+
+    Locate 10, 15
+
+End Sub
+
+
+'----------------------------------------
+'         FRAMESTATS Subroutine
+'----------------------------------------
+'This subroutine draws an ASCII box in grey.
+'The box starts at row 8 and is approx. 77
+'char's wide. When done, the cursor is set
+'at the first printable row and column
+'inside the box.
+Sub FRAMESTATS (J)
+
+    Locate 1, 1
+    Color 0, 7
+
+    Print Chr$(214); String$(77, 196); Chr$(183);
+
+    For II = 1 To J
+        Locate 1 + II, 1
+        Print Chr$(186); String$(77, 32); Chr$(186);
+    Next
+
+    Locate 2 + J, 1
+    Print Chr$(211); String$(77, 196); Chr$(189);
+
+    Locate 2, 32
+
+End Sub
+

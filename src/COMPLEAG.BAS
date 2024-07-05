@@ -16,7 +16,8 @@ Sub CompileLeague ()
     Shared compileZ1!(), DFT!(), JS!(), OFT!()
 
     Shared BA$(), compileTeams$(), compileZ2$(), compileZ3$()
-    Shared ER$(), statFiles$(), NM$()
+    Shared ER$(), NM$()
+    Shared statFileNames$()
 
     'Initialize values first
     APP = 0
@@ -55,11 +56,11 @@ Sub CompileLeague ()
 
         Open diskPaths$(2) + leagStatFile$ + ".TMS" For Input As #2
 
-        Input #2, league$, div1Name$, div2Name$, div3Name$, div4Name$
+        Input #2, league$, div1Name$, div2$, div3$, div4$
 
         For XW = 1 To TEAMS_PER_LEAGUE
-            Input #2, statFiles$(XW)
-            compileTeams$(XW) = statFiles$(XW)
+            Input #2, statFileNames$(XW)
+            compileTeams$(XW) = statFileNames$(XW)
         Next
 
         Close 2
@@ -69,17 +70,17 @@ Sub CompileLeague ()
             fullWins = 0
             fullLosses = 0
 
-            If statFiles$(XW) <> Chr$(42) Then
+            If statFileNames$(XW) <> Chr$(42) Then
 
-                haveStats = FindStatsPro%(statFiles$(XW), TN$, fullWins, fullLosses)
+                haveStats = FindStatsPro%(statFileNames$(XW), TN$, fullWins, fullLosses)
 
                 If (haveStats) Then
 
-                    L = Len(statFiles$(XW))
+                    L = Len(statFileNames$(XW))
                     WT$ = ""
 
                     For X = 1 To L
-                        A = Asc(Mid$(statFiles$(XW), X, 1))
+                        A = Asc(Mid$(statFileNames$(XW), X, 1))
                         WT$ = WT$ + Chr$(A)
                     Next X
 
@@ -102,10 +103,10 @@ Sub CompileLeague ()
 
                     Next X
 
-                    If confGame <> 1 And _FileExists(diskPaths$(1) + statFiles$(XW)) Then
+                    If confGame <> 1 And _FileExists(diskPaths$(1) + statFileNames$(XW)) Then
 
-                        Call ReadStatsLeague(statFiles$(XW), TN$, totalGames)
-                        Call CheckStatsLeague(statFiles$(XW), WT$, totalGames)
+                        Call ReadStatsLeague(statFileNames$(XW), TN$, totalGames)
+                        Call CheckStatsLeague(statFileNames$(XW), WT$, totalGames)
                         Call CalcStatTotals(WT$, totalGames)
 
                     End If 'Done checking if we need to skip

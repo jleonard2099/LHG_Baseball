@@ -8,11 +8,11 @@ Sub CREATLEAG ()
 
     _Title "Full Count Baseball - Manage Leagues"
 
-    Dim div1Name$, div2Name$, div3Name$, div4Name$
+    Dim div1$, div2$, div3$, div4$
 
-    Shared statZ1%()
+    Shared memberIdx()
 
-    Shared Z1$(), Z2$()
+    Shared memberName$(), memberYear$()
 
     ReDim menuChoices$(1 To 3)
 
@@ -46,29 +46,30 @@ Sub CREATLEAG ()
         If ExitCode% <> 27 Then
 
             For X = 1 To TEAMS_PER_LEAGUE
-                Z1$(X) = "XXX"
-                Z2$(X) = "XXX"
-                statZ1%(X) = -1
+                memberName$(X) = "XXX"
+                memberYear$(X) = "XXX"
+                memberIdx(X) = -1
             Next
 
-            div1Name$ = ""
-            div2Name$ = ""
-            div3Name$ = ""
-            div4Name$ = ""
+            div1$ = ""
+            div2$ = ""
+            div3$ = ""
+            div4$ = ""
 
             Select Case Selection%
 
                 Case 1:
-                    Call DefineLeague(league$, div1Name$, div2Name$, div3Name$, div4Name$)
-                    Call ReviewEditLeague(league$, div1Name$, div2Name$, div3Name$, div4Name$)
+                    Call DefineLeague(league$, div1$, div2$, div3$, div4$)
+                    leagueFile$ = league$
+                    Call ReviewEditLeague(leagueFile$, league$, div1$, div2$, div3$, div4$)
 
                 Case 2:
                     Do
 
-                        league$ = ChooseFile$(diskPaths$(2) + "*.TMI", "LEAGUE", FileExit%)
+                        leagueFile$ = ChooseFile$(diskPaths$(2) + "*.TMI", "LEAGUE", FileExit%)
 
                         If FileExit% <> 27 And FileExit% <> 0 Then
-                            Call ReviewEditLeague(league$, div1Name$, div2Name$, div3Name$, div4Name$)
+                            Call ReviewEditLeague(leagueFile$, league$, div1$, div2$, div3$, div4$)
                         End If
 
                     Loop Until FileExit% = 27 Or FileExit% = 0
@@ -183,22 +184,22 @@ End Sub
 'This subroutine provides an interface to
 'the user allowing them to choose / clear
 'teams from the league definition.
-Sub ReviewEditLeague (league$, div1$, div2$, div3$, div4$)
+Sub ReviewEditLeague (leagueFile$, league$, div1$, div2$, div3$, div4$)
 
-    Shared statZ1%()
+    Shared memberIdx()
 
-    Shared Z1$(), Z2$()
+    Shared memberName$(), memberYear$()
 
-    If _FileExists(diskPaths$(2) + league$ + ".TMI") Then
+    If _FileExists(diskPaths$(2) + leagueFile$ + ".TMI") Then
 
-        Open diskPaths$(2) + league$ + ".TMI" For Input As #2
+        Open diskPaths$(2) + leagueFile$ + ".TMI" For Input As #2
 
         Input #2, league$, div1$, div2$, div3$, div4$
 
         For X = 1 To TEAMS_PER_LEAGUE
-            Input #2, Z1$(X)
-            Input #2, statZ1%(X)
-            Input #2, Z2$(X)
+            Input #2, memberName$(X)
+            Input #2, memberIdx(X)
+            Input #2, memberYear$(X)
         Next
 
         Close 2
@@ -223,19 +224,19 @@ Sub ReviewEditLeague (league$, div1$, div2$, div3$, div4$)
 
             Color 2
             Print Using "## "; I;
-            Color 15: Print Z1$(I);
+            Color 15: Print Left$(memberName$(I), 17);
 
             Locate , 21
             Color 2: Print Using "## "; I + 10;
-            Color 15: Print Z1$(I + 10);
+            Color 15: Print Left$(memberName$(I + 10), 17);
 
             Locate , 41
             Color 2: Print Using "## "; I + 20;
-            Color 15: Print Z1$(I + 20);
+            Color 15: Print Left$(memberName$(I + 20), 17);
 
             Locate , 61
             Color 2: Print Using "## "; I + 30;
-            Color 15: Print Z1$(I + 30)
+            Color 15: Print Left$(memberName$(I + 30), 17)
 
         Next I
 
@@ -265,17 +266,17 @@ Sub ReviewEditLeague (league$, div1$, div2$, div3$, div4$)
             If choice = 1 Then
                 'Add team
                 teamNbr = 0
-                Call ChooseTeam(Z2$(B), NTMS, statZ1%(B), Z1$(B))
+                Call ChooseTeam(memberYear$(B), NTMS, memberIdx(B), memberName$(B))
             Else
                 'Remove team
-                Z1$(B) = "XXX"
+                memberName$(B) = "XXX"
             End If
 
         End If 'Done checking if ready to save
 
     Loop Until choice = 3
 
-    Call SaveLeague(league$, div1$, div2$, div3$, div4$)
+    Call SaveLeague(leagueFile$, league$, div1$, div2$, div3$, div4$)
 
 End Sub
 
@@ -286,13 +287,14 @@ End Sub
 'This subroutine writes the league team
 'memberships and definition to each of
 'the corresponding files (.TMI, .TMS)
-Sub SaveLeague (league$, div1$, div2$, div3$, div4$)
+Sub SaveLeague (leagueFile$, league$, div1$, div2$, div3$, div4$)
 
-    Shared statZ1%()
+    Shared memberIdx()
 
-    Shared Z1$(), Z2$()
+    Shared memberName$(), memberYear$()
+    Shared statFileNames$()
 
-    Open diskPaths$(2) + league$ + ".TMI" For Output As #2
+    Open diskPaths$(2) + leagueFile$ + ".TMI" For Output As #2
 
     Print #2, league$
     Print #2, div1$
@@ -301,24 +303,24 @@ Sub SaveLeague (league$, div1$, div2$, div3$, div4$)
     Print #2, div4$
 
     For X = 1 To TEAMS_PER_LEAGUE
-        Print #2, Z1$(X)
-        Print #2, statZ1%(X)
-        Print #2, Z2$(X)
+        Print #2, memberName$(X)
+        Print #2, memberIdx(X)
+        Print #2, memberYear$(X)
     Next
 
     Close 2
 
     For X = 1 To TEAMS_PER_LEAGUE
 
-        If Z1$(X) <> "XXX" Then
-            Z1$(X) = nameStatFile$(Z1$(X))
+        If memberName$(X) <> "XXX" Then
+           statFileNames$(X) = nameStatFile$(memberName$(X))
         Else
-            Z1$(X) = Chr$(42)
+            statFileNames$(X) = Chr$(42)
         End If
 
     Next X
 
-    Open diskPaths$(2) + league$ + ".TMS" For Output As #2
+    Open diskPaths$(2) + leagueFile$ + ".TMS" For Output As #2
 
     Write #2, league$
     Write #2, div1$
@@ -327,7 +329,7 @@ Sub SaveLeague (league$, div1$, div2$, div3$, div4$)
     Write #2, div4$
 
     For X = 1 To TEAMS_PER_LEAGUE
-        Write #2, Z1$(X)
+        Write #2, statFileNames$(X)
     Next
 
     Close 2

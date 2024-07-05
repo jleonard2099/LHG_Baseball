@@ -198,12 +198,12 @@ Sub NewSchedule (scheduleFile$)
 
                 T1 = scheduleNG%(X + NS% * 20, 0)
                 YN$ = scheduleYN$(X + NS% * 20, 0)
-                Call ReadTeam (YN$, team$, T1)
+                Call ReadTeam (YN$, team$, T1, validData)
                 scheduleV$(X) = team$
 
                 T1 = scheduleNG%(X + NS% * 20, 1)
                 YN$ = scheduleYN$(X + NS% * 20, 1)
-                Call ReadTeam (YN$, team$, T1)
+                Call ReadTeam (YN$, team$, T1, validData)
                 scheduleH$(X) = team$
 
                 'Game number
@@ -350,7 +350,7 @@ Sub NewSchedule (scheduleFile$)
 
                 Do
 
-                    Locate 8, 12: Print "TOtotAwayLosses GAMES ="; scheduleAP%(0)
+                    Locate 8, 12: Print "TOTAL GAMES ="; scheduleAP%(0)
                     Locate 9, 12: Print "SELECT GAME # TO START AND END WITH": Print
                     Locate 10, 12: Input "ENTER START GAME #: "; SG%: Print
                     Locate 11, 12: Input "ENTER END GAME #:"; EG%: Print
@@ -1433,8 +1433,8 @@ Sub CreateSeasonSchedule ()
     Shared BS%
 
     Shared scheduleAP%(), homeScores(), visitorScores()
-    Shared scheduleNG%(), statZ1%()
-    Shared scheduleYN$(), Z1$(), Z2$()
+    Shared scheduleNG%(), memberIdx()
+    Shared scheduleYN$(), memberName$(), memberYear$()
 
     Call TITLE_SCHEDULER
 
@@ -1468,15 +1468,15 @@ Sub CreateSeasonSchedule ()
             Open diskPaths$(2) + leagueFile$ + ".TMI" For Input As #2
 
             Input #2, league$
-            Input #2, div1Name$
-            Input #2, div2Name$
-            Input #2, div3Name$
-            Input #2, div4Name$
+            Input #2, div1$
+            Input #2, div2$
+            Input #2, div3$
+            Input #2, div4$
 
             For X = 1 To TEAMS_PER_LEAGUE
-                Input #2, Z1$(X)
-                Input #2, statZ1%(X)
-                Input #2, Z2$(X)
+                Input #2, memberName$(X)
+                Input #2, memberIdx(X)
+                Input #2, memberYear$(X)
             Next
 
             Close #2
@@ -1537,7 +1537,7 @@ Sub CreateSeasonSchedule ()
             If seasonSchedFile$ <> "" Then
 
                 For I = 1 To 20
-                    Print statZ1%(I), Z2$(I)
+                    Print memberIdx(I), memberYear$(I)
                 Next
 
                 For I = 1 To scheduleAP%(0)
@@ -1550,56 +1550,56 @@ Sub CreateSeasonSchedule ()
 
                         Case 0 To 1:
                             X = scheduleNG%(I, 0)
-                            scheduleNG%(I, 0) = statZ1%(X)
-                            scheduleYN$(I, 0) = Z2$(X)
+                            scheduleNG%(I, 0) = memberIdx(X)
+                            scheduleYN$(I, 0) = memberYear$(X)
                             X = scheduleNG%(I, 1)
-                            scheduleNG%(I, 1) = statZ1%(X)
-                            scheduleYN$(I, 1) = Z2$(X)
+                            scheduleNG%(I, 1) = memberIdx(X)
+                            scheduleYN$(I, 1) = memberYear$(X)
 
                         Case 2:
                             If scheduleNG%(I, 0) <= 6 Then
                                 X = scheduleNG%(I, 0)
                                 Print X
-                                scheduleNG%(I, 0) = statZ1%(X)
-                                scheduleYN$(I, 0) = Z2$(X)
+                                scheduleNG%(I, 0) = memberIdx(X)
+                                scheduleYN$(I, 0) = memberYear$(X)
                             Else
                                 X = scheduleNG%(I, 0)
                                 Print X
-                                scheduleNG%(I, 0) = statZ1%(X + 4)
-                                scheduleYN$(I, 0) = Z2$(X + 4)
+                                scheduleNG%(I, 0) = memberIdx(X + 4)
+                                scheduleYN$(I, 0) = memberYear$(X + 4)
                             End If
 
                             If scheduleNG%(I, 1) <= 6 Then
                                 X = scheduleNG%(I, 1)
                                 Print X
-                                scheduleNG%(I, 1) = statZ1%(X)
-                                scheduleYN$(I, 1) = Z2$(X)
+                                scheduleNG%(I, 1) = memberIdx(X)
+                                scheduleYN$(I, 1) = memberYear$(X)
                             Else
                                 X = scheduleNG%(I, 1)
                                 Print X
-                                scheduleNG%(I, 1) = statZ1%(X + 4)
-                                scheduleYN$(I, 1) = Z2$(X + 4)
+                                scheduleNG%(I, 1) = memberIdx(X + 4)
+                                scheduleYN$(I, 1) = memberYear$(X + 4)
                             End If
 
                         Case 3:
                             If scheduleNG%(I, 0) <= 7 Then
                                 X = scheduleNG%(I, 0)
-                                scheduleNG%(I, 0) = statZ1%(X)
-                                scheduleYN$(I, 0) = Z2$(X)
+                                scheduleNG%(I, 0) = memberIdx(X)
+                                scheduleYN$(I, 0) = memberYear$(X)
                             Else
                                 X = scheduleNG%(I, 0)
-                                scheduleNG%(I, 0) = statZ1%(X + 3)
-                                scheduleYN$(I, 0) = Z2$(X + 3)
+                                scheduleNG%(I, 0) = memberIdx(X + 3)
+                                scheduleYN$(I, 0) = memberYear$(X + 3)
                             End If
 
                             If scheduleNG%(I, 1) <= 7 Then
                                 X = scheduleNG%(I, 1)
-                                scheduleNG%(I, 1) = statZ1%(X)
-                                scheduleYN$(I, 1) = Z2$(X)
+                                scheduleNG%(I, 1) = memberIdx(X)
+                                scheduleYN$(I, 1) = memberYear$(X)
                             Else
                                 X = scheduleNG%(I, 1)
-                                scheduleNG%(I, 1) = statZ1%(X + 3)
-                                scheduleYN$(I, 1) = Z2$(X + 3)
+                                scheduleNG%(I, 1) = memberIdx(X + 3)
+                                scheduleYN$(I, 1) = memberYear$(X + 3)
                             End If
 
                     End Select

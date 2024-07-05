@@ -3529,7 +3529,7 @@ Sub ViewHitters (teamName$)
 
         Print
         Color 14
-        Print "TOtotAwayLossesS";
+        Print "TOTALS";
         Locate , 23: Print Using "####    ####   ###    ###    ####    ###     .###"; TB%(1); TB%(3); TB%(5); TB%(7); TB%(9); TB%(11); TB%(3) / TB%(1)
         Locate , 27: Print Using "####   ####   ###     ###     ###"; TB%(2); TB%(4); TB%(6); TB%(8); TB%(10)
 
@@ -3617,13 +3617,13 @@ Sub ViewPitchers (teamName$)
 
     Print
     Color 14
-    Print "TOtotAwayLossesS";
+    Print "TOTALS";
     Locate , 14
     Print Using "####  ####      ####    ####     #.##    ###   ###"; inputTP%(1); inputTP%(3); inputTP%(6); inputTP%(8); (ERX! * 9) / inputTP%(6); inputTP%(13); inputTP%(33)
     Locate , 17
     Print Using "####      ###    ####    ####            ###"; inputTP%(2); inputTP%(5); inputTP%(7); inputTP%(9); inputTP%(16)
     Print
-    Print "TOtotAwayLosses APPEARANCES: "; numberAppearances
+    Print "TOTAL APPEARANCES: "; numberAppearances
 
     Color 11
     Locate 24: Print "HIT ANY KEY TO CONTINUE";

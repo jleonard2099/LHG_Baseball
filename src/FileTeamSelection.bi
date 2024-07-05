@@ -1,6 +1,6 @@
 Declare Sub ChooseTeam (yearNumber$, numberTeams, teamIdx)
 Declare Sub SelectTeam (numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%)
-Declare Sub ReadTeam (teamYear$, targetTeam$, teamIdx)
+Declare Sub ReadTeam (teamYear$, targetTeam$, teamIdx, dataOK)
 Declare Sub ReadExtraData (teamYear$, targetTeam$, teamIdx)
 Declare Sub UserFilePrompt (reportFile$)
 

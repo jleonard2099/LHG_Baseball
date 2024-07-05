@@ -8,7 +8,7 @@ Sub BLANK ()
 
     _Title "Full Count Baseball - Erase League Stats"
 
-    Dim statFiles$(TEAMS_PER_LEAGUE)
+    Shared statFileNames$()
 
     leagueFile$ = ChooseFile$ (diskPaths$(2) + "*.TMI", "LEAGUE", ExitCode%)
 
@@ -24,21 +24,21 @@ Sub BLANK ()
 
         If UCase$(A$) = "Y" Then
 
-            Open diskPaths$(2) + leagueFile$ + ".TMS" For Input As #2
+            Open diskPaths$(2) + leagueFile$ + ".TMS" For Input As #1
 
-            Input #2, league$, div1Name$, div2Name$, div3Name$, div4Name$
+            Input #2, league$, div1$, div2$, div3$, div4$
 
             For XW = 1 To TEAMS_PER_LEAGUE
-                Input #2, statFiles$(XW)
+                Input #2, statFileNames$(XW)
             Next
 
-            Close 2
+            Close #1
 
             For XW = 1 To TEAMS_PER_LEAGUE
 
-                If statFiles$(XW) <> Chr$(42) Then
-                    statFile$ = diskPaths$(1) + statFiles$(XW)
-                    Print "DELETING "; statFiles$(XW); " STATS"
+                If statFileNames$(XW) <> Chr$(42) Then
+                    Print "DELETING "; statFileNames$(XW); " STATS"
+                    statFile$ = diskPaths$(1) + statFileNames$(XW)
                     If _FileExists (statFile$) Then Kill statFile$
                     If _FileExists (statFile$ + "R") Then Kill statFile$ + "R"
                     If _FileExists (statFile$ + "S") Then Kill statFile$ + "S"
@@ -47,8 +47,8 @@ Sub BLANK ()
 
             Next
 
-        End If 'Done with keypress from CsMsgBox
+        End If 'Done confirming to move forward with deletion
 
-    End If 'Done checking for ESC
+    End If
 
 End Sub

@@ -507,7 +507,7 @@ Sub ViewStatSummary (statFile$, teamName$, splitStatChoice)
 
             Locate I + 3, 1
             Color 7
-            If I / 2 = Int(I / 2) Then Color 15
+            If (I Mod 2) = 0 Then Color 15
 
             Print Left$(batterNames$(I), 10);
 
@@ -618,7 +618,7 @@ Sub ViewStatSummary (statFile$, teamName$, splitStatChoice)
 
             Color 7, 0
 
-            If I / 2 = Int(I / 2) Then Color 15
+            If (I Mod 2) = 0 Then Color 15
 
             Print Left$(batterNames$(I), 10);
             Locate , 12: Print Using "###"; statB0%(I, 14);
@@ -687,7 +687,7 @@ Sub ViewStatSummary (statFile$, teamName$, splitStatChoice)
 
             Color 7, 0
 
-            If I / 2 = Int(I / 2) Then Color 15
+            If (I Mod 2) = 0 Then Color 15
 
             Locate I + 3, 1: Print Left$(pitcherNames$(I), 10);
             Locate , 11: Print Using "###"; statP0%(I, 23);
@@ -782,7 +782,7 @@ Sub ViewStatSummary (statFile$, teamName$, splitStatChoice)
 
             Color 7, 0
 
-            If I / 2 = Int(I / 2) Then Color 15
+            If (I Mod 2) = 0 Then Color 15
 
             Print Left$(pitcherNames$(I), 10);
             Locate , 12: Print Using "###"; statP0%(I, 8);
@@ -817,7 +817,7 @@ Sub ViewStatSummary (statFile$, teamName$, splitStatChoice)
     Print "    WON: "; W2%; "  LOST: "; L2%
     Color 14, 0
     Print
-    Print "  TEAM BATTING TOtotAwayLossesS"
+    Print "  TEAM BATTING TOTALS"
     Color 15, 1
     Print "  AB    R    H  RBI  2B  3B  HR    BA   SLG   OBP   SO   BB  SB  CS"
     Color 14, 0
@@ -902,7 +902,7 @@ Sub ViewStatSummary (statFile$, teamName$, splitStatChoice)
     For I = 0 To 21
         If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
             Locate I + 3, 1
-            Color 7, 0: If I / 2 = Int(I / 2) Then Color 15
+            Color 7, 0: If (I Mod 2) = 0 Then Color 15
             Print Left$(pitcherNames$(I), 10);
             Locate , 12: Print Using "##"; statP0%(I, 6);
             Locate , 15: Print Using "##"; statP0%(I, 7);
@@ -949,7 +949,7 @@ Sub ViewStatSummary (statFile$, teamName$, splitStatChoice)
     For I = 0 To 21
         If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
             Locate I + 3, 1
-            Color 7, 0: If I / 2 = Int(I / 2) Then Color 15
+            Color 7, 0: If (I Mod 2) = 0 Then Color 15
             Print Left$(pitcherNames$(I), 10);: Locate , 12
             Print Using "## ## ### ### "; statP0%(I, 19); statP0%(I, 22); statP0%(I, 17); statP0%(I, 18);
             If statP0%(I, 9) > 0 Then
@@ -975,7 +975,7 @@ Sub ViewStatSummary (statFile$, teamName$, splitStatChoice)
     Print "    WON: "; W2%; "  LOST: "; L2%
     Color 14, 0
     Print
-    Print "  TEAM PITCHING TOtotAwayLossesS"
+    Print "  TEAM PITCHING TOTALS"
     Color 15, 4
     Print "  W   L  SV     IP    H   BB   SO   ERA   G  GS  CG  RUN   ER ShO HRA  DP"
     Color 14, 0
@@ -1001,13 +1001,15 @@ End Sub
 'for each team in the chosen league.
 Sub ReportsAllTeams ()
 
-    Dim statFiles$(40)
     Shared D0%, D1%, L2%, W2%
 
-    Shared batterNames$(), pitcherNames$()
     Shared statT0!(), statT1!()
+
     Shared statB%(), statB0%()
     Shared statP%(), statP0%()
+
+    Shared batterNames$(), pitcherNames$()
+    Shared statFileNames$()
 
     leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", ExitCode%)
 
@@ -1015,19 +1017,19 @@ Sub ReportsAllTeams ()
 
         Open diskPaths$(2) + leagStatFile$ + ".TMS" For Input As #2
 
-        Input #2, league$, div1Name$, div2Name$, div3Name$, div4Name$
+        Input #2, league$, div1$, div2$, div3$, div4$
 
         For XW = 1 To TEAMS_PER_LEAGUE
-            Input #2, statFiles$(XW)
+            Input #2, statFileNames$(XW)
         Next
 
         Close 2
 
         For XW = 1 To TEAMS_PER_LEAGUE
 
-            If _FileExists(diskPaths$(1) + statFiles$(XW)) Then
+            If _FileExists(diskPaths$(1) + statFileNames$(XW)) Then
 
-                Open diskPaths$(1) + statFiles$(XW) For Input As #1
+                Open diskPaths$(1) + statFileNames$(XW) For Input As #1
 
                 Input #1, teamName$
                 Input #1, W2%
@@ -1077,11 +1079,11 @@ Sub ReportsAllTeams ()
                         Case "F"
                             userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
                             If userFile$ <> "" Then
-                                Call NewPrintStats(0, userFile$, statFiles$(XW), teamName$, nbrGames, 3, splitStatChoice)
+                                Call NewPrintStats(0, userFile$, statFileNames$(XW), teamName$, nbrGames, 3, splitStatChoice)
                             End If
 
                         Case "P"
-                            Call NewPrintStats(1, "REPORT", statFiles$(XW), teamName$, nbrGames, 3, splitStatChoice)
+                            Call NewPrintStats(1, "REPORT", statFileNames$(XW), teamName$, nbrGames, 3, splitStatChoice)
 
                     End Select
                     
@@ -1123,7 +1125,7 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
     Shared teamScore(), nbrInnings()
     Shared statSS%(), oppScore()
 
-    RQ = Val(Right$(statFiles$(XW), 2))
+    RQ = Val(Right$(statFileNames$(XW), 2))
     RT = 60
     If RQ > RT Then
         '# games afer 1960
@@ -1365,7 +1367,7 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
 
     Next
 
-    LPrint " ": LPrint "TOtotAwayLossesS";
+    LPrint " ": LPrint "TOTALS";
     LPrint Tab(12);: LPrint Using "###"; nbrGames;
     LPrint Tab(19);: LPrint Using "####"; statT0!(2);
     LPrint Tab(27);: LPrint Using "###"; statT0!(4);
@@ -1469,7 +1471,7 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
     Next
 
     LPrint
-    LPrint "TOtotAwayLossesS";
+    LPrint "TOTALS";
     LPrint Tab(18);: LPrint Using "##"; statT1!(12);
     LPrint Tab(26);: LPrint Using "####"; statT1!(1);
     LPrint Tab(34);: LPrint Using "####"; statT1!(5);

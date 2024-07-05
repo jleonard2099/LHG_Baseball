@@ -1515,9 +1515,19 @@ Sub SelectTradeTeam(numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%,
             'Locate 2, 33
             'Color 31: Print "LOADING..."
 
-            Call ReadTradeTeam(yearNumber$, teamName$, selectedIdx, tradeIdx)
+            Call ReadTradeTeam(yearNumber$, teamName$, selectedIdx, tradeIdx, validData)
                  
         End If
+
+    End If
+
+    If validData = 0 And ExitCode% <> 27 Then
+
+        selectedIdx = -1
+        Locate 9,
+        Call CSMsgBox("THERE WAS AN ISSUE READING TEAM DATA.... PRESS ANY KEY AND TRY ANOTHER DISK ID", 20, PASS)
+        K$ = GetKeyPress$
+        Call CSMsgBox("", 0, PASS)
 
     End If
 
@@ -1529,7 +1539,7 @@ End Sub
 '----------------------------------------
 'This subroutine reads team data into 
 'arrays for the selected team
-Sub ReadTradeTeam (teamYear$, targetTeam$, teamIdx, tradeIdx)
+Sub ReadTradeTeam (teamYear$, targetTeam$, teamIdx, tradeIdx, dataOK)
 
     Shared batRat_TRADE(), pitRat_TRADE()
     Shared teamRat_TRADE()
@@ -1596,6 +1606,16 @@ Sub ReadTradeTeam (teamYear$, targetTeam$, teamIdx, tradeIdx)
 
     CK = CVI(Q$(1843))
 
-    Close 1
+    Close #1
+        
+    If CK = 999 Then
+
+        dataOK = 1
+        
+    Else
+    
+        dataOK = 0
+        
+    End If
 
 End Sub

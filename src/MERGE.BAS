@@ -67,24 +67,25 @@ End Sub
 'perform the merge
 Sub MergeStats ()
 
-    Dim BR$(22)
-
-	Shared nbrGamesCurr, nbrGamesRoad
+    Shared nbrGamesCurr, nbrGamesRoad
 
     Shared BR%(), PR%()
 
-    Shared batterNames$(), pitcherNames$()
-    Shared oppName$(), HR$()
-    Shared losePitcher$(), LR$()
-    Shared locIndicator$(), PLR$(), PR$()
-    Shared winPitcher$(), WR$()
+    Shared batterNames$(), batterNames_Road$()
+    Shared pitcherNames$(), pitcherNames_Road$()
+
+    Shared oppName$(), oppName_Road$()
+    Shared losePitcher$(), losePitcher_Road$()
+    Shared locIndicator$(), locIndicator_Road$()
+    Shared winPitcher$(), winPitcher_Road$()
 
     Shared statB%(), statB0%(), B0R%()
-    Shared teamScore(), HR%(), nbrInnings(), IR%()
     Shared statP%(), statP0%(), P0R%()
     Shared S0%(), SR%()
     Shared statT0%(), statT1%()
-    Shared oppScore(), VR%()
+
+    Shared oppScore(), oppScore_Road()
+    Shared teamScore(), teamScore_Road(), nbrInnings(), nbrInnings_Road()
 
     Shared draftTR(), draftTR1()
 
@@ -98,7 +99,7 @@ Sub MergeStats ()
             Call ChooseTeam(YN$, NTMS, teamNbr, team$)
             statFile$ = nameStatFile$(team$)
 
-			Color , 0
+            Color , 0
             Cls
 
             Locate 10, 15: Print "ROAD STATS ARE ON DRIVE "; pathRoadStats$
@@ -120,14 +121,38 @@ Sub MergeStats ()
                     Input #1, WR2%
                     Input #1, LR2%
 
-                    For I = 0 To 22: Input #1, BR$(I): Input #1, BR%(I): Next I
-                    For I = 0 To 21: Input #1, PR$(I): Input #1, PR%(I): Next I
-                    For I = 0 To 22: For I1 = 0 To 21: Input #1, B0R%(I, I1): Next I1: Next I
-                    For I = 0 To 21: For I1 = 0 To 41: Input #1, P0R%(I, I1): Next I1: Next I
+                    For I = 0 To 22: 
+                        Input #1, batterNames_Road$(I)
+                        Input #1, BR%(I)
+                    Next I
+                    
+                    For I = 0 To 21: 
+                        Input #1, pitcherNames_Road$(I)
+                        Input #1, PR%(I)
+                    Next I
+                    
+                    For I = 0 To 22: 
+                        For I1 = 0 To 21: 
+                            Input #1, B0R%(I, I1)
+                        Next I1
+                    Next I
+                    
+                    For I = 0 To 21: 
+                        For I1 = 0 To 41: 
+                            Input #1, P0R%(I, I1)
+                        Next I1
+                    Next I
 
-                    Input #1, D0R%: Input #1, D1R%
-                    For I = 0 To 21: Input #1, draftTR(I): Next I
-                    For I = 0 To 22: Input #1, draftTR1(I): Next I
+                    Input #1, D0R%
+                    Input #1, D1R%
+
+                    For I = 0 To 21: 
+                        Input #1, draftTR(I)
+                    Next I
+
+                    For I = 0 To 22: 
+                        Input #1, draftTR1(I)
+                    Next I
 
                     Close #1
 
@@ -149,13 +174,33 @@ Sub MergeStats ()
 
                     Input #1, nbrGamesRoad
 
-                    For I = 1 To MAX_SCHED_STATS: Input #1, HR%(I): Next I
-                    For I = 1 To MAX_SCHED_STATS: Input #1, HR$(I): Next I
-                    For I = 1 To MAX_SCHED_STATS: Input #1, VR%(I): Next I
-                    For I = 1 To MAX_SCHED_STATS: Input #1, PLR$(I): Next I
-                    For I = 1 To MAX_SCHED_STATS: Input #1, WR$(I): Next I
-                    For I = 1 To MAX_SCHED_STATS: Input #1, LR$(I): Next I
-                    For I = 1 To MAX_SCHED_STATS: Input #1, IR%(I): Next I
+                    For I = 1 To MAX_SCHED_STATS: 
+                        Input #1, teamScore_Road(I)
+                    Next I
+
+                    For I = 1 To MAX_SCHED_STATS: 
+                        Input #1, oppName_Road$(I)
+                    Next I
+
+                    For I = 1 To MAX_SCHED_STATS: 
+                        Input #1, oppScore_Road(I)
+                    Next I
+
+                    For I = 1 To MAX_SCHED_STATS: 
+                        Input #1, locIndicator_Road$(I)
+                    Next I
+
+                    For I = 1 To MAX_SCHED_STATS: 
+                        Input #1, winPitcher_Road$(I)
+                    Next I
+
+                    For I = 1 To MAX_SCHED_STATS: 
+                        Input #1, losePitcher_Road$(I)
+                    Next I
+
+                    For I = 1 To MAX_SCHED_STATS: 
+                        Input #1, nbrInnings_Road(I)
+                    Next I
 
                     Close #1
 
@@ -168,31 +213,31 @@ Sub MergeStats ()
                         Input #1, L2%
 
                         For I = 0 To 22: 
-							Input #1, batterNames$(I)
-							Input #1, statB%(I)
-						Next I
+                            Input #1, batterNames$(I)
+                            Input #1, statB%(I)
+                        Next I
                         
-						For I = 0 To 21: 
-							Input #1, pitcherNames$(I)
-							Input #1, statP%(I)
-						Next I
+                        For I = 0 To 21: 
+                            Input #1, pitcherNames$(I)
+                            Input #1, statP%(I)
+                        Next I
 
                         For I = 0 To 22: 
-							For I1 = 0 To 21: 
+                            For I1 = 0 To 21: 
                                 Input #1, statB0%(I, I1)
                             Next I1
-						Next I
+                        Next I
                         
-						For I = 0 To 21: 
-							For I1 = 0 To 41: 
+                        For I = 0 To 21: 
+                            For I1 = 0 To 41: 
                                 Input #1, statP0%(I, I1)
                             Next I1
-						Next I
+                        Next I
 
                         Input #1, D0%
-						Input #1, D1%
+                        Input #1, D1%
                         
-						For I = 0 To 21: 
+                        For I = 0 To 21: 
                             Input #1, statT0%(I)
                         Next I
                         
@@ -208,7 +253,7 @@ Sub MergeStats ()
 
                             For I = 0 To 22
                                 For I1 = 0 To 6: Input #1, S0%(I, I1): Next
-							Next
+                            Next
 
                             Close 1
 
@@ -251,20 +296,20 @@ Sub MergeStats ()
                         SEQ = 0
 
                         For K = 0 To 22
-                            If UCase$(BR$(K)) <> UCase$(batterNames$(K)) Then
+                            If UCase$(batterNames_Road$(K)) <> UCase$(batterNames$(K)) Then
                                 SEQ = SEQ + 1
                             End If
                         Next
 
                         For K = 0 To 21
-                            If UCase$(PR$(K)) <> UCase$(pitcherNames$(K)) Then
+                            If UCase$(pitcherNames_Road$(K)) <> UCase$(pitcherNames$(K)) Then
                                 SEQ = SEQ + 1
                             End If
                         Next
 
                         If SEQ = 0 Then
 
-                            Call DoTheMerge(pathCurrentStats$, statFile$, B$)
+                            Call DoTheMerge(pathCurrentStats$, statFile$, B$, nbrGamesCurr, nbrGamesRoad)
 
                             For J = 13 To 23
                                 Locate J
@@ -291,12 +336,12 @@ Sub MergeStats ()
                     Else
 
                         Cls
+                        Color 7
+                        Locate 2, 10: Print "NON-EXISTANT PATH OR INCORRECT FILE NAME!!!!"
+                        Print
+                        Locate , 10: Line Input "HIT ENTER TO RE-ENTER INFORMATION"; DUMMY$
 
                         Do
-                            Color 7
-                            Locate 2, 10: Print "NON-EXISTANT PATH OR INCORRECT FILE NAME!!!!"
-                            Print
-                            Locate , 10: Line Input "HIT ENTER TO RE-ENTER INFORMATION"; DUMMY$
                             Locate , 10
                             Print "TRY AGAIN? (Y/N) "
                             I$ = GetKeyPress$
@@ -336,7 +381,7 @@ Sub MergeStats ()
 
         End If 'Done checking for ESC
 
-    Loop Until DUMMY$ <> "" Or UCase$(I$) = "N" Or I$ = Chr$(27)
+    Loop Until DUMMY$ <> "" Or UCase$(J$) = "N" Or UCase$(I$) = "N" Or I$ = Chr$(27)
 
 End Sub
 
@@ -348,126 +393,172 @@ End Sub
 'values together from each file and then
 'overwrites the current file with the
 'newly aggregated results.
-Sub DoTheMerge (pathCurrentStats$, statFile$, B$)
+Sub DoTheMerge (pathCurrentStats$, statFile$, B$, nbrGamesCurr, nbrGamesRoad)
 
-	Shared nbrGamesCurr, nbrGamesRoad
-	Shared L2%, LR2%
+    Shared nbrGamesCurr, nbrGamesRoad
+    Shared L2%, LR2%
     Shared W2%, WR2%
 
     Shared batterNames$(), pitcherNames$()
-    Shared oppName$(), HR$()
-    Shared losePitcher$(), LR$()
-    Shared locIndicator$(), PLR$()
-    Shared winPitcher$(), WR$()
+    Shared oppName$(), oppName_Road$()
+    Shared losePitcher$(), losePitcher_Road$()
+    Shared locIndicator$(), locIndicator_Road$()
+    Shared winPitcher$(), winPitcher_Road$()
 
     Shared statB%(), statB0%(), B0R%()
-    Shared teamScore(), HR%(), nbrInnings(), IR%()
+    Shared teamScore(), teamScore_Road(), nbrInnings(), nbrInnings_Road()
     Shared statP%(), statP0%(), P0R%()
     Shared statT0%(), statT1%()
     Shared S0%(), SR%()
-    Shared oppScore(), VR%()
+    Shared oppScore(), oppScore_Road()
 
     Shared draftTR(), draftTR1()
 
     For K = 1 to nbrGamesRoad
         nbrGamesCurr = nbrGamesCurr + 1
-        teamScore(nbrGamesCurr) = HR%(K)
-        oppName$(nbrGamesCurr) = HR$(K)
-        oppScore(nbrGamesCurr) = VR%(K)
-        locIndicator$(nbrGamesCurr) = PLR$(K)
-        winPitcher$(nbrGamesCurr) = WR$(K)
-        losePitcher$(nbrGamesCurr) = LR$(K)
-        nbrInnings(nbrGamesCurr) = IR%(K)
+        teamScore(nbrGamesCurr) = teamScore_Road(K)
+        oppName$(nbrGamesCurr) = oppName_Road$(K)
+        oppScore(nbrGamesCurr) = oppScore_Road(K)
+        locIndicator$(nbrGamesCurr) = locIndicator_Road$(K)
+        winPitcher$(nbrGamesCurr) = winPitcher_Road$(K)
+        losePitcher$(nbrGamesCurr) = losePitcher_Road$(K)
+        nbrInnings(nbrGamesCurr) = nbrInnings_Road(K)
     Next
 
     W2% = W2% + WR2%
-	L2% = L2% + LR2%
+    L2% = L2% + LR2%
 
     Color 12
     Locate 18, 20: Print "MERGING STAT FILE AND SCHEDULE RESULTS . . . ."
 
     For I = 0 To 22
+
         For I1 = 0 To 6
             S0%(I, I1) = S0%(I, I1) + SR%(I, I1)
         Next
 
-        For I1 = 0 To 11: statB0%(I, I1) = statB0%(I, I1) + B0R%(I, I1): Next I1
-        For I1 = 14 To 21: statB0%(I, I1) = statB0%(I, I1) + B0R%(I, I1): Next I1
+        For I1 = 0 To 11: 
+            statB0%(I, I1) = statB0%(I, I1) + B0R%(I, I1)
+        Next I1
+        
+        For I1 = 14 To 21: 
+            statB0%(I, I1) = statB0%(I, I1) + B0R%(I, I1)
+        Next I1
+
     Next I
 
     For I = 0 To 21
-        For I1 = 0 To 34: statP0%(I, I1) = statP0%(I, I1) + P0R%(I, I1): Next I1
-        For I1 = 37 To 41: statP0%(I, I1) = statP0%(I, I1) + P0R%(I, I1): Next I1
+
+        For I1 = 0 To 34: 
+            statP0%(I, I1) = statP0%(I, I1) + P0R%(I, I1)
+        Next I1
+
+        For I1 = 37 To 41: 
+            statP0%(I, I1) = statP0%(I, I1) + P0R%(I, I1)
+        Next I1
+
     Next I
 
     D0% = D0% + DR0%
-	D1% = D1% + DR1%
+    D1% = D1% + DR1%
 
-    For I = 0 To 21: statT0%(I) = statT0%(I) + draftTR(I): Next
-    For I = 0 To 22: statT1%(I) = statT1%(I) + draftTR1(I): Next
+    For I = 0 To 21: 
+        statT0%(I) = statT0%(I) + draftTR(I)
+    Next
+
+    For I = 0 To 22: 
+        statT1%(I) = statT1%(I) + draftTR1(I)
+    Next
 
     Open pathCurrentStats$ + statFile$ For Output As #1
+
     Write #1, B$
-	Write #1, W2%
-	Write #1, L2%
+    Write #1, W2%
+    Write #1, L2%
 
     For I = 0 To 22: 
-		Write #1, batterNames$(I)
-		Write #1, statB%(I)
-	Next I
+        Write #1, batterNames$(I)
+        Write #1, statB%(I)
+    Next I
     
-	For I = 0 To 21: 
-		Write #1, pitcherNames$(I)
-		Write #1, statP%(I)
-	Next I
+    For I = 0 To 21: 
+        Write #1, pitcherNames$(I)
+        Write #1, statP%(I)
+    Next I
 
     For I = 0 To 22: 
-		For I1 = 0 To 21: Write #1, statB0%(I, I1): Next I1
-	Next I
+        For I1 = 0 To 21: 
+            Write #1, statB0%(I, I1)
+        Next I1
+    Next I
     
-	For I = 0 To 21: 
-		For I1 = 0 To 41: Write #1, statP0%(I, I1): Next I1
-	Next I
+    For I = 0 To 21: 
+        For I1 = 0 To 41: 
+            Write #1, statP0%(I, I1)
+        Next I1
+    Next I
 
     Write #1, D0%
-	Write #1, D1%
+    Write #1, D1%
 
-    For I = 0 To 21: Write #1, statT0%(I): Next I
-    For I = 0 To 22: Write #1, statT1%(I): Next I
+    For I = 0 To 21: 
+        Write #1, statT0%(I)
+    Next I
+
+    For I = 0 To 22: 
+        Write #1, statT1%(I)
+    Next I
 
     Close #1
 
     Open pathCurrentStats$ + statFile$ + "R" For Output As #1
+
     For I = 0 To 22
         For I1 = 0 To 6
             Write #1, S0%(I, I1)
         Next
     Next
-    Close 1
+
+    Close #1
 
     Open pathCurrentStats$ + statFile$ + "S" For Output As #1
 
     Write #1, nbrGamesCurr
 
-    For I = 1 To MAX_SCHED_STATS: Write #1, teamScore(I): Next I
+    For I = 1 To MAX_SCHED_STATS: 
+        Write #1, teamScore(I)
+    Next I
 
-    For I = 1 To MAX_SCHED_STATS: Write #1, oppName$(I): Next I
+    For I = 1 To MAX_SCHED_STATS: 
+        Write #1, oppName$(I)
+    Next I
 
-    For I = 1 To MAX_SCHED_STATS: Write #1, oppScore(I): Next I
+    For I = 1 To MAX_SCHED_STATS: 
+        Write #1, oppScore(I)
+    Next I
 
-    For I = 1 To MAX_SCHED_STATS: Write #1, locIndicator$(I): Next I
+    For I = 1 To MAX_SCHED_STATS: 
+        Write #1, locIndicator$(I)
+    Next I
 
-    For I = 1 To MAX_SCHED_STATS: Write #1, winPitcher$(I): Next I
+    For I = 1 To MAX_SCHED_STATS: 
+        Write #1, winPitcher$(I)
+    Next I
 
-    For I = 1 To MAX_SCHED_STATS: Write #1, losePitcher$(I): Next I
+    For I = 1 To MAX_SCHED_STATS: 
+        Write #1, losePitcher$(I)
+    Next I
 
-    For I = 1 To MAX_SCHED_STATS: Write #1, nbrInnings(I): Next I
+    For I = 1 To MAX_SCHED_STATS: 
+        Write #1, nbrInnings(I)
+    Next I
 
     Close #1
 
     Y = 0
 
-    Locate 20, 20: Color 12: Print "RESULTS SUCCESSFULLY MERGED!!"
+    Color 12
+    Locate 20, 20: Print "RESULTS SUCCESSFULLY MERGED!!"
 
 End Sub
 

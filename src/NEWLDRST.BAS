@@ -12,7 +12,7 @@ Sub ExpandedStandings ()
     Shared expLL!(), LLS!(), lastTenLosses!(), lastTenWins!(), LWS!()
     Shared RLL!(), RWW!(), TLS!(), TWS!(), WW!()
 
-    Shared TML$(), Z1$()
+    Shared TML$(), memberName$()
 
     Shared div1Name$, div2Name$, div3Name$, div4Name$
 
@@ -135,7 +135,7 @@ Sub UpdateExpandedStandings (league$)
     Shared RLL!(), RWW!()
     Shared TLS!(), TWS!(), WW!()
 
-    Shared TML$(), Z1$()
+    Shared TML$(), memberName$()
 
     'These are just read in and written back
     Shared teamScore(), nbrInnings(), oppScore()
@@ -154,18 +154,18 @@ Sub UpdateExpandedStandings (league$)
         Locate 7, 38
         TMR = TMR - 1: Print Using "###"; TMR
 
-        If Z1$(KK) <> "*" Then
+        If memberName$(KK) <> "*" Then
 
-            TML$(currRecord) = Z1$(KK)
+            TML$(currRecord) = memberName$(KK)
 
             Color 15, 0
             Cls
 
             Locate 5: Print "COMPUTING RECORDS . . . . . PLEASE WAIT"
 
-            If _FileExists(diskPaths$(1) + Z1$(KK) + "S") Then
+            If _FileExists(diskPaths$(1) + memberName$(KK) + "S") Then
 
-                Open diskPaths$(1) + Z1$(KK) + "S" For Input As #1
+                Open diskPaths$(1) + memberName$(KK) + "S" For Input As #1
 
                 Input #1, nbrGames
 

@@ -964,12 +964,22 @@ Sub SelectDraftTeam (numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%
             'Color 31: Print "LOADING..."
 
             If draftIdx = 0 Then
-                Call ReadDestTeam(yearNumber$, teamName$, selectedIdx)
+                Call ReadDestTeam(yearNumber$, teamName$, selectedIdx, validData)
             Else
-                Call ReadSourceTeam(yearNumber$, teamName$, selectedIdx)
+                Call ReadSourceTeam(yearNumber$, teamName$, selectedIdx, validData)
             End If
 
         End If
+
+    End If
+
+    If validData = 0 And ExitCode% <> 27 Then
+
+        selectedIdx = -1
+        Locate 9,
+        Call CSMsgBox("THERE WAS AN ISSUE READING TEAM DATA.... PRESS ANY KEY AND TRY ANOTHER DISK ID", 20, PASS)
+        K$ = GetKeyPress$
+        Call CSMsgBox("", 0, PASS)
 
     End If
 
@@ -980,7 +990,7 @@ End Sub
 '----------------------------------------
 'This subroutine reads team data into
 'arrays for the team we are drafting from
-Sub ReadDestTeam (teamYear$, targetTeam$, teamIdx)
+Sub ReadDestTeam (teamYear$, targetTeam$, teamIdx, dataOK)
 
     Shared batterRatings(), pitcherRatings()
     Shared teamRatings%()
@@ -1043,117 +1053,125 @@ Sub ReadDestTeam (teamYear$, targetTeam$, teamIdx)
 
     CK = CVI(Q$(1843))
 
-    Close 1
+    Close #1
 
-    If Not _FileExists(diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$) Then
+    If CK = 999 Then
 
-        MsgText$ = "WARNING!!! NO DATA FILE WAS FOUND FOR THIS TEAM. PRESS ANY KEY TO CONTINUE"
-        BoxWidth = 20
-        BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
-        Call CSMsgBox(MsgText$, BoxWidth, Pass)
-        I$ = GetKeyPress$
-        Call CSMsgBox("", 0, Pass)
+        If Not _FileExists(diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$) Then
 
-    Else
+            MsgText$ = "WARNING!!! NO DATA FILE WAS FOUND FOR THIS TEAM. PRESS ANY KEY TO CONTINUE"
+            BoxWidth = 20
+            BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+            Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+            Call CSMsgBox(MsgText$, BoxWidth, Pass)
+            I$ = GetKeyPress$
+            Call CSMsgBox("", 0, Pass)
 
-        Open diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$ For Random As #1 Len = DATA_SIZE_BYTES
+            dataOK = 0
 
-        For X = 0 To 11
-            Field #1, X * 2 As X$, 2 As Q$(X + 1), DATA_SIZE_BYTES - 2 - 2 * X As X$
-        Next
+        Else
 
-        For X = 0 To 22
-            For X1 = 1 To 14
-                Field #1, 24 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(12 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (24 + (X1 - 1) * 2 + X * 14 * 2) As X$
+            Open diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$ For Random As #1 Len = DATA_SIZE_BYTES
+
+            For X = 0 To 11
+                Field #1, X * 2 As X$, 2 As Q$(X + 1), DATA_SIZE_BYTES - 2 - 2 * X As X$
             Next
-        Next
-
-        For X = 0 To 21
-            For X1 = 1 To 14
-                Field #1, 668 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(334 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (668 + (X1 - 1) * 2 + X * 14 * 2) As X$
-            Next
-        Next
-
-        For X = 0 To 21
-            For X1 = 1 To 14
-                Field #1, 1284 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(642 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (1284 + (X1 - 1) * 2 + X * 14 * 2) As X$
-            Next
-        Next
-
-        For X = 1 To 24
-            Field #1, 1900 + (X - 1) * 2 As X$, 2 As Q$(950 + X), DATA_SIZE_BYTES - 2 - (X - 1) * 2 - 1900 As X$
-        Next
-
-        For X = 0 To 22
-            For X1 = 1 To 24
-                Field #1, 1948 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(975 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (1948 + (X1 - 1) * 2 + X * 24 * 2) As X$
-            Next
-        Next
-
-        For X = 0 To 21
-            For X1 = 1 To 24
-                Field #1, 3052 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(1528 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (3052 + (X1 - 1) * 2 + X * 24 * 2) As X$
-            Next
-        Next
-
-        Get #1, teamIdx
-
-        For X = 0 To 11
-            teamTS%(X) = CVI(Q$(X + 1))
-        Next
-
-        For X = 0 To 22
-            For X1 = 1 To 14
-                batterRatings(X, X1 + 41) = CVI(Q$(12 + X1 + X * 14))
-            Next
-        Next
-
-        For X = 0 To 21
-            For X1 = 1 To 14
-                pitcherRatings(X, X1 + 36) = CVI(Q$(334 + X1 + X * 14))
-            Next
-        Next
-
-        For X = 0 To 21
-            For X1 = 1 To 14
-                pitcherRatings(X, X1 + 50) = CVI(Q$(642 + X1 + X * 14))
-            Next
-        Next
-
-        For X = 1 To 24
-            teamSA%(X) = CVI(Q$(X + 950))
-        Next
-
-        For X = 0 To 22
-            For X1 = 1 To 24
-                batterRatings(X, X1 + 55) = CVI(Q$(975 + X1 + X * 24))
-            Next
-        Next
-
-        For X = 0 To 21
-            For X1 = 1 To 24
-                pitcherRatings(X, X1 + 64) = CVI(Q$(1528 + X1 + X * 24))
-            Next
-        Next
-
-        Close 1
-
-        If draftTS%(0) <> 999 Then
 
             For X = 0 To 22
-                For X1 = 42 To 79
-                    batterRatings(X, X1) = 0
+                For X1 = 1 To 14
+                    Field #1, 24 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(12 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (24 + (X1 - 1) * 2 + X * 14 * 2) As X$
                 Next
             Next
 
             For X = 0 To 21
-                For X1 = 37 To 88
-                    pitcherRatings(X, X1) = 0
+                For X1 = 1 To 14
+                    Field #1, 668 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(334 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (668 + (X1 - 1) * 2 + X * 14 * 2) As X$
                 Next
             Next
 
-            Erase teamSA%, teamTS%
+            For X = 0 To 21
+                For X1 = 1 To 14
+                    Field #1, 1284 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(642 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (1284 + (X1 - 1) * 2 + X * 14 * 2) As X$
+                Next
+            Next
+
+            For X = 1 To 24
+                Field #1, 1900 + (X - 1) * 2 As X$, 2 As Q$(950 + X), DATA_SIZE_BYTES - 2 - (X - 1) * 2 - 1900 As X$
+            Next
+
+            For X = 0 To 22
+                For X1 = 1 To 24
+                    Field #1, 1948 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(975 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (1948 + (X1 - 1) * 2 + X * 24 * 2) As X$
+                Next
+            Next
+
+            For X = 0 To 21
+                For X1 = 1 To 24
+                    Field #1, 3052 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(1528 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (3052 + (X1 - 1) * 2 + X * 24 * 2) As X$
+                Next
+            Next
+
+            Get #1, teamIdx
+
+            For X = 0 To 11
+                teamTS%(X) = CVI(Q$(X + 1))
+            Next
+
+            For X = 0 To 22
+                For X1 = 1 To 14
+                    batterRatings(X, X1 + 41) = CVI(Q$(12 + X1 + X * 14))
+                Next
+            Next
+
+            For X = 0 To 21
+                For X1 = 1 To 14
+                    pitcherRatings(X, X1 + 36) = CVI(Q$(334 + X1 + X * 14))
+                Next
+            Next
+
+            For X = 0 To 21
+                For X1 = 1 To 14
+                    pitcherRatings(X, X1 + 50) = CVI(Q$(642 + X1 + X * 14))
+                Next
+            Next
+
+            For X = 1 To 24
+                teamSA%(X) = CVI(Q$(X + 950))
+            Next
+
+            For X = 0 To 22
+                For X1 = 1 To 24
+                    batterRatings(X, X1 + 55) = CVI(Q$(975 + X1 + X * 24))
+                Next
+            Next
+
+            For X = 0 To 21
+                For X1 = 1 To 24
+                    pitcherRatings(X, X1 + 64) = CVI(Q$(1528 + X1 + X * 24))
+                Next
+            Next
+
+            Close 1
+
+            If draftTS%(0) <> 999 Then
+
+                For X = 0 To 22
+                    For X1 = 42 To 79
+                        batterRatings(X, X1) = 0
+                    Next
+                Next
+
+                For X = 0 To 21
+                    For X1 = 37 To 88
+                        pitcherRatings(X, X1) = 0
+                    Next
+                Next
+
+                Erase teamSA%, teamTS%
+
+            End If
+
+            dataOK = 1
 
         End If
 
@@ -1167,7 +1185,7 @@ End Sub
 '----------------------------------------
 'This subroutine reads team data into
 'arrays for the team we are drafting to
-Sub ReadSourceTeam (yearNumber$, targetTeam$, teamIdx)
+Sub ReadSourceTeam (yearNumber$, targetTeam$, teamIdx, dataOK)
 
     Shared batRat_DRAFT%(), teamRat_DRAFT()
     Shared pitRat_DRAFT%()
@@ -1229,120 +1247,130 @@ Sub ReadSourceTeam (yearNumber$, targetTeam$, teamIdx)
     srcTmManager$ = RTrim$(Q$(1841))
     srcTmAbbrev$ = RTrim$(Q$(1842))
 
-    Close 1
+    Close #1
 
-    If Not _FileExists(diskPaths$(0) + DATA_FILE_NAME$ + "." + yearNumber$) Then
+    If CK = 999 Then
 
-        MsgText$ = "WARNING!!! NO DATA FILE WAS FOUND FOR THIS TEAM. PRESS ANY KEY TO CONTINUE"
-        BoxWidth = 20
-        BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
-        Call CSMsgBox(MsgText$, BoxWidth, Pass)
-        I$ = GetKeyPress$
-        Call CSMsgBox("", 0, Pass)
+        If Not _FileExists(diskPaths$(0) + DATA_FILE_NAME$ + "." + yearNumber$) Then
 
-    Else
+            MsgText$ = "WARNING!!! NO DATA FILE WAS FOUND FOR THIS TEAM. PRESS ANY KEY TO CONTINUE"
+            BoxWidth = 20
+            BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+            Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+            Call CSMsgBox(MsgText$, BoxWidth, Pass)
+            I$ = GetKeyPress$
+            Call CSMsgBox("", 0, Pass)
 
-        Open diskPaths$(0) + DATA_FILE_NAME$ + "." + yearNumber$ For Random As #1 Len = DATA_SIZE_BYTES
+        Else
 
-        For X = 0 To 11
-            Field #1, X * 2 As X$, 2 As Q$(X + 1), DATA_SIZE_BYTES - 2 - 2 * X As X$
-        Next
+            Open diskPaths$(0) + DATA_FILE_NAME$ + "." + yearNumber$ For Random As #1 Len = DATA_SIZE_BYTES
 
-        For X = 0 To 22
-            For X1 = 1 To 14
-                Field #1, 24 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(12 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (24 + (X1 - 1) * 2 + X * 14 * 2) As X$
+            For X = 0 To 11
+                Field #1, X * 2 As X$, 2 As Q$(X + 1), DATA_SIZE_BYTES - 2 - 2 * X As X$
             Next
-        Next
-
-        For X = 0 To 21
-            For X1 = 1 To 14
-                Field #1, 668 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(334 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (668 + (X1 - 1) * 2 + X * 14 * 2) As X$
-            Next
-        Next
-
-        For X = 0 To 21
-            For X1 = 1 To 14
-                Field #1, 1284 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(642 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (1284 + (X1 - 1) * 2 + X * 14 * 2) As X$
-            Next
-        Next
-
-        For X = 1 To 24
-            Field #1, 1900 + (X - 1) * 2 As X$, 2 As Q$(950 + X), DATA_SIZE_BYTES - 2 - (X - 1) * 2 - 1900 As X$
-        Next
-
-        For X = 0 To 22
-            For X1 = 1 To 24
-                Field #1, 1948 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(975 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (1948 + (X1 - 1) * 2 + X * 24 * 2) As X$
-            Next
-        Next
-
-        For X = 0 To 21
-            For X1 = 1 To 24
-                Field #1, 3052 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(1528 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (3052 + (X1 - 1) * 2 + X * 24 * 2) As X$
-            Next
-        Next
-
-        Get #1, teamIdx
-
-        For X = 0 To 11
-            draftTS%(X) = CVI(Q$(X + 1))
-        Next
-
-        For X = 0 To 22
-            For X1 = 1 To 14
-                batRat_DRAFT%(X, X1 + 41) = CVI(Q$(12 + X1 + X * 14))
-            Next
-        Next
-
-        For X = 0 To 21
-            For X1 = 1 To 14
-                pitRat_DRAFT%(X, X1 + 36) = CVI(Q$(334 + X1 + X * 14))
-            Next
-        Next
-
-        For X = 0 To 21
-            For X1 = 1 To 14
-                pitRat_DRAFT%(X, X1 + 50) = CVI(Q$(642 + X1 + X * 14))
-            Next
-        Next
-
-        For X = 1 To 24
-            draftSA%(X) = CVI(Q$(X + 950))
-        Next
-
-        For X = 0 To 22
-            For X1 = 1 To 24
-                batRat_DRAFT%(X, X1 + 55) = CVI(Q$(975 + X1 + X * 24))
-            Next
-        Next
-
-        For X = 0 To 21
-            For X1 = 1 To 24
-                pitRat_DRAFT%(X, X1 + 64) = CVI(Q$(1528 + X1 + X * 24))
-            Next
-        Next
-
-        Close 1
-
-        If draftTS%(0) <> 999 Then
 
             For X = 0 To 22
-                For X1 = 42 To 79
-                    batRat_DRAFT%(X, X1) = 0
+                For X1 = 1 To 14
+                    Field #1, 24 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(12 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (24 + (X1 - 1) * 2 + X * 14 * 2) As X$
                 Next
             Next
 
             For X = 0 To 21
-                For X1 = 37 To 88
-                    pitRat_DRAFT%(X, X1) = 0
+                For X1 = 1 To 14
+                    Field #1, 668 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(334 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (668 + (X1 - 1) * 2 + X * 14 * 2) As X$
                 Next
             Next
 
-            Erase draftSA%, draftTS%
+            For X = 0 To 21
+                For X1 = 1 To 14
+                    Field #1, 1284 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(642 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (1284 + (X1 - 1) * 2 + X * 14 * 2) As X$
+                Next
+            Next
 
-        End If
+            For X = 1 To 24
+                Field #1, 1900 + (X - 1) * 2 As X$, 2 As Q$(950 + X), DATA_SIZE_BYTES - 2 - (X - 1) * 2 - 1900 As X$
+            Next
 
-    End If 'Done checking for file exists
+            For X = 0 To 22
+                For X1 = 1 To 24
+                    Field #1, 1948 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(975 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (1948 + (X1 - 1) * 2 + X * 24 * 2) As X$
+                Next
+            Next
+
+            For X = 0 To 21
+                For X1 = 1 To 24
+                    Field #1, 3052 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(1528 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (3052 + (X1 - 1) * 2 + X * 24 * 2) As X$
+                Next
+            Next
+
+            Get #1, teamIdx
+
+            For X = 0 To 11
+                draftTS%(X) = CVI(Q$(X + 1))
+            Next
+
+            For X = 0 To 22
+                For X1 = 1 To 14
+                    batRat_DRAFT%(X, X1 + 41) = CVI(Q$(12 + X1 + X * 14))
+                Next
+            Next
+
+            For X = 0 To 21
+                For X1 = 1 To 14
+                    pitRat_DRAFT%(X, X1 + 36) = CVI(Q$(334 + X1 + X * 14))
+                Next
+            Next
+
+            For X = 0 To 21
+                For X1 = 1 To 14
+                    pitRat_DRAFT%(X, X1 + 50) = CVI(Q$(642 + X1 + X * 14))
+                Next
+            Next
+
+            For X = 1 To 24
+                draftSA%(X) = CVI(Q$(X + 950))
+            Next
+
+            For X = 0 To 22
+                For X1 = 1 To 24
+                    batRat_DRAFT%(X, X1 + 55) = CVI(Q$(975 + X1 + X * 24))
+                Next
+            Next
+
+            For X = 0 To 21
+                For X1 = 1 To 24
+                    pitRat_DRAFT%(X, X1 + 64) = CVI(Q$(1528 + X1 + X * 24))
+                Next
+            Next
+
+            Close 1
+
+            If draftTS%(0) <> 999 Then
+
+                For X = 0 To 22
+                    For X1 = 42 To 79
+                        batRat_DRAFT%(X, X1) = 0
+                    Next
+                Next
+
+                For X = 0 To 21
+                    For X1 = 37 To 88
+                        pitRat_DRAFT%(X, X1) = 0
+                    Next
+                Next
+
+                Erase draftSA%, draftTS%
+
+            End If
+
+        End If 'Done checking for file exists
+
+        dataOK = 1
+        
+    Else
+    
+        dataOK = 0
+    
+    End If
 
 End Sub

@@ -570,7 +570,7 @@ Sub ViewLeaders_Batters (careerFile$)
     If I3! > 0 And I3! < 100 Then Locate , 70: Print ".0";: Print Using "##"; I3!
     If I3! >= 100 Then Locate , 70: Print ".";: Print Using "###"; I3!
 
-    Print "TOtotAwayLossesS";
+    Print "TOTALS";
 
     Print Tab(13); Using "##"; VV;
     Print Tab(21); Using "####"; TT2;
@@ -751,7 +751,7 @@ Sub ViewLeaders_Pitchers (careerFile$)
     Print Tab(55); Using "###"; TT23;
     Print Tab(62); Using "####"; TT25;
     Print Tab(69); Using "####"; TT27
-    Print "TOtotAwayLossesS";
+    Print "TOTALS";
     Print Tab(13); Using "###"; VV;
     Print Tab(19); Using "###"; TT14;
     Print Tab(27); Using "###"; Int(TT16 / 3);
@@ -1102,7 +1102,7 @@ Sub BatterTotals ()
     If I3! > 0 And I3! < 100 Then Locate , 70: Print ".0";: Print Using "##"; I3!
     If I3! >= 100 Then Locate , 70: Print ".";: Print Using "###"; I3!
 
-    Print "TOtotAwayLossesS";
+    Print "TOTALS";
 
     Print Tab(14); Using "##"; VV;
     Print Tab(21); Using "####"; TT2;
@@ -1173,7 +1173,7 @@ Sub PitcherTotals ()
     Print Tab(55); Using "###"; TT23;
     Print Tab(62); Using "####"; TT25;
     Print Tab(69); Using "####"; TT27
-    Print "TOtotAwayLossesS";
+    Print "TOTALS";
     Print Tab(13); Using "###"; VV;
     Print Tab(19); Using "###"; TT14;
     Print Tab(27); Using "###"; Int(TT16 / 3);

@@ -17,14 +17,14 @@ Dim locIndicator$(MAX_SCHED_STATS), oppName$(MAX_SCHED_STATS)
 Dim statB%(0 To 22), statB0%(0 To 22, 0 To 41)
 Dim statP%(0 To 21), statP0%(0 To 21, 0 To 41)
 Dim statSS%(0 To 22, 0 To 6)
-Dim statT0%(0 To 21), statT1%(0 To 22), statZ1%(40)
+Dim statT0%(0 To 21), statT1%(0 To 22), memberIdx(40)
 
 Dim statT0!(22), statT1!(22)
 
 '-- For Road Data
-Dim HR$(MAX_SCHED_STATS), LR$(MAX_SCHED_STATS)
-Dim PLR$(MAX_SCHED_STATS), WR$(MAX_SCHED_STATS)
-Dim HR%(MAX_SCHED_STATS), IR%(MAX_SCHED_STATS), VR%(MAX_SCHED_STATS)
+Dim oppName_Road$(MAX_SCHED_STATS), losePitcher_Road$(MAX_SCHED_STATS)
+Dim locIndicator_Road$(MAX_SCHED_STATS), winPitcher_Road$(MAX_SCHED_STATS)
+Dim teamScore_Road(MAX_SCHED_STATS), nbrInnings_Road(MAX_SCHED_STATS), oppScore_Road(MAX_SCHED_STATS)
 
 
 ' *** Schedule Data ***
@@ -48,8 +48,10 @@ Dim umpireNumber(50)
 ' -------------------------
 Dim Shared backToMenu, BO%
 
-Dim Z1$(1 To 40), Z2$(1 To 40)
+Dim memberName$(TEAMS_PER_LEAGUE), memberYear$(TEAMS_PER_LEAGUE)
+Dim statFileNames$(TEAMS_PER_LEAGUE)
 
+Dim div1Name$, div2Name$, div3Name$, div4Name$
 
 '----------------------------------------
 '  Used in ALIGN / MERGE routines
@@ -57,14 +59,12 @@ Dim Z1$(1 To 40), Z2$(1 To 40)
 Dim nbrGamesCurr, nbrGamesRoad
 Dim LR2%, WR2%
 
-Dim BN$(23), PN$(22)
-Dim BR$(23), PR$(22)
-
-Dim S0%(22, 6)
+Dim BN$(23), batterNames_Road$(23)
+Dim PN$(22), pitcherNames_Road$(22)
 
 Dim B0N%(23, 22), BN%(23)
 Dim P0N%(22, 42), PN%(22)
-Dim S0N%(22, 6)
+Dim S0%(22, 6), S0N%(22, 6)
 
 Dim B0R%(23, 22), BR%(23)
 Dim P0R%(22, 42), PR%(22)
@@ -90,9 +90,9 @@ Dim BL1!(18, 20), PL1!(16, 21)
 
 Dim leaderBL$(1 To 920), leaderPL$(1 To 880)
 
-Dim leaderTeams$(40, 22), TMP$(1 To 880)
+Dim plyLeaderTeams$(40, 22), TMP$(1 To 880)
 Dim expBatCategory$(0 To 31), expPitCategory$(0 To 29), expTeamCategory$(0 To 39)
-Dim TMB$(1 To 920), TMM$(1 To 920), TPP$(1 To 920), TT2$(40, 23)
+Dim TMB$(1 To 920), TMM$(1 To 920), TPP$(1 To 920), tmLeaderTeams$(40, 23)
 
 Dim BK%(1 To 920, 22), PM%(1 To 880, 23)
 
@@ -127,7 +127,7 @@ Dim compileZ1!(298, 2)
 Dim DFT!(40, 20), JS!(46, 42), OFT!(40, 20)
 Dim seeZ!(298), seeZ1!(298)
 
-Dim BA$(40), ER$(40), statFiles$(40)
+Dim BA$(40), ER$(40)
 Dim compileZ2$(298), compileZ3$(298)
 Dim LF$(70), NM$(46), seeP$(298)
 Dim RT$(70), seeT$(40), compileTeams$(1 To 40)
@@ -262,9 +262,10 @@ Dim progM%(0 To 9)
 ' Used in POSSRT routines
 '----------------------------------------
 Dim currPosition
+Dim TM(TEAMS_PER_LEAGUE)
+
 Dim A$(TEAMS_PER_LEAGUE)
 Dim PB$(22), TYN$(40)
-Dim TM(TEAMS_PER_LEAGUE)
 
 
 '----------------------------------------

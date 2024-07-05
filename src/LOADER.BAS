@@ -137,14 +137,21 @@ Sub LOADER
 
     If autoPlay = 1 Then
 
-        Call AUTOSETUP
+        Call AUTOSETUP(goodTeam)
 
-        For Idx = 0 To 1
-            gameT1%(Idx) = NG%(Idx)
-            YN$ = diskIDs$(Idx)
-            Call ReadGameTeam(YN$, gameTeams$(Idx), gameT1%(Idx), Idx)
-            diskIDs$(Idx) = YN$
-        Next Idx
+        If goodTeam = 0 Then
+
+            'Notify user that game won't execute
+            MsgText$ = "ATTEMPTED TO LOAD AN INVALID TEAM. PRESS ANY KEY TO RETURN TO MENU"
+            BoxWidth = 18
+            BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+            Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+            Call CSMsgBox(MsgText$, BoxWidth, PASS)
+            I$ = GetKeyPress$
+            Call CSMsgBox("", 0, PASS)
+            Exit Sub
+
+        End If
 
     Else
 

@@ -17,7 +17,7 @@ Sub ConfigureDrives ()
     browseImage& = _LoadImage("search.png", 32)
     saveImage& = _LoadImage("floppy-disk.png", 32)
 
-    Open "DEV.BAS" For Input As #2
+    Open "FOLDERS.CFG" For Input As #2
 
     For I = 0 To 3
         Input #2, diskPaths$(I)
@@ -92,7 +92,13 @@ Sub ConfigureDrives ()
                         I = _MouseInput
                     Loop Until Not _MouseButton(1)
 
-                    userFolder$ = _SelectFolderDialog$("Select a path for teams files", _CWD$ + "\Teams")
+                    Select Case opSysType$
+                        Case "[WINDOWS]":
+                            userFolder$ = _SelectFolderDialog$("Select a path for teams files", diskPaths$(0))
+                        Case "[MAC]", "[MACOSX]", "[LINUX]":
+                            userFolder$ = _SelectFolderDialog$("Select a path for teams files", diskPaths$(0))
+                    End Select
+
                     If userFolder$ <> "" Then diskPaths$(0) = userFolder$
                     Color Black, DarkGray
                     Locate 8, 1: Print PadRight$(diskPaths$(0), 80)
@@ -105,7 +111,13 @@ Sub ConfigureDrives ()
                         I = _MouseInput
                     Loop Until Not _MouseButton(1)
 
-                    userFolder$ = _SelectFolderDialog$("Select a path for stats files", _CWD$ + "\Stats")
+                    Select Case opSysType$
+                        Case "[WINDOWS]":
+                            userFolder$ = _SelectFolderDialog$("Select a path for stats files", diskPaths$(1))
+                        Case "[MAC]", "[MACOSX]", "[LINUX]":
+                            userFolder$ = _SelectFolderDialog$("Select a path for stats files", diskPaths$(1))
+                    End Select
+
                     If userFolder$ <> "" Then diskPaths$(1) = userFolder$
                     Color Black, DarkGray
                     Locate 12, 1: Print PadRight$(diskPaths$(1), 80)
@@ -118,7 +130,13 @@ Sub ConfigureDrives ()
                         I = _MouseInput
                     Loop Until Not _MouseButton(1)
 
-                    userFolder$ = _SelectFolderDialog$("Select a path for leaders files", _CWD$ + "\Leaders")
+                    Select Case opSysType$
+                        Case "[WINDOWS]":
+                            userFolder$ = _SelectFolderDialog$("Select a path for leaders files", diskPaths$(2))
+                        Case "[MAC]", "[MACOSX]", "[LINUX]":
+                            userFolder$ = _SelectFolderDialog$("Select a path for leaders files", diskPaths$(2))
+                    End Select
+
                     If userFolder$ <> "" Then diskPaths$(2) = userFolder$
                     Color Black, DarkGray
                     Locate 16, 1: Print PadRight$(diskPaths$(2), 80)
@@ -131,7 +149,13 @@ Sub ConfigureDrives ()
                         I = _MouseInput
                     Loop Until Not _MouseButton(1)
 
-                    userFolder$ = _SelectFolderDialog$("Select a path for schedules files", _CWD$ + "\Schedules")
+                    Select Case opSysType$
+                        Case "[WINDOWS]":
+                            userFolder$ = _SelectFolderDialog$("Select a path for schedules files", diskPaths$(3))
+                        Case "[MAC]", "[MACOSX]", "[LINUX]":
+                            userFolder$ = _SelectFolderDialog$("Select a path for schedules files", diskPaths$(3))
+                    End Select
+
                     If userFolder$ <> "" Then diskPaths$(3) = userFolder$
                     Color Black, DarkGray
                     Locate 20, 1: Print PadRight$(diskPaths$(3), 80)
@@ -216,13 +240,15 @@ Sub ConfigureDrives ()
     If X$ <> "Y" GoTo Done 'insist on either Y or N or up-arrow
 
     Save:
-    Open "DEV.BAS" For Output As #1
+    Open "FOLDERS.CFG" For Output As #1
 
     For R = 0 To 3:
 
         Select Case opSysType$
-            Case "[WINDOWS]": diskPaths$(R) = diskPaths$(R) + "\"
-            Case "[MAC]", "[MACOSX]", "[LINUX]": diskPaths$(R) = diskPaths$(R) + "/"
+            Case "[WINDOWS]": 
+                diskPaths$(R) = diskPaths$(R) + "\"
+            Case "[MAC]", "[MACOSX]", "[LINUX]": 
+                diskPaths$(R) = diskPaths$(R) + "/"
         End Select
 
         Print #1, diskPaths$(R)
@@ -337,7 +363,13 @@ Sub ConfigureDrives_Base ()
                         I = _MouseInput
                     Loop Until Not _MouseButton(1)
 
-                    userFolder$ = _SelectFolderDialog$("Select a path for teams files", _CWD$ + "\Teams")
+                    Select Case opSysType$
+                        Case "[WINDOWS]":
+                            userFolder$ = _SelectFolderDialog$("Select a path for teams files", diskPaths$(0))
+                        Case "[MAC]", "[MACOSX]", "[LINUX]":
+                            userFolder$ = _SelectFolderDialog$("Select a path for teams files", diskPaths$(0))
+                    End Select
+
                     If userFolder$ <> "" Then diskPaths$(0) = userFolder$
                     Color Black, DarkGray
                     Locate 8, 1: Print PadRight$(diskPaths$(0), 80)
@@ -350,7 +382,13 @@ Sub ConfigureDrives_Base ()
                         I = _MouseInput
                     Loop Until Not _MouseButton(1)
 
-                    userFolder$ = _SelectFolderDialog$("Select a path for stats files", _CWD$ + "\Stats")
+                    Select Case opSysType$
+                        Case "[WINDOWS]":
+                            userFolder$ = _SelectFolderDialog$("Select a path for stats files", diskPaths$(1))
+                        Case "[MAC]", "[MACOSX]", "[LINUX]":
+                            userFolder$ = _SelectFolderDialog$("Select a path for stats files", diskPaths$(1))
+                    End Select
+
                     If userFolder$ <> "" Then diskPaths$(1) = userFolder$
                     Color Black, DarkGray
                     Locate 12, 1: Print PadRight$(diskPaths$(1), 80)
@@ -363,7 +401,13 @@ Sub ConfigureDrives_Base ()
                         I = _MouseInput
                     Loop Until Not _MouseButton(1)
 
-                    userFolder$ = _SelectFolderDialog$("Select a path for leaders files", _CWD$ + "\Leaders")
+                    Select Case opSysType$
+                        Case "[WINDOWS]":
+                            userFolder$ = _SelectFolderDialog$("Select a path for leaders files", diskPaths$(2))
+                        Case "[MAC]", "[MACOSX]", "[LINUX]":
+                            userFolder$ = _SelectFolderDialog$("Select a path for leaders files", diskPaths$(2))
+                    End Select
+
                     If userFolder$ <> "" Then diskPaths$(2) = userFolder$
                     Color Black, DarkGray
                     Locate 16, 1: Print PadRight$(diskPaths$(2), 80)
@@ -376,7 +420,13 @@ Sub ConfigureDrives_Base ()
                         I = _MouseInput
                     Loop Until Not _MouseButton(1)
 
-                    userFolder$ = _SelectFolderDialog$("Select a path for schedules files", _CWD$ + "\Schedules")
+                    Select Case opSysType$
+                        Case "[WINDOWS]":
+                            userFolder$ = _SelectFolderDialog$("Select a path for schedules files", diskPaths$(3))
+                        Case "[MAC]", "[MACOSX]", "[LINUX]":
+                            userFolder$ = _SelectFolderDialog$("Select a path for schedules files", diskPaths$(3))
+                    End Select
+
                     If userFolder$ <> "" Then diskPaths$(3) = userFolder$
                     Color Black, DarkGray
                     Locate 20, 1: Print PadRight$(diskPaths$(3), 80)
@@ -389,14 +439,20 @@ Sub ConfigureDrives_Base ()
                         I = _MouseInput
                     Loop Until Not _MouseButton(1)
 
-                    userFolder$ = _SelectFolderDialog$("Select a path for profile files", _CWD$ + "\Profiles")
+                    Select Case opSysType$
+                        Case "[WINDOWS]":
+                            userFolder$ = _SelectFolderDialog$("Select a path for profiles files", diskPaths$(4))
+                        Case "[MAC]", "[MACOSX]", "[LINUX]":
+                            userFolder$ = _SelectFolderDialog$("Select a path for profiles files", diskPaths$(4))
+                    End Select
+
                     If userFolder$ <> "" Then diskPaths$(4) = userFolder$
                     Color Black, DarkGray
                     Locate 24, 1: Print PadRight$(diskPaths$(4), 80)
 
                 End If
 
-                If _MouseX >= 304 And _MouseX <= 336 And _MouseY >= 430 And _MouseY <= 462 Then
+                If _MouseX >= 304 And _MouseX <= 336 And _MouseY >= 390 And _MouseY <= 422 Then
                     'Mouse clicked inside button area
                     Do
                         I = _MouseInput
@@ -488,8 +544,10 @@ Sub ConfigureDrives_Base ()
     For R = 0 To 4:
 
         Select Case opSysType$
-            Case "[WINDOWS]": diskPaths$(R) = diskPaths$(R) + "\"
-            Case "[MAC]", "[MACOSX]", "[LINUX]": diskPaths$(R) = diskPaths$(R) + "/"
+            Case "[WINDOWS]": 
+                diskPaths$(R) = diskPaths$(R) + "\"
+            Case "[MAC]", "[MACOSX]", "[LINUX]": 
+                diskPaths$(R) = diskPaths$(R) + "/"
         End Select
 
         Print #1, diskPaths$(R)

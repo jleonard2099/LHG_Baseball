@@ -2062,7 +2062,7 @@ Sub PrintManagerProfile (printDest, destFile$, targetTeam$)
         Print #1,  "BASE RUNNING STRATEGY": Print #1, 
         Print #1,  Tab(32); "TABLE OF VALUES"
         Print #1,  "SCENARIO                            %       %          %          %"
-        Print #1,  "                                  SAFE    NORMAL   AGGRESSIVE   TOtotAwayLosses"
+        Print #1,  "                                  SAFE    NORMAL   AGGRESSIVE   TOTALS"
         Print #1,  " 1 - INNING 1-3, WHEN AHEAD       "; Using "###     ###        ###          ###"; progMG%(811); progMG%(812); progMG%(813); progMG%(811) + progMG%(812) + progMG%(813)
         Print #1,  " 2 - INNING 1-3, WHEN TIED        "; Using "###     ###        ###          ###"; progMG%(814); progMG%(815); progMG%(816); progMG%(816) + progMG%(815) + progMG%(814)
         Print #1,  " 3 - INNING 1-3, WHEN BEHIND      "; Using "###     ###        ###          ###"; progMG%(817); progMG%(818); progMG%(819); progMG%(819) + progMG%(818) + progMG%(817)
@@ -2184,7 +2184,7 @@ Sub SpotStarters (targetTeam$, yearNumber$, mgrNbr)
 
         Next
 
-        Locate 19, 40: Print "TOtotAwayLosses MUST EQUAL 100"; Tab(70); SS%
+        Locate 19, 40: Print "TOTALS MUST EQUAL 100"; Tab(70); SS%
         Locate 20, 40
         Color 15: Print "(A)";
         Color 15: Print "DD SPOT STARTER ";
@@ -4624,7 +4624,7 @@ Sub BASERUN (teamYear$, mgrNbr)
 
         Print "SCENARIO                            %       %          %          %"
         Color 15
-        Print "                                  SAFE    NORMAL   AGGRESSIVE   TOtotAwayLosses"
+        Print "                                  SAFE    NORMAL   AGGRESSIVE   TOTALS"
         Print " 1 - INNING 1-3, WHEN AHEAD       "; Using "###     ###        ###          ###"; progMG%(811); progMG%(812); progMG%(813); progMG%(811) + progMG%(812) + progMG%(813)
         Print " 2 - INNING 1-3, WHEN TIED        "; Using "###     ###        ###          ###"; progMG%(814); progMG%(815); progMG%(816); progMG%(816) + progMG%(815) + progMG%(814)
         Print " 3 - INNING 1-3, WHEN BEHIND      "; Using "###     ###        ###          ###"; progMG%(817); progMG%(818); progMG%(819); progMG%(819) + progMG%(818) + progMG%(817)

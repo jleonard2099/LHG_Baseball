@@ -111,7 +111,7 @@ Sub CreateCareerFile ()
 
         Call MergeFirstYear
 
-    End If 'Done confirming user continue
+    End If 'Done checking if user is ready
 
 End Sub
 
@@ -411,8 +411,8 @@ Sub ReviewCareerRecords ()
                 Case "S":
 
                     Do
-                        Color 15, 0
                         Cls
+                        Color 0, 15
 
                         Color 12: Print "CATEGORY           RECORD           PLAYER              YEAR"
                         Print
@@ -710,6 +710,7 @@ Sub MergeCareerFiles ()
     _Title "Full Count Baseball - Update Career Files"
 
     Do
+
         Color 14, 0
         Cls
 
@@ -734,8 +735,8 @@ Sub MergeCareerFiles ()
         Print
         Print
 
-        Color 12
-        Locate , 25: Print "DO YOU WISH TO CONTINUE? (Y/N)"
+        Color 12: Locate , 25
+        Print "DO YOU WISH TO CONTINUE? (Y/N)"
 
         I$ = GetKeyPress$
 
@@ -751,7 +752,7 @@ Sub MergeCareerFiles ()
             Call ChooseTeam(YN$, NTMS, teamNbr, team$)
             statFile$ = nameStatFile$(team$)
 
-            If Not (_FileExists(diskPaths$(1) + statFile$)) Then
+            If Not _FileExists(diskPaths$(1) + statFile$) Then
 
                 MsgText$ = "NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU"
                 BoxWidth = 24
@@ -771,7 +772,6 @@ Sub MergeCareerFiles ()
 
     End If
 
-
 End Sub
 
 
@@ -785,21 +785,6 @@ End Sub
 'them, then overwrites the career file 
 'with the new values. 
 Sub MergeAddYear (selectedFile$, statFile$)
-
-    Shared careerB$(), careerP$()
-
-    Shared careerB0%(), careerB1%(), BRS%()
-    Shared careerP0%(), careerP1%(), PRS%()
-
-    'Dim statT0%(0 to 21), statT1%(0 to 22)
-    Shared statT0%(), statT1%()
-
-    Dim BR$(100), PR$(80)
-
-    Dim TMR1%, TMR2
-
-    TMR1% = 4175
-    TMR2 = 6875
 
     Color 15, 0
     Cls
@@ -823,274 +808,308 @@ Sub MergeAddYear (selectedFile$, statFile$)
 
         If finalUpdate$ = "Y" Then doPostLeaders = 1 Else doPostLeaders = 0
 
-        Locate 20, 5
-        Print "LOADING CAREER STATS . . . . PLEASE WAIT"
-
-        Open diskPaths$(1) + selectedFile$ + ".CAR" For Input As #1
-
-        Input #1, NB, NP
-
-        For I = 0 To 99:
-            Input #1, careerB$(I)
-        Next
-
-        For I = 0 To 79:
-            Input #1, careerP$(I)
-        Next
-
-        For J = 1 To 15:
-
-            For I = 0 To 99:
-
-                For I1 = O To 17:
-                    Input #1, BRS%(J, I, I1)
-                Next I1
-
-                Locate 21, 35: Color 9
-                TMR2 = TMR2 - 1
-                Print Using "####"; TMR2
-
-            Next I
-
-        Next J
-
-        For J = 1 To 15:
-
-            For I = 0 To 79:
-
-                For I1 = 0 To 16:
-                    Input #1, PRS%(J, I, I1)
-                Next I1
-
-                Locate 21, 35: Color 9
-                TMR2 = TMR2 - 1
-                Print Using "####"; TMR2
-
-            Next I
-
-        Next J
-
-        Close #1
-
-        Locate 20, 5
-        Print "LOADING STATS FILE . . . . PLEASE WAIT"
-
-        Open diskPaths$(1) + statFile$ For Input As #1
-
-        Input #1, team$
-        Input #1, W2%
-        Input #1, L2%
-
-        For I = 0 To 22:
-            Input #1, BR$(I)
-            Input #1, careerB1%(I)
-            Color 9: Locate 21, 35
-            TMR1% = TMR1% - 1
-            Print Using "####"; TMR1%
-        Next I
-
-        For I = 0 To 21:
-            Input #1, PR$(I)
-            Input #1, careerP1%(I)
-            Color 9: Locate 21, 35
-            TMR1% = TMR1% - 1
-            Print Using "####"; TMR1%
-        Next I
-
-        For I = 0 To 22:
-            For I1 = 0 To 21:
-                Input #1, careerB0%(I, I1)
-                Locate 21, 35
-                Color 9
-                TMR1% = TMR1% - 1: Print Using "####"; TMR1%
-            Next I1
-        Next I
-
-        For I = 0 To 21:
-            For I1 = 0 To 41:
-                Input #1, careerP0%(I, I1)
-                Color 9: Locate 21, 35
-                TMR1% = TMR1% - 1
-                Print Using "####"; TMR1%
-            Next I1
-        Next I
-
-        Input #1, D0%, D1%
-
-        For I = 0 To 21:
-            Input #1, statT0%(I)
-        Next I
-
-        For I = 0 To 22:
-            Input #1, statT1%(I)
-        Next I
-
-        Close #1
-
-        For I = 0 To 22
-
-            RR = 0
-            CHK = 0
-            doneLoop% = 0
-
-            For J = 0 To 99
-
-                If UCase$(BR$(I)) = UCase$(careerB$(J)) Then
-
-                    For W = 1 To 15
-                        If BRS%(W, J, 17) = statYear Then
-                            CHK = CHK + 1
-                        End If
-                    Next W
-
-                    If CHK > 0 Then
-                        N = BRS%(1, J, 16) + BRS%(2, J, 16) + BRS%(3, J, 16) + BRS%(4, J, 16) + BRS%(5, J, 16) + BRS%(6, J, 16) + BRS%(7, J, 16) + BRS%(8, J, 16) + BRS%(9, J, 16) + BRS%(10, J, 16) + BRS%(11, J, 16) + BRS%(12, J, 16) + BRS%(13, J, 16) + BRS%(14, J, 16) + BRS%(15, J, 16)
-                    Else
-                        N = BRS%(1, J, 16) + BRS%(2, J, 16) + BRS%(3, J, 16) + BRS%(4, J, 16) + BRS%(5, J, 16) + BRS%(6, J, 16) + BRS%(7, J, 16) + BRS%(8, J, 16) + BRS%(9, J, 16) + BRS%(10, J, 16) + BRS%(11, J, 16) + BRS%(12, J, 16) + BRS%(13, J, 16) + BRS%(14, J, 16) + BRS%(15, J, 16) + 1
-                    End If
-
-                    For K = 0 To 15: BRS%(N, J, K) = careerB0%(I, K): Next K
-
-                    BRS%(N, J, 16) = 1
-                    BRS%(N, J, 17) = statYear
-                Else
-                    doneLoop% = 1
-                End If
-
-                If doneLoop% = 1 Then Exit For
-
-            Next J
-
-            If doneLoop% = 1 Then Exit For
-
-        Next I
-
-        RR = RR + 1
-
-        If RR = 100 Then
-            If BR$(I) <> "END" And BR$(I) <> "XXX" And BR$(I) <> "" Then
-                NB = NB + 1
-                careerB$(NB) = BR$(I)
-                N = 1
-
-                For K = 0 To 15:
-                    BRS%(N, NB, K) = careerB0%(I, K)
-                Next
-
-                BRS%(N, NB, 16) = 1
-                BRS%(N, NB, 17) = statYear
-
-            End If
-
-        End If
-
-        For I = 0 To 21
-
-            RRP = 0
-            CHK = 0
-
-            For J = 0 To 79
-
-                If UCase$(PR$(I)) = UCase$(careerP$(J)) Then
-
-                    For W = 1 To 15
-                        If PRS%(W, J, 16) = statYear Then
-                            CHK = CHK + 1
-                        End If
-                    Next W
-
-                    If CHK > 0 Then
-                        N = PRS%(1, J, 15) + PRS%(2, J, 15) + PRS%(3, J, 15) + PRS%(4, J, 15) + PRS%(5, J, 15) + PRS%(6, J, 15) + PRS%(7, J, 15) + PRS%(8, J, 15) + PRS%(9, J, 15) + PRS%(10, J, 15) + PRS%(11, J, 15) + PRS%(12, J, 15) + PRS%(13, J, 15) + PRS%(14, J, 15) + PRS%(15, J, 15)
-                    Else
-                        N = PRS%(1, J, 15) + PRS%(2, J, 15) + PRS%(3, J, 15) + PRS%(4, J, 15) + PRS%(5, J, 15) + PRS%(6, J, 15) + PRS%(7, J, 15) + PRS%(8, J, 15) + PRS%(9, J, 15) + PRS%(10, J, 15) + PRS%(11, J, 15) + PRS%(12, J, 15) + PRS%(13, J, 15) + PRS%(14, J, 15) + PRS%(15, J, 15) + 1
-                    End If
-
-                    For K = 0 To 14:
-                        PRS%(N, J, K) = careerP0%(I, K)
-                    Next K
-
-                    PRS%(N, J, 15) = 1
-                    PRS%(N, J, 16) = statYear
-
-                    Exit For 'GoTo 1530
-
-                Else
-
-                    RRP = RRP + 1
-
-                    If RRP = 80 Then
-
-                        If PR$(I) <> "END" And PR$(I) <> "XXX" And PR$(I) <> "" Then
-                            NP = NP + 1
-                            careerP$(NP) = PR$(I)
-                            N = 1
-
-                            For K = 0 To 14:
-                                PRS%(N, NP, K) = careerP0%(I, K)
-                            Next
-
-                            PRS%(N, NP, 15) = 1
-                            PRS%(N, NP, 16) = statYear
-                        End If
-
-                    End If
-
-                End If
-
-            Next J
-
-        Next I
-
-        If doPostLeaders = 1 Then Call UpdateCareerLeaders(selectedFile$)
-
-        Locate 20, 5
-        Print "MERGING CAREER STATS . . . . PLEASE WAIT"
-
-        Open diskPaths$(1) + selectedFile$ + ".CAR" For Output As #1
-
-        Write #1, NB, NP
-
-        For I = 0 To 99: Write #1, careerB$(I): Next
-
-        For I = 0 To 79: Write #1, careerP$(I): Next
-
-        For J = 1 To 15:
-
-            For I = 0 To 99:
-
-                For I1 = O To 17:
-                    Write #1, BRS%(J, I, I1)
-                Next I1
-
-                Color 9: Locate 21, 35
-                TMR2 = TMR2 - 1
-                Print Using "####"; TMR2
-
-            Next I
-
-        Next J
-
-        For J = 1 To 15:
-
-            For I = 0 To 79:
-
-                For I1 = 0 To 16:
-                    Write #1, PRS%(J, I, I1)
-                Next I1
-
-                Color 9: Locate 21, 35
-                TMR2 = TMR2 - 1
-                Print Using "####"; TMR2
-
-            Next I
-
-        Next J
-
-        Close #1
+        Call AddCareerYear(doPostLeaders, selectedFile$, statFile$)
 
     End If ' Done checking for year to add
 
 End Sub
+
+
+'----------------------------------------
+'       AddCareerYear Subroutine
+'----------------------------------------
+'This routine loads the existing career
+'stats, adds the team's stats to them,
+'then overwrites the career file with the
+'new values. 
+Sub AddCareerYear (finalUpdate, careerFile$, statFile$)
+
+    Shared careerB$(), careerP$()
+
+    Shared careerB0%(), careerB1%(), BRS%()
+    Shared careerP0%(), careerP1%(), PRS%()
+
+    'Dim statT0%(0 to 21), statT1%(0 to 22)
+    Shared statT0%(), statT1%()
+
+    Dim BR$(100), PR$(80)
+
+    Dim TMR1%, TMR2
+
+    TMR1% = 4175
+    TMR2 = 6875
+
+    Locate 20, 5
+    Print "LOADING CAREER STATS . . . . PLEASE WAIT"
+
+    Open diskPaths$(1) + selectedFile$ + ".CAR" For Input As #1
+
+    Input #1, NB, NP
+
+    For I = 0 To 99:
+        Input #1, careerB$(I)
+    Next
+
+    For I = 0 To 79:
+        Input #1, careerP$(I)
+    Next
+
+    For J = 1 To 15:
+
+        For I = 0 To 99:
+
+            For I1 = O To 17:
+                Input #1, BRS%(J, I, I1)
+            Next I1
+
+            Locate 21, 35: Color 9
+            TMR2 = TMR2 - 1
+            Print Using "####"; TMR2
+
+        Next I
+
+    Next J
+
+    For J = 1 To 15:
+
+        For I = 0 To 79:
+
+            For I1 = 0 To 16:
+                Input #1, PRS%(J, I, I1)
+            Next I1
+
+            Locate 21, 35: Color 9
+            TMR2 = TMR2 - 1
+            Print Using "####"; TMR2
+
+        Next I
+
+    Next J
+
+    Close #1
+
+    Locate 20, 5
+    Print "LOADING STATS FILE . . . . PLEASE WAIT"
+
+    Open diskPaths$(1) + statFile$ For Input As #1
+
+    Input #1, team$
+    Input #1, W2%
+    Input #1, L2%
+
+    For I = 0 To 22:
+        Input #1, BR$(I)
+        Input #1, careerB1%(I)
+        Color 9: Locate 21, 35
+        TMR1% = TMR1% - 1
+        Print Using "####"; TMR1%
+    Next I
+
+    For I = 0 To 21:
+        Input #1, PR$(I)
+        Input #1, careerP1%(I)
+        Color 9: Locate 21, 35
+        TMR1% = TMR1% - 1
+        Print Using "####"; TMR1%
+    Next I
+
+    For I = 0 To 22:
+        For I1 = 0 To 21:
+            Input #1, careerB0%(I, I1)
+            Locate 21, 35
+            Color 9
+            TMR1% = TMR1% - 1: Print Using "####"; TMR1%
+        Next I1
+    Next I
+
+    For I = 0 To 21:
+        For I1 = 0 To 41:
+            Input #1, careerP0%(I, I1)
+            Color 9: Locate 21, 35
+            TMR1% = TMR1% - 1
+            Print Using "####"; TMR1%
+        Next I1
+    Next I
+
+    Input #1, D0%, D1%
+
+    For I = 0 To 21:
+        Input #1, statT0%(I)
+    Next I
+
+    For I = 0 To 22:
+        Input #1, statT1%(I)
+    Next I
+
+    Close #1
+
+    For I = 0 To 22
+
+        RR = 0
+        CHK = 0
+        doneLoop% = 0
+
+        For J = 0 To 99
+
+            If UCase$(BR$(I)) = UCase$(careerB$(J)) Then
+
+                For W = 1 To 15
+                    If BRS%(W, J, 17) = statYear Then
+                        CHK = CHK + 1
+                    End If
+                Next W
+
+                If CHK > 0 Then
+                    N = BRS%(1, J, 16) + BRS%(2, J, 16) + BRS%(3, J, 16) + BRS%(4, J, 16) + BRS%(5, J, 16) + BRS%(6, J, 16) + BRS%(7, J, 16) + BRS%(8, J, 16) + BRS%(9, J, 16) + BRS%(10, J, 16) + BRS%(11, J, 16) + BRS%(12, J, 16) + BRS%(13, J, 16) + BRS%(14, J, 16) + BRS%(15, J, 16)
+                Else
+                    N = BRS%(1, J, 16) + BRS%(2, J, 16) + BRS%(3, J, 16) + BRS%(4, J, 16) + BRS%(5, J, 16) + BRS%(6, J, 16) + BRS%(7, J, 16) + BRS%(8, J, 16) + BRS%(9, J, 16) + BRS%(10, J, 16) + BRS%(11, J, 16) + BRS%(12, J, 16) + BRS%(13, J, 16) + BRS%(14, J, 16) + BRS%(15, J, 16) + 1
+                End If
+
+                For K = 0 To 15: BRS%(N, J, K) = careerB0%(I, K): Next K
+
+                BRS%(N, J, 16) = 1
+                BRS%(N, J, 17) = statYear
+            Else
+                doneLoop% = 1
+            End If
+
+            If doneLoop% = 1 Then Exit For
+
+        Next J
+
+        If doneLoop% = 1 Then Exit For
+
+    Next I
+
+    RR = RR + 1
+
+    If RR = 100 Then
+        If BR$(I) <> "END" And BR$(I) <> "XXX" And BR$(I) <> "" Then
+            NB = NB + 1
+            careerB$(NB) = BR$(I)
+            N = 1
+
+            For K = 0 To 15:
+                BRS%(N, NB, K) = careerB0%(I, K)
+            Next
+
+            BRS%(N, NB, 16) = 1
+            BRS%(N, NB, 17) = statYear
+
+        End If
+
+    End If
+
+    For I = 0 To 21
+
+        RRP = 0
+        CHK = 0
+
+        For J = 0 To 79
+
+            If UCase$(PR$(I)) = UCase$(careerP$(J)) Then
+
+                For W = 1 To 15
+                    If PRS%(W, J, 16) = statYear Then
+                        CHK = CHK + 1
+                    End If
+                Next W
+
+                If CHK > 0 Then
+                    N = PRS%(1, J, 15) + PRS%(2, J, 15) + PRS%(3, J, 15) + PRS%(4, J, 15) + PRS%(5, J, 15) + PRS%(6, J, 15) + PRS%(7, J, 15) + PRS%(8, J, 15) + PRS%(9, J, 15) + PRS%(10, J, 15) + PRS%(11, J, 15) + PRS%(12, J, 15) + PRS%(13, J, 15) + PRS%(14, J, 15) + PRS%(15, J, 15)
+                Else
+                    N = PRS%(1, J, 15) + PRS%(2, J, 15) + PRS%(3, J, 15) + PRS%(4, J, 15) + PRS%(5, J, 15) + PRS%(6, J, 15) + PRS%(7, J, 15) + PRS%(8, J, 15) + PRS%(9, J, 15) + PRS%(10, J, 15) + PRS%(11, J, 15) + PRS%(12, J, 15) + PRS%(13, J, 15) + PRS%(14, J, 15) + PRS%(15, J, 15) + 1
+                End If
+
+                For K = 0 To 14:
+                    PRS%(N, J, K) = careerP0%(I, K)
+                Next K
+
+                PRS%(N, J, 15) = 1
+                PRS%(N, J, 16) = statYear
+
+                Exit For 'GoTo 1530
+
+            Else
+
+                RRP = RRP + 1
+
+                If RRP = 80 Then
+
+                    If PR$(I) <> "END" And PR$(I) <> "XXX" And PR$(I) <> "" Then
+                        NP = NP + 1
+                        careerP$(NP) = PR$(I)
+                        N = 1
+
+                        For K = 0 To 14:
+                            PRS%(N, NP, K) = careerP0%(I, K)
+                        Next
+
+                        PRS%(N, NP, 15) = 1
+                        PRS%(N, NP, 16) = statYear
+                    End If
+
+                End If
+
+            End If
+
+        Next J
+
+    Next I
+
+    If finalUpdate = 1 Then Call UpdateCareerLeaders(careerFile$)
+
+    Locate 20, 5
+    Print "MERGING CAREER STATS . . . . PLEASE WAIT"
+
+    Open diskPaths$(1) + careerFile$ + ".CAR" For Output As #1
+
+    Write #1, NB, NP
+
+    For I = 0 To 99: 
+        Write #1, careerB$(I)
+    Next
+
+    For I = 0 To 79: 
+        Write #1, careerP$(I)
+    Next
+
+    For J = 1 To 15:
+
+        For I = 0 To 99:
+
+            For I1 = O To 17:
+                Write #1, BRS%(J, I, I1)
+            Next I1
+
+            Color 9: Locate 21, 35
+            TMR2 = TMR2 - 1
+            Print Using "####"; TMR2
+
+        Next I
+
+    Next J
+
+    For J = 1 To 15:
+
+        For I = 0 To 79:
+
+            For I1 = 0 To 16:
+                Write #1, PRS%(J, I, I1)
+            Next I1
+
+            Color 9: Locate 21, 35
+            TMR2 = TMR2 - 1
+            Print Using "####"; TMR2
+
+        Next I
+
+    Next J
+
+    Close #1
+
+End Sub
+
 
 '----------------------------------------
 '     UpdateCareerLeaders Subroutine

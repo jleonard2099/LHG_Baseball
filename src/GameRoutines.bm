@@ -1,3 +1,4 @@
+
 '----------------------------------------
 '            INFO Subroutine
 '----------------------------------------
@@ -5259,7 +5260,7 @@ Sub STEALCHANCE (AA, I2, TGTBASE%, CHANCE%)
         Case Else: DD = .3
     End Select
 
-    TT = CC + BB - (BB * DD) ' *** TOtotAwayLosses CHANCES TO STEAL 3RD
+    TT = CC + BB - (BB * DD) ' *** TOTAL CHANCES TO STEAL 3RD
     RR = (TT * .19) * 1.4 ' *** "      "      "   "     "  1 OUT
     SS = (TT * .56) * 1.4 ' ***                            0 OUT
     GG = RR + SS ' ***                           (0,1 OUT)
@@ -8831,7 +8832,7 @@ Sub BOX2FILE (printChoice, boxName$)
             Next
         Next
 
-        Print #2, "TOtotAwayLossesS"; Tab(17); T3%(0); Tab(22); T3%(1); Tab(27); T3%(4);
+        Print #2, "TOTALS"; Tab(17); T3%(0); Tab(22); T3%(1); Tab(27); T3%(4);
         Print #2, Tab(32); T3%(6); Tab(36); T3%(7); Tab(42);
         Print #2, T3%(10); Tab(46); T3%(16); Tab(50); T3%(17)
         Print #2, Tab(20); T3%(2); Tab(24); T3%(3); Tab(29);
@@ -8905,7 +8906,7 @@ Sub BOX2FILE (printChoice, boxName$)
 
         Next I1
 
-        Print #2, "TOtotAwayLossesS"; Tab(28);
+        Print #2, "TOTALS"; Tab(28);
         Print #2, Using "##"; Int(T3%(0) / 3);
 
         If T3%(0) - (Int(T3%(0) / 3) * 3) > 0 Then Print #2, ".";: Print #2, Using "#"; T3%(0) - (Int(T3%(0) / 3) * 3);
@@ -9387,7 +9388,7 @@ Sub STATS2SCREEN
 
         Next
 
-        Color 14, 0: Print "TOtotAwayLossesS";
+        Color 14, 0: Print "TOTALS";
         Color 15, 0
         Locate , 17: Print T3%(0);
         Locate , 22: Print T3%(1);
@@ -9493,7 +9494,7 @@ Sub STATS2SCREEN
         Next I1
 
         Color 14, 0
-        Print "TOtotAwayLossesS";
+        Print "TOTALS";
         Color 15, 0
 
         Locate , 30

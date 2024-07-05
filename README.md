@@ -20,13 +20,35 @@ Lance Haffner Games were some of the premier simulators of the 80's. They were a
 <img src="base-screen1.png">
 
 # The Game #
+
 ### Installation ###
-No installation required. Releases are available as pre-compiled binaries for each major platform.
 
-### Usage ###
-Run Hello.exe to start with the main game menu.
+No formal install process is necessary. Teams files are now provided as well! Files provided are NOT backwards-compatible with the DOS versions of the game.
+1) Extract zip folder contents to folder on your hard drive (preferrably not in user folders!)
+2) Extract the leaders, schedules or teams you are interested in to the same folder
 
-Teams files will not be included at this time. However, if you're nice enough, the people at the [Haffner Files Facebook group](https://www.facebook.com/groups/183455342454939) will be glad to help you.
+If you intend to manage several seasons or files:
+1) Create folders for Leaders, Profiles, Schedules, Stats and Teams on your system.
+2) Open HELLO and check the "CONFIGURE GAME FOLDERS" option
+3) Click each "Folder" icon to browse to the folders you created
+4) Move or extract your team, leader and schedule files to the new folders.
+
+### Linux Dependencies ####
+- File dialog manager
+  - applescript [Mac OS]
+  - kdialog	[KDE]
+  - Xdialog [X-Win]
+  - zenity [Gnome] and variants
+    - yad (GTK+)
+    - matedialog (MATE)
+   - shellementary (SUSE)
+   - qarma (Qt)
+- ALSA (libasound2 / alsa-lib)
+- Mesa (libglu1-mesa / mesa-libGLU)
+- OpenGL (libopengl0 / libglvnd-opengl)
+
+### Useage
+Launch HELLO binary compiled for your system directly from the folder!
 
 ### Support ###
 Contact support@lhgames.net with inquiries for now.

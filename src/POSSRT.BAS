@@ -226,7 +226,7 @@ Sub ViewSearchResults (posnType, posnDesc$, positionFile$)
 
         If TM(J) <> 0 Then
 
-            Call ReadTeam(TYN$(J), T$, TM(J))
+            Call ReadTeam(TYN$(J), T$, TM(J), validData)
 
             For I = 0 To 22
 
@@ -359,7 +359,7 @@ Sub SearchResults_Report (printDest, destFile$, posnType, posnDesc$, positionFil
 
         If TM(J) <> 0 Then
 
-            Call ReadTeam(TYN$(J), T$, TM(J))
+            Call ReadTeam(TYN$(J), T$, TM(J), validData)
 
             For I = 0 To 22
 
@@ -560,7 +560,7 @@ Sub Pitchers10_Games (PC, pitchPosnDesc$, positionFile$)
 
                     If TM(J) <> 0 Then
 
-                        Call ReadTeam(TYN$(J), T$, TM(J))
+                        Call ReadTeam(TYN$(J), T$, TM(J), validData)
 
                         For I = 0 To 21
 
@@ -660,7 +660,7 @@ Sub PitchersHanded (THR, pitchPosnDesc$, positionFile$)
 
                     If TM(J) <> 0 Then
 
-                        Call ReadTeam(TYN$(J), T$, TM(J))
+                        Call ReadTeam(TYN$(J), T$, TM(J), validData)
 
                         For I = 0 To 21
 
@@ -762,7 +762,7 @@ Sub PitchersHanded_Print (printDest, destFile$, pitchPosnDesc$)
 
         If TM(J) <> 0 Then
 
-            Call ReadTeam(TYN$(J), T$, TM(J))
+            Call ReadTeam(TYN$(J), T$, TM(J), validData)
 
             For I = 0 To 21
                 If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
@@ -859,7 +859,7 @@ Sub Pitchers10_Print (printDest, destFile$, PC, pitchPosnDesc$, positionFile$)
 
         If TM(J) <> 0 Then
 
-            Call ReadTeam(TYN$(J), T$, TM(J))
+            Call ReadTeam(TYN$(J), T$, TM(J), validData)
 
             For I = 0 To 21
 

@@ -13,8 +13,8 @@ Sub SEELEAG ()
 
     If ExitCode% <> 27 And ExitCode% <> 0 Then
 
-        Call LoadLeaderFiles(league$, div1Name$, div2Name$, leaderFile$)
-        Call StatOptions(league$, div1Name$, div2Name$)
+        Call LoadLeaderFiles(league$, div1$, div2$, leaderFile$)
+        Call StatOptions(league$, div1$, div2$)
 
     End If
 
@@ -26,7 +26,7 @@ End Sub
 '----------------------------------------
 'This subroutine loads the league stats
 'from the file into several arrays
-Sub LoadLeaderFiles (league$, div1Name$, div2Name$, targetFile$)
+Sub LoadLeaderFiles (league$, div1$, div2$, targetFile$)
 
     Shared Wins(), Losses()
 
@@ -37,15 +37,13 @@ Sub LoadLeaderFiles (league$, div1Name$, div2Name$, targetFile$)
     Shared LF$(), seeP$(), RT$(), seeT$()
 
     Open diskPaths$(2) + targetFile$ + ".TMS" For Input As #2
-
-    Input #2, league$, div1Name$, div2Name$, div3Name$, div4Name$
-
+    Input #2, league$, div1$, div2$, div3$, div4$
     Close 2
 
-    div1Name$ = PadRight$(div1Name$, 8)
-    div2Name$ = PadRight$(div2Name$, 8)
-    div3Name$ = PadRight$(div3Name$, 8)
-    div4Name$ = PadRight$(div4Name$, 8)
+    div1$ = PadRight$(div1$, 8)
+    div2$ = PadRight$(div2$, 8)
+    div3$ = PadRight$(div3$, 8)
+    div4$ = PadRight$(div4$, 8)
 
     Cls
 
@@ -88,7 +86,7 @@ End Sub
 'This subroutine gives the user various
 'options for viewing the previously loaded
 'stats, and then calls routines for each
-Sub StatOptions (league$, div1Name$, div2Name$)
+Sub StatOptions (league$, div1$, div2$)
 
     Do
 
@@ -104,14 +102,14 @@ Sub StatOptions (league$, div1Name$, div2Name$)
                 Case "F":
                     userFile$ = _SAVEFILEDIALOG$("Save League Report",_CWD$ + "\Report","*.txt","Text File")
                     If userFile$ <> "" Then
-                        Call LeagueStats_Report(league$, div1Name$, div2Name$, 0, userFile$)
+                        Call LeagueStats_Report(league$, div1$, div2$, 0, userFile$)
                     End If
 
                 Case "P":
-                    Call LeagueStats_Report(league$, div1Name$, div2Name$, 1, "REPORT")
+                    Call LeagueStats_Report(league$, div1$, div2$, 1, "REPORT")
 
                 Case "S":
-                    Call LeagueStats_Screen(league$, div1Name$, div2Name$)
+                    Call LeagueStats_Screen(league$, div1$, div2$)
 
             End Select
 
@@ -143,7 +141,7 @@ End Sub
 'This subroutine formats the previously
 'loaded stats and outputs them to the end
 'user display.
-Sub LeagueStats_Screen (league$, div1Name$, div2Name$)
+Sub LeagueStats_Screen (league$, div1$, div2$)
 
     Shared Wins(), Losses()
 
@@ -257,8 +255,8 @@ Sub LeagueStats_Screen (league$, div1Name$, div2Name$)
     Color 14
     Locate 3, 1
 
-    If div1Name$ = "" Then div1Name$ = Space$(8)
-    Print "    " + div1Name$ + "      W   L   PCT   GB"
+    If div1$ = "" Then div1$ = Space$(8)
+    Print "    " + div1$ + "      W   L   PCT   GB"
 
     Color 15
 
@@ -307,8 +305,8 @@ Sub LeagueStats_Screen (league$, div1Name$, div2Name$)
     Color 14
     Locate 3, 41
 
-    If div2Name$ = "" Then div2Name$ = Space$(8)
-    Print "    " + div2Name$ + "      W   L   PCT   GB"
+    If div2$ = "" Then div2$ = Space$(8)
+    Print "    " + div2$ + "      W   L   PCT   GB"
 
     Color 15
 
@@ -1186,7 +1184,7 @@ Sub LeagueStats_Screen (league$, div1Name$, div2Name$)
     End If
 
     Print
-    Print "LG TOtotAwayLossesS"; Tab(13); Using "#.###"; statCalc!;
+    Print "LG TOTALS"; Tab(13); Using "#.###"; statCalc!;
 
     '                      AB    R    H   2B   3B  HR   RBI   BB   SO  SB  CS   E"
     Print Tab(18); Using "     ###       ###      ###        ###      ###      ###"; R; B2; HR; BB; SB; E
@@ -1259,7 +1257,7 @@ End Sub
 'loaded stats and outputs them to a file.
 'This file can then be looped through to
 'send to the default printer
-Sub LeagueStats_Report (league$, div1Name$, div2Name$, printDest, destFile$)
+Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     Shared Wins(), Losses()
 
@@ -1524,7 +1522,7 @@ Sub LeagueStats_Report (league$, div1Name$, div2Name$, printDest, destFile$)
     '-----
 
     LF$(1) = "    " + league$ + " LEAGUE STANDINGS AS OF " + Date$
-    LF$(3) = "    " + div1Name$ + "      W   L   PCT   GB"
+    LF$(3) = "    " + div1$ + "      W   L   PCT   GB"
 
     For P = 1 To 10:
 
@@ -1552,7 +1550,7 @@ Sub LeagueStats_Report (league$, div1Name$, div2Name$, printDest, destFile$)
 
     RT = 0
 
-    RT$(3) = "    " + div2Name$ + "      W   L   PCT   GB"
+    RT$(3) = "    " + div2$ + "      W   L   PCT   GB"
 
     For P = 11 To 20
 
