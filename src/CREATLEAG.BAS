@@ -26,21 +26,21 @@ Sub CREATLEAG ()
         menuChoices$(1) = "CREATE A LEAGUE       "
         menuChoices$(2) = "MANAGE LEAGUE MEMBERS "
         menuChoices$(3) = "RETURN TO LEADERS MENU"
-        Selection% = 1
+        SELECTION% = 1
         Count% = 3
         Start% = 1
         ExitCode% = 3
-        FileFGColor% = 15: FileBGColor% = 1
+        FileFGColor = 15: FileBGColor = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 6
         Row% = 8
         menuWidth% = Len(menuChoices$(1))
         Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor%, FileBGColor%)
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor, FileBGColor)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         If ExitCode% <> 27 Then
@@ -56,7 +56,7 @@ Sub CREATLEAG ()
             div3$ = ""
             div4$ = ""
 
-            Select Case Selection%
+            Select Case SELECTION%
 
                 Case 1:
                     Call DefineLeague(league$, div1$, div2$, div3$, div4$)
@@ -78,7 +78,7 @@ Sub CREATLEAG ()
 
         End If
 
-    Loop Until Selection% = 3 Or ExitCode% = 27
+    Loop Until SELECTION% = 3 Or ExitCode% = 27
 
 End Sub
 
@@ -292,7 +292,7 @@ Sub SaveLeague (leagueFile$, league$, div1$, div2$, div3$, div4$)
     Shared memberIdx()
 
     Shared memberName$(), memberYear$()
-    Shared statFileNames$()
+    Shared statFiles$()
 
     Open diskPaths$(2) + leagueFile$ + ".TMI" For Output As #2
 
@@ -313,9 +313,9 @@ Sub SaveLeague (leagueFile$, league$, div1$, div2$, div3$, div4$)
     For X = 1 To TEAMS_PER_LEAGUE
 
         If memberName$(X) <> "XXX" Then
-           statFileNames$(X) = nameStatFile$(memberName$(X))
+           statFiles$(X) = nameStatFile$(memberName$(X))
         Else
-            statFileNames$(X) = Chr$(42)
+            statFiles$(X) = Chr$(42)
         End If
 
     Next X
@@ -329,7 +329,7 @@ Sub SaveLeague (leagueFile$, league$, div1$, div2$, div3$, div4$)
     Write #2, div4$
 
     For X = 1 To TEAMS_PER_LEAGUE
-        Write #2, statFileNames$(X)
+        Write #2, statFiles$(X)
     Next
 
     Close 2

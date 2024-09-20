@@ -3,12 +3,15 @@ $Color:32
 
 Const GAME_VERSION$ = "7.00"
 Const MAX_SCHEDULE_GAMES = 1500
+Const MAX_TOURNAMENT_GAMES = 200
 Const MAX_TEAMS = 1000
 Const MAX_FILES = 10240
 'optimium = 1048576 (but slows code)
 Const TEAMS_PER_DIV = 10
 Const DIVS_PER_LEAGUE = 4
 Const TEAMS_PER_LEAGUE = 40
+Const MAX_CAREER_YEARS = 15
+'Const MAX_CONFERENCES = 40
 
 Const MAX_SCHED_STATS = 162
 Const SCHEDULE_SIZE_BYTES = 52
@@ -39,6 +42,12 @@ On Error GoTo Errhandler
 '----------------------------------------
 '          READ IN ALL DATA
 '----------------------------------------
+
+'Defaults for Event Settings
+Data 15,0,15,1,19,4,4,6,3,1,2,3,14
+For X = 1 To 13:
+    Read eventSettings(X)
+Next
 
 Data AT BATS,HITS,RUNS,RUNS BATTED IN,DOUBLES,TRIPLES,HOME RUNS,TIMES WALKED
 Data TIME STRUCK OUT,STOLEN BASES,CAUGHT STEALING,ERRORS,CURRENT HITTING STREAK
@@ -148,9 +157,6 @@ For I = 3 To 6
 Next
 
 Data 681,663,645,627,609,591,573,555,537
-
-Data 15,0,15,1,19,4,4,6,3,1,2,3,14
-
 Data 6,12,37,55,66,74,86,96,100
 Data 5,10,32,55,67,75,86,96,100
 Data 4,8,27,54,68,76,86,96,100
@@ -185,10 +191,6 @@ Data 30,73,100,35,70,100,40,67,100,45,65,100,50,63,100,60,65,100
 'Read in data and assign variables
 For I = 1 To 9:
     Read AB%(I)
-Next
-
-For X = 1 To 13:
-    Read eventSettings(X)
 Next
 
 For I = 0 To 1
@@ -281,7 +283,8 @@ If _FileExists("DEV.BAS") Then
 
     Open "DEV.BAS" For Input As #1
 
-    For I = 0 To 4
+    'DEV.BAS will not have the "Schedule" folder configured
+    For I = 0 To 3
         Input #1, diskPaths$(I)
     Next
 
@@ -314,13 +317,13 @@ Next
 Close #3
 
 'Run main menu
-Selection% = 1
+SELECTION% = 1
 
 Do
 
-    Call Main_Menu(Selection%)
+    Call Main_Menu(SELECTION%)
 
-Loop Until Selection% = 10
+Loop Until SELECTION% = 10
 
 System
 
@@ -342,7 +345,7 @@ Resume Next ' moves program to code following the error.
 '----------------------------------------
 '       Main_Menu Subroutine
 '----------------------------------------
-Sub Main_Menu (menuSelection%)
+Sub Main_Menu (menuSelection)
 
     Do
 
@@ -364,28 +367,28 @@ Sub Main_Menu (menuSelection%)
         menuChoices$(9) = "CONFIGURE GAME FOLDERS    "
         menuChoices$(10) = "EXIT PROGRAM             "
 
-        menuSelection% = 1
+        menuSelection = 1
         Count% = 10
         Start% = 1
         ExitCode% = 10
-        FileFGColor% = 15: FileBGColor% = 1
+        FileFGColor = 15: FileBGColor = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 8
         menuWidth% = Len(menuChoices$(1))
         Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor%, FileBGColor%)
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor, FileBGColor)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), menuSelection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), menuSelection, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
 
         If ExitCode% <> 27 Then
 
-            Select Case menuSelection%
+            Select Case menuSelection
 
                 Case 1:
                     Call LOADER
@@ -418,9 +421,9 @@ Sub Main_Menu (menuSelection%)
 
         End If
 
-    Loop Until menuSelection% = 10 Or ExitCode% = 27
+    Loop Until menuSelection = 10 Or ExitCode% = 27
 
-    If ExitCode% = 27 Then menuSelection% = 10
+    If ExitCode% = 27 Then menuSelection = 10
 
 End Sub
 
@@ -452,28 +455,28 @@ Sub TeamMgt_Menu ()
         menuChoices$(7) = "TOGGLE PLAYER STATUS       "
         menuChoices$(8) = "SWAP SPOTS ON A TEAM ROSTER"
         menuChoices$(9) = "RETURN TO MAIN MENU        "
-        Selection% = 1
+        SELECTION% = 1
         Count% = 9
         Start% = 1
         ExitCode% = 9
-        FileFGColor% = 15: FileBGColor% = 1
+        FileFGColor = 15: FileBGColor = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 8
         menuWidth% = Len(menuChoices$(1))
         Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor%, FileBGColor%)
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor, FileBGColor)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
 
         If ExitCode% <> 27 Then
 
-            Select Case Selection%
+            Select Case SELECTION%
 
                 Case 1:
                     Call InputEditTeam(1, YN$, team$, teamNbr)
@@ -510,7 +513,7 @@ Sub TeamMgt_Menu ()
 
         End If
 
-    Loop Until menuSelection% = 9 Or ExitCode% = 27
+    Loop Until menuSelection = 9 Or ExitCode% = 27
 
 End Sub
 
@@ -540,28 +543,28 @@ Sub Replay_Menu ()
         menuChoices$(4) = "MERGE SEPARATE STATISTICAL FILES"
         menuChoices$(5) = "SORT PLAYERS BY POSITION        "
         menuChoices$(6) = "RETURN TO MAIN MENU             "
-        Selection% = 1
+        SELECTION% = 1
         Count% = 6
         Start% = 1
         ExitCode% = 6
-        FileFGColor% = 15: FileBGColor% = 1
+        FileFGColor = 15: FileBGColor = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 8
         menuWidth% = Len(menuChoices$(1))
         Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor%, FileBGColor%)
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor, FileBGColor)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
 
         If ExitCode% <> 27 Then
 
-            Select Case Selection%
+            Select Case SELECTION%
 
                 Case 1:
                     Call LOOKY
@@ -585,7 +588,7 @@ Sub Replay_Menu ()
 
         End If
 
-    Loop Until Selection% = 6 Or ExitCode% = 27
+    Loop Until SELECTION% = 6 Or ExitCode% = 27
 
 End Sub
 
@@ -616,28 +619,28 @@ Sub Leaders_Menu ()
         menuChoices$(6) = "EXPANDED LEADERS / STANDINGS   "
         menuChoices$(7) = "DELETE ALL STATS FOR A LEAGUE  "
         menuChoices$(8) = "RETURN TO MAIN MENU            "
-        Selection% = 1
+        SELECTION% = 1
         Count% = 8
         Start% = 1
         ExitCode% = 8
-        FileFGColor% = 15: FileBGColor% = 1
+        FileFGColor = 15: FileBGColor = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 8
         menuWidth% = Len(menuChoices$(1))
         Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor%, FileBGColor%)
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor, FileBGColor)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
 
         If ExitCode% <> 27 Then
 
-            Select Case Selection%
+            Select Case SELECTION%
 
                 Case 1:
                     Call CREATLEAG
@@ -665,7 +668,7 @@ Sub Leaders_Menu ()
 
         End If
 
-    Loop Until Selection% = 8 Or ExitCode% = 27
+    Loop Until SELECTION% = 8 Or ExitCode% = 27
 
 End Sub
 
@@ -692,28 +695,28 @@ Sub Calculations_Menu ()
         menuChoices$(2) = "CALCULATE BUNT RATINGS   "
         menuChoices$(3) = "CALCULATE RUN RATINGS    "
         menuChoices$(4) = "RETURN TO MAIN MENU      "
-        Selection% = 1
+        SELECTION% = 1
         Count% = 4
         Start% = 1
         ExitCode% = 4
-        FileFGColor% = 15: FileBGColor% = 1
+        FileFGColor = 15: FileBGColor = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 8
         menuWidth% = Len(menuChoices$(1))
         Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor%, FileBGColor%)
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor, FileBGColor)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
 
         If ExitCode% <> 27 Then
 
-            Select Case Selection%
+            Select Case SELECTION%
 
                 Case 1:
                     Call GROUND
@@ -742,7 +745,7 @@ Sub Calculations_Menu ()
 
         End If
 
-    Loop Until menuSelection% = 4 Or ExitCode% = 27
+    Loop Until menuSelection = 4 Or ExitCode% = 27
 
 End Sub
 
@@ -1061,13 +1064,13 @@ Sub AUTOSETUP (validTeam)
     For tgtTeam = 0 To 1
 
         tgtId = NG%(tgtTeam)
-        YN$ = diskIDs$(tgtTeam)
+        tgtYear$ = diskIDs$(tgtTeam)
 
-        Call ReadGameTeam(YN$, gameTeams$(tgtTeam), tgtId, tgtTeam, validData)
+        Call ReadGameTeam(tgtYear$, gameTeams$(tgtTeam), tgtId, tgtTeam, validData)
 
         NG%(tgtTeam) = tgtId
         gameT1%(tgtTeam) = tgtId
-        diskIDs$(tgtTeam) = YN$
+        diskIDs$(tgtTeam) = tgtYear$
 
         If tgtId = 0 Then
             'In case chosen team ends up with 0 value
@@ -1155,6 +1158,9 @@ End Sub
 'cursor is set at the first printable row
 'and column inside the box.
 Sub FRAMEOPTION (boxHeight, teamIdx)
+
+    PCopy 0, 1
+    Screen , , 1, 1
 
     Locate 8, 8
     Color teamRat_GAME(teamIdx, 11), teamRat_GAME(teamIdx, 12)
@@ -10696,6 +10702,8 @@ Sub ChooseGameTeam (yearNumber$, numberTeams, chosenIdx, teamName$, gameIdx)
 
     Do
 
+        chosenIdx = 0
+
         Color 15, 0
         Cls
 
@@ -10823,7 +10831,7 @@ Sub ChooseGameTeam (yearNumber$, numberTeams, chosenIdx, teamName$, gameIdx)
 
     Loop Until UCase$(J$) = "N" Or I$ = Chr$(27) 'Or J$ = Chr$(27)
 
-    If I$ = Chr$(27) Or J$ = Chr$(27) Then chosenIdx = 0
+    'If I$ = Chr$(27) Or J$ = Chr$(27) Then chosenIdx = 0
 
 End Sub
 
@@ -10836,7 +10844,10 @@ End Sub
 'the disk ID.
 Sub SelectGameTeam (numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%, gameIdx)
 
-    If numberTeams > 0 Then
+    ExitCode% = -1
+    validData = 0
+
+    If numberTeams > 0 And CheckString%(teamNames$(numberTeams)) = 0 Then
 
         SELECTION% = 1
         Count% = numberTeams

@@ -90,7 +90,9 @@ Sub SaveTeamFile (newID, yearNumber$, targetTeam$, targetFile$, teamIdx)
 
     fileLength& = LOF(1)
 
-    If teamIdx = 0 Or newID = 1 Then teamIdx = fileLength& / TEAM_SIZE_BYTES + 1
+    If teamIdx = 0 Or newID = 1 Then 
+        teamIdx = (fileLength& / TEAM_SIZE_BYTES) + 1
+    End If
 
     Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14)
 
@@ -428,7 +430,7 @@ Sub LoadTeam (targetTeam$, SS, statFile$)
 
     If Not _FileExists(diskPaths$(1) + statFile$) Then
 
-        MsgText$ = "NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU"
+        MsgText$ = "NO COMPILED STATS COULD BE FOUND FOR THIS TEAM. PRESS ANY KEY TO RETURN TO THE MAIN MENU"
         BoxWidth = 24
         BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
         Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))

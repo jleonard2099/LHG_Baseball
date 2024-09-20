@@ -22,28 +22,28 @@ Sub LOOKY ()
         menuChoices$(1) = "VIEW / PRINT COMPILED STATS FOR ONE TEAM"
         menuChoices$(2) = "PRINT REPORTS FOR ALL TEAMS IN A LEAGUE "
         menuChoices$(3) = "RETURN TO MAIN MENU                     "
-        Selection% = 1
+        SELECTION% = 1
         Count% = 3
         Start% = 1
         ExitCode% = 3
-        FileFGColor% = 15: FileBGColor% = 1
+        FileFGColor = 15: FileBGColor = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 8
         menuWidth% = Len(menuChoices$(1))
         Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
+        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor, FileBGColor)
 
         _MouseShow "Default"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
 
         If ExitCode% <> 27 Then
 
-            Select Case Selection%
+            Select Case SELECTION%
                 Case 1: Call StatsOneTeam
                 Case 2: Call ReportsAllTeams
                 Case 3: Cls
@@ -51,7 +51,7 @@ Sub LOOKY ()
 
         End If
 
-    Loop Until Selection% = 3 Or ExitCode% = 27
+    Loop Until SELECTION% = 3 Or ExitCode% = 27
 
 End Sub
 
@@ -74,7 +74,7 @@ Sub StatsOneTeam ()
 
         If Not _FileExists(diskPaths$(1) + statFile$) Then
 
-            MsgText$ = "NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU"
+            MsgText$ = "NO COMPILED STATS COULD BE FOUND FOR THIS TEAM. PRESS ANY KEY TO RETURN TO THE MAIN MENU"
             BoxWidth = 24
             BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
             Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
@@ -287,26 +287,26 @@ Sub ViewAndPrintOptions (statFile$, teamName$, nbrGames, menuExit)
         menuChoices$(3) = "PRINT SCHEDULE AND STATS"
         menuChoices$(4) = "PRINT STATS ONLY        "
 
-        Selection% = 1
+        SELECTION% = 1
         Count% = 4
         Start% = 1
         ExitCode% = 3
-        FileFGColor% = 15: FileBGColor% = 1
+        FileFGColor = 15: FileBGColor = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 8
         menuWidth% = Len(menuChoices$(1))
         Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
+        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor, FileBGColor)
 
         _MouseShow "Default"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         If ExitCode% <> 27 Then
 
-            Select Case Selection%
+            Select Case SELECTION%
 
                 Case 1
                     Color , 0
@@ -368,11 +368,11 @@ Sub ViewAndPrintOptions (statFile$, teamName$, nbrGames, menuExit)
                             Case "F"
                                 userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
                                 If userFile$ <> "" Then
-                                    Call NewPrintStats(0, userFile$, statFile$, teamName$, nbrGames, Selection%, splitStatChoice)
+                                    Call NewPrintStats(0, userFile$, statFile$, teamName$, nbrGames, SELECTION%, splitStatChoice)
                                 End If
 
                             Case "P"
-                                Call NewPrintStats(1, "REPORT", statFile$, teamName$, nbrGames, Selection%, splitStatChoice)
+                                Call NewPrintStats(1, "REPORT", statFile$, teamName$, nbrGames, SELECTION%, splitStatChoice)
 
                         End Select
                         
@@ -380,12 +380,12 @@ Sub ViewAndPrintOptions (statFile$, teamName$, nbrGames, menuExit)
 
             End Select
 
-            If Selection% <> 3 And Selection% <> 4 Then
+            If SELECTION% <> 3 And SELECTION% <> 4 Then
 
                 Color 15, 0
                 Cls
 
-                Call ViewStatSummary(statFile$, teamName$, splitStatChoice)
+                Call ViewScheduleStatSummary(statFile$, teamName$, splitStatChoice)
 
                 Color 15, 0
 
@@ -414,7 +414,7 @@ Sub ViewAndPrintOptions (statFile$, teamName$, nbrGames, menuExit)
 
         End If
 
-    Loop Until Selection% = 5 Or ExitCode% = 27
+    Loop Until SELECTION% = 5 Or ExitCode% = 27
 
     'Call ResetStatPrompt (statFile$, teamRatings%())
 
@@ -424,13 +424,13 @@ End Sub
 
 
 '----------------------------------------
-'       ViewStatSummary Subroutine
+'       ViewScheduleStatSummary Subroutine
 '----------------------------------------
 'This subroutine formats and outputs the 
 'selected team's record to the display,
 'then provides routines for output of
 'the other stat categories
-Sub ViewStatSummary (statFile$, teamName$, splitStatChoice)
+Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
 
     Shared extraInnWins, extraInnLosses
     Shared homeWins, homeLosses
@@ -1009,7 +1009,7 @@ Sub ReportsAllTeams ()
     Shared statP%(), statP0%()
 
     Shared batterNames$(), pitcherNames$()
-    Shared statFileNames$()
+    Shared statFiles$()
 
     leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", ExitCode%)
 
@@ -1020,16 +1020,16 @@ Sub ReportsAllTeams ()
         Input #2, league$, div1$, div2$, div3$, div4$
 
         For XW = 1 To TEAMS_PER_LEAGUE
-            Input #2, statFileNames$(XW)
+            Input #2, statFiles$(XW)
         Next
 
         Close 2
 
         For XW = 1 To TEAMS_PER_LEAGUE
 
-            If _FileExists(diskPaths$(1) + statFileNames$(XW)) Then
+            If _FileExists(diskPaths$(1) + statFiles$(XW)) Then
 
-                Open diskPaths$(1) + statFileNames$(XW) For Input As #1
+                Open diskPaths$(1) + statFiles$(XW) For Input As #1
 
                 Input #1, teamName$
                 Input #1, W2%
@@ -1079,11 +1079,11 @@ Sub ReportsAllTeams ()
                         Case "F"
                             userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
                             If userFile$ <> "" Then
-                                Call NewPrintStats(0, userFile$, statFileNames$(XW), teamName$, nbrGames, 3, splitStatChoice)
+                                Call NewPrintStats(0, userFile$, statFiles$(XW), teamName$, nbrGames, 3, splitStatChoice)
                             End If
 
                         Case "P"
-                            Call NewPrintStats(1, "REPORT", statFileNames$(XW), teamName$, nbrGames, 3, splitStatChoice)
+                            Call NewPrintStats(1, "REPORT", statFiles$(XW), teamName$, nbrGames, 3, splitStatChoice)
 
                     End Select
                     
@@ -1125,7 +1125,7 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
     Shared teamScore(), nbrInnings()
     Shared statSS%(), oppScore()
 
-    RQ = Val(Right$(statFileNames$(XW), 2))
+    RQ = Val(Right$(statFiles$(XW), 2))
     RT = 60
     If RQ > RT Then
         '# games afer 1960

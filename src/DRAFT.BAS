@@ -26,28 +26,28 @@ Sub DRAFT ()
         menuChoices$(1) = "DRAFT A NEW TEAM         "
         menuChoices$(2) = "DRAFT TO AN EXISTING TEAM"
         menuChoices$(3) = "RETURN TO GAME MENU      "
-        Selection% = 1
+        SELECTION% = 1
         Count% = 3
         Start% = 1
         ExitCode% = 3
-        FileFGColor% = 15: FileBGColor% = 1
+        FileFGColor = 15: FileBGColor = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 6
         Row% = 8
         menuWidth% = Len(menuChoices$(1))
         Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
+        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor, FileBGColor)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         If ExitCode% <> 27 Then
 
             done = 0
 
-            Select Case Selection%
+            Select Case SELECTION%
 
                 Case 1:
                     draftNew = 1
@@ -69,20 +69,22 @@ Sub DRAFT ()
                     Erase teamTS%, draftTS%, teamSA%, draftSA%
 
                     Call NewTeamParameters(draftYN$(0), team$)
-                    Call DraftChoices(draftNew, done, team$, draftYN$(), teamNbr)
+                    Call DraftChoices(draftNew, done, team$, draftYN$(0), teamNbr)
 
                 Case 2:
                     draftNew = 0
                     Call ChooseDestTeam(draftYN$(0), NTMS, teamNbr, team$)
-                    If teamNbr > 0 Then Call DraftChoices(draftNew, done, team$, draftYN$(), teamNbr)
+                    If teamNbr > 0 Then 
+                        Call DraftChoices(draftNew, done, team$, draftYN$(0), teamNbr)
+                    End If
 
             End Select
 
-            If done = 1 Then Selection% = 3
+            If done = 1 Then SELECTION% = 3
 
         End If
 
-    Loop Until Selection% = 3 Or ExitCode% = 27 Or done = 1
+    Loop Until SELECTION% = 3 Or ExitCode% = 27 Or done = 1
 
 End Sub
 
@@ -275,7 +277,7 @@ End Sub
 'draftNew
 '  0 = Existing Team
 '  1 = New Team
-Sub DraftChoices (draftNew, doneDrafting, teamName$, teamYears$(), teamIdx)
+Sub DraftChoices (draftNew, doneDrafting, teamName$, draftTeamYear$, teamIdx)
 
     Shared teamRatings%()
 
@@ -344,7 +346,7 @@ Sub DraftChoices (draftNew, doneDrafting, teamName$, teamYears$(), teamIdx)
                     Call DraftPlayer(2, B)
 
                 Case 3:
-                    Call SaveTeamDraft(draftNew, teamYears$(0), teamName$, teamIdx)
+                    Call SaveTeamDraft(draftNew, draftTeamYear$, teamName$, teamIdx)
 
             End Select
 
@@ -352,6 +354,7 @@ Sub DraftChoices (draftNew, doneDrafting, teamName$, teamYears$(), teamIdx)
 
     Loop Until I1 = 3
 
+    Color 15, 0
     Cls
 
     Call box0 (6, 8, 8, 70, 2, 15, 1)
@@ -509,7 +512,9 @@ Sub SaveTeamDraft (draftNew, yearNumber$, teamName$, teamIdx)
 
     '0 actually means YES we're drafting a NEW team
     'Put them in the first available slot
-    If draftNew = 1 Then teamIdx = fileLength& / TEAM_SIZE_BYTES + 1
+    If draftNew = 1 Then 
+        teamIdx = (fileLength& / TEAM_SIZE_BYTES) + 1
+    End If
 
     Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
 
@@ -568,6 +573,7 @@ Sub SaveTeamDraft (draftNew, yearNumber$, teamName$, teamIdx)
     Next
 
     If SCK > 0 Then
+
         teamTS%(0) = 999
 
         For X = 1 To 11
@@ -674,6 +680,8 @@ Sub ChooseDestTeam (yearNumber$, numberTeams, chosenIdx, teamName$)
 
     Do
 
+        chosenIdx = 0
+
         Color 15, 0
         Cls
 
@@ -727,8 +735,8 @@ Sub ChooseDestTeam (yearNumber$, numberTeams, chosenIdx, teamName$)
 
                     If Not _FileExists(diskPaths$(0) + TEAM_FILE_NAME$ + "." + yearNumber$) Then
 
-                        MsgText$ = "NO TEAM FILES WERE FOUND MATCHING THIS ID. PRESS ANY KEY TO RETURN TO MAIN MENU"
-                        BoxWidth = 20
+                        MsgText$ = "NO TEAM FILES COULD BE FOUND MATCHING THIS ID. PRESS ANY KEY TO RETURN TO THE MAIN MENU"
+                        BoxWidth = 24
                         BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
                         Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
                         Call CSMsgBox(MsgText$, BoxWidth, Pass)
@@ -795,7 +803,7 @@ Sub ChooseDestTeam (yearNumber$, numberTeams, chosenIdx, teamName$)
 
     Loop Until UCase$(J$) = "N" Or I$ = Chr$(27) 'Or J$ = Chr$(27)
 
-    If I$ = Chr$(27) Or J$ = Chr$(27) Then chosenIdx = 0
+    'If I$ = Chr$(27) Or J$ = Chr$(27) Then chosenIdx = 0
 
 End Sub
 
@@ -812,6 +820,8 @@ Sub ChooseSourceTeam (yearNumber$, numberTeams, chosenIdx, teamName$, draftIdx)
     Shared previousYear$
 
     Do
+
+        chosenIdx = 0
 
         Color 15, 0
         Cls
@@ -848,8 +858,8 @@ Sub ChooseSourceTeam (yearNumber$, numberTeams, chosenIdx, teamName$, draftIdx)
 
                     If Not _FileExists(diskPaths$(0) + TEAM_FILE_NAME$ + "." + yearNumber$) Then
 
-                        MsgText$ = "NO TEAM FILES WERE FOUND MATCHING THIS ID. PRESS ANY KEY TO RETURN TO MAIN MENU"
-                        BoxWidth = 20
+                        MsgText$ = "NO TEAM FILES COULD BE FOUND MATCHING THIS ID. PRESS ANY KEY TO RETURN TO THE MAIN MENU"
+                        BoxWidth = 24
                         BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
                         Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
                         Call CSMsgBox(MsgText$, BoxWidth, Pass)
@@ -910,13 +920,13 @@ Sub ChooseSourceTeam (yearNumber$, numberTeams, chosenIdx, teamName$, draftIdx)
 
                 End If
 
-            Loop Until ExitCode% = 27 Or J$ = Chr$(27) Or UCase$(J$) = "N"
+            Loop Until ExitCode% = 27 Or J$ = Chr$(27) Or UCase$(J$) = "N" Or chosenIdx = -1
 
         End If 'Done checking for ESC
 
     Loop Until UCase$(J$) = "N" Or I$ = Chr$(27) 'Or J$ = Chr$(27)
 
-    If I$ = Chr$(27) Or J$ = Chr$(27) Then chosenIdx = 0
+    'If I$ = Chr$(27) Or J$ = Chr$(27) Then chosenIdx = 0
 
 End Sub
 
@@ -929,12 +939,15 @@ End Sub
 'ones.
 Sub SelectDraftTeam (numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%, draftIdx)
 
-    If numberTeams > 0 Then
+    ExitCode% = -1
+    validData = 0
+
+    If numberTeams > 0 And CheckString%(teamNames$(numberTeams)) = 0 Then
 
         SELECTION% = 1
         Count% = numberTeams
         Start% = 1
-        FileFGColor% = 15: FileBGColor% = 4
+        FileFGColor = 15: FileBGColor = 4
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Rows% = 20
         Columns% = 4
@@ -953,7 +966,7 @@ Sub SelectDraftTeam (numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%
         Color 15: Print "-SELECTS TEAM";
 
         _MouseShow "DEFAULT"
-        MAMenu teamNames$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Rows%, Columns%, Spacing%, Row%, Column%
+        MAMenu teamNames$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Rows%, Columns%, Spacing%, Row%, Column%
         _MouseHide
 
         If ExitCode% <> 27 Then
@@ -1059,123 +1072,124 @@ Sub ReadDestTeam (teamYear$, targetTeam$, teamIdx, dataOK)
 
         If Not _FileExists(diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$) Then
 
-            MsgText$ = "WARNING!!! NO DATA FILE WAS FOUND FOR THIS TEAM. PRESS ANY KEY TO CONTINUE"
-            BoxWidth = 20
-            BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-            Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
-            Call CSMsgBox(MsgText$, BoxWidth, Pass)
-            I$ = GetKeyPress$
-            Call CSMsgBox("", 0, Pass)
+            'MsgText$ = "WARNING!!! NO DATA FILE WAS FOUND FOR THIS TEAM. PRESS ANY KEY TO CONTINUE"
+            'BoxWidth = 24
+            'BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+            'Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+            'Call CSMsgBox(MsgText$, BoxWidth, Pass)
+            'I$ = GetKeyPress$
+            'Call CSMsgBox("", 0, Pass)
 
-            dataOK = 0
-
-        Else
-
-            Open diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$ For Random As #1 Len = DATA_SIZE_BYTES
-
-            For X = 0 To 11
-                Field #1, X * 2 As X$, 2 As Q$(X + 1), DATA_SIZE_BYTES - 2 - 2 * X As X$
-            Next
-
-            For X = 0 To 22
-                For X1 = 1 To 14
-                    Field #1, 24 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(12 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (24 + (X1 - 1) * 2 + X * 14 * 2) As X$
-                Next
-            Next
-
-            For X = 0 To 21
-                For X1 = 1 To 14
-                    Field #1, 668 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(334 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (668 + (X1 - 1) * 2 + X * 14 * 2) As X$
-                Next
-            Next
-
-            For X = 0 To 21
-                For X1 = 1 To 14
-                    Field #1, 1284 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(642 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (1284 + (X1 - 1) * 2 + X * 14 * 2) As X$
-                Next
-            Next
-
-            For X = 1 To 24
-                Field #1, 1900 + (X - 1) * 2 As X$, 2 As Q$(950 + X), DATA_SIZE_BYTES - 2 - (X - 1) * 2 - 1900 As X$
-            Next
-
-            For X = 0 To 22
-                For X1 = 1 To 24
-                    Field #1, 1948 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(975 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (1948 + (X1 - 1) * 2 + X * 24 * 2) As X$
-                Next
-            Next
-
-            For X = 0 To 21
-                For X1 = 1 To 24
-                    Field #1, 3052 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(1528 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (3052 + (X1 - 1) * 2 + X * 24 * 2) As X$
-                Next
-            Next
-
-            Get #1, teamIdx
-
-            For X = 0 To 11
-                teamTS%(X) = CVI(Q$(X + 1))
-            Next
-
-            For X = 0 To 22
-                For X1 = 1 To 14
-                    batterRatings(X, X1 + 41) = CVI(Q$(12 + X1 + X * 14))
-                Next
-            Next
-
-            For X = 0 To 21
-                For X1 = 1 To 14
-                    pitcherRatings(X, X1 + 36) = CVI(Q$(334 + X1 + X * 14))
-                Next
-            Next
-
-            For X = 0 To 21
-                For X1 = 1 To 14
-                    pitcherRatings(X, X1 + 50) = CVI(Q$(642 + X1 + X * 14))
-                Next
-            Next
-
-            For X = 1 To 24
-                teamSA%(X) = CVI(Q$(X + 950))
-            Next
-
-            For X = 0 To 22
-                For X1 = 1 To 24
-                    batterRatings(X, X1 + 55) = CVI(Q$(975 + X1 + X * 24))
-                Next
-            Next
-
-            For X = 0 To 21
-                For X1 = 1 To 24
-                    pitcherRatings(X, X1 + 64) = CVI(Q$(1528 + X1 + X * 24))
-                Next
-            Next
-
-            Close 1
-
-            If draftTS%(0) <> 999 Then
-
-                For X = 0 To 22
-                    For X1 = 42 To 79
-                        batterRatings(X, X1) = 0
-                    Next
-                Next
-
-                For X = 0 To 21
-                    For X1 = 37 To 88
-                        pitcherRatings(X, X1) = 0
-                    Next
-                Next
-
-                Erase teamSA%, teamTS%
-
-            End If
-
-            dataOK = 1
+            'dataOK = 0
 
         End If
 
-    End If 'Done checking for file exists
+        Open diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$ For Random As #1 Len = DATA_SIZE_BYTES
+
+        For X = 0 To 11
+            Field #1, X * 2 As X$, 2 As Q$(X + 1), DATA_SIZE_BYTES - 2 - 2 * X As X$
+        Next
+
+        For X = 0 To 22
+            For X1 = 1 To 14
+                Field #1, 24 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(12 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (24 + (X1 - 1) * 2 + X * 14 * 2) As X$
+            Next
+        Next
+
+        For X = 0 To 21
+            For X1 = 1 To 14
+                Field #1, 668 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(334 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (668 + (X1 - 1) * 2 + X * 14 * 2) As X$
+            Next
+        Next
+
+        For X = 0 To 21
+            For X1 = 1 To 14
+                Field #1, 1284 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(642 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (1284 + (X1 - 1) * 2 + X * 14 * 2) As X$
+            Next
+        Next
+
+        For X = 1 To 24
+            Field #1, 1900 + (X - 1) * 2 As X$, 2 As Q$(950 + X), DATA_SIZE_BYTES - 2 - (X - 1) * 2 - 1900 As X$
+        Next
+
+        For X = 0 To 22
+            For X1 = 1 To 24
+                Field #1, 1948 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(975 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (1948 + (X1 - 1) * 2 + X * 24 * 2) As X$
+            Next
+        Next
+
+        For X = 0 To 21
+            For X1 = 1 To 24
+                Field #1, 3052 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(1528 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (3052 + (X1 - 1) * 2 + X * 24 * 2) As X$
+            Next
+        Next
+
+        Get #1, teamIdx
+
+        For X = 0 To 11
+            teamTS%(X) = CVI(Q$(X + 1))
+        Next
+
+        For X = 0 To 22
+            For X1 = 1 To 14
+                batterRatings(X, X1 + 41) = CVI(Q$(12 + X1 + X * 14))
+            Next
+        Next
+
+        For X = 0 To 21
+            For X1 = 1 To 14
+                pitcherRatings(X, X1 + 36) = CVI(Q$(334 + X1 + X * 14))
+            Next
+        Next
+
+        For X = 0 To 21
+            For X1 = 1 To 14
+                pitcherRatings(X, X1 + 50) = CVI(Q$(642 + X1 + X * 14))
+            Next
+        Next
+
+        For X = 1 To 24
+            teamSA%(X) = CVI(Q$(X + 950))
+        Next
+
+        For X = 0 To 22
+            For X1 = 1 To 24
+                batterRatings(X, X1 + 55) = CVI(Q$(975 + X1 + X * 24))
+            Next
+        Next
+
+        For X = 0 To 21
+            For X1 = 1 To 24
+                pitcherRatings(X, X1 + 64) = CVI(Q$(1528 + X1 + X * 24))
+            Next
+        Next
+
+        Close 1
+
+        If draftTS%(0) <> 999 Then
+
+            For X = 0 To 22
+                For X1 = 42 To 79
+                    batterRatings(X, X1) = 0
+                Next
+            Next
+
+            For X = 0 To 21
+                For X1 = 37 To 88
+                    pitcherRatings(X, X1) = 0
+                Next
+            Next
+
+            Erase teamSA%, teamTS%
+
+        End If
+
+        dataOK = 1
+    Else
+    
+        dataOK = 0
+
+    End If
 
 End Sub
 
@@ -1254,7 +1268,7 @@ Sub ReadSourceTeam (yearNumber$, targetTeam$, teamIdx, dataOK)
         If Not _FileExists(diskPaths$(0) + DATA_FILE_NAME$ + "." + yearNumber$) Then
 
             MsgText$ = "WARNING!!! NO DATA FILE WAS FOUND FOR THIS TEAM. PRESS ANY KEY TO CONTINUE"
-            BoxWidth = 20
+            BoxWidth = 24
             BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
             Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
             Call CSMsgBox(MsgText$, BoxWidth, Pass)

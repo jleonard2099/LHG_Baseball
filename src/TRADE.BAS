@@ -12,14 +12,15 @@ Sub TRADE ()
 
     _Title "Full Count Baseball - Trade Players"
 
-    Dim yearNumbers$(0 To 1)
+    Dim yearNumbers$(1)
 
     Shared teamIndexes()
 
-    Shared teams_TRADE$()
+    Shared tmInfo_TRADE$()
 
     tradeIdx = 0
-    Call ChooseTradeTeam(yearNumbers$(tradeIdx), NTMS, teamNbr, teams_TRADE$(tradeIdx), tradeIdx)
+    Call ChooseTradeTeam(yearNumbers$(tradeIdx), NTMS, teamNbr, tmInfo_TRADE$(tradeIdx), tradeIdx)
+
     If teamNbr > 0 Then
 
         teamIndexes(tradeIdx) = teamNbr
@@ -28,7 +29,7 @@ Sub TRADE ()
         Call LoadStatsForTrade(yearNumbers$(), tradeIdx)
 
         tradeIdx = 1
-        Call ChooseTradeTeam(yearNumbers$(tradeIdx), NTMS, teamNbr, teams_TRADE$(tradeIdx), tradeIdx)
+        Call ChooseTradeTeam(yearNumbers$(tradeIdx), NTMS, teamNbr, tmInfo_TRADE$(tradeIdx), tradeIdx)
         teamIndexes(tradeIdx) = teamNbr
         'Call LoadStatsForTrade(yearNumbers$(), tradeIdx)
 
@@ -177,9 +178,9 @@ End Sub
 'ards to the trading of stats associated
 'with the players. If chosen to trade them,
 'the stats are loaded from the team stats.
-Sub LoadStatsForTrade (yearNumbers$(), sourceIdx)
+Sub LoadStatsForTrade (yearNumbers$(), tradeIdx)
 
-    Shared teams_TRADE$(), A1$()
+    Shared tmInfo_TRADE$(), A1$()
     Shared tradeB1$(), tradeP1$()
 
     Shared tradeD0%(), tradeD1%(), teamRat_TRADE(), tradeL2%()
@@ -191,13 +192,14 @@ Sub LoadStatsForTrade (yearNumbers$(), sourceIdx)
     Color 15, 0
     Call TITLE
 
-    haveStats(sourceIdx) = 0
+    haveStats(tradeIdx) = 0
+
+    Call box0 (6, 8, 8, 70, 2, 15, 1)
 
     Do
-        Cls
-
+        Locate 3
         Print "DOES ";
-        Color teamRat_TRADE(sourceIdx, 11), teamRat_TRADE(sourceIdx, 12): Print teams_TRADE$(sourceIdx);
+        Color teamRat_TRADE(tradeIdx, 11), teamRat_TRADE(tradeIdx, 12): Print tmInfo_TRADE$(tradeIdx);
         Color 15, 0
         Print " HAVE SAVED STATS? (Y/N)"
         I$ = GetKeyPress$
@@ -205,52 +207,52 @@ Sub LoadStatsForTrade (yearNumbers$(), sourceIdx)
 
     If UCase$(I$) = "N" Then
 
-        haveStats(sourceIdx) = 1
+        haveStats(tradeIdx) = 1
 
     Else
 
-        statFile$ = nameStatFile$(teams_TRADE$(sourceIdx))
+        statFile$ = nameStatFile$(tmInfo_TRADE$(tradeIdx))
 
         If _FileExists(diskPaths$(1) + statFile$) Then
 
             Open diskPaths$(1) + statFile$ For Input As #1
 
-            Input #1, A1$(sourceIdx)
-            Input #1, tradeW2%(sourceIdx)
-            Input #1, tradeL2%(sourceIdx)
+            Input #1, A1$(tradeIdx)
+            Input #1, tradeW2%(tradeIdx)
+            Input #1, tradeL2%(tradeIdx)
 
             For I1 = 0 To 22:
-                Input #1, tradeB1$(sourceIdx, I1)
-                Input #1, tradeB3%(sourceIdx, I1)
+                Input #1, tradeB1$(tradeIdx, I1)
+                Input #1, tradeB3%(tradeIdx, I1)
             Next I1
 
             For I1 = 0 To 21:
-                Input #1, tradeP1$(sourceIdx, I1)
-                Input #1, tradeP3%(sourceIdx, I1)
+                Input #1, tradeP1$(tradeIdx, I1)
+                Input #1, tradeP3%(tradeIdx, I1)
             Next I1
 
             For I1 = 0 To 22:
                 For I2 = 0 To 21:
-                    Input #1, tradeB0%(sourceIdx, I1, I2)
+                    Input #1, tradeB0%(tradeIdx, I1, I2)
                 Next I2
             Next I1
 
             For I1 = 0 To 21:
                 For I2 = 0 To 41:
-                    Input #1, tradeP0%(sourceIdx, I1, I2)
+                    Input #1, tradeP0%(tradeIdx, I1, I2)
                 Next I2
             Next I1
 
-            Input #1, tradeD0%(sourceIdx)
-            Input #1, tradeD1%(sourceIdx)
+            Input #1, tradeD0%(tradeIdx)
+            Input #1, tradeD1%(tradeIdx)
 
-            For I = 0 To 21: Input #1, TEAM%(sourceIdx, I): Next I
+            For I = 0 To 21: Input #1, TEAM%(tradeIdx, I): Next I
 
-            For I = 0 To 22: Input #1, tradeT1%(sourceIdx, I): Next I
+            For I = 0 To 22: Input #1, tradeT1%(tradeIdx, I): Next I
 
             Close #1
 
-            If haveStats(sourceIdx) = 1 Then
+            If haveStats(tradeIdx) = 1 Then
                 haveStats(0) = 1
             End If
 
@@ -262,7 +264,7 @@ Sub LoadStatsForTrade (yearNumbers$(), sourceIdx)
 
                 For I1 = 0 To 22
                     For I2 = 0 To 6
-                        Input #1, tradeSS%(sourceIdx, I1, I2)
+                        Input #1, tradeSS%(tradeIdx, I1, I2)
                     Next I2
                 Next I1
 
@@ -272,9 +274,9 @@ Sub LoadStatsForTrade (yearNumbers$(), sourceIdx)
 
         Else
 
-            haveStats(sourceIdx) = 1
+            haveStats(tradeIdx) = 1
 
-            MsgText$ = "NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU"
+            MsgText$ = "NO COMPILED STATS COULD BE FOUND FOR THIS TEAM. PRESS ANY KEY TO RETURN TO THE MAIN MENU"
             BoxWidth = 24
             BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
             Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
@@ -298,7 +300,7 @@ End Sub
 'the trade and then save the changes.
 Sub ContinueTrade (yearNumbers$())
 
-    Shared teams_TRADE$(), A1$()
+    Shared tmInfo_TRADE$(), A1$()
     Shared tradeB1$(), tradeP1$()
 
     Shared tradeD0%(), tradeD1%(), teamRat_TRADE(), tradeL2%()
@@ -399,7 +401,7 @@ End Sub
 'for trade, and then swaps the players.
 Sub TradeBatters ()
 
-    Shared teams_TRADE$(), tradeB1$(), batNam_TRADE$()
+    Shared tmInfo_TRADE$(), tradeB1$(), batNam_TRADE$()
 
     Shared batRat_TRADE(), tradeB0%(), tradeB3%(), teamRat_TRADE()
     Shared tradeSA%(), tradeSS%(), tradeTS%()
@@ -429,8 +431,8 @@ Sub TradeBatters ()
     Next
 
     Color 15, 0
-    Locate 1: Print teams_TRADE$(0);
-    Locate , 40: Print teams_TRADE$(1)
+    Locate 1: Print tmInfo_TRADE$(0);
+    Locate , 40: Print tmInfo_TRADE$(1)
 
     For I = 0 To 16
         Color 15, 0
@@ -459,7 +461,7 @@ Sub TradeBatters ()
         Print Space$(40);
         Print Space$(40);
 
-        Locate 20, 1: Print teams_TRADE$(0); " BATTER: ";
+        Locate 20, 1: Print tmInfo_TRADE$(0); " BATTER: ";
 
         Do
             Input I$
@@ -467,7 +469,7 @@ Sub TradeBatters ()
         Loop Until I1 >= 0 And I1 <= 22
 
         Print batNam_TRADE$(0, I1)
-        Locate 21, 1: Print teams_TRADE$(1); " BATTER: ";
+        Locate 21, 1: Print tmInfo_TRADE$(1); " BATTER: ";
 
         Do
             Input I$
@@ -562,7 +564,7 @@ End Sub
 'for trade, and then swaps the players.
 Sub TradePitchers ()
 
-    Shared teams_TRADE$(), batNam_TRADE$(), tradeP1$()
+    Shared tmInfo_TRADE$(), batNam_TRADE$(), tradeP1$()
     Shared teamRat_TRADE(), tradeP0%(), pitRat_TRADE(), tradeP3%()
     Shared tradeSA%(), tradeTS%()
     Shared haveStats()
@@ -589,7 +591,7 @@ Sub TradePitchers ()
         Color , teamRat_TRADE(1, 12): Print Space$(15)
     Next
 
-    Color 15, 0: Locate 1: Print teams_TRADE$(0);: Locate , 40: Print teams_TRADE$(1)
+    Color 15, 0: Locate 1: Print tmInfo_TRADE$(0);: Locate , 40: Print tmInfo_TRADE$(1)
 
     For I = 0 To 11
         Color 15, 0
@@ -619,7 +621,7 @@ Sub TradePitchers ()
         Print Space$(40);
         Print Space$(40);
 
-        Locate 20, 1: Print teams_TRADE$(0); " PITCHER: ";
+        Locate 20, 1: Print tmInfo_TRADE$(0); " PITCHER: ";
 
         Do
             Input I$
@@ -627,7 +629,7 @@ Sub TradePitchers ()
         Loop Until I1 >= 0 And I1 <= 21
 
         Print batNam_TRADE$(0, I1)
-        Locate 21, 1: Print teams_TRADE$(1); " PITCHER: ";
+        Locate 21, 1: Print tmInfo_TRADE$(1); " PITCHER: ";
 
         Do
             Input I$
@@ -714,7 +716,7 @@ End Sub
 'data from the trade to the team files.
 Sub SaveTrades (yearNumbers$())
 
-    Shared teams_TRADE$(), A1$()
+    Shared tmInfo_TRADE$(), A1$()
     Shared batNam_TRADE$(), pitNam_TRADE$()
     Shared tradeB1$(), tradeP1$()
 
@@ -757,7 +759,7 @@ Sub SaveTrades (yearNumbers$())
 
         Field #1, 4280 As X$, 40 As Q$(1840), 15 As Q$(1841), 5 As Q$(1842), 2 As Q$(1843)
 
-        LSet Q$(0) = teams_TRADE$(tradeIdx)
+        LSet Q$(0) = tmInfo_TRADE$(tradeIdx)
 
         For J = 1 To 13:
             LSet Q$(J) = MKI$(teamRat_TRADE(tradeIdx, J))
@@ -900,7 +902,7 @@ Sub SaveTrades (yearNumbers$())
 
             Cls
 
-            statFile$ = nameStatFile$(teams_TRADE$(I))
+            statFile$ = nameStatFile$(tmInfo_TRADE$(I))
 
             Open diskPaths$(1) + statFile$ For Output As #1
 
@@ -962,7 +964,7 @@ End Sub
 'trades.
 Sub TradeSummary_Batters (p1idx, p2idx)
 
-    Shared teams_TRADE$(), batNam_TRADE$()
+    Shared tmInfo_TRADE$(), batNam_TRADE$()
     Shared teamRat_TRADE(), batRat_TRADE(), tradeB0%()
 
     Dim progC$(9), plateX$(4)
@@ -985,9 +987,9 @@ Sub TradeSummary_Batters (p1idx, p2idx)
     progC$(9) = "RF"
 
     Cls
-    Color teamRat_TRADE(0, 11), teamRat_TRADE(0, 12): Print teams_TRADE$(0);
+    Color teamRat_TRADE(0, 11), teamRat_TRADE(0, 12): Print tmInfo_TRADE$(0);
     Locate , 41
-    Color teamRat_TRADE(1, 11), teamRat_TRADE(1, 12): Print teams_TRADE$(1)
+    Color teamRat_TRADE(1, 11), teamRat_TRADE(1, 12): Print tmInfo_TRADE$(1)
 
     Color 15, 0
     Print batNam_TRADE$(0, p1idx); " "; plateX$(batRat_TRADE(0, p1idx, 0) + 2); " "; progC$(batRat_TRADE(0, p1idx, 22));
@@ -1224,7 +1226,7 @@ End Sub
 'result of the trade being proposed
 Sub TradeSummary_Pitchers (p1idx, p2idx)
 
-    Shared teams_TRADE$(), batNam_TRADE$()
+    Shared tmInfo_TRADE$(), batNam_TRADE$()
     Shared teamRat_TRADE(), pitRat_TRADE(), tradeP0%()
     Dim plateX$(4)
 
@@ -1236,9 +1238,9 @@ Sub TradeSummary_Pitchers (p1idx, p2idx)
 
     '905
     Cls
-    Color teamRat_TRADE(0, 11), teamRat_TRADE(0, 12): Print teams_TRADE$(0);
+    Color teamRat_TRADE(0, 11), teamRat_TRADE(0, 12): Print tmInfo_TRADE$(0);
     Locate , 41
-    Color teamRat_TRADE(1, 11), teamRat_TRADE(1, 12): Print teams_TRADE$(1)
+    Color teamRat_TRADE(1, 11), teamRat_TRADE(1, 12): Print tmInfo_TRADE$(1)
     Color 15, 0
 
     Locate , 1: Print batNam_TRADE$(0, p1idx); " "; plateX$(pitRat_TRADE(0, p1idx, 0) + 2);
@@ -1343,6 +1345,8 @@ Sub ChooseTradeTeam (yearNumber$, numberTeams, chosenIdx, teamName$, tradeIdx)
 
     Do
 
+        chosenIdx = 0
+
         Color 15, 0
         Cls
 
@@ -1401,8 +1405,8 @@ Sub ChooseTradeTeam (yearNumber$, numberTeams, chosenIdx, teamName$, tradeIdx)
 
                     If Not _FileExists(diskPaths$(0) + TEAM_FILE_NAME$ + "." + yearNumber$) Then
 
-                        MsgText$ = "NO TEAM FILES WERE FOUND MATCHING THIS ID. PRESS ANY KEY TO RETURN TO MAIN MENU"
-                        BoxWidth = 20
+                        MsgText$ = "NO TEAM FILES COULD BE FOUND MATCHING THIS ID. PRESS ANY KEY TO RETURN TO THE MAIN MENU"
+                        BoxWidth = 24
                         BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
                         Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
                         Call CSMsgBox(MsgText$, BoxWidth, Pass)
@@ -1446,9 +1450,9 @@ Sub ChooseTradeTeam (yearNumber$, numberTeams, chosenIdx, teamName$, tradeIdx)
 
             Do
 
-                Call SelectTradeTeam(numberTeams, yearNumber$, chosenIdx, teamName$, ExitCode%, tradeIdx)
+                Call SelectTradeTeam (numberTeams, yearNumber$, chosenIdx, teamName$, ExitCode%, tradeIdx)
 
-                If ExitCode% <> 27 And chosenIdx <> 0 Then
+                If ExitCode% <> 27 And numberTeams <> 0 And chosenIdx > 0 Then
 
                     Do
                         Locate 2, 33
@@ -1463,13 +1467,13 @@ Sub ChooseTradeTeam (yearNumber$, numberTeams, chosenIdx, teamName$, tradeIdx)
 
                 End If
 
-            Loop Until ExitCode% = 27 Or J$ = Chr$(27) Or UCase$(J$) = "N"
+            Loop Until ExitCode% = 27 Or J$ = Chr$(27) Or UCase$(J$) = "N" Or chosenIdx = -1
 
         End If 'Done checking for ESC
 
     Loop Until UCase$(J$) = "N" Or I$ = Chr$(27) 'Or J$ = Chr$(27)
 
-    If I$ = Chr$(27) Or J$ = Chr$(27) Then chosenIdx = 0
+    'If I$ = Chr$(27) Or J$ = Chr$(27) Then chosenIdx = 0
 
 End Sub
 
@@ -1479,14 +1483,17 @@ End Sub
 '----------------------------------------
 'This subroutine provides an interface for 
 'selecting the team to trade players from
-Sub SelectTradeTeam(numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%, tradeIdx)
+Sub SelectTradeTeam (numberTeams, yearNumber$, selectedIdx, chosenTeam$, ExitCode%, tradeIdx)
 
-    If numberTeams > 0 Then
+    ExitCode% = -1
+    validData = 0
 
-        Selection% = 1
+    If numberTeams > 0 And CheckString%(teamNames$(numberTeams)) = 0 Then
+
+        SELECTION% = 1
         Count% = numberTeams
         Start% = 1
-        FileFGColor% = 15: FileBGColor% = 4
+        FileFGColor = 15: FileBGColor = 4
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Rows% = 20
         Columns% = 4
@@ -1505,17 +1512,17 @@ Sub SelectTradeTeam(numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%,
         Color 15: Print "-SELECTS TEAM";
 
         _MouseShow "DEFAULT"
-        MAMenu teamNames$(), Selection%, Start%, Count%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Rows%, Columns%, Spacing%, Row%, Column%
+        MAMenu teamNames$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Rows%, Columns%, Spacing%, Row%, Column%
         _MouseHide
 
         If ExitCode% <> 27 Then
 
-            selectedIdx = teamIndex%(Selection%)
+            selectedIdx = teamIndex%(SELECTION%)
 
             'Locate 2, 33
             'Color 31: Print "LOADING..."
 
-            Call ReadTradeTeam(yearNumber$, teamName$, selectedIdx, tradeIdx, validData)
+            Call ReadTradeTeam(yearNumber$, selectedIdx, chosenTeam$, tradeIdx, validData)
                  
         End If
 
@@ -1539,7 +1546,7 @@ End Sub
 '----------------------------------------
 'This subroutine reads team data into 
 'arrays for the selected team
-Sub ReadTradeTeam (teamYear$, targetTeam$, teamIdx, tradeIdx, dataOK)
+Sub ReadTradeTeam (teamYear$, teamIdx, targetTeam$, tradeIdx, dataOK)
 
     Shared batRat_TRADE(), pitRat_TRADE()
     Shared teamRat_TRADE()

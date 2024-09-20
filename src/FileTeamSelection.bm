@@ -159,7 +159,10 @@ End Sub
 ' from the selected team.
 Sub SelectTeam (numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%)
 
-    If numberTeams > 0 Then
+    ExitCode% = -1
+    validData = 0
+
+    If numberTeams > 0 And CheckString%(teamNames$(numberTeams)) = 0 Then
 
         SELECTION% = 1
         Count% = numberTeams
@@ -322,116 +325,114 @@ Sub ReadExtraData (teamYear$, targetTeam$, teamIdx)
 
     If Not _FileExists(diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$) Then
 
-		MsgText$ = "WARNING!!! NO DATA FILE WAS FOUND FOR THIS TEAM. PRESS ANY KEY TO CONTINUE"
-		BoxWidth = 20
-		BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-		Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
-		Call CSMsgBox(MsgText$, BoxWidth, Pass)
-		I$ = GetKeyPress$
-		Call CSMsgBox("", 0, Pass)
+        'MsgText$ = "WARNING!!! NO DATA FILE WAS FOUND FOR THIS TEAM. PRESS ANY KEY TO CONTINUE"
+        'BoxWidth = 24
+        'BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+        'Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+        'Call CSMsgBox(MsgText$, BoxWidth, Pass)
+        'I$ = GetKeyPress$
+        'Call CSMsgBox("", 0, Pass)
 
-    Else
+    End If
 
-        Open diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$ For Random As #1 Len = DATA_SIZE_BYTES
+    Open diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$ For Random As #1 Len = DATA_SIZE_BYTES
 
-        For X = 0 To 11
-            Field #1, X * 2 As X$, 2 As Q$(X + 1)
+    For X = 0 To 11
+        Field #1, X * 2 As X$, 2 As Q$(X + 1)
+    Next
+
+    For X = 0 To 22
+        For X1 = 1 To 14
+            Field #1, 24 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(12 + X1 + X * 14)
         Next
+    Next
+
+    For X = 0 To 21
+        For X1 = 1 To 14
+            Field #1, 668 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(334 + X1 + X * 14)
+        Next
+    Next
+
+    For X = 0 To 21
+        For X1 = 1 To 14
+            Field #1, 1284 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(642 + X1 + X * 14)
+        Next
+    Next
+
+    For X = 1 To 24
+        Field #1, 1900 + (X - 1) * 2 As X$, 2 As Q$(950 + X)
+    Next
+
+    For X = 0 To 22
+        For X1 = 1 To 24
+            Field #1, 1948 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(975 + X1 + X * 24)
+        Next
+    Next
+
+    For X = 0 To 21
+        For X1 = 1 To 24
+            Field #1, 3052 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(1528 + X1 + X * 24)
+        Next
+    Next
+
+    Get #1, teamIdx
+
+    For X = 0 To 11
+        teamTS%(X) = CVI(Q$(X + 1))
+    Next
+
+    For X = 0 To 22
+        For X1 = 1 To 14
+            batterRatings(X, X1 + 41) = CVI(Q$(12 + X1 + X * 14))
+        Next
+    Next
+
+    For X = 0 To 21
+        For X1 = 1 To 14
+            pitcherRatings(X, X1 + 36) = CVI(Q$(334 + X1 + X * 14))
+        Next
+    Next
+
+    For X = 0 To 21
+        For X1 = 1 To 14
+            pitcherRatings(X, X1 + 50) = CVI(Q$(642 + X1 + X * 14))
+        Next
+    Next
+
+    For X = 1 To 24
+        teamSA%(X) = CVI(Q$(X + 950))
+    Next
+
+    For X = 0 To 22
+        For X1 = 1 To 24
+            batterRatings(X, X1 + 55) = CVI(Q$(975 + X1 + X * 24))
+        Next
+    Next
+
+    For X = 0 To 21
+        For X1 = 1 To 24
+            pitcherRatings(X, X1 + 64) = CVI(Q$(1528 + X1 + X * 24))
+        Next
+    Next
+
+    Close #1
+
+    If teamTS%(0) <> 999 Then
 
         For X = 0 To 22
-            For X1 = 1 To 14
-                Field #1, 24 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(12 + X1 + X * 14)
+            For X1 = 42 To 79
+                batterRatings(X, X1) = 0
             Next
         Next
 
         For X = 0 To 21
-            For X1 = 1 To 14
-                Field #1, 668 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(334 + X1 + X * 14)
+            For X1 = 37 To 88
+                pitcherRatings(X, X1) = 0
             Next
         Next
 
-        For X = 0 To 21
-            For X1 = 1 To 14
-                Field #1, 1284 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(642 + X1 + X * 14)
-            Next
-        Next
+        Erase teamSA%, teamTS%
 
-        For X = 1 To 24
-            Field #1, 1900 + (X - 1) * 2 As X$, 2 As Q$(950 + X)
-        Next
-
-        For X = 0 To 22
-            For X1 = 1 To 24
-                Field #1, 1948 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(975 + X1 + X * 24)
-            Next
-        Next
-
-        For X = 0 To 21
-            For X1 = 1 To 24
-                Field #1, 3052 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(1528 + X1 + X * 24)
-            Next
-        Next
-
-        Get #1, teamIdx
-
-        For X = 0 To 11
-            teamTS%(X) = CVI(Q$(X + 1))
-        Next
-
-        For X = 0 To 22
-            For X1 = 1 To 14
-                batterRatings(X, X1 + 41) = CVI(Q$(12 + X1 + X * 14))
-            Next
-        Next
-
-        For X = 0 To 21
-            For X1 = 1 To 14
-                pitcherRatings(X, X1 + 36) = CVI(Q$(334 + X1 + X * 14))
-            Next
-        Next
-
-        For X = 0 To 21
-            For X1 = 1 To 14
-                pitcherRatings(X, X1 + 50) = CVI(Q$(642 + X1 + X * 14))
-            Next
-        Next
-
-        For X = 1 To 24
-            teamSA%(X) = CVI(Q$(X + 950))
-        Next
-
-        For X = 0 To 22
-            For X1 = 1 To 24
-                batterRatings(X, X1 + 55) = CVI(Q$(975 + X1 + X * 24))
-            Next
-        Next
-
-        For X = 0 To 21
-            For X1 = 1 To 24
-                pitcherRatings(X, X1 + 64) = CVI(Q$(1528 + X1 + X * 24))
-            Next
-        Next
-
-        Close #1
-
-        If teamTS%(0) <> 999 Then
-
-            For X = 0 To 22
-                For X1 = 42 To 79
-                    batterRatings(X, X1) = 0
-                Next
-            Next
-
-            For X = 0 To 21
-                For X1 = 37 To 88
-                    pitcherRatings(X, X1) = 0
-                Next
-            Next
-
-            Erase teamSA%, teamTS%
-
-        End If
-        
     End If
 
 End Sub
@@ -482,6 +483,39 @@ Function nameStatFile$ (teamName$)
     Next XX
 
     nameStatFile$ = Mid$(teamPrefix$, 4, QQ) + "." + Left$(teamPrefix$, 2)
+
+End Function
+
+
+'----------------------------------------
+'          CheckString Function
+'----------------------------------------
+'This function checks the given string
+'to determine if any characters are not
+'alpha-numeric or printable.
+'Return Values
+'1 = non-printable characters were found
+'0 = all characters in string are alpha-numeric.
+Function CheckString% (targetString$)
+
+    badString = 0
+    stringPosition% = 1
+
+    Do
+
+        test = Asc(Mid$(targetString$, stringPosition%, 1))
+
+        'If it is a non-printable character (corrupt data)
+        If test > 122 Or test < 32 Then
+            stringPosition% = 1
+            badString = 1
+        Else
+            stringPosition% = stringPosition% + 1
+        End If
+
+    Loop Until stringPosition% = Len(targetString$) Or badString = 1
+
+    CheckString% = badString
 
 End Function
 
@@ -542,9 +576,9 @@ Function ChooseFile$ (fileSpec$, fileDesc$, ExitCode%)
                 Color 14
                 Print "SELECT "; fileDesc$; " FILE"
                 Color 15
-                Selection% = 1
+                SELECTION% = 1
                 START% = 1
-                FileFGColor% = 15: FileBGColor% = 1
+                FileFGColor = 15: FileBGColor = 1
                 HiLiteFGColor% = 0: HiLiteBGColor% = 7
                 Rows% = 20
                 Columns% = 3
@@ -562,13 +596,13 @@ Function ChooseFile$ (fileSpec$, fileDesc$, ExitCode%)
                 Color 15
 
                 _MouseShow "DEFAULT"
-                MAMenu foundFiles$(), Selection%, START%, Count%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Rows%, Columns%, Spacing%, Row%, Column%
+                MAMenu foundFiles$(), SELECTION%, START%, Count%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Rows%, Columns%, Spacing%, Row%, Column%
                 _MouseHide
 
                 If ExitCode% <> 27 Then
 
                     Color 15, 1
-                    targetFile$ = RTrim$(foundFiles$(Selection%))
+                    targetFile$ = RTrim$(foundFiles$(SELECTION%))
                     XCoord = Int((80 - Len(targetFile$))/2)
                     Locate 2, XCoord
                     Print targetFile$
@@ -640,36 +674,36 @@ End Sub
 'the name of the schedule file to be saved
 Sub ScheduleFilePrompt (scheduleFile$)
 
-	Color 15, 0
-	Cls
+    Color 15, 0
+    Cls
 
-	Call MenuBox(6, 8, 61, 8, 15, 1)
+    Call MenuBox(6, 8, 61, 8, 15, 1)
 
-	Do
+    Do
 
-		Locate 7, 32
+        Locate 7, 32
 
-		Locate , 12: Print "ENTER NAME FOR SCHEDULE: "
-		Print
-		Locate , 12: Print "THE NAME SHOULD HAVE NO PERIODS OR SPECIAL CHARACTERS"
-		Locate , 12: Print "DO NOT ADD A FILE EXTENSION; THE PROGRAM"
-		Locate , 12: Print "WILL AUTOMATICALLY ADD .SCD"
-		Locate , 12: Print "SAMPLE NAMES ARE INDIANA, BOS68, CHI-76, ETC      "
-		Locate 7, 40: Input scheduleFile$
+        Locate , 12: Print "ENTER NAME FOR SCHEDULE: "
+        Print
+        Locate , 12: Print "THE NAME SHOULD HAVE NO PERIODS OR SPECIAL CHARACTERS"
+        Locate , 12: Print "DO NOT ADD A FILE EXTENSION; THE PROGRAM"
+        Locate , 12: Print "WILL AUTOMATICALLY ADD .SCD"
+        Locate , 12: Print "SAMPLE NAMES ARE INDIANA, BOS68, CHI-76, ETC      "
+        Locate 7, 40: Input scheduleFile$
 
-		If scheduleFile$ <> "" Then
+        If scheduleFile$ <> "" Then
 
-			Do
+            Do
 
-				Locate 14, 12
-				Print "ANY CHANGE? (Y/N) "
-				I$ = GetKeyPress$
+                Locate 14, 12
+                Print "ANY CHANGE? (Y/N) "
+                I$ = GetKeyPress$
 
-			Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N" Or I$ = Chr$(27)
+            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N" Or I$ = Chr$(27)
 
-		End If
+        End If
 
-	Loop Until (UCase$(I$) = "N" And scheduleFile$ <> "") Or I$ = Chr$(27)
+    Loop Until (UCase$(I$) = "N" And scheduleFile$ <> "") Or I$ = Chr$(27)
 
 
 End Sub

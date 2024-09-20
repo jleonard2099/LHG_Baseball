@@ -67,28 +67,28 @@ Sub PROGMAN ()
                 menuChoices$(12) = "EXPORT MANAGERIAL PROFILE                                "
                 menuChoices$(13) = "PRINT MANAGERIAL PROFILE                                 "
                 menuChoices$(14) = "RETURN TO GAME MENU                                      "
-                Selection% = 1
+                SELECTION% = 1
                 Count% = 14
                 Start% = 1
                 ExitCode% = 14
-                FileFGColor% = 15: FileBGColor% = 1
+                FileFGColor = 15: FileBGColor = 1
                 HiLiteFGColor% = 0: HiLiteBGColor% = 7
                 Spacing% = 1
                 Row% = 5
                 menuWidth% = Len(menuChoices$(1))
                 Column% = (80 - menuWidth% - 2) / 2
 
-                Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
+                Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor, FileBGColor)
 
                 _MouseShow "DEFAULT"
-                MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+                MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
                 _MouseHide
 
                 Color , 0
 
                 If ExitCode% <> 27 Then
 
-                    Select Case Selection%
+                    Select Case SELECTION%
 
                         Case 1
                             For I = 1 To 999:
@@ -157,7 +157,7 @@ Sub PROGMAN ()
 
                 End If
 
-            Loop Until Selection% = 14 Or ExitCode% = 27
+            Loop Until SELECTION% = 14 Or ExitCode% = 27
 
         End If
 
@@ -190,31 +190,31 @@ Sub RotationReliefMenu (yearNumber$, targetTeam$, mgrNbr)
         menuChoices$(4) = "SELECT / EDIT SET-UP MEN                   "
         menuChoices$(5) = "SELECT / EDIT CLOSERS                      "
         menuChoices$(6) = "RETURN TO MAIN MENU                        "
-        Selection% = 1
+        SELECTION% = 1
         Count% = 6
         Start% = 1
         ExitCode% = 6
-        FileFGColor% = 15: FileBGColor% = 1
+        FileFGColor = 15: FileBGColor = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 5
         menuWidth% = Len(menuChoices$(1))
         Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
+        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor, FileBGColor)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
 
         If ExitCode% <> 27 Then
 
-            Select Case Selection%
+            Select Case SELECTION%
 
                 Case 1, 2:
-                    Call ManagePitchingRotations(Selection%, targetTeam$, mgrNbr)
+                    Call ManagePitchingRotations(SELECTION%, targetTeam$, mgrNbr)
 
                 Case 3:
                     Call SetupMiddleRelievers(targetTeam$, yearNumber$, mgrNbr)
@@ -231,7 +231,7 @@ Sub RotationReliefMenu (yearNumber$, targetTeam$, mgrNbr)
 
         End If
 
-    Loop Until Selection% = 6 Or ExitCode% = 27
+    Loop Until SELECTION% = 6 Or ExitCode% = 27
 
 End Sub
 
@@ -256,30 +256,30 @@ Sub LineupStrategy (yearNumber$, targetTeam$)
         menuChoices$(2) = "SELECT / CHANGE / DISPLAY LINEUPS VS. LHP              "
         menuChoices$(3) = "ANALYZE PLAYER USAGE ACCORDING TO YOUR LINEUPS SELECTED"
         menuChoices$(4) = "RETURN TO TOP MENU                                     "
-        Selection% = 1
+        SELECTION% = 1
         Count% = 4
         Start% = 1
         ExitCode% = 4
-        FileFGColor% = 15: FileBGColor% = 1
+        FileFGColor = 15: FileBGColor = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 5
         menuWidth% = Len(menuChoices$(1))
         Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
+        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor, FileBGColor)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
 
-        handRL% = Selection% - 1
+        handRL% = SELECTION% - 1
         '0 = right hand
         '1 = left hand
 
-        Select Case Selection%
+        Select Case SELECTION%
 
             Case 1, 2:
                 Call EditLineups(handRL%, targetTeam$, yearNumber$)
@@ -292,7 +292,7 @@ Sub LineupStrategy (yearNumber$, targetTeam$)
 
         End Select
 
-    Loop Until Selection% = 4 Or ExitCode% = 27
+    Loop Until SELECTION% = 4 Or ExitCode% = 27
 
 End Sub
 
@@ -765,26 +765,26 @@ Sub EditLineups (handRL%, targetTeam$, yearNumber$)
         menuChoices$(2) = "EDIT AN EXISTING LINEUP       "
         menuChoices$(3) = "DELETE AN EXISTING LINEUP     "
         menuChoices$(4) = "RETURN TO LINEUP STRATEGY MENU"
-        Selection% = 1
+        SELECTION% = 1
         Count% = 4
         Start% = 1
         ExitCode% = 4
-        FileFGColor% = 15: FileBGColor% = 1
+        FileFGColor = 15: FileBGColor = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 5
         menuWidth% = Len(menuChoices$(1))
         Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
+        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor, FileBGColor)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
-        If ExitCode% <> 27 And Selection% <> 4 Then
+        If ExitCode% <> 27 And SELECTION% <> 4 Then
 
-            lineupChoice% = Selection%
+            lineupChoice% = SELECTION%
 
             Color , 0
 
@@ -893,7 +893,7 @@ Sub EditLineups (handRL%, targetTeam$, yearNumber$)
 
         End If 'Done checking for eSC
 
-    Loop Until Selection% = 4 Or ExitCode% = 27
+    Loop Until SELECTION% = 4 Or ExitCode% = 27
 
     Color 15, 0
 
@@ -3099,26 +3099,26 @@ Sub HittingStrategy (yearNumber$, mgrNbr)
         menuChoices$(4) = "HIT AND RUN SCENARIOS                        "
         menuChoices$(5) = "SITUATIONS TO PH FOR POSITION PLAYERS        "
         menuChoices$(6) = "RETURN TO MAIN MENU                          "
-        Selection% = 1
+        SELECTION% = 1
         Count% = 6
         Start% = 1
         ExitCode% = 6
-        FileFGColor% = 15: FileBGColor% = 1
+        FileFGColor = 15: FileBGColor = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 5
         menuWidth% = Len(menuChoices$(1))
         Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
+        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor, FileBGColor)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
 
-        Select Case Selection%
+        Select Case SELECTION%
 
             Case 1:
                 Call PHPITCHER(yearNumber$, mgrNbr)
@@ -3269,7 +3269,7 @@ Sub HittingStrategy (yearNumber$, mgrNbr)
 
         End Select
 
-    Loop Until Selection% = 6 Or ExitCode% = 27
+    Loop Until SELECTION% = 6 Or ExitCode% = 27
 
 End Sub
 
@@ -3376,26 +3376,26 @@ Sub DefensiveStrategy (yearNumber$, mgrNbr)
         menuChoices$(7) = "PITCH AROUND THE HITTER                      "
         menuChoices$(8) = "NOT THROWING HOME WITH RUNNER TRYING TO SCORE"
         menuChoices$(9) = "RETURN TO MAIN MENU                          "
-        Selection% = 1
+        SELECTION% = 1
         Count% = 9
         Start% = 1
         ExitCode% = 9
-        FileFGColor% = 15: FileBGColor% = 1
+        FileFGColor = 15: FileBGColor = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 5
         menuWidth% = Len(menuChoices$(1))
         Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
+        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor, FileBGColor)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
 
-        Select Case Selection%
+        Select Case SELECTION%
             Case 1
                 Do
                     'INFIELD IN
@@ -3692,7 +3692,7 @@ Sub DefensiveStrategy (yearNumber$, mgrNbr)
 
         End Select
 
-    Loop Until Selection% = 9 Or ExitCode% = 27
+    Loop Until SELECTION% = 9 Or ExitCode% = 27
 
 End Sub
 
@@ -3722,26 +3722,26 @@ Sub PinchRunStrategy (yearNumber$, targetTeam$, mgrNbr)
         menuChoices$(2) = "SELECT PLAYERS TO PINCH RUN FOR AND THEIR REPLACEMENTS"
         menuChoices$(3) = "SITUATIONS TO PINCH RUN FOR THE PITCHER               "
         menuChoices$(4) = "RETURN TO MAIN MENU                                   "
-        Selection% = 1
+        SELECTION% = 1
         Count% = 4
         Start% = 1
         ExitCode% = 4
-        FileFGColor% = 15: FileBGColor% = 1
+        FileFGColor = 15: FileBGColor = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 5
         menuWidth% = Len(menuChoices$(1))
         Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
+        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor, FileBGColor)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
 
-        Select Case Selection%
+        Select Case SELECTION%
 
             Case 1:
                 Call PinchRunnerOptions(yearNumber$, targetTeam$, mgrNbr)
@@ -3794,7 +3794,7 @@ Sub PinchRunStrategy (yearNumber$, targetTeam$, mgrNbr)
 
         End Select
 
-    Loop Until Selection% = 4 Or ExitCode% = 27
+    Loop Until SELECTION% = 4 Or ExitCode% = 27
 
 End Sub
 

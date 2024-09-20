@@ -15,7 +15,7 @@ Sub NEWLDR ()
     Shared expLL!(), LLS!(), lastTenLosses!(), lastTenWins!(), LWS!()
     Shared RLL!(), RWW!(), TLS!(), TWS!(), WW!()
 
-    Shared statFileNames$(), TML$()
+    Shared statFiles$(), TML$()
 
     Shared div1Name$, div2Name$, div3Name$, div4Name$
 
@@ -35,21 +35,21 @@ Sub NEWLDR ()
         menuChoices$(3) = "UPDATE EXPANDED LEAGUE STANDINGS      "
         menuChoices$(4) = "VIEW / PRINT EXPANDED LEAGUE STANDINGS"
         menuChoices$(5) = "RETURN TO LEAGUE LEADER MAIN MENU     "
-        Selection% = 1
+        SELECTION% = 1
         Count% = 5
         Start% = 1
         ExitCode% = 5
-        FileFGColor% = 15: FileBGColor% = 1
+        FileFGColor = 15: FileBGColor = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 8
         menuWidth% = Len(menuChoices$(1))
         Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor%, FileBGColor%)
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor, FileBGColor)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
@@ -58,7 +58,7 @@ Sub NEWLDR ()
 
             printOrView = 0
 
-            Select Case Selection%
+            Select Case SELECTION%
 
                 Case 1:
                     Do
@@ -67,7 +67,7 @@ Sub NEWLDR ()
                         If FileExit% <> 27 And FileExit% <> 0 Then
 
                             For X = 1 To TEAMS_PER_LEAGUE
-                                statFileNames$(X) = "XXX"
+                                statFiles$(X) = "XXX"
                             Next
 
                             Open diskPaths$(2) + leagStatFile$ + ".TMS" For Input As #2
@@ -75,7 +75,7 @@ Sub NEWLDR ()
                             Input #2, league$, div1Name$, div2Name$, div3Name$, div4Name$
 
                             For X = 1 To TEAMS_PER_LEAGUE
-                                Input #2, statFileNames$(X)
+                                Input #2, statFiles$(X)
                             Next
 
                             Close #2
@@ -155,7 +155,7 @@ Sub NEWLDR ()
 
         End If
 
-    Loop Until Selection% = 5 Or ExitCode% = 27
+    Loop Until SELECTION% = 5 Or ExitCode% = 27
 
 End Sub
 
@@ -173,12 +173,12 @@ Sub ViewExpandedStats (JB, JP, plyrTotalStats, teamTotalStats)
 
     Shared div1Name$, div2Name$, div3Name$, div4Name$
 
-    Shared statFileNames$()
+    Shared statFiles$()
 
     printOrView = 0
 
     For X = 1 To TEAMS_PER_LEAGUE
-        statFileNames$(X) = "XXX"
+        statFiles$(X) = "XXX"
     Next
 
     leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE", ExitCode%)
@@ -194,7 +194,7 @@ Sub ViewExpandedStats (JB, JP, plyrTotalStats, teamTotalStats)
         Input #1, div4Name$
 
         For X = 1 To TEAMS_PER_LEAGUE:
-            Input #1, statFileNames$(X)
+            Input #1, statFiles$(X)
         Next
 
         Close #1
@@ -229,7 +229,7 @@ Sub UpdateExpandedLeaders (JB, JP, plyrTotalStats, teamTotalStats)
 
     Shared batterNames$(), leaderBL$(), pitcherNames$(), leaderPL$()
     Shared plyLeaderTeams$(), TMB$(), TMP$(), tmLeaderTeams$()
-    Shared statFileNames$()
+    Shared statFiles$()
 
     Color 15, 0
     Cls
@@ -240,13 +240,13 @@ Sub UpdateExpandedLeaders (JB, JP, plyrTotalStats, teamTotalStats)
 
         YY = YY + 1
 
-        If statFileNames$(KK) <> "*" And statFileNames$(KK) <> "XXX" And statFileNames$(KK) <> "" Then
+        If statFiles$(KK) <> "*" And statFiles$(KK) <> "XXX" And statFiles$(KK) <> "" Then
 
-            Print "CONVERTING STAT FILE OF "; statFileNames$(KK)
+            Print "CONVERTING STAT FILE OF "; statFiles$(KK)
 
-            If _FileExists(diskPaths$(1) + statFileNames$(KK)) Then
+            If _FileExists(diskPaths$(1) + statFiles$(KK)) Then
 
-                Open diskPaths$(1) + statFileNames$(KK) For Input As #1
+                Open diskPaths$(1) + statFiles$(KK) For Input As #1
 
                 Input #1, teamName$
                 Input #1, W2%
@@ -644,28 +644,28 @@ Sub ExpandedLeaders_Menu (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
         menuChoices$(2) = "VIEW PITCHING LEADERS"
         menuChoices$(3) = "VIEW TEAM TOTALS     "
         menuChoices$(4) = "RETURN TO MAIN MENU  "
-        Selection% = 1
+        SELECTION% = 1
         Count% = 4
         Start% = 1
         ExitCode% = 4
-        FileFGColor% = 15: FileBGColor% = 1
+        FileFGColor = 15: FileBGColor = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 8
         menuWidth% = Len(menuChoices$(1))
         Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor%, FileBGColor%)
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor, FileBGColor)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
 
         If ExitCode% <> 27 Then
 
-            Select Case Selection%
+            Select Case SELECTION%
 
                 Case 1:
                     Call ViewBattingLeaders(leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
@@ -680,7 +680,7 @@ Sub ExpandedLeaders_Menu (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
 
         End If
 
-    Loop Until Selection% = 4 Or ExitCode% = 27
+    Loop Until SELECTION% = 4 Or ExitCode% = 27
 
 End Sub
 

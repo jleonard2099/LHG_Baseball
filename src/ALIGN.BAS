@@ -206,7 +206,7 @@ Sub AlignStats (pathRoadStats$, statFile$)
 
     Shared batterNames$(), pitcherNames$()
 
-    Shared BN$(), PN$()
+    Shared alignBatterName$(), alignPitcherName$()
     Shared B0N%(), BN%()
     Shared P0N%(), PN%()
     Shared S0N%()
@@ -257,7 +257,7 @@ Sub AlignStats (pathRoadStats$, statFile$)
 
             If UCase$(batterNames$(N)) = UCase$(batterNames_Road$(J)) Then
 
-                BN$(N) = batterNames_Road$(J)
+                alignBatterName$(N) = batterNames_Road$(J)
                 BN%(N) = BR%(J)
 
                 For K = 0 To 21
@@ -284,7 +284,7 @@ Sub AlignStats (pathRoadStats$, statFile$)
 
             If UCase$(pitcherNames$(N)) = UCase$(pitcherNames_Road$(J)) Then
 
-                PN$(N) = pitcherNames_Road$(J)
+                alignPitcherName$(N) = pitcherNames_Road$(J)
                 PN%(N) = PR%(J)
 
                 For K = 0 To 41
@@ -303,14 +303,14 @@ Sub AlignStats (pathRoadStats$, statFile$)
 
     'Check batters
     For J = 0 To 22
-        If UCase$(BN$(J)) <> UCase$(batterNames$(J)) Then
+        If UCase$(alignBatterName$(J)) <> UCase$(batterNames$(J)) Then
             SEQ = SEQ + 1
         End If
     Next J
 
     'Check pitchers
     For J = 0 To 21
-        If UCase$(PN$(J)) <> UCase$(pitcherNames$(J)) Then
+        If UCase$(alignPitcherName$(J)) <> UCase$(pitcherNames$(J)) Then
             SEQ = SEQ + 1
         End If
     Next J
@@ -342,7 +342,7 @@ Sub ReviewAndSaveAlignment (pathRoadStats$, statFile$)
 
     Shared draftTR(), draftTR1()
 
-    Shared BN$(), PN$()
+    Shared alignBatterName$(), alignPitcherName$()
     Shared B0N%(), BN%()
     Shared P0N%(), PN%()
     Shared S0N%()
@@ -360,7 +360,7 @@ Sub ReviewAndSaveAlignment (pathRoadStats$, statFile$)
         Color 12: Locate I + 1, 1: Print Using "##"; I;
         Print " ";: Color 15: Print Left$(batterNames$(I), 10);
         Color 12: Print Tab(17); Using "##"; I;: Print " ";
-        Color 7: Print Left$(BN$(I), 10);
+        Color 7: Print Left$(alignBatterName$(I), 10);
     Next
 
     For I = 0 To 21:
@@ -370,7 +370,7 @@ Sub ReviewAndSaveAlignment (pathRoadStats$, statFile$)
         Color 15: Print Left$(pitcherNames$(I), 10);
         Color 12: Print Tab(62); Using "##"; I;
         Print " ";
-        Color 7: Print Left$(PN$(I), 10);
+        Color 7: Print Left$(alignPitcherName$(I), 10);
     Next
 
     Color 11
@@ -384,12 +384,12 @@ Sub ReviewAndSaveAlignment (pathRoadStats$, statFile$)
     Write #1, L2R%
 
     For I = 0 To 22: 
-        Write #1, BN$(I)
+        Write #1, alignBatterName$(I)
         Write #1, BN%(I)
     Next I
 
     For I = 0 To 21: 
-        Write #1, PN$(I)
+        Write #1, alignPitcherName$(I)
         Write #1, PN%(I)
     Next I
 

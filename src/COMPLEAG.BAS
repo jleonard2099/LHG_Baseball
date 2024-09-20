@@ -17,7 +17,7 @@ Sub CompileLeague ()
 
     Shared BA$(), compileTeams$(), compileZ2$(), compileZ3$()
     Shared ER$(), NM$()
-    Shared statFileNames$()
+    Shared statFiles$()
 
     'Initialize values first
     APP = 0
@@ -59,8 +59,8 @@ Sub CompileLeague ()
         Input #2, league$, div1Name$, div2$, div3$, div4$
 
         For XW = 1 To TEAMS_PER_LEAGUE
-            Input #2, statFileNames$(XW)
-            compileTeams$(XW) = statFileNames$(XW)
+            Input #2, statFiles$(XW)
+            compileTeams$(XW) = statFiles$(XW)
         Next
 
         Close 2
@@ -70,17 +70,17 @@ Sub CompileLeague ()
             fullWins = 0
             fullLosses = 0
 
-            If statFileNames$(XW) <> Chr$(42) Then
+            If statFiles$(XW) <> Chr$(42) Then
 
-                haveStats = FindStatsPro%(statFileNames$(XW), TN$, fullWins, fullLosses)
+                haveStats = FindStatsPro%(statFiles$(XW), TN$, fullWins, fullLosses)
 
                 If (haveStats) Then
 
-                    L = Len(statFileNames$(XW))
+                    L = Len(statFiles$(XW))
                     WT$ = ""
 
                     For X = 1 To L
-                        A = Asc(Mid$(statFileNames$(XW), X, 1))
+                        A = Asc(Mid$(statFiles$(XW), X, 1))
                         WT$ = WT$ + Chr$(A)
                     Next X
 
@@ -103,10 +103,10 @@ Sub CompileLeague ()
 
                     Next X
 
-                    If confGame <> 1 And _FileExists(diskPaths$(1) + statFileNames$(XW)) Then
+                    If confGame <> 1 And _FileExists(diskPaths$(1) + statFiles$(XW)) Then
 
-                        Call ReadStatsLeague(statFileNames$(XW), TN$, totalGames)
-                        Call CheckStatsLeague(statFileNames$(XW), WT$, totalGames)
+                        Call ReadStatsLeague(statFiles$(XW), TN$, totalGames)
+                        Call CheckStatsLeague(statFiles$(XW), WT$, totalGames)
                         Call CalcStatTotals(WT$, totalGames)
 
                     End If 'Done checking if we need to skip

@@ -1,43 +1,81 @@
-'----------------------------------------
-' Used in more than one source file
-'----------------------------------------
+
 Dim opSysType$
 
 Dim Shared diskPaths$(0 To 4), Q$(0 To 2056), Q2$(0 To 2056), Q3$(100)
-Dim Shared teamIndex%(MAX_TEAMS)
 Dim Shared teamNames$(MAX_TEAMS)
-
+Dim Shared teamIndex%(MAX_TEAMS)
 
 ' *** Reading Stat Data ***
 ' -------------------------                                                                                                                   3
-Dim nbrInnings(MAX_SCHED_STATS), teamScore(MAX_SCHED_STATS), oppScore(MAX_SCHED_STATS)
+Dim gameAttendance&(MAX_SCHED_STATS)
+
+Dim oppScore(MAX_SCHED_STATS), teamScore(MAX_SCHED_STATS)
+Dim nbrInnings(MAX_SCHED_STATS)
+
+Dim gameSite$(MAX_SCHED_STATS), locIndicator$(MAX_SCHED_STATS), oppName$(MAX_SCHED_STATS)
 Dim losePitcher$(MAX_SCHED_STATS), winPitcher$(MAX_SCHED_STATS)
-Dim locIndicator$(MAX_SCHED_STATS), oppName$(MAX_SCHED_STATS)
+
+Dim div1Name$, div2Name$, div3Name$, div4Name$
 
 Dim statB%(0 To 22), statB0%(0 To 22, 0 To 41)
 Dim statP%(0 To 21), statP0%(0 To 21, 0 To 41)
 Dim statSS%(0 To 22, 0 To 6)
-Dim statT0%(0 To 21), statT1%(0 To 22), memberIdx(40)
+Dim statT0%(0 To 21), statT1%(0 To 22)
 
 Dim statT0!(22), statT1!(22)
 
+'Record / Standings
+Dim homeWins, homeLosses
+Dim roadWins, roadLosses
+Dim totalWins, totalLosses
+
+'-- Extra Inning Games
+Dim extraInnWins, extraInnLosses
+
+'-- Last 10 Games
+Dim lastTenLosses, lastTenWins
+
+'-- One Run Games
+Dim oneRunWins, oneRunLosses
+
+
+' Conferences / Orgs
+Dim memberIdx(TEAMS_PER_LEAGUE)
+Dim memberName$(TEAMS_PER_LEAGUE)
+Dim memberYear$(TEAMS_PER_LEAGUE)
+Dim statFiles$(TEAMS_PER_LEAGUE)
+
 '-- For Road Data
-Dim oppName_Road$(MAX_SCHED_STATS), losePitcher_Road$(MAX_SCHED_STATS)
-Dim locIndicator_Road$(MAX_SCHED_STATS), winPitcher_Road$(MAX_SCHED_STATS)
-Dim teamScore_Road(MAX_SCHED_STATS), nbrInnings_Road(MAX_SCHED_STATS), oppScore_Road(MAX_SCHED_STATS)
+Dim gameAtt_Road&(MAX_SCHED_STATS)
+
+Dim oppScore_Road(MAX_SCHED_STATS), teamScore_Road(MAX_SCHED_STATS)
+Dim nbrInnings_Road(MAX_SCHED_STATS)
+
+Dim oppName_Road$(MAX_SCHED_STATS), locIndicator_Road$(MAX_SCHED_STATS)
+Dim losePitcher_Road$(MAX_SCHED_STATS), winPitcher_Road$(MAX_SCHED_STATS)
 
 
 ' *** Schedule Data ***
 ' -------------------------
-'Dim homeTeam$(MAX_SCHEDULE_GAMES), visitingTeam$(MAX_SCHEDULE_GAMES)
-Dim homeScores(MAX_SCHEDULE_GAMES), visitorScores(MAX_SCHEDULE_GAMES)
+Dim BS%, NS%
+
+ReDim scheduleAP%(MAX_SCHEDULE_GAMES), scheduleNG%(MAX_SCHEDULE_GAMES, 18)
+ReDim homeScores(MAX_SCHEDULE_GAMES), visitorScores(MAX_SCHEDULE_GAMES)
+
+ReDim scheduleH$(MAX_SCHEDULE_GAMES), scheduleV$(MAX_SCHEDULE_GAMES)
+'ReDim homeTeam$(MAX_SCHEDULE_GAMES), visitingTeam$(MAX_SCHEDULE_GAMES)
+ReDim scheduleYN$(MAX_SCHEDULE_GAMES, 1)
+'ReDim yearNumber$(MAX_SCHEDULE_GAMES, 1)
+
 
 ' *** Game Options ***
 ' -------------------------
 Dim Shared DT$, TM$
 
+Dim eventSettings(13)
+
 Dim dayNight$(0 To 1), desigHitOpt$(1), gameType$(1)
-Dim leagueType$(2), month$(1 To 12)
+Dim leagueType$(2), modeAbbrev$(3), month$(1 To 12)
 Dim pitcherEra$(8), playMode$(0 To 3)
 Dim teamIndicator$(1), umpireName$(50)
 Dim yesNo$(1), yesNoText$(1)
@@ -46,29 +84,24 @@ Dim umpireNumber(50)
 
 ' *** Miscellaneous Use ***
 ' -------------------------
-Dim Shared backToMenu, BO%
+Dim Shared backToMenu
 
-Dim memberName$(TEAMS_PER_LEAGUE), memberYear$(TEAMS_PER_LEAGUE)
-Dim statFileNames$(TEAMS_PER_LEAGUE)
-
-Dim div1Name$, div2Name$, div3Name$, div4Name$
 
 '----------------------------------------
 '  Used in ALIGN / MERGE routines
 '----------------------------------------
-Dim nbrGamesCurr, nbrGamesRoad
 Dim LR2%, WR2%
 
-Dim BN$(23), batterNames_Road$(23)
-Dim PN$(22), pitcherNames_Road$(22)
+Dim alignBatterName$(23), batterNames_Road$(23)
+Dim alignPitcherName$(22), pitcherNames_Road$(22)
 
-Dim B0N%(23, 22), BN%(23)
-Dim P0N%(22, 42), PN%(22)
+Dim BN%(23), B0N%(23, 22)
+Dim PN%(22), P0N%(22, 42)
 Dim S0%(22, 6), S0N%(22, 6)
 
-Dim B0R%(23, 22), BR%(23)
-Dim P0R%(22, 42), PR%(22)
-Dim S0R%(22, 6), SR%(22, 6)
+Dim BR%(23), B0R%(23, 22)
+Dim PR%(22), P0R%(22, 42)
+Dim SR%(22, 6), S0R%(22, 6)
 
 Dim draftTR(22), draftTR1(23)
 
@@ -76,38 +109,43 @@ Dim draftTR(22), draftTR1(23)
 '----------------------------------------
 '  Used in CAREER / LEADER routines
 '----------------------------------------
-Dim BL0$(18, 20), PL0$(80, 20)
-Dim careerBL$(15), careerPL$(15)
-Dim careerB$(0 To 99), careerP$(0 To 79)
+Dim NB, NP
 
-Dim BLYR%(15), BRS%(15, 100, 17)
-Dim PLYR%(15), PRS%(15, 80, 18)
+Dim carLdrBatName$(18, 20), carLdrPitName$(16, 20)
+Dim careerBL$(15), careerPL$(15)
+Dim careerBatters$(0 To 99), careerPitchers$(0 To 79)
+
+Dim BLYR%(MAX_CAREER_YEARS), BRS%(MAX_CAREER_YEARS, 100, 17)
+Dim PLYR%(MAX_CAREER_YEARS), PRS%(MAX_CAREER_YEARS, 80, 18)
+
 Dim careerB0%(100, 23), careerB1%(100)
 Dim careerP0%(80, 42), careerP1%(80)
 
 Dim BLL!(15), PLL!(15)
-Dim BL1!(18, 20), PL1!(16, 21)
+Dim carLdrBatVal!(18, 20), carLdrPitVal!(16, 21)
 
 Dim leaderBL$(1 To 920), leaderPL$(1 To 880)
 
-Dim plyLeaderTeams$(40, 22), TMP$(1 To 880)
 Dim expBatCategory$(0 To 31), expPitCategory$(0 To 29), expTeamCategory$(0 To 39)
-Dim TMB$(1 To 920), TMM$(1 To 920), TPP$(1 To 920), tmLeaderTeams$(40, 23)
+Dim TMB$(1 To 920), TMM$(1 To 920), TMP$(1 To 880), TPP$(1 To 920)
+
+Dim plyLeaderTeams$(TEAMS_PER_LEAGUE, 22), tmLeaderTeams$(TEAMS_PER_LEAGUE, 23)
 
 Dim BK%(1 To 920, 22), PM%(1 To 880, 23)
 
 Dim TYP!(1 To 920), TYP1!(1 To 920)
-Dim TT!(40, 22), TT1!(40, 23)
 
 Dim GM1!(920), GM2(880)
 
-'NEWLDRST
-Dim CLT!(40), CWS!(40), ELL!(40), EWW!(40)
-Dim HLL!(40), HWW!(40), LLS!(40), LWS!(40)
-Dim expLL!(40), lastTenWins!(40), lastTenLosses!(40)
-Dim RLL!(40), RWW!(40), TLS!(40), TWS!(40), WW!(40)
+'Expanded Standings
+Dim CLT!(TEAMS_PER_LEAGUE), CWS!(TEAMS_PER_LEAGUE), ELL!(TEAMS_PER_LEAGUE), EWW!(TEAMS_PER_LEAGUE)
+Dim HLL!(TEAMS_PER_LEAGUE), HWW!(TEAMS_PER_LEAGUE), LLS!(TEAMS_PER_LEAGUE), LWS!(TEAMS_PER_LEAGUE)
+Dim expLL!(TEAMS_PER_LEAGUE), lastTenWins!(TEAMS_PER_LEAGUE), lastTenLosses!(TEAMS_PER_LEAGUE)
+Dim RLL!(TEAMS_PER_LEAGUE), RWW!(TEAMS_PER_LEAGUE)
+Dim TLS!(TEAMS_PER_LEAGUE), TWS!(TEAMS_PER_LEAGUE), TT!(TEAMS_PER_LEAGUE, 22), TT1!(TEAMS_PER_LEAGUE, 23)
+Dim WW!(TEAMS_PER_LEAGUE)
 
-Dim TML$(40)
+Dim TML$(TEAMS_PER_LEAGUE)
 
 
 '----------------------------------------
@@ -117,7 +155,7 @@ Dim TP&(33)
 
 
 '----------------------------------------
-'   Used in COMPILE routines
+'   Used in COMPILER routines
 '----------------------------------------
 Dim BAT%(24), PIT%(23)
 Dim O1(1 To 40), O2(1 To 40)
@@ -148,18 +186,6 @@ Dim batNames_DRAFT$(22), pitNames_DRAFT$(22)
 
 
 '----------------------------------------
-' Used in RECORDS routines
-'----------------------------------------
-Dim batRecVal!(32), batRecYr!(32), pitRecVal!(29), pitRecYr!(29)
-Dim batRecTmVal!(24), pitRecTmVal!(25), batRecTmYr!(24), pitRecTmYr!(25)
-
-Dim batRecPlyr$(32), batRecTeam$(32), pitRecPlyr$(29), pitRecTeam$(29)
-Dim batIndCategory$(1 To 32), pitIndCategory$(1 To 28)
-Dim batTeamCategory$(0 To 20), pitTeamCategory$(0 To 18)
-Dim batRecTmDesc$(24), pitRecTmDesc$(25)
-
-
-'----------------------------------------
 ' Used in TRADE routines
 '----------------------------------------
 Dim haveStats(1)
@@ -176,7 +202,7 @@ Dim mgrs_TRADE$(2), stads_TRADE$(2), tmAbbrev_TRADE$(2)
 ' ** Stat File **
 Dim tradeL2%(1), TEAM%(1, 22)
 
-Dim teams_TRADE$(1), A1$(1)
+Dim tmInfo_TRADE$(1), A1$(1)
 Dim tradeB1$(2, 23), tradeP1$(2, 22)
 
 Dim tradeB0%(2, 22, 22), tradeB3%(2, 23)
@@ -192,13 +218,8 @@ Dim tradeW2%(1)
 
 
 '----------------------------------------
-' Used in STAT / INPUT other routines
+'   Used in HD2HD routines
 '----------------------------------------
-Dim inputBS%(22)
-'DYS% = days rest; INJ% = injury status
-Dim inputDYS%(21), inputINJ%(22), inputTP%(33)
-Dim PS%(32), TB%(15)
-
 Dim homeWins(50), awayWins(50)
 Dim homeLosses(50), awayLosses(50)
 Dim totHomeWin(4), totAwayWin(4)
@@ -206,42 +227,45 @@ Dim totHomeLosses(4), totAwayLosses(4)
 Dim homeScoreTeam(200), homeScoreOpp(200)
 Dim awayScoreTeam(200), awayScoreOpp(200)
 Dim totHomeScoreTeam(4), totHomeScoreOpp(4)
-DIm totAwayScoreTeam(4), totAwayScoreOpp(4)
+Dim totAwayScoreTeam(4), totAwayScoreOpp(4)
+
+
+'----------------------------------------
+' Used in RECORD routines
+'----------------------------------------
+Dim batRecVal!(32), batRecYr!(32), pitRecVal!(29), pitRecYr!(29)
+Dim batRecTmVal!(24), pitRecTmVal!(25), batRecTmYr!(24), pitRecTmYr!(25)
+
+Dim batRecPlyr$(32), batRecTeam$(32), pitRecPlyr$(29), pitRecTeam$(29)
+Dim batIndCategory$(1 To 32), pitIndCategory$(1 To 28)
+Dim batTeamCategory$(0 To 20), pitTeamCategory$(0 To 18)
+Dim batRecTmDesc$(24), pitRecTmDesc$(25)
+
+
+'----------------------------------------
+' Used in STAT / INPUT other routines
+'----------------------------------------
+Dim inputBS%(22)
+
+'DYS% = days rest; INJ% = injury status
+Dim inputDYS%(21), inputINJ%(22), inputTP%(33)
+
+Dim PS%(32), TB%(15)
 
 Dim DV$(4)
 
 Dim ERX!, statI2!
 
-Dim CK
 Dim parkHR
-
-'Extra Inning Games
-Dim extraInnWins, extraInnLosses
-Dim homeWins, homeLosses
-'Last 10 Games
-Dim lastTenLosses, lastTenWins
-'One Run Games
-Dim oneRunWins, oneRunLosses
-Dim roadWins, roadLosses
-Dim totalWins, totalLosses
 
 Dim D0%, D1%, L2%, W2%
 
 Dim parkType$(3), BS$(22), PS$(21)
 
+
 '----------------------------------------
-' Used in SCHEDULE routines
+' Used in SEExxx routines
 '----------------------------------------
-Dim BS%, NS%
-
-Dim scheduleNG%(MAX_SCHEDULE_GAMES, 18)
-
-Dim eventSettings(1 To 13)
-Dim scheduleAP%(1)
-
-Dim modeAbbrev$(3)
-Dim scheduleH$(1 To 20), scheduleV$(1 To 20)
-Dim scheduleYN$(MAX_SCHEDULE_GAMES, 1)
 
 
 '----------------------------------------

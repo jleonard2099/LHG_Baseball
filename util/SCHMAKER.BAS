@@ -36,7 +36,7 @@ OPEN "DEV.BAS" FOR INPUT AS #2: FOR I = 0 TO 2: INPUT #2, D$(I): NEXT: CLOSE 2
 	PRINT "SELECT LEAGUE TO SCHEDULE": COLOR 15
 	SELECTION% = 1
 	Start% = 1
-	FileFGColor% = 15:FileBGColor% = 1
+	FileFGColor = 15:FileBGColor = 1
 	HiLiteFGColor% = 0:HiLiteBGColor% = 7
 	Rows% = 20
 	Columns% = 4
@@ -49,7 +49,7 @@ OPEN "DEV.BAS" FOR INPUT AS #2: FOR I = 0 TO 2: INPUT #2, D$(I): NEXT: CLOSE 2
 	PRINT "-SELECTS TEAM";
 
 _MouseShow "DEFAULT"
-MAMenu leagueFiles$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Rows%, Columns%, Spacing%, Row%, Column%
+MAMenu leagueFiles$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Rows%, Columns%, Spacing%, Row%, Column%
 _MouseHide
 
 	IF ExitCode% = 27 THEN END

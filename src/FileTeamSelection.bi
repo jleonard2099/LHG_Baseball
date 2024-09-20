@@ -5,6 +5,7 @@ Declare Sub ReadExtraData (teamYear$, targetTeam$, teamIdx)
 Declare Sub UserFilePrompt (reportFile$)
 
 Declare Function nameStatFile$ (teamName$)
+Declare Function CheckString% (targetString$)
 Declare Function ChooseFile$(fileSpec$, fileDesc$)
 
 Const TEAM_SIZE_BYTES = 4342
@@ -18,6 +19,8 @@ Dim previousYear$
 
 '-- transition away from this
 Dim Shared fileLength&
+
+Dim CK
 
 Dim Manager$, teamAbbrev$, Stadium$
 

@@ -19,29 +19,29 @@ Sub CARLDR ()
         menuChoices$(1) = "UPDATE CAREER LEADERS      "
         menuChoices$(2) = "VIEW / PRINT CAREER LEADERS"
         menuChoices$(3) = "RETURN TO UTILITIES MENU   "
-        Selection% = 1
+        SELECTION% = 1
         Count% = 3
         Start% = 1
         ExitCode% = 3
-        FileFGColor% = 15: FileBGColor% = 1
+        FileFGColor = 15: FileBGColor = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 6
         Row% = 8
         menuWidth% = Len(menuChoices$(1))
         Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor, FileBGColor)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         If ExitCode% <> 27 Then
 
-            Select Case Selection%
+            Select Case SELECTION%
 
                 Case 1:
-                    Call UpdateLeaders
+                    Call UpdateCareerLeaders
 
                 Case 2:
                     Call CareerLeaderOptions
@@ -50,39 +50,39 @@ Sub CARLDR ()
 
         End If
 
-    Loop Until Selection% = 3 Or ExitCode% = 27
+    Loop Until SELECTION% = 3 Or ExitCode% = 27
 
 End Sub
 
+
 '----------------------------------------
-'       UpdateLeaders Subroutine
+'       UpdateCareerLeaders Subroutine
 '----------------------------------------
-'This routine reads in the current stats, 
+'This routine reads in the current stats,
 'calculates the latest values (based on
 'the criteria given) and then creates /
 'overwrites the TCL file with the newest
 'calculated values.
-Sub UpdateLeaders ()
+Sub UpdateCareerLeaders ()
 
-    Dim BC(100, 18), PC(80, 17)
+    Dim batCarVals(100, 18), pitCarVals(80, 17)
 
-    Shared BL0$(), PL0$()
-    Shared careerB$(), careerP$()
+    Shared carLdrBatName$(), carLdrPitName$()
+    Shared carLdrBatVal!(), carLdrPitVal!()
 
+    Shared careerBatters$(), careerPitchers$()
     Shared BRS%(), PRS%()
 
-    Shared BL1!(), PL1!()
+    TMR1 = (100 * 14) + (80 * 17)
 
-    TMR1 = 2700
-
-    Erase BL1!, PL1!
+    Erase carLdrBatVal!, carLdrPitVal!
 
     '-- Initialize to 1000 because later we assign
-    '-- values based on comparison. (ie, looking 
+    '-- values based on comparison. (ie, looking
     '-- for lowest values. Nothing will ever be
     '-- lower than 0 if we don't have something here.
     For I1 = 0 To 20
-        PL1!(15, I1) = 1000
+        carLdrPitVal!(15, I1) = 1000
     Next
 
     careerFile$ = ChooseFile$(diskPaths$(1) + "*.CAR", "CAREER", ExitCode%)
@@ -105,107 +105,99 @@ Sub UpdateLeaders ()
 
         Loop Until UCase$(I$) = "N"
 
-        Open diskPaths$(1) + careerFile$ + ".CAR" For Input As #1
-
-        Input #1, NB, NP
-
-        For I = 0 To 99:
-            Input #1, careerB$(I)
-        Next
-
-        For I = 0 To 79:
-            Input #1, careerP$(I)
-        Next
-
-        For J = 1 To 15:
-
-            For I = 0 To 99:
-
-                For I1 = O To 17:
-                    Input #1, BRS%(J, I, I1)
-                Next I1
-
-                Color 9
-                Locate 7, 38
-                TMR1 = TMR1 - 1: Print Using "####"; TMR1
-
-            Next I
-
-        Next J
-
-        For J = 1 To 15:
-
-            For I = 0 To 79:
-
-                For I1 = 0 To 16:
-                    Input #1, PRS%(J, I, I1)
-                Next I1
-
-                Color 9
-                Locate 7, 38
-                TMR1 = TMR1 - 1: Print Using "####"; TMR1
-
-            Next I
-
-        Next J
-
-        Close #1
+        Call LoadCareerFile(careerFile$)
 
         Color 14
 
         Locate 10: Print "COMPUTING LEADER FILE . . . . . . PLEASE WAIT"
 
-        For I = 0 To 99
-            For I1 = 0 To 14
-                For J = 1 To 15
-                    BC(I, I1) = BC(I, I1) + BRS%(J, I, I1)
-                Next
-            Next
-        Next
+        '# Career Years
+        For N = 1 To MAX_CAREER_YEARS
 
-        For I = 0 To 79
-            For I1 = 0 To 16
-                For J = 1 To 15
-                    PC(I, I1) = PC(I, I1) + PRS%(J, I, I1)
-                Next
-            Next
-        Next
+            '# Player
+            For I = 0 To 99
 
-        For K = 0 To 99
+                If careerBatters$(I) <> "" And careerBatters$(I) <> "XXX" And careerBatters$(I) <> "END" Then
 
-            For X = 0 To 14
+                    '# Stats
+                    For J = 0 To 14
 
-                If BC(K, X) > BL1!(X, 19) Then
+                        batCarVals(I, J) = batCarVals(I, J) + BRS%(N, I, J)
 
-                    BL1!(X, 19) = BC(K, X)
-                    BL0$(X, 19) = careerB$(K)
+                    Next J
+
+                End If
+
+            Next I
+
+        Next N
+
+        '# Career Years
+        For N = 1 To MAX_CAREER_YEARS
+
+            '# Player
+            For I = 0 To 79
+
+                If careerPitchers$(I) <> "" And careerPitchers$(I) <> "XXX" And careerPitchers$(I) <> "END" Then
+
+                    '# Stats
+                    For J = 0 To 16
+
+                        pitCarVals(I, J) = pitCarVals(I, J) + PRS%(N, I, J)
+
+                    Next J
+
+                End If
+
+            Next I
+
+        Next N
+
+        ' ##############################
+        ' #   Update and sort leaders
+        ' ##############################
+        'Batters
+
+        'Categories # 0 to 14
+        For Z = 0 To 14
+
+            For K = 0 To 99
+
+                If batCarVals(K, Z) > carLdrBatVal!(Z, 19) Then
+
+                    carLdrBatVal!(Z, 19) = batCarVals(K, Z)
+                    carLdrBatName$(Z, 19) = careerBatters$(K)
 
                     For I = 1 To 20
                         For J = 20 To I Step -1
-                            If BL1!(X, J - 1) < BL1!(X, J) Then Swap BL1!(X, J - 1), BL1!(X, J): Swap BL0$(X, J - 1), BL0$(X, J)
+                            If carLdrBatVal!(Z, J - 1) < carLdrBatVal!(Z, J) Then
+                                Swap carLdrBatVal!(Z, J - 1), carLdrBatVal!(Z, J)
+                                Swap carLdrBatName$(Z, J - 1), carLdrBatName$(Z, J)
+                            End If
                         Next J
                     Next I
 
                 End If
 
-            Next X
+            Next K
 
-        Next K
+        Next Z
 
+        'Category # 15 - Batting Average
         For K = 0 To 99
 
-            If BC(K, 0) < N1 Or BC(K, 0) = 0 Then
+            If batCarVals(K, 0) < N1 Or batCarVals(K, 0) = 0 Then
 
-                If BC(K, 1) / BC(K, 0) > BL1!(15, 19) Then
+                If batCarVals(K, 1) / batCarVals(K, 0) > carLdrBatVal!(15, 19) Then
 
-                    BL1!(15, 19) = BC(K, 1) / BC(K, 0)
-                    BL0$(15, 19) = careerB$(K)
+                    carLdrBatVal!(15, 19) = batCarVals(K, 1) / batCarVals(K, 0)
+                    carLdrBatName$(15, 19) = careerBatters$(K)
 
                     For I = 1 To 20
                         For J = 20 To I Step -1
-                            If BL1!(15, J - 1) < BL1!(15, J) Then
-                                Swap BL1!(15, J - 1), BL1!(15, J)
-                                Swap BL0$(15, J - 1), BL0$(15, J)
+                            If carLdrBatVal!(15, J - 1) < carLdrBatVal!(15, J) Then
+                                Swap carLdrBatVal!(15, J - 1), carLdrBatVal!(15, J)
+                                Swap carLdrBatName$(15, J - 1), carLdrBatName$(15, J)
                             End If
                         Next J
                     Next I
@@ -216,20 +208,21 @@ Sub UpdateLeaders ()
 
         Next K
 
+        'Category # 16 - Slugging %
         For K = 0 To 99
 
-            If BC(K, 0) < N1 Or BC(K, 0) = 0 Then
+            If batCarVals(K, 0) < N1 Or batCarVals(K, 0) = 0 Then
 
-                If (BC(K, 1) + BC(K, 4) + BC(K, 5) * 2 + BC(K, 6) * 3) / BC(K, 0) > BL1!(16, 19) Then
+                If (batCarVals(K, 1) + batCarVals(K, 4) + batCarVals(K, 5) * 2 + batCarVals(K, 6) * 3) / batCarVals(K, 0) > carLdrBatVal!(16, 19) Then
 
-                    BL1!(16, 19) = (BC(K, 1) + BC(K, 4) + BC(K, 5) * 2 + BC(K, 6) * 3) / BC(K, 0)
-                    BL0$(16, 19) = careerB$(K)
+                    carLdrBatVal!(16, 19) = (batCarVals(K, 1) + batCarVals(K, 4) + batCarVals(K, 5) * 2 + batCarVals(K, 6) * 3) / batCarVals(K, 0)
+                    carLdrBatName$(16, 19) = careerBatters$(K)
 
                     For I = 1 To 20
                         For J = 20 To I Step -1
-                            If BL1!(16, J - 1) < BL1!(16, J) Then
-                                Swap BL1!(16, J - 1), BL1!(16, J)
-                                Swap BL0$(16, J - 1), BL0$(16, J)
+                            If carLdrBatVal!(16, J - 1) < carLdrBatVal!(16, J) Then
+                                Swap carLdrBatVal!(16, J - 1), carLdrBatVal!(16, J)
+                                Swap carLdrBatName$(16, J - 1), carLdrBatName$(16, J)
                             End If
                         Next J
                     Next I
@@ -240,20 +233,21 @@ Sub UpdateLeaders ()
 
         Next K
 
+        ' Category # 17 - On Base %
         For K = 0 To 99
 
-            If Not (BC(K, 0) < N1 Or BC(K, 0) + BC(K, 7) = 0) Then
+            If Not (batCarVals(K, 0) < N1 Or batCarVals(K, 0) + batCarVals(K, 7) = 0) Then
 
-                If (BC(K, 1) + BC(K, 7)) / (BC(K, 0) + BC(K, 7)) > BL1!(17, 19) Then
+                If (batCarVals(K, 1) + batCarVals(K, 7)) / (batCarVals(K, 0) + batCarVals(K, 7)) > carLdrBatVal!(17, 19) Then
 
-                    BL1!(17, 19) = (BC(K, 1) + BC(K, 7)) / (BC(K, 0) + BC(K, 7))
-                    BL0$(17, 19) = careerB$(K)
+                    carLdrBatVal!(17, 19) = (batCarVals(K, 1) + batCarVals(K, 7)) / (batCarVals(K, 0) + batCarVals(K, 7))
+                    carLdrBatName$(17, 19) = careerBatters$(K)
 
                     For I = 1 To 20
                         For J = 20 To I Step -1
-                            If BL1!(17, J - 1) < BL1!(17, J) Then
-                                Swap BL1!(17, J - 1), BL1!(17, J)
-                                Swap BL0$(17, J - 1), BL0$(17, J)
+                            If carLdrBatVal!(17, J - 1) < carLdrBatVal!(17, J) Then
+                                Swap carLdrBatVal!(17, J - 1), carLdrBatVal!(17, J)
+                                Swap carLdrBatName$(17, J - 1), carLdrBatName$(17, J)
                             End If
                         Next J
                     Next I
@@ -264,43 +258,50 @@ Sub UpdateLeaders ()
 
         Next K
 
+        ' ##############################
+        ' #   Update and sort leaders
+        ' ##############################
+        'Pitchers
+
+        'Categories # 0 to 14
+        For Z = 0 To 14
+
+            For K = 0 To 79
+
+                If pitCarVals(K, Z) > carLdrPitVal!(Z, 19) Then
+
+                    carLdrPitVal!(Z, 19) = pitCarVals(K, Z)
+                    carLdrPitName$(Z, 19) = careerPitchers$(K)
+
+                    For I = 1 To 20
+                        For J = 20 To I Step -1
+                            If carLdrPitVal!(Z, J - 1) < carLdrPitVal!(Z, J) Then
+                                Swap carLdrPitVal!(Z, J - 1), carLdrPitVal!(Z, J)
+                                Swap carLdrPitName$(Z, J - 1), carLdrPitName$(Z, J)
+                            End If
+                        Next J
+                    Next I
+                End If
+
+            Next K
+
+        Next Z
+
+        'Category #15 - ERA
         For K = 0 To 79
 
-            For X = 0 To 14
+            If Not (pitCarVals(K, 0) < N2 * 3 Or pitCarVals(K, 0) = 0) Then
 
-                If PC(K, X) > PL1!(X, 19) Then
+                If ((pitCarVals(K, 3) * 9) / pitCarVals(K, 0)) * 3 < carLdrPitVal!(15, 19) Then
 
-                    PL1!(X, 19) = PC(K, X)
-                    PL0$(X, 19) = careerP$(K)
-
-                    For I = 1 To 20
-                        For J = 20 To I Step -1
-                            If PL1!(X, J - 1) < PL1!(X, J) Then
-                                Swap PL1!(X, J - 1), PL1!(X, J)
-                                Swap PL0$(X, J - 1), PL0$(X, J)
-                            End If
-                        Next J
-                    Next I
-                End If
-
-            Next X
-
-        Next K
-
-        For K = 0 To 79
-
-            If Not (PC(K, 0) < N2 * 3 Or PC(K, 0) = 0) Then
-
-                If ((PC(K, 3) * 9) / PC(K, 0)) * 3 < PL1!(15, 19) Then
-
-                    PL1!(15, 19) = ((PC(K, 3) * 9) / PC(K, 0)) * 3
-                    PL0$(15, 19) = careerP$(K)
+                    carLdrPitVal!(15, 19) = ((pitCarVals(K, 3) * 9) / pitCarVals(K, 0)) * 3
+                    carLdrPitName$(15, 19) = careerPitchers$(K)
 
                     For I = 1 To 20
                         For J = 20 To I Step -1
-                            If PL1!(15, J) < PL1!(15, J - 1) Then
-                                Swap PL1!(15, J), PL1!(15, J - 1)
-                                Swap PL0$(15, J), PL0$(15, J - 1)
+                            If carLdrPitVal!(15, J) < carLdrPitVal!(15, J - 1) Then
+                                Swap carLdrPitVal!(15, J), carLdrPitVal!(15, J - 1)
+                                Swap carLdrPitName$(15, J), carLdrPitName$(15, J - 1)
                             End If
                         Next J
                     Next I
@@ -311,17 +312,20 @@ Sub UpdateLeaders ()
 
         Next K
 
-        Open diskPaths$(1) + careerFile$ + ".TCL" For Output As #1
+        'Save leaders
+        Open diskPaths$(2) + careerFile$ + ".TCL" For Output As #1
 
         For I = 0 To 17:
             For I1 = 0 To 19:
-                Write #1, BL1!(I, I1), BL0$(I, I1)
+                'Batting leaders
+                Write #1, carLdrBatVal!(I, I1), carLdrBatName$(I, I1)
             Next
         Next
 
         For I = 0 To 15:
             For I1 = 0 To 19:
-                Write #1, PL1!(I, I1), PL0$(I, I1)
+                'Pitching leaders
+                Write #1, carLdrPitVal!(I, I1), carLdrPitName$(I, I1)
             Next
         Next
 
@@ -331,6 +335,7 @@ Sub UpdateLeaders ()
 
 End Sub
 
+
 '----------------------------------------
 '     CareerLeaderOptions Subroutine
 '----------------------------------------
@@ -339,29 +344,29 @@ End Sub
 'the user options to print or view the stats.
 Sub CareerLeaderOptions ()
 
-    Shared BL1!(), PL1!()
-    Shared BL0$(), PL0$()
+    Shared carLdrBatVal!(), carLdrPitVal!()
+    Shared carLdrBatName$(), carLdrPitName$()
 
     Cls
 
-    leaderFile$ = ChooseFile$(diskPaths$(1) + "*.TCL", "LEADER", ExitCode%)
+    leaderFile$ = ChooseFile$(diskPaths$(2) + "*.TCL", "LEADER", ExitCode%)
 
     If ExitCode% <> 27 And ExitCode% <> 0 Then
 
         Color 15, 0
         Cls
 
-        Open diskPaths$(1) + leaderFile$ + ".TCL" For Input As #1
+        Open diskPaths$(2) + leaderFile$ + ".TCL" For Input As #1
 
         For I = 0 To 17:
             For I1 = 0 To 19:
-                Input #1, BL1!(I, I1), BL0$(I, I1)
+                Input #1, carLdrBatVal!(I, I1), carLdrBatName$(I, I1)
             Next
         Next
 
         For I = 0 To 15:
             For I1 = 0 To 19:
-                Input #1, PL1!(I, I1), PL0$(I, I1)
+                Input #1, carLdrPitVal!(I, I1), carLdrPitName$(I, I1)
             Next
         Next
 
@@ -374,19 +379,19 @@ Sub CareerLeaderOptions ()
             Select Case userKey$
 
                 Case "F"
-                    userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                    userFile$ = _SaveFileDialog$("Save Report File", _CWD$ + "\Report", "*.txt", "Text File")
                     If userFile$ <> "" Then
                         Call PrintCareerLeaders(0, userFile$)
                     End If
 
                 Case "P"
                     Call PrintCareerLeaders(1, "REPORT")
-                    
+
                 Case "S"
                     Call ViewCareerLeaders
 
             End Select
-            
+
         End If
 
     End If 'Done checking for ESC
@@ -396,179 +401,186 @@ End Sub
 '----------------------------------------
 '       PrintCareerLeaders Subroutine
 '----------------------------------------
-'This routine sends formatted career stats 
-'(loaded from the .TCL file) to the user's 
+'This routine sends formatted career stats
+'(loaded from the .TCL file) to the user's
 'default printer
 Sub PrintCareerLeaders (printDest, destFile$)
 
-    Shared BL0$(), PL0$()
-    Shared BL1!(), PL1!()
+    Shared carLdrBatName$(), carLdrPitName$()
+    Shared carLdrBatVal!(), carLdrPitVal!()
 
-	Color 15, 0
-	Cls
+    Color 15, 0
+    Cls
 
-	Open destFile$ For Output As #1
+    Open destFile$ For Output As #1
 
-    Print #1, Tab(5); "AT BATS"; Tab(29); "HITS"; Tab(54); "RUNS SCORED"; Tab(79); "RBI'S"; Tab(104); "DOUBLES"
+    ' ### BATTERS ###
+
+    Print #1, Tab(5); "AT BATS"; Tab(29); "HITS"; Tab(54); "RUNS SCORED"; Tab(79); "RBI'S"
 
     For I = 0 To 19
-        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(0, I);: Print #1, Tab(18); Using "####"; BL1!(0, I);
-        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(1, I);: Print #1, Tab(43); Using "####"; BL1!(1, I);
-        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(2, I);: Print #1, Tab(68); Using "####"; BL1!(2, I);
-        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(3, I);: Print #1, Tab(93); Using "####"; BL1!(3, I);
-        Print #1, Tab(100); Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(4, I);: Print #1, Tab(118); Using "####"; BL1!(4, I)
+        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(0, I), 13);: Print #1, Tab(18); Using "####"; carLdrBatVal!(0, I);
+        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(1, I), 13);: Print #1, Tab(43); Using "####"; carLdrBatVal!(1, I);
+        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(2, I), 13);: Print #1, Tab(68); Using "####"; carLdrBatVal!(2, I);
+        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(3, I), 13);: Print #1, Tab(93); Using "####"; carLdrBatVal!(3, I)
     Next
 
     Print #1,
     Print #1,
-    Print #1, Tab(5); "TRIPLES"; Tab(29); "HOME RUNS"; Tab(54); "WALKS"; Tab(79); "STRIKE OUTS"; Tab(104); "STOLEN BASES"
+
+    Print #1, Tab(5); "DOUBLES"; Tab(29); "TRIPLES"; Tab(54); "HOME RUNS"; Tab(79); "WALKS"
 
     For I = 0 To 19
-        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(5, I);: Print #1, Tab(18); Using "####"; BL1!(5, I);
-        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(6, I);: Print #1, Tab(43); Using "####"; BL1!(6, I);
-        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(7, I);: Print #1, Tab(68); Using "####"; BL1!(7, I);
-        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(8, I);: Print #1, Tab(93); Using "####"; BL1!(8, I);
-        Print #1, Tab(100); Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(9, I);: Print #1, Tab(118); Using "####"; BL1!(9, I)
-    Next
-
-    Print #1, Chr$(12)
-
-    Print #1,
-    Print #1,
-    Print #1, Tab(5); "CAUGHT STEALING"; Tab(29); "ERRORS"; Tab(54); "GAMES PLAYED"; Tab(79); "BATTING AVERAGE"; Tab(104); "SLUGGING PCT."
-
-    For I = 0 To 19
-        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(10, I);: Print #1, Tab(18); Using "####"; BL1!(10, I);
-        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(11, I);: Print #1, Tab(43); Using "####"; BL1!(11, I);
-        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(14, I);: Print #1, Tab(68); Using "####"; BL1!(14, I);
-        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(15, I);: Print #1, Tab(93); Using "#.###"; BL1!(15, I);
-        Print #1, Tab(100); Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(16, I);: Print #1, Tab(118); Using "#.###"; BL1!(16, I)
-    Next
-
-    Print #1,
-    Print #1,
-    Print #1, Tab(5); "ON-BASE PCT."; Tab(29); "INNINGS PITCHED"; Tab(54); "HITS ALLOWED"; Tab(79); "RUNS ALLOWED"; Tab(104); "EARNED RUNS ALLOWED"
-
-    For I = 0 To 19
-        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, BL0$(17, I);: Print #1, Tab(18); Using "#.###"; BL1!(17, I);
-        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(0, I);: Print #1, Tab(43); Using "###"; Int(PL1!(0, I) / 3);: If PL1!(O, I) - (Int(PL1!(O, I) / 3) * 3) > 0 Then Print #1, ".";: Print #1, Using "#"; PL1!(O, I) - (Int(PL1!(O, I) / 3) * 3);
-        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(1, I);: Print #1, Tab(68); Using "####"; PL1!(1, I);
-        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(2, I);: Print #1, Tab(93); Using "####"; PL1!(2, I);
-        Print #1, Tab(100); Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(3, I);: Print #1, Tab(118); Using "####"; PL1!(3, I)
+        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(4, I), 13);: Print #1, Tab(18); Using "####"; carLdrBatVal!(4, I);
+        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(5, I), 13);: Print #1, Tab(43); Using "####"; carLdrBatVal!(5, I);
+        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(6, I), 13);: Print #1, Tab(68); Using "####"; carLdrBatVal!(6, I);
+        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(7, I), 13);: Print #1, Tab(93); Using "####"; carLdrBatVal!(7, I)
     Next
 
     Print #1, Chr$(12)
 
     Print #1,
     Print #1,
-    Print #1, Tab(5); "WALKS"; Tab(29); "STRIKEOUTS"; Tab(54); "WINS"; Tab(79); "LOSSES"; Tab(104); "GAMES"
+
+    Print #1, Tab(5); "STRIKE OUTS"; Tab(29); "STOLEN BASES"; Tab(54); "CAUGHT STEALING"; Tab(79); "ERRORS"
 
     For I = 0 To 19
-        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(4, I);: Print #1, Tab(18); Using "####"; PL1!(4, I);
-        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(5, I);: Print #1, Tab(43); Using "####"; PL1!(5, I);
-        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(6, I);: Print #1, Tab(68); Using "####"; PL1!(6, I);
-        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(7, I);: Print #1, Tab(93); Using "####"; PL1!(7, I);
-        Print #1, Tab(100); Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(8, I);: Print #1, Tab(118); Using "####"; PL1!(8, I)
+        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(10, I), 13);: Print #1, Tab(18); Using "####"; carLdrBatVal!(10, I);
+        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(11, I), 13);: Print #1, Tab(43); Using "####"; carLdrBatVal!(11, I);
+        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(12, I), 13);: Print #1, Tab(68); Using "####"; carLdrBatVal!(12, I);
+        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(13, I), 13);: Print #1, Tab(93); Using "####"; carLdrBatVal!(13, I)
     Next
 
     Print #1,
     Print #1,
-    Print #1, Tab(5); "GAMES STARTED"; Tab(29); "COMPLETE GAMES"; Tab(54); "SHUTOUTS"; Tab(79); "SAVES"; Tab(104); "DOUBLE PLAYS THROWN"
+
+    Print #1, Tab(5); "ON-BASE PCT."; Tab(29); "GAMES PLAYED"; Tab(54); "BATTING AVERAGE"; Tab(79); "SLUGGING PCT."
 
     For I = 0 To 19
-        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(9, I);: Print #1, Tab(18); Using "####"; PL1!(9, I);
-        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(10, I);: Print #1, Tab(43); Using "####"; PL1!(10, I);
-        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(11, I);: Print #1, Tab(68); Using "####"; PL1!(11, I);
-        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(12, I);: Print #1, Tab(93); Using "####"; PL1!(12, I);
-        Print #1, Tab(100); Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(13, I);: Print #1, Tab(118); Using "####"; PL1!(13, I)
+        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(17, I), 13);: Print #1, Tab(18); Using "#.###"; carLdrBatVal!(17, I);
+        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(14, I), 13);: Print #1, Tab(43); Using "####"; carLdrBatVal!(14, I);
+        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(15, I), 13);: Print #1, Tab(68); Using "#.###"; carLdrBatVal!(15, I);
+        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(16, I), 13);: Print #1, Tab(93); Using "#.###"; carLdrBatVal!(16, I)
     Next
 
     Print #1, Chr$(12)
 
     Print #1,
     Print #1,
-    Print #1, Tab(5); "HOME RUNS ALLOWED"; Tab(29); "EARNED RUN AVERAGE"
+
+    ' ### PITCHERS ###
+
+    Print #1, Tab(5); "INNINGS PITCHED"; Tab(29); "HITS ALLOWED"; Tab(54); "RUNS ALLOWED"; Tab(79); "EARNED RUNS ALLOWED"
 
     For I = 0 To 19
-        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(14, I);: Print #1, Tab(20); Using "####"; PL1!(14, I);
-        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, PL0$(15, I);
-        If PL1!(15, I) = 1000 Then
-            Print #1, Tab(43); Using "###.##"; 0.0
+
+        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(0, I), 13);: Print #1, Tab(18); Using "###"; Int(carLdrPitVal!(0, I) / 3);
+        If carLdrPitVal!(0, I) - (Int(carLdrPitVal!(0, I) / 3) * 3) > 0 Then
+            Print #1, ".";: Print #1, Using "#"; carLdrPitVal!(0, I) - (Int(carLdrPitVal!(0, I) / 3) * 3);
+        End If
+
+        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(1, I), 13);: Print #1, Tab(43); Using "####"; carLdrPitVal!(1, I);
+        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(2, I), 13);: Print #1, Tab(68); Using "####"; carLdrPitVal!(2, I);
+        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(3, I), 13);: Print #1, Tab(93); Using "####"; carLdrPitVal!(3, I)
+
+    Next
+
+    Print #1,
+    Print #1,
+
+    Print #1, Tab(5); "WALKS"; Tab(29); "STRIKEOUTS"; Tab(54); "WINS"; Tab(79); "LOSSES"
+
+    For I = 0 To 19
+        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(4, I), 13);: Print #1, Tab(18); Using "####"; carLdrPitVal!(4, I);
+        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(5, I), 13);: Print #1, Tab(43); Using "####"; carLdrPitVal!(5, I);
+        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(6, I), 13);: Print #1, Tab(68); Using "####"; carLdrPitVal!(6, I);
+        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(7, I), 13);: Print #1, Tab(93); Using "####"; carLdrPitVal!(7, I)
+    Next
+
+    Print #1, Chr$(12)
+
+    Print #1,
+    Print #1,
+
+    Print #1, Tab(5); "GAMES"; Tab(29); "GAMES STARTED"; Tab(54); "COMPLETE GAMES"; Tab(79); "SHUTOUTS"
+
+    For I = 0 To 19
+        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(8, I), 13);: Print #1, Tab(18); Using "####"; carLdrPitVal!(8, I);
+        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(9, I), 13);: Print #1, Tab(43); Using "####"; carLdrPitVal!(9, I);
+        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(10, I), 13);: Print #1, Tab(68); Using "####"; carLdrPitVal!(10, I);
+        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(11, I), 13);: Print #1, Tab(93); Using "####"; carLdrPitVal!(11, I)
+    Next
+
+    Print #1,
+    Print #1,
+
+    Print #1, Tab(5); "SAVES"; Tab(29); "DOUBLE PLAYS THROWN"; Tab(54); "HOME RUNS ALLOWED"; Tab(79); "EARNED RUN AVERAGE"
+
+    For I = 0 To 19
+
+        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(12, I), 13);: Print #1, Tab(18); Using "####"; carLdrPitVal!(12, I);
+        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(13, I), 13);: Print #1, Tab(43); Using "####"; carLdrPitVal!(13, I);
+        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(14, I), 13);: Print #1, Tab(68); Using "####"; carLdrPitVal!(14, I);
+
+        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(15, I), 13);
+        If carLdrPitVal!(15, I) = 1000 Then
+            Print #1, Tab(93); Using "###.##"; 0.0
         Else
-            Print #1, Tab(43); Using "###.##"; PL1!(15, I)
+            Print #1, Tab(93); Using "###.##"; carLdrPitVal!(15, I)
         End If
 
     Next
 
     Print #1, Chr$(12)
 
-	If printDest = 1 Then
+    If printDest = 1 Then
 
-		Open destFile$ For Input As #2
+        Open destFile$ For Input As #2
 
-		Do While Not EOF(2)
-			Line Input #2, X$
-			LPrint X$
-		Loop
+        Do While Not EOF(2)
+            Line Input #2, X$
+            LPrint X$
+        Loop
 
-		Close #2
+        Close #2
 
-		LPrint Chr$(12)
+        LPrint Chr$(12)
 
-		Kill destFile$
+        Kill destFile$
 
-	End If
+    End If
 
 End Sub
 
 '----------------------------------------
 '      ViewCareerLeaders Subroutine
 '----------------------------------------
-'This routine displays formatted career 
-'stats (loaded from the .TCL file) to the 
+'This routine displays formatted career
+'stats (loaded from the .TCL file) to the
 'primary screen
 Sub ViewCareerLeaders ()
 
-    Shared BL0$(), PL0$()
-    Shared BL1!(), PL1!()
+    Shared carLdrBatName$(), carLdrPitName$()
+    Shared carLdrBatVal!(), carLdrPitVal!()
 
     Cls
     Color 12
 
-    Print Tab(5); "AT BATS                                HITS"
+    ' ### BATTERS ###
+
+    Print Tab(5); "AT BATS"; Tab(44); "HITS"
     For I = 0 To 19
         Color 3
         Locate I + 2: Print Using "##"; I + 1;
         Print ". ";
-        Color 15: Print BL0$(0, I);
-        Print Tab(20); Using "####"; BL1!(0, I);:
+        Color 15: Print carLdrBatName$(0, I);
+        Print Tab(20); Using "####"; carLdrBatVal!(0, I);:
 
         Color 3
         Print Tab(40); Using "##"; I + 1;
         Print ". ";
-        Color 15: Print BL0$(1, I);
-        Print Tab(60); Using "####"; BL1!(1, I)
-    Next
-
-    Locate 23, 22
-    Color 14: Print "HIT ANY KEY TO CONTINUE"
-    I$ = GetKeyPress$
-
-    Cls
-    Color 12
-
-    Print Tab(5); "RUNS SCORED                            RBI'S"
-    For I = 0 To 19
-        Color 3
-        Locate I + 2: Print Using "##"; I + 1;
-        Print ". ";
-        Color 15: Print BL0$(2, I);
-        Print Tab(20); Using "####"; BL1!(2, I);:
-        Color 3
-        Print Tab(40); Using "##"; I + 1;
-        Print ". ";
-        Color 15: Print BL0$(3, I);
-        Print Tab(60); Using "####"; BL1!(3, I)
+        Color 15: Print carLdrBatName$(1, I);
+        Print Tab(60); Using "####"; carLdrBatVal!(1, I)
     Next
 
     Locate 23, 22
@@ -578,18 +590,19 @@ Sub ViewCareerLeaders ()
     Cls
     Color 12
 
-    Print Tab(5); "DOUBLES                                TRIPLES"
+    Print Tab(5); "RUNS SCORE"; Tab(44); "RBI'S"
     For I = 0 To 19
         Color 3
         Locate I + 2: Print Using "##"; I + 1;
         Print ". ";
-        Color 15: Print BL0$(4, I);
-        Print Tab(20); Using "####"; BL1!(4, I);:
+        Color 15: Print carLdrBatName$(2, I);
+        Print Tab(20); Using "####"; carLdrBatVal!(2, I);:
+
         Color 3
         Print Tab(40); Using "##"; I + 1;
         Print ". ";
-        Color 15: Print BL0$(5, I);
-        Print Tab(60); Using "####"; BL1!(5, I)
+        Color 15: Print carLdrBatName$(3, I);
+        Print Tab(60); Using "####"; carLdrBatVal!(3, I)
     Next
 
     Locate 23, 22
@@ -599,18 +612,19 @@ Sub ViewCareerLeaders ()
     Cls
     Color 12
 
-    Print Tab(5); "HOME RUNS                              WALKS"
+    Print Tab(5); "DOUBLES"; Tab(44); "TRIPLES"
     For I = 0 To 19
         Color 3
         Locate I + 2: Print Using "##"; I + 1;
         Print ". ";
-        Color 15: Print BL0$(6, I);
-        Print Tab(20); Using "####"; BL1!(6, I);:
+        Color 15: Print carLdrBatName$(4, I);
+        Print Tab(20); Using "####"; carLdrBatVal!(4, I);:
+
         Color 3
         Print Tab(40); Using "##"; I + 1;
         Print ". ";
-        Color 15: Print BL0$(7, I);
-        Print Tab(60); Using "####"; BL1!(7, I)
+        Color 15: Print carLdrBatName$(5, I);
+        Print Tab(60); Using "####"; carLdrBatVal!(5, I)
     Next
 
     Locate 23, 22
@@ -620,18 +634,19 @@ Sub ViewCareerLeaders ()
     Cls
     Color 12
 
-    Print Tab(5); "STRIKE OUTS                            STOLEN BASES"
+    Print Tab(5); "HOME RUNS"; Tab(44); "WALKS"
     For I = 0 To 19
         Color 3
         Locate I + 2: Print Using "##"; I + 1;
         Print ". ";
-        Color 15: Print BL0$(8, I);
-        Print Tab(20); Using "####"; BL1!(8, I);:
+        Color 15: Print carLdrBatName$(6, I);
+        Print Tab(20); Using "####"; carLdrBatVal!(6, I);:
+
         Color 3
         Print Tab(40); Using "##"; I + 1;
         Print ". ";
-        Color 15: Print BL0$(9, I);
-        Print Tab(60); Using "####"; BL1!(9, I)
+        Color 15: Print carLdrBatName$(7, I);
+        Print Tab(60); Using "####"; carLdrBatVal!(7, I)
     Next
 
     Locate 23, 22
@@ -641,18 +656,20 @@ Sub ViewCareerLeaders ()
     Cls
     Color 12
 
-    Print Tab(5); "CAUGHT STEALING                        ERRORS"
+    Print Tab(5); "STRIKE OUTS"; Tab(44); "STOLEN BASES"
     For I = 0 To 19
+
         Color 3
         Locate I + 2: Print Using "##"; I + 1;
         Print ". ";
-        Color 15: Print BL0$(10, I);
-        Print Tab(20); Using "####"; BL1!(10, I);:
+        Color 15: Print carLdrBatName$(8, I);
+        Print Tab(20); Using "####"; carLdrBatVal!(8, I);:
+
         Color 3
         Print Tab(40); Using "##"; I + 1;
         Print ". ";
-        Color 15: Print BL0$(11, I);
-        Print Tab(60); Using "####"; BL1!(11, I)
+        Color 15: Print carLdrBatName$(9, I);
+        Print Tab(60); Using "####"; carLdrBatVal!(9, I)
     Next
 
     Locate 23, 22
@@ -660,18 +677,21 @@ Sub ViewCareerLeaders ()
     I$ = GetKeyPress$
 
     Cls
-    Color 12: Print Tab(5); "GAMES PLAYED                           BATTING AVERAGE"
+    Color 12
+
+    Print Tab(5); "CAUGHT STEALING"; Tab(44); "ERRORS"
     For I = 0 To 19
         Color 3
         Locate I + 2: Print Using "##"; I + 1;
         Print ". ";
-        Color 15: Print BL0$(14, I);
-        Print Tab(20); Using "####"; BL1!(14, I);:
+        Color 15: Print carLdrBatName$(10, I);
+        Print Tab(20); Using "####"; carLdrBatVal!(10, I);:
+
         Color 3
         Print Tab(40); Using "##"; I + 1;
         Print ". ";
-        Color 15: Print BL0$(15, I);
-        Print Tab(60); Using "#.###"; BL1!(15, I)
+        Color 15: Print carLdrBatName$(11, I);
+        Print Tab(60); Using "####"; carLdrBatVal!(11, I)
     Next
 
     Locate 23, 22
@@ -679,18 +699,21 @@ Sub ViewCareerLeaders ()
     I$ = GetKeyPress$
 
     Cls
-    Color 12: Print Tab(5); "SLUGGING PCT.                          ON-BASE PCT."
+    Color 12
+
+    Print Tab(5); "GAMES PLAYED"; Tab(44); "BATTING AVERAGE"
     For I = 0 To 19
         Color 3
         Locate I + 2: Print Using "##"; I + 1;
         Print ". ";
-        Color 15: Print BL0$(16, I);
-        Print Tab(20); Using "#.###"; BL1!(16, I);:
+        Color 15: Print carLdrBatName$(14, I);
+        Print Tab(20); Using "####"; carLdrBatVal!(14, I);:
+
         Color 3
         Print Tab(40); Using "##"; I + 1;
         Print ". ";
-        Color 15: Print BL0$(17, I);
-        Print Tab(60); Using "#.###"; BL1!(17, I)
+        Color 15: Print carLdrBatName$(15, I);
+        Print Tab(60); Using "#.###"; carLdrBatVal!(15, I)
     Next
 
     Locate 23, 22
@@ -698,19 +721,21 @@ Sub ViewCareerLeaders ()
     I$ = GetKeyPress$
 
     Cls
-    Color 12: Print Tab(5); "INNINGS PITCHED                        HITS ALLOWED"
+    Color 12
+
+    Print Tab(5); "SLUGGING PCT."; Tab(44); "ON-BASE PCT."
     For I = 0 To 19
         Color 3
         Locate I + 2: Print Using "##"; I + 1;
         Print ". ";
-        Color 15: Print PL0$(0, I);
-        Print Tab(18); Using "###"; Int(PL1!(0, I) / 3);
-        If PL1!(O, I) - (Int(PL1!(O, I) / 3) * 3) > 0 Then Print ".";: Print Using "#"; PL1!(O, I) - (Int(PL1!(O, I) / 3) * 3);:
+        Color 15: Print carLdrBatName$(16, I);
+        Print Tab(20); Using "#.###"; carLdrBatVal!(16, I);:
+
         Color 3
         Print Tab(40); Using "##"; I + 1;
         Print ". ";
-        Color 15: Print PL0$(1, I);
-        Print Tab(60); Using "####"; PL1!(1, I)
+        Color 15: Print carLdrBatName$(17, I);
+        Print Tab(60); Using "#.###"; carLdrBatVal!(17, I)
     Next
 
     Locate 23, 22
@@ -718,18 +743,27 @@ Sub ViewCareerLeaders ()
     I$ = GetKeyPress$
 
     Cls
-    Color 12: Print Tab(5); "RUNS ALLOWED                           EARNED RUNS ALLOWED"
+    Color 12
+
+    ' ### PITCHERS ###
+
+    Print Tab(5); "INNINGS PITCHED"; Tab(44); "HITS ALLOWED"
     For I = 0 To 19
         Color 3
         Locate I + 2: Print Using "##"; I + 1;
         Print ". ";
-        Color 15: Print PL0$(2, I);
-        Print Tab(20); Using "####"; PL1!(2, I);:
+        Color 15: Print carLdrPitName$(0, I);
+        Print Tab(18); Using "###"; Int(carLdrPitVal!(0, I) / 3);
+        If carLdrPitVal!(O, I) - (Int(carLdrPitVal!(O, I) / 3) * 3) > 0 Then
+            Print ".";
+            Print Using "#"; carLdrPitVal!(O, I) - (Int(carLdrPitVal!(O, I) / 3) * 3);:
+        End If
+
         Color 3
         Print Tab(40); Using "##"; I + 1;
         Print ". ";
-        Color 15: Print PL0$(3, I);
-        Print Tab(60); Using "####"; PL1!(3, I)
+        Color 15: Print carLdrPitName$(1, I);
+        Print Tab(60); Using "####"; carLdrPitVal!(1, I)
     Next
 
     Locate 23, 22
@@ -737,18 +771,21 @@ Sub ViewCareerLeaders ()
     I$ = GetKeyPress$
 
     Cls
-    Color 12: Print Tab(5); "WALKS                                  STRIKEOUTS"
+    Color 12
+
+    Print Tab(5); "RUNS ALLOWED"; Tab(44); "EARNED RUNS ALLOWED"
     For I = 0 To 19
         Color 3
         Locate I + 2: Print Using "##"; I + 1;
         Print ". ";
-        Color 15: Print PL0$(4, I);
-        Print Tab(20); Using "####"; PL1!(4, I);:
+        Color 15: Print carLdrPitName$(2, I);
+        Print Tab(20); Using "####"; carLdrPitVal!(2, I);:
+
         Color 3
         Print Tab(40); Using "##"; I + 1;
         Print ". ";
-        Color 15: Print PL0$(5, I);
-        Print Tab(60); Using "####"; PL1!(5, I)
+        Color 15: Print carLdrPitName$(3, I);
+        Print Tab(60); Using "####"; carLdrPitVal!(3, I)
     Next
 
     Locate 23, 22
@@ -756,18 +793,21 @@ Sub ViewCareerLeaders ()
     I$ = GetKeyPress$
 
     Cls
-    Color 12: Print Tab(5); "WINS                                   LOSSES"
+    Color 12
+
+    Print Tab(5); "WALKS"; Tab(44); "STRIKEOUTS"
     For I = 0 To 19
         Color 3
         Locate I + 2: Print Using "##"; I + 1;
         Print ". ";
-        Color 15: Print PL0$(6, I);
-        Print Tab(20); Using "####"; PL1!(6, I);:
+        Color 15: Print carLdrPitName$(4, I);
+        Print Tab(20); Using "####"; carLdrPitVal!(4, I);:
+
         Color 3
         Print Tab(40); Using "##"; I + 1;
         Print ". ";
-        Color 15: Print PL0$(7, I);
-        Print Tab(60); Using "####"; PL1!(7, I)
+        Color 15: Print carLdrPitName$(5, I);
+        Print Tab(60); Using "####"; carLdrPitVal!(5, I)
     Next
 
     Locate 23, 22
@@ -775,18 +815,21 @@ Sub ViewCareerLeaders ()
     I$ = GetKeyPress$
 
     Cls
-    Color 12: Print Tab(5); "GAMES                                  GAMES STARTED"
+    Color 12
+
+    Print Tab(5); "WINS"; Tab(44); "LOSSES"
     For I = 0 To 19
         Color 3
         Locate I + 2: Print Using "##"; I + 1;
         Print ". ";
-        Color 15: Print PL0$(8, I);
-        Print Tab(20); Using "####"; PL1!(8, I);:
+        Color 15: Print carLdrPitName$(6, I);
+        Print Tab(20); Using "####"; carLdrPitVal!(6, I);:
+
         Color 3
         Print Tab(40); Using "##"; I + 1;
         Print ". ";
-        Color 15: Print PL0$(9, I);
-        Print Tab(60); Using "####"; PL1!(9, I)
+        Color 15: Print carLdrPitName$(7, I);
+        Print Tab(60); Using "####"; carLdrPitVal!(7, I)
     Next
 
     Locate 23, 22
@@ -794,18 +837,21 @@ Sub ViewCareerLeaders ()
     I$ = GetKeyPress$
 
     Cls
-    Color 12: Print Tab(5); "COMPLETE GAMES                         SHUTOUTS"
+    Color 12
+
+    Print Tab(5); "GAMES"; Tab(44); "GAMES STARTED"
     For I = 0 To 19
         Color 3
         Locate I + 2: Print Using "##"; I + 1;
         Print ". ";
-        Color 15: Print PL0$(10, I);
-        Print Tab(20); Using "####"; PL1!(10, I);:
+        Color 15: Print carLdrPitName$(8, I);
+        Print Tab(20); Using "####"; carLdrPitVal!(8, I);:
+
         Color 3
         Print Tab(40); Using "##"; I + 1;
         Print ". ";
-        Color 15: Print PL0$(11, I);
-        Print Tab(60); Using "####"; PL1!(11, I)
+        Color 15: Print carLdrPitName$(9, I);
+        Print Tab(60); Using "####"; carLdrPitVal!(9, I)
     Next
 
     Locate 23, 22
@@ -813,18 +859,21 @@ Sub ViewCareerLeaders ()
     I$ = GetKeyPress$
 
     Cls
-    Color 12: Print Tab(5); "SAVES                                  DOUBLE PLAYS THROWN"
+    Color 12
+
+    Print Tab(5); "COMPLETE GAMES"; Tab(44); "SHUTOUTS"
     For I = 0 To 19
         Color 3
         Locate I + 2: Print Using "##"; I + 1;
         Print ". ";
-        Color 15: Print PL0$(12, I);
-        Print Tab(20); Using "####"; PL1!(12, I);:
+        Color 15: Print carLdrPitName$(10, I);
+        Print Tab(20); Using "####"; carLdrPitVal!(10, I);:
+
         Color 3
         Print Tab(40); Using "##"; I + 1;
         Print ". ";
-        Color 15: Print PL0$(13, I);
-        Print Tab(60); Using "####"; PL1!(13, I)
+        Color 15: Print carLdrPitName$(11, I);
+        Print Tab(60); Using "####"; carLdrPitVal!(11, I)
     Next
 
     Locate 23, 22
@@ -832,21 +881,46 @@ Sub ViewCareerLeaders ()
     I$ = GetKeyPress$
 
     Cls
-    Color 12: Print Tab(5); "HOME RUNS ALLOWED                     EARNED RUN AVERAGE"
+    Color 12
+
+    Print Tab(5); "SAVES"; Tab(44); "DOUBLE PLAYS THROWN"
     For I = 0 To 19
         Color 3
         Locate I + 2: Print Using "##"; I + 1;
         Print ". ";
-        Color 15: Print PL0$(14, I);
-        Print Tab(20); Using "####"; PL1!(14, I);
+        Color 15: Print carLdrPitName$(12, I);
+        Print Tab(20); Using "####"; carLdrPitVal!(12, I);:
+
         Color 3
         Print Tab(40); Using "##"; I + 1;
         Print ". ";
-        Color 15: Print PL0$(15, I);
-        If PL1!(15, I) = 1000 Then
+        Color 15: Print carLdrPitName$(13, I);
+        Print Tab(60); Using "####"; carLdrPitVal!(13, I)
+    Next
+
+    Locate 23, 22
+    Color 14: Print "HIT ANY KEY TO CONTINUE"
+    I$ = GetKeyPress$
+
+    Cls
+    Color 12
+
+    Print Tab(5); "HOME RUNS ALLOWED"; Tab(44); "EARNED RUN AVERAGE"
+    For I = 0 To 19
+        Color 3
+        Locate I + 2: Print Using "##"; I + 1;
+        Print ". ";
+        Color 15: Print carLdrPitName$(14, I);
+        Print Tab(20); Using "####"; carLdrPitVal!(14, I);
+
+        Color 3
+        Print Tab(40); Using "##"; I + 1;
+        Print ". ";
+        Color 15: Print carLdrPitName$(15, I);
+        If carLdrPitVal!(15, I) = 1000 Then
             Print Tab(58); Using "###.##"; 0.0
         Else
-            Print Tab(58); Using "###.##"; PL1!(15, I)
+            Print Tab(58); Using "###.##"; carLdrPitVal!(15, I)
         End If
     Next
 
@@ -855,5 +929,4 @@ Sub ViewCareerLeaders ()
     I$ = GetKeyPress$
 
 End Sub
-
 

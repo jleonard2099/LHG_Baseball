@@ -20,11 +20,11 @@ Sub CNGTM (userChoice)
         menuChoices$(2) = "PRINT A TEAM ROSTER  "
         menuChoices$(3) = "VIEW A TEAM ROSTER   "
         menuChoices$(4) = "EXIT TO MAIN MENU    "
-        Selection% = 1
+        SELECTION% = 1
         Count% = 4
         Start% = 1
         ExitCode% = 4
-        FileFGColor% = 15: FileBGColor% = 1
+        FileFGColor = 15: FileBGColor = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 8
@@ -33,27 +33,27 @@ Sub CNGTM (userChoice)
 
         If (userChoice <> 0) Then
 
-            Selection% = userChoice
+            SELECTION% = userChoice
 
         Else
 
-            Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor%, FileBGColor%)
+            Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor, FileBGColor)
 
             _MouseShow "DEFAULT"
-            MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+            MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
             _MouseHide
 
             Color , 0
         End If
 
-        If ExitCode% <> 27 And Selection% <> 4 Then
+        If ExitCode% <> 27 And SELECTION% <> 4 Then
 
             teamNbr = 0
             Call ChooseTeam(YN$, NTMS, teamNbr, team$)
 
             If teamNbr <> 0 Then
 
-                Select Case Selection%
+                Select Case SELECTION%
 
                     Case 1:
                         Call InputEditTeam(2, YN$, team$, teamNbr)
@@ -93,7 +93,7 @@ Sub CNGTM (userChoice)
 
         End If
 
-    Loop Until Selection% = 4 Or ExitCode% = 27
+    Loop Until SELECTION% = 4 Or ExitCode% = 27
 
 End Sub
 

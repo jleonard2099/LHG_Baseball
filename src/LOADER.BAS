@@ -30,27 +30,10 @@ Sub LOADER
     '----------------------------------------
     '         DETERMINE GAME OPTIONS
     '----------------------------------------
-
-    If Not _FileExists("DEV.BAS") Then
-
-        Open "DEV.BAS" For Output As #1
-
-        For I = 0 To 3
-            Print #1, _CWD$ + "\"
-        Next
-
-        Close #1
-
-    End If
-
-    Open "DEV.BAS" For Input As #2
-
-    For I = 0 To 3
-        Input #2, diskPaths$(I)
-    Next
-
-    Close #2
-
+    '-- We should udpate this to read in DEFERA
+    '-- Then delete it
+    '-- And finally write as DEFAULT
+    '-- Use same logic as for DEV.BAS
     If Not _FileExists("DEFERA") Then
 
         Open "DEFERA" For Output As #3
@@ -99,34 +82,51 @@ Sub LOADER
 
         Close #5
 
-        'currGame = schedGame(0) + schedGame(2)
+        currGame = schedGame(0) + schedGame(2)
 
         'Open "pbplog" + Str$(currGame) For Append As #11
+        'Open "pbplog" For Append As #11
+        If Not _FileExists(diskPaths$(3) + scheduleFile$) Then
 
-        Open diskPaths$(3) + scheduleFile$ For Random As #6 Len = SCHEDULE_SIZE_BYTES
+            'Notify user that game won't execute
+            MsgText$ = "CAN'T FIND OR LOAD TARGET SCHEDULE.  PRESS ANY KEY TO RETURN TO MENU"
+            BoxWidth = 18
+            BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+            Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+            Call CSMsgBox(MsgText$, BoxWidth, PASS)
+            I$ = GetKeyPress$
+            Call CSMsgBox("", 0, PASS)
 
-        For X = 0 To 18
-            Field #6, X * 2 As X$, 2 As Q2$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
-        Next
+            earlyExit = 1
 
-        Field #6, 38 As X$, 2 As Q2$(22), 2 As Q2$(23), 5 As Q2$(20), 5 As Q2$(21)
+        Else
 
-        Get #6, schedGame(0) + schedGame(2)
+            Open diskPaths$(3) + scheduleFile$ For Random As #6 Len = SCHEDULE_SIZE_BYTES
 
-        For X = 0 To 18
-            NG%(X) = CVI(Q2$(X + 1))
-        Next
+            For X = 0 To 18
+                Field #6, X * 2 As X$, 2 As Q2$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
+            Next
 
-        For X = 0 To 1
-            diskIDs$(X) = _Trim$(Q2$(20 + X))
-        Next
+            Field #6, 38 As X$, 2 As Q2$(22), 2 As Q2$(23), 5 As Q2$(20), 5 As Q2$(21)
 
-        VS% = CVI(Q2$(22))
-        HS% = CVI(Q2$(23))
+            Get #6, schedGame(0) + schedGame(2)
 
-        Close #6
+            For X = 0 To 18
+                NG%(X) = CVI(Q2$(X + 1))
+            Next
 
-        autoPlay = 1
+            For X = 0 To 1
+                diskIDs$(X) = _Trim$(Q2$(20 + X))
+            Next
+
+            VS% = CVI(Q2$(22))
+            HS% = CVI(Q2$(23))
+
+            Close #6
+
+            autoPlay = 1
+            
+        End If
 
     Else
 
@@ -149,7 +149,8 @@ Sub LOADER
             Call CSMsgBox(MsgText$, BoxWidth, PASS)
             I$ = GetKeyPress$
             Call CSMsgBox("", 0, PASS)
-            Exit Sub
+            
+            earlyExit = 1
 
         End If
 
@@ -230,13 +231,13 @@ Sub LOADER
 
                 I$ = GetKeyPress$
 
-                If I$ <> Chr$(27) Then Call LetterToNumber(I$, I)
+                If I$ <> Chr$(27) Then Call LetterToNumber(I$, setting)
 
-            Loop Until I >= 0 And I <= 17 Or I$ = Chr$(27) Or UCase$(I$) = "Q"
+            Loop Until setting >= 0 And setting <= 17 Or I$ = Chr$(27) Or UCase$(I$) = "Q"
 
             If I$ <> Chr$(27) And UCase$(I$) <> "Q" Then
 
-                Select Case I
+                Select Case setting
 
                     Case 0:
                         Open "DEFERA" For Output As #7
@@ -319,28 +320,53 @@ Sub LOADER
 
                 End Select
 
-            Else
-
-                'Close #7
-                'End
-                'System
-                Exit Sub
-
             End If
 
-        Loop Until (I = 9 And gameTeams$(0) <> "" And gameTeams$(1) <> "") Or I$ = Chr$(27) Or UCase$(I$) = "Q"
+        Loop Until (setting = 9 And gameTeams$(0) <> "" And gameTeams$(1) <> "") Or I$ = Chr$(27) Or UCase$(I$) = "Q"
 
         If I$ <> Chr$(27) And UCase$(I$) <> "Q" Then
             'TICKER PROMPT
         Else
 
-            'End
-            'System
-            'Exit Sub
+            earlyExit = 1
 
         End If
 
     End If
+
+    'If we've run into issues so far...
+    If earlyExit = 1 Then Exit Sub
+
+    '----------------------------------------
+    '    AUTO-DETERMINE OTHER OPTIONS
+    '----------------------------------------
+
+    ' Determine computer team
+    Select Case playerOpt
+
+        Case 1:
+            playerMode = 1
+            compTeam = 0
+
+        Case 2:
+            playerMode = 1
+            compTeam = 1
+
+        Case 3:
+            playerMode = 2
+
+    End Select
+
+    'playerMode represents the following values:
+    '   0 = Human
+    '   1 = Computer Team
+    '   2 = PC vs. PC
+
+
+    If teamRat_GAME(0, 11) = teamRat_GAME(1, 11) And teamRat_GAME(0, 12) = teamRat_GAME(1, 12) Then 
+        Call ColorChange
+    End If
+
 
     'Determine attendance
 
@@ -376,33 +402,6 @@ Sub LOADER
         ' ** averages read in from PARKS.DBF
         actualAttendance& = avgAttendance& + Int(Rnd(1) * 20000) - 10000
     End If
-
-    '----------------------------------------
-    '    AUTO-DETERMINE OTHER OPTIONS
-    '----------------------------------------
-
-    ' Determine computer team
-    Select Case playerOpt
-
-        Case 1:
-            playerMode = 1
-            compTeam = 0
-
-        Case 2:
-            playerMode = 1
-            compTeam = 1
-
-        Case 3:
-            playerMode = 2
-
-    End Select
-
-    'playerMode represents the following values:
-    '   0 = Human
-    '   1 = Computer Team
-    '   2 = PC vs. PC
-
-    If teamRat_GAME(0, 11) = teamRat_GAME(1, 11) And teamRat_GAME(0, 12) = teamRat_GAME(1, 12) Then Call ColorChange
 
     YV = 1
     YM = 0
@@ -1692,7 +1691,7 @@ Sub SelectStadium (useVGA)
                 Start% = 1
 
                 Do
-                    Selection% = 1
+                    SELECTION% = 1
                     Count% = 15
                     ExitCode% = 99
                     FileFGColor = 15: FileBGColor = 1
@@ -1702,24 +1701,24 @@ Sub SelectStadium (useVGA)
                     menuWidth% = Len(menuChoices$(1))
                     Column% = (80 - menuWidth% - 2) / 2
 
-                    Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor%, FileBGColor%)
+                    Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor, FileBGColor)
 
                     _MouseShow "Default"
-                    MAMenu PARK$(), Selection%, Start%, Count%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor, HiLiteBGColor, 15, 1, 1, Row%, Column%
+                    MAMenu PARK$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor, HiLiteBGColor, 15, 1, 1, Row%, Column%
                     _MouseHide
 
                     Color , 0
 
                     If ExitCode% <> 27 Then
 
-                        PARK$ = Right$(Str$(Selection%), Len(Str$(Selection%)) - 1)
+                        PARK$ = Right$(Str$(SELECTION%), Len(Str$(SELECTION%)) - 1)
                         If dayOrNight = 0 Then PARK$ = PARK$ + "D.PNG" Else PARK$ = PARK$ + "N.PNG"
                         Color 15, 0
 
                         If _FileExists(".\parks\" + PARK$) Then
                             foundPark% = 1
-                            teamRat_GAME(1, 13) = Selection%
-                            gameStadiums$(1) = PARK$(Selection%)
+                            teamRat_GAME(1, 13) = SELECTION%
+                            gameStadiums$(1) = PARK$(SELECTION%)
                         Else
                             Do
                                 Locate 10, 8
@@ -1730,14 +1729,12 @@ Sub SelectStadium (useVGA)
                             Loop Until UCase$(J$) = "Y" Or UCase$(J$) = "N"
 
                             If I$ = "Y" Then
-                                teamRat_GAME(1, 13) = Selection%: gameStadiums$(1) = PARK$(Selection%)
+                                teamRat_GAME(1, 13) = SELECTION%: gameStadiums$(1) = PARK$(SELECTION%)
                                 If dayOrNight = 0 Then PARK$ = "99D.PNG" Else PARK$ = "99N.PNG"
                             End If
 
                         End If
 
-                    Else
-                        BO% = 1
                     End If
 
                 Loop Until UCase$(J$) = "Y" Or ExitCode% = 27 Or foundPark% = 1
@@ -1754,7 +1751,7 @@ Sub SelectStadium (useVGA)
         'So instead, let's switch to regular mode
         If Not _FileExists(".\parks\" + PARK$) Then useVGA = 0
 
-    Loop Until BO% = 0 Or UCase$(I$) = "N" Or ExitCode% = 27
+    Loop Until UCase$(I$) = "N" Or ExitCode% = 27
 
 End Sub
 
@@ -2659,7 +2656,7 @@ End Sub
 'choose a starting pitcher. The choices
 'will have already been printed to the
 'screen from other routines.
-Sub PitchingStarter (idx%)
+Sub PitchingStarter (tmIdx)
 
     Shared startPitcher()
 
@@ -2667,26 +2664,26 @@ Sub PitchingStarter (idx%)
 
         Locate 19, 58: Print "SELECT STARTER"
 
-        If startPitcher(idx%) <> -1 Then
+        If startPitcher(tmIdx) <> -1 Then
 
-            I1 = startPitcher(idx%)
+            pitchIdx = startPitcher(tmIdx)
 
         Else
 
             Do
                 I$ = GetKeyPress$
-                Call LetterToNumber(I$, I1)
-            Loop Until I1 <= 21 And pitchRating(idx%, I1, 15) <= 0
+                Call LetterToNumber(I$, pitchIdx)
+            Loop Until pitchIdx <= 21 And pitchRating(tmIdx, pitchIdx, 15) <= 0
 
         End If
 
         Locate 20, 58
 
-        Print pitchers$(idx%, I1); " "; handed$(pitchRating(idx%, I1, 0) + 2)
+        Print pitchers$(tmIdx, pitchIdx); " "; handed$(pitchRating(tmIdx, pitchIdx, 0) + 2)
 
         Print
 
-        If Not (autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = idx%)) Then
+        If Not (autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = tmIdx)) Then
 
             Do
                 Locate 21, 58: Print "ANY CHANGE? (Y/N)"
@@ -2696,7 +2693,7 @@ Sub PitchingStarter (idx%)
             If UCase$(I$) = "Y" Then
                 Locate 20, 58
                 Print Space$(16)
-                startPitcher(idx%) = -1
+                startPitcher(tmIdx) = -1
             End If
 
         Else
@@ -2707,14 +2704,14 @@ Sub PitchingStarter (idx%)
 
     Loop Until UCase$(I$) = "N"
 
-    P1%(idx%) = I1
-    P6%(idx%) = 1
-    pitchRating(idx%, I1, 15) = P6%(idx%)
+    P1%(tmIdx) = pitchIdx
+    P6%(tmIdx) = 1
+    pitchRating(tmIdx, pitchIdx, 15) = P6%(tmIdx)
 
-    pitchEff(idx%, 0) = Int(((pitchRating(idx%, P1%(idx%), 8) + pitchRating(idx%, P1%(idx%), 7)) / pitchRating(idx%, P1%(idx%), 4)) + .5)
-    pitchEff(idx%, 1) = 3
+    pitchEff(tmIdx, 0) = Int(((pitchRating(tmIdx, P1%(tmIdx), 8) + pitchRating(tmIdx, P1%(tmIdx), 7)) / pitchRating(tmIdx, P1%(tmIdx), 4)) + .5)
+    pitchEff(tmIdx, 1) = 3
 
-    If P6%(idx%) > 1 Then pitchEff(idx%, 1) = 0
+    If P6%(tmIdx) > 1 Then pitchEff(tmIdx, 1) = 0
 
 End Sub
 

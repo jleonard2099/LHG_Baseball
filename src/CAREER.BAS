@@ -1,7 +1,7 @@
 '----------------------------------------
 '          CAREER Subroutine
 '----------------------------------------
-'This routine gives the user a menu from 
+'This routine gives the user a menu from
 'which they can choose several options
 'for managing career files
 Sub CAREER ()
@@ -17,35 +17,35 @@ Sub CAREER ()
 
         Call TITLE_CAREER
 
-        menuChoices$(1) = "CREATE AND MERGE INITIAL STAT FILE"
-        menuChoices$(2) = "MERGE / UPDATE CAREER STATS       "
-        menuChoices$(3) = "VIEW / PRINT CAREER STATS         "
-        menuChoices$(4) = "EDIT CAREER STATS                 "
+        menuChoices$(1) = "CREATE INITIAL CAREER STATS FILE  "
+        menuChoices$(2) = "ADD CAREER YEAR TO STATS          "
+        menuChoices$(3) = "REMOVE PLAYERS FROM CAREER STATS  "
+        menuChoices$(4) = "VIEW / PRINT CAREER STATS         "
         menuChoices$(5) = "VIEW / PRINT CAREER RECORDS       "
         menuChoices$(6) = "UPDATE / VIEW TEAM CAREER LEADERS "
         menuChoices$(7) = "RETURN TO MAIN MENU               "
-        Selection% = 1
+        SELECTION% = 1
         Count% = 7
         Start% = 1
         ExitCode% = 7
-        FileFGColor% = 15: FileBGColor% = 1
+        FileFGColor = 15: FileBGColor = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 8
         menuWidth% = Len(menuChoices$(1))
         Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
+        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor, FileBGColor)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
 
         If ExitCode% <> 27 Then
 
-            Select Case Selection%
+            Select Case SELECTION%
 
                 Case 1:
                     Call CreateCareerFile
@@ -54,10 +54,10 @@ Sub CAREER ()
                     Call MergeCareerFiles
 
                 Case 3:
-                    Call CARVIEW
+                    Call CAREDIT
 
                 Case 4:
-                    Call CAREDIT
+                    Call CARVIEW
 
                 Case 5:
                     Call ReviewCareerRecords
@@ -69,7 +69,7 @@ Sub CAREER ()
 
         End If
 
-    Loop Until Selection% = 7 Or ExitCode% = 27
+    Loop Until SELECTION% = 7 Or ExitCode% = 27
 
 End Sub
 
@@ -124,7 +124,9 @@ End Sub
 'year's worth of stats to the career file
 Sub MergeFirstYear ()
 
-    Shared careerB$(), careerP$()
+    Shared NB, NP
+
+    Shared careerBatters$(), careerPitchers$()
 
     Shared careerB0%(), careerB1%(), BRS%()
     Shared careerP0%(), careerP1%(), PRS%()
@@ -138,6 +140,7 @@ Sub MergeFirstYear ()
 
     Do
 
+        Color 11, 0
         Cls
 
         For J = 15 To 18:
@@ -145,7 +148,6 @@ Sub MergeFirstYear ()
             Print Space$(68)
         Next
 
-        Color 11
         Locate 15, 5
         Input "ENTER NAME OF CAREER STAT FILE "; careerFile$
 
@@ -170,19 +172,21 @@ Sub MergeFirstYear ()
 
             If UCase$(J$) = "N" Then
 
-                VV = 1
-
                 Do
                     Locate , 5
                     Print "WOULD YOU LIKE TO POST CAREER RECORDS? (Y/N)"
                     K$ = GetKeyPress$
                 Loop Until UCase$(K$) = "Y" Or UCase$(K$) = "N" Or K$ = Chr$(27)
 
-                If UCase$(K$) = "Y" Then doPostLeaders = 1 Else doPostLeaders = 0
+                If UCase$(K$) = "Y" Then 
+                    doPostLeaders = 1 
+                Else 
+                    doPostLeaders = 0
+                End If
 
                 If Not _FileExists(diskPaths$(1) + statFile$) Then
 
-                    MsgText$ = "NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU"
+                    MsgText$ = "NO COMPILED STATS COULD BE FOUND FOR THIS TEAM. PRESS ANY KEY TO RETURN TO THE MAIN MENU"
                     BoxWidth = 24
                     BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
                     Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
@@ -196,7 +200,7 @@ Sub MergeFirstYear ()
                     Color 15
                     Print "MERGING AND UPDATING CAREER STATS . . . . PLEASE WAIT"
 
-                    TMR = 4175
+                    TMR = 3 + (23*2) + (22*2) + (23*22) + (22*42)
 
                     Open diskPaths$(1) + statFile$ For Input As #1
 
@@ -205,7 +209,7 @@ Sub MergeFirstYear ()
                     Input #1, L2%
 
                     For I = 0 To 22:
-                        Input #1, careerB$(I)
+                        Input #1, careerBatters$(I)
                         Input #1, careerB1%(I)
                         Color 9
                         Locate 21, 38
@@ -214,7 +218,7 @@ Sub MergeFirstYear ()
                     Next I
 
                     For I = 0 To 21:
-                        Input #1, careerP$(I)
+                        Input #1, careerPitchers$(I)
                         Input #1, careerP1%(I)
                         Color 9
                         Locate 21, 38
@@ -246,8 +250,7 @@ Sub MergeFirstYear ()
 
                     Next I
 
-                    Input #1, D0%
-                    Input #1, D1%
+                    Input #1, D0%, D1%
 
                     For I = 0 To 21:
                         Input #1, statT0%(I)
@@ -263,8 +266,8 @@ Sub MergeFirstYear ()
 
                         N = 1
 
-                        If careerB$(I) = "END" Or careerB$(I) = "XXX" Or careerB$(I) = "" Then
-                            careerB$(I) = ""
+                        If careerBatters$(I) = "END" Or careerBatters$(I) = "XXX" Or careerBatters$(I) = "" Then
+                            careerBatters$(I) = ""
                         Else
                             NB = NB + 1
                         End If
@@ -280,8 +283,8 @@ Sub MergeFirstYear ()
 
                     For I = 0 To 79
 
-                        If careerP$(I) = "END" Or careerP$(I) = "XXX" Or careerP$(I) = "" Then
-                            careerP$(I) = ""
+                        If careerPitchers$(I) = "END" Or careerPitchers$(I) = "XXX" Or careerPitchers$(I) = "" Then
+                            careerPitchers$(I) = ""
                         Else
                             NP = NP + 1
                         End If
@@ -295,58 +298,9 @@ Sub MergeFirstYear ()
 
                     Next I
 
-                    If doPostLeaders = 1 Then Call UpdateCareerLeaders(careerFile$)
+                    If doPostLeaders = 1 Then Call UpdateCareerRecords(careerFile$)
 
-                    Locate 20, 5
-                    Color 15: Print "MERGING AND UPDATING CAREER STATS . . . . PLEASE WAIT"
-
-                    Open diskPaths$(1) + careerFile$ + ".CAR" For Output As #1
-
-                    Write #1, NB, NP
-
-                    For I = 0 To 99:
-                        Write #1, careerB$(I)
-                    Next
-
-                    For I = 0 To 79:
-                        Write #1, careerP$(I)
-                    Next
-
-                    For J = 1 To 15:
-
-                        For I = 0 To 99:
-
-                            For I1 = 0 To 17:
-                                Write #1, BRS%(J, I, I1)
-                            Next I1
-
-                            Color 9
-                            Locate 21, 38
-                            TMR = TMR - 1
-                            Print Using "####"; TMR
-
-                        Next I
-
-                    Next J
-
-                    For J = 1 To 15:
-
-                        For I = 0 To 79:
-
-                            For I1 = 0 To 16:
-                                Write #1, PRS%(J, I, I1)
-                            Next I1
-
-                            Color 9
-                            Locate 21, 38
-                            TMR = TMR - 1
-                            Print Using "####"; TMR
-
-                        Next I
-
-                    Next J
-
-                    Close #1
+                    Call SaveCareerFile (careerFile$)
 
                 End If 'Done checking for stat file
 
@@ -412,23 +366,35 @@ Sub ReviewCareerRecords ()
 
                     Do
                         Cls
-                        Color 0, 15
+                        Color 15, 0
 
                         Color 12: Print "CATEGORY           RECORD           PLAYER              YEAR"
                         Print
 
-                        Color 3: Print "AT BATS";: Color 7: Print Tab(23); Using "###"; BLL!(0);: Print Tab(37); careerBL$(0);: Print Tab(56); BLYR%(0)
-                        Color 3: Print "RUNS SCORED";: Color 7: Print Tab(23); Using "###"; BLL!(1);: Print Tab(37); careerBL$(1);: Print Tab(56); BLYR%(1)
-                        Color 3: Print "HITS";: Color 7: Print Tab(23); Using "###"; BLL!(2);: Print Tab(37); careerBL$(2);: Print Tab(56); BLYR%(2)
-                        Color 3: Print "DOUBLES";: Color 7: Print Tab(23); Using "###"; BLL!(3);: Print Tab(37); careerBL$(3);: Print Tab(56); BLYR%(3)
-                        Color 3: Print "TRIPLES";: Color 7: Print Tab(23); Using "###"; BLL!(4);: Print Tab(37); careerBL$(4);: Print Tab(56); BLYR%(4)
-                        Color 3: Print "HOME RUNS";: Color 7: Print Tab(23); Using "###"; BLL!(5);: Print Tab(37); careerBL$(5);: Print Tab(56); BLYR%(5)
-                        Color 3: Print "RUNS BATTED IN";: Color 7: Print Tab(23); Using "###"; BLL!(6);: Print Tab(37); careerBL$(6);: Print Tab(56); BLYR%(6)
-                        Color 3: Print "WALKS";: Color 7: Print Tab(23); Using "###"; BLL!(7);: Print Tab(37); careerBL$(7);: Print Tab(56); BLYR%(7)
-                        Color 3: Print "STRIKEOUTS";: Color 7: Print Tab(23); Using "###"; BLL!(8);: Print Tab(37); careerBL$(8);: Print Tab(56); BLYR%(8)
-                        Color 3: Print "STEALS";: Color 7: Print Tab(23); Using "###"; BLL!(9);: Print Tab(37); careerBL$(9);: Print Tab(56); BLYR%(9)
-                        Color 3: Print "CAUGHT STEALING";: Color 7: Print Tab(23); Using "###"; BLL!(10);: Print Tab(37); careerBL$(10);: Print Tab(56); BLYR%(10)
-                        Color 3: Print "ERRORS";: Color 7: Print Tab(23); Using "###"; BLL!(11);: Print Tab(37); careerBL$(11);: Print Tab(56); BLYR%(11)
+                        Color 3: Print "AT BATS";
+                        Color 7: Print Tab(23); Using "###"; BLL!(0);: Print Tab(37); careerBL$(0);: Print Tab(56); BLYR%(0)
+                        Color 3: Print "RUNS SCORED";
+                        Color 7: Print Tab(23); Using "###"; BLL!(1);: Print Tab(37); careerBL$(1);: Print Tab(56); BLYR%(1)
+                        Color 3: Print "HITS";
+                        Color 7: Print Tab(23); Using "###"; BLL!(2);: Print Tab(37); careerBL$(2);: Print Tab(56); BLYR%(2)
+                        Color 3: Print "DOUBLES";
+                        Color 7: Print Tab(23); Using "###"; BLL!(3);: Print Tab(37); careerBL$(3);: Print Tab(56); BLYR%(3)
+                        Color 3: Print "TRIPLES";
+                        Color 7: Print Tab(23); Using "###"; BLL!(4);: Print Tab(37); careerBL$(4);: Print Tab(56); BLYR%(4)
+                        Color 3: Print "HOME RUNS";
+                        Color 7: Print Tab(23); Using "###"; BLL!(5);: Print Tab(37); careerBL$(5);: Print Tab(56); BLYR%(5)
+                        Color 3: Print "RUNS BATTED IN";
+                        Color 7: Print Tab(23); Using "###"; BLL!(6);: Print Tab(37); careerBL$(6);: Print Tab(56); BLYR%(6)
+                        Color 3: Print "WALKS";
+                        Color 7: Print Tab(23); Using "###"; BLL!(7);: Print Tab(37); careerBL$(7);: Print Tab(56); BLYR%(7)
+                        Color 3: Print "STRIKEOUTS";
+                        Color 7: Print Tab(23); Using "###"; BLL!(8);: Print Tab(37); careerBL$(8);: Print Tab(56); BLYR%(8)
+                        Color 3: Print "STEALS";
+                        Color 7: Print Tab(23); Using "###"; BLL!(9);: Print Tab(37); careerBL$(9);: Print Tab(56); BLYR%(9)
+                        Color 3: Print "CAUGHT STEALING";
+                        Color 7: Print Tab(23); Using "###"; BLL!(10);: Print Tab(37); careerBL$(10);: Print Tab(56); BLYR%(10)
+                        Color 3: Print "ERRORS";
+                        Color 7: Print Tab(23); Using "###"; BLL!(11);: Print Tab(37); careerBL$(11);: Print Tab(56); BLYR%(11)
                         Color 3: Print "BATTING AVERAGE";: Color 7
 
                         If BLL!(12) > 0 Then
@@ -461,17 +427,24 @@ Sub ReviewCareerRecords ()
 
                         Print
 
-                        Color 3: Print "WINS";: Color 7: Print Tab(23); Using "###"; PLL!(0);: Print Tab(37); careerPL$(0);: Print Tab(56); PLYR%(0)
-                        Color 3: Print "LOSSES";: Color 7: Print Tab(23); Using "###"; PLL!(1);: Print Tab(37); careerPL$(1);: Print Tab(56); PLYR%(1)
-                        Color 3: Print "SAVES";: Color 7: Print Tab(23); Using "###"; PLL!(2);: Print Tab(37); careerPL$(2);: Print Tab(56); PLYR%(2)
-                        Color 3: Print "INNINGS PITCHED";: Color 7: Print Tab(23); Using "###"; PLL!(3);:
+                        Color 3: Print "WINS";
+                        Color 7: Print Tab(23); Using "###"; PLL!(0);: Print Tab(37); careerPL$(0);: Print Tab(56); PLYR%(0)
+                        Color 3: Print "LOSSES";
+                        Color 7: Print Tab(23); Using "###"; PLL!(1);: Print Tab(37); careerPL$(1);: Print Tab(56); PLYR%(1)
+                        Color 3: Print "SAVES";
+                        Color 7: Print Tab(23); Using "###"; PLL!(2);: Print Tab(37); careerPL$(2);: Print Tab(56); PLYR%(2)
+                        Color 3: Print "INNINGS PITCHED";
+                        Color 7: Print Tab(23); Using "###"; PLL!(3);:
 
                         If PLL!(3) - (Int(PLL!(3) / 3) * 3) > 0 Then Print ".";: Print Using "#"; PLL!(3) - (Int(PLL!(3) / 3) * 3);:
 
                         Print Tab(37); careerPL$(3);: Print Tab(56); PLYR%(3)
-                        Color 3: Print "HITS ALLOWED";: Color 7: Print Tab(23); Using "###"; PLL!(4);: Print Tab(37); careerPL$(4);: Print Tab(56); PLYR%(4)
-                        Color 3: Print "WALKS";: Color 7: Print Tab(23); Using "###"; PLL!(5);: Print Tab(37); careerPL$(5);: Print Tab(56); PLYR%(5)
-                        Color 3: Print "STRIKOUTS";: Color 7: Print Tab(23); Using "###"; PLL!(6);: Print Tab(37); careerPL$(6);: Print Tab(56); PLYR%(6)
+                        Color 3: Print "HITS ALLOWED";
+                        Color 7: Print Tab(23); Using "###"; PLL!(4);: Print Tab(37); careerPL$(4);: Print Tab(56); PLYR%(4)
+                        Color 3: Print "WALKS";
+                        Color 7: Print Tab(23); Using "###"; PLL!(5);: Print Tab(37); careerPL$(5);: Print Tab(56); PLYR%(5)
+                        Color 3: Print "STRIKOUTS";
+                        Color 7: Print Tab(23); Using "###"; PLL!(6);: Print Tab(37); careerPL$(6);: Print Tab(56); PLYR%(6)
 
                         Color 3: Print "EARNED RUN AVERAGE";: Color 7
                         If PLL!(7) > 0 Then
@@ -480,20 +453,27 @@ Sub ReviewCareerRecords ()
                             Print Tab(22); " ---"
                         End If
 
-                        Color 3: Print "GAMES";: Color 7: Print Tab(23); Using "###"; PLL!(8);: Print Tab(37); careerPL$(8);: Print Tab(56); PLYR%(8)
-                        Color 3: Print "COMPLETE GAMES";: Color 7: Print Tab(23); Using "###"; PLL!(9);: Print Tab(37); careerPL$(9);: Print Tab(56); PLYR%(9)
-                        Color 3: Print "RUNS ALLOWED";: Color 7: Print Tab(23); Using "###"; PLL!(10);: Print Tab(37); careerPL$(10);: Print Tab(56); PLYR%(10)
-                        Color 3: Print "EARNED RUNS ALLOWED";: Color 7: Print Tab(23); Using "###"; PLL!(11);: Print Tab(37); careerPL$(11);: Print Tab(56); PLYR%(11)
-                        Color 3: Print "SHUTOUTS";: Color 7: Print Tab(23); Using "###"; PLL!(12);: Print Tab(37); careerPL$(12);: Print Tab(56); PLYR%(12)
-                        Color 3: Print "HOME RUNS ALLOWED";: Color 7: Print Tab(23); Using "###"; PLL!(13);: Print Tab(37); careerPL$(13);: Print Tab(56); PLYR%(13)
-                        Color 3: Print "DOUBLE PLAYS";: Color 7: Print Tab(23); Using "###"; PLL!(14);: Print Tab(37); careerPL$(14);: Print Tab(56); PLYR%(14)
+                        Color 3: Print "GAMES";
+                        Color 7: Print Tab(23); Using "###"; PLL!(8);: Print Tab(37); careerPL$(8);: Print Tab(56); PLYR%(8)
+                        Color 3: Print "COMPLETE GAMES";
+                        Color 7: Print Tab(23); Using "###"; PLL!(9);: Print Tab(37); careerPL$(9);: Print Tab(56); PLYR%(9)
+                        Color 3: Print "RUNS ALLOWED";
+                        Color 7: Print Tab(23); Using "###"; PLL!(10);: Print Tab(37); careerPL$(10);: Print Tab(56); PLYR%(10)
+                        Color 3: Print "EARNED RUNS ALLOWED";
+                        Color 7: Print Tab(23); Using "###"; PLL!(11);: Print Tab(37); careerPL$(11);: Print Tab(56); PLYR%(11)
+                        Color 3: Print "SHUTOUTS";
+                        Color 7: Print Tab(23); Using "###"; PLL!(12);: Print Tab(37); careerPL$(12);: Print Tab(56); PLYR%(12)
+                        Color 3: Print "HOME RUNS ALLOWED";
+                        Color 7: Print Tab(23); Using "###"; PLL!(13);: Print Tab(37); careerPL$(13);: Print Tab(56); PLYR%(13)
+                        Color 3: Print "DOUBLE PLAYS";
+                        Color 7: Print Tab(23); Using "###"; PLL!(14);: Print Tab(37); careerPL$(14);: Print Tab(56); PLYR%(14)
 
                         Color 15
 
                         Do
                             Locate 22: Print "VIEW AGAIN? (Y/N)"
                             I$ = GetKeyPress$
-                        Loop Until UCase$(I$) = "N" Or I$ = Chr$(27)
+                        Loop Until UCase$(I$) = "N" Or Ucase$(I$) = "Y" Or I$ = Chr$(27)
 
                     Loop Until UCase$(I$) = "N" Or I$ = Chr$(27)
 
@@ -522,10 +502,10 @@ Sub CareerRecords_Report (printDest, destFile$)
 
     Shared careerBL$(), careerPL$()
 
-	Color 15, 0
-	Cls
+    Color 0, 15
+    Cls
 
-	Open destFile$ For Output As #1
+    Open destFile$ For Output As #1
 
     Print #1, "CATEGORY           RECORD           PLAYER              YEAR"
     Print #1,
@@ -618,6 +598,7 @@ Sub CareerRecords_Report (printDest, destFile$)
     Print #1, Tab(23); Using "###"; PLL!(2);
     Print #1, Tab(37); careerPL$(2);
     Print #1, Tab(56); PLYR%(2)
+
     Print #1, "INNINGS PITCHED";
     Print #1, Tab(23); Using "###"; PLL!(3);:
 
@@ -628,6 +609,7 @@ Sub CareerRecords_Report (printDest, destFile$)
 
     Print #1, Tab(37); careerPL$(3);
     Print #1, Tab(56); PLYR%(3)
+
     Print #1, "HITS ALLOWED";
     Print #1, Tab(23); Using "###"; PLL!(4);
     Print #1, Tab(37); careerPL$(4);
@@ -679,22 +661,22 @@ Sub CareerRecords_Report (printDest, destFile$)
     Print #1, Tab(37); careerPL$(14);
     Print #1, Tab(56); PLYR%(14)
 
-	If printDest = 1 Then
+    If printDest = 1 Then
 
-		Open destFile$ For Input As #2
+        Open destFile$ For Input As #2
 
-		Do While Not EOF(2)
-			Line Input #2, X$
-			LPrint X$
-		Loop
+        Do While Not EOF(2)
+            Line Input #2, X$
+            LPrint X$
+        Loop
 
-		Close #2
+        Close #2
 
-		LPrint Chr$(12)
+        LPrint Chr$(12)
 
-		Kill destFile$
+        Kill destFile$
 
-	End If
+    End If
 
 End Sub
 
@@ -754,7 +736,7 @@ Sub MergeCareerFiles ()
 
             If Not _FileExists(diskPaths$(1) + statFile$) Then
 
-                MsgText$ = "NO COMPILED STATS WERE FOUND FOR THIS TEAM.  PRESS ANY KEY TO RETURN TO MAIN MENU"
+                MsgText$ = "NO COMPILED STATS COULD BE FOUND FOR THIS TEAM. PRESS ANY KEY TO RETURN TO THE MAIN MENU"
                 BoxWidth = 24
                 BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
                 Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
@@ -789,8 +771,6 @@ Sub MergeAddYear (selectedFile$, statFile$)
     Color 15, 0
     Cls
 
-    VV = 0
-
     Do
         Locate 8, 22: Input "ENTER YEAR TO ADD (EX. - 1961)"; statYear
         Locate 9, 22: Print "ANY CHANGE? (Y/N)"
@@ -806,9 +786,13 @@ Sub MergeAddYear (selectedFile$, statFile$)
             finalUpdate$ = UCase$(K$)
         Loop Until finalUpdate$ = "Y" Or finalUpdate$ = "N" Or K$ = Chr$(27)
 
-        If finalUpdate$ = "Y" Then doPostLeaders = 1 Else doPostLeaders = 0
+        If finalUpdate$ = "Y" Then 
+            doPostLeaders = 1 
+        Else 
+            doPostLeaders = 0
+        End If
 
-        Call AddCareerYear(doPostLeaders, selectedFile$, statFile$)
+        Call AddCareerYear(statYear, doPostLeaders, selectedFile$, statFile$)
 
     End If ' Done checking for year to add
 
@@ -822,74 +806,26 @@ End Sub
 'stats, adds the team's stats to them,
 'then overwrites the career file with the
 'new values. 
-Sub AddCareerYear (finalUpdate, careerFile$, statFile$)
+Sub AddCareerYear (statYear, finalUpdate, careerFile$, statFile$)
 
-    Shared careerB$(), careerP$()
+    Shared NB, NP
+
+    Shared careerBatters$(), careerPitchers$()
+    Dim BR$(100), PR$(80)
 
     Shared careerB0%(), careerB1%(), BRS%()
     Shared careerP0%(), careerP1%(), PRS%()
 
-    'Dim statT0%(0 to 21), statT1%(0 to 22)
     Shared statT0%(), statT1%()
 
-    Dim BR$(100), PR$(80)
+    NB = -1
 
-    Dim TMR1%, TMR2
-
-    TMR1% = 4175
-    TMR2 = 6875
-
-    Locate 20, 5
-    Print "LOADING CAREER STATS . . . . PLEASE WAIT"
-
-    Open diskPaths$(1) + selectedFile$ + ".CAR" For Input As #1
-
-    Input #1, NB, NP
-
-    For I = 0 To 99:
-        Input #1, careerB$(I)
-    Next
-
-    For I = 0 To 79:
-        Input #1, careerP$(I)
-    Next
-
-    For J = 1 To 15:
-
-        For I = 0 To 99:
-
-            For I1 = O To 17:
-                Input #1, BRS%(J, I, I1)
-            Next I1
-
-            Locate 21, 35: Color 9
-            TMR2 = TMR2 - 1
-            Print Using "####"; TMR2
-
-        Next I
-
-    Next J
-
-    For J = 1 To 15:
-
-        For I = 0 To 79:
-
-            For I1 = 0 To 16:
-                Input #1, PRS%(J, I, I1)
-            Next I1
-
-            Locate 21, 35: Color 9
-            TMR2 = TMR2 - 1
-            Print Using "####"; TMR2
-
-        Next I
-
-    Next J
-
-    Close #1
+    Call LoadCareerFile (careerFile$)
 
     Locate 20, 5
     Print "LOADING STATS FILE . . . . PLEASE WAIT"
+
+    TMR1% = 3 + (23*2) + (22*2) + (23*22) + (22*42)
 
     Open diskPaths$(1) + statFile$ For Input As #1
 
@@ -951,26 +887,33 @@ Sub AddCareerYear (finalUpdate, careerFile$, statFile$)
 
         For J = 0 To 99
 
-            If UCase$(BR$(I)) = UCase$(careerB$(J)) Then
+            If UCase$(BR$(I)) = UCase$(careerBatters$(J)) Then
 
-                For W = 1 To 15
+                For W = 1 To MAX_CAREER_YEARS
                     If BRS%(W, J, 17) = statYear Then
                         CHK = CHK + 1
                     End If
                 Next W
 
-                If CHK > 0 Then
-                    N = BRS%(1, J, 16) + BRS%(2, J, 16) + BRS%(3, J, 16) + BRS%(4, J, 16) + BRS%(5, J, 16) + BRS%(6, J, 16) + BRS%(7, J, 16) + BRS%(8, J, 16) + BRS%(9, J, 16) + BRS%(10, J, 16) + BRS%(11, J, 16) + BRS%(12, J, 16) + BRS%(13, J, 16) + BRS%(14, J, 16) + BRS%(15, J, 16)
-                Else
-                    N = BRS%(1, J, 16) + BRS%(2, J, 16) + BRS%(3, J, 16) + BRS%(4, J, 16) + BRS%(5, J, 16) + BRS%(6, J, 16) + BRS%(7, J, 16) + BRS%(8, J, 16) + BRS%(9, J, 16) + BRS%(10, J, 16) + BRS%(11, J, 16) + BRS%(12, J, 16) + BRS%(13, J, 16) + BRS%(14, J, 16) + BRS%(15, J, 16) + 1
+                For Z = 1 to MAX_CAREER_YEARS
+                    N = N + BRS%(Z, J, 16)
+                Next Z 
+
+                If CHK = 0 Then
+                    N = N + 1
                 End If
 
-                For K = 0 To 15: BRS%(N, J, K) = careerB0%(I, K): Next K
+                For K = 0 To 15: 
+                    BRS%(N, J, K) = careerB0%(I, K)
+                Next K
 
                 BRS%(N, J, 16) = 1
                 BRS%(N, J, 17) = statYear
+
             Else
+
                 doneLoop% = 1
+
             End If
 
             If doneLoop% = 1 Then Exit For
@@ -984,9 +927,11 @@ Sub AddCareerYear (finalUpdate, careerFile$, statFile$)
     RR = RR + 1
 
     If RR = 100 Then
+    
         If BR$(I) <> "END" And BR$(I) <> "XXX" And BR$(I) <> "" Then
+
             NB = NB + 1
-            careerB$(NB) = BR$(I)
+            careerBatters$(NB) = BR$(I)
             N = 1
 
             For K = 0 To 15:
@@ -1007,18 +952,20 @@ Sub AddCareerYear (finalUpdate, careerFile$, statFile$)
 
         For J = 0 To 79
 
-            If UCase$(PR$(I)) = UCase$(careerP$(J)) Then
+            If UCase$(PR$(I)) = UCase$(careerPitchers$(J)) Then
 
-                For W = 1 To 15
+                For W = 1 To MAX_CAREER_YEARS
                     If PRS%(W, J, 16) = statYear Then
                         CHK = CHK + 1
                     End If
                 Next W
 
-                If CHK > 0 Then
-                    N = PRS%(1, J, 15) + PRS%(2, J, 15) + PRS%(3, J, 15) + PRS%(4, J, 15) + PRS%(5, J, 15) + PRS%(6, J, 15) + PRS%(7, J, 15) + PRS%(8, J, 15) + PRS%(9, J, 15) + PRS%(10, J, 15) + PRS%(11, J, 15) + PRS%(12, J, 15) + PRS%(13, J, 15) + PRS%(14, J, 15) + PRS%(15, J, 15)
-                Else
-                    N = PRS%(1, J, 15) + PRS%(2, J, 15) + PRS%(3, J, 15) + PRS%(4, J, 15) + PRS%(5, J, 15) + PRS%(6, J, 15) + PRS%(7, J, 15) + PRS%(8, J, 15) + PRS%(9, J, 15) + PRS%(10, J, 15) + PRS%(11, J, 15) + PRS%(12, J, 15) + PRS%(13, J, 15) + PRS%(14, J, 15) + PRS%(15, J, 15) + 1
+                For Z = 1 to MAX_CAREER_YEARS
+                    N = N + PRS%(Z, J, 15)
+                Next Z 
+
+                If CHK = 0 Then
+                    N = N + 1
                 End If
 
                 For K = 0 To 14:
@@ -1038,7 +985,7 @@ Sub AddCareerYear (finalUpdate, careerFile$, statFile$)
 
                     If PR$(I) <> "END" And PR$(I) <> "XXX" And PR$(I) <> "" Then
                         NP = NP + 1
-                        careerP$(NP) = PR$(I)
+                        careerPitchers$(NP) = PR$(I)
                         N = 1
 
                         For K = 0 To 14:
@@ -1057,68 +1004,159 @@ Sub AddCareerYear (finalUpdate, careerFile$, statFile$)
 
     Next I
 
-    If finalUpdate = 1 Then Call UpdateCareerLeaders(careerFile$)
+    If finalUpdate = 1 Then Call UpdateCareerRecords(careerFile$)
 
-    Locate 20, 5
-    Print "MERGING CAREER STATS . . . . PLEASE WAIT"
-
-    Open diskPaths$(1) + careerFile$ + ".CAR" For Output As #1
-
-    Write #1, NB, NP
-
-    For I = 0 To 99: 
-        Write #1, careerB$(I)
-    Next
-
-    For I = 0 To 79: 
-        Write #1, careerP$(I)
-    Next
-
-    For J = 1 To 15:
-
-        For I = 0 To 99:
-
-            For I1 = O To 17:
-                Write #1, BRS%(J, I, I1)
-            Next I1
-
-            Color 9: Locate 21, 35
-            TMR2 = TMR2 - 1
-            Print Using "####"; TMR2
-
-        Next I
-
-    Next J
-
-    For J = 1 To 15:
-
-        For I = 0 To 79:
-
-            For I1 = 0 To 16:
-                Write #1, PRS%(J, I, I1)
-            Next I1
-
-            Color 9: Locate 21, 35
-            TMR2 = TMR2 - 1
-            Print Using "####"; TMR2
-
-        Next I
-
-    Next J
-
-    Close #1
+    Call SaveCareerFile (careerFile$)
 
 End Sub
 
 
 '----------------------------------------
-'     UpdateCareerLeaders Subroutine
+'      LoadCareerFile Subroutine
+'----------------------------------------
+'This routine loads the existing career
+'file data into arrays.
+Sub LoadCareerFile (loadFile$)
+
+    Shared NB, NP
+    
+    Shared careerBatters$(), careerPitchers$()
+
+    Shared BRS%(), PRS%()
+
+    Color 15, 0
+    Cls
+
+    Locate 12, 10: Print "LOADING CAREER FILE . . . . PLEASE WAIT"
+
+    TMR = 100 + 80 + (MAX_CAREER_YEARS*100) + (MAX_CAREER_YEARS*80)
+
+    Open diskPaths$(1) + loadFile$ + ".CAR" For Input As #2
+
+    Input #2, NB, NP
+
+    For I = 0 To 99: 
+        Input #2, careerBatters$(I)
+    Next
+
+    For I = 0 To 79: 
+        Input #2, careerPitchers$(I)
+    Next
+
+    For J = 1 To MAX_CAREER_YEARS: 
+
+        For I = 0 To 99: 
+
+            For I1 = 0 To 17: 
+                Input #2, BRS%(J, I, I1)
+            Next I1
+
+            Color 3
+            Locate 21, 38
+            TMR = TMR - 1: Print Using "####"; TMR
+
+        Next I
+
+    Next J
+
+    For J = 1 To MAX_CAREER_YEARS: 
+
+        For I = 0 To 79: 
+
+            For I1 = 0 To 16: 
+                Input #2, PRS%(J, I, I1)
+            Next I1
+
+            Color 3
+            Locate 21, 38
+            TMR = TMR - 1: Print Using "####"; TMR
+
+        Next I
+
+    Next J
+
+    Close #2
+
+End Sub
+
+
+'----------------------------------------
+'      SaveCareerFile Subroutine
+'----------------------------------------
+'This routine updates the existing career
+'file with the modified stats values.
+Sub SaveCareerFile (saveFile$)
+
+    Shared NB, NP
+
+    Shared careerBatters$(), careerPitchers$()
+
+    Shared BRS%(), PRS%()
+
+    Cls
+    Color 15
+
+    Locate 12, 6: Print "SAVING UPDATED CAREER FILE . . . PLEASE WAIT"
+
+    TMR = 100 + 80 + (MAX_CAREER_YEARS*100) + (MAX_CAREER_YEARS*80)
+
+    Open diskPaths$(1) + saveFile$ + ".CAR" For Output As #3
+
+    Write #3, NB, NP
+
+    For I = 0 To 99: 
+        Write #3, careerBatters$(I)
+    Next
+
+    For I = 0 To 79: 
+        Write #3, careerPitchers$(I)
+    Next
+
+    For J = 1 To MAX_CAREER_YEARS: 
+
+        For I = 0 To 99: 
+
+            For I1 = 0 To 17: 
+                Write #3, BRS%(J, I, I1)
+            Next I1
+
+            Color 3
+            Locate 21, 38
+            TMR = TMR - 1: Print Using "####"; TMR
+
+        Next I
+
+    Next J
+
+    For J = 1 To MAX_CAREER_YEARS:
+
+        For I = 0 To 79: 
+
+            For I1 = 0 To 16: 
+                Write #3, PRS%(J, I, I1)
+            Next I1
+
+            Color 3
+            Locate 21, 38
+            TMR = TMR - 1: Print Using "####"; TMR
+
+        Next I
+
+    Next J
+
+    Close #3
+
+End Sub
+
+
+'----------------------------------------
+'     UpdateCareerRecords Subroutine
 '----------------------------------------
 'This routine reads in any existing career 
 'leader files (.CLD), adds the new stats,
 'and then saves the changes back to the
 'career leader file (.CLD)
-Sub UpdateCareerLeaders (recordFile$)
+Sub UpdateCareerRecords (recordFile$)
 
     Dim AVG!, SLG!, OBP!, EV!
 
@@ -1126,7 +1164,7 @@ Sub UpdateCareerLeaders (recordFile$)
 
     Shared BLYR%(), PLYR%()
 
-    Shared careerB$(), careerP$()
+    Shared careerBatters$(), careerPitchers$()
     Shared careerBL$(), careerPL$()
 
     Shared BRS%(), PRS%()
@@ -1150,110 +1188,115 @@ Sub UpdateCareerLeaders (recordFile$)
     'Batters
     For I = 0 To 99
 
-        If careerB$(I) <> "" And careerB$(I) <> "XXX" And careerB$(I) <> "END" Then
+        If careerBatters$(I) <> "" And careerBatters$(I) <> "XXX" And careerBatters$(I) <> "END" Then
 
-            For J = 1 To 15
+            For J = 1 To MAX_CAREER_YEARS
 
                 If BRS%(J, I, 17) <> 0 Then
 
                     If BRS%(J, I, 0) > BLL!(0) Then
                         BLL!(0) = BRS%(J, I, 0)
-                        careerBL$(0) = careerB$(I)
+                        careerBL$(0) = careerBatters$(I)
                         BLYR%(0) = BRS%(J, I, 17)
                     End If
 
                     If BRS%(J, I, 2) > BLL!(1) Then
                         BLL!(1) = BRS%(J, I, 2)
-                        careerBL$(1) = careerB$(I)
+                        careerBL$(1) = careerBatters$(I)
                         BLYR%(1) = BRS%(J, I, 17)
                     End If
 
                     If BRS%(J, I, 1) > BLL!(2) Then
                         BLL!(2) = BRS%(J, I, 1)
-                        careerBL$(2) = careerB$(I)
+                        careerBL$(2) = careerBatters$(I)
                         BLYR%(2) = BRS%(J, I, 17)
                     End If
 
                     If BRS%(J, I, 4) > BLL!(3) Then
                         BLL!(3) = BRS%(J, I, 4)
-                        careerBL$(3) = careerB$(I)
+                        careerBL$(3) = careerBatters$(I)
                         BLYR%(3) = BRS%(J, I, 17)
                     End If
 
                     If BRS%(J, I, 5) > BLL!(4) Then
                         BLL!(4) = BRS%(J, I, 5)
-                        careerBL$(4) = careerB$(I)
+                        careerBL$(4) = careerBatters$(I)
                         BLYR%(4) = BRS%(J, I, 17)
                     End If
 
                     If BRS%(J, I, 6) > BLL!(5) Then
                         BLL!(5) = BRS%(J, I, 6)
-                        careerBL$(5) = careerB$(I)
+                        careerBL$(5) = careerBatters$(I)
                         BLYR%(5) = BRS%(J, I, 17)
                     End If
 
                     If BRS%(J, I, 3) > BLL!(6) Then
-                        BLL!(6) = BRS%(J, I, 3): careerBL$(6) = careerB$(I): BLYR%(6) = BRS%(J, I, 17)
+                        BLL!(6) = BRS%(J, I, 3)
+                        careerBL$(6) = careerBatters$(I)
+                        BLYR%(6) = BRS%(J, I, 17)
                     End If
 
                     If BRS%(J, I, 7) > BLL!(7) Then
                         BLL!(7) = BRS%(J, I, 7)
-                        careerBL$(7) = careerB$(I)
+                        careerBL$(7) = careerBatters$(I)
                         BLYR%(7) = BRS%(J, I, 17)
                     End If
 
                     If BRS%(J, I, 8) > BLL!(8) Then
                         BLL!(8) = BRS%(J, I, 8)
-                        careerBL$(8) = careerB$(I)
+                        careerBL$(8) = careerBatters$(I)
                         BLYR%(8) = BRS%(J, I, 17)
                     End If
 
                     If BRS%(J, I, 9) > BLL!(9) Then
                         BLL!(9) = BRS%(J, I, 9)
-                        careerBL$(9) = careerB$(I)
+                        careerBL$(9) = careerBatters$(I)
                         BLYR%(9) = BRS%(J, I, 17)
                     Else
                         If BRS%(J, I, 10) > BLL!(10) Then
                             BLL!(10) = BRS%(J, I, 10)
-                            careerBL$(10) = careerB$(I)
+                            careerBL$(10) = careerBatters$(I)
                             BLYR%(10) = BRS%(J, I, 17)
                         End If
                     End If
 
                     If BRS%(J, I, 11) > BLL!(11) Then
                         BLL!(11) = BRS%(J, I, 11)
-                        careerBL$(11) = careerB$(I)
+                        careerBL$(11) = careerBatters$(I)
                         BLYR%(11) = BRS%(J, I, 17)
                     End If
 
                     If BRS%(J, I, 0) + BRS%(J, I, 7) > 501 Then
+
                         AVG! = BRS%(J, I, 1) / BRS%(J, I, 0)
 
                         If AVG! > BLL!(12) Then
                             BLL!(12) = AVG!
-                            careerBL$(12) = careerB$(I)
+                            careerBL$(12) = careerBatters$(I)
                             BLYR%(12) = BRS%(J, I, 17)
                         End If
 
                     End If
 
                     If BRS%(J, I, 0) + BRS%(J, I, 7) > 501 Then
+                        
                         SLG! = (BRS%(J, I, 1) + BRS%(J, I, 4) + BRS%(J, I, 5) * 2 + BRS%(J, I, 6) * 3) / BRS%(J, I, 0)
+
                         If SLG! > BLL!(13) Then
                             BLL!(13) = SLG!
-                            careerBL$(13) = careerB$(I)
+                            careerBL$(13) = careerBatters$(I)
                             BLYR%(13) = BRS%(J, I, 17)
                         End If
+
                     End If
 
                     If BRS%(J, I, 0) + BRS%(J, I, 7) > 501 Then
 
                         OBP! = (BRS%(J, I, 1) + BRS%(J, I, 7)) / (BRS%(J, I, 7) + BRS%(J, I, 0))
 
-                        test! = BLL!(14)
                         If OBP! > BLL!(14) Then
                             BLL!(14) = OBP!
-                            careerBL$(14) = careerB$(I)
+                            careerBL$(14) = careerBatters$(I)
                             BLYR%(14) = BRS%(J, I, 17)
                         End If
 
@@ -1270,51 +1313,51 @@ Sub UpdateCareerLeaders (recordFile$)
     'Pitchers
     For I = 0 To 79
 
-        If careerP$(I) <> "" And careerP$(I) <> "XXX" And careerP$(I) <> "END" Then
+        If careerPitchers$(I) <> "" And careerPitchers$(I) <> "XXX" And careerPitchers$(I) <> "END" Then
 
-            For J = 1 To 15
+            For J = 1 To MAX_CAREER_YEARS
 
                 If PRS%(J, I, 16) <> 0 Then
 
                     If PRS%(J, I, 6) > PLL!(0) Then
                         PLL!(0) = PRS%(J, I, 6)
-                        careerPL$(0) = careerP$(I)
+                        careerPL$(0) = careerPitchers$(I)
                         PLYR%(0) = PRS%(J, I, 16)
                     End If
 
                     If PRS%(J, I, 7) > PLL!(1) Then
                         PLL!(1) = PRS%(J, I, 7)
-                        careerPL$(1) = careerP$(I)
+                        careerPL$(1) = careerPitchers$(I)
                         PLYR%(1) = PRS%(J, I, 16)
                     End If
 
                     If PRS%(J, I, 12) > PLL!(2) Then
                         PLL!(2) = PRS%(J, I, 12)
-                        careerPL$(2) = careerP$(I)
+                        careerPL$(2) = careerPitchers$(I)
                         PLYR%(2) = PRS%(J, I, 16)
                     End If
 
                     If PRS%(J, I, 0) / 3 > PLL!(3) Then
                         PLL!(3) = PRS%(J, I, 0) / 3
-                        careerPL$(3) = careerP$(I)
+                        careerPL$(3) = careerPitchers$(I)
                         PLYR%(3) = PRS%(J, I, 16)
                     End If
 
                     If PRS%(J, I, 1) > PLL!(4) Then
                         PLL!(4) = PRS%(J, I, 1)
-                        careerPL$(4) = careerP$(I)
+                        careerPL$(4) = careerPitchers$(I)
                         PLYR%(4) = PRS%(J, I, 16)
                     End If
 
                     If PRS%(J, I, 4) > PLL!(5) Then
                         PLL!(5) = PRS%(J, I, 4)
-                        careerPL$(5) = careerP$(I)
+                        careerPL$(5) = careerPitchers$(I)
                         PLYR%(5) = PRS%(J, I, 16)
                     End If
 
                     If PRS%(J, I, 5) > PLL!(6) Then
                         PLL!(6) = PRS%(J, I, 5)
-                        careerPL$(6) = careerP$(I)
+                        careerPL$(6) = careerPitchers$(I)
                         PLYR%(6) = PRS%(J, I, 16)
                     End If
 
@@ -1323,50 +1366,50 @@ Sub UpdateCareerLeaders (recordFile$)
                         If PLL!(7) = 0 Then PLL!(7) = 1000
                         If EV! < PLL!(7) Then
                             PLL!(7) = EV!
-                            careerPL$(7) = careerP$(I)
+                            careerPL$(7) = careerPitchers$(I)
                             PLYR%(7) = PRS%(J, I, 16)
                         End If
                     End If
 
                     If PRS%(J, I, 8) > PLL!(8) Then
                         PLL!(8) = PRS%(J, I, 8)
-                        careerPL$(8) = careerP$(I)
+                        careerPL$(8) = careerPitchers$(I)
                         PLYR%(8) = PRS%(J, I, 16)
                     End If
 
                     If PRS%(J, I, 10) > PLL!(9) Then
                         PLL!(9) = PRS%(J, I, 10)
-                        careerPL$(9) = careerP$(I)
+                        careerPL$(9) = careerPitchers$(I)
                         PLYR%(9) = PRS%(J, I, 16)
                     End If
 
                     If PRS%(J, I, 2) > PLL!(10) Then
                         PLL!(10) = PRS%(J, I, 2)
-                        careerPL$(10) = careerP$(I)
+                        careerPL$(10) = careerPitchers$(I)
                         PLYR%(10) = PRS%(J, I, 16)
                     End If
 
                     If PRS%(J, I, 3) > PLL!(11) Then
                         PLL!(11) = PRS%(J, I, 3)
-                        careerPL$(11) = careerP$(I)
+                        careerPL$(11) = careerPitchers$(I)
                         PLYR%(11) = PRS%(J, I, 16)
                     End If
 
                     If PRS%(J, I, 11) > PLL!(12) Then
                         PLL!(12) = PRS%(J, I, 11)
-                        careerPL$(12) = careerP$(I)
+                        careerPL$(12) = careerPitchers$(I)
                         PLYR%(12) = PRS%(J, I, 16)
                     End If
 
                     If PRS%(J, I, 14) > PLL!(13) Then
                         PLL!(13) = PRS%(J, I, 14)
-                        careerPL$(13) = careerP$(I)
+                        careerPL$(13) = careerPitchers$(I)
                         PLYR%(13) = PRS%(J, I, 16)
                     End If
 
                     If PRS%(J, I, 13) > PLL!(14) Then
                         PLL!(14) = PRS%(J, I, 13)
-                        careerPL$(14) = careerP$(I)
+                        careerPL$(14) = careerPitchers$(I)
                         PLYR%(14) = PRS%(J, I, 16)
                     End If
 

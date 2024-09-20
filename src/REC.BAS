@@ -41,28 +41,28 @@ Sub SeasonRecords ()
         menuChoices$(3) = "PRINT SEASON RECORDS "
         menuChoices$(4) = "DELETE SEASON RECORDS"
         menuChoices$(5) = "RETURN TO MAIN MENU  "
-        Selection% = 1
+        SELECTION% = 1
         Count% = 5
         Start% = 1
         ExitCode% = 3
-        FileFGColor% = 15: FileBGColor% = 1
+        FileFGColor = 15: FileBGColor = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
         Row% = 8
         menuWidth% = Len(menuChoices$(1))
         Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor%, FileBGColor%)
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor, FileBGColor)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
 
         If ExitCode% <> 27 Then
 
-            Select Case Selection%
+            Select Case SELECTION%
 
                 Case 1:
                     leagueFile$ = ChooseFile$(diskPaths$(2) + "*.BAT", "LEAGUE", FileExit%)
@@ -114,7 +114,7 @@ Sub SeasonRecords ()
 
         End If 'Done checking for user ESC
 
-    Loop Until Selection% = 5 Or ExitCode% = 27
+    Loop Until SELECTION% = 5 Or ExitCode% = 27
 
 End Sub
 
@@ -156,7 +156,7 @@ Sub UpdateRecords (leagueFile$)
     JP = 0
     TS = 0
 
-    If Not _FileExists(diskPaths$(2) + "BASEBALL.REC") And Selection% < 4 Then
+    If Not _FileExists(diskPaths$(2) + "BASEBALL.REC") And SELECTION% < 4 Then
     
         MsgText$ = "UNABLE TO LOCATE RECORDS PRESS ANY KEY TO RETURN TO MAIN MENU"
         BoxWidth = 24
@@ -736,7 +736,7 @@ Sub ViewSeasonRecords (leagueFile$)
 
     Shared batIndCategory$(), pitIndCategory$(), batTeamCategory$(), pitTeamCategory$()
 
-    If Not _FileExists(diskPaths$(2) + "BASEBALL.REC") And Selection% < 4 Then
+    If Not _FileExists(diskPaths$(2) + "BASEBALL.REC") And SELECTION% < 4 Then
     
         MsgText$ = "UNABLE TO LOCATE RECORDS PRESS ANY KEY TO RETURN TO MAIN MENU"
         BoxWidth = 24
@@ -774,7 +774,6 @@ Sub ViewSeasonRecords (leagueFile$)
 
         Call ShadowBox(1, 1, 73, 20, 15, 4)
 
-        Color 15
         Locate 1
         Print leagueFile$
         Locate 2, 24
@@ -843,7 +842,6 @@ Sub ViewSeasonRecords (leagueFile$)
 
         Call ShadowBox(1, 1, 73, 20, 15, 1)
 
-        Color 15
         Locate 1
         Print leagueFile$
         Locate 2, 24
@@ -856,7 +854,11 @@ Sub ViewSeasonRecords (leagueFile$)
 
         Locate , 4
         Print pitIndCategory$(1); Tab(28); pitRecPlyr$(1); Tab(43); pitRecTeam$(1); Tab(61); Using "###"; Int(pitRecVal!(1) / 3);
-        If pitRecVal!(1) - Int(pitRecVal!(1) / 3) * 3 > 0 Then Print ".";: Print Using "#"; pitRecVal!(1) - (Int(pitRecVal!(1) / 3) * 3); Else Print ".0";
+        If pitRecVal!(1) - Int(pitRecVal!(1) / 3) * 3 > 0 Then 
+            Print ".";: Print Using "#"; pitRecVal!(1) - (Int(pitRecVal!(1) / 3) * 3); 
+        Else 
+            Print ".0";
+        End If
         Print Tab(70); Using "####"; pitRecYr!(1)
 
         For I = 2 To 15
@@ -912,7 +914,6 @@ Sub ViewSeasonRecords (leagueFile$)
 
         Call ShadowBox(1, 1, 73, 20, 14, 0)
 
-        Color 14
         Locate 1
         Print leagueFile$
         Locate 2, 26
@@ -967,6 +968,7 @@ Sub ViewSeasonRecords (leagueFile$)
             Print batTeamCategory$(I - 4); Tab(28); batRecTmDesc$(I); Tab(62); Using ".###"; batRecTmVal!(I);: Print Tab(70); Using "####"; batRecTmYr!(I)
         Next
 
+        'Pitcher Records
         Locate , 4
         Print pitTeamCategory$(0); Tab(28); pitRecTmDesc$(0); Tab(60); Using "####"; Int(pitRecTmVal!(0) / 3);
         If pitRecTmVal!(0) - Int(pitRecTmVal!(0) / 3) * 3 > 0 Then
@@ -1048,7 +1050,7 @@ Sub PrintSeasonRecords (printDest, destFile$, leagueName$)
 
     Shared batIndCategory$(), pitIndCategory$(), batTeamCategory$(), pitTeamCategory$()
 
-    If Not _FileExists(diskPaths$(2) + "BASEBALL.REC") And Selection% < 4 Then
+    If Not _FileExists(diskPaths$(2) + "BASEBALL.REC") And SELECTION% < 4 Then
     
         MsgText$ = "UNABLE TO LOCATE RECORDS PRESS ANY KEY TO RETURN TO MAIN MENU"
         BoxWidth = 24

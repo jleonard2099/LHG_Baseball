@@ -62,7 +62,7 @@ Sub ShadowBox (StartRow%, StartCol%, boxWidth%, boxHeight%, FGColor%, BGColor%)
     Locate , StartCol% + 2
     Print String$(boxWidth% + 4, 177)
 
-    Color FGColor%
+    Color FGColor%, BGColor%
 
 End Sub
 
