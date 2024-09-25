@@ -1146,7 +1146,6 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
     H! = 0
     AB = 0
     R = 0
-    B2% = 0
     B3 = 0
     HR = 0
     RBI = 0

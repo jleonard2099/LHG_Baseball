@@ -67,15 +67,23 @@ End Sub
 'perform the merge
 Sub MergeStats ()
 
-    Shared BR%(), PR%()
+    Shared statD0, statD1
+    Shared statD0_Road, statD1_Road
 
-    Shared batterNames$(), batterNames_Road$()
-    Shared pitcherNames$(), pitcherNames_Road$()
+    Shared teamLosses, teamLosses_Road
+    Shared teamWins, teamWins_Road
+
+    Shared batterNames$(), batNames_Road$()
+    Shared pitcherNames$(), pitNames_Road$()
 
     Shared oppName$(), oppName_Road$()
     Shared losePitcher$(), losePitcher_Road$()
     Shared locIndicator$(), locIndicator_Road$()
     Shared winPitcher$(), winPitcher_Road$()
+
+    Shared alignTR(), alignTR1()
+
+    Shared BR%(), PR%()
 
     Shared statB%(), statB0%(), B0R%()
     Shared statP%(), statP0%(), P0R%()
@@ -85,7 +93,6 @@ Sub MergeStats ()
     Shared oppScore(), oppScore_Road()
     Shared teamScore(), teamScore_Road(), nbrInnings(), nbrInnings_Road()
 
-    Shared draftTR(), draftTR1()
 
     Do
 
@@ -115,17 +122,17 @@ Sub MergeStats ()
 
                     Open pathRoadStats$ + statFile$ For Input As #1
 
-                    Input #1, team$
-                    Input #1, WR2%
-                    Input #1, LR2%
+                    Input #1, teamNameRoad$
+                    Input #1, teamWins_Road
+                    Input #1, teamLosses_Road
 
                     For I = 0 To 22: 
-                        Input #1, batterNames_Road$(I)
+                        Input #1, batNames_Road$(I)
                         Input #1, BR%(I)
                     Next I
                     
                     For I = 0 To 21: 
-                        Input #1, pitcherNames_Road$(I)
+                        Input #1, pitNames_Road$(I)
                         Input #1, PR%(I)
                     Next I
                     
@@ -141,15 +148,15 @@ Sub MergeStats ()
                         Next I1
                     Next I
 
-                    Input #1, D0R%
-                    Input #1, D1R%
+                    Input #1, statD0_Road
+                    Input #1, statD1_Road
 
                     For I = 0 To 21: 
-                        Input #1, draftTR(I)
+                        Input #1, alignTR(I)
                     Next I
 
                     For I = 0 To 22: 
-                        Input #1, draftTR1(I)
+                        Input #1, alignTR1(I)
                     Next I
 
                     Close #1
@@ -206,9 +213,9 @@ Sub MergeStats ()
 
                         Open pathCurrentStats$ + statFile$ For Input As #1
 
-                        Input #1, team$
-                        Input #1, W2%
-                        Input #1, L2%
+                        Input #1, teamNameStats$
+                        Input #1, teamWins
+                        Input #1, teamLosses
 
                         For I = 0 To 22: 
                             Input #1, batterNames$(I)
@@ -232,8 +239,8 @@ Sub MergeStats ()
                             Next I1
                         Next I
 
-                        Input #1, D0%
-                        Input #1, D1%
+                        Input #1, statD0
+                        Input #1, statD1
                         
                         For I = 0 To 21: 
                             Input #1, statT0%(I)
@@ -250,7 +257,9 @@ Sub MergeStats ()
                             Open pathCurrentStats$ + statFile$ + "R" For Input As #1
 
                             For I = 0 To 22
-                                For I1 = 0 To 6: Input #1, S0%(I, I1): Next
+                                For I1 = 0 To 6: 
+                                    Input #1, S0%(I, I1)
+                                Next
                             Next
 
                             Close 1
@@ -294,20 +303,20 @@ Sub MergeStats ()
                         SEQ = 0
 
                         For K = 0 To 22
-                            If UCase$(batterNames_Road$(K)) <> UCase$(batterNames$(K)) Then
+                            If UCase$(batNames_Road$(K)) <> UCase$(batterNames$(K)) Then
                                 SEQ = SEQ + 1
                             End If
                         Next
 
                         For K = 0 To 21
-                            If UCase$(pitcherNames_Road$(K)) <> UCase$(pitcherNames$(K)) Then
+                            If UCase$(pitNames_Road$(K)) <> UCase$(pitcherNames$(K)) Then
                                 SEQ = SEQ + 1
                             End If
                         Next
 
                         If SEQ = 0 Then
 
-                            Call DoTheMerge(pathCurrentStats$, statFile$, B$, nbrGamesCurr, nbrGamesRoad)
+                            Call DoTheMerge(pathCurrentStats$, statFile$, teamNameStats$, nbrGamesCurr, nbrGamesRoad)
 
                             For J = 13 To 23
                                 Locate J
@@ -391,10 +400,13 @@ End Sub
 'values together from each file and then
 'overwrites the current file with the
 'newly aggregated results.
-Sub DoTheMerge (pathCurrentStats$, statFile$, B$, nbrGamesCurr, nbrGamesRoad)
+Sub DoTheMerge (pathCurrentStats$, statFile$, teamNameStats$, nbrGamesCurr, nbrGamesRoad)
 
-    Shared L2%, LR2%
-    Shared W2%, WR2%
+    Shared statD0, statD1
+    Shared statD0_Road, statD1_Road
+
+    Shared teamLosses, teamLosses_Road
+    Shared teamWins, teamWins_Road
 
     Shared batterNames$(), pitcherNames$()
     Shared oppName$(), oppName_Road$()
@@ -409,7 +421,7 @@ Sub DoTheMerge (pathCurrentStats$, statFile$, B$, nbrGamesCurr, nbrGamesRoad)
     Shared S0%(), SR%()
     Shared oppScore(), oppScore_Road()
 
-    Shared draftTR(), draftTR1()
+    Shared alignTR(), alignTR1()
 
     For K = 1 to nbrGamesRoad
         nbrGamesCurr = nbrGamesCurr + 1
@@ -422,8 +434,8 @@ Sub DoTheMerge (pathCurrentStats$, statFile$, B$, nbrGamesCurr, nbrGamesRoad)
         nbrInnings(nbrGamesCurr) = nbrInnings_Road(K)
     Next
 
-    W2% = W2% + WR2%
-    L2% = L2% + LR2%
+    teamWins = teamWins + teamWins_Road
+    teamLosses = teamLosses + teamLosses_Road
 
     Color 12
     Locate 18, 20: Print "MERGING STAT FILE AND SCHEDULE RESULTS . . . ."
@@ -456,22 +468,22 @@ Sub DoTheMerge (pathCurrentStats$, statFile$, B$, nbrGamesCurr, nbrGamesRoad)
 
     Next I
 
-    D0% = D0% + DR0%
-    D1% = D1% + DR1%
+    statD0 = statD0 + statD0_Road
+    statD1 = statD1 + statD1_Road
 
     For I = 0 To 21: 
-        statT0%(I) = statT0%(I) + draftTR(I)
+        statT0%(I) = statT0%(I) + alignTR(I)
     Next
 
     For I = 0 To 22: 
-        statT1%(I) = statT1%(I) + draftTR1(I)
+        statT1%(I) = statT1%(I) + alignTR1(I)
     Next
 
     Open pathCurrentStats$ + statFile$ For Output As #1
 
-    Write #1, B$
-    Write #1, W2%
-    Write #1, L2%
+    Write #1, teamNameStats$
+    Write #1, teamWins
+    Write #1, teamLosses
 
     For I = 0 To 22: 
         Write #1, batterNames$(I)
@@ -495,8 +507,8 @@ Sub DoTheMerge (pathCurrentStats$, statFile$, B$, nbrGamesCurr, nbrGamesRoad)
         Next I1
     Next I
 
-    Write #1, D0%
-    Write #1, D1%
+    Write #1, statD0
+    Write #1, statD1
 
     For I = 0 To 21: 
         Write #1, statT0%(I)

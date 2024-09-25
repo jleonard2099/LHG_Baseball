@@ -7,7 +7,7 @@ Sub HDCOPY ()
 	
 	CLS
 	
-	alignPitcherName$="BASEBALL"
+	pitName_Align$="BASEBALL"
 	
 	Do
 
@@ -33,7 +33,7 @@ Sub HDCOPY ()
 		LOCATE ,12
 		INPUT "SUBDIRECTORY NAME TO INSTALL TO: ";NN$
 		
-		IF NN$="" THEN NN$=alignPitcherName$
+		IF NN$="" THEN NN$=pitName_Align$
 		
 		LOCATE ,12
 		PRINT "FILES WILL BE COPIED TO "D$+":\"+NN$

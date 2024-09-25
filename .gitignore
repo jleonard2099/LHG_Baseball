@@ -4,6 +4,7 @@
 *.ini
 bin/DEV.BAS
 bin/errlog
+bin/FOLDERS.CFG
 bin/GAME82
 bin/HELLO*
 bin/TICKER
@@ -20,4 +21,3 @@ src/parks/*.*
 src/REVISED.PBP
 src/TICKER
 src/UMPIRES.*
-bin/FOLDERS.CFG

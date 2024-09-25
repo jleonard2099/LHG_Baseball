@@ -100,6 +100,8 @@ End Sub
 'stats into arrays
 Sub LoadTeamStats (statFile$, nbrGames)
 
+    Shared statD0, statD1
+
     Shared extraInnWins, extraInnLosses
     Shared homeWins, homeLosses
     Shared lastTenLosses, lastTenWins, oneRunWins, oneRunLosses
@@ -115,7 +117,7 @@ Sub LoadTeamStats (statFile$, nbrGames)
     Shared oppName$(), losePitcher$(), locIndicator$(), winPitcher$()
     Shared teamScore(), nbrInnings(), oppScore()
 
-    Shared D0%, D1%, L2%, W2%
+    Shared teamLosses, teamWins
 
     totalWins = 0
     totalLosses = 0
@@ -133,8 +135,8 @@ Sub LoadTeamStats (statFile$, nbrGames)
     Open diskPaths$(1) + statFile$ For Input As #1
 
     Input #1, teamName$
-    Input #1, W2%
-    Input #1, L2%
+    Input #1, teamWins
+    Input #1, teamLosses
 
     For I = 0 To 22: 
         Input #1, batterNames$(I)
@@ -158,8 +160,8 @@ Sub LoadTeamStats (statFile$, nbrGames)
         Next I1
     Next I
 
-    Input #1, D0%
-    Input #1, D1%
+    Input #1, statD0
+    Input #1, statD1
 
     For I = 0 To 21: 
         Input #1, statT0!(I)
@@ -228,18 +230,38 @@ Sub LoadTeamStats (statFile$, nbrGames)
 
     For I = 1 To nbrGames
 
-        If Abs(teamScore(I) - oppScore(I)) = 1 And teamScore(I) > oppScore(I) Then oneRunWins = oneRunWins + 1
-        If Abs(teamScore(I) - oppScore(I)) = 1 And teamScore(I) < oppScore(I) Then oneRunLosses = oneRunLosses + 1
+        If Abs(teamScore(I) - oppScore(I)) = 1 And teamScore(I) > oppScore(I) Then 
+            oneRunWins = oneRunWins + 1
+        End If
+        If Abs(teamScore(I) - oppScore(I)) = 1 And teamScore(I) < oppScore(I) Then 
+            oneRunLosses = oneRunLosses + 1
+        End If
 
-        If teamScore(I) > oppScore(I) Then totalWins = totalWins + 1
-        If teamScore(I) > oppScore(I) And nbrInnings(I) > 9 Then extraInnWins = extraInnWins + 1
-        If teamScore(I) > oppScore(I) And locIndicator$(I) = "A" Then roadWins = roadWins + 1
-        If teamScore(I) > oppScore(I) And locIndicator$(I) = "H" Then homeWins = homeWins + 1
+        If teamScore(I) > oppScore(I) Then 
+            totalWins = totalWins + 1
+        End If
+        If teamScore(I) > oppScore(I) And nbrInnings(I) > 9 Then 
+            extraInnWins = extraInnWins + 1
+        End If
+        If teamScore(I) > oppScore(I) And locIndicator$(I) = "A" Then 
+            roadWins = roadWins + 1
+        End If
+        If teamScore(I) > oppScore(I) And locIndicator$(I) = "H" Then 
+            homeWins = homeWins + 1
+        End If
 
-        If oppScore(I) > teamScore(I) Then totalLosses = totalLosses + 1
-        If oppScore(I) > teamScore(I) And nbrInnings(I) > 9 Then extraInnLosses = extraInnLosses + 1
-        If oppScore(I) > teamScore(I) And locIndicator$(I) = "A" Then roadLosses = roadLosses + 1
-        If oppScore(I) > teamScore(I) And locIndicator$(I) = "H" Then homeLosses = homeLosses + 1
+        If oppScore(I) > teamScore(I) Then 
+            totalLosses = totalLosses + 1
+        End If
+        If oppScore(I) > teamScore(I) And nbrInnings(I) > 9 Then 
+            extraInnLosses = extraInnLosses + 1
+        End If
+        If oppScore(I) > teamScore(I) And locIndicator$(I) = "A" Then 
+            roadLosses = roadLosses + 1
+        End If
+        If oppScore(I) > teamScore(I) And locIndicator$(I) = "H" Then 
+            homeLosses = homeLosses + 1
+        End If
 
     Next I
 
@@ -253,8 +275,12 @@ Sub LoadTeamStats (statFile$, nbrGames)
         M = nbrGames - 9
 
         For J = M To nbrGames
-            If teamScore(J) > oppScore(J) Then lastTenWins = lastTenWins + 1
-            If oppScore(J) > teamScore(J) Then lastTenLosses = lastTenLosses + 1
+            If teamScore(J) > oppScore(J) Then 
+                lastTenWins = lastTenWins + 1
+            End If
+            If oppScore(J) > teamScore(J) Then 
+                lastTenLosses = lastTenLosses + 1
+            End If
         Next J
 
     End If
@@ -353,7 +379,6 @@ Sub ViewAndPrintOptions (statFile$, teamName$, nbrGames, menuExit)
 
                     Locate 24, 27: Print "PRESS ANY KEY TO CONTINUE";
                     I$ = GetKeyPress$
-                    I$ = GetKeyPress$
 
                 Case 2:
                     '
@@ -424,7 +449,7 @@ End Sub
 
 
 '----------------------------------------
-'       ViewScheduleStatSummary Subroutine
+'   ViewScheduleStatSummary Subroutine
 '----------------------------------------
 'This subroutine formats and outputs the 
 'selected team's record to the display,
@@ -438,7 +463,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Shared roadWins, roadLosses
     Shared totalWins, totalLosses
 
-    Shared L2%, W2%
+    Shared teamLosses, teamWins
 
     Shared teamRatings%()
 
@@ -496,7 +521,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Print teamName$;
 
     Color 12, 0
-    Print "    WON: "; W2%; "  LOST: "; L2%
+    Print "    WON: "; teamWins; "  LOST: "; teamLosses
     Color 15, 1
     Print "BATTERS    AB   R   H RBI  2B 3B  HR    BA   SLG   OBP  SO  BB  SB  CS %RAB    "
     Color 15, 0
@@ -606,7 +631,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Print teamName$;
 
     Color 12, 0
-    Print "    WON: "; W2%; "  LOST: "; L2%
+    Print "    WON: "; teamWins; "  LOST: "; teamLosses
     Color 15, 1
     Print "BATTERS      G  CHS LHS GIDP NEEDS PROJ AB  PO   A  E  FAVG  SBA CS %CS SH SF"
 
@@ -641,12 +666,23 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
             If (statB%(I) > 0) And statCalc% > 0 Then
                 Locate , 31: Print Using "####"; statCalc%;
             Else
-                If statB%(I) = 0 Then Print "  ";
-                If statB%(I) > 0 Then Locate , 31: Print Using "####"; statCalc%;
+                If statB%(I) = 0 Then
+                    Print "  ";
+                End If
+                If statB%(I) > 0 Then 
+                    Locate , 31: Print Using "####"; statCalc%;
+                End If
             End If
 
-            If statB%(I) > 0 Then Locate , 37: H5% = Int((((statB%(I) + 0) / QT) * (statT1!(9) + 1)) + .5): Print Using "####"; H5%;: statT0!(13) = statT0!(13) + H5%
-            If statB%(I) = 0 Then Locate , 39: Print "0";
+            If statB%(I) > 0 Then 
+                Locate , 37
+                H5% = Int((((statB%(I) + 0) / QT) * (statT1!(9) + 1)) + .5)
+                Print Using "####"; H5%;: statT0!(13) = statT0!(13) + H5%
+            End If
+            If statB%(I) = 0 Then 
+                Locate , 39: Print "0";
+            End If
+
             Locate , 42
 
             Print Using " #### ### ## "; statB0%(I, 16); statB0%(I, 17); statB0%(I, 11);
@@ -677,7 +713,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Print teamName$;
 
     Color 12, 0
-    Print "    WON: "; W2%; "  LOST: "; L2%
+    Print "    WON: "; teamWins; "  LOST: "; teamLosses
     Color 15, 1
     Print "PITCHERS   AB   R   H RBI  2B 3B  HR    BA   SLG   OBP  SO  BB  SB  CS"
 
@@ -769,7 +805,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Print teamName$;
 
     Color 12, 0
-    Print "    WON: "; W2%; "  LOST: "; L2%
+    Print "    WON: "; teamWins; "  LOST: "; teamLosses
     Color 15, 1
     Print "PITCHERS     G  CHS LHS GIDP   PO   A  E  FAVG SH SF"
     Color 15
@@ -814,7 +850,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Print teamName$;
 
     Color 12, 0
-    Print "    WON: "; W2%; "  LOST: "; L2%
+    Print "    WON: "; teamWins; "  LOST: "; teamLosses
     Color 14, 0
     Print
     Print "  TEAM BATTING TOTALS"
@@ -893,7 +929,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Print teamName$;
 
     Color 12, 0
-    Print "    WON: "; W2%; "  LOST: "; L2%
+    Print "    WON: "; teamWins; "  LOST: "; teamLosses
     Color 15, 4
     Print "PITCHERS    W  L SV    IP    H  BB   SO   ERA  G GS CG RUN  ER ShO HRA  DP %RIP"
 
@@ -942,7 +978,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Print teamName$;
 
     Color 12, 0
-    Print "    WON: "; W2%; "  LOST: "; L2%
+    Print "    WON: "; teamWins; "  LOST: "; teamLosses
     Color 15, 4
     Print "PITCHERS   BS HL  RI  RS   SUP GS QS  SH SF"
 
@@ -972,14 +1008,14 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Print teamName$;
 
     Color 12, 0
-    Print "    WON: "; W2%; "  LOST: "; L2%
+    Print "    WON: "; teamWins; "  LOST: "; teamLosses
     Color 14, 0
     Print
     Print "  TEAM PITCHING TOTALS"
     Color 15, 4
     Print "  W   L  SV     IP    H   BB   SO   ERA   G  GS  CG  RUN   ER ShO HRA  DP"
     Color 14, 0
-    Print Using "### ### ### "; W2%; L2%; statT1!(12);
+    Print Using "### ### ### "; teamWins; teamLosses; statT1!(12);
     Print Using "####"; Int(statT1!(0) / 3);
     Print ".";: Print Using "#"; statT1!(0) - Int(statT1!(0) / 3) * 3;
     Print Using " #### #### #### ##.## ### ### ### "; statT1!(1); statT1!(4); statT1!(5); statT1!(3) * 9 / (statT1!(0) / 3); statT1!(9); statT1!(9); statT1!(10);
@@ -1001,7 +1037,7 @@ End Sub
 'for each team in the chosen league.
 Sub ReportsAllTeams ()
 
-    Shared D0%, D1%, L2%, W2%
+    Shared statD0, statD1
 
     Shared statT0!(), statT1!()
 
@@ -1010,6 +1046,8 @@ Sub ReportsAllTeams ()
 
     Shared batterNames$(), pitcherNames$()
     Shared statFiles$()
+
+    Shared teamLosses, teamWins
 
     leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", ExitCode%)
 
@@ -1032,8 +1070,8 @@ Sub ReportsAllTeams ()
                 Open diskPaths$(1) + statFiles$(XW) For Input As #1
 
                 Input #1, teamName$
-                Input #1, W2%
-                Input #1, L2%
+                Input #1, teamWins
+                Input #1, teamLosses
 
                 For I = 0 To 22: 
                     Input #1, batterNames$(I)
@@ -1057,8 +1095,8 @@ Sub ReportsAllTeams ()
                     Next I1
                 Next I
 
-                Input #1, D0%
-                Input #1, D1%
+                Input #1, statD0
+                Input #1, statD1
 
                 For I = 0 To 21: 
                     Input #1, statT0!(I)
@@ -1107,7 +1145,7 @@ End Sub
 'default printer
 Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printChoice, splitStatChoice)
 
-    Shared L2%, W2%
+    Shared teamLosses, teamWins
 
     Shared extraInnWins, extraInnLosses
     Shared homeWins, homeLosses
@@ -1173,7 +1211,7 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
 
     End If
 
-    LPrint teamName$; "    WON: "; W2%; " LOST: "; L2%
+    LPrint teamName$; "    WON: "; teamWins; " LOST: "; teamLosses
     LPrint "BATTERS      G  AB   R   H 2B 3B HR RBI  BB   K  SB CS CHS LHS GIDP  BAVG   SLG   OBP NEED PROJ.AB %RAB   PO   A  E  FAVG SH SF"
 
     For I = 0 To 22
@@ -1403,8 +1441,8 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
     LPrint Tab(125); Using "###"; statT0!(19)
     LPrint
     LPrint
-    TT$ = Str$(statT0!(2) / (W2% + L2%) + .05)
-    UU$ = Str$(statT1!(2) / (W2% + L2%) + .05)
+    TT$ = Str$(statT0!(2) / (teamWins + teamLosses) + .05)
+    UU$ = Str$(statT1!(2) / (teamWins + teamLosses) + .05)
     LPrint "RUNS PER GAME ";: LPrint Left$(TT$, 4);
     LPrint " OPPONENTS";: LPrint Left$(UU$, 4)
     LPrint
@@ -1416,7 +1454,7 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
     LPrint Tab(20); "EXTRA INNINGS  ("; Str$(extraInnWins); " -"; Str$(extraInnLosses); " )"
     LPrint Tab(20); "ONE RUN GAMES  ("; Str$(oneRunWins); " -"; Str$(oneRunLosses); " )"
     LPrint Chr$(12)
-    LPrint teamName$; "    WON: "; W2%; " LOST: "; L2%
+    LPrint teamName$; "    WON: "; teamWins; " LOST: "; teamLosses
     LPrint "PITCHERS    W  L SV  IP     H  BB  SO  ERA    G GS CG RUN  ER ShO HR DP %RIP SH SF  RI RIS BS   SUP QS"
 
     For I = 0 To 21

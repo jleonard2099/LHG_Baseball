@@ -104,18 +104,20 @@ End Sub
 'This subroutine inputs stats from the
 'chosen stat file and then gives the user
 'an interface for modifying the stats.
-Sub ModifyTeamStats (Z$)
+Sub ModifyTeamStats (statFile$)
+
+    Shared statD0, statD1
 
     Shared batterNames$(), pitcherNames$()
     Shared careerB0%(), careerP0%()
     Shared teamRatings%()
     Shared statB%(), statP%(), statT0%(), statT1%()
 
-    Open diskPaths$(1) + Z$ For Input As #1
+    Open diskPaths$(1) + statFile$ For Input As #1
 
-    Input #1, A$
-    Input #1, W2%
-    Input #1, L2%
+    Input #1, teamName$
+    Input #1, teamWins
+    Input #1, teamLosses
 
     For I = 0 To 22: 
         Input #1, batterNames$(I)
@@ -139,8 +141,8 @@ Sub ModifyTeamStats (Z$)
         Next I1
     Next I
 
-    Input #1, D0%
-    Input #1, D1%
+    Input #1, statD0
+    Input #1, statD1
 
     For I = 0 To 21: 
         Input #1, statT0%(I)
@@ -300,8 +302,8 @@ Sub ModifyTeamStats (Z$)
     X$ = "TEAM PITCHING STATS"
     Call TITLE_STAT_HEADER(X$)
 
-    Locate 2: Print "1. WON "; W2%
-    Locate 3: Print "2. LOST "; L2%
+    Locate 2: Print "1. WON "; teamWins
+    Locate 3: Print "2. LOST "; teamLosses
     Locate 4: Print "3. TM SV "; statT1%(12)
     Locate 5: Print "4. (TM IP X 3) "; statT1%(0)
     Locate 6: Print "5. TM HITS "; statT1%(1)
@@ -332,12 +334,12 @@ Sub ModifyTeamStats (Z$)
 
             Case 1
                 Locate 2, 8: Print Space$(10)
-                Locate 2, 1: Input " 1. WON"; W2%
+                Locate 2, 1: Input " 1. WON"; teamWins
                 Locate 2, 8: Print " "
                 
             Case 2
                 Locate 3, 9: Print Space$(10)
-                Locate 3, 1: Input " 2. LOST"; L2%
+                Locate 3, 1: Input " 2. LOST"; teamLosses
                 Locate 3, 9: Print " "
 
             Case 3
@@ -444,9 +446,9 @@ Sub ModifyTeamStats (Z$)
     ' Save the File
     Open diskPaths$(1) + teamName$ For Output As #1
 
-    Print #1, A$
-    Print #1, W2%
-    Print #1, L2%
+    Print #1, teamName$
+    Print #1, teamWins
+    Print #1, teamLosses
 
     For I = 0 To 22: 
         Print #1, batterNames$(I)
@@ -470,7 +472,8 @@ Sub ModifyTeamStats (Z$)
         Next I1
     Next I
 
-    Print #1, D0%: Print #1, D1%
+    Print #1, statD0
+    Print #1, statD1
 
     For I = 0 To 21: 
         Print #1, statT0%(I)

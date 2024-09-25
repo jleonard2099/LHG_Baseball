@@ -266,13 +266,13 @@ End Sub
 'correct routine to actually swap the info.
 Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
 
+    Shared statD0, statD1
+
     Shared batterNames$(), BS$(), pitcherNames$(), PS$()
 
     Shared inputBS%()
     Shared statB0%(), statP0%(), statSS%()
     Shared statT0!(), statT1!()
-
-    Shared D0%, D1%
 
     Dim SS, TS
 
@@ -347,8 +347,8 @@ Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
                     Open diskPaths$(1) + teamStatFile$ For Output As #1
 
                     Print #1, A$
-                    Print #1, W2%
-                    Print #1, L2%
+                    Print #1, teamWins
+                    Print #1, teamLosses
 
                     For I = 0 To 22:
                         Print #1, BS$(I)
@@ -372,9 +372,8 @@ Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
                         Next I1
                     Next I
 
-                    Print #1, D0%
-
-                    Print #1, D1%
+                    Print #1, statD0
+                    Print #1, statD1
 
                     For I = 0 To 21:
                         Print #1, statT0!(I)
@@ -419,6 +418,8 @@ End Sub
 'team.
 Sub LoadTeam (targetTeam$, SS, statFile$)
 
+    Shared statD0, statD1
+
     Shared inputBS%(), PS%(), statSS%()
     Shared statB0%(), statP0%()
 
@@ -443,8 +444,8 @@ Sub LoadTeam (targetTeam$, SS, statFile$)
         Open diskPaths$(1) + statFile$ For Input As #1
 
         Input #1, A$
-        Input #1, W2%
-        Input #1, L2%
+        Input #1, teamWins
+        Input #1, teamLosses
 
         For I = 0 To 22:
             Input #1, BS$(I)
@@ -468,8 +469,8 @@ Sub LoadTeam (targetTeam$, SS, statFile$)
             Next I1
         Next I
 
-        Input #1, D0%
-        Input #1, D1%
+        Input #1, statD0
+        Input #1, statD1
 
         For I = 0 To 21:
             Input #1, statT0!(I)

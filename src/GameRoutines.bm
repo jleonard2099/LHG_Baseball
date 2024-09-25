@@ -196,7 +196,7 @@ Sub InitVar ()
     Erase VV, VV1
 
     Erase A5%, gameB0%
-    Erase B1%, B2%, B4%, B5%, B8%, B9%
+    Erase B1%, gameB, B4%, B5%, B8%, B9%
     Erase BT%, BB%, CSS%, D3%, DP%
     Erase gameD0%, gameScore, gameT1%, GK%
     Erase H0%, inningScore
@@ -7452,8 +7452,8 @@ Sub GETSTATS ()
             Open diskPaths$(1) + statFile$ For Input As #1
 
             Input #1, A$
-            Input #1, W2%
-            Input #1, L2%
+            Input #1, teamWins
+            Input #1, teamLosses
 
             For I1 = 0 To 22: Input #1, K$: Input #1, K%: Next I1
 
@@ -8107,8 +8107,8 @@ Sub SAVESTATS ()
 
         Cls
         Q = 0
-        W2% = 0
-        L2% = 0
+        teamWins = 0
+        teamLosses = 0
 
         Do
             C% = 0
@@ -8225,12 +8225,12 @@ Sub COMPILESTATFILES (teamIdx)
         Open diskPaths$(1) + statFile$ For Input As #1
 
         Input #1, gameTeams$(teamIdx)
-        Input #1, W2%
-        Input #1, L2%
+        Input #1, teamWins
+        Input #1, teamLosses
 
         For I = 0 To 22: 
             Input #1, batters$(teamIdx, I)
-            Input #1, B2%(teamIdx, I)
+            Input #1, gameB(teamIdx, I)
         Next I
 
         For I = 0 To 21: 
@@ -8264,7 +8264,7 @@ Sub COMPILESTATFILES (teamIdx)
 
     For I = 0 To 22
 
-        B2%(teamIdx, I) = batRating(teamIdx, I, 4)
+        gameB(teamIdx, I) = batRating(teamIdx, I, 4)
 
         For I1 = 0 To 11
             B6%(I, I1) = B6%(I, I1) + B8%(teamIdx, I, I1)
@@ -8349,8 +8349,8 @@ Sub COMPILESTATFILES (teamIdx)
     gameD0%(teamIdx) = gameD0%(teamIdx) + D3%(teamIdx)
     gameD1%(teamIdx) = gameD1%(teamIdx) + D3%(1 - teamIdx)
 
-    If gameScore(teamIdx, 0) - gameScore(1 - teamIdx, 0) > 0 Then W2% = W2% + 1
-    If gameScore(teamIdx, 0) - gameScore(1 - teamIdx, 0) < 0 Then L2% = L2% + 1
+    If gameScore(teamIdx, 0) - gameScore(1 - teamIdx, 0) > 0 Then teamWins = teamWins + 1
+    If gameScore(teamIdx, 0) - gameScore(1 - teamIdx, 0) < 0 Then teamLosses = teamLosses + 1
 
     Color 15, 0
 
@@ -8363,12 +8363,12 @@ Sub COMPILESTATFILES (teamIdx)
     Open diskPaths$(1) + statFile$ For Output As #1
 
     Print #1, gameTeams$(teamIdx)
-    Print #1, W2%
-    Print #1, L2%
+    Print #1, teamWins
+    Print #1, teamLosses
 
     For I = 0 To 22: 
         Print #1, batters$(teamIdx, I)
-        Print #1, B2%(teamIdx, I)
+        Print #1, gameB(teamIdx, I)
     Next I
     
     For I = 0 To 21: 
@@ -8538,11 +8538,11 @@ Sub COMPILESTATFILES (teamIdx)
 
     numberGames = 0
 
-    Erase B2%, B6%, P3%, P4%
+    Erase gameB, B6%, P3%, P4%
     Erase statSS%, statP0%, statT0%
 
-    W2% = 0
-    L2% = 0
+    teamWins = 0
+    teamLosses = 0
 
 
 End Sub

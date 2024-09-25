@@ -7,6 +7,9 @@ Dim Shared teamIndex%(MAX_TEAMS)
 
 ' *** Reading Stat Data ***
 ' -------------------------                                                                                                                   3
+Dim div1Name$, div2Name$, div3Name$, div4Name$
+Dim teamNameStats$
+
 Dim gameAttendance&(MAX_SCHED_STATS)
 
 Dim oppScore(MAX_SCHED_STATS), teamScore(MAX_SCHED_STATS)
@@ -14,8 +17,6 @@ Dim nbrInnings(MAX_SCHED_STATS)
 
 Dim gameSite$(MAX_SCHED_STATS), locIndicator$(MAX_SCHED_STATS), oppName$(MAX_SCHED_STATS)
 Dim losePitcher$(MAX_SCHED_STATS), winPitcher$(MAX_SCHED_STATS)
-
-Dim div1Name$, div2Name$, div3Name$, div4Name$
 
 Dim statB%(0 To 22), statB0%(0 To 22, 0 To 41)
 Dim statP%(0 To 21), statP0%(0 To 21, 0 To 41)
@@ -90,20 +91,24 @@ Dim Shared backToMenu
 '----------------------------------------
 '  Used in ALIGN / MERGE routines
 '----------------------------------------
-Dim LR2%, WR2%
+Dim teamLosses_Road, teamWins_Road
 
-Dim alignBatterName$(23), batterNames_Road$(23)
-Dim alignPitcherName$(22), pitcherNames_Road$(22)
+Dim batNames_Align$(23), batNames_Road$(23)
+Dim pitName_Align$(22), pitNames_Road$(22)
 
+'Align
 Dim BN%(23), B0N%(23, 22)
 Dim PN%(22), P0N%(22, 42)
+
 Dim S0%(22, 6), S0N%(22, 6)
 
+'Road
 Dim BR%(23), B0R%(23, 22)
 Dim PR%(22), P0R%(22, 42)
 Dim SR%(22, 6), S0R%(22, 6)
 
-Dim draftTR(22), draftTR1(23)
+'-- Rename to alignTR, alignTR1
+Dim alignTR(22), alignTR1(23)
 
 
 '----------------------------------------
@@ -138,12 +143,15 @@ Dim TYP!(1 To 920), TYP1!(1 To 920)
 Dim GM1!(920), GM2(880)
 
 'Expanded Standings
+Dim expLL!(TEAMS_PER_LEAGUE), lastTenWins!(TEAMS_PER_LEAGUE), lastTenLosses!(TEAMS_PER_LEAGUE)
+
 Dim CLT!(TEAMS_PER_LEAGUE), CWS!(TEAMS_PER_LEAGUE), ELL!(TEAMS_PER_LEAGUE), EWW!(TEAMS_PER_LEAGUE)
 Dim HLL!(TEAMS_PER_LEAGUE), HWW!(TEAMS_PER_LEAGUE), LLS!(TEAMS_PER_LEAGUE), LWS!(TEAMS_PER_LEAGUE)
-Dim expLL!(TEAMS_PER_LEAGUE), lastTenWins!(TEAMS_PER_LEAGUE), lastTenLosses!(TEAMS_PER_LEAGUE)
 Dim RLL!(TEAMS_PER_LEAGUE), RWW!(TEAMS_PER_LEAGUE)
-Dim TLS!(TEAMS_PER_LEAGUE), TWS!(TEAMS_PER_LEAGUE), TT!(TEAMS_PER_LEAGUE, 22), TT1!(TEAMS_PER_LEAGUE, 23)
+Dim TLS!(TEAMS_PER_LEAGUE), TWS!(TEAMS_PER_LEAGUE)
 Dim WW!(TEAMS_PER_LEAGUE)
+
+Dim TT!(TEAMS_PER_LEAGUE, 22), TT1!(TEAMS_PER_LEAGUE, 23)
 
 Dim TML$(TEAMS_PER_LEAGUE)
 
@@ -200,21 +208,19 @@ Dim mgrs_TRADE$(2), stads_TRADE$(2), tmAbbrev_TRADE$(2)
 
 
 ' ** Stat File **
-Dim tradeL2%(1), TEAM%(1, 22)
+Dim TEAM%(1, 22)
+Dim tradeLosses(1), tradeWins(1)
 
-Dim tmInfo_TRADE$(1), A1$(1)
-Dim tradeB1$(2, 23), tradeP1$(2, 22)
+Dim tmInfo_TRADE$(1)
+Dim tradeA1$(1), tradeB1$(2, 23), tradeP1$(2, 22)
 
-Dim tradeB0%(2, 22, 22), tradeB3%(2, 23)
+Dim tradeB(2, 23), tradeB0%(2, 22, 22)
 Dim tradeD0%(1), tradeD1%(1)
-
-Dim tradeP0%(2, 22, 42), tradeP3%(2, 22)
+Dim tradeP(2, 22), tradeP0%(2, 22, 42)
 
 '-- There are "Dim Shared" equivalents for the game
 Dim tradeSA%(1, 24), tradeSS%(1, 22, 6)
-
 Dim tradeT1%(2, 23), tradeTS%(1, 11)
-Dim tradeW2%(1)
 
 
 '----------------------------------------
@@ -245,22 +251,24 @@ Dim batRecTmDesc$(24), pitRecTmDesc$(25)
 '----------------------------------------
 ' Used in STAT / INPUT other routines
 '----------------------------------------
+Dim statsD0, statsD1
+Dim statsD0_Road, statsD1_Road
+
 Dim inputBS%(22)
 
 'DYS% = days rest; INJ% = injury status
 Dim inputDYS%(21), inputINJ%(22), inputTP%(33)
 
 Dim PS%(32), TB%(15)
+Dim teamLosses, teamWins
+
+Dim parkType$(3), BS$(22), PS$(21)
 
 Dim DV$(4)
 
 Dim ERX!, statI2!
 
 Dim parkHR
-
-Dim D0%, D1%, L2%, W2%
-
-Dim parkType$(3), BS$(22), PS$(21)
 
 
 '----------------------------------------
@@ -342,14 +350,20 @@ Dim Shared nbrOuts(1)
 Dim SU(1, 1)
 
 Dim Shared A5%(0 To 3), assigned(1 To 9)
-Dim Shared B1%(3, 1), B2%(1, 22), B3%(0 To 1, 0 To 9), B4%(1, 7, 9), B5%(0 To 1, 0 To 22, 0 To 21)
+Dim Shared B1%(3, 1), B3%(0 To 1, 0 To 9), B4%(1, 7, 9), B5%(0 To 1, 0 To 22, 0 To 21)
 Dim Shared B7%(0 To 1, 0 To 9), B8%(0 To 1, 0 To 22, 0 To 21), B9%(1, 10), BT%(0 To 1, 1 To 9, 1 To 9)
+
 Dim Shared CF%(0 To 9, 0 To 2), CSS%(1, 22, 6), D3%(1), DP%(1)
+
+Dim Shared gameB(1, 22), gameP(1, 21)
 Dim Shared gameB0%(0 To 3, 0 To 2), gameD0%(1), gameM%(0 To 9), gameSA%(1, 24), gameScore(1, 2)
+
 Dim Shared GK%(1), H0%(1), injuryStatus(0 To 1, 0 To 22), L0%(1), LB%(9, 1)
 Dim Shared MG%(0 To 1, 999), NG%(18)
-Dim Shared P1%(0 To 1), P2%(1), P3%(1, 21), P4%(0 To 22)
+
+Dim Shared P1%(0 To 1), P2%(1), P4%(0 To 22)
 Dim Shared P5%(1, 21, 41), P6%(1), P8%(0 To 1, 0 To 21, 0 To 41)
+
 Dim Shared S1%(1), S8%(1, 1), SO%(0 To 5, 0 To 2)
 Dim Shared T3%(22), gameTS%(1, 11), X0%(1, 2, 23), YR%(1)
 

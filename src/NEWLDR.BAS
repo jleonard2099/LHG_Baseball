@@ -249,8 +249,8 @@ Sub UpdateExpandedLeaders (JB, JP, plyrTotalStats, teamTotalStats)
                 Open diskPaths$(1) + statFiles$(KK) For Input As #1
 
                 Input #1, teamName$
-                Input #1, W2%
-                Input #1, L2%
+                Input #1, teamWins
+                Input #1, teamLosses
 
                 For I = 0 To 22
                     Input #1, batterNames$(I)
@@ -274,8 +274,8 @@ Sub UpdateExpandedLeaders (JB, JP, plyrTotalStats, teamTotalStats)
                     Next I1
                 Next I
 
-                Input #1, D0%
-                Input #1, D1%
+                Input #1, D0
+                Input #1, D1
 
                 For I = 0 To 21:
                     Input #1, statT0%(I)
@@ -287,8 +287,8 @@ Sub UpdateExpandedLeaders (JB, JP, plyrTotalStats, teamTotalStats)
 
                 Close #1
 
-                Wins(YY) = W2%
-                Losses(YY) = L2%
+                Wins(YY) = teamWins
+                Losses(YY) = teamLosses
 
                 plyrTotalStats = plyrTotalStats + 1
 

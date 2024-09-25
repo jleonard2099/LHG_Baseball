@@ -36,13 +36,14 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
     'IP / H / BB / K headers
     PrintOnGfx 66, 28, "IP   H BB  K", imageScreen&
 
+    'IP
     If P8%(D, P1%(D), 0) <> 0 Then
         pStats$ = FUsing$(Str$(Int(P8%(D, P1%(D), 0) / 3)), "##.#", 1)
     Else
         pStats$ = " 0.0"
     End If
 
-    '                                      H                                            BB                                                      K
+    'H / BB / K
     pStats$ = pStats$ + " " + FUsing$(Str$(P8%(D, P1%(D), 1)), "##", 1) + " " + FUsing$(Str$(P8%(D, P1%(D), 4)), "###", 1) + " " + FUsing$(Str$(P8%(D, P1%(D), 5)), "###", 1)
 
     PrintOnGfx 65, 29, pStats$, imageScreen&
@@ -66,9 +67,6 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
         'Printing white on background
         _PrintMode _KeepBackground , imageScreen&
         Color 4294967295
-
-        bpj = batRating(p, J, 0)
-        pdd = pitchRating(D, P1%(D), 0)
 
         If batRating(p, J, 0) < 0 Or batRating(p, J, 0) = 0 And pitchRating(D, P1%(D), 0) > 0 Then
             'Batter Name - Right of Plate
@@ -103,7 +101,6 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
             If bAvg! = 0 Then
                 PrintOnGfx 65, 24, ".000  0  0   0", imageScreen&
             Else
-                bb = batRating(p, J, 11)
                 pStats$ = "." + FUsing$(Str$(bAvg! * 1000), "###", 1)
                 '                                 HR                                         BB                                            K
                 pStats$ = pStats$ + " " + FUsing$(Str$(batRating(p, J, 9)), "##", 1) + " " + FUsing$(Str$(batRating(p, J, 11)), "###", 1) + " " + FUsing$(Str$(batRating(p, J, 12)), "###", 1)
@@ -145,6 +142,7 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
 
     End If
 
+    ' # - # TODAY
     If B7%(p, B1!(p)) <> 1 Then
         today$ = FUsing$(Str$(B8%(p, B3%(p, B1!(p)), 1)), "##", 1) + "-" + FUsing$(Str$(B8%(p, B3%(p, B1!(p)), 0)), "##", 1)
     Else
@@ -153,17 +151,16 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
 
     today$ = today$ + " TODAY"
 
-    ' # - # TODAY
     PrintOnGfx 66, 25, today$, imageScreen&
 
     'Balls
     PrintOnGfx 63, 27, Str$(BC%), imageScreen&
 
-    'Strikes
-    PrintOnGfx 63, 28, Str$(nbrStrikes), imageScreen&
-
     'Outs
     PrintOnGfx 63, 29, Str$(nbrOuts(0)), imageScreen&
+
+    'Strikes
+    PrintOnGfx 63, 28, Str$(nbrStrikes), imageScreen&
 
     'Infield
     _PutImage (52 * FontColAdj, 416)-Step(13 * FontColAdj, 16), backupScreen&, imageScreen&, (52 * FontColAdj, 416)-Step(13 * FontColAdj, 16)

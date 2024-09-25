@@ -180,12 +180,12 @@ End Sub
 'the stats are loaded from the team stats.
 Sub LoadStatsForTrade (yearNumbers$(), tradeIdx)
 
-    Shared tmInfo_TRADE$(), A1$()
+    Shared tmInfo_TRADE$(), tradeA1$()
     Shared tradeB1$(), tradeP1$()
 
-    Shared tradeD0%(), tradeD1%(), teamRat_TRADE(), tradeL2%()
-    Shared TEAM%(), tradeT1%(), tradeP0%(), tradeP3%()
-    Shared tradeB0%(), tradeB3%(), tradeSS%(), tradeW2%()
+    Shared tradeD0%(), tradeD1%(), teamRat_TRADE(), tradeLosses()
+    Shared TEAM%(), tradeT1%(), tradeP0%(), tradeP()
+    Shared tradeB0%(), tradeB(), tradeSS%(), tradeWins()
 
     Shared haveStats()
 
@@ -217,18 +217,18 @@ Sub LoadStatsForTrade (yearNumbers$(), tradeIdx)
 
             Open diskPaths$(1) + statFile$ For Input As #1
 
-            Input #1, A1$(tradeIdx)
-            Input #1, tradeW2%(tradeIdx)
-            Input #1, tradeL2%(tradeIdx)
+            Input #1, tradeA1$(tradeIdx)
+            Input #1, tradeWins(tradeIdx)
+            Input #1, tradeLosses(tradeIdx)
 
             For I1 = 0 To 22:
                 Input #1, tradeB1$(tradeIdx, I1)
-                Input #1, tradeB3%(tradeIdx, I1)
+                Input #1, tradeB(tradeIdx, I1)
             Next I1
 
             For I1 = 0 To 21:
                 Input #1, tradeP1$(tradeIdx, I1)
-                Input #1, tradeP3%(tradeIdx, I1)
+                Input #1, tradeP(tradeIdx, I1)
             Next I1
 
             For I1 = 0 To 22:
@@ -300,12 +300,12 @@ End Sub
 'the trade and then save the changes.
 Sub ContinueTrade (yearNumbers$())
 
-    Shared tmInfo_TRADE$(), A1$()
+    Shared tmInfo_TRADE$(), tradeA1$()
     Shared tradeB1$(), tradeP1$()
 
-    Shared tradeD0%(), tradeD1%(), teamRat_TRADE(), tradeL2%()
-    Shared TEAM%(), tradeT1%(), tradeP0%(), tradeP3%()
-    Shared tradeB0%(), tradeB3%(), tradeSS%(), tradeW2%()
+    Shared tradeD0%(), tradeD1%(), teamRat_TRADE(), tradeLosses()
+    Shared TEAM%(), tradeT1%(), tradeP0%(), tradeP()
+    Shared tradeB0%(), tradeB(), tradeSS%(), tradeWins()
 
     Shared haveStats()
 
@@ -403,7 +403,7 @@ Sub TradeBatters ()
 
     Shared tmInfo_TRADE$(), tradeB1$(), batNam_TRADE$()
 
-    Shared batRat_TRADE(), tradeB0%(), tradeB3%(), teamRat_TRADE()
+    Shared batRat_TRADE(), tradeB0%(), tradeB(), teamRat_TRADE()
     Shared tradeSA%(), tradeSS%(), tradeTS%()
 
     Shared haveStats()
@@ -532,7 +532,7 @@ Sub TradeBatters ()
 
     tradeB1$(0, I1) = batNam_TRADE$(0, I1)
     tradeB1$(1, I2) = batNam_TRADE$(1, I2)
-    Swap tradeB3%(0, I1), tradeB3%(1, I2)
+    Swap tradeB(0, I1), tradeB(1, I2)
 
     If haveStats(0) = 1 Or haveStats(1) = 1 Or W1 = 0 Then
 
@@ -565,7 +565,7 @@ End Sub
 Sub TradePitchers ()
 
     Shared tmInfo_TRADE$(), batNam_TRADE$(), tradeP1$()
-    Shared teamRat_TRADE(), tradeP0%(), pitRat_TRADE(), tradeP3%()
+    Shared teamRat_TRADE(), tradeP0%(), pitRat_TRADE(), tradeP()
     Shared tradeSA%(), tradeTS%()
     Shared haveStats()
 
@@ -696,7 +696,7 @@ Sub TradePitchers ()
             tradeP0%(1, I2, I3) = 0
         Next I3
     Else
-        Swap tradeP3%(0, I1), tradeP3%(1, I2)
+        Swap tradeP(0, I1), tradeP(1, I2)
         For I3 = 0 To 41:
             Swap tradeP0%(0, I1, I3), tradeP0%(1, I2, I3)
         Next I3
@@ -716,16 +716,16 @@ End Sub
 'data from the trade to the team files.
 Sub SaveTrades (yearNumbers$())
 
-    Shared tmInfo_TRADE$(), A1$()
+    Shared tmInfo_TRADE$(), tradeA1$()
     Shared batNam_TRADE$(), pitNam_TRADE$()
     Shared tradeB1$(), tradeP1$()
 
-    Shared tradeD0%(), tradeD1%(), teamRat_TRADE(), tradeL2%()
+    Shared tradeD0%(), tradeD1%(), teamRat_TRADE(), tradeLosses()
     Shared haveStats(), TEAM%()
-    Shared batRat_TRADE(), tradeB0%(), tradeB3%()
-    Shared pitRat_TRADE(), tradeP0%(), tradeP3%()
+    Shared batRat_TRADE(), tradeB0%(), tradeB()
+    Shared pitRat_TRADE(), tradeP0%(), tradeP()
     Shared tradeSA%(), tradeSS%(), tradeT1%(), tradeTS%()
-    Shared teamIndexes(), tradeW2%()
+    Shared teamIndexes(), tradeWins()
 
     Shared mgrs_TRADE$(), stads_TRADE$(), tmAbbrev_TRADE$()
 
@@ -906,18 +906,18 @@ Sub SaveTrades (yearNumbers$())
 
             Open diskPaths$(1) + statFile$ For Output As #1
 
-            Print #1, A1$(I)
-            Print #1, tradeW2%(I)
-            Print #1, tradeL2%(I)
+            Print #1, tradeA1$(I)
+            Print #1, tradeWins(I)
+            Print #1, tradeLosses(I)
 
             For I1 = 0 To 22:
                 Print #1, tradeB1$(I, I1)
-                Print #1, tradeB3%(I, I1)
+                Print #1, tradeB(I, I1)
             Next I1
 
             For I1 = 0 To 21:
                 Print #1, tradeP1$(I, I1)
-                Print #1, tradeP3%(I, I1)
+                Print #1, tradeP(I, I1)
             Next I1
 
             For I1 = 0 To 22:
