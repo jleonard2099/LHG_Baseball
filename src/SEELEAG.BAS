@@ -13,8 +13,8 @@ Sub SEELEAG ()
 
     If ExitCode% <> 27 And ExitCode% <> 0 Then
 
-        Call LoadLeaderFiles(league$, div1$, div2$, leaderFile$)
-        Call StatOptions(league$, div1$, div2$)
+        Call LoadLeaderFiles(league$, div1$, div2$, div3$, div4$, leaderFile$)
+        Call StatOptions(league$, div1$, div2$, div3$, div4$)
 
     End If
 
@@ -26,15 +26,15 @@ End Sub
 '----------------------------------------
 'This subroutine loads the league stats
 'from the file into several arrays
-Sub LoadLeaderFiles (league$, div1$, div2$, targetFile$)
+Sub LoadLeaderFiles (league$, div1$, div2$, div3$, div4$, targetFile$)
 
-    Shared Wins(), Losses()
+    Shared divWins(), divLosses()
 
     Shared DFT!(), OFT!()
-    Shared seeZ!(), seeZ1!()
+    Shared leagLdrVal1!(), leagLdrVal2!()
 
-    Shared BA$(), compileZ2$(), compileZ3$(), ER$()
-    Shared LF$(), seeP$(), RT$(), seeT$()
+    Shared BA$(), leagLdrPlayer$(), leagLdrTeam$(), ER$()
+    Shared LF$(), leaderPlayer$(), memberName$()
 
     Open diskPaths$(2) + targetFile$ + ".TMS" For Input As #2
     Input #2, league$, div1$, div2$, div3$, div4$
@@ -52,11 +52,11 @@ Sub LoadLeaderFiles (league$, div1$, div2$, targetFile$)
     Open diskPaths$(2) + targetFile$ + ".LDR" For Input As #2
 
     For X = 1 To TEAMS_PER_LEAGUE
-        Input #2, seeT$(X), Wins(X), Losses(X)
+        Input #2, memberName$(X), divWins(X), divLosses(X)
     Next
 
     For X = 1 To 298: 
-        Input #2, compileZ2$(X), compileZ3$(X), seeZ!(X), seeZ1!(X)
+        Input #2, leagLdrPlayer$(X), leagLdrTeam$(X), leagLdrVal1!(X), leagLdrVal2!(X)
     Next
 
     For X = 1 To TEAMS_PER_LEAGUE
@@ -86,7 +86,7 @@ End Sub
 'This subroutine gives the user various
 'options for viewing the previously loaded
 'stats, and then calls routines for each
-Sub StatOptions (league$, div1$, div2$)
+Sub StatOptions (league$, div1$, div2$, div3$, div4$)
 
     Do
 
@@ -102,14 +102,14 @@ Sub StatOptions (league$, div1$, div2$)
                 Case "F":
                     userFile$ = _SAVEFILEDIALOG$("Save League Report",_CWD$ + "\Report","*.txt","Text File")
                     If userFile$ <> "" Then
-                        Call LeagueStats_Report(league$, div1$, div2$, 0, userFile$)
+                        Call LeagueStats_Report(league$, div1$, div2$, div3$, 0, userFile$)
                     End If
 
                 Case "P":
-                    Call LeagueStats_Report(league$, div1$, div2$, 1, "REPORT")
+                    Call LeagueStats_Report(league$, div1$, div2$, div3$, 1, "REPORT")
 
                 Case "S":
-                    Call LeagueStats_Screen(league$, div1$, div2$)
+                    Call LeagueStats_Screen(league$, div1$, div2$, div3$)
 
             End Select
 
@@ -141,15 +141,15 @@ End Sub
 'This subroutine formats the previously
 'loaded stats and outputs them to the end
 'user display.
-Sub LeagueStats_Screen (league$, div1$, div2$)
+Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
-    Shared Wins(), Losses()
+    Shared divWins(), divLosses()
 
     Shared DFT!(), OFT!()
-    Shared seeZ!(), seeZ1!()
+    Shared leagLdrVal1!(), leagLdrVal2!()
 
-    Shared BA$(), compileZ2$(), compileZ3$(), ER$()
-    Shared LF$(), seeP$(), RT$(), seeT$()
+    Shared BA$(), leagLdrPlayer$(), leagLdrTeam$(), ER$()
+    Shared LF$(), leaderPlayer$(), memberName$()
 
     Dim J!, ATBATS!, INNINGS!
 
@@ -170,34 +170,34 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
         first = ((O - 1) * 10) + 1
         last = O * 10
 
-        D1 = Wins(first) - Losses(first)
+        D1 = divWins(first) - divLosses(first)
 
         For P = first To last
 
-            If seeT$(P) = "*" Then
+            If memberName$(P) = "*" Then
 
-                seeP$(P) = ""
+                leaderPlayer$(P) = ""
 
             Else
 
-                seeP$(P) = PadRight$(seeT$(P), 12)
+                leaderPlayer$(P) = PadRight$(memberName$(P), 12)
 
-                'Wins
-                seeP$(P) = seeP$(P) + Right$("     " + Str$(Wins(P)), 3)
-                seeP$(P) = PadRight$(seeP$(P), 16)
+                'divWins
+                leaderPlayer$(P) = leaderPlayer$(P) + Right$("     " + Str$(divWins(P)), 3)
+                leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 16)
 
                 'Losses
-                seeP$(P) = seeP$(P) + Right$("     " + Str$(Losses(P)), 3)
-                seeP$(P) = PadRight$(seeP$(P), 21)
+                leaderPlayer$(P) = leaderPlayer$(P) + Right$("     " + Str$(divLosses(P)), 3)
+                leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 21)
 
                 'PCT
                 J! = 0
-                If Wins(P) + Losses(P) > 0 Then J! = Wins(P) / (Wins(P) + Losses(P))
+                If divWins(P) + divLosses(P) > 0 Then J! = divWins(P) / (divWins(P) + divLosses(P))
 
                 J! = Int(1000 * J! + .5)
 
                 If J! = 1000 Then
-                    seeP$(P) = seeP$(P) + "1.000 "
+                    leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
                 Else
 
                     If J! > 1000 Then
@@ -208,7 +208,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
                         '0-pad PCT of fewer than 3 chars
                         While Len(A$) < 3: A$ = "0" + A$: Wend
 
-                        seeP$(P) = seeP$(P) + "1." + A$
+                        leaderPlayer$(P) = leaderPlayer$(P) + "1." + A$
                     Else
                         A$ = Str$(J!)
                         L = Len(A$)
@@ -216,16 +216,16 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
                         '0-pad PCT of fewer than 3 chars
                         While Len(A$) < 3: A$ = "0" + A$: Wend
 
-                        seeP$(P) = seeP$(P) + "." + A$
+                        leaderPlayer$(P) = leaderPlayer$(P) + "." + A$
 
                     End If
 
                 End If
 
-                seeP$(P) = PadRight$(seeP$(P), 28)
+                leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 28)
 
                 'Games Behind
-                D = Wins(P) - Losses(P)
+                D = divWins(P) - divLosses(P)
                 D = D1 - D
                 BK$ = Str$(Int(D / 2))
                 If D = 0 Then BK$ = "---"
@@ -233,7 +233,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
                 If D > 19 Then L = Len(BK$): BK$ = Right$(BK$, L - 1)
                 If D / 2 <> Int(D / 2) Then BK$ = BK$ + " 1/2"
 
-                seeP$(P) = seeP$(P) + BK$
+                leaderPlayer$(P) = leaderPlayer$(P) + BK$
 
             End If
 
@@ -262,10 +262,10 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 1 To 10
 
-        If seeP$(P) = "" Then
+        If leaderPlayer$(P) = "" Then
             RT = RT + 1
         Else
-            Locate (P + 3 - RT), 1: Print "    "; seeP$(P)
+            Locate (P + 3 - RT), 1: Print "    "; leaderPlayer$(P)
         End If
 
     Next P
@@ -281,17 +281,17 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
     Color 14
     Locate 15, 1
 
-    If div3Name$ = "" Then div3Name$ = Space$(8)
-    Print "    " + div3Name$ + "      W   L   PCT   GB"
+    If div3$ = "" Then div3$ = Space$(8)
+    Print "    " + div3$ + "      W   L   PCT   GB"
 
     Color 15
 
     For P = 21 To 30
 
-        If seeP$(P) = "" Then
+        If leaderPlayer$(P) = "" Then
             RT = RT + 1
         Else
-            Locate (P - 5 - RT), 1: Print "    "; seeP$(P)
+            Locate (P - 5 - RT), 1: Print "    "; leaderPlayer$(P)
         End If
 
     Next P
@@ -312,10 +312,10 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 11 To 20
 
-        If seeP$(P) = "" Then
+        If leaderPlayer$(P) = "" Then
             RT = RT + 1
         Else
-            Locate (P - 7 - RT), 41: Print "    "; seeP$(P)
+            Locate (P - 7 - RT), 41: Print "    "; leaderPlayer$(P)
         End If
 
     Next P
@@ -337,10 +337,10 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 31 To 40
 
-        If seeP$(P) = "" Then
+        If leaderPlayer$(P) = "" Then
             RT = RT + 1
         Else
-            Locate (P - 15 - RT), 41: Print "    "; seeP$(P)
+            Locate (P - 15 - RT), 41: Print "    "; leaderPlayer$(P)
         End If
 
     Next P
@@ -359,7 +359,9 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
     AB$ = Str$(Int(AB))
     TD = IP - 3 * IG
     AB$ = Right$(AB$, Len(AB$) - 1)
-    If TD > 0 Then TD$ = " 1/3"
+    If TD > 0 Then 
+        TD$ = " 1/3"
+    End If
 
     IG$ = Str$(IP)
     IP$ = Right$(IG$, Len(IG$) - 1)
@@ -370,22 +372,22 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 1 To 19
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "*" Then
+        If leagLdrPlayer$(P) <> "*" Then
 
-            seeP$(P) = Left$(compileZ2$(P), 13)
-            If compileZ3$(P) <> "*" Then
-                seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
+            leaderPlayer$(P) = Left$(leagLdrPlayer$(P), 13)
+            If leagLdrTeam$(P) <> "*" Then
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
-            seeP$(P) = PadRight$(seeP$(P), 26)
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
 
-            J! = Int(1000 * seeZ!(P) + .5)
+            J! = Int(1000 * leagLdrVal1!(P) + .5)
 
             If J! = 1000 Then
 
-                seeP$(P) = seeP$(P) + "1.000 "
+                leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
 
             Else
 
@@ -396,21 +398,24 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
                     While Len(A$) < 3: A$ = "0" + A$: Wend
 
                     A$ = "1." + A$
-                    seeP$(P) = seeP$(P) + A$
+                    leaderPlayer$(P) = leaderPlayer$(P) + A$
                 Else
                     A$ = Str$(J!)
                     L = Len(A$)
                     A$ = Right$(A$, L - 1)
-                    '0-pad PCT of fewer than 3 chars
-                    While Len(A$) < 3: A$ = "0" + A$: Wend
 
-                    seeP$(P) = seeP$(P) + "." + A$
+                    '0-pad PCT of fewer than 3 chars
+                    While Len(A$) < 3
+                        A$ = "0" + A$
+                    Wend
+
+                    leaderPlayer$(P) = leaderPlayer$(P) + "." + A$
 
                 End If
 
             End If
 
-            seeP$(P) = seeP$(P) + "     " + Str$(seeZ1!(P))
+            leaderPlayer$(P) = leaderPlayer$(P) + "     " + Str$(leagLdrVal2!(P))
 
         End If
 
@@ -425,10 +430,10 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
     Color 15
 
     For P = 1 To 19
-        Print compileZ2$(P) + ", " + compileZ3$(P); Tab(28); Using "#.###  ###"; seeZ!(P); seeZ1!(P);
+        Print leagLdrPlayer$(P) + ", " + leagLdrTeam$(P); Tab(28); Using "#.###  ###"; leagLdrVal1!(P); leagLdrVal2!(P);
 
-        Print Tab(41); compileZ2$(P + 238) + ", " + compileZ3$(P + 238); Tab(69);
-        Print Using "#.###  ###"; seeZ!(P + 238); seeZ1!(P + 238)
+        Print Tab(41); leagLdrPlayer$(P + 238) + ", " + leagLdrTeam$(P + 238); Tab(69);
+        Print Using "#.###  ###"; leagLdrVal1!(P + 238); leagLdrVal2!(P + 238)
     Next
 
     Print
@@ -439,14 +444,16 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 21 To 30
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "" Then
+        If leagLdrPlayer$(P) <> "" Then
 
-            seeP$(P) = Left$(compileZ2$(P), 13)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
-            seeP$(P) = PadRight$(seeP$(P), 26)
-            seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
+            leaderPlayer$(P) = Left$(leagLdrPlayer$(P), 13)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
+            leaderPlayer$(P) = leaderPlayer$(P) + Right$("     " + Str$(leagLdrVal1!(P)), 3)
 
         End If
 
@@ -464,7 +471,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
     Color 14: Print "      HITS"
     Color 15
     For P = 21 To 30:
-        Print "      "; seeP$(P)
+        Print "      "; leaderPlayer$(P)
     Next P
     Print
 
@@ -475,14 +482,16 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 32 To 41
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "" Then
+        If leagLdrPlayer$(P) <> "" Then
 
-            seeP$(P) = Left$(compileZ2$(P), 13)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
-            seeP$(P) = PadRight$(seeP$(P), 26)
-            seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
+            leaderPlayer$(P) = Left$(leagLdrPlayer$(P), 13)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
+            leaderPlayer$(P) = leaderPlayer$(P) + Right$("     " + Str$(leagLdrVal1!(P)), 3)
 
         End If
 
@@ -493,7 +502,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
     Color 15
 
     For P = 32 To 41:
-        Print "      "; seeP$(P)
+        Print "      "; leaderPlayer$(P)
     Next P
 
 
@@ -503,14 +512,16 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 43 To 52
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "" Then
+        If leagLdrPlayer$(P) <> "" Then
 
-            seeP$(P) = Left$(compileZ2$(P), 13)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
-            seeP$(P) = PadRight$(seeP$(P), 26)
-            seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
+            leaderPlayer$(P) = Left$(leagLdrPlayer$(P), 13)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
+            leaderPlayer$(P) = leaderPlayer$(P) + Right$("     " + Str$(leagLdrVal1!(P)), 3)
 
         End If
 
@@ -523,7 +534,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 43 To 52
         Locate (P - 41), 40
-        Print "      "; seeP$(P)
+        Print "      "; leaderPlayer$(P)
     Next P
 
     Print
@@ -533,14 +544,16 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
     '------------------------------
 
     For P = 54 To 63
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "" Then
+        If leagLdrPlayer$(P) <> "" Then
 
-            seeP$(P) = Left$(compileZ2$(P), 13)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
-            seeP$(P) = PadRight$(seeP$(P), 26)
-            seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
+            leaderPlayer$(P) = Left$(leagLdrPlayer$(P), 13)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
+            leaderPlayer$(P) = leaderPlayer$(P) + Right$("     " + Str$(leagLdrVal1!(P)), 3)
 
         End If
 
@@ -553,7 +566,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 54 To 63:
         Locate (P - 40), 40
-        Print "      "; seeP$(P)
+        Print "      "; leaderPlayer$(P)
     Next P
 
     '-----
@@ -569,14 +582,16 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 65 To 73
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "" Then
+        If leagLdrPlayer$(P) <> "" Then
 
-            seeP$(P) = Left$(compileZ2$(P), 13)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
-            seeP$(P) = PadRight$(seeP$(P), 26)
-            seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
+            leaderPlayer$(P) = Left$(leagLdrPlayer$(P), 13)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
+            leaderPlayer$(P) = leaderPlayer$(P) + Right$("     " + Str$(leagLdrVal1!(P)), 3)
 
         End If
 
@@ -588,7 +603,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
     Color 15
 
     For P = 65 To 73:
-        Print "      "; seeP$(P)
+        Print "      "; leaderPlayer$(P)
     Next P
 
     Print
@@ -599,14 +614,16 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 76 To 84:
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "" Then
+        If leagLdrPlayer$(P) <> "" Then
 
-            seeP$(P) = Left$(compileZ2$(P), 13)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
-            seeP$(P) = PadRight$(seeP$(P), 26)
-            seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
+            leaderPlayer$(P) = Left$(leagLdrPlayer$(P), 13)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
+            leaderPlayer$(P) = leaderPlayer$(P) + Right$("     " + Str$(leagLdrVal1!(P)), 3)
 
         End If
 
@@ -618,7 +635,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
     Color 15
 
     For P = 76 To 84:
-        Print "      "; seeP$(P)
+        Print "      "; leaderPlayer$(P)
     Next P
 
 
@@ -628,14 +645,16 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 87 To 96
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "" Then
+        If leagLdrPlayer$(P) <> "" Then
 
-            seeP$(P) = Left$(compileZ2$(P), 13)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
-            seeP$(P) = PadRight$(seeP$(P), 26)
-            seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
+            leaderPlayer$(P) = Left$(leagLdrPlayer$(P), 13)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
+            leaderPlayer$(P) = leaderPlayer$(P) + Right$("     " + Str$(leagLdrVal1!(P)), 3)
 
         End If
 
@@ -648,7 +667,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 87 To 96:
         Locate (P - 85), 40
-        Print "      "; seeP$(P)
+        Print "      "; leaderPlayer$(P)
     Next P
 
 
@@ -658,19 +677,21 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 98 To 107:
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "" Then
+        If leagLdrPlayer$(P) <> "" Then
 
-            seeP$(P) = Left$(compileZ2$(P), 13)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
-            seeP$(P) = PadRight$(seeP$(P), 26)
+            leaderPlayer$(P) = Left$(leagLdrPlayer$(P), 13)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
 
-            J! = Int(1000 * seeZ!(P) + .5)
+            J! = Int(1000 * leagLdrVal1!(P) + .5)
 
             If J! = 1000 Then
 
-                seeP$(P) = seeP$(P) + "1.000 "
+                leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
 
             Else
 
@@ -678,17 +699,22 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
                     A$ = Str$(J! - 1000)
                     L = Len(A$)
                     A$ = Right$(A$, L - 1)
-                    While Len(A$) < 3: A$ = "0" + A$: Wend
+                    '0-pad % fewer than 3 chars
+                    While Len(A$) < 3
+                        A$ = "0" + A$
+                    Wend
                     A$ = "1." + A$
-                    seeP$(P) = seeP$(P) + A$
+                    leaderPlayer$(P) = leaderPlayer$(P) + A$
                 Else
                     A$ = Str$(J!)
                     L = Len(A$)
                     A$ = Right$(A$, L - 1)
-                    '0-pad PCT of fewer than 3 chars
-                    While Len(A$) < 3: A$ = "0" + A$: Wend
+                    '0-pad % fewer than 3 chars
+                    While Len(A$) < 3
+                        A$ = "0" + A$
+                    Wend
 
-                    seeP$(P) = seeP$(P) + "." + A$
+                    leaderPlayer$(P) = leaderPlayer$(P) + "." + A$
 
                 End If
 
@@ -704,7 +730,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
     Color 15
 
     For P = 99 To 108:
-        Locate (P - 85), 40: Print "      "; seeP$(P)
+        Locate (P - 85), 40: Print "      "; leaderPlayer$(P)
     Next P
 
     '-----
@@ -720,19 +746,19 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 110 To 119
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "" Then
+        If leagLdrPlayer$(P) <> "" Then
 
-            seeP$(P) = Left$(compileZ2$(P), 13)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
-            seeP$(P) = PadRight$(seeP$(P), 26)
+            leaderPlayer$(P) = Left$(leagLdrPlayer$(P), 13)
+            If leagLdrTeam$(P) <> "*" Then leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
 
-            J! = Int(1000 * seeZ!(P) + .5)
+            J! = Int(1000 * leagLdrVal1!(P) + .5)
 
             If J! = 1000 Then
 
-                seeP$(P) = seeP$(P) + "1.000 "
+                leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
 
             Else
 
@@ -740,17 +766,22 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
                     A$ = Str$(J! - 1000)
                     L = Len(A$)
                     A$ = Right$(A$, L - 1)
-                    While Len(A$) < 3: A$ = "0" + A$: Wend
+                    '0-pad % fewer than 3 chars
+                    While Len(A$) < 3
+                        A$ = "0" + A$
+                    Wend
                     A$ = "1." + A$
-                    seeP$(P) = seeP$(P) + A$
+                    leaderPlayer$(P) = leaderPlayer$(P) + A$
                 Else
                     A$ = Str$(J!)
                     L = Len(A$)
                     A$ = Right$(A$, L - 1)
                     '0-pad PCT of fewer than 3 chars
-                    While Len(A$) < 3: A$ = "0" + A$: Wend
-
-                    seeP$(P) = seeP$(P) + "." + A$
+                    '0-pad % fewer than 3 chars
+                    While Len(A$) < 3
+                        A$ = "0" + A$
+                    Wend
+                    leaderPlayer$(P) = leaderPlayer$(P) + "." + A$
 
                 End If
 
@@ -768,7 +799,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 110 To 119
         Print "      ";
-        Print seeP$(P)
+        Print leaderPlayer$(P)
     Next P
 
     Print
@@ -779,14 +810,16 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 217 To 226
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "" Then
+        If leagLdrPlayer$(P) <> "" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
-            seeP$(P) = PadRight$(seeP$(P), 26)
-            seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
+            leaderPlayer$(P) = leaderPlayer$(P) + Right$("     " + Str$(leagLdrVal1!(P)), 3)
 
         End If
 
@@ -799,7 +832,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
     Color 15
 
     For P = 217 To 226:
-        Locate (P - 215), 41: Print seeP$(P)
+        Locate (P - 215), 41: Print leaderPlayer$(P)
     Next P
 
     '------------------------------
@@ -811,7 +844,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 279 To 288
         Print "      ";
-        Print Left$(compileZ2$(P), 13) + ", " + compileZ3$(P); Tab(34); Using "###"; seeZ!(P)
+        Print Left$(leagLdrPlayer$(P), 13) + ", " + leagLdrTeam$(P); Tab(34); Using "###"; leagLdrVal1!(P)
     Next P
 
     Locate 13, 40
@@ -821,7 +854,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 289 To 298
         Locate , 41
-        Print Left$(compileZ2$(P), 13) + ", " + compileZ3$(P); Tab(67); Using "###"; seeZ!(P)
+        Print Left$(leagLdrPlayer$(P), 13) + ", " + leagLdrTeam$(P); Tab(67); Using "###"; leagLdrVal1!(P)
     Next P
 
     '-----
@@ -837,15 +870,17 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 120 To 138
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "" Then
+        If leagLdrPlayer$(P) <> "" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
-            seeP$(P) = PadRight$(seeP$(P), 26)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
 
-            J! = Int(100 * seeZ!(P) + .5)
+            J! = Int(100 * leagLdrVal1!(P) + .5)
             A$ = Str$(J!)
 
             LN = Len(A$)
@@ -856,10 +891,10 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
             A$ = Left$(A$, LN - 2) + "." + Right$(A$, 2)
             A$ = "    " + A$
-            seeP$(P) = seeP$(P) + Right$(A$, 5)
+            leaderPlayer$(P) = leaderPlayer$(P) + Right$(A$, 5)
 
-            J! = Int(seeZ1!(P))
-            seeP$(P) = seeP$(P) + "     " + Str$(J!)
+            J! = Int(leagLdrVal2!(P))
+            leaderPlayer$(P) = leaderPlayer$(P) + "     " + Str$(J!)
 
         End If
 
@@ -874,9 +909,9 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
     Color 15
 
     For P = 121 To 139
-        Print compileZ2$(P) + ", " + compileZ3$(P); Tab(30); Using "#.##  ###"; seeZ!(P); seeZ1!(P);
+        Print leagLdrPlayer$(P) + ", " + leagLdrTeam$(P); Tab(30); Using "#.##  ###"; leagLdrVal1!(P); leagLdrVal2!(P);
         Print Tab(41);
-        Print compileZ2$(P + 138) + ", " + compileZ3$(P + 138); Tab(70); Using "##.## ###"; seeZ!(P + 138); seeZ1!(P + 138)
+        Print leagLdrPlayer$(P + 138) + ", " + leagLdrTeam$(P + 138); Tab(70); Using "##.## ###"; leagLdrVal1!(P + 138); leagLdrVal2!(P + 138)
     Next
 
     '-----
@@ -892,18 +927,20 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 140 To 149
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If seeZ!(P) <> seeZ!(150) Or seeZ1!(P) <> seeZ1!(150) Then
+        If leagLdrVal1!(P) <> leagLdrVal1!(150) Or leagLdrVal2!(P) <> leagLdrVal2!(150) Then
 
-            seeP$(P) = seeP$(P) + compileZ2$(P)
+            leaderPlayer$(P) = leaderPlayer$(P) + leagLdrPlayer$(P)
 
-            If compileZ3$(P) <> "" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
+            If leagLdrTeam$(P) <> "" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
 
-            seeP$(P) = PadRight$(seeP$(P), 26)
-            seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 2)
-            seeP$(P) = seeP$(P) + "-"
-            seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ1!(P)), 2)
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
+            leaderPlayer$(P) = leaderPlayer$(P) + Right$("     " + Str$(leagLdrVal1!(P)), 2)
+            leaderPlayer$(P) = leaderPlayer$(P) + "-"
+            leaderPlayer$(P) = leaderPlayer$(P) + Right$("     " + Str$(leagLdrVal2!(P)), 2)
 
         End If
 
@@ -916,7 +953,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
     Color 15
 
     For P = 140 To 149
-        Print "      "; seeP$(P)
+        Print "      "; leaderPlayer$(P)
     Next
 
     Print
@@ -926,14 +963,16 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
     '------------------------------
 
     For P = 151 To 160
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "*" Then
+        If leagLdrPlayer$(P) <> "*" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
-            seeP$(P) = PadRight$(seeP$(P), 26)
-            seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
+            leaderPlayer$(P) = leaderPlayer$(P) + Right$("     " + Str$(leagLdrVal1!(P)), 3)
 
         End If
 
@@ -944,7 +983,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
     Color 15
 
     For P = 151 To 160:
-        Print "      "; seeP$(P)
+        Print "      "; leaderPlayer$(P)
     Next P
 
     '------------------------------
@@ -953,14 +992,16 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 162 To 171
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "" Then
+        If leagLdrPlayer$(P) <> "" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
-            seeP$(P) = PadRight$(seeP$(P), 26)
-            seeP$(P) = seeP$(P) + Right$("     " + Str$(Int(seeZ!(P))), 3)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
+            leaderPlayer$(P) = leaderPlayer$(P) + Right$("     " + Str$(Int(leagLdrVal1!(P))), 3)
 
         End If
 
@@ -972,7 +1013,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
     Color 15
 
     For P = 162 To 171:
-        Locate (P - 160), 40: Print "      "; seeP$(P)
+        Locate (P - 160), 40: Print "      "; leaderPlayer$(P)
     Next P
 
     '------------------------------
@@ -981,16 +1022,17 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 173 To 182
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "" Then
+        If leagLdrPlayer$(P) <> "" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
 
-            seeP$(P) = PadRight$(seeP$(P), 26)
-
-            seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
+            leaderPlayer$(P) = leaderPlayer$(P) + Right$("     " + Str$(leagLdrVal1!(P)), 3)
 
         End If
 
@@ -1003,7 +1045,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 173 To 182:
         Locate (P - 159), 40
-        Print "      "; seeP$(P)
+        Print "      "; leaderPlayer$(P)
     Next P
 
     '-----
@@ -1019,14 +1061,16 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 184 To 193
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "" Then
+        If leagLdrPlayer$(P) <> "" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
-            seeP$(P) = PadRight$(seeP$(P), 26)
-            seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
+            leaderPlayer$(P) = leaderPlayer$(P) + Right$("     " + Str$(leagLdrVal1!(P)), 3)
 
         End If
 
@@ -1039,7 +1083,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
     Color 15
 
     For P = 184 To 193:
-        Print "      "; seeP$(P)
+        Print "      "; leaderPlayer$(P)
     Next P
 
     Print
@@ -1050,14 +1094,16 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 195 To 204
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "" Then
+        If leagLdrPlayer$(P) <> "" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
-            seeP$(P) = PadRight$(seeP$(P), 26)
-            seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
+            leaderPlayer$(P) = leaderPlayer$(P) + Right$("     " + Str$(leagLdrVal1!(P)), 3)
 
         End If
 
@@ -1068,7 +1114,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
     Color 15
 
     For P = 195 To 204
-        Print "      "; seeP$(P)
+        Print "      "; leaderPlayer$(P)
     Next P
 
     '------------------------------
@@ -1076,14 +1122,16 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
     '------------------------------
     For P = 206 To 215
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "" Then
+        If leagLdrPlayer$(P) <> "" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
-            seeP$(P) = PadRight$(seeP$(P), 26)
-            seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
+            leaderPlayer$(P) = leaderPlayer$(P) + Right$("     " + Str$(leagLdrVal1!(P)), 3)
 
         End If
 
@@ -1096,7 +1144,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 206 To 215:
         Locate (P - 204), 40
-        Print "      "; seeP$(P)
+        Print "      "; leaderPlayer$(P)
     Next P
 
     '------------------------------
@@ -1109,14 +1157,16 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
     Color 15
 
     For P = 228 To 237
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "" Then
+        If leagLdrPlayer$(P) <> "" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
-            seeP$(P) = PadRight$(seeP$(P), 26)
-            seeP$(P) = seeP$(P) + Right$("     " + Str$(seeZ!(P)), 3)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
+            leaderPlayer$(P) = leaderPlayer$(P) + Right$("     " + Str$(leagLdrVal1!(P)), 3)
 
         End If
 
@@ -1125,7 +1175,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$)
 
     For P = 228 To 237:
         Locate (P - 214), 40
-        Print "      "; seeP$(P)
+        Print "      "; leaderPlayer$(P)
     Next P
 
     '-----
@@ -1256,62 +1306,66 @@ End Sub
 'loaded stats and outputs them to a file.
 'This file can then be looped through to
 'send to the default printer
-Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
+Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
-    Shared Wins(), Losses()
+    Shared divWins(), divLosses()
 
     Shared DFT!(), OFT!()
-    Shared seeZ!(), seeZ1!()
+    Shared leagLdrVal1!(), leagLdrVal2!()
 
-    Shared BA$(), compileZ2$(), compileZ3$(), ER$()
-    Shared LF$(), seeP$(), RT$(), seeT$()
+    Shared BA$(), leagLdrPlayer$(), leagLdrTeam$(), ER$()
+    Shared LF$(), leaderPlayer$(), RT$(), memberName$()
 
-	Color 15, 0
-	Cls
+    Color 15, 0
+    Cls
 
-	Open destFile$ For Output As #1
+    Open destFile$ For Output As #1
 
     For P = 1 To 10:
 
-        If seeT$(P) = "*" Then
-            seeP$(P) = ""
+        If memberName$(P) = "*" Then
+            leaderPlayer$(P) = ""
         Else
 
-            seeP$(P) = seeT$(P)
+            leaderPlayer$(P) = memberName$(P)
 
-            While Len(seeP$(P)) < 12
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 12
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = Wins(P)
+            J! = divWins(P)
             W = 3
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
 
-            While Len(seeP$(P)) < 16
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 16
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = Losses(P)
+            J! = divLosses(P)
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
 
-            While Len(seeP$(P)) < 21
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 21
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
             J! = 0
-            If Wins(P) + Losses(P) > 0 Then J! = Wins(P) / (Wins(P) + Losses(P))
+            If divWins(P) + divLosses(P) > 0 Then 
+                J! = divWins(P) / (divWins(P) + divLosses(P))
+            End If
             J! = Int(1000 * J! + .5)
-            If J! = 1000 Then seeP$(P) = seeP$(P) + "1.000 "
+            If J! = 1000 Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
+            End If
 
-            While Len(seeP$(P)) < 28
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 28
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            D = Wins(P) - Losses(P)
+            D = divWins(P) - divLosses(P)
             D = D1 - D
             BK$ = Str$(Int(D / 2))
 
@@ -1324,7 +1378,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
             If D / 2 <> Int(D / 2) Then BK$ = BK$ + " 1/2"
 
-            seeP$(P) = seeP$(P) + BK$
+            leaderPlayer$(P) = leaderPlayer$(P) + BK$
 
         End If
 
@@ -1332,51 +1386,55 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     '-----
 
-    D1 = Wins(11) - Losses(11)
+    D1 = divWins(11) - divLosses(11)
 
     For P = 11 To 20:
 
-        If seeT$(P) = "*" Then
-            seeP$(P) = ""
+        If memberName$(P) = "*" Then
+            leaderPlayer$(P) = ""
         Else
 
-            seeP$(P) = seeT$(P)
+            leaderPlayer$(P) = memberName$(P)
 
-            While Len(seeP$(P)) < 12
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 12
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = Wins(P)
+            J! = divWins(P)
             W = 3
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
 
             L = 16
 
-            While Len(seeP$(P)) < L
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < L
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = Losses(P)
+            J! = divLosses(P)
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
 
-            While Len(seeP$(P)) < 21
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 21
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
             J! = 0
-            If Wins(P) + Losses(P) > 0 Then J! = Wins(P) / (Wins(P) + Losses(P))
+            If divWins(P) + divLosses(P) > 0 Then 
+                J! = divWins(P) / (divWins(P) + divLosses(P))
+            End If
             J! = Int(1000 * J! + .5)
-            If J! = 1000 Then seeP$(P) = seeP$(P) + "1.000 "
+            If J! = 1000 Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
+            End If
 
-            While Len(seeP$(P)) < 28
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 28
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            D = Wins(P) - Losses(P)
+            D = divWins(P) - divLosses(P)
             D = D1 - D
             BK$ = Str$(Int(D / 2))
 
@@ -1388,7 +1446,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
             End If
             If D / 2 <> Int(D / 2) Then BK$ = BK$ + " 1/2"
 
-            seeP$(P) = seeP$(P) + BK$
+            leaderPlayer$(P) = leaderPlayer$(P) + BK$
 
         End If
 
@@ -1396,48 +1454,52 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     '-----
 
-    D1 = Wins(21) - Losses(21)
+    D1 = divWins(21) - divLosses(21)
 
     For P = 21 To 30
 
-        If seeT$(P) = "*" Then
-            seeP$(P) = ""
+        If memberName$(P) = "*" Then
+            leaderPlayer$(P) = ""
         Else
-            seeP$(P) = seeT$(P)
+            leaderPlayer$(P) = memberName$(P)
 
-            While Len(seeP$(P)) < 12
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 12
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = Wins(P)
+            J! = divWins(P)
             W = 3
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
 
-            While Len(seeP$(P)) < 16
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 16
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = Losses(P)
+            J! = divLosses(P)
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
 
-            While Len(seeP$(P)) < 21
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 21
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
             J! = 0
-            If Wins(P) + Losses(P) > 0 Then J! = Wins(P) / (Wins(P) + Losses(P))
+            If divWins(P) + divLosses(P) > 0 Then 
+                J! = divWins(P) / (divWins(P) + divLosses(P))
+            End If
             J! = Int(1000 * J! + .5)
-            If J! = 1000 Then seeP$(P) = seeP$(P) + "1.000 "
+            If J! = 1000 Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
+            End If
 
-            While Len(seeP$(P)) < 28
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 28
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            D = Wins(P) - Losses(P)
+            D = divWins(P) - divLosses(P)
             D = D1 - D
 
             BK$ = Str$(Int(D / 2))
@@ -1449,7 +1511,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
             End If
             If D / 2 <> Int(D / 2) Then BK$ = BK$ + " 1/2"
 
-            seeP$(P) = seeP$(P) + BK$
+            leaderPlayer$(P) = leaderPlayer$(P) + BK$
 
         End If
 
@@ -1457,48 +1519,50 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     '-----
 
-    D1 = Wins(31) - Losses(31)
+    D1 = divWins(31) - divLosses(31)
 
     For P = 31 To 40
 
-        If seeT$(P) = "*" Then
-            seeP$(P) = ""
+        If memberName$(P) = "*" Then
+            leaderPlayer$(P) = ""
         Else
-            seeP$(P) = seeT$(P)
+            leaderPlayer$(P) = memberName$(P)
 
-            While Len(seeP$(P)) < 12
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 12
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = Wins(P)
+            J! = divWins(P)
             W = 3
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
 
-            While Len(seeP$(P)) < 16
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 16
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = Losses(P)
+            J! = divLosses(P)
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
 
-            While Len(seeP$(P)) < 21
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 21
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
             J! = 0
-            If Wins(P) + Losses(P) > 0 Then J! = Wins(P) / (Wins(P) + Losses(P))
+            If divWins(P) + divLosses(P) > 0 Then 
+                J! = divWins(P) / (divWins(P) + divLosses(P))
+            End If
             J! = Int(1000 * J! + .5)
-            If J! = 1000 Then seeP$(P) = seeP$(P) + "1.000 "
+            If J! = 1000 Then leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
 
-            While Len(seeP$(P)) < 28
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 28
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            D = Wins(P) - Losses(P)
+            D = divWins(P) - divLosses(P)
             D = D1 - D
             BK$ = Str$(Int(D / 2))
 
@@ -1510,7 +1574,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
             End If
             If D / 2 <> Int(D / 2) Then BK$ = BK$ + " 1/2"
 
-            seeP$(P) = seeP$(P) + BK$
+            leaderPlayer$(P) = leaderPlayer$(P) + BK$
 
         End If
 
@@ -1525,24 +1589,24 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     For P = 1 To 10:
 
-        If seeP$(P) = "" Then
+        If leaderPlayer$(P) = "" Then
             RT = RT + 1
         Else
-            LF$(P + 3 - RT) = "    " + seeP$(P)
+            LF$(P + 3 - RT) = "    " + leaderPlayer$(P)
         End If
 
     Next P
 
     RT = 0
 
-    LF$(15) = "    " + div3Name$ + "      W   L   PCT   GB"
+    LF$(15) = "    " + div3$ + "      W   L   PCT   GB"
 
     For P = 21 To 30:
 
-        If seeP$(P) = "" Then
+        If leaderPlayer$(P) = "" Then
             RT = RT + 1
         Else
-            LF$(P - 5 - RT) = "    " + seeP$(P)
+            LF$(P - 5 - RT) = "    " + leaderPlayer$(P)
         End If
 
     Next P
@@ -1553,10 +1617,10 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     For P = 11 To 20
 
-        If seeP$(P) = "" Then
+        If leaderPlayer$(P) = "" Then
             RT = RT + 1
         Else
-            RT$(P - 7 - RT) = "    " + seeP$(P)
+            RT$(P - 7 - RT) = "    " + leaderPlayer$(P)
         End If
 
     Next P
@@ -1567,10 +1631,10 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     For P = 31 To 40
 
-        If seeP$(P) = "" Then
+        If leaderPlayer$(P) = "" Then
             RT = RT + 1
         Else
-            RT$(P - 15 - RT) = "    " + seeP$(P)
+            RT$(P - 15 - RT) = "    " + leaderPlayer$(P)
         End If
 
     Next P
@@ -1610,23 +1674,25 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     For P = 1 To 20
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "*" Then
+        If leagLdrPlayer$(P) <> "*" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
 
-            While Len(seeP$(P)) < 27
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 27
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = seeZ!(P)
+            J! = leagLdrVal1!(P)
             J! = Int(1000 * J! + .5)
 
-            If J! = 1000 Then seeP$(P) = seeP$(P) + "1.000 "
-            J! = seeZ1!(P)
-            seeP$(P) = seeP$(P) + " " + Str$(J)
+            If J! = 1000 Then leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
+            J! = leagLdrVal2!(P)
+            leaderPlayer$(P) = leaderPlayer$(P) + " " + Str$(J)
 
         End If
 
@@ -1637,7 +1703,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
     LF$(27) = "   BATTING LEADERS  (MIN 3.1 PA/G)"
 
     For P = 1 To 19
-        LF$(P + 27) = "   " + seeP$(P)
+        LF$(P + 27) = "   " + leaderPlayer$(P)
     Next
 
     LF$(47) = " "
@@ -1646,23 +1712,27 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     For P = 239 To 258
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "*" Then
+        If leagLdrPlayer$(P) <> "*" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
 
-            While Len(seeP$(P)) < 27
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 27
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = seeZ!(P)
+            J! = leagLdrVal1!(P)
             J! = Int(1000 * J! + .5)
 
-            If J! = 1000 Then seeP$(P) = seeP$(P) + "1.000 "
-            J! = seeZ1!(P)
-            seeP$(P) = seeP$(P) + " " + Str$(J!)
+            If J! = 1000 Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
+            End If
+            J! = leagLdrVal2!(P)
+            leaderPlayer$(P) = leaderPlayer$(P) + " " + Str$(J!)
 
         End If
 
@@ -1673,7 +1743,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
     RT$(27) = "       BATTING TRAILERS  (MIN 3.1 PA/G)"
 
     For P = 239 To 258:
-        RT$(P - 211) = "   " + seeP$(P)
+        RT$(P - 211) = "   " + leaderPlayer$(P)
     Next
 
     '-----
@@ -1700,22 +1770,25 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     For P = 21 To 30
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "*" Then
+        If leagLdrPlayer$(P) <> "*" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
 
-            While Len(seeP$(P)) < 28
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 28
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = seeZ!(P)
+            J! = leagLdrVal1!(P)
             W = 3
+
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
 
         End If
 
@@ -1723,37 +1796,39 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     LF$(49) = "   HITS"
     For P = 21 To 30:
-        LF$(P + 29) = "   " + seeP$(P)
+        LF$(P + 29) = "   " + leaderPlayer$(P)
     Next P
 
     '-----
 
     For P = 32 To 41
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "*" Then
+        If leagLdrPlayer$(P) <> "*" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
 
-            While Len(seeP$(P)) < 28
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 28
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = seeZ!(P)
+            J! = leagLdrVal1!(P)
             W = 3
 
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
         End If
 
     Next P
 
     RT$(49) = "       DOUBLES"
     For P = 32 To 41:
-        RT$(P + 18) = "       " + seeP$(P)
+        RT$(P + 18) = "       " + leaderPlayer$(P)
     Next P
 
     '-----
@@ -1780,22 +1855,24 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     For P = 43 To 52
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "*" Then
+        If leagLdrPlayer$(P) <> "*" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
 
-            While Len(seeP$(P)) < 28
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 28
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = seeZ!(P)
+            J! = leagLdrVal1!(P)
             W = 3
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
 
         End If
 
@@ -1804,7 +1881,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
     LF$(1) = "   TRIPLES"
 
     For P = 43 To 52:
-        LF$(P - 41) = "   " + seeP$(P)
+        LF$(P - 41) = "   " + leaderPlayer$(P)
     Next P
 
     LF$(12) = " "
@@ -1813,22 +1890,24 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     For P = 54 To 63:
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "*" Then
+        If leagLdrPlayer$(P) <> "*" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
 
-            While Len(seeP$(P)) < 28
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 28
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = seeZ!(P)
+            J! = leagLdrVal1!(P)
             W = 3
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
 
         End If
 
@@ -1836,7 +1915,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     RT$(1) = "     HOME RUNS"
     For P = 54 To 63:
-        RT$(P - 52) = "     " + seeP$(P)
+        RT$(P - 52) = "     " + leaderPlayer$(P)
     Next P
 
     RT$(12) = " "
@@ -1863,27 +1942,27 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     For P = 65 To 73
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "*" Then
-            seeP$(P) = compileZ2$(P): If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
+        If leagLdrPlayer$(P) <> "*" Then
+            leaderPlayer$(P) = leagLdrPlayer$(P): If leagLdrTeam$(P) <> "*" Then leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
 
-            While Len(seeP$(P)) < 28
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 28
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = seeZ!(P)
+            J! = leagLdrVal1!(P)
             W = 3
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
         End If
 
     Next P
 
     LF$(13) = "   RUNS"
     For P = 65 To 73:
-        LF$(P - 51) = "   " + seeP$(P)
+        LF$(P - 51) = "   " + leaderPlayer$(P)
     Next P
     LF$(23) = " "
 
@@ -1891,29 +1970,31 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     For P = 76 To 84
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "*" Then
+        If leagLdrPlayer$(P) <> "*" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
 
-            While Len(seeP$(P)) < 28
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 28
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = seeZ!(P)
+            J! = leagLdrVal1!(P)
             W = 3
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
         End If
 
     Next P
 
     RT$(13) = "     RUNS BATTED IN"
     For P = 76 To 84:
-        RT$(P - 62) = "     " + seeP$(P)
+        RT$(P - 62) = "     " + leaderPlayer$(P)
     Next P
     RT$(23) = " "
 
@@ -1939,29 +2020,31 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     For P = 87 To 96
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "*" Then
+        If leagLdrPlayer$(P) <> "*" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
 
-            While Len(seeP$(P)) < 28
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 28
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = seeZ!(P)
+            J! = leagLdrVal1!(P)
             W = 3
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
         End If
 
     Next P
 
     LF$(24) = "   STOLEN BASES"
     For P = 87 To 96:
-        LF$(P - 62) = "   " + seeP$(P)
+        LF$(P - 62) = "   " + leaderPlayer$(P)
     Next P
     LF$(35) = " "
 
@@ -1969,27 +2052,31 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     For P = 99 To 108
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "*" Then
+        If leagLdrPlayer$(P) <> "*" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
 
-            While Len(seeP$(P)) < 28
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 28
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = seeZ!(P)
+            J! = leagLdrVal1!(P)
             J! = Int(1000 * J! + .5)
-            If J! = 1000 Then seeP$(P) = seeP$(P) + "1.000 "
+            If J! = 1000 Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
+            End If
         End If
 
     Next P
 
     RT$(24) = "     SLUGGING PCT LEADERS"
     For P = 99 To 108:
-        RT$(P - 74) = "     " + seeP$(P)
+        RT$(P - 74) = "     " + leaderPlayer$(P)
     Next P
     RT$(35) = " "
 
@@ -2015,27 +2102,31 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     For P = 110 To 119
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "*" Then
+        If leagLdrPlayer$(P) <> "*" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
 
-            While Len(seeP$(P)) < 28
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 28
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = seeZ!(P)
+            J! = leagLdrVal1!(P)
             J! = Int(1000 * J! + .5)
-            If J! = 1000 Then seeP$(P) = seeP$(P) + "1.000 "
+            If J! = 1000 Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
+            End If
         End If
 
     Next P
 
     LF$(36) = "   ON BASE PCT LEADERS"
     For P = 110 To 119
-        LF$(P - 73) = "   " + seeP$(P)
+        LF$(P - 73) = "   " + leaderPlayer$(P)
     Next P
     LF$(47) = " "
 
@@ -2043,29 +2134,31 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     For P = 217 To 226
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "*" Then
+        If leagLdrPlayer$(P) <> "*" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
 
-            While Len(seeP$(P)) < 28
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 28
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = seeZ!(P)
+            J! = leagLdrVal1!(P)
             W = 3
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
         End If
 
     Next P
 
     RT$(36) = "     BASE ON BALLS"
     For P = 217 To 226
-        RT$(P - 180) = "    " + seeP$(P)
+        RT$(P - 180) = "    " + leaderPlayer$(P)
     Next P
     RT$(47) = " "
 
@@ -2091,57 +2184,61 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     For P = 279 To 288
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "*" Then
+        If leagLdrPlayer$(P) <> "*" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
 
-            While Len(seeP$(P)) < 28
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 28
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = seeZ!(P)
+            J! = leagLdrVal1!(P)
             W = 3
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
         End If
 
     Next P
 
     LF$(48) = "   CURRENT HITTING STREAK"
 
-    For P = 279 To 288: LF$(P - 230) = "   " + seeP$(P): Next P
+    For P = 279 To 288: LF$(P - 230) = "   " + leaderPlayer$(P): Next P
 
     '-----
 
     For P = 289 To 298:
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "*" Then
+        If leagLdrPlayer$(P) <> "*" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
 
-            While Len(seeP$(P)) < 28
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 28
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = seeZ!(P)
+            J! = leagLdrVal1!(P)
             W = 3
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
         End If
 
     Next P
 
     RT$(48) = "       LONGEST HITTING STREAK"
     For P = 289 To 298:
-        RT$(P - 240) = "       " + seeP$(P)
+        RT$(P - 240) = "       " + leaderPlayer$(P)
     Next P
 
     '-----
@@ -2168,18 +2265,20 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     For P = 121 To 139
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "*" Then
+        If leagLdrPlayer$(P) <> "*" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
 
-            While Len(seeP$(P)) < 24
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 24
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = seeZ!(P)
+            J! = leagLdrVal1!(P)
             J! = Int(100 * J! + .5)
             A$ = Str$(J)
             LN = Len(A$)
@@ -2194,10 +2293,10 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
             A$ = Left$(A$, LN - 2) + "." + Right$(A$, 2)
             A$ = "    " + A$
             A$ = Right$(A$, 5)
-            seeP$(P) = seeP$(P) + A$
-            J! = Int(seeZ1!(P))
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
+            J! = Int(leagLdrVal2!(P))
 
-            seeP$(P) = seeP$(P) + " " + Str$(J!)
+            leaderPlayer$(P) = leaderPlayer$(P) + " " + Str$(J!)
 
         End If
 
@@ -2206,34 +2305,37 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
     RT$(27) = "     ERA LEADERS (MIN 1 IP/G)"
 
     For P = 121 To 139
-        RT$(P - 93) = "    " + seeP$(P)
+        RT$(P - 93) = "    " + leaderPlayer$(P)
     Next
 
     '-----
 
     For P = 140 To 149
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If seeZ!(P) <> seeZ!(150) Or seeZ1!(P) <> seeZ1!(150) Then
+        If leagLdrVal1!(P) <> leagLdrVal1!(150) Or leagLdrVal2!(P) <> leagLdrVal2!(150) Then
 
-            seeP$(P) = seeP$(P) + compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
+            leaderPlayer$(P) = leaderPlayer$(P) + leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
 
-            While Len(seeP$(P)) < 23
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 23
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = seeZ!(P)
+            J! = leagLdrVal1!(P)
             W = 2
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
-            seeP$(P) = seeP$(P) + "-"
-            J! = seeZ1!(P)
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + "-"
+
+            J! = leagLdrVal2!(P)
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
 
         End If
 
@@ -2241,35 +2343,37 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     LF$(48) = "   PITCHING RECORD"
     For P = 140 To 149
-        LF$(P - 91) = "   " + seeP$(P)
+        LF$(P - 91) = "   " + leaderPlayer$(P)
     Next
     LF$(59) = " "
 
     '-----
 
-    For P = 151 To 160: seeP$(P) = ""
+    For P = 151 To 160: leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "*" Then
+        If leagLdrPlayer$(P) <> "*" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
 
-            While Len(seeP$(P)) < 24
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 24
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = seeZ!(P)
+            J! = leagLdrVal1!(P)
             W = 3
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
         End If
 
     Next P
 
     RT$(48) = "     VICTORIES"
     For P = 151 To 160
-        RT$(P - 102) = "     " + seeP$(P)
+        RT$(P - 102) = "     " + leaderPlayer$(P)
     Next P
     RT$(59) = " "
 
@@ -2297,29 +2401,31 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     For P = 162 To 171
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "*" Then
+        If leagLdrPlayer$(P) <> "*" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
 
-            While Len(seeP$(P)) < 24
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 24
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = Int(seeZ!(P))
+            J! = Int(leagLdrVal1!(P))
             W = 3
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
         End If
 
     Next P
 
     LF$(1) = "   INNINGS PITCHED"
     For P = 162 To 171:
-        LF$(P - 160) = "   " + seeP$(P)
+        LF$(P - 160) = "   " + leaderPlayer$(P)
     Next P
     LF$(12) = " "
 
@@ -2327,22 +2433,24 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     For P = 173 To 182:
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "*" Then
+        If leagLdrPlayer$(P) <> "*" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
 
-            While Len(seeP$(P)) < 24
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 24
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = seeZ!(P)
+            J! = leagLdrVal1!(P)
             W = 3
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
         End If
 
     Next P
@@ -2351,7 +2459,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     RT$(1) = "     STRIKEOUTS"
     For P = 173 To 182:
-        RT$(P - 171) = "     " + seeP$(P)
+        RT$(P - 171) = "     " + leaderPlayer$(P)
     Next P
     RT$(12) = " "
 
@@ -2375,57 +2483,61 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     For P = 184 To 193
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "*" Then
+        If leagLdrPlayer$(P) <> "*" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
 
-            While Len(seeP$(P)) < 24
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 24
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = seeZ!(P)
+            J! = leagLdrVal1!(P)
             W = 3
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
         End If
 
     Next P
 
     LF$(13) = "   COMPLETE GAMES"
     For P = 184 To 193:
-        LF$(P - 170) = "   " + seeP$(P)
+        LF$(P - 170) = "   " + leaderPlayer$(P)
     Next P
     LF$(24) = " "
 
     '-----
 
-    For P = 195 To 204: seeP$(P) = ""
+    For P = 195 To 204: leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "*" Then
+        If leagLdrPlayer$(P) <> "*" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
 
-            While Len(seeP$(P)) < 24
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 24
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = seeZ!(P)
+            J! = leagLdrVal1!(P)
             W = 3
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
         End If
 
     Next P
 
     RT$(13) = "     SHUTOUTS"
     For P = 195 To 204:
-        RT$(P - 181) = "     " + seeP$(P)
+        RT$(P - 181) = "     " + leaderPlayer$(P)
     Next P
     RT$(24) = " "
 
@@ -2451,21 +2563,23 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     For P = 206 To 215
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "*" Then
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
+        If leagLdrPlayer$(P) <> "*" Then
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
 
-            While Len(seeP$(P)) < 24
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 24
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = seeZ!(P)
+            J! = leagLdrVal1!(P)
             W = 3
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
         End If
 
     Next P
@@ -2473,7 +2587,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
     LF$(25) = "   SAVES"
 
     For P = 206 To 215:
-        LF$(P - 180) = "   " + seeP$(P)
+        LF$(P - 180) = "   " + leaderPlayer$(P)
     Next P
 
     LF$(36) = " "
@@ -2483,27 +2597,29 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     For P = 228 To 237
 
-        seeP$(P) = ""
+        leaderPlayer$(P) = ""
 
-        If compileZ2$(P) <> "*" Then
+        If leagLdrPlayer$(P) <> "*" Then
 
-            seeP$(P) = compileZ2$(P)
-            If compileZ3$(P) <> "*" Then seeP$(P) = seeP$(P) + ", " + compileZ3$(P)
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
 
-            While Len(seeP$(P)) < 24
-                seeP$(P) = seeP$(P) + " "
+            While Len(leaderPlayer$(P)) < 24
+                leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = seeZ!(P)
+            J! = leagLdrVal1!(P)
             W = 3
             A$ = "     " + Str$(J)
             A$ = Right$(A$, W)
-            seeP$(P) = seeP$(P) + A$
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
         End If
     Next P
 
     For P = 228 To 237
-        RT$(P - 202) = "     " + seeP$(P)
+        RT$(P - 202) = "     " + leaderPlayer$(P)
     Next P
     RT$(36) = " "
 
@@ -2564,22 +2680,22 @@ Sub LeagueStats_Report (league$, div1$, div2$, printDest, destFile$)
 
     Next
 
-	If printDest = 1 Then
+    If printDest = 1 Then
 
-		Open destFile$ For Input As #2
+        Open destFile$ For Input As #2
 
-		Do While Not EOF(2)
-			Line Input #2, X$
-			LPrint X$
-		Loop
+        Do While Not EOF(2)
+            Line Input #2, X$
+            LPrint X$
+        Loop
 
-		Close #2
+        Close #2
 
-		LPrint Chr$(12)
+        LPrint Chr$(12)
 
-		Kill destFile$
+        Kill destFile$
 
-	End If
+    End If
 
 End Sub
 

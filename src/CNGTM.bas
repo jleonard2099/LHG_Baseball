@@ -108,22 +108,22 @@ Sub PrintTeamStats (printDest, destFile$, targetTeam$)
 
     Shared batterNames$(), parkType$(), pitcherNames$()
 
-    Shared batterRatings(), pitcherRatings(), teamRatings%()
+    Shared batterRatings(), pitcherRatings(), teamRatings()
 
     Shared CK, parkHR
     Shared Manager$, teamAbbrev$, Stadium$
 
-	Color 15, 0
-	Cls
+    Color 15, 0
+    Cls
 
-	Open destFile$ For Output As #1
+    Open destFile$ For Output As #1
 
     Print #1, "TEAM NAME "; targetTeam$; Tab(30); "MANAGER: "; Manager$; Tab(50); "STADIUM: "; Stadium$
 
     Print #1,
     Print #1, "LBA LSO LBB LHR DPG DBL TR    HR   FOUL PARK INFO"
 
-    Print #1, Using "### ### ### ### ### ### ### ###### ###  "; teamRatings%(1); teamRatings%(2); teamRatings%(3); teamRatings%(4); teamRatings%(5); teamRatings%(6); teamRatings%(7); parkHR; teamRatings%(8);: Print #1, parkType$(teamRatings%(9)); " "; parkType$(teamRatings%(10) + 2)
+    Print #1, Using "### ### ### ### ### ### ### ###### ###  "; teamRatings(1); teamRatings(2); teamRatings(3); teamRatings(4); teamRatings(5); teamRatings(6); teamRatings(7); parkHR; teamRatings(8);: Print #1, parkType$(teamRatings(9)); " "; parkType$(teamRatings(10) + 2)
 
     Print #1,
     Print #1, "BATTER      B    G  AB   R   H DB TR HR RBI  BB  SO  SB CS RN B GA P1 FAV1 A R P2 FAV2 A R P3 FAV3 A R P4 FAV4 A R EBA BAVG"
@@ -210,22 +210,22 @@ Sub PrintTeamStats (printDest, destFile$, targetTeam$)
 
     Next I
 
-	If printDest = 1 Then
+    If printDest = 1 Then
 
-		Open destFile$ For Input As #2
+        Open destFile$ For Input As #2
 
-		Do While Not EOF(2)
-			Line Input #2, X$
-			LPrint X$
-		Loop
+        Do While Not EOF(2)
+            Line Input #2, X$
+            LPrint X$
+        Loop
 
-		Close #2
+        Close #2
 
-		LPrint Chr$(12)
+        LPrint Chr$(12)
 
-		Kill destFile$
+        Kill destFile$
 
-	End If
+    End If
 
 End Sub
 
@@ -239,21 +239,21 @@ End Sub
 'various aspects of the roster
 Sub ViewRoster (targetTeam$)
 
-    Shared ERX!
+    Shared earnedRuns!
 
     Shared parkHR
 
-    Shared teamRatings%(), TB%(), inputTP%()
+    Shared teamRatings(), totBatRat(), totPitch()
 
     Shared batterNames$(), pitcherNames$()
     Shared batterRatings(), pitcherRatings()
 
-    Erase TB%, inputTP%
+    Erase totBatRat, totPitch
 
     For K = 4 To 18:
         For I = 0 To 22
             If batterNames$(I) <> "XXX" Then
-                TB%(K - 3) = TB%(K - 3) + batterRatings(I, K)
+                totBatRat(K - 3) = totBatRat(K - 3) + batterRatings(I, K)
             End If
         Next
     Next
@@ -261,7 +261,7 @@ Sub ViewRoster (targetTeam$)
     For K = 4 To 18:
         For I = 0 To 21
             If pitcherNames$(I) <> "XXX" And pitcherRatings(I, 11) = 999 Then
-                TB%(K - 3) = TB%(K - 3) + pitcherRatings(I, K + 16)
+                totBatRat(K - 3) = totBatRat(K - 3) + pitcherRatings(I, K + 16)
             End If
         Next
     Next
@@ -269,16 +269,16 @@ Sub ViewRoster (targetTeam$)
     For K = 1 To 33:
         For I = 0 To 21
             If pitcherNames$(I) <> "XXX" Then
-                inputTP%(K) = inputTP%(K) + pitcherRatings(I, K)
+                totPitch(K) = totPitch(K) + pitcherRatings(I, K)
             End If
         Next
     Next
 
-    ERX! = 0
+    earnedRuns! = 0
 
     For I = 0 To 21
         If pitcherNames$(I) <> "XXX" Then
-            ERX! = ERX! + ((pitcherRatings(I, 6) / 9) * (pitcherRatings(I, 10) / 100))
+            earnedRuns! = earnedRuns! + ((pitcherRatings(I, 6) / 9) * (pitcherRatings(I, 10) / 100))
         End If
     Next
 
@@ -290,31 +290,31 @@ Sub ViewRoster (targetTeam$)
     Color 3
     Locate 7, 10: Print "LEAGUE BATTING AVG.";
     Color 7
-    Locate 7, 38: Print Using "#####"; teamRatings%(1)
+    Locate 7, 38: Print Using "#####"; teamRatings(1)
     Color 3
     Locate , 10: Print "LEAGUE STRIKE OUT AVG.";
     Color 7
-    Locate , 38: Print Using "#####"; teamRatings%(2)
+    Locate , 38: Print Using "#####"; teamRatings(2)
     Color 3
     Locate , 10: Print "LEAGUE BASE ON BALLS AVG.";
     Color 7
-    Locate , 38: Print Using "#####"; teamRatings%(3)
+    Locate , 38: Print Using "#####"; teamRatings(3)
     Color 3
     Locate , 10: Print "LEAGUE HOME RUN AVG.";
     Color 7
-    Locate , 38: Print Using "#####"; teamRatings%(4)
+    Locate , 38: Print Using "#####"; teamRatings(4)
     Color 3
     Locate , 10: Print "DOUBLE PLAYS AVG.";
     Color 7
-    Locate , 38: Print Using "#####"; teamRatings%(5)
+    Locate , 38: Print Using "#####"; teamRatings(5)
     Color 3
     Locate , 10: Print "PARK DOUBLE ADJ.";
     Color 7
-    Locate , 38: Print Using "#####"; teamRatings%(6)
+    Locate , 38: Print Using "#####"; teamRatings(6)
     Color 3
     Locate , 10: Print "PARK TRIPLE ADJ.";
     Color 7
-    Locate , 38: Print Using "#####"; teamRatings%(7)
+    Locate , 38: Print Using "#####"; teamRatings(7)
     Color 3
     Locate , 10: Print "PARK HOME RUN ADJ.";
     Color 7
@@ -322,7 +322,7 @@ Sub ViewRoster (targetTeam$)
     Color 3
     Locate , 10: Print "PARK FOUL GROUND ADJ.";
     Color 7
-    Locate , 37: Print Using "######"; teamRatings%(8)
+    Locate , 37: Print Using "######"; teamRatings(8)
 
     Color 11
     Locate 23, 10: Print "HIT ANY KEY TO CONTINUE"

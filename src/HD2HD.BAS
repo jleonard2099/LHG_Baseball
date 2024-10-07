@@ -81,7 +81,7 @@ Sub Hd2HdPro_League ()
     Shared totHomeScoreTeam(), totHomeScoreOpp(), totAwayScoreTeam(), totAwayScoreOpp()
     Shared totHomeWin(), totHomeLosses(), totAwayWin(), totAwayLosses()
 
-    Shared DV$()
+    Shared divisionNames$()
     Shared locIndicator$(), losePitcher$(), oppName$()
     Shared memberName$(), memberYear$()
     Shared winPitcher$()
@@ -329,7 +329,7 @@ Sub Hd2HdPro_Report (teamName$, printDest)
     Shared awayLosses(), awayWins(), homeWins(), homeLosses()
     Shared homeScoreTeam(), homeScoreOpp(), awayScoreTeam(), awayScoreOpp(), totAwayWin(), totHomeWin()
 
-    Shared DV$(), memberName$()
+    Shared divisionNames$(), memberName$()
 
     Shared div1Name$, div2Name$, div3Name$, div4Name$
 
@@ -339,10 +339,10 @@ Sub Hd2HdPro_Report (teamName$, printDest)
         destFile$ = "Comparison"
     End If
 
-    DV$(1) = div1Name$
-    DV$(2) = div2Name$
-    DV$(3) = div3Name$
-    DV$(4) = div4Name$
+    divisionNames$(1) = div1Name$
+    divisionNames$(2) = div2Name$
+    divisionNames$(3) = div3Name$
+    divisionNames$(4) = div4Name$
 
     Color 15, 0
     Cls
@@ -364,9 +364,9 @@ Sub Hd2HdPro_Report (teamName$, printDest)
         DD = ((RDD - 1) * TEAMS_PER_DIV) + 1
         EE = RDD * TEAMS_PER_DIV
 
-        'If DV$(RDD) <> "XXX" And DV$(RDD) <> "" Then
+        'If divisionNames$(RDD) <> "XXX" And divisionNames$(RDD) <> "" Then
 
-        Print #1, Tab(2); DV$(RDD)
+        Print #1, Tab(2); divisionNames$(RDD)
 
         For K = DD To EE
 
@@ -488,7 +488,7 @@ Sub Hd2HdPro_Report (teamName$, printDest)
 
         div = div + 1
 
-    Loop Until div > DIVS_PER_LEAGUE Or DV$(div) = "XXX" Or DV$(div) = ""
+    Loop Until div > DIVS_PER_LEAGUE Or divisionNames$(div) = "XXX" Or divisionNames$(div) = ""
 
     Print #1,
     Print #1,
@@ -501,9 +501,9 @@ Sub Hd2HdPro_Report (teamName$, printDest)
 
     For W = 1 To DIVS_PER_LEAGUE
 
-        If DV$(W) <> "XXX" Then
+        If divisionNames$(W) <> "XXX" Then
 
-            Print #1, Tab(2); DV$(W);
+            Print #1, Tab(2); divisionNames$(W);
             Print #1, Tab(21); Using "##"; totHomeWin(W);
             Print #1, Tab(25); Using "##"; totHomeLosses(W);
 
@@ -558,14 +558,14 @@ Sub Hd2HdPro_Report (teamName$, printDest)
     Next W
 
     THWW = 0
-    THLL = 0
-    TAWW = 0
+    TtotHomeLosses = 0
+    TAteamTotWins = 0
     TALL = 0
 
     For I = 1 To 4
         THWW = THWW + totHomeWin(I)
-        THLL = THLL + totHomeLosses(I)
-        TAWW = TAWW + totAwayWin(I)
+        TtotHomeLosses = TtotHomeLosses + totHomeLosses(I)
+        TAteamTotWins = TAteamTotWins + totAwayWin(I)
         TALL = TALL + totAwayLosses(I)
     Next
 
@@ -583,48 +583,48 @@ Sub Hd2HdPro_Report (teamName$, printDest)
 
     Print #1, Tab(5); "TOTALS";
     Print #1, Tab(20); Using "###"; THWW;
-    Print #1, Tab(24); Using "###"; THLL;
+    Print #1, Tab(24); Using "###"; TtotHomeLosses;
 
-    If THWW = THWW + THLL And THWW <> 0 Then 
+    If THWW = THWW + TtotHomeLosses And THWW <> 0 Then 
         Print #1, Tab(28); "1.000";
     End If
     If THWW = 0 Then 
         Print #1, Tab(29); ".000";
     End If
-    If THWW > 0 And THWW < THWW + THLL Then
-        statPCT! = THWW / (THWW + THLL)
+    If THWW > 0 And THWW < THWW + TtotHomeLosses Then
+        statPCT! = THWW / (THWW + TtotHomeLosses)
         Print #1, Tab(29); Using ".###"; statPCT!;
     End If
 
     Print #1, Tab(35); Using "###"; TR11;
     Print #1, Tab(39); Using "###"; TR22;
-    Print #1, Tab(52); Using "###"; TAWW;
+    Print #1, Tab(52); Using "###"; TAteamTotWins;
     Print #1, Tab(56); Using "###"; TALL;
 
-    If TAWW = TAWW + TALL And TAWW <> 0 Then 
+    If TAteamTotWins = TAteamTotWins + TALL And TAteamTotWins <> 0 Then 
         Print #1, Tab(60); "1.000";
     End If
-    If TAWW = 0 Then 
+    If TAteamTotWins = 0 Then 
         Print #1, Tab(61); ".000";
     End If
-    If TAWW > 0 And TAWW < TAWW + TALL Then
-        statPCT! = TAWW / (TAWW + TALL)
+    If TAteamTotWins > 0 And TAteamTotWins < TAteamTotWins + TALL Then
+        statPCT! = TAteamTotWins / (TAteamTotWins + TALL)
         Print #1, Tab(61); Using ".###"; statPCT!;
     End If
 
     Print #1, Tab(67); Using "###"; TR33;
     Print #1, Tab(71); Using "###"; TR44;
-    Print #1, Tab(84); Using "###"; THWW + TAWW;
-    Print #1, Tab(89); Using "###"; THLL + TALL;
+    Print #1, Tab(84); Using "###"; THWW + TAteamTotWins;
+    Print #1, Tab(89); Using "###"; TtotHomeLosses + TALL;
 
-    If THWW + TAWW = THWW + TAWW + THLL + TALL And THWW + TAWW <> 0 Then 
+    If THWW + TAteamTotWins = THWW + TAteamTotWins + TtotHomeLosses + TALL And THWW + TAteamTotWins <> 0 Then 
         Print #1, Tab(95); "1.000";
     End If
-    If THWW + TAWW = 0 Then 
+    If THWW + TAteamTotWins = 0 Then 
         Print #1, Tab(96); ".000";
     End If
-    If THWW + TAWW > 0 And THWW + TAWW < THWW + TAWW + THLL + TALL Then
-        statPCT! = (THWW + TAWW) / (THWW + TAWW + THLL + TALL)
+    If THWW + TAteamTotWins > 0 And THWW + TAteamTotWins < THWW + TAteamTotWins + TtotHomeLosses + TALL Then
+        statPCT! = (THWW + TAteamTotWins) / (THWW + TAteamTotWins + TtotHomeLosses + TALL)
         Print #1, Tab(96); Using ".###"; statPCT!;
     End If
 
@@ -660,18 +660,18 @@ Sub Hd2HdPro_Screen (teamName$)
 
     Shared homeWins(), awayWins(), homeLosses(), awayLosses()
     Shared homeScoreTeam(), homeScoreOpp(), awayScoreTeam(), awayScoreOpp()
-    Shared teamRatings%()
+    Shared teamRatings()
 
-    Shared DV$(), memberName$()
+    Shared divisionNames$(), memberName$()
 
     Shared totHomeScoreTeam(), totHomeScoreOpp(), totAwayScoreTeam(), totAwayScoreOpp(), totHomeWin(), totHomeLosses(), totAwayWin(), totAwayLosses()
 
     Shared div1Name$, div2Name$, div3Name$, div4Name$
 
-    DV$(1) = div1Name$
-    DV$(2) = div2Name$
-    DV$(3) = div3Name$
-    DV$(4) = div4Name$
+    divisionNames$(1) = div1Name$
+    divisionNames$(2) = div2Name$
+    divisionNames$(3) = div3Name$
+    divisionNames$(4) = div4Name$
 
     div = 0
 
@@ -682,7 +682,7 @@ Sub Hd2HdPro_Screen (teamName$)
         Cls
 
         Locate 2, 35
-        Color teamRatings%(11), teamRatings%(12): Print teamName$
+        Color teamRatings(11), teamRatings(12): Print teamName$
         Color 3, 0
 
         Locate 4
@@ -694,7 +694,7 @@ Sub Hd2HdPro_Screen (teamName$)
         EE = RDD * TEAMS_PER_DIV
 
         Color 11
-        Print Left$(DV$(RDD), 15);
+        Print Left$(divisionNames$(RDD), 15);
 
         Color 3: Print Tab(35); Chr$(179); Tab(58); Chr$(179)
 
@@ -856,12 +856,12 @@ Sub Hd2HdPro_Screen (teamName$)
 
         div = div + 1
 
-    Loop Until div > DIVS_PER_LEAGUE Or DV$(div) = "XXX" Or DV$(div) = ""
+    Loop Until div > DIVS_PER_LEAGUE Or divisionNames$(div) = "XXX" Or divisionNames$(div) = ""
 
     Cls
 
     Locate 2, 35
-    Color teamRatings%(11), teamRatings%(12): Print teamName$
+    Color teamRatings(11), teamRatings(12): Print teamName$
     Color 3, 0
 
     Locate 4
@@ -875,11 +875,11 @@ Sub Hd2HdPro_Screen (teamName$)
 
     For W = 1 To DIVS_PER_LEAGUE
 
-        If DV$(W) <> "XXX" Then
+        If divisionNames$(W) <> "XXX" Then
 
             Color 15
             'We have to limit this to 14 because we start stats on column 15
-            Locate , 1: Print Left$(DV$(W), 14);
+            Locate , 1: Print Left$(divisionNames$(W), 14);
 
             Color 7
 
@@ -950,14 +950,14 @@ Sub Hd2HdPro_Screen (teamName$)
     Next W
 
     THWW = 0
-    THLL = 0
-    TAWW = 0
+    TtotHomeLosses = 0
+    TAteamTotWins = 0
     TALL = 0
 
     For I = 1 To DIVS_PER_LEAGUE
         THWW = THWW + totHomeWin(I)
-        THLL = THLL + totHomeLosses(I)
-        TAWW = TAWW + totHomeWin(I)
+        TtotHomeLosses = TtotHomeLosses + totHomeLosses(I)
+        TAteamTotWins = TAteamTotWins + totHomeWin(I)
         TALL = TALL + totAwayLosses(I)
     Next
 
@@ -977,50 +977,50 @@ Sub Hd2HdPro_Screen (teamName$)
 
     Color 11: Locate , 3: Print "TOTALS";
     Locate , 14: Print Using "###"; THWW;
-    Locate , 17: Print Using "###"; THLL;
+    Locate , 17: Print Using "###"; TtotHomeLosses;
 
-    If THWW = THWW + THLL And THWW <> 0 Then 
+    If THWW = THWW + TtotHomeLosses And THWW <> 0 Then 
         Locate , 21: Print "1.000";
     End If
     If THWW = 0 Then 
         Locate , 22: Print ".000";
     End If
-    If THWW > 0 And THWW < THWW + THLL Then
-        statPCT! = THWW / (THWW + THLL)
+    If THWW > 0 And THWW < THWW + TtotHomeLosses Then
+        statPCT! = THWW / (THWW + TtotHomeLosses)
         Locate , 22: Print Using ".###"; statPCT!;
     End If
 
     Locate , 27: Print Using "###"; TR11;
     Locate , 31: Print Using "###"; TR22;
     Color 3: Print Tab(35); Chr$(179);
-    Color 11: Locate , 36: Print Using "###"; TAWW;
+    Color 11: Locate , 36: Print Using "###"; TAteamTotWins;
     Locate , 39: Print Using "###"; TALL;
 
-    If TAWW = TAWW + TALL And TAWW <> 0 Then 
+    If TAteamTotWins = TAteamTotWins + TALL And TAteamTotWins <> 0 Then 
         Locate , 43: Print "1.000";
     End If
-    If TAWW = 0 Then 
+    If TAteamTotWins = 0 Then 
         Locate , 44: Print ".000";
     End If
-    If TAWW > 0 And TAWW < TAWW + TALL Then
-        statPCT! = TAWW / (TAWW + TALL)
+    If TAteamTotWins > 0 And TAteamTotWins < TAteamTotWins + TALL Then
+        statPCT! = TAteamTotWins / (TAteamTotWins + TALL)
         Locate , 44: Print Using ".###"; statPCT!;
     End If
 
     Locate , 49: Print Using "###"; TR33;
     Locate , 53: Print Using "###"; TR44;
     Color 3: Print Tab(58); Chr$(179);
-    Color 11: Locate , 59: Print Using "###"; THWW + TAWW;
-    Locate , 62: Print Using "###"; THLL + TALL;
+    Color 11: Locate , 59: Print Using "###"; THWW + TAteamTotWins;
+    Locate , 62: Print Using "###"; TtotHomeLosses + TALL;
 
-    If THWW + TAWW = THWW + TAWW + THLL + TALL And THWW + TAWW <> 0 Then 
+    If THWW + TAteamTotWins = THWW + TAteamTotWins + TtotHomeLosses + TALL And THWW + TAteamTotWins <> 0 Then 
         Locate , 66: Print "1.000";
     End If
-    If THWW + TAWW = 0 Then 
+    If THWW + TAteamTotWins = 0 Then 
         Locate , 67: Print ".000";
     End If
-    If THWW + TAWW > 0 And THWW + TAWW < THWW + TAWW + THLL + TALL Then
-        statPCT! = (THWW + TAWW) / (THWW + TAWW + THLL + TALL)
+    If THWW + TAteamTotWins > 0 And THWW + TAteamTotWins < THWW + TAteamTotWins + TtotHomeLosses + TALL Then
+        statPCT! = (THWW + TAteamTotWins) / (THWW + TAteamTotWins + TtotHomeLosses + TALL)
         Locate , 67: Print Using ".###"; statPCT!;
     End If
 

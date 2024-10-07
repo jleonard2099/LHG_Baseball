@@ -83,12 +83,12 @@ Sub MergeStats ()
 
     Shared alignTR(), alignTR1()
 
-    Shared BR%(), PR%()
+    Shared alignB_Road(), alignP_Road()
 
-    Shared statB%(), statB0%(), B0R%()
-    Shared statP%(), statP0%(), P0R%()
-    Shared S0%(), SR%()
-    Shared statT0%(), statT1%()
+    Shared statB(), statB0(), alignB0_Road()
+    Shared statP(), statP0(), alignP0_Road()
+    Shared alignS(), alignS_Road()
+    Shared statT0!(), statT1!()
 
     Shared oppScore(), oppScore_Road()
     Shared teamScore(), teamScore_Road(), nbrInnings(), nbrInnings_Road()
@@ -128,23 +128,23 @@ Sub MergeStats ()
 
                     For I = 0 To 22: 
                         Input #1, batNames_Road$(I)
-                        Input #1, BR%(I)
+                        Input #1, alignB_Road(I)
                     Next I
                     
                     For I = 0 To 21: 
                         Input #1, pitNames_Road$(I)
-                        Input #1, PR%(I)
+                        Input #1, alignP_Road(I)
                     Next I
                     
                     For I = 0 To 22: 
                         For I1 = 0 To 21: 
-                            Input #1, B0R%(I, I1)
+                            Input #1, alignB0_Road(I, I1)
                         Next I1
                     Next I
                     
                     For I = 0 To 21: 
                         For I1 = 0 To 41: 
-                            Input #1, P0R%(I, I1)
+                            Input #1, alignP0_Road(I, I1)
                         Next I1
                     Next I
 
@@ -167,7 +167,7 @@ Sub MergeStats ()
 
                         For I = 0 To 22
                             For I1 = 0 To 6
-                                Input #1, SR%(I, I1)
+                                Input #1, alignS_Road(I, I1)
                             Next
                         Next
 
@@ -219,23 +219,23 @@ Sub MergeStats ()
 
                         For I = 0 To 22: 
                             Input #1, batterNames$(I)
-                            Input #1, statB%(I)
+                            Input #1, statB(I)
                         Next I
                         
                         For I = 0 To 21: 
                             Input #1, pitcherNames$(I)
-                            Input #1, statP%(I)
+                            Input #1, statP(I)
                         Next I
 
                         For I = 0 To 22: 
                             For I1 = 0 To 21: 
-                                Input #1, statB0%(I, I1)
+                                Input #1, statB0(I, I1)
                             Next I1
                         Next I
                         
                         For I = 0 To 21: 
                             For I1 = 0 To 41: 
-                                Input #1, statP0%(I, I1)
+                                Input #1, statP0(I, I1)
                             Next I1
                         Next I
 
@@ -243,11 +243,11 @@ Sub MergeStats ()
                         Input #1, statD1
                         
                         For I = 0 To 21: 
-                            Input #1, statT0%(I)
+                            Input #1, statT0!(I)
                         Next I
                         
                         For I = 0 To 22: 
-                            Input #1, statT1%(I)
+                            Input #1, statT1!(I)
                         Next I
 
                         Close #1
@@ -258,7 +258,7 @@ Sub MergeStats ()
 
                             For I = 0 To 22
                                 For I1 = 0 To 6: 
-                                    Input #1, S0%(I, I1)
+                                    Input #1, alignS(I, I1)
                                 Next
                             Next
 
@@ -414,11 +414,11 @@ Sub DoTheMerge (pathCurrentStats$, statFile$, teamNameStats$, nbrGamesCurr, nbrG
     Shared locIndicator$(), locIndicator_Road$()
     Shared winPitcher$(), winPitcher_Road$()
 
-    Shared statB%(), statB0%(), B0R%()
+    Shared statB(), statB0(), alignB0_Road()
     Shared teamScore(), teamScore_Road(), nbrInnings(), nbrInnings_Road()
-    Shared statP%(), statP0%(), P0R%()
-    Shared statT0%(), statT1%()
-    Shared S0%(), SR%()
+    Shared statP(), statP0(), alignP0_Road()
+    Shared statT0!(), statT1!()
+    Shared alignS(), alignS_Road()
     Shared oppScore(), oppScore_Road()
 
     Shared alignTR(), alignTR1()
@@ -443,15 +443,15 @@ Sub DoTheMerge (pathCurrentStats$, statFile$, teamNameStats$, nbrGamesCurr, nbrG
     For I = 0 To 22
 
         For I1 = 0 To 6
-            S0%(I, I1) = S0%(I, I1) + SR%(I, I1)
+            alignS(I, I1) = alignS(I, I1) + alignS_Road(I, I1)
         Next
 
         For I1 = 0 To 11: 
-            statB0%(I, I1) = statB0%(I, I1) + B0R%(I, I1)
+            statB0(I, I1) = statB0(I, I1) + alignB0_Road(I, I1)
         Next I1
         
         For I1 = 14 To 21: 
-            statB0%(I, I1) = statB0%(I, I1) + B0R%(I, I1)
+            statB0(I, I1) = statB0(I, I1) + alignB0_Road(I, I1)
         Next I1
 
     Next I
@@ -459,11 +459,11 @@ Sub DoTheMerge (pathCurrentStats$, statFile$, teamNameStats$, nbrGamesCurr, nbrG
     For I = 0 To 21
 
         For I1 = 0 To 34: 
-            statP0%(I, I1) = statP0%(I, I1) + P0R%(I, I1)
+            statP0(I, I1) = statP0(I, I1) + alignP0_Road(I, I1)
         Next I1
 
         For I1 = 37 To 41: 
-            statP0%(I, I1) = statP0%(I, I1) + P0R%(I, I1)
+            statP0(I, I1) = statP0(I, I1) + alignP0_Road(I, I1)
         Next I1
 
     Next I
@@ -472,11 +472,11 @@ Sub DoTheMerge (pathCurrentStats$, statFile$, teamNameStats$, nbrGamesCurr, nbrG
     statD1 = statD1 + statD1_Road
 
     For I = 0 To 21: 
-        statT0%(I) = statT0%(I) + alignTR(I)
+        statT0!(I) = statT0!(I) + alignTR(I)
     Next
 
     For I = 0 To 22: 
-        statT1%(I) = statT1%(I) + alignTR1(I)
+        statT1!(I) = statT1!(I) + alignTR1(I)
     Next
 
     Open pathCurrentStats$ + statFile$ For Output As #1
@@ -487,23 +487,23 @@ Sub DoTheMerge (pathCurrentStats$, statFile$, teamNameStats$, nbrGamesCurr, nbrG
 
     For I = 0 To 22: 
         Write #1, batterNames$(I)
-        Write #1, statB%(I)
+        Write #1, statB(I)
     Next I
     
     For I = 0 To 21: 
         Write #1, pitcherNames$(I)
-        Write #1, statP%(I)
+        Write #1, statP(I)
     Next I
 
     For I = 0 To 22: 
         For I1 = 0 To 21: 
-            Write #1, statB0%(I, I1)
+            Write #1, statB0(I, I1)
         Next I1
     Next I
     
     For I = 0 To 21: 
         For I1 = 0 To 41: 
-            Write #1, statP0%(I, I1)
+            Write #1, statP0(I, I1)
         Next I1
     Next I
 
@@ -511,11 +511,11 @@ Sub DoTheMerge (pathCurrentStats$, statFile$, teamNameStats$, nbrGamesCurr, nbrG
     Write #1, statD1
 
     For I = 0 To 21: 
-        Write #1, statT0%(I)
+        Write #1, statT0!(I)
     Next I
 
     For I = 0 To 22: 
-        Write #1, statT1%(I)
+        Write #1, statT1!(I)
     Next I
 
     Close #1
@@ -524,7 +524,7 @@ Sub DoTheMerge (pathCurrentStats$, statFile$, teamNameStats$, nbrGamesCurr, nbrG
 
     For I = 0 To 22
         For I1 = 0 To 6
-            Write #1, S0%(I, I1)
+            Write #1, alignS(I, I1)
         Next
     Next
 

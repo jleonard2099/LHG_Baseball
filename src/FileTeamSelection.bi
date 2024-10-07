@@ -25,12 +25,12 @@ Dim CK
 Dim Manager$, teamAbbrev$, Stadium$
 
 Dim batterRatings(0 To 22, 0 To 79), pitcherRatings(21, 88)
-Dim teamRatings%(1 To 13)
+Dim teamRatings(1 To 13)
 
 'These are used for the LR. file
 'Presumably this was the new way to load
 ' LEFTY / RIGHTY, since the game code references that
 ' it will perform those calculations the "old way"
-Dim teamSA%(24), teamTS%(11)
+Dim teamSA(24), teamTS(11)
 
 Dim batterNames$(0 To 23), pitcherNames$(0 To 21)

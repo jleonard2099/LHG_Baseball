@@ -306,7 +306,7 @@ Sub TITLE ()
     Locate 3, 1
     Print "           PROGRAMMED BY LANCE HAFFNER, SHANNON LYNN AND JASON LEONARD"
     Print "               FOR TECHNICAL SUPPORT, CONTACT support@LHGames.net"
-    Print "          LANCE HAFFNER GAMES ON THE INTERNET AT https://www.LHGames.net"
+    Print "          LANCE HAFFNER GAMES ON THE INTERNET AT https://teamTotWinsw.LHGames.net"
 
     Color 10
 

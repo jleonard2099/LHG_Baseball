@@ -68,8 +68,8 @@ End Sub
 'routine is then called based on the pick.
 Sub SearchPlayers ()
 
-    Shared A$(), TYN$()
-    Shared TM()
+    Shared memberName$(), posTeamYr$()
+    Shared posTeamIdx()
 
     Cls
 
@@ -126,28 +126,28 @@ Sub SearchPlayers ()
                 Select Case Z
                     Case 0
                         PS = 2
-                        PS$ = "CATCHERS"
+                        pitcherNames$ = "CATCHERS"
                     Case 1
                         PS = 3
-                        PS$ = "FIRST BASEMEN"
+                        pitcherNames$ = "FIRST BASEMEN"
                     Case 2
                         PS = 4
-                        PS$ = "SECOND BASEMEN"
+                        pitcherNames$ = "SECOND BASEMEN"
                     Case 3
                         PS = 6
-                        PS$ = "SHORTSTOPS"
+                        pitcherNames$ = "SHORTSTOPS"
                     Case 4
                         PS = 5
-                        PS$ = "THIRD BASEMEN"
+                        pitcherNames$ = "THIRD BASEMEN"
                     Case 5
                         PS = 7
-                        PS$ = "LEFT FIELDERS"
+                        pitcherNames$ = "LEFT FIELDERS"
                     Case 6
                         PS = 8
-                        PS$ = "CENTER FIELDERS"
+                        pitcherNames$ = "CENTER FIELDERS"
                     Case 7
                         PS = 9
-                        PS$ = "RIGHT FIELDERS"
+                        pitcherNames$ = "RIGHT FIELDERS"
                     Case 8:
                         PS = 1
                         Call SortPitchers(positionFile$)
@@ -161,7 +161,7 @@ Sub SearchPlayers ()
                     Open diskPaths$(0) + positionFile$ + ".POS" For Input As #1
 
                     For J = 1 To TEAMS_PER_LEAGUE
-                        Input #1, TM(J), A$(J), TYN$(J)
+                        Input #1, posTeamIdx(J), memberName$(J), posTeamYr$(J)
                     Next
 
                     Close #1
@@ -175,14 +175,14 @@ Sub SearchPlayers ()
                             Case "F"
                                 userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
                                 If userFile$ <> "" Then
-                                    Call SearchResults_Report(0, userFile$, PS, PS$, positionFile$)
+                                    Call SearchResults_Report(0, userFile$, PS, pitcherNames$, positionFile$)
                                 End If
 
                             Case "P"
-                                Call SearchResults_Report(1, "REPORT", PS, PS$, positionFile$)
+                                Call SearchResults_Report(1, "REPORT", PS, pitcherNames$, positionFile$)
 
                             Case "S": 
-                                Call ViewSearchResults(PS, PS$, positionFile$)
+                                Call ViewSearchResults(PS, pitcherNames$, positionFile$)
                         
                         End Select
                         
@@ -208,9 +208,9 @@ Sub ViewSearchResults (posnType, posnDesc$, positionFile$)
     Shared currPosition
     Shared NN$
 
-    Shared batterNames$(), TYN$()
+    Shared batterNames$(), posTeamYr$()
 
-    Shared TM()
+    Shared posTeamIdx()
     Shared batterRatings()
 
     Dim BB$(23)
@@ -224,18 +224,26 @@ Sub ViewSearchResults (posnType, posnDesc$, positionFile$)
 
     For J = 1 To TEAMS_PER_LEAGUE
 
-        If TM(J) <> 0 Then
+        If posTeamIdx(J) <> 0 Then
 
-            Call ReadTeam(TYN$(J), T$, TM(J), validData)
+            Call ReadTeam(posTeamYr$(J), T$, posTeamIdx(J), validData)
 
             For I = 0 To 22
 
                 If batterNames$(I) <> "XXX" And batterNames$(I) <> "" Then
 
-                    If batterRatings(I, 22) = posnType Then I2 = 33
-                    If batterRatings(I, 23) = posnType Then I2 = 35
-                    If batterRatings(I, 24) = posnType Then I2 = 37
-                    If batterRatings(I, 25) = posnType Then I2 = 39
+                    If batterRatings(I, 22) = posnType Then 
+                        I2 = 33
+                    End If
+                    If batterRatings(I, 23) = posnType Then 
+                        I2 = 35
+                    End If
+                    If batterRatings(I, 24) = posnType Then 
+                        I2 = 37
+                    End If
+                    If batterRatings(I, 25) = posnType Then 
+                        I2 = 39
+                    End If
 
                     If I2 = 33 Or I2 = 35 Or I2 = 37 Or I2 = 39 Then
 
@@ -267,11 +275,21 @@ Sub ViewSearchResults (posnType, posnDesc$, positionFile$)
                         Color 3
                         Print Tab(12); Left$(T$, 2); NN$;
 
-                        If batterRatings(I, 0) = -1 Then BB$(I) = "L"
-                        If batterRatings(I, 0) = 1 Then BB$(I) = "R"
-                        If batterRatings(I, 0) = 0 Then BB$(I) = "S"
-                        If batterRatings(I, 0) = 2 Then BB$(I) = "RP"
-                        If batterRatings(I, 0) = -2 Then BB$(I) = "LP"
+                        If batterRatings(I, 0) = -1 Then 
+                            BB$(I) = "L"
+                        End If
+                        If batterRatings(I, 0) = 1 Then 
+                            BB$(I) = "R"
+                        End If
+                        If batterRatings(I, 0) = 0 Then 
+                            BB$(I) = "S"
+                        End If
+                        If batterRatings(I, 0) = 2 Then 
+                            BB$(I) = "RP"
+                        End If
+                        If batterRatings(I, 0) = -2 Then 
+                            BB$(I) = "LP"
+                        End If
 
                         Color 7: Print Tab(19); BB$(I); Using "#"; batterRatings(I, I2);
 
@@ -298,20 +316,39 @@ Sub ViewSearchResults (posnType, posnDesc$, positionFile$)
                             I4 = Int(((batterRatings(I, 6) + batterRatings(I, 11)) / (batterRatings(I, 11) + batterRatings(I, 4)) + .0005) * 1000)
                         End If
 
-                        If batterRatings(I, 4) = 0 Or I2 = 0 Then Print Tab(66); ".000";
+                        If batterRatings(I, 4) = 0 Or I2 = 0 Then 
+                            Print Tab(66); ".000";
+                        End If
 
-                        If I2 > 0 And I2 < 100 Then Print Tab(66); ".0";: Print Using "##"; I2;
-                        If I2 >= 100 Then Print Tab(66); ".";: Print Using "###"; I2;
+                        If I2 > 0 And I2 < 100 Then 
+                            Print Tab(66); ".0";: Print Using "##"; I2;
+                        End If
+                        If I2 >= 100 Then 
+                            Print Tab(66); ".";: Print Using "###"; I2;
+                        End If
 
-                        If batterRatings(I, 4) = 0 Or I3 = 0 Then Print Tab(71); ".000";
+                        If batterRatings(I, 4) = 0 Or I3 = 0 Then 
+                            Print Tab(71); ".000";
+                        End If
 
-                        If I3 > 0 And I3 < 100 Then Print Tab(71); ".0";: Print Using "##"; I3;
-                        If I3 >= 100 Then Print Tab(71); ".";: Print Using "###"; I3;
+                        If I3 > 0 And I3 < 100 Then 
+                            Print Tab(71); ".0";: Print Using "##"; I3;
+                        End If
+                        If I3 >= 100 Then 
+                            Print Tab(71); ".";: Print Using "###"; I3;
+                        End If
 
-                        If batterRatings(I, 4) = 0 Or I4 = 0 Then Print Tab(76); ".000";
+                        If batterRatings(I, 4) = 0 Or I4 = 0 Then 
+                            Print Tab(76); ".000";
+                        End If
 
-                        If I4 > 0 And I4 < 100 Then Print Tab(76); ".0";: Print Using "##"; I4;
-                        If I4 >= 100 Then Print Tab(76); ".";: Print Using "###"; I4
+                        If I4 > 0 And I4 < 100 Then 
+                            Print Tab(76); ".0";: Print Using "##"; I4;
+                        End If
+                        If I4 >= 100 Then 
+                            Print Tab(76); ".";: Print Using "###"; I4
+
+                        End If
 
                     End If
 
@@ -319,7 +356,7 @@ Sub ViewSearchResults (posnType, posnDesc$, positionFile$)
 
             Next I
 
-        End If 'Done checking TM(J)
+        End If 'Done checking posTeamIdx(J)
 
     Next J
 
@@ -339,10 +376,10 @@ Sub SearchResults_Report (printDest, destFile$, posnType, posnDesc$, positionFil
     Shared currPosition
     Shared NN$
 
-    Shared TYN$()
+    Shared posTeamYr$()
 
     Shared batterRatings()
-    Shared TM()
+    Shared posTeamIdx()
     
     Dim BB$(23)
 
@@ -357,9 +394,9 @@ Sub SearchResults_Report (printDest, destFile$, posnType, posnDesc$, positionFil
 
     For J = 1 To TEAMS_PER_LEAGUE
 
-        If TM(J) <> 0 Then
+        If posTeamIdx(J) <> 0 Then
 
-            Call ReadTeam(TYN$(J), T$, TM(J), validData)
+            Call ReadTeam(posTeamYr$(J), T$, posTeamIdx(J), validData)
 
             For I = 0 To 22
 
@@ -384,9 +421,15 @@ Sub SearchResults_Report (printDest, destFile$, posnType, posnDesc$, positionFil
 
                         Print #1,  Tab(16); Left$(T$, 2); NN$;
 
-                        If batterRatings(I, 0) = -1 Then BB$(I) = "L"
-                        If batterRatings(I, 0) = 1 Then BB$(I) = "R"
-                        If batterRatings(I, 0) = 0 Then BB$(I) = "S"
+                        If batterRatings(I, 0) = -1 Then 
+                            BB$(I) = "L"
+                        End If
+                        If batterRatings(I, 0) = 1 Then 
+                            BB$(I) = "R"
+                        End If
+                        If batterRatings(I, 0) = 0 Then 
+                            BB$(I) = "S"
+                        End If
 
                         Print #1,  Tab(34); BB$(I);
                         Print #1,  Tab(39); Using "###"; batterRatings(I, 3);
@@ -414,18 +457,34 @@ Sub SearchResults_Report (printDest, destFile$, posnType, posnDesc$, positionFil
 
                         If batterRatings(I, 4) = 0 Or I2 = 0 Then Print #1,  Tab(107); ".000";
 
-                        If I2 > 0 And I2 < 100 Then Print #1,  Tab(107); ".0";: Print #1,  Using "##"; I2;
-                        If I2 >= 100 Then Print #1,  Tab(107); ".";: Print #1,  Using "###"; I2;
+                        If I2 > 0 And I2 < 100 Then 
+                            Print #1,  Tab(107); ".0";: Print #1,  Using "##"; I2;
+                        End If
+                        If I2 >= 100 Then 
+                            Print #1,  Tab(107); ".";: Print #1,  Using "###"; I2;
+                        End If
 
-                        If batterRatings(I, 4) = 0 Or I3 = 0 Then Print #1,  Tab(114); ".000";
+                        If batterRatings(I, 4) = 0 Or I3 = 0 Then 
+                            Print #1,  Tab(114); ".000";
+                        End If
 
-                        If I3 > 0 And I3 < 100 Then Print #1,  Tab(114); ".0";: Print #1,  Using "##"; I3;
-                        If I3 >= 100 Then Print #1,  Tab(114); ".";: Print #1,  Using "###"; I3;
+                        If I3 > 0 And I3 < 100 Then 
+                            Print #1,  Tab(114); ".0";: Print #1,  Using "##"; I3;
+                        End If
+                        If I3 >= 100 Then 
+                            Print #1,  Tab(114); ".";: Print #1,  Using "###"; I3;
+                        End If
 
-                        If batterRatings(I, 4) = 0 Or I4 = 0 Then Print #1,  Tab(121); ".000";
+                        If batterRatings(I, 4) = 0 Or I4 = 0 Then 
+                            Print #1,  Tab(121); ".000";
+                        End If
 
-                        If I4 > 0 And I4 < 100 Then Print #1,  Tab(121); ".0";: Print #1,  Using "##"; I4;
-                        If I4 >= 100 Then Print #1,  Tab(121); ".";: Print #1,  Using "###"; I4
+                        If I4 > 0 And I4 < 100 Then 
+                            Print #1,  Tab(121); ".0";: Print #1,  Using "##"; I4;
+                        End If
+                        If I4 >= 100 Then 
+                            Print #1,  Tab(121); ".";: Print #1,  Using "###"; I4
+                        End If
 
                     End If
 
@@ -495,24 +554,24 @@ Sub SortPitchers (positionFile$)
         Case 1:
             PPS = 10
             PC = 1
-            PPS$ = "PITCHERS WITH LESS THAN 10 GAMES STARTED"
-            Call Pitchers10_Games(PC, PPS$, positionFile$)
+            PpitcherNames$ = "PITCHERS WITH LESS THAN 10 GAMES STARTED"
+            Call Pitchers10_Games(PC, PpitcherNames$, positionFile$)
 
         Case 2:
             PPS = 10
             PC = 2
-            PPS$ = "PITCHERS WITH MORE THAN 10 GAMES STARTED"
-            Call Pitchers10_Games(PC, PPS$, positionFile$)
+            PpitcherNames$ = "PITCHERS WITH MORE THAN 10 GAMES STARTED"
+            Call Pitchers10_Games(PC, PpitcherNames$, positionFile$)
 
         Case 3:
             THR = 1
-            PPS$ = "RIGHT-HANDED PITCHERS"
-            Call PitchersHanded(THR, PPS$, positionFile$)
+            PpitcherNames$ = "RIGHT-HANDED PITCHERS"
+            Call PitchersHanded(THR, PpitcherNames$, positionFile$)
 
         Case 4:
             THR = 2
-            PPS$ = "LEFT-HANDED PITCHERS"
-            Call PitchersHanded(THR, PPS$, positionFile$)
+            PpitcherNames$ = "LEFT-HANDED PITCHERS"
+            Call PitchersHanded(THR, PpitcherNames$, positionFile$)
 
     End Select
 
@@ -528,10 +587,10 @@ Sub Pitchers10_Games (PC, pitchPosnDesc$, positionFile$)
     Shared currPosition
     Shared NN$
 
-    Shared pitcherNames$(), PB$(), TYN$()
+    Shared pitcherNames$(), pitchHand$(), posTeamYr$()
 
-    Shared TM()
-    Shared teamRatings%(), pitcherRatings()
+    Shared posTeamIdx()
+    Shared teamRatings(), pitcherRatings()
 
     userKey$ = GetOutputOptions$
 
@@ -554,13 +613,14 @@ Sub Pitchers10_Games (PC, pitchPosnDesc$, positionFile$)
                 Color 15
                 Locate 1, 20: Print pitchPosnDesc$
 
-                Locate 3: Color 11: Print "PLAYER     TEAM      T    G   W   L   SV  GS   IP   H   BB   SO   ERA   HR"
+                Locate 3
+                Color 11: Print "PLAYER     TEAM      T    G   W   L   SV  GS   IP   H   BB   SO   ERA   HR"
 
                 For J = 1 To TEAMS_PER_LEAGUE
 
-                    If TM(J) <> 0 Then
+                    If posTeamIdx(J) <> 0 Then
 
-                        Call ReadTeam(TYN$(J), T$, TM(J), validData)
+                        Call ReadTeam(posTeamYr$(J), T$, posTeamIdx(J), validData)
 
                         For I = 0 To 21
 
@@ -589,10 +649,14 @@ Sub Pitchers10_Games (PC, pitchPosnDesc$, positionFile$)
                                     Color 12: Print Left$(pitcherNames$(I), 10);
                                     Color 3: Print Tab(12); Left$(T$, 2); NN$
 
-                                    If pitcherRatings(I, 0) = 1 Then PB$(I) = "R"
-                                    If pitcherRatings(I, 0) = -1 Then PB$(I) = "L"
+                                    If pitcherRatings(I, 0) = 1 Then 
+                                        pitchHand$(I) = "R"
+                                    End If
+                                    If pitcherRatings(I, 0) = -1 Then 
+                                        pitchHand$(I) = "L"
+                                    End If
 
-                                    Color 7: Print Tab(22); PB$(I);
+                                    Color 7: Print Tab(22); pitchHand$(I);
 
                                     Print Tab(25); Using "###"; pitcherRatings(I, 4);
                                     Print Tab(30); Using "##"; pitcherRatings(I, 1);
@@ -637,10 +701,10 @@ Sub PitchersHanded (THR, pitchPosnDesc$, positionFile$)
     Shared currPosition
     Shared NN$
 
-    Shared pitcherNames$(), PB$(), TYN$()
+    Shared pitcherNames$(), pitchHand$(), posTeamYr$()
 
     Shared pitcherRatings()
-    Shared TM()
+    Shared posTeamIdx()
 
     userKey$ = GetPrintOptions$
 
@@ -658,9 +722,9 @@ Sub PitchersHanded (THR, pitchPosnDesc$, positionFile$)
 
                 For J = 1 To TEAMS_PER_LEAGUE
 
-                    If TM(J) <> 0 Then
+                    If posTeamIdx(J) <> 0 Then
 
-                        Call ReadTeam(TYN$(J), T$, TM(J), validData)
+                        Call ReadTeam(posTeamYr$(J), T$, posTeamIdx(J), validData)
 
                         For I = 0 To 21
 
@@ -687,10 +751,14 @@ Sub PitchersHanded (THR, pitchPosnDesc$, positionFile$)
                                     Color 12: Print Left$(pitcherNames$(I), 10);
                                     Color 3: Print Tab(12); Left$(T$, 2); NN$;
 
-                                    If pitcherRatings(I, 0) = 1 Then PB$(I) = "R"
-                                    If pitcherRatings(I, 0) = -1 Then PB$(I) = "L"
+                                    If pitcherRatings(I, 0) = 1 Then 
+                                        pitchHand$(I) = "R"
+                                    End If
+                                    If pitcherRatings(I, 0) = -1 Then 
+                                        pitchHand$(I) = "L"
+                                    End If
 
-                                    Color 7: Print Tab(22); PB$(I);
+                                    Color 7: Print Tab(22); pitchHand$(I);
 
                                     Print Tab(25); Using "###"; pitcherRatings(I, 4);
                                     Print Tab(30); Using "##"; pitcherRatings(I, 1);
@@ -744,10 +812,10 @@ Sub PitchersHanded_Print (printDest, destFile$, pitchPosnDesc$)
     Shared currPosition
     Shared NN$
 
-    Shared pitcherNames$(), PB$(), TYN$()
+    Shared pitcherNames$(), pitchHand$(), posTeamYr$()
     Shared pitcherRatings()
 
-    Shared TM()
+    Shared posTeamIdx()
 
     Color 15, 0
     Cls
@@ -760,9 +828,9 @@ Sub PitchersHanded_Print (printDest, destFile$, pitchPosnDesc$)
 
     For J = 1 To TEAMS_PER_LEAGUE
 
-        If TM(J) <> 0 Then
+        If posTeamIdx(J) <> 0 Then
 
-            Call ReadTeam(TYN$(J), T$, TM(J), validData)
+            Call ReadTeam(posTeamYr$(J), T$, posTeamIdx(J), validData)
 
             For I = 0 To 21
                 If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
@@ -781,11 +849,15 @@ Sub PitchersHanded_Print (printDest, destFile$, pitchPosnDesc$)
                         Print #1,  pitcherNames$(I);
                         Print #1,  Tab(19); Left$(T$, 2); NN$;
 
-                        If pitcherRatings(I, 0) = 1 Then PB$(I) = "R"
+                        If pitcherRatings(I, 0) = 1 Then 
+                            pitchHand$(I) = "R"
+                        End If
 
-                        If pitcherRatings(I, 0) = -1 Then PB$(I) = "L"
+                        If pitcherRatings(I, 0) = -1 Then 
+                            pitchHand$(I) = "L"
+                        End If
 
-                        Print #1,  Tab(35); PB$(I);
+                        Print #1,  Tab(35); pitchHand$(I);
                         Print #1,  Tab(39); Using "###"; pitcherRatings(I, 4);
                         Print #1,  Tab(45); Using "##"; pitcherRatings(I, 1);
                         Print #1,  Tab(50); Using "##"; pitcherRatings(I, 2);
@@ -841,10 +913,10 @@ Sub Pitchers10_Print (printDest, destFile$, PC, pitchPosnDesc$, positionFile$)
     Shared currPosition
     Shared NN$
 
-    Shared pitcherNames$(), PB$(), TYN$()
+    Shared pitcherNames$(), pitchHand$(), posTeamYr$()
     Shared pitcherRatings()
 
-    Shared TM()
+    Shared posTeamIdx()
 
     Color 15, 0
     Cls
@@ -857,9 +929,9 @@ Sub Pitchers10_Print (printDest, destFile$, PC, pitchPosnDesc$, positionFile$)
 
     For J = 1 To TEAMS_PER_LEAGUE
 
-        If TM(J) <> 0 Then
+        If posTeamIdx(J) <> 0 Then
 
-            Call ReadTeam(TYN$(J), T$, TM(J), validData)
+            Call ReadTeam(posTeamYr$(J), T$, posTeamIdx(J), validData)
 
             For I = 0 To 21
 
@@ -879,10 +951,14 @@ Sub Pitchers10_Print (printDest, destFile$, PC, pitchPosnDesc$, positionFile$)
                         Print #1,  pitcherNames$(I);
                         Print #1,  Tab(19); Left$(T$, 2); NN$;
 
-                        If pitcherRatings(I, 0) = 1 Then PB$(I) = "R"
-                        If pitcherRatings(I, 0) = -1 Then PB$(I) = "L"
+                        If pitcherRatings(I, 0) = 1 Then 
+                            pitchHand$(I) = "R"
+                        End If
+                        If pitcherRatings(I, 0) = -1 Then 
+                            pitchHand$(I) = "L"
+                        End If
 
-                        Print #1,  Tab(35); PB$(I);
+                        Print #1,  Tab(35); pitchHand$(I);
                         Print #1,  Tab(39); Using "###"; pitcherRatings(I, 4);
                         Print #1,  Tab(45); Using "##"; pitcherRatings(I, 1);
                         Print #1,  Tab(50); Using "##"; pitcherRatings(I, 2);

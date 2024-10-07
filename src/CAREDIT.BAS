@@ -70,7 +70,7 @@ Sub EditBatters (careerFile$)
 
     Shared careerBatters$()
 
-    Shared BRS%()
+    Shared carRecBatStats()
 
     Do
 
@@ -183,7 +183,7 @@ Sub EditBatters (careerFile$)
                 For J = 1 To MAX_CAREER_YEARS
                     For I = B9 To 98
                         For I1 = 0 To 17
-                            BRS%(J, I, I1) = BRS%(J, I + 1, I1)
+                            carRecBatStats(J, I, I1) = carRecBatStats(J, I + 1, I1)
                         Next
 
                         Locate 7, 36
@@ -198,7 +198,7 @@ Sub EditBatters (careerFile$)
                 careerBatters$(99) = ""
                 For J = 1 To MAX_CAREER_YEARS
                     For I1 = 0 To 17
-                        BRS%(J, 99, I1) = 0
+                        carRecBatStats(J, 99, I1) = 0
                     Next
                 Next
             End If
@@ -220,7 +220,7 @@ Sub EditPitchers (careerFile$)
 
     Shared careerPitchers$()
 
-    Shared PRS%()
+    Shared carRecPitStats()
 
     Do
         Cls
@@ -324,7 +324,7 @@ Sub EditPitchers (careerFile$)
                 For J = 1 To MAX_CAREER_YEARS
                     For I = B9 To 78
                         For I1 = 0 To 16
-                            PRS%(J, I, I1) = PRS%(J, I + 1, I1)
+                            carRecPitStats(J, I, I1) = carRecPitStats(J, I + 1, I1)
                         Next
                         Locate 7, 36
                         Color 12
@@ -339,7 +339,7 @@ Sub EditPitchers (careerFile$)
                 careerPitchers$(79) = ""
                 For J = 1 To MAX_CAREER_YEARS
                     For I1 = 0 To 16
-                        PRS%(J, 79, I1) = 0
+                        carRecPitStats(J, 79, I1) = 0
                     Next
                 Next
             End If
@@ -358,7 +358,7 @@ End Sub
 Sub PrintBatterStats (printDest, destFile$, careerFile$, playerIdx)
 
     Dim I2!, I3!, I4!
-    Shared BRS%(), PRS%()
+    Shared carRecBatStats(), carRecPitStats()
     Shared careerBatters$(), careerPitchers$()
 
     VV = 0
@@ -372,38 +372,38 @@ Sub PrintBatterStats (printDest, destFile$, careerFile$, playerIdx)
     Print #1, "BATTER     YEAR      G      AB      R      H    2B    3B    HR    RBI     BB     SO     SB    CS     E     AVG     SLG      OB"
 
     For Z = 1 To MAX_CAREER_YEARS
-        VV = VV + BRS%(Z, playerIdx, 16)
+        VV = VV + carRecBatStats(Z, playerIdx, 16)
     Next Z
 
     Print #1, Left$(careerBatters$(playerIdx), 10);
 
     For V = 1 To VV
 
-        Print #1, Tab(11); BRS%(V, playerIdx, 17);
-        Print #1, Tab(20); Using "###"; BRS%(V, playerIdx, 14);
-        Print #1, Tab(28); Using "###"; BRS%(V, playerIdx, 0);
-        Print #1, Tab(35); Using "###"; BRS%(V, playerIdx, 2);
-        Print #1, Tab(42); Using "###"; BRS%(V, playerIdx, 1);
-        Print #1, Tab(49); Using "##"; BRS%(V, playerIdx, 4);
-        Print #1, Tab(55); Using "##"; BRS%(V, playerIdx, 5);
-        Print #1, Tab(61); Using "##"; BRS%(V, playerIdx, 6);
-        Print #1, Tab(67); Using "###"; BRS%(V, playerIdx, 3);
-        Print #1, Tab(74); Using "###"; BRS%(V, playerIdx, 7);
-        Print #1, Tab(81); Using "###"; BRS%(V, playerIdx, 8);
-        Print #1, Tab(88); Using "###"; BRS%(V, playerIdx, 9);
-        Print #1, Tab(95); Using "##"; BRS%(V, playerIdx, 10);
-        Print #1, Tab(101); Using "##"; BRS%(V, playerIdx, 11);
+        Print #1, Tab(11); carRecBatStats(V, playerIdx, 17);
+        Print #1, Tab(20); Using "###"; carRecBatStats(V, playerIdx, 14);
+        Print #1, Tab(28); Using "###"; carRecBatStats(V, playerIdx, 0);
+        Print #1, Tab(35); Using "###"; carRecBatStats(V, playerIdx, 2);
+        Print #1, Tab(42); Using "###"; carRecBatStats(V, playerIdx, 1);
+        Print #1, Tab(49); Using "##"; carRecBatStats(V, playerIdx, 4);
+        Print #1, Tab(55); Using "##"; carRecBatStats(V, playerIdx, 5);
+        Print #1, Tab(61); Using "##"; carRecBatStats(V, playerIdx, 6);
+        Print #1, Tab(67); Using "###"; carRecBatStats(V, playerIdx, 3);
+        Print #1, Tab(74); Using "###"; carRecBatStats(V, playerIdx, 7);
+        Print #1, Tab(81); Using "###"; carRecBatStats(V, playerIdx, 8);
+        Print #1, Tab(88); Using "###"; carRecBatStats(V, playerIdx, 9);
+        Print #1, Tab(95); Using "##"; carRecBatStats(V, playerIdx, 10);
+        Print #1, Tab(101); Using "##"; carRecBatStats(V, playerIdx, 11);
 
         I2! = 0
         I3! = 0
         I4! = 0
 
-        IF BRS%(V, playerIdx, 0) > 0 Then
-            I2! = INT((BRS%(V, playerIdx, 1) / BRS%(V, playerIdx, 0) + .0005) * 1000)
-            I3! = INT(((BRS%(V, playerIdx, 1) + BRS%(V, playerIdx, 4) + 2 * BRS%(V, playerIdx, 5) + 3 * BRS%(V, playerIdx, 6)) / BRS%(V, playerIdx, 0) + .0005) * 1000)
-            I4! = INT(((BRS%(V, playerIdx, 1) + BRS%(V, playerIdx, 7)) / (BRS%(V, playerIdx, 7) + BRS%(V, playerIdx, 0)) + .0005) * 1000)
+        IF carRecBatStats(V, playerIdx, 0) > 0 Then
+            I2! = INT((carRecBatStats(V, playerIdx, 1) / carRecBatStats(V, playerIdx, 0) + .0005) * 1000)
+            I3! = INT(((carRecBatStats(V, playerIdx, 1) + carRecBatStats(V, playerIdx, 4) + 2 * carRecBatStats(V, playerIdx, 5) + 3 * carRecBatStats(V, playerIdx, 6)) / carRecBatStats(V, playerIdx, 0) + .0005) * 1000)
+            I4! = INT(((carRecBatStats(V, playerIdx, 1) + carRecBatStats(V, playerIdx, 7)) / (carRecBatStats(V, playerIdx, 7) + carRecBatStats(V, playerIdx, 0)) + .0005) * 1000)
         End If
-        If BRS%(V, playerIdx, 0) = 0 Or I2! = 0 Then 
+        If carRecBatStats(V, playerIdx, 0) = 0 Or I2! = 0 Then 
             Print #1, Tab(107); ".000";
         End If
 
@@ -414,7 +414,7 @@ Sub PrintBatterStats (printDest, destFile$, careerFile$, playerIdx)
             Print #1, Tab(107); ".";: Print #1, Using "###"; I2!;
         End If
 
-        If BRS%(V, playerIdx, 0) = 0 Or I3! = 0 Then 
+        If carRecBatStats(V, playerIdx, 0) = 0 Or I3! = 0 Then 
             Print #1, Tab(115); ".000";
         End If
 
@@ -425,7 +425,7 @@ Sub PrintBatterStats (printDest, destFile$, careerFile$, playerIdx)
             Print #1, Tab(115); ".";: Print #1, Using "###"; I3!;
         End If
 
-        If BRS%(V, playerIdx, 0) = 0 Or I4! = 0 Then 
+        If carRecBatStats(V, playerIdx, 0) = 0 Or I4! = 0 Then 
             Print #1, Tab(123); ".000"
         End If
 
@@ -440,19 +440,19 @@ Sub PrintBatterStats (printDest, destFile$, careerFile$, playerIdx)
 
     For V = 0 To VV
 
-        TT1 = TT1 + BRS%(V, playerIdx, 14)
-        TT3 = TT3 + BRS%(V, playerIdx, 2)
-        TT5 = TT5 + BRS%(V, playerIdx, 4)
-        TT7 = TT7 + BRS%(V, playerIdx, 6)
-        TT9 = TT9 + BRS%(V, playerIdx, 7)
-        TT11 = TT11 + BRS%(V, playerIdx, 9)
-        TT13 = TT13 + BRS%(V, playerIdx, 11)
-        TT2 = TT2 + BRS%(V, playerIdx, 0)
-        TT4 = TT4 + BRS%(V, playerIdx, 1)
-        TT6 = TT6 + BRS%(V, playerIdx, 5)
-        TT8 = TT8 + BRS%(V, playerIdx, 3)
-        TT10 = TT10 + BRS%(V, playerIdx, 8)
-        TT12 = TT12 + BRS%(V, playerIdx, 10)
+        TT1 = TT1 + carRecBatStats(V, playerIdx, 14)
+        TT3 = TT3 + carRecBatStats(V, playerIdx, 2)
+        TT5 = TT5 + carRecBatStats(V, playerIdx, 4)
+        TT7 = TT7 + carRecBatStats(V, playerIdx, 6)
+        TT9 = TT9 + carRecBatStats(V, playerIdx, 7)
+        TT11 = TT11 + carRecBatStats(V, playerIdx, 9)
+        TT13 = TT13 + carRecBatStats(V, playerIdx, 11)
+        TT2 = TT2 + carRecBatStats(V, playerIdx, 0)
+        TT4 = TT4 + carRecBatStats(V, playerIdx, 1)
+        TT6 = TT6 + carRecBatStats(V, playerIdx, 5)
+        TT8 = TT8 + carRecBatStats(V, playerIdx, 3)
+        TT10 = TT10 + carRecBatStats(V, playerIdx, 8)
+        TT12 = TT12 + carRecBatStats(V, playerIdx, 10)
 
     Next V
 
@@ -565,7 +565,7 @@ Sub PrintPitcherStats (printDest, destFile$, careerFile$, playerIdx)
 
     Shared careerPitchers$()
 
-    Shared PRS%()
+    Shared carRecPitStats()
 
     VV = 0
 
@@ -579,61 +579,61 @@ Sub PrintPitcherStats (printDest, destFile$, careerFile$, playerIdx)
     Print #1, "PITCHER    YEAR     W     L     S      IP        H     BB     SO     ERA     G    GS    CG    RUN     ER    SHO    HR    DP"
 
 
-    VV = PRS%(1, playerIdx, 15) + PRS%(2, playerIdx, 15) + PRS%(3, playerIdx, 15) + PRS%(4, playerIdx, 15) + PRS%(5, playerIdx, 15) + PRS%(6, playerIdx, 15) + PRS%(7, playerIdx, 15) + PRS%(8, playerIdx, 15) + PRS%(9, playerIdx, 15) + PRS%(10, playerIdx, 15) + PRS%(11, playerIdx, 15) + PRS%(12, playerIdx, 15) + PRS%(13, playerIdx, 15) + PRS%(14, playerIdx, 15) + PRS%(15, playerIdx, 15)
+    VV = carRecPitStats(1, playerIdx, 15) + carRecPitStats(2, playerIdx, 15) + carRecPitStats(3, playerIdx, 15) + carRecPitStats(4, playerIdx, 15) + carRecPitStats(5, playerIdx, 15) + carRecPitStats(6, playerIdx, 15) + carRecPitStats(7, playerIdx, 15) + carRecPitStats(8, playerIdx, 15) + carRecPitStats(9, playerIdx, 15) + carRecPitStats(10, playerIdx, 15) + carRecPitStats(11, playerIdx, 15) + carRecPitStats(12, playerIdx, 15) + carRecPitStats(13, playerIdx, 15) + carRecPitStats(14, playerIdx, 15) + carRecPitStats(15, playerIdx, 15)
 
     Print #1, Left$(careerPitchers$(playerIdx), 10);
 
     For V = 1 To VV
 
-        Print #1, Tab(11); PRS%(V, playerIdx, 16);
-        Print #1, Tab(20); Using "##"; PRS%(V, playerIdx, 6);
-        Print #1, Tab(26); Using "##"; PRS%(V, playerIdx, 7);
-        Print #1, Tab(32); Using "##"; PRS%(V, playerIdx, 12);
-        Print #1, Tab(39);: Print #1, Using "###"; Int(PRS%(V, playerIdx, 0) / 3);
+        Print #1, Tab(11); carRecPitStats(V, playerIdx, 16);
+        Print #1, Tab(20); Using "##"; carRecPitStats(V, playerIdx, 6);
+        Print #1, Tab(26); Using "##"; carRecPitStats(V, playerIdx, 7);
+        Print #1, Tab(32); Using "##"; carRecPitStats(V, playerIdx, 12);
+        Print #1, Tab(39);: Print #1, Using "###"; Int(carRecPitStats(V, playerIdx, 0) / 3);
 
-        If PRS%(V, playerIdx, 0) - (Int(PRS%(V, playerIdx, 0) / 3) * 3) > 0 Then 
-            Print #1, ".";: Print #1, Using "#"; PRS%(V, playerIdx, 0) - (Int(PRS%(V, playerIdx, 0) / 3) * 3);
+        If carRecPitStats(V, playerIdx, 0) - (Int(carRecPitStats(V, playerIdx, 0) / 3) * 3) > 0 Then 
+            Print #1, ".";: Print #1, Using "#"; carRecPitStats(V, playerIdx, 0) - (Int(carRecPitStats(V, playerIdx, 0) / 3) * 3);
         End If
 
-        Print #1, Tab(48); Using "###"; PRS%(V, playerIdx, 1);
-        Print #1, Tab(55); Using "###"; PRS%(V, playerIdx, 4);
-        Print #1, Tab(62); Using "###"; PRS%(V, playerIdx, 5)
+        Print #1, Tab(48); Using "###"; carRecPitStats(V, playerIdx, 1);
+        Print #1, Tab(55); Using "###"; carRecPitStats(V, playerIdx, 4);
+        Print #1, Tab(62); Using "###"; carRecPitStats(V, playerIdx, 5)
 
         I2! = 0
-        If PRS%(V, playerIdx, 0) > 0 Then 
-            I2! = Int((((PRS%(V, playerIdx, 3) * 9) / (PRS%(V, playerIdx, 0) / 3)) + .0005) * 100)
+        If carRecPitStats(V, playerIdx, 0) > 0 Then 
+            I2! = Int((((carRecPitStats(V, playerIdx, 3) * 9) / (carRecPitStats(V, playerIdx, 0) / 3)) + .0005) * 100)
         End If
 
         I3! = Int(I2! / 100)
         I4! = I2! - (I3! * 100)
 
-        If PRS%(V, playerIdx, 0) = 0 Or I2! = 0 Then 
+        If carRecPitStats(V, playerIdx, 0) = 0 Or I2! = 0 Then 
             Print #1, Tab(68); " 0.00";
         End If
-        If PRS%(V, playerIdx, 0) > 0 And I2! > 0 And I2! <= 999 Then 
+        If carRecPitStats(V, playerIdx, 0) > 0 And I2! > 0 And I2! <= 999 Then 
             Print #1, Tab(68); Using "##"; I3!;: Print #1, ".";
         End If
-        If PRS%(V, playerIdx, 0) > 0 And I2! >= 1000 Then 
+        If carRecPitStats(V, playerIdx, 0) > 0 And I2! >= 1000 Then 
             Print #1, Tab(68); Using "##"; I3!;: Print #1, ".";
         End If
-        If PRS%(V, playerIdx, 0) > 0 And I4! = 0 And I2! > 0 Then 
+        If carRecPitStats(V, playerIdx, 0) > 0 And I4! = 0 And I2! > 0 Then 
             Print #1, "00";
         End If
-        If PRS%(V, playerIdx, 0) > 0 And I4! > 0 And I4! < 10 And I2! > 0 Then 
+        If carRecPitStats(V, playerIdx, 0) > 0 And I4! > 0 And I4! < 10 And I2! > 0 Then 
             Print #1, "0";: Print #1, Using "#"; I4!;
         End If
-        If PRS%(V, playerIdx, 0) > 0 And I4! >= 10 And I2! > 0 Then 
+        If carRecPitStats(V, playerIdx, 0) > 0 And I4! >= 10 And I2! > 0 Then 
             Print #1, Using "##"; I4!;
         End If
 
-        Print #1, Tab(77); Using "##"; PRS%(V, playerIdx, 8);
-        Print #1, Tab(83); Using "##"; PRS%(V, playerIdx, 9);
-        Print #1, Tab(89); Using "##"; PRS%(V, playerIdx, 10);
-        Print #1, Tab(95); Using "###"; PRS%(V, playerIdx, 2);
-        Print #1, Tab(102); Using "###"; PRS%(V, playerIdx, 3);
-        Print #1, Tab(110); Using "##"; PRS%(V, playerIdx, 11);
-        Print #1, Tab(116); Using "##"; PRS%(V, playerIdx, 14);
-        Print #1, Tab(121); Using "###"; PRS%(V, playerIdx, 13)
+        Print #1, Tab(77); Using "##"; carRecPitStats(V, playerIdx, 8);
+        Print #1, Tab(83); Using "##"; carRecPitStats(V, playerIdx, 9);
+        Print #1, Tab(89); Using "##"; carRecPitStats(V, playerIdx, 10);
+        Print #1, Tab(95); Using "###"; carRecPitStats(V, playerIdx, 2);
+        Print #1, Tab(102); Using "###"; carRecPitStats(V, playerIdx, 3);
+        Print #1, Tab(110); Using "##"; carRecPitStats(V, playerIdx, 11);
+        Print #1, Tab(116); Using "##"; carRecPitStats(V, playerIdx, 14);
+        Print #1, Tab(121); Using "###"; carRecPitStats(V, playerIdx, 13)
 
     Next V
 
@@ -655,27 +655,27 @@ Sub PrintPitcherStats (printDest, destFile$, careerFile$, playerIdx)
     TT28 = 0
 
     For Z = 1 To MAX_CAREER_YEARS
-        VV = VV + PRS%(Z, playerIdx, 15)
+        VV = VV + carRecPitStats(Z, playerIdx, 15)
     Next Z
 
     For V = 0 To VV
 
-        TT13 = TT13 + PRS%(V, playerIdx, 6)
-        TT15 = TT15 + PRS%(V, playerIdx, 12)
-        TT17 = TT17 + PRS%(V, playerIdx, 1)
-        TT19 = TT19 + PRS%(V, playerIdx, 5)
-        TT21 = TT21 + PRS%(V, playerIdx, 8)
-        TT23 = TT23 + PRS%(V, playerIdx, 10)
-        TT25 = TT25 + PRS%(V, playerIdx, 3)
-        TT27 = TT27 + PRS%(V, playerIdx, 14)
-        TT14 = TT14 + PRS%(V, playerIdx, 7)
-        TT16 = TT16 + PRS%(V, playerIdx, 0)
-        TT18 = TT18 + PRS%(V, playerIdx, 4)
+        TT13 = TT13 + carRecPitStats(V, playerIdx, 6)
+        TT15 = TT15 + carRecPitStats(V, playerIdx, 12)
+        TT17 = TT17 + carRecPitStats(V, playerIdx, 1)
+        TT19 = TT19 + carRecPitStats(V, playerIdx, 5)
+        TT21 = TT21 + carRecPitStats(V, playerIdx, 8)
+        TT23 = TT23 + carRecPitStats(V, playerIdx, 10)
+        TT25 = TT25 + carRecPitStats(V, playerIdx, 3)
+        TT27 = TT27 + carRecPitStats(V, playerIdx, 14)
+        TT14 = TT14 + carRecPitStats(V, playerIdx, 7)
+        TT16 = TT16 + carRecPitStats(V, playerIdx, 0)
+        TT18 = TT18 + carRecPitStats(V, playerIdx, 4)
         TT20 = TT20
-        TT22 = TT22 + PRS%(V, playerIdx, 9)
-        TT24 = TT24 + PRS%(V, playerIdx, 2)
-        TT26 = TT26 + PRS%(V, playerIdx, 11)
-        TT28 = TT28 + PRS%(V, playerIdx, 13)
+        TT22 = TT22 + carRecPitStats(V, playerIdx, 9)
+        TT24 = TT24 + carRecPitStats(V, playerIdx, 2)
+        TT26 = TT26 + carRecPitStats(V, playerIdx, 11)
+        TT28 = TT28 + carRecPitStats(V, playerIdx, 13)
 
     Next V
 

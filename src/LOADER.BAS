@@ -13,10 +13,10 @@ Sub LOADER
 
     Shared dayNight$(), desigHitOpt$(), gameType$()
     Shared leagueType$(), month$()
-    Shared PT$(), pitcherEra$()
+    Shared pitHand$(), pitcherEra$()
     Shared playMode$(), umpireName$()
     Shared teamIndicator$(), yesNoText$()
-    Shared gameT1%(), umpireNumber()
+    Shared gameMgrIdx(), umpireNumber()
 
     Shared scheduleFile$
 
@@ -262,11 +262,11 @@ Sub LOADER
                         If playerOpt > 3 Then playerOpt = 0
 
                     Case 2:
-                        Call ChooseGameTeam(diskIDs$(0), NTMS, gameT1%(0), gameTeams$(0), 0)
+                        Call ChooseGameTeam(diskIDs$(0), NTMS, gameMgrIdx(0), gameTeams$(0), 0)
                         Color 15, 0
 
                     Case 3:
-                        Call ChooseGameTeam(diskIDs$(1), NTMS, gameT1%(1), gameTeams$(1), 1)
+                        Call ChooseGameTeam(diskIDs$(1), NTMS, gameMgrIdx(1), gameTeams$(1), 1)
                         Color 15, 0
 
                     Case 4:
@@ -373,7 +373,7 @@ Sub LOADER
     ' ** the original game generated random attendance from 5,000 to 59,000
     ' ** Attendannce hasn't been as low as 5,000 since early 1900,
     ' ** and almost never 59,000 except for significant events
-    'https://www.baseball-reference.com/leagues/majors/misc.shtml
+    'https://teamTotWinsw.baseball-reference.com/leagues/majors/misc.shtml
     If gameLoc = 2 Or avgAttendance& = 0 Then
         'Get assumed year of home team
         YR% = GetTeamYear%(gameTeams$(1))
@@ -488,9 +488,9 @@ Sub LOADER
         Call SelectPitchers(P9, cancelPitchers%, computerRotations%)
         Call PitchingStarter(P9)
 
-        If Inotloop% <= 5 And gameScore(P9, 0) - gameScore(1 - P9, 0) > 0 Then P2%(P9) = P1%(P9)
+        If Inotloop% <= 5 And gameScore(P9, 0) - gameScore(1 - P9, 0) > 0 Then P2%(P9) = P1(P9)
 
-        pitchEff(P9, 0) = Int(((pitchRating(P9, P1%(P9), 8) + pitchRating(P9, P1%(P9), 7)) / pitchRating(P9, P1%(P9), 4)) + .5)
+        pitchEff(P9, 0) = Int(((pitchRating(P9, P1(P9), 8) + pitchRating(P9, P1(P9), 7)) / pitchRating(P9, P1(P9), 4)) + .5)
         pitchEff(P9, 1) = 3
 
         If P6%(P9) > 1 Then pitchEff(P9, 1) = 0
@@ -603,7 +603,7 @@ Sub LOADER
                 If skipLineChange% <> 1 Then
                     Color 15, 0
                     Locate 5, 59: Print "OPPOSING PITCHER"
-                    Locate , 59: Print pitchers$(1 - P9, P1%(1 - P9)); " "; handed$(pitchRating(1 - P9, P1%(1 - P9), 0) + 2)
+                    Locate , 59: Print pitchers$(1 - P9, P1(1 - P9)); " "; handed$(pitchRating(1 - P9, P1(1 - P9), 0) + 2)
                     If RP = 1 Then RP = 0
                 End If
 
@@ -629,7 +629,7 @@ Sub LOADER
             X0%(I, 2, I1) = I1 * 10
         Next I1
 
-        gameD0%(I) = 9
+        gameD0(I) = 9
 
     Next I
 
@@ -815,7 +815,7 @@ Sub StartingLineup (P9)
     Do
         'track assigned positions
         '   0 = unassigned
-        Erase gameM%
+        Erase gameM
 
         Locate 25, 1
 
@@ -826,12 +826,12 @@ Sub StartingLineup (P9)
                 If desigHit <> 1 Or I1 <> 1 Then
 
                     Locate 24, (I1 * 3) + 1
-                    If gameM%(I1) = 0 Then Print fieldPos$(I1); "  ";
-                    If gameM%(I1) = 1 Then Print "   ";
+                    If gameM(I1) = 0 Then Print fieldPos$(I1); "  ";
+                    If gameM(I1) = 1 Then Print "   ";
 
                     Locate 25, (I1 * 3) + 1
-                    If gameM%(I1) = 0 Then Print I1; "  ";
-                    If gameM%(I1) = 1 Then Print "   ";
+                    If gameM(I1) = 0 Then Print I1; "  ";
+                    If gameM(I1) = 1 Then Print "   ";
 
                 End If
 
@@ -843,7 +843,7 @@ Sub StartingLineup (P9)
 
             Color 15, 0
             Locate 5, 59: Print "OPPOSING PITCHER"
-            Locate , 59: Print pitchers$(1 - P9, P1%(1 - P9)); " "; handed$(pitchRating(1 - P9, P1%(1 - P9), 0) + 2)
+            Locate , 59: Print pitchers$(1 - P9, P1(1 - P9)); " "; handed$(pitchRating(1 - P9, P1(1 - P9), 0) + 2)
             Call LineupPositions(P9, I)
             If C1 = 1 Then Exit For
 
@@ -874,7 +874,7 @@ Sub LineupPositions (teamIdx, posIdx)
 
     If I$ = Chr$(27) Then
 
-        Erase gameM%
+        Erase gameM
 
         For J = 1 To 9
             B7%(teamIdx, J) = -1
@@ -901,7 +901,7 @@ Sub LineupPositions (teamIdx, posIdx)
 
             For J = 1 To 9
                 If Not (J = posIdx Or (B3%(teamIdx, J) = I1 And B7%(teamIdx, J) = 1)) Then
-                    If B3%(teamIdx, J) = I1 And UCase$(I$) <> "P" Then GoTo 560 'skip1% = 1
+                    If B3%(teamIdx, J) = I1 And UCase$(I$) <> "P" Then GoTo 560 'skiP1 = 1
                 End If
             Next J
 
@@ -911,21 +911,21 @@ Sub LineupPositions (teamIdx, posIdx)
 
                     For J = 1 To 9
                         If J <> posIdx Then
-                            If B3%(teamIdx, J) = P1%(teamIdx) And B7%(teamIdx, J) = 1 Then skip2% = 1
+                            If B3%(teamIdx, J) = P1(teamIdx) And B7%(teamIdx, J) = 1 Then skip2% = 1
                         End If
                     Next J
 
                     If skip2% <> 1 Then
 
-                        B3%(teamIdx, posIdx) = P1%(teamIdx)
-                        Print pitchers$(teamIdx, P1%(teamIdx));
-                        gameM%(I1) = 1
+                        B3%(teamIdx, posIdx) = P1(teamIdx)
+                        Print pitchers$(teamIdx, P1(teamIdx));
+                        gameM(I1) = 1
 
                         Locate , 75
                         Print "P ";
                         B7%(teamIdx, posIdx) = 1
-                        B9%(teamIdx, 1) = P1%(teamIdx)
-                        gameM%(1) = 1
+                        B9%(teamIdx, 1) = P1(teamIdx)
+                        gameM(1) = 1
 
                         Locate 25, 1
 
@@ -936,12 +936,12 @@ Sub LineupPositions (teamIdx, posIdx)
                                 If desigHit <> 1 Or I0 <> 1 Then
 
                                     Locate 24, (I0 * 3) + 1
-                                    If gameM%(I0) = 0 Then Print fieldPos$(I0); "  ";
-                                    If gameM%(I0) = 1 Then Print "   ";
+                                    If gameM(I0) = 0 Then Print fieldPos$(I0); "  ";
+                                    If gameM(I0) = 1 Then Print "   ";
 
                                     Locate 25, (I0 * 3) + 1
-                                    If gameM%(I0) = 0 Then Print I0; "  ";
-                                    If gameM%(I0) = 1 Then Print "   ";
+                                    If gameM(I0) = 0 Then Print I0; "  ";
+                                    If gameM(I0) = 1 Then Print "   ";
 
                                 End If
                             End If
@@ -984,7 +984,7 @@ Sub LineupPositions (teamIdx, posIdx)
                         B7%(teamIdx, posIdx) = J1
 
                         B9%(teamIdx, B7%(teamIdx, posIdx)) = B3%(teamIdx, posIdx)
-                        gameM%(J1) = 1
+                        gameM(J1) = 1
 
                         'Highlight the player we selected
                         Locate I1 + 2, 2: Print "*";
@@ -1002,12 +1002,12 @@ Sub LineupPositions (teamIdx, posIdx)
                                 If desigHit <> 1 Or I1 <> 1 Then
 
                                     Locate 24, (I1 * 3) + 1
-                                    If gameM%(I1) = 0 Then Print fieldPos$(I1); "  ";
-                                    If gameM%(I1) = 1 Then Print "   ";
+                                    If gameM(I1) = 0 Then Print fieldPos$(I1); "  ";
+                                    If gameM(I1) = 1 Then Print "   ";
 
                                     Locate 25, (I1 * 3) + 1
-                                    If gameM%(I1) = 0 Then Print I1; "  ";
-                                    If gameM%(I1) = 1 Then Print "   ";
+                                    If gameM(I1) = 0 Then Print I1; "  ";
+                                    If gameM(I1) = 1 Then Print "   ";
 
                                 End If
 
@@ -1072,13 +1072,13 @@ Sub ChangeLineup_PreGame (P9, reselect)
                             End If
                         Next I
 
-                        Erase gameM%
+                        Erase gameM
 
                         C1 = 0
 
                     Case "R", Chr$(27):
 
-                        Erase gameM%
+                        Erase gameM
 
                         For J = 1 To 9
                             B7%(P9, J) = -1
@@ -1130,7 +1130,7 @@ End Sub
 'to assign a frequency to it.
 Sub SaveLineup (idx%)
 
-    Shared mgrFile(), gameT1%()
+    Shared mgrFile(), gameMgrIdx()
 
     If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = idx%) Then
         I$ = "N"
@@ -1147,32 +1147,32 @@ Sub SaveLineup (idx%)
 
         Cls
 
-        If pitchRating(1 - idx%, P1%(1 - idx%), 0) = -1 Then Q2% = 1
-        If pitchRating(1 - idx%, P1%(1 - idx%), 0) = 0 Then Q2% = 0
+        If pitchRating(1 - idx%, P1(1 - idx%), 0) = -1 Then Q2% = 1
+        If pitchRating(1 - idx%, P1(1 - idx%), 0) = 0 Then Q2% = 0
 
         For I = 0 To 9
             Print I; " ";
-            If MG%(idx%, 120 + (I + Q2% * 10) * 21) <> 999 Then Print "AVAILABLE"
-            If MG%(idx%, 120 + (I + Q2% * 10) * 21) = 999 Then Print "LINEUP ALREADY SAVED "; MG%(idx%, 100 + (I + Q2% * 10) * 21); " % USAGE"
+            If teamMgrProfileVal(idx%, 120 + (I + Q2% * 10) * 21) <> 999 Then Print "AVAILABLE"
+            If teamMgrProfileVal(idx%, 120 + (I + Q2% * 10) * 21) = 999 Then Print "LINEUP ALREADY SAVED "; teamMgrProfileVal(idx%, 100 + (I + Q2% * 10) * 21); " % USAGE"
         Next
 
         Input "LINEUP # TO SAVE "; LN%
         Input "% OF TIME TO USE "; LU%
 
-        If MG%(idx%, 120 + (LN% + Q2% * 10) * 21) <> 999 Then MG%(idx%, 120 + (LN% + Q2% * 10) * 21) = 999
+        If teamMgrProfileVal(idx%, 120 + (LN% + Q2% * 10) * 21) <> 999 Then teamMgrProfileVal(idx%, 120 + (LN% + Q2% * 10) * 21) = 999
         If Q2% = 1 Then LN% = LN% + 10
 
-        MG%(idx%, 101 + LN% * 21) = desigHit
-        MG%(idx%, 100 + LN% * 21) = LU%
+        teamMgrProfileVal(idx%, 101 + LN% * 21) = desigHit
+        teamMgrProfileVal(idx%, 100 + LN% * 21) = LU%
 
         For I = 1 To 9
-            MG%(idx%, 110 + I + LN% * 21) = B3%(idx%, I)
-            MG%(idx%, 101 + I + LN% * 21) = B7%(idx%, I)
+            teamMgrProfileVal(idx%, 110 + I + LN% * 21) = B3%(idx%, I)
+            teamMgrProfileVal(idx%, 101 + I + LN% * 21) = B7%(idx%, I)
         Next
 
         'idx% = P9
-        MG%(idx%, 99) = 999
-        MG%(idx%, 0) = 999
+        teamMgrProfileVal(idx%, 99) = 999
+        teamMgrProfileVal(idx%, 0) = 999
         mgrFile(idx%) = 0
 
         teamYear$ = RTrim$(diskIDs$(idx%))
@@ -1184,10 +1184,10 @@ Sub SaveLineup (idx%)
         Next
 
         For I = 0 To 999:
-            LSet Q2$(I) = MKI$(MG%(idx%, I))
+            LSet Q2$(I) = MKI$(teamMgrProfileVal(idx%, I))
         Next
 
-        Put #9, gameT1%(idx%)
+        Put #9, gameMgrIdx(idx%)
 
         Close 9
 
@@ -1202,71 +1202,71 @@ End Sub
 'lineup from the manager profiles.
 Sub SearchForLineup (P9)
 
-    Shared PT$()
+    Shared pitHand$()
 
     '2500
     Cls
-    If pitchRating(1 - P9, P1%(1 - P9), 0) = -1 Then Q2% = 1
-    If pitchRating(1 - P9, P1%(1 - P9), 0) = 1 Then Q2% = 0
+    If pitchRating(1 - P9, P1(1 - P9), 0) = -1 Then Q2% = 1
+    If pitchRating(1 - P9, P1(1 - P9), 0) = 1 Then Q2% = 0
     'pitchRating(0-1,0-1,0); all indexes are 1's
 
-    Print Tab(30); "LINEUPS FOUND VS. "; PT$(Q2%)
-    Print " #0    "; MG%(P9, 100 + (0 + Q2% * 10) * 21); "%";
-    Locate , 17: Print " #1    "; MG%(P9, 100 + (1 + Q2% * 10) * 21); "%";
-    Locate , 33: Print " #2    "; MG%(P9, 100 + (2 + Q2% * 10) * 21); "%";
-    Locate , 49: Print " #3    "; MG%(P9, 100 + (3 + Q2% * 10) * 21); "%";
-    Locate , 65: Print " #4    "; MG%(P9, 100 + (4 + Q2% * 10) * 21); "%"
+    Print Tab(30); "LINEUPS FOUND VS. "; pitHand$(Q2%)
+    Print " #0    "; teamMgrProfileVal(P9, 100 + (0 + Q2% * 10) * 21); "%";
+    Locate , 17: Print " #1    "; teamMgrProfileVal(P9, 100 + (1 + Q2% * 10) * 21); "%";
+    Locate , 33: Print " #2    "; teamMgrProfileVal(P9, 100 + (2 + Q2% * 10) * 21); "%";
+    Locate , 49: Print " #3    "; teamMgrProfileVal(P9, 100 + (3 + Q2% * 10) * 21); "%";
+    Locate , 65: Print " #4    "; teamMgrProfileVal(P9, 100 + (4 + Q2% * 10) * 21); "%"
 
     For I = 0 To 4
         For I1 = 1 To 9
 
-            If MG%(P9, 120 + (I + Q2% * 10) * 21) <> 999 And I1 = 1 Then
+            If teamMgrProfileVal(P9, 120 + (I + Q2% * 10) * 21) <> 999 And I1 = 1 Then
                 Locate 3, 16 * I + 1: Print "NONE FOUND"
             Else
 
-                If MG%(P9, 120 + (I + Q2% * 10) * 21) <> 999 And I1 <> 1 Then
+                If teamMgrProfileVal(P9, 120 + (I + Q2% * 10) * 21) <> 999 And I1 <> 1 Then
                     Locate 2 + I1, 16 * I + 1: Print "         "
                 Else
                     Locate 2 + I1, 16 * I + 1
 
-                    If MG%(P9, 101 + I1 + (I + Q2% * 10) * 21) = 1 Then
+                    If teamMgrProfileVal(P9, 101 + I1 + (I + Q2% * 10) * 21) = 1 Then
                         Print "PITCHER";
                     Else
-                        Print Left$(batters$(P9, MG%(P9, 110 + I1 + (I + Q2% * 10) * 21)), 10);
+                        Print Left$(batters$(P9, teamMgrProfileVal(P9, 110 + I1 + (I + Q2% * 10) * 21)), 10);
                     End If
 
-                    Locate 2 + I1, 16 * I + 12: Print fieldPos$(MG%(P9, 101 + I1 + (I + Q2% * 10) * 21))
+                    Locate 2 + I1, 16 * I + 12: Print fieldPos$(teamMgrProfileVal(P9, 101 + I1 + (I + Q2% * 10) * 21))
                 End If
             End If
         Next I1
     Next I
 
     Print
-    Print " #5    "; MG%(P9, 100 + (5 + Q2% * 10) * 21); "%";
-    Locate , 17: Print " #6    "; MG%(P9, 100 + (6 + Q2% * 10) * 21); "%";
-    Locate , 33: Print " #7    "; MG%(P9, 100 + (7 + Q2% * 10) * 21); "%";
-    Locate , 49: Print " #8    "; MG%(P9, 100 + (8 + Q2% * 10) * 21); "%";
-    Locate , 65: Print " #9    "; MG%(P9, 100 + (9 + Q2% * 10) * 21); "%"
+    Print " #5    "; teamMgrProfileVal(P9, 100 + (5 + Q2% * 10) * 21); "%";
+    Locate , 17: Print " #6    "; teamMgrProfileVal(P9, 100 + (6 + Q2% * 10) * 21); "%";
+    Locate , 33: Print " #7    "; teamMgrProfileVal(P9, 100 + (7 + Q2% * 10) * 21); "%";
+    Locate , 49: Print " #8    "; teamMgrProfileVal(P9, 100 + (8 + Q2% * 10) * 21); "%";
+    Locate , 65: Print " #9    "; teamMgrProfileVal(P9, 100 + (9 + Q2% * 10) * 21); "%"
 
     For I = 5 To 9
 
         For I1 = 1 To 9
 
-            If MG%(P9, 120 + (I + Q2% * 10) * 21) <> 999 And I1 = 1 Then
+            If teamMgrProfileVal(P9, 120 + (I + Q2% * 10) * 21) <> 999 And I1 = 1 Then
                 Locate 14, 16 * (I - 5) + 1: Print "NONE FOUND"
             Else
-                If MG%(P9, 120 + (I + Q2% * 10) * 21) <> 999 And I1 <> 1 Then
+                If teamMgrProfileVal(P9, 120 + (I + Q2% * 10) * 21) <> 999 And I1 <> 1 Then
                     Locate 13 + I1, 16 * (I - 5) + 1: Print "         "
                 Else
                     Locate 13 + I1, 16 * (I - 5) + 1
 
-                    If MG%(P9, 101 + I1 + (I + Q2% * 10) * 21) = 1 Then
+                    If teamMgrProfileVal(P9, 101 + I1 + (I + Q2% * 10) * 21) = 1 Then
                         Print "PITCHER";
                     Else
-                        Print Left$(batters$(P9, MG%(P9, 110 + I1 + (I + Q2% * 10) * 21)), 10);
+                        Print Left$(batters$(P9, teamMgrProfileVal(P9, 110 + I1 + (I + Q2% * 10) * 21)), 10);
                     End If
 
-                    Locate 13 + I1, 16 * (I - 5) + 12: Print fieldPos$(MG%(P9, 101 + I1 + (I + Q2% * 10) * 21))
+                    Locate 13 + I1, 16 * (I - 5) + 12: Print fieldPos$(teamMgrProfileVal(P9, 101 + I1 + (I + Q2% * 10) * 21))
                 End If
             End If
 
@@ -1289,9 +1289,9 @@ Sub LineupFromProfile (lineupFound%, P9, skipLineChange%)
     PCT% = 0
 
     For I = 0 To 9
-        If MG%(P9, 120 + (I + Q2% * 10) * 21) = 999 Then
+        If teamMgrProfileVal(P9, 120 + (I + Q2% * 10) * 21) = 999 Then
             lineupFound% = lineupFound% + 1
-            PCT% = PCT% + MG%(P9, 100 + (I + Q2% * 10) * 21)
+            PCT% = PCT% + teamMgrProfileVal(P9, 100 + (I + Q2% * 10) * 21)
         End If
     Next
 
@@ -1319,8 +1319,8 @@ Sub LineupFromProfile (lineupFound%, P9, skipLineChange%)
             PCT% = 0
 
             For I = 0 To 9
-                If MG%(P9, 120 + (I + Q2% * 10) * 21) = 999 Then
-                    PCT% = PCT% + MG%(P9, 100 + (I + Q2% * 10) * 21)
+                If teamMgrProfileVal(P9, 120 + (I + Q2% * 10) * 21) = 999 Then
+                    PCT% = PCT% + teamMgrProfileVal(P9, 100 + (I + Q2% * 10) * 21)
                     If RN <= PCT% Then LN% = I: Exit For
                 End If
             Next
@@ -1332,15 +1332,15 @@ Sub LineupFromProfile (lineupFound%, P9, skipLineChange%)
 
         End If
 
-        If MG%(P9, 120 + (LN% + Q2% * 10) * 21) = 999 Then
+        If teamMgrProfileVal(P9, 120 + (LN% + Q2% * 10) * 21) = 999 Then
 
             If Q2% = 1 Then LN% = LN% + 10
 
-            If desigHit = MG%(P9, 101 + LN% * 21) Then
+            If desigHit = teamMgrProfileVal(P9, 101 + LN% * 21) Then
 
                 For I = 1 To 9
-                    B3%(P9, I) = MG%(P9, 110 + I + LN% * 21)
-                    B7%(P9, I) = MG%(P9, 101 + I + LN% * 21)
+                    B3%(P9, I) = teamMgrProfileVal(P9, 110 + I + LN% * 21)
+                    B7%(P9, I) = teamMgrProfileVal(P9, 101 + I + LN% * 21)
                 Next
 
                 LU% = 1
@@ -1378,8 +1378,8 @@ Sub LineupSummary (P9, reselect, LU%)
             B9%(P9, B7%(P9, I)) = B3%(P9, I)
 
             If B7%(P9, I) = 1 Then
-                B3%(P9, I) = P1%(P9)
-                B9%(P9, 1) = P1%(P9)
+                B3%(P9, I) = P1(P9)
+                B9%(P9, 1) = P1(P9)
             Else
                 batRating(P9, B3%(P9, I), 21) = 0
             End If
@@ -1415,7 +1415,7 @@ Sub LineupSummary (P9, reselect, LU%)
     Next I2
 
     For I3 = 0 To 9:
-        gameM%(I3) = 1
+        gameM(I3) = 1
     Next I3
 
     Call ChangeLineup_PreGame(P9, reselect)
@@ -1438,7 +1438,7 @@ Sub SelectBatters (batterFlag%, P9)
 
     Color 15, 0
     Locate 5, 59: Print "OPPOSING PITCHER"
-    Locate 6, 59: Print pitchers$(1 - P9, P1%(1 - P9)); " "; handed$(pitchRating(1 - P9, P1%(1 - P9), 0) + 2)
+    Locate 6, 59: Print pitchers$(1 - P9, P1(1 - P9)); " "; handed$(pitchRating(1 - P9, P1(1 - P9), 0) + 2)
 
     'TG = 0
 
@@ -1459,7 +1459,7 @@ Sub SelectBatters (batterFlag%, P9)
             'Handle ESC
             If I$ = Chr$(27) Then
 
-                Erase gameM%
+                Erase gameM
 
                 For J = 1 To 9
                     B7%(P9, J) = -1
@@ -1489,7 +1489,7 @@ Sub SelectBatters (batterFlag%, P9)
         ' Check if user pressed Tab
         If Asc(I$) = 9 Then TG = TG + 1
 
-        If TG > 2 Or TG = 2 And gameTS%(P9, 0) <> 999 Then TG = 0
+        If TG > 2 Or TG = 2 And teamSplit(P9, 0) <> 999 Then TG = 0
 
         If Asc(I$) = 9 Then
             '   Update display after TAB
@@ -1539,7 +1539,7 @@ Sub SelectBatters (batterFlag%, P9)
 
             Color 15, 0
             Locate 5, 59: Print "OPPOSING PITCHER"
-            Locate 6, 59: Print pitchers$(1 - P9, P1%(1 - P9)); " "; handed$(pitchRating(1 - P9, P1%(1 - P9), 0) + 2)
+            Locate 6, 59: Print pitchers$(1 - P9, P1(1 - P9)); " "; handed$(pitchRating(1 - P9, P1(1 - P9), 0) + 2)
             Inotloop% = 0
             batterFlag% = 1
 
@@ -1833,18 +1833,18 @@ Sub PitchingRotations (computerRotations%, P9)
     End If
 
     '4615
-    MG%(P9, 1) = I
-    MG%(P9, 2) = 0
+    teamMgrProfileVal(P9, 1) = I
+    teamMgrProfileVal(P9, 2) = 0
 
     For I = 3 To 36
-        MG%(P9, I) = -1
+        teamMgrProfileVal(P9, I) = -1
     Next
 
     For I = 41 To 56
-        MG%(P9, I) = 0
+        teamMgrProfileVal(P9, I) = 0
     Next
 
-    MG%(P9, 0) = 999
+    teamMgrProfileVal(P9, 0) = 999
 
     Inotloop% = 99
 
@@ -1852,7 +1852,7 @@ Sub PitchingRotations (computerRotations%, P9)
 
     If computerRotations% = 0 Then
 
-        For I = 0 To MG%(P9, 1) - 1
+        For I = 0 To teamMgrProfileVal(P9, 1) - 1
 
             Do
 
@@ -1863,7 +1863,7 @@ Sub PitchingRotations (computerRotations%, P9)
                 Do
                     I$ = GetKeyPress$
                     Call LetterToNumber(I$, I1)
-                Loop Until I1 <= 21 And MG%(P9, 3) <> I1 And MG%(P9, 4) <> I1 And MG%(P9, 5) <> I1 And MG%(P9, 6) <> I1 And MG%(P9, 7) <> I1
+                Loop Until I1 <= 21 And teamMgrProfileVal(P9, 3) <> I1 And teamMgrProfileVal(P9, 4) <> I1 And teamMgrProfileVal(P9, 5) <> I1 And teamMgrProfileVal(P9, 6) <> I1 And teamMgrProfileVal(P9, 7) <> I1
 
                 Locate 16, 59: Print pitchers$(P9, I1)
 
@@ -1878,7 +1878,7 @@ Sub PitchingRotations (computerRotations%, P9)
 
             Loop Until UCase$(J$) = "N"
 
-            MG%(P9, I + 3) = I1
+            teamMgrProfileVal(P9, I + 3) = I1
 
             For I2 = 15 To 17: Locate I2, 59: Print Space$(18): Next
 
@@ -1910,17 +1910,17 @@ Sub PitchingRotations (computerRotations%, P9)
             Next Z1
         Next Z
 
-        For I = 0 To MG%(P9, 1) - 1
-            MG%(P9, I + 3) = gamesStarted%(I, 1)
+        For I = 0 To teamMgrProfileVal(P9, 1) - 1
+            teamMgrProfileVal(P9, I + 3) = gamesStarted%(I, 1)
         Next
 
         I1 = 0
 
-        For I = MG%(P9, 1) To 21
+        For I = teamMgrProfileVal(P9, 1) To 21
             I1 = I1 + 1
 
             If gamesStarted%(I, 0) <> 0 Then
-                MG%(P9, I1 + 20) = gamesStarted%(I, 1)
+                teamMgrProfileVal(P9, I1 + 20) = gamesStarted%(I, 1)
             Else
                 Exit For
             End If
@@ -1930,29 +1930,29 @@ Sub PitchingRotations (computerRotations%, P9)
 
     I1 = I1 - 1
 
-    If MG%(P9, 1) = 1 Then
-        MG%(P9, 13) = 100
+    If teamMgrProfileVal(P9, 1) = 1 Then
+        teamMgrProfileVal(P9, 13) = 100
     Else
-        If MG%(P9, 1) = 2 Then gamesStarted% = 75
-        If MG%(P9, 1) = 3 Then gamesStarted% = 54
-        If MG%(P9, 1) = 4 Then gamesStarted% = 41
-        If MG%(P9, 1) = 5 Then gamesStarted% = 32
+        If teamMgrProfileVal(P9, 1) = 2 Then gamesStarted% = 75
+        If teamMgrProfileVal(P9, 1) = 3 Then gamesStarted% = 54
+        If teamMgrProfileVal(P9, 1) = 4 Then gamesStarted% = 41
+        If teamMgrProfileVal(P9, 1) = 5 Then gamesStarted% = 32
 
-        For I = 1 To MG%(P9, 1)
-            MG%(P9, I + 12) = Int(pitchRating(P9, MG%(P9, I + 2), 5) * 100 / gamesStarted% + .5)
+        For I = 1 To teamMgrProfileVal(P9, 1)
+            teamMgrProfileVal(P9, I + 12) = Int(pitchRating(P9, teamMgrProfileVal(P9, I + 2), 5) * 100 / gamesStarted% + .5)
         Next
 
-        SS% = 0
+        SS = 0
 
         For I = 21 To 36
-            If MG%(P9, I) >= 0 And MG%(P9, I) <= 21 Then
-                SS% = SS% + pitchRating(P9, MG%(P9, I), 5)
+            If teamMgrProfileVal(P9, I) >= 0 And teamMgrProfileVal(P9, I) <= 21 Then
+                SS = SS + pitchRating(P9, teamMgrProfileVal(P9, I), 5)
             End If
         Next
 
         For I = 21 To 36
-            If MG%(P9, I) >= 0 And MG%(P9, I) <= 21 Then
-                MG%(P9, I + 20) = Int(pitchRating(P9, MG%(P9, I), 5) * 100 / SS% + .5)
+            If teamMgrProfileVal(P9, I) >= 0 And teamMgrProfileVal(P9, I) <= 21 Then
+                teamMgrProfileVal(P9, I + 20) = Int(pitchRating(P9, teamMgrProfileVal(P9, I), 5) * 100 / SS + .5)
             End If
         Next
 
@@ -2120,7 +2120,7 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
                 noLineups = 1
                 'reselect = 1
 
-                Erase gameM%
+                Erase gameM
 
                 For J = 1 To 9:
                     B7%(P9, J) = -1
@@ -2329,10 +2329,10 @@ Sub DoSort (B, C, P9)
                 If R! > 9 Then R! = 9
                 If R! < 0 Then R! = 1
 
-                T1% = 100 * batRating(P9, J, 6) / batRating(P9, J, 4) - 27
-                If T1% < 0 Then T1% = 3 * T1%
+                T1 = 100 * batRating(P9, J, 6) / batRating(P9, J, 4) - 27
+                If T1 < 0 Then T1 = 3 * T1
 
-                JJ! = 3 * R! + T1%
+                JJ! = 3 * R! + T1
 
                 If JJ! > E! Then
                     E! = JJ!
@@ -2360,7 +2360,7 @@ End Sub
 'rotation of pitchers.
 Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
 
-    Shared gameT1%(), mgrFile(), startPitcher()
+    Shared gameMgrIdx(), mgrFile(), startPitcher()
 
     ' *** PITCHING ROTATIONS ***
     Inotloop% = 99
@@ -2403,7 +2403,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
                 'Pre-Set Rotation
                 Cls
 
-                If mgrFile(idx%) = -1 Or MG%(idx%, 99) <> 999 Then
+                If mgrFile(idx%) = -1 Or teamMgrProfileVal(idx%, 99) <> 999 Then
 
                     If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = idx%) Then
                         computerRotations% = 1
@@ -2462,17 +2462,17 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
         If skipDisablePitchers% <> 1 Then
             'AUTOMATIC DISABLE OF PITCHERS IN THE ROTATION
 
-            'For I = 0 To MG%(idx%, 1) - 1
-            '    pitchRating(idx%, MG%(idx%, 3 + I), 15) = 99
+            'For I = 0 To teamMgrProfileVal(idx%, 1) - 1
+            '    pitchRating(idx%, teamMgrProfileVal(idx%, 3 + I), 15) = 99
             'Next
 
             Do
                 Call Rolld100(RN)
 
-                pitchRating(idx%, MG%(idx%, MG%(idx%, 2) + 3), 15) = 0
+                pitchRating(idx%, teamMgrProfileVal(idx%, teamMgrProfileVal(idx%, 2) + 3), 15) = 0
 
-                If RN <= MG%(idx%, MG%(idx%, 2) + 10 + 3) Or MG%(idx%, MG%(idx%, 2) + 10 + 3) = 0 Then
-                    startPitcher(idx%) = MG%(idx%, MG%(idx%, 2) + 3)
+                If RN <= teamMgrProfileVal(idx%, teamMgrProfileVal(idx%, 2) + 10 + 3) Or teamMgrProfileVal(idx%, teamMgrProfileVal(idx%, 2) + 10 + 3) = 0 Then
+                    startPitcher(idx%) = teamMgrProfileVal(idx%, teamMgrProfileVal(idx%, 2) + 3)
                     doneAutoDisable% = 1
                 Else
 
@@ -2481,13 +2481,13 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
 
                     For J = 21 To 36
 
-                        If MG%(idx%, J) <> -1 And MG%(idx%, J) >= 0 And MG%(idx%, J) <= 21 Then
+                        If teamMgrProfileVal(idx%, J) <> -1 And teamMgrProfileVal(idx%, J) >= 0 And teamMgrProfileVal(idx%, J) <= 21 Then
 
-                            SP% = SP% + MG%(idx%, J + 20)
+                            SP% = SP% + teamMgrProfileVal(idx%, J + 20)
 
-                            If RN <= SP% And MG%(idx%, J) <> -1 Then
-                                pitchRating(idx%, MG%(idx%, J), 15) = 0
-                                startPitcher(idx%) = MG%(idx%, J)
+                            If RN <= SP% And teamMgrProfileVal(idx%, J) <> -1 Then
+                                pitchRating(idx%, teamMgrProfileVal(idx%, J), 15) = 0
+                                startPitcher(idx%) = teamMgrProfileVal(idx%, J)
                                 doneAutoDisable% = 1
                                 Exit For
                             End If
@@ -2500,12 +2500,12 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
 
             Loop Until doneAutoDisable% = 1
 
-            MG%(idx%, 2) = MG%(idx%, 2) + 1
+            teamMgrProfileVal(idx%, 2) = teamMgrProfileVal(idx%, 2) + 1
 
-            If MG%(idx%, 2) = MG%(idx%, 1) Then MG%(idx%, 2) = 0
+            If teamMgrProfileVal(idx%, 2) = teamMgrProfileVal(idx%, 1) Then teamMgrProfileVal(idx%, 2) = 0
 
-            MG%(idx%, 99) = 999
-            MG%(idx%, 0) = 999
+            teamMgrProfileVal(idx%, 99) = 999
+            teamMgrProfileVal(idx%, 0) = 999
             mgrFile(idx%) = 0
 
             teamYear$ = RTrim$(diskIDs$(idx%))
@@ -2516,9 +2516,9 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
                 Field #1, I * 2 As Q$, 2 As Q2$(I), MGR_SIZE_BYTES - I * 2 - 2 As Q$
             Next
 
-            For I = 0 To 999: LSet Q2$(I) = MKI$(MG%(idx%, I)): Next
+            For I = 0 To 999: LSet Q2$(I) = MKI$(teamMgrProfileVal(idx%, I)): Next
 
-            Put #1, gameT1%(idx%)
+            Put #1, gameMgrIdx(idx%)
 
             Close #1
 
@@ -2642,7 +2642,7 @@ Sub PrintPitcherInfo (idx%)
     If Inotloop% <= 0 Then
 
         Call PitchingStarter(idx%)
-        'If Inotloop% <= 5 And gameScore(P9, 0) - gameScore(1 - P9, 0) > 0 Then P2%(P9) = P1%(P9)
+        'If Inotloop% <= 5 And gameScore(P9, 0) - gameScore(1 - P9, 0) > 0 Then P2%(P9) = P1(P9)
 
     End If
 
@@ -2704,11 +2704,11 @@ Sub PitchingStarter (tmIdx)
 
     Loop Until UCase$(I$) = "N"
 
-    P1%(tmIdx) = pitchIdx
+    P1(tmIdx) = pitchIdx
     P6%(tmIdx) = 1
     pitchRating(tmIdx, pitchIdx, 15) = P6%(tmIdx)
 
-    pitchEff(tmIdx, 0) = Int(((pitchRating(tmIdx, P1%(tmIdx), 8) + pitchRating(tmIdx, P1%(tmIdx), 7)) / pitchRating(tmIdx, P1%(tmIdx), 4)) + .5)
+    pitchEff(tmIdx, 0) = Int(((pitchRating(tmIdx, P1(tmIdx), 8) + pitchRating(tmIdx, P1(tmIdx), 7)) / pitchRating(tmIdx, P1(tmIdx), 4)) + .5)
     pitchEff(tmIdx, 1) = 3
 
     If P6%(tmIdx) > 1 Then pitchEff(tmIdx, 1) = 0

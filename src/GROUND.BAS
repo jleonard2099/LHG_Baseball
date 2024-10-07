@@ -8,7 +8,7 @@ Sub GROUND ()
 
     _Title "Full Count Baseball - Groundball Calculations"
 
-    Shared batterRatings(), teamRatings%(), pitcherRatings()
+    Shared batterRatings(), teamRatings(), pitcherRatings()
     Shared batterNames$(), pitcherNames$()
 
     Shared parkHR_DRAFT&()
@@ -16,7 +16,7 @@ Sub GROUND ()
     Shared Manager$, teamAbbrev$, Stadium$
 
     Dim BA%(29), DP%(29), RH%(21)
-    Dim SP%(29), TB%(29)
+    Dim SP%(29), totBatRat(29)
 
     Dim BAP!, CH!, PD!
     Dim RHP!, SLP!
@@ -99,13 +99,13 @@ Sub GROUND ()
 
             For I = 0 To 22
 
-                TB%(I) = batterRatings(I, 6) + batterRatings(I, 7) + 2 * batterRatings(I, 8) + 3 * batterRatings(I, 9)
+                totBatRat(I) = batterRatings(I, 6) + batterRatings(I, 7) + 2 * batterRatings(I, 8) + 3 * batterRatings(I, 9)
 
                 If batterRatings(I, 4) = 0 Then
                     SP%(I) = 0
                     BA%(I) = 0
                 Else
-                    SLP! = TB%(I) / batterRatings(I, 4)
+                    SLP! = totBatRat(I) / batterRatings(I, 4)
                     SP%(I) = SLP! * 1000
                     batterRatings(I, 20) = BP
                     BAP! = batterRatings(I, 6) / batterRatings(I, 4)
@@ -198,7 +198,7 @@ Sub GROUND ()
             LSet Q$(0) = team$
 
             For I = 1 To 13:
-                LSet Q$(I) = MKI$(teamRatings%(I))
+                LSet Q$(I) = MKI$(teamRatings(I))
             Next
 
             LSet Q$(14) = MKS$(parkHR_DRAFT&(0))

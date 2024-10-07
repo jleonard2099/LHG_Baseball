@@ -48,7 +48,7 @@ End Sub
 Sub LoadLRForTrade (teamYear$, tradeIdx)
 
     Shared batRat_TRADE(), pitRat_TRADE()
-    Shared tradeSA%(), tradeTS%()
+    Shared tradeSA(), tradeTS()
 
     If Not _FileExists(diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$) Then
 
@@ -107,7 +107,7 @@ Sub LoadLRForTrade (teamYear$, tradeIdx)
         Get #1, teamIndexes(tradeIdx)
 
         For X = 0 To 11
-            tradeTS%(tradeIdx, X) = CVI(Q$(X + 1))
+            tradeTS(tradeIdx, X) = CVI(Q$(X + 1))
         Next
 
         For X = 0 To 22
@@ -129,7 +129,7 @@ Sub LoadLRForTrade (teamYear$, tradeIdx)
         Next
 
         For X = 1 To 24
-            tradeSA%(tradeIdx, X) = CVI(Q$(X + 950))
+            tradeSA(tradeIdx, X) = CVI(Q$(X + 950))
         Next
 
         For X = 0 To 22
@@ -146,7 +146,7 @@ Sub LoadLRForTrade (teamYear$, tradeIdx)
 
         Close 1
 
-        If tradeTS%(tradeIdx, 0) <> 999 Then
+        If tradeTS(tradeIdx, 0) <> 999 Then
 
             For X = 0 To 22
                 For X1 = 42 To 79
@@ -160,7 +160,7 @@ Sub LoadLRForTrade (teamYear$, tradeIdx)
                 Next
             Next
 
-            Erase tradeSA%, tradeTS%
+            Erase tradeSA, tradeTS
 
         End If
 
@@ -180,12 +180,12 @@ End Sub
 'the stats are loaded from the team stats.
 Sub LoadStatsForTrade (yearNumbers$(), tradeIdx)
 
-    Shared tmInfo_TRADE$(), tradeA1$()
-    Shared tradeB1$(), tradeP1$()
+    Shared tmInfo_TRADE$(), tradeTeamName$()
+    Shared tradeBatName$(), tradePitName$()
 
-    Shared tradeD0%(), tradeD1%(), teamRat_TRADE(), tradeLosses()
-    Shared TEAM%(), tradeT1%(), tradeP0%(), tradeP()
-    Shared tradeB0%(), tradeB(), tradeSS%(), tradeWins()
+    Shared tradeD0(), tradeD1(), teamRat_TRADE(), tradeLosses()
+    Shared tradeT0(), tradeT1(), tradeP0(), tradeP()
+    Shared tradeB0(), tradeB(), tradeSS(), tradeWins()
 
     Shared haveStats()
 
@@ -217,38 +217,42 @@ Sub LoadStatsForTrade (yearNumbers$(), tradeIdx)
 
             Open diskPaths$(1) + statFile$ For Input As #1
 
-            Input #1, tradeA1$(tradeIdx)
+            Input #1, tradeTeamName$(tradeIdx)
             Input #1, tradeWins(tradeIdx)
             Input #1, tradeLosses(tradeIdx)
 
             For I1 = 0 To 22:
-                Input #1, tradeB1$(tradeIdx, I1)
+                Input #1, tradeBatName$(tradeIdx, I1)
                 Input #1, tradeB(tradeIdx, I1)
             Next I1
 
             For I1 = 0 To 21:
-                Input #1, tradeP1$(tradeIdx, I1)
+                Input #1, tradePitName$(tradeIdx, I1)
                 Input #1, tradeP(tradeIdx, I1)
             Next I1
 
             For I1 = 0 To 22:
                 For I2 = 0 To 21:
-                    Input #1, tradeB0%(tradeIdx, I1, I2)
+                    Input #1, tradeB0(tradeIdx, I1, I2)
                 Next I2
             Next I1
 
             For I1 = 0 To 21:
                 For I2 = 0 To 41:
-                    Input #1, tradeP0%(tradeIdx, I1, I2)
+                    Input #1, tradeP0(tradeIdx, I1, I2)
                 Next I2
             Next I1
 
-            Input #1, tradeD0%(tradeIdx)
-            Input #1, tradeD1%(tradeIdx)
+            Input #1, tradeD0(tradeIdx)
+            Input #1, tradeD1(tradeIdx)
 
-            For I = 0 To 21: Input #1, TEAM%(tradeIdx, I): Next I
+            For I = 0 To 21: 
+                Input #1, tradeT0(tradeIdx, I)
+            Next I
 
-            For I = 0 To 22: Input #1, tradeT1%(tradeIdx, I): Next I
+            For I = 0 To 22: 
+                Input #1, tradeT1(tradeIdx, I)
+            Next I
 
             Close #1
 
@@ -264,7 +268,7 @@ Sub LoadStatsForTrade (yearNumbers$(), tradeIdx)
 
                 For I1 = 0 To 22
                     For I2 = 0 To 6
-                        Input #1, tradeSS%(tradeIdx, I1, I2)
+                        Input #1, tradeSS(tradeIdx, I1, I2)
                     Next I2
                 Next I1
 
@@ -300,12 +304,12 @@ End Sub
 'the trade and then save the changes.
 Sub ContinueTrade (yearNumbers$())
 
-    Shared tmInfo_TRADE$(), tradeA1$()
-    Shared tradeB1$(), tradeP1$()
+    Shared tmInfo_TRADE$(), tradeTeamName$()
+    Shared tradeBatName$(), tradePitName$()
 
-    Shared tradeD0%(), tradeD1%(), teamRat_TRADE(), tradeLosses()
-    Shared TEAM%(), tradeT1%(), tradeP0%(), tradeP()
-    Shared tradeB0%(), tradeB(), tradeSS%(), tradeWins()
+    Shared tradeD0(), tradeD1(), teamRat_TRADE(), tradeLosses()
+    Shared tradeT0(), tradeT1(), tradeP0(), tradeP()
+    Shared tradeB0(), tradeB(), tradeSS(), tradeWins()
 
     Shared haveStats()
 
@@ -401,10 +405,10 @@ End Sub
 'for trade, and then swaps the players.
 Sub TradeBatters ()
 
-    Shared tmInfo_TRADE$(), tradeB1$(), batNam_TRADE$()
+    Shared tmInfo_TRADE$(), tradeBatName$(), batNam_TRADE$()
 
-    Shared batRat_TRADE(), tradeB0%(), tradeB(), teamRat_TRADE()
-    Shared tradeSA%(), tradeSS%(), tradeTS%()
+    Shared batRat_TRADE(), tradeB0(), tradeB(), teamRat_TRADE()
+    Shared tradeSA(), tradeSS(), tradeTS()
 
     Shared haveStats()
 
@@ -490,28 +494,28 @@ Sub TradeBatters ()
     Locate 24, 1: Print "HIT ANY KEY TO TRADE";
     I$ = GetKeyPress$
 
-    If Not (tradeTS%(0, 0) = 999 And tradeTS%(1, 0) = 999) And Not (tradeTS%(0, 0) <> 999 And tradeTS%(1, 0) <> 999) Then
+    If Not (tradeTS(0, 0) = 999 And tradeTS(1, 0) = 999) And Not (tradeTS(0, 0) <> 999 And tradeTS(1, 0) <> 999) Then
 
-        If tradeTS%(0, 0) = 999 And tradeTS%(1, 0) <> 999 Then
+        If tradeTS(0, 0) = 999 And tradeTS(1, 0) <> 999 Then
 
             For I3 = 0 To 11:
-                tradeTS%(1, I3) = tradeTS%(0, I3)
+                tradeTS(1, I3) = tradeTS(0, I3)
             Next
 
             For I3 = 1 To 24:
-                tradeSA%(1, I3) = tradeSA%(0, I3)
+                tradeSA(1, I3) = tradeSA(0, I3)
             Next
 
         Else
 
-            If tradeTS%(1, 0) = 999 And tradeTS%(0, 0) <> 999 Then
+            If tradeTS(1, 0) = 999 And tradeTS(0, 0) <> 999 Then
 
                 For I3 = 0 To 11:
-                    tradeTS%(0, I3) = tradeTS%(1, I3)
+                    tradeTS(0, I3) = tradeTS(1, I3)
                 Next
 
                 For I3 = 1 To 24:
-                    tradeSA%(0, I3) = tradeSA%(1, I3)
+                    tradeSA(0, I3) = tradeSA(1, I3)
                 Next
 
             End If
@@ -527,24 +531,24 @@ Sub TradeBatters ()
     Next I3
 
     For I3 = 0 To 6
-        Swap tradeSS%(0, I1, I3), tradeSS%(1, I2, I3)
+        Swap tradeSS(0, I1, I3), tradeSS(1, I2, I3)
     Next I3
 
-    tradeB1$(0, I1) = batNam_TRADE$(0, I1)
-    tradeB1$(1, I2) = batNam_TRADE$(1, I2)
+    tradeBatName$(0, I1) = batNam_TRADE$(0, I1)
+    tradeBatName$(1, I2) = batNam_TRADE$(1, I2)
     Swap tradeB(0, I1), tradeB(1, I2)
 
     If haveStats(0) = 1 Or haveStats(1) = 1 Or W1 = 0 Then
 
         For I3 = 0 To 21:
-            Swap tradeB0%(0, I1, I3), tradeB0%(1, I2, I3)
+            Swap tradeB0(0, I1, I3), tradeB0(1, I2, I3)
         Next I3
 
     Else
 
         For I3 = 0 To 21:
-            tradeB0%(0, I1, I3) = 0
-            tradeB0%(1, I2, I3) = 0
+            tradeB0(0, I1, I3) = 0
+            tradeB0(1, I2, I3) = 0
         Next I3
 
     End If
@@ -564,9 +568,9 @@ End Sub
 'for trade, and then swaps the players.
 Sub TradePitchers ()
 
-    Shared tmInfo_TRADE$(), batNam_TRADE$(), tradeP1$()
-    Shared teamRat_TRADE(), tradeP0%(), pitRat_TRADE(), tradeP()
-    Shared tradeSA%(), tradeTS%()
+    Shared tmInfo_TRADE$(), batNam_TRADE$(), tradePitName$()
+    Shared teamRat_TRADE(), tradeP0(), pitRat_TRADE(), tradeP()
+    Shared tradeSA(), tradeTS()
     Shared haveStats()
 
     Cls
@@ -650,32 +654,32 @@ Sub TradePitchers ()
     Locate 24, 1: Print "HIT ANY KEY TO TRADE";
     I$ = GetKeyPress$
 
-    If tradeTS%(0, 0) = 999 And tradeTS%(1, 0) = 999 Then 505
+    If tradeTS(0, 0) = 999 And tradeTS(1, 0) = 999 Then 505
 
-    If tradeTS%(0, 0) <> 999 And tradeTS%(1, 0) <> 999 Then 505
+    If tradeTS(0, 0) <> 999 And tradeTS(1, 0) <> 999 Then 505
 
-    If tradeTS%(0, 0) = 999 And tradeTS%(1, 0) <> 999 Then
+    If tradeTS(0, 0) = 999 And tradeTS(1, 0) <> 999 Then
 
         For I3 = 0 To 11:
-            tradeTS%(1, I3) = tradeTS%(0, I3)
+            tradeTS(1, I3) = tradeTS(0, I3)
         Next
 
         For I3 = 1 To 24:
-            tradeSA%(1, I3) = tradeSA%(0, I3)
+            tradeSA(1, I3) = tradeSA(0, I3)
         Next
 
         GoTo 505
 
     End If
 
-    If tradeTS%(1, 0) = 999 And tradeTS%(0, 0) <> 999 Then
+    If tradeTS(1, 0) = 999 And tradeTS(0, 0) <> 999 Then
 
         For I3 = 0 To 11:
-            tradeTS%(0, I3) = tradeTS%(1, I3)
+            tradeTS(0, I3) = tradeTS(1, I3)
         Next
 
         For I3 = 1 To 24:
-            tradeSA%(0, I3) = tradeSA%(1, I3)
+            tradeSA(0, I3) = tradeSA(1, I3)
         Next
 
     End If
@@ -687,18 +691,18 @@ Sub TradePitchers ()
         Swap pitRat_TRADE(0, I1, I3), pitRat_TRADE(1, I2, I3)
     Next I3
 
-    tradeP1$(0, I1) = batNam_TRADE$(0, I1)
-    tradeP1$(1, I2) = batNam_TRADE$(1, I2)
+    tradePitName$(0, I1) = batNam_TRADE$(0, I1)
+    tradePitName$(1, I2) = batNam_TRADE$(1, I2)
 
     If haveStats(0) = 1 Or haveStats(1) = 1 Or W1 = 0 Then
         For I3 = 0 To 41:
-            tradeP0%(0, I1, I3) = 0
-            tradeP0%(1, I2, I3) = 0
+            tradeP0(0, I1, I3) = 0
+            tradeP0(1, I2, I3) = 0
         Next I3
     Else
         Swap tradeP(0, I1), tradeP(1, I2)
         For I3 = 0 To 41:
-            Swap tradeP0%(0, I1, I3), tradeP0%(1, I2, I3)
+            Swap tradeP0(0, I1, I3), tradeP0(1, I2, I3)
         Next I3
     End If
 
@@ -716,15 +720,15 @@ End Sub
 'data from the trade to the team files.
 Sub SaveTrades (yearNumbers$())
 
-    Shared tmInfo_TRADE$(), tradeA1$()
+    Shared tmInfo_TRADE$(), tradeTeamName$()
     Shared batNam_TRADE$(), pitNam_TRADE$()
-    Shared tradeB1$(), tradeP1$()
+    Shared tradeBatName$(), tradePitName$()
 
-    Shared tradeD0%(), tradeD1%(), teamRat_TRADE(), tradeLosses()
-    Shared haveStats(), TEAM%()
-    Shared batRat_TRADE(), tradeB0%(), tradeB()
-    Shared pitRat_TRADE(), tradeP0%(), tradeP()
-    Shared tradeSA%(), tradeSS%(), tradeT1%(), tradeTS%()
+    Shared tradeD0(), tradeD1(), teamRat_TRADE(), tradeLosses()
+    Shared haveStats(), tradeT0()
+    Shared batRat_TRADE(), tradeB0(), tradeB()
+    Shared pitRat_TRADE(), tradeP0(), tradeP()
+    Shared tradeSA(), tradeSS(), tradeT1(), tradeTS()
     Shared teamIndexes(), tradeWins()
 
     Shared mgrs_TRADE$(), stads_TRADE$(), tmAbbrev_TRADE$()
@@ -801,15 +805,15 @@ Sub SaveTrades (yearNumbers$())
         SCK = 0
 
         For X = 1 To 24
-            SCK = SCK + tradeSA%(tradeIdx, X)
+            SCK = SCK + tradeSA(tradeIdx, X)
         Next
 
         If SCK > 0 Then
 
-            tradeTS%(tradeIdx, 0) = 999
+            tradeTS(tradeIdx, 0) = 999
 
             For X = 1 To 11
-                tradeTS%(tradeIdx, X) = -1
+                tradeTS(tradeIdx, X) = -1
             Next
 
             Open diskPaths$(0) + DATA_FILE_NAME$ + "." + yearNumbers$(tradeIdx) For Random As #1 Len = DATA_SIZE_BYTES
@@ -852,7 +856,7 @@ Sub SaveTrades (yearNumbers$())
                 Next
             Next
 
-            For X = 0 To 11: LSet Q$(X + 1) = MKI$(tradeTS%(tradeIdx, X)): Next
+            For X = 0 To 11: LSet Q$(X + 1) = MKI$(tradeTS(tradeIdx, X)): Next
 
             For X = 0 To 22
                 For X1 = 1 To 14
@@ -873,7 +877,7 @@ Sub SaveTrades (yearNumbers$())
             Next
 
             For X = 1 To 24
-                LSet Q$(X + 950) = MKI$(tradeSA%(tradeIdx, X))
+                LSet Q$(X + 950) = MKI$(tradeSA(tradeIdx, X))
             Next
 
             For X = 0 To 22
@@ -906,38 +910,38 @@ Sub SaveTrades (yearNumbers$())
 
             Open diskPaths$(1) + statFile$ For Output As #1
 
-            Print #1, tradeA1$(I)
+            Print #1, tradeTeamName$(I)
             Print #1, tradeWins(I)
             Print #1, tradeLosses(I)
 
             For I1 = 0 To 22:
-                Print #1, tradeB1$(I, I1)
+                Print #1, tradeBatName$(I, I1)
                 Print #1, tradeB(I, I1)
             Next I1
 
             For I1 = 0 To 21:
-                Print #1, tradeP1$(I, I1)
+                Print #1, tradePitName$(I, I1)
                 Print #1, tradeP(I, I1)
             Next I1
 
             For I1 = 0 To 22:
                 For I2 = 0 To 21:
-                    Print #1, tradeB0%(I, I1, I2)
+                    Print #1, tradeB0(I, I1, I2)
                 Next I2
             Next I1
 
             For I1 = 0 To 21:
                 For I2 = 0 To 41:
-                    Print #1, tradeP0%(I, I1, I2)
+                    Print #1, tradeP0(I, I1, I2)
                 Next I2
             Next I1
 
-            Print #1, tradeD0%(I)
-            Print #1, tradeD1%(I)
+            Print #1, tradeD0(I)
+            Print #1, tradeD1(I)
 
-            For I1 = 0 To 21: Print #1, TEAM%(I, I1): Next I1
+            For I1 = 0 To 21: Print #1, tradeT0(I, I1): Next I1
 
-            For I1 = 0 To 22: Print #1, tradeT1%(I, I1): Next I1
+            For I1 = 0 To 22: Print #1, tradeT1(I, I1): Next I1
 
             Close #1
 
@@ -945,7 +949,7 @@ Sub SaveTrades (yearNumbers$())
 
             For I1 = 0 To 22:
                 For I2 = 0 To 6
-                    Print #1, tradeSS%(I, I1, I2)
+                    Print #1, tradeSS(I, I1, I2)
                 Next I2
             Next I1
 
@@ -965,7 +969,7 @@ End Sub
 Sub TradeSummary_Batters (p1idx, p2idx)
 
     Shared tmInfo_TRADE$(), batNam_TRADE$()
-    Shared teamRat_TRADE(), batRat_TRADE(), tradeB0%()
+    Shared teamRat_TRADE(), batRat_TRADE(), tradeB0()
 
     Dim progC$(9), plateX$(4)
 
@@ -1019,52 +1023,52 @@ Sub TradeSummary_Batters (p1idx, p2idx)
     Locate , 10
     Print "G";
     Locate , 15
-    Print tradeB0%(0, p1idx, 14);
+    Print tradeB0(0, p1idx, 14);
     Locate , 41
     Print batRat_TRADE(1, p2idx, 3);
     Locate , 50
     Print "G";
     Locate , 55
-    Print tradeB0%(1, p2idx, 14)
+    Print tradeB0(1, p2idx, 14)
 
     Locate , 1
     Print batRat_TRADE(0, p1idx, 4);
     Locate , 10
     Print "AB";
     Locate , 15
-    Print tradeB0%(0, p1idx, 0);
+    Print tradeB0(0, p1idx, 0);
     Locate , 41
     Print batRat_TRADE(1, p2idx, 4);
     Locate , 50
     Print "AB";
     Locate , 55
-    Print tradeB0%(1, p2idx, 0)
+    Print tradeB0(1, p2idx, 0)
 
     Locate , 1
     Print batRat_TRADE(0, p1idx, 5);
     Locate , 10
     Print "R";
     Locate , 15
-    Print tradeB0%(0, p1idx, 2);
+    Print tradeB0(0, p1idx, 2);
     Locate , 41
     Print batRat_TRADE(1, p2idx, 5);
     Locate , 50
     Print "R";
     Locate , 55
-    Print tradeB0%(1, p2idx, 2)
+    Print tradeB0(1, p2idx, 2)
 
     Locate , 1
     Print batRat_TRADE(0, p1idx, 6);
     Locate , 10
     Print "H";
     Locate , 15
-    Print tradeB0%(0, p1idx, 1);
+    Print tradeB0(0, p1idx, 1);
     Locate , 41
     Print batRat_TRADE(1, p2idx, 6);
     Locate , 50
     Print "H";
     Locate , 55
-    Print tradeB0%(1, p2idx, 1)
+    Print tradeB0(1, p2idx, 1)
 
 
     Locate , 1
@@ -1072,77 +1076,77 @@ Sub TradeSummary_Batters (p1idx, p2idx)
     Locate , 9
     Print "RBI";
     Locate , 15
-    Print tradeB0%(0, p1idx, 3);
+    Print tradeB0(0, p1idx, 3);
     Locate , 41
     Print batRat_TRADE(1, p2idx, 10);
     Locate , 49
     Print "RBI";
     Locate , 55
-    Print tradeB0%(1, p2idx, 3)
+    Print tradeB0(1, p2idx, 3)
 
     Locate , 1
     Print batRat_TRADE(0, p1idx, 7);
     Locate , 10
     Print "DB";
     Locate , 15
-    Print tradeB0%(0, p1idx, 4);
+    Print tradeB0(0, p1idx, 4);
     Locate , 41
     Print batRat_TRADE(1, p2idx, 7);
     Locate , 50
     Print "DB";: Locate , 55
-    Print tradeB0%(1, p2idx, 4)
+    Print tradeB0(1, p2idx, 4)
 
     Locate , 1
     Print batRat_TRADE(0, p1idx, 8);
     Locate , 10
     Print "TR";
     Locate , 15
-    Print tradeB0%(0, p1idx, 5);
+    Print tradeB0(0, p1idx, 5);
     Locate , 41
     Print batRat_TRADE(1, p2idx, 8);
     Locate , 50
     Print "TR";
     Locate , 55
-    Print tradeB0%(1, p2idx, 5)
+    Print tradeB0(1, p2idx, 5)
 
     Locate , 1
     Print batRat_TRADE(0, p1idx, 9);
     Locate , 10
     Print "HR";
     Locate , 15
-    Print tradeB0%(0, p1idx, 6);
+    Print tradeB0(0, p1idx, 6);
     Locate , 41
     Print batRat_TRADE(1, p2idx, 9);
     Locate , 50
     Print "HR";
     Locate , 55
-    Print tradeB0%(1, p2idx, 6)
+    Print tradeB0(1, p2idx, 6)
 
     Locate , 1
     Print batRat_TRADE(0, p1idx, 11);
     Locate , 10
     Print "BB";
     Locate , 15
-    Print tradeB0%(0, p1idx, 7);
+    Print tradeB0(0, p1idx, 7);
     Locate , 41
     Print batRat_TRADE(1, p2idx, 11);
     Locate , 50
     Print "BB";
     Locate , 55
-    Print tradeB0%(1, p2idx, 7)
+    Print tradeB0(1, p2idx, 7)
 
     Locate , 1
     Print batRat_TRADE(0, p1idx, 12);
     Locate , 10
     Print "SO";
     Locate , 15
-    Print tradeB0%(0, p1idx, 8);
+    Print tradeB0(0, p1idx, 8);
     Locate , 41
     Print batRat_TRADE(1, p2idx, 12);
     Locate , 50
     Print "S0";
     Locate , 55
-    Print tradeB0%(1, p2idx, 8)
+    Print tradeB0(1, p2idx, 8)
 
     Locate , 1
     If batRat_TRADE(0, p1idx, 4) = 0 Then
@@ -1157,13 +1161,13 @@ Sub TradeSummary_Batters (p1idx, p2idx)
 
     Locate , 9
     Print "BAVG";: Locate , 15
-    If tradeB0%(0, p1idx, 0) = 0 Then
+    If tradeB0(0, p1idx, 0) = 0 Then
         Print "-.---";
     Else
-        If tradeB0%(0, p1idx, 0) = tradeB0%(0, p1idx, 1) Then
+        If tradeB0(0, p1idx, 0) = tradeB0(0, p1idx, 1) Then
             Print "1.000";
         Else
-            Print Using " .###"; (tradeB0%(0, p1idx, 1) / tradeB0%(0, p1idx, 0));
+            Print Using " .###"; (tradeB0(0, p1idx, 1) / tradeB0(0, p1idx, 0));
         End If
     End If
 
@@ -1180,13 +1184,13 @@ Sub TradeSummary_Batters (p1idx, p2idx)
 
     Locate , 49
     Print "BAVG";: Locate , 55
-    If tradeB0%(1, p2idx, 0) = 0 Then
+    If tradeB0(1, p2idx, 0) = 0 Then
         Print "-.---"
     Else
-        If tradeB0%(1, p2idx, 0) = tradeB0%(1, p2idx, 1) Then
+        If tradeB0(1, p2idx, 0) = tradeB0(1, p2idx, 1) Then
             Print "1.000"
         Else
-            Print Using " .###"; (tradeB0%(1, p2idx, 1) / tradeB0%(1, p2idx, 0))
+            Print Using " .###"; (tradeB0(1, p2idx, 1) / tradeB0(1, p2idx, 0))
         End If
     End If
 
@@ -1195,26 +1199,26 @@ Sub TradeSummary_Batters (p1idx, p2idx)
     Locate , 10
     Print "SB";
     Locate , 15
-    Print tradeB0%(0, p1idx, 9);
+    Print tradeB0(0, p1idx, 9);
     Locate , 41
     Print batRat_TRADE(1, p2idx, 13);
     Locate , 50
     Print "SB";
     Locate , 55
-    Print tradeB0%(1, p2idx, 9)
+    Print tradeB0(1, p2idx, 9)
 
     Locate , 1
     Print batRat_TRADE(0, p1idx, 14);
     Locate , 10
     Print "CS";
     Locate , 15
-    Print tradeB0%(0, p1idx, 10);
+    Print tradeB0(0, p1idx, 10);
     Locate , 41
     Print batRat_TRADE(1, p2idx, 14);
     Locate , 50
     Print "CS";
     Locate , 55
-    Print tradeB0%(1, p2idx, 10)
+    Print tradeB0(1, p2idx, 10)
 
 End Sub
 
@@ -1227,7 +1231,7 @@ End Sub
 Sub TradeSummary_Pitchers (p1idx, p2idx)
 
     Shared tmInfo_TRADE$(), batNam_TRADE$()
-    Shared teamRat_TRADE(), pitRat_TRADE(), tradeP0%()
+    Shared teamRat_TRADE(), pitRat_TRADE(), tradeP0()
     Dim plateX$(4)
 
     plateX$(0) = "LP"
@@ -1251,66 +1255,66 @@ Sub TradeSummary_Pitchers (p1idx, p2idx)
     Locate , 55: Print "COMP"
     Locate , 1: Print pitRat_TRADE(0, p1idx, 1); "-"; pitRat_TRADE(0, p1idx, 2);
     Locate , 9: Print "W-L";
-    Locate , 15: Print tradeP0%(0, p1idx, 6); "-"; tradeP0%(0, p1idx, 7);
+    Locate , 15: Print tradeP0(0, p1idx, 6); "-"; tradeP0(0, p1idx, 7);
     Locate , 41: Print pitRat_TRADE(1, p2idx, 1); "-"; pitRat_TRADE(1, p2idx, 2);
     Locate , 49: Print "W-L";
-    Locate , 55: Print tradeP0%(1, p2idx, 6); "-"; tradeP0%(1, p2idx, 7)
+    Locate , 55: Print tradeP0(1, p2idx, 6); "-"; tradeP0(1, p2idx, 7)
     Locate , 1: Print pitRat_TRADE(0, p1idx, 4);: Locate , 10: Print "G";
-    Locate , 15: Print tradeP0%(0, p1idx, 8);
+    Locate , 15: Print tradeP0(0, p1idx, 8);
     Locate , 41: Print pitRat_TRADE(1, p2idx, 4);
     Locate , 50: Print "G";
-    Locate , 55: Print tradeP0%(1, p2idx, 8)
+    Locate , 55: Print tradeP0(1, p2idx, 8)
     Locate , 1: Print pitRat_TRADE(0, p1idx, 5);
     Locate , 10: Print "GS";
-    Locate , 15: Print tradeP0%(0, p1idx, 9);
+    Locate , 15: Print tradeP0(0, p1idx, 9);
     Locate , 41: Print pitRat_TRADE(1, p2idx, 5);
     Locate , 50: Print "GS";
-    Locate , 55: Print tradeP0%(1, p2idx, 9)
+    Locate , 55: Print tradeP0(1, p2idx, 9)
     Locate , 1: Print pitRat_TRADE(0, p1idx, 3);
     Locate , 10: Print "SV";
-    Locate , 15: Print tradeP0%(0, p1idx, 12);
+    Locate , 15: Print tradeP0(0, p1idx, 12);
     Locate , 41: Print pitRat_TRADE(1, p2idx, 3);
     Locate , 50: Print "SV";
-    Locate , 55: Print tradeP0%(1, p2idx, 12)
+    Locate , 55: Print tradeP0(1, p2idx, 12)
     Locate , 1: Print pitRat_TRADE(0, p1idx, 6);
     Locate , 10: Print "IP";
-    Locate , 15: Print Int((tradeP0%(0, p1idx, 0) / 3) + .5);
+    Locate , 15: Print Int((tradeP0(0, p1idx, 0) / 3) + .5);
     Locate , 41: Print pitRat_TRADE(1, p2idx, 6);
     Locate , 50: Print "IP";
-    Locate , 55: Print Int((tradeP0%(1, p2idx, 0) / 3) + .5)
+    Locate , 55: Print Int((tradeP0(1, p2idx, 0) / 3) + .5)
     Locate , 1: Print pitRat_TRADE(0, p1idx, 7);
     Locate , 10: Print "H";
-    Locate , 15: Print tradeP0%(0, p1idx, 1);
+    Locate , 15: Print tradeP0(0, p1idx, 1);
     Locate , 41: Print pitRat_TRADE(1, p2idx, 7);
     Locate , 50: Print "H";
-    Locate , 55: Print tradeP0%(1, p2idx, 1)
+    Locate , 55: Print tradeP0(1, p2idx, 1)
     Locate , 1: Print pitRat_TRADE(0, p1idx, 8);
     Locate , 10: Print "BB";
-    Locate , 15: Print tradeP0%(0, p1idx, 4);
+    Locate , 15: Print tradeP0(0, p1idx, 4);
     Locate , 41: Print pitRat_TRADE(1, p2idx, 8);
     Locate , 50: Print "BB";
-    Locate , 55: Print tradeP0%(1, p2idx, 4)
+    Locate , 55: Print tradeP0(1, p2idx, 4)
     Locate , 1: Print pitRat_TRADE(0, p1idx, 9);
     Locate , 10: Print "SO";
-    Locate , 15: Print tradeP0%(0, p1idx, 5);
+    Locate , 15: Print tradeP0(0, p1idx, 5);
     Locate , 41: Print pitRat_TRADE(1, p2idx, 9);
     Locate , 50: Print "SO";
-    Locate , 55: Print tradeP0%(1, p2idx, 5)
+    Locate , 55: Print tradeP0(1, p2idx, 5)
     Locate , 1: Print pitRat_TRADE(0, p1idx, 13);
     Locate , 10: Print "HR";
-    Locate , 15: Print tradeP0%(0, p1idx, 14);
+    Locate , 15: Print tradeP0(0, p1idx, 14);
     Locate , 41: Print pitRat_TRADE(1, p2idx, 13);
     Locate , 50: Print "HR";
-    Locate , 55: Print tradeP0%(1, p2idx, 14)
+    Locate , 55: Print tradeP0(1, p2idx, 14)
     Locate , 1: Print Using "##.##"; pitRat_TRADE(0, p1idx, 10) / 100;
     Locate , 9: Print "ERA";
 
     Locate , 15:
 
-    If tradeP0%(0, p1idx, 0) = 0 Then
+    If tradeP0(0, p1idx, 0) = 0 Then
         Print " -.--";
     Else
-        Print Using "##.##"; tradeP0%(0, p1idx, 3) * 27 / tradeP0%(0, p1idx, 0);
+        Print Using "##.##"; tradeP0(0, p1idx, 3) * 27 / tradeP0(0, p1idx, 0);
     End If
 
     Locate , 41
@@ -1318,12 +1322,12 @@ Sub TradeSummary_Pitchers (p1idx, p2idx)
     Print Using "##.##"; pitRat_TRADE(1, p2idx, 10) / 100;
     Locate , 49: Print "ERA";
 
-    Locate , 55: If tradeP0%(1, p2idx, 0) = 0 Then
+    Locate , 55: If tradeP0(1, p2idx, 0) = 0 Then
         Print " -.--"
     Else
-        Print Using "##.##"; tradeP0%(1, p2idx, 3) * 27 / tradeP0%(1, p2idx, 0)
+        Print Using "##.##"; tradeP0(1, p2idx, 3) * 27 / tradeP0(1, p2idx, 0)
 
-        If tradeP0%(0, p1idx, 0) > 0 Then G1% = Int((((tradeP0%(0, p1idx, 3) * 9) / (tradeP0%(0, p1idx, 0) / 3)) + .0005) * 100)
+        If tradeP0(0, p1idx, 0) > 0 Then G1% = Int((((tradeP0(0, p1idx, 3) * 9) / (tradeP0(0, p1idx, 0) / 3)) + .0005) * 100)
 
         E1% = Int(G1% / 100)
         F1% = G1% - (E1% * 100)

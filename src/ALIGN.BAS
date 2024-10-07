@@ -22,13 +22,14 @@ Sub ALIGN ()
     
     Shared alignTR(), alignTR1()
 
-    Shared B0R%(), BR%()
-    Shared P0R%(), PR%()
+    Shared alignB0_Road(), alignB_Road()
+    Shared alignP0_Road(), alignP_Road()
+    Shared alignS0_Road()
 
-    Shared statB0%(), statB%()
-    Shared S0R%(), S0%()
-    Shared statP%(), statP0%()
-    Shared statT0%(), statT1%()
+    Shared alignS() 
+    Shared statB0(), statB()
+    Shared statP(), statP0()
+    Shared statT0!(), statT1!()
 
     Do
 
@@ -60,23 +61,23 @@ Sub ALIGN ()
 
                 For I = 0 To 22:
                     Input #1, batNames_Road$(I)
-                    Input #1, BR%(I)
+                    Input #1, alignB_Road(I)
                 Next I
 
                 For I = 0 To 21:
                     Input #1, pitNames_Road$(I)
-                    Input #1, PR%(I)
+                    Input #1, alignP_Road(I)
                 Next I
 
                 For I = 0 To 22:
                     For I1 = 0 To 21:
-                        Input #1, B0R%(I, I1)
+                        Input #1, alignB0_Road(I, I1)
                     Next I1
                 Next I
 
                 For I = 0 To 21:
                     For I1 = 0 To 41:
-                        Input #1, P0R%(I, I1)
+                        Input #1, alignP0_Road(I, I1)
                     Next I1
                 Next I
 
@@ -99,7 +100,7 @@ Sub ALIGN ()
 
                     For I = 0 To 22
                         For I1 = 0 To 6
-                            Input #1, S0R%(I, I1)
+                            Input #1, alignS0_Road(I, I1)
                         Next
                     Next
 
@@ -117,23 +118,23 @@ Sub ALIGN ()
 
                     For I = 0 To 22:
                         Input #1, batterNames$(I)
-                        Input #1, statB%(I)
+                        Input #1, statB(I)
                     Next I
 
                     For I = 0 To 21:
                         Input #1, pitcherNames$(I)
-                        Input #1, statP%(I)
+                        Input #1, statP(I)
                     Next I
 
                     For I = 0 To 22:
                         For I1 = 0 To 21:
-                            Input #1, statB0%(I, I1)
+                            Input #1, statB0(I, I1)
                         Next I1
                     Next I
 
                     For I = 0 To 21:
                         For I1 = 0 To 41:
-                            Input #1, statP0%(I, I1)
+                            Input #1, statP0(I, I1)
                         Next I1
                     Next I
 
@@ -141,11 +142,11 @@ Sub ALIGN ()
                     Input #1, statsD1
 
                     For I = 0 To 21: 
-                        Input #1, statT0%(I)
+                        Input #1, statT0!(I)
                     Next I
 
                     For I = 0 To 22: 
-                        Input #1, statT1%(I)
+                        Input #1, statT1!(I)
                     Next I
 
                     Close #1
@@ -156,7 +157,7 @@ Sub ALIGN ()
 
                         For I = 0 To 22
                             For I1 = 0 To 6
-                                Input #1, S0%(I, I1)
+                                Input #1, alignS(I, I1)
                             Next
                         Next
 
@@ -213,14 +214,14 @@ Sub AlignStats (pathRoadStats$, statFile$)
     Shared batterNames$(), pitcherNames$()
 
     Shared batNames_Align$(), pitName_Align$()
-    Shared B0N%(), BN%()
-    Shared P0N%(), PN%()
-    Shared S0N%()
+    Shared alignB0(), alignB()
+    Shared alignP0(), alignP()
+    Shared alignS0()
 
     Shared batNames_Road$(), pitNames_Road$()
-    Shared PR%()
-    Shared B0R%(), BR%()
-    Shared P0R%(), S0R%()
+    Shared alignP_Road()
+    Shared alignB0_Road(), alignB_Road()
+    Shared alignP0_Road(), alignS0_Road()
 
     Cls
 
@@ -264,14 +265,14 @@ Sub AlignStats (pathRoadStats$, statFile$)
             If UCase$(batterNames$(N)) = UCase$(batNames_Road$(J)) Then
 
                 batNames_Align$(N) = batNames_Road$(J)
-                BN%(N) = BR%(J)
+                alignB(N) = alignB_Road(J)
 
                 For K = 0 To 21
-                    B0N%(N, K) = B0R%(J, K)
+                    alignB0(N, K) = alignB0_Road(J, K)
                 Next K
 
                 For K = 0 To 6
-                    S0N%(N, K) = S0R%(J, K)
+                    alignS0(N, K) = alignS0_Road(J, K)
                 Next K
 
             End If
@@ -291,10 +292,10 @@ Sub AlignStats (pathRoadStats$, statFile$)
             If UCase$(pitcherNames$(N)) = UCase$(pitNames_Road$(J)) Then
 
                 pitName_Align$(N) = pitNames_Road$(J)
-                PN%(N) = PR%(J)
+                alignP(N) = alignP_Road(J)
 
                 For K = 0 To 41
-                    P0N%(N, K) = P0R%(J, K)
+                    alignP0(N, K) = alignP0_Road(J, K)
                 Next K
 
             End If
@@ -354,9 +355,9 @@ Sub ReviewAndSaveAlignment (pathRoadStats$, statFile$)
 
     Shared alignTR(), alignTR1()
 
-    Shared B0N%(), BN%()
-    Shared P0N%(), PN%()
-    Shared S0N%()
+    Shared alignB0(), alignB()
+    Shared alignP0(), alignP()
+    Shared alignS0()
 
     Cls
 
@@ -396,23 +397,23 @@ Sub ReviewAndSaveAlignment (pathRoadStats$, statFile$)
 
     For I = 0 To 22: 
         Write #1, batNames_Align$(I)
-        Write #1, BN%(I)
+        Write #1, alignB(I)
     Next I
 
     For I = 0 To 21: 
         Write #1, pitName_Align$(I)
-        Write #1, PN%(I)
+        Write #1, alignP(I)
     Next I
 
     For I = 0 To 22: 
         For I1 = 0 To 21: 
-            Write #1, B0N%(I, I1)
+            Write #1, alignB0(I, I1)
         Next I1
     Next I
 
     For I = 0 To 21: 
         For I1 = 0 To 41: 
-            Write #1, P0N%(I, I1)
+            Write #1, alignP0(I, I1)
         Next I1
     Next I
 
@@ -433,7 +434,7 @@ Sub ReviewAndSaveAlignment (pathRoadStats$, statFile$)
 
     For I = 0 To 22
         For I1 = 0 To 6
-            Print #1, S0N%(I, I1)
+            Print #1, alignS0(I, I1)
         Next
     Next
 

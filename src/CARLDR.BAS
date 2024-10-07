@@ -71,7 +71,7 @@ Sub UpdateCareerLeaders ()
     Shared carLdrBatVal!(), carLdrPitVal!()
 
     Shared careerBatters$(), careerPitchers$()
-    Shared BRS%(), PRS%()
+    Shared carRecBatStats(), carRecPitStats()
 
     TMR1 = (100 * 14) + (80 * 17)
 
@@ -122,7 +122,7 @@ Sub UpdateCareerLeaders ()
                     '# Stats
                     For J = 0 To 14
 
-                        batCarVals(I, J) = batCarVals(I, J) + BRS%(N, I, J)
+                        batCarVals(I, J) = batCarVals(I, J) + carRecBatStats(N, I, J)
 
                     Next J
 
@@ -143,7 +143,7 @@ Sub UpdateCareerLeaders ()
                     '# Stats
                     For J = 0 To 16
 
-                        pitCarVals(I, J) = pitCarVals(I, J) + PRS%(N, I, J)
+                        pitCarVals(I, J) = pitCarVals(I, J) + carRecPitStats(N, I, J)
 
                     Next J
 

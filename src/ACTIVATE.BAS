@@ -9,7 +9,7 @@ Sub ACTIVATE ()
     _Title "Full Count Baseball - Activate Players"
 
     Shared parkHR_DRAFT&()
-    Shared batterRatings(), teamRatings%(), pitcherRatings()
+    Shared batterRatings(), teamRatings(), pitcherRatings()
     Shared batterNames$(), pitcherNames$()
 
     Shared Manager$, teamAbbrev$, Stadium$
@@ -31,20 +31,20 @@ Sub ACTIVATE ()
                 Color 15, 0
                 Locate I + 5, 5: Print Using "## "; I + 1;
 
-                If batterRatings(I, 31) <> 0 Then Color teamRatings%(11), teamRatings%(12)
+                If batterRatings(I, 31) <> 0 Then Color teamRatings(11), teamRatings(12)
                 Print batterNames$(I);
 
                 Color 15, 0
                 Print Tab(40);: Print Using "## "; I + 13;
 
-                If batterRatings(I + 12, 31) <> 0 Then Color teamRatings%(11), teamRatings%(12)
+                If batterRatings(I + 12, 31) <> 0 Then Color teamRatings(11), teamRatings(12)
                 Print batterNames$(I + 12): Color 15, 0
 
             Next
 
             Locate , 5: Print Using "## "; 12;
 
-            If batterRatings(11, 31) <> 0 Then Color teamRatings%(11), teamRatings%(12)
+            If batterRatings(11, 31) <> 0 Then Color teamRatings(11), teamRatings(12)
             Print batterNames$(11)
 
             Color 15, 0
@@ -69,12 +69,12 @@ Sub ACTIVATE ()
 
                 Locate I + 5, 5: Print Using "## "; I + 1;
 
-                If pitcherRatings(I, 34) <> 0 Then Color teamRatings%(11), teamRatings%(12)
+                If pitcherRatings(I, 34) <> 0 Then Color teamRatings(11), teamRatings(12)
                 Print pitcherNames$(I);: Color 15, 0
 
                 Print Tab(40);: Print Using "## "; I + 12;
 
-                If pitcherRatings(I + 11, 34) <> 0 Then Color teamRatings%(11), teamRatings%(12)
+                If pitcherRatings(I + 11, 34) <> 0 Then Color teamRatings(11), teamRatings(12)
                 Print pitcherNames$(I + 11): Color 15, 0
 
             Next
@@ -117,7 +117,7 @@ Sub ACTIVATE ()
         LSet Q$(0) = team$
 
         For I = 1 To 13
-            LSet Q$(I) = MKI$(teamRatings%(I))
+            LSet Q$(I) = MKI$(teamRatings(I))
         Next
 
         LSet Q$(14) = MKS$(parkHR_DRAFT&(0))

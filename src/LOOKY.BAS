@@ -61,7 +61,7 @@ End Sub
 '...explanation...
 Sub StatsOneTeam ()
 
-    Shared teamRatings%()
+    Shared teamRatings()
 
     teamNbr = 0
     Call ChooseTeam(YN$, NTMS, teamNbr, team$)
@@ -110,9 +110,9 @@ Sub LoadTeamStats (statFile$, nbrGames)
 
     Shared batterNames$(), pitcherNames$()
     Shared statT0!(), statT1!()
-    Shared statB%(), statB0%()
-    Shared statP%(), statP0%()
-    Shared statSS%()
+    Shared statB(), statB0()
+    Shared statP(), statP0()
+    Shared statS0()
 
     Shared oppName$(), losePitcher$(), locIndicator$(), winPitcher$()
     Shared teamScore(), nbrInnings(), oppScore()
@@ -140,23 +140,23 @@ Sub LoadTeamStats (statFile$, nbrGames)
 
     For I = 0 To 22: 
         Input #1, batterNames$(I)
-        Input #1, statB%(I)
+        Input #1, statB(I)
     Next I
     
     For I = 0 To 21: 
         Input #1, pitcherNames$(I)
-        Input #1, statP%(I)
+        Input #1, statP(I)
     Next I
     
     For I = 0 To 22: 
         For I1 = 0 To 21: 
-            Input #1, statB0%(I, I1)
+            Input #1, statB0(I, I1)
         Next I1
     Next I
     
     For I = 0 To 21: 
         For I1 = 0 To 41: 
-            Input #1, statP0%(I, I1)
+            Input #1, statP0(I, I1)
         Next I1
     Next I
 
@@ -175,17 +175,17 @@ Sub LoadTeamStats (statFile$, nbrGames)
 
     If Not _FileExists(diskPaths$(1) + statFile$ + "R") Then
 
-        SS% = 0
+        SS = 0
 
     Else
 
-        SS% = 1
+        SS = 1
 
         Open diskPaths$(1) + statFile$ + "R" For Input As #1
 
         For I = 0 To 22
             For I1 = 0 To 6
-                Input #1, statSS%(I, I1)
+                Input #1, statS0(I, I1)
             Next I1
 
         Next I
@@ -295,7 +295,7 @@ End Sub
 'to print / view
 Sub ViewAndPrintOptions (statFile$, teamName$, nbrGames, menuExit)
 
-    Shared teamScore(), nbrInnings(), teamRatings%(), oppScore()
+    Shared teamScore(), nbrInnings(), teamRatings(), oppScore()
 
     Shared oppName$(), losePitcher$(), locIndicator$(), winPitcher$()
 
@@ -345,7 +345,7 @@ Sub ViewAndPrintOptions (statFile$, teamName$, nbrGames, menuExit)
                     Locate 1, Xcoord
 
                     Print "SCHEDULE RESULTS FOR ";
-                    Color teamRatings%(11), teamRatings%(12)
+                    Color teamRatings(11), teamRatings(12)
                     Print teamName$
 
                     Color 15, 0
@@ -366,7 +366,7 @@ Sub ViewAndPrintOptions (statFile$, teamName$, nbrGames, menuExit)
                             Locate 1, Xcoord
                             Color 12
                             Print "SCHEDULE RESULTS FOR ";
-                            Color teamRatings%(11), teamRatings%(12)
+                            Color teamRatings(11), teamRatings(12)
                             Print teamName$
 
                             Color 15, 0
@@ -419,7 +419,7 @@ Sub ViewAndPrintOptions (statFile$, teamName$, nbrGames, menuExit)
                 JJ = 1
                 Locate 6, 8
 
-                Call MenuBox (6, 8, 61, 1, teamRatings%(11), teamRatings%(12))
+                Call MenuBox (6, 8, 61, 1, teamRatings(11), teamRatings(12))
 
                 Do
                     Locate 7
@@ -441,7 +441,7 @@ Sub ViewAndPrintOptions (statFile$, teamName$, nbrGames, menuExit)
 
     Loop Until SELECTION% = 5 Or ExitCode% = 27
 
-    'Call ResetStatPrompt (statFile$, teamRatings%())
+    'Call ResetStatPrompt (statFile$, teamRatings())
 
     Cls
 
@@ -465,14 +465,14 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
 
     Shared teamLosses, teamWins
 
-    Shared teamRatings%()
+    Shared teamRatings()
 
-    Shared batterNames$(), pitcherNames$(), statSS%()
+    Shared batterNames$(), pitcherNames$(), statS0()
     Shared statT0!(), statT1!()
 
-    Shared statB%(), statB0%()
-    Shared teamScore(), nbrInnings(), teamRatings%(), oppScore()
-    Shared statP%(), statP0%()
+    Shared statB(), statB0()
+    Shared teamScore(), nbrInnings(), teamRatings(), oppScore()
+    Shared statP(), statP0()
 
     Shared oppName$(), losePitcher$(), locIndicator$(), winPitcher$()
 
@@ -480,7 +480,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Xcoord = Int((80 - Xcoord) / 2)
     Locate 1, Xcoord
 
-    Color teamRatings%(11), teamRatings%(12)
+    Color teamRatings(11), teamRatings(12)
     Print teamName$
     Print
 
@@ -517,7 +517,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Locate , Xcoord
 
     'Color 14
-    Color teamRatings%(11), teamRatings%(12)
+    Color teamRatings(11), teamRatings(12)
     Print teamName$;
 
     Color 12, 0
@@ -536,13 +536,13 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
 
             Print Left$(batterNames$(I), 10);
 
-            Locate , 11: Print Using "###"; statB0%(I, 0);
-            Locate , 15: Print Using "###"; statB0%(I, 2);
-            Locate , 19: Print Using "###"; statB0%(I, 1);
-            Locate , 23: Print Using "###"; statB0%(I, 3);
-            Locate , 28: Print Using "##"; statB0%(I, 4);
-            Locate , 31: Print Using "##"; statB0%(I, 5);
-            Locate , 35: Print Using "##"; statB0%(I, 6);
+            Locate , 11: Print Using "###"; statB0(I, 0);
+            Locate , 15: Print Using "###"; statB0(I, 2);
+            Locate , 19: Print Using "###"; statB0(I, 1);
+            Locate , 23: Print Using "###"; statB0(I, 3);
+            Locate , 28: Print Using "##"; statB0(I, 4);
+            Locate , 31: Print Using "##"; statB0(I, 5);
+            Locate , 35: Print Using "##"; statB0(I, 6);
 
             I2 = 0
             I3 = 0
@@ -550,42 +550,42 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
 
             Locate , 38
 
-            If statB0%(I, 0) = 0 Then
+            If statB0(I, 0) = 0 Then
                 Print " .--- ";
             Else
-                If statB0%(I, 0) = statB0%(I, 1) Then
+                If statB0(I, 0) = statB0(I, 1) Then
                     Print "1.000 ";
                 Else
-                    If statB0%(I, 1) = 0 Then
+                    If statB0(I, 1) = 0 Then
                         Print " .000 ";
                     Else
-                        Print Using " .### "; statB0%(I, 1) / statB0%(I, 0);
+                        Print Using " .### "; statB0(I, 1) / statB0(I, 0);
                     End If
                 End If
             End If
 
-            I3 = statB0%(I, 1) + statB0%(I, 4) + 2 * statB0%(I, 5) + 3 * statB0%(I, 6)
+            I3 = statB0(I, 1) + statB0(I, 4) + 2 * statB0(I, 5) + 3 * statB0(I, 6)
 
-            If statB0%(I, 0) = 0 Then
+            If statB0(I, 0) = 0 Then
                 Print " .--- ";
             Else
                 If I3 = 0 Then
                     Print " .000 ";
                 Else
-                    If statB0%(I, 0) = I3 Then
+                    If statB0(I, 0) = I3 Then
                         Print "1.000 ";
                     Else
-                        If I3 / statB0%(I, 0) >= 1 Then
-                            Print Using "#.### "; I3 / statB0%(I, 0);
+                        If I3 / statB0(I, 0) >= 1 Then
+                            Print Using "#.### "; I3 / statB0(I, 0);
                         Else
-                            Print Using " .### "; I3 / statB0%(I, 0);
+                            Print Using " .### "; I3 / statB0(I, 0);
                         End If
                     End If
                 End If
             End If
 
-            I4 = statB0%(I, 1) + statB0%(I, 7)
-            I3 = statB0%(I, 7) + statB0%(I, 0)
+            I4 = statB0(I, 1) + statB0(I, 7)
+            I3 = statB0(I, 7) + statB0(I, 0)
 
             If I3 = 0 Then
                 Print " .---";
@@ -601,18 +601,18 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
                 End If
             End If
 
-            Locate , 56: Print Using "###"; statB0%(I, 8);
-            Locate , 60: Print Using "###"; statB0%(I, 7);
-            Locate , 64: Print Using "###"; statB0%(I, 9);
-            Locate , 69: Print Using "##"; statB0%(I, 10);
+            Locate , 56: Print Using "###"; statB0(I, 8);
+            Locate , 60: Print Using "###"; statB0(I, 7);
+            Locate , 64: Print Using "###"; statB0(I, 9);
+            Locate , 69: Print Using "##"; statB0(I, 10);
 
-            If statB%(I) > 0 Then
+            If statB(I) > 0 Then
                 Locate , 73
-                MM = statB0%(I, 0) / statB%(I) * 100
+                MM = statB0(I, 0) / statB(I) * 100
                 MM = Int(MM)
                 Print Str$(MM);
             Else
-                If statB%(I) = 0 Then Locate , 73: Print "--";
+                If statB(I) = 0 Then Locate , 73: Print "--";
             End If
 
             If statT0!(0) = 0 Then statT0!(0) = 1
@@ -627,7 +627,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Cls
 
     Locate , Xcoord
-    Color teamRatings%(11), teamRatings%(12)
+    Color teamRatings(11), teamRatings(12)
     Print teamName$;
 
     Color 12, 0
@@ -646,10 +646,10 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
             If (I Mod 2) = 0 Then Color 15
 
             Print Left$(batterNames$(I), 10);
-            Locate , 12: Print Using "###"; statB0%(I, 14);
-            Locate , 18: Print Using "##"; statB0%(I, 12);
-            Locate , 22: Print Using "##"; statB0%(I, 13);
-            Locate , 27: Print Using "##"; statB0%(I, 15);
+            Locate , 12: Print Using "###"; statB0(I, 14);
+            Locate , 18: Print Using "##"; statB0(I, 12);
+            Locate , 22: Print Using "##"; statB0(I, 13);
+            Locate , 27: Print Using "##"; statB0(I, 15);
 
             RQ = Val(Right$(statFile$, 2))
             RT = 60
@@ -661,44 +661,45 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
                 QT = 154
             End If
 
-            statCalc% = (Int((((statB%(I) + 0) / QT) * (statT1!(9) + 1)) + .5) - (statB0%(I, 0) + 0))
+            statCalc% = (Int((((statB(I) + 0) / QT) * (statT1!(9) + 1)) + .5) - (statB0(I, 0) + 0))
 
-            If (statB%(I) > 0) And statCalc% > 0 Then
+            If (statB(I) > 0) And statCalc% > 0 Then
                 Locate , 31: Print Using "####"; statCalc%;
             Else
-                If statB%(I) = 0 Then
+                If statB(I) = 0 Then
                     Print "  ";
                 End If
-                If statB%(I) > 0 Then 
+                If statB(I) > 0 Then 
                     Locate , 31: Print Using "####"; statCalc%;
                 End If
             End If
 
-            If statB%(I) > 0 Then 
+            If statB(I) > 0 Then 
                 Locate , 37
-                H5% = Int((((statB%(I) + 0) / QT) * (statT1!(9) + 1)) + .5)
-                Print Using "####"; H5%;: statT0!(13) = statT0!(13) + H5%
+                H5% = Int((((statB(I) + 0) / QT) * (statT1!(9) + 1)) + .5)
+                Print Using "####"; H5%;
+                statT0!(13) = statT0!(13) + H5%
             End If
-            If statB%(I) = 0 Then 
+            If statB(I) = 0 Then 
                 Locate , 39: Print "0";
             End If
 
             Locate , 42
 
-            Print Using " #### ### ## "; statB0%(I, 16); statB0%(I, 17); statB0%(I, 11);
+            Print Using " #### ### ## "; statB0(I, 16); statB0(I, 17); statB0(I, 11);
 
-            If statB0%(I, 16) + statB0%(I, 17) + statB0%(I, 11) <> 0 Then
-                If statB0%(I, 11) <> 0 Then
-                    Print Using " .###"; (statB0%(I, 16) + statB0%(I, 17)) / (statB0%(I, 16) + statB0%(I, 17) + statB0%(I, 11));
+            If statB0(I, 16) + statB0(I, 17) + statB0(I, 11) <> 0 Then
+                If statB0(I, 11) <> 0 Then
+                    Print Using " .###"; (statB0(I, 16) + statB0(I, 17)) / (statB0(I, 16) + statB0(I, 17) + statB0(I, 11));
                 Else
                     Print "1.000";
                 End If
             End If
 
-            If statB0%(I, 21) + statB0%(I, 20) <> 0 Then
-                Print Using "  ### ## ###"; statB0%(I, 20) + statB0%(I, 21); statB0%(I, 21); statB0%(I, 21) / (statB0%(I, 20) + statB0%(I, 21)) * 100;
+            If statB0(I, 21) + statB0(I, 20) <> 0 Then
+                Print Using "  ### ## ###"; statB0(I, 20) + statB0(I, 21); statB0(I, 21); statB0(I, 21) / (statB0(I, 20) + statB0(I, 21)) * 100;
             End If
-            Locate , 73: Print Using "## ##"; statB0%(I, 18); statB0%(I, 19);
+            Locate , 73: Print Using "## ##"; statB0(I, 18); statB0(I, 19);
 
         End If
 
@@ -709,7 +710,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Cls
 
     Locate , Xcoord
-    Color teamRatings%(11), teamRatings%(12)
+    Color teamRatings(11), teamRatings(12)
     Print teamName$;
 
     Color 12, 0
@@ -726,52 +727,52 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
             If (I Mod 2) = 0 Then Color 15
 
             Locate I + 3, 1: Print Left$(pitcherNames$(I), 10);
-            Locate , 11: Print Using "###"; statP0%(I, 23);
-            Locate , 15: Print Using "###"; statP0%(I, 25);
-            Locate , 19: Print Using "###"; statP0%(I, 24);
-            Locate , 23: Print Using "###"; statP0%(I, 26);
-            Locate , 28: Print Using "##"; statP0%(I, 27);
-            Locate , 31: Print Using "##"; statP0%(I, 28);
-            Locate , 35: Print Using "##"; statP0%(I, 29);
+            Locate , 11: Print Using "###"; statP0(I, 23);
+            Locate , 15: Print Using "###"; statP0(I, 25);
+            Locate , 19: Print Using "###"; statP0(I, 24);
+            Locate , 23: Print Using "###"; statP0(I, 26);
+            Locate , 28: Print Using "##"; statP0(I, 27);
+            Locate , 31: Print Using "##"; statP0(I, 28);
+            Locate , 35: Print Using "##"; statP0(I, 29);
 
             Locate , 38
 
-            If statP0%(I, 23) = 0 Then
+            If statP0(I, 23) = 0 Then
                 Print " .--- ";
             Else
-                If statP0%(I, 23) = statP0%(I, 24) Then
+                If statP0(I, 23) = statP0(I, 24) Then
                     Print "1.000 ";
                 Else
-                    If statP0%(I, 24) = 0 Then
+                    If statP0(I, 24) = 0 Then
                         Print " .000 ";
                     Else
-                        Print Using " .### "; statP0%(I, 24) / statP0%(I, 23);
+                        Print Using " .### "; statP0(I, 24) / statP0(I, 23);
                     End If
                 End If
             End If
 
-            I3 = statP0%(I, 24) + statP0%(I, 27) + 2 * statP0%(I, 28) + 3 * statP0%(I, 29)
+            I3 = statP0(I, 24) + statP0(I, 27) + 2 * statP0(I, 28) + 3 * statP0(I, 29)
 
-            If statP0%(I, 23) = 0 Then
+            If statP0(I, 23) = 0 Then
                 Print " .--- ";
             Else
                 If I3 = 0 Then
                     Print " .000 ";
                 Else
-                    If statP0%(I, 23) = I3 Then
+                    If statP0(I, 23) = I3 Then
                         Print "1.000 ";
                     Else
-                        If I3 / statP0%(I, 23) >= 1 Then
-                            Print Using "#.### "; I3 / statP0%(I, 23);
+                        If I3 / statP0(I, 23) >= 1 Then
+                            Print Using "#.### "; I3 / statP0(I, 23);
                         Else
-                            Print Using " .### "; I3 / statP0%(I, 23);
+                            Print Using " .### "; I3 / statP0(I, 23);
                         End If
                     End If
                 End If
             End If
 
-            I3 = statP0%(I, 30) + statP0%(I, 23)
-            I4 = statP0%(I, 24) + statP0%(I, 30)
+            I3 = statP0(I, 30) + statP0(I, 23)
+            I4 = statP0(I, 24) + statP0(I, 30)
             If I3 = 0 Then
                 Print " .---";
             Else
@@ -786,11 +787,13 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
                 End If
             End If
 
-            Locate , 56: Print Using "###"; statP0%(I, 31);
-            Locate , 60: Print Using "###"; statP0%(I, 30);
-            Locate , 64: Print Using "###"; statP0%(I, 32);
-            Locate , 69: Print Using "##"; statP0%(I, 33);
-            If statT0!(0) = 0 Then statT0!(0) = 1
+            Locate , 56: Print Using "###"; statP0(I, 31);
+            Locate , 60: Print Using "###"; statP0(I, 30);
+            Locate , 64: Print Using "###"; statP0(I, 32);
+            Locate , 69: Print Using "##"; statP0(I, 33);
+            If statT0!(0) = 0 Then 
+                statT0!(0) = 1
+            End If
 
         End If
     Next I
@@ -801,7 +804,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Cls
 
     Locate , Xcoord
-    Color teamRatings%(11), teamRatings%(12)
+    Color teamRatings(11), teamRatings(12)
     Print teamName$;
 
     Color 12, 0
@@ -821,21 +824,21 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
             If (I Mod 2) = 0 Then Color 15
 
             Print Left$(pitcherNames$(I), 10);
-            Locate , 12: Print Using "###"; statP0%(I, 8);
-            Locate , 18: Print Using "##"; statP0%(I, 35);
-            Locate , 22: Print Using "##"; statP0%(I, 36);
-            Locate , 27: Print Using "##"; statP0%(I, 37);: Locate , 29
-            Print Using " #### ### ## "; statP0%(I, 38); statP0%(I, 39); statP0%(I, 34);
+            Locate , 12: Print Using "###"; statP0(I, 8);
+            Locate , 18: Print Using "##"; statP0(I, 35);
+            Locate , 22: Print Using "##"; statP0(I, 36);
+            Locate , 27: Print Using "##"; statP0(I, 37);: Locate , 29
+            Print Using " #### ### ## "; statP0(I, 38); statP0(I, 39); statP0(I, 34);
 
-            If statP0%(I, 38) + statP0%(I, 39) + statP0%(I, 34) <> 0 Then
-                If statP0%(I, 34) = 0 Then
+            If statP0(I, 38) + statP0(I, 39) + statP0(I, 34) <> 0 Then
+                If statP0(I, 34) = 0 Then
                     Print "1.000";
                 Else
-                    Print Using " .###"; (statP0%(I, 38) + statP0%(I, 39)) / (statP0%(I, 38) + statP0%(I, 39) + statP0%(I, 34));
+                    Print Using " .###"; (statP0(I, 38) + statP0(I, 39)) / (statP0(I, 38) + statP0(I, 39) + statP0(I, 34));
                 End If
             End If
 
-            Locate , 48: Print Using "## ##"; statP0%(I, 40); statP0%(I, 41);
+            Locate , 48: Print Using "## ##"; statP0(I, 40); statP0(I, 41);
 
         End If
     Next I
@@ -846,7 +849,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Cls
 
     Locate , Xcoord
-    Color teamRatings%(11), teamRatings%(12)
+    Color teamRatings(11), teamRatings(12)
     Print teamName$;
 
     Color 12, 0
@@ -856,16 +859,27 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Print "  TEAM BATTING TOTALS"
     Color 15, 1
     Print "  AB    R    H  RBI  2B  3B  HR    BA   SLG   OBP   SO   BB  SB  CS"
-    Color 14, 0
 
+    Color 14, 0
+    
+    'At Bats, Runs, Hits, RBI, Doubles, Tripls, HR
     Print Using "#### #### #### #### ### ### ###"; statT0!(0); statT0!(2); statT0!(1); statT0!(3); statT0!(4); statT0!(5); statT0!(6);
+
+    'Bat Average
     Locate , 34: Print ".";: Print Using "###"; Int((statT0!(1) / statT0!(0) + .0005) * 1000);
     Locate , 40: Print ".";
+
+    'Slug %
     Print Using "###"; Int((((statT0!(1) + statT0!(4) + 2 * statT0!(5) + 3 * statT0!(6)) / statT0!(0)) + .0005) * 1000);
     Locate , 46: Print ".";
+
+    'On-Base %
     Print Using "###"; Int(((statT0!(1) + statT0!(7)) / (statT0!(7) + statT0!(0)) + .0005) * 1000);
+
+    'Strikeouts, Walks, Stolen Base, Caught Stealing
     Locate , 51: Print Using "#### #### ### ###"; statT0!(8); statT0!(7); statT0!(9); statT0!(10)
     Locate 8, 1: Color 15, 1: Print "GIDP   PO    A   E  FAVG  SH  SF  LOB": Color 15
+
     Color 14, 0
     Print Using "#### #### #### ###"; statT0!(15); statT0!(16); statT0!(17); statT0!(11);
     Locate , 20: If statT0!(11) = 0 Then Print "1.000";
@@ -877,7 +891,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     If splitStatChoice <> 0 Then
         ' DISPLAY SPLIT STATS
         Cls
-        Color teamRatings%(11), teamRatings%(12): Print teamName$;
+        Color teamRatings(11), teamRatings(12): Print teamName$;
         Locate 1, 15
         Color 14, 0
         Print "VS L  AB 2B 3B HR  BB   K   AVG  VS R  AB 2B 3B HR  BB   K   AVG"
@@ -889,28 +903,32 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
             If batterNames$(I) <> "XXX" And Left$(batterNames$(I), 1) <> " " And batterNames$(I) <> "" Then
 
                 Print batterNames$(I);
-                '                        AB   2B 3B HR BB  K
-                Locate , 20: Print Using "### ## ## ## ### ### "; statSS%(I, 0); statSS%(I, 2); statSS%(I, 3); statSS%(I, 4); statSS%(I, 5); statSS%(I, 6);
 
-                If statSS%(I, 0) = 0 And statSS%(I, 1) = 0 Then
+                'At Bats, Doubles, Triples, HR, Walks, Strikeout
+                Locate , 20: Print Using "### ## ## ## ### ### "; statS0(I, 0); statS0(I, 2); statS0(I, 3); statS0(I, 4); statS0(I, 5); statS0(I, 6);
+
+                'Bat Avg
+                If statS0(I, 0) = 0 And statS0(I, 1) = 0 Then
                     Print " .000";
                 Else
-                    If statSS%(I, 0) = statSS%(I, 1) Then
+                    If statS0(I, 0) = statS0(I, 1) Then
                         Print "1.000";
                     Else
-                        Print Using "#.###"; statSS%(I, 1) / statSS%(I, 0);
+                        Print Using "#.###"; statS0(I, 1) / statS0(I, 0);
                     End If
                 End If
 
-                '                        AB   2B 3B HR BB  K
-                Locate , 53: Print Using "### ## ## ## ### ### "; statB0%(I, 0) - statSS%(I, 0); statB0%(I, 4) - statSS%(I, 2); statB0%(I, 5) - statSS%(I, 3); statB0%(I, 6) - statSS%(I, 4); statB0%(I, 7) - statSS%(I, 5); statB0%(I, 8) - statSS%(I, 6);
-                If statB0%(I, 0) - statSS%(I, 0) = 0 Or statB0%(I, 1) - statSS%(I, 1) = 0 Then
+                'At Bats, Doubles, Triples, HR, Walks, Strikeout
+                Locate , 53: Print Using "### ## ## ## ### ### "; statB0(I, 0) - statS0(I, 0); statB0(I, 4) - statS0(I, 2); statB0(I, 5) - statS0(I, 3); statB0(I, 6) - statS0(I, 4); statB0(I, 7) - statS0(I, 5); statB0(I, 8) - statS0(I, 6);
+
+                'Bat Avg
+                If statB0(I, 0) - statS0(I, 0) = 0 Or statB0(I, 1) - statS0(I, 1) = 0 Then
                     Print " .000";
                 Else
-                    If statB0%(I, 0) - statSS%(I, 0) = statB0%(I, 1) - statSS%(I, 1) Then
+                    If statB0(I, 0) - statS0(I, 0) = statB0(I, 1) - statS0(I, 1) Then
                         Print "1.000";
                     Else
-                        Print Using "#.###"; (statB0%(I, 1) - statSS%(I, 1)) / (statB0%(I, 0) - statSS%(I, 0));
+                        Print Using "#.###"; (statB0(I, 1) - statS0(I, 1)) / (statB0(I, 0) - statS0(I, 0));
                     End If
                 End If
                 If I <> 22 Then Print
@@ -925,7 +943,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Cls
 
     Locate , Xcoord
-    Color teamRatings%(11), teamRatings%(12)
+    Color teamRatings(11), teamRatings(12)
     Print teamName$;
 
     Color 12, 0
@@ -939,31 +957,45 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
         If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
             Locate I + 3, 1
             Color 7, 0: If (I Mod 2) = 0 Then Color 15
+            
             Print Left$(pitcherNames$(I), 10);
-            Locate , 12: Print Using "##"; statP0%(I, 6);
-            Locate , 15: Print Using "##"; statP0%(I, 7);
-            Locate , 18: Print Using "##"; statP0%(I, 12);
-            Locate , 22: Print Using "###"; Int(statP0%(I, 0) / 3);
-            Print ".";: Print Using "#"; statP0%(I, 0) - Int(statP0%(I, 0) / 3) * 3;
-            Locate , 27: Print Using "####"; statP0%(I, 1);
-            Locate , 32: Print Using "###"; statP0%(I, 4);
-            Locate , 36: Print Using "####"; statP0%(I, 5);
+            
+            'Wins
+            Locate , 12: Print Using "##"; statP0(I, 6);
+            'Losses
+            Locate , 15: Print Using "##"; statP0(I, 7);
+            'Saves
+            Locate , 18: Print Using "##"; statP0(I, 12);
+            'Inn Pitched
+            Locate , 22: Print Using "###"; Int(statP0(I, 0) / 3);
+            Print ".";: Print Using "#"; statP0(I, 0) - Int(statP0(I, 0) / 3) * 3;
+            'Hits
+            Locate , 27: Print Using "####"; statP0(I, 1);
+            'Walks
+            Locate , 32: Print Using "###"; statP0(I, 4);
+            'Strikeout
+            Locate , 36: Print Using "####"; statP0(I, 5);
             Locate , 41
 
-            If statP0%(I, 0) = 0 Then
+            'ERA
+            If statP0(I, 0) = 0 Then
                 Print " -.--";
             Else
-                If statP0%(I, 3) = 0 Then
+                If statP0(I, 3) = 0 Then
                     Print " 0.00";
                 Else
-                    Print Using "##.##"; (statP0%(I, 3) * 9) / (statP0%(I, 0) / 3);
+                    Print Using "##.##"; (statP0(I, 3) * 9) / (statP0(I, 0) / 3);
                 End If
             End If
 
-            Locate , 47: Print Using "## ## ## ### ### ## ### ###"; statP0%(I, 8); statP0%(I, 9); statP0%(I, 10); statP0%(I, 2); statP0%(I, 3); statP0%(I, 11); statP0%(I, 14); statP0%(I, 13);
+            'Games, Games Started, Complete Game, Runs, Earned Run, Shutout, HR Allowed, Double Player
+            Locate , 47: Print Using "## ## ## ### ### ## ### ###"; statP0(I, 8); statP0(I, 9); statP0(I, 10); statP0(I, 2); statP0(I, 3); statP0(I, 11); statP0(I, 14); statP0(I, 13);
 
-            If statP%(I) > 0 Then Locate , 76: Print Using "###"; Int((((statP0%(I, 0) / 3) * 100) / statP%(I)) + .5);
-            If statP%(I) = 0 Then Print "  ";
+            '%RIP
+            If statP(I) > 0 Then 
+                Locate , 76: Print Using "###"; Int((((statP0(I, 0) / 3) * 100) / statP(I)) + .5);
+            End If
+            If statP(I) = 0 Then Print "  ";
 
         End If
 
@@ -974,7 +1006,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Cls
 
     Locate , Xcoord
-    Color teamRatings%(11), teamRatings%(12)
+    Color teamRatings(11), teamRatings(12)
     Print teamName$;
 
     Color 12, 0
@@ -983,18 +1015,28 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Print "PITCHERS   BS HL  RI  RS   SUP GS QS  SH SF"
 
     For I = 0 To 21
+
         If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
+
             Locate I + 3, 1
             Color 7, 0: If (I Mod 2) = 0 Then Color 15
             Print Left$(pitcherNames$(I), 10);: Locate , 12
-            Print Using "## ## ### ### "; statP0%(I, 19); statP0%(I, 22); statP0%(I, 17); statP0%(I, 18);
-            If statP0%(I, 9) > 0 Then
-                Print Using "##.## ## ##"; statP0%(I, 20) / statP0%(I, 9); statP0%(I, 9); statP0%(I, 21);
+
+            'Blown Save, Hold, RI, Runs Saved
+            Print Using "## ## ### ### "; statP0(I, 19); statP0(I, 22); statP0(I, 17); statP0(I, 18);
+
+            If statP0(I, 9) > 0 Then
+                'SUP, Games Started, Quality Start
+                Print Using "##.## ## ##"; statP0(I, 20) / statP0(I, 9); statP0(I, 9); statP0(I, 21);
             Else
                 Print " -.-- -- --";
             End If
-            Print Using "  ## ##"; statP0%(I, 15); statP0%(I, 16);
+
+            'Sacifice Bunt, Sacrifice Fly
+            Print Using "  ## ##"; statP0(I, 15); statP0(I, 16);
+
         End If
+
     Next I
 
     Locate 1, 1
@@ -1004,7 +1046,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Cls
 
     Locate , Xcoord
-    Color teamRatings%(11), teamRatings%(12)
+    Color teamRatings(11), teamRatings(12)
     Print teamName$;
 
     Color 12, 0
@@ -1014,15 +1056,21 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Print "  TEAM PITCHING TOTALS"
     Color 15, 4
     Print "  W   L  SV     IP    H   BB   SO   ERA   G  GS  CG  RUN   ER ShO HRA  DP"
+
     Color 14, 0
+    '
     Print Using "### ### ### "; teamWins; teamLosses; statT1!(12);
+    '
     Print Using "####"; Int(statT1!(0) / 3);
     Print ".";: Print Using "#"; statT1!(0) - Int(statT1!(0) / 3) * 3;
+    '
     Print Using " #### #### #### ##.## ### ### ### "; statT1!(1); statT1!(4); statT1!(5); statT1!(3) * 9 / (statT1!(0) / 3); statT1!(9); statT1!(9); statT1!(10);
+    '
     Print Using "#### #### ### ### ###"; statT1!(2); statT1!(3); statT1!(11); statT1!(14); statT1!(13)
 
     Locate 8, 1
     Color 15, 4: Print " BS   RI   RS   SUP  QS  SH  SF": Color 14, 0
+    'Blown Save, RI, Runs Saved, SUP, Quality Start, Sacrifice Bunt, Sacrifice Fly
     Print Using "### #### #### ##.## ### ### ###"; statT1!(19); statT1!(17); statT1!(18); statT0!(2) / statT1!(9); statT1!(21); statT1!(15); statT1!(16)
 
     I$ = GetKeyPress$
@@ -1041,8 +1089,8 @@ Sub ReportsAllTeams ()
 
     Shared statT0!(), statT1!()
 
-    Shared statB%(), statB0%()
-    Shared statP%(), statP0%()
+    Shared statB(), statB0()
+    Shared statP(), statP0()
 
     Shared batterNames$(), pitcherNames$()
     Shared statFiles$()
@@ -1075,23 +1123,23 @@ Sub ReportsAllTeams ()
 
                 For I = 0 To 22: 
                     Input #1, batterNames$(I)
-                    Input #1, statB%(I)
+                    Input #1, statB(I)
                 Next I
 
                 For I = 0 To 21: 
                     Input #1, pitcherNames$(I)
-                    Input #1, statP%(I)
+                    Input #1, statP(I)
                 Next I
 
                 For I = 0 To 22: 
                     For I1 = 0 To 21: 
-                        Input #1, statB0%(I, I1)
+                        Input #1, statB0(I, I1)
                     Next I1
                 Next I
 
                 For I = 0 To 21: 
                     For I1 = 0 To 41: 
-                        Input #1, statP0%(I, I1)
+                        Input #1, statP0(I, I1)
                     Next I1
                 Next I
 
@@ -1155,13 +1203,13 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
 
     Shared batterNames$(), pitcherNames$()
     Shared statT0!(), statT1!()
-    Shared statB%(), statB0%()
-    Shared statP%(), statP0%()
+    Shared statB(), statB0()
+    Shared statP(), statP0()
 
     Shared oppName$(), losePitcher$()
     Shared locIndicator$(), winPitcher$()
     Shared teamScore(), nbrInnings()
-    Shared statSS%(), oppScore()
+    Shared statS0(), oppScore()
 
     RQ = Val(Right$(statFiles$(XW), 2))
     RT = 60
@@ -1217,45 +1265,45 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
     For I = 0 To 22
 
         If batterNames$(I) <> "XXX" And batterNames$(I) <> "" Then
-            LPrint Left$(batterNames$(I), 10); Tab(12);: LPrint Using "###"; statB0%(I, 14);
-            LPrint Tab(16); Using "### ### ### ##"; statB0%(I, 0); statB0%(I, 2); statB0%(I, 1); statB0%(I, 4);
-            LPrint Tab(31); Using "## ## ### ###"; statB0%(I, 5); statB0%(I, 6); statB0%(I, 3); statB0%(I, 7);
-            LPrint Tab(45); Using "### ### ##"; statB0%(I, 8); statB0%(I, 9); statB0%(I, 10);
-            LPrint Tab(56);: LPrint Using "##"; statB0%(I, 12);
-            LPrint Tab(60);: LPrint Using "##"; statB0%(I, 13);
-            LPrint Tab(64);: LPrint Using "##"; statB0%(I, 15);
+            LPrint Left$(batterNames$(I), 10); Tab(12);: LPrint Using "###"; statB0(I, 14);
+            LPrint Tab(16); Using "### ### ### ##"; statB0(I, 0); statB0(I, 2); statB0(I, 1); statB0(I, 4);
+            LPrint Tab(31); Using "## ## ### ###"; statB0(I, 5); statB0(I, 6); statB0(I, 3); statB0(I, 7);
+            LPrint Tab(45); Using "### ### ##"; statB0(I, 8); statB0(I, 9); statB0(I, 10);
+            LPrint Tab(56);: LPrint Using "##"; statB0(I, 12);
+            LPrint Tab(60);: LPrint Using "##"; statB0(I, 13);
+            LPrint Tab(64);: LPrint Using "##"; statB0(I, 15);
             LPrint Tab(69);
 
-            If statB0%(I, 0) = 0 Then
+            If statB0(I, 0) = 0 Then
                 LPrint "-.---";
             Else
-                If statB0%(I, 0) = statB0%(I, 1) Then
+                If statB0(I, 0) = statB0(I, 1) Then
                     LPrint "1.000";
                 Else
-                    If statB0%(I, 1) = 0 Then
+                    If statB0(I, 1) = 0 Then
                         LPrint " .000";
                     Else
-                        LPrint Using " .###"; (statB0%(I, 1) / statB0%(I, 0));
+                        LPrint Using " .###"; (statB0(I, 1) / statB0(I, 0));
                     End If
                 End If
             End If
 
             LPrint Tab(75);
 
-            If statB0%(I, 0) = 0 Then
+            If statB0(I, 0) = 0 Then
                 LPrint "-.---";
             Else
-                J = statB0%(I, 1) + statB0%(I, 4) + statB0%(I, 5) * 2 + statB0%(I, 6) * 3
-                If J = statB0%(I, 0) Then
+                J = statB0(I, 1) + statB0(I, 4) + statB0(I, 5) * 2 + statB0(I, 6) * 3
+                If J = statB0(I, 0) Then
                     LPrint "1.000";
                 Else
-                    If J / statB0%(I, 0) > 1 Then
-                        LPrint Using "#.###"; (J / statB0%(I, 0));
+                    If J / statB0(I, 0) > 1 Then
+                        LPrint Using "#.###"; (J / statB0(I, 0));
                     Else
-                        If statB0%(I, 1) = 0 Then
+                        If statB0(I, 1) = 0 Then
                             LPrint " .000";
                         Else
-                            LPrint Using " .###"; (J / statB0%(I, 0));
+                            LPrint Using " .###"; (J / statB0(I, 0));
                         End If
                     End If
                 End If
@@ -1263,20 +1311,20 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
 
             LPrint Tab(81);
 
-            If statB0%(I, 0) = 0 Then
+            If statB0(I, 0) = 0 Then
                 LPrint "-.---";
             Else
-                J = statB0%(I, 1) + statB0%(I, 7)
-                If J = statB0%(I, 0) Then
+                J = statB0(I, 1) + statB0(I, 7)
+                If J = statB0(I, 0) Then
                     LPrint "1.000";
                 Else
-                    If J / (statB0%(I, 7) + statB0%(I, 0)) > 1 Then
-                        LPrint Using "#.###"; (J / (statB0%(I, 7) + statB0%(I, 0)));
+                    If J / (statB0(I, 7) + statB0(I, 0)) > 1 Then
+                        LPrint Using "#.###"; (J / (statB0(I, 7) + statB0(I, 0)));
                     Else
                         If J = 0 Then
                             LPrint " .000";
                         Else
-                            LPrint Using " .###"; (J / (statB0%(I, 7) + statB0%(I, 0)));
+                            LPrint Using " .###"; (J / (statB0(I, 7) + statB0(I, 0)));
                         End If
                     End If
                 End If
@@ -1284,35 +1332,35 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
 
             LPrint Tab(87);
 
-            If statB%(I) > 0 And (Int((((statB%(I) + 0) / QT) * (statT1!(9) + 1)) + .5) - (statB0%(I, 0) + 0)) > 0 Then
-                LPrint Using "###"; Int((((statB%(I) + 0) / QT) * (statT1!(9) + 1)) + .5) - (statB0%(I, 0) + 0);
+            If statB(I) > 0 And (Int((((statB(I) + 0) / QT) * (statT1!(9) + 1)) + .5) - (statB0(I, 0) + 0)) > 0 Then
+                LPrint Using "###"; Int((((statB(I) + 0) / QT) * (statT1!(9) + 1)) + .5) - (statB0(I, 0) + 0);
             Else
-                If statB%(I) > 0 Then
-                    LPrint Using "###"; Int(((statB%(I) / QT) * (statT1!(9) + 1)) + .5) - (statB0%(I, 0) + 0);
+                If statB(I) > 0 Then
+                    LPrint Using "###"; Int(((statB(I) / QT) * (statT1!(9) + 1)) + .5) - (statB0(I, 0) + 0);
                 End If
             End If
 
             LPrint Tab(95);
-            If statB%(I) > 0 Then H5% = Int((((statB%(I) + 0) / QT) * (statT1!(9) + 1)) + .5): LPrint Using "###"; H5%;: statT0!(13) = statT0!(13) + H5%
+            If statB(I) > 0 Then H5% = Int((((statB(I) + 0) / QT) * (statT1!(9) + 1)) + .5): LPrint Using "###"; H5%;: statT0!(13) = statT0!(13) + H5%
 
             LPrint Tab(100);
-            If statB%(I) > 0 Then LPrint Using "###"; ((statB0%(I, 0) / statB%(I)) * 100);
+            If statB(I) > 0 Then LPrint Using "###"; ((statB0(I, 0) / statB(I)) * 100);
 
-            LPrint Tab(105);: LPrint Using "####"; statB0%(I, 16);
-            LPrint Tab(110);: LPrint Using "###"; statB0%(I, 17);
-            LPrint Tab(114);: LPrint Using "##"; statB0%(I, 11);: LPrint Tab(117);
+            LPrint Tab(105);: LPrint Using "####"; statB0(I, 16);
+            LPrint Tab(110);: LPrint Using "###"; statB0(I, 17);
+            LPrint Tab(114);: LPrint Using "##"; statB0(I, 11);: LPrint Tab(117);
 
-            If statB0%(I, 11) + statB0%(I, 17) + statB0%(I, 16) = 0 Then
+            If statB0(I, 11) + statB0(I, 17) + statB0(I, 16) = 0 Then
                 LPrint " .---";
             Else
-                If statB0%(I, 11) = 0 Then
+                If statB0(I, 11) = 0 Then
                     LPrint "1.000";
                 Else
-                    LPrint Using " .###"; (statB0%(I, 16) + statB0%(I, 17)) / (statB0%(I, 16) + statB0%(I, 17) + statB0%(I, 11));
+                    LPrint Using " .###"; (statB0(I, 16) + statB0(I, 17)) / (statB0(I, 16) + statB0(I, 17) + statB0(I, 11));
                 End If
             End If
 
-            LPrint Tab(123); Using "## ##"; statB0%(I, 18); statB0%(I, 19)
+            LPrint Tab(123); Using "## ##"; statB0(I, 18); statB0(I, 19)
 
         End If
 
@@ -1322,84 +1370,84 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
 
         If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
             LPrint Left$(pitcherNames$(I), 10); Tab(12);
-            LPrint Using "###"; statP0%(I, 8);
-            LPrint Tab(16); Using "### ### ### ##"; statP0%(I, 23); statP0%(I, 25); statP0%(I, 24); statP0%(I, 27);
-            LPrint Tab(31); Using "## ## ### ###"; statP0%(I, 28); statP0%(I, 29); statP0%(I, 26); statP0%(I, 30);
-            LPrint Tab(45); Using "### ### ##"; statP0%(I, 31); statP0%(I, 32); statP0%(I, 33);
-            LPrint Tab(56);: LPrint Using "##"; statP0%(I, 35);
-            LPrint Tab(60);: LPrint Using "##"; statP0%(I, 36);
-            LPrint Tab(64);: LPrint Using "##"; statP0%(I, 37);
+            LPrint Using "###"; statP0(I, 8);
+            LPrint Tab(16); Using "### ### ### ##"; statP0(I, 23); statP0(I, 25); statP0(I, 24); statP0(I, 27);
+            LPrint Tab(31); Using "## ## ### ###"; statP0(I, 28); statP0(I, 29); statP0(I, 26); statP0(I, 30);
+            LPrint Tab(45); Using "### ### ##"; statP0(I, 31); statP0(I, 32); statP0(I, 33);
+            LPrint Tab(56);: LPrint Using "##"; statP0(I, 35);
+            LPrint Tab(60);: LPrint Using "##"; statP0(I, 36);
+            LPrint Tab(64);: LPrint Using "##"; statP0(I, 37);
 
             LPrint Tab(69);
-            If statP0%(I, 23) = 0 Then
+            If statP0(I, 23) = 0 Then
                 LPrint "-.---";
             Else
-                If statP0%(I, 23) = statP0%(I, 24) Then
+                If statP0(I, 23) = statP0(I, 24) Then
                     LPrint "1.000";
                 Else
-                    If statP0%(I, 24) = 0 Then
+                    If statP0(I, 24) = 0 Then
                         LPrint " .000";
                     Else
-                        LPrint Using " .###"; (statP0%(I, 24) / statP0%(I, 23));
+                        LPrint Using " .###"; (statP0(I, 24) / statP0(I, 23));
                     End If
                 End If
             End If
 
             LPrint Tab(75);
-            If statP0%(I, 23) = 0 Then
+            If statP0(I, 23) = 0 Then
                 LPrint "-.---";
             Else
-                J = statP0%(I, 24) + statP0%(I, 27) + statP0%(I, 28) * 2 + statP0%(I, 29) * 3
-                If J = statP0%(I, 23) Then
+                J = statP0(I, 24) + statP0(I, 27) + statP0(I, 28) * 2 + statP0(I, 29) * 3
+                If J = statP0(I, 23) Then
                     LPrint "1.000";
                 Else
-                    If J / statP0%(I, 23) > 1 Then
-                        LPrint Using "#.###"; (J / statP0%(I, 23));
+                    If J / statP0(I, 23) > 1 Then
+                        LPrint Using "#.###"; (J / statP0(I, 23));
                     Else
-                        If statP0%(I, 24) = 0 Then
+                        If statP0(I, 24) = 0 Then
                             LPrint " .000";
                         Else
-                            LPrint Using " .###"; (J / statP0%(I, 23));
+                            LPrint Using " .###"; (J / statP0(I, 23));
                         End If
                     End If
                 End If
             End If
 
             LPrint Tab(81);
-            If statP0%(I, 23) = 0 Then
+            If statP0(I, 23) = 0 Then
                 LPrint "-.---";
             Else
-                J = statP0%(I, 24) + statP0%(I, 30)
-                If J = statP0%(I, 23) Then
+                J = statP0(I, 24) + statP0(I, 30)
+                If J = statP0(I, 23) Then
                     LPrint "1.000";
                 Else
-                    If J / (statP0%(I, 30) + statP0%(I, 23)) > 1 Then
-                        LPrint Using "#.###"; (J / (statP0%(I, 30) + statP0%(I, 23)));
+                    If J / (statP0(I, 30) + statP0(I, 23)) > 1 Then
+                        LPrint Using "#.###"; (J / (statP0(I, 30) + statP0(I, 23)));
                     Else
                         If J = 0 Then
                             LPrint " .000";
                         Else
-                            LPrint Using " .###"; (J / (statP0%(I, 30) + statP0%(I, 23)));
+                            LPrint Using " .###"; (J / (statP0(I, 30) + statP0(I, 23)));
                         End If
                     End If
                 End If
             End If
 
-            LPrint Tab(105);: LPrint Using "####"; statP0%(I, 38);
-            LPrint Tab(110);: LPrint Using "###"; statP0%(I, 39);
-            LPrint Tab(114);: LPrint Using "##"; statP0%(I, 34);: LPrint Tab(117);
+            LPrint Tab(105);: LPrint Using "####"; statP0(I, 38);
+            LPrint Tab(110);: LPrint Using "###"; statP0(I, 39);
+            LPrint Tab(114);: LPrint Using "##"; statP0(I, 34);: LPrint Tab(117);
 
-            If statP0%(I, 34) + statP0%(I, 38) + statP0%(I, 39) = 0 Then
+            If statP0(I, 34) + statP0(I, 38) + statP0(I, 39) = 0 Then
                 LPrint " .---";
             Else
-                If statP0%(I, 34) = 0 Then
+                If statP0(I, 34) = 0 Then
                     LPrint "1.000";
                 Else
-                    LPrint Using " .###"; (statP0%(I, 38) + statP0%(I, 39)) / (statP0%(I, 38) + statP0%(I, 39) + statP0%(I, 34));
+                    LPrint Using " .###"; (statP0(I, 38) + statP0(I, 39)) / (statP0(I, 38) + statP0(I, 39) + statP0(I, 34));
                 End If
             End If
 
-            LPrint Tab(123); Using "## ##"; statP0%(I, 40); statP0%(I, 41)
+            LPrint Tab(123); Using "## ##"; statP0(I, 40); statP0(I, 41)
 
         End If
 
@@ -1461,48 +1509,48 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
 
         If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
             LPrint Left$(pitcherNames$(I), 10);
-            LPrint Tab(12);: LPrint Using "##"; statP0%(I, 6);
-            LPrint Tab(15);: LPrint Using "##"; statP0%(I, 7);
-            LPrint Tab(18);: LPrint Using "##"; statP0%(I, 12);
-            LPrint Tab(21);: LPrint Using "###"; Int(statP0%(I, 0) / 3);
+            LPrint Tab(12);: LPrint Using "##"; statP0(I, 6);
+            LPrint Tab(15);: LPrint Using "##"; statP0(I, 7);
+            LPrint Tab(18);: LPrint Using "##"; statP0(I, 12);
+            LPrint Tab(21);: LPrint Using "###"; Int(statP0(I, 0) / 3);
 
-            If statP0%(I, 0) - (Int(statP0%(I, 0) / 3) * 3) > 0 Then LPrint ".";: LPrint Using "#"; statP0%(I, 0) - (Int(statP0%(I, 0) / 3) * 3);
+            If statP0(I, 0) - (Int(statP0(I, 0) / 3) * 3) > 0 Then LPrint ".";: LPrint Using "#"; statP0(I, 0) - (Int(statP0(I, 0) / 3) * 3);
 
-            LPrint Tab(27);: LPrint Using "###"; statP0%(I, 1);
-            LPrint Tab(31);: LPrint Using "###"; statP0%(I, 4);
-            LPrint Tab(35);: LPrint Using "###"; statP0%(I, 5);
+            LPrint Tab(27);: LPrint Using "###"; statP0(I, 1);
+            LPrint Tab(31);: LPrint Using "###"; statP0(I, 4);
+            LPrint Tab(35);: LPrint Using "###"; statP0(I, 5);
             I2 = 0
 
-            If statP0%(I, 0) > 0 Then
+            If statP0(I, 0) > 0 Then
                 LPrint Tab(39);
-                LPrint Using "##.##"; (statP0%(I, 3) * 9 / (statP0%(I, 0) / 3));
+                LPrint Using "##.##"; (statP0(I, 3) * 9 / (statP0(I, 0) / 3));
             Else
                 '= 0
                 LPrint Tab(39); " -.--";
             End If
 
-            LPrint Tab(45);: LPrint Using "###"; statP0%(I, 8);
-            LPrint Tab(49);: LPrint Using "##"; statP0%(I, 9);
-            LPrint Tab(52);: LPrint Using "##"; statP0%(I, 10);
-            LPrint Tab(55);: LPrint Using "###"; statP0%(I, 2);
-            LPrint Tab(59);: LPrint Using "###"; statP0%(I, 3);
-            LPrint Tab(63);: LPrint Using "###"; statP0%(I, 11);
-            LPrint Tab(67);: LPrint Using "##"; statP0%(I, 14);
-            LPrint Tab(70);: LPrint Using "##"; statP0%(I, 13);
+            LPrint Tab(45);: LPrint Using "###"; statP0(I, 8);
+            LPrint Tab(49);: LPrint Using "##"; statP0(I, 9);
+            LPrint Tab(52);: LPrint Using "##"; statP0(I, 10);
+            LPrint Tab(55);: LPrint Using "###"; statP0(I, 2);
+            LPrint Tab(59);: LPrint Using "###"; statP0(I, 3);
+            LPrint Tab(63);: LPrint Using "###"; statP0(I, 11);
+            LPrint Tab(67);: LPrint Using "##"; statP0(I, 14);
+            LPrint Tab(70);: LPrint Using "##"; statP0(I, 13);
             LPrint Tab(74);
 
-            If statP%(I) > 0 Then
-                LPrint Using "###"; Int((((statP0%(I, 0) / 3) * 100) / statP%(I)) + .5);
+            If statP(I) > 0 Then
+                LPrint Using "###"; Int((((statP0(I, 0) / 3) * 100) / statP(I)) + .5);
             Else
                 '= 0
                 LPrint "  ";
             End If
 
-            LPrint Tab(78); Using "## ## ### ### ## "; statP0%(I, 15); statP0%(I, 16); statP0%(I, 17); statP0%(I, 18); statP0%(I, 19);
+            LPrint Tab(78); Using "## ## ### ### ## "; statP0(I, 15); statP0(I, 16); statP0(I, 17); statP0(I, 18); statP0(I, 19);
 
-            If statP0%(I, 9) > 0 Then LPrint Using "##.## "; statP0%(I, 20) / statP0%(I, 9);
+            If statP0(I, 9) > 0 Then LPrint Using "##.## "; statP0(I, 20) / statP0(I, 9);
 
-            LPrint Tab(101); Using "##"; statP0%(I, 21)
+            LPrint Tab(101); Using "##"; statP0(I, 21)
 
         End If
 
@@ -1534,8 +1582,8 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
     LPrint "CATCHERS    SBA   CS   CS%"
 
     For I = 0 To 22
-        If batterNames$(I) <> "XXX" And batterNames$(I) <> "" And statB0%(I, 21) + statB0%(I, 20) <> 0 Then
-            LPrint Left$(batterNames$(I), 10); Tab(12); Using "###   ##   ###"; statB0%(I, 20) + statB0%(I, 21); statB0%(I, 21); statB0%(I, 21) / (statB0%(I, 20) + statB0%(I, 21)) * 100
+        If batterNames$(I) <> "XXX" And batterNames$(I) <> "" And statB0(I, 21) + statB0(I, 20) <> 0 Then
+            LPrint Left$(batterNames$(I), 10); Tab(12); Using "###   ##   ###"; statB0(I, 20) + statB0(I, 21); statB0(I, 21); statB0(I, 21) / (statB0(I, 20) + statB0(I, 21)) * 100
         End If
     Next
 
@@ -1548,27 +1596,27 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
 
             If batterNames$(I) <> "XXX" And Left$(batterNames$(I), 1) <> " " And batterNames$(I) <> "" Then
                 LPrint batterNames$(I);
-                LPrint Tab(20); Using "### ## ## ## ### ### "; statSS%(I, 0); statSS%(I, 2); statSS%(I, 3); statSS%(I, 4); statSS%(I, 5); statSS%(I, 6);
+                LPrint Tab(20); Using "### ## ## ## ### ### "; statS0(I, 0); statS0(I, 2); statS0(I, 3); statS0(I, 4); statS0(I, 5); statS0(I, 6);
 
-                If statSS%(I, 0) = 0 Or statSS%(I, 1) = 0 Then
+                If statS0(I, 0) = 0 Or statS0(I, 1) = 0 Then
                     LPrint " .000";
                 Else
-                    If statSS%(I, 0) = statSS%(I, 1) Then
+                    If statS0(I, 0) = statS0(I, 1) Then
                         LPrint "1.000";
                     Else
-                        LPrint Using " .###"; statSS%(I, 1) / statSS%(I, 0);
+                        LPrint Using " .###"; statS0(I, 1) / statS0(I, 0);
                     End If
                 End If
 
-                LPrint Tab(53); Using "### ## ## ## ### ### "; statB0%(I, 0) - statSS%(I, 0); statB0%(I, 4) - statSS%(I, 2); statB0%(I, 5) - statSS%(I, 3); statB0%(I, 6) - statSS%(I, 4); statB0%(I, 7) - statSS%(I, 5); statB0%(I, 8) - statSS%(I, 6);
+                LPrint Tab(53); Using "### ## ## ## ### ### "; statB0(I, 0) - statS0(I, 0); statB0(I, 4) - statS0(I, 2); statB0(I, 5) - statS0(I, 3); statB0(I, 6) - statS0(I, 4); statB0(I, 7) - statS0(I, 5); statB0(I, 8) - statS0(I, 6);
 
-                If statB0%(I, 0) - statSS%(I, 0) = 0 Or statB0%(I, 1) - statSS%(I, 1) = 0 Then
+                If statB0(I, 0) - statS0(I, 0) = 0 Or statB0(I, 1) - statS0(I, 1) = 0 Then
                     LPrint " .000"
                 Else
-                    If statB0%(I, 0) - statSS%(I, 0) = statB0%(I, 1) - statSS%(I, 1) Then
+                    If statB0(I, 0) - statS0(I, 0) = statB0(I, 1) - statS0(I, 1) Then
                         LPrint "1.000"
                     Else
-                        LPrint Using " .###"; (statB0%(I, 1) - statSS%(I, 1)) / (statB0%(I, 0) - statSS%(I, 0))
+                        LPrint Using " .###"; (statB0(I, 1) - statS0(I, 1)) / (statB0(I, 0) - statS0(I, 0))
                     End If
                 End If
 
@@ -1590,11 +1638,11 @@ End Sub
 'a choice to reset stats. If they chose, 
 'and confirm, it will then proceed to 
 'delete the files.
-Sub ResetStatPrompt (statFile$, teamRatings%())
+Sub ResetStatPrompt (statFile$, teamRatings())
 
     Cls
 
-    Call MenuBox (6, 8, 61, 1, teamRatings%(11), teamRatings%(12))
+    Call MenuBox (6, 8, 61, 1, teamRatings(11), teamRatings(12))
 
     Locate 7
 
@@ -1609,7 +1657,7 @@ Sub ResetStatPrompt (statFile$, teamRatings%())
 
     If UCase$(I$) = "Y" Then
 
-        Call MenuBox (6, 8, 61, 1, teamRatings%(11), teamRatings%(12))
+        Call MenuBox (6, 8, 61, 1, teamRatings(11), teamRatings(12))
 
         Locate 7
 

@@ -10,9 +10,7 @@
 ' reading in data for the chosen team
 Sub ChooseTeam (yearNumber$, numberTeams, chosenIdx, teamName$)
 
-    Shared teamRatings%()
-
-    'Shared teamNames$()
+    Shared teamRatings()
 
     Shared previousYear$
 
@@ -125,7 +123,7 @@ Sub ChooseTeam (yearNumber$, numberTeams, chosenIdx, teamName$)
 
                         YCoord = Int((80 - Len(teamName$)) / 2)
                         Locate 2, YCoord
-                        Color teamRatings%(11), teamRatings%(12): Print teamName$
+                        Color teamRatings(11), teamRatings(12): Print teamName$
 
                         Color 15, 4
                         Locate 3, 32: Print "ANY CHANGE? (Y/N)";
@@ -227,7 +225,7 @@ End Sub
 Sub ReadTeam (teamYear$, targetTeam$, teamIdx, dataOK)
 
     Shared batterRatings(), pitcherRatings()
-    Shared teamRatings%()
+    Shared teamRatings()
 
     Shared CK, parkHR
 
@@ -260,7 +258,7 @@ Sub ReadTeam (teamYear$, targetTeam$, teamIdx, dataOK)
     targetTeam$ = RTrim$(Q$(0))
 
     For I = 1 To 13:
-        teamRatings%(I) = CVI(Q$(I))
+        teamRatings(I) = CVI(Q$(I))
     Next
 
     parkHR = CVS(Q$(14))
@@ -320,7 +318,7 @@ End Sub
 ' been included for.
 Sub ReadExtraData (teamYear$, targetTeam$, teamIdx)
 
-    Shared teamSA%(), teamTS%()
+    Shared teamSA(), teamTS()
     Shared batterRatings(), pitcherRatings()
 
     If Not _FileExists(diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$) Then
@@ -378,7 +376,7 @@ Sub ReadExtraData (teamYear$, targetTeam$, teamIdx)
     Get #1, teamIdx
 
     For X = 0 To 11
-        teamTS%(X) = CVI(Q$(X + 1))
+        teamTS(X) = CVI(Q$(X + 1))
     Next
 
     For X = 0 To 22
@@ -400,7 +398,7 @@ Sub ReadExtraData (teamYear$, targetTeam$, teamIdx)
     Next
 
     For X = 1 To 24
-        teamSA%(X) = CVI(Q$(X + 950))
+        teamSA(X) = CVI(Q$(X + 950))
     Next
 
     For X = 0 To 22
@@ -417,7 +415,7 @@ Sub ReadExtraData (teamYear$, targetTeam$, teamIdx)
 
     Close #1
 
-    If teamTS%(0) <> 999 Then
+    If teamTS(0) <> 999 Then
 
         For X = 0 To 22
             For X1 = 42 To 79
@@ -431,7 +429,7 @@ Sub ReadExtraData (teamYear$, targetTeam$, teamIdx)
             Next
         Next
 
-        Erase teamSA%, teamTS%
+        Erase teamSA, teamTS
 
     End If
 

@@ -64,9 +64,9 @@ End Sub
 Sub EditStatsSchedules (action%)
 
     Shared batterNames$(), pitcherNames$()
-    Shared statB%(), careerB0%()
-    Shared statP%(), careerP0%()
-    Shared statT0%(), statT1%()
+    Shared statB(), careerB0()
+    Shared statP(), careerP0()
+    Shared statT0!(), statT1!()
 
     teamNbr = 0
     Call ChooseTeam(YN$, NTMS, teamNbr, team$)    
@@ -109,9 +109,9 @@ Sub ModifyTeamStats (statFile$)
     Shared statD0, statD1
 
     Shared batterNames$(), pitcherNames$()
-    Shared careerB0%(), careerP0%()
-    Shared teamRatings%()
-    Shared statB%(), statP%(), statT0%(), statT1%()
+    Shared careerB0(), careerP0()
+    Shared teamRatings()
+    Shared statB(), statP(), statT0!(), statT1!()
 
     Open diskPaths$(1) + statFile$ For Input As #1
 
@@ -121,23 +121,23 @@ Sub ModifyTeamStats (statFile$)
 
     For I = 0 To 22: 
         Input #1, batterNames$(I)
-        Input #1, statB%(I)
+        Input #1, statB(I)
     Next I
 
     For I = 0 To 21: 
         Input #1, pitcherNames$(I)
-        Input #1, statP%(I)
+        Input #1, statP(I)
     Next I
 
     For I = 0 To 22: 
         For I1 = 0 To 21: 
-            Input #1, careerB0%(I, I1)
+            Input #1, careerB0(I, I1)
         Next I1
     Next I
 
     For I = 0 To 21: 
         For I1 = 0 To 41: 
-            Input #1, careerP0%(I, I1)
+            Input #1, careerP0(I, I1)
         Next I1
     Next I
 
@@ -145,11 +145,11 @@ Sub ModifyTeamStats (statFile$)
     Input #1, statD1
 
     For I = 0 To 21: 
-        Input #1, statT0%(I)
+        Input #1, statT0!(I)
     Next I
 
     For I = 0 To 22: 
-        Input #1, statT1%(I)
+        Input #1, statT1!(I)
     Next I
 
     Close #1
@@ -165,24 +165,24 @@ Sub ModifyTeamStats (statFile$)
 
     Locate 2, 1
     Print "1. TEAM NAME (EX. ST_LOUIS.64)  "; teamName$
-    Print "2. TM AB "; statT0%(0)
-    Print "3. TM RUNS "; statT0%(2)
-    Print "4. TM HITS "; statT0%(1)
-    Print "5. TM DBL "; statT0%(4)
-    Print "6. TM TRPL "; statT0%(5)
-    Print "7. TM HR "; statT0%(6)
-    Print "8. TM RBI "; statT0%(3)
-    Print "9. TM BB "; statT0%(7)
-    Print "10. TM SO "; statT0%(8)
-    Print "11. TM ERR "; statT0%(11)
-    Print "12. TM SB "; statT0%(9)
-    Print "13. TM CS "; statT0%(10)
-    Print "14. TM PO "; statT0%(16)
-    Print "15. TM A "; statT0%(17)
-    Print "16. TM SH "; statT0%(18)
-    Print "17. TM SF "; statT0%(19)
-    Print "18. TM GIDP "; statT0%(15)
-    Print "19. TM LOB "; statT0%(12)
+    Print "2. TM AB "; statT0!(0)
+    Print "3. TM RUNS "; statT0!(2)
+    Print "4. TM HITS "; statT0!(1)
+    Print "5. TM DBL "; statT0!(4)
+    Print "6. TM TRPL "; statT0!(5)
+    Print "7. TM HR "; statT0!(6)
+    Print "8. TM RBI "; statT0!(3)
+    Print "9. TM BB "; statT0!(7)
+    Print "10. TM SO "; statT0!(8)
+    Print "11. TM ERR "; statT0!(11)
+    Print "12. TM SB "; statT0!(9)
+    Print "13. TM CS "; statT0!(10)
+    Print "14. TM PO "; statT0!(16)
+    Print "15. TM A "; statT0!(17)
+    Print "16. TM SH "; statT0!(18)
+    Print "17. TM SF "; statT0!(19)
+    Print "18. TM GIDP "; statT0!(15)
+    Print "19. TM LOB "; statT0!(12)
 
     Do
 
@@ -200,92 +200,92 @@ Sub ModifyTeamStats (statFile$)
 
             Case 2
                 Locate 3, 10: Print Space$(10)
-                Locate 3, 1: Input " 2. TM AB"; statT0%(0)
+                Locate 3, 1: Input " 2. TM AB"; statT0!(0)
                 Locate 3, 10: Print " "
 
             Case 3
                 Locate 4, 12: Print Space$(10)
-                Locate 4, 1: Input " 3. TM RUNS"; statT0%(2)
+                Locate 4, 1: Input " 3. TM RUNS"; statT0!(2)
                 Locate 4, 12: Print " "
 
             Case 4
                 Locate 5, 12: Print Space$(10)
-                Locate 5, 1: Input " 4. TM HITS"; statT0%(1)
+                Locate 5, 1: Input " 4. TM HITS"; statT0!(1)
                 Locate 5, 12: Print " "
 
             Case 5
                 Locate 6, 11: Print Space$(10)
-                Locate 6, 1: Input " 5. TM DBL"; statT0%(4)
+                Locate 6, 1: Input " 5. TM DBL"; statT0!(4)
                 Locate 6, 11: Print " "
 
             Case 6
                 Locate 7, 12: Print Space$(10)
-                Locate 7, 1: Input " 6. TM TRPL"; statT0%(5)
+                Locate 7, 1: Input " 6. TM TRPL"; statT0!(5)
                 Locate 7, 12: Print " "
 
             Case 7
                 Locate 8, 10: Print Space$(10)
-                Locate 8, 1: Input " 7. TM HR"; statT0%(6)
+                Locate 8, 1: Input " 7. TM HR"; statT0!(6)
                 Locate 8, 10: Print " "
 
             Case 8
                 Locate 9, 11: Print Space$(10)
-                Locate 9, 1: Input " 8. TM RBI"; statT0%(3)
+                Locate 9, 1: Input " 8. TM RBI"; statT0!(3)
                 Locate 9, 11: Print " "
 
             Case 9
                 Locate 10, 10: Print Space$(10)
-                Locate 10, 1: Input " 9. TM BB"; statT0%(7)
+                Locate 10, 1: Input " 9. TM BB"; statT0!(7)
                 Locate 10, 10: Print " "
 
             Case 10
                 Locate 11, 10: Print Space$(10)
-                Locate 11, 1: Input "10. TM SO"; statT0%(8)
+                Locate 11, 1: Input "10. TM SO"; statT0!(8)
                 Locate 11, 10: Print " "
 
             Case 11
                 Locate 12, 11: Print Space$(10)
-                Locate 12, 1: Input "11. TM ERR"; statT0%(11)
+                Locate 12, 1: Input "11. TM ERR"; statT0!(11)
                 Locate 12, 11: Print " "
 
             Case 12
                 Locate 13, 10: Print Space$(10)
-                Locate 13, 1: Input "12. TM SB"; statT0%(9)
+                Locate 13, 1: Input "12. TM SB"; statT0!(9)
                 Locate 13, 10: Print " "
 
             Case 13
                 Locate 14, 10: Print Space$(10)
-                Locate 14, 1: Input "13. TM CS"; statT0%(10)
+                Locate 14, 1: Input "13. TM CS"; statT0!(10)
                 Locate 14, 10: Print " "
 
             Case 14
                 Locate 15, 10: Print Space$(10)
-                Locate 15, 1: Input "14. TM PO"; statT0%(16)
+                Locate 15, 1: Input "14. TM PO"; statT0!(16)
                 Locate 15, 10: Print " "
 
             Case 15
                 Locate 16, 9: Print Space$(10)
-                Locate 16, 1: Input "15. TM A"; statT0%(17)
+                Locate 16, 1: Input "15. TM A"; statT0!(17)
                 Locate 16, 9: Print " "
 
             Case 16
                 Locate 17, 10: Print Space$(10)
-                Locate 17, 1: Input "16. TM SH"; statT0%(18)
+                Locate 17, 1: Input "16. TM SH"; statT0!(18)
                 Locate 17, 10: Print " "
 
             Case 17
                 Locate 18, 10: Print Space$(10)
-                Locate 18, 1: Input "17. TM SF"; statT0%(19)
+                Locate 18, 1: Input "17. TM SF"; statT0!(19)
                 Locate 18, 10: Print " "
 
             Case 18
                 Locate 19, 12: Print Space$(10)
-                Locate 19, 1: Input "18. TM GIDP"; statT0%(15)
+                Locate 19, 1: Input "18. TM GIDP"; statT0!(15)
                 Locate 19, 12: Print " "
 
             Case 19
                 Locate 20, 10: Print Space$(10)
-                Locate 20, 1: Input "19. TM LOB"; statT0%(12)
+                Locate 20, 1: Input "19. TM LOB"; statT0!(12)
                 Locate 20, 10: Print " "
 
         End Select
@@ -304,24 +304,24 @@ Sub ModifyTeamStats (statFile$)
 
     Locate 2: Print "1. WON "; teamWins
     Locate 3: Print "2. LOST "; teamLosses
-    Locate 4: Print "3. TM SV "; statT1%(12)
-    Locate 5: Print "4. (TM IP X 3) "; statT1%(0)
-    Locate 6: Print "5. TM HITS "; statT1%(1)
-    Locate 7: Print "6. TM BB "; statT1%(4)
-    Locate 8: Print "7. TM SO "; statT1%(5)
-    Locate 9: Print "8. TM CG "; statT1%(10)
-    Locate 10: Print "9. TM RUNS "; statT1%(2)
-    Locate 11: Print "10. TM E R "; statT1%(3)
-    Locate 12: Print "11. TM SHT OUT "; statT1%(11)
-    Locate 13: Print "12. TM STARTS "; statT1%(9)
-    Locate 14: Print "13. TM HRA "; statT1%(14)
-    Locate 15: Print "14. TM DP TURNED "; statT1%(13)
-    Locate 16: Print "15. TM SH "; statT1%(15)
-    Locate 17: Print "16. TM SF "; statT1%(16)
-    Locate 18: Print "17. TM RUNNERS INHERITED (RI) "; statT1%(17)
-    Locate 19: Print "18. TM RI SCORED "; statT1%(18)
-    Locate 20: Print "19. TM BLOWN SAVES "; statT1%(19)
-    Locate 21: Print "20. TM QUALITY STARTS "; statT1%(21)
+    Locate 4: Print "3. TM SV "; statT1!(12)
+    Locate 5: Print "4. (TM IP X 3) "; statT1!(0)
+    Locate 6: Print "5. TM HITS "; statT1!(1)
+    Locate 7: Print "6. TM BB "; statT1!(4)
+    Locate 8: Print "7. TM SO "; statT1!(5)
+    Locate 9: Print "8. TM CG "; statT1!(10)
+    Locate 10: Print "9. TM RUNS "; statT1!(2)
+    Locate 11: Print "10. TM E R "; statT1!(3)
+    Locate 12: Print "11. TM SHT OUT "; statT1!(11)
+    Locate 13: Print "12. TM STARTS "; statT1!(9)
+    Locate 14: Print "13. TM HRA "; statT1!(14)
+    Locate 15: Print "14. TM DP TURNED "; statT1!(13)
+    Locate 16: Print "15. TM SH "; statT1!(15)
+    Locate 17: Print "16. TM SF "; statT1!(16)
+    Locate 18: Print "17. TM RUNNERS INHERITED (RI) "; statT1!(17)
+    Locate 19: Print "18. TM RI SCORED "; statT1!(18)
+    Locate 20: Print "19. TM BLOWN SAVES "; statT1!(19)
+    Locate 21: Print "20. TM QUALITY STARTS "; statT1!(21)
 
     Do
 
@@ -344,92 +344,92 @@ Sub ModifyTeamStats (statFile$)
 
             Case 3
                 Locate 4, 10: Print Space$(10)
-                Locate 4, 1: Input " 3. TM SV"; statT1%(12)
+                Locate 4, 1: Input " 3. TM SV"; statT1!(12)
                 Locate 4, 10: Print " "
 
             Case 4
                 Locate 5, 16: Print Space$(10)
-                Locate 5, 1: Input " 4. (TM IP X 3)"; statT1%(0)
+                Locate 5, 1: Input " 4. (TM IP X 3)"; statT1!(0)
                 Locate 5, 16: Print " "
 
             Case 5
                 Locate 6, 12: Print Space$(10)
-                Locate 6, 1: Input " 5. TM HITS"; statT1%(1)
+                Locate 6, 1: Input " 5. TM HITS"; statT1!(1)
                 Locate 6, 12: Print " "
 
             Case 6
                 Locate 7, 10: Print Space$(10)
-                Locate 7, 1: Input " 6. TM BB"; statT1%(4)
+                Locate 7, 1: Input " 6. TM BB"; statT1!(4)
                 Locate 7, 10: Print " "
 
             Case 7
                 Locate 8, 10: Print Space$(10)
-                Locate 8, 1: Input " 7. TM SO"; statT1%(5)
+                Locate 8, 1: Input " 7. TM SO"; statT1!(5)
                 Locate 8, 10: Print " "
 
             Case 8
                 Locate 9, 10: Print Space$(10)
-                Locate 9, 1: Input " 8. TM CG"; statT1%(10)
+                Locate 9, 1: Input " 8. TM CG"; statT1!(10)
                 Locate 9, 10: Print " "
 
             Case 9
                 Locate 10, 12: Print Space$(10)
-                Locate 10, 1: Input " 9. TM RUNS"; statT1%(2)
+                Locate 10, 1: Input " 9. TM RUNS"; statT1!(2)
                 Locate 10, 12: Print " "
 
             Case 10
                 Locate 11, 11: Print Space$(10)
-                Locate 11, 1: Input "10. TM E R"; statT1%(3)
+                Locate 11, 1: Input "10. TM E R"; statT1!(3)
                 Locate 11, 11: Print " "
 
             Case 11
                 Locate 12, 14: Print Space$(10)
-                Locate 12, 1: Input "11. TM SH OUT"; statT1%(11)
+                Locate 12, 1: Input "11. TM SH OUT"; statT1!(11)
                 Locate 12, 14: Print " "
 
             Case 12
                 Locate 13, 14: Print Space$(10)
-                Locate 13, 1: Input "12. TM STARTS"; statT1%(9)
+                Locate 13, 1: Input "12. TM STARTS"; statT1!(9)
                 Locate 13, 14: Print " "
 
             Case 13
                 Locate 14, 11: Print Space$(10)
-                Locate 14, 1: Input "13. TM HRA"; statT1%(14)
+                Locate 14, 1: Input "13. TM HRA"; statT1!(14)
                 Locate 14, 11: Print " "
 
             Case 14
                 Locate 15, 17: Print Space$(10)
-                Locate 15, 1: Input "14. TM DP TURNED"; statT1%(13)
+                Locate 15, 1: Input "14. TM DP TURNED"; statT1!(13)
                 Locate 15, 17: Print " "
 
             Case 15
                 Locate 16, 10: Print Space$(10)
-                Locate 16, 1: Input "15. TM SH"; statT1%(15)
+                Locate 16, 1: Input "15. TM SH"; statT1!(15)
                 Locate 16, 10: Print " "
 
             Case 16
                 Locate 17, 10: Print Space$(10)
-                Locate 17, 1: Input "16. TM SF"; statT1%(16)
+                Locate 17, 1: Input "16. TM SF"; statT1!(16)
                 Locate 17, 10: Print " "
 
             Case 17
                 Locate 18, 30: Print Space$(10)
-                Locate 18, 1: Input "17. TM RUNNERS INHERITED (RI)"; statT1%(17)
+                Locate 18, 1: Input "17. TM RUNNERS INHERITED (RI)"; statT1!(17)
                 Locate 18, 30: Print " "
 
             Case 18
                 Locate 19, 17: Print Space$(10)
-                Locate 19, 1: Input "18. TM RI SCORED"; statT1%(18)
+                Locate 19, 1: Input "18. TM RI SCORED"; statT1!(18)
                 Locate 19, 17: Print " "
 
             Case 19
                 Locate 20, 19: Print Space$(10)
-                Locate 20, 1: Input "19. TM BLOWN SAVES"; statT1%(19)
+                Locate 20, 1: Input "19. TM BLOWN SAVES"; statT1!(19)
                 Locate 20, 19: Print " "
 
             Case 20
                 Locate 21, 22: Print Space$(10)
-                Locate 21, 1: Input "20. TM QUALITY STARTS"; statT1%(21)
+                Locate 21, 1: Input "20. TM QUALITY STARTS"; statT1!(21)
                 Locate 21, 22: Print " "
 
         End Select
@@ -452,23 +452,23 @@ Sub ModifyTeamStats (statFile$)
 
     For I = 0 To 22: 
         Print #1, batterNames$(I)
-        Print #1, statB%(I)
+        Print #1, statB(I)
     Next I
 
     For I = 0 To 21: 
         Print #1, pitcherNames$(I)
-        Print #1, statP%(I)
+        Print #1, statP(I)
     Next I
 
     For I = 0 To 22: 
         For I1 = 0 To 21: 
-            Print #1, careerB0%(I, I1)
+            Print #1, careerB0(I, I1)
         Next I1
     Next I
 
     For I = 0 To 21: 
         For I1 = 0 To 41: 
-            Print #1, careerP0%(I, I1)
+            Print #1, careerP0(I, I1)
         Next I1
     Next I
 
@@ -476,11 +476,11 @@ Sub ModifyTeamStats (statFile$)
     Print #1, statD1
 
     For I = 0 To 21: 
-        Print #1, statT0%(I)
+        Print #1, statT0!(I)
     Next I
 
     For I = 0 To 22: 
-        Print #1, statT1%(I)
+        Print #1, statT1!(I)
     Next I
 
     Close #1
@@ -497,7 +497,7 @@ End Sub
 Sub ChangeBatters ()
 
     Shared batterNames$()
-    Shared careerB0%()
+    Shared careerB0()
 
     Do
 
@@ -532,26 +532,26 @@ Sub ChangeBatters ()
             Call TITLE_STAT_HEADER(X$)
 
             Locate 1: Print "1. NAME  "; batterNames$(I)
-            Locate 2: Print "2. AB "; careerB0%(I, 0)
-            Locate 3: Print "3. RUNS "; careerB0%(I, 2)
-            Locate 4: Print "4. HITS "; careerB0%(I, 1)
-            Locate 5: Print "5. DBL "; careerB0%(I, 4)
-            Locate 6: Print "6. TRPL "; careerB0%(I, 5)
-            Locate 7: Print "7. HR "; careerB0%(I, 6)
-            Locate 8: Print "8. RBI "; careerB0%(I, 3)
-            Locate 9: Print "9. BB "; careerB0%(I, 7)
-            Locate 10: Print "10. SO "; careerB0%(I, 8)
-            Locate 11: Print "11. ERR "; careerB0%(I, 11)
-            Locate 12: Print "12. SB "; careerB0%(I, 9)
-            Locate 13: Print "13. CS "; careerB0%(I, 10)
-            Locate 14: Print "14. G "; careerB0%(I, 14)
-            Locate 15: Print "15. CHS "; careerB0%(I, 12)
-            Locate 16: Print "16. LHS "; careerB0%(I, 13)
-            Locate 17: Print "17. GIDP "; careerB0%(I, 15)
-            Locate 18: Print "18. PO "; careerB0%(I, 16)
-            Locate 19: Print "19. A "; careerB0%(I, 17)
-            Locate 20: Print "20. SH "; careerB0%(I, 18)
-            Locate 21: Print "21. SF "; careerB0%(I, 19)
+            Locate 2: Print "2. AB "; careerB0(I, 0)
+            Locate 3: Print "3. RUNS "; careerB0(I, 2)
+            Locate 4: Print "4. HITS "; careerB0(I, 1)
+            Locate 5: Print "5. DBL "; careerB0(I, 4)
+            Locate 6: Print "6. TRPL "; careerB0(I, 5)
+            Locate 7: Print "7. HR "; careerB0(I, 6)
+            Locate 8: Print "8. RBI "; careerB0(I, 3)
+            Locate 9: Print "9. BB "; careerB0(I, 7)
+            Locate 10: Print "10. SO "; careerB0(I, 8)
+            Locate 11: Print "11. ERR "; careerB0(I, 11)
+            Locate 12: Print "12. SB "; careerB0(I, 9)
+            Locate 13: Print "13. CS "; careerB0(I, 10)
+            Locate 14: Print "14. G "; careerB0(I, 14)
+            Locate 15: Print "15. CHS "; careerB0(I, 12)
+            Locate 16: Print "16. LHS "; careerB0(I, 13)
+            Locate 17: Print "17. GIDP "; careerB0(I, 15)
+            Locate 18: Print "18. PO "; careerB0(I, 16)
+            Locate 19: Print "19. A "; careerB0(I, 17)
+            Locate 20: Print "20. SH "; careerB0(I, 18)
+            Locate 21: Print "21. SF "; careerB0(I, 19)
 
             Do
 
@@ -571,102 +571,102 @@ Sub ChangeBatters ()
 
                     Case 2
                         Locate 2, 7: Print Space$(10)
-                        Locate 2, 1: Input " 2. AB"; careerB0%(I, 0)
+                        Locate 2, 1: Input " 2. AB"; careerB0(I, 0)
                         Locate 2, 7: Print " "
 
                     Case 3
                         Locate 3, 9: Print Space$(10)
-                        Locate 3, 1: Input " 3. RUNS"; careerB0%(I, 2)
+                        Locate 3, 1: Input " 3. RUNS"; careerB0(I, 2)
                         Locate 3, 9: Print " "
 
                     Case 4
                         Locate 4, 9: Print Space$(10)
-                        Locate 4, 1: Input " 4. HITS"; careerB0%(I, 1)
+                        Locate 4, 1: Input " 4. HITS"; careerB0(I, 1)
                         Locate 4, 9: Print " "
 
                     Case 5
                         Locate 5, 8: Print Space$(10)
-                        Locate 5, 1: Input " 5. DBL"; careerB0%(I, 4)
+                        Locate 5, 1: Input " 5. DBL"; careerB0(I, 4)
                         Locate 5, 8: Print " "
 
                     Case 6
                         Locate 6, 9: Print Space$(10)
-                        Locate 6, 1: Input " 6. TRPL"; careerB0%(I, 5)
+                        Locate 6, 1: Input " 6. TRPL"; careerB0(I, 5)
                         Locate 6, 9: Print " "
 
                     Case 7
                         Locate 7, 7: Print Space$(10)
-                        Locate 7, 1: Input " 7. HR"; careerB0%(I, 6)
+                        Locate 7, 1: Input " 7. HR"; careerB0(I, 6)
                         Locate 7, 7: Print " "
 
                     Case 8
                         Locate 8, 8: Print Space$(10)
-                        Locate 8, 1: Input " 8. RBI"; careerB0%(I, 3)
+                        Locate 8, 1: Input " 8. RBI"; careerB0(I, 3)
                         Locate 8, 8: Print " "
 
                     Case 9
                         Locate 9, 7: Print Space$(10)
-                        Locate 9, 1: Input " 9. BB"; careerB0%(I, 7)
+                        Locate 9, 1: Input " 9. BB"; careerB0(I, 7)
                         Locate 9, 7: Print " "
 
                     Case 10
                         Locate 10, 7: Print Space$(10)
-                        Locate 10, 1: Input "10. SO"; careerB0%(I, 8)
+                        Locate 10, 1: Input "10. SO"; careerB0(I, 8)
                         Locate 10, 7: Print " "
 
                     Case 11
                         Locate 11, 8: Print Space$(10)
-                        Locate 11, 1: Input "11. ERR"; careerB0%(I, 11)
+                        Locate 11, 1: Input "11. ERR"; careerB0(I, 11)
                         Locate 11, 8: Print " "
 
                     Case 12
                         Locate 12, 7: Print Space$(10)
-                        Locate 12, 1: Input "12. SB"; careerB0%(I, 9)
+                        Locate 12, 1: Input "12. SB"; careerB0(I, 9)
                         Locate 12, 7: Print " "
 
                     Case 13
                         Locate 13, 7: Print Space$(10)
-                        Locate 13, 1: Input "13. CS"; careerB0%(I, 10)
+                        Locate 13, 1: Input "13. CS"; careerB0(I, 10)
                         Locate 13, 7: Print " "
 
                     Case 14
                         Locate 14, 6: Print Space$(10)
-                        Locate 14, 1: Input "14. G"; careerB0%(I, 14)
+                        Locate 14, 1: Input "14. G"; careerB0(I, 14)
                         Locate 14, 6: Print " "
 
                     Case 15
                         Locate 15, 8: Print Space$(10)
-                        Locate 15, 1: Input "15. CHS"; careerB0%(I, 12)
+                        Locate 15, 1: Input "15. CHS"; careerB0(I, 12)
                         Locate 15, 8: Print " "
 
                     Case 16
                         Locate 16, 8: Print Space$(10)
-                        Locate 16, 1: Input "16. LHS"; careerB0%(I, 13)
+                        Locate 16, 1: Input "16. LHS"; careerB0(I, 13)
                         Locate 16, 8: Print " "
 
                     Case 17
                         Locate 17, 9: Print Space$(10)
-                        Locate 17, 1: Input "17. GIDP"; careerB0%(I, 15)
+                        Locate 17, 1: Input "17. GIDP"; careerB0(I, 15)
                         Locate 17, 9: Print " "
 
                     Case 18
                         Locate 18, 7: Print Space$(10)
-                        Locate 18, 1: Input "18. PO"; careerB0%(I, 16)
+                        Locate 18, 1: Input "18. PO"; careerB0(I, 16)
                         Locate 18, 7: Print " "
 
                     Case 19
                         Locate 19, 7: Print Space$(10)
-                        Locate 19, 1: Input "19. A"; careerB0%(I, 17)
+                        Locate 19, 1: Input "19. A"; careerB0(I, 17)
                         Locate 19, 7: Print " "
 
                     Case 20
                         Locate 20, 7: Print Space$(10)
-                        Locate 20, 1: Input "20. SH"; careerB0%(I, 18)
+                        Locate 20, 1: Input "20. SH"; careerB0(I, 18)
                         Locate 20, 7: Print " "
 
                     Case 21
                         Locate 21, 7: Print Space$(10)
-                        Locate 21, 1: Input "21. SF"; careerB0%(I, 19)
+                        Locate 21, 1: Input "21. SF"; careerB0(I, 19)
                         Locate 21, 7: Print " "
 
                 End Select
@@ -691,8 +691,8 @@ End Sub
 Sub ChangePitchers ()
 
     Shared batterNames$(), pitcherNames$()
-    Shared statB%(), careerB0%(), statP%(), careerP0%()
-    Shared statT0%(), statT1%()
+    Shared statB(), careerB0(), statP(), careerP0()
+    Shared statT0!(), statT1!()
 
     Do
 
@@ -723,47 +723,47 @@ Sub ChangePitchers ()
             Call TITLE_STAT_HEADER(X$)
 
             Locate 1: Print "1. NAME  "; pitcherNames$(idx)
-            Locate 2: Print "2. WON "; careerP0%(idx, 6);
-            Locate, 40: Print "23. QUALITY STARTS "; careerP0%(idx, 21)
-            Locate 3: Print "3. LOST "; careerP0%(idx, 7);
-            Locate , 40: Print "24. AB "; careerP0%(idx, 23)
-            Locate 4: Print "4. SV "; careerP0%(idx, 12);
-            Locate , 40: Print "25. H "; careerP0%(idx, 24)
-            Locate 5: Print "5. (IP X 3) "; careerP0%(idx, 0);
-            Locate , 40: Print "26. R "; careerP0%(idx, 25)
-            Locate 6: Print "6. HITS "; careerP0%(idx, 1);
-            Locate , 40: Print "27. RBI "; careerP0%(idx, 26)
-            Locate 7: Print "7. BB "; careerP0%(idx, 4);
-            Locate , 40: Print "28. DBL "; careerP0%(idx, 27)
-            Locate 8: Print "8. SO "; careerP0%(idx, 5);
-            Locate , 40: Print "29. TRPL "; careerP0%(idx, 28)
-            Locate 9: Print "9. CG "; careerP0%(idx, 10);
-            Locate , 40: Print "30. HR "; careerP0%(idx, 29)
-            Locate 10: Print "10. RUNS "; careerP0%(idx, 2);
-            Locate , 40: Print "31. BB "; careerP0%(idx, 30)
-            Locate 11: Print "11. E R "; careerP0%(idx, 3);
-            Locate , 40: Print "32. K "; careerP0%(idx, 31)
-            Locate 12: Print "12. SH OUT "; careerP0%(idx, 11);
-            Locate , 40: Print "33. SB "; careerP0%(idx, 32)
-            Locate 13: Print "13. GAMES "; careerP0%(idx, 8);
-            Locate , 40: Print "34. CS "; careerP0%(idx, 33)
-            Locate 14: Print "14. STARTS "; careerP0%(idx, 9);
-            Locate , 40: Print "35. ERR "; careerP0%(idx, 34)
-            Locate 15: Print "15. HR ALL "; careerP0%(idx, 14);
-            Locate , 40: Print "36. CHS "; careerP0%(idx, 35)
-            Locate 16: Print "16. GIDP "; careerP0%(idx, 13);
-            Locate , 40: Print "37. LHS "; careerP0%(idx, 36)
-            Locate 17: Print "17. SH "; careerP0%(idx, 15);
-            Locate , 40: Print "38. GIDP "; careerP0%(idx, 37)
-            Locate 18: Print "18. SF "; careerP0%(idx, 16);
-            Locate , 40: Print "39. PO "; careerP0%(idx, 38)
-            Locate 19: Print "19. RUNNERS INHERITED (RI) "; careerP0%(idx, 17);
-            Locate , 40: Print "40. A "; careerP0%(idx, 39)
-            Locate 20: Print "20. RI SCORED "; careerP0%(idx, 18);
-            Locate , 40: Print "41. SH "; careerP0%(idx, 40)
-            Locate 21: Print "21. BLOWN SAVES "; careerP0%(idx, 19);
-            Locate , 40: Print "42. SF "; careerP0%(idx, 41)
-            Locate 22: Print "22. RUN SUPPORT "; careerP0%(idx, 20)
+            Locate 2: Print "2. WON "; careerP0(idx, 6);
+            Locate, 40: Print "23. QUALITY STARTS "; careerP0(idx, 21)
+            Locate 3: Print "3. LOST "; careerP0(idx, 7);
+            Locate , 40: Print "24. AB "; careerP0(idx, 23)
+            Locate 4: Print "4. SV "; careerP0(idx, 12);
+            Locate , 40: Print "25. H "; careerP0(idx, 24)
+            Locate 5: Print "5. (IP X 3) "; careerP0(idx, 0);
+            Locate , 40: Print "26. R "; careerP0(idx, 25)
+            Locate 6: Print "6. HITS "; careerP0(idx, 1);
+            Locate , 40: Print "27. RBI "; careerP0(idx, 26)
+            Locate 7: Print "7. BB "; careerP0(idx, 4);
+            Locate , 40: Print "28. DBL "; careerP0(idx, 27)
+            Locate 8: Print "8. SO "; careerP0(idx, 5);
+            Locate , 40: Print "29. TRPL "; careerP0(idx, 28)
+            Locate 9: Print "9. CG "; careerP0(idx, 10);
+            Locate , 40: Print "30. HR "; careerP0(idx, 29)
+            Locate 10: Print "10. RUNS "; careerP0(idx, 2);
+            Locate , 40: Print "31. BB "; careerP0(idx, 30)
+            Locate 11: Print "11. E R "; careerP0(idx, 3);
+            Locate , 40: Print "32. K "; careerP0(idx, 31)
+            Locate 12: Print "12. SH OUT "; careerP0(idx, 11);
+            Locate , 40: Print "33. SB "; careerP0(idx, 32)
+            Locate 13: Print "13. GAMES "; careerP0(idx, 8);
+            Locate , 40: Print "34. CS "; careerP0(idx, 33)
+            Locate 14: Print "14. STARTS "; careerP0(idx, 9);
+            Locate , 40: Print "35. ERR "; careerP0(idx, 34)
+            Locate 15: Print "15. HR ALL "; careerP0(idx, 14);
+            Locate , 40: Print "36. CHS "; careerP0(idx, 35)
+            Locate 16: Print "16. GIDP "; careerP0(idx, 13);
+            Locate , 40: Print "37. LHS "; careerP0(idx, 36)
+            Locate 17: Print "17. SH "; careerP0(idx, 15);
+            Locate , 40: Print "38. GIDP "; careerP0(idx, 37)
+            Locate 18: Print "18. SF "; careerP0(idx, 16);
+            Locate , 40: Print "39. PO "; careerP0(idx, 38)
+            Locate 19: Print "19. RUNNERS INHERITED (RI) "; careerP0(idx, 17);
+            Locate , 40: Print "40. A "; careerP0(idx, 39)
+            Locate 20: Print "20. RI SCORED "; careerP0(idx, 18);
+            Locate , 40: Print "41. SH "; careerP0(idx, 40)
+            Locate 21: Print "21. BLOWN SAVES "; careerP0(idx, 19);
+            Locate , 40: Print "42. SF "; careerP0(idx, 41)
+            Locate 22: Print "22. RUN SUPPORT "; careerP0(idx, 20)
 
             Do
 
@@ -780,208 +780,208 @@ Sub ChangePitchers ()
 
                     Case 2
                         Locate 2, 8: Print Space$(10)
-                        Locate 2, 1: Input " 2. WON"; careerP0%(idx, 6)
+                        Locate 2, 1: Input " 2. WON"; careerP0(idx, 6)
                         Locate 2, 8: Print " "
 
                     Case 3
                         Locate 3, 9: Print Space$(10)
-                        Locate 3, 1: Input " 3. LOST"; careerP0%(idx, 7)
+                        Locate 3, 1: Input " 3. LOST"; careerP0(idx, 7)
                         Locate 3, 9: Print " "
 
                     Case 4
                         Locate 4, 7: Print Space$(10)
-                        Locate 4, 1: Input " 4. SV"; careerP0%(idx, 12)
+                        Locate 4, 1: Input " 4. SV"; careerP0(idx, 12)
                         Locate 4, 7: Print " "
 
                     Case 5
                         Locate 5, 13: Print Space$(10)
-                        Locate 5, 1: Input " 5. (IP X 3)"; careerP0%(idx, 0)
+                        Locate 5, 1: Input " 5. (IP X 3)"; careerP0(idx, 0)
                         Locate 5, 13: Print " "
 
                     Case 6
                         Locate 6, 9: Print Space$(10)
-                        Locate 6, 1: Input " 6. HITS"; careerP0%(idx, 1)
+                        Locate 6, 1: Input " 6. HITS"; careerP0(idx, 1)
                         Locate 6, 9: Print " "
 
                     Case 7
                         Locate 7, 7: Print Space$(10)
-                        Locate 7, 1: Input " 7. BB"; careerP0%(idx, 4)
+                        Locate 7, 1: Input " 7. BB"; careerP0(idx, 4)
                         Locate 7, 7: Print " "
 
                     Case 8
                         Locate 8, 7: Print Space$(10)
-                        Locate 8, 1: Input " 8. SO"; careerP0%(idx, 5)
+                        Locate 8, 1: Input " 8. SO"; careerP0(idx, 5)
                         Locate 8, 7: Print " "
 
                     Case 9
                         Locate 9, 7: Print Space$(10)
-                        Locate 9, 1: Input " 9. CG"; careerP0%(idx, 10)
+                        Locate 9, 1: Input " 9. CG"; careerP0(idx, 10)
                         Locate 9, 7: Print " "
 
                     Case 10
                         Locate 10, 9: Print Space$(10)
-                        Locate 10, 1: Input "10. RUNS"; careerP0%(idx, 2)
+                        Locate 10, 1: Input "10. RUNS"; careerP0(idx, 2)
                         Locate 10, 9: Print " "
 
                     Case 11
                         Locate 11, 8: Print Space$(10)
-                        Locate 11, 1: Input "11. E R"; careerP0%(idx, 3)
+                        Locate 11, 1: Input "11. E R"; careerP0(idx, 3)
                         Locate 11, 8: Print " "
 
                     Case 12
                         Locate 12, 11: Print Space$(10)
-                        Locate 12, 1: Input "12. SH OUT"; careerP0%(idx, 11)
+                        Locate 12, 1: Input "12. SH OUT"; careerP0(idx, 11)
                         Locate 12, 11: Print " "
                     Case 13
 
                     Case 13
                         Locate 13, 10: Print Space$(10)
-                        Locate 13, 1: Input "13. GAMES"; careerP0%(idx, 8)
+                        Locate 13, 1: Input "13. GAMES"; careerP0(idx, 8)
                         Locate 13, 10: Print " "
 
                     Case 14
                         Locate 14, 11: Print Space$(10)
-                        Locate 14, 1: Input "14. STARTS"; careerP0%(idx, 9)
+                        Locate 14, 1: Input "14. STARTS"; careerP0(idx, 9)
                         Locate 14, 11: Print " "
 
                     Case 15
                         Locate 15, 11: Print Space$(10)
-                        Locate 15, 1: Input "15. HR ALL"; careerP0%(idx, 14)
+                        Locate 15, 1: Input "15. HR ALL"; careerP0(idx, 14)
                         Locate 15, 11: Print " "
 
                     Case 16
                         Locate 16, 9: Print Space$(10)
-                        Locate 16, 1: Input "16. GIDP"; careerP0%(idx, 13)
+                        Locate 16, 1: Input "16. GIDP"; careerP0(idx, 13)
                         Locate 16, 9: Print " "
 
                     Case 17
                         Locate 17, 7: Print Space$(10)
-                        Locate 17, 1: Input "17. SH"; careerP0%(idx, 15)
+                        Locate 17, 1: Input "17. SH"; careerP0(idx, 15)
                         Locate 17, 7: Print " "
 
                     Case 18
                         Locate 18, 7: Print Space$(10)
-                        Locate 18, 1: Input "18. SF"; careerP0%(idx, 16)
+                        Locate 18, 1: Input "18. SF"; careerP0(idx, 16)
                         Locate 18, 7: Print " "
 
                     Case 19
                         Locate 19, 27: Print Space$(10)
-                        Locate 19, 1: Input "19. RUNNERS INHERITED (RI)"; careerP0%(idx, 17)
+                        Locate 19, 1: Input "19. RUNNERS INHERITED (RI)"; careerP0(idx, 17)
                         Locate 19, 27: Print " "
 
                     Case 20
                         Locate 20, 14: Print Space$(10)
-                        Locate 20, 1: Input "20. RI SCORED"; careerP0%(idx, 18)
+                        Locate 20, 1: Input "20. RI SCORED"; careerP0(idx, 18)
                         Locate 20, 14: Print " "
 
                     Case 21
                         Locate 21, 16: Print Space$(10)
-                        Locate 21, 1: Input "21. BLOWN SAVES"; careerP0%(idx, 19)
+                        Locate 21, 1: Input "21. BLOWN SAVES"; careerP0(idx, 19)
                         Locate 21, 16: Print " "
 
                     Case 22
                         Locate 22, 16: Print Space$(10)
-                        Locate 22, 1: Input "22. RUN SUPPORT"; careerP0%(idx, 20)
+                        Locate 22, 1: Input "22. RUN SUPPORT"; careerP0(idx, 20)
                         Locate 22, 16: Print " "
 
                     Case 23
                         Locate 23, 19: Print Space$(10)
-                        Locate 23, 1: Input "23. QUALITY STARTS"; careerP0%(idx, 21)
+                        Locate 23, 1: Input "23. QUALITY STARTS"; careerP0(idx, 21)
                         Locate 23, 19: Print " "
 
                     Case 24
                         Locate 2, 47: Print Space$(10)
-                        Locate 2, 40: Input "24. AB"; careerP0%(idx, 23)
+                        Locate 2, 40: Input "24. AB"; careerP0(idx, 23)
                         Locate 2, 47: Print " "
 
                     Case 25
                         Locate 3, 46: Print Space$(10)
-                        Locate 3, 40: Input "25. H"; careerP0%(idx, 24)
+                        Locate 3, 40: Input "25. H"; careerP0(idx, 24)
                         Locate 3, 46: Print " "
 
                     Case 26
                         Locate 4, 46: Print Space$(10)
-                        Locate 4, 40: Input "26. R"; careerP0%(idx, 25)
+                        Locate 4, 40: Input "26. R"; careerP0(idx, 25)
                         Locate 4, 46: Print " "
 
                     Case 27
                         Locate 5, 48: Print Space$(10)
-                        Locate 5, 40: Input "27. RBI"; careerP0%(idx, 26)
+                        Locate 5, 40: Input "27. RBI"; careerP0(idx, 26)
                         Locate 5, 48: Print " "
 
                     Case 28
                         Locate 6, 48: Print Space$(10)
-                        Locate 6, 40: Input "28. DBL"; careerP0%(idx, 27)
+                        Locate 6, 40: Input "28. DBL"; careerP0(idx, 27)
                         Locate 6, 48: Print " "
 
                     Case 29
                         Locate 7, 49: Print Space$(10)
-                        Locate 7, 40: Input "29. TRPL"; careerP0%(idx, 28)
+                        Locate 7, 40: Input "29. TRPL"; careerP0(idx, 28)
                         Locate 7, 49: Print " "
 
                     Case 30
                         Locate 8, 47: Print Space$(10)
-                        Locate 8, 40: Input "30. HR"; careerP0%(idx, 29)
+                        Locate 8, 40: Input "30. HR"; careerP0(idx, 29)
                         Locate 8, 47: Print " "
 
                     Case 31
                         Locate 9, 47: Print Space$(10)
-                        Locate 9, 40: Input "31. BB"; careerP0%(idx, 30)
+                        Locate 9, 40: Input "31. BB"; careerP0(idx, 30)
                         Locate 9, 47: Print " "
 
                     Case 32
                         Locate 10, 46: Print Space$(10)
-                        Locate 10, 40: Input "32. K"; careerP0%(idx, 31)
+                        Locate 10, 40: Input "32. K"; careerP0(idx, 31)
                         Locate 10, 46: Print " "
 
                     Case 33
                         Locate 11, 47: Print Space$(10)
-                        Locate 11, 40: Input "33. SB"; careerP0%(idx, 32)
+                        Locate 11, 40: Input "33. SB"; careerP0(idx, 32)
                         Locate 11, 47: Print " "
 
                     Case 34
                         Locate 12, 47: Print Space$(10)
-                        Locate 12, 40: Input "34. CS"; careerP0%(idx, 33)
+                        Locate 12, 40: Input "34. CS"; careerP0(idx, 33)
                         Locate 12, 47: Print " "
 
                     Case 35
                         Locate 13, 48: Print Space$(10)
-                        Locate 13, 40: Input "35. ERR"; careerP0%(idx, 34)
+                        Locate 13, 40: Input "35. ERR"; careerP0(idx, 34)
                         Locate 13, 48: Print " "
 
                     Case 36
                         Locate 14, 48: Print Space$(10)
-                        Locate 14, 40: Input "36. CHS"; careerP0%(idx, 35)
+                        Locate 14, 40: Input "36. CHS"; careerP0(idx, 35)
                         Locate 14, 48: Print " "
 
                     Case 37
                         Locate 15, 48: Print Space$(10)
-                        Locate 15, 40: Input "37. LHS"; careerP0%(idx, 36)
+                        Locate 15, 40: Input "37. LHS"; careerP0(idx, 36)
                         Locate 15, 48: Print " "
 
                     Case 38
                         Locate 16, 49: Print Space$(10)
-                        Locate 16, 40: Input "38. GIDP"; careerP0%(idx, 37)
+                        Locate 16, 40: Input "38. GIDP"; careerP0(idx, 37)
                         Locate 16, 49: Print " "
 
                     Case 39
                         Locate 17, 47: Print Space$(10)
-                        Locate 17, 40: Input "39. PO"; careerP0%(idx, 38)
+                        Locate 17, 40: Input "39. PO"; careerP0(idx, 38)
                         Locate 17, 47: Print " "
 
                     Case 40
                         Locate 18, 46: Print Space$(10)
-                        Locate 18, 40: Input "40. A"; careerP0%(idx, 39)
+                        Locate 18, 40: Input "40. A"; careerP0(idx, 39)
                         Locate 18, 46: Print " "
 
                     Case 41
                         Locate 19, 47: Print Space$(10)
-                        Locate 19, 40: Input "41. SH"; careerP0%(idx, 40)
+                        Locate 19, 40: Input "41. SH"; careerP0(idx, 40)
                         Locate 19, 47: Print " "
 
                     Case 42
                         Locate 20, 47: Print Space$(10)
-                        Locate 20, 40: Input "42. SF"; careerP0%(idx, 41)
+                        Locate 20, 40: Input "42. SF"; careerP0(idx, 41)
                         Locate 20, 47: Print " "
 
                 End Select

@@ -13,20 +13,20 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
     '-----
 
     'Pitcher Name
-    pitcher$ = Left$(pitchers$(D, P1%(D)), 14)
+    pitcher$ = Left$(pitchers$(D, P1(D)), 14)
     PrintOnGfx 65, 26, " " + pitcher$, imageScreen&
 
     '-- Why is this not Pitch Count / Strikes ???
 
     'Wins
-    FORMATTED$ = FUsing$(Str$(pitchRating(D, P1%(D), 1)), "##", 1)
+    FORMATTED$ = FUsing$(Str$(pitchRating(D, P1(D), 1)), "##", 1)
     pStats$ = FORMATTED$ + "-"
 
     'Losses
-    FORMATTED$ = FUsing$(Str$(pitchRating(D, P1%(D), 2)), "##", 1)
+    FORMATTED$ = FUsing$(Str$(pitchRating(D, P1(D), 2)), "##", 1)
 
     '                                              ERA
-    pStats$ = pStats$ + FORMATTED$ + " " + FUsing$(Str$(pitchRating(D, P1%(D), 10) / 100), "##.##", 1)
+    pStats$ = pStats$ + FORMATTED$ + " " + FUsing$(Str$(pitchRating(D, P1(D), 10) / 100), "##.##", 1)
 
     'Pitcher Stats
     PrintOnGfx 66, 27, pStats$, imageScreen&
@@ -37,21 +37,21 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
     PrintOnGfx 66, 28, "IP   H BB  K", imageScreen&
 
     'IP
-    If P8%(D, P1%(D), 0) <> 0 Then
-        pStats$ = FUsing$(Str$(Int(P8%(D, P1%(D), 0) / 3)), "##.#", 1)
+    If gamePitStats(D, P1(D), 0) <> 0 Then
+        pStats$ = FUsing$(Str$(Int(gamePitStats(D, P1(D), 0) / 3)), "##.#", 1)
     Else
         pStats$ = " 0.0"
     End If
 
     'H / BB / K
-    pStats$ = pStats$ + " " + FUsing$(Str$(P8%(D, P1%(D), 1)), "##", 1) + " " + FUsing$(Str$(P8%(D, P1%(D), 4)), "###", 1) + " " + FUsing$(Str$(P8%(D, P1%(D), 5)), "###", 1)
+    pStats$ = pStats$ + " " + FUsing$(Str$(gamePitStats(D, P1(D), 1)), "##", 1) + " " + FUsing$(Str$(gamePitStats(D, P1(D), 4)), "###", 1) + " " + FUsing$(Str$(gamePitStats(D, P1(D), 5)), "###", 1)
 
     PrintOnGfx 65, 29, pStats$, imageScreen&
 
     J = B3%(p, B1!(p))
 
     If B7%(p, B1!(p)) = 1 Then
-        X$ = pitchers$(p, P1%(p))
+        X$ = pitchers$(p, P1(p))
         'We're going to use this in just a bit
         'We'll be printing it with more space
         player$ = X$
@@ -68,12 +68,12 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
         _PrintMode _KeepBackground , imageScreen&
         Color 4294967295
 
-        If batRating(p, J, 0) < 0 Or batRating(p, J, 0) = 0 And pitchRating(D, P1%(D), 0) > 0 Then
+        If batRating(p, J, 0) < 0 Or batRating(p, J, 0) = 0 And pitchRating(D, P1(D), 0) > 0 Then
             'Batter Name - Right of Plate
             PrintOnGfx 41, 25, Left$(X$, 11), imageScreen&
         End If
 
-        If batRating(p, J, 0) > 0 Or batRating(p, J, 0) = 0 And pitchRating(D, P1%(D), 0) < 0 Then
+        If batRating(p, J, 0) > 0 Or batRating(p, J, 0) = 0 And pitchRating(D, P1(D), 0) < 0 Then
             'Batter Name - Left of Plate
             PrintOnGfx 30, 25, Left$(X$, 11), imageScreen&
         End If
@@ -112,27 +112,27 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
     Else
 
         'Batter Stats - Pitcher
-        If pitchRating(p, P1%(p), 11) <> 999 Then
+        If pitchRating(p, P1(p), 11) <> 999 Then
             If pAvg! = 0 Then
                 pStats$ = ".000"
             Else
-                pAvg! = pitchRating(p, P1%(p), 11)
+                pAvg! = pitchRating(p, P1(p), 11)
                 pStats$ = "." + FUsing$(Str$(pAvg! * 1000), "###", 1)
             End If
             PrintOnGfx 65, 24, pStats$ + "           ", imageScreen&
         Else
-            If pitchRating(p, P1%(p), 20) = 0 Then
+            If pitchRating(p, P1(p), 20) = 0 Then
                 PrintOnGfx 65, 24, ".000  0   0   0", imageScreen&
             Else
                 'AVG
-                pAvg! = pitchRating(p, P1%(p), 22) / pitchRating(p, P1%(p), 20)
+                pAvg! = pitchRating(p, P1(p), 22) / pitchRating(p, P1(p), 20)
 
                 If pAvg! = 0 Then
                     PrintOnGfx 65, 24, ".000  0   0   0", imageScreen&
                 Else
                     pStats$ = FUsing$(Str$(pAvg! * 1000), ".###", 1)
                     '                                 HR                                                BB                                         K
-                    pStats$ = pStats$ + " " + FUsing$(Str$(pitchRating(p, P1%(p), 25)), "##", 1) + " " + FUsing$(Str$(pitchRating(p, P1%(p), 27)), "###", 1) + " " + FUsing$(Str$(pitchRating(p, P1%(p), 28)), "###", 1)
+                    pStats$ = pStats$ + " " + FUsing$(Str$(pitchRating(p, P1(p), 25)), "##", 1) + " " + FUsing$(Str$(pitchRating(p, P1(p), 27)), "###", 1) + " " + FUsing$(Str$(pitchRating(p, P1(p), 28)), "###", 1)
                     PrintOnGfx 65, 24, pStats$, imageScreen&
 
                 End If
@@ -144,9 +144,9 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
 
     ' # - # TODAY
     If B7%(p, B1!(p)) <> 1 Then
-        today$ = FUsing$(Str$(B8%(p, B3%(p, B1!(p)), 1)), "##", 1) + "-" + FUsing$(Str$(B8%(p, B3%(p, B1!(p)), 0)), "##", 1)
+        today$ = FUsing$(Str$(gameBatStats(p, B3%(p, B1!(p)), 1)), "##", 1) + "-" + FUsing$(Str$(gameBatStats(p, B3%(p, B1!(p)), 0)), "##", 1)
     Else
-        today$ = FUsing$(Str$(P8%(p, P1%(p), 24)), "##", 1) + "-" + FUsing$(Str$(P8%(p, P1%(p), 23)), "##", 1)
+        today$ = FUsing$(Str$(gamePitStats(p, P1(p), 24)), "##", 1) + "-" + FUsing$(Str$(gamePitStats(p, P1(p), 23)), "##", 1)
     End If
 
     today$ = today$ + " TODAY"
@@ -190,7 +190,7 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
     If nbrOuts(0) <> 3 Then MO = 0
 
     For WK = 1 To 3
-        If gameB0%(WK, 0) > 0 Then MO = MO + 1
+        If B2%(WK, 0) > 0 Then MO = MO + 1
     Next
 
     'RUNNER AT THIRD
@@ -228,7 +228,7 @@ Sub DisplayRun_G (I2, p, X)
 
     End Select
 
-    J = gameB0%(I2, 0)
+    J = B2%(I2, 0)
 
     If J <> 0 Then
 
@@ -240,16 +240,16 @@ Sub DisplayRun_G (I2, p, X)
         Color 4294967295
 
         If B7%(p, J) = 1 Then
-            If pitchRating(p, P1%(p), 11) <> 999 Then
-                runner$ = pitchers$(p, P1%(p))
+            If pitchRating(p, P1(p), 11) <> 999 Then
+                runner$ = pitchers$(p, P1(p))
                 runner$ = PadRight(runner$, 11)
                 PrintOnGfx X, Y - 1, runner$, imageScreen&
                 PrintOnGfx X, Y, "1/  0", imageScreen&
             Else
-                runner$ = pitchers$(p, P1%(p))
+                runner$ = pitchers$(p, P1(p))
                 runner$ = PadRight(runner$, 11)
                 PrintOnGfx X, Y - 1, runner$, imageScreen&
-                runStats$ = FUsing$(Str$(pitchRating(p, P1%(p), 31)), "#", 1) + "/" + FUsing$(Str$(pitchRating(p, P1%(p), 29)), "###", 1)
+                runStats$ = FUsing$(Str$(pitchRating(p, P1(p), 31)), "#", 1) + "/" + FUsing$(Str$(pitchRating(p, P1(p), 29)), "###", 1)
                 PrintOnGfx X, Y, runStats$, imageScreen&
             End If
         Else
@@ -501,22 +501,22 @@ Sub DisplayBallField_Gfx (BC%, p, nbrStrikes, D)
     PrintOnGfx 61, 20, player$, imageScreen&
 
     'Pitcher Name
-    player$ = "[" + handed$(pitchRating(D, P1%(D), 0) + 2) + "] " + Left$(pitchers$(D, P1%(D)), 10)
+    player$ = "[" + handed$(pitchRating(D, P1(D), 0) + 2) + "] " + Left$(pitchers$(D, P1(D)), 10)
     player$ = PadRight(player$, 10)
     PrintOnGfx 35, 21, player$, imageScreen&
 
     'Pitcher Stats
-    If pitchRating(D, P1%(D), 17) = 1000 Then
+    If pitchRating(D, P1(D), 17) = 1000 Then
         fldPct$ = "1.000"
     Else
-        If pitchRating(D, P1%(D), 17) = 0 Then
+        If pitchRating(D, P1(D), 17) = 0 Then
             fldPct$ = " .000"
         Else
-            fldPct$ = "." + FUsing$(Str$(pitchRating(D, P1%(D), 17)), "###", 1)
+            fldPct$ = "." + FUsing$(Str$(pitchRating(D, P1(D), 17)), "###", 1)
         End If
     End If
 
-    player$ = "H" + FUsing$(Str$(pitchRating(D, P1%(D), 18)), "#", 1) + " F" + fldPct$
+    player$ = "H" + FUsing$(Str$(pitchRating(D, P1(D), 18)), "#", 1) + " F" + fldPct$
     'was column 39 previously
     PrintOnGfx 35, 22, player$, imageScreen&
 
