@@ -461,6 +461,7 @@ Function nameStatFile$ (teamName$)
 
     For XX = 12 To 14
 
+        'If Mid$(teamPrefix$, XX, 3) = " ST" Then
         If Mid$(teamPrefix$, XX, 2) = "ST" Then
             Mid$(teamPrefix$, 9, 1) = "_"
             Mid$(teamPrefix$, 10, 2) = "ST"

@@ -292,7 +292,8 @@ Sub SaveLeague (leagueFile$, league$, div1$, div2$, div3$, div4$)
     Shared memberIdx()
 
     Shared memberName$(), memberYear$()
-    Shared statFiles$()
+
+    Dim statFileNames$(TEAMS_PER_LEAGUE)
 
     Open diskPaths$(2) + leagueFile$ + ".TMI" For Output As #2
 
@@ -308,14 +309,15 @@ Sub SaveLeague (leagueFile$, league$, div1$, div2$, div3$, div4$)
         Print #2, memberYear$(X)
     Next
 
-    Close 2
+    Close #2
 
     For X = 1 To TEAMS_PER_LEAGUE
 
-        If memberName$(X) <> "XXX" Then
-           statFiles$(X) = nameStatFile$(memberName$(X))
+        If memberName$(X) = "XXX" Then
+            statFileNames$(X) = Chr$(42)
         Else
-            statFiles$(X) = Chr$(42)
+            teamName$ = memberName$(X)
+            statFileNames$(X) = nameStatFile$(teamName$)
         End If
 
     Next X
@@ -329,12 +331,10 @@ Sub SaveLeague (leagueFile$, league$, div1$, div2$, div3$, div4$)
     Write #2, div4$
 
     For X = 1 To TEAMS_PER_LEAGUE
-        Write #2, statFiles$(X)
+        Write #2, statFileNames$(X)
     Next
 
     Close 2
 
-
 End Sub
-
 

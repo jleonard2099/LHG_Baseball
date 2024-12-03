@@ -17,7 +17,6 @@ Sub CompileLeague ()
 
     Shared BA$(), memberName$(), leagLdrPlayer$(), leagLdrTeam$()
     Shared ER$(), leaderNames$()
-    Shared statFiles$()
 
     'Initialize values first
     APP = 0
@@ -59,8 +58,7 @@ Sub CompileLeague ()
         Input #2, league$, div1Name$, div2$, div3$, div4$
 
         For XW = 1 To TEAMS_PER_LEAGUE
-            Input #2, statFiles$(XW)
-            memberName$(XW) = statFiles$(XW)
+            Input #2, memberName$(XW)
         Next
 
         Close 2
@@ -70,17 +68,17 @@ Sub CompileLeague ()
             fullWins = 0
             fullLosses = 0
 
-            If statFiles$(XW) <> Chr$(42) Then
+            If memberName$(XW) <> Chr$(42) Then
 
-                haveStats = FindStatsPro%(statFiles$(XW), TN$, fullWins, fullLosses)
+                haveStats = FindStatsPro%(memberName$(XW), TN$, fullWins, fullLosses)
 
                 If (haveStats) Then
 
-                    L = Len(statFiles$(XW))
+                    L = Len(memberName(XW))
                     WT$ = ""
 
                     For X = 1 To L
-                        A = Asc(Mid$(statFiles$(XW), X, 1))
+                        A = Asc(Mid$(memberName$(XW), X, 1))
                         WT$ = WT$ + Chr$(A)
                     Next X
 
@@ -103,10 +101,10 @@ Sub CompileLeague ()
 
                     Next X
 
-                    If confGame <> 1 And _FileExists(diskPaths$(1) + statFiles$(XW)) Then
+                    If confGame <> 1 And _FileExists(diskPaths$(1) + memberName$(XW)) Then
 
-                        Call ReadStatsLeague(statFiles$(XW), TN$, totalGames)
-                        Call CheckStatsLeague(statFiles$(XW), WT$, totalGames)
+                        Call ReadStatsLeague(memberName$(XW), TN$, totalGames)
+                        Call CheckStatsLeague(memberName$(XW), WT$, totalGames)
                         Call CalcStatTotals(WT$, totalGames)
 
                     End If 'Done checking if we need to skip

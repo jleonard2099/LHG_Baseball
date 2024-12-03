@@ -45,7 +45,6 @@ Dim oneRunWins, oneRunLosses
 Dim memberIdx(TEAMS_PER_LEAGUE)
 Dim memberName$(TEAMS_PER_LEAGUE)
 Dim memberYear$(TEAMS_PER_LEAGUE)
-Dim statFiles$(TEAMS_PER_LEAGUE)
 
 '-- For Road Data
 Dim gameAtt_Road&(MAX_SCHED_STATS)

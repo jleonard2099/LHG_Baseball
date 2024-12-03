@@ -206,6 +206,8 @@ Sub UpdateExpandedStandings (league$)
                         teamTotWins!(currRecord) = teamTotWins!(currRecord) + 1
                         lastWinStreak!(currRecord) = lastWinStreak!(currRecord) + 1
                         lastLoseStreak!(currRecord) = 0
+                        cWinStreak!(currRecord) = cWinStreak!(currRecord) + 1
+                        cLoseStreak!(currRecord) = 0
 
                         If nbrInnings(I) > 9 Then 
                             totExtInnWins!(currRecord) = totExtInnWins!(currRecord) + 1
@@ -320,7 +322,7 @@ Sub NewStandings_Screen (league$)
         Color 11
         Locate 1, 35: Print league$
         Color 14
-        Locate 2: Print Tab(16); "                      MAG.  L  L   C  C   HOME  ROAD  X-IN  L-10"
+        Locate 2: Print Tab(16); "                      MAG. LNG LNG C  C   HOME  ROAD  X-IN  L-10"
         Locate 3
 
         Select Case NT
@@ -339,7 +341,7 @@ Sub NewStandings_Screen (league$)
 
         End Select
 
-        Print Tab(16); "G   W   L   PCT   GB   #    WS LS  WS LS  W- L  W- L  W- L  W- L"
+        Print Tab(16); "G   W   L   PCT   GB   #   WS  LS  WS LS  W- L  W- L  W- L  W- L"
 
         For I = AA To ZZ
 
@@ -362,7 +364,7 @@ Sub NewStandings_Screen (league$)
                         Print Tab(27); ".000";
                     Else
                         If teamTotWins!(I) + teamTotLosses!(I) <> 0 Then
-                            winPCT! = teamTotWins!(I) /  teamTotWins!(I) + teamTotLosses!(I)
+                            winPCT! = teamTotWins!(I) /  (teamTotWins!(I) + teamTotLosses!(I))
                             Print Tab(27); Using ".###"; winPCT!;
                         Else
                             If teamTotWins!(I) + teamTotLosses!(I) = 0 Then Print Tab(27); ".000";
@@ -378,7 +380,7 @@ Sub NewStandings_Screen (league$)
                     Print Tab(32); Using "##.#"; calcGB!;
                 End If
 
-                Print Tab(44); Using "##"; teamWinStreak!(I); Tab(47); teamLoseStreak!(I); Tab(51); cWinStreak!(I); Tab(54); cLoseStreak!(I);
+                Print Tab(43); Using "##"; teamWinStreak!(I); Tab(46); teamLoseStreak!(I); Tab(50); cWinStreak!(I); Tab(53); cLoseStreak!(I);
                 Print Tab(57); Using "##"; totHomeWins!(I);: Print Tab(60); Using "##"; totHomeLosses!(I);
                 Print Tab(63); Using "##"; totRoadWins!(I);: Print Tab(66); Using "##"; totRoadLosses!(I);
                 Print Tab(69); Using "##"; totExtInnWins!(I);: Print Tab(72); Using "##"; totExtInnLosses!(I);

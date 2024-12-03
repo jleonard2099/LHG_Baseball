@@ -831,25 +831,72 @@ Sub LOADER
     '-- Then delete it
     '-- And finally write as DEFAULT
     '-- Use same logic as for DEV.BAS
-    If Not _FileExists("DEFERA") Then
+    If _FileExists("DEFERA") Then
 
-        Open "DEFERA" For Output As #3
+        Open "DEFERA" For Input As #2
+        Input #2, playerOpt
+        Input #2, leagueOpt
+        Input #2, desigHit
+        Input #2, gameTypeOpt
+        Input #2, gameMonth
+        Input #2, dayOrNight
+        Input #2, useWeather
+        Input #2, useInj
+        Input #2, useLRSplit
+        Input #2, useRest
+        Input #2, useMgrProf
+        Input #2, pbpDelay!
+        Input #2, useVGA
+        Input #2, pitchEraOpt
 
-        For I = 1 To 4:
+        Close #2
+
+        Kill "DEV.BAS"
+
+    Else
+
+        If Not _FileExists("DEFAULT") Then
+
+            Open "DEFAULT" For Output As #3
+
+            'Player option
+            Print #3, 3
+
+            'NL / AL
+            Print #3, 1
+
+            'DH Opt, Game Type
+            For I = 1 To 2:
+                Print #3, 0
+            Next
+
+            'Game Month
+            Print #3, 4
+
+            'Day | Night Game
             Print #3, 0
-        Next
 
-        Print #3, 4
+            'Yes/No Options
+            For I = 1 To 5:
+                Print #3, 0
+            Next
 
-        For I = 6 To 14:
+            'PBP Delay
+            Print #3, 1.2
+
+            'Use Graphics?
+            Print #3, 1
+
+            'Pitcher Era
             Print #3, 0
-        Next
 
-        Close #3
+            Close #3
+
+        End If
 
     End If
 
-    Open "DEFERA" For Input As #4
+    Open "DEFAULT" For Input As #4
     Input #4, playerOpt
     Input #4, leagueOpt
     Input #4, desigHit
@@ -13078,16 +13125,16 @@ Sub BOX2FILE (printChoice, boxName$)
 
             For I2 = 1 To INNING%
                 Call InningPrintFile(I2)
-                If I = 0 Then 
+                If I = 0 Then
                     Print #2, Using "##"; inningScore(I, I2);
                 End If
-                If I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = INNING% And inningScore(1, INNING%) = 0 Then 
+                If I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = INNING% And inningScore(1, INNING%) = 0 Then
                     Print #2, " X";
                 End If
-                If I = 1 And gameScore(1, 0) < gameScore(0, 0) And I2 = INNING% Or I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = INNING% And inningScore(1, INNING%) > 0 Then 
+                If I = 1 And gameScore(1, 0) < gameScore(0, 0) And I2 = INNING% Or I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = INNING% And inningScore(1, INNING%) > 0 Then
                     Print #2, Using "##"; inningScore(I, I2);
                 End If
-                If I = 1 And I2 < INNING% Then 
+                If I = 1 And I2 < INNING% Then
                     Print #2, Using "##"; inningScore(I, I2);
                 End If
             Next I2
@@ -13109,21 +13156,21 @@ Sub BOX2FILE (printChoice, boxName$)
 
             For I2 = 1 To 9
                 Call InningPrintFile(I2)
-                If I = 0 Then 
+                If I = 0 Then
                     Print #2, Using "##"; inningScore(I, I2);
                 End If
-                If I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = 9 And inningScore(1, 9) = 0 Then 
+                If I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = 9 And inningScore(1, 9) = 0 Then
                     Print #2, " X";
                 End If
-                If I = 1 And gameScore(1, 0) < gameScore(0, 0) And I2 = 9 Or I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = 9 And inningScore(1, 9) > 0 Then 
+                If I = 1 And gameScore(1, 0) < gameScore(0, 0) And I2 = 9 Or I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = 9 And inningScore(1, 9) > 0 Then
                     Print #2, Using "##"; inningScore(I, I2);
                 End If
-                If I = 1 And I2 < 9 Then 
+                If I = 1 And I2 < 9 Then
                     Print #2, Using "##"; inningScore(I, I2);
                 End If
             Next I2
 
-            If INNING% = 10 Then 
+            If INNING% = 10 Then
                 Print #2, "   ";
             End If
             Print #2, " -";
@@ -13155,7 +13202,7 @@ Sub BOX2FILE (printChoice, boxName$)
                 Print #2, Using "##"; inningScore(I, I2);
             Next I2
 
-            If (INNING% Mod 3 = 0) Then 
+            If (INNING% Mod 3 = 0) Then
                 Print #2, " "
             End If
 
@@ -13250,12 +13297,12 @@ Sub BOX2FILE (printChoice, boxName$)
 
         Next I3
 
-        For I1 = 0 To 21: 
-            For I2 = 0 To 13: 
+        For I1 = 0 To 21:
+            For I2 = 0 To 13:
                 T3%(I2) = T3%(I2) + gamePitStats(I, I1, I2 + 23)
             Next
 
-            For I2 = 14 To 17: 
+            For I2 = 14 To 17:
                 T3%(I2) = T3%(I2) + gamePitStats(I, I1, I2 + 22)
             Next
         Next
@@ -13319,18 +13366,18 @@ Sub BOX2FILE (printChoice, boxName$)
                         gameL$ = pitchers$(I, I2)
                     End If
 
-                    If gamePitStats(I, I2, 19) > 0 Then 
+                    If gamePitStats(I, I2, 19) > 0 Then
                         Print #2, "(BS,";: Print #2, Using "##"; leagPitStats(I, I2, 19);: Print #2, ")";
                     End If
-                    If gamePitStats(I, I2, 22) > 0 Then 
+                    If gamePitStats(I, I2, 22) > 0 Then
                         Print #2, "(H,";: Print #2, Using "##"; leagPitStats(I, I2, 22);: Print #2, ")";
                     End If
 
                     Print #2, Tab(29);: Print #2, Using "##"; Int(gamePitStats(I, I2, 0) / 3);
 
-                    If gamePitStats(I, I2, 0) - (Int(gamePitStats(I, I2, 0) / 3) * 3) > 0 Then 
+                    If gamePitStats(I, I2, 0) - (Int(gamePitStats(I, I2, 0) / 3) * 3) > 0 Then
                         Print #2, ".";: Print #2, Using "#"; gamePitStats(I, I2, 0) - (Int(gamePitStats(I, I2, 0) / 3) * 3);
-                    End if
+                    End If
                     
                     Print #2, Tab(34);
                     Print #2, Using "## ##  ## ## ##"; gamePitStats(I, I2, 1); gamePitStats(I, I2, 2); gamePitStats(I, I2, 3); gamePitStats(I, I2, 4); gamePitStats(I, I2, 5);
@@ -13350,19 +13397,19 @@ Sub BOX2FILE (printChoice, boxName$)
                         End If
                     End If
 
-                    If P2%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then 
-                        Print #2, Using "## "; leagPitStats(I, I2, 6) + 1; 
-                    Else 
+                    If P2%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then
+                        Print #2, Using "## "; leagPitStats(I, I2, 6) + 1;
+                    Else
                         Print #2, Using "## "; leagPitStats(I, I2, 6);
                     End If
-                    If P2%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) < 0 Then 
-                        Print #2, Using "## "; leagPitStats(I, I2, 7) + 1; 
-                    Else 
+                    If P2%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) < 0 Then
+                        Print #2, Using "## "; leagPitStats(I, I2, 7) + 1;
+                    Else
                         Print #2, Using "## "; leagPitStats(I, I2, 7);
                     End If
-                    If S1%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then 
-                        Print #2, Using "## "; leagPitStats(I, I2, 12) + 1; 
-                    Else 
+                    If S1%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then
+                        Print #2, Using "## "; leagPitStats(I, I2, 12) + 1;
+                    Else
                         Print #2, Using "## "; leagPitStats(I, I2, 12);
                     End If
 
@@ -13380,7 +13427,7 @@ Sub BOX2FILE (printChoice, boxName$)
         Print #2, "TOTALS"; Tab(28);
         Print #2, Using "##"; Int(T3%(0) / 3);
 
-        If T3%(0) - (Int(T3%(0) / 3) * 3) > 0 Then 
+        If T3%(0) - (Int(T3%(0) / 3) * 3) > 0 Then
             Print #2, ".";: Print #2, Using "#"; T3%(0) - (Int(T3%(0) / 3) * 3);
         End If
 
@@ -13389,7 +13436,7 @@ Sub BOX2FILE (printChoice, boxName$)
 
         LYN% = CInt(T3%(0) / 3)
 
-        For I1 = 0 To 5: 
+        For I1 = 0 To 5:
             T3%(I1) = 0
         Next I1
 
@@ -13567,16 +13614,16 @@ Sub ScoreSummary
 
                 Call InningPrintBox(I2)
 
-                If I = 0 Then 
+                If I = 0 Then
                     Print Using "##"; inningScore(I, I2);
                 End If
-                If I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = INNING% And inningScore(1, INNING%) = 0 Then 
+                If I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = INNING% And inningScore(1, INNING%) = 0 Then
                     Print , " X";
                 End If
-                If I = 1 And gameScore(1, 0) < gameScore(0, 0) And I2 = INNING% Or I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = INNING% And inningScore(1, INNING%) > 0 Then 
+                If I = 1 And gameScore(1, 0) < gameScore(0, 0) And I2 = INNING% Or I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = INNING% And inningScore(1, INNING%) > 0 Then
                     Print Using "##"; inningScore(I, I2);
                 End If
-                If I = 1 And I2 < INNING% Then 
+                If I = 1 And I2 < INNING% Then
                     Print Using "##"; inningScore(I, I2);
                 End If
 
@@ -13657,7 +13704,7 @@ Sub ScoreSummary
 
         Next I
 
-        If P = 0 And INNING% < 19 Or INNING% = 19 Then 
+        If P = 0 And INNING% < 19 Or INNING% = 19 Then
             INNING% = INNING% - 1
         End If
 
@@ -13901,7 +13948,7 @@ Sub STATS2SCREEN
 
         Cls
 
-        For I1 = 0 To 22: 
+        For I1 = 0 To 22:
             T3%(I1) = 0
         Next I1
 
@@ -13933,7 +13980,7 @@ Sub STATS2SCREEN
                         gameW$ = pitchers$(I, I2)
                     End If
 
-                    If S1%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then 
+                    If S1%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then
                         Print "(S,"; Right$(Str$(leagPitStats(I, I2, 12) + 1), (Len(Str$(leagPitStats(I, I2, 12) + 1)) - 1)); ")";
                     End If
 
@@ -13942,16 +13989,16 @@ Sub STATS2SCREEN
                         gameL$ = pitchers$(I, I2)
                     End If
 
-                    If gamePitStats(I, I2, 19) > 0 Then 
+                    If gamePitStats(I, I2, 19) > 0 Then
                         Print "(BS,";: Print Using "##"; leagPitStats(I, I2, 19);: Print ")";
                     End If
-                    If gamePitStats(I, I2, 22) > 0 Then 
+                    If gamePitStats(I, I2, 22) > 0 Then
                         Print "(H,";: Print Using "##"; leagPitStats(I, I2, 22);: Print ")";
                     End If
 
                     Locate , 30: Print Using "##"; Int(gamePitStats(I, I2, 0) / 3);
 
-                    If gamePitStats(I, I2, 0) - (Int(gamePitStats(I, I2, 0) / 3) * 3) > 0 Then 
+                    If gamePitStats(I, I2, 0) - (Int(gamePitStats(I, I2, 0) / 3) * 3) > 0 Then
                         Print ".";: Print Using "#"; gamePitStats(I, I2, 0) - (Int(gamePitStats(I, I2, 0) / 3) * 3);
                     End If
 
@@ -13975,19 +14022,19 @@ Sub STATS2SCREEN
                         End If
                     End If
 
-                    If P2%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then 
-                        Print Using "## "; leagPitStats(I, I2, 6) + 1; 
-                    Else 
+                    If P2%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then
+                        Print Using "## "; leagPitStats(I, I2, 6) + 1;
+                    Else
                         Print Using "## "; leagPitStats(I, I2, 6);
                     End If
-                    If P2%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) < 0 Then 
-                        Print Using "## "; leagPitStats(I, I2, 7) + 1; 
-                    Else 
+                    If P2%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) < 0 Then
+                        Print Using "## "; leagPitStats(I, I2, 7) + 1;
+                    Else
                         Print Using "## "; leagPitStats(I, I2, 7);
                     End If
-                    If S1%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then 
-                        Print Using "## "; leagPitStats(I, I2, 12) + 1; 
-                    Else 
+                    If S1%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then
+                        Print Using "## "; leagPitStats(I, I2, 12) + 1;
+                    Else
                         Print Using "## "; leagPitStats(I, I2, 12);
                     End If
 
@@ -14048,7 +14095,7 @@ Sub STATS2SCREEN
     If E = 0 Then
         Print "none"
     Else
-        For X = 0 To (E - 1): 
+        For X = 0 To (E - 1):
             Print eventDesc$(X); ",";
         Next
         Print
@@ -14060,7 +14107,7 @@ Sub STATS2SCREEN
     If DB = 0 Then
         Print "none"
     Else
-        For X = 0 To (DB - 1): 
+        For X = 0 To (DB - 1):
             Print doublesPlayer$(X); ",";
         Next
         Print
@@ -14072,7 +14119,7 @@ Sub STATS2SCREEN
     If TR = 0 Then
         Print "none"
     Else
-        For X = 0 To (TR - 1): 
+        For X = 0 To (TR - 1):
             Print triplesPlayer$(X); ",";
         Next
         Print
@@ -14084,7 +14131,7 @@ Sub STATS2SCREEN
     If HR = 0 Then
         Print "none"
     Else
-        For X = 0 To (HR - 1): 
+        For X = 0 To (HR - 1):
             Print homeRuns$(X); ",";
         Next
         Print
@@ -14169,7 +14216,7 @@ Sub BOX2SPC (boxName$)
 
     Print #2,
 
-    If INNING% > eventSettings(1) Then 
+    If INNING% > eventSettings(1) Then
         Print #2, Using "MORE THAN ## INNINGS"; eventSettings(1)
     End If
 
@@ -14634,7 +14681,7 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx, dataOK)
         Next
 
         'If player is inactive
-        If batRating(gameIdx, I1, 31) <> 0 Then 
+        If batRating(gameIdx, I1, 31) <> 0 Then
             batRating(gameIdx, I1, 21) = 99
         End If
 
@@ -14648,10 +14695,10 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx, dataOK)
             pitchRating(gameIdx, I1, I2) = CVI(Q2$(I1 * 38 + I2 + 1005))
         Next
 
-        If pitchRating(gameIdx, I1, 34) <> 0 Then 
+        If pitchRating(gameIdx, I1, 34) <> 0 Then
             pitchRating(gameIdx, I1, 15) = 99
         End If
-        If pitchRating(gameIdx, I1, 0) = 0 Then 
+        If pitchRating(gameIdx, I1, 0) = 0 Then
             pitchRating(gameIdx, I1, 0) = 1
         End If
     Next
@@ -14667,12 +14714,12 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx, dataOK)
 
         For I1 = 0 To 22
             'check for 1934 season
-            If Val(Left$(gameTeams$(gameIdx), 2)) < 54 And Mid$(gameTeams$(gameIdx), 3, 1) = " " Then 
+            If Val(Left$(gameTeams$(gameIdx), 2)) < 54 And Mid$(gameTeams$(gameIdx), 3, 1) = " " Then
                 batRating(gameIdx, I1, 30) = batRating(gameIdx, I1, 30) * .75
             End If
 
             For I2 = 22 To 25
-                If batRating(gameIdx, I1, I2) <> -1 And batRating(gameIdx, I1, I2) <> 0 And batRating(gameIdx, I1, I2 + 4) = 0 Then 
+                If batRating(gameIdx, I1, I2) <> -1 And batRating(gameIdx, I1, I2) <> 0 And batRating(gameIdx, I1, I2 + 4) = 0 Then
                     batRating(gameIdx, I1, I2 + 4) = 900
                 End If
             Next
@@ -14849,7 +14896,7 @@ Sub ReadGameExtraData (teamYear$, teamIdx, gameIdx)
 
         Get #3, teamIdx
 
-        For X = 0 To 999: 
+        For X = 0 To 999:
             teamMgrProfileVal(gameIdx, X) = CVI(Q2$(X))
         Next
 
@@ -14886,7 +14933,7 @@ Sub ReadGameExtraData (teamYear$, teamIdx, gameIdx)
 
         If useInj = 1 Then
             For I1 = 0 To 22
-                If injuryStatus(gameIdx, I1) > 0 Then 
+                If injuryStatus(gameIdx, I1) > 0 Then
                     batRating(gameIdx, I1, 21) = 99
                 End If
             Next

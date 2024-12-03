@@ -1093,7 +1093,7 @@ Sub ReportsAllTeams ()
     Shared statP(), statP0()
 
     Shared batterNames$(), pitcherNames$()
-    Shared statFiles$()
+    Shared memberName$()
 
     Shared teamLosses, teamWins
 
@@ -1106,16 +1106,16 @@ Sub ReportsAllTeams ()
         Input #2, league$, div1$, div2$, div3$, div4$
 
         For XW = 1 To TEAMS_PER_LEAGUE
-            Input #2, statFiles$(XW)
+            Input #2, memberName$(XW)
         Next
 
         Close 2
 
         For XW = 1 To TEAMS_PER_LEAGUE
 
-            If _FileExists(diskPaths$(1) + statFiles$(XW)) Then
+            If _FileExists(diskPaths$(1) + memberName$(XW)) Then
 
-                Open diskPaths$(1) + statFiles$(XW) For Input As #1
+                Open diskPaths$(1) + memberName$(XW) For Input As #1
 
                 Input #1, teamName$
                 Input #1, teamWins
@@ -1165,11 +1165,11 @@ Sub ReportsAllTeams ()
                         Case "F"
                             userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
                             If userFile$ <> "" Then
-                                Call NewPrintStats(0, userFile$, statFiles$(XW), teamName$, nbrGames, 3, splitStatChoice)
+                                Call NewPrintStats(0, userFile$, memberName$(XW), teamName$, nbrGames, 3, splitStatChoice)
                             End If
 
                         Case "P"
-                            Call NewPrintStats(1, "REPORT", statFiles$(XW), teamName$, nbrGames, 3, splitStatChoice)
+                            Call NewPrintStats(1, "REPORT", memberName$(XW), teamName$, nbrGames, 3, splitStatChoice)
 
                     End Select
                     
@@ -1211,7 +1211,7 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
     Shared teamScore(), nbrInnings()
     Shared statS0(), oppScore()
 
-    RQ = Val(Right$(statFiles$(XW), 2))
+    RQ = Val(Right$(memberName$(XW), 2))
     RT = 60
     If RQ > RT Then
         '# games afer 1960
