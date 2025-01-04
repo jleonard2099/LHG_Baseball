@@ -47,6 +47,12 @@ Sub BLANK ()
 
             Next
 
+            leaderFile$ = diskPaths$(2) + leagueFile$ + ".LDR"
+            If _FileExists(leaderFile$) Then Kill leaderFile$
+
+            standingsFile$ = diskPaths$(2) + leagueFile$ + ".LDS"
+            If _FileExists(standingsFile$) Then Kill standingsFile$
+
         End If 'Done confirming to move forward with deletion
 
     End If

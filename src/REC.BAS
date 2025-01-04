@@ -18,7 +18,7 @@ Sub SeasonRecords ()
     Shared batRecPlyr$(), batRecTeam$(), batRecTmDesc$()    
     Shared pitRecTmDesc$(), pitRecPlyr$(), pitRecTeam$()
 
-    'If Not _FileExists(diskPaths$(1) + "BASEBALL.REC") Then
+    'If Not _FileExists(diskPaths$(1) + "RECORDS.MLB") Then
     '
     '   MsgText$ = "UNABLE TO LOCATE RECORDS PRESS ANY KEY TO RETURN TO MAIN MENU"
     '    BoxWidth = 24
@@ -105,8 +105,8 @@ Sub SeasonRecords ()
                     End If
 
                 Case 4
-                    If _FileExists(diskPaths$(1) + "BASEBALL.REC") Then 
-                        Kill diskPaths$(1) + "BASEBALL.REC"
+                    If _FileExists(diskPaths$(1) + "RECORDS.MLB") Then 
+                        Kill diskPaths$(1) + "RECORDS.MLB"
                     End If
 
             End Select
@@ -156,7 +156,7 @@ Sub UpdateRecords (leagueFile$)
     JP = 0
     TS = 0
 
-    If Not _FileExists(diskPaths$(2) + "BASEBALL.REC") And SELECTION% < 4 Then
+    If Not _FileExists(diskPaths$(2) + "RECORDS.MLB") And SELECTION% < 4 Then
     
         MsgText$ = "UNABLE TO LOCATE RECORDS PRESS ANY KEY TO RETURN TO MAIN MENU"
         BoxWidth = 24
@@ -168,7 +168,7 @@ Sub UpdateRecords (leagueFile$)
         
     Else
     
-        Open diskPaths$(2) + "BASEBALL.REC" For Input As #1
+        Open diskPaths$(2) + "RECORDS.MLB" For Input As #1
 
         For I = 1 To 32: 
             Input #1, batRecVal!(I), batRecPlyr$(I), batRecTeam$(I), batRecYr!(I)
@@ -203,7 +203,7 @@ Sub UpdateRecords (leagueFile$)
             I$ = GetKeyPress$
         Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
-        If Not _FileExists(diskPaths$(2) + "BASEBALL.REC") Then
+        If Not _FileExists(diskPaths$(2) + "RECORDS.MLB") Then
 
             pitRecVal!(23) = 100
             pitRecVal!(25) = 100
@@ -217,7 +217,7 @@ Sub UpdateRecords (leagueFile$)
 
         Else
 
-            Open diskPaths$(2) + "BASEBALL.REC" For Input As #1
+            Open diskPaths$(2) + "RECORDS.MLB" For Input As #1
 
             Print "READING IN CURRENT RECORDS"
 
@@ -690,7 +690,7 @@ Sub UpdateRecords (leagueFile$)
 
             Else
 
-                Open diskPaths$(2) + "BASEBALL.REC" For Output As #1
+                Open diskPaths$(2) + "RECORDS.MLB" For Output As #1
 
                 For I = 1 To 32:
                     Write #1, batRecVal!(I), batRecPlyr$(I), batRecTeam$(I), batRecYr!(I)
@@ -736,7 +736,7 @@ Sub ViewSeasonRecords (leagueFile$)
 
     Shared batIndCategory$(), pitIndCategory$(), batTeamCategory$(), pitTeamCategory$()
 
-    If Not _FileExists(diskPaths$(2) + "BASEBALL.REC") And SELECTION% < 4 Then
+    If Not _FileExists(diskPaths$(2) + "RECORDS.MLB") And SELECTION% < 4 Then
     
         MsgText$ = "UNABLE TO LOCATE RECORDS PRESS ANY KEY TO RETURN TO MAIN MENU"
         BoxWidth = 24
@@ -748,7 +748,7 @@ Sub ViewSeasonRecords (leagueFile$)
         
     Else
     
-        Open diskPaths$(2) + "BASEBALL.REC" For Input As #1
+        Open diskPaths$(2) + "RECORDS.MLB" For Input As #1
 
         For I = 1 To 32: 
             Input #1, batRecVal!(I), batRecPlyr$(I), batRecTeam$(I), batRecYr!(I)
@@ -1050,7 +1050,7 @@ Sub PrintSeasonRecords (printDest, destFile$, leagueName$)
 
     Shared batIndCategory$(), pitIndCategory$(), batTeamCategory$(), pitTeamCategory$()
 
-    If Not _FileExists(diskPaths$(2) + "BASEBALL.REC") And SELECTION% < 4 Then
+    If Not _FileExists(diskPaths$(2) + "RECORDS.MLB") And SELECTION% < 4 Then
     
         MsgText$ = "UNABLE TO LOCATE RECORDS PRESS ANY KEY TO RETURN TO MAIN MENU"
         BoxWidth = 24
@@ -1062,7 +1062,7 @@ Sub PrintSeasonRecords (printDest, destFile$, leagueName$)
         
     Else
     
-        Open diskPaths$(2) + "BASEBALL.REC" For Input As #1
+        Open diskPaths$(2) + "RECORDS.MLB" For Input As #1
 
         For I = 1 To 32: 
             Input #1, batRecVal!(I), batRecPlyr$(I), batRecTeam$(I), batRecYr!(I)

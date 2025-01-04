@@ -65,7 +65,7 @@ ReDim homeScores(MAX_SCHEDULE_GAMES), visitorScores(MAX_SCHEDULE_GAMES)
 
 ReDim scheduleH$(MAX_SCHEDULE_GAMES), scheduleV$(MAX_SCHEDULE_GAMES)
 'ReDim homeTeam$(MAX_SCHEDULE_GAMES), visitingTeam$(MAX_SCHEDULE_GAMES)
-ReDim scheduleYN$(MAX_SCHEDULE_GAMES, 1)
+'ReDim scheduleYN$(MAX_SCHEDULE_GAMES, 1)
 'ReDim yearNumber$(MAX_SCHEDULE_GAMES, 1)
 
 
@@ -260,8 +260,8 @@ Dim teamLosses, teamWins
 Dim daysRest(21), daysInjure(22)
 
 Dim totBatRat(15)
-Dim totPitch(33)	'totPitRat
-Dim totPitRat&(33)	'compTotPitRat&
+Dim totPitch(33) 'totPitRat
+Dim totPitRat&(33) 'compTotPitRat&
 
 Dim divisionNames$(4)
 Dim parkType$(3)
@@ -317,7 +317,7 @@ Dim Shared IJL%, INNING%, Inotloop%, LYN%
 Dim Shared PB%, PC%, SC%, WS%
 
 Dim Shared autoPlay, BV, compTeam, desigHit, D
-Dim Shared endGame, endAllGames, FontColAdj
+Dim Shared gameOver, endAllGames, FontColAdj
 Dim Shared gameLoc, gameTemp
 Dim Shared nbrStrikes, noLUFound, normalFinish
 Dim Shared P, pbpLine, PPH, pitchEraOpt, playerMode, playerOpt

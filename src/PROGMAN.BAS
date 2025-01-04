@@ -2584,7 +2584,7 @@ Sub ManagePitchingRotations (action%, targetTeam$, mgrNbr)
         GS% = GS% * SL% / 162
 
         For I = 1 To mgrProfileVal(1)
-            mgrProfileVal(I + 12) = Int(pitcherRatings(mgrProfileVal(I + 2), 5) * 100 / GS% + .5)
+            mgrProfileVal(I + 12) = CInt(pitcherRatings(mgrProfileVal(I + 2), 5) * 100 / GS%)
         Next
 
         SS = 0
@@ -2599,7 +2599,7 @@ Sub ManagePitchingRotations (action%, targetTeam$, mgrNbr)
 
         For I = 21 To 36
             If mgrProfileVal(I) >= 0 And mgrProfileVal(I) <= 21 Then
-                mgrProfileVal(I + 20) = Int(pitcherRatings(mgrProfileVal(I), 5) * 100 / SS + .5)
+                mgrProfileVal(I + 20) = CInt(pitcherRatings(mgrProfileVal(I), 5) * 100 / SS)
             End If
         Next
 

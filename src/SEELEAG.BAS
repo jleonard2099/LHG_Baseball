@@ -194,7 +194,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
                 J! = 0
                 If divWins(P) + divLosses(P) > 0 Then J! = divWins(P) / (divWins(P) + divLosses(P))
 
-                J! = Int(1000 * J! + .5)
+                J! = CInt(1000 * J!)
 
                 If J! = 1000 Then
                     leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
@@ -203,18 +203,16 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
                     If J! > 1000 Then
 
                         A$ = Str$(J! - 1000)
-                        L = Len(A$)
-                        A$ = Right$(A$, L - 1)
-                        '0-pad PCT of fewer than 3 chars
-                        While Len(A$) < 3: A$ = "0" + A$: Wend
+                        A$ = Right$(A$, Len(A$) - 1)
+                        A$ = Right$(("000" + LTrim$(A$)), 3)
 
                         leaderPlayer$(P) = leaderPlayer$(P) + "1." + A$
+
                     Else
+
                         A$ = Str$(J!)
-                        L = Len(A$)
-                        A$ = Right$(A$, L - 1)
-                        '0-pad PCT of fewer than 3 chars
-                        While Len(A$) < 3: A$ = "0" + A$: Wend
+                        A$ = Right$(A$, Len(A$) - 1)
+                        A$ = Right$(("000" + LTrim$(A$)), 3)
 
                         leaderPlayer$(P) = leaderPlayer$(P) + "." + A$
 
@@ -383,7 +381,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
 
-            J! = Int(1000 * leagLdrVal1!(P) + .5)
+            J! = CInt(1000 * leagLdrVal1!(P))
 
             If J! = 1000 Then
 
@@ -392,22 +390,19 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
             Else
 
                 If J! > 1000 Then
+
                     A$ = Str$(J! - 1000)
-                    L = Len(A$)
-                    A$ = Right$(A$, L - 1)
-                    While Len(A$) < 3: A$ = "0" + A$: Wend
+                    A$ = Right$(A$, Len(A$) - 1)
+                    A$ = Right$(("000" + LTrim$(A$)), 3)
 
                     A$ = "1." + A$
                     leaderPlayer$(P) = leaderPlayer$(P) + A$
-                Else
-                    A$ = Str$(J!)
-                    L = Len(A$)
-                    A$ = Right$(A$, L - 1)
 
-                    '0-pad PCT of fewer than 3 chars
-                    While Len(A$) < 3
-                        A$ = "0" + A$
-                    Wend
+                Else
+
+                    A$ = Str$(J!)
+                    A$ = Right$(A$, Len(A$) - 1)
+                    A$ = Right$(("000" + LTrim$(A$)), 3)
 
                     leaderPlayer$(P) = leaderPlayer$(P) + "." + A$
 
@@ -687,7 +682,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
             End If
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
 
-            J! = Int(1000 * leagLdrVal1!(P) + .5)
+            J! = CInt(1000 * leagLdrVal1!(P))
 
             If J! = 1000 Then
 
@@ -696,23 +691,19 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
             Else
 
                 If J! > 1000 Then
+
                     A$ = Str$(J! - 1000)
-                    L = Len(A$)
-                    A$ = Right$(A$, L - 1)
-                    '0-pad % fewer than 3 chars
-                    While Len(A$) < 3
-                        A$ = "0" + A$
-                    Wend
+                    A$ = Right$(A$, Len(A$) - 1)
+                    A$ = Right$(("000" + LTrim$(A$)), 3)
+
                     A$ = "1." + A$
                     leaderPlayer$(P) = leaderPlayer$(P) + A$
+
                 Else
+
                     A$ = Str$(J!)
-                    L = Len(A$)
-                    A$ = Right$(A$, L - 1)
-                    '0-pad % fewer than 3 chars
-                    While Len(A$) < 3
-                        A$ = "0" + A$
-                    Wend
+                    A$ = Right$(A$, Len(A$) - 1)
+                    A$ = Right$(("000" + LTrim$(A$)), 3)
 
                     leaderPlayer$(P) = leaderPlayer$(P) + "." + A$
 
@@ -754,7 +745,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
             If leagLdrTeam$(P) <> "*" Then leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
 
-            J! = Int(1000 * leagLdrVal1!(P) + .5)
+            J! = CInt(1000 * leagLdrVal1!(P))
 
             If J! = 1000 Then
 
@@ -763,24 +754,20 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
             Else
 
                 If J! > 1000 Then
+
                     A$ = Str$(J! - 1000)
-                    L = Len(A$)
-                    A$ = Right$(A$, L - 1)
-                    '0-pad % fewer than 3 chars
-                    While Len(A$) < 3
-                        A$ = "0" + A$
-                    Wend
+                    A$ = Right$(A$, Len(A$) - 1)
+                    A$ = Right$(("000" + LTrim$(A$)), 3)
+
                     A$ = "1." + A$
                     leaderPlayer$(P) = leaderPlayer$(P) + A$
+
                 Else
+
                     A$ = Str$(J!)
-                    L = Len(A$)
-                    A$ = Right$(A$, L - 1)
-                    '0-pad PCT of fewer than 3 chars
-                    '0-pad % fewer than 3 chars
-                    While Len(A$) < 3
-                        A$ = "0" + A$
-                    Wend
+                    A$ = Right$(A$, Len(A$) - 1)
+                    A$ = Right$(("000" + LTrim$(A$)), 3)
+
                     leaderPlayer$(P) = leaderPlayer$(P) + "." + A$
 
                 End If
@@ -880,16 +867,13 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
             End If
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
 
-            J! = Int(100 * leagLdrVal1!(P) + .5)
+            J! = CInt(100 * leagLdrVal1!(P))
             A$ = Str$(J!)
 
-            LN = Len(A$)
-            A$ = Right$(A$, LN - 1)
+            A$ = Right$(A$, Len(A$) - 1)
+            A$ = Right$(("000" + LTrim$(A$)), 3)
+            A$ = Left$(A$, Len(A$) - 2) + "." + Right$(A$, 2)
 
-            LN = Len(A$)
-            While Len(A$) < 3: A$ = "0" + A$: Wend
-
-            A$ = Left$(A$, LN - 2) + "." + Right$(A$, 2)
             A$ = "    " + A$
             leaderPlayer$(P) = leaderPlayer$(P) + Right$(A$, 5)
 
@@ -1333,18 +1317,15 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = divWins(P)
-            W = 3
-            A$ = "     " + Str$(J)
-            A$ = Right$(A$, W)
+            A$ = "     " + Str$(divWins(P))
+            A$ = Right$(A$, 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
             While Len(leaderPlayer$(P)) < 16
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = divLosses(P)
-            A$ = "     " + Str$(J)
+            A$ = "     " + Str$(divLosses(P))
             A$ = Right$(A$, W)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
@@ -1356,7 +1337,8 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
             If divWins(P) + divLosses(P) > 0 Then 
                 J! = divWins(P) / (divWins(P) + divLosses(P))
             End If
-            J! = Int(1000 * J! + .5)
+
+            J! = CInt(1000 * J!)
             If J! = 1000 Then 
                 leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
             End If
@@ -1400,21 +1382,17 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = divWins(P)
-            W = 3
-            A$ = "     " + Str$(J)
-            A$ = Right$(A$, W)
+            A$ = "     " + Str$(divWins(P))
+            A$ = Right$(A$, 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
-            L = 16
-
-            While Len(leaderPlayer$(P)) < L
+            While Len(leaderPlayer$(P)) < 16
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
             J! = divLosses(P)
-            A$ = "     " + Str$(J)
-            A$ = Right$(A$, W)
+            A$ = "     " + Str$(J!)
+            A$ = Right$(A$, 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
             While Len(leaderPlayer$(P)) < 21
@@ -1425,7 +1403,8 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
             If divWins(P) + divLosses(P) > 0 Then 
                 J! = divWins(P) / (divWins(P) + divLosses(P))
             End If
-            J! = Int(1000 * J! + .5)
+            
+            J! = CInt(1000 * J!)
             If J! = 1000 Then 
                 leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
             End If
@@ -1467,19 +1446,16 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = divWins(P)
-            W = 3
-            A$ = "     " + Str$(J)
-            A$ = Right$(A$, W)
+            A$ = "     " + Str$(divWins(P))
+            A$ = Right$(A$, 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
             While Len(leaderPlayer$(P)) < 16
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = divLosses(P)
-            A$ = "     " + Str$(J)
-            A$ = Right$(A$, W)
+            A$ = "     " + Str$(divLosses(P))
+            A$ = Right$(A$, 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
             While Len(leaderPlayer$(P)) < 21
@@ -1490,7 +1466,8 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
             If divWins(P) + divLosses(P) > 0 Then 
                 J! = divWins(P) / (divWins(P) + divLosses(P))
             End If
-            J! = Int(1000 * J! + .5)
+            
+            J! = CInt(1000 * J!)
             If J! = 1000 Then 
                 leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
             End If
@@ -1532,19 +1509,16 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = divWins(P)
-            W = 3
-            A$ = "     " + Str$(J)
-            A$ = Right$(A$, W)
+            A$ = "     " + Str$(divWins(P))
+            A$ = Right$(A$, 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
             While Len(leaderPlayer$(P)) < 16
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = divLosses(P)
-            A$ = "     " + Str$(J)
-            A$ = Right$(A$, W)
+            A$ = "     " + Str$(divLosses(P))
+            A$ = Right$(A$, 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
             While Len(leaderPlayer$(P)) < 21
@@ -1555,7 +1529,8 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
             If divWins(P) + divLosses(P) > 0 Then 
                 J! = divWins(P) / (divWins(P) + divLosses(P))
             End If
-            J! = Int(1000 * J! + .5)
+            
+            J! = CInt(1000 * J!)
             If J! = 1000 Then leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
 
             While Len(leaderPlayer$(P)) < 28
@@ -1687,12 +1662,11 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = leagLdrVal1!(P)
-            J! = Int(1000 * J! + .5)
-
+            J! = CInt(1000 * leagLdrVal1!(P))
             If J! = 1000 Then leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
+
             J! = leagLdrVal2!(P)
-            leaderPlayer$(P) = leaderPlayer$(P) + " " + Str$(J)
+            leaderPlayer$(P) = leaderPlayer$(P) + " " + Str$(J!)
 
         End If
 
@@ -1725,12 +1699,12 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = leagLdrVal1!(P)
-            J! = Int(1000 * J! + .5)
+            J! = CInt(1000 * leagLdrVal1!(P))
 
             If J! = 1000 Then 
                 leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
             End If
+
             J! = leagLdrVal2!(P)
             leaderPlayer$(P) = leaderPlayer$(P) + " " + Str$(J!)
 
@@ -1783,11 +1757,8 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = leagLdrVal1!(P)
-            W = 3
-
-            A$ = "     " + Str$(J)
-            A$ = Right$(A$, W)
+            A$ = "     " + Str$(leagLdrVal1!(P))
+            A$ = Right$(A$, 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
         End If
@@ -1816,12 +1787,10 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = leagLdrVal1!(P)
-            W = 3
-
-            A$ = "     " + Str$(J)
-            A$ = Right$(A$, W)
+            A$ = "     " + Str$(leagLdrVal1!(P))
+            A$ = Right$(A$, 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
+
         End If
 
     Next P
@@ -1868,10 +1837,8 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = leagLdrVal1!(P)
-            W = 3
-            A$ = "     " + Str$(J)
-            A$ = Right$(A$, W)
+            A$ = "     " + Str$(leagLdrVal1!(P))
+            A$ = Right$(A$, 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
         End If
@@ -1903,10 +1870,8 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = leagLdrVal1!(P)
-            W = 3
-            A$ = "     " + Str$(J)
-            A$ = Right$(A$, W)
+            A$ = "     " + Str$(leagLdrVal1!(P))
+            A$ = Right$(A$, 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
         End If
@@ -1945,17 +1910,20 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         leaderPlayer$(P) = ""
 
         If leagLdrPlayer$(P) <> "*" Then
-            leaderPlayer$(P) = leagLdrPlayer$(P): If leagLdrTeam$(P) <> "*" Then leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+
+            leaderPlayer$(P) = leagLdrPlayer$(P)
+            If leagLdrTeam$(P) <> "*" Then 
+                leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
+            End If
 
             While Len(leaderPlayer$(P)) < 28
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = leagLdrVal1!(P)
-            W = 3
-            A$ = "     " + Str$(J)
-            A$ = Right$(A$, W)
+            A$ = "     " + Str$(leagLdrVal1!(P))
+            A$ = Right$(A$, 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
+
         End If
 
     Next P
@@ -1983,11 +1951,10 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = leagLdrVal1!(P)
-            W = 3
-            A$ = "     " + Str$(J)
-            A$ = Right$(A$, W)
+            A$ = "     " + Str$(leagLdrVal1!(P))
+            A$ = Right$(A$, 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
+
         End If
 
     Next P
@@ -2033,11 +2000,10 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = leagLdrVal1!(P)
-            W = 3
-            A$ = "     " + Str$(J)
-            A$ = Right$(A$, W)
+            A$ = "     " + Str$(leagLdrVal1!(P))
+            A$ = Right$(A$, 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
+
         End If
 
     Next P
@@ -2065,11 +2031,11 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = leagLdrVal1!(P)
-            J! = Int(1000 * J! + .5)
+            J! = CInt(1000 * leagLdrVal1!(P))
             If J! = 1000 Then 
                 leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
             End If
+
         End If
 
     Next P
@@ -2115,11 +2081,11 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = leagLdrVal1!(P)
-            J! = Int(1000 * J! + .5)
+            J! = CInt(1000 * leagLdrVal1!(P))
             If J! = 1000 Then 
                 leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
             End If
+
         End If
 
     Next P
@@ -2147,11 +2113,10 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = leagLdrVal1!(P)
-            W = 3
-            A$ = "     " + Str$(J)
-            A$ = Right$(A$, W)
+            A$ = "     " + Str$(leagLdrVal1!(P))
+            A$ = Right$(A$, 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
+
         End If
 
     Next P
@@ -2197,11 +2162,10 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = leagLdrVal1!(P)
-            W = 3
-            A$ = "     " + Str$(J)
-            A$ = Right$(A$, W)
+            A$ = "     " + Str$(leagLdrVal1!(P))
+            A$ = Right$(A$, 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
+
         End If
 
     Next P
@@ -2227,11 +2191,10 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = leagLdrVal1!(P)
-            W = 3
-            A$ = "     " + Str$(J)
-            A$ = Right$(A$, W)
+            A$ = "     " + Str$(leagLdrVal1!(P))
+            A$ = Right$(A$, 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
+
         End If
 
     Next P
@@ -2278,24 +2241,18 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = leagLdrVal1!(P)
-            J! = Int(100 * J! + .5)
-            A$ = Str$(J)
-            LN = Len(A$)
-            A$ = Right$(A$, LN - 1)
+            J! = CInt(100 * leagLdrVal1!(P))
+            A$ = Str$(J!)
 
-            '-- couldn't we just do Print Using???
-            While Len(A$) < 3
-                LN = Len(A$)
-                A$ = "0" + A$
-            Wend
-
+            A$ = Right$(A$, Len(A$) - 1)
+            A$ = Right$(("000" + LTrim$(A$)), 3)
             A$ = Left$(A$, LN - 2) + "." + Right$(A$, 2)
             A$ = "    " + A$
             A$ = Right$(A$, 5)
-            leaderPlayer$(P) = leaderPlayer$(P) + A$
-            J! = Int(leagLdrVal2!(P))
 
+            leaderPlayer$(P) = leaderPlayer$(P) + A$
+
+            J! = CInt(leagLdrVal2!(P))
             leaderPlayer$(P) = leaderPlayer$(P) + " " + Str$(J!)
 
         End If
@@ -2325,16 +2282,14 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = leagLdrVal1!(P)
-            W = 2
-            A$ = "     " + Str$(J)
-            A$ = Right$(A$, W)
+            A$ = "     " + Str$(leagLdrVal1!(P))
+            A$ = Right$(A$, 2)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
             leaderPlayer$(P) = leaderPlayer$(P) + "-"
 
             J! = leagLdrVal2!(P)
-            A$ = "     " + Str$(J)
-            A$ = Right$(A$, W)
+            A$ = "     " + Str$(leagLdrVal1!(P))
+            A$ = Right$(A$, 2)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
         End If
@@ -2362,11 +2317,10 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = leagLdrVal1!(P)
-            W = 3
-            A$ = "     " + Str$(J)
-            A$ = Right$(A$, W)
+            A$ = "     " + Str$(leagLdrVal1!(P))
+            A$ = Right$(A$, 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
+
         End If
 
     Next P
@@ -2415,10 +2369,10 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
             Wend
 
             J! = Int(leagLdrVal1!(P))
-            W = 3
-            A$ = "     " + Str$(J)
-            A$ = Right$(A$, W)
+            A$ = "     " + Str$(J!)
+            A$ = Right$(A$, 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
+
         End If
 
     Next P
@@ -2446,11 +2400,10 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = leagLdrVal1!(P)
-            W = 3
-            A$ = "     " + Str$(J)
-            A$ = Right$(A$, W)
+            A$ = "     " + Str$(leagLdrVal1!(P))
+            A$ = Right$(A$, 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
+
         End If
 
     Next P
@@ -2496,11 +2449,10 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = leagLdrVal1!(P)
-            W = 3
-            A$ = "     " + Str$(J)
-            A$ = Right$(A$, W)
+            A$ = "     " + Str$(leagLdrVal1!(P))
+            A$ = Right$(A$, 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
+
         End If
 
     Next P
@@ -2526,11 +2478,10 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = leagLdrVal1!(P)
-            W = 3
-            A$ = "     " + Str$(J)
-            A$ = Right$(A$, W)
+            A$ = "     " + Str$(leagLdrVal1!(P))
+            A$ = Right$(A$, 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
+
         End If
 
     Next P
@@ -2566,6 +2517,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         leaderPlayer$(P) = ""
 
         If leagLdrPlayer$(P) <> "*" Then
+
             leaderPlayer$(P) = leagLdrPlayer$(P)
             If leagLdrTeam$(P) <> "*" Then 
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
@@ -2575,11 +2527,10 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = leagLdrVal1!(P)
-            W = 3
-            A$ = "     " + Str$(J)
-            A$ = Right$(A$, W)
+            A$ = "     " + Str$(leagLdrVal1!(P))
+            A$ = Right$(A$, 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
+
         End If
 
     Next P
@@ -2610,12 +2561,12 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + " "
             Wend
 
-            J! = leagLdrVal1!(P)
-            W = 3
-            A$ = "     " + Str$(J)
-            A$ = Right$(A$, W)
+            A$ = "     " + Str$(leagLdrVal1!(P))
+            A$ = Right$(A$, 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
+
         End If
+
     Next P
 
     For P = 228 To 237

@@ -661,7 +661,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
                 QT = 154
             End If
 
-            statCalc% = (Int((((statB(I) + 0) / QT) * (statT1!(9) + 1)) + .5) - (statB0(I, 0) + 0))
+            statCalc% = (CInt((((statB(I) + 0) / QT) * (statT1!(9) + 1))) - (statB0(I, 0) + 0))
 
             If (statB(I) > 0) And statCalc% > 0 Then
                 Locate , 31: Print Using "####"; statCalc%;
@@ -676,7 +676,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
 
             If statB(I) > 0 Then 
                 Locate , 37
-                H5% = Int((((statB(I) + 0) / QT) * (statT1!(9) + 1)) + .5)
+                H5% = CInt((((statB(I) + 0) / QT) * (statT1!(9) + 1)))
                 Print Using "####"; H5%;
                 statT0!(13) = statT0!(13) + H5%
             End If
@@ -993,7 +993,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
 
             '%RIP
             If statP(I) > 0 Then 
-                Locate , 76: Print Using "###"; Int((((statP0(I, 0) / 3) * 100) / statP(I)) + .5);
+                Locate , 76: Print Using "###"; CInt((((statP0(I, 0) / 3) * 100) / statP(I)));
             End If
             If statP(I) = 0 Then Print "  ";
 
@@ -1332,19 +1332,25 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
 
             LPrint Tab(87);
 
-            If statB(I) > 0 And (Int((((statB(I) + 0) / QT) * (statT1!(9) + 1)) + .5) - (statB0(I, 0) + 0)) > 0 Then
-                LPrint Using "###"; Int((((statB(I) + 0) / QT) * (statT1!(9) + 1)) + .5) - (statB0(I, 0) + 0);
+            If statB(I) > 0 And (CInt((((statB(I) + 0) / QT) * (statT1!(9) + 1))) - (statB0(I, 0) + 0)) > 0 Then
+                LPrint Using "###"; CInt((((statB(I) + 0) / QT) * (statT1!(9) + 1))) - (statB0(I, 0) + 0);
             Else
                 If statB(I) > 0 Then
-                    LPrint Using "###"; Int(((statB(I) / QT) * (statT1!(9) + 1)) + .5) - (statB0(I, 0) + 0);
+                    LPrint Using "###"; CInt(((statB(I) / QT) * (statT1!(9) + 1))) - (statB0(I, 0) + 0);
                 End If
             End If
 
             LPrint Tab(95);
-            If statB(I) > 0 Then H5% = Int((((statB(I) + 0) / QT) * (statT1!(9) + 1)) + .5): LPrint Using "###"; H5%;: statT0!(13) = statT0!(13) + H5%
+            If statB(I) > 0 Then 
+                H5% = CInt((((statB(I) + 0) / QT) * (statT1!(9) + 1)))
+                LPrint Using "###"; H5%;
+                statT0!(13) = statT0!(13) + H5%
+            End If
 
             LPrint Tab(100);
-            If statB(I) > 0 Then LPrint Using "###"; ((statB0(I, 0) / statB(I)) * 100);
+            If statB(I) > 0 Then 
+                LPrint Using "###"; ((statB0(I, 0) / statB(I)) * 100);
+            End If
 
             LPrint Tab(105);: LPrint Using "####"; statB0(I, 16);
             LPrint Tab(110);: LPrint Using "###"; statB0(I, 17);
@@ -1540,7 +1546,7 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
             LPrint Tab(74);
 
             If statP(I) > 0 Then
-                LPrint Using "###"; Int((((statP0(I, 0) / 3) * 100) / statP(I)) + .5);
+                LPrint Using "###"; CInt((((statP0(I, 0) / 3) * 100) / statP(I)));
             Else
                 '= 0
                 LPrint "  ";

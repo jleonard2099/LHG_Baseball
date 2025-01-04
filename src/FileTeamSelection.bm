@@ -195,7 +195,7 @@ Sub SelectTeam (numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%)
             'Color 31: Print "LOADING..."
 
             Call ReadTeam(yearNumber$, teamName$, selectedIdx, validData)
-            Call ReadExtraData(yearNumber$, teamName$, selectedIdx)
+            Call ReadExtraData(yearNumber$, selectedIdx)
 
         End If
 
@@ -287,7 +287,6 @@ Sub ReadTeam (teamYear$, targetTeam$, teamIdx, dataOK)
     Manager$ = RTrim$(Q$(1841))
     teamAbbrev$ = RTrim$(Q$(1842))
 
-    '-- This is currently not used
     CK = CVI(Q$(1843))
 
     'Close team file
@@ -311,12 +310,12 @@ End Sub
 '----------------------------------------
 'Reads in extra data for the selected team, 
 ' given it's index in the team file. 
-'This extra file usually includes info.
-' related to stadiums, coaches, etc.
+'This extra file includes Lefty-Right 
+' calculations.
 'This routine is highly customized TO
 ' the specific game for which it has
 ' been included for.
-Sub ReadExtraData (teamYear$, targetTeam$, teamIdx)
+Sub ReadExtraData (teamYear$, teamIdx)
 
     Shared teamSA(), teamTS()
     Shared batterRatings(), pitcherRatings()

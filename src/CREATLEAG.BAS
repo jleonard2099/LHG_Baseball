@@ -24,7 +24,7 @@ Sub CREATLEAG ()
         Call TITLE
 
         menuChoices$(1) = "CREATE A LEAGUE       "
-        menuChoices$(2) = "MANAGE LEAGUE MEMBERS "
+        menuChoices$(2) = "MODIFY LEAGUE MEMBERS "
         menuChoices$(3) = "RETURN TO LEADERS MENU"
         SELECTION% = 1
         Count% = 3
@@ -259,9 +259,9 @@ Sub ReviewEditLeague (leagueFile$, league$, div1$, div2$, div3$, div4$)
 
             Do
                 Locate 22, 35
-                Print "SLOT # (1-40) ";
+                    Print "SLOT # (1-" + Str$(TEAMS_PER_LEAGUE) + ") ";
                 Input B
-            Loop Until B >= 1 Or B <= 40
+            Loop Until B >= 1 Or B <= TEAMS_PER_LEAGUE
 
             If choice = 1 Then
                 'Add team

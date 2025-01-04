@@ -44,7 +44,13 @@ End Sub
 '----------------------------------------
 '       LoadLRForTrade Subroutine
 '----------------------------------------
-'...explanation...
+'Reads in extra data for the selected team, 
+' given it's index in the team file. 
+'This extra file includes Lefty-Right 
+' calculations.
+'This routine is highly customized TO
+' the specific game for which it has
+' been included for.
 Sub LoadLRForTrade (teamYear$, tradeIdx)
 
     Shared batRat_TRADE(), pitRat_TRADE()
@@ -1278,10 +1284,10 @@ Sub TradeSummary_Pitchers (p1idx, p2idx)
     Locate , 55: Print tradeP0(1, p2idx, 12)
     Locate , 1: Print pitRat_TRADE(0, p1idx, 6);
     Locate , 10: Print "IP";
-    Locate , 15: Print Int((tradeP0(0, p1idx, 0) / 3) + .5);
+    Locate , 15: Print CInt((tradeP0(0, p1idx, 0) / 3));
     Locate , 41: Print pitRat_TRADE(1, p2idx, 6);
     Locate , 50: Print "IP";
-    Locate , 55: Print Int((tradeP0(1, p2idx, 0) / 3) + .5)
+    Locate , 55: Print CInt((tradeP0(1, p2idx, 0) / 3))
     Locate , 1: Print pitRat_TRADE(0, p1idx, 7);
     Locate , 10: Print "H";
     Locate , 15: Print tradeP0(0, p1idx, 1);

@@ -10,7 +10,7 @@ Sub DRAFT ()
     Shared batterRatings(), batRat_DRAFT()
     Shared draftSA(), draftTS()
     Shared pitcherRatings(), pitRat_DRAFT()
-    Shared teamRatings(), teamSA(), teamTS()
+    Shared teamSA(), teamTS()
 
     Shared batterNames$(), batNames_DRAFT$()
     Shared pitcherNames$(), pitNames_DRAFT$()
@@ -674,7 +674,7 @@ End Sub
 'choosing the team to draft players to
 Sub ChooseDestTeam (yearNumber$, numberTeams, chosenIdx, teamName$)
 
-    Shared teamRatings()
+    Shared teamRat_DRAFT()
 
     Shared previousYear$
 
@@ -1070,124 +1070,146 @@ Sub ReadDestTeam (teamYear$, targetTeam$, teamIdx, dataOK)
 
     If CK = 999 Then
 
-        If Not _FileExists(diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$) Then
-
-            'MsgText$ = "WARNING!!! NO DATA FILE WAS FOUND FOR THIS TEAM. PRESS ANY KEY TO CONTINUE"
-            'BoxWidth = 24
-            'BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-            'Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
-            'Call CSMsgBox(MsgText$, BoxWidth, Pass)
-            'I$ = GetKeyPress$
-            'Call CSMsgBox("", 0, Pass)
-
-            'dataOK = 0
-
-        End If
-
-        Open diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$ For Random As #1 Len = DATA_SIZE_BYTES
-
-        For X = 0 To 11
-            Field #1, X * 2 As X$, 2 As Q$(X + 1), DATA_SIZE_BYTES - 2 - 2 * X As X$
-        Next
-
-        For X = 0 To 22
-            For X1 = 1 To 14
-                Field #1, 24 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(12 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (24 + (X1 - 1) * 2 + X * 14 * 2) As X$
-            Next
-        Next
-
-        For X = 0 To 21
-            For X1 = 1 To 14
-                Field #1, 668 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(334 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (668 + (X1 - 1) * 2 + X * 14 * 2) As X$
-            Next
-        Next
-
-        For X = 0 To 21
-            For X1 = 1 To 14
-                Field #1, 1284 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(642 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (1284 + (X1 - 1) * 2 + X * 14 * 2) As X$
-            Next
-        Next
-
-        For X = 1 To 24
-            Field #1, 1900 + (X - 1) * 2 As X$, 2 As Q$(950 + X), DATA_SIZE_BYTES - 2 - (X - 1) * 2 - 1900 As X$
-        Next
-
-        For X = 0 To 22
-            For X1 = 1 To 24
-                Field #1, 1948 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(975 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (1948 + (X1 - 1) * 2 + X * 24 * 2) As X$
-            Next
-        Next
-
-        For X = 0 To 21
-            For X1 = 1 To 24
-                Field #1, 3052 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(1528 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (3052 + (X1 - 1) * 2 + X * 24 * 2) As X$
-            Next
-        Next
-
-        Get #1, teamIdx
-
-        For X = 0 To 11
-            teamTS(X) = CVI(Q$(X + 1))
-        Next
-
-        For X = 0 To 22
-            For X1 = 1 To 14
-                batterRatings(X, X1 + 41) = CVI(Q$(12 + X1 + X * 14))
-            Next
-        Next
-
-        For X = 0 To 21
-            For X1 = 1 To 14
-                pitcherRatings(X, X1 + 36) = CVI(Q$(334 + X1 + X * 14))
-            Next
-        Next
-
-        For X = 0 To 21
-            For X1 = 1 To 14
-                pitcherRatings(X, X1 + 50) = CVI(Q$(642 + X1 + X * 14))
-            Next
-        Next
-
-        For X = 1 To 24
-            teamSA(X) = CVI(Q$(X + 950))
-        Next
-
-        For X = 0 To 22
-            For X1 = 1 To 24
-                batterRatings(X, X1 + 55) = CVI(Q$(975 + X1 + X * 24))
-            Next
-        Next
-
-        For X = 0 To 21
-            For X1 = 1 To 24
-                pitcherRatings(X, X1 + 64) = CVI(Q$(1528 + X1 + X * 24))
-            Next
-        Next
-
-        Close 1
-
-        If draftTS(0) <> 999 Then
-
-            For X = 0 To 22
-                For X1 = 42 To 79
-                    batterRatings(X, X1) = 0
-                Next
-            Next
-
-            For X = 0 To 21
-                For X1 = 37 To 88
-                    pitcherRatings(X, X1) = 0
-                Next
-            Next
-
-            Erase teamSA, teamTS
-
-        End If
+        Call ReadDraftExtraData (teamYear$, teamIdx)
 
         dataOK = 1
     Else
     
         dataOK = 0
+
+    End If
+
+End Sub
+
+
+'----------------------------------------
+'     ReadDraftExtraData Subroutine
+'----------------------------------------
+'Reads in extra data for the selected team, 
+' given it's index in the team file. 
+'This extra file includes Lefty-Right 
+' calculations.
+'This routine is highly customized TO
+' the specific game for which it has
+' been included for.
+Sub ReadDraftExtraData (teamYear$, teamIdx)
+
+    Shared batterRatings(), pitcherRatings()
+    Shared teamRatings()
+
+    Shared draftTS(), teamSA(), teamTS()
+
+    If Not _FileExists(diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$) Then
+
+        'MsgText$ = "WARNING!!! NO DATA FILE WAS FOUND FOR THIS TEAM. PRESS ANY KEY TO CONTINUE"
+        'BoxWidth = 24
+        'BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+        'Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+        'Call CSMsgBox(MsgText$, BoxWidth, Pass)
+        'I$ = GetKeyPress$
+        'Call CSMsgBox("", 0, Pass)
+
+        'dataOK = 0
+
+    End If
+
+    Open diskPaths$(0) + DATA_FILE_NAME$ + "." + teamYear$ For Random As #1 Len = DATA_SIZE_BYTES
+
+    For X = 0 To 11
+        Field #1, X * 2 As X$, 2 As Q$(X + 1), DATA_SIZE_BYTES - 2 - 2 * X As X$
+    Next
+
+    For X = 0 To 22
+        For X1 = 1 To 14
+            Field #1, 24 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(12 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (24 + (X1 - 1) * 2 + X * 14 * 2) As X$
+        Next
+    Next
+
+    For X = 0 To 21
+        For X1 = 1 To 14
+            Field #1, 668 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(334 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (668 + (X1 - 1) * 2 + X * 14 * 2) As X$
+        Next
+    Next
+
+    For X = 0 To 21
+        For X1 = 1 To 14
+            Field #1, 1284 + (X1 - 1) * 2 + X * 14 * 2 As X$, 2 As Q$(642 + X1 + X * 14), DATA_SIZE_BYTES - 2 - (1284 + (X1 - 1) * 2 + X * 14 * 2) As X$
+        Next
+    Next
+
+    For X = 1 To 24
+        Field #1, 1900 + (X - 1) * 2 As X$, 2 As Q$(950 + X), DATA_SIZE_BYTES - 2 - (X - 1) * 2 - 1900 As X$
+    Next
+
+    For X = 0 To 22
+        For X1 = 1 To 24
+            Field #1, 1948 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(975 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (1948 + (X1 - 1) * 2 + X * 24 * 2) As X$
+        Next
+    Next
+
+    For X = 0 To 21
+        For X1 = 1 To 24
+            Field #1, 3052 + (X1 - 1) * 2 + X * 24 * 2 As X$, 2 As Q$(1528 + X1 + X * 24), DATA_SIZE_BYTES - 2 - (3052 + (X1 - 1) * 2 + X * 24 * 2) As X$
+        Next
+    Next
+
+    Get #1, teamIdx
+
+    For X = 0 To 11
+        teamTS(X) = CVI(Q$(X + 1))
+    Next
+
+    For X = 0 To 22
+        For X1 = 1 To 14
+            batterRatings(X, X1 + 41) = CVI(Q$(12 + X1 + X * 14))
+        Next
+    Next
+
+    For X = 0 To 21
+        For X1 = 1 To 14
+            pitcherRatings(X, X1 + 36) = CVI(Q$(334 + X1 + X * 14))
+        Next
+    Next
+
+    For X = 0 To 21
+        For X1 = 1 To 14
+            pitcherRatings(X, X1 + 50) = CVI(Q$(642 + X1 + X * 14))
+        Next
+    Next
+
+    For X = 1 To 24
+        teamSA(X) = CVI(Q$(X + 950))
+    Next
+
+    For X = 0 To 22
+        For X1 = 1 To 24
+            batterRatings(X, X1 + 55) = CVI(Q$(975 + X1 + X * 24))
+        Next
+    Next
+
+    For X = 0 To 21
+        For X1 = 1 To 24
+            pitcherRatings(X, X1 + 64) = CVI(Q$(1528 + X1 + X * 24))
+        Next
+    Next
+
+    Close 1
+
+    If draftTS(0) <> 999 Then
+
+        For X = 0 To 22
+            For X1 = 42 To 79
+                batterRatings(X, X1) = 0
+            Next
+        Next
+
+        For X = 0 To 21
+            For X1 = 37 To 88
+                pitcherRatings(X, X1) = 0
+            Next
+        Next
+
+        Erase teamSA, teamTS
 
     End If
 

@@ -641,7 +641,7 @@ Sub CalculateRunRating ()
             If batterRatings(I, 6) + batterRatings(I, 11) - batterRatings(I, 7) - batterRatings(I, 8) - batterRatings(I, 9) = 0 Then
                 RR = Int(Rnd(1) * 15) + 1
             Else
-                RR = Int(SPD / (batterRatings(I, 6) + batterRatings(I, 11) - batterRatings(I, 7) - batterRatings(I, 8) - batterRatings(I, 9)) + .5)
+                RR = CInt(SPD / (batterRatings(I, 6) + batterRatings(I, 11) - batterRatings(I, 7) - batterRatings(I, 8) - batterRatings(I, 9)))
                 RR = RR * 1.4
             End If
 
@@ -779,7 +779,7 @@ Sub CalculateBuntRating ()
             If BUNT! > 9 Then 
                 BUNT! = 9
             End If
-            batterRatings(I, 30) = Int(BUNT! + .5)
+            batterRatings(I, 30) = CInt(BUNT!)
 
             If I < 22 Then
                 Print batterNames$(I); Tab(20); batterRatings(I, 30)
@@ -849,7 +849,7 @@ Sub CalculateBuntRating ()
                 BUNT! = 9
             End If
 
-            pitcherRatings(I, 32) = Int(BUNT! + .5)
+            pitcherRatings(I, 32) = CInt(BUNT!)
             Print pitcherNames$(I); Tab(20); pitcherRatings(I, 32)
 
         End If
