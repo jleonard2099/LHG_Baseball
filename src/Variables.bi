@@ -7,6 +7,7 @@ Dim Shared teamIndex%(MAX_TEAMS)
 
 ' *** Reading Stat Data ***
 ' -------------------------                                                                                                                   3
+Dim leagueName$
 Dim div1Name$, div2Name$, div3Name$, div4Name$
 Dim teamNameStats$
 
@@ -253,8 +254,8 @@ Dim batRecTmDesc$(24), pitRecTmDesc$(25)
 Dim batAvg!, earnedRuns!
 
 Dim parkHR
-Dim statsD0, statsD0_Road
-Dim statsD1, statsD1_Road
+Dim statD0, statD0_Road
+Dim statD1, statD1_Road
 Dim teamLosses, teamWins
 
 Dim daysRest(21), daysInjure(22)

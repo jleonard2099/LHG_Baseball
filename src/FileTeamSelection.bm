@@ -434,6 +434,216 @@ Sub ReadExtraData (teamYear$, teamIdx)
 
 End Sub
 
+
+'----------------------------------------
+'        ReadTeamStats Subroutine
+'----------------------------------------
+'Reads in compiled stats for a given team
+Sub ReadTeamStats (teamName$, statFile$)
+
+    Shared batterNames$(), pitcherNames$()
+    Shared statT0!(), statT1!()
+    Shared statB(), statB0()
+    Shared statP(), statP0()
+    Shared statS0()
+
+    Shared statD0, statD1
+    Shared teamLosses, teamWins
+
+    Open diskPaths$(1) + statFile$ For Input As #1
+
+    Input #1, teamName$
+    Input #1, teamWins
+    Input #1, teamLosses
+
+    For I = 0 To 22: 
+        Input #1, batterNames$(I)
+        Input #1, statB(I)
+    Next I
+    
+    For I = 0 To 21: 
+        Input #1, pitcherNames$(I)
+        Input #1, statP(I)
+    Next I
+    
+    For I = 0 To 22: 
+        For I1 = 0 To 21: 
+            Input #1, statB0(I, I1)
+        Next I1
+    Next I
+    
+    For I = 0 To 21: 
+        For I1 = 0 To 41: 
+            Input #1, statP0(I, I1)
+        Next I1
+    Next I
+
+    Input #1, statD0
+    Input #1, statD1
+
+    For I = 0 To 21: 
+        Input #1, statT0!(I)
+    Next I
+
+    For I = 0 To 22: 
+        Input #1, statT1!(I)
+    Next I
+
+    Close #1
+
+End Sub
+
+
+'----------------------------------------
+'      ReadScheduleStats Subroutine
+'----------------------------------------
+'This subroutine reads in all data from the
+'team's schedule stats file.
+Sub ReadScheduleStats (statFile$, numberGames)
+
+    Shared oppName$(), losePitcher$(), locIndicator$(), winPitcher$()
+    Shared teamScore(), nbrInnings(), oppScore()
+
+    findFile$ = diskPaths$(1) + statFile$ + "S"
+
+    Open findFile$ For Input As #1
+
+    Input #1, numberGames
+
+    For I = 1 To MAX_SCHED_STATS: 
+        Input #1, teamScore(I)
+    Next I
+
+    For I = 1 To MAX_SCHED_STATS: 
+        Input #1, oppName$(I)
+    Next I
+
+    For I = 1 To MAX_SCHED_STATS: 
+        Input #1, oppScore(I)
+    Next I
+
+    For I = 1 To MAX_SCHED_STATS: 
+        Input #1, locIndicator$(I)
+    Next I
+
+    For I = 1 To MAX_SCHED_STATS: 
+        Input #1, winPitcher$(I)
+    Next I
+
+    For I = 1 To MAX_SCHED_STATS: 
+        Input #1, losePitcher$(I)
+    Next I
+
+    For I = 1 To MAX_SCHED_STATS: 
+        Input #1, nbrInnings(I)
+    Next I
+
+    Close #1
+
+End Sub
+
+
+'----------------------------------------
+'       ReadSeasonRecords Subroutine
+'----------------------------------------
+'Reads in list of team and individual 
+'record values from the records file.
+Sub ReadSeasonRecords (recordFile$)
+
+    Shared batRecTmVal!(), batRecTmYr!()
+    Shared batRecVal!(), batRecYr!()
+    Shared pitRecTmVal!(), pitRecTmYr!()
+    Shared pitRecVal!(), pitRecYr!()
+
+    Shared batRecPlyr$(), batRecTeam$(), batRecTmDesc$()    
+    Shared pitRecTmDesc$(), pitRecPlyr$(), pitRecTeam$()
+
+    Open diskPaths$(2) + recordFile$ For Input As #1
+
+    For I = 1 To 32: 
+        Input #1, batRecVal!(I), batRecPlyr$(I), batRecTeam$(I), batRecYr!(I)
+    Next
+    
+    For I = 1 To 28: 
+        Input #1, pitRecVal!(I), pitRecPlyr$(I), pitRecTeam$(I), pitRecYr!(I)
+    Next
+    
+    For I = 0 To 24: 
+        Input #1, batRecTmVal!(I), batRecTmDesc$(I), batRecTmYr!(I)
+    Next
+    
+    For I = 0 To 24: 
+        Input #1, pitRecTmVal!(I), pitRecTmDesc$(I), pitRecTmYr!(I)
+    Next
+
+    Close #1
+
+End Sub
+
+
+'----------------------------------------
+'       ReadGameRecords Subroutine
+'----------------------------------------
+'Reads in list of team and individual 
+'record values from the records file.
+Sub ReadGameRecords (recordFile$)
+
+    Shared indRecords!(), teamRecords!()
+    
+    Shared indRecDesc$(), teamRecDesc$()
+
+    Open diskPaths$(1) + recordFile$ For Input As #1
+
+    For I = 0 To 48
+
+        For I1 = 0 To 2
+            Input #1, indRecords!(I, I1)
+        Next
+
+        For I1 = 0 To 4
+            Input #1, indRecDesc$(I, I1)
+        Next
+    Next
+
+    For I = 0 To 125
+        For I1 = 0 To 2
+            Input #1, teamRecords!(I, I1)
+        Next
+        For I1 = 0 To 3
+            Input #1, teamRecDesc$(I, I1)
+        Next
+    Next
+
+    Close #1
+
+End Sub
+
+
+'----------------------------------------
+'     ReadLeagueStats Subroutine
+'----------------------------------------
+'This subroutine reads in the league stats
+'from the .TMS file and assigns them to
+'variables for use later in the routine.
+Sub ReadLeagueStats (statFile$)
+
+    Shared memberName$()
+    Shared leagueName$
+    Shared div1Name$, div2Name$, div3Name$, div4Name$
+
+    Open diskPaths$(2) + statFile$ + ".TMS" For Input As #1
+
+    Input #1, leagueName$, div1Name$, div2Name$, div3Name$, div4Name$
+
+    For XW = 1 To TEAMS_PER_CONFERENCE
+        Input #1, memberName$(XW)
+    Next
+
+    Close #1
+
+End Sub
+
+
 '----------------------------------------
 '         nameStatFile$ Function
 '----------------------------------------

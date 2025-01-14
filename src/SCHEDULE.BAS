@@ -161,8 +161,8 @@ Sub NewSchedule (scheduleFile$)
 
     Shared modeAbbrev$(), yesNo$()
 
-    DT$ = "04-01-23"
-    TM$ = "07:30P"
+    DT$ = "03-18-24"
+    TM$ = "03:00P"
 
     Do
 
@@ -1269,8 +1269,8 @@ Sub ChangeGlobalSettings ()
     useVGA = scheduleNG%(1, 11)
     pitchEraOpt = scheduleNG%(1, 14)
 
-    DT$ = "04-04-23"
-    TM$ = "07:30P"
+    DT$ = "03-18-24"
+    TM$ = "03:00P"
 
     Do
 

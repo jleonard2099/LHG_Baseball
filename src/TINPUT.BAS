@@ -441,46 +441,7 @@ Sub LoadTeam (targetTeam$, SS, statFile$)
 
     Else
 
-        Open diskPaths$(1) + statFile$ For Input As #1
-
-        Input #1, teamName$
-        Input #1, teamWins
-        Input #1, teamLosses
-
-        For I = 0 To 22:
-            Input #1, batterNames$(I)
-            Input #1, statB(I)
-        Next I
-
-        For I = 0 To 21:
-            Input #1, pitcherNames$(I)
-            Input #1, statP(I)
-        Next I
-
-        For I = 0 To 22:
-            For I1 = 0 To 21:
-                Input #1, statB0(I, I1)
-            Next I1
-        Next I
-
-        For I = 0 To 21:
-            For I1 = 0 To 41:
-                Input #1, statP0(I, I1)
-            Next I1
-        Next I
-
-        Input #1, statD0
-        Input #1, statD1
-
-        For I = 0 To 21:
-            Input #1, statT0!(I)
-        Next I
-
-        For I = 0 To 22:
-            Input #1, statT1!(I)
-        Next I
-
-        Close #1
+        Call ReadTeamStats (team$, statFile$)
 
         If Not _FileExists(diskPaths$(1) + statFile$ + "R") Then
 

@@ -806,7 +806,7 @@ End Sub
 'stats, adds the team's stats to them,
 'then overwrites the career file with the
 'new values. 
-Sub AddCareerYear (statYear, finalUpdate, careerFile$, statFile$)
+Sub AddCareerYear (targetYear, finalUpdate, careerFile$, statFile$)
 
     Shared NB, NP
 
@@ -890,7 +890,7 @@ Sub AddCareerYear (statYear, finalUpdate, careerFile$, statFile$)
             If UCase$(BR$(I)) = UCase$(careerBatters$(J)) Then
 
                 For W = 1 To MAX_CAREER_YEARS
-                    If carRecBatStats(W, J, 17) = statYear Then
+                    If carRecBatStats(W, J, 17) = targetYear Then
                         CHK = CHK + 1
                     End If
                 Next W
@@ -908,7 +908,7 @@ Sub AddCareerYear (statYear, finalUpdate, careerFile$, statFile$)
                 Next K
 
                 carRecBatStats(N, J, 16) = 1
-                carRecBatStats(N, J, 17) = statYear
+                carRecBatStats(N, J, 17) = targetYear
 
             Else
 
@@ -939,7 +939,7 @@ Sub AddCareerYear (statYear, finalUpdate, careerFile$, statFile$)
             Next
 
             carRecBatStats(N, NB, 16) = 1
-            carRecBatStats(N, NB, 17) = statYear
+            carRecBatStats(N, NB, 17) = targetYear
 
         End If
 
@@ -955,7 +955,7 @@ Sub AddCareerYear (statYear, finalUpdate, careerFile$, statFile$)
             If UCase$(PR$(I)) = UCase$(careerPitchers$(J)) Then
 
                 For W = 1 To MAX_CAREER_YEARS
-                    If carRecPitStats(W, J, 16) = statYear Then
+                    If carRecPitStats(W, J, 16) = targetYear Then
                         CHK = CHK + 1
                     End If
                 Next W
@@ -973,7 +973,7 @@ Sub AddCareerYear (statYear, finalUpdate, careerFile$, statFile$)
                 Next K
 
                 carRecPitStats(N, J, 15) = 1
-                carRecPitStats(N, J, 16) = statYear
+                carRecPitStats(N, J, 16) = targetYear
 
                 Exit For 'GoTo 1530
 
@@ -993,7 +993,7 @@ Sub AddCareerYear (statYear, finalUpdate, careerFile$, statFile$)
                         Next
 
                         carRecPitStats(N, NP, 15) = 1
-                        carRecPitStats(N, NP, 16) = statYear
+                        carRecPitStats(N, NP, 16) = targetYear
                     End If
 
                 End If

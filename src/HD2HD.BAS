@@ -113,39 +113,7 @@ Sub Hd2HdPro_League ()
 
                 Else
 
-                    Open diskPaths$(1) + statFile$ + "S" For Input As #1
-
-                    Input #1, nbrGames
-
-                    For I = 1 To MAX_SCHED_STATS:
-                        Input #1, teamScore(I)
-                    Next I
-
-                    For I = 1 To MAX_SCHED_STATS:
-                        Input #1, oppName$(I)
-                    Next I
-
-                    For I = 1 To MAX_SCHED_STATS:
-                        Input #1, oppScore(I)
-                    Next I
-
-                    For I = 1 To MAX_SCHED_STATS:
-                        Input #1, locIndicator$(I)
-                    Next I
-
-                    For I = 1 To MAX_SCHED_STATS:
-                        Input #1, winPitcher$(I)
-                    Next I
-
-                    For I = 1 To MAX_SCHED_STATS:
-                        Input #1, losePitcher$(I)
-                    Next I
-
-                    For I = 1 To MAX_SCHED_STATS:
-                        Input #1, nbrInnings(I)
-                    Next I
-
-                    Close #1
+                    Call ReadScheduleStats (statFile$, nbrGames)
 
                     'Check if same league
                     If sameLeague <> 1 Then

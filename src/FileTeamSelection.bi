@@ -4,6 +4,12 @@ Declare Sub ReadTeam (teamYear$, targetTeam$, teamIdx, dataOK)
 Declare Sub ReadExtraData (teamYear$, targetTeam$, teamIdx)
 Declare Sub UserFilePrompt (reportFile$)
 
+Declare Sub ReadTeamStats (teamName$, statFile$)
+Declare Sub ReadScheduleStats (statFile$, numberGames)
+Declare Sub ReadSeasonRecords (recordFile$)
+Declare Sub ReadGameRecords (recordFile$)
+Declare Sub ReadLeagueStats (statFile$, statType)
+
 Declare Function nameStatFile$ (teamName$)
 Declare Function CheckString% (targetString$)
 Declare Function ChooseFile$(fileSpec$, fileDesc$)

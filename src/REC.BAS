@@ -167,26 +167,8 @@ Sub UpdateRecords (leagueFile$)
         Call CSMsgBox("", 0, Pass)
         
     Else
-    
-        Open diskPaths$(2) + "RECORDS.MLB" For Input As #1
 
-        For I = 1 To 32: 
-            Input #1, batRecVal!(I), batRecPlyr$(I), batRecTeam$(I), batRecYr!(I)
-        Next
-        
-        For I = 1 To 28: 
-            Input #1, pitRecVal!(I), pitRecPlyr$(I), pitRecTeam$(I), pitRecYr!(I)
-        Next
-        
-        For I = 0 To 24: 
-            Input #1, batRecTmVal!(I), batRecTmDesc$(I), batRecTmYr!(I)
-        Next
-        
-        For I = 0 To 24: 
-            Input #1, pitRecTmVal!(I), pitRecTmDesc$(I), pitRecTmYr!(I)
-        Next
-
-        Close #1
+        Call ReadSeasonRecords ("RECORDS.MLB")
 
         Cls
         Input "ENTER SEASON YEAR (1991,1992)"; seasonYear
@@ -217,27 +199,9 @@ Sub UpdateRecords (leagueFile$)
 
         Else
 
-            Open diskPaths$(2) + "RECORDS.MLB" For Input As #1
-
             Print "READING IN CURRENT RECORDS"
 
-            For I = 1 To 32:
-                Input #1, batRecVal!(I), batRecPlyr$(I), batRecTeam$(I), batRecYr!(I)
-            Next
-
-            For I = 1 To 28:
-                Input #1, pitRecVal!(I), pitRecPlyr$(I), pitRecTeam$(I), pitRecYr!(I)
-            Next
-
-            For I = 0 To 24:
-                Input #1, batRecTmVal!(I), batRecTmDesc$(I), batRecTmYr!(I)
-            Next
-
-            For I = 0 To 24:
-                Input #1, pitRecTmVal!(I), pitRecTmDesc$(I), pitRecTmYr!(I)
-            Next
-
-            Close #1
+            Call ReadSeasonRecords ("RECORDS.MLB")
 
         End If
 
@@ -747,26 +711,8 @@ Sub ViewSeasonRecords (leagueFile$)
         Call CSMsgBox("", 0, Pass)
         
     Else
-    
-        Open diskPaths$(2) + "RECORDS.MLB" For Input As #1
 
-        For I = 1 To 32: 
-            Input #1, batRecVal!(I), batRecPlyr$(I), batRecTeam$(I), batRecYr!(I)
-        Next
-        
-        For I = 1 To 28: 
-            Input #1, pitRecVal!(I), pitRecPlyr$(I), pitRecTeam$(I), pitRecYr!(I)
-        Next
-        
-        For I = 0 To 24: 
-            Input #1, batRecTmVal!(I), batRecTmDesc$(I), batRecTmYr!(I)
-        Next
-        
-        For I = 0 To 24: 
-            Input #1, pitRecTmVal!(I), pitRecTmDesc$(I), pitRecTmYr!(I)
-        Next
-
-        Close #1
+        Call ReadSeasonRecords ("RECORDS.MLB")
 
         Color 0, 0
 
@@ -1062,25 +1008,7 @@ Sub PrintSeasonRecords (printDest, destFile$, leagueName$)
         
     Else
     
-        Open diskPaths$(2) + "RECORDS.MLB" For Input As #1
-
-        For I = 1 To 32: 
-            Input #1, batRecVal!(I), batRecPlyr$(I), batRecTeam$(I), batRecYr!(I)
-        Next
-        
-        For I = 1 To 28: 
-            Input #1, pitRecVal!(I), pitRecPlyr$(I), pitRecTeam$(I), pitRecYr!(I)
-        Next
-        
-        For I = 0 To 24: 
-            Input #1, batRecTmVal!(I), batRecTmDesc$(I), batRecTmYr!(I)
-        Next
-        
-        For I = 0 To 24: 
-            Input #1, pitRecTmVal!(I), pitRecTmDesc$(I), pitRecTmYr!(I)
-        Next
-
-        Close #1
+        Call ReadSeasonRecords ("RECORDS.MLB")
 
         Color 15, 0
         Cls

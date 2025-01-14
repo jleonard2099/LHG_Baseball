@@ -165,39 +165,7 @@ Sub UpdateExpandedStandings (league$)
 
             If _FileExists(diskPaths$(1) + memberName$(KK) + "S") Then
 
-                Open diskPaths$(1) + memberName$(KK) + "S" For Input As #1
-
-                Input #1, nbrGames
-
-                For I = 1 To MAX_SCHED_STATS: 
-                    Input #1, teamScore(I)
-                Next I
-
-                For I = 1 To MAX_SCHED_STATS: 
-                    Input #1, oppName$(I)
-                Next I
-
-                For I = 1 To MAX_SCHED_STATS: 
-                    Input #1, oppScore(I)
-                Next I
-
-                For I = 1 To MAX_SCHED_STATS: 
-                    Input #1, locIndicator$(I)
-                Next I
-
-                For I = 1 To MAX_SCHED_STATS: 
-                    Input #1, winPitcher$(I)
-                Next I
-
-                For I = 1 To MAX_SCHED_STATS: 
-                    Input #1, losePitcher$(I)
-                Next I
-
-                For I = 1 To MAX_SCHED_STATS: 
-                    Input #1, nbrInnings(I)
-                Next I
-
-                Close #1
+                Call ReadScheduleStats (memberName$(KK), nbrGames)
 
                 For I = 1 To nbrGames
 

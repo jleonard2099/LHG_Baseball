@@ -66,9 +66,13 @@ Sub NEWLDR ()
 
                         If FileExit% <> 27 And FileExit% <> 0 Then
 
+                            For X = 1 To TEAMS_PER_LEAGUE
+                                memberName$(X) = "XXX"
+                            Next
+
                             Call ReadLeagueStats(leagStatFile$)
                             Call UpdateExpandedLeaders(JB, JP, TS, TTS)
-                            Call SAVELEADER(leagStatFile$, league$, JB, JP, TS, TTS)
+                            Call SaveLeaderStdg(leagStatFile$, league$, JB, JP, TS, TTS)
 
                         End If
 
@@ -89,10 +93,17 @@ Sub NEWLDR ()
                         leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", FileExit%)
 
                         If FileExit% <> 27 And FileExit% <> 0 Then
+
                             Color 15, 0
                             Cls
+
+                            For X = 1 To TEAMS_PER_LEAGUE
+                                memberName$(X) = "XXX"
+                            Next
+
                             Call ReadLeagueStats(leagStatFile$)
                             Call UpdateExpandedStandings(leagStatFile$)
+
                         End If
 
                     Loop Until FileExit% = 27 Or FileExit% = 0
@@ -149,37 +160,6 @@ End Sub
 
 
 '----------------------------------------
-'       ReadLeagueStats Subroutine
-'----------------------------------------
-'This subroutine reads in the league stats
-'from the .TMS file and assigns them to
-'variables for use later in the routine.
-Sub ReadLeagueStats (statFile$)
-
-    Shared memberName$()
-
-    Shared div1Name$, div2Name$, div3Name$, div4Name$
-
-    Erase memberName$
-
-    For X = 1 To TEAMS_PER_LEAGUE
-        memberName$(X) = "XXX"
-    Next
-
-    Open diskPaths$(2) + statFile$ + ".TMS" For Input As #1
-
-    Input #1, league$, div1Name$, div2Name$, div3Name$, div4Name$
-
-    For X = 1 To TEAMS_PER_LEAGUE:
-        Input #1, memberName$(X)
-    Next
-
-    Close #1
-
-End Sub
-
-
-'----------------------------------------
 '      ViewExpandedStats Subroutine
 '----------------------------------------
 'This subroutine reads in the league stats
@@ -219,7 +199,7 @@ Sub ViewExpandedStats (JB, JP, plyrTotalStats, teamTotalStats)
         Close #1
 
         Call UpdateExpandedLeaders(JB, JP, plyrTotalStats, teamTotalStats)
-        Call SAVELEADER(leagStatFile$, league$, JB, JP, plyrTotalStats, teamTotalStats)
+        Call SaveLeaderStdg(leagStatFile$, league$, JB, JP, plyrTotalStats, teamTotalStats)
         Call ExpandedLeaders_Menu(leagStatFile$, JB, JP, plyrTotalStats, teamTotalStats)
 
     End If 'Done checking for ESC
@@ -389,12 +369,12 @@ End Sub
 
 
 '----------------------------------------
-'        SAVELEADER Subroutine
+'        SaveLeaderStdg Subroutine
 '----------------------------------------
 'This subroutine compiles the leader files
 '(.BAT, .PIT, and .TOT) for the expanded
 'standings modules
-Sub SAVELEADER (leaderFile$, league$, JB, JP, plyrTotalStats, teamTotalStats)
+Sub SaveLeaderStdg (leaderFile$, league$, JB, JP, plyrTotalStats, teamTotalStats)
 
     Shared expLdrB0(), expLdrP0()
     Shared pitTotGames!()
@@ -510,12 +490,12 @@ End Sub
 
 
 '----------------------------------------
-'        READLEADER Subroutine
+'        ReadLeaderStdg Subroutine
 '----------------------------------------
 'This subroutine reads in both types of
 'leader files (.BAT and .PIT) for the
 'expanded standings  modules
-Sub READLEADER (leaderFile$, league$, JB, JP, plyrTotalStats, teamTotalStats)
+Sub ReadLeaderStdg (leaderFile$, league$, JB, JP, plyrTotalStats, teamTotalStats)
 
     Shared expLdrB0(), expLdrP0()
     Shared pitTotGames!()

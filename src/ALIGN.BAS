@@ -11,8 +11,8 @@ Sub ALIGN ()
 
     _Title "Full Count Baseball - Align Stats"
 
-    Shared statsD0, statsD1
-    Shared statsD0_Road, statsD1_Road
+    Shared statD0, statD1
+    Shared statD0_Road, statD1_Road
 
     Shared teamLosses_Road, teamWins_Road
     Shared teamName_Align$
@@ -81,8 +81,8 @@ Sub ALIGN ()
                     Next I1
                 Next I
 
-                Input #1, statsD0_Road
-                Input #1, statsD1_Road
+                Input #1, statD0_Road
+                Input #1, statD1_Road
 
                 For I = 0 To 21: 
                     Input #1, alignTR(I)
@@ -138,8 +138,8 @@ Sub ALIGN ()
                         Next I1
                     Next I
 
-                    Input #1, statsD0
-                    Input #1, statsD1
+                    Input #1, statD0
+                    Input #1, statD1
 
                     For I = 0 To 21: 
                         Input #1, statT0!(I)
@@ -345,7 +345,7 @@ End Sub
 'user a chance to actually save the results 
 Sub ReviewAndSaveAlignment (pathRoadStats$, statFile$)
 
-    Shared statsD0_Road, statsD1_Road
+    Shared statD0_Road, statD1_Road
     Shared teamLosses_Road, teamWins_Road
 
     Shared teamNameRoad$
@@ -417,8 +417,8 @@ Sub ReviewAndSaveAlignment (pathRoadStats$, statFile$)
         Next I1
     Next I
 
-    Write #1, statsD0_Road
-    Write #1, statsD1_Road
+    Write #1, statD0_Road
+    Write #1, statD1_Road
 
     For I = 0 To 21: 
         Write #1, alignTR(I)

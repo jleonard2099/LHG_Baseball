@@ -18,6 +18,8 @@ Sub CompileLeague ()
     Shared BA$(), memberName$(), leagLdrPlayer$(), leagLdrTeam$()
     Shared ER$(), leaderNames$()
 
+    Shared leagueName$
+
     'Initialize values first
     APP = 0
 
@@ -53,15 +55,7 @@ Sub CompileLeague ()
         Color 15, 0
         Cls
 
-        Open diskPaths$(2) + leagStatFile$ + ".TMS" For Input As #2
-
-        Input #2, league$, div1Name$, div2$, div3$, div4$
-
-        For XW = 1 To TEAMS_PER_LEAGUE
-            Input #2, memberName$(XW)
-        Next
-
-        Close 2
+        Call ReadLeagueStats (leagueFile$)
 
         For XW = 1 To TEAMS_PER_LEAGUE
 
@@ -116,7 +110,7 @@ Sub CompileLeague ()
         Next XW
 
         Call SortStandingsLeague
-        Call PostLeaders(league$, leagStatFile$, APP)
+        Call PostLeaders(leagueName$, leagStatFile$, APP)
 
     End If
 
@@ -137,9 +131,7 @@ Function FindStatsPro% (statFile$, teamName$, fullWins, fullLosses)
     Else
 
         Open diskPaths$(1) + statFile$ For Input As #1
-
         Input #1, teamName$, fullWins, fullLosses
-
         Close #1
 
         Color 15, 0

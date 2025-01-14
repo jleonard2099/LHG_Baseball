@@ -108,15 +108,6 @@ Sub LoadTeamStats (statFile$, nbrGames)
     Shared roadWins, roadLosses
     Shared totalWins, totalLosses
 
-    Shared batterNames$(), pitcherNames$()
-    Shared statT0!(), statT1!()
-    Shared statB(), statB0()
-    Shared statP(), statP0()
-    Shared statS0()
-
-    Shared oppName$(), losePitcher$(), locIndicator$(), winPitcher$()
-    Shared teamScore(), nbrInnings(), oppScore()
-
     Shared teamLosses, teamWins
 
     totalWins = 0
@@ -132,46 +123,7 @@ Sub LoadTeamStats (statFile$, nbrGames)
     lastTenLosses = 0
     lastTenWins = 0
 
-    Open diskPaths$(1) + statFile$ For Input As #1
-
-    Input #1, teamName$
-    Input #1, teamWins
-    Input #1, teamLosses
-
-    For I = 0 To 22: 
-        Input #1, batterNames$(I)
-        Input #1, statB(I)
-    Next I
-    
-    For I = 0 To 21: 
-        Input #1, pitcherNames$(I)
-        Input #1, statP(I)
-    Next I
-    
-    For I = 0 To 22: 
-        For I1 = 0 To 21: 
-            Input #1, statB0(I, I1)
-        Next I1
-    Next I
-    
-    For I = 0 To 21: 
-        For I1 = 0 To 41: 
-            Input #1, statP0(I, I1)
-        Next I1
-    Next I
-
-    Input #1, statD0
-    Input #1, statD1
-
-    For I = 0 To 21: 
-        Input #1, statT0!(I)
-    Next I
-
-    For I = 0 To 22: 
-        Input #1, statT1!(I)
-    Next I
-
-    Close #1
+    Call ReadTeamStats (team$, statFile$)
 
     If Not _FileExists(diskPaths$(1) + statFile$ + "R") Then
 
@@ -194,39 +146,7 @@ Sub LoadTeamStats (statFile$, nbrGames)
 
     End If
 
-    Open diskPaths$(1) + statFile$ + "S" For Input As #1
-
-    Input #1, nbrGames
-
-    For I = 1 To MAX_SCHED_STATS: 
-        Input #1, teamScore(I)
-    Next I
-
-    For I = 1 To MAX_SCHED_STATS: 
-        Input #1, oppName$(I)
-    Next I
-
-    For I = 1 To MAX_SCHED_STATS: 
-        Input #1, oppScore(I)
-    Next I
-
-    For I = 1 To MAX_SCHED_STATS: 
-        Input #1, locIndicator$(I)
-    Next I
-
-    For I = 1 To MAX_SCHED_STATS: 
-        Input #1, winPitcher$(I)
-    Next I
-
-    For I = 1 To MAX_SCHED_STATS: 
-        Input #1, losePitcher$(I)
-    Next I
-
-    For I = 1 To MAX_SCHED_STATS: 
-        Input #1, nbrInnings(I)
-    Next I
-
-    Close #1
+    Call ReadScheduleStats (statFile$, nbrGames)
 
     For I = 1 To nbrGames
 
@@ -1101,60 +1021,13 @@ Sub ReportsAllTeams ()
 
     If ExitCode% <> 27 And ExitCode% <> 0 Then
 
-        Open diskPaths$(2) + leagStatFile$ + ".TMS" For Input As #2
-
-        Input #2, league$, div1$, div2$, div3$, div4$
-
-        For XW = 1 To TEAMS_PER_LEAGUE
-            Input #2, memberName$(XW)
-        Next
-
-        Close 2
+        Call ReadLeagueStats (leagStatFile$)
 
         For XW = 1 To TEAMS_PER_LEAGUE
 
             If _FileExists(diskPaths$(1) + memberName$(XW)) Then
 
-                Open diskPaths$(1) + memberName$(XW) For Input As #1
-
-                Input #1, teamName$
-                Input #1, teamWins
-                Input #1, teamLosses
-
-                For I = 0 To 22: 
-                    Input #1, batterNames$(I)
-                    Input #1, statB(I)
-                Next I
-
-                For I = 0 To 21: 
-                    Input #1, pitcherNames$(I)
-                    Input #1, statP(I)
-                Next I
-
-                For I = 0 To 22: 
-                    For I1 = 0 To 21: 
-                        Input #1, statB0(I, I1)
-                    Next I1
-                Next I
-
-                For I = 0 To 21: 
-                    For I1 = 0 To 41: 
-                        Input #1, statP0(I, I1)
-                    Next I1
-                Next I
-
-                Input #1, statD0
-                Input #1, statD1
-
-                For I = 0 To 21: 
-                    Input #1, statT0!(I)
-                Next I
-                
-                For I = 0 To 22: 
-                    Input #1, statT1!(I)
-                Next I
-
-                Close #1
+                Call ReadTeamStats (teamName$, memberName$(XW))
 
                 userKey$ = GetPrintOptions$
 
