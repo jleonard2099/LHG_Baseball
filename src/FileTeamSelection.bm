@@ -582,44 +582,6 @@ End Sub
 
 
 '----------------------------------------
-'       ReadGameRecords Subroutine
-'----------------------------------------
-'Reads in list of team and individual 
-'record values from the records file.
-Sub ReadGameRecords (recordFile$)
-
-    Shared indRecords!(), teamRecords!()
-    
-    Shared indRecDesc$(), teamRecDesc$()
-
-    Open diskPaths$(1) + recordFile$ For Input As #1
-
-    For I = 0 To 48
-
-        For I1 = 0 To 2
-            Input #1, indRecords!(I, I1)
-        Next
-
-        For I1 = 0 To 4
-            Input #1, indRecDesc$(I, I1)
-        Next
-    Next
-
-    For I = 0 To 125
-        For I1 = 0 To 2
-            Input #1, teamRecords!(I, I1)
-        Next
-        For I1 = 0 To 3
-            Input #1, teamRecDesc$(I, I1)
-        Next
-    Next
-
-    Close #1
-
-End Sub
-
-
-'----------------------------------------
 '     ReadLeagueStats Subroutine
 '----------------------------------------
 'This subroutine reads in the league stats

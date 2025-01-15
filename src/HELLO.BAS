@@ -17946,7 +17946,7 @@ Sub COMPILESTATFILES (teamIdx)
 
     If _FileExists(diskPaths$(1) + statFile$ + "S") Then
 
-        Call ReadScheduleStats (statFile$, numberGames)
+        Call ReadScheduleStats(statFile$, numberGames)
 
     Else
         'Default stat values
