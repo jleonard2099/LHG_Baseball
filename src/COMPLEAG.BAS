@@ -57,45 +57,44 @@ Sub CompileLeague ()
 
         Call ReadLeagueStats (leagueFile$)
 
+        Erase divWins!, divLosses!
+
         For XW = 1 To TEAMS_PER_LEAGUE
 
-            fullWins = 0
-            fullLosses = 0
-
+            'Look for * as terminating char
             If memberName$(XW) <> Chr$(42) Then
 
-                haveStats = FindStatsPro%(memberName$(XW), TN$, fullWins, fullLosses)
+                haveStats = FindStatsLeague%(memberName$(XW), TN$, fullWins, fullLosses)
 
                 If (haveStats) Then
 
-                    L = Len(memberName(XW))
-                    WT$ = ""
-
-                    For X = 1 To L
-                        A = Asc(Mid$(memberName$(XW), X, 1))
-                        WT$ = WT$ + Chr$(A)
-                    Next X
-
-                    confGame = 0
+                    WT$ = memberName$(XW)
+                    nonConfGame = 0
 
                     For X = 1 To TEAMS_PER_LEAGUE:
 
                         If memberName$(X) = WT$ Then
 
                             If divWins(X) = fullWins And divLosses(X) = fullLosses Then
-                                confGame = 1
+
+                                nonConfGame = 1
+                                Exit For
+
                             Else
+
                                 divWins(X) = fullWins
                                 divLosses(X) = fullLosses
+
                             End If
 
                         End If
 
-                        If (confGame) Then Exit For
+                        If (nonConfGame) Then Exit For
 
                     Next X
+                    'alternatively, use a Do / Until loop; nonConfGame = 1 or EC = 30
 
-                    If confGame <> 1 And _FileExists(diskPaths$(1) + memberName$(XW)) Then
+                    If nonConfGame <> 1 And _FileExists(diskPaths$(1) + memberName$(XW)) Then
 
                         Call ReadStatsLeague(memberName$(XW), TN$, totalGames)
                         Call CheckStatsLeague(memberName$(XW), WT$, totalGames)
@@ -118,15 +117,15 @@ End Sub
 
 
 '----------------------------------------
-'         FindStatsPro Function
+'         FindStatsLeague Function
 '----------------------------------------
 '...explanation...
-Function FindStatsPro% (statFile$, teamName$, fullWins, fullLosses)
+Function FindStatsLeague% (statFile$, teamName$, fullWins, fullLosses)
 
     If Not _FileExists(diskPaths$(1) + statFile$) Then
 
         Print "NO STATS FOUND FOR "; statFile$
-        FindStatsPro% = 0
+        FindStatsLeague% = 0
 
     Else
 
@@ -146,7 +145,7 @@ Function FindStatsPro% (statFile$, teamName$, fullWins, fullLosses)
         Color 15
         Print " STATS            "
 
-        FindStatsPro% = 1
+        FindStatsLeague% = 1
 
     End If
 
