@@ -30,7 +30,7 @@ Sub MERGE ()
         menuWidth% = Len(menuChoices$(1))
         Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor, FileBGColor)
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor, FileBGColor)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
@@ -266,7 +266,39 @@ Sub MergeStats ()
 
                         End If
 
-                        Call ReadScheduleStats (statFile$, nbrGamesCurr)
+                        Open pathCurrentStats$ + statFile$ + "S" For Input As #4
+
+                        Input #4, nbrGamesCurr
+
+                        For I = 1 To MAX_SCHED_STATS: 
+                            Input #4, teamScore(I)
+                        Next I
+
+                        For I = 1 To MAX_SCHED_STATS: 
+                            Input #4, oppName$(I)
+                        Next I
+
+                        For I = 1 To MAX_SCHED_STATS: 
+                            Input #4, oppScore(I)
+                        Next I
+
+                        For I = 1 To MAX_SCHED_STATS: 
+                            Input #4, locIndicator$(I)
+                        Next I
+
+                        For I = 1 To MAX_SCHED_STATS: 
+                            Input #4, winPitcher$(I)
+                        Next I
+
+                        For I = 1 To MAX_SCHED_STATS: 
+                            Input #4, losePitcher$(I)
+                        Next I
+
+                        For I = 1 To MAX_SCHED_STATS: 
+                            Input #4, nbrInnings(I)
+                        Next I
+
+                        Close #4
 
                         SEQ = 0
 

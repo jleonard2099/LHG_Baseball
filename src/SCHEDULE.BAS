@@ -49,7 +49,7 @@ Sub SCHEDULE ()
         menuWidth% = Len(menuChoices$(1))
         Column% = (80 - menuWidth% - 2) / 2
 
-        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor, FileBGColor)
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor, FileBGColor)
 
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
@@ -1050,7 +1050,7 @@ Sub BoxscoreMaintenance ()
 
         Call TITLE_SCHEDULER
 
-        Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor, FileBGColor)
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor, FileBGColor)
         
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
@@ -1547,21 +1547,7 @@ Sub CreateSeasonSchedule ()
 
         If ExitCode% <> 27 And ExitCode% <> 0 Then
 
-            Open diskPaths$(2) + leagueFile$ + ".TMI" For Input As #2
-
-            Input #2, league$
-            Input #2, div1$
-            Input #2, div2$
-            Input #2, div3$
-            Input #2, div4$
-
-            For X = 1 To TEAMS_PER_LEAGUE
-                Input #2, memberName$(X)
-                Input #2, memberIdx(X)
-                Input #2, memberYear$(X)
-            Next
-
-            Close #2
+            Call ReadLeagueIndex (leagueFile$)
 
             Select Case choice%
                 Case 0: scxFile$ = "154TEMP.SCX"

@@ -664,7 +664,7 @@ Sub Leaders_Menu ()
 
                 Case 4:
                     Call Hd2HdPro_League
-                    'Call HD2HD
+                    'Call HD2HDLEAG
 
                 Case 5:
                     Call SeasonRecords
@@ -786,7 +786,7 @@ End Sub
 '$Include: 'CREATLEAG.BAS'
 '$Include: 'DRAFT.BAS'
 '$Include: 'GROUND.BAS'
-'$Include: 'HD2HD.BAS'
+'$Include: 'HD2HDLEAG.BAS'
 '$Include: 'LOOKY.BAS'
 '$Include: 'MERGE.BAS'
 '$Include: 'NEWLDR.BAS'
@@ -1117,23 +1117,15 @@ Sub LOADER
                         If playerOpt > 3 Then playerOpt = 0
 
                     Case 2:
-                        test$ = diskIDs$(0)
-                        test1 = gameMgrIdx(0)
-                        testT$ = gameTeams$(0)
                         Call ChooseGameTeam(diskIDs$(0), NTMS, gameMgrIdx(0), gameTeams$(0), 0)
-                        test$ = diskIDs$(0)
-                        test1 = gameMgrIdx(0)
-                        testT$ = gameTeams$(0)
+                        If tmIdx <> 0 Then
+                        End If
                         Color 15, 0
 
                     Case 3:
-                        test$ = diskIDs$(1)
-                        test1 = gameMgrIdx(0)
-                        testT$ = gameTeams$(1)
                         Call ChooseGameTeam(diskIDs$(1), NTMS, gameMgrIdx(1), gameTeams$(1), 1)
-                        test$ = diskIDs$(1)
-                        test1 = gameMgrIdx(0)
-                        testT$ = gameTeams$(1)
+                        If tmIdx <> 0 Then
+                        End If
                         Color 15, 0
 
                     Case 4:
@@ -1149,12 +1141,12 @@ Sub LOADER
                     Case 7:
                         gameMonth = gameMonth + 1
                         If gameMonth > 10 Then gameMonth = 4
-                        Locate 7, 4: Print BK$
+                        '-- wtf?? Locate 7, 4: Print BK$
 
                     Case 8:
                         dayOrNight = 1 - dayOrNight
                         Locate 8, 4
-                        Print BK$
+                        '-- wtf?? Print BK$
 
                     Case 9:
                         '
@@ -1651,7 +1643,7 @@ Sub LOADER
 
     End Select
 
-    Call GETSTATS
+    Call LOADSTATS
     Call DISPBAVG(D)
 
     W5 = 0
@@ -10019,22 +10011,27 @@ Sub CHECKSAVE (D, P, S4%)
     S1%(D) = -1
 
     If I3 >= 1 Then
+
         If S4% = 0 And I3 <= 2 Then S1%(D) = P1(D)
         If S4% > 0 And S4% < 4 And I3 <= 3 Then S1%(D) = P1(D)
         If S4% > 3 And S4% < 7 And I3 <= 4 Then S1%(D) = P1(D)
         If S4% = 7 And I3 <= 5 Then S1%(D) = P1(D)
         If S4% = 0 And nbrOuts(0) = 0 And I3 <= 3 Then S1%(D) = P1(D)
         If INNING% > 5 And I3 > 0 And INNING% < 8 Then S1%(D) = P1(D)
+
     End If
 
     RI = 0
 
     If S4% <> 0 Then
+
         If S4% = 1 Or S4% = 2 Or S4% = 3 Then RI = 1
         If S4% = 4 Or S4% = 5 Or S4% = 6 Then RI = 2
         If S4% = 7 Then RI = 3
+
         leagPitStats(D, P1(D), 17) = leagPitStats(D, P1(D), 17) + RI
         gamePitStats(D, P1(D), 17) = gamePitStats(D, P1(D), 17) + RI
+
     End If
 
 End Sub
@@ -16778,11 +16775,11 @@ End Sub
 
 
 '----------------------------------------
-'          GETSTATS Subroutine
+'          LOADSTATS Subroutine
 '----------------------------------------
 'This subroutine loads in stats for the
 'each team
-Sub GETSTATS ()
+Sub LOADSTATS ()
 
     For I = 0 To 1
 

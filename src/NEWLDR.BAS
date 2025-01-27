@@ -11,7 +11,7 @@ Sub NEWLDR ()
     ReDim menuChoices$(1 To 5)
 
     Shared cLoseStreak!(), cWinStreak!()
-    Shared totExtInnLosses!(), totExtInnWins!(), totHomeLosses!(), totHomeWins!()
+    Shared totExtInnLosses!(), totExtInnWins!(), totHomeLosses!!(), totHomeWins!s!()
     Shared teamTotLosses!(), lastLoseStreak!(), lastTenLosses!(), lastTenWins!(), lastWinStreak!()
     Shared totRoadLosses!(), totRoadWins!(), teamLoseStreak!(), teamWinStreak!(), teamTotWins!()
 
@@ -119,7 +119,7 @@ Sub NEWLDR ()
                             Input #1, league$, div1Name$, div2Name$, div3Name$, div4Name$
 
                             For I = 1 To TEAMS_PER_LEAGUE
-                                Input #1, expStdLeagName$(I), teamTotWins!(I), teamTotLosses!(I), teamWinStreak!(I), teamLoseStreak!(I), cWinStreak!(I), cLoseStreak!(I), totHomeWins!(I), totHomeLosses!(I), totRoadWins!(I), totRoadLosses!(I), totExtInnWins!(I), totExtInnLosses!(I), lastTenWins!(I), lastTenLosses!(I)
+                                Input #1, expStdLeagName$(I), teamTotWins!(I), totHomeWins!s!(I), totRoadWins!(I), totExtInnWins!(I), lastTenWins!(I), teamTotLosses!(I), totHomeLosses!!(I), totRoadLosses!(I), totExtInnLosses!(I), lastTenLosses!(I), teamWinStreak!(I), teamLoseStreak!(I), cWinStreak!(I), cLoseStreak!(I)
                             Next
 
                             Close #1
@@ -215,9 +215,8 @@ End Sub
 'a variety of arrays.
 Sub UpdateExpandedLeaders (JB, JP, plyrTotalStats, teamTotalStats)
 
-    Shared pitTotGames!()
-
     Shared batTotGames!()
+    Shared pitTotGames!()
 
     Shared expLdrB0(), careerB0(), statB()
     Shared careerP0(), statP(), expLdrP0()
@@ -226,9 +225,27 @@ Sub UpdateExpandedLeaders (JB, JP, plyrTotalStats, teamTotalStats)
     Shared plyLdrVal!(), teamLdrVal!()
     Shared divWins(), divLosses()
 
-    Shared batterNames$(), expBatLdrName$(), pitcherNames$(), expPitLdrName$()
-    Shared plyLeaderTeams$(), expBatLdrTeam$(), expPitLdrTeam$(), tmLeaderTeams$()
+    Shared batterNames$(), pitcherNames$()
+    Shared expBatLdrName$(), expPitLdrName$()
+    Shared expBatLdrTeam$(), expPitLdrTeam$()
+    Shared plyLeaderTeams$(), tmLeaderTeams$()
     Shared memberName$()
+
+    Erase batTotGames!
+    Erase pitTotGames!
+
+    Erase expLdrB0, careerB0, statB
+    Erase careerP0, statP, expLdrP0
+    Erase statT0!, statT1!
+
+    Erase plyLdrVal!, teamLdrVal!
+    Erase divWins, divLosses
+
+    Erase batterNames$, pitcherNames$
+    Erase expBatLdrName$, expPitLdrName$
+    Erase expBatLdrTeam$, expPitLdrTeam$
+    Erase plyLeaderTeams$, tmLeaderTeams$
+    Erase memberName$
 
     Color 15, 0
     Cls

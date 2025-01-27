@@ -582,14 +582,49 @@ End Sub
 
 
 '----------------------------------------
+'       ReadLeagueIndex Subroutine
+'----------------------------------------
+'This subroutine reads in the team file
+'indexes from the .TMI file and assigns them
+'to variables for use later.
+Sub ReadLeagueIndex (indexFile$)
+
+    Shared memberIdx()
+    Shared memberName$(), memberYear$()
+
+    Shared leagueName$
+    Shared div1Name$, div2Name$, div3Name$, div4Name$
+
+    Open diskPaths$(2) + indexFile$ + ".TMI" For Input As #2
+
+    Input #3, leagueName$
+    Input #3, div1Name$
+    Input #3, div2Name$
+    Input #3, div3Name$
+    Input #3, div4Name$
+
+    For X = 1 To TEAMS_PER_LEAGUE
+        Input #3, memberName$(X)
+        Input #3, memberIdx(X)
+        Input #3, memberYear$(X)
+    Next
+
+    Close #3
+
+
+End Sub
+
+
+'----------------------------------------
 '     ReadLeagueStats Subroutine
 '----------------------------------------
-'This subroutine reads in the league stats
-'from the .TMS file and assigns them to
-'variables for use later in the routine.
+'This subroutine reads in the stat file
+'names from the .TMS file and assigns them
+'to variables for use later.
 Sub ReadLeagueStats (statFile$)
 
     Shared memberName$()
+
     Shared leagueName$
     Shared div1Name$, div2Name$, div3Name$, div4Name$
 
