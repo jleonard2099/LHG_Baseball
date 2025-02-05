@@ -68,12 +68,12 @@ Sub CompileLeague ()
 
                 If (haveStats) Then
 
-                    WT$ = memberName$(XW)
+                    statName$ = memberName$(XW)
                     nonConfGame = 0
 
                     For X = 1 To TEAMS_PER_LEAGUE:
 
-                        If memberName$(X) = WT$ Then
+                        If memberName$(X) = statName$ Then
 
                             If divWins(X) = fullWins And divLosses(X) = fullLosses Then
 
@@ -97,8 +97,8 @@ Sub CompileLeague ()
                     If nonConfGame <> 1 And _FileExists(diskPaths$(1) + memberName$(XW)) Then
 
                         Call ReadStatsLeague(memberName$(XW), TN$, totalGames)
-                        Call CheckStatsLeague(memberName$(XW), WT$, totalGames)
-                        Call CalcStatTotals(WT$, totalGames)
+                        Call CheckStatsLeague(memberName$(XW), statName$, totalGames)
+                        Call CalcStatTotals(statName$, totalGames)
 
                     End If 'Done checking if we need to skip
 
@@ -252,7 +252,7 @@ End Sub
 '----------------------------------------
 'This subroutine compares pre-loaded stats
 'to existing leaders and updates as needed
-Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
+Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
 
     Dim pitcherNames$(TEAMS_PER_LEAGUE)
 
@@ -277,14 +277,14 @@ Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
             Color 15
             Print leaderNames$(X)
 
-            pitcherNames$(X) = WT$
+            pitcherNames$(X) = statName$
 
             skipIF = 0
 
             'Batting Avg
             For Y = 1 To 20
 
-                If leagLdrPlayer$(Y) = leaderNames$(X) And leagLdrTeam$(Y) = WT$ Then
+                If leagLdrPlayer$(Y) = leaderNames$(X) And leagLdrTeam$(Y) = statName$ Then
 
                     leaderVals!(Y, 1) = leaderStatVal2!(X, 13)
                     leaderVals!(Y, 2) = leaderStatVal2!(X, 1)
@@ -371,7 +371,7 @@ Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
             'Slugging Pct
             For Y = 99 To 108
 
-                If leagLdrPlayer$(Y) = leaderNames$(X) And leagLdrTeam$(Y) = WT$ Then
+                If leagLdrPlayer$(Y) = leaderNames$(X) And leagLdrTeam$(Y) = statName$ Then
 
                     leaderVals!(Y, 1) = leaderStatVal2!(X, 14)
                     leaderVals!(Y, 2) = leaderStatVal2!(X, 1)
@@ -444,7 +444,7 @@ Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
             'On Base Pct
             For Y = 110 To 119
 
-                If leagLdrPlayer$(Y) = leaderNames$(X) And leagLdrTeam$(Y) = WT$ Then
+                If leagLdrPlayer$(Y) = leaderNames$(X) And leagLdrTeam$(Y) = statName$ Then
 
                     leaderVals!(Y, 1) = leaderStatVal2!(X, 15)
                     leaderVals!(Y, 2) = leaderStatVal2!(X, 1)
@@ -515,7 +515,7 @@ Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
             3330 '
             For Z = 21 To 31
 
-                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = WT$ Then
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 2)
                     GoTo 3335
                 End If
@@ -526,7 +526,7 @@ Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
 
                 leaderVals!(31, 1) = leaderStatVal2!(X, 2)
                 leagLdrPlayer$(31) = leaderNames$(X)
-                leagLdrTeam$(31) = WT$
+                leagLdrTeam$(31) = statName$
 
                 3335 '
                 For Z = 21 To 30
@@ -544,7 +544,7 @@ Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
             'Division 4
             For Z = 32 To 42
 
-                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = WT$ Then
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 5)
                     GoTo 3347
                 End If
@@ -555,7 +555,7 @@ Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
 
                 leaderVals!(42, 1) = leaderStatVal2!(X, 5)
                 leagLdrPlayer$(42) = leaderNames$(X)
-                leagLdrTeam$(42) = WT$
+                leagLdrTeam$(42) = statName$
 
                 3347 '
                 For Z = 32 To 41
@@ -574,7 +574,7 @@ Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
 
             3354 '
             For Z = 43 To 53
-                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = WT$ Then
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 6)
                     GoTo 3359
                 End If
@@ -584,7 +584,7 @@ Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
 
                 leaderVals!(53, 1) = leaderStatVal2!(X, 6)
                 leagLdrPlayer$(53) = leaderNames$(X)
-                leagLdrTeam$(53) = WT$
+                leagLdrTeam$(53) = statName$
 
                 3359 '
                 For Z = 43 To 52
@@ -600,7 +600,7 @@ Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
             End If
 
             For Z = 54 To 64
-                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = WT$ Then
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 7)
                     GoTo 3371
                 End If
@@ -610,7 +610,7 @@ Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
 
                 leaderVals!(64, 1) = leaderStatVal2!(X, 7)
                 leagLdrPlayer$(64) = leaderNames$(X)
-                leagLdrTeam$(64) = WT$
+                leagLdrTeam$(64) = statName$
 
                 3371 '
                 For Z = 54 To 63:
@@ -628,7 +628,7 @@ Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
             3378 '
             For Z = 65 To 74
 
-                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = WT$ Then
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 3)
                     GoTo 3383
                 End If
@@ -639,7 +639,7 @@ Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
 
                 leaderVals!(74, 1) = leaderStatVal2!(X, 3)
                 leagLdrPlayer$(74) = leaderNames$(X)
-                leagLdrTeam$(74) = WT$
+                leagLdrTeam$(74) = statName$
 
                 3383 '
                 For Z = 65 To 73
@@ -655,7 +655,7 @@ Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
             End If
 
             For Z = 76 To 85
-                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = WT$ Then
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 4)
                     GoTo 3395
                 End If
@@ -665,7 +665,7 @@ Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
 
                 leaderVals!(85, 1) = leaderStatVal2!(X, 4)
                 leagLdrPlayer$(85) = leaderNames$(X)
-                leagLdrTeam$(85) = WT$
+                leagLdrTeam$(85) = statName$
 
                 3395 '
                 For Z = 76 To 84
@@ -683,7 +683,7 @@ Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
 
             For Z = 87 To 97
 
-                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = WT$ Then
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 10)
                     GoTo 3407
                 End If
@@ -693,7 +693,7 @@ Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
 
                 leaderVals!(97, 1) = leaderStatVal2!(X, 10)
                 leagLdrPlayer$(97) = leaderNames$(X)
-                leagLdrTeam$(97) = WT$
+                leagLdrTeam$(97) = statName$
 
                 3407 '
                 For Z = 87 To 96
@@ -714,7 +714,7 @@ Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
         'Base on Balls
         For Z = 217 To 227
 
-            If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = WT$ Then
+            If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                 leaderVals!(Z, 1) = leaderStatVal2!(X, 8)
                 GoTo 3605
             End If
@@ -725,7 +725,7 @@ Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
 
             leaderVals!(227, 1) = leaderStatVal2!(X, 8)
             leagLdrPlayer$(227) = leaderNames$(X)
-            leagLdrTeam$(227) = WT$
+            leagLdrTeam$(227) = statName$
 
             3605 '
             For Z = 217 To 226
@@ -742,7 +742,7 @@ Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
         'Hitting Streak
         For Z = 279 To 288
 
-            If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = WT$ Then
+            If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                 leaderVals!(Z, 1) = leaderStatVal2!(X, 17)
                 GoTo 3615
             End If
@@ -753,7 +753,7 @@ Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
 
             leaderVals!(288, 1) = leaderStatVal2!(X, 17)
             leagLdrPlayer$(288) = leaderNames$(X)
-            leagLdrTeam$(288) = WT$
+            leagLdrTeam$(288) = statName$
 
             3615 '
             For Z = 279 To 287
@@ -773,7 +773,7 @@ Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
         'Longest Hitting Streak
         For Z = 289 To 298
             3621 '
-            If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = WT$ Then
+            If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                 leaderVals!(Z, 1) = leaderStatVal2!(X, 18)
                 GoTo 3625
             End If
@@ -784,7 +784,7 @@ Sub CheckStatsLeague (targetTeam$, WT$, totalGames)
 
             leaderVals!(298, 1) = leaderStatVal2!(X, 18)
             leagLdrPlayer$(298) = leaderNames$(X)
-            leagLdrTeam$(298) = WT$
+            leagLdrTeam$(298) = statName$
 
             3625 '
             For Z = 289 To 297
@@ -812,7 +812,7 @@ End Sub
 'This subroutine compares all pre-loaded
 'stats to each of the record categories to
 'see if any should be updated
-Sub CalcStatTotals (WT$, totalGames)
+Sub CalcStatTotals (statName$, totalGames)
 
     Shared ldrBatStat(), ldrPitStat()
     Shared leagLdrPlayer$(), leagLdrTeam$()
@@ -833,7 +833,7 @@ Sub CalcStatTotals (WT$, totalGames)
             If leaderStatVal2!(X, 14) <= leaderVals!(139, 1) Then
 
                 leagLdrPlayer$(139) = leaderNames$(X)
-                leagLdrTeam$(139) = WT$
+                leagLdrTeam$(139) = statName$
                 leaderVals!(139, 1) = leaderStatVal2!(X, 14)
                 leaderVals!(139, 2) = leaderStatVal2!(X, 1) / 3
 
@@ -857,7 +857,7 @@ Sub CalcStatTotals (WT$, totalGames)
                 If leaderStatVal2!(X, 14) < 99.9 And leaderStatVal2!(X, 14) >= leaderVals!(278, 1) Then
 
                     leagLdrPlayer$(278) = leaderNames$(X)
-                    leagLdrTeam$(278) = WT$
+                    leagLdrTeam$(278) = statName$
                     leaderVals!(278, 1) = leaderStatVal2!(X, 14)
                     leaderVals!(278, 2) = leaderStatVal2!(X, 1) / 3
 
@@ -880,7 +880,7 @@ Sub CalcStatTotals (WT$, totalGames)
             3430 '
             For Y = 140 To 150
 
-                If leagLdrPlayer$(Y) = leaderNames$(X) And leagLdrTeam$(Y) = WT$ Then
+                If leagLdrPlayer$(Y) = leaderNames$(X) And leagLdrTeam$(Y) = statName$ Then
 
                     leaderVals!(Y, 1) = leaderStatVal2!(X, 7)
                     leaderVals!(Y, 2) = leaderStatVal2!(X, 8)
@@ -917,7 +917,7 @@ Sub CalcStatTotals (WT$, totalGames)
                 If Not (leaderStatVal2!(X, 7) - leaderStatVal2!(X, 8) = leaderVals!(150, 1) - leaderVals!(150, 2) And leaderStatVal2!(X, 7) >= leaderVals!(150, 1)) Then
 
                     leagLdrPlayer$(150) = leaderNames$(X)
-                    leagLdrTeam$(150) = WT$
+                    leagLdrTeam$(150) = statName$
                     leaderVals!(150, 1) = leaderStatVal2!(X, 7)
                     leaderVals!(150, 2) = leaderStatVal2!(X, 8)
 
@@ -948,7 +948,7 @@ Sub CalcStatTotals (WT$, totalGames)
             3440 '
             For Z = 151 To 161
 
-                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = WT$ Then
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
 
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 7)
                     '3445
@@ -973,7 +973,7 @@ Sub CalcStatTotals (WT$, totalGames)
 
                 leaderVals!(161, 1) = leaderStatVal2!(X, 7)
                 leagLdrPlayer$(161) = leaderNames$(X)
-                leagLdrTeam$(161) = WT$
+                leagLdrTeam$(161) = statName$
 
                 3445 '
                 For Z = 151 To 160
@@ -995,7 +995,7 @@ Sub CalcStatTotals (WT$, totalGames)
             3452 '
             For Z = 162 To 172
 
-                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = WT$ Then
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 1) / 3
                     GoTo 3457
                 End If
@@ -1006,7 +1006,7 @@ Sub CalcStatTotals (WT$, totalGames)
 
                 leaderVals!(172, 1) = leaderStatVal2!(X, 1) / 3
                 leagLdrPlayer$(172) = leaderNames$(X)
-                leagLdrTeam$(172) = WT$
+                leagLdrTeam$(172) = statName$
 
                 3457 '
                 For Z = 162 To 171
@@ -1023,7 +1023,7 @@ Sub CalcStatTotals (WT$, totalGames)
 
             3464 '
             For Z = 173 To 183
-                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = WT$ Then
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 6)
                     GoTo 3469
                 End If
@@ -1033,7 +1033,7 @@ Sub CalcStatTotals (WT$, totalGames)
 
                 leaderVals!(183, 1) = leaderStatVal2!(X, 6)
                 leagLdrPlayer$(183) = leaderNames$(X)
-                leagLdrTeam$(183) = WT$
+                leagLdrTeam$(183) = statName$
 
                 3469 '
                 For Z = 173 To 182:
@@ -1053,7 +1053,7 @@ Sub CalcStatTotals (WT$, totalGames)
 
             3476 '
             For Z = 184 To 194
-                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = WT$ Then
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 11)
                     GoTo 3481
                 End If
@@ -1063,7 +1063,7 @@ Sub CalcStatTotals (WT$, totalGames)
 
                 leaderVals!(194, 1) = leaderStatVal2!(X, 11)
                 leagLdrPlayer$(194) = leaderNames$(X)
-                leagLdrTeam$(194) = WT$
+                leagLdrTeam$(194) = statName$
 
                 3481 '
                 For Z = 184 To 193
@@ -1081,7 +1081,7 @@ Sub CalcStatTotals (WT$, totalGames)
             3488 '
             For Z = 195 To 205
 
-                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = WT$ Then
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 12)
                     GoTo 3493
                 End If
@@ -1090,7 +1090,7 @@ Sub CalcStatTotals (WT$, totalGames)
             If leaderStatVal2!(X, 12) > leaderVals!(205, 1) Then
                 leaderVals!(205, 1) = leaderStatVal2!(X, 12)
                 leagLdrPlayer$(205) = leaderNames$(X)
-                leagLdrTeam$(205) = WT$
+                leagLdrTeam$(205) = statName$
 
                 3493 '
                 For Z = 195 To 204
@@ -1108,7 +1108,7 @@ Sub CalcStatTotals (WT$, totalGames)
             3500 '
             For Z = 206 To 216
 
-                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = WT$ Then
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 13)
                     GoTo 3505
                 End If
@@ -1118,7 +1118,7 @@ Sub CalcStatTotals (WT$, totalGames)
 
                 leaderVals!(216, 1) = leaderStatVal2!(X, 13)
                 leagLdrPlayer$(216) = leaderNames$(X)
-                leagLdrTeam$(216) = WT$
+                leagLdrTeam$(216) = statName$
 
                 3505 '
                 For Z = 206 To 215
@@ -1135,7 +1135,7 @@ Sub CalcStatTotals (WT$, totalGames)
 
             APP = APP + leaderStatVal2!(X, 9)
             For Z = 228 To 238
-                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = WT$ Then
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 9)
                     GoTo 3518
                 End If
@@ -1145,7 +1145,7 @@ Sub CalcStatTotals (WT$, totalGames)
 
                 leaderVals!(238, 1) = leaderStatVal2!(X, 9)
                 leagLdrPlayer$(238) = leaderNames$(X)
-                leagLdrTeam$(238) = WT$
+                leagLdrTeam$(238) = statName$
 
                 3518 '
                 For Z = 228 To 237:
@@ -1170,7 +1170,7 @@ Sub CalcStatTotals (WT$, totalGames)
 
         If ldrBatStat(3) = 0 Then ldrBatStat(3) = 1
 
-        If BA$(Z) = WT$ Then
+        If BA$(Z) = statName$ Then
             OFT!(Z, 1) = ldrBatStat(4) / ldrBatStat(3)
             For M = 3 To 14: 
                 OFT!(Z, M) = ldrBatStat(M)
@@ -1188,7 +1188,7 @@ Sub CalcStatTotals (WT$, totalGames)
             OFT!(40, M) = ldrBatStat(M)
         Next M
 
-        BA$(40) = WT$
+        BA$(40) = statName$
 
         3535 '
         For Z = 1 To 39
@@ -1224,7 +1224,7 @@ Sub CalcStatTotals (WT$, totalGames)
             ldrPitStat(4) = 3
         End If
 
-        If ER$(Z) = WT$ Then
+        If ER$(Z) = statName$ Then
             DFT!(Z, 1) = ldrPitStat(4) / ldrPitStat(1) * 27
             For M = 2 To 14:
                 DFT!(Z, M) = ldrPitStat(M - 1)
@@ -1241,8 +1241,8 @@ Sub CalcStatTotals (WT$, totalGames)
             DFT!(40, M) = ldrPitStat(M - 1)
         Next M
 
-        ER$(40) = WT$
-        ER$(40) = WT$
+        ER$(40) = statName$
+        ER$(40) = statName$
 
         3555 '
         For Z = 1 To 39

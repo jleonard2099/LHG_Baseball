@@ -10,6 +10,7 @@ bin/HELLO*
 bin/TICKER
 doc/*.odt
 src/*.mp3
+src/*.png
 src/DEFERA
 src/DEV.BAS
 src/errlog
@@ -18,6 +19,8 @@ src/FOLDERS.CFG
 src/GAME82
 src/PARKS.DBF
 src/parks/*.*
+src/pbplog
 src/REVISED.PBP
+src/schedule
 src/TICKER
 src/UMPIRES.*

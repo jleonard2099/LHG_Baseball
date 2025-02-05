@@ -967,7 +967,7 @@ Sub LOADER
             Get #6, schedGame(0) + schedGame(2)
 
             For X = 0 To 18
-                NG%(X) = CVI(Q2$(X + 1))
+                schedOptions(X) = CVI(Q2$(X + 1))
             Next
 
             For X = 0 To 1
@@ -8915,7 +8915,7 @@ Sub InitVar ()
     Erase gameM, gameScore, GK%
     Erase gamePitStats, H0%, inningScore
     Erase L0%, leagPitStats, mgrFile
-    Erase NG%, nbrInnings, nbrOuts
+    Erase schedOptions, nbrInnings, nbrOuts
     Erase oppScore
     Erase P1, P2%, statT1!, P6%
     Erase S1%, S8%, startPitcher
@@ -8960,19 +8960,19 @@ End Sub
 Sub AUTOSETUP (validTeam)
 
     'Setup variables for auto-play
-    playerOpt = NG%(8)
-    desigHit = NG%(3)
-    pbpDelay! = NG%(4) / 10
-    gameMonth = NG%(17)
-    useWeather = NG%(5)
-    useVGA = NG%(11)
-    useInj = NG%(6)
-    useLRSplit = NG%(7)
-    useRest = NG%(9)
-    useMgrProf = NG%(10)
-    pitchEraOpt = NG%(14)
+    playerOpt = schedOptions(8)
+    desigHit = schedOptions(3)
+    pbpDelay! = schedOptions(4) / 10
+    gameMonth = schedOptions(17)
+    useWeather = schedOptions(5)
+    useVGA = schedOptions(11)
+    useInj = schedOptions(6)
+    useLRSplit = schedOptions(7)
+    useRest = schedOptions(9)
+    useMgrProf = schedOptions(10)
+    pitchEraOpt = schedOptions(14)
 
-    If NG%(15) < 1600 Then
+    If schedOptions(15) < 1600 Then
         dayOrNight = 0
     Else
         dayOrNight = 1
@@ -8980,12 +8980,12 @@ Sub AUTOSETUP (validTeam)
 
     For tgtTeam = 0 To 1
 
-        tgtId = NG%(tgtTeam)
+        tgtId = schedOptions(tgtTeam)
         tgtYear$ = diskIDs$(tgtTeam)
 
         Call ReadGameTeam(tgtYear$, gameTeams$(tgtTeam), tgtId, tgtTeam, validData)
 
-        NG%(tgtTeam) = tgtId
+        schedOptions(tgtTeam) = tgtId
         gameMgrIdx(tgtTeam) = tgtId
         diskIDs$(tgtTeam) = tgtYear$
 
@@ -17482,10 +17482,10 @@ Sub SAVESTATS ()
 
             Field #1, 38 As X$, 2 As player$(22), 2 As player$(23), 5 As player$(20), 5 As player$(21)
 
-            NG%(13) = 1
+            schedOptions(13) = 1
 
             For X = 0 To 18:
-                LSet player$(X + 1) = MKI$(NG%(X))
+                LSet player$(X + 1) = MKI$(schedOptions(X))
             Next
 
             For X = 0 To 1:

@@ -436,6 +436,84 @@ End Sub
 
 
 '----------------------------------------
+'     ReportFilePrompt_Pro Subroutine
+'----------------------------------------
+'This subroutine prompts the user for
+'the name of the report file to be saved
+Sub UserFilePrompt (reportFile$)
+
+    Do
+
+        Color 15, 0
+        Cls
+
+        Call MenuBox(6, 8, 61, 7, 15, 1)
+
+        Locate 7, 32
+
+        Locate , 12: Print "ENTER NAME FOR FILE: ": Print
+        Locate , 12: Print "THE NAME SHOULD HAVE NO PERIODS OR SPECIAL CHARACTERS"
+        Locate , 12: Print "DO NOT ADD A FILE EXTENSION; THE PROGRAM"
+        Locate , 12: Print "WILL AUTOMATICALLY ADD .RPT"
+        Locate 7, 37: Input reportFile$
+
+        If reportFile$ <> "" Then
+
+            Do
+                Locate 13, 12: Print "ANY CHANGE? (Y/N) "
+                I$ = GetKeyPress$
+            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+        End If
+
+    Loop Until UCase$(I$) = "N" And reportFile$ <> ""
+
+End Sub
+
+
+'----------------------------------------
+'     ScheduleFilePrompt Subroutine
+'----------------------------------------
+'This subroutine prompts the user for
+'the name of the schedule file to be saved
+Sub ScheduleFilePrompt (scheduleFile$)
+
+    Color 15, 0
+    Cls
+
+    Call MenuBox(6, 8, 61, 8, 15, 1)
+
+    Do
+
+        Locate 7, 32
+
+        Locate , 12: Print "ENTER NAME FOR SCHEDULE: "
+        Print
+        Locate , 12: Print "THE NAME SHOULD HAVE NO PERIODS OR SPECIAL CHARACTERS"
+        Locate , 12: Print "DO NOT ADD A FILE EXTENSION; THE PROGRAM"
+        Locate , 12: Print "WILL AUTOMATICALLY ADD .SCD"
+        Locate , 12: Print "SAMPLE NAMES ARE INDIANA, BOS68, CHI-76, ETC      "
+        Locate 7, 40: Input scheduleFile$
+
+        If scheduleFile$ <> "" Then
+
+            Do
+
+                Locate 14, 12
+                Print "ANY CHANGE? (Y/N) "
+                I$ = GetKeyPress$
+
+            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N" Or I$ = Chr$(27)
+
+        End If
+
+    Loop Until (UCase$(I$) = "N" And scheduleFile$ <> "") Or I$ = Chr$(27)
+
+
+End Sub
+
+
+'----------------------------------------
 '        ReadTeamStats Subroutine
 '----------------------------------------
 'Reads in compiled stats for a given team
@@ -501,8 +579,10 @@ End Sub
 'team's schedule stats file.
 Sub ReadScheduleStats (statFile$, numberGames)
 
-    Shared oppName$(), losePitcher$(), locIndicator$(), winPitcher$()
-    Shared teamScore(), nbrInnings(), oppScore()
+    Shared locIndicator$(), oppName$()
+    Shared losePitcher$(), winPitcher$()
+
+    Shared nbrInnings(), oppScore(), teamScore()
 
     findFile$ = diskPaths$(1) + statFile$ + "S"
 
@@ -834,81 +914,3 @@ Function ChooseFile$ (fileSpec$, fileDesc$, ExitCode%)
     End If
 
 End Function
-
-
-'----------------------------------------
-'     ReportFilePrompt_Pro Subroutine
-'----------------------------------------
-'This subroutine prompts the user for
-'the name of the report file to be saved
-Sub UserFilePrompt (reportFile$)
-
-    Do
-
-        Color 15, 0
-        Cls
-
-        Call MenuBox(6, 8, 61, 7, 15, 1)
-
-        Locate 7, 32
-
-        Locate , 12: Print "ENTER NAME FOR FILE: ": Print
-        Locate , 12: Print "THE NAME SHOULD HAVE NO PERIODS OR SPECIAL CHARACTERS"
-        Locate , 12: Print "DO NOT ADD A FILE EXTENSION; THE PROGRAM"
-        Locate , 12: Print "WILL AUTOMATICALLY ADD .RPT"
-        Locate 7, 37: Input reportFile$
-
-        If reportFile$ <> "" Then
-
-            Do
-                Locate 13, 12: Print "ANY CHANGE? (Y/N) "
-                I$ = GetKeyPress$
-            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
-        End If
-
-    Loop Until UCase$(I$) = "N" And reportFile$ <> ""
-
-End Sub
-
-
-'----------------------------------------
-'     ScheduleFilePrompt Subroutine
-'----------------------------------------
-'This subroutine prompts the user for
-'the name of the schedule file to be saved
-Sub ScheduleFilePrompt (scheduleFile$)
-
-    Color 15, 0
-    Cls
-
-    Call MenuBox(6, 8, 61, 8, 15, 1)
-
-    Do
-
-        Locate 7, 32
-
-        Locate , 12: Print "ENTER NAME FOR SCHEDULE: "
-        Print
-        Locate , 12: Print "THE NAME SHOULD HAVE NO PERIODS OR SPECIAL CHARACTERS"
-        Locate , 12: Print "DO NOT ADD A FILE EXTENSION; THE PROGRAM"
-        Locate , 12: Print "WILL AUTOMATICALLY ADD .SCD"
-        Locate , 12: Print "SAMPLE NAMES ARE INDIANA, BOS68, CHI-76, ETC      "
-        Locate 7, 40: Input scheduleFile$
-
-        If scheduleFile$ <> "" Then
-
-            Do
-
-                Locate 14, 12
-                Print "ANY CHANGE? (Y/N) "
-                I$ = GetKeyPress$
-
-            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N" Or I$ = Chr$(27)
-
-        End If
-
-    Loop Until (UCase$(I$) = "N" And scheduleFile$ <> "") Or I$ = Chr$(27)
-
-
-End Sub

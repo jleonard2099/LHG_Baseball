@@ -478,6 +478,66 @@ Sub NewSchedule (scheduleFile$)
                     scheduleNG%(I, 13) = 0
                 Next
 
+            Case "Z"
+                'Export to text file
+                Open "schedule" For Append As #15
+
+                For X = 1 To scheduleAP%(0)
+
+                    T1 = scheduleNG%(X, 0)
+                    YN$ = scheduleYN$(X, 0)
+                    Call ReadTeam(YN$, team$, T1, validData)
+                    scheduleV$(X) = team$
+
+                    T1 = scheduleNG%(X, 1)
+                    YN$ = scheduleYN$(X, 1)
+                    Call ReadTeam(YN$, team$, T1, validData)
+                    scheduleH$(X) = team$
+
+                    'Game number
+                    Print #15, Using "####"; X;
+                    Print #15, ",";
+
+                    'Date
+                    Print #15, Using "##/##/##"; scheduleNG%(X, 17); scheduleNG%(X, 16); scheduleNG%(X, 18);
+                    Print #15, ",";
+
+                    'Time
+                    I$ = "A"
+                    HR% = scheduleNG%(X + NS% * 20, 15) / 100
+                    MIN% = scheduleNG%(X + NS% * 20, 15) - HR% * 100
+
+                    If HR% = 12 Then I$ = "P"
+                    If HR% > 12 Then HR% = HR% - 12: I$ = "P"
+
+                    TM$ = Right$(Str$(HR%), 2) + ":"
+
+                    If MIN% < 10 Then TM$ = TM$ + "0" + Right$(Str$(MIN%), 1)
+                    If MIN% >= 10 Then TM$ = TM$ + Right$(Str$(MIN%), 2)
+
+                    'Time
+                    TM$ = TM$ + I$
+                    Print #15, TM$; ",";
+
+                    'Visiting Team
+                    Print #15, scheduleV$(X); ",";
+                    If scheduleNG%(X, 13) = 1 Then
+                        Print #15, Using "###"; visitorScores(X);
+                    End If
+                    Print #15, ",";
+
+                    'Home Team
+                    Print #15, scheduleH$(X); ",";
+                    If scheduleNG%(X, 13) = 1 Then
+                        Print #15, Using "###"; homeScores(X);
+                    End If
+
+                    Print #15,
+
+                Next X
+
+                Close #15
+
             Case Chr$(0) + Chr$(81), Chr$(0) + Chr$(77)
                 ' *** PAGE DOWN | RIGHT ARROW ***
                 If NS% >= BS% Then

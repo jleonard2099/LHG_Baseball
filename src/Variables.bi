@@ -332,7 +332,7 @@ Dim Shared PARK$, pbpString$, wind$, YY$
 
 Dim Shared batRating(0 To 1, 0 To 22, 80), CZ%(0 To 1), inningScore(1, 26)
 Dim Shared MON(5, 14), pitchEff(0 To 1, 0 To 1), pitchRating(0 To 1, 0 To 21, 0 To 89)
-Dim Shared schedGame(2), teamRat_GAME(1, 13), VV(1), VV1(1)
+Dim Shared schedGame(2), schedOptions(18), teamRat_GAME(1, 13), VV(1), VV1(1)
 Dim Shared nbrOuts(1)
 
 '-- Not really used??
@@ -343,7 +343,7 @@ Dim Shared B1(3, 1), B2%(0 To 3, 0 To 2), B3%(0 To 1, 0 To 9), B4%(1, 7, 9)
 Dim Shared B7%(0 To 1, 0 To 9), B9%(1, 10), BT%(0 To 1, 1 To 9, 1 To 9)
 Dim Shared CF%(0 To 9, 0 To 2), CSS(1, 22, 6), D3%(1), DP%(1)
 Dim Shared P1(0 To 1), P2%(1)
-Dim Shared NG%(18), P6%(1)
+Dim Shared P6%(1)
 Dim Shared S1%(1), S8%(1, 1), SO%(0 To 5, 0 To 2)
 Dim Shared T3%(22), X0%(1, 2, 23), YR%(1)
 
