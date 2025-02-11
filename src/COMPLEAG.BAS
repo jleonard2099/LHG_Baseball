@@ -57,7 +57,7 @@ Sub CompileLeague ()
 
         Call ReadLeagueStats (leagueFile$)
 
-        Erase divWins!, divLosses!
+        Erase divWins, divLosses
 
         For XW = 1 To TEAMS_PER_LEAGUE
 

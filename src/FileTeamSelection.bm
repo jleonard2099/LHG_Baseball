@@ -624,6 +624,57 @@ End Sub
 
 
 '----------------------------------------
+'      SaveScheduleStats Subroutine
+'----------------------------------------
+'This subroutine writes in all data to the
+'team's schedule stats file.
+Sub SaveScheduleStats (saveFile$, numberGames)
+
+    Shared locIndicator$(), oppName$()
+    Shared losePitcher$(), winPitcher$()
+
+    Shared nbrInnings(), oppScore(), teamScore()
+
+    Open diskPaths$(1) + saveFile$ + "S" For Output As #2
+
+    Print #2, numberGames
+
+    For I = 1 To MAX_SCHED_STATS:
+        Print #2, teamScore(I)
+    Next I
+
+    For I = 1 To MAX_SCHED_STATS:
+        Print #2, oppName$(I)
+    Next I
+
+    For I = 1 To MAX_SCHED_STATS:
+        Print #2, oppScore(I)
+    Next I
+
+    For I = 1 To MAX_SCHED_STATS:
+        Print #2, locIndicator$(I)
+    Next I
+
+    For I = 1 To MAX_SCHED_STATS:
+        Print #2, winPitcher$(I)
+    Next I
+
+    For I = 1 To MAX_SCHED_STATS:
+        Print #2, losePitcher$(I)
+    Next I
+
+    For I = 1 To MAX_SCHED_STATS:
+        Print #2, nbrInnings(I)
+    Next I
+
+    Close #2
+
+End Sub
+
+
+
+
+'----------------------------------------
 '       ReadSeasonRecords Subroutine
 '----------------------------------------
 'Reads in list of team and individual 

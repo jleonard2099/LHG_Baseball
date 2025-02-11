@@ -103,7 +103,7 @@ Sub LoadTeamStats (statFile$, nbrGames)
     Shared statD0, statD1
 
     Shared extraInnWins, extraInnLosses
-    Shared homeWins!, homeLosses!
+    Shared homeWins, homeLosses
     Shared lastTenLosses, lastTenWins, oneRunWins, oneRunLosses
     Shared roadWins, roadLosses
     Shared totalWins, totalLosses
@@ -116,8 +116,8 @@ Sub LoadTeamStats (statFile$, nbrGames)
     roadLosses = 0
     oneRunWins = 0
     oneRunLosses = 0
-    homeWins! = 0
-    homeLosses! = 0
+    homeWins = 0
+    homeLosses = 0
     extraInnWins = 0
     extraInnLosses = 0
     lastTenLosses = 0
@@ -167,7 +167,7 @@ Sub LoadTeamStats (statFile$, nbrGames)
             roadWins = roadWins + 1
         End If
         If teamScore(I) > oppScore(I) And locIndicator$(I) = "H" Then 
-            homeWins! = homeWins! + 1
+            homeWins = homeWins + 1
         End If
 
         If oppScore(I) > teamScore(I) Then 
@@ -180,7 +180,7 @@ Sub LoadTeamStats (statFile$, nbrGames)
             roadLosses = roadLosses + 1
         End If
         If oppScore(I) > teamScore(I) And locIndicator$(I) = "H" Then 
-            homeLosses! = homeLosses! + 1
+            homeLosses = homeLosses + 1
         End If
 
     Next I
@@ -378,7 +378,7 @@ End Sub
 Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
 
     Shared extraInnWins, extraInnLosses
-    Shared homeWins!, homeLosses!
+    Shared homeWins, homeLosses
     Shared lastTenLosses, lastTenWins, oneRunWins, oneRunLosses
     Shared roadWins, roadLosses
     Shared totalWins, totalLosses
@@ -410,7 +410,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Color 15: Print "("; totalWins; "-"; totalLosses; ")"
     Locate , 20
     Color 14: Print "HOME RECORD    ";
-    Color 15: Print "("; homeWins!; "-"; homeLosses!; ")"
+    Color 15: Print "("; homeWins; "-"; homeLosses; ")"
     Locate , 20
     Color 14: Print "ROAD RECORD    ";
     Color 15: Print "("; roadWins; "-"; roadLosses; ")"
@@ -1069,7 +1069,7 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
     Shared teamLosses, teamWins
 
     Shared extraInnWins, extraInnLosses
-    Shared homeWins!, homeLosses!
+    Shared homeWins, homeLosses
     Shared lastTenLosses, lastTenWins, oneRunWins, oneRunLosses
     Shared roadWins, roadLosses
     Shared totalWins, totalLosses
@@ -1103,8 +1103,8 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
         oneRunLosses = 0
         roadWins = 0
         roadLosses = 0
-        homeWins! = 0
-        homeLosses! = 0
+        homeWins = 0
+        homeLosses = 0
         extraInnWins = 0
         extraInnLosses = 0
         lastTenLosses = 0
@@ -1123,7 +1123,7 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
         LPrint
         LPrint
         LPrint Tab(20); "RECORD         ("; Str$(totalWins); " -"; Str$(totalLosses); " )"
-        LPrint Tab(20); "HOME RECORD    ("; Str$(homeWins!); " -"; Str$(homeLosses!); " )"
+        LPrint Tab(20); "HOME RECORD    ("; Str$(homeWins); " -"; Str$(homeLosses); " )"
         LPrint Tab(20); "ROAD RECORD    ("; Str$(roadWins); " -"; Str$(roadLosses); " )"
         LPrint Tab(20); "LAST 10 GAMES  ("; Str$(lastTenWins); " -"; Str$(lastTenLosses); " )"
         LPrint Tab(20); "EXTRA INNINGS  ("; Str$(extraInnWins); " -"; Str$(extraInnLosses); " )"
@@ -1375,7 +1375,7 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
     LPrint
     LPrint
     LPrint Tab(20); "RECORD         ("; Str$(totalWins); " -"; Str$(totalLosses); " )"
-    LPrint Tab(20); "HOME RECORD    ("; Str$(homeWins!); " -"; Str$(homeLosses!); " )"
+    LPrint Tab(20); "HOME RECORD    ("; Str$(homeWins); " -"; Str$(homeLosses); " )"
     LPrint Tab(20); "ROAD RECORD    ("; Str$(roadWins); " -"; Str$(roadLosses); " )"
     LPrint Tab(20); "LAST 10 GAMES  ("; Str$(lastTenWins); " -"; Str$(lastTenLosses); " )"
     LPrint Tab(20); "EXTRA INNINGS  ("; Str$(extraInnWins); " -"; Str$(extraInnLosses); " )"

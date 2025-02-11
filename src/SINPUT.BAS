@@ -16,9 +16,9 @@ Sub EditStats ()
 
         Call TITLE
 
-        menuChoices$(1) = "EDIT/CHANGE EXISTING REPLAY STAT FILE"
-        menuChoices$(2) = "ENTER SCHEDULE RESULTS               "
-        menuChoices$(3) = "RETURN TO MAIN MENU                  "
+        menuChoices$(1) = "EDIT / CHANGE REPLAY STATS    "
+        menuChoices$(2) = "EDIT / CHANGE SCHEDULE RESULTS"
+        menuChoices$(3) = "RETURN TO MAIN MENU           "
         SELECTION% = 1
         Count% = 3
         Start% = 1
@@ -63,18 +63,13 @@ End Sub
 'Results.
 Sub EditStatsSchedules (action%)
 
-    Shared batterNames$(), pitcherNames$()
-    Shared statB(), statB0()
-    Shared statP(), statP0()
-    Shared statT0!(), statT1!()
-
     teamNbr = 0
     Call ChooseTeam(YN$, NTMS, teamNbr, team$)    
     statFile$ = nameStatFile$(team$)
 
     If action% = 2 Then
 
-        Call ChangeSchedule(statFile$)
+        Call ChangeScheduleStats(statFile$)
 
     Else
         'action% = 1
@@ -960,16 +955,18 @@ End Sub
 
 
 '----------------------------------------
-'       ChangeSchedule Subroutine
+'     ChangeScheduleStats Subroutine
 '----------------------------------------
 'This subroutine inputs stats from the
 'chosen Stat Schedule file and then gives 
 'the user an interface for modifying the 
 'schedule results.
-Sub ChangeSchedule (teamName$)
+Sub ChangeScheduleStats (teamName$)
 
-    Shared teamScore(), nbrInnings(), oppScore()
-    Shared oppName$(), losePitcher$(), locIndicator$(), winPitcher$()
+    Shared locIndicator$(), oppName$()
+    Shared losePitcher$(), winPitcher$()
+
+    Shared nbrInnings(), oppScore(), teamScore()
 
     statsFile$ = diskPaths$(1) + teamName$ + "S"
 
@@ -985,93 +982,79 @@ Sub ChangeSchedule (teamName$)
 
     Else
 
-        Cls
-
-        Open statsFile$ For Input As #1
-
-        Input #1, nbrGames
-
-        For I = 1 To MAX_SCHED_STATS: 
-            Input #1, teamScore(I)
-        Next I
-
-        For I = 1 To MAX_SCHED_STATS: 
-            Input #1, oppName$(I)
-        Next I
-
-        For I = 1 To MAX_SCHED_STATS: 
-            Input #1, oppScore(I)
-        Next I
-
-        For I = 1 To MAX_SCHED_STATS: 
-            Input #1, locIndicator$(I)
-        Next I
-
-        For I = 1 To MAX_SCHED_STATS: 
-            Input #1, winPitcher$(I)
-        Next I
-
-        For I = 1 To MAX_SCHED_STATS: 
-            Input #1, losePitcher$(I)
-        Next I
-
-        For I = 1 To MAX_SCHED_STATS: 
-            Input #1, nbrInnings(I)
-        Next I
-
-        Close 1
-
-        Cls
+        Call ReadScheduleStats (statsFile$, nbrGames)
 
         Do
-            Locate 1, 1: Print "1. SCORE FOR  "; teamName$; " "; homeScore
-            Locate 2, 1: Print "2. OPPONENT'S NAME  "; oppTeam$
-            Locate 3, 1: Print "3. OPPONENT'S SCORE "; oppPts
-            Locate 4, 1: Print "4. (H)OME OR (A)WAY  "; homeOrAway$
-            Locate 5, 1: Print "5. WINNING PITCHER  "; winPitch$
-            Locate 6, 1: Print "6. LOSING PITCHER  "; losePitch$
-            Locate 7, 1: Print "7. NUMBER OF INNINGS "; numInn
+
+            Color 15, 0
+            Cls
+
+            X$ = "TEAM SCHEDULE STATS"
+            Call TITLE_STAT_HEADER(X$)
+
+            homeScore = 0
+            oppTeam$ = ""
+            oppPts = 0
+            homeOrAway$ = ""
+            winPitch$ = 0
+            losePitch$ = 0
+            numInn = 0
 
             Do
-                Locate 9, 1: Print "ENTER # TO CHANGE (1-7) OR 0 TO CONTINUE"
-                J$ = GetKeyPress$
-                D = Val(J$)
+
+                Locate 2, 1: Print "1. SCORE FOR "; teamName$; "  "; homeScore
+                Locate 3, 1: Print "2. OPPONENT'S NAME  "; oppTeam$
+                Locate 4, 1: Print "3. OPPONENT'S SCORE  "; oppPts
+                Locate 5, 1: Print "4. (H)OME OR (A)WAY  "; homeOrAway$
+                Locate 6, 1: Print "5. WINNING PITCHER  "; winPitch$
+                Locate 7, 1: Print "6. LOSING PITCHER  "; losePitch$
+                Locate 8, 1: Print "7. NUMBER OF INNINGS  "; numInn
+
+                Do
+                    Locate 10, 1: Print "ENTER # TO CHANGE (1-7) OR 0 TO CONTINUE"
+                    J$ = GetKeyPress$
+                    D = Val(J$)
+                Loop Until D >= 0 And D <= 7
+
 
                 Select Case D
 
                     Case 1:
-                        Locate 1, 1: Input "1. SCORE FOR"; teamName$
-                        Locate 1, 13: Print " "
+                        Locate 2, 1: Print "1. SCORE FOR "; teamName$; " ";
+                        Input homeScore
+                        Locate 2, 13 + Len(teamName$): Print " "
 
                     Case 2:
-                        Locate 2, 1: Input "2. OPPONENT'S NAME"; oppTeam$
-                        Locate 2, 19: Print " "
-
-                    Case 3:
-                        Locate 3, 20: Print Space$(10)
-                        Locate 3, 1: Input "3. OPPONENT'S SCORE"; oppPts
+                        Locate 3, 1: Input "2. OPPONENT'S NAME"; oppTeam$
                         Locate 3, 20: Print " "
 
+                    Case 3:
+                        Locate 4, 21: Print Space$(10)
+                        Locate 4, 1: Input "3. OPPONENT'S SCORE "; oppPts
+                        Locate 4, 21: Print " "
+
                     Case 4:
-                        Locate 4, 1: Input "4. (H)OME OR (A)WAY"; homeOrAway$
-                        Locate 4, 20: Print " "
+                        Do
+                            Locate 5, 1: Input "4. (H)OME OR (A)WAY"; homeOrAway$
+                            Locate 5, 20: Print " "
+                        Loop Until homeOrAway$ = "A" Or homeOrAway$ = "H"
 
                     Case 5:
-                        Locate 5, 1: Input "5. WINNING PITCHER"; winPitch$
-                        Locate 5, 19: Print " "
+                        Locate 6, 1: Input "5. WINNING PITCHER"; winPitch$
+                        Locate 6, 21: Print " "
 
                     Case 6:
-                        Locate 6, 1: Input "6. LOSING PITCHER"; losePitch$
-                        Locate 6, 18: Print " "
+                        Locate 7, 1: Input "6. LOSING PITCHER"; losePitch$
+                        Locate 7, 20: Print " "
 
                     Case 7:
-                        Locate 7, 21: Print Space$(10)
-                        Locate 7, 1: Input "7. NUMBER OF INNINGS"; numInn
-                        Locate 7, 21: Print " "
+                        Locate 8, 21: Print Space$(10)
+                        Locate 8, 1: Input "7. NUMBER OF INNINGS "; numInn
+                        Locate 8, 23: Print " "
 
                 End Select
 
-            Loop Until D >= 0 And D <= 7
+            Loop Until D = 0
 
             nbrGames = nbrGames + 1
             teamScore(nbrGames) = homeScore
@@ -1083,49 +1066,17 @@ Sub ChangeSchedule (teamName$)
             nbrInnings(nbrGames) = numInn
 
             Do
+                Locate 12, 1
                 Print "ADD ANOTHER GAME? (Y/N)";
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
         Loop Until UCase$(I$) = "N"
 
-        'Save changes
-        Open diskPaths$(1) + teamName$ + "S" For Output As #1
-
-        Print #1, nbrGames
-
-        For I = 1 To MAX_SCHED_STATS: 
-            Print #1, teamScore(I)
-        Next
-        
-        For I = 1 To MAX_SCHED_STATS: 
-            Print #1, oppName$(I)
-        Next
-        
-        For I = 1 To MAX_SCHED_STATS: 
-            Print #1, oppScore(I)
-        Next
-        
-        For I = 1 To MAX_SCHED_STATS: 
-            Print #1, locIndicator$(I)
-        Next
-        
-        For I = 1 To MAX_SCHED_STATS: 
-            Print #1, winPitcher$(I)
-        Next
-        
-        For I = 1 To MAX_SCHED_STATS: 
-            Print #1, losePitcher$(I)
-        Next
-        
-        For I = 1 To MAX_SCHED_STATS: 
-            Print #1, nbrInnings(I)
-        Next
-
-        Close 1
+        Call SaveScheduleStats (statsFile$, nbrGames)
 
         Cls
 
-    End If 'Done checking if file exiss
+    End If 'Done checking if file exists
 
 End Sub

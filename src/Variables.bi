@@ -28,7 +28,7 @@ Dim statS0(0 To 22, 0 To 6)
 Dim statT0!(0 To 21), statT1!(0 To 22)
 
 'Record / Standings
-Dim homeWins!, homeLosses!
+Dim homeWins, homeLosses
 Dim roadWins, roadLosses
 Dim totalWins, totalLosses
 
@@ -148,13 +148,13 @@ Dim expLdrVal!(1 To 920), expLdrTYP1!(1 To 920)
 'Expanded Standings
 Dim expStdLeagName$(TEAMS_PER_LEAGUE)
 
-Dim teamTotLosses!(TEAMS_PER_LEAGUE), teamTotWins!(TEAMS_PER_LEAGUE)
-Dim lastTenWins!(TEAMS_PER_LEAGUE), lastTenLosses!(TEAMS_PER_LEAGUE)
+Dim teamTotLosses(TEAMS_PER_LEAGUE), teamTotWins(TEAMS_PER_LEAGUE)
+Dim lastTenWins(TEAMS_PER_LEAGUE), lastTenLosses(TEAMS_PER_LEAGUE)
 
-Dim cLoseStreak!(TEAMS_PER_LEAGUE), cWinStreak!(TEAMS_PER_LEAGUE), totExtInnLosses!(TEAMS_PER_LEAGUE), totExtInnWins!(TEAMS_PER_LEAGUE)
-Dim totHomeLosses!!(TEAMS_PER_LEAGUE), totHomeWins!s!(TEAMS_PER_LEAGUE), lastLoseStreak!(TEAMS_PER_LEAGUE), lastWinStreak!(TEAMS_PER_LEAGUE)
-Dim totRoadLosses!(TEAMS_PER_LEAGUE), totRoadWins!(TEAMS_PER_LEAGUE)
-Dim teamLoseStreak!(TEAMS_PER_LEAGUE), teamWinStreak!(TEAMS_PER_LEAGUE)
+Dim cLoseStreak(TEAMS_PER_LEAGUE), cWinStreak(TEAMS_PER_LEAGUE), totExtInnLosses(TEAMS_PER_LEAGUE), totExtInnWins(TEAMS_PER_LEAGUE)
+Dim totHomeLosses!(TEAMS_PER_LEAGUE), totHomeWinss!(TEAMS_PER_LEAGUE), lastLoseStreak(TEAMS_PER_LEAGUE), lastWinStreak(TEAMS_PER_LEAGUE)
+Dim totRoadLosses(TEAMS_PER_LEAGUE), totRoadWins(TEAMS_PER_LEAGUE)
+Dim teamLoseStreak(TEAMS_PER_LEAGUE), teamWinStreak(TEAMS_PER_LEAGUE)
 
 Dim plyLdrVal!(TEAMS_PER_LEAGUE, 22), teamLdrVal!(TEAMS_PER_LEAGUE, 23)
 
@@ -227,11 +227,11 @@ Dim tradeT1(2, 23), tradeTS(1, 11)
 '   Used in HD2HD routines
 '----------------------------------------
 Dim awayScoreTeam!(200), awayScoreOpp!(200)
-Dim homeWins!(50), awayWins!(50)
-Dim homeLosses!(50), awayLosses!(50)
+Dim homeWins(50), awayWins(50)
+Dim homeLosses(50), awayLosses(50)
 Dim homeScoreTeam!(200), homeScoreOpp!(200)
-Dim totHomeWins!(4), totAwayWins!(4)
-Dim totHomeLosses!(4), totAwayLosses!(4)
+Dim totHomeWins(4), totAwayWins(4)
+Dim totHomeLosses(4), totAwayLosses(4)
 Dim totAwayScoreTeam!(4), totAwayScoreOpp!(4)
 Dim totHomeScoreTeam!(4), totHomeScoreOpp!(4)
 

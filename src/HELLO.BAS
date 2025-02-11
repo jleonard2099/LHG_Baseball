@@ -545,19 +545,19 @@ Sub Replay_Menu ()
 
         Call TITLE
 
-        ReDim menuChoices$(1 To 6)
+        ReDim menuChoices$(1 To 7)
 
         menuChoices$(1) = "VIEW / PRINT COMPILED STATS     "
         menuChoices$(2) = "TEAM CAREER OPTIONS             "
         menuChoices$(3) = "COMPARE REPLAY STATS TO ACTUAL  "
-        'menuChoices$(4) = "MODIFY REPLAY STATS            "
-        menuChoices$(4) = "MERGE SEPARATE STATISTICAL FILES"
-        menuChoices$(5) = "SORT PLAYERS BY POSITION        "
-        menuChoices$(6) = "RETURN TO MAIN MENU             "
+        menuChoices$(4) = "MODIFY REPLAY STATS            "
+        menuChoices$(5) = "MERGE SEPARATE STATISTICAL FILES"
+        menuChoices$(6) = "SORT PLAYERS BY POSITION        "
+        menuChoices$(7) = "RETURN TO MAIN MENU             "
         SELECTION% = 1
-        Count% = 6
+        Count% = 7
         Start% = 1
-        ExitCode% = 6
+        ExitCode% = 7
         FileFGColor = 15: FileBGColor = 1
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
         Spacing% = 1
@@ -587,19 +587,22 @@ Sub Replay_Menu ()
                     Call COMPARE
 
                 Case 4:
-                    Call MERGE
+                    Call EditStats
 
                 Case 5:
-                    Call POSSRT
+                    Call MERGE
 
                 Case 6:
+                    Call POSSRT
+
+                Case 7:
                     '
 
             End Select
 
         End If
 
-    Loop Until SELECTION% = 6 Or ExitCode% = 27
+    Loop Until SELECTION% = 7 Or ExitCode% = 27
 
 End Sub
 
@@ -1221,11 +1224,21 @@ Sub LOADER
     '   1 = Computer Team
     '   2 = PC vs. PC
 
+    For I = 0 To 1:
+        'If disk ID has alpha-char, or is only 3 characters,
+        'then assume the year is the first 2 chars
+        If CheckString%(diskIDs$(I)) = 1 Or Len(diskIDs$(I)) <= 3 Then
+            teamYears(I) = GetTeamYear%(Left$(gameTeams$(I), 2))
+        Else
+            'If we have 4 or more characters,
+            'then Val will return the first 4 digits
+            teamYears(I) = Val(RTrim$(diskIDs$(I)))
+        End If
+    Next I
 
     If teamRat_GAME(0, 11) = teamRat_GAME(1, 11) And teamRat_GAME(0, 12) = teamRat_GAME(1, 12) Then
         Call ColorChange
     End If
-
 
     'Determine attendance
 
@@ -1235,9 +1248,7 @@ Sub LOADER
     'https://teamTotWinsw.baseball-reference.com/leagues/majors/misc.shtml
     If gameLoc = 2 Or avgAttendance& = 0 Then
         'Get assumed year of home team
-        YR% = GetTeamYear%(gameTeams$(1))
-
-        Select Case YR%
+        Select Case teamYears(1)
 
             Case Is <= 1900
                 'Random # from 500 to 3,000
@@ -8960,17 +8971,18 @@ End Sub
 Sub AUTOSETUP (validTeam)
 
     'Setup variables for auto-play
-    playerOpt = schedOptions(8)
+    gameLoc = schedOptions(2)
     desigHit = schedOptions(3)
     pbpDelay! = schedOptions(4) / 10
-    gameMonth = schedOptions(17)
     useWeather = schedOptions(5)
-    useVGA = schedOptions(11)
     useInj = schedOptions(6)
     useLRSplit = schedOptions(7)
+    playerOpt = schedOptions(8)
     useRest = schedOptions(9)
     useMgrProf = schedOptions(10)
+    useVGA = schedOptions(11)
     pitchEraOpt = schedOptions(14)
+    gameMonth = schedOptions(17)
 
     If schedOptions(15) < 1600 Then
         dayOrNight = 0
@@ -17974,39 +17986,7 @@ Sub COMPILESTATFILES (teamIdx)
         locIndicator$(numberGames) = "H"
     End If
 
-    Open diskPaths$(1) + statFile$ + "S" For Output As #1
-
-    Print #1, numberGames
-
-    For I = 1 To MAX_SCHED_STATS:
-        Print #1, teamScore(I)
-    Next I
-
-    For I = 1 To MAX_SCHED_STATS:
-        Print #1, oppName$(I)
-    Next I
-
-    For I = 1 To MAX_SCHED_STATS:
-        Print #1, oppScore(I)
-    Next I
-
-    For I = 1 To MAX_SCHED_STATS:
-        Print #1, locIndicator$(I)
-    Next I
-
-    For I = 1 To MAX_SCHED_STATS:
-        Print #1, winPitcher$(I)
-    Next I
-
-    For I = 1 To MAX_SCHED_STATS:
-        Print #1, losePitcher$(I)
-    Next I
-
-    For I = 1 To MAX_SCHED_STATS:
-        Print #1, nbrInnings(I)
-    Next I
-
-    Close #1
+    Call SaveScheduleStats (statFile$, numberGames)
 
     numberGames = 0
 

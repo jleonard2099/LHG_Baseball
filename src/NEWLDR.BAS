@@ -10,18 +10,18 @@ Sub NEWLDR ()
 
     ReDim menuChoices$(1 To 5)
 
-    Shared cLoseStreak!(), cWinStreak!()
-    Shared totExtInnLosses!(), totExtInnWins!(), totHomeLosses!!(), totHomeWins!s!()
-    Shared teamTotLosses!(), lastLoseStreak!(), lastTenLosses!(), lastTenWins!(), lastWinStreak!()
-    Shared totRoadLosses!(), totRoadWins!(), teamLoseStreak!(), teamWinStreak!(), teamTotWins!()
+    Shared cLoseStreak(), cWinStreak()
+    Shared totExtInnLosses(), totExtInnWins(), totHomeLosses!(), totHomeWinss!()
+    Shared teamTotLosses(), lastLoseStreak(), lastTenLosses(), lastTenWins(), lastWinStreak()
+    Shared totRoadLosses(), totRoadWins(), teamLoseStreak(), teamWinStreak(), teamTotWins()
 
     Shared memberName$(), expStdLeagName$()
 
     Shared div1Name$, div2Name$, div3Name$, div4Name$
 
-    Erase cWinStreak!, cLoseStreak!
-    Erase lastLoseStreak!, lastWinStreak!
-    Erase teamLoseStreak!, teamWinStreak!
+    Erase cWinStreak, cLoseStreak
+    Erase lastLoseStreak, lastWinStreak
+    Erase teamLoseStreak, teamWinStreak
 
     Do
 
@@ -119,7 +119,7 @@ Sub NEWLDR ()
                             Input #1, league$, div1Name$, div2Name$, div3Name$, div4Name$
 
                             For I = 1 To TEAMS_PER_LEAGUE
-                                Input #1, expStdLeagName$(I), teamTotWins!(I), totHomeWins!s!(I), totRoadWins!(I), totExtInnWins!(I), lastTenWins!(I), teamTotLosses!(I), totHomeLosses!!(I), totRoadLosses!(I), totExtInnLosses!(I), lastTenLosses!(I), teamWinStreak!(I), teamLoseStreak!(I), cWinStreak!(I), cLoseStreak!(I)
+                                Input #1, expStdLeagName$(I), teamTotWins(I), totHomeWinss!(I), totRoadWins(I), totExtInnWins(I), lastTenWins(I), teamTotLosses(I), totHomeLosses!(I), totRoadLosses(I), totExtInnLosses(I), lastTenLosses(I), teamWinStreak(I), teamLoseStreak(I), cWinStreak(I), cLoseStreak(I)
                             Next
 
                             Close #1
