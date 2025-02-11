@@ -968,9 +968,7 @@ Sub ChangeScheduleStats (teamName$)
 
     Shared nbrInnings(), oppScore(), teamScore()
 
-    statsFile$ = diskPaths$(1) + teamName$ + "S"
-
-    If Not _FileExists(statsFile$) Then
+    If Not _FileExists(diskPaths$(1) + teamName$ + "S") Then
 
         MsgText$ = "NO COMPILED STATS COULD BE FOUND FOR THIS TEAM. PRESS ANY KEY TO RETURN TO THE MAIN MENU"
         BoxWidth = 24
@@ -982,7 +980,7 @@ Sub ChangeScheduleStats (teamName$)
 
     Else
 
-        Call ReadScheduleStats (statsFile$, nbrGames)
+        Call ReadScheduleStats (teamName$, nbrGames)
 
         Do
 
@@ -996,8 +994,8 @@ Sub ChangeScheduleStats (teamName$)
             oppTeam$ = ""
             oppPts = 0
             homeOrAway$ = ""
-            winPitch$ = 0
-            losePitch$ = 0
+            winPitch$ = ""
+            losePitch$ = ""
             numInn = 0
 
             Do
@@ -1073,7 +1071,7 @@ Sub ChangeScheduleStats (teamName$)
 
         Loop Until UCase$(I$) = "N"
 
-        Call SaveScheduleStats (statsFile$, nbrGames)
+        Call SaveScheduleStats(teamName$, nbrGames)
 
         Cls
 

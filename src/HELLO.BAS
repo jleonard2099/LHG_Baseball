@@ -17986,7 +17986,7 @@ Sub COMPILESTATFILES (teamIdx)
         locIndicator$(numberGames) = "H"
     End If
 
-    Call SaveScheduleStats (statFile$, numberGames)
+    Call SaveScheduleStats(statFile$, numberGames)
 
     numberGames = 0
 

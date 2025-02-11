@@ -476,7 +476,7 @@ Sub Hd2HdPro_Report (teamName$, printDest)
     Print #1, Tab(22); "W"; Tab(26); "L"; Tab(30); "PCT."; Tab(36); "RF"; Tab(40); "RA"; 
     Print #1, Tab(54); "W"; Tab(58); "L"; Tab(62); "PCT."; Tab(68); "RF"; Tab(72); "RA"; 
     Print #1, Tab(86); "W"; Tab(91); "L"; Tab(97); "PCT."; Tab(103); "RF"; Tab(107); "RA"
-    Print #1
+    Print #1,
 
     For W = 1 To DIVS_PER_LEAGUE
 
