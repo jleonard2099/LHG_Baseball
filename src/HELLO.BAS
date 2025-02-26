@@ -16,7 +16,6 @@ Const MAX_CAREER_YEARS = 15
 Const MAX_SCHED_STATS = 162
 Const SCHEDULE_SIZE_BYTES = 52
 
-
 DefInt A-Z
 
 ' General purpose
@@ -17971,7 +17970,15 @@ Sub COMPILESTATFILES (teamIdx)
 
     End If
 
-    If numberGames < MAX_SCHED_STATS Then numberGames = numberGames + 1
+    If numberGames < MAX_SCHED_STATS Then
+        numberGames = numberGames + 1
+    End If
+
+    If teamIdx = 0 Then
+        locIndicator$(numberGames) = "A"
+    Else
+        locIndicator$(numberGames) = "H"
+    End If
     
     teamScore(numberGames) = gameScore(teamIdx, 0)
     oppName$(numberGames) = gameTeams$(1 - teamIdx)
@@ -17979,12 +17986,6 @@ Sub COMPILESTATFILES (teamIdx)
     winPitcher$(numberGames) = gameW$
     losePitcher$(numberGames) = gameL$
     nbrInnings(numberGames) = LYN%
-
-    If teamIdx = 0 Then
-        locIndicator$(numberGames) = "A"
-    Else
-        locIndicator$(numberGames) = "H"
-    End If
 
     Call SaveScheduleStats(statFile$, numberGames)
 

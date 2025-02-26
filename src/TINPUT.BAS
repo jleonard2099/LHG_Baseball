@@ -60,6 +60,7 @@ Sub InputEditTeam (inputAction%, yearNumber$, targetTeam$, teamIdx)
 
 End Sub
 
+
 '----------------------------------------
 '        SaveTeamFile subroutine
 '----------------------------------------
@@ -895,8 +896,9 @@ Sub EditBatter ()
             Locate 24, 13: Print "RHB vs RHP";
 
             ' INITIALIZE BATTER FIELDS
-            FG = 0
-            BG = 7
+            FG = Black
+            BG = DarkGray
+
             Color FG, BG
 
             Locate 3, 7: QPrint PadRight$(batterNames$(I), 15), FG, BG, -1
