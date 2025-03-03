@@ -1,4 +1,5 @@
 $Debug
+$Console
 
 Const GAME_VERSION$ = "6.91"
 Const MAX_TEAMS = 1000
@@ -270,6 +271,15 @@ _AllowFullScreen
 
 opSysType$ = Left$(_OS$, InStr(2, _OS$, "[") - 1)
 
+fileSeparator$ = "/"
+
+Select Case opSysType$
+    Case "[WINDOWS]":
+        fileSeparator$ = "\"
+    Case "[MAC]", "[MACOSX]", "[LINUX]":
+        fileSeparator$ = "/"
+End Select
+
 If Not _FileExists("DEV.BAS") Then
 
     Open "DEV.BAS" For Output As #1
@@ -311,6 +321,11 @@ System
 Errhandler:
 Open "errlog" For Append As #9
 Print #9, "Error #"; Err; "on program file line"; _ErrorLine
+
+If _InclErrorLine Then
+    Print #9, "    in module "; _InclErrorFile$; " line "; _InclErrorLine
+End If
+
 'If _FileExists("GAME82") Then
 'Print #9, "Schedule game # "; Using "###"; schedGame(0) + schedGame(2)
 'Print #9, gameTeams$(0) + " vs. " + gameTeams$(1)

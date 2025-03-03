@@ -1,6 +1,7 @@
 
 Function GetKeyPress$ Static
     Do
+        Sleep
         k$ = InKey$
     Loop Until k$ <> ""
     GetKeyPress$ = k$
@@ -9,6 +10,7 @@ End Function
 
 Function GetKeyCode% Static
     Do
+        Sleep
         k$ = InKey$
     Loop Until k$ <> ""
     GetKeyCode% = CVI(k$ + Chr$(0))

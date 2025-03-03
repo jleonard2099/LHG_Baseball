@@ -2,6 +2,7 @@
 ' Used in more than one source file
 '----------------------------------------
 Dim opSysType$
+Dim fileSeparator$
 
 Dim Shared diskPaths$(0 To 3), Q$(0 To 2056), Q2$(0 To 2056), Q3$(100)
 Dim Shared teamIndex%(MAX_TEAMS)
@@ -312,14 +313,14 @@ Dim Shared nbrOuts(1)
 Dim SU(1, 1)
 
 Dim Shared A5%(0 To 3), assigned(1 To 9)
-Dim Shared B1%(3, 1), B2%(1, 22), B3%(0 To 1, 0 To 9), B4%(1, 7, 9), B5%(0 To 1, 0 To 22, 0 To 21)
-Dim Shared B7%(0 To 1, 0 To 9), B8%(0 To 1, 0 To 22, 0 To 21), B9%(1, 10), BT%(0 To 1, 1 To 9, 1 To 9)
+Dim Shared B1%(3, 1), B2%(1, 22), B3%(0 To 1, 0 To 9), B4%(1, 7, 9), statBatterLeague%(0 To 1, 0 To 22, 0 To 21)
+Dim Shared B7%(0 To 1, 0 To 9), statBatterGame%(0 To 1, 0 To 22, 0 To 21), B9%(1, 10), BT%(0 To 1, 1 To 9, 1 To 9)
 Dim Shared CF%(0 To 9, 0 To 2), CSS%(1, 22, 6), D3%(1), DP%(1)
 Dim Shared gameB0%(0 To 3, 0 To 2), gameD0%(1), gameM%(0 To 9), gameSA%(1, 24), gameScore(1, 2)
 Dim Shared GK%(1), H0%(1), injuryStatus(0 To 1, 0 To 22), L0%(1), LB%(9, 1)
 Dim Shared MG%(0 To 1, 999), NG%(18)
 Dim Shared P1%(0 To 1), P2%(1), P3%(1, 21), P4%(0 To 22)
-Dim Shared P5%(1, 21, 41), P6%(1), P8%(0 To 1, 0 To 21, 0 To 41)
+Dim Shared statPitcherLeague%(1, 21, 41), gamePitcher%(1), statPitcherGame%(0 To 1, 0 To 21, 0 To 41)
 Dim Shared S1%(1), S8%(1, 1), SO%(0 To 5, 0 To 2)
 Dim Shared T3%(22), gameTS%(1, 11), X0%(1, 2, 23), YR%(1)
 

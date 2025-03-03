@@ -101,7 +101,7 @@ Sub LOADER
 
         'currGame = schedGame(0) + schedGame(2)
 
-        'Open "pbplog" + Str$(currGame) For Append As #11
+        Open "pbplog" + Str$(currGame) For Append As #11
 
         Open diskPaths$(0) + scheduleFile$ For Random As #6 Len = SCHEDULE_SIZE_BYTES
 
@@ -130,7 +130,7 @@ Sub LOADER
 
     Else
 
-        'Open "pbplog" For Output As #11
+        Open "pbplog" For Output As #11
 
     End If
 
@@ -487,7 +487,7 @@ Sub LOADER
         pitchEff(P9, 0) = Int(((pitchRating(P9, P1%(P9), 8) + pitchRating(P9, P1%(P9), 7)) / pitchRating(P9, P1%(P9), 4)) + .5)
         pitchEff(P9, 1) = 3
 
-        If P6%(P9) > 1 Then pitchEff(P9, 1) = 0
+        If gamePitcher%(P9) > 1 Then pitchEff(P9, 1) = 0
 
         'I'm not sure why we go back only
         'if ESC was pressed during pitcher select
@@ -1550,6 +1550,7 @@ End Sub
 'choice of any of the pre-created graphics
 'for the stadiums.
 Sub SelectStadium (useVGA)
+    Shared fileSeparator$
 
     Do
         'SELECT A DIFFERENT STADIUM
@@ -1645,10 +1646,10 @@ Sub SelectStadium (useVGA)
 
         If dayOrNight = 0 Then
             '0 = daytime
-            PARK$ = PARK$ + "D.PNG"
+            PARK$ = PARK$ + "D.png"
         Else
             '1 = nighttime
-            PARK$ = PARK$ + "N.PNG"
+            PARK$ = PARK$ + "N.png"
         End If
 
         'Display detected park
@@ -1656,13 +1657,18 @@ Sub SelectStadium (useVGA)
         Locate , 11: Print PARK$(teamRat_GAME(1, 13))
 
         Locate , 11
+        
+        _Dest _Console
+        Print "fileSeparator: " + fileSeparator$
+        Print "Current park: ." + fileSeparator$ + "parks" + fileSeparator$ + PARK$
+        _Dest 0
 
-        If _FileExists(".\parks\" + PARK$) Then
+        If _FileExists("." + fileSeparator$ + "parks" + fileSeparator$ + PARK$) Then
             Print "GRAPHIC EXISTS"
         Else
             '99 is the Generic Park
             Print "GRAPHIC NOT AVAILABLE"
-            PARK$ = "99N.PNG"
+            PARK$ = "99N.png"
         End If
 
         'We may have checked if the file associated with the park
@@ -1706,10 +1712,15 @@ Sub SelectStadium (useVGA)
                     If ExitCode% <> 27 Then
 
                         PARK$ = Right$(Str$(Selection%), Len(Str$(Selection%)) - 1)
-                        If dayOrNight = 0 Then PARK$ = PARK$ + "D.PNG" Else PARK$ = PARK$ + "N.PNG"
+                        If dayOrNight = 0 Then PARK$ = PARK$ + "D.png" Else PARK$ = PARK$ + "N.png"
                         Color 15, 0
 
-                        If _FileExists(".\parks\" + PARK$) Then
+						_Dest _Console
+                        Print "fileSeparator: " + fileSeparator$
+						Print "Selection: ." + fileSeparator$ + "parks" + fileSeparator$ + PARK$
+						_Dest 0
+        
+                        If _FileExists("." + fileSeparator$ + "parks" + fileSeparator$ + PARK$) Then
                             foundPark% = 1
                             teamRat_GAME(1, 13) = Selection%
                             gameStadiums$(1) = PARK$(Selection%)
@@ -1724,7 +1735,7 @@ Sub SelectStadium (useVGA)
 
                             If I$ = "Y" Then
                                 teamRat_GAME(1, 13) = Selection%: gameStadiums$(1) = PARK$(Selection%)
-                                If dayOrNight = 0 Then PARK$ = "99D.PNG" Else PARK$ = "99N.PNG"
+                                If dayOrNight = 0 Then PARK$ = "99D.png" Else PARK$ = "99N.png"
                             End If
 
                         End If
@@ -1745,7 +1756,17 @@ Sub SelectStadium (useVGA)
         'position if no graphics exist at all!
 
         'So instead, let's switch to regular mode
-        If Not _FileExists(".\parks\" + PARK$) Then useVGA = 0
+        
+        _Dest _Console
+        Print "fileSeparator: " + fileSeparator$
+        Print "useVGA: ." + fileSeparator$ + "parks" + fileSeparator$ + PARK$
+        _Dest 0
+        
+        If Not _FileExists("." + fileSeparator$ + "parks" + fileSeparator$ + PARK$) Then useVGA = 0
+        
+        _Dest _Console
+        Print useVGA
+        _Dest 0
 
     Loop Until BO% = 0 Or UCase$(I$) = "N" Or ExitCode% = 27
 
@@ -2701,13 +2722,13 @@ Sub PitchingStarter (idx%)
     Loop Until UCase$(I$) = "N"
 
     P1%(idx%) = I1
-    P6%(idx%) = 1
-    pitchRating(idx%, I1, 15) = P6%(idx%)
+    gamePitcher%(idx%) = 1
+    pitchRating(idx%, I1, 15) = gamePitcher%(idx%)
 
     pitchEff(idx%, 0) = Int(((pitchRating(idx%, P1%(idx%), 8) + pitchRating(idx%, P1%(idx%), 7)) / pitchRating(idx%, P1%(idx%), 4)) + .5)
     pitchEff(idx%, 1) = 3
 
-    If P6%(idx%) > 1 Then pitchEff(idx%, 1) = 0
+    If gamePitcher%(idx%) > 1 Then pitchEff(idx%, 1) = 0
 
 End Sub
 
