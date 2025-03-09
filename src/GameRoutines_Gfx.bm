@@ -7,26 +7,26 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
     _PutImage (29 * FontColAdj, 400)-Step(24 * FontColAdj, 16), backupScreen&, imageScreen&, (29 * FontColAdj, 400)-Step(24 * FontColAdj, 16)
 
     'Printing white on black
-    Color 4294967295
+    Color &HFFFFFFFF
     _PrintMode _FillBackground , imageScreen&
 
     '-----
 
     'Pitcher Name
-    pitcher$ = Left$(pitchers$(D, P1%(D)), 14)
+    pitcher$ = Left$(pitchers$(D, currPitcher%(D)), 14)
     PrintOnGfx 65, 26, " " + pitcher$, imageScreen&
 
     '-- Why is this not Pitch Count / Strikes ???
 
     'Wins
-    FORMATTED$ = FUsing$(Str$(pitchRating(D, P1%(D), 1)), "##", 1)
+    FORMATTED$ = FUsing$(Str$(pitchRating(D, currPitcher%(D), 1)), "##", 1)
     pStats$ = FORMATTED$ + "-"
 
     'Losses
-    FORMATTED$ = FUsing$(Str$(pitchRating(D, P1%(D), 2)), "##", 1)
+    FORMATTED$ = FUsing$(Str$(pitchRating(D, currPitcher%(D), 2)), "##", 1)
 
     '                                              ERA
-    pStats$ = pStats$ + FORMATTED$ + " " + FUsing$(Str$(pitchRating(D, P1%(D), 10) / 100), "##.##", 1)
+    pStats$ = pStats$ + FORMATTED$ + " " + FUsing$(Str$(pitchRating(D, currPitcher%(D), 10) / 100), "##.##", 1)
 
     'Pitcher Stats
     PrintOnGfx 66, 27, pStats$, imageScreen&
@@ -36,21 +36,21 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
     'IP / H / BB / K headers
     PrintOnGfx 66, 28, "IP   H BB  K", imageScreen&
 
-    If statPitcherGame%(D, P1%(D), 0) <> 0 Then
-        pStats$ = FUsing$(Str$(Int(statPitcherGame%(D, P1%(D), 0) / 3)), "##.#", 1)
+    If statPitcherGame%(D, currPitcher%(D), 0) <> 0 Then
+        pStats$ = FUsing$(Str$(Int(statPitcherGame%(D, currPitcher%(D), 0) / 3)), "##.#", 1)
     Else
         pStats$ = " 0.0"
     End If
 
     '                                      H                                            BB                                                      K
-    pStats$ = pStats$ + " " + FUsing$(Str$(statPitcherGame%(D, P1%(D), 1)), "##", 1) + " " + FUsing$(Str$(statPitcherGame%(D, P1%(D), 4)), "###", 1) + " " + FUsing$(Str$(statPitcherGame%(D, P1%(D), 5)), "###", 1)
+    pStats$ = pStats$ + " " + FUsing$(Str$(statPitcherGame%(D, currPitcher%(D), 1)), "##", 1) + " " + FUsing$(Str$(statPitcherGame%(D, currPitcher%(D), 4)), "###", 1) + " " + FUsing$(Str$(statPitcherGame%(D, currPitcher%(D), 5)), "###", 1)
 
     PrintOnGfx 65, 29, pStats$, imageScreen&
 
-    J = B3%(p, B1!(p))
+    J = playerNum%(p, currBatter!(p))
 
-    If B7%(p, B1!(p)) = 1 Then
-        X$ = pitchers$(p, P1%(p))
+    If fldPos%(p, currBatter!(p)) = 1 Then
+        X$ = pitchers$(p, currPitcher%(p))
         'We're going to use this in just a bit
         'We'll be printing it with more space
         player$ = X$
@@ -65,17 +65,17 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
 
         'Printing white on background
         _PrintMode _KeepBackground , imageScreen&
-        Color 4294967295
+        Color &HFFFFFFFF
 
-        bpj = batRating(p, J, 0)
-        pdd = pitchRating(D, P1%(D), 0)
+        bpj = batRating(p, J, SS_B_Bats)
+        pdd = pitchRating(D, currPitcher%(D), 0)
 
-        If batRating(p, J, 0) < 0 Or batRating(p, J, 0) = 0 And pitchRating(D, P1%(D), 0) > 0 Then
+        If batRating(p, J, SS_B_Bats) < 0 Or batRating(p, J, SS_B_Bats) = 0 And pitchRating(D, currPitcher%(D), 0) > 0 Then
             'Batter Name - Right of Plate
             PrintOnGfx 41, 25, Left$(X$, 11), imageScreen&
         End If
 
-        If batRating(p, J, 0) > 0 Or batRating(p, J, 0) = 0 And pitchRating(D, P1%(D), 0) < 0 Then
+        If batRating(p, J, SS_B_Bats) > 0 Or batRating(p, J, SS_B_Bats) = 0 And pitchRating(D, currPitcher%(D), 0) < 0 Then
             'Batter Name - Left of Plate
             PrintOnGfx 30, 25, Left$(X$, 11), imageScreen&
         End If
@@ -93,20 +93,20 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
     'Batter Stats - Header
     PrintOnGfx 65, 23, " AVG HR  BB  K ", imageScreen&
 
-    If B7%(p, B1!(p)) <> 1 Then
+    If fldPos%(p, currBatter!(p)) <> 1 Then
         'Batter Stats - Hitter
-        If batRating(p, J, 4) = 0 Then
+        If batRating(p, J, SS_B_AB) = 0 Then
             PrintOnGfx 65, 24, ".000  0  0   0", imageScreen&
         Else
             'AVG
-            bAvg! = batRating(p, J, 6) / batRating(p, J, 4)
+            bAvg! = batRating(p, J, SS_B_H) / batRating(p, J, SS_B_AB)
             If bAvg! = 0 Then
                 PrintOnGfx 65, 24, ".000  0  0   0", imageScreen&
             Else
-                bb = batRating(p, J, 11)
+                bb = batRating(p, J, SS_B_W)
                 pStats$ = "." + FUsing$(Str$(bAvg! * 1000), "###", 1)
                 '                                 HR                                         BB                                            K
-                pStats$ = pStats$ + " " + FUsing$(Str$(batRating(p, J, 9)), "##", 1) + " " + FUsing$(Str$(batRating(p, J, 11)), "###", 1) + " " + FUsing$(Str$(batRating(p, J, 12)), "###", 1)
+                pStats$ = pStats$ + " " + FUsing$(Str$(batRating(p, J, SS_B_HR)), "##", 1) + " " + FUsing$(Str$(batRating(p, J, SS_B_W)), "###", 1) + " " + FUsing$(Str$(batRating(p, J, SS_B_K)), "###", 1)
                 PrintOnGfx 65, 24, pStats$, imageScreen&
             End If
 
@@ -115,27 +115,27 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
     Else
 
         'Batter Stats - Pitcher
-        If pitchRating(p, P1%(p), 11) <> 999 Then
+        If pitchRating(p, currPitcher%(p), 11) <> 999 Then
             If pAvg! = 0 Then
                 pStats$ = ".000"
             Else
-                pAvg! = pitchRating(p, P1%(p), 11)
+                pAvg! = pitchRating(p, currPitcher%(p), 11)
                 pStats$ = "." + FUsing$(Str$(pAvg! * 1000), "###", 1)
             End If
             PrintOnGfx 65, 24, pStats$ + "           ", imageScreen&
         Else
-            If pitchRating(p, P1%(p), 20) = 0 Then
+            If pitchRating(p, currPitcher%(p), 20) = 0 Then
                 PrintOnGfx 65, 24, ".000  0   0   0", imageScreen&
             Else
                 'AVG
-                pAvg! = pitchRating(p, P1%(p), 22) / pitchRating(p, P1%(p), 20)
+                pAvg! = pitchRating(p, currPitcher%(p), 22) / pitchRating(p, currPitcher%(p), 20)
 
                 If pAvg! = 0 Then
                     PrintOnGfx 65, 24, ".000  0   0   0", imageScreen&
                 Else
                     pStats$ = FUsing$(Str$(pAvg! * 1000), ".###", 1)
                     '                                 HR                                                BB                                         K
-                    pStats$ = pStats$ + " " + FUsing$(Str$(pitchRating(p, P1%(p), 25)), "##", 1) + " " + FUsing$(Str$(pitchRating(p, P1%(p), 27)), "###", 1) + " " + FUsing$(Str$(pitchRating(p, P1%(p), 28)), "###", 1)
+                    pStats$ = pStats$ + " " + FUsing$(Str$(pitchRating(p, currPitcher%(p), 25)), "##", 1) + " " + FUsing$(Str$(pitchRating(p, currPitcher%(p), 27)), "###", 1) + " " + FUsing$(Str$(pitchRating(p, currPitcher%(p), 28)), "###", 1)
                     PrintOnGfx 65, 24, pStats$, imageScreen&
 
                 End If
@@ -145,10 +145,10 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
 
     End If
 
-    If B7%(p, B1!(p)) <> 1 Then
-        today$ = FUsing$(Str$(statBatterGame%(p, B3%(p, B1!(p)), 1)), "##", 1) + "-" + FUsing$(Str$(statBatterGame%(p, B3%(p, B1!(p)), 0)), "##", 1)
+    If fldPos%(p, currBatter!(p)) <> 1 Then
+        today$ = FUsing$(Str$(statBatterGame%(p, playerNum%(p, currBatter!(p)), 1)), "##", 1) + "-" + FUsing$(Str$(statBatterGame%(p, playerNum%(p, currBatter!(p)), 0)), "##", 1)
     Else
-        today$ = FUsing$(Str$(statPitcherGame%(p, P1%(p), 24)), "##", 1) + "-" + FUsing$(Str$(statPitcherGame%(p, P1%(p), 23)), "##", 1)
+        today$ = FUsing$(Str$(statPitcherGame%(p, currPitcher%(p), 24)), "##", 1) + "-" + FUsing$(Str$(statPitcherGame%(p, currPitcher%(p), 23)), "##", 1)
     End If
 
     today$ = today$ + " TODAY"
@@ -181,14 +181,13 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
     PrintOnGfx 52, 26, infStatus$, imageScreen&
 
     'Printing white on black
-    Color 4294967295
+    Color &HFFFFFFFF
     _PrintMode _FillBackground , imageScreen&
     Call HOLDSTATUS_G(runnerHeld)
 
-    'RUNNER AT SECOND
-    I2 = 2
+    'display RUNNER AT SECOND
     X = 37
-    Call DisplayRun_G(I2, p, X)
+    Call DisplayRun_G(2, p, X)
 
     If nbrOuts(0) <> 3 Then MO = 0
 
@@ -196,15 +195,13 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
         If gameB0%(WK, 0) > 0 Then MO = MO + 1
     Next
 
-    'RUNNER AT THIRD
-    I2 = 3
+    'display RUNNER AT THIRD
     X = 15
-    Call DisplayRun_G(I2, p, X)
+    Call DisplayRun_G(3, p, X)
 
-    'RUNNER AT FIRST
-    I2 = 1
+    'display RUNNER AT FIRST
     X = 56
-    Call DisplayRun_G(I2, p, X)
+    Call DisplayRun_G(1, p, X)
 
 End Sub
 
@@ -240,27 +237,27 @@ Sub DisplayRun_G (I2, p, X)
 
         'Printing white on background
         _PrintMode _KeepBackground , imageScreen&
-        Color 4294967295
+        Color &HFFFFFFFF
 
-        If B7%(p, J) = 1 Then
-            If pitchRating(p, P1%(p), 11) <> 999 Then
-                runner$ = pitchers$(p, P1%(p))
-                runner$ = PadRight(runner$, 11)
-                PrintOnGfx X, Y - 1, runner$, imageScreen&
-                PrintOnGfx X, Y, "1/  0", imageScreen&
+        If fldPos%(p, J) = 1 Then
+            If pitchRating(p, currPitcher%(p), 11) <> 999 Then
+                runner$ = pitchers$(p, currPitcher%(p))
+                PrintOnGfx X, Y-1, PadRight(runner$, 11), imageScreen&
+                PrintOnGfx X, Y,   "1/  0", imageScreen&
             Else
-                runner$ = pitchers$(p, P1%(p))
-                runner$ = PadRight(runner$, 11)
-                PrintOnGfx X, Y - 1, runner$, imageScreen&
-                runStats$ = FUsing$(Str$(pitchRating(p, P1%(p), 31)), "#", 1) + "/" + FUsing$(Str$(pitchRating(p, P1%(p), 29)), "###", 1)
-                PrintOnGfx X, Y, runStats$, imageScreen&
+                runner$ = pitchers$(p, currPitcher%(p))
+                PrintOnGfx X, Y-1, PadRight(runner$, 11), imageScreen&
+
+                runStats$ = FUsing$(Str$(pitchRating(p, currPitcher%(p), 31)), "#", 1) + "/" _
+                          + FUsing$(Str$(pitchRating(p, currPitcher%(p), 29)), "###", 1)
+                PrintOnGfx X, Y,   runStats$, imageScreen&
             End If
         Else
-            runner$ = batters$(p, B3%(p, J))
-            runner$ = PadRight(runner$, 11)
-            PrintOnGfx X, Y - 1, runner$, imageScreen&
-            runStats$ = FUsing$(Str$(batRating(p, B3%(p, J), 16)), "#", 1) + "/" + FUsing$(Str$(batRating(p, B3%(p, J), 13)), "###", 1)
-            PrintOnGfx X, Y, runStats$, imageScreen&
+            runner$ = batters$(p, playerNum%(p, J))
+            PrintOnGfx X, Y-1, PadRight(runner$, 11), imageScreen&
+
+            runStats$ = FUsing$(Str$(batRating(p, playerNum%(p, J), 16)), "#", 1) + "/" + FUsing$(Str$(batRating(p, playerNum%(p, J), 13)), "###", 1)
+            PrintOnGfx X, Y,   runStats$, imageScreen&
 
             'Printing white on black
             _PrintMode _FillBackground , imageScreen&
@@ -362,7 +359,7 @@ Sub DisplayBallField_Gfx (BC%, p, nbrStrikes, D)
     'Catcher
     _PutImage (35 * FontColAdj, 416)-Step(13 * FontColAdj, 32), backupScreen&, imageScreen&, (35 * FontColAdj, 416)-Step(13 * FontColAdj, 32)
 
-    player$ = Left$(batters$(D, B9%(D, 8)), 11)
+    player$ = Left$(batters$(D, playerX%(D, POS_CF)), 11)
     player$ = PadRight(player$, 11)
 
     'Print all positions around the diamond
@@ -375,162 +372,162 @@ Sub DisplayBallField_Gfx (BC%, p, nbrStrikes, D)
     PrintOnGfx 36, 14, player$, imageScreen&
 
     'Center Field Stats
-    If batRating(D, B9%(D, 8), 19) = 1000 Then
+    If batRating(D, playerX%(D, POS_CF), 19) = 1000 Then
         fldPct$ = "1.000"
     Else
-        If batRating(D, B9%(D, 8), 19) = 0 Then
+        If batRating(D, playerX%(D, POS_CF), 19) = 0 Then
             fldPct$ = " .000"
         Else
-            fldPct$ = "." + FUsing$(Str$(batRating(D, B9%(D, 8), 19)), "###", 1)
+            fldPct$ = "." + FUsing$(Str$(batRating(D, playerX%(D, POS_CF), 19)), "###", 1)
         End If
     End If
 
-    player$ = "A" + FUsing$(Str$(batRating(D, B9%(D, 8), 15)), "#", 1) + " R" + FUsing$(Str$(batRating(D, B9%(D, 8), 17)), "#", 1) + " F" + fldPct$
+    player$ = "A" + FUsing$(Str$(batRating(D, playerX%(D, POS_CF), 15)), "#", 1) + " R" + FUsing$(Str$(batRating(D, playerX%(D, POS_CF), 17)), "#", 1) + " F" + fldPct$
     PrintOnGfx 36, 15, player$, imageScreen&
 
     'Left Field Name
-    player$ = Left$(batters$(D, B9%(D, 7)), 10)
+    player$ = Left$(batters$(D, playerX%(D, POS_LF)), 10)
     player$ = PadRight(player$, 10)
     PrintOnGfx 7, 16, player$, imageScreen&
 
     'Left Field Stats
-    If batRating(D, B9%(D, 7), 19) = 1000 Then
+    If batRating(D, playerX%(D, POS_LF), 19) = 1000 Then
         fldPct$ = "1.000"
     Else
-        If batRating(D, B9%(D, 7), 19) = 0 Then
+        If batRating(D, playerX%(D, POS_LF), 19) = 0 Then
             fldPct$ = " .000"
         Else
-            fldPct$ = "." + FUsing$(Str$(batRating(D, B9%(D, 7), 19)), "###", 1)
+            fldPct$ = "." + FUsing$(Str$(batRating(D, playerX%(D, POS_LF), 19)), "###", 1)
         End If
     End If
 
-    player$ = "A" + FUsing$(Str$(batRating(D, B9%(D, 7), 15)), "#", 1) + " R" + FUsing$(Str$(batRating(D, B9%(D, 7), 17)), "#", 1) + " F" + fldPct$
+    player$ = "A" + FUsing$(Str$(batRating(D, playerX%(D, POS_LF), 15)), "#", 1) + " R" + FUsing$(Str$(batRating(D, playerX%(D, POS_LF), 17)), "#", 1) + " F" + fldPct$
     PrintOnGfx 7, 17, player$, imageScreen&
 
     'Right Field Name
-    player$ = Left$(batters$(D, B9%(D, 9)), 10)
+    player$ = Left$(batters$(D, playerX%(D, POS_RF)), 10)
     player$ = PadRight(player$, 10)
     PrintOnGfx 64, 16, player$, imageScreen&
 
     'Right Field Stats
-    If batRating(D, B9%(D, 9), 19) = 1000 Then
+    If batRating(D, playerX%(D, POS_RF), 19) = 1000 Then
         fldPct$ = "1.000"
     Else
-        If batRating(D, B9%(D, 9), 19) = 0 Then
+        If batRating(D, playerX%(D, POS_RF), 19) = 0 Then
             fldPct$ = " .000"
         Else
-            fldPct$ = "." + FUsing$(Str$(batRating(D, B9%(D, 9), 19)), "###", 1)
+            fldPct$ = "." + FUsing$(Str$(batRating(D, playerX%(D, POS_RF), 19)), "###", 1)
         End If
     End If
 
-    player$ = "A" + FUsing$(Str$(batRating(D, B9%(D, 9), 15)), "#", 1) + " R" + FUsing$(Str$(batRating(D, B9%(D, 9), 17)), "#", 1) + " F" + fldPct$
+    player$ = "A" + FUsing$(Str$(batRating(D, playerX%(D, POS_RF), 15)), "#", 1) + " R" + FUsing$(Str$(batRating(D, playerX%(D, POS_RF), 17)), "#", 1) + " F" + fldPct$
     PrintOnGfx 64, 17, player$, imageScreen&
 
     'Short Stop Name
-    player$ = Left$(batters$(D, B9%(D, 6)), 10)
+    player$ = Left$(batters$(D, playerX%(D, POS_SS)), 10)
     player$ = PadRight(player$, 10)
     PrintOnGfx 28, 17, player$, imageScreen&
 
     'Short Stop Stats
-    If batRating(D, B9%(D, 6), 19) = 1000 Then
+    If batRating(D, playerX%(D, POS_SS), 19) = 1000 Then
         fldPct$ = "1.000"
     Else
-        If batRating(D, B9%(D, 6), 19) = 0 Then
+        If batRating(D, playerX%(D, POS_SS), 19) = 0 Then
             fldPct$ = " .000"
         Else
-            fldPct$ = "." + FUsing$(Str$(batRating(D, B9%(D, 6), 19)), "###", 1)
+            fldPct$ = "." + FUsing$(Str$(batRating(D, playerX%(D, POS_SS), 19)), "###", 1)
         End If
     End If
 
-    player$ = "R" + FUsing$(Str$(batRating(D, B9%(D, 6), 17)), "#", 1) + " F" + fldPct$
+    player$ = "R" + FUsing$(Str$(batRating(D, playerX%(D, POS_SS), 17)), "#", 1) + " F" + fldPct$
     PrintOnGfx 28, 18, player$, imageScreen&
 
     '2nd Base Name
-    player$ = Left$(batters$(D, B9%(D, 4)), 10)
+    player$ = Left$(batters$(D, playerX%(D, POS_2B)), 10)
     player$ = PadRight(player$, 10)
     PrintOnGfx 46, 17, player$, imageScreen&
 
     '2nd Base Stats
-    If batRating(D, B9%(D, 4), 19) = 1000 Then
+    If batRating(D, playerX%(D, POS_2B), 19) = 1000 Then
         fldPct$ = "1.000"
     Else
-        If batRating(D, B9%(D, 4), 19) = 0 Then
+        If batRating(D, playerX%(D, POS_2B), 19) = 0 Then
             fldPct$ = " .000"
         Else
-            fldPct$ = "." + FUsing$(Str$(batRating(D, B9%(D, 4), 19)), "###", 1)
+            fldPct$ = "." + FUsing$(Str$(batRating(D, playerX%(D, POS_2B), 19)), "###", 1)
         End If
     End If
 
-    player$ = "R" + FUsing$(Str$(batRating(D, B9%(D, 4), 17)), "#", 1) + " F" + fldPct$
+    player$ = "R" + FUsing$(Str$(batRating(D, playerX%(D, POS_2B), 17)), "#", 1) + " F" + fldPct$
     PrintOnGfx 46, 18, player$, imageScreen&
 
     '3rd Base Name
-    player$ = Left$(batters$(D, B9%(D, 5)), 10)
+    player$ = Left$(batters$(D, playerX%(D, POS_3B)), 10)
     player$ = PadRight(player$, 10)
     PrintOnGfx 13, 19, player$, imageScreen&
 
     '3rd Base Stats
-    If batRating(D, B9%(D, 5), 19) = 1000 Then
+    If batRating(D, playerX%(D, POS_3B), 19) = 1000 Then
         fldPct$ = "1.000"
     Else
-        If batRating(D, B9%(D, 5), 19) = 0 Then
+        If batRating(D, playerX%(D, POS_3B), 19) = 0 Then
             fldPct$ = " .000"
         Else
 
-            fldPct$ = "." + FUsing$(Str$(batRating(D, B9%(D, 5), 19)), "###", 1)
+            fldPct$ = "." + FUsing$(Str$(batRating(D, playerX%(D, POS_3B), 19)), "###", 1)
         End If
     End If
 
-    player$ = "R" + FUsing$(Str$(batRating(D, B9%(D, 5), 17)), "#", 1) + " F" + fldPct$
+    player$ = "R" + FUsing$(Str$(batRating(D, playerX%(D, POS_3B), 17)), "#", 1) + " F" + fldPct$
     PrintOnGfx 13, 20, player$, imageScreen&
 
     '1st Base Name
-    player$ = Left$(batters$(D, B9%(D, 3)), 10)
+    player$ = Left$(batters$(D, playerX%(D, POS_1B)), 10)
     player$ = PadRight(player$, 10)
     PrintOnGfx 61, 19, player$, imageScreen&
 
     '1st Base Stats
-    If batRating(D, B9%(D, 1), 19) = 1000 Then
+    If batRating(D, playerX%(D, POS_P), 19) = 1000 Then
         fldPct$ = "1.000"
     Else
-        If batRating(D, B9%(D, 1), 19) = 0 Then
+        If batRating(D, playerX%(D, POS_P), 19) = 0 Then
             fldPct$ = " .000"
         Else
-            fldPct$ = "." + FUsing$(Str$(batRating(D, B9%(D, 1), 19)), "###", 1)
+            fldPct$ = "." + FUsing$(Str$(batRating(D, playerX%(D, POS_P), 19)), "###", 1)
         End If
     End If
 
-    player$ = "R" + FUsing$(Str$(batRating(D, B9%(D, 3), 17)), "#", 1) + " F" + fldPct$
+    player$ = "R" + FUsing$(Str$(batRating(D, playerX%(D, POS_1B), 17)), "#", 1) + " F" + fldPct$
     PrintOnGfx 61, 20, player$, imageScreen&
 
     'Pitcher Name
-    player$ = "[" + handed$(pitchRating(D, P1%(D), 0) + 2) + "] " + Left$(pitchers$(D, P1%(D)), 10)
+    player$ = "[" + handed$(pitchRating(D, currPitcher%(D), 0) + 2) + "] " + Left$(pitchers$(D, currPitcher%(D)), 10)
     player$ = PadRight(player$, 10)
     PrintOnGfx 35, 21, player$, imageScreen&
 
     'Pitcher Stats
-    If pitchRating(D, P1%(D), 17) = 1000 Then
+    If pitchRating(D, currPitcher%(D), 17) = 1000 Then
         fldPct$ = "1.000"
     Else
-        If pitchRating(D, P1%(D), 17) = 0 Then
+        If pitchRating(D, currPitcher%(D), 17) = 0 Then
             fldPct$ = " .000"
         Else
-            fldPct$ = "." + FUsing$(Str$(pitchRating(D, P1%(D), 17)), "###", 1)
+            fldPct$ = "." + FUsing$(Str$(pitchRating(D, currPitcher%(D), 17)), "###", 1)
         End If
     End If
 
-    player$ = "H" + FUsing$(Str$(pitchRating(D, P1%(D), 18)), "#", 1) + " F" + fldPct$
+    player$ = "H" + FUsing$(Str$(pitchRating(D, currPitcher%(D), 18)), "#", 1) + " F" + fldPct$
     'was column 39 previously
     PrintOnGfx 35, 22, player$, imageScreen&
 
     'Catcher Name
-    player$ = Left$(batters$(D, B9%(D, 2)), 10)
+    player$ = Left$(batters$(D, playerX%(D, POS_C)), 10)
     player$ = PadRight(player$, 10)
-    player$ = player$ + "A" + FUsing$(Str$(batRating(D, B9%(D, 2), 15)), "#", 1)
+    player$ = player$ + "A" + FUsing$(Str$(batRating(D, playerX%(D, POS_C), 15)), "#", 1)
     PrintOnGfx 35, 26, player$, imageScreen&
 
     'Printing white on black
-    Color 4294967295
+    Color &HFFFFFFFF
     _PrintMode _FillBackground , imageScreen&
 
 End Sub
@@ -557,7 +554,7 @@ Sub HOLDSTATUS_G (runnerHeld)
     PrintOnGfx 53, 25, rhStatus$, imageScreen&
 
     'Printing white on black
-    Color 4294967295
+    Color &HFFFFFFFF
     _PrintMode _FillBackground , imageScreen&
 
 End Sub

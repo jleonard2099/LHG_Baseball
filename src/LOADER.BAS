@@ -231,7 +231,7 @@ Sub LOADER
 
                 Select Case I
 
-                    Case 0:
+                    Case 0: 'Save settings as default'
                         Open "DEFERA" For Output As #7
                         Print #7, playerOpt
                         Print #7, leagueOpt
@@ -249,64 +249,64 @@ Sub LOADER
                         Print #7, pitchEraOpt
                         Close #7
 
-                    Case 1:
+                    Case 1: 'Play Mode'
                         playerOpt = playerOpt + 1
                         If playerOpt > 3 Then playerOpt = 0
 
-                    Case 2:
+                    Case 2: 'Visiting Team'
                         Call ChooseGameTeam(diskIDs$(0), NTMS, gameT1%(0), gameTeams$(0), 0)
                         Color 15, 0
 
-                    Case 3:
+                    Case 3: 'Home Team'
                         Call ChooseGameTeam(diskIDs$(1), NTMS, gameT1%(1), gameTeams$(1), 1)
                         Color 15, 0
 
-                    Case 4:
+                    Case 4: 'League Type'
                         leagueOpt = leagueOpt + 1
                         If leagueOpt > 2 Then leagueOpt = 0
 
-                    Case 5:
+                    Case 5: 'Designated Hitter'
                         desigHit = 1 - desigHit
 
-                    Case 6:
+                    Case 6: 'Game Type'
                         gameTypeOpt = 1 - gameTypeOpt
 
-                    Case 7:
+                    Case 7: 'Month'
                         gameMonth = gameMonth + 1
                         If gameMonth > 10 Then gameMonth = 4
                         Locate 7, 4: Print BK$
 
-                    Case 8:
+                    Case 8: 'Time of Day'
                         dayOrNight = 1 - dayOrNight
                         Locate 8, 4
                         Print BK$
 
-                    Case 9:
+                    Case 9: 'Start Game'
                         '
 
-                    Case 10:
+                    Case 10:    'Play-By-Play Delay'
                         Locate 12, 32
                         Input pbpDelay!
 
-                    Case 11:
+                    Case 11:    'Use Injuries'
                         useInj = 1 - useInj
 
-                    Case 12:
+                    Case 12:    'Use Left/Right Split Stats'
                         useLRSplit = 1 - useLRSplit
 
-                    Case 13:
+                    Case 13:    'Use Days Rest Data For Pitchers'
                         useRest = 1 - useRest
 
-                    Case 14:
+                    Case 14:    'Use Manager Profile, If Available'
                         useMgrProf = 1 - useMgrProf
 
-                    Case 15:
+                    Case 15:    'Use Weather Effects'
                         useWeather = 1 - useWeather
 
-                    Case 16:
+                    Case 16:    'Use VGA Screens, If Able'
                         useVGA = 1 - useVGA
 
-                    Case 17:
+                    Case 17:    'Pitcher Era'
                         pitchEraOpt = pitchEraOpt + 1
                         If pitchEraOpt > 8 Then pitchEraOpt = 0
 
@@ -482,9 +482,9 @@ Sub LOADER
         Call SelectPitchers(P9, cancelPitchers%, computerRotations%)
         Call PitchingStarter(P9)
 
-        If Inotloop% <= 5 And gameScore(P9, 0) - gameScore(1 - P9, 0) > 0 Then P2%(P9) = P1%(P9)
+        If Inotloop% <= 5 And gameScore(P9, 0) - gameScore(1 - P9, 0) > 0 Then P2%(P9) = currPitcher%(P9)
 
-        pitchEff(P9, 0) = Int(((pitchRating(P9, P1%(P9), 8) + pitchRating(P9, P1%(P9), 7)) / pitchRating(P9, P1%(P9), 4)) + .5)
+        pitchEff(P9, 0) = Int(((pitchRating(P9, currPitcher%(P9), 8) + pitchRating(P9, currPitcher%(P9), 7)) / pitchRating(P9, currPitcher%(P9), 4)) + .5)
         pitchEff(P9, 1) = 3
 
         If gamePitcher%(P9) > 1 Then pitchEff(P9, 1) = 0
@@ -597,7 +597,7 @@ Sub LOADER
                 If skipLineChange% <> 1 Then
                     Color 15, 0
                     Locate 5, 59: Print "OPPOSING PITCHER"
-                    Locate , 59: Print pitchers$(1 - P9, P1%(1 - P9)); " "; handed$(pitchRating(1 - P9, P1%(1 - P9), 0) + 2)
+                    Locate , 59: Print pitchers$(1 - P9, currPitcher%(1 - P9)); " "; handed$(pitchRating(1 - P9, currPitcher%(1 - P9), 0) + 2)
                     If RP = 1 Then RP = 0
                 End If
 
@@ -618,13 +618,31 @@ Sub LOADER
 
     For I = 0 To 1
         For I1 = 1 To 9
-            X0%(I, 0, I1) = B3%(I, I1)
-            X0%(I, 1, I1) = B7%(I, I1)
+            X0%(I, 0, I1) = playerNum%(I, I1)
+            X0%(I, 1, I1) = fldPos%(I, I1)
             X0%(I, 2, I1) = I1 * 10
         Next I1
 
         gameD0%(I) = 9
 
+        DumpAll
+
+        Print #11, I; "Ready to PLay: "; gameTeams$(I)  ' [bm]'
+        Print #11, "B3: "; playerNum%(I, 1); playerNum%(I, 2); playerNum%(I, 3); playerNum%(I, 4); playerNum%(I, 5); playerNum%(I, 6); playerNum%(I, 7); playerNum%(I, 8); playerNum%(I, 9) 
+        Print #11, "B7: "; fldPos%(I, 1); fldPos%(I, 2); fldPos%(I, 3); fldPos%(I, 4); fldPos%(I, 5); fldPos%(I, 6); fldPos%(I, 7); fldPos%(I, 8); fldPos%(I, 9) 
+
+        Print  #11,
+        'Print #11, "Roster Batter 0", batterNames$(0)
+        'For I1 = 0 To 80
+'            Print #11, I1; batRating(I, 0, I1)
+        'Next I1
+
+        'Print  #11,
+        'Print #11, "Roster Pitcher 0", pitcherNames(0)
+        'For I1 = 0 To 89
+'            Print #11, I1; pitchRating(I, 0, I1)
+        'Next I1
+        
     Next I
 
     W5 = 0
@@ -640,59 +658,55 @@ Sub LOADER
 
     For I = 0 To 1
         For I1 = 1 To 9
-            If B7%(I, I1) >= 2 And B7%(I, I1) <= 9 Then
-                If B7%(I, I1) = batRating(I, B3%(I, I1), 22) Then
-                    batRating(I, B3%(I, I1), 15) = batRating(I, B3%(I, I1), 33)
-                    batRating(I, B3%(I, I1), 17) = batRating(I, B3%(I, I1), 34)
-                    batRating(I, B3%(I, I1), 19) = batRating(I, B3%(I, I1), 26)
+            If fldPos%(I, I1) >= 2 And fldPos%(I, I1) <= 9 Then
+               If fldPos%(I, I1) = batRating(I, playerNum%(I, I1), 22) Then
+                    batRating(I, playerNum%(I, I1), 15) = batRating(I, playerNum%(I, I1), 33)
+                    batRating(I, playerNum%(I, I1), 17) = batRating(I, playerNum%(I, I1), 34)
+                    batRating(I, playerNum%(I, I1), 19) = batRating(I, playerNum%(I, I1), 26)
+                ElseIf fldPos%(I, I1) = batRating(I, playerNum%(I, I1), 23) Then
+                    batRating(I, playerNum%(I, I1), 15) = batRating(I, playerNum%(I, I1), 35)
+                    batRating(I, playerNum%(I, I1), 17) = batRating(I, playerNum%(I, I1), 36)
+                    batRating(I, playerNum%(I, I1), 19) = batRating(I, playerNum%(I, I1), 27)
+                ElseIf fldPos%(I, I1) = batRating(I, playerNum%(I, I1), 24) Then
+                    batRating(I, playerNum%(I, I1), 15) = batRating(I, playerNum%(I, I1), 37)
+                    batRating(I, playerNum%(I, I1), 17) = batRating(I, playerNum%(I, I1), 38)
+                    batRating(I, playerNum%(I, I1), 19) = batRating(I, playerNum%(I, I1), 28)
+                ElseIf fldPos%(I, I1) = batRating(I, playerNum%(I, I1), 25) Then
+                    batRating(I, playerNum%(I, I1), 15) = batRating(I, playerNum%(I, I1), 39)
+                    batRating(I, playerNum%(I, I1), 17) = batRating(I, playerNum%(I, I1), 40)
+                    batRating(I, playerNum%(I, I1), 19) = batRating(I, playerNum%(I, I1), 29)
                 Else
-                    If B7%(I, I1) = batRating(I, B3%(I, I1), 23) Then
-                        batRating(I, B3%(I, I1), 15) = batRating(I, B3%(I, I1), 35)
-                        batRating(I, B3%(I, I1), 17) = batRating(I, B3%(I, I1), 36)
-                        batRating(I, B3%(I, I1), 19) = batRating(I, B3%(I, I1), 27)
-                    Else
-                        If B7%(I, I1) = batRating(I, B3%(I, I1), 24) Then
-                            batRating(I, B3%(I, I1), 15) = batRating(I, B3%(I, I1), 37)
-                            batRating(I, B3%(I, I1), 17) = batRating(I, B3%(I, I1), 38)
-                            batRating(I, B3%(I, I1), 19) = batRating(I, B3%(I, I1), 28)
-                        Else
-                            If B7%(I, I1) = batRating(I, B3%(I, I1), 25) Then
-                                batRating(I, B3%(I, I1), 15) = batRating(I, B3%(I, I1), 39)
-                                batRating(I, B3%(I, I1), 17) = batRating(I, B3%(I, I1), 40)
-                                batRating(I, B3%(I, I1), 19) = batRating(I, B3%(I, I1), 29)
-                            Else
-                                If B7%(I, I1) = 2 Then
-                                    batRating(I, B3%(I, I1), 15) = 1
-                                    batRating(I, B3%(I, I1), 17) = 0
-                                    batRating(I, B3%(I, I1), 19) = 910 + Int(Rnd(1) * 10) + 1
-                                End If
-                                If B7%(I, I1) = 3 Then
-                                    batRating(I, B3%(I, I1), 15) = 0
-                                    batRating(I, B3%(I, I1), 17) = 3
-                                    batRating(I, B3%(I, I1), 19) = 960 + Int(Rnd(1) * 10) + 1
-                                End If
-                                If B7%(I, I1) = 4 Then
-                                    batRating(I, B3%(I, I1), 15) = 0
-                                    batRating(I, B3%(I, I1), 17) = 3
-                                    batRating(I, B3%(I, I1), 19) = 912 + Int(Rnd(1) * 10) + 1
-                                End If
-                                If B7%(I, I1) = 5 Or B7%(I, I1) = 6 Then
-                                    batRating(I, B3%(I, I1), 15) = 0
-                                    batRating(I, B3%(I, I1), 17) = 3
-                                    batRating(I, B3%(I, I1), 19) = 902 + Int(Rnd(1) * 10) + 1
-                                End If
-                                If B7%(I, I1) >= 7 Then
-                                    batRating(I, B3%(I, I1), 15) = 2
-                                    batRating(I, B3%(I, I1), 17) = 2
-                                    batRating(I, B3%(I, I1), 19) = 972 + Int(Rnd(1) * 10) + 1
-                                End If
-                            End If
-                        End If
+                    If fldPos%(I, I1) = 2 Then
+                        batRating(I, playerNum%(I, I1), 15) = 1
+                        batRating(I, playerNum%(I, I1), 17) = 0
+                        batRating(I, playerNum%(I, I1), 19) = 910 + Int(Rnd(1) * 10) + 1
+                    End If
+                    If fldPos%(I, I1) = 3 Then
+                        batRating(I, playerNum%(I, I1), 15) = 0
+                        batRating(I, playerNum%(I, I1), 17) = 3
+                        batRating(I, playerNum%(I, I1), 19) = 960 + Int(Rnd(1) * 10) + 1
+                    End If
+                    If fldPos%(I, I1) = 4 Then
+                        batRating(I, playerNum%(I, I1), 15) = 0
+                        batRating(I, playerNum%(I, I1), 17) = 3
+                        batRating(I, playerNum%(I, I1), 19) = 912 + Int(Rnd(1) * 10) + 1
+                    End If
+                    If fldPos%(I, I1) = 5 Or fldPos%(I, I1) = 6 Then
+                        batRating(I, playerNum%(I, I1), 15) = 0
+                        batRating(I, playerNum%(I, I1), 17) = 3
+                        batRating(I, playerNum%(I, I1), 19) = 902 + Int(Rnd(1) * 10) + 1
+                    End If
+                    If fldPos%(I, I1) >= 7 Then
+                        batRating(I, playerNum%(I, I1), 15) = 2
+                        batRating(I, playerNum%(I, I1), 17) = 2
+                        batRating(I, playerNum%(I, I1), 19) = 972 + Int(Rnd(1) * 10) + 1
                     End If
                 End If
             End If
         Next I1
     Next I
+
+    Print #11, "Selecting Stadium"
 
     Call SelectStadium(useVGA)
 
@@ -837,7 +851,7 @@ Sub StartingLineup (P9)
 
             Color 15, 0
             Locate 5, 59: Print "OPPOSING PITCHER"
-            Locate , 59: Print pitchers$(1 - P9, P1%(1 - P9)); " "; handed$(pitchRating(1 - P9, P1%(1 - P9), 0) + 2)
+            Locate , 59: Print pitchers$(1 - P9, currPitcher%(1 - P9)); " "; handed$(pitchRating(1 - P9, currPitcher%(1 - P9), 0) + 2)
             Call LineupPositions(P9, I)
             If C1 = 1 Then Exit For
 
@@ -871,8 +885,8 @@ Sub LineupPositions (teamIdx, posIdx)
         Erase gameM%
 
         For J = 1 To 9
-            B7%(teamIdx, J) = -1
-            B3%(teamIdx, J) = -1
+            fldPos%(teamIdx, J) = -1
+            playerNum%(teamIdx, J) = -1
         Next
 
         C1 = 0
@@ -894,8 +908,8 @@ Sub LineupPositions (teamIdx, posIdx)
         If UCase$(I$) <> "X" Then
 
             For J = 1 To 9
-                If Not (J = posIdx Or (B3%(teamIdx, J) = I1 And B7%(teamIdx, J) = 1)) Then
-                    If B3%(teamIdx, J) = I1 And UCase$(I$) <> "P" Then GoTo 560 'skip1% = 1
+                If Not (J = posIdx Or (playerNum%(teamIdx, J) = I1 And fldPos%(teamIdx, J) = 1)) Then
+                    If playerNum%(teamIdx, J) = I1 And UCase$(I$) <> "P" Then GoTo 560 'skip1% = 1
                 End If
             Next J
 
@@ -905,20 +919,20 @@ Sub LineupPositions (teamIdx, posIdx)
 
                     For J = 1 To 9
                         If J <> posIdx Then
-                            If B3%(teamIdx, J) = P1%(teamIdx) And B7%(teamIdx, J) = 1 Then skip2% = 1
+                            If playerNum%(teamIdx, J) = currPitcher%(teamIdx) And fldPos%(teamIdx, J) = 1 Then skip2% = 1
                         End If
                     Next J
 
                     If skip2% <> 1 Then
 
-                        B3%(teamIdx, posIdx) = P1%(teamIdx)
-                        Print pitchers$(teamIdx, P1%(teamIdx));
+                        playerNum%(teamIdx, posIdx) = currPitcher%(teamIdx)
+                        Print pitchers$(teamIdx, currPitcher%(teamIdx));
                         gameM%(I1) = 1
 
                         Locate , 75
                         Print "P ";
-                        B7%(teamIdx, posIdx) = 1
-                        B9%(teamIdx, 1) = P1%(teamIdx)
+                        fldPos%(teamIdx, posIdx) = 1
+                        playerX%(teamIdx, 1) = currPitcher%(teamIdx)
                         gameM%(1) = 1
 
                         Locate 25, 1
@@ -949,9 +963,9 @@ Sub LineupPositions (teamIdx, posIdx)
 
                 Else
 
-                    B3%(teamIdx, posIdx) = I1
+                    playerNum%(teamIdx, posIdx) = I1
                     Print Using "# "; posIdx;
-                    Print batters$(teamIdx, B3%(teamIdx, posIdx));
+                    Print batters$(teamIdx, playerNum%(teamIdx, posIdx));
 
                     Locate , 74
 
@@ -967,7 +981,7 @@ Sub LineupPositions (teamIdx, posIdx)
 
                     For J = 1 To 9
                         If J <> posIdx Then
-                            If J1 = B7%(teamIdx, J) Then 680
+                            If J1 = fldPos%(teamIdx, J) Then 680
                         End If
                     Next J
 
@@ -975,9 +989,9 @@ Sub LineupPositions (teamIdx, posIdx)
 
                         'Print position selected
                         Print fieldPos$(J1);
-                        B7%(teamIdx, posIdx) = J1
+                        fldPos%(teamIdx, posIdx) = J1
 
-                        B9%(teamIdx, B7%(teamIdx, posIdx)) = B3%(teamIdx, posIdx)
+                        playerX%(teamIdx, fldPos%(teamIdx, posIdx)) = playerNum%(teamIdx, posIdx)
                         gameM%(J1) = 1
 
                         'Highlight the player we selected
@@ -1061,8 +1075,8 @@ Sub ChangeLineup_PreGame (P9, reselect)
                         If Inotloop% = 0 Then Call SaveLineup(P9)
 
                         For I = 1 To 9
-                            If B7%(P9, I) <> 1 Then
-                                batRating(P9, B3%(P9, I), 21) = 1
+                            If fldPos%(P9, I) <> 1 Then
+                                batRating(P9, playerNum%(P9, I), 21) = 1
                             End If
                         Next I
 
@@ -1075,8 +1089,8 @@ Sub ChangeLineup_PreGame (P9, reselect)
                         Erase gameM%
 
                         For J = 1 To 9
-                            B7%(P9, J) = -1
-                            B3%(P9, J) = -1
+                            fldPos%(P9, J) = -1
+                            playerNum%(P9, J) = -1
                         Next
 
                         C1 = 0
@@ -1103,8 +1117,8 @@ Sub ChangeLineup_PreGame (P9, reselect)
                 End Select
 
             Case 1 To 9:
-                Locate B3%(P9, I) + 2 - B4%, 2
-                Print " "; batters$(P9, B3%(P9, I))
+                Locate playerNum%(P9, I) + 2 - liveBatRating%, 2
+                Print " "; batters$(P9, playerNum%(P9, I))
 
                 Call LineupPositions(P9, I)
 
@@ -1141,8 +1155,8 @@ Sub SaveLineup (idx%)
 
         Cls
 
-        If pitchRating(1 - idx%, P1%(1 - idx%), 0) = -1 Then Q2% = 1
-        If pitchRating(1 - idx%, P1%(1 - idx%), 0) = 0 Then Q2% = 0
+        If pitchRating(1 - idx%, currPitcher%(1 - idx%), 0) = -1 Then Q2% = 1
+        If pitchRating(1 - idx%, currPitcher%(1 - idx%), 0) = 0 Then Q2% = 0
 
         For I = 0 To 9
             Print I; " ";
@@ -1160,8 +1174,8 @@ Sub SaveLineup (idx%)
         MG%(idx%, 100 + LN% * 21) = LU%
 
         For I = 1 To 9
-            MG%(idx%, 110 + I + LN% * 21) = B3%(idx%, I)
-            MG%(idx%, 101 + I + LN% * 21) = B7%(idx%, I)
+            MG%(idx%, 110 + I + LN% * 21) = playerNum%(idx%, I)
+            MG%(idx%, 101 + I + LN% * 21) = fldPos%(idx%, I)
         Next
 
         'idx% = P9
@@ -1200,8 +1214,8 @@ Sub SearchForLineup (P9)
 
     '2500
     Cls
-    If pitchRating(1 - P9, P1%(1 - P9), 0) = -1 Then Q2% = 1
-    If pitchRating(1 - P9, P1%(1 - P9), 0) = 1 Then Q2% = 0
+    If pitchRating(1 - P9, currPitcher%(1 - P9), 0) = -1 Then Q2% = 1
+    If pitchRating(1 - P9, currPitcher%(1 - P9), 0) = 1 Then Q2% = 0
     'pitchRating(0-1,0-1,0); all indexes are 1's
 
     Print Tab(30); "LINEUPS FOUND VS. "; PT$(Q2%)
@@ -1333,8 +1347,8 @@ Sub LineupFromProfile (lineupFound%, P9, skipLineChange%)
             If desigHit = MG%(P9, 101 + LN% * 21) Then
 
                 For I = 1 To 9
-                    B3%(P9, I) = MG%(P9, 110 + I + LN% * 21)
-                    B7%(P9, I) = MG%(P9, 101 + I + LN% * 21)
+                    playerNum%(P9, I) = MG%(P9, 110 + I + LN% * 21)
+                    fldPos%(P9, I) = MG%(P9, 101 + I + LN% * 21)
                 Next
 
                 LU% = 1
@@ -1365,17 +1379,17 @@ Sub LineupSummary (P9, reselect, LU%)
 
     For I = 1 To 9:
 
-        testIdx = B7%(P9, I)
+        testIdx = fldPos%(P9, I)
 
         If testIdx >= 0 Then
 
-            B9%(P9, B7%(P9, I)) = B3%(P9, I)
+            playerX%(P9, fldPos%(P9, I)) = playerNum%(P9, I)
 
-            If B7%(P9, I) = 1 Then
-                B3%(P9, I) = P1%(P9)
-                B9%(P9, 1) = P1%(P9)
+            If fldPos%(P9, I) = 1 Then
+                playerNum%(P9, I) = currPitcher%(P9)
+                playerX%(P9, 1) = currPitcher%(P9)
             Else
-                batRating(P9, B3%(P9, I), 21) = 0
+                batRating(P9, playerNum%(P9, I), 21) = 0
             End If
 
         End If
@@ -1398,7 +1412,7 @@ Sub LineupSummary (P9, reselect, LU%)
         Locate I2 + 2, 2
 
         For I3 = 1 To 9
-            If B3%(P9, I3) = I2 And B7%(P9, I3) <> 1 Then
+            If playerNum%(P9, I3) = I2 And fldPos%(P9, I3) <> 1 Then
                 Print "*";
                 Color teamRat_GAME(P9, 11), teamRat_GAME(P9, 12)
                 Print batters$(P9, I2)
@@ -1432,7 +1446,7 @@ Sub SelectBatters (batterFlag%, P9)
 
     Color 15, 0
     Locate 5, 59: Print "OPPOSING PITCHER"
-    Locate 6, 59: Print pitchers$(1 - P9, P1%(1 - P9)); " "; handed$(pitchRating(1 - P9, P1%(1 - P9), 0) + 2)
+    Locate 6, 59: Print pitchers$(1 - P9, currPitcher%(1 - P9)); " "; handed$(pitchRating(1 - P9, currPitcher%(1 - P9), 0) + 2)
 
     'TG = 0
 
@@ -1456,8 +1470,8 @@ Sub SelectBatters (batterFlag%, P9)
                 Erase gameM%
 
                 For J = 1 To 9
-                    B7%(P9, J) = -1
-                    B3%(P9, J) = -1
+                    fldPos%(P9, J) = -1
+                    playerNum%(P9, J) = -1
                 Next
 
                 C1 = 0
@@ -1533,7 +1547,7 @@ Sub SelectBatters (batterFlag%, P9)
 
             Color 15, 0
             Locate 5, 59: Print "OPPOSING PITCHER"
-            Locate 6, 59: Print pitchers$(1 - P9, P1%(1 - P9)); " "; handed$(pitchRating(1 - P9, P1%(1 - P9), 0) + 2)
+            Locate 6, 59: Print pitchers$(1 - P9, currPitcher%(1 - P9)); " "; handed$(pitchRating(1 - P9, currPitcher%(1 - P9), 0) + 2)
             Inotloop% = 0
             batterFlag% = 1
 
@@ -1805,7 +1819,7 @@ Sub PitchingRotations (computerRotations%, P9)
 
         Locate I + 15, 1
         If pitchers$(P9, I) <> "XXX" Then
-            Print pitchers$(P9, I); Tab(18); pitchRating(P9, I, 5);
+            Print pitchers$(P9, I); Tab(18); pitchRating(P9, I, SS_P_GS);
         End If
 
         Locate , 25
@@ -1825,7 +1839,7 @@ Sub PitchingRotations (computerRotations%, P9)
         gamesStarted = 0
 
         For I = 0 To 21
-            If pitchRating(P9, I, 5) > gamesStarted Then gamesStarted = pitchRating(P9, I, 5)
+            If pitchRating(P9, I, SS_P_GS) > gamesStarted Then gamesStarted = pitchRating(P9, I, SS_P_GS)
         Next
 
         'Auto-determine # of men in rotation
@@ -1913,7 +1927,7 @@ Sub PitchingRotations (computerRotations%, P9)
                 gamesStarted%(I, 0) = 0
                 gamesStarted%(I, 1) = -1
             Else
-                gamesStarted%(I, 0) = pitchRating(P9, I, 5)
+                gamesStarted%(I, 0) = pitchRating(P9, I, SS_P_GS)
                 gamesStarted%(I, 1) = I
             End If
         Next
@@ -2033,19 +2047,19 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
                     I2 = 0
                     For I1 = 0 To 22
                         If batRating(P9, I1, 21) <= 0 And batters$(P9, I1) <> "XXX" Then
-                            If batRating(P9, I1, 22) = 0 Then
-                                position(I2, 0) = batRating(P9, I1, 4)
+                            If batRating(P9, I1, SS_B_Pos1) = 0 Then
+                                position(I2, 0) = batRating(P9, I1, SS_B_AB)
                             Else
-                                If batRating(P9, I1, 23) = 0 Then
-                                    position(I2, 0) = batRating(P9, I1, 4) * .5
+                                If batRating(P9, I1, SS_B_Pos2) = 0 Then
+                                    position(I2, 0) = batRating(P9, I1, SS_B_AB) * .5
                                 Else
-                                    If batRating(P9, I1, 24) = 0 Then
-                                        position(I2, 0) = batRating(P9, I1, 4) * .3
+                                    If batRating(P9, I1, SS_B_Pos3) = 0 Then
+                                        position(I2, 0) = batRating(P9, I1, SS_B_AB) * .3
                                     Else
-                                        If batRating(P9, I1, 25) = 0 Then
-                                            position(I2, 0) = batRating(P9, I1, 4) * .2
+                                        If batRating(P9, I1, SS_B_Pos4) = 0 Then
+                                            position(I2, 0) = batRating(P9, I1, SS_B_AB) * .2
                                         Else
-                                            position(I2, 0) = Int(batRating(P9, I1, 4) * .05 + .5)
+                                            position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .05 + .5)
                                         End If
                                     End If
                                 End If
@@ -2063,35 +2077,35 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
                 'I <> 1
                 For I1 = 0 To 22:
                     If batRating(P9, I1, 21) <= 0 And batters$(P9, I1) <> "XXX" Then
-                        If batRating(P9, I1, 22) = I And batRating(P9, I1, 23) = -1 Then
-                            position(I2, 0) = batRating(P9, I1, 4):
+                        If batRating(P9, I1, SS_B_Pos1) = I And batRating(P9, I1, SS_B_Pos2) = -1 Then
+                            position(I2, 0) = batRating(P9, I1, SS_B_AB):
                         Else
-                            If batRating(P9, I1, 22) = I And batRating(P9, I1, 24) = -1 Then
-                                position(I2, 0) = Int(batRating(P9, I1, 4) * .9 + .5)
+                            If batRating(P9, I1, SS_B_Pos1) = I And batRating(P9, I1, SS_B_Pos3) = -1 Then
+                                position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .9 + .5)
                             Else
-                                If batRating(P9, I1, 22) = I And batRating(P9, I1, 25) = -1 Then
-                                    position(I2, 0) = Int(batRating(P9, I1, 4) * .8 + .5)
+                                If batRating(P9, I1, SS_B_Pos1) = I And batRating(P9, I1, SS_B_Pos4) = -1 Then
+                                    position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .8 + .5)
                                 Else
-                                    If batRating(P9, I1, 22) = I Then
-                                        position(I2, 0) = Int(batRating(P9, I1, 4) * .7 + .5)
+                                    If batRating(P9, I1, SS_B_Pos1) = I Then
+                                        position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .7 + .5)
                                     Else
-                                        If batRating(P9, I1, 23) = I And batRating(P9, I1, 24) = -1 Then
-                                            position(I2, 0) = Int(batRating(P9, I1, 4) * .1 + .5)
+                                        If batRating(P9, I1, SS_B_Pos2) = I And batRating(P9, I1, SS_B_Pos3) = -1 Then
+                                            position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .1 + .5)
                                         Else
-                                            If batRating(P9, I1, 23) = I And batRating(P9, I1, 25) = -1 Then
-                                                position(I2, 0) = Int(batRating(P9, I1, 4) * .1 + .5)
+                                            If batRating(P9, I1, SS_B_Pos2) = I And batRating(P9, I1, SS_B_Pos4) = -1 Then
+                                                position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .1 + .5)
                                             Else
-                                                If batRating(P9, I1, 23) = I Then
-                                                    position(I2, 0) = Int(batRating(P9, I1, 4) * .1 + .5)
+                                                If batRating(P9, I1, SS_B_Pos2) = I Then
+                                                    position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .1 + .5)
                                                 Else
-                                                    If batRating(P9, I1, 24) = I And batRating(P9, I1, 25) = -1 Then
-                                                        position(I2, 0) = Int(batRating(P9, I1, 4) * .1 + .5)
+                                                    If batRating(P9, I1, SS_B_Pos3) = I And batRating(P9, I1, SS_B_Pos4) = -1 Then
+                                                        position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .1 + .5)
                                                     Else
-                                                        If batRating(P9, I1, 24) = I Then
-                                                            position(I2, 0) = Int(batRating(P9, I1, 4) * .1 + .5)
+                                                        If batRating(P9, I1, SS_B_Pos3) = I Then
+                                                            position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .1 + .5)
                                                         Else
-                                                            If batRating(P9, I1, 25) = I Then
-                                                                position(I2, 0) = Int(batRating(P9, I1, 4) * .1 + .5)
+                                                            If batRating(P9, I1, SS_B_Pos4) = I Then
+                                                                position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .1 + .5)
                                                             End If
                                                         End If
                                                     End If
@@ -2140,8 +2154,8 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
                 Erase gameM%
 
                 For J = 1 To 9:
-                    B7%(P9, J) = -1
-                    B3%(P9, J) = -1
+                    fldPos%(P9, J) = -1
+                    playerNum%(P9, J) = -1
                 Next
 
                 C1 = 0
@@ -2264,8 +2278,8 @@ Sub SortHitters (P9)
     End If
 
     For I = 1 To 9
-        B3%(P9, I) = BB%(I)
-        B7%(P9, I) = BP(I)
+        playerNum%(P9, I) = BB%(I)
+        fldPos%(P9, I) = BP(I)
     Next
 
 End Sub
@@ -2314,7 +2328,7 @@ Sub DoSort (B, C, P9)
 
             If C <> 1 Then
 
-                SE! = (batRating(P9, J, 6) + batRating(P9, J, 7) + batRating(P9, J, 8) * 2 + batRating(P9, J, 9) * 3) / batRating(P9, J, 4)
+                SE! = (batRating(P9, J, SS_B_H) + batRating(P9, J, SS_B_2B) + batRating(P9, J, SS_B_3B) * 2 + batRating(P9, J, SS_B_HR) * 3) / batRating(P9, J, SS_B_AB)
 
                 If SE! >= E! Then
                     E! = SE!
@@ -2327,11 +2341,11 @@ Sub DoSort (B, C, P9)
                 JJ = J
 
                 'IF A PITCHER THEN 268
-                Q1! = (batRating(P9, JJ, 6) - batRating(P9, JJ, 8) - batRating(P9, JJ, 9) + batRating(P9, JJ, 11)) * .7
+                Q1! = (batRating(P9, JJ, SS_B_H) - batRating(P9, JJ, SS_B_3B) - batRating(P9, JJ, SS_B_HR) + batRating(P9, JJ, SS_B_W)) * .7
 
                 If Q1! = 0 Then Q1! = 1
 
-                Q1! = batRating(P9, JJ, 13) / Q1!
+                Q1! = batRating(P9, JJ, SS_B_SB) / Q1!
 
                 If Q1! >= .02 Then
                     QQ! = Q1! + .18
@@ -2346,7 +2360,7 @@ Sub DoSort (B, C, P9)
                 If R! > 9 Then R! = 9
                 If R! < 0 Then R! = 1
 
-                T1% = 100 * batRating(P9, J, 6) / batRating(P9, J, 4) - 27
+                T1% = 100 * batRating(P9, J, SS_B_H) / batRating(P9, J, SS_B_AB) - 27
                 If T1% < 0 Then T1% = 3 * T1%
 
                 JJ! = 3 * R! + T1%
@@ -2659,7 +2673,7 @@ Sub PrintPitcherInfo (idx%)
     If Inotloop% <= 0 Then
 
         Call PitchingStarter(idx%)
-        'If Inotloop% <= 5 And gameScore(P9, 0) - gameScore(1 - P9, 0) > 0 Then P2%(P9) = P1%(P9)
+        'If Inotloop% <= 5 And gameScore(P9, 0) - gameScore(1 - P9, 0) > 0 Then P2%(P9) = currPitcher%(P9)
 
     End If
 
@@ -2721,11 +2735,11 @@ Sub PitchingStarter (idx%)
 
     Loop Until UCase$(I$) = "N"
 
-    P1%(idx%) = I1
+    currPitcher%(idx%) = I1
     gamePitcher%(idx%) = 1
     pitchRating(idx%, I1, 15) = gamePitcher%(idx%)
 
-    pitchEff(idx%, 0) = Int(((pitchRating(idx%, P1%(idx%), 8) + pitchRating(idx%, P1%(idx%), 7)) / pitchRating(idx%, P1%(idx%), 4)) + .5)
+    pitchEff(idx%, 0) = Int(((pitchRating(idx%, currPitcher%(idx%), 8) + pitchRating(idx%, currPitcher%(idx%), 7)) / pitchRating(idx%, currPitcher%(idx%), 4)) + .5)
     pitchEff(idx%, 1) = 3
 
     If gamePitcher%(idx%) > 1 Then pitchEff(idx%, 1) = 0

@@ -288,7 +288,7 @@ Dim grounderDir$(10), PT$(1)
 
 
 ' Shared / Global
-Dim Shared badString%, EJ%, gameW%, H6%
+Dim Shared badString%, EJ%, currFielder%, dice1000%
 Dim Shared IJL%, INNING%, Inotloop%, LYN%
 Dim Shared PB%, PC%, SC%, WS%
 
@@ -313,18 +313,18 @@ Dim Shared nbrOuts(1)
 Dim SU(1, 1)
 
 Dim Shared A5%(0 To 3), assigned(1 To 9)
-Dim Shared B1%(3, 1), B2%(1, 22), B3%(0 To 1, 0 To 9), B4%(1, 7, 9), statBatterLeague%(0 To 1, 0 To 22, 0 To 21)
-Dim Shared B7%(0 To 1, 0 To 9), statBatterGame%(0 To 1, 0 To 22, 0 To 21), B9%(1, 10), BT%(0 To 1, 1 To 9, 1 To 9)
+Dim Shared B1%(3, 1), B2%(1, 22), playerNum%(0 To 1, 0 To 9), liveBatRating%(1, 7, 9), statBatterLeague%(0 To 1, 0 To 22, 0 To 21)
+Dim Shared fldPos%(0 To 1, 0 To 9), statBatterGame%(0 To 1, 0 To 22, 0 To 21), playerX%(1, 10), BT%(0 To 1, 1 To 9, 1 To 9)
 Dim Shared CF%(0 To 9, 0 To 2), CSS%(1, 22, 6), D3%(1), DP%(1)
 Dim Shared gameB0%(0 To 3, 0 To 2), gameD0%(1), gameM%(0 To 9), gameSA%(1, 24), gameScore(1, 2)
 Dim Shared GK%(1), H0%(1), injuryStatus(0 To 1, 0 To 22), L0%(1), LB%(9, 1)
 Dim Shared MG%(0 To 1, 999), NG%(18)
-Dim Shared P1%(0 To 1), P2%(1), P3%(1, 21), P4%(0 To 22)
+Dim Shared currPitcher%(0 To 1), P2%(1), P3%(1, 21), P4%(0 To 22)
 Dim Shared statPitcherLeague%(1, 21, 41), gamePitcher%(1), statPitcherGame%(0 To 1, 0 To 21, 0 To 41)
-Dim Shared S1%(1), S8%(1, 1), SO%(0 To 5, 0 To 2)
+Dim Shared S1%(1), stamina%(1, 1), SO%(0 To 5, 0 To 2)
 Dim Shared T3%(22), gameTS%(1, 11), X0%(1, 2, 23), YR%(1)
 
-Dim Shared B1!(9), parkHRVals!(1)
+Dim Shared currBatter!(9), parkHRVals!(1)
 
 Dim Shared alpha$(12), baseName$(0 To 4), batters$(0 To 1, 0 To 22), handed$(4)
 Dim Shared diskIDs$(1), doublesPlayer$(0 To 22), ejections$(20), eventDesc$(0 To 22)
