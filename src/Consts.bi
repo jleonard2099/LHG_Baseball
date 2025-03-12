@@ -1,4 +1,4 @@
-Const SS_B_Bats = 0
+Const SS_B_Bats = 0 '-1=Left, 0=Switch, 1=Right'
 
 Const SS_B_G = 3
 Const SS_B_AB = 4
@@ -40,7 +40,7 @@ Const SS_B_Range3 = 38
 Const SS_B_Arm4   = 39
 Const SS_B_Range4 = 40
 
-' 41-79 could be SPLITS'
+' 41-79 could be SPLITS - at least 41-55 are '
 Const SS_B_LHP_AB = 42
 Const SS_B_LHP_H = 43
 '44 is unknown'
@@ -125,9 +125,9 @@ Const LG_P_IP3  = 0
 Const LG_P_H    = 1
 Const LG_P_R    = 2
 Const LG_P_ER   = 3
-Const LG_P_W    = 4
+Const LG_P_BB   = 4
 Const LG_P_K    = 5
-Const LG_P_BB   = 6
+Const LG_P_W    = 6
 Const LG_P_L    = 7
 Const LG_P_G    = 8
 Const LG_P_GS   = 9
@@ -136,6 +136,18 @@ Const LG_P_Sv   = 12
 Const LG_P_HR   = 14
 Const LG_P_BSv  = 19
 Const LG_P_Hold = 22
+
+Const LG_P_E    = 34 '???'
+
+Const LIVE_BAvg=0
+Const LIVE_2B = 1
+Const LIVE_3B = 2
+Const LIVE_HR = 3
+Const LIVE_K  = 4
+Const LIVE_BB = 5
+Const LIVE_L_HR=6
+Const LIVE_R_HR=7
+
 
 Const TM_BAVG   = 1
 Const TM_K      = 2
