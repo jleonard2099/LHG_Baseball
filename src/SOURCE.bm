@@ -18,13 +18,11 @@ Sub SOURCE ()
 
     Shared triplePlayAdj(), SU()
 
-     '(teamRat_GAME(), pitchRating(), currPitcher%(), fldPos%(), batRating(), VV(), VV1(), playerNum%(), liveBatRating%(), parkHRVals!(), WF!)
-
-    If useVGA = 1 Then Call LOADSCREEN
-
     VV(0)  = 0 : VV(1)  = 0
     VV1(1) = 9 : VV1(1) = 9
     Call HITTINGLINES   '[bm]'
+
+    If useVGA = 1 Then Call LOADSCREEN
 
 LStart: '
     DumpAll
@@ -863,7 +861,7 @@ LStart: '
 
     If I3 <= 350 Then Goto LWeirdPlay
 
-    If I9 <= (liveBatRating%(P, 4, currBatter!(P)) * 2 * .33) Then
+    If I9 <= (liveBatRating%(P, LIVE_K, currBatter!(P)) * 2 * .33) Then
 
         nbrStrikes = nbrStrikes + 1
         Call PBP(player$(0) + " swings and misses")
@@ -882,7 +880,7 @@ LStart: '
         End If
     End If
 
-    If I9 <= liveBatRating%(P, 4, currBatter!(P)) * 2 Then
+    If I9 <= liveBatRating%(P, LIVE_K, currBatter!(P)) * 2 Then
         Call PBP(player$(0) + " fouls off the pitch...hit away")
         Call DELAY
         P2 = 1
@@ -1270,9 +1268,9 @@ LStart: '
 '    ", batter is:"; batters$(D, currBatter!(P)); ", pitcher is: "; pitchers$(P, currPitcher%(D)), pitchers$(P, currPitcher%(P))
 
     Print #11, "/\/\/\ Dice1000% = "; dice1000%; ", walkRating = "; liveBatRating%(P, 5, currBatter!(P)) + 28; _
-        ", isWalk? "; dice1000% <= liveBatRating%(P, 5, currBatter!(P)) + 28
+        ", isWalk? "; dice1000% <= liveBatRating%(P, LIVE_BB, currBatter!(P)) + 28
         
-    If dice1000% <= liveBatRating%(P, 5, currBatter!(P)) + 28 Then      'ToDo [bm]: define obstruction factor constant'
+    If dice1000% <= liveBatRating%(P, LIVE_BB, currBatter!(P)) + 28 Then      'ToDo [bm]: define obstruction factor constant'
         event% = EVENT_BB_OR_INTERFERENCE
         '13240 / *** base on balls ***
         Print #11, "1237 BASEONBALLS"
@@ -1317,12 +1315,12 @@ LStart: '
         GoTo LDrawnInInfield
     End If
 
-    If dice1000% > liveBatRating%(P, 0, currBatter!(P)) + I4 Then
+    If dice1000% > liveBatRating%(P, LIVE_BAvg, currBatter!(P)) + I4 Then   ' *** check for strikeout ***
 
         '3600
         ' *** check for strikeout ***
         dice1000% = Int(Rnd(1) * 1000) + 1
-        strikeoutRating = liveBatRating%(P, 4, currBatter!(P))
+        strikeoutRating = liveBatRating%(P, LIVE_K, currBatter!(P))
 
         Print #11, "/\/\/\ Dice1000% = "; dice1000%; ", KRating = "; strikeoutRating; ", isK? "; dice1000% <= strikeoutRating
         If dice1000% > strikeoutRating Then ' NOT a strikeout
@@ -1912,7 +1910,7 @@ LStart: '
                 If P2 = 2 Then nbrStrikes = 3
             End If
 
-            Call ADDPIT(D, currPitcher%(D), 5)
+            Call ADDPIT(D, currPitcher%(D), LG_P_K)
             Call ADDPIT(D, currPitcher%(D), 0)
 
             If fldPos%(P, currBatter!(P)) = 1 Then
@@ -1964,13 +1962,13 @@ LStart: '
 
         End If
 
-    Else
+    Else    ' base hit '
 
         dice1000% = Int(Rnd(1) * 1000) + 1
-        Print #11, "/\/\/\ DOUBLE Dice1000% = "; dice1000%; ", 2BRating = "; liveBatRating%(P, 1, currBatter!(P))
+        Print #11, "/\/\/\ DOUBLE Dice1000% = "; dice1000%; ", 2BRating = "; liveBatRating%(P, LIVE_2B, currBatter!(P))
 
-        If dice1000% <= liveBatRating%(P, 1, currBatter!(P)) And P2 <> 2 _
-        Or dice1000% <= liveBatRating%(P, 1, currBatter!(P)) * .5 And P2 = 2 Then
+        If dice1000% <= liveBatRating%(P, LIVE_2B, currBatter!(P)) And P2 <> 2 _
+        Or dice1000% <= liveBatRating%(P, LIVE_2B, currBatter!(P)) * .5 And P2 = 2 Then
 
             event% = EVENT_2B
 
@@ -2118,8 +2116,8 @@ LStart: '
         End If
 
 
-        Print #11, "/\/\/\ TRIPLE Dice1000% = "; dice1000%; ", 3BRating = "; liveBatRating%(P, 1, currBatter!(P)) + liveBatRating%(P, 2, currBatter!(P))
-        If dice1000% <= liveBatRating%(P, 1, currBatter!(P)) + liveBatRating%(P, 2, currBatter!(P)) And P2 <> 2 Or dice1000% <= liveBatRating%(P, 1, currBatter!(P)) * .5 + liveBatRating%(P, 2, currBatter!(P)) * .5 And P2 = 2 Then
+        Print #11, "/\/\/\ TRIPLE Dice1000% = "; dice1000%; ", 3BRating = "; liveBatRating%(P, LIVE_2B, currBatter!(P)) + liveBatRating%(P, LIVE_3B, currBatter!(P))
+        If dice1000% <= liveBatRating%(P, LIVE_2B, currBatter!(P)) + liveBatRating%(P, LIVE_3B, currBatter!(P)) And P2 <> 2 Or dice1000% <= liveBatRating%(P, LIVE_2B, currBatter!(P)) * .5 + liveBatRating%(P, LIVE_3B, currBatter!(P)) * .5 And P2 = 2 Then
 
             event% = EVENT_3B
 
@@ -2253,9 +2251,9 @@ LStart: '
         DumpAll
         Print #11, "L2236 HITS2GAP: currFielder% ="; currFielder%; ", P ="; P; ", D ="; D; ", I1 ="; I1; ", dice1000% ="; dice1000%; ", E2% ="; E2%; ", P2 ="; P2; _IIF(D = 1, "Visiting", "Home") + " batting"
 
-        I3 = liveBatRating%(P, 1, currBatter!(P)) + liveBatRating%(P, 2, currBatter!(P))
+        I3 = liveBatRating%(P, LIVE_2B, currBatter!(P)) + liveBatRating%(P, LIVE_3B, currBatter!(P))
 
-        E2% = I3 + liveBatRating%(P, 3, currBatter!(P))
+        E2% = I3 + liveBatRating%(P, LIVE_HR, currBatter!(P))
         Print #11, "/\/\/\ HR Dice1000% = "; dice1000%; ", HRRating = "; E2%
 
         Print #11, "CF ?: E2% ="; E2%
@@ -2265,7 +2263,7 @@ LStart: '
             GoTo LHomeRun
         End If
 
-        E2% = I3 + liveBatRating%(P, 6, currBatter!(P))
+        E2% = I3 + liveBatRating%(P, LIVE_L-HR, currBatter!(P))
         Print #11, "LF ?: E2% ="; E2%   'righty batter or pitcher?'
         If currFielder% = 7 And dice1000% <= E2% And P2 <> 2 Or currFielder% = 7 And dice1000% <= E2% * .5 And P2 = 2 Then
             event% = EVENT_HR
@@ -2273,7 +2271,7 @@ LStart: '
             GoTo LHomeRun
         End If
 
-        E2% = I3 + liveBatRating%(P, 7, currBatter!(P))
+        E2% = I3 + liveBatRating%(P, LIVE_R_HR, currBatter!(P))
         Print #11, "RF ?: E2% ="; E2%   'lefty batter or pitcher?'
         If currFielder% = 9 And dice1000% <= E2% And P2 <> 2 Or currFielder% = 9 And dice1000% <= E2% * .5 And P2 = 2 Then
             event% = EVENT_HR
@@ -2294,7 +2292,7 @@ LStart: '
 
         Print #11, "/\/\/\ SINGLE Dice7500% = "; dice7500%; ", infPosFactor = "; infPosFactor; ", dice100 ="; dice100%; ", liveBatRating%(P, 0, currBatter!(P)) = "; "liveBA ="; liveBatRating%(P, 0, currBatter!(P))
         'If fldPos%(P, currBatter!(P)) = 1 Or dice7500% <= infPosFactor Then
-        If fldPos%(P, currBatter!(P)) <> 1 And dice100% <= liveBatRating%(P, 0, currBatter!(P)) And P2 <> 2 Then
+        If fldPos%(P, currBatter!(P)) <> 1 And dice100% <= liveBatRating%(P, LIVE_BAvg, currBatter!(P)) And P2 <> 2 Then
 
           LSingle: '/ *** single ***
             DumpAll
@@ -4804,14 +4802,14 @@ LStart: '
             GoTo LManageDefense
         End If
 
-        Ib4 = liveBatRating%(P, 0, currBatter!(P))
-        I1 = liveBatRating%(P, 3, currBatter!(P))
+        Ib4 = liveBatRating%(P, LIVE_BAvg, currBatter!(P))
+        I1 = liveBatRating%(P, LIVE_HR, currBatter!(P))
         If currBatter!(P) = 9 Then
-            I2 = liveBatRating%(P, 0, 0)
-            I3 = liveBatRating%(P, 3, 0)
+            I2 = liveBatRating%(P, LIVE_BAvg, 0)
+            I3 = liveBatRating%(P, LIVE_HR, 0)
         Else
-            I2 = liveBatRating%(P, 0, currBatter!(P) + 1)
-            I3 = liveBatRating%(P, 3, currBatter!(P) + 1)
+            I2 = liveBatRating%(P, LIVE_BAvg, currBatter!(P) + 1)
+            I3 = liveBatRating%(P, LIVE_HR, currBatter!(P) + 1)
         End If
 
         If Not (baseRunners% <> BASE_2 And baseRunners% <> BASE_2_3) Then
@@ -5207,7 +5205,7 @@ LStart: '
         If Not (baseRunners% = BASE_EMPTY Or nbrOuts(0) > 0 Or baseRunners% = BASE_FULL Or baseRunners% = BASE_2_3 Or baseRunners% = BASE_3 Or baseRunners% = BASE_1_3 Or nbrStrikes = 2 Or P = 0 And INNING% > 7) Then
 
             If fldPos%(P, currBatter!(P)) = 1 And baseRunners% = BASE_1 And nbrOuts(0) < 2 Or fldPos%(P, currBatter!(P)) = 1 And baseRunners% = BASE_2 And nbrOuts(0) = 0 Or fldPos%(P, currBatter!(P)) = 1 And baseRunners% = BASE_1_2 And nbrOuts(0) = 0 Then 18969
-            If currBatter!(P) > 2 And currBatter!(P) < 6 Or liveBatRating%(P, 0, currBatter!(P)) > 290 And fldPos%(P, currBatter!(P)) <> 1 Or fldPos%(P, currBatter!(P)) <> 1 And liveBatRating%(P, 3, currBatter!(P)) > 70 Then 18968
+            If currBatter!(P) > 2 And currBatter!(P) < 6 Or liveBatRating%(P, LIVE_BAvg, currBatter!(P)) > 290 And fldPos%(P, currBatter!(P)) <> 1 Or fldPos%(P, currBatter!(P)) <> 1 And liveBatRating%(P, LIVE_HR, currBatter!(P)) > 70 Then 18968
             If INNING% > 7 And A1 = -1 And nbrOuts(0) = 0 And baseRunners% = BASE_1 Then 18969
 
         End If
@@ -5225,7 +5223,7 @@ LStart: '
 
     Call d100(RN0)
 
-    If nbrOuts(0) = 2 Or liveBatRating%(P, 4, currBatter!(P)) > 100 Or baseRunners% = BASE_EMPTY Or BASE_FULL Or baseRunners% = BASE_2_3 Or baseRunners% = BASE_3 Or baseRunners% = BASE_2 Or A1 < -3 Or RN0 > 20 Then
+    If nbrOuts(0) = 2 Or liveBatRating%(P, LIVE_K, currBatter!(P)) > 100 Or baseRunners% = BASE_EMPTY Or BASE_FULL Or baseRunners% = BASE_2_3 Or baseRunners% = BASE_3 Or baseRunners% = BASE_2 Or A1 < -3 Or RN0 > 20 Then
         GoTo LRunnerGoing
     Else
         P2 = 2

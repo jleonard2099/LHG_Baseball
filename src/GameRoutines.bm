@@ -1808,38 +1808,38 @@ End Sub
 '           FLDERR Subroutine
 '----------------------------------------
 'Fielding Error
-Sub FLDERR (F%, currFielder%, D, I3, SB%, S2%, P)
+Sub FLDERR (F%, currFielder%, D, fldPct, SB%, S2%, P)
 
     F% = 0
 
     If currFielder% = 1 Then
         If SB% = 1 Then
-            I3 = 995
+            fldPct = 995
         Else
-            I3 = pitchRating(D, currPitcher%(D), 17) + 30
+            fldPct = pitchRating(D, currPitcher%(D), 17) + 30
         End If
     Else
-        Call FLDAVG(D, currFielder%, I3)
+        Call FLDAVG(D, currFielder%, fldPct)
     End If
 
-    If I3 >= 999 Then
-        I6 = 1
+    If fldPct >= 999 Then
+        errVal% = 1
     Else
-        If S2% >= 12 And S2% <= 15 Then I6 = 1009 - I3
-        If S2% >= 7 And S2% <= 9 Then I6 = 1006 - I3
-        If S2% = 16 Or S2% >= 22 Then I6 = 1000 - I3
-        If S2% >= EVENT_FLY_DEEP And S2% <= 21 Then I6 = (1000 - I3) * .05
+        If S2% >= 12 And S2% <= 15 Then errVal% = 1009 - fldPct
+        If S2% >= 7 And S2% <= 9 Then errVal% = 1006 - fldPct
+        If S2% = 16 Or S2% >= 22 Then errVal% = 1000 - fldPct
+        If S2% >= EVENT_FLY_DEEP And S2% <= 21 Then errVal% = (1000 - fldPct) * .05
 
     End If
 
-    If currFielder% = 7 Then I6 = I6 - 4
-    If currFielder% = 8 Then I6 = I6 - 10
-    If currFielder% = 9 Then I6 = I6 - 15
-    If currFielder% = 5 Then I6 = I6 - 15
+    If currFielder% = 7 Then errVal% = errVal% - 4
+    If currFielder% = 8 Then errVal% = errVal% - 10
+    If currFielder% = 9 Then errVal% = errVal% - 15
+    If currFielder% = 5 Then errVal% = errVal% - 15
 
     dice1000% = Int(Rnd(1) * 1000) + 1
 
-    If dice1000% <= I6 Then
+    If dice1000% <= errVal% Then
 
         F% = 1
         rand = Int(Rnd(1) * 2) + 1
@@ -1950,7 +1950,7 @@ Sub FLDERR (F%, currFielder%, D, I3, SB%, S2%, P)
 
         gameScore(D, 2) = gameScore(D, 2) + 1
 
-        Call ADVANCEMENT(P, D, S2%, F%, I3)
+        Call ADVANCEMENT(P, D, S2%, F%, fldPct)
 
     End If
 
@@ -4161,11 +4161,10 @@ Sub HITTINGLINES
 
             End If
 
-            liveBatRating%(side, 5, lineup) = NORMALIZE!(theRating!, oppPitRating!, oppTeamBB!)
+            liveBatRating%(side, LIVE_BB, lineup) = NORMALIZE!(theRating!, oppPitRating!, oppTeamBB!)
 
-            Print #11, "BBBBB side: "; side; ", lineup: "; lineup; ", theRating: "; theRating!; _
-                ", oppPitRating: "; oppPitRating!; ", oppTeamBB: "; oppTeamBB!; _
-                ". liveBatRating: "; liveBatRating%(side, 5, lineup)
+            Print #11, Using "BBBBB side: #, lineup: #, the Rating: ##.###, oppPitRating: ##.###, oppTeamBB: ##.###, liveBatRating: ##.###"; _
+                side, lineup, theRating!, oppPitRating!, oppTeamBB!, liveBatRating%(side, 5, lineup)
 
         Next lineup
 
@@ -4243,11 +4242,10 @@ Sub HITTINGLINES
 
             End If
 
-            liveBatRating%(side, 4, lineup) = NORMALIZE!(theRating!, oppPitRating!, oppTeamK!)
+            liveBatRating%(side, LIVE_K, lineup) = NORMALIZE!(theRating!, oppPitRating!, oppTeamK!)
 
-            Print #11, "KKKKK side: "; side; ", lineup: "; lineup; ", theRating!: "; theRating!; _
-                ", oppPitRating: "; oppPitRating!; ", oppTeamK: "; oppTeamK!; _
-                ". liveBatRating: "; liveBatRating%(side, 4, lineup)
+            Print #11, Using "KKKKK side: #, lineup: #, the Rating: ##.###, oppPitRating: ##.###, oppTeamK: ##.###, liveBatRating: ##.###"; _
+                side, lineup, theRating!, oppPitRating!, oppTeamK!, liveBatRating%(side, 4, lineup)
 
         Next lineup
 
@@ -4349,7 +4347,7 @@ Sub HITTINGLINES
             If gameTS%(side, 0) = 999 And batRating(side, playerNum%(side, lineup), 80) <> 0 Then I6! = gameSA%(side, TY% * 6 + 1) / 1000
 
             I2! = i9!
-            liveBatRating%(side, 0, lineup) = NORMALIZE!(theRating!, I2!, I6!)
+            liveBatRating%(side, LIVE_BAvg, lineup) = NORMALIZE!(theRating!, I2!, I6!)
 
         Next lineup
 
@@ -4360,44 +4358,44 @@ Sub HITTINGLINES
             Call InitHittingLinesVars(side, lineup, TY%, PY%, BY%)
 
             If fldPos%(side, lineup) = 1 And pitchRating(side, currPitcher%(side), 11) <> 999 Then
-                liveBatRating%(side, 1, lineup) = (130 * (i9! * 1000)) / teamRat_GAME(othSide, TM_BAVG)
-                liveBatRating%(side, 2, lineup) = ( 19 * (i9! * 1000)) / teamRat_GAME(othSide, TM_BAVG)
-                liveBatRating%(side, 3, lineup) = 37
+                liveBatRating%(side, LIVE_2B, lineup) = (130 * (i9! * 1000)) / teamRat_GAME(othSide, TM_BAVG)
+                liveBatRating%(side, LIVE_3B, lineup) = ( 19 * (i9! * 1000)) / teamRat_GAME(othSide, TM_BAVG)
+                liveBatRating%(side, LIVE_HR, lineup) = 37
             Else
 
                 E2! = (i9! * 1000) / teamRat_GAME(othSide, TM_BAVG)
 
                 If gameTS%(othSide, 0) = 999 Then E2! = (i9! * 1000) / gameSA%(othSide, TY% * 6 + 1)
 
-                If fldPos%(side, lineup) =  1 And pitchRating(side, currPitcher%(side), 22) = 0 Then liveBatRating%(side, 1, lineup) = 0: liveBatRating%(side, 2, lineup) = 0: liveBatRating%(side, 3, lineup) = 0: GoTo 235
-                If fldPos%(side, lineup) <> 1 And batRating(side, playerNum%(side, lineup), 6) = 0 Then liveBatRating%(side, 1, lineup) = 0: liveBatRating%(side, 2, lineup) = 0: liveBatRating%(side, 3, lineup) = 0: GoTo 235
+                If fldPos%(side, lineup) =  1 And pitchRating(side, currPitcher%(side), 22) = 0 Then liveBatRating%(side, LIVE_2B, lineup) = 0: liveBatRating%(side, LIVE_3B, lineup) = 0: liveBatRating%(side, LIVE_HR, lineup) = 0: GoTo 235
+                If fldPos%(side, lineup) <> 1 And batRating(side, playerNum%(side, lineup), 6) = 0 Then liveBatRating%(side, LIVE_2B, lineup) = 0: liveBatRating%(side, LIVE_3B, lineup) = 0: liveBatRating%(side, LIVE_HR, lineup) = 0: GoTo 235
 
-                If fldPos%(side, lineup) =  1 And gameTS%(side, 0) = 999 And pitchRating(side, currPitcher%(side), 38 + BY% * 7) = 0 Then liveBatRating%(side, 1, lineup) = 0: liveBatRating%(side, 2, lineup) = 0: liveBatRating%(side, 3, lineup) = 0: GoTo 235
+                If fldPos%(side, lineup) =  1 And gameTS%(side, 0) = 999 And pitchRating(side, currPitcher%(side), 38 + BY% * 7) = 0 Then liveBatRating%(side, LIVE_2B, lineup) = 0: liveBatRating%(side, LIVE_3B, lineup) = 0: liveBatRating%(side, LIVE_HR, lineup) = 0: GoTo 235
 
-                If fldPos%(side, lineup) =  1 And gameTS%(side, 0) = 999 Then liveBatRating%(side, 1, lineup) = Int((pitchRating(side, currPitcher%(side), 39 + BY% * 7) / pitchRating(side, currPitcher%(side), 38 + BY% * 7)) * 1000) * E2!: ' doubles times  * .95
-                If fldPos%(side, lineup) =  1 And gameTS%(side, 0) = 999 Then liveBatRating%(side, 2, lineup) = Int((pitchRating(side, currPitcher%(side), 40 + BY% * 7) / pitchRating(side, currPitcher%(side), 38 + BY% * 7)) * 1000) * E2!
-                If fldPos%(side, lineup) =  1 And gameTS%(side, 0) = 999 Then liveBatRating%(side, 3, lineup) = Int((pitchRating(side, currPitcher%(side), 41 + BY% * 7) / pitchRating(side, currPitcher%(side), 38 + BY% * 7)) * 1000): GoTo 235
+                If fldPos%(side, lineup) =  1 And gameTS%(side, 0) = 999 Then liveBatRating%(side, LIVE_2B, lineup) = Int((pitchRating(side, currPitcher%(side), 39 + BY% * 7) / pitchRating(side, currPitcher%(side), 38 + BY% * 7)) * 1000) * E2!: ' doubles times  * .95
+                If fldPos%(side, lineup) =  1 And gameTS%(side, 0) = 999 Then liveBatRating%(side, LIVE_3B, lineup) = Int((pitchRating(side, currPitcher%(side), 40 + BY% * 7) / pitchRating(side, currPitcher%(side), 38 + BY% * 7)) * 1000) * E2!
+                If fldPos%(side, lineup) =  1 And gameTS%(side, 0) = 999 Then liveBatRating%(side, LIVE_HR, lineup) = Int((pitchRating(side, currPitcher%(side), 41 + BY% * 7) / pitchRating(side, currPitcher%(side), 38 + BY% * 7)) * 1000): GoTo 235
 
-                If fldPos%(side, lineup) =  1 Then liveBatRating%(side, 1, lineup) = Int((pitchRating(side, currPitcher%(side), 23) / pitchRating(side, currPitcher%(side), 22)) * 1000) * E2!: ' doubles times  * .95
-                If fldPos%(side, lineup) =  1 Then liveBatRating%(side, 2, lineup) = Int((pitchRating(side, currPitcher%(side), 24) / pitchRating(side, currPitcher%(side), 22)) * 1000) * E2!
-                If fldPos%(side, lineup) =  1 Then liveBatRating%(side, 3, lineup) = Int((pitchRating(side, currPitcher%(side), 25) / pitchRating(side, currPitcher%(side), 22)) * 1000): GoTo 235
+                If fldPos%(side, lineup) =  1 Then liveBatRating%(side, LIVE_2B, lineup) = Int((pitchRating(side, currPitcher%(side), 23) / pitchRating(side, currPitcher%(side), 22)) * 1000) * E2!: ' doubles times  * .95
+                If fldPos%(side, lineup) =  1 Then liveBatRating%(side, LIVE_3B, lineup) = Int((pitchRating(side, currPitcher%(side), 24) / pitchRating(side, currPitcher%(side), 22)) * 1000) * E2!
+                If fldPos%(side, lineup) =  1 Then liveBatRating%(side, LIVE_HR, lineup) = Int((pitchRating(side, currPitcher%(side), 25) / pitchRating(side, currPitcher%(side), 22)) * 1000): GoTo 235
 
-                If batRating(side, playerNum%(side, lineup), 6) = 0 Then liveBatRating%(side, 1, lineup) = 0: liveBatRating%(side, 2, lineup) = 0: liveBatRating%(side, 3, lineup) = 0: GoTo 235
+                If batRating(side, playerNum%(side, lineup), 6) = 0 Then liveBatRating%(side, LIVE_2B, lineup) = 0: liveBatRating%(side, LIVE_3B, lineup) = 0: liveBatRating%(side, LIVE_HR, lineup) = 0: GoTo 235
 
-                If gameTS%(side, 0) = 999 And batRating(side, playerNum%(side, lineup), 80) <> 0 And batRating(side, playerNum%(side, lineup), 43 + BY% * 7) = 0 Then liveBatRating%(side, 1, lineup) = 0: liveBatRating%(side, 2, lineup) = 0: liveBatRating%(side, 3, lineup) = 0: GoTo 235
-                If gameTS%(side, 0) = 999 And batRating(side, playerNum%(side, lineup), 80) <> 0 Then liveBatRating%(side, 1, lineup) = Int((batRating(side, playerNum%(side, lineup), 44 + BY% * 7) / batRating(side, playerNum%(side, lineup), 43 + BY% * 7)) * 1000) * E2!: 'see note on pitchers * .95
-                If gameTS%(side, 0) = 999 And batRating(side, playerNum%(side, lineup), 80) <> 0 Then liveBatRating%(side, 2, lineup) = Int((batRating(side, playerNum%(side, lineup), 45 + BY% * 7) / batRating(side, playerNum%(side, lineup), 43 + BY% * 7)) * 1000) * E2!
-                If gameTS%(side, 0) = 999 And batRating(side, playerNum%(side, lineup), 80) <> 0 Then liveBatRating%(side, 3, lineup) = Int((batRating(side, playerNum%(side, lineup), 46 + BY% * 7) / batRating(side, playerNum%(side, lineup), 43 + BY% * 7)) * 1000): GoTo 235
+                If gameTS%(side, 0) = 999 And batRating(side, playerNum%(side, lineup), 80) <> 0 And batRating(side, playerNum%(side, lineup), 43 + BY% * 7) = 0 Then liveBatRating%(side, LIVE_2B, lineup) = 0: liveBatRating%(side, LIVE_3B, lineup) = 0: liveBatRating%(side, LIVE_HR, lineup) = 0: GoTo 235
+                If gameTS%(side, 0) = 999 And batRating(side, playerNum%(side, lineup), 80) <> 0 Then liveBatRating%(side, LIVE_2B, lineup) = Int((batRating(side, playerNum%(side, lineup), 44 + BY% * 7) / batRating(side, playerNum%(side, lineup), 43 + BY% * 7)) * 1000) * E2!: 'see note on pitchers * .95
+                If gameTS%(side, 0) = 999 And batRating(side, playerNum%(side, lineup), 80) <> 0 Then liveBatRating%(side, LIVE_3B, lineup) = Int((batRating(side, playerNum%(side, lineup), 45 + BY% * 7) / batRating(side, playerNum%(side, lineup), 43 + BY% * 7)) * 1000) * E2!
+                If gameTS%(side, 0) = 999 And batRating(side, playerNum%(side, lineup), 80) <> 0 Then liveBatRating%(side, LIVE_HR, lineup) = Int((batRating(side, playerNum%(side, lineup), 46 + BY% * 7) / batRating(side, playerNum%(side, lineup), 43 + BY% * 7)) * 1000): GoTo 235
 
-                liveBatRating%(side, 1, lineup) = Int((batRating(side, playerNum%(side, lineup), 7) / batRating(side, playerNum%(side, lineup), 6)) * 1000) * E2!: 'see note on pitchers * .95
-                liveBatRating%(side, 2, lineup) = Int((batRating(side, playerNum%(side, lineup), 8) / batRating(side, playerNum%(side, lineup), 6)) * 1000) * E2!
-                liveBatRating%(side, 3, lineup) = Int((batRating(side, playerNum%(side, lineup), 9) / batRating(side, playerNum%(side, lineup), 6)) * 1000)
+                liveBatRating%(side, LIVE_2B, lineup) = Int((batRating(side, playerNum%(side, lineup), 7) / batRating(side, playerNum%(side, lineup), 6)) * 1000) * E2!: 'see note on pitchers * .95
+                liveBatRating%(side, LIVE_3B, lineup) = Int((batRating(side, playerNum%(side, lineup), 8) / batRating(side, playerNum%(side, lineup), 6)) * 1000) * E2!
+                liveBatRating%(side, LIVE_HR, lineup) = Int((batRating(side, playerNum%(side, lineup), 9) / batRating(side, playerNum%(side, lineup), 6)) * 1000)
 
             End If
 
             235 '
             I6! = teamRat_GAME(othSide, TM_HR) / 1000
-            theRating! = liveBatRating%(side, 3, lineup) / 1000
+            theRating! = liveBatRating%(side, LIVE_HR, lineup) / 1000
             I2! = 0
 
             If pitchRating(othSide, currPitcher%(othSide), 7) <> 0 Then I2! = pitchRating(othSide, currPitcher%(othSide), 13) / pitchRating(othSide, currPitcher%(othSide), 7)
@@ -4411,7 +4409,7 @@ Sub HITTINGLINES
 
             End If
 
-            liveBatRating%(side, 3, lineup) = NORMALIZE!(theRating!, I2!, I6!)
+            liveBatRating%(side, LIVE_HR, lineup) = NORMALIZE!(theRating!, I2!, I6!)
 
         Next lineup
 
@@ -4420,38 +4418,56 @@ Sub HITTINGLINES
 
         For lineup = VV(side) To VV1(side)
 
+            Print #11, Using "ADJ L/R: side: #, lineup: #, gameTS: ####, play80: ####, pit: #, pitBat: #, bat: #"; _
+                side, lineup, gameTS%(side, 0), batRating(side, playerNum%(side, lineup), 80), _
+                pit, pitchRating(side, currPitcher%(side), 0), batRating(side, playerNum%(side, lineup), 0)
+
             If gameTS%(side, 0) = 999 And batRating(side, playerNum%(side, lineup), 80) = 0 Then
 
-                I2 = batRating(side, playerNum%(side, lineup), 0)
+                If fldPos%(side, lineup) = 1 Then
+                    pitBat = pitchRating(side,    currPitcher%(side),    0)
 
-                If fldPos%(side, lineup) = 1 And pitchRating(side, currPitcher%(side), 0) = -1 And pitchRating(othSide, currPitcher%(othSide), 0) =  1 Then A = 1.04: A1 =  .88: Call LRADJ(A!, A1!)
-                If fldPos%(side, lineup) = 1 And pitchRating(side, currPitcher%(side), 0) = -1 And pitchRating(othSide, currPitcher%(othSide), 0) = -1 Then A =  .93: A1 = 1.16: Call LRADJ(A!, A1!)
-                If fldPos%(side, lineup) = 1 And pitchRating(side, currPitcher%(side), 0) =  1 And pitchRating(othSide, currPitcher%(othSide), 0) = -1 Then A = 1.02: A1 =  .98: Call LRADJ(A!, A1!)
-                If fldPos%(side, lineup) = 1 And pitchRating(side, currPitcher%(side), 0) =  1 And pitchRating(othSide, currPitcher%(othSide), 0) =  1 Then A =  .97: A1 = 1.10: Call LRADJ(A!, A1!)
-                If fldPos%(side, lineup) <> 1 And I2 = -2 And pit =  1 Then A = 1.04: A1 =  .96: Call LRADJ(A!, A1!)
-                If fldPos%(side, lineup) <> 1 And I2 = -2 And pit = -1 Then A =  .78: A1 = 1.22: Call LRADJ(A!, A1!)
-                If fldPos%(side, lineup) <> 1 And I2 =  2 And pit =  1 Then A =  .78: A1 = 1.22: Call LRADJ(A!, A1!)
-                If fldPos%(side, lineup) <> 1 And I2 =  2 And pit = -1 Then A = 1.04: A1 =  .96: Call LRADJ(A!, A1!)
-                If fldPos%(side, lineup) <> 1 And I2 = -1 And pit = -1 Then A =  .93: A1 = 1.16: Call LRADJ(A!, A1!)
-                If fldPos%(side, lineup) <> 1 And I2 = -1 And pit =  1 Then A = 1.04: A1 =  .88: Call LRADJ(A!, A1!)
-                If fldPos%(side, lineup) <> 1 And I2 =  1 And pit =  1 Then A =  .97: A1 = 1.10: Call LRADJ(A!, A1!)
-                If fldPos%(side, lineup) <> 1 And I2 =  1 And pit = -1 Then A = 1.02: A1 =  .98: Call LRADJ(A!, A1!)
-                If fldPos%(side, lineup) <> 1 And I2 =  0 And pit = -1 Then A = 1.01: A1 =  .86: Call LRADJ(A!, A1!)
-                If fldPos%(side, lineup) <> 1 And I2 =  0 And pit =  1 Then A =  .99: A1 =  .93: Call LRADJ(A!, A1!)
+''                    Print #11, Using "^^^ ADJ L/R for pitcher: side: #, lineup: #, pitBat: #, pit: #", side, lineup, pitBat, pit
+
+                    If pitBat = -1 And pit =  1 Then Call LRADJ(1.04,  .88)    ' (aOffense, aStrikeout) '
+                    If pitBat = -1 And pit = -1 Then Call LRADJ( .93, 1.16)    '-2=LP,-1=L,0=S,1=R,2=RP'
+
+                    If pitBat =  1 And pit = -1 Then Call LRADJ(1.02,  .98)
+                    If pitBat =  1 And pit =  1 Then Call LRADJ( .97, 1.10)
+                Else
+                    bat = batRating(side, playerNum%(side, lineup), 0)
+
+''                    Print #11, Using "^^^ ADJ L/R for hitter: side: #, lineup: #, bat: #, pit: #, name: $", side, lineup, bat, pit, batters$(side, lineup)
+
+                If bat = -2 And pit = -1 Then Call LRADJ( .78, 1.22)
+                    If bat = -2 And pit =  1 Then Call LRADJ(1.04,  .96)
+
+                    If bat = -1 And pit = -1 Then Call LRADJ( .93, 1.16)
+                    If bat = -1 And pit =  1 Then Call LRADJ(1.04,  .88)
+                    
+                    If bat =  0 And pit = -1 Then Call LRADJ(1.01,  .86)
+                    If bat =  0 And pit =  1 Then Call LRADJ( .99,  .93)
+                    
+                    If bat =  1 And pit = -1 Then Call LRADJ(1.02,  .98)
+                    If bat =  1 And pit =  1 Then Call LRADJ( .97, 1.10)
+
+                    If bat =  2 And pit = -1 Then Call LRADJ(1.04,  .96)
+                    If bat =  2 And pit =  1 Then Call LRADJ( .78, 1.22)
+                End If
 
             End If
 
-            liveBatRating%(side, 6, lineup) = liveBatRating%(side, 3, lineup)
-            liveBatRating%(side, 7, lineup) = liveBatRating%(side, 3, lineup)
+            liveBatRating%(side, LIVE_L_HR, lineup) = liveBatRating%(side, LIVE_HR, lineup)
+            liveBatRating%(side, LIVE_R_HR, lineup) = liveBatRating%(side, LIVE_HR, lineup)
 
         Next lineup
 
         ' ADJUST AVERAGES FOR THE HOME TEAM
         For lineup = VV(side) To VV1(side)
             If side = 1 Then
-                liveBatRating%(side, 0, lineup) = liveBatRating%(side, 0, lineup) + 5
+                liveBatRating%(side, LIVE_BAvg, lineup) = liveBatRating%(side, LIVE_BAvg, lineup) + 5
             Else
-                liveBatRating%(side, 0, lineup) = liveBatRating%(side, 0, lineup) - 5
+                liveBatRating%(side, LIVE_BAvg, lineup) = liveBatRating%(side, LIVE_BAvg, lineup) - 5
             End If
         Next lineup
 
@@ -4460,12 +4476,12 @@ Sub HITTINGLINES
 
             For lineup = VV(side) To VV1(side)
                 If side = 1 Then
-                    liveBatRating%(side, 1, lineup) = Int(liveBatRating%(side, 1, lineup) * (teamRat_GAME(side, TM_2B) / 100) + .5)
-                    liveBatRating%(side, 2, lineup) = Int(liveBatRating%(side, 2, lineup) * (teamRat_GAME(side, TM_3B) / 100) + .5)
+                    liveBatRating%(side, LIVE_2B, lineup) = Int(liveBatRating%(side, LIVE_2B, lineup) * (teamRat_GAME(side, TM_2B) / 100) + .5)
+                    liveBatRating%(side, LIVE_3B, lineup) = Int(liveBatRating%(side, LIVE_3B, lineup) * (teamRat_GAME(side, TM_3B) / 100) + .5)
                 Else
                     'side <> 1
-                    liveBatRating%(side, 1, lineup) = Int(liveBatRating%(side, 1, lineup) * (teamRat_GAME(othSide, TM_2B) / 100) * ((200 - teamRat_GAME(side, TM_2B)) / 100) + .5)
-                    liveBatRating%(side, 2, lineup) = Int(liveBatRating%(side, 2, lineup) * (teamRat_GAME(othSide, TM_3B) / 100) * ((200 - teamRat_GAME(side, TM_3B)) / 100) + .5)
+                    liveBatRating%(side, LIVE_2B, lineup) = Int(liveBatRating%(side, LIVE_2B, lineup) * (teamRat_GAME(othSide, TM_2B) / 100) * ((200 - teamRat_GAME(side, TM_2B)) / 100) + .5)
+                    liveBatRating%(side, LIVE_3B, lineup) = Int(liveBatRating%(side, LIVE_3B, lineup) * (teamRat_GAME(othSide, TM_3B) / 100) * ((200 - teamRat_GAME(side, TM_3B)) / 100) + .5)
                 End If
 
                 If parkHRVals!(side) > 1000 Then 
@@ -4493,14 +4509,14 @@ Sub HITTINGLINES
                 End If
 
                 If side = 1 Then
-                    liveBatRating%(side, 3, lineup) = Int((liveBatRating%(side, 3, lineup) * (I3! / 100)) + .5)
-                    liveBatRating%(side, 6, lineup) = Int((liveBatRating%(side, 6, lineup) * (I6! / 100)) + .5)
-                    liveBatRating%(side, 7, lineup) = Int((liveBatRating%(side, 7, lineup) * (theRating! / 100)) + .5)
+                    liveBatRating%(side, LIVE_HR,   lineup) = Int((liveBatRating%(side, LIVE_HR,   lineup) * (I3! / 100)) + .5)
+                    liveBatRating%(side, LIVE_L_HR, lineup) = Int((liveBatRating%(side, LIVE_L_HR, lineup) * (I6! / 100)) + .5)
+                    liveBatRating%(side, LIVE_R_HR, lineup) = Int((liveBatRating%(side, LIVE_R_HR, lineup) * (theRating! / 100)) + .5)
                 Else
                     'side <> 1
-                    liveBatRating%(side, 3, lineup) = Int((liveBatRating%(side, 3, lineup) * (I4! / 100) * ((200 - I3!) / 100)) + .5)
-                    liveBatRating%(side, 6, lineup) = Int((liveBatRating%(side, 6, lineup) * (K8! / 100) * ((200 - I6!) / 100)) + .5)
-                    liveBatRating%(side, 7, lineup) = Int((liveBatRating%(side, 7, lineup) * (i9! / 100) * ((200 - theRating!) / 100)) + .5)
+                    liveBatRating%(side, LIVE_HR,   lineup) = Int((liveBatRating%(side, LIVE_HR,   lineup) * (I4! / 100) * ((200 - I3!) / 100)) + .5)
+                    liveBatRating%(side, LIVE_L-HR, lineup) = Int((liveBatRating%(side, LIVE_L-HR, lineup) * (K8! / 100) * ((200 - I6!) / 100)) + .5)
+                    liveBatRating%(side, LIVE_R_HR, lineup) = Int((liveBatRating%(side, LIVE_R_HR, lineup) * (i9! / 100) * ((200 - theRating!) / 100)) + .5)
                 End If
 
             Next lineup
@@ -4518,14 +4534,14 @@ End Sub
 '            LRADJ Subroutine
 '----------------------------------------
 ' ...explanation...
-Sub LRADJ (A!, A1!)
+Sub LRADJ (aOffense!, aStrikeout!)
 
-    For I6 = 0 To 3
-        liveBatRating%(side, I6, lineup) = liveBatRating%(I, I6, lineup) * A!
-    Next I6
+    For idx_b = 0 To 3
+        liveBatRating%(side, idx_b, lineup) = liveBatRating%(I, idx_b, lineup) * aOffense!
+    Next idx_b
 
-    liveBatRating%(I, 5, lineup) = liveBatRating%(I, 5, lineup) * A!
-    liveBatRating%(I, 4, lineup) = liveBatRating%(I, 4, lineup) * A1!
+    liveBatRating%(side, LIVE_BB, lineup) = liveBatRating%(side, LIVE_BB, lineup) * aOffense!
+    liveBatRating%(side, LIVE_K,  lineup) = liveBatRating%(side, LIVE_K,  lineup) * aStrikeout!
 
 End Sub
 
@@ -4559,6 +4575,13 @@ Sub BASEONBALLS (S2%, D2, D, P)
     S2% = 2
 
     Call WINDEX
+
+    If fldPos%(P, currBatter!(P)) <> 1 Then
+        Call INCBATOFF(P, playerNum%(P, currBatter!(P)), 7)
+    Else
+        Call INCPITOFF(P, currPitcher%(P), 30)
+    End If
+    Call ADDPIT(D, currPitcher%(D), LG_P_BB)  '[bm]'
 
     Call d100(BV)
     Call d100(RN)
@@ -10262,10 +10285,15 @@ End Sub
 
 Sub DumpAll
 
+    myPNum = playerNum%( P, currBatter!(P) )
     Print #11, "---"
     Print #11, "DumpAll Inning is:"; INNING%; ", P ="; P; _
-        _IIF(D = 1, "Visiting", "Home") + " batting:"; currBatter!(P);  _
+        _IIF(D = 1, "Visiting", "Home") + " batting:"; currBatter!(P); " roster #: "; myPNum; _
         " baseRunners ="; baseRunners%
+    Print #11, "Batter name: "; batters$(P, myPNum)
+
+    Print #11, "Batter: "; player$(0); ", 1st base: "; player$(1); ", 2nd base: "; player$(2); _
+        ", 3rd base: "; player$(3); ", fielder w/ball: "; player$(4)
 
     Print #11, "BAvg"; liveBatRating%(P, 0, currBatter!(P))
     Print #11, "2B  "; liveBatRating%(P, 1, currBatter!(P))

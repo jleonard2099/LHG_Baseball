@@ -1729,11 +1729,6 @@ Sub SelectStadium (useVGA)
                         If dayOrNight = 0 Then PARK$ = PARK$ + "D.png" Else PARK$ = PARK$ + "N.png"
                         Color 15, 0
 
-						_Dest _Console
-                        Print "fileSeparator: " + fileSeparator$
-						Print "Selection: ." + fileSeparator$ + "parks" + fileSeparator$ + PARK$
-						_Dest 0
-        
                         If _FileExists("." + fileSeparator$ + "parks" + fileSeparator$ + PARK$) Then
                             foundPark% = 1
                             teamRat_GAME(1, 13) = Selection%
@@ -1777,10 +1772,6 @@ Sub SelectStadium (useVGA)
         _Dest 0
         
         If Not _FileExists("." + fileSeparator$ + "parks" + fileSeparator$ + PARK$) Then useVGA = 0
-        
-        _Dest _Console
-        Print useVGA
-        _Dest 0
 
     Loop Until BO% = 0 Or UCase$(I$) = "N" Or ExitCode% = 27
 
@@ -2499,7 +2490,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
 
             Do
                 Call d100(RN)
-
+                
                 pitchRating(idx%, MG%(idx%, MG%(idx%, 2) + 3), 15) = 0
 
                 If RN <= MG%(idx%, MG%(idx%, 2) + 10 + 3) Or MG%(idx%, MG%(idx%, 2) + 10 + 3) = 0 Then

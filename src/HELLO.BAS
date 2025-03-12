@@ -330,7 +330,7 @@ End If
 'Print #9, "Schedule game # "; Using "###"; schedGame(0) + schedGame(2)
 'Print #9, gameTeams$(0) + " vs. " + gameTeams$(1)
 'End If
-Print #9, "Value of D = "; D
+'Print #9, "Value of D = "; D
 Print #9,
 Close #9
 Resume Next ' moves program to code following the error.
