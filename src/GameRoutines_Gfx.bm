@@ -19,11 +19,11 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
     '-- Why is this not Pitch Count / Strikes ???
 
     'Wins
-    FORMATTED$ = FUsing$(Str$(pitchRating(D, currPitcher%(D), 1)), "##", 1)
+    FORMATTED$ = FUsing$(Str$(pitchRating(D, currPitcher%(D), SS_P_W)), "##", 1)
     pStats$ = FORMATTED$ + "-"
 
     'Losses
-    FORMATTED$ = FUsing$(Str$(pitchRating(D, currPitcher%(D), 2)), "##", 1)
+    FORMATTED$ = FUsing$(Str$(pitchRating(D, currPitcher%(D), SS_P_L)), "##", 1)
 
     '                                              ERA
     pStats$ = pStats$ + FORMATTED$ + " " + FUsing$(Str$(pitchRating(D, currPitcher%(D), 10) / 100), "##.##", 1)

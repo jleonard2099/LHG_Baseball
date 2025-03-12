@@ -484,7 +484,7 @@ Sub LOADER
 
         If Inotloop% <= 5 And gameScore(P9, 0) - gameScore(1 - P9, 0) > 0 Then P2%(P9) = currPitcher%(P9)
 
-        pitchEff(P9, 0) = Int(((pitchRating(P9, currPitcher%(P9), 8) + pitchRating(P9, currPitcher%(P9), 7)) / pitchRating(P9, currPitcher%(P9), 4)) + .5)
+        pitchEff(P9, 0) = Int(((pitchRating(P9, currPitcher%(P9), SS_P_BB) + pitchRating(P9, currPitcher%(P9), SS_P_H)) / pitchRating(P9, currPitcher%(P9), SS_P_G)) + .5)
         pitchEff(P9, 1) = 3
 
         If gamePitcher%(P9) > 1 Then pitchEff(P9, 1) = 0
@@ -1815,12 +1815,12 @@ Sub PitchingRotations (computerRotations%, P9)
 
         Locate , 25
         If pitchers$(P9, I + 7) <> "XXX" Then
-            Print pitchers$(P9, I + 7); Tab(43); pitchRating(P9, I + 7, 5);
+            Print pitchers$(P9, I + 7); Tab(43); pitchRating(P9, I + 7, SS_P_GS);
         End If
 
         Locate , 50
         If pitchers$(P9, I + 14) <> "XXX" Then
-            Print pitchers$(P9, I + 14); Tab(68); pitchRating(P9, I + 14, 5)
+            Print pitchers$(P9, I + 14); Tab(68); pitchRating(P9, I + 14, SS_P_GS)
         End If
 
     Next
@@ -1961,20 +1961,20 @@ Sub PitchingRotations (computerRotations%, P9)
         If MG%(P9, 1) = 5 Then gamesStarted% = 32
 
         For I = 1 To MG%(P9, 1)
-            MG%(P9, I + 12) = Int(pitchRating(P9, MG%(P9, I + 2), 5) * 100 / gamesStarted% + .5)
+            MG%(P9, I + 12) = Int(pitchRating(P9, MG%(P9, I + 2), SS_P_GS) * 100 / gamesStarted% + .5)
         Next
 
         SS% = 0
 
         For I = 21 To 36
             If MG%(P9, I) >= 0 And MG%(P9, I) <= 21 Then
-                SS% = SS% + pitchRating(P9, MG%(P9, I), 5)
+                SS% = SS% + pitchRating(P9, MG%(P9, I), SS_P_GS)
             End If
         Next
 
         For I = 21 To 36
             If MG%(P9, I) >= 0 And MG%(P9, I) <= 21 Then
-                MG%(P9, I + 20) = Int(pitchRating(P9, MG%(P9, I), 5) * 100 / SS% + .5)
+                MG%(P9, I + 20) = Int(pitchRating(P9, MG%(P9, I), SS_P_GS) * 100 / SS% + .5)
             End If
         Next
 
@@ -2654,9 +2654,9 @@ Sub PrintPitcherInfo (idx%)
 
             Locate , 16: Print handed$(pitchRating(idx%, I, 0) + 2);
             '                          IP  H   G   GS DR BB  SO
-            Locate , 17: Print Using " ### ### ### ## ## ### ###"; pitchRating(idx%, I, 6); pitchRating(idx%, I, 7); pitchRating(idx%, I, 4); pitchRating(idx%, I, 5); pitchRating(idx%, I, 35); pitchRating(idx%, I, 8); pitchRating(idx%, I, 9);
+            Locate , 17: Print Using " ### ### ### ## ## ### ###"; pitchRating(idx%, I, 6); pitchRating(idx%, I, SS_P_H); pitchRating(idx%, I, SS_P_G); pitchRating(idx%, I, SS_P_GS); pitchRating(idx%, I, 35); pitchRating(idx%, I, SS_P_BB); pitchRating(idx%, I, SS_P_K);
             '                           W                                                       L  ERA
-            Locate , 43: Print Using "  ##"; pitchRating(idx%, I, 1);: Print "-";: Print Using "## ##.##"; pitchRating(idx%, I, 2); pitchRating(idx%, I, 10) / 100
+            Locate , 43: Print Using "  ##"; pitchRating(idx%, I, SS_P_W);: Print "-";: Print Using "## ##.##"; pitchRating(idx%, I, SS_P_L); pitchRating(idx%, I, 10) / 100
         End If
 
     Next I
@@ -2730,7 +2730,7 @@ Sub PitchingStarter (idx%)
     gamePitcher%(idx%) = 1
     pitchRating(idx%, I1, 15) = gamePitcher%(idx%)
 
-    pitchEff(idx%, 0) = Int(((pitchRating(idx%, currPitcher%(idx%), 8) + pitchRating(idx%, currPitcher%(idx%), 7)) / pitchRating(idx%, currPitcher%(idx%), 4)) + .5)
+    pitchEff(idx%, 0) = Int(((pitchRating(idx%, currPitcher%(idx%), SS_P_BB) + pitchRating(idx%, currPitcher%(idx%), SS_P_H)) / pitchRating(idx%, currPitcher%(idx%), SS_P_G)) + .5)
     pitchEff(idx%, 1) = 3
 
     If gamePitcher%(idx%) > 1 Then pitchEff(idx%, 1) = 0

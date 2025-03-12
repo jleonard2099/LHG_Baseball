@@ -663,7 +663,7 @@ LStart: '
                             If INNING% > 4 And INNING% < 7 And A1 < -3 Then Goto LPhForPitcher
                             If INNING% > 6 And A1 < 0 Or A1 = 0 And INNING% > 6 And INNING% < 9 And baseRunners% > BASE_1 Then Goto LPhForPitcher
                             If A1 = 0 And INNING% >= 9 And baseRunners% > BASE_EMPTY Or A1 = 0 And INNING% >= 9 And nbrOuts(0) = 0 Then Goto LPhForPitcher
-                            If pitchRating(P, currPitcher%(P), 6) / pitchRating(P, currPitcher%(P), 4) <= 2 And statPitcherGame%(P, currPitcher%(P), 0) >= 6 Then Goto LPhForPitcher
+                            If pitchRating(P, currPitcher%(P), 6) / pitchRating(P, currPitcher%(P), SS_P_G) <= 2 And statPitcherGame%(P, currPitcher%(P), 0) >= 6 Then Goto LPhForPitcher
 
                             Exit For
 
@@ -3369,7 +3369,7 @@ LStart: '
             If pitchRating(D, currPitcher%(D), 6) = 0 Then
                 BR = 0
             Else
-                BR = pitchRating(D, currPitcher%(D), 9) / pitchRating(D, currPitcher%(D), 6)
+                BR = pitchRating(D, currPitcher%(D), SS_P_K) / pitchRating(D, currPitcher%(D), 6)
             End If
 
             If BR <= 4 Then PR = 5
@@ -4567,11 +4567,11 @@ LStart: '
 
             Else
 
-                If gameScore(P, 0) = 0 And pitchRating(D, currPitcher%(D), 5) > 0 And RN <= Int(pitchRating(D, currPitcher%(D), 16) / pitchRating(D, currPitcher%(D), 5) * 100 + .5) + 10 Then 18725
-                If pitchRating(D, currPitcher%(D), 5) > 0 And RN <= Int(pitchRating(D, currPitcher%(D), 16) / pitchRating(D, currPitcher%(D), 5) * 100 + .5) Then 18725
+                If gameScore(P, 0) = 0 And pitchRating(D, currPitcher%(D), 5) > 0 And RN <= Int(pitchRating(D, currPitcher%(D), 16) / pitchRating(D, currPitcher%(D), SS_P_GS) * 100 + .5) + 10 Then 18725
+                If pitchRating(D, currPitcher%(D), 5) > 0 And RN <= Int(pitchRating(D, currPitcher%(D), 16) / pitchRating(D, currPitcher%(D), SS_P_GS) * 100 + .5) Then 18725
                 Call d100(RN0)
-                If pitchEraOpt > 0 And INNING% > 7 And gameScore(D, 0) > gameScore(P, 0) And pitchRating(D, currPitcher%(D), 1) > 0 And gamePitcher%(D) = 1 And Int(pitchRating(D, currPitcher%(D), 16) / pitchRating(D, currPitcher%(D), 1) * 100 + .5) <= 100 And RN0 <= Int(pitchRating(D, currPitcher%(D), 16) / pitchRating(D, currPitcher%(D), 1) * 100 + .5) Then 18725
-                If pitchEraOpt > 0 And INNING% > 7 And (gameScore(D, 0) >= gameScore(P, 0) Or gameScore(P, 0) - gameScore(D, 0) <= 2) And pitchRating(D, currPitcher%(D), 1) > 0 And gamePitcher%(D) = 1 And Int(pitchRating(D, currPitcher%(D), 16) / pitchRating(D, currPitcher%(D), 1) * 100 + .5) >= 100 Then 18725
+                If pitchEraOpt > 0 And INNING% > 7 And gameScore(D, 0) > gameScore(P, 0) And pitchRating(D, currPitcher%(D), SS_P_W) > 0 And gamePitcher%(D) = 1 And Int(pitchRating(D, currPitcher%(D), 16) / pitchRating(D, currPitcher%(D), SS_P_W) * 100 + .5) <= 100 And RN0 <= Int(pitchRating(D, currPitcher%(D), 16) / pitchRating(D, currPitcher%(D), SS_P_W) * 100 + .5) Then 18725
+                If pitchEraOpt > 0 And INNING% > 7 And (gameScore(D, 0) >= gameScore(P, 0) Or gameScore(P, 0) - gameScore(D, 0) <= 2) And pitchRating(D, currPitcher%(D), SS_P_W) > 0 And gamePitcher%(D) = 1 And Int(pitchRating(D, currPitcher%(D), 16) / pitchRating(D, currPitcher%(D), SS_P_W) * 100 + .5) >= 100 Then 18725
                 If pitchEraOpt >= 8 Then 18725
 
                 GK%(D) = 1
@@ -4999,7 +4999,7 @@ LStart: '
         J% = 0
         GP% = 0
 
-        If (pitchEraOpt > 1 And INNING% < 4) Or (pitchEraOpt > 2 And INNING% < 7) Or (pitchEraOpt > 3 And INNING% < 9) Or (pitchEraOpt >= 8) Or (pitchEraOpt > 0 And INNING% > 7 And gameScore(P, 0) > gameScore(D, 0) And pitchRating(P, currPitcher%(P), 1) > 0 And gamePitcher%(P) = 1 And Int(pitchRating(P, currPitcher%(P), 16) / pitchRating(P, currPitcher%(P), 1) * 100 + .5) <= 100 And RN0 <= Int(pitchRating(P, currPitcher%(P), 16) / pitchRating(P, currPitcher%(P), 1) * 100 + .5)) Or (pitchEraOpt > 0 And INNING% > 7 And (gameScore(P, 0) >= gameScore(D, 0) Or gameScore(D, 0) - gameScore(P, 0) <= 2) And pitchRating(P, currPitcher%(P), 1) > 0 And gamePitcher%(P) = 1 And Int(pitchRating(P, currPitcher%(P), 16) / pitchRating(P, currPitcher%(P), 1) * 100 + .5) >= 100) Then skipLoop = 1
+        If (pitchEraOpt > 1 And INNING% < 4) Or (pitchEraOpt > 2 And INNING% < 7) Or (pitchEraOpt > 3 And INNING% < 9) Or (pitchEraOpt >= 8) Or (pitchEraOpt > 0 And INNING% > 7 And gameScore(P, 0) > gameScore(D, 0) And pitchRating(P, currPitcher%(P), SS_P_W) > 0 And gamePitcher%(P) = 1 And Int(pitchRating(P, currPitcher%(P), 16) / pitchRating(P, currPitcher%(P), SS_P_W) * 100 + .5) <= 100 And RN0 <= Int(pitchRating(P, currPitcher%(P), 16) / pitchRating(P, currPitcher%(P), SS_P_W) * 100 + .5)) Or (pitchEraOpt > 0 And INNING% > 7 And (gameScore(P, 0) >= gameScore(D, 0) Or gameScore(D, 0) - gameScore(P, 0) <= 2) And pitchRating(P, currPitcher%(P), SS_P_W) > 0 And gamePitcher%(P) = 1 And Int(pitchRating(P, currPitcher%(P), 16) / pitchRating(P, currPitcher%(P), SS_P_W) * 100 + .5) >= 100) Then skipLoop = 1
 
         If skipLoop = 0 Then
 
