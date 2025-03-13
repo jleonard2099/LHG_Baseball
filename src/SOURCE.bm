@@ -22,6 +22,8 @@ Sub SOURCE ()
     VV1(1) = 9 : VV1(1) = 9
     Call HITTINGLINES   '[bm]'
 
+    Call PITSTAM(0) : Call PITSTAM(1)
+
     If useVGA = 1 Then Call LOADSCREEN
 
 LStart: '
@@ -602,18 +604,18 @@ LStart: '
 
                         For I = 0 To 2
                             If INNING% >= MG%(P, 848 + I * 6) And A1 <= MG%(P, 849 + I * 6) * -1 And I6! <= MG%(P, 851 + I * 6) And I7! <= MG%(P, 852 + I * 6) And RN <= MG%(P, 853 + I * 6) And MOB% >= MG%(P, 850 + I * 6) Then
-                                GoTo LPhForPostion
+                                GoTo LPhForPosition
                             End If
                         Next
 
                     Else
 
                         If batRating(P, JM, SS_B_AB) <> 0 Then
-                            GoTo LPhForPostion
+                            GoTo LPhForPosition
                         Else
 
                             If Not (batRating(P, JM, SS_B_H) / batRating(P, JM, SS_B_AB) * 1000 > 233 Or batRating(P, JM, SS_B_HR) >= 15) Then
-                                If INNING% > 6 And A1 < -2 Or A1 <= 0 And INNING% >= 8 Or A1 = 0 And INNING% >= 9 Then Goto LPhForPostion
+                                If INNING% > 6 And A1 < -2 Or A1 <= 0 And INNING% >= 8 Or A1 = 0 And INNING% >= 9 Then Goto LPhForPosition
                             End If
 
                         End If
@@ -663,7 +665,7 @@ LStart: '
                             If INNING% > 4 And INNING% < 7 And A1 < -3 Then Goto LPhForPitcher
                             If INNING% > 6 And A1 < 0 Or A1 = 0 And INNING% > 6 And INNING% < 9 And baseRunners% > BASE_1 Then Goto LPhForPitcher
                             If A1 = 0 And INNING% >= 9 And baseRunners% > BASE_EMPTY Or A1 = 0 And INNING% >= 9 And nbrOuts(0) = 0 Then Goto LPhForPitcher
-                            If pitchRating(P, currPitcher%(P), 6) / pitchRating(P, currPitcher%(P), SS_P_G) <= 2 And statPitcherGame%(P, currPitcher%(P), 0) >= 6 Then Goto LPhForPitcher
+                            If pitchRating(P, currPitcher%(P), 6) / pitchRating(P, currPitcher%(P), SS_P_G) <= 2 And statPitcherGame%(P, currPitcher%(P), LG_P_IP3) >= 6 Then Goto LPhForPitcher
 
                             Exit For
 
@@ -1300,7 +1302,7 @@ LStart: '
     infPosFactor = 20
     End If
 
-    If INNING% > 5 And stamina%(D, 0) <= statPitcherGame%(D, currPitcher%(D), 4) + statPitcherGame%(D, currPitcher%(D), 1) And stamina%(D, 1) <= statPitcherGame%(D, currPitcher%(D), 2) Then
+    If INNING% > 5 And stamina%(D, 0) <= statPitcherGame%(D, currPitcher%(D), LG_P_BB) + statPitcherGame%(D, currPitcher%(D), LG_P_H) And stamina%(D, LG_P_H) <= statPitcherGame%(D, currPitcher%(D), LG_P_R) Then
         I4 = I4 + 40
     End If
 
@@ -1328,8 +1330,8 @@ LStart: '
             ' *** ground ball for out ***
             Call d100(dice1000%)
 
-            E2% = batRating(P, playerNum%(P, currBatter!(P)), 18) + pitchRating(D, currPitcher%(D), 12) - 52
-            E3% = 23 + pitchRating(D, currPitcher%(D), 12)
+            E2% = batRating(P, playerNum%(P, currBatter!(P)), SS_B_GndPct) + pitchRating(D, currPitcher%(D), SS_P_GndPct)- 52
+            E3% = 23 + pitchRating(D, currPitcher%(D), SS_B_GndPct)
             E4% = 0 '[bm] 0 = groundball, 1 = flyball'
 
             If dice1000% > E2% And fldPos%(P, currBatter!(P)) <> 1 Then E4% = 1
@@ -1339,7 +1341,7 @@ LStart: '
                 ", GBRating = "; E2%; " or "; E3%; ", isGB? "; dice1000% <= strikeoutRating
 
             DumpAll
-            Print #11, "1244 (groundball) - batRating = "; batRating(P, playerNum%(P, currBatter!(P)), 18); ", pitRating = "; pitchRating(D, currPitcher%(D), 12)
+            Print #11, "1244 (groundball) - batRating = "; batRating(P, playerNum%(P, currBatter!(P)), SS_B_GndPct); ", pitRating = "; pitchRating(D, currPitcher%(D), SS_B_GndPct)
             Print #11, "1244 (groundball) - E2% = "; E2%; ", E3% = "; E3%; ", E4% = "; E4%; ", fldPos% = "; fldPos%(P, currBatter!(P)); ", dice1000% = "; dice1000%
             
             If E4% = 1 Then
@@ -1933,7 +1935,7 @@ LStart: '
                 nbrOuts(0) = nbrOuts(0) - 1
                 nbrOuts(1) = nbrOuts(1) - 1
                 I5 = currPitcher%(D)
-                statPitcherGame%(D, I5, 0) = statPitcherGame%(D, I5, 0) - 1
+                statPitcherGame%(D, I5, LG_P_IP3) = statPitcherGame%(D, I5, LG_P_IP3) - 1
                 statPitcherLeague%(D, I5, 0) = statPitcherLeague%(D, I5, 0) - 1
                 statBatterGame%(D, playerX%(D, POS_C), 16) = statBatterGame%(D, playerX%(D, POS_C), 16) - 1
                 statBatterLeague%(D, playerX%(D, POS_C), 16) = statBatterLeague%(D, playerX%(D, POS_C), 16) - 1
@@ -3366,10 +3368,10 @@ LStart: '
             'FLKSO
             Call d100(RN)
 
-            If pitchRating(D, currPitcher%(D), 6) = 0 Then
+            If pitchRating(D, currPitcher%(D), SS_P_IP)= 0 Then
                 BR = 0
             Else
-                BR = pitchRating(D, currPitcher%(D), SS_P_K) / pitchRating(D, currPitcher%(D), 6)
+                BR = pitchRating(D, currPitcher%(D), SS_P_K) / pitchRating(D, currPitcher%(D), SS_P_IP)
             End If
 
             If BR <= 4 Then PR = 5
@@ -3615,8 +3617,8 @@ LStart: '
 
     Call STEAL3RD(TGTBASE%, AA, Q0, runnerHeld, D) ' *** SUCCESS OF 3B STEAL ***
 
-    If pitchRating(D, currPitcher%(D), 0) = 1 And TGTBASE% = 2 Then CHANCE% = CHANCE% + 25: Q0 = Q0 + 10
-    If pitchRating(D, currPitcher%(D), 0) = -1 And TGTBASE% = 2 Then CHANCE% = CHANCE% - 50: Q0 = Q0 - 30
+    If pitchRating(D, currPitcher%(D), SS_P_Throws)= 1 And TGTBASE% = 2 Then CHANCE% = CHANCE% + 25: Q0 = Q0 + 10
+    If pitchRating(D, currPitcher%(D), SS_P_Throws)= -1 And TGTBASE% = 2 Then CHANCE% = CHANCE% - 50: Q0 = Q0 - 30
     If P2 = 2 Then
 
         CHANCE% = 100
@@ -4051,7 +4053,7 @@ LStart: '
     'This I has to do with the above key loop
     Select Case I + 1
 
-        Case 1
+        Case 1  'Resume Play'
           LChangeNobody: '
             Print #11, "---"
             Print #11, "LChangeNobody possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
@@ -4072,7 +4074,7 @@ LStart: '
 
             GoTo LNextBatter
 
-        Case 2
+        Case 2  'Relief Pitcher'
           LChangePitcher: '
             Print #11, "---"
             Print #11, "LChangePitcher possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
@@ -4275,7 +4277,7 @@ LStart: '
 
             GoTo LChangeBatterFielder
 
-        Case 3
+        Case 3  'Change Batter/Fielder'
 
             '--- START OF A SHORT SUB
             '-- ChangeBatterFielder
@@ -4563,16 +4565,16 @@ LStart: '
 
             If gamePitcher%(D) <> 1 Then
                 Call d100(RN)
-                If RN <= 80 And pitchRating(D, currPitcher%(D), 3) < 15 Then GK%(D) = 1
+                If RN <= 80 And pitchRating(D, currPitcher%(D), SS_P_Sv) < 15 Then GK%(D) = 1
 
             Else
 
-                If gameScore(P, 0) = 0 And pitchRating(D, currPitcher%(D), 5) > 0 And RN <= Int(pitchRating(D, currPitcher%(D), 16) / pitchRating(D, currPitcher%(D), SS_P_GS) * 100 + .5) + 10 Then 18725
-                If pitchRating(D, currPitcher%(D), 5) > 0 And RN <= Int(pitchRating(D, currPitcher%(D), 16) / pitchRating(D, currPitcher%(D), SS_P_GS) * 100 + .5) Then 18725
+                If gameScore(P, 0) = 0 And pitchRating(D, currPitcher%(D), SS_P_GS)> 0 And RN <= Int(pitchRating(D, currPitcher%(D), SS_P_CG)/ pitchRating(D, currPitcher%(D), SS_P_GS) * 100 + .5) + 10 Then Goto LReliever1
+                If pitchRating(D, currPitcher%(D), SS_P_GS)> 0 And RN <= Int(pitchRating(D, currPitcher%(D), SS_P_CG)/ pitchRating(D, currPitcher%(D), SS_P_GS) * 100 + .5) Then Goto LReliever1
                 Call d100(RN0)
-                If pitchEraOpt > 0 And INNING% > 7 And gameScore(D, 0) > gameScore(P, 0) And pitchRating(D, currPitcher%(D), SS_P_W) > 0 And gamePitcher%(D) = 1 And Int(pitchRating(D, currPitcher%(D), 16) / pitchRating(D, currPitcher%(D), SS_P_W) * 100 + .5) <= 100 And RN0 <= Int(pitchRating(D, currPitcher%(D), 16) / pitchRating(D, currPitcher%(D), SS_P_W) * 100 + .5) Then 18725
-                If pitchEraOpt > 0 And INNING% > 7 And (gameScore(D, 0) >= gameScore(P, 0) Or gameScore(P, 0) - gameScore(D, 0) <= 2) And pitchRating(D, currPitcher%(D), SS_P_W) > 0 And gamePitcher%(D) = 1 And Int(pitchRating(D, currPitcher%(D), 16) / pitchRating(D, currPitcher%(D), SS_P_W) * 100 + .5) >= 100 Then 18725
-                If pitchEraOpt >= 8 Then 18725
+                If pitchEraOpt > 0 And INNING% > 7 And gameScore(D, 0) > gameScore(P, 0) And pitchRating(D, currPitcher%(D), SS_P_W) > 0 And gamePitcher%(D) = 1 And Int(pitchRating(D, currPitcher%(D), SS_P_CG) / pitchRating(D, currPitcher%(D), SS_P_W) * 100 + .5) <= 100 And RN0 <= Int(pitchRating(D, currPitcher%(D), SS_P_CG)/ pitchRating(D, currPitcher%(D), SS_P_W) * 100 + .5) Then Goto LReliever1
+                If pitchEraOpt > 0 And INNING% > 7 And (gameScore(D, 0) >= gameScore(P, 0) Or gameScore(P, 0) - gameScore(D, 0) <= 2) And pitchRating(D, currPitcher%(D), SS_P_W) > 0 And gamePitcher%(D) = 1 And Int(pitchRating(D, currPitcher%(D), SS_P_CG)/ pitchRating(D, currPitcher%(D), SS_P_W) * 100 + .5) >= 100 Then Goto LReliever1
+                If pitchEraOpt >= 8 Then Goto LReliever1
 
                 GK%(D) = 1
 
@@ -4582,10 +4584,10 @@ LStart: '
 
     End If
 
-  18725 '
+  LReliever1: '
     DumpAll
     Print #11, "---"
-    Print #11, "18725 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
+    Print #11, "LReliever1 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
     Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
     Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
     If GK%(D) = 1 Then
@@ -4756,9 +4758,9 @@ LStart: '
                         I6! = 0
                     Else
                         I6! = Int((batRating(P, playerNum%(P, currBatter!(P)), 6) + batRating(P, playerNum%(P, currBatter!(P)), 7) + batRating(P, playerNum%(P, currBatter!(P)), 8) * 2 + batRating(P, playerNum%(P, currBatter!(P)), 9) * 3) / batRating(P, playerNum%(P, currBatter!(P)), 4) * 1000 + .5)
-                        If I6! <= MG%(D, 757) And INNING% >= MG%(D, 758) And RN <= MG%(D, 759) Then D2 = 8: GoTo 18850
-                        If I6! <= MG%(D, 760) And INNING% >= MG%(D, 761) And RN <= MG%(D, 762) Then D2 = 8: GoTo 18850
-                        If I6! <= MG%(D, 763) And INNING% >= MG%(D, 764) And RN <= MG%(D, 765) Then D2 = 8: GoTo 18850
+                        If I6! <= MG%(D, 757) And INNING% >= MG%(D, 758) And RN <= MG%(D, 759) Then D2 = 8: GoTo LReliever2
+                        If I6! <= MG%(D, 760) And INNING% >= MG%(D, 761) And RN <= MG%(D, 762) Then D2 = 8: GoTo LReliever2
+                        If I6! <= MG%(D, 763) And INNING% >= MG%(D, 764) And RN <= MG%(D, 765) Then D2 = 8: GoTo LReliever2
                     End If
 
                 End If
@@ -4823,13 +4825,14 @@ LStart: '
 
     End If
 
-  18850 '
+  LReliever2: '
     DumpAll
     Print #11, "---"
-    Print #11, "18850 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
+    Print #11, "LReliever2 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
     Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
     Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
-    If (stamina%(D, 0) <= statPitcherGame%(D, currPitcher%(D), 4) + statPitcherGame%(D, currPitcher%(D), 1) And stamina%(D, 1) <= statPitcherGame%(D, currPitcher%(D), 2)) Or playerX%(D, POS_P) = 99 Then
+    If ( stamina%(D, 0) <= statPitcherGame%(D, currPitcher%(D), LG_P_BB) + statPitcherGame%(D, currPitcher%(D), LG_P_H) _
+        And stamina%(D, LG_P_H) <= statPitcherGame%(D, currPitcher%(D), LG_P_R) ) Or playerX%(D, POS_P) = 99 Then
         Call RELIEVERS(PPH, pz)
         If useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
     End If
@@ -4840,10 +4843,10 @@ LStart: '
     '----- NOODLE -----
 
 
-  LPhForPostion: 'GET A PINCH HITTER FOR A POSITION PLAYER
+  LPhForPosition: 'GET A PINCH HITTER FOR A POSITION PLAYER
     DumpAll
     Print #11, "---"
-    Print #11, "LPhForPostion PH for POSITION player - possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
+    Print #11, "LPhForPosition PH for POSITION player - possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
     Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
     Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
     If MG%(P, 540) = 999 Then
@@ -4856,7 +4859,7 @@ LStart: '
                 If fldPos%(P, currBatter!(P)) = batRating(P, I, SS_B_Pos1) Or fldPos%(P, currBatter!(P)) = batRating(P, I, SS_B_Pos2) Or fldPos%(P, currBatter!(P)) = batRating(P, I, SS_B_Pos3) Or fldPos%(P, currBatter!(P)) = batRating(P, I, SS_B_Pos4) Then
 
                     I1 = 6
-                    If pitchRating(D, currPitcher%(D), 0) < 0 Then I1 = 1
+                    If pitchRating(D, currPitcher%(D), SS_P_Throws)< 0 Then I1 = 1
 
                     For I = I1 To I1 + 4
 
@@ -4884,7 +4887,7 @@ LStart: '
                             I9% = playerNum%(P, currBatter!(P))
                             Call REPLACEMENTS(I7%, I8%, I9%)
 
-                            GoTo 18938
+                            GoTo LPinchHitter
 
                         End If
 
@@ -4906,7 +4909,7 @@ LStart: '
 
                 '-- The next 3 IF statements execute identical code
 
-                If pitchRating(D, currPitcher%(D), 0) = 1 And batRating(P, I, SS_B_Bats) > 0 And batRating(P, I, SS_B_H) / batRating(P, I, SS_B_AB) * 1000 > batRating(P, JM, SS_B_H) / batRating(P, JM, SS_B_AB) * 1000 + 35 Then
+                If pitchRating(D, currPitcher%(D), SS_P_Throws)= 1 And batRating(P, I, SS_B_Bats) > 0 And batRating(P, I, SS_B_H) / batRating(P, I, SS_B_AB) * 1000 > batRating(P, JM, SS_B_H) / batRating(P, JM, SS_B_AB) * 1000 + 35 Then
 
                     PPH = 1
                     gameD0%(P) = gameD0%(P) + 1
@@ -4924,11 +4927,11 @@ LStart: '
                     I9% = playerNum%(P, currBatter!(P))
                     Call REPLACEMENTS(I7%, I8%, I9%)
 
-                    GoTo 18938
+                    GoTo LPinchHitter
 
                 End If
 
-                If pitchRating(D, currPitcher%(D), 0) = -1 And batRating(P, I, SS_B_Bats) < 0 And batRating(P, I, SS_B_H) / batRating(P, I, SS_B_AB) * 1000 > batRating(P, JM, SS_B_H) / batRating(P, JM, SS_B_AB) * 1000 + 45 Then
+                If pitchRating(D, currPitcher%(D), SS_P_Throws)= -1 And batRating(P, I, SS_B_Bats) < 0 And batRating(P, I, SS_B_H) / batRating(P, I, SS_B_AB) * 1000 > batRating(P, JM, SS_B_H) / batRating(P, JM, SS_B_AB) * 1000 + 45 Then
 
                     PPH = 1
                     gameD0%(P) = gameD0%(P) + 1
@@ -4946,7 +4949,7 @@ LStart: '
                     I9% = playerNum%(P, currBatter!(P))
                     Call REPLACEMENTS(I7%, I8%, I9%)
 
-                    GoTo 18938
+                    GoTo LPinchHitter
 
                 End If
 
@@ -4968,7 +4971,7 @@ LStart: '
                     I9% = playerNum%(P, currBatter!(P))
                     Call REPLACEMENTS(I7%, I8%, I9%)
 
-                    GoTo 18938
+                    GoTo LPinchHitter
 
                 End If
 
@@ -4987,7 +4990,7 @@ LStart: '
   LPhForPitcher: 'GET A PINCH HITTER FOR THE PITCHER
     DumpAll
     Print #11, "---"
-    Print #11, "18938 PH for PITCHER - possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
+    Print #11, "LPinchHitter PH for PITCHER - possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
     Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
     Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
 
@@ -5007,7 +5010,7 @@ LStart: '
 
                 If Not (batters$(P, Idx) = "XXX" Or batRating(P, Idx, 21) > 0 Or batRating(P, Idx, SS_B_AB) = 0) Then
 
-                    If batRating(P, Idx, SS_B_Bats) > 0 And pitchRating(D, currPitcher%(D), 0) = 1 Or batRating(P, Idx, SS_B_Bats) < 0 And pitchRating(D, currPitcher%(D), 0) = -1 Then
+                    If batRating(P, Idx, SS_B_Bats) > 0 And pitchRating(D, currPitcher%(D), 0) = 1 Or batRating(P, Idx, SS_B_Bats) < 0 And pitchRating(D, currPitcher%(D), SS_P_Throws)= -1 Then
                         PH%(J%, 0) = Int(batRating(P, Idx, SS_B_G) / 4 + .5)
                     Else
                         PH%(J%, 0) = batRating(P, Idx, SS_B_G)
@@ -5054,10 +5057,10 @@ LStart: '
 
             If fldPos%(P, currBatter!(P)) = 1 Or fldPos%(P, currBatter!(P)) = 10 Then playerX%(P, 1) = 99: playerX%(P, 0) = currBatter!(P): fldPos%(P, currBatter!(P)) = 10
 
-          18938 '
+          LPinchHitter: '
             DumpAll
             Print #11, "---"
-            Print #11, "18938 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
+            Print #11, "LPinchHitter possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
             Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
             Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
             P9 = P
@@ -5163,13 +5166,13 @@ LStart: '
             End If
 
             Call d100(RN)
-            If baseRunners% = BASE_1 And INNING% <= 7 And A1 <= MG%(P, 635) And A1 >= MG%(P, 636) * -1 And I7! <= MG%(P, 637) And I6! <= MG%(P, 638) And pitchRating(D, currPitcher%(D), 10) <= MG%(P, 639) And RN <= MG%(P, 640) Then 18970
-            If baseRunners% = BASE_2 And INNING% <= 7 And A1 <= MG%(P, 641) And A1 >= MG%(P, 642) * -1 And I7! <= MG%(P, 643) And I6! <= MG%(P, 644) And pitchRating(D, currPitcher%(D), 10) <= MG%(P, 645) And RN <= MG%(P, 646) Then 18970
-            If baseRunners% = BASE_1_2 And INNING% <= 7 And A1 <= MG%(P, 647) And A1 >= MG%(P, 648) * -1 And I7! <= MG%(P, 649) And I6! <= MG%(P, 650) And pitchRating(D, currPitcher%(D), 10) <= MG%(P, 651) And RN <= MG%(P, 652) Then 18970
+            If baseRunners% = BASE_1 And INNING% <= 7 And A1 <= MG%(P, 635) And A1 >= MG%(P, 636) * -1 And I7! <= MG%(P, 637) And I6! <= MG%(P, 638) And pitchRating(D, currPitcher%(D), SS_P_ERA100)<= MG%(P, 639) And RN <= MG%(P, 640) Then 18970
+            If baseRunners% = BASE_2 And INNING% <= 7 And A1 <= MG%(P, 641) And A1 >= MG%(P, 642) * -1 And I7! <= MG%(P, 643) And I6! <= MG%(P, 644) And pitchRating(D, currPitcher%(D), SS_P_ERA100)<= MG%(P, 645) And RN <= MG%(P, 646) Then 18970
+            If baseRunners% = BASE_1_2 And INNING% <= 7 And A1 <= MG%(P, 647) And A1 >= MG%(P, 648) * -1 And I7! <= MG%(P, 649) And I6! <= MG%(P, 650) And pitchRating(D, currPitcher%(D), SS_P_ERA100)<= MG%(P, 651) And RN <= MG%(P, 652) Then 18970
 
-            If baseRunners% = BASE_1 And INNING% > 7 And A1 <= MG%(P, 653) And A1 >= MG%(P, 654) * -1 And I7! <= MG%(P, 655) And I6! <= MG%(P, 656) And pitchRating(D, currPitcher%(D), 10) <= MG%(P, 657) And RN <= MG%(P, 658) Then 18970
-            If baseRunners% = BASE_2 And INNING% > 7 And A1 <= MG%(P, 659) And A1 >= MG%(P, 660) * -1 And I7! <= MG%(P, 661) And I6! <= MG%(P, 662) And pitchRating(D, currPitcher%(D), 10) <= MG%(P, 663) And RN <= MG%(P, 664) Then 18970
-            If baseRunners% = BASE_1_2 And INNING% > 7 And A1 <= MG%(P, 665) And A1 >= MG%(P, 666) * -1 And I7! <= MG%(P, 667) And I6! <= MG%(P, 668) And pitchRating(D, currPitcher%(D), 10) <= MG%(P, 669) And RN <= MG%(P, 670) Then 18970
+            If baseRunners% = BASE_1 And INNING% > 7 And A1 <= MG%(P, 653) And A1 >= MG%(P, 654) * -1 And I7! <= MG%(P, 655) And I6! <= MG%(P, 656) And pitchRating(D, currPitcher%(D), SS_P_ERA100)<= MG%(P, 657) And RN <= MG%(P, 658) Then 18970
+            If baseRunners% = BASE_2 And INNING% > 7 And A1 <= MG%(P, 659) And A1 >= MG%(P, 660) * -1 And I7! <= MG%(P, 661) And I6! <= MG%(P, 662) And pitchRating(D, currPitcher%(D), SS_P_ERA100)<= MG%(P, 663) And RN <= MG%(P, 664) Then 18970
+            If baseRunners% = BASE_1_2 And INNING% > 7 And A1 <= MG%(P, 665) And A1 >= MG%(P, 666) * -1 And I7! <= MG%(P, 667) And I6! <= MG%(P, 668) And pitchRating(D, currPitcher%(D), SS_P_ERA100)<= MG%(P, 669) And RN <= MG%(P, 670) Then 18970
 
         End If
 

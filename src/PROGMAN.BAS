@@ -4051,7 +4051,7 @@ End Sub
 'manager profile, it prompts for a name.
 Sub ExportManagerProfile (mgrNbr)
 
-    Shared progMG%()
+    Shared progMG%(), progR$()
 
     teamNbr = 0
     Call ChooseTeam(YN$, NTMS, mgrNbr, team$)
@@ -4619,7 +4619,7 @@ End Sub
 'to load the corresponding manager profile.
 Sub GetManagerProfile (targetTeam$, yearNumber$, mgrNbr)
 
-    Shared progMG%()
+    Shared progMG%(), progR$()
 
     teamNbr = 0
     Call ChooseTeam(yearNumber$, NTMS, mgrNbr, targetTeam$)

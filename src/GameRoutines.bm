@@ -1124,7 +1124,7 @@ Sub CHECKSAVE (D, P, baseRunners%)
         If baseRunners% = BASE_1_2 Or baseRunners% = BASE_1_3 Or baseRunners% = BASE_2_3 Then RI = 2
         If baseRunners% = BASE_FULL Then RI = 3
         statPitcherLeague%(D, currPitcher%(D), 17) = statPitcherLeague%(D, currPitcher%(D), 17) + RI
-        statPitcherGame%(D, currPitcher%(D), 17) = statPitcherGame%(D, currPitcher%(D), 17) + RI
+        statPitcherGame%(D, currPitcher%(D), LG_P_RInh) = statPitcherGame%(D, currPitcher%(D), LG_P_RInh) + RI
     End If
 
 End Sub
@@ -1762,15 +1762,15 @@ Sub DisplayBallField (nbrBalls, P, nbrStrikes, D)
     Locate 17, 78: Print Chr$(219);
 
     'Pitcher Name
-    Locate 17, 55: Print "["; handed$(pitchRating(D, currPitcher%(D), 0) + 2); "] "; Left$(pitchers$(D, currPitcher%(D)), 10)
+    Locate 17, 55: Print "["; handed$(pitchRating(D, currPitcher%(D), SS_P_Throws)+ 2); "] "; Left$(pitchers$(D, currPitcher%(D)), SS_P_ERA100)
 
     'Pitcher Stats
     Color 15, 2
-    Locate 18, 59: Print Using "H:#"; pitchRating(D, currPitcher%(D), 18)
-    If pitchRating(D, currPitcher%(D), 17) = 1000 Then
+    Locate 18, 59: Print Using "H:#"; pitchRating(D, currPitcher%(D), SS_P_HoldRunner)
+    If pitchRating(D, currPitcher%(D), SS_P_FldPct)= 1000 Then
         fldPct$ = "1.000"
     Else
-        fldPct$ = "." + FUsing$(Str$(pitchRating(D, currPitcher%(D), 17)), "###", 1)
+        fldPct$ = "." + FUsing$(Str$(pitchRating(D, currPitcher%(D), SS_P_FldPct)), "###", 1)
     End If
     Locate 19, 59: Print "FA:" + fldPct$
 
@@ -1816,7 +1816,7 @@ Sub FLDERR (F%, currFielder%, D, fldPct, SB%, S2%, P)
         If SB% = 1 Then
             fldPct = 995
         Else
-            fldPct = pitchRating(D, currPitcher%(D), 17) + 30
+            fldPct = pitchRating(D, currPitcher%(D), SS_P_FldPct)+ 30
         End If
     Else
         Call FLDAVG(D, currFielder%, fldPct)
@@ -2417,7 +2417,7 @@ Sub MAINSCREEN (D, P, nbrBalls, nbrStrikes, MO)
     Locate 10, 1
 
     Color teamRat_GAME(D, 11), teamRat_GAME(D, 12)
-    Print pitchers$(D, currPitcher%(D)); " "; handed$(pitchRating(D, currPitcher%(D), 0) + 2)
+    Print pitchers$(D, currPitcher%(D)); " "; handed$(pitchRating(D, currPitcher%(D), SS_P_Throws)+ 2)
 
     Color 15, 0
 
@@ -2432,7 +2432,7 @@ Sub MAINSCREEN (D, P, nbrBalls, nbrStrikes, MO)
     Color 15, 0
 
     Print Using "##"; pitchRating(D, currPitcher%(D), SS_P_W);: Print "-";: Print Using "##"; pitchRating(D, currPitcher%(D), SS_P_L);
-    Print " ";: Print Using "##.##"; pitchRating(D, currPitcher%(D), 10) / 100
+    Print " ";: Print Using "##.##"; pitchRating(D, currPitcher%(D), SS_P_ERA100)/ 100
 
     Color 2, 0
 
@@ -2440,14 +2440,14 @@ Sub MAINSCREEN (D, P, nbrBalls, nbrStrikes, MO)
 
     Color 15, 0
 
-    If statPitcherGame%(D, currPitcher%(D), 0) = 0 Then
+    If statPitcherGame%(D, currPitcher%(D), LG_P_IP3) = 0 Then
         Print " 0.0";
     Else
-        Print Using "##"; Int(statPitcherGame%(D, currPitcher%(D), 0) / 3);
-        Print ".";: Print Using "#"; statPitcherGame%(D, currPitcher%(D), 0) - (Int(statPitcherGame%(D, currPitcher%(D), 0) / 3) * 3);
+        Print Using "##"; Int(statPitcherGame%(D, currPitcher%(D), LG_P_IP3) / 3);
+        Print ".";: Print Using "#"; statPitcherGame%(D, currPitcher%(D), LG_P_IP3) - (Int(statPitcherGame%(D, currPitcher%(D), LG_P_IP3) / 3) * 3);
     End If
 
-    Print Using " ##  ## ##"; statPitcherGame%(D, currPitcher%(D), 1); statPitcherGame%(D, currPitcher%(D), 4); statPitcherGame%(D, currPitcher%(D), 5)
+    Print Using " ##  ## ##"; statPitcherGame%(D, currPitcher%(D), LG_P_H); statPitcherGame%(D, currPitcher%(D), LG_P_BB); statPitcherGame%(D, currPitcher%(D), LG_P_K)
     Locate 5, 1
     J = playerNum%(P, currBatter!(P))
     Color teamRat_GAME(P, 11), teamRat_GAME(P, 12)
@@ -2459,9 +2459,9 @@ Sub MAINSCREEN (D, P, nbrBalls, nbrStrikes, MO)
     Else
         X$ = batters$(P, J)
         Print X$; " "; handed$(batRating(P, J, SS_B_Bats) + 2);
-        If batRating(P, J, SS_B_Bats) < 0 Or batRating(P, J, SS_B_Bats) = 0 And pitchRating(D, currPitcher%(D), 0) > 0 Then Locate 21, 64
+        If batRating(P, J, SS_B_Bats) < 0 Or batRating(P, J, SS_B_Bats) = 0 And pitchRating(D, currPitcher%(D), SS_P_Throws)> 0 Then Locate 21, 64
         X = Len(X$)
-        If batRating(P, J, SS_B_Bats) > 0 Or batRating(P, J, SS_B_Bats) = 0 And pitchRating(D, currPitcher%(D), 0) < 0 Then Locate 21, 51 + 10 - X
+        If batRating(P, J, SS_B_Bats) > 0 Or batRating(P, J, SS_B_Bats) = 0 And pitchRating(D, currPitcher%(D), SS_P_Throws)< 0 Then Locate 21, 51 + 10 - X
         Print X$
     End If
 
@@ -3117,7 +3117,8 @@ Sub PITSTAM (P9)
     If pitchRating(P9, currPitcher%(P9), SS_P_G) = 0 Then
         stamina%(P9, 0) = 3
     Else
-        stamina%(P9, 0) = Int(((pitchRating(P9, currPitcher%(P9), SS_P_BB) + pitchRating(P9, currPitcher%(P9), SS_P_H)) / pitchRating(P9, currPitcher%(P9), SS_P_G)) + .5)
+        stamina%(P9, 0) = Int( ( (pitchRating(P9, currPitcher%(P9), SS_P_BB) + pitchRating(P9, currPitcher%(P9), SS_P_H) ) / _
+            pitchRating(P9, currPitcher%(P9), SS_P_G) ) + .5)
     End If
 
     If stamina%(P9, 0) < 3 Then stamina%(P9, 0) = 3
@@ -3211,13 +3212,13 @@ Sub PITSTRAT (PPH, pz)
                     If INNING% = 8 And MG%(D, 588) = 8 And MG%(D, 589) = 1 And A1 >= 0 And SN% = 584 Then 8113
                     If INNING% >= 9 And A1 >= 0 And SN% = 584 Then 8113
 
-                    If stamina%(D, 0) <= statPitcherGame%(D, currPitcher%(D), 4) + statPitcherGame%(D, currPitcher%(D), 1) And stamina%(D, 1) <= statPitcherGame%(D, currPitcher%(D), 2) And INNING% = 8 And MG%(D, 588) = 8 And MG%(D, 589) = 0 And A1 > 0 And SN% = 585 Then 8114
-                    If stamina%(D, 0) <= statPitcherGame%(D, currPitcher%(D), 4) + statPitcherGame%(D, currPitcher%(D), 1) And stamina%(D, 1) <= statPitcherGame%(D, currPitcher%(D), 2) And INNING% = 8 And MG%(D, 588) = 8 And MG%(D, 589) = 1 And A1 > 0 And SN% = 585 Then 8113
-                    If stamina%(D, 0) <= statPitcherGame%(D, currPitcher%(D), 4) + statPitcherGame%(D, currPitcher%(D), 1) And stamina%(D, 1) <= statPitcherGame%(D, currPitcher%(D), 2) And INNING% >= 9 And A1 > 0 And SN% = 585 Then 8113
+                    If stamina%(D, 0) <= statPitcherGame%(D, currPitcher%(D), LG_P_BB) + statPitcherGame%(D, currPitcher%(D), LG_P_H) And stamina%(D, LG_P_H) <= statPitcherGame%(D, currPitcher%(D), LG_P_R) And INNING% = 8 And MG%(D, 588) = 8 And MG%(D, 589) = 0 And A1 > 0 And SN% = 585 Then 8114
+                    If stamina%(D, 0) <= statPitcherGame%(D, currPitcher%(D), LG_P_BB) + statPitcherGame%(D, currPitcher%(D), LG_P_H) And stamina%(D, LG_P_H) <= statPitcherGame%(D, currPitcher%(D), LG_P_R) And INNING% = 8 And MG%(D, 588) = 8 And MG%(D, 589) = 1 And A1 > 0 And SN% = 585 Then 8113
+                    If stamina%(D, 0) <= statPitcherGame%(D, currPitcher%(D), LG_P_BB) + statPitcherGame%(D, currPitcher%(D), LG_P_H) And stamina%(D, LG_P_H) <= statPitcherGame%(D, currPitcher%(D), LG_P_R) And INNING% >= 9 And A1 > 0 And SN% = 585 Then 8113
 
-                    If stamina%(D, 0) <= statPitcherGame%(D, currPitcher%(D), 4) + statPitcherGame%(D, currPitcher%(D), 1) And stamina%(D, 1) <= statPitcherGame%(D, currPitcher%(D), 2) And INNING% = 8 And MG%(D, 588) = 8 And MG%(D, 589) = 0 And A1 >= 0 And SN% = 586 Then 8114
-                    If stamina%(D, 0) <= statPitcherGame%(D, currPitcher%(D), 4) + statPitcherGame%(D, currPitcher%(D), 1) And stamina%(D, 1) <= statPitcherGame%(D, currPitcher%(D), 2) And INNING% = 8 And MG%(D, 588) = 8 And MG%(D, 589) = 1 And A1 >= 0 And SN% = 586 Then 8113
-                    If stamina%(D, 0) <= statPitcherGame%(D, currPitcher%(D), 4) + statPitcherGame%(D, currPitcher%(D), 1) And stamina%(D, 1) <= statPitcherGame%(D, currPitcher%(D), 2) And INNING% >= 9 And A1 >= 0 And SN% = 586 Then 8113
+                    If stamina%(D, 0) <= statPitcherGame%(D, currPitcher%(D), LG_P_BB) + statPitcherGame%(D, currPitcher%(D), LG_P_H) And stamina%(D, LG_P_H) <= statPitcherGame%(D, currPitcher%(D), LG_P_R) And INNING% = 8 And MG%(D, 588) = 8 And MG%(D, 589) = 0 And A1 >= 0 And SN% = 586 Then 8114
+                    If stamina%(D, 0) <= statPitcherGame%(D, currPitcher%(D), LG_P_BB) + statPitcherGame%(D, currPitcher%(D), LG_P_H) And stamina%(D, LG_P_H) <= statPitcherGame%(D, currPitcher%(D), LG_P_R) And INNING% = 8 And MG%(D, 588) = 8 And MG%(D, 589) = 1 And A1 >= 0 And SN% = 586 Then 8113
+                    If stamina%(D, 0) <= statPitcherGame%(D, currPitcher%(D), LG_P_BB) + statPitcherGame%(D, currPitcher%(D), LG_P_H) And stamina%(D, LG_P_H) <= statPitcherGame%(D, currPitcher%(D), LG_P_R) And INNING% >= 9 And A1 >= 0 And SN% = 586 Then 8113
 
                     Exit For
 
@@ -3717,26 +3718,26 @@ Sub PopUp_Pitcher (WK, M)
         statPitcherLeague%(WK, M, 2); statPitcherLeague%(WK, M, 3); statPitcherLeague%(WK, M, 14)
 
     Locate , 6: Print "GAME     ";
-    Print Using "## ## ## "; statPitcherGame%(WK, M, 6); statPitcherGame%(WK, M, 7); statPitcherGame%(WK, M, 12);
+    Print Using "## ## ## "; statPitcherGame%(WK, M, LG_P_W); statPitcherGame%(WK, M, LG_P_L); statPitcherGame%(WK, M, LG_P_Sv);
 
-    If statPitcherGame%(WK, M, 3) = 0 Or statPitcherGame%(WK, M, 0) = 0 Then
+    If statPitcherGame%(WK, M, LG_P_ER) = 0 Or statPitcherGame%(WK, M, LG_P_IP3) = 0 Then
         Print " 0.00";
     Else
-        Print Using "##.##"; statPitcherGame%(WK, M, 3) / (statPitcherGame%(WK, M, 0) / 3) * 9;
+        Print Using "##.##"; statPitcherGame%(WK, M, LG_P_ER) / (statPitcherGame%(WK, M, LG_P_IP3) / 3) * 9;
     End If
 
-    Print Using " ## ## ## "; statPitcherGame%(WK, M, 8); statPitcherGame%(WK, M, 9); statPitcherGame%(WK, M, 10);
+    Print Using " ## ## ## "; statPitcherGame%(WK, M, LG_P_G); statPitcherGame%(WK, M, LG_P_GS); statPitcherGame%(WK, M, 10);
 
-    If statPitcherGame%(WK, M, 0) = 0 Then
+    If statPitcherGame%(WK, M, LG_P_IP3) = 0 Then
         Print "  0.0";
     Else
-        Print Using "###"; Int(statPitcherGame%(WK, M, 0) / 3);
-        Print ".";: Print Using "#"; statPitcherGame%(WK, M, 0) - (Int(statPitcherGame%(WK, M, 0) / 3) * 3);
+        Print Using "###"; Int(statPitcherGame%(WK, M, LG_P_IP3) / 3);
+        Print ".";: Print Using "#"; statPitcherGame%(WK, M, LG_P_IP3) - (Int(statPitcherGame%(WK, M, LG_P_IP3) / 3) * 3);
     End If
 
     Print Using " ### ### ### ### ### ##"; _
-        statPitcherGame%(WK, M, 1); statPitcherGame%(WK, M, 4); statPitcherGame%(WK, M, 5); _
-        statPitcherGame%(WK, M, 2); statPitcherGame%(WK, M, 3); statPitcherGame%(WK, M, 14)
+        statPitcherGame%(WK, M, LG_P_H); statPitcherGame%(WK, M, LG_P_BB); statPitcherGame%(WK, M, LG_P_K); _
+        statPitcherGame%(WK, M, LG_P_R); statPitcherGame%(WK, M, LG_P_ER); statPitcherGame%(WK, M, LG_P_HR)
 
 End Sub
 
@@ -3883,7 +3884,7 @@ Sub POPUPSTATS ()
         End If
 
         Locate , 26
-        Print Using "### ### ### ### ## ## ## ### ### ### ### ## ## ##"; statPitcherGame%(P, J, 8); statPitcherGame%(P, J, 23); statPitcherGame%(P, J, 25); statPitcherGame%(P, J, 24); statPitcherGame%(P, J, 27); statPitcherGame%(P, J, 28); statPitcherGame%(P, J, 29); statPitcherGame%(P, J, 26); statPitcherGame%(P, J, 30); statPitcherGame%(P, J, 31); statPitcherGame%(P, J, 32); statPitcherGame%(P, J, 33); statPitcherGame%(P, J, 35); statPitcherGame%(P, J, 36)
+        Print Using "### ### ### ### ## ## ## ### ### ### ### ## ## ##"; statPitcherGame%(P, J, LG_P_G); statPitcherGame%(P, J, 23); statPitcherGame%(P, J, 25); statPitcherGame%(P, J, 24); statPitcherGame%(P, J, 27); statPitcherGame%(P, J, 28); statPitcherGame%(P, J, 29); statPitcherGame%(P, J, 26); statPitcherGame%(P, J, 30); statPitcherGame%(P, J, 31); statPitcherGame%(P, J, 32); statPitcherGame%(P, J, 33); statPitcherGame%(P, J, 35); statPitcherGame%(P, J, 36)
 
     End If
 
@@ -4024,9 +4025,9 @@ End Sub
 'active batter
 Sub DISPBAVG (D)
 
-    If INNING% > 5 And stamina%(D, 0) < statPitcherGame%(D, currPitcher%(D), 4) + statPitcherGame%(D, currPitcher%(D), 1) And stamina%(D, 1) < statPitcherGame%(D, currPitcher%(D), 2) Then
+    If INNING% > 5 And stamina%(D, 0) < statPitcherGame%(D, currPitcher%(D), LG_P_BB) + statPitcherGame%(D, currPitcher%(D), LG_P_H) And stamina%(D, LG_P_H) < statPitcherGame%(D, currPitcher%(D), LG_P_R) Then
         Locate 10, 17
-        Color 30, 0: Print "-T-"
+        Color 30, 0: Print "-T-"    '[bm] tired pitcher'
         Color 15, 0
     End If
 
@@ -5177,7 +5178,7 @@ Sub STEAL3RD (TGTBASE%, AA, Q0, runnerHeld, D)
         Q0 = Q0 + 50
     Else
         'Runner is held
-        Q0 = Q0 - ((pitchRating(D, currPitcher%(D), 18) - 5) * 25): ' - 50
+        Q0 = Q0 - ((pitchRating(D, currPitcher%(D), SS_P_HoldRunner)- 5) * 25): ' - 50
     End If
 
 End Sub
@@ -5298,10 +5299,10 @@ Sub STRIKEOUT (nbrStrikes, D)
     Select Case RN
 
         Case 1 To 20:
-            pbpString$ = "Number" + Str$(statPitcherGame%(D, currPitcher%(D), 5) + 1) + " for " + pitchers$(D, currPitcher%(D))
+            pbpString$ = "Number" + Str$(statPitcherGame%(D, currPitcher%(D), LG_P_K) + 1) + " for " + pitchers$(D, currPitcher%(D))
 
         Case 21 To 40:
-            pbpString$ = "That's" + Str$(statPitcherGame%(D, currPitcher%(D), 5) + 1) + " for " + pitchers$(D, currPitcher%(D))
+            pbpString$ = "That's" + Str$(statPitcherGame%(D, currPitcher%(D), LG_P_K) + 1) + " for " + pitchers$(D, currPitcher%(D))
 
         Case 41:
             pbpString$ = player$(0) + " is not a happy man"
@@ -5368,7 +5369,7 @@ Sub TAGADVANCE (S2%, I8!, D)
 
     If S2% = EVENT_2B And I8! = 3 Or S2% = EVENT_3B And I8! = 4 Then
 
-        If pitchRating(D, currPitcher%(D), 0) <> 1 Then
+        If pitchRating(D, currPitcher%(D), SS_P_Throws)<> 1 Then
             CSS%(P, I5, I3 - 2) = CSS%(P, I5, I3 - 2) - 1
             CSS%(P, I5, I4 - 2) = CSS%(P, I5, I4 - 2) + 1
         Else
@@ -5406,11 +5407,12 @@ End Sub
 'for Play-by-Play
 Sub TIRING (P9)
 
-    If stamina%(P9, 0) <= statPitcherGame%(P9, currPitcher%(P9), 4) + statPitcherGame%(P9, currPitcher%(P9), 1) And stamina%(P9, 1) <= statPitcherGame%(P9, currPitcher%(P9), 2) Then
+    If stamina%(P9, 0) <= statPitcherGame%(P9, currPitcher%(P9), LG_P_BB) + statPitcherGame%(P9, currPitcher%(P9), LG_P_H) _
+        And stamina%(P9, 1) <= statPitcherGame%(P9, currPitcher%(P9), LG_P_R) Then
 
         Call d100(RN)
 
-        If stamina%(P9, 1) > 0 And INNING% < 6 Or stamina%(P9, 1) = 0 And statPitcherGame%(P9, currPitcher%(P9), 4) + statPitcherGame%(P9, currPitcher%(P9), 1) > 4 Then
+        If stamina%(P9, 1) > 0 And INNING% < 6 Or stamina%(P9, 1) = 0 And statPitcherGame%(P9, currPitcher%(P9), LG_P_BB) + statPitcherGame%(P9, currPitcher%(P9), LG_P_H) > 4 Then
             If RN <= 50 Then
                 Print pitchers$(P9, currPitcher%(P9)); " just doesn't have it today";
             Else
@@ -5422,11 +5424,11 @@ Sub TIRING (P9)
 
     Else
 
-        If stamina%(P9, 1) > 0 And (stamina%(P9, 0) <= statPitcherGame%(P9, currPitcher%(P9), 4) + statPitcherGame%(P9, currPitcher%(P9), 1) Or stamina%(P9, 1) <= statPitcherGame%(P9, currPitcher%(P9), 2)) Or (statPitcherGame%(P9, currPitcher%(P9), 4) + statPitcherGame%(P9, currPitcher%(P9), 1) > 2 And statPitcherGame%(P9, currPitcher%(P9), 0) >= 5) Then
+        If stamina%(P9, 1) > 0 And (stamina%(P9, 0) <= statPitcherGame%(P9, currPitcher%(P9), LG_P_BB) + statPitcherGame%(P9, currPitcher%(P9), LG_P_H) Or stamina%(P9, LG_P_H) <= statPitcherGame%(P9, currPitcher%(P9), LG_P_R)) Or (statPitcherGame%(P9, currPitcher%(P9), LG_P_BB) + statPitcherGame%(P9, currPitcher%(P9), LG_P_H) > 2 And statPitcherGame%(P9, currPitcher%(P9), LG_P_IP3) >= 5) Then
             Print pitchers$(P9, currPitcher%(P9)); " is tiring!!";
         Else
 
-            If stamina%(P9, 1) > 0 Or (statPitcherGame%(P9, currPitcher%(P9), 4) + statPitcherGame%(P9, currPitcher%(P9), 1) < 3 And statPitcherGame%(P9, currPitcher%(P9), 2) = 0) Then
+            If stamina%(P9, 1) > 0 Or (statPitcherGame%(P9, currPitcher%(P9), LG_P_BB) + statPitcherGame%(P9, currPitcher%(P9), LG_P_H) < 3 And statPitcherGame%(P9, currPitcher%(P9), LG_P_R) = 0) Then
                 Print pitchers$(P9, currPitcher%(P9)); " seems to be OK!!";
             End If
 
@@ -5762,7 +5764,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, currFielder%, sah%, SB%, baseNbr!, I9
                         statBatterGame%(P, playerNum%(P, currBatter!(P)), 0) = statBatterGame%(P, playerNum%(P, currBatter!(P)), 0) - 1
                         statBatterLeague%(P, playerNum%(P, currBatter!(P)), 0) = statBatterLeague%(P, playerNum%(P, currBatter!(P)), 0) - 1
 
-                        If pitchRating(D, currPitcher%(D), 0) <> 1 Then
+                        If pitchRating(D, currPitcher%(D), SS_P_Throws)<> 1 Then
                             CSS%(P, playerNum%(P, currBatter!(P)), 0) = CSS%(P, playerNum%(P, currBatter!(P)), 0) - 1
                         End If
 
@@ -7480,7 +7482,7 @@ Sub EVENTS (specialCount, specialStat)
 
                     For I1 = 0 To 21
 
-                        If statPitcherGame%(I, I1, 5) > eventSettings(13) Then
+                        If statPitcherGame%(I, I1, LG_P_K) > eventSettings(13) Then
                             checkSpecial% = 1
                             Exit For
                         End If
@@ -7540,7 +7542,7 @@ Sub CheckRecords ()
 
     For I = 0 To 1:
         For I1 = 0 To 21:
-            If statPitcherGame%(I, I1, 1) < 0 Then statPitcherGame%(I, I1, 1) = 0
+            If statPitcherGame%(I, I1, LG_P_H) < 0 Then statPitcherGame%(I, I1, LG_P_H) = 0
         Next I1
     Next I
 
@@ -7548,7 +7550,7 @@ Sub CheckRecords ()
 
         For I1 = 0 To 21
             If pitchRating(I, I1, SS_P_WP) = 1 Then
-                If statPitcherGame%(I, I1, 0) >= 18 And statPitcherGame%(I, I1, 3) <= 3 Then statPitcherGame%(I, I1, 21) = 1
+                If statPitcherGame%(I, I1, LG_P_IP3) >= 18 And statPitcherGame%(I, I1, LG_P_ER) <= 3 Then statPitcherGame%(I, I1, 21) = 1
             End If
         Next I1
 
@@ -7879,7 +7881,7 @@ Sub POSTGAME ()
         I3 = 0
 
         If gameScore(1, 0) - gameScore(0, 0) > 0 Then I3 = 1
-        If P2%(I3) <> currPitcher%(I3) And S1%(I3) = -1 And statPitcherGame%(I3, currPitcher%(I3), 0) >= 9 And statPitcherGame%(I3, currPitcher%(I3), 0) <= 12 And gamePitcher%(I3) > 0 And statPitcherGame%(I3, currPitcher%(I3), 3) < 3 Then S1%(I3) = currPitcher%(I3)
+        If P2%(I3) <> currPitcher%(I3) And S1%(I3) = -1 And statPitcherGame%(I3, currPitcher%(I3), LG_P_IP3) >= 9 And statPitcherGame%(I3, currPitcher%(I3), LG_P_IP3) <= 12 And gamePitcher%(I3) > 0 And statPitcherGame%(I3, currPitcher%(I3), LG_P_ER) < 3 Then S1%(I3) = currPitcher%(I3)
         If P2%(I3) = S1%(I3) Then S1%(I3) = -1
 
         Color 15, 0
@@ -8148,19 +8150,19 @@ Sub COMPILESTATFILES (teamIdx)
 
                 If daysRest(teamIdx, I1) > 0 And daysRest(teamIdx, I1) < 90 Then daysRest(teamIdx, I1) = daysRest(teamIdx, I1) - 1
 
-                If statPitcherGame%(teamIdx, I1, 0) = 0 And daysRest(teamIdx, I1) > 0 And daysRest(teamIdx, I1) < 90 Then 7667
-                If statPitcherGame%(teamIdx, I1, 0) = 0 And (daysRest(teamIdx, I1) = 0 Or daysRest(teamIdx, I1) = 1 Or daysRest(teamIdx, I1) = 91 Or daysRest(teamIdx, I1) = 92) Then daysRest(teamIdx, I1) = 0: GoTo 7667
-                If statPitcherGame%(teamIdx, I1, 0) > 0 And statPitcherGame%(teamIdx, I1, 0) <= 3 And daysRest(teamIdx, I1) = 0 Then daysRest(teamIdx, I1) = 91: GoTo 7667
-                If statPitcherGame%(teamIdx, I1, 0) > 0 And statPitcherGame%(teamIdx, I1, 0) <= 3 And daysRest(teamIdx, I1) = 91 Then daysRest(teamIdx, I1) = 911: GoTo 7667
-                If statPitcherGame%(teamIdx, I1, 0) > 0 And statPitcherGame%(teamIdx, I1, 0) <= 3 And daysRest(teamIdx, I1) = 911 Then daysRest(teamIdx, I1) = 1: GoTo 7667
-                If statPitcherGame%(teamIdx, I1, 0) > 0 And statPitcherGame%(teamIdx, I1, 0) <= 3 And daysRest(teamIdx, I1) = 92 Then daysRest(teamIdx, I1) = 1: GoTo 7667
-                If statPitcherGame%(teamIdx, I1, 0) > 0 And statPitcherGame%(teamIdx, I1, 0) <= 3 And daysRest(teamIdx, I1) > 0 Then daysRest(teamIdx, I1) = daysRest(teamIdx, I1) + 1: GoTo 7667
-                If statPitcherGame%(teamIdx, I1, 0) > 3 And statPitcherGame%(teamIdx, I1, 0) <= 6 And daysRest(teamIdx, I1) = 0 Then daysRest(teamIdx, I1) = 92: GoTo 7667
-                If statPitcherGame%(teamIdx, I1, 0) > 3 And statPitcherGame%(teamIdx, I1, 0) <= 6 And daysRest(teamIdx, I1) = 91 Then daysRest(teamIdx, I1) = 1: GoTo 7667
-                If statPitcherGame%(teamIdx, I1, 0) > 3 And statPitcherGame%(teamIdx, I1, 0) <= 6 And daysRest(teamIdx, I1) = 92 Then daysRest(teamIdx, I1) = 1: GoTo 7667
-                If statPitcherGame%(teamIdx, I1, 0) > 3 And statPitcherGame%(teamIdx, I1, 0) <= 6 And daysRest(teamIdx, I1) = 911 Then daysRest(teamIdx, I1) = 1: GoTo 7667
-                If statPitcherGame%(teamIdx, I1, 0) > 3 And statPitcherGame%(teamIdx, I1, 0) <= 6 And daysRest(teamIdx, I1) > 0 Then daysRest(teamIdx, I1) = daysRest(teamIdx, I1) + 1: GoTo 7667
-                If statPitcherGame%(teamIdx, I1, 0) > 6 Then daysRest(teamIdx, I1) = Int(statPitcherGame%(teamIdx, I1, 0) / 3) + 1 - 2
+                If statPitcherGame%(teamIdx, I1, LG_P_IP3) = 0 And daysRest(teamIdx, I1) > 0 And daysRest(teamIdx, I1) < 90 Then 7667
+                If statPitcherGame%(teamIdx, I1, LG_P_IP3) = 0 And (daysRest(teamIdx, I1) = 0 Or daysRest(teamIdx, I1) = 1 Or daysRest(teamIdx, I1) = 91 Or daysRest(teamIdx, I1) = 92) Then daysRest(teamIdx, I1) = 0: GoTo 7667
+                If statPitcherGame%(teamIdx, I1, LG_P_IP3) > 0 And statPitcherGame%(teamIdx, I1, LG_P_IP3) <= 3 And daysRest(teamIdx, I1) = 0 Then daysRest(teamIdx, I1) = 91: GoTo 7667
+                If statPitcherGame%(teamIdx, I1, LG_P_IP3) > 0 And statPitcherGame%(teamIdx, I1, LG_P_IP3) <= 3 And daysRest(teamIdx, I1) = 91 Then daysRest(teamIdx, I1) = 911: GoTo 7667
+                If statPitcherGame%(teamIdx, I1, LG_P_IP3) > 0 And statPitcherGame%(teamIdx, I1, LG_P_IP3) <= 3 And daysRest(teamIdx, I1) = 911 Then daysRest(teamIdx, I1) = 1: GoTo 7667
+                If statPitcherGame%(teamIdx, I1, LG_P_IP3) > 0 And statPitcherGame%(teamIdx, I1, LG_P_IP3) <= 3 And daysRest(teamIdx, I1) = 92 Then daysRest(teamIdx, I1) = 1: GoTo 7667
+                If statPitcherGame%(teamIdx, I1, LG_P_IP3) > 0 And statPitcherGame%(teamIdx, I1, LG_P_IP3) <= 3 And daysRest(teamIdx, I1) > 0 Then daysRest(teamIdx, I1) = daysRest(teamIdx, I1) + 1: GoTo 7667
+                If statPitcherGame%(teamIdx, I1, LG_P_IP3) > 3 And statPitcherGame%(teamIdx, I1, LG_P_IP3) <= 6 And daysRest(teamIdx, I1) = 0 Then daysRest(teamIdx, I1) = 92: GoTo 7667
+                If statPitcherGame%(teamIdx, I1, LG_P_IP3) > 3 And statPitcherGame%(teamIdx, I1, LG_P_IP3) <= 6 And daysRest(teamIdx, I1) = 91 Then daysRest(teamIdx, I1) = 1: GoTo 7667
+                If statPitcherGame%(teamIdx, I1, LG_P_IP3) > 3 And statPitcherGame%(teamIdx, I1, LG_P_IP3) <= 6 And daysRest(teamIdx, I1) = 92 Then daysRest(teamIdx, I1) = 1: GoTo 7667
+                If statPitcherGame%(teamIdx, I1, LG_P_IP3) > 3 And statPitcherGame%(teamIdx, I1, LG_P_IP3) <= 6 And daysRest(teamIdx, I1) = 911 Then daysRest(teamIdx, I1) = 1: GoTo 7667
+                If statPitcherGame%(teamIdx, I1, LG_P_IP3) > 3 And statPitcherGame%(teamIdx, I1, LG_P_IP3) <= 6 And daysRest(teamIdx, I1) > 0 Then daysRest(teamIdx, I1) = daysRest(teamIdx, I1) + 1: GoTo 7667
+                If statPitcherGame%(teamIdx, I1, LG_P_IP3) > 6 Then daysRest(teamIdx, I1) = Int(statPitcherGame%(teamIdx, I1, LG_P_IP3) / 3) + 1 - 2
 
                 If MG%(teamIdx, 1) <= 0 Then daysRest(teamIdx, I1) = 3: GoTo 7667
 
@@ -8280,7 +8282,7 @@ Sub COMPILESTATFILES (teamIdx)
     INNING% = 0
 
     For I = 0 To 21
-        INNING% = INNING% + statPitcherGame%(teamIdx, I, 0)
+        INNING% = INNING% + statPitcherGame%(teamIdx, I, LG_P_IP3)
         P3%(teamIdx, I) = pitchRating(teamIdx, I, SS_P_IP)
 
         For I1 = 0 To 5
@@ -8301,8 +8303,8 @@ Sub COMPILESTATFILES (teamIdx)
 
     For I = 0 To 21
         If pitchRating(teamIdx, I, SS_P_WP) <> 0 Then statP0%(I, 8) = statP0%(I, SS_P_BB) + 1: P4%(8) = P4%(8) + 1
-        If INNING% = statPitcherGame%(teamIdx, I, 0) Then statP0%(I, 10) = statP0%(I, 10) + 1: P4%(10) = P4%(10) + 1
-        If INNING% = statPitcherGame%(teamIdx, I, 0) And gameScore(1 - teamIdx, 0) = 0 Then statP0%(I, 11) = statP0%(I, 11) + 1: P4%(11) = P4%(11) + 1
+        If INNING% = statPitcherGame%(teamIdx, I, LG_P_IP3) Then statP0%(I, 10) = statP0%(I, LG_P_CG) + 1: P4%(10) = P4%(10) + 1
+        If INNING% = statPitcherGame%(teamIdx, I, LG_P_IP3) And gameScore(1 - teamIdx, LG_P_IP3) = 0 Then statP0%(I, 11) = statP0%(I, 11) + 1: P4%(11) = P4%(11) + 1
     Next I
 
     statP0%(SX%(teamIdx), 9) = statP0%(SX%(teamIdx), 9) + 1
@@ -8828,15 +8830,15 @@ Sub BOX2FILE (printChoice, boxName$)
                         gameL$ = pitchers$(I, I2)
                     End If
 
-                    If statPitcherGame%(I, I2, 19) > 0 Then Print #2, "(BS,";: Print #2, Using "##"; statPitcherLeague%(I, I2, 19);: Print #2, ")";
-                    If statPitcherGame%(I, I2, 22) > 0 Then Print #2, "(H,";: Print #2, Using "##"; statPitcherLeague%(I, I2, 22);: Print #2, ")";
+                    If statPitcherGame%(I, I2, 19) > 0 Then Print #2, "(BS,";: Print #2, Using "##"; statPitcherLeague%(I, I2, LG_P_BSv);: Print #2, ")";
+                    If statPitcherGame%(I, I2, LG_P_Hold) > 0 Then Print #2, "(H,";: Print #2, Using "##"; statPitcherLeague%(I, I2, LG_P_Hold);: Print #2, ")";
 
-                    Print #2, Tab(29);: Print #2, Using "##"; Int(statPitcherGame%(I, I2, 0) / 3);
+                    Print #2, Tab(29);: Print #2, Using "##"; Int(statPitcherGame%(I, I2, LG_P_IP3) / 3);
 
-                    If statPitcherGame%(I, I2, 0) - (Int(statPitcherGame%(I, I2, 0) / 3) * 3) > 0 Then Print #2, ".";: Print #2, Using "#"; statPitcherGame%(I, I2, 0) - (Int(statPitcherGame%(I, I2, 0) / 3) * 3);
+                    If statPitcherGame%(I, I2, LG_P_IP3) - (Int(statPitcherGame%(I, I2, LG_P_IP3) / 3) * 3) > 0 Then Print #2, ".";: Print #2, Using "#"; statPitcherGame%(I, I2, LG_P_IP3) - (Int(statPitcherGame%(I, I2, LG_P_IP3) / 3) * 3);
 
                     Print #2, Tab(34);
-                    Print #2, Using "## ##  ## ## ##"; statPitcherGame%(I, I2, 1); statPitcherGame%(I, I2, 2); statPitcherGame%(I, I2, 3); statPitcherGame%(I, I2, 4); statPitcherGame%(I, I2, 5);
+                    Print #2, Using "## ##  ## ## ##"; statPitcherGame%(I, I2, LG_P_H); statPitcherGame%(I, I2, LG_P_R); statPitcherGame%(I, I2, LG_P_ER); statPitcherGame%(I, I2, LG_P_BB); statPitcherGame%(I, I2, LG_P_K);
                     Print #2, "   ";
 
                     If statPitcherLeague%(I, I2, 3) > 0 And statPitcherLeague%(I, I2, 0) = 0 Then
@@ -9413,29 +9415,29 @@ Sub STATS2SCREEN
                         gameL$ = pitchers$(I, I2)
                     End If
 
-                    If statPitcherGame%(I, I2, 19) > 0 Then Print "(BS,";: Print Using "##"; statPitcherLeague%(I, I2, 19);: Print ")";
-                    If statPitcherGame%(I, I2, 22) > 0 Then Print "(H,";: Print Using "##"; statPitcherLeague%(I, I2, 22);: Print ")";
+                    If statPitcherGame%(I, I2, 19) > 0 Then Print "(BS,";: Print Using "##"; statPitcherLeague%(I, I2, LG_P_BSv);: Print ")";
+                    If statPitcherGame%(I, I2, LG_P_Hold) > 0 Then Print "(H,";: Print Using "##"; statPitcherLeague%(I, I2, LG_P_Hold);: Print ")";
 
-                    Locate , 30: Print Using "##"; Int(statPitcherGame%(I, I2, 0) / 3);
+                    Locate , 30: Print Using "##"; Int(statPitcherGame%(I, I2, LG_P_IP3) / 3);
 
-                    If statPitcherGame%(I, I2, 0) - (Int(statPitcherGame%(I, I2, 0) / 3) * 3) > 0 Then Print ".";: Print Using "#"; statPitcherGame%(I, I2, 0) - (Int(statPitcherGame%(I, I2, 0) / 3) * 3);
+                    If statPitcherGame%(I, I2, LG_P_IP3) - (Int(statPitcherGame%(I, I2, LG_P_IP3) / 3) * 3) > 0 Then Print ".";: Print Using "#"; statPitcherGame%(I, I2, LG_P_IP3) - (Int(statPitcherGame%(I, I2, LG_P_IP3) / 3) * 3);
 
                     Locate , 34
 
-                    Print Using "## ##  ## ## ##"; statPitcherGame%(I, I2, 1); statPitcherGame%(I, I2, 2); statPitcherGame%(I, I2, 3); statPitcherGame%(I, I2, 4); statPitcherGame%(I, I2, 5);
+                    Print Using "## ##  ## ## ##"; statPitcherGame%(I, I2, LG_P_H); statPitcherGame%(I, I2, LG_P_R); statPitcherGame%(I, I2, LG_P_ER); statPitcherGame%(I, I2, LG_P_BB); statPitcherGame%(I, I2, LG_P_K);
 
                     Print "   ";
 
-                    If statPitcherGame%(I, I2, 3) > 0 And statPitcherGame%(I, I2, 0) = 0 Then
+                    If statPitcherGame%(I, I2, LG_P_ER) > 0 And statPitcherGame%(I, I2, LG_P_IP3) = 0 Then
                         Print "99.99 ";
                     Else
-                        If statPitcherGame%(I, I2, 0) = 0 Then
+                        If statPitcherGame%(I, I2, LG_P_IP3) = 0 Then
                             Print "--.-- ";
                         Else
-                            If statPitcherGame%(I, I2, 3) = 0 Then
+                            If statPitcherGame%(I, I2, LG_P_ER) = 0 Then
                                 Print " 0.00 ";
                             Else
-                                Print Using "##.## "; statPitcherGame%(I, I2, 3) / (statPitcherGame%(I, I2, 0) / 3) * 9;
+                                Print Using "##.## "; statPitcherGame%(I, I2, LG_P_ER) / (statPitcherGame%(I, I2, LG_P_IP3) / 3) * 9;
                             End If
                         End If
                     End If
@@ -9698,7 +9700,7 @@ Sub BOX2SPC (boxName$)
 
     For I = 0 To 1
         For I1 = 0 To 21
-            If statPitcherGame%(I, I1, 5) > eventSettings(13) Then
+            If statPitcherGame%(I, I1, LG_P_K) > eventSettings(13) Then
                 Print #2, pitchers$(I, I1);
                 Print #2, Using " STRUCK OUT MORE THAN ## BATTER(S)"; eventSettings(13)
             End If
@@ -10291,6 +10293,8 @@ Sub DumpAll
         _IIF(D = 1, "Visiting", "Home") + " batting:"; currBatter!(P); " roster #: "; myPNum; _
         " baseRunners ="; baseRunners%
     Print #11, "Batter name: "; batters$(P, myPNum)
+
+    Print #11, "Pitcher: "; pitchers$(D, currPitcher%(D)); ", Stamina: "; stamina%(D, 0); stamina%(D, 1) 
 
     Print #11, "Batter: "; player$(0); ", 1st base: "; player$(1); ", 2nd base: "; player$(2); _
         ", 3rd base: "; player$(3); ", fielder w/ball: "; player$(4)

@@ -26,7 +26,7 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
     FORMATTED$ = FUsing$(Str$(pitchRating(D, currPitcher%(D), SS_P_L)), "##", 1)
 
     '                                              ERA
-    pStats$ = pStats$ + FORMATTED$ + " " + FUsing$(Str$(pitchRating(D, currPitcher%(D), 10) / 100), "##.##", 1)
+    pStats$ = pStats$ + FORMATTED$ + " " + FUsing$(Str$(pitchRating(D, currPitcher%(D), SS_P_ERA100)/ 100), "##.##", 1)
 
     'Pitcher Stats
     PrintOnGfx 66, 27, pStats$, imageScreen&
@@ -36,14 +36,14 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
     'IP / H / BB / K headers
     PrintOnGfx 66, 28, "IP   H BB  K", imageScreen&
 
-    If statPitcherGame%(D, currPitcher%(D), 0) <> 0 Then
-        pStats$ = FUsing$(Str$(Int(statPitcherGame%(D, currPitcher%(D), 0) / 3)), "##.#", 1)
+    If statPitcherGame%(D, currPitcher%(D), LG_P_IP3) <> 0 Then
+        pStats$ = FUsing$(Str$(Int(statPitcherGame%(D, currPitcher%(D), LG_P_IP3) / 3)), "##.#", 1)
     Else
         pStats$ = " 0.0"
     End If
 
     '                                      H                                            BB                                                      K
-    pStats$ = pStats$ + " " + FUsing$(Str$(statPitcherGame%(D, currPitcher%(D), 1)), "##", 1) + " " + FUsing$(Str$(statPitcherGame%(D, currPitcher%(D), 4)), "###", 1) + " " + FUsing$(Str$(statPitcherGame%(D, currPitcher%(D), 5)), "###", 1)
+    pStats$ = pStats$ + " " + FUsing$(Str$(statPitcherGame%(D, currPitcher%(D), LG_P_H)), "##", 1) + " " + FUsing$(Str$(statPitcherGame%(D, currPitcher%(D), LG_P_BB)), "###", 1) + " " + FUsing$(Str$(statPitcherGame%(D, currPitcher%(D), LG_P_K)), "###", 1)
 
     PrintOnGfx 65, 29, pStats$, imageScreen&
 
@@ -70,12 +70,12 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
         bpj = batRating(p, J, SS_B_Bats)
         pdd = pitchRating(D, currPitcher%(D), 0)
 
-        If batRating(p, J, SS_B_Bats) < 0 Or batRating(p, J, SS_B_Bats) = 0 And pitchRating(D, currPitcher%(D), 0) > 0 Then
+        If batRating(p, J, SS_B_Bats) < 0 Or batRating(p, J, SS_B_Bats) = 0 And pitchRating(D, currPitcher%(D), SS_P_Throws)> 0 Then
             'Batter Name - Right of Plate
             PrintOnGfx 41, 25, Left$(X$, 11), imageScreen&
         End If
 
-        If batRating(p, J, SS_B_Bats) > 0 Or batRating(p, J, SS_B_Bats) = 0 And pitchRating(D, currPitcher%(D), 0) < 0 Then
+        If batRating(p, J, SS_B_Bats) > 0 Or batRating(p, J, SS_B_Bats) = 0 And pitchRating(D, currPitcher%(D), SS_P_Throws)< 0 Then
             'Batter Name - Left of Plate
             PrintOnGfx 30, 25, Left$(X$, 11), imageScreen&
         End If
@@ -501,22 +501,22 @@ Sub DisplayBallField_Gfx (BC%, p, nbrStrikes, D)
     PrintOnGfx 61, 20, player$, imageScreen&
 
     'Pitcher Name
-    player$ = "[" + handed$(pitchRating(D, currPitcher%(D), 0) + 2) + "] " + Left$(pitchers$(D, currPitcher%(D)), 10)
+    player$ = "[" + handed$(pitchRating(D, currPitcher%(D), SS_P_Throws)+ 2) + "] " + Left$(pitchers$(D, currPitcher%(D)), SS_P_ERA100)
     player$ = PadRight(player$, 10)
     PrintOnGfx 35, 21, player$, imageScreen&
 
     'Pitcher Stats
-    If pitchRating(D, currPitcher%(D), 17) = 1000 Then
+    If pitchRating(D, currPitcher%(D), SS_P_FldPct)= 1000 Then
         fldPct$ = "1.000"
     Else
-        If pitchRating(D, currPitcher%(D), 17) = 0 Then
+        If pitchRating(D, currPitcher%(D), SS_P_FldPct)= 0 Then
             fldPct$ = " .000"
         Else
-            fldPct$ = "." + FUsing$(Str$(pitchRating(D, currPitcher%(D), 17)), "###", 1)
+            fldPct$ = "." + FUsing$(Str$(pitchRating(D, currPitcher%(D), SS_P_FldPct)), "###", 1)
         End If
     End If
 
-    player$ = "H" + FUsing$(Str$(pitchRating(D, currPitcher%(D), 18)), "#", 1) + " F" + fldPct$
+    player$ = "H" + FUsing$(Str$(pitchRating(D, currPitcher%(D), SS_P_HoldRunner)), "#", 1) + " F" + fldPct$
     'was column 39 previously
     PrintOnGfx 35, 22, player$, imageScreen&
 

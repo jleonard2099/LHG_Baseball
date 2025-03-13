@@ -18,7 +18,7 @@ Const SS_B_Range = 17
 Const SS_B_GndPct = 18
 Const SS_B_FldPct = 19 '** ToDo: Check if this is correct'
 
-'21 is unknown'
+'21 is unknown (INJURY?)'
 Const SS_B_Pos1 = 22
 Const SS_B_Pos2 = 23
 Const SS_B_Pos3 = 24
@@ -28,7 +28,7 @@ Const SS_B_FldPct2 = 27
 Const SS_B_FldPct3 = 28
 Const SS_B_FldPct4 = 29
 '30 is BUNT?'
-'31 is unknown'
+'31 is unknown (INJURY?)'
 '32 is INJURY?'
 
 Const SS_B_Arm1   = 33
@@ -68,7 +68,7 @@ Const SS_P_IP = 6
 Const SS_P_H = 7
 Const SS_P_BB =  8
 Const SS_P_K = 9
-Const SS_P_ERA = 10 'ERA*100
+Const SS_P_ERA100 = 10 'ERA*100
 
 Const SS_P_GndPct = 12
 Const SS_P_HR = 13
@@ -76,7 +76,7 @@ Const SS_P_HR = 13
 Const SS_P_WP = 15
 Const SS_P_CG = 16
 Const SS_P_FldPct = 17
-Const SS_P_Hold = 18
+Const SS_P_HoldRunner = 18
 
 Const SS_P_H_G  = 19
 Const SS_P_H_AB = 20
@@ -135,6 +135,7 @@ Const LG_P_GS   = 9
 Const LG_P_CG   = 10
 Const LG_P_Sv   = 12
 Const LG_P_HR   = 14
+Const LG_P_RInh = 17
 Const LG_P_BSv  = 19
 Const LG_P_Hold = 22
 
