@@ -970,7 +970,7 @@ Sub InputDeleteLineup (D%, yearNumber$)
 
                 If D% <> 1 Or I1 <> 1 Then
 
-                    Locate 24, (I1 * 3) + 1
+                    Locate LAST_LINE, (I1 * 3) + 1
                     If progM%(I1) = 0 Then 
                         Print fieldPos$(I1); " ";
                     End If
@@ -1049,7 +1049,7 @@ Sub InputDeleteLineup (D%, yearNumber$)
 
                                 If D% <> 1 Or I1 <> 1 Then
 
-                                    Locate 24, (I1 * 3) + 1
+                                    Locate LAST_LINE, (I1 * 3) + 1
                                     If progM%(I1) = 0 Then 
                                         Print fieldPos$(I1); " ";
                                     End If
@@ -1121,7 +1121,7 @@ Sub InputDeleteLineup (D%, yearNumber$)
 
                             If D% <> 1 Or I1 <> 1 Then
 
-                                Locate 24, (I1 * 3) + 1
+                                Locate LAST_LINE, (I1 * 3) + 1
                                 If progM%(I1) = 0 Then 
                                     Print fieldPos$(I1); " ";
                                 End If

@@ -13,7 +13,7 @@ Sub TITLE_CAREER ()
     Locate , 23
     Print "FULL COUNT BASEBALL: CAREER STATS"
 
-    Locate 24, 1
+    Locate LAST_LINE, 1
     Print Tab(80); " ";
 
     Locate , 1
@@ -48,7 +48,7 @@ Sub TITLE_EDITSTATS ()
     '    Print subtitle$
     'End If
 
-    Locate 24, 1
+    Locate LAST_LINE, 1
     Print Tab(80); " ";
 
     Locate , 1
@@ -96,7 +96,7 @@ Sub TITLE_LEADERS
     Locate , 26
     Print "FULL COUNT BASEBALL LEADERS"
 
-    Locate 24, 1
+    Locate LAST_LINE, 1
     Print Tab(80); " ";
 
     Locate , 1
@@ -122,7 +122,7 @@ Sub TITLE_MERGE ()
     Locate , 27
     Print "FULL COUNT BASEBALL: MERGE"
 
-    Locate 24, 1
+    Locate LAST_LINE, 1
     Print Tab(80); " ";
 
     Locate , 1
@@ -151,7 +151,7 @@ Sub TITLE_SCHEDULER ()
     Locate , 33
     Print "AUTO SCHEDULER"
 
-    Locate 24, 1
+    Locate LAST_LINE, 1
     Print Tab(80); " ";
 
     Locate , 1
@@ -176,7 +176,7 @@ Sub TITLE_STATS ()
     Locate , 25
     Print "FULL COUNT BASEBALL STATISTICS"
 
-    Locate 24, 1
+    Locate LAST_LINE, 1
     Print Tab(80); " ";
 
     Locate , 1
@@ -203,7 +203,7 @@ Sub TITLE_STAT_HEADER (header$)
     Locate , Int(80 - Len(header$)) / 2
     Print header$
     
-    Locate 24, 1
+    Locate LAST_LINE, 1
     Print Tab(80); " ";
 
     Locate , 1    
@@ -232,7 +232,7 @@ Sub TITLE_TOURN ()
     Locate , 20
     Print "FULL COUNT BASEBALL TOURNAMENT SCHEDULER"
     
-    Locate 24, 1
+    Locate LAST_LINE, 1
     Print Tab(80); " ";
 
     Locate , 1    
@@ -262,7 +262,7 @@ Sub TITLE_UTILS ()
     Locate , 25
     Print "FULL COUNT BASEBALL UTILITIES"
     
-    Locate 24, 1
+    Locate LAST_LINE, 1
     Print Tab(80); " ";
 
     Locate , 1    
@@ -294,7 +294,7 @@ Sub TITLE ()
     Print "FULL COUNT BASEBALL V" + GAME_VERSION$
 
     'Footer
-    Locate 24, 1
+    Locate LAST_LINE, 1
     Print Tab(80); " ";
 
     Color 12, 1

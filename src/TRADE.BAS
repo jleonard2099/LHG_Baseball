@@ -497,7 +497,7 @@ Sub TradeBatters ()
 
     Call TradeSummary_Batters(I1, I2)
 
-    Locate 24, 1: Print "HIT ANY KEY TO TRADE";
+    Locate LAST_LINE, 1: Print "HIT ANY KEY TO TRADE";
     I$ = GetKeyPress$
 
     If Not (tradeTS(0, 0) = 999 And tradeTS(1, 0) = 999) And Not (tradeTS(0, 0) <> 999 And tradeTS(1, 0) <> 999) Then
@@ -561,7 +561,7 @@ Sub TradeBatters ()
 
     Call TradeSummary_Batters(I1, I2)
 
-    Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
+    Locate LAST_LINE, 1: Print "HIT ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
 End Sub
@@ -657,7 +657,7 @@ Sub TradePitchers ()
 
     Call TradeSummary_Pitchers(I1, I2)
 
-    Locate 24, 1: Print "HIT ANY KEY TO TRADE";
+    Locate LAST_LINE, 1: Print "HIT ANY KEY TO TRADE";
     I$ = GetKeyPress$
 
     If tradeTS(0, 0) = 999 And tradeTS(1, 0) = 999 Then 505
@@ -714,7 +714,7 @@ Sub TradePitchers ()
 
     Call TradeSummary_Pitchers(I1, I2)
 
-    Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
+    Locate LAST_LINE, 1: Print "HIT ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
 End Sub

@@ -278,7 +278,7 @@ Sub ViewAndPrintOptions (statFile$, teamName$, nbrGames, menuExit)
 
                         If (I Mod 20 = 0) Then
 
-                            Locate 24, 27: Print "PRESS ANY KEY TO CONTINUE";
+                            Locate LAST_LINE, 27: Print "PRESS ANY KEY TO CONTINUE";
                             I$ = GetKeyPress$
 
                             Cls
@@ -297,7 +297,7 @@ Sub ViewAndPrintOptions (statFile$, teamName$, nbrGames, menuExit)
 
                     Next
 
-                    Locate 24, 27: Print "PRESS ANY KEY TO CONTINUE";
+                    Locate LAST_LINE, 27: Print "PRESS ANY KEY TO CONTINUE";
                     I$ = GetKeyPress$
 
                 Case 2:

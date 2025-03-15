@@ -69,7 +69,7 @@ Sub CompileLeague ()
                 If (haveStats) Then
 
                     statName$ = memberName$(XW)
-                    nonConfGame = 0
+                    sameTeam = 0
 
                     For X = 1 To TEAMS_PER_LEAGUE:
 
@@ -77,8 +77,7 @@ Sub CompileLeague ()
 
                             If divWins(X) = fullWins And divLosses(X) = fullLosses Then
 
-                                nonConfGame = 1
-                                Exit For
+                                sameTeam = 1
 
                             Else
 
@@ -89,12 +88,12 @@ Sub CompileLeague ()
 
                         End If
 
-                        If (nonConfGame) Then Exit For
+                        If (sameTeam) Then Exit For
 
                     Next X
-                    'alternatively, use a Do / Until loop; nonConfGame = 1 or EC = 30
+                    'alternatively, use a Do / Until loop; sameTeam = 1 or EC = 30
 
-                    If nonConfGame <> 1 And _FileExists(diskPaths$(1) + memberName$(XW)) Then
+                    If sameTeam = 0 And _FileExists(diskPaths$(1) + memberName$(XW)) Then
 
                         Call ReadStatsLeague(memberName$(XW), TN$, totalGames)
                         Call CheckStatsLeague(memberName$(XW), statName$, totalGames)
@@ -220,7 +219,7 @@ Sub ReadStatsLeague (statFile$, teamName$, totalGames)
         ' Must have 3.1 Min At Bats / Game
         '-- Previously compared to 2.5
         '-- Header for Viewing Leader says 3.1
-        If (leaderStatVal2!(J, 8) + leaderStatVal2!(J, 1)) / totalGames < 3.1 Then
+        If (leaderStatVal2!(J, 8) + leaderStatVal2!(J, 1)) < totalGames * 3.1 Then
             leaderStatVal2!(J, 14) = 0
             leaderStatVal2!(J, 15) = 0
             leaderStatVal2!(J, 16) = 0
@@ -268,6 +267,11 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
 
     Color 15
 
+    ' Must have 3.1 Min PA / Game
+    '-- Previously compared to 2.5
+    '-- When viewing leaders, header says Min 3.1
+    minAtBat = totalGames * 3.1
+
     For X = 1 To 23
 
         If leaderNames$(X) <> "XXX" Then
@@ -289,10 +293,7 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
                     leaderVals!(Y, 1) = leaderStatVal2!(X, 13)
                     leaderVals!(Y, 2) = leaderStatVal2!(X, 1)
 
-                    ' Must have 3.1 Min At Bats / Game
-                    '-- Previously compared to 2.5
-                    '-- Header for Viewing Leader says 3.1
-                    If leaderVals!(Y, 2) < 3.1 * totalGames Then
+                    If leaderVals!(Y, 2) < minAtBat Then
                         leagLdrPlayer$(Y) = "*"
                         leagLdrTeam$(Y) = "*"
                         leaderVals!(Y, 1) = 0
@@ -339,10 +340,7 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
             End If
 
             3318 '
-            ' Must have 3.1 Min At Bats / Game
-            '-- Previously compared to 2.5
-            '-- Header for Viewing Leader says 3.1
-            If (leaderStatVal2!(X, 8) + leaderStatVal2!(X, 1)) / totalGames >= 3.1 Then
+            If (leaderStatVal2!(X, 8) + leaderStatVal2!(X, 1)) >= minAtBat Then
 
                 If leaderStatVal2!(X, 16) <> 0 And leaderStatVal2!(X, 16) <= leaderVals!(258, 1) Then
 
@@ -376,10 +374,7 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
                     leaderVals!(Y, 1) = leaderStatVal2!(X, 14)
                     leaderVals!(Y, 2) = leaderStatVal2!(X, 1)
 
-                    ' Must have 3.1 Min At Bats / Game
-                    '-- Previously compared to 2.5
-                    '-- Header for Viewing Leader says 3.1
-                    If leaderVals!(Y, 2) < totalGames * 3.1 Then
+                    If leaderVals!(Y, 2) < minAtBat Then
                         leagLdrPlayer$(Y) = "*"
                         leagLdrTeam$(Y) = "*"
                         leaderVals!(Y, 1) = 0
@@ -416,10 +411,7 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
                 leaderVals!(Y, 1) = leaderStatVal2!(X, 14)
                 leaderVals!(Y, 2) = leaderStatVal2!(X, 1)
 
-                ' Must have 3.1 Min At Bats / Game
-                '-- Previously compared to 2.5
-                '-- Header for Viewing Leader says 3.1
-                If leaderVals!(Y, 2) < totalGames * 3.1 Then
+                If leaderVals!(Y, 2) < minAtBat Then
                     leagLdrPlayer$(Y) = "*"
                     leagLdrTeam$(Y) = "*"
                     leaderVals!(Y, 1) = 0
@@ -449,10 +441,7 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
                     leaderVals!(Y, 1) = leaderStatVal2!(X, 15)
                     leaderVals!(Y, 2) = leaderStatVal2!(X, 1)
 
-                    ' Must have 3.1 Min PA / Game
-                    '-- Previously compared to 2.5
-                    '-- When viewing leaders, header says Min 3.1
-                    If leaderVals!(Y, 2) < totalGames * 3.1 Then
+                    If leaderVals!(Y, 2) < minAtBat Then
                         leagLdrPlayer$(Y) = "*"
                         leagLdrTeam$(Y) = "*"
                         leaderVals!(Y, 1) = 0
@@ -488,10 +477,7 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
                 leaderVals!(Y, 1) = leaderStatVal2!(X, 15)
                 leaderVals!(Y, 2) = leaderStatVal2!(X, 1)
 
-                ' Must have 3.1 Min PA / Game
-                '-- Previously compared to 2.5
-                '-- When viewing leaders, header says Min 3.1
-                If leaderVals!(Y, 2) < totalGames * 3.1 Then
+                If leaderVals!(Y, 2) < minAtBat Then
                     leagLdrPlayer$(Y) = "*"
                     leagLdrTeam$(Y) = "*"
                     leaderVals!(Y, 1) = 0
@@ -514,12 +500,10 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
 
             3330 '
             For Z = 21 To 31
-
                 If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 2)
                     GoTo 3335
                 End If
-
             Next Z
 
             If leaderStatVal2!(X, 2) > leaderVals!(31, 1) Then
@@ -543,12 +527,10 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
 
             'Division 4
             For Z = 32 To 42
-
                 If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 5)
                     GoTo 3347
                 End If
-
             Next Z
 
             If leaderStatVal2!(X, 5) > leaderVals!(42, 1) Then
@@ -627,12 +609,10 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
 
             3378 '
             For Z = 65 To 74
-
                 If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 3)
                     GoTo 3383
                 End If
-
             Next Z
 
             If leaderStatVal2!(X, 3) > leaderVals!(74, 1) Then
@@ -682,7 +662,6 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
             End If
 
             For Z = 87 To 97
-
                 If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 10)
                     GoTo 3407
@@ -713,12 +692,10 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
         3414 '
         'Base on Balls
         For Z = 217 To 227
-
             If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                 leaderVals!(Z, 1) = leaderStatVal2!(X, 8)
                 GoTo 3605
             End If
-
         Next Z
 
         If leaderStatVal2!(X, 8) > leaderVals!(227, 1) Then
@@ -741,12 +718,10 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
 
         'Hitting Streak
         For Z = 279 To 288
-
             If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                 leaderVals!(Z, 1) = leaderStatVal2!(X, 17)
                 GoTo 3615
             End If
-
         Next Z
 
         If leaderStatVal2!(X, 17) > leaderVals!(288, 1) Then

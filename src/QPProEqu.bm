@@ -89,15 +89,16 @@ Function FUsing$ (Number$, Image$, Typ%)
 
     'Function:  Can return a PRINT USING formatted string for assignment to
     '           any string variable. This is a multiple name function for
-    '           use of upto three arguments (Format$, Format2$, Format3$).
+    '           use of up to three arguments (Format$, Format2$, Format3$).
     '
     'Synopsis:  res$ = FUsing$  (Number$, Image$, Typ%)
     '
     'Result:    res$ --> the resulting formatted string
     '
-    'Inputs:    Image$ --> the string with format options for PRINT USING
+    'Inputs:    
     '           Number$ --> the argument(s) to format into the Image$ string,
     '                    use STR$(num) to pass in a number
+    '           Image$ --> the string with format options for PRINT USING
     '           Typ% --> the type(s) of the respective argument(s),
     '                     0 = argument is a real (alphanumeric) string
     '                     1 = argument is a STR$() number string
@@ -118,6 +119,7 @@ Function FUsing$ (Number$, Image$, Typ%)
     Next I%
     _Source shan&: _Dest dhan&: _FreeImage than&
     FUsing$ = res$
+
 End Function
 
 '-----------------------------------
@@ -1693,3 +1695,5 @@ Sub Lts2Menu (Item$(), Prompt$(), Choice%, FGColor%, BGColor%)
     Erase Break%, ScrBuf%
 
 End Sub
+
+

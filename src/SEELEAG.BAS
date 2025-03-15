@@ -345,7 +345,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     '-----
     Color 12
-    'Locate 24: Print "HIT ANY KEY TO CONTINUE!";
+    'Locate LAST_LINE: Print "HIT ANY KEY TO CONTINUE!";
     Color 15
     QK$ = GetKeyPress$
     '-----
@@ -456,7 +456,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     '-----
     Color 12
-    'Locate 24: Print "HIT ANY KEY TO CONTINUE!";
+    'Locate LAST_LINE: Print "HIT ANY KEY TO CONTINUE!";
     Color 15
     QK$ = GetKeyPress$
     '-----
@@ -566,7 +566,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     '-----
     Color 12
-    'Locate 24: Print "HIT ANY KEY TO CONTINUE!";
+    'Locate LAST_LINE: Print "HIT ANY KEY TO CONTINUE!";
     Color 15
     QK$ = GetKeyPress$
     '-----
@@ -726,7 +726,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     '-----
     Color 12
-    'Locate 24: Print "HIT ANY KEY TO CONTINUE!";
+    'Locate LAST_LINE: Print "HIT ANY KEY TO CONTINUE!";
     Color 15
     QK$ = GetKeyPress$
     '-----
@@ -846,7 +846,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     '-----
     Color 12
-    'Locate 24: Print "HIT ANY KEY TO CONTINUE!";
+    'Locate LAST_LINE: Print "HIT ANY KEY TO CONTINUE!";
     Color 15
     QK$ = GetKeyPress$
     '-----
@@ -900,7 +900,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     '-----
     Color 12
-    'Locate 24: Print "HIT ANY KEY TO CONTINUE!";
+    'Locate LAST_LINE: Print "HIT ANY KEY TO CONTINUE!";
     Color 15
     QK$ = GetKeyPress$
     '-----
@@ -1034,7 +1034,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     '-----
     Color 12
-    'Locate 24: Print "HIT ANY KEY TO CONTINUE!";
+    'Locate LAST_LINE: Print "HIT ANY KEY TO CONTINUE!";
     Color 15
     QK$ = GetKeyPress$
     '-----
@@ -1164,7 +1164,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     '-----
     Color 12
-    'Locate 24: Print "HIT ANY KEY TO CONTINUE!";
+    'Locate LAST_LINE: Print "HIT ANY KEY TO CONTINUE!";
     Color 15
     QK$ = GetKeyPress$
     '-----
@@ -1225,7 +1225,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     '-----
     Color 12
-    'Locate 24: Print "HIT ANY KEY TO CONTINUE!";
+    'Locate LAST_LINE: Print "HIT ANY KEY TO CONTINUE!";
     Color 15
     QK$ = GetKeyPress$
     '-----
@@ -1275,7 +1275,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     '-----
     Color 12
-    'Locate 24: Print "HIT ANY KEY TO CONTINUE!";
+    'Locate LAST_LINE: Print "HIT ANY KEY TO CONTINUE!";
     Color 15
     QK$ = GetKeyPress$
     '-----

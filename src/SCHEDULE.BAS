@@ -181,9 +181,9 @@ Sub NewSchedule (scheduleFile$)
         Color 11: Print " B";
         Color 14: Print "-BOXSCORE OPTIONS"
 
-        Locate 24, 1
+        Locate LAST_LINE, 1
         Color , 1: Print Tab(80); " ";
-        Locate 24, 1
+        Locate LAST_LINE, 1
         Color 11: Print "C";
         Color 14: Print "-SAVE AND CONTINUE  ";
         Color 11: Print "A";
@@ -353,7 +353,7 @@ Sub NewSchedule (scheduleFile$)
             Case "D":
                 ' *** DELETE A GAME FROM THE SCHEDULE ***
                 Do
-                    Locate 24, 1: Input "ENTER GAME # TO DELETE "; targetGame%
+                    Locate LAST_LINE, 1: Input "ENTER GAME # TO DELETE "; targetGame%
                 Loop Until targetGame% >= 1 And targetGame% <= scheduleAP%(0)
 
                 For X = targetGame% To scheduleAP%(0) - 1

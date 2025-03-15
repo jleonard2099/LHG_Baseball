@@ -645,7 +645,7 @@ Sub CalculateRunRating ()
 
     Next
 
-    Locate 24, 1: Print "PRESS ANY KEY TO CONTINUE";
+    Locate LAST_LINE, 1: Print "PRESS ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
     Cls
@@ -679,7 +679,7 @@ Sub CalculateRunRating ()
 
     Next
 
-    Locate 24, 1: Print "PRESS ANY KEY TO CONTINUE";
+    Locate LAST_LINE, 1: Print "PRESS ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
 End Sub
@@ -753,7 +753,7 @@ Sub CalculateBuntRating ()
 
     Next
 
-    Locate 24, 1: Print "PRESS ANY KEY TO CONTINUE";
+    Locate LAST_LINE, 1: Print "PRESS ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
     Cls
@@ -818,7 +818,7 @@ Sub CalculateBuntRating ()
 
     Next
 
-    Locate 24, 1: Print "PRESS ANY KEY TO CONTINUE";
+    Locate LAST_LINE, 1: Print "PRESS ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
 End Sub
@@ -893,7 +893,7 @@ Sub EditBatter ()
             Locate 21, 13: Print "LHB vs LHP"
             Locate 22, 13: Print "LHB vs RHP"
             Locate 23, 13: Print "RHB vs LHP";
-            Locate 24, 13: Print "RHB vs RHP";
+            Locate LAST_LINE, 13: Print "RHB vs RHP";
 
             ' INITIALIZE BATTER FIELDS
             FG = Black
@@ -993,12 +993,12 @@ Sub EditBatter ()
             Locate 23, 42: Print Using "###"; batterRatings(I, 71);
             Locate 23, 47: Print Using "###"; batterRatings(I, 72);
             Locate 23, 52: Print Using "###"; batterRatings(I, 73);
-            Locate 24, 27: Print Using "###"; batterRatings(I, 74);
-            Locate 24, 32: Print Using "###"; batterRatings(I, 75);
-            Locate 24, 37: Print Using "###"; batterRatings(I, 76);
-            Locate 24, 42: Print Using "###"; batterRatings(I, 77);
-            Locate 24, 47: Print Using "###"; batterRatings(I, 78);
-            Locate 24, 52: Print Using "###"; batterRatings(I, 79);
+            Locate LAST_LINE, 27: Print Using "###"; batterRatings(I, 74);
+            Locate LAST_LINE, 32: Print Using "###"; batterRatings(I, 75);
+            Locate LAST_LINE, 37: Print Using "###"; batterRatings(I, 76);
+            Locate LAST_LINE, 42: Print Using "###"; batterRatings(I, 77);
+            Locate LAST_LINE, 47: Print Using "###"; batterRatings(I, 78);
+            Locate LAST_LINE, 52: Print Using "###"; batterRatings(I, 79);
 
             BName:
             Locate 3, 7
@@ -1627,7 +1627,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 68)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 68) = Int(draftB#)
-            Locate 24, 27: Print Using "###"; batterRatings(I, 68);
+            Locate LAST_LINE, 27: Print Using "###"; batterRatings(I, 68);
             If XCode = 1 GoTo bLRKO:
             If XCode = 2 GoTo bDone
 
@@ -1637,7 +1637,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 69)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 69) = Int(draftB#)
-            Locate 24, 32: Print Using "###"; batterRatings(I, 69);
+            Locate LAST_LINE, 32: Print Using "###"; batterRatings(I, 69);
             If XCode = 1 GoTo bRLBA:
             If XCode = 2 GoTo bDone
 
@@ -1647,7 +1647,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 70)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 70) = Int(draftB#)
-            Locate 24, 37: Print Using "###"; batterRatings(I, 70);
+            Locate LAST_LINE, 37: Print Using "###"; batterRatings(I, 70);
             If XCode = 1 GoTo bRL2B:
             If XCode = 2 GoTo bDone
 
@@ -1657,7 +1657,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 71)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 71) = Int(draftB#)
-            Locate 24, 42: Print Using "###"; batterRatings(I, 71);
+            Locate LAST_LINE, 42: Print Using "###"; batterRatings(I, 71);
             If XCode = 1 GoTo bRL3B:
             If XCode = 2 GoTo bDone
 
@@ -1667,7 +1667,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 72)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 72) = Int(draftB#)
-            Locate 24, 47: Print Using "###"; batterRatings(I, 72);
+            Locate LAST_LINE, 47: Print Using "###"; batterRatings(I, 72);
             If XCode = 1 GoTo bRLHR:
             If XCode = 2 GoTo bDone
 
@@ -1677,12 +1677,12 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 73)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 73) = Int(draftB#)
-            Locate 24, 52: Print Using "###"; batterRatings(I, 73);
+            Locate LAST_LINE, 52: Print Using "###"; batterRatings(I, 73);
             If XCode = 1 GoTo bRLBB:
             If XCode = 2 GoTo bDone
 
             bRRBA:
-            Locate 24, 27
+            Locate LAST_LINE, 27
             Max = 3
             draftB# = batterRatings(I, 74)
             Call NumIn(draftB#, Max, XCode, FG, BG)
@@ -1692,7 +1692,7 @@ Sub EditBatter ()
             If XCode = 2 GoTo bDone
 
             bRR2B:
-            Locate 24, 32
+            Locate LAST_LINE, 32
             Max = 3
             draftB# = batterRatings(I, 75)
             Call NumIn(draftB#, Max, XCode, FG, BG)
@@ -1702,7 +1702,7 @@ Sub EditBatter ()
             If XCode = 2 GoTo bDone
 
             bRR3B:
-            Locate 24, 37
+            Locate LAST_LINE, 37
             Max = 3
             draftB# = batterRatings(I, 76)
             Call NumIn(draftB#, Max, XCode, FG, BG)
@@ -1712,7 +1712,7 @@ Sub EditBatter ()
             If XCode = 2 GoTo bDone
 
             bRRHR:
-            Locate 24, 42
+            Locate LAST_LINE, 42
             Max = 3
             draftB# = batterRatings(I, 77)
             Call NumIn(draftB#, Max, XCode, FG, BG)
@@ -1722,7 +1722,7 @@ Sub EditBatter ()
             If XCode = 2 GoTo bDone
 
             bRRBB:
-            Locate 24, 47
+            Locate LAST_LINE, 47
             Max = 3
             draftB# = batterRatings(I, 78)
             Call NumIn(draftB#, Max, XCode, FG, BG)
@@ -1732,7 +1732,7 @@ Sub EditBatter ()
             If XCode = 2 GoTo bDone
 
             bRRKO:
-            Locate 24, 52
+            Locate LAST_LINE, 52
             Max = 3
             draftB# = batterRatings(I, 79)
             Call NumIn(draftB#, Max, XCode, FG, BG)
@@ -2330,7 +2330,7 @@ Sub EditTeamInfo (YN$, team$, teamIdx)
         Done:
         'Do
         Color 14, 1
-        Locate 24, 1
+        Locate LAST_LINE, 1
         'Print "Is this okay? (Y)es/(N)o/(A)bort ";
         Print "Is this okay? (Y)es/(N)o";
         X$ = ""
@@ -2427,7 +2427,7 @@ Sub EditPitcher ()
             Locate 21, 26: Print "BAVG   K%  BB%  HR%  2B%  3B%"
             Locate 22, 13: Print "LHB vs LHP"
             Locate 23, 13: Print "LHB vs RHP"
-            Locate 24, 13: Print "RHB vs LHP";
+            Locate LAST_LINE, 13: Print "RHB vs LHP";
             Locate 25, 13: Print "RHB vs RHP";
 
             ' INITIALIZE PITCHER FIELDS
@@ -3209,62 +3209,62 @@ Sub EditPitcher ()
             If XCode = 2 GoTo PDone
 
             PRLBA:
-            Locate 24, 27
+            Locate LAST_LINE, 27
             Max = 3
             draftP# = pitcherRatings(I, 77)
             Call NumIn(draftP#, Max, XCode, FG, BG)
             pitcherRatings(I, 77) = Int(draftP#)
-            Locate 24, 27: Print Using "###"; pitcherRatings(I, 77);
+            Locate LAST_LINE, 27: Print Using "###"; pitcherRatings(I, 77);
             If XCode = 1 GoTo PLRKO:
             If XCode = 2 GoTo PDone
 
             PRL2B:
-            Locate 24, 32
+            Locate LAST_LINE, 32
             Max = 3
             draftP# = pitcherRatings(I, 78)
             Call NumIn(draftP#, Max, XCode, FG, BG)
             pitcherRatings(I, 78) = Int(draftP#)
-            Locate 24, 32: Print Using "###"; pitcherRatings(I, 78);
+            Locate LAST_LINE, 32: Print Using "###"; pitcherRatings(I, 78);
             If XCode = 1 GoTo PRLBA:
             If XCode = 2 GoTo PDone
 
             PRL3B:
-            Locate 24, 37
+            Locate LAST_LINE, 37
             Max = 3
             draftP# = pitcherRatings(I, 79)
             Call NumIn(draftP#, Max, XCode, FG, BG)
             pitcherRatings(I, 79) = Int(draftP#)
-            Locate 24, 37: Print Using "###"; pitcherRatings(I, 79);
+            Locate LAST_LINE, 37: Print Using "###"; pitcherRatings(I, 79);
             If XCode = 1 GoTo PRL2B:
             If XCode = 2 GoTo PDone
 
             PRLHR:
-            Locate 24, 42
+            Locate LAST_LINE, 42
             Max = 3
             draftP# = pitcherRatings(I, 80)
             Call NumIn(draftP#, Max, XCode, FG, BG)
             pitcherRatings(I, 80) = Int(draftP#)
-            Locate 24, 42: Print Using "###"; pitcherRatings(I, 80);
+            Locate LAST_LINE, 42: Print Using "###"; pitcherRatings(I, 80);
             If XCode = 1 GoTo PRL3B:
             If XCode = 2 GoTo PDone
 
             PRLBB:
-            Locate 24, 47
+            Locate LAST_LINE, 47
             Max = 3
             draftP# = pitcherRatings(I, 81)
             Call NumIn(draftP#, Max, XCode, FG, BG)
             pitcherRatings(I, 81) = Int(draftP#)
-            Locate 24, 47: Print Using "###"; pitcherRatings(I, 81);
+            Locate LAST_LINE, 47: Print Using "###"; pitcherRatings(I, 81);
             If XCode = 1 GoTo PRLHR:
             If XCode = 2 GoTo PDone
 
             PRLKO:
-            Locate 24, 52
+            Locate LAST_LINE, 52
             Max = 3
             draftP# = pitcherRatings(I, 82)
             Call NumIn(draftP#, Max, XCode, FG, BG)
             pitcherRatings(I, 82) = Int(draftP#)
-            Locate 24, 52: Print Using "###"; pitcherRatings(I, 82);
+            Locate LAST_LINE, 52: Print Using "###"; pitcherRatings(I, 82);
             If XCode = 1 GoTo PRLBB:
             If XCode = 2 GoTo PDone
 
@@ -3436,12 +3436,12 @@ Sub PITCHINIT (i, FG, BG)
     Locate 23, 42: Print Using "###"; pitcherRatings(i, 74)
     Locate 23, 47: Print Using "###"; pitcherRatings(i, 75)
     Locate 23, 52: Print Using "###"; pitcherRatings(i, 76)
-    Locate 24, 27: Print Using "###"; pitcherRatings(i, 77);
-    Locate 24, 32: Print Using "###"; pitcherRatings(i, 78);
-    Locate 24, 37: Print Using "###"; pitcherRatings(i, 79);
-    Locate 24, 42: Print Using "###"; pitcherRatings(i, 80);
-    Locate 24, 47: Print Using "###"; pitcherRatings(i, 81);
-    Locate 24, 52: Print Using "###"; pitcherRatings(i, 82);
+    Locate LAST_LINE, 27: Print Using "###"; pitcherRatings(i, 77);
+    Locate LAST_LINE, 32: Print Using "###"; pitcherRatings(i, 78);
+    Locate LAST_LINE, 37: Print Using "###"; pitcherRatings(i, 79);
+    Locate LAST_LINE, 42: Print Using "###"; pitcherRatings(i, 80);
+    Locate LAST_LINE, 47: Print Using "###"; pitcherRatings(i, 81);
+    Locate LAST_LINE, 52: Print Using "###"; pitcherRatings(i, 82);
     Locate 25, 27: Print Using "###"; pitcherRatings(i, 83);
     Locate 25, 32: Print Using "###"; pitcherRatings(i, 84);
     Locate 25, 37: Print Using "###"; pitcherRatings(i, 85);
@@ -3668,7 +3668,7 @@ Sub ViewPitchers (teamName$)
     Print "TOTAL APPEARANCES: "; numberAppearances
 
     Color 11
-    Locate 24: Print "HIT ANY KEY TO CONTINUE";
+    Locate LAST_LINE: Print "HIT ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
 End Sub
@@ -3743,7 +3743,7 @@ Sub ViewHittingFielding ()
     Next
 
     Color 11
-    Locate 24: Print "HIT ANY KEY TO CONTINUE";
+    Locate LAST_LINE: Print "HIT ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
 End Sub

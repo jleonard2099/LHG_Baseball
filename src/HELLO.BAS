@@ -2,19 +2,20 @@ $Debug
 $Color:32
 
 Const GAME_VERSION$ = "7.00"
+Const MAX_FILES = 10240
+Const MAX_CAREER_YEARS = 15
+'Const MAX_CONFERENCES = 40
+Const MAX_SCHED_STATS = 162
 Const MAX_SCHEDULE_GAMES = 1500
 Const MAX_TOURNAMENT_GAMES = 200
 Const MAX_TEAMS = 1000
-Const MAX_FILES = 10240
 'optimium = 1048576 (but slows code)
 Const TEAMS_PER_DIV = 10
 Const DIVS_PER_LEAGUE = 4
 Const TEAMS_PER_LEAGUE = 40
-Const MAX_CAREER_YEARS = 15
-'Const MAX_CONFERENCES = 40
 
-Const MAX_SCHED_STATS = 162
 Const SCHEDULE_SIZE_BYTES = 52
+Const LAST_LINE = 24
 
 DefInt A-Z
 
@@ -1090,9 +1091,9 @@ Sub LOADER
 
                 If I$ <> Chr$(27) Then Call LetterToNumber(I$, setting)
 
-            Loop Until setting >= 0 And setting <= 17 Or I$ = Chr$(27) Or UCase$(I$) = "Q"
+            Loop Until setting >= 0 And setting <= 17 Or I$ = Chr$(27) Or UCase$(I$) = Chr$(17) Or UCase$(I$) = "Q"
 
-            If I$ <> Chr$(27) And UCase$(I$) <> "Q" Then
+            If I$ <> Chr$(27) And UCase$(I$) <> "Q" And UCase$(I$) <> Chr$(17) Then
 
                 Select Case setting
 
@@ -1183,9 +1184,9 @@ Sub LOADER
 
             End If
 
-        Loop Until (setting = 9 And gameTeams$(0) <> "" And gameTeams$(1) <> "") Or I$ = Chr$(27) Or UCase$(I$) = "Q"
+        Loop Until (setting = 9 And gameTeams$(0) <> "" And gameTeams$(1) <> "") Or I$ = Chr$(27) Or I$ = Chr$(17) Or UCase$(I$) = "Q"
 
-        If I$ <> Chr$(27) And UCase$(I$) <> "Q" Then
+        If I$ <> Chr$(27) And UCase$(I$) <> Chr$(17) And UCase$(I$) <> "Q" Then
             'TICKER PROMPT
         Else
 
@@ -1706,7 +1707,7 @@ Sub StartingLineup (P9)
 
                 If desigHit <> 1 Or I1 <> 1 Then
 
-                    Locate 24, (I1 * 3) + 1
+                    Locate LAST_LINE, (I1 * 3) + 1
                     If gameM(I1) = 0 Then
                         Print fieldPos$(I1); "  ";
                     End If
@@ -1830,7 +1831,7 @@ Sub LineupPositions (teamIdx, posIdx)
 
                                 If desigHit <> 1 Or I0 <> 1 Then
 
-                                    Locate 24, (I0 * 3) + 1
+                                    Locate LAST_LINE, (I0 * 3) + 1
                                     If gameM(I0) = 0 Then
                                         Print fieldPos$(I0); "  ";
                                     End If
@@ -1904,7 +1905,7 @@ Sub LineupPositions (teamIdx, posIdx)
 
                                 If desigHit <> 1 Or I1 <> 1 Then
 
-                                    Locate 24, (I1 * 3) + 1
+                                    Locate LAST_LINE, (I1 * 3) + 1
                                     If gameM(I1) = 0 Then
                                         Print fieldPos$(I1); "  ";
                                     End If
@@ -2234,7 +2235,7 @@ Sub LineupFromProfile (lineupFound%, P9, skipLineChange%)
         If autoPlay = 1 Then
             noLUFound = 1
         Else
-            'Locate 24, 1
+            'Locate LAST_LINE, 1
             Locate 22, 1
             Print "PRESS ANY KEY TO CONTINUE"
             I$ = GetKeyPress$
@@ -3770,7 +3771,7 @@ Sub SOURCE ()
 
         Print "THIS GAME HAS BEEN CALLED ON ACCOUNT OF RAIN!!!"
         Print "ALL RECORDS ARE OFFICIAL!!"
-        Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
+        Locate LAST_LINE, 1: Print "HIT ANY KEY TO CONTINUE";
 
         I$ = GetKeyPress$
 
@@ -4101,7 +4102,7 @@ Sub SOURCE ()
             GoTo 15580
         End If
 
-        If UCase$(I$) = "Q" Then
+        If UCase$(I$) = Chr$(17) Then
             If useVGA = 0 Then Cls
             Call EndOfGame
             Exit Sub
@@ -4394,7 +4395,7 @@ Sub SOURCE ()
             GoTo 15580
         End If
 
-        If UCase$(I$) = "Q" Then
+        If UCase$(I$) = Chr$(17) Then
             If useVGA = 0 Then Cls
             Call EndOfGame
             Exit Sub
@@ -6442,7 +6443,7 @@ Sub SOURCE ()
     ' or special menus, etc.
     I$ = InKey$
 
-    If UCase$(I$) = "Q" Then
+    If UCase$(I$) = Chr$(17) Then
         Call EndOfGame
         Exit Sub
     End If
@@ -7577,7 +7578,7 @@ Sub SOURCE ()
             Do
 
                 Call PITDISP(P9)
-                Locate 24, 1: Print "SELECT RELIEVER (Z = NO CHANGE)   ";
+                Locate LAST_LINE, 1: Print "SELECT RELIEVER (Z = NO CHANGE)   ";
                 If B9%(P9, 1) <> 99 Then Call TIRING(P9)
                 Print
 
@@ -8736,7 +8737,7 @@ Sub INFO ()
     Color 14
     Print "GAME OPTIONS MENU"
 
-    Locate 24, 1
+    Locate LAST_LINE, 1
     Print Tab(80); " ";
     Locate , 1
     Print "    LANCE HAFFNER / JASON LEONARD  1986-2024"; Tab(70); Left$(Time$, 5);
@@ -9333,7 +9334,7 @@ Sub PBP (pbpString$)
         Call OPTIONS
     End If
 
-    If UCase$(M$) = "Q" Then
+    If UCase$(M$) = Chr$(17) Then
         Cls
         End
     End If
@@ -10708,7 +10709,7 @@ Sub DisplayBallField (nbrBalls, P, nbrStrikes, D)
 
     'Catcher Stats
     Color 15, 2
-    Locate 24, 59: Print Using "   A:#"; batRating(D, B9%(D, 2), 15);
+    Locate LAST_LINE, 59: Print Using "   A:#"; batRating(D, B9%(D, 2), 15);
 
     If batRating(D, B9%(D, 2), 19) = 1000 Then
         fldPct$ = "1.000"
@@ -12567,7 +12568,7 @@ Sub PopUp_Lineup ()
     Next
 
     Color 15, 0
-    Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
+    Locate LAST_LINE, 1: Print "HIT ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
 End Sub
@@ -12903,7 +12904,7 @@ Sub POPUPSTATS ()
     M = P1(D)
     Call PopUp_Pitcher(WK, M)
 
-    Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
+    Locate LAST_LINE, 1: Print "HIT ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
     Color 7, 0
 
@@ -16284,7 +16285,7 @@ Sub WEATHER ()
     End If
 
     Color 15, 0
-    Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
+    Locate LAST_LINE, 1: Print "HIT ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
     If useVGA = 1 Then
@@ -16743,7 +16744,7 @@ Sub OPTIONS ()
 
         Do
             Color 7, 0
-            'Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
+            'Locate LAST_LINE, 1: Print "HIT ANY KEY TO CONTINUE";
             I$ = GetKeyPress$
             I = Val(I$)
         Loop Until I >= 0 And I <= 2
@@ -18554,7 +18555,7 @@ Sub BOX2SCREEN
     Call ScoreSummary
 
     If autoPlay <> 1 Or playerMode <> 2 Then
-        Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
+        Locate LAST_LINE, 1: Print "HIT ANY KEY TO CONTINUE";
         I$ = GetKeyPress$
     End If
 
@@ -18921,7 +18922,7 @@ Sub STATS2SCREEN
         Print
 
         If autoPlay <> 1 Or playerMode <> 2 Then
-            Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
+            Locate LAST_LINE, 1: Print "HIT ANY KEY TO CONTINUE";
             I$ = GetKeyPress$
         End If
 
@@ -19050,7 +19051,7 @@ Sub STATS2SCREEN
         Print
 
         If autoPlay <> 1 Or playerMode <> 2 Then
-            Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
+            Locate LAST_LINE, 1: Print "HIT ANY KEY TO CONTINUE";
             I$ = GetKeyPress$
         End If
 
@@ -19175,7 +19176,7 @@ Sub STATS2SCREEN
     Color 15, 0: Print precip$(precipType)
 
     If autoPlay <> 1 Or playerMode <> 2 Then
-        Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
+        Locate LAST_LINE, 1: Print "HIT ANY KEY TO CONTINUE";
         I$ = GetKeyPress$
     End If
 
@@ -19308,8 +19309,6 @@ End Sub
 'should be started.
 Sub EndOfGame ()
 
-    'Close #11
-
     Cls
 
     If useVGA = 1 Then
@@ -19319,22 +19318,24 @@ Sub EndOfGame ()
 
     If normalFinish = 1 Then
 
+        'Close #11
         Call POSTGAME
 
-        ' Prompt to play another game
         Cls
 
+        ' Prompt to play another game
         If autoPlay <> 1 Then
 
             'Using Home Team's color for the box
             Call TEAMBOX(1, 1)
 
-            Do
-                U$ = "PLAY ANOTHER GAME? (Y/N)"
-                Locate 7, (80 - Len(U$)) / 2
-                Print U$
+            pbpString$ = "PLAY ANOTHER GAME? (Y/N)"
+            Locate 7, (80 - Len(pbpString$)) / 2
+            Print pbpString$
 
-                Color 15, 0
+            Color 15, 0
+
+            Do
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 

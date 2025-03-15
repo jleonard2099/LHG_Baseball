@@ -229,7 +229,7 @@ Sub ConfigureDrives ()
 
     Done:
     Color Yellow, 1
-    Locate 24, 1
+    Locate LAST_LINE, 1
     Print "Is this okay? (Y/N) ";
     X$ = ""
     Call YesNoB(X$, XCode, FG, BG)
@@ -339,7 +339,7 @@ Sub ConfigureDrives_Base ()
 
     Color Yellow, Blue
     Locate 23, 1: Print "Path for Profiles "
-    Color Black, DarkGray: Locate 24, 1: Print PadRight$(diskPaths$(4), 80)
+    Color Black, DarkGray: Locate LAST_LINE, 1: Print PadRight$(diskPaths$(4), 80)
     _PutImage (580, 390)-(612, 422), browseImage&, confDriveScreen&
 
     Color Yellow, Blue
@@ -448,7 +448,7 @@ Sub ConfigureDrives_Base ()
 
                     If userFolder$ <> "" Then diskPaths$(4) = userFolder$
                     Color Black, DarkGray
-                    Locate 24, 1: Print PadRight$(diskPaths$(4), 80)
+                    Locate LAST_LINE, 1: Print PadRight$(diskPaths$(4), 80)
 
                 End If
 
@@ -511,7 +511,7 @@ Sub ConfigureDrives_Base ()
             diskPaths$(3) = _Trim$(diskPaths$(3))
 
             GetDiv5:
-            Locate 24, 1 'location of beginning of field
+            Locate LAST_LINE, 1 'location of beginning of field
             CapsOn = 0
             NumOnly = 0
             Max = 80
@@ -528,7 +528,7 @@ Sub ConfigureDrives_Base ()
 
     Done:
     Color Yellow, 1
-    Locate 24, 1
+    Locate LAST_LINE, 1
     Print "Is this okay? (Y/N) ";
     X$ = ""
     Call YesNoB(X$, XCode, FG, BG)

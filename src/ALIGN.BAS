@@ -253,8 +253,8 @@ Sub AlignStats (pathRoadStats$, statFile$)
     Next
 
     Color 11
-    Locate 24, 31: Line Input "HIT ENTER TO ALIGN"; DUMMY$
-    Locate 24, 30: Print "ALIGNING FILES . . ."
+    Locate LAST_LINE, 31: Line Input "HIT ENTER TO ALIGN"; DUMMY$
+    Locate LAST_LINE, 30: Print "ALIGNING FILES . . ."
 
     N = 0
 
@@ -386,8 +386,8 @@ Sub ReviewAndSaveAlignment (pathRoadStats$, statFile$)
     Next
 
     Color 11
-    Locate 24, 31: Line Input "HIT ENTER TO ALIGN"; DUMMY$
-    Locate 24, 30: Print "ALIGNING FILES . . ."
+    Locate LAST_LINE, 31: Line Input "HIT ENTER TO ALIGN"; DUMMY$
+    Locate LAST_LINE, 30: Print "ALIGNING FILES . . ."
 
     Open pathRoadStats$ + statFile$ For Output As #1
 
