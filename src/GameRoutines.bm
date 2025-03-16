@@ -4322,7 +4322,7 @@ Sub HITTINGLINES
 
                 If pitchRating(side, currPitcher%(side), SS_P_BAvg) <= 0 Or pitchRating(side, currPitcher%(side), SS_P_BAvg) = 1 Then
                     theRating! = pitchRating(side, currPitcher%(side), SS_P_H_H) / pitchRating(side, currPitcher%(side), SS_P_H_AB)
-                    Print #11, "*+*+*+ 25 RESETTING The Rating: "; theRating!; " because of 0 or 1 for pit avg: "; pitchRating(side, currPitcher%(side), SS_P_BAvg)
+                    Print #11, "*+*+*+ 24 RESETTING The Rating: "; theRating!; " because of 0 or 1 for pit avg: "; pitchRating(side, currPitcher%(side), SS_P_BAvg)
                 End If
 
                 oppPitRating! = pitchRating(side, currPitcher%(side), 14) / 1000
@@ -4350,11 +4350,11 @@ Sub HITTINGLINES
 
                 If fldPos%(side, lineup) = 1 And gameTS%(side, 0) = 999 Then
 
-                    oppPitRating! = pitchRating(side, currPitcher%(side), TY% * 6 + 65) / 1000
+                    I6! = pitchRating(side, currPitcher%(side), TY% * 6 + 65) / 1000
                 Else
 
                     If fldPos%(side, lineup) = 1 Then
-                        oppPitRating! = pitchRating(side, currPitcher%(side), 14) / 1000
+                        I6! = pitchRating(side, currPitcher%(side), 14) / 1000
                     Else
                         If batRating(side, playerNum%(side, lineup), SS_B_AB) = 0 Then
                             theRating! = 0
@@ -4374,8 +4374,14 @@ Sub HITTINGLINES
 
                         End If
 
-                        oppPitRating! = batRating(side, playerNum%(side, lineup), 20) / 1000
-                        If gameTS%(side, 0) = 999 And batRating(side, playerNum%(side, lineup), 80) <> 0 Then I6! = batRating(side, playerNum%(side, lineup), 56 + TY% * 6) / 1000
+                        I6! = batRating(side, playerNum%(side, lineup), 20) / 1000
+
+                        If gameTS%(side, 0) = 999 And batRating(side, playerNum%(side, lineup), 80) <> 0 Then 
+                            I6! = batRating(side, playerNum%(side, lineup), 56 + TY% * 6) / 1000
+
+                            Print #11, Using "BAVG 22   bat80 = ###.##  TY = ####.###  batRating = ####.###  I6 = ####.###"; _
+                            batRating(side, playerNum%(side, lineup), 80), TY%, batRating(side, playerNum%(side, lineup), 56 + TY% * 6), I6!
+                        End If
 
                     End If
 
@@ -5411,7 +5417,7 @@ Sub TAGADVANCE (S2%, I8!, D)
     If S2% = EVENT_2B And I8! = 3 Then
 
         If fldPos%(P, currBatter!(P)) = 1 Then
-            I5 = P1%(P)
+            I5 = playerNum%(P, currBatter!(P))
             Call INCPITOFF(P, I5, 28)
 
             statPitcherGame%(  P, currPitcher%(P), 27) = statPitcherGame%(  P, currPitcher%(P), 27) - 1
@@ -9041,7 +9047,7 @@ Sub BOX2FILE (printChoice, boxName$)
             LPrint X$
         Loop While Left$(X$, 1) <> Chr$(12)
 
-        Kill "TEMPBOX"
+        If _FileExists("TEMPBOX") Then Kill "TEMPBOX"
 
     End If
 
@@ -9823,9 +9829,7 @@ Sub EndOfGame ()
         If UCase$(I$) = "Y" Or (autoPlay = 1 And endAllGames <> 1) Then
             Cls
             Print "PLEASE WAIT ..."
-            Print #11, "BEFORE calling Loader..."
             Call LOADER
-            Print #11, "AFTER calling Loader..."
         End If
 
     End If
@@ -10389,4 +10393,16 @@ Sub DumpAll
 
     Print #11, "---"
 
+End Sub
+
+Sub DumpBatters
+    For bm = 0 To 80
+        Print #11, "Dump batter"; bm, batRating(0, 0, bm)
+    Next
+End Sub
+
+Sub DumpPitchers
+    For bm = 0 To 89
+        Print #11, "Dump pitchr"; bm, pitchRating(0, 0, bm)
+    Next
 End Sub

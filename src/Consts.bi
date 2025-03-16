@@ -17,7 +17,7 @@ Const SS_B_Run = 16
 Const SS_B_Range = 17
 Const SS_B_GndPct = 18
 Const SS_B_FldPct = 19
-
+Const SS_B_LgBAvg = 20
 '21 is unknown (INJURY?)'
 Const SS_B_Pos1 = 22
 Const SS_B_Pos2 = 23
@@ -27,7 +27,7 @@ Const SS_B_FldPct1 = 26
 Const SS_B_FldPct2 = 27
 Const SS_B_FldPct3 = 28
 Const SS_B_FldPct4 = 29
-'30 is BUNT?'
+Const SS_B_Bunt = 30
 '31 is unknown (INJURY?)'
 '32 is INJURY?'
 
@@ -72,7 +72,7 @@ Const SS_P_ERA100 = 10 'ERA*100
 Const SS_H_BAvg = 11
 Const SS_P_GndPct = 12
 Const SS_P_HR = 13
-' Const SS_P_CG = 14
+Const SS_P_LgBAvg = 14
 Const SS_P_WP = 15
 Const SS_P_CG = 16
 Const SS_P_FldPct = 17
@@ -92,6 +92,7 @@ Const SS_P_H_SB = 29
 Const SS_P_H_CS = 30
 Const SS_P_Range= 31
 Const SS_P_Bunt = 32
+Const SS_P_SH   = 33
 
 Const SS_P_Rest = 35
 

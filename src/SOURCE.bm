@@ -24,6 +24,9 @@ Sub SOURCE ()
 
     Call PITSTAM(0) : Call PITSTAM(1)
 
+    DumpBatters
+    DumpPitchers
+
     If useVGA = 1 Then Call LOADSCREEN
 
 LStart: '
@@ -4998,13 +5001,14 @@ LStart: '
         J% = 0
         GP% = 0
         pit16 = pitchRating(P, currPitcher%(P), 16)
-        pit15 = pitchRating(P, currPitcher%(P), SS_P_W)
+        pit15 = pitchRating(P, currPitcher%(P), 15)
         pitRatio = Int( pit16 / pit15 * 100 + .5 )
 
-        Print #11, Using "LPhForPitcher INNING: ##  ourScore: ##  theirScore: ## gamePitcher: ##  pit16: ##  pit15: ##  pitRatio: ##.###"; _
-            INNING%, pitchEraOpt, gameScore(P, 0), gameScore(D, 0), gamePitcher%(P), pit16, pit15, pitRatio, RN0
+        Print #11, Using "LPhForPitcher DH: ## INNING: ##  pitchEraOpt: ##   ourScore: ##  theirScore: ## gamePitcher: ##  pit16: ##  pit15: ##  pitRatio: ##.###  RN0: ##.###"; _
+          desigHit, INNING%, pitchEraOpt, gameScore(P, 0), gameScore(D, 0), gamePitcher%(P), pit16, pit15, pitRatio, RN0
 
-        If (  pitchEraOpt > 1 And INNING% < 4) _
+          'ToDo:  Move the check for DH (desigHit) earlier (upstream) -- we shouldn't even be reaching here when using DH'
+        If desigHit = 1 Or ( (  pitchEraOpt > 1 And INNING% < 4) _
           Or (pitchEraOpt > 2 And INNING% < 7) _
           Or (pitchEraOpt > 3 And INNING% < 9) _
           Or (pitchEraOpt >= 8) _
@@ -5021,7 +5025,7 @@ LStart: '
           Or gameScore(D, 0) - gameScore(P, 0) <= 2) _
             And pit15 > 0 _
             And gamePitcher%(P) = 1 _
-            And pitRatio >= 100) _
+            And pitRatio >= 100) )_
         Then skipLoop = 1
 
         If skipLoop = 0 Then
@@ -5030,8 +5034,9 @@ LStart: '
 
                 If Not (batters$(P, Idx) = "XXX" Or batRating(P, Idx, 21) > 0 Or batRating(P, Idx, SS_B_AB) = 0) Then
 
-                    If batRating(P, Idx, SS_B_Bats) > 0 And pitchRating(D, currPitcher%(D), 0) = 1 Or batRating(P, Idx, SS_B_Bats) < 0 And pitchRating(D, currPitcher%(D), SS_P_Throws)= -1 Then
-                        PH%(J%, 0) = Int(batRating(P, Idx, SS_B_G) / 4 + .5)
+                    If batRating(P, Idx, SS_B_Bats) > 0 And pitchRating(D, currPitcher%(D), SS_P_Throws) = 1 Or _
+                       batRating(P, Idx, SS_B_Bats) < 0 And pitchRating(D, currPitcher%(D), SS_P_Throws)= -1 Then
+                        PH%(J%, 0) = Int( batRating(P, Idx, SS_B_G) / 4 + .5 )
                     Else
                         PH%(J%, 0) = batRating(P, Idx, SS_B_G)
                     End If
