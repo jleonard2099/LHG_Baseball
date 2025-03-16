@@ -192,7 +192,7 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
     If nbrOuts(0) <> 3 Then MO = 0
 
     For WK = 1 To 3
-        If gameB0%(WK, 0) > 0 Then MO = MO + 1
+        If gameBaserunners%(WK, 0) > 0 Then MO = MO + 1
     Next
 
     'display RUNNER AT THIRD
@@ -228,7 +228,7 @@ Sub DisplayRun_G (I2, p, X)
 
     End Select
 
-    J = gameB0%(I2, 0)
+    J = gameBaserunners%(I2, 0)
 
     If J <> 0 Then
 

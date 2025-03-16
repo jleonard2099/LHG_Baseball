@@ -1720,11 +1720,6 @@ Sub SelectStadium (useVGA)
                     Spacing% = 1
                     Row% = 5
 
-                    _Dest _Console
-                    Print "1: " + menuChoices$(1)
-                    Print "2: " + menuChoices$(2)
-                    _Dest 0
-                    
                     menuWidth% = Len(menuChoices$(1))
                     Column% = (80 - menuWidth% - 2) / 2
 

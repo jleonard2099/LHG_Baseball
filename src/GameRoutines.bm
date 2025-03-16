@@ -194,7 +194,7 @@ Sub InitVar ()
     Erase BP, F, MON
     Erase VV, VV1
 
-    Erase A5%, gameB0%
+    Erase A5%, gameBaserunners%
     Erase B1%, B2%, liveBatRating%, statBatterLeague%, statBatterGame%, playerX%
     Erase BT%, BB%, CSS%, D3%, DP%
     Erase gameD0%, gameScore, gameT1%, GK%
@@ -767,9 +767,9 @@ End Sub
 Sub ADV1BASE (i)
 
     For I4 = 0 To 2
-        gameB0%(i + 1, I4) = gameB0%(i, I4)
-        gameB0%(i + 1, 2) = 0
-        gameB0%(i, I4) = 0
+        gameBaserunners%(i + 1, I4) = gameBaserunners%(i, I4)
+        gameBaserunners%(i + 1, 2) = 0
+        gameBaserunners%(i, I4) = 0
     Next I4
 
     player$(i + 1) = player$(i)
@@ -783,9 +783,9 @@ End Sub
 ' ...explanation...
 Sub ADV2BASES (i)
     For I4 = 0 To 2
-        gameB0%(i + 2, I4) = gameB0%(i, I4)
-        gameB0%(i + 1, 2) = 0
-        gameB0%(i, I4) = 0
+        gameBaserunners%(i + 2, I4) = gameBaserunners%(i, I4)
+        gameBaserunners%(i + 1, 2) = 0
+        gameBaserunners%(i, I4) = 0
     Next I4
 
     player$(i + 2) = player$(i)
@@ -799,10 +799,10 @@ End Sub
 ' ...explanation...
 Sub ADV3BASES (I3, P, D)
 
-    gameB0%(I3, 0) = currBatter!(P)
-    gameB0%(I3, 1) = currPitcher%(D)
-    gameB0%(I3, 2) = 0
-    gameB0%(0, 0) = 0
+    gameBaserunners%(I3, 0) = currBatter!(P)
+    gameBaserunners%(I3, 1) = currPitcher%(D)
+    gameBaserunners%(I3, 2) = 0
+    gameBaserunners%(0, 0) = 0
 
     player$(I3) = player$(0)
 
@@ -814,40 +814,40 @@ End Sub
 ' ...explanation...
 Sub ADVANCEMENT (P, D, S2%, F%, I3)
 
-    If gameB0%(3, 0) <> 0 And A5%(3) <> 0 Then
+    If gameBaserunners%(3, 0) <> 0 And A5%(3) <> 0 Then
         i = 3
         If A5%(3) >= 1 And A5%(3) <= 4 Then Call RecordRun(sah%, i, D, F%, PQ, S2%, currFielder%, INFPOS%)
         If A5%(3) = 10 Then Call RecordOut(i, 3)    'out at third'
         If A5%(3) = 11 Then Call RecordOut(i, 4)    'out at home'
     End If
 
-    If gameB0%(2, 0) <> 0 And A5%(2) <> 0 Then
+    If gameBaserunners%(2, 0) <> 0 And A5%(2) <> 0 Then
         i = 2
-        If A5%(2) = 1 And gameB0%(3, 0) = 0 Then Call ADV1BASE(i)
-        If A5%(2) >= 2 And A5%(2) <= 4 And gameB0%(3, 0) = 0 Then Call RecordRun(sah%, i, D, F%, PQ, S2%, currFielder%, INFPOS%)
+        If A5%(2) = 1 And gameBaserunners%(3, 0) = 0 Then Call ADV1BASE(i)
+        If A5%(2) >= 2 And A5%(2) <= 4 And gameBaserunners%(3, 0) = 0 Then Call RecordRun(sah%, i, D, F%, PQ, S2%, currFielder%, INFPOS%)
 
         'nothing happens for values 5-9? or are they not possible?
 
         If A5%(2) = 10 Then Call RecordOut(i, 2)    'out at second'
         If A5%(2) = 11 Then Call RecordOut(i, 3)    'out at third'
-        If A5%(2) = 12 And gameB0%(3, 0) = 0 Then Call RecordOut(i, 4)  'out at home'
+        If A5%(2) = 12 And gameBaserunners%(3, 0) = 0 Then Call RecordOut(i, 4)  'out at home'
     End If
 
-    If gameB0%(1, 0) <> 0 And A5%(1) <> 0 Then
+    If gameBaserunners%(1, 0) <> 0 And A5%(1) <> 0 Then
         i = 1
-        If A5%(1) = 1 And gameB0%(2, 0) = 0 Then Call ADV1BASE(i)
-        If A5%(1) = 2 And gameB0%(2, 0) = 0 And gameB0%(3, 0) = 0 Then Call ADV2BASES(i)
-        If A5%(1) >= 3 And A5%(1) <= 4 And gameB0%(2, 0) = 0 And gameB0%(3, 0) = 0 Then Call RecordRun(sah%, i, D, F%, PQ, S2%, currFielder%, INFPOS%)
-        If A5%(1) = 8 And gameB0%(2, 0) = 0 Then Call ADV1BASE(i)
+        If A5%(1) = 1 And gameBaserunners%(2, 0) = 0 Then Call ADV1BASE(i)
+        If A5%(1) = 2 And gameBaserunners%(2, 0) = 0 And gameBaserunners%(3, 0) = 0 Then Call ADV2BASES(i)
+        If A5%(1) >= 3 And A5%(1) <= 4 And gameBaserunners%(2, 0) = 0 And gameBaserunners%(3, 0) = 0 Then Call RecordRun(sah%, i, D, F%, PQ, S2%, currFielder%, INFPOS%)
+        If A5%(1) = 8 And gameBaserunners%(2, 0) = 0 Then Call ADV1BASE(i)
         If A5%(1) = 10 Then Call RecordOut(i, 1)    'out at first'
         If A5%(1) = 11 Then Call RecordOut(i, 2)    'out at second'
-        If A5%(1) = 12 And gameB0%(3, 0) = 0 And gameB0%(2, 0) = 0 Then Call RecordOut(i, 3)    'out at third'
-        If A5%(1) = 13 And gameB0%(2, 0) = 0 And gameB0%(3, 0) = 0 Then Call RecordOut(i, 4)    'out at home'
+        If A5%(1) = 12 And gameBaserunners%(3, 0) = 0 And gameBaserunners%(2, 0) = 0 Then Call RecordOut(i, 3)    'out at third'
+        If A5%(1) = 13 And gameBaserunners%(2, 0) = 0 And gameBaserunners%(3, 0) = 0 Then Call RecordOut(i, 4)    'out at home'
     End If
 
     i = 0
-    gameB0%(0, 0) = currBatter!(P)
-    gameB0%(0, 1) = currPitcher%(D)
+    gameBaserunners%(0, 0) = currBatter!(P)
+    gameBaserunners%(0, 1) = currPitcher%(D)
 
     If A5%(0) <> 0 Then
         'values 1 to 3
@@ -1074,7 +1074,7 @@ Sub CHANGELINEUP (P9, P)
         Locate , 25
 
         For I1 = 1 To 3
-            If gameB0%(I1, 0) = luIdx And P9 = P Then Color 3: Print I1;: Color 15
+            If gameBaserunners%(I1, 0) = luIdx And P9 = P Then Color 3: Print I1;: Color 15
         Next I1
 
         Print " "
@@ -1296,7 +1296,7 @@ End Sub
 ' ...explanation...
 Sub DisplayRun (I2, P, X)
 
-    J = gameB0%(I2, 0)
+    J = gameBaserunners%(I2, 0)
 
     If J <> 0 Then
 
@@ -1930,7 +1930,7 @@ Sub FLDERR (F%, currFielder%, D, fldPct, SB%, S2%, P)
             A5%(0) = 2
         End If
 
-        If S2% >= 17 And S2% <= 19 And RN <= 33 And nbrOuts(0) < 2 And gameB0%(1, 0) = 0 Then A5%(0) = 2
+        If S2% >= 17 And S2% <= 19 And RN <= 33 And nbrOuts(0) < 2 And gameBaserunners%(1, 0) = 0 Then A5%(0) = 2
 
         If S2% = 16 Or S2% = 22 Then A5%(0) = 0
 
@@ -2539,7 +2539,7 @@ Sub MAINSCREEN (D, P, nbrBalls, nbrStrikes, MO)
     If nbrOuts(0) <> 3 Then MO = 0
 
     For WK = 1 To 3
-        If gameB0%(WK, 0) > 0 Then MO = MO + 1
+        If gameBaserunners%(WK, 0) > 0 Then MO = MO + 1
     Next
 
     Locate 18, 47
@@ -2852,7 +2852,7 @@ Sub PINCHRUNNER (MS%, A1, baseRunners%, I2, P, PR%, nbrBalls, nbrStrikes, D, MO)
 
         ' J REPRESENTS THE SPOT IN THE BATTING ORDER
         ' J1 represents the base
-        J = gameB0%(I2, 0)
+        J = gameBaserunners%(I2, 0)
         J1 = I2
 
         If J <> 0 Then
@@ -3381,9 +3381,9 @@ Sub PLAYERNAME (P)
 
     For pIdx = 1 To 3
 
-        If gameB0%(pIdx, 0) > 0 Then
-            If fldPos%(P, gameB0%(pIdx, 0)) <> 1 Then
-                player$(pIdx) = batters$(P, playerNum%(P, gameB0%(pIdx, 0)))
+        If gameBaserunners%(pIdx, 0) > 0 Then
+            If fldPos%(P, gameBaserunners%(pIdx, 0)) <> 1 Then
+                player$(pIdx) = batters$(P, playerNum%(P, gameBaserunners%(pIdx, 0)))
             Else
                 player$(pIdx) = pitchers$(P, currPitcher%(P))
             End If
@@ -3932,10 +3932,10 @@ End Sub
 ' ...explanation...
 Sub PUTOUT (i, P)
 
-    If fldPos%(P, gameB0%(i - 1, 0)) = 1 Then
+    If fldPos%(P, gameBaserunners%(i - 1, 0)) = 1 Then
         Call INCPITOFF(P, currPitcher%(P), 33)
     Else
-        Call INCBATOFF(P, playerNum%(P, gameB0%(i - 1, 0)), 10)
+        Call INCBATOFF(P, playerNum%(P, gameBaserunners%(i - 1, 0)), 10)
     End If
 
 End Sub
@@ -3950,9 +3950,9 @@ Sub RecordOut (i, I3)
 
     Call PBP(player$(i) + " out @ " + baseName$(I3))
 
-    gameB0%(i, 0) = 0
-    gameB0%(i, 1) = 0
-    gameB0%(i, 2) = 0
+    gameBaserunners%(i, 0) = 0
+    gameBaserunners%(i, 1) = 0
+    gameBaserunners%(i, 2) = 0
     player$(i) = ""
 
 End Sub
@@ -3967,9 +3967,9 @@ Sub RecordRun (sah%, i, D, F%, PQ, S2%, currFielder%, INFPOS%)
     If sah% = 0 Then Call PBP(player$(i) + " scores")
     sah% = 0
 
-    Call ADDPIT(D, gameB0%(i, 1), 2)
+    Call ADDPIT(D, gameBaserunners%(i, 1), 2)
 
-    If currPitcher%(D) <> gameB0%(i, 1) Then 
+    If currPitcher%(D) <> gameBaserunners%(i, 1) Then 
         Call ADDPIT(D, currPitcher%(D), 18)
     End If
 
@@ -3977,10 +3977,10 @@ Sub RecordRun (sah%, i, D, F%, PQ, S2%, currFielder%, INFPOS%)
         statPitcherGame%(P, currPitcher%(P), 20) = statPitcherGame%(P, currPitcher%(P), 20) + 1
     End If
 
-    If fldPos%(P, gameB0%(i, 0)) = 1 Then
+    If fldPos%(P, gameBaserunners%(i, 0)) = 1 Then
         Call INCPITOFF(P, currPitcher%(P), 25)
     Else
-        Call INCBATOFF(P, playerNum%(P, gameB0%(i, 0)), 2)
+        Call INCBATOFF(P, playerNum%(P, gameBaserunners%(i, 0)), 2)
     End If
 
     If F% = 1 Then
@@ -4014,7 +4014,7 @@ Sub RecordRun (sah%, i, D, F%, PQ, S2%, currFielder%, INFPOS%)
     gameScore(P, 0) = gameScore(P, 0) + 1
 
     If gameScore(P, 0) - gameScore(D, 0) = 1 Then
-        P2%(D) = gameB0%(i, 1)
+        P2%(D) = gameBaserunners%(i, 1)
         P2%(P) = currPitcher%(P)
         S1%(1) = -1
         S1%(0) = -1
@@ -4025,9 +4025,9 @@ Sub RecordRun (sah%, i, D, F%, PQ, S2%, currFielder%, INFPOS%)
         End If
     End If
 
-    gameB0%(i, 0) = 0
-    gameB0%(i, 1) = 0
-    gameB0%(i, 2) = 0
+    gameBaserunners%(i, 0) = 0
+    gameBaserunners%(i, 1) = 0
+    gameBaserunners%(i, 2) = 0
     player$(i) = ""
 
     Call d100(RN0)
@@ -5097,12 +5097,12 @@ Sub SINGLEROUTINE (currFielder%, P, I1, D, S2%, P2)
         A5%(I) = 1
     Next I
 
-    If S2% <> EVENT_PSBL_SINGLE And gameB0%(2, 0) <> 0 Then
+    If S2% <> EVENT_PSBL_SINGLE And gameBaserunners%(2, 0) <> 0 Then
 
         Call d100(dice1000%)
 
-        If fldPos%(P, gameB0%(2, 0)) <> 1 Then
-            BR% = batRating(P, playerNum%(P, gameB0%(2, 0)), 16)
+        If fldPos%(P, gameBaserunners%(2, 0)) <> 1 Then
+            BR% = batRating(P, playerNum%(P, gameBaserunners%(2, 0)), 16)
         Else
             BR% = pitchRating(P, currPitcher%(P), 31)
         End If
@@ -5129,13 +5129,13 @@ Sub SINGLEROUTINE (currFielder%, P, I1, D, S2%, P2)
 
     End If
 
-    If Not (gameB0%(1, 0) = 0 Or S2% = EVENT_PSBL_SINGLE Or gameB0%(2, 0) > 0 And A5%(2) = 1) Then
+    If Not (gameBaserunners%(1, 0) = 0 Or S2% = EVENT_PSBL_SINGLE Or gameBaserunners%(2, 0) > 0 And A5%(2) = 1) Then
 
         Call d100(dice1000%)
 
-        BR% = batRating(P, playerNum%(P, gameB0%(1, 0)), 16)
+        BR% = batRating(P, playerNum%(P, gameBaserunners%(1, 0)), 16)
 
-        If fldPos%(P, gameB0%(1, 0)) = 1 Then BR% = pitchRating(P, currPitcher%(P), 31)
+        If fldPos%(P, gameBaserunners%(1, 0)) = 1 Then BR% = pitchRating(P, currPitcher%(P), 31)
 
         I3 = 0
 
@@ -5171,12 +5171,12 @@ End Sub
 ' ...explanation...
 Sub SOMESTATS (V, P, F%)
 
-    If gameB0%(V, 0) > 0 And F% = 0 Then
+    If gameBaserunners%(V, 0) > 0 And F% = 0 Then
 
-        If fldPos%(P, gameB0%(V, 0)) = 1 Then
+        If fldPos%(P, gameBaserunners%(V, 0)) = 1 Then
             Call INCPITOFF(P, currPitcher%(P), 32)
         Else
-            Call INCBATOFF(P, playerNum%(P, gameB0%(V, 0)), 9)
+            Call INCBATOFF(P, playerNum%(P, gameBaserunners%(V, 0)), 9)
         End If
 
     End If
@@ -5552,16 +5552,16 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, currFielder%, sah%, SB%, baseNbr!, I9
         Call d100(dice1000%)
 
         'Determine which base we're stealing
-        If S2% = EVENT_2B And gameB0%(2, 0) > 0 And dice1000% < 6 And gameB0%(3, 0) = 0 And batRating(P, playerNum%(P, gameB0%(2, 0)), 8) > 0 Then baseNbr! = 3
-        If S2% = EVENT_3B And gameB0%(3, 0) > 0 And dice1000% <= 2 And batRating(P, playerNum%(P, gameB0%(3, 0)), 9) > 0 Then baseNbr! = 4
-        If S2% = EVENT_1B And gameB0%(3, 0) > 0 And P2 = 2 And dice1000% >= 6 And dice1000% <= batRating(P, playerNum%(P, gameB0%(3, 0)), 16) Then baseNbr! = 4
-        If S2% = EVENT_1B And gameB0%(3, 0) > 0 And Z2% = gameB0%(3, 0) And P2 <> 2 And dice1000% <= batRating(P, playerNum%(P, gameB0%(3, 0)), 16) * 12 Then baseNbr! = 4
+        If S2% = EVENT_2B And gameBaserunners%(2, 0) > 0 And dice1000% < 6 And gameBaserunners%(3, 0) = 0 And batRating(P, playerNum%(P, gameBaserunners%(2, 0)), 8) > 0 Then baseNbr! = 3
+        If S2% = EVENT_3B And gameBaserunners%(3, 0) > 0 And dice1000% <= 2 And batRating(P, playerNum%(P, gameBaserunners%(3, 0)), 9) > 0 Then baseNbr! = 4
+        If S2% = EVENT_1B And gameBaserunners%(3, 0) > 0 And P2 = 2 And dice1000% >= 6 And dice1000% <= batRating(P, playerNum%(P, gameBaserunners%(3, 0)), 16) Then baseNbr! = 4
+        If S2% = EVENT_1B And gameBaserunners%(3, 0) > 0 And Z2% = gameBaserunners%(3, 0) And P2 <> 2 And dice1000% <= batRating(P, playerNum%(P, gameBaserunners%(3, 0)), 16) * 12 Then baseNbr! = 4
 
         E2% = 10
 
-        If gameB0%(2, 0) > 0 Then E2% = E2% + batRating(P, playerNum%(P, gameB0%(2, 0)), 16)
-        If S2% = EVENT_1B And gameB0%(2, 0) > 0 And P2 <> 2 And dice1000% <= E2% And gameB0%(3, 0) = 0 And baseNbr! = 0 Then baseNbr! = 3
-        If S2% = EVENT_1B And gameB0%(1, 0) > 0 And gameB0%(2, 0) = 0 And baseNbr! = 0 And dice1000% <= batRating(P, playerNum%(P, gameB0%(1, 0)), 16) And batRating(P, playerNum%(P, gameB0%(1, 0)), 7) > 0 Then baseNbr! = 2
+        If gameBaserunners%(2, 0) > 0 Then E2% = E2% + batRating(P, playerNum%(P, gameBaserunners%(2, 0)), 16)
+        If S2% = EVENT_1B And gameBaserunners%(2, 0) > 0 And P2 <> 2 And dice1000% <= E2% And gameBaserunners%(3, 0) = 0 And baseNbr! = 0 Then baseNbr! = 3
+        If S2% = EVENT_1B And gameBaserunners%(1, 0) > 0 And gameBaserunners%(2, 0) = 0 And baseNbr! = 0 And dice1000% <= batRating(P, playerNum%(P, gameBaserunners%(1, 0)), 16) And batRating(P, playerNum%(P, gameBaserunners%(1, 0)), 7) > 0 Then baseNbr! = 2
 
     End If
 
@@ -5649,9 +5649,9 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, currFielder%, sah%, SB%, baseNbr!, I9
                 If F% <> 1 Then
 
                     I4 = Int(Rnd(1) * 1000) + 1
-                    A = batRating(P, playerNum%(P, gameB0%(baseNbr! - 1, 0)), 16)
+                    A = batRating(P, playerNum%(P, gameBaserunners%(baseNbr! - 1, 0)), 16)
 
-                    If fldPos%(P, gameB0%((baseNbr! - 1), 0)) = 1 Then A = pitchRating(P, currPitcher%(P), 31)
+                    If fldPos%(P, gameBaserunners%((baseNbr! - 1), 0)) = 1 Then A = pitchRating(P, currPitcher%(P), 31)
                     A = A - 5
                     A = A * 50
 
@@ -5706,7 +5706,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, currFielder%, sah%, SB%, baseNbr!, I9
                         If Not (A1 < -2 Or A1 < 0 And INNING% > 8) Then
 
                             ' *** RUNNER ON 2ND GUNNED AT 3RD ON THROW HOME ***
-                            If baseNbr! - 1 > 2 And I5 <= 15 And gameB0%(2, 0) > 0 Then
+                            If baseNbr! - 1 > 2 And I5 <= 15 And gameBaserunners%(2, 0) > 0 Then
                                 Call CREDITASSIST(currFielder%, D)
                                 Call PBP("runner is trying for 3rd...")
                                 A5%(2) = 11
@@ -5720,7 +5720,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, currFielder%, sah%, SB%, baseNbr!, I9
                             ' *** RUNNER ON 1ST GUNNED AT 2ND ON THROW TO HOME OR 3RD ***
                             Call d100(I5)
 
-                            If baseNbr! - 1 > 1 And I5 <= 15 And gameB0%(1, 0) > 0 And A5%(2) <> 11 Then
+                            If baseNbr! - 1 > 1 And I5 <= 15 And gameBaserunners%(1, 0) > 0 And A5%(2) <> 11 Then
                                 Call CREDITASSIST(currFielder%, D)
                                 currFielder% = 6
                                 Call CREDITREGPO(currFielder%, D)
@@ -5733,7 +5733,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, currFielder%, sah%, SB%, baseNbr!, I9
 
                             Call d100(I5)
 
-                            If gameB0%(2, 0) > 0 And baseNbr! - 1 > 2 And A5%(2) <> 11 And I5 > (80 - batRating(P, playerNum%(P, gameB0%(2, 0)), 16) * 2) And I9 = 0 Then
+                            If gameBaserunners%(2, 0) > 0 And baseNbr! - 1 > 2 And A5%(2) <> 11 And I5 > (80 - batRating(P, playerNum%(P, gameBaserunners%(2, 0)), 16) * 2) And I9 = 0 Then
                                 A5%(2) = 1
                                 Call PBP("runner is trying for 3rd...")
                                 Call PBP("He's safe!")
@@ -5741,7 +5741,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, currFielder%, sah%, SB%, baseNbr!, I9
 
                             I5 = Int(Rnd(1) * 10) + 1
 
-                            If gameB0%(1, 0) > 0 And A5%(1) <> 11 And (baseRunners% = BASE_1_2 Or baseRunners% = BASE_FULL And baseNbr! - 1 > 1 And I5 > (10 - batRating(P, playerNum%(P, gameB0%(1, 0)), 16)) And I9 = 0) Then
+                            If gameBaserunners%(1, 0) > 0 And A5%(1) <> 11 And (baseRunners% = BASE_1_2 Or baseRunners% = BASE_FULL And baseNbr! - 1 > 1 And I5 > (10 - batRating(P, playerNum%(P, gameBaserunners%(1, 0)), 16)) And I9 = 0) Then
                                 A5%(1) = 1
                                 Call PBP("runner is trying for 2nd...")
                                 Call PBP("He's in there!")
@@ -5749,7 +5749,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, currFielder%, sah%, SB%, baseNbr!, I9
 
                                 Call d100(I5)
 
-                                If gameB0%(1, 0) > 0 And baseNbr! - 1 > 1 And I5 > (80 - batRating(P, playerNum%(P, gameB0%(1, 0)), 16) * 2) And I9 = 0 And A5%(1) <> 11 Then
+                                If gameBaserunners%(1, 0) > 0 And baseNbr! - 1 > 1 And I5 > (80 - batRating(P, playerNum%(P, gameBaserunners%(1, 0)), 16) * 2) And I9 = 0 And A5%(1) <> 11 Then
                                     A5%(1) = 1
                                     Call PBP("runner safe at 2nd on the throw")
                                 End If
@@ -6080,10 +6080,10 @@ Sub WHICHRUNNER (i, baseRunners%, D5)
 
         Call PBP("WHICH RUNNER DO YOU WANT TO GO AFTER")
 
-        Call PBP("1 - " + batters$(P, playerNum%(P, gameB0%(2, 0))))
+        Call PBP("1 - " + batters$(P, playerNum%(P, gameBaserunners%(2, 0))))
 
-        If fldPos%(P, gameB0%(1, 0)) <> 1 Then
-            Call PBP("2 - " + batters$(P, playerNum%(P, gameB0%(1, 0))))
+        If fldPos%(P, gameBaserunners%(1, 0)) <> 1 Then
+            Call PBP("2 - " + batters$(P, playerNum%(P, gameBaserunners%(1, 0))))
         Else
             Call PBP("2 - " + pitchers$(P, currPitcher%(P)))
         End If
@@ -6100,8 +6100,8 @@ Sub WHICHRUNNER (i, baseRunners%, D5)
         If D5 = 2 Then
             i = 2
             D5 = 3
-            I2 = playerNum%(P, gameB0%(1, 0))
-            If fldPos%(P, gameB0%(1, 0)) = 1 Then player$(i - 1) = pitchers$(P, currPitcher%(P))
+            I2 = playerNum%(P, gameBaserunners%(1, 0))
+            If fldPos%(P, gameBaserunners%(1, 0)) = 1 Then player$(i - 1) = pitchers$(P, currPitcher%(P))
         End If
 
         D5 = 0
@@ -6118,9 +6118,9 @@ End Sub
 Sub WHOSON1ST (baseRunners%)
 
     baseRunners% = BASE_EMPTY
-    I1 = gameB0%(1, 0)
-    I2 = gameB0%(2, 0)
-    I3 = gameB0%(3, 0)
+    I1 = gameBaserunners%(1, 0)
+    I2 = gameBaserunners%(2, 0)
+    I3 = gameBaserunners%(3, 0)
 
     If I1 > 0 Then
         If I2 = 0 Then
@@ -10375,7 +10375,7 @@ Sub DumpAll
     For bm1 = 0 to 3
         Print #11, "A5%:"; bm1; A5%(bm1)
         For bm2 = 0 to 2
-                Print #11, "gameB0%:"; bm1; bm2; gameB0%(bm1, bm2)
+                Print #11, "gameBaserunners%:"; bm1; bm2; gameBaserunners%(bm1, bm2)
         Next bm2
     Next bm1
 

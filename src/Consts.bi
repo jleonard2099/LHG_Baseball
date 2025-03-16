@@ -16,7 +16,7 @@ Const SS_B_Arm = 15
 Const SS_B_Run = 16
 Const SS_B_Range = 17
 Const SS_B_GndPct = 18
-Const SS_B_FldPct = 19 '** ToDo: Check if this is correct'
+Const SS_B_FldPct = 19
 
 '21 is unknown (INJURY?)'
 Const SS_B_Pos1 = 22
@@ -69,7 +69,7 @@ Const SS_P_H = 7
 Const SS_P_BB =  8
 Const SS_P_K = 9
 Const SS_P_ERA100 = 10 'ERA*100
-
+Const SS_H_BAvg = 11
 Const SS_P_GndPct = 12
 Const SS_P_HR = 13
 ' Const SS_P_CG = 14
@@ -191,6 +191,16 @@ Const POS_LF = 7
 Const POS_CF = 8
 Const POS_RF = 9    
 Const POS_DH = 0
+
+Const MGR_CLOSE_STRATEGY     = 581
+Const MGR_INN_SAVE_OPP       = 582
+Const MGR_INN_AHEAD          = 583
+Const MGR_INN_TIED_AHEAD     = 584
+Const MGR_TIRED_AHEAD        = 585
+Const MGR_TIRED_TIED_AHEAD   = 586
+Const MGR_SAVE_OPP_OCCURS    = 587
+Const MGR_INN_CLOSE_STRATEGY = 588
+Const MGR_USE_BOTH_SETUP_CLOSER = 589
 
 Const EVENT_HPB   = 1
 Const EVENT_BB_OR_INTERFERENCE= 2
