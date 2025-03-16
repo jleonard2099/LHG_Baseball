@@ -68,7 +68,7 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
         Color &HFFFFFFFF
 
         bpj = batRating(p, J, SS_B_Bats)
-        pdd = pitchRating(D, currPitcher%(D), 0)
+        pdd = pitchRating(D, currPitcher%(D), SS_P_Throws)
 
         If batRating(p, J, SS_B_Bats) < 0 Or batRating(p, J, SS_B_Bats) = 0 And pitchRating(D, currPitcher%(D), SS_P_Throws)> 0 Then
             'Batter Name - Right of Plate
@@ -115,11 +115,11 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
     Else
 
         'Batter Stats - Pitcher
-        If pitchRating(p, currPitcher%(p), 11) <> 999 Then
+        If pitchRating(p, currPitcher%(p), SS_P_BAvg) <> 999 Then
             If pAvg! = 0 Then
                 pStats$ = ".000"
             Else
-                pAvg! = pitchRating(p, currPitcher%(p), 11)
+                pAvg! = pitchRating(p, currPitcher%(p), SS_P_BAvg)
                 pStats$ = "." + FUsing$(Str$(pAvg! * 1000), "###", 1)
             End If
             PrintOnGfx 65, 24, pStats$ + "           ", imageScreen&
@@ -240,7 +240,7 @@ Sub DisplayRun_G (I2, p, X)
         Color &HFFFFFFFF
 
         If fldPos%(p, J) = 1 Then
-            If pitchRating(p, currPitcher%(p), 11) <> 999 Then
+            If pitchRating(p, currPitcher%(p), SS_P_BAvg) <> 999 Then
                 runner$ = pitchers$(p, currPitcher%(p))
                 PrintOnGfx X, Y-1, PadRight(runner$, 11), imageScreen&
                 PrintOnGfx X, Y,   "1/  0", imageScreen&

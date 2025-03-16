@@ -625,8 +625,6 @@ Sub LOADER
 
         gameD0%(I) = 9
 
-        DumpAll
-
         Print #11, I; "Ready to PLay: "; gameTeams$(I)  ' [bm]'
         Print #11, "B3: "; playerNum%(I, 1); playerNum%(I, 2); playerNum%(I, 3); playerNum%(I, 4); playerNum%(I, 5); playerNum%(I, 6); playerNum%(I, 7); playerNum%(I, 8); playerNum%(I, 9) 
         Print #11, "B7: "; fldPos%(I, 1); fldPos%(I, 2); fldPos%(I, 3); fldPos%(I, 4); fldPos%(I, 5); fldPos%(I, 6); fldPos%(I, 7); fldPos%(I, 8); fldPos%(I, 9) 
@@ -1672,11 +1670,6 @@ Sub SelectStadium (useVGA)
 
         Locate , 11
         
-        _Dest _Console
-        Print "fileSeparator: " + fileSeparator$
-        Print "Current park: ." + fileSeparator$ + "parks" + fileSeparator$ + PARK$
-        _Dest 0
-
         If _FileExists("." + fileSeparator$ + "parks" + fileSeparator$ + PARK$) Then
             Print "GRAPHIC EXISTS"
         Else
@@ -1698,6 +1691,20 @@ Sub SelectStadium (useVGA)
 
             Color 15, 0
 
+            ReDim menuChoices$(1 To 10) '[bm] KLUDGE: Why is this suddenly necessary? How did it disappear?
+
+            menuChoices$(1) = "PLAY SINGLE GAME                "
+            menuChoices$(2) = "TEAM MANAGEMENT / ORGANIZATION  "
+            menuChoices$(3) = "REPLAY STATISTICS AND REPORTS   "
+            menuChoices$(4) = "LEADERS / STANDINGS / RECORDS   "
+            menuChoices$(5) = "SCHEDULER / AUTOPLAY / BOXSCORES"
+            menuChoices$(6) = "GROUND / FLY / RUN / BUNT CALC. "
+            menuChoices$(7) = "MANAGE UMPIRES                  "
+            menuChoices$(8) = "PROGRAMMABLE MANAGER            "
+            'menuChoices$(9) = "HARD DRIVE INSTALLATION         "
+            menuChoices$(9) = "CONFIGURE DRIVES FOR TEAMS,STATS"
+            menuChoices$(10) = "EXIT TO DOS                     "
+            
             If UCase$(I$) = "Y" Then
 
                 Cls
@@ -1712,6 +1719,12 @@ Sub SelectStadium (useVGA)
                     HiLiteFGColor = 0: HiLiteBGColor = 7
                     Spacing% = 1
                     Row% = 5
+
+                    _Dest _Console
+                    Print "1: " + menuChoices$(1)
+                    Print "2: " + menuChoices$(2)
+                    _Dest 0
+                    
                     menuWidth% = Len(menuChoices$(1))
                     Column% = (80 - menuWidth% - 2) / 2
 
@@ -1765,11 +1778,6 @@ Sub SelectStadium (useVGA)
         'position if no graphics exist at all!
 
         'So instead, let's switch to regular mode
-        
-        _Dest _Console
-        Print "fileSeparator: " + fileSeparator$
-        Print "useVGA: ." + fileSeparator$ + "parks" + fileSeparator$ + PARK$
-        _Dest 0
         
         If Not _FileExists("." + fileSeparator$ + "parks" + fileSeparator$ + PARK$) Then useVGA = 0
 
