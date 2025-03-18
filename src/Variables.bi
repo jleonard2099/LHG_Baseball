@@ -7,6 +7,7 @@ Dim fileSeparator$
 Dim Shared diskPaths$(0 To 3), Q$(0 To 2056), Q2$(0 To 2056), Q3$(100)
 Dim Shared teamIndex%(MAX_TEAMS)
 Dim Shared teamNames$(MAX_TEAMS)
+ReDim Shared menuChoices$(1 To 10)
 
 
 ' *** Reading Stat Data ***
@@ -296,7 +297,7 @@ Dim Shared autoPlay, BV, compTeam, desigHit, D
 Dim Shared endGame, endAllGames, FontColAdj
 Dim Shared gameLoc, gameTemp
 Dim Shared nbrStrikes, noLUFound, normalFinish
-Dim Shared P, pbpLine, PPH, pitchEraOpt, playerMode, playerOpt
+Dim Shared P, pbpLine, flagPinchHitter, pitchEraOpt, playerMode, playerOpt
 Dim Shared RE, RD, useInj, useRest, useVGA
 Dim Shared strikeoutRating
 

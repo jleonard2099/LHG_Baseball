@@ -1691,20 +1691,6 @@ Sub SelectStadium (useVGA)
 
             Color 15, 0
 
-            ReDim menuChoices$(1 To 10) '[bm] KLUDGE: Why is this suddenly necessary? How did it disappear?
-
-            menuChoices$(1) = "PLAY SINGLE GAME                "
-            menuChoices$(2) = "TEAM MANAGEMENT / ORGANIZATION  "
-            menuChoices$(3) = "REPLAY STATISTICS AND REPORTS   "
-            menuChoices$(4) = "LEADERS / STANDINGS / RECORDS   "
-            menuChoices$(5) = "SCHEDULER / AUTOPLAY / BOXSCORES"
-            menuChoices$(6) = "GROUND / FLY / RUN / BUNT CALC. "
-            menuChoices$(7) = "MANAGE UMPIRES                  "
-            menuChoices$(8) = "PROGRAMMABLE MANAGER            "
-            'menuChoices$(9) = "HARD DRIVE INSTALLATION         "
-            menuChoices$(9) = "CONFIGURE DRIVES FOR TEAMS,STATS"
-            menuChoices$(10) = "EXIT TO DOS                     "
-            
             If UCase$(I$) = "Y" Then
 
                 Cls
@@ -2657,9 +2643,10 @@ Sub PrintPitcherInfo (idx%)
 
             Locate , 16: Print handed$(pitchRating(idx%, I, 0) + 2);
             '                          IP  H   G   GS DR BB  SO
-            Locate , 17: Print Using " ### ### ### ## ## ### ###"; pitchRating(idx%, I, 6); pitchRating(idx%, I, SS_P_H); pitchRating(idx%, I, SS_P_G); pitchRating(idx%, I, SS_P_GS); pitchRating(idx%, I, 35); pitchRating(idx%, I, SS_P_BB); pitchRating(idx%, I, SS_P_K);
+            Locate , 17: Print Using " ### ### ### ## ## ### ###"; _
+                pitchRating(idx%, I, SS_P_IP); pitchRating(idx%, I, SS_P_H); pitchRating(idx%, I, SS_P_G); pitchRating(idx%, I, SS_P_GS); pitchRating(idx%, I, SS_P_Rest); pitchRating(idx%, I, SS_P_BB); pitchRating(idx%, I, SS_P_K);
             '                           W                                                       L  ERA
-            Locate , 43: Print Using "  ##"; pitchRating(idx%, I, SS_P_W);: Print "-";: Print Using "## ##.##"; pitchRating(idx%, I, SS_P_L); pitchRating(idx%, I, 10) / 100
+            Locate , 43: Print Using "  ##"; pitchRating(idx%, I, SS_P_W); : Print "-"; : Print Using "## ##.##"; pitchRating(idx%, I, SS_P_L); pitchRating(idx%, I, SS_P_ERA100) / 100
         End If
 
     Next I
