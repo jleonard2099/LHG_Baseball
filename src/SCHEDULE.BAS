@@ -8,7 +8,6 @@
 Sub SCHEDULE ()
 
     Dim scheduleFile$
-    ReDim menuChoices$(1 To 8)
 
     Shared NS%
 
@@ -18,6 +17,7 @@ Sub SCHEDULE ()
 
     Do
 
+        ReDim menuChoices$(1 To 8)
         Color 7, 0
         Cls
 
@@ -101,7 +101,7 @@ Sub SCHEDULE ()
                 Case 2 To 5:
                     Do
                         'Have the user pick a schedule
-                        scheduleFile$ = ChooseFile$ (diskPaths$(1) + "*.SCD", "SCHEDULE", FileExit%)
+                        scheduleFile$ = ChooseFile$ (diskPaths$(4) + "*.SCD", "SCHEDULE", FileExit%)
 
                         If FileExit% <> 27 And FileExit% <> 0 Then
 
@@ -427,7 +427,9 @@ Sub NewSchedule (scheduleFile$)
 
                 Close 2
 
-                Call LOADER
+                Do
+                    Call LOADER
+                Loop Until schedGame(0) + schedGame(2) > schedGame(1)
 
                 Call LoadScheduleInfo (scheduleFile$)
 
@@ -829,7 +831,7 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
                                 'Write matching games
                                 Locate 1, 1: Print numberGames + 1; " MATCHES"
 
-                                Open diskPaths$(1) + subSchedFile$ + ".SCD" For Random As #1 Len = SCHEDULE_SIZE_BYTES
+                                Open diskPaths$(4) + subSchedFile$ + ".SCD" For Random As #1 Len = SCHEDULE_SIZE_BYTES
 
                                 fileLength& = LOF(1)
 
@@ -1094,9 +1096,9 @@ Sub SaveScheduleFile (saveFile$)
     Shared scheduleAP%(), scheduleNG%()
     Shared scheduleYN$()
 
-    If _FileExists(diskPaths$(1) + saveFile$ + ".SCD") Then Kill diskPaths$(1) + saveFile$ + ".SCD"
+    If _FileExists(diskPaths$(4) + saveFile$ + ".SCD") Then Kill diskPaths$(4) + saveFile$ + ".SCD"
 
-    Open diskPaths$(1) + saveFile$ + ".SCD" For Random As #1 Len = SCHEDULE_SIZE_BYTES
+    Open diskPaths$(4) + saveFile$ + ".SCD" For Random As #1 Len = SCHEDULE_SIZE_BYTES
 
     For X = 0 To 18
         Field #1, X * 2 As X$, 2 As Q$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
@@ -1356,7 +1358,9 @@ End Sub
 'BoxScore maintenance routine.
 Sub DeleteBoxscores (fileChoice%, fileSpec$)
 
-    Spec$ = diskPaths$(0) + fileSpec$
+    ' Spec$ = diskPaths$(1) + fileSpec$
+    Spec$ = fileSpec$
+    _Dest _Console : Print Spec$ : _Dest 0
     Count% = FileCount%(Spec$)
 
     If Count% = 0 Then
@@ -1424,7 +1428,7 @@ Sub LoadScheduleInfo (targetFile$)
     Shared homeScores(), visitorScores()
     Shared scheduleYN$()
 
-    Open diskPaths$(1) + targetFile$ + ".SCD" For Random As #1 Len = SCHEDULE_SIZE_BYTES
+    Open diskPaths$(4) + targetFile$ + ".SCD" For Random As #1 Len = SCHEDULE_SIZE_BYTES
 
     fileLength& = LOF(1)
 

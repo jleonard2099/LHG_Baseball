@@ -35,7 +35,7 @@ Sub LOADER
 
         Open "DEV.BAS" For Output As #1
 
-        For I = 0 To 3
+        For I = 0 To 4
             Print #1, _CWD$ + "\"
         Next
 
@@ -45,7 +45,7 @@ Sub LOADER
 
     Open "DEV.BAS" For Input As #2
 
-    For I = 0 To 3
+    For I = 0 To 4
         Input #2, diskPaths$(I)
     Next
 
@@ -101,9 +101,9 @@ Sub LOADER
 
         'currGame = schedGame(0) + schedGame(2)
 
-        Open "pbplog" + Str$(currGame) For Append As #11
+        Open "pbplog" + _Trim$( Str$(schedGame(0)) ) + "-" + _Trim$( Str$(schedGame(1)) ) For Append As #11
 
-        Open diskPaths$(0) + scheduleFile$ For Random As #6 Len = SCHEDULE_SIZE_BYTES
+        Open diskPaths$(4) + scheduleFile$ For Random As #6 Len = SCHEDULE_SIZE_BYTES
 
         For X = 0 To 18
             Field #6, X * 2 As X$, 2 As Q2$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
@@ -130,7 +130,7 @@ Sub LOADER
 
     Else
 
-        Open "pbplog" For Output As #11
+        Open "pbplog" For Output As #11 'todo [bm] we need to close this when we leave so it's not still open if we re-enter
 
     End If
 
@@ -632,13 +632,13 @@ Sub LOADER
         Print  #11,
         'Print #11, "Roster Batter 0", batterNames$(0)
         'For I1 = 0 To 80
-'            Print #11, I1; batRating(I, 0, I1)
+       '     Print #11, I1; batRating(I, 0, I1)
         'Next I1
 
         'Print  #11,
         'Print #11, "Roster Pitcher 0", pitcherNames(0)
         'For I1 = 0 To 89
-'            Print #11, I1; pitchRating(I, 0, I1)
+            'Print #11, I1; pitchRating(I, 0, I1)
         'Next I1
         
     Next I

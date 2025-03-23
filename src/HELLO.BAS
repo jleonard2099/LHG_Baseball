@@ -284,7 +284,7 @@ If Not _FileExists("DEV.BAS") Then
 
     Open "DEV.BAS" For Output As #1
 
-    For I = 0 To 3
+    For I = 0 To 4
         Select Case opSysType$
             Case "[WINDOWS]": Print #1, _CWD$ + "\"
             Case "[MAC]", "[MACOSX]", "[LINUX]": Print #1, _CWD$ + "/"
@@ -297,7 +297,7 @@ End If
 
 Open "DEV.BAS" For Input As #2
 
-For I = 0 To 3
+For I = 0 To 4
     Input #2, diskPaths$(I)
 Next
 
@@ -333,7 +333,8 @@ End If
 'Print #9, "Value of D = "; D
 Print #9,
 Close #9
-Resume Next ' moves program to code following the error.
+' [bm] I want to FAIL FAST for debugging...   Resume Next ' moves program to code following the error.
+End
 
 '----------------------------------------
 '       Main_Menu Subroutine
@@ -428,13 +429,13 @@ End Sub
 '...explanation...
 Sub ConfigureDrives ()
 
-    Shared opSysType$
+    Shared opSysType$, fileSeparator$
 
     Color 15, 1
     FG = 0
     BG = 7
 
-    For I = 0 To 3
+    For I = 0 To 4
         diskPaths$(I) = Left$(diskPaths$(I), Len(diskPaths$(I)) - 1)
     Next
 
@@ -460,10 +461,12 @@ Sub ConfigureDrives ()
     Locate , 16: QPrint PadRight$(diskPaths$(0), 61), FG, BG, -1
     Locate 9, 1: QPrint "Path for Stats ", 14, 1, -1
     Locate , 16: QPrint PadRight$(diskPaths$(1), 61), FG, BG, -1
-    Locate 11, 1: QPrint "Path for Leaders ", 14, 1, -1
+    Locate 11,1: QPrint "Path for Leaders ", 14, 1, -1
     Locate , 18: QPrint PadRight$(diskPaths$(2), 59), FG, BG, -1
-    Locate 13, 1: QPrint "Path for Manager Profiles ", 14, 1, -1
+    Locate 13,1: QPrint "Path for Manager Profiles ", 14, 1, -1
     Locate , 27: QPrint PadRight$(diskPaths$(3), 50), FG, BG, -1
+    Locate 15,1: QPrint "Path for Schedules ", 14, 1, -1
+    Locate , 20: QPrint PadRight$(diskPaths$(4), 59), FG, BG, -1
 
     GetDiv1:
     Locate 7, 16 'location of beginning of field
@@ -504,6 +507,15 @@ Sub ConfigureDrives ()
     If XCode = 1 GoTo GetDiv3: 'can't back up any more, stay here
     diskPaths$(3) = _Trim$(diskPaths$(3))
 
+    GetDiv5:
+    Locate 15, 20 'location of beginning of field
+    CapsOn = 0
+    NumOnly = 0
+    Max = 59
+    Call TextIn(diskPaths$(4), Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+    If XCode = 1 GoTo GetDiv4: 'can't back up any more, stay here
+    diskPaths$(4) = _Trim$(diskPaths$(4))
+
     Done:
     Color 14, 1
     Locate 23, 1
@@ -512,20 +524,21 @@ Sub ConfigureDrives ()
     Call YesNoB(X$, XCode, FG, BG)
     Locate , 1
     ClearEOL 14, 1
-    If XCode = 1 GoTo GetDiv4
+    If XCode = 1 GoTo GetDiv5
     If X$ = "N" GoTo GetDiv1
     If X$ <> "Y" GoTo Done 'insist on either Y or N or up-arrow
 
     Open "DEV.BAS" For Output As #1
 
-    For R = 0 To 3:
+    For R = 0 To 4:
 
-        Select Case opSysType$
-            Case "[WINDOWS]": diskPaths$(R) = diskPaths$(R) + "\"
-            Case "[MAC]", "[MACOSX]", "[LINUX]": diskPaths$(R) = diskPaths$(R) + "/"
-        End Select
+        'Select Case opSysType$
+        '    Case "[WINDOWS]": diskPaths$(R) = diskPaths$(R) + "\"
+        '    Case "[MAC]", "[MACOSX]", "[LINUX]": diskPaths$(R) = diskPaths$(R) + "/"
+        'End Select
 
-        Print #1, diskPaths$(R)
+        Print #1, diskPaths$(R) + fileSeparator$
+        _Dest _Console : Print diskPaths$(R) + fileSeparator$ : _Dest 0
 
     Next R
 

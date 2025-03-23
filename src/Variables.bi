@@ -4,7 +4,7 @@
 Dim opSysType$
 Dim fileSeparator$
 
-Dim Shared diskPaths$(0 To 3), Q$(0 To 2056), Q2$(0 To 2056), Q3$(100)
+Dim Shared diskPaths$(0 To 4), Q$(0 To 2056), Q2$(0 To 2056), Q3$(100)
 Dim Shared teamIndex%(MAX_TEAMS)
 Dim Shared teamNames$(MAX_TEAMS)
 ReDim Shared menuChoices$(1 To 10)

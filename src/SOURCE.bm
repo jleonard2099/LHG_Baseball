@@ -24,9 +24,9 @@ Sub SOURCE ()
 
     Call PITSTAM(0) : Call PITSTAM(1)
 
-    DumpBatters
-    DumpPitchers
-    DumpMgr
+    ' DumpBatters
+    ' DumpPitchers
+    ' DumpMgr
 
     If useVGA = 1 Then Call LOADSCREEN
 
@@ -1919,7 +1919,7 @@ LStart: '
             Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
             Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
            Call WINDEX
-            Call pbpLog(2994)
+            ' Call pbpLog(2994)
             Call STRIKEOUT(nbrStrikes, D)
 
             currFielder% = 2
@@ -4900,7 +4900,7 @@ LStart: '
     Print #11, "LPhForPosition PH for POSITION player - possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
     Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
     Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
-    If MG%(P, 540) = 999 Then
+    If 0 = 1 And MG%(P, 540) = 999 Then '[bm] Todo re-enable this once it's fixed (no more -1 as array subscript)'
 
         'SELECT PH FOR HITTER
         For I = 0 To 22
@@ -4917,12 +4917,17 @@ LStart: '
 
                     For I = I1 To I1 + 4
 
-                        If MG%(P, I1 + 540) <> -1 And batRating(P, MG%(P, I1 + 540), 21) = 0 Then
-                            mg% = MG%(P, I1 + 540)
-                            MG%(P, I1 + 540) = -1
+                        If MG%(P, I1 + 540) <> -1 Then
+                            If MG%(P, I1 + 540) <> -1 And batRating(P, MG%(P, I1 + 540), 21) = 0 Then
+                                mg% = MG%(P, I1 + 540)
+                                MG%(P, I1 + 540) = -1
 
-                            Print #11, "PH for position player scenario #1, I ="; I
-                            Goto LPhForPosContinue
+                                Print #11, "PH for position player scenario #1, I ="; I
+                                Goto LPhForPosContinue
+                            End If
+                        Else
+                            Print #11, "WARNING!! Got -1 in LPhForPosition: "; MG%(P, 540)
+                            Exit For
                         End If
 
                     Next
