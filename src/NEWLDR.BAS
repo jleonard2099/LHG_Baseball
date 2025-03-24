@@ -245,7 +245,6 @@ Sub UpdateExpandedLeaders (JB, JP, plyrTotalStats, teamTotalStats)
     Erase expBatLdrName$, expPitLdrName$
     Erase expBatLdrTeam$, expPitLdrTeam$
     Erase plyLeaderTeams$, tmLeaderTeams$
-    Erase memberName$
 
     Color 15, 0
     Cls
@@ -535,7 +534,7 @@ Sub ReadLeaderStdg (leaderFile$, league$, JB, JP, plyrTotalStats, teamTotalStats
         MsgText$ = "NO COMPILED LEADER FILES WERE FOUND. PRESS ANY KEY TO RETURN TO MAIN MENU"
         BoxWidth = 20
         BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+        Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
         Call CSMsgBox(MsgText$, BoxWidth, Pass)
         I$ = GetKeyPress$
         Call CSMsgBox("", 0, Pass)
@@ -725,7 +724,7 @@ Sub ViewBattingLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
         MsgText$ = "NO COMPILED LEADER FILES WERE FOUND. PRESS ANY KEY TO RETURN TO MAIN MENU"
         BoxWidth = 20
         BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+        Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
         Call CSMsgBox(MsgText$, BoxWidth, Pass)
         I$ = GetKeyPress$
         Call CSMsgBox("", 0, Pass)
@@ -1046,52 +1045,54 @@ Sub DisplayBattingLeaders (TVN, maxRecords, categoryId)
 
         Color 14, 0
         Cls
-        Print "     PLAYER                  TEAM                     "; expBatCategory$(categoryId)
 
         For W = 1 To maxRecords
 
-            If W <> 0 And (W Mod 20 = 0) Then
+            ' Every 25 records ? new page (but skip prompt on the first page)
+            If (W - 1) Mod 25 = 0 Then
 
-                Color 14
-                Locate 22: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
-                Color 15
+                If W > 1 Then
 
-                I$ = GetKeyPress$
+                    Color 14
+                    Locate LAST_ROW - 1, 15: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)";
+                    Color 15
 
-                If I$ = Chr$(27) Then
-                    userExit% = 1
-                Else
+                    I$ = GetKeyPress$
+
+                    If I$ = Chr$(27) Then
+                        userExit% = 1
+                        Exit For
+                    End If
+
                     Color 14, 0
                     Cls
-                    Print "     PLAYER                  TEAM                     "; expBatCategory$(categoryId)
+
                 End If
+
+                ' Print page header
+                Locate 2, 1
+                Print "     PLAYER                  TEAM                     "; expBatCategory$(categoryId)
 
             End If
 
             If userExit% <> 1 Then
 
                 Color 12
-                Print Using "###"; W;
-                Print " ";
+                Print Using "### "; W;
                 Color 3: Print expLdrPlyrName$(W);
                 Color 15
                 Print Tab(25); expLdrTeam$(W);
 
                 Select Case TVN
-
-                    Case 1:
-                        Print Tab(58); Using "#####"; expLdrVal!(W)
-
-                    Case 2:
-                        Print Tab(58); Using ".###"; expLdrVal!(W)
-
-                    Case 3:
-                        Print Tab(58); Using "###.##"; expLdrVal!(W)
-
+                    Case 1: Print Tab(58); Using "#####"; expLdrVal!(W)
+                    Case 2: Print Tab(58); Using ".###"; expLdrVal!(W)
+                    Case 3: Print Tab(58); Using "###.##"; expLdrVal!(W)
                 End Select
 
             Else
+
                 Exit Do
+
             End If
 
         Next W
@@ -1099,19 +1100,20 @@ Sub DisplayBattingLeaders (TVN, maxRecords, categoryId)
         If userExit% <> 1 Then
 
             Color 14
-            Locate 22: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
+            Locate LAST_ROW - 1, 15: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)";
             Color 15
 
             I$ = GetKeyPress$
 
             If I$ <> Chr$(27) Then
 
-                Locate 22: Print Space$(64)
                 Color 14
+                Locate LAST_ROW - 1, 15
+                Print Space$(50);
+                Locate LAST_ROW - 1, 32
+                Print "VIEW AGAIN? (Y/N)";
 
                 Do
-                    Locate 22
-                    Print "VIEW AGAIN? (Y/N)"
                     I$ = GetKeyPress$
                 Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
 
@@ -1150,7 +1152,7 @@ Sub ViewPitchingLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
         MsgText$ = "NO COMPILED LEADER FILES WERE FOUND. PRESS ANY KEY TO RETURN TO MAIN MENU"
         BoxWidth = 20
         BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+        Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
         Call CSMsgBox(MsgText$, BoxWidth, Pass)
         I$ = GetKeyPress$
         Call CSMsgBox("", 0, Pass)
@@ -1191,7 +1193,8 @@ Sub ViewPitchingLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
             Color 15, 0
             Cls
 
-            Call MenuBox(2, 4, 66, 20, 15, 10)
+            'Call MenuBox(2, 4, 66, 20, 15, 10)
+            Call ShadowBox(2, 4, 66, 20, 15, 10)
 
             Locate 10, 15
 
@@ -1208,9 +1211,7 @@ Sub ViewPitchingLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
                 Next
 
                 Print
-                Locate , 23
-
-                Input "SELECT NUMBER TO VIEW"; categoryId
+                Locate , 23: Input "SELECT NUMBER TO VIEW"; categoryId
 
                 sptl = 0
                 PPP = 0
@@ -1285,7 +1286,7 @@ Sub ViewPitchingLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
                                     End If
                                 Else
                                     'sortType = 2
-                                    If TYP2(J - 1) > TYP2(J) Then 
+                                    If TYP2(J - 1) > TYP2(J) Then
                                         Swap expLdrPlyrName$(J - 1), expLdrPlyrName$(J)
                                         Swap expLdrTeam$(J - 1), expLdrTeam$(J)
                                         Swap TYP2(J - 1), TYP2(J)
@@ -1447,32 +1448,39 @@ Sub DisplayPitchingLeaders (TVN, maxRecords, categoryId)
 
         Color 14, 0
         Cls
-        Print "     PLAYER                  TEAM                     "; expPitCategory$(categoryId)
 
         For W = 1 To maxRecords
 
-            If W <> 0 And (W Mod 20 = 0) Then
+            ' Every 25 records ? new page (but skip prompt on the first page)
+            If (W - 1) Mod 25 = 0 Then
 
-                Color 14
-                Locate 22: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
-                Color 15
+                If W > 1 Then
 
-                I$ = GetKeyPress$
+                    Color 14
+                    Locate LAST_ROW - 2: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
+                    Color 15
 
-                If I$ = Chr$(27) Then
-                    userExit% = 1
-                Else
+                    I$ = GetKeyPress$
+
+                    If I$ = Chr$(27) Then
+                        userExit% = 1
+                        Exit For
+                    End If
+
+                    Color 14, 0
                     Cls
-                    Color 14: Print "     PLAYER                  TEAM                     "; expPitCategory$(categoryId)
+
                 End If
 
+                ' Print page header
+                Locate 2, 1
+                Color 14: Print "     PLAYER                  TEAM                     "; expPitCategory$(categoryId)
             End If
 
             If userExit% <> 1 Then
 
                 Color 12
-                Print Using "###"; W;
-                Print " ";
+                Print Using "### "; W;
                 Color 3: Print expLdrPlyrName$(W);
                 Color 15
                 Print Tab(25); expLdrTeam$(W);
@@ -1504,19 +1512,20 @@ Sub DisplayPitchingLeaders (TVN, maxRecords, categoryId)
         If userExit% <> 1 Then
 
             Color 14
-            Locate 22: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
+            Locate LAST_ROW - 1, 15: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
             Color 15
 
             I$ = GetKeyPress$
 
             If I$ <> Chr$(27) Then
 
-                Locate 22: Print Space$(64)
                 Color 14
+                Locate LAST_ROW - 1, 15
+                Print Space$(50);
+                Locate LAST_ROW - 1, 32
+                Print "VIEW AGAIN? (Y/N)";
 
                 Do
-                    Locate 22
-                    Print "VIEW AGAIN? (Y/N)"
                     I$ = GetKeyPress$
                 Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -1552,7 +1561,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
         MsgText$ = "NO COMPILED LEADER FILES WERE FOUND. PRESS ANY KEY TO RETURN TO MAIN MENU"
         BoxWidth = 20
         BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+        Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
         Call CSMsgBox(MsgText$, BoxWidth, Pass)
         I$ = GetKeyPress$
         Call CSMsgBox("", 0, Pass)
@@ -1602,7 +1611,8 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
             Color , 0
             Cls
 
-            Call MenuBox(2, 4, 66, 21, 15, 6)
+            'Call MenuBox(2, 4, 66, 21, 15, 6)
+            Call ShadowBox(2, 4, 66, 21, 15, 6)
 
             Locate 10, 15
 
@@ -1671,7 +1681,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
                     Case 38: X0 = 16: XX = 38
                 End Select
 
-                If categoryId < 39 And categoryID >= 0 Then
+                If categoryId < 39 And categoryId >= 0 Then
                     Call SortOptions(printOrView, sortType, newCategory)
                     Cls
                 End If
@@ -1813,7 +1823,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
 
                 End Select
 
-                If categoryId < 39 And categoryID >= 0 Then
+                If categoryId < 39 And categoryId >= 0 Then
                     Call DisplayTeamView(XX, screenType, printOrView, TVN, maxRecords)
                 End If
 
@@ -2048,34 +2058,41 @@ Sub LeagueTotals_A_Screen (XX, TVN, maxRecords)
         Color 14, 0
         Cls
 
-        Print "     TEAM                     "; expTeamCategory$(XX)
-
         For W = 1 To maxRecords
 
-            If W <> 0 And (W Mod 20 = 0) Then
+            ' Every 25 records ? new page (but skip prompt on the first page)
+            If (W - 1) Mod 25 = 0 Then
 
-                Color 14
-                Locate 22: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
-                Color 15
+                If W > 1 Then
 
-                I$ = GetKeyPress$
-
-                If I$ <> Chr$(27) Then
-                    Cls
                     Color 14
-                    Print "     TEAM                     "; expTeamCategory$(XX)
-                Else
-                    Exit Sub
+                    Locate LAST_ROW - 2: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
+                    Color 15
+
+                    I$ = GetKeyPress$
+
+                    If I$ = Chr$(27) Then
+                        userExit% = 1
+                        Exit For
+                    End If
+
+                    Color 14
+                    Cls
+
                 End If
 
-            Else
+                ' Print page header
+                Locate 2, 1
+                Print "     TEAM                     "; expTeamCategory$(XX)
+
+            End If
+
+            If userExit% <> 1 Then
 
                 Color 12
-                Print Using "###"; W;
-                Print " ";
+                Print Using "### "; W;
                 Color 3
                 Print expLdrTeam$(W);
-
                 Color 15
 
                 Select Case TVN
@@ -2088,24 +2105,29 @@ Sub LeagueTotals_A_Screen (XX, TVN, maxRecords)
 
                 End Select
 
+            Else
+
+                Exit Do
+
             End If
 
         Next W
 
         Color 14
-        Locate 22: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
+        Locate LAST_ROW - 1, 15: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
         Color 15
 
         I$ = GetKeyPress$
 
         If I$ <> Chr$(27) Then
 
-            Locate 22: Print Space$(64)
             Color 14
+            Locate LAST_ROW - 1, 15
+            Print Space$(50);
+            Locate LAST_ROW - 1, 32
+            Print "VIEW AGAIN? (Y/N)";
 
             Do
-                Locate 22
-                Print "VIEW AGAIN? (Y/N)"
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -2132,31 +2154,38 @@ Sub LeagueTotals_B_Screen (XX, TVN, maxRecords)
         Color 14, 0
         Cls
 
-        Print "     TEAM                     "; expTeamCategory$(XX)
-
         For W = 1 To maxRecords
 
-            If W <> 0 And (W Mod 20 = 0) Then
+            ' Every 25 records ? new page (but skip prompt on the first page)
+            If (W - 1) Mod 25 = 0 Then
 
-                Color 14
-                Locate 22: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
-                Color 15
+                If W > 1 Then
 
-                I$ = GetKeyPress$
-
-                If I$ <> Chr$(27) Then
-                    Cls
                     Color 14
-                    Print "     TEAM                     "; expTeamCategory$(XX)
-                Else
-                    Exit Sub
+                    Locate LAST_ROW - 2: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
+                    Color 15
+
+                    I$ = GetKeyPress$
+
+                    If I$ = Chr$(27) Then
+                        userExit% = 1
+                        Exit For
+                    End If
+
+                    Color 14
+                    Cls
+
                 End If
 
-            Else
+                ' Print page header
+                Locate 2, 1
+                Print "     TEAM                     "; expTeamCategory$(XX)
+            End If
+
+            If userExit% <> 1 Then
 
                 Color 12
-                Print Using "###"; W;
-                Print " ";
+                Print Using "### "; W;
                 Color 3
                 Print expLdrTeam$(W);
                 Color 15
@@ -2177,24 +2206,29 @@ Sub LeagueTotals_B_Screen (XX, TVN, maxRecords)
 
                 End Select
 
+            Else
+
+                Exit Do
+
             End If
 
         Next W
 
         Color 14
-        Locate 22: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
+        Locate LAST_ROW - 1, 15: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
         Color 15
 
         I$ = GetKeyPress$
 
         If I$ <> Chr$(27) Then
 
-            Locate 22: Print Space$(64)
             Color 14
+            Locate LAST_ROW - 1, 15
+            Print Space$(50);
+            Locate LAST_ROW - 1, 32
+            Print "VIEW AGAIN? (Y/N)";
 
             Do
-                Locate 22
-                Print "VIEW AGAIN? (Y/N)"
                 I$ = GetKeyPress$
             Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
@@ -2290,9 +2324,12 @@ Sub PrintViewReselect (userOpt$)
 
     Color 12
     Locate , 30: Print "SELECT OPTION:"
-    Locate , 30: Color 14: Print "P";: Color 7: Print "RINT"
-    Locate , 30: Color 14: Print "V";: Color 7: Print "IEW"
-    Locate , 30: Color 14: Print "R";: Color 7: Print "E-SELECT OPTION"
+    Locate , 30: Color 14: Print "P";
+    Color 7: Print "RINT"
+    Locate , 30: Color 14: Print "V";
+    Color 7: Print "IEW"
+    Locate , 30: Color 14: Print "R";
+    Color 7: Print "E-SELECT OPTION"
 
     Do
         userOpt$ = GetKeyPress$

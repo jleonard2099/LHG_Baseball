@@ -72,7 +72,7 @@ Sub ChooseTeam (yearNumber$, numberTeams, chosenIdx, teamName$)
                         MsgText$ = "NO TEAMS WERE FOUND MATCHING THAT ID... PRESS ANY KEY TO SELECT ANOTHER ID"
                         BoxWidth = 20
                         BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-                        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+                        Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
                         Call CSMsgBox(MsgText$, BoxWidth, Pass)
                         I$ = GetKeyPress$
                         Call CSMsgBox("", 0, Pass)
@@ -167,21 +167,27 @@ Sub SelectTeam (numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%)
         Start% = 1
         FileFGColor = 15: FileBGColor = 4
         HiLiteFGColor = 0: HiLiteBGColor = 7
-        Rows = 20
+        '3 rows header, 2 rows spacing, 1 row footer
+        Rows% = LAST_ROW - 6
         Columns% = 4
         Spacing% = 6
-        Row% = 4
+        Row% = 5
         Column% = 1
 
         Color , 4
         Cls
+
         Color 14
         Locate , 33: Print "TEAM SELECTION"
-        Locate 25, 1
-        Color 14: Print "ESC";
-        Color 15: Print "-SELECT NEW ID  PGDN  PGUP  ";
-        Color 14: Print "ENTER";
+        Locate LAST_ROW, 1
+        Print Tab(3); "PG DN";
+        Print Tab(18); "ENTER";
         Color 15: Print "-SELECTS TEAM";
+        Color 14
+        Print Tab(39); "ESC";
+        Color 15: Print "-SELECT NEW ID";
+        Color 14
+        Print Tab(72); "PG UP";
 
         _MouseShow "DEFAULT"
         MAMenu teamNames$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor, HiLiteBGColor, Rows%, Columns%, Spacing%, Row%, Column%
@@ -325,7 +331,7 @@ Sub ReadExtraData (teamYear$, teamIdx)
         'MsgText$ = "WARNING!!! NO DATA FILE WAS FOUND FOR THIS TEAM. PRESS ANY KEY TO CONTINUE"
         'BoxWidth = 24
         'BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-        'Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+        'Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
         'Call CSMsgBox(MsgText$, BoxWidth, Pass)
         'I$ = GetKeyPress$
         'Call CSMsgBox("", 0, Pass)
@@ -763,7 +769,7 @@ Sub ReadLeagueStats (statFile$)
 
     Input #1, leagueName$, div1Name$, div2Name$, div3Name$, div4Name$
 
-    For XW = 1 To TEAMS_PER_CONFERENCE
+    For XW = 1 To TEAMS_PER_LEAGUE
         Input #1, memberName$(XW)
     Next
 
@@ -908,20 +914,24 @@ Function ChooseFile$ (fileSpec$, fileDesc$, ExitCode%)
 
                 Color , 1
                 Cls
+
                 Locate , XCoord
                 Color 14
                 Print "SELECT "; fileDesc$; " FILE"
                 Color 15
+
                 SELECTION% = 1
                 START% = 1
                 FileFGColor = 15: FileBGColor = 1
                 HiLiteFGColor% = 0: HiLiteBGColor% = 7
-                Rows% = 20
+                '3 rows header, 2 rows spacing, 1 row footer
+                Rows% = LAST_ROW - 6
                 Columns% = 3
                 Spacing% = 5
-                Row% = 4
+                Row% = 5
                 Column% = 1
-                Locate 25, 1
+
+                Locate LAST_ROW, 1
                 Color 14
                 Print "ENTER";
                 Color 15

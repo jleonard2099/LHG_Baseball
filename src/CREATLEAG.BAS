@@ -171,7 +171,7 @@ Sub DefineLeague ()
 
     Done:
     Color 14, 1
-    Locate 23, 1
+    Locate LAST_ROW - 2, 1
     Print "Is this okay? (Yes/No) ";
     X$ = ""
     Call YesNoB(X$, XCode, FG, BG)

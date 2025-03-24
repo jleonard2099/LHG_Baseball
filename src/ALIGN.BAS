@@ -2,10 +2,10 @@
 '            ALIGN Subroutine
 '----------------------------------------
 'This routine presents a menu / interface
-'that assists the user with aligning 
-'player names in separate stat files. 
-'(ie, Road Vs. Local) This should be done 
-'before merging stats, since player name 
+'that assists the user with aligning
+'player names in separate stat files.
+'(ie, Road Vs. Local) This should be done
+'before merging stats, since player name
 'entry may not be consistent.
 Sub ALIGN ()
 
@@ -19,30 +19,35 @@ Sub ALIGN ()
 
     Shared pitcherNames$(), pitNames_Road$()
     Shared batterNames$(), batNames_Road$()
-    
+
     Shared alignTR(), alignTR1()
 
     Shared alignB0_Road(), alignB_Road()
     Shared alignP0_Road(), alignP_Road()
     Shared alignS0_Road()
 
-    Shared alignS() 
+    Shared alignS()
     Shared statB0(), statB()
     Shared statP(), statP0()
     Shared statT0!(), statT1!()
 
     Do
 
-        Call GetMergePaths (pathCurrentStats$, pathRoadStats$, I$)
+        'Call GetMergePaths(pathCurrentStats$, pathRoadStats$, I$)
+        pathCurrentStats$ = diskPaths$(1)
+        pathRoadStats$ = _SelectFolderDialog$("Select folder with ROAD stats", diskPaths$(1))
 
-        If UCase$(I$) = "N" And I$ <> Chr$(27) Then
+        'If UCase$(I$) = "N" And I$ <> Chr$(27) Then
+        If pathRoadStats$ <> "" Then
+
+            pathRoadStats$ = pathRoadStats$ + "\"
 
             Locate 15, 5: Print Space$(55)
             Locate 16, 5: Print Space$(55)
             Color 11
 
             teamNbr = 0
-            Call ChooseTeam (YN$, NTMS, teamNbr, team$)
+            Call ChooseTeam(YN$, NTMS, teamNbr, team$)
 
             statFile$ = nameStatFile$(team$)
 
@@ -84,11 +89,11 @@ Sub ALIGN ()
                 Input #1, statD0_Road
                 Input #1, statD1_Road
 
-                For I = 0 To 21: 
+                For I = 0 To 21:
                     Input #1, alignTR(I)
                 Next I
-                
-                For I = 0 To 22: 
+
+                For I = 0 To 22:
                     Input #1, alignTR1(I)
                 Next I
 
@@ -141,11 +146,11 @@ Sub ALIGN ()
                     Input #1, statD0
                     Input #1, statD1
 
-                    For I = 0 To 21: 
+                    For I = 0 To 21:
                         Input #1, statT0!(I)
                     Next I
 
-                    For I = 0 To 22: 
+                    For I = 0 To 22:
                         Input #1, statT1!(I)
                     Next I
 
@@ -204,10 +209,10 @@ End Sub
 '----------------------------------------
 '         AlignStats Subroutine
 '----------------------------------------
-'This routine presents the user with a 
+'This routine presents the user with a
 'summary of the statistics in each file.
-'It then performs the alignment before 
-'presenting the user a chance to review 
+'It then performs the alignment before
+'presenting the user a chance to review
 'the results.
 Sub AlignStats (pathRoadStats$, statFile$)
 
@@ -228,13 +233,14 @@ Sub AlignStats (pathRoadStats$, statFile$)
     Locate 1, 34
     Color 12: Print "STAT ROSTERS"
 
-    Locate , 33
-    Color 15: Print "CURRENT  ";
-    Color 7: Print " ROAD"
+    Color 11
+    Locate 3, 13: Print "CURRENT";
+    Color 7: Print Tab(53); "ROAD"
+
 
     For I = 0 To 22:
         Color 12
-        Locate I + 1, 1: Print Using "##"; I;
+        Locate I + 4, 1: Print Using "##"; I;
         Print " ";
         Color 15: Print Left$(batterNames$(I), 10);
         Color 12: Print Tab(17); Using "##"; I;
@@ -244,17 +250,16 @@ Sub AlignStats (pathRoadStats$, statFile$)
 
     For I = 0 To 21:
         Color 12
-        Locate I + 1, 48: Print Using "##"; I;
+        Locate I + 4, 40: Print Using "##"; I;
         Print " ";
         Color 15: Print Left$(pitcherNames$(I), 10);
-        Color 12: Print Tab(62); Using "##"; I;
+        Color 12: Print Tab(54); Using "##"; I;
         Print " ";
         Color 7: Print Left$(pitNames_Road$(I), 10);
     Next
 
     Color 11
-    Locate LAST_LINE, 31: Line Input "HIT ENTER TO ALIGN"; DUMMY$
-    Locate LAST_LINE, 30: Print "ALIGNING FILES . . ."
+    Locate 28, 31: Line Input "HIT ENTER TO ALIGN"; DUMMY$
 
     N = 0
 
@@ -327,10 +332,10 @@ Sub AlignStats (pathRoadStats$, statFile$)
     Else
         Color 14
         Locate 20
-        Print "WARNING !! - - ROAD STAT FILE CONTAINS PLAYERS NOT IN EXISTING STATS.  YOU MUST"
-        Print "CHANGE ROAD STAT FILE USING OPTION #6 ON GAME MENU BEFORE ATTEMPTING STAT MERGE."
+        Print "WARNING !! - ROAD STAT FILE CONTAINS PLAYERS NOT IN EXISTING STATS."
+        Print "YOU MUST UPDATE ROAD STAT FILE FROM GAME MENU BEFORE ATTEMPTING MERGE."
         Color 13
-        Locate 23, 30
+        Locate LAST_ROW - 2, 30
         Line Input "HIT ENTER TO CONTINUE"; DUMMY$
     End If 'Done checking SEQ
 
@@ -340,9 +345,9 @@ End Sub
 '----------------------------------------
 '    ReviewAndSaveAlignment Subroutine
 '----------------------------------------
-'This routine displays the results of the 
+'This routine displays the results of the
 'player name alignment, then gives the end
-'user a chance to actually save the results 
+'user a chance to actually save the results
 Sub ReviewAndSaveAlignment (pathRoadStats$, statFile$)
 
     Shared statD0_Road, statD1_Road
@@ -361,33 +366,38 @@ Sub ReviewAndSaveAlignment (pathRoadStats$, statFile$)
 
     Cls
 
-    Locate 1, 32
+    Locate 1, 34
     Color 12: Print "STAT ROSTERS"
 
-    Color 15
-    Locate , 26: Print "CURRENT  ";
-    Color 7: Print "             ROAD"
+    Color 11
+    Locate 3, 13: Print "CURRENT";
+    Color 7: Print Tab(53); "ROAD"
 
     For I = 0 To 22:
-        Color 12: Locate I + 1, 1: Print Using "##"; I;
-        Print " ";: Color 15: Print Left$(batterNames$(I), 10);
+        Color 12
+        Locate I + 4, 1: Print Using "##"; I;
+        Print " ";
+        Color 15: Print Left$(batterNames$(I), 10);
         Color 12: Print Tab(17); Using "##"; I;: Print " ";
         Color 7: Print Left$(batNames_Align$(I), 10);
     Next
 
     For I = 0 To 21:
         Color 12
-        Locate I + 1, 48: Print Using "##"; I;
+        Locate I + 4, 40: Print Using "##"; I;
         Print " ";
         Color 15: Print Left$(pitcherNames$(I), 10);
-        Color 12: Print Tab(62); Using "##"; I;
+        Color 12: Print Tab(54); Using "##"; I;
         Print " ";
         Color 7: Print Left$(pitName_Align$(I), 10);
     Next
 
     Color 11
-    Locate LAST_LINE, 31: Line Input "HIT ENTER TO ALIGN"; DUMMY$
-    Locate LAST_LINE, 30: Print "ALIGNING FILES . . ."
+    Locate 28, 26: Line Input "HIT ENTER TO SAVE ALIGNMENT"; DUMMY$
+
+    Cls
+
+    Locate 6, 30: Print "ALIGNING FILES . . ."
 
     Open pathRoadStats$ + statFile$ For Output As #1
 
@@ -395,24 +405,24 @@ Sub ReviewAndSaveAlignment (pathRoadStats$, statFile$)
     Write #1, teamWins_Road
     Write #1, teamLosses_Road
 
-    For I = 0 To 22: 
+    For I = 0 To 22:
         Write #1, batNames_Align$(I)
         Write #1, alignB(I)
     Next I
 
-    For I = 0 To 21: 
+    For I = 0 To 21:
         Write #1, pitName_Align$(I)
         Write #1, alignP(I)
     Next I
 
-    For I = 0 To 22: 
-        For I1 = 0 To 21: 
+    For I = 0 To 22:
+        For I1 = 0 To 21:
             Write #1, alignB0(I, I1)
         Next I1
     Next I
 
-    For I = 0 To 21: 
-        For I1 = 0 To 41: 
+    For I = 0 To 21:
+        For I1 = 0 To 41:
             Write #1, alignP0(I, I1)
         Next I1
     Next I
@@ -420,11 +430,11 @@ Sub ReviewAndSaveAlignment (pathRoadStats$, statFile$)
     Write #1, statD0_Road
     Write #1, statD1_Road
 
-    For I = 0 To 21: 
+    For I = 0 To 21:
         Write #1, alignTR(I)
     Next I
 
-    For I = 0 To 22: 
+    For I = 0 To 22:
         Write #1, alignTR1(I)
     Next I
 
@@ -440,13 +450,12 @@ Sub ReviewAndSaveAlignment (pathRoadStats$, statFile$)
 
     Close 1
 
-    Cls
-
-    Locate 8, 20: Print "RE-ALIGNMENT COMPLETED"
+    Locate 8, 30: Print "RE-ALIGNMENT COMPLETED"
     Color 12
-    Locate 12, 20
+    Locate 12, 30
     Line Input "HIT ENTER TO CONTINUE"; DUMMY$
 
     Cls
 
 End Sub
+

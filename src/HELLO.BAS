@@ -15,7 +15,8 @@ Const DIVS_PER_LEAGUE = 4
 Const TEAMS_PER_LEAGUE = 40
 
 Const SCHEDULE_SIZE_BYTES = 52
-Const LAST_LINE = 24
+Const LAST_COL = 80
+Const LAST_ROW = 30
 
 DefInt A-Z
 
@@ -29,8 +30,6 @@ DefInt A-Z
 '$Include: 'BoxRoutines.bi'
 '$Include: 'FileTeamSelection.bi'
 '$Include: 'Variables.bi'
-ReDim scheduleYN$(MAX_SCHEDULE_GAMES, 1)
-
 '$Include: 'MainRoutines.bi'
 '$Include: 'TITLE.bi'
 
@@ -329,6 +328,8 @@ End If
 
 'Run main menu
 SELECTION% = 1
+
+Screen _NewImage(640, 480, 256)
 
 Do
 
@@ -904,6 +905,9 @@ Sub LOADER
             'Pitcher Era
             Print #3, 0
 
+            'Sound option
+            Print #3, 1
+
             Close #3
 
         End If
@@ -925,6 +929,9 @@ Sub LOADER
     Input #4, pbpDelay!
     Input #4, useVGA
     Input #4, pitchEraOpt
+    If Not EOF(4) Then
+        Input #4, sndOpt
+    End If
     Close #4
 
     'Load game in-progress, if there is one
@@ -950,7 +957,7 @@ Sub LOADER
             MsgText$ = "CAN'T FIND OR LOAD TARGET SCHEDULE.  PRESS ANY KEY TO RETURN TO MENU"
             BoxWidth = 18
             BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-            Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+            Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
             Call CSMsgBox(MsgText$, BoxWidth, PASS)
             I$ = GetKeyPress$
             Call CSMsgBox("", 0, PASS)
@@ -1003,7 +1010,7 @@ Sub LOADER
             MsgText$ = "ATTEMPTED TO LOAD AN INVALID TEAM. PRESS ANY KEY TO RETURN TO MENU"
             BoxWidth = 18
             BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-            Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+            Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
             Call CSMsgBox(MsgText$, BoxWidth, PASS)
             I$ = GetKeyPress$
             Call CSMsgBox("", 0, PASS)
@@ -1027,62 +1034,71 @@ Sub LOADER
             Color 2
             Print Tab(29); "SELECT OPENING OPTIONS"
 
-            Locate 2, 2: Color 14
+            Locate 3, 2: Color 14
             Print "(1) ";
             Color 15: Print playMode$(playerOpt)
-            Locate 3, 2: Color 14
+            Locate 4, 2: Color 14
             Print "(2) ";
             Color 15: Print "VISITING TEAM: ";
             Color teamRat_GAME(0, 11), teamRat_GAME(0, 12): Print gameTeams$(0)
-            Locate 4, 2: Color 14, 0
+            Locate 5, 2: Color 14, 0
             Print "(3) ";
             Color 15: Print "HOME TEAM: ";
             Color teamRat_GAME(1, 11), teamRat_GAME(1, 12): Print gameTeams$(1)
-            Locate 5, 2: Color 14, 0
+            Locate 6, 2: Color 14, 0
             Print "(4) ";
             Color 15: Print "LEAGUE TYPE: "; leagueType$(leagueOpt)
-            Locate 6, 2: Color 14
+            Locate 7, 2: Color 14
             Print "(5) ";
             Color 15: Print "DESIGNATED HITTER: "; desigHitOpt$(desigHit)
-            Locate 7, 2: Color 14
+            Locate 8, 2: Color 14
             Print "(6) ";
             Color 15: Print "GAME TYPE: "; gameType$(gameTypeOpt)
-            Locate 8, 2: Color 14
+            Locate 9, 2: Color 14
             Print "(7) ";
             Color 15: Print "MONTH: "; month$(gameMonth)
-            Locate 9, 2: Color 14
+            Locate 10, 2: Color 14
             Print "(8) ";
             Color 15: Print "TIME OF DAY: "; dayNight$(dayOrNight)
-            Locate 10, 2: Color 14
+            Locate 11, 2: Color 14
             Print "(9) ";
             Color 15: Print "START GAME"
-            Locate 11, 2: Color 14
+            Locate 12, 2: Color 14
             Print "(0) ";
             Color 15: Print "SAVE SETTINGS AS DEFAULT"
-            Locate 12, 2: Color 14
+            Locate 13, 2: Color 14
             Print "(A) ";
             Color 15: Print Using "PLAY-BY-PLAY DELAY (SECS): ##.# "; pbpDelay!
-            Locate 13, 2: Color 14
+            Locate 14, 2: Color 14
             Print "(B) ";
             Color 15: Print "USE INJURIES: "; yesNoText$(useInj)
-            Locate 14, 2: Color 14
+            Locate 15, 2: Color 14
             Print "(C) ";
             Color 15: Print "USE LEFT/RIGHT SPLIT STATS: "; yesNoText$(useLRSplit)
-            Locate 15, 2: Color 14
+            Locate 16, 2: Color 14
             Print "(D) ";
             Color 15: Print "USE DAYS REST DATA FOR PITCHERS: "; yesNoText$(useRest)
-            Locate 16, 2: Color 14
+            Locate 17, 2: Color 14
             Print "(E) ";
             Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE: "; yesNoText$(useMgrProf)
-            Locate 17, 2: Color 14
+            Locate 18, 2: Color 14
             Print "(F) ";
             Color 15: Print "USE WEATHER EFFECTS: "; yesNoText$(useWeather)
-            Locate 18, 2: Color 14
+            Locate 19, 2: Color 14
             Print "(G) ";
             Color 15: Print "USE VGA SCREENS, IF ABLE: "; yesNoText$(useVGA)
-            Locate 19, 2: Color 14
+            Locate 20, 2: Color 14
             Print "(H) ";
             Color 15: Print "PITCHER ERA: "; pitcherEra$(pitchEraOpt)
+            Locate 21, 2: Color 14
+            Print "(I) ";
+            Color 15: Print "SOUND ENABLED: "; yesNoText$(sndOpt)
+
+            'Locate 23, 2: Color 14
+            'Print "NOTE:: "
+            'Color 15
+            
+            'Locate , 2: Print "* NOTE ABOUT RULES GOES HERE"
 
             Do
                 Color 7, 0
@@ -1091,7 +1107,7 @@ Sub LOADER
 
                 If I$ <> Chr$(27) Then Call LetterToNumber(I$, setting)
 
-            Loop Until setting >= 0 And setting <= 17 Or I$ = Chr$(27) Or UCase$(I$) = Chr$(17) Or UCase$(I$) = "Q"
+            Loop Until setting >= 0 And setting <= 18 Or I$ = Chr$(27) Or UCase$(I$) = Chr$(17) Or UCase$(I$) = "Q"
 
             If I$ <> Chr$(27) And UCase$(I$) <> "Q" And UCase$(I$) <> Chr$(17) Then
 
@@ -1113,6 +1129,7 @@ Sub LOADER
                         Print #7, pbpDelay!
                         Print #7, useVGA
                         Print #7, pitchEraOpt
+                        Print #7, sndOpt
                         Close #7
 
                     Case 1:
@@ -1179,6 +1196,9 @@ Sub LOADER
                     Case 17:
                         pitchEraOpt = pitchEraOpt + 1
                         If pitchEraOpt > 8 Then pitchEraOpt = 0
+
+                    Case 18
+                        sndOpt = 1 - sndOpt
 
                 End Select
 
@@ -1670,7 +1690,7 @@ Sub LOADER
         MsgText$ = "ERROR!!! PLAY-BY-PLAY SOURCE FILE NOT FOUND. CHECK THAT THE FILE 'REVISED.PBP' EXISTS AND IS READ-ONLY."
         BoxWidth = 22
         BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+        Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
         Call CSMsgBox(MsgText$, BoxWidth, PASS)
         A$ = GetKeyPress$
         Call CSMsgBox("", 0, PASS)
@@ -1707,7 +1727,7 @@ Sub StartingLineup (P9)
 
                 If desigHit <> 1 Or I1 <> 1 Then
 
-                    Locate LAST_LINE, (I1 * 3) + 1
+                    Locate LAST_ROW, (I1 * 3) + 1
                     If gameM(I1) = 0 Then
                         Print fieldPos$(I1); "  ";
                     End If
@@ -1831,7 +1851,7 @@ Sub LineupPositions (teamIdx, posIdx)
 
                                 If desigHit <> 1 Or I0 <> 1 Then
 
-                                    Locate LAST_LINE, (I0 * 3) + 1
+                                    Locate LAST_ROW, (I0 * 3) + 1
                                     If gameM(I0) = 0 Then
                                         Print fieldPos$(I0); "  ";
                                     End If
@@ -1905,7 +1925,7 @@ Sub LineupPositions (teamIdx, posIdx)
 
                                 If desigHit <> 1 Or I1 <> 1 Then
 
-                                    Locate LAST_LINE, (I1 * 3) + 1
+                                    Locate LAST_ROW, (I1 * 3) + 1
                                     If gameM(I1) = 0 Then
                                         Print fieldPos$(I1); "  ";
                                     End If
@@ -2235,7 +2255,6 @@ Sub LineupFromProfile (lineupFound%, P9, skipLineChange%)
         If autoPlay = 1 Then
             noLUFound = 1
         Else
-            'Locate LAST_LINE, 1
             Locate 22, 1
             Print "PRESS ANY KEY TO CONTINUE"
             I$ = GetKeyPress$
@@ -3771,7 +3790,7 @@ Sub SOURCE ()
 
         Print "THIS GAME HAS BEEN CALLED ON ACCOUNT OF RAIN!!!"
         Print "ALL RECORDS ARE OFFICIAL!!"
-        Locate LAST_LINE, 1: Print "HIT ANY KEY TO CONTINUE";
+        Locate LAST_ROW, 1: Print "HIT ANY KEY TO CONTINUE";
 
         I$ = GetKeyPress$
 
@@ -7578,7 +7597,7 @@ Sub SOURCE ()
             Do
 
                 Call PITDISP(P9)
-                Locate LAST_LINE, 1: Print "SELECT RELIEVER (Z = NO CHANGE)   ";
+                Locate LAST_ROW, 1: Print "SELECT RELIEVER (Z = NO CHANGE)   ";
                 If B9%(P9, 1) <> 99 Then Call TIRING(P9)
                 Print
 
@@ -8737,10 +8756,10 @@ Sub INFO ()
     Color 14
     Print "GAME OPTIONS MENU"
 
-    Locate LAST_LINE, 1
+    Locate LAST_ROW, 1
     Print Tab(80); " ";
     Locate , 1
-    Print "    LANCE HAFFNER / JASON LEONARD  1986-2024"; Tab(70); Left$(Time$, 5);
+    Print "    LANCE HAFFNER / JASON LEONARD  1986-2025"; Tab(70); Left$(Time$, 5);
     Locate 3, 1
     Color , 0
 
@@ -10709,7 +10728,7 @@ Sub DisplayBallField (nbrBalls, P, nbrStrikes, D)
 
     'Catcher Stats
     Color 15, 2
-    Locate LAST_LINE, 59: Print Using "   A:#"; batRating(D, B9%(D, 2), 15);
+    Locate LAST_ROW, 59: Print Using "   A:#"; batRating(D, B9%(D, 2), 15);
 
     If batRating(D, B9%(D, 2), 19) = 1000 Then
         fldPct$ = "1.000"
@@ -12568,7 +12587,7 @@ Sub PopUp_Lineup ()
     Next
 
     Color 15, 0
-    Locate LAST_LINE, 1: Print "HIT ANY KEY TO CONTINUE";
+    Locate LAST_ROW, 1: Print "HIT ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
 End Sub
@@ -12904,7 +12923,7 @@ Sub POPUPSTATS ()
     M = P1(D)
     Call PopUp_Pitcher(WK, M)
 
-    Locate LAST_LINE, 1: Print "HIT ANY KEY TO CONTINUE";
+    Locate LAST_ROW, 1: Print "HIT ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
     Color 7, 0
 
@@ -16285,7 +16304,7 @@ Sub WEATHER ()
     End If
 
     Color 15, 0
-    Locate LAST_LINE, 1: Print "HIT ANY KEY TO CONTINUE";
+    Locate LAST_ROW, 1: Print "HIT ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
     If useVGA = 1 Then
@@ -16744,7 +16763,6 @@ Sub OPTIONS ()
 
         Do
             Color 7, 0
-            'Locate LAST_LINE, 1: Print "HIT ANY KEY TO CONTINUE";
             I$ = GetKeyPress$
             I = Val(I$)
         Loop Until I >= 0 And I <= 2
@@ -18555,7 +18573,7 @@ Sub BOX2SCREEN
     Call ScoreSummary
 
     If autoPlay <> 1 Or playerMode <> 2 Then
-        Locate LAST_LINE, 1: Print "HIT ANY KEY TO CONTINUE";
+        Locate LAST_ROW, 1: Print "HIT ANY KEY TO CONTINUE";
         I$ = GetKeyPress$
     End If
 
@@ -18922,7 +18940,7 @@ Sub STATS2SCREEN
         Print
 
         If autoPlay <> 1 Or playerMode <> 2 Then
-            Locate LAST_LINE, 1: Print "HIT ANY KEY TO CONTINUE";
+            Locate LAST_ROW, 1: Print "HIT ANY KEY TO CONTINUE";
             I$ = GetKeyPress$
         End If
 
@@ -19051,7 +19069,7 @@ Sub STATS2SCREEN
         Print
 
         If autoPlay <> 1 Or playerMode <> 2 Then
-            Locate LAST_LINE, 1: Print "HIT ANY KEY TO CONTINUE";
+            Locate LAST_ROW, 1: Print "HIT ANY KEY TO CONTINUE";
             I$ = GetKeyPress$
         End If
 
@@ -19176,7 +19194,7 @@ Sub STATS2SCREEN
     Color 15, 0: Print precip$(precipType)
 
     If autoPlay <> 1 Or playerMode <> 2 Then
-        Locate LAST_LINE, 1: Print "HIT ANY KEY TO CONTINUE";
+        Locate LAST_ROW, 1: Print "HIT ANY KEY TO CONTINUE";
         I$ = GetKeyPress$
     End If
 
@@ -19468,7 +19486,7 @@ Sub ChooseGameTeam (yearNumber$, numberTeams, chosenIdx, teamName$, gameIdx)
                         MsgText$ = "NO TEAMS WERE FOUND MATCHING THAT ID... PRESS ANY KEY TO SELECT ANOTHER ID"
                         BoxWidth = 20
                         BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-                        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+                        Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
                         Call CSMsgBox(MsgText$, BoxWidth, Pass)
                         I$ = GetKeyPress$
                         Call CSMsgBox("", 0, Pass)
@@ -19560,21 +19578,26 @@ Sub SelectGameTeam (numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%,
         Start% = 1
         FileFGColor = 15: FileBGColor = 4
         HiLiteFGColor = 0: HiLiteBGColor = 7
-        Rows = 20
+        Rows% = LAST_ROW - 6
         Columns% = 4
         Spacing% = 6
-        Row% = 4
+        Row% = 5
         Column% = 1
 
         Color , 4
         Cls
+
         Color 14
         Locate , 33: Print "TEAM SELECTION"
-        Locate 25, 1
-        Color 14: Print "ESC";
-        Color 15: Print "-SELECT NEW ID  PGDN  PGUP  ";
-        Color 14: Print "ENTER";
+        Locate LAST_ROW, 1
+        Print Tab(3); "PG DN";
+        Print Tab(18); "ENTER";
         Color 15: Print "-SELECTS TEAM";
+        Color 14
+        Print Tab(39); "ESC";
+        Color 15: Print "-SELECT NEW ID";
+        Color 14
+        Print Tab(72); "PG UP";
 
         _MouseShow "DEFAULT"
         MAMenu teamNames$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor, HiLiteBGColor, Rows%, Columns%, Spacing%, Row%, Column%

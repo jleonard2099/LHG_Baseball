@@ -323,7 +323,7 @@ Sub ViewRoster (targetTeam$)
     Locate , 37: Print Using "######"; teamRatings(8)
 
     Color 11
-    Locate 23, 10: Print "HIT ANY KEY TO CONTINUE"
+    Locate LAST_ROW - 2, 10: Print "HIT ANY KEY TO CONTINUE"
 
     I$ = GetKeyPress$
 

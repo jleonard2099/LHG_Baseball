@@ -23,7 +23,7 @@ Sub SeasonRecords ()
     '   MsgText$ = "UNABLE TO LOCATE RECORDS PRESS ANY KEY TO RETURN TO MAIN MENU"
     '    BoxWidth = 24
     '   BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-    '   Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+    '   Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
     '   Call CSMsgBox(MsgText$, BoxWidth, Pass)
     '   I$ = GetKeyPress$
     '   Call CSMsgBox("", 0, Pass)
@@ -161,7 +161,7 @@ Sub UpdateRecords (leagueFile$)
         MsgText$ = "UNABLE TO LOCATE RECORDS PRESS ANY KEY TO RETURN TO MAIN MENU"
         BoxWidth = 24
         BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+        Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
         Call CSMsgBox(MsgText$, BoxWidth, Pass)
         I$ = GetKeyPress$
         Call CSMsgBox("", 0, Pass)
@@ -705,7 +705,7 @@ Sub ViewSeasonRecords (leagueFile$)
         MsgText$ = "UNABLE TO LOCATE RECORDS PRESS ANY KEY TO RETURN TO MAIN MENU"
         BoxWidth = 24
         BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+        Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
         Call CSMsgBox(MsgText$, BoxWidth, Pass)
         I$ = GetKeyPress$
         Call CSMsgBox("", 0, Pass)
@@ -1001,7 +1001,7 @@ Sub PrintSeasonRecords (printDest, destFile$, leagueName$)
         MsgText$ = "UNABLE TO LOCATE RECORDS PRESS ANY KEY TO RETURN TO MAIN MENU"
         BoxWidth = 24
         BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+        Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
         Call CSMsgBox(MsgText$, BoxWidth, Pass)
         I$ = GetKeyPress$
         Call CSMsgBox("", 0, Pass)

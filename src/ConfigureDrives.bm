@@ -99,7 +99,7 @@ Sub ConfigureDrives ()
                             userFolder$ = _SelectFolderDialog$("Select a path for teams files", diskPaths$(0))
                     End Select
 
-                    If userFolder$ <> "" Then diskPaths$(0) = userFolder$
+                    If _DirExists(userFolder$) Then diskPaths$(0) = userFolder$
                     Color Black, DarkGray
                     Locate 8, 1: Print PadRight$(diskPaths$(0), 80)
 
@@ -118,7 +118,7 @@ Sub ConfigureDrives ()
                             userFolder$ = _SelectFolderDialog$("Select a path for stats files", diskPaths$(1))
                     End Select
 
-                    If userFolder$ <> "" Then diskPaths$(1) = userFolder$
+                    If _DirExists(userFolder$) Then diskPaths$(1) = userFolder$
                     Color Black, DarkGray
                     Locate 12, 1: Print PadRight$(diskPaths$(1), 80)
 
@@ -137,7 +137,7 @@ Sub ConfigureDrives ()
                             userFolder$ = _SelectFolderDialog$("Select a path for leaders files", diskPaths$(2))
                     End Select
 
-                    If userFolder$ <> "" Then diskPaths$(2) = userFolder$
+                    If _DirExists(userFolder$) Then diskPaths$(2) = userFolder$
                     Color Black, DarkGray
                     Locate 16, 1: Print PadRight$(diskPaths$(2), 80)
 
@@ -156,7 +156,7 @@ Sub ConfigureDrives ()
                             userFolder$ = _SelectFolderDialog$("Select a path for schedules files", diskPaths$(3))
                     End Select
 
-                    If userFolder$ <> "" Then diskPaths$(3) = userFolder$
+                    If _DirExists(userFolder$) Then diskPaths$(3) = userFolder$
                     Color Black, DarkGray
                     Locate 20, 1: Print PadRight$(diskPaths$(3), 80)
 
@@ -229,7 +229,7 @@ Sub ConfigureDrives ()
 
     Done:
     Color Yellow, 1
-    Locate LAST_LINE, 1
+    Locate 24, 1
     Print "Is this okay? (Y/N) ";
     X$ = ""
     Call YesNoB(X$, XCode, FG, BG)
@@ -339,7 +339,7 @@ Sub ConfigureDrives_Base ()
 
     Color Yellow, Blue
     Locate 23, 1: Print "Path for Profiles "
-    Color Black, DarkGray: Locate LAST_LINE, 1: Print PadRight$(diskPaths$(4), 80)
+    Color Black, DarkGray: Locate 24, 1: Print PadRight$(diskPaths$(4), 80)
     _PutImage (580, 390)-(612, 422), browseImage&, confDriveScreen&
 
     Color Yellow, Blue
@@ -370,7 +370,7 @@ Sub ConfigureDrives_Base ()
                             userFolder$ = _SelectFolderDialog$("Select a path for teams files", diskPaths$(0))
                     End Select
 
-                    If userFolder$ <> "" Then diskPaths$(0) = userFolder$
+                    If _DirExists(userFolder$) Then diskPaths$(0) = userFolder$
                     Color Black, DarkGray
                     Locate 8, 1: Print PadRight$(diskPaths$(0), 80)
 
@@ -389,7 +389,7 @@ Sub ConfigureDrives_Base ()
                             userFolder$ = _SelectFolderDialog$("Select a path for stats files", diskPaths$(1))
                     End Select
 
-                    If userFolder$ <> "" Then diskPaths$(1) = userFolder$
+                    If _DirExists(userFolder$) Then diskPaths$(1) = userFolder$
                     Color Black, DarkGray
                     Locate 12, 1: Print PadRight$(diskPaths$(1), 80)
 
@@ -408,7 +408,7 @@ Sub ConfigureDrives_Base ()
                             userFolder$ = _SelectFolderDialog$("Select a path for leaders files", diskPaths$(2))
                     End Select
 
-                    If userFolder$ <> "" Then diskPaths$(2) = userFolder$
+                    If _DirExists(userFolder$) Then diskPaths$(2) = userFolder$
                     Color Black, DarkGray
                     Locate 16, 1: Print PadRight$(diskPaths$(2), 80)
 
@@ -427,7 +427,7 @@ Sub ConfigureDrives_Base ()
                             userFolder$ = _SelectFolderDialog$("Select a path for schedules files", diskPaths$(3))
                     End Select
 
-                    If userFolder$ <> "" Then diskPaths$(3) = userFolder$
+                    If _DirExists(userFolder$) Then diskPaths$(3) = userFolder$
                     Color Black, DarkGray
                     Locate 20, 1: Print PadRight$(diskPaths$(3), 80)
 
@@ -446,9 +446,9 @@ Sub ConfigureDrives_Base ()
                             userFolder$ = _SelectFolderDialog$("Select a path for profiles files", diskPaths$(4))
                     End Select
 
-                    If userFolder$ <> "" Then diskPaths$(4) = userFolder$
+                    If _DirExists(userFolder$) Then diskPaths$(4) = userFolder$
                     Color Black, DarkGray
-                    Locate LAST_LINE, 1: Print PadRight$(diskPaths$(4), 80)
+                    Locate 24, 1: Print PadRight$(diskPaths$(4), 80)
 
                 End If
 
@@ -511,7 +511,7 @@ Sub ConfigureDrives_Base ()
             diskPaths$(3) = _Trim$(diskPaths$(3))
 
             GetDiv5:
-            Locate LAST_LINE, 1 'location of beginning of field
+            Locate 24, 1 'location of beginning of field
             CapsOn = 0
             NumOnly = 0
             Max = 80
@@ -528,7 +528,7 @@ Sub ConfigureDrives_Base ()
 
     Done:
     Color Yellow, 1
-    Locate LAST_LINE, 1
+    Locate 24, 1
     Print "Is this okay? (Y/N) ";
     X$ = ""
     Call YesNoB(X$, XCode, FG, BG)

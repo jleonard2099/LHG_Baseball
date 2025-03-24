@@ -95,7 +95,7 @@ Function FUsing$ (Number$, Image$, Typ%)
     '
     'Result:    res$ --> the resulting formatted string
     '
-    'Inputs:    
+    'Inputs:
     '           Number$ --> the argument(s) to format into the Image$ string,
     '                    use STR$(num) to pass in a number
     '           Image$ --> the string with format options for PRINT USING
@@ -107,17 +107,28 @@ Function FUsing$ (Number$, Image$, Typ%)
     '   This function is adapted and slightly altered from
     '   an idea posted in the QB64 Forum by Fellippe Heitor
 
-    shan& = _Source: dhan& = _Dest: than& = _NewImage(256, 1, 0) 'if results may get longer, then raise the 256 value
-    _Source than&: _Dest than&
+    shan& = _Source
+    dhan& = _Dest
+    than& = _NewImage(256, 1, 0) 'if results may get longer, then raise the 256 value
+
+    _Source than&
+    _Dest than&
+
     If Typ% Then
         Print Using Image$; Val(Number$);
     Else
         Print Using Image$; Number$;
     End If
+
     For I% = 1 To Pos(0) - 1
         res$ = res$ + Chr$(Screen(1, I%))
     Next I%
-    _Source shan&: _Dest dhan&: _FreeImage than&
+
+    _Source shan&
+    _Dest dhan&
+
+    _FreeImage than&
+
     FUsing$ = res$
 
 End Function
@@ -140,6 +151,7 @@ Function MGetKey (Row%, Col%)
     Do
         k$ = InKey$
     Loop Until k$ <> ""
+
     KeyCode% = CVI(k$ + Chr$(0))
 
 End Function
@@ -362,7 +374,7 @@ Sub CapNum ()
     If Cap = CapStatus Then GoTo QNumCheck 'No change since last check
 
     Cap = CapStatus 'save CapsLock status
-    Locate 25, 69 'Position to print status msg
+    Locate LAST_ROW, 69 'Position to print status msg
 
     If CapStatus Then
         Print " CAP "; 'White on Black
@@ -374,7 +386,7 @@ Sub CapNum ()
     If Num = NumStatus Then GoTo QCapNumExit 'No change since last check
 
     Num = NumStatus 'Save NumLock status
-    Locate 25, 75 'Position to print status msg
+    Locate LAST_ROW, 75 'Position to print status msg
 
     If NumStatus Then 'Print or erase message
         Print " NUM ";
@@ -465,6 +477,7 @@ Sub CSMsgBox (Message$, MsgWidth%, Pass)
 
         '*** Parse the message into lines
         Do
+
             While Mid$(Message$, Strt, 1) = " " 'Skip over blanks
                 Strt = Strt + 1
             Wend
@@ -481,13 +494,13 @@ Sub CSMsgBox (Message$, MsgWidth%, Pass)
             'Pull out the new line
             Temp$(LN) = Mid$(Message$, Strt, ND - Strt)
             Strt = ND + 1 'Reset starting pos. for next line
+
         Loop Until ND >= MesLen 'Get more unless @ end of mes
 
         BotRow = Row + LN + 1 'Find the bottom row #
 
         'Save current screen
-        oldmode& = _CopyImage(0) 'the 0 value designates the current destination SCREEN
-        'PCopy 0, 1
+        oldmode& = _CopyImage(0)
 
         BoxWidth% = MsgWidth% + 4 'Find the outer box width
         ColPos = 40 - (BoxWidth% \ 2) 'Starting pos. for centered box
@@ -516,13 +529,14 @@ Sub CSMsgBox (Message$, MsgWidth%, Pass)
         Erase Temp$ 'Don't need this anymore
 
     Else
+
         If Pass = 1 Then 'If we've been here before...
             'Restore the original screen
-            'PCopy 1, 0
             Screen oldmode&
 
             Pass = 0 'Reset flag for next call
         End If
+
     End If
 
 End Sub
@@ -1544,7 +1558,6 @@ Sub Lts2Menu (Item$(), Prompt$(), Choice%, FGColor%, BGColor%)
     ReDim ScrBuf%(0 To 159)
     TRow% = CsrLin
 
-    'PCopy 0, 1
     oldmode& = _CopyImage(0) 'the 0 value designates the current destination SCREEN
 
     Call ClearEOL(7, 0) 'clear any old prompt information
@@ -1627,10 +1640,13 @@ Sub Lts2Menu (Item$(), Prompt$(), Choice%, FGColor%, BGColor%)
     Loop Until Len(X$)
 
     If Len(X$) = 2 Then 'extended key
+
         Select Case Asc(Right$(X$, 1))
+
             Case 71 'Home Key
                 Choice% = 1 'set to the first item in the list
                 ClearFlag% = 1 'flag to clear old items
+
             Case 75 'Left Arrow
                 If Choice% > 1 Then
                     Choice% = Choice% - 1
@@ -1639,6 +1655,7 @@ Sub Lts2Menu (Item$(), Prompt$(), Choice%, FGColor%, BGColor%)
                     Choice% = NumItems%
                     ClearFlag% = 1
                 End If
+
             Case 77 'Right Arrow
                 If Choice% < NumItems% Then
                     Choice% = Choice% + 1
@@ -1652,9 +1669,13 @@ Sub Lts2Menu (Item$(), Prompt$(), Choice%, FGColor%, BGColor%)
                 Choice% = NumItems%
                 ClearFlag% = 1
             Case Else
+
         End Select
+
     Else
+
         Select Case X$
+
             Case Chr$(13) 'Enter Key
                 GoTo QPExitLt2 'exit with the current choice
 
@@ -1691,9 +1712,8 @@ Sub Lts2Menu (Item$(), Prompt$(), Choice%, FGColor%, BGColor%)
     QPExitLt2:
 
     Screen oldmode&
-    'PCopy 1, 0
+
     Erase Break%, ScrBuf%
 
 End Sub
-
 

@@ -66,7 +66,7 @@ ReDim homeScores(MAX_SCHEDULE_GAMES), visitorScores(MAX_SCHEDULE_GAMES)
 
 ReDim scheduleH$(MAX_SCHEDULE_GAMES), scheduleV$(MAX_SCHEDULE_GAMES)
 'ReDim homeTeam$(MAX_SCHEDULE_GAMES), visitingTeam$(MAX_SCHEDULE_GAMES)
-'ReDim scheduleYN$(MAX_SCHEDULE_GAMES, 1)
+ReDim scheduleYN$(MAX_SCHEDULE_GAMES, 1)
 'ReDim yearNumber$(MAX_SCHEDULE_GAMES, 1)
 
 

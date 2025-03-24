@@ -251,7 +251,7 @@ Sub ViewSearchResults (posnType, posnDesc$, positionFile$)
 
                         If (currPosition Mod 19 = 1) Then
 
-                            Locate 23
+                            Locate LAST_ROW - 2
                             Color 14: Print "HIT ANY KEY TO CONTINUE"
                             I$ = GetKeyPress$
 
@@ -632,7 +632,7 @@ Sub Pitchers10_Games (PC, pitchPosnDesc$, positionFile$)
 
                                     If (currPosition Mod 18 = 1) Then
 
-                                        Locate 23
+                                        Locate LAST_ROW - 2
                                         Color 14: Print "HIT ANY KEY TO CONTINUE"
                                         I$ = GetKeyPress$
 
@@ -736,7 +736,7 @@ Sub PitchersHanded (THR, pitchPosnDesc$, positionFile$)
 
                                     If (currPosition Mod 19 = 1) Then
                                         Color 14
-                                        Locate 23: Print "HIT ANY KEY TO CONTINUE"
+                                        Locate LAST_ROW - 2: Print "HIT ANY KEY TO CONTINUE"
                                         I$ = GetKeyPress$
 
                                         Cls

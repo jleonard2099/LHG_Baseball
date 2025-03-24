@@ -61,7 +61,7 @@ Sub LoadLRForTrade (teamYear$, tradeIdx)
         MsgText$ = "WARNING!!! NO DATA FILE WAS FOUND FOR THIS TEAM. PRESS ANY KEY TO CONTINUE"
         BoxWidth = 20
         BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+        Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
         Call CSMsgBox(MsgText$, BoxWidth, Pass)
         I$ = GetKeyPress$
         Call CSMsgBox("", 0, Pass)
@@ -289,7 +289,7 @@ Sub LoadStatsForTrade (yearNumbers$(), tradeIdx)
             MsgText$ = "NO COMPILED STATS COULD BE FOUND FOR THIS TEAM. PRESS ANY KEY TO RETURN TO THE MAIN MENU"
             BoxWidth = 24
             BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-            Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+            Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
             Call CSMsgBox(MsgText$, BoxWidth, Pass)
             I$ = GetKeyPress$
             Call CSMsgBox("", 0, Pass)
@@ -497,7 +497,7 @@ Sub TradeBatters ()
 
     Call TradeSummary_Batters(I1, I2)
 
-    Locate LAST_LINE, 1: Print "HIT ANY KEY TO TRADE";
+    Locate LAST_ROW - 1: Print "HIT ANY KEY TO TRADE";
     I$ = GetKeyPress$
 
     If Not (tradeTS(0, 0) = 999 And tradeTS(1, 0) = 999) And Not (tradeTS(0, 0) <> 999 And tradeTS(1, 0) <> 999) Then
@@ -561,7 +561,7 @@ Sub TradeBatters ()
 
     Call TradeSummary_Batters(I1, I2)
 
-    Locate LAST_LINE, 1: Print "HIT ANY KEY TO CONTINUE";
+    Locate LAST_ROW - 1: Print "HIT ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
 End Sub
@@ -657,7 +657,7 @@ Sub TradePitchers ()
 
     Call TradeSummary_Pitchers(I1, I2)
 
-    Locate LAST_LINE, 1: Print "HIT ANY KEY TO TRADE";
+    Locate LAST_ROW - 1: Print "HIT ANY KEY TO TRADE";
     I$ = GetKeyPress$
 
     If tradeTS(0, 0) = 999 And tradeTS(1, 0) = 999 Then 505
@@ -714,7 +714,7 @@ Sub TradePitchers ()
 
     Call TradeSummary_Pitchers(I1, I2)
 
-    Locate LAST_LINE, 1: Print "HIT ANY KEY TO CONTINUE";
+    Locate LAST_ROW - 1: Print "HIT ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
 End Sub
@@ -1418,7 +1418,7 @@ Sub ChooseTradeTeam (yearNumber$, numberTeams, chosenIdx, teamName$, tradeIdx)
                         MsgText$ = "NO TEAM FILES COULD BE FOUND MATCHING THIS ID. PRESS ANY KEY TO RETURN TO THE MAIN MENU"
                         BoxWidth = 24
                         BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-                        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+                        Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
                         Call CSMsgBox(MsgText$, BoxWidth, Pass)
                         I$ = GetKeyPress$
                         Call CSMsgBox("", 0, Pass)
@@ -1505,21 +1505,26 @@ Sub SelectTradeTeam (numberTeams, yearNumber$, selectedIdx, chosenTeam$, ExitCod
         Start% = 1
         FileFGColor = 15: FileBGColor = 4
         HiLiteFGColor% = 0: HiLiteBGColor% = 7
-        Rows% = 20
+        Rows% = LAST_ROW - 6
         Columns% = 4
         Spacing% = 6
-        Row% = 4
+        Row% = 5
         Column% = 1
 
         Color , 4
         Cls
+
         Color 14
-        Locate , 33: Print "TEAM"; tradeIdx; "SELECTION"
-        Locate 25, 1
-        Color 14: Print "ESC";
-        Color 15: Print "-SELECT NEW ID  PGDN  PGUP  ";
-        Color 14: Print "ENTER";
+        Locate , 33: Print "TEAM SELECTION"
+        Locate LAST_ROW, 1
+        Print Tab(3); "PG DN";
+        Print Tab(18); "ENTER";
         Color 15: Print "-SELECTS TEAM";
+        Color 14
+        Print Tab(39); "ESC";
+        Color 15: Print "-SELECT NEW ID";
+        Color 14
+        Print Tab(72); "PG UP";
 
         _MouseShow "DEFAULT"
         MAMenu teamNames$(), SELECTION%, Start%, Count%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Rows%, Columns%, Spacing%, Row%, Column%

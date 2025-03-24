@@ -55,7 +55,7 @@ Sub LoadLeaderFiles (league$, div1$, div2$, div3$, div4$, targetFile$)
         Input #2, memberName$(X), divWins(X), divLosses(X)
     Next
 
-    For X = 1 To 298: 
+    For X = 1 To 298:
         Input #2, leagLdrPlayer$(X), leagLdrTeam$(X), leagLdrVal1!(X), leagLdrVal2!(X)
     Next
 
@@ -100,7 +100,7 @@ Sub StatOptions (league$, div1$, div2$, div3$, div4$)
             Select Case userKey$
 
                 Case "F":
-                    userFile$ = _SAVEFILEDIALOG$("Save League Report",_CWD$ + "\Report","*.txt","Text File")
+                    userFile$ = _SaveFileDialog$("Save League Report", _CWD$ + "\Report", "*.txt", "Text File")
                     If userFile$ <> "" Then
                         Call LeagueStats_Report(league$, div1$, div2$, div3$, 0, userFile$)
                     End If
@@ -116,7 +116,7 @@ Sub StatOptions (league$, div1$, div2$, div3$, div4$)
             Color 15, 0
             Cls
 
-            Call box0 (6, 8, 11, 70, 2, 15, 1)
+            Call box0(6, 20, 10, 60, 2, 15, 1)
 
             Do
                 Color 15, 1
@@ -165,10 +165,10 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
     '------------------------------
 
     'Cycle through divisions
-    For O = 1 To 4
+    For div = 1 To 4
 
-        first = ((O - 1) * 10) + 1
-        last = O * 10
+        first = ((div - 1) * 10) + 1
+        last = div * 10
 
         D1 = divWins(first) - divLosses(first)
 
@@ -237,24 +237,25 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
         Next P
 
-    Next O
+    Next div
 
     '-----
 
     Cls
 
     Color 12
-    Print "                        "; league$; " LEAGUE STANDINGS"
-    Print
+    Locate 2, Int((80 - Len(leagueName$) - 17) / 2)
+    Print league$; " LEAGUE STANDINGS"
 
     '------------------------------
     ' Division 1 Standings
     '------------------------------
-    Color 14
-    Locate 3, 1
+    Color 2
+    Locate 4, 1
+    Print "    " + RTrim$(div1$)
 
-    If div1$ = "" Then div1$ = Space$(8)
-    Print "    " + div1$ + "      W   L   PCT   GB"
+    Color 14
+    Print "                  W   L   PCT     GB"
 
     Color 15
 
@@ -263,89 +264,103 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
         If leaderPlayer$(P) = "" Then
             RT = RT + 1
         Else
-            Locate (P + 3 - RT), 1: Print "    "; leaderPlayer$(P)
-        End If
-
-    Next P
-
-    Print
-
-    RT = 0
-
-    '------------------------------
-    ' Division 3 Standings
-    '------------------------------
-
-    Color 14
-    Locate 15, 1
-
-    If div3$ = "" Then div3$ = Space$(8)
-    Print "    " + div3$ + "      W   L   PCT   GB"
-
-    Color 15
-
-    For P = 21 To 30
-
-        If leaderPlayer$(P) = "" Then
-            RT = RT + 1
-        Else
-            Locate (P - 5 - RT), 1: Print "    "; leaderPlayer$(P)
+            Locate (P + 5 - RT), 1: Print "    "; leaderPlayer$(P)
         End If
 
     Next P
 
     RT = 0
+
 
     '------------------------------
     ' Division 2 Standings
     '------------------------------
+    If RTrim$(div2$) <> "" Then
 
-    Color 14
-    Locate 3, 41
+        Color 2
+        Locate 4, 41
+        Print "    " + RTrim$(div2$)
 
-    If div2$ = "" Then div2$ = Space$(8)
-    Print "    " + div2$ + "      W   L   PCT   GB"
+        Color 14
+        Locate , 41
+        Print "                  W   L   PCT     GB"
 
-    Color 15
+        Color 15
 
-    For P = 11 To 20
+        For P = 11 To 20
 
-        If leaderPlayer$(P) = "" Then
-            RT = RT + 1
-        Else
-            Locate (P - 7 - RT), 41: Print "    "; leaderPlayer$(P)
-        End If
+            If leaderPlayer$(P) = "" Then
+                RT = RT + 1
+            Else
+                Locate (P - 5 - RT), 41: Print "    "; leaderPlayer$(P)
+            End If
 
-    Next P
+        Next P
 
-    Print
+        Print
 
-    RT = 0
+        RT = 0
+
+    End If
+
+    '------------------------------
+    ' Division 3 Standings
+    '------------------------------
+    If RTrim$(div3$) <> "" Then
+
+        Color 2
+        Locate 16, 1
+        Print "    " + RTrim$(div3$)
+
+        Color 14
+        Print "                  W   L   PCT     GB"
+
+        Color 15
+
+        For P = 21 To 30
+
+            If leaderPlayer$(P) = "" Then
+                RT = RT + 1
+            Else
+                Locate (P - 3 - RT), 1: Print "    "; leaderPlayer$(P)
+            End If
+
+        Next P
+
+        RT = 0
+
+    End If
 
     '------------------------------
     ' Division 4 Standings
     '------------------------------
-    Color 14
-    Locate 15, 41
+    If RTrim$(div4$) <> "" Then
 
-    If div4Name$ = "" Then div4Name$ = Space$(8)
-    Print "    " + div4Name$ + "      W   L   PCT   GB"
+        Color 2
+        Locate 16, 41
+        Print "    " + RTrim$(div4$)
 
-    Color 15
+        Color 14
+        Locate , 41
+        Print "                  W   L   PCT     GB"
 
-    For P = 31 To 40
+        Color 15
 
-        If leaderPlayer$(P) = "" Then
-            RT = RT + 1
-        Else
-            Locate (P - 15 - RT), 41: Print "    "; leaderPlayer$(P)
-        End If
+        For P = 31 To 40
 
-    Next P
+            If leaderPlayer$(P) = "" Then
+                RT = RT + 1
+            Else
+                Locate (P - 13 - RT), 41: Print "    "; leaderPlayer$(P)
+            End If
+
+        Next P
+
+    End If
 
     '-----
     Color 12
-    'Locate LAST_LINE: Print "HIT ANY KEY TO CONTINUE!";
+    Locate LAST_ROW - 1: Print "HIT ANY KEY TO CONTINUE!";
     Color 15
     QK$ = GetKeyPress$
     '-----
@@ -353,11 +368,10 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
     '------------------------------
     ' String Constants
     '------------------------------
-
     AB$ = Str$(Int(AB))
     TD = IP - 3 * IG
     AB$ = Right$(AB$, Len(AB$) - 1)
-    If TD > 0 Then 
+    If TD > 0 Then
         TD$ = " 1/3"
     End If
 
@@ -419,8 +433,10 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     Cls
 
+    Locate 2, 1
     Color 14
     Print "      BATTING LEADERS  (MIN 3.1 PA/G)"
+    Locate 4, 1
     Print "WHO'S HOT                   AVG   AB    AND WHO'S NOT                AVG   AB"
     Color 15
 
@@ -444,7 +460,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
         If leagLdrPlayer$(P) <> "" Then
 
             leaderPlayer$(P) = Left$(leagLdrPlayer$(P), 13)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
@@ -456,14 +472,16 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     '-----
     Color 12
-    'Locate LAST_LINE: Print "HIT ANY KEY TO CONTINUE!";
+    Locate LAST_ROW - 1: Print "HIT ANY KEY TO CONTINUE!";
     Color 15
     QK$ = GetKeyPress$
     '-----
 
     Cls
 
-    Color 14: Print "      HITS"
+    Locate 2, 1
+    Color 14
+    Print "      HITS"
     Color 15
     For P = 21 To 30:
         Print "      "; leaderPlayer$(P)
@@ -482,7 +500,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
         If leagLdrPlayer$(P) <> "" Then
 
             leaderPlayer$(P) = Left$(leagLdrPlayer$(P), 13)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
@@ -492,6 +510,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     Next P
 
+    Locate 2, 1
     Color 14
     Print "      DOUBLES"
     Color 15
@@ -512,7 +531,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
         If leagLdrPlayer$(P) <> "" Then
 
             leaderPlayer$(P) = Left$(leagLdrPlayer$(P), 13)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
@@ -522,17 +541,16 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     Next P
 
-    Locate 1, 40
+    Locate 2, 40
     Color 14
     Print "      TRIPLES"
     Color 15
 
     For P = 43 To 52
-        Locate (P - 41), 40
+        Locate (P - 40), 40
         Print "      "; leaderPlayer$(P)
     Next P
 
-    Print
 
     '------------------------------
     '           HOME RUNS
@@ -544,7 +562,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
         If leagLdrPlayer$(P) <> "" Then
 
             leaderPlayer$(P) = Left$(leagLdrPlayer$(P), 13)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
@@ -554,19 +572,19 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     Next P
 
-    Locate 13, 40
+    Locate 14, 40
     Color 14
     Print "      HOME RUNS"
     Color 15
 
     For P = 54 To 63:
-        Locate (P - 40), 40
+        Locate (P - 39), 40
         Print "      "; leaderPlayer$(P)
     Next P
 
     '-----
     Color 12
-    'Locate LAST_LINE: Print "HIT ANY KEY TO CONTINUE!";
+    Locate LAST_ROW - 1: Print "HIT ANY KEY TO CONTINUE!";
     Color 15
     QK$ = GetKeyPress$
     '-----
@@ -582,7 +600,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
         If leagLdrPlayer$(P) <> "" Then
 
             leaderPlayer$(P) = Left$(leagLdrPlayer$(P), 13)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
@@ -593,6 +611,8 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
     Next P
 
     Cls
+
+    Locate 2, 1
     Color 14
     Print "      RUNS"
     Color 15
@@ -601,12 +621,9 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
         Print "      "; leaderPlayer$(P)
     Next P
 
-    Print
-
     '------------------------------
     '             RBIs
     '------------------------------
-
     For P = 76 To 84:
 
         leaderPlayer$(P) = ""
@@ -614,7 +631,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
         If leagLdrPlayer$(P) <> "" Then
 
             leaderPlayer$(P) = Left$(leagLdrPlayer$(P), 13)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
@@ -625,6 +642,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
     Next P
 
     Print
+    Locate 14, 1
     Color 14
     Print "      RUNS BATTED IN"
     Color 15
@@ -645,7 +663,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
         If leagLdrPlayer$(P) <> "" Then
 
             leaderPlayer$(P) = Left$(leagLdrPlayer$(P), 13)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
@@ -655,13 +673,13 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     Next P
 
-    Locate 1, 40
+    Locate 2, 40
     Color 14
     Print "      STOLEN BASES"
     Color 15
 
     For P = 87 To 96:
-        Locate (P - 85), 40
+        Locate (P - 84), 40
         Print "      "; leaderPlayer$(P)
     Next P
 
@@ -677,7 +695,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
         If leagLdrPlayer$(P) <> "" Then
 
             leaderPlayer$(P) = Left$(leagLdrPlayer$(P), 13)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
@@ -715,18 +733,18 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     Next P
 
-    Locate 13, 40
+    Locate 14, 40
     Color 14
     Print "      SLUGGING PCT LEADERS"
     Color 15
 
     For P = 99 To 108:
-        Locate (P - 85), 40: Print "      "; leaderPlayer$(P)
+        Locate (P - 84), 40: Print "      "; leaderPlayer$(P)
     Next P
 
     '-----
     Color 12
-    'Locate LAST_LINE: Print "HIT ANY KEY TO CONTINUE!";
+    Locate LAST_ROW - 1: Print "HIT ANY KEY TO CONTINUE!";
     Color 15
     QK$ = GetKeyPress$
     '-----
@@ -780,6 +798,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     Cls
 
+    Locate 2, 1
     Color 14
     Print "      ON BASE PCT LEADERS"
     Color 15
@@ -802,7 +821,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
         If leagLdrPlayer$(P) <> "" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
@@ -813,18 +832,18 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
     Next P
 
 
-    Locate 1, 40
+    Locate 2, 40
     Color 14
     Print " BASE ON BALLS"
     Color 15
 
     For P = 217 To 226:
-        Locate (P - 215), 41: Print leaderPlayer$(P)
+        Locate (P - 214), 41: Print leaderPlayer$(P)
     Next P
 
     '------------------------------
 
-    Locate 13, 1
+    Locate 14, 1
     Color 14
     Print "      CURRENT HITTING STREAK"
     Color 15
@@ -834,7 +853,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
         Print Left$(leagLdrPlayer$(P), 13) + ", " + leagLdrTeam$(P); Tab(34); Using "###"; leagLdrVal1!(P)
     Next P
 
-    Locate 13, 40
+    Locate 14, 40
     Color 14
     Print " LONGEST HITTING STREAK"
     Color 15
@@ -846,7 +865,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     '-----
     Color 12
-    'Locate LAST_LINE: Print "HIT ANY KEY TO CONTINUE!";
+    Locate LAST_ROW - 1: Print "HIT ANY KEY TO CONTINUE!";
     Color 15
     QK$ = GetKeyPress$
     '-----
@@ -862,7 +881,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
         If leagLdrPlayer$(P) <> "" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
@@ -884,11 +903,12 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     Next P
 
-
     Cls
 
+    Locate 2, 1
     Color 14
     Print "       ERA LEADERS (MIN 1 IP/G)"
+    Locate 4, 1
     Print "WHO'S HOT                     ERA   IP  WHO'S NOT                      ERA  IP"
     Color 15
 
@@ -900,7 +920,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     '-----
     Color 12
-    'Locate LAST_LINE: Print "HIT ANY KEY TO CONTINUE!";
+    Locate LAST_ROW - 1: Print "HIT ANY KEY TO CONTINUE!";
     Color 15
     QK$ = GetKeyPress$
     '-----
@@ -917,7 +937,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
             leaderPlayer$(P) = leaderPlayer$(P) + leagLdrPlayer$(P)
 
-            If leagLdrTeam$(P) <> "" Then 
+            If leagLdrTeam$(P) <> "" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
@@ -932,6 +952,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     Cls
 
+    Locate 2, 1
     Color 14
     Print "      PITCHING RECORD"
     Color 15
@@ -939,8 +960,6 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
     For P = 140 To 149
         Print "      "; leaderPlayer$(P)
     Next
-
-    Print
 
     '------------------------------
     '           VICTORIES
@@ -952,7 +971,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
         If leagLdrPlayer$(P) <> "*" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
@@ -962,6 +981,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     Next P
 
+    Locate 14, 1
     Color 14
     Print "      VICTORIES"
     Color 15
@@ -981,7 +1001,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
         If leagLdrPlayer$(P) <> "" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
@@ -991,13 +1011,13 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     Next P
 
-    Locate 1, 40
+    Locate 2, 40
     Color 14
     Print "      INNINGS PITCHED"
     Color 15
 
     For P = 162 To 171:
-        Locate (P - 160), 40: Print "      "; leaderPlayer$(P)
+        Locate (P - 159), 40: Print "      "; leaderPlayer$(P)
     Next P
 
     '------------------------------
@@ -1011,7 +1031,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
         If leagLdrPlayer$(P) <> "" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
@@ -1022,19 +1042,19 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     Next P
 
-    Locate 13, 40
+    Locate 14, 40
     Color 14
     Print "      STRIKEOUTS     "
     Color 15
 
     For P = 173 To 182:
-        Locate (P - 159), 40
+        Locate (P - 158), 40
         Print "      "; leaderPlayer$(P)
     Next P
 
     '-----
     Color 12
-    'Locate LAST_LINE: Print "HIT ANY KEY TO CONTINUE!";
+    Locate LAST_ROW - 1: Print "HIT ANY KEY TO CONTINUE!";
     Color 15
     QK$ = GetKeyPress$
     '-----
@@ -1050,7 +1070,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
         If leagLdrPlayer$(P) <> "" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
@@ -1062,6 +1082,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     Cls
 
+    Locate 2, 1
     Color 14
     Print "      COMPLETE GAMES "
     Color 15
@@ -1069,8 +1090,6 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
     For P = 184 To 193:
         Print "      "; leaderPlayer$(P)
     Next P
-
-    Print
 
     '------------------------------
     '           SHUTOUTS
@@ -1083,7 +1102,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
         If leagLdrPlayer$(P) <> "" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
@@ -1093,6 +1112,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     Next P
 
+    Locate 14, 1
     Color 14
     Print "      SHUTOUTS       "
     Color 15
@@ -1111,7 +1131,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
         If leagLdrPlayer$(P) <> "" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
@@ -1121,13 +1141,13 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
     Next P
 
-    Locate 1, 40
+    Locate 2, 40
     Color 14
     Print "      SAVES          "
     Color 15
 
     For P = 206 To 215:
-        Locate (P - 204), 40
+        Locate (P - 203), 40
         Print "      "; leaderPlayer$(P)
     Next P
 
@@ -1135,7 +1155,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
     '         APPEARANCES
     '------------------------------
 
-    Locate 13, 40
+    Locate 14, 40
     Color 14
     Print "      APPEARANCES    "
     Color 15
@@ -1146,7 +1166,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
         If leagLdrPlayer$(P) <> "" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 26)
@@ -1158,24 +1178,26 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
 
     For P = 228 To 237:
-        Locate (P - 214), 40
+        Locate (P - 213), 40
         Print "      "; leaderPlayer$(P)
     Next P
 
     '-----
     Color 12
-    'Locate LAST_LINE: Print "HIT ANY KEY TO CONTINUE!";
+    Locate LAST_ROW - 1: Print "HIT ANY KEY TO CONTINUE!";
     Color 15
     QK$ = GetKeyPress$
     '-----
 
     Cls
 
+    Locate 2, 1
     Color 12
     Print "                                 CLUB BATTING   "
     Color 14
 
-    Print "CLUB         AVG   AB    R    H   2B   3B  HR   RBI   BB   SO  SB  CS   E"
+    Locate 4, 1
+    Print "CLUB         AVG   AB    R    H  2B   3B  HR   RBI   BB   SO  SB  CS     E"
     Color 15
     H! = 0
     AB = 0
@@ -1193,7 +1215,7 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
 
         If BA$(X) <> "" And BA$(X) <> "*" Then
             Print Left$(BA$(X), 11); Tab(13);
-            '           "AVG   AB    R    H   2B   3B  HR   RBI   BB   SO  SB  CS   E"
+            '            AVG   AB    R    H  2B   3B  HR   RBI   BB   SO  SB  CS     E"
             Print Using ".### ####  ### #### ###  ### ###  ####  ### #### ### ###  ###"; OFT!(X, 1); OFT!(X, 3); OFT!(X, 5); OFT!(X, 4); OFT!(X, 7); OFT!(X, 8); OFT!(X, 9); OFT!(X, 6); OFT!(X, 10); OFT!(X, 11); OFT!(X, 12); OFT!(X, 13); OFT!(X, 14)
             ATBATS! = ATBATS! + OFT!(X, 3)
             H! = H! + OFT!(X, 4)
@@ -1217,25 +1239,29 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
     End If
 
     Print
-    Print "LG TOTALS"; Tab(13); Using "#.###"; statCalc!;
+    Print "LG TOTALS";
+    'AVG
+    Print Tab(13); Using "#.###"; statCalc!;
 
-    '                      AB    R    H   2B   3B  HR   RBI   BB   SO  SB  CS   E"
-    Print Tab(18); Using "     ###       ###      ###        ###      ###      ###"; R; B2; HR; BB; SB; E
-    Print Tab(18); Using "####     ####       ###      ####      ####     ###     "; ATBATS!; H!; B3; RBI; SO; CS
+    '                     AB    R    H  2B   3B  HR   RBI   BB   SO  SB  CS     E"
+    Print Tab(18); Using "     ###      ###      ###        ###      ###      ###"; R; B2; HR; BB; SB; E
+    Print Tab(18); Using "####     ####      ###      ####      ####     ###     "; ATBATS!; H!; B3; RBI; SO; CS
 
     '-----
     Color 12
-    'Locate LAST_LINE: Print "HIT ANY KEY TO CONTINUE!";
+    Locate LAST_ROW - 1: Print "HIT ANY KEY TO CONTINUE!";
     Color 15
     QK$ = GetKeyPress$
     '-----
 
     Cls
 
+    Locate 2, 1
     Color 12
     Print "                                 CLUB PITCHING  "
-    Color 14
 
+    Locate 4, 1
+    Color 14
     Print "CLUB          ERA   G  CG  SHO  SV    IP     H     R    ER     BB     SO"
     Color 15
 
@@ -1269,13 +1295,14 @@ Sub LeagueStats_Screen (league$, div1$, div2$, div3$)
         statCalc! = 0
     End If
 
+    Print
     Print Tab(13); Using "##.##"; statCalc!
     'PRINT "COMPLETE GAMES: "; G
     'PRINT "APPEARANCES: "; APP
 
     '-----
     Color 12
-    'Locate LAST_LINE: Print "HIT ANY KEY TO CONTINUE!";
+    Locate LAST_ROW - 1: Print "HIT ANY KEY TO CONTINUE!";
     Color 15
     QK$ = GetKeyPress$
     '-----
@@ -1334,12 +1361,12 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
             Wend
 
             J! = 0
-            If divWins(P) + divLosses(P) > 0 Then 
+            If divWins(P) + divLosses(P) > 0 Then
                 J! = divWins(P) / (divWins(P) + divLosses(P))
             End If
 
             J! = CInt(1000 * J!)
-            If J! = 1000 Then 
+            If J! = 1000 Then
                 leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
             End If
 
@@ -1400,12 +1427,12 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
             Wend
 
             J! = 0
-            If divWins(P) + divLosses(P) > 0 Then 
+            If divWins(P) + divLosses(P) > 0 Then
                 J! = divWins(P) / (divWins(P) + divLosses(P))
             End If
-            
+
             J! = CInt(1000 * J!)
-            If J! = 1000 Then 
+            If J! = 1000 Then
                 leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
             End If
 
@@ -1463,12 +1490,12 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
             Wend
 
             J! = 0
-            If divWins(P) + divLosses(P) > 0 Then 
+            If divWins(P) + divLosses(P) > 0 Then
                 J! = divWins(P) / (divWins(P) + divLosses(P))
             End If
-            
+
             J! = CInt(1000 * J!)
-            If J! = 1000 Then 
+            If J! = 1000 Then
                 leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
             End If
 
@@ -1526,10 +1553,10 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
             Wend
 
             J! = 0
-            If divWins(P) + divLosses(P) > 0 Then 
+            If divWins(P) + divLosses(P) > 0 Then
                 J! = divWins(P) / (divWins(P) + divLosses(P))
             End If
-            
+
             J! = CInt(1000 * J!)
             If J! = 1000 Then leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
 
@@ -1654,7 +1681,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         If leagLdrPlayer$(P) <> "*" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
@@ -1691,7 +1718,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         If leagLdrPlayer$(P) <> "*" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
@@ -1701,7 +1728,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
             J! = CInt(1000 * leagLdrVal1!(P))
 
-            If J! = 1000 Then 
+            If J! = 1000 Then
                 leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
             End If
 
@@ -1749,7 +1776,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         If leagLdrPlayer$(P) <> "*" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
@@ -1779,7 +1806,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         If leagLdrPlayer$(P) <> "*" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
@@ -1829,7 +1856,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         If leagLdrPlayer$(P) <> "*" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
@@ -1862,7 +1889,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         If leagLdrPlayer$(P) <> "*" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
@@ -1912,7 +1939,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         If leagLdrPlayer$(P) <> "*" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
@@ -1943,7 +1970,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         If leagLdrPlayer$(P) <> "*" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
@@ -1992,7 +2019,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         If leagLdrPlayer$(P) <> "*" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
@@ -2023,7 +2050,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         If leagLdrPlayer$(P) <> "*" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
@@ -2032,7 +2059,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
             Wend
 
             J! = CInt(1000 * leagLdrVal1!(P))
-            If J! = 1000 Then 
+            If J! = 1000 Then
                 leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
             End If
 
@@ -2073,7 +2100,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         If leagLdrPlayer$(P) <> "*" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
@@ -2082,7 +2109,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
             Wend
 
             J! = CInt(1000 * leagLdrVal1!(P))
-            If J! = 1000 Then 
+            If J! = 1000 Then
                 leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
             End If
 
@@ -2105,7 +2132,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         If leagLdrPlayer$(P) <> "*" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
@@ -2154,7 +2181,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         If leagLdrPlayer$(P) <> "*" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
@@ -2183,7 +2210,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         If leagLdrPlayer$(P) <> "*" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
@@ -2233,7 +2260,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         If leagLdrPlayer$(P) <> "*" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
@@ -2274,7 +2301,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         If leagLdrVal1!(P) <> leagLdrVal1!(150) Or leagLdrVal2!(P) <> leagLdrVal2!(150) Then
 
             leaderPlayer$(P) = leaderPlayer$(P) + leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
@@ -2309,7 +2336,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         If leagLdrPlayer$(P) <> "*" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
@@ -2360,7 +2387,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         If leagLdrPlayer$(P) <> "*" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
@@ -2392,7 +2419,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         If leagLdrPlayer$(P) <> "*" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
@@ -2428,7 +2455,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Next P
 
-    For X = 1 To 12: 
+    For X = 1 To 12:
         Print #1, LF$(X); RT$(X)
     Next
 
@@ -2441,7 +2468,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         If leagLdrPlayer$(P) <> "*" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
@@ -2470,7 +2497,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         If leagLdrPlayer$(P) <> "*" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
@@ -2519,7 +2546,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         If leagLdrPlayer$(P) <> "*" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
@@ -2553,7 +2580,7 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         If leagLdrPlayer$(P) <> "*" Then
 
             leaderPlayer$(P) = leagLdrPlayer$(P)
-            If leagLdrTeam$(P) <> "*" Then 
+            If leagLdrTeam$(P) <> "*" Then
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
@@ -2649,4 +2676,3 @@ Sub LeagueStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
     End If
 
 End Sub
-
