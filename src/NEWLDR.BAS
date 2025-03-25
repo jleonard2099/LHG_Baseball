@@ -1193,8 +1193,7 @@ Sub ViewPitchingLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
             Color 15, 0
             Cls
 
-            'Call MenuBox(2, 4, 66, 20, 15, 10)
-            Call ShadowBox(2, 4, 66, 20, 15, 10)
+            Call ShadowBox(2, 4, 66, 20, 7, 10)
 
             Locate 10, 15
 
@@ -1611,8 +1610,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
             Color , 0
             Cls
 
-            'Call MenuBox(2, 4, 66, 21, 15, 6)
-            Call ShadowBox(2, 4, 66, 21, 15, 6)
+            Call ShadowBox(2, 4, 66, 21, 7, 6)
 
             Locate 10, 15
 
@@ -1841,7 +1839,7 @@ End Sub
 '----------------------------------------
 'This subroutine uses several different
 'routines to display team total stats
-Sub DisplayTeamView (XX, screenType, printOrView, TVN, maxRecords)
+Sub DisplayTeamView (categoryID, screenType, printOrView, TVN, maxRecords)
 
     Shared expLdrVal!(), expLdrTYP1!()
 
@@ -1853,7 +1851,7 @@ Sub DisplayTeamView (XX, screenType, printOrView, TVN, maxRecords)
         Select Case printOrView
 
             Case 1:
-                Call LeagueTotals_A_Screen(XX, TVN, maxRecords)
+                Call LeagueTotals_A_Screen(categoryID, TVN, maxRecords)
 
             Case 2:
 
@@ -1899,16 +1897,12 @@ Sub DisplayTeamView (XX, screenType, printOrView, TVN, maxRecords)
 
                 Open destFile$ For Output As #1
 
-                Print #1, "     TEAM                     "; expBatCategory$(XX)
+                Print #1, "     TEAM                     "; expBatCategory$(categoryID)
 
                 For W = 1 To maxRecords
 
-                    Color 12
-                    Print #1, Using "###"; W;
-                    Print #1, " ";
-                    Color 3
+                    Print #1, Using "### "; W;
                     Print #1, expLdrTeam$(W);
-                    Color 15
 
                     Select Case TVN
 
@@ -1946,7 +1940,7 @@ Sub DisplayTeamView (XX, screenType, printOrView, TVN, maxRecords)
         Select Case printOrView
 
             Case 1:
-                Call LeagueTotals_B_Screen(XX, TVN, maxRecords)
+                Call LeagueTotals_B_Screen(categoryID, TVN, maxRecords)
 
             Case 2:
 
@@ -1992,10 +1986,11 @@ Sub DisplayTeamView (XX, screenType, printOrView, TVN, maxRecords)
 
                 Open destFile$ For Output As #1
 
-                Print #1, "     TEAM                     "; expPitCategory$(XX)
+                Print #1, "     TEAM                     "; expPitCategory$(categoryID)
+                Print #1, "     ------                   ";
+                Print #1, String$(Len(expPitCategory$(categoryID)),45)
 
-                Print #1, Using "###"; W;
-                Print #1, " ";
+                Print #1, Using "### "; W;
                 Print #1, expLdrTeam$(W);:
 
                 For W = 1 To maxRecords
@@ -2048,7 +2043,7 @@ End Sub
 'output team totals to the use display.
 'The 2 routines differ in the types of
 'numbers they are intended to output.
-Sub LeagueTotals_A_Screen (XX, TVN, maxRecords)
+Sub LeagueTotals_A_Screen (categoryID, TVN, maxRecords)
 
     Shared expLdrVal!()
     Shared expLdrTeam$(), expTeamCategory$()
@@ -2083,7 +2078,7 @@ Sub LeagueTotals_A_Screen (XX, TVN, maxRecords)
 
                 ' Print page header
                 Locate 2, 1
-                Print "     TEAM                     "; expTeamCategory$(XX)
+                Print "     TEAM                     "; expTeamCategory$(categoryID)
 
             End If
 
@@ -2144,7 +2139,7 @@ End Sub
 'output team totals to the use display.
 'The 2 routines differ in the types of
 'numbers they are intended to output.
-Sub LeagueTotals_B_Screen (XX, TVN, maxRecords)
+Sub LeagueTotals_B_Screen (categoryID, TVN, maxRecords)
 
     Shared expLdrTeam$(), expTeamCategory$()
     Shared expLdrVal!(), expLdrTYP1!()
@@ -2179,7 +2174,7 @@ Sub LeagueTotals_B_Screen (XX, TVN, maxRecords)
 
                 ' Print page header
                 Locate 2, 1
-                Print "     TEAM                     "; expTeamCategory$(XX)
+                Print "     TEAM                     "; expTeamCategory$(categoryID)
             End If
 
             If userExit% <> 1 Then
@@ -2240,7 +2235,7 @@ End Sub
 
 
 '----------------------------------------
-'       SortOptions Subroutine
+'         SortOptions Subroutine
 '----------------------------------------
 'This subroutine prompts the users for the
 'different sort options available in the
@@ -2431,17 +2426,16 @@ Sub PrintLeaders (printDest, destFile$, TVN, maxRecords, categoryID)
 
     Open destFile$ For Output As #1
 
-    Print #1, "     PLAYER                  TEAM                     "; expBatCategory$(categoryID)
-
     For W = 1 To maxRecords
 
-        If W <> 0 And (W Mod 50 = 0) Then
+        If (W - 1) Mod 55 = 0 Then
             Print #1, Chr$(12)
             Print #1, "     PLAYER                  TEAM                     "; expBatCategory$(categoryID)
+            Print #1, "     ------                  ----                     ";
+            Print #1, String$(Len(expBatCategory$(categoryID)),45)
         End If
 
-        Print #1, Using "###"; W;
-        Print #1, " ";
+        Print #1, Using "### "; W;
         Print #1, expLdrPlyrName$(W);
         Print #1, Tab(25); expLdrTeam$(W);
 
