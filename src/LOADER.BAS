@@ -2024,11 +2024,21 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
                     J = J - 1
                     I2 = 0
                     For I1 = 0 To 22
-                        Print #11, Using "DH_! I2: ##  I1: ##  status: ###  batter: &"; I2, I1, batRating(P9, I1, 21), batters$(P9, I1)
+                        ' Print #11, Using "DH_! I2: ##  I1: ##  status: ###  batter: &"; I2, I1, batRating(P9, I1, 21), batters$(P9, I1)
+
                         If batRating(P9, I1, 21) <= 0 And batters$(P9, I1) <> "XXX" Then
 
                             If     batRating(P9, I1, SS_B_Pos1) = 0 Then 
+                                If     batRating(P9, I1, SS_B_Pos2) = -1 Then 
                                                                         position(I2, 0) = batRating(P9, I1, SS_B_AB)
+                                ElseIf batRating(P9, I1, SS_B_Pos3) = -1 Then 
+                                                                        position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .9 + .5)
+                                ElseIf batRating(P9, I1, SS_B_Pos4) = -1 Then 
+                                                                        position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .8 + .5)
+                                Else                                          
+                                                                        position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .7 + .5)
+                                End If
+                                
                             ElseIf batRating(P9, I1, SS_B_Pos2) = 0 Then 
                                                                         position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .5  + .5)
                             ElseIf batRating(P9, I1, SS_B_Pos3) = 0 Then 
@@ -2040,7 +2050,8 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
                             End If
 
                             position(I2, 1) = I1
-                            Print #11, Using "Player ## could DH, i: ##  p0 = ####  p1 = ####  &"; I1, I, position(I2, 0), position(I2, 1), batters$(P9, I1)
+
+                            ' Print #11, Using "Player ## could DH, i: ##  p0 = ####  p1 = ####  &"; I1, I, position(I2, 0), position(I2, 1), batters$(P9, I1)
 
                             I2 = I2 + 1
 
