@@ -578,13 +578,14 @@ Sub PBP (pbpString$)
         End
     End If
 
+    Print #11, "    " + pbpString$
+
     If pbpDelay! > 0 Then
 
         'Clean up / restrict to 44 char's
         'this is the width of the PBP window
         pbpString$ = PadRight(pbpString$, 44)
         pbpString$ = Left$(pbpString$, 44)
-        Print #11, "+++++ " + pbpString$
 
         pbpLine = pbpLine + 1
 
@@ -629,14 +630,13 @@ End Sub
 '----------------------------------------
 ' ...explanation...
 Sub ADDPIT (D, I5, I6)
-    Print #11, "ADDPIT: D = "; D; ", I5 = "; I5; ", I6 = "; I6
 
     If I5 >= 0 And I5 <= 21 Then
         statPitcherGame%(D, I5, I6) = statPitcherGame%(D, I5, I6) + 1
         statPitcherLeague%(D, I5, I6) = statPitcherLeague%(D, I5, I6) + 1
     Else
         Print #11, "WARNING!! skipping stat update for ADDPIT -- I5: "; I5
-    EndIf
+    End If
 
 End Sub
 
@@ -945,7 +945,6 @@ End Sub
 '----------------------------------------
 ' ...explanation...
 Sub BATOFF (P, I5, I6)
-    Print #11, "BATOFF: P = "; P; ", I5 = "; I5; ", I6 = "; I6
 
     statBatterGame%(P, I5, I6) = statBatterGame%(P, I5, I6) - 1
     statBatterLeague%(P, I5, I6) = statBatterLeague%(P, I5, I6) - 1
@@ -1205,7 +1204,7 @@ Sub CREDITPUTOUT (I3, FB2P%, AST%, D)
             Call INCBATDF(D, playerX%(D, po%), 16)
         Else
             Print #11, "WARNING!!  skipping call to INCBATDF in CREDITPUTOUT because po% = "; po%
-        EndIf
+        End If
 
     End If
 
@@ -1233,7 +1232,6 @@ End Sub
 'This subroutine generates the PBP for
 'a pitch delivery.
 Sub DELIVERY (D)
-    Print #11, "DELIVERY: D = "; D
 
     Call d100(RN)
 
@@ -2173,7 +2171,6 @@ End Sub
 '----------------------------------------
 'Increment Batter Defense
 Sub INCBATDF (D, I5, I6)
-    Print #11, "INCBATDF: D = "; D; ", I5 = "; I5; ", I6 = "; I6
 
     statBatterGame%(D, I5, I6) = statBatterGame%(D, I5, I6) + 1
     statBatterLeague%(D, I5, I6) = statBatterLeague%(D, I5, I6) + 1
@@ -2185,7 +2182,6 @@ End Sub
 '----------------------------------------
 'Increment Batter Offense
 Sub INCBATOFF (P, I5, I6)
-    Print #11, "INCBATOFF: P = "; P; ", I5 = "; I5; ", I6 = "; I6
 
     statBatterGame%  (P, I5, I6) = statBatterGame%  (P, I5, I6) + 1
     statBatterLeague%(P, I5, I6) = statBatterLeague%(P, I5, I6) + 1
@@ -2207,7 +2203,6 @@ End Sub
 '----------------------------------------
 'Increment Pitcher Offense
 Sub INCPITOFF (P, I5, I6)
-    Print #11, "INCPITOFF: P = "; P; ", I5 = "; I5; ", I6 = "; I6
 
     statPitcherGame%(P, I5, I6) = statPitcherGame%(P, I5, I6) + 1
     statPitcherLeague%(P, I5, I6) = statPitcherLeague%(P, I5, I6) + 1
@@ -2705,7 +2700,6 @@ End Sub
 '----------------------------------------
 'OffPit
 Sub OFFPIT (P9, I5, I6)
-    Print #11, "OFFPIT: P9 = "; P9; ", I5 = "; I5; ", I6 = "; I6
 
     statPitcherGame%(P9, I5, I6) = statPitcherGame%(P9, I5, I6) + 1
     statPitcherLeague%(P9, I5, I6) = statPitcherLeague%(P9, I5, I6) + 1
@@ -3067,7 +3061,6 @@ End Sub
 '----------------------------------------
 ' ...explanation...
 Sub PITOFF (P, I5, I6)
-    Print #11, "PITOFF: P = "; P; ", I5 = "; I5; ", I6 = "; I6
 
     statPitcherGame%(P, I5, I6) = statPitcherGame%(P, I5, I6) - 1
     statPitcherLeague%(P, I5, I6) = statPitcherLeague%(P, I5, I6) - 1
@@ -3234,9 +3227,6 @@ Sub PITSTRAT (flagPinchHitter, pz)
                     pitWalks = statPitcherGame%(D, currPitcher%(D), LG_P_BB)
                     pitHits  = statPitcherGame%(D, currPitcher%(D), LG_P_H)
                     pitRuns  = statPitcherGame%(D, currPitcher%(D), LG_P_R)
-
-                    Print #11, Using "PITSTRAT staminaWH: ##  W: ##  H: ## ... staminaR: ##  R:  ##  MGR_INN_CLOSE_STRATEGY: ##  MGR_USE_BOTH_SETUP_CLOSER: ##  gamePitcher: ##"; _
-                    stamina%(D, 0), pitWalks, pitHits, stamina%(D, 1), pitRuns, MG%(D, MGR_INN_CLOSE_STRATEGY), MG%(D, MGR_USE_BOTH_SETUP_CLOSER), gamePitcher%(D)
 
                     If INNING% = 8 And stamina%(D, 0) <= pitWalks + pitHits And stamina%(D, 1) <= pitRuns And MG%(D, MGR_INN_CLOSE_STRATEGY) = 8 And ourLead > 0 And SN% = MGR_TIRED_AHEAD Then
                          If     MG%(D, MGR_USE_BOTH_SETUP_CLOSER) = 0 Then Goto LSetupMan
@@ -4201,9 +4191,6 @@ Sub HITTINGLINES
 
             liveBatRating%(side, LIVE_BB, lineup) = NORMALIZE!(theRating!, oppPitRating!, oppTeamBB!)
 
-            Print #11, Using "BBBBB side: #, lineup: #, the Rating: ##.###, oppPitRating: ##.###, oppTeamBB: ##.###, liveBatRating: ##.###"; _
-                side, lineup, theRating!, oppPitRating!, oppTeamBB!, liveBatRating%(side, 5, lineup)
-
         Next lineup
 
         ' CALCULATE STRIKEOUT PERCENTAGES
@@ -4282,9 +4269,6 @@ Sub HITTINGLINES
 
             liveBatRating%(side, LIVE_K, lineup) = NORMALIZE!(theRating!, oppPitRating!, oppTeamK!)
 
-            Print #11, Using "KKKKK side: #, lineup: #, the Rating: ##.###, oppPitRating: ##.###, oppTeamK: ##.###, liveBatRating: ##.###"; _
-                side, lineup, theRating!, oppPitRating!, oppTeamK!, liveBatRating%(side, 4, lineup)
-
         Next lineup
 
         ' CALCULATE THE BATTING AVERAGE
@@ -4297,12 +4281,9 @@ Sub HITTINGLINES
                 theRating! = 0
             Else
                 theRating! = pitchRating(othSide, currPitcher%(othSide), SS_P_H) / (((pitchRating(othSide, currPitcher%(othSide), SS_P_IP) * 3) * .94) + pitchRating(othSide, currPitcher%(othSide), SS_P_H))
-                Print #11, "*+*+*+ 10  The Rating: "; theRating!
             End If
 
             i9! = NORMALIZE!(theRating!, I2!, oppPitRating!) / 1000
-
-            ' Print #11, Using "BAVG 10 -- theRating = ####.###  I2 = ####.###  oppPitRating = ####.###  i9 - ####.###"; theRating!, I2!, oppPitRating!, i9!
 
             TY% = 0 : PY% = 0 : BY% = 0   'Is this necessary in QB64?'
             Call InitHittingLinesVars(side, lineup, TY%, PY%, BY%)
@@ -4315,7 +4296,6 @@ Sub HITTINGLINES
                     theRating! = 0
                 Else
                     theRating! = pitchRating(othSide, currPitcher%(othSide), 52 + PY% * 7) / pitchRating(othSide, currPitcher%(othSide), 51 + PY% * 7)
-                    Print #11, "*+*+*+ 20  The Rating: "; theRating!
                     End If
 
             End If
@@ -4324,19 +4304,15 @@ Sub HITTINGLINES
             If gameTS%(othSide, 0) = 999 And pitchRating(othSide, currPitcher%(othSide), 89) <> 0 Then K8! = NORMALIZE!(theRating!, I2!, oppPitRating!)
             If gameTS%(othSide, 0) = 999 And pitchRating(othSide, currPitcher%(othSide), 89) <> 0 Then i9! = K8! / 1000
 
-            ' Print #11, Using "BAVG 20 -- I2 = ####.###  k8 = ####.###  i9 - ####.###"; I2!, K8!, i9!
-
             If fldPos%(side, lineup) = 1 And pitchRating(side, currPitcher%(side), SS_P_BAvg) <> 999 Then
                 theRating!    = pitchRating(side, currPitcher%(side), SS_P_BAvg) / 1000
 
                 If pitchRating(side, currPitcher%(side), SS_P_BAvg) <= 0 Or pitchRating(side, currPitcher%(side), SS_P_BAvg) = 1 Then
                     If pitchRating(side, currPitcher%(side), SS_P_H_AB) = 0 Then theRating! = 0
                     Else theRating! = pitchRating(side, currPitcher%(side), SS_P_H_H) / pitchRating(side, currPitcher%(side), SS_P_H_AB)
-                    Print #11, "*+*+*+ 24 RESETTING The Rating: "; theRating!; " because of 0 or 1 for pit avg: "; pitchRating(side, currPitcher%(side), SS_P_BAvg)
                 End If
 
                 oppPitRating! = pitchRating(side, currPitcher%(side), 14) / 1000
-                Print #11, "*+*+*+ 30  The Rating: "; theRating!
 
             Else
 
@@ -4349,11 +4325,9 @@ Sub HITTINGLINES
                             theRating! = 0
                         Else
                             theRating! = pitchRating(side, currPitcher%(side), 38 + BY% * 7) / pitchRating(side, currPitcher%(side), 37 + BY% * 7)
-                            Print #11, "*+*+*+ 40  The Rating: "; theRating!
                             End If
                     Else
                         If fldPos%(side, lineup) = 1 Then theRating! = pitchRating(side, currPitcher%(side), SS_P_H_H) / pitchRating(side, currPitcher%(side), SS_P_H_AB)
-                        Print #11, "*+*+*+ 45  The Rating: "; theRating!
                         End If
 
                 End If
@@ -4375,11 +4349,9 @@ Sub HITTINGLINES
                                     theRating! = 0
                                 Else
                                     theRating! = batRating(side, playerNum%(side, lineup), 43 + BY% * 7) / batRating(side, playerNum%(side, lineup), 42 + BY% * 7)
-                                    Print #11, "*+*+*+ 50  The Rating: "; theRating!
                                     End If
                             Else
                                 theRating! = batRating(side, playerNum%(side, lineup), SS_B_H) / batRating(side, playerNum%(side, lineup), SS_B_AB)
-                                Print #11, "*+*+*+ 60  The Rating: "; theRating!
                                 End If
 
                         End If
@@ -4388,9 +4360,6 @@ Sub HITTINGLINES
 
                         If gameTS%(side, 0) = 999 And batRating(side, playerNum%(side, lineup), 80) <> 0 Then 
                             I6! = batRating(side, playerNum%(side, lineup), 56 + TY% * 6) / 1000
-
-                            Print #11, Using "BAVG 22   bat80 = ###.##  TY = ####.###  batRating = ####.###  I6 = ####.###"; _
-                            batRating(side, playerNum%(side, lineup), 80), TY%, batRating(side, playerNum%(side, lineup), 56 + TY% * 6), I6!
                         End If
 
                     End If
@@ -4404,15 +4373,11 @@ Sub HITTINGLINES
 
             If I6! = 0.0 Then 
                 I6! = I2!
-                Print #11, Using "BAVG 25 RESETTING I6 -- I2 = ####.###  I6 = ####.###"; I2!, I6! 'hack! [bm]'
             End If
 
             K8! = NORMALIZE!(theRating!, I2!, I6!)
 
-            Print #11, Using "BAVG 30 -- theRating = ####.###  I2 = ####.###  I6 = ####.###  K8 - ####.###"; theRating!, I2!, I6!, K8!
-
             theRating! = K8! / 1000
-            Print #11, "*+*+*+ 70  The Rating!: "; theRating!
             I6! = teamRat_GAME(side, TM_BAVG) / 1000
 
             If gameTS%(side, 0) = 999 And batRating(side, playerNum%(side, lineup), 80) <> 0 Then I6! = gameSA%(side, TY% * 6 + 1) / 1000
@@ -4430,9 +4395,6 @@ Sub HITTINGLINES
             End If
 
             liveBatRating%(side, LIVE_BAvg, lineup) = NORMALIZE!(theRating!, I2!, I6!)
-
-            Print #11, Using "BAVG 40 -- side=##  lineup=##  H = ###  AB = ###  origBavg = ####.###  theRating = ####.###  I2 = ####.###  I6 = ####.###  Result = ####.###"; _
-                side, lineup, batRating(side, playerNum%(side, lineup), SS_B_H), batRating(side, playerNum%(side, lineup), SS_B_AB), oldBAvg!, theRating!, I2!, I6!, liveBatRating%(side, LIVE_BAvg, lineup)
 
         Next lineup
 
@@ -4503,16 +4465,10 @@ Sub HITTINGLINES
 
         For lineup = VV(side) To VV1(side)
 
-            Print #11, Using "ADJ L/R: side: #, lineup: #, gameTS: ####, play80: ####, pit: #, pitBat: #, bat: #"; _
-                side, lineup, gameTS%(side, 0), batRating(side, playerNum%(side, lineup), 80), _
-                pit, pitchRating(side, currPitcher%(side), SS_P_Throws), batRating(side, playerNum%(side, lineup), SS_B_Bats)
-
             If gameTS%(side, 0) = 999 And batRating(side, playerNum%(side, lineup), 80) = 0 Then
 
                 If fldPos%(side, lineup) = 1 Then
                     pitBat = pitchRating(side,    currPitcher%(side),    0)
-
-                    ' Print #11, Using "^^^ ADJ L/R for pitcher: side: #, lineup: #, pitBat: #, pit: #", side, lineup, pitBat, pit
 
                     If pitBat = -1 And pit =  1 Then Call LRADJ(1.04,  .88)    ' (aOffense, aStrikeout) '
                     If pitBat = -1 And pit = -1 Then Call LRADJ( .93, 1.16)    '-2=LP,-1=L,0=S,1=R,2=RP'
@@ -4521,8 +4477,6 @@ Sub HITTINGLINES
                     If pitBat =  1 And pit =  1 Then Call LRADJ( .97, 1.10)
                 Else
                     bat = batRating(side, playerNum%(side, lineup), SS_B_Bats)
-
-                    ' Print #11, Using "^^^ ADJ L/R for hitter: side: #, lineup: #, bat: #, pit: #, name: $", side, lineup, bat, pit, batters$(side, lineup)
 
                 If bat = -2 And pit = -1 Then Call LRADJ( .78, 1.22)
                     If bat = -2 And pit =  1 Then Call LRADJ(1.04,  .96)
@@ -7184,14 +7138,29 @@ Sub NEWLINES (P9)
         Print Using "# "; I;
 
         If fldPos%(P9, I) <> 1 Then
-            Print batters$(P9, playerNum%(P9, I));
+            If playerNum%(P9, I) >= 0 And playerNum%(P9, I) <= 22 Then
+                Print batters$(P9, playerNum%(P9, I));
+            Else
+                Print "UNKNOWN";
+                Print #11, Using "WARNING_! Got a batter subscript of ### for I: ## in subroutine NEWLINES"; playerNum%(P9, I), I
+            End If
         Else
-            If I5 <> 66 Then Print pitchers$(P9, playerNum%(P9, I));
+            If playerNum%(P9, I) >= 0 And playerNum%(P9, I) <= 21 Then
+                If I5 <> 66 Then Print pitchers$(P9, playerNum%(P9, I));
+                Else
+                    If I5 <> 66 Then Print "UNKNOWN";
+                    Print #11, Using "WARNING_! Got a pitcher subscript of ### for I: ## in subroutine NEWLINES"; playerNum%(P9, I), I
+                End If
         End If
 
         Print Tab(74);
 
-        Print fieldPos$(fldPos%(P9, I));
+        If fldPos%(P9, I) >= 0 And fldPos%(P9, I) <= 11 Then
+            Print fieldPos$(fldPos%(P9, I));
+        Else
+            Print "??";
+            Print #11, Using "WARNING_! Got a fielder subscript of ### for I: ## in subroutine NEWLINES"; fldPos%(P9, I), I
+            End If
 
     Next I
 

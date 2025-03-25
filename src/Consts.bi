@@ -18,7 +18,7 @@ Const SS_B_Range = 17
 Const SS_B_GndPct = 18
 Const SS_B_FldPct = 19
 Const SS_B_LgBAvg = 20
-'21 is unknown (INJURY?)'
+'21 is: 0=Available, 1=In Game
 Const SS_B_Pos1 = 22
 Const SS_B_Pos2 = 23
 Const SS_B_Pos3 = 24

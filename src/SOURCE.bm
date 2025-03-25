@@ -30,12 +30,8 @@ Sub SOURCE ()
 
     If useVGA = 1 Then Call LOADSCREEN
 
-LStart: '
-    DumpAll
-    Print #11, "---"
-    Print #11, "LStart possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
+  LStart: '
+    ' DumpAll
 
     '-- An error comes up every so many games
     '-- when playerX%(D, POS_P) gets a negative value
@@ -64,11 +60,6 @@ LStart: '
     'Switch posession
     P = 1 - P
     D = 1 - P
-    DumpAll
-    Print #11, "---"
-    Print #11, "Source 54 -- SWITCHED possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "Source 54 -- playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "Source 54 -- gameScore ="; gameScore(0,0); gameScore(1,0)
 
     If INNING% = 7 And teamRat_GAME(1, 13) = 8 And P = 1 And Val(Left$(gameTeams$(1), 2)) > 75 Then
         Call WINDEX
@@ -122,8 +113,6 @@ LStart: '
     End If
 
     For IJ0% = 0 To 22
-        Print #11, "*** LStart: "; IJ0%; batRating(D, IJ0%, 21)
-
         If batRating(D, IJ0%, 21) > 39 And batRating(D, IJ0%, 21) <= 49 Then
 
             I1 = IJ0%
@@ -174,8 +163,6 @@ LStart: '
     If Not (MG%(D, 560) <> 999 Or INNING% < 8 Or playerMode = 0 Or playerMode = 1 And P = compTeam) Then
 
         For IJ0% = 1 To 4
-            Print #11, "*** LStart2: "; IJ0%; batRating(D, MG%(D, 564 + IJ0%), 21); MG%(D, 560 + IJ0%)
-
             If MG%(D, 560 + IJ0%) <> -1 And batRating(D, MG%(D, 564 + IJ0%), 21) = 0 Then
 
                 Call d100(RN)
@@ -238,11 +225,6 @@ LStart: '
     End If
 
   LNextInning: '
-    DumpAll
-    Print #11, "---"
-    Print #11, "LNextInning possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
     SH = 0
     F% = 0
     SO = 0
@@ -252,13 +234,14 @@ LStart: '
 
     If currBatter!(P) = 10 Then currBatter!(P) = 1
 
+    Print #11, "---"
+    Print #11, "LNextInning possession: "; _IIF(P = 0, "Visiting", "Home") + " team batting"
+    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
+    Print #11, "gameScore ="; gameScore(0, 0); "-" ; gameScore(1, 0); ", inning:"; INNING%; ","; nbrOuts(0); "outs"
+    Print #11,
+
     '--- Start of a new sub
   LNextBatter: '
-    DumpAll
-    Print #11, "---"
-    Print #11, "LNextBatter possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
     Call WHOSON1ST(baseRunners%)
     Call PLAYERNAME(P)
 
@@ -277,11 +260,12 @@ LStart: '
     End If
 
   LContinueBatter: '
-    DumpAll
-    Print #11, "---"
-    Print #11, "LContinueBatter possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
+    Print #11,
+    For iBM = 3 to 1 Step -1
+        If gameBaserunners%(iBM, 0) > 0 Then Print #11, "  ++ "; batters$( P, playerNum%(P, gameBaserunners%(iBM, 0)) ); " is on base:"; iBM
+    Next
+    Print #11, "  The pitcher is: "; pitchers$( D, currPitcher%(D)) ; ", Stamina: "; stamina%(D, 0); stamina%(D, 1)
+    Print #11, "  The batter is: " ; batters$ ( P, playerNum%(P, currBatter!(P)) ); " with"; nbrOuts(0); "outs"
 
     Do
 
@@ -328,11 +312,6 @@ LStart: '
         F% = 0
 
       LContinueBatter2: '
-        DumpAll
-        Print #11, "---"
-        Print #11, "LContinueBatter2 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-        Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-        Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
         If (playerMode = 2 Or playerMode = 1 And P <> compTeam) Then
             GoTo LEndOfGame
         End If
@@ -350,11 +329,6 @@ LStart: '
         ' DEFENSE OPTIONS MENU
         '----------------------------------------
       LDefenseOptions: '
-        DumpAll
-        Print #11, "---"
-        Print #11, "LDefenseOptions DEFENSE possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-        Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-        Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
         pbpString$ = PadRight$(Left$(gameTeams$(D), 3) + teamAbbreviatons$(D), 8)
 
         'Call WINDEX
@@ -505,11 +479,6 @@ LStart: '
 
 
   LManageDefense: '
-    DumpAll
-    Print #11, "---"
-    Print #11, "LManageDefense possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
 
     Select Case D2
         Case 1
@@ -572,11 +541,6 @@ LStart: '
     '----------------------------------------
   LOffenseOptions: '
     Do
-        DumpAll
-        Print #11, "---"
-        Print #11, "LOffenseOptions OFFENSE -- possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-        Print #11, "Source 528 -- playerMode ="; playerMode; ", compTeam ="; compTeam
-        Print #11, "Source 528 -- gameScore ="; gameScore(0,0); gameScore(1,0); ", flagPinchHitter ="; flagPinchHitter
 
         If (playerMode = 2 Or playerMode = 1 And P = compTeam) Then
 
@@ -616,7 +580,7 @@ LStart: '
                     Else
 
                         If batRating(P, JM, SS_B_AB) <> 0 Then
-                            Print #11, "Pinch hitting for JM ="; JM; ", batRating ="; batRating(P, JM, SS_B_AB)
+                            ' Print #11, "Pinch hitting for JM ="; JM; ", batRating ="; batRating(P, JM, SS_B_AB)
                             GoTo LPhForPosition
                         Else
 
@@ -778,29 +742,18 @@ LStart: '
     Loop Until P2 >= 1 And P2 <= 5
 
   LRunnerGoing: '
-    DumpAll
-    Print #11, "---"
-    Print #11, "LRunnerGoing possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "dice1000 ="; dice1000%; "gameScore ="; gameScore(0,0); gameScore(1,0)
     Select Case P2
 
         Case 1, 4   'Hit away, Bunt'
 
-            Print #11, "726: P2="; P2; ", D2="; D2
-            
             If D2 <> 8 Then Goto LWeirdPlay
 
             Call WINDEX
-
             Call d100(RN)
-            Print #11, "LRunnerGoing: P2="; P2; ", RN="; RN
             
             If P2 = 4 Or (P2 = 1 And RN <= 50) Then Goto LWeirdPlay
 
-            Print #11, "Calling BASEONBALLS"
             Call BASEONBALLS(event%, D2, D, P)
-
             GoTo LHBP
 
         Case 2  'Hit and run'
@@ -818,11 +771,6 @@ LStart: '
     End Select
 
   LRunnerGoing2: '
-    DumpAll
-    Print #11, "---"
-    Print #11, "LRunnerGoing2 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "dice1000 ="; dice1000%; "gameScore ="; gameScore(0,0); gameScore(1,0)
     '-- this is related to the PICKEDOFF routine and it's immediate aftermath
     If baseRunners% = BASE_1_2 Then I = 3 Else I = 2
 
@@ -912,11 +860,6 @@ LStart: '
 
 
   LRarePlays: ' BRANCH FOR RARE PLAYS
-    DumpAll
-    Print #11, "---"
-    Print #11, "LRarePlays Rare Plays possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
     Call RAREPLAYS(dice1000%, dice7500%, IP%)
 
     If IP% = 1 Then 'pitcher is injured'
@@ -1027,42 +970,32 @@ LStart: '
 
 
   LWeirdPlay: '
-    DumpAll
-    Print #11, "---"
-    Print #11, "LWeirdPlay possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "dice1000 ="; dice1000%; "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
     Call d100(RN)
 
     If (((precipType = 1 Or precipType = 2 Or precipType = 3) And RN = 2) Or (rainDelay = 1 And RN <= 5)) And INNING% >= 2 And gameDelayed = 0 Then
         dice7500% = 20
         dice1000% = 21
-        Print #11, "Noodle 10"
         GoTo LRarePlays
     End If
 
     dice1000% = Int(Rnd(1) * 1000) + 1
     If dice1000% <= 3 And useInj = 1 Then
-        Print #11, "Noodle 20"
         GoTo LRarePlays
     End If
 
     infPosFactor = 0
     dice1000% = Int(Rnd(1) * 1000) + 1
 
-    Print #11, "WEIRD dice1000 ="; dice1000%
-    shuffle% = Int(Rnd(1) * 5) + 1
-    For iBM% = 1 To shuffle%
-        dice1000% = Int(Rnd(1) * 1000) + 1  ' [bm] shuffle the dice'
-    Next
-    Print #11, "NEW WEIRD dice1000 ="; dice1000%
+    ' shuffle% = Int(Rnd(1) * 5) + 1
+    ' For iBM% = 1 To shuffle%
+    '     dice1000% = Int(Rnd(1) * 1000) + 1  'todo [bm] do we need to shuffle the dice to ensure Visitor BB's occur?'
+    ' Next
 
     If nbrOuts(0) = 0 And baseRunners% = BASE_1_2 And INFPOS% < INF_INFIELD_IN And dice1000% = 768 _
     Or nbrOuts(0) = 0 And baseRunners% = BASE_1_2 And INFPOS% < INF_INFIELD_IN And dice1000% = 123 _
     Or nbrOuts(0) = 0 And baseRunners% = BASE_FULL And INFPOS% < INF_INFIELD_IN And dice1000% = 245 _
     Or nbrOuts(0) = 0 And baseRunners% = BASE_FULL And INFPOS% < INF_INFIELD_IN And dice1000% = 381 Then
         Call TRIPLEPLAY(D)
-        Print #11, "Noodle TRIPLEPLAY"
         GoTo LCheckForOptionsOrQuit
     End If
 
@@ -1072,15 +1005,9 @@ LStart: '
 
     If dice1000% <= 4 Then
         ' *** hit by pitch ***
-        Print #11, "Noodle HITBYPITCH"
         Call HITBYPITCH(event%, D)
 
       LHBP: '
-        DumpAll
-        Print #11, "---"
-        Print #11, "133201 HBP possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-        Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-        Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
         A5%(0) = 1
         A5%(1) = 0
         A5%(2) = 0
@@ -1099,7 +1026,6 @@ LStart: '
             End If
         End If
 
-        Print #11, "Noodle 10 ADVANCEMENT"
         Call ADVANCEMENT(P, D, event%, F%, I3)
         GoTo LNextInning
 
@@ -1110,7 +1036,6 @@ LStart: '
         ' *** balk ***
         If baseRunners% = BASE_EMPTY Then
             '13100 / *** fouled out of play ***
-            Print #11, "Noodle 10 FOULBALL"
             Call FOULBALL
             GoTo LContinueBatter
         Else
@@ -1133,13 +1058,11 @@ LStart: '
 
             Call PBP(pbpString$)
 
-            '13223
             If gameBaserunners%(1, 0) = 0 And RN = 9 And SO = 1 Or nbrOuts(0) > 1 And RN = 9 And SO = 1 Then
                 A5%(0) = 1
                 A5%(1) = 1
                 A5%(2) = 1
                 A5%(3) = 1
-                Print #11, "Noodle 20 ADVANCEMENT"
                 Call ADVANCEMENT(P, D, event%, F%, I3)
                 GoTo LCheckForOptionsOrQuit
             Else
@@ -1147,7 +1070,6 @@ LStart: '
                 A5%(2) = 1
                 A5%(3) = 1
                 A5%(0) = 0
-                Print #11, "Noodle 30 ADVANCEMENt"
                 Call ADVANCEMENT(P, D, event%, F%, I3)
                 GoTo LNextBatter
             End If
@@ -1160,14 +1082,8 @@ LStart: '
     If dice1000% <= 11 Or dice1000% <= 200 And batRating(D, playerX%(D, POS_C), 22) <> 2 And batRating(D, playerX%(D, POS_C), 23) <> 2 And batRating(D, playerX%(D, POS_C), 24) <> 2 And batRating(D, playerX%(D, POS_C), 25) <> 2 Then
 
       LPassedBall: ' *** passed ball ***
-        DumpAll
-        Print #11, "---"
-        Print #11, "LPassedBall PassedBall possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-        Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-        Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
         If baseRunners% = BASE_EMPTY And SO <> 1 Then
             '13100 / *** fouled out of play ***
-            Print #11, "Noodle 20 ADVANCEMENT"
             Call FOULBALL
             GoTo LContinueBatter
         End If
@@ -1192,11 +1108,6 @@ LStart: '
         End If
 
       13222 '
-        DumpAll
-        Print #11, "---"
-        Print #11, "13222 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-        Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-        Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
         RN3 = Int(Rnd(1) * 10) + 1
 
         If baseRunners% = BASE_1 And P2 = 2 And RN3 < batRating(P, playerNum%(P, gameBaserunners%(1, 0)), 16) Or baseRunners% = BASE_1_3 And P2 = 2 And RN3 < batRating(P, playerNum%(P, gameBaserunners%(1, 0)), 16) Then
@@ -1204,23 +1115,15 @@ LStart: '
             A5%(3) = 1
             A5%(0) = 0
             A5%(2) = 2
-            Print #11, "Noodle 30 H&R ADVANCEMENT"
             Call ADVANCEMENT(P, D, event%, F%, I3)
             GoTo LNextBatter
         End If
 
-      13223 '
-        DumpAll
-        Print #11, "---"
-        Print #11, "13223 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-        Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-        Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
         If gameBaserunners%(1, 0) = 0 And RN = 9 And SO = 1 Or nbrOuts(0) > 1 And RN = 9 And SO = 1 Then
             A5%(0) = 1
             A5%(1) = 1
             A5%(2) = 1
             A5%(3) = 1
-            Print #11, "Noodle 40 ADVANCEMENT"
             Call ADVANCEMENT(P, D, event%, F%, I3)
             GoTo LCheckForOptionsOrQuit
         Else
@@ -1228,7 +1131,6 @@ LStart: '
             A5%(1) = 1
             A5%(2) = 1
             A5%(3) = 1
-            Print #11, "Noodle 50 ADVANCEMENT"
             Call ADVANCEMENT(P, D, event%, F%, I3)
             GoTo LNextBatter
         End If
@@ -1281,17 +1183,8 @@ LStart: '
         GoTo LCheckForOptionsOrQuit
     End If
 
-    DumpAll
-    Print #11, "BaseOnBalls: dice1000% ="; dice1000%; ", Batter BB% is:"; liveBatRating%(P, 5, currBatter!(P)); ", Batter # is"; currBatter!(P); ", Inning is:"; INNING%; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"; ", baseRunners ="; baseRunners%
-    Print #11, gameTeams$(0); " at "; gameTeams$(1), "outs0 ="; nbrOuts(0); ", outs1 ="; nbrOuts(1)
-
-    Print #11, "/\/\/\ Dice1000% = "; dice1000%; ", walkRating = "; liveBatRating%(P, 5, currBatter!(P)) + 28; _
-        ", isWalk? "; dice1000% <= liveBatRating%(P, LIVE_BB, currBatter!(P)) + 28
-        
     If dice1000% <= liveBatRating%(P, LIVE_BB, currBatter!(P)) + 28 Then      'ToDo [bm]: define obstruction factor constant'
         event% = EVENT_BB_OR_INTERFERENCE
-        '13240 / *** base on balls ***
-        Print #11, "1237 BASEONBALLS"
         Call BASEONBALLS(event%, D2, D, P)
         GoTo LHBP
     End If
@@ -1327,8 +1220,6 @@ LStart: '
     If P = 0 Then fatigue = fatigue - 2
     If P = 1 Then fatigue = fatigue + 2
 
-    Print #11, "fatigue ="; fatigue
-
     Call WINDEX
 
     If dice7500% <= infPosFactor Then
@@ -1336,8 +1227,6 @@ LStart: '
         Call DELAY
         GoTo LDrawnInInfield
     End If
-
-    Print #11, "/\/\/\ Dice1000% = "; dice1000%; ", BAvgRating (w/fatigue) = "; liveBatRating%(P, LIVE_BAvg, currBatter!(P)) + fatigue
 
     If dice1000% > liveBatRating%(P, LIVE_BAvg, currBatter!(P)) + fatigue Then   ' *** check for strikeout ***
       Z_Out: ' just a marker label for the Out section  
@@ -1347,7 +1236,6 @@ LStart: '
         dice1000% = Int(Rnd(1) * 1000) + 1
         strikeoutRating = liveBatRating%(P, LIVE_K, currBatter!(P))
 
-        Print #11, "/\/\/\ Dice1000% = "; dice1000%; ", KRating = "; strikeoutRating; ", isK? "; dice1000% <= strikeoutRating
       Z_Strikeout: ' just a marker label for the Strikeout section  
         If dice1000% > strikeoutRating Then ' NOT a strikeout
 
@@ -1361,42 +1249,29 @@ LStart: '
             If dice1000% > E2% And fldPos%(P, currBatter!(P)) <> 1 Then E4% = 1
             If dice1000% > E3% And fldPos%(P, currBatter!(P)) =  1 Then E4% = 1
 
-            Print #11, "/\/\/\ Dice1000% = "; dice1000%; " fldPos: "; fldPos%(P, currBatter!(P)); _
-                ", GBRating = "; E2%; " or "; E3%; ", isGB? "; dice1000% <= strikeoutRating
-
-            DumpAll
-            Print #11, "1244 (groundball) - batRating = "; batRating(P, playerNum%(P, currBatter!(P)), SS_B_GndPct); ", pitRating = "; pitchRating(D, currPitcher%(D), SS_B_GndPct)
-            Print #11, "1244 (groundball) - E2% = "; E2%; ", E3% = "; E3%; ", E4% = "; E4%; ", fldPos% = "; fldPos%(P, currBatter!(P)); ", dice1000% = "; dice1000%
-            
             If E4% = 1 Then
 
                 'balls hit to the air
                 Call d100(RN)
-                Print #11, "/\/\/\ FLYBALL Dice100% = "; RN
 
                 A5%(0) = 0
                 A5%(1) = 0
                 A5%(2) = 0
                 A5%(3) = 0
 
-                DumpAll
                 Select Case RN
 
                     Case 1 To 73
                         ' *** FLY  OUTS ***
-                        Print #11, "1260 GETOUTFIELDER: RN = "; RN
                         Call GETOUTFIELDER(currFielder%, P, I1, D)
 
                         If fldPos%(P, currBatter!(P)) <> 1 Then
-                            Print #11, "1260 INCBATOFF: I5 = "; playerNum%(P, currBatter!(P))
                             Call INCBATOFF(P, playerNum%(P, currBatter!(P)), 0)
                         Else
-                            Print #11, "1269 INCPITOFF: I5 = "; currPitcher%(P)
                             Call INCPITOFF(P, currPitcher%(P), 23)
                         End If
 
                         Call d100(RN)
-                        Print #11, "/\/\/\ SHALLOW or DEEP Dice100% = "; RN
 
                         Select Case RN
 
@@ -1414,13 +1289,11 @@ LStart: '
 
                                     'What is this used for?
                                     'Call d100(RN)
-                                    'Print #11, "/\/\/\ What for? Dice100% = "; RN
 
                                     Call GetPBPString(60, 1170, Y$, D)
                                     Call PBP(Y$ + " " + X$)
 
                                     Call FLDERR(F%, currFielder%, D, I3, SB%, event%, P)
-                                    Print #11, "1296 shallow fly ball: F% = "; F%
                                     If F% = 1 Then Goto LCheckForOptionsOrQuit
                                     GoTo 14025
 
@@ -1434,7 +1307,6 @@ LStart: '
                                 Call LONGFLY(D, currFielder%)
 
                                 Call FLDERR(F%, currFielder%, D, I3, SB%, event%, P)
-                                Print #11, "1310 deep fly out: F% = "; F%
                                 If F% = 1 Then Goto LCheckForOptionsOrQuit
 
                                 Call CREDITREGPO(currFielder%, D)
@@ -1445,8 +1317,6 @@ LStart: '
 
                                 Call ADDPIT(D, currPitcher%(D), 0)
 
-                                Print #11, "1323 nbrOuts(0) = "; nbrOuts(0); ", nbrOuts(1) = "; nbrOuts(1)
-                                
                                 If nbrOuts(0) = 3 Then Goto LCheckForOptionsOrQuit
 
                                 If gameBaserunners%(3, 0) <> 0 Then
@@ -1467,11 +1337,6 @@ LStart: '
                                 End If
 
                               LFlyOut: '
-                                DumpAll
-                                Print #11, "---"
-                                Print #11, "LFlyOut possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-                                Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-                                Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
                                 If gameBaserunners%(2, 0) <> 0 Then
 
                                     I4 = (batRating(P, playerNum%(P, gameBaserunners%(2, 0)), 16) - 5) * 25
@@ -1479,7 +1344,6 @@ LStart: '
                                     I4 = I4 - ZM
 
                                     RN = Int(Rnd(1) * 1000) + 1
-                                    Print #11, "/\/\/\ LFlyOut Dice1000% = "; RN
 
                                     '-- These are ALL conditions for assigning the same value
                                     If currFielder% = 9 And event% = FLY_DEEP    And RN <= 800 + I4 And P2 <> 2 _
@@ -1551,11 +1415,6 @@ LStart: '
                                 '--- where does this end?
                                 '--- can we turn into subroutine?
                               14025 '
-                                DumpAll
-                                Print #11, "---"
-                                Print #11, "14025 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-                                Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-                                Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
                                 Call CREDITREGPO(currFielder%, D)
                                 Call CAUGHTFLY(RN, event%, D)
 
@@ -1566,7 +1425,6 @@ LStart: '
                                 If nbrOuts(0) = 3 Then Goto LCheckForOptionsOrQuit
 
                                 Call d100(RN)
-                                Print #11, "/\/\/\ CAUGHTFLY Dice100% = "; RN
 
                                 If event% = EVENT_FLY_SHALLOW And baseRunners% = BASE_1   And RN <= 33 And P2 = 2 _
                                 Or event% = EVENT_FLY_SHALLOW And baseRunners% = BASE_1_3 And RN <= 33 Then
@@ -1751,11 +1609,6 @@ LStart: '
                         End If
 
                       14009 '
-                        DumpAll
-                        Print #11, "---"
-                        Print #11, "14009 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-                        Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-                        Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
                         Call ADVANCEMENT(P, D, event%, F%, I3)
                         GoTo LCheckForOptionsOrQuit
 
@@ -1782,7 +1635,6 @@ LStart: '
             End If
 
             Call d100(RN)
-            Print #11, "/\/\/\ 1764 Dice100% = "; RN
 
             If (baseRunners% = BASE_1 Or baseRunners% = BASE_1_2 _
                 Or ((baseRunners% = BASE_FULL Or baseRunners% = BASE_1_3) _ 
@@ -1913,11 +1765,6 @@ LStart: '
 
             'Strikeout!
           LStrikeout: '
-            DumpAll
-            Print #11, "---"
-            Print #11, "LStrikeout STRIKEOUT possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-            Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-            Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
            Call WINDEX
             ' Call pbpLog(2994)
             Call STRIKEOUT(nbrStrikes, D)
@@ -1951,7 +1798,6 @@ LStart: '
 
             ' *** WILD PITCH OR PASSED BALL ON A STRIKEOUT
             RN = Int(Rnd(1) * 600) + 1
-            Print #11, "/\/\/\ WP Dice600% = "; RN
 
             If gameBaserunners%(1, 0) = 0 And RN = 9 And SO = 1 Or nbrOuts(0) = 3 And RN = 9 Then
 
@@ -1991,7 +1837,6 @@ LStart: '
       Z_BaseHit: 'just a marker label for the base hit section
 
         dice1000% = Int(Rnd(1) * 1000) + 1
-        Print #11, "/\/\/\ DOUBLE Dice1000% = "; dice1000%; ", 2BRating = "; liveBatRating%(P, LIVE_2B, currBatter!(P))
 
         If dice1000% <= liveBatRating%(P, LIVE_2B, currBatter!(P)) And P2 <> 2 _
         Or dice1000% <= liveBatRating%(P, LIVE_2B, currBatter!(P)) * .5 And P2 = 2 Then
@@ -2041,7 +1886,6 @@ LStart: '
             Else
               Z_Double: 'just a marker label for the Double section
                 Call d100(RN)
-                Print #11, "/\/\/\ LONGFLY Dice100% = "; RN
 
                 Select Case RN
 
@@ -2143,7 +1987,6 @@ LStart: '
 
 
       Z_Triple: 'just a marker label for the Triple section
-        Print #11, "/\/\/\ TRIPLE Dice1000% = "; dice1000%; ", 3BRating = "; liveBatRating%(P, LIVE_2B, currBatter!(P)) + liveBatRating%(P, LIVE_3B, currBatter!(P))
         If dice1000% <= liveBatRating%(P, LIVE_2B, currBatter!(P)) + liveBatRating%(P, LIVE_3B, currBatter!(P)) And P2 <> 2 Or dice1000% <= liveBatRating%(P, LIVE_2B, currBatter!(P)) * .5 + liveBatRating%(P, LIVE_3B, currBatter!(P)) * .5 And P2 = 2 Then
 
             event% = EVENT_3B
@@ -2275,61 +2118,40 @@ LStart: '
 
         Call HITS2GAP(currFielder%, P, I1, D)
 
-        DumpAll
-        Print #11, "L2236 HITS2GAP: currFielder% ="; currFielder%; ", P ="; P; ", D ="; D; ", I1 ="; I1; ", dice1000% ="; dice1000%; ", E2% ="; E2%; ", P2 ="; P2; _IIF(D = 1, "Visiting", "Home") + " batting"
-
         I3 = liveBatRating%(P, LIVE_2B, currBatter!(P)) + liveBatRating%(P, LIVE_3B, currBatter!(P))
 
       Z_Hit2Gap: 'just a marker label for the Hit2Gap Run section    
         E2% = I3 + liveBatRating%(P, LIVE_HR, currBatter!(P))
-        Print #11, "/\/\/\ HR Dice1000% = "; dice1000%; ", HRRating = "; E2%
 
-        Print #11, "CF ?: E2% ="; E2%
         If currFielder% = 8 And dice1000% <= E2% And P2 <> 2 Or currFielder% = 8 And dice1000% <= E2% * .5 And P2 = 2 Then
             event% = EVENT_HR
-            Print #11, "L2245 cf ?: dice1000% ="; dice1000%; ", E2% ="; E2%; ", P2 ="; P2
             GoTo LHomeRun
         End If
 
         E2% = I3 + liveBatRating%(P, LIVE_L_HR, currBatter!(P))
-        Print #11, Using "LF ? E2 = ####  I3 = ####  HRbatRating = ####"; E2%, I3, liveBatRating%(P, LIVE_L_HR, currBatter!(P))    'righty batter or pitcher?'
 
         If currFielder% = 7 And dice1000% <= E2% And P2 <> 2 Or currFielder% = 7 And dice1000% <= E2% * .5 And P2 = 2 Then
             event% = EVENT_HR
-            Print #11, "L2245 lf ?: dice1000% ="; dice1000%; ", E2% ="; E2%; ", P2 ="; P2
             GoTo LHomeRun
         End If
 
         E2% = I3 + liveBatRating%(P, LIVE_R_HR, currBatter!(P))
-        Print #11, Using "RF ? E2 = ####  I3 = ####  HRbatRating = ####"; E2%, I3, liveBatRating%(P, LIVE_R_HR, currBatter!(P))    'lefty batter or pitcher?'
 
         If currFielder% = 9 And dice1000% <= E2% And P2 <> 2 Or currFielder% = 9 And dice1000% <= E2% * .5 And P2 = 2 Then
             event% = EVENT_HR
-             Print #11, "L2245 rf ?: dice1000% ="; dice1000%; ", E2% ="; E2%; ", P2 ="; P2
            GoTo LHomeRun
         End If
 
       LDrawnInInfield: '
-        DumpAll
-        Print #11, "---"
-        Print #11, "LDrawnInInfield possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-        Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-        Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
 
         dice100% = 0
         Call d100(dice100%)
         event% = EVENT_1B
 
-        Print #11, "/\/\/\ SINGLE Dice7500% = "; dice7500%; ", infPosFactor = "; infPosFactor; ", dice100 ="; dice100%; ", liveBatRating%(P, 0, currBatter!(P)) = "; "liveBA ="; liveBatRating%(P, 0, currBatter!(P))
         'If fldPos%(P, currBatter!(P)) = 1 Or dice7500% <= infPosFactor Then
         If fldPos%(P, currBatter!(P)) <> 1 And dice100% <= liveBatRating%(P, LIVE_BAvg, currBatter!(P)) And P2 <> 2 Then
 
           LSingle: '/ *** single ***
-            DumpAll
-            Print #11, "---"
-            Print #11, "LSingle SINGLE possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-            Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-            Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
             Call SINGLEROUTINE(currFielder%, P, I1, D, event%, P2)
 
             If event% = EVENT_PSBL_SINGLE Then
@@ -2350,7 +2172,6 @@ LStart: '
 
         End If
 
-        Print #11, "/\/\/\ FLDERR Dice100% = "; dice100%; ", ErrRating = "; (batRating(P, playerNum%(P, currBatter!(1)), 16) * 2.5)
         If dice100% <= (batRating(P, playerNum%(P, currBatter!(1)), 16) * 2.5) Then
             event% = EVENT_PSBL_SINGLE
             Call GETINFIELDER(currFielder%, P, I1, D, event%, P2)
@@ -2363,19 +2184,9 @@ LStart: '
 
     '----- NOODLE -----
 
-    DumpAll
-    Print #11, "---"
-    Print #11, "PUNTING possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
     Goto LProcessOutAndDP2
 
   LHomeRun: '
-    DumpAll
-    Print #11, "---"
-    Print #11, "LHomeRun possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
     ' *** HOME RUN event%=10 ***
 
     Call WINDEX
@@ -2509,11 +2320,6 @@ LStart: '
 
 
   LHomeRun2: '
-    DumpAll
-    Print #11, "---"
-    Print #11, "LHomeRun2 (POTENTIAL MYSTERY RUN???) possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
     Call PBP(pbpString$)
     Call DELAY
 
@@ -2534,11 +2340,6 @@ LStart: '
     '----- NOODLE -----
 
   LProcessOutAndDP: '
-    DumpAll
-    Print #11, "---"
-    Print #11, "LProcessOutAndDP possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
 
     Call ADDPIT(D, currPitcher%(D), 0)
 
@@ -2600,11 +2401,6 @@ LStart: '
 
 
   LGrounderToPitcher: '
-    DumpAll
-    Print #11, "---"
-    Print #11, "LGrounderToPitcher possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
     If nbrOuts(0) >= 2 Then
 
         RN = Int(Rnd(1) * 10) + 1
@@ -2723,10 +2519,6 @@ LStart: '
         End If
 
       LProcessOutAndDP2: 'Call DELAY
-        DumpAll
-        Print #11, "LProcessOutAndDP2 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-        Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-        Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
         If fbun% = 0 Then Call CREDITASSIST(currFielder%, D)
         fbun% = 0
 
@@ -2787,10 +2579,6 @@ LStart: '
         If Not (baseRunners% = BASE_1 Or baseRunners% = BASE_1_2 Or baseRunners% = BASE_1_3 Or baseRunners% = BASE_FULL) Then
 
             13693 '
-            DumpAll
-            Print #11, "13693 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-            Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-            Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
             Call d100(RN)
             A5%(1) = 0
             A5%(2) = 0
@@ -2829,11 +2617,6 @@ LStart: '
     End If
 
   13725 '
-    DumpAll
-    Print #11, "---"
-    Print #11, "13725 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
     If baseRunners% <> BASE_1_2 And baseRunners% <> BASE_FULL Then
         If gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 6 And nbrOuts(0) = 0 And INFPOS% > 0 And currFielder% = 5 Or gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 6 And nbrOuts(0) = 0 And INFPOS% > 0 And currFielder% = 3 Then
 
@@ -2918,11 +2701,6 @@ LStart: '
     '-----------------------------------------------------
     ' Play-by-Play box
   LCheckForOptionsOrQuit: '
-    DumpAll
-    Print #11, "---"
-    Print #11, "LCheckForOptionsOrQuit possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
     If useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 144), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 144)
 
     ' essentially it allows the user to press a key
@@ -2959,11 +2737,6 @@ LStart: '
     '----- NOODLE -----
 
   LBunt: ' *** BUNT ROUTINE ***
-    DumpAll
-    Print #11, "---"
-    Print #11, "LBunt BUNT possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
     Call WINDEX
 
     Erase A5%
@@ -3020,11 +2793,6 @@ LStart: '
                 '--- start of a new sub ???
                 '--- where does 4111 end ???
               14111 '
-                DumpAll
-                Print #11, "---"
-                Print #11, "14111 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-                Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-                Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
                 If currFielder% <> 5 Then
                     Call CREDITASSIST(currFielder%, D)
                     currFielder% = 5
@@ -3195,11 +2963,6 @@ LStart: '
 
         Case 4
           LSacrifice: 'SHGOOD
-            DumpAll
-            Print #11, "---"
-            Print #11, "LSacrifice SH possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-            Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-            Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
             Call PBP(player$(0) + " lays down a good bunt...")
             Call FLDERR(F%, currFielder%, D, I3, SB%, event%, P)
             Call PBP(player$(4) + " makes a nice play")
@@ -3215,12 +2978,6 @@ LStart: '
                 '-- or direct other code to this loop
                 '-- with a value of 4 and a 'skip' variable
               LSacrifice2: '
-                DumpAll
-                Print #11, "---"
-                Print #11, "LSacrifice2 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"; _IIF(D = 1, "Visiting", "Home") + " batting"
-                Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-                Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
-
                 Call ADDPIT(D, currPitcher%(D), 15)
 
                 If fldPos%(P, currBatter!(P)) = 1 Then
@@ -3261,11 +3018,6 @@ LStart: '
 
         Case 5
           14150 'C@3
-            DumpAll
-            Print #11, "---"
-            Print #11, "14150 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-            Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-            Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
             Call d100(RN)
             If fldPos%(P, currBatter!(P)) = 1 Then
                 RR = 2
@@ -3312,11 +3064,6 @@ LStart: '
 
                 Case 2
                   14157 '
-                    DumpAll
-                    Print #11, "---"
-                    Print #11, "14157 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-                    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-                    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
                     event% = 12
                     Call PBP(player$(0) + " lays down a great bunt...")
 
@@ -3507,11 +3254,6 @@ LStart: '
 
         Case 9
           14175 '
-            DumpAll
-            Print #11, "---"
-            Print #11, "14175 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-            Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-            Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
             nbrStrikes = nbrStrikes + 1
 
             Call WINDEX
@@ -3559,11 +3301,6 @@ LStart: '
 
 
   LSteal: '
-    DumpAll
-    Print #11, "---"
-    Print #11, "LSteal possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
     SH% = 0
     event% = 16
     currFielder% = 1
@@ -3636,11 +3373,6 @@ LStart: '
     Q0 = 100
 
   14813 '
-    DumpAll
-    Print #11, "---"
-    Print #11, "14813 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
     If fldPos%(P, gameBaserunners%(TGTBASE% - 1, 0)) = 1 Then Q0 = 100
 
     Call STEAL3RD(TGTBASE%, AA, Q0, runnerHeld, D) ' *** SUCCESS OF 3B STEAL ***
@@ -3680,11 +3412,6 @@ LStart: '
         player$(4) = pitchers$(D, currPitcher%(D))
 
       14820 '
-        DumpAll
-        Print #11, "---"
-        Print #11, "14820 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-        Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-        Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
         Call WINDEX
         Call PBP(player$(TGTBASE% - 1) + " caught off base in a rundown!")
 
@@ -3734,11 +3461,6 @@ LStart: '
     End If
 
   LStealHome: '
-    DumpAll
-    Print #11, "---"
-    Print #11, "LStealHome possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
     Call WINDEX
     TGBASE% = playerNum%(P, gameBaserunners%(TGTBASE% - 1, 0))
 
@@ -3765,11 +3487,6 @@ LStart: '
         If UCase$(I$) <> "Y" Then PJ = 7: GoTo 14829
 
       LDoubleSteal: '
-        DumpAll
-        Print #11, "---"
-        Print #11, "LDoubleSteal possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-        Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-        Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
         currFielder% = 2
         player$(4) = batters$(D, playerX%(D, POS_C))
 
@@ -3785,11 +3502,6 @@ LStart: '
         End If
 
       LDoubleSteal2: '
-        DumpAll
-        Print #11, "---"
-        Print #11, "LDoubleSteal2 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-        Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-        Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
         Call WHICHRUNNER(TGTBASE%, baseRunners%, D5)
         I9 = Int(Rnd(1) * 1000) + 1
         Q0 = Q0 - ((batRating(D, playerX%(D, POS_C), 15) - 5) * 25)
@@ -3912,11 +3624,6 @@ LStart: '
     End If
 
   14831 '
-    DumpAll
-    Print #11, "---"
-    Print #11, "14831 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
     If nbrOuts(0) >= 3 Or P2 = 2 And nbrStrikes = 3 Then
         GoTo LCheckForOptionsOrQuit
     End If
@@ -3965,11 +3672,6 @@ LStart: '
     '----------------------------------------
 
   LStayInGame: '
-    DumpAll
-    Print #11, "---"
-    Print #11, "LStayInGame possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
     Cls
 
     If useVGA = 0 Then Screen 0
@@ -4046,10 +3748,6 @@ LStart: '
     '-- make this into a subroutine?!?!
 
   LPersonnelMenu: '
-    Print #11, "---"
-    Print #11, "LPersonnelMenu possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
     Cls
     If useVGA = 1 Then Screen 0
     TG = 0
@@ -4064,11 +3762,6 @@ LStart: '
     Color 15: Print "CHANGE BATTER/FIELDER"
 
   15501 '
-    DumpAll
-    Print #11, "---"
-    Print #11, "15501 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
     Do
         I$ = GetKeyPress$
         I = Val(I$)
@@ -4080,10 +3773,6 @@ LStart: '
 
         Case 1  'Resume Play'
           LChangeNobody: '
-            Print #11, "---"
-            Print #11, "LChangeNobody possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-            Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-            Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
             For I = 1 To 9
                 If fldPos%(P9, I) <> 1 Then
                     batRating(P9, playerNum%(P9, I), 21) = 1
@@ -4101,10 +3790,6 @@ LStart: '
 
         Case 2  'Relief Pitcher'
           LChangePitcher: '
-            Print #11, "---"
-            Print #11, "LChangePitcher possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-            Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-            Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
             If P2 = 5 Then Call TIRING(P9): GoTo 15501
 
             Do
@@ -4147,10 +3832,6 @@ LStart: '
             Call CHECKSAVE(D, P, baseRunners%)
 
           15518 '
-            Print #11, "---"
-            Print #11, "15518 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-            Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-            Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
             P9 = 1 - P9
             W5 = P9
             W6 = W5
@@ -4308,10 +3989,6 @@ LStart: '
             '-- ChangeBatterFielder
 
           LChangeBatterFielder: '
-            Print #11, "---"
-            Print #11, "LChangeBatterFielder Change Batter/Fielder possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-            Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-            Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
             Cls
             Call DisplayBatter_Lineup(PG, P9)
             Call CHANGELINEUP(P9, P)
@@ -4337,10 +4014,6 @@ LStart: '
             Color 15: Print "TOGGLE FIELDING/BATTING"
 
           15547 '
-            Print #11, "---"
-            Print #11, "15547 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-            Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-            Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
             I$ = GetKeyPress$
             If Asc(I$) = 32 And PG = 0 Then PG = 1: Call DisplayBatter_Lineup(PG, P9): GoTo 15547
             If Asc(I$) = 32 And PG = 1 Then PG = 0: Call DisplayBatter_Lineup(PG, P9): GoTo 15547
@@ -4352,10 +4025,6 @@ LStart: '
             If I1 = 2 Then
 
               15567 '
-                Print #11, "---"
-                Print #11, "15567 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-                Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-                Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
                 Do
                     Locate 20, 29: Print "B.O. #1 (1-9)"
                     I$ = GetKeyPress$
@@ -4402,11 +4071,6 @@ LStart: '
     End Select
 
   15550 '
-    DumpAll
-    Print #11, "---"
-    Print #11, "15550 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
     Do
         Locate 20, 30: Print "LINEUP SLOT TO REPLACE (1-9) (Z)=NO CHANGE"
 
@@ -4427,11 +4091,6 @@ LStart: '
         If fldPos%(P9, I2) <> 1 Then Print batters$(P9, playerNum%(P9, I2));
 
       15555 '
-        DumpAll
-        Print #11, "---"
-        Print #11, "15555 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-        Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-        Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
         Do
             Locate 22, 30: Print "# OF SUB"
 
@@ -4491,11 +4150,6 @@ LStart: '
     '----------------------------------------
 
   LGameOver: '
-    Print #11, "---"
-    Print #11, "LGameOver possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
-
     normalFinish = 1
 
     'Print winning team and score
@@ -4529,11 +4183,6 @@ LStart: '
 
     '-- This can join the code above as there's only one branch to it
   LEndOfGame: '
-    DumpAll
-    Print #11, "---"
-    Print #11, "LEndOfGame possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
     runnerHeld = 0
     If useVGA = 1 Then
         Call HOLDSTATUS_G(runnerHeld)
@@ -4628,11 +4277,6 @@ LStart: '
     End If
 
   LReliever1: '
-    DumpAll
-    Print #11, "---"
-    Print #11, "LReliever1 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
     If GK%(D) = 1 Then
 
         GK%(D) = 0
@@ -4873,15 +4517,6 @@ LStart: '
     End If
 
   LReliever2: '
-    DumpAll
-    Print #11, "---"
-    Print #11, "LReliever2 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
-    Print #11, Using "LReliever2 staminaWH: ##  W: ##  H: ## ... staminaR: ##  R:  ##  playerX: ##  gamePitcher: ##"; _
-        stamina%(D, 0), statPitcherGame%(D, currPitcher%(D), LG_P_BB), statPitcherGame%(D, currPitcher%(D), LG_P_H), _
-        stamina%(D, 1), statPitcherGame%(D, currPitcher%(D), LG_P_R), playerX%(D, POS_P), gamePitcher%(D)
-
     If (    stamina%(D, 0) <= statPitcherGame%(D, currPitcher%(D), LG_P_BB) + statPitcherGame%(D, currPitcher%(D), LG_P_H) _
         And stamina%(D, 1) <= statPitcherGame%(D, currPitcher%(D), LG_P_R) ) Or playerX%(D, POS_P) = 99 Then
         Call RELIEVERS(flagPinchHitter, pz)
@@ -4895,11 +4530,6 @@ LStart: '
 
 
   LPhForPosition: 'GET A PINCH HITTER FOR A POSITION PLAYER
-    DumpAll
-    Print #11, "---"
-    Print #11, "LPhForPosition PH for POSITION player - possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
     If 0 = 1 And MG%(P, 540) = 999 Then '[bm] Todo re-enable this once it's fixed (no more -1 as array subscript)'
 
         'SELECT PH FOR HITTER
@@ -5005,12 +4635,6 @@ LStart: '
     '----- NOODLE -----
 
   LPhForPitcher: 'GET A PINCH HITTER FOR THE PITCHER
-    DumpAll
-    Print #11, "---"
-    Print #11, "LPinchHitter PH for PITCHER - possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
-
     callPinch = 0
     skipLoop = 0
 
@@ -5088,24 +4712,24 @@ LStart: '
         End If 'Done checking of we should skip the loop
 
 
-        If callPinch = 1 Then
+        If callPinch = 1 And gameD0%(P) < 23 Then   '[bm] kludge to avoid array out-of-bounds'
 
             flagPinchHitter = 1
             gameD0%(P) = gameD0%(P) + 1
+            Print #11, "gameD0: "; gameD0%(P)
             X0%(P, 0, gameD0%(P)) = PH%
             X0%(P, 1, gameD0%(P)) = 10
             X0%(P, 2, gameD0%(P)) = 81 + gameD0%(P)
             batRating(P, PH%, 21) = 1
             playerNum%(P, currBatter!(P)) = PH%
 
-            If fldPos%(P, currBatter!(P)) = 1 Or fldPos%(P, currBatter!(P)) = 10 Then playerX%(P, 1) = 99: playerX%(P, 0) = currBatter!(P): fldPos%(P, currBatter!(P)) = 10
+            If fldPos%(P, currBatter!(P)) = 1 Or fldPos%(P, currBatter!(P)) = 10 Then
+                playerX%(P, 1) = 99
+                playerX%(P, 0) = currBatter!(P)
+                fldPos%(P, currBatter!(P)) = 10
+            End If
 
           LPinchHitter: '
-            DumpAll
-            Print #11, "---"
-            Print #11, "LPinchHitter possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-            Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-            Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
             P9 = P
             W5 = P9
             W6 = P9
@@ -5136,11 +4760,6 @@ LStart: '
         End If
 
       LPinchRunner: '
-        DumpAll
-        Print #11, "---"
-        Print #11, "LPinchRunner possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-        Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-        Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
         If flagPinchRunner% <> 1 Then
             Call PINCHRUNNER(MS%, ourLead, baseRunners%, I2, P, flagPinchRunner%, nbrBalls, nbrStrikes, D, MO)
         End If
@@ -5243,11 +4862,6 @@ LStart: '
         End If
 
       LNoSteal:
-        DumpAll
-        Print #11, "---"
-        Print #11, "LNoSteal possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-        Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-        Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
         If Not (baseRunners% = BASE_EMPTY Or nbrOuts(0) > 0 Or baseRunners% = BASE_FULL Or baseRunners% = BASE_2_3 Or baseRunners% = BASE_3 Or baseRunners% = BASE_1_3 Or nbrStrikes = 2 Or P = 0 And INNING% > 7) Then
 
             If fldPos%(P, currBatter!(P)) = 1 And baseRunners% = BASE_1   And nbrOuts(0) < 2 Or _
@@ -5261,11 +4875,6 @@ LStart: '
     End If
 
   LPinchRunner0:
-    DumpAll
-    Print #11, "---"
-    Print #11, "LPinchRunner0 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
     flagPinchHitter = 0
     flagPinchRunner% = 0
 
@@ -5283,20 +4892,10 @@ LStart: '
     '----- NOODLE -----
 
   LPinchRunner1:
-    DumpAll
-    Print #11, "---"
-    Print #11, "LPinchRunner1 possession: D ="; D; ", P ="; P; _IIF(D = 1, "Visiting", "Home") + " batting"
-    Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-    Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
-
     If nbrOuts(0) >= 1 And INNING% >= 7 Then
         GoTo LPinchRunner0
     Else
       LBunt0:
-        Print #11, "---"
-        Print #11, "Goto LBunt0 possession: D ="; D; ", P ="; P
-        Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
-        Print #11, "gameScore ="; gameScore(0,0); gameScore(1,0)
         P2 = 4
         GoTo LBunt
     End If

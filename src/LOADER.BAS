@@ -704,8 +704,6 @@ Sub LOADER
         Next I1
     Next I
 
-    Print #11, "Selecting Stadium"
-
     Call SelectStadium(useVGA)
 
     Call GETWEATHER(windDir, windSpeed, gameMonth, WF!, skyType, gameTemp, rainDelay)
@@ -2026,26 +2024,24 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
                     J = J - 1
                     I2 = 0
                     For I1 = 0 To 22
+                        Print #11, Using "DH_! I2: ##  I1: ##  status: ###  batter: &"; I2, I1, batRating(P9, I1, 21), batters$(P9, I1)
                         If batRating(P9, I1, 21) <= 0 And batters$(P9, I1) <> "XXX" Then
-                            If batRating(P9, I1, SS_B_Pos1) = 0 Then
-                                position(I2, 0) = batRating(P9, I1, SS_B_AB)
-                            Else
-                                If batRating(P9, I1, SS_B_Pos2) = 0 Then
-                                    position(I2, 0) = batRating(P9, I1, SS_B_AB) * .5
-                                Else
-                                    If batRating(P9, I1, SS_B_Pos3) = 0 Then
-                                        position(I2, 0) = batRating(P9, I1, SS_B_AB) * .3
-                                    Else
-                                        If batRating(P9, I1, SS_B_Pos4) = 0 Then
-                                            position(I2, 0) = batRating(P9, I1, SS_B_AB) * .2
-                                        Else
-                                            position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .05 + .5)
-                                        End If
-                                    End If
-                                End If
+
+                            If     batRating(P9, I1, SS_B_Pos1) = 0 Then 
+                                                                        position(I2, 0) = batRating(P9, I1, SS_B_AB)
+                            ElseIf batRating(P9, I1, SS_B_Pos2) = 0 Then 
+                                                                        position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .5  + .5)
+                            ElseIf batRating(P9, I1, SS_B_Pos3) = 0 Then 
+                                                                        position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .3  + .5)
+                            ElseIf batRating(P9, I1, SS_B_Pos4) = 0 Then 
+                                                                        position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .2  + .5)
+                            Else                                         
+                                                                        position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .05 + .5)
                             End If
 
                             position(I2, 1) = I1
+                            Print #11, Using "Player ## could DH, i: ##  p0 = ####  p1 = ####  &"; I1, I, position(I2, 0), position(I2, 1), batters$(P9, I1)
+
                             I2 = I2 + 1
 
                         End If
@@ -2055,51 +2051,50 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
                 End If
             Else
                 'I <> 1
+                ' For each fielding position I (1-9), for each active player who plays that position, and store his
+                ' "normalized" at-bats in position(I2, 0) and the field position # in position(I2, 1)
+
                 For I1 = 0 To 22:
                     If batRating(P9, I1, 21) <= 0 And batters$(P9, I1) <> "XXX" Then
-                        If batRating(P9, I1, SS_B_Pos1) = I And batRating(P9, I1, SS_B_Pos2) = -1 Then
-                            position(I2, 0) = batRating(P9, I1, SS_B_AB):
-                        Else
-                            If batRating(P9, I1, SS_B_Pos1) = I And batRating(P9, I1, SS_B_Pos3) = -1 Then
-                                position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .9 + .5)
-                            Else
-                                If batRating(P9, I1, SS_B_Pos1) = I And batRating(P9, I1, SS_B_Pos4) = -1 Then
-                                    position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .8 + .5)
-                                Else
-                                    If batRating(P9, I1, SS_B_Pos1) = I Then
-                                        position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .7 + .5)
-                                    Else
-                                        If batRating(P9, I1, SS_B_Pos2) = I And batRating(P9, I1, SS_B_Pos3) = -1 Then
-                                            position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .1 + .5)
-                                        Else
-                                            If batRating(P9, I1, SS_B_Pos2) = I And batRating(P9, I1, SS_B_Pos4) = -1 Then
-                                                position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .1 + .5)
-                                            Else
-                                                If batRating(P9, I1, SS_B_Pos2) = I Then
-                                                    position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .1 + .5)
-                                                Else
-                                                    If batRating(P9, I1, SS_B_Pos3) = I And batRating(P9, I1, SS_B_Pos4) = -1 Then
-                                                        position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .1 + .5)
-                                                    Else
-                                                        If batRating(P9, I1, SS_B_Pos3) = I Then
-                                                            position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .1 + .5)
-                                                        Else
-                                                            If batRating(P9, I1, SS_B_Pos4) = I Then
-                                                                position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .1 + .5)
-                                                            End If
-                                                        End If
-                                                    End If
-                                                End If
-                                            End If
-                                        End If
-                                    End If
-                                End If
-                            End If
-                        End If
-                    End If
 
-                    position(I2, 1) = I1
-                    I2 = I2 + 1
+                        If batRating(P9, I1, SS_B_Pos1) = I Then
+                            If     batRating(P9, I1, SS_B_Pos2) = -1 Then 
+                                                                        position(I2, 0) = batRating(P9, I1, SS_B_AB)
+                            ElseIf batRating(P9, I1, SS_B_Pos3) = -1 Then 
+                                                                        position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .9 + .5)
+                            ElseIf batRating(P9, I1, SS_B_Pos4) = -1 Then 
+                                                                        position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .8 + .5)
+                            Else                                          
+                                                                        position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .7 + .5)
+                            End If
+
+                        ElseIf batRating(P9, I1, SS_B_Pos2) = I Then
+                            If     batRating(P9, I1, SS_B_Pos3) = -1 Then 
+                                                                        position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .1 + .5)
+                            ElseIf batRating(P9, I1, SS_B_Pos4) = -1 Then 
+                                                                        position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .1 + .5)
+                            Else                                          
+                                                                        position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .1 + .5)
+                            End If
+
+                        ElseIf batRating(P9, I1, SS_B_Pos3) = I Then
+                            If     batRating(P9, I1, SS_B_Pos4) = -1 Then     
+                                                                        position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .1 + .5)
+                            Else                                          
+                                                                        position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .1 + .5)
+                            End If
+
+                        ElseIf batRating(P9, I1, SS_B_Pos4) = I Then      
+                                                                        position(I2, 0) = Int(batRating(P9, I1, SS_B_AB) * .1 + .5)
+                        End If
+
+                        position(I2, 1) = I1
+
+                        ' Print #11, Using "Player ##: & could play position ##  p0 = ####  p1 = ####"; I1, batters$(P9, I1), I, position(I2, 0), position(I2, 1)
+    
+                        I2 = I2 + 1
+    
+                    End If
 
                 Next I1
 
@@ -2110,24 +2105,52 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
 
             For I1 = 0 To I2
                 AB% = AB% + position(I1, 0)
+                
+                ' Print #11, Using "I: ##  I2: ##  I1: ##  AB: ####  batter: &"; _
+                '     I, I2, I1, AB%, _IIF( position(I1, 1) >= 0, batters$(P9, position(I1, 1)), "???" )
             Next
+
+            ' Print #11,
+            ' For I1 = 0 To 22
+                ' Print #11, Using "I: ##  I2: ##  I1: ##  pos0: ####  pos1: ####  AB: ####  batter: &"; _
+                '     I, I2, I1, position(I1, 0), position(I1, 1), AB%, _IIF( position(I1, 1) >= 0, batters$(P9, position(I1, 1)), "???" )
+            ' Next
+            ' Print #11,
 
             'I2 = 4
             'AB% = 630
             RN = Int(Rnd(1) * AB%) + 1
 
+            ' Print #11, "---"
+
+            ' For each fielding position I (1-9), find a position(I1, 0) [i.e., at-bats] value that is above the random threshold, and 
+            ' assign the player to that position
+
+            lineupDone% = 0
             For I1 = 0 To I2
                 If RN <= position(I1, 0) Then
                     F(J) = position(I1, 1)
                     batRating(P9, position(I1, 1), 21) = 1
                     lineupDone% = 1
+
+                    ' Print #11, Using "Found xxx I: ##  J: ##  I2: ##  I1: ##  pos0: ####  pos1: ####  AB: ####  RN: ####  batter: &"; _
+                    '     I, J, I2, I1, position(I1, 0), position(I1, 1), AB%, RN, batters$(P9, position(I1, 1))
+                    Exit For
                 Else
                     position(I1 + 1, 0) = position(I1 + 1, 0) + position(I1, 0)
+
+                    ' Print #11, Using "NOT Found I: ##  J: ##  I2: ##  I1: ##  pos0: ####  pos1: ####  AB: ####  RN: ####  batter: &"; _
+                    '     I, J, I2, I1, position(I1, 0), position(I1, 1), AB%, RN, batters$(P9, position(I1, 1))
                 End If
+
+                ' Print #11, Using "AB: ####  RN: ####  I1: ##  I2: ##  pos0: ####  pos1: ####  pos11: ####  J: ##  FJ: ####  batter: &  lineupDone: ##"; _
+                '     AB%, RN, I1, I2, position(I1, 0), position(I1+1, 0), position(I1, 1), J, F(J), batters$(P9, I1), lineupDone%
             Next I1
+            ' Print #11, "---"
 
             If lineupDone% <> 1 Then
                 Locate 25, 1: Print "CANNOT MAKE A LINEUP!!...";
+                Print #11, "CANNOT MAKE A LINEUP!!..."
                 noLineups = 1
                 'reselect = 1
 

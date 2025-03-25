@@ -87,6 +87,8 @@ Sub Hd2Hd_League (LG$, sameLeague)
 
     Shared D1$, D2$, D3$, D4$
 
+    Shared oppName$(), losePitcher$(), locIndicator$(), winPitcher$()
+
     Do
 
         teamNbr = 0
