@@ -359,7 +359,7 @@ Sub DisplayBallField_Gfx (BC%, p, nbrStrikes, D)
     'Catcher
     _PutImage (35 * FontColAdj, 416)-Step(13 * FontColAdj, 32), backupScreen&, imageScreen&, (35 * FontColAdj, 416)-Step(13 * FontColAdj, 32)
 
-    player$ = Left$(batters$(D, playerX%(D, POS_CF)), 11)
+    player$ = Left$(batters$(D, fielder%(D, POS_CF)), 11)
     player$ = PadRight(player$, 11)
 
     'Print all positions around the diamond
@@ -372,132 +372,132 @@ Sub DisplayBallField_Gfx (BC%, p, nbrStrikes, D)
     PrintOnGfx 36, 14, player$, imageScreen&
 
     'Center Field Stats
-    If batRating(D, playerX%(D, POS_CF), 19) = 1000 Then
+    If batRating(D, fielder%(D, POS_CF), 19) = 1000 Then
         fldPct$ = "1.000"
     Else
-        If batRating(D, playerX%(D, POS_CF), 19) = 0 Then
+        If batRating(D, fielder%(D, POS_CF), 19) = 0 Then
             fldPct$ = " .000"
         Else
-            fldPct$ = "." + FUsing$(Str$(batRating(D, playerX%(D, POS_CF), 19)), "###", 1)
+            fldPct$ = "." + FUsing$(Str$(batRating(D, fielder%(D, POS_CF), 19)), "###", 1)
         End If
     End If
 
-    player$ = "A" + FUsing$(Str$(batRating(D, playerX%(D, POS_CF), 15)), "#", 1) + " R" + FUsing$(Str$(batRating(D, playerX%(D, POS_CF), 17)), "#", 1) + " F" + fldPct$
+    player$ = "A" + FUsing$(Str$(batRating(D, fielder%(D, POS_CF), 15)), "#", 1) + " R" + FUsing$(Str$(batRating(D, fielder%(D, POS_CF), 17)), "#", 1) + " F" + fldPct$
     PrintOnGfx 36, 15, player$, imageScreen&
 
     'Left Field Name
-    player$ = Left$(batters$(D, playerX%(D, POS_LF)), 10)
+    player$ = Left$(batters$(D, fielder%(D, POS_LF)), 10)
     player$ = PadRight(player$, 10)
     PrintOnGfx 7, 16, player$, imageScreen&
 
     'Left Field Stats
-    If batRating(D, playerX%(D, POS_LF), 19) = 1000 Then
+    If batRating(D, fielder%(D, POS_LF), 19) = 1000 Then
         fldPct$ = "1.000"
     Else
-        If batRating(D, playerX%(D, POS_LF), 19) = 0 Then
+        If batRating(D, fielder%(D, POS_LF), 19) = 0 Then
             fldPct$ = " .000"
         Else
-            fldPct$ = "." + FUsing$(Str$(batRating(D, playerX%(D, POS_LF), 19)), "###", 1)
+            fldPct$ = "." + FUsing$(Str$(batRating(D, fielder%(D, POS_LF), 19)), "###", 1)
         End If
     End If
 
-    player$ = "A" + FUsing$(Str$(batRating(D, playerX%(D, POS_LF), 15)), "#", 1) + " R" + FUsing$(Str$(batRating(D, playerX%(D, POS_LF), 17)), "#", 1) + " F" + fldPct$
+    player$ = "A" + FUsing$(Str$(batRating(D, fielder%(D, POS_LF), 15)), "#", 1) + " R" + FUsing$(Str$(batRating(D, fielder%(D, POS_LF), 17)), "#", 1) + " F" + fldPct$
     PrintOnGfx 7, 17, player$, imageScreen&
 
     'Right Field Name
-    player$ = Left$(batters$(D, playerX%(D, POS_RF)), 10)
+    player$ = Left$(batters$(D, fielder%(D, POS_RF)), 10)
     player$ = PadRight(player$, 10)
     PrintOnGfx 64, 16, player$, imageScreen&
 
     'Right Field Stats
-    If batRating(D, playerX%(D, POS_RF), 19) = 1000 Then
+    If batRating(D, fielder%(D, POS_RF), 19) = 1000 Then
         fldPct$ = "1.000"
     Else
-        If batRating(D, playerX%(D, POS_RF), 19) = 0 Then
+        If batRating(D, fielder%(D, POS_RF), 19) = 0 Then
             fldPct$ = " .000"
         Else
-            fldPct$ = "." + FUsing$(Str$(batRating(D, playerX%(D, POS_RF), 19)), "###", 1)
+            fldPct$ = "." + FUsing$(Str$(batRating(D, fielder%(D, POS_RF), 19)), "###", 1)
         End If
     End If
 
-    player$ = "A" + FUsing$(Str$(batRating(D, playerX%(D, POS_RF), 15)), "#", 1) + " R" + FUsing$(Str$(batRating(D, playerX%(D, POS_RF), 17)), "#", 1) + " F" + fldPct$
+    player$ = "A" + FUsing$(Str$(batRating(D, fielder%(D, POS_RF), 15)), "#", 1) + " R" + FUsing$(Str$(batRating(D, fielder%(D, POS_RF), 17)), "#", 1) + " F" + fldPct$
     PrintOnGfx 64, 17, player$, imageScreen&
 
     'Short Stop Name
-    player$ = Left$(batters$(D, playerX%(D, POS_SS)), 10)
+    player$ = Left$(batters$(D, fielder%(D, POS_SS)), 10)
     player$ = PadRight(player$, 10)
     PrintOnGfx 28, 17, player$, imageScreen&
 
     'Short Stop Stats
-    If batRating(D, playerX%(D, POS_SS), 19) = 1000 Then
+    If batRating(D, fielder%(D, POS_SS), 19) = 1000 Then
         fldPct$ = "1.000"
     Else
-        If batRating(D, playerX%(D, POS_SS), 19) = 0 Then
+        If batRating(D, fielder%(D, POS_SS), 19) = 0 Then
             fldPct$ = " .000"
         Else
-            fldPct$ = "." + FUsing$(Str$(batRating(D, playerX%(D, POS_SS), 19)), "###", 1)
+            fldPct$ = "." + FUsing$(Str$(batRating(D, fielder%(D, POS_SS), 19)), "###", 1)
         End If
     End If
 
-    player$ = "R" + FUsing$(Str$(batRating(D, playerX%(D, POS_SS), 17)), "#", 1) + " F" + fldPct$
+    player$ = "R" + FUsing$(Str$(batRating(D, fielder%(D, POS_SS), 17)), "#", 1) + " F" + fldPct$
     PrintOnGfx 28, 18, player$, imageScreen&
 
     '2nd Base Name
-    player$ = Left$(batters$(D, playerX%(D, POS_2B)), 10)
+    player$ = Left$(batters$(D, fielder%(D, POS_2B)), 10)
     player$ = PadRight(player$, 10)
     PrintOnGfx 46, 17, player$, imageScreen&
 
     '2nd Base Stats
-    If batRating(D, playerX%(D, POS_2B), 19) = 1000 Then
+    If batRating(D, fielder%(D, POS_2B), 19) = 1000 Then
         fldPct$ = "1.000"
     Else
-        If batRating(D, playerX%(D, POS_2B), 19) = 0 Then
+        If batRating(D, fielder%(D, POS_2B), 19) = 0 Then
             fldPct$ = " .000"
         Else
-            fldPct$ = "." + FUsing$(Str$(batRating(D, playerX%(D, POS_2B), 19)), "###", 1)
+            fldPct$ = "." + FUsing$(Str$(batRating(D, fielder%(D, POS_2B), 19)), "###", 1)
         End If
     End If
 
-    player$ = "R" + FUsing$(Str$(batRating(D, playerX%(D, POS_2B), 17)), "#", 1) + " F" + fldPct$
+    player$ = "R" + FUsing$(Str$(batRating(D, fielder%(D, POS_2B), 17)), "#", 1) + " F" + fldPct$
     PrintOnGfx 46, 18, player$, imageScreen&
 
     '3rd Base Name
-    player$ = Left$(batters$(D, playerX%(D, POS_3B)), 10)
+    player$ = Left$(batters$(D, fielder%(D, POS_3B)), 10)
     player$ = PadRight(player$, 10)
     PrintOnGfx 13, 19, player$, imageScreen&
 
     '3rd Base Stats
-    If batRating(D, playerX%(D, POS_3B), 19) = 1000 Then
+    If batRating(D, fielder%(D, POS_3B), 19) = 1000 Then
         fldPct$ = "1.000"
     Else
-        If batRating(D, playerX%(D, POS_3B), 19) = 0 Then
+        If batRating(D, fielder%(D, POS_3B), 19) = 0 Then
             fldPct$ = " .000"
         Else
 
-            fldPct$ = "." + FUsing$(Str$(batRating(D, playerX%(D, POS_3B), 19)), "###", 1)
+            fldPct$ = "." + FUsing$(Str$(batRating(D, fielder%(D, POS_3B), 19)), "###", 1)
         End If
     End If
 
-    player$ = "R" + FUsing$(Str$(batRating(D, playerX%(D, POS_3B), 17)), "#", 1) + " F" + fldPct$
+    player$ = "R" + FUsing$(Str$(batRating(D, fielder%(D, POS_3B), 17)), "#", 1) + " F" + fldPct$
     PrintOnGfx 13, 20, player$, imageScreen&
 
     '1st Base Name
-    player$ = Left$(batters$(D, playerX%(D, POS_1B)), 10)
+    player$ = Left$(batters$(D, fielder%(D, POS_1B)), 10)
     player$ = PadRight(player$, 10)
     PrintOnGfx 61, 19, player$, imageScreen&
 
     '1st Base Stats
-    If batRating(D, playerX%(D, POS_P), 19) = 1000 Then
+    If batRating(D, fielder%(D, POS_1B), 19) = 1000 Then
         fldPct$ = "1.000"
     Else
-        If batRating(D, playerX%(D, POS_P), 19) = 0 Then
+        If batRating(D, fielder%(D, POS_1B), 19) = 0 Then
             fldPct$ = " .000"
         Else
-            fldPct$ = "." + FUsing$(Str$(batRating(D, playerX%(D, POS_P), 19)), "###", 1)
+            fldPct$ = "." + FUsing$(Str$(batRating(D, fielder%(D, POS_1B), 19)), "###", 1)
         End If
     End If
 
-    player$ = "R" + FUsing$(Str$(batRating(D, playerX%(D, POS_1B), 17)), "#", 1) + " F" + fldPct$
+    player$ = "R" + FUsing$(Str$(batRating(D, fielder%(D, POS_1B), 17)), "#", 1) + " F" + fldPct$
     PrintOnGfx 61, 20, player$, imageScreen&
 
     'Pitcher Name
@@ -521,9 +521,9 @@ Sub DisplayBallField_Gfx (BC%, p, nbrStrikes, D)
     PrintOnGfx 35, 22, player$, imageScreen&
 
     'Catcher Name
-    player$ = Left$(batters$(D, playerX%(D, POS_C)), 10)
+    player$ = Left$(batters$(D, fielder%(D, POS_C)), 10)
     player$ = PadRight(player$, 10)
-    player$ = player$ + "A" + FUsing$(Str$(batRating(D, playerX%(D, POS_C), 15)), "#", 1)
+    player$ = player$ + "A" + FUsing$(Str$(batRating(D, fielder%(D, POS_C), 15)), "#", 1)
     PrintOnGfx 35, 26, player$, imageScreen&
 
     'Printing white on black

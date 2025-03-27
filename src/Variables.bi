@@ -274,16 +274,14 @@ Dim actualAttendance&, avgAttendance&
 'Used by POSTGAME
 Dim DB, HR, TR, SB
 Dim eventNbr
-Dim BP(0 To 9), F(0 To 9)
+Dim fldNo(0 To 9), gameF(0 To 9)
 
-Dim B6%(22, 21), BB%(0 To 9)
+Dim B6%(22, 21), playNo%(0 To 9)
 Dim gameD1%(1), daysRest(0 To 1, 0 To 21)
 
 Dim gameT1%(0 To 1), triplePlayAdj(0 To 11, 0 To 2)
 Dim mgrFile(1)
 Dim startPitcher(1), SX%(0 To 1)
-
-Dim E!
 
 Dim grounderDir$(10), PT$(1)
 
@@ -315,7 +313,7 @@ Dim SU(1, 1)
 
 Dim Shared A5%(0 To 3), assigned(1 To 9)
 Dim Shared B1%(3, 1), B2%(1, 22), playerNum%(0 To 1, 0 To 9), liveBatRating%(1, 7, 9), statBatterLeague%(0 To 1, 0 To 22, 0 To 21)
-Dim Shared fldPos%(0 To 1, 0 To 9), statBatterGame%(0 To 1, 0 To 22, 0 To 21), playerX%(1, 10), BT%(0 To 1, 1 To 9, 1 To 9)
+Dim Shared fldPos%(0 To 1, 0 To 9), statBatterGame%(0 To 1, 0 To 22, 0 To 21), fielder%(1, 10), BT%(0 To 1, 1 To 9, 1 To 9)
 Dim Shared CF%(0 To 9, 0 To 2), CSS%(1, 22, 6), D3%(1), DP%(1)
 Dim Shared gameBaserunners%(0 To 3, 0 To 2), gameD0%(1), gameM%(0 To 9), gameSA%(1, 24), gameScore(1, 2)
 Dim Shared GK%(1), H0%(1), injuryStatus(0 To 1, 0 To 22), L0%(1), LB%(9, 1)
