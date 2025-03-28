@@ -67,8 +67,14 @@ Sub SOURCE ()
     End If
 
     'Check scores / innings
+    ' If we're in extra innings and the visiting team is coming to bat in the top of the inning
+    ' or we're going into the 23rd inning,
+    ' or we're in the 9th inning or later and the home team is coming to bat with a lead,
+    ' then the game is over.
     '------------------------------
-    If INNING% > 9 And D = 1 And gameScore(1, 0) <> gameScore(0, 0) Or INNING% = 28 Or INNING% >= 9 And P = 1 And gameScore(P, 0) - gameScore(D, 0) > 0 Then
+    If INNING% > 9 And D = 1 And gameScore(1, 0) <> gameScore(0, 0) _
+      Or INNING% >= 23 _
+      Or INNING% >= 9 And P = 1 And gameScore(1, 0) > gameScore(0, 0) Then
         'After 9th inning, score not tied, etc..
         'End of game!
         GoTo LGameOver
@@ -986,11 +992,6 @@ Sub SOURCE ()
     infPosFactor = 0
     dice1000% = Int(Rnd(1) * 1000) + 1
 
-    ' shuffle% = Int(Rnd(1) * 5) + 1
-    ' For iBM% = 1 To shuffle%
-    '     dice1000% = Int(Rnd(1) * 1000) + 1  'todo [bm] do we need to shuffle the dice to ensure Visitor BB's occur?'
-    ' Next
-
     If nbrOuts(0) = 0 And baseRunners% = BASE_1_2 And INFPOS% < INF_INFIELD_IN And dice1000% = 768 _
     Or nbrOuts(0) = 0 And baseRunners% = BASE_1_2 And INFPOS% < INF_INFIELD_IN And dice1000% = 123 _
     Or nbrOuts(0) = 0 And baseRunners% = BASE_FULL And INFPOS% < INF_INFIELD_IN And dice1000% = 245 _
@@ -1234,6 +1235,8 @@ Sub SOURCE ()
         GoTo LDrawnInInfield
     End If
 
+    If fatigue > 2 Then Print #11, "Pitcher fatigue is:"; fatigue
+
     If dice1000% > liveBatRating%(P, LIVE_BAvg, currBatter!(P)) + fatigue Then   ' *** check for strikeout ***
       Z_Out: ' just a marker label for the Out section
 
@@ -1250,7 +1253,7 @@ Sub SOURCE ()
 
             E2% = batRating(P, playerNum%(P, currBatter!(P)), SS_B_GndPct) + pitchRating(D, currPitcher%(D), SS_P_GndPct)- 52
             E3% = 23 + pitchRating(D, currPitcher%(D), SS_B_GndPct)
-            E4% = 0 '[bm] 0 = groundball, 1 = flyball'
+            E4% = 0 '0 = groundball, 1 = flyball'
 
             If dice1000% > E2% And fldPos%(P, currBatter!(P)) <> 1 Then E4% = 1
             If dice1000% > E3% And fldPos%(P, currBatter!(P)) =  1 Then E4% = 1
@@ -4560,6 +4563,7 @@ Sub SOURCE ()
                                 MG%(P, I1 + 540) = -1
 
                                 Print #11, "PH for position player scenario #1, I ="; I
+
                                 Goto LPhForPosContinue
                             End If
                         Else
@@ -4577,6 +4581,8 @@ Sub SOURCE ()
 
     End If
 
+    If INNING% < 6 Then Goto LPinchRunner   ' [bm] KLUDGE: Don't pinch hit for a position player in the first 5 innings
+
     For I = 0 To 22:
 
         If batRating(P, I, 21) <= 0 And batters$(P, I) <> "XXX" And batRating(P, I, SS_B_AB) <> 0 Then
@@ -4592,22 +4598,28 @@ Sub SOURCE ()
 
                 ' Pitcher and PH both righty
                 If pitchRating(D, currPitcher%(D), SS_P_Throws) =  1 And batRating(P, I, SS_B_Bats) > 0 And pinchBAvg > battrBAvg + 35 Then
+
                     Print #11, Using "PH for position player scenario 2, batAvg = ####.#  pinchAvg = ####.#  abRand = ###.#  pinchAB = ###  rosterNum = ##"; _
                         battrBAvg, pinchBAvg, abRand, batRating(P, I,  SS_B_AB), I
+
                     If abRand < batRating(P, I,  SS_B_AB) Then Goto LPhForPosContinue
                 End If
 
                 ' Pitcher and PH both lefty
                 If pitchRating(D, currPitcher%(D), SS_P_Throws) = -1 And batRating(P, I, SS_B_Bats) < 0 And pinchBAvg > battrBAvg + 45 Then
+
                     Print #11, Using "PH for position player scenario 3, batAvg = ####.#  pinchAvg = ####.#  abRand = ###.#  pinchAB = ###  rosterNum = ##"; _
                         battrBAvg, pinchBAvg, abRand, batRating(P, I,  SS_B_AB), I
+
                     If abRand < batRating(P, I,  SS_B_AB) Then Goto LPhForPosContinue
                 End If
 
                 ' PH is switch hitter
                 If batRating(P, I, SS_B_Bats) = 0 And pinchBAvg > battrBAvg + 30 Then
+
                     Print #11, Using "PH for position player scenario 4, batAvg = ####.#  pinchAvg = ####.#  abRand = ###.#  pinchAB = ###  rosterNum = ##"; _
                         battrBAvg, pinchBAvg, abRand, batRating(P, I,  SS_B_AB), I
+
                     If abRand < batRating(P, I,  SS_B_AB) Then Goto LPhForPosContinue
                 End If
 
@@ -4719,6 +4731,7 @@ Sub SOURCE ()
 
         End If 'Done checking of we should skip the loop
 
+        If gameD0%(P) >= 23 Then Print #11, "WARNING!! gameD0%(P) >= 23 in LPhForPitcher:"; gameD0%(P)
 
         If callPinch = 1 And gameD0%(P) < 23 Then   '[bm] kludge to avoid array out-of-bounds'
 

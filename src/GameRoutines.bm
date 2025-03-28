@@ -3196,7 +3196,7 @@ Sub PITSTRAT (flagPinchHitter, pz)
                     If baseRunners% > BASE_EMPTY And baseRunners% < BASE_1_2  And ourLead <= 3 Then saveOpp% = 1
                     If baseRunners% > BASE_3     And baseRunners% < BASE_FULL And ourLead <= 4 Then saveOpp% = 1
                     If baseRunners% = BASE_FULL                               And ourLead <= 5 Then saveOpp% = 1
-                    If baseRunners% = BASE_EMPTY And nbrOuts(0) = 0 And ourLead <= 3 Then saveOpp% = 1
+                    If baseRunners% = BASE_EMPTY And nbrOuts(0) = 0           And ourLead <= 3 Then saveOpp% = 1
 
                     If currBatter!(P) <= 7 Then For pIdx = 0 To 2: I3 = I3 + batRating(P, playerNum%(P, currBatter!(P) + pIdx), 0): Next
                     If currBatter!(P) =  8 Then For pIdx = 0 To 1: I3 = I3 + batRating(P, playerNum%(P, currBatter!(P) + pIdx), 0): Next : I3 = I3 + batRating(P, playerNum%(P, 1), 0)
@@ -4060,7 +4060,8 @@ End Sub
 'active batter
 Sub DISPBAVG (D)
 
-    If INNING% > 5 And stamina%(D, 0) < statPitcherGame%(D, currPitcher%(D), LG_P_BB) + statPitcherGame%(D, currPitcher%(D), LG_P_H) And stamina%(D, LG_P_H) < statPitcherGame%(D, currPitcher%(D), LG_P_R) Then
+    If INNING% > 5 And stamina%(D, 0) < statPitcherGame%(D, currPitcher%(D), LG_P_BB) + statPitcherGame%(D, currPitcher%(D), LG_P_H) _
+                   And stamina%(D, 1) < statPitcherGame%(D, currPitcher%(D), LG_P_R) Then
         Locate 10, 17
         Color 30, 0: Print "-T-"    '[bm] tired pitcher'
         Color 15, 0
@@ -4391,7 +4392,6 @@ Sub HITTINGLINES
             If gameTS%(side, 0) = 999 And batRating(side, playerNum%(side, lineup), 80) <> 0 Then I6! = gameSA%(side, TY% * 6 + 1) / 1000
 
             I2! = i9!
-            ' oldBAvg% = liveBatRating%(side, LIVE_BAvg, lineup)  'todo remove [bm]'
             If batRating(side, playerNum%(side, lineup), SS_B_AB) = 0 Then
                 oldBAvg! = 0
             Else
@@ -4628,7 +4628,7 @@ Sub BASEONBALLS (S2%, D2, D, P)
     Else
         Call INCPITOFF(P, currPitcher%(P), 30)
     End If
-    Call ADDPIT(D, currPitcher%(D), LG_P_BB)  '[bm]'
+    Call ADDPIT(D, currPitcher%(D), LG_P_BB)
 
     Call d100(BV)
     Call d100(RN)
@@ -7531,6 +7531,11 @@ Sub EVENTS (specialCount, specialStat)
                         Exit For
                     End If
 
+                    If statBatterGame%(I, I1, 7) > 3 Or statBatterGame%(I, I1, 8) > 3 Or statBatterGame%(I, I1, 11) > 2 Then
+                        checkSpecial% = 1
+                        Exit For
+                    End If
+
                     If checkSpecial% = 1 Then Exit For
 
                 Next
@@ -9674,46 +9679,46 @@ Sub BOX2SPC (boxName$)
 
     Print #2,
 
-    If INNING% > eventSettings(1) Then Print #2, Using "MORE THAN ## INNINGS"; eventSettings(1)
+    If INNING% > eventSettings(1) Then Print #2, Using "MORE THAN ## INNINGS : ##"; eventSettings(1), INNING%
 
     If gameScore(1, 0) < eventSettings(2) Then
         Print #2, gameTeams$(1);
-        Print #2, Using " SCORED LESS THAN ## RUN(S)"; eventSettings(2)
+        Print #2, Using " SCORED LESS THAN ## RUN(S) : ##"; eventSettings(2), gameScore(1, 0)
     End If
 
     If gameScore(0, 0) < eventSettings(2) Then
         Print #2, gameTeams$(0);
-        Print #2, Using " SCORED LESS THAN ## RUN(S)"; eventSettings(2)
+        Print #2, Using " SCORED LESS THAN ## RUN(S) : ##"; eventSettings(2), gameScore(0, 0)
     End If
 
     If gameScore(1, 0) > eventSettings(3) Then
         Print #2, gameTeams$(1);
-        Print #2, Using " SCORED MORE THAN ## RUN(S)"; eventSettings(3)
+        Print #2, Using " SCORED MORE THAN ## RUN(S) : ##"; eventSettings(3), gameScore(1, 0)
     End If
 
     If gameScore(0, 0) > eventSettings(3) Then
         Print #2, gameTeams$(0);
-        Print #2, Using " SCORED MORE THAN ## RUN(S)"; eventSettings(3)
+        Print #2, Using " SCORED MORE THAN ## RUN(S) : ##"; eventSettings(3), gameScore(0, 0)
     End If
 
     If gameScore(1, 1) > eventSettings(5) Then
         Print #2, gameTeams$(1);
-        Print #2, Using " HAD MORE THAN ## HIT%(S)"; eventSettings(5)
+        Print #2, Using " HAD MORE THAN ## HIT(S) : ##"; eventSettings(5), gameScore(1, 1)
     End If
 
     If gameScore(0, 1) > eventSettings(5) Then
         Print #2, gameTeams$(0);
-        Print #2, Using " HAD MORE THAN ## HIT%(S)"; eventSettings(5)
+        Print #2, Using " HAD MORE THAN ## HIT(S) : ##"; eventSettings(5), gameScore(0, 1)
     End If
 
     If gameScore(1, 1) < eventSettings(4) Then
         Print #2, gameTeams$(1);
-        Print #2, Using " HAD LESS THAN ## HIT%(S)"; eventSettings(4)
+        Print #2, Using " HAD LESS THAN ## HIT(S) : ##"; eventSettings(4), gameScore(1, 1)
     End If
 
     If gameScore(0, 1) < eventSettings(4) Then
         Print #2, gameTeams$(0);
-        Print #2, Using " HAD LESS THAN ## HIT%(S)"; eventSettings(4)
+        Print #2, Using " HAD LESS THAN ## HIT(S) : ##"; eventSettings(4), gameScore(0, 1)
     End If
 
     For I = 0 To 1
@@ -9722,39 +9727,53 @@ Sub BOX2SPC (boxName$)
 
             If statBatterGame%(I, I1, 1) > eventSettings(6) Then
                 Print #2, batters$(I, I1);
-                Print #2, Using " HAD MORE THAN ## HIT%(S)"; eventSettings(6)
+                Print #2, Using " HAD MORE THAN ## HIT%(S) : ##"; eventSettings(6), statBatterGame%(I, I1, 1)
             End If
 
             If statBatterGame%(I, I1, 2) > eventSettings(7) Then
                 Print #2, batters$(I, I1);
-                Print #2, Using " SCORED MORE THAN ## RUN(S)"; eventSettings(7)
+                Print #2, Using " SCORED MORE THAN ## RUN(S) : ##"; eventSettings(7), statBatterGame%(I, I1, 2)
             End If
 
             If statBatterGame%(I, I1, 3) > eventSettings(8) Then
                 Print #2, batters$(I, I1);
-                Print #2, Using " HAD MORE THAN ## RBI(S)"; eventSettings(8)
+                Print #2, Using " HAD MORE THAN ## RBI(S) : ##"; eventSettings(8), statBatterGame%(I, I1, 3)
             End If
 
             If statBatterGame%(I, I1, 4) > eventSettings(9) Then
                 Print #2, batters$(I, I1);
-                Print #2, Using " HIT MORE THAN ## DOUBLES(S)"; eventSettings(9)
+                Print #2, Using " HIT MORE THAN ## DOUBLES(S) : ##"; eventSettings(9), statBatterGame%(I, I1, 4)
             End If
 
             If statBatterGame%(I, I1, 5) > eventSettings(10) Then
                 Print #2, batters$(I, I1);
-                Print #2, Using " HIT MORE THAN ## TRIPLE(S)"; eventSettings(10)
+                Print #2, Using " HIT MORE THAN ## TRIPLE(S) : ##"; eventSettings(10), statBatterGame%(I, I1, 5)
             End If
 
             If statBatterGame%(I, I1, 6) > eventSettings(11) Then
                 Print #2, batters$(I, I1);
-                Print #2, Using " HOMERED MORE THAN ## TIME(S)"; eventSettings(11)
+                Print #2, Using " HOMERED MORE THAN ## TIME(S) : ##"; eventSettings(11), statBatterGame%(I, I1, 6)
             End If
 
             If statBatterGame%(I, I1, 9) > eventSettings(12) Then
                 Print #2, batters$(I, I1);
-                Print #2, Using " STOLE MORE THAN ## BASE(S)"; eventSettings(12)
+                Print #2, Using " STOLE MORE THAN ## BASE(S) : ##"; eventSettings(12), statBatterGame%(I, I1, 9)
             End If
 
+            If statBatterGame%(I, I1, 7) > 3 Then   '[bm] todo change these to actual parameters
+                Print #2, batters$(I, I1);
+                Print #2, Using " WALKED ## TIMES"; statBatterGame%(I, I1, 7)
+            End If
+
+            If statBatterGame%(I, I1, 8) > 3 Then
+                Print #2, batters$(I, I1);
+                Print #2, Using " STRUCK OUT ## TIMES"; statBatterGame%(I, I1, 8)
+            End If
+
+            If statBatterGame%(I, I1, 11) > 2 Then
+                Print #2, batters$(I, I1);
+                Print #2, Using " MADE ## ERRORS"; statBatterGame%(I, I1, 11)
+            End If
         Next
 
     Next
@@ -9763,7 +9782,7 @@ Sub BOX2SPC (boxName$)
         For I1 = 0 To 21
             If statPitcherGame%(I, I1, LG_P_K) > eventSettings(13) Then
                 Print #2, pitchers$(I, I1);
-                Print #2, Using " STRUCK OUT MORE THAN ## BATTER(S)"; eventSettings(13)
+                Print #2, Using " STRUCK OUT MORE THAN ## BATTER(S) : ##"; eventSettings(13), statPitcherGame%(I, I1, LG_P_K)
             End If
         Next
     Next
