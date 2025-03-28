@@ -491,13 +491,13 @@ Sub NewStandings_Report (printDest, destFile$, league$)
                     Print #1, Tab(75); Using "##"; lastTenWins(I);: Print #1, Tab(78); Using "##"; lastTenLosses(I)
 
                 End If
-                
-            End If
 
-        Next
+            Next I
 
-        Print #1,
-        Print #1,
+            Print #1,
+            Print #1,
+
+        End If
 
     Next NT
 

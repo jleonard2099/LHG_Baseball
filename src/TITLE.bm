@@ -28,8 +28,7 @@ End Sub
 '       TITLE_EDITSTATS Subroutine
 '----------------------------------------
 ' Displays window title / game copyright
-Sub TITLE_EDITSTATS ()
-'Sub Title_EDITSTATS (titleType, subtitle$)
+Sub Title_EDITSTATS (titleType, subtitle$)
 
     Color 12, 1
 
@@ -37,16 +36,14 @@ Sub TITLE_EDITSTATS ()
     Print Tab(80); " ";
 
     Color 14
-    Locate , 28
-    Print "EDIT COMPILED STATISTICS"
 
-    'If (titleType = 1) Then
-    '    Locate , 28
-    '    Print "EDIT COMPILED STATISTICS"
-    'Else
-    '    Locate , Int(80 - Len(X$)) / 2
-    '    Print subtitle$
-    'End If
+    If (titleType = 1) Then
+        Locate , 28
+        Print "EDIT COMPILED STATISTICS"
+    Else
+        Locate , Int(80 - Len(subtitle$)) / 2
+        Print subtitle$
+    End If
 
     Locate LAST_ROW, 1
     Print Tab(80); " ";

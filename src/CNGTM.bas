@@ -132,11 +132,15 @@ Sub PrintTeamStats (printDest, destFile$, targetTeam$)
 
             Print #1, Left$(batterNames$(I), 12); Tab(13);
 
-            If batterRatings(I, 0) = 0 Then Print #1, "S  ";
-            If batterRatings(I, 0) = -1 Then Print #1, "L  ";
-            If batterRatings(I, 0) = 1 Then Print #1, "R  ";
-            If batterRatings(I, 0) = -2 Then Print #1, "LP ";
-            If batterRatings(I, 0) = 2 Then Print #1, "RP ";
+            Select Case batterRatings(I, 0)
+                
+                Case 0: Print #1, "S  ";
+                Case -1: Print #1, "L  ";
+                Case 1: Print #1, "R  ";
+                Case -2: Print #1, "LP ";
+                Case 2: Print #1, "RP ";
+
+            End Select
 
             Print #1, Using "### ### ### ### ## ## ## ### ### ### ### ##  "; batterRatings(I, 3); batterRatings(I, 4); batterRatings(I, 5); batterRatings(I, 6); batterRatings(I, 7); batterRatings(I, 8); batterRatings(I, 9); batterRatings(I, 10); batterRatings(I, 11); batterRatings(I, 12); batterRatings(I, 13); batterRatings(I, 14);
 
@@ -330,32 +334,42 @@ Sub ViewRoster (targetTeam$)
     Do
 
         Cls
+
+        Locate 2, 1
+        Print "TEAM ROSTER FOR ";
+        Color teamRatings(11), teamRatings(12): Print targetTeam$
+
+        Locate 4, 1
         Color 12: Print "TEAM OPTIONS"
-        Print
+
+        Locate 6, 1
         Color 14: Print "(1) ";
         Color 15: Print "VIEW HITTERS"
-        Print
+
+        Locate 8, 1
         Color 14: Print "(2) ";
         Color 15: Print "VIEW PITCHERS"
-        Print
+
+        Locate 10, 1
         Color 14: Print "(3) ";
         Color 15: Print "VIEW PITCHERS HITTING/FLDG STATS"
-        Print
+
+        Locate 12, 1
         Color 14: Print "(4) ";
         Color 15: Print "RETURN TO MAIN MENU"
 
         Do
-            I$ = GetKeyPress$
-            I = Val(I$)
+            Locate 14, 1
+            Input "SELECT AN OPTION"; I
         Loop Until I >= 1 And I <= 4
 
         Select Case I
 
             Case 1:
-                Call ViewHitters (T$)
+                Call ViewHitters (targetTeam$)
 
             Case 2:
-                Call ViewPitchers (T$)
+                Call ViewPitchers (targetTeam$)
 
             Case 3:
                 Call ViewHittingFielding
