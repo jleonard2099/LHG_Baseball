@@ -970,7 +970,7 @@ Sub InputDeleteLineup (D%, yearNumber$)
 
                 If D% <> 1 Or I1 <> 1 Then
 
-                    Locate LAST_LINE, (I1 * 3) + 1
+                    Locate 24, (I1 * 3) + 1
                     If progM%(I1) = 0 Then 
                         Print fieldPos$(I1); " ";
                     End If
@@ -1049,7 +1049,7 @@ Sub InputDeleteLineup (D%, yearNumber$)
 
                                 If D% <> 1 Or I1 <> 1 Then
 
-                                    Locate LAST_LINE, (I1 * 3) + 1
+                                    Locate 24, (I1 * 3) + 1
                                     If progM%(I1) = 0 Then 
                                         Print fieldPos$(I1); " ";
                                     End If
@@ -1121,7 +1121,7 @@ Sub InputDeleteLineup (D%, yearNumber$)
 
                             If D% <> 1 Or I1 <> 1 Then
 
-                                Locate LAST_LINE, (I1 * 3) + 1
+                                Locate 24, (I1 * 3) + 1
                                 If progM%(I1) = 0 Then 
                                     Print fieldPos$(I1); " ";
                                 End If
@@ -4011,7 +4011,7 @@ Sub ExportManagerProfile (mgrNbr)
         MsgText$ = "NO MANAGER PROFILE EXISTS FOR THIS TEAM PRESS ANY KEY TO RETURN TO MAIN MENU"
         BoxWidth = 20
         BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+        Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
         Call CSMsgBox(MsgText$, BoxWidth, Pass)
         I$ = GetKeyPress$
         Call CSMsgBox("", 0, Pass)
