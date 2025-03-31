@@ -586,7 +586,7 @@ End Sub
 ' ...explanation...
 Sub LOADSCREEN ()
 
-    parkImage& = _LoadImage(".\parks\" + PARK$, 32)
+    parkImage& = _LoadImage("." + dirSeparator$ + "parks" + dirSeparator$ + PARK$, 32)
     imageWidth% = _Width(parkImage&)
     imageHeight% = _Height(parkImage&)
     imageScreen& = _NewImage(imageWidth%, imageHeight%, 32)

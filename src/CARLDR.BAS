@@ -56,7 +56,7 @@ End Sub
 
 
 '----------------------------------------
-'       UpdateCareerLeaders Subroutine
+'     UpdateCareerLeaders Subroutine
 '----------------------------------------
 'This routine reads in the current stats,
 'calculates the latest values (based on
@@ -568,10 +568,12 @@ Sub ViewCareerLeaders ()
 
     ' ### BATTERS ###
 
+    Locate 2, 1
     Print Tab(5); "AT BATS"; Tab(44); "HITS"
+
     For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;
+        Locate I + 3: Print Using "##"; I + 1;
         Print ". ";
         Color 15: Print carLdrBatName$(0, I);
         Print Tab(20); Using "####"; carLdrBatVal!(0, I);:
@@ -590,10 +592,12 @@ Sub ViewCareerLeaders ()
     Cls
     Color 12
 
+    Locate 2, 1
     Print Tab(5); "RUNS SCORE"; Tab(44); "RBI'S"
+
     For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;
+        Locate I + 3: Print Using "##"; I + 1;
         Print ". ";
         Color 15: Print carLdrBatName$(2, I);
         Print Tab(20); Using "####"; carLdrBatVal!(2, I);:
@@ -612,10 +616,12 @@ Sub ViewCareerLeaders ()
     Cls
     Color 12
 
+    Locate 2, 1
     Print Tab(5); "DOUBLES"; Tab(44); "TRIPLES"
+
     For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;
+        Locate I + 3: Print Using "##"; I + 1;
         Print ". ";
         Color 15: Print carLdrBatName$(4, I);
         Print Tab(20); Using "####"; carLdrBatVal!(4, I);:
@@ -634,10 +640,12 @@ Sub ViewCareerLeaders ()
     Cls
     Color 12
 
+    Locate 2, 1
     Print Tab(5); "HOME RUNS"; Tab(44); "WALKS"
+
     For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;
+        Locate I + 3: Print Using "##"; I + 1;
         Print ". ";
         Color 15: Print carLdrBatName$(6, I);
         Print Tab(20); Using "####"; carLdrBatVal!(6, I);:
@@ -656,11 +664,12 @@ Sub ViewCareerLeaders ()
     Cls
     Color 12
 
+    Locate 2, 1
     Print Tab(5); "STRIKE OUTS"; Tab(44); "STOLEN BASES"
-    For I = 0 To 19
-
+    
+	For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;
+        Locate I + 3: Print Using "##"; I + 1;
         Print ". ";
         Color 15: Print carLdrBatName$(8, I);
         Print Tab(20); Using "####"; carLdrBatVal!(8, I);:
@@ -679,10 +688,12 @@ Sub ViewCareerLeaders ()
     Cls
     Color 12
 
+    Locate 2, 1
     Print Tab(5); "CAUGHT STEALING"; Tab(44); "ERRORS"
-    For I = 0 To 19
+    
+	For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;
+        Locate I + 3: Print Using "##"; I + 1;
         Print ". ";
         Color 15: Print carLdrBatName$(10, I);
         Print Tab(20); Using "####"; carLdrBatVal!(10, I);:
@@ -701,10 +712,12 @@ Sub ViewCareerLeaders ()
     Cls
     Color 12
 
+    Locate 2, 1
     Print Tab(5); "GAMES PLAYED"; Tab(44); "BATTING AVERAGE"
-    For I = 0 To 19
+    
+	For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;
+        Locate I + 3: Print Using "##"; I + 1;
         Print ". ";
         Color 15: Print carLdrBatName$(14, I);
         Print Tab(20); Using "####"; carLdrBatVal!(14, I);:
@@ -723,10 +736,12 @@ Sub ViewCareerLeaders ()
     Cls
     Color 12
 
+    Locate 2, 1
     Print Tab(5); "SLUGGING PCT."; Tab(44); "ON-BASE PCT."
-    For I = 0 To 19
+    
+	For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;
+        Locate I + 3: Print Using "##"; I + 1;
         Print ". ";
         Color 15: Print carLdrBatName$(16, I);
         Print Tab(20); Using "#.###"; carLdrBatVal!(16, I);:
@@ -747,10 +762,12 @@ Sub ViewCareerLeaders ()
 
     ' ### PITCHERS ###
 
+    Locate 2, 1
     Print Tab(5); "INNINGS PITCHED"; Tab(44); "HITS ALLOWED"
-    For I = 0 To 19
+    
+	For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;
+        Locate I + 3: Print Using "##"; I + 1;
         Print ". ";
         Color 15: Print carLdrPitName$(0, I);
         Print Tab(18); Using "###"; Int(carLdrPitVal!(0, I) / 3);
@@ -773,10 +790,12 @@ Sub ViewCareerLeaders ()
     Cls
     Color 12
 
+    Locate 2, 1
     Print Tab(5); "RUNS ALLOWED"; Tab(44); "EARNED RUNS ALLOWED"
-    For I = 0 To 19
+    
+	For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;
+        Locate I + 3: Print Using "##"; I + 1;
         Print ". ";
         Color 15: Print carLdrPitName$(2, I);
         Print Tab(20); Using "####"; carLdrPitVal!(2, I);:
@@ -795,10 +814,12 @@ Sub ViewCareerLeaders ()
     Cls
     Color 12
 
+    Locate 2, 1
     Print Tab(5); "WALKS"; Tab(44); "STRIKEOUTS"
-    For I = 0 To 19
+    
+	For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;
+        Locate I + 3: Print Using "##"; I + 1;
         Print ". ";
         Color 15: Print carLdrPitName$(4, I);
         Print Tab(20); Using "####"; carLdrPitVal!(4, I);:
@@ -817,10 +838,12 @@ Sub ViewCareerLeaders ()
     Cls
     Color 12
 
+    Locate 2, 1
     Print Tab(5); "WINS"; Tab(44); "LOSSES"
-    For I = 0 To 19
+    
+	For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;
+        Locate I + 3: Print Using "##"; I + 1;
         Print ". ";
         Color 15: Print carLdrPitName$(6, I);
         Print Tab(20); Using "####"; carLdrPitVal!(6, I);:
@@ -839,10 +862,12 @@ Sub ViewCareerLeaders ()
     Cls
     Color 12
 
+    Locate 2, 1
     Print Tab(5); "GAMES"; Tab(44); "GAMES STARTED"
-    For I = 0 To 19
+    
+	For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;
+        Locate I + 3: Print Using "##"; I + 1;
         Print ". ";
         Color 15: Print carLdrPitName$(8, I);
         Print Tab(20); Using "####"; carLdrPitVal!(8, I);:
@@ -861,10 +886,12 @@ Sub ViewCareerLeaders ()
     Cls
     Color 12
 
+    Locate 2, 1
     Print Tab(5); "COMPLETE GAMES"; Tab(44); "SHUTOUTS"
-    For I = 0 To 19
+    
+	For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;
+        Locate I + 3: Print Using "##"; I + 1;
         Print ". ";
         Color 15: Print carLdrPitName$(10, I);
         Print Tab(20); Using "####"; carLdrPitVal!(10, I);:
@@ -883,10 +910,12 @@ Sub ViewCareerLeaders ()
     Cls
     Color 12
 
+    Locate 2, 1
     Print Tab(5); "SAVES"; Tab(44); "DOUBLE PLAYS THROWN"
-    For I = 0 To 19
+    
+	For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;
+        Locate I + 3: Print Using "##"; I + 1;
         Print ". ";
         Color 15: Print carLdrPitName$(12, I);
         Print Tab(20); Using "####"; carLdrPitVal!(12, I);:
@@ -905,10 +934,12 @@ Sub ViewCareerLeaders ()
     Cls
     Color 12
 
+    Locate 2, 1
     Print Tab(5); "HOME RUNS ALLOWED"; Tab(44); "EARNED RUN AVERAGE"
-    For I = 0 To 19
+    
+	For I = 0 To 19
         Color 3
-        Locate I + 2: Print Using "##"; I + 1;
+        Locate I + 3: Print Using "##"; I + 1;
         Print ". ";
         Color 15: Print carLdrPitName$(14, I);
         Print Tab(20); Using "####"; carLdrPitVal!(14, I);

@@ -896,8 +896,8 @@ Sub EditBatter ()
             Locate 24, 13: Print "RHB vs RHP";
 
             ' INITIALIZE BATTER FIELDS
-            FG = Black
-            BG = DarkGray
+            FG = 0
+            BG = 7
 
             Color FG, BG
 
@@ -1742,7 +1742,7 @@ Sub EditBatter ()
 
             bDone:
             Color 14, 1
-            Locate 25, 1
+            Locate LAST_ROW - 1, 1
             Print "Is this okay? (Yes/No) ";
             X$ = ""
             Call YesNoB(X$, XCode, FG, BG)
@@ -2330,7 +2330,7 @@ Sub EditTeamInfo (YN$, team$, teamIdx)
         Done:
         'Do
         Color 14, 1
-        Locate 24, 1
+        Locate LAST_ROW - 1, 1
         'Print "Is this okay? (Y)es/(N)o/(A)bort ";
         Print "Is this okay? (Y)es/(N)o";
         X$ = ""
@@ -3328,7 +3328,7 @@ Sub EditPitcher ()
             If XCode = 1 GoTo PRRBB:
 
             PDone:
-            Locate 25, 1
+            Locate LAST_ROW - 1, 1
             Print "Is this okay? (Yes/No) ";
             X$ = ""
             Call YesNoB(X$, XCode, FG, BG)
@@ -3461,7 +3461,8 @@ End Sub
 Sub ViewHitters (teamName$)
 
     Shared batterNames$()
-    Shared batterRatings(), totBatRat()
+    Shared batterRatings()
+    Shared teamRatings(), totBatRat()
     Shared batAvg!
 
     Do
@@ -3469,8 +3470,10 @@ Sub ViewHitters (teamName$)
         Cls
 
         Locate 2, 1
-        Color 15: Print teamName$
+        Color teamRatings(11), teamRatings(12): Print teamName$
+
         Color 14
+        Locate 4, 1
         Print "BATTER     B POS     G  AB   R   H DB TR HR RBI  BB  SO  SB CS GA  BAVG"
 
         For I = 0 To 22
@@ -3481,7 +3484,7 @@ Sub ViewHitters (teamName$)
 
                 Print Left$(batterNames$(I), 10);
 
-                Color 7
+                Color 15
 
                 Select Case batterRatings(I, 0)
 
@@ -3538,19 +3541,25 @@ Sub ViewHitters (teamName$)
 
         Next
 
-        Color 14
-        Print "TOTALS";
-        Locate , 23: Print Using "####    ####   ###    ###    ####    ###     .###"; totBatRat(1); totBatRat(3); totBatRat(5); totBatRat(7); totBatRat(9); totBatRat(11); totBatRat(3) / totBatRat(1)
-        Locate , 27: Print Using "####   ####   ###     ###     ###"; totBatRat(2); totBatRat(4); totBatRat(6); totBatRat(8); totBatRat(10)
+        If totBatRat(1) > 0 Then
+            bavg! = totBatRat(3) / totBatRat(1)
+        Else
+            bavg! = 0
+        End If
 
-        Color 11
-        Locate 29: Print "HIT TAB KEY FOR FIELDING STATS/ANY KEY TO CONTINUE";
+        Color 12
+        Print "TOTALS";
+        Locate , 23: Print Using "####    ####   ###    ###    ####    ###     .###"; totBatRat(1); totBatRat(3); totBatRat(5); totBatRat(7); totBatRat(9); totBatRat(11); bavg!
+        Locate , 27: Print Using "####   ####   ###     ###     ###"; totBatRat(2); totBatRat(4); totBatRat(6); totBatRat(8); totBatRat(10);
+
+        Color 14
+        Locate 30, 14: Print "HIT TAB KEY FOR FIELDING STATS / ANY KEY TO CONTINUE";
         I$ = GetKeyPress$
 
         If I$ = Chr$(9) Then
-            Call FieldingStats(teamName$)
-            Color 11
-            Locate 29: Print "HIT TAB KEY FOR FIELDING STATS/ANY KEY TO CONTINUE";
+            Call ViewFieldingStats(teamName$)
+            Color 14
+            Locate 30, 14: Print "HIT TAB KEY FOR BATTING STATS / ANY KEY TO CONTINUE";
             I$ = GetKeyPress$
             'TAB goes back to previous screen
             'any key goes to options selection (EXIT SUB)
@@ -3569,12 +3578,13 @@ End Sub
 Sub ViewPitchers (teamName$)
 
     Shared pitcherNames$()
-    Shared pitcherRatings(), totPitch()
+    Shared pitcherRatings()
+    Shared teamRatings(), totPitchRat()
 
     Cls
 
     Locate 2, 1
-    Color 15: Print teamName$
+    Color teamRatings(11), teamRatings(12): Print teamName$
     Color 14
     Print "PITCHER      T  W  L SV  G GS  IP   H  BB  SO  ERA  GA HR CG WP HLDR"
 
@@ -3589,7 +3599,7 @@ Sub ViewPitchers (teamName$)
             numberAppearances = numberAppearances + pitcherRatings(I, 4)
             Print Left$(pitcherNames$(I), 10);
 
-            Color 7
+            Color 15
 
             If pitcherRatings(I, 0) = -1 Then
                 Print Tab(14); "L";
@@ -3633,29 +3643,36 @@ Sub ViewPitchers (teamName$)
 
     Next
 
-    Color 14
+    If totPitchRat(6) > 0 Then
+        rate! = (earnedRuns! * 9) / totPitchRat(6)
+    Else
+        rate! = 0
+    End If
+
+    Color 12
     Print "TOTALS";
     Locate , 14
-    Print Using "####  ####      ####    ####     #.##    ###   ###"; totPitch(1); totPitch(3); totPitch(6); totPitch(8); (earnedRuns! * 9) / totPitch(6); totPitch(13); totPitch(33)
+    Print Using "####  ####      ####    ####     #.##    ###   ###"; totPitchRat(1); totPitchRat(3); totPitchRat(6); totPitchRat(8); rate!; totPitchRat(13); totPitchRat(33)
     Locate , 17
-    Print Using "####      ###    ####    ####            ###"; totPitch(2); totPitch(5); totPitch(7); totPitch(9); totPitch(16)
+    Print Using "####      ###    ####    ####            ###"; totPitchRat(2); totPitchRat(5); totPitchRat(7); totPitchRat(9); totPitchRat(16)
     Print
+    Color 6
     Print "TOTAL APPEARANCES: "; numberAppearances
 
-    Color 11
-    Locate LAST_ROW - 1: Print "HIT ANY KEY TO CONTINUE";
+    Color 14
+    Locate LAST_ROW - 1, 28: Print "HIT ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
 End Sub
 
 
 '----------------------------------------
-'     ViewHittingFielding subroutine
+'     ViewPitcherHittingFielding subroutine
 '----------------------------------------
 'This subroutine give the user a summary
 'of fielding and hitting stats for each
 'team pitcher.
-Sub ViewHittingFielding ()
+Sub ViewPitcherHittingFielding ()
 
     Shared pitcherRatings()
     Shared pitcherNames$()
@@ -3672,7 +3689,7 @@ Sub ViewHittingFielding ()
         Color 3
         Print Left$(pitcherNames$(I), 10);
 
-        Color 7
+        Color 15
         Print Tab(14); Using "###"; pitcherRatings(I, 19);
         Print Tab(18); Using "###"; pitcherRatings(I, 20);
         Print Tab(22); Using "###"; pitcherRatings(I, 21);
@@ -3688,7 +3705,7 @@ Sub ViewHittingFielding ()
 
         If pitcherRatings(I, 11) <> 999 Then
             statPCT! = pitcherRatings(I, 11) / 1000
-            Print Tab(59); Using "#.###"; statPCT!;
+            Print Tab(58); Using "#.###"; statPCT!;
         Else
             batAvg! = 0
 
@@ -3698,17 +3715,17 @@ Sub ViewHittingFielding ()
                 batAvg! = Int((pitcherRatings(I, 22) / pitcherRatings(I, 20) + .0005) * 1000)
             End If
             If pitcherRatings(I, 20) = 0 Or batAvg! = 0 Then
-                Print Tab(59); ".000";
+                Print Tab(58); ".000";
             End If
 
             If batAvg! > 0 And batAvg! < 100 Then
-                Print Tab(59); ".0";: Print Tab(61); Using "##"; batAvg!;
+                Print Tab(58); ".0";: Print Tab(61); Using "##"; batAvg!;
             End If
             If batAvg! > 100 And batAvg! < 1000 Then
-                Print Tab(59); ".";: Print Tab(60); Using "###"; batAvg!;
+                Print Tab(58); ".";: Print Tab(60); Using "###"; batAvg!;
             End If
             If batAvg! >= 1000 Then
-                Print Tab(59); " ---";
+                Print Tab(58); " ---";
             End If
 
         End If
@@ -3719,36 +3736,39 @@ Sub ViewHittingFielding ()
 
     Next
 
-    Color 11
-    Locate LAST_ROW - 1: Print "HIT ANY KEY TO CONTINUE";
+    Color 14
+    Locate LAST_ROW - 2, 28: Print "HIT ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
 End Sub
 
 
 '----------------------------------------
-'       FieldingStats Subroutine
+'      ViewFieldingStats Subroutine
 '----------------------------------------
 'This subroutine give the user a summary
 'of field stats for each batter.
-Sub FieldingStats (teamName$)
+Sub ViewFieldingStats (teamName$)
 
     Shared batterNames$()
     Shared batterRatings()
+    Shared teamRatings()
 
     Cls
 
     Locate 2, 1
-    Color 15: Print teamName$
+    Color teamRatings(11), teamRatings(12): Print teamName$
+
     Color 14
-    Print "BATTER       AVG ARM RGE  AVG ARM RGE  AVG ARM RGE  AVG ARM RGE RUN BUNT"
+    Print "             POSITION 1    POSITION 2  POSITION 3   POSITION 4"
+    Print "BATTER       AVG ARM RGE  AVG ARM RGE  AVG ARM RGE  AVG ARM RGE  RUN BUNT"
 
     For I = 0 To 22
 
         Color 3
         Print Left$(batterNames$(I), 10);
 
-        Color 7
+        Color 15
         Print Tab(13); Using "####"; batterRatings(I, 26);
         Print Tab(19); Using "#"; batterRatings(I, 33);
         Print Tab(23); Using "#"; batterRatings(I, 34);
@@ -3761,8 +3781,8 @@ Sub FieldingStats (teamName$)
         Print Tab(52); Using "####"; batterRatings(I, 29);
         Print Tab(58); Using "#"; batterRatings(I, 39);
         Print Tab(62); Using "#"; batterRatings(I, 40);
-        Print Tab(66); Using "#"; batterRatings(I, 16);
-        Print Tab(71); Using "#"; batterRatings(I, 30)
+        Print Tab(67); Using "#"; batterRatings(I, 16);
+        Print Tab(72); Using "#"; batterRatings(I, 30)
 
     Next I
 

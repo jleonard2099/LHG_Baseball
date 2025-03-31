@@ -499,17 +499,21 @@ Sub CareerToScreen (careerFile$)
         Color 15, 0
         Cls
 
+        Locate 4, 10
         Color 7: Print "VIEW ";
         Color 12: Print "B";
         Color 7: Print "ATTERS"
 
+        Locate , 10
         Color 7: Print "VIEW ";
         Color 12: Print "P";
         Color 7: Print "ITCHERS"
 
+        Locate , 10
         Color 12: Print "R";
         Color 7: Print "OSTER IN SEQUENCE"
 
+        Locate , 10
         Color 12: Print "E";
         Color 7: Print "XIT TO MAIN MENU"
 
