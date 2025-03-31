@@ -15333,7 +15333,7 @@ Sub WALLDOUBLE (HW%, currFielder)
                     End If
             End Select
 
-            If teamRat_GAME(1, 13) = 27 And gameW% = 7 Then
+            If teamRat_GAME(1, 13) = 27 And currFielder = 7 Then
                 pbpString$ = "It hits off the screen!"
             Else
                 pbpString$ = "It's off the wall"
@@ -15342,7 +15342,7 @@ Sub WALLDOUBLE (HW%, currFielder)
         Case 66 To 85
 
             If HW% = 0 Then
-                If gameW% = 8 Then
+                If currFielder = 8 Then
                     pbpString$ = "It's in the gap and to the wall"
                 Else
                     Call PBP("It's past " + player$(4))
@@ -15769,6 +15769,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                     nbrOuts(1) = nbrOuts(1) + 1
                     currFielder = 2
 
+                    Call CREDITASSIST(currFielder, D)
                     Call ADVANCEMENT(P, D, S2%, F%, I3)
                     Call CREDITPUTOUT(I3, FB2P%, AST%, D)
 
@@ -15992,15 +15993,13 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 Call ADDPIT(D, P1(D), 1)
 
-                gameW% = Int(Rnd(1) * 3) + 7
                 currFielder = Int(Rnd(1) * 3) + 7
 
                 Call PBP(player$(0) + " hits a sinking liner into " + fieldPos$(currFielder))
                 Call PBP(batters$(D, B9%(D, currFielder)) + " dives for the catch...")
                 Call PBP("the ball rolls free!")
-                Call PBP(batters$(D, B9%(D, gameW% - 1)) + " gets the loose ball in")
+                Call PBP(batters$(D, B9%(D, currFielder - 1)) + " gets the loose ball in")
 
-                op% = gameW%
                 op% = currFielder
 
                 Call ADDPIT(D, P1(D), 1)
@@ -16128,7 +16127,6 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 Call ADDPIT(D, P1(D), 1)
 
-                gameW% = 8
                 currFielder = 8
 
                 Call LONGFLY(D, currFielder)
