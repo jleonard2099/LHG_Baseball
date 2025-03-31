@@ -1024,13 +1024,13 @@ Sub InputDeleteLineup (D%, yearNumber$)
 
                         For J = 1 To 9
                             If J = I Then
-                                If progB3%(J) = P1 And progB7%(J) = 1 Then 
+                                If progB3%(J) = currPitcher And progB7%(J) = 1 Then 
                                     Call GetLineupPosition(I1, I$)
                                 End If
                             End If
                         Next J
 
-                        progB3%(I) = P1
+                        progB3%(I) = currPitcher
                         Print batterNames$(23);
                         progM%(Val(I$)) = 1
 
@@ -1038,7 +1038,7 @@ Sub InputDeleteLineup (D%, yearNumber$)
 
                         Print "  p ";
                         progB7%(I) = 1
-                        progB9%(1) = P1
+                        progB9%(1) = currPitcher
                         progM%(1) = 1
 
                         Locate 25, 1
@@ -1398,7 +1398,8 @@ Sub EditOneLineup (targetTeam$, yearNumber$)
         progB9%(progB7%(I)) = progB3%(I)
 
         If progB7%(I) = 1 Then
-            progB3%(I) = P1: progB9%(1) = P1
+            progB3%(I) = currPitcher
+            progB9%(1) = currPitcher
         Else
             batterRatings(progB3%(I), 21) = 0
         End If
