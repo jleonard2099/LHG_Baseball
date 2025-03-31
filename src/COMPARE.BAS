@@ -37,7 +37,7 @@ Sub COMPARE ()
                 MsgText$ = "NO COMPILED STATS COULD BE FOUND FOR THIS TEAM. PRESS ANY KEY TO RETURN TO THE MAIN MENU"
                 BoxWidth = 24
                 BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-                Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+                Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
                 Call CSMsgBox(MsgText$, BoxWidth, Pass)
                 I$ = GetKeyPress$
                 Call CSMsgBox("", 0, Pass)
@@ -555,7 +555,7 @@ Sub Comparisons_Screen (teamName$, backToMenu)
         Cls
 
         Color 9
-        Locate 1, 22: Print "STAT COMPARISONS FOR ";
+        Locate 2, 22: Print "STAT COMPARISONS FOR ";
         Color 15: Print teamName$
 
         For I = 0 To 16
@@ -1100,10 +1100,10 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                     Locate 18, 15: Print String$(8, 177)
 
                     Color 15, 0
-                    Locate 23, 4: Print "HIT ANY KEY TO CONTINUE"
+                    Locate LAST_ROW - 2, 4: Print "HIT ANY KEY TO CONTINUE"
 
                     If BI = 1 Then
-                        Locate 23, 28: Print "OR ESC TO RETURN TO MENU"
+                        Locate LAST_ROW - 2, 28: Print "OR ESC TO RETURN TO MENU"
                     End If
 
                     I$ = GetKeyPress$
@@ -1380,10 +1380,10 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                         Locate 12, 16: Print String$(30, 177)
 
                         Color 15, 0
-                        Locate 23, 4: Print "HIT ANY KEY TO CONTINUE"
+                        Locate LAST_ROW - 2, 4: Print "HIT ANY KEY TO CONTINUE"
 
                         If BI = 1 Then
-                            Locate 23, 28: Print "OR ESC TO RETURN TO MENU"
+                            Locate LAST_ROW - 2, 28: Print "OR ESC TO RETURN TO MENU"
                         End If
 
                         I$ = GetKeyPress$
@@ -1982,7 +1982,7 @@ Sub TeamComparison_Screen (teamName$)
     Print String$(22, 177)
 
     Color 15, 0
-    Locate 22, 48: Print "HIT ANY KEY TO CONTINUE"
+    Locate LAST_ROW - 2, 48: Print "HIT ANY KEY TO CONTINUE"
 
     I$ = GetKeyPress$
 

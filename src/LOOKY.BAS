@@ -77,7 +77,7 @@ Sub StatsOneTeam ()
             MsgText$ = "NO COMPILED STATS COULD BE FOUND FOR THIS TEAM. PRESS ANY KEY TO RETURN TO THE MAIN MENU"
             BoxWidth = 24
             BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-            Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+            Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
             Call CSMsgBox(MsgText$, BoxWidth, Pass)
             I$ = GetKeyPress$
             Call CSMsgBox("", 0, Pass)
@@ -255,49 +255,48 @@ Sub ViewAndPrintOptions (statFile$, teamName$, nbrGames, menuExit)
             Select Case SELECTION%
 
                 Case 1
-                    Color , 0
+
+                    Color 12, 0
                     Cls
 
-                    Color 12
                     header$ = "SCHEDULE RESULTS FOR " + teamName$
                     Xcoord = Len(header$)
                     Xcoord = Int((80 - Xcoord) / 2)
-                    Locate 1, Xcoord
-
+                    Locate 2, Xcoord
                     Print "SCHEDULE RESULTS FOR ";
                     Color teamRatings(11), teamRatings(12)
                     Print teamName$
 
-                    Color 15, 0
-                    Color 14: Print Tab(6); "OPPONENT"; Tab(33); "WINNING PITCHER"; Tab(50); "LOSING PITCHER"; Tab(66); "INNINGS"
+                    Locate 4
+                    Color 14, 0: Print Tab(6); "OPPONENT"; Tab(33); "WINNING PITCHER"; Tab(50); "LOSING PITCHER"; Tab(66); "INNINGS"
                     Color 15
 
                     For I = 1 To nbrGames
 
                         Print Str$(teamScore(I)); Tab(6); Left$(oppName$(I), 15); Tab(22); Str$(oppScore(I)); Tab(27); "("; locIndicator$(I); ")"; Tab(33); winPitcher$(I); Tab(50); losePitcher$(I); Tab(66); nbrInnings(I)
 
-                        If (I Mod 20 = 0) Then
+                        If (I Mod (LAST_ROW - 7) = 0) Then
 
-                            Locate LAST_LINE, 27: Print "PRESS ANY KEY TO CONTINUE";
+                            Locate LAST_ROW - 1, 27: Print "PRESS ANY KEY TO CONTINUE";
                             I$ = GetKeyPress$
 
+                            Color 12
                             Cls
 
-                            Locate 1, Xcoord
-                            Color 12
+                            Locate 2, Xcoord
                             Print "SCHEDULE RESULTS FOR ";
                             Color teamRatings(11), teamRatings(12)
                             Print teamName$
 
-                            Color 15, 0
-                            Color 14: Print Tab(6); "OPPONENT"; Tab(33); "WINNING PITCHER"; Tab(50); "LOSING PITCHER"; Tab(66); "INNINGS"
+                            Locate 4
+                            Color 14, 0: Print Tab(6); "OPPONENT"; Tab(33); "WINNING PITCHER"; Tab(50); "LOSING PITCHER"; Tab(66); "INNINGS"
                             Color 15
 
                         End If
 
                     Next
 
-                    Locate LAST_LINE, 27: Print "PRESS ANY KEY TO CONTINUE";
+                    Locate LAST_ROW - 1, 27: Print "PRESS ANY KEY TO CONTINUE";
                     I$ = GetKeyPress$
 
                 Case 2:
@@ -405,22 +404,22 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Print
 
     Color 15, 0
-    Locate , 20
+    Locate , 26
     Color 14: Print "OVERALL RECORD ";
     Color 15: Print "("; totalWins; "-"; totalLosses; ")"
-    Locate , 20
+    Locate , 26
     Color 14: Print "HOME RECORD    ";
     Color 15: Print "("; homeWins; "-"; homeLosses; ")"
-    Locate , 20
+    Locate , 26
     Color 14: Print "ROAD RECORD    ";
     Color 15: Print "("; roadWins; "-"; roadLosses; ")"
-    Locate , 20
+    Locate , 26
     Color 14: Print "LAST 10 GAMES  ";
     Color 15: Print "("; lastTenWins; " -"; lastTenLosses; ")"
-    Locate , 20
+    Locate , 26
     Color 14: Print "EXTRA INNINGS  ";
     Color 15: Print "("; extraInnWins; " -"; extraInnLosses; ")"
-    Locate , 20
+    Locate , 26
     Color 14: Print "ONE RUN GAMES  ";
     Color 15: Print "("; oneRunWins; " -"; oneRunLosses; ")"
 
@@ -429,19 +428,19 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
 
     'Call TITLE_STATS
 
-    Locate 1, 1
-    Print Tab(80); " ";
+    'Locate 2, 1
+    'Print Tab(80); " ";
 
     Xcoord = Len(teamName$)
     Xcoord = Int((80 - Xcoord) / 2)
-    Locate , Xcoord
-
-    'Color 14
+    Locate 2, Xcoord
     Color teamRatings(11), teamRatings(12)
-    Print teamName$;
+    Print teamName$
 
+    Locate 3, 31
     Color 12, 0
-    Print "    WON: "; teamWins; "  LOST: "; teamLosses
+    Print "WON: "; teamWins; " LOST: "; teamLosses
+    Locate 5
     Color 15, 1
     Print "BATTERS    AB   R   H RBI  2B 3B  HR    BA   SLG   OBP  SO  BB  SB  CS %RAB    "
     Color 15, 0
@@ -450,8 +449,9 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
 
         If batterNames$(I) <> "XXX" And batterNames$(I) <> "" Then
 
-            Locate I + 3, 1
+            Locate I + 6, 1
             Color 7
+
             If (I Mod 2) = 0 Then Color 15
 
             Print Left$(batterNames$(I), 10);
@@ -541,17 +541,20 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
 
     Next I
 
-    Locate 1, 1
+    Locate 2, 1
     I$ = GetKeyPress$
 
     Cls
 
-    Locate , Xcoord
+    Locate 2, Xcoord
     Color teamRatings(11), teamRatings(12)
-    Print teamName$;
+    Print teamName$
 
+    Locate 3, 31
     Color 12, 0
-    Print "    WON: "; teamWins; "  LOST: "; teamLosses
+    Print "WON: "; teamWins; " LOST: "; teamLosses
+    Locate 5
+
     Color 15, 1
     Print "BATTERS      G  CHS LHS GIDP NEEDS PROJ AB  PO   A  E  FAVG  SBA CS %CS SH SF"
 
@@ -559,8 +562,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
 
         If batterNames$(I) <> "XXX" And batterNames$(I) <> "" Then
 
-            Locate I + 3, 1
-
+            Locate I + 6, 1
             Color 7, 0
 
             If (I Mod 2) = 0 Then Color 15
@@ -629,12 +631,15 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
 
     Cls
 
-    Locate , Xcoord
+    Locate 2, Xcoord
     Color teamRatings(11), teamRatings(12)
-    Print teamName$;
+    Print teamName$
 
+    Locate 3, 31
     Color 12, 0
-    Print "    WON: "; teamWins; "  LOST: "; teamLosses
+    Print "WON: "; teamWins; " LOST: "; teamLosses
+    Locate 5
+
     Color 15, 1
     Print "PITCHERS   AB   R   H RBI  2B 3B  HR    BA   SLG   OBP  SO  BB  SB  CS"
 
@@ -642,11 +647,12 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
 
         If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
 
+            Locate I + 6, 1
             Color 7, 0
 
             If (I Mod 2) = 0 Then Color 15
 
-            Locate I + 3, 1: Print Left$(pitcherNames$(I), 10);
+            Locate I + 6, 1: Print Left$(pitcherNames$(I), 10);
             Locate , 11: Print Using "###"; statP0(I, 23);
             Locate , 15: Print Using "###"; statP0(I, 25);
             Locate , 19: Print Using "###"; statP0(I, 24);
@@ -718,17 +724,20 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
         End If
     Next I
 
-    Locate 1, 1
+    Locate 2, 1
     I$ = GetKeyPress$
 
     Cls
 
-    Locate , Xcoord
+    Locate 2, Xcoord
     Color teamRatings(11), teamRatings(12)
-    Print teamName$;
+    Print teamName$
 
+    Locate 3, 31
     Color 12, 0
-    Print "    WON: "; teamWins; "  LOST: "; teamLosses
+    Print "WON: "; teamWins; " LOST: "; teamLosses
+    Locate 5
+
     Color 15, 1
     Print "PITCHERS     G  CHS LHS GIDP   PO   A  E  FAVG SH SF"
     Color 15
@@ -737,8 +746,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
 
         If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
 
-            Locate I + 3, 1
-
+            Locate I + 6, 1
             Color 7, 0
 
             If (I Mod 2) = 0 Then Color 15
@@ -763,19 +771,21 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
         End If
     Next I
 
-    Locate 1, 1
+    Locate 2, 1
     I$ = GetKeyPress$
 
     Cls
 
-    Locate , Xcoord
+    Locate 2, Xcoord
     Color teamRatings(11), teamRatings(12)
-    Print teamName$;
+    Print teamName$
 
+    Locate 3, 31
     Color 12, 0
-    Print "    WON: "; teamWins; "  LOST: "; teamLosses
+    Print "WON: "; teamWins; " LOST: "; teamLosses
+    Locate 5
+
     Color 14, 0
-    Print
     Print "  TEAM BATTING TOTALS"
     Color 15, 1
     Print "  AB    R    H  RBI  2B  3B  HR    BA   SLG   OBP   SO   BB  SB  CS"
@@ -809,9 +819,13 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     I$ = GetKeyPress$
 
     If splitStatChoice <> 0 Then
+
         ' DISPLAY SPLIT STATS
         Cls
-        Color teamRatings(11), teamRatings(12): Print teamName$;
+
+        Color teamRatings(11), teamRatings(12)
+        Print teamName$;
+
         Locate 1, 15
         Color 14, 0
         Print "VS L  AB 2B 3B HR  BB   K   AVG  VS R  AB 2B 3B HR  BB   K   AVG"
@@ -862,12 +876,15 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
 
     Cls
 
-    Locate , Xcoord
+    Locate 2, Xcoord
     Color teamRatings(11), teamRatings(12)
-    Print teamName$;
+    Print teamName$
 
+    Locate 3, 31
     Color 12, 0
-    Print "    WON: "; teamWins; "  LOST: "; teamLosses
+    Print "WON: "; teamWins; " LOST: "; teamLosses
+    Locate 5
+
     Color 15, 4
     Print "PITCHERS    W  L SV    IP    H  BB   SO   ERA  G GS CG RUN  ER ShO HRA  DP %RIP"
 
@@ -875,8 +892,11 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
 
     For I = 0 To 21
         If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
-            Locate I + 3, 1
-            Color 7, 0: If (I Mod 2) = 0 Then Color 15
+
+            Locate I + 6, 1
+            Color 7, 0
+
+            If (I Mod 2) = 0 Then Color 15
             
             Print Left$(pitcherNames$(I), 10);
             
@@ -925,12 +945,15 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
 
     Cls
 
-    Locate , Xcoord
+    Locate 2, Xcoord
     Color teamRatings(11), teamRatings(12)
-    Print teamName$;
+    Print teamName$
 
+    Locate 3, 31
     Color 12, 0
-    Print "    WON: "; teamWins; "  LOST: "; teamLosses
+    Print "WON: "; teamWins; " LOST: "; teamLosses
+    Locate 5
+
     Color 15, 4
     Print "PITCHERS   BS HL  RI  RS   SUP GS QS  SH SF"
 
@@ -938,8 +961,11 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
 
         If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
 
-            Locate I + 3, 1
-            Color 7, 0: If (I Mod 2) = 0 Then Color 15
+            Locate I + 6, 1
+            Color 7, 0
+
+            If (I Mod 2) = 0 Then Color 15
+            
             Print Left$(pitcherNames$(I), 10);: Locate , 12
 
             'Blown Save, Hold, RI, Runs Saved
@@ -959,20 +985,22 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
 
     Next I
 
-    Locate 1, 1
+    Locate 2, 1
 
     I$ = GetKeyPress$
 
     Cls
 
-    Locate , Xcoord
+    Locate 2, Xcoord
     Color teamRatings(11), teamRatings(12)
-    Print teamName$;
+    Print teamName$
 
+    Locate 3, 31
     Color 12, 0
-    Print "    WON: "; teamWins; "  LOST: "; teamLosses
+    Print "WON: "; teamWins; " LOST: "; teamLosses
+    Locate 5
+
     Color 14, 0
-    Print
     Print "  TEAM PITCHING TOTALS"
     Color 15, 4
     Print "  W   L  SV     IP    H   BB   SO   ERA   G  GS  CG  RUN   ER ShO HRA  DP"

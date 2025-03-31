@@ -55,7 +55,7 @@ Sub CompileLeague ()
         Color 15, 0
         Cls
 
-        Call ReadLeagueStats (leagueFile$)
+        Call ReadLeagueStats(leagStatFile$)
 
         Erase divWins, divLosses
 
@@ -1147,7 +1147,7 @@ Sub CalcStatTotals (statName$, totalGames)
 
         If BA$(Z) = statName$ Then
             OFT!(Z, 1) = ldrBatStat(4) / ldrBatStat(3)
-            For M = 3 To 14: 
+            For M = 3 To 14:
                 OFT!(Z, M) = ldrBatStat(M)
             Next M
             GoTo 3535
@@ -1159,7 +1159,7 @@ Sub CalcStatTotals (statName$, totalGames)
 
         OFT!(40, 1) = ldrBatStat(4) / ldrBatStat(3)
 
-        For M = 3 To 14: 
+        For M = 3 To 14:
             OFT!(40, M) = ldrBatStat(M)
         Next M
 
@@ -1185,7 +1185,7 @@ Sub CalcStatTotals (statName$, totalGames)
         Next Z
 
         For Z = 1 To TEAMS_PER_LEAGUE
-            If OFT!(Z, 1) = OFT!(40, 1) Then 
+            If OFT!(Z, 1) = OFT!(40, 1) Then
                 BA$(Z) = "*"
             End If
         Next Z
@@ -1194,7 +1194,7 @@ Sub CalcStatTotals (statName$, totalGames)
 
     For Z = 1 To TEAMS_PER_LEAGUE
 
-        If ldrPitStat(1) = 0 Then 
+        If ldrPitStat(1) = 0 Then
             ldrPitStat(1) = 1
             ldrPitStat(4) = 3
         End If
@@ -1212,7 +1212,7 @@ Sub CalcStatTotals (statName$, totalGames)
     If ldrPitStat(4) / ldrPitStat(1) * 27 < DFT!(40, 1) Then
 
         DFT!(40, 1) = ldrPitStat(4) / ldrPitStat(1) * 27
-        For M = 2 To 14: 
+        For M = 2 To 14:
             DFT!(40, M) = ldrPitStat(M - 1)
         Next M
 
@@ -1239,7 +1239,7 @@ Sub CalcStatTotals (statName$, totalGames)
         Next Z
 
         For Z = 1 To TEAMS_PER_LEAGUE
-            If DFT!(Z, 1) = DFT!(40, 1) Then 
+            If DFT!(Z, 1) = DFT!(40, 1) Then
                 ER$(Z) = "*"
             End If
         Next Z
@@ -1253,7 +1253,7 @@ End Sub
 '     SortStandingsLeague Subroutine
 '----------------------------------------
 'This subroutine sorts the leaders in the
-'target league. Currently setup using a 
+'target league. Currently setup using a
 'bubble sort algorithm.
 Sub SortStandingsLeague
 

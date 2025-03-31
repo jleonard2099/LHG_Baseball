@@ -1,5 +1,6 @@
 
 Dim opSysType$
+Dim Shared dirSeparator$
 
 Dim Shared diskPaths$(0 To 4), Q$(0 To 2056), Q2$(0 To 2056), Q3$(100)
 Dim Shared teamNames$(MAX_TEAMS)
@@ -66,7 +67,7 @@ ReDim homeScores(MAX_SCHEDULE_GAMES), visitorScores(MAX_SCHEDULE_GAMES)
 
 ReDim scheduleH$(MAX_SCHEDULE_GAMES), scheduleV$(MAX_SCHEDULE_GAMES)
 'ReDim homeTeam$(MAX_SCHEDULE_GAMES), visitingTeam$(MAX_SCHEDULE_GAMES)
-'ReDim scheduleYN$(MAX_SCHEDULE_GAMES, 1)
+ReDim scheduleYN$(MAX_SCHEDULE_GAMES, 1)
 'ReDim yearNumber$(MAX_SCHEDULE_GAMES, 1)
 
 
@@ -261,8 +262,8 @@ Dim teamLosses, teamWins
 Dim daysRest(21), daysInjure(22)
 
 Dim totBatRat(15)
-Dim totPitch(33) 'totPitRat
-Dim totPitRat&(33) 'compTotPitRat&
+Dim totPitchRat(33)
+Dim totPitRat&(33)
 
 Dim divisionNames$(4)
 Dim parkType$(3)
@@ -343,7 +344,7 @@ Dim Shared B1(3, 1), B2%(0 To 3, 0 To 2), B3%(0 To 1, 0 To 9), B4%(1, 7, 9)
 Dim Shared B7%(0 To 1, 0 To 9), B9%(1, 10), BT%(0 To 1, 1 To 9, 1 To 9)
 Dim Shared CF%(0 To 9, 0 To 2), CSS(1, 22, 6), D3%(1), DP%(1)
 Dim Shared P1(0 To 1), P2%(1)
-Dim Shared P6%(1)
+Dim Shared gamePitcher(1)
 Dim Shared S1%(1), S8%(1, 1), SO%(0 To 5, 0 To 2)
 Dim Shared T3%(22), X0%(1, 2, 23), YR%(1)
 
@@ -354,7 +355,7 @@ Dim Shared gameM(0 To 9), gameSA(1, 24)
 
 Dim Shared gameScore(1, 2), GK%(1), H0%(1)
 Dim Shared injuryStatus(0 To 1, 0 To 22), L0%(1), LB%(9, 1)
-Dim Shared teamMgrProfileVal(0 To 1, 999), teamSplit(1, 11)
+Dim Shared teamMgrProfileVal(0 To 1, 999), teamSplit(1, 11), teamYears(1)
 
 Dim Shared B1!(9), parkHRVals!(1)
 

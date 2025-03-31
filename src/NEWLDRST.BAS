@@ -296,88 +296,93 @@ Sub NewStandings_Screen (league$)
 
         Cls
 
-        Color 11
-        Locate 1, 35: Print league$
-        Color 14
-        Locate 2: Print Tab(16); "                      MAG. LNG LNG C  C   HOME  ROAD  X-IN  L-10"
-        Locate 3
-
         Select Case NT
 
             Case 1
-                Print #1, div1Name$;
+                targetDiv$ = div1Name$
 
             Case 2
-                Print #1, div2Name$;
+                targetDiv$ = div2Name$
 
             Case 3
-                Print #1, div3Name$;
+                targetDiv$ = div3Name$
 
             Case 4
-                Print #1, div4Name$;
+                targetDiv$ = div4Name$
 
         End Select
 
-        Print Tab(16); "G   W   L   PCT   GB   #   WS  LS  WS LS  W- L  W- L  W- L  W- L"
+        If NT > 1 And targetDiv$ <> "" Then
 
-        For I = AA To ZZ
+            Color 11
+            Locate 2, 35: Print league$
+            
+            Color 14
+            Locate 4: Print Tab(16); "                      MAG. LNG LNG C  C   HOME  ROAD  X-IN  L-10"
 
-            If expStdLeagName$(I) <> "" And expStdLeagName$(I) <> "*" Then
+            Print RTrim$(targetDiv$)
+            Print Tab(16); "G   W   L   PCT   GB   #   WS  LS  WS LS  W- L  W- L  W- L  W- L"
 
-                Color 3
-                Print expStdLeagName$(I);
-                Color 15
+            For I = AA To ZZ
 
-                'G / W / L
-                Print Tab(14); Using "###"; teamTotWins(I) + teamTotLosses(I); Tab(18);
-                Print Using "###"; teamTotWins(I); Tab(22);
-                Print Using "###"; teamTotLosses(I);
+                If expStdLeagName$(I) <> "" And expStdLeagName$(I) <> "*" Then
 
-                ' PCT
-                If teamTotLosses(I) = 0 And teamTotLosses(I) + teamTotWins(I) <> 0 Then
-                    Print Tab(26); "1.000";
-                Else
-                    If teamTotWins(I) = 0 Then
-                        Print Tab(27); ".000";
+                    Color 3
+                    Print expStdLeagName$(I);
+                    Color 15
+
+                    'G / W / L
+                    Print Tab(14); Using "###"; teamTotWins(I) + teamTotLosses(I); Tab(18);
+                    Print Using "###"; teamTotWins(I); Tab(22);
+                    Print Using "###"; teamTotLosses(I);
+
+                    ' PCT
+                    If teamTotLosses(I) = 0 And teamTotLosses(I) + teamTotWins(I) <> 0 Then
+                        Print Tab(26); "1.000";
                     Else
-                        If teamTotWins(I) + teamTotLosses(I) <> 0 Then
-                            winPCT! = teamTotWins(I) /  (teamTotWins(I) + teamTotLosses(I))
-                            Print Tab(27); Using ".###"; winPCT!;
+                        If teamTotWins(I) = 0 Then
+                            Print Tab(27); ".000";
                         Else
-                            If teamTotWins(I) + teamTotLosses(I) = 0 Then Print Tab(27); ".000";
+                            If teamTotWins(I) + teamTotLosses(I) <> 0 Then
+                                winPCT! = teamTotWins(I) /  (teamTotWins(I) + teamTotLosses(I))
+                                Print Tab(27); Using ".###"; winPCT!;
+                            Else
+                                If teamTotWins(I) + teamTotLosses(I) = 0 Then Print Tab(27); ".000";
+                            End If
                         End If
                     End If
+
+                    ' GB
+                    calcGB! = ( (teamTotWins(AA) - teamTotWins(I)) + (teamTotLosses(I) - teamTotLosses(AA)) ) / 2
+                    If calcGB! = 0 Then
+                        Print Tab(32); " ---";
+                    Else
+                        Print Tab(32); Using "##.#"; calcGB!;
+                    End If
+
+                    Print Tab(43); Using "##"; teamWinStreak(I); Tab(46); teamLoseStreak(I); Tab(50); cWinStreak(I); Tab(53); cLoseStreak(I);
+                    Print Tab(57); Using "##"; totHomeWinss!(I);: Print Tab(60); Using "##"; totHomeLosses!(I);
+                    Print Tab(63); Using "##"; totRoadWins(I);: Print Tab(66); Using "##"; totRoadLosses(I);
+                    Print Tab(69); Using "##"; totExtInnWins(I);: Print Tab(72); Using "##"; totExtInnLosses(I);
+                    Print Tab(75); Using "##"; lastTenWins(I);: Print Tab(78); Using "##"; lastTenLosses(I)
+
                 End If
 
-                ' GB
-                calcGB! = ( (teamTotWins(AA) - teamTotWins(I)) + (teamTotLosses(I) - teamTotLosses(AA)) ) / 2
-                If calcGB! = 0 Then
-                    Print Tab(32); " ---";
-                Else
-                    Print Tab(32); Using "##.#"; calcGB!;
-                End If
+            Next
 
-                Print Tab(43); Using "##"; teamWinStreak(I); Tab(46); teamLoseStreak(I); Tab(50); cWinStreak(I); Tab(53); cLoseStreak(I);
-                Print Tab(57); Using "##"; totHomeWinss!(I);: Print Tab(60); Using "##"; totHomeLosses!(I);
-                Print Tab(63); Using "##"; totRoadWins(I);: Print Tab(66); Using "##"; totRoadLosses(I);
-                Print Tab(69); Using "##"; totExtInnWins(I);: Print Tab(72); Using "##"; totExtInnLosses(I);
-                Print Tab(75); Using "##"; lastTenWins(I);: Print Tab(78); Using "##"; lastTenLosses(I)
+            'MAG #
+            MJ = 163 - teamTotWins(AA) - teamTotLosses(AA + 1)
+            If MJ < 0 Then MJ = 0
 
-            End If
+            Locate 6, 38
+            Print Using "###"; MJ;
 
-        Next
-
-        'MAG #
-        MJ = 163 - teamTotWins(AA) - teamTotLosses(AA + 1)
-        If MJ < 0 Then MJ = 0
-
-        Locate 4, 38
-        Print Using "###"; MJ;
-
-        Color 14
-        Locate LAST_LINE, 1: Print "HIT ANY KEY TO CONTINUE";
-        I$ = GetKeyPress$
-
+            Color 14
+            Locate LAST_ROW - 1: Print "HIT ANY KEY TO CONTINUE";
+            I$ = GetKeyPress$
+            
+        End If
+        
     Next NT
 
 End Sub
@@ -416,76 +421,83 @@ Sub NewStandings_Report (printDest, destFile$, league$)
 
         Call SortStandings(AA, ZZ)
 
-        Print #1, Tab(16); "                      MAG.  L  L   C  C   HOME  ROAD  X-IN  L-10"
-
         Select Case NT
 
             Case 1
-                Print #1, div1Name$;
+                targetDiv$ = div1Name$
 
             Case 2
-                Print #1, div2Name$;
+                targetDiv$ = div2Name$
 
             Case 3
-                Print #1, div3Name$;
+                targetDiv$ = div3Name$
 
             Case 4
-                Print #1, div4Name$;
+                targetDiv$ = div4Name$
 
         End Select
 
-        Print #1, Tab(16); "G   W   L   PCT   GB   #    WS LS  WS LS  W- L  W- L  W- L  W- L"
+        If NT > 1 And targetDiv$ <> "" Then
 
-        For I = AA To ZZ
+            Print #1, Tab(35); league$
+            Print #1, Tab(16); "                      MAG.  L  L   C  C   HOME  ROAD  X-IN  L-10"
 
-            If expStdLeagName$(I) <> "" And expStdLeagName$(I) <> "*" Then
+            Print #1, RTrim$(targetDiv$);
+            Print #1, Tab(16); "G   W   L   PCT   GB   #    WS LS  WS LS  W- L  W- L  W- L  W- L"
+            Print #1, String$(80,45)
 
-                Print #1, expStdLeagName$(I);
-                Print #1, Tab(14); Using "###"; teamTotWins(I) + teamTotLosses(I); Tab(18);
-                Print #1, Using "###"; teamTotWins(I); Tab(22);
-                Print #1, Using "###"; teamTotLosses(I);
+            For I = AA To ZZ
 
-                'PCT
-                If teamTotLosses(I) = 0 And teamTotLosses(I) + teamTotWins(I) <> 0 Then
-                    Print #1, Tab(26); "1.000";
-                Else
-                    If teamTotWins(I) = 0 Then
-                        Print #1, Tab(27); ".000";
+                If expStdLeagName$(I) <> "" And expStdLeagName$(I) <> "*" Then
+
+                    Print #1, expStdLeagName$(I);
+                    Print #1, Tab(14); Using "###"; teamTotWins(I) + teamTotLosses(I); Tab(18);
+                    Print #1, Using "###"; teamTotWins(I); Tab(22);
+                    Print #1, Using "###"; teamTotLosses(I);
+
+                    'PCT
+                    If teamTotLosses(I) = 0 And teamTotLosses(I) + teamTotWins(I) <> 0 Then
+                        Print #1, Tab(26); "1.000";
                     Else
-                        If teamTotWins(I) + teamTotLosses(I) = 0 Then
+                        If teamTotWins(I) = 0 Then
                             Print #1, Tab(27); ".000";
                         Else
-                            winPCT! = teamTotWins(I) /  (teamTotWins(I) + teamTotLosses(I))
-                            Print #1, Tab(27); Using ".###"; winPCT!;
+                            If teamTotWins(I) + teamTotLosses(I) = 0 Then
+                                Print #1, Tab(27); ".000";
+                            Else
+                                winPCT! = teamTotWins(I) /  (teamTotWins(I) + teamTotLosses(I))
+                                Print #1, Tab(27); Using ".###"; winPCT!;
+                            End If
                         End If
                     End If
+
+                    'GB
+                    If ((teamTotWins(AA) - teamTotWins(I)) + (teamTotLosses(I) - teamTotLosses(AA))) / 2 = 0 Then
+                        Print #1, Tab(32); " ---";
+                    Else
+                        Print #1, Tab(32); Using "##.#"; ((teamTotWins(NT * 10 - 9) - teamTotWins(I)) + (teamTotLosses(I) - teamTotLosses(NT * 10 - 9))) / 2;
+                    End If
+
+                    If I = AA Then
+                        MJ = 163 - teamTotWins(AA) - teamTotLosses(AA + 1)
+                        If MJ < 0 Then MJ = 0
+                        Print #1, Tab(38); Using "###"; MJ
+                    End If
+
+                    Print #1, Tab(44); Using "##"; teamWinStreak(I); Tab(47); teamLoseStreak(I); Tab(51); cWinStreak(I); Tab(54); cLoseStreak(I);
+                    Print #1, Tab(57); Using "##"; totHomeWinss!(I);: Print #1, Tab(60); Using "##"; totHomeLosses!(I);
+                    Print #1, Tab(63); Using "##"; totRoadWins(I);: Print #1, Tab(66); Using "##"; totRoadLosses(I);
+                    Print #1, Tab(69); Using "##"; totExtInnWins(I);: Print #1, Tab(72); Using "##"; totExtInnLosses(I);
+                    Print #1, Tab(75); Using "##"; lastTenWins(I);: Print #1, Tab(78); Using "##"; lastTenLosses(I)
+
                 End If
 
-                'GB
-                If ((teamTotWins(AA) - teamTotWins(I)) + (teamTotLosses(I) - teamTotLosses(AA))) / 2 = 0 Then
-                    Print #1, Tab(32); " ---";
-                Else
-                    Print #1, Tab(32); Using "##.#"; ((teamTotWins(NT * 10 - 9) - teamTotWins(I)) + (teamTotLosses(I) - teamTotLosses(NT * 10 - 9))) / 2;
-                End If
+            Next I
 
-                If I = AA Then
-                    MJ = 163 - teamTotWins(AA) - teamTotLosses(AA + 1)
-                    If MJ < 0 Then MJ = 0
-                    Print #1, Tab(38); Using "###"; MJ
-                End If
+            Print #1,
+            Print #1,
 
-                Print #1, Tab(44); Using "##"; teamWinStreak(I); Tab(47); teamLoseStreak(I); Tab(51); cWinStreak(I); Tab(54); cLoseStreak(I);
-                Print #1, Tab(57); Using "##"; totHomeWinss!(I);: Print #1, Tab(60); Using "##"; totHomeLosses!(I);
-                Print #1, Tab(63); Using "##"; totRoadWins(I);: Print #1, Tab(66); Using "##"; totRoadLosses(I);
-                Print #1, Tab(69); Using "##"; totExtInnWins(I);: Print #1, Tab(72); Using "##"; totExtInnLosses(I);
-                Print #1, Tab(75); Using "##"; lastTenWins(I);: Print #1, Tab(78); Using "##"; lastTenLosses(I)
-
-            End If
-
-        Next
-
-        Print #1,
-        Print #1,
+        End If
 
     Next NT
 

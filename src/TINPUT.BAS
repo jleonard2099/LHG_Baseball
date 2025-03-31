@@ -1,7 +1,7 @@
 '----------------------------------------
 '        InputEditTeam Subroutine
 '----------------------------------------
-'This subroutine steps user through screens 
+'This subroutine steps user through screens
 'for adjusting team data and players
 '
 'NOTE: <ENTER> key is valued as 0 for when
@@ -91,7 +91,7 @@ Sub SaveTeamFile (newID, yearNumber$, targetTeam$, targetFile$, teamIdx)
 
     fileLength& = LOF(1)
 
-    If teamIdx = 0 Or newID = 1 Then 
+    If teamIdx = 0 Or newID = 1 Then
         teamIdx = (fileLength& / TEAM_SIZE_BYTES) + 1
     End If
 
@@ -435,14 +435,14 @@ Sub LoadTeam (targetTeam$, SS, statFile$)
         MsgText$ = "NO COMPILED STATS COULD BE FOUND FOR THIS TEAM. PRESS ANY KEY TO RETURN TO THE MAIN MENU"
         BoxWidth = 24
         BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+        Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
         Call CSMsgBox(MsgText$, BoxWidth, Pass)
         I$ = GetKeyPress$
         Call CSMsgBox("", 0, Pass)
 
     Else
 
-        Call ReadTeamStats (team$, statFile$)
+        Call ReadTeamStats(team$, statFile$)
 
         If Not _FileExists(diskPaths$(1) + statFile$ + "R") Then
 
@@ -614,27 +614,27 @@ Sub CalculateRunRating ()
 
                 Case 4, 5
                     batterRatings(I, 16) = 2
-            
-                Case 6 to 10
+
+                Case 6 To 10
                     batterRatings(I, 16) = 3
-            
-                Case 11 to 15 
+
+                Case 11 To 15
                     batterRatings(I, 16) = 4
-            
-                Case 16 to 20 
+
+                Case 16 To 20
                     batterRatings(I, 16) = 5
-            
-                Case 21 to 25
+
+                Case 21 To 25
                     batterRatings(I, 16) = 6
-            
-                Case 26 to 30
+
+                Case 26 To 30
                     batterRatings(I, 16) = 7
-            
-                Case 31 to 40 
+
+                Case 31 To 40
                     batterRatings(I, 16) = 8
-            
+
                 Case Else
-                '40+
+                    '40+
                     batterRatings(I, 16) = 9
 
             End Select
@@ -645,7 +645,7 @@ Sub CalculateRunRating ()
 
     Next
 
-    Locate LAST_LINE, 1: Print "PRESS ANY KEY TO CONTINUE";
+    Locate LAST_ROW - 1: Print "PRESS ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
     Cls
@@ -657,19 +657,19 @@ Sub CalculateRunRating ()
             RR = Int(Rnd(1) * 20) + 1
             RR = RR * 1.4
 
-            If RR <= 4 Then 
+            If RR <= 4 Then
                 pitcherRatings(I, 31) = 1
             End If
-            If RR > 4 And RR <= 8 Then 
+            If RR > 4 And RR <= 8 Then
                 pitcherRatings(I, 31) = 2
             End If
-            If RR > 8 And RR <= 12 Then 
+            If RR > 8 And RR <= 12 Then
                 pitcherRatings(I, 31) = 3
             End If
-            If RR > 12 And RR <= 16 Then 
+            If RR > 12 And RR <= 16 Then
                 pitcherRatings(I, 31) = 4
             End If
-            If RR > 16 Then 
+            If RR > 16 Then
                 pitcherRatings(I, 31) = 5
             End If
 
@@ -679,7 +679,7 @@ Sub CalculateRunRating ()
 
     Next
 
-    Locate LAST_LINE, 1: Print "PRESS ANY KEY TO CONTINUE";
+    Locate LAST_ROW - 1: Print "PRESS ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
 End Sub
@@ -735,10 +735,10 @@ Sub CalculateBuntRating ()
             End Select
 
             BUNT! = (BUNT! + BR) / 2
-            If BUNT! < 1 Then 
+            If BUNT! < 1 Then
                 BUNT! = 1
             End If
-            If BUNT! > 9 Then 
+            If BUNT! > 9 Then
                 BUNT! = 9
             End If
             batterRatings(I, 30) = CInt(BUNT!)
@@ -753,7 +753,7 @@ Sub CalculateBuntRating ()
 
     Next
 
-    Locate LAST_LINE, 1: Print "PRESS ANY KEY TO CONTINUE";
+    Locate LAST_ROW - 1: Print "PRESS ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
     Cls
@@ -771,18 +771,18 @@ Sub CalculateBuntRating ()
 
             R1! = (pitcherRatings(I, 28) * 100 + PA / 2) / PA
             R1! = 11 - R1! ^ 2 / 25
-            If R1! < 1 Then 
+            If R1! < 1 Then
                 R1! = 1
             End If
-            If R1! > 10 Then 
+            If R1! > 10 Then
                 R1! = 10
             End If
 
             R2! = 11 - (SLG2! - OB!) / 25
-            If R2! < 1 Then 
+            If R2! < 1 Then
                 R2! = 1
             End If
-            If R2! > 10 Then 
+            If R2! > 10 Then
                 R2! = 10
             End If
 
@@ -804,10 +804,10 @@ Sub CalculateBuntRating ()
             End Select
 
             BUNT! = (BUNT! + BR) / 2
-            If BUNT! < 1 Then 
+            If BUNT! < 1 Then
                 BUNT! = 1
             End If
-            If BUNT! > 9 Then 
+            If BUNT! > 9 Then
                 BUNT! = 9
             End If
 
@@ -818,7 +818,7 @@ Sub CalculateBuntRating ()
 
     Next
 
-    Locate LAST_LINE, 1: Print "PRESS ANY KEY TO CONTINUE";
+    Locate LAST_ROW - 1: Print "PRESS ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
 End Sub
@@ -893,36 +893,36 @@ Sub EditBatter ()
             Locate 21, 13: Print "LHB vs LHP"
             Locate 22, 13: Print "LHB vs RHP"
             Locate 23, 13: Print "RHB vs LHP";
-            Locate LAST_LINE, 13: Print "RHB vs RHP";
+            Locate 24, 13: Print "RHB vs RHP";
 
             ' INITIALIZE BATTER FIELDS
-            FG = Black
-            BG = DarkGray
+            FG = 0
+            BG = 7
 
             Color FG, BG
 
             Locate 3, 7: QPrint PadRight$(batterNames$(I), 15), FG, BG, -1
 
-            If batterRatings(I, 0) = 2 Then 
+            If batterRatings(I, 0) = 2 Then
                 BATS$ = "RP"
             End If
-            If batterRatings(I, 0) = -2 Then 
+            If batterRatings(I, 0) = -2 Then
                 BATS$ = "LP"
             End If
-            If batterRatings(I, 0) = 1 Then 
+            If batterRatings(I, 0) = 1 Then
                 BATS$ = "R"
             End If
-            If batterRatings(I, 0) = -1 Then 
+            If batterRatings(I, 0) = -1 Then
                 BATS$ = "L"
             End If
-            If batterRatings(I, 0) = 0 Then 
+            If batterRatings(I, 0) = 0 Then
                 BATS$ = "S"
             End If
 
             Locate 3, 30: QPrint PadRight$(BATS$, 2), FG, BG, -1
 
             ACT$ = "Y"
-            If batterRatings(I, 31) = 1 Then 
+            If batterRatings(I, 31) = 1 Then
                 ACT$ = "N"
             End If
 
@@ -993,12 +993,12 @@ Sub EditBatter ()
             Locate 23, 42: Print Using "###"; batterRatings(I, 71);
             Locate 23, 47: Print Using "###"; batterRatings(I, 72);
             Locate 23, 52: Print Using "###"; batterRatings(I, 73);
-            Locate LAST_LINE, 27: Print Using "###"; batterRatings(I, 74);
-            Locate LAST_LINE, 32: Print Using "###"; batterRatings(I, 75);
-            Locate LAST_LINE, 37: Print Using "###"; batterRatings(I, 76);
-            Locate LAST_LINE, 42: Print Using "###"; batterRatings(I, 77);
-            Locate LAST_LINE, 47: Print Using "###"; batterRatings(I, 78);
-            Locate LAST_LINE, 52: Print Using "###"; batterRatings(I, 79);
+            Locate 24, 27: Print Using "###"; batterRatings(I, 74);
+            Locate 24, 32: Print Using "###"; batterRatings(I, 75);
+            Locate 24, 37: Print Using "###"; batterRatings(I, 76);
+            Locate 24, 42: Print Using "###"; batterRatings(I, 77);
+            Locate 24, 47: Print Using "###"; batterRatings(I, 78);
+            Locate 24, 52: Print Using "###"; batterRatings(I, 79);
 
             BName:
             Locate 3, 7
@@ -1627,7 +1627,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 68)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 68) = Int(draftB#)
-            Locate LAST_LINE, 27: Print Using "###"; batterRatings(I, 68);
+            Locate 24, 27: Print Using "###"; batterRatings(I, 68);
             If XCode = 1 GoTo bLRKO:
             If XCode = 2 GoTo bDone
 
@@ -1637,7 +1637,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 69)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 69) = Int(draftB#)
-            Locate LAST_LINE, 32: Print Using "###"; batterRatings(I, 69);
+            Locate 24, 32: Print Using "###"; batterRatings(I, 69);
             If XCode = 1 GoTo bRLBA:
             If XCode = 2 GoTo bDone
 
@@ -1647,7 +1647,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 70)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 70) = Int(draftB#)
-            Locate LAST_LINE, 37: Print Using "###"; batterRatings(I, 70);
+            Locate 24, 37: Print Using "###"; batterRatings(I, 70);
             If XCode = 1 GoTo bRL2B:
             If XCode = 2 GoTo bDone
 
@@ -1657,7 +1657,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 71)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 71) = Int(draftB#)
-            Locate LAST_LINE, 42: Print Using "###"; batterRatings(I, 71);
+            Locate 24, 42: Print Using "###"; batterRatings(I, 71);
             If XCode = 1 GoTo bRL3B:
             If XCode = 2 GoTo bDone
 
@@ -1667,7 +1667,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 72)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 72) = Int(draftB#)
-            Locate LAST_LINE, 47: Print Using "###"; batterRatings(I, 72);
+            Locate 24, 47: Print Using "###"; batterRatings(I, 72);
             If XCode = 1 GoTo bRLHR:
             If XCode = 2 GoTo bDone
 
@@ -1677,12 +1677,12 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 73)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 73) = Int(draftB#)
-            Locate LAST_LINE, 52: Print Using "###"; batterRatings(I, 73);
+            Locate 24, 52: Print Using "###"; batterRatings(I, 73);
             If XCode = 1 GoTo bRLBB:
             If XCode = 2 GoTo bDone
 
             bRRBA:
-            Locate LAST_LINE, 27
+            Locate 24, 27
             Max = 3
             draftB# = batterRatings(I, 74)
             Call NumIn(draftB#, Max, XCode, FG, BG)
@@ -1692,7 +1692,7 @@ Sub EditBatter ()
             If XCode = 2 GoTo bDone
 
             bRR2B:
-            Locate LAST_LINE, 32
+            Locate 24, 32
             Max = 3
             draftB# = batterRatings(I, 75)
             Call NumIn(draftB#, Max, XCode, FG, BG)
@@ -1702,7 +1702,7 @@ Sub EditBatter ()
             If XCode = 2 GoTo bDone
 
             bRR3B:
-            Locate LAST_LINE, 37
+            Locate 24, 37
             Max = 3
             draftB# = batterRatings(I, 76)
             Call NumIn(draftB#, Max, XCode, FG, BG)
@@ -1712,7 +1712,7 @@ Sub EditBatter ()
             If XCode = 2 GoTo bDone
 
             bRRHR:
-            Locate LAST_LINE, 42
+            Locate 24, 42
             Max = 3
             draftB# = batterRatings(I, 77)
             Call NumIn(draftB#, Max, XCode, FG, BG)
@@ -1722,7 +1722,7 @@ Sub EditBatter ()
             If XCode = 2 GoTo bDone
 
             bRRBB:
-            Locate LAST_LINE, 47
+            Locate 24, 47
             Max = 3
             draftB# = batterRatings(I, 78)
             Call NumIn(draftB#, Max, XCode, FG, BG)
@@ -1732,7 +1732,7 @@ Sub EditBatter ()
             If XCode = 2 GoTo bDone
 
             bRRKO:
-            Locate LAST_LINE, 52
+            Locate 24, 52
             Max = 3
             draftB# = batterRatings(I, 79)
             Call NumIn(draftB#, Max, XCode, FG, BG)
@@ -1742,7 +1742,7 @@ Sub EditBatter ()
 
             bDone:
             Color 14, 1
-            Locate 25, 1
+            Locate LAST_ROW - 1, 1
             Print "Is this okay? (Yes/No) ";
             X$ = ""
             Call YesNoB(X$, XCode, FG, BG)
@@ -1753,23 +1753,23 @@ Sub EditBatter ()
 
             batterRatings(I, 0) = 0
             BATS$ = _Trim$(BATS$)
-            If UCase$(BATS$) = "L" Then 
+            If UCase$(BATS$) = "L" Then
                 batterRatings(I, 0) = -1
             End If
-            If UCase$(BATS$) = "R" Then 
+            If UCase$(BATS$) = "R" Then
                 batterRatings(I, 0) = 1
             End If
-            If UCase$(BATS$) = "LP" Then 
+            If UCase$(BATS$) = "LP" Then
                 batterRatings(I, 0) = -2
             End If
-            If UCase$(BATS$) = "RP" Then 
+            If UCase$(BATS$) = "RP" Then
                 batterRatings(I, 0) = 2
             End If
 
             ACT$ = _Trim$(ACT$)
             batterRatings(I, 31) = 0
 
-            If UCase$(ACT$) = "N" Then 
+            If UCase$(ACT$) = "N" Then
                 batterRatings(I, 31) = 1
             End If
 
@@ -2330,7 +2330,7 @@ Sub EditTeamInfo (YN$, team$, teamIdx)
         Done:
         'Do
         Color 14, 1
-        Locate LAST_LINE, 1
+        Locate LAST_ROW - 1, 1
         'Print "Is this okay? (Y)es/(N)o/(A)bort ";
         Print "Is this okay? (Y)es/(N)o";
         X$ = ""
@@ -2350,7 +2350,7 @@ Sub EditTeamInfo (YN$, team$, teamIdx)
             MsgText$ = "TEAM INDEX OR TEAM NAME NOT COMPLETED. PRESS ANY KEY TO RETURN TO DATA ENTRY"
             BoxWidth = 26
             BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-            Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+            Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
             Call CSMsgBox(MsgText$, BoxWidth, Pass)
             I$ = GetKeyPress$
             Call CSMsgBox("", 0, Pass)
@@ -2427,7 +2427,7 @@ Sub EditPitcher ()
             Locate 21, 26: Print "BAVG   K%  BB%  HR%  2B%  3B%"
             Locate 22, 13: Print "LHB vs LHP"
             Locate 23, 13: Print "LHB vs RHP"
-            Locate LAST_LINE, 13: Print "RHB vs LHP";
+            Locate 24, 13: Print "RHB vs LHP";
             Locate 25, 13: Print "RHB vs RHP";
 
             ' INITIALIZE PITCHER FIELDS
@@ -3209,62 +3209,62 @@ Sub EditPitcher ()
             If XCode = 2 GoTo PDone
 
             PRLBA:
-            Locate LAST_LINE, 27
+            Locate 24, 27
             Max = 3
             draftP# = pitcherRatings(I, 77)
             Call NumIn(draftP#, Max, XCode, FG, BG)
             pitcherRatings(I, 77) = Int(draftP#)
-            Locate LAST_LINE, 27: Print Using "###"; pitcherRatings(I, 77);
+            Locate 24, 27: Print Using "###"; pitcherRatings(I, 77);
             If XCode = 1 GoTo PLRKO:
             If XCode = 2 GoTo PDone
 
             PRL2B:
-            Locate LAST_LINE, 32
+            Locate 24, 32
             Max = 3
             draftP# = pitcherRatings(I, 78)
             Call NumIn(draftP#, Max, XCode, FG, BG)
             pitcherRatings(I, 78) = Int(draftP#)
-            Locate LAST_LINE, 32: Print Using "###"; pitcherRatings(I, 78);
+            Locate 24, 32: Print Using "###"; pitcherRatings(I, 78);
             If XCode = 1 GoTo PRLBA:
             If XCode = 2 GoTo PDone
 
             PRL3B:
-            Locate LAST_LINE, 37
+            Locate 24, 37
             Max = 3
             draftP# = pitcherRatings(I, 79)
             Call NumIn(draftP#, Max, XCode, FG, BG)
             pitcherRatings(I, 79) = Int(draftP#)
-            Locate LAST_LINE, 37: Print Using "###"; pitcherRatings(I, 79);
+            Locate 24, 37: Print Using "###"; pitcherRatings(I, 79);
             If XCode = 1 GoTo PRL2B:
             If XCode = 2 GoTo PDone
 
             PRLHR:
-            Locate LAST_LINE, 42
+            Locate 24, 42
             Max = 3
             draftP# = pitcherRatings(I, 80)
             Call NumIn(draftP#, Max, XCode, FG, BG)
             pitcherRatings(I, 80) = Int(draftP#)
-            Locate LAST_LINE, 42: Print Using "###"; pitcherRatings(I, 80);
+            Locate 24, 42: Print Using "###"; pitcherRatings(I, 80);
             If XCode = 1 GoTo PRL3B:
             If XCode = 2 GoTo PDone
 
             PRLBB:
-            Locate LAST_LINE, 47
+            Locate 24, 47
             Max = 3
             draftP# = pitcherRatings(I, 81)
             Call NumIn(draftP#, Max, XCode, FG, BG)
             pitcherRatings(I, 81) = Int(draftP#)
-            Locate LAST_LINE, 47: Print Using "###"; pitcherRatings(I, 81);
+            Locate 24, 47: Print Using "###"; pitcherRatings(I, 81);
             If XCode = 1 GoTo PRLHR:
             If XCode = 2 GoTo PDone
 
             PRLKO:
-            Locate LAST_LINE, 52
+            Locate 24, 52
             Max = 3
             draftP# = pitcherRatings(I, 82)
             Call NumIn(draftP#, Max, XCode, FG, BG)
             pitcherRatings(I, 82) = Int(draftP#)
-            Locate LAST_LINE, 52: Print Using "###"; pitcherRatings(I, 82);
+            Locate 24, 52: Print Using "###"; pitcherRatings(I, 82);
             If XCode = 1 GoTo PRLBB:
             If XCode = 2 GoTo PDone
 
@@ -3328,7 +3328,7 @@ Sub EditPitcher ()
             If XCode = 1 GoTo PRRBB:
 
             PDone:
-            Locate 25, 1
+            Locate LAST_ROW - 1, 1
             Print "Is this okay? (Yes/No) ";
             X$ = ""
             Call YesNoB(X$, XCode, FG, BG)
@@ -3436,12 +3436,12 @@ Sub PITCHINIT (i, FG, BG)
     Locate 23, 42: Print Using "###"; pitcherRatings(i, 74)
     Locate 23, 47: Print Using "###"; pitcherRatings(i, 75)
     Locate 23, 52: Print Using "###"; pitcherRatings(i, 76)
-    Locate LAST_LINE, 27: Print Using "###"; pitcherRatings(i, 77);
-    Locate LAST_LINE, 32: Print Using "###"; pitcherRatings(i, 78);
-    Locate LAST_LINE, 37: Print Using "###"; pitcherRatings(i, 79);
-    Locate LAST_LINE, 42: Print Using "###"; pitcherRatings(i, 80);
-    Locate LAST_LINE, 47: Print Using "###"; pitcherRatings(i, 81);
-    Locate LAST_LINE, 52: Print Using "###"; pitcherRatings(i, 82);
+    Locate 24, 27: Print Using "###"; pitcherRatings(i, 77);
+    Locate 24, 32: Print Using "###"; pitcherRatings(i, 78);
+    Locate 24, 37: Print Using "###"; pitcherRatings(i, 79);
+    Locate 24, 42: Print Using "###"; pitcherRatings(i, 80);
+    Locate 24, 47: Print Using "###"; pitcherRatings(i, 81);
+    Locate 24, 52: Print Using "###"; pitcherRatings(i, 82);
     Locate 25, 27: Print Using "###"; pitcherRatings(i, 83);
     Locate 25, 32: Print Using "###"; pitcherRatings(i, 84);
     Locate 25, 37: Print Using "###"; pitcherRatings(i, 85);
@@ -3461,31 +3461,22 @@ End Sub
 Sub ViewHitters (teamName$)
 
     Shared batterNames$()
-    Shared batterRatings(), totBatRat()
+    Shared batterRatings()
+    Shared teamRatings(), totBatRat()
     Shared batAvg!
 
     Do
 
         Cls
 
-        Color 12: Print teamName$
+        Locate 2, 1
+        Color teamRatings(11), teamRatings(12): Print teamName$
+
         Color 14
+        Locate 4, 1
         Print "BATTER     B POS     G  AB   R   H DB TR HR RBI  BB  SO  SB CS GA  BAVG"
 
         For I = 0 To 22
-
-            If I = 20 Then
-                Locate 23
-                Color 11
-                Print "HIT ANY KEY TO CONTINUE"
-                I$ = GetKeyPress$
-
-                Cls
-
-                Color 12: Print teamName$
-                Color 14
-                Print "BATTER     B POS     G  AB   R   H DB TR HR RBI  BB  SO  SB CS GA  BAVG"
-            End If
 
             Color 3
 
@@ -3493,7 +3484,7 @@ Sub ViewHitters (teamName$)
 
                 Print Left$(batterNames$(I), 10);
 
-                Color 7
+                Color 15
 
                 Select Case batterRatings(I, 0)
 
@@ -3533,16 +3524,16 @@ Sub ViewHitters (teamName$)
 
                 batAvg! = 0
 
-                If batterRatings(I, 4) > 0 Then 
+                If batterRatings(I, 4) > 0 Then
                     batAvg! = Int((batterRatings(I, 6) / batterRatings(I, 4) + .0005) * 1000)
                 End If
-                If batterRatings(I, 4) = 0 Or batAvg! = 0 Then 
+                If batterRatings(I, 4) = 0 Or batAvg! = 0 Then
                     Print Tab(68); ".000"
                 End If
-                If batAvg! > 0 And batAvg! < 100 Then 
+                If batAvg! > 0 And batAvg! < 100 Then
                     Print Tab(68); ".0";: Print Tab(70); Using "##"; batAvg!
                 End If
-                If batAvg! > 100 Then 
+                If batAvg! > 100 Then
                     Print Tab(68); ".";: Print Tab(69); Using "###"; batAvg!
                 End If
 
@@ -3550,20 +3541,25 @@ Sub ViewHitters (teamName$)
 
         Next
 
-        Print
-        Color 14
-        Print "TOTALS";
-        Locate , 23: Print Using "####    ####   ###    ###    ####    ###     .###"; totBatRat(1); totBatRat(3); totBatRat(5); totBatRat(7); totBatRat(9); totBatRat(11); totBatRat(3) / totBatRat(1)
-        Locate , 27: Print Using "####   ####   ###     ###     ###"; totBatRat(2); totBatRat(4); totBatRat(6); totBatRat(8); totBatRat(10)
+        If totBatRat(1) > 0 Then
+            bavg! = totBatRat(3) / totBatRat(1)
+        Else
+            bavg! = 0
+        End If
 
-        Color 11
-        Locate 20: Print "HIT TAB KEY FOR FIELDING STATS/ANY KEY TO CONTINUE"
+        Color 12
+        Print "TOTALS";
+        Locate , 23: Print Using "####    ####   ###    ###    ####    ###     .###"; totBatRat(1); totBatRat(3); totBatRat(5); totBatRat(7); totBatRat(9); totBatRat(11); bavg!
+        Locate , 27: Print Using "####   ####   ###     ###     ###"; totBatRat(2); totBatRat(4); totBatRat(6); totBatRat(8); totBatRat(10);
+
+        Color 14
+        Locate 30, 14: Print "HIT TAB KEY FOR FIELDING STATS / ANY KEY TO CONTINUE";
         I$ = GetKeyPress$
 
         If I$ = Chr$(9) Then
-            Call FieldingStats (teamName$)
-            Color 11
-            Locate 20: Print "HIT TAB KEY FOR FIELDING STATS/ANY KEY TO CONTINUE"
+            Call ViewFieldingStats(teamName$)
+            Color 14
+            Locate 30, 14: Print "HIT TAB KEY FOR BATTING STATS / ANY KEY TO CONTINUE";
             I$ = GetKeyPress$
             'TAB goes back to previous screen
             'any key goes to options selection (EXIT SUB)
@@ -3575,36 +3571,26 @@ End Sub
 
 
 '----------------------------------------
-'       ViewPitchers subroutine
+'       ViewPitchers Subroutine
 '----------------------------------------
 'This subroutine give the user a summary
 'of each team pitcher.
 Sub ViewPitchers (teamName$)
 
     Shared pitcherNames$()
-    Shared pitcherRatings(), totPitch()
+    Shared pitcherRatings()
+    Shared teamRatings(), totPitchRat()
 
     Cls
 
-    Color 12: Print teamName$
+    Locate 2, 1
+    Color teamRatings(11), teamRatings(12): Print teamName$
     Color 14
     Print "PITCHER      T  W  L SV  G GS  IP   H  BB  SO  ERA  GA HR CG WP HLDR"
 
     numberAppearances = 0
 
     For I = 0 To 21
-
-        If I = 18 Then
-            Color 11
-            Locate 23: Print "HIT ANY KEY TO CONTINUE"
-            I$ = GetKeyPress$
-
-            Cls
-
-            Color 12: Print teamName$
-            Color 14
-            Print "PITCHER      T  W  L SV  G GS  IP   H  BB  SO  ERA  GA HR CG WP HLDR"
-        End If
 
         Color 3
 
@@ -3613,12 +3599,12 @@ Sub ViewPitchers (teamName$)
             numberAppearances = numberAppearances + pitcherRatings(I, 4)
             Print Left$(pitcherNames$(I), 10);
 
-            Color 7
+            Color 15
 
-            If pitcherRatings(I, 0) = -1 Then 
+            If pitcherRatings(I, 0) = -1 Then
                 Print Tab(14); "L";
             End If
-            If pitcherRatings(I, 0) = 1 Then 
+            If pitcherRatings(I, 0) = 1 Then
                 Print Tab(14); "R";
             End If
 
@@ -3657,36 +3643,44 @@ Sub ViewPitchers (teamName$)
 
     Next
 
-    Print
-    Color 14
+    If totPitchRat(6) > 0 Then
+        rate! = (earnedRuns! * 9) / totPitchRat(6)
+    Else
+        rate! = 0
+    End If
+
+    Color 12
     Print "TOTALS";
     Locate , 14
-    Print Using "####  ####      ####    ####     #.##    ###   ###"; totPitch(1); totPitch(3); totPitch(6); totPitch(8); (earnedRuns! * 9) / totPitch(6); totPitch(13); totPitch(33)
+    Print Using "####  ####      ####    ####     #.##    ###   ###"; totPitchRat(1); totPitchRat(3); totPitchRat(6); totPitchRat(8); rate!; totPitchRat(13); totPitchRat(33)
     Locate , 17
-    Print Using "####      ###    ####    ####            ###"; totPitch(2); totPitch(5); totPitch(7); totPitch(9); totPitch(16)
+    Print Using "####      ###    ####    ####            ###"; totPitchRat(2); totPitchRat(5); totPitchRat(7); totPitchRat(9); totPitchRat(16)
     Print
+    Color 6
     Print "TOTAL APPEARANCES: "; numberAppearances
 
-    Color 11
-    Locate LAST_LINE: Print "HIT ANY KEY TO CONTINUE";
+    Color 14
+    Locate LAST_ROW - 1, 28: Print "HIT ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
 End Sub
 
 
 '----------------------------------------
-'     ViewHittingFielding subroutine
+'     ViewPitcherHittingFielding subroutine
 '----------------------------------------
 'This subroutine give the user a summary
 'of fielding and hitting stats for each
 'team pitcher.
-Sub ViewHittingFielding ()
+Sub ViewPitcherHittingFielding ()
 
     Shared pitcherRatings()
     Shared pitcherNames$()
 
     Cls
 
+    Locate 2, 1
+    Color 15: Print teamName$
     Color 14
     Print "PITCHER        G  AB   R   H DB TR HR RBI  BB  SO  SB CS BAVG  R B FAVG"
 
@@ -3695,7 +3689,7 @@ Sub ViewHittingFielding ()
         Color 3
         Print Left$(pitcherNames$(I), 10);
 
-        Color 7
+        Color 15
         Print Tab(14); Using "###"; pitcherRatings(I, 19);
         Print Tab(18); Using "###"; pitcherRatings(I, 20);
         Print Tab(22); Using "###"; pitcherRatings(I, 21);
@@ -3711,27 +3705,27 @@ Sub ViewHittingFielding ()
 
         If pitcherRatings(I, 11) <> 999 Then
             statPCT! = pitcherRatings(I, 11) / 1000
-            Print Tab(59); Using "#.###"; statPCT!;
+            Print Tab(58); Using "#.###"; statPCT!;
         Else
             batAvg! = 0
 
             '-- This is initialized as 1000
             '-- So when not given a value it calculates too large
-            If pitcherRatings(I, 20) > 0 Then 
+            If pitcherRatings(I, 20) > 0 Then
                 batAvg! = Int((pitcherRatings(I, 22) / pitcherRatings(I, 20) + .0005) * 1000)
             End If
-            If pitcherRatings(I, 20) = 0 Or batAvg! = 0 Then 
-                Print Tab(59); ".000";
+            If pitcherRatings(I, 20) = 0 Or batAvg! = 0 Then
+                Print Tab(58); ".000";
             End If
 
-            If batAvg! > 0 And batAvg! < 100 Then 
-                Print Tab(59); ".0";: Print Tab(61); Using "##"; batAvg!;
+            If batAvg! > 0 And batAvg! < 100 Then
+                Print Tab(58); ".0";: Print Tab(61); Using "##"; batAvg!;
             End If
-            If batAvg! > 100 And batAvg! < 1000 Then 
-                Print Tab(59); ".";: Print Tab(60); Using "###"; batAvg!;
+            If batAvg! > 100 And batAvg! < 1000 Then
+                Print Tab(58); ".";: Print Tab(60); Using "###"; batAvg!;
             End If
-            If batAvg! >= 1000 Then 
-                Print Tab(59); " ---";
+            If batAvg! >= 1000 Then
+                Print Tab(58); " ---";
             End If
 
         End If
@@ -3742,48 +3736,39 @@ Sub ViewHittingFielding ()
 
     Next
 
-    Color 11
-    Locate LAST_LINE: Print "HIT ANY KEY TO CONTINUE";
+    Color 14
+    Locate LAST_ROW - 2, 28: Print "HIT ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
 End Sub
 
 
 '----------------------------------------
-'       FieldingStats Subroutine
+'      ViewFieldingStats Subroutine
 '----------------------------------------
 'This subroutine give the user a summary
 'of field stats for each batter.
-Sub FieldingStats (teamName$)
+Sub ViewFieldingStats (teamName$)
 
     Shared batterNames$()
     Shared batterRatings()
+    Shared teamRatings()
 
     Cls
 
+    Locate 2, 1
+    Color teamRatings(11), teamRatings(12): Print teamName$
+
     Color 14
-    Print "BATTER       AVG ARM RGE  AVG ARM RGE  AVG ARM RGE  AVG ARM RGE RUN BUNT"
+    Print "             POSITION 1    POSITION 2  POSITION 3   POSITION 4"
+    Print "BATTER       AVG ARM RGE  AVG ARM RGE  AVG ARM RGE  AVG ARM RGE  RUN BUNT"
 
     For I = 0 To 22
-
-        If I = 20 Then
-
-            Color 11
-            Locate 23: Print "HIT ANY KEY TO CONTINUE"
-            I$ = GetKeyPress$
-
-            Cls
-
-            Color 12: Print teamName$
-            Color 14
-            Print "BATTER       AVG ARM RGE  AVG ARM RGE  AVG ARM RGE  AVG ARM RGE RUN BUNT"
-
-        End If
 
         Color 3
         Print Left$(batterNames$(I), 10);
 
-        Color 7
+        Color 15
         Print Tab(13); Using "####"; batterRatings(I, 26);
         Print Tab(19); Using "#"; batterRatings(I, 33);
         Print Tab(23); Using "#"; batterRatings(I, 34);
@@ -3796,9 +3781,10 @@ Sub FieldingStats (teamName$)
         Print Tab(52); Using "####"; batterRatings(I, 29);
         Print Tab(58); Using "#"; batterRatings(I, 39);
         Print Tab(62); Using "#"; batterRatings(I, 40);
-        Print Tab(66); Using "#"; batterRatings(I, 16);
-        Print Tab(71); Using "#"; batterRatings(I, 30)
+        Print Tab(67); Using "#"; batterRatings(I, 16);
+        Print Tab(72); Using "#"; batterRatings(I, 30)
 
     Next I
 
 End Sub
+

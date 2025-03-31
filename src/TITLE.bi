@@ -1,6 +1,6 @@
 Declare Sub TITLE ()
 Declare Sub TITLE_CAREER ()
-Declare Sub TITLE_EDITSTATS ()
+Declare Sub Title_EDITSTATS (titleType, subtitle$)
 Declare Sub TITLE_HEADER ()
 Declare Sub TITLE_LEADERS
 Declare Sub TITLE_MERGE ()
