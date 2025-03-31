@@ -98,7 +98,7 @@ Sub PROGMAN ()
                             Call GetManagerProfile(T$, YN$, mgrNbr)
 
                         Case 2
-                            Call LineupStrategy(YN$, T$)
+                            Call LineupStrategy(YN$, T$, mgrNbr)
 
                         Case 3
                             Call RotationReliefMenu(YN$, T$, mgrNbr)
@@ -155,6 +155,9 @@ End Sub
 'choosing pitching rotations and relievers.
 Sub RotationReliefMenu (yearNumber$, targetTeam$, mgrNbr)
 
+    ' Shared pitcherNames$()
+    Shared progMG%()    ' , pitcherRatings()
+
     Do
 
         Cls
@@ -197,7 +200,7 @@ Sub RotationReliefMenu (yearNumber$, targetTeam$, mgrNbr)
             Select Case Selection%
 
                 Case 1, 2:
-                    Call ManagePitchingRotations(Selection%, targetTeam$, mgrNbr)
+                    Call ManagePitchingRotations(Selection%, targetTeam$, yearNumber$, mgrNbr)
 
                 Case 3:
                     Call SetupMiddleRelievers(targetTeam$, yearNumber$, mgrNbr)
@@ -224,7 +227,7 @@ End Sub
 '----------------------------------------
 'This subroutine gives the user a menu for
 'choosing and analyzing a lineup strategy
-Sub LineupStrategy (yearNumber$, targetTeam$)
+Sub LineupStrategy (yearNumber$, targetTeam$, mgrNbr)
 
     Do
 
@@ -265,7 +268,7 @@ Sub LineupStrategy (yearNumber$, targetTeam$)
         Select Case Selection%
 
             Case 1, 2:
-                Call EditLineups(handRL%, targetTeam$, yearNumber$)
+                Call EditLineups(handRL%, targetTeam$, yearNumber$, mgrNbr)
 
             Case 3:
                 Call AnalyzePlayerUsage(targetTeam$)
@@ -727,7 +730,7 @@ End Sub
 '----------------------------------------
 'This subroutine serves as a menu for the
 'user to choose and review their lineups.
-Sub EditLineups (handRL%, targetTeam$, yearNumber$)
+Sub EditLineups (handRL%, targetTeam$, yearNumber$, mgrNbr)
 
     Shared teamRatings%(), progMG%()
     Shared PT$()
@@ -854,12 +857,12 @@ Sub EditLineups (handRL%, targetTeam$, yearNumber$)
                         Locate I, 59: Print Space$(21);
                     Next
 
-                    Call InputDeleteLineup(D%, yearNumber$)
+                    Call InputDeleteLineup(D%, yearNumber$, mgrNbr, handRL%)
 
                 Else
 
                     'lineupChoice% = 2
-                    Call EditOneLineup(targetTeam$, yearNumber$)
+                    Call EditOneLineup(targetTeam$, yearNumber$, mgrNbr, handRL%)
 
                 End If
 
@@ -954,7 +957,7 @@ End Sub
 '----------------------------------------
 'This subroutine lets you reivew a line-
 'up and make changes.
-Sub InputDeleteLineup (D%, yearNumber$)
+Sub InputDeleteLineup (D%, yearNumber$, mgrNbr, handRL%)
 
     Shared batterNames$()
 
@@ -1125,7 +1128,7 @@ Sub InputDeleteLineup (D%, yearNumber$)
         Next I
 
         If UCase$(I$) <> "X" Then
-            Call ChangeLineup_PROGMAN(yearNumber$, J$)
+            Call ChangeLineup_PROGMAN(yearNumber$, J$, mgrNbr, handRL%)
         End If
 
     Loop Until UCase$(I$) = "X" Or J$ = "0"
@@ -1176,7 +1179,7 @@ End Sub
 'This routine lets the user select a line-
 'up and determine how often it should be
 'used.
-Sub ChangeLineup_PROGMAN (yearNumber$, I$)
+Sub ChangeLineup_PROGMAN (yearNumber$, I$, mgrNbr, handRL%)
 
     Shared batterNames$()
     Shared progB3%(), progB7%(), progB9%()
@@ -1310,15 +1313,15 @@ Sub ChangeLineup_PROGMAN (yearNumber$, I$)
 
                 If LU% < 1 Then LU% = 1
                 If LU% > 100 Then LU% = 100
-                progMG%(100 + LN% * 21) = LU%
-                progMG%(101 + LN% * 21) = D%
+                progMG%(100 + (LN% + handRL% * 10) * 21) = LU%
+                progMG%(101 + (LN% + handRL% * 10) * 21) = D%
 
                 For I = 1 To 9
-                    progMG%(101 + I + LN% * 21) = progB7%(I)
-                    progMG%(110 + I + LN% * 21) = progB3%(I)
+                    progMG%(101 + I + (LN% + handRL% * 10) * 21) = progB7%(I)
+                    progMG%(110 + I + (LN% + handRL% * 10) * 21) = progB3%(I)
                 Next
 
-                progMG%(120 + LN% * 21) = 999
+                progMG%(120 + (LN% + handRL% * 10) * 21) = 999
                 progMG%(0) = 999
 
                 Call UpdateManagerFile(yearNumber$, mgrNbr)
@@ -1355,11 +1358,11 @@ End Sub
 'This Subroutine lets the user view one
 'pre-configured lineup and work through
 'making changes.
-Sub EditOneLineup (targetTeam$, yearNumber$)
+Sub EditOneLineup (targetTeam$, yearNumber$, mgrNbr, handRL%)
 
     Shared batterNames$(), fieldPos$()
     Shared progB3%(), progB7%(), progB9%()
-    Shared progM%(), batterRatings()
+    Shared progM%(), progMG%(), teamRatings%(), batterRatings()
 
     Call ViewLineup(targetTeam$)
 
@@ -1371,8 +1374,8 @@ Sub EditOneLineup (targetTeam$, yearNumber$)
     D% = progMG%(101 + LN% * 21)
 
     For I = 1 To 9
-        progB3%(I) = progMG%(110 + I + LN% * 21)
-        progB7%(I) = progMG%(101 + I + LN% * 21)
+        progB3%(I) = progMG%(110 + I + (LN% + handRL% * 10) * 21)
+        progB7%(I) = progMG%(101 + I + (LN% + handRL% * 10) * 21)
     Next
 
     For I = 1 To 9:
@@ -1422,7 +1425,7 @@ Sub EditOneLineup (targetTeam$, yearNumber$)
         progM%(I3) = 1
     Next I3
 
-    Call ChangeLineup_PROGMAN(yearNumber$, J$)
+    Call ChangeLineup_PROGMAN(yearNumber$, J$, mgrNbr, handRL%)
 
 End Sub
 
@@ -2239,7 +2242,7 @@ End Sub
 'This subroutine lets the user choose the
 'parameters (size / type / frequency) for
 'the pitching rotation.
-Sub RotationParams (targetTeam$, mgrNbr)
+Sub RotationParams (targetTeam$, yearNumber$, mgrNbr)
 
     Shared progMG%()
     Shared pitcherNames$()
@@ -2331,7 +2334,7 @@ End Sub
 '----------------------------------------
 'This subroutine lets the user configure
 'all details of a pitching rotation.
-Sub ManagePitchingRotations (action%, targetTeam$, mgrNbr)
+Sub ManagePitchingRotations (action%, targetTeam$, yearNumber$, mgrNbr)
 
     Shared pitcherNames$()
     Shared progMG%(), pitcherRatings()
@@ -2345,7 +2348,7 @@ Sub ManagePitchingRotations (action%, targetTeam$, mgrNbr)
         '999 = rotation exists
         If progMG%(99) = 999 Then
 
-            Call RotationParams(targetTeam$, mgrNbr)
+            Call RotationParams(targetTeam$, yearNumber$, mgrNbr)
 
         Else
             '4600
@@ -2553,7 +2556,7 @@ Sub ManagePitchingRotations (action%, targetTeam$, mgrNbr)
         Select Case progMG%(1)
             Case 1:
                 progMG%(13) = 100
-                Call RotationParams(targetTeam$, mgrNbr)
+                Call RotationParams(targetTeam$, yearNumber$, mgrNbr)
 
             Case 2:
                 GS% = 75
@@ -2591,7 +2594,7 @@ Sub ManagePitchingRotations (action%, targetTeam$, mgrNbr)
             End If
         Next
 
-        Call RotationParams(targetTeam$, mgrNbr)
+        Call RotationParams(targetTeam$, yearNumber$, mgrNbr)
 
     End If
 
@@ -4628,7 +4631,8 @@ Sub GetManagerProfile (targetTeam$, yearNumber$, mgrNbr)
 
     If _FileExists(diskPaths$(3) + MGR_FILE_NAME$ + "." + yearNumber$) Then
 
-        Open diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$ For Random As #2 Len = MGR_SIZE_BYTES
+        '[bm] TODO could be teamYear$ instead of yearNumber$'
+        Open diskPaths$(3) + MGR_FILE_NAME$ + "." + yearNumber$ For Random As #2 Len = MGR_SIZE_BYTES
 
         For I = 0 To 999
             Field #2, I * 2 As Q$, 2 As progR$(I), MGR_SIZE_BYTES - I * 2 - 2 As Q$

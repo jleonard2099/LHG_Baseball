@@ -18,7 +18,7 @@ Const SS_B_Range = 17
 Const SS_B_GndPct = 18
 Const SS_B_FldPct = 19
 Const SS_B_LgBAvg = 20
-'21 is: 0=Available, 1=In Game
+Const SS_B_Avail = 21   ' 99-Available, 0=In Game?, 1=Injured, 2=Resting, 3=Suspended, 4=Inactive, 1=Removed from game?
 Const SS_B_Pos1 = 22
 Const SS_B_Pos2 = 23
 Const SS_B_Pos3 = 24
@@ -28,7 +28,7 @@ Const SS_B_FldPct2 = 27
 Const SS_B_FldPct3 = 28
 Const SS_B_FldPct4 = 29
 Const SS_B_Bunt = 30
-'31 is unknown (INJURY?)'
+Const SS_B_Active = 31  ' 0=Active, 1=Inactive
 '32 is INJURY?'
 
 Const SS_B_Arm1   = 33
@@ -73,7 +73,7 @@ Const SS_H_BAvg = 11
 Const SS_P_GndPct = 12
 Const SS_P_HR = 13
 Const SS_P_LgBAvg = 14
-Const SS_P_WP = 15
+Const SS_P_Avail = 15
 Const SS_P_CG = 16
 Const SS_P_FldPct = 17
 Const SS_P_HoldRunner = 18
@@ -98,7 +98,7 @@ Const SS_P_Rest = 35
 
 ' 37-88 could be SPLITS'
 
-Const SS_P_LHP_AB = 51 
+Const SS_P_LHP_AB = 51
 Const SS_P_LHP_H = 52
 
 Const SS_P_RHP_AB = 58
@@ -190,7 +190,7 @@ Const POS_3B = 5
 Const POS_SS = 6
 Const POS_LF = 7
 Const POS_CF = 8
-Const POS_RF = 9    
+Const POS_RF = 9
 Const POS_DH = 0
 
 Const MGR_CLOSE_STRATEGY     = 581
@@ -214,9 +214,15 @@ Const EVENT_3B    =  9
 Const EVENT_HR    = 10
 Const EVENT_PSBL_SINGLE = 12
 Const EVENT_DP          = 15
+Const EVENT_STEAL       = 16
 Const EVENT_FLY_DEEP    = 17
 Const EVENT_FLY_REGULAR = 18
 Const EVENT_FLY_SHALLOW = 19
 Const EVENT_INF_POPUP   = 20
 Const EVENT_RUNNER_DBLD = 21
+Const EVENT_RUNDOWN     = 22
 Const EVENT_BUNT        = 23
+
+Const PLAY_MODE_HUMAN    = 0
+Const PLAY_MODE_COMPUTER = 1
+Const PLAY_MODE_PCvsPC   = 2

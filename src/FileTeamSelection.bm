@@ -161,11 +161,11 @@ End Sub
 '----------------------------------------
 '          SelectTeam Subroutine
 '----------------------------------------
-'Presents selection menu of all teams 
-' found in the target "disk" file. 
-'The focus of this routine is confirming 
-' a team choice. It then relies on 
-' another subroutine to read in data 
+'Presents selection menu of all teams
+' found in the target "disk" file.
+'The focus of this routine is confirming
+' a team choice. It then relies on
+' another subroutine to read in data
 ' from the selected team.
 Sub SelectTeam (numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%)
 
@@ -218,8 +218,8 @@ End Sub
 '----------------------------------------
 '           ReadTeam Subroutine
 '----------------------------------------
-'Reads in all data for the selected team, 
-' given it's index in the team file. 
+'Reads in all data for the selected team,
+' given it's index in the team file.
 'This routine is highly customized TO
 ' the specific game for which it has
 ' been included for.
@@ -300,8 +300,8 @@ End Sub
 '----------------------------------------
 '        ReadExtraData Subroutine
 '----------------------------------------
-'Reads in extra data for the selected team, 
-' given it's index in the team file. 
+'Reads in extra data for the selected team,
+' given it's index in the team file.
 'This extra file usually includes info.
 ' related to stadiums, coaches, etc.
 'This routine is highly customized TO
@@ -431,7 +431,7 @@ End Sub
 '----------------------------------------
 '         nameStatFile$ Function
 '----------------------------------------
-'Helps create uniquely named file to 
+'Helps create uniquely named file to
 ' store a team's stats.
 '
 'There are 2 main changes done in order
@@ -484,15 +484,15 @@ End Function
 'Shows user a file selection menu, based
 ' on the file spec parameter passed.
 '
-'fileSpec$ - file specification to load 
+'fileSpec$ - file specification to load
 '            should include base path.
 '
 ' EXAMPLE - C:\Temp\*.tmp
 '
-'fileDesc$ - brief description of the 
+'fileDesc$ - brief description of the
 '            type of file
 '
-' RETURNS - base name of chosen file 
+' RETURNS - base name of chosen file
 '            (that is, without extension)
 Function ChooseFile$ (fileSpec$, fileDesc$, ExitCode%)
 
@@ -504,7 +504,7 @@ Function ChooseFile$ (fileSpec$, fileDesc$, ExitCode%)
         Count% = FileCount%(fileSpec$)
 
         If Count% = 0 Then
-        
+
             _Dest _Console
             Print "NOT FOUND, fileSpec: " + fileSpec$
             _Dest 0

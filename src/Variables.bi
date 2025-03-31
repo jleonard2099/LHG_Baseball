@@ -291,15 +291,15 @@ Dim Shared badString%, EJ%, currFielder%, dice1000%
 Dim Shared IJL%, INNING%, Inotloop%, LYN%
 Dim Shared PB%, PC%, SC%, WS%
 
-Dim Shared autoPlay, BV, compTeam, desigHit, D
-Dim Shared endGame, endAllGames, FontColAdj
+Dim Shared autoPlay, BV, compTeam, MAIN_desigHit, D
+Dim Shared endAllGames, FontColAdj
 Dim Shared gameLoc, gameTemp
 Dim Shared nbrStrikes, noLUFound, normalFinish
-Dim Shared P, pbpLine, flagPinchHitter, pitchEraOpt, playerMode, playerOpt
-Dim Shared RE, RD, useInj, useRest, useVGA
+Dim Shared P, pbpLine, flagPinchHitter, MAIN_pitchEraOpt, playerMode, MAIN_playerOpt
+Dim Shared RE, RD, MAIN_useInj, MAIN_useRest, MAIN_useVGA
 Dim Shared strikeoutRating
 
-Dim Shared pbpDelay!, WF!
+Dim Shared MAIN_pbpDelay!, WF!
 
 Dim Shared boxName$, fileString$, gameTime$, gameL$, gameW$
 Dim Shared PARK$, pbpString$, wind$, YY$

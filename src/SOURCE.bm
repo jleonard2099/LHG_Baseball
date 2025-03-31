@@ -28,9 +28,9 @@ Sub SOURCE ()
     ' DumpPitchers
     ' DumpMgr
 
-    If useVGA = 1 Then Call LOADSCREEN
+    If MAIN_useVGA = 1 Then Call LOADSCREEN
 
-  LStart: '
+  LNextHalfInning: '
     ' DumpAll
 
     '-- An error comes up every so many games
@@ -84,7 +84,7 @@ Sub SOURCE ()
 
         Cls
 
-        If useVGA = 0 Then Screen 0
+        If MAIN_useVGA = 0 Then Screen 0
 
         Print "THIS GAME HAS BEEN CALLED ON ACCOUNT OF RAIN!!!"
         Print "ALL RECORDS ARE OFFICIAL!!"
@@ -106,7 +106,7 @@ Sub SOURCE ()
     End If
 
     'Game is not over - show the field
-    If useVGA = 1 Then
+    If MAIN_useVGA = 1 Then
 
         '-- Here, we restore the non-negative value
         '-- of fielder%() to prevent an error
@@ -119,12 +119,12 @@ Sub SOURCE ()
     End If
 
     For IJ0% = 0 To 22
-        If batRating(D, IJ0%, 21) > 39 And batRating(D, IJ0%, 21) <= 49 Then
+        If batRating(D, IJ0%, SS_B_Avail) > 39 And batRating(D, IJ0%, SS_B_Avail) <= 49 Then
 
             I1 = IJ0%
-            I2 = batRating(D, IJ0%, 21) - 40
+            I2 = batRating(D, IJ0%, SS_B_Avail) - 40
 
-            batRating(D, I1, 21) = 1
+            batRating(D, I1, SS_B_Avail) = 1
             playerNum%(D, I2) = I1
             fielder%(D, fldPos%(D, I2)) = I1
             gameD0%(D) = gameD0%(D) + 1
@@ -149,7 +149,7 @@ Sub SOURCE ()
             '14955  ---> this is it's own routine used often
             Call HITTINGLINES
 
-            If useVGA = 1 Then
+            If MAIN_useVGA = 1 Then
                 Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
                 Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
             Else
@@ -166,10 +166,10 @@ Sub SOURCE ()
 
     ourLead = gameScore(D, 0) - gameScore(P, 0)
 
-    If Not (MG%(D, 560) <> 999 Or INNING% < 8 Or playerMode = 0 Or playerMode = 1 And P = compTeam) Then
+    If Not (MG%(D, 560) <> 999 Or INNING% < 8 Or playerMode = PLAY_MODE_HUMAN Or playerMode = PLAY_MODE_COMPUTER And P = compTeam) Then
 
         For IJ0% = 1 To 4
-            If MG%(D, 560 + IJ0%) <> -1 And batRating(D, MG%(D, 564 + IJ0%), 21) = 0 Then
+            If MG%(D, 560 + IJ0%) <> -1 And batRating(D, MG%(D, 564 + IJ0%), SS_B_Avail) = 0 Then
 
                 Call d100(RN)
 
@@ -181,7 +181,7 @@ Sub SOURCE ()
                         If fldPos%(D, I2) = MG%(D, 576 + IJ0%) Then Exit For
                     Next
 
-                    batRating(D, I1, 21) = 1
+                    batRating(D, I1, SS_B_Avail) = 1
                     playerNum%(D, I2) = I1
                     fielder%(D, fldPos%(D, I2)) = I1
 
@@ -206,7 +206,7 @@ Sub SOURCE ()
 
                     Call HITTINGLINES
 
-                    If useVGA = 1 Then
+                    If MAIN_useVGA = 1 Then
                         Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
                         Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
                     Else
@@ -225,12 +225,12 @@ Sub SOURCE ()
 
     End If
 
-    If fielder%(D, POS_P) = 99 And playerMode = 0 Or fielder%(D, POS_P) = 99 And playerMode = 1 And compTeam = 1 - D Then
+    If fielder%(D, POS_P) = 99 And playerMode = PLAY_MODE_HUMAN Or fielder%(D, POS_P) = 99 And playerMode = PLAY_MODE_COMPUTER And compTeam = 1 - D Then
         '----- move stuff here -----
         GoTo LStayInGame
     End If
 
-  LNextInning: '
+  LNextBatter0: '
     SH = 0
     F% = 0
     SO = 0
@@ -241,17 +241,17 @@ Sub SOURCE ()
     If currBatter!(P) = 10 Then currBatter!(P) = 1
 
     Print #11, "---"
-    Print #11, "LNextInning possession: "; _IIF(P = 0, "Visiting", "Home") + " team batting"
+    Print #11, "LNextBatter0 possession: "; _IIF(P = 0, "Visiting", "Home") + " team batting"
     Print #11, "playerMode ="; playerMode; ", compTeam ="; compTeam
     Print #11, "gameScore ="; gameScore(0, 0); "-" ; gameScore(1, 0); ", inning:"; INNING%; ","; nbrOuts(0); "outs"
     Print #11,
 
     '--- Start of a new sub
-  LNextBatter: '
+  LNextBatter1: '
     Call WHOSON1ST(baseRunners%)
     Call PLAYERNAME(P)
 
-    If useVGA = 1 Then
+    If MAIN_useVGA = 1 Then
         Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
     Else
         Call MAINSCREEN(D, P, nbrBalls, nbrStrikes, MO)
@@ -275,7 +275,7 @@ Sub SOURCE ()
 
     Do
 
-        If useVGA = 1 Then
+        If MAIN_useVGA = 1 Then
             _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
         Else
             Color 14, 0
@@ -287,7 +287,7 @@ Sub SOURCE ()
 
         'Move cursor to current inning if score > 0
         If inningScore(P, INNING%) > 0 Then
-            If useVGA = 1 Then
+            If MAIN_useVGA = 1 Then
                 Call INNDISP_G(I2, I0)
             Else
                 Call INNDISP(I2, I0)
@@ -295,7 +295,7 @@ Sub SOURCE ()
         End If
 
         'Print total score
-        If useVGA = 1 Then
+        If MAIN_useVGA = 1 Then
 
             FORMATTED$ = FUsing$(Str$(gameScore(I0, 0)), "##", 1)
             PrintOnGfx 53, I0 + 28, FORMATTED$, imageScreen&
@@ -318,13 +318,13 @@ Sub SOURCE ()
         F% = 0
 
       LContinueBatter2: '
-        If (playerMode = 2 Or playerMode = 1 And P <> compTeam) Then
+        If (playerMode = PLAY_MODE_PCvsPC Or playerMode = PLAY_MODE_COMPUTER And P <> compTeam) Then
             GoTo LEndOfGame
         End If
 
         If baseRunners% = BASE_1 Or baseRunners% = BASE_1_3 Then
             runnerHeld = 1
-            If useVGA = 1 Then
+            If MAIN_useVGA = 1 Then
                 Call HOLDSTATUS_G(runnerHeld)
             Else
                 Call HOLDSTATUS(runnerHeld)
@@ -339,7 +339,7 @@ Sub SOURCE ()
 
         'Call WINDEX
 
-        If useVGA = 1 Then
+        If MAIN_useVGA = 1 Then
 
             'Printing black on background
             _PrintMode _KeepBackground , imageScreen&
@@ -386,7 +386,7 @@ Sub SOURCE ()
         I$ = GetKeyPress$
 
         'Restore image where commands went
-        If useVGA = 1 Then _PutImage (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176), backupScreen&, imageScreen&, (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176)
+        If MAIN_useVGA = 1 Then _PutImage (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176), backupScreen&, imageScreen&, (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176)
 
         If UCase$(I$) = "D" Then
             Call VIEWTEAM
@@ -397,7 +397,7 @@ Sub SOURCE ()
 
             INFPOS% = INF_GUARD_LINES
 
-            If useVGA = 1 Then
+            If MAIN_useVGA = 1 Then
                 pbpString$ = "INF:GUARD LINE"
                 _PutImage (52 * FontColAdj, 416)-Step(14 * FontColAdj, 16), backupScreen&, imageScreen&, (52 * FontColAdj, 416)-Step(14 * FontColAdj, 16)
 
@@ -430,7 +430,7 @@ Sub SOURCE ()
         End If
 
         If UCase$(I$) = "Q" Then
-            If useVGA = 0 Then Cls
+            If MAIN_useVGA = 0 Then Cls
             Call EndOfGame
             Exit Sub
         End If
@@ -441,13 +441,13 @@ Sub SOURCE ()
         End If
 
         If UCase$(I$) = "B" Then
-            If useVGA = 1 Then Screen 0
+            If MAIN_useVGA = 1 Then Screen 0
             Call PopUp_Batter(D, currPitcher%(D))
             GoTo LChangeNobody
         End If
 
         If UCase$(I$) = "P" Then
-            If useVGA = 1 Then Screen 0
+            If MAIN_useVGA = 1 Then Screen 0
             Call PopUp_Pitcher(P, currPitcher%(P))
             GoTo LChangeNobody
         End If
@@ -461,7 +461,7 @@ Sub SOURCE ()
 
             runnerHeld = 1 - runnerHeld
 
-            If useVGA = 1 Then
+            If MAIN_useVGA = 1 Then
                 Call HOLDSTATUS_G(runnerHeld)
             Else
                 Call HOLDSTATUS(runnerHeld)
@@ -519,7 +519,7 @@ Sub SOURCE ()
     'now we have to print it on the screen
     If D2 >= 3 And D2 <= 5 Then
 
-        If useVGA = 1 Then
+        If MAIN_useVGA = 1 Then
             'Restore image where options go
             _PutImage (52 * FontColAdj, 416)-Step(14 * FontColAdj, 16), backupScreen&, imageScreen&, (52 * FontColAdj, 416)-Step(14 * FontColAdj, 16)
 
@@ -548,7 +548,7 @@ Sub SOURCE ()
   LOffenseOptions: '
     Do
 
-        If (playerMode = 2 Or playerMode = 1 And P = compTeam) Then
+        If (playerMode = PLAY_MODE_PCvsPC Or playerMode = PLAY_MODE_COMPUTER And P = compTeam) Then
 
             JM = playerNum%(P, currBatter!(P))
 
@@ -605,7 +605,7 @@ Sub SOURCE ()
 
                     For I = 0 To 21
 
-                        If pitchRating(P, I, SS_P_WP) = 0 Then
+                        If pitchRating(P, I, SS_P_Avail) = 0 Then
 
                             If MG%(P, 590) = 999 Then
 
@@ -666,7 +666,7 @@ Sub SOURCE ()
 
             pbpString$ = PadRight$(Left$(gameTeams$(P), 3) + teamAbbreviatons$(P), 8)
 
-            If useVGA = 1 Then
+            If MAIN_useVGA = 1 Then
                 'Printing black on background
                 _PrintMode _KeepBackground , imageScreen&
                 Color 4278190080
@@ -708,7 +708,7 @@ Sub SOURCE ()
 
         I$ = GetKeyPress$
 
-        If useVGA = 1 Then
+        If MAIN_useVGA = 1 Then
             _PutImage (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176), backupScreen&, imageScreen&, (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176)
         End If
 
@@ -728,7 +728,7 @@ Sub SOURCE ()
         End If
 
         If UCase$(I$) = "Q" Then
-            If useVGA = 0 Then Cls
+            If MAIN_useVGA = 0 Then Cls
             Call EndOfGame
             Exit Sub
         End If
@@ -763,7 +763,7 @@ Sub SOURCE ()
             GoTo LHBP
 
         Case 2  'Hit and run'
-            If nbrOuts(0) = 2 Or (baseRunners% <> BASE_1 And baseRunners% <> BASE_1_2 And baseRunners% <> BASE_1_3) Then Goto LNextBatter
+            If nbrOuts(0) = 2 Or (baseRunners% <> BASE_1 And baseRunners% <> BASE_1_2 And baseRunners% <> BASE_1_3) Then Goto LNextBatter1
 
         Case 3  'Steal'
             GoTo LSteal
@@ -776,7 +776,7 @@ Sub SOURCE ()
 
     End Select
 
-  LRunnerGoing2: '
+  LHitAndRun: '
     '-- this is related to the PICKEDOFF routine and it's immediate aftermath
     If baseRunners% = BASE_1_2 Then I = 3 Else I = 2
 
@@ -808,7 +808,7 @@ Sub SOURCE ()
 
     End If
 
-    If PO = 1 Then PO = 0: GoTo LNextBatter
+    If PO = 1 Then PO = 0: GoTo LNextBatter1
 
     Call WINDEX
 
@@ -832,7 +832,7 @@ Sub SOURCE ()
         Call PBP(player$(0) + " swings and misses")
         Call DELAY
 
-        If useVGA = 1 Then
+        If MAIN_useVGA = 1 Then
             PrintOnGfx 63, 28, Str$(nbrStrikes), imageScreen&
         Else
             Locate 2, 58: Print nbrStrikes
@@ -877,7 +877,7 @@ Sub SOURCE ()
     '-- almost no matter what value dice1000% is.
 
     '   "Call HITTING LINES...
-    '   If useVGA = 1...
+    '   If MAIN_useVGA = 1...
 
     '-- In original code this was a short sub
     '-- I'm not sure why it can't be run outside
@@ -892,7 +892,7 @@ Sub SOURCE ()
 
         Call HITTINGLINES
 
-        If useVGA = 1 Then
+        If MAIN_useVGA = 1 Then
             Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
             Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
         Else
@@ -910,7 +910,7 @@ Sub SOURCE ()
 
         Call HITTINGLINES
 
-        If useVGA = 1 Then
+        If MAIN_useVGA = 1 Then
             Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
             Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
         Else
@@ -927,7 +927,7 @@ Sub SOURCE ()
 
         Call HITTINGLINES
 
-        If useVGA = 1 Then
+        If MAIN_useVGA = 1 Then
             Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
             Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
         Else
@@ -946,7 +946,7 @@ Sub SOURCE ()
 
         Call HITTINGLINES
 
-        If useVGA = 1 Then
+        If MAIN_useVGA = 1 Then
             Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
             Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
         Else
@@ -962,7 +962,7 @@ Sub SOURCE ()
     '46+ ???
     Call HITTINGLINES
 
-    If useVGA = 1 Then
+    If MAIN_useVGA = 1 Then
         Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
         Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
     Else
@@ -985,7 +985,7 @@ Sub SOURCE ()
     End If
 
     dice1000% = Int(Rnd(1) * 1000) + 1
-    If dice1000% <= 3 And useInj = 1 Then
+    If dice1000% <= 3 And MAIN_useInj = 1 Then
         GoTo LRarePlays
     End If
 
@@ -1028,7 +1028,7 @@ Sub SOURCE ()
         End If
 
         Call ADVANCEMENT(P, D, event%, F%, I3)
-        GoTo LNextInning
+        GoTo LNextBatter0
 
     End If
 
@@ -1072,7 +1072,7 @@ Sub SOURCE ()
                 A5%(3) = 1
                 A5%(0) = 0
                 Call ADVANCEMENT(P, D, event%, F%, I3)
-                GoTo LNextBatter
+                GoTo LNextBatter1
             End If
 
         End If
@@ -1123,7 +1123,7 @@ Sub SOURCE ()
             A5%(0) = 0
             A5%(2) = 2
             Call ADVANCEMENT(P, D, event%, F%, I3)
-            GoTo LNextBatter
+            GoTo LNextBatter1
         End If
 
         If gameBaserunners%(1, 0) = 0 And RN = 9 And SO = 1 Or nbrOuts(0) > 1 And RN = 9 And SO = 1 Then
@@ -1139,7 +1139,7 @@ Sub SOURCE ()
             A5%(2) = 1
             A5%(3) = 1
             Call ADVANCEMENT(P, D, event%, F%, I3)
-            GoTo LNextBatter
+            GoTo LNextBatter1
         End If
 
     End If
@@ -2166,7 +2166,7 @@ Sub SOURCE ()
             If event% = EVENT_PSBL_SINGLE Then
 
                 Call SCOREBOARD
-                GoTo LNextInning
+                GoTo LNextBatter0
 
             Else
 
@@ -2710,7 +2710,7 @@ Sub SOURCE ()
     '-----------------------------------------------------
     ' Play-by-Play box
   LCheckForOptionsOrQuit: '
-    If useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 144), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 144)
+    If MAIN_useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 144), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 144)
 
     ' essentially it allows the user to press a key
     ' during game play to activate certain functions
@@ -2729,7 +2729,7 @@ Sub SOURCE ()
     'There was some question as to whether this is needed
     'based on comparing to the original code, but the working
     'version of my code had this in it still
-    If useVGA = 1 Then _PutImage (17 * FontColAdj, 128)-Step(46 * FontColAdj, 80), backupScreen&, imageScreen&, (17 * FontColAdj, 128)-Step(46 * FontColAdj, 80)
+    If MAIN_useVGA = 1 Then _PutImage (17 * FontColAdj, 128)-Step(46 * FontColAdj, 80), backupScreen&, imageScreen&, (17 * FontColAdj, 128)-Step(46 * FontColAdj, 80)
 
     DPC% = 0
     runnerHeld = 0
@@ -2738,9 +2738,9 @@ Sub SOURCE ()
     H0%(0) = 0
 
     If nbrOuts(0) = 3 Then
-        GoTo LStart
+        GoTo LNextHalfInning
     Else
-        GoTo LNextInning
+        GoTo LNextBatter0
     End If
 
     '----- NOODLE -----
@@ -2826,7 +2826,7 @@ Sub SOURCE ()
 
                 If SH = 1 Then
                     If nbrOuts(0) < 3 Then
-                        GoTo LNextBatter
+                        GoTo LNextBatter1
                     Else
                         'nbrOuts(0) >= 3
                         currBatter!(P) = currBatter!(P) - 1
@@ -3109,7 +3109,7 @@ Sub SOURCE ()
             Call PBP("Looks like a close play at " + J3$ + "!!")
             Call PBP("1- Throw to " + J3$ + " 2- Throw to 1st")
 
-            If playerMode = 2 Or playerMode = 1 And P <> compTeam Then
+            If playerMode = PLAY_MODE_PCvsPC Or playerMode = PLAY_MODE_COMPUTER And P <> compTeam Then
                 I$ = "1"
             Else
                 Do
@@ -3187,7 +3187,7 @@ Sub SOURCE ()
                     If RN > 42 Then pbpString$ = pbpString$ + "bunts it foul"
                     Call PBP(pbpString$)
 
-                    If useVGA = 1 Then
+                    If MAIN_useVGA = 1 Then
                         PrintOnGfx 63, 28, Str$(nbrStrikes), imageScreen&
                     Else
                         Locate 2, 58: Print nbrStrikes
@@ -3211,7 +3211,7 @@ Sub SOURCE ()
 
                     If baseRunners% = BASE_1_2 Or baseRunners% = BASE_2 Then INFPOS% = INF_NORMAL
 
-                    If useVGA = 1 Then
+                    If MAIN_useVGA = 1 Then
                         _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
                     End If
 
@@ -3274,7 +3274,7 @@ Sub SOURCE ()
             If RN > 42 Then pbpString$ = pbpString$ + "bunts it foul"
             Call PBP(pbpString$)
 
-            If useVGA = 1 Then
+            If MAIN_useVGA = 1 Then
                 PrintOnGfx 63, 28, Str$(nbrStrikes), imageScreen&
             Else
                 Locate 2, 58: Print nbrStrikes
@@ -3295,7 +3295,7 @@ Sub SOURCE ()
 
             If baseRunners% = BASE_1_2 Or baseRunners% = BASE_2 Then INFPOS% = INF_NORMAL
 
-            If useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
+            If MAIN_useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
 
             GoTo LContinueBatter2
 
@@ -3311,13 +3311,13 @@ Sub SOURCE ()
 
   LSteal: '
     SH% = 0
-    event% = 16
+    event% = EVENT_STEAL
     currFielder% = 1
     player$(4) = pitchers$(D, currPitcher%(D))
 
     Select Case baseRunners%
         Case BASE_EMPTY
-            GoTo LNextBatter
+            GoTo LNextBatter1
             'set a "skip" variable here
 
         Case BASE_1, BASE_1_3
@@ -3375,23 +3375,28 @@ Sub SOURCE ()
     'Reduce chance for stealing home
     If TGTBASE% = 4 Then CHANCE% = CHANCE% * .05
 
-    If batRating(P, I2, SS_B_CS) > 0 Then Q0 = Int((batRating(P, I2, SS_B_SB) / (batRating(P, I2, SS_B_SB) + batRating(P, I2, SS_B_CS))) * 1000): GoTo 14813
-    If batRating(P, I2, SS_B_SB) > 31 Then Q0 = 700 + ((batRating(P, I2, SS_B_SB) - 30) * 2): GoTo 14813
-    If batRating(P, I2, SS_B_SB) > 10 Then Q0 = 600 + ((batRating(P, I2, SS_B_SB) - 10) * 10): GoTo 14813
-    If batRating(P, I2, SS_B_SB) > 0 Then Q0 = 400 + ((batRating(P, I2, SS_B_SB) * 20))
-    Q0 = 100
+    If batRating(P, I2, SS_B_CS) > 0 Then
+        stealPercent = Int((batRating(P, I2, SS_B_SB) / (batRating(P, I2, SS_B_SB) + batRating(P, I2, SS_B_CS))) * 1000)
+    ElseIf batRating(P, I2, SS_B_SB) > 31 Then
+        stealPercent = 700 + ((batRating(P, I2, SS_B_SB) - 30) * 2)
+    ElseIf batRating(P, I2, SS_B_SB) > 10 Then
+        stealPercent = 600 + ((batRating(P, I2, SS_B_SB) - 10) * 10)
+    ElseIf batRating(P, I2, SS_B_SB) > 0 Then
+        stealPercent = 400 + ((batRating(P, I2, SS_B_SB) * 20))
+    Else
+        stealPercent = 100
+    End If
 
-  14813 '
-    If fldPos%(P, gameBaserunners%(TGTBASE% - 1, 0)) = 1 Then Q0 = 100
+    If fldPos%(P, gameBaserunners%(TGTBASE% - 1, 0)) = 1 Then stealPercent = 100
 
-    Call STEAL3RD(TGTBASE%, AA, Q0, runnerHeld, D) ' *** SUCCESS OF 3B STEAL ***
+    Call STEAL3RD(TGTBASE%, AA, stealPercent, runnerHeld, D) ' *** SUCCESS OF 3B STEAL ***
 
-    If pitchRating(D, currPitcher%(D), SS_P_Throws)= 1 And TGTBASE% = 2 Then CHANCE% = CHANCE% + 25: Q0 = Q0 + 10
-    If pitchRating(D, currPitcher%(D), SS_P_Throws)= -1 And TGTBASE% = 2 Then CHANCE% = CHANCE% - 50: Q0 = Q0 - 30
+    If pitchRating(D, currPitcher%(D), SS_P_Throws)=  1 And TGTBASE% = 2 Then CHANCE% = CHANCE% + 25: stealPercent = stealPercent + 10
+    If pitchRating(D, currPitcher%(D), SS_P_Throws)= -1 And TGTBASE% = 2 Then CHANCE% = CHANCE% - 50: stealPercent = stealPercent - 30
     If P2 = 2 Then
 
         CHANCE% = 100
-        Q0 = Q0 - 200
+        stealPercent = stealPercent - 200
         currFielder% = 2
         player$(4) = batters$(D, fielder%(D, POS_C))
         TGBASE% = playerNum%(P, gameBaserunners%(TGTBASE% - 1, 0))
@@ -3416,11 +3421,11 @@ Sub SOURCE ()
 
     If I4 <= gameBaserunners%(TGTBASE% - 1, 2) Then
 
-        event% = 22
+        event% = EVENT_RUNDOWN
         currFielder% = 1
         player$(4) = pitchers$(D, currPitcher%(D))
 
-      14820 '
+      LRundown:
         Call WINDEX
         Call PBP(player$(TGTBASE% - 1) + " caught off base in a rundown!")
 
@@ -3444,7 +3449,7 @@ Sub SOURCE ()
 
         INFPOS% = INF_NORMAL
 
-        GoTo LNextBatter
+        GoTo LNextBatter1
 
     End If
 
@@ -3453,7 +3458,6 @@ Sub SOURCE ()
     '-- perhaps it could become a sub?
     '----------------------------------------
 
-    '14825
     'RUNNER HAS A CHANCE TO STEAL
     gameBaserunners%(TGTBASE% - 1, 2) = gameBaserunners%(TGTBASE% - 1, 2) + 17
     I9 = Int(Rnd(1) * 1000) + 1
@@ -3463,7 +3467,7 @@ Sub SOURCE ()
         Call WINDEX
         Call NOJUMP(D)
 
-        If useVGA = 1 Then _PutImage (17 * FontColAdj, 128)-Step(46 * FontColAdj, 80), backupScreen&, imageScreen&, (17 * FontColAdj, 128)-Step(46 * FontColAdj, 80)
+        If MAIN_useVGA = 1 Then _PutImage (17 * FontColAdj, 128)-Step(46 * FontColAdj, 80), backupScreen&, imageScreen&, (17 * FontColAdj, 128)-Step(46 * FontColAdj, 80)
 
         GoTo LOffenseOptions
 
@@ -3479,21 +3483,21 @@ Sub SOURCE ()
     Call GetPBPString(13, 3110, Y$, D)
     Call PBP(Y$)
 
-    Call PITCHOUT(baseRunners%, TGTBASE%, Q0)
+    Call PITCHOUT(baseRunners%, TGTBASE%, stealPercent)
 
     If baseRunners% <> BASE_1_3 Then Goto LDoubleSteal ' *** DOUBLE STEAL ***1st&3rd
 
     If SH% = 1 Then
         I9 = Int(Rnd(1) * 1000) + 1
     Else
-        If playerMode = 2 Or playerMode = 1 And P <> compTeam Then
+        If playerMode = PLAY_MODE_PCvsPC Or playerMode = PLAY_MODE_COMPUTER And P <> compTeam Then
             I$ = "Y"
         Else
             Call PBP("Throw to 2B? (Y/N) ")
             I$ = GetKeyPress$
         End If
 
-        If UCase$(I$) <> "Y" Then PJ = 7: GoTo 14829
+        If UCase$(I$) <> "Y" Then PJ = 7: GoTo LRunnerSafe
 
       LDoubleSteal: '
         currFielder% = 2
@@ -3513,7 +3517,7 @@ Sub SOURCE ()
       LDoubleSteal2: '
         Call WHICHRUNNER(TGTBASE%, baseRunners%, D5)
         I9 = Int(Rnd(1) * 1000) + 1
-        Q0 = Q0 - ((batRating(D, fielder%(D, POS_C), 15) - 5) * 25)
+        stealPercent = stealPercent - ((batRating(D, fielder%(D, POS_C), 15) - 5) * 25)
 
     End If
 
@@ -3533,9 +3537,9 @@ Sub SOURCE ()
         Call PBP(pbpString$)
     End If
 
-    If Not (gameBaserunners%(TGTBASE% - 1, 2) = 18 And I9 > Q0 Or gameBaserunners%(TGTBASE% - 1, 2) > 18 And I9 > Q0 - 200) Then
+    If Not (gameBaserunners%(TGTBASE% - 1, 2) = 18 And I9 > stealPercent Or gameBaserunners%(TGTBASE% - 1, 2) > 18 And I9 > stealPercent - 200) Then
 
-        14829
+      LRunnerSafe:
         Call d100(RN)
         Select Case RN
             Case 1 To 20: pbpString$ = "He beats the throw!"
@@ -3569,16 +3573,16 @@ Sub SOURCE ()
                 SS% = Int(Rnd(1) * 20) + 1
 
                 If SS% = 6 Then
-                    GoTo 14820
+                    GoTo LRundown
                 Else
-                    GoTo 14831
+                    GoTo LStealContinue
                 End If
             Else
-                GoTo 14831
+                GoTo LStealContinue
             End If
         Else
             SH% = 0
-            GoTo LNextBatter
+            GoTo LNextBatter1
         End If
 
     End If
@@ -3632,23 +3636,23 @@ Sub SOURCE ()
         GoTo LCheckForOptionsOrQuit
     End If
 
-  14831 '
+  LStealContinue:
     If nbrOuts(0) >= 3 Or P2 = 2 And nbrStrikes = 3 Then
         GoTo LCheckForOptionsOrQuit
     End If
 
     If SH% = 1 Then
         SH% = 0
-        GoTo LNextBatter
+        GoTo LNextBatter1
     End If
 
     If AA < 20 Or baseRunners% <> BASE_1_3 Or fldPos%(P, gameBaserunners%(3, 0)) = 1 Then
-        GoTo LNextBatter
+        GoTo LNextBatter1
     End If
 
     Call WINDEX
 
-    If playerMode = 2 Or playerMode = 1 And P = compTeam Then
+    If playerMode = PLAY_MODE_PCvsPC Or playerMode = PLAY_MODE_COMPUTER And P = compTeam Then
         I$ = "N"
     Else
         Call PBP("TRY TO STEAL HOME? (Y/N)")
@@ -3657,7 +3661,7 @@ Sub SOURCE ()
 
     If UCase$(I$) = "Y" Then
 
-        GoTo LNextBatter
+        GoTo LNextBatter1
 
     Else
         SH% = 1
@@ -3667,7 +3671,7 @@ Sub SOURCE ()
         A5%(3) = 1
         I2 = playerNum%(P, gameBaserunners%(TGTBASE% - 1, 0))
         CHANCE% = 100
-        Q0 = 700
+        stealPercent = 700
 
         GoTo LStealHome ' *** STEAL HOME ***
 
@@ -3683,7 +3687,7 @@ Sub SOURCE ()
   LStayInGame: '
     Cls
 
-    If useVGA = 0 Then Screen 0
+    If MAIN_useVGA = 0 Then Screen 0
 
     P9 = D
     currBatter!(P) = currBatter!(P) + 1
@@ -3758,7 +3762,7 @@ Sub SOURCE ()
 
   LPersonnelMenu: '
     Cls
-    If useVGA = 1 Then Screen 0
+    If MAIN_useVGA = 1 Then Screen 0
     TG = 0
     PG = 0
     RG = 0
@@ -3784,18 +3788,18 @@ Sub SOURCE ()
           LChangeNobody: '
             For I = 1 To 9
                 If fldPos%(P9, I) <> 1 Then
-                    batRating(P9, playerNum%(P9, I), 21) = 1
+                    batRating(P9, playerNum%(P9, I), SS_B_Avail) = 1
                 End If
             Next I
 
-            If useVGA = 1 Then
+            If MAIN_useVGA = 1 Then
                 Call LOADSCREEN
                 Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
             Else
                 Call DisplayBallField(nbrBalls, P, nbrStrikes, D)
             End If
 
-            GoTo LNextBatter
+            GoTo LNextBatter1
 
         Case 2  'Relief Pitcher'
           LChangePitcher: '
@@ -3817,7 +3821,7 @@ Sub SOURCE ()
                         Call LetterToNumber(I$, I1)
                     End If
 
-                Loop Until I1 <= 21 And pitchRating(P9, I1, SS_P_WP) <= 0
+                Loop Until I1 <= 21 And pitchRating(P9, I1, SS_P_Avail) <= 0
 
                 Locate 23, 1: Print String$(78, 32)
                 Locate 23, 1: Print "YOU CHOSE "; pitchers$(P9, I1); " "; handed$(pitchRating(P9, I1, SS_P_Throws) + 2); " - ";
@@ -3836,7 +3840,7 @@ Sub SOURCE ()
 
             currPitcher%(P9) = I1
             gamePitcher%(P9) = gamePitcher%(P9) + 1
-            pitchRating(P9, I1, SS_P_WP) = gamePitcher%(P9)
+            pitchRating(P9, I1, SS_P_Avail) = gamePitcher%(P9)
             Call PITSTAM(P9)
             Call CHECKSAVE(D, P, baseRunners%)
 
@@ -3850,7 +3854,7 @@ Sub SOURCE ()
 
             P9 = 1 - P9
 
-            If Not (desigHit = 1 Or I5 = 66 Or I5 = 77) Then
+            If Not (MAIN_desigHit = 1 Or I5 = 66 Or I5 = 77) Then
 
                 'No Designated Hitter
 
@@ -3930,7 +3934,7 @@ Sub SOURCE ()
                             VV1(D) = 9
                         Next V0
 
-                        batRating(D, V3, 21) = 1
+                        batRating(D, V3, SS_B_Avail) = 1
                         I7% = D
                         I8% = V2
                         I9% = V3
@@ -4110,7 +4114,7 @@ Sub SOURCE ()
             If Asc(I$) = 9 And TG = 1 Then TG = 0: Call DisplayBatter_Lineup(PG, P9): Call CHANGELINEUP(P9, P)
             Call LetterToNumber(I$, I1)
 
-        Loop Until I1 <= 22 Or batRating(P9, I1, 21) <= 0
+        Loop Until I1 <= 22 Or batRating(P9, I1, SS_B_Avail) <= 0
 
         Do
             Locate 23, 30
@@ -4121,7 +4125,7 @@ Sub SOURCE ()
 
         If UCase$(I$) <> "N" Then
 
-            batRating(P9, I1, 21) = 1
+            batRating(P9, I1, SS_B_Avail) = 1
             playerNum%(P9, I2) = I1
             fielder%(P9, fldPos%(P9, I2)) = I1
 
@@ -4168,8 +4172,8 @@ Sub SOURCE ()
         Call PBP(gameTeams$(1) + " defeats " + gameTeams$(0) + Str$(gameScore(1, 0)) + " TO" + Str$(gameScore(0, 0)) + "!")
     End If
 
-    If autoPlay <> 1 Or playerMode <> 2 Then
-        If pbpDelay! = 0 Then pbpDelay! = 0.1
+    If Not autoPlay Or playerMode <> 2 Then
+        If MAIN_pbpDelay! = 0 Then MAIN_pbpDelay! = 0.1
         'Delay of 0 will not present the text
         'But we want to be sure the user sees it
         Call PBP("PRESS ANY KEY TO CONTINUE")
@@ -4193,7 +4197,7 @@ Sub SOURCE ()
     '-- This can join the code above as there's only one branch to it
   LEndOfGame: '
     runnerHeld = 0
-    If useVGA = 1 Then
+    If MAIN_useVGA = 1 Then
         Call HOLDSTATUS_G(runnerHeld)
     Else
         Call HOLDSTATUS(runnerHeld)
@@ -4216,7 +4220,7 @@ Sub SOURCE ()
 
                     If fldPos%(P, J) <> 1 And batRating(P, playerNum%(P, J), 13) >= 10 Then
                         runnerHeld = 1
-                        If useVGA = 1 Then
+                        If MAIN_useVGA = 1 Then
                             Call HOLDSTATUS_G(runnerHeld)
                         Else
                             Call HOLDSTATUS(runnerHeld)
@@ -4240,7 +4244,7 @@ Sub SOURCE ()
     ourLead = gameScore(D, 0) - gameScore(P, 0)
     Call d100(RN)
 
-    If Not (INNING% < 9 Or CZ%(D) = -1 Or MG%(D, MGR_CLOSE_STRATEGY) = 999) Then
+    If Not (INNING% < 9 Or CZ%(D) = -1 Or MG%(D, 581) = 999) Then
 
         CZ%(D) = -1
 
@@ -4264,16 +4268,16 @@ Sub SOURCE ()
 
                 Call d100(RN0)
 
-                If pitchEraOpt > 0 And INNING% > 7 And gameScore(D, 0) > gameScore(P, 0) _
+                If MAIN_pitchEraOpt > 0 And INNING% > 7 And gameScore(D, 0) > gameScore(P, 0) _
                     And pitW > 0 And gamePitcher%(D) = 1 _
                     And Int(pitCG / pitW * 100 + .5) <= 100 _
                     And RN0 <= Int(pitCG / pitW * 100 + .5) Then Goto LReliever1
 
-                If pitchEraOpt > 0 And INNING% > 7 And (gameScore(D, 0) >= gameScore(P, 0) _
+                If MAIN_pitchEraOpt > 0 And INNING% > 7 And (gameScore(D, 0) >= gameScore(P, 0) _
                     Or gameScore(P, 0) - gameScore(D, 0) <= 2) _
                         And pitW > 0  And gamePitcher%(D) = 1 And Int(pitCG / pitW * 100 + .5) >= 100 Then Goto LReliever1
 
-                If pitchEraOpt >= 8 Then Goto LReliever1
+                If MAIN_pitchEraOpt >= 8 Then Goto LReliever1
 
                 GK%(D) = 1  'new reliever'
                 Print #11, Using "NEW RELIEVER 2 Inning: ##  ourLead: ##  gamePitcher: ##  GS: ##  CG: ##  Wins: ##"; _
@@ -4290,7 +4294,7 @@ Sub SOURCE ()
 
         GK%(D) = 0
         Call RELIEVERS(flagPinchHitter, pz)
-        If useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
+        If MAIN_useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
         GoTo LManageDefense
 
     End If
@@ -4529,7 +4533,7 @@ Sub SOURCE ()
     If (    stamina%(D, 0) <= statPitcherGame%(D, currPitcher%(D), LG_P_BB) + statPitcherGame%(D, currPitcher%(D), LG_P_H) _
         And stamina%(D, 1) <= statPitcherGame%(D, currPitcher%(D), LG_P_R) ) Or fielder%(D, POS_P) = 99 Then
         Call RELIEVERS(flagPinchHitter, pz)
-        If useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
+        If MAIN_useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
     End If
 
     GoTo LManageDefense
@@ -4539,13 +4543,13 @@ Sub SOURCE ()
 
 
   LPhForPosition: 'GET A PINCH HITTER FOR A POSITION PLAYER
-    If MG%(P, 540) = 999 Then
+    If MG%(P, 540) = 999 Then   ' flag indicating that we have a specified list of pinch hitters
         Print #11, "WARNING!! Inside Manager Profile in LPhForPosition, this code probably has bugs"    '[bm] todo fix someday
 
         'SELECT PH FOR HITTER
         For I = 0 To 22
 
-            If batRating(P, I, 21) <= 0 And batters$(P, I) <> "XXX" Then
+            If batRating(P, I, SS_B_Avail) <= 0 And batters$(P, I) <> "XXX" Then
 
                 If fldPos%(P, currBatter!(P)) = batRating(P, I, SS_B_Pos1) Or _
                    fldPos%(P, currBatter!(P)) = batRating(P, I, SS_B_Pos2) Or _
@@ -4557,10 +4561,10 @@ Sub SOURCE ()
 
                     For I = I1 To I1 + 4
 
-                        If MG%(P, I1 + 540) <> -1 Then
-                            If MG%(P, I1 + 540) <> -1 And batRating(P, MG%(P, I1 + 540), 21) = 0 Then
-                                mg% = MG%(P, I1 + 540)
-                                MG%(P, I1 + 540) = -1
+                        If MG%(P, I + 540) <> -1 Then
+                            If MG%(P, I + 540) <> -1 And batRating(P, MG%(P, I + 540), SS_B_Avail) = 0 Then
+                                ' [bm] unused??? mg% = MG%(P, I + 540)
+                                MG%(P, I + 540) = -1
 
                                 Print #11, "PH for position player scenario #1, I ="; I
 
@@ -4585,7 +4589,7 @@ Sub SOURCE ()
 
     For I = 0 To 22:
 
-        If batRating(P, I, 21) <= 0 And batters$(P, I) <> "XXX" And batRating(P, I, SS_B_AB) <> 0 Then
+        If batRating(P, I, SS_B_Avail) <= 0 And batters$(P, I) <> "XXX" And batRating(P, I, SS_B_AB) <> 0 Then
 
             If fldPos%(P, currBatter!(P)) = batRating(P, I, SS_B_Pos1) Or _
                fldPos%(P, currBatter!(P)) = batRating(P, I, SS_B_Pos2) Or _
@@ -4638,7 +4642,7 @@ Sub SOURCE ()
     X0%(P, 0, gameD0%(P)) = I
     X0%(P, 1, gameD0%(P)) = fldPos%(P, currBatter!(P))
     X0%(P, 2, gameD0%(P)) = (currBatter!(P) * 10) + (gameD0%(P) - 9)
-    batRating(P, I, 21) = 1
+    batRating(P, I, SS_B_Avail) = 1
     playerNum%(P, currBatter!(P)) = I
     fielder%(P, fldPos%(P, currBatter!(P))) = I
 
@@ -4658,7 +4662,7 @@ Sub SOURCE ()
     callPinch = 0
     skipLoop = 0
 
-    If MG%(P, 540) <> 999 Then
+    If MG%(P, 540) <> 999 Then  ' we DON'T have a specified list of pinch hitters
 
         J% = 0
         GP% = 0
@@ -4666,22 +4670,22 @@ Sub SOURCE ()
         pit15 = pitchRating(P, currPitcher%(P), 15)
         pitRatio = Int( pit16 / pit15 * 100 + .5 )
 
-        Print #11, Using "LPhForPitcher DH: ## INNING: ##  pitchEraOpt: ##   ourScore: ##  theirScore: ## gamePitcher: ##  pit16: ##  pit15: ##  pitRatio: ##.###  RN0: ##.###"; _
-          desigHit, INNING%, pitchEraOpt, gameScore(P, 0), gameScore(D, 0), gamePitcher%(P), pit16, pit15, pitRatio, RN0
+        Print #11, Using "LPhForPitcher DH: ## INNING: ##  MAIN_pitchEraOpt: ##   ourScore: ##  theirScore: ## gamePitcher: ##  pit16: ##  pit15: ##  pitRatio: ##.###  RN0: ##.###"; _
+          MAIN_desigHit, INNING%, MAIN_pitchEraOpt, gameScore(P, 0), gameScore(D, 0), gamePitcher%(P), pit16, pit15, pitRatio, RN0
 
-          'ToDo:  Move the check for DH (desigHit) earlier (upstream) -- we shouldn't even be reaching here when using DH'
-        If desigHit = 1 Or ( (  pitchEraOpt > 1 And INNING% < 4) _
-          Or (pitchEraOpt > 2 And INNING% < 7) _
-          Or (pitchEraOpt > 3 And INNING% < 9) _
-          Or (pitchEraOpt >= 8) _
-          Or ( pitchEraOpt > 0 _
+          'ToDo:  Move the check for DH (MAIN_desigHit) earlier (upstream) -- we shouldn't even be reaching here when using DH'
+        If MAIN_desigHit = 1 Or ( (  MAIN_pitchEraOpt > 1 And INNING% < 4) _
+          Or (MAIN_pitchEraOpt > 2 And INNING% < 7) _
+          Or (MAIN_pitchEraOpt > 3 And INNING% < 9) _
+          Or (MAIN_pitchEraOpt >= 8) _
+          Or ( MAIN_pitchEraOpt > 0 _
             And INNING% > 7 _
             And gameScore(P, 0) > gameScore(D, 0) _
             And pit15 > 0 _
             And gamePitcher%(P) = 1 _
             And pitRatio <= 100 _
             And RN0 <= pitRatio ) _
-          Or (pitchEraOpt > 0 _
+          Or (MAIN_pitchEraOpt > 0 _
             And INNING% > 7 _
             And (gameScore(P, 0) >= gameScore(D, 0) _
           Or gameScore(D, 0) - gameScore(P, 0) <= 2) _
@@ -4694,7 +4698,7 @@ Sub SOURCE ()
 
             For Idx = 0 To 22
 
-                If Not (batters$(P, Idx) = "XXX" Or batRating(P, Idx, 21) > 0 Or batRating(P, Idx, SS_B_AB) = 0) Then
+                If Not (batters$(P, Idx) = "XXX" Or batRating(P, Idx, SS_B_Avail) > 0 Or batRating(P, Idx, SS_B_AB) = 0) Then
 
                     If batRating(P, Idx, SS_B_Bats) > 0 And pitchRating(D, currPitcher%(D), SS_P_Throws) = 1 Or _
                        batRating(P, Idx, SS_B_Bats) < 0 And pitchRating(D, currPitcher%(D), SS_P_Throws)= -1 Then
@@ -4741,7 +4745,7 @@ Sub SOURCE ()
             X0%(P, 0, gameD0%(P)) = PH%
             X0%(P, 1, gameD0%(P)) = 10
             X0%(P, 2, gameD0%(P)) = 81 + gameD0%(P)
-            batRating(P, PH%, 21) = 1
+            batRating(P, PH%, SS_B_Avail) = 1
             playerNum%(P, currBatter!(P)) = PH%
 
             If fldPos%(P, currBatter!(P)) = 1 Or fldPos%(P, currBatter!(P)) = 10 Then
@@ -4758,7 +4762,7 @@ Sub SOURCE ()
             VV1(P9) = currBatter!(P)
             Call HITTINGLINES
 
-            If useVGA = 1 Then
+            If MAIN_useVGA = 1 Then
                 Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
                 Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
             Else
@@ -4810,14 +4814,14 @@ Sub SOURCE ()
             If batRating(P, playerNum%(P, currBatter!(P)), SS_B_AB) = 0 Then I7! = 0 Else I7! = Int((batRating(P, playerNum%(P, currBatter!(P)), SS_B_H) + batRating(P, playerNum%(P, currBatter!(P)), 7) + batRating(P, playerNum%(P, currBatter!(P)), 8) * 2 + batRating(P, playerNum%(P, currBatter!(P)), 9) * 3) / batRating(P, playerNum%(P, currBatter!(P)), SS_B_AB) * 1000 + .5)
             If batRating(P, playerNum%(P, currBatter!(P)), 12) = 0 Then I6! = 0 Else I6! = Int(batRating(P, playerNum%(P, currBatter!(P)), SS_B_AB) / batRating(P, playerNum%(P, currBatter!(P)), 12) + .5)
 
-            If baseRunners% = BASE_1 And nbrOuts(0) = 0 And ourLead <= MG%(P, 672) And ourLead >= MG%(P, 673) * -1 And RN <= MG%(P, 674) And I7! <= MG%(P, 872) And I6! >= MG%(P, 866) Then P2 = 2: GoTo LRunnerGoing2
-            If baseRunners% = BASE_1 And nbrOuts(0) = 1 And ourLead <= MG%(P, 675) And ourLead >= MG%(P, 676) * -1 And RN <= MG%(P, 677) And I7! <= MG%(P, 873) And I6! >= MG%(P, 867) Then P2 = 2: GoTo LRunnerGoing2
+            If baseRunners% = BASE_1 And nbrOuts(0) = 0 And ourLead <= MG%(P, 672) And ourLead >= MG%(P, 673) * -1 And RN <= MG%(P, 674) And I7! <= MG%(P, 872) And I6! >= MG%(P, 866) Then P2 = 2: GoTo LHitAndRun
+            If baseRunners% = BASE_1 And nbrOuts(0) = 1 And ourLead <= MG%(P, 675) And ourLead >= MG%(P, 676) * -1 And RN <= MG%(P, 677) And I7! <= MG%(P, 873) And I6! >= MG%(P, 867) Then P2 = 2: GoTo LHitAndRun
 
-            If baseRunners% = BASE_1_3 And nbrOuts(0) = 0 And ourLead <= MG%(P, 678) And ourLead >= MG%(P, 679) * -1 And RN <= MG%(P, 680) And I7! <= MG%(P, 874) And I6! >= MG%(P, 868) Then P2 = 2: GoTo LRunnerGoing2
-            If baseRunners% = BASE_1_3 And nbrOuts(0) = 1 And ourLead <= MG%(P, 681) And ourLead >= MG%(P, 682) * -1 And RN <= MG%(P, 683) And I7! <= MG%(P, 875) And I6! >= MG%(P, 869) Then P2 = 2: GoTo LRunnerGoing2
+            If baseRunners% = BASE_1_3 And nbrOuts(0) = 0 And ourLead <= MG%(P, 678) And ourLead >= MG%(P, 679) * -1 And RN <= MG%(P, 680) And I7! <= MG%(P, 874) And I6! >= MG%(P, 868) Then P2 = 2: GoTo LHitAndRun
+            If baseRunners% = BASE_1_3 And nbrOuts(0) = 1 And ourLead <= MG%(P, 681) And ourLead >= MG%(P, 682) * -1 And RN <= MG%(P, 683) And I7! <= MG%(P, 875) And I6! >= MG%(P, 869) Then P2 = 2: GoTo LHitAndRun
 
-            If baseRunners% = BASE_1_2 And nbrOuts(0) = 0 And ourLead <= MG%(P, 684) And ourLead >= MG%(P, 685) * -1 And RN <= MG%(P, 686) And I7! <= MG%(P, 876) And I6! >= MG%(P, 870) Then P2 = 2: GoTo LRunnerGoing2
-            If baseRunners% = BASE_1_2 And nbrOuts(0) = 1 And ourLead <= MG%(P, 687) And ourLead >= MG%(P, 688) * -1 And RN <= MG%(P, 689) And I7! <= MG%(P, 877) And I6! >= MG%(P, 871) Then P2 = 2: GoTo LRunnerGoing2
+            If baseRunners% = BASE_1_2 And nbrOuts(0) = 0 And ourLead <= MG%(P, 684) And ourLead >= MG%(P, 685) * -1 And RN <= MG%(P, 686) And I7! <= MG%(P, 876) And I6! >= MG%(P, 870) Then P2 = 2: GoTo LHitAndRun
+            If baseRunners% = BASE_1_2 And nbrOuts(0) = 1 And ourLead <= MG%(P, 687) And ourLead >= MG%(P, 688) * -1 And RN <= MG%(P, 689) And I7! <= MG%(P, 877) And I6! >= MG%(P, 871) Then P2 = 2: GoTo LHitAndRun
         End If
 
         If Not (MG%(P, 609) <> 999 Or fldPos%(P, currBatter!(P)) <> 1) Then
@@ -4826,14 +4830,14 @@ Sub SOURCE ()
 
                 Call d100(RN)
 
-                If baseRunners% = BASE_1   And INNING% <= 7 And MG%(P, 610) >= nbrOuts(0) And ourLead <= MG%(P, 611) And ourLead >= MG%(P, 612) * -1 And RN <= MG%(P, 613) Then Goto LBunt0
-                If baseRunners% = BASE_1   And INNING% >  7 And MG%(P, 614) >= nbrOuts(0) And ourLead <= MG%(P, 615) And ourLead >= MG%(P, 616) * -1 And RN <= MG%(P, 617) Then Goto LBunt0
+                If baseRunners% = BASE_1   And INNING% <= 7 And MG%(P, 610) >= nbrOuts(0) And ourLead <= MG%(P, 611) And ourLead >= MG%(P, 612) * -1 And RN <= MG%(P, 613) Then Goto LPitcherBunt
+                If baseRunners% = BASE_1   And INNING% >  7 And MG%(P, 614) >= nbrOuts(0) And ourLead <= MG%(P, 615) And ourLead >= MG%(P, 616) * -1 And RN <= MG%(P, 617) Then Goto LPitcherBunt
 
-                If baseRunners% = BASE_2   And INNING% <= 7 And MG%(P, 618) >= nbrOuts(0) And ourLead <= MG%(P, 619) And ourLead >= MG%(P, 620) * -1 And RN <= MG%(P, 621) Then Goto LBunt0
-                If baseRunners% = BASE_2   And INNING% >  7 And MG%(P, 622) >= nbrOuts(0) And ourLead <= MG%(P, 623) And ourLead >= MG%(P, 624) * -1 And RN <= MG%(P, 625) Then Goto LBunt0
+                If baseRunners% = BASE_2   And INNING% <= 7 And MG%(P, 618) >= nbrOuts(0) And ourLead <= MG%(P, 619) And ourLead >= MG%(P, 620) * -1 And RN <= MG%(P, 621) Then Goto LPitcherBunt
+                If baseRunners% = BASE_2   And INNING% >  7 And MG%(P, 622) >= nbrOuts(0) And ourLead <= MG%(P, 623) And ourLead >= MG%(P, 624) * -1 And RN <= MG%(P, 625) Then Goto LPitcherBunt
 
-                If baseRunners% = BASE_1_2 And INNING% <= 7 And MG%(P, 626) >= nbrOuts(0) And ourLead <= MG%(P, 627) And ourLead >= MG%(P, 628) * -1 And RN <= MG%(P, 629) Then Goto LBunt0
-                If baseRunners% = BASE_1_2 And INNING% >  7 And MG%(P, 630) >= nbrOuts(0) And ourLead <= MG%(P, 631) And ourLead >= MG%(P, 632) * -1 And RN <= MG%(P, 633) Then Goto LBunt0
+                If baseRunners% = BASE_1_2 And INNING% <= 7 And MG%(P, 626) >= nbrOuts(0) And ourLead <= MG%(P, 627) And ourLead >= MG%(P, 628) * -1 And RN <= MG%(P, 629) Then Goto LPitcherBunt
+                If baseRunners% = BASE_1_2 And INNING% >  7 And MG%(P, 630) >= nbrOuts(0) And ourLead <= MG%(P, 631) And ourLead >= MG%(P, 632) * -1 And RN <= MG%(P, 633) Then Goto LPitcherBunt
 
             End If
 
@@ -4850,13 +4854,13 @@ Sub SOURCE ()
             End If
 
             Call d100(RN)
-            If baseRunners% = BASE_1   And INNING% <= 7 And ourLead <= MG%(P, 635) And ourLead >= MG%(P, 636) * -1 And I7! <= MG%(P, 637) And I6! <= MG%(P, 638) And pitchRating(D, currPitcher%(D), SS_P_ERA100) <= MG%(P, 639) And RN <= MG%(P, 640) Then Goto LBunt0
-            If baseRunners% = BASE_2   And INNING% <= 7 And ourLead <= MG%(P, 641) And ourLead >= MG%(P, 642) * -1 And I7! <= MG%(P, 643) And I6! <= MG%(P, 644) And pitchRating(D, currPitcher%(D), SS_P_ERA100) <= MG%(P, 645) And RN <= MG%(P, 646) Then Goto LBunt0
-            If baseRunners% = BASE_1_2 And INNING% <= 7 And ourLead <= MG%(P, 647) And ourLead >= MG%(P, 648) * -1 And I7! <= MG%(P, 649) And I6! <= MG%(P, 650) And pitchRating(D, currPitcher%(D), SS_P_ERA100) <= MG%(P, 651) And RN <= MG%(P, 652) Then Goto LBunt0
+            If baseRunners% = BASE_1   And INNING% <= 7 And ourLead <= MG%(P, 635) And ourLead >= MG%(P, 636) * -1 And I7! <= MG%(P, 637) And I6! <= MG%(P, 638) And pitchRating(D, currPitcher%(D), SS_P_ERA100) <= MG%(P, 639) And RN <= MG%(P, 640) Then Goto LPitcherBunt
+            If baseRunners% = BASE_2   And INNING% <= 7 And ourLead <= MG%(P, 641) And ourLead >= MG%(P, 642) * -1 And I7! <= MG%(P, 643) And I6! <= MG%(P, 644) And pitchRating(D, currPitcher%(D), SS_P_ERA100) <= MG%(P, 645) And RN <= MG%(P, 646) Then Goto LPitcherBunt
+            If baseRunners% = BASE_1_2 And INNING% <= 7 And ourLead <= MG%(P, 647) And ourLead >= MG%(P, 648) * -1 And I7! <= MG%(P, 649) And I6! <= MG%(P, 650) And pitchRating(D, currPitcher%(D), SS_P_ERA100) <= MG%(P, 651) And RN <= MG%(P, 652) Then Goto LPitcherBunt
 
-            If baseRunners% = BASE_1   And INNING% >  7 And ourLead <= MG%(P, 653) And ourLead >= MG%(P, 654) * -1 And I7! <= MG%(P, 655) And I6! <= MG%(P, 656) And pitchRating(D, currPitcher%(D), SS_P_ERA100) <= MG%(P, 657) And RN <= MG%(P, 658) Then Goto LBunt0
-            If baseRunners% = BASE_2   And INNING% >  7 And ourLead <= MG%(P, 659) And ourLead >= MG%(P, 660) * -1 And I7! <= MG%(P, 661) And I6! <= MG%(P, 662) And pitchRating(D, currPitcher%(D), SS_P_ERA100) <= MG%(P, 663) And RN <= MG%(P, 664) Then Goto LBunt0
-            If baseRunners% = BASE_1_2 And INNING% >  7 And ourLead <= MG%(P, 665) And ourLead >= MG%(P, 666) * -1 And I7! <= MG%(P, 667) And I6! <= MG%(P, 668) And pitchRating(D, currPitcher%(D), SS_P_ERA100) <= MG%(P, 669) And RN <= MG%(P, 670) Then Goto LBunt0
+            If baseRunners% = BASE_1   And INNING% >  7 And ourLead <= MG%(P, 653) And ourLead >= MG%(P, 654) * -1 And I7! <= MG%(P, 655) And I6! <= MG%(P, 656) And pitchRating(D, currPitcher%(D), SS_P_ERA100) <= MG%(P, 657) And RN <= MG%(P, 658) Then Goto LPitcherBunt
+            If baseRunners% = BASE_2   And INNING% >  7 And ourLead <= MG%(P, 659) And ourLead >= MG%(P, 660) * -1 And I7! <= MG%(P, 661) And I6! <= MG%(P, 662) And pitchRating(D, currPitcher%(D), SS_P_ERA100) <= MG%(P, 663) And RN <= MG%(P, 664) Then Goto LPitcherBunt
+            If baseRunners% = BASE_1_2 And INNING% >  7 And ourLead <= MG%(P, 665) And ourLead >= MG%(P, 666) * -1 And I7! <= MG%(P, 667) And I6! <= MG%(P, 668) And pitchRating(D, currPitcher%(D), SS_P_ERA100) <= MG%(P, 669) And RN <= MG%(P, 670) Then Goto LPitcherBunt
 
         End If
 
@@ -4909,7 +4913,7 @@ Sub SOURCE ()
         GoTo LRunnerGoing
     Else
         P2 = 2
-        GoTo LRunnerGoing2
+        GoTo LHitAndRun
     End If
 
     '----- NOODLE -----
@@ -4918,7 +4922,7 @@ Sub SOURCE ()
     If nbrOuts(0) >= 1 And INNING% >= 7 Then
         GoTo LPinchRunner0
     Else
-      LBunt0:
+      LPitcherBunt:
         P2 = 4
         GoTo LBunt
     End If

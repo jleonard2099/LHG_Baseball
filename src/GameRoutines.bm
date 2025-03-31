@@ -109,7 +109,7 @@ Sub InitVar ()
     month$(8) = "AUGUST"
     month$(9) = "SEPTEMBER"
     month$(10) = "OCTOBER"
-    gameMonth = 4
+    MAIN_gameMonth = 4
 
     dayNight$(0) = "AFTERNOON"
     dayNight$(1) = "NIGHT"
@@ -125,7 +125,7 @@ Sub InitVar ()
     P = 1
 
     For I = 0 To 1:
-        currPitcher%(I) = -1: gamePitcher%(I) = -1
+        currPitcher%(I) = -1 : gamePitcher%(I) = -1
     Next
 
     startPitcher(0) = -1
@@ -141,12 +141,11 @@ Sub InitVar ()
     D = 0
     P = 1
 
-    autoPlay = 0
+    autoPlay = _FALSE
     compTeam = 0
     DB = 0
     ejectCnt = 0
-    endAllGames = 0
-    endGame = 1
+    endAllGames = _FALSE
     gameTemp = 0
     currFielder% = 0
     dice1000% = 0
@@ -215,7 +214,7 @@ Sub InitVar ()
 
     For P9 = 0 To 1
         For I3 = 0 To 21
-            If pitchRating(P9, I3, SS_P_WP) <> 99 Then pitchRating(P9, I3, SS_P_WP) = 0
+            If pitchRating(P9, I3, SS_P_Avail) <> 99 Then pitchRating(P9, I3, SS_P_Avail) = 0
         Next
     Next
 
@@ -228,7 +227,7 @@ Sub InitVar ()
 
     For I = 0 To 1
         For I1 = 0 To 22
-            If batRating(I, I1, 21) <> 99 Then batRating(I, I1, 21) = 0
+            If batRating(I, I1, SS_B_Avail) <> 99 Then batRating(I, I1, SS_B_Avail) = 0
         Next
     Next
 
@@ -243,22 +242,22 @@ End Sub
 Sub AUTOSETUP
 
     'Setup variables for auto-play
-    playerOpt = NG%(8)
-    desigHit = NG%(3)
-    pbpDelay! = NG%(4) / 10
-    gameMonth = NG%(17)
-    useWeather = NG%(5)
-    useVGA = NG%(11)
-    useInj = NG%(6)
-    useLRSplit = NG%(7)
-    useRest = NG%(9)
-    useMgrProf = NG%(10)
-    pitchEraOpt = NG%(14)
+    MAIN_playerOpt = NG%(8)
+    MAIN_desigHit = NG%(3)
+    MAIN_pbpDelay! = NG%(4) / 10
+    MAIN_gameMonth = NG%(17)
+    MAIN_useWeather = NG%(5)
+    MAIN_useVGA = NG%(11)
+    MAIN_useInj = NG%(6)
+    MAIN_useLRSplit = NG%(7)
+    MAIN_useRest = NG%(9)
+    MAIN_useMgrProf = NG%(10)
+    MAIN_pitchEraOpt = NG%(14)
 
     If NG%(15) < 1600 Then
-        dayOrNight = 0
+        MAIN_dayOrNight = 0
     Else
-        dayOrNight = 1
+        MAIN_dayOrNight = 1
     End If
 
 
@@ -383,7 +382,7 @@ End Sub
 'pbp delay.
 Sub DELAY ()
 
-    _Delay pbpDelay!
+    _Delay MAIN_pbpDelay!
 
 End Sub
 
@@ -578,7 +577,7 @@ Sub PBP (pbpString$)
 
     Print #11, "    " + pbpString$
 
-    If pbpDelay! > 0 Then
+    If MAIN_pbpDelay! > 0 Then
 
         'Clean up / restrict to 44 char's
         'this is the width of the PBP window
@@ -605,7 +604,7 @@ Sub PBP (pbpString$)
         'Print all 8 lines from scratch
         For I9 = 1 To 8
 
-            If useVGA = 1 Then
+            If MAIN_useVGA = 1 Then
                 Color &HFFFFFFFF
                 _PrintMode _FillBackground , imageScreen&
                 PrintOnGfx 20, I9 + 3, pbpStrings$(I9), imageScreen&
@@ -896,7 +895,7 @@ Sub DisplayBatter_Lineup (PG, P9)
 
         Locate , 1
 
-        If batRating(P9, idx, 21) = 0 Then
+        If batRating(P9, idx, SS_B_Avail) = 0 Then
 
             Color 2, 0
 
@@ -1273,7 +1272,7 @@ Sub DisplayFielding_Lineup (PG, P9, TG)
 
     For luIdx = AA To BB:
 
-        If batRating(P9, luIdx, 21) = 0 Then
+        If batRating(P9, luIdx, SS_B_Avail) = 0 Then
             Color 2
             If luIdx < 10 Then Print Using "#"; luIdx;
             If luIdx > 9 Then Print alpha$(luIdx - 10);
@@ -1476,7 +1475,7 @@ End Sub
 'that prompts the user for replacements.
 Sub EJECTIONINJURY (playerMode, P, compTeam, D, po%, P9, W5, W6)
 
-    If Not (playerMode = 2 Or playerMode = 1 And P <> compTeam) Then
+    If Not (playerMode = PLAY_MODE_PCvsPC Or playerMode = PLAY_MODE_COMPUTER And P <> compTeam) Then
         pbpString$ = "You must replace " + batters$(D, fielder%(D, po%))
         Call PBP(pbpString$)
     Else
@@ -1487,7 +1486,7 @@ Sub EJECTIONINJURY (playerMode, P, compTeam, D, po%, P9, W5, W6)
 
         For idx = 0 To 22
 
-            If batRating(D, idx, 21) <= 0 And batters$(D, idx) <> "XXX" Then
+            If batRating(D, idx, SS_B_Avail) <= 0 And batters$(D, idx) <> "XXX" Then
 
                 If fldPos%(D, I2) = batRating(D, idx, SS_B_Pos1) Or fldPos%(D, I2) = batRating(D, idx, SS_B_Pos2) Or fldPos%(D, I2) = batRating(D, idx, SS_B_Pos3) Or fldPos%(D, I2) = batRating(D, idx, SS_B_Pos4) Then
 
@@ -1498,7 +1497,7 @@ Sub EJECTIONINJURY (playerMode, P, compTeam, D, po%, P9, W5, W6)
                     X0%(D, 0, gameD0%(D)) = idx
                     X0%(D, 1, gameD0%(D)) = fldPos%(D, I2)
                     X0%(D, 2, gameD0%(D)) = (I2 * 10) + (gameD0%(D) - 9)
-                    batRating(D, idx, 21) = 1
+                    batRating(D, idx, SS_B_Avail) = 1
                     playerNum%(D, I2) = idx
                     I7% = D
                     I8% = I2
@@ -1814,7 +1813,7 @@ End Sub
 '           FLDERR Subroutine
 '----------------------------------------
 'Fielding Error
-Sub FLDERR (F%, currFielder%, D, fldPct, SB%, S2%, P)
+Sub FLDERR (F%, currFielder%, D, fldPct, SB%, event%, P)
 
     F% = 0
 
@@ -1831,10 +1830,10 @@ Sub FLDERR (F%, currFielder%, D, fldPct, SB%, S2%, P)
     If fldPct >= 999 Then
         errVal% = 1
     Else
-        If S2% >= 12 And S2% <= 15 Then errVal% = 1009 - fldPct
-        If S2% >= 7 And S2% <= 9 Then errVal% = 1006 - fldPct
-        If S2% = 16 Or S2% >= 22 Then errVal% = 1000 - fldPct
-        If S2% >= EVENT_FLY_DEEP And S2% <= 21 Then errVal% = (1000 - fldPct) * .05
+        If event% >= 12 And event% <= 15 Then errVal% = 1009 - fldPct
+        If event% >= 7 And event% <= 9 Then errVal% = 1006 - fldPct
+        If event% = 16 Or event% >= 22 Then errVal% = 1000 - fldPct
+        If event% >= EVENT_FLY_DEEP And event% <= 21 Then errVal% = (1000 - fldPct) * .05
 
     End If
 
@@ -1857,7 +1856,7 @@ Sub FLDERR (F%, currFielder%, D, fldPct, SB%, S2%, P)
             Call INCBATDF(D, fielder%(D, currFielder%), 11)
         End If
 
-        If S2% = EVENT_PSBL_SINGLE Then
+        If event% = EVENT_PSBL_SINGLE Then
 
             Call PBP(player$(0) + " beats out an infield single")
             If fldPos%(P, currBatter!(P)) <> 1 Then
@@ -1874,14 +1873,14 @@ Sub FLDERR (F%, currFielder%, D, fldPct, SB%, S2%, P)
 
         End If
 
-        If S2% >= 17 And S2% <= 21 Then I1 = 3
-        If S2% >= 17 And S2% <= 20 Then Call OUTFIELDERR
-        If S2% = EVENT_2B Or S2% = EVENT_3B Or S2% >= 22 Or S2% = 16 Then I1 = 1
-        If S2% >= 12 And S2% <= 14 And rand = 1 Or S2% = EVENT_DP Then I1 = 1
+        If event% >= 17 And event% <= 21 Then I1 = 3
+        If event% >= 17 And event% <= 20 Then Call OUTFIELDERR
+        If event% = EVENT_2B Or event% = EVENT_3B Or event% >= 22 Or event% = EVENT_STEAL Then I1 = 1
+        If event% >= 12 And event% <= 14 And rand = 1 Or event% = EVENT_DP Then I1 = 1
 
         Call d100(RN)
 
-        If I1 = 1 And currFielder% = 1 And S2% = 16 Then pbpString$ = "*** WILD PICK OFF THROW BY" + " " + player$(4) + " ***"
+        If I1 = 1 And currFielder% = 1 And event% = EVENT_STEAL Then pbpString$ = "*** WILD PICK OFF THROW BY" + " " + player$(4) + " ***"
         If I1 = 1 And RN <= 50 Then pbpString$ = "*** THROWING ERROR ON" + " " + player$(4) + " ***"
         If I1 = 1 And RN > 50 And RN <= 55 Then pbpString$ = "*** BALL KICKED BY" + " " + player$(4) + " ***"
         If I1 = 1 Then pbpString$ = "*** " + player$(4) + " THROWS IT AWAY ***"
@@ -1898,7 +1897,7 @@ Sub FLDERR (F%, currFielder%, D, fldPct, SB%, S2%, P)
 
         Call PBP(pbpString$)
 
-        If S2% = 16 Or S2% = 22 Then
+        If event% = EVENT_STEAL Or event% = EVENT_RUNDOWN Then
 
             I8! = Int(Rnd(1) * 10) + 1
 
@@ -1918,9 +1917,9 @@ Sub FLDERR (F%, currFielder%, D, fldPct, SB%, S2%, P)
             A5%(2) = 1
             A5%(3) = 1
 
-            If Not (S2% > EVENT_FLY_DEEP Or S2% <= 20) Then
+            If Not (event% > EVENT_FLY_DEEP Or event% <= 20) Then
 
-                If RN <= 17 And S2% <> EVENT_2B Or S2% = EVENT_PSBL_SINGLE Then
+                If RN <= 17 And event% <> EVENT_2B Or event% = EVENT_PSBL_SINGLE Then
                     A5%(0) = 2
                     A5%(1) = 2
                     A5%(2) = 2
@@ -1929,20 +1928,20 @@ Sub FLDERR (F%, currFielder%, D, fldPct, SB%, S2%, P)
 
         End If
 
-        If S2% >= 17 And S2% <= 20 And nbrOuts(0) = 2 Or S2% >= 23 Or S2% = 16 And currFielder% = 2 Then
+        If event% >= 17 And event% <= 20 And nbrOuts(0) = 2 Or event% >= 23 Or event% = EVENT_STEAL And currFielder% = 2 Then
             A5%(3) = 1
             A5%(2) = 2
             A5%(1) = 2
             A5%(0) = 2
         End If
 
-        If S2% >= 17 And S2% <= 19 And RN <= 33 And nbrOuts(0) < 2 And gameBaserunners%(1, 0) = 0 Then A5%(0) = 2
+        If event% >= 17 And event% <= 19 And RN <= 33 And nbrOuts(0) < 2 And gameBaserunners%(1, 0) = 0 Then A5%(0) = 2
 
-        If S2% = 16 Or S2% = 22 Then A5%(0) = 0
+        If event% = EVENT_STEAL Or event% = EVENT_RUNDOWN Then A5%(0) = 0
 
-        If I1 > 0 And S2% <> EVENT_1B And S2% <> EVENT_2B And S2% <> EVENT_3B And S2% <> 16 And S2% <> 22 Then nbrOuts(1) = nbrOuts(1) + 1
+        If I1 > 0 And event% <> EVENT_1B And event% <> EVENT_2B And event% <> EVENT_3B And event% <> EVENT_STEAL And event% <> EVENT_RUNDOWN Then nbrOuts(1) = nbrOuts(1) + 1
 
-        If S2% = 16 Or S2% = EVENT_1B Or S2% = EVENT_2B Or S2% = 9 Or S2% = 22 Then
+        If event% = EVENT_STEAL Or event% = EVENT_1B Or event% = EVENT_2B Or event% = EVENT_3B Or event% = EVENT_RUNDOWN Then
 
             A5%(0) = 0
 
@@ -1956,7 +1955,7 @@ Sub FLDERR (F%, currFielder%, D, fldPct, SB%, S2%, P)
 
         gameScore(D, 2) = gameScore(D, 2) + 1
 
-        Call ADVANCEMENT(P, D, S2%, F%, fldPct)
+        Call ADVANCEMENT(P, D, event%, F%, fldPct)
 
     End If
 
@@ -2243,7 +2242,7 @@ End Sub
 'who has been ejected or injured.
 Sub INJPIT (P, D, IP%, flagPinchHitter)
 
-    If playerMode = 2 Or playerMode = 1 And P <> compTeam Then
+    If playerMode = PLAY_MODE_PCvsPC Or playerMode = PLAY_MODE_COMPUTER And P <> compTeam Then
         IP% = 1
         Call RELIEVERS(flagPinchHitter, pz)
     Else
@@ -2588,12 +2587,12 @@ End Sub
 'for the play-by-play text.
 Sub WINDEX ()
 
-    If pbpDelay! > 0 Then
+    If MAIN_pbpDelay! > 0 Then
 
 
         pbpLine = 0
 
-        If useVGA = 1 Then
+        If MAIN_useVGA = 1 Then
 
             Color &HFFFFFFFF
             _PrintMode _FillBackground , imageScreen&
@@ -2633,7 +2632,7 @@ Sub NEWPITCHER (pIdx, flagPinchHitter, pz)
 
     currPitcher%(D) = V0
     gamePitcher%(D) = gamePitcher%(D) + 1
-    pitchRating(D, V0, SS_P_WP) = gamePitcher%(D)
+    pitchRating(D, V0, SS_P_Avail) = gamePitcher%(D)
     P9 = D
 
     Call PITSTAM(P9)
@@ -2677,7 +2676,7 @@ Sub NEWPITCHER (pIdx, flagPinchHitter, pz)
     Call DELAY
     Call HITTINGLINES
 
-    If useVGA = 1 Then
+    If MAIN_useVGA = 1 Then
         Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
         Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
     Else
@@ -2872,7 +2871,7 @@ Sub PINCHRUNNER (MS%, A1, baseRunners%, I2, P, flagPinchRunner%, nbrBalls, nbrSt
 
                 For I1 = 772 To 777
                     If MG%(P, I1) <> -1 Then
-                        If batRating(P, MG%(P, I1), 21) = 0 Then
+                        If batRating(P, MG%(P, I1), SS_B_Avail) = 0 Then
                             I1 = MG%(P, I1)
                             If fldPos%(P, J) = 1 Then
                                 'PINCH RUNNING FOR THE PITCHER
@@ -2888,8 +2887,8 @@ Sub PINCHRUNNER (MS%, A1, baseRunners%, I2, P, flagPinchRunner%, nbrBalls, nbrSt
                                 If MG%(P, I * 4 + 779) = playerNum%(P, J) Then
                                     'FOUND A MATCH FOR THE RUNNER ON BASE
                                     Call d100(RN)
-                                    If INNING% >= MG%(P, I * 4 + 780) And batRating(P, MG%(P, I * 4 + 781), 21) = 0 And RN <= MG%(P, I * 4 + 782) Then
-                                        batRating(P, MG%(P, I * 4 + 781), 21) = 40 + J
+                                    If INNING% >= MG%(P, I * 4 + 780) And batRating(P, MG%(P, I * 4 + 781), SS_B_Avail) = 0 And RN <= MG%(P, I * 4 + 782) Then
+                                        batRating(P, MG%(P, I * 4 + 781), SS_B_Avail) = 40 + J
                                         Goto LFoundPinchRunner
                                     End If
                                     Exit Sub
@@ -2912,7 +2911,7 @@ Sub PINCHRUNNER (MS%, A1, baseRunners%, I2, P, flagPinchRunner%, nbrBalls, nbrSt
             selectedPR = -1
 
             For I = 0 To 22
-                If batters$(P, I) <> "XXX" And batRating(P, I, 21) <= 0 Then
+                If batters$(P, I) <> "XXX" And batRating(P, I, SS_B_Avail) <= 0 Then
                     For I2 = 22 To 25
                         If batRating(P, I, I2) <> -1 And batRating(P, I, I2) = fldPos%(P, J) And fldPos%(P, J) <> 1 Then selectedPR = I
                     Next
@@ -2924,14 +2923,14 @@ Sub PINCHRUNNER (MS%, A1, baseRunners%, I2, P, flagPinchRunner%, nbrBalls, nbrSt
             Next
 
             If numPRsFound = 0 Or selectedPR = -1 And fldPos%(P, J) <> 1 Then Exit Sub
-            If fldPos%(P, J) <> 1 Then batRating(P, selectedPR, 21) = 40 + J
+            If fldPos%(P, J) <> 1 Then batRating(P, selectedPR, SS_B_Avail) = 40 + J
 
             selectedPR = pinchRunners( Int(Rnd(1) * numPRsFound) )  'Randomly select a pinch runner from all the ones we found'
 
           LFoundPinchRunner:
             I2 = J
             player$(J1) = batters$(P, selectedPR)
-            batRating(P, selectedPR, 21) = 1
+            batRating(P, selectedPR, SS_B_Avail) = 1
             playerNum%(P, I2) = selectedPR
             fielder%(P, fldPos%(P, I2)) = selectedPR
 
@@ -2964,7 +2963,7 @@ Sub PINCHRUNNER (MS%, A1, baseRunners%, I2, P, flagPinchRunner%, nbrBalls, nbrSt
             Call DELAY
             Call HITTINGLINES
 
-            If useVGA = 1 Then
+            If MAIN_useVGA = 1 Then
                 Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
                 Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
                 MS% = 1
@@ -3004,7 +3003,7 @@ End Sub
 '----------------------------------------
 'This subroutine handles the stats and
 'Play-by-Play for a pitchout.
-Sub PITCHOUT (baseRunners%, TGTBASE%, Q0)
+Sub PITCHOUT (baseRunners%, TGTBASE%, stealPercent)
 
     If baseRunners% <> BASE_1_3 And TGTBASE% = 2 Then
 
@@ -3012,7 +3011,7 @@ Sub PITCHOUT (baseRunners%, TGTBASE%, Q0)
 
         If PJ <= 8 Then
             Call PBP("...PITCH OUT!!!")
-            Q0 = Q0 - 200
+            stealPercent = stealPercent - 200
         End If
 
     End If
@@ -3037,7 +3036,7 @@ Sub PITDISP (P9)
 
     For pIdx = 0 To 21:
 
-        If pitchRating(P9, pIdx, SS_P_WP) <= 0 Then
+        If pitchRating(P9, pIdx, SS_P_Avail) <= 0 Then
             Color 2, 0
 
             If pIdx <= 9 Then
@@ -3084,7 +3083,7 @@ End Sub
 'that place.
 Sub PITPLACEMENT (P, X$)
 
-    If useVGA = 1 Then
+    If MAIN_useVGA = 1 Then
         'Printing white on background
         _PrintMode _KeepBackground , imageScreen&
         Color &HFFFFFFFF
@@ -3092,7 +3091,7 @@ Sub PITPLACEMENT (P, X$)
     End If
 
     If pitchRating(P, currPitcher%(P), 0) < 0 Then
-        If useVGA = 1 Then
+        If MAIN_useVGA = 1 Then
             PrintOnGfx 42, 25, X$, imageScreen&
         Else
             Locate 21, 64
@@ -3101,7 +3100,7 @@ Sub PITPLACEMENT (P, X$)
     End If
 
     If pitchRating(P, currPitcher%(P), 0) > 0 Then
-        If useVGA = 1 Then
+        If MAIN_useVGA = 1 Then
             PrintOnGfx 30, 25, X$, imageScreen&
         Else
             Locate 21, 51
@@ -3109,7 +3108,7 @@ Sub PITPLACEMENT (P, X$)
         End If
     End If
 
-    If useVGA = 1 Then
+    If MAIN_useVGA = 1 Then
         'Printing white on black
         Color &HFFFFFFFF
         _PrintMode _FillBackground , imageScreen&
@@ -3136,7 +3135,7 @@ Sub PITSTAM (P9)
 
     If gamePitcher%(P9) > 1 Then stamina%(P9, 1) = 0
 
-    If pitchEraOpt > 0 Then
+    If MAIN_pitchEraOpt > 0 Then
         If gamePitcher%(P9) > 1 Then
             stamina%(P9, 1) = 1
         Else
@@ -3169,7 +3168,7 @@ Sub PITSTRAT (flagPinchHitter, pz)
     If MG%(D, 60) = 999 Or INNING% > 7 Then
 
         'if no closers set up or no closing strategy defined, skip out
-        If Not (INNING% >= 8 And MG%(D, 520) <> 999 And MG%(D, 90) <> 999 Or MG%(D, MGR_CLOSE_STRATEGY) <> 999) Then
+        If Not (INNING% >= 8 And MG%(D, 520) <> 999 And MG%(D, 90) <> 999 Or MG%(D, 581) <> 999) Then
 
             'if still needing middle relief
             If INNING% <= 7 Then GoTo LMiddleReliever
@@ -3198,9 +3197,9 @@ Sub PITSTRAT (flagPinchHitter, pz)
                     If baseRunners% = BASE_FULL                               And ourLead <= 5 Then saveOpp% = 1
                     If baseRunners% = BASE_EMPTY And nbrOuts(0) = 0           And ourLead <= 3 Then saveOpp% = 1
 
-                    If currBatter!(P) <= 7 Then For pIdx = 0 To 2: I3 = I3 + batRating(P, playerNum%(P, currBatter!(P) + pIdx), 0): Next
-                    If currBatter!(P) =  8 Then For pIdx = 0 To 1: I3 = I3 + batRating(P, playerNum%(P, currBatter!(P) + pIdx), 0): Next : I3 = I3 + batRating(P, playerNum%(P, 1), 0)
-                    If currBatter!(P) =  9 Then For pIdx = 1 To 2: I3 = I3 + batRating(P, playerNum%(P,                  pIdx), 0): Next : I3 = I3 + batRating(P, playerNum%(P, 9), 0)
+                    If currBatter!(P) <= 7 Then For pIdx = 0 To 2 : I3 = I3 + batRating(P, playerNum%(P, currBatter!(P) + pIdx), 0): Next
+                    If currBatter!(P) =  8 Then For pIdx = 0 To 1 : I3 = I3 + batRating(P, playerNum%(P, currBatter!(P) + pIdx), 0): Next : I3 = I3 + batRating(P, playerNum%(P, 1), 0)
+                    If currBatter!(P) =  9 Then For pIdx = 1 To 2 : I3 = I3 + batRating(P, playerNum%(P,                  pIdx), 0): Next : I3 = I3 + batRating(P, playerNum%(P, 9), 0)
 
                     Print #11, Using "pidx: ###  Inning: ##  saveSituation: #  MGR_INN_CLOSE_STRATEGY: ##  MGR_USE_BOTH_SETUP_CLOSER:  ##"; pIdx, INNING%, saveOpp%, MG%(D, MGR_INN_CLOSE_STRATEGY), MG%(D, MGR_USE_BOTH_SETUP_CLOSER)
 
@@ -3268,14 +3267,14 @@ Sub PITSTRAT (flagPinchHitter, pz)
     If I3 < 0 Then I1 = 81
     If I3 > 0 Then I1 = 84
     For pIdx = I1 To I1 + 2
-        If MG%(D, pIdx) >= 0 And pitchRating(D, MG%(D, pIdx), 15) = 0 Then I2 = I2 + MG%(D, pIdx + 10)
+        If MG%(D, pIdx) >= 0 And pitchRating(D, MG%(D, pIdx), SS_P_Avail) = 0 Then I2 = I2 + MG%(D, pIdx + 10)
     Next
 
     I3 = Int(Rnd(1) * I2) + 1
     I2 = 0
 
     For pIdx = I1 To I1 + 2
-        If MG%(D, pIdx) >= 0 And pitchRating(D, MG%(D, pIdx), 15) = 0 Then I2 = I2 + MG%(D, pIdx + 10)
+        If MG%(D, pIdx) >= 0 And pitchRating(D, MG%(D, pIdx), SS_P_Avail) = 0 Then I2 = I2 + MG%(D, pIdx + 10)
         If I3 <= I2 Then
             V0 = MG%(D, pIdx)
             MG%(D, pIdx) = -1
@@ -3294,14 +3293,14 @@ Sub PITSTRAT (flagPinchHitter, pz)
     If I3 > 0 Then I1 = 524
 
     For pIdx = I1 To I1 + 2
-        If MG%(D, pIdx) >= 0 And pitchRating(D, MG%(D, pIdx), 15) = 0 Then I2 = I2 + MG%(D, pIdx + 10)
+        If MG%(D, pIdx) >= 0 And pitchRating(D, MG%(D, pIdx), SS_P_Avail) = 0 Then I2 = I2 + MG%(D, pIdx + 10)
     Next
 
     I3 = Int(Rnd(1) * I2) + 1
     I2 = 0
 
     For pIdx = I1 To I1 + 2
-        If MG%(D, pIdx) >= 0 And pitchRating(D, MG%(D, pIdx), 15) = 0 Then I2 = I2 + MG%(D, pIdx + 10)
+        If MG%(D, pIdx) >= 0 And pitchRating(D, MG%(D, pIdx), SS_P_Avail) = 0 Then I2 = I2 + MG%(D, pIdx + 10)
         If I3 <= I2 Then
             V0 = MG%(D, pIdx)
             MG%(D, pIdx) = -1
@@ -3320,14 +3319,14 @@ Sub PITSTRAT (flagPinchHitter, pz)
     I2 = 0
 
     For pIdx = 61 To 70
-        If MG%(D, pIdx) >= 0 And pitchRating(D, MG%(D, pIdx), 15) = 0 Then I2 = I2 + MG%(D, pIdx + 10)
+        If MG%(D, pIdx) >= 0 And pitchRating(D, MG%(D, pIdx), SS_P_Avail) = 0 Then I2 = I2 + MG%(D, pIdx + 10)
     Next
 
     I3 = Int(Rnd(1) * I2) + 1
     I2 = 0
 
     For pIdx = 61 To 70
-        If MG%(D, pIdx) >= 0 And pitchRating(D, MG%(D, pIdx), 15) = 0 Then I2 = I2 + MG%(D, pIdx + 10)
+        If MG%(D, pIdx) >= 0 And pitchRating(D, MG%(D, pIdx), SS_P_Avail) = 0 Then I2 = I2 + MG%(D, pIdx + 10)
         If I3 <= I2 Then
             V0 = MG%(D, pIdx)
             MG%(D, pIdx) = -1
@@ -3407,7 +3406,7 @@ End Sub
 ' Offensive Player Ejected/Injured
 Sub PLYRHRT (P, P9, W5, W6, nbrBalls, nbrStrikes, D, MO)
 
-    If Not (playerMode = 2 Or playerMode = 1 And P = compTeam) Then
+    If Not (playerMode = PLAY_MODE_PCvsPC Or playerMode = PLAY_MODE_COMPUTER And P = compTeam) Then
 
         Call PBP("You must replace " + player$(0) + " with a pinch-hitter")
 
@@ -3415,13 +3414,13 @@ Sub PLYRHRT (P, P9, W5, W6, nbrBalls, nbrStrikes, D, MO)
 
         For pIdx = 0 To 22
 
-            If batRating(P, pIdx, 21) <= 0 And batters$(P, pIdx) <> "XXX" Then
+            If batRating(P, pIdx, SS_B_Avail) <= 0 And batters$(P, pIdx) <> "XXX" Then
 
                 If fldPos%(P, currBatter!(P)) = batRating(P, pIdx, SS_B_Pos1) Or fldPos%(P, currBatter!(P)) = batRating(P, pIdx, SS_B_Pos2) Or fldPos%(P, currBatter!(P)) = batRating(P, pIdx, SS_B_Pos3) Or fldPos%(P, currBatter!(P)) = batRating(P, pIdx, SS_B_Pos4) Then
 
                     Call PinchHitter(P, P9, W5, W6, pIdx)
 
-                    If useVGA = 1 Then
+                    If MAIN_useVGA = 1 Then
                         Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
                         Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
                     Else
@@ -3445,11 +3444,11 @@ Sub PLYRHRT (P, P9, W5, W6, nbrBalls, nbrStrikes, D, MO)
 
         For pIdx = 0 To 22
 
-            If batRating(P, pIdx, 21) <= 0 And batters$(P, pIdx) <> "XXX" Then
+            If batRating(P, pIdx, SS_B_Avail) <= 0 And batters$(P, pIdx) <> "XXX" Then
 
                 Call PinchHitter(P, P9, W5, W6, pIdx)
 
-                If useVGA = 1 Then
+                If MAIN_useVGA = 1 Then
                     Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
                     Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
                 Else
@@ -3484,7 +3483,7 @@ Sub PinchHitter (P, P9, W5, W6, idx)
     X0%(P, 0, gameD0%(P)) = idx
     X0%(P, 1, gameD0%(P)) = fldPos%(P, currBatter!(P))
     X0%(P, 2, gameD0%(P)) = (currBatter!(P) * 10) + (gameD0%(P) - 9)
-    batRating(P, idx, 21) = 1
+    batRating(P, idx, SS_B_Avail) = 1
     playerNum%(P, currBatter!(P)) = idx
     fielder%(P, fldPos%(P, currBatter!(P))) = idx
 
@@ -3514,7 +3513,7 @@ End Sub
 'that contains a view of the team lineup
 Sub PopUp_Lineup ()
 
-    If useVGA = 1 Then Screen 0
+    If MAIN_useVGA = 1 Then Screen 0
 
     Call FRAMEOPTION(11, 1)
 
@@ -3785,7 +3784,7 @@ End Sub
 'batters and pitchers.
 Sub POPUPSTATS ()
 
-    If useVGA = 1 Then Screen 0
+    If MAIN_useVGA = 1 Then Screen 0
 
     J = playerNum%(P, currBatter!(P))
 
@@ -4813,7 +4812,7 @@ Sub RELIEVERS (flagPinchHitter, pz)
 
             A2 = pitchRating(D, rIdx, SS_P_G) - pitchRating(D, rIdx, SS_P_GS) - pitchRating(D, rIdx, SS_P_Sv) * 1.3
 
-            If Not (pitchRating(D, rIdx, SS_P_WP) > 0 Or pitchers$(D, rIdx) = "XXX" Or A2 = 0) Then
+            If Not (pitchRating(D, rIdx, SS_P_Avail) > 0 Or pitchers$(D, rIdx) = "XXX" Or A2 = 0) Then
                 If INNING% <= 7 And A2 > 0 Then I2 = I2 + A2
                 If INNING% > 7 And A1 < 0 And A2 > 0 Then I2 = I2 + A2
                 If INNING% > 7 And A1 >= 0 Then I2 = I2 + pitchRating(D, rIdx, SS_P_Sv)
@@ -4828,7 +4827,7 @@ Sub RELIEVERS (flagPinchHitter, pz)
 
             A2 = pitchRating(D, rIdx, SS_P_G) - pitchRating(D, rIdx, SS_P_GS) - pitchRating(D, rIdx, SS_P_Sv) * 1.3
 
-            If Not (pitchRating(D, rIdx, SS_P_WP) > 0 Or pitchers$(D, rIdx) = "XXX" Or A2 = 0) Then
+            If Not (pitchRating(D, rIdx, SS_P_Avail) > 0 Or pitchers$(D, rIdx) = "XXX" Or A2 = 0) Then
 
                 If INNING% <= 7 Then
 
@@ -4869,7 +4868,7 @@ Sub RELIEVERS (flagPinchHitter, pz)
         Next rIdx
 
         For rIdx = 0 To 21
-            If pitchRating(D, rIdx, SS_P_WP) = 0 And pitchers$(D, rIdx) <> "XXX" Then
+            If pitchRating(D, rIdx, SS_P_Avail) = 0 And pitchers$(D, rIdx) <> "XXX" Then
                 Call NEWPITCHER(rIdx, flagPinchHitter, pz)
                 Exit For
             End If
@@ -4944,7 +4943,7 @@ Sub SCOREBOARD ()
 
     gameScore(P, 1) = gameScore(P, 1) + 1
 
-    If useVGA = 0 Then
+    If MAIN_useVGA = 0 Then
         Color 14, 0
         Locate P + 2, 43
         Print Using "##"; gameScore(P, 1);
@@ -5187,7 +5186,7 @@ End Sub
 
 Sub SQUEEZECHOICE (SH)
 
-    If playerMode = 2 Or playerMode = 1 And P = compTeam Then
+    If playerMode = PLAY_MODE_PCvsPC Or playerMode = PLAY_MODE_COMPUTER And P = compTeam Then
         SH = 2
     Else
         Locate 15, 1
@@ -5206,25 +5205,25 @@ End Sub
 '----------------------------------------
 'This subroutine handles the attempt of
 'a runner to steal 3rd base.
-Sub STEAL3RD (TGTBASE%, AA, Q0, runnerHeld, D)
+Sub STEAL3RD (TGTBASE%, AA, stealPercent, runnerHeld, D)
 
     If TGTBASE% = 3 Then
         ' *** SUCCESS OF 3B STEAL ***
         If AA >= 24 Then
-            Q0 = 830
+            stealPercent = 830
         Else
-            Q0 = 700
+            stealPercent = 700
         End If
     End If
 
-    If TGTBASE% = 4 Then Q0 = Q0 * .5
+    If TGTBASE% = 4 Then stealPercent = stealPercent * .5
 
     If runnerHeld = 0 Then
         'Runner not held
-        Q0 = Q0 + 50
+        stealPercent = stealPercent + 50
     Else
         'Runner is held
-        Q0 = Q0 - ((pitchRating(D, currPitcher%(D), SS_P_HoldRunner)- 5) * 25): ' - 50
+        stealPercent = stealPercent - ((pitchRating(D, currPitcher%(D), SS_P_HoldRunner)- 5) * 25): ' - 50
     End If
 
 End Sub
@@ -5550,7 +5549,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, currFielder%, sah%, SB%, baseNbr!, I9
     If baseNbr! <> 0 Then
         'We shouldn't still have a 0 value!
 
-        If Not (playerMode = 2 Or playerMode = 1 And P = compTeam) Then
+        If Not (playerMode = PLAY_MODE_PCvsPC Or playerMode = PLAY_MODE_COMPUTER And P = compTeam) Then
             If S2% < EVENT_HR Then Call PBP(player$(baseNbr! - 1) + " try for " + baseName$(baseNbr!) + "? (Y/N) ")
             If S2% > EVENT_HR Then Call PBP(player$(baseNbr! - 1) + " tag up? (Y/N) ")
             Call PBP("against " + player$(4))
@@ -5559,7 +5558,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, currFielder%, sah%, SB%, baseNbr!, I9
         I$ = "N"
         A1 = gameScore(P, 0) - gameScore(D, 0)
 
-        If (playerMode = 2 Or playerMode = 1 And P = compTeam) Then
+        If (playerMode = PLAY_MODE_PCvsPC Or playerMode = PLAY_MODE_COMPUTER And P = compTeam) Then
             If A1 > -2 And A1 < 2 And S2% <> EVENT_FLY_SHALLOW Then
                 I$ = "Y"
             Else
@@ -5574,7 +5573,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, currFielder%, sah%, SB%, baseNbr!, I9
         End If
 
         skipThrow% = 0
-        If Not (playerMode = 2 Or playerMode = 1 And P = compTeam) Then
+        If Not (playerMode = PLAY_MODE_PCvsPC Or playerMode = PLAY_MODE_COMPUTER And P = compTeam) Then
             I$ = GetKeyPress$
         End If
 
@@ -5592,13 +5591,13 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, currFielder%, sah%, SB%, baseNbr!, I9
 
             If Not (S2% = EVENT_1B And baseNbr! = 2 Or S2% > EVENT_HR And baseRunners% = BASE_3) Then
 
-                If Not (playerMode = 2 Or playerMode = 1 And D = compTeam) Then
+                If Not (playerMode = PLAY_MODE_PCvsPC Or playerMode = PLAY_MODE_COMPUTER And D = compTeam) Then
                     Call PBP(player$(4) + " throw to " + baseName$(baseNbr!) + "? (Y/N) ")
                 End If
 
                 Call d100(RN)
 
-                If (playerMode = 2 Or playerMode = 1 And D = compTeam) Then
+                If (playerMode = PLAY_MODE_PCvsPC Or playerMode = PLAY_MODE_COMPUTER And D = compTeam) Then
                     If MG%(D, 766) = 999 And baseNbr! = 4 Then
                         If INNING% >= MG%(D, 767) And MG%(D, 767) <> 0 And MG%(D, 768) <= gameScore(D, 0) - gameScore(P, 0) Then I$ = "N"
                         If INNING% >= MG%(D, 769) And MG%(D, 769) <> 0 And MG%(D, 770) <= gameScore(D, 0) - gameScore(P, 0) Then I$ = "N"
@@ -5842,7 +5841,7 @@ End Sub
 'gameplay
 Sub VIEWTEAM ()
 
-    If useVGA = 1 Then Screen 0
+    If MAIN_useVGA = 1 Then Screen 0
 
     Do
         Cls
@@ -5885,17 +5884,17 @@ Sub VIEWTEAM ()
 
                         For idx = 0 To 10:
                             Color 3, 0
-                            If batRating(WK, idx, 21) = 0 Then Color 11
+                            If batRating(WK, idx, SS_B_Avail) = 0 Then Color 11
                             Locate idx + 5, 5: Print Using "##"; idx;
                             Print " "; batters$(WK, idx); Tab(40);
                             Color 3
-                            If batRating(WK, idx + 12, 21) = 0 Then Color 11
+                            If batRating(WK, idx + 12, SS_B_Avail) = 0 Then Color 11
                             Print Using "##"; idx + 12;
                             Print " "; batters$(WK, idx + 12)
                             Color 3
                         Next
 
-                        If batRating(WK, 11, 21) = 0 Then Color 11
+                        If batRating(WK, 11, SS_B_Avail) = 0 Then Color 11
 
                         Locate , 5: Print Using "##"; 11;: Print " "; batters$(WK, 11)
 
@@ -5942,7 +5941,7 @@ Sub VIEWTEAM ()
 
                             Color 3, 0
 
-                            If pitchRating(WK, idx, SS_P_WP) = 0 Then Color 11
+                            If pitchRating(WK, idx, SS_P_Avail) = 0 Then Color 11
 
                             Locate idx + 5, 5: Print Using "##"; idx;
                             Print " "; pitchers$(WK, idx); Tab(40);
@@ -6070,7 +6069,7 @@ Sub WHICHRUNNER (i, baseRunners%, D5)
             Call PBP("2 - " + pitchers$(P, currPitcher%(P)))
         End If
 
-        If playerMode = 2 Or playerMode = 1 And P <> compTeam Then
+        If playerMode = PLAY_MODE_PCvsPC Or playerMode = PLAY_MODE_COMPUTER And P <> compTeam Then
             D5 = Int(Rnd(1) * 2) + 1
             i$ = Str$(D5)
         Else
@@ -6924,7 +6923,7 @@ End Sub
 'conditions in a pop-up box
 Sub WEATHER ()
 
-    If useVGA = 1 Then
+    If MAIN_useVGA = 1 Then
         Cls
         Screen 0
     End If
@@ -6947,7 +6946,7 @@ Sub WEATHER ()
     Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
-    If useVGA = 1 Then
+    If MAIN_useVGA = 1 Then
         Screen imageScreen&
     Else
         Color 15, 0
@@ -6962,7 +6961,7 @@ End Sub
 ' ...explanation...
 Sub COLCHK (P9, I)
 
-    If batRating(P9, I, 21) >= 98 Then Color 0, 7
+    If batRating(P9, I, SS_B_Avail) >= 98 Then Color 0, 7
 
 End Sub
 
@@ -6973,7 +6972,7 @@ End Sub
 'This subroutine opens the PARKS.DBF file
 'to read in attendance data, wind factor,
 'weather and other ballpark calculations.
-Sub GETWEATHER (windDir, windSpeed, gameMonth, WF!, skyType, gameTemp, rainDelay)
+Sub GETWEATHER (windDir, windSpeed, MAIN_gameMonth, WF!, skyType, gameTemp, rainDelay)
 
     Shared avgAttendance&
 
@@ -7016,10 +7015,10 @@ Sub GETWEATHER (windDir, windSpeed, gameMonth, WF!, skyType, gameTemp, rainDelay
     Next
     Close 1
 
-    If gameMonth < 4 Then gameMonth = 4
-    If gameMonth > 9 Then gameMonth = 9
+    If MAIN_gameMonth < 4 Then MAIN_gameMonth = 4
+    If MAIN_gameMonth > 9 Then MAIN_gameMonth = 9
 
-    SM% = gameMonth - 4
+    SM% = MAIN_gameMonth - 4
 
     Call d100(RN0)
 
@@ -7244,7 +7243,7 @@ Sub SHOWBATTERS (P9)
     For I = 0 To 22: Locate , 1
 
         If batters$(P9, I) = "XXX" Or Left$(batters$(P9, I), 1) = " " Or batters$(P9, I) = "" Then
-            batRating(P9, I, 21) = 98
+            batRating(P9, I, SS_B_Avail) = 98
         Else
             Color 2, 0
 
@@ -7394,7 +7393,7 @@ Sub OPTIONS ()
 
     Shared playMode$()
 
-    If useVGA = 1 Then
+    If MAIN_useVGA = 1 Then
         Screen 0
     Else
         Screen , , 0, 0
@@ -7407,9 +7406,9 @@ Sub OPTIONS ()
         Color , 0
         Locate 3, 1
         Color 14: Print "(1) ";
-        Color 15: Print playMode$(playerOpt)
+        Color 15: Print playMode$(MAIN_playerOpt)
         Color 14: Print "(2) ";
-        Color 15: Print Using "PLAY-BY-PLAY DELAY: #.# "; pbpDelay!
+        Color 15: Print Using "PLAY-BY-PLAY DELAY: #.# "; MAIN_pbpDelay!
         Print
         Color 14: Print "<ENTER> ";
         Color 15: Print "RETURN TO GAME PLAY"
@@ -7423,31 +7422,31 @@ Sub OPTIONS ()
 
         Select Case I
             Case 1
-                playerOpt = playerOpt + 1
-                If playerOpt > 3 Then playerOpt = 0
+                MAIN_playerOpt = MAIN_playerOpt + 1
+                If MAIN_playerOpt > 3 Then MAIN_playerOpt = 0
             Case 2
-                Locate 4, 23: Input pbpDelay!
+                Locate 4, 23: Input MAIN_pbpDelay!
         End Select
 
         ' Determine computer team
-        Select Case playerOpt
+        Select Case MAIN_playerOpt
 
             Case 1:
-                playerMode = 1
+                playerMode = PLAY_MODE_COMPUTER
                 compTeam = 0
 
             Case 2:
-                playerMode = 1
+                playerMode = PLAY_MODE_COMPUTER
                 compTeam = 1
 
             Case 3:
-                playerMode = 2
+                playerMode = PLAY_MODE_PCvsPC
 
         End Select
 
     Loop Until I$ = Chr$(13)
 
-    If useVGA = 1 Then
+    If MAIN_useVGA = 1 Then
         Screen imageScreen&
     Else
         Screen , , 0, 0
@@ -7615,7 +7614,7 @@ Sub CheckRecords ()
     For I = 0 To 1:
 
         For I1 = 0 To 21
-            If pitchRating(I, I1, SS_P_WP) = 1 Then
+            If pitchRating(I, I1, SS_P_Avail) = 1 Then
                 If statPitcherGame%(I, I1, LG_P_IP3) >= 18 And statPitcherGame%(I, I1, LG_P_ER) <= 3 Then statPitcherGame%(I, I1, 21) = 1
             End If
         Next I1
@@ -7787,15 +7786,15 @@ Sub CheckRecords ()
 
     For I = 0 To 1:
         For I1 = 0 To 21:
-            If pitchRating(I, I1, SS_P_WP) >= 98 Then pitchRating(I, I1, SS_P_WP) = 0
+            If pitchRating(I, I1, SS_P_Avail) >= 98 Then pitchRating(I, I1, SS_P_Avail) = 0
         Next I1
     Next I
 
     For I = 0 To 1:
 
         For I1 = 0 To 22:
-            If batRating(I, I1, 21) >= 98 Then batRating(I, I1, 21) = 0
-            If batRating(I, I1, 21) <> 0 Then statBatterGame%(I, I1, 14) = 1
+            If batRating(I, I1, SS_B_Avail) >= 98 Then batRating(I, I1, SS_B_Avail) = 0
+            If batRating(I, I1, SS_B_Avail) <> 0 Then statBatterGame%(I, I1, 14) = 1
         Next I1
 
     Next I
@@ -7941,7 +7940,6 @@ Sub POSTGAME ()
 
     Call CheckRecords
     Call EVENTS(specialCount, specialStat)
-    endGame = 1
 
     Do
         I3 = 0
@@ -7964,7 +7962,7 @@ Sub POSTGAME ()
         Color 14: Print "(2) ";
         Color 15: Print "STATS TO TEXT FILE"
 
-        If autoPlay = 1 And playerMode = 2 Then
+        If autoPlay And playerMode = PLAY_MODE_PCvsPC Then
             X = 2
         Else
             Do
@@ -7982,7 +7980,7 @@ Sub POSTGAME ()
         Color 15, 0
         Cls
 
-        If Not (autoPlay = 1 And playerMode = 2) Then
+        If Not (autoPlay And playerMode = PLAY_MODE_PCvsPC) Then
 
             Do
                 'Using Home Team's color for the box
@@ -7996,7 +7994,7 @@ Sub POSTGAME ()
 
         End If
 
-    Loop Until UCase$(I$) = "N" Or (autoPlay = 1 And playerMode = 2)
+    Loop Until UCase$(I$) = "N" Or (autoPlay And playerMode = PLAY_MODE_PCvsPC)
 
     'If we had special events
     If specialStat = 1 Then
@@ -8013,7 +8011,6 @@ Sub POSTGAME ()
 
     Call SAVESTATS
 
-    endGame = 0
     specialStat = 0
 
 End Sub
@@ -8037,7 +8034,7 @@ Sub SAVESTATS ()
     Color 15, 0
     Cls
 
-    If autoPlay <> 1 Then
+    If Not autoPlay Then
 
         Call TEAMBOX(1, 1)
 
@@ -8078,11 +8075,11 @@ Sub SAVESTATS ()
         BN% = 1
     End If
 
-    If UCase$(I$) = "Y" Or autoPlay = 1 Then
+    If UCase$(I$) = "Y" Or autoPlay Then
 
         For PX = 0 To 1
             For I = 0 To 21
-                If pitchRating(PX, I, SS_P_WP) = 1 Then SX%(PX) = I: Exit For
+                If pitchRating(PX, I, SS_P_Avail) = 1 Then SX%(PX) = I: Exit For
             Next I
         Next PX
 
@@ -8114,11 +8111,11 @@ Sub SAVESTATS ()
             Close 1
 
             schedGame(2) = schedGame(2) + 1
-            autoPlay = 1
+            autoPlay = _TRUE
 
             If schedGame(1) < schedGame(0) + schedGame(2) Then
                 Kill "GAME82"
-                endAllGames = 1
+                endAllGames = _TRUE
             Else
 
                 Open "GAME82" For Output As #2
@@ -8143,7 +8140,7 @@ Sub SAVESTATS ()
         Do
             C% = 0
 
-            If autoPlay = 1 Then
+            If autoPlay Then
                 C% = 0
             Else
                 If X1 = 0 Or X1 = 1 And Q = 0 Or X1 = 2 And Q = 1 Then
@@ -8201,16 +8198,16 @@ Sub COMPILESTATFILES (teamIdx)
 
     End If
 
-    If useInj = 1 Or useRest = 1 Then
+    If MAIN_useInj = 1 Or MAIN_useRest = 1 Then
 
-        If useInj = 1 Then
+        If MAIN_useInj = 1 Then
             For I1 = 0 To 22
                 If injuryStatus(teamIdx, I1) > 0 Then injuryStatus(teamIdx, I1) = injuryStatus(teamIdx, I1) - 1
                 If batRating(teamIdx, I1, 32) > 0 Then injuryStatus(teamIdx, I1) = batRating(teamIdx, I1, 32)
             Next
         End If
 
-        If useRest = 1 Then
+        If MAIN_useRest = 1 Then
 
             For I1 = 0 To 21
 
@@ -8368,7 +8365,7 @@ Sub COMPILESTATFILES (teamIdx)
     If gameScore(teamIdx, 0) - gameScore(1 - teamIdx, 0) > 0 And S1%(teamIdx) >= 0 Then statP0%(S1%(teamIdx), 12) = statP0%(S1%(teamIdx), 12) + 1: P4%(12) = P4%(12) + 1
 
     For I = 0 To 21
-        If pitchRating(teamIdx, I, SS_P_WP) <> 0 Then statP0%(I, 8) = statP0%(I, SS_P_BB) + 1: P4%(8) = P4%(8) + 1
+        If pitchRating(teamIdx, I, SS_P_Avail) <> 0 Then statP0%(I, 8) = statP0%(I, SS_P_BB) + 1: P4%(8) = P4%(8) + 1
         If INNING% = statPitcherGame%(teamIdx, I, LG_P_IP3) Then statP0%(I, 10) = statP0%(I, LG_P_CG) + 1: P4%(10) = P4%(10) + 1
         If INNING% = statPitcherGame%(teamIdx, I, LG_P_IP3) And gameScore(1 - teamIdx, LG_P_IP3) = 0 Then statP0%(I, 11) = statP0%(I, 11) + 1: P4%(11) = P4%(11) + 1
     Next I
@@ -8609,7 +8606,7 @@ Sub BOXOPTIONS (outputChoice)
                 boxName$ = "TEMPBOX"
             Else
                 'File = prompt | auto-create
-                If autoPlay <> 1 Then
+                If Not autoPlay Then
                     Cls
                     Print "ENTER FILENAME FOR BOXSCORE (NO SPACES OR PERIODS)";
                     Input boxName$
@@ -8840,7 +8837,7 @@ Sub BOX2FILE (printChoice, boxName$)
         For I1 = 1 To gamePitcher%(I)
             For I2 = 0 To 21
 
-                If pitchRating(I, I2, SS_P_WP) = I1 Then
+                If pitchRating(I, I2, SS_P_Avail) = I1 Then
 
                     Print #2, pitchers$(I, I2); ", P";
                     Print #2, Tab(18);
@@ -8880,7 +8877,7 @@ Sub BOX2FILE (printChoice, boxName$)
 
             For I2 = 0 To 21
 
-                If pitchRating(I, I2, SS_P_WP) = I1 Then
+                If pitchRating(I, I2, SS_P_Avail) = I1 Then
 
                     I4 = 1 - I: Print #2, pitchers$(I, I2); " ";
 
@@ -9082,7 +9079,7 @@ Sub BOX2SCREEN
 
     Call ScoreSummary
 
-    If autoPlay <> 1 Or playerMode <> 2 Then
+    If Not autoPlay Or playerMode <> 2 Then
         Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
         I$ = GetKeyPress$
     End If
@@ -9390,7 +9387,7 @@ Sub STATS2SCREEN
 
             For I2 = 0 To 21
 
-                If pitchRating(I, I2, SS_P_WP) = I1 Then
+                If pitchRating(I, I2, SS_P_Avail) = I1 Then
 
                     Print pitchers$(I, I2); ", P";
                     Locate , 18
@@ -9437,7 +9434,7 @@ Sub STATS2SCREEN
 
         Print
 
-        If autoPlay <> 1 Or playerMode <> 2 Then
+        If Not autoPlay Or playerMode <> 2 Then
             Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
             I$ = GetKeyPress$
         End If
@@ -9464,7 +9461,7 @@ Sub STATS2SCREEN
 
             For I2 = 0 To 21
 
-                If pitchRating(I, I2, SS_P_WP) = I1 Then
+                If pitchRating(I, I2, SS_P_Avail) = I1 Then
                     I4 = 1 - I
                     Locate , 1
                     Print pitchers$(I, I2); " ";
@@ -9544,7 +9541,7 @@ Sub STATS2SCREEN
         Print Using "## ##  ## ## ##"; T3%(1); T3%(2); T3%(3); T3%(4); T3%(5)
         Print
 
-        If autoPlay <> 1 Or playerMode <> 2 Then
+        If Not autoPlay Or playerMode <> 2 Then
             Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
             I$ = GetKeyPress$
         End If
@@ -9658,7 +9655,7 @@ Sub STATS2SCREEN
     Color 14, 0: Print "PRECIPITATION: ";
     Color 15, 0: Print precip$(precipType)
 
-    If autoPlay <> 1 Or playerMode <> 2 Then
+    If Not autoPlay Or playerMode <> 2 Then
         Locate 24, 1: Print "HIT ANY KEY TO CONTINUE";
         I$ = GetKeyPress$
     End If
@@ -9808,7 +9805,7 @@ Sub EndOfGame ()
 
     Cls
 
-    If useVGA = 1 Then
+    If MAIN_useVGA = 1 Then
         Screen 0
         _FreeImage imageScreen&
     End If
@@ -9820,7 +9817,7 @@ Sub EndOfGame ()
         ' Prompt to play another game
         Cls
 
-        If autoPlay <> 1 Then
+        If Not autoPlay Then
 
             'Using Home Team's color for the box
             Call TEAMBOX(1, 1)
@@ -9836,7 +9833,7 @@ Sub EndOfGame ()
 
         End If
 
-        If UCase$(I$) = "Y" Or (autoPlay = 1 And endAllGames <> 1) Then
+        If UCase$(I$) = "Y" Or (autoPlay And Not endAllGames) Then
             Cls
             Print "PLEASE WAIT ..."
             ' [bm] Removed infinitely recursive call, it eventually crashes silently (stack overflow?) Call LOADER
@@ -10133,7 +10130,7 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
             batRating(gameIdx, I1, I2) = CVI(Q2$(I1 * 43 + I2 + 16))
         Next
 
-        If batRating(gameIdx, I1, 31) <> 0 Then batRating(gameIdx, I1, 21) = 99
+        If batRating(gameIdx, I1, SS_B_Active) <> 0 Then batRating(gameIdx, I1, SS_B_Avail) = 99
     Next
 
     For I1 = 0 To 21:
@@ -10144,7 +10141,7 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
             pitchRating(gameIdx, I1, I2) = CVI(Q2$(I1 * 38 + I2 + 1005))
         Next
 
-        If pitchRating(gameIdx, I1, 34) <> 0 Then pitchRating(gameIdx, I1, SS_P_WP) = 99
+        If pitchRating(gameIdx, I1, 34) <> 0 Then pitchRating(gameIdx, I1, SS_P_Avail) = 99
         If pitchRating(gameIdx, I1, SS_P_Throws) = 0 Then pitchRating(gameIdx, I1, SS_P_Throws) = 1
     Next
 
@@ -10176,7 +10173,7 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
         Next
     Next
 
-    If useLRSplit = 0 Then
+    If MAIN_useLRSplit = 0 Then
 
         gameTS%(gameIdx, 0) = -1
 
@@ -10298,7 +10295,7 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
     'Read in manager data
     If Not _FileExists(diskPaths$(3) + MGR_FILE_NAME$ + "." + teamYear$) Then
 
-        mgrFile(gameIdx) = -1
+        mgrFile(gameIdx) = _FALSE
 
     Else
 
@@ -10314,11 +10311,13 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
 
         Close 3
 
+        mgrFile(gameIdx) = _TRUE
+
     End If
 
-    If MG%(gameIdx, 0) <> 999 Or mgrFile(gameIdx) = -1 Then
+    If MG%(gameIdx, 0) <> 999 Or Not mgrFile(gameIdx) Then
 
-        mgrFile(gameIdx) = -1
+        mgrFile(gameIdx) = _FALSE
 
         For X = 0 To 999:
             MG%(gameIdx, X) = -1
@@ -10343,15 +10342,15 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx)
 
         Close #4
 
-        If useInj = 1 Then
+        If MAIN_useInj = 1 Then
             For I1 = 0 To 22
-                If injuryStatus(gameIdx, I1) > 0 Then batRating(gameIdx, I1, 21) = 99
+                If injuryStatus(gameIdx, I1) > 0 Then batRating(gameIdx, I1, SS_B_Avail) = 99
             Next
         End If
 
     End If
 
-    If useRest = 1 Then
+    If MAIN_useRest = 1 Then
 
         For I1 = 0 To 21
             If daysRest(gameIdx, I1) <> 0 And daysRest(gameIdx, I1) < 90 Then

@@ -58,7 +58,7 @@ Sub SCHEDULE ()
         If ExitCode% <> 27 Then
 
             Select Case Selection%
-            
+
                 Case 1:
                     'number of games in schedule
                     scheduleAP%(0) = 0
@@ -142,9 +142,9 @@ End Sub
 '----------------------------------------
 '       NewSchedule SubRoutine
 '----------------------------------------
-'This subroutine facilitates the user 
-'creation of a schedule. It provides all 
-'options required and displays the schedule 
+'This subroutine facilitates the user
+'creation of a schedule. It provides all
+'options required and displays the schedule
 'while editing
 Sub NewSchedule (scheduleFile$)
 
@@ -163,9 +163,9 @@ Sub NewSchedule (scheduleFile$)
     Do
 
         Cls
-        
+
         Locate 23, 1
-        Color , 1: Print Tab(80);        
+        Color , 1: Print Tab(80);
         Locate 23, 1
         Color 13: Print "MA";
         Color 14: Print "-MODE OF PLAY  ";
@@ -206,7 +206,7 @@ Sub NewSchedule (scheduleFile$)
         Locate 1, 1: Print Tab(80);
         Locate 1, 1: Print scheduleFile$
         Locate 1, 33
-        
+
         Color 14: Print "AUTO SCHEDULER"
 
         Color 15, 0
@@ -285,7 +285,7 @@ Sub NewSchedule (scheduleFile$)
         I$ = GetKeyPress$
 
         Select Case UCase$(I$)
-        
+
             Case "A":
                 ' *** ADD A GAME TO THE SCHEDULE ***
                 V$ = ""
@@ -304,7 +304,7 @@ Sub NewSchedule (scheduleFile$)
                     End If
                 Next
 
-                For X = 0 To 1: 
+                For X = 0 To 1:
                     scheduleYN$(targetGame%, X) = scheduleYN$(targetGame% - 1, X)
                 Next
 
@@ -336,10 +336,10 @@ Sub NewSchedule (scheduleFile$)
                     For X1 = 0 To 18
                         scheduleNG%(X, X1) = scheduleNG%(X + 1, X1)
                     Next
-                    
+
                     visitorScores(X) = visitorScores(X + 1)
                     homeScores(X) = homeScores(X + 1)
-                    
+
                     For X1 = 0 To 1
                         scheduleYN$(X, X1) = scheduleYN$(X + 1, X1)
                     Next
@@ -406,26 +406,26 @@ Sub NewSchedule (scheduleFile$)
                     scheduleNG%(I, 12) = Int(TM% / 30) - 18
                 Next
 
-                Open "TICKER" For Output As #2
-                For I = 1 To 32: 
-                    For I1 = 0 To 1: 
-                        For I2 = 1 To 14
-                            Print #2, -1
-                        Next
-                    Next
-                Next
+                'Open "TICKER" For Output As #2
+                'For I = 1 To 32:
+                ''    For I1 = 0 To 1:
+                ''        For I2 = 1 To 14
+                ''            Print #2, -1
+                ''        Next
+                ''    Next
+                'Next
 
-                For I = 1 To 32: 
-                    For I1 = 0 To 1: 
-                        Print #2, "XXX"
-                    Next
-                Next
+                'For I = 1 To 32:
+                ''    For I1 = 0 To 1:
+                ''        Print #2, "XXX"
+                ''    Next
+                'Next
 
-                For I = SG% To SG% + 31
-                    Print #2, scheduleNG%(I, 12)
-                Next
+                'For I = SG% To SG% + 31
+                ''    Print #2, scheduleNG%(I, 12)
+                'Next
 
-                Close 2
+                'Close 2
 
                 Do
                     Call LOADER
@@ -481,7 +481,7 @@ Sub EditGame (DT$, TM$)
         Locate 23, 1: Input "ENTER GAME # TO EDIT "; targetGame%
     Loop Until targetGame% >= 1 And targetGame% <= scheduleAP%(0)
 
-    If targetGame% - Int(targetGame% / 20) * 20 = 0 Then 
+    If targetGame% - Int(targetGame% / 20) * 20 = 0 Then
         V$ = scheduleV$(20)
         H$ = scheduleH$(20)
         YN$ = scheduleYN$(20, 0)
@@ -503,7 +503,7 @@ Sub EditGame (DT$, TM$)
 
     TM$ = Right$(Str$(HR%), 2) + ":"
 
-    If MIN% < 10 Then 
+    If MIN% < 10 Then
         TM$ = TM$ + "0" + Right$(Str$(MIN%), 1)
     Else
         TM$ = TM$ + Right$(Str$(MIN%), 2)
@@ -513,7 +513,7 @@ Sub EditGame (DT$, TM$)
     DT$ = Right$(Str$(scheduleNG%(targetGame%, 17)), 2) + "/"
     DYMO% = Val(Right$(Str$(scheduleNG%(targetGame%, 16)), 2))
 
-    If DYMO% < 10 Then 
+    If DYMO% < 10 Then
         DYMO$ = "0" + Right$(Str$(scheduleNG%(targetGame%, 16)), 1)
     Else
         DYMO$ = Right$(Str$(scheduleNG%(targetGame%, 16)), 2)
@@ -540,7 +540,7 @@ Sub NewGame (visitor$, home$, YN$, DT$, TM$, NTMS, gameIndex%)
     Shared scheduleYN$()
 
     Shared scheduleNG%()
-    
+
     Shared playMode$(), pitcherEra$(), yesNoText$()
 
     Do
@@ -623,7 +623,7 @@ Sub NewGame (visitor$, home$, YN$, DT$, TM$, NTMS, gameIndex%)
 
                     teamNbr = 0
                     Call ChooseTeam (YN$, NTMS, teamNbr, team$)
-                    
+
                     If teamNbr <> 0 Then
 
                         Color 15, 0
@@ -713,7 +713,7 @@ End Sub
 '       ExtractSchedule SubRoutine
 '----------------------------------------
 'This is the core subroutine to leverage
-'when mass changes are needing to be made 
+'when mass changes are needing to be made
 'to a schedule. It essentially reads in
 'the existing schedule parameters, prompts
 'the user for the appropriate changes, and
@@ -843,11 +843,11 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
 
                                 Field #1, 38 As X$, 2 As Q$(22), 2 As Q$(23), 3 As Q$(20), 3 As Q$(21)
 
-                                For X = 0 To 18: 
+                                For X = 0 To 18:
                                     LSet Q$(X + 1) = MKI$(scheduleNG%(I, X))
                                 Next
 
-                                For X = 0 To 1: 
+                                For X = 0 To 1:
                                     LSet Q$(20 + X) = scheduleYN$(I, X)
                                 Next
 
@@ -919,62 +919,62 @@ Sub EditParameters ()
 
         Select Case B9
 
-            Case 1: 
+            Case 1:
                 Locate 2, 24: Print Space$(10)
                 Locate 2, 1: Input " 1. IF INNINGS ARE OVER"; E%(1)
                 Locate 2, 24: Print " "
 
-            Case 2: 
+            Case 2:
                 Locate 3, 28: Print Space$(10)
                 Locate 3, 1: Input " 2. A TEAM'S RUNS LESS THAN"; E%(2)
                 Locate 3, 28: Print " "
 
-            Case 3: 
+            Case 3:
                 Locate 4, 28: Print Space$(10)
                 Locate 4, 1: Input " 3. A TEAM'S RUNS MORE THAN"; E%(3)
                 Locate 4, 28: Print " "
 
-            Case 4: 
+            Case 4:
                 Locate 5, 28: Print Space$(10)
                 Locate 5, 1: Input " 4. A TEAM'S HITS LESS THAN"; E%(4)
                 Locate 5, 28: Print " "
 
-            Case 5: 
+            Case 5:
                 Locate 6, 28: Print Space$(10)
                 Locate 6, 1: Input " 5. A TEAM'S HITS MORE THAN"; E%(5)
                 Locate 6, 28: Print " "
 
-            Case 6: 
+            Case 6:
                 Locate 7, 28: Print Space$(10)
                 Locate 7, 1: Input " 6. BATTER'S HITS MORE THAN"; E%(6)
                 Locate 7, 28: Print " "
 
-            Case 7: 
+            Case 7:
                 Locate 8, 28: Print Space$(10)
                 Locate 8, 1: Input " 7. BATTER'S RUNS MORE THAN"; E%(7)
                 Locate 8, 28: Print " "
 
-            Case 8: 
+            Case 8:
                 Locate 9, 29: Print Space$(10)
                 Locate 9, 1: Input " 8. BATTER'S RBI'S MORE THAN"; E%(8)
                 Locate 9, 29: Print " "
 
-            Case 9: 
+            Case 9:
                 Locate 10, 28: Print Space$(10)
                 Locate 10, 1: Input " 9. BATTER'S 2B'S MORE THAN"; E%(9)
                 Locate 10, 28: Print " "
 
-            Case 10: 
+            Case 10:
                 Locate 11, 28: Print Space$(10)
                 Locate 11, 1: Input "10. BATTER'S 3B'S MORE THAN"; E%(10)
                 Locate 11, 28: Print " "
 
-            Case 11: 
+            Case 11:
                 Locate 12, 28: Print Space$(10)
                 Locate 12, 1: Input "11. BATTER'S HR'S MORE THAN"; E%(11)
                 Locate 12, 28: Print " "
 
-            Case 12: 
+            Case 12:
                 Locate 13, 28: Print Space$(10)
                 Locate 13, 1: Input "12. BATTER'S SB'S MORE THAN"; E%(12)
                 Locate 13, 28: Print " "
@@ -990,7 +990,7 @@ Sub EditParameters ()
 
     'Save all changes
     Open "EVENTS.BOX" For Output As #1
-    
+
     For X = 1 To 13
         Print #1, E%(X)
     Next
@@ -1034,7 +1034,7 @@ Sub BoxscoreMaintenance ()
         Call TITLE_SCHEDULER
 
         Call box0(Row%-1, Column%-1, Row%+Count%, Column%+menuWidth%, 2, FileFGColor%, FileBGColor%)
-        
+
         _MouseShow "DEFAULT"
         MMenuVert menuChoices$(), Selection%, Start%, ExitCode%, FileFGColor%, FileBGColor%, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
@@ -1108,11 +1108,11 @@ Sub SaveScheduleFile (saveFile$)
 
     For I = 1 To scheduleAP%(0)
 
-        For X = 0 To 18: 
+        For X = 0 To 18:
             LSet Q$(X + 1) = MKI$(scheduleNG%(I, X))
         Next
 
-        For X = 0 To 1: 
+        For X = 0 To 1:
             LSet Q$(20 + X) = RTrim$(scheduleYN$(I, X))
         Next
 
@@ -1131,7 +1131,7 @@ End Sub
 '----------------------------------------
 '       SortSchedule SubRoutine
 '----------------------------------------
-'This subroutine is used to automatically 
+'This subroutine is used to automatically
 'sort all games in the schedule by their
 'date / time.
 Sub SortSchedule ()
@@ -1163,10 +1163,10 @@ Sub SortSchedule ()
             Locate 1, 1: Print Z, Z1
 
             If scheduleNG%(Z, 12) > scheduleNG%(Z1, 12) Then
-                For I = 0 To 18: 
+                For I = 0 To 18:
                     Swap scheduleNG%(Z, I), scheduleNG%(Z1, I)
                 Next
-                For I = 0 To 1: 
+                For I = 0 To 1:
                     Swap scheduleYN$(Z, I), scheduleYN$(Z1, I)
                 Next
                 Swap schedDates&(Z), schedDates&(Z1)
@@ -1183,10 +1183,10 @@ Sub SortSchedule ()
         For Z1 = Z + 1 To scheduleAP%(0)
 
             If schedDates&(Z) > schedDates&(Z1) Then
-                For I = 0 To 18: 
+                For I = 0 To 18:
                     Swap scheduleNG%(Z, I), scheduleNG%(Z1, I)
                 Next
-                For I = 0 To 1: 
+                For I = 0 To 1:
                     Swap scheduleYN$(Z, I), scheduleYN$(Z1, I)
                 Next
                 Swap schedDates&(Z), schedDates&(Z1)
@@ -1204,7 +1204,7 @@ End Sub
 '----------------------------------------
 '    ChangeGlobalSettings SubRoutine
 '----------------------------------------
-'This subroutine presents the end user a 
+'This subroutine presents the end user a
 'variety of game options that can be changed
 'or applied to all games in the schedule file.
 'These would be game-specific options, as
@@ -1220,29 +1220,29 @@ Sub ChangeGlobalSettings ()
 
     ' GLOBAL SETTINGS FOR A SCHEDULE
     ' The code below would use default values based on the most recent rules
-    'playerOpt = 3
-    'desigHit = 0
-    'useWeather = 1
-    'useInj = 1
-    'useLRSplit = 1
-    'useRest = 1
-    'useMgrProf = 1
-    'useVGA = 1
-    'pitchEraOpt = 0
+    'MAIN_playerOpt = 3
+    'MAIN_desigHit = 0
+    'MAIN_useWeather = 1
+    'MAIN_useInj = 1
+    'MAIN_useLRSplit = 1
+    'MAIN_useRest = 1
+    'MAIN_useMgrProf = 1
+    'MAIN_useVGA = 1
+    'MAIN_pitchEraOpt = 0
 
     'This code will assign defaults based on the first game in the schedule.
     'Usually when I want to change global settings, I want to keep most
     'settings in the schedule the same.
-    playerOpt = scheduleNG%(1, 8)
-    desigHit = scheduleNG%(1, 3)
+    MAIN_playerOpt = scheduleNG%(1, 8)
+    MAIN_desigHit = scheduleNG%(1, 3)
     displayPause! = scheduleNG%(1, 4) / 10
-    useInj = scheduleNG%(1, 6)
-    useRest = scheduleNG%(1, 9)
-    useLRSplit = scheduleNG%(1, 7)
-    useMgrProf = scheduleNG%(1, 10)
-    useWeather = scheduleNG%(1, 5)
-    useVGA = scheduleNG%(1, 11)
-    pitchEraOpt = scheduleNG%(1, 14)
+    MAIN_useInj = scheduleNG%(1, 6)
+    MAIN_useRest = scheduleNG%(1, 9)
+    MAIN_useLRSplit = scheduleNG%(1, 7)
+    MAIN_useMgrProf = scheduleNG%(1, 10)
+    MAIN_useWeather = scheduleNG%(1, 5)
+    MAIN_useVGA = scheduleNG%(1, 11)
+    MAIN_pitchEraOpt = scheduleNG%(1, 14)
 
     DT$ = "04-04-23"
     TM$ = "07:30P"
@@ -1254,34 +1254,34 @@ Sub ChangeGlobalSettings ()
 
         Locate 3, 2: Color 14
         Print "(1) ";
-        Color 15: Print "GAME PLAY: "; playMode$(playerOpt)
+        Color 15: Print "GAME PLAY: "; playMode$(MAIN_playerOpt)
         Locate 4, 2: Color 14
         Print "(2) ";
-        Color 15: Print "DESIGNATED HITTER: "; yesNoText$(desigHit)
+        Color 15: Print "DESIGNATED HITTER: "; yesNoText$(MAIN_desigHit)
         Locate 5, 2: Color 14
         Print "(3) ";
         Color 15: Print Using "PLAY-BY-PLAY DELAY (SECS): ##.#  "; displayPause! ' / 10
         Locate 6, 2: Color 14
         Print "(4) ";
-        Color 15: Print "USE INJURIES: "; yesNoText$(useInj)
+        Color 15: Print "USE INJURIES: "; yesNoText$(MAIN_useInj)
         Locate 7, 2: Color 14
         Print "(5) ";
-        Color 15: Print "USE DAYS REST DATA FOR PITCHERS: "; yesNoText$(useRest)
+        Color 15: Print "USE DAYS REST DATA FOR PITCHERS: "; yesNoText$(MAIN_useRest)
         Locate 8, 2: Color 14
         Print "(6) ";
-        Color 15: Print "USE LEFT/RIGHT SPLIT STATS: "; yesNoText$(useLRSplit)
+        Color 15: Print "USE LEFT/RIGHT SPLIT STATS: "; yesNoText$(MAIN_useLRSplit)
         Locate 9, 2: Color 14
         Print "(7) ";
-        Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE: "; yesNoText$(useMgrProf)
+        Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE: "; yesNoText$(MAIN_useMgrProf)
         Locate 10, 2: Color 14
         Print "(8) ";
-        Color 15: Print "USE WEATHER EFFECTS: "; yesNoText$(useWeather)
+        Color 15: Print "USE WEATHER EFFECTS: "; yesNoText$(MAIN_useWeather)
         Locate 11, 2: Color 14
         Print "(9) ";
-        Color 15: Print "USE VGA SCREENS, IF ABLE: "; yesNoText$(useVGA)
+        Color 15: Print "USE VGA SCREENS, IF ABLE: "; yesNoText$(MAIN_useVGA)
         Locate 12, 2: Color 14
         Print "(A) ";
-        Color 15: Print "PITCHER ERA: "; pitcherEra$(pitchEraOpt)
+        Color 15: Print "PITCHER ERA: "; pitcherEra$(MAIN_pitchEraOpt)
         Locate 14, 2: Color 14
         Print "(0) ";
         Color 15: Print "ACCEPT GLOBAL SETTINGS"
@@ -1295,37 +1295,37 @@ Sub ChangeGlobalSettings ()
         Select Case I
 
             Case 1:
-                playerOpt = playerOpt + 1
-                If playerOpt > 3 Then playerOpt = 0
+                MAIN_playerOpt = MAIN_playerOpt + 1
+                If MAIN_playerOpt > 3 Then MAIN_playerOpt = 0
 
             Case 2:
-                desigHit = 1 - desigHit
+                MAIN_desigHit = 1 - MAIN_desigHit
 
             Case 3:
                 Locate 4, 32: Input displayPause!
                 'Input "DISPLAY VARIABLE "; displayPause!
 
             Case 4:
-                useInj = 1 - useInj
+                MAIN_useInj = 1 - MAIN_useInj
 
             Case 5:
-                useRest = 1 - useRest
+                MAIN_useRest = 1 - MAIN_useRest
 
             Case 6:
-                useLRSplit = 1 - useLRSplit
+                MAIN_useLRSplit = 1 - MAIN_useLRSplit
 
             Case 7:
-                useMgrProf = 1 - useMgrProf
+                MAIN_useMgrProf = 1 - MAIN_useMgrProf
 
             Case 8:
-                useWeather = 1 - useWeather
+                MAIN_useWeather = 1 - MAIN_useWeather
 
             Case 9:
-                useVGA = 1 - useVGA
+                MAIN_useVGA = 1 - MAIN_useVGA
 
             Case 10:
-                pitchEraOpt = pitchEraOpt + 1
-                If pitchEraOpt > 8 Then pitchEraOpt = 0
+                MAIN_pitchEraOpt = MAIN_pitchEraOpt + 1
+                If MAIN_pitchEraOpt > 8 Then MAIN_pitchEraOpt = 0
 
             Case 0: '
 
@@ -1334,16 +1334,16 @@ Sub ChangeGlobalSettings ()
     Loop Until I = 0
 
     For I = 1 To scheduleAP%(0)
-        scheduleNG%(I, 3) = desigHit
+        scheduleNG%(I, 3) = MAIN_desigHit
         scheduleNG%(I, 4) = displayPause! * 10
-        scheduleNG%(I, 5) = useWeather
-        scheduleNG%(I, 6) = useInj
-        scheduleNG%(I, 7) = useLRSplit
-        scheduleNG%(I, 8) = playerOpt
-        scheduleNG%(I, 9) = useRest
-        scheduleNG%(I, 10) = useMgrProf
-        scheduleNG%(I, 11) = useVGA
-        scheduleNG%(I, 14) = pitchEraOpt
+        scheduleNG%(I, 5) = MAIN_useWeather
+        scheduleNG%(I, 6) = MAIN_useInj
+        scheduleNG%(I, 7) = MAIN_useLRSplit
+        scheduleNG%(I, 8) = MAIN_playerOpt
+        scheduleNG%(I, 9) = MAIN_useRest
+        scheduleNG%(I, 10) = MAIN_useMgrProf
+        scheduleNG%(I, 11) = MAIN_useVGA
+        scheduleNG%(I, 14) = MAIN_pitchEraOpt
     Next
 
 End Sub
@@ -1360,7 +1360,6 @@ Sub DeleteBoxscores (fileChoice%, fileSpec$)
 
     ' Spec$ = diskPaths$(1) + fileSpec$
     Spec$ = fileSpec$
-    _Dest _Console : Print Spec$ : _Dest 0
     Count% = FileCount%(Spec$)
 
     If Count% = 0 Then
@@ -1466,7 +1465,7 @@ Sub LoadScheduleInfo (targetFile$)
     Next
 
     Close 1
-    
+
     NS% = 0
 
 End Sub
@@ -1558,11 +1557,11 @@ Sub CreateSeasonSchedule ()
 
                 Get #1, I
 
-                For X = 0 To 18: 
+                For X = 0 To 18:
                     scheduleNG%(I, X) = CVI(Q$(X + 1))
                 Next
 
-                For X = 0 To 1: 
+                For X = 0 To 1:
                     scheduleYN$(I, X) = RTrim$(Q$(20 + X))
                 Next
 

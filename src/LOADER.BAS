@@ -70,20 +70,20 @@ Sub LOADER
     End If
 
     Open "DEFERA" For Input As #4
-    Input #4, playerOpt
+    Input #4, MAIN_playerOpt
     Input #4, leagueOpt
-    Input #4, desigHit
+    Input #4, MAIN_desigHit
     Input #4, gameTypeOpt
-    Input #4, gameMonth
-    Input #4, dayOrNight
-    Input #4, useWeather
-    Input #4, useInj
-    Input #4, useLRSplit
-    Input #4, useRest
-    Input #4, useMgrProf
-    Input #4, pbpDelay!
-    Input #4, useVGA
-    Input #4, pitchEraOpt
+    Input #4, MAIN_gameMonth
+    Input #4, MAIN_dayOrNight
+    Input #4, MAIN_useWeather
+    Input #4, MAIN_useInj
+    Input #4, MAIN_useLRSplit
+    Input #4, MAIN_useRest
+    Input #4, MAIN_useMgrProf
+    Input #4, MAIN_pbpDelay!
+    Input #4, MAIN_useVGA
+    Input #4, MAIN_pitchEraOpt
     Close #4
 
     'Load game in-progress, if there is one
@@ -126,7 +126,7 @@ Sub LOADER
 
         Close #6
 
-        autoPlay = 1
+        autoPlay = _TRUE
 
     Else
 
@@ -135,7 +135,7 @@ Sub LOADER
     End If
 
 
-    If autoPlay = 1 Then
+    If autoPlay Then
 
         Call AUTOSETUP
 
@@ -163,7 +163,7 @@ Sub LOADER
 
             Locate 2, 2: Color 14
             Print "(1) ";
-            Color 15: Print playMode$(playerOpt)
+            Color 15: Print playMode$(MAIN_playerOpt)
             Locate 3, 2: Color 14
             Print "(2) ";
             Color 15: Print "VISITING TEAM: ";
@@ -177,16 +177,16 @@ Sub LOADER
             Color 15: Print "LEAGUE TYPE: "; leagueType$(leagueOpt)
             Locate 6, 2: Color 14
             Print "(5) ";
-            Color 15: Print "DESIGNATED HITTER: "; desigHitOpt$(desigHit)
+            Color 15: Print "DESIGNATED HITTER: "; desigHitOpt$(MAIN_desigHit)
             Locate 7, 2: Color 14
             Print "(6) ";
             Color 15: Print "GAME TYPE: "; gameType$(gameTypeOpt)
             Locate 8, 2: Color 14
             Print "(7) ";
-            Color 15: Print "MONTH: "; month$(gameMonth)
+            Color 15: Print "MONTH: "; month$(MAIN_gameMonth)
             Locate 9, 2: Color 14
             Print "(8) ";
-            Color 15: Print "TIME OF DAY: "; dayNight$(dayOrNight)
+            Color 15: Print "TIME OF DAY: "; dayNight$(MAIN_dayOrNight)
             Locate 10, 2: Color 14
             Print "(9) ";
             Color 15: Print "START GAME"
@@ -195,28 +195,28 @@ Sub LOADER
             Color 15: Print "SAVE SETTINGS AS DEFAULT"
             Locate 12, 2: Color 14
             Print "(A) ";
-            Color 15: Print Using "PLAY-BY-PLAY DELAY (SECS): ##.# "; pbpDelay!
+            Color 15: Print Using "PLAY-BY-PLAY DELAY (SECS): ##.# "; MAIN_pbpDelay!
             Locate 13, 2: Color 14
             Print "(B) ";
-            Color 15: Print "USE INJURIES: "; yesNoText$(useInj)
+            Color 15: Print "USE INJURIES: "; yesNoText$(MAIN_useInj)
             Locate 14, 2: Color 14
             Print "(C) ";
-            Color 15: Print "USE LEFT/RIGHT SPLIT STATS: "; yesNoText$(useLRSplit)
+            Color 15: Print "USE LEFT/RIGHT SPLIT STATS: "; yesNoText$(MAIN_useLRSplit)
             Locate 15, 2: Color 14
             Print "(D) ";
-            Color 15: Print "USE DAYS REST DATA FOR PITCHERS: "; yesNoText$(useRest)
+            Color 15: Print "USE DAYS REST DATA FOR PITCHERS: "; yesNoText$(MAIN_useRest)
             Locate 16, 2: Color 14
             Print "(E) ";
-            Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE: "; yesNoText$(useMgrProf)
+            Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE: "; yesNoText$(MAIN_useMgrProf)
             Locate 17, 2: Color 14
             Print "(F) ";
-            Color 15: Print "USE WEATHER EFFECTS: "; yesNoText$(useWeather)
+            Color 15: Print "USE WEATHER EFFECTS: "; yesNoText$(MAIN_useWeather)
             Locate 18, 2: Color 14
             Print "(G) ";
-            Color 15: Print "USE VGA SCREENS, IF ABLE: "; yesNoText$(useVGA)
+            Color 15: Print "USE VGA SCREENS, IF ABLE: "; yesNoText$(MAIN_useVGA)
             Locate 19, 2: Color 14
             Print "(H) ";
-            Color 15: Print "PITCHER ERA: "; pitcherEra$(pitchEraOpt)
+            Color 15: Print "PITCHER ERA: "; pitcherEra$(MAIN_pitchEraOpt)
 
             Do
                 Color 7, 0
@@ -233,25 +233,25 @@ Sub LOADER
 
                     Case 0: 'Save settings as default'
                         Open "DEFERA" For Output As #7
-                        Print #7, playerOpt
+                        Print #7, MAIN_playerOpt
                         Print #7, leagueOpt
-                        Print #7, desigHit
+                        Print #7, MAIN_desigHit
                         Print #7, gameTypeOpt
-                        Print #7, gameMonth
-                        Print #7, dayOrNight
-                        Print #7, useWeather
-                        Print #7, useInj
-                        Print #7, useLRSplit
-                        Print #7, useRest
-                        Print #7, useMgrProf
-                        Print #7, pbpDelay!
-                        Print #7, useVGA
-                        Print #7, pitchEraOpt
+                        Print #7, MAIN_gameMonth
+                        Print #7, MAIN_dayOrNight
+                        Print #7, MAIN_useWeather
+                        Print #7, MAIN_useInj
+                        Print #7, MAIN_useLRSplit
+                        Print #7, MAIN_useRest
+                        Print #7, MAIN_useMgrProf
+                        Print #7, MAIN_pbpDelay!
+                        Print #7, MAIN_useVGA
+                        Print #7, MAIN_pitchEraOpt
                         Close #7
 
                     Case 1: 'Play Mode'
-                        playerOpt = playerOpt + 1
-                        If playerOpt > 3 Then playerOpt = 0
+                        MAIN_playerOpt = MAIN_playerOpt + 1
+                        If MAIN_playerOpt > 3 Then MAIN_playerOpt = 0
 
                     Case 2: 'Visiting Team'
                         Call ChooseGameTeam(diskIDs$(0), NTMS, gameT1%(0), gameTeams$(0), 0)
@@ -266,18 +266,18 @@ Sub LOADER
                         If leagueOpt > 2 Then leagueOpt = 0
 
                     Case 5: 'Designated Hitter'
-                        desigHit = 1 - desigHit
+                        MAIN_desigHit = 1 - MAIN_desigHit
 
                     Case 6: 'Game Type'
                         gameTypeOpt = 1 - gameTypeOpt
 
                     Case 7: 'Month'
-                        gameMonth = gameMonth + 1
-                        If gameMonth > 10 Then gameMonth = 4
+                        MAIN_gameMonth = MAIN_gameMonth + 1
+                        If MAIN_gameMonth > 10 Then MAIN_gameMonth = 4
                         Locate 7, 4: Print BK$
 
                     Case 8: 'Time of Day'
-                        dayOrNight = 1 - dayOrNight
+                        MAIN_dayOrNight = 1 - MAIN_dayOrNight
                         Locate 8, 4
                         Print BK$
 
@@ -286,29 +286,29 @@ Sub LOADER
 
                     Case 10:    'Play-By-Play Delay'
                         Locate 12, 32
-                        Input pbpDelay!
+                        Input MAIN_pbpDelay!
 
                     Case 11:    'Use Injuries'
-                        useInj = 1 - useInj
+                        MAIN_useInj = 1 - MAIN_useInj
 
                     Case 12:    'Use Left/Right Split Stats'
-                        useLRSplit = 1 - useLRSplit
+                        MAIN_useLRSplit = 1 - MAIN_useLRSplit
 
                     Case 13:    'Use Days Rest Data For Pitchers'
-                        useRest = 1 - useRest
+                        MAIN_useRest = 1 - MAIN_useRest
 
                     Case 14:    'Use Manager Profile, If Available'
-                        useMgrProf = 1 - useMgrProf
+                        MAIN_useMgrProf = 1 - MAIN_useMgrProf
 
                     Case 15:    'Use Weather Effects'
-                        useWeather = 1 - useWeather
+                        MAIN_useWeather = 1 - MAIN_useWeather
 
                     Case 16:    'Use VGA Screens, If Able'
-                        useVGA = 1 - useVGA
+                        MAIN_useVGA = 1 - MAIN_useVGA
 
                     Case 17:    'Pitcher Era'
-                        pitchEraOpt = pitchEraOpt + 1
-                        If pitchEraOpt > 8 Then pitchEraOpt = 0
+                        MAIN_pitchEraOpt = MAIN_pitchEraOpt + 1
+                        If MAIN_pitchEraOpt > 8 Then MAIN_pitchEraOpt = 0
 
                 End Select
 
@@ -375,18 +375,18 @@ Sub LOADER
     '----------------------------------------
 
     ' Determine computer team
-    Select Case playerOpt
+    Select Case MAIN_playerOpt
 
         Case 1:
-            playerMode = 1
+            playerMode = PLAY_MODE_COMPUTER
             compTeam = 0
 
         Case 2:
-            playerMode = 1
+            playerMode = PLAY_MODE_COMPUTER
             compTeam = 1
 
         Case 3:
-            playerMode = 2
+            playerMode = PLAY_MODE_PCvsPC
 
     End Select
 
@@ -456,7 +456,7 @@ Sub LOADER
     '-------------------------
 
     'Determine which team PC will play
-    'If playerMode = 1 And autoPlay <> 1 Then
+    'If playerMode = PLAY_MODE_COMPUTER And Not autoPlay Then
 
     'If not doing autoplay...
     '    Call INFO
@@ -517,7 +517,7 @@ Sub LOADER
 
             reselect = 0
 
-            If autoPlay = 1 Then
+            If autoPlay Then
 
                 'noLUFound = no lineup found?
                 If noLUFound = 1 Then
@@ -527,8 +527,8 @@ Sub LOADER
 
                 Else
 
-                    If (playerMode = 2 Or playerMode = 1 And compTeam = P9) Then
-                        If useMgrProf = 1 Then
+                    If (playerMode = PLAY_MODE_PCvsPC Or playerMode = PLAY_MODE_COMPUTER And compTeam = P9) Then
+                        If MAIN_useMgrProf = 1 Then
                             I$ = "1"
                         Else
                             I$ = "2"
@@ -568,9 +568,9 @@ Sub LOADER
 
                 Case "1", "3":
                     'Lineup using profile
-                    Call SearchForLineup(P9)
+                    Call SearchForLineup(P9, Q2%)
 
-                    Call LineupFromProfile(lineupFound%, P9, skipLineChange%)
+                    Call LineupFromProfile(lineupFound%, P9, skipLineChange%, MAIN_useMgrProf, I$, Q2%)
 
                     If lineupFound% = 1 Or skipLineChange% = 0 Then
                         Call ChangeLineup_PreGame(P9, reselect)
@@ -704,9 +704,9 @@ Sub LOADER
         Next I1
     Next I
 
-    Call SelectStadium(useVGA)
+    Call SelectStadium(MAIN_useVGA)
 
-    Call GETWEATHER(windDir, windSpeed, gameMonth, WF!, skyType, gameTemp, rainDelay)
+    Call GETWEATHER(windDir, windSpeed, MAIN_gameMonth, WF!, skyType, gameTemp, rainDelay)
 
     Cls
 
@@ -723,7 +723,7 @@ Sub LOADER
         Locate , 11: Print "WIND: "; windDirection$(windDir);
         Print Using " ## MPH"; windSpeed
 
-        If useVGA = 0 Then
+        If MAIN_useVGA = 0 Then
             windDirection$(2) = "L->R"
             windDirection$(3) = "R->L"
             windDirection$(4) = "<-LF"
@@ -752,7 +752,7 @@ Sub LOADER
     'pitchEff(0, 1) = calculated from Walks + Hits / Game
     'pitchEff(1, 1) = 3
 
-    Select Case pitchEraOpt
+    Select Case MAIN_pitchEraOpt
 
         Case 3
             '1946-1954
@@ -825,9 +825,9 @@ Sub StartingLineup (P9)
 
         For I1 = 0 To 9
 
-            If desigHit <> 0 Or I1 <> 0 Then
+            If MAIN_desigHit <> 0 Or I1 <> 0 Then
 
-                If desigHit <> 1 Or I1 <> 1 Then
+                If MAIN_desigHit <> 1 Or I1 <> 1 Then
 
                     Locate 24, (I1 * 3) + 1
                     If gameM%(I1) = 0 Then Print fieldPos$(I1); "  ";
@@ -888,13 +888,13 @@ Sub LineupPositions (teamIdx, posIdx)
         C1 = 0
 
         For J = 0 To 22
-            batRating(teamIdx, J, 21) = 0
+            batRating(teamIdx, J, SS_B_Avail) = 0
         Next
 
         RP = 1
 
         For J = 0 To 22
-            If batRating(teamIdx, J, 31) <> 0 Then batRating(teamIdx, J, 21) = 99
+            If batRating(teamIdx, J, SS_B_Active) <> 0 Then batRating(teamIdx, J, SS_B_Avail) = 99
         Next
 
     Else
@@ -909,7 +909,7 @@ Sub LineupPositions (teamIdx, posIdx)
                 End If
             Next J
 
-            If Not (desigHit = 1 And UCase$(I$) = "P") Or Not (batRating(teamIdx, I1, 21) <> 0 And UCase$(I$) <> "P") Then
+            If Not (MAIN_desigHit = 1 And UCase$(I$) = "P") Or Not (batRating(teamIdx, I1, SS_B_Avail) <> 0 And UCase$(I$) <> "P") Then
 
                 If UCase$(I$) = "P" Then
 
@@ -935,9 +935,9 @@ Sub LineupPositions (teamIdx, posIdx)
 
                         For I0 = 0 To 9
 
-                            If desigHit <> 0 Or I0 <> 0 Then
+                            If MAIN_desigHit <> 0 Or I0 <> 0 Then
 
-                                If desigHit <> 1 Or I0 <> 1 Then
+                                If MAIN_desigHit <> 1 Or I0 <> 1 Then
 
                                     Locate 24, (I0 * 3) + 1
                                     If gameM%(I0) = 0 Then Print fieldPos$(I0); "  ";
@@ -967,7 +967,7 @@ Sub LineupPositions (teamIdx, posIdx)
 
                     680 '
                     'Input fielding position
-                    'If desigHit = 1 Then firstSlot = 1 Else firstSlot = 0
+                    'If MAIN_desigHit = 1 Then firstSlot = 1 Else firstSlot = 0
                     firstSlot = 1
 
                     Do
@@ -981,7 +981,7 @@ Sub LineupPositions (teamIdx, posIdx)
                         End If
                     Next J
 
-                    If Not (desigHit = 0 And J1 = 0 Or UCase$(J$) = "X") Then
+                    If Not (MAIN_desigHit = 0 And J1 = 0 Or UCase$(J$) = "X") Then
 
                         'Print position selected
                         Print fieldPos$(J1);
@@ -1001,9 +1001,9 @@ Sub LineupPositions (teamIdx, posIdx)
 
                         For I1 = 0 To 9
 
-                            If desigHit <> 0 Or I1 <> 0 Then
+                            If MAIN_desigHit <> 0 Or I1 <> 0 Then
 
-                                If desigHit <> 1 Or I1 <> 1 Then
+                                If MAIN_desigHit <> 1 Or I1 <> 1 Then
 
                                     Locate 24, (I1 * 3) + 1
                                     If gameM%(I1) = 0 Then Print fieldPos$(I1); "  ";
@@ -1051,7 +1051,7 @@ Sub ChangeLineup_PreGame (P9, reselect)
         Color 14: Print "(1-9) CHANGE 0-NONE (R)ESELECT LINEUP (P)OSITION SWAP (L)INEUP SWAP";
         Color 15, 0
 
-        If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = P9) Then
+        If autoPlay And (playerMode = PLAY_MODE_PCvsPC Or playerMode = PLAY_MODE_COMPUTER And compTeam = P9) Then
             I$ = "0"
         Else
             I$ = GetKeyPress$
@@ -1072,7 +1072,7 @@ Sub ChangeLineup_PreGame (P9, reselect)
 
                         For I = 1 To 9
                             If fldPos%(P9, I) <> 1 Then
-                                batRating(P9, playerNum%(P9, I), 21) = 1
+                                batRating(P9, playerNum%(P9, I), SS_B_Avail) = 1
                             End If
                         Next I
 
@@ -1092,14 +1092,14 @@ Sub ChangeLineup_PreGame (P9, reselect)
                         C1 = 0
 
                         For J = 0 To 22:
-                            batRating(P9, J, 21) = 0
+                            batRating(P9, J, SS_B_Avail) = 0
                         Next
 
                         RP = 1
 
                         '1001
                         For J = 0 To 22
-                            If batRating(P9, J, 31) <> 0 Then batRating(P9, J, 21) = 99
+                            If batRating(P9, J, SS_B_Active) <> 0 Then batRating(P9, J, SS_B_Avail) = 99
                         Next
 
                         reselect = 1
@@ -1136,7 +1136,7 @@ Sub SaveLineup (idx%)
 
     Shared mgrFile(), gameT1%()
 
-    If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = idx%) Then
+    If autoPlay And (playerMode = PLAY_MODE_PCvsPC Or playerMode = PLAY_MODE_COMPUTER And compTeam = idx%) Then
         I$ = "N"
     Else
         Do
@@ -1166,7 +1166,7 @@ Sub SaveLineup (idx%)
         If MG%(idx%, 120 + (LN% + Q2% * 10) * 21) <> 999 Then MG%(idx%, 120 + (LN% + Q2% * 10) * 21) = 999
         If Q2% = 1 Then LN% = LN% + 10
 
-        MG%(idx%, 101 + LN% * 21) = desigHit
+        MG%(idx%, 101 + LN% * 21) = MAIN_desigHit
         MG%(idx%, 100 + LN% * 21) = LU%
 
         For I = 1 To 9
@@ -1177,7 +1177,7 @@ Sub SaveLineup (idx%)
         'idx% = P9
         MG%(idx%, 99) = 999
         MG%(idx%, 0) = 999
-        mgrFile(idx%) = 0
+        mgrFile(idx%) = _TRUE
 
         teamYear$ = RTrim$(diskIDs$(idx%))
 
@@ -1204,14 +1204,14 @@ End Sub
 '----------------------------------------
 'This routines searches for an existing
 'lineup from the manager profiles.
-Sub SearchForLineup (P9)
+Sub SearchForLineup (P9, Q2%)
 
     Shared PT$()
 
     '2500
     Cls
     If pitchRating(1 - P9, currPitcher%(1 - P9), 0) = -1 Then Q2% = 1
-    If pitchRating(1 - P9, currPitcher%(1 - P9), 0) = 1 Then Q2% = 0
+    If pitchRating(1 - P9, currPitcher%(1 - P9), 0) =  1 Then Q2% = 0
     'pitchRating(0-1,0-1,0); all indexes are 1's
 
     Print Tab(30); "LINEUPS FOUND VS. "; PT$(Q2%)
@@ -1287,7 +1287,7 @@ End Sub
 'This subroutine attempts to load a selected
 'lineup from the manager profile and presents
 'a summary of it, if found.
-Sub LineupFromProfile (lineupFound%, P9, skipLineChange%)
+Sub LineupFromProfile (lineupFound%, P9, skipLineChange%, MAIN_useMgrProf, I$, Q2%)
 
     lineupFound% = 0
     PCT% = 0
@@ -1304,7 +1304,7 @@ Sub LineupFromProfile (lineupFound%, P9, skipLineChange%)
         Cls
         Print "ERROR:: NO LINEUPS FOUND...BE SURE CORRECT LINEUP ID WAS CHOSEN"
 
-        If autoPlay = 1 Then
+        If autoPlay Then
             noLUFound = 1
         Else
             'Locate 24, 1
@@ -1316,7 +1316,7 @@ Sub LineupFromProfile (lineupFound%, P9, skipLineChange%)
 
     Else
 
-        If autoPlay = 1 And useMgrProf = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = P9) Or I$ = "3" Then
+        If ( autoPlay And MAIN_useMgrProf = 1 And (playerMode = PLAY_MODE_PCvsPC Or playerMode = PLAY_MODE_COMPUTER And compTeam = P9) ) Or I$ = "3" Then
 
             'Create automated lineup
             RN = Int(Rnd(1) * PCT%) + 1
@@ -1340,7 +1340,7 @@ Sub LineupFromProfile (lineupFound%, P9, skipLineChange%)
 
             If Q2% = 1 Then LN% = LN% + 10
 
-            If desigHit = MG%(P9, 101 + LN% * 21) Then
+            If MAIN_desigHit = MG%(P9, 101 + LN% * 21) Then
 
                 For I = 1 To 9
                     playerNum%(P9, I) = MG%(P9, 110 + I + LN% * 21)
@@ -1355,7 +1355,7 @@ Sub LineupFromProfile (lineupFound%, P9, skipLineChange%)
                 'But we will skip prompting for
                 'any lineup changes
                 skipLineChange% = 1
-            End If 'Done checking desigHit
+            End If 'Done checking MAIN_desigHit
         Else
             'skip lineup changes
             skipLineChange% = 1
@@ -1385,7 +1385,7 @@ Sub LineupSummary (P9, reselect, LU%)
                 playerNum%(P9, I) = currPitcher%(P9)
                 fielder%(P9, 1) = currPitcher%(P9)
             Else
-                batRating(P9, playerNum%(P9, I), 21) = 0
+                batRating(P9, playerNum%(P9, I), SS_B_Avail) = 0
             End If
 
         End If
@@ -1453,7 +1453,7 @@ Sub SelectBatters (batterFlag%, P9)
         Locate , 59: Print "X-REACTIVATE ALL"
         Locate , 59: Print "<TAB>-BAT/FIELD/SPLIT"
 
-        If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = P9) Then
+        If autoPlay And (playerMode = PLAY_MODE_PCvsPC Or playerMode = PLAY_MODE_COMPUTER And compTeam = P9) Then
             'Autoplay = auto-select
             I$ = "Z"
             batterFlag% = 1
@@ -1473,13 +1473,13 @@ Sub SelectBatters (batterFlag%, P9)
                 C1 = 0
 
                 For J = 0 To 22
-                    batRating(P9, J, 21) = 0
+                    batRating(P9, J, SS_B_Avail) = 0
                 Next
 
                 RP = 1
 
                 For J = 0 To 22
-                    If batRating(P9, J, 31) <> 0 Then batRating(P9, J, 21) = 99
+                    If batRating(P9, J, SS_B_Active) <> 0 Then batRating(P9, J, SS_B_Avail) = 99
                 Next
 
                 batterFlag% = 0
@@ -1520,15 +1520,15 @@ Sub SelectBatters (batterFlag%, P9)
 
                 Case "X":
                     For I3 = 0 To 22
-                        If batRating(P9, I3, 21) = 99 And batRating(P9, I3, 31) = 0 Then
-                            batRating(P9, I3, 21) = 0
+                        If batRating(P9, I3, SS_B_Avail) = 99 And batRating(P9, I3, SS_B_Active) = 0 Then
+                            batRating(P9, I3, SS_B_Avail) = 0
                             Locate I3 + 2, 3: Print batters$(P9, I3)
                         End If
                     Next I3
 
                 Case Else:
                     If I1 >= 0 And I1 <= 22 Then
-                        batRating(P9, I1, 21) = 99
+                        batRating(P9, I1, SS_B_Avail) = 99
                         Color 0, 7
                         Locate I1 + 2, 3: Print batters$(P9, I1);
                         Color 15, 0
@@ -1559,7 +1559,7 @@ End Sub
 'This subroutine assists the user with the
 'choice of any of the pre-created graphics
 'for the stadiums.
-Sub SelectStadium (useVGA)
+Sub SelectStadium (MAIN_useVGA)
     Shared fileSeparator$
 
     Do
@@ -1654,7 +1654,7 @@ Sub SelectStadium (useVGA)
         'Determine park from the team data
         PARK$ = Right$(Str$(teamRat_GAME(1, 13)), Len(Str$(teamRat_GAME(1, 13))) - 1)
 
-        If dayOrNight = 0 Then
+        If MAIN_dayOrNight = 0 Then
             '0 = daytime
             PARK$ = PARK$ + "D.png"
         Else
@@ -1678,9 +1678,8 @@ Sub SelectStadium (useVGA)
 
         'We may have checked if the file associated with the park
         'exists, but we haven't checked if any graphics exist at all
-        If autoPlay <> 1 Then
+        If Not autoPlay Then
 
-            'No autoplay
             Do
                 Locate 10, 11
                 Print "SELECT A DIFFERENT STADIUM? (Y/N)"
@@ -1718,7 +1717,7 @@ Sub SelectStadium (useVGA)
                     If ExitCode% <> 27 Then
 
                         PARK$ = Right$(Str$(Selection%), Len(Str$(Selection%)) - 1)
-                        If dayOrNight = 0 Then PARK$ = PARK$ + "D.png" Else PARK$ = PARK$ + "N.png"
+                        If MAIN_dayOrNight = 0 Then PARK$ = PARK$ + "D.png" Else PARK$ = PARK$ + "N.png"
                         Color 15, 0
 
                         If _FileExists("." + fileSeparator$ + "parks" + fileSeparator$ + PARK$) Then
@@ -1736,7 +1735,7 @@ Sub SelectStadium (useVGA)
 
                             If I$ = "Y" Then
                                 teamRat_GAME(1, 13) = Selection%: gameStadiums$(1) = PARK$(Selection%)
-                                If dayOrNight = 0 Then PARK$ = "99D.png" Else PARK$ = "99N.png"
+                                If MAIN_dayOrNight = 0 Then PARK$ = "99D.png" Else PARK$ = "99N.png"
                             End If
 
                         End If
@@ -1758,7 +1757,7 @@ Sub SelectStadium (useVGA)
 
         'So instead, let's switch to regular mode
 
-        If Not _FileExists("." + fileSeparator$ + "parks" + fileSeparator$ + PARK$) Then useVGA = 0
+        If Not _FileExists("." + fileSeparator$ + "parks" + fileSeparator$ + PARK$) Then MAIN_useVGA = 0
 
     Loop Until BO% = 0 Or UCase$(I$) = "N" Or ExitCode% = 27
 
@@ -1812,7 +1811,7 @@ Sub PitchingRotations (computerRotations%, P9)
 
     Next
 
-    If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = P9) Then
+    If autoPlay And (playerMode = PLAY_MODE_PCvsPC Or playerMode = PLAY_MODE_COMPUTER And compTeam = P9) Then
         '   4685
         gamesStarted = 0
 
@@ -1985,7 +1984,7 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
     Dim position(23, 1)
 
     For I = 0 To 22
-        If batters$(P9, I) = "XXX" Then batRating(P9, I, 21) = 98
+        If batters$(P9, I) = "XXX" Then batRating(P9, I, SS_B_Avail) = 98
     Next
 
     Call SelectBatters(batterFlag%, P9)
@@ -2017,16 +2016,16 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
 
             If I = 1 Then
                 '5120
-                If desigHit = 0 Then
+                If MAIN_desigHit = 0 Then
                     fldNo(9) = 1
                     Exit For
                 Else
                     J = J - 1
                     I2 = 0
                     For I1 = 0 To 22
-                        ' Print #11, Using "DH_! I2: ##  I1: ##  status: ###  batter: &"; I2, I1, batRating(P9, I1, 21), batters$(P9, I1)
+                        ' Print #11, Using "DH_! I2: ##  I1: ##  status: ###  batter: &"; I2, I1, batRating(P9, I1, SS_B_Avail), batters$(P9, I1)
 
-                        If batRating(P9, I1, 21) <= 0 And batters$(P9, I1) <> "XXX" Then
+                        If batRating(P9, I1, SS_B_Avail) <= 0 And batters$(P9, I1) <> "XXX" Then
 
                             If     batRating(P9, I1, SS_B_Pos1) = 0 Then
                                 If     batRating(P9, I1, SS_B_Pos2) = -1 Then
@@ -2066,7 +2065,7 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
                 ' "normalized" at-bats in position(I2, 0) and the field position # in position(I2, 1)
 
                 For I1 = 0 To 22:
-                    If batRating(P9, I1, 21) <= 0 And batters$(P9, I1) <> "XXX" Then
+                    If batRating(P9, I1, SS_B_Avail) <= 0 And batters$(P9, I1) <> "XXX" Then
 
                         If batRating(P9, I1, SS_B_Pos1) = I Then
                             If     batRating(P9, I1, SS_B_Pos2) = -1 Then
@@ -2141,7 +2140,7 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
             For I1 = 0 To I2
                 If RN <= position(I1, 0) Then
                     gameF(J) = position(I1, 1)
-                    batRating(P9, position(I1, 1), 21) = 1
+                    batRating(P9, position(I1, 1), SS_B_Avail) = 1
                     lineupDone% = 1
 
                     ' Print #11, Using "Found xxx I: ##  J: ##  I2: ##  I1: ##  pos0: ####  pos1: ####  AB: ####  RN: ####  batter: &"; _
@@ -2175,10 +2174,10 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
                 C1 = 0
 
                 For J = 0 To 22
-                    If batRating(P9, J, 21) <> 99 Then batRating(P9, J, 21) = 0
+                    If batRating(P9, J, SS_B_Avail) <> 99 Then batRating(P9, J, SS_B_Avail) = 0
                 Next
 
-                If autoPlay <> 1 Then
+                If Not autoPlay Then
                     I$ = GetKeyPress$
                     Exit For
                 End If
@@ -2229,7 +2228,7 @@ Sub SortHitters (P9)
     Call DoSort(7, USE_OPS, P9)
     Call DoSort(8, USE_OPS, P9)
 
-    If desigHit = 1 Then
+    If MAIN_desigHit = 1 Then
         B = 9
         Call DoSort(9, USE_OPS, P9)
     End If
@@ -2329,8 +2328,8 @@ Sub DoSort (B, calcMode, P9)
 
     For L = 0 To 9
 
-        If desigHit = 0 And L = 0 Then L = 2
-        If desigHit = 1 And L = 1 Then L = 2
+        If MAIN_desigHit = 0 And L = 0 Then L = 2
+        If MAIN_desigHit = 1 And L = 1 Then L = 2
 
         found = _FALSE
 
@@ -2443,7 +2442,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
     Locate 16, 57: Print "1-USE PRE-SET ROTATION"
     Locate 17, 57: Print "2-ENTER A NEW ROTATION"
 
-    If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = idx%) Then
+    If autoPlay And (playerMode = PLAY_MODE_PCvsPC Or playerMode = PLAY_MODE_COMPUTER And compTeam = idx%) Then
         'For automated games, use preset rotation
         'This will end up being computer-generated
         choice = 1
@@ -2474,9 +2473,9 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
                 'Pre-Set Rotation
                 Cls
 
-                If mgrFile(idx%) = -1 Or MG%(idx%, 99) <> 999 Then
+                If Not mgrFile(idx%) Or MG%(idx%, 99) <> 999 Then
 
-                    If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = idx%) Then
+                    If autoPlay And (playerMode = PLAY_MODE_PCvsPC Or playerMode = PLAY_MODE_COMPUTER And compTeam = idx%) Then
                         computerRotations% = 1
                     Else
                         'This should instead go to automatic disable of rotations???
@@ -2534,13 +2533,15 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
             'AUTOMATIC DISABLE OF PITCHERS IN THE ROTATION
 
             'For I = 0 To MG%(idx%, 1) - 1
-            '    pitchRating(idx%, MG%(idx%, 3 + I), 15) = 99
+            '    pitchRating(idx%, MG%(idx%, 3 + I), SS_P_Avail) = 99
             'Next
 
             Do
                 Call d100(RN)
 
-                pitchRating(idx%, MG%(idx%, MG%(idx%, 2) + 3), 15) = 0
+                ' If MG%(idx%, 2) = -1 Then MG%(idx%, 2) = 0  '[bm] KLUDGE'
+
+                pitchRating(idx%, MG%(idx%, MG%(idx%, 2) + 3), SS_P_Avail) = 0
 
                 If RN <= MG%(idx%, MG%(idx%, 2) + 10 + 3) Or MG%(idx%, MG%(idx%, 2) + 10 + 3) = 0 Then
                     startPitcher(idx%) = MG%(idx%, MG%(idx%, 2) + 3)
@@ -2557,7 +2558,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
                             SP% = SP% + MG%(idx%, J + 20)
 
                             If RN <= SP% And MG%(idx%, J) <> -1 Then
-                                pitchRating(idx%, MG%(idx%, J), 15) = 0
+                                pitchRating(idx%, MG%(idx%, J), SS_P_Avail) = 0
                                 startPitcher(idx%) = MG%(idx%, J)
                                 doneAutoDisable% = 1
                                 Exit For
@@ -2577,7 +2578,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
 
             MG%(idx%, 99) = 999
             MG%(idx%, 0) = 999
-            mgrFile(idx%) = 0
+            mgrFile(idx%) = _TRUE
 
             teamYear$ = RTrim$(diskIDs$(idx%))
 
@@ -2606,7 +2607,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
             Locate , 58: Print "Z-CONTINUE"
             Locate , 58: Print "X-ACTIVATE ALL PITCHERS"
 
-            If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = idx%) Then
+            If autoPlay And (playerMode = PLAY_MODE_PCvsPC Or playerMode = PLAY_MODE_COMPUTER And compTeam = idx%) Then
                 I$ = "Z"
             End If
 
@@ -2621,7 +2622,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
                     Select Case UCase$(I$)
                         Case "Y":
                             ':GRANT DAY OFF
-                            If useRest = 1 Then
+                            If MAIN_useRest = 1 Then
                                 For I1 = 0 To 21
                                     If pitchRating(idx%, I1, 35) > 0 Then pitchRating(idx%, I1, 35) = pitchRating(idx%, I1, 35) - 1
                                 Next
@@ -2755,7 +2756,7 @@ Sub PitchingStarter (idx%)
 
         Print
 
-        If Not (autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = idx%)) Then
+        If Not (autoPlay And (playerMode = PLAY_MODE_PCvsPC Or playerMode = PLAY_MODE_COMPUTER And compTeam = idx%)) Then
 
             Do
                 Locate 21, 58: Print "ANY CHANGE? (Y/N)"
