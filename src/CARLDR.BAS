@@ -576,7 +576,7 @@ Sub ViewCareerLeaders ()
         Locate I + 3: Print Using "##"; I + 1;
         Print ". ";
         Color 15: Print carLdrBatName$(0, I);
-        Print Tab(20); Using "####"; carLdrBatVal!(0, I);:
+        Print Tab(20); Using "####"; carLdrBatVal!(0, I);
 
         Color 3
         Print Tab(40); Using "##"; I + 1;
@@ -600,7 +600,7 @@ Sub ViewCareerLeaders ()
         Locate I + 3: Print Using "##"; I + 1;
         Print ". ";
         Color 15: Print carLdrBatName$(2, I);
-        Print Tab(20); Using "####"; carLdrBatVal!(2, I);:
+        Print Tab(20); Using "####"; carLdrBatVal!(2, I);
 
         Color 3
         Print Tab(40); Using "##"; I + 1;

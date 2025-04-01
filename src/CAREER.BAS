@@ -381,6 +381,11 @@ End Sub
 'output to the screen
 Sub CareerRecords_Screen
 
+    Shared carRecBatLdrVal!(), carRecPitLdrVal!()
+    Shared carRecBatYear(), carRecPitYear()
+
+    Shared carRecBatName$(), carRecPitName$()
+
     Do
 
         Cls
@@ -391,42 +396,42 @@ Sub CareerRecords_Screen
 
         Locate 4, 1
         Color 3: Print "AT BATS";
-        Color 7: Print Tab(23); Using "###"; carRecBatLdrVal!(0);
+        Color 15: Print Tab(23); Using "###"; carRecBatLdrVal!(0);
 		Print Tab(37); carRecBatName$(0);: Print Tab(56); carRecBatYear(0)
         Color 3: Print "RUNS SCORED";
-        Color 7: Print Tab(23); Using "###"; carRecBatLdrVal!(1);
+        Color 15: Print Tab(23); Using "###"; carRecBatLdrVal!(1);
 		Print Tab(37); carRecBatName$(1);: Print Tab(56); carRecBatYear(1)
         Color 3: Print "HITS";
-        Color 7: Print Tab(23); Using "###"; carRecBatLdrVal!(2);
+        Color 15: Print Tab(23); Using "###"; carRecBatLdrVal!(2);
 		Print Tab(37); carRecBatName$(2);: Print Tab(56); carRecBatYear(2)
         Color 3: Print "DOUBLES";
-        Color 7: Print Tab(23); Using "###"; carRecBatLdrVal!(3);
+        Color 15: Print Tab(23); Using "###"; carRecBatLdrVal!(3);
 		Print Tab(37); carRecBatName$(3);: Print Tab(56); carRecBatYear(3)
         Color 3: Print "TRIPLES";
-        Color 7: Print Tab(23); Using "###"; carRecBatLdrVal!(4);
+        Color 15: Print Tab(23); Using "###"; carRecBatLdrVal!(4);
 		Print Tab(37); carRecBatName$(4);: Print Tab(56); carRecBatYear(4)
         Color 3: Print "HOME RUNS";
-        Color 7: Print Tab(23); Using "###"; carRecBatLdrVal!(5);
+        Color 15: Print Tab(23); Using "###"; carRecBatLdrVal!(5);
 		Print Tab(37); carRecBatName$(5);: Print Tab(56); carRecBatYear(5)
         Color 3: Print "RUNS BATTED IN";
-        Color 7: Print Tab(23); Using "###"; carRecBatLdrVal!(6);
+        Color 15: Print Tab(23); Using "###"; carRecBatLdrVal!(6);
 		Print Tab(37); carRecBatName$(6);: Print Tab(56); carRecBatYear(6)
         Color 3: Print "WALKS";
-        Color 7: Print Tab(23); Using "###"; carRecBatLdrVal!(7);
+        Color 15: Print Tab(23); Using "###"; carRecBatLdrVal!(7);
 		Print Tab(37); carRecBatName$(7);: Print Tab(56); carRecBatYear(7)
         Color 3: Print "STRIKEOUTS";
-        Color 7: Print Tab(23); Using "###"; carRecBatLdrVal!(8);
+        Color 15: Print Tab(23); Using "###"; carRecBatLdrVal!(8);
 		Print Tab(37); carRecBatName$(8);: Print Tab(56); carRecBatYear(8)
         Color 3: Print "STEALS";
-        Color 7: Print Tab(23); Using "###"; carRecBatLdrVal!(9);
+        Color 15: Print Tab(23); Using "###"; carRecBatLdrVal!(9);
 		Print Tab(37); carRecBatName$(9);: Print Tab(56); carRecBatYear(9)
         Color 3: Print "CAUGHT STEALING";
-        Color 7: Print Tab(23); Using "###"; carRecBatLdrVal!(10);
+        Color 15: Print Tab(23); Using "###"; carRecBatLdrVal!(10);
 		Print Tab(37); carRecBatName$(10);: Print Tab(56); carRecBatYear(10)
         Color 3: Print "ERRORS";
-        Color 7: Print Tab(23); Using "###"; carRecBatLdrVal!(11);
+        Color 15: Print Tab(23); Using "###"; carRecBatLdrVal!(11);
 		Print Tab(37); carRecBatName$(11);: Print Tab(56); carRecBatYear(11)
-        Color 3: Print "BATTING AVERAGE";: Color 7
+        Color 3: Print "BATTING AVERAGE";: Color 15
 
         If carRecBatLdrVal!(12) > 0 Then
             Print Tab(22); Using ".###"; carRecBatLdrVal!(12);
@@ -435,7 +440,7 @@ Sub CareerRecords_Screen
             Print Tab(22); " ---"
         End If
 
-        Color 3: Print "SLUGGING PCT.";: Color 7:
+        Color 3: Print "SLUGGING PCT.";: Color 15:
         If carRecBatLdrVal!(13) > 0 Then
             Print Tab(22); Using "#.###"; carRecBatLdrVal!(13);
 		Print Tab(37); carRecBatName$(13);: Print Tab(56); carRecBatYear(13)
@@ -443,7 +448,7 @@ Sub CareerRecords_Screen
             Print Tab(22); " ---"
         End If
 
-        Color 3: Print "ON BASE PCT.";: Color 7:
+        Color 3: Print "ON BASE PCT.";: Color 15:
         If carRecBatLdrVal!(13) > 0 Then
             Print Tab(22); Using "#.###"; carRecBatLdrVal!(14);
 		Print Tab(37); carRecBatName$(14);: Print Tab(56); carRecBatYear(14)
@@ -452,31 +457,31 @@ Sub CareerRecords_Screen
         End If
 
         Color 3: Print "WINS";
-        Color 7: Print Tab(23); Using "###"; carRecPitLdrVal!(0);
+        Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(0);
 		Print Tab(37); carRecPitName$(0);: Print Tab(56); carRecPitYear(0)
         Color 3: Print "LOSSES";
-        Color 7: Print Tab(23); Using "###"; carRecPitLdrVal!(1);
+        Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(1);
 		Print Tab(37); carRecPitName$(1);: Print Tab(56); carRecPitYear(1)
         Color 3: Print "SAVES";
-        Color 7: Print Tab(23); Using "###"; carRecPitLdrVal!(2);
+        Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(2);
 		Print Tab(37); carRecPitName$(2);: Print Tab(56); carRecPitYear(2)
         Color 3: Print "INNINGS PITCHED";
-        Color 7: Print Tab(23); Using "###"; carRecPitLdrVal!(3);:
+        Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(3);:
 
         If carRecPitLdrVal!(3) - (Int(carRecPitLdrVal!(3) / 3) * 3) > 0 Then Print ".";: Print Using "#"; carRecPitLdrVal!(3) - (Int(carRecPitLdrVal!(3) / 3) * 3);:
 
         Print Tab(37); carRecPitName$(3);: Print Tab(56); carRecPitYear(3)
         Color 3: Print "HITS ALLOWED";
-        Color 7: Print Tab(23); Using "###"; carRecPitLdrVal!(4);
+        Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(4);
 		Print Tab(37); carRecPitName$(4);: Print Tab(56); carRecPitYear(4)
         Color 3: Print "WALKS";
-        Color 7: Print Tab(23); Using "###"; carRecPitLdrVal!(5);
+        Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(5);
 		Print Tab(37); carRecPitName$(5);: Print Tab(56); carRecPitYear(5)
         Color 3: Print "STRIKOUTS";
-        Color 7: Print Tab(23); Using "###"; carRecPitLdrVal!(6);
+        Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(6);
 		Print Tab(37); carRecPitName$(6);: Print Tab(56); carRecPitYear(6)
 
-        Color 3: Print "EARNED RUN AVERAGE";: Color 7
+        Color 3: Print "EARNED RUN AVERAGE";: Color 15
         If carRecPitLdrVal!(7) > 0 Then
             Print Tab(22); Using "##.##"; carRecPitLdrVal!(7);
 		Print Tab(37); carRecPitName$(7);: Print Tab(56); carRecPitYear(7)
@@ -496,25 +501,25 @@ Sub CareerRecords_Screen
         Locate 4, 1
 
         Color 3: Print "GAMES";
-        Color 7: Print Tab(23); Using "###"; carRecPitLdrVal!(8);
+        Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(8);
 		Print Tab(37); carRecPitName$(8);: Print Tab(56); carRecPitYear(8)
         Color 3: Print "COMPLETE GAMES";
-        Color 7: Print Tab(23); Using "###"; carRecPitLdrVal!(9);
+        Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(9);
 		Print Tab(37); carRecPitName$(9);: Print Tab(56); carRecPitYear(9)
         Color 3: Print "RUNS ALLOWED";
-        Color 7: Print Tab(23); Using "###"; carRecPitLdrVal!(10);
+        Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(10);
 		Print Tab(37); carRecPitName$(10);: Print Tab(56); carRecPitYear(10)
         Color 3: Print "EARNED RUNS ALLOWED";
-        Color 7: Print Tab(23); Using "###"; carRecPitLdrVal!(11);
+        Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(11);
 		Print Tab(37); carRecPitName$(11);: Print Tab(56); carRecPitYear(11)
         Color 3: Print "SHUTOUTS";
-        Color 7: Print Tab(23); Using "###"; carRecPitLdrVal!(12);
+        Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(12);
 		Print Tab(37); carRecPitName$(12);: Print Tab(56); carRecPitYear(12)
         Color 3: Print "HOME RUNS ALLOWED";
-        Color 7: Print Tab(23); Using "###"; carRecPitLdrVal!(13);
+        Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(13);
 		Print Tab(37); carRecPitName$(13);: Print Tab(56); carRecPitYear(13)
         Color 3: Print "DOUBLE PLAYS";
-        Color 7: Print Tab(23); Using "###"; carRecPitLdrVal!(14);
+        Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(14);
 		Print Tab(37); carRecPitName$(14);: Print Tab(56); carRecPitYear(14)
 
         Do

@@ -60,6 +60,7 @@ Sub CareerToPrinter (printDest, destFile$, careerFile$)
 
     Open destFile$ For Output As #1
 
+    Print #1, 
     Print #1, careerFile$
     Print #1, "BATTER     YEAR      G      AB      R      H    2B    3B    HR    RBI     BB     SO     SB    CS     E     AVG     SLG      OB"
 
@@ -550,47 +551,52 @@ Sub ViewLeaders_Batters (careerFile$)
 
     Cls
     
-    Color 12: Print careerFile$
+    Locate 2, 1
+    Color 12
+    Print careerFile$
 
     For I = 0 To 19
-        Locate I + 2
+        Locate I + 4
         Color 11: Print Using "##"; I;
         Print ".";
         Color 7: Print Left$(careerBatters$(I), 12)
     Next
 
     For I = 20 To 39
-        Locate I - 18, 21
+        Locate I - 16, 21
         Color 11: Print Using "##"; I;
         Print ".";
         Color 7: Print Left$(careerBatters$(I), 12)
     Next
 
     For I = 40 To 59
-        Locate I - 38, 41
+        Locate I - 36, 41
         Color 11: Print Using "##"; I;
         Print ".";
         Color 7: Print Left$(careerBatters$(I), 12)
     Next
 
     For I = 60 To 79
-        Locate I - 58, 61
+        Locate I - 56, 61
         Color 11: Print Using "##"; I;
         Print ".";
         Color 7: Print Left$(careerBatters$(I), 12)
     Next
 
     Print
-    Color 15: Input "ENTER NUMBER OF PLAYER TO VIEW"; B9
+    Color 14: Input "ENTER NUMBER OF PLAYER TO VIEW"; B9
 
     Cls
 
     Color 11
-    Locate 1: Print careerFile$
+    Locate 2, 1
+    Print careerFile$
+
     Color 12
-    Locate 2: Print "BATTER     YEAR   G   AB   R   H 2B 3B HR RBI  BB  SO  SB CS  E  AVG  SLG   OB"
+    Locate 4,1
+    Print "BATTER     YEAR   G   AB   R   H 2B 3B HR RBI  BB  SO  SB CS  E  AVG  SLG   OB"
     Color 15
-    Locate 3: Print Left$(careerBatters$(B9), 13);
+    Print Left$(careerBatters$(B9), 13);
 
     VV = 0 
 
@@ -781,7 +787,8 @@ Sub ViewLeaders_Batters (careerFile$)
 
     Print
     Print
-    Color 15: Input "HIT ENTER TO CONTINUE"; DUMMY$
+    Color 14
+    Locate , 30: Input "HIT ENTER TO CONTINUE"; DUMMY$
 
 End Sub
 
@@ -797,31 +804,34 @@ Sub ViewLeaders_Pitchers (careerFile$)
     Shared carRecPitStats()
 
     Cls
-    Color 12: Print careerFile$
+
+    Color 12
+    Locate 2, 1
+    Print careerFile$
 
     For I = 0 To 19
-        Locate I + 2
+        Locate I + 4
         Color 11: Print Using "##"; I;
         Print ".";
         Color 7: Print Left$(careerPitchers$(I), 12)
     Next
 
     For I = 20 To 39
-        Locate I - 18, 21
+        Locate I - 16, 21
         Color 11: Print Using "##"; I;
         Print ".";
         Color 7: Print Left$(careerPitchers$(I), 12)
     Next
 
     For I = 40 To 59
-        Locate I - 38, 41
+        Locate I - 36, 41
         Color 11: Print Using "##"; I;
         Print ".";
         Color 7: Print Left$(careerPitchers$(I), 12)
     Next
 
     For I = 60 To 79
-        Locate I - 58, 61
+        Locate I - 56, 61
         Color 11: Print Using "##"; I;
         Print ".";
         Color 7: Print Left$(careerPitchers$(I), 12)
@@ -829,16 +839,19 @@ Sub ViewLeaders_Pitchers (careerFile$)
 
     Print
 
-    Color 15: Input "ENTER NUMBER OF PLAYER TO VIEW"; B9
+    Color 14: Input "ENTER NUMBER OF PLAYER TO VIEW"; B9
 
     Cls
 
     Color 11
-    Locate 1: Print careerFile$
+    Locate 2, 1
+    Print careerFile$
+
     Color 12
-    Locate 2: Print "PITCHER    YEAR  W  L  S   IP     H  BB  SO  ERA  G GS CG RUN  ER SHO HR DP"
+    Locate 4,1
+    Print "PITCHER    YEAR  W  L  S   IP     H  BB  SO  ERA  G GS CG RUN  ER SHO HR DP"
     Color 15
-    Locate 3: Print Left$(careerPitchers$(B9), 13);
+    Print Left$(careerPitchers$(B9), 13);
 
     VV = 0 
 
@@ -1021,7 +1034,8 @@ Sub ViewLeaders_Pitchers (careerFile$)
 
     Print
     Print
-    Color 15: Input "HIT ENTER TO CONTINUE"; DUMMY$
+    Color 14
+    Locate , 30: Input "HIT ENTER TO CONTINUE"; DUMMY$
 
 End Sub
 
@@ -1070,17 +1084,19 @@ Sub ViewLeaders_Sequence (careerFile$)
         TT27 = 0
         TT28 = 0
 
+        Locate 2, 1
         Color 11
-        Locate 1: Print careerFile$
+        Print careerFile$
         Color 12
-        Locate 2: Print "BATTER     YEAR   G   AB   R   H 2B 3B HR RBI  BB  SO  SB CS  E  AVG  SLG   OB"
+        Locate 4, 1
+        Print "BATTER     YEAR   G   AB   R   H 2B 3B HR RBI  BB  SO  SB CS  E  AVG  SLG   OB"
 
         For I = 0 To 99
 
             If careerBatters$(I) <> "" And careerBatters$(I) <> "XXX" Then
 
                 Color 15
-                Locate 3: Print Left$(careerBatters$(I), 10);
+                Locate 5: Print Left$(careerBatters$(I), 10);
 
                 VV = 0
                 
@@ -1195,7 +1211,8 @@ Sub ViewLeaders_Sequence (careerFile$)
                 TT13 = 0
 
                 Do
-                    Locate 10: Color 14
+                    Locate 10, 16
+                    Color 14
                     Print "HIT ENTER TO CONTINUE OR ESC TO GO TO MAIN MENU"
                     I$ = GetKeyPress$
 
@@ -1220,17 +1237,19 @@ Sub ViewLeaders_Sequence (careerFile$)
 
             Cls
 
+            Locate 2, 1
             Color 11
-            Locate 1: Print careerFile$
+            Print careerFile$
             Color 12
-            Locate 2: Print "PITCHER    YEAR  W  L  S   IP     H  BB  SO  ERA  G GS CG RUN  ER SHO HR DP"
+            Locate 4, 1
+            Print "PITCHER    YEAR  W  L  S   IP     H  BB  SO  ERA  G GS CG RUN  ER SHO HR DP"
 
             For I = 0 To 79
 
                 If careerPitchers$(I) <> "" And careerPitchers$(I) <> "XXX" Then
 
                     Color 15
-                    Locate 3: Print Left$(careerPitchers$(I), 10);
+                    Locate 5: Print Left$(careerPitchers$(I), 10);
 
                     VV = 0
                     
@@ -1330,7 +1349,8 @@ Sub ViewLeaders_Sequence (careerFile$)
                     TT28 = 0
 
                     Do
-                        Locate 10: Color 14
+                        Locate 10, 16
+                        Color 14
                         Print "HIT ENTER TO CONTINUE OR ESC TO GO TO MAIN MENU"
                         I$ = GetKeyPress$
 
