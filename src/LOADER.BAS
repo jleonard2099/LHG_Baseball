@@ -626,8 +626,8 @@ Sub LOADER
         gameD0%(I) = 9
 
         Print #11, I; "Ready to PLay: "; gameTeams$(I)  ' [bm]'
-        Print #11, "B3: "; playerNum%(I, 1); playerNum%(I, 2); playerNum%(I, 3); playerNum%(I, 4); playerNum%(I, 5); playerNum%(I, 6); playerNum%(I, 7); playerNum%(I, 8); playerNum%(I, 9)
-        Print #11, "B7: "; fldPos%(I, 1); fldPos%(I, 2); fldPos%(I, 3); fldPos%(I, 4); fldPos%(I, 5); fldPos%(I, 6); fldPos%(I, 7); fldPos%(I, 8); fldPos%(I, 9)
+        Print #11, "playerNum%: "; playerNum%(I, 1); playerNum%(I, 2); playerNum%(I, 3); playerNum%(I, 4); playerNum%(I, 5); playerNum%(I, 6); playerNum%(I, 7); playerNum%(I, 8); playerNum%(I, 9)
+        Print #11, "fldPos%:    "; fldPos%(I, 1); fldPos%(I, 2); fldPos%(I, 3); fldPos%(I, 4); fldPos%(I, 5); fldPos%(I, 6); fldPos%(I, 7); fldPos%(I, 8); fldPos%(I, 9)
 
         Print  #11,
         'Print #11, "Roster Batter 0", batterNames$(0)
@@ -2145,6 +2145,7 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
 
                     ' Print #11, Using "Found xxx I: ##  J: ##  I2: ##  I1: ##  pos0: ####  pos1: ####  AB: ####  RN: ####  batter: &"; _
                     '     I, J, I2, I1, position(I1, 0), position(I1, 1), AB%, RN, batters$(P9, position(I1, 1))
+
                     Exit For
                 Else
                     position(I1 + 1, 0) = position(I1 + 1, 0) + position(I1, 0)
@@ -2203,8 +2204,7 @@ End Sub
 'lineup summary to the user.
 Sub SortHitters (P9)
 
-    Shared fldNo()
-    Shared playNo%()
+    Shared fldNo(), playNo%(), currPitcher%()
 
     Shared USE_SLUG, USE_LH, USE_OPS, USE_OBA_SB                ' Shared with DoSort()
     USE_SLUG = 0 : USE_LH = 1 : USE_OPS = 2 : USE_OBA_SB = 3
@@ -2229,8 +2229,10 @@ Sub SortHitters (P9)
     Call DoSort(8, USE_OPS, P9)
 
     If MAIN_desigHit = 1 Then
-        B = 9
         Call DoSort(9, USE_OPS, P9)
+    Else
+        playNo%(9) = currPitcher%(P9)
+        fldNo = 1
     End If
 
 

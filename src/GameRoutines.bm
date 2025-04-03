@@ -2240,11 +2240,11 @@ End Sub
 'This subroutine handles the Play-by-Play
 'and replacement for a defensive pitcher
 'who has been ejected or injured.
-Sub INJPIT (P, D, IP%, flagPinchHitter)
+Sub INJPIT (P, D, flagPitcherInjured%, flagPinchHitter)
 
     If playerMode = PLAY_MODE_PCvsPC Or playerMode = PLAY_MODE_COMPUTER And P <> compTeam Then
-        IP% = 1
-        Call RELIEVERS(flagPinchHitter, pz)
+        flagPitcherInjured% = _TRUE
+        Call RELIEVERS(flagPinchHitter, flagNewPitcher)
     Else
         Call PBP("You must replace " + pitchers$(D, currPitcher%(D)))
     End If
@@ -2622,7 +2622,7 @@ End Sub
 '        NEWPITCHER Subroutine
 '----------------------------------------
 'NewPitcher
-Sub NEWPITCHER (pIdx, flagPinchHitter, pz)
+Sub NEWPITCHER (pIdx, flagPinchHitter, flagNewPitcher)
 
     V0 = pIdx
 
@@ -2634,6 +2634,8 @@ Sub NEWPITCHER (pIdx, flagPinchHitter, pz)
     gamePitcher%(D) = gamePitcher%(D) + 1
     pitchRating(D, V0, SS_P_Avail) = gamePitcher%(D)
     P9 = D
+
+    Print #11, Using "NEWPITCHER: ##  gamePitcher: ##  & will be in to pitch..."; V0, gamePitcher%(D), pitchers$(D, V0)
 
     Call PITSTAM(P9)
 
@@ -2684,9 +2686,9 @@ Sub NEWPITCHER (pIdx, flagPinchHitter, pz)
         Call MAINSCREEN(D, P, nbrBalls, nbrStrikes, MO)
     End If
 
-    flagPinchHitter = 0
+    flagPinchHitter = _FALSE
 
-    pz = 1
+    flagNewPitcher = _TRUE
 
 End Sub
 
@@ -2958,7 +2960,7 @@ Sub PINCHRUNNER (MS%, A1, baseRunners%, I2, P, flagPinchRunner%, nbrBalls, nbrSt
             Call WINDEX
             Locate 15, 1
             Call PBP(gameManagers$(P) + " is sending in a pinch runner")
-            flagPinchRunner% = 1
+            flagPinchRunner% = _TRUE
 
             Call DELAY
             Call HITTINGLINES
@@ -3153,13 +3155,13 @@ End Sub
 '----------------------------------------
 'This subroutine loads a pitcher strategy
 'from a manager profile.
-Sub PITSTRAT (flagPinchHitter, pz)
+Sub PITSTRAT (flagPinchHitter, flagNewPitcher)
 
     Shared SU()
 
     ourLead = gameScore(D, 0) - gameScore(P, 0)
 
-    pz = 0
+    flagNewPitcher = _FALSE
 
     ' if there are no middle relievers in the profile,
     ' and it's less than the 7th inning, then go back
@@ -3201,7 +3203,7 @@ Sub PITSTRAT (flagPinchHitter, pz)
                     If currBatter!(P) =  8 Then For pIdx = 0 To 1 : I3 = I3 + batRating(P, playerNum%(P, currBatter!(P) + pIdx), 0): Next : I3 = I3 + batRating(P, playerNum%(P, 1), 0)
                     If currBatter!(P) =  9 Then For pIdx = 1 To 2 : I3 = I3 + batRating(P, playerNum%(P,                  pIdx), 0): Next : I3 = I3 + batRating(P, playerNum%(P, 9), 0)
 
-                    Print #11, Using "pidx: ###  Inning: ##  saveSituation: #  MGR_INN_CLOSE_STRATEGY: ##  MGR_USE_BOTH_SETUP_CLOSER:  ##"; pIdx, INNING%, saveOpp%, MG%(D, MGR_INN_CLOSE_STRATEGY), MG%(D, MGR_USE_BOTH_SETUP_CLOSER)
+                    Print #11, Using "pidx: ###  Inning: ##  saveSituation: #  588: ##  589:  ##"; pIdx, INNING%, saveOpp%, MG%(D, 588), MG%(D, 589)
 
                     If I3 = 0 Then
                         Do
@@ -3210,44 +3212,44 @@ Sub PITSTRAT (flagPinchHitter, pz)
                         'Why not just do a random # from 1 to 2???
                     End If
 
-                    If INNING% = 8 And MG%(D, MGR_INN_CLOSE_STRATEGY) = 8 And saveOpp% = 1 And (SN% = MGR_INN_SAVE_OPP Or SN% = MGR_SAVE_OPP_OCCURS) Then
-                        If     MG%(D, MGR_USE_BOTH_SETUP_CLOSER) = 0 Then Goto LSetupMan
-                        ElseIf MG%(D, MGR_USE_BOTH_SETUP_CLOSER) = 1 Then Goto LCloser
+                    If INNING% = 8 And MG%(D, 588) = 8 And saveOpp% = 1 And (SN% = 582 Or SN% = 587) Then
+                        If     MG%(D, 589) = 0 Then Goto LSetupMan
+                        ElseIf MG%(D, 589) = 1 Then Goto LCloser
                     End If
 
-                    If INNING% >= 9 And saveOpp% = 1 And (SN% = MGR_INN_SAVE_OPP Or SN% = MGR_SAVE_OPP_OCCURS) Then Goto LCloser
+                    If INNING% >= 9 And saveOpp% = 1 And (SN% = 582 Or SN% = 587) Then Goto LCloser
 
-                    If INNING% = 8 And MG%(D, MGR_INN_CLOSE_STRATEGY) = 8 And ourLead > 0 And SN% = MGR_INN_AHEAD Then
-                        If     MG%(D, MGR_USE_BOTH_SETUP_CLOSER) = 0 Then Goto LSetupMan
-                        ElseIf MG%(D, MGR_USE_BOTH_SETUP_CLOSER) = 1 Then Goto LCloser
+                    If INNING% = 8 And MG%(D, 588) = 8 And ourLead > 0 And SN% = 583 Then
+                        If     MG%(D, 589) = 0 Then Goto LSetupMan
+                        ElseIf MG%(D, 589) = 1 Then Goto LCloser
                     End If
 
-                    If INNING% >= 9 And ourLead > 0 And SN% = MGR_INN_AHEAD Then Goto LCloser
+                    If INNING% >= 9 And ourLead > 0 And SN% = 583 Then Goto LCloser
 
-                    If INNING% = 8 And MG%(D, MGR_INN_CLOSE_STRATEGY) = 8 And ourLead >= 0 And SN% = MGR_INN_TIED_AHEAD Then
-                        If     MG%(D, MGR_USE_BOTH_SETUP_CLOSER) = 0 Then Goto LSetupMan
-                        ElseIf MG%(D, MGR_USE_BOTH_SETUP_CLOSER) = 1 Then Goto LCloser
+                    If INNING% = 8 And MG%(D, 588) = 8 And ourLead >= 0 And SN% = 584 Then
+                        If     MG%(D, 589) = 0 Then Goto LSetupMan
+                        ElseIf MG%(D, 589) = 1 Then Goto LCloser
                     End If
 
-                    If INNING% >= 9 And ourLead >= 0 And SN% = MGR_INN_TIED_AHEAD Then Goto LCloser
+                    If INNING% >= 9 And ourLead >= 0 And SN% = 584 Then Goto LCloser
 
                     pitWalks = statPitcherGame%(D, currPitcher%(D), LG_P_BB)
                     pitHits  = statPitcherGame%(D, currPitcher%(D), LG_P_H)
                     pitRuns  = statPitcherGame%(D, currPitcher%(D), LG_P_R)
 
-                    If INNING% = 8 And stamina%(D, 0) <= pitWalks + pitHits And stamina%(D, 1) <= pitRuns And MG%(D, MGR_INN_CLOSE_STRATEGY) = 8 And ourLead > 0 And SN% = MGR_TIRED_AHEAD Then
-                         If     MG%(D, MGR_USE_BOTH_SETUP_CLOSER) = 0 Then Goto LSetupMan
-                         ElseIf MG%(D, MGR_USE_BOTH_SETUP_CLOSER) = 1 Then Goto LCloser
+                    If INNING% = 8 And stamina%(D, 0) <= pitWalks + pitHits And stamina%(D, 1) <= pitRuns And MG%(D, 588) = 8 And ourLead > 0 And SN% = 585 Then
+                         If     MG%(D, 589) = 0 Then Goto LSetupMan
+                         ElseIf MG%(D, 589) = 1 Then Goto LCloser
                     End If
 
-                    If INNING% >= 9 And stamina%(D, 0) <= pitWalks + pitHits And stamina%(D, 1) <= pitRuns And ourLead > 0 And SN% = MGR_TIRED_AHEAD Then Goto LCloser
+                    If INNING% >= 9 And stamina%(D, 0) <= pitWalks + pitHits And stamina%(D, 1) <= pitRuns And ourLead > 0 And SN% = 585 Then Goto LCloser
 
-                    If INNING% =  8 And stamina%(D, 0) <= pitWalks + pitHits And stamina%(D, 1) <= pitRuns And MG%(D, MGR_INN_CLOSE_STRATEGY) = 8 And ourLead >= 0 And SN% = MGR_TIRED_TIED_AHEAD Then
-                        If     MG%(D, MGR_USE_BOTH_SETUP_CLOSER) = 0 Then Goto LSetupMan
-                        ElseIf MG%(D, MGR_USE_BOTH_SETUP_CLOSER) = 1 Then Goto LCloser
+                    If INNING% =  8 And stamina%(D, 0) <= pitWalks + pitHits And stamina%(D, 1) <= pitRuns And MG%(D, 588) = 8 And ourLead >= 0 And SN% = 586 Then
+                        If     MG%(D, 589) = 0 Then Goto LSetupMan
+                        ElseIf MG%(D, 589) = 1 Then Goto LCloser
                     End If
 
-                    If INNING% >= 9 And stamina%(D, 0) <= pitWalks + pitHits And stamina%(D, 1) <= pitRuns And ourLead >= 0 And SN% = MGR_TIRED_TIED_AHEAD Then Goto LCloser
+                    If INNING% >= 9 And stamina%(D, 0) <= pitWalks + pitHits And stamina%(D, 1) <= pitRuns And ourLead >= 0 And SN% = 586 Then Goto LCloser
 
                     Exit For
 
@@ -3279,7 +3281,7 @@ Sub PITSTRAT (flagPinchHitter, pz)
             V0 = MG%(D, pIdx)
             MG%(D, pIdx) = -1
             pIdx = V0
-            Call NEWPITCHER(pIdx, flagPinchHitter, pz)
+            Call NEWPITCHER(pIdx, flagPinchHitter, flagNewPitcher)
             SU(D, 0) = -1
             Exit Sub
         End If
@@ -3305,7 +3307,7 @@ Sub PITSTRAT (flagPinchHitter, pz)
             V0 = MG%(D, pIdx)
             MG%(D, pIdx) = -1
             pIdx = V0
-            Call NEWPITCHER(pIdx, flagPinchHitter, pz)
+            Call NEWPITCHER(pIdx, flagPinchHitter, flagNewPitcher)
             SU(D, 1) = -1
             Exit Sub
         End If
@@ -3331,7 +3333,7 @@ Sub PITSTRAT (flagPinchHitter, pz)
             V0 = MG%(D, pIdx)
             MG%(D, pIdx) = -1
             pIdx = V0
-            Call NEWPITCHER(pIdx, flagPinchHitter, pz)
+            Call NEWPITCHER(pIdx, flagPinchHitter, flagNewPitcher)
             Exit Sub
         End If
     Next
@@ -4798,65 +4800,69 @@ End Sub
 '          RELIEVERS Subroutine
 '----------------------------------------
 ' ...explanation...
-Sub RELIEVERS (flagPinchHitter, pz)
+Sub RELIEVERS (flagPinchHitter, flagNewPitcher)
 
-    Call PITSTRAT(flagPinchHitter, pz)
+    Call PITSTRAT(flagPinchHitter, flagNewPitcher)
 
-    If pz = 1 Then
-        pz = 0
-    Else
-        I2 = 0
-        A1 = gameScore(D, 0) - gameScore(P, 0)
+    If flagNewPitcher Then
+        flagNewPitcher = _FALSE
+        Print #11, "NEWPITCHER scenario #MGR"
+    Else    ' choose a new pitcher WITHOUT a strategy in profile
+        totReliefApp = 0
+        ourLead = gameScore(D, 0) - gameScore(P, 0)
 
         For rIdx = 0 To 21
 
-            A2 = pitchRating(D, rIdx, SS_P_G) - pitchRating(D, rIdx, SS_P_GS) - pitchRating(D, rIdx, SS_P_Sv) * 1.3
+            reliefAppearances = pitchRating(D, rIdx, SS_P_G) - pitchRating(D, rIdx, SS_P_GS) - pitchRating(D, rIdx, SS_P_Sv) * 1.3
 
-            If Not (pitchRating(D, rIdx, SS_P_Avail) > 0 Or pitchers$(D, rIdx) = "XXX" Or A2 = 0) Then
-                If INNING% <= 7 And A2 > 0 Then I2 = I2 + A2
-                If INNING% > 7 And A1 < 0 And A2 > 0 Then I2 = I2 + A2
-                If INNING% > 7 And A1 >= 0 Then I2 = I2 + pitchRating(D, rIdx, SS_P_Sv)
+            If Not (pitchRating(D, rIdx, SS_P_Avail) > 0 Or pitchers$(D, rIdx) = "XXX" Or reliefAppearances = 0) Then
+                If INNING% <= 7 And reliefAppearances > 0 Then totReliefApp = totReliefApp + reliefAppearances
+                If INNING% > 7 And ourLead < 0 And reliefAppearances > 0 Then totReliefApp = totReliefApp + reliefAppearances
+                If INNING% > 7 And ourLead >= 0 Then totReliefApp = totReliefApp + pitchRating(D, rIdx, SS_P_Sv)
             End If
 
         Next rIdx
 
-        I3 = Int(Rnd(1) * I2) + 1
-        I2 = 0
+        iRand = Int(Rnd(1) * totReliefApp) + 1
+        totReliefApp = 0
 
         For rIdx = 0 To 21
 
-            A2 = pitchRating(D, rIdx, SS_P_G) - pitchRating(D, rIdx, SS_P_GS) - pitchRating(D, rIdx, SS_P_Sv) * 1.3
+            reliefAppearances = pitchRating(D, rIdx, SS_P_G) - pitchRating(D, rIdx, SS_P_GS) - pitchRating(D, rIdx, SS_P_Sv) * 1.3
 
-            If Not (pitchRating(D, rIdx, SS_P_Avail) > 0 Or pitchers$(D, rIdx) = "XXX" Or A2 = 0) Then
+            If Not (pitchRating(D, rIdx, SS_P_Avail) > 0 Or pitchers$(D, rIdx) = "XXX" Or reliefAppearances = 0) Then
 
                 If INNING% <= 7 Then
 
-                    If A2 > 0 Then
-                        If I3 <= I2 + A2 Then
-                            Call NEWPITCHER(rIdx, flagPinchHitter, pz)
+                    If reliefAppearances > 0 Then
+                        If iRand <= totReliefApp + reliefAppearances Then
+                            Print #11, "NEWPITCHER scenario 'middle relief'"
+                            Call NEWPITCHER(rIdx, flagPinchHitter, flagNewPitcher)
                             Exit Sub
                         Else
-                            I2 = I2 + A2
+                            totReliefApp = totReliefApp + reliefAppearances
                         End If
                     End If
 
                 Else
 
                     'INNING% > 7
-                    If A1 < 0 And A2 > 0 Then
-                        If I3 <= I2 + A2 Then
-                            Call NEWPITCHER(rIdx, flagPinchHitter, pz)
+                    If ourLead < 0 And reliefAppearances > 0 Then
+                        If iRand <= totReliefApp + reliefAppearances Then
+                            Print #11, "NEWPITCHER scenario 'setup'"
+                        Call NEWPITCHER(rIdx, flagPinchHitter, flagNewPitcher)
                             Exit Sub
                         Else
-                            I2 = I2 + A2
+                            totReliefApp = totReliefApp + reliefAppearances
                         End If
                     Else
-                        If A1 >= 0 And I3 > I2 Then
-                            If I3 <= I2 + pitchRating(D, rIdx, SS_P_Sv) Then
-                                Call NEWPITCHER(rIdx, flagPinchHitter, pz)
+                        If ourLead >= 0 And iRand > totReliefApp Then
+                            If iRand <= totReliefApp + pitchRating(D, rIdx, SS_P_Sv) Then
+                                Print #11, "NEWPITCHER scenario 'closer'"
+                                Call NEWPITCHER(rIdx, flagPinchHitter, flagNewPitcher)
                                 Exit Sub
                             Else
-                                I2 = I2 + pitchRating(D, rIdx, SS_P_Sv)
+                                totReliefApp = totReliefApp + pitchRating(D, rIdx, SS_P_Sv)
                             End If
                         End If
                     End If
@@ -4869,7 +4875,8 @@ Sub RELIEVERS (flagPinchHitter, pz)
 
         For rIdx = 0 To 21
             If pitchRating(D, rIdx, SS_P_Avail) = 0 And pitchers$(D, rIdx) <> "XXX" Then
-                Call NEWPITCHER(rIdx, flagPinchHitter, pz)
+                Print #11, "NEWPITCHER scenario 'anyone'"
+                Call NEWPITCHER(rIdx, flagPinchHitter, flagNewPitcher)
                 Exit For
             End If
         Next rIdx
@@ -6180,7 +6187,7 @@ End Sub
 'at the end of most of these branches,
 'it gets assigned a static value.
 ' Where is it used in the game?
-Sub RAREPLAYS (dice1000%, dice7500%, IP%)
+Sub RAREPLAYS (dice1000%, dice7500%, flagPitcherInjured%)
 
     If dice7500% = 20 Then
         dice7500% = 0
@@ -6218,7 +6225,7 @@ Sub RAREPLAYS (dice1000%, dice7500%, IP%)
 
                 Call EJECTINC(ejectCnt, X$)
                 Call DELAY
-                Call INJPIT(P, D, IP%, flagPinchHitter)
+                Call INJPIT(P, D, flagPitcherInjured%, flagPinchHitter)
 
             Case 4
                 If fldPos%(P, currBatter!(P)) <> 1 Then
@@ -6293,7 +6300,7 @@ Sub RAREPLAYS (dice1000%, dice7500%, IP%)
                 po% = 3
 
                 Call EJECTIONINJURY(playerMode, P, compTeam, D, po%, P9, W5, W6)
-                Call INJPIT(P, D, IP%, flagPinchHitter)
+                Call INJPIT(P, D, flagPitcherInjured%, flagPinchHitter)
 
             Case 6 To 7
 
@@ -6324,7 +6331,7 @@ Sub RAREPLAYS (dice1000%, dice7500%, IP%)
                 ejections$(ejectCnt) = pitchers$(D, currPitcher%(D))
 
                 Call DELAY
-                Call INJPIT(P, D, IP%, flagPinchHitter)
+                Call INJPIT(P, D, flagPitcherInjured%, flagPinchHitter)
 
             Case 9
 
@@ -6351,7 +6358,7 @@ Sub RAREPLAYS (dice1000%, dice7500%, IP%)
                         Call PBP(pitchers$(D, currPitcher%(D)) + " has been ejected")
                         X$ = pitchers$(D, currPitcher%(D))
                         Call EJECTINC(ejectCnt, X$)
-                        Call INJPIT(P, D, IP%, flagPinchHitter)
+                        Call INJPIT(P, D, flagPitcherInjured%, flagPinchHitter)
 
                     Case 2:
                         Call PBP(player$(0) + " has been ejected")
@@ -6365,7 +6372,7 @@ Sub RAREPLAYS (dice1000%, dice7500%, IP%)
                         Call EJECTINC(ejectCnt, X$)
                         X$ = pitchers$(D, currPitcher%(D))
                         Call EJECTINC(ejectCnt, X$)
-                        Call INJPIT(P, D, IP%, flagPinchHitter)
+                        Call INJPIT(P, D, flagPitcherInjured%, flagPinchHitter)
                         Call PLYRHRT(P, P9, W5, W6, nbrBalls, nbrStrikes, D, MO)
 
                 End Select
@@ -6846,7 +6853,7 @@ Sub RAREPLAYS (dice1000%, dice7500%, IP%)
                     Call WINDEX
                     Call PBP("He reaches on a single")
                     Call PBP(pitchers$(D, currPitcher%(D)) + " is down and in pain!")
-                    Call INJPIT(P, D, IP%, flagPinchHitter)
+                    Call INJPIT(P, D, flagPitcherInjured%, flagPinchHitter)
                     dice1000% = 5
                 Else
                     'i = 2 to 5
@@ -6884,7 +6891,7 @@ Sub RAREPLAYS (dice1000%, dice7500%, IP%)
                 Call PBP(pitchers$(D, currPitcher%(D)) + " is motioning for " + gameManagers$(D) + " to come out")
                 Call PBP("It appears he has a blister")
                 Call PBP("He will have to leave the game")
-                Call INJPIT(P, D, IP%, flagPinchHitter)
+                Call INJPIT(P, D, flagPitcherInjured%, flagPinchHitter)
 
                 dice1000% = 1
 
@@ -7601,6 +7608,7 @@ End Sub
 Sub CheckRecords ()
 
     Shared DB, HR, TR, SB
+    Shared eventNbr
     Shared allEvents
     Shared doublesPlayer$(), eventDesc$(), homeRuns$()
     Shared stolenBases$(), triplesPlayer$()
@@ -7629,7 +7637,8 @@ Sub CheckRecords ()
 
             If statBatterGame%(I, I1, 11) <> 0 Then
 
-                If statBatterGame%(I, I1, 11) = 1 Then
+            '        ***CHECKING ERRORS***
+            If statBatterGame%(I, I1, 11) = 1 Then
                     eventDesc$(eventNbr) = batters$(I, I1)
                 Else
                     eventDesc$(eventNbr) = batters$(I, I1) + Str$(statBatterGame%(I, I1, 11))
@@ -8648,6 +8657,9 @@ Sub BOX2FILE (printChoice, boxName$)
     Shared actualAttendance&
 
     Shared eventSettings()
+
+    Shared doublesPlayer$(), eventDesc$(), homeRuns$()
+    Shared stolenBases$(), triplesPlayer$()
 
     Dim BK$
     BK$ = "## # # ## # #  # # #  #  # # ## ##"

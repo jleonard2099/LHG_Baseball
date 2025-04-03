@@ -505,9 +505,7 @@ Function ChooseFile$ (fileSpec$, fileDesc$, ExitCode%)
 
         If Count% = 0 Then
 
-            _Dest _Console
-            Print "NOT FOUND, fileSpec: " + fileSpec$
-            _Dest 0
+            _Dest _Console : Print "NOT FOUND, fileSpec: " + fileSpec$ : _Dest 0
 
             Locate 10, 8
             zeroCountMsg$ = "NO " + fileDesc$ + " FILES WERE FOUND... PRESS ANY KEY TO RETURN TO MAIN MENU"

@@ -225,9 +225,16 @@ Sub SOURCE ()
 
     End If
 
-    If fielder%(D, POS_P) = 99 And playerMode = PLAY_MODE_HUMAN Or fielder%(D, POS_P) = 99 And playerMode = PLAY_MODE_COMPUTER And compTeam = 1 - D Then
+    Print #11, Using "LNextHalfInning fielder for P: ### :  &"; fielder%(D, POS_P), _IIF(P = 0, "Visiting", "Home") + " team batting"
+
+    If fielder%(D, POS_P) = 99 Then
+        If playerMode = PLAY_MODE_HUMAN Or playerMode = PLAY_MODE_COMPUTER And compTeam = 1 - D Then
         '----- move stuff here -----
-        GoTo LStayInGame
+            GoTo LStayInGame
+        Else
+            Print #11, "Will choose a new pitcher b/c pitcher was pinch hit for..."
+            Call RELIEVERS(flagPinchHitter, flagNewPitcher)
+            End If
     End If
 
   LNextBatter0: '
@@ -271,7 +278,9 @@ Sub SOURCE ()
         If gameBaserunners%(iBM, 0) > 0 Then Print #11, "  ++ "; batters$( P, playerNum%(P, gameBaserunners%(iBM, 0)) ); " is on base:"; iBM
     Next
     Print #11, "  The pitcher is: "; pitchers$( D, currPitcher%(D)) ; ", Stamina: "; stamina%(D, 0); stamina%(D, 1)
-    Print #11, "  The batter is: " ; batters$ ( P, playerNum%(P, currBatter!(P)) ); " with"; nbrOuts(0); "outs"
+    foo$ = _IIF( fldPos%(P, currBatter!(P)) = 1, pitchers$( P, playerNum%(P, currBatter!(P)) ), batters$( P, playerNum%(P, currBatter!(P)) ) )
+    Print #11, "  The batter is: " ; foo$; " with"; nbrOuts(0); "outs"
+    Print #11, "  lineup slot is " + STR$( currBatter!(P) ) + ", field position is " + STR$( fldPos%(P, currBatter!(P)) )
 
     Do
 
@@ -552,7 +561,7 @@ Sub SOURCE ()
 
             JM = playerNum%(P, currBatter!(P))
 
-            If flagPinchHitter <> 1 Then
+            If Not flagPinchHitter Then
 
                 ourLead = gameScore(P, 0) - gameScore(D, 0)
 
@@ -601,7 +610,7 @@ Sub SOURCE ()
 
                     End If
 
-                Else
+                Else    ' batter is the pitcher
 
                     For I = 0 To 21
 
@@ -614,27 +623,31 @@ Sub SOURCE ()
 
                                 MOB% = 0
 
-                                For I = 1 To 3
-                                    If gameBaserunners%(I, 0) > 0 Then MOB% = MOB% + 1
+                                For iBM = 1 To 3
+                                    If gameBaserunners%(iBM, 0) > 0 Then MOB% = MOB% + 1
                                 Next
 
                                 If pitchRating(P, currPitcher%(P), SS_P_BAvg) <> 999 Then
-                                    I7! = pitchRating(I0, currPitcher%(I0), SS_P_BAvg)
+                                    pitcherBAvg = pitchRating(I0, currPitcher%(I0), SS_P_BAvg)
                                 Else
                                     If pitchRating(P, currPitcher%(P), 20) = 0 Then
-                                        I7! = 0
+                                        pitcherBAvg = 0
                                     Else
-                                        I7! = Int((pitchRating(P, currPitcher%(P), 22) / pitchRating(P, currPitcher%(P), 20) * 1000 + .5))
+                                        pitcherBAvg = Int((pitchRating(P, currPitcher%(P), 22) / pitchRating(P, currPitcher%(P), 20) * 1000 + .5))
                                     End If
                                 End If
 
-                                For I = 0 To 2
-                                    If INNING% >= MG%(P, 591 + I * 6) And ourLead <= MG%(P, 592 + I * 6) * -1 And nbrOuts(0) <= MG%(P, 594 + I * 6) And I7! <= MG%(P, 595 + I * 6) And RN <= MG%(P, 596 + I * 6) And MOB% >= MG%(P, 593 + I * 6) Then
+                                For iBM = 0 To 2
+                                    If INNING%        >= MG%(P, 591 + iBM * 6) _
+                                      And ourLead     <= MG%(P, 592 + iBM * 6) * -1 _
+                                      And nbrOuts(0)  <= MG%(P, 594 + iBM * 6) _
+                                      And pitcherBAvg <= MG%(P, 595 + iBM * 6) _
+                                      And RN          <= MG%(P, 596 + iBM * 6) _
+                                      And MOB%        >= MG%(P, 593 + iBM * 6) Then
                                         GoTo LPhForPitcher
                                     End If
                                 Next
 
-                                Exit For
 
                             Else
 
@@ -866,11 +879,11 @@ Sub SOURCE ()
 
 
   LRarePlays: ' BRANCH FOR RARE PLAYS
-    Call RAREPLAYS(dice1000%, dice7500%, IP%)
+    Call RAREPLAYS(dice1000%, dice7500%, flagPitcherInjured%)
 
-    If IP% = 1 Then 'pitcher is injured'
-        IP% = 0
-        Call RELIEVERS(flagPinchHitter, pz)
+    If flagPitcherInjured% Then 'pitcher is injured'
+        flagPitcherInjured% = _FALSE
+        Call RELIEVERS(flagPinchHitter, flagNewPitcher)
     End If
 
     '-- It appears the following lines get executed
@@ -3831,8 +3844,8 @@ Sub SOURCE ()
 
             Loop Until UCase$(I$) = "Y"
 
-            flagPinchHitter = 0
-            flagPinchRunner% = 0
+            flagPinchHitter = _FALSE
+            flagPinchRunner% = _FALSE
 
             If S1%(P9) <> -1 And gamePitcher%(P9) > 1 Then
                 Call OFFPIT(P9, currPitcher%(P9), 22)
@@ -4235,11 +4248,11 @@ Sub SOURCE ()
 
     End If
 
-    If SU(D, 0) <> -1 And MG%(D, MGR_USE_BOTH_SETUP_CLOSER) =  0 And INNING% =  MG%(D, MGR_INN_CLOSE_STRATEGY) Then Call PITSTRAT(flagPinchHitter, pz)
-    If SU(D, 1) <> -1 And MG%(D, MGR_USE_BOTH_SETUP_CLOSER) =  0 And INNING% >  MG%(D, MGR_INN_CLOSE_STRATEGY) Then Call PITSTRAT(flagPinchHitter, pz)
-    If SU(D, 1) <> -1 And MG%(D, MGR_USE_BOTH_SETUP_CLOSER) <> 0 And INNING% >= MG%(D, MGR_INN_CLOSE_STRATEGY) Then Call PITSTRAT(flagPinchHitter, pz)
+    If SU(D, 0) <> -1 And MG%(D, 589) =  0 And INNING% =  MG%(D, 588) Then Call PITSTRAT(flagPinchHitter, flagNewPitcher)
+    If SU(D, 1) <> -1 And MG%(D, 589) =  0 And INNING% >  MG%(D, 588) Then Call PITSTRAT(flagPinchHitter, flagNewPitcher)
+    If SU(D, 1) <> -1 And MG%(D, 589) <> 0 And INNING% >= MG%(D, 588) Then Call PITSTRAT(flagPinchHitter, flagNewPitcher)
 
-    If pz = 1 Then pz = 0: GoTo LManageDefense
+    If flagNewPitcher Then flagNewPitcher = _FALSE: GoTo LManageDefense
 
     ourLead = gameScore(D, 0) - gameScore(P, 0)
     Call d100(RN)
@@ -4293,7 +4306,7 @@ Sub SOURCE ()
     If GK%(D) = 1 Then
 
         GK%(D) = 0
-        Call RELIEVERS(flagPinchHitter, pz)
+        Call RELIEVERS(flagPinchHitter, flagNewPitcher)
         If MAIN_useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
         GoTo LManageDefense
 
@@ -4303,12 +4316,12 @@ Sub SOURCE ()
     If fldPos%(P, currBatter!(P)) <> 1 Then BR = batRating(P, playerNum%(P, currBatter!(P)), 30)
 
     If pitchRating(P, currPitcher%(P), SS_P_BAvg) <> 999 Then
-        I7! = pitchRating(I0, currPitcher%(I0), SS_P_BAvg)
+        pitcherBAvg = pitchRating(I0, currPitcher%(I0), SS_P_BAvg)
     Else
         If pitchRating(P, currPitcher%(P), 20) = 0 Then
-            I7! = 0
+            pitcherBAvg = 0
         Else
-            I7! = Int((pitchRating(P, currPitcher%(P), 22) / pitchRating(P, currPitcher%(P), 20) * 1000 + .5))
+            pitcherBAvg = Int((pitchRating(P, currPitcher%(P), 22) / pitchRating(P, currPitcher%(P), 20) * 1000 + .5))
         End If
     End If
 
@@ -4532,7 +4545,7 @@ Sub SOURCE ()
   LReliever2: '
     If (    stamina%(D, 0) <= statPitcherGame%(D, currPitcher%(D), LG_P_BB) + statPitcherGame%(D, currPitcher%(D), LG_P_H) _
         And stamina%(D, 1) <= statPitcherGame%(D, currPitcher%(D), LG_P_R) ) Or fielder%(D, POS_P) = 99 Then
-        Call RELIEVERS(flagPinchHitter, pz)
+        Call RELIEVERS(flagPinchHitter, flagNewPitcher)
         If MAIN_useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
     End If
 
@@ -4600,8 +4613,11 @@ Sub SOURCE ()
                 battrBAvg = batRating(P, JM, SS_B_H) / batRating(P, JM, SS_B_AB) * 1000
                 abRand = Int(Rnd(1) * 500)
 
+                iPitThrows = pitchRating(D, currPitcher%(D), SS_P_Throws)
+                iBatHits   = batRating(P, I, SS_B_Bats)
+
                 ' Pitcher and PH both righty
-                If pitchRating(D, currPitcher%(D), SS_P_Throws) =  1 And batRating(P, I, SS_B_Bats) > 0 And pinchBAvg > battrBAvg + 35 Then
+                If iPitThrows =  1 And iBatHits > 0 And pinchBAvg > battrBAvg + 35 Then
 
                     Print #11, Using "PH for position player scenario 2, batAvg = ####.#  pinchAvg = ####.#  abRand = ###.#  pinchAB = ###  rosterNum = ##"; _
                         battrBAvg, pinchBAvg, abRand, batRating(P, I,  SS_B_AB), I
@@ -4610,7 +4626,7 @@ Sub SOURCE ()
                 End If
 
                 ' Pitcher and PH both lefty
-                If pitchRating(D, currPitcher%(D), SS_P_Throws) = -1 And batRating(P, I, SS_B_Bats) < 0 And pinchBAvg > battrBAvg + 45 Then
+                If iPitThrows = -1 And iBatHits < 0 And pinchBAvg > battrBAvg + 45 Then
 
                     Print #11, Using "PH for position player scenario 3, batAvg = ####.#  pinchAvg = ####.#  abRand = ###.#  pinchAB = ###  rosterNum = ##"; _
                         battrBAvg, pinchBAvg, abRand, batRating(P, I,  SS_B_AB), I
@@ -4618,8 +4634,8 @@ Sub SOURCE ()
                     If abRand < batRating(P, I,  SS_B_AB) Then Goto LPhForPosContinue
                 End If
 
-                ' PH is switch hitter
-                If batRating(P, I, SS_B_Bats) = 0 And pinchBAvg > battrBAvg + 30 Then
+                ' Pitcher and PH on opposite sides
+                If (iPitThrows = -1 And iBatHits >= 0 Or iPitThrows = 1 And iBatHits <= 0) And pinchBAvg > battrBAvg + 30 Then
 
                     Print #11, Using "PH for position player scenario 4, batAvg = ####.#  pinchAvg = ####.#  abRand = ###.#  pinchAB = ###  rosterNum = ##"; _
                         battrBAvg, pinchBAvg, abRand, batRating(P, I,  SS_B_AB), I
@@ -4636,7 +4652,7 @@ Sub SOURCE ()
     GoTo LPinchRunner
 
   LPhForPosContinue:
-    flagPinchHitter = 1
+    flagPinchHitter = _TRUE
     gameD0%(P) = gameD0%(P) + 1
     Print #11, Using "_*_*_* LPhForPosContinue: PH: ##  PR: ##  gameD0: ##"; flagPinchHitter, flagPinchRunner, gameD0%(P)
     X0%(P, 0, gameD0%(P)) = I
@@ -4659,13 +4675,13 @@ Sub SOURCE ()
     '----- NOODLE -----
 
   LPhForPitcher: 'GET A PINCH HITTER FOR THE PITCHER
-    callPinch = 0
-    skipLoop = 0
+    callPinch = _FALSE
+    skipLoop = _FALSE
 
     If MG%(P, 540) <> 999 Then  ' we DON'T have a specified list of pinch hitters
 
         J% = 0
-        GP% = 0
+        totPH% = 0
         pit16 = pitchRating(P, currPitcher%(P), 16)
         pit15 = pitchRating(P, currPitcher%(P), 15)
         pitRatio = Int( pit16 / pit15 * 100 + .5 )
@@ -4692,9 +4708,9 @@ Sub SOURCE ()
             And pit15 > 0 _
             And gamePitcher%(P) = 1 _
             And pitRatio >= 100) )_
-        Then skipLoop = 1
+        Then skipLoop = _TRUE
 
-        If skipLoop = 0 Then
+        If Not skipLoop Then
 
             For Idx = 0 To 22
 
@@ -4702,13 +4718,13 @@ Sub SOURCE ()
 
                     If batRating(P, Idx, SS_B_Bats) > 0 And pitchRating(D, currPitcher%(D), SS_P_Throws) = 1 Or _
                        batRating(P, Idx, SS_B_Bats) < 0 And pitchRating(D, currPitcher%(D), SS_P_Throws)= -1 Then
-                        PH%(J%, 0) = Int( batRating(P, Idx, SS_B_G) / 4 + .5 )
+                        PH%(J%, 0) = Int( batRating(P, Idx, SS_B_G) / 4 + .5 )  ' batter and pitcher are same handed
                     Else
-                        PH%(J%, 0) = batRating(P, Idx, SS_B_G)
+                        PH%(J%, 0) = batRating(P, Idx, SS_B_G)  ' batter and pitcher are different handed
                     End If
 
                     PH%(J%, 1) = Idx
-                    GP% = GP% + PH%(J%, 0)
+                    totPH% = totPH% + PH%(J%, 0)
                     J% = J% + 1
 
                 End If
@@ -4717,13 +4733,13 @@ Sub SOURCE ()
 
             If J% <> 0 Then
 
-                RN = Int(Rnd(1) * GP%) + 1
+                RN = Int(Rnd(1) * totPH%) + 1
 
                 For I = 0 To J% - 1
 
                     If RN <= PH%(I, 0) Then
-                        PH% = PH%(I, 1)
-                        callPinch = 1
+                        foundPH% = PH%(I, 1)
+                        callPinch = _TRUE
                         Exit For
                     Else
                         PH%(I + 1, 0) = PH%(I, 0) + PH%(I + 1, 0)
@@ -4737,16 +4753,16 @@ Sub SOURCE ()
 
         If gameD0%(P) >= 23 Then Print #11, "WARNING!! gameD0%(P) >= 23 in LPhForPitcher:"; gameD0%(P)
 
-        If callPinch = 1 And gameD0%(P) < 23 Then   '[bm] kludge to avoid array out-of-bounds'
+        If callPinch And gameD0%(P) < 23 Then   '[bm] kludge to avoid array index out-of-bounds'
 
-            flagPinchHitter = 1
+            flagPinchHitter = _TRUE
             gameD0%(P) = gameD0%(P) + 1
             Print #11, Using "_*_*_* LPhForPitcher: PH: ##  PR: ##  gameD0: ##"; flagPinchHitter, flagPinchRunner, gameD0%(P)
-            X0%(P, 0, gameD0%(P)) = PH%
+            X0%(P, 0, gameD0%(P)) = foundPH%
             X0%(P, 1, gameD0%(P)) = 10
             X0%(P, 2, gameD0%(P)) = 81 + gameD0%(P)
-            batRating(P, PH%, SS_B_Avail) = 1
-            playerNum%(P, currBatter!(P)) = PH%
+            batRating(P, foundPH%, SS_B_Avail) = 1
+            playerNum%(P, currBatter!(P)) = foundPH%
 
             If fldPos%(P, currBatter!(P)) = 1 Or fldPos%(P, currBatter!(P)) = 10 Then
                 fielder%(P, 1) = 99
@@ -4778,7 +4794,7 @@ Sub SOURCE ()
             If fldPos%(P, currBatter!(P)) = 1 Then player$(0) = pitchers$(P, currPitcher%(D))
             Call WINDEX
             Call PBP(gameManagers$(P) + " is sending up a pinch hitter")
-            flagPinchHitter = 1
+            flagPinchHitter = _TRUE
             Print #11, Using "_*_*_* LPhForPitcher2:PH: ##  PR: ##  gameD0: ##"; flagPinchHitter, flagPinchRunner, gameD0%(P)
 
             GoTo LContinueBatter
@@ -4786,7 +4802,7 @@ Sub SOURCE ()
         End If
 
       LPinchRunner: '
-        If flagPinchRunner% <> 1 Then
+        If Not flagPinchRunner% Then
             Call PINCHRUNNER(MS%, ourLead, baseRunners%, I2, P, flagPinchRunner%, nbrBalls, nbrStrikes, D, MO)
         End If
 
@@ -4901,8 +4917,8 @@ Sub SOURCE ()
     End If
 
   LPinchRunner0:
-    flagPinchHitter = 0
-    flagPinchRunner% = 0
+    flagPinchHitter = _FALSE
+    flagPinchRunner% = _FALSE
     Print #11, Using "_*_*_* LPinchRunner0: PH: ##  PR: ##  gameD0: ##"; flagPinchHitter, flagPinchRunner, gameD0%(P)
 
     Call d100(RN0)

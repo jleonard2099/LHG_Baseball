@@ -2232,7 +2232,7 @@ Sub SpotStarters (targetTeam$, yearNumber$, mgrNbr)
 
         End Select
 
-    Loop Until UCase$(I$) = "S"
+    Loop Until UCase$(I$) = "S" Or I$ = Chr$(27)
 
 End Sub
 
@@ -2364,7 +2364,8 @@ Sub ManagePitchingRotations (action%, targetTeam$, yearNumber$, mgrNbr)
 
     End If 'Done for action = 2
 
-    If UCase$(I$) = "Y" Or progMG%(99) = 999 Or progMG%(99) = -1 Then
+    ' If UCase$(I$) = "Y" Or progMG%(99) = 999 Or progMG%(99) = -1 Then
+    If UCase$(I$) = "Y" Or ( action% = 1 And (progMG%(99) = 999 Or progMG%(99) = -1) ) Then
 
         Cls
 
