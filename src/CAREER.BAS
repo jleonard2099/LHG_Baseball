@@ -17,13 +17,13 @@ Sub CAREER ()
 
         Call TITLE_CAREER
 
-        menuChoices$(1) = "CREATE INITIAL CAREER STATS FILE  "
-        menuChoices$(2) = "ADD CAREER YEAR TO STATS          "
-        menuChoices$(3) = "REMOVE PLAYERS FROM CAREER STATS  "
-        menuChoices$(4) = "VIEW / PRINT CAREER STATS         "
-        menuChoices$(5) = "VIEW / PRINT CAREER RECORDS       "
-        menuChoices$(6) = "UPDATE / VIEW TEAM CAREER LEADERS "
-        menuChoices$(7) = "RETURN TO MAIN MENU               "
+        menuChoices$(1) = "CREATE INITIAL CAREER STATS FILE"
+        menuChoices$(2) = "ADD CAREER YEAR TO STATS        "
+        menuChoices$(3) = "REMOVE PLAYERS FROM CAREER STATS"
+        menuChoices$(4) = "REVIEW CAREER STATS             "
+        menuChoices$(5) = "REVIEW CAREER RECORDS           "
+        menuChoices$(6) = "MANAGE TEAM CAREER LEADERS      "
+        menuChoices$(7) = "RETURN TO MAIN MENU             "
         SELECTION% = 1
         Count% = 7
         Start% = 1
@@ -75,11 +75,11 @@ End Sub
 
 
 '----------------------------------------
-'       CreateCareerFile Subroutine
+'      CreateCareerFile Subroutine
 '----------------------------------------
 'This routine assists the user with the
 'creation of a team's first career file.
-'This naturally means it will guide them 
+'This naturally means it will guide them
 'through also adding the first year's
 'stats to the file.
 Sub CreateCareerFile ()
@@ -92,10 +92,10 @@ Sub CreateCareerFile ()
         Locate 5, 27: Print " - - - C A U T I O N - - -"
 
         Color 15
-        Locate 8, 18: Print "THIS OPTION SHOULD ONLY BE USED WHEN CREATING"
-        Locate , 18: Print "AND MERGING THE INITIAL STAT FILE.  IF YOU ARE"
-        Locate , 18: Print "ADDING AN ADDITIONAL YEAR TO AN EXISTING FILE,"
-        Locate , 18: Print "            USE OPTION #2."
+        Locate 8, 18: Print "THIS OPTION SHOULD ONLY BE USED WHEN CREATING AND"
+        Locate , 18: Print "MERGING THE INITIAL CAREER FILE."
+        Locate , 18: Print "IF YOU ARE ADDING AN EXTRA YEAR TO AN EXISTING"
+        Locate , 18: Print "CAREER FILE, USE THE 'ADD CAREER YEAR' OPTION"
         Print
         Print
         Print
@@ -119,7 +119,7 @@ End Sub
 '----------------------------------------
 '        MergeFirstYear Subroutine
 '----------------------------------------
-'This routine actually prompts the user for 
+'This routine actually prompts the user for
 'parameters to be used for merging the first
 'year's worth of stats to the career file
 Sub MergeFirstYear ()
@@ -143,13 +143,8 @@ Sub MergeFirstYear ()
         Color 11, 0
         Cls
 
-        For J = 15 To 18:
-            Locate J
-            Print Space$(68)
-        Next
-
-        Locate 15, 5
-        Input "ENTER NAME OF CAREER STAT FILE "; careerFile$
+        careerFile$ = _InputBox$("Career File", "Enter name for Career stats file")
+        'careerFile$ = _SAVEFILEDIALOG$("Save Career File", "", "*.CAR", "Career files")
 
         teamNbr = 0
         Call ChooseTeam(YN$, NTMS, teamNbr, team$)
@@ -173,14 +168,14 @@ Sub MergeFirstYear ()
             If UCase$(J$) = "N" Then
 
                 Do
-                    Locate , 5
+                    Locate 11, 18
                     Print "WOULD YOU LIKE TO POST CAREER RECORDS? (Y/N)"
                     K$ = GetKeyPress$
                 Loop Until UCase$(K$) = "Y" Or UCase$(K$) = "N" Or K$ = Chr$(27)
 
-                If UCase$(K$) = "Y" Then 
-                    doPostLeaders = 1 
-                Else 
+                If UCase$(K$) = "Y" Then
+                    doPostLeaders = 1
+                Else
                     doPostLeaders = 0
                 End If
 
@@ -196,11 +191,9 @@ Sub MergeFirstYear ()
 
                 Else
 
-                    Locate 20, 5
+                    Locate 20, 13
                     Color 15
                     Print "MERGING AND UPDATING CAREER STATS . . . . PLEASE WAIT"
-
-                    TMR = 3 + (23*2) + (22*2) + (23*22) + (22*42)
 
                     Open diskPaths$(1) + statFile$ For Input As #1
 
@@ -211,29 +204,17 @@ Sub MergeFirstYear ()
                     For I = 0 To 22:
                         Input #1, careerBatters$(I)
                         Input #1, careerB1(I)
-                        Color 9
-                        Locate 21, 38
-                        TMR = TMR - 1
-                        Print Using "####"; TMR
                     Next I
 
                     For I = 0 To 21:
                         Input #1, careerPitchers$(I)
                         Input #1, careerP1(I)
-                        Color 9
-                        Locate 21, 38
-                        TMR = TMR - 1
-                        Print Using "####"; TMR
                     Next I
 
                     For I = 0 To 22:
 
                         For I1 = 0 To 21:
                             Input #1, careerB0(I, I1)
-                            Color 9
-                            Locate 21, 38
-                            TMR = TMR - 1
-                            Print Using "####"; TMR
                         Next I1
 
                     Next I
@@ -242,10 +223,6 @@ Sub MergeFirstYear ()
 
                         For I1 = 0 To 41:
                             Input #1, careerP0(I, I1)
-                            Color 9
-                            Locate 21, 38
-                            TMR = TMR - 1
-                            Print Using "####"; TMR
                         Next I1
 
                     Next I
@@ -298,9 +275,9 @@ Sub MergeFirstYear ()
 
                     Next I
 
-                    If doPostLeaders = 1 Then Call UpdateCareerRecords(careerFile$)
+                    If doPostLeaders = 1 Then Call UpdateCareerRecords(diskPaths$(2) + careerFile$ + ".CLD")
 
-                    Call SaveCareerFile (careerFile$)
+                    Call SaveCareerFile(diskPaths$(1) + careerFile$ + ".CAR")
 
                 End If 'Done checking for stat file
 
@@ -308,7 +285,7 @@ Sub MergeFirstYear ()
 
         End If 'Done checking if team was chosen
 
-    Loop Until UCase$(J$) = "N"
+    Loop Until UCase$(I$) = "N" Or UCase$(J$) = "N"
 
 End Sub
 
@@ -317,35 +294,20 @@ End Sub
 '    ReviewCareerRecords Subroutine
 '----------------------------------------
 'This routine loads in leader records from
-'the .CLD file (which were compiled from  
+'the .CLD file (which were compiled from
 'the career file). It then gives the user
 'an option to View or Print results, AND
 'formats the results for them as directed.
 Sub ReviewCareerRecords ()
 
-    Shared carRecBatLdrVal!(), carRecPitLdrVal!()
-    Shared carRecBatYear(), carRecPitYear()
+    recordFile$ = _OpenFileDialog$("Choose Career Leader file", diskPaths$(2), "*.CLD", "Career Leader files")
 
-    Shared carRecBatName$(), carRecPitName$()
-
-    recordFile$ = ChooseFile$(diskPaths$(2) + "*.CLD", "CAREER RECORD", ExitCode%)
-
-    If ExitCode% <> 27 And ExitCode% <> 0 Then
+    If recordFile$ <> "" Then
 
         Color 15, 0
         Cls
 
-        Open diskPaths$(2) + recordFile$ + ".CLD" For Input As #1
-
-        For I = 0 To 14: 
-            Input #1, carRecBatYear(I), carRecBatName$(I), carRecBatLdrVal!(I)
-        Next
-
-        For I = 0 To 14: 
-            Input #1, carRecPitYear(I), carRecPitName$(I), carRecPitLdrVal!(I)
-        Next
-
-        Close #1
+        Call LoadCareerLeaders(recordFile$)
 
         userKey$ = GetOutputOptions$
 
@@ -354,7 +316,7 @@ Sub ReviewCareerRecords ()
             Select Case userKey$
 
                 Case "F"
-                    userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Career","*.txt","Text File")
+                    userFile$ = _SaveFileDialog$("Save Report File", _CWD$ + "\Career", "*.txt", "Text File")
                     If userFile$ <> "" Then
                         Call CareerRecords_Report(0, userFile$)
                     End If
@@ -366,16 +328,16 @@ Sub ReviewCareerRecords ()
                     Call CareerRecords_Screen
 
             End Select
-            
+
         End If
 
-    End If 'Done checking ESC
+    End If 'Done checking for ESC
 
 End Sub
 
 
 '----------------------------------------
-'    CareerRecords_Report Subroutine
+'    CareerRecords_Screen Subroutine
 '----------------------------------------
 'This routine formats career records for
 'output to the screen
@@ -397,45 +359,45 @@ Sub CareerRecords_Screen
         Locate 4, 1
         Color 3: Print "AT BATS";
         Color 15: Print Tab(23); Using "###"; carRecBatLdrVal!(0);
-		Print Tab(37); carRecBatName$(0);: Print Tab(56); carRecBatYear(0)
+        Print Tab(37); carRecBatName$(0);: Print Tab(56); carRecBatYear(0)
         Color 3: Print "RUNS SCORED";
         Color 15: Print Tab(23); Using "###"; carRecBatLdrVal!(1);
-		Print Tab(37); carRecBatName$(1);: Print Tab(56); carRecBatYear(1)
+        Print Tab(37); carRecBatName$(1);: Print Tab(56); carRecBatYear(1)
         Color 3: Print "HITS";
         Color 15: Print Tab(23); Using "###"; carRecBatLdrVal!(2);
-		Print Tab(37); carRecBatName$(2);: Print Tab(56); carRecBatYear(2)
+        Print Tab(37); carRecBatName$(2);: Print Tab(56); carRecBatYear(2)
         Color 3: Print "DOUBLES";
         Color 15: Print Tab(23); Using "###"; carRecBatLdrVal!(3);
-		Print Tab(37); carRecBatName$(3);: Print Tab(56); carRecBatYear(3)
+        Print Tab(37); carRecBatName$(3);: Print Tab(56); carRecBatYear(3)
         Color 3: Print "TRIPLES";
         Color 15: Print Tab(23); Using "###"; carRecBatLdrVal!(4);
-		Print Tab(37); carRecBatName$(4);: Print Tab(56); carRecBatYear(4)
+        Print Tab(37); carRecBatName$(4);: Print Tab(56); carRecBatYear(4)
         Color 3: Print "HOME RUNS";
         Color 15: Print Tab(23); Using "###"; carRecBatLdrVal!(5);
-		Print Tab(37); carRecBatName$(5);: Print Tab(56); carRecBatYear(5)
+        Print Tab(37); carRecBatName$(5);: Print Tab(56); carRecBatYear(5)
         Color 3: Print "RUNS BATTED IN";
         Color 15: Print Tab(23); Using "###"; carRecBatLdrVal!(6);
-		Print Tab(37); carRecBatName$(6);: Print Tab(56); carRecBatYear(6)
+        Print Tab(37); carRecBatName$(6);: Print Tab(56); carRecBatYear(6)
         Color 3: Print "WALKS";
         Color 15: Print Tab(23); Using "###"; carRecBatLdrVal!(7);
-		Print Tab(37); carRecBatName$(7);: Print Tab(56); carRecBatYear(7)
+        Print Tab(37); carRecBatName$(7);: Print Tab(56); carRecBatYear(7)
         Color 3: Print "STRIKEOUTS";
         Color 15: Print Tab(23); Using "###"; carRecBatLdrVal!(8);
-		Print Tab(37); carRecBatName$(8);: Print Tab(56); carRecBatYear(8)
+        Print Tab(37); carRecBatName$(8);: Print Tab(56); carRecBatYear(8)
         Color 3: Print "STEALS";
         Color 15: Print Tab(23); Using "###"; carRecBatLdrVal!(9);
-		Print Tab(37); carRecBatName$(9);: Print Tab(56); carRecBatYear(9)
+        Print Tab(37); carRecBatName$(9);: Print Tab(56); carRecBatYear(9)
         Color 3: Print "CAUGHT STEALING";
         Color 15: Print Tab(23); Using "###"; carRecBatLdrVal!(10);
-		Print Tab(37); carRecBatName$(10);: Print Tab(56); carRecBatYear(10)
+        Print Tab(37); carRecBatName$(10);: Print Tab(56); carRecBatYear(10)
         Color 3: Print "ERRORS";
         Color 15: Print Tab(23); Using "###"; carRecBatLdrVal!(11);
-		Print Tab(37); carRecBatName$(11);: Print Tab(56); carRecBatYear(11)
+        Print Tab(37); carRecBatName$(11);: Print Tab(56); carRecBatYear(11)
         Color 3: Print "BATTING AVERAGE";: Color 15
 
         If carRecBatLdrVal!(12) > 0 Then
             Print Tab(22); Using ".###"; carRecBatLdrVal!(12);
-		Print Tab(37); carRecBatName$(12);: Print Tab(56); carRecBatYear(12)
+            Print Tab(37); carRecBatName$(12);: Print Tab(56); carRecBatYear(12)
         Else
             Print Tab(22); " ---"
         End If
@@ -443,7 +405,7 @@ Sub CareerRecords_Screen
         Color 3: Print "SLUGGING PCT.";: Color 15:
         If carRecBatLdrVal!(13) > 0 Then
             Print Tab(22); Using "#.###"; carRecBatLdrVal!(13);
-		Print Tab(37); carRecBatName$(13);: Print Tab(56); carRecBatYear(13)
+            Print Tab(37); carRecBatName$(13);: Print Tab(56); carRecBatYear(13)
         Else
             Print Tab(22); " ---"
         End If
@@ -451,20 +413,20 @@ Sub CareerRecords_Screen
         Color 3: Print "ON BASE PCT.";: Color 15:
         If carRecBatLdrVal!(13) > 0 Then
             Print Tab(22); Using "#.###"; carRecBatLdrVal!(14);
-		Print Tab(37); carRecBatName$(14);: Print Tab(56); carRecBatYear(14)
+            Print Tab(37); carRecBatName$(14);: Print Tab(56); carRecBatYear(14)
         Else
             Print Tab(22); " ---"
         End If
 
         Color 3: Print "WINS";
         Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(0);
-		Print Tab(37); carRecPitName$(0);: Print Tab(56); carRecPitYear(0)
+        Print Tab(37); carRecPitName$(0);: Print Tab(56); carRecPitYear(0)
         Color 3: Print "LOSSES";
         Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(1);
-		Print Tab(37); carRecPitName$(1);: Print Tab(56); carRecPitYear(1)
+        Print Tab(37); carRecPitName$(1);: Print Tab(56); carRecPitYear(1)
         Color 3: Print "SAVES";
         Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(2);
-		Print Tab(37); carRecPitName$(2);: Print Tab(56); carRecPitYear(2)
+        Print Tab(37); carRecPitName$(2);: Print Tab(56); carRecPitYear(2)
         Color 3: Print "INNINGS PITCHED";
         Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(3);:
 
@@ -473,23 +435,23 @@ Sub CareerRecords_Screen
         Print Tab(37); carRecPitName$(3);: Print Tab(56); carRecPitYear(3)
         Color 3: Print "HITS ALLOWED";
         Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(4);
-		Print Tab(37); carRecPitName$(4);: Print Tab(56); carRecPitYear(4)
+        Print Tab(37); carRecPitName$(4);: Print Tab(56); carRecPitYear(4)
         Color 3: Print "WALKS";
         Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(5);
-		Print Tab(37); carRecPitName$(5);: Print Tab(56); carRecPitYear(5)
+        Print Tab(37); carRecPitName$(5);: Print Tab(56); carRecPitYear(5)
         Color 3: Print "STRIKOUTS";
         Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(6);
-		Print Tab(37); carRecPitName$(6);: Print Tab(56); carRecPitYear(6)
+        Print Tab(37); carRecPitName$(6);: Print Tab(56); carRecPitYear(6)
 
         Color 3: Print "EARNED RUN AVERAGE";: Color 15
         If carRecPitLdrVal!(7) > 0 Then
             Print Tab(22); Using "##.##"; carRecPitLdrVal!(7);
-		Print Tab(37); carRecPitName$(7);: Print Tab(56); carRecPitYear(7)
+            Print Tab(37); carRecPitName$(7);: Print Tab(56); carRecPitYear(7)
         Else
             Print Tab(22); " ---"
         End If
 
-        Color 15
+        Color 14
         Locate LAST_ROW - 1, 28: Print "HIT ANY KEY TO CONTINUE";
         I$ = GetKeyPress$
 
@@ -502,25 +464,25 @@ Sub CareerRecords_Screen
 
         Color 3: Print "GAMES";
         Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(8);
-		Print Tab(37); carRecPitName$(8);: Print Tab(56); carRecPitYear(8)
+        Print Tab(37); carRecPitName$(8);: Print Tab(56); carRecPitYear(8)
         Color 3: Print "COMPLETE GAMES";
         Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(9);
-		Print Tab(37); carRecPitName$(9);: Print Tab(56); carRecPitYear(9)
+        Print Tab(37); carRecPitName$(9);: Print Tab(56); carRecPitYear(9)
         Color 3: Print "RUNS ALLOWED";
         Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(10);
-		Print Tab(37); carRecPitName$(10);: Print Tab(56); carRecPitYear(10)
+        Print Tab(37); carRecPitName$(10);: Print Tab(56); carRecPitYear(10)
         Color 3: Print "EARNED RUNS ALLOWED";
         Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(11);
-		Print Tab(37); carRecPitName$(11);: Print Tab(56); carRecPitYear(11)
+        Print Tab(37); carRecPitName$(11);: Print Tab(56); carRecPitYear(11)
         Color 3: Print "SHUTOUTS";
         Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(12);
-		Print Tab(37); carRecPitName$(12);: Print Tab(56); carRecPitYear(12)
+        Print Tab(37); carRecPitName$(12);: Print Tab(56); carRecPitYear(12)
         Color 3: Print "HOME RUNS ALLOWED";
         Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(13);
-		Print Tab(37); carRecPitName$(13);: Print Tab(56); carRecPitYear(13)
+        Print Tab(37); carRecPitName$(13);: Print Tab(56); carRecPitYear(13)
         Color 3: Print "DOUBLE PLAYS";
         Color 15: Print Tab(23); Using "###"; carRecPitLdrVal!(14);
-		Print Tab(37); carRecPitName$(14);: Print Tab(56); carRecPitYear(14)
+        Print Tab(37); carRecPitName$(14);: Print Tab(56); carRecPitYear(14)
 
         Do
             Color 14
@@ -541,7 +503,7 @@ End Sub
 'output to either a file or printer, as
 'specified by the user. All operations
 'involve creating a file first, that can
-'then be looped through if sending to 
+'then be looped through if sending to
 'printer
 Sub CareerRecords_Report (printDest, destFile$)
 
@@ -555,7 +517,7 @@ Sub CareerRecords_Report (printDest, destFile$)
 
     Open destFile$ For Output As #1
 
-    Print #1, 
+    Print #1,
     Print #1, "CATEGORY           RECORD           PLAYER              YEAR"
     Print #1,
     Print #1, "AT BATS";
@@ -651,7 +613,7 @@ Sub CareerRecords_Report (printDest, destFile$)
     Print #1, "INNINGS PITCHED";
     Print #1, Tab(23); Using "###"; carRecPitLdrVal!(3);:
 
-    If carRecPitLdrVal!(3) - (Int(carRecPitLdrVal!(3) / 3) * 3) > 0 Then 
+    If carRecPitLdrVal!(3) - (Int(carRecPitLdrVal!(3) / 3) * 3) > 0 Then
         Print #1, ".";
         Print #1, Using "#"; carRecPitLdrVal!(3) - (Int(carRecPitLdrVal!(3) / 3) * 3);:
     End If
@@ -731,10 +693,10 @@ End Sub
 
 
 '----------------------------------------
-'       MergeCareerFiles Subroutine
+'      MergeCareerFiles Subroutine
 '----------------------------------------
 'This routine assists thet user with the
-'addition of career stats from any extra 
+'addition of career stats from any extra
 'season years that have been compiled.
 Sub MergeCareerFiles ()
 
@@ -751,33 +713,33 @@ Sub MergeCareerFiles ()
         Color 15
         Locate 8, 1
 
-        Print "THIS OPTION SHOULD ONLY BE USED WHEN ADDING YEARS TO AN EXISTING STAT"
-        Print "FILE. IF YOU ARE CREATING A NEW CAREER FILE, USE THE CREATE OPTION."
+        Print "THIS OPTION SHOULD ONLY BE USED WHEN ADDING YEARS TO AN EXISTING FILE"
+        Print "IF YOU ARE CREATING A NEW CAREER FILE, USE THE CREATE OPTION."
         Print
-        Print "IF YOU ARE ADDING AN ADDITIONAL CAREER YEAR, MAKE SURE THAT ANY UNUSED PLAYER"
-        Print "SLOTS (XXX, END, ETC.) ARE AT THE END OF THE SEASON STAT LIST BEFORE YOU MERGE."
+        Print "IF YOU ARE ADDING AN ADDITIONAL CAREER YEAR, MAKE SURE ANY UNUSED PLAYER SLOTS"
+        Print "(XXX, END, ETC.) ARE AT THE END OF THE SEASON STAT LIST BEFORE YOU MERGE."
         Print
-        Print "ALSO MAKE SURE THAT THE PLAYERS NAMES IN THE FILE YOU ARE ADDING, MATCH"
-        Print "THE EXACT SPELLING OF THE NAME OF THE SAME PLAYER IN THE CAREER FILE FOR THE"
-        Print "PLAYERS THAT HAD PLAYED IN PREVIOUS YEARS.  EXAMPLE - IF BILLY WILLIAMS IS"
-        Print "LISTED AS 'WILLIAMS' IN THE CAREER FILE AND THE SEASON STATS HAD HIM AS"
-        Print "'B.WILLIAMS', HE SHOULD BE CHANGED TO 'WILLIAMS' IN THE SEASON FILE BEFORE"
-        Print "MERGING, OR YOU COULD CHANGE HIM TO 'B.WILLIAMS' IN THE CAREER FILE"
+        Print "ALSO, ENSURE THAT PLAYER NAMES IN THE FILE YOU ARE ADDING MATCH, EXACTLY,"
+        Print "THE NAME OF THE SAME PLAYER IN THE CAREER FILE FOR PREVIOUS YEARS."
+        Print "EXAMPLE - IF BILLY WILLIAMS IS LISTED AS 'WILLIAMS' IN THE CAREER FILE,"
+        Print "AND THE SEASON STATS HAD HIM AS 'B.WILLIAMS', HE SHOULD BE CHANGED TO"
+        Print "'WILLIAMS' IN THE SEASON FILE BEFORE MERGING"
         Print
         Print
 
-        Color 12: Locate , 25
+        Color 12
+        Locate , 25
         Print "DO YOU WISH TO CONTINUE? (Y/N)"
 
         I$ = GetKeyPress$
 
-    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N" Or I$ = Chr$(27)
+    Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y" Or I$ = Chr$(27)
 
     If UCase$(I$) = "Y" Then
 
-        careerFile$ = ChooseFile$(diskPaths$(1) + "*.CAR", "CAREER", ExitCode%)
+        careerFile$ = _OpenFileDialog$("Choose Career file", diskPaths$(1), "*.CAR", "Career Career files")
 
-        If ExitCode% <> 27 And ExitCode% <> 0 Then
+        If careerFile$ <> "" Then
 
             teamNbr = 0
             Call ChooseTeam(YN$, NTMS, teamNbr, team$)
@@ -799,9 +761,9 @@ Sub MergeCareerFiles ()
 
             End If
 
-        End If
+        End If 'Done checking for ESC
 
-    End If
+    End If 'Done confirming user choice
 
 End Sub
 
@@ -811,10 +773,10 @@ End Sub
 '----------------------------------------
 'This routine actually prompts the user
 'for parameters for the team / year to
-'be updated. It then loads the existing 
-'career stats, adds the team's stats to 
-'them, then overwrites the career file 
-'with the new values. 
+'be updated. It then loads the existing
+'career stats, adds the team's stats to
+'them, then overwrites the career file
+'with the new values.
 Sub MergeAddYear (selectedFile$, statFile$)
 
     Color 15, 0
@@ -829,15 +791,15 @@ Sub MergeAddYear (selectedFile$, statFile$)
     If UCase$(J$) = "N" Then
 
         Do
-            Locate , 5
+            Locate 11, 18
             Print "WOULD YOU LIKE TO POST CAREER RECORDS? (Y/N)"
             K$ = GetKeyPress$
             finalUpdate$ = UCase$(K$)
         Loop Until finalUpdate$ = "Y" Or finalUpdate$ = "N" Or K$ = Chr$(27)
 
-        If finalUpdate$ = "Y" Then 
-            doPostLeaders = 1 
-        Else 
+        If finalUpdate$ = "Y" Then
+            doPostLeaders = 1
+        Else
             doPostLeaders = 0
         End If
 
@@ -854,8 +816,8 @@ End Sub
 'This routine loads the existing career
 'stats, adds the team's stats to them,
 'then overwrites the career file with the
-'new values. 
-Sub AddCareerYear (targetYear, finalUpdate, careerFile$, statFile$)
+'new values.
+Sub AddCareerYear (targetYear, doPostLeaders, careerFile$, statFile$)
 
     Shared NB, NP
 
@@ -869,12 +831,12 @@ Sub AddCareerYear (targetYear, finalUpdate, careerFile$, statFile$)
 
     NB = -1
 
-    Call LoadCareerFile (careerFile$)
+    Call LoadCareerFile(careerFile$)
 
-    Locate 20, 5
+    Locate 20, 21
     Print "LOADING STATS FILE . . . . PLEASE WAIT"
 
-    TMR1% = 3 + (23*2) + (22*2) + (23*22) + (22*42)
+    TMR1% = 3 + (23 * 2) + (22 * 2) + (23 * 22) + (22 * 42)
 
     Open diskPaths$(1) + statFile$ For Input As #1
 
@@ -885,7 +847,9 @@ Sub AddCareerYear (targetYear, finalUpdate, careerFile$, statFile$)
     For I = 0 To 22:
         Input #1, BR$(I)
         Input #1, careerB1(I)
-        Color 9: Locate 21, 35
+
+        Color 9
+        Locate 21, 35
         TMR1% = TMR1% - 1
         Print Using "####"; TMR1%
     Next I
@@ -893,7 +857,9 @@ Sub AddCareerYear (targetYear, finalUpdate, careerFile$, statFile$)
     For I = 0 To 21:
         Input #1, PR$(I)
         Input #1, careerP1(I)
-        Color 9: Locate 21, 35
+
+        Color 9
+        Locate 21, 35
         TMR1% = TMR1% - 1
         Print Using "####"; TMR1%
     Next I
@@ -901,8 +867,9 @@ Sub AddCareerYear (targetYear, finalUpdate, careerFile$, statFile$)
     For I = 0 To 22:
         For I1 = 0 To 21:
             Input #1, careerB0(I, I1)
-            Locate 21, 35
+
             Color 9
+            Locate 21, 35
             TMR1% = TMR1% - 1: Print Using "####"; TMR1%
         Next I1
     Next I
@@ -910,7 +877,9 @@ Sub AddCareerYear (targetYear, finalUpdate, careerFile$, statFile$)
     For I = 0 To 21:
         For I1 = 0 To 41:
             Input #1, careerP0(I, I1)
-            Color 9: Locate 21, 35
+
+            Color 9
+            Locate 21, 35
             TMR1% = TMR1% - 1
             Print Using "####"; TMR1%
         Next I1
@@ -928,72 +897,85 @@ Sub AddCareerYear (targetYear, finalUpdate, careerFile$, statFile$)
 
     Close #1
 
+    'Batters
     For I = 0 To 22
 
         RR = 0
         CHK = 0
-        doneLoop% = 0
+        matchFound = 0
 
         For J = 0 To 99
 
             If UCase$(BR$(I)) = UCase$(careerBatters$(J)) Then
 
+                CHK = 0
+
+                'Find next stat year to save
                 For W = 1 To MAX_CAREER_YEARS
                     If carRecBatStats(W, J, 17) = targetYear Then
                         CHK = CHK + 1
                     End If
                 Next W
 
-                For Z = 1 to MAX_CAREER_YEARS
-                    N = N + carRecBatStats(Z, J, 16)
-                Next Z 
+                If CHK > 0 Then
 
-                If CHK = 0 Then
+                    N = 0
+
+                    'Look at number of years from previous
+                    For Z = 1 To MAX_CAREER_YEARS
+                        N = N + carRecBatStats(Z, J, 16)
+                    Next Z
+
+                Else
+
+                    N = 0
+                    For Z = 1 To MAX_CAREER_YEARS
+                        N = N + carRecBatStats(Z, J, 16)
+                    Next Z
                     N = N + 1
+
                 End If
 
-                For K = 0 To 15: 
+                For K = 0 To 15:
                     carRecBatStats(N, J, K) = careerB0(I, K)
                 Next K
 
                 carRecBatStats(N, J, 16) = 1
                 carRecBatStats(N, J, 17) = targetYear
 
+                matchFound = 1
+                Exit For
+
             Else
 
-                doneLoop% = 1
+                RR = RR + 1
+
+                If RR = 100 Then
+
+                    If BR$(I) <> "END" And BR$(I) <> "XXX" And BR$(I) <> "" Then
+
+                        NB = NB + 1
+                        careerBatters$(NB) = BR$(I)
+                        N = 1
+
+                        For K = 0 To 15:
+                            carRecBatStats(N, NB, K) = careerB0(I, K)
+                        Next
+
+                        carRecBatStats(N, NB, 16) = 1
+                        carRecBatStats(N, NB, 17) = targetYear
+
+                    End If
+
+                End If
 
             End If
 
-            If doneLoop% = 1 Then Exit For
-
         Next J
-
-        If doneLoop% = 1 Then Exit For
 
     Next I
 
-    RR = RR + 1
-
-    If RR = 100 Then
-    
-        If BR$(I) <> "END" And BR$(I) <> "XXX" And BR$(I) <> "" Then
-
-            NB = NB + 1
-            careerBatters$(NB) = BR$(I)
-            N = 1
-
-            For K = 0 To 15:
-                carRecBatStats(N, NB, K) = careerB0(I, K)
-            Next
-
-            carRecBatStats(N, NB, 16) = 1
-            carRecBatStats(N, NB, 17) = targetYear
-
-        End If
-
-    End If
-
+    'Pitchers
     For I = 0 To 21
 
         RRP = 0
@@ -1003,17 +985,27 @@ Sub AddCareerYear (targetYear, finalUpdate, careerFile$, statFile$)
 
             If UCase$(PR$(I)) = UCase$(careerPitchers$(J)) Then
 
+                CHK = 0
+
                 For W = 1 To MAX_CAREER_YEARS
                     If carRecPitStats(W, J, 16) = targetYear Then
                         CHK = CHK + 1
                     End If
                 Next W
 
-                For Z = 1 to MAX_CAREER_YEARS
-                    N = N + carRecPitStats(Z, J, 15)
-                Next Z 
+                If CHK > 0 Then
+                    N = 0
 
-                If CHK = 0 Then
+                    For Z = 1 To MAX_CAREER_YEARS
+                        N = N + carRecPitStats(Z, J, 15)
+                    Next Z
+                Else
+                    N = 0
+
+                    For Z = 1 To MAX_CAREER_YEARS
+                        N = N + carRecPitStats(Z, J, 15)
+                    Next Z
+
                     N = N + 1
                 End If
 
@@ -1024,7 +1016,8 @@ Sub AddCareerYear (targetYear, finalUpdate, careerFile$, statFile$)
                 carRecPitStats(N, J, 15) = 1
                 carRecPitStats(N, J, 16) = targetYear
 
-                Exit For 'GoTo 1530
+                matchFound = 1
+                Exit For
 
             Else
 
@@ -1053,9 +1046,12 @@ Sub AddCareerYear (targetYear, finalUpdate, careerFile$, statFile$)
 
     Next I
 
-    If finalUpdate = 1 Then Call UpdateCareerRecords(careerFile$)
+    Locate 20, 21
+    Print Space$(38)
 
-    Call SaveCareerFile (careerFile$)
+    If doPostLeaders = 1 Then Call UpdateCareerRecords(careerFile$)
+
+    Call SaveCareerFile(careerFile$)
 
 End Sub
 
@@ -1068,63 +1064,77 @@ End Sub
 Sub LoadCareerFile (loadFile$)
 
     Shared NB, NP
-    
+
     Shared careerBatters$(), careerPitchers$()
 
     Shared carRecBatStats(), carRecPitStats()
 
+    Dim TMR As Long
+
     Color 15, 0
     Cls
 
-    Locate 12, 10: Print "LOADING CAREER FILE . . . . PLEASE WAIT"
+    Locate 12, 21
+    Print "LOADING CAREER FILE . . . . PLEASE WAIT"
 
-    TMR = 100 + 80 + (MAX_CAREER_YEARS*100) + (MAX_CAREER_YEARS*80)
+    TMR = 100 + 80 + (MAX_CAREER_YEARS * 100 * 18) + (MAX_CAREER_YEARS * 80 * 17)
 
-    Open diskPaths$(1) + loadFile$ + ".CAR" For Input As #2
+    Open loadFile$ For Input As #1
 
-    Input #2, NB, NP
+    Input #1, NB, NP
 
-    For I = 0 To 99: 
-        Input #2, careerBatters$(I)
+    For I = 0 To 99:
+        Input #1, careerBatters$(I)
+
+        Color 5
+        Locate 21, 38
+        TMR = TMR - 1: Print Using "####"; TMR
     Next
 
-    For I = 0 To 79: 
-        Input #2, careerPitchers$(I)
+    For I = 0 To 79:
+        Input #1, careerPitchers$(I)
+
+        Color 5
+        Locate 21, 38
+        TMR = TMR - 1: Print Using "####"; TMR
     Next
 
-    For J = 1 To MAX_CAREER_YEARS: 
+    For J = 1 To MAX_CAREER_YEARS:
 
-        For I = 0 To 99: 
+        For I = 0 To 99:
 
-            For I1 = 0 To 17: 
-                Input #2, carRecBatStats(J, I, I1)
+            For I1 = 0 To 17:
+                Input #1, carRecBatStats(J, I, I1)
+
+                Color 5
+                Locate 21, 38
+                TMR = TMR - 1: Print Using "####"; TMR
             Next I1
-
-            Color 3
-            Locate 21, 38
-            TMR = TMR - 1: Print Using "####"; TMR
 
         Next I
 
     Next J
 
-    For J = 1 To MAX_CAREER_YEARS: 
+    For J = 1 To MAX_CAREER_YEARS:
 
-        For I = 0 To 79: 
+        For I = 0 To 79:
 
-            For I1 = 0 To 16: 
-                Input #2, carRecPitStats(J, I, I1)
+            For I1 = 0 To 16:
+                Input #1, carRecPitStats(J, I, I1)
+
+                Color 5
+                Locate 21, 38
+                TMR = TMR - 1: Print Using "####"; TMR
             Next I1
-
-            Color 3
-            Locate 21, 38
-            TMR = TMR - 1: Print Using "####"; TMR
 
         Next I
 
     Next J
 
-    Close #2
+    Close #1
+
+    Locate 12, 21
+    Print Space$(39)
 
 End Sub
 
@@ -1142,30 +1152,34 @@ Sub SaveCareerFile (saveFile$)
 
     Shared carRecBatStats(), carRecPitStats()
 
+    Dim TMR As Long
+
     Cls
     Color 15
 
-    Locate 12, 6: Print "SAVING UPDATED CAREER FILE . . . PLEASE WAIT"
+    Locate 12, 18
+    Print "SAVING UPDATED CAREER FILE . . . PLEASE WAIT"
 
-    TMR = 100 + 80 + (MAX_CAREER_YEARS*100) + (MAX_CAREER_YEARS*80)
+    TMR = 100 + 80 + (MAX_CAREER_YEARS * 100 * 18) + (MAX_CAREER_YEARS * 80 * 17)
 
-    Open diskPaths$(1) + saveFile$ + ".CAR" For Output As #3
+    Open saveFile$ For Output As #3
 
     Write #3, NB, NP
 
-    For I = 0 To 99: 
+    For I = 0 To 99:
         Write #3, careerBatters$(I)
     Next
 
-    For I = 0 To 79: 
+    For I = 0 To 79:
         Write #3, careerPitchers$(I)
     Next
 
-    For J = 1 To MAX_CAREER_YEARS: 
+    '# Years
+    For J = 1 To MAX_CAREER_YEARS:
 
-        For I = 0 To 99: 
+        For I = 0 To 99:
 
-            For I1 = 0 To 17: 
+            For I1 = 0 To 17:
                 Write #3, carRecBatStats(J, I, I1)
             Next I1
 
@@ -1179,9 +1193,9 @@ Sub SaveCareerFile (saveFile$)
 
     For J = 1 To MAX_CAREER_YEARS:
 
-        For I = 0 To 79: 
+        For I = 0 To 79:
 
-            For I1 = 0 To 16: 
+            For I1 = 0 To 16:
                 Write #3, carRecPitStats(J, I, I1)
             Next I1
 
@@ -1195,17 +1209,46 @@ Sub SaveCareerFile (saveFile$)
 
     Close #3
 
+    Locate 12, 18
+    Print Space$(44)
+
+End Sub
+
+
+'----------------------------------------
+'      LoadCareerLeaders Subroutine
+'----------------------------------------
+'This routine loads the existing career
+'leaders file data into arrays.
+Sub LoadCareerLeaders (leaderFile$)
+
+    Shared carRecBatYear(), carRecPitYear()
+    Shared carRecBatName$(), carRecPitName$()
+    Shared carRecBatLdrVal!(), carRecPitLdrVal!()
+
+    Open leaderFile$ For Input As #1
+
+    For I = 0 To 14:
+        Input #1, carRecBatYear(I), carRecBatName$(I), carRecBatLdrVal!(I)
+    Next
+
+    For I = 0 To 14:
+        Input #1, carRecPitYear(I), carRecPitName$(I), carRecPitLdrVal!(I)
+    Next
+
+    Close #1
+
 End Sub
 
 
 '----------------------------------------
 '     UpdateCareerRecords Subroutine
 '----------------------------------------
-'This routine reads in any existing career 
+'This routine reads in any existing career
 'leader files (.CLD), adds the new stats,
 'and then saves the changes back to the
 'career leader file (.CLD)
-Sub UpdateCareerRecords (recordFile$)
+Sub UpdateCareerRecords (careerRecordFile$)
 
     Dim AVG!, SLG!, OBP!, EV!
 
@@ -1217,20 +1260,8 @@ Sub UpdateCareerRecords (recordFile$)
 
     Shared carRecBatStats(), carRecPitStats()
 
-    If _FileExists(diskPaths$(2) + recordFile$ + ".CLD") Then
-
-        Open diskPaths$(2) + recordFile$ + ".CLD" For Input As #1
-
-        For I = 0 To 14:
-            Input #1, carRecBatYear(I), carRecBatName$(I), carRecBatLdrVal!(I)
-        Next
-
-        For I = 0 To 14:
-            Input #1, carRecPitYear(I), carRecPitName$(I), carRecPitLdrVal!(I)
-        Next
-
-        Close #1
-
+    If _FileExists(careerRecordFile$) Then
+        Call LoadCareerLeaders(careerRecordFile$)
     End If
 
     'Batters
@@ -1327,7 +1358,7 @@ Sub UpdateCareerRecords (recordFile$)
                     End If
 
                     If carRecBatStats(J, I, 0) + carRecBatStats(J, I, 7) > 501 Then
-                        
+
                         SLG! = (carRecBatStats(J, I, 1) + carRecBatStats(J, I, 4) + carRecBatStats(J, I, 5) * 2 + carRecBatStats(J, I, 6) * 3) / carRecBatStats(J, I, 0)
 
                         If SLG! > carRecBatLdrVal!(13) Then
@@ -1469,7 +1500,7 @@ Sub UpdateCareerRecords (recordFile$)
 
     Next I
 
-    Open diskPaths$(2) + recordFile$ + ".CLD" For Output As #1
+    Open careerRecordFile$ For Output As #1
 
     For I = 0 To 14:
         Write #1, carRecBatYear(I), carRecBatName$(I), carRecBatLdrVal!(I)

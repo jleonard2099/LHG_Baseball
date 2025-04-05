@@ -16,9 +16,9 @@ Sub CARLDR ()
         Call TITLE
 
         ReDim menuChoices$(1 To 3)
-        menuChoices$(1) = "UPDATE CAREER LEADERS      "
-        menuChoices$(2) = "VIEW / PRINT CAREER LEADERS"
-        menuChoices$(3) = "RETURN TO UTILITIES MENU   "
+        menuChoices$(1) = "UPDATE CAREER LEADERS   "
+        menuChoices$(2) = "REVIEW CAREER LEADERS   "
+        menuChoices$(3) = "RETURN TO UTILITIES MENU"
         SELECTION% = 1
         Count% = 3
         Start% = 1
@@ -105,7 +105,7 @@ Sub UpdateCareerLeaders ()
 
         Loop Until UCase$(I$) = "N"
 
-        Call LoadCareerFile(careerFile$)
+        Call LoadCareerFile(diskPaths$(1) + careerFile$ + ".CAR")
 
         Color 14
 

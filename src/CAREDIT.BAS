@@ -12,11 +12,11 @@ Sub CAREDIT ()
     Color 15, 0
     Cls
 
-    careerFile$ = ChooseFile$ (diskPaths$(1) + "*.CAR", "CAREER", ExitCode%)
+    careerFile$ = ChooseFile$(diskPaths$(1) + "*.CAR", "CAREER", ExitCode%)
 
     If ExitCode% <> 27 And ExitCode% <> 0 Then
 
-		Call LoadCareerFile (careerFile$)
+		Call LoadCareerFile (diskPaths$(1) + careerFile$ + ".CAR")
 
         Do
 
@@ -49,7 +49,7 @@ Sub CAREDIT ()
                     Call EditPitchers (careerFile$)
 
                 Case "U":
-                    Call SaveCareerFile (careerFile$)
+                    Call SaveCareerFile (diskPaths$(1) + careerFile$ + ".CAR")
 
             End Select
 

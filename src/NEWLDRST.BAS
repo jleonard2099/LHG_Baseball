@@ -38,9 +38,9 @@ Sub ExpandedStandings ()
 
         Call TITLE
 
-        menuChoices$(1) = "UPDATE EXPANDED LEAGUE STANDINGS      "
-        menuChoices$(2) = "VIEW / PRINT EXPANDED LEAGUE STANDINGS"
-        menuChoices$(3) = "RETURN TO MAIN MENU                   "
+        menuChoices$(1) = "UPDATE EXPANDED LEAGUE STANDINGS"
+        menuChoices$(2) = "REVIEW EXPANDED LEAGUE STANDINGS"
+        menuChoices$(3) = "RETURN TO MAIN MENU             "
         SELECTION% = 1
         Count% = 3
         Start% = 1
