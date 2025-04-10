@@ -2940,7 +2940,7 @@ Sub PINCHRUNNER (MS%, A1, baseRunners%, I2, P, flagPinchRunner%, nbrBalls, nbrSt
 
             gameD0%(P) = gameD0%(P) + 1
             X0%(P, 0, gameD0%(P)) = playerNum%(P, I2)
-            X0%(P, 1, gameD0%(P)) = 11
+            X0%(P, 1, gameD0%(P)) = 11      ' 11 = Pinch Runner
             X0%(P, 2, gameD0%(P)) = (I2 * 10) + (gameD0%(P) - 9)
 
             W5 = P
@@ -8680,7 +8680,7 @@ Sub BOX2FILE (printChoice, boxName$)
 
     Next IG
 
-    Print #2, "   H  R E"
+    Print #2, "   R  H E"
 
     If INNING% < 9 Then
 

@@ -4759,7 +4759,7 @@ Sub SOURCE ()
             gameD0%(P) = gameD0%(P) + 1
             Print #11, Using "_*_*_* LPhForPitcher: PH: ##  PR: ##  gameD0: ##"; flagPinchHitter, flagPinchRunner, gameD0%(P)
             X0%(P, 0, gameD0%(P)) = foundPH%
-            X0%(P, 1, gameD0%(P)) = 10
+            X0%(P, 1, gameD0%(P)) = 10       ' 10 = pinch hitter
             X0%(P, 2, gameD0%(P)) = 81 + gameD0%(P)
             batRating(P, foundPH%, SS_B_Avail) = 1
             playerNum%(P, currBatter!(P)) = foundPH%
