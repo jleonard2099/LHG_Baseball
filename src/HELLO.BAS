@@ -1108,7 +1108,7 @@ Sub LOADER
             'Locate 23, 2: Color 14
             'Print "NOTE:: "
             'Color 15
-            
+
             'Locate , 2: Print "* NOTE ABOUT RULES GOES HERE"
 
             Do
@@ -2994,7 +2994,7 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
                     BP(9) = 1
                     Exit For
                 Else
-                    
+
                     J = J - 1
                     currPos = 0
 
@@ -5933,6 +5933,7 @@ Sub SOURCE ()
 
     '----- NOODLE -----
 
+    GoTo 13684
 
     13530 '
     ' *** HOME RUN S2%=10 ***
@@ -11026,7 +11027,7 @@ Sub GETOUTFIELDER (currFielder, P, I1, D)
     Call GETFIELDER(currFielder, P, I1, D)
 
     Call Rolld100(RN0)
-    
+
     If RN0 <= 30 Then
         currFielder = 8
     Else
@@ -11832,7 +11833,7 @@ Sub PICKEDOFF (D, i)
     Call DELIVERY(D)
 
     Call Rolld100(RN)
-    
+
     Select Case RN
         Case 1 To 33: pbpString$ = "NO, " + pitchers$(D, P1(D)) + " throws to " + baseName$(i - 1)
         Case 34 To 66: pbpString$ = "quick move to " + baseName$(i - 1)
@@ -13084,7 +13085,7 @@ Sub RecordRun (sah%, i, D, F%, PQ, S2%, currFielder, INFPOS%)
             A5%(2) = 0
             A5%(3) = 0
         End If
-        
+
 
     End If
 
@@ -17920,18 +17921,18 @@ Sub COMPILESTATFILES (teamIdx)
         Print #1, batters$(teamIdx, I)
         Print #1, gameB(teamIdx, I)
     Next I
-    
+
     For I = 0 To 21:
         Print #1, pitchers$(teamIdx, I)
         Print #1, gameP(teamIdx, I)
     Next I
-    
+
     For I = 0 To 22:
         For I1 = 0 To 21:
             Print #1, statB0(I, I1)
         Next I1
     Next I
-    
+
     For I = 0 To 21:
         For I1 = 0 To 41:
             Print #1, statP0(I, I1)
@@ -17944,7 +17945,7 @@ Sub COMPILESTATFILES (teamIdx)
     For I = 0 To 21:
         Print #1, statT0!(I)
     Next I
-    
+
     For I = 0 To 22:
         Print #1, statT1!(I)
     Next I
@@ -18014,7 +18015,7 @@ Sub COMPILESTATFILES (teamIdx)
     Else
         locIndicator$(numberGames) = "H"
     End If
-    
+
     teamScore(numberGames) = gameScore(teamIdx, 0)
     oppName$(numberGames) = gameTeams$(1 - teamIdx)
     oppScore(numberGames) = gameScore(1 - teamIdx, 0)
@@ -18392,7 +18393,7 @@ Sub BOX2FILE (printChoice, boxName$)
                     If gamePitStats(I, I2, 0) - (Int(gamePitStats(I, I2, 0) / 3) * 3) > 0 Then
                         Print #2, ".";: Print #2, Using "#"; gamePitStats(I, I2, 0) - (Int(gamePitStats(I, I2, 0) / 3) * 3);
                     End If
-                    
+
                     Print #2, Tab(34);
                     Print #2, Using "## ##  ## ## ##"; gamePitStats(I, I2, 1); gamePitStats(I, I2, 2); gamePitStats(I, I2, 3); gamePitStats(I, I2, 4); gamePitStats(I, I2, 5);
                     Print #2, "   ";
@@ -19755,13 +19756,13 @@ Sub ReadGameTeam (teamYear$, targetTeam$, teamIdx, gameIdx, dataOK)
                 pitchRating(gameIdx, X, X1 + 36) = 0
             Next
         Next
-        
+
         dataOK = 1
-        
+
     Else
-    
+
         dataOK = 0
-        
+
     End If
 
 End Sub
