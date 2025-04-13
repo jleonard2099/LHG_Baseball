@@ -24,7 +24,7 @@ Dim losePitcher$(MAX_SCHED_STATS), winPitcher$(MAX_SCHED_STATS)
 
 Dim statB(0 To 22), statB0(0 To 22, 0 To 41)
 Dim statP(0 To 21), statP0(0 To 21, 0 To 41)
-Dim Shared gameD0(0), gameD1(1)
+Dim Shared gameD0(1), gameD1(1)
 
 Dim statS0(0 To 22, 0 To 6)
 
