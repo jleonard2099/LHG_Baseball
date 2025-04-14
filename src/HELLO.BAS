@@ -2668,7 +2668,7 @@ Sub SelectStadium (useVGA)
                     HiLiteFGColor = 0: HiLiteBGColor = 7
                     Spacing% = 1
                     Row% = 5
-                    menuWidth% = Len(menuChoices$(1))
+                    menuWidth% = 38 'Inserting arbitrary value... menuChoices$() not available here!   Len(menuChoices$(1))
                     Column% = (80 - menuWidth% - 2) / 2
 
                     Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor, FileBGColor)
@@ -2705,6 +2705,9 @@ Sub SelectStadium (useVGA)
 
                         End If
 
+                    Else
+                        BO% = 1
+
                     End If
 
                 Loop Until UCase$(J$) = "Y" Or ExitCode% = 27 Or foundPark% = 1
@@ -2721,7 +2724,7 @@ Sub SelectStadium (useVGA)
         'So instead, let's switch to regular mode
         If Not _FileExists(".\parks\" + PARK$) Then useVGA = 0
 
-    Loop Until UCase$(I$) = "N" Or ExitCode% = 27
+    Loop Until BO% = 0 Or UCase$(I$) = "N" Or ExitCode% = 27
 
 End Sub
 
@@ -8062,19 +8065,28 @@ Sub SOURCE ()
 
             Else
 
-                If gameScore(P, 0) = 0 And pitchRating(D, P1(D), 5) > 0 And RN0 <= CInt(pitchRating(D, P1(D), 16) / pitchRating(D, P1(D), 5) * 100) + 10 Then
+                ' To avoid division by zero
+                pitAvg1 = _Iif( pitchRating(D, P1(D), 1) > 0, _
+                            CInt( pitchRating(D, P1(D), 16) / pitchRating(D, P1(D), 1) * 100 ), _
+                            0 )
+
+                pitAvg5 = _Iif( pitchRating(D, P1(D), 5) > 0, _
+                            CInt( pitchRating(D, P1(D), 16) / pitchRating(D, P1(D), 5) * 100 ), _
+                            0 )
+
+                If gameScore(P, 0) = 0 And pitchRating(D, P1(D), 5) > 0 And RN0 <= pitAvg5 + 10 Then
                     GoTo 18725
                 End If
 
-                If pitchRating(D, P1(D), 5) > 0 And RN0 <= CInt(pitchRating(D, P1(D), 16) / pitchRating(D, P1(D), 5) * 100) Then
+                If pitchRating(D, P1(D), 5) > 0 And RN0 <= pitAvg5 Then
                     GoTo 18725
                 End If
 
-                If pitchEraOpt > 0 And INNING% > 7 And gameScore(D, 0) > gameScore(P, 0) And pitchRating(D, P1(D), 1) > 0 And gamePitcher(D) = 1 And CInt(pitchRating(D, P1(D), 16) / pitchRating(D, P1(D), 1) * 100) <= 100 And RN0 <= CInt(pitchRating(D, P1(D), 16) / pitchRating(D, P1(D), 1) * 100) Then
+                If pitchEraOpt > 0 And INNING% > 7 And gameScore(D, 0) > gameScore(P, 0) And pitchRating(D, P1(D), 1) > 0 And gamePitcher(D) = 1 And pitAvg1 <= 100 And RN0 <= pitAvg1 Then
                     GoTo 18725
                 End If
 
-                If pitchEraOpt > 0 And INNING% > 7 And (gameScore(D, 0) >= gameScore(P, 0) Or gameScore(P, 0) - gameScore(D, 0) <= 2) And pitchRating(D, P1(D), 1) > 0 And gamePitcher(D) = 1 And CInt(pitchRating(D, P1(D), 16) / pitchRating(D, P1(D), 1) * 100) >= 100 Then
+                If pitchEraOpt > 0 And INNING% > 7 And (gameScore(D, 0) >= gameScore(P, 0) Or gameScore(P, 0) - gameScore(D, 0) <= 2) And pitchRating(D, P1(D), 1) > 0 And gamePitcher(D) = 1 And pitAvg1 >= 100 Then
                     GoTo 18725
                 End If
 
@@ -8496,7 +8508,22 @@ Sub SOURCE ()
         J% = 0
         GP% = 0
 
-        If (pitchEraOpt > 1 And INNING% < 4) Or (pitchEraOpt > 2 And INNING% < 7) Or (pitchEraOpt > 3 And INNING% < 9) Or (pitchEraOpt >= 8) Or (pitchEraOpt > 0 And INNING% > 7 And gameScore(P, 0) > gameScore(D, 0) And pitchRating(P, P1(P), 1) > 0 And gamePitcher(P) = 1 And CInt(pitchRating(P, P1(P), 16) / pitchRating(P, P1(P), 1) * 100) <= 100 And RN0 <= CInt(pitchRating(P, P1(P), 16) / pitchRating(P, P1(P), 1) * 100)) Or (pitchEraOpt > 0 And INNING% > 7 And (gameScore(P, 0) >= gameScore(D, 0) Or gameScore(D, 0) - gameScore(P, 0) <= 2) And pitchRating(P, P1(P), 1) > 0 And gamePitcher(P) = 1 And CInt(pitchRating(P, P1(P), 16) / pitchRating(P, P1(P), 1) * 100) >= 100) Then
+        ' To avoid division by zero
+        pitAvg = _Iif( pitchRating(P, P1(P), 1) > 0, _
+                    CInt( pitchRating(P, P1(P), 16) / pitchRating(P, P1(P), 1) * 100 ), _
+                    0 )
+
+        If desigHit = 1 Or _
+            (pitchEraOpt > 1 And INNING% < 4) Or _
+            (pitchEraOpt > 2 And INNING% < 7) Or _
+            (pitchEraOpt > 3 And INNING% < 9) Or _
+            (pitchEraOpt >= 8) Or _
+            ( pitchEraOpt > 0 And INNING% > 7 And gameScore(P, 0) > gameScore(D, 0) And _
+            pitchRating(P, P1(P), 1) > 0 And gamePitcher(P) = 1 And _
+            pitAvg <= 100 And RN0 <= pitAvg ) Or _
+            ( pitchEraOpt > 0 And INNING% > 7 And (gameScore(P, 0) >= gameScore(D, 0) Or _
+            gameScore(D, 0) - gameScore(P, 0) <= 2) And pitchRating(P, P1(P), 1) > 0 And _
+            gamePitcher(P) = 1 And pitAvg >= 100 ) Then
             skipLoop = 1
         End If
 
@@ -19380,7 +19407,7 @@ Sub EndOfGame ()
         If UCase$(I$) = "Y" Or (autoPlay = 1 And endAllGames <> 1) Then
             Cls
             Print "PLEASE WAIT ..."
-            Call LOADER
+            ' [bm] Removed infinitely recursive call, it eventually crashes silently (stack overflow?) Call LOADER
         End If
 
     End If
