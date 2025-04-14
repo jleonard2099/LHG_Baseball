@@ -1,3 +1,5 @@
+'$INCLUDE: 'Consts.bi'
+
 Declare Sub LOADER
 Declare Sub StartingLineup (P9)
 Declare Sub LineupPositions (teamIdx, posIdx)
