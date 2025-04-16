@@ -734,20 +734,19 @@ Sub ReadLeagueIndex (indexFile$)
 
     Open diskPaths$(2) + indexFile$ + ".TMI" For Input As #2
 
-    Input #3, leagueName$
-    Input #3, div1Name$
-    Input #3, div2Name$
-    Input #3, div3Name$
-    Input #3, div4Name$
+    Input #2, leagueName$
+    Input #2, div1Name$
+    Input #2, div2Name$
+    Input #2, div3Name$
+    Input #2, div4Name$
 
     For X = 1 To TEAMS_PER_LEAGUE
-        Input #3, memberName$(X)
-        Input #3, memberIdx(X)
-        Input #3, memberYear$(X)
+        Input #2, memberName$(X)
+        Input #2, memberIdx(X)
+        Input #2, memberYear$(X)
     Next
 
-    Close #3
-
+    Close #2
 
 End Sub
 

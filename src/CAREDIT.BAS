@@ -12,11 +12,12 @@ Sub CAREDIT ()
     Color 15, 0
     Cls
 
-    careerFile$ = ChooseFile$(diskPaths$(1) + "*.CAR", "CAREER", ExitCode%)
+    careerFile$ = _OpenFileDialog$("Choose Career Record file", diskPaths$(1), "*.CAR", "Career Record files")
+    'ChooseFile$(diskPaths$(1) + "*.CAR", "CAREER", ExitCode%)
 
     If ExitCode% <> 27 And ExitCode% <> 0 Then
 
-		Call LoadCareerFile (diskPaths$(1) + careerFile$ + ".CAR")
+		Call LoadCareerFile (careerFile$)
 
         Do
 
@@ -41,15 +42,15 @@ Sub CAREDIT ()
             Select Case UCase$(I$)
 
                 Case "B": 
-                    Call EditBatters (careerFile$)
+                    Call EditBatters (GetFileBaseName$(careerFile$))
 
                 Case "E", "X": '
 
                 Case "P": 
-                    Call EditPitchers (careerFile$)
+                    Call EditPitchers (GetFileBaseName$(careerFile$))
 
                 Case "U":
-                    Call SaveCareerFile (diskPaths$(1) + careerFile$ + ".CAR")
+                    Call SaveCareerFile (careerFile$)
 
             End Select
 
@@ -66,7 +67,7 @@ End Sub
 'batters to edit from the career stats,
 'then presents options for handling them
 'before deletions or edits are processed.
-Sub EditBatters (careerFile$)
+Sub EditBatters (careerName$)
 
     Shared careerBatters$()
 
@@ -75,7 +76,7 @@ Sub EditBatters (careerFile$)
     Do
 
         Cls
-        Color 12: Print careerFile$
+        Color 12: Print careerName$
 
         For I = 0 To 19
             Locate I + 2, 1
@@ -150,11 +151,11 @@ Sub EditBatters (careerFile$)
                                     Case "F"
                                         userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
                                         If userFile$ <> "" Then
-                                            Call PrintBatterStats (0, userFile$, careerFile$, B9)
+                                            Call PrintBatterStats (0, userFile$, careerName$, B9)
                                         End If
 
                                     Case "P"
-                                        Call PrintBatterStats (1, "REPORT", careerFile$, B9)
+                                        Call PrintBatterStats (1, "REPORT", careerName$, B9)
 
                                 End Select
                                 
@@ -216,7 +217,7 @@ End Sub
 'pitchers to edit from the career stats,
 'then presents options for handling them
 'before deletions or edits are processed.
-Sub EditPitchers (careerFile$)
+Sub EditPitchers (careerName$)
 
     Shared careerPitchers$()
 
@@ -224,7 +225,7 @@ Sub EditPitchers (careerFile$)
 
     Do
         Cls
-        Color 12: Print careerFile$
+        Color 12: Print careerName$
 
         For I = 0 To 19
             Color 11: Locate I + 2, 1
@@ -291,11 +292,11 @@ Sub EditPitchers (careerFile$)
                                     Case "F"
                                         userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
                                         If userFile$ <> "" Then
-                                            Call PrintPitcherStats(0, userFile$, careerFile$, B9)
+                                            Call PrintPitcherStats(0, userFile$, careerName$, B9)
                                         End If
 
                                     Case "P"
-                                        Call PrintPitcherStats(1, "REPORT", careerFile$, B9)
+                                        Call PrintPitcherStats(1, "REPORT", careerName$, B9)
 
                                 End Select
                                 
@@ -355,7 +356,7 @@ End Sub
 '----------------------------------------
 'This routine formats and prints career 
 'stats associated with the team's batters.
-Sub PrintBatterStats (printDest, destFile$, careerFile$, playerIdx)
+Sub PrintBatterStats (printDest, destFile$, careerName$, playerIdx)
 
     Dim I2!, I3!, I4!
     Shared carRecBatStats(), carRecPitStats()
@@ -368,7 +369,7 @@ Sub PrintBatterStats (printDest, destFile$, careerFile$, playerIdx)
 
     Open destFile$ For Output As #1
 
-    Print #1, careerFile$
+    Print #1, careerName$
     Print #1, "BATTER     YEAR      G      AB      R      H    2B    3B    HR    RBI     BB     SO     SB    CS     E     AVG     SLG      OB"
 
     For Z = 1 To MAX_CAREER_YEARS
@@ -559,7 +560,7 @@ End Sub
 '----------------------------------------
 'This routine formats and prints career 
 'stats associated with the team's pitchers.
-Sub PrintPitcherStats (printDest, destFile$, careerFile$, playerIdx)
+Sub PrintPitcherStats (printDest, destFile$, careerName$, playerIdx)
 
     Dim I2!, I3!, I4!
 
@@ -574,7 +575,7 @@ Sub PrintPitcherStats (printDest, destFile$, careerFile$, playerIdx)
 
     Open destFile$ For Output As #1
 
-    Print #1, careerFile$
+    Print #1, careerName$
 
     Print #1, "PITCHER    YEAR     W     L     S      IP        H     BB     SO     ERA     G    GS    CG    RUN     ER    SHO    HR    DP"
 

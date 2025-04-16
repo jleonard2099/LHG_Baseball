@@ -23,19 +23,13 @@ DefInt A-Z
 ' General purpose
 '$Include: 'KeyInput.bi'
 '$Include: 'QPProEqu.bi'
-'$Include: 'PadRight.bi'
+'$Include: 'StringManip.bi'
 '$Include: 'QBWRITE.bi'
 
 ' For Utils
 '$Include: 'BoxRoutines.bi'
 '$Include: 'FileTeamSelection.bi'
 '$Include: 'Variables.bi'
-Dim carRecBatYear(MAX_CAREER_YEARS), carRecBatStats(MAX_CAREER_YEARS, 100, 17)
-Dim carRecBatLdrVal!(15)
-
-Dim carRecPitYear(MAX_CAREER_YEARS), carRecPitStats(MAX_CAREER_YEARS, 80, 18)
-Dim carRecPitLdrVal!(15)
-
 '$Include: 'MainRoutines.bi'
 '$Include: 'TITLE.bi'
 
@@ -776,7 +770,7 @@ End Sub
 ' General purpose
 '$Include: 'KeyInput.bm'
 '$Include: 'QPProEqu.bm'
-'$Include: 'PadRight.bm'
+'$Include: 'StringManip.bm'
 '$Include: 'QBWRITE.bm'
 
 ' For Utils

@@ -152,7 +152,7 @@ Sub UpdateExpandedStandings (league$)
 
     Shared div1Name$, div2Name$, div3Name$, div4Name$
 
-    TMR = 40
+    TMR = TEAMS_PER_LEAGUE
 
     currRecord = 0
 

@@ -143,8 +143,8 @@ Sub MergeFirstYear ()
         Color 11, 0
         Cls
 
-        careerFile$ = _InputBox$("Career File", "Enter name for Career stats file")
-        'careerFile$ = _SAVEFILEDIALOG$("Save Career File", "", "*.CAR", "Career files")
+        'careerFile$ = _InputBox$("Career File", "Enter name for Career stats file")
+        careerFile$ = _SAVEFILEDIALOG$("Save Career File", "", "*.CAR", "Career files")
 
         teamNbr = 0
         Call ChooseTeam(YN$, NTMS, teamNbr, team$)
@@ -275,9 +275,11 @@ Sub MergeFirstYear ()
 
                     Next I
 
-                    If doPostLeaders = 1 Then Call UpdateCareerRecords(diskPaths$(2) + careerFile$ + ".CLD")
+                    If doPostLeaders = 1 Then 
+                        Call UpdateCareerRecords(diskPaths$(2) + GetFileBaseName$(careerFile$) + ".CLD")
+                    End If
 
-                    Call SaveCareerFile(diskPaths$(1) + careerFile$ + ".CAR")
+                    Call SaveCareerFile (careerFile$)
 
                 End If 'Done checking for stat file
 
@@ -300,7 +302,7 @@ End Sub
 'formats the results for them as directed.
 Sub ReviewCareerRecords ()
 
-    recordFile$ = _OpenFileDialog$("Choose Career Leader file", diskPaths$(2), "*.CLD", "Career Leader files")
+    recordFile$ = _OpenFileDialog$("Choose Career Record file", diskPaths$(2), "*.CLD", "Career Record files")
 
     If recordFile$ <> "" Then
 
@@ -325,7 +327,7 @@ Sub ReviewCareerRecords ()
                     Call CareerRecords_Report(1, "CAREER")
 
                 Case "S":
-                    Call CareerRecords_Screen
+                    Call CareerRecords_Screen(GetFileBaseName$(recordFile$))
 
             End Select
 
@@ -341,7 +343,7 @@ End Sub
 '----------------------------------------
 'This routine formats career records for
 'output to the screen
-Sub CareerRecords_Screen
+Sub CareerRecords_Screen (careerName$)
 
     Shared carRecBatLdrVal!(), carRecPitLdrVal!()
     Shared carRecBatYear(), carRecPitYear()
@@ -352,6 +354,9 @@ Sub CareerRecords_Screen
 
         Cls
         Color 15, 0
+
+        Locate 1, 80 - Int(Len(careerName$) / 2)
+        Print careerName$
 
         Locate 2, 1
         Color 12: Print "CATEGORY           RECORD           PLAYER              YEAR"
@@ -457,6 +462,9 @@ Sub CareerRecords_Screen
 
         Cls
 
+        Locate 1, 80 - Int(Len(careerName$) / 2)
+        Print careerName$
+
         Locate 2, 1
         Color 12: Print "CATEGORY           RECORD           PLAYER              YEAR"
 
@@ -517,7 +525,10 @@ Sub CareerRecords_Report (printDest, destFile$)
 
     Open destFile$ For Output As #1
 
+    Print #1, Tab(80 - Int(Len(careerName$) / 2))
+    Print #1, careerName$
     Print #1,
+
     Print #1, "CATEGORY           RECORD           PLAYER              YEAR"
     Print #1,
     Print #1, "AT BATS";
@@ -837,6 +848,8 @@ Sub AddCareerYear (targetYear, doPostLeaders, careerFile$, statFile$)
     Print "LOADING STATS FILE . . . . PLEASE WAIT"
 
     TMR1% = 3 + (23 * 2) + (22 * 2) + (23 * 22) + (22 * 42)
+
+    'Call ReadTeamStats(temp$, statFile$)
 
     Open diskPaths$(1) + statFile$ For Input As #1
 

@@ -8,11 +8,12 @@ Sub CARVIEW ()
 
     _Title "Full Count Baseball - View Careers"
 
-    careerFile$ = ChooseFile$(diskPaths$(1) + "*.CAR", "CAREER", ExitCode%)
+    careerFile$ = _OpenFileDialog$("Choose Career Leader file", diskPaths$(1), "*.CAR", "Career Leader files")
+    'ChooseFile$(diskPaths$(1) + "*.CAR", "CAREER", ExitCode%)
 
-    If ExitCode% <> 27 And ExitCode% <> 0 Then
+    If careerFile$ <> "" Then
 
-        Call LoadCareerFile(diskPaths$(1) + careerFile$ + ".CAR")
+        Call LoadCareerFile(careerFile$)
 
         userKey$ = GetOutputOptions$
 
@@ -23,14 +24,14 @@ Sub CARVIEW ()
                 Case "F"
                     userFile$ = _SaveFileDialog$("Save Report File", _CWD$ + "\Report", "*.txt", "Text File")
                     If userFile$ <> "" Then
-                        Call CareerToPrinter(0, userFile$, careerFile$)
+                        Call CareerStats_Report(0, userFile$, GetFileBaseName$(careerFile$))
                     End If
 
                 Case "P"
-                    Call CareerToPrinter(1, "REPORT", careerFile$)
+                    Call CareerStats_Report(1, "CAREER", GetFileBaseName$(careerFile$))
 
                 Case "S"
-                    Call CareerToScreen(careerFile$)
+                    Call CareerStats_Screen(GetFileBaseName$(careerFile$))
 
             End Select
 
@@ -42,11 +43,11 @@ End Sub
 
 
 '----------------------------------------
-'       CareerToPrinter Subroutine
+'     CareerStats_Report Subroutine
 '----------------------------------------
 'Formats results of Career stats and sends
 'to the user's default printer
-Sub CareerToPrinter (printDest, destFile$, careerFile$)
+Sub CareerStats_Report (printDest, destFile$, careerName$)
 
     Dim I2!, I3!, I4!
     Shared carRecBatStats(), carRecPitStats()
@@ -61,7 +62,7 @@ Sub CareerToPrinter (printDest, destFile$, careerFile$)
     Open destFile$ For Output As #1
 
     Print #1,
-    Print #1, careerFile$
+    Print #1, careerName$
     Print #1, "BATTER     YEAR      G      AB      R      H    2B    3B    HR    RBI     BB     SO     SB    CS     E     AVG     SLG      OB"
 
     For I = 0 To 99
@@ -74,7 +75,7 @@ Sub CareerToPrinter (printDest, destFile$, careerFile$)
 
             If 55 - PTN < VV Then
                 Print #1, Chr$(12)
-                Print #1, careerFile$
+                Print #1, careerName$
                 Print #1, "BATTER     YEAR      G      AB      R      H    2B    3B    HR    RBI     BB     SO     SB    CS     E     AVG     SLG      OB"
                 PTN = 0
 
@@ -268,7 +269,7 @@ Sub CareerToPrinter (printDest, destFile$, careerFile$)
     Print #1, Chr$(12)
 
     PTN = 0
-    Print #1, careerFile$
+    Print #1, careerName$
     Print #1, "PITCHER    YEAR     W     L     S      IP        H     BB     SO     ERA     G    GS    CG    RUN     ER    SHO    HR    DP"
 
     For I = 0 To 79
@@ -283,7 +284,7 @@ Sub CareerToPrinter (printDest, destFile$, careerFile$)
 
             If 55 - PTN < VV Then
                 Print #1, Chr$(12)
-                Print #1, careerFile$
+                Print #1, careerName$
                 Print #1, "PITCHER    YEAR     W     L     S      IP        H     BB     SO     ERA     G    GS    CG    RUN     ER    SHO    HR    DP"
                 PTN = 0
             End If
@@ -484,14 +485,14 @@ Sub CareerToPrinter (printDest, destFile$, careerFile$)
 End Sub
 
 '----------------------------------------
-'        CareerToScreen Subroutine
+'     CareerStats_Screen Subroutine
 '----------------------------------------
 'This routine gives the user different
 'categories of stats related to the roster.
 'It then calls a supplemental routine for
 'each  that will format those stats and
 'send them to the display screen
-Sub CareerToScreen (careerFile$)
+Sub CareerStats_Screen (careerName$)
 
     Do
 
@@ -521,13 +522,13 @@ Sub CareerToScreen (careerFile$)
         Select Case UCase$(I$)
 
             Case "B":
-                Call ViewLeaders_Batters(careerFile$)
+                Call ViewLeaders_Batters(careerName$)
 
             Case "P":
-                Call ViewLeaders_Pitchers(careerFile$)
+                Call ViewLeaders_Pitchers(careerName$)
 
             Case "R":
-                Call ViewLeaders_Sequence(careerFile$)
+                Call ViewLeaders_Sequence(careerName$)
 
         End Select
 
@@ -540,7 +541,7 @@ End Sub
 '----------------------------------------
 'This subroutine will display batter stats
 'from the team's career file
-Sub ViewLeaders_Batters (careerFile$)
+Sub ViewLeaders_Batters (careerName$)
 
     Shared careerBatters$()
 
@@ -548,7 +549,7 @@ Sub ViewLeaders_Batters (careerFile$)
 
     Locate 2, 1
     Color 12
-    Print careerFile$
+    Print careerName$
 
     For I = 0 To 19
         Locate I + 4
@@ -581,7 +582,7 @@ Sub ViewLeaders_Batters (careerFile$)
     Print
     Color 14: Input "ENTER NUMBER OF PLAYER TO VIEW"; B9
 
-    Call OneBatter_Screen(B9)
+    Call OneBatter_Screen(careerName$, B9)
 
     Color 14
     Locate , 30
@@ -589,12 +590,13 @@ Sub ViewLeaders_Batters (careerFile$)
 
 End Sub
 
+
 '----------------------------------------
 '     ViewLeaders_Pitchers Subroutine
 '----------------------------------------
 'This subroutine will display pitcher stats
 'from the team's career file
-Sub ViewLeaders_Pitchers (careerFile$)
+Sub ViewLeaders_Pitchers (careerName$)
 
     Shared careerPitchers$()
 
@@ -602,7 +604,7 @@ Sub ViewLeaders_Pitchers (careerFile$)
 
     Color 12
     Locate 2, 1
-    Print careerFile$
+    Print careerName$
 
     For I = 0 To 19
         Locate I + 4
@@ -636,7 +638,7 @@ Sub ViewLeaders_Pitchers (careerFile$)
 
     Color 14: Input "ENTER NUMBER OF PLAYER TO VIEW"; B9
 
-    Call OnePitcher_Screen(B9)
+    Call OnePitcher_Screen(careerName$, B9)
 
     Color 14
     Locate , 30
@@ -644,12 +646,13 @@ Sub ViewLeaders_Pitchers (careerFile$)
 
 End Sub
 
+
 '----------------------------------------
 '     ViewLeaders_Sequence Subroutine
 '----------------------------------------
 'This subroutine will display players from
 'the team's career file, in sequence
-Sub ViewLeaders_Sequence (careerFile$)
+Sub ViewLeaders_Sequence (careerName$)
 
     Dim I2!, I3!, I4!
     Shared carRecBatStats(), carRecPitStats()
@@ -659,13 +662,13 @@ Sub ViewLeaders_Sequence (careerFile$)
 
         Locate 2, 1
         Color 11
-        Print careerFile$
+        Print careerName$
 
         For I = 0 To 99
 
             If careerBatters$(I) <> "" And careerBatters$(I) <> "XXX" Then
 
-                Call OneBatter_Screen(I)
+                Call OneBatter_Screen(careerName$, I)
 
                 Do
                     Locate 10, 16
@@ -698,7 +701,7 @@ Sub ViewLeaders_Sequence (careerFile$)
 
                 If careerPitchers$(I) <> "" And careerPitchers$(I) <> "XXX" Then
 
-                    Call OnePitcher_Screen(I)
+                    Call OnePitcher_Screen(careerName$, I)
 
                     Do
                         Locate 10, 16
@@ -753,7 +756,7 @@ End Sub
 '----------------------------------------
 'This subroutine will display career stats
 'on the screen for a single batter
-Sub OneBatter_Screen (index)
+Sub OneBatter_Screen (careerName$, index)
 
     Dim I2!, I3!, I4!
 
@@ -764,7 +767,7 @@ Sub OneBatter_Screen (index)
 
     Locate 2, 1
     Color 11
-    'Print careerFile$
+    Print careerName$
 
     Color 12
     Locate 4, 1
@@ -871,7 +874,7 @@ End Sub
 '----------------------------------------
 'This subroutine will display career stats
 'on the screen for a single pitcher
-Sub OnePitcher_Screen (index)
+Sub OnePitcher_Screen (careerName$, index)
 
     Dim I2!, I3!, I4!
     Shared careerPitchers$()
@@ -881,7 +884,7 @@ Sub OnePitcher_Screen (index)
 
     Color 11
     Locate 2, 1
-    'Print careerFile$
+    Print careerName$
 
     Color 12
     Locate 4, 1

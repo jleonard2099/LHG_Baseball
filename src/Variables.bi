@@ -128,11 +128,11 @@ Dim careerP0(80, 42), careerP1(80)
 
 Dim carRecBatName$(15), carRecPitName$(15)
 
-'Dim carRecBatYear(MAX_CAREER_YEARS), carRecBatStats(MAX_CAREER_YEARS, 100, 17)
-'Dim carRecBatLdrVal!(15)
+Dim carRecBatYear(MAX_CAREER_YEARS), carRecBatStats(MAX_CAREER_YEARS, 100, 17)
+Dim carRecBatLdrVal!(15)
 
-'Dim carRecPitYear(MAX_CAREER_YEARS), carRecPitStats(MAX_CAREER_YEARS, 80, 18)
-'Dim carRecPitLdrVal!(15)
+Dim carRecPitYear(MAX_CAREER_YEARS), carRecPitStats(MAX_CAREER_YEARS, 80, 18)
+Dim carRecPitLdrVal!(15)
 
 Dim plyLeaderTeams$(TEAMS_PER_LEAGUE, 22), tmLeaderTeams$(TEAMS_PER_LEAGUE, 23)
 

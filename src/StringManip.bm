@@ -1,0 +1,72 @@
+'----------------------------------------
+'           PadRight Function
+'----------------------------------------
+' Pads string to the right with spaces
+Function PadRight$ (X$, Length)
+    PadRight$ = X$ + Space$(Length - Len(X$)) 'for display only
+End Function
+
+
+'----------------------------------------
+'         GetFileName$ Function
+'----------------------------------------
+' Returns the file name, including the
+' full extension, from a full path
+Function GetFileName$ (fullPath$)
+
+    Dim i As Integer
+    Dim fileName$, separator$
+
+    opSysType$ = Left$(_OS$, InStr(2, _OS$, "[") - 1)
+
+    Select Case opSysType$
+        Case "[WINDOWS]":
+            separator$ = "\"
+        Case "[MAC]", "[MACOSX]", "[LINUX]":
+            separator$ = "/"
+    End Select
+
+    ' Start from the end of the string and work backwards
+    i = Len(fullPath$)
+    Do While i > 0
+        If Mid$(fullPath$, i, 1) = separator$ Then
+            fileName$ = Mid$(fullPath$, i + 1)
+            i = 0 ' End loop
+        Else
+            i = i - 1
+        End If
+    Loop
+
+    ' If no backslash was found, assume it's just a filename already
+    GetFileName$ = fileName$
+
+End Function
+
+
+'----------------------------------------
+'       GetFileBaseName$ Function
+'----------------------------------------
+' Returns the file name, without the
+' full extension, from a full path
+Function GetFileBaseName$ (fullPath$)
+
+    Dim i As Integer
+    Dim fileName$, baseName$
+
+    fileName$ = GetFileName$(fullPath$)
+
+    ' Start from the end of the string and work backwards
+    i = Len(fileName$)
+    Do While i > 0
+        If Mid$(fileName$, i, 1) = "." Then
+            baseName$ = Left$(fileName$, i - 1)
+            i = 0 ' End loop
+        Else
+            i = i - 1
+        End If
+    Loop
+
+    ' If no backslash was found, assume it's just a filename already
+    GetFileBaseName$ = baseName$
+
+End Function

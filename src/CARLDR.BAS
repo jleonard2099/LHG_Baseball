@@ -85,9 +85,9 @@ Sub UpdateCareerLeaders ()
         carLdrPitVal!(15, I1) = 1000
     Next
 
-    careerFile$ = ChooseFile$(diskPaths$(1) + "*.CAR", "CAREER", ExitCode%)
+    careerFile$ = _OpenFileDialog$("Choose Career file", diskPaths$(1), "*.CAR", "Career Career files")
 
-    If ExitCode% <> 27 And ExitCode% <> 0 Then
+    If careerFile$ <> "" Then
 
         Cls
 
@@ -105,7 +105,7 @@ Sub UpdateCareerLeaders ()
 
         Loop Until UCase$(I$) = "N"
 
-        Call LoadCareerFile(diskPaths$(1) + careerFile$ + ".CAR")
+        Call LoadCareerFile(careerFile$)
 
         Color 14
 
@@ -313,7 +313,7 @@ Sub UpdateCareerLeaders ()
         Next K
 
         'Save leaders
-        Open diskPaths$(2) + careerFile$ + ".TCL" For Output As #1
+        Open diskPaths$(2) + GetFileBaseName$(careerFile$) + ".TCL" For Output As #1
 
         For I = 0 To 17:
             For I1 = 0 To 19:
@@ -349,14 +349,14 @@ Sub CareerLeaderOptions ()
 
     Cls
 
-    leaderFile$ = ChooseFile$(diskPaths$(2) + "*.TCL", "LEADER", ExitCode%)
+    leaderFile$ = _OpenFileDialog$("Choose Career Leader file", diskPaths$(2), "*.TCL", "Career Leader files")    
 
-    If ExitCode% <> 27 And ExitCode% <> 0 Then
+    If leaderFile$ <> "" Then
 
         Color 15, 0
         Cls
 
-        Open diskPaths$(2) + leaderFile$ + ".TCL" For Input As #1
+        Open leaderFile$ For Input As #1
 
         For I = 0 To 17:
             For I1 = 0 To 19:
@@ -381,14 +381,14 @@ Sub CareerLeaderOptions ()
                 Case "F"
                     userFile$ = _SaveFileDialog$("Save Report File", _CWD$ + "\Report", "*.txt", "Text File")
                     If userFile$ <> "" Then
-                        Call PrintCareerLeaders(0, userFile$)
+                        Call CareerLeaders_Report(GetFileBaseName$(userFile$), 0, userFile$)
                     End If
 
                 Case "P"
-                    Call PrintCareerLeaders(1, "REPORT")
+                    Call CareerLeaders_Report (GetFileBaseName$(leaderFile$), 1, "REPORT")
 
                 Case "S"
-                    Call ViewCareerLeaders
+                    Call CareerLeaders_Screen (GetFileBaseName$(leaderFile$))
 
             End Select
 
@@ -399,12 +399,12 @@ Sub CareerLeaderOptions ()
 End Sub
 
 '----------------------------------------
-'       PrintCareerLeaders Subroutine
+'    CareerLeaders_Report Subroutine
 '----------------------------------------
 'This routine sends formatted career stats
 '(loaded from the .TCL file) to the user's
 'default printer
-Sub PrintCareerLeaders (printDest, destFile$)
+Sub CareerLeaders_Report (careerName$, printDest, destFile$)
 
     Shared carLdrBatName$(), carLdrPitName$()
     Shared carLdrBatVal!(), carLdrPitVal!()
@@ -414,8 +414,11 @@ Sub PrintCareerLeaders (printDest, destFile$)
 
     Open destFile$ For Output As #1
 
-    ' ### BATTERS ###
+    Print #1, Tab(80 - Int(Len(careerName$) / 2))
+    Print #1, careerName$
+    Print #1, 
 
+    ' ### BATTERS ###
     Print #1, Tab(5); "AT BATS"; Tab(29); "HITS"; Tab(54); "RUNS SCORED"; Tab(79); "RBI'S"
 
     For I = 0 To 19
@@ -553,18 +556,21 @@ Sub PrintCareerLeaders (printDest, destFile$)
 End Sub
 
 '----------------------------------------
-'      ViewCareerLeaders Subroutine
+'    CareerLeaders_Screen Subroutine
 '----------------------------------------
 'This routine displays formatted career
 'stats (loaded from the .TCL file) to the
 'primary screen
-Sub ViewCareerLeaders ()
+Sub CareerLeaders_Screen (careerName$)
 
     Shared carLdrBatName$(), carLdrPitName$()
     Shared carLdrBatVal!(), carLdrPitVal!()
 
     Cls
     Color 12
+
+    Locate 1, 80 - Int(Len(careerName$) / 2)
+    Print careerName$
 
     ' ### BATTERS ###
 
@@ -592,6 +598,9 @@ Sub ViewCareerLeaders ()
     Cls
     Color 12
 
+    Locate 1, 80 - Int(Len(careerName$) / 2)
+    Print careerName$
+
     Locate 2, 1
     Print Tab(5); "RUNS SCORE"; Tab(44); "RBI'S"
 
@@ -615,6 +624,9 @@ Sub ViewCareerLeaders ()
 
     Cls
     Color 12
+
+    Locate 1, 80 - Int(Len(careerName$) / 2)
+    Print careerName$
 
     Locate 2, 1
     Print Tab(5); "DOUBLES"; Tab(44); "TRIPLES"
@@ -640,6 +652,9 @@ Sub ViewCareerLeaders ()
     Cls
     Color 12
 
+    Locate 1, 80 - Int(Len(careerName$) / 2)
+    Print careerName$
+
     Locate 2, 1
     Print Tab(5); "HOME RUNS"; Tab(44); "WALKS"
 
@@ -663,6 +678,9 @@ Sub ViewCareerLeaders ()
 
     Cls
     Color 12
+
+    Locate 1, 80 - Int(Len(careerName$) / 2)
+    Print careerName$
 
     Locate 2, 1
     Print Tab(5); "STRIKE OUTS"; Tab(44); "STOLEN BASES"
@@ -688,6 +706,9 @@ Sub ViewCareerLeaders ()
     Cls
     Color 12
 
+    Locate 1, 80 - Int(Len(careerName$) / 2)
+    Print careerName$
+
     Locate 2, 1
     Print Tab(5); "CAUGHT STEALING"; Tab(44); "ERRORS"
     
@@ -711,6 +732,9 @@ Sub ViewCareerLeaders ()
 
     Cls
     Color 12
+
+    Locate 1, 80 - Int(Len(careerName$) / 2)
+    Print careerName$
 
     Locate 2, 1
     Print Tab(5); "GAMES PLAYED"; Tab(44); "BATTING AVERAGE"
@@ -736,6 +760,9 @@ Sub ViewCareerLeaders ()
     Cls
     Color 12
 
+    Locate 1, 80 - Int(Len(careerName$) / 2)
+    Print careerName$
+
     Locate 2, 1
     Print Tab(5); "SLUGGING PCT."; Tab(44); "ON-BASE PCT."
     
@@ -759,6 +786,9 @@ Sub ViewCareerLeaders ()
 
     Cls
     Color 12
+
+    Locate 1, 80 - Int(Len(careerName$) / 2)
+    Print careerName$
 
     ' ### PITCHERS ###
 
@@ -790,6 +820,9 @@ Sub ViewCareerLeaders ()
     Cls
     Color 12
 
+    Locate 1, 80 - Int(Len(careerName$) / 2)
+    Print careerName$
+
     Locate 2, 1
     Print Tab(5); "RUNS ALLOWED"; Tab(44); "EARNED RUNS ALLOWED"
     
@@ -813,6 +846,9 @@ Sub ViewCareerLeaders ()
 
     Cls
     Color 12
+
+    Locate 1, 80 - Int(Len(careerName$) / 2)
+    Print careerName$
 
     Locate 2, 1
     Print Tab(5); "WALKS"; Tab(44); "STRIKEOUTS"
@@ -838,6 +874,9 @@ Sub ViewCareerLeaders ()
     Cls
     Color 12
 
+    Locate 1, 80 - Int(Len(careerName$) / 2)
+    Print careerName$
+
     Locate 2, 1
     Print Tab(5); "WINS"; Tab(44); "LOSSES"
     
@@ -861,6 +900,9 @@ Sub ViewCareerLeaders ()
 
     Cls
     Color 12
+
+    Locate 1, 80 - Int(Len(careerName$) / 2)
+    Print careerName$
 
     Locate 2, 1
     Print Tab(5); "GAMES"; Tab(44); "GAMES STARTED"
@@ -886,6 +928,9 @@ Sub ViewCareerLeaders ()
     Cls
     Color 12
 
+    Locate 1, 80 - Int(Len(careerName$) / 2)
+    Print careerName$
+
     Locate 2, 1
     Print Tab(5); "COMPLETE GAMES"; Tab(44); "SHUTOUTS"
     
@@ -910,6 +955,9 @@ Sub ViewCareerLeaders ()
     Cls
     Color 12
 
+    Locate 1, 80 - Int(Len(careerName$) / 2)
+    Print careerName$
+
     Locate 2, 1
     Print Tab(5); "SAVES"; Tab(44); "DOUBLE PLAYS THROWN"
     
@@ -933,6 +981,9 @@ Sub ViewCareerLeaders ()
 
     Cls
     Color 12
+
+    Locate 1, 80 - Int(Len(careerName$) / 2)
+    Print careerName$
 
     Locate 2, 1
     Print Tab(5); "HOME RUNS ALLOWED"; Tab(44); "EARNED RUN AVERAGE"
@@ -960,4 +1011,3 @@ Sub ViewCareerLeaders ()
     I$ = GetKeyPress$
 
 End Sub
-

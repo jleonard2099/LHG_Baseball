@@ -466,7 +466,7 @@ Sub SaveLeaderStdg (leaderFile$, league$, JB, JP, plyrTotalStats, teamTotalStats
 
     Next I
 
-    Close 1
+    Close #1
 
     Open diskPaths$(2) + leaderFile$ + ".TOT" For Output As #1
 
@@ -474,10 +474,13 @@ Sub SaveLeaderStdg (leaderFile$, league$, JB, JP, plyrTotalStats, teamTotalStats
 
     For I = 1 To TEAMS_PER_LEAGUE
         Write #1, divWins(I), divLosses(I)
+
+        Color 14
+        Locate 18, 45
+        TMR = TMR - 1: Print Using "#####"; TMR
     Next
 
     For I = 1 To TEAMS_PER_LEAGUE
-
         For I1 = 0 To 21:
             Write #1, plyLdrVal!(I, I1), plyLeaderTeams$(I, I1)
         Next
@@ -485,11 +488,9 @@ Sub SaveLeaderStdg (leaderFile$, league$, JB, JP, plyrTotalStats, teamTotalStats
         Color 14
         Locate 18, 45
         TMR = TMR - 1: Print Using "#####"; TMR
-
     Next
 
     For I = 1 To TEAMS_PER_LEAGUE
-
         For I1 = 0 To 22:
             Write #1, teamLdrVal!(I, I1), tmLeaderTeams$(I, I1)
         Next
@@ -497,7 +498,6 @@ Sub SaveLeaderStdg (leaderFile$, league$, JB, JP, plyrTotalStats, teamTotalStats
         Color 14
         Locate 18, 45
         TMR = TMR - 1: Print Using "#####"; TMR
-
     Next
 
     Close #1
@@ -607,10 +607,13 @@ Sub ReadLeaderStdg (leaderFile$, league$, JB, JP, plyrTotalStats, teamTotalStats
 
         For I = 1 To TEAMS_PER_LEAGUE
             Input #1, divWins(I), divLosses(I)
+
+            Color 14
+            Locate 18, 45
+            TMR = TMR - 1: Print Using "#####"; TMR
         Next
 
         For I = 1 To TEAMS_PER_LEAGUE
-
             For I1 = 0 To 21:
                 Input #1, plyLdrVal!(I, I1), plyLeaderTeams$(I, I1)
             Next
@@ -618,11 +621,9 @@ Sub ReadLeaderStdg (leaderFile$, league$, JB, JP, plyrTotalStats, teamTotalStats
             Color 14
             Locate 18, 45
             TMR = TMR - 1: Print Using "#####"; TMR
-
         Next
 
         For I = 1 To TEAMS_PER_LEAGUE
-
             For I1 = 0 To 22:
                 Input #1, teamLdrVal!(I, I1), tmLeaderTeams$(I, I1)
             Next
@@ -630,7 +631,6 @@ Sub ReadLeaderStdg (leaderFile$, league$, JB, JP, plyrTotalStats, teamTotalStats
             Color 14
             Locate 18, 45
             TMR = TMR - 1: Print Using "#####"; TMR
-
         Next
 
         Close #1
@@ -1008,11 +1008,11 @@ Sub ViewBattingLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
                                 Case "F"
                                     userFile$ = _SaveFileDialog$("Save Report File", _CWD$ + "\Report", "*.txt", "Text File")
                                     If userFile$ <> "" Then
-                                        Call PrintLeaders(0, userFile$, TVN, LG, B9)
+                                        Call NewLeaders_Report(0, userFile$, TVN, LG, B9)
                                     End If
 
                                 Case "P"
-                                    Call PrintLeaders(1, "REPORT", TVN, LG, B9)
+                                    Call NewLeaders_Report(1, "REPORT", TVN, LG, B9)
 
                             End Select
 
@@ -1412,11 +1412,11 @@ Sub ViewPitchingLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
                             Case "F"
                                 userFile$ = _SaveFileDialog$("Save Report File", _CWD$ + "\Report", "*.txt", "Text File")
                                 If userFile$ <> "" Then
-                                    Call PrintLeaders(0, userFile$, TVN, LG, B9)
+                                    Call NewLeaders_Report(0, userFile$, TVN, LG, B9)
                                 End If
 
                             Case "P"
-                                Call PrintLeaders(1, "REPORT", TVN, LG, B9)
+                                Call NewLeaders_Report(1, "REPORT", TVN, LG, B9)
 
                         End Select
 
@@ -2412,11 +2412,11 @@ End Sub
 
 
 '----------------------------------------
-'        PrintLeaders Subroutine
+'     NewLeaders_Report Subroutine
 '----------------------------------------
 'This subroutine displays individual player
 'stat categories to the default printer
-Sub PrintLeaders (printDest, destFile$, TVN, maxRecords, categoryID)
+Sub NewLeaders_Report (printDest, destFile$, TVN, maxRecords, categoryID)
 
     Shared expLdrVal!()
     Shared expBatCategory$(), expLdrTeam$(), expLdrPlyrName$()
