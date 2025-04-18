@@ -122,7 +122,7 @@ Sub SCHEDULE ()
                     Call BoxscoreMaintenance
 
                 Case 8:
-                    scheduleFile$ = _OpenFileDialog$("Select schedule file", diskPaths$(3), "*.SCD", "Schedule files")
+                    scheduleFile$ = _OpenFileDialog$("Select schedule file", diskPaths$(3), "*.SCD", "Schedule files [.SCD]")
                     Call ConvertSched6to7(scheduleFile$, 0)
                     'Call ConvertAllSched
 

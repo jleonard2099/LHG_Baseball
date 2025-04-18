@@ -8,7 +8,7 @@ Sub CARVIEW ()
 
     _Title "Full Count Baseball - View Careers"
 
-    careerFile$ = _OpenFileDialog$("Choose Career Leader file", diskPaths$(1), "*.CAR", "Career Leader files")
+    careerFile$ = _OpenFileDialog$("Choose Career Leader file", diskPaths$(1), "*.CAR", "Career Leader files [.CAR]")
     'ChooseFile$(diskPaths$(1) + "*.CAR", "CAREER", ExitCode%)
 
     If careerFile$ <> "" Then
@@ -547,8 +547,8 @@ Sub ViewLeaders_Batters (careerName$)
 
     Cls
 
-    Locate 2, 1
-    Color 12
+    Locate 2, (80 - Len(careerName$)) / 2
+    Color 11
     Print careerName$
 
     For I = 0 To 19
@@ -582,7 +582,7 @@ Sub ViewLeaders_Batters (careerName$)
     Print
     Color 14: Input "ENTER NUMBER OF PLAYER TO VIEW"; B9
 
-    Call OneBatter_Screen(careerName$, B9)
+    Call OneBatter_Screen(careerName$, B9, VV)
 
     Color 14
     Locate , 30
@@ -602,8 +602,8 @@ Sub ViewLeaders_Pitchers (careerName$)
 
     Cls
 
-    Color 12
-    Locate 2, 1
+    Locate 2, (80 - Len(careerName$)) / 2
+    Color 11
     Print careerName$
 
     For I = 0 To 19
@@ -638,10 +638,10 @@ Sub ViewLeaders_Pitchers (careerName$)
 
     Color 14: Input "ENTER NUMBER OF PLAYER TO VIEW"; B9
 
-    Call OnePitcher_Screen(careerName$, B9)
+    Call OnePitcher_Screen(careerName$, B9, VV)
 
     Color 14
-    Locate , 30
+    Locate 10 + VV, 30
     Input "HIT ENTER TO CONTINUE"; DUMMY$
 
 End Sub
@@ -660,19 +660,21 @@ Sub ViewLeaders_Sequence (careerName$)
 
     Do
 
-        Locate 2, 1
+        Locate 2, (80 - Len(careerName$)) / 2
         Color 11
         Print careerName$
 
         For I = 0 To 99
 
+            'Check for valid player
             If careerBatters$(I) <> "" And careerBatters$(I) <> "XXX" Then
 
-                Call OneBatter_Screen(careerName$, I)
+                Call OneBatter_Screen(careerName$, I, VV)
 
                 Do
-                    Locate 10, 16
+
                     Color 14
+                    Locate 10 + VV, 16
                     Print "HIT ENTER TO CONTINUE OR ESC TO GO TO MAIN MENU"
                     I$ = GetKeyPress$
 
@@ -701,10 +703,10 @@ Sub ViewLeaders_Sequence (careerName$)
 
                 If careerPitchers$(I) <> "" And careerPitchers$(I) <> "XXX" Then
 
-                    Call OnePitcher_Screen(careerName$, I)
+                    Call OnePitcher_Screen(careerName$, I, VV)
 
                     Do
-                        Locate 10, 16
+                        Locate 10 + VV, 16
                         Color 14
                         Print "HIT ENTER TO CONTINUE OR ESC TO GO TO MAIN MENU"
                         I$ = GetKeyPress$
@@ -756,7 +758,7 @@ End Sub
 '----------------------------------------
 'This subroutine will display career stats
 'on the screen for a single batter
-Sub OneBatter_Screen (careerName$, index)
+Sub OneBatter_Screen (careerName$, index, nbrYears)
 
     Dim I2!, I3!, I4!
 
@@ -776,13 +778,13 @@ Sub OneBatter_Screen (careerName$, index)
     Color 15
     Print Left$(careerBatters$(index), 12);
 
-    VV = 0
+    nbrYears = 0
 
     For Z = 1 To MAX_CAREER_YEARS
-        VV = VV + carRecBatStats(Z, index, 16)
+        nbrYears = nbrYears + carRecBatStats(Z, index, 16)
     Next Z
 
-    For V = 1 To VV
+    For V = 1 To nbrYears
 
         Color 7
 
@@ -862,9 +864,7 @@ Sub OneBatter_Screen (careerName$, index)
 
     Next V
 
-    Call BatterTotals(index, VV)
-
-    Locate 10+VV
+    Call BatterTotals(index, nbrYears)
 
 End Sub
 
@@ -874,7 +874,7 @@ End Sub
 '----------------------------------------
 'This subroutine will display career stats
 'on the screen for a single pitcher
-Sub OnePitcher_Screen (careerName$, index)
+Sub OnePitcher_Screen (careerName$, index, nbrYears)
 
     Dim I2!, I3!, I4!
     Shared careerPitchers$()
@@ -888,28 +888,29 @@ Sub OnePitcher_Screen (careerName$, index)
 
     Color 12
     Locate 4, 1
-    Print "PITCHER     YEAR  W  L  S   IP     H  BB  SO  ERA  G GS CG RUN  ER SHO HR DP"
+    Print "PITCHER      YEAR  W  L  S  IP    H  BB  SO  ERA  GP  GS CG RUN  ER SHO HR  DP"
+    '     "             #### ## ## ##  ###.# ### ### ### #.## ### ### ## ### ### ##  ## ###
     Color 15
     Print Left$(careerPitchers$(index), 12);
 
-    VV = 0
+    nbrYears = 0
 
     For Z = 1 To MAX_CAREER_YEARS
-        VV = VV + carRecPitStats(Z, index, 15)
+        nbrYears = nbrYears + carRecPitStats(Z, index, 15)
     Next Z
 
-    For V = 1 To VV
+    For V = 1 To nbrYears
 
         Color 7
 
         'Year
-        Print Tab(12); carRecPitStats(V, index, 16);
+        Print Tab(14); Using "####"; carRecPitStats(V, index, 16);
         'W
-        Print Tab(18); Using "##"; carRecPitStats(V, index, 6);
+        Print Tab(19); Using "##"; carRecPitStats(V, index, 6);
         'L
-        Print Tab(21); Using "##"; carRecPitStats(V, index, 7);
+        Print Tab(22); Using "##"; carRecPitStats(V, index, 7);
         'S
-        Print Tab(24); Using "##"; carRecPitStats(V, index, 12);
+        Print Tab(25); Using "##"; carRecPitStats(V, index, 12);
         'IP
         Locate , 28: Print Using "###"; Int(carRecPitStats(V, index, 0) / 3);
 
@@ -918,11 +919,11 @@ Sub OnePitcher_Screen (careerName$, index)
         End If
 
         'H
-        Print Tab(34); Using "###"; carRecPitStats(V, index, 1);
+        Print Tab(33); Using "###"; carRecPitStats(V, index, 1);
         'BB
-        Print Tab(38); Using "###"; carRecPitStats(V, index, 4);
+        Print Tab(37); Using "###"; carRecPitStats(V, index, 4);
         'SO
-        Print Tab(42); Using "###"; carRecPitStats(V, index, 5);
+        Print Tab(41); Using "###"; carRecPitStats(V, index, 5);
 
         'ERA
         I2! = 0
@@ -934,13 +935,13 @@ Sub OnePitcher_Screen (careerName$, index)
         I4! = I2! - (I3! * 100)
 
         If carRecPitStats(V, index, 0) = 0 Or I2! = 0 Then
-            Locate , 45: Print " 0.00";
+            Locate , 44: Print " 0.00";
         End If
         If carRecPitStats(V, index, 0) > 0 And I2! > 0 And I2! <= 999 Then
-            Locate , 45: Print Using "##"; I3!;: Print ".";
+            Locate , 44: Print Using "##"; I3!;: Print ".";
         End If
         If carRecPitStats(V, index, 0) > 0 And I2! >= 1000 Then
-            Locate , 45: Print Using "##"; I3!;: Print ".";
+            Locate , 44: Print Using "##"; I3!;: Print ".";
         End If
 
         If carRecPitStats(V, index, 0) > 0 And I4! = 0 And I2! > 0 Then
@@ -954,30 +955,28 @@ Sub OnePitcher_Screen (careerName$, index)
         End If
 
         'G
-        Print Tab(51); Using "##"; carRecPitStats(V, index, 8);
+        Print Tab(50); Using "###"; carRecPitStats(V, index, 8);
         'GS
-        Print Tab(54); Using "##"; carRecPitStats(V, index, 9);
+        Print Tab(54); Using "###"; carRecPitStats(V, index, 9);
         'CG
-        Print Tab(57); Using "##"; carRecPitStats(V, index, 10);
+        Print Tab(58); Using "##"; carRecPitStats(V, index, 10);
         'Run
-        Print Tab(60); Using "###"; carRecPitStats(V, index, 2);
+        Print Tab(61); Using "###"; carRecPitStats(V, index, 2);
         'ER
-        Print Tab(64); Using "###"; carRecPitStats(V, index, 3);
+        Print Tab(65); Using "###"; carRecPitStats(V, index, 3);
         'SHO
         Print Tab(69); Using "##"; carRecPitStats(V, index, 11);
         'HR
-        Print Tab(72); Using "##"; carRecPitStats(V, index, 14);
+        Print Tab(73); Using "##"; carRecPitStats(V, index, 14);
         'DP
-        Print Tab(74); Using "###"; carRecPitStats(V, index, 13)
+        Print Tab(76); Using "###"; carRecPitStats(V, index, 13)
 
     Next V
 
     Print
     Color 3
 
-    Call PitcherTotals(index, VV)
-
-    Locate 10+VV
+    Call PitcherTotals(index, nbrYears)
 
 End Sub
 
@@ -987,7 +986,7 @@ End Sub
 '----------------------------------------
 'This subroutine will calculate the career
 'totals for batters
-Sub BatterTotals (index, VV)
+Sub BatterTotals (index, nbrYears)
 
     Dim I3!, I4!
     Shared carRecBatStats()
@@ -1006,7 +1005,7 @@ Sub BatterTotals (index, VV)
     TT12 = 0
     TT13 = 0
 
-    For V = 0 To VV
+    For V = 0 To nbrYears
 
         TT1 = TT1 + carRecBatStats(V, index, 14)
         TT3 = TT3 + carRecBatStats(V, index, 2)
@@ -1050,7 +1049,7 @@ Sub BatterTotals (index, VV)
 
     Print "TOTALS";
 
-    Print Tab(14); Using "##"; VV;
+    Print Tab(14); Using "##"; nbrYears;
     Print Tab(21); Using "####"; TT2;
     Print Tab(29); Using "####"; TT4;
     Print Tab(36); Using "###"; TT6;
@@ -1100,7 +1099,7 @@ End Sub
 '----------------------------------------
 'This subroutine will calculate the career
 'totals for pitchers
-Sub PitcherTotals (index, VV)
+Sub PitcherTotals (index, nbrYears)
 
     Shared carRecPitStats()
 
@@ -1122,7 +1121,7 @@ Sub PitcherTotals (index, VV)
     TT27 = 0
     TT28 = 0
 
-    For V = 0 To VV
+    For V = 0 To nbrYears
 
         TT13 = TT13 + carRecPitStats(V, index, 6)
         TT15 = TT15 + carRecPitStats(V, index, 12)
@@ -1155,7 +1154,7 @@ Sub PitcherTotals (index, VV)
     Print Tab(69); Using "####"; TT27
 
     Print "TOTALS";
-    Print Tab(13); Using "###"; VV;
+    Print Tab(13); Using "###"; nbrYears;
     Print Tab(19); Using "###"; TT14;
     Print Tab(27); Using "###"; Int(TT16 / 3);
 
@@ -1198,5 +1197,3 @@ Sub PitcherTotals (index, VV)
     Print Tab(73); Using "###"; TT28
 
 End Sub
-
-

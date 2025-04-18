@@ -1,3 +1,4 @@
+
 $Debug
 $Color:32
 
@@ -2527,7 +2528,7 @@ Sub SelectStadium (useVGA)
         PARK$(2) = "THE ASTRODOME               "
         PARK$(3) = "OAKLAND-ALAMEADA COLISEUM   "
         PARK$(4) = "SKYDOME                     "
-        PARK$(5) = "ATLANTA-FULTON COUNTY STADIU"
+        PARK$(5) = "ATLANTA-FULTON COUNTY STAD. "
         PARK$(6) = "MILWAUKEE COUNTY STADIUM    "
         PARK$(7) = "BUSCH MEMORIAL STADIUM      "
         PARK$(8) = "WRIGLEY FIELD               "
@@ -2713,9 +2714,10 @@ Sub SelectStadium (useVGA)
         'position if no graphics exist at all!
 
         'So instead, let's switch to regular mode
-        If Not _FileExists(".\parks\" + PARK$) Then useVGA = 0
+        Test$ = "." + dirSeparator$ + "parks" + dirSeparator$ + PARK$
+        If Not _FileExists("." + dirSeparator$ + "parks" + dirSeparator$ + PARK$) Then useVGA = 0
 
-    Loop Until UCase$(I$) = "N" Or ExitCode% = 27
+    Loop Until BO% = 0 Or UCase$(I$) = "N" Or ExitCode% = 27
 
 End Sub
 
@@ -2995,8 +2997,8 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
 
                         If batRating(P9, batterIdx, SS_B_Avail) <= 0 And batters$(P9, batterIdx) <> "XXX" Then
 
-                            If     batRating(P9, batterIdx, SS_B_Pos1) = 0 Then
-                                If     batRating(P9, batterIdx, SS_B_Pos2) = -1 Then
+                            If batRating(P9, batterIdx, SS_B_Pos1) = 0 Then
+                                If batRating(P9, batterIdx, SS_B_Pos2) = -1 Then
                                     position(currPos, 0) = batRating(P9, batterIdx, SS_B_AB)
                                 ElseIf batRating(P9, batterIdx, SS_B_Pos3) = -1 Then
                                     position(currPos, 0) = Int(batRating(P9, batterIdx, SS_B_AB) * .9 + .5)
@@ -3007,13 +3009,13 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
                                 End If
 
                             ElseIf batRating(P9, batterIdx, SS_B_Pos2) = 0 Then
-                                    position(currPos, 0) = Int(batRating(P9, batterIdx, SS_B_AB) * .5  + .5)
+                                position(currPos, 0) = Int(batRating(P9, batterIdx, SS_B_AB) * .5 + .5)
                             ElseIf batRating(P9, batterIdx, SS_B_Pos3) = 0 Then
-                                    position(currPos, 0) = Int(batRating(P9, batterIdx, SS_B_AB) * .3  + .5)
+                                position(currPos, 0) = Int(batRating(P9, batterIdx, SS_B_AB) * .3 + .5)
                             ElseIf batRating(P9, batterIdx, SS_B_Pos4) = 0 Then
-                                    position(currPos, 0) = Int(batRating(P9, batterIdx, SS_B_AB) * .2  + .5)
-                                        Else
-                                    position(currPos, 0) = Int(batRating(P9, batterIdx, SS_B_AB) * .05 + .5)    ' no DH experience
+                                position(currPos, 0) = Int(batRating(P9, batterIdx, SS_B_AB) * .2 + .5)
+                            Else
+                                position(currPos, 0) = Int(batRating(P9, batterIdx, SS_B_AB) * .05 + .5) ' no DH experience
                             End If
 
                             position(currPos, 1) = batterIdx
@@ -3035,38 +3037,38 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
                     If batRating(P9, batterIdx, SS_B_Avail) <= 0 And batters$(P9, batterIdx) <> "XXX" Then
 
                         If batRating(P9, batterIdx, SS_B_Pos1) = I Then
-                            If     batRating(P9, batterIdx, SS_B_Pos2) = -1 Then
+                            If batRating(P9, batterIdx, SS_B_Pos2) = -1 Then
                                 position(currPos, 0) = batRating(P9, batterIdx, SS_B_AB)
                             ElseIf batRating(P9, batterIdx, SS_B_Pos3) = -1 Then
                                 position(currPos, 0) = Int(batRating(P9, batterIdx, SS_B_AB) * .9 + .5)
                             ElseIf batRating(P9, batterIdx, SS_B_Pos4) = -1 Then
                                 position(currPos, 0) = Int(batRating(P9, batterIdx, SS_B_AB) * .8 + .5)
-                                Else
+                            Else
                                 position(currPos, 0) = Int(batRating(P9, batterIdx, SS_B_AB) * .7 + .5)
                             End If
 
                         ElseIf batRating(P9, batterIdx, SS_B_Pos2) = I Then
-                            If     batRating(P9, batterIdx, SS_B_Pos3) = -1 Then
+                            If batRating(P9, batterIdx, SS_B_Pos3) = -1 Then
                                 position(currPos, 0) = Int(batRating(P9, batterIdx, SS_B_AB) * .1 + .5)
                             ElseIf batRating(P9, batterIdx, SS_B_Pos4) = -1 Then
                                 position(currPos, 0) = Int(batRating(P9, batterIdx, SS_B_AB) * .1 + .5)
-                                            Else
+                            Else
                                 position(currPos, 0) = Int(batRating(P9, batterIdx, SS_B_AB) * .1 + .5)
                             End If
 
                         ElseIf batRating(P9, batterIdx, SS_B_Pos3) = I Then
-                            If     batRating(P9, batterIdx, SS_B_Pos4) = -1 Then
+                            If batRating(P9, batterIdx, SS_B_Pos4) = -1 Then
                                 position(currPos, 0) = Int(batRating(P9, batterIdx, SS_B_AB) * .1 + .5)
-                                                        Else
+                            Else
                                 position(currPos, 0) = Int(batRating(P9, batterIdx, SS_B_AB) * .1 + .5)
-                                                            End If
+                            End If
 
                         ElseIf batRating(P9, batterIdx, SS_B_Pos4) = I Then
-                                position(currPos, 0) = Int(batRating(P9, batterIdx, SS_B_AB) * .1 + .5)
-                    End If
+                            position(currPos, 0) = Int(batRating(P9, batterIdx, SS_B_AB) * .1 + .5)
+                        End If
 
-                    position(currPos, 1) = batterIdx
-                    currPos = currPos + 1
+                        position(currPos, 1) = batterIdx
+                        currPos = currPos + 1
 
                     End If
 

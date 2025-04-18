@@ -12,7 +12,7 @@ Sub CAREDIT ()
     Color 15, 0
     Cls
 
-    careerFile$ = _OpenFileDialog$("Choose Career Record file", diskPaths$(1), "*.CAR", "Career Record files")
+    careerFile$ = _OpenFileDialog$("Choose Career file", diskPaths$(1), "*.CAR", "Career files [.CAR]")
     'ChooseFile$(diskPaths$(1) + "*.CAR", "CAREER", ExitCode%)
 
     If ExitCode% <> 27 And ExitCode% <> 0 Then
