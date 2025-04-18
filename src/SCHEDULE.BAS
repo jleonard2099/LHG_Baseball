@@ -460,7 +460,9 @@ Sub NewSchedule (scheduleFile$)
                 ReDim scheduleH$(1)
                 ReDim scheduleV$(1)
 
-                Call LOADER
+                Do
+                    Call LOADER
+                Loop Until schedGame(0) + schedGame(2) > schedGame(1)
 
                 'Restore memory so we can populate again
                 ReDim scheduleNG%(MAX_SCHEDULE_GAMES, 18)
