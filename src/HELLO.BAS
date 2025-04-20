@@ -348,6 +348,11 @@ System
 Errhandler:
 Open "errlog" For Append As #9
 Print #9, "Error #"; Err; "on program file line"; _ErrorLine
+
+If _InclErrorLine Then
+    Print #9, "    in module "; _InclErrorFile$; " line "; _InclErrorLine
+End If
+
 'If _FileExists("GAME82") Then
 'Print #9, "Schedule game # "; Using "###"; schedGame(0) + schedGame(2)
 'Print #9, gameTeams$(0) + " vs. " + gameTeams$(1)
@@ -4306,58 +4311,58 @@ Sub SOURCE ()
 
                     End If
 
-                End If
+                Else    ' batter is the pitcher
 
-            Else
+                    For I = 0 To 21
 
-                For I = 0 To 21
+                        If pitchRating(P, I, 15) = 0 Then
 
-                    If pitchRating(P, I, 15) = 0 Then
+                            If teamMgrProfileVal(P, 590) = 999 Then
 
-                        If teamMgrProfileVal(P, 590) = 999 Then
+                                'PH FOR PITCHER WITH PROFILE
+                                Call Rolld100(RN)
 
-                            'PH FOR PITCHER WITH PROFILE
-                            Call Rolld100(RN)
+                                MOB% = 0
 
-                            MOB% = 0
+                                For indx = 1 To 3
+                                    If B2%(indx, 0) > 0 Then MOB% = MOB% + 1
+                                Next
 
-                            For I = 1 To 3
-                                If B2%(I, 0) > 0 Then MOB% = MOB% + 1
-                            Next
-
-                            If pitchRating(P, P1(P), 11) <> 999 Then
-                                I7! = pitchRating(I0, P1(I0), 11)
-                            Else
-                                If pitchRating(P, P1(P), 20) = 0 Then
-                                    I7! = 0
+                                If pitchRating(P, P1(P), 11) <> 999 Then
+                                    I7! = pitchRating(I0, P1(I0), 11)
                                 Else
-                                    I7! = CInt((pitchRating(P, P1(P), 22) / pitchRating(P, P1(P), 20) * 1000))
+                                    If pitchRating(P, P1(P), 20) = 0 Then
+                                        I7! = 0
+                                    Else
+                                        I7! = CInt((pitchRating(P, P1(P), 22) / pitchRating(P, P1(P), 20) * 1000))
+                                    End If
                                 End If
+
+                                For indx = 0 To 2
+                                    If INNING% >= teamMgrProfileVal(P, 591 + indx * 6) And A1 <= teamMgrProfileVal(P, 592 + indx * 6) * -1 And nbrOuts(0) <= teamMgrProfileVal(P, 594 + indx * 6) And I7! <= teamMgrProfileVal(P, 595 + indx * 6) And RN <= teamMgrProfileVal(P, 596 + indx * 6) And MOB% >= teamMgrProfileVal(P, 593 + indx * 6) Then
+                                        GoTo 18930
+                                    End If
+                                Next
+
+                                Exit For
+
+                            Else
+
+                                If INNING% > 4 And INNING% < 7 And A1 < -2 And gameScore(P, 0) > 0 Then 18930
+                                If INNING% > 4 And INNING% < 7 And A1 < -3 Then 18930
+                                If INNING% > 6 And A1 < 0 Or A1 = 0 And INNING% > 6 And INNING% < 9 And baseRunners > 1 Then 18930
+                                If A1 = 0 And INNING% >= 9 And baseRunners > 0 Or A1 = 0 And INNING% >= 9 And nbrOuts(0) = 0 Then 18930
+                                If pitchRating(P, P1(P), 6) / pitchRating(P, P1(P), 4) <= 2 And gamePitStats(P, P1(P), 0) >= 6 Then 18930
+
+                                Exit For
+
                             End If
-
-                            For I = 0 To 2
-                                If INNING% >= teamMgrProfileVal(P, 591 + I * 6) And A1 <= teamMgrProfileVal(P, 592 + I * 6) * -1 And nbrOuts(0) <= teamMgrProfileVal(P, 594 + I * 6) And I7! <= teamMgrProfileVal(P, 595 + I * 6) And RN <= teamMgrProfileVal(P, 596 + I * 6) And MOB% >= teamMgrProfileVal(P, 593 + I * 6) Then
-                                    GoTo 18930
-                                End If
-                            Next
-
-                            Exit For
-
-                        Else
-
-                            If INNING% > 4 And INNING% < 7 And A1 < -2 And gameScore(P, 0) > 0 Then 18930
-                            If INNING% > 4 And INNING% < 7 And A1 < -3 Then 18930
-                            If INNING% > 6 And A1 < 0 Or A1 = 0 And INNING% > 6 And INNING% < 9 And baseRunners > 1 Then 18930
-                            If A1 = 0 And INNING% >= 9 And baseRunners > 0 Or A1 = 0 And INNING% >= 9 And nbrOuts(0) = 0 Then 18930
-                            If pitchRating(P, P1(P), 6) / pitchRating(P, P1(P), 4) <= 2 And gamePitStats(P, P1(P), 0) >= 6 Then 18930
-
-                            Exit For
 
                         End If
 
-                    End If
+                    Next
 
-                Next
+                End If
 
             End If
 
