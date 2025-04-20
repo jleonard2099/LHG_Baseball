@@ -1045,11 +1045,11 @@ Sub ReportsAllTeams ()
 
     Shared teamLosses, teamWins
 
-    leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", ExitCode%)
+    leagueFile$ = _OpenFileDialog$("Choose League Stats file", diskPaths$(2), "*.TMS", "League Stats files [.TMS]")
 
-    If ExitCode% <> 27 And ExitCode% <> 0 Then
+    If leagueFile$ <> "" Then
 
-        Call ReadLeagueStats (leagStatFile$)
+        Call ReadLeagueStats (leagueFile$)
 
         For XW = 1 To TEAMS_PER_LEAGUE
 

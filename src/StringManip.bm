@@ -70,3 +70,31 @@ Function GetFileBaseName$ (fullPath$)
     GetFileBaseName$ = baseName$
 
 End Function
+
+
+'----------------------------------------
+'      GetFileExtension$ Function
+'----------------------------------------
+' Returns the file name, without the
+' full extension, from a full path
+Function GetFileExtension$ (fullPath$)
+
+    fileName$ = GetFileName$(fullPath$)
+
+    i = Len(fileName$)
+
+    Do While i > 0
+
+        If Mid$(fileName$, i, 1) = "." Then
+            ext$ = Mid$(fileName$, i + 1)
+            i = 0 ' Exit loop
+        Else
+            i = i - 1
+        End If
+
+    Loop
+
+    GetFileExtension$ = ext$
+
+End Function
+

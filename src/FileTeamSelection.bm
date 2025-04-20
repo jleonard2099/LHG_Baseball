@@ -590,9 +590,9 @@ Sub ReadScheduleStats (statFile$, numberGames)
 
     Shared nbrInnings(), oppScore(), teamScore()
 
-    findFile$ = diskPaths$(1) + statFile$ + "S"
+    baseFile$ = diskPaths$(1) + statFile$ + "S"
 
-    Open findFile$ For Input As #1
+    Open baseFile$ For Input As #1
 
     Input #1, numberGames
 
@@ -732,7 +732,7 @@ Sub ReadLeagueIndex (indexFile$)
     Shared leagueName$
     Shared div1Name$, div2Name$, div3Name$, div4Name$
 
-    Open diskPaths$(2) + indexFile$ + ".TMI" For Input As #2
+    Open indexFile$ For Input As #2
 
     Input #2, leagueName$
     Input #2, div1Name$
@@ -764,7 +764,7 @@ Sub ReadLeagueStats (statFile$)
     Shared leagueName$
     Shared div1Name$, div2Name$, div3Name$, div4Name$
 
-    Open diskPaths$(2) + statFile$ + ".TMS" For Input As #1
+    Open statFile$ For Input As #1
 
     Input #1, leagueName$, div1Name$, div2Name$, div3Name$, div4Name$
 

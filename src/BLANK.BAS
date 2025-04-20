@@ -10,9 +10,10 @@ Sub BLANK ()
 
 	Shared memberName$()
 
-    leagueFile$ = ChooseFile$ (diskPaths$(2) + "*.TMI", "LEAGUE", ExitCode%)
+	leagueFile$ = _OpenFileDialog$("Choose League Stats file", diskPaths$(2), "*.TMS", "League Stats files [.TMS]")
+    'ChooseFile$ (diskPaths$(2) + "*.TMI", "LEAGUE", ExitCode%)
 
-    If ExitCode% <> 27 And ExitCode% <> 0 Then
+    If leagueFile$ <> "" Then
 
         MsgText$ = "WARNING!!! THIS WILL ERASE ALL COMPILED STATS FOR THIS LEAGUE. IF YOU STILL WISH TO ERASE ALL STATS, PRESS 'Y' FOR YES"
         BoxWidth = 31

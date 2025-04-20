@@ -122,7 +122,8 @@ Sub Hd2HdPro_League ()
 
                     'Check if same league
                     If sameLeague <> 1 Then
-                        leagueFile$ = ChooseFile$(diskPaths$(2) + "*.TMI", "LEAGUE", ExitCode%)
+                        leagueFile$ = _OpenFileDialog$("Choose League Definition file", diskPaths$(2), "*.TMI", "League Definition files [.TMI]")
+                        'ChooseFile$(diskPaths$(2) + "*.TMI", "LEAGUE", ExitCode%)
                     End If
 
                 End If

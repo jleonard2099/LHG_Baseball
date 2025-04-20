@@ -1,4 +1,3 @@
-
 $Debug
 $Color:32
 
@@ -332,7 +331,8 @@ End If
 'Run main menu
 SELECTION% = 1
 
-Screen _NewImage(640, 480, 256)
+menu& = _NewImage(640, 480, 256)
+Screen menu&
 
 Do
 
@@ -406,7 +406,15 @@ Sub Main_Menu (menuSelection)
             Select Case menuSelection
 
                 Case 1:
-                    Call LOADER
+                    If schedGame(0) + schedGame(2) <= schedGame(1) Then
+                        activeSchedule = 1
+                    Else
+                        activeSchedule = 0
+                    End If
+
+                    Do
+                        Call LOADER
+                    Loop Until activeSchedule = 0
 
                 Case 2:
                     Call TeamMgt_Menu
@@ -3796,7 +3804,7 @@ Sub SOURCE ()
 
         Cls
 
-        If useVGA = 0 Then Screen 0
+        If useVGA = 0 Then Screen menu&
 
         Print "THIS GAME HAS BEEN CALLED ON ACCOUNT OF RAIN!!!"
         Print "ALL RECORDS ARE OFFICIAL!!"
@@ -4143,13 +4151,13 @@ Sub SOURCE ()
         End If
 
         If UCase$(I$) = "B" Then
-            If useVGA = 1 Then Screen 0
+            If useVGA = 1 Then Screen menu&
             Call PopUp_Batter(D, P1(D))
             GoTo 15580
         End If
 
         If UCase$(I$) = "P" Then
-            If useVGA = 1 Then Screen 0
+            If useVGA = 1 Then Screen menu&
             Call PopUp_Pitcher(P, P1(P))
             GoTo 15580
         End If
@@ -7488,7 +7496,7 @@ Sub SOURCE ()
     14900 '
     Cls
 
-    If useVGA = 0 Then Screen 0
+    If useVGA = 0 Then Screen menu&
 
     P9 = D
     B1!(P) = B1!(P) + 1
@@ -7566,7 +7574,7 @@ Sub SOURCE ()
 
     15500 '
     Cls
-    If useVGA = 1 Then Screen 0
+    If useVGA = 1 Then Screen menu&
     TG = 0
     PG = 0
     RG = 0
@@ -8062,13 +8070,20 @@ Sub SOURCE ()
             Else
 
                 ' To avoid division by zero
-                pitAvg1 = _Iif( pitchRating(D, P1(D), 1) > 0, _
-                            CInt( pitchRating(D, P1(D), 16) / pitchRating(D, P1(D), 1) * 100 ), _
-                            0 )
+                '-- Only in QB64PE version 4.0
+                'pitAvg1 = _IIF(pitchRating(D, P1(D), 1) > 0, CInt(pitchRating(D, P1(D), 16) / pitchRating(D, P1(D), 1) * 100), 0)
+                'pitAvg5 = _IIF(pitchRating(D, P1(D), 5) > 0, CInt(pitchRating(D, P1(D), 16) / pitchRating(D, P1(D), 5) * 100), 0)
+                If pitchRating(D, P1(D), 1) > 0 Then
+                    pitAvg1 = CInt(pitchRating(D, P1(D), 16) / pitchRating(D, P1(D), 1) * 100)
+                Else
+                    pitAvg1 = 0
+                End If
 
-                pitAvg5 = _Iif( pitchRating(D, P1(D), 5) > 0, _
-                            CInt( pitchRating(D, P1(D), 16) / pitchRating(D, P1(D), 5) * 100 ), _
-                            0 )
+                If pitchRating(D, P1(D), 5) > 0 Then
+                    pitAvg5 = CInt(pitchRating(D, P1(D), 16) / pitchRating(D, P1(D), 5) * 100)
+                Else
+                    pitAvg5 = 0
+                End If
 
                 If gameScore(P, 0) = 0 And pitchRating(D, P1(D), 5) > 0 And RN0 <= pitAvg5 + 10 Then
                     GoTo 18725
@@ -8505,9 +8520,13 @@ Sub SOURCE ()
         GP% = 0
 
         ' To avoid division by zero
-        pitAvg = _Iif( pitchRating(P, P1(P), 1) > 0, _
-                    CInt( pitchRating(P, P1(P), 16) / pitchRating(P, P1(P), 1) * 100 ), _
-                    0 )
+        '_IIF only in QB64PE v4.0
+        'pitAvg = _IIF( pitchRating(P, P1(P), 1) > 0, CInt( pitchRating(P, P1(P), 16) / pitchRating(P, P1(P), 1) * 100 ), 0 )
+        If pitchRating(P, P1(P), 1) > 0 Then
+            pitAvg = CInt(pitchRating(P, P1(P), 16) / pitchRating(P, P1(P), 1) * 100)
+        Else
+            pitAvg = 0
+        End If
 
         If desigHit = 1 Or _
             (pitchEraOpt > 1 And INNING% < 4) Or _
@@ -12573,7 +12592,7 @@ End Sub
 'that contains a view of the team lineup
 Sub PopUp_Lineup ()
 
-    If useVGA = 1 Then Screen 0
+    If useVGA = 1 Then Screen menu&
 
     Call FRAMEOPTION(11, 1)
 
@@ -12822,7 +12841,7 @@ End Sub
 'batters and pitchers.
 Sub POPUPSTATS ()
 
-    If useVGA = 1 Then Screen 0
+    If useVGA = 1 Then Screen menu&
 
     J = B3%(P, B1!(P))
 
@@ -15215,7 +15234,7 @@ End Sub
 'gameplay
 Sub VIEWTEAM ()
 
-    If useVGA = 1 Then Screen 0
+    If useVGA = 1 Then Screen menu&
 
     Do
         Cls
@@ -16327,7 +16346,7 @@ Sub WEATHER ()
 
     If useVGA = 1 Then
         Cls
-        Screen 0
+        Screen menu&
     End If
 
     Call FRAMEOPTION(5, 1)
@@ -16783,7 +16802,7 @@ Sub OPTIONS ()
     Shared playMode$()
 
     If useVGA = 1 Then
-        Screen 0
+        Screen menu&
     Else
         Screen , , 0, 0
     End If
@@ -17586,7 +17605,7 @@ Sub SAVESTATS ()
                     Print #2, schedGame(I)
                 Next
 
-                Close 2
+                Close #2
 
             End If
 
@@ -19371,7 +19390,7 @@ Sub EndOfGame ()
     Cls
 
     If useVGA = 1 Then
-        Screen 0
+        Screen menu&
         _FreeImage imageScreen&
     End If
 
@@ -19403,7 +19422,6 @@ Sub EndOfGame ()
         If UCase$(I$) = "Y" Or (autoPlay = 1 And endAllGames <> 1) Then
             Cls
             Print "PLEASE WAIT ..."
-            ' [bm] Removed infinitely recursive call, it eventually crashes silently (stack overflow?) Call LOADER
         End If
 
     End If

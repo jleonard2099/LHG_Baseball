@@ -65,23 +65,27 @@ Sub SeasonRecords ()
             Select Case SELECTION%
 
                 Case 1:
-                    leagueFile$ = ChooseFile$(diskPaths$(2) + "*.BAT", "LEAGUE", FileExit%)
+                    leagueFile$ = _OpenFileDialog$("Choose League Record file", diskPaths$(2), "*.BAT", "League Record files [.BAT]")
 
-                    If FileExit% <> 27 And leagueFile$ <> "" Then
-                        Call UpdateRecords(leagueFile$)
+                    'ChooseFile$(diskPaths$(2) + "*.BAT", "LEAGUE", FileExit%)
+
+                    If leagueFile$ <> "" Then
+                        Call UpdateRecords(GetFileBaseName$(leagueFile$))
                     End if
 
                 Case 2:
-                    leagueFile$ = ChooseFile$(diskPaths$(2) + "*.BAT", "LEAGUE", FileExit%)
+                    leagueFile$ = _OpenFileDialog$("Choose League Record file", diskPaths$(2), "*.BAT", "League Record files [.BAT]")
+                    'ChooseFile$(diskPaths$(2) + "*.BAT", "LEAGUE", FileExit%)
 
-                    If FileExit% <> 27 And leagueFile$ <> "" Then
-                        Call ViewSeasonRecords(leagueFile$)
+                    If leagueFile$ <> "" Then
+                        Call ViewSeasonRecords(GetFileBaseName$(leagueFile$))
                     End If
 
                 Case 3:
-                    leagueFile$ = ChooseFile$(diskPaths$(2) + "*.BAT", "LEAGUE", FileExit%)
+                    leagueFile$ = _OpenFileDialog$("Choose League Record file", diskPaths$(2), "*.BAT", "League Record files [.BAT]")
+                    'ChooseFile$(diskPaths$(2) + "*.BAT", "LEAGUE", FileExit%)
 
-                    If FileExit% <> 27 And leagueFile$ <> "" Then
+                    If leagueFile$ <> "" Then
 
                         userKey$ = GetPrintOptions$
 
@@ -92,11 +96,11 @@ Sub SeasonRecords ()
                                 Case "F"
                                     userFile$ = _SAVEFILEDIALOG$("Save Records Report",_CWD$ + "\Records","*.txt","Text File")           
                                     If userFile$ <> "" Then
-                                        Call PrintSeasonRecords(0, userFile$, leagueFile$)
+                                        Call PrintSeasonRecords(0, userFile$, GetFileBaseName$(leagueFile$))
                                     End If
 
                                 Case "P"
-                                    Call PrintSeasonRecords(1, "RECORDS", leagueFile$)
+                                    Call PrintSeasonRecords(1, "RECORDS", GetFileBaseName$(leagueFile$))
 
                             End Select
                             

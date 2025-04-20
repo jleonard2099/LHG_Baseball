@@ -1,132 +1,4 @@
 '----------------------------------------
-'           NEWLDRST Subroutine
-'----------------------------------------
-'This subroutine presents the user options
-'for navigating the "Expanded" standings
-Sub ExpandedStandings ()
-
-    _Title "Full Count Baseball - Expanded Leaders / Standings"
-
-    Shared cLoseStreak(), cWinStreak()
-    Shared lastTenLosses(), lastTenWins()
-    Shared lastLoseStreak(), lastWinStreak()
-    Shared teamLoseStreak(), teamWinStreak()
-    Shared teamTotLosses(), teamTotWins()
-    Shared totExtInnLosses(), totExtInnWins()
-    Shared totHomeLosses!(), totHomeWinss!()
-    Shared totRoadLosses(), totRoadWins()
-
-    Shared expStdLeagName$(), memberName$()
-
-    Shared div1Name$, div2Name$, div3Name$, div4Name$
-
-    Erase cLoseStreak, cWinStreak
-    Erase lastLoseStreak, lastWinStreak
-    Erase lastTenLosses, lastTenWins
-    Erase teamLoseStreak, teamWinStreak
-    Erase teamTotLosses, teamTotWins
-    Erase totExtInnLosses, totExtInnWins
-    Erase totHomeLosses!, totHomeWinss!
-    Erase totRoadLosses, totRoadWins
-
-    ReDim menuChoices$(1 To 3)
-
-    Do
-
-        Cls
-        Color 15, 0
-
-        Call TITLE
-
-        menuChoices$(1) = "UPDATE EXPANDED LEAGUE STANDINGS"
-        menuChoices$(2) = "REVIEW EXPANDED LEAGUE STANDINGS"
-        menuChoices$(3) = "RETURN TO MAIN MENU             "
-        SELECTION% = 1
-        Count% = 3
-        Start% = 1
-        ExitCode% = 3
-        FileFGColor = 15: FileBGColor = 1
-        HiLiteFGColor% = 0: HiLiteBGColor% = 7
-        Spacing% = 1
-        Row% = 8
-        menuWidth% = Len(menuChoices$(1))
-        Column% = (80 - menuWidth% - 2) / 2
-
-        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor, FileBGColor)
-
-        _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
-        _MouseHide
-
-        Color , 0
-
-        If ExitCode% <> 27 Then
-
-            Select Case SELECTION%
-
-                Case 1:
-                    Do
-                        leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", FileExit%)
-
-                        If FileExit% <> 27 And FileExit% <> 0 Then
-                            Color 15, 0
-                            Cls
-                            Call UpdateExpandedStandings(leagStatFile$)
-                        End If
-
-                    Loop Until FileExit% = 27 Or FileExit% = 0
-
-                Case 2:
-                    Do
-                        standingsFile$ = ChooseFile$ (diskPaths$(2) + "*.STD", "LEAGUE STANDINGS", FileExit%)
-
-                        If FileExit% <> 27 And FileExit% <> 0 Then
-
-                            Open diskPaths$(2) + standingsFile$ + ".STD" For Input As #1
-
-                            Input #1, league$, div1Name$, div2Name$, div3Name$, div4Name$
-
-                            For I = 1 To TEAMS_PER_LEAGUE
-                                Input #1, expStdLeagName$(I), teamTotWins(I), totHomeWinss!(I), totRoadWins(I), totExtInnWins(I), lastTenWins(I), teamTotLosses(I), totHomeLosses!(I), totRoadLosses(I), totExtInnLosses(I), lastTenLosses(I), teamWinStreak(I), teamLoseStreak(I), cWinStreak(I), cLoseStreak(I)
-                            Next
-
-                            Close #1
-
-                            userKey$ = GetOutputOptions$
-
-                            If userKey$ <> Chr$(27) Then
-
-                                Select Case userKey$
-
-                                    Case "F"
-                                        userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
-                                        If userFile$ <> "" Then
-                                            Call NewStandings_Report(0, userFile$, league$)
-                                        End If
-
-                                    Case "P"
-                                        Call NewStandings_Report(1, "REPORT", league$)
-
-                                    Case "S":
-                                        Call NewStandings_Screen(league$)
-
-                                End Select
-                                
-                            End If
-
-                        End If
-
-                    Loop Until FileExit% = 27 Or FileExit% = 0
-
-            End Select
-        End If
-
-    Loop Until SELECTION% = 3 Or ExitCode% = 27
-
-End Sub
-
-
-'----------------------------------------
 '    UpdateExpandedStandings Subroutine
 '----------------------------------------
 'This subroutine lets the user select a
@@ -316,11 +188,10 @@ Sub NewStandings_Screen (league$)
 
             Color 11
             Locate 2, 35: Print league$
+            Print RTrim$(targetDiv$)
             
             Color 14
-            Locate 4: Print Tab(16); "                      MAG. LNG LNG C  C   HOME  ROAD  X-IN  L-10"
-
-            Print RTrim$(targetDiv$)
+            Locate 4: Print Tab(38); "MAG  LNG LNG C  C   HOME  ROAD  X-IN  L-10"
             Print Tab(16); "G   W   L   PCT   GB   #   WS  LS  WS LS  W- L  W- L  W- L  W- L"
 
             For I = AA To ZZ
@@ -374,11 +245,12 @@ Sub NewStandings_Screen (league$)
             MJ = 163 - teamTotWins(AA) - teamTotLosses(AA + 1)
             If MJ < 0 Then MJ = 0
 
+            Color 15
             Locate 6, 38
             Print Using "###"; MJ;
 
             Color 14
-            Locate LAST_ROW - 1: Print "HIT ANY KEY TO CONTINUE";
+            Locate LAST_ROW - 1, 28: Print "HIT ANY KEY TO CONTINUE";
             I$ = GetKeyPress$
             
         End If
@@ -580,4 +452,3 @@ Sub SortStandings (AA, ZZ)
     Next X
 
 End Sub
-

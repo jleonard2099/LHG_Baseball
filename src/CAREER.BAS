@@ -153,10 +153,13 @@ Sub MergeFirstYear ()
 
             statFile$ = nameStatFile$(team$)
 
-            Do
+            Color 15, 0
+            Cls
 
-                Color 15, 0
-                Cls
+            statYear = Val(YN$)
+            Locate 8, 53: Print targetYear
+
+            Do
 
                 Locate 8, 22: Input "ENTER YEAR TO ADD (EX. - 1961)"; statYear
                 Locate 9, 22: Print "ANY CHANGE? (Y/N)"
@@ -767,7 +770,7 @@ Sub MergeCareerFiles ()
 
             Else
 
-                Call MergeAddYear(careerFile$, statFile$)
+                Call MergeAddYear(careerFile$, statFile$, YN$)
 
             End If
 
@@ -787,13 +790,16 @@ End Sub
 'career stats, adds the team's stats to
 'them, then overwrites the career file
 'with the new values.
-Sub MergeAddYear (selectedFile$, statFile$)
+Sub MergeAddYear (selectedFile$, statFile$, yearNumber$)
 
     Color 15, 0
     Cls
 
+    targetYear = Val(yearNumber$)
+    Locate 8, 53: Print targetYear
+
     Do
-        Locate 8, 22: Input "ENTER YEAR TO ADD (EX. - 1961)"; statYear
+        Locate 8, 22: Input "ENTER YEAR TO ADD (EX. - 1961)"; targetYear
         Locate 9, 22: Print "ANY CHANGE? (Y/N)"
         J$ = GetKeyPress$
     Loop Until UCase$(J$) = "Y" Or UCase$(J$) = "N"
@@ -813,7 +819,7 @@ Sub MergeAddYear (selectedFile$, statFile$)
             doPostLeaders = 0
         End If
 
-        Call AddCareerYear(statYear, doPostLeaders, selectedFile$, statFile$)
+        Call AddCareerYear(targetYear, doPostLeaders, selectedFile$, statFile$)
 
     End If ' Done checking for year to add
 

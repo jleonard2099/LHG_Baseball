@@ -259,7 +259,7 @@ Sub ConfigureDrives ()
 
     _MouseHide
 
-    Screen 0
+    Screen menu&
 
 End Sub
 
@@ -558,7 +558,7 @@ Sub ConfigureDrives_Base ()
 
     _MouseHide
 
-    Screen 0
+    Screen menu&
 
 End Sub
 

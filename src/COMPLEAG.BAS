@@ -48,14 +48,15 @@ Sub CompileLeague ()
 
     C$ = ","
 
-    leagStatFile$ = ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE STATS", ExitCode%)
+    leagueFile$ = _OpenFileDialog$("Choose League Stats file", diskPaths$(2), "*.TMS", "League Stats files [.TMS]")
+    'ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE", ExitCode%)
 
-    If ExitCode% <> 27 And ExitCode% <> 0 Then
+    If leagueFile$ <> "" Then
 
         Color 15, 0
         Cls
 
-        Call ReadLeagueStats(leagStatFile$)
+        Call ReadLeagueStats(leagueFile$)
 
         Erase divWins, divLosses
 
@@ -108,7 +109,7 @@ Sub CompileLeague ()
         Next XW
 
         Call SortStandingsLeague
-        Call PostLeaders(leagueName$, leagStatFile$, APP)
+        Call PostLeaders(GetFileBaseName$(leagueFile$), APP)
 
     End If
 
@@ -1304,7 +1305,7 @@ End Sub
 'This subroutine opens the existing leader
 'and record files for the league, and
 'writes the updated stats to the file
-Sub PostLeaders (league$, leaderFile$, APP)
+Sub PostLeaders (leaderFile$, APP)
 
     Shared divWins(), divLosses()
 
@@ -1314,8 +1315,9 @@ Sub PostLeaders (league$, leaderFile$, APP)
     Shared ER$(), memberName$()
 
     Color 15, 0
+    Cls
 
-    Print "POSTING "; league$; " LEADERS"
+    Print "POSTING "; leaderFile; " LEADERS"
 
     Open diskPaths$(2) + leaderFile$ + ".LDR" For Output As #2
 

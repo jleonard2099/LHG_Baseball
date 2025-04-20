@@ -1,6 +1,7 @@
 '----------------------------------------
 ' Used in more than one source file
 '----------------------------------------
+Dim Shared menu&
 Dim opSysType$
 Dim Shared dirSeparator$
 
