@@ -1495,6 +1495,8 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         End If
 
     Next
+   
+    Close #1
 
     If printDest = 1 Then
 

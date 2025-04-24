@@ -95,7 +95,7 @@ Sub SCHEDULE ()
                         scheduleFile$ = _OpenFileDialog$("Choose Schedule file", diskPaths$(3), "*.SCD", "Schedule files [.SCD]")
                         'ChooseFile$(diskPaths$(3) + "*.SCD", "SCHEDULE", FileExit%)
 
-                        If scheduleFile$ Then
+                        If scheduleFile$ <> "" Then
 
                             Call LoadScheduleInfo(scheduleFile$)
 

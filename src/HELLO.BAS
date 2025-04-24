@@ -347,7 +347,7 @@ System
 
 Errhandler:
 Open "errlog" For Append As #9
-Print #9, "Error #"; Err; "on program file line"; _ErrorLine
+Print #9, "Error #"; Err; "on program file line"; _ErrorLine; "-- "; _ErrorMessage$
 
 If _InclErrorLine Then
     Print #9, "    in module "; _InclErrorFile$; " line "; _InclErrorLine
@@ -1122,6 +1122,7 @@ Sub LOADER
             Do
                 Color 7, 0
 
+                Sleep
                 I$ = GetKeyPress$
 
                 If I$ <> Chr$(27) Then Call LetterToNumber(I$, setting)
