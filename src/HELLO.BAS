@@ -37,6 +37,8 @@ DefInt A-Z
 '$Include: 'GameRoutines.bi'
 '$Include: 'GameRoutines_Gfx.bi'
 '$Include: 'SOURCE.bi'
+'$INCLUDE: 'Consts.bi'
+
 
 On Error GoTo Errhandler
 
@@ -970,7 +972,7 @@ Sub LOADER
 
         'Open "pbplog" + Str$(currGame) For Append As #11
         'Open "pbplog" For Append As #11
-        If Not _FileExists(diskPaths$(3) + scheduleFile$) Then
+        If Not _FileExists(scheduleFile$) Then
 
             'Notify user that game won't execute
             MsgText$ = "CAN'T FIND OR LOAD TARGET SCHEDULE.  PRESS ANY KEY TO RETURN TO MENU"
@@ -985,7 +987,7 @@ Sub LOADER
 
         Else
 
-            Open diskPaths$(3) + scheduleFile$ For Random As #6 Len = SCHEDULE_SIZE_BYTES
+            Open scheduleFile$ For Random As #6 Len = SCHEDULE_SIZE_BYTES
 
             For X = 0 To 18
                 Field #6, X * 2 As X$, 2 As Q2$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
@@ -3759,7 +3761,11 @@ Sub SOURCE ()
 
     Shared triplePlayAdj(), SU()
 
+    VV(0)  = 1 : VV(1)  = 1
+    VV1(1) = 9 : VV1(1) = 9
     Call HITTINGLINES '(teamRat_GAME(), pitchRating(), P1(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+
+    Call PITSTAM(0) : Call PITSTAM(1)
 
     If useVGA = 1 Then Call LOADSCREEN
 
@@ -3953,9 +3959,13 @@ Sub SOURCE ()
 
     End If
 
-    If B9%(D, 1) = 99 And playerMode = 0 Or B9%(D, 1) = 99 And playerMode = 1 And compTeam = 1 - D Then
+    If B9%(D, 1) = 99 Then
+        If playerMode = 0 Or B9%(D, 1) = 99 And playerMode = 1 And compTeam = 1 - D Then
         '----- move stuff here -----
         GoTo 14900
+        Else
+            Call RELIEVERS(PPH, pz) 'Will choose a new pitcher because pitcher was pinch hit for
+        End If        
     End If
 
     15050 '
@@ -8111,7 +8121,7 @@ Sub SOURCE ()
                     GoTo 18725
                 End If
 
-                GK%(D) = 1
+                GK%(D) = 1  'new reliever'
 
             End If
 
@@ -8429,81 +8439,35 @@ Sub SOURCE ()
 
     End If
 
+    If INNING% < 6 Then 18941   ' [bm] KLUDGE: Don't pinch hit for a position player before the 6th inning
+
     For I = 0 To 22:
 
         If Not (batRating(P, I, 21) > 0 Or batters$(P, I) = "XXX" Or batRating(P, I, 4) = 0) Then
 
             If Not (B7%(P, B1!(P)) <> batRating(P, I, 22) And B7%(P, B1!(P)) <> batRating(P, I, 23) And B7%(P, B1!(P)) <> batRating(P, I, 24) And B7%(P, B1!(P)) <> batRating(P, I, 25)) Then
 
-                '-- The next 3 IF statements execute identical code
+                pinchBAvg = batRating(P, I,  SS_B_H) / batRating(P, I,  SS_B_AB) * 1000
+                battrBAvg = batRating(P, JM, SS_B_H) / batRating(P, JM, SS_B_AB) * 1000
+                abRand = Int(Rnd(1) * 500)  ' Randomize chance of PH entering game, based on his AB's in the season. This will limit players who hardly played.  (500 is arbitrary number)
 
-                If pitchRating(D, P1(D), 0) = 1 And batRating(P, I, 0) > 0 And batRating(P, I, 6) / batRating(P, I, 4) * 1000 > batRating(P, JM, 6) / batRating(P, JM, 4) * 1000 + 35 Then
+                iPitThrows = pitchRating(D, P1(D), SS_P_Throws)   ' pitcher throws L/R
+                iBatHits   = batRating(P, I, SS_B_Bats)           ' batter hits L/Sw/R
 
-                    PPH = 1
-                    gameD0(P) = gameD0(P) + 1
-                    X0%(P, 0, gameD0(P)) = I
-                    X0%(P, 1, gameD0(P)) = B7%(P, B1!(P))
-                    X0%(P, 2, gameD0(P)) = (B1!(P) * 10) + (gameD0(P) - 9)
-                    batRating(P, I, 21) = 1
-                    B3%(P, B1!(P)) = I
-                    B9%(P, B7%(P, B1!(P))) = I
-
-                    If B7%(P, B1!(P)) = 1 Or B7%(P, B1!(P)) = 10 Then B9%(P, 1) = 99: B9%(P, 0) = B1!(P): B7%(P, B1!(P)) = 10
-
-                    I7% = P
-                    I8% = B1!(P)
-                    I9% = B3%(P, B1!(P))
-                    Call REPLACEMENTS(I7%, I8%, I9%)
-
-                    GoTo 18938
-
+                ' Pitcher and PH both righty
+                If iPitThrows =  1 And iBatHits > 0 And pinchBAvg > battrBAvg + 35 Then
+                    If abRand < batRating(P, I,  SS_B_AB) Then GoTo PhForPosPlayer
                 End If
 
-                If pitchRating(D, P1(D), 0) = -1 And batRating(P, I, 0) < 0 And batRating(P, I, 6) / batRating(P, I, 4) * 1000 > batRating(P, JM, 6) / batRating(P, JM, 4) * 1000 + 45 Then
-
-                    PPH = 1
-                    gameD0(P) = gameD0(P) + 1
-                    X0%(P, 0, gameD0(P)) = I
-                    X0%(P, 1, gameD0(P)) = B7%(P, B1!(P))
-                    X0%(P, 2, gameD0(P)) = (B1!(P) * 10) + (gameD0(P) - 9)
-                    batRating(P, I, 21) = 1
-                    B3%(P, B1!(P)) = I
-                    B9%(P, B7%(P, B1!(P))) = I
-
-                    If B7%(P, B1!(P)) = 1 Or B7%(P, B1!(P)) = 10 Then B9%(P, 1) = 99: B9%(P, 0) = B1!(P): B7%(P, B1!(P)) = 10
-
-                    I7% = P
-                    I8% = B1!(P)
-                    I9% = B3%(P, B1!(P))
-                    Call REPLACEMENTS(I7%, I8%, I9%)
-
-                    GoTo 18938
-
+                ' Pitcher and PH both lefty
+                If iPitThrows = -1 And iBatHits < 0 And pinchBAvg > battrBAvg + 45 Then
+                    If abRand < batRating(P, I,  SS_B_AB) Then GoTo PhForPosPlayer
                 End If
 
-                If batRating(P, I, 0) = 0 And batRating(P, I, 6) / batRating(P, I, 4) * 1000 > batRating(P, JM, 6) / batRating(P, JM, 4) * 1000 + 30 Then
-
-                    PPH = 1
-                    gameD0(P) = gameD0(P) + 1
-                    X0%(P, 0, gameD0(P)) = I
-                    X0%(P, 1, gameD0(P)) = B7%(P, B1!(P))
-                    X0%(P, 2, gameD0(P)) = (B1!(P) * 10) + (gameD0(P) - 9)
-                    batRating(P, I, 21) = 1
-                    B3%(P, B1!(P)) = I
-                    B9%(P, B7%(P, B1!(P))) = I
-
-                    If B7%(P, B1!(P)) = 1 Or B7%(P, B1!(P)) = 10 Then B9%(P, 1) = 99: B9%(P, 0) = B1!(P): B7%(P, B1!(P)) = 10
-
-                    I7% = P
-                    I8% = B1!(P)
-                    I9% = B3%(P, B1!(P))
-                    Call REPLACEMENTS(I7%, I8%, I9%)
-
-                    GoTo 18938
-
+                ' Pitcher and PH on opposite sides
+                If (iPitThrows = -1 And iBatHits >= 0 Or iPitThrows = 1 And iBatHits <= 0) And pinchBAvg > battrBAvg + 30 Then
+                    If abRand < batRating(P, I,  SS_B_AB) Then GoTo PhForPosPlayer
                 End If
-
-                '-- Done with identical If/Then code
 
             End If
 
@@ -8512,6 +8476,28 @@ Sub SOURCE ()
     Next I
 
     GoTo 18941
+
+
+    PhForPosPlayer:
+
+    PPH = 1
+    gameD0(P) = gameD0(P) + 1
+    X0%(P, 0, gameD0(P)) = I
+    X0%(P, 1, gameD0(P)) = B7%(P, B1!(P))
+    X0%(P, 2, gameD0(P)) = (B1!(P) * 10) + (gameD0(P) - 9)
+    batRating(P, I, 21) = 1
+    B3%(P, B1!(P)) = I
+    B9%(P, B7%(P, B1!(P))) = I
+
+    If B7%(P, B1!(P)) = 1 Or B7%(P, B1!(P)) = 10 Then B9%(P, 1) = 99: B9%(P, 0) = B1!(P): B7%(P, B1!(P)) = 10
+
+    I7% = P
+    I8% = B1!(P)
+    I9% = B3%(P, B1!(P))
+    Call REPLACEMENTS(I7%, I8%, I9%)
+
+    GoTo 18938
+
 
     '----- NOODLE -----
 
@@ -9081,6 +9067,7 @@ Sub AUTOSETUP (validTeam)
         tgtYear$ = diskIDs$(tgtTeam)
 
         Call ReadGameTeam(tgtYear$, gameTeams$(tgtTeam), tgtId, tgtTeam, validTeam)
+        Call ReadGameExtraData(tgtYear$, tgtId, tgtTeam)
 
         schedOptions(tgtTeam) = tgtId
         gameMgrIdx(tgtTeam) = tgtId
@@ -12252,7 +12239,7 @@ Sub PITSTRAT (PPH, pz)
 
                     8111 SF% = 0
 
-                    If A1 < 1 Then 8195
+                    If A1 < 1 Then Exit Sub
 
                     If A1 > 0 And A1 <= 2 Then
                         SF% = 1
@@ -12326,7 +12313,7 @@ Sub PITSTRAT (PPH, pz)
 
     End If
 
-    GoTo 8195
+    Exit Sub
 
     'strategy identified, now
 
@@ -12353,11 +12340,10 @@ Sub PITSTRAT (PPH, pz)
             pIdx = V0
             Call NEWPITCHER(pIdx, PPH, pz)
             SU(D, 0) = -1
-            GoTo 8195
+            Exit Sub
         End If
     Next
     'NO SETUP MAN FOUND
-    'GOTO 8195
 
     8113
     I2 = 0
@@ -12383,7 +12369,7 @@ Sub PITSTRAT (PPH, pz)
             pIdx = V0
             Call NEWPITCHER(pIdx, PPH, pz)
             SU(D, 1) = -1
-            GoTo 8195
+            Exit Sub
         End If
     Next
 
@@ -12412,13 +12398,12 @@ Sub PITSTRAT (PPH, pz)
             teamMgrProfileVal(D, pIdx) = -1
             pIdx = V0
             Call NEWPITCHER(pIdx, PPH, pz)
-            GoTo 8195
+            Exit Sub
         End If
     Next
 
     'NO middle RELIEVER FOUND
 
-    8195 '
 End Sub
 
 
@@ -14135,7 +14120,7 @@ Sub RELIEVERS (PPH, pz)
 
                     If A2 > 0 Then
                         If I3 <= I2 + A2 Then
-                            Call NEWPITCHER(rIdx, PPH, pz)
+                            Call NEWPITCHER(rIdx, PPH, pz)      ' middle relief
                             Exit Sub
                         Else
                             I2 = I2 + A2
@@ -14147,7 +14132,7 @@ Sub RELIEVERS (PPH, pz)
                     'INNING% > 7
                     If A1 < 0 And A2 > 0 Then
                         If I3 <= I2 + A2 Then
-                            Call NEWPITCHER(rIdx, PPH, pz)
+                            Call NEWPITCHER(rIdx, PPH, pz)      ' setup
                             Exit Sub
                         Else
                             I2 = I2 + A2
@@ -14155,7 +14140,7 @@ Sub RELIEVERS (PPH, pz)
                     Else
                         If A1 >= 0 And I3 > I2 Then
                             If I3 <= I2 + pitchRating(D, rIdx, 3) Then
-                                Call NEWPITCHER(rIdx, PPH, pz)
+                                Call NEWPITCHER(rIdx, PPH, pz)  ' closer
                                 Exit Sub
                             Else
                                 I2 = I2 + pitchRating(D, rIdx, 3)
@@ -14171,7 +14156,7 @@ Sub RELIEVERS (PPH, pz)
 
         For rIdx = 0 To 21
             If pitchRating(D, rIdx, 15) = 0 And pitchers$(D, rIdx) <> "XXX" Then
-                Call NEWPITCHER(rIdx, PPH, pz)
+                Call NEWPITCHER(rIdx, PPH, pz)                  ' anyone with a healthy arm
                 Exit For
             End If
         Next rIdx
@@ -17570,7 +17555,7 @@ Sub SAVESTATS ()
 
         If _FileExists("GAME82") Then
 
-            Open diskPaths$(3) + scheduleFile$ For Random As #1 Len = SCHEDULE_SIZE_BYTES
+            Open scheduleFile$ For Random As #1 Len = SCHEDULE_SIZE_BYTES
 
             For X = 0 To 18
                 Field #1, X * 2 As X$, 2 As player$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
@@ -18125,7 +18110,8 @@ Sub BOXOPTIONS (outputChoice)
                     'boxName$ = boxName$ + ".SPC"
                 Else
                     'ScheduleName_GameXXX.BS
-                    boxName$ = Mid$(scheduleFile$, 1, Len(scheduleFile$) - 4) + "_GAME" + Mid$(Str$(schedGame(0) + schedGame(2)), 2, Len(Str$(schedGame(0) + schedGame(2)))) + ".BS"
+                    baseFile$ = GetFileBaseName$(scheduleFile$)
+                    boxName$ = Mid$(baseFile$, 1, Len(baseFile$) - 4) + "_GAME" + Mid$(Str$(schedGame(0) + schedGame(2)), 2, Len(Str$(schedGame(0) + schedGame(2)))) + ".BS"
                     'boxName$ = "BOX" + Mid$(Str$(schedGame(0) + schedGame(2)), 2, Len(Str$(schedGame(0) + schedGame(2))))
                 End If
 
