@@ -2,6 +2,7 @@
 Function GetKeyPress$ Static
 
     Do
+		Sleep
         k$ = InKey$
     Loop Until k$ <> ""
 
@@ -13,6 +14,7 @@ End Function
 Function GetKeyCode% Static
 
     Do
+		Sleep
         k$ = InKey$
     Loop Until k$ <> ""
 

@@ -317,6 +317,7 @@ Dim grounderDir$(10), pitHand$(1)
 
 
 ' Shared / Global
+Dim Shared earlyExit
 Dim Shared badString%, EJ%, currFielder, H6%
 Dim Shared IJL%, INNING%, Inotloop%, LYN%
 Dim Shared PB%, PC%, SC%, WS%

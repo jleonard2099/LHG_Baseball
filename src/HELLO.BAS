@@ -346,20 +346,21 @@ System
 '----------------------------------------
 
 Errhandler:
-Open "errlog" For Append As #9
-Print #9, "Error #"; Err; "on program file line"; _ErrorLine
+
+Open "errlog" For Append As #10
+'Print #10, "An error occurred. Please contact support with the following information:"
+Print #10, "Error #"; Err; "on program file line"; _ErrorLine
 
 If _InclErrorLine Then
-    Print #9, "    in module "; _InclErrorFile$; " line "; _InclErrorLine
+    Print #10, "    in module "; _InclErrorFile$; " line "; _InclErrorLine
 End If
 
 'If _FileExists("GAME82") Then
-'Print #9, "Schedule game # "; Using "###"; schedGame(0) + schedGame(2)
-'Print #9, gameTeams$(0) + " vs. " + gameTeams$(1)
+'Print #10, "Schedule game # "; Using "###"; schedGame(0) + schedGame(2)
+'Print #10, gameTeams$(0) + " vs. " + gameTeams$(1)
 'End If
-Print #9, "Value of D = "; D
-Print #9,
-Close #9
+Print #10,
+Close #10
 Resume Next ' moves program to code following the error.
 
 '----------------------------------------
@@ -419,7 +420,7 @@ Sub Main_Menu (menuSelection)
 
                     Do
                         Call LOADER
-                    Loop Until activeSchedule = 0
+                    Loop Until activeSchedule = 0 or earlyExit = 1
 
                 Case 2:
                     Call TeamMgt_Menu
@@ -1191,8 +1192,10 @@ Sub LOADER
                         '
 
                     Case 10:
-                        Locate 12, 32
-                        Input pbpDelay!
+                        Do
+                            Locate 13, 32
+                            Input pbpDelay!
+                        Loop Until pbpDelay! >= 0
 
                     Case 11:
                         useInj = 1 - useInj
@@ -18124,7 +18127,8 @@ Sub BOXOPTIONS (outputChoice)
                     'boxName$ = boxName$ + ".SPC"
                 Else
                     'ScheduleName_GameXXX.BS
-                    boxName$ = Mid$(scheduleFile$, 1, Len(scheduleFile$) - 4) + "_GAME" + Mid$(Str$(schedGame(0) + schedGame(2)), 2, Len(Str$(schedGame(0) + schedGame(2)))) + ".BS"
+                    baseFile$ = GetFileBaseName$(scheduleFile$)
+                    boxName$ = Mid$(baseFile$, 1, Len(baseFile$) - 4) + "_GAME" + Mid$(Str$(schedGame(0) + schedGame(2)), 2, Len(Str$(schedGame(0) + schedGame(2)))) + ".BS"
                     'boxName$ = "BOX" + Mid$(Str$(schedGame(0) + schedGame(2)), 2, Len(Str$(schedGame(0) + schedGame(2))))
                 End If
 

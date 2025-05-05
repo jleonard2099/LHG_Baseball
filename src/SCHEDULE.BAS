@@ -162,8 +162,10 @@ Sub NewSchedule (scheduleFile$)
 
     Shared modeAbbrev$(), yesNo$()
 
-    DT$ = "03-18-24"
+    DT$ = "03-18-25"
     TM$ = "03:00P"
+
+    baseFile$ = GetFileBaseName$(scheduleFile$)
 
     Do
 
@@ -210,7 +212,7 @@ Sub NewSchedule (scheduleFile$)
         Color 14: Print "-RESET SCORES";
 
         Locate 1, 1: Print Tab(80); " ";
-        Locate 1, 1: Print scheduleFile$
+        Locate 1, 1: Print baseFile$
         Locate 1, 33
 
         Color 14: Print "AUTO SCHEDULER"
@@ -346,7 +348,7 @@ Sub NewSchedule (scheduleFile$)
                 NS% = Int((targetGame% - 1) / 20)
 
                 'boxName$ = diskPaths$(1) + "BOX" + Mid$(Str$(targetGame%), 2, Len(Str$(targetGame%)))
-                boxName$ = diskPaths$(1) + scheduleFile$ + "_GAME" + Mid$(Str$(targetGame%), 2, Len(Str$(targetGame%))) + ".BS"
+                boxName$ = diskPaths$(1) + baseFile$ + "_GAME" + Mid$(Str$(targetGame%), 2, Len(Str$(targetGame%))) + ".BS"
 
                 Call EditBoxscore(boxName$)
                 Color 15, 0
@@ -418,7 +420,7 @@ Sub NewSchedule (scheduleFile$)
                 If EG% > scheduleAP%(0) Then EG% = scheduleAP%(0)
 
                 Open "GAME82" For Output As #1
-                Print #1, scheduleFile$ + ".SCD"
+                Print #1, baseFile$ + ".SCD"
                 Print #1, SG% 'Start Game
                 Print #1, EG% 'End Game
                 Print #1, 0
