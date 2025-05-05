@@ -112,13 +112,13 @@ Sub NEWLDR ()
 
                         Open standingsFile$ For Input As #2
 
-                        Input #1, league$, div1Name$, div2Name$, div3Name$, div4Name$
+                        Input #2, league$, div1Name$, div2Name$, div3Name$, div4Name$
 
                         For I = 1 To TEAMS_PER_LEAGUE
-                            Input #1, expStdLeagName$(I), teamTotWins(I), totHomeWinss!(I), totRoadWins(I), totExtInnWins(I), lastTenWins(I), teamTotLosses(I), totHomeLosses!(I), totRoadLosses(I), totExtInnLosses(I), lastTenLosses(I), teamWinStreak(I), teamLoseStreak(I), cWinStreak(I), cLoseStreak(I)
+                            Input #2, expStdLeagName$(I), teamTotWins(I), totHomeWinss!(I), totRoadWins(I), totExtInnWins(I), lastTenWins(I), teamTotLosses(I), totHomeLosses!(I), totRoadLosses(I), totExtInnLosses(I), lastTenLosses(I), teamWinStreak(I), teamLoseStreak(I), cWinStreak(I), cLoseStreak(I)
                         Next
 
-                        Close #1
+                        Close #2
 
                         userKey$ = GetOutputOptions$
 

@@ -750,6 +750,7 @@ Sub MAMenu (menuChoices$(), Selected%, Start%, Count%, ScanCode%, ItemFGColor%, 
     UserIn$ = "" ' *** Reset UserIn$ ***
 
     Do
+        Sleep
         UserIn$ = InKey$
     Loop Until UserIn$ <> ""
 
@@ -868,6 +869,7 @@ Sub MMenuVert (menuChoices$(), Selected%, Start%, ScanCode%, ItemFGColor%, ItemB
 
     'get cursor key movements and redraw menu
     Do
+        Sleep
         UserIn$ = InKey$
 
         If Len(UserIn$) = 2 Then UserIn$ = Right$(UserIn$, 1)

@@ -84,7 +84,7 @@ Sub SCHEDULE ()
                     scheduleFile$ = _InputBox$("Schedule File Name", "Enter name for schedule file")
 
                     If scheduleFile$ <> "" Then
-                        Call NewSchedule(GetFileBaseName$(scheduleFile$))
+                        Call NewSchedule(scheduleFile$)
                     End If
 
                 Case 2 To 5:
@@ -95,7 +95,7 @@ Sub SCHEDULE ()
                         scheduleFile$ = _OpenFileDialog$("Choose Schedule file", diskPaths$(3), "*.SCD", "Schedule files [.SCD]")
                         'ChooseFile$(diskPaths$(3) + "*.SCD", "SCHEDULE", FileExit%)
 
-                        If scheduleFile$ Then
+                        If scheduleFile$ <> "" Then
 
                             Call LoadScheduleInfo(scheduleFile$)
 
@@ -108,7 +108,7 @@ Sub SCHEDULE ()
                             Else
                                 'Retrieve / Edit / Play Schedule
                                 Color 15, 0
-                                Call NewSchedule(GetFileBaseName$(scheduleFile$))
+                                Call NewSchedule(scheduleFile$)
                             End If
 
                         End If
@@ -418,7 +418,7 @@ Sub NewSchedule (scheduleFile$)
                 If EG% > scheduleAP%(0) Then EG% = scheduleAP%(0)
 
                 Open "GAME82" For Output As #1
-                Print #1, scheduleFile$ + ".SCD"
+                Print #1, scheduleFile$
                 Print #1, SG% 'Start Game
                 Print #1, EG% 'End Game
                 Print #1, 0
@@ -852,7 +852,7 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
         Case 5
             Call ChangeGlobalSettings
             Call SaveScheduleFile(scheduleFile$)
-            Call NewSchedule(GetFileBaseName$(scheduleFile$))
+            Call NewSchedule(scheduleFile$)
 
         Case 3, 4
 

@@ -100,7 +100,7 @@ End Sub
 'stats into arrays
 Sub LoadTeamStats (statFile$, nbrGames)
 
-    Shared statD0, statD1
+    Shared statD0, statD1, statS0(), teamScore(), oppScore(), nbrInnings(), locIndicator$()
 
     Shared extraInnWins, extraInnLosses
     Shared homeWins, homeLosses
@@ -1112,7 +1112,7 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
     Shared teamScore(), nbrInnings()
     Shared statS0(), oppScore()
 
-    RQ = Val(Right$(memberName$(XW), 2))
+    RQ = Val(Right$(statFile$, 2))
     RT = 60
     If RQ > RT Then
         '# games afer 1960
