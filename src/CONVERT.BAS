@@ -168,7 +168,7 @@ Sub ConvertSched6to7 (targetFile$, silent)
 
         numberGames = fileLength& / (SCHEDULE_SIZE_BYTES - 4)
 
-        Call ReadSchedOld(GetFileBaseName$(targetFile$))
+        Call ReadSchedOld(targetFile$)
 
         'Call SaveSchedFileConverted(newFile$, numberGames)
 
