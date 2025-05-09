@@ -1130,7 +1130,6 @@ Sub LOADER
             Do
                 Color 7, 0
 
-                Sleep
                 I$ = GetKeyPress$
 
                 If I$ <> Chr$(27) Then Call LetterToNumber(I$, setting)
@@ -3771,7 +3770,7 @@ Sub SOURCE ()
 
     VV(0)  = 1 : VV(1)  = 1
     VV1(1) = 9 : VV1(1) = 9
-    Call HITTINGLINES '(teamRat_GAME(), pitchRating(), P1(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+    Call HITTINGLINES
 
     Call PITSTAM(0) : Call PITSTAM(1)
 
@@ -3888,7 +3887,7 @@ Sub SOURCE ()
             Next
 
             '14955  ---> this is it's own routine used often
-            Call HITTINGLINES '(teamRat_GAME(), p%(), P1(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+            Call HITTINGLINES
 
             If useVGA = 1 Then
                 Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
@@ -3946,7 +3945,7 @@ Sub SOURCE ()
                         End If
                     Next
 
-                    Call HITTINGLINES '(teamRat_GAME(), p%(), P1(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+                    Call HITTINGLINES
 
                     If useVGA = 1 Then
                         Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
@@ -4077,7 +4076,7 @@ Sub SOURCE ()
 
             'Printing black on background
             _PrintMode _KeepBackground , imageScreen&
-            Color &HF000000
+            Color &HF0000000
 
             PrintOnGfx 1, 19, pbpString$, imageScreen&
 
@@ -4137,7 +4136,7 @@ Sub SOURCE ()
 
                 'Printing black on background
                 _PrintMode _KeepBackground , imageScreen&
-                Color &HF000000
+                Color &HF0000000
 
                 PrintOnGfx 52, 26, pbpString$, imageScreen&
 
@@ -4259,7 +4258,7 @@ Sub SOURCE ()
 
             'Printing black on background
             _PrintMode _KeepBackground , imageScreen&
-            Color &HF000000
+            Color &HF0000000
 
             'Print infield status
             PrintOnGfx 52, 26, infStatus$, imageScreen&
@@ -4398,7 +4397,7 @@ Sub SOURCE ()
             If useVGA = 1 Then
                 'Printing black on background
                 _PrintMode _KeepBackground , imageScreen&
-                Color &HF000000
+                Color &HF0000000
 
                 PrintOnGfx 1, 19, pbpString$, imageScreen&
 
@@ -4559,7 +4558,7 @@ Sub SOURCE ()
 
     If I3 <= 350 Then Goto LWeirdPlay
 
-    If I9 <= (B4%(P, LIVE_K, B1!(P)) * 2 * .33) Then
+    If I9 <= (game_batRating(P, LIVE_K, B1!(P)) * 2 * .33) Then
 
         nbrStrikes = nbrStrikes + 1
         Call PBP(player$(0) + " swings and misses")
@@ -4578,7 +4577,7 @@ Sub SOURCE ()
         End If
     End If
 
-    If I9 <= B4%(P, LIVE_K, B1!(P)) * 2 Then
+    If I9 <= game_batRating(P, LIVE_K, B1!(P)) * 2 Then
         Call PBP(player$(0) + " fouls off the pitch...hit away")
         Call DELAY
         P2 = 1
@@ -4623,7 +4622,7 @@ Sub SOURCE ()
     '10 to 24
     If H6% <= 4 Or H6% > 5 And H6% < 9 Or H6% >= 10 And H6% <= 24 Then
 
-        Call HITTINGLINES '(teamRat_GAME(), p%(), P1(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+        Call HITTINGLINES
 
         If useVGA = 1 Then
             Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
@@ -4641,7 +4640,7 @@ Sub SOURCE ()
     '25 to 29
     If H6% = 5 Or H6% >= 25 And H6% <= 29 Then
 
-        Call HITTINGLINES '(teamRat_GAME(), p%(), P1(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+        Call HITTINGLINES
 
         If useVGA = 1 Then
             Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
@@ -4658,7 +4657,7 @@ Sub SOURCE ()
     '9
     If H6% = 9 Then
 
-        Call HITTINGLINES '(teamRat_GAME(), p%(), P1(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+        Call HITTINGLINES
 
         If useVGA = 1 Then
             Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
@@ -4677,7 +4676,7 @@ Sub SOURCE ()
     '45
     If H6% = 45 Then
 
-        Call HITTINGLINES '(teamRat_GAME(), p%(), P1(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+        Call HITTINGLINES
 
         If useVGA = 1 Then
             Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
@@ -4693,7 +4692,7 @@ Sub SOURCE ()
 
     '30 to 44
     '46+ ???
-    Call HITTINGLINES '(teamRat_GAME(), p%(), P1(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+    Call HITTINGLINES
 
     If useVGA = 1 Then
         Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
@@ -4922,7 +4921,7 @@ Sub SOURCE ()
         GoTo LCheckForOptionsOrQuit
     End If
 
-    If H6% <= B4%(P, LIVE_BB, B1!(P)) + 25 Then
+    If H6% <= game_batRating(P, LIVE_BB, B1!(P)) + 25 Then
         S2% = 2
         '13240 / *** base on balls ***
         Call BASEONBALLS(S2%, D2, D, P)
@@ -4966,14 +4965,14 @@ Sub SOURCE ()
         GoTo 13063
     End If
 
-    If H6% > B4%(P, LIVE_BAvg, B1!(P)) + I4 Then
+    If H6% > game_batRating(P, LIVE_BAvg, B1!(P)) + I4 Then
 
         '3600
         ' *** check for strikeout ***
         H6% = Int(Rnd(1) * 1000) + 1
-        strikeoutRating = B4%(P, LIVE_K, B1!(P))
+        strikeoutRating = game_batRating(P, LIVE_K, B1!(P))
 
-        If H6% > B4%(P, LIVE_K, B1!(P)) Then
+        If H6% > game_batRating(P, LIVE_K, B1!(P)) Then
 
             ' *** ground ball for out ***
             Call Rolld100(H6%)
@@ -5607,7 +5606,7 @@ Sub SOURCE ()
 
         H6% = Int(Rnd(1) * 1000) + 1
 
-        If H6% <= B4%(P, LIVE_2B, B1!(P)) And P2 <> 2 Or H6% <= B4%(P, LIVE_2B, B1!(P)) * .5 And P2 = 2 Then
+        If H6% <= game_batRating(P, LIVE_2B, B1!(P)) And P2 <> 2 Or H6% <= game_batRating(P, LIVE_2B, B1!(P)) * .5 And P2 = 2 Then
 
             S2% = 8
 
@@ -5763,7 +5762,7 @@ Sub SOURCE ()
         End If
 
 
-        If H6% <= B4%(P, LIVE_2B, B1!(P)) + B4%(P, LIVE_3B, B1!(P)) And P2 <> 2 Or H6% <= B4%(P, LIVE_2B, B1!(P)) * .5 + B4%(P, LIVE_3B, B1!(P)) * .5 And P2 = 2 Then
+        If H6% <= game_batRating(P, LIVE_2B, B1!(P)) + game_batRating(P, LIVE_3B, B1!(P)) And P2 <> 2 Or H6% <= game_batRating(P, LIVE_2B, B1!(P)) * .5 + game_batRating(P, LIVE_3B, B1!(P)) * .5 And P2 = 2 Then
 
             S2% = 9
 
@@ -5905,21 +5904,21 @@ Sub SOURCE ()
 
         Call HITS2GAP(currFielder, P, I1, D)
 
-        I3 = B4%(P, LIVE_2B, B1!(P)) + B4%(P, LIVE_3B, B1!(P))
+        I3 = game_batRating(P, LIVE_2B, B1!(P)) + game_batRating(P, LIVE_3B, B1!(P))
 
-        E2% = I3 + B4%(P, LIVE_HR, B1!(P))
+        E2% = I3 + game_batRating(P, LIVE_HR, B1!(P))
         If currFielder = 8 And H6% <= E2% And P2 <> 2 Or currFielder = 8 And H6% <= E2% * .5 And P2 = 2 Then
             S2% = 10
             GoTo LHomeRun
         End If
 
-        E2% = I3 + B4%(P, LIVE_L_HR, B1!(P))
+        E2% = I3 + game_batRating(P, LIVE_L_HR, B1!(P))
         If currFielder = 7 And H6% <= E2% And P2 <> 2 Or currFielder = 7 And H6% <= E2% * .5 And P2 = 2 Then
             S2% = 10
             GoTo LHomeRun
         End If
 
-        E2% = I3 + B4%(P, LIVE_R_HR, B1!(P))
+        E2% = I3 + game_batRating(P, LIVE_R_HR, B1!(P))
         If currFielder = 9 And H6% <= E2% And P2 <> 2 Or currFielder = 9 And H6% <= E2% * .5 And P2 = 2 Then
             S2% = 10
             GoTo LHomeRun
@@ -5930,7 +5929,7 @@ Sub SOURCE ()
         S2% = 7
 
         ' If B7%(P, B1!(P)) = 1 Or H7% <= SN Then
-        If B7%(P, B1!(P)) <> 1 And H6% <= B4%(P, LIVE_BAvg, B1!(P)) And P2 <> 2 Then
+        If B7%(P, B1!(P)) <> 1 And H6% <= game_batRating(P, LIVE_BAvg, B1!(P)) And P2 <> 2 Then
 
             13065 '/ *** single ***
             Call SINGLEROUTINE(currFielder, P, I1, D, S2%, P2)
@@ -7684,7 +7683,7 @@ Sub SOURCE ()
             W6 = W5
             VV(P9) = 1
             VV1(P9) = 9
-            Call HITTINGLINES '(teamRat_GAME(), pitchRating(), P1(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+            Call HITTINGLINES
 
             P9 = 1 - P9
 
@@ -7762,7 +7761,7 @@ Sub SOURCE ()
                                 W6 = D
                                 VV(D) = V0
                                 VV1(D) = V0
-                                Call HITTINGLINES '(teamRat_GAME(), pitchRating(), P1(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+                                Call HITTINGLINES
                             End If
                             VV(D) = 1
                             VV1(D) = 9
@@ -7784,7 +7783,7 @@ Sub SOURCE ()
                                 B9%(D, 1) = P1(D)
                                 VV(D) = V0
                                 VV1(D) = V0
-                                Call HITTINGLINES '(teamRat_GAME(), pitchRating(), P1(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+                                Call HITTINGLINES
                             End If
                         Next V0
 
@@ -7818,7 +7817,7 @@ Sub SOURCE ()
                     VV(D) = V0
                     VV1(D) = V0
 
-                    Call HITTINGLINES '(teamRat_GAME(), pitchRating(), P1(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+                    Call HITTINGLINES
 
                     VV(D) = 1
                     VV1(D) = 9
@@ -7978,7 +7977,7 @@ Sub SOURCE ()
             I9% = I1
 
             Call REPLACEMENTS(I7%, I8%, I9%)
-            Call HITTINGLINES '(teamRat_GAME(), pitchRating(), P1(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+            Call HITTINGLINES
 
             VV(P9) = 1
             VV1(P9) = 9
@@ -8361,14 +8360,14 @@ Sub SOURCE ()
             GoTo LManageDefense
         End If
 
-        Ib4 = B4%(P, LIVE_BAvg, B1!(P))
-        I1 = B4%(P, LIVE_HR, B1!(P))
+        Ib4 = game_batRating(P, LIVE_BAvg, B1!(P))
+        I1 = game_batRating(P, LIVE_HR, B1!(P))
         If B1!(P) = 9 Then
-            I2 = B4%(P, LIVE_BAvg, 0)
-            I3 = B4%(P, LIVE_HR, 0)
+            I2 = game_batRating(P, LIVE_BAvg, 0)
+            I3 = game_batRating(P, LIVE_HR, 0)
         Else
-            I2 = B4%(P, LIVE_BAvg, B1!(P) + 1)
-            I3 = B4%(P, LIVE_HR, B1!(P) + 1)
+            I2 = game_batRating(P, LIVE_BAvg, B1!(P) + 1)
+            I3 = game_batRating(P, LIVE_HR, B1!(P) + 1)
         End If
 
         If Not (baseRunners <> 2 And baseRunners <> 6) Then
@@ -8600,7 +8599,7 @@ Sub SOURCE ()
             W6 = P9
             VV(P9) = B1!(P)
             VV1(P9) = B1!(P)
-            Call HITTINGLINES '(teamRat_GAME(), pitchRating(), P1(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+            Call HITTINGLINES
 
             If useVGA = 1 Then
                 Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
@@ -8757,7 +8756,7 @@ Sub SOURCE ()
         If Not (baseRunners = 0 Or nbrOuts(0) > 0 Or baseRunners = 7 Or baseRunners = 6 Or baseRunners = 3 Or baseRunners = 5 Or nbrStrikes = 2 Or P = 0 And INNING% > 7) Then
 
             If B7%(P, B1!(P)) = 1 And baseRunners = 1 And nbrOuts(0) < 2 Or B7%(P, B1!(P)) = 1 And baseRunners = 2 And nbrOuts(0) = 0 Or B7%(P, B1!(P)) = 1 And baseRunners = 4 And nbrOuts(0) = 0 Then Goto LPinchRunner1
-            If B1!(P) > 2 And B1!(P) < 6 Or B4%(P, LIVE_BAvg, B1!(P)) > 290 And B7%(P, B1!(P)) <> 1 Or B7%(P, B1!(P)) <> 1 And B4%(P, LIVE_HR, B1!(P)) > 70 Then Goto LPinchRunner0
+            If B1!(P) > 2 And B1!(P) < 6 Or game_batRating(P, LIVE_BAvg, B1!(P)) > 290 And B7%(P, B1!(P)) <> 1 Or B7%(P, B1!(P)) <> 1 And game_batRating(P, LIVE_HR, B1!(P)) > 70 Then Goto LPinchRunner0
             If INNING% > 7 And A1 = -1 And nbrOuts(0) = 0 And baseRunners = 1 Then Goto LPinchRunner1
 
         End If
@@ -8770,7 +8769,7 @@ Sub SOURCE ()
 
     Call Rolld100(RN0)
 
-    If nbrOuts(0) = 2 Or B4%(P, LIVE_K, B1!(P)) > 100 Or baseRunners = 0 Or baseRunners = 7 Or baseRunners = 6 Or baseRunners = 3 Or baseRunners = 2 Or A1 < -3 Or RN0 > 20 Then
+    If nbrOuts(0) = 2 Or game_batRating(P, LIVE_K, B1!(P)) > 100 Or baseRunners = 0 Or baseRunners = 7 Or baseRunners = 6 Or baseRunners = 3 Or baseRunners = 2 Or A1 < -3 Or RN0 > 20 Then
         GoTo 15064
     Else
         P2 = 2
@@ -8996,7 +8995,7 @@ Sub InitVar ()
     Erase VV, VV1
 
     Erase A5%
-    Erase B1, B4%, leagBatStats, gameBatStats, B9%
+    Erase B1, game_batRating, leagBatStats, gameBatStats, B9%
     Erase BT%, BB%, CSS, D3%, DP%
     Erase gameB, B2%, gameP
     Erase gameD0, gameMgrIdx
@@ -11725,7 +11724,7 @@ Sub NEWPITCHER (pIdx, PPH, pz)
             W6 = P9
             VV(P9) = V0
             VV1(P9) = V0
-            Call HITTINGLINES '(teamRat_GAME(), pitchRating(), P1(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+            Call HITTINGLINES
         End If
 
     Next V0
@@ -11749,7 +11748,7 @@ Sub NEWPITCHER (pIdx, PPH, pz)
 
     Call PBP(gameManagers$(D) + " is making a pitching change")
     Call DELAY
-    Call HITTINGLINES '(teamRat_GAME(), pitchRating(), P1(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+    Call HITTINGLINES
 
     If useVGA = 1 Then
         Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
@@ -12027,7 +12026,7 @@ Sub PINCHRUNNER (MS%, A1, baseRunners, I2, P, PR%, nbrBalls, nbrStrikes, D, MO)
             PR% = 1
 
             Call DELAY
-            Call HITTINGLINES '(teamRat_GAME(), pitchRating(), P1(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+            Call HITTINGLINES
 
             If useVGA = 1 Then
                 Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
@@ -12586,7 +12585,7 @@ Sub PinchHitter (P, P9, W5, W6, idx)
     W6 = P9
     VV(P9) = B1!(P)
     VV1(P9) = B1!(P)
-    Call HITTINGLINES '(teamRat_GAME(), pitchRating(), P1(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+    Call HITTINGLINES
 
     VV(P9) = 1
     VV1(P9) = 9
@@ -13224,7 +13223,7 @@ End Sub
 '        HITTINGLINES Subroutine
 '----------------------------------------
 ' ...explanation...
-Sub HITTINGLINES '(teamRat_GAME(), pitchRating(), P1(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+Sub HITTINGLINES
 
     Randomize Timer
 
@@ -13346,7 +13345,7 @@ Sub HITTINGLINES '(teamRat_GAME(), pitchRating(), P1(), B7%(), batRating(), VV()
             End If
 
             Call NORMALIZE(I7!, I2!, I6!, K8!)
-            B4%(I, 5, I3) = K8!
+            game_batRating(I, 5, I3) = K8!
 
         Next I3
 
@@ -13467,7 +13466,7 @@ Sub HITTINGLINES '(teamRat_GAME(), pitchRating(), P1(), B7%(), batRating(), VV()
             End If
 
             Call NORMALIZE(I7!, I2!, I6!, K8!)
-            B4%(I, 4, I3) = K8!
+            game_batRating(I, 4, I3) = K8!
 
         Next I3
 
@@ -13624,7 +13623,7 @@ Sub HITTINGLINES '(teamRat_GAME(), pitchRating(), P1(), B7%(), batRating(), VV()
 
             I2! = i9!
             Call NORMALIZE(I7!, I2!, I6!, K8!)
-            B4%(I, 0, I3) = K8!
+            game_batRating(I, 0, I3) = K8!
 
         Next I3
 
@@ -13680,9 +13679,9 @@ Sub HITTINGLINES '(teamRat_GAME(), pitchRating(), P1(), B7%(), batRating(), VV()
             End If
 
             If B7%(I, I3) = 1 And pitchRating(I, P1(I), 11) <> 999 Then
-                B4%(I, 1, I3) = (130 * (i9! * 1000)) / teamRat_GAME(I1, 1)
-                B4%(I, 2, I3) = (19 * (i9! * 1000)) / teamRat_GAME(I1, 1)
-                B4%(I, 3, I3) = 37
+                game_batRating(I, 1, I3) = (130 * (i9! * 1000)) / teamRat_GAME(I1, 1)
+                game_batRating(I, 2, I3) = (19 * (i9! * 1000)) / teamRat_GAME(I1, 1)
+                game_batRating(I, 3, I3) = 37
             Else
 
                 E2! = (i9! * 1000) / teamRat_GAME(I1, 1)
@@ -13691,41 +13690,41 @@ Sub HITTINGLINES '(teamRat_GAME(), pitchRating(), P1(), B7%(), batRating(), VV()
                     E2! = (i9! * 1000) / gameSA(I1, TY% * 6 + 1)
                 End If
 
-                If B7%(I, I3) = 1 And pitchRating(I, P1(I), 22) = 0 Then B4%(I, 1, I3) = 0: B4%(I, 2, I3) = 0: B4%(I, 3, I3) = 0: GoTo 235
-                If B7%(I, I3) <> 1 And batRating(I, B3%(I, I3), 6) = 0 Then B4%(I, 1, I3) = 0: B4%(I, 2, I3) = 0: B4%(I, 3, I3) = 0: GoTo 235
-                If B7%(I, I3) = 1 And teamSplit(I, 0) = 999 And pitchRating(I, P1(I), 38 + BY% * 7) = 0 Then B4%(I, 1, I3) = 0: B4%(I, 2, I3) = 0: B4%(I, 3, I3) = 0: GoTo 235
-                If B7%(I, I3) = 1 And teamSplit(I, 0) = 999 Then B4%(I, 1, I3) = Int((pitchRating(I, P1(I), 39 + BY% * 7) / pitchRating(I, P1(I), 38 + BY% * 7)) * 1000) * E2!: ' doubles times  * .95
-                If B7%(I, I3) = 1 And teamSplit(I, 0) = 999 Then B4%(I, 2, I3) = Int((pitchRating(I, P1(I), 40 + BY% * 7) / pitchRating(I, P1(I), 38 + BY% * 7)) * 1000) * E2!
-                If B7%(I, I3) = 1 And teamSplit(I, 0) = 999 Then B4%(I, 3, I3) = Int((pitchRating(I, P1(I), 41 + BY% * 7) / pitchRating(I, P1(I), 38 + BY% * 7)) * 1000): GoTo 235
-                If B7%(I, I3) = 1 Then B4%(I, 1, I3) = Int((pitchRating(I, P1(I), 23) / pitchRating(I, P1(I), 22)) * 1000) * E2!: ' doubles times  * .95
-                If B7%(I, I3) = 1 Then B4%(I, 2, I3) = Int((pitchRating(I, P1(I), 24) / pitchRating(I, P1(I), 22)) * 1000) * E2!
-                If B7%(I, I3) = 1 Then B4%(I, 3, I3) = Int((pitchRating(I, P1(I), 25) / pitchRating(I, P1(I), 22)) * 1000): GoTo 235
+                If B7%(I, I3) = 1 And pitchRating(I, P1(I), 22) = 0 Then game_batRating(I, 1, I3) = 0: game_batRating(I, 2, I3) = 0: game_batRating(I, 3, I3) = 0: GoTo 235
+                If B7%(I, I3) <> 1 And batRating(I, B3%(I, I3), 6) = 0 Then game_batRating(I, 1, I3) = 0: game_batRating(I, 2, I3) = 0: game_batRating(I, 3, I3) = 0: GoTo 235
+                If B7%(I, I3) = 1 And teamSplit(I, 0) = 999 And pitchRating(I, P1(I), 38 + BY% * 7) = 0 Then game_batRating(I, 1, I3) = 0: game_batRating(I, 2, I3) = 0: game_batRating(I, 3, I3) = 0: GoTo 235
+                If B7%(I, I3) = 1 And teamSplit(I, 0) = 999 Then game_batRating(I, 1, I3) = Int((pitchRating(I, P1(I), 39 + BY% * 7) / pitchRating(I, P1(I), 38 + BY% * 7)) * 1000) * E2!: ' doubles times  * .95
+                If B7%(I, I3) = 1 And teamSplit(I, 0) = 999 Then game_batRating(I, 2, I3) = Int((pitchRating(I, P1(I), 40 + BY% * 7) / pitchRating(I, P1(I), 38 + BY% * 7)) * 1000) * E2!
+                If B7%(I, I3) = 1 And teamSplit(I, 0) = 999 Then game_batRating(I, 3, I3) = Int((pitchRating(I, P1(I), 41 + BY% * 7) / pitchRating(I, P1(I), 38 + BY% * 7)) * 1000): GoTo 235
+                If B7%(I, I3) = 1 Then game_batRating(I, 1, I3) = Int((pitchRating(I, P1(I), 23) / pitchRating(I, P1(I), 22)) * 1000) * E2!: ' doubles times  * .95
+                If B7%(I, I3) = 1 Then game_batRating(I, 2, I3) = Int((pitchRating(I, P1(I), 24) / pitchRating(I, P1(I), 22)) * 1000) * E2!
+                If B7%(I, I3) = 1 Then game_batRating(I, 3, I3) = Int((pitchRating(I, P1(I), 25) / pitchRating(I, P1(I), 22)) * 1000): GoTo 235
 
-                If batRating(I, B3%(I, I3), 6) = 0 Then B4%(I, 1, I3) = 0: B4%(I, 2, I3) = 0: B4%(I, 3, I3) = 0: GoTo 235
+                If batRating(I, B3%(I, I3), 6) = 0 Then game_batRating(I, 1, I3) = 0: game_batRating(I, 2, I3) = 0: game_batRating(I, 3, I3) = 0: GoTo 235
 
                 If teamSplit(I, 0) = 999 And batRating(I, B3%(I, I3), 80) <> 0 Then
 
                     If batRating(I, B3%(I, I3), 43 + BY% * 7) = 0 Then
-                        B4%(I, 1, I3) = 0
-                        B4%(I, 2, I3) = 0
-                        B4%(I, 3, I3) = 0
+                        game_batRating(I, 1, I3) = 0
+                        game_batRating(I, 2, I3) = 0
+                        game_batRating(I, 3, I3) = 0
                     Else
-                        B4%(I, 1, I3) = Int((batRating(I, B3%(I, I3), 44 + BY% * 7) / batRating(I, B3%(I, I3), 43 + BY% * 7)) * 1000) * E2!: 'see note on pitchers * .95
-                        B4%(I, 2, I3) = Int((batRating(I, B3%(I, I3), 45 + BY% * 7) / batRating(I, B3%(I, I3), 43 + BY% * 7)) * 1000) * E2!
-                        B4%(I, 3, I3) = Int((batRating(I, B3%(I, I3), 46 + BY% * 7) / batRating(I, B3%(I, I3), 43 + BY% * 7)) * 1000)
+                        game_batRating(I, 1, I3) = Int((batRating(I, B3%(I, I3), 44 + BY% * 7) / batRating(I, B3%(I, I3), 43 + BY% * 7)) * 1000) * E2!: 'see note on pitchers * .95
+                        game_batRating(I, 2, I3) = Int((batRating(I, B3%(I, I3), 45 + BY% * 7) / batRating(I, B3%(I, I3), 43 + BY% * 7)) * 1000) * E2!
+                        game_batRating(I, 3, I3) = Int((batRating(I, B3%(I, I3), 46 + BY% * 7) / batRating(I, B3%(I, I3), 43 + BY% * 7)) * 1000)
                     End If
                     GoTo 235
                 End If
 
-                B4%(I, 1, I3) = Int((batRating(I, B3%(I, I3), 7) / batRating(I, B3%(I, I3), 6)) * 1000) * E2!: 'see note on pitchers * .95
-                B4%(I, 2, I3) = Int((batRating(I, B3%(I, I3), 8) / batRating(I, B3%(I, I3), 6)) * 1000) * E2!
-                B4%(I, 3, I3) = Int((batRating(I, B3%(I, I3), 9) / batRating(I, B3%(I, I3), 6)) * 1000)
+                game_batRating(I, 1, I3) = Int((batRating(I, B3%(I, I3), 7) / batRating(I, B3%(I, I3), 6)) * 1000) * E2!: 'see note on pitchers * .95
+                game_batRating(I, 2, I3) = Int((batRating(I, B3%(I, I3), 8) / batRating(I, B3%(I, I3), 6)) * 1000) * E2!
+                game_batRating(I, 3, I3) = Int((batRating(I, B3%(I, I3), 9) / batRating(I, B3%(I, I3), 6)) * 1000)
 
             End If
 
             235 '
             I6! = teamRat_GAME(I1, 4) / 1000
-            I7! = B4%(I, 3, I3) / 1000
+            I7! = game_batRating(I, 3, I3) / 1000
             I2! = 0
 
             If pitchRating(I1, P1(I1), 7) <> 0 Then I2! = pitchRating(I1, P1(I1), 13) / pitchRating(I1, P1(I1), 7)
@@ -13741,7 +13740,7 @@ Sub HITTINGLINES '(teamRat_GAME(), pitchRating(), P1(), B7%(), batRating(), VV()
 
             Call NORMALIZE(I7!, I2!, I6!, K8!)
 
-            B4%(I, 3, I3) = K8!
+            game_batRating(I, 3, I3) = K8!
 
         Next I3
 
@@ -13827,17 +13826,17 @@ Sub HITTINGLINES '(teamRat_GAME(), pitchRating(), P1(), B7%(), batRating(), VV()
 
             End If
 
-            B4%(I, 6, I3) = B4%(I, 3, I3)
-            B4%(I, 7, I3) = B4%(I, 3, I3)
+            game_batRating(I, 6, I3) = game_batRating(I, 3, I3)
+            game_batRating(I, 7, I3) = game_batRating(I, 3, I3)
 
         Next I3
 
         ' ADJUST AVERAGES FOR THE HOME TEAM
         For I3 = VV(I) To VV1(I)
             If I = 1 Then
-                B4%(I, 0, I3) = B4%(I, 0, I3) + 5
+                game_batRating(I, 0, I3) = game_batRating(I, 0, I3) + 5
             Else
-                B4%(I, 0, I3) = B4%(I, 0, I3) - 5
+                game_batRating(I, 0, I3) = game_batRating(I, 0, I3) - 5
             End If
         Next I3
 
@@ -13846,12 +13845,12 @@ Sub HITTINGLINES '(teamRat_GAME(), pitchRating(), P1(), B7%(), batRating(), VV()
 
             For I2 = VV(I) To VV1(I)
                 If I = 1 Then
-                    B4%(I, 1, I2) = CInt(B4%(I, 1, I2) * (teamRat_GAME(I, 6) / 100))
-                    B4%(I, 2, I2) = CInt(B4%(I, 2, I2) * (teamRat_GAME(I, 7) / 100))
+                    game_batRating(I, 1, I2) = CInt(game_batRating(I, 1, I2) * (teamRat_GAME(I, 6) / 100))
+                    game_batRating(I, 2, I2) = CInt(game_batRating(I, 2, I2) * (teamRat_GAME(I, 7) / 100))
                 Else
                     'I <> 1
-                    B4%(I, 1, I2) = CInt(B4%(I, 1, I2) * (teamRat_GAME(I1, 6) / 100) * ((200 - teamRat_GAME(I, 6)) / 100))
-                    B4%(I, 2, I2) = CInt(B4%(I, 2, I2) * (teamRat_GAME(I1, 7) / 100) * ((200 - teamRat_GAME(I, 7)) / 100))
+                    game_batRating(I, 1, I2) = CInt(game_batRating(I, 1, I2) * (teamRat_GAME(I1, 6) / 100) * ((200 - teamRat_GAME(I, 6)) / 100))
+                    game_batRating(I, 2, I2) = CInt(game_batRating(I, 2, I2) * (teamRat_GAME(I1, 7) / 100) * ((200 - teamRat_GAME(I, 7)) / 100))
                 End If
 
                 If parkHRVals!(I) > 1000 Then
@@ -13877,14 +13876,14 @@ Sub HITTINGLINES '(teamRat_GAME(), pitchRating(), P1(), B7%(), batRating(), VV()
                 End If
 
                 If I = 1 Then
-                    B4%(I, 3, I2) = CInt((B4%(I, 3, I2) * (I3! / 100)))
-                    B4%(I, 6, I2) = CInt((B4%(I, 6, I2) * (I6! / 100)))
-                    B4%(I, 7, I2) = CInt((B4%(I, 7, I2) * (I7! / 100)))
+                    game_batRating(I, 3, I2) = CInt((game_batRating(I, 3, I2) * (I3! / 100)))
+                    game_batRating(I, 6, I2) = CInt((game_batRating(I, 6, I2) * (I6! / 100)))
+                    game_batRating(I, 7, I2) = CInt((game_batRating(I, 7, I2) * (I7! / 100)))
                 Else
                     'I <> 1
-                    B4%(I, 3, I2) = CInt((B4%(I, 3, I2) * (I4! / 100) * ((200 - I3!) / 100)))
-                    B4%(I, 6, I2) = CInt((B4%(I, 6, I2) * (K8! / 100) * ((200 - I6!) / 100)))
-                    B4%(I, 7, I2) = CInt((B4%(I, 7, I2) * (i9! / 100) * ((200 - I7!) / 100)))
+                    game_batRating(I, 3, I2) = CInt((game_batRating(I, 3, I2) * (I4! / 100) * ((200 - I3!) / 100)))
+                    game_batRating(I, 6, I2) = CInt((game_batRating(I, 6, I2) * (K8! / 100) * ((200 - I6!) / 100)))
+                    game_batRating(I, 7, I2) = CInt((game_batRating(I, 7, I2) * (i9! / 100) * ((200 - I7!) / 100)))
                 End If
 
             Next I2
@@ -13905,11 +13904,11 @@ End Sub
 Sub LRADJ (A!, A1!)
 
     For I6 = 0 To 3
-        B4%(I, I6, I3) = B4%(I, I6, I3) * A!
+        game_batRating(I, I6, I3) = game_batRating(I, I6, I3) * A!
     Next I6
 
-    B4%(I, 5, I3) = B4%(I, 5, I3) * A!
-    B4%(I, 4, I3) = B4%(I, 4, I3) * A1!
+    game_batRating(I, 5, I3) = game_batRating(I, 5, I3) * A!
+    game_batRating(I, 4, I3) = game_batRating(I, 4, I3) * A1!
 
 End Sub
 

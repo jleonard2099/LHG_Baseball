@@ -174,7 +174,7 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
 
     'Printing black on background
     _PrintMode _KeepBackground , imageScreen&
-    Color &HF000000
+    Color &HF0000000
     PrintOnGfx 52, 26, infStatus$, imageScreen&
 
     'Printing white on black
@@ -366,7 +366,7 @@ Sub DisplayBallField_Gfx (BC%, p, nbrStrikes, D)
     '----------------------------------------
     'Printing black on background
     _PrintMode _KeepBackground , imageScreen&
-    Color &HF000000
+    Color &HF0000000
 
     'Center Field Name
     PrintOnGfx 36, 14, player$, imageScreen&
@@ -550,7 +550,7 @@ Sub HOLDSTATUS_G (runnerHeld)
 
     'Printing black on background
     _PrintMode _KeepBackground , imageScreen&
-    Color &HF000000
+    Color &HF0000000
     PrintOnGfx 53, 25, rhStatus$, imageScreen&
 
     'Printing white on black
