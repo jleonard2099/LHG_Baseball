@@ -7,7 +7,7 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
     _PutImage (29 * FontColAdj, 400)-Step(24 * FontColAdj, 16), backupScreen&, imageScreen&, (29 * FontColAdj, 400)-Step(24 * FontColAdj, 16)
 
     'Printing white on black
-    Color 4294967295
+    Color &HFFFFFFFF
     _PrintMode _FillBackground , imageScreen&
 
     '-----
@@ -66,7 +66,7 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
 
         'Printing white on background
         _PrintMode _KeepBackground , imageScreen&
-        Color 4294967295
+        Color &HFFFFFFFF
 
         If batRating(p, J, 0) < 0 Or batRating(p, J, 0) = 0 And pitchRating(D, P1(D), 0) > 0 Then
             'Batter Name - Right of Plate
@@ -174,11 +174,11 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
 
     'Printing black on background
     _PrintMode _KeepBackground , imageScreen&
-    Color 4278190080
+    Color &HF000000
     PrintOnGfx 52, 26, infStatus$, imageScreen&
 
     'Printing white on black
-    Color 4294967295
+    Color &HFFFFFFFF
     _PrintMode _FillBackground , imageScreen&
     Call HOLDSTATUS_G(runnerHeld)
 
@@ -237,7 +237,7 @@ Sub DisplayRun_G (I2, p, X)
 
         'Printing white on background
         _PrintMode _KeepBackground , imageScreen&
-        Color 4294967295
+        Color &HFFFFFFFF
 
         If B7%(p, J) = 1 Then
             If pitchRating(p, P1(p), 11) <> 999 Then
@@ -366,7 +366,7 @@ Sub DisplayBallField_Gfx (BC%, p, nbrStrikes, D)
     '----------------------------------------
     'Printing black on background
     _PrintMode _KeepBackground , imageScreen&
-    Color 4278190080
+    Color &HF000000
 
     'Center Field Name
     PrintOnGfx 36, 14, player$, imageScreen&
@@ -527,7 +527,7 @@ Sub DisplayBallField_Gfx (BC%, p, nbrStrikes, D)
     PrintOnGfx 35, 26, player$, imageScreen&
 
     'Printing white on black
-    Color 4294967295
+    Color &HFFFFFFFF
     _PrintMode _FillBackground , imageScreen&
 
 End Sub
@@ -550,11 +550,11 @@ Sub HOLDSTATUS_G (runnerHeld)
 
     'Printing black on background
     _PrintMode _KeepBackground , imageScreen&
-    Color 4278190080
+    Color &HF000000
     PrintOnGfx 53, 25, rhStatus$, imageScreen&
 
     'Printing white on black
-    Color 4294967295
+    Color &HFFFFFFFF
     _PrintMode _FillBackground , imageScreen&
 
 End Sub

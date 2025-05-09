@@ -348,8 +348,8 @@ System
 '----------------------------------------
 
 Errhandler:
-Open "errlog" For Append As #9
-Print #9, "Error #"; Err; "on program file line"; _ErrorLine; "-- "; _ErrorMessage$
+Open "errlog" For Append As #10
+Print #10, "Error #"; Err; "on program file line"; _ErrorLine; "-- "; _ErrorMessage$
 
 If _InclErrorLine Then
     Print #10, "    in module "; _InclErrorFile$; " line "; _InclErrorLine
@@ -362,6 +362,13 @@ End If
 Print #10,
 Close #10
 Resume Next ' moves program to code following the error.
+
+
+Sub LogError (errMsg$)
+    Open "errlog" For Append As #10
+    Print #10, errMsg$
+    Close #10
+End Sub
 
 '----------------------------------------
 '       Main_Menu Subroutine
@@ -4070,7 +4077,7 @@ Sub SOURCE ()
 
             'Printing black on background
             _PrintMode _KeepBackground , imageScreen&
-            Color 4278190080
+            Color &HF000000
 
             PrintOnGfx 1, 19, pbpString$, imageScreen&
 
@@ -4130,12 +4137,12 @@ Sub SOURCE ()
 
                 'Printing black on background
                 _PrintMode _KeepBackground , imageScreen&
-                Color 4278190080
+                Color &HF000000
 
                 PrintOnGfx 52, 26, pbpString$, imageScreen&
 
                 'Printing white on black
-                Color 4294967295
+                Color &HFFFFFFFF
                 _PrintMode _FillBackground , imageScreen&
             Else
                 Color 15, 2
@@ -4252,13 +4259,13 @@ Sub SOURCE ()
 
             'Printing black on background
             _PrintMode _KeepBackground , imageScreen&
-            Color 4278190080
+            Color &HF000000
 
             'Print infield status
             PrintOnGfx 52, 26, infStatus$, imageScreen&
 
             'Printing white on black
-            Color 4294967295
+            Color &HFFFFFFFF
             _PrintMode _FillBackground , imageScreen&
         Else
             Color 15, 2
@@ -4391,7 +4398,7 @@ Sub SOURCE ()
             If useVGA = 1 Then
                 'Printing black on background
                 _PrintMode _KeepBackground , imageScreen&
-                Color 4278190080
+                Color &HF000000
 
                 PrintOnGfx 1, 19, pbpString$, imageScreen&
 
@@ -4411,7 +4418,7 @@ Sub SOURCE ()
                 Next
 
                 'Printing white on black
-                Color 4294967295
+                Color &HFFFFFFFF
                 _PrintMode _FillBackground , imageScreen&
 
             Else
@@ -9441,7 +9448,7 @@ Sub PBP (pbpString$)
         For I9 = 1 To 8
 
             If useVGA = 1 Then
-                Color 4294967295
+                Color &HFFFFFFFF
                 _PrintMode _FillBackground , imageScreen&
                 PrintOnGfx 20, I9 + 3, pbpStrings$(I9), imageScreen&
             Else
@@ -10188,7 +10195,17 @@ Sub CREDITPUTOUT (I3, FB2P%, AST%, D)
         End If
 
         AST% = 0
-        Call INCBATDF(D, B9%(D, po%), 16)
+
+        If po% = 1 Then
+            fld% = P1(D)
+        ElseIf po% > 1 And po% <= 10 Then
+            fld% = B9%(D, po%)
+        Else
+            LogError("WARNING!!  skipping call to INCBATDF in CREDITPUTOUT because po% = " + Str$(po%))
+            Exit Sub
+        End If
+
+        Call INCBATDF(D, fld%, 16)
 
     End If
 
@@ -11654,7 +11671,7 @@ Sub WINDEX ()
 
         If useVGA = 1 Then
 
-            Color 4294967295
+            Color &HFFFFFFFF
             _PrintMode _FillBackground , imageScreen&
 
             For I5 = 4 To 11
@@ -12137,7 +12154,7 @@ Sub PITPLACEMENT (P, X$)
     If useVGA = 1 Then
         'Printing white on background
         _PrintMode _KeepBackground , imageScreen&
-        Color 4294967295
+        Color &HFFFFFFFF
 
     End If
 
@@ -12161,7 +12178,7 @@ Sub PITPLACEMENT (P, X$)
 
     If useVGA = 1 Then
         'Printing white on black
-        Color 4294967295
+        Color &HFFFFFFFF
         _PrintMode _FillBackground , imageScreen&
     End If
 
@@ -13911,7 +13928,7 @@ Sub NORMALIZE (I7!, I2!, I6!, K8!)
         K8! = I0! / (I0! + ((1 - I7!) * (1 - I2!) * I6!))
     End If
 
-    K8! = Int((K8! * 1000) + .0005)
+    K8! = CInt(K8! * 1000)
 
 End Sub
 
