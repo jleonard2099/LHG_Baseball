@@ -916,7 +916,7 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                     Color 7, 0: Print String$(2, 177)
                     Locate 18, 4: Print String$(8, 177)
 
-                    Color 14, 11
+                    Color 4, 11
                     Locate 6, 13: Print Using "###"; statB0(I, 14);
 
                     If statB0(I, 0) = 0 Or statB0(I, 2) = 0 Then 
@@ -997,19 +997,19 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                         Color 7, 0: Print String$(2, 177)
                     End If
 
-                    Color 14, 11
+                    Color 4, 11
                     If statB0(I, 9) > 0 And statB0(I, 10) = 0 Then 
                         Locate 12, 68: Print "   100% ";
                         Color 7, 0: Print String$(2, 177)
                     End If
                     
-                    Color 14, 11
+                    Color 4, 11
                     If statB0(I, 9) > 0 And statB0(I, 10) > 0 Then 
                         Locate 12, 68: Print "   ";: Print Using "###"; (statB0(I, 9) / (statB0(I, 10) + statB0(I, 9))) * 100;: Print "% ";
                         Color 7, 0: Print String$(2, 177)
                     End If
                     
-                    Color 14, 11
+                    Color 4, 11
                     Locate 6, 54
                     Print Using "####"; statB0(I, 9)
                     Locate 6, 58
@@ -1051,14 +1051,14 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                         Locate 6, 72: Print ".000";: Color 7, 0: Print String$(2, 177)
                     End If
 
-                    Color 14, 11
+                    Color 4, 11
                     If I4 > 0 And I4 < 100 Then 
                         Locate 6, 72
                         Print ".0";: Print Using "##"; I4;
                         Color 7, 0: Print String$(2, 177)
                     End If
 
-                    Color 14, 11
+                    Color 4, 11
                     If I4 >= 100 Then 
                         Locate 6, 72
                         Print ".";: Print Using "###"; I4;
@@ -1074,14 +1074,14 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                         I5 = ((statB0(I, 16) + statB0(I, 17)) / (statB0(I, 16) + statB0(I, 17) + statB0(I, 11))) * 1000
                     End If
 
-                    Color 14, 11
+                    Color 4, 11
                     If I5 = 0 Then 
                         Locate 17, 13
                         Print "  .000  ";
                         Color 7, 0: Print String$(2, 177)
                     End If
 
-                    Color 14, 11
+                    Color 4, 11
                     If I5 > 0 And I5 < 1000 Then 
                         Locate 17, 13: Print "  .";
                         Print Using "###"; I5;
@@ -1089,7 +1089,7 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                         Color 7, 0: Print String$(2, 177)
                     End If
 
-                    Color 14, 11
+                    Color 4, 11
                     If I5 = 1000 Then 
                         Locate 17, 13
                         Print Using "##"; I5 / 1000;: Print ".000  ";
@@ -1696,7 +1696,7 @@ Sub TeamComparison_Screen (teamName$)
     Color 7, 0
     Print String$(2, 177)
 
-    Color 14, 11
+    Color 4, 11
     Locate 5, 13: Print Using "####"; statT0!(0);
     Locate , 17: Print Using "####"; statT0!(2);
     Locate , 21: Print Using "#####"; statT0!(1);
@@ -1803,7 +1803,7 @@ Sub TeamComparison_Screen (teamName$)
     Color 7, 0
     Print String$(2, 177)
 
-    Color 14, 11
+    Color 4, 11
 
     Locate 11, 13
     If statT0!(2) = 0 Then

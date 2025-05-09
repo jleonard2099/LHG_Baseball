@@ -107,7 +107,7 @@ Declare Sub PUTOUT (i, P)
 Declare Sub RecordOut (i, baseNbr)
 Declare Sub RecordRun (sah%, i, D, F%, PQ, S2%, currFielder, INFPOS%)
 Declare Sub DISPBAVG (D)
-Declare Sub HITTINGLINES '(teamRat_GAME(), pitchRating(), P1(), B7%(), batRating(), VV(), VV1(), B3%(), B4%(), parkHRVals!(), WF!)
+Declare Sub HITTINGLINES
 Declare Sub LRADJ (A!, A1!)
 Declare Sub NORMALIZE (I7!, I2!, I6!, K8!)
 Declare Sub BASEONBALLS (S2%, D2, D, P)

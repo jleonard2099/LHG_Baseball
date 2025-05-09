@@ -344,7 +344,7 @@ Dim Shared nbrOuts(1)
 Dim SU(1, 1)
 
 Dim Shared A5%(0 To 3), assigned(1 To 9)
-Dim Shared B1(3, 1), B2%(0 To 3, 0 To 2), B3%(0 To 1, 0 To 9), B4%(1, 7, 9)
+Dim Shared B1(3, 1), B2%(0 To 3, 0 To 2), B3%(0 To 1, 0 To 9), game_batRating(1, 7, 9)
 Dim Shared B7%(0 To 1, 0 To 9), B9%(1, 10), BT%(0 To 1, 1 To 9, 1 To 9)
 Dim Shared CF%(0 To 9, 0 To 2), CSS(1, 22, 6), D3%(1), DP%(1)
 Dim Shared P1(0 To 1), P2%(1)
