@@ -5,7 +5,7 @@
 'the options related to team rosters
 Sub CNGTM (userChoice)
 
-    _Title "Courtside College Basketball - Change Team"
+    _Title "Full Count Baseball - Change Team"
 
     ReDim menuChoices$(1 To 4)
 
