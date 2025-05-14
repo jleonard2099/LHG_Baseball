@@ -37,7 +37,7 @@ DefInt A-Z
 '$Include: 'GameRoutines.bi'
 '$Include: 'GameRoutines_Gfx.bi'
 '$Include: 'SOURCE.bi'
-'$INCLUDE: 'Consts.bi'
+'$Include: 'Consts.bi'
 
 
 On Error GoTo Errhandler
@@ -3980,7 +3980,7 @@ Sub SOURCE ()
     errorOnPlay% = 0
     SO = 0
     currLineupSlot(P) = currLineupSlot(P) + 1
-    INFPOS% = 0
+    INFPOS% = INF_BACK
     nbrStrikes = 0
 
     If currLineupSlot(P) = 10 Then currLineupSlot(P) = 1
@@ -4128,7 +4128,7 @@ Sub SOURCE ()
 
         If UCase$(I$) = "G" Then
 
-            INFPOS% = 3
+            INFPOS% = INF_GUARD_LINES
 
             If useVGA = 1 Then
                 pbpString$ = "INF:GUARD LINE"
@@ -4205,8 +4205,8 @@ Sub SOURCE ()
         End If
 
         If Val(I$) = 7 Then
-            P2 = 1
-            D2 = 1
+            P2 = OFF_HIT_AWAY
+            D2 = DEF_PITCH
 
             GoTo LWeirdPlay
 
@@ -4229,15 +4229,15 @@ Sub SOURCE ()
             GoTo LHBP
 
         Case 3
-            INFPOS% = 2
+            INFPOS% = INF_IN
             infStatus$ = "INF:INFIELD IN"
 
         Case 4
-            INFPOS% = 1
+            INFPOS% = INF_CORNERS_IN
             infStatus$ = "INF:CORNERS IN"
 
         Case 5
-            INFPOS% = 0
+            INFPOS% = INF_BACK
             infStatus$ = "INF:NORMAL    "
 
         Case 6
@@ -4473,7 +4473,7 @@ Sub SOURCE ()
 
         P2 = Val(I$)
 
-    Loop Until P2 >= 1 And P2 <= 5
+    Loop Until P2 >= OFF_HIT_AWAY And P2 <= 5
 
     15064 '
     Select Case P2
@@ -4486,7 +4486,7 @@ Sub SOURCE ()
 
             Call Rolld100(RN)
 
-            If P2 = 4 Or (P2 = 1 And RN <= 50) Then Goto LWeirdPlay
+            If P2 = OFF_BUNT Or (P2 = OFF_HIT_AWAY And RN <= 50) Then Goto LWeirdPlay
 
             Call BASEONBALLS(S2%, D2, D, P)
 
@@ -4508,16 +4508,16 @@ Sub SOURCE ()
 
     LHitAndRun:
     '-- this is related to the PICKEDOFF routine and it's immediate aftermath
-    If baseRunners = 4 Then I = 3 Else I = 2
+    If baseRunners = 4 Then pickedOffBase = 3 Else pickedOffBase = 2
 
     Call Rolld100(I3)
 
     If I3 < 6 Then
 
-        Call PICKEDOFF(D, I)
+        Call PICKEDOFF(D, pickedOffBase)
 
         PO = 1
-        A5%(I - 1) = 10
+        A5%(pickedOffBase - 1) = 10
         nbrOuts(0) = nbrOuts(0) + 1
         nbrOuts(1) = nbrOuts(1) + 1
         currFielder = 1
@@ -4549,7 +4549,7 @@ Sub SOURCE ()
         Call PBP("Runner(s) going")
     Else
         Call PBP("Count not favorable...hit away")
-        P2 = 1
+        P2 = OFF_HIT_AWAY
     End If
 
     Call DELAY
@@ -4578,7 +4578,7 @@ Sub SOURCE ()
     If I9 <= game_batRating(P, GM_K, currLineupSlot(P)) * 2 Then
         Call PBP(player$(0) + " fouls off the pitch...hit away")
         Call DELAY
-        P2 = 1
+        P2 = OFF_HIT_AWAY
     End If
 
     GoTo LWeirdPlay
@@ -4721,7 +4721,10 @@ Sub SOURCE ()
 
     SN = 0
     H6% = Int(Rnd(1) * 1000) + 1
-    If nbrOuts(0) = 0 And baseRunners = 4 And INFPOS% < 2 And H6% = 768 Or nbrOuts(0) = 0 And baseRunners = 4 And INFPOS% < 2 And H6% = 123 Or nbrOuts(0) = 0 And baseRunners = 7 And INFPOS% < 2 And H6% = 245 Or nbrOuts(0) = 0 And baseRunners = 7 And INFPOS% < 2 And H6% = 381 Then
+    If nbrOuts(0) = 0 And baseRunners = 4 And INFPOS% <  INF_IN And H6% = 768 Or _
+       nbrOuts(0) = 0 And baseRunners = 4 And INFPOS% >= INF_IN And H6% = 123 Or _
+       nbrOuts(0) = 0 And baseRunners = 7 And INFPOS% >= INF_IN And H6% = 245 Or _
+       nbrOuts(0) = 0 And baseRunners = 7 And INFPOS% <  INF_IN And H6% = 381 Then
         Call TRIPLEPLAY(D)
         GoTo LCheckForOptionsOrQuit
     End If
@@ -4838,8 +4841,8 @@ Sub SOURCE ()
         13222 '
         RN3 = Int(Rnd(1) * 10) + 1
 
-        If baseRunners = 1 And P2 = 2 And RN3 < batRating(P, lineupPlayer(P, b2Base(1)), SS_B_Run) Or _
-           baseRunners = 5 And P2 = 2 And RN3 < batRating(P, lineupPlayer(P, b2Base(1)), SS_B_Run) Then
+        If baseRunners = 1 And P2 = OFF_HIT_N_RUN And RN3 < batRating(P, lineupPlayer(P, b2Base(1)), SS_B_Run) Or _
+           baseRunners = 5 And P2 = OFF_HIT_N_RUN And RN3 < batRating(P, lineupPlayer(P, b2Base(1)), SS_B_Run) Then
             A5%(1) = 2
             A5%(3) = 1
             A5%(0) = 0
@@ -4921,16 +4924,16 @@ Sub SOURCE ()
         GoTo LHBP
     End If
 
-    If P2 = 4 Then Goto LBunt
+    If P2 = OFF_BUNT Then Goto LBunt
 
     '3056
     H6% = Int(Rnd(1) * 1000) + 1
     H7% = Int(Rnd(1) * 1000) + 1
     I4 = 0
 
-    If P2 = 2 Then I4 = -5
+    If P2 = OFF_HIT_N_RUN Then I4 = -5
 
-    If INFPOS% = 2 Then
+    If INFPOS% = INF_IN Then
         SN = 70
         I4 = I4 + 15
     End If
@@ -4939,7 +4942,7 @@ Sub SOURCE ()
         I4 = I4 - 15
     End If
 
-    If INFPOS% = 1 Then
+    If INFPOS% = INF_CORNERS_IN Then
         SN = 20
     End If
 
@@ -5080,8 +5083,8 @@ Sub SOURCE ()
                                        currFielder = 8 And S2% = EVENT_FLY_REGULAR And RN <= 350 + offset And P2 <> 2 Or _
                                        currFielder = 7 And S2% = EVENT_FLY_DEEP    And RN <= 250 + offset And P2 <> 2 Then A5%(2) = 1
 
-                                    If P2 = 2 And speedRating > 6 And currFielder = 9 And S2% = EVENT_FLY_DEEP And RN <= 400 + offset Or _
-                                       P2 = 2 And speedRating > 6 And currFielder = 8 And S2% = EVENT_FLY_DEEP And RN <= 400 + offset Then A5%(2) = 1
+                                    If P2 = OFF_HIT_N_RUN And speedRating > 6 And currFielder = 9 And S2% = EVENT_FLY_DEEP And RN <= 400 + offset Or _
+                                       P2 = OFF_HIT_N_RUN And speedRating > 6 And currFielder = 8 And S2% = EVENT_FLY_DEEP And RN <= 400 + offset Then A5%(2) = 1
 
                                     If A5%(2) <> 1 And S2% = EVENT_FLY_REGULAR And P2 <> 2 And baseRunners < 6 Then
 
@@ -5155,7 +5158,7 @@ Sub SOURCE ()
 
                                 Call Rolld100(RN)
 
-                                If S2% = EVENT_FLY_SHALLOW And baseRunners = 1 And RN <= 33 And P2 = 2 Or _
+                                If S2% = EVENT_FLY_SHALLOW And baseRunners = 1 And RN <= 33 And P2 = OFF_HIT_N_RUN Or _
                                    S2% = EVENT_FLY_SHALLOW And baseRunners = 5 And RN <= 33 Then   'Double Play
                                     A5%(1) = 10
                                     nbrOuts(0) = nbrOuts(0) + 1
@@ -5284,7 +5287,7 @@ Sub SOURCE ()
 
                         Call Rolld100(RN)
 
-                        If (baseRunners = 1 Or baseRunners = 5) And RN >= 80 Or (baseRunners = 1 Or baseRunners = 5) And P2 = 2 Then    'Double Play
+                        If (baseRunners = 1 Or baseRunners = 5) And RN >= 80 Or (baseRunners = 1 Or baseRunners = 5) And P2 = OFF_HIT_N_RUN Then    'Double Play
 
                             'runner doubled off of 1st
                             A5%(1) = 10
@@ -5315,7 +5318,7 @@ Sub SOURCE ()
 
                         Else
 
-                            If (baseRunners = 4 Or baseRunners = 2) And RN >= 80 Or baseRunners = 4 And P2 = 2 Then 'Double Play
+                            If (baseRunners = 4 Or baseRunners = 2) And RN >= 80 Or baseRunners = 4 And P2 = OFF_HIT_N_RUN Then 'Double Play
 
                                 'runner doubled off of 2nd
                                 A5%(2) = 10
@@ -5363,7 +5366,8 @@ Sub SOURCE ()
 
             Call Rolld100(RN)
 
-            If (baseRunners = 1 Or baseRunners = 4 Or ((baseRunners = 7 Or baseRunners = 5) And INFPOS% < 2)) And nbrOuts(0) <= 1 And RN <= 50 Then
+            If (baseRunners = 1 Or baseRunners = 4 Or _
+             ( (baseRunners = 7 Or baseRunners = 5) And INFPOS% < INF_IN) ) And nbrOuts(0) <= 1 And RN <= 50 Then
                 DPC% = 1
                 Call DPPBP
             End If
@@ -5384,7 +5388,7 @@ Sub SOURCE ()
             E2% = ((teamRat_GAME(D, 5) - 80) * 4)
             E3% = ((5 - batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_Run)) * 9)
 
-            If (currFielder = 2 And H6% > 250 + E2% + E3%) Or (H6% > 490 + E2% + E3%) Or P2 = 2 Then Goto LGrounderToPitcher
+            If (currFielder = 2 And H6% > 250 + E2% + E3%) Or (H6% > 490 + E2% + E3%) Or P2 = OFF_HIT_N_RUN Then Goto LGrounderToPitcher
 
             S2% = EVENT_GROUNDER
 
@@ -5421,11 +5425,12 @@ Sub SOURCE ()
                 GoTo LProcessOutAndDP
             End If
 
-            If baseRunners = 5 And gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 7 And nbrOuts(0) = 0 And INFPOS% > 0 And currFielder = 5 Or baseRunners = 5 And gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 7 And nbrOuts(0) = 0 And INFPOS% > 0 And currFielder = 3 Then
+            If baseRunners = 5 And gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 7 And nbrOuts(0) = 0 And INFPOS% > INF_BACK And currFielder = 5 Or _
+               baseRunners = 5 And gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 7 And nbrOuts(0) = 0 And INFPOS% > INF_BACK And currFielder = 3 Then    'ToDo [bm] looks wrong
                 GoTo LGrounderToPitcher
             End If
 
-            If baseRunners = 7 And INFPOS% > 0 And (currFielder = 5 Or currFielder = 3) Then
+            If baseRunners = 7 And INFPOS% > INF_BACK And (currFielder = 5 Or currFielder = 3) Then
                 Call CREDITASSIST(currFielder, D)
                 TB = 9
                 currFielder = 2
@@ -5437,7 +5442,7 @@ Sub SOURCE ()
                 GoTo LProcessOutAndDP
             End If
 
-            If baseRunners = 7 And INFPOS% = 2 And currFielder = 4 Then
+            If baseRunners = 7 And INFPOS% = INF_IN And currFielder = 4 Then
                 Call CREDITASSIST(currFielder, D)
                 TB = 9
                 currFielder = 2
@@ -5450,7 +5455,7 @@ Sub SOURCE ()
             End If
 
 
-            If baseRunners = 7 And INFPOS% = 2 And currFielder = 6 Then
+            If baseRunners = 7 And INFPOS% = INF_IN And currFielder = 6 Then
                 Call CREDITASSIST(currFielder, D)
                 TB = 9
                 currFielder = 2
@@ -5505,7 +5510,7 @@ Sub SOURCE ()
             If fldPos(P, currLineupSlot(P)) <> 1 Then
                 Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
                 Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_K)
-                If P2 = 2 Then nbrStrikes = 3
+                If P2 = OFF_HIT_N_RUN Then nbrStrikes = 3
             End If
 
             CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
@@ -5514,10 +5519,10 @@ Sub SOURCE ()
             If fldPos(P, currLineupSlot(P)) = 1 Then
                 Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
                 Call INCPITOFF(P, currPitcher(P), LG_PB_K)
-                If P2 = 2 Then nbrStrikes = 3
+                If P2 = OFF_HIT_N_RUN Then nbrStrikes = 3
             End If
 
-            If P2 = 2 And nbrOuts(0) < 3 Then
+            If P2 = OFF_HIT_N_RUN And nbrOuts(0) < 3 Then
                 SO = 7
                 GoTo LSteal
             End If
@@ -5561,7 +5566,8 @@ Sub SOURCE ()
 
         H6% = Int(Rnd(1) * 1000) + 1
 
-        If H6% <= game_batRating(P, GM_2B, currLineupSlot(P)) And P2 <> 2 Or H6% <= game_batRating(P, GM_2B, currLineupSlot(P)) * .5 And P2 = 2 Then
+        If H6% <= game_batRating(P, GM_2B, currLineupSlot(P))      And P2 <> OFF_HIT_N_RUN Or _
+           H6% <= game_batRating(P, GM_2B, currLineupSlot(P)) * .5 And P2  = OFF_HIT_N_RUN Then
 
             S2% = EVENT_2B
 
@@ -5689,7 +5695,7 @@ Sub SOURCE ()
                 If nbrOuts(0) = 1 And currFielder = 9 Then I3 = 18 + BR% * 3
                 If nbrOuts(0) = 2 And currFielder = 9 Then I3 = 40 + BR% * 3
 
-                If H6% <= I3 Or P2 = 2 Then A5%(1) = 3
+                If H6% <= I3 Or P2 = OFF_HIT_N_RUN Then A5%(1) = 3
 
             End If
 
@@ -5706,7 +5712,8 @@ Sub SOURCE ()
         End If
 
 
-        If H6% <= game_batRating(P, GM_2B, currLineupSlot(P)) + game_batRating(P, GM_3B, currLineupSlot(P)) And P2 <> 2 Or H6% <= game_batRating(P, GM_2B, currLineupSlot(P)) * .5 + game_batRating(P, GM_3B, currLineupSlot(P)) * .5 And P2 = 2 Then
+        If H6% <= game_batRating(P, GM_2B, currLineupSlot(P))      + game_batRating(P, GM_3B, currLineupSlot(P))      And P2 <> OFF_HIT_N_RUN Or _
+           H6% <= game_batRating(P, GM_2B, currLineupSlot(P)) * .5 + game_batRating(P, GM_3B, currLineupSlot(P)) * .5 And P2  = OFF_HIT_N_RUN Then
 
             S2% = 9
 
@@ -5840,19 +5847,22 @@ Sub SOURCE ()
         I3 = game_batRating(P, GM_2B, currLineupSlot(P)) + game_batRating(P, GM_3B, currLineupSlot(P))
 
         E2% = I3 + game_batRating(P, GM_HR, currLineupSlot(P))
-        If currFielder = 8 And H6% <= E2% And P2 <> 2 Or currFielder = 8 And H6% <= E2% * .5 And P2 = 2 Then
+        If currFielder = 8 And H6% <= E2%      And P2 <> OFF_HIT_N_RUN Or _
+           currFielder = 8 And H6% <= E2% * .5 And P2  = OFF_HIT_N_RUN Then
             S2% = EVENT_HR
             GoTo LHomeRun
         End If
 
         E2% = I3 + game_batRating(P, GM_L_HR, currLineupSlot(P))
-        If currFielder = 7 And H6% <= E2% And P2 <> 2 Or currFielder = 7 And H6% <= E2% * .5 And P2 = 2 Then
+        If currFielder = 7 And H6% <= E2%      And P2 <> OFF_HIT_N_RUN Or _
+           currFielder = 7 And H6% <= E2% * .5 And P2 =  OFF_HIT_N_RUN Then
             S2% = EVENT_HR
             GoTo LHomeRun
         End If
 
         E2% = I3 + game_batRating(P, GM_R_HR, currLineupSlot(P))
-        If currFielder = 9 And H6% <= E2% And P2 <> 2 Or currFielder = 9 And H6% <= E2% * .5 And P2 = 2 Then
+        If currFielder = 9 And H6% <= E2%      And P2 <> OFF_HIT_N_RUN Or _
+           currFielder = 9 And H6% <= E2% * .5 And P2 = OFF_HIT_N_RUN Then
             S2% = EVENT_HR
             GoTo LHomeRun
         End If
@@ -6256,7 +6266,7 @@ Sub SOURCE ()
     Else
 
         Call Rolld100(RN)
-        If (RN <= 90 And P2 <> 2 Or baseRunners = 0) Or (RN <= 10 And P2 = 2) Then
+        If (RN <= 90 And P2 <> 2 Or baseRunners = 0) Or (RN <= 10 And P2 = OFF_HIT_N_RUN) Then
 
             S2% = 14
 
@@ -6273,7 +6283,7 @@ Sub SOURCE ()
             A5%(2) = 1
             A5%(3) = 1
 
-            If INFPOS% = 0 And currFielder = 2 Then A5%(3) = 0
+            If INFPOS% = INF_BACK And currFielder = 2 Then A5%(3) = 0
             If baseRunners = 5 Or baseRunners = 7 Or baseRunners = 4 Then 13725
 
             A5%(1) = 11
@@ -6296,30 +6306,32 @@ Sub SOURCE ()
             A5%(2) = 0
             A5%(3) = 0
 
-            If currFielder = 5 And RN <= 25 And INFPOS% < 2 Then A5%(2) = 1
-            If currFielder = 5 And RN <= 83 And INFPOS% = 0 Then A5%(3) = 1: ' WAS 50
-            If currFielder = 5 And RN <= 10 And INFPOS% > 0 Then A5%(3) = 1
+            If currFielder = 5 And RN <= 25 And INFPOS% < INF_IN   Then A5%(2) = 1
+            If currFielder = 5 And RN <= 83 And INFPOS% = INF_BACK Then A5%(3) = 1 ' WAS 50
+            If currFielder = 5 And RN <= 10 And INFPOS% > INF_BACK Then A5%(3) = 1
 
-            If currFielder = 5 And RN < 5 And INFPOS% < 2 And baseRunners = 2 And gameScore(P, 0) - gameScore(D, 0) > -2 Or currFielder = 5 And RN < 5 And INFPOS% < 2 And baseRunners = 6 And A5%(3) = 1 And gameScore(P, 0) - gameScore(D, 0) > -2 Then
+            If currFielder = 5 And RN < 5 And INFPOS% < INF_IN And baseRunners = 2 And gameScore(P, 0) - gameScore(D, 0) > -2 Or _
+               currFielder = 5 And RN < 5 And INFPOS% < INF_IN And baseRunners = 6 And gameScore(P, 0) - gameScore(D, 0) > -2 And A5%(3) = 1 Then
                 A5%(2) = 11
                 A5%(0) = 1
                 Call PBP("NO, he's going to third")
             End If
 
-            If currFielder = 6 And RN <= 20 And INFPOS% < 2 Then A5%(2) = 1
-            If currFielder = 6 And RN <= 92 And INFPOS% < 2 Then A5%(3) = 1
-            If currFielder = 6 And RN <= 5 And INFPOS% = 2 Then A5%(3) = 1
-            If currFielder = 6 And RN < 6 And INFPOS% < 2 And baseRunners = 2 And gameScore(P, 0) - gameScore(D, 0) > -2 Or currFielder = 6 And RN < 6 And INFPOS% < 2 And baseRunners = 6 And A5%(3) = 1 And gameScore(P, 0) - gameScore(D, 0) > -2 Then A5%(2) = 11: A5%(0) = 1: Call PBP("NO, he's going to third")
-            If currFielder = 4 And RN <= 90 And INFPOS% < 2 Then A5%(2) = 1
-            If currFielder = 4 And RN <= 90 And INFPOS% < 2 Then A5%(3) = 1
-            If currFielder = 4 And RN <= 65 And INFPOS% = 2 Then A5%(2) = 1
-            If currFielder = 4 And RN <= 5 And INFPOS% = 2 Then A5%(3) = 1
+            If currFielder = 6 And RN <= 20 And INFPOS% < INF_IN Then A5%(2) = 1
+            If currFielder = 6 And RN <= 92 And INFPOS% < INF_IN Then A5%(3) = 1
+            If currFielder = 6 And RN <=  5 And INFPOS% = INF_IN Then A5%(3) = 1
+            If currFielder = 6 And RN <   6 And INFPOS% < INF_IN And baseRunners = 2 And gameScore(P, 0) - gameScore(D, 0) > -2 Or _
+               currFielder = 6 And RN <   6 And INFPOS% < INF_IN And baseRunners = 6 And gameScore(P, 0) - gameScore(D, 0) > -2 And A5%(3) = 1 Then A5%(2) = 11: A5%(0) = 1: Call PBP("NO, he's going to third")
+            If currFielder = 4 And RN <= 90 And INFPOS% < INF_IN Then A5%(2) = 1
+            If currFielder = 4 And RN <= 90 And INFPOS% < INF_IN Then A5%(3) = 1
+            If currFielder = 4 And RN <= 65 And INFPOS% = INF_IN Then A5%(2) = 1
+            If currFielder = 4 And RN <=  5 And INFPOS% = INF_IN Then A5%(3) = 1
             If currFielder = 3 And RN <= 95 Then A5%(2) = 1
-            If currFielder = 3 And RN <= 88 And INFPOS% = 0 Then A5%(3) = 1: ' WAS 60
-            If currFielder = 3 And RN <= 15 And INFPOS% > 0 Then A5%(3) = 1
+            If currFielder = 3 And RN <= 88 And INFPOS% = INF_BACK Then A5%(3) = 1  ' WAS 60
+            If currFielder = 3 And RN <= 15 And INFPOS% > INF_BACK Then A5%(3) = 1
             If currFielder = 1 And RN <= 30 Then A5%(2) = 1
-            If currFielder = 1 And RN <= 50 And INFPOS% = 0 Then A5%(3) = 1
-            If currFielder = 1 And RN <= 10 And INFPOS% > 0 Then A5%(3) = 1
+            If currFielder = 1 And RN <= 50 And INFPOS% = INF_BACK Then A5%(3) = 1
+            If currFielder = 1 And RN <= 10 And INFPOS% > INF_BACK Then A5%(3) = 1
             If currFielder = 2 And RN <= 45 Then A5%(2) = 1
 
         End If
@@ -6331,17 +6343,17 @@ Sub SOURCE ()
     13725 '
     If baseRunners <> 4 And baseRunners <> 7 Then
 
-        If gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 6 And nbrOuts(0) = 0 And INFPOS% > 0 And currFielder = 5 Or _
-           gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 6 And nbrOuts(0) = 0 And INFPOS% > 0 And currFielder = 3 Then
+        If gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 6 And nbrOuts(0) = 0 And INFPOS% > INF_BACK And currFielder = 5 Or _
+           gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 6 And nbrOuts(0) = 0 And INFPOS% > INF_BACK And currFielder = 3 Then
 
             A5%(3) = 11
 
         Else
 
-            If INFPOS% = 0 And currFielder <> 2 Then A5%(1) = 11: GoTo LProcessOutAndDP2
-            If INFPOS% > 0 And currFielder = 5 Or INFPOS% > 0 And currFielder = 3 Then A5%(3) = 0: A5%(1) = 11: GoTo LProcessOutAndDP2
-            If INFPOS% > 0 And (currFielder = 1 Or currFielder = 3) Then A5%(3) = 0: A5%(1) = 1: A5%(0) = 11: GoTo LProcessOutAndDP2
-            If INFPOS% = 2 And currFielder = 4 Or INFPOS% = 2 And currFielder = 6 And RN <= 90 Then
+            If INFPOS% = INF_BACK And currFielder <> 2 Then A5%(1) = 11: GoTo LProcessOutAndDP2
+            If INFPOS% > INF_BACK And currFielder = 5 Or INFPOS% > INF_BACK And currFielder = 3 Then A5%(3) = 0: A5%(1) = 11: GoTo LProcessOutAndDP2
+            If INFPOS% > INF_BACK And (currFielder = 1 Or currFielder = 3) Then A5%(3) = 0: A5%(1) = 1: A5%(0) = 11: GoTo LProcessOutAndDP2
+            If INFPOS% = INF_IN And currFielder = 4 Or INFPOS% = INF_IN And currFielder = 6 And RN <= 90 Then
                 A5%(3) = 0
                 A5%(1) = 11
             Else
@@ -6352,8 +6364,8 @@ Sub SOURCE ()
 
     Else
 
-        If currFielder = 6 And RN < 6 And INFPOS% < 2 And INNING% < 9 Or _
-           currFielder = 5 And RN < 6 And INFPOS% < 2 And INNING% < 9 Then
+        If currFielder = 6 And RN < 6 And INFPOS% < INF_IN And INNING% < 9 Or _
+           currFielder = 5 And RN < 6 And INFPOS% < INF_IN And INNING% < 9 Then
             A5%(2) = 11
         Else
             If baseRunners = 7 Then
@@ -6364,10 +6376,10 @@ Sub SOURCE ()
                 A5%(3) = 1
                 A5%(0) = 1
 
-                If INFPOS% > 0 And currFielder = 5 Or _
-                   INFPOS% > 0 And currFielder = 3 Or _
-                   INFPOS% = 2 And currFielder = 4 Or _
-                   INFPOS% = 2 And currFielder = 6 Or _
+                If INFPOS% > INF_BACK And currFielder = 5 Or _
+                   INFPOS% > INF_BACK And currFielder = 3 Or _
+                   INFPOS% = INF_IN And currFielder = 4 Or _
+                   INFPOS% = INF_IN And currFielder = 6 Or _
                    currFielder = 2 Or currFielder = 1 Then
                     A5%(3) = 11
                     A5%(0) = 1
@@ -6443,7 +6455,7 @@ Sub SOURCE ()
 
     DPC% = 0
     runnerHeld = 0
-    INFPOS% = 0
+    INFPOS% = INF_BACK
     errorOnPlay% = 0
     H0%(0) = 0
 
@@ -6473,7 +6485,7 @@ Sub SOURCE ()
         BR = batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_Bunt)
     End If
 
-    If INFPOS% > 0 Then BR = BR - 2
+    If INFPOS% > INF_BACK Then BR = BR - 2
     If BR <= 1 Then BR = 1
 
     For I = 1 To 9:
@@ -6745,7 +6757,7 @@ Sub SOURCE ()
                 RR = batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_Run)
             End If
 
-            If INFPOS% > 0 Then RR = RR - 2
+            If INFPOS% > INF_BACK Then RR = RR - 2
             If RR <= 2 Then RR = 2
 
             For I = 0 To 2
@@ -6802,7 +6814,7 @@ Sub SOURCE ()
             'PLYLDBS
             If fldPos(P, currLineupSlot(P)) = 1 Then RR = 2
             If fldPos(P, currLineupSlot(P)) <> 1 Then RR = batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_Run)
-            If INFPOS% > 0 Then RR = RR - 2
+            If INFPOS% > INF_BACK Then RR = RR - 2
             If RR <= 2 Then RR = 2
 
             If baseRunners = 0 Then 14150
@@ -6918,7 +6930,7 @@ Sub SOURCE ()
                     End If
                     Call PBP(pbpString$)
 
-                    If baseRunners = 4 Or baseRunners = 2 Then INFPOS% = 0
+                    If baseRunners = 4 Or baseRunners = 2 Then INFPOS% = INF_BACK
 
                     If useVGA = 1 Then
                         _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
@@ -6941,9 +6953,9 @@ Sub SOURCE ()
 
             If currFielder = 1 Then RR = 3
             If currFielder <> 1 Then RR = batRating(D, fielder(D, currFielder), SS_B_Range)
-            If INFPOS% > 0 And baseRunners <> 0 Then RR = RR + 1 + teamRat_GAME(1, 10)
-            If INFPOS% > 0 And baseRunners = 0 Then RR = RR + teamRat_GAME(1, 10)
-            If INFPOS% = 0 And baseRunners = 0 Then RR = RR - 1
+            If INFPOS% > INF_BACK And baseRunners <> 0 Then RR = RR + 1 + teamRat_GAME(1, 10)
+            If INFPOS% > INF_BACK And baseRunners = 0  Then RR = RR + teamRat_GAME(1, 10)
+            If INFPOS% = INF_BACK And baseRunners = 0  Then RR = RR - 1
 
             If RR > 11 Then RR = 11
             If RR < 0 Then RR = 0
@@ -7003,7 +7015,7 @@ Sub SOURCE ()
                 Call PBP("He has" + Str$(nbrStrikes) + "strikes")
             End If
 
-            If baseRunners = 4 Or baseRunners = 2 Then INFPOS% = 0
+            If baseRunners = 4 Or baseRunners = 2 Then INFPOS% = INF_BACK
 
             If useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
 
@@ -7074,10 +7086,9 @@ Sub SOURCE ()
     End Select
 
     I2 = lineupPlayer(P, b2Base(TGTBASE% - 1))
-    For I3 = 1 To 2
-        A5%(I3) = 1
-        A5%(3) = 0
-    Next I3
+    A5%(1) = 1
+    A5%(2) = 1
+    A5%(3) = 0
 
     Call STEALCHANCE(AA, I2, TGTBASE%, CHANCE%)
     If fldPos(P, b2Base(TGTBASE% - 1)) = 1 Then CHANCE% = 0
@@ -7103,7 +7114,7 @@ Sub SOURCE ()
 
     If pitchRating(D, currPitcher(D), 0) =  1 And TGTBASE% = 2 Then CHANCE% = CHANCE% + 25: stlChance = stlChance + 10
     If pitchRating(D, currPitcher(D), 0) = -1 And TGTBASE% = 2 Then CHANCE% = CHANCE% - 50: stlChance = stlChance - 30
-    If P2 = 2 Then
+    If P2 = OFF_HIT_N_RUN Then
 
         CHANCE% = 100
         stlChance = stlChance - 200
@@ -7157,7 +7168,7 @@ Sub SOURCE ()
             GoTo LCheckForOptionsOrQuit
         End If
 
-        INFPOS% = 0
+        INFPOS% = INF_BACK
 
         GoTo LNextBatter1
 
@@ -7270,7 +7281,7 @@ Sub SOURCE ()
         Call PBP("safe @ " + baseName$(TGTBASE%) + "!")
 
         b2Mystery(TGTBASE% - 1) = 0
-        INFPOS% = 0
+        INFPOS% = INF_BACK
         Call PITSWAP(TGTBASE%)
         Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
 
@@ -7324,7 +7335,7 @@ Sub SOURCE ()
     Call PBP(pbpString$)
 
     A5%(TGTBASE% - 1) = 11
-    INFPOS% = 0
+    INFPOS% = INF_BACK
 
     Call INCBATOFF(P, lineupPlayer(P, b2Base(TGTBASE% - 1)), LG_B_CS)
 
@@ -7347,7 +7358,7 @@ Sub SOURCE ()
     End If
 
     LStealContinue:
-    If nbrOuts(0) >= 3 Or P2 = 2 And nbrStrikes = 3 Then
+    If nbrOuts(0) >= 3 Or P2 = OFF_HIT_N_RUN And nbrStrikes = 3 Then
         GoTo LCheckForOptionsOrQuit
     End If
 
@@ -7451,7 +7462,7 @@ Sub SOURCE ()
 
         If fldPos(D, I2) = 10 Then fldPos(D, I2) = 1
 
-        INFPOS% = 0
+        INFPOS% = INF_BACK
         fldPos(D, fielder(D, 0)) = fldPos(D, I2)
         fielder(D, fldPos(D, fielder(D, 0))) = lineupPlayer(D, fielder(D, 0))
         fldPos(D, I2) = 1
@@ -7782,7 +7793,7 @@ Sub SOURCE ()
             End If
 
             If I1 = 3 Then 15550
-            If D2 = 6 Then 15550
+            If D2 = DEF_PERSONNEL Then 15550
             I2 = currLineupSlot(P): GoTo 15555
 
             For I5 = 20 To 23: Locate I5, 28
@@ -8038,7 +8049,7 @@ Sub SOURCE ()
         End If
     End If
 
-    D2 = 1
+    D2 = DEF_PITCH
 
     If INFPOS% <= 0 Then
 
@@ -8048,10 +8059,10 @@ Sub SOURCE ()
 
                 ' PROFILE INFIELD IN WITH 3RD OCCUPIED
                 Call Rolld100(RN)
-                If nbrOuts(0) = 0 And A1 >= teamMgrProfileVal(D, 691) * -1 And A1 <= teamMgrProfileVal(D, 692) * -1 And INNING% >= teamMgrProfileVal(D, 693) And RN <= teamMgrProfileVal(D, 694) Then INFPOS% = 2: D2 = 3: GoTo LManageDefense
-                If nbrOuts(0) = 0 And A1 >= teamMgrProfileVal(D, 695) * -1 And A1 <= teamMgrProfileVal(D, 696) * -1 And INNING% >= teamMgrProfileVal(D, 697) And RN <= teamMgrProfileVal(D, 698) Then INFPOS% = 2: D2 = 3: GoTo LManageDefense
-                If nbrOuts(0) = 1 And (baseRunners = 5 Or baseRunners = 7) And A1 >= teamMgrProfileVal(D, 699) * -1 And A1 <= teamMgrProfileVal(D, 700) * -1 And INNING% >= teamMgrProfileVal(D, 701) And RN <= teamMgrProfileVal(D, 702) Then INFPOS% = 2: D2 = 3: GoTo LManageDefense
-                If nbrOuts(0) = 1 And (baseRunners = 5 Or baseRunners = 7) And A1 >= teamMgrProfileVal(D, 703) * -1 And A1 <= teamMgrProfileVal(D, 704) * -1 And INNING% >= teamMgrProfileVal(D, 705) And RN <= teamMgrProfileVal(D, 706) Then INFPOS% = 2: D2 = 3: GoTo LManageDefense
+                If nbrOuts(0) = 0 And A1 >= teamMgrProfileVal(D, 691) * -1 And A1 <= teamMgrProfileVal(D, 692) * -1 And INNING% >= teamMgrProfileVal(D, 693) And RN <= teamMgrProfileVal(D, 694) Then INFPOS% = INF_IN: D2 = DEF_INFIELD_IN: GoTo LManageDefense
+                If nbrOuts(0) = 0 And A1 >= teamMgrProfileVal(D, 695) * -1 And A1 <= teamMgrProfileVal(D, 696) * -1 And INNING% >= teamMgrProfileVal(D, 697) And RN <= teamMgrProfileVal(D, 698) Then INFPOS% = INF_IN: D2 = DEF_INFIELD_IN: GoTo LManageDefense
+                If nbrOuts(0) = 1 And (baseRunners = 5 Or baseRunners = 7) And A1 >= teamMgrProfileVal(D, 699) * -1 And A1 <= teamMgrProfileVal(D, 700) * -1 And INNING% >= teamMgrProfileVal(D, 701) And RN <= teamMgrProfileVal(D, 702) Then INFPOS% = INF_IN: D2 = DEF_INFIELD_IN: GoTo LManageDefense
+                If nbrOuts(0) = 1 And (baseRunners = 5 Or baseRunners = 7) And A1 >= teamMgrProfileVal(D, 703) * -1 And A1 <= teamMgrProfileVal(D, 704) * -1 And INNING% >= teamMgrProfileVal(D, 705) And RN <= teamMgrProfileVal(D, 706) Then INFPOS% = INF_IN: D2 = DEF_INFIELD_IN: GoTo LManageDefense
 
             End If
 
@@ -8064,8 +8075,8 @@ Sub SOURCE ()
                 ' PROFILE CORNERS IN AGAINST A BUNT HIT
                 Call Rolld100(RN)
                 If BR >= teamMgrProfileVal(D, 708) And RN <= teamMgrProfileVal(D, 709) Or BR >= teamMgrProfileVal(D, 710) And RN <= teamMgrProfileVal(D, 711) Or BR >= teamMgrProfileVal(D, 712) And RN <= teamMgrProfileVal(D, 713) Then
-                    INFPOS% = 1
-                    D2 = 4
+                    INFPOS% = INF_CORNERS_IN
+                    D2 = DEF_CORNERS_IN
                     GoTo LManageDefense
                 End If
 
@@ -8082,23 +8093,23 @@ Sub SOURCE ()
                     ' PROFILE CORNERS IN VS HITTER IN SAC BUNT SITUATION
                     Call Rolld100(RN)
                     If A1 <= teamMgrProfileVal(D, 715) And A1 >= teamMgrProfileVal(D, 716) * -1 And baseRunners = 1 And BR >= teamMgrProfileVal(D, 717) And RN <= teamMgrProfileVal(D, 718) Then
-                        INFPOS% = 1
-                        D2 = 4
+                        INFPOS% = INF_CORNERS_IN
+                        D2 = DEF_CORNERS_IN
                         GoTo LManageDefense
                     End If
                     If A1 <= teamMgrProfileVal(D, 719) And A1 >= teamMgrProfileVal(D, 720) * -1 And baseRunners = 1 And BR >= teamMgrProfileVal(D, 721) And RN <= teamMgrProfileVal(D, 722) Then
-                        INFPOS% = 1
-                        D2 = 4
+                        INFPOS% = INF_CORNERS_IN
+                        D2 = DEF_CORNERS_IN
                         GoTo LManageDefense
                     End If
                     If A1 <= teamMgrProfileVal(D, 723) And A1 >= teamMgrProfileVal(D, 724) * -1 And baseRunners = 4 And BR >= teamMgrProfileVal(D, 725) And RN <= teamMgrProfileVal(D, 726) Then
-                        INFPOS% = 1
-                        D2 = 4
+                        INFPOS% = INF_CORNERS_IN
+                        D2 = DEF_CORNERS_IN
                         GoTo LManageDefense
                     End If
                     If A1 <= teamMgrProfileVal(D, 727) And A1 >= teamMgrProfileVal(D, 728) * -1 And baseRunners = 4 And BR >= teamMgrProfileVal(D, 729) And RN <= teamMgrProfileVal(D, 730) Then
-                        INFPOS% = 1
-                        D2 = 4
+                        INFPOS% = INF_CORNERS_IN
+                        D2 = DEF_CORNERS_IN
                         GoTo LManageDefense
                     End If
 
@@ -8116,26 +8127,26 @@ Sub SOURCE ()
                 Call Rolld100(RN)
 
                 If I7! <= teamMgrProfileVal(D, 732) And RN <= teamMgrProfileVal(D, 733) And baseRunners = 1 And nbrOuts(0) <= 1 Then
-                    INFPOS% = 1
-                    D2 = 4
+                    INFPOS% = INF_CORNERS_IN
+                    D2 = DEF_CORNERS_IN
                     GoTo LManageDefense
                 End If
 
                 If I7! <= teamMgrProfileVal(D, 734) And RN <= teamMgrProfileVal(D, 735) And baseRunners = 1 And nbrOuts(0) <= 1 Then
-                    INFPOS% = 1
-                    D2 = 4
+                    INFPOS% = INF_CORNERS_IN
+                    D2 = DEF_CORNERS_IN
                     GoTo LManageDefense
                 End If
 
                 If I7! <= teamMgrProfileVal(D, 736) And RN <= teamMgrProfileVal(D, 737) And (baseRunners = 2 Or baseRunners = 4) And nbrOuts(0) = 0 Then
-                    INFPOS% = 1
-                    D2 = 4
+                    INFPOS% = INF_CORNERS_IN
+                    D2 = DEF_CORNERS_IN
                     GoTo LManageDefense
                 End If
 
                 If I7! <= teamMgrProfileVal(D, 738) And RN <= teamMgrProfileVal(D, 739) And (baseRunners = 2 Or baseRunners = 4) And nbrOuts(0) = 0 Then
-                    INFPOS% = 1
-                    D2 = 4
+                    INFPOS% = INF_CORNERS_IN
+                    D2 = DEF_CORNERS_IN
                     GoTo LManageDefense
                 End If
 
@@ -8150,13 +8161,13 @@ Sub SOURCE ()
                 ' PROFILE CORNERS IN FOR A SQUEEZE
                 Call Rolld100(RN)
                 If nbrOuts(0) = 0 And A1 <= teamMgrProfileVal(D, 741) And A1 >= teamMgrProfileVal(D, 742) And BR >= teamMgrProfileVal(D, 743) And RN <= teamMgrProfileVal(D, 744) Then
-                    INFPOS% = 1
-                    D2 = 4
+                    INFPOS% = INF_CORNERS_IN
+                    D2 = DEF_CORNERS_IN
                     GoTo LManageDefense
                 End If
                 If nbrOuts(0) = 1 And A1 <= teamMgrProfileVal(D, 745) And A1 >= teamMgrProfileVal(D, 746) And BR >= teamMgrProfileVal(D, 747) And RN <= teamMgrProfileVal(D, 748) Then
-                    INFPOS% = 1
-                    D2 = 4
+                    INFPOS% = INF_CORNERS_IN
+                    D2 = DEF_CORNERS_IN
                     GoTo LManageDefense
                 End If
 
@@ -8185,15 +8196,15 @@ Sub SOURCE ()
                     Else
                         I6! = CInt((batRating(P, lineupPlayer(P, currLineupSlot(P)), 6) + batRating(P, lineupPlayer(P, currLineupSlot(P)), 7) + batRating(P, lineupPlayer(P, currLineupSlot(P)), 8) * 2 + batRating(P, lineupPlayer(P, currLineupSlot(P)), 9) * 3) / batRating(P, lineupPlayer(P, currLineupSlot(P)), 4) * 1000)
                         If I6! <= teamMgrProfileVal(D, 757) And INNING% >= teamMgrProfileVal(D, 758) And RN <= teamMgrProfileVal(D, 759) Then
-                            D2 = 8
+                            D2 = DEF_PITCH_AROUND
                             GoTo LReliever2
                         End If
                         If I6! <= teamMgrProfileVal(D, 760) And INNING% >= teamMgrProfileVal(D, 761) And RN <= teamMgrProfileVal(D, 762) Then
-                            D2 = 8
+                            D2 = DEF_PITCH_AROUND
                             GoTo LReliever2
                         End If
                         If I6! <= teamMgrProfileVal(D, 763) And INNING% >= teamMgrProfileVal(D, 764) And RN <= teamMgrProfileVal(D, 765) Then
-                            D2 = 8
+                            D2 = DEF_PITCH_AROUND
                             GoTo LReliever2
                         End If
                     End If
@@ -8207,8 +8218,8 @@ Sub SOURCE ()
         A1 = gameScore(D, 0) - gameScore(P, 0)
 
         If A1 >= -1 And A1 <= 1 And INNING% >= 8 And (baseRunners = 3 Or baseRunners >= 5) And nbrOuts(0) < 2 Then
-            INFPOS% = 2
-            D2 = 3
+            INFPOS% = INF_IN
+            D2 = DEF_INFIELD_IN
 
         Else
 
@@ -8216,13 +8227,13 @@ Sub SOURCE ()
 
                 If Not (baseRunners = 0 Or baseRunners = 2 Or baseRunners = 3 Or baseRunners >= 5 Or nbrOuts(0) = 2 Or currLineupSlot(P) >= 3 And currLineupSlot(P) <= 6 Or INNING% <= 6 And A1 >= 3 Or INNING% <= 6 And A1 <= -3) Then
                     If Not (INNING% > 7 And A1 >= 1 Or INNING% > 7 And A1 < -1) Then
-                        INFPOS% = 1
-                        D2 = 4
+                        INFPOS% = INF_CORNERS_IN
+                        D2 = DEF_CORNERS_IN
                     End If
                 End If
             Else
-                INFPOS% = 2
-                D2 = 3
+                INFPOS% = INF_IN
+                D2 = DEF_INFIELD_IN
             End If
 
         End If
@@ -8235,7 +8246,7 @@ Sub SOURCE ()
 
         If INNING% >= 9 And P = 1 And nbrOuts(0) < 2 And A1 = 0 And baseRunners >= 2 And baseRunners <= 3 Or INNING% >= 9 And P = 1 And nbrOuts(0) = 2 And A1 = 0 And baseRunners >= 5 And baseRunners <= 6 Then
             '18835
-            D2 = 2
+            D2 = DEF_INTNTL_BB
             GoTo LManageDefense
         End If
 
@@ -8249,10 +8260,10 @@ Sub SOURCE ()
             I3 = game_batRating(P, GM_HR, currLineupSlot(P) + 1)
         End If
 
-        If Not (baseRunners <> 2 And baseRunners <> 6) Then
+        If baseRunners = 2 Or baseRunners = 6 Then
 
             If Ib4 - I2 >= 50 And I1 - I3 >= 50 And A1 < 1 And INNING% > 8 Or Ib4 >= 280 And I1 >= 140 And INNING% > 8 And I1 > I3 And A1 < 1 Then
-                D2 = 2
+                D2 = DEF_INTNTL_BB
                 GoTo LManageDefense
             End If
 
@@ -8520,8 +8531,8 @@ Sub SOURCE ()
 
 
         Call Rolld100(RN)
-        If baseRunners = 0 And (INFPOS% > 0 And RN <= 5 Or INFPOS% = 0 And RN <= 5) And BR > 8 Then
-            P2 = 4
+        If baseRunners = 0 And (INFPOS% > INF_BACK And RN <= 5 Or INFPOS% = INF_BACK And RN <= 5) And BR > 8 Then
+            P2 = OFF_BUNT
             GoTo LBunt
         End If
 
@@ -8542,27 +8553,27 @@ Sub SOURCE ()
             End If
 
             If baseRunners = 1 And nbrOuts(0) = 0 And A1 <= teamMgrProfileVal(P, 672) And A1 >= teamMgrProfileVal(P, 673) * -1 And RN <= teamMgrProfileVal(P, 674) And I7! <= teamMgrProfileVal(P, 872) And I6! >= teamMgrProfileVal(P, 866) Then
-                P2 = 2
+                P2 = OFF_HIT_N_RUN
                 GoTo LHitAndRun
             End If
             If baseRunners = 1 And nbrOuts(0) = 1 And A1 <= teamMgrProfileVal(P, 675) And A1 >= teamMgrProfileVal(P, 676) * -1 And RN <= teamMgrProfileVal(P, 677) And I7! <= teamMgrProfileVal(P, 873) And I6! >= teamMgrProfileVal(P, 867) Then
-                P2 = 2
+                P2 = OFF_HIT_N_RUN
                 GoTo LHitAndRun
             End If
             If baseRunners = 5 And nbrOuts(0) = 0 And A1 <= teamMgrProfileVal(P, 678) And A1 >= teamMgrProfileVal(P, 679) * -1 And RN <= teamMgrProfileVal(P, 680) And I7! <= teamMgrProfileVal(P, 874) And I6! >= teamMgrProfileVal(P, 868) Then
-                P2 = 2
+                P2 = OFF_HIT_N_RUN
                 GoTo LHitAndRun
             End If
             If baseRunners = 5 And nbrOuts(0) = 1 And A1 <= teamMgrProfileVal(P, 681) And A1 >= teamMgrProfileVal(P, 682) * -1 And RN <= teamMgrProfileVal(P, 683) And I7! <= teamMgrProfileVal(P, 875) And I6! >= teamMgrProfileVal(P, 869) Then
-                P2 = 2
+                P2 = OFF_HIT_N_RUN
                 GoTo LHitAndRun
             End If
             If baseRunners = 4 And nbrOuts(0) = 0 And A1 <= teamMgrProfileVal(P, 684) And A1 >= teamMgrProfileVal(P, 685) * -1 And RN <= teamMgrProfileVal(P, 686) And I7! <= teamMgrProfileVal(P, 876) And I6! >= teamMgrProfileVal(P, 870) Then
-                P2 = 2
+                P2 = OFF_HIT_N_RUN
                 GoTo LHitAndRun
             End If
             If baseRunners = 4 And nbrOuts(0) = 1 And A1 <= teamMgrProfileVal(P, 687) And A1 >= teamMgrProfileVal(P, 688) * -1 And RN <= teamMgrProfileVal(P, 689) And I7! <= teamMgrProfileVal(P, 877) And I6! >= teamMgrProfileVal(P, 871) Then
-                P2 = 2
+                P2 = OFF_HIT_N_RUN
                 GoTo LHitAndRun
             End If
 
@@ -8575,13 +8586,13 @@ Sub SOURCE ()
                 Call Rolld100(RN)
 
                 If baseRunners = 1 And INNING% <= 7 And teamMgrProfileVal(P, 610) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 611) And A1 >= teamMgrProfileVal(P, 612) * -1 And RN <= teamMgrProfileVal(P, 613) Then 18970
-                If baseRunners = 1 And INNING% > 7 And teamMgrProfileVal(P, 614) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 615) And A1 >= teamMgrProfileVal(P, 616) * -1 And RN <= teamMgrProfileVal(P, 617) Then 18970
+                If baseRunners = 1 And INNING%  > 7 And teamMgrProfileVal(P, 614) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 615) And A1 >= teamMgrProfileVal(P, 616) * -1 And RN <= teamMgrProfileVal(P, 617) Then 18970
 
                 If baseRunners = 2 And INNING% <= 7 And teamMgrProfileVal(P, 618) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 619) And A1 >= teamMgrProfileVal(P, 620) * -1 And RN <= teamMgrProfileVal(P, 621) Then 18970
-                If baseRunners = 2 And INNING% > 7 And teamMgrProfileVal(P, 622) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 623) And A1 >= teamMgrProfileVal(P, 624) * -1 And RN <= teamMgrProfileVal(P, 625) Then 18970
+                If baseRunners = 2 And INNING%  > 7 And teamMgrProfileVal(P, 622) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 623) And A1 >= teamMgrProfileVal(P, 624) * -1 And RN <= teamMgrProfileVal(P, 625) Then 18970
 
                 If baseRunners = 4 And INNING% <= 7 And teamMgrProfileVal(P, 626) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 627) And A1 >= teamMgrProfileVal(P, 628) * -1 And RN <= teamMgrProfileVal(P, 629) Then 18970
-                If baseRunners = 4 And INNING% > 7 And teamMgrProfileVal(P, 630) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 631) And A1 >= teamMgrProfileVal(P, 632) * -1 And RN <= teamMgrProfileVal(P, 633) Then 18970
+                If baseRunners = 4 And INNING%  > 7 And teamMgrProfileVal(P, 630) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 631) And A1 >= teamMgrProfileVal(P, 632) * -1 And RN <= teamMgrProfileVal(P, 633) Then 18970
 
             End If
 
@@ -8608,15 +8619,15 @@ Sub SOURCE ()
 
         End If
 
-        P2 = 1
+        P2 = OFF_HIT_AWAY
 
         If baseRunners = 1 Or baseRunners = 5 Then
 
-            If A1 <= -1 And batRating(P, lineupPlayer(P, b2Base(1)), SS_B_SB) < 10 Or b2Mystery(1) > 1 Then Goto LNoSteal: 'CHANGED FROM <10
+            If A1 <= -1 And batRating(P, lineupPlayer(P, b2Base(1)), SS_B_SB) < 10 Or b2Mystery(1) > 1 Then Goto LNoSteal  'CHANGED FROM <10
             If A1 >= -1 And baseRunners = 5 Then Goto LNoSteal
             If A1 < -5 Or fldPos(P, b2Base(1)) = 1 And baseRunners = 1 Or fldPos(P, b2Base(2)) = 1 And baseRunners = 2 Then Goto LNoSteal
             If A1 < 0 And INNING% >= 7 Then Goto LNoSteal
-            P2 = 3
+            P2 = OFF_STEAL
 
             GoTo LSteal
 
@@ -8625,7 +8636,7 @@ Sub SOURCE ()
         If baseRunners = 2 Or baseRunners = 4 Then
             If Not (batRating(P, lineupPlayer(P, b2Base(2)), SS_B_SB) < 40 Or fldPos(P, currLineupSlot(P)) = 1 Or nbrOuts(0) = 2) Then
                 If b2Mystery(2) <= 1 Then
-                    P2 = 3
+                    P2 = OFF_STEAL
                     GoTo LSteal
                 End If
             End If
@@ -8651,7 +8662,7 @@ Sub SOURCE ()
     If nbrOuts(0) = 2 Or game_batRating(P, GM_K, currLineupSlot(P)) > 100 Or baseRunners = 0 Or baseRunners = 7 Or baseRunners = 6 Or baseRunners = 3 Or baseRunners = 2 Or A1 < -3 Or RN0 > 20 Then
         GoTo 15064
     Else
-        P2 = 2
+        P2 = OFF_HIT_N_RUN
         GoTo LHitAndRun
     End If
 
@@ -8663,7 +8674,7 @@ Sub SOURCE ()
         GoTo LPinchRunner0
     Else
         18970 '
-        P2 = 4
+        P2 = OFF_BUNT
         GoTo LBunt
     End If
 
@@ -10710,6 +10721,7 @@ End Sub
 Sub FLDERR (errorOnPlay%, currFielder, D, I3, SB%, S2%, P)
 
     errorOnPlay% = 0
+    errType = 0
 
     If currFielder = 1 Then
         If SB% = 1 Then
@@ -10742,7 +10754,7 @@ Sub FLDERR (errorOnPlay%, currFielder, D, I3, SB%, S2%, P)
 
         errorOnPlay% = 1
         rand = Int(Rnd(1) * 2) + 1
-        I1 = 2
+        errType = 2
 
         If currFielder = 1 Then
             Call ADDPIT(D, currPitcher(D), LG_PB_E)
@@ -10768,31 +10780,31 @@ Sub FLDERR (errorOnPlay%, currFielder, D, I3, SB%, S2%, P)
         End If
 
         If S2% >= EVENT_FLY_DEEP And S2% <= EVENT_RUNNER_DBLD Then
-            I1 = 3
+            errType = 3
         End If
         If S2% >= EVENT_FLY_DEEP And S2% <= EVENT_INF_POPUP Then
             Call OUTFIELDERR
         End If
         If S2% = EVENT_2B Or S2% = EVENT_3B Or S2% >= EVENT_RUNDOWN Or S2% = EVENT_STEAL Then
-            I1 = 1
+            errType = 1
         End If
         If S2% >= EVENT_INF_SINGLE And S2% <= 14 And rand = 1 Or S2% = EVENT_DP Then
-            I1 = 1
+            errType = 1
         End If
 
         Call Rolld100(RN)
 
-        If I1 = 1 And currFielder = 1 And S2% = EVENT_STEAL Then
+        If errType = 1 And currFielder = 1 And S2% = EVENT_STEAL Then
             pbpString$ = "*** WILD PICK OFF THROW BY" + " " + player$(4) + " ***"
         End If
 
-        If I1 = 1 Then
+        If errType = 1 Then
             If RN <= 50 Then pbpString$ = "*** THROWING ERROR ON" + " " + player$(4) + " ***"
             If RN > 50 And RN <= 55 Then pbpString$ = "*** BALL KICKED BY" + " " + player$(4) + " ***"
             If RN > 55 Then pbpString$ = "*** " + player$(4) + " THROWS IT AWAY ***"
         End If
 
-        If I1 = 2 Then
+        If errType = 2 Then
             If RN <= 30 Then pbpString$ = "*** FIELDING ERROR ON" + " " + player$(4) + " ***"
             If RN > 30 And RN <= 50 Then pbpString$ = "*** OFF THE GLOVE OF" + " " + player$(4) + " ***"
             If RN > 50 And RN <= 75 Then pbpString$ = "*** BALL IS BOOTED BY" + " " + player$(4) + " ***"
@@ -10800,7 +10812,7 @@ Sub FLDERR (errorOnPlay%, currFielder, D, I3, SB%, S2%, P)
             If RN > 95 Then pbpString$ = "*** BALL IS THROUGH THE LEGS OF" + " " + player$(4) + " ***"
         End If
 
-        If I1 = 3 Then
+        If errType = 3 Then
             If RN <= 33 Then pbpString$ = "*** BALL DROPPED BY" + " " + player$(4) + " ***"
             If RN > 33 And RN <= 66 Then pbpString$ = "*** OFF THE GLOVE OF" + " " + player$(4) + " ***"
             If RN > 66 Then pbpString$ = "*** BALL IS MISPLAYED BY" + " " + player$(4) + " ***"
@@ -10849,7 +10861,7 @@ Sub FLDERR (errorOnPlay%, currFielder, D, I3, SB%, S2%, P)
 
         If S2% = EVENT_STEAL Or S2% = EVENT_RUNDOWN Then A5%(0) = 0
 
-        If I1 > 0 And S2% <> EVENT_1B And S2% <> EVENT_2B And S2% <> EVENT_3B And S2% <> EVENT_STEAL And S2% <> EVENT_RUNDOWN Then nbrOuts(1) = nbrOuts(1) + 1
+        If errType > 0 And S2% <> EVENT_1B And S2% <> EVENT_2B And S2% <> EVENT_3B And S2% <> EVENT_STEAL And S2% <> EVENT_RUNDOWN Then nbrOuts(1) = nbrOuts(1) + 1
 
         If S2% = EVENT_STEAL Or S2% = EVENT_1B Or S2% = EVENT_2B Or S2% = EVENT_3B Or S2% = EVENT_RUNDOWN Then
 
@@ -10946,8 +10958,8 @@ Sub GETINFIELDER (currFielder, P, I1, D, S2%, P2)
     If S2% = EVENT_INF_POPUP And RN <= 4 Or RN <= 12 Then currFielder = 2
 
     If S2% = EVENT_RUNNER_DBLD And currFielder = 2 Then currFielder = 1
-    If P2 = 4 And currFielder = 6 Then currFielder = 1
-    If P2 = 4 And currFielder = 4 Or S2% = EVENT_INF_POPUP And currFielder = 1 Then currFielder = 2
+    If P2 = OFF_BUNT And currFielder = 6 Then currFielder = 1
+    If P2 = OFF_BUNT And currFielder = 4 Or S2% = EVENT_INF_POPUP And currFielder = 1 Then currFielder = 2
 
     Call GETFIELDNAME(currFielder, D)
 
@@ -11761,7 +11773,7 @@ End Sub
 'This subroutine covers the stats and the
 'Play-by-Play for a runner who is picked
 'off by the pitcher or catcher.
-Sub PICKEDOFF (D, i)
+Sub PICKEDOFF (D, pickedOffBase)
 
     ' *** picked off ***
     Call WINDEX
@@ -11770,17 +11782,17 @@ Sub PICKEDOFF (D, i)
     Call Rolld100(RN)
 
     Select Case RN
-        Case 1 To 33: pbpString$ = "NO, " + pitchers$(D, currPitcher(D)) + " throws to " + baseName$(i - 1)
-        Case 34 To 66: pbpString$ = "quick move to " + baseName$(i - 1)
-        Case 67 To 100: pbpString$ = "pickoff throw to " + baseName$(i - 1)
+        Case  1 To  33: pbpString$ = "NO, " + pitchers$(D, currPitcher(D)) + " throws to " + baseName$(pickedOffBase - 1)
+        Case 34 To  66: pbpString$ = "quick move to " + baseName$(pickedOffBase - 1)
+        Case 67 To 100: pbpString$ = "pickoff throw to " + baseName$(pickedOffBase - 1)
     End Select
 
     Call PBP(pbpString$)
 
     If d100% <= 50 Then
-        pbpString$ = player$(i - 1) + " is picked off base!"
+        pbpString$ = player$(pickedOffBase - 1) + " is picked off base!"
     Else
-        pbpString$ = player$(i - 1) + " is caught napping"
+        pbpString$ = player$(pickedOffBase - 1) + " is caught napping"
     End If
 
     Call PBP(pbpString$)
@@ -12955,7 +12967,7 @@ Sub RecordRun (sah%, i, D, errorOnPlay%, PQ, S2%, currFielder, INFPOS%)
                     End If
 
                 Case 4, 6
-                    If INFPOS% = 2 Then
+                    If INFPOS% = INF_IN Then
                         PQ = 8
                     End If
 
@@ -13576,10 +13588,10 @@ Sub HITTINGLINES
                 If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), 22) = 0 Then game_batRating(I, 1, I3) = 0: game_batRating(I, 2, I3) = 0: game_batRating(I, 3, I3) = 0: GoTo 235
                 If fldPos(I, I3) <> 1 And batRating(I, lineupPlayer(I, I3), 6) = 0 Then game_batRating(I, 1, I3) = 0: game_batRating(I, 2, I3) = 0: game_batRating(I, 3, I3) = 0: GoTo 235
                 If fldPos(I, I3) = 1 And teamSplit(I, 0) = 999 And pitchRating(I, currPitcher(I), 38 + BY% * 7) = 0 Then game_batRating(I, 1, I3) = 0: game_batRating(I, 2, I3) = 0: game_batRating(I, 3, I3) = 0: GoTo 235
-                If fldPos(I, I3) = 1 And teamSplit(I, 0) = 999 Then game_batRating(I, 1, I3) = Int((pitchRating(I, currPitcher(I), 39 + BY% * 7) / pitchRating(I, currPitcher(I), 38 + BY% * 7)) * 1000) * E2!: ' doubles times  * .95
+                If fldPos(I, I3) = 1 And teamSplit(I, 0) = 999 Then game_batRating(I, 1, I3) = Int((pitchRating(I, currPitcher(I), 39 + BY% * 7) / pitchRating(I, currPitcher(I), 38 + BY% * 7)) * 1000) * E2!  ' doubles times  * .95
                 If fldPos(I, I3) = 1 And teamSplit(I, 0) = 999 Then game_batRating(I, 2, I3) = Int((pitchRating(I, currPitcher(I), 40 + BY% * 7) / pitchRating(I, currPitcher(I), 38 + BY% * 7)) * 1000) * E2!
                 If fldPos(I, I3) = 1 And teamSplit(I, 0) = 999 Then game_batRating(I, 3, I3) = Int((pitchRating(I, currPitcher(I), 41 + BY% * 7) / pitchRating(I, currPitcher(I), 38 + BY% * 7)) * 1000): GoTo 235
-                If fldPos(I, I3) = 1 Then game_batRating(I, 1, I3) = Int((pitchRating(I, currPitcher(I), 23) / pitchRating(I, currPitcher(I), 22)) * 1000) * E2!: ' doubles times  * .95
+                If fldPos(I, I3) = 1 Then game_batRating(I, 1, I3) = Int((pitchRating(I, currPitcher(I), 23) / pitchRating(I, currPitcher(I), 22)) * 1000) * E2!  ' doubles times  * .95
                 If fldPos(I, I3) = 1 Then game_batRating(I, 2, I3) = Int((pitchRating(I, currPitcher(I), 24) / pitchRating(I, currPitcher(I), 22)) * 1000) * E2!
                 If fldPos(I, I3) = 1 Then game_batRating(I, 3, I3) = Int((pitchRating(I, currPitcher(I), 25) / pitchRating(I, currPitcher(I), 22)) * 1000): GoTo 235
 
@@ -13592,14 +13604,14 @@ Sub HITTINGLINES
                         game_batRating(I, 2, I3) = 0
                         game_batRating(I, 3, I3) = 0
                     Else
-                        game_batRating(I, 1, I3) = Int((batRating(I, lineupPlayer(I, I3), 44 + BY% * 7) / batRating(I, lineupPlayer(I, I3), 43 + BY% * 7)) * 1000) * E2!: 'see note on pitchers * .95
+                        game_batRating(I, 1, I3) = Int((batRating(I, lineupPlayer(I, I3), 44 + BY% * 7) / batRating(I, lineupPlayer(I, I3), 43 + BY% * 7)) * 1000) * E2!  'see note on pitchers * .95
                         game_batRating(I, 2, I3) = Int((batRating(I, lineupPlayer(I, I3), 45 + BY% * 7) / batRating(I, lineupPlayer(I, I3), 43 + BY% * 7)) * 1000) * E2!
                         game_batRating(I, 3, I3) = Int((batRating(I, lineupPlayer(I, I3), 46 + BY% * 7) / batRating(I, lineupPlayer(I, I3), 43 + BY% * 7)) * 1000)
                     End If
                     GoTo 235
                 End If
 
-                game_batRating(I, 1, I3) = Int((batRating(I, lineupPlayer(I, I3), 7) / batRating(I, lineupPlayer(I, I3), 6)) * 1000) * E2!: 'see note on pitchers * .95
+                game_batRating(I, 1, I3) = Int((batRating(I, lineupPlayer(I, I3), 7) / batRating(I, lineupPlayer(I, I3), 6)) * 1000) * E2!  'see note on pitchers * .95
                 game_batRating(I, 2, I3) = Int((batRating(I, lineupPlayer(I, I3), 8) / batRating(I, lineupPlayer(I, I3), 6)) * 1000) * E2!
                 game_batRating(I, 3, I3) = Int((batRating(I, lineupPlayer(I, I3), 9) / batRating(I, lineupPlayer(I, I3), 6)) * 1000)
 
@@ -13827,7 +13839,7 @@ Sub BASEONBALLS (S2%, D2, D, P)
 
     Call Rolld100(BV)
 
-    If D2 = 2 Then
+    If D2 = DEF_INTNTL_BB Then
 
         If BV <= 50 Then
             Call PBP(player$(0) + " is walked intentionally...")
@@ -13851,14 +13863,14 @@ Sub BASEONBALLS (S2%, D2, D, P)
 
     End If
 
-    '-- Where does s4 get a value???
-    If s4% = 7 And d100% <= 30 Then Call PBP("that forces a run in")
+    '-- Where does s4 get a value???  [bm] I think this should be baseRunners
+    If baseRunners = 7 And d100% <= 30 Then Call PBP("that forces a run in")
 
     RN = Int(Rnd(1) * 4) + 1
 
     '-- here, if s4 is between 4 and 6, bases are loaded
     '-- in context, this is obviously AFTER the walk
-    If s4% > 3 And s4% < 7 Then
+    If baseRunners > 3 And baseRunners < 7 Then
 
         Select Case RN
             Case 1: Call PBP("and the bases are loaded!")
@@ -13903,7 +13915,7 @@ Sub HITBYPITCH (S2%, D)
 
     Call Rolld100(RN)
 
-    If RN <= 50 And s4% = 7 Then Call PBP("tough way to get an RBI")
+    If RN <= 50 And baseRunners = 7 Then Call PBP("tough way to get an RBI")
 
 End Sub
 
@@ -14314,7 +14326,7 @@ Sub SINGLEROUTINE (currFielder, P, I1, D, S2%, P2)
             End If
         End If
 
-        If H6% <= I3 Or P2 = 2 And S2% <> EVENT_INF_SINGLE Then
+        If H6% <= I3 Or P2 = OFF_HIT_N_RUN And S2% <> EVENT_INF_SINGLE Then
             A5%(2) = 2
         End If
 
@@ -14368,7 +14380,7 @@ Sub SINGLEROUTINE (currFielder, P, I1, D, S2%, P2)
             End If
         End If
 
-        If H6% <= I3 Or P2 = 2 And S2% <> EVENT_INF_SINGLE Then
+        If H6% <= I3 Or P2 = OFF_HIT_N_RUN And S2% <> EVENT_INF_SINGLE Then
             A5%(1) = 2
         End If
 
@@ -14455,7 +14467,7 @@ Sub STEAL3RD (TGTBASE%, AA, stlChance, runnerHeld, D)
         stlChance = stlChance + 50
     Else
         'Runner is held
-        stlChance = stlChance - ((pitchRating(D, currPitcher(D), SS_P_HoldRunner) - 5) * 25): ' - 50
+        stlChance = stlChance - ((pitchRating(D, currPitcher(D), SS_P_HoldRunner) - 5) * 25)  ' - 50
     End If
 
 End Sub
@@ -14475,7 +14487,7 @@ Sub STEALCHANCE (AA, I2, TGTBASE%, CHANCE%)
 
     AA = batRating(P, I2, 13)
     BB = batRating(P, I2, 13) + batRating(P, I2, 14)
-    CC = batRating(P, I2, 7): ' *** CHANCE TO STEAL 2B & 3B ***
+    CC = batRating(P, I2, 7)  ' *** CHANCE TO STEAL 2B & 3B ***
 
     Select Case AA
         Case Is <= 43: DD = .16
@@ -14782,7 +14794,7 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, currFielder, sah%, SB%, baseNbr!, I9)
         If S2% = EVENT_3B And b2Base(3) > 0 And H6% <= 2 And batRating(P, lineupPlayer(P, b2Base(3)), SS_B_HR) > 0 Then
             baseNbr! = 4
         End If
-        If S2% = EVENT_1B And b2Base(3) > 0 And P2 = 2 And H6% >= 6 And H6% <= batRating(P, lineupPlayer(P, b2Base(3)), SS_B_Run) Then
+        If S2% = EVENT_1B And b2Base(3) > 0 And P2 = OFF_HIT_N_RUN And H6% >= 6 And H6% <= batRating(P, lineupPlayer(P, b2Base(3)), SS_B_Run) Then
             baseNbr! = 4
         End If
         If S2% = EVENT_1B And b2Base(3) > 0 And Z2% = b2Base(3) And P2 <> 2 And H6% <= batRating(P, lineupPlayer(P, b2Base(3)), SS_B_Run) * 12 Then
@@ -14904,10 +14916,10 @@ Sub TRYFOREXTRABASE (LN%, S2%, P2, Z2%, D, currFielder, sah%, SB%, baseNbr!, I9)
                     A = A * 50
 
                     If S2% = EVENT_FLY_DEEP Then
-                        b = ((batRating(D, fielder(D, currFielder), SS_B_Arm) - 5) * 25): I3 = 1000 + A - b: ' WAS 800
+                        b = ((batRating(D, fielder(D, currFielder), SS_B_Arm) - 5) * 25): I3 = 1000 + A - b  ' WAS 800
                     End If
                     If S2% = EVENT_FLY_REGULAR Then
-                        b = ((batRating(D, fielder(D, currFielder), SS_B_Arm) - 5) * 25): I3 = 800 + A - b: ' WAS 650
+                        b = ((batRating(D, fielder(D, currFielder), SS_B_Arm) - 5) * 25): I3 = 800 + A - b  ' WAS 650
                     End If
                     If S2% = EVENT_FLY_SHALLOW Or S2% < EVENT_HR Then
                         b = ((batRating(D, fielder(D, currFielder), SS_B_Arm) - 5) * 25): I3 = 500 + A - b
@@ -15700,36 +15712,37 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
             Case 22 To 24
 
-                Select Case s4%
+                Select Case baseRunners
                     Case 0
                         If teamRat_GAME(1, 13) = 14 Then
                             Call PBP(player$(0) + " steps out of the box as a jet passes over")
                         Else
                             Call PBP(gameUmpire$(1) + " calls time to get some new baseballs")
                         End If
+                        pickedOffBase = 0
 
                     Case 1
                         Call PBP(batters$(D, fielder(D, 2)) + " rifles the ball to ")
                         Call PBP("1st...")
-                        i = 2
+                        pickedOffBase = 2
 
                     Case 2, 4
                         Call PBP(batters$(D, fielder(D, 2)) + " rifles the ball to ")
                         Call PBP("2nd base...")
-                        i = 3
+                        pickedOffBase = 3
 
-                    Case 3
+                    Case 3, 5, 6, 7
                         Call PBP(batters$(D, fielder(D, 2)) + " rifles the ball to ")
                         Call PBP("3rd base...")
-                        i = 4
+                        pickedOffBase = 4
 
                 End Select
 
-                If s4% <> 0 Then
+                If pickedOffBase > 0 Then
 
-                    Call PBP(player$(i - 1) + " is picked off base!")
+                    Call PBP(player$(pickedOffBase - 1) + " is picked off base!")
 
-                    A5%(i - 1) = 10
+                    A5%(pickedOffBase - 1) = 10
                     nbrOuts(0) = nbrOuts(0) + 1
                     nbrOuts(1) = nbrOuts(1) + 1
                     currFielder = 2
