@@ -74,14 +74,12 @@ This phase will start to identify these as new games, making improvements to the
 **Completed.**
 
 ### Phase 3 ###
-This final phase will involve the following:
-- Updating the games to support modern rules
-- Including support files such as team files, leagues, schedules, etc.
-- Address gameplay bugs as reported by longtime users and playtesters
+This phase will see the games take on updated rules and correct accuracy. All known bugs will be squashed and user files will be prepared to distribute with the game.
+**Completed.**
 
 ### The Future ###
 - Updating code to work with databases instead of flat files.
-- Bringing modern interface concepts to the design (including GUI)
+- Bringing modern interface concepts to the design (including GUI) [IN PROGRESS!]
 
 # The Fine Print #
 
@@ -101,3 +99,4 @@ Contact me directly if interested in contributing. Only considering people who s
 - Jason Lamb, for lending his expertise in BASIC to helping me learn some standards and rewriting the menu functions.
 - Lance Haffner, for his hard work over 2 decades giving people endless hours of playable sports games and making dreams come true.
 - [Lance Haffner Sports Sims](https://www.facebook.com/groups/115923978469802) Facebook group admin Philip Lupi, for his hard work keeping Lance's games alive and active with fans old and new.
+- [BenXM](https://github.com/BenXM) for pretty much fixing all the bugs I didn't know about and giving the variables meaningful names
