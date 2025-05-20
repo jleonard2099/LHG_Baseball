@@ -165,6 +165,9 @@ Sub NewSchedule (scheduleFile$)
     DT$ = "03-18-25"
     TM$ = "03:00P"
 
+    'Show 25 schedule entries on the screen at once
+    entriesPerScreen = 25
+
     baseFile$ = GetFileBaseName$(scheduleFile$)
 
     Do
@@ -224,40 +227,39 @@ Sub NewSchedule (scheduleFile$)
         Print "GAME  DATE      TIME    VISITING TEAM        HOME TEAM            MA  DH  WEA"
         Color 15
 
-        'Show 20 schedule entries on the screen at once
-        For X = 1 To 20
+        For X = 1 To entriesPerScreen
 
             Locate X + 2, 1
 
-            If X + NS% * 20 <= scheduleAP%(0) Then
+            If X + NS% * entriesPerScreen <= scheduleAP%(0) Then
 
-                T1 = scheduleNG%(X + NS% * 20, 0)
-                YN$ = scheduleYN$(X + NS% * 20, 0)
+                T1 = scheduleNG%(X + NS% * entriesPerScreen, 0)
+                YN$ = scheduleYN$(X + NS% * entriesPerScreen, 0)
                 Call ReadTeam(YN$, team$, T1, validData)
 
                 If validData = 1 Then
 
-                    scheduleV$(X + NS% * 20) = team$
+                    scheduleV$(X + NS% * entriesPerScreen) = team$
 
-                    T1 = scheduleNG%(X + NS% * 20, 1)
-                    YN$ = scheduleYN$(X + NS% * 20, 1)
+                    T1 = scheduleNG%(X + NS% * entriesPerScreen, 1)
+                    YN$ = scheduleYN$(X + NS% * entriesPerScreen, 1)
                     Call ReadTeam(YN$, team$, T1, validData)
 
                     If validData = 1 Then
 
-                        scheduleH$(X + NS% * 20) = team$
+                        scheduleH$(X + NS% * entriesPerScreen) = team$
 
                         'Game number
-                        Print Using "####  "; X + NS% * 20;
+                        Print Using "####  "; X + NS% * entriesPerScreen;
 
                         'Date
-                        Print Using "##/##/##"; scheduleNG%(X + NS% * 20, 17); scheduleNG%(X + NS% * 20, 16); scheduleNG%(X + NS% * 20, 18);
+                        Print Using "##/##/##"; scheduleNG%(X + NS% * entriesPerScreen, 17); scheduleNG%(X + NS% * entriesPerScreen, 16); scheduleNG%(X + NS% * entriesPerScreen, 18);
 
                         'Time
                         Locate , 17
                         I$ = "A"
-                        HR% = scheduleNG%(X + NS% * 20, 15) / 100
-                        MIN% = scheduleNG%(X + NS% * 20, 15) - HR% * 100
+                        HR% = scheduleNG%(X + NS% * entriesPerScreen, 15) / 100
+                        MIN% = scheduleNG%(X + NS% * entriesPerScreen, 15) - HR% * 100
 
                         If HR% = 12 Then I$ = "P"
                         If HR% > 12 Then HR% = HR% - 12: I$ = "P"
@@ -272,25 +274,25 @@ Sub NewSchedule (scheduleFile$)
                         Print TM$;
 
                         'Visiting Team
-                        Locate , 25: Print scheduleV$(X + NS% * 20); " ";
-                        If scheduleNG%(X + NS% * 20, 13) = 1 Then Print Using "###"; visitorScores(X + NS% * 20);
+                        Locate , 25: Print scheduleV$(X + NS% * entriesPerScreen); " ";
+                        If scheduleNG%(X + NS% * entriesPerScreen, 13) = 1 Then Print Using "###"; visitorScores(X + NS% * entriesPerScreen);
 
                         'Home Team
-                        Locate , 46: Print scheduleH$(X + NS% * 20); " ";
-                        If scheduleNG%(X + NS% * 20, 13) = 1 Then Print Using "###"; homeScores(X + NS% * 20);
+                        Locate , 46: Print scheduleH$(X + NS% * entriesPerScreen); " ";
+                        If scheduleNG%(X + NS% * entriesPerScreen, 13) = 1 Then Print Using "###"; homeScores(X + NS% * entriesPerScreen);
 
                         'Mode of Play
-                        Locate , 67: Print modeAbbrev$(scheduleNG%(X + NS% * 20, 8));
+                        Locate , 67: Print modeAbbrev$(scheduleNG%(X + NS% * entriesPerScreen, 8));
 
                         'DH
-                        Locate , 72: If scheduleNG%(X + NS% * 20, 3) = 1 Then
+                        Locate , 72: If scheduleNG%(X + NS% * entriesPerScreen, 3) = 1 Then
                             Print "Y";
                         Else
                             Print "N";
                         End If
 
                         'Weather
-                        Locate , 75: Print yesNo$(scheduleNG%(X + NS% * 20, 5))
+                        Locate , 75: Print yesNo$(scheduleNG%(X + NS% * entriesPerScreen, 5))
 
                     End If
 
@@ -322,7 +324,7 @@ Sub NewSchedule (scheduleFile$)
                 scheduleAP%(0) = scheduleAP%(0) + 1
                 targetGame% = scheduleAP%(0)
 
-                BS% = Int((targetGame% - 1) / 20)
+                BS% = Int((targetGame% - 1) / entriesPerScreen)
                 If NS% < BS% Then NS% = BS%
 
                 For X = 0 To 18
@@ -345,7 +347,7 @@ Sub NewSchedule (scheduleFile$)
                     Locate LAST_ROW - 3, 1: Print "ENTER GAME # TO GO TO        "
                     Locate LAST_ROW - 3, 1: Input "ENTER GAME # TO GO TO "; targetGame%
                 Loop Until targetGame% >= 1 And targetGame% <= scheduleAP%(0)
-                NS% = Int((targetGame% - 1) / 20)
+                NS% = Int((targetGame% - 1) / entriesPerScreen)
 
                 'boxName$ = diskPaths$(1) + "BOX" + Mid$(Str$(targetGame%), 2, Len(Str$(targetGame%)))
                 boxName$ = diskPaths$(1) + baseFile$ + "_GAME" + Mid$(Str$(targetGame%), 2, Len(Str$(targetGame%))) + ".BS"
@@ -373,7 +375,7 @@ Sub NewSchedule (scheduleFile$)
                 Next
 
                 scheduleAP%(0) = scheduleAP%(0) - 1
-                BS% = Int((scheduleAP%(0) - 1) / 20)
+                BS% = Int((scheduleAP%(0) - 1) / entriesPerScreen)
                 If NS% > BS% Then NS% = BS%
 
             Case "G":
@@ -383,7 +385,7 @@ Sub NewSchedule (scheduleFile$)
                     Locate LAST_ROW - 3, 1: Input "ENTER GAME # TO GO TO "; targetGame%
                 Loop Until targetGame% >= 1 And targetGame% <= scheduleAP%(0)
 
-                NS% = Int((targetGame% - 1) / 20)
+                NS% = Int((targetGame% - 1) / entriesPerScreen)
 
             Case "S":
                 Call SortSchedule
@@ -420,7 +422,7 @@ Sub NewSchedule (scheduleFile$)
                 If EG% > scheduleAP%(0) Then EG% = scheduleAP%(0)
 
                 Open "GAME82" For Output As #1
-                Print #1, scheduleFile$
+                Print #1, baseFile$ + ".SCD"
                 Print #1, SG% 'Start Game
                 Print #1, EG% 'End Game
                 Print #1, 0
@@ -509,8 +511,8 @@ Sub NewSchedule (scheduleFile$)
 
                     'Time
                     I$ = "A"
-                    HR% = scheduleNG%(X + NS% * 20, 15) / 100
-                    MIN% = scheduleNG%(X + NS% * 20, 15) - HR% * 100
+                    HR% = scheduleNG%(X + NS% * entriesPerScreen, 15) / 100
+                    MIN% = scheduleNG%(X + NS% * entriesPerScreen, 15) - HR% * 100
 
                     If HR% = 12 Then I$ = "P"
                     If HR% > 12 Then HR% = HR% - 12: I$ = "P"

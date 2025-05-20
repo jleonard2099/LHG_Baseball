@@ -143,7 +143,8 @@ Sub ModifyTeamStats (statFile$)
     Do
 
         Do
-
+            Locate 25, 29
+            Print Space$(10)
             Locate 25, 1
             Input "# TO CHANGE (0 TO CONTINUE)"; B9
         Loop Until B9 >= 0 And B9 <= 19
@@ -246,9 +247,6 @@ Sub ModifyTeamStats (statFile$)
 
         End Select
 
-        Locate 25, 29
-        Print Space$(10)
-
     Loop Until B9 = 0
 
     '---------------
@@ -284,6 +282,8 @@ Sub ModifyTeamStats (statFile$)
     Do
 
         Do
+            Locate 25, 29
+            Print Space$(10)
             Locate 25, 1
             Input "# TO CHANGE (0 TO CONTINUE)"; B9
         Loop Until B9 >= 0 And B9 <= 20
@@ -391,9 +391,6 @@ Sub ModifyTeamStats (statFile$)
                 Locate 22, 22: Print " "
 
         End Select
-
-        Locate 25, 29
-        Print Space$(10)
 
     Loop Until B9 = 0
 
@@ -519,6 +516,8 @@ Sub ChangeBatters ()
             Do
 
                 Do
+                    Locate 25, 29
+                    Print Space$(10)
                     Locate 25, 5
                     Input "# TO CHANGE (0 TO CONTINUE)"; B9
                 Loop Until B9 >= 0 And B9 <= 21
@@ -634,9 +633,6 @@ Sub ChangeBatters ()
 
                 End Select
 
-                Locate 25, 29
-                Print Space$(10)
-
             Loop Until B9 = 0
 
         End If
@@ -735,6 +731,8 @@ Sub ChangePitchers ()
             Do
 
                 Do
+                    Locate 25, 29
+                    Print Space$(10)
                     Locate 25, 5
                     Input "# TO CHANGE (0 TO CONTINUE)"; B9
                 Loop Until B9 >= 0 And B9 <= 42
@@ -799,7 +797,6 @@ Sub ChangePitchers ()
                         Locate 14, 11: Print Space$(10)
                         Locate 14, 1: Input "12. SH OUT"; statP0(idx, 11)
                         Locate 14, 11: Print " "
-                    Case 13
 
                     Case 13
                         Locate 15, 10: Print Space$(10)
@@ -952,9 +949,6 @@ Sub ChangePitchers ()
                         Locate 22, 47: Print " "
 
                 End Select
-
-                Locate 25, 29
-                Print Space$(10)
 
             Loop Until B9 = 0
 
