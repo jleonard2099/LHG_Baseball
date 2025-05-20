@@ -487,13 +487,13 @@ Sub DisplayBallField_Gfx (BC%, p, nbrStrikes, D)
     PrintOnGfx 61, 19, player$, imageScreen&
 
     '1st Base Stats
-    If batRating(D, fielder(D, 1), 19) = 1000 Then
+    If batRating(D, fielder(D, 3), 19) = 1000 Then
         fldPct$ = "1.000"
     Else
-        If batRating(D, fielder(D, 1), 19) = 0 Then
+        If batRating(D, fielder(D, 3), 19) = 0 Then
             fldPct$ = " .000"
         Else
-            fldPct$ = "." + FUsing$(Str$(batRating(D, fielder(D, 1), 19)), "###", 1)
+            fldPct$ = "." + FUsing$(Str$(batRating(D, fielder(D, 3), 19)), "###", 1)
         End If
     End If
 
