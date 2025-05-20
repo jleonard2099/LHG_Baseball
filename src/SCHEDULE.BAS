@@ -422,7 +422,7 @@ Sub NewSchedule (scheduleFile$)
                 If EG% > scheduleAP%(0) Then EG% = scheduleAP%(0)
 
                 Open "GAME82" For Output As #1
-                Print #1, baseFile$ + ".SCD"
+                Print #1, scheduleFile$
                 Print #1, SG% 'Start Game
                 Print #1, EG% 'End Game
                 Print #1, 0

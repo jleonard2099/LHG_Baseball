@@ -3171,40 +3171,27 @@ Sub SortHitters (P9)
     Shared BP()
     Shared BB%()
 
-    C = 2
+    Shared USE_SLUG, USE_LH, USE_OPS, USE_OBA_SB                ' Shared with DoSort()
+    USE_SLUG = 0 : USE_LH = 1 : USE_OPS = 2 : USE_OBA_SB = 3
 
-    B = 1
-    Call DoSort(B, C, P9)
+    ' Note: At least for now, I am not using the original "USE_LH" algorithm,
+    ' until I understand it better  :)
 
-    B = 2
-    Call DoSort(B, C, P9)
+    ' Put the 3 hitters with the highest SLG Pct in the 3-5 holes in the lineup card
+    Call DoSort(3, USE_SLUG, P9)
+    Call DoSort(4, USE_SLUG, P9)
+    Call DoSort(5, USE_SLUG, P9)
 
-    C = 1
+    ' Of the remaining hitters, put the 2 with the highest OBA plus SB in the 1-2 holes
+    Call DoSort(1, USE_OBA_SB, P9)
+    Call DoSort(2, USE_OBA_SB, P9)
 
-    B = 3
-    Call DoSort(B, C, P9)
+    ' For the rest, slot them in descending order by OPS (on-base plus slugging)
+    Call DoSort(6, USE_OPS, P9)
+    Call DoSort(7, USE_OPS, P9)
+    Call DoSort(8, USE_OPS, P9)
 
-    B = 4
-    Call DoSort(B, C, P9)
-
-    C = 1
-
-    B = 5
-    Call DoSort(B, C, P9)
-
-    B = 6
-    Call DoSort(B, C, P9)
-
-    B = 7
-    Call DoSort(B, C, P9)
-
-    B = 8
-    Call DoSort(B, C, P9)
-
-    If desigHit = 1 Then
-        B = 9
-        Call DoSort(B, C, P9)
-    End If
+    If desigHit = 1 Then Call DoSort(9, USE_OPS, P9)
 
     'I have not found a cause, but sometimes
     'spot 8 doesn't get populated. The loop
@@ -3278,95 +3265,118 @@ End Sub
 'named "SortHitters", and likely DOES
 'some of the actual sorting as it's
 'called after each lineup position.
-Sub DoSort (B, C, P9)
+Sub DoSort (B, calcMode, P9)
 
-    Shared BP(), batLUIdx()
-    Shared E!
-    Shared BB%()
+    Shared BP(), BB%(), batLUIdx()
+    Shared USE_SLUG, USE_LH, USE_OPS, USE_OBA_SB
 
-    Dim JJ!, R!, SE!, Q1!, QQ!
+    ' Dim JJ!, R!, SE!, Q1!, QQ!
 
-    E! = -100
-    U = -1
-    T = -1
+    theMax! = -100
+    UFldNo = -1
+    TPlayNo = -1
 
     'L = lineup position
     For L = 0 To 9
 
-        If desigHit = 0 And L = 0 Then L = L + 2
-        If desigHit = 1 And L = 1 Then L = L + 1
+        If desigHit = 0 And L = 0 Then L = 2
+        If desigHit = 1 And L = 1 Then L = 2
 
         'Assign J based on lineup position
-        J = batLUIdx(L)
-        X = 1
+        found = 0
 
         For Z = 1 To 9
-            If BB%(Z) = J Then
+            If BB%(Z) = batLUIdx(L) Then
                 'If we found the matching player, loop to next lineup position
-                X = 0
-                Z = 9
+                found = 1
+                Exit For
             End If
         Next Z
 
-        If X <> 0 Then
+        If found = 0 Then
 
-            If C <> 1 Then
+            'Assign J based on lineup position
+            J = batLUIdx(L)
 
-                SE! = (batRating(P9, J, SS_B_H) + batRating(P9, J, SS_B_2B) + batRating(P9, J, SS_B_3B) * 2 + batRating(P9, J, SS_B_HR) * 3) / batRating(P9, J, SS_B_AB)
+            Select Case calcMode
+                Case USE_SLUG
 
-                If SE! >= E! Then
-                    E! = SE!
-                    T = J
-                    U = L
+                    slug! = (batRating(P9, J, SS_B_H) + batRating(P9, J, SS_B_2B) + batRating(P9, J, SS_B_3B) * 2 + batRating(P9, J, SS_B_HR) * 3) / batRating(P9, J, SS_B_AB)
+
+                    If slug! >= theMax! Then
+                        theMax! = slug!
+                        TPlayNo = J
+                        UFldNo = L
                 End If
 
-            Else
+                Case USE_LH ' original Lance Haffner algorithm
 
-                JJ = J
+                    JJ = J
 
-                'Hits - Triples - HR's + Walks * 0.7
-                'Or, basically Singles + Doubles + Walks * 0.7
-                Q1! = (batRating(P9, JJ, SS_B_H) - batRating(P9, JJ, SS_B_3B) - batRating(P9, JJ, SS_B_HR) + batRating(P9, JJ, SS_B_W)) * .7
+                    'Hits - Triples - HR's + Walks * 0.7
+                    'Or, basically Singles + Doubles + Walks * 0.7
+                    stealPct! = ( batRating(P9, JJ, SS_B_H) - batRating(P9, JJ, SS_B_3B) - batRating(P9, JJ, SS_B_HR) + batRating(P9, JJ, SS_B_W) ) * .7
 
-                If Q1! = 0 Then Q1! = 1
+                    If stealPct! = 0 Then stealPct! = 1
 
-                'Stolen Bases / (Singles + Doubles + Walks * 0.7)
-                Q1! = batRating(P9, JJ, 13) / Q1!
+                '   Stolen Bases / (Singles + Doubles + Walks * 0.7)
+                    stealPct! = batRating(P9, JJ, SS_B_SB) / stealPct!
 
-                If Q1! >= .02 Then
-                    QQ! = Q1! + .18
-                    R! = Int(QQ! * (18 + 2 * Abs((QQ! < .34))))
-                Else
-                    R! = 2 + Int(Q1! * 100)
-                    If batRating(P9, JJ, 1) = 2 Then R = R - 1
-                End If
+                    If stealPct! >= .02 Then
+                        QQ! = stealPct! + .18
+                        R! = Int(QQ! * (18 + 2 * Abs((QQ! < .34))))
+                    Else
+                        R! = 2 + Int(stealPct! * 100)
+                        If batRating(P9, JJ, 1) = 2 Then R! = R! - 1
+                    End If
 
-                If (batRating(P9, JJ, 1) = 6 Or batRating(P9, JJ, 1) = 8) And R! < 7 Then
-                    R! = R! + 1
-                End If
+                    If (batRating(P9, JJ, 1) = 6 Or batRating(P9, JJ, 1) = 8) And R! < 7 Then
+                        R! = R! + 1
+                    End If
 
-                If R! > 9 Then R! = 9
-                If R! < 0 Then R! = 1
+                    If R! > 9 Then R! = 9
+                    If R! < 0 Then R! = 1
 
-                T1 = 100 * batRating(P9, J, SS_B_H) / batRating(P9, J, SS_B_AB) - 27
-                If T1 < 0 Then T1 = 3 * T1
+                    batAvg% = 100 * batRating(P9, J, SS_B_H) / batRating(P9, J, SS_B_AB) - 27
+                    If batAvg% < 0 Then batAvg% = 3 * batAvg%
 
-                JJ! = 3 * R! + T1
+                    JJ! = 3 * R! + batAvg%
 
-                If JJ! > E! Then
-                    E! = JJ!
-                    T = J
-                    U = L
-                End If
+                    If JJ! > theMax! Then
+                        theMax! = JJ!
+                        TPlayNo = J
+                        UFldNo = L
+                    End If
 
-            End If 'Done checking C
+                Case USE_OPS
+                    slug! = ( batRating(P9, J, SS_B_H) + batRating(P9, J, SS_B_2B) + batRating(P9, J, SS_B_3B) * 2 + batRating(P9, J, SS_B_HR) * 3 ) / batRating(P9, J, SS_B_AB)
+                    oba!  = ( batRating(P9, J, SS_B_H) + batRating(P9, J, SS_B_W) ) / ( batRating(P9, J, SS_B_AB) + batRating(P9, J, SS_B_W) )
+                    ops! = slug! + oba!
 
-        End If 'Done checking X
+                    If ops! >= theMax! Then
+                        theMax! = ops!
+                        TPlayNo = J
+                        UFldNo = L
+                    End If
+
+                Case USE_OBA_SB
+                    oba!  = ( batRating(P9, J, SS_B_H) + batRating(P9, J, SS_B_W) + batRating(P9, J, SS_B_SB) ) / ( batRating(P9, J, SS_B_AB) + batRating(P9, J, SS_B_W + batRating(P9, J, SS_B_CS)) )
+                    _LogInfo "OBA  -- B: " + Str$(B) + "  L: " + Str$(L) + "  batLU: " + Str$(J) + "  oba: " + Str$(oba!)
+
+                    If oba! >= theMax! Then
+                        theMax! = oba!
+                        TPlayNo = J
+                        UFldNo = L
+                    End If
+
+            End Select
+
+        End If 'Done checking found
 
     Next L
 
-    BB%(B) = T
-    BP(B) = U
+    BB%(B) = TPlayNo
+    BP(B) = UFldNo
 
 End Sub
 
@@ -3774,10 +3784,10 @@ Sub SOURCE ()
 
     If Environ$("PBPLOG") = "TRUE" Then
         Print #11,
-        Print #11, "..... side is retired ....."    
+        Print #11, "..... side is retired ....."
         Print #11,
     End If
-    
+
     '-- An error comes up every so many games
     '-- when fielder(D, 1) gets a negative value
     '-- Nothing in the the code modifies fielder()
@@ -3974,7 +3984,7 @@ Sub SOURCE ()
         GoTo LStayInGame
         Else
             Call RELIEVERS(PPH, pz) 'Will choose a new pitcher because pitcher was pinch hit for
-        End If        
+        End If
     End If
 
    LNextBatter0:
@@ -5703,7 +5713,7 @@ Sub SOURCE ()
 
             errorOnPlay% = 0
             Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-            If errorOnPlay% = 0 Then 
+            If errorOnPlay% = 0 Then
                 If Environ$("PBPLOG") = "TRUE" Then Print #11, "-- gonna try to advance on Double --"
                 baseNbr! = 0
                 Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
@@ -7110,15 +7120,15 @@ Sub SOURCE ()
     'Reduce chance for stealing home
     If TGTBASE% = 4 Then CHANCE% = CHANCE% * .05
 
-    If batRating(P, I2, SS_B_CS) > 0 Then 
+    If batRating(P, I2, SS_B_CS) > 0 Then
         stlChance = Int((batRating(P, I2, SS_B_SB) / (batRating(P, I2, SS_B_SB) + batRating(P, I2, SS_B_CS))) * 1000)
-    ElseIf batRating(P, I2, SS_B_SB) > 31 Then 
+    ElseIf batRating(P, I2, SS_B_SB) > 31 Then
         stlChance = 700 + ((batRating(P, I2, SS_B_SB) - 30) *  2)
-    ElseIf batRating(P, I2, SS_B_SB) > 10 Then 
+    ElseIf batRating(P, I2, SS_B_SB) > 10 Then
         stlChance = 600 + ((batRating(P, I2, SS_B_SB) - 10) * 10)
-    ElseIf batRating(P, I2, SS_B_SB) >  0 Then 
+    ElseIf batRating(P, I2, SS_B_SB) >  0 Then
         stlChance = 400 + ((batRating(P, I2, SS_B_SB) * 20))
-    Else 
+    Else
         stlChance = 100
     End If
 
@@ -8402,7 +8412,7 @@ Sub SOURCE ()
     lineupPlayer(P, currLineupSlot(P)) = I
     fielder(P, fldPos(P, currLineupSlot(P))) = I
 
-    If fldPos(P, currLineupSlot(P)) = 1 Or fldPos(P, currLineupSlot(P)) = 10 Then 
+    If fldPos(P, currLineupSlot(P)) = 1 Or fldPos(P, currLineupSlot(P)) = 10 Then
         fielder(P, 1) = 99
         fielder(P, 0) = currLineupSlot(P)
         fldPos(P, currLineupSlot(P)) = 10
@@ -8496,12 +8506,12 @@ Sub SOURCE ()
             PPH = 1
             gameD0(P) = gameD0(P) + 1
             X0%(P, 0, gameD0(P)) = PH%
-            X0%(P, 1, gameD0(P)) = 10
+            X0%(P, 1, gameD0(P)) = 10   '10 = pinch hitter'
             X0%(P, 2, gameD0(P)) = 81 + gameD0(P)
             batRating(P, PH%, SS_B_Avail) = 1
             lineupPlayer(P, currLineupSlot(P)) = PH%
 
-            If fldPos(P, currLineupSlot(P)) = 1 Or fldPos(P, currLineupSlot(P)) = 10 Then 
+            If fldPos(P, currLineupSlot(P)) = 1 Or fldPos(P, currLineupSlot(P)) = 10 Then
                 fielder(P, 1) = 99
                 fielder(P, 0) = currLineupSlot(P)
                 fldPos(P, currLineupSlot(P)) = 10
@@ -9333,7 +9343,7 @@ Sub PBP (pbpString$)
     End If
 
     If Environ$("PBPLOG") = "TRUE" Then Print #11, "======== "; pbpString$
-    
+
     If pbpDelay! > 0 Then
 
         'Clean up / restrict to 44 char's
@@ -10132,7 +10142,7 @@ Sub CREDITPUTOUT (I3, FB2P%, AST%, D)
         po% = 2
         AST% = 0
         Call INCBATDF(D, fielder(D, po%), LG_B_PO)
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Infield? Putout1 for: "; po% 
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Infield? Putout1 for: "; po%
 
     Else
 
@@ -10938,7 +10948,7 @@ Sub FLDERR (errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
 
         If S2% = EVENT_STEAL Or S2% = EVENT_RUNDOWN Then A5%(0) = 0
 
-        If errType > 0 And S2% <> EVENT_1B And S2% <> EVENT_2B And S2% <> EVENT_3B And S2% <> EVENT_STEAL And S2% <> EVENT_RUNDOWN Then 
+        If errType > 0 And S2% <> EVENT_1B And S2% <> EVENT_2B And S2% <> EVENT_3B And S2% <> EVENT_STEAL And S2% <> EVENT_RUNDOWN Then
             nbrOuts(1) = nbrOuts(1) + 1     'nbrOuts(1) tracks how many outs there would be if no errors (for recording unearned runs)
         End If
 
@@ -11977,7 +11987,7 @@ Sub PINCHRUNNER (MS%, A1, baseRunners, I2, P, PR%, nbrBalls, nbrStrikes, D, MO)
             lineupPlayer(P, I2) = I1
             fielder(P, fldPos(P, I2)) = I1
 
-            If fldPos(P, I2) = 1 Or fldPos(P, I2) = 10 Then 
+            If fldPos(P, I2) = 1 Or fldPos(P, I2) = 10 Then
                 fielder(P, 1) = 99
                 fielder(P, 0) = I2
                 fldPos(P, I2) = 10
@@ -11985,7 +11995,7 @@ Sub PINCHRUNNER (MS%, A1, baseRunners, I2, P, PR%, nbrBalls, nbrStrikes, D, MO)
 
             gameD0(P) = gameD0(P) + 1
             X0%(P, 0, gameD0(P)) = lineupPlayer(P, I2)
-            X0%(P, 1, gameD0(P)) = 11
+            X0%(P, 1, gameD0(P)) = 11   '11 = Pinch Runner
             X0%(P, 2, gameD0(P)) = (I2 * 10) + (gameD0(P) - 9)
 
             W5 = P
@@ -11994,7 +12004,7 @@ Sub PINCHRUNNER (MS%, A1, baseRunners, I2, P, PR%, nbrBalls, nbrStrikes, D, MO)
             VV1(P) = I2
 
             For xx = 22 To 25
-                If fldPos(P, I2) = batRating(P, I1, xx) Then 
+                If fldPos(P, I2) = batRating(P, I1, xx) Then
                     batRating(P, I1, SS_B_Arm)    = batRating(P, I1, 33 + (xx - 22) * 2)
                     batRating(P, I1, SS_B_Range)  = batRating(P, I1, 34 + (xx - 22) * 2)
                     batRating(P, I1, SS_B_FldPct) = batRating(P, I1, xx + 4)
@@ -14870,7 +14880,7 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
         baseNbr! = 0
         Call Rolld100(H6%)
 
-        If Environ$("PBPLOG") = "TRUE" Then 
+        If Environ$("PBPLOG") = "TRUE" Then
             Print #11, "TRYFOREXTRABASE starting at baseNbr = 0, H6% = "; H6%; ", S2Event = "; S2%
             For bm1 = 1 To 3
                 If b2Base(bm1) > 0 Then Print #11, "  base:"; bm1; " runnerRating:"; batRating(P, lineupPlayer(P, b2Base(bm1)), SS_B_Run);
@@ -17018,6 +17028,7 @@ End Sub
 Sub CheckRecords ()
 
     Shared DB, HR, TR, SB
+    Shared eventNbr
     Shared allEvents
     Shared doublesPlayer$(), eventDesc$(), homeRuns$()
     Shared stolenBases$(), triplesPlayer$()
@@ -17050,6 +17061,7 @@ Sub CheckRecords ()
 
             If gameBatStats(I, I1, 11) <> 0 Then
 
+            '        ***CHECKING ERRORS***
                 If gameBatStats(I, I1, 11) = 1 Then
                     eventDesc$(eventNbr) = batters$(I, I1)
                 Else
@@ -18156,6 +18168,9 @@ Sub BOX2FILE (printChoice, boxName$)
 
     Shared eventSettings()
 
+    Shared doublesPlayer$(), eventDesc$(), homeRuns$()
+    Shared stolenBases$(), triplesPlayer$()
+
     Dim BK$
     BK$ = "## # # ## # #  # # #  #  # # ## ##"
 
@@ -18175,7 +18190,7 @@ Sub BOX2FILE (printChoice, boxName$)
 
     Next IG
 
-    Print #2, "   H  R E"
+    Print #2, "   R  H E"
 
     If INNING% < 9 Then
 
@@ -18894,6 +18909,9 @@ End Sub
 Sub STATS2SCREEN
 
     Shared actualAttendance&
+
+    Shared doublesPlayer$(), eventDesc$(), homeRuns$()
+    Shared stolenBases$(), triplesPlayer$()
 
     Dim BK$
     BK$ = "## # # ## # #  # # #  #  # # ## ##"
@@ -19966,6 +19984,8 @@ Sub ReadGameExtraData (teamYear$, teamIdx, gameIdx)
 
         Close 3
 
+        mgrFile(gameIdx) = 0
+
     End If
 
     If teamMgrProfileVal(gameIdx, 0) <> 999 Or mgrFile(gameIdx) = -1 Then
@@ -20046,7 +20066,7 @@ Sub DumpIt(baseRunners, P2, D2)
     batr$ = _IIF( fp% = 1, pitchers$( P, currPitcher(P) ), batters$(P, lp%) )
 
     Print #11, "Lineup slot is: "; currLineupSlot(P); " Roster player is: "; lp%;  " Batter is: "; batr$; " Position is; "; fp%; " Pitcher is: "; pitchers$(D, currPitcher(D))
-    
+
     Print #11, "Batter: "; player$(0); ", 1st base: "; player$(1); ", 2nd base: "; player$(2); ", 3rd base: "; player$(3); ", fielder w/ball: "; player$(4)
 
     If P2 <> 1 Then Print #11, " +++ Off strategy: "; P2;
