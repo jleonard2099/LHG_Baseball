@@ -79,6 +79,7 @@ Declare Sub INNDISP (currInning, teamLine)
 Declare Sub LDRIVE (X$)
 Declare Sub LONGFLY (D, currFielder)
 Declare Sub MAINSCREEN (D, P, nbrBalls, nbrStrikes, MO)
+Declare Sub UpdateSchedule
 Declare Sub WINDEX ()
 Declare Sub NEWPITCHER (pIdx, PPH, pz)
 Declare Sub NOJUMP (D)

@@ -17,6 +17,7 @@ Const TEAMS_PER_LEAGUE = 40
 Const SCHEDULE_SIZE_BYTES = 52
 Const LAST_COL = 80
 Const LAST_ROW = 30
+Const SCHED_ENTRIES_PER_SCREEN = 25
 
 DefInt A-Z
 
@@ -267,6 +268,10 @@ _Title "Full Count Baseball - Menu"
 $ExeIcon:'./lhg_fcbase.ico'
 _Icon
 _AllowFullScreen
+
+If _FileExists("errlog") Then
+    Kill "errlog"
+End If
 
 opSysType$ = Left$(_OS$, InStr(2, _OS$, "[") - 1)
 
@@ -978,6 +983,7 @@ Sub LOADER
 
         'Open "pbplog" + Str$(currGame) For Append As #11
         'Open "pbplog" For Append As #11
+
         If Not _FileExists(scheduleFile$) Then
 
             'Notify user that game won't execute
@@ -993,6 +999,7 @@ Sub LOADER
 
         Else
 
+            'Read in schedule options
             Open scheduleFile$ For Random As #6 Len = SCHEDULE_SIZE_BYTES
 
             For X = 0 To 18
@@ -11694,6 +11701,50 @@ Sub WINDEX ()
 
 End Sub
 
+
+'----------------------------------------
+'       UpdateSchedule Subroutine
+'----------------------------------------
+'This subroutine updates the schedule
+'file for a completed game. It will first 
+'update any relevant ticker scores, then 
+'update the scores for the current game in
+'the corresponding schedule file.
+Sub UpdateSchedule
+
+    Shared scheduleFile$
+
+	Open scheduleFile$ For Random As #1 Len = SCHEDULE_SIZE_BYTES
+
+	For X = 0 To 18
+		Field #1, X * 2 As X$, 2 As player$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
+	Next
+
+	Field #1, 38 As X$, 2 As player$(22), 2 As player$(23), 5 As player$(20), 5 As player$(21)
+
+	schedOptions(13) = 1
+
+	For X = 0 To 18:
+		LSet player$(X + 1) = MKI$(schedOptions(X))
+	Next
+
+	For X = 0 To 1:
+		LSet player$(20 + X) = diskIDs$(X)
+	Next
+
+	LSet player$(22) = MKI$(gameScore(0, 0))
+	LSet player$(23) = MKI$(gameScore(1, 0))
+
+	Put #1, schedGame(0) + schedGame(2)
+
+	Close #1
+
+	schedGame(2) = schedGame(2) + 1
+	autoPlay = 1
+
+End Sub
+
+
 '----------------------------------------
 '        NEWPITCHER Subroutine
 '----------------------------------------
@@ -14265,36 +14316,172 @@ End Sub
 '----------------------------------------
 'This routine checks to see if both teams
 'have conflicting primary colors.
-'If so, it will substitute the secondary
-'color with white/grey and reverse them.
+'If so, it will substitute the colors
+'for the home team by either reversing
+'them (with a slight color change) or
+'otherwise using White/Grey/Black as
+'an alternate color.
 'In essence, it's the digital equivalent
 'of assigning an alternate jersey color.
 Sub ColorChange ()
 
-    If teamRat_GAME(1, 11) = 15 And teamRat_GAME(1, 12) = 4 Then
-        teamRat_GAME(1, 11) = 4
-        teamRat_GAME(1, 12) = 7
-    End If
+    ' ** Home Team Colors **
+    fg_color = teamRat_GAME(1, 11)
+    bg_color = teamRat_GAME(1, 12)
 
-    If teamRat_GAME(1, 11) = 15 And teamRat_GAME(1, 12) = 1 Then
-        teamRat_GAME(1, 11) = 1
-        teamRat_GAME(1, 12) = 7
-    End If
-
-    If teamRat_GAME(1, 11) = 0 And teamRat_GAME(1, 12) = 4 Then
-        teamRat_GAME(1, 11) = 12
+    '-- Black Foreground --
+    '-- Blue / Green / Cyan / Red / Magenta Background --
+    If fg_color = 0 And ((bg_color >= 1 And bg_color <= 5) Or (bg_color >= 9 And bg_color <= 13)) Then
+        'Change foreground to alternate version of background color
+        'Change background to Black
+        If bg_color < 9 Then
+            teamRat_GAME(1, 11) = bg_color + 8
+        Else
+            teamRat_GAME(1, 11) = bg_color - 8
+        End If
         teamRat_GAME(1, 12) = 0
     End If
 
-    If teamRat_GAME(1, 11) = 1 And teamRat_GAME(1, 12) = 7 Then
-        teamRat_GAME(1, 11) = 15
-        teamRat_GAME(1, 12) = 1
+
+    '-- Black Foreground --
+    '-- Orange / Yellow Background --
+    If (fg_color = 0) And (bg_color = 14 Or bg_color = 6) Then
+        'Change foreground to background color
+        'Change background to foreground color
+        teamRat_GAME(1, 0) = bg_color
+        teamRat_GAME(1, 1) = fg_color
     End If
 
-    If teamRat_GAME(1, 11) = 4 And teamRat_GAME(1, 12) = 7 Then
-        teamRat_GAME(1, 11) = 15
-        teamRat_GAME(1, 12) = 4
+
+    '-- Grey / White Foreground --
+    '-- Blue / Green / Cyan / Red / Magenta Background --
+    If (fg_color = 7 Or fg_color = 15) And ((bg_color >= 1 And bg_color <= 5) Or (bg_color >= 9 And bg_color <= 13)) Then
+        'Change foreground to alternate version of background color
+        'Change background to Grey | White
+        If bg_color < 9 Then
+            teamRat_GAME(1, 11) = bg_color + 8
+        Else
+            teamRat_GAME(1, 11) = bg_color - 8
+        End If
+        If fg_color = 7 Then
+            teamRat_GAME(1, 12) = 15
+        Else
+            teamRat_GAME(1, 12) = 7
+        End If
     End If
+
+
+    '-- Grey / White Foreground --
+    '-- Black Background --
+    If (fg_color = 7 Or fg_color = 15) And (bg_color = 0) Then
+        'Change foreground to Black
+        'Change background to Grey | White
+        teamRat_GAME(1, 11) = 0
+        If fg_color = 7 Then
+            teamRat_GAME(1, 12) = 15
+        Else
+            teamRat_GAME(1, 12) = 7
+        End If
+    End If
+
+
+    '-- Blue / Green / Cyan / Red / Magenta Foreground --
+    '-- Black Background --
+    If ((fg_color >= 1 And fg_color <= 5) Or (fg_color >= 9 And fg_color <= 13)) And bg_color = 0 Then
+        'Change foreground to Black
+        'Change background to alternate version of foreground color
+        teamRat_GAME(1, 11) = 0
+        If fg_color < 9 Then
+            teamRat_GAME(1, 12) = fg_color + 8
+        Else
+            teamRat_GAME(1, 12) = fg_color - 8
+        End If
+    End If
+
+
+    '-- Blue / Green / Cyan / Red / Magenta Foreground --
+    '-- White | Grey Background --
+    If ((fg_color >= 1 And fg_color <= 5) Or (fg_color >= 9 And fg_color <= 13)) And (bg_color = 7 Or bg_color = 15) Then
+        'Change foreground to Grey | White
+        'Change background to foreground color
+        If bg_color = 7 Then
+            teamRat_GAME(1, 11) = 15
+        Else
+            teamRat_GAME(1, 11) = 7
+        End If
+
+        teamRat_GAME(1, 12) = fg_color
+    End If
+
+
+    '-- Blue / Green / Cyan / Red / Magenta Foreground --
+    '-- Blue / Green / Cyan / Red / Magenta Background --
+    If ((fg_color >= 1 And fg_color <= 5) Or (fg_color >= 9 And fg_color <= 13)) And ((bg_color >= 1 And bg_color <= 5) Or (bg_color >= 9 And bg_color <= 13)) Then
+        'Change foreground to alternate version of background color
+        'Change background to alternate version of foreground color
+        If bg_color < 9 Then
+            teamRat_GAME(1, 11) = bg_color + 8
+        Else
+            teamRat_GAME(1, 11) = bg_color - 8
+        End If
+        If fg_color < 9 Then
+            teamRat_GAME(1, 12) = fg_color + 8
+        Else
+            teamRat_GAME(1, 12) = fg_color - 8
+        End If
+
+    End If
+
+
+    '-- Orange / Yellow Foreground
+    '-- Black / Blue / Green / Cyan / Red / Magenta Background --
+    If (fg_color = 14 Or fg_color = 6) And ((bg_color >= 0 And bg_color <= 5) Or (bg_color >= 9 And bg_color <= 13)) Then
+        'Change foreground to background color
+        'Change background to foreground color
+        teamRat_GAME(1, 11) = bg_color
+        teamRat_GAME(1, 12) = fg_color
+    End If
+
+
+    '-- Orange / Yellow Foreground
+    '-- Grey / White Background --
+    If (fg_color = 14 Or fg_color = 6) And (bg_color = 7 Or bg_color = 15) Then
+        'Change foregroundto background color
+        'Change background to Grey | White
+        teamRat_GAME(1, 11) = bg_color
+        If fg_color = 7 Then
+            teamRat_GAME(1, 12) = 15
+        Else
+            teamRat_GAME(1, 12) = 7
+        End If
+    End If
+
+
+    '-- Blue / Green / Cyan / Red / Magenta Foreground --
+    '-- Orange / Yellow Background
+    If (((fg_color >= 1 And fg_color <= 5) Or (fg_color >= 9 And fg_color <= 13)) And (bg_color = 14 Or bg_color = 6)) Then
+        'Change foregroundto background color
+        'Change background to foreground color
+        teamRat_GAME(1, 11) = bg_color
+        teamRat_GAME(1, 12) = fg_color
+    End If
+
+
+    '-- Grey / White Foreground --
+    '-- Orange / Yellow Background
+    If (fg_color = 7 Or fg_color = 15) And (bg_color = 14 Or bg_color = 6) Then
+        'Change foregroundto background color
+        'Change background to Grey | White
+        teamRat_GAME(1, 11) = bg_color
+
+        'teamRat_GAME(1, 12) = 0
+        If fg_color = 7 Then
+            teamRat_GAME(1, 12) = 15
+        Else
+            teamRat_GAME(1, 12) = 7
+        End If
+    End If
+
 
 End Sub
 
@@ -17483,7 +17670,6 @@ Sub POSTGAME ()
     If specialStat = 1 Then
 
         boxName$ = "BOXSCORE" + Mid$(Str$(specialCount), 2, Len(Str$(specialCount))) + ".BSS"
-        'boxName$ = "BOX" + Mid$(Str$(specialCount), 2, Len(Str$(specialCount))) + ".SPC"
 
         'Append special events
         Call BOX2SPC(boxName$)
@@ -17572,33 +17758,7 @@ Sub SAVESTATS ()
 
         If _FileExists("GAME82") Then
 
-            Open scheduleFile$ For Random As #1 Len = SCHEDULE_SIZE_BYTES
-
-            For X = 0 To 18
-                Field #1, X * 2 As X$, 2 As player$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
-            Next
-
-            Field #1, 38 As X$, 2 As player$(22), 2 As player$(23), 5 As player$(20), 5 As player$(21)
-
-            schedOptions(13) = 1
-
-            For X = 0 To 18:
-                LSet player$(X + 1) = MKI$(schedOptions(X))
-            Next
-
-            For X = 0 To 1:
-                LSet player$(20 + X) = diskIDs$(X)
-            Next
-
-            LSet player$(22) = MKI$(gameScore(0, 0))
-            LSet player$(23) = MKI$(gameScore(1, 0))
-
-            Put #1, schedGame(0) + schedGame(2)
-
-            Close 1
-
-            schedGame(2) = schedGame(2) + 1
-            autoPlay = 1
+            Call UpdateSchedule
 
             If schedGame(1) < schedGame(0) + schedGame(2) Then
                 Kill "GAME82"
@@ -18124,12 +18284,10 @@ Sub BOXOPTIONS (outputChoice)
                     Print "ENTER FILENAME FOR BOXSCORE (NO SPACES OR PERIODS)";
                     Input boxName$
                     boxName$ = boxName$ + ".BSS"
-                    'boxName$ = boxName$ + ".SPC"
                 Else
                     'ScheduleName_GameXXX.BS
                     baseFile$ = GetFileBaseName$(scheduleFile$)
-                    boxName$ = Mid$(baseFile$, 1, Len(baseFile$) - 4) + "_GAME" + Mid$(Str$(schedGame(0) + schedGame(2)), 2, Len(Str$(schedGame(0) + schedGame(2)))) + ".BS"
-                    'boxName$ = "BOX" + Mid$(Str$(schedGame(0) + schedGame(2)), 2, Len(Str$(schedGame(0) + schedGame(2))))
+                    boxName$ = baseFile$ + "_GAME" + Mid$(Str$(schedGame(0) + schedGame(2)), 2, Len(Str$(schedGame(0) + schedGame(2)))) + ".BS"
                 End If
 
             End If

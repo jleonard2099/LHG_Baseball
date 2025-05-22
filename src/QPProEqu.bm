@@ -146,7 +146,7 @@ Function MGetKey (Row%, Col%)
     'was clicked
 
     'Clear keyboard buffer
-    ' ???
+    'Sleep
 
     Do
         k$ = InKey$
@@ -749,11 +749,12 @@ Sub MAMenu (menuChoices$(), Selected%, Start%, Count%, ScanCode%, ItemFGColor%, 
 
     UserIn$ = "" ' *** Reset UserIn$ ***
 
+    'Sleep
+
     Do
-        Sleep
         UserIn$ = InKey$
     Loop Until UserIn$ <> ""
-
+    
     Select Case UserIn$
 
         Case Chr$(0) + Chr$(80)
@@ -867,9 +868,10 @@ Sub MMenuVert (menuChoices$(), Selected%, Start%, ScanCode%, ItemFGColor%, ItemB
 
     GoSub DrawMenu
 
+    'Sleep
+
     'get cursor key movements and redraw menu
     Do
-        Sleep
         UserIn$ = InKey$
 
         If Len(UserIn$) = 2 Then UserIn$ = Right$(UserIn$, 1)
@@ -999,6 +1001,8 @@ Sub NumIn (Number#, Max, XCode, FGColor&, BGColor&)
     Locate , Pos(0) + Max - ALength + 1, 1 'locate and turn on the cursor
 
     NGetKey:
+    'Sleep
+
     Do
         Call CapNum 'print Cap/Num if active
 
@@ -1132,6 +1136,7 @@ Sub NumIn (Number#, Max, XCode, FGColor&, BGColor&)
     NTabKey: 'you may handle Tab separately
     '  if you'd like
     NEnter:
+
     Number# = Val(X$) 'assign returned amount
     Locate , , 0 'turn off the cursor
 
@@ -1239,9 +1244,9 @@ Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode%, FGColor&, BGColor&)
 
     X$ = X$ + Space$(Max% - Length) 'Pad with trailing spaces
 
-    Locate , , 1 'Toggle the cursor
+    'Locate , , 1 'Toggle the cursor
     Call QPrint(X$, FGColor&, BGColor&, -1)
-    ' Locate , , 1  'Toggle the cursor
+    'Locate , , 0  'Toggle the cursor
 
     GoSub TInsertOff 'Set cursor size according to display
 
@@ -1463,6 +1468,7 @@ Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode%, FGColor&, BGColor&)
     Else
         Locate , , , 12, 13
     End If
+
     Return
 
 End Sub
@@ -1718,4 +1724,3 @@ Sub Lts2Menu (Item$(), Prompt$(), Choice%, FGColor%, BGColor%)
     Erase Break%, ScrBuf%
 
 End Sub
-
