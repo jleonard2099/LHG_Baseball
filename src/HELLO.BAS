@@ -401,7 +401,7 @@ End If
 'End If
 Print #10,
 Close #10
-End 'Resume Next ' moves program to code following the error.
+Resume Next ' moves program to code following the error.
 
 
 Sub LogError (errMsg$)
@@ -5196,7 +5196,7 @@ Sub SOURCE ()
                                 Call GetPBPString(range, min, Y$, D)
                                 Call PBP(Y$ + " " + X$)
 
-                                Call FLDERR(errorOnPlay%, currFielder, D, I3, SB%, S2%, P)
+                                Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
 
                                 If errorOnPlay% = 1 Then Goto LCheckForOptionsOrQuit
 
@@ -5482,7 +5482,8 @@ Sub SOURCE ()
                 GoTo LProcessOutAndDP
             End If
 
-            If baseRunners = 5 And gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 7 And nbrOuts(0) = 0 And INFPOS% > INF_BACK And (currFielder = 5 Or currFielder = 3) Then GoTo LGrounderToPitcher
+            If baseRunners = 5 And gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 7 And nbrOuts(0) = 0 _
+                And INFPOS% > INF_BACK And (currFielder = 5 Or currFielder = 3) Then GoTo LGrounderToPitcher
 
             If baseRunners = 7 And INFPOS% > INF_BACK And (currFielder = 5 Or currFielder = 3) Then
                 Call CREDITASSIST(currFielder, D)
@@ -9708,21 +9709,6 @@ Sub ADV2BASES (p_base)
         Next bm1
         Print #11,
     End If
-
-  For I4 = 0 To 2
-        b2Base   (p_base + 2) = b2Base(p_base)
-        b2Pitcher(p_base + 2) = b2Pitcher(p_base)
-        b2Mystery(p_base + 2) = b2Mystery(p_base)
-
-        b2Mystery(p_base + 1) = 0
-
-        b2Base   (p_base) = 0
-        b2Pitcher(p_base) = 0
-        b2Mystery(p_base) = 0
-    Next I4
-
-    player$(p_base + 2) = player$(p_base)
-    player$(p_base) = ""
 
 End Sub
 
@@ -15172,19 +15158,19 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
 
         'Determine which base we're stealing
         If S2% = EVENT_2B And b2Base(2) > 0 And H6% < 6 And b2Base(3) = 0 And batRating(P, lineupPlayer(P, b2Base(2)), SS_B_3B) > 0 Then
-        If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE stretching a Double to a Triple..."
+            If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE stretching a Double to a Triple..."
             baseNbr! = 3
         End If
         If S2% = EVENT_3B And b2Base(3) > 0 And H6% <= 2 And batRating(P, lineupPlayer(P, b2Base(3)), SS_B_HR) > 0 Then
-        If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE stretching a Triple to an Inside-The-Park HR..."
+            If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE stretching a Triple to an Inside-The-Park HR..."
             baseNbr! = 4
         End If
         If S2% = EVENT_1B And b2Base(3) > 0 And P2 = OFF_HIT_N_RUN And H6% >= 6 And H6% <= batRating(P, lineupPlayer(P, b2Base(3)), SS_B_Run) Then
-        If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE trying to score from 3rd on a Hit & Run Single..."
+            If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE trying to score from 3rd on a Hit & Run Single..."
             baseNbr! = 4
         End If
         If S2% = EVENT_1B And b2Base(3) > 0 And runnerOn2nd = b2Base(3) And P2 <> OFF_HIT_N_RUN And H6% <= batRating(P, lineupPlayer(P, b2Base(3)), SS_B_Run) * 12 Then
-        If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE trying to score from 3rd on a Single..."
+            If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE trying to score from 3rd on a Single..."
             baseNbr! = 4
         End If
 
@@ -15194,11 +15180,11 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
             runRating = runRating + batRating(P, lineupPlayer(P, b2Base(2)), SS_B_Run)
         End If
         If S2% = EVENT_1B And b2Base(2) > 0 And P2 <> OFF_HIT_N_RUN And H6% <= runRating And b2Base(3) = 0 And baseNbr! = 0 Then
-        If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE trying to advance to 3rd on a Single..."
+            If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE trying to advance to 3rd on a Single..."
             baseNbr! = 3
         End If
         If S2% = EVENT_1B And b2Base(1) > 0 And b2Base(2) = 0 And baseNbr! = 0 And H6% <= batRating(P, lineupPlayer(P, b2Base(1)), SS_B_Run) And batRating(P, lineupPlayer(P, b2Base(1)), SS_B_2B) > 0 Then
-        If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE stretching a Single to a Double..."
+            If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE stretching a Single to a Double..."
             baseNbr! = 2
         End If
 
