@@ -29,7 +29,7 @@ Const SS_B_FldPct3 = 28
 Const SS_B_FldPct4 = 29
 Const SS_B_Bunt = 30
 Const SS_B_Active = 31  ' 0=Active, 1=Inactive
-'32 is INJURY?'
+Const SS_B_Injured= 32
 
 Const SS_B_Arm1   = 33
 Const SS_B_Range1 = 34
@@ -58,24 +58,24 @@ Const SS_B_RHP_H = 50
 
 '80 is unknown'
 
-Const SS_P_Throws = 0
-Const SS_P_W = 1
-Const SS_P_L = 2
-Const SS_P_Sv = 3
-Const SS_P_G = 4
-Const SS_P_GS = 5
-Const SS_P_IP = 6
-Const SS_P_H = 7
-Const SS_P_BB =  8
-Const SS_P_K = 9
-Const SS_P_ERA100 = 10 'ERA*100
-Const SS_P_BAvg = 11
-Const SS_P_GndPct = 12
-Const SS_P_HR = 13
-Const SS_P_LgBAvg = 14
-Const SS_P_Avail = 15
-Const SS_P_CG = 16
-Const SS_P_FldPct = 17
+Const SS_P_Throws     =  0
+Const SS_P_W          =  1
+Const SS_P_L          =  2
+Const SS_P_Sv         =  3
+Const SS_P_G          =  4
+Const SS_P_GS         =  5
+Const SS_P_IP         =  6
+Const SS_P_H          =  7
+Const SS_P_BB         =  8
+Const SS_P_K          =  9
+Const SS_P_ERA100     = 10 'ERA*100
+Const SS_P_BAvg       = 11
+Const SS_P_GndPct     = 12
+Const SS_P_HR         = 13
+Const SS_P_LgBAvg     = 14
+Const SS_P_Avail      = 15
+Const SS_P_CG         = 16
+Const SS_P_FldPct     = 17
 Const SS_P_HoldRunner = 18
 
 Const SS_P_H_G  = 19
@@ -93,7 +93,8 @@ Const SS_P_H_CS = 30
 Const SS_P_Run  = 31
 Const SS_P_Bunt = 32
 Const SS_P_SH   = 33
-
+Const SS_P_Active= 34  ' 0=Active, 1=Inactive
+'ToDo [bm] there is also 50 and 89?
 Const SS_P_Rest = 35
 
 ' 37-88 could be SPLITS'
@@ -125,6 +126,8 @@ Const LG_B_PO  = 16
 Const LG_B_A   = 17
 Const LG_B_Sac = 18
 Const LG_B_SF  = 19
+Const LG_BF_SB = 20
+Const LG_BF_CS = 21
 
 Const LG_P_OUT  = 0
 Const LG_P_H    = 1
@@ -160,8 +163,8 @@ Const LG_PB_E   = 34
 'Const LG_PB_LS  = 36
 'Const LG_PB_G   = 37
 Const LG_PB_GIDP= 37
-'Const LG_PB_PO  = 39
-'Const LG_PB_A   = 40
+Const LG_PB_PO  = 38
+Const LG_PB_A   = 39
 Const LG_PB_Sac = 40
 Const LG_PB_SF  = 41
 
@@ -185,8 +188,8 @@ Const TM_3B     = 7
 Const TM_FOUL   = 8
 Const TM_OUTDOORS= 9
 Const TM_GRASS  = 10
-Const TM_FG     = 11
-Const TM_BG     = 12
+Const TM_COLOR_FG= 11
+Const TM_COLOR_BG= 12
 Const TM_PARK_ID= 13
 
 Const BASE_EMPTY= 0
@@ -198,12 +201,27 @@ Const BASE_1_3  = 5
 Const BASE_2_3  = 6
 Const BASE_FULL = 7
 
-Const INF_NORMAL = 0
-Const INF_CORNERS_IN = 1
-Const INF_INFIELD_IN = 2
+Const INF_BACK        = 0
+Const INF_CORNERS_IN  = 1
+Const INF_IN          = 2
 Const INF_GUARD_LINES = 3
 ' Const INF_SHIFT = 4
 ' Const INF_PULL = 5
+
+Const OFF_HIT_AWAY    = 1
+Const OFF_HIT_N_RUN   = 2
+Const OFF_STEAL       = 3
+Const OFF_BUNT        = 4
+Const OFF_PERSONNEL   = 5
+
+Const DEF_PITCH       = 1
+Const DEF_INTNTL_BB   = 2
+Const DEF_INFIELD_IN  = 3
+Const DEF_CORNERS_IN  = 4
+Const DEF_INFIELD_BACK= 5
+Const DEF_PERSONNEL   = 6
+Const DEF_PITCH_AWAY  = 7
+Const DEF_PITCH_AROUND= 8
 
 Const POS_P  = 1
 Const POS_C  = 2
