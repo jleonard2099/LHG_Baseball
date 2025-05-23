@@ -160,7 +160,10 @@ For I = 3 To 6
     Read grounderDir$(I)
 Next
 
+'AB%() -- for analyzing player usage??
 Data 681,663,645,627,609,591,573,555,537
+
+'BT%() -- bunt quality (on grass)
 Data 6,12,37,55,66,74,86,96,100
 Data 5,10,32,55,67,75,86,96,100
 Data 4,8,27,54,68,76,86,96,100
@@ -170,6 +173,8 @@ Data 2,5,20,53,69,78,86,96,100
 Data 2,4,17,53,70,78,86,96,100
 Data 1,3,12,52,71,79,86,96,100
 Data 1,2,7,51,72,80,86,96,100
+
+'BT%() -- bunt quality (on turf)
 Data 6,14,42,55,63,74,86,96,100
 Data 5,12,37,55,64,75,86,96,100
 Data 4,10,32,55,65,76,86,96,100
@@ -179,7 +184,9 @@ Data 3,6,24,55,66,77,86,96,100
 Data 2,5,22,55,67,78,86,96,100
 Data 1,4,17,55,68,79,86,96,100
 Data 1,3,12,55,69,80,86,96,100
-Data 0,0,100
+
+'CF%() -- base hit on bunt attempt
+Data 0, 0,100
 Data 0,15,100
 Data 0,30,100
 Data 0,45,100
@@ -187,10 +194,38 @@ Data 0,60,100
 Data 1,75,100
 Data 3,90,100
 Data 4,97,100
-Data 100,0,90,100,75,100,60,100,45,100,30,100,15,100,8,100
-Data 100,0,0,90,100,0,70,95,100,50,80,100,30,65,100,10,50,100
-Data 0,90,100,5,87,100,10,85,100,15,80,100,20,77,100,25,75,100
-Data 30,73,100,35,70,100,40,67,100,45,65,100,50,63,100,60,65,100
+
+'LB%() -- lead runner outcome on bunt attempt
+Data 100, 0
+Data 90,100
+Data 75,100
+Data 60,100
+Data 45,100
+Data 30,100
+Data 15,100
+Data  8,100
+
+'SO%() -- batter misses pitch on bunt attempt (strike / strikeout)
+Data 100,  0,  0
+Data  90,100,  0
+Data  70, 95,100
+Data  50, 80,100
+Data  30, 65,100
+Data  10, 50,100
+
+'triplePlayAdj() -- attempting to bunt
+Data  0,90,100
+Data  5,87,100
+Data 10,85,100
+Data 15,80,100
+Data 20,77,100
+Data 25,75,100
+Data 30,73,100
+Data 35,70,100
+Data 40,67,100
+Data 45,65,100
+Data 50,63,100
+Data 60,65,100
 
 'Read in data and assign variables
 For I = 1 To 9:
@@ -361,7 +396,7 @@ End If
 'End If
 Print #10,
 Close #10
-Resume Next ' moves program to code following the error.
+End 'Resume Next ' moves program to code following the error.
 
 
 Sub LogError (errMsg$)
@@ -1498,9 +1533,9 @@ Sub LOADER
 
                 Case "1", "3":
                     'Lineup using profile
-                    Call SearchForLineup(P9)
+                    Call SearchForLineup(P9, Q2%)
 
-                    Call LineupFromProfile(lineupFound%, P9, skipLineChange%)
+                    Call LineupFromProfile(lineupFound%, P9, skipLineChange%, useMgrProf, I$, Q2%)
 
                     If lineupFound% = 1 Or skipLineChange% = 0 Then
                         Call ChangeLineup_PreGame(P9, reselect)
@@ -2169,18 +2204,14 @@ End Sub
 '----------------------------------------
 'This routines searches for an existing
 'lineup from the manager profiles.
-Sub SearchForLineup (P9)
+Sub SearchForLineup (P9, Q2%)
 
     Shared pitHand$()
 
     '2500
     Cls
-    If pitchRating(1 - P9, currPitcher(1 - P9), SS_P_Throws) = -1 Then
-        Q2% = 1
-    End If
-    If pitchRating(1 - P9, currPitcher(1 - P9), SS_P_Throws) = 1 Then
-        Q2% = 0
-    End If
+    If pitchRating(1 - P9, currPitcher(1 - P9), SS_P_Throws) = -1 Then Q2% = 1
+    If pitchRating(1 - P9, currPitcher(1 - P9), SS_P_Throws) =  1 Then Q2% = 0
     'pitchRating(0-1,0-1,0); all indexes are 1's
 
     Print Tab(30); "LINEUPS FOUND VS. "; pitHand$(Q2%)
@@ -2256,7 +2287,7 @@ End Sub
 'This subroutine attempts to load a selected
 'lineup from the manager profile and presents
 'a summary of it, if found.
-Sub LineupFromProfile (lineupFound%, P9, skipLineChange%)
+Sub LineupFromProfile (lineupFound%, P9, skipLineChange%, useMgrProf, I$, Q2%)
 
     lineupFound% = 0
     PCT% = 0
@@ -3361,7 +3392,6 @@ Sub DoSort (B, calcMode, P9)
 
                 Case USE_OBA_SB
                     oba!  = ( batRating(P9, J, SS_B_H) + batRating(P9, J, SS_B_W) + batRating(P9, J, SS_B_SB) ) / ( batRating(P9, J, SS_B_AB) + batRating(P9, J, SS_B_W + batRating(P9, J, SS_B_CS)) )
-                    _LogInfo "OBA  -- B: " + Str$(B) + "  L: " + Str$(L) + "  batLU: " + Str$(J) + "  oba: " + Str$(oba!)
 
                     If oba! >= theMax! Then
                         theMax! = oba!
@@ -3770,7 +3800,7 @@ Sub SOURCE ()
 
     Shared grounderDir$()
 
-    Shared triplePlayAdj(), SU()
+    Shared triplePlayAdj(), setupUsed(), closerUsed()
 
     VV(0)  = 1 : VV(1)  = 1
     VV1(1) = 9 : VV1(1) = 9
@@ -3918,6 +3948,8 @@ Sub SOURCE ()
 
     If Not (teamMgrProfileVal(D, 560) <> 999 Or INNING% < 8 Or playerMode = 0 Or playerMode = 1 And P = compTeam) Then
 
+        If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a DEFENSIVE strategy !!"
+
         For IJ0% = 1 To 4
 
             If teamMgrProfileVal(D, 560 + IJ0%) <> -1 And batRating(D, teamMgrProfileVal(D, 564 + IJ0%), SS_B_Avail) = 0 Then
@@ -3983,7 +4015,7 @@ Sub SOURCE ()
         '----- move stuff here -----
         GoTo LStayInGame
         Else
-            Call RELIEVERS(PPH, pz) 'Will choose a new pitcher because pitcher was pinch hit for
+            Call RELIEVERS(pinchHitterFlag, newPitcherFlag) 'Will choose a new pitcher because pitcher was pinch hit for
         End If
     End If
 
@@ -4299,13 +4331,15 @@ Sub SOURCE ()
 
             JM = lineupPlayer(P, currLineupSlot(P))
 
-            If PPH <> 1 Then
+            If pinchHitterFlag <> 1 Then
 
                 A1 = gameScore(P, 0) - gameScore(D, 0)
 
                 If fldPos(P, currLineupSlot(P)) <> 1 Then
 
                     If teamMgrProfileVal(P, 847) = 999 Then
+
+                        If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a PINCH HITTING for POSITION PLAYER strategy !!"
 
                         'PH FOR POS PLAYER CASES
                         Call Rolld100(RN)
@@ -4350,6 +4384,8 @@ Sub SOURCE ()
                         If pitchRating(P, I, SS_P_Avail) = 0 Then
 
                             If teamMgrProfileVal(P, 590) = 999 Then
+
+                                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a PINCH HITTER for PITCHER strategy !!"
 
                                 'PH FOR PITCHER WITH PROFILE
                                 Call Rolld100(RN)
@@ -4489,7 +4525,7 @@ Sub SOURCE ()
 
     Loop Until P2 >= OFF_HIT_AWAY And P2 <= OFF_PERSONNEL
 
-    15064 '
+   LExecuteOffense:
     Select Case P2
 
         Case 1, 4   'Hit away, Bunt
@@ -4614,7 +4650,7 @@ Sub SOURCE ()
 
     If IP% = 1 Then
         IP% = 0
-        Call RELIEVERS(PPH, pz)
+        Call RELIEVERS(pinchHitterFlag, newPitcherFlag)
     End If
 
     '-- It appears the following lines get executed
@@ -4821,7 +4857,7 @@ Sub SOURCE ()
 
     End If
 
-    '7 to 11 OR 7 to 200 And ...
+    '7 to 11 OR 7 to 200 And catcher is playing out of position
     If H6% <= 11 Or H6% <= 200 And batRating(D, fielder(D, 2), SS_B_Pos1) <> 2 And batRating(D, fielder(D, 2), SS_B_Pos2) <> 2 And batRating(D, fielder(D, 2), SS_B_Pos3) <> 2 And batRating(D, fielder(D, 2), SS_B_Pos4) <> 2 Then
 
        LPassedBall: ' *** passed ball ***
@@ -4958,7 +4994,7 @@ Sub SOURCE ()
         SN = 20
     End If
 
-    If INNING% > 5 And S8%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And S8%(D, 1) <= gamePitStats(D, currPitcher(D), 2) Then
+    If INNING% > 5 And stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2) Then
         I4 = I4 + 40
     End If
 
@@ -5102,13 +5138,13 @@ Sub SOURCE ()
 
                                         If (currFielder = 9 And RN > 800) Or (currFielder = 8 And RN > 840) Then
                                             baseNbr! = 3
-                                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "-- gonna try for 3rd on regular fly to CF or RF..."
+                                            If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try for 3rd on regular fly to CF or RF..."
                                             If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
                                         End If
 
                                         If currFielder = 7 And P2 <> OFF_HIT_N_RUN And baseRunners < 6 And RN > 880 Then
                                             baseNbr! = 3
-                                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "-- gonna try for 3rd on regular fly to LF..."
+                                            If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try for 3rd on regular fly to LF..."
                                             If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
                                         End If
 
@@ -5125,7 +5161,7 @@ Sub SOURCE ()
 
                                     If S2% = EVENT_FLY_DEEP And P2 <> OFF_HIT_N_RUN And baseRunners = 1 And RN <= 100 + J5 Then
                                         baseNbr! = 2
-                                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "-- gonna try for 2nd on deep fly..."
+                                        If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try for 2nd on deep fly..."
                                         If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
                                     End If
                                     ' I8! = 2
@@ -5190,7 +5226,7 @@ Sub SOURCE ()
 
                                 If b2Base(3) > 0 Then
                                     baseNbr! = 4
-                                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "-- gonna try to score..."
+                                    If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try to score..."
                                     If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
 
                                 End If
@@ -5714,7 +5750,7 @@ Sub SOURCE ()
             errorOnPlay% = 0
             Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
             If errorOnPlay% = 0 Then
-                If Environ$("PBPLOG") = "TRUE" Then Print #11, "-- gonna try to advance on Double --"
+                If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try to advance on Double --"
                 baseNbr! = 0
                 Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
             End If
@@ -5849,7 +5885,7 @@ Sub SOURCE ()
 
             errorOnPlay% = 0
             Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-            If Environ$("PBPLOG") = "TRUE" Then Print #11, "-- gonna try to advance on Triple --"
+            If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try to advance on Triple --"
             baseNbr! = 0
             If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
 
@@ -5902,7 +5938,7 @@ Sub SOURCE ()
 
                 errorOnPlay% = 0
                 Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-                If Environ$("PBPLOG") = "TRUE" Then Print #11, "-- gonna try to advance on Single --"
+                If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try to advance on Single --"
                 baseNbr! = 0
                 If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
 
@@ -7579,10 +7615,10 @@ Sub SOURCE ()
 
             Loop Until UCase$(I$) = "Y"
 
-            PPH = 0
+            pinchHitterFlag = 0
             PR% = 0
 
-            If S1%(P9) <> -1 And gamePitcher(P9) > 1 Then Call OFFPIT(P9, currPitcher(P9), 22)
+            If relieverOnRecordForSave(P9) <> -1 And gamePitcher(P9) > 1 Then Call OFFPIT(P9, currPitcher(P9), 22)
 
             currPitcher(P9) = I1
             gamePitcher(P9) = gamePitcher(P9) + 1
@@ -7985,11 +8021,11 @@ Sub SOURCE ()
 
     End If
 
-    If SU(D, 0) <> -1 And teamMgrProfileVal(D, 589) = 0 And INNING% = teamMgrProfileVal(D, 588) Then Call PITSTRAT(PPH, pz)
-    If SU(D, 1) <> -1 And teamMgrProfileVal(D, 589) = 0 And INNING% > teamMgrProfileVal(D, 588) Then Call PITSTRAT(PPH, pz)
-    If SU(D, 1) <> -1 And teamMgrProfileVal(D, 589) <> 0 And INNING% >= teamMgrProfileVal(D, 588) Then Call PITSTRAT(PPH, pz)
+    If setupUsed(D)  <> -1 And teamMgrProfileVal(D, 589) =  0 And INNING% =  teamMgrProfileVal(D, 588) Then Call PITSTRAT(pinchHitterFlag, newPitcherFlag)
+    If closerUsed(D) <> -1 And teamMgrProfileVal(D, 589) =  0 And INNING% >  teamMgrProfileVal(D, 588) Then Call PITSTRAT(pinchHitterFlag, newPitcherFlag)
+    If closerUsed(D) <> -1 And teamMgrProfileVal(D, 589) <> 0 And INNING% >= teamMgrProfileVal(D, 588) Then Call PITSTRAT(pinchHitterFlag, newPitcherFlag)
 
-    If pz = 1 Then pz = 0: GoTo LManageDefense
+    If newPitcherFlag = 1 Then newPitcherFlag = 0: GoTo LManageDefense
 
     A1 = gameScore(D, 0) - gameScore(P, 0)
     Call Rolld100(RN0)
@@ -8003,7 +8039,7 @@ Sub SOURCE ()
             If gamePitcher(D) <> 1 Then
 
                 If d100% <= 80 And pitchRating(D, currPitcher(D), 3) < 15 Then
-                    GK%(D) = 1
+                    newRelieverNeeded(D) = 1
                 End If
 
             Else
@@ -8044,7 +8080,7 @@ Sub SOURCE ()
                     GoTo LReliever1
                 End If
 
-                GK%(D) = 1  'new reliever'
+                newRelieverNeeded(D) = 1  'new reliever'
 
             End If
 
@@ -8053,10 +8089,10 @@ Sub SOURCE ()
     End If
 
    LReliever1:
-    If GK%(D) = 1 Then
+    If newRelieverNeeded(D) = 1 Then
 
-        GK%(D) = 0
-        Call RELIEVERS(PPH, pz)
+        newRelieverNeeded(D) = 0
+        Call RELIEVERS(pinchHitterFlag, newPitcherFlag)
         If useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
         GoTo LManageDefense
 
@@ -8083,6 +8119,8 @@ Sub SOURCE ()
 
             If Not (baseRunners < 3 Or baseRunners = 4) Then
 
+                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a INFIELD IN (3rd base occupied) strategy !!"
+
                 ' PROFILE INFIELD IN WITH 3RD OCCUPIED
                 Call Rolld100(RN)
                 If nbrOuts(0) = 0 And A1 >= teamMgrProfileVal(D, 691) * -1 And A1 <= teamMgrProfileVal(D, 692) * -1 And INNING% >= teamMgrProfileVal(D, 693) And RN <= teamMgrProfileVal(D, 694) Then INFPOS% = INF_IN: D2 = DEF_INFIELD_IN: GoTo LManageDefense
@@ -8097,6 +8135,8 @@ Sub SOURCE ()
         If teamMgrProfileVal(D, 707) = 999 Then
 
             If baseRunners = 0 Then
+
+                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a CORNERS IN against BUNT FOR HIT strategy !!"
 
                 ' PROFILE CORNERS IN AGAINST A BUNT HIT
                 Call Rolld100(RN)
@@ -8115,6 +8155,8 @@ Sub SOURCE ()
             If nbrOuts(0) = 0 Then
 
                 If Not (baseRunners <> 1 And baseRunners <> 4) Then
+
+                    If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a CORNERS IN against SAC BUNT strategy !!"
 
                     ' PROFILE CORNERS IN VS HITTER IN SAC BUNT SITUATION
                     Call Rolld100(RN)
@@ -8148,6 +8190,8 @@ Sub SOURCE ()
         If Not (teamMgrProfileVal(D, 731) <> 999 Or fldPos(P, currLineupSlot(P)) <> 1 Or nbrOuts(0) = 2) Then
 
             If Not (baseRunners <> 1 And baseRunners <> 2 And baseRunners <> 4) Then
+
+                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a CORNERS IN against PITCHER SAC BUNT strategy !!"
 
                 ' PROFILE CORNERS IN VS A PITCHER IN SAC BUNT SITUATION
                 Call Rolld100(RN)
@@ -8184,6 +8228,8 @@ Sub SOURCE ()
 
             If Not (nbrOuts(0) = 2 Or baseRunners <> 3 And baseRunners < 5) Then
 
+                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a CORNERS IN against SQUEEZE strategy !!"
+
                 ' PROFILE CORNERS IN FOR A SQUEEZE
                 Call Rolld100(RN)
                 If nbrOuts(0) = 0 And A1 <= teamMgrProfileVal(D, 741) And A1 >= teamMgrProfileVal(D, 742) And BR >= teamMgrProfileVal(D, 743) And RN <= teamMgrProfileVal(D, 744) Then
@@ -8205,6 +8251,8 @@ Sub SOURCE ()
         If teamMgrProfileVal(D, 756) = 999 Then
 
             If Not (baseRunners = 1 Or baseRunners = 4 Or baseRunners = 5 Or baseRunners = 7) Then
+
+                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a PITCH AROUND HITTER strategy !!"
 
                 MOB% = 0
 
@@ -8298,8 +8346,8 @@ Sub SOURCE ()
     End If
 
    LReliever2:
-    If (S8%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And S8%(D, 1) <= gamePitStats(D, currPitcher(D), 2)) Or fielder(D, 1) = 99 Then
-        Call RELIEVERS(PPH, pz)
+    If (stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2)) Or fielder(D, 1) = 99 Then
+        Call RELIEVERS(pinchHitterFlag, newPitcherFlag)
         If useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
     End If
 
@@ -8311,6 +8359,8 @@ Sub SOURCE ()
 
    LPhForPosition: 'GET A PINCH HITTER FOR A POSITION PLAYER
     If teamMgrProfileVal(P, 540) = 999 Then
+
+        If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a PINCH HITTING strategy !!"
 
         'SELECT PH FOR HITTER
         For I = 0 To 22
@@ -8328,7 +8378,7 @@ Sub SOURCE ()
                             teamMgrProfileVal = teamMgrProfileVal(P, I1 + 540)
                             teamMgrProfileVal(P, I1 + 540) = -1
 
-                            PPH = 1
+                            pinchHitterFlag = 1
                             gameD0(P) = gameD0(P) + 1
                             X0%(P, 0, gameD0(P)) = teamMgrProfileVal
                             X0%(P, 1, gameD0(P)) = fldPos(P, currLineupSlot(P))
@@ -8403,7 +8453,7 @@ Sub SOURCE ()
 
    LPhForPosPlayer:
 
-    PPH = 1
+    pinchHitterFlag = 1
     gameD0(P) = gameD0(P) + 1
     X0%(P, 0, gameD0(P)) = I
     X0%(P, 1, gameD0(P)) = fldPos(P, currLineupSlot(P))
@@ -8503,7 +8553,7 @@ Sub SOURCE ()
 
         If callPinch = 1 Then
 
-            PPH = 1
+            pinchHitterFlag = 1
             gameD0(P) = gameD0(P) + 1
             X0%(P, 0, gameD0(P)) = PH%
             X0%(P, 1, gameD0(P)) = 10   '10 = pinch hitter'
@@ -8541,7 +8591,7 @@ Sub SOURCE ()
             If fldPos(P, currLineupSlot(P)) = 1 Then player$(0) = pitchers$(P, currPitcher(D))
             Call WINDEX
             Call PBP(gameManagers$(P) + " is sending up a pinch hitter")
-            PPH = 1
+            pinchHitterFlag = 1
 
             GoTo LContinueBatter
 
@@ -8573,6 +8623,8 @@ Sub SOURCE ()
         ' MANAGER PROFILE TO HIT AND RUN
         Call Rolld100(RN)
         If Not (baseRunners = 0 Or teamMgrProfileVal(P, 671) <> 999 Or fldPos(P, currLineupSlot(P)) = 1) Then
+
+            If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a HIT & RUN strategy !!"
 
             If batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_AB) = 0 Then
                 I7! = 0
@@ -8617,22 +8669,26 @@ Sub SOURCE ()
 
             If Not (baseRunners <> 1 And baseRunners <> 2 And baseRunners <> 4) Then
 
+                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a PITCHER BUNTING strategy !!"
+
                 Call Rolld100(RN)
 
-                If baseRunners = 1 And INNING% <= 7 And teamMgrProfileVal(P, 610) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 611) And A1 >= teamMgrProfileVal(P, 612) * -1 And RN <= teamMgrProfileVal(P, 613) Then 18970
-                If baseRunners = 1 And INNING%  > 7 And teamMgrProfileVal(P, 614) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 615) And A1 >= teamMgrProfileVal(P, 616) * -1 And RN <= teamMgrProfileVal(P, 617) Then 18970
+                If baseRunners = 1 And INNING% <= 7 And teamMgrProfileVal(P, 610) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 611) And A1 >= teamMgrProfileVal(P, 612) * -1 And RN <= teamMgrProfileVal(P, 613) Then P2 = OFF_BUNT : GoTo LBunt
+                If baseRunners = 1 And INNING%  > 7 And teamMgrProfileVal(P, 614) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 615) And A1 >= teamMgrProfileVal(P, 616) * -1 And RN <= teamMgrProfileVal(P, 617) Then P2 = OFF_BUNT : GoTo LBunt
 
-                If baseRunners = 2 And INNING% <= 7 And teamMgrProfileVal(P, 618) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 619) And A1 >= teamMgrProfileVal(P, 620) * -1 And RN <= teamMgrProfileVal(P, 621) Then 18970
-                If baseRunners = 2 And INNING%  > 7 And teamMgrProfileVal(P, 622) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 623) And A1 >= teamMgrProfileVal(P, 624) * -1 And RN <= teamMgrProfileVal(P, 625) Then 18970
+                If baseRunners = 2 And INNING% <= 7 And teamMgrProfileVal(P, 618) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 619) And A1 >= teamMgrProfileVal(P, 620) * -1 And RN <= teamMgrProfileVal(P, 621) Then P2 = OFF_BUNT : GoTo LBunt
+                If baseRunners = 2 And INNING%  > 7 And teamMgrProfileVal(P, 622) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 623) And A1 >= teamMgrProfileVal(P, 624) * -1 And RN <= teamMgrProfileVal(P, 625) Then P2 = OFF_BUNT : GoTo LBunt
 
-                If baseRunners = 4 And INNING% <= 7 And teamMgrProfileVal(P, 626) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 627) And A1 >= teamMgrProfileVal(P, 628) * -1 And RN <= teamMgrProfileVal(P, 629) Then 18970
-                If baseRunners = 4 And INNING%  > 7 And teamMgrProfileVal(P, 630) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 631) And A1 >= teamMgrProfileVal(P, 632) * -1 And RN <= teamMgrProfileVal(P, 633) Then 18970
+                If baseRunners = 4 And INNING% <= 7 And teamMgrProfileVal(P, 626) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 627) And A1 >= teamMgrProfileVal(P, 628) * -1 And RN <= teamMgrProfileVal(P, 629) Then P2 = OFF_BUNT : GoTo LBunt
+                If baseRunners = 4 And INNING%  > 7 And teamMgrProfileVal(P, 630) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 631) And A1 >= teamMgrProfileVal(P, 632) * -1 And RN <= teamMgrProfileVal(P, 633) Then P2 = OFF_BUNT : GoTo LBunt
 
             End If
 
         End If
 
         If teamMgrProfileVal(P, 634) = 999 And fldPos(P, currLineupSlot(P)) <> 1 And nbrOuts(0) = 0 Or (baseRunners <> 1 And baseRunners <> 2 And baseRunners <> 4) Then
+
+            If Environ$("MGRLOG") = "TRUE" And teamMgrProfileVal(P, 634) = 999 Then Print #11, "!! Team is using a POSITION PLAYER BUNTING strategy !!"
 
             If batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_AB) = 0 Then
                 I7! = 0
@@ -8643,13 +8699,13 @@ Sub SOURCE ()
             End If
 
             Call Rolld100(RN)
-            If baseRunners = 1 And INNING% <= 7 And A1 <= teamMgrProfileVal(P, 635) And A1 >= teamMgrProfileVal(P, 636) * -1 And I7! <= teamMgrProfileVal(P, 637) And I6! <= teamMgrProfileVal(P, 638) And pitchRating(D, currPitcher(D), SS_P_ERA100) <= teamMgrProfileVal(P, 639) And RN <= teamMgrProfileVal(P, 640) Then 18970
-            If baseRunners = 2 And INNING% <= 7 And A1 <= teamMgrProfileVal(P, 641) And A1 >= teamMgrProfileVal(P, 642) * -1 And I7! <= teamMgrProfileVal(P, 643) And I6! <= teamMgrProfileVal(P, 644) And pitchRating(D, currPitcher(D), SS_P_ERA100) <= teamMgrProfileVal(P, 645) And RN <= teamMgrProfileVal(P, 646) Then 18970
-            If baseRunners = 4 And INNING% <= 7 And A1 <= teamMgrProfileVal(P, 647) And A1 >= teamMgrProfileVal(P, 648) * -1 And I7! <= teamMgrProfileVal(P, 649) And I6! <= teamMgrProfileVal(P, 650) And pitchRating(D, currPitcher(D), SS_P_ERA100) <= teamMgrProfileVal(P, 651) And RN <= teamMgrProfileVal(P, 652) Then 18970
+            If baseRunners = 1 And INNING% <= 7 And A1 <= teamMgrProfileVal(P, 635) And A1 >= teamMgrProfileVal(P, 636) * -1 And I7! <= teamMgrProfileVal(P, 637) And I6! <= teamMgrProfileVal(P, 638) And pitchRating(D, currPitcher(D), SS_P_ERA100) <= teamMgrProfileVal(P, 639) And RN <= teamMgrProfileVal(P, 640) Then P2 = OFF_BUNT : GoTo LBunt
+            If baseRunners = 2 And INNING% <= 7 And A1 <= teamMgrProfileVal(P, 641) And A1 >= teamMgrProfileVal(P, 642) * -1 And I7! <= teamMgrProfileVal(P, 643) And I6! <= teamMgrProfileVal(P, 644) And pitchRating(D, currPitcher(D), SS_P_ERA100) <= teamMgrProfileVal(P, 645) And RN <= teamMgrProfileVal(P, 646) Then P2 = OFF_BUNT : GoTo LBunt
+            If baseRunners = 4 And INNING% <= 7 And A1 <= teamMgrProfileVal(P, 647) And A1 >= teamMgrProfileVal(P, 648) * -1 And I7! <= teamMgrProfileVal(P, 649) And I6! <= teamMgrProfileVal(P, 650) And pitchRating(D, currPitcher(D), SS_P_ERA100) <= teamMgrProfileVal(P, 651) And RN <= teamMgrProfileVal(P, 652) Then P2 = OFF_BUNT : GoTo LBunt
 
-            If baseRunners = 1 And INNING% > 7 And A1 <= teamMgrProfileVal(P, 653) And A1 >= teamMgrProfileVal(P, 654) * -1 And I7! <= teamMgrProfileVal(P, 655) And I6! <= teamMgrProfileVal(P, 656) And pitchRating(D, currPitcher(D), SS_P_ERA100) <= teamMgrProfileVal(P, 657) And RN <= teamMgrProfileVal(P, 658) Then 18970
-            If baseRunners = 2 And INNING% > 7 And A1 <= teamMgrProfileVal(P, 659) And A1 >= teamMgrProfileVal(P, 660) * -1 And I7! <= teamMgrProfileVal(P, 661) And I6! <= teamMgrProfileVal(P, 662) And pitchRating(D, currPitcher(D), SS_P_ERA100) <= teamMgrProfileVal(P, 663) And RN <= teamMgrProfileVal(P, 664) Then 18970
-            If baseRunners = 4 And INNING% > 7 And A1 <= teamMgrProfileVal(P, 665) And A1 >= teamMgrProfileVal(P, 666) * -1 And I7! <= teamMgrProfileVal(P, 667) And I6! <= teamMgrProfileVal(P, 668) And pitchRating(D, currPitcher(D), SS_P_ERA100) <= teamMgrProfileVal(P, 669) And RN <= teamMgrProfileVal(P, 670) Then 18970
+            If baseRunners = 1 And INNING% > 7 And A1 <= teamMgrProfileVal(P, 653) And A1 >= teamMgrProfileVal(P, 654) * -1 And I7! <= teamMgrProfileVal(P, 655) And I6! <= teamMgrProfileVal(P, 656) And pitchRating(D, currPitcher(D), SS_P_ERA100) <= teamMgrProfileVal(P, 657) And RN <= teamMgrProfileVal(P, 658) Then P2 = OFF_BUNT : GoTo LBunt
+            If baseRunners = 2 And INNING% > 7 And A1 <= teamMgrProfileVal(P, 659) And A1 >= teamMgrProfileVal(P, 660) * -1 And I7! <= teamMgrProfileVal(P, 661) And I6! <= teamMgrProfileVal(P, 662) And pitchRating(D, currPitcher(D), SS_P_ERA100) <= teamMgrProfileVal(P, 663) And RN <= teamMgrProfileVal(P, 664) Then P2 = OFF_BUNT : GoTo LBunt
+            If baseRunners = 4 And INNING% > 7 And A1 <= teamMgrProfileVal(P, 665) And A1 >= teamMgrProfileVal(P, 666) * -1 And I7! <= teamMgrProfileVal(P, 667) And I6! <= teamMgrProfileVal(P, 668) And pitchRating(D, currPitcher(D), SS_P_ERA100) <= teamMgrProfileVal(P, 669) And RN <= teamMgrProfileVal(P, 670) Then P2 = OFF_BUNT : GoTo LBunt
 
         End If
 
@@ -8688,13 +8744,13 @@ Sub SOURCE ()
     End If
 
    LPinchRunner0:
-    PPH = 0
+    pinchHitterFlag = 0
     PR% = 0
 
     Call Rolld100(RN0)
 
     If nbrOuts(0) = 2 Or game_batRating(P, GM_K, currLineupSlot(P)) > 100 Or baseRunners = 0 Or baseRunners = 7 Or baseRunners = 6 Or baseRunners = 3 Or baseRunners = 2 Or A1 < -3 Or RN0 > 20 Then
-        GoTo 15064
+        GoTo LExecuteOffense
     Else
         P2 = OFF_HIT_N_RUN
         GoTo LHitAndRun
@@ -8707,7 +8763,6 @@ Sub SOURCE ()
     If nbrOuts(0) >= 1 And INNING% >= 7 Then
         GoTo LPinchRunner0
     Else
-        18970 '
         P2 = OFF_BUNT
         GoTo LBunt
     End If
@@ -8766,7 +8821,7 @@ Sub InitVar ()
     Shared BB%(), gameMgrIdx(), mgrFile()
     Shared nbrInnings(), oppScore()
     Shared startPitcher()
-    Shared SU(), teamScore()
+    Shared setupUsed(), closerUsed(), teamScore()
 
     Shared statT0!(), statT1!()
 
@@ -8923,13 +8978,13 @@ Sub InitVar ()
     Erase BT%, BB%, CSS, D3%, DP%
     Erase gameB, b2Base, b2Pitcher, b2Mystery, gameP
     Erase gameD0, gameMgrIdx
-    Erase gameM, gameScore, GK%
+    Erase gameM, gameScore, newRelieverNeeded
     Erase gamePitStats, H0%, inningScore
     Erase L0%, leagPitStats, mgrFile
     Erase schedOptions, nbrInnings, nbrOuts
     Erase oppScore
     Erase currPitcher, pitcherOfRecord, statT1!, gamePitcher
-    Erase S1%, S8%, startPitcher
+    Erase relieverOnRecordForSave, stamina%, startPitcher
     Erase teamMgrProfileVal, teamScore, T3%, X0%
 
     Erase currLineupSlot, parkHRVals!, statT0!
@@ -9577,7 +9632,7 @@ End Sub
 ' ...explanation...
 Sub ADV1BASE (p_base)
 
-    If Environ$("PBPLOG") = "TRUE" Then
+    If Environ$("RUNLOG") = "TRUE" Then
         Print #11,
         Print #11, "ADV1BASE before: p_base: "; p_base
         For bm1 = 0 to 3
@@ -9598,7 +9653,7 @@ Sub ADV1BASE (p_base)
     player$(p_base + 1) = player$(p_base)
     player$(p_base) = ""
 
-    If Environ$("PBPLOG") = "TRUE" Then
+    If Environ$("RUNLOG") = "TRUE" Then
         Print #11,
         Print #11, "ADV1BASE after: p_base: "; p_base
         For bm1 = 0 to 3
@@ -9615,7 +9670,7 @@ End Sub
 ' ...explanation...
 Sub ADV2BASES (p_base)
 
-    If Environ$("PBPLOG") = "TRUE" Then
+    If Environ$("RUNLOG") = "TRUE" Then
         Print #11,
         Print #11, "ADV2BASES before: p_base: "; p_base
         For bm1 = 0 to 3
@@ -9636,7 +9691,7 @@ Sub ADV2BASES (p_base)
     player$(p_base + 2) = player$(p_base)
     player$(p_base) = ""
 
-    If Environ$("PBPLOG") = "TRUE" Then
+    If Environ$("RUNLOG") = "TRUE" Then
         Print #11,
         Print #11, "ADV2BASES after: p_base: "; p_base
         For bm1 = 0 to 3
@@ -9668,7 +9723,7 @@ End Sub
 ' ...explanation...
 Sub ADVANCEMENT (P, D, S2%, errorOnPlay%, I3)
 
-    If Environ$("PBPLOG") = "TRUE" Then
+    If Environ$("RUNLOG") = "TRUE" Then
 
         Print #11,
         Print #11, "--- ADVANCEMENT ---"
@@ -10072,16 +10127,16 @@ End Sub
 Sub CHECKSAVE (D, P, baseRunners)
 
     I3 = gameScore(D, 0) - gameScore(P, 0)
-    S1%(D) = -1
+    relieverOnRecordForSave(D) = -1
 
     If I3 >= 1 Then
 
-        If baseRunners = 0 And I3 <= 2 Then S1%(D) = currPitcher(D)
-        If baseRunners > 0 And baseRunners < 4 And I3 <= 3 Then S1%(D) = currPitcher(D)
-        If baseRunners > 3 And baseRunners < 7 And I3 <= 4 Then S1%(D) = currPitcher(D)
-        If baseRunners = 7 And I3 <= 5 Then S1%(D) = currPitcher(D)
-        If baseRunners = 0 And nbrOuts(0) = 0 And I3 <= 3 Then S1%(D) = currPitcher(D)
-        If INNING% > 5 And I3 > 0 And INNING% < 8 Then S1%(D) = currPitcher(D)
+        If baseRunners = 0 And I3 <= 2 Then relieverOnRecordForSave(D) = currPitcher(D)
+        If baseRunners > 0 And baseRunners < 4 And I3 <= 3 Then relieverOnRecordForSave(D) = currPitcher(D)
+        If baseRunners > 3 And baseRunners < 7 And I3 <= 4 Then relieverOnRecordForSave(D) = currPitcher(D)
+        If baseRunners = 7 And I3 <= 5 Then relieverOnRecordForSave(D) = currPitcher(D)
+        If baseRunners = 0 And nbrOuts(0) = 0 And I3 <= 3 Then relieverOnRecordForSave(D) = currPitcher(D)
+        If INNING% > 5 And I3 > 0 And INNING% < 8 Then relieverOnRecordForSave(D) = currPitcher(D)
 
     End If
 
@@ -11272,11 +11327,11 @@ End Sub
 'This subroutine handles the Play-by-Play
 'and replacement for a defensive pitcher
 'who has been ejected or injured.
-Sub INJPIT (P, D, IP%, PPH)
+Sub INJPIT (P, D, IP%, pinchHitterFlag)
 
     If playerMode = 2 Or playerMode = 1 And P <> compTeam Then
         IP% = 1
-        Call RELIEVERS(PPH, pz)
+        Call RELIEVERS(pinchHitterFlag, newPitcherFlag)
     Else
         Call PBP("You must replace " + pitchers$(D, currPitcher(D)))
     End If
@@ -11681,11 +11736,11 @@ End Sub
 '        NEWPITCHER Subroutine
 '----------------------------------------
 'NewPitcher
-Sub NEWPITCHER (pIdx, PPH, pz)
+Sub NEWPITCHER (pIdx, pinchHitterFlag, newPitcherFlag)
 
     V0 = pIdx
 
-    If S1%(D) <> -1 And gamePitcher(D) > 1 Then
+    If relieverOnRecordForSave(D) <> -1 And gamePitcher(D) > 1 Then
         Call ADDPIT(D, currPitcher(D), LG_P_Hold)
     End If
 
@@ -11741,9 +11796,9 @@ Sub NEWPITCHER (pIdx, PPH, pz)
         Call MAINSCREEN(D, P, nbrBalls, nbrStrikes, MO)
     End If
 
-    PPH = 0
+    pinchHitterFlag = 0
 
-    pz = 1
+    newPitcherFlag = 1
 
 End Sub
 
@@ -11924,6 +11979,8 @@ Sub PINCHRUNNER (MS%, A1, baseRunners, I2, P, PR%, nbrBalls, nbrStrikes, D, MO)
 
             If teamMgrProfileVal(P, 771) = 999 Then
 
+                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a PINCH RUNNING strategy !!"
+
                 For I1 = 772 To 777
                     If teamMgrProfileVal(P, I1) <> -1 Then
                         If batRating(P, teamMgrProfileVal(P, I1), SS_B_Avail) = 0 Then
@@ -11931,19 +11988,21 @@ Sub PINCHRUNNER (MS%, A1, baseRunners, I2, P, PR%, nbrBalls, nbrStrikes, D, MO)
                             If fldPos(P, J) = 1 Then
                                 'PINCH RUNNING FOR THE PITCHER
                                 If teamMgrProfileVal(P, 803) = 999 Then
+                                    If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a PINCH RUNNING for PITCHER strategy !!"
                                     Call Rolld100(RN)
                                     If pitchRating(P, currPitcher(P), SS_P_Run) <= teamMgrProfileVal(P, 804) And INNING% >= teamMgrProfileVal(P, 805) And RN <= teamMgrProfileVal(P, 806) Then 8993
                                     If pitchRating(P, currPitcher(P), SS_P_Run) <= teamMgrProfileVal(P, 807) And INNING% >= teamMgrProfileVal(P, 808) And RN <= teamMgrProfileVal(P, 809) Then 8993
-                                    GoTo 8999
+                                    Exit Sub
                                 End If
                             End If
 
                             For I = 0 To 5
                                 If teamMgrProfileVal(P, I * 4 + 779) = lineupPlayer(P, J) Then
                                     'FOUND A MATCH FOR THE RUNNER ON BASE
+                                    If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a DEFENSE SUBSTITUTION strategy !!"
                                     Call Rolld100(RN)
                                     If INNING% >= teamMgrProfileVal(P, I * 4 + 780) And batRating(P, teamMgrProfileVal(P, I * 4 + 781), SS_B_Avail) = 0 And RN <= teamMgrProfileVal(P, I * 4 + 782) Then batRating(P, teamMgrProfileVal(P, I * 4 + 781), SS_B_Avail) = 40 + J: GoTo 8993
-                                    GoTo 8999
+                                    Exit Sub
                                 End If
                             Next
 
@@ -11953,12 +12012,12 @@ Sub PINCHRUNNER (MS%, A1, baseRunners, I2, P, PR%, nbrBalls, nbrStrikes, D, MO)
 
                 Next
 
-                GoTo 8999
+                Exit Sub
 
             End If
 
-            If fldPos(P, J) = 1 And pitchRating(P, currPitcher(P), SS_P_Run) > 4 Then 8999
-            If fldPos(P, J) <> 1 And batRating(P, lineupPlayer(P, J), SS_B_Run) > 3 Then 8999
+            If fldPos(P, J) =  1 And pitchRating(P, currPitcher(P),   SS_P_Run) > 4 Then Exit Sub
+            If fldPos(P, J) <> 1 And batRating(P, lineupPlayer(P, J), SS_B_Run) > 3 Then Exit Sub
 
             I1 = -1
 
@@ -11974,7 +12033,7 @@ Sub PINCHRUNNER (MS%, A1, baseRunners, I2, P, PR%, nbrBalls, nbrStrikes, D, MO)
                 End If
             Next
 
-            If i0% = 0 Or I1 = -1 And fldPos(P, J) <> 1 Then 8999
+            If i0% = 0 Or I1 = -1 And fldPos(P, J) <> 1 Then Exit Sub
             If fldPos(P, J) <> 1 Then batRating(P, I1, SS_B_Avail) = 40 + J
 
             RN = Int(Rnd(1) * i0%)
@@ -12036,8 +12095,6 @@ Sub PINCHRUNNER (MS%, A1, baseRunners, I2, P, PR%, nbrBalls, nbrStrikes, D, MO)
         End If
 
     End If
-
-    8999 '
 
 End Sub
 
@@ -12183,21 +12240,21 @@ End Sub
 Sub PITSTAM (P9)
 
     If pitchRating(P9, currPitcher(P9), 4) = 0 Then
-        S8%(P9, 0) = 3
+        stamina%(P9, 0) = 3
     Else
-        S8%(P9, 0) = CInt(((pitchRating(P9, currPitcher(P9), 8) + pitchRating(P9, currPitcher(P9), 7)) / pitchRating(P9, currPitcher(P9), 4)))
+        stamina%(P9, 0) = CInt(((pitchRating(P9, currPitcher(P9), 8) + pitchRating(P9, currPitcher(P9), 7)) / pitchRating(P9, currPitcher(P9), 4)))
     End If
 
-    If S8%(P9, 0) < 3 Then S8%(P9, 0) = 3
-    S8%(P9, 1) = 3
+    If stamina%(P9, 0) < 3 Then stamina%(P9, 0) = 3
+    stamina%(P9, 1) = 3
 
-    If gamePitcher(P9) > 1 Then S8%(P9, 1) = 0
+    If gamePitcher(P9) > 1 Then stamina%(P9, 1) = 0
 
     If pitchEraOpt > 0 Then
         If gamePitcher(P9) > 1 Then
-            S8%(P9, 1) = 1
+            stamina%(P9, 1) = 1
         Else
-            S8%(P9, 0) = S8%(P9, 0) + 1
+            stamina%(P9, 0) = stamina%(P9, 0) + 1
         End If
     End If
 
@@ -12211,26 +12268,31 @@ End Sub
 '----------------------------------------
 'This subroutine loads a pitcher strategy
 'from a manager profile.
-Sub PITSTRAT (PPH, pz)
+Sub PITSTRAT (pinchHitterFlag, newPitcherFlag)
 
-    Shared SU()
+    Shared setupUsed(), closerUsed()
 
-    A1 = gameScore(D, 0) - gameScore(P, 0)
+    ourLead = gameScore(D, 0) - gameScore(P, 0)
 
-    pz = 0
+    newPitcherFlag = 0
 
     ' if there are no middle relievers in the profile,
     ' and it's less than the 7th inning, then go back
     ' and find one the old fashioned way (which is?)
+
+    If Environ$("MGRLOG") = "TRUE" Then Print #11, Using "Team is using 60 is ####  90 is #####  520 is ####  581 is ####"; _
+        teamMgrProfileVal(D, 60), teamMgrProfileVal(D, 90), teamMgrProfileVal(D, 520), teamMgrProfileVal(D, 581)
 
     If teamMgrProfileVal(D, 60) = 999 Or INNING% > 7 Then
 
         'if no closers set up or no closing strategy defined, skip out
         If Not (INNING% >= 8 And teamMgrProfileVal(D, 520) <> 999 And teamMgrProfileVal(D, 90) <> 999 Or teamMgrProfileVal(D, 581) <> 999) Then
 
+            If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a PITCHING strategy !!"
+
             'if still needing middle relief
             If INNING% <= 7 Then
-                GoTo 8115
+                GoTo LMiddleRelievers
             End If
 
             ' we have defined a closing/setup possibility
@@ -12246,29 +12308,30 @@ Sub PITSTRAT (PPH, pz)
                 If I3 <= I2 Then
                     SN% = pIdx
 
-                    8111 SF% = 0
+                    saveSituation = 0
 
-                    If A1 < 1 Then Exit Sub
+                    If ourLead < 1 Then Exit Sub
 
-                    If A1 > 0 And A1 <= 2 Then
-                        SF% = 1
+                    If ourLead > 0 And ourLead <= 2 Then
+                        saveSituation = 1
                     End If
-                    If baseRunners = 0 And A1 <= 2 Then
-                        SF% = 1
+                    If baseRunners = 0 And ourLead <= 2 Then
+                        saveSituation = 1
                     End If
-                    If baseRunners > 0 And baseRunners < 4 And A1 <= 3 Then
-                        SF% = 1
+                    If baseRunners > 0 And baseRunners < 4 And ourLead <= 3 Then
+                        saveSituation = 1
                     End If
-                    If baseRunners > 3 And baseRunners < 7 And A1 <= 4 Then
-                        SF% = 1
+                    If baseRunners > 3 And baseRunners < 7 And ourLead <= 4 Then
+                        saveSituation = 1
                     End If
-                    If baseRunners = 7 And A1 <= 5 Then
-                        SF% = 1
+                    If baseRunners = 7 And ourLead <= 5 Then
+                        saveSituation = 1
                     End If
-                    If baseRunners = 0 And nbrOuts(0) = 0 And A1 <= 3 Then
-                        SF% = 1
+                    If baseRunners = 0 And nbrOuts(0) = 0 And ourLead <= 3 Then
+                        saveSituation = 1
                     End If
-                    If currLineupSlot(P) <= 7 Then
+
+                    If currLineupSlot(P) <= 7 Then  'I3 will determine which way the next 3 hitters bat (L/R) on average
                         For pIdx = 0 To 2:
                             I3 = I3 + batRating(P, lineupPlayer(P, currLineupSlot(P) + pIdx), SS_B_Bats)
                         Next
@@ -12283,7 +12346,7 @@ Sub PITSTRAT (PPH, pz)
                         For pIdx = 1 To 2:
                             I3 = I3 + batRating(P, lineupPlayer(P, pIdx), SS_B_Bats)
                         Next
-                        I3 = I3 + batRating(P, lineupPlayer(P, SS_B_HR), SS_B_Bats)
+                        I3 = I3 + batRating(P, lineupPlayer(P, 9), SS_B_Bats)
                     End If
 
                     If I3 = 0 Then
@@ -12293,25 +12356,25 @@ Sub PITSTRAT (PPH, pz)
                         'Why not just do a random # from 1 to 2???
                     End If
 
-                    If INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 0 And SF% = 1 And (SN% = 582 Or SN% = 587) Then 8114
-                    If INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 1 And SF% = 1 And (SN% = 582 Or SN% = 587) Then 8113
-                    If INNING% >= 9 And SF% = 1 And (SN% = 582 Or SN% = 587) Then 8113
+                    If INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 0 And saveSituation = 1 And (SN% = 582 Or SN% = 587) Then Goto LSetupMen
+                    If INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 1 And saveSituation = 1 And (SN% = 582 Or SN% = 587) Then Goto LClosers
+                    If INNING% >= 9 And saveSituation = 1 And (SN% = 582 Or SN% = 587) Then Goto LClosers
 
-                    If INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 0 And A1 > 0 And SN% = 583 Then 8114
-                    If INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 1 And A1 > 0 And SN% = 583 Then 8113
-                    If INNING% >= 9 And A1 > 0 And SN% = 583 Then 8113
+                    If INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 0 And ourLead > 0 And SN% = 583 Then Goto LSetupMen
+                    If INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 1 And ourLead > 0 And SN% = 583 Then Goto LClosers
+                    If INNING% >= 9 And ourLead > 0 And SN% = 583 Then Goto LClosers
 
-                    If INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 0 And A1 >= 0 And SN% = 584 Then 8114
-                    If INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 1 And A1 >= 0 And SN% = 584 Then 8113
-                    If INNING% >= 9 And A1 >= 0 And SN% = 584 Then 8113
+                    If INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 0 And ourLead >= 0 And SN% = 584 Then Goto LSetupMen
+                    If INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 1 And ourLead >= 0 And SN% = 584 Then Goto LClosers
+                    If INNING% >= 9 And ourLead >= 0 And SN% = 584 Then Goto LClosers
 
-                    If S8%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And S8%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 0 And A1 > 0 And SN% = 585 Then 8114
-                    If S8%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And S8%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 1 And A1 > 0 And SN% = 585 Then 8113
-                    If S8%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And S8%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% >= 9 And A1 > 0 And SN% = 585 Then 8113
+                    If stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 0 And ourLead > 0 And SN% = 585 Then Goto LSetupMen
+                    If stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 1 And ourLead > 0 And SN% = 585 Then Goto LClosers
+                    If stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% >= 9 And ourLead > 0 And SN% = 585 Then Goto LClosers
 
-                    If S8%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And S8%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 0 And A1 >= 0 And SN% = 586 Then 8114
-                    If S8%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And S8%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 1 And A1 >= 0 And SN% = 586 Then 8113
-                    If S8%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And S8%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% >= 9 And A1 >= 0 And SN% = 586 Then 8113
+                    If stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 0 And ourLead >= 0 And SN% = 586 Then Goto LSetupMen
+                    If stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 1 And ourLead >= 0 And SN% = 586 Then Goto LClosers
+                    If stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% >= 9 And ourLead >= 0 And SN% = 586 Then Goto LClosers
 
                     Exit For
 
@@ -12326,13 +12389,15 @@ Sub PITSTRAT (PPH, pz)
 
     'strategy identified, now
 
-    8114
+   LSetupMen:
     I2 = 0
     If I3 < 0 Then I1 = 81
     If I3 > 0 Then I1 = 84
     For pIdx = I1 To I1 + 2
-        If teamMgrProfileVal(D, pIdx) >= 0 And pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then
-            I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
+        If teamMgrProfileVal(D, pIdx) >= 0 Then     'if not already used
+            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'need to break into separate IF's, because QB64 does not short-circuit
+                I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
+            End If
         End If
     Next
 
@@ -12340,28 +12405,33 @@ Sub PITSTRAT (PPH, pz)
     I2 = 0
 
     For pIdx = I1 To I1 + 2
-        If teamMgrProfileVal(D, pIdx) >= 0 And pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then
-            I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
+        If teamMgrProfileVal(D, pIdx) >= 0 THen     'if not already used
+            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'need to break into separate IF's, because QB64 does not short-circuit
+                I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
+            End If
         End If
         If I3 <= I2 Then
             V0 = teamMgrProfileVal(D, pIdx)
             teamMgrProfileVal(D, pIdx) = -1
             pIdx = V0
-            Call NEWPITCHER(pIdx, PPH, pz)
-            SU(D, 0) = -1
+            Call NEWPITCHER(pIdx, pinchHitterFlag, newPitcherFlag)
+            setupUsed(D) = -1
+            If Environ$("MGRLOG") = "TRUE" Then Print #11, "Found SETUP MAN: "; pIdx
             Exit Sub
         End If
     Next
     'NO SETUP MAN FOUND
 
-    8113
+   LClosers:
     I2 = 0
     If I3 < 0 Then I1 = 521
     If I3 > 0 Then I1 = 524
 
     For pIdx = I1 To I1 + 2
-        If teamMgrProfileVal(D, pIdx) >= 0 And pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then
-            I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
+        If teamMgrProfileVal(D, pIdx) >= 0 Then     'if not already used
+            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'need to break into separate IF's, because QB64 does not short-circuit
+                I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
+            End If
         End If
     Next
 
@@ -12369,29 +12439,35 @@ Sub PITSTRAT (PPH, pz)
     I2 = 0
 
     For pIdx = I1 To I1 + 2
-        If teamMgrProfileVal(D, pIdx) >= 0 And pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then
-            I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
+        If teamMgrProfileVal(D, pIdx) >= 0 Then     'if not already used
+            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'need to break into separate IF's, because QB64 does not short-circuit
+                I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
+            End if
         End If
         If I3 <= I2 Then
             V0 = teamMgrProfileVal(D, pIdx)
             teamMgrProfileVal(D, pIdx) = -1
             pIdx = V0
-            Call NEWPITCHER(pIdx, PPH, pz)
-            SU(D, 1) = -1
+            Call NEWPITCHER(pIdx, pinchHitterFlag, newPitcherFlag)
+            closerUsed(D) = -1
+            If Environ$("MGRLOG") = "TRUE" Then Print #11, "Found CLOSER: "; pIdx
             Exit Sub
         End If
     Next
 
     'NO CLOSER FOUND
-    SU(D, 0) = -1
-    SU(D, 1) = -1
+    setupUsed(D)  = -1
+    closerUsed(D) = -1
+    If Environ$("MGRLOG") = "TRUE" Then Print #11, "Couldn't find SETUP MAN or CLOSER"
 
-    8115 '
+   LMiddleRelievers:
     I2 = 0
 
     For pIdx = 61 To 70
-        If teamMgrProfileVal(D, pIdx) >= 0 And pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then
-            I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
+        If teamMgrProfileVal(D, pIdx) >= 0 Then     'if not already used
+            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'need to break into separate IF's, because QB64 does not short-circuit
+                I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
+            End If
         End If
     Next
 
@@ -12399,14 +12475,16 @@ Sub PITSTRAT (PPH, pz)
     I2 = 0
 
     For pIdx = 61 To 70
-        If teamMgrProfileVal(D, pIdx) >= 0 And pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then
-            I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
+        If teamMgrProfileVal(D, pIdx) >= 0 Then     'if not already used
+            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'need to break into separate IF's, because QB64 does not short-circuit
+                I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
+            End If
         End If
         If I3 <= I2 Then
             V0 = teamMgrProfileVal(D, pIdx)
             teamMgrProfileVal(D, pIdx) = -1
             pIdx = V0
-            Call NEWPITCHER(pIdx, PPH, pz)
+            Call NEWPITCHER(pIdx, pinchHitterFlag, newPitcherFlag)
             Exit Sub
         End If
     Next
@@ -13094,12 +13172,12 @@ Sub RecordRun (sah%, i, D, errorOnPlay%, PQ, S2%, currFielder, INFPOS%)
     If gameScore(P, 0) - gameScore(D, 0) = 1 Then
         pitcherOfRecord(D) = b2Pitcher(i)
         pitcherOfRecord(P) = currPitcher(P)
-        S1%(1) = -1
-        S1%(0) = -1
+        relieverOnRecordForSave(1) = -1
+        relieverOnRecordForSave(0) = -1
     Else
-        If gameScore(P, 0) - gameScore(D, 0) = 0 And S1%(D) <> -1 Then
+        If gameScore(P, 0) - gameScore(D, 0) = 0 And relieverOnRecordForSave(D) <> -1 Then
             Call ADDPIT(D, currPitcher(D), LG_P_BSv)
-            S1%(D) = -1
+            relieverOnRecordForSave(D) = -1
         End If
     End If
 
@@ -13139,7 +13217,7 @@ End Sub
 'active batter
 Sub DISPBAVG (D)
 
-    If INNING% > 5 And S8%(D, 0) < gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And S8%(D, 1) < gamePitStats(D, currPitcher(D), 2) Then
+    If INNING% > 5 And stamina%(D, 0) < gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) < gamePitStats(D, currPitcher(D), 2) Then
         Locate 10, 17
         Color 30, 0: Print "-T-"
         Color 15, 0
@@ -13940,7 +14018,7 @@ Sub BASEONBALLS (S2%, D2, D, P)
             Call PBP(player$(0) + " is given a purpose pass...")
         End If
 
-        S8%(D, 0) = S8%(D, 0) + 1
+        stamina%(D, 0) = stamina%(D, 0) + 1
 
     Else
 
@@ -14084,12 +14162,12 @@ End Sub
 '          RELIEVERS Subroutine
 '----------------------------------------
 ' ...explanation...
-Sub RELIEVERS (PPH, pz)
+Sub RELIEVERS (pinchHitterFlag, newPitcherFlag)
 
-    Call PITSTRAT(PPH, pz)
+    Call PITSTRAT(pinchHitterFlag, newPitcherFlag)
 
-    If pz = 1 Then
-        pz = 0
+    If newPitcherFlag = 1 Then
+        newPitcherFlag = 0
     Else
         I2 = 0
         A1 = gameScore(D, 0) - gameScore(P, 0)
@@ -14125,7 +14203,7 @@ Sub RELIEVERS (PPH, pz)
 
                     If A2 > 0 Then
                         If I3 <= I2 + A2 Then
-                            Call NEWPITCHER(rIdx, PPH, pz)      ' middle relief
+                            Call NEWPITCHER(rIdx, pinchHitterFlag, newPitcherFlag)      ' middle relief
                             Exit Sub
                         Else
                             I2 = I2 + A2
@@ -14137,7 +14215,7 @@ Sub RELIEVERS (PPH, pz)
                     'INNING% > 7
                     If A1 < 0 And A2 > 0 Then
                         If I3 <= I2 + A2 Then
-                            Call NEWPITCHER(rIdx, PPH, pz)      ' setup
+                            Call NEWPITCHER(rIdx, pinchHitterFlag, newPitcherFlag)      ' setup
                             Exit Sub
                         Else
                             I2 = I2 + A2
@@ -14145,7 +14223,7 @@ Sub RELIEVERS (PPH, pz)
                     Else
                         If A1 >= 0 And I3 > I2 Then
                             If I3 <= I2 + pitchRating(D, rIdx, 3) Then
-                                Call NEWPITCHER(rIdx, PPH, pz)  ' closer
+                                Call NEWPITCHER(rIdx, pinchHitterFlag, newPitcherFlag)  ' closer
                                 Exit Sub
                             Else
                                 I2 = I2 + pitchRating(D, rIdx, 3)
@@ -14161,7 +14239,7 @@ Sub RELIEVERS (PPH, pz)
 
         For rIdx = 0 To 21
             If pitchRating(D, rIdx, SS_P_Avail) = 0 And pitchers$(D, rIdx) <> "XXX" Then
-                Call NEWPITCHER(rIdx, PPH, pz)                  ' anyone with a healthy arm
+                Call NEWPITCHER(rIdx, pinchHitterFlag, newPitcherFlag)                  ' anyone with a healthy arm
                 Exit For
             End If
         Next rIdx
@@ -14802,9 +14880,9 @@ End Sub
 'for Play-by-Play
 Sub TIRING (P9)
 
-    If S8%(P9, 0) <= gamePitStats(P9, currPitcher(P9), 4) + gamePitStats(P9, currPitcher(P9), 1) And S8%(P9, 1) <= gamePitStats(P9, currPitcher(P9), 2) Then
+    If stamina%(P9, 0) <= gamePitStats(P9, currPitcher(P9), 4) + gamePitStats(P9, currPitcher(P9), 1) And stamina%(P9, 1) <= gamePitStats(P9, currPitcher(P9), 2) Then
 
-        If S8%(P9, 1) > 0 And INNING% < 6 Or S8%(P9, 1) = 0 And gamePitStats(P9, currPitcher(P9), 4) + gamePitStats(P9, currPitcher(P9), 1) > 4 Then
+        If stamina%(P9, 1) > 0 And INNING% < 6 Or stamina%(P9, 1) = 0 And gamePitStats(P9, currPitcher(P9), 4) + gamePitStats(P9, currPitcher(P9), 1) > 4 Then
             If d100% <= 50 Then
                 Print pitchers$(P9, currPitcher(P9)); " just doesn't have it today";
             Else
@@ -14816,11 +14894,11 @@ Sub TIRING (P9)
 
     Else
 
-        If S8%(P9, 1) > 0 And (S8%(P9, 0) <= gamePitStats(P9, currPitcher(P9), 4) + gamePitStats(P9, currPitcher(P9), 1) Or S8%(P9, 1) <= gamePitStats(P9, currPitcher(P9), 2)) Or (gamePitStats(P9, currPitcher(P9), 4) + gamePitStats(P9, currPitcher(P9), 1) > 2 And gamePitStats(P9, currPitcher(P9), 0) >= 5) Then
+        If stamina%(P9, 1) > 0 And (stamina%(P9, 0) <= gamePitStats(P9, currPitcher(P9), 4) + gamePitStats(P9, currPitcher(P9), 1) Or stamina%(P9, 1) <= gamePitStats(P9, currPitcher(P9), 2)) Or (gamePitStats(P9, currPitcher(P9), 4) + gamePitStats(P9, currPitcher(P9), 1) > 2 And gamePitStats(P9, currPitcher(P9), 0) >= 5) Then
             Print pitchers$(P9, currPitcher(P9)); " is tiring!!";
         Else
 
-            If S8%(P9, 1) > 0 Or (gamePitStats(P9, currPitcher(P9), 4) + gamePitStats(P9, currPitcher(P9), 1) < 3 And gamePitStats(P9, currPitcher(P9), 2) = 0) Then
+            If stamina%(P9, 1) > 0 Or (gamePitStats(P9, currPitcher(P9), 4) + gamePitStats(P9, currPitcher(P9), 1) < 3 And gamePitStats(P9, currPitcher(P9), 2) = 0) Then
                 Print pitchers$(P9, currPitcher(P9)); " seems to be OK!!";
             End If
 
@@ -14873,14 +14951,14 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
 
     If baseNbr! <> 0 Then
         'This happens very rarely
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE already have baseNbr = "; baseNbr!
+        If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE already have baseNbr = "; baseNbr!
 
     Else
 
         baseNbr! = 0
         Call Rolld100(H6%)
 
-        If Environ$("PBPLOG") = "TRUE" Then
+        If Environ$("RUNLOG") = "TRUE" Then
             Print #11, "TRYFOREXTRABASE starting at baseNbr = 0, H6% = "; H6%; ", S2Event = "; S2%
             For bm1 = 1 To 3
                 If b2Base(bm1) > 0 Then Print #11, "  base:"; bm1; " runnerRating:"; batRating(P, lineupPlayer(P, b2Base(bm1)), SS_B_Run);
@@ -14890,19 +14968,19 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
 
         'Determine which base we're stealing
         If S2% = EVENT_2B And b2Base(2) > 0 And H6% < 6 And b2Base(3) = 0 And batRating(P, lineupPlayer(P, b2Base(2)), SS_B_3B) > 0 Then
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE baseNbr 3A"
+        If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE stretching a Double to a Triple..."
             baseNbr! = 3
         End If
         If S2% = EVENT_3B And b2Base(3) > 0 And H6% <= 2 And batRating(P, lineupPlayer(P, b2Base(3)), SS_B_HR) > 0 Then
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE baseNbr 4A"
+        If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE stretching a Triple to an Inside-The-Park HR..."
             baseNbr! = 4
         End If
         If S2% = EVENT_1B And b2Base(3) > 0 And P2 = OFF_HIT_N_RUN And H6% >= 6 And H6% <= batRating(P, lineupPlayer(P, b2Base(3)), SS_B_Run) Then
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE baseNbr 4B"
+        If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE trying to score from 3rd on a Hit & Run Single..."
             baseNbr! = 4
         End If
         If S2% = EVENT_1B And b2Base(3) > 0 And runnerOn2nd = b2Base(3) And P2 <> OFF_HIT_N_RUN And H6% <= batRating(P, lineupPlayer(P, b2Base(3)), SS_B_Run) * 12 Then
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE baseNbr 4C"
+        If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE trying to score from 3rd on a Single..."
             baseNbr! = 4
         End If
 
@@ -14912,11 +14990,11 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
             runRating = runRating + batRating(P, lineupPlayer(P, b2Base(2)), SS_B_Run)
         End If
         If S2% = EVENT_1B And b2Base(2) > 0 And P2 <> OFF_HIT_N_RUN And H6% <= runRating And b2Base(3) = 0 And baseNbr! = 0 Then
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE baseNbr 3B"
+        If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE trying to advance to 3rd on a Single..."
             baseNbr! = 3
         End If
         If S2% = EVENT_1B And b2Base(1) > 0 And b2Base(2) = 0 And baseNbr! = 0 And H6% <= batRating(P, lineupPlayer(P, b2Base(1)), SS_B_Run) And batRating(P, lineupPlayer(P, b2Base(1)), SS_B_2B) > 0 Then
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE baseNbr 2"
+        If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE stretching a Single to a Double..."
             baseNbr! = 2
         End If
 
@@ -14941,6 +15019,7 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
         If (playerMode = 2 Or playerMode = 1 And P = compTeam) Then
             If A1 > -2 And A1 < 2 And S2% <> EVENT_FLY_SHALLOW Then
                 I$ = "Y"
+                If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE Green light! -- game margin is within 1 run and event is: "; S2%
             Else
                 If A1 < 0 And (INNING% >= 7 Or S2% = EVENT_FLY_SHALLOW) Then
                     I$ = "N"
@@ -14949,6 +15028,7 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
 
             If S2% = EVENT_2B And nbrOuts(0) = 2 And baseNbr! = 3 Then
                 I$ = "N"
+                If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE not going to try advancing to 3rd with 2 outs..."
             End If
         End If
 
@@ -14981,6 +15061,9 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
 
                 If (playerMode = 2 Or playerMode = 1 And D = compTeam) Then
                     If teamMgrProfileVal(D, 766) = 999 And baseNbr! = 4 Then
+
+                        If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a THROWING HOME strategy !!"
+
                         If INNING% >= teamMgrProfileVal(D, 767) And teamMgrProfileVal(D, 767) <> 0 And teamMgrProfileVal(D, 768) <= gameScore(D, 0) - gameScore(P, 0) Then
                             I$ = "N"
                         End If
@@ -15036,7 +15119,7 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
                         I3 = 500 + runRating - armRating
                     End If
 
-                    If I4 > I3 Then
+                    If I4 > I3 Then     ' outcome = OUT!
 
                         A5%(baseNbr! - 1) = 11
                         nbrOuts(0) = nbrOuts(0) + 1
@@ -15147,7 +15230,7 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
 
                 End If
 
-                A5%(baseNbr! - 1) = 1
+                A5%(baseNbr! - 1) = 1   ' outcome = SAFE!
 
                 If noThrow <> 1 Then
 
@@ -15635,7 +15718,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
 
                 Call EJECTINC(ejectCnt, X$)
                 Call DELAY
-                Call INJPIT(P, D, IP%, PPH)
+                Call INJPIT(P, D, IP%, pinchHitterFlag)
 
             Case 4
                 If fldPos(P, currLineupSlot(P)) <> 1 Then
@@ -15712,7 +15795,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 po% = 3
 
                 Call EJECTIONINJURY(playerMode, P, compTeam, D, po%, P9, W5, W6)
-                Call INJPIT(P, D, IP%, PPH)
+                Call INJPIT(P, D, IP%, pinchHitterFlag)
 
             Case 6 To 7
 
@@ -15743,7 +15826,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 ejections$(ejectCnt) = pitchers$(D, currPitcher(D))
 
                 Call DELAY
-                Call INJPIT(P, D, IP%, PPH)
+                Call INJPIT(P, D, IP%, pinchHitterFlag)
 
             Case 9
 
@@ -15770,7 +15853,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                         Call PBP(pitchers$(D, currPitcher(D)) + " has been ejected")
                         X$ = pitchers$(D, currPitcher(D))
                         Call EJECTINC(ejectCnt, X$)
-                        Call INJPIT(P, D, IP%, PPH)
+                        Call INJPIT(P, D, IP%, pinchHitterFlag)
 
                     Case 2:
                         Call PBP(player$(0) + " has been ejected")
@@ -15784,7 +15867,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                         Call EJECTINC(ejectCnt, X$)
                         X$ = pitchers$(D, currPitcher(D))
                         Call EJECTINC(ejectCnt, X$)
-                        Call INJPIT(P, D, IP%, PPH)
+                        Call INJPIT(P, D, IP%, pinchHitterFlag)
                         Call PLYRHRT(P, P9, W5, W6, nbrBalls, nbrStrikes, D, MO)
 
                 End Select
@@ -15815,7 +15898,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                         Call PBP("Their arms have stiffened up")
                         Call DELAY
                         For idx = 0 To 1:
-                            S8%(idx, 0) = S8%(idx, 0) - 2
+                            stamina%(idx, 0) = stamina%(idx, 0) - 2
                         Next
                     End If
 
@@ -16279,7 +16362,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                     Call WINDEX
                     Call PBP("He reaches on a single")
                     Call PBP(pitchers$(D, currPitcher(D)) + " is down and in pain!")
-                    Call INJPIT(P, D, IP%, PPH)
+                    Call INJPIT(P, D, IP%, pinchHitterFlag)
                     H6% = 5
                 Else
                     'i = 2 to 5
@@ -16316,7 +16399,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                 Call PBP(pitchers$(D, currPitcher(D)) + " is motioning for " + gameManagers$(D) + " to come out")
                 Call PBP("It appears he has a blister")
                 Call PBP("He will have to leave the game")
-                Call INJPIT(P, D, IP%, PPH)
+                Call INJPIT(P, D, IP%, pinchHitterFlag)
 
                 H6% = 1
 
@@ -17429,11 +17512,11 @@ Sub POSTGAME ()
         If gameScore(1, 0) - gameScore(0, 0) > 0 Then
             I3 = 1
         End If
-        If pitcherOfRecord(I3) <> currPitcher(I3) And S1%(I3) = -1 And gamePitStats(I3, currPitcher(I3), 0) >= 9 And gamePitStats(I3, currPitcher(I3), 0) <= 12 And gamePitcher(I3) > 0 And gamePitStats(I3, currPitcher(I3), 3) < 3 Then
-            S1%(I3) = currPitcher(I3)
+        If pitcherOfRecord(I3) <> currPitcher(I3) And relieverOnRecordForSave(I3) = -1 And gamePitStats(I3, currPitcher(I3), 0) >= 9 And gamePitStats(I3, currPitcher(I3), 0) <= 12 And gamePitcher(I3) > 0 And gamePitStats(I3, currPitcher(I3), 3) < 3 Then
+            relieverOnRecordForSave(I3) = currPitcher(I3)
         End If
-        If pitcherOfRecord(I3) = S1%(I3) Then
-            S1%(I3) = -1
+        If pitcherOfRecord(I3) = relieverOnRecordForSave(I3) Then
+            relieverOnRecordForSave(I3) = -1
         End If
 
         Color 15, 0
@@ -17921,9 +18004,9 @@ Sub COMPILESTATFILES (teamIdx)
         statP0(pitcherOfRecord(teamIdx), 7) = statP0(pitcherOfRecord(teamIdx), 7) + 1
     End If
 
-    If gameScore(teamIdx, 0) - gameScore(1 - teamIdx, 0) > 0 And S1%(teamIdx) >= 0 Then
-        'Team Win + S1% ??
-        statP0(S1%(teamIdx), 12) = statP0(S1%(teamIdx), 12) + 1
+    If gameScore(teamIdx, 0) - gameScore(1 - teamIdx, 0) > 0 And relieverOnRecordForSave(teamIdx) >= 0 Then
+        'Team Win + relieverOnRecordForSave ??
+        statP0(relieverOnRecordForSave(teamIdx), 12) = statP0(relieverOnRecordForSave(teamIdx), 12) + 1
         statT1!(12) = statT1!(12) + 1
     End If
 
@@ -18434,7 +18517,7 @@ Sub BOX2FILE (printChoice, boxName$)
                         gameW$ = pitchers$(I, I2)
                     End If
 
-                    If S1%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then Print #2, "(S,"; Right$(Str$(leagPitStats(I, I2, 12) + 1), (Len(Str$(leagPitStats(I, I2, 12) + 1)) - 1)); ")";
+                    If relieverOnRecordForSave(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then Print #2, "(S,"; Right$(Str$(leagPitStats(I, I2, 12) + 1), (Len(Str$(leagPitStats(I, I2, 12) + 1)) - 1)); ")";
 
                     If pitcherOfRecord(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) < 0 Then
                         Print #2, "(L,"; Right$(Str$(leagPitStats(I, I2, 6) + 0), (Len(Str$(leagPitStats(I, I2, 6) + 0)) - 1)); "-"; Right$(Str$(leagPitStats(I, I2, 7) + 1), (Len(Str$(leagPitStats(I, I2, 7) + 1)) - 1)); ")";
@@ -18482,7 +18565,7 @@ Sub BOX2FILE (printChoice, boxName$)
                     Else
                         Print #2, Using "## "; leagPitStats(I, I2, 7);
                     End If
-                    If S1%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then
+                    If relieverOnRecordForSave(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then
                         Print #2, Using "## "; leagPitStats(I, I2, 12) + 1;
                     Else
                         Print #2, Using "## "; leagPitStats(I, I2, 12);
@@ -19058,7 +19141,7 @@ Sub STATS2SCREEN
                         gameW$ = pitchers$(I, I2)
                     End If
 
-                    If S1%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then
+                    If relieverOnRecordForSave(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then
                         Print "(S,"; Right$(Str$(leagPitStats(I, I2, 12) + 1), (Len(Str$(leagPitStats(I, I2, 12) + 1)) - 1)); ")";
                     End If
 
@@ -19110,7 +19193,7 @@ Sub STATS2SCREEN
                     Else
                         Print Using "## "; leagPitStats(I, I2, 7);
                     End If
-                    If S1%(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then
+                    If relieverOnRecordForSave(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then
                         Print Using "## "; leagPitStats(I, I2, 12) + 1;
                     Else
                         Print Using "## "; leagPitStats(I, I2, 12);
@@ -20037,7 +20120,7 @@ Sub ReadGameExtraData (teamYear$, teamIdx, gameIdx)
 
 End Sub
 
-Sub DumpRunners(baseRunners, myText$)
+Sub DumpRunners(myText$)
     Print #11, "--- "; myText$; " ---"
     For bm1 = 0 to 3
        Print #11, "A5%:"; A5%(bm1) ; " -- ";
@@ -20069,8 +20152,8 @@ Sub DumpIt(baseRunners, P2, D2)
 
     Print #11, "Batter: "; player$(0); ", 1st base: "; player$(1); ", 2nd base: "; player$(2); ", 3rd base: "; player$(3); ", fielder w/ball: "; player$(4)
 
-    If P2 <> 1 Then Print #11, " +++ Off strategy: "; P2;
-    If D2 <> 1 Then Print #11, " +++ Def strategy: "; D2
+    If P2 > 1 Then Print #11, " +++ Off strategy: "; P2;
+    If D2 > 1 Then Print #11, " +++ Def strategy: "; D2
     Print #11, ""
 
     For bm1 = 0 to 3
