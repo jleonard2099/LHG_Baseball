@@ -5079,6 +5079,7 @@ Sub SOURCE ()
                                     Call PBP(Y$ + " " + X$)
 
                                     Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+
                                     If errorOnPlay% = 1 Then Goto LCheckForOptionsOrQuit
                                     GoTo 14025
 
@@ -5092,6 +5093,7 @@ Sub SOURCE ()
                                 Call LONGFLY(D, currFielder)
 
                                 Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+
                                 If errorOnPlay% = 1 Then Goto LCheckForOptionsOrQuit
 
                                 Call CREDITREGPO(currFielder, D)
@@ -5105,9 +5107,7 @@ Sub SOURCE ()
                                 If nbrOuts(0) = 3 Then Goto LCheckForOptionsOrQuit
 
                                 If b2Base(3) <> 0 Then
-
                                     A5%(3) = 1  'sac fly
-
                                     Call ADDPIT(D, currPitcher(D), 16)
 
                                     If fldPos(P, currLineupSlot(P)) = 1 Then
@@ -5196,7 +5196,8 @@ Sub SOURCE ()
                                 Call GetPBPString(range, min, Y$, D)
                                 Call PBP(Y$ + " " + X$)
 
-                                Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+                                Call FLDERR(errorOnPlay%, currFielder, D, I3, SB%, S2%, P)
+
                                 If errorOnPlay% = 1 Then Goto LCheckForOptionsOrQuit
 
                                 '--- where does this end?
@@ -5235,7 +5236,6 @@ Sub SOURCE ()
                                     baseNbr! = 4
                                     If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try to score..."
                                     If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
-
                                 End If
 
                                 If I9 = 1 Then
@@ -5330,6 +5330,7 @@ Sub SOURCE ()
                         End If
 
                         Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+
                         If errorOnPlay% = 1 Then Goto LCheckForOptionsOrQuit
 
                         nbrOuts(0) = nbrOuts(0) + 1
@@ -5434,6 +5435,7 @@ Sub SOURCE ()
             End If
 
             Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+
             If errorOnPlay% = 1 Then Goto LCheckForOptionsOrQuit
 
             ' *** 2 outs, bases empty, runner 2nd, runner 3rd, or 2nd&3rd ***
@@ -5480,8 +5482,7 @@ Sub SOURCE ()
                 GoTo LProcessOutAndDP
             End If
 
-            If baseRunners = 5 And gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 7 And nbrOuts(0) = 0 _
-                And INFPOS% > INF_BACK And (currFielder = 5 Or currFielder = 3) Then GoTo LGrounderToPitcher
+            If baseRunners = 5 And gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 7 And nbrOuts(0) = 0 And INFPOS% > INF_BACK And (currFielder = 5 Or currFielder = 3) Then GoTo LGrounderToPitcher
 
             If baseRunners = 7 And INFPOS% > INF_BACK And (currFielder = 5 Or currFielder = 3) Then
                 Call CREDITASSIST(currFielder, D)
@@ -5755,6 +5756,7 @@ Sub SOURCE ()
             Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
 
             errorOnPlay% = 0
+
             Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
             If errorOnPlay% = 0 Then
                 If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try to advance on Double --"
@@ -5930,7 +5932,6 @@ Sub SOURCE ()
         Call Rolld100(H6%)
         S2% = EVENT_1B
 
-        ' If fldPos(P, currLineupSlot(P)) = 1 Or H7% <= SN Then
         If fldPos(P, currLineupSlot(P)) <> 1 And H6% <= game_batRating(P, GM_BAvg, currLineupSlot(P)) And P2 <> OFF_HIT_N_RUN Then
 
             13065 '/ *** single ***
@@ -6331,6 +6332,7 @@ Sub SOURCE ()
     Else
 
         Call Rolld100(RN)
+
         If (RN <= 90 And P2 <> OFF_HIT_N_RUN Or baseRunners = 0) Or (RN <= 10 And P2 = OFF_HIT_N_RUN) Then
 
             S2% = 14
@@ -9707,6 +9709,21 @@ Sub ADV2BASES (p_base)
         Print #11,
     End If
 
+  For I4 = 0 To 2
+        b2Base   (p_base + 2) = b2Base(p_base)
+        b2Pitcher(p_base + 2) = b2Pitcher(p_base)
+        b2Mystery(p_base + 2) = b2Mystery(p_base)
+
+        b2Mystery(p_base + 1) = 0
+
+        b2Base   (p_base) = 0
+        b2Pitcher(p_base) = 0
+        b2Mystery(p_base) = 0
+    Next I4
+
+    player$(p_base + 2) = player$(p_base)
+    player$(p_base) = ""
+
 End Sub
 
 '----------------------------------------
@@ -11744,8 +11761,8 @@ End Sub
 '       UpdateSchedule Subroutine
 '----------------------------------------
 'This subroutine updates the schedule
-'file for a completed game. It will first 
-'update any relevant ticker scores, then 
+'file for a completed game. It will first
+'update any relevant ticker scores, then
 'update the scores for the current game in
 'the corresponding schedule file.
 Sub UpdateSchedule
