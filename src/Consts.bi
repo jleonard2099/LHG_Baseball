@@ -126,7 +126,6 @@ Const LG_B_PO  = 16
 Const LG_B_A   = 17
 Const LG_B_Sac = 18
 Const LG_B_SF  = 19
-
 Const LG_BF_SB = 20
 Const LG_BF_CS = 21
 

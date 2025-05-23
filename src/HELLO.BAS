@@ -17,6 +17,7 @@ Const TEAMS_PER_LEAGUE = 40
 Const SCHEDULE_SIZE_BYTES = 52
 Const LAST_COL = 80
 Const LAST_ROW = 30
+Const SCHED_ENTRIES_PER_SCREEN = 25
 
 DefInt A-Z
 
@@ -267,6 +268,10 @@ _Title "Full Count Baseball - Menu"
 $ExeIcon:'./lhg_fcbase.ico'
 _Icon
 _AllowFullScreen
+
+If _FileExists("errlog") Then
+    Kill "errlog"
+End If
 
 opSysType$ = Left$(_OS$, InStr(2, _OS$, "[") - 1)
 
@@ -978,6 +983,7 @@ Sub LOADER
 
         'Open "pbplog" + Str$(currGame) For Append As #11
         'Open "pbplog" For Append As #11
+
         If Not _FileExists(scheduleFile$) Then
 
             'Notify user that game won't execute
@@ -993,6 +999,7 @@ Sub LOADER
 
         Else
 
+            'Read in schedule options
             Open scheduleFile$ For Random As #6 Len = SCHEDULE_SIZE_BYTES
 
             For X = 0 To 18
@@ -5026,6 +5033,7 @@ Sub SOURCE ()
                                     Call PBP(Y$ + " " + X$)
 
                                     Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+                                    
                                     If errorOnPlay% = 1 Then Goto LCheckForOptionsOrQuit
                                     GoTo 14025
 
@@ -5039,6 +5047,7 @@ Sub SOURCE ()
                                 Call LONGFLY(D, currFielder)
 
                                 Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+
                                 If errorOnPlay% = 1 Then Goto LCheckForOptionsOrQuit
 
                                 Call CREDITREGPO(currFielder, D)
@@ -5052,9 +5061,7 @@ Sub SOURCE ()
                                 If nbrOuts(0) = 3 Then Goto LCheckForOptionsOrQuit
 
                                 If b2Base(3) <> 0 Then
-
                                     A5%(3) = 1  'sac fly
-
                                     Call ADDPIT(D, currPitcher(D), 16)
 
                                     If fldPos(P, currLineupSlot(P)) = 1 Then
@@ -5143,7 +5150,8 @@ Sub SOURCE ()
                                 Call GetPBPString(range, min, Y$, D)
                                 Call PBP(Y$ + " " + X$)
 
-                                Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+                                Call FLDERR(errorOnPlay%, currFielder, D, I3, SB%, S2%, P)
+
                                 If errorOnPlay% = 1 Then Goto LCheckForOptionsOrQuit
 
                                 '--- where does this end?
@@ -5182,7 +5190,6 @@ Sub SOURCE ()
                                     baseNbr! = 4
                                     If Environ$("PBPLOG") = "TRUE" Then Print #11, "-- gonna try to score..."
                                     If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
-
                                 End If
 
                                 If I9 = 1 Then
@@ -5277,6 +5284,7 @@ Sub SOURCE ()
                         End If
 
                         Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+    
                         If errorOnPlay% = 1 Then Goto LCheckForOptionsOrQuit
 
                         nbrOuts(0) = nbrOuts(0) + 1
@@ -5381,6 +5389,7 @@ Sub SOURCE ()
             End If
 
             Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+      
             If errorOnPlay% = 1 Then Goto LCheckForOptionsOrQuit
 
             ' *** 2 outs, bases empty, runner 2nd, runner 3rd, or 2nd&3rd ***
@@ -5427,8 +5436,7 @@ Sub SOURCE ()
                 GoTo LProcessOutAndDP
             End If
 
-            If baseRunners = 5 And gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 7 And nbrOuts(0) = 0 _
-                And INFPOS% > INF_BACK And (currFielder = 5 Or currFielder = 3) Then GoTo LGrounderToPitcher
+            If baseRunners = 5 And gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 7 And nbrOuts(0) = 0 And INFPOS% > INF_BACK And (currFielder = 5 Or currFielder = 3) Then GoTo LGrounderToPitcher
 
             If baseRunners = 7 And INFPOS% > INF_BACK And (currFielder = 5 Or currFielder = 3) Then
                 Call CREDITASSIST(currFielder, D)
@@ -5702,6 +5710,7 @@ Sub SOURCE ()
             Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
 
             errorOnPlay% = 0
+                                      
             Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
             If errorOnPlay% = 0 Then 
                 If Environ$("PBPLOG") = "TRUE" Then Print #11, "-- gonna try to advance on Double --"
@@ -5877,7 +5886,6 @@ Sub SOURCE ()
         Call Rolld100(H6%)
         S2% = EVENT_1B
 
-        ' If fldPos(P, currLineupSlot(P)) = 1 Or H7% <= SN Then
         If fldPos(P, currLineupSlot(P)) <> 1 And H6% <= game_batRating(P, GM_BAvg, currLineupSlot(P)) And P2 <> OFF_HIT_N_RUN Then
 
             13065 '/ *** single ***
@@ -6278,6 +6286,7 @@ Sub SOURCE ()
     Else
 
         Call Rolld100(RN)
+
         If (RN <= 90 And P2 <> OFF_HIT_N_RUN Or baseRunners = 0) Or (RN <= 10 And P2 = OFF_HIT_N_RUN) Then
 
             S2% = 14
@@ -9635,6 +9644,21 @@ Sub ADV2BASES (p_base)
         Print #11,
     End If
 
+  For I4 = 0 To 2
+        b2Base   (p_base + 2) = b2Base(p_base)
+        b2Pitcher(p_base + 2) = b2Pitcher(p_base)
+        b2Mystery(p_base + 2) = b2Mystery(p_base)
+
+        b2Mystery(p_base + 1) = 0
+
+        b2Base   (p_base) = 0
+        b2Pitcher(p_base) = 0
+        b2Mystery(p_base) = 0
+    Next I4
+
+    player$(p_base + 2) = player$(p_base)
+    player$(p_base) = ""
+
 End Sub
 
 '----------------------------------------
@@ -11666,6 +11690,50 @@ Sub WINDEX ()
     End If
 
 End Sub
+
+
+'----------------------------------------
+'       UpdateSchedule Subroutine
+'----------------------------------------
+'This subroutine updates the schedule
+'file for a completed game. It will first 
+'update any relevant ticker scores, then 
+'update the scores for the current game in
+'the corresponding schedule file.
+Sub UpdateSchedule
+
+    Shared scheduleFile$
+
+	Open scheduleFile$ For Random As #1 Len = SCHEDULE_SIZE_BYTES
+
+	For X = 0 To 18
+		Field #1, X * 2 As X$, 2 As player$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
+	Next
+
+	Field #1, 38 As X$, 2 As player$(22), 2 As player$(23), 5 As player$(20), 5 As player$(21)
+
+	schedOptions(13) = 1
+
+	For X = 0 To 18:
+		LSet player$(X + 1) = MKI$(schedOptions(X))
+	Next
+
+	For X = 0 To 1:
+		LSet player$(20 + X) = diskIDs$(X)
+	Next
+
+	LSet player$(22) = MKI$(gameScore(0, 0))
+	LSet player$(23) = MKI$(gameScore(1, 0))
+
+	Put #1, schedGame(0) + schedGame(2)
+
+	Close #1
+
+	schedGame(2) = schedGame(2) + 1
+	autoPlay = 1
+
+End Sub
+
 
 '----------------------------------------
 '        NEWPITCHER Subroutine
@@ -14241,36 +14309,172 @@ End Sub
 '----------------------------------------
 'This routine checks to see if both teams
 'have conflicting primary colors.
-'If so, it will substitute the secondary
-'color with white/grey and reverse them.
+'If so, it will substitute the colors
+'for the home team by either reversing
+'them (with a slight color change) or
+'otherwise using White/Grey/Black as
+'an alternate color.
 'In essence, it's the digital equivalent
 'of assigning an alternate jersey color.
 Sub ColorChange ()
 
-    If teamRat_GAME(1, 11) = 15 And teamRat_GAME(1, 12) = 4 Then
-        teamRat_GAME(1, 11) = 4
-        teamRat_GAME(1, 12) = 7
-    End If
+    ' ** Home Team Colors **
+    fg_color = teamRat_GAME(1, 11)
+    bg_color = teamRat_GAME(1, 12)
 
-    If teamRat_GAME(1, 11) = 15 And teamRat_GAME(1, 12) = 1 Then
-        teamRat_GAME(1, 11) = 1
-        teamRat_GAME(1, 12) = 7
-    End If
-
-    If teamRat_GAME(1, 11) = 0 And teamRat_GAME(1, 12) = 4 Then
-        teamRat_GAME(1, 11) = 12
+    '-- Black Foreground --
+    '-- Blue / Green / Cyan / Red / Magenta Background --
+    If fg_color = 0 And ((bg_color >= 1 And bg_color <= 5) Or (bg_color >= 9 And bg_color <= 13)) Then
+        'Change foreground to alternate version of background color
+        'Change background to Black
+        If bg_color < 9 Then
+            teamRat_GAME(1, 11) = bg_color + 8
+        Else
+            teamRat_GAME(1, 11) = bg_color - 8
+        End If
         teamRat_GAME(1, 12) = 0
     End If
 
-    If teamRat_GAME(1, 11) = 1 And teamRat_GAME(1, 12) = 7 Then
-        teamRat_GAME(1, 11) = 15
-        teamRat_GAME(1, 12) = 1
+
+    '-- Black Foreground --
+    '-- Orange / Yellow Background --
+    If (fg_color = 0) And (bg_color = 14 Or bg_color = 6) Then
+        'Change foreground to background color
+        'Change background to foreground color
+        teamRat_GAME(1, 0) = bg_color
+        teamRat_GAME(1, 1) = fg_color
     End If
 
-    If teamRat_GAME(1, 11) = 4 And teamRat_GAME(1, 12) = 7 Then
-        teamRat_GAME(1, 11) = 15
-        teamRat_GAME(1, 12) = 4
+
+    '-- Grey / White Foreground --
+    '-- Blue / Green / Cyan / Red / Magenta Background --
+    If (fg_color = 7 Or fg_color = 15) And ((bg_color >= 1 And bg_color <= 5) Or (bg_color >= 9 And bg_color <= 13)) Then
+        'Change foreground to alternate version of background color
+        'Change background to Grey | White
+        If bg_color < 9 Then
+            teamRat_GAME(1, 11) = bg_color + 8
+        Else
+            teamRat_GAME(1, 11) = bg_color - 8
+        End If
+        If fg_color = 7 Then
+            teamRat_GAME(1, 12) = 15
+        Else
+            teamRat_GAME(1, 12) = 7
+        End If
     End If
+
+
+    '-- Grey / White Foreground --
+    '-- Black Background --
+    If (fg_color = 7 Or fg_color = 15) And (bg_color = 0) Then
+        'Change foreground to Black
+        'Change background to Grey | White
+        teamRat_GAME(1, 11) = 0
+        If fg_color = 7 Then
+            teamRat_GAME(1, 12) = 15
+        Else
+            teamRat_GAME(1, 12) = 7
+        End If
+    End If
+
+
+    '-- Blue / Green / Cyan / Red / Magenta Foreground --
+    '-- Black Background --
+    If ((fg_color >= 1 And fg_color <= 5) Or (fg_color >= 9 And fg_color <= 13)) And bg_color = 0 Then
+        'Change foreground to Black
+        'Change background to alternate version of foreground color
+        teamRat_GAME(1, 11) = 0
+        If fg_color < 9 Then
+            teamRat_GAME(1, 12) = fg_color + 8
+        Else
+            teamRat_GAME(1, 12) = fg_color - 8
+        End If
+    End If
+
+
+    '-- Blue / Green / Cyan / Red / Magenta Foreground --
+    '-- White | Grey Background --
+    If ((fg_color >= 1 And fg_color <= 5) Or (fg_color >= 9 And fg_color <= 13)) And (bg_color = 7 Or bg_color = 15) Then
+        'Change foreground to Grey | White
+        'Change background to foreground color
+        If bg_color = 7 Then
+            teamRat_GAME(1, 11) = 15
+        Else
+            teamRat_GAME(1, 11) = 7
+        End If
+
+        teamRat_GAME(1, 12) = fg_color
+    End If
+
+
+    '-- Blue / Green / Cyan / Red / Magenta Foreground --
+    '-- Blue / Green / Cyan / Red / Magenta Background --
+    If ((fg_color >= 1 And fg_color <= 5) Or (fg_color >= 9 And fg_color <= 13)) And ((bg_color >= 1 And bg_color <= 5) Or (bg_color >= 9 And bg_color <= 13)) Then
+        'Change foreground to alternate version of background color
+        'Change background to alternate version of foreground color
+        If bg_color < 9 Then
+            teamRat_GAME(1, 11) = bg_color + 8
+        Else
+            teamRat_GAME(1, 11) = bg_color - 8
+        End If
+        If fg_color < 9 Then
+            teamRat_GAME(1, 12) = fg_color + 8
+        Else
+            teamRat_GAME(1, 12) = fg_color - 8
+        End If
+
+    End If
+
+
+    '-- Orange / Yellow Foreground
+    '-- Black / Blue / Green / Cyan / Red / Magenta Background --
+    If (fg_color = 14 Or fg_color = 6) And ((bg_color >= 0 And bg_color <= 5) Or (bg_color >= 9 And bg_color <= 13)) Then
+        'Change foreground to background color
+        'Change background to foreground color
+        teamRat_GAME(1, 11) = bg_color
+        teamRat_GAME(1, 12) = fg_color
+    End If
+
+
+    '-- Orange / Yellow Foreground
+    '-- Grey / White Background --
+    If (fg_color = 14 Or fg_color = 6) And (bg_color = 7 Or bg_color = 15) Then
+        'Change foregroundto background color
+        'Change background to Grey | White
+        teamRat_GAME(1, 11) = bg_color
+        If fg_color = 7 Then
+            teamRat_GAME(1, 12) = 15
+        Else
+            teamRat_GAME(1, 12) = 7
+        End If
+    End If
+
+
+    '-- Blue / Green / Cyan / Red / Magenta Foreground --
+    '-- Orange / Yellow Background
+    If (((fg_color >= 1 And fg_color <= 5) Or (fg_color >= 9 And fg_color <= 13)) And (bg_color = 14 Or bg_color = 6)) Then
+        'Change foregroundto background color
+        'Change background to foreground color
+        teamRat_GAME(1, 11) = bg_color
+        teamRat_GAME(1, 12) = fg_color
+    End If
+
+
+    '-- Grey / White Foreground --
+    '-- Orange / Yellow Background
+    If (fg_color = 7 Or fg_color = 15) And (bg_color = 14 Or bg_color = 6) Then
+        'Change foregroundto background color
+        'Change background to Grey | White
+        teamRat_GAME(1, 11) = bg_color
+
+        'teamRat_GAME(1, 12) = 0
+        If fg_color = 7 Then
+            teamRat_GAME(1, 12) = 15
+        Else
+            teamRat_GAME(1, 12) = 7
+        End If
+    End If
+
 
 End Sub
 
@@ -14880,19 +15084,19 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
 
         'Determine which base we're stealing
         If S2% = EVENT_2B And b2Base(2) > 0 And H6% < 6 And b2Base(3) = 0 And batRating(P, lineupPlayer(P, b2Base(2)), SS_B_3B) > 0 Then
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE baseNbr 3A"
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE baseNbr 3A"
             baseNbr! = 3
         End If
         If S2% = EVENT_3B And b2Base(3) > 0 And H6% <= 2 And batRating(P, lineupPlayer(P, b2Base(3)), SS_B_HR) > 0 Then
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE baseNbr 4A"
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE baseNbr 4A"
             baseNbr! = 4
         End If
         If S2% = EVENT_1B And b2Base(3) > 0 And P2 = OFF_HIT_N_RUN And H6% >= 6 And H6% <= batRating(P, lineupPlayer(P, b2Base(3)), SS_B_Run) Then
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE baseNbr 4B"
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE baseNbr 4B"
             baseNbr! = 4
         End If
         If S2% = EVENT_1B And b2Base(3) > 0 And runnerOn2nd = b2Base(3) And P2 <> OFF_HIT_N_RUN And H6% <= batRating(P, lineupPlayer(P, b2Base(3)), SS_B_Run) * 12 Then
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE baseNbr 4C"
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE baseNbr 4C"
             baseNbr! = 4
         End If
 
@@ -14902,11 +15106,11 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
             runRating = runRating + batRating(P, lineupPlayer(P, b2Base(2)), SS_B_Run)
         End If
         If S2% = EVENT_1B And b2Base(2) > 0 And P2 <> OFF_HIT_N_RUN And H6% <= runRating And b2Base(3) = 0 And baseNbr! = 0 Then
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE baseNbr 3B"
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE baseNbr 3B"
             baseNbr! = 3
         End If
         If S2% = EVENT_1B And b2Base(1) > 0 And b2Base(2) = 0 And baseNbr! = 0 And H6% <= batRating(P, lineupPlayer(P, b2Base(1)), SS_B_Run) And batRating(P, lineupPlayer(P, b2Base(1)), SS_B_2B) > 0 Then
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE baseNbr 2"
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE baseNbr 2"
             baseNbr! = 2
         End If
 
@@ -17476,7 +17680,6 @@ Sub POSTGAME ()
     If specialStat = 1 Then
 
         boxName$ = "BOXSCORE" + Mid$(Str$(specialCount), 2, Len(Str$(specialCount))) + ".BSS"
-        'boxName$ = "BOX" + Mid$(Str$(specialCount), 2, Len(Str$(specialCount))) + ".SPC"
 
         'Append special events
         Call BOX2SPC(boxName$)
@@ -17565,33 +17768,7 @@ Sub SAVESTATS ()
 
         If _FileExists("GAME82") Then
 
-            Open scheduleFile$ For Random As #1 Len = SCHEDULE_SIZE_BYTES
-
-            For X = 0 To 18
-                Field #1, X * 2 As X$, 2 As player$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
-            Next
-
-            Field #1, 38 As X$, 2 As player$(22), 2 As player$(23), 5 As player$(20), 5 As player$(21)
-
-            schedOptions(13) = 1
-
-            For X = 0 To 18:
-                LSet player$(X + 1) = MKI$(schedOptions(X))
-            Next
-
-            For X = 0 To 1:
-                LSet player$(20 + X) = diskIDs$(X)
-            Next
-
-            LSet player$(22) = MKI$(gameScore(0, 0))
-            LSet player$(23) = MKI$(gameScore(1, 0))
-
-            Put #1, schedGame(0) + schedGame(2)
-
-            Close 1
-
-            schedGame(2) = schedGame(2) + 1
-            autoPlay = 1
+            Call UpdateSchedule
 
             If schedGame(1) < schedGame(0) + schedGame(2) Then
                 Kill "GAME82"
@@ -18117,12 +18294,10 @@ Sub BOXOPTIONS (outputChoice)
                     Print "ENTER FILENAME FOR BOXSCORE (NO SPACES OR PERIODS)";
                     Input boxName$
                     boxName$ = boxName$ + ".BSS"
-                    'boxName$ = boxName$ + ".SPC"
                 Else
                     'ScheduleName_GameXXX.BS
                     baseFile$ = GetFileBaseName$(scheduleFile$)
-                    boxName$ = Mid$(baseFile$, 1, Len(baseFile$) - 4) + "_GAME" + Mid$(Str$(schedGame(0) + schedGame(2)), 2, Len(Str$(schedGame(0) + schedGame(2)))) + ".BS"
-                    'boxName$ = "BOX" + Mid$(Str$(schedGame(0) + schedGame(2)), 2, Len(Str$(schedGame(0) + schedGame(2))))
+                    boxName$ = baseFile$ + "_GAME" + Mid$(Str$(schedGame(0) + schedGame(2)), 2, Len(Str$(schedGame(0) + schedGame(2)))) + ".BS"
                 End If
 
             End If
