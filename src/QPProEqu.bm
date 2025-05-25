@@ -752,9 +752,10 @@ Sub MAMenu (menuChoices$(), Selected%, Start%, Count%, ScanCode%, ItemFGColor%, 
     'Sleep
 
     Do
+        Sleep
         UserIn$ = InKey$
     Loop Until UserIn$ <> ""
-    
+
     Select Case UserIn$
 
         Case Chr$(0) + Chr$(80)
@@ -872,6 +873,7 @@ Sub MMenuVert (menuChoices$(), Selected%, Start%, ScanCode%, ItemFGColor%, ItemB
 
     'get cursor key movements and redraw menu
     Do
+        Sleep
         UserIn$ = InKey$
 
         If Len(UserIn$) = 2 Then UserIn$ = Right$(UserIn$, 1)

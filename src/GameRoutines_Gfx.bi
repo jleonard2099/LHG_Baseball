@@ -1,6 +1,6 @@
 Declare Sub DisplayBallField_Gfx (BC%, p, nbrStrikes, D)
 Declare Sub DisplayRun_G (I2, p, X)
-Declare Sub HOLDSTATUS_G (H0%)
+Declare Sub HOLDSTATUS_G (runnerHeld)
 Declare Sub INNDISP_G (currInning, teamLine)
 Declare Sub LOADSCREEN ()
 Declare Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
