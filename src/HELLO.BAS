@@ -4180,7 +4180,8 @@ Sub SOURCE ()
 
         If UCase$(I$) = "D" Then
             Call VIEWTEAM
-            GoTo LResumePlay
+            Call LResumePlay
+            GoTo LNextBatter1
         End If
 
         If UCase$(I$) = "G" Then
@@ -4211,12 +4212,14 @@ Sub SOURCE ()
 
         If UCase$(I$) = "L" Then
             Call PopUp_Lineup
-            GoTo LResumePlay
+            Call LResumePlay
+            GoTo LNextBatter1
         End If
 
         If UCase$(I$) = "O" Then
             Call OPTIONS
-            GoTo LResumePlay
+            Call LResumePlay
+            GoTo LNextBatter1
         End If
 
         If UCase$(I$) = Chr$(17) Then
@@ -4227,24 +4230,28 @@ Sub SOURCE ()
 
         If UCase$(I$) = "S" Then
             Call POPUPSTATS
-            GoTo LResumePlay
+            Call LResumePlay
+            GoTo LNextBatter1
         End If
 
         If UCase$(I$) = "B" Then
             If useVGA = 1 Then Screen menu&
             Call PopUp_Batter(D, currPitcher(D))
-            GoTo LResumePlay
+            Call LResumePlay
+            GoTo LNextBatter1
         End If
 
         If UCase$(I$) = "P" Then
             If useVGA = 1 Then Screen menu&
             Call PopUp_Pitcher(P, currPitcher(P))
-            GoTo LResumePlay
+            Call LResumePlay
+            GoTo LNextBatter1
         End If
 
         If UCase$(I$) = "W" Then
             Call WEATHER
-            GoTo LResumePlay
+            Call LResumePlay
+            GoTo LNextBatter1
         End If
 
         If UCase$(I$) = "H" Then
@@ -4504,17 +4511,20 @@ Sub SOURCE ()
 
         If UCase$(I$) = "D" Then
             Call VIEWTEAM
-            GoTo LResumePlay
+            Call LResumePlay
+            GoTo LNextBatter1
         End If
 
         If UCase$(I$) = "L" Then
             Call PopUp_Lineup
-            GoTo LResumePlay
+            Call LResumePlay
+            GoTo LNextBatter1
         End If
 
         If UCase$(I$) = "O" Then
             Call OPTIONS
-            GoTo LResumePlay
+            Call LResumePlay
+            GoTo LNextBatter1
         End If
 
         If UCase$(I$) = Chr$(17) Then
@@ -4525,12 +4535,14 @@ Sub SOURCE ()
 
         If UCase$(I$) = "S" Then
             Call POPUPSTATS
-            GoTo LResumePlay
+            Call LResumePlay
+            GoTo LNextBatter1
         End If
 
         If UCase$(I$) = "W" Then
             Call WEATHER
-            GoTo LResumePlay
+            Call LResumePlay
+            GoTo LNextBatter1
         End If
 
         P2 = Val(I$)
@@ -7550,20 +7562,7 @@ Sub SOURCE ()
     Select Case I + 1
 
         Case 1
-           LResumePlay:
-            For I = 1 To 9
-                If fldPos(P9, I) <> 1 Then
-                    batRating(P9, lineupPlayer(P9, I), SS_B_Avail) = 1
-                End If
-            Next I
-
-            If useVGA = 1 Then
-                Call LOADSCREEN
-                Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
-            Else
-                Call DisplayBallField(nbrBalls, P, nbrStrikes, D)
-            End If
-
+            Call LResumePlay
             GoTo LNextBatter1
 
         Case 2
@@ -8379,8 +8378,8 @@ Sub SOURCE ()
                             I8% = currLineupSlot(P)
                             I9% = lineupPlayer(P, currLineupSlot(P))
                             Call REPLACEMENTS(I7%, I8%, I9%)
-
-                            GoTo LPinchHitter
+                            Call LPinchHitter
+                            GoTo LContinueBatter
 
                         End If
 
@@ -8411,17 +8410,17 @@ Sub SOURCE ()
 
                 ' Pitcher and PH both righty
                 If iPitThrows =  1 And iBatHits > 0 And pinchBAvg > battrBAvg + 35 Then
-                    If abRand < batRating(P, I,  SS_B_AB) Then Call LPhForPosPlayer(I): GoTo LPinchHitter
+                    If abRand < batRating(P, I,  SS_B_AB) Then Call LPhForPosPlayer(I): Call LPinchHitter: GoTo LContinueBatter
                 End If
 
                 ' Pitcher and PH both lefty
                 If iPitThrows = -1 And iBatHits < 0 And pinchBAvg > battrBAvg + 45 Then
-                    If abRand < batRating(P, I,  SS_B_AB) Then Call LPhForPosPlayer(I): GoTo LPinchHitter
+                    If abRand < batRating(P, I,  SS_B_AB) Then Call LPhForPosPlayer(I): Call LPinchHitter: GoTo LContinueBatter
                 End If
 
                 ' Pitcher and PH on opposite sides
                 If (iPitThrows = -1 And iBatHits >= 0 Or iPitThrows = 1 And iBatHits <= 0) And pinchBAvg > battrBAvg + 30 Then
-                    If abRand < batRating(P, I,  SS_B_AB) Then Call LPhForPosPlayer(I): GoTo LPinchHitter
+                    If abRand < batRating(P, I,  SS_B_AB) Then Call LPhForPosPlayer(I): Call LPinchHitter: GoTo LContinueBatter
                 End If
 
             End If
@@ -8524,32 +8523,7 @@ Sub SOURCE ()
                 fldPos(P, currLineupSlot(P)) = 10
             End If
 
-           LPinchHitter:
-            P9 = P
-            W5 = P9
-            W6 = P9
-            VV(P9) = currLineupSlot(P)
-            VV1(P9) = currLineupSlot(P)
-            Call HITTINGLINES
-
-            If useVGA = 1 Then
-                Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
-                Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
-            Else
-                Call DisplayBallField(nbrBalls, P, nbrStrikes, D)
-                Call MAINSCREEN(D, P, nbrBalls, nbrStrikes, MO)
-            End If
-
-            VV(P9) = 1
-            VV1(P9) = 9
-
-            player$(0) = batters$(P, lineupPlayer(P, currLineupSlot(P)))
-
-            If fldPos(P, currLineupSlot(P)) = 1 Then player$(0) = pitchers$(P, currPitcher(D))
-            Call WINDEX
-            Call PBP(gameManagers$(P) + " is sending up a pinch hitter")
-            pinchHitterFlag = 1
-
+            Call LPinchHitter
             GoTo LContinueBatter
 
         End If
@@ -8888,6 +8862,49 @@ Function LPassedBall$
     LPassedBall$ = LBallGetsPastCatcher$
 End Function
 
+
+Sub LResumePlay
+    For I = 1 To 9
+        If fldPos(P9, I) <> 1 Then
+            batRating(P9, lineupPlayer(P9, I), SS_B_Avail) = 1
+        End If
+    Next I
+
+    If useVGA = 1 Then
+        Call LOADSCREEN
+        Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)   'ToDo [bm] Remove nbrBalls if determined to be unused
+    Else
+        Call DisplayBallField(nbrBalls, P, nbrStrikes, D)
+    End If
+End Sub
+
+
+Sub LPinchHitter
+    ' P9 = P
+    ' W5 = P9
+    ' W6 = P9
+    VV(P)  = currLineupSlot(P)
+    VV1(P) = currLineupSlot(P)
+    Call HITTINGLINES
+
+    If useVGA = 1 Then
+        Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)   'ToDo [bm] Remove nbrBalls if determined to be unused
+        Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
+    Else
+        Call DisplayBallField(nbrBalls, P, nbrStrikes, D)
+        Call MAINSCREEN(D, P, nbrBalls, nbrStrikes, MO)
+    End If
+
+    VV(P)  = 1
+    VV1(P) = 9
+
+    player$(0) = batters$(P, lineupPlayer(P, currLineupSlot(P)))
+
+    If fldPos(P, currLineupSlot(P)) = 1 Then player$(0) = pitchers$(P, currPitcher(D))
+    Call WINDEX
+    Call PBP(gameManagers$(P) + " is sending up a pinch hitter")
+    pinchHitterFlag = 1
+End Sub
 
 '----------------------------------------
 '            INFO Subroutine
