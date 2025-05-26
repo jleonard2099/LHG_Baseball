@@ -4283,7 +4283,8 @@ Sub SOURCE ()
         Case 2
             Call WINDEX
             Call BASEONBALLS(S2%, D2, D, P)
-            GoTo LHBP
+            Call LBatterGoesTo1st
+            GoTo LNextBatter0
 
         Case 3
             INFPOS% = INF_IN
@@ -4551,7 +4552,8 @@ Sub SOURCE ()
 
             Call BASEONBALLS(S2%, D2, D, P)
 
-            GoTo LHBP
+            Call LBatterGoesTo1st
+            GoTo LNextBatter0
 
         Case 2  'Hit and run
             If nbrOuts(0) = 2 Or (baseRunners <> 1 And baseRunners <> 4 And baseRunners <> 5) Then Goto LNextBatter1
@@ -4728,7 +4730,8 @@ Sub SOURCE ()
 
         '13240 / *** base on balls ***
         Call BASEONBALLS(S2%, D2, D, P)
-        GoTo LHBP
+        Call LBatterGoesTo1st
+        GoTo LNextBatter0
 
     End If
 
@@ -4745,7 +4748,8 @@ Sub SOURCE ()
             Call MAINSCREEN(D, P, nbrBalls, nbrStrikes, MO)
         End If
 
-        GoTo LHBP
+        Call LBatterGoesTo1st
+        GoTo LNextBatter0
 
     End If
 
@@ -4797,25 +4801,7 @@ Sub SOURCE ()
     If H6% <= 4 Then
         ' *** hit by pitch ***
         Call HITBYPITCH(S2%, D)
-
-       LHBP:
-        A5%(0) = 1  'batter advances to 1st base
-        A5%(1) = 0
-        A5%(2) = 0
-        A5%(3) = 0
-
-        If b2Base(1) > 0 Then           '1st, 1st & 2nd, or bases loaded
-            A5%(1) = 1
-            If b2Base(2) > 0 Then       '1st & 2nd or bases loaded
-                A5%(2) = 1
-                If b2Base(3) > 0 Then   'bases loaded
-                    A5%(3) = 1
-                    If currFielder = 2 And S2% > 2 Then A5%(3) = 11
-                End If
-            End If
-        End If
-
-        Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+        Call LBatterGoesTo1st
         GoTo LNextBatter0
 
     End If
@@ -4870,7 +4856,13 @@ Sub SOURCE ()
     '7 to 11 OR 7 to 200 And catcher is playing out of position
     If H6% <= 11 Or H6% <= 200 And batRating(D, fielder(D, 2), SS_B_Pos1) <> 2 And batRating(D, fielder(D, 2), SS_B_Pos2) <> 2 And batRating(D, fielder(D, 2), SS_B_Pos3) <> 2 And batRating(D, fielder(D, 2), SS_B_Pos4) <> 2 Then
 
-       LPassedBall: ' *** passed ball ***
+        go$ = LPassedBall$
+        If go$ = "LNextBatter1"           Then GoTo LNextBatter1
+        If go$ = "LContinueBatter"        Then GoTo LContinueBatter
+        If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LPassedBall: "; go$
+        End
+
         If baseRunners = 0 And SO <> 1 Then
             '13100 / *** fouled out of play ***
             Call FOULBALL
@@ -4900,6 +4892,7 @@ Sub SOURCE ()
         If go$ = "LNextBatter1" Then GoTo LNextBatter1
         If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
         If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LBallGetsPastCatcher: "; go$
+        End
 
     End If
 
@@ -4918,6 +4911,7 @@ Sub SOURCE ()
         If go$ = "LNextBatter1" Then GoTo LNextBatter1
         If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
         If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LBallGetsPastCatcher: "; go$
+        End
 
     End If
 
@@ -4927,7 +4921,8 @@ Sub SOURCE ()
         Call WINDEX
         Call PBP(batters$(D, fielder(D, 2)) + " is called for interference!!")
         Call PBP(player$(0) + " trots to first base")
-        GoTo LHBP
+        Call LBatterGoesTo1st
+        GoTo LNextBatter0
 
     End If
 
@@ -4957,7 +4952,8 @@ Sub SOURCE ()
         S2% = EVENT_INTERFERENCE
         '13240 / *** base on balls ***
         Call BASEONBALLS(S2%, D2, D, P)
-        GoTo LHBP
+        Call LBatterGoesTo1st
+        GoTo LNextBatter0
     End If
 
     If P2 = OFF_BUNT Then Goto LBunt
@@ -5586,12 +5582,18 @@ Sub SOURCE ()
                     Else
                         Call WILDPITCH(S2%, D)
                         go$ = LBallGetsPastCatcher
-                        If go$ = "LNextBatter1" Then GoTo LNextBatter1
+                        If go$ = "LNextBatter1"           Then GoTo LNextBatter1
                         If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
                         If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LBallGetsPastCatcher: "; go$
+                        End
                     End If
                 Else
-                    GoTo LPassedBall
+                    go$ = LPassedBall$
+                    If go$ = "LNextBatter1"               Then GoTo LNextBatter1
+                    If go$ = "LContinueBatter"            Then GoTo LContinueBatter
+                    If go$ = "LCheckForOptionsOrQuit"     Then GoTo LCheckForOptionsOrQuit
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LPassedBall: "; go$
+                    End
                 End If
 
             End If
@@ -8779,7 +8781,7 @@ Function LSingle$
     If S2% = EVENT_INF_SINGLE Then
 
         Call SCOREBOARD
-        LSingle = "LNextBatter0"
+        LSingle$ = "LNextBatter0"
 
     Else
 
@@ -8790,11 +8792,11 @@ Function LSingle$
         If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
 
         Call SCOREBOARD
-        LSingle = "LCheckForOptionsOrQuit"
+        LSingle$ = "LCheckForOptionsOrQuit"
 
     End If
-
 End Function
+
 
 Function LBallGetsPastCatcher$
     Shared S2%, errorOnPlay%, I3
@@ -8809,7 +8811,8 @@ Function LBallGetsPastCatcher$
         A5%(2) = 2
         A5%(3) = 1
         Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-        LBallGetsPastCatcher = "LNextBatter1"
+        LBallGetsPastCatcher$ = "LNextBatter1"
+        Exit Function
     End If
 
     If b2Base(1) = 0 And RN = 9 And SO = 1 Or nbrOuts(0) > 1 And RN = 9 And SO = 1 Then
@@ -8818,16 +8821,73 @@ Function LBallGetsPastCatcher$
         A5%(2) = 1
         A5%(3) = 1
         Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-        LBallGetsPastCatcher = "LCheckForOptionsOrQuit"
+        LBallGetsPastCatcher$ = "LCheckForOptionsOrQuit"
     Else
         A5%(0) = 0
         A5%(1) = 1
         A5%(2) = 1
         A5%(3) = 1
         Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-        LBallGetsPastCatcher = "LNextBatter1"
+        LBallGetsPastCatcher$ = "LNextBatter1"
     End If
 End Function
+
+Sub LBatterGoesTo1st
+    Shared S2%, errorOnPlay%, I3
+
+    A5%(0) = 1  'batter advances to 1st base
+    A5%(1) = 0
+    A5%(2) = 0
+    A5%(3) = 0
+
+    If b2Base(1) > 0 Then           '1st, 1st & 2nd, or bases loaded
+        A5%(1) = 1
+        If b2Base(2) > 0 Then       '1st & 2nd or bases loaded
+            A5%(2) = 1
+            If b2Base(3) > 0 Then   'bases loaded
+                A5%(3) = 1
+                If currFielder = 2 And S2% > 2 Then A5%(3) = 11
+            End If
+        End If
+    End If
+
+    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+End Sub
+
+Function LPassedBall$
+    Shared S2%, errorOnPlay%, I3
+    Shared I1, P2, stealing, runnerOn2nd, SAH%, baseNbr!, I9
+    Shared SO
+
+    If baseRunners = 0 And SO <> 1 Then
+        '13100 / *** fouled out of play ***
+        Call FOULBALL
+        LPassedBall$ = "LContinueBatter"
+        Exit Function
+    End If
+
+    S2% = EVENT_PB
+    Call WINDEX
+    Call DELIVERY(D)
+
+    Call Rolld100(RN2)
+    If RN2 <= 50 Then
+        Call PBP("pitch gets by " + batters$(D, fielder(D, 2)))
+    Else
+        'RN > 50
+        Call PBP("off " + batters$(D, fielder(D, 2)) + "'s glove")
+        Call PBP("it gets away from him")
+    End If
+
+    Call PBP("It's ruled a passed ball")
+
+    If b2Base(1) = 0 And RN = 9 And SO = 1 Or nbrOuts(0) > 1 And RN = 9 And SO = 1 Then
+        nbrOuts(1) = nbrOuts(1) + 1     'nbrOuts(1) tracks how many outs there would be without errors (for recording unearned runs)
+    End If
+
+    LPassedBall$ = LBallGetsPastCatcher$
+End Function
+
 
 '----------------------------------------
 '            INFO Subroutine
