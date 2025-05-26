@@ -3810,6 +3810,8 @@ Sub SOURCE ()
     Shared triplePlayAdj(), setupUsed(), closerUsed()
 
     Shared S2%, errorOnPlay%, I3
+    Shared I1, P2, stealing, runnerOn2nd, SAH%, baseNbr!, I9
+    Shared SO
 
     VV(0)  = 1 : VV(1)  = 1
     VV1(1) = 9 : VV1(1) = 9
@@ -4894,34 +4896,10 @@ Sub SOURCE ()
             nbrOuts(1) = nbrOuts(1) + 1     'nbrOuts(1) tracks how many outs there would be without errors (for recording unearned runs)
         End If
 
-       LBallGetsPastCatcher:
-        RN3 = Int(Rnd(1) * 10) + 1
-
-        If baseRunners = 1 And P2 = OFF_HIT_N_RUN And RN3 < batRating(P, lineupPlayer(P, b2Base(1)), SS_B_Run) Or _
-           baseRunners = 5 And P2 = OFF_HIT_N_RUN And RN3 < batRating(P, lineupPlayer(P, b2Base(1)), SS_B_Run) Then
-            A5%(0) = 0
-            A5%(1) = 2
-            A5%(2) = 2
-            A5%(3) = 1
-            Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-            GoTo LNextBatter1
-        End If
-
-        If b2Base(1) = 0 And RN = 9 And SO = 1 Or nbrOuts(0) > 1 And RN = 9 And SO = 1 Then
-            A5%(0) = 1
-            A5%(1) = 1
-            A5%(2) = 1
-            A5%(3) = 1
-            Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-            GoTo LCheckForOptionsOrQuit
-        Else
-            A5%(0) = 0
-            A5%(1) = 1
-            A5%(2) = 1
-            A5%(3) = 1
-            Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-            GoTo LNextBatter1
-        End If
+        go$ = LBallGetsPastCatcher
+        If go$ = "LNextBatter1" Then GoTo LNextBatter1
+        If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LBallGetsPastCatcher: "; go$
 
     End If
 
@@ -4936,7 +4914,10 @@ Sub SOURCE ()
 
         Call WILDPITCH(S2%, D)
 
-        GoTo LBallGetsPastCatcher
+        go$ = LBallGetsPastCatcher
+        If go$ = "LNextBatter1" Then GoTo LNextBatter1
+        If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LBallGetsPastCatcher: "; go$
 
     End If
 
@@ -5604,7 +5585,10 @@ Sub SOURCE ()
                         GoTo LContinueBatter
                     Else
                         Call WILDPITCH(S2%, D)
-                        GoTo LBallGetsPastCatcher
+                        go$ = LBallGetsPastCatcher
+                        If go$ = "LNextBatter1" Then GoTo LNextBatter1
+                        If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LBallGetsPastCatcher: "; go$
                     End If
                 Else
                     GoTo LPassedBall
@@ -5934,27 +5918,11 @@ Sub SOURCE ()
         S2% = EVENT_1B
 
         If fldPos(P, currLineupSlot(P)) <> 1 And H6% <= game_batRating(P, GM_BAvg, currLineupSlot(P)) And P2 <> OFF_HIT_N_RUN Then
-
-           LSingle:
-            Call SINGLEROUTINE(currFielder, P, I1, D, S2%, P2)
-
-            If S2% = EVENT_INF_SINGLE Then
-
-                Call SCOREBOARD
-                GoTo LNextBatter0
-
-            Else
-
-                errorOnPlay% = 0
-                Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-                If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try to advance on Single --"
-                baseNbr! = 0
-                If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
-
-                Call SCOREBOARD
-                GoTo LCheckForOptionsOrQuit
-
-            End If
+           go$ = LSingle$
+           If go$ = "LNextBatter0" Then GoTo LNextBatter0
+           If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+           If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LSINGLE: "; go$
+           End
 
         End If
 
@@ -6755,7 +6723,11 @@ Sub SOURCE ()
 
                 S2% = -EVENT_INF_SINGLE
                 Call PBP(player$(0) + " beats out an infield hit!")
-                GoTo LSingle
+                go$ = LSingle$
+                If go$ = "LNextBatter0" Then GoTo LNextBatter0
+                If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LSINGLE: "; go$
+                End
 
             Else
                 '-- turn this into a unique sub?
@@ -6776,7 +6748,11 @@ Sub SOURCE ()
                 If baseRunners = 5 And SH = 2 And RN > 98 Or RN > 97 Then
                     S2% = -EVENT_INF_SINGLE
                     Call PBP(player$(0) + " beats it out!")
-                    GoTo LSingle
+                    go$ = LSingle$
+                    If go$ = "LNextBatter0" Then GoTo LNextBatter0
+                    If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LSINGLE: "; go$
+                    End
                 End If
 
                 A5%(0) = 11
@@ -6858,7 +6834,11 @@ Sub SOURCE ()
 
                     Call PBP(player$(4) + " fields... but too late!")
                     S2% = -EVENT_INF_SINGLE
-                    GoTo LSingle
+                    go$ = LSingle$
+                    If go$ = "LNextBatter0" Then GoTo LNextBatter0
+                    If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LSINGLE: "; go$
+                    End
 
                 Case 3
                     GoTo 14140
@@ -7026,7 +7006,11 @@ Sub SOURCE ()
                 Case 1:
                     S2% = EVENT_INF_SINGLE
                     Call PBP("but too late...base hit!")
-                    GoTo LSingle
+                    go$ = LSingle$
+                    If go$ = "LNextBatter0" Then GoTo LNextBatter0
+                    If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LSINGLE: "; go$
+                    End
 
                 Case 2:
                     PLB = 1
@@ -8425,17 +8409,17 @@ Sub SOURCE ()
 
                 ' Pitcher and PH both righty
                 If iPitThrows =  1 And iBatHits > 0 And pinchBAvg > battrBAvg + 35 Then
-                    If abRand < batRating(P, I,  SS_B_AB) Then Call LPhForPosPlayer: GoTo LPinchHitter
+                    If abRand < batRating(P, I,  SS_B_AB) Then Call LPhForPosPlayer(I): GoTo LPinchHitter
                 End If
 
                 ' Pitcher and PH both lefty
                 If iPitThrows = -1 And iBatHits < 0 And pinchBAvg > battrBAvg + 45 Then
-                    If abRand < batRating(P, I,  SS_B_AB) Then Call LPhForPosPlayer: GoTo LPinchHitter
+                    If abRand < batRating(P, I,  SS_B_AB) Then Call LPhForPosPlayer(I): GoTo LPinchHitter
                 End If
 
                 ' Pitcher and PH on opposite sides
                 If (iPitThrows = -1 And iBatHits >= 0 Or iPitThrows = 1 And iBatHits <= 0) And pinchBAvg > battrBAvg + 30 Then
-                    If abRand < batRating(P, I,  SS_B_AB) Then Call LPhForPosPlayer: GoTo LPinchHitter
+                    If abRand < batRating(P, I,  SS_B_AB) Then Call LPhForPosPlayer(I): GoTo LPinchHitter
                 End If
 
             End If
@@ -8746,7 +8730,7 @@ End Sub
 'Include: 'GameRoutines.bm'
 
 
-Sub LPhForPosPlayer ()
+Sub LPhForPosPlayer (I)
 
     pinchHitterFlag = 1
     gameD0(P) = gameD0(P) + 1
@@ -8784,6 +8768,66 @@ Sub LHomeRun2
     Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
     Call SCOREBOARD
 End Sub
+
+
+Function LSingle$
+    Shared S2%, errorOnPlay%, I3
+    Shared I1, P2, stealing, runnerOn2nd, SAH%, baseNbr!, I9
+
+    Call SINGLEROUTINE(currFielder, P, I1, D, S2%, P2)
+
+    If S2% = EVENT_INF_SINGLE Then
+
+        Call SCOREBOARD
+        LSingle = "LNextBatter0"
+
+    Else
+
+        errorOnPlay% = 0
+        Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+        If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try to advance on Single --"
+        baseNbr! = 0
+        If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
+
+        Call SCOREBOARD
+        LSingle = "LCheckForOptionsOrQuit"
+
+    End If
+
+End Function
+
+Function LBallGetsPastCatcher$
+    Shared S2%, errorOnPlay%, I3
+    Shared SO
+
+    RN3 = Int(Rnd(1) * 10) + 1
+
+    If baseRunners = 1 And P2 = OFF_HIT_N_RUN And RN3 < batRating(P, lineupPlayer(P, b2Base(1)), SS_B_Run) Or _
+        baseRunners = 5 And P2 = OFF_HIT_N_RUN And RN3 < batRating(P, lineupPlayer(P, b2Base(1)), SS_B_Run) Then
+        A5%(0) = 0
+        A5%(1) = 2
+        A5%(2) = 2
+        A5%(3) = 1
+        Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+        LBallGetsPastCatcher = "LNextBatter1"
+    End If
+
+    If b2Base(1) = 0 And RN = 9 And SO = 1 Or nbrOuts(0) > 1 And RN = 9 And SO = 1 Then
+        A5%(0) = 1
+        A5%(1) = 1
+        A5%(2) = 1
+        A5%(3) = 1
+        Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+        LBallGetsPastCatcher = "LCheckForOptionsOrQuit"
+    Else
+        A5%(0) = 0
+        A5%(1) = 1
+        A5%(2) = 1
+        A5%(3) = 1
+        Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+        LBallGetsPastCatcher = "LNextBatter1"
+    End If
+End Function
 
 '----------------------------------------
 '            INFO Subroutine
