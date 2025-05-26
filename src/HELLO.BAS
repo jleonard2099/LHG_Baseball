@@ -330,7 +330,7 @@ Close #3
 'Rename records file to new format
 If _FileExists("BASEBALL.REC") Then
 
-    Call FCopy("RECORDS.MLB", "BASEBALL.REC", Buff$, copyErr%)
+    result$ = CopyFile$("RECORDS.MLB", "BASEBALL.REC")
     Kill "BASEBALL.REC"
 
 End If

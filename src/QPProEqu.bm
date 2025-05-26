@@ -904,7 +904,8 @@ Sub MMenuVert (menuChoices$(), Selected%, Start%, ScanCode%, ItemFGColor%, ItemB
     Return
 
     MoveUp:
-    If Selected% = 1 Then
+    'If Selected% = 1 Then
+    If Selected% = 0 Then
         Selected% = UBound(menuChoices$)
     Else
         Selected% = Selected% - 1
@@ -913,7 +914,8 @@ Sub MMenuVert (menuChoices$(), Selected%, Start%, ScanCode%, ItemFGColor%, ItemB
 
     MoveDown:
     If Selected% = UBound(menuChoices$) Then
-        Selected% = 1
+        'Selected% = 1
+        Selected% = 0
     Else
         Selected% = Selected% + 1
     End If
@@ -1724,3 +1726,28 @@ Sub Lts2Menu (Item$(), Prompt$(), Choice%, FGColor%, BGColor%)
     Erase Break%, ScrBuf%
 
 End Sub
+
+
+'-----------------------------------
+'          CopyFile$ Function
+'-----------------------------------
+'A simple OS-native routine that can
+'performi a file copy routine by only
+'using QB64 functions
+Function CopyFile$ (src$, dst$)
+    CopyFile$ = "" 'empty = success, otherwise error message
+    buffer$ = _READFILE$(src$)
+    IF buffer$ = "" AND _FILEEXISTS(src$) = 0 THEN
+        CopyFile$ = "ERROR: Source file not found."
+    ELSE
+        slp% = _INSTRREV(dst$, "\")
+        IF slp% = 0 THEN slp% = _INSTRREV(dst$, "/")
+        IF slp% > 0 THEN
+            IF NOT _DIREXISTS(LEFT$(dst$, slp% - 1)) THEN
+                CopyFile$ = "ERROR: Destination path not found."
+                EXIT FUNCTION
+            END IF
+        END IF
+        _WRITEFILE dst$, buffer$
+    END IF
+END FUNCTION
