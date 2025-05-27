@@ -9710,11 +9710,6 @@ Sub ADV2BASES (p_base)
         Print #11,
     End If
 
-
-
-    player$(p_base + 2) = player$(p_base)
-    player$(p_base) = ""
-
 End Sub
 
 '----------------------------------------
@@ -20311,8 +20306,9 @@ Sub DumpIt (baseRunners, P2, D2)
         Print #11, "Visiting";
     Else
         Print #11, "Home";
-        Print #11, " team batting"
     End If
+    Print #11, " team batting"
+
     Print #11, "baserunners = "; baseRunners; " outs: "; nbrOuts(0); " expected outs: "; nbrOuts(1)
     Print #11, "Score is: "; gameScore(0, 0); " to "; gameScore(1, 0)
 
