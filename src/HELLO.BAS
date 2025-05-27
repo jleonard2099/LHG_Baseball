@@ -4453,7 +4453,7 @@ Sub SOURCE ()
 
             End If
 
-            GoTo LPinchRunner
+            GoTo LNoPinchHitter
 
         Else
 
@@ -6096,7 +6096,7 @@ Sub SOURCE ()
 
     '----- NOODLE -----
 
-   LProcessOutAndDP:
+   LProcessOutAndDP:    'ToDo [bm] tackle this next
     ' 3
     CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
 
@@ -8393,7 +8393,7 @@ Sub SOURCE ()
 
     End If
 
-    If INNING% < 6 Then Goto LPinchRunner   ' [bm] KLUDGE: Don't pinch hit for a position player before the 6th inning
+    If INNING% < 6 Then Goto LNoPinchHitter   ' [bm] KLUDGE: Don't pinch hit for a position player before the 6th inning
 
     For I = 0 To 22:
 
@@ -8429,7 +8429,7 @@ Sub SOURCE ()
 
     Next I
 
-    GoTo LPinchRunner
+    GoTo LNoPinchHitter
 
 
     '----- NOODLE -----
@@ -8528,7 +8528,7 @@ Sub SOURCE ()
 
         End If
 
-       LPinchRunner:
+       LNoPinchHitter:
         If pinchRunnerFlag <> 1 Then
             Call PINCHRUNNER(MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
         End If
@@ -8552,91 +8552,30 @@ Sub SOURCE ()
         End If
 
         ' MANAGER PROFILE TO HIT AND RUN
-        Call Rolld100(RN)
         If Not (baseRunners = 0 Or teamMgrProfileVal(P, 671) <> 999 Or fldPos(P, currLineupSlot(P)) = 1) Then
 
-            If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a HIT & RUN strategy !!"
-
-            If batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_AB) = 0 Then
-                I7! = 0
-            Else
-                I7! = CInt((batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_H) + batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_2B) + batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_3B) * 2 + batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_HR) * 3) / batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_AB) * 1000)
-            End If
-
-            If batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_K) = 0 Then
-                I6! = 0
-            Else
-                I6! = CInt(batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_AB) / batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_K))
-            End If
-
-            If baseRunners = 1 And nbrOuts(0) = 0 And A1 <= teamMgrProfileVal(P, 672) And A1 >= teamMgrProfileVal(P, 673) * -1 And RN <= teamMgrProfileVal(P, 674) And I7! <= teamMgrProfileVal(P, 872) And I6! >= teamMgrProfileVal(P, 866) Then
-                P2 = OFF_HIT_N_RUN
-                GoTo LHitAndRun
-            End If
-            If baseRunners = 1 And nbrOuts(0) = 1 And A1 <= teamMgrProfileVal(P, 675) And A1 >= teamMgrProfileVal(P, 676) * -1 And RN <= teamMgrProfileVal(P, 677) And I7! <= teamMgrProfileVal(P, 873) And I6! >= teamMgrProfileVal(P, 867) Then
-                P2 = OFF_HIT_N_RUN
-                GoTo LHitAndRun
-            End If
-            If baseRunners = 5 And nbrOuts(0) = 0 And A1 <= teamMgrProfileVal(P, 678) And A1 >= teamMgrProfileVal(P, 679) * -1 And RN <= teamMgrProfileVal(P, 680) And I7! <= teamMgrProfileVal(P, 874) And I6! >= teamMgrProfileVal(P, 868) Then
-                P2 = OFF_HIT_N_RUN
-                GoTo LHitAndRun
-            End If
-            If baseRunners = 5 And nbrOuts(0) = 1 And A1 <= teamMgrProfileVal(P, 681) And A1 >= teamMgrProfileVal(P, 682) * -1 And RN <= teamMgrProfileVal(P, 683) And I7! <= teamMgrProfileVal(P, 875) And I6! >= teamMgrProfileVal(P, 869) Then
-                P2 = OFF_HIT_N_RUN
-                GoTo LHitAndRun
-            End If
-            If baseRunners = 4 And nbrOuts(0) = 0 And A1 <= teamMgrProfileVal(P, 684) And A1 >= teamMgrProfileVal(P, 685) * -1 And RN <= teamMgrProfileVal(P, 686) And I7! <= teamMgrProfileVal(P, 876) And I6! >= teamMgrProfileVal(P, 870) Then
-                P2 = OFF_HIT_N_RUN
-                GoTo LHitAndRun
-            End If
-            If baseRunners = 4 And nbrOuts(0) = 1 And A1 <= teamMgrProfileVal(P, 687) And A1 >= teamMgrProfileVal(P, 688) * -1 And RN <= teamMgrProfileVal(P, 689) And I7! <= teamMgrProfileVal(P, 877) And I6! >= teamMgrProfileVal(P, 871) Then
-                P2 = OFF_HIT_N_RUN
-                GoTo LHitAndRun
-            End If
+            go$ = MgrStrategyHitAndRun$
+            If go$ = "LHitAndRun" Then GoTo LHitAndRun
 
         End If
 
+        ' MANAGER PROFILE FOR PITCHER TO BUNT
         If Not (teamMgrProfileVal(P, 609) <> 999 Or fldPos(P, currLineupSlot(P)) <> 1) Then
 
             If Not (baseRunners <> 1 And baseRunners <> 2 And baseRunners <> 4) Then
 
-                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a PITCHER BUNTING strategy !!"
-
-                Call Rolld100(RN)
-
-                If baseRunners = 1 And INNING% <= 7 And teamMgrProfileVal(P, 610) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 611) And A1 >= teamMgrProfileVal(P, 612) * -1 And RN <= teamMgrProfileVal(P, 613) Then P2 = OFF_BUNT : GoTo LBunt
-                If baseRunners = 1 And INNING%  > 7 And teamMgrProfileVal(P, 614) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 615) And A1 >= teamMgrProfileVal(P, 616) * -1 And RN <= teamMgrProfileVal(P, 617) Then P2 = OFF_BUNT : GoTo LBunt
-
-                If baseRunners = 2 And INNING% <= 7 And teamMgrProfileVal(P, 618) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 619) And A1 >= teamMgrProfileVal(P, 620) * -1 And RN <= teamMgrProfileVal(P, 621) Then P2 = OFF_BUNT : GoTo LBunt
-                If baseRunners = 2 And INNING%  > 7 And teamMgrProfileVal(P, 622) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 623) And A1 >= teamMgrProfileVal(P, 624) * -1 And RN <= teamMgrProfileVal(P, 625) Then P2 = OFF_BUNT : GoTo LBunt
-
-                If baseRunners = 4 And INNING% <= 7 And teamMgrProfileVal(P, 626) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 627) And A1 >= teamMgrProfileVal(P, 628) * -1 And RN <= teamMgrProfileVal(P, 629) Then P2 = OFF_BUNT : GoTo LBunt
-                If baseRunners = 4 And INNING%  > 7 And teamMgrProfileVal(P, 630) >= nbrOuts(0) And A1 <= teamMgrProfileVal(P, 631) And A1 >= teamMgrProfileVal(P, 632) * -1 And RN <= teamMgrProfileVal(P, 633) Then P2 = OFF_BUNT : GoTo LBunt
+                go$ = MgrStrategyBuntPitcher$
+                If go$ = "LBunt" Then GoTo LBunt
 
             End If
 
         End If
 
+        ' MANAGER PROFILE FOR POSITION PLAYER TO BUNT
         If teamMgrProfileVal(P, 634) = 999 And fldPos(P, currLineupSlot(P)) <> 1 And nbrOuts(0) = 0 Or (baseRunners <> 1 And baseRunners <> 2 And baseRunners <> 4) Then
 
-            If Environ$("MGRLOG") = "TRUE" And teamMgrProfileVal(P, 634) = 999 Then Print #11, "!! Team is using a POSITION PLAYER BUNTING strategy !!"
-
-            If batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_AB) = 0 Then
-                I7! = 0
-                I6! = 0
-            Else
-                I7! = CInt( batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_H) / batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_AB) * 1000)
-                I6! = CInt((batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_H) + batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_2B) + batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_3B) * 2 + batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_HR) * 3) / batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_AB) * 1000)
-            End If
-
-            Call Rolld100(RN)
-            If baseRunners = 1 And INNING% <= 7 And A1 <= teamMgrProfileVal(P, 635) And A1 >= teamMgrProfileVal(P, 636) * -1 And I7! <= teamMgrProfileVal(P, 637) And I6! <= teamMgrProfileVal(P, 638) And pitchRating(D, currPitcher(D), SS_P_ERA100) <= teamMgrProfileVal(P, 639) And RN <= teamMgrProfileVal(P, 640) Then P2 = OFF_BUNT : GoTo LBunt
-            If baseRunners = 2 And INNING% <= 7 And A1 <= teamMgrProfileVal(P, 641) And A1 >= teamMgrProfileVal(P, 642) * -1 And I7! <= teamMgrProfileVal(P, 643) And I6! <= teamMgrProfileVal(P, 644) And pitchRating(D, currPitcher(D), SS_P_ERA100) <= teamMgrProfileVal(P, 645) And RN <= teamMgrProfileVal(P, 646) Then P2 = OFF_BUNT : GoTo LBunt
-            If baseRunners = 4 And INNING% <= 7 And A1 <= teamMgrProfileVal(P, 647) And A1 >= teamMgrProfileVal(P, 648) * -1 And I7! <= teamMgrProfileVal(P, 649) And I6! <= teamMgrProfileVal(P, 650) And pitchRating(D, currPitcher(D), SS_P_ERA100) <= teamMgrProfileVal(P, 651) And RN <= teamMgrProfileVal(P, 652) Then P2 = OFF_BUNT : GoTo LBunt
-
-            If baseRunners = 1 And INNING% > 7 And A1 <= teamMgrProfileVal(P, 653) And A1 >= teamMgrProfileVal(P, 654) * -1 And I7! <= teamMgrProfileVal(P, 655) And I6! <= teamMgrProfileVal(P, 656) And pitchRating(D, currPitcher(D), SS_P_ERA100) <= teamMgrProfileVal(P, 657) And RN <= teamMgrProfileVal(P, 658) Then P2 = OFF_BUNT : GoTo LBunt
-            If baseRunners = 2 And INNING% > 7 And A1 <= teamMgrProfileVal(P, 659) And A1 >= teamMgrProfileVal(P, 660) * -1 And I7! <= teamMgrProfileVal(P, 661) And I6! <= teamMgrProfileVal(P, 662) And pitchRating(D, currPitcher(D), SS_P_ERA100) <= teamMgrProfileVal(P, 663) And RN <= teamMgrProfileVal(P, 664) Then P2 = OFF_BUNT : GoTo LBunt
-            If baseRunners = 4 And INNING% > 7 And A1 <= teamMgrProfileVal(P, 665) And A1 >= teamMgrProfileVal(P, 666) * -1 And I7! <= teamMgrProfileVal(P, 667) And I6! <= teamMgrProfileVal(P, 668) And pitchRating(D, currPitcher(D), SS_P_ERA100) <= teamMgrProfileVal(P, 669) And RN <= teamMgrProfileVal(P, 670) Then P2 = OFF_BUNT : GoTo LBunt
+            go$ = MgrStrategyBuntPosPlayer$
+            If go$ = "LBunt" Then GoTo LBunt
 
         End If
 
@@ -8644,10 +8583,31 @@ Sub SOURCE ()
 
         If baseRunners = 1 Or baseRunners = 5 Then
 
-            If A1 <= -1 And batRating(P, lineupPlayer(P, b2Base(1)), SS_B_SB) < 10 Or b2Mystery(1) > 1 Then Goto LNoSteal  'CHANGED FROM <10
-            If A1 >= -1 And baseRunners = 5 Then Goto LNoSteal
-            If A1 < -5 Or fldPos(P, b2Base(1)) = 1 And baseRunners = 1 Or fldPos(P, b2Base(2)) = 1 And baseRunners = 2 Then Goto LNoSteal
-            If A1 < 0 And INNING% >= 7 Then Goto LNoSteal
+            skipSteal = 0
+
+            If A1 <= -1 And batRating(P, lineupPlayer(P, b2Base(1)), SS_B_SB) < 10 Or b2Mystery(1) > 1 Then skipSteal = 1  'CHANGED FROM <10
+            If A1 >= -1 And baseRunners = 5 Then skipSteal = 1
+            If A1 < -5 Or fldPos(P, b2Base(1)) = 1 And baseRunners = 1 Or fldPos(P, b2Base(2)) = 1 And baseRunners = 2 Then skipSteal = 1
+            If A1 < 0 And INNING% >= 7 Then skipSteal = 1
+
+            If skipSteal = 1 Then
+                go$ = LNoSteal$
+                If go$ = "LExecuteOffense" Then Goto LExecuteOffense
+                If go$ = "LHitAndRun"      Then Goto LHitAndRun
+                If go$ = "LBunt"           Then Goto LBunt
+
+                If go$ = "CONTINUE" Then
+                    go$ = LPossibleHitAndRun$
+                    If go$ = "LExecuteOffense" Then Goto LExecuteOffense
+                    If go$ = "LHitAndRun" Then Goto LHitAndRun
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result C from LPossibleHitAndRun: "; go$
+                    End
+                End If
+
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LNoSteal: "; go$
+                End
+            End If
+
             P2 = OFF_STEAL
 
             GoTo LSteal
@@ -8663,41 +8623,13 @@ Sub SOURCE ()
             End If
         End If
 
-       LNoSteal:
-        If Not (baseRunners = 0 Or nbrOuts(0) > 0 Or baseRunners = 7 Or baseRunners = 6 Or baseRunners = 3 Or baseRunners = 5 Or nbrStrikes = 2 Or P = 0 And INNING% > 7) Then
-
-            If fldPos(P, currLineupSlot(P)) = 1 And baseRunners = 1 And nbrOuts(0) < 2 Or fldPos(P, currLineupSlot(P)) = 1 And baseRunners = 2 And nbrOuts(0) = 0 Or fldPos(P, currLineupSlot(P)) = 1 And baseRunners = 4 And nbrOuts(0) = 0 Then Goto LPinchRunner1
-            If currLineupSlot(P) > 2 And currLineupSlot(P) < 6 Or game_batRating(P, GM_BAvg, currLineupSlot(P)) > 290 And fldPos(P, currLineupSlot(P)) <> 1 Or fldPos(P, currLineupSlot(P)) <> 1 And game_batRating(P, GM_HR, currLineupSlot(P)) > 70 Then Goto LPinchRunner0
-            If INNING% > 7 And A1 = -1 And nbrOuts(0) = 0 And baseRunners = 1 Then Goto LPinchRunner1
-
-        End If
-
     End If
 
-   LPinchRunner0:
-    pinchHitterFlag = 0
-    pinchRunnerFlag = 0
-
-    Call Rolld100(RN0)
-
-    If nbrOuts(0) = 2 Or game_batRating(P, GM_K, currLineupSlot(P)) > 100 Or baseRunners = 0 Or baseRunners = 7 Or baseRunners = 6 Or baseRunners = 3 Or baseRunners = 2 Or A1 < -3 Or RN0 > 20 Then
-        GoTo LExecuteOffense
-    Else
-        P2 = OFF_HIT_N_RUN
-        GoTo LHitAndRun
-    End If
-
-    '----- NOODLE -----
-
-   LPinchRunner1:
-
-    If nbrOuts(0) >= 1 And INNING% >= 7 Then
-        GoTo LPinchRunner0
-    Else
-        P2 = OFF_BUNT
-        GoTo LBunt
-    End If
-
+    go$ = LPossibleHitAndRun$
+    If go$ = "LExecuteOffense" Then Goto LExecuteOffense
+    If go$ = "LHitAndRun" Then Goto LHitAndRun
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result B from LPossibleHitAndRun: "; go$
+    End
 
 End Sub
 
@@ -8905,6 +8837,239 @@ Sub LPinchHitter
     Call PBP(gameManagers$(P) + " is sending up a pinch hitter")
     pinchHitterFlag = 1
 End Sub
+
+
+Function LPossibleHitAndRun$
+    Shared P2
+
+    pinchHitterFlag = 0
+    pinchRunnerFlag = 0
+    ourLead = gameScore(D, 0) - gameScore(P, 0)
+
+    Call Rolld100(RN0)
+
+    If nbrOuts(0) = 2 Or game_batRating(P, GM_K, currLineupSlot(P)) > 100 _
+      Or baseRunners = 0 Or baseRunners = 7 Or baseRunners = 6 Or baseRunners = 3 Or baseRunners = 2 _
+      Or ourLead < -3 Or RN0 > 20 Then
+        Print #11, "RETURNING from LPossibleHitAndRun: LExecuteOffense" 'ToDo [bm] remove all the RETURNING
+        LPossibleHitAndRun$ = "LExecuteOffense"
+    Else
+        P2 = OFF_HIT_N_RUN
+        Print #11, "RETURNING from LPossibleHitAndRun: LHitAndRun"
+        LPossibleHitAndRun$ = "LHitAndRun"
+    End If
+End Function
+
+
+Function LPossibleBunt$:
+    Shared P2
+
+    If nbrOuts(0) >= 1 And INNING% >= 7 Then
+        Print #11, "RETURNING from LPossibleBunt: something from LPOssibleHitAndRun"
+        LPossibleBunt$ = LPossibleHitAndRun$
+    Else
+        P2 = OFF_BUNT
+        Print #11, "RETURNING from Bunt: LBunt"
+        LPossibleBunt$ = "LBunt"
+    End If
+End Function
+
+
+Function MgrStrategyHitAndRun$
+    Shared P2
+
+    If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a HIT & RUN strategy !!"
+
+    ourLead = gameScore(D, 0) - gameScore(P, 0)
+
+    Call Rolld100(RN)
+
+    If batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_AB) = 0 Then
+        I7! = 0
+    Else
+        I7! = CInt((batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_H) _
+                  + batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_2B) _
+                  + batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_3B) * 2 _
+                  + batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_HR) * 3) / batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_AB) * 1000)
+    End If
+
+    If batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_K) = 0 Then
+        I6! = 0
+    Else
+        I6! = CInt(batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_AB) / batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_K))
+    End If
+
+    If baseRunners = 1 And nbrOuts(0) = 0 And ourLead <= teamMgrProfileVal(P, 672) And ourLead >= teamMgrProfileVal(P, 673) * -1 _
+      And RN <= teamMgrProfileVal(P, 674) And I7! <= teamMgrProfileVal(P, 872) And I6! >= teamMgrProfileVal(P, 866) Then
+        P2 = OFF_HIT_N_RUN
+        MgrStrategyHitAndRun$ = "LHitAndRun"
+    End If
+    If baseRunners = 1 And nbrOuts(0) = 1 And ourLead <= teamMgrProfileVal(P, 675) And ourLead >= teamMgrProfileVal(P, 676) * -1 _
+      And RN <= teamMgrProfileVal(P, 677) And I7! <= teamMgrProfileVal(P, 873) And I6! >= teamMgrProfileVal(P, 867) Then
+        P2 = OFF_HIT_N_RUN
+        MgrStrategyHitAndRun$ = "LHitAndRun"
+    End If
+    If baseRunners = 5 And nbrOuts(0) = 0 And ourLead <= teamMgrProfileVal(P, 678) And ourLead >= teamMgrProfileVal(P, 679) * -1 _
+      And RN <= teamMgrProfileVal(P, 680) And I7! <= teamMgrProfileVal(P, 874) And I6! >= teamMgrProfileVal(P, 868) Then
+        P2 = OFF_HIT_N_RUN
+        MgrStrategyHitAndRun$ = "LHitAndRun"
+    End If
+    If baseRunners = 5 And nbrOuts(0) = 1 And ourLead <= teamMgrProfileVal(P, 681) And ourLead >= teamMgrProfileVal(P, 682) * -1 _
+      And RN <= teamMgrProfileVal(P, 683) And I7! <= teamMgrProfileVal(P, 875) And I6! >= teamMgrProfileVal(P, 869) Then
+        P2 = OFF_HIT_N_RUN
+        MgrStrategyHitAndRun$ = "LHitAndRun"
+    End If
+    If baseRunners = 4 And nbrOuts(0) = 0 And ourLead <= teamMgrProfileVal(P, 684) And ourLead >= teamMgrProfileVal(P, 685) * -1 _
+      And RN <= teamMgrProfileVal(P, 686) And I7! <= teamMgrProfileVal(P, 876) And I6! >= teamMgrProfileVal(P, 870) Then
+        P2 = OFF_HIT_N_RUN
+        MgrStrategyHitAndRun$ = "LHitAndRun"
+    End If
+    If baseRunners = 4 And nbrOuts(0) = 1 And ourLead <= teamMgrProfileVal(P, 687) And ourLead >= teamMgrProfileVal(P, 688) * -1 _
+      And RN <= teamMgrProfileVal(P, 689) And I7! <= teamMgrProfileVal(P, 877) And I6! >= teamMgrProfileVal(P, 871) Then
+        P2 = OFF_HIT_N_RUN
+        MgrStrategyHitAndRun$ = "LHitAndRun"
+    End If
+End Function
+
+
+Function MgrStrategyBuntPitcher$
+    Shared P2
+
+    If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a PITCHER BUNTING strategy !!"
+
+    ourLead = gameScore(D, 0) - gameScore(P, 0)
+
+    Call Rolld100(RN)
+
+    If baseRunners = 1 And INNING% <= 7 And teamMgrProfileVal(P, 610) >= nbrOuts(0) _
+      And ourLead <= teamMgrProfileVal(P, 611) And ourLead >= teamMgrProfileVal(P, 612) * -1 And RN <= teamMgrProfileVal(P, 613) Then
+        P2 = OFF_BUNT
+        MgrStrategyBuntPitcher$ =  "LBunt"
+    End if
+    If baseRunners = 1 And INNING%  > 7 And teamMgrProfileVal(P, 614) >= nbrOuts(0) _
+      And ourLead <= teamMgrProfileVal(P, 615) And ourLead >= teamMgrProfileVal(P, 616) * -1 And RN <= teamMgrProfileVal(P, 617) Then
+        P2 = OFF_BUNT
+        MgrStrategyBuntPitcher$ =  "LBunt"
+    End if
+
+    If baseRunners = 2 And INNING% <= 7 And teamMgrProfileVal(P, 618) >= nbrOuts(0) _
+      And ourLead <= teamMgrProfileVal(P, 619) And ourLead >= teamMgrProfileVal(P, 620) * -1 And RN <= teamMgrProfileVal(P, 621) Then
+        P2 = OFF_BUNT
+        MgrStrategyBuntPitcher$ =  "LBunt"
+    End if
+    If baseRunners = 2 And INNING%  > 7 And teamMgrProfileVal(P, 622) >= nbrOuts(0) _
+      And ourLead <= teamMgrProfileVal(P, 623) And ourLead >= teamMgrProfileVal(P, 624) * -1 And RN <= teamMgrProfileVal(P, 625) Then
+        P2 = OFF_BUNT
+        MgrStrategyBuntPitcher$ =  "LBunt"
+    End if
+
+    If baseRunners = 4 And INNING% <= 7 And teamMgrProfileVal(P, 626) >= nbrOuts(0) _
+      And ourLead <= teamMgrProfileVal(P, 627) And ourLead >= teamMgrProfileVal(P, 628) * -1 And RN <= teamMgrProfileVal(P, 629) Then
+        P2 = OFF_BUNT
+        MgrStrategyBuntPitcher$ =  "LBunt"
+    End if
+    If baseRunners = 4 And INNING%  > 7 And teamMgrProfileVal(P, 630) >= nbrOuts(0) _
+      And ourLead <= teamMgrProfileVal(P, 631) And ourLead >= teamMgrProfileVal(P, 632) * -1 And RN <= teamMgrProfileVal(P, 633) Then
+        P2 = OFF_BUNT
+        MgrStrategyBuntPitcher$ =  "LBunt"
+    End if
+End Function
+
+
+Function MgrStrategyBuntPosPlayer$
+
+    If Environ$("MGRLOG") = "TRUE" And teamMgrProfileVal(P, 634) = 999 Then Print #11, "!! Team is using a POSITION PLAYER BUNTING strategy !!"
+
+    ourLead = gameScore(D, 0) - gameScore(P, 0)
+
+    If batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_AB) = 0 Then
+        I7! = 0
+        I6! = 0
+    Else
+        I7! = CInt( batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_H) / batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_AB) * 1000)
+        I6! = CInt((batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_H) _
+                  + batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_2B) _
+                  + batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_3B) * 2 _
+                  + batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_HR) * 3) / batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_AB) * 1000)
+    End If
+
+    Call Rolld100(RN)
+
+    If baseRunners = 1 And INNING% <= 7 And ourLead <= teamMgrProfileVal(P, 635) And ourLead >= teamMgrProfileVal(P, 636) * -1 _
+      And I7! <= teamMgrProfileVal(P, 637) And I6! <= teamMgrProfileVal(P, 638) _
+      And pitchRating(D, currPitcher(D), SS_P_ERA100) <= teamMgrProfileVal(P, 639) And RN <= teamMgrProfileVal(P, 640) Then
+        P2 = OFF_BUNT
+        MgrStrategyBuntPosPlayer$ = "LBunt"
+    End If
+    If baseRunners = 2 And INNING% <= 7 And ourLead <= teamMgrProfileVal(P, 641) And ourLead >= teamMgrProfileVal(P, 642) * -1 _
+      And I7! <= teamMgrProfileVal(P, 643) And I6! <= teamMgrProfileVal(P, 644) _
+      And pitchRating(D, currPitcher(D), SS_P_ERA100) <= teamMgrProfileVal(P, 645) And RN <= teamMgrProfileVal(P, 646) Then
+        P2 = OFF_BUNT
+        MgrStrategyBuntPosPlayer$ = "LBunt"
+    End If
+    If baseRunners = 4 And INNING% <= 7 And ourLead <= teamMgrProfileVal(P, 647) And ourLead >= teamMgrProfileVal(P, 648) * -1 _
+      And I7! <= teamMgrProfileVal(P, 649) And I6! <= teamMgrProfileVal(P, 650) _
+      And pitchRating(D, currPitcher(D), SS_P_ERA100) <= teamMgrProfileVal(P, 651) And RN <= teamMgrProfileVal(P, 652) Then
+        P2 = OFF_BUNT
+        MgrStrategyBuntPosPlayer$ = "LBunt"
+    End If
+
+    If baseRunners = 1 And INNING% > 7 And ourLead <= teamMgrProfileVal(P, 653) And ourLead >= teamMgrProfileVal(P, 654) * -1 _
+      And I7! <= teamMgrProfileVal(P, 655) And I6! <= teamMgrProfileVal(P, 656) _
+      And pitchRating(D, currPitcher(D), SS_P_ERA100) <= teamMgrProfileVal(P, 657) And RN <= teamMgrProfileVal(P, 658) Then
+        P2 = OFF_BUNT
+        MgrStrategyBuntPosPlayer$ = "LBunt"
+    End If
+    If baseRunners = 2 And INNING% > 7 And ourLead <= teamMgrProfileVal(P, 659) And ourLead >= teamMgrProfileVal(P, 660) * -1 _
+      And I7! <= teamMgrProfileVal(P, 661) And I6! <= teamMgrProfileVal(P, 662) _
+      And pitchRating(D, currPitcher(D), SS_P_ERA100) <= teamMgrProfileVal(P, 663) And RN <= teamMgrProfileVal(P, 664) Then
+        P2 = OFF_BUNT
+        MgrStrategyBuntPosPlayer$ = "LBunt"
+    End If
+    If baseRunners = 4 And INNING% > 7 And ourLead <= teamMgrProfileVal(P, 665) And ourLead >= teamMgrProfileVal(P, 666) * -1 _
+      And I7! <= teamMgrProfileVal(P, 667) And I6! <= teamMgrProfileVal(P, 668) _
+      And pitchRating(D, currPitcher(D), SS_P_ERA100) <= teamMgrProfileVal(P, 669) And RN <= teamMgrProfileVal(P, 670) Then
+        P2 = OFF_BUNT
+        MgrStrategyBuntPosPlayer$ = "LBunt"
+    End If
+End Function
+
+
+Function LNoSteal$
+    If Not (baseRunners = 0 Or nbrOuts(0) > 0 Or baseRunners = 7 Or baseRunners = 6 Or baseRunners = 3 Or baseRunners = 5 Or nbrStrikes = 2 Or P = 0 And INNING% > 7) Then
+
+        ourLead = gameScore(D, 0) - gameScore(P, 0)
+
+        If fldPos(P, currLineupSlot(P)) = 1 And baseRunners = 1 And nbrOuts(0) < 2 Or _
+           fldPos(P, currLineupSlot(P)) = 1 And baseRunners = 2 And nbrOuts(0) = 0 Or _
+           fldPos(P, currLineupSlot(P)) = 1 And baseRunners = 4 And nbrOuts(0) = 0 Then
+            LNoSteal$ = LPossibleBunt$
+            Print #11, "RETURNING from LSteal: something from LPossibleBunt"
+            Exit Function
+        End If
+        If currLineupSlot(P) > 2 And currLineupSlot(P) < 6 Or _
+          game_batRating(P, GM_BAvg, currLineupSlot(P)) > 290 And fldPos(P, currLineupSlot(P)) <> 1 Or _
+          fldPos(P, currLineupSlot(P)) <> 1 And game_batRating(P, GM_HR, currLineupSlot(P)) > 70 Then   'ToDo [bm] Possible bug, calling H&R with a Home Run slugger?
+            LNoSteal$ = LPossibleHitAndRun$
+            Print #11, "RETURNING from LSteal: something from LPossibleHiTAndRun"
+            Exit Function
+        End If
+        If INNING% > 7 And ourLead = -1 And nbrOuts(0) = 0 And baseRunners = 1 Then
+            LNoSteal$ = LPossibleBunt$
+            Print #11, "RETURNING from LSteal: something from LPossibleBunt"
+            Exit Function
+        End If
+
+        Print #11, "RETURNING from LSteal: CONTINUE"
+        LNoSteal$ = "CONTINUE"
+
+    End If
+
+    Print #11, "RETURNING from LSteal: CONTINUE"
+    LNoSteal$ = "CONTINUE"
+
+End Function
+
 
 '----------------------------------------
 '            INFO Subroutine
