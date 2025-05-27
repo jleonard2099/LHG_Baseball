@@ -174,7 +174,7 @@ Sub ConvertSched6to7 (targetFile$, silent)
 
         'Kill targetFile$
 
-        'Call FCopy(newFile$, targetFile$, Buff$, copyErr%)
+        'result$ = CopyFile$(newFile$, targetFile$)
 
         'Kill newFile$
 

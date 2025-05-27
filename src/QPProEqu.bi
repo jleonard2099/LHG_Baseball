@@ -5,6 +5,7 @@ Declare Function MGetKey (Row%, Col%)
 Declare Function Monitor%
 Declare Function OneColor% (FGColor, BGColor)
 Declare Function READDIR$(dirSpec$)
+Declare Function CopyFile$ (src$, dst$)
 Declare Sub AddInt (AElement, Value, NumEls)
 Declare Sub box0 (ULRow%, ULCol%, LRRow%, LRCol%, Char%, FGColor%, BGColor%)
 Declare Sub CapNum ()
