@@ -326,7 +326,7 @@ Dim Shared autoPlay, BV, compTeam, desigHit, D
 Dim Shared gameOver, endAllGames, FontColAdj
 Dim Shared gameLoc, gameTemp
 Dim Shared nbrStrikes, noLUFound, normalFinish
-Dim Shared P, pbpLine, pinchHitterFlag, pitchEraOpt, playerMode, playerOpt
+Dim Shared P, pbpLine, pinchHitterFlag, pinchRunnerFlag, pitchEraOpt, playerMode, playerOpt
 Dim Shared RE, RD, useInj, useRest, useVGA, dayOrNight
 Dim Shared strikeoutRating
 
