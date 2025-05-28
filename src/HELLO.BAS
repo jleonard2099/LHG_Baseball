@@ -3812,6 +3812,7 @@ Sub SOURCE ()
     Shared S2%, errorOnPlay%, I3
     Shared I1, P2, stealing, runnerOn2nd, SAH%, baseNbr!, I9
     Shared SO
+    Shared fbUnassisted, fbPitcherCoveringFirst%, AST%, DPC%, TB
 
     VV(0)  = 1 : VV(1)  = 1
     VV1(1) = 9 : VV1(1) = 9
@@ -3937,7 +3938,7 @@ Sub SOURCE ()
                 End If
             Next
 
-            '14955  ---> this is it's own routine used often
+            ' ---> this is it's own routine used often
             Call HITTINGLINES
 
             If useVGA = 1 Then
@@ -4740,7 +4741,7 @@ Sub SOURCE ()
             Call MAINSCREEN(D, P, nbrBalls, nbrStrikes, MO)
         End If
 
-        '13240 / *** base on balls ***
+        ' *** base on balls ***
         Call BASEONBALLS(S2%, D2, D, P)
         Call LBatterGoesTo1st
         GoTo LNextBatter0
@@ -4822,7 +4823,6 @@ Sub SOURCE ()
 
         ' *** balk ***
         If baseRunners = 0 Then
-            '13100 / *** fouled out of play ***
             Call FOULBALL
             GoTo LContinueBatter
         Else
@@ -4876,7 +4876,6 @@ Sub SOURCE ()
         End
 
         If baseRunners = 0 And SO <> 1 Then
-            '13100 / *** fouled out of play ***
             Call FOULBALL
             GoTo LContinueBatter
         End If
@@ -4910,9 +4909,8 @@ Sub SOURCE ()
 
     If H6% <= 19 Then
 
-        '13230 / *** wild pitch ***
+        ' *** wild pitch ***
         If baseRunners = 0 And SO <> 1 Then
-            '13100 / *** fouled out of play ***
             Call FOULBALL
             GoTo LContinueBatter
         End If
@@ -4962,7 +4960,7 @@ Sub SOURCE ()
 
     If H6% <= game_batRating(P, GM_BB, currLineupSlot(P)) + 25 Then 'ToDo [bm] I have 28 as the constant in an older version
         S2% = EVENT_INTERFERENCE
-        '13240 / *** base on balls ***
+        ' *** base on balls ***
         Call BASEONBALLS(S2%, D2, D, P)
         Call LBatterGoesTo1st
         GoTo LNextBatter0
@@ -5002,7 +5000,7 @@ Sub SOURCE ()
     If H7% <= SN Then
         Call PBP("It gets through the drawn-in infield!")
         Call DELAY
-        GoTo 13063
+        GoTo LInfSingle
     End If
 
     If H6% > game_batRating(P, GM_BAvg, currLineupSlot(P)) + I4 Then    'not a base hit
@@ -5445,7 +5443,9 @@ Sub SOURCE ()
                     A5%(2) = 11
                     A5%(1) = 0
                     A5%(0) = 0
-                    GoTo LProcessOutAndDP
+                    Call LProcessOutAndDP
+                    GoTo LCheckForOptionsOrQuit
+
                 End If
 
                 If currFielder = 2 Then
@@ -5454,7 +5454,8 @@ Sub SOURCE ()
                     A5%(2) = 11
                     A5%(1) = 0
                     A5%(0) = 0
-                    GoTo LProcessOutAndDP
+                    Call LProcessOutAndDP
+                    GoTo LCheckForOptionsOrQuit
                 End If
 
             End If
@@ -5468,7 +5469,9 @@ Sub SOURCE ()
                 A5%(1) = 0
                 A5%(2) = 0
                 A5%(0) = 0
-                GoTo LProcessOutAndDP
+                Call LProcessOutAndDP
+                GoTo LCheckForOptionsOrQuit
+
             End If
 
             If baseRunners = 5 And gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 7 And nbrOuts(0) = 0 _
@@ -5483,7 +5486,8 @@ Sub SOURCE ()
                 A5%(1) = 0
                 A5%(2) = 0
                 A5%(0) = 0
-                GoTo LProcessOutAndDP
+                Call LProcessOutAndDP
+                GoTo LCheckForOptionsOrQuit
             End If
 
             If baseRunners = 7 And INFPOS% = INF_IN And currFielder = 4 Then
@@ -5495,7 +5499,8 @@ Sub SOURCE ()
                 A5%(1) = 0
                 A5%(2) = 0
                 A5%(0) = 0
-                GoTo LProcessOutAndDP
+                Call LProcessOutAndDP
+                GoTo LCheckForOptionsOrQuit
             End If
 
 
@@ -5508,7 +5513,8 @@ Sub SOURCE ()
                 A5%(1) = 0
                 A5%(2) = 0
                 A5%(0) = 0
-                GoTo LProcessOutAndDP
+                Call LProcessOutAndDP
+                GoTo LCheckForOptionsOrQuit
             End If
 
 
@@ -5534,7 +5540,8 @@ Sub SOURCE ()
                 A5%(0) = 1
             End If
 
-            GoTo LProcessOutAndDP
+            Call LProcessOutAndDP
+            GoTo LCheckForOptionsOrQuit
 
         Else
 
@@ -5586,9 +5593,8 @@ Sub SOURCE ()
 
                 If I1 < 77 Then
 
-                    '13230 / *** wild pitch ***
+                    ' *** wild pitch ***
                     If baseRunners = 0 And SO <> 1 Then
-                        '13100 / *** fouled out of play ***
                         Call FOULBALL
                         GoTo LContinueBatter
                     Else
@@ -5927,7 +5933,7 @@ Sub SOURCE ()
             GoTo LHomeRun
         End If
 
-        13063 '
+       LInfSingle:
         Call Rolld100(H6%)
         S2% = EVENT_1B
 
@@ -5952,7 +5958,8 @@ Sub SOURCE ()
 
     '----- NOODLE -----
 
-    GoTo LProcessOutAndDP2
+    Call LProcessOutAndDP2
+    GoTo LCheckForOptionsOrQuit
 
    LHomeRun:
     ' *** HOME RUN S2%=10 ***
@@ -5985,7 +5992,6 @@ Sub SOURCE ()
         If RN <= 15 And teamRat_GAME(1, 13) = 8 And currFielder = 7 Then Call PBP("IT'S GONE"): pbpString$ = "LAST SEEN BOUNCING DOWN WAVELAND AVENUE!!!": Call LHomeRun2: GoTo LCheckForOptionsOrQuit
         If RN <= 25 Then
 
-            '13580
             If teamRat_GAME(1, 13) = 21 And currFielder = 7 Then Call PBP("IT CLEARS THE GREEN MONSTER!!"): pbpString$ = "HOME RUN!!!": Call LHomeRun2: GoTo LCheckForOptionsOrQuit
             If teamRat_GAME(1, 13) = 27 And currFielder = 7 Then Call PBP("IT CLEARS THE SCREEN!!"): pbpString$ = "HOME RUN!!!": Call LHomeRun2: GoTo LCheckForOptionsOrQuit
             If teamRat_GAME(1, 13) = 33 And P = 1 Then Call PBP("ADIOS!! THAT'S A HOME RUN!!"): pbpString$ = "THE BUSCH EAGLE FLAPS ITS WINGS": Call LHomeRun2: GoTo LCheckForOptionsOrQuit
@@ -5995,7 +6001,6 @@ Sub SOURCE ()
             If teamRat_GAME(1, 13) = 8 Or teamRat_GAME(1, 13) = 40 Then pbpString$ = "IT CLEARS THE IVY FOR A HOME RUN!!": Call LHomeRun2: GoTo LCheckForOptionsOrQuit
             If teamRat_GAME(1, 13) = 23 And (currFielder = 7 Or currFielder = 9) Then Call PBP("IT'S LONG, IT'S LONG, IT'S GONE!!"): pbpString$ = "THAT ONE'S IN THE UPPER DECK": Call LHomeRun2: GoTo LCheckForOptionsOrQuit
 
-            '13545
             Call Rolld100(RN)
             Select Case RN
                 Case 1 To 7
@@ -6095,65 +6100,6 @@ Sub SOURCE ()
 
 
     '----- NOODLE -----
-
-   LProcessOutAndDP:    'ToDo [bm] tackle this next
-    ' 3
-    CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
-
-    nbrOuts(0) = nbrOuts(0) + 1
-    nbrOuts(1) = nbrOuts(1) + 1
-    player$(4) = batters$(D, fielder(D, currFielder))
-
-    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-    Call CREDITREGPO(currFielder, D)
-
-    S2% = EVENT_DP
-
-    Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-    If errorOnPlay% = 1 Then Goto LCheckForOptionsOrQuit
-
-    Call CREDITASSIST(currFielder, D)
-
-    If currFielder = 5 And nbrOuts(0) < 2 And Int(Rnd(1) * 10) + 1 <= batRating(P, lineupPlayer(P, b2Base(1)), SS_B_Run) Then
-        A5%(0) = 1
-        A5%(1) = 11
-        A5%(2) = 0
-        A5%(3) = 0
-        If nbrOuts(0) < 2 Then A5%(2) = 1: A5%(3) = 1
-    Else
-        A5%(0) = 11
-        A5%(1) = 1
-        A5%(2) = 0
-        A5%(3) = 0
-        If nbrOuts(0) < 2 Then A5%(2) = 1: A5%(3) = 1
-    End If
-
-    nbrOuts(0) = nbrOuts(0) + 1
-    nbrOuts(1) = 2
-
-    Call DPRELAY
-    CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
-    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-    Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
-    Call Rolld100(RN)
-
-    DPC% = 0
-    If RN <= 80 Then
-        pbpString$ = " --- DOUBLE PLAY ---"
-    Else
-        'RN > 80
-        pbpString$ = " --- TWIN KILLING ---"
-    End If
-    Call PBP(pbpString$)
-
-    DP%(D) = DP%(D) + 1
-    D3%(D) = D3%(D) + 1
-    TB = 0
-    Call INCREMENTHIT(P, D, MO)
-
-    GoTo LCheckForOptionsOrQuit
-
-
     '----- NOODLE -----
 
 
@@ -6173,7 +6119,8 @@ Sub SOURCE ()
                 A5%(1) = 0
                 A5%(2) = 11
                 A5%(3) = 0
-                GoTo LProcessOutAndDP2
+                Call LProcessOutAndDP2
+                GoTo LCheckForOptionsOrQuit
 
             Else
 
@@ -6185,7 +6132,8 @@ Sub SOURCE ()
                 A5%(2) = 0
                 A5%(3) = 0
                 '-- this may not be necessary since the next statement is looking for W = 4
-                GoTo LProcessOutAndDP2
+                Call LProcessOutAndDP2
+                GoTo LCheckForOptionsOrQuit
 
             End If
 
@@ -6203,7 +6151,8 @@ Sub SOURCE ()
                 A5%(2) = 0
                 A5%(3) = 0
                 '-- this may not be necessary since the next statement is looking for W = 4
-                GoTo LProcessOutAndDP2
+                Call LProcessOutAndDP2
+                GoTo LCheckForOptionsOrQuit
 
             Else
                 Call PITCHERNAME(currFielder, D)
@@ -6214,7 +6163,8 @@ Sub SOURCE ()
                 A5%(2) = 0
                 A5%(3) = 0
                 '-- this may not be necessary since the next statement is looking for W = 4
-                GoTo LProcessOutAndDP2
+                Call LProcessOutAndDP2
+                GoTo LCheckForOptionsOrQuit
 
             End If
 
@@ -6275,27 +6225,7 @@ Sub SOURCE ()
 
         End If
 
-       LProcessOutAndDP2: 'Call DELAY
-        If fbUnassisted% = 0 Then Call CREDITASSIST(currFielder, D)
-        fbUnassisted% = 0
-
-        If DPC% = 1 And A5%(0) = 1 Then DPC% = 2
-
-        Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-
-        If DPC% = 2 Then
-            DPC% = 0
-            Call DPSAFE
-        End If
-
-        If I3 > 4 Then I3 = 1
-
-        Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
-
-        nbrOuts(0) = nbrOuts(0) + 1
-        nbrOuts(1) = nbrOuts(1) + 1
-        CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
-
+        Call LProcessOutAndDP2
         GoTo LCheckForOptionsOrQuit
 
     Else
@@ -6309,7 +6239,7 @@ Sub SOURCE ()
             If baseRunners = 0 Or baseRunners = 2 Or baseRunners = 3 Or baseRunners = 6 Then
                 A5%(0) = 11
                 Call OUTATFIRST(currFielder, D, fbUnassisted%, fbPitcherCoveringFirst%)
-                GoTo 13693
+                GoTo LGroundBall
             End If
 
             Call Rolld100(RN)
@@ -6320,11 +6250,12 @@ Sub SOURCE ()
             A5%(3) = 1
 
             If INFPOS% = INF_BACK And currFielder = 2 Then A5%(3) = 0
-            If baseRunners = 5 Or baseRunners = 7 Or baseRunners = 4 Then 13725
+            If baseRunners = 5 Or baseRunners = 7 Or baseRunners = 4 Then Goto LMoveRunners
 
             A5%(1) = 11
 
-            GoTo LProcessOutAndDP2
+            Call LProcessOutAndDP2
+            GoTo LCheckForOptionsOrQuit
 
         End If
 
@@ -6336,7 +6267,7 @@ Sub SOURCE ()
 
         If Not (baseRunners = 1 Or baseRunners = 4 Or baseRunners = 5 Or baseRunners = 7) Then
 
-            13693 '
+           LGroundBall:
             Call Rolld100(RN)
             A5%(1) = 0
             A5%(2) = 0
@@ -6372,11 +6303,12 @@ Sub SOURCE ()
 
         End If
 
-        GoTo LProcessOutAndDP2
+        Call LProcessOutAndDP2
+        GoTo LCheckForOptionsOrQuit
 
     End If
 
-    13725 '
+   LMoveRunners:
     If baseRunners <> 4 And baseRunners <> 7 Then
 
         If gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 6 And nbrOuts(0) = 0 And INFPOS% > INF_BACK And currFielder = 5 Or _
@@ -6386,9 +6318,9 @@ Sub SOURCE ()
 
         Else
 
-            If INFPOS% = INF_BACK And currFielder <> 2 Then A5%(1) = 11: GoTo LProcessOutAndDP2
-            If INFPOS% > INF_BACK And currFielder = 5 Or INFPOS% > INF_BACK And currFielder = 3 Then A5%(3) = 0: A5%(1) = 11: GoTo LProcessOutAndDP2
-            If INFPOS% > INF_BACK And (currFielder = 1 Or currFielder = 3) Then A5%(3) = 0: A5%(1) = 1: A5%(0) = 11: GoTo LProcessOutAndDP2
+            If INFPOS% = INF_BACK And currFielder <> 2 Then A5%(1) = 11: Call LProcessOutAndDP2: GoTo LCheckForOptionsOrQuit
+            If INFPOS% > INF_BACK And currFielder = 5 Or INFPOS% > INF_BACK And currFielder = 3 Then A5%(3) = 0: A5%(1) = 11: Call LProcessOutAndDP2: GoTo LCheckForOptionsOrQuit
+            If INFPOS% > INF_BACK And (currFielder = 1 Or currFielder = 3) Then A5%(3) = 0: A5%(1) = 1: A5%(0) = 11: Call LProcessOutAndDP2: GoTo LCheckForOptionsOrQuit
             If INFPOS% = INF_IN And currFielder = 4 Or INFPOS% = INF_IN And currFielder = 6 And RN <= 90 Then
                 A5%(3) = 0
                 A5%(1) = 11
@@ -6460,8 +6392,8 @@ Sub SOURCE ()
 
     End If
 
-    GoTo LProcessOutAndDP2
-
+    Call LProcessOutAndDP2
+    GoTo LCheckForOptionsOrQuit
 
     '-----------------------------------------------------
     '--- THIS IS CRITICAL FOR PBP MOVING AUTOMATICALLY ---
@@ -6558,7 +6490,7 @@ Sub SOURCE ()
             If nbrOuts(0) <> 3 And SH <> 2 Then
                 '--- start of a new sub ???
                 '--- where does 4111 end ???
-                14111 '
+                14111 'LPlayAtThird
                 If currFielder <> 5 Then
                     Call CREDITASSIST(currFielder, D)
                     currFielder = 5
@@ -6747,7 +6679,7 @@ Sub SOURCE ()
                 '-- turn this into a unique sub?
                 '-- or direct other code to this loop
                 '-- with a value of 4 and a 'skip' variable
-                14141 '
+                14141 'LSacBunt
 
                 Call ADDPIT(D, currPitcher(D), 15)
 
@@ -6839,7 +6771,7 @@ Sub SOURCE ()
                     GoTo LCheckForOptionsOrQuit
 
                 Case 2
-                    14157 '
+                    14157 'LBuntSingle
                     S2% = EVENT_INF_SINGLE
                     Call PBP(player$(0) + " lays down a great bunt...")
 
@@ -7037,7 +6969,7 @@ Sub SOURCE ()
             End Select
 
         Case 9
-            14175 '
+            14175 'LStrike
             nbrStrikes = nbrStrikes + 1
 
             Call WINDEX
@@ -8666,7 +8598,6 @@ Sub LHomeRun2
     Call PBP(pbpString$)
     Call DELAY
 
-    '13544
     A5%(3) = 1
     A5%(2) = 2
     A5%(1) = 3
@@ -8766,7 +8697,6 @@ Function LPassedBall$
     Shared SO
 
     If baseRunners = 0 And SO <> 1 Then
-        '13100 / *** fouled out of play ***
         Call FOULBALL
         LPassedBall$ = "LContinueBatter"
         Exit Function
@@ -9069,6 +8999,93 @@ Function LNoSteal$
     LNoSteal$ = "CONTINUE"
 
 End Function
+
+
+Sub LProcessOutAndDP
+    Shared S2%, errorOnPlay%, I3
+    Shared stealing, fbPitcherCoveringFirst%, AST%, DPC%, TB
+
+    CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
+
+    nbrOuts(0) = nbrOuts(0) + 1
+    nbrOuts(1) = nbrOuts(1) + 1
+    player$(4) = batters$(D, fielder(D, currFielder))
+
+    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+    Call CREDITREGPO(currFielder, D)
+
+    S2% = EVENT_DP
+
+    Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+    If errorOnPlay% = 1 Then Exit Sub
+
+    Call CREDITASSIST(currFielder, D)
+
+    If currFielder = 5 And nbrOuts(0) < 2 And Int(Rnd(1) * 10) + 1 <= batRating(P, lineupPlayer(P, b2Base(1)), SS_B_Run) Then
+        A5%(0) = 1
+        A5%(1) = 11
+        A5%(2) = 0
+        A5%(3) = 0
+        If nbrOuts(0) < 2 Then A5%(2) = 1: A5%(3) = 1
+    Else
+        A5%(0) = 11
+        A5%(1) = 1
+        A5%(2) = 0
+        A5%(3) = 0
+        If nbrOuts(0) < 2 Then A5%(2) = 1: A5%(3) = 1
+    End If
+
+    nbrOuts(0) = nbrOuts(0) + 1
+    nbrOuts(1) = 2
+
+    Call DPRELAY
+    CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
+    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+    Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
+    Call Rolld100(RN)
+
+    DPC% = 0
+    If RN <= 80 Then
+        pbpString$ = " --- DOUBLE PLAY ---"
+    Else
+        'RN > 80
+        pbpString$ = " --- TWIN KILLING ---"
+    End If
+    Call PBP(pbpString$)
+
+    DP%(D) = DP%(D) + 1
+    D3%(D) = D3%(D) + 1
+    TB = 0
+    Call INCREMENTHIT(P, D, MO)
+
+End Sub
+
+
+Sub LProcessOutAndDP2
+    Shared S2%, errorOnPlay%, I3
+    Shared stealing, fbUnassisted, fbPitcherCoveringFirst%, AST%, DPC%
+
+    If fbUnassisted% = 0 Then Call CREDITASSIST(currFielder, D)
+    fbUnassisted% = 0
+
+    If DPC% = 1 And A5%(0) = 1 Then DPC% = 2
+
+    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+
+    If DPC% = 2 Then
+        DPC% = 0
+        Call DPSAFE
+    End If
+
+    If I3 > 4 Then I3 = 1
+
+    Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
+
+    nbrOuts(0) = nbrOuts(0) + 1
+    nbrOuts(1) = nbrOuts(1) + 1
+    CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
+
+End Sub
 
 
 '----------------------------------------
@@ -12735,7 +12752,7 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag)
     If I3 > 0 Then I1 = 84
     For pIdx = I1 To I1 + 2
         If teamMgrProfileVal(D, pIdx) >= 0 Then     'if not already used
-            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'need to break into separate IF's, because QB64 does not short-circuit
+            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'needed to break into separate IF's, because QB64 does not short-circuit
                 I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
             End If
         End If
@@ -12746,7 +12763,7 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag)
 
     For pIdx = I1 To I1 + 2
         If teamMgrProfileVal(D, pIdx) >= 0 THen     'if not already used
-            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'need to break into separate IF's, because QB64 does not short-circuit
+            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'needed to break into separate IF's, because QB64 does not short-circuit
                 I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
             End If
         End If
@@ -12769,7 +12786,7 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag)
 
     For pIdx = I1 To I1 + 2
         If teamMgrProfileVal(D, pIdx) >= 0 Then     'if not already used
-            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'need to break into separate IF's, because QB64 does not short-circuit
+            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'needed to break into separate IF's, because QB64 does not short-circuit
                 I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
             End If
         End If
@@ -12780,7 +12797,7 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag)
 
     For pIdx = I1 To I1 + 2
         If teamMgrProfileVal(D, pIdx) >= 0 Then     'if not already used
-            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'need to break into separate IF's, because QB64 does not short-circuit
+            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'needed to break into separate IF's, because QB64 does not short-circuit
                 I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
             End if
         End If
@@ -12805,7 +12822,7 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag)
 
     For pIdx = 61 To 70
         If teamMgrProfileVal(D, pIdx) >= 0 Then     'if not already used
-            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'need to break into separate IF's, because QB64 does not short-circuit
+            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'needed to break into separate IF's, because QB64 does not short-circuit
                 I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
             End If
         End If
@@ -12816,7 +12833,7 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag)
 
     For pIdx = 61 To 70
         If teamMgrProfileVal(D, pIdx) >= 0 Then     'if not already used
-            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'need to break into separate IF's, because QB64 does not short-circuit
+            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'needed to break into separate IF's, because QB64 does not short-circuit
                 I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
             End If
         End If

@@ -113,7 +113,7 @@ WD$ = WindDirection
 | ------ | ------- |
 | (6 times)
 | 779   | player being substituted |
-| 780   | "I" ? |
+| 780   | inning |
 | 781   | substitute |
 | 782   | pct. |
 | ------ | ------- |
