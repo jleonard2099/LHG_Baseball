@@ -3811,8 +3811,9 @@ Sub SOURCE ()
 
     Shared S2%, errorOnPlay%, I3
     Shared I1, P2, stealing, runnerOn2nd, SAH%, baseNbr!, I9
-    Shared SO
+    Shared SO, SH
     Shared fbUnassisted, fbPitcherCoveringFirst%, AST%, DPC%, TB
+    Shared INFPOS%
 
     VV(0)  = 1 : VV(1)  = 1
     VV1(1) = 9 : VV1(1) = 9
@@ -6468,7 +6469,15 @@ Sub SOURCE ()
 
     Call Rolld100(RN)
 
-    If RN <= 52 Then 14175
+    If RN <= 52 Then
+        go$ = LStrike$(RN)
+        If go$  = "LStrikeout"   Then GoTo LStrikeout
+        If go$  = "LNextBatter1" Then GoTo LNextBatter1
+        If go$ <> "CONTINUE" Then
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LStrike: "; go$
+            End
+        End If
+    End If
 
     If I = 5 And SH = 1 Then I = 6
 
@@ -6490,36 +6499,11 @@ Sub SOURCE ()
             If nbrOuts(0) <> 3 And SH <> 2 Then
                 '--- start of a new sub ???
                 '--- where does 4111 end ???
-                14111 'LPlayAtThird
-                If currFielder <> 5 Then
-                    Call CREDITASSIST(currFielder, D)
-                    currFielder = 5
-                    Call CREDITREGPO(currFielder, D)
-                    player$(5) = player$(4)
-                    Call GETFIELDNAME(currFielder, D)
-                Else
-                    Call CREDITASSIST(currFielder, D)
-                    currFielder = 6
-                    Call CREDITREGPO(currFielder, D)
-                    player$(5) = player$(4)
-                    Call GETFIELDNAME(currFielder, D)
-                End If
-
-                Call PBP(player$(5) + " throws to " + player$(4) + " at 3rd")
-                A5%(3) = 10
-                Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-                nbrOuts(0) = nbrOuts(0) + 1
-                nbrOuts(1) = nbrOuts(1) + 1
-
-                CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
-
-                If SH = 1 Then
-                    If nbrOuts(0) < 3 Then
-                        GoTo LNextBatter1
-                    Else
-                        'nbrOuts(0) >= 3
-                        currLineupSlot(P) = currLineupSlot(P) - 1
-                    End If
+                go$ = LPlayAtThird$
+                If go$  = "LNextBatter1" Then GoTo LNextBatter1
+                If go$ <> "CONTINUE" Then
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LPlayAtThird: "; go$
+                    End
                 End If
 
             End If
@@ -6745,7 +6729,13 @@ Sub SOURCE ()
             Select Case I + 1
                 Case 1
 
-                    If baseRunners > 0 Then 14157
+                    If baseRunners > 0 Then
+                        go$ = LBuntSingle$
+                        If go$ = "LNextBatter0"           Then GoTo LNextBatter0
+                        If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LBuntSingle: "; go$
+                        End
+                    End If
                     Call PBP(player$(0) + " drops it right down the line")
                     Call PBP(player$(4) + " lets it roll...")
                     Call PBP(player$(0) + " is trying for 2nd!!")
@@ -6771,19 +6761,10 @@ Sub SOURCE ()
                     GoTo LCheckForOptionsOrQuit
 
                 Case 2
-                    14157 'LBuntSingle
-                    S2% = EVENT_INF_SINGLE
-                    Call PBP(player$(0) + " lays down a great bunt...")
-
-                    Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-                    If errorOnPlay% = 1 Then Goto LCheckForOptionsOrQuit
-
-                    Call PBP(player$(4) + " fields... but too late!")
-                    S2% = -EVENT_INF_SINGLE
-                    go$ = LSingle$
-                    If go$ = "LNextBatter0" Then GoTo LNextBatter0
+                    go$ = LBuntSingle$
+                    If go$ = "LNextBatter0"           Then GoTo LNextBatter0
                     If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
-                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LSINGLE: "; go$
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result B from LBuntSingle: "; go$
                     End
 
                 Case 3
@@ -6900,7 +6881,13 @@ Sub SOURCE ()
                     If SH = 1 And RN <= 42 Then
                         currFielder = 2
                         Call GETFIELDNAME(currFielder, D)
-                        GoTo 14111
+
+                        go$ = LPlayAtThird$
+                        If go$  = "LNextBatter1" Then GoTo LNextBatter1
+                        If go$ <> "CONTINUE" Then
+                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LPlayAtThird: "; go$
+                            End
+                        End If
                     End If
 
                     If nbrStrikes = 1 Then
@@ -6969,7 +6956,14 @@ Sub SOURCE ()
             End Select
 
         Case 9
-            14175 'LStrike
+            go$ = LStrike$(RN)
+            If go$  = "LStrikeout"   Then GoTo LStrikeout
+            If go$  = "LNextBatter1" Then GoTo LNextBatter1
+            If go$ <> "CONTINUE" Then
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result B from LStrike: "; go$
+                End
+            End If
+
             nbrStrikes = nbrStrikes + 1
 
             Call WINDEX
@@ -6987,11 +6981,19 @@ Sub SOURCE ()
                 Locate 2, 58: Print nbrStrikes
             End If
 
-            If nbrStrikes = 3 Then
-                GoTo LStrikeout
-            End If
+            If nbrStrikes = 3 Then GoTo LStrikeout
 
-            If SH = 1 And RN <= 42 Then currFielder = 2: Call GETFIELDNAME(currFielder, D): GoTo 14111
+            If SH = 1 And RN <= 42 Then
+                currFielder = 2
+                Call GETFIELDNAME(currFielder, D)
+
+                go$ = LPlayAtThird$
+                If go$  = "LNextBatter1" Then GoTo LNextBatter1
+                If go$ <> "CONTINUE" Then
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LPlayAtThird: "; go$
+                    End
+                End If
+            End If
 
             If nbrStrikes = 1 Then
                 Call PBP("He has" + Str$(nbrStrikes) + " strike")
@@ -9086,6 +9088,108 @@ Sub LProcessOutAndDP2
     CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
 
 End Sub
+
+
+Function LPlayAtThird$
+    Shared S2%, errorOnPlay%, I3
+    Shared SH
+
+    If currFielder <> 5 Then
+        Call CREDITASSIST(currFielder, D)
+        currFielder = 5
+        Call CREDITREGPO(currFielder, D)
+        player$(5) = player$(4)
+        Call GETFIELDNAME(currFielder, D)
+    Else
+        Call CREDITASSIST(currFielder, D)
+        currFielder = 6
+        Call CREDITREGPO(currFielder, D)
+        player$(5) = player$(4)
+        Call GETFIELDNAME(currFielder, D)
+    End If
+
+    Call PBP(player$(5) + " throws to " + player$(4) + " at 3rd")
+    A5%(3) = 10
+    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+    nbrOuts(0) = nbrOuts(0) + 1
+    nbrOuts(1) = nbrOuts(1) + 1
+
+    CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
+
+    If SH = 1 Then
+        If nbrOuts(0) < 3 Then
+            LPlayAtThird$ =  "LNextBatter1"
+        Else
+            'nbrOuts(0) >= 3
+            currLineupSlot(P) = currLineupSlot(P) - 1
+        End If
+    End If
+
+    LPlayAtThird$ = "CONTINUE"
+
+End Function
+
+
+Function LBuntSingle$
+    Shared S2%, errorOnPlay%, I3
+    Shared stealing
+
+    S2% = EVENT_INF_SINGLE
+    Call PBP(player$(0) + " lays down a great bunt...")
+
+    Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+    If errorOnPlay% = 1 Then LBuntSingle$ = "LCheckForOptionsOrQuit": Exit Function
+
+    Call PBP(player$(4) + " fields... but too late!")
+    LBuntSingle$ = LSingle$
+
+End Function
+
+
+Function LStrike$(RN)
+    Shared SH
+    Shared imageScreen&, INFPOS%, backupScreen&
+
+    nbrStrikes = nbrStrikes + 1
+
+    Call WINDEX
+    Call Rolld100(RN)
+
+    pbpString$ = player$(0) + " "
+    If RN <= 13 Or SH = 1 And RN <= 42 Then pbpString$ = pbpString$ + "misses the pitch"
+    If RN > 13 And RN <= 42 And SH <> 1 Then pbpString$ = pbpString$ + "takes a called strike"
+    If RN > 42 Then pbpString$ = pbpString$ + "bunts it foul"
+    Call PBP(pbpString$)
+
+    If useVGA = 1 Then
+        PrintOnGfx 63, 28, Str$(nbrStrikes), imageScreen&
+    Else
+        Locate 2, 58: Print nbrStrikes
+    End If
+
+    If nbrStrikes = 3 Then LStrike$ = "LStrikeout": Exit Function
+
+    If SH = 1 And RN <= 42 Then
+        currFielder = 2
+        Call GETFIELDNAME(currFielder, D)
+        LStrike$ = LPlayAtThird$
+        Exit Function
+    End If
+
+    If nbrStrikes = 1 Then
+        Call PBP("He has" + Str$(nbrStrikes) + " strike")
+    Else
+        'nbrStrikes > 1
+        Call PBP("He has" + Str$(nbrStrikes) + "strikes")
+    End If
+
+    If baseRunners = 4 Or baseRunners = 2 Then INFPOS% = INF_BACK
+
+    If useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
+
+    LStrike$ = "CONTINUE"
+
+End Function
 
 
 '----------------------------------------
