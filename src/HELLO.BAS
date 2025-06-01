@@ -5060,16 +5060,14 @@ Sub SOURCE ()
 
                                     Call DELIVERY(D)
 
-                                    'What is this used for?
-                                    Call Rolld100(RN)
-
                                     Call GetPBPString(60, 1170, Y$, D)
                                     Call PBP(Y$ + " " + X$)
 
                                     Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-
                                     If errorOnPlay% = 1 Then Goto LCheckForOptionsOrQuit
-                                    GoTo 14025
+
+                                    Call LFlyout
+                                    GoTo LCheckForOptionsOrQuit
 
                                 End If
 
@@ -5110,60 +5108,7 @@ Sub SOURCE ()
 
                                 End If
 
-                                14066 '
-                                If b2Base(2) <> 0 Then
-
-                                    speedRating = batRating(P, lineupPlayer(P, b2Base(2)), SS_B_Run)
-                                    fldArm = (batRating(D, fielder(D, currFielder), SS_B_Arm) - 5) * 25
-                                    offset = (speedRating - 5) * 25 - fldArm
-
-                                    RN = Int(Rnd(1) * 1000) + 1
-
-                                    '-- These are ALL conditions for assigning the same value
-                                    If currFielder = 9 And S2% = EVENT_FLY_DEEP    And RN <= 800 + offset And P2 <> OFF_HIT_N_RUN Or _
-                                       currFielder = 9 And S2% = EVENT_FLY_REGULAR And RN <= 400 + offset And P2 <> OFF_HIT_N_RUN Or _
-                                       currFielder = 8 And S2% = EVENT_FLY_DEEP    And RN <= 700 + offset And P2 <> OFF_HIT_N_RUN Or _
-                                       currFielder = 8 And S2% = EVENT_FLY_REGULAR And RN <= 350 + offset And P2 <> OFF_HIT_N_RUN Or _
-                                       currFielder = 7 And S2% = EVENT_FLY_DEEP    And RN <= 250 + offset And P2 <> OFF_HIT_N_RUN Then A5%(2) = 1
-
-                                    If P2 = OFF_HIT_N_RUN And speedRating > 6 And currFielder = 9 And S2% = EVENT_FLY_DEEP And RN <= 400 + offset Or _
-                                       P2 = OFF_HIT_N_RUN And speedRating > 6 And currFielder = 8 And S2% = EVENT_FLY_DEEP And RN <= 400 + offset Then A5%(2) = 1
-
-                                    If A5%(2) <> 1 And S2% = EVENT_FLY_REGULAR And P2 <> OFF_HIT_N_RUN And baseRunners < 6 Then
-
-                                        If (currFielder = 9 And RN > 800) Or (currFielder = 8 And RN > 840) Then
-                                            baseNbr! = 3
-                                            If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try for 3rd on regular fly to CF or RF..."
-                                            If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
-                                        End If
-
-                                        If currFielder = 7 And P2 <> OFF_HIT_N_RUN And baseRunners < 6 And RN > 880 Then
-                                            baseNbr! = 3
-                                            If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try for 3rd on regular fly to LF..."
-                                            If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
-                                        End If
-
-                                    End If
-
-                                End If
-
-                                If b2Base(1) <> 0 Then
-                                    RN = Int(Rnd(1) * 1000) + 1
-                                    A5%(1) = 0
-                                    I3 = (batRating(P, lineupPlayer(P, b2Base(1)), SS_B_Run) - 5) * 25
-                                    I4 = (batRating(D, fielder(D, currFielder), SS_B_Arm) - 5) * 25
-                                    J5 = I3 - I4
-
-                                    If S2% = EVENT_FLY_DEEP And P2 <> OFF_HIT_N_RUN And baseRunners = 1 And RN <= 100 + J5 Then
-                                        baseNbr! = 2
-                                        If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try for 2nd on deep fly..."
-                                        If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
-                                    End If
-                                    ' I8! = 2
-                                    ' LN% = 3308
-                                End If
-
-                                Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+                                Call LAttemptToAdvance
                                 GoTo LCheckForOptionsOrQuit
 
                             Case 34 To 100
@@ -5190,49 +5135,8 @@ Sub SOURCE ()
 
                                 '--- where does this end?
                                 '--- can we turn into subroutine?
-                                14025 '
-                                Call CREDITREGPO(currFielder, D)
-                                Call CAUGHTFLY(RN, S2%, D)
-
-                                nbrOuts(0) = nbrOuts(0) + 1
-                                nbrOuts(1) = nbrOuts(1) + 1
-
-                                CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
-                                If nbrOuts(0) = 3 Then Goto LCheckForOptionsOrQuit
-
-                                Call Rolld100(RN)
-
-                                If S2% = EVENT_FLY_SHALLOW And baseRunners = 1 And RN <= 33 And P2 = OFF_HIT_N_RUN Or _
-                                   S2% = EVENT_FLY_SHALLOW And baseRunners = 5 And RN <= 33 Then   'Double Play
-                                    A5%(1) = 10
-                                    nbrOuts(0) = nbrOuts(0) + 1
-                                    nbrOuts(1) = nbrOuts(1) + 1
-
-                                    CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
-
-                                    D3%(D) = D3%(D) + 1
-                                    DP%(D) = DP%(D) + 1
-
-                                    Call CREDITASSIST(currFielder, D)
-
-                                    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-                                    GoTo LCheckForOptionsOrQuit
-
-                                End If
-
-                                If b2Base(3) > 0 Then
-                                    baseNbr! = 4
-                                    If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try to score..."
-                                    If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
-                                End If
-
-                                If I9 = 1 Then
-                                    I9 = 0
-                                    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-                                    GoTo LCheckForOptionsOrQuit
-                                Else
-                                    GoTo 14066
-                                End If
+                                Call LFlyout
+                                GoTo LCheckForOptionsOrQuit
 
                         End Select
 
@@ -9264,6 +9168,122 @@ Function LGoodBunt$
     End If
 
 End Function
+
+
+Sub LFlyout
+    Shared S2%, errorOnPlay%, I3
+    Shared I1, P2, stealing, runnerOn2nd, SAH%, baseNbr!, I9
+    Shared fbUnassisted, fbPitcherCoveringFirst%, AST%, DPC%
+    Shared SH
+
+    Call CREDITREGPO(currFielder, D)
+
+    Call Rolld100(RN)
+    Call CAUGHTFLY(RN, S2%, D)
+
+    nbrOuts(0) = nbrOuts(0) + 1
+    nbrOuts(1) = nbrOuts(1) + 1
+
+    CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
+    If nbrOuts(0) = 3 Then Exit Sub
+
+    Call Rolld100(RN)
+
+    If S2% = EVENT_FLY_SHALLOW And baseRunners = 1 And RN <= 33 And P2 = OFF_HIT_N_RUN Or _
+       S2% = EVENT_FLY_SHALLOW And baseRunners = 5 And RN <= 33 Then   'Double Play
+        A5%(1) = 10
+        nbrOuts(0) = nbrOuts(0) + 1
+        nbrOuts(1) = nbrOuts(1) + 1
+
+        CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
+
+        D3%(D) = D3%(D) + 1
+        DP%(D) = DP%(D) + 1
+
+        Call CREDITASSIST(currFielder, D)
+
+        Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+        Exit Sub
+
+    End If
+
+    If b2Base(3) > 0 Then
+        baseNbr! = 4
+        If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try to score..."
+        If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
+    End If
+
+    If I9 = 1 Then  'no throw
+        I9 = 0
+        Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+    Else
+        Call LAttemptToAdvance
+    End If
+
+End Sub
+
+
+Sub LAttemptToAdvance
+    Shared S2%, errorOnPlay%, I3
+    Shared I1, P2, stealing, runnerOn2nd, SAH%, baseNbr!, I9
+    Shared fbUnassisted, fbPitcherCoveringFirst%, AST%, DPC%
+    Shared SH
+
+    If b2Base(2) <> 0 Then
+
+        speedRating = batRating(P, lineupPlayer(P, b2Base(2)), SS_B_Run)
+        fldArm = (batRating(D, fielder(D, currFielder), SS_B_Arm) - 5) * 25
+        offset = (speedRating - 5) * 25 - fldArm
+
+        RN = Int(Rnd(1) * 1000) + 1
+
+        '-- These are ALL conditions for assigning the same value
+        If  currFielder = 9 And S2% = EVENT_FLY_DEEP    And RN <= 800 + offset And P2 <> OFF_HIT_N_RUN Or _
+            currFielder = 9 And S2% = EVENT_FLY_REGULAR And RN <= 400 + offset And P2 <> OFF_HIT_N_RUN Or _
+            currFielder = 8 And S2% = EVENT_FLY_DEEP    And RN <= 700 + offset And P2 <> OFF_HIT_N_RUN Or _
+            currFielder = 8 And S2% = EVENT_FLY_REGULAR And RN <= 350 + offset And P2 <> OFF_HIT_N_RUN Or _
+            currFielder = 7 And S2% = EVENT_FLY_DEEP    And RN <= 250 + offset And P2 <> OFF_HIT_N_RUN Then A5%(2) = 1
+
+        If  P2 = OFF_HIT_N_RUN And speedRating > 6 And currFielder = 9 And S2% = EVENT_FLY_DEEP And RN <= 400 + offset Or _
+            P2 = OFF_HIT_N_RUN And speedRating > 6 And currFielder = 8 And S2% = EVENT_FLY_DEEP And RN <= 400 + offset Then A5%(2) = 1
+
+        If A5%(2) <> 1 And S2% = EVENT_FLY_REGULAR And P2 <> OFF_HIT_N_RUN And baseRunners < 6 Then
+
+            If (currFielder = 9 And RN > 800) Or (currFielder = 8 And RN > 840) Then
+                baseNbr! = 3
+                If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try for 3rd on regular fly to CF or RF..."
+                If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
+            End If
+
+            If currFielder = 7 And P2 <> OFF_HIT_N_RUN And baseRunners < 6 And RN > 880 Then
+                baseNbr! = 3
+                If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try for 3rd on regular fly to LF..."
+                If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
+            End If
+
+        End If
+
+    End If
+
+    If b2Base(1) <> 0 Then
+        RN = Int(Rnd(1) * 1000) + 1
+        A5%(1) = 0
+        I3 = (batRating(P, lineupPlayer(P, b2Base(1)), SS_B_Run) - 5) * 25
+        I4 = (batRating(D, fielder(D, currFielder), SS_B_Arm) - 5) * 25
+        J5 = I3 - I4
+
+        If S2% = EVENT_FLY_DEEP And P2 <> OFF_HIT_N_RUN And baseRunners = 1 And RN <= 100 + J5 Then
+            baseNbr! = 2
+            If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try for 2nd on deep fly..."
+            If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
+        End If
+        ' I8! = 2
+        ' LN% = 3308
+    End If
+
+    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+
+End Sub
 
 
 '----------------------------------------
