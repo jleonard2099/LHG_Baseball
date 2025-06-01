@@ -6644,7 +6644,14 @@ Sub SOURCE ()
             GoTo LCheckForOptionsOrQuit
 
         Case 4
-            14140 'SHGOOD
+            go$ = LGoodBunt$
+            If go$ = "LNextBatter0"           Then GoTo LNextBatter0
+            If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+            If go$ <> "CONTINUE" Then
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LGoodBunt: "; go$
+                End
+            End If
+
             Call PBP(player$(0) + " lays down a good bunt...")
             Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
             Call PBP(player$(4) + " makes a nice play")
@@ -6663,46 +6670,12 @@ Sub SOURCE ()
                 '-- turn this into a unique sub?
                 '-- or direct other code to this loop
                 '-- with a value of 4 and a 'skip' variable
-                14141 'LSacBunt
-
-                Call ADDPIT(D, currPitcher(D), 15)
-
-                If fldPos(P, currLineupSlot(P)) = 1 Then
-                    Call INCPITOFF(P, currPitcher(P), LG_PB_Sac)
-                Else
-                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_Sac)
-                End If
-
-                Call Rolld100(RN)
-
-                If baseRunners = 5 And SH = 2 And RN > 98 Or RN > 97 Then
-                    S2% = -EVENT_INF_SINGLE
-                    Call PBP(player$(0) + " beats it out!")
-                    go$ = LSingle$
-                    If go$ = "LNextBatter0" Then GoTo LNextBatter0
-                    If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
-                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LSINGLE: "; go$
+                go$ =  LSacBunt$
+                If go$ = "LNextBatter0"           Then GoTo LNextBatter0
+                If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+                If go$ <> "CONTINUE" Then
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LSacBunt: "; go$
                     End
-                End If
-
-                A5%(0) = 11
-
-                Call PBP("The only play is to first")
-
-                CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
-
-                nbrOuts(0) = nbrOuts(0) + 1
-                nbrOuts(1) = nbrOuts(1) + 1
-
-                Call CREDITASSIST(currFielder, D)
-                Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-                Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
-
-                If nbrOuts(0) < 3 Then
-                    For I = 1 To 3
-                        A5%(I) = 1
-                    Next
-                    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
                 End If
 
             End If
@@ -6768,7 +6741,13 @@ Sub SOURCE ()
                     End
 
                 Case 3
-                    GoTo 14140
+                    go$ = LGoodBunt$
+                    If go$ = "LNextBatter0"           Then GoTo LNextBatter0
+                    If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+                    If go$ <> "CONTINUE" Then
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LSacBunt: "; go$
+                        End
+                    End If
 
             End Select
 
@@ -6802,7 +6781,15 @@ Sub SOURCE ()
                 Loop Until I5 >= 1 And I5 <= 2
             End If
 
-            If I5 = 2 Then 14141
+            If I5 = 2 Then
+                go$ =  LSacBunt$
+                If go$ = "LNextBatter0"           Then GoTo LNextBatter0
+                If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+                If go$ <> "CONTINUE" Then
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result B from LSacBunt: "; go$
+                    End
+                End If
+            End If
 
             Call Rolld100(RN)
 
@@ -6907,7 +6894,13 @@ Sub SOURCE ()
                     GoTo LContinueBatter2
 
                 Case 3
-                    GoTo 14140
+                    go$ = LGoodBunt$
+                    If go$ = "LNextBatter0"           Then GoTo LNextBatter0
+                    If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+                    If go$ <> "CONTINUE" Then
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LSacBunt: "; go$
+                        End
+                    End If
 
             End Select
 
@@ -6951,7 +6944,13 @@ Sub SOURCE ()
                     GoTo LCheckForOptionsOrQuit
 
                 Case 3:
-                    GoTo 14141
+                    go$ =  LSacBunt$
+                    If go$ = "LNextBatter0"           Then GoTo LNextBatter0
+                    If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+                    If go$ <> "CONTINUE" Then
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result C from LSacBunt: "; go$
+                        End
+                    End If
 
             End Select
 
@@ -8968,6 +8967,8 @@ End Function
 
 
 Function LNoSteal$
+    Shared P2
+
     If Not (baseRunners = 0 Or nbrOuts(0) > 0 Or baseRunners = 7 Or baseRunners = 6 Or baseRunners = 3 Or baseRunners = 5 Or nbrStrikes = 2 Or P = 0 And INNING% > 7) Then
 
         ourLead = gameScore(D, 0) - gameScore(P, 0)
@@ -9132,7 +9133,7 @@ End Function
 
 Function LBuntSingle$
     Shared S2%, errorOnPlay%, I3
-    Shared stealing
+    Shared I1, P2, stealing, runnerOn2nd, SAH%, baseNbr!, I9
 
     S2% = EVENT_INF_SINGLE
     Call PBP(player$(0) + " lays down a great bunt...")
@@ -9148,6 +9149,7 @@ End Function
 
 Function LStrike$(RN)
     Shared SH
+    Shared S2%, errorOnPlay%, I3
     Shared imageScreen&, INFPOS%, backupScreen&
 
     nbrStrikes = nbrStrikes + 1
@@ -9188,6 +9190,78 @@ Function LStrike$(RN)
     If useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
 
     LStrike$ = "CONTINUE"
+
+End Function
+
+
+Function LSacBunt$
+    Shared S2%, errorOnPlay%, I3
+    Shared I1, P2, stealing, runnerOn2nd, SAH%, baseNbr!, I9
+    Shared fbUnassisted, fbPitcherCoveringFirst%, AST%, DPC%
+    Shared SH
+
+    Call ADDPIT(D, currPitcher(D), 15)
+
+    If fldPos(P, currLineupSlot(P)) = 1 Then
+        Call INCPITOFF(P, currPitcher(P), LG_PB_Sac)
+    Else
+        Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_Sac)
+    End If
+
+    Call Rolld100(RN)
+
+    If baseRunners = 5 And SH = 2 And RN > 98 Or RN > 97 Then
+        S2% = -EVENT_INF_SINGLE
+        Call PBP(player$(0) + " beats it out!")
+        LSacBunt$ = LSingle$
+        Exit Function
+    End If
+
+    A5%(0) = 11
+
+    Call PBP("The only play is to first")
+
+    CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
+
+    nbrOuts(0) = nbrOuts(0) + 1
+    nbrOuts(1) = nbrOuts(1) + 1
+
+    Call CREDITASSIST(currFielder, D)
+    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+    Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
+
+    If nbrOuts(0) < 3 Then
+        For I = 1 To 3
+            A5%(I) = 1
+        Next
+        Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+    End If
+
+    LSacBunt$ = "CONTINUE"
+
+End Function
+
+
+Function LGoodBunt$
+    Shared S2%, errorOnPlay%, I3
+    Shared I1, P2, stealing, runnerOn2nd, SAH%, baseNbr!, I9
+    Shared fbUnassisted, fbPitcherCoveringFirst%, AST%, DPC%
+    Shared SH
+
+    Call PBP(player$(0) + " lays down a good bunt...")
+    Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+    Call PBP(player$(4) + " makes a nice play")
+
+    If baseRunners = 0 Then
+        S2% = -EVENT_INF_SINGLE
+        Call PBP(player$(0) + " beats out an infield hit!")
+
+        LGoodBunt$ = LSingle$
+        Exit Function
+    Else
+        LGoodBunt$ = LSacBunt$
+        Exit Function
+    End If
 
 End Function
 
@@ -13171,12 +13245,10 @@ Sub PopUp_Lineup ()
 
                 If batRating(J, lineupPlayer(J, X), SS_B_AB) = 0 Then
                     Print " .000"
+                ElseIf batRating(J, lineupPlayer(J, X), SS_B_H) = batRating(J, lineupPlayer(J, X), SS_B_AB) Then
+                    Print "1.000"
                 Else
-                    If batRating(J, lineupPlayer(J, X), SS_B_H) = batRating(J, lineupPlayer(J, X), SS_B_AB) Then
-                        Print "1.000"
-                    Else
-                        Print Using " .###"; batRating(J, lineupPlayer(J, X), SS_B_H) / batRating(J, lineupPlayer(J, X), SS_B_AB)
-                    End If
+                    Print " ."; Using "###"; 1000 * batRating(J, lineupPlayer(J, X), SS_B_H) / batRating(J, lineupPlayer(J, X), SS_B_AB)
                 End If
 
             End If

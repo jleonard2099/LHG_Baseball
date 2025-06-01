@@ -470,9 +470,10 @@ Sub SelectPinchHitters (yearNumber$, targetTeam$, mgrNbr)
                 Locate , 17: Print Using "  ###  ##  ###"; batterRatings(I, 4); batterRatings(I, 9); batterRatings(I, 10);
 
                 If batterRatings(I, 4) <> 0 Then
-                    Print Using " #.###"; batterRatings(I, 6) / batterRatings(I, 4);    'ToDo [bm] Format to eliminate leading zero before decimal point
-                End If
-                If batterRatings(I, 4) = 0 Then
+                    Print "  ."; Using "###"; 1000 * batterRatings(I, 6) / batterRatings(I, 4);
+                ElseIf batRating(J, lineupPlayer(J, X), 6) = batRating(J, lineupPlayer(J, X), 4) Then
+                    Print " 1.000";
+                Else
                     Print "  .---";
                 End If
 
@@ -932,12 +933,10 @@ Sub ViewLineup (targetTeam$)
 
             If batterRatings(I, 6) = batterRatings(I, 4) And batterRatings(I, 6) <> 0 Then
                 Print "1.000";
+            ElseIf batterRatings(I, 4) = 0 Then
+                Print " .---";
             Else
-                If batterRatings(I, 4) = 0 Then
-                    Print " .---";
-                Else
-                    Print Using " .###"; batterRatings(I, 6) / batterRatings(I, 4);
-                End If
+                Print " ."; Using "###"; 1000 * batterRatings(I, 6) / batterRatings(I, 4);
             End If
 
             If I <> 22 Then Print
