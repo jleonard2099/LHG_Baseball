@@ -7356,11 +7356,8 @@ Sub SOURCE ()
         fldPos(D, fielder(D, 0)) = fldPos(D, I2)
         fielder(D, fldPos(D, fielder(D, 0))) = lineupPlayer(D, fielder(D, 0))
         fldPos(D, I2) = 1
-        I7% = D
-        I8% = fielder(D, 0)
-        I9% = lineupPlayer(D, fielder(D, 0))
 
-        Call REPLACEMENTS(I7%, I8%, I9%)
+        Call REPLACEMENTS(D, fielder(D, 0), lineupPlayer(D, fielder(D, 0)))
 
         I5 = 66
 
@@ -7379,7 +7376,6 @@ Sub SOURCE ()
     If useVGA = 1 Then Screen menu&
     TG = 0
     PG = 0
-    RG = 0
     Color 12: Print Tab(33); "PERSONNEL MENU": Print
     Color 14: Print "(0) ";
     Color 15: Print "RESUME PLAY": Print
@@ -7534,11 +7530,8 @@ Sub SOURCE ()
                         Next V0
 
                         batRating(D, V3, SS_B_Avail) = 1
-                        I7% = D
-                        I8% = V2
-                        I9% = V3
 
-                        Call REPLACEMENTS(I7%, I8%, I9%)
+                        Call REPLACEMENTS(D, V2, V3)
 
                         I5 = 0
 
@@ -7636,7 +7629,7 @@ Sub SOURCE ()
             If UCase$(I$) = "Z" Then Goto LPersonnelMenu
             I1 = Val(I$)
 
-            If I1 = 2 Then
+            If I1 = 2 Then  ' Swap positions
 
                 Do
                     Locate 20, 29: Print "B.O. #1 (1-9)"
@@ -7656,24 +7649,18 @@ Sub SOURCE ()
                 fielder(P9, fldPos(P9, I1)) = lineupPlayer(P9, I1)
                 fielder(P9, fldPos(P9, I2)) = lineupPlayer(P9, I2)
 
-                I7% = P9
-                I8% = I2
-                I9% = lineupPlayer(P9, I2)
-                Call REPLACEMENTS(I7%, I8%, I9%)
-
-                I7% = P9
-                I8% = I1
-                I9% = lineupPlayer(P9, I1)
-                Call REPLACEMENTS(I7%, I8%, I9%)
+                Call REPLACEMENTS(P9, I2, lineupPlayer(P9, I2))
+                Call REPLACEMENTS(P9, I1, lineupPlayer(P9, I1))
 
                 GoTo LChangeBatterFielder
 
             End If
 
-            If I1 = 3 Then 15550
-            If D2 = DEF_PERSONNEL Then 15550
-            I2 = currLineupSlot(P): GoTo 15555
+            If I1 = 3             Then Call LReplacePlayer: GoTo LChangeBatterFielder   ' Substitute player
+            If D2 = DEF_PERSONNEL Then Call LReplacePlayer: GoTo LChangeBatterFielder
+            Call LSubstitutePlayer(currLineupSlot(P))     : GoTo LChangeBatterFielder
 
+            'Todo [bm] Dead code ???
             For I5 = 20 To 23: Locate I5, 28
                 Print Space$(52)
             Next I5
@@ -7684,75 +7671,7 @@ Sub SOURCE ()
 
     End Select
 
-    15550 '
-    Do
-        Locate 20, 30: Print "LINEUP SLOT TO REPLACE (1-9) (Z)=NO CHANGE"
-
-        I$ = GetKeyPress$
-        If Asc(I$) = 32 And PG = 0 Then PG = 1: Call DisplayBatter_Lineup(PG, P9): Call CHANGELINEUP(P9, P)
-        If Asc(I$) = 32 And PG = 1 Then PG = 0: Call DisplayBatter_Lineup(PG, P9): Call CHANGELINEUP(P9, P)
-        If Asc(I$) = 9 And TG = 0 Then Call DisplayFielding_Lineup(PG, P9, TG): Call CHANGELINEUP(P9, P)
-        If Asc(I$) = 9 And TG = 1 Then TG = 0: Call DisplayBatter_Lineup(PG, P9): Call CHANGELINEUP(P9, P)
-        If UCase$(I$) <> "Z" Then I2 = Val(I$)
-
-    Loop Until I2 >= 1 And I2 <= 9 And Not (P9 = D And fldPos(P9, I2) = 1) Or UCase$(I$) = "Z"
-
-
-    If UCase$(I$) <> "Z" Then
-
-        Locate , 30
-        If fldPos(P9, I2) = 1 Then Print pitchers$(P9, currPitcher(P9));
-        If fldPos(P9, I2) <> 1 Then Print batters$(P9, lineupPlayer(P9, I2));
-
-        15555 '
-        Do
-            Locate 22, 30: Print "# OF SUB"
-
-            I$ = GetKeyPress$
-            If Asc(I$) = 32 And PG = 0 Then PG = 1: Call DisplayBatter_Lineup(PG, P9): Call CHANGELINEUP(P9, P)
-            If Asc(I$) = 32 And PG = 1 Then PG = 0: Call DisplayBatter_Lineup(PG, P9): Call CHANGELINEUP(P9, P)
-            If Asc(I$) = 9 And TG = 0 Then Call DisplayFielding_Lineup(PG, P9, TG): Call CHANGELINEUP(P9, P)
-            If Asc(I$) = 9 And TG = 1 Then TG = 0: Call DisplayBatter_Lineup(PG, P9): Call CHANGELINEUP(P9, P)
-            Call LetterToNumber(I$, I1)
-
-        Loop Until I1 <= 22 Or batRating(P9, I1, SS_B_Avail) <= 0
-
-        Do
-            Locate 23, 30
-            Print batters$(P9, I1); "... ARE YOU SURE? (Y/N)"
-            I$ = GetKeyPress$
-        Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
-
-
-        If UCase$(I$) <> "N" Then
-
-            batRating(P9, I1, SS_B_Avail) = 1
-            lineupPlayer(P9, I2) = I1
-            fielder(P9, fldPos(P9, I2)) = I1
-
-            If fldPos(P9, I2) = 1 Or fldPos(P9, I2) = 10 Then fielder(P9, 1) = 99: fielder(P9, 0) = I2: fldPos(P9, I2) = 10
-
-            gameD0(P9) = gameD0(P9) + 1
-            X0%(P9, 0, gameD0(P9)) = lineupPlayer(P9, I2)
-            X0%(P9, 1, gameD0(P9)) = fldPos(P9, I2)
-            X0%(P9, 2, gameD0(P9)) = (I2 * 10) + (gameD0(P9) - 9)
-            W5 = P9
-            W6 = P9
-            VV(P9) = I2
-            VV1(P9) = I2
-            I7% = P9
-            I8% = I2
-            I9% = I1
-
-            Call REPLACEMENTS(I7%, I8%, I9%)
-            Call HITTINGLINES
-
-            VV(P9) = 1
-            VV1(P9) = 9
-
-        End If
-
-    End If
+    Call LReplacePlayer
 
     GoTo LChangeBatterFielder
 
@@ -8211,10 +8130,7 @@ Sub SOURCE ()
                                 fldPos(P, currLineupSlot(P)) = 10
                             End If
 
-                            I7% = P
-                            I8% = currLineupSlot(P)
-                            I9% = lineupPlayer(P, currLineupSlot(P))
-                            Call REPLACEMENTS(I7%, I8%, I9%)
+                            Call REPLACEMENTS(P, currLineupSlot(P), lineupPlayer(P, currLineupSlot(P)))
                             Call LPinchHitter
                             GoTo LContinueBatter
 
@@ -9283,6 +9199,96 @@ Sub LAttemptToAdvance
 
     Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
 
+End Sub
+
+
+Sub LReplacePlayer  'ToDo [bm] Finish this, and check args of calls to REPLACEMENT (PG, TG, etc.)
+    'Shared S2%, errorOnPlay%, I3
+    'Shared I1, P2, stealing, runnerOn2nd, SAH%, baseNbr!, I9
+    'Shared fbUnassisted, fbPitcherCoveringFirst%, AST%, DPC%
+    'Shared SH
+    Shared P9, PG, TG
+
+    Do
+        Locate 20, 30: Print "LINEUP SLOT TO REPLACE (1-9) (Z)=NO CHANGE"
+
+        I$ = GetKeyPress$
+        If Asc(I$) = 32 And PG = 0 Then PG = 1: Call DisplayBatter_Lineup(PG, P9): Call CHANGELINEUP(P9, P)
+        If Asc(I$) = 32 And PG = 1 Then PG = 0: Call DisplayBatter_Lineup(PG, P9): Call CHANGELINEUP(P9, P)
+        If Asc(I$) = 9 And TG = 0 Then Call DisplayFielding_Lineup(PG, P9, TG): Call CHANGELINEUP(P9, P)
+        If Asc(I$) = 9 And TG = 1 Then TG = 0: Call DisplayBatter_Lineup(PG, P9): Call CHANGELINEUP(P9, P)
+        If UCase$(I$) <> "Z" Then lineupSlotChoice = Val(I$)
+
+    Loop Until lineupSlotChoice >= 1 And lineupSlotChoice <= 9 And Not (P9 = D And fldPos(P9, lineupSlotChoice) = 1) Or UCase$(I$) = "Z"
+
+
+    If UCase$(I$) <> "Z" Then
+
+        Locate , 30
+        If fldPos(P9, lineupSlotChoice)  = 1 Then Print pitchers$(P9, currPitcher(P9));
+        If fldPos(P9, lineupSlotChoice) <> 1 Then Print batters$(P9, lineupPlayer(P9, lineupSlotChoice));
+
+        Call LSubstitutePlayer(lineupSlotChoice)
+
+    End If
+
+End Sub
+
+
+Sub LSubstitutePlayer(lineupSlotChoice)
+    'Shared S2%, errorOnPlay%, I3
+    'Shared I1, P2, stealing, runnerOn2nd, SAH%, baseNbr!, I9
+    'Shared fbUnassisted, fbPitcherCoveringFirst%, AST%, DPC%
+    'Shared SH
+    Shared P9, PG, TG
+
+    Do
+        Locate 22, 30: Print "# OF SUB"
+
+        I$ = GetKeyPress$
+        If Asc(I$) = 32 And PG = 0 Then PG = 1: Call DisplayBatter_Lineup(PG, P9): Call CHANGELINEUP(P9, P)
+        If Asc(I$) = 32 And PG = 1 Then PG = 0: Call DisplayBatter_Lineup(PG, P9): Call CHANGELINEUP(P9, P)
+        If Asc(I$) = 9 And TG = 0 Then Call DisplayFielding_Lineup(PG, P9, TG): Call CHANGELINEUP(P9, P)
+        If Asc(I$) = 9 And TG = 1 Then TG = 0: Call DisplayBatter_Lineup(PG, P9): Call CHANGELINEUP(P9, P)
+        Call LetterToNumber(I$, subNumber)
+
+    Loop Until subNumber <= 22 Or batRating(P9, subNumber, SS_B_Avail) <= 0
+
+    Do
+        Locate 23, 30
+        Print batters$(P9, subNumber); "... ARE YOU SURE? (Y/N)"
+        I$ = GetKeyPress$
+    Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
+
+
+    If UCase$(I$) <> "N" Then
+
+        batRating(P9, subNumber, SS_B_Avail) = 1
+        lineupPlayer(P9, lineupSlotChoice) = subNumber
+        fielder(P9, fldPos(P9, lineupSlotChoice)) = subNumber
+
+        If fldPos(P9, lineupSlotChoice) = 1 Or fldPos(P9, lineupSlotChoice) = 10 Then
+            fielder(P9, 1) = 99
+            fielder(P9, 0) = lineupSlotChoice
+            fldPos(P9, lineupSlotChoice) = 10
+        End If
+
+        gameD0(P9) = gameD0(P9) + 1
+        X0%(P9, 0, gameD0(P9)) = lineupPlayer(P9, lineupSlotChoice)
+        X0%(P9, 1, gameD0(P9)) = fldPos(P9, lineupSlotChoice)
+        X0%(P9, 2, gameD0(P9)) = (lineupSlotChoice * 10) + (gameD0(P9) - 9)
+        ' W5 = P9
+        ' W6 = P9
+        VV(P9) = lineupSlotChoice
+        VV1(P9) = lineupSlotChoice
+
+        Call REPLACEMENTS(P9, lineupSlotChoice, subNumber)
+        Call HITTINGLINES
+
+        VV(P9) = 1
+        VV1(P9) = 9
+
+    End If
 End Sub
 
 
@@ -11053,11 +11059,8 @@ Sub EJECTIONINJURY (playerMode, P, compTeam, D, po%, P9, W5, W6)
                     X0%(D, 2, gameD0(D)) = (I2 * 10) + (gameD0(D) - 9)
                     batRating(D, idx, SS_B_Avail) = 1
                     lineupPlayer(D, I2) = idx
-                    I7% = D
-                    I8% = I2
-                    i9% = idx
 
-                    Call REPLACEMENTS(I7%, I8%, i9%)
+                    Call REPLACEMENTS(D, I2, idx)
 
                     fielder(D, fldPos(D, I2)) = idx
                     P9 = D
