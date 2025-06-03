@@ -3814,6 +3814,7 @@ Sub SOURCE ()
     Shared SO, SH
     Shared fbUnassisted, fbPitcherCoveringFirst%, AST%, DPC%, TB
     Shared INFPOS%
+    Shared P9, PG, TG
 
     VV(0)  = 1 : VV(1)  = 1
     VV1(1) = 9 : VV1(1) = 9
