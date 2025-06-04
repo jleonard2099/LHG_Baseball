@@ -7385,7 +7385,7 @@ Sub SOURCE ()
     Color 14: Print "(2) ";
     Color 15: Print "CHANGE BATTER/FIELDER"
 
-    15501 '
+   LPersonnelMenu2:
     Do
         I$ = GetKeyPress$
         I = Val(I$)
@@ -7400,8 +7400,8 @@ Sub SOURCE ()
             GoTo LNextBatter1
 
         Case 2
-           LChangePitcher:
-            If P2 = OFF_PERSONNEL Then Call TIRING(P9): GoTo 15501
+           LChangePitcher:  'ToDo [bm] Do next
+            If P2 = OFF_PERSONNEL Then Call TIRING(P9): GoTo LPersonnelMenu2
 
             Do
 
@@ -7440,7 +7440,7 @@ Sub SOURCE ()
             Call PITSTAM(P9)
             Call CHECKSAVE(D, P, baseRunners)
 
-           15518 '
+           LChangePitcher2:
             P9 = 1 - P9
             W5 = P9
             W6 = W5
@@ -7554,7 +7554,7 @@ Sub SOURCE ()
 
                     Else
 
-                        GoTo 15518
+                        GoTo LChangePitcher2
 
                     End If
 
@@ -7587,99 +7587,19 @@ Sub SOURCE ()
 
             Next V0
 
-            GoTo LChangeBatterFielder
+            Call LChangeBatterFielder
+            Goto LPersonnelMenu
 
         Case 3
-
-            '--- START OF A SHORT SUB
-            '-- ChangeBatterFielder
-
-           LChangeBatterFielder:    'ToDo [bm] Do this NEXT 6/3/25
-            Cls
-            Call DisplayBatter_Lineup(PG, P9)
-            Call CHANGELINEUP(P9, P)
-
-            Locate 14, 29
-            Color 12: Print "SELECT:"
-            Locate , 30
-            Color 14: Print " (1) ";
-            Color 15: Print "SELECT A PINCH-HITTER"
-            Locate , 30
-            Color 14: Print " (2) ";
-            Color 15: Print "SWAP POSITIONS BETWEEN PLAYERS"
-            Locate , 30
-            Color 14: Print " (3) ";
-            Color 15: Print "SUBSTITUTE PLAYER IN LINEUP"
-            Locate , 30
-            Color 14: Print " (Z) ";
-            Color 15: Print "RESUME PLAY"
-            Locate , 30
-            Color 14: Print "<SPACE> ";
-            Color 15: Print "TOGGLE ROSTER";
-            Color 14: Print " <TAB> ";
-            Color 15: Print "TOGGLE FIELDING/BATTING"
-
-            Do
-                I$ = GetKeyPress$
-                If Asc(I$) = 32 And PG = 0 Then
-                    PG = 1: Call DisplayBatter_Lineup(PG, P9)
-                ELseIf Asc(I$) = 32 And PG = 1 Then
-                    PG = 0: Call DisplayBatter_Lineup(PG, P9)
-                ELseIf Asc(I$) =  9 And TG = 0 Then
-                    Call DisplayFielding_Lineup(PG, P9, TG)
-                ELseIf Asc(I$) =  9 And TG = 1 Then
-                    TG = 0: Call DisplayBatter_Lineup(PG, P9)
-                End If
-            Loop While Asc(I$) = 32 Or Asc(I$) = 9
-
-            If UCase$(I$) = "Z" Then Goto LPersonnelMenu
-            I1 = Val(I$)
-
-            If I1 = 2 Then  ' Swap positions
-
-                Do
-                    Locate 20, 29: Print "B.O. #1 (1-9)"
-                    I$ = GetKeyPress$
-                    I1 = Val(I$)
-                Loop Until I1 >= 1 And I1 <= 9 Or fldPos(P9, I1) <> 1
-
-                Do
-                    Locate 21, 29: Print "B.O. #2 (1-9)"
-                    I$ = GetKeyPress$
-                    I2 = Val(I$)
-                Loop Until I1 >= 1 And I1 <= 9 Or fldPos(P9, I2) <> 1
-
-                I3 = fldPos(P9, I2)
-                fldPos(P9, I2) = fldPos(P9, I1)
-                fldPos(P9, I1) = I3
-                fielder(P9, fldPos(P9, I1)) = lineupPlayer(P9, I1)
-                fielder(P9, fldPos(P9, I2)) = lineupPlayer(P9, I2)
-
-                Call REPLACEMENTS(P9, I2, lineupPlayer(P9, I2))
-                Call REPLACEMENTS(P9, I1, lineupPlayer(P9, I1))
-
-                GoTo LChangeBatterFielder
-
-            End If
-
-            If I1 = 3             Then Call LReplacePlayer: GoTo LChangeBatterFielder   ' Substitute player
-            If D2 = DEF_PERSONNEL Then Call LReplacePlayer: GoTo LChangeBatterFielder
-            Call LSubstitutePlayer(currLineupSlot(P))     : GoTo LChangeBatterFielder
-
-            'Todo [bm] Dead code ???
-            For I5 = 20 To 23: Locate I5, 28
-                Print Space$(52)
-            Next I5
-
-            Return
-
-            '--- END OF A SHORT SUB
-
+           Call LChangeBatterFielder
+           Goto LPersonnelMenu
     End Select
 
+    'ToDo [bm] Dead code?
     Call LReplacePlayer
 
-    GoTo LChangeBatterFielder
+    Call LChangeBatterFielder
+    Goto LPersonnelMenu
 
     '----- NOODLE -----
 
@@ -9297,6 +9217,92 @@ Sub LSubstitutePlayer(lineupSlotChoice)
     End If
 End Sub
 
+
+Sub LChangeBatterFielder
+    Shared P9, PG, TG
+
+    Do
+        Cls
+        Call DisplayBatter_Lineup(PG, P9)
+        Call CHANGELINEUP(P9, P)
+
+        Locate 14, 29
+        Color 12: Print "SELECT:"
+        Locate , 30
+        Color 14: Print " (1) ";
+        Color 15: Print "SELECT A PINCH-HITTER"
+        Locate , 30
+        Color 14: Print " (2) ";
+        Color 15: Print "SWAP POSITIONS BETWEEN PLAYERS"
+        Locate , 30
+        Color 14: Print " (3) ";
+        Color 15: Print "SUBSTITUTE PLAYER IN LINEUP"
+        Locate , 30
+        Color 14: Print " (Z) ";
+        Color 15: Print "RESUME PLAY"
+        Locate , 30
+        Color 14: Print "<SPACE> ";
+        Color 15: Print "TOGGLE ROSTER";
+        Color 14: Print " <TAB> ";
+        Color 15: Print "TOGGLE FIELDING/BATTING"
+
+        Do
+            I$ = GetKeyPress$
+            If Asc(I$) = 32 And PG = 0 Then
+                PG = 1: Call DisplayBatter_Lineup(PG, P9)
+            ELseIf Asc(I$) = 32 And PG = 1 Then
+                PG = 0: Call DisplayBatter_Lineup(PG, P9)
+            ELseIf Asc(I$) =  9 And TG = 0 Then
+                Call DisplayFielding_Lineup(PG, P9, TG)
+            ELseIf Asc(I$) =  9 And TG = 1 Then
+                TG = 0: Call DisplayBatter_Lineup(PG, P9)
+            End If
+        Loop While Asc(I$) = 32 Or Asc(I$) = 9
+
+        If UCase$(I$) = "Z" Then Exit Do
+        I1 = Val(I$)
+
+        Select Case I1
+            Case 1 ' Pinch hitter
+                Call LSubstitutePlayer(currLineupSlot(P))
+
+            Case 2 ' Swap positions
+                Do
+                    Locate 20, 29: Print "B.O. #1 (1-9)"
+                    I$ = GetKeyPress$
+                    I1 = Val(I$)
+                Loop Until I1 >= 1 And I1 <= 9 Or fldPos(P9, I1) <> 1
+
+                Do
+                    Locate 21, 29: Print "B.O. #2 (1-9)"
+                    I$ = GetKeyPress$
+                    I2 = Val(I$)
+                Loop Until I1 >= 1 And I1 <= 9 Or fldPos(P9, I2) <> 1
+
+                I3 = fldPos(P9, I2)
+                fldPos(P9, I2) = fldPos(P9, I1)
+                fldPos(P9, I1) = I3
+                fielder(P9, fldPos(P9, I1)) = lineupPlayer(P9, I1)
+                fielder(P9, fldPos(P9, I2)) = lineupPlayer(P9, I2)
+
+                Call REPLACEMENTS(P9, I2, lineupPlayer(P9, I2))
+                Call REPLACEMENTS(P9, I1, lineupPlayer(P9, I1))
+
+            Case 3 ' Substitute player
+                Call LReplacePlayer
+
+            Case Else   'ToDo [bm] dead code?
+                If D2 = DEF_PERSONNEL Then
+                    Call LReplacePlayer
+                Else
+                    Call LSubstitutePlayer(currLineupSlot(P))
+                End If
+
+        End Select
+
+    Loop
+
+End Function
 
 '----------------------------------------
 '            INFO Subroutine
