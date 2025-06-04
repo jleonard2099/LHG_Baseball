@@ -7440,7 +7440,7 @@ Sub SOURCE ()
             Call PITSTAM(P9)
             Call CHECKSAVE(D, P, baseRunners)
 
-            15518 '
+           15518 '
             P9 = 1 - P9
             W5 = P9
             W6 = W5
@@ -7594,7 +7594,7 @@ Sub SOURCE ()
             '--- START OF A SHORT SUB
             '-- ChangeBatterFielder
 
-           LChangeBatterFielder:
+           LChangeBatterFielder:    'ToDo [bm] Do this NEXT 6/3/25
             Cls
             Call DisplayBatter_Lineup(PG, P9)
             Call CHANGELINEUP(P9, P)
@@ -7619,13 +7619,18 @@ Sub SOURCE ()
             Color 14: Print " <TAB> ";
             Color 15: Print "TOGGLE FIELDING/BATTING"
 
-            Do While 0 = 0
+            Do
                 I$ = GetKeyPress$
-                If Asc(I$) = 32 And PG = 0 Then PG = 1: Call DisplayBatter_Lineup(PG, P9): Exit Do
-                If Asc(I$) = 32 And PG = 1 Then PG = 0: Call DisplayBatter_Lineup(PG, P9): Exit Do
-                If Asc(I$) =  9 And TG = 0 Then Call DisplayFielding_Lineup(PG, P9, TG)  : Exit Do
-                If Asc(I$) =  9 And TG = 1 Then TG = 0: Call DisplayBatter_Lineup(PG, P9): Exit Do
-            Loop
+                If Asc(I$) = 32 And PG = 0 Then
+                    PG = 1: Call DisplayBatter_Lineup(PG, P9)
+                ELseIf Asc(I$) = 32 And PG = 1 Then
+                    PG = 0: Call DisplayBatter_Lineup(PG, P9)
+                ELseIf Asc(I$) =  9 And TG = 0 Then
+                    Call DisplayFielding_Lineup(PG, P9, TG)
+                ELseIf Asc(I$) =  9 And TG = 1 Then
+                    TG = 0: Call DisplayBatter_Lineup(PG, P9)
+                End If
+            Loop While Asc(I$) = 32 Or Asc(I$) = 9
 
             If UCase$(I$) = "Z" Then Goto LPersonnelMenu
             I1 = Val(I$)
