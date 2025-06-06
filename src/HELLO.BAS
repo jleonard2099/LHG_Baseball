@@ -3815,6 +3815,7 @@ Sub SOURCE ()
     Shared fbUnassisted, fbPitcherCoveringFirst%, AST%, DPC%, TB
     Shared INFPOS%
     Shared P9, PG, TG
+    Shared baseRunners
 
     VV(0)  = 1 : VV(1)  = 1
     VV1(1) = 9 : VV1(1) = 9
@@ -7328,9 +7329,9 @@ Sub SOURCE ()
             Locate I + 4, 5: Print Using "# "; I;
 
             If fldPos(P9, I) = 1 Then
-                If I5 = 66 Then
+                If I5 = 66 Then 'batter staying in game
                     Print batters$(P9, lineupPlayer(P9, I));
-                Else
+                Else            'batter coming out of game
                     Print pitchers$(P9, lineupPlayer(P9, I));
                 End If
             Else
@@ -7364,7 +7365,8 @@ Sub SOURCE ()
 
     End If
 
-    GoTo LChangePitcher
+    Call LChangePitcher(I5)
+    Goto LPersonnelMenu
 
 
     '-----------------------------------
@@ -7400,194 +7402,9 @@ Sub SOURCE ()
             GoTo LNextBatter1
 
         Case 2
-           LChangePitcher:  'ToDo [bm] Do next
             If P2 = OFF_PERSONNEL Then Call TIRING(P9): GoTo LPersonnelMenu2
 
-            Do
-
-                Call PITDISP(P9)
-                Locate LAST_ROW, 1: Print "SELECT RELIEVER (Z = NO CHANGE)   ";
-                If fielder(P9, 1) <> 99 Then Call TIRING(P9)
-                Print
-
-                Do
-
-                    I$ = GetKeyPress$
-                    If UCase$(I$) = "Z" Then
-                        GoTo LPersonnelMenu
-                    Else
-                        Call LetterToNumber(I$, I1)
-                    End If
-
-                Loop Until I1 <= 21 And pitchRating(P9, I1, SS_P_Avail) <= 0
-
-                Locate 23, 1: Print String$(78, 32)
-                Locate 23, 1: Print "YOU CHOSE "; pitchers$(P9, I1); " "; handed$(pitchRating(P9, I1, SS_P_Throws) + 2); " - ";
-
-                Print "ARE YOU SURE? (Y/N)";
-                I$ = GetKeyPress$
-
-            Loop Until UCase$(I$) = "Y"
-
-            pinchHitterFlag = 0
-            pinchRunnerFlag = 0
-
-            If relieverOnRecordForSave(P9) <> -1 And gamePitcher(P9) > 1 Then Call OFFPIT(P9, currPitcher(P9), 22)
-
-            currPitcher(P9) = I1
-            gamePitcher(P9) = gamePitcher(P9) + 1
-            pitchRating(P9, I1, SS_P_Avail) = gamePitcher(P9)
-            Call PITSTAM(P9)
-            Call CHECKSAVE(D, P, baseRunners)
-
-           LChangePitcher2:
-            P9 = 1 - P9
-            W5 = P9
-            W6 = W5
-            VV(P9) = 1
-            VV1(P9) = 9
-            Call HITTINGLINES
-
-            P9 = 1 - P9
-
-            If Not (desigHit = 1 Or I5 = 66 Or I5 = 77) Then
-
-                'No Designated Hitter
-
-                Do
-
-                    Cls
-                    Locate , 14
-                    Color 14: Print "DO YOU WISH TO MAKE A FLIP FLOP OR DOUBLE SWITCH? (Y/N)";
-                    Color 15
-
-                    I$ = GetKeyPress$
-
-                Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
-                If UCase$(I$) = "Y" Then
-
-                    Cls
-                    Call DisplayBatter_Lineup(PG, P9)
-
-                    Call CHANGELINEUP(P9, P)
-
-                    Do
-                        Locate 12, 30: Print "LINEUP SLOT FOR PITCHER TO BAT IN (1-9)"
-
-                        I$ = GetKeyPress$
-                        If Asc(I$) = 32 And PG = 0 Then PG = 1: Cls: Call DisplayBatter_Lineup(PG, P9): Call CHANGELINEUP(P9, P)
-                        If Asc(I$) = 32 And PG = 1 Then PG = 0: Cls: Call DisplayBatter_Lineup(PG, P9): Call CHANGELINEUP(P9, P)
-                        If Asc(I$) = 9 And TG = 0 Then Call DisplayFielding_Lineup(PG, P9, TG): Call CHANGELINEUP(P9, P)
-                        If Asc(I$) = 9 And TG = 1 Then TG = 0: Call DisplayBatter_Lineup(PG, P9): Call CHANGELINEUP(P9, P)
-                        V2 = Val(I$)
-                    Loop Until V2 >= 1 And V2 <= 9
-
-
-                    Do
-                        Locate 13, 30
-                        Print "WHO WILL REPLACE "; batters$(D, lineupPlayer(D, V2)); " @ "; fieldPos$(fldPos(D, V2));
-
-                        I$ = GetKeyPress$
-                        If Asc(I$) = 32 And PG = 0 Then PG = 1: Call DisplayBatter_Lineup(PG, P9)
-                        If Asc(I$) = 32 And PG = 1 Then PG = 0: Call DisplayBatter_Lineup(PG, P9)
-
-                        If Asc(I$) = 9 And TG = 0 Then Call DisplayFielding_Lineup(PG, P9, TG)
-                        If Asc(I$) = 9 And TG = 1 Then TG = 0: Call DisplayBatter_Lineup(PG, P9)
-
-                        Call LetterToNumber(I$, V3)
-
-                    Loop Until V3 <= 22
-
-                    Locate 16, 29: Print batters$(D, V3)
-                    Locate 17, 29: Print "ARE YOU SURE? (Y/N)";
-
-                    I$ = GetKeyPress$
-
-                    If UCase$(I$) = "Y" Then
-
-                        gameD0(D) = gameD0(D) + 1
-                        X0%(D, 0, gameD0(D)) = V3
-                        X0%(D, 1, gameD0(D)) = fldPos(D, V2)
-
-                        For V0 = 1 To 9
-                            If fldPos(D, V0) = 1 Then X0%(D, 2, gameD0(D)) = (V0 * 10) + (gameD0(D) - 9)
-                        Next V0
-
-                        For V0 = 1 To 9
-                            If fldPos(D, V0) = 1 Then
-                                fldPos(D, V0) = fldPos(D, V2)
-                                lineupPlayer(D, V0) = V3
-                                fielder(D, fldPos(D, V0)) = V3
-                                P9 = D
-                                W5 = D
-                                W6 = D
-                                VV(D) = V0
-                                VV1(D) = V0
-                                Call HITTINGLINES
-                            End If
-                            VV(D) = 1
-                            VV1(D) = 9
-                        Next V0
-
-                        batRating(D, V3, SS_B_Avail) = 1
-
-                        Call REPLACEMENTS(D, V2, V3)
-
-                        I5 = 0
-
-                        For V0 = 1 To 9
-                            If V0 = V2 Then
-                                fldPos(D, V2) = 1
-                                lineupPlayer(D, V2) = currPitcher(D)
-                                fielder(D, 1) = currPitcher(D)
-                                VV(D) = V0
-                                VV1(D) = V0
-                                Call HITTINGLINES
-                            End If
-                        Next V0
-
-                        VV(D) = 1
-                        VV1(D) = 9
-
-                        GoTo LPersonnelMenu 'Back to personnel menu
-
-                    Else
-
-                        GoTo LChangePitcher2
-
-                    End If
-
-                End If
-
-            End If
-
-            I5 = 0
-
-            For V0 = 1 To 9
-
-                If fldPos(D, V0) = 1 Or fldPos(D, V0) = 10 Then
-
-                    lineupPlayer(D, V0) = currPitcher(D)
-                    fielder(D, 1) = currPitcher(D)
-                    fldPos(D, V0) = 1
-                    P9 = D
-                    W5 = D
-                    W6 = D
-                    VV(D) = V0
-                    VV1(D) = V0
-
-                    Call HITTINGLINES
-
-                    VV(D) = 1
-                    VV1(D) = 9
-                    GoTo LPersonnelMenu
-
-                End If
-
-            Next V0
-
-            Call LChangeBatterFielder
+            Call LChangePitcher(I5)
             Goto LPersonnelMenu
 
         Case 3
@@ -9303,6 +9120,198 @@ Sub LChangeBatterFielder
     Loop
 
 End Function
+
+
+Sub LChangePitcher(I5)
+    Shared P9, baseRunners
+
+    Do
+
+        Call PITDISP(P9)
+        Locate LAST_ROW, 1: Print "SELECT RELIEVER (Z = NO CHANGE)   ";
+        If fielder(P9, 1) <> 99 Then Call TIRING(P9)
+        Print
+
+        Do
+
+            I$ = GetKeyPress$
+            If UCase$(I$) = "Z" Then
+                Exit Sub
+            Else
+                Call LetterToNumber(I$, I1)
+            End If
+
+        Loop Until I1 <= 21 And pitchRating(P9, I1, SS_P_Avail) <= 0
+
+        Locate 23, 1: Print String$(78, 32)
+        Locate 23, 1: Print "YOU CHOSE "; pitchers$(P9, I1); " "; handed$(pitchRating(P9, I1, SS_P_Throws) + 2); " - ";
+
+        Print "ARE YOU SURE? (Y/N)";
+        I$ = GetKeyPress$
+
+    Loop Until UCase$(I$) = "Y"
+
+    pinchHitterFlag = 0
+    pinchRunnerFlag = 0
+
+    If relieverOnRecordForSave(P9) <> -1 And gamePitcher(P9) > 1 Then Call OFFPIT(P9, currPitcher(P9), 22)
+
+    currPitcher(P9) = I1
+    gamePitcher(P9) = gamePitcher(P9) + 1
+    pitchRating(P9, I1, SS_P_Avail) = gamePitcher(P9)
+    Call PITSTAM(P9)
+    Call CHECKSAVE(D, P, baseRunners)
+
+    Do
+
+        P9 = 1 - P9
+        W5 = P9
+        W6 = W5
+        VV(P9) = 1
+        VV1(P9) = 9
+        Call HITTINGLINES
+
+        P9 = 1 - P9
+
+        If Not (desigHit = 1 Or I5 = 66 Or I5 = 77) Then
+
+            'No Designated Hitter
+
+            Do
+
+                Cls
+                Locate , 14
+                Color 14: Print "DO YOU WISH TO MAKE A FLIP FLOP OR DOUBLE SWITCH? (Y/N)";
+                Color 15
+
+                I$ = GetKeyPress$
+
+            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+            If UCase$(I$) = "Y" Then
+
+                Cls
+                Call DisplayBatter_Lineup(PG, P9)
+
+                Call CHANGELINEUP(P9, P)
+
+                Do
+                    Locate 12, 30: Print "LINEUP SLOT FOR PITCHER TO BAT IN (1-9)"
+
+                    I$ = GetKeyPress$
+                    If Asc(I$) = 32 And PG = 0 Then PG = 1: Cls: Call DisplayBatter_Lineup(PG, P9): Call CHANGELINEUP(P9, P)
+                    If Asc(I$) = 32 And PG = 1 Then PG = 0: Cls: Call DisplayBatter_Lineup(PG, P9): Call CHANGELINEUP(P9, P)
+                    If Asc(I$) = 9 And TG = 0 Then Call DisplayFielding_Lineup(PG, P9, TG): Call CHANGELINEUP(P9, P)
+                    If Asc(I$) = 9 And TG = 1 Then TG = 0: Call DisplayBatter_Lineup(PG, P9): Call CHANGELINEUP(P9, P)
+                    V2 = Val(I$)
+                Loop Until V2 >= 1 And V2 <= 9
+
+
+                Do
+                    Locate 13, 30
+                    Print "WHO WILL REPLACE "; batters$(D, lineupPlayer(D, V2)); " @ "; fieldPos$(fldPos(D, V2));
+
+                    I$ = GetKeyPress$
+                    If Asc(I$) = 32 And PG = 0 Then PG = 1: Call DisplayBatter_Lineup(PG, P9)
+                    If Asc(I$) = 32 And PG = 1 Then PG = 0: Call DisplayBatter_Lineup(PG, P9)
+
+                    If Asc(I$) = 9 And TG = 0 Then Call DisplayFielding_Lineup(PG, P9, TG)
+                    If Asc(I$) = 9 And TG = 1 Then TG = 0: Call DisplayBatter_Lineup(PG, P9)
+
+                    Call LetterToNumber(I$, V3)
+
+                Loop Until V3 <= 22
+
+                Locate 16, 29: Print batters$(D, V3)
+                Locate 17, 29: Print "ARE YOU SURE? (Y/N)";
+
+                I$ = GetKeyPress$
+
+                If UCase$(I$) = "Y" Then
+
+                    gameD0(D) = gameD0(D) + 1
+                    X0%(D, 0, gameD0(D)) = V3
+                    X0%(D, 1, gameD0(D)) = fldPos(D, V2)
+
+                    For V0 = 1 To 9
+                        If fldPos(D, V0) = 1 Then X0%(D, 2, gameD0(D)) = (V0 * 10) + (gameD0(D) - 9)
+                    Next V0
+
+                    For V0 = 1 To 9
+                        If fldPos(D, V0) = 1 Then
+                            fldPos(D, V0) = fldPos(D, V2)
+                            lineupPlayer(D, V0) = V3
+                            fielder(D, fldPos(D, V0)) = V3
+                            P9 = D
+                            W5 = D
+                            W6 = D
+                            VV(D) = V0
+                            VV1(D) = V0
+                            Call HITTINGLINES
+                        End If
+                        VV(D) = 1
+                        VV1(D) = 9
+                    Next V0
+
+                    batRating(D, V3, SS_B_Avail) = 1
+
+                    Call REPLACEMENTS(D, V2, V3)
+
+                    I5 = 0
+
+                    For V0 = 1 To 9
+                        If V0 = V2 Then
+                            fldPos(D, V2) = 1
+                            lineupPlayer(D, V2) = currPitcher(D)
+                            fielder(D, 1) = currPitcher(D)
+                            VV(D) = V0
+                            VV1(D) = V0
+                            Call HITTINGLINES
+                        End If
+                    Next V0
+
+                    VV(D) = 1
+                    VV1(D) = 9
+                    Exit Sub
+
+                End If
+            Else
+                Exit Do
+            End If
+        End If
+
+    Loop
+
+    I5 = 0
+
+    For V0 = 1 To 9
+
+        If fldPos(D, V0) = 1 Or fldPos(D, V0) = 10 Then
+
+            lineupPlayer(D, V0) = currPitcher(D)
+            fielder(D, 1) = currPitcher(D)
+            fldPos(D, V0) = 1
+            P9 = D
+            W5 = D
+            W6 = D
+            VV(D) = V0
+            VV1(D) = V0
+
+            Call HITTINGLINES
+
+            VV(D) = 1
+            VV1(D) = 9
+
+            Exit Sub
+
+        End If
+
+    Next V0
+
+    Call LChangeBatterFielder
+
+End Sub
+
 
 '----------------------------------------
 '            INFO Subroutine
