@@ -9403,6 +9403,62 @@ Sub InitBatsThrows(I3, I, I1, TY%, PY%, BY%)
 End Sub
 
 
+Sub LPinchRunner(MS%, J, J1, I1)
+    I2 = J
+    player$(J1) = batters$(P, I1)
+    batRating(P, I1, SS_B_Avail) = 1
+    lineupPlayer(P, I2) = I1
+    fielder(P, fldPos(P, I2)) = I1
+
+    If fldPos(P, I2) = 1 Or fldPos(P, I2) = 10 Then
+        fielder(P, 1) = 99
+        fielder(P, 0) = I2
+        fldPos(P, I2) = 10
+    End If
+
+    gameD0(P) = gameD0(P) + 1
+    X0%(P, 0, gameD0(P)) = lineupPlayer(P, I2)
+    X0%(P, 1, gameD0(P)) = 11   '11 = Pinch Runner
+    X0%(P, 2, gameD0(P)) = (I2 * 10) + (gameD0(P) - 9)
+
+    'W5 = P
+    'W6 = P
+    VV(P) = I2
+    VV1(P) = I2
+
+    For xx = 22 To 25
+        If fldPos(P, I2) = batRating(P, I1, xx) Then
+            batRating(P, I1, SS_B_Arm)    = batRating(P, I1, 33 + (xx - 22) * 2)
+            batRating(P, I1, SS_B_Range)  = batRating(P, I1, 34 + (xx - 22) * 2)
+            batRating(P, I1, SS_B_FldPct) = batRating(P, I1, xx + 4)
+            Exit For
+        End If
+    Next
+
+    Call WINDEX
+    Locate 15, 1
+    Call PBP(gameManagers$(P) + " is sending in a pinch runner")
+    pinchRunnerFlag = 1
+
+    Call DELAY
+    Call HITTINGLINES
+
+    If useVGA = 1 Then
+        Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
+        Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
+        MS% = 1
+    Else
+        Call DisplayBallField(nbrBalls, P, nbrStrikes, D)
+        Call MAINSCREEN(D, P, nbrBalls, nbrStrikes, MO)
+        MS% = 1
+    End If
+
+    VV(P) = 1
+    VV1(P) = 9
+
+End Sub
+
+
 '----------------------------------------
 '            INFO Subroutine
 '----------------------------------------
@@ -12659,8 +12715,21 @@ Sub PINCHRUNNER (MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStri
                                 If teamMgrProfileVal(P, 803) = 999 Then
                                     If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a PINCH RUNNING for PITCHER strategy !!"
                                     Call Rolld100(RN)
-                                    If pitchRating(P, currPitcher(P), SS_P_Run) <= teamMgrProfileVal(P, 804) And INNING% >= teamMgrProfileVal(P, 805) And RN <= teamMgrProfileVal(P, 806) Then 8993
-                                    If pitchRating(P, currPitcher(P), SS_P_Run) <= teamMgrProfileVal(P, 807) And INNING% >= teamMgrProfileVal(P, 808) And RN <= teamMgrProfileVal(P, 809) Then 8993
+                                    If pitchRating(P, currPitcher(P), SS_P_Run) <= teamMgrProfileVal(P, 804) _
+                                      And INNING% >= teamMgrProfileVal(P, 805) _
+                                      And RN <= teamMgrProfileVal(P, 806) Then
+                                        Call LPinchRunner(MS%, J, J1, I1)
+                                        Exit Sub
+
+                                    End If
+                                    If pitchRating(P, currPitcher(P), SS_P_Run) <= teamMgrProfileVal(P, 807) _
+                                      And INNING% >= teamMgrProfileVal(P, 808) _
+                                      And RN <= teamMgrProfileVal(P, 809) Then
+                                        Call LPinchRunner(MS%, J, J1, I1)
+                                        Exit Sub
+
+                                    End If
+
                                     Exit Sub
                                 End If
                             End If
@@ -12670,7 +12739,15 @@ Sub PINCHRUNNER (MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStri
                                     'FOUND A MATCH FOR THE RUNNER ON BASE
                                     If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a DEFENSE SUBSTITUTION strategy !!"
                                     Call Rolld100(RN)
-                                    If INNING% >= teamMgrProfileVal(P, I * 4 + 780) And batRating(P, teamMgrProfileVal(P, I * 4 + 781), SS_B_Avail) = 0 And RN <= teamMgrProfileVal(P, I * 4 + 782) Then batRating(P, teamMgrProfileVal(P, I * 4 + 781), SS_B_Avail) = 40 + J: GoTo 8993
+                                    If INNING% >= teamMgrProfileVal(P, I * 4 + 780) _
+                                      And batRating(P, teamMgrProfileVal(P, I * 4 + 781), SS_B_Avail) = 0 _
+                                      And RN <= teamMgrProfileVal(P, I * 4 + 782) Then
+                                        batRating(P, teamMgrProfileVal(P, I * 4 + 781), SS_B_Avail) = 40 + J
+                                        Call LPinchRunner(MS%, J, J1, I1)
+                                        Exit Sub
+
+                                    End If
+
                                     Exit Sub
                                 End If
                             Next
@@ -12708,58 +12785,7 @@ Sub PINCHRUNNER (MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStri
             RN = Int(Rnd(1) * i0%)
             I1 = pinchRunners(RN)
 
-            8993 '
-            I2 = J
-            player$(J1) = batters$(P, I1)
-            batRating(P, I1, SS_B_Avail) = 1
-            lineupPlayer(P, I2) = I1
-            fielder(P, fldPos(P, I2)) = I1
-
-            If fldPos(P, I2) = 1 Or fldPos(P, I2) = 10 Then
-                fielder(P, 1) = 99
-                fielder(P, 0) = I2
-                fldPos(P, I2) = 10
-            End If
-
-            gameD0(P) = gameD0(P) + 1
-            X0%(P, 0, gameD0(P)) = lineupPlayer(P, I2)
-            X0%(P, 1, gameD0(P)) = 11   '11 = Pinch Runner
-            X0%(P, 2, gameD0(P)) = (I2 * 10) + (gameD0(P) - 9)
-
-            W5 = P
-            W6 = P
-            VV(P) = I2
-            VV1(P) = I2
-
-            For xx = 22 To 25
-                If fldPos(P, I2) = batRating(P, I1, xx) Then
-                    batRating(P, I1, SS_B_Arm)    = batRating(P, I1, 33 + (xx - 22) * 2)
-                    batRating(P, I1, SS_B_Range)  = batRating(P, I1, 34 + (xx - 22) * 2)
-                    batRating(P, I1, SS_B_FldPct) = batRating(P, I1, xx + 4)
-                    Exit For
-                End If
-            Next
-
-            Call WINDEX
-            Locate 15, 1
-            Call PBP(gameManagers$(P) + " is sending in a pinch runner")
-            pinchRunnerFlag = 1
-
-            Call DELAY
-            Call HITTINGLINES
-
-            If useVGA = 1 Then
-                Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
-                Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
-                MS% = 1
-            Else
-                Call DisplayBallField(nbrBalls, P, nbrStrikes, D)
-                Call MAINSCREEN(D, P, nbrBalls, nbrStrikes, MO)
-                MS% = 1
-            End If
-
-            VV(P) = 1
-            VV1(P) = 9
+            Call LPinchRunner(MS%, J, J1, I1)
 
         End If
 
