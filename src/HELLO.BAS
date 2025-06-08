@@ -1948,21 +1948,27 @@ Sub LineupPositions (teamIdx, posIdx)
 
                     Locate , 74
 
-                    680 '
-                    'Input fielding position
-                    'If desigHit = 1 Then firstSlot = 1 Else firstSlot = 0
-                    firstSlot = 1
+                    match% = 0
+                    Do  ' 680
+                        'Input fielding position
+                        'If desigHit = 1 Then firstSlot = 1 Else firstSlot = 0
+                        firstSlot = 1
 
-                    Do
-                        J$ = GetKeyPress$
-                        J1 = Val(J$)
-                    Loop Until J1 <> firstSlot
+                        Do
+                            J$ = GetKeyPress$
+                            J1 = Val(J$)
+                        Loop Until J1 <> firstSlot
 
-                    For J = 1 To 9
-                        If J <> posIdx Then
-                            If J1 = fldPos(teamIdx, J) Then 680
-                        End If
-                    Next J
+                        For J = 1 To 9
+                            If J <> posIdx Then
+                                If J1 = fldPos(teamIdx, J) Then
+                                    match% = 1    ' 680
+                                    Exit For
+                                End If
+                            End If
+                        Next J
+                        If match% = 0 then Exit Do  'ToDo [bm] TEST!
+                    Loop
 
                     If Not (desigHit = 0 And J1 = 0 Or UCase$(J$) = "X") Then
 
@@ -4311,9 +4317,10 @@ Sub SOURCE ()
 
         Case 6
             P9 = D
-            W5 = -1
-            W6 = -1
-            GoTo LPersonnelMenu
+            'W5 = -1
+            'W6 = -1
+            Call LPersonnelMenu
+            Goto LNextBatter1
 
     End Select
 
@@ -4579,9 +4586,11 @@ Sub SOURCE ()
 
         Case 5  'Personnel
             P9 = P
-            W5 = -1
-            W6 = -1
-            GoTo LPersonnelMenu
+            'W5 = -1
+            'W6 = -1
+            Call LPersonnelMenu
+            Goto LNextBatter1
+
 
     End Select
 
@@ -7366,57 +7375,9 @@ Sub SOURCE ()
     End If
 
     Call LChangePitcher(I5)
-    Goto LPersonnelMenu
+    Call LPersonnelMenu
+    Goto LNextBatter1
 
-
-    '-----------------------------------
-    '-----      PERSONNEL MENU     -----
-    '-----------------------------------
-    '-- make this into a subroutine?!?!
-
-   LPersonnelMenu:
-    Cls
-    If useVGA = 1 Then Screen menu&
-    TG = 0
-    PG = 0
-    Color 12: Print Tab(33); "PERSONNEL MENU": Print
-    Color 14: Print "(0) ";
-    Color 15: Print "RESUME PLAY": Print
-    Color 14: Print "(1) ";
-    Color 15: Print "RELIEF PITCHER": Print
-    Color 14: Print "(2) ";
-    Color 15: Print "CHANGE BATTER/FIELDER"
-
-   LPersonnelMenu2:
-    Do
-        I$ = GetKeyPress$
-        I = Val(I$)
-        I5 = 0
-    Loop Until I >= 0 And I <= 2
-
-    'This I has to do with the above key loop
-    Select Case I + 1
-
-        Case 1
-            Call LResumePlay
-            GoTo LNextBatter1
-
-        Case 2
-            If P2 = OFF_PERSONNEL Then Call TIRING(P9): GoTo LPersonnelMenu2
-
-            Call LChangePitcher(I5)
-            Goto LPersonnelMenu
-
-        Case 3
-           Call LChangeBatterFielder
-           Goto LPersonnelMenu
-    End Select
-
-    'ToDo [bm] Dead code?
-    Call LReplacePlayer
-
-    Call LChangeBatterFielder
-    Goto LPersonnelMenu
 
     '----- NOODLE -----
 
@@ -9309,6 +9270,135 @@ Sub LChangePitcher(I5)
     Next V0
 
     Call LChangeBatterFielder
+
+End Sub
+
+
+    '-----------------------------------
+    '-----      PERSONNEL MENU     -----
+    '-----------------------------------
+    '-- make this into a subroutine?!?!
+
+Sub LPersonnelMenu
+    Do
+        Cls
+        If useVGA = 1 Then Screen menu&
+        TG = 0
+        PG = 0
+        Color 12: Print Tab(33); "PERSONNEL MENU": Print
+        Color 14: Print "(0) ";
+        Color 15: Print "RESUME PLAY": Print
+        Color 14: Print "(1) ";
+        Color 15: Print "RELIEF PITCHER": Print
+        Color 14: Print "(2) ";
+        Color 15: Print "CHANGE BATTER/FIELDER"
+
+        Do  'LPersonnelMenu2:
+            Do
+                I$ = GetKeyPress$
+                I = Val(I$)
+                I5 = 0
+            Loop Until I >= 0 And I <= 2
+
+            'This I has to do with the above key loop
+            Select Case I + 1
+
+                Case 1
+                    Call LResumePlay
+                    Exit Sub    ' GoTo LNextBatter1
+
+                Case 2
+                    If P2 = OFF_PERSONNEL Then
+                        Call TIRING(P9)  ': GoTo LPersonnelMenu2
+                    Else
+                        Call LChangePitcher(I5)
+                        Exit Do 'Goto LPersonnelMenu
+                    End If
+
+                Case 3
+                    Call LChangeBatterFielder
+                    Exit Do 'Goto LPersonnelMenu
+            End Select
+        Loop
+
+        'ToDo [bm] Dead code?
+        ' Call LReplacePlayer
+
+        ' Call LChangeBatterFielder
+        ' Goto LPersonnelMenu
+    Loop
+
+End Sub
+
+
+Sub CalcExtraBaseHits(I3, i9!, BY%, TY%)
+    If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_BAvg) <> 999 Then
+        game_batRating(I, GM_2B, I3) = (130 * (i9! * 1000)) / teamRat_GAME(I1, 1)
+        game_batRating(I, GM_3B, I3) = ( 19 * (i9! * 1000)) / teamRat_GAME(I1, 1)
+        game_batRating(I, GM_HR, I3) = 37
+    Else
+
+        E2! = (i9! * 1000) / teamRat_GAME(I1, 1)
+
+        If teamSplit(I1, 0) = 999 Then
+            E2! = (i9! * 1000) / gameSA(I1, TY% * 6 + 1)
+        End If
+
+        If fldPos(I, I3) =  1 And pitchRating(I, currPitcher(I), SS_P_H_H) = 0  Then game_batRating(I, GM_2B, I3) = 0: game_batRating(I, GM_3B, I3) = 0: game_batRating(I, GM_HR, I3) = 0: Exit Sub
+        If fldPos(I, I3) <> 1 And batRating(I, lineupPlayer(I, I3), SS_B_H) = 0 Then game_batRating(I, GM_2B, I3) = 0: game_batRating(I, GM_3B, I3) = 0: game_batRating(I, GM_HR, I3) = 0: Exit Sub
+        If fldPos(I, I3)  = 1 And teamSplit(I, 0) = 999 And pitchRating(I, currPitcher(I), 38 + BY% * 7) = 0 Then game_batRating(I, GM_2B, I3) = 0: game_batRating(I, GM_3B, I3) = 0: game_batRating(I, GM_HR, I3) = 0: Exit Sub
+        If fldPos(I, I3)  = 1 And teamSplit(I, 0) = 999 Then game_batRating(I, GM_2B, I3) = Int((pitchRating(I, currPitcher(I), 39 + BY% * 7) / pitchRating(I, currPitcher(I), 38 + BY% * 7)) * 1000) * E2!  ' doubles times  * .95
+        If fldPos(I, I3)  = 1 And teamSplit(I, 0) = 999 Then game_batRating(I, GM_3B, I3) = Int((pitchRating(I, currPitcher(I), 40 + BY% * 7) / pitchRating(I, currPitcher(I), 38 + BY% * 7)) * 1000) * E2!
+        If fldPos(I, I3)  = 1 And teamSplit(I, 0) = 999 Then game_batRating(I, GM_HR, I3) = Int((pitchRating(I, currPitcher(I), 41 + BY% * 7) / pitchRating(I, currPitcher(I), 38 + BY% * 7)) * 1000): Exit Sub
+        If fldPos(I, I3)  = 1 Then game_batRating(I, GM_2B, I3) = Int((pitchRating(I, currPitcher(I), SS_P_H_2B) / pitchRating(I, currPitcher(I), SS_P_H_H)) * 1000) * E2!  ' doubles times  * .95
+        If fldPos(I, I3)  = 1 Then game_batRating(I, GM_3B, I3) = Int((pitchRating(I, currPitcher(I), SS_P_H_3B) / pitchRating(I, currPitcher(I), SS_P_H_H)) * 1000) * E2!
+        If fldPos(I, I3)  = 1 Then game_batRating(I, GM_HR, I3) = Int((pitchRating(I, currPitcher(I), SS_P_H_HR) / pitchRating(I, currPitcher(I), SS_P_H_H)) * 1000): Exit Sub
+
+        If batRating(I, lineupPlayer(I, I3), SS_B_H) = 0 Then game_batRating(I, GM_2B, I3) = 0: game_batRating(I, GM_3B, I3) = 0: game_batRating(I, GM_HR, I3) = 0: Exit Sub
+
+        If teamSplit(I, 0) = 999 And batRating(I, lineupPlayer(I, I3), 80) <> 0 Then
+
+            If batRating(I, lineupPlayer(I, I3), 43 + BY% * 7) = 0 Then
+                game_batRating(I, GM_2B, I3) = 0
+                game_batRating(I, GM_3B, I3) = 0
+                game_batRating(I, GM_HR, I3) = 0
+            Else
+                game_batRating(I, GM_2B, I3) = Int((batRating(I, lineupPlayer(I, I3), 44 + BY% * 7) / batRating(I, lineupPlayer(I, I3), 43 + BY% * 7)) * 1000) * E2!  'see note on pitchers * .95
+                game_batRating(I, GM_3B, I3) = Int((batRating(I, lineupPlayer(I, I3), 45 + BY% * 7) / batRating(I, lineupPlayer(I, I3), 43 + BY% * 7)) * 1000) * E2!
+                game_batRating(I, GM_HR, I3) = Int((batRating(I, lineupPlayer(I, I3), 46 + BY% * 7) / batRating(I, lineupPlayer(I, I3), 43 + BY% * 7)) * 1000)
+            End If
+            Exit Sub
+        End If
+
+        game_batRating(I, GM_2B, I3) = Int((batRating(I, lineupPlayer(I, I3), SS_B_2B) / batRating(I, lineupPlayer(I, I3), SS_B_H)) * 1000) * E2!  'see note on pitchers * .95
+        game_batRating(I, GM_3B, I3) = Int((batRating(I, lineupPlayer(I, I3), SS_B_3B) / batRating(I, lineupPlayer(I, I3), SS_B_H)) * 1000) * E2!
+        game_batRating(I, GM_HR, I3) = Int((batRating(I, lineupPlayer(I, I3), SS_B_HR) / batRating(I, lineupPlayer(I, I3), SS_B_H)) * 1000)
+
+    End If
+
+End Sub
+
+
+Sub InitBatsThrows(I3, I, I1, TY%, PY%, BY%)
+    bats%   = batRating(I, lineupPlayer(I, I3), SS_B_Bats)
+    throws% = pitchRating(I1, currPitcher(I1), SS_P_Throws)
+
+    If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_Throws) = -1 And throws% = -1 Then TY% = 0
+    If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_Throws) = -1 And throws% =  1 Then TY% = 1
+    If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_Throws) =  1 And throws% = -1 Then TY% = 2
+    If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_Throws) =  1 And throws% =  1 Then TY% = 3
+
+    If fldPos(I, I3) <> 1 And bats% < 0 And throws% = -1 Then TY% = 0
+    If fldPos(I, I3) <> 1 And bats% < 0 And throws% =  1 Then TY% = 1
+    If fldPos(I, I3) <> 1 And bats% = 0 And throws% =  1 Then TY% = 1
+    If fldPos(I, I3) <> 1 And bats% = 0 And throws% = -1 Then TY% = 2
+    If fldPos(I, I3) <> 1 And bats% > 0 And throws% = -1 Then TY% = 2
+    If fldPos(I, I3) <> 1 And bats% > 0 And throws% =  1 Then TY% = 3
+
+    If TY% = 0 Or TY% = 1 Then PY% = 0
+    If TY% = 2 Or TY% = 3 Then PY% = 1
+    If TY% = 0 Or TY% = 2 Then BY% = 0
+    If TY% = 1 Or TY% = 3 Then BY% = 1
 
 End Sub
 
@@ -13891,53 +13981,7 @@ Sub HITTINGLINES
                 'I2! = pitchRating(I1, currPitcher(I1), 8) / (((pitchRating(I1, currPitcher(I1), 6) * 3) * .94) + pitchRating(I1, currPitcher(I1), 7) + pitchRating(I1, currPitcher(I1), 8))
             End If
 
-            II = batRating(I, lineupPlayer(I, I3), SS_B_Bats)
-            I4 = pitchRating(I1, currPitcher(I1), SS_P_Throws)
-
-            If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_Throws) = -1 And I4 = 1 Then
-                TY% = 1
-            End If
-            If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_Throws) = -1 And I4 = -1 Then
-                TY% = 0
-            End If
-            If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_Throws) = 1 And I4 = -1 Then
-                TY% = 2
-            End If
-            If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_Throws) = 1 And I4 = 1 Then
-                TY% = 3
-            End If
-
-            If fldPos(I, I3) <> 1 And II < 0 And I4 = 1 Then
-                TY% = 1
-            End If
-            If fldPos(I, I3) <> 1 And II < 0 And I4 = -1 Then
-                TY% = 0
-            End If
-            If fldPos(I, I3) <> 1 And II > 0 And I4 = -1 Then
-                TY% = 2
-            End If
-            If fldPos(I, I3) <> 1 And II > 0 And I4 = 1 Then
-                TY% = 3
-            End If
-            If fldPos(I, I3) <> 1 And II = 0 And I4 = 1 Then
-                TY% = 1
-            End If
-            If fldPos(I, I3) <> 1 And II = 0 And I4 = -1 Then
-                TY% = 2
-            End If
-
-            If TY% = 0 Or TY% = 1 Then
-                PY% = 0
-            End If
-            If TY% = 2 Or TY% = 3 Then
-                PY% = 1
-            End If
-            If TY% = 0 Or TY% = 2 Then
-                BY% = 0
-            End If
-            If TY% = 1 Or TY% = 3 Then
-                BY% = 1
-            End If
+            Call InitBatsThrows(I3, I, I1, TY%, PY%, BY%)
 
             If teamSplit(I1, 0) = 999 And pitchRating(I1, currPitcher(I1), 89) <> 0 Then
                 I6! = gameSA(I1, TY% * 6 + 3) / 1000
@@ -14003,50 +14047,7 @@ Sub HITTINGLINES
 
             I6! = teamRat_GAME(I1, 2) / 1000
 
-            II = batRating(I, lineupPlayer(I, I3), SS_B_Bats)
-            I4 = pitchRating(I1, currPitcher(I1), SS_P_Throws)
-            If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_Throws) = -1 And I4 = 1 Then
-                TY% = 1
-            End If
-            If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_Throws) = -1 And I4 = -1 Then
-                TY% = 0
-            End If
-            If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_Throws) = 1 And I4 = -1 Then
-                TY% = 2
-            End If
-            If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_Throws) = 1 And I4 = 1 Then
-                TY% = 3
-            End If
-            If fldPos(I, I3) <> 1 And II < 0 And I4 = 1 Then
-                TY% = 1
-            End If
-            If fldPos(I, I3) <> 1 And II < 0 And I4 = -1 Then
-                TY% = 0
-            End If
-            If fldPos(I, I3) <> 1 And II > 0 And I4 = -1 Then
-                TY% = 2
-            End If
-            If fldPos(I, I3) <> 1 And II > 0 And I4 = 1 Then
-                TY% = 3
-            End If
-            If fldPos(I, I3) <> 1 And II = 0 And I4 = 1 Then
-                TY% = 1
-            End If
-            If fldPos(I, I3) <> 1 And II = 0 And I4 = -1 Then
-                TY% = 2
-            End If
-            If TY% = 0 Or TY% = 1 Then
-                PY% = 0
-            End If
-            If TY% = 2 Or TY% = 3 Then
-                PY% = 1
-            End If
-            If TY% = 0 Or TY% = 2 Then
-                BY% = 0
-            End If
-            If TY% = 1 Or TY% = 3 Then
-                BY% = 1
-            End If
+            Call InitBatsThrows(I3, I, I1, TY%, PY%, BY%)
 
             If teamSplit(I1, 0) = 999 And pitchRating(I1, currPitcher(I1), 89) <> 0 Then
 
@@ -14127,50 +14128,8 @@ Sub HITTINGLINES
 
             Call NORMALIZE(I7!, I2!, I6!, K8!)
             i9! = K8! / 1000
-            II = batRating(I, lineupPlayer(I, I3), SS_B_Bats)
-            I4 = pitchRating(I1, currPitcher(I1), SS_P_Throws)
-            If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_Throws) = -1 And I4 = 1 Then
-                TY% = 1
-            End If
-            If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_Throws) = -1 And I4 = -1 Then
-                TY% = 0
-            End If
-            If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_Throws) = 1 And I4 = -1 Then
-                TY% = 2
-            End If
-            If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_Throws) = 1 And I4 = 1 Then
-                TY% = 3
-            End If
-            If fldPos(I, I3) <> 1 And II < 0 And I4 = 1 Then
-                TY% = 1
-            End If
-            If fldPos(I, I3) <> 1 And II < 0 And I4 = -1 Then
-                TY% = 0
-            End If
-            If fldPos(I, I3) <> 1 And II > 0 And I4 = -1 Then
-                TY% = 2
-            End If
-            If fldPos(I, I3) <> 1 And II > 0 And I4 = 1 Then
-                TY% = 3
-            End If
-            If fldPos(I, I3) <> 1 And II = 0 And I4 = 1 Then
-                TY% = 1
-            End If
-            If fldPos(I, I3) <> 1 And II = 0 And I4 = -1 Then
-                TY% = 2
-            End If
-            If TY% = 0 Or TY% = 1 Then
-                PY% = 0
-            End If
-            If TY% = 2 Or TY% = 3 Then
-                PY% = 1
-            End If
-            If TY% = 0 Or TY% = 2 Then
-                BY% = 0
-            End If
-            If TY% = 1 Or TY% = 3 Then
-                BY% = 1
-            End If
+
+            Call InitBatsThrows(I3, I, I1, TY%, PY%, BY%)
 
             If teamSplit(I1, 0) = 999 And pitchRating(I1, currPitcher(I1), 89) <> 0 Then
 
@@ -14273,99 +14232,10 @@ Sub HITTINGLINES
         ' CALCULATE THE EXTRA BASE HITS RATIOS
         For I3 = VV(I) To VV1(I)
 
-            II = batRating(I, lineupPlayer(I, I3), SS_B_Bats)
-            I4 = pitchRating(I1, currPitcher(I1), SS_P_Throws)
+            Call InitBatsThrows(I3, I, I1, TY%, PY%, BY%)
 
-            If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_Throws) = -1 And I4 = 1 Then
-                TY% = 1
-            End If
-            If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_Throws) = -1 And I4 = -1 Then
-                TY% = 0
-            End If
-            If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_Throws) = 1 And I4 = -1 Then
-                TY% = 2
-            End If
-            If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_Throws) = 1 And I4 = 1 Then
-                TY% = 3
-            End If
+            Call CalcExtraBaseHits(I3, i9!, BY%, TY%)
 
-            If fldPos(I, I3) <> 1 And II < 0 And I4 = 1 Then
-                TY% = 1
-            End If
-            If fldPos(I, I3) <> 1 And II < 0 And I4 = -1 Then
-                TY% = 0
-            End If
-            If fldPos(I, I3) <> 1 And II > 0 And I4 = -1 Then
-                TY% = 2
-            End If
-            If fldPos(I, I3) <> 1 And II > 0 And I4 = 1 Then
-                TY% = 3
-            End If
-            If fldPos(I, I3) <> 1 And II = 0 And I4 = 1 Then
-                TY% = 1
-            End If
-            If fldPos(I, I3) <> 1 And II = 0 And I4 = -1 Then
-                TY% = 2
-            End If
-
-            If TY% = 0 Or TY% = 1 Then
-                PY% = 0
-            End If
-            If TY% = 2 Or TY% = 3 Then
-                PY% = 1
-            End If
-            If TY% = 0 Or TY% = 2 Then
-                BY% = 0
-            End If
-            If TY% = 1 Or TY% = 3 Then
-                BY% = 1
-            End If
-
-            If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_BAvg) <> 999 Then
-                game_batRating(I, GM_2B, I3) = (130 * (i9! * 1000)) / teamRat_GAME(I1, 1)
-                game_batRating(I, GM_3B, I3) = ( 19 * (i9! * 1000)) / teamRat_GAME(I1, 1)
-                game_batRating(I, GM_HR, I3) = 37
-            Else
-
-                E2! = (i9! * 1000) / teamRat_GAME(I1, 1)
-
-                If teamSplit(I1, 0) = 999 Then
-                    E2! = (i9! * 1000) / gameSA(I1, TY% * 6 + 1)
-                End If
-
-                If fldPos(I, I3) =  1 And pitchRating(I, currPitcher(I), SS_P_H_H) = 0  Then game_batRating(I, GM_2B, I3) = 0: game_batRating(I, GM_3B, I3) = 0: game_batRating(I, GM_HR, I3) = 0: GoTo 235
-                If fldPos(I, I3) <> 1 And batRating(I, lineupPlayer(I, I3), SS_B_H) = 0 Then game_batRating(I, GM_2B, I3) = 0: game_batRating(I, GM_3B, I3) = 0: game_batRating(I, GM_HR, I3) = 0: GoTo 235
-                If fldPos(I, I3) = 1 And teamSplit(I, 0) = 999 And pitchRating(I, currPitcher(I), 38 + BY% * 7) = 0 Then game_batRating(I, GM_2B, I3) = 0: game_batRating(I, GM_3B, I3) = 0: game_batRating(I, GM_HR, I3) = 0: GoTo 235
-                If fldPos(I, I3) = 1 And teamSplit(I, 0) = 999 Then game_batRating(I, GM_2B, I3) = Int((pitchRating(I, currPitcher(I), 39 + BY% * 7) / pitchRating(I, currPitcher(I), 38 + BY% * 7)) * 1000) * E2!  ' doubles times  * .95
-                If fldPos(I, I3) = 1 And teamSplit(I, 0) = 999 Then game_batRating(I, GM_3B, I3) = Int((pitchRating(I, currPitcher(I), 40 + BY% * 7) / pitchRating(I, currPitcher(I), 38 + BY% * 7)) * 1000) * E2!
-                If fldPos(I, I3) = 1 And teamSplit(I, 0) = 999 Then game_batRating(I, GM_HR, I3) = Int((pitchRating(I, currPitcher(I), 41 + BY% * 7) / pitchRating(I, currPitcher(I), 38 + BY% * 7)) * 1000): GoTo 235
-                If fldPos(I, I3) = 1 Then game_batRating(I, GM_2B, I3) = Int((pitchRating(I, currPitcher(I), SS_P_H_2B) / pitchRating(I, currPitcher(I), SS_P_H_H)) * 1000) * E2!  ' doubles times  * .95
-                If fldPos(I, I3) = 1 Then game_batRating(I, GM_3B, I3) = Int((pitchRating(I, currPitcher(I), SS_P_H_3B) / pitchRating(I, currPitcher(I), SS_P_H_H)) * 1000) * E2!
-                If fldPos(I, I3) = 1 Then game_batRating(I, GM_HR, I3) = Int((pitchRating(I, currPitcher(I), SS_P_H_HR) / pitchRating(I, currPitcher(I), SS_P_H_H)) * 1000): GoTo 235
-
-                If batRating(I, lineupPlayer(I, I3), SS_B_H) = 0 Then game_batRating(I, GM_2B, I3) = 0: game_batRating(I, GM_3B, I3) = 0: game_batRating(I, GM_HR, I3) = 0: GoTo 235
-
-                If teamSplit(I, 0) = 999 And batRating(I, lineupPlayer(I, I3), 80) <> 0 Then
-
-                    If batRating(I, lineupPlayer(I, I3), 43 + BY% * 7) = 0 Then
-                        game_batRating(I, GM_2B, I3) = 0
-                        game_batRating(I, GM_3B, I3) = 0
-                        game_batRating(I, GM_HR, I3) = 0
-                    Else
-                        game_batRating(I, GM_2B, I3) = Int((batRating(I, lineupPlayer(I, I3), 44 + BY% * 7) / batRating(I, lineupPlayer(I, I3), 43 + BY% * 7)) * 1000) * E2!  'see note on pitchers * .95
-                        game_batRating(I, GM_3B, I3) = Int((batRating(I, lineupPlayer(I, I3), 45 + BY% * 7) / batRating(I, lineupPlayer(I, I3), 43 + BY% * 7)) * 1000) * E2!
-                        game_batRating(I, GM_HR, I3) = Int((batRating(I, lineupPlayer(I, I3), 46 + BY% * 7) / batRating(I, lineupPlayer(I, I3), 43 + BY% * 7)) * 1000)
-                    End If
-                    GoTo 235
-                End If
-
-                game_batRating(I, GM_2B, I3) = Int((batRating(I, lineupPlayer(I, I3), SS_B_2B) / batRating(I, lineupPlayer(I, I3), SS_B_H)) * 1000) * E2!  'see note on pitchers * .95
-                game_batRating(I, GM_3B, I3) = Int((batRating(I, lineupPlayer(I, I3), SS_B_3B) / batRating(I, lineupPlayer(I, I3), SS_B_H)) * 1000) * E2!
-                game_batRating(I, GM_HR, I3) = Int((batRating(I, lineupPlayer(I, I3), SS_B_HR) / batRating(I, lineupPlayer(I, I3), SS_B_H)) * 1000)
-
-            End If
-
-            235 '
             I6! = teamRat_GAME(I1, 4) / 1000
             I7! = game_batRating(I, GM_HR, I3) / 1000
             I2! = 0
