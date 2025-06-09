@@ -15675,12 +15675,8 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
 
                         If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a THROWING HOME strategy !!"
 
-                        If INNING% >= teamMgrProfileVal(D, 767) And teamMgrProfileVal(D, 767) <> 0 And teamMgrProfileVal(D, 768) <= gameScore(D, 0) - gameScore(P, 0) Then
-                            I$ = "N"
-                        End If
-                        If INNING% >= teamMgrProfileVal(D, 769) And teamMgrProfileVal(D, 769) <> 0 And teamMgrProfileVal(D, 770) <= gameScore(D, 0) - gameScore(P, 0) Then
-                            I$ = "N"
-                        End If
+                        If INNING% >= teamMgrProfileVal(D, 767) And teamMgrProfileVal(D, 767) <> 0 And teamMgrProfileVal(D, 768) <= gameScore(D, 0) - gameScore(P, 0) Then I$ = "N"
+                        If INNING% >= teamMgrProfileVal(D, 769) And teamMgrProfileVal(D, 769) <> 0 And teamMgrProfileVal(D, 770) <= gameScore(D, 0) - gameScore(P, 0) Then I$ = "N"
                     Else
                         I$ = "Y"
                     End If
@@ -15720,15 +15716,9 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
                     runRating = (runRating - 5) * 50
 
                     armRating = (batRating(D, fielder(D, currFielder), SS_B_Arm) - 5) * 25
-                    If S2% = EVENT_FLY_DEEP Then
-                        I3 = 1000 + runRating - armRating  ' WAS 800
-                    End If
-                    If S2% = EVENT_FLY_REGULAR Then
-                        I3 = 800 + runRating - armRating  ' WAS 650
-                    End If
-                    If S2% = EVENT_FLY_SHALLOW Or S2% < EVENT_HR Then
-                        I3 = 500 + runRating - armRating
-                    End If
+                    If S2% = EVENT_FLY_DEEP    Then I3 = 1000 + runRating - armRating  ' WAS 800
+                    If S2% = EVENT_FLY_REGULAR Then I3 =  800 + runRating - armRating  ' WAS 650
+                    If S2% = EVENT_FLY_SHALLOW Or S2% < EVENT_HR Then I3 = 500 + runRating - armRating
 
                     If I4 > I3 Then     ' outcome = OUT!
 
@@ -15772,69 +15762,7 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
 
                         If nbrOuts(0) = 3 Or S2% > EVENT_HR Then Exit Sub
 
-                       LRunnerGoing:
-                        Call Rolld100(I5)
-
-                        A1 = gameScore(P, 0) - gameScore(D, 0)
-
-                        If Not (A1 < -2 Or A1 < 0 And INNING% > 8) Then
-
-                            ' *** RUNNER ON 2ND GUNNED AT 3RD ON THROW HOME ***
-                            If baseNbr! - 1 > 2 And I5 <= 15 And b2Base(2) > 0 Then
-                                Call CREDITASSIST(currFielder, D)
-                                Call PBP("runner is trying for 3rd...")
-                                A5%(2) = 11
-                                nbrOuts(0) = nbrOuts(0) + 1
-                                nbrOuts(1) = nbrOuts(1) + 1
-                                currFielder = 5
-                                Call CREDITREGPO(currFielder, D)
-                                CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
-                            End If
-
-                            ' *** RUNNER ON 1ST GUNNED AT 2ND ON THROW TO HOME OR 3RD ***
-                            Call Rolld100(I5)
-
-                            If baseNbr! - 1 > 1 And I5 <= 15 And b2Base(1) > 0 And A5%(2) <> 11 Then
-                                Call CREDITASSIST(currFielder, D)
-                                currFielder = 6
-                                Call CREDITREGPO(currFielder, D)
-                                Call PBP("runner is trying for 2nd...")
-                                A5%(1) = 11
-                                nbrOuts(0) = nbrOuts(0) + 1
-                                nbrOuts(1) = nbrOuts(1) + 1
-                                CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
-                            End If
-
-                            Call Rolld100(I5)
-
-                            If b2Base(2) > 0 And baseNbr! - 1 > 2 And A5%(2) <> 11 And I5 > (80 - batRating(P, lineupPlayer(P, b2Base(2)), SS_B_Run) * 2) And noThrow = 0 Then
-                                A5%(2) = 1
-                                Call PBP("runner is trying for 3rd...")
-                                Call PBP("He's safe!")
-                            End If
-
-                            I5 = Int(Rnd(1) * 10) + 1
-
-                            If b2Base(1) > 0 And A5%(1) <> 11 And (baseRunners = 4 Or baseRunners = 7 And baseNbr! - 1 > 1 And I5 > (10 - batRating(P, lineupPlayer(P, b2Base(1)), SS_B_Run)) And noThrow = 0) Then
-                                A5%(1) = 1
-                                Call PBP("runner is trying for 2nd...")
-                                Call PBP("He's in there!")
-                            Else
-
-                                Call Rolld100(I5)
-
-                                If b2Base(1) > 0 And baseNbr! - 1 > 1 And I5 > (80 - batRating(P, lineupPlayer(P, b2Base(1)), SS_B_Run) * 2) And noThrow = 0 And A5%(1) <> 11 Then
-                                    A5%(1) = 1
-                                    Call PBP("runner safe at 2nd on the throw")
-                                End If
-
-                            End If
-
-                        End If
-
-                        Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-                        noThrow = 0
-
+                        Call LRunnerGoing(S2%, D, currFielder, baseNbr!, noThrow)
                         Exit Sub
 
                     End If
@@ -15855,9 +15783,7 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
                             End If
 
                         Case 5 To 50:
-                            If baseNbr! <> 4 Then
-                                Call PBP(player$(baseNbr! - 1) + " beats the throw!")
-                            End If
+                            If baseNbr! <> 4 Then Call PBP(player$(baseNbr! - 1) + " beats the throw!")
 
                         Case 51 To 60:
                             Call PBP(player$(baseNbr! - 1) + " is ahead of the throw")
@@ -15884,13 +15810,11 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
                 Call PBP(player$(baseNbr! - 1) + " is safe @ " + baseName$(baseNbr!))
 
                 'sah% = safeAtHome ?
-                If baseNbr! = 4 Then
-                    sah% = 1
-                End If
+                If baseNbr! = 4 Then sah% = 1
 
                 Call TAGADVANCE(S2%, baseNbr!, D)
 
-                If S2% < EVENT_HR Then Goto LRunnerGoing
+                If S2% < EVENT_HR Then Call LRunnerGoing(S2%, D, currFielder, baseNbr!, noThrow): Exit Sub
 
                 If S2% > EVENT_HR Then
 
@@ -15914,7 +15838,8 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
 
                         Call ADDPIT(D, currPitcher(D), 16)
 
-                        GoTo LRunnerGoing
+                        Call LRunnerGoing(S2%, D, currFielder, baseNbr!, noThrow)
+                        Exit Sub
 
                     End If
 
@@ -15929,6 +15854,74 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
     End If
 
 End Sub
+
+
+Sub LRunnerGoing (S2%, D, currFielder, baseNbr!, noThrow)
+
+    Call Rolld100(I5)
+
+    A1 = gameScore(P, 0) - gameScore(D, 0)
+
+    If Not (A1 < -2 Or A1 < 0 And INNING% > 8) Then
+
+        ' *** RUNNER ON 2ND GUNNED AT 3RD ON THROW HOME ***
+        If baseNbr! - 1 > 2 And I5 <= 15 And b2Base(2) > 0 Then
+            Call CREDITASSIST(currFielder, D)
+            Call PBP("runner is trying for 3rd...")
+            A5%(2) = 11
+            nbrOuts(0) = nbrOuts(0) + 1
+            nbrOuts(1) = nbrOuts(1) + 1
+            currFielder = 5
+            Call CREDITREGPO(currFielder, D)
+            CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
+        End If
+
+        ' *** RUNNER ON 1ST GUNNED AT 2ND ON THROW TO HOME OR 3RD ***
+        Call Rolld100(I5)
+
+        If baseNbr! - 1 > 1 And I5 <= 15 And b2Base(1) > 0 And A5%(2) <> 11 Then
+            Call CREDITASSIST(currFielder, D)
+            currFielder = 6
+            Call CREDITREGPO(currFielder, D)
+            Call PBP("runner is trying for 2nd...")
+            A5%(1) = 11
+            nbrOuts(0) = nbrOuts(0) + 1
+            nbrOuts(1) = nbrOuts(1) + 1
+            CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
+        End If
+
+        Call Rolld100(I5)
+
+        If b2Base(2) > 0 And baseNbr! - 1 > 2 And A5%(2) <> 11 And I5 > (80 - batRating(P, lineupPlayer(P, b2Base(2)), SS_B_Run) * 2) And noThrow = 0 Then
+            A5%(2) = 1
+            Call PBP("runner is trying for 3rd...")
+            Call PBP("He's safe!")
+        End If
+
+        I5 = Int(Rnd(1) * 10) + 1
+
+        If b2Base(1) > 0 And A5%(1) <> 11 And (baseRunners = 4 Or baseRunners = 7 And baseNbr! - 1 > 1 And I5 > (10 - batRating(P, lineupPlayer(P, b2Base(1)), SS_B_Run)) And noThrow = 0) Then
+            A5%(1) = 1
+            Call PBP("runner is trying for 2nd...")
+            Call PBP("He's in there!")
+        Else
+
+            Call Rolld100(I5)
+
+            If b2Base(1) > 0 And baseNbr! - 1 > 1 And I5 > (80 - batRating(P, lineupPlayer(P, b2Base(1)), SS_B_Run) * 2) And noThrow = 0 And A5%(1) <> 11 Then
+                A5%(1) = 1
+                Call PBP("runner safe at 2nd on the throw")
+            End If
+
+        End If
+
+    End If
+
+    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+    noThrow = 0
+
+End Sub
+
 
 '----------------------------------------
 '          VIEWTEAM Subroutine
