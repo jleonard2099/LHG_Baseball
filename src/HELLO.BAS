@@ -1070,519 +1070,533 @@ Sub LOADER
 
     If Environ$("PBPLOG") = "TRUE" Then Open "pbplog.txt" For Append As #11
 
-    If autoPlay = 1 Then
+    Do
 
-        Call AUTOSETUP(goodTeam)
+        skip1 = 0
 
-        If goodTeam = 0 Then
+        If autoPlay = 1 Then
 
-            'Notify user that game won't execute
-            MsgText$ = "ATTEMPTED TO LOAD AN INVALID TEAM. PRESS ANY KEY TO RETURN TO MENU"
-            BoxWidth = 18
-            BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-            Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
-            Call CSMsgBox(MsgText$, BoxWidth, PASS)
-            I$ = GetKeyPress$
-            Call CSMsgBox("", 0, PASS)
+            Call AUTOSETUP(goodTeam)
 
-            earlyExit = 1
+            If goodTeam = 0 Then
 
-        End If
-
-    Else
-
-        170 '
-        Call INFO
-
-        If gameLoc = 0 Then gameLoc = 1
-
-        Do
-
-            Color 15, 0
-            Cls
-
-            Color 2
-            Print Tab(29); "SELECT OPENING OPTIONS"
-
-            Locate 3, 2: Color 14
-            Print "(1) ";
-            Color 15: Print playMode$(playerOpt)
-            Locate 4, 2: Color 14
-            Print "(2) ";
-            Color 15: Print "VISITING TEAM: ";
-            Color teamRat_GAME(0, 11), teamRat_GAME(0, 12): Print gameTeams$(0)
-            Locate 5, 2: Color 14, 0
-            Print "(3) ";
-            Color 15: Print "HOME TEAM: ";
-            Color teamRat_GAME(1, 11), teamRat_GAME(1, 12): Print gameTeams$(1)
-            Locate 6, 2: Color 14, 0
-            Print "(4) ";
-            Color 15: Print "LEAGUE TYPE: "; leagueType$(leagueOpt)
-            Locate 7, 2: Color 14
-            Print "(5) ";
-            Color 15: Print "DESIGNATED HITTER: "; desigHitOpt$(desigHit)
-            Locate 8, 2: Color 14
-            Print "(6) ";
-            Color 15: Print "GAME TYPE: "; gameType$(gameTypeOpt)
-            Locate 9, 2: Color 14
-            Print "(7) ";
-            Color 15: Print "MONTH: "; month$(gameMonth)
-            Locate 10, 2: Color 14
-            Print "(8) ";
-            Color 15: Print "TIME OF DAY: "; dayNight$(dayOrNight)
-            Locate 11, 2: Color 14
-            Print "(9) ";
-            Color 15: Print "START GAME"
-            Locate 12, 2: Color 14
-            Print "(0) ";
-            Color 15: Print "SAVE SETTINGS AS DEFAULT"
-            Locate 13, 2: Color 14
-            Print "(A) ";
-            Color 15: Print Using "PLAY-BY-PLAY DELAY (SECS): ##.# "; pbpDelay!
-            Locate 14, 2: Color 14
-            Print "(B) ";
-            Color 15: Print "USE INJURIES: "; yesNoText$(useInj)
-            Locate 15, 2: Color 14
-            Print "(C) ";
-            Color 15: Print "USE LEFT/RIGHT SPLIT STATS: "; yesNoText$(useLRSplit)
-            Locate 16, 2: Color 14
-            Print "(D) ";
-            Color 15: Print "USE DAYS REST DATA FOR PITCHERS: "; yesNoText$(useRest)
-            Locate 17, 2: Color 14
-            Print "(E) ";
-            Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE: "; yesNoText$(useMgrProf)
-            Locate 18, 2: Color 14
-            Print "(F) ";
-            Color 15: Print "USE WEATHER EFFECTS: "; yesNoText$(useWeather)
-            Locate 19, 2: Color 14
-            Print "(G) ";
-            Color 15: Print "USE VGA SCREENS, IF ABLE: "; yesNoText$(useVGA)
-            Locate 20, 2: Color 14
-            Print "(H) ";
-            Color 15: Print "PITCHER ERA: "; pitcherEra$(pitchEraOpt)
-            Locate 21, 2: Color 14
-            Print "(I) ";
-            Color 15: Print "SOUND ENABLED: "; yesNoText$(sndOpt)
-
-            'Locate 23, 2: Color 14
-            'Print "NOTE:: "
-            'Color 15
-
-            'Locate , 2: Print "* NOTE ABOUT RULES GOES HERE"
-
-            Do
-                Color 7, 0
-
+                'Notify user that game won't execute
+                MsgText$ = "ATTEMPTED TO LOAD AN INVALID TEAM. PRESS ANY KEY TO RETURN TO MENU"
+                BoxWidth = 18
+                BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+                Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+                Call CSMsgBox(MsgText$, BoxWidth, PASS)
                 I$ = GetKeyPress$
+                Call CSMsgBox("", 0, PASS)
 
-                If I$ <> Chr$(27) Then Call LetterToNumber(I$, setting)
-
-            Loop Until setting >= 0 And setting <= 18 Or I$ = Chr$(27) Or UCase$(I$) = Chr$(17) Or UCase$(I$) = "Q"
-
-            If I$ <> Chr$(27) And UCase$(I$) <> "Q" And UCase$(I$) <> Chr$(17) Then
-
-                Select Case setting
-
-                    Case 0:
-                        Open "DEFERA" For Output As #7
-                        Print #7, playerOpt
-                        Print #7, leagueOpt
-                        Print #7, desigHit
-                        Print #7, gameTypeOpt
-                        Print #7, gameMonth
-                        Print #7, dayOrNight
-                        Print #7, useWeather
-                        Print #7, useInj
-                        Print #7, useLRSplit
-                        Print #7, useRest
-                        Print #7, useMgrProf
-                        Print #7, pbpDelay!
-                        Print #7, useVGA
-                        Print #7, pitchEraOpt
-                        Print #7, sndOpt
-                        Close #7
-
-                    Case 1:
-                        playerOpt = playerOpt + 1
-                        If playerOpt > 3 Then playerOpt = 0
-
-                    Case 2:
-                        Call ChooseGameTeam(diskIDs$(0), NTMS, gameMgrIdx(0), gameTeams$(0), 0)
-                        If tmIdx <> 0 Then
-                        End If
-                        Color 15, 0
-
-                    Case 3:
-                        Call ChooseGameTeam(diskIDs$(1), NTMS, gameMgrIdx(1), gameTeams$(1), 1)
-                        If tmIdx <> 0 Then
-                        End If
-                        Color 15, 0
-
-                    Case 4:
-                        leagueOpt = leagueOpt + 1
-                        If leagueOpt > 2 Then leagueOpt = 0
-
-                    Case 5:
-                        desigHit = 1 - desigHit
-
-                    Case 6:
-                        gameTypeOpt = 1 - gameTypeOpt
-
-                    Case 7:
-                        gameMonth = gameMonth + 1
-                        If gameMonth > 10 Then gameMonth = 4
-                        '-- wtf?? Locate 7, 4: Print BK$
-
-                    Case 8:
-                        dayOrNight = 1 - dayOrNight
-                        Locate 8, 4
-                        '-- wtf?? Print BK$
-
-                    Case 9:
-                        '
-
-                    Case 10:
-                        Do
-                            Locate 13, 32
-                            Input pbpDelay!
-                        Loop Until pbpDelay! >= 0
-
-                    Case 11:
-                        useInj = 1 - useInj
-
-                    Case 12:
-                        useLRSplit = 1 - useLRSplit
-
-                    Case 13:
-                        useRest = 1 - useRest
-
-                    Case 14:
-                        useMgrProf = 1 - useMgrProf
-
-                    Case 15:
-                        useWeather = 1 - useWeather
-
-                    Case 16:
-                        useVGA = 1 - useVGA
-
-                    Case 17:
-                        pitchEraOpt = pitchEraOpt + 1
-                        If pitchEraOpt > 8 Then pitchEraOpt = 0
-
-                    Case 18
-                        sndOpt = 1 - sndOpt
-
-                End Select
+                earlyExit = 1
 
             End If
 
-        Loop Until (setting = 9 And gameTeams$(0) <> "" And gameTeams$(1) <> "") Or I$ = Chr$(27) Or I$ = Chr$(17) Or UCase$(I$) = "Q"
-
-        If I$ <> Chr$(27) And UCase$(I$) <> Chr$(17) And UCase$(I$) <> "Q" Then
-            'TICKER PROMPT
         Else
 
-            earlyExit = 1
+            Call INFO
+
+            If gameLoc = 0 Then gameLoc = 1
+
+            Do
+
+                Color 15, 0
+                Cls
+
+                Color 2
+                Print Tab(29); "SELECT OPENING OPTIONS"
+
+                Locate 3, 2: Color 14
+                Print "(1) ";
+                Color 15: Print playMode$(playerOpt)
+                Locate 4, 2: Color 14
+                Print "(2) ";
+                Color 15: Print "VISITING TEAM: ";
+                Color teamRat_GAME(0, 11), teamRat_GAME(0, 12): Print gameTeams$(0)
+                Locate 5, 2: Color 14, 0
+                Print "(3) ";
+                Color 15: Print "HOME TEAM: ";
+                Color teamRat_GAME(1, 11), teamRat_GAME(1, 12): Print gameTeams$(1)
+                Locate 6, 2: Color 14, 0
+                Print "(4) ";
+                Color 15: Print "LEAGUE TYPE: "; leagueType$(leagueOpt)
+                Locate 7, 2: Color 14
+                Print "(5) ";
+                Color 15: Print "DESIGNATED HITTER: "; desigHitOpt$(desigHit)
+                Locate 8, 2: Color 14
+                Print "(6) ";
+                Color 15: Print "GAME TYPE: "; gameType$(gameTypeOpt)
+                Locate 9, 2: Color 14
+                Print "(7) ";
+                Color 15: Print "MONTH: "; month$(gameMonth)
+                Locate 10, 2: Color 14
+                Print "(8) ";
+                Color 15: Print "TIME OF DAY: "; dayNight$(dayOrNight)
+                Locate 11, 2: Color 14
+                Print "(9) ";
+                Color 15: Print "START GAME"
+                Locate 12, 2: Color 14
+                Print "(0) ";
+                Color 15: Print "SAVE SETTINGS AS DEFAULT"
+                Locate 13, 2: Color 14
+                Print "(A) ";
+                Color 15: Print Using "PLAY-BY-PLAY DELAY (SECS): ##.# "; pbpDelay!
+                Locate 14, 2: Color 14
+                Print "(B) ";
+                Color 15: Print "USE INJURIES: "; yesNoText$(useInj)
+                Locate 15, 2: Color 14
+                Print "(C) ";
+                Color 15: Print "USE LEFT/RIGHT SPLIT STATS: "; yesNoText$(useLRSplit)
+                Locate 16, 2: Color 14
+                Print "(D) ";
+                Color 15: Print "USE DAYS REST DATA FOR PITCHERS: "; yesNoText$(useRest)
+                Locate 17, 2: Color 14
+                Print "(E) ";
+                Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE: "; yesNoText$(useMgrProf)
+                Locate 18, 2: Color 14
+                Print "(F) ";
+                Color 15: Print "USE WEATHER EFFECTS: "; yesNoText$(useWeather)
+                Locate 19, 2: Color 14
+                Print "(G) ";
+                Color 15: Print "USE VGA SCREENS, IF ABLE: "; yesNoText$(useVGA)
+                Locate 20, 2: Color 14
+                Print "(H) ";
+                Color 15: Print "PITCHER ERA: "; pitcherEra$(pitchEraOpt)
+                Locate 21, 2: Color 14
+                Print "(I) ";
+                Color 15: Print "SOUND ENABLED: "; yesNoText$(sndOpt)
+
+                'Locate 23, 2: Color 14
+                'Print "NOTE:: "
+                'Color 15
+
+                'Locate , 2: Print "* NOTE ABOUT RULES GOES HERE"
+
+                Do
+                    Color 7, 0
+
+                    I$ = GetKeyPress$
+
+                    If I$ <> Chr$(27) Then Call LetterToNumber(I$, setting)
+
+                Loop Until setting >= 0 And setting <= 18 Or I$ = Chr$(27) Or UCase$(I$) = Chr$(17) Or UCase$(I$) = "Q"
+
+                If I$ <> Chr$(27) And UCase$(I$) <> "Q" And UCase$(I$) <> Chr$(17) Then
+
+                    Select Case setting
+
+                        Case 0:
+                            Open "DEFERA" For Output As #7
+                            Print #7, playerOpt
+                            Print #7, leagueOpt
+                            Print #7, desigHit
+                            Print #7, gameTypeOpt
+                            Print #7, gameMonth
+                            Print #7, dayOrNight
+                            Print #7, useWeather
+                            Print #7, useInj
+                            Print #7, useLRSplit
+                            Print #7, useRest
+                            Print #7, useMgrProf
+                            Print #7, pbpDelay!
+                            Print #7, useVGA
+                            Print #7, pitchEraOpt
+                            Print #7, sndOpt
+                            Close #7
+
+                        Case 1:
+                            playerOpt = playerOpt + 1
+                            If playerOpt > 3 Then playerOpt = 0
+
+                        Case 2:
+                            Call ChooseGameTeam(diskIDs$(0), NTMS, gameMgrIdx(0), gameTeams$(0), 0)
+                            If tmIdx <> 0 Then
+                            End If
+                            Color 15, 0
+
+                        Case 3:
+                            Call ChooseGameTeam(diskIDs$(1), NTMS, gameMgrIdx(1), gameTeams$(1), 1)
+                            If tmIdx <> 0 Then
+                            End If
+                            Color 15, 0
+
+                        Case 4:
+                            leagueOpt = leagueOpt + 1
+                            If leagueOpt > 2 Then leagueOpt = 0
+
+                        Case 5:
+                            desigHit = 1 - desigHit
+
+                        Case 6:
+                            gameTypeOpt = 1 - gameTypeOpt
+
+                        Case 7:
+                            gameMonth = gameMonth + 1
+                            If gameMonth > 10 Then gameMonth = 4
+                            '-- wtf?? Locate 7, 4: Print BK$
+
+                        Case 8:
+                            dayOrNight = 1 - dayOrNight
+                            Locate 8, 4
+                            '-- wtf?? Print BK$
+
+                        Case 9:
+                            '
+
+                        Case 10:
+                            Do
+                                Locate 13, 32
+                                Input pbpDelay!
+                            Loop Until pbpDelay! >= 0
+
+                        Case 11:
+                            useInj = 1 - useInj
+
+                        Case 12:
+                            useLRSplit = 1 - useLRSplit
+
+                        Case 13:
+                            useRest = 1 - useRest
+
+                        Case 14:
+                            useMgrProf = 1 - useMgrProf
+
+                        Case 15:
+                            useWeather = 1 - useWeather
+
+                        Case 16:
+                            useVGA = 1 - useVGA
+
+                        Case 17:
+                            pitchEraOpt = pitchEraOpt + 1
+                            If pitchEraOpt > 8 Then pitchEraOpt = 0
+
+                        Case 18
+                            sndOpt = 1 - sndOpt
+
+                    End Select
+
+                End If
+
+            Loop Until (setting = 9 And gameTeams$(0) <> "" And gameTeams$(1) <> "") Or I$ = Chr$(27) Or I$ = Chr$(17) Or UCase$(I$) = "Q"
+
+            If I$ <> Chr$(27) And UCase$(I$) <> Chr$(17) And UCase$(I$) <> "Q" Then
+                'TICKER PROMPT
+            Else
+
+                earlyExit = 1
+
+            End If
 
         End If
 
-    End If
-
-    'If we've run into issues so far...
-    If earlyExit = 1 Then Exit Sub
-
-    '----------------------------------------
-    '    AUTO-DETERMINE OTHER OPTIONS
-    '----------------------------------------
-
-    ' Determine computer team
-    Select Case playerOpt
-
-        Case 1:
-            playerMode = 1
-            compTeam = 0
-
-        Case 2:
-            playerMode = 1
-            compTeam = 1
-
-        Case 3:
-            playerMode = 2
-
-    End Select
-
-    'playerMode represents the following values:
-    '   0 = Human
-    '   1 = Computer Team
-    '   2 = PC vs. PC
-
-    For I = 0 To 1:
-        'If disk ID has alpha-char, or is only 3 characters,
-        'then assume the year is the first 2 chars
-        If CheckString%(diskIDs$(I)) = 1 Or Len(diskIDs$(I)) <= 3 Then
-            teamYears(I) = GetTeamYear%(Left$(gameTeams$(I), 2))
-        Else
-            'If we have 4 or more characters,
-            'then Val will return the first 4 digits
-            teamYears(I) = Val(RTrim$(diskIDs$(I)))
+        'If we've run into issues so far...
+        If earlyExit = 1 Then
+            If Environ$("PBPLOG") = "TRUE" Then Close #11
+            Exit Sub
         End If
-    Next I
 
-    If teamRat_GAME(0, 11) = teamRat_GAME(1, 11) And teamRat_GAME(0, 12) = teamRat_GAME(1, 12) Then
-        Call ColorChange
-    End If
+        '----------------------------------------
+        '    AUTO-DETERMINE OTHER OPTIONS
+        '----------------------------------------
 
-    'Determine attendance
+        ' Determine computer team
+        Select Case playerOpt
 
-    ' ** the original game generated random attendance from 5,000 to 59,000
-    ' ** Attendannce hasn't been as low as 5,000 since early 1900,
-    ' ** and almost never 59,000 except for significant events
-    'https://teamTotWinsw.baseball-reference.com/leagues/majors/misc.shtml
-    If gameLoc = 2 Or avgAttendance& = 0 Then
-        'Get assumed year of home team
-        Select Case teamYears(1)
+            Case 1:
+                playerMode = 1
+                compTeam = 0
 
-            Case Is <= 1900
-                'Random # from 500 to 3,000
-                actualAttendance& = Int(Rnd(1) * 2500) + 500
+            Case 2:
+                playerMode = 1
+                compTeam = 1
 
-            Case 1901 - 1945
-                'Random # from 4,000 to 10,000
-                actualAttendance& = Int(Rnd(1) * 6000) + 4000
-
-            Case Is >= 1946
-                'Random # from 15,000 to 30,000
-                actualAttendance& = Int(Rnd(1) * 15000) + 15000
+            Case 3:
+                playerMode = 2
 
         End Select
 
-    Else
-        'Random % +/- 10,000 of team's average
-        ' ** this was added by me (Jason) to reflect
-        ' ** how other games calculate attendance.
-        ' ** Previously the source was not using the
-        ' ** averages read in from PARKS.DBF
-        actualAttendance& = avgAttendance& + Int(Rnd(1) * 20000) - 10000
-    End If
+        'playerMode represents the following values:
+        '   0 = Human
+        '   1 = Computer Team
+        '   2 = PC vs. PC
 
-    YV = 1
-    YM = 0
+        For I = 0 To 1:
+            'If disk ID has alpha-char, or is only 3 characters,
+            'then assume the year is the first 2 chars
+            If CheckString%(diskIDs$(I)) = 1 Or Len(diskIDs$(I)) <= 3 Then
+                teamYears(I) = GetTeamYear%(Left$(gameTeams$(I), 2))
+            Else
+                'If we have 4 or more characters,
+                'then Val will return the first 4 digits
+                teamYears(I) = Val(RTrim$(diskIDs$(I)))
+            End If
+        Next I
 
-    '-------------------------
-    ' Determine umpires
-    '-------------------------
-    If Not _FileExists(diskPaths$(0) + "UMPIRES." + umpireName$(leagueOpt)) Then
+        If teamRat_GAME(0, 11) = teamRat_GAME(1, 11) And teamRat_GAME(0, 12) = teamRat_GAME(1, 12) Then
+            Call ColorChange
+        End If
 
-        'Assign generic umpire names if we don't have any
-        gameUmpire$(1) = "RHODES"
-        gameUmpire$(2) = "WINBERRY"
-        gameUmpire$(3) = "TIPPETT"
-        gameUmpire$(4) = "MILLER"
+        'Determine attendance
 
-    Else
-        YU = 0
+        ' ** the original game generated random attendance from 5,000 to 59,000
+        ' ** Attendannce hasn't been as low as 5,000 since early 1900,
+        ' ** and almost never 59,000 except for significant events
+        'https://teamTotWinsw.baseball-reference.com/leagues/majors/misc.shtml
+        If gameLoc = 2 Or avgAttendance& = 0 Then
+            'Get assumed year of home team
+            Select Case teamYears(1)
 
-        Open diskPaths$(0) + "UMPIRES." + umpireName$(leagueOpt) For Input As #8
+                Case Is <= 1900
+                    'Random # from 500 to 3,000
+                    actualAttendance& = Int(Rnd(1) * 2500) + 500
 
-        For I1 = 1 To 50
-            Input #8, umpireName$(I1)
-            Input #8, umpireNumber(I1)
-        Next
+                Case 1901 - 1945
+                    'Random # from 4,000 to 10,000
+                    actualAttendance& = Int(Rnd(1) * 6000) + 4000
 
-        Close #8
+                Case Is >= 1946
+                    'Random # from 15,000 to 30,000
+                    actualAttendance& = Int(Rnd(1) * 15000) + 15000
 
-        For I1 = 1 To 50
-            If umpireName$(I1) <> "" Then YU = YU + 1
-        Next
+            End Select
 
-        If YU < 4 Then
-            'If there aren't 4 umpires, assign generic names
+        Else
+            'Random % +/- 10,000 of team's average
+            ' ** this was added by me (Jason) to reflect
+            ' ** how other games calculate attendance.
+            ' ** Previously the source was not using the
+            ' ** averages read in from PARKS.DBF
+            actualAttendance& = avgAttendance& + Int(Rnd(1) * 20000) - 10000
+        End If
+
+        YV = 1
+        YM = 0
+
+        '-------------------------
+        ' Determine umpires
+        '-------------------------
+        If Not _FileExists(diskPaths$(0) + "UMPIRES." + umpireName$(leagueOpt)) Then
+
+            'Assign generic umpire names if we don't have any
             gameUmpire$(1) = "RHODES"
             gameUmpire$(2) = "WINBERRY"
             gameUmpire$(3) = "TIPPETT"
             gameUmpire$(4) = "MILLER"
+
         Else
-            'Randomly assign umpires
-            Do
+            YU = 0
 
-                While (umpireName$(YU) = "" Or YU = YM)
-                    YU = Int(Rnd(1) * 50) + 1
-                Wend
+            Open diskPaths$(0) + "UMPIRES." + umpireName$(leagueOpt) For Input As #8
 
-                gameUmpire$(YV) = umpireName$(YU)
-                YM = YU
-                YV = YV + 1
+            For I1 = 1 To 50
+                Input #8, umpireName$(I1)
+                Input #8, umpireNumber(I1)
+            Next
 
-            Loop Until YV >= 5
+            Close #8
 
-        End If
+            For I1 = 1 To 50
+                If umpireName$(I1) <> "" Then YU = YU + 1
+            Next
 
-    End If
-
-    '-------------------------
-    ' Team Mgmt + Lineups
-    '-------------------------
-
-    'Determine which team PC will play
-    'If playerMode = 1 And autoPlay <> 1 Then
-
-    'If not doing autoplay...
-    '    Call INFO
-
-    '    Color 14: Print "WHICH TEAM DOES COMPUTER MANAGE ?"
-    '    Print
-    '    Color 15: Print "(0) ";: Color teamRat_GAME(0, 11), teamRat_GAME(0, 12): Print gameTeams$(0): Color 7, 0
-    '    Print
-    '    Color 15: Print "(1) ";: Color teamRat_GAME(1, 11), teamRat_GAME(1, 12): Print gameTeams$(1): Color 7, 0
-
-    '    Do
-    '        I$ = GetKeyPress$
-    '        compTeam = Val(I$)
-    '    Loop Until compTeam = 0 Or compTeam = 1
-
-    'End If
-
-    'Determine pitchers
-    For P9 = 0 To 1
-
-        cancelPitchers% = 0
-
-        Call SelectPitchers(P9, cancelPitchers%, computerRotations%)
-        Call PitchingStarter(P9)
-
-        If Inotloop% <= 5 And gameScore(P9, 0) - gameScore(1 - P9, 0) > 0 Then
-            pitcherOfRecord(P9) = currPitcher(P9)
-        End If
-
-        pitchEff(P9, 0) = CInt(((pitchRating(P9, currPitcher(P9), 8) + pitchRating(P9, currPitcher(P9), 7)) / pitchRating(P9, currPitcher(P9), 4)))
-        pitchEff(P9, 1) = 3
-
-        If gamePitcher(P9) > 1 Then
-            pitchEff(P9, 1) = 0
-        End If
-
-        'I'm not sure why we go back only
-        'if ESC was pressed during pitcher select
-        If cancelPitchers% = 1 Then GoTo 170
-
-    Next P9
-
-    'Determine lineup for each team
-    For P9 = 0 To 1
-
-        Do
-
-            Cls
-
-            Call INFO
-
-            Locate 3, 1
-            Color teamRat_GAME(P9, 11), teamRat_GAME(P9, 12): Print gameTeams$(P9): Color 7, 0
-            Print
-            Color 14: Print "(0) ";: Color 15: Print "INPUT A LINEUP MANUALLY"
-            Print
-            Color 14: Print "(1) ";: Color 15: Print "SELECT A LINEUP FROM MANAGER PROFILE"
-            Print
-            Color 14: Print "(2) ";: Color 15: Print "COMPUTER DETERMINE LINEUP RANDOMLY"
-            Print
-            Color 14: Print "(3) ";: Color 15: Print "COMPUTER DETERMINE LINEUP FROM MANAGER PROFILE"
-
-            reselect = 0
-
-            If autoPlay = 1 Then
-
-                'noLUFound = no lineup found?
-                If noLUFound = 1 Then
-
-                    noLUFound = 0
-                    I$ = "2"
-
-                Else
-
-                    If (playerMode = 2 Or playerMode = 1 And compTeam = P9) Then
-                        If useMgrProf = 1 Then
-                            I$ = "1"
-                        Else
-                            I$ = "2"
-                        End If
-                    End If
-
-                End If
-
+            If YU < 4 Then
+                'If there aren't 4 umpires, assign generic names
+                gameUmpire$(1) = "RHODES"
+                gameUmpire$(2) = "WINBERRY"
+                gameUmpire$(3) = "TIPPETT"
+                gameUmpire$(4) = "MILLER"
             Else
+                'Randomly assign umpires
+                Do
+
+                    While (umpireName$(YU) = "" Or YU = YM)
+                        YU = Int(Rnd(1) * 50) + 1
+                    Wend
+
+                    gameUmpire$(YV) = umpireName$(YU)
+                    YM = YU
+                    YV = YV + 1
+
+                Loop Until YV >= 5
+
+            End If
+
+        End If
+
+        '-------------------------
+        ' Team Mgmt + Lineups
+        '-------------------------
+
+        'Determine which team PC will play
+        'If playerMode = 1 And autoPlay <> 1 Then
+
+        'If not doing autoplay...
+        '    Call INFO
+
+        '    Color 14: Print "WHICH TEAM DOES COMPUTER MANAGE ?"
+        '    Print
+        '    Color 15: Print "(0) ";: Color teamRat_GAME(0, 11), teamRat_GAME(0, 12): Print gameTeams$(0): Color 7, 0
+        '    Print
+        '    Color 15: Print "(1) ";: Color teamRat_GAME(1, 11), teamRat_GAME(1, 12): Print gameTeams$(1): Color 7, 0
+
+        '    Do
+        '        I$ = GetKeyPress$
+        '        compTeam = Val(I$)
+        '    Loop Until compTeam = 0 Or compTeam = 1
+
+        'End If
+
+        'Determine pitchers
+        For P9 = 0 To 1
+
+            cancelPitchers% = 0
+
+            Call SelectPitchers(P9, cancelPitchers%, computerRotations%)
+            Call PitchingStarter(P9)
+
+            If Inotloop% <= 5 And gameScore(P9, 0) - gameScore(1 - P9, 0) > 0 Then
+                pitcherOfRecord(P9) = currPitcher(P9)
+            End If
+
+            pitchEff(P9, 0) = CInt(((pitchRating(P9, currPitcher(P9), 8) + pitchRating(P9, currPitcher(P9), 7)) / pitchRating(P9, currPitcher(P9), 4)))
+            pitchEff(P9, 1) = 3
+
+            If gamePitcher(P9) > 1 Then
+                pitchEff(P9, 1) = 0
+            End If
+
+            'I'm not sure why we go back only
+            'if ESC was pressed during pitcher select
+            If cancelPitchers% = 1 Then
+                skip1 = 1
+                Exit For
+            End If
+
+        Next P9
+
+        If skip1 <> 1 Then
+        'Determine lineup for each team
+            For P9 = 0 To 1
 
                 Do
-                    I$ = GetKeyPress$
-                    I1 = Val(I$)
-                Loop Until I1 >= 0 And I1 <= 3 And I$ <> Chr$(27)
 
-            End If
+                    Cls
 
-            Select Case I$
+                    Call INFO
 
-                Case "0":
-                    'Lineup - no profile
+                    Locate 3, 1
+                    Color teamRat_GAME(P9, 11), teamRat_GAME(P9, 12): Print gameTeams$(P9): Color 7, 0
+                    Print
+                    Color 14: Print "(0) ";: Color 15: Print "INPUT A LINEUP MANUALLY"
+                    Print
+                    Color 14: Print "(1) ";: Color 15: Print "SELECT A LINEUP FROM MANAGER PROFILE"
+                    Print
+                    Color 14: Print "(2) ";: Color 15: Print "COMPUTER DETERMINE LINEUP RANDOMLY"
+                    Print
+                    Color 14: Print "(3) ";: Color 15: Print "COMPUTER DETERMINE LINEUP FROM MANAGER PROFILE"
 
-                    Call SelectBatters(batterFlag%, P9)
+                    reselect = 0
 
-                    If batterFlag% = 1 Then
-                        For I = 10 To 22
-                            Locate I, 59: Print Space$(21);
-                        Next
+                    If autoPlay = 1 Then
 
-                        Call StartingLineup(P9)
-                        Call ChangeLineup_PreGame(P9, reselect)
+                        'noLUFound = no lineup found?
+                        If noLUFound = 1 Then
 
-                        If noLineups = 1 Then
-                            noLineups = 0
+                            noLUFound = 0
+                            I$ = "2"
+
+                        Else
+
+                            If (playerMode = 2 Or playerMode = 1 And compTeam = P9) Then
+                                If useMgrProf = 1 Then
+                                    I$ = "1"
+                                Else
+                                    I$ = "2"
+                                End If
+                            End If
+
                         End If
-                    End If
 
-                Case "1", "3":
-                    'Lineup using profile
-                    Call SearchForLineup(P9, Q2%)
-
-                    Call LineupFromProfile(lineupFound%, P9, skipLineChange%, useMgrProf, I$, Q2%)
-
-                    If lineupFound% = 1 Or skipLineChange% = 0 Then
-                        Call ChangeLineup_PreGame(P9, reselect)
-                        If noLineups = 1 Then
-                            noLineups = 0
-                        End If
                     Else
+
+                        Do
+                            I$ = GetKeyPress$
+                            I1 = Val(I$)
+                        Loop Until I1 >= 0 And I1 <= 3 And I$ <> Chr$(27)
+
+                    End If
+
+                    Select Case I$
+
+                        Case "0":
+                            'Lineup - no profile
+
+                            Call SelectBatters(batterFlag%, P9)
+
+                            If batterFlag% = 1 Then
+                                For I = 10 To 22
+                                    Locate I, 59: Print Space$(21);
+                                Next
+
+                                Call StartingLineup(P9)
+                                Call ChangeLineup_PreGame(P9, reselect)
+
+                                If noLineups = 1 Then
+                                    noLineups = 0
+                                End If
+                            End If
+
+                        Case "1", "3":
+                            'Lineup using profile
+                            Call SearchForLineup(P9, Q2%)
+
+                            Call LineupFromProfile(lineupFound%, P9, skipLineChange%, useMgrProf, I$, Q2%)
+
+                            If lineupFound% = 1 Or skipLineChange% = 0 Then
+                                Call ChangeLineup_PreGame(P9, reselect)
+                                If noLineups = 1 Then
+                                    noLineups = 0
+                                End If
+                            Else
+                                noLineups = 1
+                            End If
+
+                        Case "2"
+                            Call ComputerLineups(batterFlag%, P9, noLineups, reselect)
+
+                            If noLineups = 1 Then
+                                noLineups = 0
+                                skipLineChange% = 1
+                            End If
+
+                    End Select
+
+                    If I$ <> Chr$(27) Then
+                        'We didn't ESC so we have to move foneRunWinsard
+
+                        If skipLineChange% <> 1 Then
+                            Color 15, 0
+                            Locate 5, 59: Print "OPPOSING PITCHER"
+                            Locate , 59: Print pitchers$(1 - P9, currPitcher(1 - P9)); " "; handed$(pitchRating(1 - P9, currPitcher(1 - P9), SS_P_Throws) + 2)
+                            If RP = 1 Then RP = 0
+                        End If
+
+                    Else
+                        'ESC means we go back to earlier menus
                         noLineups = 1
+                        skip1 = 1
+                        Exit For
+
                     End If
 
-                Case "2"
-                    Call ComputerLineups(batterFlag%, P9, noLineups, reselect)
+                Loop Until noLineups = 0 And reselect = 0
 
-                    If noLineups = 1 Then
-                        noLineups = 0
-                        skipLineChange% = 1
-                    End If
+            Next P9
+        End If
 
-            End Select
-
-            If I$ <> Chr$(27) Then
-                'We didn't ESC so we have to move foneRunWinsard
-
-                If skipLineChange% <> 1 Then
-                    Color 15, 0
-                    Locate 5, 59: Print "OPPOSING PITCHER"
-                    Locate , 59: Print pitchers$(1 - P9, currPitcher(1 - P9)); " "; handed$(pitchRating(1 - P9, currPitcher(1 - P9), SS_P_Throws) + 2)
-                    If RP = 1 Then RP = 0
-                End If
-
-            Else
-                'ESC means we go back to earlier menus
-                noLineups = 1
-                GoTo 170
-
-            End If
-
-        Loop Until noLineups = 0 And reselect = 0
-
-    Next P9
+    Loop While skip1 = 1
 
     '-------------------------
     ' Ready to Play
@@ -1835,200 +1849,189 @@ End Sub
 'each place in the lineup
 Sub LineupPositions (teamIdx, posIdx)
 
-    'Do
+    Do
 
-    560 '
-    Call PositionCursor(posIdx)
-    Print Space$(18);
-    Call PositionCursor(posIdx)
+        skip1 = 0
 
-    'Get keypress for batter #
-    I$ = GetKeyPress$
+        Call PositionCursor(posIdx)
+        Print Space$(18);
+        Call PositionCursor(posIdx)
 
-    If I$ = Chr$(27) Then
+        'Get keypress for batter #
+        I$ = GetKeyPress$
 
-        Erase gameM
+        If I$ = Chr$(27) Then
 
-        For J = 1 To 9
-            fldPos(teamIdx, J) = -1
-            lineupPlayer(teamIdx, J) = -1
-        Next
-
-        C1 = 0
-
-        For J = 0 To 22
-            batRating(teamIdx, J, SS_B_Avail) = 0
-        Next
-
-        RP = 1
-
-        For J = 0 To 22
-            If batRating(teamIdx, J, SS_B_Active) <> 0 Then
-                batRating(teamIdx, J, SS_B_Avail) = 99
-            End If
-        Next
-
-    Else
-
-        Call LetterToNumber(I$, I1)
-
-        If UCase$(I$) <> "X" Then
+            Erase gameM
 
             For J = 1 To 9
-                If Not (J = posIdx Or (lineupPlayer(teamIdx, J) = I1 And fldPos(teamIdx, J) = 1)) Then
-                    If lineupPlayer(teamIdx, J) = I1 And UCase$(I$) <> "P" Then
-                        GoTo 560 'skiP1 = 1
-                    End If
+                fldPos(teamIdx, J) = -1
+                lineupPlayer(teamIdx, J) = -1
+            Next
+
+            C1 = 0
+
+            For J = 0 To 22
+                batRating(teamIdx, J, SS_B_Avail) = 0
+            Next
+
+            RP = 1
+
+            For J = 0 To 22
+                If batRating(teamIdx, J, SS_B_Active) <> 0 Then
+                    batRating(teamIdx, J, SS_B_Avail) = 99
                 End If
-            Next J
+            Next
 
-            If Not (desigHit = 1 And UCase$(I$) = "P") Or Not (batRating(teamIdx, I1, SS_B_Avail) <> 0 And UCase$(I$) <> "P") Then
+            Exit Do
 
-                If UCase$(I$) = "P" Then
+        Else
 
-                    For J = 1 To 9
-                        If J <> posIdx Then
-                            If lineupPlayer(teamIdx, J) = currPitcher(teamIdx) And fldPos(teamIdx, J) = 1 Then
-                                skip2% = 1
-                            End If
+            Call LetterToNumber(I$, I1)
+
+            If UCase$(I$) <> "X" Then
+
+                For J = 1 To 9
+                    If Not (J = posIdx Or (lineupPlayer(teamIdx, J) = I1 And fldPos(teamIdx, J) = 1)) Then
+                        If lineupPlayer(teamIdx, J) = I1 And UCase$(I$) <> "P" Then
+                            skip1 = 1
                         End If
-                    Next J
-
-                    If skip2% <> 1 Then
-
-                        lineupPlayer(teamIdx, posIdx) = currPitcher(teamIdx)
-                        Print pitchers$(teamIdx, currPitcher(teamIdx));
-                        gameM(I1) = 1
-
-                        Locate , 75
-                        Print "P ";
-                        fldPos(teamIdx, posIdx) = 1
-                        fielder(teamIdx, 1) = currPitcher(teamIdx)
-                        gameM(1) = 1
-
-                        Locate 25, 1
-
-                        For I0 = 0 To 9
-
-                            If desigHit <> 0 Or I0 <> 0 Then
-
-                                If desigHit <> 1 Or I0 <> 1 Then
-
-                                    Locate LAST_ROW, (I0 * 3) + 1
-                                    If gameM(I0) = 0 Then
-                                        Print fieldPos$(I0); "  ";
-                                    End If
-                                    If gameM(I0) = 1 Then
-                                        Print "   ";
-                                    End If
-
-                                    Locate 25, (I0 * 3) + 1
-                                    If gameM(I0) = 0 Then
-                                        Print I0; "  ";
-                                    End If
-                                    If gameM(I0) = 1 Then
-                                        Print "   ";
-                                    End If
-
-                                End If
-                            End If
-
-                        Next I0
-
-                        '-- this is taken care of outside the routine
-                        'If C1 = 1 Then Call ChangeLineup_Pregame
-
                     End If
+                Next J
 
-                Else
+            If skip1 <> 1 And Not (desigHit = 1 And UCase$(I$) = "P") Or Not (batRating(teamIdx, I1, SS_B_Avail) <> 0 And UCase$(I$) <> "P") Then
 
-                    lineupPlayer(teamIdx, posIdx) = I1
-                    Print Using "# "; posIdx;
-                    Print batters$(teamIdx, lineupPlayer(teamIdx, posIdx));
-
-                    Locate , 74
-
-                    match% = 0
-                    Do  ' 680
-                        'Input fielding position
-                        'If desigHit = 1 Then firstSlot = 1 Else firstSlot = 0
-                        firstSlot = 1
-
-                        Do
-                            J$ = GetKeyPress$
-                            J1 = Val(J$)
-                        Loop Until J1 <> firstSlot
+                    If UCase$(I$) = "P" Then
 
                         For J = 1 To 9
                             If J <> posIdx Then
-                                If J1 = fldPos(teamIdx, J) Then
-                                    match% = 1    ' 680
-                                    Exit For
+                                If lineupPlayer(teamIdx, J) = currPitcher(teamIdx) And fldPos(teamIdx, J) = 1 Then
+                                    skip2% = 1
                                 End If
                             End If
                         Next J
-                        If match% = 0 then Exit Do  'ToDo [bm] TEST!
-                    Loop
 
-                    If Not (desigHit = 0 And J1 = 0 Or UCase$(J$) = "X") Then
+                        If skip2% <> 1 Then
 
-                        'Print position selected
-                        Print fieldPos$(J1);
-                        fldPos(teamIdx, posIdx) = J1
+                            lineupPlayer(teamIdx, posIdx) = currPitcher(teamIdx)
+                            Print pitchers$(teamIdx, currPitcher(teamIdx));
+                            gameM(I1) = 1
 
-                        fielder(teamIdx, fldPos(teamIdx, posIdx)) = lineupPlayer(teamIdx, posIdx)
-                        gameM(J1) = 1
+                            Locate , 75
+                            Print "P ";
+                            fldPos(teamIdx, posIdx) = 1
+                            fielder(teamIdx, 1) = currPitcher(teamIdx)
+                            gameM(1) = 1
 
-                        'Highlight the player we selected
-                        Locate I1 + 2, 2: Print "*";
+                            Locate 25, 1
 
-                        Color teamRat_GAME(teamIdx, 11), teamRat_GAME(teamIdx, 12)
-                        Print batters$(teamIdx, I1)
-                        Color 15, 0
+                            For I0 = 0 To 9
 
-                        Locate 25, 1
+                                If desigHit <> 0 Or I0 <> 0 Then
 
-                        For I1 = 0 To 9
+                                    If desigHit <> 1 Or I0 <> 1 Then
 
-                            If desigHit <> 0 Or I1 <> 0 Then
+                                        Locate LAST_ROW, (I0 * 3) + 1
+                                        If gameM(I0) = 0 Then Print fieldPos$(I0); "  ";
+                                        If gameM(I0) = 1 Then Print "   ";
 
-                                If desigHit <> 1 Or I1 <> 1 Then
+                                        Locate 25, (I0 * 3) + 1
+                                        If gameM(I0) = 0 Then Print I0; "  ";
+                                        If gameM(I0) = 1 Then Print "   ";
 
-                                    Locate LAST_ROW, (I1 * 3) + 1
-                                    If gameM(I1) = 0 Then
-                                        Print fieldPos$(I1); "  ";
                                     End If
-                                    If gameM(I1) = 1 Then
-                                        Print "   ";
-                                    End If
+                                End If
 
-                                    Locate 25, (I1 * 3) + 1
-                                    If gameM(I1) = 0 Then
-                                        Print I1; "  ";
+                            Next I0
+
+                            '-- this is taken care of outside the routine
+                            'If C1 = 1 Then Call ChangeLineup_Pregame
+
+                        End If
+
+                    Else
+
+                        lineupPlayer(teamIdx, posIdx) = I1
+                        Print Using "# "; posIdx;
+                        Print batters$(teamIdx, lineupPlayer(teamIdx, posIdx));
+
+                        Locate , 74
+
+                        match% = 0
+                        Do  ' 680
+                            'Input fielding position
+                            'If desigHit = 1 Then firstSlot = 1 Else firstSlot = 0
+                            firstSlot = 1
+
+                            Do
+                                J$ = GetKeyPress$
+                                J1 = Val(J$)
+                            Loop Until J1 <> firstSlot
+
+                            For J = 1 To 9
+                                If J <> posIdx Then
+                                    If J1 = fldPos(teamIdx, J) Then
+                                        match% = 1    ' 680
+                                        Exit For
                                     End If
-                                    If gameM(I1) = 1 Then
-                                        Print "   ";
+                                End If
+                            Next J
+                            If match% = 0 then Exit Do  'ToDo [bm] TEST!
+                        Loop
+
+                        If Not (desigHit = 0 And J1 = 0 Or UCase$(J$) = "X") Then
+
+                            'Print position selected
+                            Print fieldPos$(J1);
+                            fldPos(teamIdx, posIdx) = J1
+
+                            fielder(teamIdx, fldPos(teamIdx, posIdx)) = lineupPlayer(teamIdx, posIdx)
+                            gameM(J1) = 1
+
+                            'Highlight the player we selected
+                            Locate I1 + 2, 2: Print "*";
+
+                            Color teamRat_GAME(teamIdx, 11), teamRat_GAME(teamIdx, 12)
+                            Print batters$(teamIdx, I1)
+                            Color 15, 0
+
+                            Locate 25, 1
+
+                            For I1 = 0 To 9
+
+                                If desigHit <> 0 Or I1 <> 0 Then
+
+                                    If desigHit <> 1 Or I1 <> 1 Then
+
+                                        Locate LAST_ROW, (I1 * 3) + 1
+                                        If gameM(I1) = 0 Then Print fieldPos$(I1); "  ";
+                                        If gameM(I1) = 1 Then Print "   ";
+
+                                        Locate 25, (I1 * 3) + 1
+                                        If gameM(I1) = 0 Then Print I1; "  ";
+                                        If gameM(I1) = 1 Then Print "   ";
+
                                     End If
 
                                 End If
 
-                            End If
+                            Next I1
 
-                        Next I1
+                        End If
 
-                    End If
+                    End If 'Done checking for "P"
 
-                End If 'Done checking for "P"
+                Else
 
-            Else
+                    skip1 = 1
 
-                GoTo 560 'skipLU% = 1
+                End If 'Done checking skip
 
-            End If 'Done checking skip
+            End If 'Done checking for "X"
 
-        End If 'Done checking for "X"
+        End If 'Done checking for ESC
 
-    End If 'Done checking for ESC
+    Loop While skip1 = 1
 
 End Sub
 
@@ -6598,7 +6601,7 @@ Sub SOURCE ()
             GoTo LCheckForOptionsOrQuit
 
         Case 5
-            14150 'C@3
+           LBunt5: 'C@3
             Call Rolld100(RN)
             If fldPos(P, currLineupSlot(P)) = 1 Then
                 RR = 2
@@ -6673,7 +6676,7 @@ Sub SOURCE ()
             If INFPOS% > INF_BACK Then RR = RR - 2
             If RR <= 2 Then RR = 2
 
-            If baseRunners = 0 Then 14150
+            If baseRunners = 0 Then Goto LBunt5
             If baseRunners = 1 Then I3 = 1: J3$ = "2nd"
             If baseRunners = 2 Or baseRunners = 4 Then I3 = 2: J3$ = "3rd"
             If baseRunners = 3 Or baseRunners > 4 Then I3 = 3: J3$ = "home"
@@ -11318,18 +11321,17 @@ Sub DisplayBallField (nbrBalls, P, nbrStrikes, D)
     Locate 1, 1
 
 
-    If INNING% <= 9 Then
-        inningStart% = 1
-        inningEnd% = 9
-    Else
-        If INNING% <= 18 Then
+    Select Case INNING%
+        Case Is <= 9
+            inningStart% = 1
+            inningEnd% = 9
+        Case 10 to 18
             inningStart% = 10
             inningEnd% = 18
-        Else
+        Case Is > 18
             inningStart% = 19
             inningEnd% = 27
-        End If
-    End If
+    End Select
 
     Print Tab(10);
 
@@ -15957,9 +15959,9 @@ Sub VIEWTEAM ()
         If WK < 2 Then
 
             Cls
-            Color 14: Print "(1) ";: Color 15: Print "VIEW PITCHERS"
+            Color 14: Print "(1) ";: Color 15: Print "VIEW HITTERS"
             Print
-            Color 14: Print "(2) ";: Color 15: Print "VIEW HITTERS"
+            Color 14: Print "(2) ";: Color 15: Print "VIEW PITCHERS"
             Print
             Color 14: Print "(3) ";: Color 15: Print "RETURN TO PLAY"
 
@@ -19694,8 +19696,6 @@ Sub STATS2SCREEN
         Next I1
 
     Next I
-
-    'GoTo 7313
 
     For I = 0 To 1
 

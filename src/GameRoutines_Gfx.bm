@@ -275,11 +275,17 @@ Sub DisplayBallField_Gfx (BC%, p, nbrStrikes, D)
 
     ReDim FORMATTED$(0 To 2)
 
-    inningStart% = 1
-    inningEnd% = 9
-
-    If INNING% > 9 Then inningStart% = 18
-    If INNING% > 18 Then inningEnd% = 27
+    Select Case INNING%
+        Case Is <= 9
+            inningStart% = 1
+            inningEnd% = 9
+        Case 10 to 18
+            inningStart% = 10
+            inningEnd% = 18
+        Case Is > 18
+            inningStart% = 19
+            inningEnd% = 27
+    End Select
 
     'Print Batter / Pitcher box
     '----------------------------------------
