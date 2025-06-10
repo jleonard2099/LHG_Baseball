@@ -304,9 +304,9 @@ $ExeIcon:'./lhg_fcbase.ico'
 _Icon
 _AllowFullScreen
 
-If _FileExists("errlog") Then
-    Kill "errlog"
-End If
+'If _FileExists("errlog") Then
+'ToDo [bm] RESTORE'    Kill "errlog"
+'End If
 
 opSysType$ = Left$(_OS$, InStr(2, _OS$, "[") - 1)
 
@@ -389,7 +389,7 @@ System
 
 Errhandler:
 Open "errlog" For Append As #10
-Print #10, "Error #"; Err; "on program file line"; _ErrorLine; "-- "; _ErrorMessage$
+Print #10, Date$; " "; Time$; " Error #"; Err; "on program file line"; _ErrorLine; "-- "; _ErrorMessage$
 
 If _InclErrorLine Then
     Print #10, "    in module "; _InclErrorFile$; " line "; _InclErrorLine
@@ -1976,7 +1976,7 @@ Sub LineupPositions (teamIdx, posIdx)
                                     End If
                                 End If
                             Next J
-                            If match% = 0 then Exit Do  'ToDo [bm] TEST!
+                            If match% = 0 then Exit Do
                         Loop
 
                         If Not (desigHit = 0 And J1 = 0 Or UCase$(J$) = "X") Then
@@ -4466,7 +4466,17 @@ Sub SOURCE ()
 
             End If
 
-            GoTo LNoPinchHitter
+            go$ = LNoPinchHitter$(MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "Got result A from LNoPinchHitter: "; go$
+
+            If go$ = "LContinueBatter" Then Goto LContinueBatter
+            If go$ = "LBunt" Then Goto LBunt
+            If go$ = "LHitAndRun"  Then Goto LHitAndRun
+            If go$ = "LExecuteOffense" Then Goto LExecuteOffense
+            If go$ =  "LSteal" Then Goto LSteal
+
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LNoPinchHitter: "; go$
+            End
 
         Else
 
@@ -7164,7 +7174,7 @@ Sub SOURCE ()
 
     If Not (b2Mystery(TGTBASE% - 1) = 18 And I9 > stlChance Or b2Mystery(TGTBASE% - 1) > 18 And I9 > stlChance - 200) Then
 
-        LRunnerSafe:
+       LRunnerSafe:
         Call Rolld100(RN)
         Select Case RN
             Case 1 To 20: pbpString$ = "He beats the throw!"
@@ -7592,7 +7602,19 @@ Sub SOURCE ()
 
     End If
 
-    If INNING% < 6 Then Goto LNoPinchHitter   ' [bm] KLUDGE: Don't pinch hit for a position player before the 6th inning
+    If INNING% < 6 Then    ' [bm] KLUDGE: Don't pinch hit for a position player before the 6th inning
+        go$ = LNoPinchHitter$(MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Got result B from LNoPinchHitter: "; go$
+
+        If go$ = "LContinueBatter" Then Goto LContinueBatter
+        If go$ = "LBunt" Then Goto LBunt
+        If go$ = "LHitAndRun"  Then Goto LHitAndRun
+        If go$ = "LExecuteOffense" Then Goto LExecuteOffense
+        If go$ =  "LSteal" Then Goto LSteal
+
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LNoPinchHitter: "; go$
+        End
+    End If
 
     For I = 0 To 22:
 
@@ -7628,7 +7650,17 @@ Sub SOURCE ()
 
     Next I
 
-    GoTo LNoPinchHitter
+    go$ = LNoPinchHitter$(MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Got result C from LNoPinchHitter: "; go$
+
+    If go$ = "LContinueBatter" Then Goto LContinueBatter
+    If go$ = "LBunt" Then Goto LBunt
+    If go$ = "LHitAndRun"  Then Goto LHitAndRun
+    If go$ = "LExecuteOffense" Then Goto LExecuteOffense
+    If go$ =  "LSteal" Then Goto LSteal
+
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LNoPinchHitter: "; go$
+    End
 
 
     '----- NOODLE -----
@@ -7727,100 +7759,17 @@ Sub SOURCE ()
 
         End If
 
-       LNoPinchHitter:
-        If pinchRunnerFlag <> 1 Then
-            Call PINCHRUNNER(MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
-        End If
+        go$ = LNoPinchHitter$(MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Got result D from LNoPinchHitter: "; go$
 
-        If MS% = 1 Then
-            MS% = 0
-            GoTo LContinueBatter
-        End If
+        If go$ = "LContinueBatter" Then Goto LContinueBatter
+        If go$ = "LBunt" Then Goto LBunt
+        If go$ = "LHitAndRun"  Then Goto LHitAndRun
+        If go$ = "LExecuteOffense" Then Goto LExecuteOffense
+        If go$ =  "LSteal" Then Goto LSteal
 
-        If fldPos(P, currLineupSlot(P)) = 1 Then
-            BR = 0
-        Else
-            BR = batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_Bunt)
-        End If
-
-
-        Call Rolld100(RN)
-        If baseRunners = 0 And (INFPOS% > INF_BACK And RN <= 5 Or INFPOS% = INF_BACK And RN <= 5) And BR > 8 Then
-            P2 = OFF_BUNT
-            GoTo LBunt
-        End If
-
-        ' MANAGER PROFILE TO HIT AND RUN
-        If Not (baseRunners = 0 Or teamMgrProfileVal(P, 671) <> 999 Or fldPos(P, currLineupSlot(P)) = 1) Then
-
-            go$ = MgrStrategyHitAndRun$
-            If go$ = "LHitAndRun" Then GoTo LHitAndRun
-
-        End If
-
-        ' MANAGER PROFILE FOR PITCHER TO BUNT
-        If Not (teamMgrProfileVal(P, 609) <> 999 Or fldPos(P, currLineupSlot(P)) <> 1) Then
-
-            If Not (baseRunners <> 1 And baseRunners <> 2 And baseRunners <> 4) Then
-
-                go$ = MgrStrategyBuntPitcher$
-                If go$ = "LBunt" Then GoTo LBunt
-
-            End If
-
-        End If
-
-        ' MANAGER PROFILE FOR POSITION PLAYER TO BUNT
-        If teamMgrProfileVal(P, 634) = 999 And fldPos(P, currLineupSlot(P)) <> 1 And nbrOuts(0) = 0 Or (baseRunners <> 1 And baseRunners <> 2 And baseRunners <> 4) Then
-
-            go$ = MgrStrategyBuntPosPlayer$
-            If go$ = "LBunt" Then GoTo LBunt
-
-        End If
-
-        P2 = OFF_HIT_AWAY
-
-        If baseRunners = 1 Or baseRunners = 5 Then
-
-            skipSteal = 0
-
-            If A1 <= -1 And batRating(P, lineupPlayer(P, b2Base(1)), SS_B_SB) < 10 Or b2Mystery(1) > 1 Then skipSteal = 1  'CHANGED FROM <10
-            If A1 >= -1 And baseRunners = 5 Then skipSteal = 1
-            If A1 < -5 Or fldPos(P, b2Base(1)) = 1 And baseRunners = 1 Or fldPos(P, b2Base(2)) = 1 And baseRunners = 2 Then skipSteal = 1
-            If A1 < 0 And INNING% >= 7 Then skipSteal = 1
-
-            If skipSteal = 1 Then
-                go$ = LNoSteal$
-                If go$ = "LExecuteOffense" Then Goto LExecuteOffense
-                If go$ = "LHitAndRun"      Then Goto LHitAndRun
-                If go$ = "LBunt"           Then Goto LBunt
-
-                If go$ = "CONTINUE" Then
-                    go$ = LPossibleHitAndRun$
-                    If go$ = "LExecuteOffense" Then Goto LExecuteOffense
-                    If go$ = "LHitAndRun" Then Goto LHitAndRun
-                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result C from LPossibleHitAndRun: "; go$
-                    End
-                End If
-
-                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LNoSteal: "; go$
-                End
-            End If
-
-            P2 = OFF_STEAL
-
-            GoTo LSteal
-
-        End If
-
-        If baseRunners = 2 Or baseRunners = 4 Then
-            If Not (batRating(P, lineupPlayer(P, b2Base(2)), SS_B_SB) < 40 Or fldPos(P, currLineupSlot(P)) = 1 Or nbrOuts(0) = 2) Then
-                If b2Mystery(2) <= 1 Then
-                    P2 = OFF_STEAL
-                    GoTo LSteal
-                End If
-            End If
-        End If
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LNoPinchHitter: "; go$
+        End
 
     End If
 
@@ -8648,11 +8597,7 @@ Sub LAttemptToAdvance
 End Sub
 
 
-Sub LReplacePlayer  'ToDo [bm] Finish this, and check args of calls to REPLACEMENT (PG, TG, etc.)
-    'Shared S2%, errorOnPlay%, I3
-    'Shared I1, P2, stealing, runnerOn2nd, SAH%, baseNbr!, I9
-    'Shared fbUnassisted, fbPitcherCoveringFirst%, AST%, DPC%
-    'Shared SH
+Sub LReplacePlayer
     Shared P9, PG, TG
 
     Do
@@ -9481,6 +9426,156 @@ Sub LReliever1 (newPitcherFlag)
 End Sub
 
 
+Function FindSetupMan% (I3, newPitcherFlag)
+    Shared setupUsed(), closerUsed()
+
+    If LSetupMen%(I3, newPitcherFlag) Then
+        FindSetupMan% = _True
+    Else
+        FindSetupMan% = FindCloser%(I3, newPitcherFlag)
+    End If
+
+End Function
+
+
+Function FindCloser% (I3, newPitcherFlag)
+    Shared setupUsed(), closerUsed()
+
+    If LClosers%(I3, newPitcherFlag) Then
+        FindCloser% = _True
+    Else
+        FindCloser% = LMiddleRelievers%(I3, newPitcherFlag)
+    End If
+
+End Function
+
+
+Function LSetupMen% (I3, newPitcherFlag)
+    Shared setupUsed(), closerUsed()
+
+    I2 = 0
+    If I3 < 0 Then I1 = 81
+    If I3 > 0 Then I1 = 84
+    For pIdx = I1 To I1 + 2
+        If teamMgrProfileVal(D, pIdx) >= 0 Then     'if not already used
+            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'needed to break into separate IF's, because QB64 does not short-circuit
+                I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
+            End If
+        End If
+    Next
+
+    I3 = Int(Rnd(1) * I2) + 1
+    I2 = 0
+
+    For pIdx = I1 To I1 + 2
+        If teamMgrProfileVal(D, pIdx) >= 0 THen     'if not already used
+            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'needed to break into separate IF's, because QB64 does not short-circuit
+                I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
+            End If
+        End If
+        If I3 <= I2 Then
+            V0 = teamMgrProfileVal(D, pIdx)
+            teamMgrProfileVal(D, pIdx) = -1
+            pIdx = V0
+            Call NEWPITCHER(pIdx, pinchHitterFlag, newPitcherFlag)
+            setupUsed(D) = -1
+            If Environ$("MGRLOG") = "TRUE" Then Print #11, "Found SETUP MAN: "; pIdx
+            LSetupMen% = _True
+            Exit Sub
+
+        End If
+    Next
+    'NO SETUP MAN FOUND
+    LSetupMen% = _False
+
+End Function
+
+
+Function LClosers% (I3, newPitcherFlag)
+    Shared setupUsed(), closerUsed()
+
+    I2 = 0
+    If I3 < 0 Then I1 = 521
+    If I3 > 0 Then I1 = 524
+
+    For pIdx = I1 To I1 + 2
+        If teamMgrProfileVal(D, pIdx) >= 0 Then     'if not already used
+            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'needed to break into separate IF's, because QB64 does not short-circuit
+                I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
+            End If
+        End If
+    Next
+
+    I3 = Int(Rnd(1) * I2) + 1
+    I2 = 0
+
+    For pIdx = I1 To I1 + 2
+        If teamMgrProfileVal(D, pIdx) >= 0 Then     'if not already used
+            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'needed to break into separate IF's, because QB64 does not short-circuit
+                I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
+            End if
+        End If
+        If I3 <= I2 Then
+            V0 = teamMgrProfileVal(D, pIdx)
+            teamMgrProfileVal(D, pIdx) = -1
+            pIdx = V0
+            Call NEWPITCHER(pIdx, pinchHitterFlag, newPitcherFlag)
+            closerUsed(D) = -1
+            If Environ$("MGRLOG") = "TRUE" Then Print #11, "Found CLOSER: "; pIdx
+            LClosers% = _True
+            Exit Sub
+
+        End If
+    Next
+
+    'NO CLOSER FOUND
+    setupUsed(D)  = -1
+    closerUsed(D) = -1
+    If Environ$("MGRLOG") = "TRUE" Then Print #11, "Couldn't find SETUP MAN or CLOSER"
+    LClosers% = _False
+
+End Function
+
+
+Function LMiddleRelievers% (I3, newPitcherFlag)
+    I2 = 0
+
+    For pIdx = 61 To 70
+        If teamMgrProfileVal(D, pIdx) >= 0 Then     'if not already used
+            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'needed to break into separate IF's, because QB64 does not short-circuit
+                I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
+            End If
+        End If
+    Next
+
+    I3 = Int(Rnd(1) * I2) + 1
+    I2 = 0
+
+    For pIdx = 61 To 70
+        If teamMgrProfileVal(D, pIdx) >= 0 Then     'if not already used
+            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'needed to break into separate IF's, because QB64 does not short-circuit
+                I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
+            End If
+        End If
+        If I3 <= I2 Then
+            V0 = teamMgrProfileVal(D, pIdx)
+            teamMgrProfileVal(D, pIdx) = -1
+            pIdx = V0
+            Call NEWPITCHER(pIdx, pinchHitterFlag, newPitcherFlag)
+            If Environ$("MGRLOG") = "TRUE" Then Print #11, "Found Middle Reliever: "; pIdx
+            LMiddleRelievers% = _True
+            Exit Sub
+
+        End If
+    Next
+
+    'NO middle RELIEVER FOUND
+    If Environ$("MGRLOG") = "TRUE" Then Print #11, "Couldn't find Middle Reliever"
+    LMiddleRelievers% = _False
+
+End Function
+
+
 '----------------------------------------
 '            INFO Subroutine
 '----------------------------------------
@@ -9506,6 +9601,101 @@ Sub INFO ()
     Color , 0
 
 End Sub
+
+
+Function LNoPinchHitter$ (MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
+    Shared INFPOS%, P2
+    Shared baseRunners
+
+    If pinchRunnerFlag <> 1 Then
+        Call PINCHRUNNER(MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
+    End If
+
+    If MS% = 1 Then
+        MS% = 0
+        LNoPinchHitter$ = "LContinueBatter"
+        Exit Function
+    End If
+
+    If fldPos(P, currLineupSlot(P)) = 1 Then
+        BR = 0
+    Else
+        BR = batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_Bunt)
+    End If
+
+
+    Call Rolld100(RN)
+
+    If baseRunners = 0 And (INFPOS% > INF_BACK And RN <= 5 Or INFPOS% = INF_BACK And RN <= 5) And BR > 8 Then
+        P2 = OFF_BUNT
+        LNoPinchHitter$ = "LBunt"
+        Exit Function
+    End If
+
+    ' MANAGER PROFILE TO HIT AND RUN
+    If Not (baseRunners = 0 Or teamMgrProfileVal(P, 671) <> 999 Or fldPos(P, currLineupSlot(P)) = 1) Then
+        go$ = MgrStrategyHitAndRun$
+        If go$ = "LHitAndRun" Then LNoPinchHitter$ = "LHitAndRun": Exit Function
+    End If
+
+    ' MANAGER PROFILE FOR PITCHER TO BUNT
+    If Not (teamMgrProfileVal(P, 609) <> 999 Or fldPos(P, currLineupSlot(P)) <> 1) Then
+
+        If Not (baseRunners <> 1 And baseRunners <> 2 And baseRunners <> 4) Then
+            go$ = MgrStrategyBuntPitcher$
+            If go$ = "LBunt" Then LNoPinchHitter$ = "LBunt": Exit Function
+        End If
+
+    End If
+
+    ' MANAGER PROFILE FOR POSITION PLAYER TO BUNT
+    If teamMgrProfileVal(P, 634) = 999 And fldPos(P, currLineupSlot(P)) <> 1 And nbrOuts(0) = 0 Or (baseRunners <> 1 And baseRunners <> 2 And baseRunners <> 4) Then
+
+        go$ = MgrStrategyBuntPosPlayer$
+        If go$ = "LBunt" Then LNoPinchHitter$ = "LBunt": Exit Function
+
+    End If
+
+    P2 = OFF_HIT_AWAY
+
+    If baseRunners = 1 Or baseRunners = 5 Then
+
+        skipSteal = 0
+
+        If A1 <= -1 And batRating(P, lineupPlayer(P, b2Base(1)), SS_B_SB) < 10 Or b2Mystery(1) > 1 Then skipSteal = 1  'CHANGED FROM <10
+        If A1 >= -1 And baseRunners = 5 Then skipSteal = 1
+        If A1 < -5 Or fldPos(P, b2Base(1)) = 1 And baseRunners = 1 Or fldPos(P, b2Base(2)) = 1 And baseRunners = 2 Then skipSteal = 1
+        If A1 < 0 And INNING% >= 7 Then skipSteal = 1
+
+        If skipSteal = 1 Then
+            go$ = LNoSteal$
+            If go$ <> "CONTINUE" Then LNoPinchHitter$ = go$ Else LNoPinchHitter$ = LPossibleHitAndRun$
+            Exit Function
+        End If
+
+        P2 = OFF_STEAL
+        LNoPinchHitter$ = "LSteal"
+        Exit Function
+    End If
+
+    If baseRunners = 2 Or baseRunners = 4 Then
+        If Not (batRating(P, lineupPlayer(P, b2Base(2)), SS_B_SB) < 40 Or fldPos(P, currLineupSlot(P)) = 1 Or nbrOuts(0) = 2) Then
+            If b2Mystery(2) <= 1 Then
+                P2 = OFF_STEAL
+                LNoPinchHitter$ = "LSteal"
+                Exit Function
+            End If
+        End If
+    End If
+
+    go$ = LPossibleHitAndRun$
+    If go$ = "LExecuteOffense" Then LNoPinchHitter$ = "LExecuteOffense": Exit Function
+    If go$ = "LHitAndRun" Then LNoPinchHitter$ = "LHitAndRun": Exit Function
+
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result C from LPossibleHitAndRun: "; go$
+    End
+
+End Function
 
 
 '----------------------------------------
@@ -10322,7 +10512,7 @@ Sub ADJRUNNERS (S2%, P)
                 Call CHARGERUN(D, 0)
 
             Case 11 To 14
-                I3 = A5%(0) - 10    'Todo [bm] Determine if I3 is even USED anywhere?
+                I3 = A5%(0) - 10
                 Call CLEARBASE(0)
 
         End Select
@@ -13007,9 +13197,7 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag)
             If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a PITCHING strategy !!"
 
             'if still needing middle relief
-            If INNING% <= 7 Then
-                GoTo LMiddleRelievers
-            End If
+            If INNING% <= 7 Then foundPitcher% = LMiddleRelievers%(I3, newPitcherFlag): Exit Sub
 
             ' we have defined a closing/setup possibility
             ' identify the stratgey
@@ -13028,24 +13216,12 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag)
 
                     If ourLead < 1 Then Exit Sub
 
-                    If ourLead > 0 And ourLead <= 2 Then
-                        saveSituation = 1
-                    End If
-                    If baseRunners = 0 And ourLead <= 2 Then
-                        saveSituation = 1
-                    End If
-                    If baseRunners > 0 And baseRunners < 4 And ourLead <= 3 Then
-                        saveSituation = 1
-                    End If
-                    If baseRunners > 3 And baseRunners < 7 And ourLead <= 4 Then
-                        saveSituation = 1
-                    End If
-                    If baseRunners = 7 And ourLead <= 5 Then
-                        saveSituation = 1
-                    End If
-                    If baseRunners = 0 And nbrOuts(0) = 0 And ourLead <= 3 Then
-                        saveSituation = 1
-                    End If
+                    If ourLead > 0 And ourLead <= 2 Then saveSituation = 1
+                    If baseRunners = 0                     And ourLead <= 2 Then saveSituation = 1  'no base runners
+                    If baseRunners > 0 And baseRunners < 4 And ourLead <= 3 Then saveSituation = 1  '1 base runner
+                    If baseRunners > 3 And baseRunners < 7 And ourLead <= 4 Then saveSituation = 1  '2 base runners
+                    If baseRunners = 7                     And ourLead <= 5 Then saveSituation = 1  '3 base runners
+                    If baseRunners = 0 And nbrOuts(0) = 0  And ourLead <= 3 Then saveSituation = 1  'no base runners
 
                     If currLineupSlot(P) <= 7 Then  'I3 will determine which way the next 3 hitters bat (L/R) on average
                         For pIdx = 0 To 2:
@@ -13072,25 +13248,25 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag)
                         'Why not just do a random # from 1 to 2???
                     End If
 
-                    If INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 0 And saveSituation = 1 And (SN% = 582 Or SN% = 587) Then Goto LSetupMen
-                    If INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 1 And saveSituation = 1 And (SN% = 582 Or SN% = 587) Then Goto LClosers
-                    If INNING% >= 9 And saveSituation = 1 And (SN% = 582 Or SN% = 587) Then Goto LClosers
+                    If INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 0 And saveSituation = 1 And (SN% = 582 Or SN% = 587) Then foundPitcher% = FindSetupMan%(I3, newPitcherFlag): Exit Sub
+                    If INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 1 And saveSituation = 1 And (SN% = 582 Or SN% = 587) Then foundPitcher% = FindCloser%  (I3, newPitcherFlag): Exit Sub
+                    If INNING% >= 9 And saveSituation = 1 And (SN% = 582 Or SN% = 587) Then foundPitcher% = FindCloser%(I3, newPitcherFlag): Exit Sub
 
-                    If INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 0 And ourLead > 0 And SN% = 583 Then Goto LSetupMen
-                    If INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 1 And ourLead > 0 And SN% = 583 Then Goto LClosers
-                    If INNING% >= 9 And ourLead > 0 And SN% = 583 Then Goto LClosers
+                    If INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 0 And ourLead > 0 And SN% = 583 Then foundPitcher% = FindSetupMan%(I3, newPitcherFlag): Exit Sub
+                    If INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 1 And ourLead > 0 And SN% = 583 Then foundPitcher% = FindCloser%  (I3, newPitcherFlag): Exit Sub
+                    If INNING% >= 9 And ourLead > 0 And SN% = 583 Then foundPitcher% = FindCloser%(I3, newPitcherFlag): Exit Sub
 
-                    If INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 0 And ourLead >= 0 And SN% = 584 Then Goto LSetupMen
-                    If INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 1 And ourLead >= 0 And SN% = 584 Then Goto LClosers
-                    If INNING% >= 9 And ourLead >= 0 And SN% = 584 Then Goto LClosers
+                    If INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 0 And ourLead >= 0 And SN% = 584 Then foundPitcher% = FindSetupMan%(I3, newPitcherFlag): Exit Sub
+                    If INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 1 And ourLead >= 0 And SN% = 584 Then foundPitcher% = FindCloser%  (I3, newPitcherFlag): Exit Sub
+                    If INNING% >= 9 And ourLead >= 0 And SN% = 584 Then foundPitcher% = FindCloser%(I3, newPitcherFlag): Exit Sub
 
-                    If stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 0 And ourLead > 0 And SN% = 585 Then Goto LSetupMen
-                    If stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 1 And ourLead > 0 And SN% = 585 Then Goto LClosers
-                    If stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% >= 9 And ourLead > 0 And SN% = 585 Then Goto LClosers
+                    If stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 0 And ourLead > 0 And SN% = 585 Then foundPitcher% = FindSetupMan%(I3, newPitcherFlag): Exit Sub
+                    If stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 1 And ourLead > 0 And SN% = 585 Then foundPitcher% = FindCloser%  (I3, newPitcherFlag): Exit Sub
+                    If stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% >= 9 And ourLead > 0 And SN% = 585 Then foundPitcher% = FindCloser%(I3, newPitcherFlag): Exit Sub
 
-                    If stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 0 And ourLead >= 0 And SN% = 586 Then Goto LSetupMen
-                    If stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 1 And ourLead >= 0 And SN% = 586 Then Goto LClosers
-                    If stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% >= 9 And ourLead >= 0 And SN% = 586 Then Goto LClosers
+                    If stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 0 And ourLead >= 0 And SN% = 586 Then foundPitcher% = FindSetupMan%(I3, newPitcherFlag): Exit Sub
+                    If stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 1 And ourLead >= 0 And SN% = 586 Then foundPitcher% = FindCloser%  (I3, newPitcherFlag): Exit Sub
+                    If stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% >= 9 And ourLead >= 0 And SN% = 586 Then foundPitcher% = FindCloser%(I3, newPitcherFlag): Exit Sub
 
                     Exit For
 
@@ -13100,112 +13276,6 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag)
         End If
 
     End If
-
-    Exit Sub
-
-    'strategy identified, now
-
-   LSetupMen:
-    I2 = 0
-    If I3 < 0 Then I1 = 81
-    If I3 > 0 Then I1 = 84
-    For pIdx = I1 To I1 + 2
-        If teamMgrProfileVal(D, pIdx) >= 0 Then     'if not already used
-            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'needed to break into separate IF's, because QB64 does not short-circuit
-                I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
-            End If
-        End If
-    Next
-
-    I3 = Int(Rnd(1) * I2) + 1
-    I2 = 0
-
-    For pIdx = I1 To I1 + 2
-        If teamMgrProfileVal(D, pIdx) >= 0 THen     'if not already used
-            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'needed to break into separate IF's, because QB64 does not short-circuit
-                I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
-            End If
-        End If
-        If I3 <= I2 Then
-            V0 = teamMgrProfileVal(D, pIdx)
-            teamMgrProfileVal(D, pIdx) = -1
-            pIdx = V0
-            Call NEWPITCHER(pIdx, pinchHitterFlag, newPitcherFlag)
-            setupUsed(D) = -1
-            If Environ$("MGRLOG") = "TRUE" Then Print #11, "Found SETUP MAN: "; pIdx
-            Exit Sub
-        End If
-    Next
-    'NO SETUP MAN FOUND
-
-   LClosers:
-    I2 = 0
-    If I3 < 0 Then I1 = 521
-    If I3 > 0 Then I1 = 524
-
-    For pIdx = I1 To I1 + 2
-        If teamMgrProfileVal(D, pIdx) >= 0 Then     'if not already used
-            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'needed to break into separate IF's, because QB64 does not short-circuit
-                I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
-            End If
-        End If
-    Next
-
-    I3 = Int(Rnd(1) * I2) + 1
-    I2 = 0
-
-    For pIdx = I1 To I1 + 2
-        If teamMgrProfileVal(D, pIdx) >= 0 Then     'if not already used
-            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'needed to break into separate IF's, because QB64 does not short-circuit
-                I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
-            End if
-        End If
-        If I3 <= I2 Then
-            V0 = teamMgrProfileVal(D, pIdx)
-            teamMgrProfileVal(D, pIdx) = -1
-            pIdx = V0
-            Call NEWPITCHER(pIdx, pinchHitterFlag, newPitcherFlag)
-            closerUsed(D) = -1
-            If Environ$("MGRLOG") = "TRUE" Then Print #11, "Found CLOSER: "; pIdx
-            Exit Sub
-        End If
-    Next
-
-    'NO CLOSER FOUND
-    setupUsed(D)  = -1
-    closerUsed(D) = -1
-    If Environ$("MGRLOG") = "TRUE" Then Print #11, "Couldn't find SETUP MAN or CLOSER"
-
-   LMiddleRelievers:
-    I2 = 0
-
-    For pIdx = 61 To 70
-        If teamMgrProfileVal(D, pIdx) >= 0 Then     'if not already used
-            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'needed to break into separate IF's, because QB64 does not short-circuit
-                I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
-            End If
-        End If
-    Next
-
-    I3 = Int(Rnd(1) * I2) + 1
-    I2 = 0
-
-    For pIdx = 61 To 70
-        If teamMgrProfileVal(D, pIdx) >= 0 Then     'if not already used
-            If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then      'needed to break into separate IF's, because QB64 does not short-circuit
-                I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
-            End If
-        End If
-        If I3 <= I2 Then
-            V0 = teamMgrProfileVal(D, pIdx)
-            teamMgrProfileVal(D, pIdx) = -1
-            pIdx = V0
-            Call NEWPITCHER(pIdx, pinchHitterFlag, newPitcherFlag)
-            Exit Sub
-        End If
-    Next
-
-    'NO middle RELIEVER FOUND
 
 End Sub
 
@@ -16107,6 +16177,8 @@ Sub WALLDOUBLE (HW%, currFielder)
 
     Call Rolld100(BV)
     Call Rolld100(RN)
+
+    pbpString$ = "It's off the wall"    'Default message for when we occasionally fall through...
 
     Select Case BV
 
