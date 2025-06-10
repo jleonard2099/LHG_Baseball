@@ -3822,7 +3822,7 @@ Sub SOURCE ()
     Shared I1, P2, stealing, runnerOn2nd, SAH%, baseNbr!, I9
     Shared SO, SH
     Shared fbUnassisted, fbPitcherCoveringFirst%, AST%, DPC%, TB
-    Shared INFPOS%
+    Shared INFPOS%, D2
     Shared P9, PG, TG
     Shared baseRunners
 
@@ -4191,7 +4191,7 @@ Sub SOURCE ()
         'Restore image where commands went
         If useVGA = 1 Then _PutImage (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176), backupScreen&, imageScreen&, (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176)
 
-        If UCase$(I$) = "D" Then
+        If UCase$(I$) = "D" Then    'Detailed Stats
             Call VIEWTEAM
             Call LResumePlay
             GoTo LNextBatter1
@@ -4235,7 +4235,7 @@ Sub SOURCE ()
             GoTo LNextBatter1
         End If
 
-        If UCase$(I$) = Chr$(17) Then
+        If UCase$(I$) = "Q" Then
             If useVGA = 0 Then Cls
             Call EndOfGame
             Exit Sub
@@ -4249,7 +4249,7 @@ Sub SOURCE ()
 
         If UCase$(I$) = "B" Then
             If useVGA = 1 Then Screen menu&
-            Call PopUp_Batter(D, currPitcher(D))
+            Call PopUp_Batter(D, currPitcher(D))    'ToDo [bm] TEST = should this be the batter instead?
             Call LResumePlay
             GoTo LNextBatter1
         End If
@@ -4297,10 +4297,9 @@ Sub SOURCE ()
    LManageDefense:
 
     Select Case D2
-        Case 1
-            '
+        Case 1  'Pitch
 
-        Case 2
+        Case 2  'Intentional BB
             Call WINDEX
             Call BASEONBALLS(S2%, D2, D, P)
             Call LBatterGoesTo1st
@@ -4541,7 +4540,7 @@ Sub SOURCE ()
             GoTo LNextBatter1
         End If
 
-        If UCase$(I$) = Chr$(17) Then
+        If UCase$(I$) = "Q" Then
             If useVGA = 0 Then Cls
             Call EndOfGame
             Exit Sub
@@ -7456,11 +7455,8 @@ Sub SOURCE ()
                             Call HOLDSTATUS(runnerHeld)
                         End If
                     End If
-
                 End If
-
             End If
-
         End If
 
     End If
@@ -7505,23 +7501,28 @@ Sub SOURCE ()
                 End If
 
                 If gameScore(P, 0) = 0 And pitchRating(D, currPitcher(D), 5) > 0 And RN0 <= pitAvg5 + 10 Then
-                    GoTo LReliever1
+                    Call LReliever1(newPitcherFlag)
+                    GoTo LManageDefense
                 End If
 
                 If pitchRating(D, currPitcher(D), 5) > 0 And RN0 <= pitAvg5 Then
-                    GoTo LReliever1
+                    Call LReliever1(newPitcherFlag)
+                    GoTo LManageDefense
                 End If
 
                 If pitchEraOpt > 0 And INNING% > 7 And gameScore(D, 0) > gameScore(P, 0) And pitchRating(D, currPitcher(D), 1) > 0 And gamePitcher(D) = 1 And pitAvg1 <= 100 And RN0 <= pitAvg1 Then
-                    GoTo LReliever1
+                    Call LReliever1(newPitcherFlag)
+                    GoTo LManageDefense
                 End If
 
                 If pitchEraOpt > 0 And INNING% > 7 And (gameScore(D, 0) >= gameScore(P, 0) Or gameScore(P, 0) - gameScore(D, 0) <= 2) And pitchRating(D, currPitcher(D), 1) > 0 And gamePitcher(D) = 1 And pitAvg1 >= 100 Then
-                    GoTo LReliever1
+                    Call LReliever1(newPitcherFlag)
+                    GoTo LManageDefense
                 End If
 
                 If pitchEraOpt >= 8 Then
-                    GoTo LReliever1
+                    Call LReliever1(newPitcherFlag)
+                    GoTo LManageDefense
                 End If
 
                 newRelieverNeeded(D) = 1  'new reliever'
@@ -7532,269 +7533,7 @@ Sub SOURCE ()
 
     End If
 
-   LReliever1:
-    If newRelieverNeeded(D) = 1 Then
-
-        newRelieverNeeded(D) = 0
-        Call RELIEVERS(pinchHitterFlag, newPitcherFlag)
-        If useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
-        GoTo LManageDefense
-
-    End If
-
-    If fldPos(P, currLineupSlot(P)) = 1 Then BR = 0
-    If fldPos(P, currLineupSlot(P)) <> 1 Then BR = batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_Bunt)
-
-    If pitchRating(P, currPitcher(P), SS_P_BAvg) <> 999 Then
-        I7! = pitchRating(I0, currPitcher(I0), SS_P_BAvg)
-    Else
-        If pitchRating(P, currPitcher(P), SS_P_H_AB) = 0 Then
-            I7! = 0
-        Else
-            I7! = CInt((pitchRating(P, currPitcher(P), SS_P_H_H) / pitchRating(P, currPitcher(P), SS_P_H_AB) * 1000))
-        End If
-    End If
-
-    D2 = DEF_PITCH
-
-    If INFPOS% <= 0 Then
-
-        If teamMgrProfileVal(D, 690) = 999 Then
-
-            If Not (baseRunners < 3 Or baseRunners = 4) Then
-
-                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a INFIELD IN (3rd base occupied) strategy !!"
-
-                ' PROFILE INFIELD IN WITH 3RD OCCUPIED
-                Call Rolld100(RN)
-                If nbrOuts(0) = 0 And A1 >= teamMgrProfileVal(D, 691) * -1 And A1 <= teamMgrProfileVal(D, 692) * -1 And INNING% >= teamMgrProfileVal(D, 693) And RN <= teamMgrProfileVal(D, 694) Then INFPOS% = INF_IN: D2 = DEF_INFIELD_IN: GoTo LManageDefense
-                If nbrOuts(0) = 0 And A1 >= teamMgrProfileVal(D, 695) * -1 And A1 <= teamMgrProfileVal(D, 696) * -1 And INNING% >= teamMgrProfileVal(D, 697) And RN <= teamMgrProfileVal(D, 698) Then INFPOS% = INF_IN: D2 = DEF_INFIELD_IN: GoTo LManageDefense
-                If nbrOuts(0) = 1 And (baseRunners = 5 Or baseRunners = 7) And A1 >= teamMgrProfileVal(D, 699) * -1 And A1 <= teamMgrProfileVal(D, 700) * -1 And INNING% >= teamMgrProfileVal(D, 701) And RN <= teamMgrProfileVal(D, 702) Then INFPOS% = INF_IN: D2 = DEF_INFIELD_IN: GoTo LManageDefense
-                If nbrOuts(0) = 1 And (baseRunners = 5 Or baseRunners = 7) And A1 >= teamMgrProfileVal(D, 703) * -1 And A1 <= teamMgrProfileVal(D, 704) * -1 And INNING% >= teamMgrProfileVal(D, 705) And RN <= teamMgrProfileVal(D, 706) Then INFPOS% = INF_IN: D2 = DEF_INFIELD_IN: GoTo LManageDefense
-
-            End If
-
-        End If
-
-        If teamMgrProfileVal(D, 707) = 999 Then
-
-            If baseRunners = 0 Then
-
-                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a CORNERS IN against BUNT FOR HIT strategy !!"
-
-                ' PROFILE CORNERS IN AGAINST A BUNT HIT
-                Call Rolld100(RN)
-                If BR >= teamMgrProfileVal(D, 708) And RN <= teamMgrProfileVal(D, 709) Or BR >= teamMgrProfileVal(D, 710) And RN <= teamMgrProfileVal(D, 711) Or BR >= teamMgrProfileVal(D, 712) And RN <= teamMgrProfileVal(D, 713) Then
-                    INFPOS% = INF_CORNERS_IN
-                    D2 = DEF_CORNERS_IN
-                    GoTo LManageDefense
-                End If
-
-            End If
-
-        End If
-
-        If teamMgrProfileVal(D, 714) = 999 And fldPos(P, currLineupSlot(P)) <> 1 Then
-
-            If nbrOuts(0) = 0 Then
-
-                If Not (baseRunners <> 1 And baseRunners <> 4) Then
-
-                    If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a CORNERS IN against SAC BUNT strategy !!"
-
-                    ' PROFILE CORNERS IN VS HITTER IN SAC BUNT SITUATION
-                    Call Rolld100(RN)
-                    If A1 <= teamMgrProfileVal(D, 715) And A1 >= teamMgrProfileVal(D, 716) * -1 And baseRunners = 1 And BR >= teamMgrProfileVal(D, 717) And RN <= teamMgrProfileVal(D, 718) Then
-                        INFPOS% = INF_CORNERS_IN
-                        D2 = DEF_CORNERS_IN
-                        GoTo LManageDefense
-                    End If
-                    If A1 <= teamMgrProfileVal(D, 719) And A1 >= teamMgrProfileVal(D, 720) * -1 And baseRunners = 1 And BR >= teamMgrProfileVal(D, 721) And RN <= teamMgrProfileVal(D, 722) Then
-                        INFPOS% = INF_CORNERS_IN
-                        D2 = DEF_CORNERS_IN
-                        GoTo LManageDefense
-                    End If
-                    If A1 <= teamMgrProfileVal(D, 723) And A1 >= teamMgrProfileVal(D, 724) * -1 And baseRunners = 4 And BR >= teamMgrProfileVal(D, 725) And RN <= teamMgrProfileVal(D, 726) Then
-                        INFPOS% = INF_CORNERS_IN
-                        D2 = DEF_CORNERS_IN
-                        GoTo LManageDefense
-                    End If
-                    If A1 <= teamMgrProfileVal(D, 727) And A1 >= teamMgrProfileVal(D, 728) * -1 And baseRunners = 4 And BR >= teamMgrProfileVal(D, 729) And RN <= teamMgrProfileVal(D, 730) Then
-                        INFPOS% = INF_CORNERS_IN
-                        D2 = DEF_CORNERS_IN
-                        GoTo LManageDefense
-                    End If
-
-                End If
-
-            End If
-
-        End If
-
-        If Not (teamMgrProfileVal(D, 731) <> 999 Or fldPos(P, currLineupSlot(P)) <> 1 Or nbrOuts(0) = 2) Then
-
-            If Not (baseRunners <> 1 And baseRunners <> 2 And baseRunners <> 4) Then
-
-                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a CORNERS IN against PITCHER SAC BUNT strategy !!"
-
-                ' PROFILE CORNERS IN VS A PITCHER IN SAC BUNT SITUATION
-                Call Rolld100(RN)
-
-                If I7! <= teamMgrProfileVal(D, 732) And RN <= teamMgrProfileVal(D, 733) And baseRunners = 1 And nbrOuts(0) <= 1 Then
-                    INFPOS% = INF_CORNERS_IN
-                    D2 = DEF_CORNERS_IN
-                    GoTo LManageDefense
-                End If
-
-                If I7! <= teamMgrProfileVal(D, 734) And RN <= teamMgrProfileVal(D, 735) And baseRunners = 1 And nbrOuts(0) <= 1 Then
-                    INFPOS% = INF_CORNERS_IN
-                    D2 = DEF_CORNERS_IN
-                    GoTo LManageDefense
-                End If
-
-                If I7! <= teamMgrProfileVal(D, 736) And RN <= teamMgrProfileVal(D, 737) And (baseRunners = 2 Or baseRunners = 4) And nbrOuts(0) = 0 Then
-                    INFPOS% = INF_CORNERS_IN
-                    D2 = DEF_CORNERS_IN
-                    GoTo LManageDefense
-                End If
-
-                If I7! <= teamMgrProfileVal(D, 738) And RN <= teamMgrProfileVal(D, 739) And (baseRunners = 2 Or baseRunners = 4) And nbrOuts(0) = 0 Then
-                    INFPOS% = INF_CORNERS_IN
-                    D2 = DEF_CORNERS_IN
-                    GoTo LManageDefense
-                End If
-
-            End If
-
-        End If
-
-        If teamMgrProfileVal(D, 740) = 999 Then
-
-            If Not (nbrOuts(0) = 2 Or baseRunners <> 3 And baseRunners < 5) Then
-
-                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a CORNERS IN against SQUEEZE strategy !!"
-
-                ' PROFILE CORNERS IN FOR A SQUEEZE
-                Call Rolld100(RN)
-                If nbrOuts(0) = 0 And A1 <= teamMgrProfileVal(D, 741) And A1 >= teamMgrProfileVal(D, 742) And BR >= teamMgrProfileVal(D, 743) And RN <= teamMgrProfileVal(D, 744) Then
-                    INFPOS% = INF_CORNERS_IN
-                    D2 = DEF_CORNERS_IN
-                    GoTo LManageDefense
-                End If
-                If nbrOuts(0) = 1 And A1 <= teamMgrProfileVal(D, 745) And A1 >= teamMgrProfileVal(D, 746) And BR >= teamMgrProfileVal(D, 747) And RN <= teamMgrProfileVal(D, 748) Then
-                    INFPOS% = INF_CORNERS_IN
-                    D2 = DEF_CORNERS_IN
-                    GoTo LManageDefense
-                End If
-
-
-            End If
-
-        End If
-
-        If teamMgrProfileVal(D, 756) = 999 Then
-
-            If Not (baseRunners = 1 Or baseRunners = 4 Or baseRunners = 5 Or baseRunners = 7) Then
-
-                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a PITCH AROUND HITTER strategy !!"
-
-                MOB% = 0
-
-                For I = 1 To 3
-                    If b2Base(I) > 0 Then MOB% = MOB% + 1
-                Next
-
-                If A1 + MOB% + 1 < 0 Then
-                    ' BATTER NOT TYING OR WINNING RUN
-                    Call Rolld100(RN)
-
-                    If batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_AB) = 0 Then
-                        I7! = 0
-                        I6! = 0
-                    Else
-                        I6! = CInt((batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_H) + batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_2B) + batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_3B) * 2 + batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_HR) * 3) / batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_AB) * 1000)
-                        If I6! <= teamMgrProfileVal(D, 757) And INNING% >= teamMgrProfileVal(D, 758) And RN <= teamMgrProfileVal(D, 759) Then
-                            D2 = DEF_PITCH_AROUND
-                            GoTo LReliever2
-                        End If
-                        If I6! <= teamMgrProfileVal(D, 760) And INNING% >= teamMgrProfileVal(D, 761) And RN <= teamMgrProfileVal(D, 762) Then
-                            D2 = DEF_PITCH_AROUND
-                            GoTo LReliever2
-                        End If
-                        If I6! <= teamMgrProfileVal(D, 763) And INNING% >= teamMgrProfileVal(D, 764) And RN <= teamMgrProfileVal(D, 765) Then
-                            D2 = DEF_PITCH_AROUND
-                            GoTo LReliever2
-                        End If
-                    End If
-
-                End If
-
-            End If
-
-        End If
-
-        A1 = gameScore(D, 0) - gameScore(P, 0)
-
-        If A1 >= -1 And A1 <= 1 And INNING% >= 8 And (baseRunners = 3 Or baseRunners >= 5) And nbrOuts(0) < 2 Then
-            INFPOS% = INF_IN
-            D2 = DEF_INFIELD_IN
-
-        Else
-
-            If A1 > 0 Or nbrOuts(0) > 0 Or baseRunners <= 2 Or baseRunners = 4 Or baseRunners = 5 And nbrOuts(0) = 1 Or INNING% <= 5 And A1 < -2 Or INNING% > 5 And A1 < -4 Then
-
-                If Not (baseRunners = 0 Or baseRunners = 2 Or baseRunners = 3 Or baseRunners >= 5 Or nbrOuts(0) = 2 Or currLineupSlot(P) >= 3 And currLineupSlot(P) <= 6 Or INNING% <= 6 And A1 >= 3 Or INNING% <= 6 And A1 <= -3) Then
-                    If Not (INNING% > 7 And A1 >= 1 Or INNING% > 7 And A1 < -1) Then
-                        INFPOS% = INF_CORNERS_IN
-                        D2 = DEF_CORNERS_IN
-                    End If
-                End If
-            Else
-                INFPOS% = INF_IN
-                D2 = DEF_INFIELD_IN
-            End If
-
-        End If
-
-        GoTo LManageDefense
-
-    End If
-
-    If Not (A1 <= 0 Or A1 = 0 And baseRunners <= 1 Or A1 = 0 And baseRunners = 4 Or baseRunners = 7 Or fldPos(P, currLineupSlot(P)) = 1) Then
-
-        If INNING% >= 9 And P = 1 And nbrOuts(0) < 2 And A1 = 0 And baseRunners >= 2 And baseRunners <= 3 Or INNING% >= 9 And P = 1 And nbrOuts(0) = 2 And A1 = 0 And baseRunners >= 5 And baseRunners <= 6 Then
-            '18835
-            D2 = DEF_INTNTL_BB
-            GoTo LManageDefense
-        End If
-
-        Ib4 = game_batRating(P, GM_BAvg, currLineupSlot(P))
-        I1 = game_batRating(P, GM_HR, currLineupSlot(P))
-        If currLineupSlot(P) = 9 Then
-            I2 = game_batRating(P, GM_BAvg, 0)
-            I3 = game_batRating(P, GM_HR, 0)
-        Else
-            I2 = game_batRating(P, GM_BAvg, currLineupSlot(P) + 1)
-            I3 = game_batRating(P, GM_HR, currLineupSlot(P) + 1)
-        End If
-
-        If baseRunners = 2 Or baseRunners = 6 Then
-
-            If Ib4 - I2 >= 50 And I1 - I3 >= 50 And A1 < 1 And INNING% > 8 Or Ib4 >= 280 And I1 >= 140 And INNING% > 8 And I1 > I3 And A1 < 1 Then
-                D2 = DEF_INTNTL_BB
-                GoTo LManageDefense
-            End If
-
-        End If
-
-    End If
-
-   LReliever2:
-    If (stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2)) Or fielder(D, 1) = 99 Then
-        Call RELIEVERS(pinchHitterFlag, newPitcherFlag)
-        If useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
-    End If
-
+    Call LReliever1(newPitcherFlag)
     GoTo LManageDefense
 
 
@@ -9458,6 +9197,286 @@ Sub LPinchRunner(MS%, J, J1, I1)
 
     VV(P) = 1
     VV1(P) = 9
+
+End Sub
+
+
+Sub LRelieveIfTired
+
+    If (stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2)) Or fielder(D, 1) = 99 Then
+        Call RELIEVERS(pinchHitterFlag, newPitcherFlag)
+        If useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
+    End If
+
+End Sub
+
+
+Sub LReliever1 (newPitcherFlag)
+    Shared INFPOS%, D2
+    Shared baseRunners
+
+    A1 = gameScore(D, 0) - gameScore(P, 0)
+
+    If newRelieverNeeded(D) = 1 Then
+
+        newRelieverNeeded(D) = 0
+        Call RELIEVERS(pinchHitterFlag, newPitcherFlag)
+        If useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
+        Exit Sub
+
+    End If
+
+    If fldPos(P, currLineupSlot(P)) = 1 Then BR = 0
+    If fldPos(P, currLineupSlot(P)) <> 1 Then BR = batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_Bunt)
+
+    If pitchRating(P, currPitcher(P), SS_P_BAvg) <> 999 Then
+        I7! = pitchRating(I0, currPitcher(I0), SS_P_BAvg)
+    ElseIf pitchRating(P, currPitcher(P), SS_P_H_AB) = 0 Then
+        I7! = 0
+    Else
+        I7! = CInt((pitchRating(P, currPitcher(P), SS_P_H_H) / pitchRating(P, currPitcher(P), SS_P_H_AB) * 1000))
+    End If
+
+    D2 = DEF_PITCH
+
+    If INFPOS% <= 0 Then
+
+        If teamMgrProfileVal(D, 690) = 999 Then
+
+            If Not (baseRunners < 3 Or baseRunners = 4) Then
+
+                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a INFIELD IN (3rd base occupied) strategy !!"
+
+                ' PROFILE INFIELD IN WITH 3RD OCCUPIED
+                Call Rolld100(RN)
+
+                If nbrOuts(0) = 0 And A1 >= teamMgrProfileVal(D, 691) * -1 And A1 <= teamMgrProfileVal(D, 692) * -1 And INNING% >= teamMgrProfileVal(D, 693) And RN <= teamMgrProfileVal(D, 694) Then INFPOS% = INF_IN: D2 = DEF_INFIELD_IN: Exit Sub
+                If nbrOuts(0) = 0 And A1 >= teamMgrProfileVal(D, 695) * -1 And A1 <= teamMgrProfileVal(D, 696) * -1 And INNING% >= teamMgrProfileVal(D, 697) And RN <= teamMgrProfileVal(D, 698) Then INFPOS% = INF_IN: D2 = DEF_INFIELD_IN: Exit Sub
+                If nbrOuts(0) = 1 And (baseRunners = 5 Or baseRunners = 7) And A1 >= teamMgrProfileVal(D, 699) * -1 And A1 <= teamMgrProfileVal(D, 700) * -1 And INNING% >= teamMgrProfileVal(D, 701) And RN <= teamMgrProfileVal(D, 702) Then INFPOS% = INF_IN: D2 = DEF_INFIELD_IN: Exit Sub
+                If nbrOuts(0) = 1 And (baseRunners = 5 Or baseRunners = 7) And A1 >= teamMgrProfileVal(D, 703) * -1 And A1 <= teamMgrProfileVal(D, 704) * -1 And INNING% >= teamMgrProfileVal(D, 705) And RN <= teamMgrProfileVal(D, 706) Then INFPOS% = INF_IN: D2 = DEF_INFIELD_IN: Exit Sub
+
+            End If
+
+        End If
+
+        If teamMgrProfileVal(D, 707) = 999 Then
+
+            If baseRunners = 0 Then
+
+                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a CORNERS IN against BUNT FOR HIT strategy !!"
+
+                ' PROFILE CORNERS IN AGAINST A BUNT HIT
+                Call Rolld100(RN)
+
+                If BR >= teamMgrProfileVal(D, 708) And RN <= teamMgrProfileVal(D, 709) Or BR >= teamMgrProfileVal(D, 710) And RN <= teamMgrProfileVal(D, 711) Or BR >= teamMgrProfileVal(D, 712) And RN <= teamMgrProfileVal(D, 713) Then
+                    INFPOS% = INF_CORNERS_IN
+                    D2 = DEF_CORNERS_IN
+                    Exit Sub
+                End If
+
+            End If
+
+        End If
+
+        If teamMgrProfileVal(D, 714) = 999 And fldPos(P, currLineupSlot(P)) <> 1 Then
+
+            If nbrOuts(0) = 0 Then
+
+                If Not (baseRunners <> 1 And baseRunners <> 4) Then
+
+                    If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a CORNERS IN against SAC BUNT strategy !!"
+
+                    ' PROFILE CORNERS IN VS HITTER IN SAC BUNT SITUATION
+                    Call Rolld100(RN)
+
+                    If A1 <= teamMgrProfileVal(D, 715) And A1 >= teamMgrProfileVal(D, 716) * -1 And baseRunners = 1 And BR >= teamMgrProfileVal(D, 717) And RN <= teamMgrProfileVal(D, 718) Then
+                        INFPOS% = INF_CORNERS_IN
+                        D2 = DEF_CORNERS_IN
+                        Exit Sub
+                    End If
+                    If A1 <= teamMgrProfileVal(D, 719) And A1 >= teamMgrProfileVal(D, 720) * -1 And baseRunners = 1 And BR >= teamMgrProfileVal(D, 721) And RN <= teamMgrProfileVal(D, 722) Then
+                        INFPOS% = INF_CORNERS_IN
+                        D2 = DEF_CORNERS_IN
+                        Exit Sub
+                    End If
+                    If A1 <= teamMgrProfileVal(D, 723) And A1 >= teamMgrProfileVal(D, 724) * -1 And baseRunners = 4 And BR >= teamMgrProfileVal(D, 725) And RN <= teamMgrProfileVal(D, 726) Then
+                        INFPOS% = INF_CORNERS_IN
+                        D2 = DEF_CORNERS_IN
+                        Exit Sub
+                    End If
+                    If A1 <= teamMgrProfileVal(D, 727) And A1 >= teamMgrProfileVal(D, 728) * -1 And baseRunners = 4 And BR >= teamMgrProfileVal(D, 729) And RN <= teamMgrProfileVal(D, 730) Then
+                        INFPOS% = INF_CORNERS_IN
+                        D2 = DEF_CORNERS_IN
+                        Exit Sub
+                    End If
+
+                End If
+
+            End If
+
+        End If
+
+        If Not (teamMgrProfileVal(D, 731) <> 999 Or fldPos(P, currLineupSlot(P)) <> 1 Or nbrOuts(0) = 2) Then
+
+            If Not (baseRunners <> 1 And baseRunners <> 2 And baseRunners <> 4) Then
+
+                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a CORNERS IN against PITCHER SAC BUNT strategy !!"
+
+                ' PROFILE CORNERS IN VS A PITCHER IN SAC BUNT SITUATION
+                Call Rolld100(RN)
+
+                If I7! <= teamMgrProfileVal(D, 732) And RN <= teamMgrProfileVal(D, 733) And baseRunners = 1 And nbrOuts(0) <= 1 Then
+                    INFPOS% = INF_CORNERS_IN
+                    D2 = DEF_CORNERS_IN
+                    Exit Sub
+                End If
+
+                If I7! <= teamMgrProfileVal(D, 734) And RN <= teamMgrProfileVal(D, 735) And baseRunners = 1 And nbrOuts(0) <= 1 Then
+                    INFPOS% = INF_CORNERS_IN
+                    D2 = DEF_CORNERS_IN
+                    Exit Sub
+                End If
+
+                If I7! <= teamMgrProfileVal(D, 736) And RN <= teamMgrProfileVal(D, 737) And (baseRunners = 2 Or baseRunners = 4) And nbrOuts(0) = 0 Then
+                    INFPOS% = INF_CORNERS_IN
+                    D2 = DEF_CORNERS_IN
+                    Exit Sub
+                End If
+
+                If I7! <= teamMgrProfileVal(D, 738) And RN <= teamMgrProfileVal(D, 739) And (baseRunners = 2 Or baseRunners = 4) And nbrOuts(0) = 0 Then
+                    INFPOS% = INF_CORNERS_IN
+                    D2 = DEF_CORNERS_IN
+                    Exit Sub
+                End If
+
+            End If
+
+        End If
+
+        If teamMgrProfileVal(D, 740) = 999 Then
+
+            If Not (nbrOuts(0) = 2 Or baseRunners <> 3 And baseRunners < 5) Then
+
+                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a CORNERS IN against SQUEEZE strategy !!"
+
+                ' PROFILE CORNERS IN FOR A SQUEEZE
+                Call Rolld100(RN)
+                If nbrOuts(0) = 0 And A1 <= teamMgrProfileVal(D, 741) And A1 >= teamMgrProfileVal(D, 742) And BR >= teamMgrProfileVal(D, 743) And RN <= teamMgrProfileVal(D, 744) Then
+                    INFPOS% = INF_CORNERS_IN
+                    D2 = DEF_CORNERS_IN
+                    Exit Sub
+                End If
+                If nbrOuts(0) = 1 And A1 <= teamMgrProfileVal(D, 745) And A1 >= teamMgrProfileVal(D, 746) And BR >= teamMgrProfileVal(D, 747) And RN <= teamMgrProfileVal(D, 748) Then
+                    INFPOS% = INF_CORNERS_IN
+                    D2 = DEF_CORNERS_IN
+                    Exit Sub
+                End If
+
+            End If
+
+        End If
+
+        If teamMgrProfileVal(D, 756) = 999 Then
+
+            If Not (baseRunners = 1 Or baseRunners = 4 Or baseRunners = 5 Or baseRunners = 7) Then
+
+                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a PITCH AROUND HITTER strategy !!"
+
+                MOB% = 0
+
+                For I = 1 To 3
+                    If b2Base(I) > 0 Then MOB% = MOB% + 1
+                Next
+
+                If A1 + MOB% + 1 < 0 Then
+                    ' BATTER NOT TYING OR WINNING RUN
+                    Call Rolld100(RN)
+
+                    If batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_AB) = 0 Then
+                        I7! = 0
+                        I6! = 0
+                    Else
+                        I6! = CInt((batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_H) + batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_2B) + batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_3B) * 2 + batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_HR) * 3) / batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_AB) * 1000)
+                        If I6! <= teamMgrProfileVal(D, 757) And INNING% >= teamMgrProfileVal(D, 758) And RN <= teamMgrProfileVal(D, 759) Then
+                            D2 = DEF_PITCH_AROUND
+                            Call LRelieveIfTired
+                            Exit Sub
+                        End If
+                        If I6! <= teamMgrProfileVal(D, 760) And INNING% >= teamMgrProfileVal(D, 761) And RN <= teamMgrProfileVal(D, 762) Then
+                            D2 = DEF_PITCH_AROUND
+                            Call LRelieveIfTired
+                            Exit Sub
+                        End If
+                        If I6! <= teamMgrProfileVal(D, 763) And INNING% >= teamMgrProfileVal(D, 764) And RN <= teamMgrProfileVal(D, 765) Then
+                            D2 = DEF_PITCH_AROUND
+                            Call LRelieveIfTired
+                            Exit Sub
+                        End If
+                    End If
+
+                End If
+
+            End If
+
+        End If
+
+        A1 = gameScore(D, 0) - gameScore(P, 0)
+
+        If A1 >= -1 And A1 <= 1 And INNING% >= 8 And (baseRunners = 3 Or baseRunners >= 5) And nbrOuts(0) < 2 Then
+            INFPOS% = INF_IN
+            D2 = DEF_INFIELD_IN
+
+        Else
+
+            If A1 > 0 Or nbrOuts(0) > 0 Or baseRunners <= 2 Or baseRunners = 4 Or baseRunners = 5 And nbrOuts(0) = 1 Or INNING% <= 5 And A1 < -2 Or INNING% > 5 And A1 < -4 Then
+
+                If Not (baseRunners = 0 Or baseRunners = 2 Or baseRunners = 3 Or baseRunners >= 5 Or nbrOuts(0) = 2 Or currLineupSlot(P) >= 3 And currLineupSlot(P) <= 6 Or INNING% <= 6 And A1 >= 3 Or INNING% <= 6 And A1 <= -3) Then
+                    If Not (INNING% > 7 And A1 >= 1 Or INNING% > 7 And A1 < -1) Then
+                        INFPOS% = INF_CORNERS_IN
+                        D2 = DEF_CORNERS_IN
+                    End If
+                End If
+            Else
+                INFPOS% = INF_IN
+                D2 = DEF_INFIELD_IN
+            End If
+
+        End If
+
+        Exit Sub
+
+    End If
+
+    If Not (A1 <= 0 Or A1 = 0 And baseRunners <= 1 Or A1 = 0 And baseRunners = 4 Or baseRunners = 7 Or fldPos(P, currLineupSlot(P)) = 1) Then
+
+        If INNING% >= 9 And P = 1 And nbrOuts(0) < 2 And A1 = 0 And baseRunners >= 2 And baseRunners <= 3 Or INNING% >= 9 And P = 1 And nbrOuts(0) = 2 And A1 = 0 And baseRunners >= 5 And baseRunners <= 6 Then
+            '18835
+            D2 = DEF_INTNTL_BB
+            Exit Sub
+        End If
+
+        Ib4 = game_batRating(P, GM_BAvg, currLineupSlot(P))
+        I1 = game_batRating(P, GM_HR, currLineupSlot(P))
+        If currLineupSlot(P) = 9 Then
+            I2 = game_batRating(P, GM_BAvg, 0)
+            I3 = game_batRating(P, GM_HR, 0)
+        Else
+            I2 = game_batRating(P, GM_BAvg, currLineupSlot(P) + 1)
+            I3 = game_batRating(P, GM_HR, currLineupSlot(P) + 1)
+        End If
+
+        If baseRunners = 2 Or baseRunners = 6 Then
+
+            If Ib4 - I2 >= 50 And I1 - I3 >= 50 And A1 < 1 And INNING% > 8 Or Ib4 >= 280 And I1 >= 140 And INNING% > 8 And I1 > I3 And A1 < 1 Then
+                D2 = DEF_INTNTL_BB
+                Exit Sub
+            End If
+
+        End If
+
+    End If
+
+    Call LRelieveIfTired
 
 End Sub
 
