@@ -4467,8 +4467,6 @@ Sub SOURCE ()
             End If
 
             go$ = LNoPinchHitter$(MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
-            If Environ$("PBPLOG") = "TRUE" Then Print #11, "Got result A from LNoPinchHitter: "; go$
-
             If go$ = "LContinueBatter" Then Goto LContinueBatter
             If go$ = "LBunt" Then Goto LBunt
             If go$ = "LHitAndRun"  Then Goto LHitAndRun
@@ -7132,7 +7130,17 @@ Sub SOURCE ()
             I$ = GetKeyPress$
         End If
 
-        If UCase$(I$) <> "Y" Then pitchoutChance = 7: GoTo LRunnerSafe
+        If UCase$(I$) <> "Y" Then
+            pitchoutChance = 7
+            go$ = LRunnerSafe$(AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%, pitchoutChance, I3)
+            If go$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+            If go$ = "LNextBatter1" Then Goto LNextBatter1
+            If go$ = "LStealHome"  Then Goto LStealHome
+            If go$ = "LCaughtInRundown"  Then Goto LCaughtInRundown
+
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LRunnerSafe: "; go$
+            End
+        End If
 
        LDoubleSteal:
         currFielder = 2
@@ -7174,50 +7182,14 @@ Sub SOURCE ()
 
     If Not (b2Mystery(TGTBASE% - 1) = 18 And I9 > stlChance Or b2Mystery(TGTBASE% - 1) > 18 And I9 > stlChance - 200) Then
 
-       LRunnerSafe:
-        Call Rolld100(RN)
-        Select Case RN
-            Case 1 To 20: pbpString$ = "He beats the throw!"
-            Case 21 To 40: pbpString$ = "He's in there!"
-            Case 41 To 50: pbpString$ = "Throw is off-line..."
-            Case 51 To 60: pbpString$ = "Throw is high..."
-            Case 61 To 80: pbpString$ = "He slides under the tag!"
-            Case 81 To 100:
-                If TGTBASE% <> 4 Then
-                    pbpString$ = gameUmpire$(TGTBASE% + 1) + " with the call"
-                Else
-                    pbpString$ = gameUmpire$(1) + " with the call"
-                End If
-        End Select
+        go$ = LRunnerSafe$(AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%, pitchoutChance, I3)
+        If go$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+        If go$ = "LNextBatter1" Then Goto LNextBatter1
+        If go$ = "LStealHome"  Then Goto LStealHome
+        If go$ = "LCaughtInRundown"  Then Goto LCaughtInRundown
 
-        Call PBP(pbpString$)
-        Call PBP("safe @ " + baseName$(TGTBASE%) + "!")
-
-        b2Mystery(TGTBASE% - 1) = 0
-        INFPOS% = INF_BACK
-        Call PITSWAP(TGTBASE%)
-        Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-
-        Call INCBATDF(D, fielder(D, 2), LG_BF_SB)
-
-        If stealHome% <> 1 Then
-
-            If Not (baseRunners <> 5 Or baseRunners = 5 And pitchoutChance = 7) Then
-                pitchoutChance = 0
-                TGTBASE% = 4
-
-                If Int(Rnd(1) * 20) + 1 = 6 Then
-                    GoTo LCaughtInRundown
-                Else
-                    GoTo LStealContinue
-                End If
-            Else
-                GoTo LStealContinue
-            End If
-        Else
-            stealHome% = 0
-            GoTo LNextBatter1
-        End If
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result B from LRunnerSafe: "; go$
+        End
 
     End If
 
@@ -7270,46 +7242,13 @@ Sub SOURCE ()
         GoTo LCheckForOptionsOrQuit
     End If
 
-   LStealContinue:
-    If nbrOuts(0) >= 3 Or P2 = OFF_HIT_N_RUN And nbrStrikes = 3 Then
-        GoTo LCheckForOptionsOrQuit
-    End If
+    go$ = LStealContinue$(AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%)
+    If go$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+    If go$ = "LNextBatter1" Then Goto LNextBatter1
+    If go$ = "LStealHome"  Then Goto LStealHome
 
-    If stealHome% = 1 Then
-        stealHome% = 0
-        GoTo LNextBatter1
-    End If
-
-    If AA < 20 Or baseRunners <> 5 Or fldPos(P, b2Base(3)) = 1 Then
-        GoTo LNextBatter1
-    End If
-
-    Call WINDEX
-
-    If playerMode = 2 Or playerMode = 1 And P = compTeam Then
-        I$ = "N"
-    Else
-        Call PBP("TRY TO STEAL HOME? (Y/N)")
-        I$ = GetKeyPress$
-    End If
-
-    If UCase$(I$) = "Y" Then
-
-        GoTo LNextBatter1
-
-    Else
-        SH% = 1
-        TGTBASE% = 4
-        A5%(1) = 0
-        A5%(2) = 0
-        A5%(3) = 1
-        I2 = lineupPlayer(P, b2Base(TGTBASE% - 1))
-        CHANCE% = 100
-        stlChance = 700
-
-        GoTo LStealHome ' *** STEAL HOME ***
-
-    End If
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result C from LStealContinue: "; go$
+    End
 
 
     '----------------------------------------
@@ -7604,8 +7543,6 @@ Sub SOURCE ()
 
     If INNING% < 6 Then    ' [bm] KLUDGE: Don't pinch hit for a position player before the 6th inning
         go$ = LNoPinchHitter$(MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Got result B from LNoPinchHitter: "; go$
-
         If go$ = "LContinueBatter" Then Goto LContinueBatter
         If go$ = "LBunt" Then Goto LBunt
         If go$ = "LHitAndRun"  Then Goto LHitAndRun
@@ -7651,8 +7588,6 @@ Sub SOURCE ()
     Next I
 
     go$ = LNoPinchHitter$(MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
-    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Got result C from LNoPinchHitter: "; go$
-
     If go$ = "LContinueBatter" Then Goto LContinueBatter
     If go$ = "LBunt" Then Goto LBunt
     If go$ = "LHitAndRun"  Then Goto LHitAndRun
@@ -7760,8 +7695,6 @@ Sub SOURCE ()
         End If
 
         go$ = LNoPinchHitter$(MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Got result D from LNoPinchHitter: "; go$
-
         If go$ = "LContinueBatter" Then Goto LContinueBatter
         If go$ = "LBunt" Then Goto LBunt
         If go$ = "LHitAndRun"  Then Goto LHitAndRun
@@ -9576,33 +9509,6 @@ Function LMiddleRelievers% (I3, newPitcherFlag)
 End Function
 
 
-'----------------------------------------
-'            INFO Subroutine
-'----------------------------------------
-'This subroutine displays a simple header
-'and footer for the game options menu.
-Sub INFO ()
-
-    Cls
-
-    Color , 1
-    Locate 1, 1
-    Print Tab(80); " ";
-
-    Locate , 33
-    Color 14
-    Print "GAME OPTIONS MENU"
-
-    Locate LAST_ROW, 1
-    Print Tab(80); " ";
-    Locate , 1
-    Print "    LANCE HAFFNER / JASON LEONARD  1986-2025"; Tab(70); Left$(Time$, 5);
-    Locate 3, 1
-    Color , 0
-
-End Sub
-
-
 Function LNoPinchHitter$ (MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
     Shared INFPOS%, P2
     Shared baseRunners
@@ -9696,6 +9602,141 @@ Function LNoPinchHitter$ (MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls
     End
 
 End Function
+
+
+Function LStealContinue$ (AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%)
+    Shared SH, baseRunners
+
+    If nbrOuts(0) >= 3 Or P2 = OFF_HIT_N_RUN And nbrStrikes = 3 Then
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LStealContinue RETURNING LCheckForOptionsOrQuit"    'ToDo [bm] REMOVE
+        LStealContinue$ = "LCheckForOptionsOrQuit": Exit Function
+    End If
+
+    If stealHome% = 1 Then
+        stealHome% = 0
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LStealContinue RETURNING LNextBatter1 A"    'ToDo [bm] REMOVE
+        LStealContinue$ = "LNextBatter1": Exit Function
+    End If
+
+    If AA < 20 Or baseRunners <> 5 Or fldPos(P, b2Base(3)) = 1 Then
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LStealContinue RETURNING LNextBatter1 B"    'ToDo [bm] REMOVE
+        LStealContinue$ = "LNextBatter1": Exit Function
+    End If
+
+    Call WINDEX
+
+    If playerMode = 2 Or playerMode = 1 And P = compTeam Then
+        I$ = "N"
+    Else
+        Call PBP("TRY TO STEAL HOME? (Y/N)")
+        I$ = GetKeyPress$
+    End If
+
+    If UCase$(I$) = "Y" Then
+
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LStealContinue RETURNING LNextBatter1 C"    'ToDo [bm] REMOVE
+        LStealContinue$ = "LNextBatter1": Exit Function
+
+    Else
+        SH = 1
+        TGTBASE% = 4
+        A5%(1) = 0
+        A5%(2) = 0
+        A5%(3) = 1
+        I2 = lineupPlayer(P, b2Base(TGTBASE% - 1))
+        CHANCE% = 100
+        stlChance = 700
+
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LStealContinue RETURNING LStealHome"    'ToDo [bm] REMOVE
+        LStealContinue$ = "LStealHome": Exit Function ' *** STEAL HOME ***
+
+    End If
+
+End Function
+
+
+Function LRunnerSafe$ (AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%, pitchoutChance, I3)
+    Shared INFPOS%
+
+    Call Rolld100(RN)
+    Select Case RN
+        Case 1 To 20: pbpString$ = "He beats the throw!"
+        Case 21 To 40: pbpString$ = "He's in there!"
+        Case 41 To 50: pbpString$ = "Throw is off-line..."
+        Case 51 To 60: pbpString$ = "Throw is high..."
+        Case 61 To 80: pbpString$ = "He slides under the tag!"
+        Case 81 To 100:
+            If TGTBASE% <> 4 Then
+                pbpString$ = gameUmpire$(TGTBASE% + 1) + " with the call"
+            Else
+                pbpString$ = gameUmpire$(1) + " with the call"
+            End If
+    End Select
+
+    Call PBP(pbpString$)
+    Call PBP("safe @ " + baseName$(TGTBASE%) + "!")
+
+    b2Mystery(TGTBASE% - 1) = 0
+    INFPOS% = INF_BACK
+    Call PITSWAP(TGTBASE%)
+    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+
+    Call INCBATDF(D, fielder(D, 2), LG_BF_SB)
+
+    If stealHome% <> 1 Then
+
+        If Not (baseRunners <> 5 Or baseRunners = 5 And pitchoutChance = 7) Then
+            pitchoutChance = 0
+            TGTBASE% = 4
+
+            If Int(Rnd(1) * 20) + 1 = 6 Then
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "LRunnerSafe RETURNING LCaughtInRundown"    'ToDo [bm] REMOVE
+                LRunnerSafe$ = "LCaughtInRundown"
+            Else
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "LRunnerSafe RETURNING LStealContinue A"    'ToDo [bm] REMOVE
+                LRunnerSafe$ = LStealContinue$(AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%)
+            End If
+        Else
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "LRunnerSafe RETURNING LStealContinue B"    'ToDo [bm] REMOVE
+            LRunnerSafe$ = LStealContinue$(AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%)
+        End If
+
+    Else
+
+        stealHome% = 0
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LRunnerSafe RETURNING LNextBatter1"    'ToDo [bm] REMOVE
+        LRunnerSafe$ = "LNextBatter1"
+
+    End If
+
+End Function
+
+
+'----------------------------------------
+'            INFO Subroutine
+'----------------------------------------
+'This subroutine displays a simple header
+'and footer for the game options menu.
+Sub INFO ()
+
+    Cls
+
+    Color , 1
+    Locate 1, 1
+    Print Tab(80); " ";
+
+    Locate , 33
+    Color 14
+    Print "GAME OPTIONS MENU"
+
+    Locate LAST_ROW, 1
+    Print Tab(80); " ";
+    Locate , 1
+    Print "    LANCE HAFFNER / JASON LEONARD  1986-2025"; Tab(70); Left$(Time$, 5);
+    Locate 3, 1
+    Color , 0
+
+End Sub
 
 
 '----------------------------------------
