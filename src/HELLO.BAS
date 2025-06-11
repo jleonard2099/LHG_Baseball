@@ -7042,7 +7042,15 @@ Sub SOURCE ()
             Call STRIKEOUTCS(SO)
             GoTo LCheckForOptionsOrQuit
         Else
-            GoTo LDoubleSteal2
+            Call WHICHRUNNER(TGTBASE%, baseRunners, D5)
+            stlChance = stlChance - ((batRating(D, fielder(D, 2), SS_B_Arm) - 5) * 25)
+            go$ = LDoubleSteal2$(I9, AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%, pitchoutChance, I3)
+            If go$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+            If go$ = "LNextBatter1" Then Goto LNextBatter1
+            If go$ = "LStealHome"  Then Goto LStealHome
+
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LDoubleSteal2: "; go$
+            End
         End If
 
     End If
@@ -7057,31 +7065,12 @@ Sub SOURCE ()
         currFielder = 1
         player$(4) = pitchers$(D, currPitcher(D))
 
-       LCaughtInRundown:
-        Call WINDEX
-        Call PBP(player$(TGTBASE% - 1) + " caught off base in a rundown!")
+        go$ = LCaughtInRundown$(TGTBASE%, S2%, errorOnPlay%, I3, fbPitcherCoveringFirst%, AST%, INFPOS%)
+        If go$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+        If go$ = "LNextBatter1" Then Goto LNextBatter1
 
-        A5%(1) = 0
-        A5%(2) = 0
-        A5%(3) = 0
-        A5%(TGTBASE% - 1) = 11
-
-        nbrOuts(0) = nbrOuts(0) + 1
-        nbrOuts(1) = nbrOuts(1) + 1
-        Call PUTOUT(TGTBASE%, P)
-        Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-        Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
-
-        CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
-
-        If nbrOuts(0) >= 3 Then
-            currLineupSlot(P) = currLineupSlot(P) - 1
-            GoTo LCheckForOptionsOrQuit
-        End If
-
-        INFPOS% = INF_BACK
-
-        GoTo LNextBatter1
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result 0 from LCaughtInRundown: "; go$
+        End
 
     End If
 
@@ -7090,7 +7079,6 @@ Sub SOURCE ()
     '-- perhaps it could become a sub?
     '----------------------------------------
 
-    '14825
     'RUNNER HAS A CHANCE TO STEAL
     b2Mystery(TGTBASE% - 1) = b2Mystery(TGTBASE% - 1) + 17
     I9 = Int(Rnd(1) * 1000) + 1
@@ -7118,31 +7106,34 @@ Sub SOURCE ()
 
     Call PITCHOUT(baseRunners, TGTBASE%, stlChance)
 
-    If baseRunners <> 5 Then Goto LDoubleSteal ' *** DOUBLE STEAL ***1st&3rd
+    'If baseRunners <> 5 Then Goto LDoubleSteal ' *** DOUBLE STEAL ***1st&3rd
 
-    If stealHome% = 1 Then
-        I9 = Int(Rnd(1) * 1000) + 1
-    Else
-        If playerMode = 2 Or playerMode = 1 And P <> compTeam Then
-            I$ = "Y"
-        Else
-            Call PBP("Throw to 2B? (Y/N) ")
-            I$ = GetKeyPress$
+    I9 = Int(Rnd(1) * 1000) + 1
+
+    If baseRunners = 5 Then
+
+        If stealHome% <> 1 Then
+            If playerMode = 2 Or playerMode = 1 And P <> compTeam Then
+                I$ = "Y"
+            Else
+                Call PBP("Throw to 2B? (Y/N) ")
+                I$ = GetKeyPress$
+            End If
+
+            If UCase$(I$) <> "Y" Then
+                pitchoutChance = 7
+                go$ = LRunnerSafe$(AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%, pitchoutChance, I3)
+                If go$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+                If go$ = "LNextBatter1" Then Goto LNextBatter1
+                If go$ = "LStealHome"  Then Goto LStealHome
+
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LRunnerSafe: "; go$
+                End
+            End If
         End If
+    End If
 
-        If UCase$(I$) <> "Y" Then
-            pitchoutChance = 7
-            go$ = LRunnerSafe$(AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%, pitchoutChance, I3)
-            If go$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
-            If go$ = "LNextBatter1" Then Goto LNextBatter1
-            If go$ = "LStealHome"  Then Goto LStealHome
-            If go$ = "LCaughtInRundown"  Then Goto LCaughtInRundown
-
-            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LRunnerSafe: "; go$
-            End
-        End If
-
-       LDoubleSteal:
+    If stealHome% <> 1 Or baseRunners <> 5 Then
         currFielder = 2
         player$(4) = batters$(D, fielder(D, 2))
 
@@ -7157,97 +7148,17 @@ Sub SOURCE ()
 
         End If
 
-       LDoubleSteal2:
         Call WHICHRUNNER(TGTBASE%, baseRunners, D5)
-        I9 = Int(Rnd(1) * 1000) + 1
         stlChance = stlChance - ((batRating(D, fielder(D, 2), SS_B_Arm) - 5) * 25)
 
     End If
 
-    RN = Int(Rnd(1) * 11) + 1
-    If TGTBASE% <> 4 Then
-        If RN = 1 Then pbpString$ = batters$(D, fielder(D, 2)) + " rifles it to " + baseName$(TGTBASE%)
-        If RN = 2 Then pbpString$ = batters$(D, fielder(D, 2)) + " fires it to " + baseName$(TGTBASE%)
-        If RN = 3 Then pbpString$ = batters$(D, fielder(D, 2)) + " unloads it"
-        If RN = 4 Then pbpString$ = batters$(D, fielder(D, 2)) + " is up and firing"
-        If RN = 5 Then pbpString$ = batters$(D, fielder(D, 2)) + " comes up firing"
-        If RN = 6 Then pbpString$ = batters$(D, fielder(D, 2)) + " lets it fly"
-        If RN = 7 Then pbpString$ = batters$(D, fielder(D, 2)) + " throws down"
-        If RN = 8 Then pbpString$ = batters$(D, fielder(D, 2)) + " gets it off"
-        If RN = 9 Then pbpString$ = batters$(D, fielder(D, 2)) + " fires a missile"
-        If RN = 10 Then pbpString$ = batters$(D, fielder(D, 2)) + " throws quickly"
-        If RN = 11 Then pbpString$ = batters$(D, fielder(D, 2)) + " throws"
-        Call PBP(pbpString$)
-    End If
-
-    If Not (b2Mystery(TGTBASE% - 1) = 18 And I9 > stlChance Or b2Mystery(TGTBASE% - 1) > 18 And I9 > stlChance - 200) Then
-
-        go$ = LRunnerSafe$(AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%, pitchoutChance, I3)
-        If go$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
-        If go$ = "LNextBatter1" Then Goto LNextBatter1
-        If go$ = "LStealHome"  Then Goto LStealHome
-        If go$ = "LCaughtInRundown"  Then Goto LCaughtInRundown
-
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result B from LRunnerSafe: "; go$
-        End
-
-    End If
-
-    Call Rolld100(RN)
-
-    Select Case RN
-        Case 1 To 20
-            pbpString$ = batters$(D, fielder(D, 2)) + " nails " + player$(TGTBASE% - 1)
-
-        Case 21 To 40
-            pbpString$ = player$(TGTBASE% - 1) + " is pegged at " + baseName$(TGTBASE%)
-
-        Case 41 To 60
-            pbpString$ = "Great throw by " + batters$(D, fielder(D, 2)) + "!!"
-
-        Case 61 To 80
-            pbpString$ = player$(TGTBASE% - 1) + " slides into the tag"
-
-        Case 81 To 100
-            If TGTBASE% <> 4 Then
-                pbpString$ = gameUmpire$(TGTBASE% + 1) + " with the call"
-            Else
-                'TGTBASE% = 4
-                pbpString$ = gameUmpire$(1) + " with the call"
-            End If
-    End Select
-
-    Call PBP(pbpString$)
-
-    A5%(TGTBASE% - 1) = 11
-    INFPOS% = INF_BACK
-
-    Call INCBATOFF(P, lineupPlayer(P, b2Base(TGTBASE% - 1)), LG_B_CS)
-
-    CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
-
-    nbrOuts(0) = nbrOuts(0) + 1
-    nbrOuts(1) = nbrOuts(1) + 1
-    currFielder = 2
-
-    Call CREDITASSIST(currFielder, D)
-    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-    Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
-
-    Call INCBATDF(D, fielder(D, 2), LG_BF_CS)
-
-    If nbrOuts(0) >= 3 Then
-        currLineupSlot(P) = currLineupSlot(P) - 1
-        Call STRIKEOUTCS(SO)
-        GoTo LCheckForOptionsOrQuit
-    End If
-
-    go$ = LStealContinue$(AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%)
+    go$ = LDoubleSteal2$(I9, AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%, pitchoutChance, I3)
     If go$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
     If go$ = "LNextBatter1" Then Goto LNextBatter1
     If go$ = "LStealHome"  Then Goto LStealHome
 
-    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result C from LStealContinue: "; go$
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LDoubleSteal2: "; go$
     End
 
 
@@ -8125,28 +8036,28 @@ Function LNoSteal$
            fldPos(P, currLineupSlot(P)) = 1 And baseRunners = 2 And nbrOuts(0) = 0 Or _
            fldPos(P, currLineupSlot(P)) = 1 And baseRunners = 4 And nbrOuts(0) = 0 Then
             LNoSteal$ = LPossibleBunt$
-            Print #11, "RETURNING from LSteal: something from LPossibleBunt"
+            Print #11, "RETURNING from LNoSteal: something from LPossibleBunt"
             Exit Function
         End If
         If currLineupSlot(P) > 2 And currLineupSlot(P) < 6 Or _
           game_batRating(P, GM_BAvg, currLineupSlot(P)) > 290 And fldPos(P, currLineupSlot(P)) <> 1 Or _
           fldPos(P, currLineupSlot(P)) <> 1 And game_batRating(P, GM_HR, currLineupSlot(P)) > 70 Then   'ToDo [bm] Possible bug, calling H&R with a Home Run slugger?
             LNoSteal$ = LPossibleHitAndRun$
-            Print #11, "RETURNING from LSteal: something from LPossibleHiTAndRun"
+            Print #11, "RETURNING from LNoSteal: something from LPossibleHiTAndRun"
             Exit Function
         End If
         If INNING% > 7 And ourLead = -1 And nbrOuts(0) = 0 And baseRunners = 1 Then
             LNoSteal$ = LPossibleBunt$
-            Print #11, "RETURNING from LSteal: something from LPossibleBunt"
+            Print #11, "RETURNING from LNoSteal: something from LPossibleBunt"
             Exit Function
         End If
 
-        Print #11, "RETURNING from LSteal: CONTINUE"
+        Print #11, "RETURNING from LNoSteal: CONTINUE"
         LNoSteal$ = "CONTINUE"
 
     End If
 
-    Print #11, "RETURNING from LSteal: CONTINUE"
+    Print #11, "RETURNING from LNoSteal: CONTINUE"
     LNoSteal$ = "CONTINUE"
 
 End Function
@@ -9691,7 +9602,7 @@ Function LRunnerSafe$ (AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%, pitchou
 
             If Int(Rnd(1) * 20) + 1 = 6 Then
                 If Environ$("PBPLOG") = "TRUE" Then Print #11, "LRunnerSafe RETURNING LCaughtInRundown"    'ToDo [bm] REMOVE
-                LRunnerSafe$ = "LCaughtInRundown"
+                LRunnerSafe$ = LCaughtInRundown$(TGTBASE%, S2%, errorOnPlay%, I3, fbPitcherCoveringFirst%, AST%, INFPOS%)
             Else
                 If Environ$("PBPLOG") = "TRUE" Then Print #11, "LRunnerSafe RETURNING LStealContinue A"    'ToDo [bm] REMOVE
                 LRunnerSafe$ = LStealContinue$(AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%)
@@ -9708,6 +9619,122 @@ Function LRunnerSafe$ (AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%, pitchou
         LRunnerSafe$ = "LNextBatter1"
 
     End If
+
+End Function
+
+
+Function LDoubleSteal2$ (I9, AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%, pitchoutChance, I3)
+
+    RN = Int(Rnd(1) * 11) + 1
+    If TGTBASE% <> 4 Then
+        If RN = 1 Then pbpString$ = batters$(D, fielder(D, 2)) + " rifles it to " + baseName$(TGTBASE%)
+        If RN = 2 Then pbpString$ = batters$(D, fielder(D, 2)) + " fires it to " + baseName$(TGTBASE%)
+        If RN = 3 Then pbpString$ = batters$(D, fielder(D, 2)) + " unloads it"
+        If RN = 4 Then pbpString$ = batters$(D, fielder(D, 2)) + " is up and firing"
+        If RN = 5 Then pbpString$ = batters$(D, fielder(D, 2)) + " comes up firing"
+        If RN = 6 Then pbpString$ = batters$(D, fielder(D, 2)) + " lets it fly"
+        If RN = 7 Then pbpString$ = batters$(D, fielder(D, 2)) + " throws down"
+        If RN = 8 Then pbpString$ = batters$(D, fielder(D, 2)) + " gets it off"
+        If RN = 9 Then pbpString$ = batters$(D, fielder(D, 2)) + " fires a missile"
+        If RN = 10 Then pbpString$ = batters$(D, fielder(D, 2)) + " throws quickly"
+        If RN = 11 Then pbpString$ = batters$(D, fielder(D, 2)) + " throws"
+        Call PBP(pbpString$)
+    End If
+
+    If Not (b2Mystery(TGTBASE% - 1) = 18 And I9 > stlChance Or b2Mystery(TGTBASE% - 1) > 18 And I9 > stlChance - 200) Then
+
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDoubleSteal2 RETURNING LRunnerSafe A"    'ToDo [bm] REMOVE
+        LDoubleSteal2$ = LRunnerSafe$(AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%, pitchoutChance, I3)
+        Exit Function
+
+    End If
+
+    Call Rolld100(RN)
+
+    Select Case RN
+        Case 1 To 20
+            pbpString$ = batters$(D, fielder(D, 2)) + " nails " + player$(TGTBASE% - 1)
+
+        Case 21 To 40
+            pbpString$ = player$(TGTBASE% - 1) + " is pegged at " + baseName$(TGTBASE%)
+
+        Case 41 To 60
+            pbpString$ = "Great throw by " + batters$(D, fielder(D, 2)) + "!!"
+
+        Case 61 To 80
+            pbpString$ = player$(TGTBASE% - 1) + " slides into the tag"
+
+        Case 81 To 100
+            If TGTBASE% <> 4 Then
+                pbpString$ = gameUmpire$(TGTBASE% + 1) + " with the call"
+            Else
+                'TGTBASE% = 4
+                pbpString$ = gameUmpire$(1) + " with the call"
+            End If
+    End Select
+
+    Call PBP(pbpString$)
+
+    A5%(TGTBASE% - 1) = 11
+    INFPOS% = INF_BACK
+
+    Call INCBATOFF(P, lineupPlayer(P, b2Base(TGTBASE% - 1)), LG_B_CS)
+
+    CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
+
+    nbrOuts(0) = nbrOuts(0) + 1
+    nbrOuts(1) = nbrOuts(1) + 1
+    currFielder = 2
+
+    Call CREDITASSIST(currFielder, D)
+    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+    Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
+
+    Call INCBATDF(D, fielder(D, 2), LG_BF_CS)
+
+    If nbrOuts(0) >= 3 Then
+        currLineupSlot(P) = currLineupSlot(P) - 1
+        Call STRIKEOUTCS(SO)
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDoubleSteal2 RETURNING LCheckForOptionsOrQuit"    'ToDo [bm] REMOVE
+        LDoubleSteal2$ = "LCheckForOptionsOrQuit"
+        Exit Function
+    End If
+
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDoubleSteal2 RETURNING LRunnerSafe B"    'ToDo [bm] REMOVE
+    LDoubleSteal2$ = LRunnerSafe$(AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%, pitchoutChance, I3)
+
+End Function
+
+
+Function LCaughtInRundown$ (TGTBASE%, S2%, errorOnPlay%, I3, fbPitcherCoveringFirst%, AST%, INFPOS%)
+
+    Call WINDEX
+    Call PBP(player$(TGTBASE% - 1) + " caught off base in a rundown!")
+
+    A5%(1) = 0
+    A5%(2) = 0
+    A5%(3) = 0
+    A5%(TGTBASE% - 1) = 11
+
+    nbrOuts(0) = nbrOuts(0) + 1
+    nbrOuts(1) = nbrOuts(1) + 1
+    Call PUTOUT(TGTBASE%, P)
+    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+    Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
+
+    CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
+
+    If nbrOuts(0) >= 3 Then
+        currLineupSlot(P) = currLineupSlot(P) - 1
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LCaughtInRundown RETURNING LCheckForOptionsOrQuit"    'ToDo [bm] REMOVE
+        LCaughtInRundown$ = "LCheckForOptionsOrQuit"
+        Exit Function
+    End If
+
+    INFPOS% = INF_BACK
+
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "LCaughtInRundown RETURNING LNextBatter1"    'ToDo [bm] REMOVE
+    LCaughtInRundown$ = "LNextBatter1"
 
 End Function
 
