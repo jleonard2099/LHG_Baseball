@@ -6165,7 +6165,9 @@ Sub SOURCE ()
             If baseRunners = 0 Or baseRunners = 2 Or baseRunners = 3 Or baseRunners = 6 Then
                 A5%(0) = 11
                 Call OUTATFIRST(currFielder, D, fbUnassisted%, fbPitcherCoveringFirst%)
-                GoTo LGroundBall
+                Call LGrounderWith1BOpen(INFPOS%)
+                Call LProcessOutAndDP2
+                GoTo LCheckForOptionsOrQuit
             End If
 
             Call Rolld100(RN)
@@ -6176,7 +6178,7 @@ Sub SOURCE ()
             A5%(3) = 1
 
             If INFPOS% = INF_BACK And currFielder = 2 Then A5%(3) = 0
-            If baseRunners = 5 Or baseRunners = 7 Or baseRunners = 4 Then Goto LMoveRunners
+            If baseRunners = 5 Or baseRunners = 7 Or baseRunners = 4 Then Call LMoveRunners(baseRunners, INFPOS%): GoTo LCheckForOptionsOrQuit
 
             A5%(1) = 11
 
@@ -6191,42 +6193,8 @@ Sub SOURCE ()
         A5%(3) = 1
         A5%(0) = 11
 
-        If Not (baseRunners = 1 Or baseRunners = 4 Or baseRunners = 5 Or baseRunners = 7) Then
-
-           LGroundBall:
-            Call Rolld100(RN)
-            A5%(1) = 0
-            A5%(2) = 0
-            A5%(3) = 0
-
-            If currFielder = 5 And RN <= 25 And INFPOS% < INF_IN   Then A5%(2) = 1
-            If currFielder = 5 And RN <= 83 And INFPOS% = INF_BACK Then A5%(3) = 1 ' WAS 50
-            If currFielder = 5 And RN <= 10 And INFPOS% > INF_BACK Then A5%(3) = 1
-
-            If currFielder = 5 And RN < 5 And INFPOS% < INF_IN And baseRunners = 2 And gameScore(P, 0) - gameScore(D, 0) > -2 Or _
-               currFielder = 5 And RN < 5 And INFPOS% < INF_IN And baseRunners = 6 And gameScore(P, 0) - gameScore(D, 0) > -2 And A5%(3) = 1 Then
-                A5%(2) = 11
-                A5%(0) = 1
-                Call PBP("NO, he's going to third")
-            End If
-
-            If currFielder = 6 And RN <= 20 And INFPOS% < INF_IN Then A5%(2) = 1
-            If currFielder = 6 And RN <= 92 And INFPOS% < INF_IN Then A5%(3) = 1
-            If currFielder = 6 And RN <=  5 And INFPOS% = INF_IN Then A5%(3) = 1
-            If currFielder = 6 And RN <   6 And INFPOS% < INF_IN And baseRunners = 2 And gameScore(P, 0) - gameScore(D, 0) > -2 Or _
-               currFielder = 6 And RN <   6 And INFPOS% < INF_IN And baseRunners = 6 And gameScore(P, 0) - gameScore(D, 0) > -2 And A5%(3) = 1 Then A5%(2) = 11: A5%(0) = 1: Call PBP("NO, he's going to third")
-            If currFielder = 4 And RN <= 90 And INFPOS% < INF_IN Then A5%(2) = 1
-            If currFielder = 4 And RN <= 90 And INFPOS% < INF_IN Then A5%(3) = 1
-            If currFielder = 4 And RN <= 65 And INFPOS% = INF_IN Then A5%(2) = 1
-            If currFielder = 4 And RN <=  5 And INFPOS% = INF_IN Then A5%(3) = 1
-            If currFielder = 3 And RN <= 95 Then A5%(2) = 1
-            If currFielder = 3 And RN <= 88 And INFPOS% = INF_BACK Then A5%(3) = 1  ' WAS 60
-            If currFielder = 3 And RN <= 15 And INFPOS% > INF_BACK Then A5%(3) = 1
-            If currFielder = 1 And RN <= 30 Then A5%(2) = 1
-            If currFielder = 1 And RN <= 50 And INFPOS% = INF_BACK Then A5%(3) = 1
-            If currFielder = 1 And RN <= 10 And INFPOS% > INF_BACK Then A5%(3) = 1
-            If currFielder = 2 And RN <= 45 Then A5%(2) = 1
-
+        If baseRunners = 0 Or baseRunners = 2 Or baseRunners = 3 Or baseRunners = 6 Then
+            Call LGrounderWith1BOpen(INFPOS%)
         End If
 
         Call LProcessOutAndDP2
@@ -6234,91 +6202,7 @@ Sub SOURCE ()
 
     End If
 
-   LMoveRunners:
-    If baseRunners <> 4 And baseRunners <> 7 Then
-
-        If gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 6 And nbrOuts(0) = 0 And INFPOS% > INF_BACK And currFielder = 5 Or _
-           gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 6 And nbrOuts(0) = 0 And INFPOS% > INF_BACK And currFielder = 3 Then
-
-            A5%(3) = 11
-
-        Else
-
-            If INFPOS% = INF_BACK And currFielder <> 2 Then A5%(1) = 11: Call LProcessOutAndDP2: GoTo LCheckForOptionsOrQuit
-            If INFPOS% > INF_BACK And currFielder = 5 Or INFPOS% > INF_BACK And currFielder = 3 Then A5%(3) = 0: A5%(1) = 11: Call LProcessOutAndDP2: GoTo LCheckForOptionsOrQuit
-            If INFPOS% > INF_BACK And (currFielder = 1 Or currFielder = 3) Then A5%(3) = 0: A5%(1) = 1: A5%(0) = 11: Call LProcessOutAndDP2: GoTo LCheckForOptionsOrQuit
-            If INFPOS% = INF_IN And currFielder = 4 Or INFPOS% = INF_IN And currFielder = 6 And RN <= 90 Then
-                A5%(3) = 0
-                A5%(1) = 11
-            Else
-                A5%(1) = 11
-            End If
-
-        End If
-
-    Else
-
-        If currFielder = 6 And RN < 6 And INFPOS% < INF_IN And INNING% < 9 Or _
-           currFielder = 5 And RN < 6 And INFPOS% < INF_IN And INNING% < 9 Then
-            A5%(2) = 11
-        Else
-            If baseRunners = 7 Then
-
-                Call Rolld100(RN)
-                A5%(1) = 11
-                A5%(2) = 1
-                A5%(3) = 1
-                A5%(0) = 1
-
-                If INFPOS% > INF_BACK And currFielder = 5 Or _
-                   INFPOS% > INF_BACK And currFielder = 3 Or _
-                   INFPOS% = INF_IN And currFielder = 4 Or _
-                   INFPOS% = INF_IN And currFielder = 6 Or _
-                   currFielder = 2 Or currFielder = 1 Then
-                    A5%(3) = 11
-                    A5%(0) = 1
-                    A5%(1) = 1
-                    A5%(2) = 1
-                Else
-                    If currFielder = 5 And RN <= 5 Or currFielder = 1 Or currFielder = 2 Then
-                        A5%(3) = 11
-                        A5%(2) = 1
-                        A5%(1) = 1
-                        A5%(0) = 1
-                    End If
-                End If
-
-            Else
-
-                RN = Int(Rnd(1) * 10) + 1
-
-                A5%(0) = 1
-                A5%(1) = 11
-                A5%(2) = 1
-                A5%(3) = 0
-
-                If currFielder = 5 And RN <= 5 Then A5%(1) = 1: A5%(2) = 11: A5%(3) = 0
-                If currFielder = 1 And RN <= 3 Then A5%(1) = 1: A5%(2) = 11: A5%(3) = 0
-
-                If currFielder = 2 And batRating(P, lineupPlayer(P, b2Base(2)), SS_B_Run) < 7 And batRating(P, lineupPlayer(P, b2Base(2)), SS_B_Run) > 0 Then
-                    A5%(1) = 1
-                    A5%(2) = 11
-                    A5%(3) = 0
-                Else
-                    If currFielder = 2 And batRating(P, lineupPlayer(P, b2Base(2)), SS_B_Run) > 6 Then
-                        A5%(1) = 1
-                        A5%(2) = 1
-                        A5%(0) = 11
-                    End If
-                End If
-
-            End If
-
-        End If
-
-    End If
-
-    Call LProcessOutAndDP2
+    Call LMoveRunners(baseRunners, INFPOS%)
     GoTo LCheckForOptionsOrQuit
 
     '-----------------------------------------------------
@@ -9737,6 +9621,133 @@ Function LCaughtInRundown$ (TGTBASE%, S2%, errorOnPlay%, I3, fbPitcherCoveringFi
     LCaughtInRundown$ = "LNextBatter1"
 
 End Function
+
+
+Sub LGrounderWith1BOpen (INFPOS%)
+
+    Call Rolld100(RN)
+
+    A5%(1) = 0
+    A5%(2) = 0
+    A5%(3) = 0
+
+    If currFielder = 5 And RN <= 25 And INFPOS% < INF_IN   Then A5%(2) = 1
+    If currFielder = 5 And RN <= 83 And INFPOS% = INF_BACK Then A5%(3) = 1 ' WAS 50
+    If currFielder = 5 And RN <= 10 And INFPOS% > INF_BACK Then A5%(3) = 1
+
+    If currFielder = 5 And RN < 5 And INFPOS% < INF_IN And baseRunners = 2 And gameScore(P, 0) - gameScore(D, 0) > -2 Or _
+        currFielder = 5 And RN < 5 And INFPOS% < INF_IN And baseRunners = 6 And gameScore(P, 0) - gameScore(D, 0) > -2 And A5%(3) = 1 Then
+        A5%(2) = 11
+        A5%(0) = 1
+        Call PBP("NO, he's going to third")
+    End If
+
+    If currFielder = 6 And RN <= 20 And INFPOS% < INF_IN Then A5%(2) = 1
+    If currFielder = 6 And RN <= 92 And INFPOS% < INF_IN Then A5%(3) = 1
+    If currFielder = 6 And RN <=  5 And INFPOS% = INF_IN Then A5%(3) = 1
+    If currFielder = 6 And RN <   6 And INFPOS% < INF_IN And baseRunners = 2 And gameScore(P, 0) - gameScore(D, 0) > -2 Or _
+       currFielder = 6 And RN <   6 And INFPOS% < INF_IN And baseRunners = 6 And gameScore(P, 0) - gameScore(D, 0) > -2 And A5%(3) = 1 Then A5%(2) = 11: A5%(0) = 1: Call PBP("NO, he's going to third")
+    If currFielder = 4 And RN <= 90 And INFPOS% < INF_IN Then A5%(2) = 1
+    If currFielder = 4 And RN <= 90 And INFPOS% < INF_IN Then A5%(3) = 1
+    If currFielder = 4 And RN <= 65 And INFPOS% = INF_IN Then A5%(2) = 1
+    If currFielder = 4 And RN <=  5 And INFPOS% = INF_IN Then A5%(3) = 1
+    If currFielder = 3 And RN <= 95 Then A5%(2) = 1
+    If currFielder = 3 And RN <= 88 And INFPOS% = INF_BACK Then A5%(3) = 1  ' WAS 60
+    If currFielder = 3 And RN <= 15 And INFPOS% > INF_BACK Then A5%(3) = 1
+    If currFielder = 1 And RN <= 30 Then A5%(2) = 1
+    If currFielder = 1 And RN <= 50 And INFPOS% = INF_BACK Then A5%(3) = 1
+    If currFielder = 1 And RN <= 10 And INFPOS% > INF_BACK Then A5%(3) = 1
+    If currFielder = 2 And RN <= 45 Then A5%(2) = 1
+
+End Sub
+
+
+Sub LMoveRunners (baseRunners, INFPOS%)
+
+    If baseRunners <> 4 And baseRunners <> 7 Then
+
+        If gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 6 And nbrOuts(0) = 0 And INFPOS% > INF_BACK And currFielder = 5 Or _
+           gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 6 And nbrOuts(0) = 0 And INFPOS% > INF_BACK And currFielder = 3 Then
+
+            A5%(3) = 11
+
+        Else
+
+            If INFPOS% = INF_BACK And currFielder <> 2                                          Then A5%(1) = 11:                         Call LProcessOutAndDP2: Exit Sub
+            If INFPOS% > INF_BACK And currFielder = 5 Or INFPOS% > INF_BACK And currFielder = 3 Then A5%(3) = 0: A5%(1) = 11:             Call LProcessOutAndDP2: Exit Sub
+            If INFPOS% > INF_BACK And (currFielder = 1 Or currFielder = 3)                      Then A5%(3) = 0: A5%(1) = 1: A5%(0) = 11: Call LProcessOutAndDP2: Exit Sub
+            If INFPOS% = INF_IN And currFielder = 4 Or INFPOS% = INF_IN And currFielder = 6 And RN <= 90 Then
+                A5%(3) = 0
+                A5%(1) = 11
+            Else
+                A5%(1) = 11
+            End If
+
+        End If
+
+    Else
+
+        If currFielder = 6 And RN < 6 And INFPOS% < INF_IN And INNING% < 9 Or _
+           currFielder = 5 And RN < 6 And INFPOS% < INF_IN And INNING% < 9 Then
+            A5%(2) = 11
+        Else
+            If baseRunners = 7 Then
+
+                Call Rolld100(RN)
+                A5%(1) = 11
+                A5%(2) = 1
+                A5%(3) = 1
+                A5%(0) = 1
+
+                If INFPOS% > INF_BACK And currFielder = 5 Or _
+                   INFPOS% > INF_BACK And currFielder = 3 Or _
+                   INFPOS% = INF_IN And currFielder = 4 Or _
+                   INFPOS% = INF_IN And currFielder = 6 Or _
+                   currFielder = 2 Or currFielder = 1 Then
+                    A5%(3) = 11
+                    A5%(0) = 1
+                    A5%(1) = 1
+                    A5%(2) = 1
+                Else
+                    If currFielder = 5 And RN <= 5 Or currFielder = 1 Or currFielder = 2 Then
+                        A5%(3) = 11
+                        A5%(2) = 1
+                        A5%(1) = 1
+                        A5%(0) = 1
+                    End If
+                End If
+
+            Else
+
+                RN = Int(Rnd(1) * 10) + 1
+
+                A5%(0) = 1
+                A5%(1) = 11
+                A5%(2) = 1
+                A5%(3) = 0
+
+                If currFielder = 5 And RN <= 5 Then A5%(1) = 1: A5%(2) = 11: A5%(3) = 0
+                If currFielder = 1 And RN <= 3 Then A5%(1) = 1: A5%(2) = 11: A5%(3) = 0
+
+                If currFielder = 2 And batRating(P, lineupPlayer(P, b2Base(2)), SS_B_Run) < 7 And batRating(P, lineupPlayer(P, b2Base(2)), SS_B_Run) > 0 Then
+                    A5%(1) = 1
+                    A5%(2) = 11
+                    A5%(3) = 0
+                Else
+                    If currFielder = 2 And batRating(P, lineupPlayer(P, b2Base(2)), SS_B_Run) > 6 Then
+                        A5%(1) = 1
+                        A5%(2) = 1
+                        A5%(0) = 11
+                    End If
+                End If
+
+            End If
+
+        End If
+
+    End If
+
+End Sub
 
 
 '----------------------------------------
