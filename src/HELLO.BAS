@@ -3821,7 +3821,7 @@ Sub SOURCE ()
     Shared S2%, errorOnPlay%, I3
     Shared I1, P2, stealing, runnerOn2nd, SAH%, baseNbr!, I9
     Shared SO, SH
-    Shared fbUnassisted, fbPitcherCoveringFirst%, AST%, DPC%, TB
+    Shared fbUnassisted%, fbPitcherCoveringFirst%, AST%, DPC%, TB
     Shared INFPOS%, D2
     Shared P9, PG, TG
     Shared baseRunners
@@ -4037,7 +4037,7 @@ Sub SOURCE ()
     If fielder(D, 1) = 99 Then
         If playerMode = 0 Or fielder(D, 1) = 99 And playerMode = 1 And compTeam = 1 - D Then
         '----- move stuff here -----
-        GoTo LStayInGame
+        GoTo LPHStayInGame
         Else
             Call RELIEVERS(pinchHitterFlag, newPitcherFlag) 'Will choose a new pitcher because pitcher was pinch hit for
         End If
@@ -4122,7 +4122,7 @@ Sub SOURCE ()
 
        LContinueBatter2:
         If (playerMode = 2 Or playerMode = 1 And P <> compTeam) Then
-            GoTo LEndOfGame
+            GoTo LCheckIfRelieverNeeded
         End If
 
         If baseRunners = 1 Or baseRunners = 5 Then
@@ -5352,13 +5352,13 @@ Sub SOURCE ()
             If errorOnPlay% = 1 Then Goto LCheckForOptionsOrQuit
 
             ' *** 2 outs, bases empty, runner 2nd, runner 3rd, or 2nd&3rd ***
-            If nbrOuts(0) = 2 Or baseRunners = 0 Or baseRunners = 2 Or baseRunners = 3 Or baseRunners = 6 Then Goto LGrounderToPitcher
+            If nbrOuts(0) = 2 Or baseRunners = 0 Or baseRunners = 2 Or baseRunners = 3 Or baseRunners = 6 Then Call LGroundBall: GoTo LCheckForOptionsOrQuit
 
             H6% = Int(Rnd(1) * 1000) + 1
             E2% = ((teamRat_GAME(D, 5) - 80) * 4)
             E3% = ((5 - batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_Run)) * 9)
 
-            If (currFielder = 2 And H6% > 250 + E2% + E3%) Or (H6% > 490 + E2% + E3%) Or P2 = OFF_HIT_N_RUN Then Goto LGrounderToPitcher
+            If (currFielder = 2 And H6% > 250 + E2% + E3%) Or (H6% > 490 + E2% + E3%) Or P2 = OFF_HIT_N_RUN Then Call LGroundBall: GoTo LCheckForOptionsOrQuit
 
             S2% = EVENT_GROUNDER
 
@@ -5401,7 +5401,7 @@ Sub SOURCE ()
             End If
 
             If baseRunners = 5 And gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 7 And nbrOuts(0) = 0 _
-                And INFPOS% > INF_BACK And (currFielder = 5 Or currFielder = 3) Then GoTo LGrounderToPitcher
+                And INFPOS% > INF_BACK And (currFielder = 5 Or currFielder = 3) Then Call LGroundBall: GoTo LCheckForOptionsOrQuit
 
             If baseRunners = 7 And INFPOS% > INF_BACK And (currFielder = 5 Or currFielder = 3) Then
                 Call CREDITASSIST(currFielder, D)
@@ -5842,21 +5842,24 @@ Sub SOURCE ()
         If currFielder = 8 And H6% <= E2%      And P2 <> OFF_HIT_N_RUN Or _
            currFielder = 8 And H6% <= E2% * .5 And P2  = OFF_HIT_N_RUN Then
             S2% = EVENT_HR
-            GoTo LHomeRun
+            Call LHomeRun
+            GoTo LCheckForOptionsOrQuit
         End If
 
         E2% = I3 + game_batRating(P, GM_L_HR, currLineupSlot(P))
         If currFielder = 7 And H6% <= E2%      And P2 <> OFF_HIT_N_RUN Or _
            currFielder = 7 And H6% <= E2% * .5 And P2 =  OFF_HIT_N_RUN Then
             S2% = EVENT_HR
-            GoTo LHomeRun
+            Call LHomeRun
+            GoTo LCheckForOptionsOrQuit
         End If
 
         E2% = I3 + game_batRating(P, GM_R_HR, currLineupSlot(P))
         If currFielder = 9 And H6% <= E2%      And P2 <> OFF_HIT_N_RUN Or _
            currFielder = 9 And H6% <= E2% * .5 And P2 = OFF_HIT_N_RUN Then
             S2% = EVENT_HR
-            GoTo LHomeRun
+            Call LHomeRun
+            GoTo LCheckForOptionsOrQuit
         End If
 
        LInfSingle:
@@ -5887,323 +5890,14 @@ Sub SOURCE ()
     Call LProcessOutAndDP2
     GoTo LCheckForOptionsOrQuit
 
-   LHomeRun:
-    ' *** HOME RUN S2%=10 ***
-
-    Call WINDEX
-
-    If fldPos(P, currLineupSlot(P)) <> 1 Then
-        Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
-        Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_H)
-        Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_HR)
-    End If
-
-    Call ADDPIT(D, currPitcher(D), LG_P_H)
-
-    If fldPos(P, currLineupSlot(P)) = 1 Then
-        Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
-        Call INCPITOFF(P, currPitcher(P), LG_PB_H)
-        Call INCPITOFF(P, currPitcher(P), LG_PB_HR)
-    End If
-
-    Call Rolld100(RN)
-
-    If RN <= 80 Then
-
-        Call LONGFLY(D, currFielder)
-
-        Call Rolld100(RN)
-
-        If RN <=  5 And teamRat_GAME(1, 13) = 8 And currFielder = 7 Then Call PBP("THAT'S OUT OF THE PARK"): Call PBP("ON WAVELAND AVENUE!!!"): pbpString$ = "HOME RUN...HOLY COW!!!": Call LHomeRun2: GoTo LCheckForOptionsOrQuit
-        If RN <= 15 And teamRat_GAME(1, 13) = 8 And currFielder = 7 Then Call PBP("IT'S GONE"): pbpString$ = "LAST SEEN BOUNCING DOWN WAVELAND AVENUE!!!": Call LHomeRun2: GoTo LCheckForOptionsOrQuit
-        If RN <= 25 Then
-
-            If teamRat_GAME(1, 13) = 21 And currFielder = 7 Then Call PBP("IT CLEARS THE GREEN MONSTER!!"): pbpString$ = "HOME RUN!!!": Call LHomeRun2: GoTo LCheckForOptionsOrQuit
-            If teamRat_GAME(1, 13) = 27 And currFielder = 7 Then Call PBP("IT CLEARS THE SCREEN!!"): pbpString$ = "HOME RUN!!!": Call LHomeRun2: GoTo LCheckForOptionsOrQuit
-            If teamRat_GAME(1, 13) = 33 And P = 1 Then Call PBP("ADIOS!! THAT'S A HOME RUN!!"): pbpString$ = "THE BUSCH EAGLE FLAPS ITS WINGS": Call LHomeRun2: GoTo LCheckForOptionsOrQuit
-            If teamRat_GAME(1, 13) = 25 And P = 1 Then Call PBP("IT'S OUT OF HERE FOR A HOMER!!!"): pbpString$ = "THERE GOES THE EXPLODING SCOREBOARD!": Call LHomeRun2: GoTo LCheckForOptionsOrQuit
-            If teamRat_GAME(1, 13) = 7 And currFielder = 9 Then Call PBP("IT CLEARS THE WAGON GATE!!"): pbpString$ = "THAT'S A HOME RUN!!": Call LHomeRun2: GoTo LCheckForOptionsOrQuit
-            If teamRat_GAME(1, 13) = 7 And P = 1 Then Call PBP("ADIOS!! THAT'S A HOME RUN!!"): pbpString$ = "THERE GO THE CANNONS!!": Call LHomeRun2: GoTo LCheckForOptionsOrQuit
-            If teamRat_GAME(1, 13) = 8 Or teamRat_GAME(1, 13) = 40 Then pbpString$ = "IT CLEARS THE IVY FOR A HOME RUN!!": Call LHomeRun2: GoTo LCheckForOptionsOrQuit
-            If teamRat_GAME(1, 13) = 23 And (currFielder = 7 Or currFielder = 9) Then Call PBP("IT'S LONG, IT'S LONG, IT'S GONE!!"): pbpString$ = "THAT ONE'S IN THE UPPER DECK": Call LHomeRun2: GoTo LCheckForOptionsOrQuit
-
-            Call Rolld100(RN)
-            Select Case RN
-                Case 1 To 7
-                    pbpString$ = "GOODBYE!! IT'S A HOME RUN!!"
-
-                Case 8 To 14
-                    pbpString$ = "ADIOS!! IT'S A HOME RUN !!!"
-
-                Case 15 To 21
-                    pbpString$ = "SAY GOOD-BYE TO THAT ONE!!!"
-
-                Case 22 To 28
-                    pbpString$ = "TOUCH 'EM ALL!!"
-
-                Case 29 To 35
-                    pbpString$ = "SEE YOU LATER!!"
-
-                Case 36 To 42
-                    pbpString$ = "GOOD-BYE MR. SPALDING!! HOME RUN!!!"
-
-                Case 43 To 49
-                    pbpString$ = "HOME RUN!! MY OH MY!!"
-
-                Case 50 To 56
-                    pbpString$ = "IT'S OVER THE WALL...OH DOCTOR!!!"
-
-                Case 57 To 63
-                    pbpString$ = "LONG, LONG, AND GONE!!"
-
-                Case 64 To 70
-                    pbpString$ = "HEY! HEY!...IT'S A HOME RUN !!!"
-
-                Case 71 To 77
-                    pbpString$ = "IT'S LONG, IT'S LONG, IT'S GONE!!!"
-
-                Case 78 To 84
-                    pbpString$ = "HOLY COW!! IT'S A HOME RUN!!!"
-
-                Case 85 To 89
-                    pbpString$ = "OPEN THE WINDOW AUNT MINNIE...HERE SHE COMES"
-
-                Case 90 To 95
-                    Call PBP("WAAYYY BACK..."): pbpString$ = "YOU CAN PUT IT ON THE BOARD, YYESSS!!"
-
-                Case 96 To 100
-                    Call PBP("IT'S WAY OUT OF HERE!! HOME RUN!!!"): pbpString$ = "HOW 'BOUT THAT!!!"
-
-            End Select
-
-        Else
-
-            Call PBP("Going... going... GONE!"): pbpString$ = "HOME RUN!!"
-
-        End If
-
-    Else
-
-        Call Rolld100(RN)
-
-        If RN <= 20 And (currFielder = 7 Or currFielder = 9) Then
-
-            pbpString$ = player$(0) + " hits it down the " + fieldPos$(currFielder) + " line"
-            Call PBP(pbpString$)
-            Call PBP("It's long enough if it's fair...")
-
-        Else
-
-            Call PBP(player$(0) + " swings...")
-
-            Select Case RN
-                Case 21 To 40
-                    Call PBP("NO DOUBT ABOUT THAT ONE!!")
-                    pbpString$ = "IT'S WAY OUT OF HERE!!"
-                Case 41 To 60
-                    pbpString$ = player$(4) + " CAN ONLY LOOK UP!!"
-                Case 61 To 80
-                    pbpString$ = pitchers$(D, currPitcher(D)) + " WATCHES IT SAIL OUT!!"
-                Case 81 To 90
-                    pbpString$ = "GONE!!!"
-                Case 91 To 100
-                    pbpString$ = "SAINTS AND HAYRAKES, LOOK AT 'ER SAIL!!"
-            End Select
-
-            Call PBP(pbpString$)
-
-        End If
-
-        '3536 / modified
-        pbpString$ = "HOME RUN!!"
-
-    End If
-
-    '---- WHERE IS HITS2GAP
-
-    Call LHomeRun2
-    GoTo LCheckForOptionsOrQuit
-
-
     '----- NOODLE -----
     '----- NOODLE -----
 
 
-   LGrounderToPitcher:
-    If nbrOuts(0) >= 2 Then
+   'LGroundBall:
 
-        RN = Int(Rnd(1) * 10) + 1
-        S2% = EVENT_GROUNDER
-
-        If currFielder = 5 Then
-
-            If RN <= 5 And (baseRunners = 4 Or baseRunners = 7) Then
-
-                Call PITCHERNAME(currFielder, D)
-                Call PBP(player$(4) + " gloves it and heads for 3rd")
-                A5%(0) = 0
-                A5%(1) = 0
-                A5%(2) = 11
-                A5%(3) = 0
-                Call LProcessOutAndDP2
-                GoTo LCheckForOptionsOrQuit
-
-            Else
-
-                Call PITCHERNAME(currFielder, D)
-                Call GROUNDERS(currFielder, D)
-                Call THROW2FIRST(D)
-                A5%(0) = 11
-                A5%(1) = 0
-                A5%(2) = 0
-                A5%(3) = 0
-                '-- this may not be necessary since the next statement is looking for W = 4
-                Call LProcessOutAndDP2
-                GoTo LCheckForOptionsOrQuit
-
-            End If
-
-        End If
-
-        If currFielder = 6 Then
-
-            If RN <= 8 And (baseRunners = 1 Or baseRunners = 4 Or baseRunners = 5 Or baseRunners = 7) Then
-                Call PITCHERNAME(currFielder, D)
-                Call GROUNDERS(currFielder, D)
-                Call DPPIVOT(currFielder, D)
-                AST% = 6
-                A5%(0) = 0
-                A5%(1) = 11
-                A5%(2) = 0
-                A5%(3) = 0
-                '-- this may not be necessary since the next statement is looking for W = 4
-                Call LProcessOutAndDP2
-                GoTo LCheckForOptionsOrQuit
-
-            Else
-                Call PITCHERNAME(currFielder, D)
-                Call GROUNDERS(currFielder, D)
-                Call THROW2FIRST(D)
-                A5%(0) = 11
-                A5%(1) = 0
-                A5%(2) = 0
-                A5%(3) = 0
-                '-- this may not be necessary since the next statement is looking for W = 4
-                Call LProcessOutAndDP2
-                GoTo LCheckForOptionsOrQuit
-
-            End If
-
-        End If
-
-        If currFielder = 4 And RN <= 5 And (baseRunners = 1 Or baseRunners = 4 Or baseRunners = 5 Or baseRunners = 7) Then
-
-            Call PITCHERNAME(currFielder, D)
-            Call GROUNDERS(currFielder, D)
-            Call DPPIVOT(currFielder, D)
-            AST% = 4
-            A5%(0) = 0
-            A5%(1) = 11
-            A5%(2) = 0
-            A5%(3) = 0
-
-        Else
-
-            Call Rolld100(RN)
-
-            If currFielder = 3 Then
-
-                If RN <= 94 Then
-
-                    Call PITCHERNAME(currFielder, D)
-                    Call GROUNDERS(currFielder, D)
-                    Call PBP("He takes it to the bag unassisted")
-                    fbUnassisted% = 1
-
-                Else
-
-                    Call PITCHERNAME(currFielder, D)
-                    Call GROUNDERS(currFielder, D)
-                    currFielder = 1
-                    Call PITCHERNAME(currFielder, D)
-                    Call PBP("He flips it to " + player$(4) + " covering")
-                    fbPitcherCoveringFirst% = 1
-                    currFielder = 3
-
-                End If
-
-            Else
-
-                Call PITCHERNAME(currFielder, D)
-                Call GROUNDERS(currFielder, D)
-                Call SECOND2FIRST(D)
-
-            End If
-
-            Call PITCHERNAME(currFielder, D)
-            Call GROUNDERS(currFielder, D)
-            Call SECOND2FIRST(D)
-
-            A5%(0) = 11
-            A5%(1) = 0
-            A5%(2) = 0
-            A5%(3) = 0
-
-        End If
-
-        Call LProcessOutAndDP2
-        GoTo LCheckForOptionsOrQuit
-
-    Else
-
-        Call Rolld100(RN)
-
-        If (RN <= 90 And P2 <> OFF_HIT_N_RUN Or baseRunners = 0) Or (RN <= 10 And P2 = OFF_HIT_N_RUN) Then
-
-            S2% = 14
-
-            If baseRunners = 0 Or baseRunners = 2 Or baseRunners = 3 Or baseRunners = 6 Then
-                A5%(0) = 11
-                Call OUTATFIRST(currFielder, D, fbUnassisted%, fbPitcherCoveringFirst%)
-                Call LGrounderWith1BOpen(INFPOS%)
-                Call LProcessOutAndDP2
-                GoTo LCheckForOptionsOrQuit
-            End If
-
-            Call Rolld100(RN)
-
-            A5%(0) = 1
-            A5%(1) = 1
-            A5%(2) = 1
-            A5%(3) = 1
-
-            If INFPOS% = INF_BACK And currFielder = 2 Then A5%(3) = 0
-            If baseRunners = 5 Or baseRunners = 7 Or baseRunners = 4 Then Call LMoveRunners(baseRunners, INFPOS%): GoTo LCheckForOptionsOrQuit
-
-            A5%(1) = 11
-
-            Call LProcessOutAndDP2
-            GoTo LCheckForOptionsOrQuit
-
-        End If
-
-        S2% = EVENT_GROUNDER
-        A5%(1) = 1
-        A5%(2) = 1
-        A5%(3) = 1
-        A5%(0) = 11
-
-        If baseRunners = 0 Or baseRunners = 2 Or baseRunners = 3 Or baseRunners = 6 Then
-            Call LGrounderWith1BOpen(INFPOS%)
-        End If
-
-        Call LProcessOutAndDP2
-        GoTo LCheckForOptionsOrQuit
-
-    End If
-
-    Call LMoveRunners(baseRunners, INFPOS%)
-    GoTo LCheckForOptionsOrQuit
+    'Call LMoveRunners(baseRunners, INFPOS%)
+    'GoTo LCheckForOptionsOrQuit
 
     '-----------------------------------------------------
     '--- THIS IS CRITICAL FOR PBP MOVING AUTOMATICALLY ---
@@ -7052,7 +6746,7 @@ Sub SOURCE ()
     '-- be made into a subroutine?
     '----------------------------------------
 
-   LStayInGame:
+   LPHStayInGame:
     Cls
 
     If useVGA = 0 Then Screen menu&
@@ -7168,7 +6862,7 @@ Sub SOURCE ()
     '================================================================================
 
     '-- This can join the code above as there's only one branch to it
-   LEndOfGame:
+   LCheckIfRelieverNeeded:
     runnerHeld = 0
     If useVGA = 1 Then
         Call HOLDSTATUS_G(runnerHeld)
@@ -8009,7 +7703,7 @@ End Sub
 
 Sub LProcessOutAndDP2
     Shared S2%, errorOnPlay%, I3
-    Shared stealing, fbUnassisted, fbPitcherCoveringFirst%, AST%, DPC%
+    Shared stealing, fbUnassisted%, fbPitcherCoveringFirst%, AST%, DPC%
 
     If fbUnassisted% = 0 Then Call CREDITASSIST(currFielder, D)
     fbUnassisted% = 0
@@ -8140,7 +7834,7 @@ End Function
 Function LSacBunt$
     Shared S2%, errorOnPlay%, I3
     Shared I1, P2, stealing, runnerOn2nd, SAH%, baseNbr!, I9
-    Shared fbUnassisted, fbPitcherCoveringFirst%, AST%, DPC%
+    Shared fbUnassisted%, fbPitcherCoveringFirst%, AST%, DPC%
     Shared SH
 
     Call ADDPIT(D, currPitcher(D), 15)
@@ -8188,7 +7882,7 @@ End Function
 Function LGoodBunt$
     Shared S2%, errorOnPlay%, I3
     Shared I1, P2, stealing, runnerOn2nd, SAH%, baseNbr!, I9
-    Shared fbUnassisted, fbPitcherCoveringFirst%, AST%, DPC%
+    Shared fbUnassisted%, fbPitcherCoveringFirst%, AST%, DPC%
     Shared SH
 
     Call PBP(player$(0) + " lays down a good bunt...")
@@ -8212,7 +7906,7 @@ End Function
 Sub LFlyout
     Shared S2%, errorOnPlay%, I3
     Shared I1, P2, stealing, runnerOn2nd, SAH%, baseNbr!, I9
-    Shared fbUnassisted, fbPitcherCoveringFirst%, AST%, DPC%
+    Shared fbUnassisted%, fbPitcherCoveringFirst%, AST%, DPC%
     Shared SH
 
     Call CREDITREGPO(currFielder, D)
@@ -8265,7 +7959,7 @@ End Sub
 Sub LAttemptToAdvance
     Shared S2%, errorOnPlay%, I3
     Shared I1, P2, stealing, runnerOn2nd, SAH%, baseNbr!, I9
-    Shared fbUnassisted, fbPitcherCoveringFirst%, AST%, DPC%
+    Shared fbUnassisted%, fbPitcherCoveringFirst%, AST%, DPC%
     Shared SH
 
     If b2Base(2) <> 0 Then
@@ -8357,7 +8051,7 @@ End Sub
 Sub LSubstitutePlayer(lineupSlotChoice)
     'Shared S2%, errorOnPlay%, I3
     'Shared I1, P2, stealing, runnerOn2nd, SAH%, baseNbr!, I9
-    'Shared fbUnassisted, fbPitcherCoveringFirst%, AST%, DPC%
+    'Shared fbUnassisted%, fbPitcherCoveringFirst%, AST%, DPC%
     'Shared SH
     Shared P9, PG, TG
 
@@ -9746,6 +9440,334 @@ Sub LMoveRunners (baseRunners, INFPOS%)
         End If
 
     End If
+
+End Sub
+
+
+Sub LGroundBall
+    Shared S2%, P2
+    Shared fbUnassisted%, fbPitcherCoveringFirst%, INFPOS%, baseRunners
+
+    If nbrOuts(0) >= 2 Then
+
+        RN = Int(Rnd(1) * 10) + 1
+        S2% = EVENT_GROUNDER
+
+        If currFielder = 5 Then
+
+            If RN <= 5 And (baseRunners = 4 Or baseRunners = 7) Then
+
+                Call PITCHERNAME(currFielder, D)
+                Call PBP(player$(4) + " gloves it and heads for 3rd")
+                A5%(0) = 0
+                A5%(1) = 0
+                A5%(2) = 11
+                A5%(3) = 0
+                Call LProcessOutAndDP2
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "LGroundBall RETURNING A"    'ToDo [bm] REMOVE
+                Exit Sub
+
+            Else
+
+                Call PITCHERNAME(currFielder, D)
+                Call GROUNDERS(currFielder, D)
+                Call THROW2FIRST(D)
+                A5%(0) = 11
+                A5%(1) = 0
+                A5%(2) = 0
+                A5%(3) = 0
+                '-- this may not be necessary since the next statement is looking for W = 4
+                Call LProcessOutAndDP2
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "LGroundBall RETURNING B"    'ToDo [bm] REMOVE
+                Exit Sub
+
+            End If
+
+        End If
+
+        If currFielder = 6 Then
+
+            If RN <= 8 And (baseRunners = 1 Or baseRunners = 4 Or baseRunners = 5 Or baseRunners = 7) Then
+                Call PITCHERNAME(currFielder, D)
+                Call GROUNDERS(currFielder, D)
+                Call DPPIVOT(currFielder, D)
+                AST% = 6
+                A5%(0) = 0
+                A5%(1) = 11
+                A5%(2) = 0
+                A5%(3) = 0
+                '-- this may not be necessary since the next statement is looking for W = 4
+                Call LProcessOutAndDP2
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "LGroundBall RETURNING C"    'ToDo [bm] REMOVE
+                Exit Sub
+
+            Else
+                Call PITCHERNAME(currFielder, D)
+                Call GROUNDERS(currFielder, D)
+                Call THROW2FIRST(D)
+                A5%(0) = 11
+                A5%(1) = 0
+                A5%(2) = 0
+                A5%(3) = 0
+                '-- this may not be necessary since the next statement is looking for W = 4
+                Call LProcessOutAndDP2
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "LGroundBall RETURNING D"    'ToDo [bm] REMOVE
+                Exit Sub
+
+            End If
+
+        End If
+
+        If currFielder = 4 And RN <= 5 And (baseRunners = 1 Or baseRunners = 4 Or baseRunners = 5 Or baseRunners = 7) Then
+
+            Call PITCHERNAME(currFielder, D)
+            Call GROUNDERS(currFielder, D)
+            Call DPPIVOT(currFielder, D)
+            AST% = 4
+            A5%(0) = 0
+            A5%(1) = 11
+            A5%(2) = 0
+            A5%(3) = 0
+
+        Else
+
+            Call Rolld100(RN)
+
+            If currFielder = 3 Then
+
+                If RN <= 94 Then
+
+                    Call PITCHERNAME(currFielder, D)
+                    Call GROUNDERS(currFielder, D)
+                    Call PBP("He takes it to the bag unassisted")
+                    fbUnassisted% = 1
+
+                Else
+
+                    Call PITCHERNAME(currFielder, D)
+                    Call GROUNDERS(currFielder, D)
+                    currFielder = 1
+                    Call PITCHERNAME(currFielder, D)
+                    Call PBP("He flips it to " + player$(4) + " covering")
+                    fbPitcherCoveringFirst% = 1
+                    currFielder = 3
+
+                End If
+
+            Else
+
+                Call PITCHERNAME(currFielder, D)
+                Call GROUNDERS(currFielder, D)
+                Call SECOND2FIRST(D)
+
+            End If
+
+            Call PITCHERNAME(currFielder, D)
+            Call GROUNDERS(currFielder, D)
+            Call SECOND2FIRST(D)
+
+            A5%(0) = 11
+            A5%(1) = 0
+            A5%(2) = 0
+            A5%(3) = 0
+
+        End If
+
+        Call LProcessOutAndDP2
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "LGroundBall RETURNING E"    'ToDo [bm] REMOVE
+        Exit Sub
+
+    Else
+
+        Call Rolld100(RN)
+
+        If (RN <= 90 And P2 <> OFF_HIT_N_RUN Or baseRunners = 0) Or (RN <= 10 And P2 = OFF_HIT_N_RUN) Then
+
+            S2% = 14
+
+            If baseRunners = 0 Or baseRunners = 2 Or baseRunners = 3 Or baseRunners = 6 Then
+                A5%(0) = 11
+                Call OUTATFIRST(currFielder, D, fbUnassisted%, fbPitcherCoveringFirst%)
+                Call LGrounderWith1BOpen(INFPOS%)
+                Call LProcessOutAndDP2
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "LGroundBall RETURNING F"    'ToDo [bm] REMOVE
+                Exit Sub
+            End If
+
+            Call Rolld100(RN)
+
+            A5%(0) = 1
+            A5%(1) = 1
+            A5%(2) = 1
+            A5%(3) = 1
+
+            If INFPOS% = INF_BACK And currFielder = 2 Then A5%(3) = 0
+            If baseRunners = 5 Or baseRunners = 7 Or baseRunners = 4 Then Call LMoveRunners(baseRunners, INFPOS%): Exit Sub
+
+            A5%(1) = 11
+
+            Call LProcessOutAndDP2
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "LGroundBall RETURNING G"    'ToDo [bm] REMOVE
+            Exit Sub
+
+        End If
+
+        S2% = EVENT_GROUNDER
+        A5%(1) = 1
+        A5%(2) = 1
+        A5%(3) = 1
+        A5%(0) = 11
+
+        If baseRunners = 0 Or baseRunners = 2 Or baseRunners = 3 Or baseRunners = 6 Then
+            Call LGrounderWith1BOpen(INFPOS%)
+        End If
+
+        Call LProcessOutAndDP2
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LGroundBall RETURNING H"    'ToDo [bm] REMOVE
+        Exit Sub
+
+    End If
+
+    Call LMoveRunners(baseRunners, INFPOS%)
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "LGroundBall RETURNING I"    'ToDo [bm] REMOVE
+
+End Sub
+
+
+Sub LHomeRun
+
+    Call WINDEX
+
+    If fldPos(P, currLineupSlot(P)) <> 1 Then
+        Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
+        Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_H)
+        Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_HR)
+    End If
+
+    Call ADDPIT(D, currPitcher(D), LG_P_H)
+
+    If fldPos(P, currLineupSlot(P)) = 1 Then
+        Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
+        Call INCPITOFF(P, currPitcher(P), LG_PB_H)
+        Call INCPITOFF(P, currPitcher(P), LG_PB_HR)
+    End If
+
+    Call Rolld100(RN)
+
+    If RN <= 80 Then
+
+        Call LONGFLY(D, currFielder)
+
+        Call Rolld100(RN)
+
+        If RN <=  5 And teamRat_GAME(1, 13) = 8 And currFielder = 7 Then Call PBP("THAT'S OUT OF THE PARK"): Call PBP("ON WAVELAND AVENUE!!!"): pbpString$ = "HOME RUN...HOLY COW!!!": Call LHomeRun2: Exit Sub
+        If RN <= 15 And teamRat_GAME(1, 13) = 8 And currFielder = 7 Then Call PBP("IT'S GONE"): pbpString$ = "LAST SEEN BOUNCING DOWN WAVELAND AVENUE!!!": Call LHomeRun2: Exit Sub
+        If RN <= 25 Then
+
+            If teamRat_GAME(1, 13) = 21 And currFielder = 7 Then Call PBP("IT CLEARS THE GREEN MONSTER!!"): pbpString$ = "HOME RUN!!!": Call LHomeRun2: Exit Sub
+            If teamRat_GAME(1, 13) = 27 And currFielder = 7 Then Call PBP("IT CLEARS THE SCREEN!!"): pbpString$ = "HOME RUN!!!": Call LHomeRun2: Exit Sub
+            If teamRat_GAME(1, 13) = 33 And P = 1 Then Call PBP("ADIOS!! THAT'S A HOME RUN!!"): pbpString$ = "THE BUSCH EAGLE FLAPS ITS WINGS": Call LHomeRun2: Exit Sub
+            If teamRat_GAME(1, 13) = 25 And P = 1 Then Call PBP("IT'S OUT OF HERE FOR A HOMER!!!"): pbpString$ = "THERE GOES THE EXPLODING SCOREBOARD!": Call LHomeRun2: Exit Sub
+            If teamRat_GAME(1, 13) = 7 And currFielder = 9 Then Call PBP("IT CLEARS THE WAGON GATE!!"): pbpString$ = "THAT'S A HOME RUN!!": Call LHomeRun2: Exit Sub
+            If teamRat_GAME(1, 13) = 7 And P = 1 Then Call PBP("ADIOS!! THAT'S A HOME RUN!!"): pbpString$ = "THERE GO THE CANNONS!!": Call LHomeRun2: Exit Sub
+            If teamRat_GAME(1, 13) = 8 Or teamRat_GAME(1, 13) = 40 Then pbpString$ = "IT CLEARS THE IVY FOR A HOME RUN!!": Call LHomeRun2: Exit Sub
+            If teamRat_GAME(1, 13) = 23 And (currFielder = 7 Or currFielder = 9) Then Call PBP("IT'S LONG, IT'S LONG, IT'S GONE!!"): pbpString$ = "THAT ONE'S IN THE UPPER DECK": Call LHomeRun2: Exit Sub
+
+            Call Rolld100(RN)
+            Select Case RN
+                Case 1 To 7
+                    pbpString$ = "GOODBYE!! IT'S A HOME RUN!!"
+
+                Case 8 To 14
+                    pbpString$ = "ADIOS!! IT'S A HOME RUN !!!"
+
+                Case 15 To 21
+                    pbpString$ = "SAY GOOD-BYE TO THAT ONE!!!"
+
+                Case 22 To 28
+                    pbpString$ = "TOUCH 'EM ALL!!"
+
+                Case 29 To 35
+                    pbpString$ = "SEE YOU LATER!!"
+
+                Case 36 To 42
+                    pbpString$ = "GOOD-BYE MR. SPALDING!! HOME RUN!!!"
+
+                Case 43 To 49
+                    pbpString$ = "HOME RUN!! MY OH MY!!"
+
+                Case 50 To 56
+                    pbpString$ = "IT'S OVER THE WALL...OH DOCTOR!!!"
+
+                Case 57 To 63
+                    pbpString$ = "LONG, LONG, AND GONE!!"
+
+                Case 64 To 70
+                    pbpString$ = "HEY! HEY!...IT'S A HOME RUN !!!"
+
+                Case 71 To 77
+                    pbpString$ = "IT'S LONG, IT'S LONG, IT'S GONE!!!"
+
+                Case 78 To 84
+                    pbpString$ = "HOLY COW!! IT'S A HOME RUN!!!"
+
+                Case 85 To 89
+                    pbpString$ = "OPEN THE WINDOW AUNT MINNIE...HERE SHE COMES"
+
+                Case 90 To 95
+                    Call PBP("WAAYYY BACK..."): pbpString$ = "YOU CAN PUT IT ON THE BOARD, YYESSS!!"
+
+                Case 96 To 100
+                    Call PBP("IT'S WAY OUT OF HERE!! HOME RUN!!!"): pbpString$ = "HOW 'BOUT THAT!!!"
+
+            End Select
+
+        Else
+
+            Call PBP("Going... going... GONE!"): pbpString$ = "HOME RUN!!"
+
+        End If
+
+    Else
+
+        Call Rolld100(RN)
+
+        If RN <= 20 And (currFielder = 7 Or currFielder = 9) Then
+
+            pbpString$ = player$(0) + " hits it down the " + fieldPos$(currFielder) + " line"
+            Call PBP(pbpString$)
+            Call PBP("It's long enough if it's fair...")
+
+        Else
+
+            Call PBP(player$(0) + " swings...")
+
+            Select Case RN
+                Case 21 To 40
+                    Call PBP("NO DOUBT ABOUT THAT ONE!!")
+                    pbpString$ = "IT'S WAY OUT OF HERE!!"
+                Case 41 To 60
+                    pbpString$ = player$(4) + " CAN ONLY LOOK UP!!"
+                Case 61 To 80
+                    pbpString$ = pitchers$(D, currPitcher(D)) + " WATCHES IT SAIL OUT!!"
+                Case 81 To 90
+                    pbpString$ = "GONE!!!"
+                Case 91 To 100
+                    pbpString$ = "SAINTS AND HAYRAKES, LOOK AT 'ER SAIL!!"
+            End Select
+
+            Call PBP(pbpString$)
+
+        End If
+
+        '3536 / modified
+        pbpString$ = "HOME RUN!!"
+
+    End If
+
+    '---- WHERE IS HITS2GAP
+
+    Call LHomeRun2
 
 End Sub
 
