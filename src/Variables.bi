@@ -335,7 +335,7 @@ Dim Shared pbpDelay!, WF!
 Dim Shared boxName$, fileString$, gameTime$, gameL$, gameW$
 Dim Shared PARK$, pbpString$, wind$, YY$
 
-Dim Shared batRating(0 To 1, 0 To 22, 80), CZ%(0 To 1), inningScore(1, 26)
+Dim Shared batRating(0 To 1, 0 To 22, 80), closerChecked%(0 To 1), inningScore(1, 26)
 Dim Shared MON(5, 14), pitchEff(0 To 1, 0 To 1), pitchRating(0 To 1, 0 To 21, 0 To 89)
 Dim Shared schedGame(2), schedOptions(18), teamRat_GAME(1, 13), VV(1), VV1(1)
 Dim Shared nbrOuts(1)

@@ -3863,7 +3863,7 @@ Sub SOURCE ()
 
     If P = 1 Then
         INNING% = INNING% + 1
-        Erase CZ%
+        Erase closerChecked%
     End If
 
     'Switch posession
@@ -5554,149 +5554,7 @@ Sub SOURCE ()
         If H6% <= game_batRating(P, GM_2B, currLineupSlot(P))      And P2 <> OFF_HIT_N_RUN Or _
            H6% <= game_batRating(P, GM_2B, currLineupSlot(P)) * .5 And P2  = OFF_HIT_N_RUN Then
 
-            S2% = EVENT_2B
-
-            '3500
-            ' *** double s2%=8 ***
-            Call GETOUTFIELDER(currFielder, P, I1, D)
-
-            Call ADDPIT(D, currPitcher(D), LG_P_H)
-            Call WINDEX
-            Call DELIVERY(D)
-
-            If fldPos(P, currLineupSlot(P)) <> 1 Then
-                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
-                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_H)
-                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_Dbl)
-            Else
-                Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
-                Call INCPITOFF(P, currPitcher(P), LG_PB_H)
-                Call INCPITOFF(P, currPitcher(P), LG_PB_Dbl)
-            End If
-
-            If RN <= 40 Then
-
-                If currFielder = 7 Then
-                    Call GetPBPString(40, 2900, Y$, D)
-                    Call PBP(Y$)
-                End If
-
-                If currFielder = 9 Then
-                    Call GetPBPString(40, 2940, Y$, D)
-                    Call PBP(Y$)
-                End If
-
-                If currFielder = 8 Then
-                    Call GetPBPString(40, 2980, Y$, D)
-                    Call PBP(Y$)
-                End If
-
-                Call GetPBPString(30, 3020, Y$, D)
-                Call PBP(Y$)
-
-            Else
-
-                Call Rolld100(RN)
-
-                Select Case RN
-
-                    Case Is <= 25
-                        Call LONGFLY(D, currFielder)
-                        HW% = 1
-                        Call WALLDOUBLE(HW%, currFielder)
-
-                    Case 26 To 50
-                        Call LDRIVE(X$)
-                        Call PBP(player$(0) + " " + X$ + " one to the gap in " + OUTFLDLOCATION$(currFielder))
-
-                    Case 51 To 60
-                        Call PBP(player$(0) + " hits a sinking liner into " + OUTFLDLOCATION$(currFielder))
-                        Call PBP("It goes to the wall")
-
-                    Case 61 To 75
-                        Call PBP(player$(0) + " lines one to the alley in " + OUTFLDLOCATION$(currFielder))
-
-                    Case 76 To 85
-                        If (currFielder = 7 Or currFielder = 9) Then
-                            Call LDRIVE(X$)
-                            Call PBP(player$(0) + " " + X$ + " one down the " + fieldPos$(currFielder) + " line")
-                            Call PBP("It rolls into the corner")
-                        End If
-
-                        If currFielder = 8 Then
-                            Call LDRIVE(X$)
-                            Call PBP(player$(0) + " " + X$ + " one between the fielders")
-                            Call PBP(player$(4) + " cuts it off...")
-                        End If
-
-                    Case 86 To 92
-                        Call LDRIVE(X$)
-                        Call PBP(player$(0) + " " + X$ + " a blue darter into " + fieldPos$(currFielder))
-
-                    Case 93 To 100
-                        Call PBP(player$(0) + " lines one to " + OUTFLDLOCATION$(currFielder))
-                        Call PBP("It's down and to the wall!")
-
-                End Select
-
-            End If
-
-            HW% = 0
-            Call Rolld100(RN0)
-
-            If RN0 <= 80 Then
-                pbpString$ = "Double!!"
-            Else
-                pbpString$ = "2-Bagger!!"
-            End If
-
-            Call PBP(pbpString$)
-
-            For I = 0 To 3:
-                A5%(I) = 2
-            Next I
-
-            '-- wtf?
-            A5%(3) = 1
-
-            If b2Base(1) <> 0 Then
-
-                Call Rolld100(H6%)
-                BR% = batRating(P, lineupPlayer(P, b2Base(1)), SS_B_Run)
-
-                If fldPos(P, b2Base(1)) = 1 Then BR% = pitchRating(P, currPitcher(P), SS_P_Run)
-
-                I3 = 0
-
-                If nbrOuts(0) = 0 And currFielder = 7 Then I3 = 18 + BR% * 3
-                If nbrOuts(0) = 1 And currFielder = 7 Then I3 = 16 + BR% * 3
-                If nbrOuts(0) = 2 And currFielder = 7 Then I3 = 34 + BR% * 3
-
-                If nbrOuts(0) = 0 And currFielder = 8 Then I3 = 37 + BR% * 3
-                If nbrOuts(0) = 1 And currFielder = 8 Then I3 = 44 + BR% * 3
-                If nbrOuts(0) = 2 And currFielder = 8 Then I3 = 65 + BR% * 3
-
-                If nbrOuts(0) = 0 And currFielder = 9 Then I3 = 12 + BR% * 3
-                If nbrOuts(0) = 1 And currFielder = 9 Then I3 = 18 + BR% * 3
-                If nbrOuts(0) = 2 And currFielder = 9 Then I3 = 40 + BR% * 3
-
-                If H6% <= I3 Or P2 = OFF_HIT_N_RUN Then A5%(1) = 3
-
-            End If
-
-            Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-
-            errorOnPlay% = 0
-
-            Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-            If errorOnPlay% = 0 Then
-                If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try to advance on Double --"
-                baseNbr! = 0
-                Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
-            End If
-
-            Call SCOREBOARD
-
+            Call LDouble(HW%)
             GoTo LCheckForOptionsOrQuit
 
         End If
@@ -5705,131 +5563,7 @@ Sub SOURCE ()
         If H6% <= game_batRating(P, GM_2B, currLineupSlot(P))      + game_batRating(P, GM_3B, currLineupSlot(P))      And P2 <> OFF_HIT_N_RUN Or _
            H6% <= game_batRating(P, GM_2B, currLineupSlot(P)) * .5 + game_batRating(P, GM_3B, currLineupSlot(P)) * .5 And P2  = OFF_HIT_N_RUN Then
 
-            S2% = EVENT_3B
-
-            '3520
-            ' *** TRIPLE S2%=9 ***
-            Call OUTFLDNAME(currFielder, D)
-            Call DELIVERY(D)
-            Call WINDEX
-
-            If fldPos(P, currLineupSlot(P)) <> 1 Then
-                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
-                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_H)
-                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_Trp)
-            Else
-                Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
-                Call INCPITOFF(P, currPitcher(P), LG_PB_H)
-                Call INCPITOFF(P, currPitcher(P), LG_PB_Trp)
-            End If
-
-            Call ADDPIT(D, currPitcher(D), LG_P_H)
-
-            Call Rolld100(RN)
-
-            If RN <= 30 Then
-
-                If currFielder = 7 Then
-                    Call GetPBPString(40, 2900, Y$, D)
-                    Call PBP(Y$)
-                End If
-
-                If currFielder = 9 Then
-                    Call GetPBPString(40, 2940, Y$, D)
-                    Call PBP(Y$)
-                End If
-
-                If currFielder = 8 Then
-                    Call GetPBPString(40, 2980, Y$, D)
-                    Call PBP(Y$)
-                End If
-
-                Call GetPBPString(40, 3050, Y$, D)
-                Call PBP(Y$)
-
-                Call Rolld100(RN)
-                If RN <= 90 Then
-                    pbpString$ = "Triple!!"
-                Else
-                    pbpString$ = "3-Bagger!"
-                End If
-
-                Call PBP(pbpString$)
-
-            Else
-
-                Call Rolld100(RN)
-
-                If RN <= 10 And currFielder <> 8 Then
-
-                    Call Rolld100(RN)
-                    X$ = "1st"
-                    If currFielder = 7 Then X$ = "3rd"
-
-                    If RN <= 50 Then
-                        Call PBP(player$(0) + " hits a hot smash")
-                    Else
-                        Call PBP(player$(0) + " lines one")
-                    End If
-
-                    Call PBP("Fair past " + X$ + "!!")
-                    Call PBP("It rolls into the " + fieldPos$(currFielder) + " corner")
-                    Call PBP("It's a triple!!")
-
-                Else
-
-                    Call LONGFLY(D, currFielder)
-                    If currFielder = 7 And teamRat_GAME(1, 13) = 27 Then
-                        ad$ = "screen"
-                    Else
-                        ad$ = "wall"
-                    End If
-
-                    Call Rolld100(BV)
-                    Call Rolld100(RN)
-                    Select Case RN
-                        Case 1 To 20
-                            pbpString$ = "It one-hops the " + ad$ + "..."
-                        Case 21 To 40
-                            pbpString$ = "It's off the top of the " + ad$ + "..."
-                        Case 41 To 60
-                            Call PBP("It bounces fair"): pbpString$ = "down into the corner..."
-                        Case 61 To 80
-                            Call PBP("It's in the gap"): pbpString$ = "It rolls to the " + ad$
-                        Case 81 To 99
-                            pbpString$ = "It hits at the base of the " + ad$ + "..."
-                        Case 100
-                            pbpString$ = "The outfielders cross"
-                    End Select
-
-                    Call PBP(pbpString$)
-
-                    Call Rolld100(RN)
-                    If RN <= 90 Then
-                        pbpString$ = "Triple!!"
-                    Else
-                        pbpString$ = "3-Bagger!"
-                    End If
-                    Call PBP(pbpString$)
-
-                End If
-
-            End If
-
-            A5%(0) = 3
-            A5%(1) = 3
-            A5%(2) = 2
-            A5%(3) = 1
-
-            Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-
-            errorOnPlay% = 0
-            Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-            If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try to advance on Triple --"
-            baseNbr! = 0
-            If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
-
-            Call SCOREBOARD
+            Call LTriple
             GoTo LCheckForOptionsOrQuit
 
         End If
@@ -6908,9 +6642,9 @@ Sub SOURCE ()
     A1 = gameScore(D, 0) - gameScore(P, 0)
     Call Rolld100(RN0)
 
-    If Not (INNING% < 9 Or CZ%(D) = -1 Or teamMgrProfileVal(D, 581) = 999) Then
+    If Not (INNING% < 9 Or closerChecked%(D) = -1 Or teamMgrProfileVal(D, 581) = 999) Then
 
-        CZ%(D) = -1
+        closerChecked%(D) = -1
 
         If A1 <= 3 And A1 >= 0 Then
 
@@ -9768,6 +9502,288 @@ Sub LHomeRun
     '---- WHERE IS HITS2GAP
 
     Call LHomeRun2
+
+End Sub
+
+
+Sub LTriple
+    Shared S2%, errorOnPlay%, I3
+    Shared P2, stealing, runnerOn2nd, SAH%, baseNbr!, I9
+
+    S2% = EVENT_3B
+
+    ' *** TRIPLE S2%=9 ***
+    Call OUTFLDNAME(currFielder, D)
+    Call DELIVERY(D)
+    Call WINDEX
+
+    If fldPos(P, currLineupSlot(P)) <> 1 Then
+        Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
+        Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_H)
+        Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_Trp)
+    Else
+        Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
+        Call INCPITOFF(P, currPitcher(P), LG_PB_H)
+        Call INCPITOFF(P, currPitcher(P), LG_PB_Trp)
+    End If
+
+    Call ADDPIT(D, currPitcher(D), LG_P_H)
+
+    Call Rolld100(RN)
+
+    If RN <= 30 Then
+
+        If currFielder = 7 Then
+            Call GetPBPString(40, 2900, Y$, D)
+            Call PBP(Y$)
+        End If
+
+        If currFielder = 9 Then
+            Call GetPBPString(40, 2940, Y$, D)
+            Call PBP(Y$)
+        End If
+
+        If currFielder = 8 Then
+            Call GetPBPString(40, 2980, Y$, D)
+            Call PBP(Y$)
+        End If
+
+        Call GetPBPString(40, 3050, Y$, D)
+        Call PBP(Y$)
+
+        Call Rolld100(RN)
+        If RN <= 90 Then
+            pbpString$ = "Triple!!"
+        Else
+            pbpString$ = "3-Bagger!"
+        End If
+
+        Call PBP(pbpString$)
+
+    Else
+
+        Call Rolld100(RN)
+
+        If RN <= 10 And currFielder <> 8 Then
+
+            Call Rolld100(RN)
+            X$ = "1st"
+            If currFielder = 7 Then X$ = "3rd"
+
+            If RN <= 50 Then
+                Call PBP(player$(0) + " hits a hot smash")
+            Else
+                Call PBP(player$(0) + " lines one")
+            End If
+
+            Call PBP("Fair past " + X$ + "!!")
+            Call PBP("It rolls into the " + fieldPos$(currFielder) + " corner")
+            Call PBP("It's a triple!!")
+
+        Else
+
+            Call LONGFLY(D, currFielder)
+            If currFielder = 7 And teamRat_GAME(1, 13) = 27 Then
+                ad$ = "screen"
+            Else
+                ad$ = "wall"
+            End If
+
+            Call Rolld100(BV)
+            Call Rolld100(RN)
+            Select Case RN
+                Case 1 To 20
+                    pbpString$ = "It one-hops the " + ad$ + "..."
+                Case 21 To 40
+                    pbpString$ = "It's off the top of the " + ad$ + "..."
+                Case 41 To 60
+                    Call PBP("It bounces fair"): pbpString$ = "down into the corner..."
+                Case 61 To 80
+                    Call PBP("It's in the gap"): pbpString$ = "It rolls to the " + ad$
+                Case 81 To 99
+                    pbpString$ = "It hits at the base of the " + ad$ + "..."
+                Case 100
+                    pbpString$ = "The outfielders cross"
+            End Select
+
+            Call PBP(pbpString$)
+
+            Call Rolld100(RN)
+            If RN <= 90 Then
+                pbpString$ = "Triple!!"
+            Else
+                pbpString$ = "3-Bagger!"
+            End If
+            Call PBP(pbpString$)
+
+        End If
+
+    End If
+
+    A5%(0) = 3
+    A5%(1) = 3
+    A5%(2) = 2
+    A5%(3) = 1
+
+    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+
+    errorOnPlay% = 0
+    Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+    If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try to advance on Triple --"
+    baseNbr! = 0
+    If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
+
+    Call SCOREBOARD
+
+End Sub
+
+
+Sub LDouble (HW%)
+    Shared S2%, errorOnPlay%, I3
+    Shared I1, P2, stealing, runnerOn2nd, SAH%, baseNbr!, I9
+
+    S2% = EVENT_2B
+
+    '3500
+    ' *** double s2%=8 ***
+    Call GETOUTFIELDER(currFielder, P, I1, D)
+
+    Call ADDPIT(D, currPitcher(D), LG_P_H)
+    Call WINDEX
+    Call DELIVERY(D)
+
+    If fldPos(P, currLineupSlot(P)) <> 1 Then
+        Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
+        Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_H)
+        Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_Dbl)
+    Else
+        Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
+        Call INCPITOFF(P, currPitcher(P), LG_PB_H)
+        Call INCPITOFF(P, currPitcher(P), LG_PB_Dbl)
+    End If
+
+    If RN <= 40 Then
+
+        If currFielder = 7 Then
+            Call GetPBPString(40, 2900, Y$, D)
+            Call PBP(Y$)
+        End If
+
+        If currFielder = 9 Then
+            Call GetPBPString(40, 2940, Y$, D)
+            Call PBP(Y$)
+        End If
+
+        If currFielder = 8 Then
+            Call GetPBPString(40, 2980, Y$, D)
+            Call PBP(Y$)
+        End If
+
+        Call GetPBPString(30, 3020, Y$, D)
+        Call PBP(Y$)
+
+    Else
+
+        Call Rolld100(RN)
+
+        Select Case RN
+
+            Case Is <= 25
+                Call LONGFLY(D, currFielder)
+                HW% = 1
+                Call WALLDOUBLE(HW%, currFielder)
+
+            Case 26 To 50
+                Call LDRIVE(X$)
+                Call PBP(player$(0) + " " + X$ + " one to the gap in " + OUTFLDLOCATION$(currFielder))
+
+            Case 51 To 60
+                Call PBP(player$(0) + " hits a sinking liner into " + OUTFLDLOCATION$(currFielder))
+                Call PBP("It goes to the wall")
+
+            Case 61 To 75
+                Call PBP(player$(0) + " lines one to the alley in " + OUTFLDLOCATION$(currFielder))
+
+            Case 76 To 85
+                If (currFielder = 7 Or currFielder = 9) Then
+                    Call LDRIVE(X$)
+                    Call PBP(player$(0) + " " + X$ + " one down the " + fieldPos$(currFielder) + " line")
+                    Call PBP("It rolls into the corner")
+                End If
+
+                If currFielder = 8 Then
+                    Call LDRIVE(X$)
+                    Call PBP(player$(0) + " " + X$ + " one between the fielders")
+                    Call PBP(player$(4) + " cuts it off...")
+                End If
+
+            Case 86 To 92
+                Call LDRIVE(X$)
+                Call PBP(player$(0) + " " + X$ + " a blue darter into " + fieldPos$(currFielder))
+
+            Case 93 To 100
+                Call PBP(player$(0) + " lines one to " + OUTFLDLOCATION$(currFielder))
+                Call PBP("It's down and to the wall!")
+
+        End Select
+
+    End If
+
+    HW% = 0
+    Call Rolld100(RN0)
+
+    If RN0 <= 80 Then
+        pbpString$ = "Double!!"
+    Else
+        pbpString$ = "2-Bagger!!"
+    End If
+
+    Call PBP(pbpString$)
+
+    For I = 0 To 3:
+        A5%(I) = 2
+    Next I
+
+    '-- wtf?
+    A5%(3) = 1
+
+    If b2Base(1) <> 0 Then
+
+        Call Rolld100(H6%)
+        BR% = batRating(P, lineupPlayer(P, b2Base(1)), SS_B_Run)
+
+        If fldPos(P, b2Base(1)) = 1 Then BR% = pitchRating(P, currPitcher(P), SS_P_Run)
+
+        I3 = 0
+
+        If nbrOuts(0) = 0 And currFielder = 7 Then I3 = 18 + BR% * 3
+        If nbrOuts(0) = 1 And currFielder = 7 Then I3 = 16 + BR% * 3
+        If nbrOuts(0) = 2 And currFielder = 7 Then I3 = 34 + BR% * 3
+
+        If nbrOuts(0) = 0 And currFielder = 8 Then I3 = 37 + BR% * 3
+        If nbrOuts(0) = 1 And currFielder = 8 Then I3 = 44 + BR% * 3
+        If nbrOuts(0) = 2 And currFielder = 8 Then I3 = 65 + BR% * 3
+
+        If nbrOuts(0) = 0 And currFielder = 9 Then I3 = 12 + BR% * 3
+        If nbrOuts(0) = 1 And currFielder = 9 Then I3 = 18 + BR% * 3
+        If nbrOuts(0) = 2 And currFielder = 9 Then I3 = 40 + BR% * 3
+
+        If H6% <= I3 Or P2 = OFF_HIT_N_RUN Then A5%(1) = 3
+
+    End If
+
+    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+
+    errorOnPlay% = 0
+
+    Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+    If errorOnPlay% = 0 Then
+        If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try to advance on Double --"
+        baseNbr! = 0
+        Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
+    End If
+
+    Call SCOREBOARD
 
 End Sub
 
