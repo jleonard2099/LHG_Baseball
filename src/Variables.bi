@@ -359,7 +359,7 @@ Dim Shared gamePitStats(0 To 1, 0 To 21, 0 To 41), leagPitStats(1, 21, 41)
 Dim Shared gameM(0 To 9), gameSA(1, 24)
 
 Dim Shared gameScore(1, 2), newRelieverNeeded(1)
-Dim Shared injuryStatus(0 To 1, 0 To 22), L0%(1), LB%(9, 1)
+Dim Shared injuryStatus(0 To 1, 0 To 22), LOB%(1), LB%(9, 1)
 Dim Shared teamMgrProfileVal(0 To 1, 999), teamSplit(1, 11), teamYears(1)
 
 Dim Shared currLineupSlot(9), parkHRVals!(1)

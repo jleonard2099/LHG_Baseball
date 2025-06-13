@@ -3858,7 +3858,7 @@ Sub SOURCE ()
     runnerHeld = 0
     baseRunners = 0
 
-    L0%(P) = L0%(P) + MO
+    LOB%(P) = LOB%(P) + MO
     MO = 0
 
     If P = 1 Then
@@ -4921,7 +4921,7 @@ Sub SOURCE ()
             nbrOuts(1) = nbrOuts(1) + 1     'nbrOuts(1) tracks how many outs there would be without errors (for recording unearned runs)
         End If
 
-        go$ = LBallGetsPastCatcher
+        go$ = LBallGetsPastCatcher$
         If go$ = "LNextBatter1" Then GoTo LNextBatter1
         If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
         If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LBallGetsPastCatcher: "; go$
@@ -4939,7 +4939,7 @@ Sub SOURCE ()
 
         Call WILDPITCH(S2%, D)
 
-        go$ = LBallGetsPastCatcher
+        go$ = LBallGetsPastCatcher$
         If go$ = "LNextBatter1" Then GoTo LNextBatter1
         If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
         If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LBallGetsPastCatcher: "; go$
@@ -5022,7 +5022,13 @@ Sub SOURCE ()
     If H7% <= SN Then
         Call PBP("It gets through the drawn-in infield!")
         Call DELAY
-        GoTo LInfSingle
+        go$ = LInfSingle$
+        If go$ = "LNextBatter0" Then GoTo LNextBatter0
+        If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+        If go$ <> "CONTINUE" Then
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LinfSingle: "; go$
+            End
+        End If
     End If
 
     If H6% > game_batRating(P, GM_BAvg, currLineupSlot(P)) + I4 Then    'not a base hit
@@ -5045,274 +5051,8 @@ Sub SOURCE ()
             If H6% > pitcherGndPct And fldPos(P, currLineupSlot(P))  = 1 Then ballHitInAir = 1
 
             If ballHitInAir = 1 Then
-
-                'balls hit to the air
-                Call Rolld100(RN)
-                A5%(0) = 0
-                A5%(1) = 0
-                A5%(2) = 0
-                A5%(3) = 0
-
-                Select Case RN
-
-                    Case 1 To 73
-                        ' *** FLY  OUTS ***
-                        Call GETOUTFIELDER(currFielder, P, I1, D)
-
-                        If fldPos(P, currLineupSlot(P)) <> 1 Then
-                            Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
-                        Else
-                            Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
-                        End If
-
-                        Call Rolld100(RN)
-
-                        Select Case RN
-
-                            Case 1 To 17
-                                If RN <= 17 Then
-                                    ' *** shallow fly ball ***
-                                    S2% = EVENT_FLY_SHALLOW
-                                    Call WINDEX
-
-                                    X$ = fieldPos$(currFielder)
-                                    If Int(Rnd(1) * 100) <= 25 And currFielder = 7 Then X$ = "lcf"
-                                    If Int(Rnd(1) * 100) <= 25 And currFielder = 9 Then X$ = "rcf"
-
-                                    Call DELIVERY(D)
-
-                                    Call GetPBPString(60, 1170, Y$, D)
-                                    Call PBP(Y$ + " " + X$)
-
-                                    Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-                                    If errorOnPlay% = 1 Then Goto LCheckForOptionsOrQuit
-
-                                    Call LFlyout
-                                    GoTo LCheckForOptionsOrQuit
-
-                                End If
-
-                            Case 18 To 33
-                                ' *** deep fly out ***
-                                S2% = EVENT_FLY_DEEP
-
-                                Call WINDEX
-                                Call LONGFLY(D, currFielder)
-
-                                Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-
-                                If errorOnPlay% = 1 Then Goto LCheckForOptionsOrQuit
-
-                                Call CREDITREGPO(currFielder, D)
-                                Call CAUGHTFLY(RN, S2%, D)
-
-                                nbrOuts(0) = nbrOuts(0) + 1
-                                nbrOuts(1) = nbrOuts(1) + 1
-
-                                CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
-
-                                If nbrOuts(0) = 3 Then Goto LCheckForOptionsOrQuit
-
-                                If b2Base(3) <> 0 Then
-                                    A5%(3) = 1  'sac fly
-                                    Call ADDPIT(D, currPitcher(D), 16)
-
-                                    If fldPos(P, currLineupSlot(P)) = 1 Then
-                                        Call PITOFF(P, currPitcher(P), LG_PB_AB)
-                                        Call INCPITOFF(P, currPitcher(P), LG_PB_SF)
-                                    Else
-
-                                        Call BATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
-                                        Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_SF)
-
-                                    End If
-
-                                End If
-
-                                Call LAttemptToAdvance
-                                GoTo LCheckForOptionsOrQuit
-
-                            Case 34 To 100
-                                ' *** regular fly out ***
-                                S2% = EVENT_FLY_REGULAR
-                                Call WINDEX
-                                X$ = fieldPos$(currFielder)
-                                If Int(Rnd(1) * 100) <= 25 And currFielder = 7 Then X$ = "lcf"
-                                If Int(Rnd(1) * 100) <= 25 And currFielder = 9 Then X$ = "rcf"
-
-                                Call DELIVERY(D)
-                                Call Rolld100(RN)
-
-                                range = 90
-                                min = 1070
-                                If (currFielder = 7 Or currFielder = 9) And RN <= 10 Then X$ = "": range = 10: min = 1160
-
-                                Call GetPBPString(range, min, Y$, D)
-                                Call PBP(Y$ + " " + X$)
-
-                                Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-
-                                If errorOnPlay% = 1 Then Goto LCheckForOptionsOrQuit
-
-                                '--- where does this end?
-                                '--- can we turn into subroutine?
-                                Call LFlyout
-                                GoTo LCheckForOptionsOrQuit
-
-                        End Select
-
-                    Case 74 To 89
-
-                        ' infield popup
-                        Call GETINFIELDER(currFielder, P, I1, D, S2%, P2)
-                        S2% = EVENT_INF_POPUP
-                        Call WINDEX
-                        Call Rolld100(RN0)
-
-                        If currFielder = 1 Then currFielder = 2: player$(4) = batters$(D, fielder(D, currFielder))
-                        If (currFielder = 2 Or currFielder = 5 Or currFielder = 3) And RN0 <= 30 Then fo% = 1
-
-                        If fo% = 0 And (baseRunners = 4 Or baseRunners = 7) And nbrOuts(0) < 2 Then Call PBP("INFIELD FLY RULE CALLED")
-                        If fo% = 1 And currFielder = 2 Then range = 24: min = 180
-                        If fo% = 1 And (currFielder = 3 Or currFielder = 4) Then range = 31: min = 210
-                        If fo% = 1 And (currFielder = 5 Or currFielder = 6) Then range = 31: min = 250
-                        If fo% <> 1 And currFielder = 2 Then range = 50: min = 400
-                        If fo% <> 1 And currFielder = 3 Then range = 60: min = 450
-                        If fo% <> 1 And currFielder = 5 Then range = 60: min = 510
-                        If fo% <> 1 And currFielder = 6 Then range = 60: min = 570
-                        If fo% <> 1 And currFielder = 4 Then range = 60: min = 630
-
-                        Call GetPBPString(range, min, Y$, D)
-                        Call PBP(Y$)
-
-                        If fo% = 1 And currFielder = 2 Then range = 12: min = 321
-                        If fo% = 1 And (currFielder = 3 Or currFielder = 4) Then range = 25: min = 340
-                        If fo% = 1 And (currFielder = 5 Or currFielder = 6) Then range = 25: min = 370
-                        If fo% <> 1 Then range = 25: min = 690
-
-                        Call GetPBPString(range, min, Y$, D)
-                        Call PBP(Y$)
-
-                        If fldPos(P, currLineupSlot(P)) = 1 Then
-                            Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
-                        Else
-                            Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
-                        End If
-
-                        If baseRunners <> 4 Then
-
-                            Call Rolld100(RN0)
-                            If RN0 <= 25 And (teamRat_GAME(1, 13) = 11 Or teamRat_GAME(1, 13) = 8) Then Call PBP("fights the wind...")
-                            If RN0 <= 15 And (teamRat_GAME(1, 13) = 2 Or teamRat_GAME(1, 13) = 4 Or teamRat_GAME(1, 13) = 13 Or teamRat_GAME(1, 13) = 24) Then Call PBP("fights the lights...")
-
-                            If fo% <> 1 Then
-                                Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-                                If errorOnPlay% = 1 Then Goto LCheckForOptionsOrQuit
-                            End If
-
-                        End If
-
-                        fo% = 0
-
-                        Call PBP(player$(4) + " makes the catch")
-                        Call CREDITREGPO(currFielder, D)
-
-                        nbrOuts(0) = nbrOuts(0) + 1
-                        nbrOuts(1) = nbrOuts(1) + 1
-
-                        CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
-                        GoTo LCheckForOptionsOrQuit
-
-                    Case 90 To 100
-                        S2% = EVENT_RUNNER_DBLD
-
-                        Call GETINFIELDER(currFielder, P, I1, D, S2%, P2)
-                        Call WINDEX
-                        Call DELIVERY(D)
-
-                        Call GetPBPString(42, 70, Y$, D)
-                        Call PBP(Y$)
-
-                        Call GetPBPString(34, 120, Y$, D)
-                        Call PBP(Y$)
-
-                        If fldPos(P, currLineupSlot(P)) = 1 Then
-                            Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
-                        Else
-                            Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
-                        End If
-
-                        Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-
-                        If errorOnPlay% = 1 Then Goto LCheckForOptionsOrQuit
-
-                        nbrOuts(0) = nbrOuts(0) + 1
-                        nbrOuts(1) = nbrOuts(1) + 1
-
-                        Call CREDITREGPO(currFielder, D)
-
-                        CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
-                        If nbrOuts(0) = 3 Then Goto LCheckForOptionsOrQuit
-
-                        Call Rolld100(RN)
-
-                        If (baseRunners = 1 Or baseRunners = 5) And RN >= 80 Or (baseRunners = 1 Or baseRunners = 5) And P2 = OFF_HIT_N_RUN Then    'Double Play
-
-                            'runner doubled off of 1st
-                            A5%(1) = 10
-                            nbrOuts(0) = nbrOuts(0) + 1
-                            nbrOuts(1) = nbrOuts(1) + 1
-
-                            CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
-
-                            D3%(D) = D3%(D) + 1
-                            DP%(D) = DP%(D) + 1
-
-                            If currFielder <> 3 Then
-                                range = 10
-                                min = 160
-                            Else
-                                range = 10
-                                min = 170
-                            End If
-
-                            Call GetPBPString(range, min, Y$, D)
-                            Call PBP(Y$)
-
-                            I3 = 1
-                            Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
-                            Call PBP(" --- DOUBLE PLAY ---")
-                            If currFielder <> 3 Then Call CREDITASSIST(currFielder, D)
-
-
-                        Else
-
-                            If (baseRunners = 4 Or baseRunners = 2) And RN >= 80 Or baseRunners = 4 And P2 = OFF_HIT_N_RUN Then 'Double Play
-
-                                'runner doubled off of 2nd
-                                A5%(2) = 10
-                                nbrOuts(0) = nbrOuts(0) + 1
-                                nbrOuts(1) = nbrOuts(1) + 1
-
-                                CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
-
-                                D3%(D) = D3%(D) + 1
-                                DP%(D) = DP%(D) + 1
-                                I3 = 2
-
-                                Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
-                                Call PBP(" --- DOUBLE PLAY ---")
-                                Call CREDITASSIST(currFielder, D)
-
-                            End If
-
-                        End If
-
-                        Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-                        GoTo LCheckForOptionsOrQuit
-
-                End Select
-
+                Call LBallHitInAir
+                GoTo LCheckForOptionsOrQuit
             End If
 
             S2% = EVENT_GROUNDER
@@ -5369,7 +5109,7 @@ Sub SOURCE ()
                     A5%(2) = 11
                     A5%(1) = 0
                     A5%(0) = 0
-                    Call LProcessOutAndDP
+                    Call LProcessOutAndDoublePlay
                     GoTo LCheckForOptionsOrQuit
 
                 End If
@@ -5380,7 +5120,7 @@ Sub SOURCE ()
                     A5%(2) = 11
                     A5%(1) = 0
                     A5%(0) = 0
-                    Call LProcessOutAndDP
+                    Call LProcessOutAndDoublePlay
                     GoTo LCheckForOptionsOrQuit
                 End If
 
@@ -5395,7 +5135,7 @@ Sub SOURCE ()
                 A5%(1) = 0
                 A5%(2) = 0
                 A5%(0) = 0
-                Call LProcessOutAndDP
+                Call LProcessOutAndDoublePlay
                 GoTo LCheckForOptionsOrQuit
 
             End If
@@ -5412,7 +5152,7 @@ Sub SOURCE ()
                 A5%(1) = 0
                 A5%(2) = 0
                 A5%(0) = 0
-                Call LProcessOutAndDP
+                Call LProcessOutAndDoublePlay
                 GoTo LCheckForOptionsOrQuit
             End If
 
@@ -5425,7 +5165,7 @@ Sub SOURCE ()
                 A5%(1) = 0
                 A5%(2) = 0
                 A5%(0) = 0
-                Call LProcessOutAndDP
+                Call LProcessOutAndDoublePlay
                 GoTo LCheckForOptionsOrQuit
             End If
 
@@ -5439,7 +5179,7 @@ Sub SOURCE ()
                 A5%(1) = 0
                 A5%(2) = 0
                 A5%(0) = 0
-                Call LProcessOutAndDP
+                Call LProcessOutAndDoublePlay
                 GoTo LCheckForOptionsOrQuit
             End If
 
@@ -5466,7 +5206,7 @@ Sub SOURCE ()
                 A5%(0) = 1
             End If
 
-            Call LProcessOutAndDP
+            Call LProcessOutAndDoublePlay
             GoTo LCheckForOptionsOrQuit
 
         Else
@@ -5525,7 +5265,7 @@ Sub SOURCE ()
                         GoTo LContinueBatter
                     Else
                         Call WILDPITCH(S2%, D)
-                        go$ = LBallGetsPastCatcher
+                        go$ = LBallGetsPastCatcher$
                         If go$ = "LNextBatter1"           Then GoTo LNextBatter1
                         If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
                         If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LBallGetsPastCatcher: "; go$
@@ -5558,7 +5298,6 @@ Sub SOURCE ()
             GoTo LCheckForOptionsOrQuit
 
         End If
-
 
         If H6% <= game_batRating(P, GM_2B, currLineupSlot(P))      + game_batRating(P, GM_3B, currLineupSlot(P))      And P2 <> OFF_HIT_N_RUN Or _
            H6% <= game_batRating(P, GM_2B, currLineupSlot(P)) * .5 + game_batRating(P, GM_3B, currLineupSlot(P)) * .5 And P2  = OFF_HIT_N_RUN Then
@@ -5596,30 +5335,15 @@ Sub SOURCE ()
             GoTo LCheckForOptionsOrQuit
         End If
 
-       LInfSingle:
-        Call Rolld100(H6%)
-        S2% = EVENT_1B
-
-        If fldPos(P, currLineupSlot(P)) <> 1 And H6% <= game_batRating(P, GM_BAvg, currLineupSlot(P)) And P2 <> OFF_HIT_N_RUN Then
-           go$ = LSingle$
-           If go$ = "LNextBatter0" Then GoTo LNextBatter0
-           If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
-           If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LSINGLE: "; go$
-           End
-
-        End If
-
-        If H6% <= (batRating(P, lineupPlayer(P, currLineupSlot(1)), SS_B_Run) * 2.5) Then
-            S2% = EVENT_INF_SINGLE
-            Call GETINFIELDER(currFielder, P, I1, D, S2%, P2)
-            Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-            If errorOnPlay% = 1 Then Goto LCheckForOptionsOrQuit
+        go$ = LInfSingle$
+        If go$ = "LNextBatter0" Then GoTo LNextBatter0
+        If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+        If go$ <> "CONTINUE" Then
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LinfSingle: "; go$
+            End
         End If
 
     End If
-
-
-    '----- NOODLE -----
 
     Call LProcessOutAndDP2
     GoTo LCheckForOptionsOrQuit
@@ -6990,6 +6714,7 @@ Function LSingle$
     If S2% = EVENT_INF_SINGLE Then
 
         Call SCOREBOARD
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LSingle RETURNING LNextBatter0"    'ToDo [bm] REMOVE
         LSingle$ = "LNextBatter0"
 
     Else
@@ -7001,6 +6726,7 @@ Function LSingle$
         If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
 
         Call SCOREBOARD
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LSingle RETURNING LCheckForOptionsOrQuit"    'ToDo [bm] REMOVE
         LSingle$ = "LCheckForOptionsOrQuit"
 
     End If
@@ -7375,9 +7101,11 @@ Function LNoSteal$
 End Function
 
 
-Sub LProcessOutAndDP
+Sub LProcessOutAndDoublePlay
     Shared S2%, errorOnPlay%, I3
     Shared stealing, fbPitcherCoveringFirst%, AST%, DPC%, TB
+
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "calling LProcessOutAndDoublePlay"  'ToDo [bm] REMOVE
 
     CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
 
@@ -7438,6 +7166,8 @@ End Sub
 Sub LProcessOutAndDP2
     Shared S2%, errorOnPlay%, I3
     Shared stealing, fbUnassisted%, fbPitcherCoveringFirst%, AST%, DPC%
+
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "calling LProcessOutAndDP2"  'ToDo [bm] REMOVE
 
     If fbUnassisted% = 0 Then Call CREDITASSIST(currFielder, D)
     fbUnassisted% = 0
@@ -9092,6 +8822,8 @@ End Sub
 
 Sub LMoveRunners (baseRunners, INFPOS%)
 
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "calling LMoveRunners"    'ToDo [bm] REMOVE
+
     If baseRunners <> 4 And baseRunners <> 7 Then
 
         If gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 6 And nbrOuts(0) = 0 And INFPOS% > INF_BACK And currFielder = 5 Or _
@@ -9175,12 +8907,16 @@ Sub LMoveRunners (baseRunners, INFPOS%)
 
     End If
 
+    Call LProcessOutAndDP2
+
 End Sub
 
 
 Sub LGroundBall
     Shared S2%, P2
     Shared fbUnassisted%, fbPitcherCoveringFirst%, INFPOS%, baseRunners
+
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "calling LGroundBall"  'ToDo [bm] REMOVE
 
     If nbrOuts(0) >= 2 Then
 
@@ -9308,7 +9044,7 @@ Sub LGroundBall
         End If
 
         Call LProcessOutAndDP2
-                If Environ$("PBPLOG") = "TRUE" Then Print #11, "LGroundBall RETURNING E"    'ToDo [bm] REMOVE
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LGroundBall RETURNING E"    'ToDo [bm] REMOVE
         Exit Sub
 
     Else
@@ -9336,7 +9072,12 @@ Sub LGroundBall
             A5%(3) = 1
 
             If INFPOS% = INF_BACK And currFielder = 2 Then A5%(3) = 0
-            If baseRunners = 5 Or baseRunners = 7 Or baseRunners = 4 Then Call LMoveRunners(baseRunners, INFPOS%): Exit Sub
+
+            If baseRunners = 5 Or baseRunners = 7 Or baseRunners = 4 Then
+                Call LMoveRunners(baseRunners, INFPOS%)
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "LGroundBall RETURNING F2"    'ToDo [bm] REMOVE
+                Exit Sub
+            End If
 
             A5%(1) = 11
 
@@ -9788,6 +9529,310 @@ Sub LDouble (HW%)
 End Sub
 
 
+Function LInfSingle$
+    Shared S2%, errorOnPlay%, I3
+    Shared I1, P2, stealing
+
+    Call Rolld100(H6%)
+    S2% = EVENT_1B
+
+    If fldPos(P, currLineupSlot(P)) <> 1 And H6% <= game_batRating(P, GM_BAvg, currLineupSlot(P)) And P2 <> OFF_HIT_N_RUN Then
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LInfSingle RETURNING LSingle$"    'ToDo [bm] REMOVE
+        LInfSingle$ = LSingle$
+        Exit Function
+
+    End If
+
+    If H6% <= (batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_Run) * 2.5) Then
+        S2% = EVENT_INF_SINGLE
+        Call GETINFIELDER(currFielder, P, I1, D, S2%, P2)
+        Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+        If errorOnPlay% = 1 Then
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "LInfSingle RETURNING LCheckForOptionsOrQuit"    'ToDo [bm] REMOVE
+            LInfSingle$ = "LCheckForOptionsOrQuit"
+            Exit Function
+        End If
+
+    End If
+
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "LInfSingle RETURNING CONTINUE"    'ToDo [bm] REMOVE
+    LInfSingle$ = "CONTINUE"
+
+End Function
+
+
+Sub LBallHitInAir
+    Shared I1, S2%, P2, errorOnPlay%, I3, stealing, baseRunners
+
+    'balls hit to the air
+    Call Rolld100(RN)
+    A5%(0) = 0
+    A5%(1) = 0
+    A5%(2) = 0
+    A5%(3) = 0
+
+    Select Case RN
+
+        Case 1 To 73
+            ' *** FLY  OUTS ***
+            Call GETOUTFIELDER(currFielder, P, I1, D)
+
+            If fldPos(P, currLineupSlot(P)) <> 1 Then
+                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
+            Else
+                Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
+            End If
+
+            Call Rolld100(RN)
+
+            Select Case RN
+
+                Case 1 To 17
+                    If RN <= 17 Then
+                        ' *** shallow fly ball ***
+                        S2% = EVENT_FLY_SHALLOW
+                        Call WINDEX
+
+                        X$ = fieldPos$(currFielder)
+                        If Int(Rnd(1) * 100) <= 25 And currFielder = 7 Then X$ = "lcf"
+                        If Int(Rnd(1) * 100) <= 25 And currFielder = 9 Then X$ = "rcf"
+
+                        Call DELIVERY(D)
+
+                        Call GetPBPString(60, 1170, Y$, D)
+                        Call PBP(Y$ + " " + X$)
+
+                        Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+                        If errorOnPlay% = 1 Then Exit Sub
+
+                        Call LFlyout
+                        Exit Sub
+
+                    End If
+
+                Case 18 To 33
+                    ' *** deep fly out ***
+                    S2% = EVENT_FLY_DEEP
+
+                    Call WINDEX
+                    Call LONGFLY(D, currFielder)
+
+                    Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+
+                    If errorOnPlay% = 1 Then Exit Sub
+
+                    Call CREDITREGPO(currFielder, D)
+                    Call CAUGHTFLY(RN, S2%, D)
+
+                    nbrOuts(0) = nbrOuts(0) + 1
+                    nbrOuts(1) = nbrOuts(1) + 1
+
+                    CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
+
+                    If nbrOuts(0) = 3 Then Exit Sub
+
+                    If b2Base(3) <> 0 Then
+                        A5%(3) = 1  'sac fly
+                        Call ADDPIT(D, currPitcher(D), 16)
+
+                        If fldPos(P, currLineupSlot(P)) = 1 Then
+                            Call PITOFF(P, currPitcher(P), LG_PB_AB)
+                            Call INCPITOFF(P, currPitcher(P), LG_PB_SF)
+                        Else
+
+                            Call BATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
+                            Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_SF)
+
+                        End If
+
+                    End If
+
+                    Call LAttemptToAdvance
+                    Exit Sub
+
+                Case 34 To 100
+                    ' *** regular fly out ***
+                    S2% = EVENT_FLY_REGULAR
+                    Call WINDEX
+                    X$ = fieldPos$(currFielder)
+                    If Int(Rnd(1) * 100) <= 25 And currFielder = 7 Then X$ = "lcf"
+                    If Int(Rnd(1) * 100) <= 25 And currFielder = 9 Then X$ = "rcf"
+
+                    Call DELIVERY(D)
+                    Call Rolld100(RN)
+
+                    range = 90
+                    min = 1070
+                    If (currFielder = 7 Or currFielder = 9) And RN <= 10 Then X$ = "": range = 10: min = 1160
+
+                    Call GetPBPString(range, min, Y$, D)
+                    Call PBP(Y$ + " " + X$)
+
+                    Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+
+                    If errorOnPlay% = 1 Then Exit Sub
+
+                    '--- where does this end?
+                    '--- can we turn into subroutine?
+                    Call LFlyout
+                    Exit Sub
+
+            End Select
+
+        Case 74 To 89
+
+            ' infield popup
+            Call GETINFIELDER(currFielder, P, I1, D, S2%, P2)
+            S2% = EVENT_INF_POPUP
+            Call WINDEX
+            Call Rolld100(RN0)
+
+            If currFielder = 1 Then currFielder = 2: player$(4) = batters$(D, fielder(D, currFielder))
+            If (currFielder = 2 Or currFielder = 5 Or currFielder = 3) And RN0 <= 30 Then fo% = 1
+
+            If fo% = 0 And (baseRunners = 4 Or baseRunners = 7) And nbrOuts(0) < 2 Then Call PBP("INFIELD FLY RULE CALLED")
+            If fo% = 1 And currFielder = 2 Then range = 24: min = 180
+            If fo% = 1 And (currFielder = 3 Or currFielder = 4) Then range = 31: min = 210
+            If fo% = 1 And (currFielder = 5 Or currFielder = 6) Then range = 31: min = 250
+            If fo% <> 1 And currFielder = 2 Then range = 50: min = 400
+            If fo% <> 1 And currFielder = 3 Then range = 60: min = 450
+            If fo% <> 1 And currFielder = 5 Then range = 60: min = 510
+            If fo% <> 1 And currFielder = 6 Then range = 60: min = 570
+            If fo% <> 1 And currFielder = 4 Then range = 60: min = 630
+
+            Call GetPBPString(range, min, Y$, D)
+            Call PBP(Y$)
+
+            If fo% = 1 And currFielder = 2 Then range = 12: min = 321
+            If fo% = 1 And (currFielder = 3 Or currFielder = 4) Then range = 25: min = 340
+            If fo% = 1 And (currFielder = 5 Or currFielder = 6) Then range = 25: min = 370
+            If fo% <> 1 Then range = 25: min = 690
+
+            Call GetPBPString(range, min, Y$, D)
+            Call PBP(Y$)
+
+            If fldPos(P, currLineupSlot(P)) = 1 Then
+                Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
+            Else
+                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
+            End If
+
+            If baseRunners <> 4 Then
+
+                Call Rolld100(RN0)
+                If RN0 <= 25 And (teamRat_GAME(1, 13) = 11 Or teamRat_GAME(1, 13) = 8) Then Call PBP("fights the wind...")
+                If RN0 <= 15 And (teamRat_GAME(1, 13) = 2 Or teamRat_GAME(1, 13) = 4 Or teamRat_GAME(1, 13) = 13 Or teamRat_GAME(1, 13) = 24) Then Call PBP("fights the lights...")
+
+                If fo% <> 1 Then
+                    Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+                    If errorOnPlay% = 1 Then Exit Sub
+                End If
+
+            End If
+
+            fo% = 0
+
+            Call PBP(player$(4) + " makes the catch")
+            Call CREDITREGPO(currFielder, D)
+
+            nbrOuts(0) = nbrOuts(0) + 1
+            nbrOuts(1) = nbrOuts(1) + 1
+
+            CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
+            Exit Sub
+
+        Case 90 To 100
+            S2% = EVENT_RUNNER_DBLD
+
+            Call GETINFIELDER(currFielder, P, I1, D, S2%, P2)
+            Call WINDEX
+            Call DELIVERY(D)
+
+            Call GetPBPString(42, 70, Y$, D)
+            Call PBP(Y$)
+
+            Call GetPBPString(34, 120, Y$, D)
+            Call PBP(Y$)
+
+            If fldPos(P, currLineupSlot(P)) = 1 Then
+                Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
+            Else
+                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
+            End If
+
+            Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+
+            If errorOnPlay% = 1 Then Exit Sub
+
+            nbrOuts(0) = nbrOuts(0) + 1
+            nbrOuts(1) = nbrOuts(1) + 1
+
+            Call CREDITREGPO(currFielder, D)
+
+            CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
+            If nbrOuts(0) = 3 Then Exit Sub
+
+            Call Rolld100(RN)
+
+            If (baseRunners = 1 Or baseRunners = 5) And RN >= 80 Or (baseRunners = 1 Or baseRunners = 5) And P2 = OFF_HIT_N_RUN Then    'Double Play
+
+                'runner doubled off of 1st
+                A5%(1) = 10
+                nbrOuts(0) = nbrOuts(0) + 1
+                nbrOuts(1) = nbrOuts(1) + 1
+
+                CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
+
+                D3%(D) = D3%(D) + 1
+                DP%(D) = DP%(D) + 1
+
+                If currFielder <> 3 Then
+                    range = 10
+                    min = 160
+                Else
+                    range = 10
+                    min = 170
+                End If
+
+                Call GetPBPString(range, min, Y$, D)
+                Call PBP(Y$)
+
+                I3 = 1
+                Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
+                Call PBP(" --- DOUBLE PLAY ---")
+                If currFielder <> 3 Then Call CREDITASSIST(currFielder, D)
+
+            Else
+
+                If (baseRunners = 4 Or baseRunners = 2) And RN >= 80 Or baseRunners = 4 And P2 = OFF_HIT_N_RUN Then 'Double Play
+
+                    'runner doubled off of 2nd
+                    A5%(2) = 10
+                    nbrOuts(0) = nbrOuts(0) + 1
+                    nbrOuts(1) = nbrOuts(1) + 1
+
+                    CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
+
+                    D3%(D) = D3%(D) + 1
+                    DP%(D) = DP%(D) + 1
+                    I3 = 2
+
+                    Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
+                    Call PBP(" --- DOUBLE PLAY ---")
+                    Call CREDITASSIST(currFielder, D)
+
+                End If
+
+            End If
+
+            Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+            Exit Sub
+
+    End Select
+
+End sub
+
+
 '----------------------------------------
 '            INFO Subroutine
 '----------------------------------------
@@ -9993,7 +10038,7 @@ Sub InitVar ()
     Erase gameD0, gameMgrIdx
     Erase gameM, gameScore, newRelieverNeeded
     Erase gamePitStats, inningScore
-    Erase L0%, leagPitStats, mgrFile
+    Erase LOB%, leagPitStats, mgrFile
     Erase schedOptions, nbrInnings, nbrOuts
     Erase oppScore
     Erase currPitcher, pitcherOfRecord, statT1!, gamePitcher
@@ -11388,6 +11433,8 @@ End Sub
 'This subroutine prints the Play-by-Play
 'for a double-play.
 Sub DPPBP ()
+
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "calling DPPBP"  'ToDo [bm] REMOVE
 
     Call Rolld100(RN)
 
@@ -18760,7 +18807,7 @@ Sub COMPILESTATFILES (teamIdx)
 
     Next I
 
-    statT0!(12) = statT0!(12) + L0%(teamIdx)
+    statT0!(12) = statT0!(12) + LOB%(teamIdx)
     INNING% = 0
 
     For I = 0 To 21
@@ -19429,7 +19476,7 @@ Sub BOX2FILE (printChoice, boxName$)
         Print #2,
     End If
 
-    Print #2, "LOB-"; gameTeams$(0); Str$(L0%(0)); ","; gameTeams$(1); Str$(L0%(1))
+    Print #2, "LOB-"; gameTeams$(0); Str$(LOB%(0)); ","; gameTeams$(1); Str$(LOB%(1))
     Print #2, "DP-"; gameTeams$(0); Str$(DP%(0)); ","; gameTeams$(1); Str$(DP%(1))
     Print #2, "UMPIRES: HP-"; gameUmpire$(1); "; 1B-"; gameUmpire$(2); "; 2B-"; gameUmpire$(3); "; 3B-"; gameUmpire$(4)
     Print #2, "TIME: "; gameTime$
@@ -20091,7 +20138,7 @@ Sub STATS2SCREEN
     End If
 
     Color 14, 0: Print "LOB-";
-    Color 15, 0: Print gameTeams$(0); Str$(L0%(0)); ","; gameTeams$(1); Str$(L0%(1))
+    Color 15, 0: Print gameTeams$(0); Str$(LOB%(0)); ","; gameTeams$(1); Str$(LOB%(1))
     Print "DP-";
     Color 15, 0: Print gameTeams$(0); Str$(DP%(0)); ","; gameTeams$(1); Str$(DP%(1))
 
