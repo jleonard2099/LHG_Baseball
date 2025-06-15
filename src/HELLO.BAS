@@ -4074,7 +4074,7 @@ Sub SOURCE ()
         GoTo LGameOver
     End If
 
-   LContinueBatter:
+   LDefenseOptions:
 
     Do
 
@@ -4137,7 +4137,7 @@ Sub SOURCE ()
         '----------------------------------------
         ' DEFENSE OPTIONS MENU
         '----------------------------------------
-       LDefenseOptions:
+       LDefOpts:
         pbpString$ = PadRight$(Left$(gameTeams$(D), 3) + teamAbbreviatons$(D), 8)
 
         'Call WINDEX
@@ -4219,7 +4219,7 @@ Sub SOURCE ()
                 Locate 23, 46: Print "GUARD LINE"
             End If
 
-            GoTo LContinueBatter
+            GoTo LDefenseOptions
 
         End If
 
@@ -4277,7 +4277,7 @@ Sub SOURCE ()
                 Call HOLDSTATUS(runnerHeld)
             End If
 
-            GoTo LDefenseOptions
+            GoTo LDefOpts
 
         End If
 
@@ -4349,7 +4349,7 @@ Sub SOURCE ()
             Locate 23, 46: Print infStatus$
         End If
 
-        GoTo LContinueBatter
+        GoTo LDefenseOptions
 
     End If
 
@@ -4467,7 +4467,7 @@ Sub SOURCE ()
             End If
 
             go$ = LNoPinchHitter$(MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
-            If go$ = "LContinueBatter" Then Goto LContinueBatter
+            If go$ = "LDefenseOptions" Then Goto LDefenseOptions
             If go$ = "LBunt" Then Goto LBunt
             If go$ = "LHitAndRun"  Then Goto LHitAndRun
             If go$ = "LExecuteOffense" Then Goto LExecuteOffense
@@ -4728,7 +4728,7 @@ Sub SOURCE ()
             Call MAINSCREEN(D, P, nbrBalls, nbrStrikes, MO)
         End If
 
-        GoTo LContinueBatter
+        GoTo LDefenseOptions
 
     End If
 
@@ -4800,7 +4800,7 @@ Sub SOURCE ()
         Call MAINSCREEN(D, P, nbrBalls, nbrStrikes, MO)
     End If
 
-    GoTo LContinueBatter
+    GoTo LDefenseOptions
 
     '----- NOODLE -----
 
@@ -4846,7 +4846,7 @@ Sub SOURCE ()
         ' *** balk ***
         If baseRunners = 0 Then
             Call FOULBALL
-            GoTo LContinueBatter
+            GoTo LDefenseOptions
         Else
             S2% = EVENT_BALK
 
@@ -4892,14 +4892,14 @@ Sub SOURCE ()
 
         go$ = LPassedBall$
         If go$ = "LNextBatter1"           Then GoTo LNextBatter1
-        If go$ = "LContinueBatter"        Then GoTo LContinueBatter
+        If go$ = "LDefenseOptions"        Then GoTo LDefenseOptions
         If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
         If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LPassedBall: "; go$
         End
 
         If baseRunners = 0 And SO <> 1 Then
             Call FOULBALL
-            GoTo LContinueBatter
+            GoTo LDefenseOptions
         End If
 
         S2% = EVENT_PB
@@ -4934,7 +4934,7 @@ Sub SOURCE ()
         ' *** wild pitch ***
         If baseRunners = 0 And SO <> 1 Then
             Call FOULBALL
-            GoTo LContinueBatter
+            GoTo LDefenseOptions
         End If
 
         Call WILDPITCH(S2%, D)
@@ -4990,7 +4990,6 @@ Sub SOURCE ()
 
     If P2 = OFF_BUNT Then Goto LBunt
 
-    '3056
     H6% = Int(Rnd(1) * 1000) + 1
     H7% = Int(Rnd(1) * 1000) + 1
     I4 = 0
@@ -5031,15 +5030,17 @@ Sub SOURCE ()
         End If
     End If
 
+   ZNormal:
     If H6% > game_batRating(P, GM_BAvg, currLineupSlot(P)) + I4 Then    'not a base hit
 
-        '3600
+       ZOut:
         ' *** check for strikeout ***
         H6% = Int(Rnd(1) * 1000) + 1
         strikeoutRating = game_batRating(P, GM_K, currLineupSlot(P))
 
         If H6% > game_batRating(P, GM_K, currLineupSlot(P)) Then
 
+           ZNormalOut:
             ' *** ground ball for out ***
             Call Rolld100(H6%)
 
@@ -5052,161 +5053,10 @@ Sub SOURCE ()
 
             If ballHitInAir = 1 Then
                 Call LBallHitInAir
-                GoTo LCheckForOptionsOrQuit
-            End If
-
-            S2% = EVENT_GROUNDER
-            Call GETINFIELDER(currFielder, P, I1, D, S2%, P2)
-            Call WINDEX
-
-            S2% = EVENT_GROUNDER
-            Call DELIVERY(D)
-            Call GROUNDERPBP(currFielder, D)
-
-            If currFielder <> 2 Then
-                If currFielder = 1 Then
-                    pbpString$ = pbpString$ + "the pitcher"
-                    Call PBP(pbpString$)
-                Else
-                    pbpString$ = pbpString$ + grounderDir$(currFielder)
-                    Call PBP(pbpString$)
-                End If
-            End If
-
-            Call Rolld100(RN)
-
-            If (baseRunners = 1 Or baseRunners = 4 Or _
-             ( (baseRunners = 7 Or baseRunners = 5) And INFPOS% < INF_IN) ) And nbrOuts(0) <= 1 And RN <= 50 Then
-                DPC% = 1
-                Call DPPBP
-            End If
-
-            If fldPos(P, currLineupSlot(P)) <> 1 Then
-                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
             Else
-                Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
+                Call LBallHitOnGround
             End If
 
-            Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-
-            If errorOnPlay% = 1 Then Goto LCheckForOptionsOrQuit
-
-            ' *** 2 outs, bases empty, runner 2nd, runner 3rd, or 2nd&3rd ***
-            If nbrOuts(0) = 2 Or baseRunners = 0 Or baseRunners = 2 Or baseRunners = 3 Or baseRunners = 6 Then Call LGroundBall: GoTo LCheckForOptionsOrQuit
-
-            H6% = Int(Rnd(1) * 1000) + 1
-            E2% = ((teamRat_GAME(D, 5) - 80) * 4)
-            E3% = ((5 - batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_Run)) * 9)
-
-            If (currFielder = 2 And H6% > 250 + E2% + E3%) Or (H6% > 490 + E2% + E3%) Or P2 = OFF_HIT_N_RUN Then Call LGroundBall: GoTo LCheckForOptionsOrQuit
-
-            S2% = EVENT_GROUNDER
-
-            If baseRunners = 4 Then
-
-                If currFielder = 5 And Int(Rnd(1) * 3) + 1 = 1 Then
-                    A5%(3) = 0
-                    A5%(2) = 11
-                    A5%(1) = 0
-                    A5%(0) = 0
-                    Call LProcessOutAndDoublePlay
-                    GoTo LCheckForOptionsOrQuit
-
-                End If
-
-                If currFielder = 2 Then
-                    Call CREDITASSIST(currFielder, D)
-                    A5%(3) = 0
-                    A5%(2) = 11
-                    A5%(1) = 0
-                    A5%(0) = 0
-                    Call LProcessOutAndDoublePlay
-                    GoTo LCheckForOptionsOrQuit
-                End If
-
-            End If
-
-            If baseRunners = 7 And currFielder = 1 Then
-                Call CREDITASSIST(currFielder, D)
-                TB = 9
-                currFielder = 2
-                Call PBP("He throws home")
-                A5%(3) = 11
-                A5%(1) = 0
-                A5%(2) = 0
-                A5%(0) = 0
-                Call LProcessOutAndDoublePlay
-                GoTo LCheckForOptionsOrQuit
-
-            End If
-
-            If baseRunners = 5 And gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 7 And nbrOuts(0) = 0 _
-                And INFPOS% > INF_BACK And (currFielder = 5 Or currFielder = 3) Then Call LGroundBall: GoTo LCheckForOptionsOrQuit
-
-            If baseRunners = 7 And INFPOS% > INF_BACK And (currFielder = 5 Or currFielder = 3) Then
-                Call CREDITASSIST(currFielder, D)
-                TB = 9
-                currFielder = 2
-                Call PBP("He fires it home")
-                A5%(3) = 11
-                A5%(1) = 0
-                A5%(2) = 0
-                A5%(0) = 0
-                Call LProcessOutAndDoublePlay
-                GoTo LCheckForOptionsOrQuit
-            End If
-
-            If baseRunners = 7 And INFPOS% = INF_IN And currFielder = 4 Then
-                Call CREDITASSIST(currFielder, D)
-                TB = 9
-                currFielder = 2
-                Call PBP("He throws home for the force")
-                A5%(3) = 11
-                A5%(1) = 0
-                A5%(2) = 0
-                A5%(0) = 0
-                Call LProcessOutAndDoublePlay
-                GoTo LCheckForOptionsOrQuit
-            End If
-
-
-            If baseRunners = 7 And INFPOS% = INF_IN And currFielder = 6 Then
-                Call CREDITASSIST(currFielder, D)
-                TB = 9
-                currFielder = 2
-                Call PBP("He goes home with it")
-                A5%(3) = 11
-                A5%(1) = 0
-                A5%(2) = 0
-                A5%(0) = 0
-                Call LProcessOutAndDoublePlay
-                GoTo LCheckForOptionsOrQuit
-            End If
-
-
-            If currFielder <= 4 Then
-                Call CREDITASSIST(currFielder, D)
-                currFielder = 6
-                Call PBP("He throws to " + batters$(D, fielder(D, 6)))
-            Else
-                Call CREDITASSIST(currFielder, D)
-                currFielder = 4
-                Call PBP("He throws to " + batters$(D, fielder(D, 4)))
-            End If
-
-            A5%(1) = 11
-            A5%(2) = 0
-            A5%(3) = 0
-            A5%(0) = 0
-
-            If baseRunners = 7 And (currFielder = 2 Or currFielder = 1) Then
-                A5%(3) = 11
-                A5%(2) = 1
-                A5%(1) = 1
-                A5%(0) = 1
-            End If
-
-            Call LProcessOutAndDoublePlay
             GoTo LCheckForOptionsOrQuit
 
         Else
@@ -5262,7 +5112,7 @@ Sub SOURCE ()
                     ' *** wild pitch ***
                     If baseRunners = 0 And SO <> 1 Then
                         Call FOULBALL
-                        GoTo LContinueBatter
+                        GoTo LDefenseOptions
                     Else
                         Call WILDPITCH(S2%, D)
                         go$ = LBallGetsPastCatcher$
@@ -5274,7 +5124,7 @@ Sub SOURCE ()
                 Else
                     go$ = LPassedBall$
                     If go$ = "LNextBatter1"               Then GoTo LNextBatter1
-                    If go$ = "LContinueBatter"            Then GoTo LContinueBatter
+                    If go$ = "LDefenseOptions"            Then GoTo LDefenseOptions
                     If go$ = "LCheckForOptionsOrQuit"     Then GoTo LCheckForOptionsOrQuit
                     If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LPassedBall: "; go$
                     End
@@ -5289,6 +5139,7 @@ Sub SOURCE ()
 
     Else    'base hit
 
+       ZSafe:
         H6% = Int(Rnd(1) * 1000) + 1
 
         If H6% <= game_batRating(P, GM_2B, currLineupSlot(P))      And P2 <> OFF_HIT_N_RUN Or _
@@ -5369,7 +5220,7 @@ Sub SOURCE ()
     ' or special menus, etc.
     I$ = InKey$
 
-    If UCase$(I$) = Chr$(17) Then
+    If UCase$(I$) = "Q" Then
         Call EndOfGame
         Exit Sub
     End If
@@ -6474,7 +6325,7 @@ Sub SOURCE ()
 
                             Call REPLACEMENTS(P, currLineupSlot(P), lineupPlayer(P, currLineupSlot(P)))
                             Call LPinchHitter
-                            GoTo LContinueBatter
+                            GoTo LDefenseOptions
 
                         End If
 
@@ -6490,7 +6341,7 @@ Sub SOURCE ()
 
     If INNING% < 6 Then    ' [bm] KLUDGE: Don't pinch hit for a position player before the 6th inning
         go$ = LNoPinchHitter$(MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
-        If go$ = "LContinueBatter" Then Goto LContinueBatter
+        If go$ = "LDefenseOptions" Then Goto LDefenseOptions
         If go$ = "LBunt" Then Goto LBunt
         If go$ = "LHitAndRun"  Then Goto LHitAndRun
         If go$ = "LExecuteOffense" Then Goto LExecuteOffense
@@ -6515,17 +6366,17 @@ Sub SOURCE ()
 
                 ' Pitcher and PH both righty
                 If iPitThrows =  1 And iBatHits > 0 And pinchBAvg > battrBAvg + 35 Then
-                    If abRand < batRating(P, I,  SS_B_AB) Then Call LPhForPosPlayer(I): Call LPinchHitter: GoTo LContinueBatter
+                    If abRand < batRating(P, I,  SS_B_AB) Then Call LPhForPosPlayer(I): Call LPinchHitter: GoTo LDefenseOptions
                 End If
 
                 ' Pitcher and PH both lefty
                 If iPitThrows = -1 And iBatHits < 0 And pinchBAvg > battrBAvg + 45 Then
-                    If abRand < batRating(P, I,  SS_B_AB) Then Call LPhForPosPlayer(I): Call LPinchHitter: GoTo LContinueBatter
+                    If abRand < batRating(P, I,  SS_B_AB) Then Call LPhForPosPlayer(I): Call LPinchHitter: GoTo LDefenseOptions
                 End If
 
                 ' Pitcher and PH on opposite sides
                 If (iPitThrows = -1 And iBatHits >= 0 Or iPitThrows = 1 And iBatHits <= 0) And pinchBAvg > battrBAvg + 30 Then
-                    If abRand < batRating(P, I,  SS_B_AB) Then Call LPhForPosPlayer(I): Call LPinchHitter: GoTo LContinueBatter
+                    If abRand < batRating(P, I,  SS_B_AB) Then Call LPhForPosPlayer(I): Call LPinchHitter: GoTo LDefenseOptions
                 End If
 
             End If
@@ -6535,7 +6386,7 @@ Sub SOURCE ()
     Next I
 
     go$ = LNoPinchHitter$(MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
-    If go$ = "LContinueBatter" Then Goto LContinueBatter
+    If go$ = "LDefenseOptions" Then Goto LDefenseOptions
     If go$ = "LBunt" Then Goto LBunt
     If go$ = "LHitAndRun"  Then Goto LHitAndRun
     If go$ = "LExecuteOffense" Then Goto LExecuteOffense
@@ -6637,12 +6488,12 @@ Sub SOURCE ()
             End If
 
             Call LPinchHitter
-            GoTo LContinueBatter
+            GoTo LDefenseOptions
 
         End If
 
         go$ = LNoPinchHitter$(MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
-        If go$ = "LContinueBatter" Then Goto LContinueBatter
+        If go$ = "LDefenseOptions" Then Goto LDefenseOptions
         If go$ = "LBunt" Then Goto LBunt
         If go$ = "LHitAndRun"  Then Goto LHitAndRun
         If go$ = "LExecuteOffense" Then Goto LExecuteOffense
@@ -6796,7 +6647,7 @@ Function LPassedBall$
 
     If baseRunners = 0 And SO <> 1 Then
         Call FOULBALL
-        LPassedBall$ = "LContinueBatter"
+        LPassedBall$ = "LDefenseOptions"
         Exit Function
     End If
 
@@ -8472,7 +8323,7 @@ Function LNoPinchHitter$ (MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls
 
     If MS% = 1 Then
         MS% = 0
-        LNoPinchHitter$ = "LContinueBatter"
+        LNoPinchHitter$ = "LDefenseOptions"
         Exit Function
     End If
 
@@ -9831,6 +9682,165 @@ Sub LBallHitInAir
     End Select
 
 End sub
+
+
+Sub LBallHitOnGround
+    Shared I1, S2%, P2, errorOnPlay%, I3, stealing, baseRunners, INFPOS%, DPC%, TB, grounderDir$()
+
+    S2% = EVENT_GROUNDER
+    Call GETINFIELDER(currFielder, P, I1, D, S2%, P2)
+    Call WINDEX
+
+    S2% = EVENT_GROUNDER
+    Call DELIVERY(D)
+    Call GROUNDERPBP(currFielder, D)
+
+    If currFielder <> 2 Then
+        If currFielder = 1 Then
+            pbpString$ = pbpString$ + "the pitcher"
+            Call PBP(pbpString$)
+        Else
+            pbpString$ = pbpString$ + grounderDir$(currFielder)
+            Call PBP(pbpString$)
+        End If
+    End If
+
+    Call Rolld100(RN)
+
+    If (baseRunners = 1 Or baseRunners = 4 Or _
+        ( (baseRunners = 7 Or baseRunners = 5) And INFPOS% < INF_IN) ) And nbrOuts(0) <= 1 And RN <= 50 Then
+        DPC% = 1
+        Call DPPBP
+    End If
+
+    If fldPos(P, currLineupSlot(P)) <> 1 Then
+        Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
+    Else
+        Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
+    End If
+
+    Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+
+    If errorOnPlay% = 1 Then Exit Sub
+
+    ' *** 2 outs, bases empty, runner 2nd, runner 3rd, or 2nd&3rd ***
+    If nbrOuts(0) = 2 Or baseRunners = 0 Or baseRunners = 2 Or baseRunners = 3 Or baseRunners = 6 Then Call LGroundBall: Exit Sub
+
+    H6% = Int(Rnd(1) * 1000) + 1
+    E2% = ((teamRat_GAME(D, 5) - 80) * 4)
+    E3% = ((5 - batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_Run)) * 9)
+
+    If (currFielder = 2 And H6% > 250 + E2% + E3%) Or (H6% > 490 + E2% + E3%) Or P2 = OFF_HIT_N_RUN Then Call LGroundBall: Exit Sub
+
+    S2% = EVENT_GROUNDER
+
+    If baseRunners = 4 Then
+
+        If currFielder = 5 And Int(Rnd(1) * 3) + 1 = 1 Then
+            A5%(3) = 0
+            A5%(2) = 11
+            A5%(1) = 0
+            A5%(0) = 0
+            Call LProcessOutAndDoublePlay
+            Exit Sub
+
+        End If
+
+        If currFielder = 2 Then
+            Call CREDITASSIST(currFielder, D)
+            A5%(3) = 0
+            A5%(2) = 11
+            A5%(1) = 0
+            A5%(0) = 0
+            Call LProcessOutAndDoublePlay
+            Exit Sub
+        End If
+
+    End If
+
+    If baseRunners = 7 And currFielder = 1 Then
+        Call CREDITASSIST(currFielder, D)
+        TB = 9
+        currFielder = 2
+        Call PBP("He throws home")
+        A5%(3) = 11
+        A5%(1) = 0
+        A5%(2) = 0
+        A5%(0) = 0
+        Call LProcessOutAndDoublePlay
+        Exit Sub
+
+    End If
+
+    If baseRunners = 5 And gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 7 And nbrOuts(0) = 0 _
+        And INFPOS% > INF_BACK And (currFielder = 5 Or currFielder = 3) Then Call LGroundBall: Exit Sub
+
+    If baseRunners = 7 And INFPOS% > INF_BACK And (currFielder = 5 Or currFielder = 3) Then
+        Call CREDITASSIST(currFielder, D)
+        TB = 9
+        currFielder = 2
+        Call PBP("He fires it home")
+        A5%(3) = 11
+        A5%(1) = 0
+        A5%(2) = 0
+        A5%(0) = 0
+        Call LProcessOutAndDoublePlay
+        Exit Sub
+    End If
+
+    If baseRunners = 7 And INFPOS% = INF_IN And currFielder = 4 Then
+        Call CREDITASSIST(currFielder, D)
+        TB = 9
+        currFielder = 2
+        Call PBP("He throws home for the force")
+        A5%(3) = 11
+        A5%(1) = 0
+        A5%(2) = 0
+        A5%(0) = 0
+        Call LProcessOutAndDoublePlay
+        Exit Sub
+    End If
+
+
+    If baseRunners = 7 And INFPOS% = INF_IN And currFielder = 6 Then
+        Call CREDITASSIST(currFielder, D)
+        TB = 9
+        currFielder = 2
+        Call PBP("He goes home with it")
+        A5%(3) = 11
+        A5%(1) = 0
+        A5%(2) = 0
+        A5%(0) = 0
+        Call LProcessOutAndDoublePlay
+        Exit Sub
+    End If
+
+
+    If currFielder <= 4 Then
+        Call CREDITASSIST(currFielder, D)
+        currFielder = 6
+        Call PBP("He throws to " + batters$(D, fielder(D, 6)))
+    Else
+        Call CREDITASSIST(currFielder, D)
+        currFielder = 4
+        Call PBP("He throws to " + batters$(D, fielder(D, 4)))
+    End If
+
+    A5%(1) = 11
+    A5%(2) = 0
+    A5%(3) = 0
+    A5%(0) = 0
+
+    If baseRunners = 7 And (currFielder = 2 Or currFielder = 1) Then
+        A5%(3) = 11
+        A5%(2) = 1
+        A5%(1) = 1
+        A5%(0) = 1
+    End If
+
+    Call LProcessOutAndDoublePlay
+
+End Sub
 
 
 '----------------------------------------
@@ -11255,7 +11265,7 @@ Sub CREDITPUTOUT (I3, fbPitcherCoveringFirst%, AST%, D)
         po% = 2
         AST% = 0
         Call INCBATDF(D, fielder(D, po%), LG_B_PO)
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Infield? Putout1 for: "; po%
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Infield A Putout1 for: "; po%; ", fielder: "; fielder(D, po%)
 
     Else
 
@@ -11293,7 +11303,7 @@ Sub CREDITPUTOUT (I3, fbPitcherCoveringFirst%, AST%, D)
         End If
 
         Call INCBATDF(D, fld%, LG_B_PO)
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Infield? Putout2 for: "; po%
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Infield B Putout2 for: "; po%; ", fielder: "; fld%
 
     End If
 
