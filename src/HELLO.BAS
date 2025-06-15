@@ -1774,6 +1774,8 @@ Sub LOADER
 
     End If
 
+    If Environ$("PBPLOG") = "TRUE" Then Close #11
+
     'Close #7
     'End
     'System
@@ -3824,7 +3826,7 @@ Sub SOURCE ()
     Shared fbUnassisted%, fbPitcherCoveringFirst%, AST%, DPC%, TB
     Shared INFPOS%, D2
     Shared P9, PG, TG
-    Shared baseRunners
+    Shared baseRunners, runnerHeld
 
     VV(0)  = 1 : VV(1)  = 1
     VV1(1) = 9 : VV1(1) = 9
@@ -4137,159 +4139,16 @@ Sub SOURCE ()
         '----------------------------------------
         ' DEFENSE OPTIONS MENU
         '----------------------------------------
-       LDefOpts:
-        pbpString$ = PadRight$(Left$(gameTeams$(D), 3) + teamAbbreviatons$(D), 8)
+        go$ = LDefOpts$(F1$())
+        If go$ = "LNextBatter1" Then Goto LNextBatter1
+        If go$ = "LDefenseOptions" Then Goto LDefenseOptions
+        If go$ = "LWeirdPlay"  Then Goto LWeirdPlay
+        If go$ = "GOODBYE" Then Exit Sub
 
-        'Call WINDEX
-
-        If useVGA = 1 Then
-
-            'Printing black on background
-            _PrintMode _KeepBackground , imageScreen&
-            Color &HF0000000
-
-            PrintOnGfx 1, 19, pbpString$, imageScreen&
-
-            F1$(1) = "1-PITCH       "
-            F1$(2) = "2-INT WALK    "
-            F1$(3) = "3-INF IN      "
-            F1$(4) = "4-CORNERS IN  "
-            F1$(5) = "5-INF NORMAL  "
-            F1$(6) = "6-PERSONNEL   "
-            F1$(7) = "8-PITCH AROUND"
-            F1$(8) = "G-GUARD LINES "
-            F1$(9) = "H-HOLD RUNNER "
-
-            '-- B/P do not do anything
-            '-- but could be programmed to
-            '-- Presumably they are for
-            '-- Batter / Pitcher stats
-            F1$(10) = "S/D/B/P STATS "
-
-            For I = 21 To 30
-                PrintOnGfx 1, I - 1, F1$(I - 20), imageScreen&
-            Next
-
-        Else
-
-            Color 14, 0: Print pbpString$
-
-            Print " 1-PITCH          D-DETAILED STATS      "
-            Print " 2-INTENTIONAL BB S-BATTER/PITCHER STATS"
-            Print " 3-INFIELD IN     H-HOLD RUNNER"
-            Print " 4-CORNERS IN     Q-QUIT GAME"
-            Print " 5-INFIELD NORMAL W-WEATHER CONDITIONS"
-            Print " 6-PERSONNEL      G-GUARD LINES"
-            Print " 7-PITCH/HIT AWAY O-GAME OPTIONS"
-            Print " 8-PITCH AROUND"
-            Color 15, 0
-
+        If go$ <> "CONTINUE" Then
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefOpts: "; go$
+            End
         End If
-
-        I$ = GetKeyPress$
-
-        'Restore image where commands went
-        If useVGA = 1 Then _PutImage (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176), backupScreen&, imageScreen&, (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176)
-
-        If UCase$(I$) = "D" Then    'Detailed Stats
-            Call VIEWTEAM
-            Call LResumePlay
-            GoTo LNextBatter1
-        End If
-
-        If UCase$(I$) = "G" Then
-
-            INFPOS% = INF_GUARD_LINES
-
-            If useVGA = 1 Then
-                pbpString$ = "INF:GUARD LINE"
-                _PutImage (52 * FontColAdj, 416)-Step(14 * FontColAdj, 16), backupScreen&, imageScreen&, (52 * FontColAdj, 416)-Step(14 * FontColAdj, 16)
-
-                'Printing black on background
-                _PrintMode _KeepBackground , imageScreen&
-                Color &HF0000000
-
-                PrintOnGfx 52, 26, pbpString$, imageScreen&
-
-                'Printing white on black
-                Color &HFFFFFFFF
-                _PrintMode _FillBackground , imageScreen&
-            Else
-                Color 15, 2
-                Locate 23, 46: Print "GUARD LINE"
-            End If
-
-            GoTo LDefenseOptions
-
-        End If
-
-        If UCase$(I$) = "L" Then
-            Call PopUp_Lineup
-            Call LResumePlay
-            GoTo LNextBatter1
-        End If
-
-        If UCase$(I$) = "O" Then
-            Call OPTIONS
-            Call LResumePlay
-            GoTo LNextBatter1
-        End If
-
-        If UCase$(I$) = "Q" Then
-            If useVGA = 0 Then Cls
-            Call EndOfGame
-            Exit Sub
-        End If
-
-        If UCase$(I$) = "S" Then
-            Call POPUPSTATS
-            Call LResumePlay
-            GoTo LNextBatter1
-        End If
-
-        If UCase$(I$) = "B" Then
-            If useVGA = 1 Then Screen menu&
-            Call PopUp_Batter(D, currPitcher(D))    'ToDo [bm] TEST = should this be the batter instead?
-            Call LResumePlay
-            GoTo LNextBatter1
-        End If
-
-        If UCase$(I$) = "P" Then
-            If useVGA = 1 Then Screen menu&
-            Call PopUp_Pitcher(P, currPitcher(P))
-            Call LResumePlay
-            GoTo LNextBatter1
-        End If
-
-        If UCase$(I$) = "W" Then
-            Call WEATHER
-            Call LResumePlay
-            GoTo LNextBatter1
-        End If
-
-        If UCase$(I$) = "H" Then
-
-            runnerHeld = 1 - runnerHeld
-
-            If useVGA = 1 Then
-                Call HOLDSTATUS_G(runnerHeld)
-            Else
-                Call HOLDSTATUS(runnerHeld)
-            End If
-
-            GoTo LDefOpts
-
-        End If
-
-        If Val(I$) = 7 Then
-            P2 = OFF_HIT_AWAY
-            D2 = DEF_PITCH
-
-            GoTo LWeirdPlay
-
-        End If
-
-        D2 = Val(I$)
 
     Loop Until D2 >= 1 And D2 <= 9
 
@@ -7705,8 +7564,8 @@ End Sub
 
 Sub LPersonnelMenu
     Do
-        Cls
         If useVGA = 1 Then Screen menu&
+        Cls
         TG = 0
         PG = 0
         Color 12: Print Tab(33); "PERSONNEL MENU": Print
@@ -9841,6 +9700,197 @@ Sub LBallHitOnGround
     Call LProcessOutAndDoublePlay
 
 End Sub
+
+
+'----------------------------------------
+' DEFENSE OPTIONS MENU
+'----------------------------------------
+Function LDefOpts$ (F1$())
+    Shared INFPOS%, runnerHeld, P2, D2
+
+    Do
+        pbpString$ = PadRight$(Left$(gameTeams$(D), 3) + teamAbbreviatons$(D), 8)
+
+        'Call WINDEX
+
+        If useVGA = 1 Then
+
+            'Printing black on background
+            _PrintMode _KeepBackground , imageScreen&
+            Color &HF0000000
+
+            PrintOnGfx 1, 19, pbpString$, imageScreen&
+
+            F1$(1) = "1-PITCH       "
+            F1$(2) = "2-INT WALK    "
+            F1$(3) = "3-INF IN      "
+            F1$(4) = "4-CORNERS IN  "
+            F1$(5) = "5-INF NORMAL  "
+            F1$(6) = "6-PERSONNEL   "
+            F1$(7) = "8-PITCH AROUND"
+            F1$(8) = "G-GUARD LINES "
+            F1$(9) = "H-HOLD RUNNER "
+
+            '-- B/P do not do anything
+            '-- but could be programmed to
+            '-- Presumably they are for
+            '-- Batter / Pitcher stats
+            F1$(10) = "S/D/B/P STATS "
+
+            For I = 21 To 30
+                PrintOnGfx 1, I - 1, F1$(I - 20), imageScreen&
+            Next
+
+        Else
+
+            Color 14, 0: Print pbpString$
+
+            Print " 1-PITCH          D-DETAILED STATS      "
+            Print " 2-INTENTIONAL BB S-BATTER/PITCHER STATS"
+            Print " 3-INFIELD IN     H-HOLD RUNNER"
+            Print " 4-CORNERS IN     Q-QUIT GAME"
+            Print " 5-INFIELD NORMAL W-WEATHER CONDITIONS"
+            Print " 6-PERSONNEL      G-GUARD LINES"
+            Print " 7-PITCH/HIT AWAY O-GAME OPTIONS"
+            Print " 8-PITCH AROUND"
+            Color 15, 0
+
+        End If
+
+        I$ = GetKeyPress$
+
+        'Restore image where commands went
+        If useVGA = 1 Then _PutImage (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176), backupScreen&, imageScreen&, (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176)
+
+        If UCase$(I$) = "D" Then    'Detailed Stats
+            Call VIEWTEAM
+            Call LResumePlay
+            LDefOpts$ = "LNextBatter1"
+            Exit Function
+        End If
+
+        If UCase$(I$) = "G" Then
+
+            INFPOS% = INF_GUARD_LINES
+
+            If useVGA = 1 Then
+                pbpString$ = "INF:GUARD LINE"
+                _PutImage (52 * FontColAdj, 416)-Step(14 * FontColAdj, 16), backupScreen&, imageScreen&, (52 * FontColAdj, 416)-Step(14 * FontColAdj, 16)
+
+                'Printing black on background
+                _PrintMode _KeepBackground , imageScreen&
+                Color &HF0000000
+
+                PrintOnGfx 52, 26, pbpString$, imageScreen&
+
+                'Printing white on black
+                Color &HFFFFFFFF
+                _PrintMode _FillBackground , imageScreen&
+            Else
+                Color 15, 2
+                Locate 23, 46: Print "GUARD LINE"
+            End If
+
+            LDefOpts$ = "LDefenseOptions"
+            Exit Function
+
+        End If
+
+        If UCase$(I$) = "L" Then
+            Call PopUp_Lineup
+            Call LResumePlay
+            LDefOpts$ = "LNextBatter1"
+            Exit Function
+        End If
+
+        If UCase$(I$) = "O" Then
+            Call OPTIONS
+            Call LResumePlay
+            LDefOpts$ = "LNextBatter1"
+            Exit Function
+        End If
+
+        If UCase$(I$) = "Q" Then
+            If useVGA = 0 Then Cls
+            Call EndOfGame
+            LDefOpts$ = "GOODBYE"
+            Exit Sub
+        End If
+
+        If UCase$(I$) = "S" Then
+            Call POPUPSTATS
+            Call LResumePlay
+            LDefOpts$ = "LNextBatter1"
+            Exit Function
+        End If
+
+        If UCase$(I$) = "B" Then
+            If useVGA = 1 Then Screen menu&
+            Cls
+            'Call PopUp_Batter(D, currPitcher(D))    'ToDo [bm] TEST = should this be the batter instead?
+            Call PopUp_Batter(P, lineupPlayer(P, currLineupSlot(P)))
+
+            Locate LAST_ROW, 1: Print "HIT ANY KEY TO CONTINUE";
+            foo$ = GetKeyPress$
+            'Color 7, 0
+
+            Call LResumePlay
+            LDefOpts$ = "LNextBatter1"
+            Exit Function
+        End If
+
+        If UCase$(I$) = "P" Then
+            If useVGA = 1 Then Screen menu&
+            Cls
+            Call PopUp_Pitcher(D, currPitcher(D))
+            Locate LAST_ROW, 1: Print "HIT ANY KEY TO CONTINUE";
+
+            foo$ = GetKeyPress$
+            'Color 7, 0
+
+            Call LResumePlay
+            LDefOpts$ = "LNextBatter1"
+            Exit Function
+        End If
+
+        If UCase$(I$) = "W" Then
+            Call WEATHER
+            Call LResumePlay
+            LDefOpts$ = "LNextBatter1"
+            Exit Function
+        End If
+
+        If UCase$(I$) = "H" Then
+
+            runnerHeld = 1 - runnerHeld
+
+            If useVGA = 1 Then
+                Call HOLDSTATUS_G(runnerHeld)
+            Else
+                Call HOLDSTATUS(runnerHeld)
+            End If
+
+            'LDefOpts$ = "LDefOpts"
+            'Exit Function
+
+        End If
+
+        If Val(I$) = 7 Then
+            P2 = OFF_HIT_AWAY
+            D2 = DEF_PITCH
+
+            LDefOpts$ = "LWeirdPlay"
+            Exit Function
+
+        End If
+
+        D2 = Val(I$)
+
+    Loop Until Val(I$) >= 1 And Val(I$) <= 9
+
+    LDefOpts$ = "CONTINUE"
+
+End Function
 
 
 '----------------------------------------
