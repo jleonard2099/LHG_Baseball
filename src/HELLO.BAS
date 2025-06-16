@@ -3850,8 +3850,8 @@ Sub SOURCE ()
     '-- between here and when it is corrupted.
     '-- Here, we save the non-negative value
     '-- so we can restore after it's corrupted.
-    b9d1 = fielder(D, 1)
-    b9d2 = fielder(D, 2)
+    'b9d1 = fielder(D, 1)
+    'b9d2 = fielder(D, 2)
 
     Erase nbrOuts
     Erase b2Base, b2Pitcher, b2Mystery, b1Runner, b1Pitcher
@@ -4079,7 +4079,7 @@ Sub SOURCE ()
    LDefe:
     Do
         go$ = LDefenseOptions$(_False)
-        If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+        If go$ = "LManageDefense"  Then GoTo LManageDefense
         If go$ = "LNextBatter1"    Then GoTo LNextBatter1
         If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
         If go$ = "GOODBYE"         Then Exit Sub
@@ -4218,7 +4218,7 @@ Sub SOURCE ()
             If go$ = "LDefenseOptions" Then
 
                 go$ = LDefenseOptions$(_False)
-                If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+                If go$ = "LManageDefense"  Then GoTo LManageDefense
                 If go$ = "LNextBatter1"    Then GoTo LNextBatter1
                 If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
                 If go$ = "GOODBYE"         Then Exit Sub
@@ -4490,7 +4490,7 @@ Sub SOURCE ()
         End If
 
         go$ = LDefenseOptions$(_False)
-        If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+        If go$ = "LManageDefense"  Then GoTo LManageDefense
         If go$ = "LNextBatter1"    Then GoTo LNextBatter1
         If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
         If go$ = "GOODBYE"         Then Exit Sub
@@ -4571,7 +4571,7 @@ Sub SOURCE ()
     End If
 
     go$ = LDefenseOptions$(_False)
-    If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+    If go$ = "LManageDefense"  Then GoTo LManageDefense
     If go$ = "LNextBatter1"    Then GoTo LNextBatter1
     If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
     If go$ = "GOODBYE"         Then Exit Sub
@@ -4627,7 +4627,7 @@ Sub SOURCE ()
             Call FOULBALL
 
             go$ = LDefenseOptions$(_False)
-            If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+            If go$ = "LManageDefense"  Then GoTo LManageDefense
             If go$ = "LNextBatter1"    Then GoTo LNextBatter1
             If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
             If go$ = "GOODBYE"         Then Exit Sub
@@ -4685,7 +4685,7 @@ Sub SOURCE ()
         If go$ = "LDefenseOptions"        Then
 
             go$ = LDefenseOptions$(_False)
-            If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+            If go$ = "LManageDefense"  Then GoTo LManageDefense
             If go$ = "LNextBatter1"    Then GoTo LNextBatter1
             If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
             If go$ = "GOODBYE"         Then Exit Sub
@@ -4704,7 +4704,7 @@ Sub SOURCE ()
             Call FOULBALL
 
             go$ = LDefenseOptions$(_False)
-            If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+            If go$ = "LManageDefense"  Then GoTo LManageDefense
             If go$ = "LNextBatter1"    Then GoTo LNextBatter1
             If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
             If go$ = "GOODBYE"         Then Exit Sub
@@ -4750,7 +4750,7 @@ Sub SOURCE ()
             Call FOULBALL
 
             go$ = LDefenseOptions$(_False)
-            If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+            If go$ = "LManageDefense"  Then GoTo LManageDefense
             If go$ = "LNextBatter1"    Then GoTo LNextBatter1
             If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
             If go$ = "GOODBYE"         Then Exit Sub
@@ -4939,7 +4939,7 @@ Sub SOURCE ()
                         Call FOULBALL
 
                         go$ = LDefenseOptions$(_False)
-                        If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+                        If go$ = "LManageDefense"  Then GoTo LManageDefense
                         If go$ = "LNextBatter1"    Then GoTo LNextBatter1
                         If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
                         If go$ = "GOODBYE"         Then Exit Sub
@@ -4963,7 +4963,7 @@ Sub SOURCE ()
                     If go$ = "LDefenseOptions"            Then
 
                         go$ = LDefenseOptions$(_False)
-                        If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+                        If go$ = "LManageDefense"  Then GoTo LManageDefense
                         If go$ = "LNextBatter1"    Then GoTo LNextBatter1
                         If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
                         If go$ = "GOODBYE"         Then Exit Sub
@@ -5553,7 +5553,7 @@ Sub SOURCE ()
                     End If
 
                     go$ = LDefenseOptions$(_True)
-                    If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+                    If go$ = "LManageDefense"  Then GoTo LManageDefense
                     If go$ = "LNextBatter1"    Then GoTo LNextBatter1
                     If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
                     If go$ = "GOODBYE"         Then Exit Sub
@@ -5676,7 +5676,7 @@ Sub SOURCE ()
             If useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
 
             go$ = LDefenseOptions$(_True)
-            If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+            If go$ = "LManageDefense"  Then GoTo LManageDefense
             If go$ = "LNextBatter1"    Then GoTo LNextBatter1
             If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
             If go$ = "GOODBYE"         Then Exit Sub
@@ -6038,117 +6038,7 @@ Sub SOURCE ()
     '================================================================================
 
     '-- This can join the code above as there's only one branch to it
-   LCheckIfRelieverNeeded:  'ToDo [bm] Do NEXT
-    runnerHeld = 0
-    If useVGA = 1 Then
-        Call HOLDSTATUS_G(runnerHeld)
-    Else
-        Call HOLDSTATUS(runnerHeld)
-    End If
-
-    A1 = gameScore(D, 0) - gameScore(P, 0)
-
-    If Not (A1 > 1 Or baseRunners = 3 Or baseRunners >= 6) Then
-
-        If baseRunners <> 1 And baseRunners <> 5 Then
-            I2 = 2
-        Else
-
-            I2 = 1
-            J = b2Base(I2)
-
-            If J <> 0 Then
-
-                If fldPos(P, J) <> 1 Then
-
-                    If fldPos(P, J) <> 1 And batRating(P, lineupPlayer(P, J), SS_B_SB) >= 10 Then
-                        runnerHeld = 1
-                        If useVGA = 1 Then
-                            Call HOLDSTATUS_G(runnerHeld)
-                        Else
-                            Call HOLDSTATUS(runnerHeld)
-                        End If
-                    End If
-                End If
-            End If
-        End If
-
-    End If
-
-    If setupUsed(D)  <> -1 And teamMgrProfileVal(D, 589) =  0 And INNING% =  teamMgrProfileVal(D, 588) Then Call PITSTRAT(pinchHitterFlag, newPitcherFlag)
-    If closerUsed(D) <> -1 And teamMgrProfileVal(D, 589) =  0 And INNING% >  teamMgrProfileVal(D, 588) Then Call PITSTRAT(pinchHitterFlag, newPitcherFlag)
-    If closerUsed(D) <> -1 And teamMgrProfileVal(D, 589) <> 0 And INNING% >= teamMgrProfileVal(D, 588) Then Call PITSTRAT(pinchHitterFlag, newPitcherFlag)
-
-    If newPitcherFlag = 1 Then newPitcherFlag = 0: GoTo LManageDefense
-
-    A1 = gameScore(D, 0) - gameScore(P, 0)
-    Call Rolld100(RN0)
-
-    If Not (INNING% < 9 Or closerChecked%(D) = -1 Or teamMgrProfileVal(D, 581) = 999) Then
-
-        closerChecked%(D) = -1
-
-        If A1 <= 3 And A1 >= 0 Then
-
-            If gamePitcher(D) <> 1 Then
-
-                If d100% <= 80 And pitchRating(D, currPitcher(D), 3) < 15 Then
-                    newRelieverNeeded(D) = 1
-                End If
-
-            Else
-
-                ' To avoid division by zero
-                '-- Only in QB64PE version 4.0
-                'pitAvg1 = _IIF(pitchRating(D, currPitcher(D), 1) > 0, CInt(pitchRating(D, currPitcher(D), 16) / pitchRating(D, currPitcher(D), 1) * 100), 0)
-                'pitAvg5 = _IIF(pitchRating(D, currPitcher(D), 5) > 0, CInt(pitchRating(D, currPitcher(D), 16) / pitchRating(D, currPitcher(D), 5) * 100), 0)
-                If pitchRating(D, currPitcher(D), 1) > 0 Then
-                    pitAvg1 = CInt(pitchRating(D, currPitcher(D), 16) / pitchRating(D, currPitcher(D), 1) * 100)
-                Else
-                    pitAvg1 = 0
-                End If
-
-                If pitchRating(D, currPitcher(D), 5) > 0 Then
-                    pitAvg5 = CInt(pitchRating(D, currPitcher(D), 16) / pitchRating(D, currPitcher(D), 5) * 100)
-                Else
-                    pitAvg5 = 0
-                End If
-
-                If gameScore(P, 0) = 0 And pitchRating(D, currPitcher(D), 5) > 0 And RN0 <= pitAvg5 + 10 Then
-                    Call LReliever1(newPitcherFlag)
-                    GoTo LManageDefense
-                End If
-
-                If pitchRating(D, currPitcher(D), 5) > 0 And RN0 <= pitAvg5 Then
-                    Call LReliever1(newPitcherFlag)
-                    GoTo LManageDefense
-                End If
-
-                If pitchEraOpt > 0 And INNING% > 7 And gameScore(D, 0) > gameScore(P, 0) And pitchRating(D, currPitcher(D), 1) > 0 And gamePitcher(D) = 1 And pitAvg1 <= 100 And RN0 <= pitAvg1 Then
-                    Call LReliever1(newPitcherFlag)
-                    GoTo LManageDefense
-                End If
-
-                If pitchEraOpt > 0 And INNING% > 7 And (gameScore(D, 0) >= gameScore(P, 0) Or gameScore(P, 0) - gameScore(D, 0) <= 2) And pitchRating(D, currPitcher(D), 1) > 0 And gamePitcher(D) = 1 And pitAvg1 >= 100 Then
-                    Call LReliever1(newPitcherFlag)
-                    GoTo LManageDefense
-                End If
-
-                If pitchEraOpt >= 8 Then
-                    Call LReliever1(newPitcherFlag)
-                    GoTo LManageDefense
-                End If
-
-                newRelieverNeeded(D) = 1  'new reliever'
-
-            End If
-
-        End If
-
-    End If
-
-    Call LReliever1(newPitcherFlag)
-    GoTo LManageDefense
+    'GoTo LManageDefense
 
 
     '----- NOODLE -----
@@ -6194,7 +6084,7 @@ Sub SOURCE ()
                             Call LPinchHitter
 
                             go$ = LDefenseOptions$(_False)
-                            If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+                            If go$ = "LManageDefense"  Then GoTo LManageDefense
                             If go$ = "LNextBatter1"    Then GoTo LNextBatter1
                             If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
                             If go$ = "GOODBYE"         Then Exit Sub
@@ -6221,7 +6111,7 @@ Sub SOURCE ()
         If go$ = "LDefenseOptions" Then
 
             go$ = LDefenseOptions$(_False)
-            If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+            If go$ = "LManageDefense"  Then GoTo LManageDefense
             If go$ = "LNextBatter1"    Then GoTo LNextBatter1
             If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
             If go$ = "GOODBYE"         Then Exit Sub
@@ -6261,7 +6151,7 @@ Sub SOURCE ()
                         Call LPinchHitter
 
                         go$ = LDefenseOptions$(_False)
-                        If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+                        If go$ = "LManageDefense"  Then GoTo LManageDefense
                         If go$ = "LNextBatter1"    Then GoTo LNextBatter1
                         If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
                         If go$ = "GOODBYE"         Then Exit Sub
@@ -6281,7 +6171,7 @@ Sub SOURCE ()
                         Call LPinchHitter
 
                         go$ = LDefenseOptions$(_False)
-                        If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+                        If go$ = "LManageDefense"  Then GoTo LManageDefense
                         If go$ = "LNextBatter1"    Then GoTo LNextBatter1
                         If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
                         If go$ = "GOODBYE"         Then Exit Sub
@@ -6300,7 +6190,7 @@ Sub SOURCE ()
                         Call LPinchHitter
 
                         go$ = LDefenseOptions$(_False)
-                        If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+                        If go$ = "LManageDefense"  Then GoTo LManageDefense
                         If go$ = "LNextBatter1"    Then GoTo LNextBatter1
                         If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
                         If go$ = "GOODBYE"         Then Exit Sub
@@ -6322,7 +6212,7 @@ Sub SOURCE ()
     If go$ = "LDefenseOptions" Then
 
         go$ = LDefenseOptions$(_False)
-        If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+        If go$ = "LManageDefense"  Then GoTo LManageDefense
         If go$ = "LNextBatter1"    Then GoTo LNextBatter1
         If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
         If go$ = "GOODBYE"         Then Exit Sub
@@ -6436,7 +6326,7 @@ Sub SOURCE ()
             Call LPinchHitter
 
             go$ = LDefenseOptions$(_False)
-            If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+            If go$ = "LManageDefense"  Then GoTo LManageDefense
             If go$ = "LNextBatter1"    Then GoTo LNextBatter1
             If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
             If go$ = "GOODBYE"         Then Exit Sub
@@ -6452,7 +6342,7 @@ Sub SOURCE ()
         If go$ = "LDefenseOptions" Then
 
             go$ = LDefenseOptions$(_False)
-            If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+            If go$ = "LManageDefense"  Then GoTo LManageDefense
             If go$ = "LNextBatter1"    Then GoTo LNextBatter1
             If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
             If go$ = "GOODBYE"         Then Exit Sub
@@ -10068,8 +9958,9 @@ Function LDefenseOptions$(skipSetup%)
 
        'LContinueBatter2:
         If (playerMode = 2 Or playerMode = 1 And P <> compTeam) Then
-            If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDefenseOptions RETURNING LCheckIfRelieverNeeded"    'ToDo [bm] REMOVE
-            LDefenseOptions$ = "LCheckIfRelieverNeeded"
+            Call LCheckIfRelieverNeeded(newPitcherFlag)
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDefenseOptions RETURNING LManageDefense"    'ToDo [bm] REMOVE
+            LDefenseOptions$ = "LManageDefense"
             Exit Function
         End If
 
@@ -10185,6 +10076,109 @@ Function LManageDefe$
     LManageDefe$ = "CONTINUE"
 
 End Function
+
+
+Sub LCheckIfRelieverNeeded (newPitcherFlag)
+    Shared runnerHeld, baseRunners, setupUsed(), closerUsed()
+
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "LCheckIfReleiverNeeded"    'ToDo [bm] REMOVE
+
+    runnerHeld = 0
+    If useVGA = 1 Then
+        Call HOLDSTATUS_G(runnerHeld)
+    Else
+        Call HOLDSTATUS(runnerHeld)
+    End If
+
+    A1 = gameScore(D, 0) - gameScore(P, 0)
+
+    If Not (A1 > 1 Or baseRunners = 3 Or baseRunners >= 6) Then
+
+        If baseRunners <> 1 And baseRunners <> 5 Then
+            I2 = 2
+        Else
+
+            I2 = 1
+            J = b2Base(I2)
+
+            If J <> 0 Then
+
+                If fldPos(P, J) <> 1 Then
+
+                    If fldPos(P, J) <> 1 And batRating(P, lineupPlayer(P, J), SS_B_SB) >= 10 Then
+                        runnerHeld = 1
+                        If useVGA = 1 Then
+                            Call HOLDSTATUS_G(runnerHeld)
+                        Else
+                            Call HOLDSTATUS(runnerHeld)
+                        End If
+                    End If
+                End If
+            End If
+        End If
+
+    End If
+
+    If setupUsed(D)  <> -1 And teamMgrProfileVal(D, 589) =  0 And INNING% =  teamMgrProfileVal(D, 588) Then Call PITSTRAT(pinchHitterFlag, newPitcherFlag)
+    If closerUsed(D) <> -1 And teamMgrProfileVal(D, 589) =  0 And INNING% >  teamMgrProfileVal(D, 588) Then Call PITSTRAT(pinchHitterFlag, newPitcherFlag)
+    If closerUsed(D) <> -1 And teamMgrProfileVal(D, 589) <> 0 And INNING% >= teamMgrProfileVal(D, 588) Then Call PITSTRAT(pinchHitterFlag, newPitcherFlag)
+
+    If newPitcherFlag = 1 Then newPitcherFlag = 0: Exit Sub
+
+    A1 = gameScore(D, 0) - gameScore(P, 0)
+    Call Rolld100(RN0)
+
+    If Not (INNING% < 9 Or closerChecked%(D) = -1 Or teamMgrProfileVal(D, 581) = 999) Then
+
+        closerChecked%(D) = -1
+
+        If A1 <= 3 And A1 >= 0 Then
+
+            If gamePitcher(D) <> 1 Then
+
+                If d100% <= 80 And pitchRating(D, currPitcher(D), 3) < 15 Then
+                    newRelieverNeeded(D) = 1
+                End If
+
+            Else
+
+                ' To avoid division by zero
+                '-- Only in QB64PE version 4.0
+                'pitAvg1 = _IIF(pitchRating(D, currPitcher(D), 1) > 0, CInt(pitchRating(D, currPitcher(D), 16) / pitchRating(D, currPitcher(D), 1) * 100), 0)
+                'pitAvg5 = _IIF(pitchRating(D, currPitcher(D), 5) > 0, CInt(pitchRating(D, currPitcher(D), 16) / pitchRating(D, currPitcher(D), 5) * 100), 0)
+                If pitchRating(D, currPitcher(D), 1) > 0 Then
+                    pitAvg1 = CInt(pitchRating(D, currPitcher(D), 16) / pitchRating(D, currPitcher(D), 1) * 100)
+                Else
+                    pitAvg1 = 0
+                End If
+
+                If pitchRating(D, currPitcher(D), 5) > 0 Then
+                    pitAvg5 = CInt(pitchRating(D, currPitcher(D), 16) / pitchRating(D, currPitcher(D), 5) * 100)
+                Else
+                    pitAvg5 = 0
+                End If
+
+                If gameScore(P, 0) = 0 And pitchRating(D, currPitcher(D), 5) > 0 And RN0 <= pitAvg5 + 10 Then Call LReliever1(newPitcherFlag): Exit Sub
+
+                If pitchRating(D, currPitcher(D), 5) > 0 And RN0 <= pitAvg5 Then Call LReliever1(newPitcherFlag): Exit Sub
+
+                If pitchEraOpt > 0 And INNING% > 7 And gameScore(D, 0) > gameScore(P, 0) And pitchRating(D, currPitcher(D), 1) > 0 And gamePitcher(D) = 1 And pitAvg1 <= 100 And RN0 <= pitAvg1 Then Call LReliever1(newPitcherFlag): Exit Sub
+
+                If pitchEraOpt > 0 And INNING% > 7 And (gameScore(D, 0) >= gameScore(P, 0) Or gameScore(P, 0) - gameScore(D, 0) <= 2) And pitchRating(D, currPitcher(D), 1) > 0 And gamePitcher(D) = 1 And pitAvg1 >= 100 Then Call LReliever1(newPitcherFlag): Exit Sub
+
+                If pitchEraOpt >= 8 Then Call LReliever1(newPitcherFlag): Exit Sub
+
+                newRelieverNeeded(D) = 1  'new reliever'
+
+            End If
+
+        End If
+
+    End If
+
+    Call LReliever1(newPitcherFlag)
+
+End Sub
 
 
 '----------------------------------------
@@ -17815,8 +17809,8 @@ Sub GETWEATHER (windDir, windSpeed, gameMonth, WF!, skyType, gameTemp, rainDelay
     End If
 
     If teamRat_GAME(1, 13) = 2 Or teamRat_GAME(1, 13) = 4 Or teamRat_GAME(1, 13) = 10 Or teamRat_GAME(1, 13) = 13 Or teamRat_GAME(1, 13) = 24 Then
-        precipType = 4
-        skyType = 4
+        precipType = 4  'NONE
+        skyType = 4     'DOME
     End If
 
 End Sub
