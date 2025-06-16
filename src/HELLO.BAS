@@ -4076,141 +4076,30 @@ Sub SOURCE ()
         GoTo LGameOver
     End If
 
-   LDefenseOptions:
-
+   LDefe:
     Do
-
-        If useVGA = 1 Then
-            _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
-        Else
-            Color 14, 0
-        End If
-
-        I2 = INNING%
-
-        I0 = P
-
-        'Move cursor to current inning if score > 0
-        If inningScore(P, INNING%) > 0 Then
-            If useVGA = 1 Then
-                Call INNDISP_G(I2, I0)
-            Else
-                Call INNDISP(I2, I0)
-            End If
-        End If
-
-        'Print total score
-        If useVGA = 1 Then
-
-            FORMATTED$ = FUsing$(Str$(gameScore(I0, 0)), "##", 1)
-            PrintOnGfx 53, I0 + 28, FORMATTED$, imageScreen&
-
-            FORMATTED$ = FUsing$(Str$(gameScore(D, 2)), "##", 1)
-            'PrintOnGfx 59, 1 - I0 + 28, FORMATTED$, imageScreen&
-            PrintOnGfx 59, D + 28, FORMATTED$, imageScreen&
-
-        Else
-
-            Locate I0 + 2, 40
-            Print Using "##"; gameScore(I0, 0);
-            Locate D + 2, 46
-            Print Using "##"; gameScore(D, 2);
-            Color 15, 0
-
-        End If
-
-        runnerOn2nd = b2Base(2)
-        errorOnPlay% = 0
-
-       LContinueBatter2:
-        If (playerMode = 2 Or playerMode = 1 And P <> compTeam) Then
-            GoTo LCheckIfRelieverNeeded
-        End If
-
-        If baseRunners = 1 Or baseRunners = 5 Then
-            runnerHeld = 1
-            If useVGA = 1 Then
-                Call HOLDSTATUS_G(runnerHeld)
-            Else
-                Call HOLDSTATUS(runnerHeld)
-            End If
-        End If
-
-        '----------------------------------------
-        ' DEFENSE OPTIONS MENU
-        '----------------------------------------
-        go$ = LDefOpts$(F1$())
-        If go$ = "LNextBatter1" Then Goto LNextBatter1
-        If go$ = "LDefenseOptions" Then Goto LDefenseOptions
-        If go$ = "LWeirdPlay"  Then Goto LWeirdPlay
-        If go$ = "GOODBYE" Then Exit Sub
+        go$ = LDefenseOptions$(_False)
+        If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+        If go$ = "LNextBatter1"    Then GoTo LNextBatter1
+        If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+        If go$ = "GOODBYE"         Then Exit Sub
 
         If go$ <> "CONTINUE" Then
-            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefOpts: "; go$
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
             End
         End If
 
-    Loop Until D2 >= 1 And D2 <= 9
+       LManageDefense:
+        go$ = LManageDefe$
+        If go$ = "LNextBatter0"    Then GoTo LNextBatter0
+        If go$ = "LNextBatter1"    Then GoTo LNextBatter1
+        If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
 
-
-   LManageDefense:
-
-    Select Case D2
-        Case 1  'Pitch
-
-        Case 2  'Intentional BB
-            Call WINDEX
-            Call BASEONBALLS(S2%, D2, D, P)
-            Call LBatterGoesTo1st
-            GoTo LNextBatter0
-
-        Case 3
-            INFPOS% = INF_IN
-            infStatus$ = "INF:INFIELD IN"
-
-        Case 4
-            INFPOS% = INF_CORNERS_IN
-            infStatus$ = "INF:CORNERS IN"
-
-        Case 5
-            INFPOS% = INF_BACK
-            infStatus$ = "INF:NORMAL    "
-
-        Case 6
-            P9 = D
-            'W5 = -1
-            'W6 = -1
-            Call LPersonnelMenu
-            Goto LNextBatter1
-
-    End Select
-
-    'We've assigned the text,
-    'now we have to print it on the screen
-    If D2 >= 3 And D2 <= 5 Then
-
-        If useVGA = 1 Then
-            'Restore image where options go
-            _PutImage (52 * FontColAdj, 416)-Step(14 * FontColAdj, 16), backupScreen&, imageScreen&, (52 * FontColAdj, 416)-Step(14 * FontColAdj, 16)
-
-            'Printing black on background
-            _PrintMode _KeepBackground , imageScreen&
-            Color &HF0000000
-
-            'Print infield status
-            PrintOnGfx 52, 26, infStatus$, imageScreen&
-
-            'Printing white on black
-            Color &HFFFFFFFF
-            _PrintMode _FillBackground , imageScreen&
-        Else
-            Color 15, 2
-            Locate 23, 46: Print infStatus$
+        If go$ <> "CONTINUE" Then
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LManageDefe: "; go$
+            End
         End If
-
-        GoTo LDefenseOptions
-
-    End If
+    Loop While D2 >= 3 And D2 <= 5
 
     '----------------------------------------
     ' OFFENSE OPTIONS MENU
@@ -4326,7 +4215,20 @@ Sub SOURCE ()
             End If
 
             go$ = LNoPinchHitter$(MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
-            If go$ = "LDefenseOptions" Then Goto LDefenseOptions
+            If go$ = "LDefenseOptions" Then
+
+                go$ = LDefenseOptions$(_False)
+                If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+                If go$ = "LNextBatter1"    Then GoTo LNextBatter1
+                If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+                If go$ = "GOODBYE"         Then Exit Sub
+
+                If go$ <> "CONTINUE" Then
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                    End
+                End If
+            End If
+
             If go$ = "LBunt" Then Goto LBunt
             If go$ = "LHitAndRun"  Then Goto LHitAndRun
             If go$ = "LExecuteOffense" Then Goto LExecuteOffense
@@ -4587,7 +4489,16 @@ Sub SOURCE ()
             Call MAINSCREEN(D, P, nbrBalls, nbrStrikes, MO)
         End If
 
-        GoTo LDefenseOptions
+        go$ = LDefenseOptions$(_False)
+        If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+        If go$ = "LNextBatter1"    Then GoTo LNextBatter1
+        If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+        If go$ = "GOODBYE"         Then Exit Sub
+
+        If go$ <> "CONTINUE" Then
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+            End
+        End If
 
     End If
 
@@ -4659,7 +4570,16 @@ Sub SOURCE ()
         Call MAINSCREEN(D, P, nbrBalls, nbrStrikes, MO)
     End If
 
-    GoTo LDefenseOptions
+    go$ = LDefenseOptions$(_False)
+    If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+    If go$ = "LNextBatter1"    Then GoTo LNextBatter1
+    If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+    If go$ = "GOODBYE"         Then Exit Sub
+
+    If go$ <> "CONTINUE" Then
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+        End
+    End If
 
     '----- NOODLE -----
 
@@ -4705,7 +4625,18 @@ Sub SOURCE ()
         ' *** balk ***
         If baseRunners = 0 Then
             Call FOULBALL
-            GoTo LDefenseOptions
+
+            go$ = LDefenseOptions$(_False)
+            If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+            If go$ = "LNextBatter1"    Then GoTo LNextBatter1
+            If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+            If go$ = "GOODBYE"         Then Exit Sub
+
+            If go$ <> "CONTINUE" Then
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                End
+            End If
+
         Else
             S2% = EVENT_BALK
 
@@ -4751,14 +4682,38 @@ Sub SOURCE ()
 
         go$ = LPassedBall$
         If go$ = "LNextBatter1"           Then GoTo LNextBatter1
-        If go$ = "LDefenseOptions"        Then GoTo LDefenseOptions
+        If go$ = "LDefenseOptions"        Then
+
+            go$ = LDefenseOptions$(_False)
+            If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+            If go$ = "LNextBatter1"    Then GoTo LNextBatter1
+            If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+            If go$ = "GOODBYE"         Then Exit Sub
+
+            If go$ <> "CONTINUE" Then
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                End
+            End If
+
+        End If
         If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
         If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LPassedBall: "; go$
         End
 
         If baseRunners = 0 And SO <> 1 Then
             Call FOULBALL
-            GoTo LDefenseOptions
+
+            go$ = LDefenseOptions$(_False)
+            If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+            If go$ = "LNextBatter1"    Then GoTo LNextBatter1
+            If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+            If go$ = "GOODBYE"         Then Exit Sub
+
+            If go$ <> "CONTINUE" Then
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                End
+            End If
+
         End If
 
         S2% = EVENT_PB
@@ -4793,7 +4748,18 @@ Sub SOURCE ()
         ' *** wild pitch ***
         If baseRunners = 0 And SO <> 1 Then
             Call FOULBALL
-            GoTo LDefenseOptions
+
+            go$ = LDefenseOptions$(_False)
+            If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+            If go$ = "LNextBatter1"    Then GoTo LNextBatter1
+            If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+            If go$ = "GOODBYE"         Then Exit Sub
+
+            If go$ <> "CONTINUE" Then
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                End
+            End If
+
         End If
 
         Call WILDPITCH(S2%, D)
@@ -4971,7 +4937,18 @@ Sub SOURCE ()
                     ' *** wild pitch ***
                     If baseRunners = 0 And SO <> 1 Then
                         Call FOULBALL
-                        GoTo LDefenseOptions
+
+                        go$ = LDefenseOptions$(_False)
+                        If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+                        If go$ = "LNextBatter1"    Then GoTo LNextBatter1
+                        If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+                        If go$ = "GOODBYE"         Then Exit Sub
+
+                        If go$ <> "CONTINUE" Then
+                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                            End
+                        End If
+
                     Else
                         Call WILDPITCH(S2%, D)
                         go$ = LBallGetsPastCatcher$
@@ -4983,7 +4960,20 @@ Sub SOURCE ()
                 Else
                     go$ = LPassedBall$
                     If go$ = "LNextBatter1"               Then GoTo LNextBatter1
-                    If go$ = "LDefenseOptions"            Then GoTo LDefenseOptions
+                    If go$ = "LDefenseOptions"            Then
+
+                        go$ = LDefenseOptions$(_False)
+                        If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+                        If go$ = "LNextBatter1"    Then GoTo LNextBatter1
+                        If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+                        If go$ = "GOODBYE"         Then Exit Sub
+
+                        If go$ <> "CONTINUE" Then
+                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                            End
+                        End If
+                    End If
+
                     If go$ = "LCheckForOptionsOrQuit"     Then GoTo LCheckForOptionsOrQuit
                     If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LPassedBall: "; go$
                     End
@@ -5562,7 +5552,16 @@ Sub SOURCE ()
                         _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
                     End If
 
-                    GoTo LContinueBatter2
+                    go$ = LDefenseOptions$(_True)
+                    If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+                    If go$ = "LNextBatter1"    Then GoTo LNextBatter1
+                    If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+                    If go$ = "GOODBYE"         Then Exit Sub
+
+                    If go$ <> "CONTINUE" Then
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                        End
+                    End If
 
                 Case 3
                     go$ = LGoodBunt$
@@ -5676,7 +5675,16 @@ Sub SOURCE ()
 
             If useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
 
-            GoTo LContinueBatter2
+            go$ = LDefenseOptions$(_True)
+            If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+            If go$ = "LNextBatter1"    Then GoTo LNextBatter1
+            If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+            If go$ = "GOODBYE"         Then Exit Sub
+
+            If go$ <> "CONTINUE" Then
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                End
+            End If
 
     End Select
 
@@ -6030,7 +6038,7 @@ Sub SOURCE ()
     '================================================================================
 
     '-- This can join the code above as there's only one branch to it
-   LCheckIfRelieverNeeded:
+   LCheckIfRelieverNeeded:  'ToDo [bm] Do NEXT
     runnerHeld = 0
     If useVGA = 1 Then
         Call HOLDSTATUS_G(runnerHeld)
@@ -6184,7 +6192,17 @@ Sub SOURCE ()
 
                             Call REPLACEMENTS(P, currLineupSlot(P), lineupPlayer(P, currLineupSlot(P)))
                             Call LPinchHitter
-                            GoTo LDefenseOptions
+
+                            go$ = LDefenseOptions$(_False)
+                            If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+                            If go$ = "LNextBatter1"    Then GoTo LNextBatter1
+                            If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+                            If go$ = "GOODBYE"         Then Exit Sub
+
+                            If go$ <> "CONTINUE" Then
+                                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                                End
+                            End If
 
                         End If
 
@@ -6200,7 +6218,20 @@ Sub SOURCE ()
 
     If INNING% < 6 Then    ' [bm] KLUDGE: Don't pinch hit for a position player before the 6th inning
         go$ = LNoPinchHitter$(MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
-        If go$ = "LDefenseOptions" Then Goto LDefenseOptions
+        If go$ = "LDefenseOptions" Then
+
+            go$ = LDefenseOptions$(_False)
+            If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+            If go$ = "LNextBatter1"    Then GoTo LNextBatter1
+            If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+            If go$ = "GOODBYE"         Then Exit Sub
+
+            If go$ <> "CONTINUE" Then
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                End
+            End If
+        End If
+
         If go$ = "LBunt" Then Goto LBunt
         If go$ = "LHitAndRun"  Then Goto LHitAndRun
         If go$ = "LExecuteOffense" Then Goto LExecuteOffense
@@ -6225,17 +6256,60 @@ Sub SOURCE ()
 
                 ' Pitcher and PH both righty
                 If iPitThrows =  1 And iBatHits > 0 And pinchBAvg > battrBAvg + 35 Then
-                    If abRand < batRating(P, I,  SS_B_AB) Then Call LPhForPosPlayer(I): Call LPinchHitter: GoTo LDefenseOptions
+                    If abRand < batRating(P, I,  SS_B_AB) Then
+                        Call LPhForPosPlayer(I)
+                        Call LPinchHitter
+
+                        go$ = LDefenseOptions$(_False)
+                        If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+                        If go$ = "LNextBatter1"    Then GoTo LNextBatter1
+                        If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+                        If go$ = "GOODBYE"         Then Exit Sub
+
+                        If go$ <> "CONTINUE" Then
+                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                            End
+                        End If
+                    End If
+
                 End If
 
                 ' Pitcher and PH both lefty
                 If iPitThrows = -1 And iBatHits < 0 And pinchBAvg > battrBAvg + 45 Then
-                    If abRand < batRating(P, I,  SS_B_AB) Then Call LPhForPosPlayer(I): Call LPinchHitter: GoTo LDefenseOptions
+                    If abRand < batRating(P, I,  SS_B_AB) Then
+                        Call LPhForPosPlayer(I)
+                        Call LPinchHitter
+
+                        go$ = LDefenseOptions$(_False)
+                        If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+                        If go$ = "LNextBatter1"    Then GoTo LNextBatter1
+                        If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+                        If go$ = "GOODBYE"         Then Exit Sub
+
+                        If go$ <> "CONTINUE" Then
+                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                            End
+                        End If
+                    End If
                 End If
 
                 ' Pitcher and PH on opposite sides
                 If (iPitThrows = -1 And iBatHits >= 0 Or iPitThrows = 1 And iBatHits <= 0) And pinchBAvg > battrBAvg + 30 Then
-                    If abRand < batRating(P, I,  SS_B_AB) Then Call LPhForPosPlayer(I): Call LPinchHitter: GoTo LDefenseOptions
+                    If abRand < batRating(P, I,  SS_B_AB) Then
+                        Call LPhForPosPlayer(I)
+                        Call LPinchHitter
+
+                        go$ = LDefenseOptions$(_False)
+                        If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+                        If go$ = "LNextBatter1"    Then GoTo LNextBatter1
+                        If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+                        If go$ = "GOODBYE"         Then Exit Sub
+
+                        If go$ <> "CONTINUE" Then
+                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                            End
+                        End If
+                    End If
                 End If
 
             End If
@@ -6245,7 +6319,20 @@ Sub SOURCE ()
     Next I
 
     go$ = LNoPinchHitter$(MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
-    If go$ = "LDefenseOptions" Then Goto LDefenseOptions
+    If go$ = "LDefenseOptions" Then
+
+        go$ = LDefenseOptions$(_False)
+        If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+        If go$ = "LNextBatter1"    Then GoTo LNextBatter1
+        If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+        If go$ = "GOODBYE"         Then Exit Sub
+
+        If go$ <> "CONTINUE" Then
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+            End
+        End If
+    End If
+
     If go$ = "LBunt" Then Goto LBunt
     If go$ = "LHitAndRun"  Then Goto LHitAndRun
     If go$ = "LExecuteOffense" Then Goto LExecuteOffense
@@ -6347,12 +6434,35 @@ Sub SOURCE ()
             End If
 
             Call LPinchHitter
-            GoTo LDefenseOptions
+
+            go$ = LDefenseOptions$(_False)
+            If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+            If go$ = "LNextBatter1"    Then GoTo LNextBatter1
+            If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+            If go$ = "GOODBYE"         Then Exit Sub
+
+            If go$ <> "CONTINUE" Then
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                End
+            End If
 
         End If
 
         go$ = LNoPinchHitter$(MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
-        If go$ = "LDefenseOptions" Then Goto LDefenseOptions
+        If go$ = "LDefenseOptions" Then
+
+            go$ = LDefenseOptions$(_False)
+            If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+            If go$ = "LNextBatter1"    Then GoTo LNextBatter1
+            If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+            If go$ = "GOODBYE"         Then Exit Sub
+
+            If go$ <> "CONTINUE" Then
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                End
+            End If
+        End If
+
         If go$ = "LBunt" Then Goto LBunt
         If go$ = "LHitAndRun"  Then Goto LHitAndRun
         If go$ = "LExecuteOffense" Then Goto LExecuteOffense
@@ -9705,9 +9815,10 @@ End Sub
 '----------------------------------------
 ' DEFENSE OPTIONS MENU
 '----------------------------------------
-Function LDefOpts$ (F1$())
+Function LDefOpts$
     Shared INFPOS%, runnerHeld, P2, D2
 
+    Dim Foo1$(10)
     Do
         pbpString$ = PadRight$(Left$(gameTeams$(D), 3) + teamAbbreviatons$(D), 8)
 
@@ -9721,24 +9832,24 @@ Function LDefOpts$ (F1$())
 
             PrintOnGfx 1, 19, pbpString$, imageScreen&
 
-            F1$(1) = "1-PITCH       "
-            F1$(2) = "2-INT WALK    "
-            F1$(3) = "3-INF IN      "
-            F1$(4) = "4-CORNERS IN  "
-            F1$(5) = "5-INF NORMAL  "
-            F1$(6) = "6-PERSONNEL   "
-            F1$(7) = "8-PITCH AROUND"
-            F1$(8) = "G-GUARD LINES "
-            F1$(9) = "H-HOLD RUNNER "
+            Foo1$(1) = "1-PITCH       "
+            Foo1$(2) = "2-INT WALK    "
+            Foo1$(3) = "3-INF IN      "
+            Foo1$(4) = "4-CORNERS IN  "
+            Foo1$(5) = "5-INF NORMAL  "
+            Foo1$(6) = "6-PERSONNEL   "
+            Foo1$(7) = "8-PITCH AROUND"
+            Foo1$(8) = "G-GUARD LINES "
+            Foo1$(9) = "H-HOLD RUNNER "
 
             '-- B/P do not do anything
             '-- but could be programmed to
             '-- Presumably they are for
             '-- Batter / Pitcher stats
-            F1$(10) = "S/D/B/P STATS "
+            Foo1$(10) = "S/D/B/P STATS "
 
             For I = 21 To 30
-                PrintOnGfx 1, I - 1, F1$(I - 20), imageScreen&
+                PrintOnGfx 1, I - 1, Foo1$(I - 20), imageScreen&
             Next
 
         Else
@@ -9765,6 +9876,7 @@ Function LDefOpts$ (F1$())
         If UCase$(I$) = "D" Then    'Detailed Stats
             Call VIEWTEAM
             Call LResumePlay
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDefOpts RETURNING LNextBatter1"    'ToDo [bm] REMOVE
             LDefOpts$ = "LNextBatter1"
             Exit Function
         End If
@@ -9791,6 +9903,7 @@ Function LDefOpts$ (F1$())
                 Locate 23, 46: Print "GUARD LINE"
             End If
 
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDefOpts RETURNING LDefenseOptions"    'ToDo [bm] REMOVE
             LDefOpts$ = "LDefenseOptions"
             Exit Function
 
@@ -9799,6 +9912,7 @@ Function LDefOpts$ (F1$())
         If UCase$(I$) = "L" Then
             Call PopUp_Lineup
             Call LResumePlay
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDefOpts RETURNING LNextBatter1"    'ToDo [bm] REMOVE
             LDefOpts$ = "LNextBatter1"
             Exit Function
         End If
@@ -9806,6 +9920,7 @@ Function LDefOpts$ (F1$())
         If UCase$(I$) = "O" Then
             Call OPTIONS
             Call LResumePlay
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDefOpts RETURNING LNextBatter1"    'ToDo [bm] REMOVE
             LDefOpts$ = "LNextBatter1"
             Exit Function
         End If
@@ -9813,6 +9928,7 @@ Function LDefOpts$ (F1$())
         If UCase$(I$) = "Q" Then
             If useVGA = 0 Then Cls
             Call EndOfGame
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDefOpts RETURNING GOODBYE"    'ToDo [bm] REMOVE
             LDefOpts$ = "GOODBYE"
             Exit Sub
         End If
@@ -9820,6 +9936,7 @@ Function LDefOpts$ (F1$())
         If UCase$(I$) = "S" Then
             Call POPUPSTATS
             Call LResumePlay
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDefOpts RETURNING LNextBatter1"    'ToDo [bm] REMOVE
             LDefOpts$ = "LNextBatter1"
             Exit Function
         End If
@@ -9835,6 +9952,7 @@ Function LDefOpts$ (F1$())
             'Color 7, 0
 
             Call LResumePlay
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDefOpts RETURNING LNextBatter1"    'ToDo [bm] REMOVE
             LDefOpts$ = "LNextBatter1"
             Exit Function
         End If
@@ -9849,6 +9967,7 @@ Function LDefOpts$ (F1$())
             'Color 7, 0
 
             Call LResumePlay
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDefOpts RETURNING LNextBatter1"    'ToDo [bm] REMOVE
             LDefOpts$ = "LNextBatter1"
             Exit Function
         End If
@@ -9856,6 +9975,7 @@ Function LDefOpts$ (F1$())
         If UCase$(I$) = "W" Then
             Call WEATHER
             Call LResumePlay
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDefOpts RETURNING LNextBatter1"    'ToDo [bm] REMOVE
             LDefOpts$ = "LNextBatter1"
             Exit Function
         End If
@@ -9879,6 +9999,7 @@ Function LDefOpts$ (F1$())
             P2 = OFF_HIT_AWAY
             D2 = DEF_PITCH
 
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDefOpts RETURNING LWeirdPlay"    'ToDo [bm] REMOVE
             LDefOpts$ = "LWeirdPlay"
             Exit Function
 
@@ -9886,9 +10007,182 @@ Function LDefOpts$ (F1$())
 
         D2 = Val(I$)
 
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDefOpts D2: "; D2    'ToDo [bm] REMOVE
+
     Loop Until Val(I$) >= 1 And Val(I$) <= 9
 
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDefOpts RETURNING CONTINUE"    'ToDo [bm] REMOVE
     LDefOpts$ = "CONTINUE"
+
+End Function
+
+
+Function LDefenseOptions$(skipSetup%)
+    Shared runnerHeld, D2, runnerOn2nd, errorOnPlay%, baseRunners
+
+    Do
+
+        If skipSetup% Then
+            If useVGA = 1 Then
+                _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
+            Else
+                Color 14, 0
+            End If
+
+            I2 = INNING%
+
+            I0 = P
+
+            'Move cursor to current inning if score > 0
+            If inningScore(P, INNING%) > 0 Then
+                If useVGA = 1 Then
+                    Call INNDISP_G(I2, I0)
+                Else
+                    Call INNDISP(I2, I0)
+                End If
+            End If
+
+            'Print total score
+            If useVGA = 1 Then
+
+                FORMATTED$ = FUsing$(Str$(gameScore(I0, 0)), "##", 1)
+                PrintOnGfx 53, I0 + 28, FORMATTED$, imageScreen&
+
+                FORMATTED$ = FUsing$(Str$(gameScore(D, 2)), "##", 1)
+                'PrintOnGfx 59, 1 - I0 + 28, FORMATTED$, imageScreen&
+                PrintOnGfx 59, D + 28, FORMATTED$, imageScreen&
+
+            Else
+
+                Locate I0 + 2, 40
+                Print Using "##"; gameScore(I0, 0);
+                Locate D + 2, 46
+                Print Using "##"; gameScore(D, 2);
+                Color 15, 0
+
+            End If
+
+            runnerOn2nd = b2Base(2)
+            errorOnPlay% = 0
+        End If
+
+       'LContinueBatter2:
+        If (playerMode = 2 Or playerMode = 1 And P <> compTeam) Then
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDefenseOptions RETURNING LCheckIfRelieverNeeded"    'ToDo [bm] REMOVE
+            LDefenseOptions$ = "LCheckIfRelieverNeeded"
+            Exit Function
+        End If
+
+        If baseRunners = 1 Or baseRunners = 5 Then
+            runnerHeld = 1
+            If useVGA = 1 Then
+                Call HOLDSTATUS_G(runnerHeld)
+            Else
+                Call HOLDSTATUS(runnerHeld)
+            End If
+        End If
+
+        '----------------------------------------
+        ' DEFENSE OPTIONS MENU
+        '----------------------------------------
+        go$ = LDefOpts$
+
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDefenseOptions maybe RETURNING "; go$    'ToDo [bm] REMOVE
+        If go$ = "LNextBatter1"    Then LDefenseOptions$ = "LNextBatter1": Exit Function
+        If go$ = "LWeirdPlay"      Then LDefenseOptions$ = "LWeirdPlay":   Exit Function
+        If go$ = "GOODBYE"         Then LDefenseOptions$ = "GOODBYE":      Exit Function
+        'If go$ = "LDefenseOptions" Then Goto LDefenseOptions
+
+        If go$ <> "CONTINUE" And go$ <> "GOODBYE" And go$ <> "LDefenseOptions" Then
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefOpts: "; go$
+            End
+        End If
+
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDefenseOptions D2: "; D2    'ToDo [bm] REMOVE
+
+    Loop Until D2 >= 1 And D2 <= 9
+
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDefenseOptions RETURNING CONTINUE"    'ToDo [bm] REMOVE
+    LDefenseOptions$ = "CONTINUE"
+
+End Function
+
+
+Function LManageDefe$
+    Shared D2, S2%, INFPOS%
+
+    Select Case D2
+        Case 1  'Pitch
+
+        Case 2  'Intentional BB
+            Call WINDEX
+            Call BASEONBALLS(S2%, D2, D, P)
+            Call LBatterGoesTo1st
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "LManageDefe RETURNING LNextBatter0"    'ToDo [bm] REMOVE
+            LManageDefe$ = "LNextBatter0"
+            Exit Function
+
+        Case 3
+            INFPOS% = INF_IN
+            infStatus$ = "INF:INFIELD IN"
+
+        Case 4
+            INFPOS% = INF_CORNERS_IN
+            infStatus$ = "INF:CORNERS IN"
+
+        Case 5
+            INFPOS% = INF_BACK
+            infStatus$ = "INF:NORMAL    "
+
+        Case 6
+            'P9 = D
+            'W5 = -1
+            'W6 = -1
+            Call LPersonnelMenu
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "LManageDefe RETURNING LNextBatter1"    'ToDo [bm] REMOVE
+            LManageDefe$ = "LNextBatter1"
+            Exit Function
+
+    End Select
+
+    'We've assigned the text,
+    'now we have to print it on the screen
+    If D2 >= 3 And D2 <= 5 Then
+
+        If useVGA = 1 Then
+            'Restore image where options go
+            _PutImage (52 * FontColAdj, 416)-Step(14 * FontColAdj, 16), backupScreen&, imageScreen&, (52 * FontColAdj, 416)-Step(14 * FontColAdj, 16)
+
+            'Printing black on background
+            _PrintMode _KeepBackground , imageScreen&
+            Color &HF0000000
+
+            'Print infield status
+            PrintOnGfx 52, 26, infStatus$, imageScreen&
+
+            'Printing white on black
+            Color &HFFFFFFFF
+            _PrintMode _FillBackground , imageScreen&
+        Else
+            Color 15, 2
+            Locate 23, 46: Print infStatus$
+        End If
+
+        'go$ = LDefenseOptions$(_False)
+        'If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
+        'If go$ = "LNextBatter1"    Then GoTo LNextBatter1
+        'If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+        'If go$ = "GOODBYE"         Then Exit Sub
+
+        'If go$ <> "CONTINUE" Then
+        ''    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LManageDefe: "; go$
+        ''    End
+        'End If
+
+    End If
+
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "LManageDefe RETURNING CONTINUE"    'ToDo [bm] REMOVE
+    LManageDefe$ = "CONTINUE"
 
 End Function
 
