@@ -357,7 +357,7 @@ Sub NewSchedule (scheduleFile$)
             Case "D":
                 ' *** DELETE A GAME FROM THE SCHEDULE ***
                 Do
-                    Locate 24, 1: Input "ENTER GAME # TO DELETE "; targetGame%
+                    Locate LAST_ROW - 3, 1: Input "ENTER GAME # TO DELETE "; targetGame%
                 Loop Until targetGame% >= 1 And targetGame% <= scheduleAP%(0)
 
                 For X = targetGame% To scheduleAP%(0) - 1
