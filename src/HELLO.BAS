@@ -3827,6 +3827,8 @@ Sub SOURCE ()
     Shared INFPOS%, D2
     Shared P9, PG, TG
     Shared baseRunners, runnerHeld
+    Shared pickedOffBase, PO
+
 
     VV(0)  = 1 : VV(1)  = 1
     VV1(1) = 9 : VV1(1) = 9
@@ -4220,9 +4222,22 @@ Sub SOURCE ()
             End If
 
             If go$ = "LBunt" Then Goto LBunt
-            If go$ = "LHitAndRun"  Then Goto LHitAndRun
-            If go$ = "LExecuteOffense" Then Goto LExecuteOffense
             If go$ =  "LSteal" Then Goto LSteal
+            If go$ = "LExecuteOffense" Then
+                go2$ = LExecuteOffense$
+                If go2$ = "LWeirdPlay" Then Goto LWeirdPlay
+                If go2$ = "LNextBatter0"  Then Goto LNextBatter0
+                If go2$ = "LNextBatter1"  Then Goto LNextBatter1
+                If go2$ =  "LSteal" Then Goto LSteal
+            End If
+
+            If go$ = "LHitAndRun"  Then
+                go2$ = LHitAndRun$
+                If go2$ = "LWeirdPlay"   Then Goto LWeirdPlay
+                If go2$ = "LStrikeout"   Then Goto LStrikeout
+                If go2$ = "LNextBatter1" Then Goto LNextBatter1
+                If go2$ = "LSteal"       Then Goto LSteal
+            End If
 
             If go$ <> "CONTINUE" Then
                 If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LNoPinchHitter: "; go$
@@ -4323,115 +4338,17 @@ Sub SOURCE ()
 
     Loop Until P2 >= OFF_HIT_AWAY And P2 <= OFF_PERSONNEL
 
-   LExecuteOffense:
-    Select Case P2
+    go$ = LExecuteOffense$
+    If go$ = "LWeirdPlay"   Then Goto LWeirdPlay
+    If go$ = "LNextBatter0" Then Goto LNextBatter0
+    If go$ = "LNextBatter1" Then Goto LNextBatter1
+    If go$ = "LSteal"       Then Goto LSteal
 
-        Case 1, 4   'Hit away, Bunt
-
-            If D2 <> 8 Then Goto LWeirdPlay
-
-            Call WINDEX
-
-            Call Rolld100(RN)
-
-            If P2 = OFF_BUNT Or (P2 = OFF_HIT_AWAY And RN <= 50) Then Goto LWeirdPlay
-
-            Call BASEONBALLS(S2%, D2, D, P)
-
-            Call LBatterGoesTo1st
-            GoTo LNextBatter0
-
-        Case 2  'Hit and run
-            If nbrOuts(0) = 2 Or (baseRunners <> 1 And baseRunners <> 4 And baseRunners <> 5) Then Goto LNextBatter1
-
-        Case 3  'Steal
-            GoTo LSteal
-
-        Case 5  'Personnel
-            P9 = P
-            'W5 = -1
-            'W6 = -1
-            Call LPersonnelMenu
-            Goto LNextBatter1
-
-    End Select
-
-   LHitAndRun:
-    '-- this is related to the PICKEDOFF routine and it's immediate aftermath
-    If baseRunners = 4 Then pickedOffBase = 3 Else pickedOffBase = 2
-
-    Call Rolld100(I3)
-
-    If I3 < 6 Then
-
-        Call PICKEDOFF(D, pickedOffBase)
-
-        PO = 1
-        A5%(pickedOffBase - 1) = 10
-        nbrOuts(0) = nbrOuts(0) + 1
-        nbrOuts(1) = nbrOuts(1) + 1
-        currFielder = 1
-
-        Call CREDITASSIST(currFielder, D)
-        Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)   'fielder making putout is returned in I3
-        Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
-
-        CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
-
-        If nbrOuts(0) >= 3 Then
-
-            currLineupSlot(P) = currLineupSlot(P) - 1
-            PO = 0
-            GoTo LCheckForOptionsOrQuit
-
-        End If
-
-    End If
-
-    If PO = 1 Then PO = 0: GoTo LNextBatter1
-
-    Call WINDEX
-
-    I3 = Int(Rnd(1) * 1000) + 1
-    I9 = Int(Rnd(1) * 1000) + 1
-
-    If I3 > 350 Then
-        Call PBP("Runner(s) going")
-    Else
-        Call PBP("Count not favorable...hit away")
-        P2 = OFF_HIT_AWAY
-    End If
-
-    Call DELAY
-
-    If I3 <= 350 Then Goto LWeirdPlay
-
-    If I9 <= (game_batRating(P, GM_K, currLineupSlot(P)) * 2 * .33) Then
-
-        nbrStrikes = nbrStrikes + 1
-        Call PBP(player$(0) + " swings and misses")
-        Call DELAY
-
-        If useVGA = 1 Then
-            PrintOnGfx 63, 28, Str$(nbrStrikes), imageScreen&
-        Else
-            Locate 2, 58: Print nbrStrikes
-        End If
-
-        If nbrStrikes = 3 Then
-            GoTo LStrikeout
-        Else
-            GoTo LSteal
-        End If
-    End If
-
-    If I9 <= game_batRating(P, GM_K, currLineupSlot(P)) * 2 Then
-        Call PBP(player$(0) + " fouls off the pitch...hit away")
-        Call DELAY
-        P2 = OFF_HIT_AWAY
-    End If
-
-    GoTo LWeirdPlay
+    go$ = LHitAndRun$
+    If go$ = "LWeirdPlay"   Then Goto LWeirdPlay
+    If go$ = "LStrikeout"   Then Goto LStrikeout
+    If go$ = "LNextBatter1" Then Goto LNextBatter1
+    If go$ = "LSteal"       Then Goto LSteal
 
 
     '--- end of a new sub
@@ -6126,9 +6043,22 @@ Sub SOURCE ()
         End If
 
         If go$ = "LBunt" Then Goto LBunt
-        If go$ = "LHitAndRun"  Then Goto LHitAndRun
-        If go$ = "LExecuteOffense" Then Goto LExecuteOffense
         If go$ =  "LSteal" Then Goto LSteal
+        If go$ = "LExecuteOffense" Then
+            go2$ = LExecuteOffense$
+            If go2$ = "LWeirdPlay" Then Goto LWeirdPlay
+            If go2$ = "LNextBatter0"  Then Goto LNextBatter0
+            If go2$ = "LNextBatter1"  Then Goto LNextBatter1
+            If go2$ =  "LSteal" Then Goto LSteal
+        End If
+
+        If go$ = "LHitAndRun"  Then
+            go2$ = LHitAndRun$
+            If go2$ = "LWeirdPlay"   Then Goto LWeirdPlay
+            If go2$ = "LStrikeout"   Then Goto LStrikeout
+            If go2$ = "LNextBatter1" Then Goto LNextBatter1
+            If go2$ = "LSteal"       Then Goto LSteal
+        End If
 
         If go$ <> "CONTINUE" Then
             If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result B from LNoPinchHitter: "; go$
@@ -6232,9 +6162,22 @@ Sub SOURCE ()
     End If
 
     If go$ = "LBunt" Then Goto LBunt
-    If go$ = "LHitAndRun"  Then Goto LHitAndRun
-    If go$ = "LExecuteOffense" Then Goto LExecuteOffense
     If go$ =  "LSteal" Then Goto LSteal
+    If go$ = "LExecuteOffense" Then
+        go2$ = LExecuteOffense$
+        If go2$ = "LWeirdPlay" Then Goto LWeirdPlay
+        If go2$ = "LNextBatter0"  Then Goto LNextBatter0
+        If go2$ = "LNextBatter1"  Then Goto LNextBatter1
+        If go2$ =  "LSteal" Then Goto LSteal
+    End If
+
+    If go$ = "LHitAndRun"  Then
+        go2$ = LHitAndRun$
+        If go2$ = "LWeirdPlay"   Then Goto LWeirdPlay
+        If go2$ = "LStrikeout"   Then Goto LStrikeout
+        If go2$ = "LNextBatter1" Then Goto LNextBatter1
+        If go2$ = "LSteal"       Then Goto LSteal
+    End If
 
     If go$ <> "CONTINUE" Then
         If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result C from LNoPinchHitter: "; go$
@@ -6367,9 +6310,22 @@ Sub SOURCE ()
         End If
 
         If go$ = "LBunt" Then Goto LBunt
-        If go$ = "LHitAndRun"  Then Goto LHitAndRun
-        If go$ = "LExecuteOffense" Then Goto LExecuteOffense
         If go$ =  "LSteal" Then Goto LSteal
+        If go$ = "LExecuteOffense" Then
+            go2$ = LExecuteOffense$
+            If go2$ = "LWeirdPlay" Then Goto LWeirdPlay
+            If go2$ = "LNextBatter0"  Then Goto LNextBatter0
+            If go2$ = "LNextBatter1"  Then Goto LNextBatter1
+            If go2$ =  "LSteal" Then Goto LSteal
+        End If
+
+        If go$ = "LHitAndRun"  Then
+            go2$ = LHitAndRun$
+            If go2$ = "LWeirdPlay"   Then Goto LWeirdPlay
+            If go2$ = "LStrikeout"   Then Goto LStrikeout
+            If go2$ = "LNextBatter1" Then Goto LNextBatter1
+            If go2$ = "LSteal"       Then Goto LSteal
+        End If
 
         If go$ <> "CONTINUE" Then
             If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result D from LNoPinchHitter: "; go$
@@ -6379,8 +6335,21 @@ Sub SOURCE ()
     End If
 
     go$ = LPossibleHitAndRun$
-    If go$ = "LExecuteOffense" Then Goto LExecuteOffense
-    If go$ = "LHitAndRun" Then Goto LHitAndRun
+    If go$ = "LExecuteOffense" Then
+        go2$ = LExecuteOffense$
+        If go2$ = "LWeirdPlay" Then Goto LWeirdPlay
+        If go2$ = "LNextBatter0"  Then Goto LNextBatter0
+        If go2$ = "LNextBatter1"  Then Goto LNextBatter1
+        If go2$ =  "LSteal" Then Goto LSteal
+    End If
+
+    If go$ = "LHitAndRun" Then
+        go2$ = LHitAndRun$
+        If go2$ = "LWeirdPlay"   Then Goto LWeirdPlay
+        If go2$ = "LStrikeout"   Then Goto LStrikeout
+        If go2$ = "LNextBatter1" Then Goto LNextBatter1
+        If go2$ = "LSteal"       Then Goto LSteal
+    End If
     If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result B from LPossibleHitAndRun: "; go$
     End
 
@@ -8092,7 +8061,7 @@ Function LSetupMen% (I3, newPitcherFlag)
             setupUsed(D) = -1
             If Environ$("MGRLOG") = "TRUE" Then Print #11, "Found SETUP MAN: "; pIdx
             LSetupMen% = _True
-            Exit Sub
+            Exit Function
 
         End If
     Next
@@ -8134,7 +8103,7 @@ Function LClosers% (I3, newPitcherFlag)
             closerUsed(D) = -1
             If Environ$("MGRLOG") = "TRUE" Then Print #11, "Found CLOSER: "; pIdx
             LClosers% = _True
-            Exit Sub
+            Exit Function
 
         End If
     Next
@@ -8175,7 +8144,7 @@ Function LMiddleRelievers% (I3, newPitcherFlag)
             Call NEWPITCHER(pIdx, pinchHitterFlag, newPitcherFlag)
             If Environ$("MGRLOG") = "TRUE" Then Print #11, "Found Middle Reliever: "; pIdx
             LMiddleRelievers% = _True
-            Exit Sub
+            Exit Function
 
         End If
     Next
@@ -9835,7 +9804,7 @@ Function LDefOpts$
             Call EndOfGame
             If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDefOpts RETURNING GOODBYE"    'ToDo [bm] REMOVE
             LDefOpts$ = "GOODBYE"
-            Exit Sub
+            Exit Function
         End If
 
         If UCase$(I$) = "S" Then
@@ -9979,11 +9948,11 @@ Function LDefenseOptions$ (skipSetup%)
 
             go$ = LDefe$(_True)
 
-            If go$ = "LNextBatter0"    Then LDefenseOptions$ = "LNextBatter0": Exit Sub
-            If go$ = "LNextBatter1"    Then LDefenseOptions$ = "LNextBatter1": Exit Sub
-            If go$ = "LWeirdPlay"      Then LDefenseOptions$ = "LWeirdPlay": Exit Sub
-            If go$ = "GOODBYE"         Then LDefenseOptions$ = "GOODBYE": Exit Sub
-            If go$ = "CONTINUE"        Then LDefenseOptions$ = "CONTINUE": Exit Sub
+            If go$ = "LNextBatter0"    Then LDefenseOptions$ = "LNextBatter0": Exit Function
+            If go$ = "LNextBatter1"    Then LDefenseOptions$ = "LNextBatter1": Exit Function
+            If go$ = "LWeirdPlay"      Then LDefenseOptions$ = "LWeirdPlay": Exit Function
+            If go$ = "GOODBYE"         Then LDefenseOptions$ = "GOODBYE": Exit Function
+            If go$ = "CONTINUE"        Then LDefenseOptions$ = "CONTINUE": Exit Function
 
             If go$ <> "CONTINUE" Then
                 If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefe: "; go$
@@ -10217,9 +10186,9 @@ Function LDefe$ (skipSetup%)
             go$ = LDefenseOptions$(_False)
             If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDefe A maybe RETURNING "; go$; ", D2 = "; D2    'ToDo [bm] REMOVE
             'If go$ = "LManageDefense"  Then GoTo LManageDefense
-            If go$ = "LNextBatter1"    Then LDefe$ = "LNextBatter1": Exit Sub
-            If go$ = "LWeirdPlay"      Then LDefe$ = "LWeirdPlay":   Exit Sub
-            If go$ = "GOODBYE"         Then LDefe$ = "GOODBYE":      Exit Sub
+            If go$ = "LNextBatter1"    Then LDefe$ = "LNextBatter1": Exit Function
+            If go$ = "LWeirdPlay"      Then LDefe$ = "LWeirdPlay":   Exit Function
+            If go$ = "GOODBYE"         Then LDefe$ = "GOODBYE":      Exit Function
 
             If go$ <> "CONTINUE" And go$ <> "LManageDefense" Then
                 If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result T from LDefenseOptions: "; go$
@@ -10229,9 +10198,9 @@ Function LDefe$ (skipSetup%)
 
         go$ = LManageDefe$
         If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDefe B maybe RETURNING "; go$; ", D2 = "; D2    'ToDo [bm] REMOVE
-        If go$ = "LNextBatter0"    Then LDefe$ = "LNextBatter0": Exit Sub
-        If go$ = "LNextBatter1"    Then LDefe$ = "LNextBatter1": Exit Sub
-        If go$ = "LWeirdPlay"      Then LDefe$ = "LWeirdPlay":   Exit Sub
+        If go$ = "LNextBatter0"    Then LDefe$ = "LNextBatter0": Exit Function
+        If go$ = "LNextBatter1"    Then LDefe$ = "LNextBatter1": Exit Function
+        If go$ = "LWeirdPlay"      Then LDefe$ = "LWeirdPlay":   Exit Function
 
         If go$ <> "CONTINUE" Then
             If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LManageDefe: "; go$
@@ -10246,6 +10215,123 @@ Function LDefe$ (skipSetup%)
     LDefe$ = "CONTINUE"
 
 End Function
+
+
+Function LExecuteOffense$
+    Shared P2, D2, S2%, baseRunners
+
+    Select Case P2
+        Case 1, 4   'Hit away, Bunt
+            If D2 <> 8 Then LExecuteOffense$ = "LWeirdPlay": Exit Function
+
+            Call WINDEX
+
+            Call Rolld100(RN)
+
+            If P2 = OFF_BUNT Or (P2 = OFF_HIT_AWAY And RN <= 50) Then LExecuteOffense$ = "LWeirdPlay": Exit Function
+
+            Call BASEONBALLS(S2%, D2, D, P)
+
+            Call LBatterGoesTo1st
+            LExecuteOffense$ = "LNextBatter0": Exit Function
+
+        Case 2  'Hit and run
+            If nbrOuts(0) = 2 Or (baseRunners <> 1 And baseRunners <> 4 And baseRunners <> 5) Then LExecuteOffense$ = "LNextBatter1": Exit Function
+
+        Case 3  'Steal
+            LExecuteOffense$ = "LSteal": Exit Function
+
+        Case 5  'Personnel
+            P9 = P
+            'W5 = -1
+            'W6 = -1
+            Call LPersonnelMenu
+            LExecuteOffense$ = "LNextBatter1": Exit Function
+    End Select
+
+End Function
+
+
+Function LHitAndRun$
+    Shared baseRunners, pickedOffBase, S2%, errorOnPlay%, PO, fbPitcherCoveringFirst%, AST%, P2
+
+    '-- this is related to the PICKEDOFF routine and it's immediate aftermath
+    If baseRunners = 4 Then pickedOffBase = 3 Else pickedOffBase = 2
+
+    Call Rolld100(I3)
+
+    If I3 < 6 Then
+
+        Call PICKEDOFF(D, pickedOffBase)
+
+        PO = 1
+        A5%(pickedOffBase - 1) = 10
+        nbrOuts(0) = nbrOuts(0) + 1
+        nbrOuts(1) = nbrOuts(1) + 1
+        currFielder = 1
+
+        Call CREDITASSIST(currFielder, D)
+        Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)   'fielder making putout is returned in I3
+        Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
+
+        CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
+
+        If nbrOuts(0) >= 3 Then
+
+            currLineupSlot(P) = currLineupSlot(P) - 1
+            PO = 0
+            LHitAndRun$ = "LCheckForOptionsOrQuit": Exit Function
+
+        End If
+
+    End If
+
+    If PO = 1 Then PO = 0: LHitAndRun$ = "LNextBatter1": Exit Function
+
+    Call WINDEX
+
+    I3 = Int(Rnd(1) * 1000) + 1
+    I9 = Int(Rnd(1) * 1000) + 1
+
+    If I3 > 350 Then
+        Call PBP("Runner(s) going")
+    Else
+        Call PBP("Count not favorable...hit away")
+        P2 = OFF_HIT_AWAY
+    End If
+
+    Call DELAY
+
+    If I3 <= 350 Then LHitAndRun$ = "LWeirdPlay": Exit Function
+
+    If I9 <= (game_batRating(P, GM_K, currLineupSlot(P)) * 2 * .33) Then
+
+        nbrStrikes = nbrStrikes + 1
+        Call PBP(player$(0) + " swings and misses")
+        Call DELAY
+
+        If useVGA = 1 Then
+            PrintOnGfx 63, 28, Str$(nbrStrikes), imageScreen&
+        Else
+            Locate 2, 58: Print nbrStrikes
+        End If
+
+        If nbrStrikes = 3 Then
+            LHitAndRun$ = "LStrikeout": Exit Function
+        Else
+            LHitAndRun$ = "LSteal": Exit Function
+        End If
+    End If
+
+    If I9 <= game_batRating(P, GM_K, currLineupSlot(P)) * 2 Then
+        Call PBP(player$(0) + " fouls off the pitch...hit away")
+        Call DELAY
+        P2 = OFF_HIT_AWAY
+    End If
+
+    LHitAndRun$ = "LWeirdPlay"
+
+End FUnction
 
 
 '----------------------------------------
