@@ -4234,9 +4234,18 @@ Sub SOURCE ()
             If go$ = "LHitAndRun"  Then
                 go2$ = LHitAndRun$
                 If go2$ = "LWeirdPlay"   Then Goto LWeirdPlay
-                If go2$ = "LStrikeout"   Then Goto LStrikeout
                 If go2$ = "LNextBatter1" Then Goto LNextBatter1
                 If go2$ = "LSteal"       Then Goto LSteal
+                If go2$ = "LStrikeout"   Then
+                    go3$ = LStrikeout$
+                    If go3$ = "LWeirdPlay"             Then Goto LWeirdPlay
+                    If go3$ = "LNextBatter0"           Then Goto LNextBatter0
+                    If go3$ = "LNextBatter1"           Then Goto LNextBatter1
+                    If go3$ = "LSteal"                 Then Goto LSteal
+                    If go3$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+                    If go3$ = "GOODBYE"                Then Exit Sub
+                End If
+
             End If
 
             If go$ <> "CONTINUE" Then
@@ -4346,9 +4355,17 @@ Sub SOURCE ()
 
     go$ = LHitAndRun$
     If go$ = "LWeirdPlay"   Then Goto LWeirdPlay
-    If go$ = "LStrikeout"   Then Goto LStrikeout
     If go$ = "LNextBatter1" Then Goto LNextBatter1
     If go$ = "LSteal"       Then Goto LSteal
+    If go$ = "LStrikeout"   Then
+        go2$ = LStrikeout$
+        If go2$ = "LWeirdPlay"             Then Goto LWeirdPlay
+        If go2$ = "LNextBatter0"           Then Goto LNextBatter0
+        If go2$ = "LNextBatter1"           Then Goto LNextBatter1
+        If go2$ = "LSteal"                 Then Goto LSteal
+        If go2$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+        If go2$ = "GOODBYE"                Then Exit Sub
+    End If
 
 
     '--- end of a new sub
@@ -4797,108 +4814,15 @@ Sub SOURCE ()
             GoTo LCheckForOptionsOrQuit
 
         Else
-
             'Strikeout!
-           LStrikeout:
-            Call WINDEX
-            'Call pbpLog(2994)
-            Call STRIKEOUT(nbrStrikes, D)
+            go$ = LStrikeout$
+            If go$ = "LWeirdPlay"             Then Goto LWeirdPlay
+            If go$ = "LNextBatter0"           Then Goto LNextBatter0
+            If go$ = "LNextBatter1"           Then Goto LNextBatter1
+            If go$ = "LSteal"                 Then Goto LSteal
+            If go$ = "GOODBYE"                Then Exit Sub
+            'If go$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
 
-            currFielder = 2
-            Call CREDITREGPO(currFielder, D)
-
-            nbrOuts(0) = nbrOuts(0) + 1
-            nbrOuts(1) = nbrOuts(1) + 1
-            SO = 1
-
-            If fldPos(P, currLineupSlot(P)) <> 1 Then
-                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
-                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_K)
-                If P2 = OFF_HIT_N_RUN Then nbrStrikes = 3
-            End If
-
-            CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
-            Call ADDPIT(D, currPitcher(D), LG_P_K)
-
-            If fldPos(P, currLineupSlot(P)) = 1 Then
-                Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
-                Call INCPITOFF(P, currPitcher(P), LG_PB_K)
-                If P2 = OFF_HIT_N_RUN Then nbrStrikes = 3
-            End If
-
-            If P2 = OFF_HIT_N_RUN And nbrOuts(0) < 3 Then
-                SO = 7
-                GoTo LSteal
-            End If
-
-            ' *** WILD PITCH OR PASSED BALL ON A STRIKEOUT
-            RN = Int(Rnd(1) * 600) + 1
-            If b2Base(1) = 0 And RN = 9 And SO = 1 Or nbrOuts(0) = 3 And RN = 9 Then
-
-                nbrOuts(0) = nbrOuts(0) - 1
-                nbrOuts(1) = nbrOuts(1) - 1
-                gamePitStats(D, currPitcher(D), 0) = gamePitStats(D, currPitcher(D), 0) - 1
-                leagPitStats(D, currPitcher(D), 0) = leagPitStats(D, currPitcher(D), 0) - 1
-                gameBatStats(D, fielder(D, 2), 16) = gameBatStats(D, fielder(D, 2), 16) - 1
-                leagBatStats(D, fielder(D, 2), 16) = leagBatStats(D, fielder(D, 2), 16) - 1
-
-                Call Rolld100(I1)
-
-                If I1 < 77 Then
-
-                    ' *** wild pitch ***
-                    If baseRunners = 0 And SO <> 1 Then
-                        Call FOULBALL
-
-                        go$ = LDefenseOptions$(_False)
-                        If go$ = "LNextBatter0"    Then GoTo LNextBatter0
-                        If go$ = "LNextBatter1"    Then GoTo LNextBatter1
-                        If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-                        If go$ = "GOODBYE"         Then Exit Sub
-
-                        If go$ <> "CONTINUE" Then
-                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result H from LDefenseOptions: "; go$
-                            End
-                        End If
-
-                    Else
-                        Call WILDPITCH(S2%, D)
-                        go$ = LBallGetsPastCatcher$
-                        If go$ = "LNextBatter1"           Then GoTo LNextBatter1
-                        If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
-                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LBallGetsPastCatcher: "; go$
-                        End
-                    End If
-                Else
-                    go$ = LPassedBall$
-                    If go$ = "LNextBatter1"               Then GoTo LNextBatter1
-                    If go$ = "LDefenseOptions"            Then
-
-                        go2$ = LDefenseOptions$(_False)
-                        If go2$ = "LNextBatter0"    Then GoTo LNextBatter0
-                        If go2$ = "LNextBatter1"    Then GoTo LNextBatter1
-                        If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-                        If go2$ = "GOODBYE"         Then Exit Sub
-
-                        If go2$ <> "CONTINUE" Then
-                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result I from LDefenseOptions: "; go$
-                            End
-                        End If
-
-                        go$ = "CONTINUE"
-
-                    End If
-
-                    If go$ = "LCheckForOptionsOrQuit"     Then GoTo LCheckForOptionsOrQuit
-                    If go$ <> "CONTINUE" Then
-                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result B from LPassedBall: "; go$
-                        End
-                    End If
-                End If
-
-            End If
-
-            '-- this should be an Else statement above?
             GoTo LCheckForOptionsOrQuit
 
         End If
@@ -5049,8 +4973,17 @@ Sub SOURCE ()
 
     If RN <= 52 Then
         go$ = LStrike$(RN)
-        If go$  = "LStrikeout"   Then GoTo LStrikeout
         If go$  = "LNextBatter1" Then GoTo LNextBatter1
+        If go$  = "LStrikeout"   Then
+            go2$ = LStrikeout$
+            If go2$ = "LWeirdPlay"             Then Goto LWeirdPlay
+            If go2$ = "LNextBatter0"           Then Goto LNextBatter0
+            If go2$ = "LNextBatter1"           Then Goto LNextBatter1
+            If go2$ = "LSteal"                 Then Goto LSteal
+            If go2$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+            If go2$ = "GOODBYE"                Then Exit Sub
+        End If
+
         If go$ <> "CONTINUE" Then
             If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LStrike: "; go$
             End
@@ -5421,7 +5354,13 @@ Sub SOURCE ()
             Select Case I + 1
 
                 Case 1
-                    GoTo LStrikeout
+                    go$ = LStrikeout$
+                    If go$ = "LWeirdPlay"             Then Goto LWeirdPlay
+                    If go$ = "LNextBatter0"           Then Goto LNextBatter0
+                    If go$ = "LNextBatter1"           Then Goto LNextBatter1
+                    If go$ = "LSteal"                 Then Goto LSteal
+                    If go$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+                    If go$ = "GOODBYE"                Then Exit Sub
 
                 Case 2
                     nbrStrikes = nbrStrikes + 1
@@ -5441,7 +5380,15 @@ Sub SOURCE ()
                         Locate 2, 58: Print nbrStrikes
                     End If
 
-                    If nbrStrikes = 3 Then Goto LStrikeout
+                    If nbrStrikes = 3 Then
+                        go$ = LStrikeout$
+                        If go$ = "LWeirdPlay"             Then Goto LWeirdPlay
+                        If go$ = "LNextBatter0"           Then Goto LNextBatter0
+                        If go$ = "LNextBatter1"           Then Goto LNextBatter1
+                        If go$ = "LSteal"                 Then Goto LSteal
+                        If go$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+                        If go$ = "GOODBYE"                Then Exit Sub
+                    End If
 
                     If SH = 1 And RN <= 42 Then
                         currFielder = 2
@@ -5543,8 +5490,17 @@ Sub SOURCE ()
 
         Case 9
             go$ = LStrike$(RN)
-            If go$  = "LStrikeout"   Then GoTo LStrikeout
             If go$  = "LNextBatter1" Then GoTo LNextBatter1
+            If go$  = "LStrikeout"   Then
+                go2$ = LStrikeout$
+                If go2$ = "LWeirdPlay"             Then Goto LWeirdPlay
+                If go2$ = "LNextBatter0"           Then Goto LNextBatter0
+                If go2$ = "LNextBatter1"           Then Goto LNextBatter1
+                If go2$ = "LSteal"                 Then Goto LSteal
+                If go2$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+                If go2$ = "GOODBYE"                Then Exit Sub
+            End If
+
             If go$ <> "CONTINUE" Then
                 If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result B from LStrike: "; go$
                 End
@@ -5567,7 +5523,15 @@ Sub SOURCE ()
                 Locate 2, 58: Print nbrStrikes
             End If
 
-            If nbrStrikes = 3 Then GoTo LStrikeout
+            If nbrStrikes = 3 Then
+                go$ = LStrikeout$
+                If go$ = "LWeirdPlay"             Then Goto LWeirdPlay
+                If go$ = "LNextBatter0"           Then Goto LNextBatter0
+                If go$ = "LNextBatter1"           Then Goto LNextBatter1
+                If go$ = "LSteal"                 Then Goto LSteal
+                If go$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+                If go$ = "GOODBYE"                Then Exit Sub
+            End If
 
             If SH = 1 And RN <= 42 Then
                 currFielder = 2
@@ -6055,9 +6019,18 @@ Sub SOURCE ()
         If go$ = "LHitAndRun"  Then
             go2$ = LHitAndRun$
             If go2$ = "LWeirdPlay"   Then Goto LWeirdPlay
-            If go2$ = "LStrikeout"   Then Goto LStrikeout
             If go2$ = "LNextBatter1" Then Goto LNextBatter1
             If go2$ = "LSteal"       Then Goto LSteal
+            If go2$ = "LStrikeout"   Then
+                go3$ = LStrikeout$
+                If go3$ = "LWeirdPlay"             Then Goto LWeirdPlay
+                If go3$ = "LNextBatter0"           Then Goto LNextBatter0
+                If go3$ = "LNextBatter1"           Then Goto LNextBatter1
+                If go3$ = "LSteal"                 Then Goto LSteal
+                If go3$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+                If go3$ = "GOODBYE"                Then Exit Sub
+            End If
+
         End If
 
         If go$ <> "CONTINUE" Then
@@ -6174,9 +6147,18 @@ Sub SOURCE ()
     If go$ = "LHitAndRun"  Then
         go2$ = LHitAndRun$
         If go2$ = "LWeirdPlay"   Then Goto LWeirdPlay
-        If go2$ = "LStrikeout"   Then Goto LStrikeout
         If go2$ = "LNextBatter1" Then Goto LNextBatter1
         If go2$ = "LSteal"       Then Goto LSteal
+        If go2$ = "LStrikeout"   Then
+            go3$ = LStrikeout$
+            If go3$ = "LWeirdPlay"             Then Goto LWeirdPlay
+            If go3$ = "LNextBatter0"           Then Goto LNextBatter0
+            If go3$ = "LNextBatter1"           Then Goto LNextBatter1
+            If go3$ = "LSteal"                 Then Goto LSteal
+            If go3$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+            If go3$ = "GOODBYE"                Then Exit Sub
+        End If
+
     End If
 
     If go$ <> "CONTINUE" Then
@@ -6322,9 +6304,18 @@ Sub SOURCE ()
         If go$ = "LHitAndRun"  Then
             go2$ = LHitAndRun$
             If go2$ = "LWeirdPlay"   Then Goto LWeirdPlay
-            If go2$ = "LStrikeout"   Then Goto LStrikeout
             If go2$ = "LNextBatter1" Then Goto LNextBatter1
             If go2$ = "LSteal"       Then Goto LSteal
+            If go2$ = "LStrikeout"   Then
+                go3$ = LStrikeout$
+                If go3$ = "LWeirdPlay"             Then Goto LWeirdPlay
+                If go3$ = "LNextBatter0"           Then Goto LNextBatter0
+                If go3$ = "LNextBatter1"           Then Goto LNextBatter1
+                If go3$ = "LSteal"                 Then Goto LSteal
+                If go3$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+                If go3$ = "GOODBYE"                Then Exit Sub
+            End If
+
         End If
 
         If go$ <> "CONTINUE" Then
@@ -6346,9 +6337,18 @@ Sub SOURCE ()
     If go$ = "LHitAndRun" Then
         go2$ = LHitAndRun$
         If go2$ = "LWeirdPlay"   Then Goto LWeirdPlay
-        If go2$ = "LStrikeout"   Then Goto LStrikeout
         If go2$ = "LNextBatter1" Then Goto LNextBatter1
         If go2$ = "LSteal"       Then Goto LSteal
+        If go2$ = "LStrikeout"   Then
+            go3$ = LStrikeout$
+            If go3$ = "LWeirdPlay"             Then Goto LWeirdPlay
+            If go3$ = "LNextBatter0"           Then Goto LNextBatter0
+            If go3$ = "LNextBatter1"           Then Goto LNextBatter1
+            If go3$ = "LSteal"                 Then Goto LSteal
+            If go3$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+            If go3$ = "GOODBYE"                Then Exit Sub
+        End If
+
     End If
     If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result B from LPossibleHitAndRun: "; go$
     End
@@ -10333,6 +10333,112 @@ Function LHitAndRun$
 
 End FUnction
 
+
+Function LStrikeout$
+    Shared SO, P2, baseRunners, S2%
+
+    Call WINDEX
+    'Call pbpLog(2994)
+    Call STRIKEOUT(nbrStrikes, D)
+
+    currFielder = 2
+    Call CREDITREGPO(currFielder, D)
+
+    nbrOuts(0) = nbrOuts(0) + 1
+    nbrOuts(1) = nbrOuts(1) + 1
+    SO = 1
+
+    If fldPos(P, currLineupSlot(P)) <> 1 Then
+        Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
+        Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_K)
+        If P2 = OFF_HIT_N_RUN Then nbrStrikes = 3
+    End If
+
+    CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
+    Call ADDPIT(D, currPitcher(D), LG_P_K)
+
+    If fldPos(P, currLineupSlot(P)) = 1 Then
+        Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
+        Call INCPITOFF(P, currPitcher(P), LG_PB_K)
+        If P2 = OFF_HIT_N_RUN Then nbrStrikes = 3
+    End If
+
+    If P2 = OFF_HIT_N_RUN And nbrOuts(0) < 3 Then
+        SO = 7
+        LStrikeout$ = "LSteal": Exit Function
+    End If
+
+    ' *** WILD PITCH OR PASSED BALL ON A STRIKEOUT
+    RN = Int(Rnd(1) * 600) + 1
+    If b2Base(1) = 0 And RN = 9 And SO = 1 Or nbrOuts(0) = 3 And RN = 9 Then
+
+        nbrOuts(0) = nbrOuts(0) - 1
+        nbrOuts(1) = nbrOuts(1) - 1
+        gamePitStats(D, currPitcher(D), 0) = gamePitStats(D, currPitcher(D), 0) - 1
+        leagPitStats(D, currPitcher(D), 0) = leagPitStats(D, currPitcher(D), 0) - 1
+        gameBatStats(D, fielder(D, 2), 16) = gameBatStats(D, fielder(D, 2), 16) - 1
+        leagBatStats(D, fielder(D, 2), 16) = leagBatStats(D, fielder(D, 2), 16) - 1
+
+        Call Rolld100(I1)
+
+        If I1 < 77 Then
+
+            ' *** wild pitch ***
+            If baseRunners = 0 And SO <> 1 Then
+                Call FOULBALL
+
+                go$ = LDefenseOptions$(_False)
+                If go$ = "LNextBatter0"    Then LStrikeout$ = "LNextBatter0": Exit Function
+                If go$ = "LNextBatter1"    Then LStrikeout$ = "LNextBatter1": Exit Function
+                If go$ = "LWeirdPlay"      Then LStrikeout$ = "LWeirdPlay":   Exit Function
+                If go$ = "GOODBYE"         Then LStrikeout$ = "GOODBYE":      Exit Function
+
+                If go$ <> "CONTINUE" Then
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result H from LDefenseOptions: "; go$
+                    End
+                End If
+
+            Else
+                Call WILDPITCH(S2%, D)
+                go$ = LBallGetsPastCatcher$
+                If go$ = "LNextBatter1"           Then LStrikeout$ = "LNextBatter1": Exit Function
+                If go$ = "LCheckForOptionsOrQuit" Then LStrikeout$ = "LCheckForOptionsOrQuit": Exit Function
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LBallGetsPastCatcher: "; go$
+                End
+            End If
+        Else
+            go$ = LPassedBall$
+            If go$ = "LNextBatter1"               Then LStrikeout$ = "LNextBatter1": Exit Function
+            If go$ = "LDefenseOptions"            Then
+
+                go2$ = LDefenseOptions$(_False)
+                If go2$ = "LNextBatter0"    Then LStrikeout$ = "LNextBatter0": Exit Function
+                If go2$ = "LNextBatter1"    Then LStrikeout$ = "LNextBatter1": Exit Function
+                If go2$ = "LWeirdPlay"      Then LStrikeout$ = "LWeirdPlay": Exit Function
+                If go2$ = "GOODBYE"         Then LStrikeout$ = "GOODBYE": Exit Function
+
+                If go2$ <> "CONTINUE" Then
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result I from LDefenseOptions: "; go$
+                    End
+                End If
+
+                go$ = "CONTINUE"
+
+            End If
+
+            If go$ = "LCheckForOptionsOrQuit"     Then LStrikeout$ = "LCheckForOptionsOrQuit": Exit Function
+            If go$ <> "CONTINUE" Then
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result B from LPassedBall: "; go$
+                End
+            End If
+        End If
+
+    End If
+
+    '-- this should be an Else statement above?
+    LStrikeout$ = "LCheckForOptionsOrQuit": Exit Function
+
+End Function
 
 '----------------------------------------
 '            INFO Subroutine
