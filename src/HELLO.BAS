@@ -4079,7 +4079,6 @@ Sub SOURCE ()
     End If
 
     go$ = LDefe$(_False)
-
     If go$ = "LNextBatter0"    Then Goto LNextBatter0
     If go$ = "LNextBatter1"    Then Goto LNextBatter1
     If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
@@ -4233,19 +4232,11 @@ Sub SOURCE ()
 
             If go$ = "LHitAndRun"  Then
                 go2$ = LHitAndRun$
-                If go2$ = "LWeirdPlay"   Then Goto LWeirdPlay
-                If go2$ = "LNextBatter1" Then Goto LNextBatter1
-                If go2$ = "LSteal"       Then Goto LSteal
-                If go2$ = "LStrikeout"   Then
-                    go3$ = LStrikeout$
-                    If go3$ = "LWeirdPlay"             Then Goto LWeirdPlay
-                    If go3$ = "LNextBatter0"           Then Goto LNextBatter0
-                    If go3$ = "LNextBatter1"           Then Goto LNextBatter1
-                    If go3$ = "LSteal"                 Then Goto LSteal
-                    If go3$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
-                    If go3$ = "GOODBYE"                Then Exit Sub
-                End If
-
+                If go2$ = "LWeirdPlay"             Then Goto LWeirdPlay
+                If go2$ = "LNextBatter0"           Then Goto LNextBatter0
+                If go2$ = "LNextBatter1"           Then Goto LNextBatter1
+                If go2$ = "LSteal"                 Then Goto LSteal
+                If go2$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
             End If
 
             If go$ <> "CONTINUE" Then
@@ -4354,18 +4345,11 @@ Sub SOURCE ()
     If go$ = "LSteal"       Then Goto LSteal
 
     go$ = LHitAndRun$
-    If go$ = "LWeirdPlay"   Then Goto LWeirdPlay
-    If go$ = "LNextBatter1" Then Goto LNextBatter1
-    If go$ = "LSteal"       Then Goto LSteal
-    If go$ = "LStrikeout"   Then
-        go2$ = LStrikeout$
-        If go2$ = "LWeirdPlay"             Then Goto LWeirdPlay
-        If go2$ = "LNextBatter0"           Then Goto LNextBatter0
-        If go2$ = "LNextBatter1"           Then Goto LNextBatter1
-        If go2$ = "LSteal"                 Then Goto LSteal
-        If go2$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
-        If go2$ = "GOODBYE"                Then Exit Sub
-    End If
+    If go$ = "LWeirdPlay"             Then Goto LWeirdPlay
+    If go$ = "LNextBatter0"           Then Goto LNextBatter0
+    If go$ = "LNextBatter1"           Then Goto LNextBatter1
+    If go$ = "LSteal"                 Then Goto LSteal
+    If go$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
 
 
     '--- end of a new sub
@@ -4792,7 +4776,7 @@ Sub SOURCE ()
         H6% = Int(Rnd(1) * 1000) + 1
         strikeoutRating = game_batRating(P, GM_K, currLineupSlot(P))
 
-        If H6% > game_batRating(P, GM_K, currLineupSlot(P)) Then
+        If H6% > strikeoutRating Then
 
            ZNormalOut:
             ' *** ground ball for out ***
@@ -6018,19 +6002,11 @@ Sub SOURCE ()
 
         If go$ = "LHitAndRun"  Then
             go2$ = LHitAndRun$
-            If go2$ = "LWeirdPlay"   Then Goto LWeirdPlay
-            If go2$ = "LNextBatter1" Then Goto LNextBatter1
-            If go2$ = "LSteal"       Then Goto LSteal
-            If go2$ = "LStrikeout"   Then
-                go3$ = LStrikeout$
-                If go3$ = "LWeirdPlay"             Then Goto LWeirdPlay
-                If go3$ = "LNextBatter0"           Then Goto LNextBatter0
-                If go3$ = "LNextBatter1"           Then Goto LNextBatter1
-                If go3$ = "LSteal"                 Then Goto LSteal
-                If go3$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
-                If go3$ = "GOODBYE"                Then Exit Sub
-            End If
-
+            If go2$ = "LWeirdPlay"             Then Goto LWeirdPlay
+            If go2$ = "LNextBatter0"           Then Goto LNextBatter0
+            If go2$ = "LNextBatter1"           Then Goto LNextBatter1
+            If go2$ = "LSteal"                 Then Goto LSteal
+            If go2$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
         End If
 
         If go$ <> "CONTINUE" Then
@@ -6146,19 +6122,11 @@ Sub SOURCE ()
 
     If go$ = "LHitAndRun"  Then
         go2$ = LHitAndRun$
-        If go2$ = "LWeirdPlay"   Then Goto LWeirdPlay
-        If go2$ = "LNextBatter1" Then Goto LNextBatter1
-        If go2$ = "LSteal"       Then Goto LSteal
-        If go2$ = "LStrikeout"   Then
-            go3$ = LStrikeout$
-            If go3$ = "LWeirdPlay"             Then Goto LWeirdPlay
-            If go3$ = "LNextBatter0"           Then Goto LNextBatter0
-            If go3$ = "LNextBatter1"           Then Goto LNextBatter1
-            If go3$ = "LSteal"                 Then Goto LSteal
-            If go3$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
-            If go3$ = "GOODBYE"                Then Exit Sub
-        End If
-
+        If go2$ = "LWeirdPlay"             Then Goto LWeirdPlay
+        If go2$ = "LNextBatter0"           Then Goto LNextBatter0
+        If go2$ = "LNextBatter1"           Then Goto LNextBatter1
+        If go2$ = "LSteal"                 Then Goto LSteal
+        If go2$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
     End If
 
     If go$ <> "CONTINUE" Then
@@ -6303,19 +6271,11 @@ Sub SOURCE ()
 
         If go$ = "LHitAndRun"  Then
             go2$ = LHitAndRun$
-            If go2$ = "LWeirdPlay"   Then Goto LWeirdPlay
-            If go2$ = "LNextBatter1" Then Goto LNextBatter1
-            If go2$ = "LSteal"       Then Goto LSteal
-            If go2$ = "LStrikeout"   Then
-                go3$ = LStrikeout$
-                If go3$ = "LWeirdPlay"             Then Goto LWeirdPlay
-                If go3$ = "LNextBatter0"           Then Goto LNextBatter0
-                If go3$ = "LNextBatter1"           Then Goto LNextBatter1
-                If go3$ = "LSteal"                 Then Goto LSteal
-                If go3$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
-                If go3$ = "GOODBYE"                Then Exit Sub
-            End If
-
+            If go2$ = "LWeirdPlay"             Then Goto LWeirdPlay
+            If go2$ = "LNextBatter0"           Then Goto LNextBatter0
+            If go2$ = "LNextBatter1"           Then Goto LNextBatter1
+            If go2$ = "LSteal"                 Then Goto LSteal
+            If go2$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
         End If
 
         If go$ <> "CONTINUE" Then
@@ -6336,19 +6296,11 @@ Sub SOURCE ()
 
     If go$ = "LHitAndRun" Then
         go2$ = LHitAndRun$
-        If go2$ = "LWeirdPlay"   Then Goto LWeirdPlay
-        If go2$ = "LNextBatter1" Then Goto LNextBatter1
-        If go2$ = "LSteal"       Then Goto LSteal
-        If go2$ = "LStrikeout"   Then
-            go3$ = LStrikeout$
-            If go3$ = "LWeirdPlay"             Then Goto LWeirdPlay
-            If go3$ = "LNextBatter0"           Then Goto LNextBatter0
-            If go3$ = "LNextBatter1"           Then Goto LNextBatter1
-            If go3$ = "LSteal"                 Then Goto LSteal
-            If go3$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
-            If go3$ = "GOODBYE"                Then Exit Sub
-        End If
-
+        If go2$ = "LWeirdPlay"             Then Goto LWeirdPlay
+        If go2$ = "LNextBatter0"           Then Goto LNextBatter0
+        If go2$ = "LNextBatter1"           Then Goto LNextBatter1
+        If go2$ = "LSteal"                 Then Goto LSteal
+        If go2$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
     End If
     If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result B from LPossibleHitAndRun: "; go$
     End
@@ -7598,7 +7550,7 @@ Sub LPersonnelMenu
 End Sub
 
 
-Sub CalcExtraBaseHits(I3, i9!, BY%, TY%)
+Sub CalcExtraBaseHits(I, I3, i9!, BY%, TY%)
     If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_BAvg) <> 999 Then
         game_batRating(I, GM_2B, I3) = (130 * (i9! * 1000)) / teamRat_GAME(I1, 1)
         game_batRating(I, GM_3B, I3) = ( 19 * (i9! * 1000)) / teamRat_GAME(I1, 1)
@@ -10317,7 +10269,7 @@ Function LHitAndRun$
         End If
 
         If nbrStrikes = 3 Then
-            LHitAndRun$ = "LStrikeout": Exit Function
+            LHitAndRun$ = LStrikeout$: Exit Function
         Else
             LHitAndRun$ = "LSteal": Exit Function
         End If
@@ -15122,7 +15074,7 @@ Sub HITTINGLINES
 
             Call InitBatsThrows(I3, I, I1, TY%, PY%, BY%)
 
-            Call CalcExtraBaseHits(I3, i9!, BY%, TY%)
+            Call CalcExtraBaseHits(I, I3, i9!, BY%, TY%)
 
             I6! = teamRat_GAME(I1, 4) / 1000
             I7! = game_batRating(I, GM_HR, I3) / 1000
