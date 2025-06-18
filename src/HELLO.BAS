@@ -4771,25 +4771,19 @@ Sub SOURCE ()
    ZNormal:
     If H6% > game_batRating(P, GM_BAvg, currLineupSlot(P)) + I4 Then    'not a base hit
 
-       ZOut:
         ' *** check for strikeout ***
         H6% = Int(Rnd(1) * 1000) + 1
         strikeoutRating = game_batRating(P, GM_K, currLineupSlot(P))
 
-        If H6% > strikeoutRating Then
+        If H6% > strikeoutRating Then                                   'contact out (flyout or groundout)
 
-           ZNormalOut:
-            ' *** ground ball for out ***
             Call Rolld100(H6%)
 
-            playerGndPct  = batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_GndPct) + pitchRating(D, currPitcher(D), SS_P_GndPct) - 52
+            batterGndPct  = batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_GndPct) + pitchRating(D, currPitcher(D), SS_P_GndPct) - 52
             pitcherGndPct = 23 + pitchRating(D, currPitcher(D), SS_P_GndPct)    'Assumption seems to be that pitchers hit a lot more grounders
-            ballHitInAir = 0
 
-            If H6% > playerGndPct  And fldPos(P, currLineupSlot(P)) <> 1 Then ballHitInAir = 1
-            If H6% > pitcherGndPct And fldPos(P, currLineupSlot(P))  = 1 Then ballHitInAir = 1
-
-            If ballHitInAir = 1 Then
+            If (fldPos(P, currLineupSlot(P)) <> 1 And H6% > batterGndPct ) Or _
+               (fldPos(P, currLineupSlot(P))  = 1 And H6% > pitcherGndPct) Then
                 Call LBallHitInAir
             Else
                 Call LBallHitOnGround
@@ -4797,8 +4791,7 @@ Sub SOURCE ()
 
             GoTo LCheckForOptionsOrQuit
 
-        Else
-            'Strikeout!
+        Else                                                            'Strikeout
             go$ = LStrikeout$
             If go$ = "LWeirdPlay"             Then Goto LWeirdPlay
             If go$ = "LNextBatter0"           Then Goto LNextBatter0
@@ -4811,60 +4804,13 @@ Sub SOURCE ()
 
         End If
 
-    Else    'base hit
+    Else                                                                'base hit
 
-       ZSafe:
-        H6% = Int(Rnd(1) * 1000) + 1
-
-        If H6% <= game_batRating(P, GM_2B, currLineupSlot(P))      And P2 <> OFF_HIT_N_RUN Or _
-           H6% <= game_batRating(P, GM_2B, currLineupSlot(P)) * .5 And P2  = OFF_HIT_N_RUN Then
-
-            Call LDouble(HW%)
-            GoTo LCheckForOptionsOrQuit
-
-        End If
-
-        If H6% <= game_batRating(P, GM_2B, currLineupSlot(P))      + game_batRating(P, GM_3B, currLineupSlot(P))      And P2 <> OFF_HIT_N_RUN Or _
-           H6% <= game_batRating(P, GM_2B, currLineupSlot(P)) * .5 + game_batRating(P, GM_3B, currLineupSlot(P)) * .5 And P2  = OFF_HIT_N_RUN Then
-
-            Call LTriple
-            GoTo LCheckForOptionsOrQuit
-
-        End If
-
-        Call HITS2GAP(currFielder, P, I1, D)
-
-        I3 = game_batRating(P, GM_2B, currLineupSlot(P)) + game_batRating(P, GM_3B, currLineupSlot(P))
-
-        E2% = I3 + game_batRating(P, GM_HR, currLineupSlot(P))
-        If currFielder = 8 And H6% <= E2%      And P2 <> OFF_HIT_N_RUN Or _
-           currFielder = 8 And H6% <= E2% * .5 And P2  = OFF_HIT_N_RUN Then
-            S2% = EVENT_HR
-            Call LHomeRun
-            GoTo LCheckForOptionsOrQuit
-        End If
-
-        E2% = I3 + game_batRating(P, GM_L_HR, currLineupSlot(P))
-        If currFielder = 7 And H6% <= E2%      And P2 <> OFF_HIT_N_RUN Or _
-           currFielder = 7 And H6% <= E2% * .5 And P2 =  OFF_HIT_N_RUN Then
-            S2% = EVENT_HR
-            Call LHomeRun
-            GoTo LCheckForOptionsOrQuit
-        End If
-
-        E2% = I3 + game_batRating(P, GM_R_HR, currLineupSlot(P))
-        If currFielder = 9 And H6% <= E2%      And P2 <> OFF_HIT_N_RUN Or _
-           currFielder = 9 And H6% <= E2% * .5 And P2 = OFF_HIT_N_RUN Then
-            S2% = EVENT_HR
-            Call LHomeRun
-            GoTo LCheckForOptionsOrQuit
-        End If
-
-        go$ = LInfSingle$
+        go$ = BaseHit$(HW%)
         If go$ = "LNextBatter0" Then GoTo LNextBatter0
         If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
         If go$ <> "CONTINUE" Then
-            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LinfSingle: "; go$
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from BaseHit: "; go$
             End
         End If
 
@@ -10391,6 +10337,70 @@ Function LStrikeout$
     LStrikeout$ = "LCheckForOptionsOrQuit": Exit Function
 
 End Function
+
+
+Function BaseHit$ (HW%)
+    Shared P2, S2%
+
+    H6% = Int(Rnd(1) * 1000) + 1
+
+    If  H6% <= game_batRating(P, GM_2B, currLineupSlot(P))      And P2 <> OFF_HIT_N_RUN Or _
+        H6% <= game_batRating(P, GM_2B, currLineupSlot(P)) * .5 And P2  = OFF_HIT_N_RUN Then
+
+        Call LDouble(HW%)
+        BaseHit$ = "LCheckForOptionsOrQuit"
+        Exit Function
+
+    End If
+
+    If  H6% <= game_batRating(P, GM_2B, currLineupSlot(P))      + game_batRating(P, GM_3B, currLineupSlot(P))      And P2 <> OFF_HIT_N_RUN Or _
+        H6% <= game_batRating(P, GM_2B, currLineupSlot(P)) * .5 + game_batRating(P, GM_3B, currLineupSlot(P)) * .5 And P2  = OFF_HIT_N_RUN Then
+
+        Call LTriple
+        BaseHit$ = "LCheckForOptionsOrQuit"
+        Exit Function
+
+    End If
+
+    Call HITS2GAP(currFielder, P, I1, D)
+
+    I3 = game_batRating(P, GM_2B, currLineupSlot(P)) + game_batRating(P, GM_3B, currLineupSlot(P))
+
+    E2% = I3 + game_batRating(P, GM_HR, currLineupSlot(P))
+    If  currFielder = 8 And H6% <= E2%      And P2 <> OFF_HIT_N_RUN Or _
+        currFielder = 8 And H6% <= E2% * .5 And P2  = OFF_HIT_N_RUN Then
+        S2% = EVENT_HR
+        Call LHomeRun
+        BaseHit$ = "LCheckForOptionsOrQuit"
+        Exit Function
+    End If
+
+    E2% = I3 + game_batRating(P, GM_L_HR, currLineupSlot(P))
+    If  currFielder = 7 And H6% <= E2%      And P2 <> OFF_HIT_N_RUN Or _
+        currFielder = 7 And H6% <= E2% * .5 And P2 =  OFF_HIT_N_RUN Then
+        S2% = EVENT_HR
+        Call LHomeRun
+        BaseHit$ = "LCheckForOptionsOrQuit"
+        Exit Function
+    End If
+
+    E2% = I3 + game_batRating(P, GM_R_HR, currLineupSlot(P))
+    If currFielder = 9 And H6% <= E2%      And P2 <> OFF_HIT_N_RUN Or _
+        currFielder = 9 And H6% <= E2% * .5 And P2 = OFF_HIT_N_RUN Then
+        S2% = EVENT_HR
+        Call LHomeRun
+        BaseHit$ = "LCheckForOptionsOrQuit"
+        Exit Function
+    End If
+
+    go$ = LInfSingle$
+    If go$ = "LNextBatter0" Then BaseHit$ = "LNextBatter0": Exit Function
+    If go$ = "LCheckForOptionsOrQuit" Then BaseHit$ = "LCheckForOptionsOrQuit": Exit Function
+
+    BaseHit$ = "CONTINUE"
+
+End Function
+
 
 '----------------------------------------
 '            INFO Subroutine
