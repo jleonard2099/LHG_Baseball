@@ -4076,30 +4076,17 @@ Sub SOURCE ()
         GoTo LGameOver
     End If
 
-   LDefe:
-    Do
-        go$ = LDefenseOptions$(_False)
-        If go$ = "LManageDefense"  Then GoTo LManageDefense
-        If go$ = "LNextBatter1"    Then GoTo LNextBatter1
-        If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-        If go$ = "GOODBYE"         Then Exit Sub
+    go$ = LDefe$(_False)
 
-        If go$ <> "CONTINUE" Then
-            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
-            End
-        End If
+    If go$ = "LNextBatter0"    Then Goto LNextBatter0
+    If go$ = "LNextBatter1"    Then Goto LNextBatter1
+    If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+    If go$ = "GOODBYE"         Then Exit Sub
 
-       LManageDefense:
-        go$ = LManageDefe$
-        If go$ = "LNextBatter0"    Then GoTo LNextBatter0
-        If go$ = "LNextBatter1"    Then GoTo LNextBatter1
-        If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-
-        If go$ <> "CONTINUE" Then
-            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LManageDefe: "; go$
-            End
-        End If
-    Loop While D2 >= 3 And D2 <= 5
+    If go$ <> "CONTINUE" Then
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefe: "; go$
+        End
+    End If
 
     '----------------------------------------
     ' OFFENSE OPTIONS MENU
@@ -4217,16 +4204,19 @@ Sub SOURCE ()
             go$ = LNoPinchHitter$(MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
             If go$ = "LDefenseOptions" Then
 
-                go$ = LDefenseOptions$(_False)
-                If go$ = "LManageDefense"  Then GoTo LManageDefense
-                If go$ = "LNextBatter1"    Then GoTo LNextBatter1
-                If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-                If go$ = "GOODBYE"         Then Exit Sub
+                go2$ = LDefenseOptions$(_False)
+                If go2$ = "LNextBatter0"    Then GoTo LNextBatter0
+                If go2$ = "LNextBatter1"    Then GoTo LNextBatter1
+                If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+                If go2$ = "GOODBYE"         Then Exit Sub
 
-                If go$ <> "CONTINUE" Then
-                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                If go2$ <> "CONTINUE" Then
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LDefenseOptions: "; go$
                     End
                 End If
+
+                go$ = "CONTINUE"
+
             End If
 
             If go$ = "LBunt" Then Goto LBunt
@@ -4234,8 +4224,10 @@ Sub SOURCE ()
             If go$ = "LExecuteOffense" Then Goto LExecuteOffense
             If go$ =  "LSteal" Then Goto LSteal
 
-            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LNoPinchHitter: "; go$
-            End
+            If go$ <> "CONTINUE" Then
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LNoPinchHitter: "; go$
+                End
+            End If
 
         Else
 
@@ -4361,7 +4353,6 @@ Sub SOURCE ()
             'W6 = -1
             Call LPersonnelMenu
             Goto LNextBatter1
-
 
     End Select
 
@@ -4490,13 +4481,13 @@ Sub SOURCE ()
         End If
 
         go$ = LDefenseOptions$(_False)
-        If go$ = "LManageDefense"  Then GoTo LManageDefense
+        If go$ = "LNextBatter0"    Then GoTo LNextBatter0
         If go$ = "LNextBatter1"    Then GoTo LNextBatter1
         If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
         If go$ = "GOODBYE"         Then Exit Sub
 
         If go$ <> "CONTINUE" Then
-            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result B from LDefenseOptions: "; go$
             End
         End If
 
@@ -4571,13 +4562,13 @@ Sub SOURCE ()
     End If
 
     go$ = LDefenseOptions$(_False)
-    If go$ = "LManageDefense"  Then GoTo LManageDefense
+    If go$ = "LNextBatter0"    Then GoTo LNextBatter0
     If go$ = "LNextBatter1"    Then GoTo LNextBatter1
     If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
     If go$ = "GOODBYE"         Then Exit Sub
 
     If go$ <> "CONTINUE" Then
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result C from LDefenseOptions: "; go$
         End
     End If
 
@@ -4627,13 +4618,13 @@ Sub SOURCE ()
             Call FOULBALL
 
             go$ = LDefenseOptions$(_False)
-            If go$ = "LManageDefense"  Then GoTo LManageDefense
+            If go$ = "LNextBatter0"    Then GoTo LNextBatter0
             If go$ = "LNextBatter1"    Then GoTo LNextBatter1
             If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
             If go$ = "GOODBYE"         Then Exit Sub
 
             If go$ <> "CONTINUE" Then
-                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result D from LDefenseOptions: "; go$
                 End
             End If
 
@@ -4684,33 +4675,37 @@ Sub SOURCE ()
         If go$ = "LNextBatter1"           Then GoTo LNextBatter1
         If go$ = "LDefenseOptions"        Then
 
-            go$ = LDefenseOptions$(_False)
-            If go$ = "LManageDefense"  Then GoTo LManageDefense
-            If go$ = "LNextBatter1"    Then GoTo LNextBatter1
-            If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-            If go$ = "GOODBYE"         Then Exit Sub
+            go2$ = LDefenseOptions$(_False)
+            If go2$ = "LNextBatter9"    Then GoTo LNextBatter0
+            If go2$ = "LNextBatter1"    Then GoTo LNextBatter1
+            If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+            If go2$ = "GOODBYE"         Then Exit Sub
 
-            If go$ <> "CONTINUE" Then
-                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+            If go2$ <> "CONTINUE" Then
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result E from LDefenseOptions: "; go$
                 End
             End If
 
+            go$ = "CONTINUE"
+
         End If
         If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LPassedBall: "; go$
-        End
+        If go$ <> "CONTINUE" Then
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LPassedBall: "; go$
+            End
+        End If
 
         If baseRunners = 0 And SO <> 1 Then
             Call FOULBALL
 
             go$ = LDefenseOptions$(_False)
-            If go$ = "LManageDefense"  Then GoTo LManageDefense
+            If go$ = "LNextBatter0"    Then GoTo LNextBatter0
             If go$ = "LNextBatter1"    Then GoTo LNextBatter1
             If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
             If go$ = "GOODBYE"         Then Exit Sub
 
             If go$ <> "CONTINUE" Then
-                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result F from LDefenseOptions: "; go$
                 End
             End If
 
@@ -4750,13 +4745,13 @@ Sub SOURCE ()
             Call FOULBALL
 
             go$ = LDefenseOptions$(_False)
-            If go$ = "LManageDefense"  Then GoTo LManageDefense
+            If go$ = "LNextBatter0"    Then GoTo LNextBatter0
             If go$ = "LNextBatter1"    Then GoTo LNextBatter1
             If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
             If go$ = "GOODBYE"         Then Exit Sub
 
             If go$ <> "CONTINUE" Then
-                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result G from LDefenseOptions: "; go$
                 End
             End If
 
@@ -4939,13 +4934,13 @@ Sub SOURCE ()
                         Call FOULBALL
 
                         go$ = LDefenseOptions$(_False)
-                        If go$ = "LManageDefense"  Then GoTo LManageDefense
+                        If go$ = "LNextBatter0"    Then GoTo LNextBatter0
                         If go$ = "LNextBatter1"    Then GoTo LNextBatter1
                         If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
                         If go$ = "GOODBYE"         Then Exit Sub
 
                         If go$ <> "CONTINUE" Then
-                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result H from LDefenseOptions: "; go$
                             End
                         End If
 
@@ -4962,21 +4957,26 @@ Sub SOURCE ()
                     If go$ = "LNextBatter1"               Then GoTo LNextBatter1
                     If go$ = "LDefenseOptions"            Then
 
-                        go$ = LDefenseOptions$(_False)
-                        If go$ = "LManageDefense"  Then GoTo LManageDefense
-                        If go$ = "LNextBatter1"    Then GoTo LNextBatter1
-                        If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-                        If go$ = "GOODBYE"         Then Exit Sub
+                        go2$ = LDefenseOptions$(_False)
+                        If go2$ = "LNextBatter0"    Then GoTo LNextBatter0
+                        If go2$ = "LNextBatter1"    Then GoTo LNextBatter1
+                        If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+                        If go2$ = "GOODBYE"         Then Exit Sub
 
-                        If go$ <> "CONTINUE" Then
-                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                        If go2$ <> "CONTINUE" Then
+                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result I from LDefenseOptions: "; go$
                             End
                         End If
+
+                        go$ = "CONTINUE"
+
                     End If
 
                     If go$ = "LCheckForOptionsOrQuit"     Then GoTo LCheckForOptionsOrQuit
-                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LPassedBall: "; go$
-                    End
+                    If go$ <> "CONTINUE" Then
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result B from LPassedBall: "; go$
+                        End
+                    End If
                 End If
 
             End If
@@ -5553,13 +5553,13 @@ Sub SOURCE ()
                     End If
 
                     go$ = LDefenseOptions$(_True)
-                    If go$ = "LManageDefense"  Then GoTo LManageDefense
+                    If go$ = "LNextBatter0"    Then GoTo LNextBatter0
                     If go$ = "LNextBatter1"    Then GoTo LNextBatter1
                     If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
                     If go$ = "GOODBYE"         Then Exit Sub
 
                     If go$ <> "CONTINUE" Then
-                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result J from LDefenseOptions: "; go$
                         End
                     End If
 
@@ -5676,13 +5676,13 @@ Sub SOURCE ()
             If useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
 
             go$ = LDefenseOptions$(_True)
-            If go$ = "LManageDefense"  Then GoTo LManageDefense
+            If go$ = "LNextBatter0"    Then GoTo LNextBatter0
             If go$ = "LNextBatter1"    Then GoTo LNextBatter1
             If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
             If go$ = "GOODBYE"         Then Exit Sub
 
             If go$ <> "CONTINUE" Then
-                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result K from LDefenseOptions: "; go$
                 End
             End If
 
@@ -6084,13 +6084,13 @@ Sub SOURCE ()
                             Call LPinchHitter
 
                             go$ = LDefenseOptions$(_False)
-                            If go$ = "LManageDefense"  Then GoTo LManageDefense
+                            If go$ = "LNextBatter0"    Then GoTo LNextBatter0
                             If go$ = "LNextBatter1"    Then GoTo LNextBatter1
                             If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
                             If go$ = "GOODBYE"         Then Exit Sub
 
                             If go$ <> "CONTINUE" Then
-                                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result L from LDefenseOptions: "; go$
                                 End
                             End If
 
@@ -6110,16 +6110,19 @@ Sub SOURCE ()
         go$ = LNoPinchHitter$(MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
         If go$ = "LDefenseOptions" Then
 
-            go$ = LDefenseOptions$(_False)
-            If go$ = "LManageDefense"  Then GoTo LManageDefense
-            If go$ = "LNextBatter1"    Then GoTo LNextBatter1
-            If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-            If go$ = "GOODBYE"         Then Exit Sub
+            go2$ = LDefenseOptions$(_False)
+            If go2$ = "LNextBatter0"    Then GoTo LNextBatter0
+            If go2$ = "LNextBatter1"    Then GoTo LNextBatter1
+            If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+            If go2$ = "GOODBYE"         Then Exit Sub
 
-            If go$ <> "CONTINUE" Then
-                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+            If go2$ <> "CONTINUE" Then
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result M from LDefenseOptions: "; go$
                 End
             End If
+
+            go$ = "CONTINUE"
+
         End If
 
         If go$ = "LBunt" Then Goto LBunt
@@ -6127,8 +6130,10 @@ Sub SOURCE ()
         If go$ = "LExecuteOffense" Then Goto LExecuteOffense
         If go$ =  "LSteal" Then Goto LSteal
 
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LNoPinchHitter: "; go$
-        End
+        If go$ <> "CONTINUE" Then
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result B from LNoPinchHitter: "; go$
+            End
+        End If
     End If
 
     For I = 0 To 22:
@@ -6151,13 +6156,13 @@ Sub SOURCE ()
                         Call LPinchHitter
 
                         go$ = LDefenseOptions$(_False)
-                        If go$ = "LManageDefense"  Then GoTo LManageDefense
+                        If go$ = "LNextBatter0"    Then GoTo LNextBatter0
                         If go$ = "LNextBatter1"    Then GoTo LNextBatter1
                         If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
                         If go$ = "GOODBYE"         Then Exit Sub
 
                         If go$ <> "CONTINUE" Then
-                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result N from LDefenseOptions: "; go$
                             End
                         End If
                     End If
@@ -6171,13 +6176,13 @@ Sub SOURCE ()
                         Call LPinchHitter
 
                         go$ = LDefenseOptions$(_False)
-                        If go$ = "LManageDefense"  Then GoTo LManageDefense
+                        If go$ = "LNextBatter0"    Then GoTo LNextBatter0
                         If go$ = "LNextBatter1"    Then GoTo LNextBatter1
                         If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
                         If go$ = "GOODBYE"         Then Exit Sub
 
                         If go$ <> "CONTINUE" Then
-                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result O from LDefenseOptions: "; go$
                             End
                         End If
                     End If
@@ -6190,13 +6195,13 @@ Sub SOURCE ()
                         Call LPinchHitter
 
                         go$ = LDefenseOptions$(_False)
-                        If go$ = "LManageDefense"  Then GoTo LManageDefense
+                        If go$ = "LNextBatter0"    Then GoTo LNextBatter0
                         If go$ = "LNextBatter1"    Then GoTo LNextBatter1
                         If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
                         If go$ = "GOODBYE"         Then Exit Sub
 
                         If go$ <> "CONTINUE" Then
-                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result P from LDefenseOptions: "; go$
                             End
                         End If
                     End If
@@ -6211,16 +6216,19 @@ Sub SOURCE ()
     go$ = LNoPinchHitter$(MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
     If go$ = "LDefenseOptions" Then
 
-        go$ = LDefenseOptions$(_False)
-        If go$ = "LManageDefense"  Then GoTo LManageDefense
-        If go$ = "LNextBatter1"    Then GoTo LNextBatter1
-        If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-        If go$ = "GOODBYE"         Then Exit Sub
+        go2$ = LDefenseOptions$(_False)
+        If go2$ = "LNextBatter0"    Then GoTo LNextBatter0
+        If go2$ = "LNextBatter1"    Then GoTo LNextBatter1
+        If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+        If go2$ = "GOODBYE"         Then Exit Sub
 
-        If go$ <> "CONTINUE" Then
-            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+        If go2$ <> "CONTINUE" Then
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result Q from LDefenseOptions: "; go$
             End
         End If
+
+        go$ = "CONTINUE"
+
     End If
 
     If go$ = "LBunt" Then Goto LBunt
@@ -6228,8 +6236,10 @@ Sub SOURCE ()
     If go$ = "LExecuteOffense" Then Goto LExecuteOffense
     If go$ =  "LSteal" Then Goto LSteal
 
-    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LNoPinchHitter: "; go$
-    End
+    If go$ <> "CONTINUE" Then
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result C from LNoPinchHitter: "; go$
+        End
+    End If
 
 
     '----- NOODLE -----
@@ -6326,13 +6336,13 @@ Sub SOURCE ()
             Call LPinchHitter
 
             go$ = LDefenseOptions$(_False)
-            If go$ = "LManageDefense"  Then GoTo LManageDefense
+            If go$ = "LNextBatter0"    Then GoTo LNextBatter0
             If go$ = "LNextBatter1"    Then GoTo LNextBatter1
             If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
             If go$ = "GOODBYE"         Then Exit Sub
 
             If go$ <> "CONTINUE" Then
-                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result R from LDefenseOptions: "; go$
                 End
             End If
 
@@ -6341,16 +6351,19 @@ Sub SOURCE ()
         go$ = LNoPinchHitter$(MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
         If go$ = "LDefenseOptions" Then
 
-            go$ = LDefenseOptions$(_False)
-            If go$ = "LManageDefense"  Then GoTo LManageDefense
-            If go$ = "LNextBatter1"    Then GoTo LNextBatter1
-            If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-            If go$ = "GOODBYE"         Then Exit Sub
+            go2$ = LDefenseOptions$(_False)
+            If go2$ = "LNextBatter0"    Then GoTo LNextBatter0
+            If go2$ = "LNextBatter1"    Then GoTo LNextBatter1
+            If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+            If go2$ = "GOODBYE"         Then Exit Sub
 
-            If go$ <> "CONTINUE" Then
-                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefenseOptions: "; go$
+            If go2$ <> "CONTINUE" Then
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result S from LDefenseOptions: "; go$
                 End
             End If
+
+            go$ = "CONTINUE"
+
         End If
 
         If go$ = "LBunt" Then Goto LBunt
@@ -6358,8 +6371,10 @@ Sub SOURCE ()
         If go$ = "LExecuteOffense" Then Goto LExecuteOffense
         If go$ =  "LSteal" Then Goto LSteal
 
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LNoPinchHitter: "; go$
-        End
+        If go$ <> "CONTINUE" Then
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result D from LNoPinchHitter: "; go$
+            End
+        End If
 
     End If
 
@@ -9907,12 +9922,12 @@ Function LDefOpts$
 End Function
 
 
-Function LDefenseOptions$(skipSetup%)
+Function LDefenseOptions$ (skipSetup%)
     Shared runnerHeld, D2, runnerOn2nd, errorOnPlay%, baseRunners
 
     Do
 
-        If skipSetup% Then
+        If Not skipSetup% Then
             If useVGA = 1 Then
                 _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
             Else
@@ -9960,8 +9975,20 @@ Function LDefenseOptions$(skipSetup%)
         If (playerMode = 2 Or playerMode = 1 And P <> compTeam) Then
             Call LCheckIfRelieverNeeded(newPitcherFlag)
             If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDefenseOptions RETURNING LManageDefense"    'ToDo [bm] REMOVE
-            LDefenseOptions$ = "LManageDefense"
-            Exit Function
+            'LDefenseOptions$ = "LManageDefense"     'ToDo [bm] FIX THIS
+
+            go$ = LDefe$(_True)
+
+            If go$ = "LNextBatter0"    Then LDefenseOptions$ = "LNextBatter0": Exit Sub
+            If go$ = "LNextBatter1"    Then LDefenseOptions$ = "LNextBatter1": Exit Sub
+            If go$ = "LWeirdPlay"      Then LDefenseOptions$ = "LWeirdPlay": Exit Sub
+            If go$ = "GOODBYE"         Then LDefenseOptions$ = "GOODBYE": Exit Sub
+            If go$ = "CONTINUE"        Then LDefenseOptions$ = "CONTINUE": Exit Sub
+
+            If go$ <> "CONTINUE" Then
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefe: "; go$
+                End
+            End If
         End If
 
         If baseRunners = 1 Or baseRunners = 5 Then
@@ -10072,7 +10099,7 @@ Function LManageDefe$
 
     End If
 
-    If Environ$("PBPLOG") = "TRUE" Then Print #11, "LManageDefe RETURNING CONTINUE"    'ToDo [bm] REMOVE
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "LManageDefe RETURNING CONTINUE, D2 = "; D2    'ToDo [bm] REMOVE
     LManageDefe$ = "CONTINUE"
 
 End Function
@@ -10081,7 +10108,7 @@ End Function
 Sub LCheckIfRelieverNeeded (newPitcherFlag)
     Shared runnerHeld, baseRunners, setupUsed(), closerUsed()
 
-    If Environ$("PBPLOG") = "TRUE" Then Print #11, "LCheckIfReleiverNeeded"    'ToDo [bm] REMOVE
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "LCheckIfRelieverNeeded"    'ToDo [bm] REMOVE
 
     runnerHeld = 0
     If useVGA = 1 Then
@@ -10179,6 +10206,46 @@ Sub LCheckIfRelieverNeeded (newPitcherFlag)
     Call LReliever1(newPitcherFlag)
 
 End Sub
+
+
+Function LDefe$ (skipSetup%)
+    Shared D2
+
+    timesThruLoop% = 0
+    Do
+        If Not skipSetup% Then
+            go$ = LDefenseOptions$(_False)
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDefe A maybe RETURNING "; go$; ", D2 = "; D2    'ToDo [bm] REMOVE
+            'If go$ = "LManageDefense"  Then GoTo LManageDefense
+            If go$ = "LNextBatter1"    Then LDefe$ = "LNextBatter1": Exit Sub
+            If go$ = "LWeirdPlay"      Then LDefe$ = "LWeirdPlay":   Exit Sub
+            If go$ = "GOODBYE"         Then LDefe$ = "GOODBYE":      Exit Sub
+
+            If go$ <> "CONTINUE" And go$ <> "LManageDefense" Then
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result T from LDefenseOptions: "; go$
+                End
+            End If
+        End If
+
+        go$ = LManageDefe$
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDefe B maybe RETURNING "; go$; ", D2 = "; D2    'ToDo [bm] REMOVE
+        If go$ = "LNextBatter0"    Then LDefe$ = "LNextBatter0": Exit Sub
+        If go$ = "LNextBatter1"    Then LDefe$ = "LNextBatter1": Exit Sub
+        If go$ = "LWeirdPlay"      Then LDefe$ = "LWeirdPlay":   Exit Sub
+
+        If go$ <> "CONTINUE" Then
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LManageDefe: "; go$
+            End
+        End If
+
+        timesThruLoop% = timesThruLoop% + 1
+    Loop While D2 >= 3 And D2 <= 5 And timesThruLoop% < 10
+
+    If timesThruLoop% >=10 And Environ$("PBPLOG") = "TRUE" Then Print #11, "WARNING!! timesThruLoop: "; timesThruLoop%
+
+    LDefe$ = "CONTINUE"
+
+End Function
 
 
 '----------------------------------------
