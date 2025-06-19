@@ -4236,7 +4236,12 @@ Sub SOURCE ()
                 If go2$ = "LNextBatter0"           Then Goto LNextBatter0
                 If go2$ = "LNextBatter1"           Then Goto LNextBatter1
                 If go2$ = "LSteal"                 Then Goto LSteal
-                If go2$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+                If go2$ = "LCheckForOptionsOrQuit" Then
+                    go3$ = LCheckForOptionsOrQuit$
+                    If go3$ = "LNextBatter0" Then GoTo LNextBatter0
+                    If go3$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                    If go3$ = "GOODBYE" Then Exit Sub
+                End If
             End If
 
             If go$ <> "CONTINUE" Then
@@ -4349,7 +4354,12 @@ Sub SOURCE ()
     If go$ = "LNextBatter0"           Then Goto LNextBatter0
     If go$ = "LNextBatter1"           Then Goto LNextBatter1
     If go$ = "LSteal"                 Then Goto LSteal
-    If go$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+    If go$ = "LCheckForOptionsOrQuit" Then
+        go2$ = LCheckForOptionsOrQuit$
+        If go2$ = "LNextBatter0" Then GoTo LNextBatter0
+        If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
+        If go2$ = "GOODBYE" Then Exit Sub
+    End If
 
 
     '--- end of a new sub
@@ -4425,7 +4435,10 @@ Sub SOURCE ()
             Call MAINSCREEN(D, P, nbrBalls, nbrStrikes, MO)
         End If
 
-        GoTo LCheckForOptionsOrQuit
+        go$ = LCheckForOptionsOrQuit$
+        If go$ = "LNextBatter0" Then GoTo LNextBatter0
+        If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+        If go$ = "GOODBYE" Then Exit Sub
 
     End If
 
@@ -4514,7 +4527,10 @@ Sub SOURCE ()
        nbrOuts(0) = 0 And baseRunners = 7 And INFPOS% >= INF_IN And H6% = 245 Or _
        nbrOuts(0) = 0 And baseRunners = 7 And INFPOS% <  INF_IN And H6% = 381 Then
         Call TRIPLEPLAY(D)
-        GoTo LCheckForOptionsOrQuit
+        go$ = LCheckForOptionsOrQuit$
+        If go$ = "LNextBatter0" Then GoTo LNextBatter0
+        If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+        If go$ = "GOODBYE" Then Exit Sub
     End If
 
     H7% = Int(Rnd(1) * 7500) + 1
@@ -4572,7 +4588,10 @@ Sub SOURCE ()
                 A5%(2) = 1
                 A5%(3) = 1
                 Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-                GoTo LCheckForOptionsOrQuit
+                go$ = LCheckForOptionsOrQuit$
+                If go$ = "LNextBatter0" Then GoTo LNextBatter0
+                If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                If go$ = "GOODBYE" Then Exit Sub
             Else
                 A5%(1) = 1
                 A5%(2) = 1
@@ -4607,7 +4626,12 @@ Sub SOURCE ()
             go$ = "CONTINUE"
 
         End If
-        If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+        If go$ = "LCheckForOptionsOrQuit" Then
+            go2$ = LCheckForOptionsOrQuit$
+            If go2$ = "LNextBatter0" Then GoTo LNextBatter0
+            If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
+            If go2$ = "GOODBYE" Then Exit Sub
+        End If
         If go$ <> "CONTINUE" Then
             If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LPassedBall: "; go$
             End
@@ -4650,7 +4674,12 @@ Sub SOURCE ()
 
         go$ = LBallGetsPastCatcher$
         If go$ = "LNextBatter1" Then GoTo LNextBatter1
-        If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+        If go$ = "LCheckForOptionsOrQuit" Then
+            go2$ = LCheckForOptionsOrQuit$
+            If go2$ = "LNextBatter0" Then GoTo LNextBatter0
+            If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
+            If go2$ = "GOODBYE" Then Exit Sub
+        End If
         If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LBallGetsPastCatcher: "; go$
         End
 
@@ -4679,7 +4708,12 @@ Sub SOURCE ()
 
         go$ = LBallGetsPastCatcher$
         If go$ = "LNextBatter1" Then GoTo LNextBatter1
-        If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+        If go$ = "LCheckForOptionsOrQuit" Then
+            go2$ = LCheckForOptionsOrQuit$
+            If go2$ = "LNextBatter0" Then GoTo LNextBatter0
+            If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
+            If go2$ = "GOODBYE" Then Exit Sub
+        End If
         If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LBallGetsPastCatcher: "; go$
         End
 
@@ -4715,7 +4749,10 @@ Sub SOURCE ()
 
         CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
 
-        GoTo LCheckForOptionsOrQuit
+        go$ = LCheckForOptionsOrQuit$
+        If go$ = "LNextBatter0" Then GoTo LNextBatter0
+        If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+        If go$ = "GOODBYE" Then Exit Sub
     End If
 
     If H6% <= game_batRating(P, GM_BB, currLineupSlot(P)) + 25 Then 'ToDo [bm] I have 28 as the constant in an older version
@@ -4761,7 +4798,12 @@ Sub SOURCE ()
         Call DELAY
         go$ = LInfSingle$
         If go$ = "LNextBatter0" Then GoTo LNextBatter0
-        If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+        If go$ = "LCheckForOptionsOrQuit" Then
+            go2$ = LCheckForOptionsOrQuit$
+            If go2$ = "LNextBatter0" Then GoTo LNextBatter0
+            If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
+            If go2$ = "GOODBYE" Then Exit Sub
+        End If
         If go$ <> "CONTINUE" Then
             If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LinfSingle: "; go$
             End
@@ -4789,7 +4831,10 @@ Sub SOURCE ()
                 Call LBallHitOnGround
             End If
 
-            GoTo LCheckForOptionsOrQuit
+            go$ = LCheckForOptionsOrQuit$
+            If go$ = "LNextBatter0" Then GoTo LNextBatter0
+            If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+            If go$ = "GOODBYE" Then Exit Sub
 
         Else                                                            'Strikeout
             go$ = LStrikeout$
@@ -4798,9 +4843,11 @@ Sub SOURCE ()
             If go$ = "LNextBatter1"           Then Goto LNextBatter1
             If go$ = "LSteal"                 Then Goto LSteal
             If go$ = "GOODBYE"                Then Exit Sub
-            'If go$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
 
-            GoTo LCheckForOptionsOrQuit
+            go$ = LCheckForOptionsOrQuit$
+            If go$ = "LNextBatter0" Then GoTo LNextBatter0
+            If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+            If go$ = "GOODBYE" Then Exit Sub
 
         End If
 
@@ -4808,7 +4855,12 @@ Sub SOURCE ()
 
         go$ = BaseHit$(HW%)
         If go$ = "LNextBatter0" Then GoTo LNextBatter0
-        If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+        If go$ = "LCheckForOptionsOrQuit" Then
+            go2$ = LCheckForOptionsOrQuit$
+            If go2$ = "LNextBatter0" Then GoTo LNextBatter0
+            If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
+            If go2$ = "GOODBYE" Then Exit Sub
+        End If
         If go$ <> "CONTINUE" Then
             If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from BaseHit: "; go$
             End
@@ -4817,53 +4869,18 @@ Sub SOURCE ()
     End If
 
     Call LProcessOutAndDP2
-    GoTo LCheckForOptionsOrQuit
 
     '----- NOODLE -----
-    '----- NOODLE -----
-
 
    'LGroundBall:
 
     'Call LMoveRunners(baseRunners, INFPOS%)
     'GoTo LCheckForOptionsOrQuit
 
-    '-----------------------------------------------------
-    '--- THIS IS CRITICAL FOR PBP MOVING AUTOMATICALLY ---
-    '-----------------------------------------------------
-    ' Play-by-Play box
-   LCheckForOptionsOrQuit:
-    If useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 144), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 144)
-
-    ' essentially it allows the user to press a key
-    ' during game play to activate certain functions
-    ' or special menus, etc.
-    I$ = InKey$
-
-    If UCase$(I$) = "Q" Then
-        Call EndOfGame
-        Exit Sub
-    End If
-
-    If UCase$(I$) = "O" Then
-        Call OPTIONS
-    End If
-
-    'There was some question as to whether this is needed
-    'based on comparing to the original code, but the working
-    'version of my code had this in it still
-    If useVGA = 1 Then _PutImage (17 * FontColAdj, 128)-Step(46 * FontColAdj, 80), backupScreen&, imageScreen&, (17 * FontColAdj, 128)-Step(46 * FontColAdj, 80)
-
-    DPC% = 0
-    runnerHeld = 0
-    INFPOS% = INF_BACK
-    errorOnPlay% = 0
-
-    If nbrOuts(0) = 3 Then
-        GoTo LNextHalfInning
-    Else
-        GoTo LNextBatter0
-    End If
+    go$ = LCheckForOptionsOrQuit$
+    If go$ = "LNextBatter0" Then GoTo LNextBatter0
+    If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+    If go$ = "GOODBYE" Then Exit Sub
 
     '----- NOODLE -----
 
@@ -4910,7 +4927,12 @@ Sub SOURCE ()
             If go2$ = "LNextBatter0"           Then Goto LNextBatter0
             If go2$ = "LNextBatter1"           Then Goto LNextBatter1
             If go2$ = "LSteal"                 Then Goto LSteal
-            If go2$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+            If go2$ = "LCheckForOptionsOrQuit" Then
+                go3$ = LCheckForOptionsOrQuit$
+                If go3$ = "LNextBatter0" Then GoTo LNextBatter0
+                If go3$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                If go3$ = "GOODBYE" Then Exit Sub
+            End If
             If go2$ = "GOODBYE"                Then Exit Sub
         End If
 
@@ -4949,7 +4971,10 @@ Sub SOURCE ()
 
             End If
 
-            GoTo LCheckForOptionsOrQuit
+            go$ = LCheckForOptionsOrQuit$
+            If go$ = "LNextBatter0" Then GoTo LNextBatter0
+            If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+            If go$ = "GOODBYE" Then Exit Sub
 
         Case 2
             'DP
@@ -4958,7 +4983,12 @@ Sub SOURCE ()
                 Call PBP(player$(0) + " lays down a good bunt")
 
                 Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-                If errorOnPlay% = 1 Then Goto LCheckForOptionsOrQuit
+                If errorOnPlay% = 1 Then
+                    go$ = LCheckForOptionsOrQuit$
+                    If go$ = "LNextBatter0" Then GoTo LNextBatter0
+                    If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                    If go$ = "GOODBYE" Then Exit Sub
+                End If
 
                 Call PBP(player$(4) + " fields it cleanly")
 
@@ -4979,15 +5009,16 @@ Sub SOURCE ()
 
                     For I = 0 To 2: A5%(0) = 1: Next
 
-                    '14122
-
                     Call ADDSTTS(P, D)
                     nbrOuts(0) = nbrOuts(0) + 1
                     nbrOuts(1) = nbrOuts(1) + 1
                     Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
                     Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
 
-                    GoTo LCheckForOptionsOrQuit
+                    go$ = LCheckForOptionsOrQuit$
+                    If go$ = "LNextBatter0" Then GoTo LNextBatter0
+                    If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                    If go$ = "GOODBYE" Then Exit Sub
 
                 End If
 
@@ -5030,7 +5061,10 @@ Sub SOURCE ()
                         Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
                     End If
 
-                    GoTo LCheckForOptionsOrQuit
+                    go$ = LCheckForOptionsOrQuit$
+                    If go$ = "LNextBatter0" Then GoTo LNextBatter0
+                    If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                    If go$ = "GOODBYE" Then Exit Sub
 
                 End If
 
@@ -5062,7 +5096,10 @@ Sub SOURCE ()
                     CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
                 End If
 
-                GoTo LCheckForOptionsOrQuit
+                go$ = LCheckForOptionsOrQuit$
+                If go$ = "LNextBatter0" Then GoTo LNextBatter0
+                If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                If go$ = "GOODBYE" Then Exit Sub
 
             Else
                 Call PBP(player$(0) + " lays down the bunt...")
@@ -5077,17 +5114,29 @@ Sub SOURCE ()
                 nbrOuts(1) = nbrOuts(1) + 1
                 Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
                 Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
-                GoTo LCheckForOptionsOrQuit
+
+                go$ = LCheckForOptionsOrQuit$
+                If go$ = "LNextBatter0" Then GoTo LNextBatter0
+                If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                If go$ = "GOODBYE" Then Exit Sub
             End If
 
         Case 3
             Call LDRNRCTDN
-            GoTo LCheckForOptionsOrQuit
+            go$ = LCheckForOptionsOrQuit$
+            If go$ = "LNextBatter0" Then GoTo LNextBatter0
+            If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+            If go$ = "GOODBYE" Then Exit Sub
 
         Case 4
             go$ = LGoodBunt$
             If go$ = "LNextBatter0"           Then GoTo LNextBatter0
-            If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+            If go$ = "LCheckForOptionsOrQuit" Then
+                go2$ = LCheckForOptionsOrQuit$
+                If go2$ = "LNextBatter0" Then GoTo LNextBatter0
+                If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                If go2$ = "GOODBYE" Then Exit Sub
+            End If
             If go$ <> "CONTINUE" Then
                 If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LGoodBunt: "; go$
                 End
@@ -5103,7 +5152,12 @@ Sub SOURCE ()
                 Call PBP(player$(0) + " beats out an infield hit!")
                 go$ = LSingle$
                 If go$ = "LNextBatter0" Then GoTo LNextBatter0
-                If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+                If go$ = "LCheckForOptionsOrQuit" Then
+                    go2$ = LCheckForOptionsOrQuit$
+                    If go2$ = "LNextBatter0" Then GoTo LNextBatter0
+                    If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                    If go2$ = "GOODBYE" Then Exit Sub
+                End If
                 If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LSINGLE: "; go$
                 End
 
@@ -5113,7 +5167,12 @@ Sub SOURCE ()
                 '-- with a value of 4 and a 'skip' variable
                 go$ =  LSacBunt$
                 If go$ = "LNextBatter0"           Then GoTo LNextBatter0
-                If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+                If go$ = "LCheckForOptionsOrQuit" Then
+                    go2$ = LCheckForOptionsOrQuit$
+                    If go2$ = "LNextBatter0" Then GoTo LNextBatter0
+                    If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                    If go2$ = "GOODBYE" Then Exit Sub
+                End If
                 If go$ <> "CONTINUE" Then
                     If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LSacBunt: "; go$
                     End
@@ -5121,7 +5180,10 @@ Sub SOURCE ()
 
             End If
 
-            GoTo LCheckForOptionsOrQuit
+            go$ = LCheckForOptionsOrQuit$
+            If go$ = "LNextBatter0" Then GoTo LNextBatter0
+            If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+            If go$ = "GOODBYE" Then Exit Sub
 
         Case 5
            LBunt5: 'C@3
@@ -5146,7 +5208,12 @@ Sub SOURCE ()
                     If baseRunners > 0 Then
                         go$ = LBuntSingle$
                         If go$ = "LNextBatter0"           Then GoTo LNextBatter0
-                        If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+                        If go$ = "LCheckForOptionsOrQuit" Then
+                            go2$ = LCheckForOptionsOrQuit$
+                            If go2$ = "LNextBatter0" Then GoTo LNextBatter0
+                            If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                            If go2$ = "GOODBYE" Then Exit Sub
+                        End If
                         If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LBuntSingle: "; go$
                         End
                     End If
@@ -5172,19 +5239,32 @@ Sub SOURCE ()
                     Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
                     Call SCOREBOARD
 
-                    GoTo LCheckForOptionsOrQuit
+                    go$ = LCheckForOptionsOrQuit$
+                    If go$ = "LNextBatter0" Then GoTo LNextBatter0
+                    If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                    If go$ = "GOODBYE" Then Exit Sub
 
                 Case 2
                     go$ = LBuntSingle$
                     If go$ = "LNextBatter0"           Then GoTo LNextBatter0
-                    If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+                    If go$ = "LCheckForOptionsOrQuit" Then
+                        go2$ = LCheckForOptionsOrQuit$
+                        If go2$ = "LNextBatter0" Then GoTo LNextBatter0
+                        If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                        If go2$ = "GOODBYE" Then Exit Sub
+                    End If
                     If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result B from LBuntSingle: "; go$
                     End
 
                 Case 3
                     go$ = LGoodBunt$
                     If go$ = "LNextBatter0"           Then GoTo LNextBatter0
-                    If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+                    If go$ = "LCheckForOptionsOrQuit" Then
+                        go2$ = LCheckForOptionsOrQuit$
+                        If go2$ = "LNextBatter0" Then GoTo LNextBatter0
+                        If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                        If go2$ = "GOODBYE" Then Exit Sub
+                    End If
                     If go$ <> "CONTINUE" Then
                         If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LSacBunt: "; go$
                         End
@@ -5207,7 +5287,12 @@ Sub SOURCE ()
             Call PBP(player$(0) + " gets the bunt down...")
 
             Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-            If errorOnPlay% = 1 Then Goto LCheckForOptionsOrQuit
+            If errorOnPlay% = 1 Then
+                go$ = LCheckForOptionsOrQuit$
+                If go$ = "LNextBatter0" Then GoTo LNextBatter0
+                If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                If go$ = "GOODBYE" Then Exit Sub
+            End If
 
             Call PBP(player$(4) + " fields it quickly...")
             Call PBP("Looks like a close play at " + J3$ + "!!")
@@ -5225,7 +5310,12 @@ Sub SOURCE ()
             If I5 = 2 Then
                 go$ =  LSacBunt$
                 If go$ = "LNextBatter0"           Then GoTo LNextBatter0
-                If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+                If go$ = "LCheckForOptionsOrQuit" Then
+                    go2$ = LCheckForOptionsOrQuit$
+                    If go2$ = "LNextBatter0" Then GoTo LNextBatter0
+                    If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                    If go2$ = "GOODBYE" Then Exit Sub
+                End If
                 If go$ <> "CONTINUE" Then
                     If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result B from LSacBunt: "; go$
                     End
@@ -5257,7 +5347,10 @@ Sub SOURCE ()
                 Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
             End If
 
-            GoTo LCheckForOptionsOrQuit
+            go$ = LCheckForOptionsOrQuit$
+            If go$ = "LNextBatter0" Then GoTo LNextBatter0
+            If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+            If go$ = "GOODBYE" Then Exit Sub
 
         Case 7
             'FLKSO
@@ -5289,7 +5382,12 @@ Sub SOURCE ()
                     If go$ = "LNextBatter0"           Then Goto LNextBatter0
                     If go$ = "LNextBatter1"           Then Goto LNextBatter1
                     If go$ = "LSteal"                 Then Goto LSteal
-                    If go$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+                    If go$ = "LCheckForOptionsOrQuit" Then
+                        go2$ = LCheckForOptionsOrQuit$
+                        If go2$ = "LNextBatter0" Then GoTo LNextBatter0
+                        If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                        If go2$ = "GOODBYE" Then Exit Sub
+                    End If
                     If go$ = "GOODBYE"                Then Exit Sub
 
                 Case 2
@@ -5316,7 +5414,12 @@ Sub SOURCE ()
                         If go$ = "LNextBatter0"           Then Goto LNextBatter0
                         If go$ = "LNextBatter1"           Then Goto LNextBatter1
                         If go$ = "LSteal"                 Then Goto LSteal
-                        If go$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+                        If go$ = "LCheckForOptionsOrQuit" Then
+                            go2$ = LCheckForOptionsOrQuit$
+                            If go2$ = "LNextBatter0" Then GoTo LNextBatter0
+                            If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                            If go2$ = "GOODBYE" Then Exit Sub
+                        End If
                         If go$ = "GOODBYE"                Then Exit Sub
                     End If
 
@@ -5360,7 +5463,12 @@ Sub SOURCE ()
                 Case 3
                     go$ = LGoodBunt$
                     If go$ = "LNextBatter0"           Then GoTo LNextBatter0
-                    If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+                    If go$ = "LCheckForOptionsOrQuit" Then
+                        go2$ = LCheckForOptionsOrQuit$
+                        If go2$ = "LNextBatter0" Then GoTo LNextBatter0
+                        If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                        If go2$ = "GOODBYE" Then Exit Sub
+                    End If
                     If go$ <> "CONTINUE" Then
                         If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LSacBunt: "; go$
                         End
@@ -5374,7 +5482,12 @@ Sub SOURCE ()
             Call PBP(player$(4) + " has a tough play")
 
             Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-            If errorOnPlay% = 1 Then Goto LCheckForOptionsOrQuit
+            If errorOnPlay% = 1 Then
+                go$ = LCheckForOptionsOrQuit$
+                If go$ = "LNextBatter0" Then GoTo LNextBatter0
+                If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                If go$ = "GOODBYE" Then Exit Sub
+            End If
 
             If currFielder = 1 Then RR = 3
             If currFielder <> 1 Then RR = batRating(D, fielder(D, currFielder), SS_B_Range)
@@ -5398,19 +5511,32 @@ Sub SOURCE ()
                     Call PBP("but too late...base hit!")
                     go$ = LSingle$
                     If go$ = "LNextBatter0" Then GoTo LNextBatter0
-                    If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+                    If go$ = "LCheckForOptionsOrQuit" Then
+                        go2$ = LCheckForOptionsOrQuit$
+                        If go2$ = "LNextBatter0" Then GoTo LNextBatter0
+                        If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                        If go2$ = "GOODBYE" Then Exit Sub
+                    End If
                     If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LSINGLE: "; go$
                     End
 
                 Case 2:
                     PLB = 1
                     Call LDRNRCTDN
-                    GoTo LCheckForOptionsOrQuit
+                    go$ = LCheckForOptionsOrQuit$
+                    If go$ = "LNextBatter0" Then GoTo LNextBatter0
+                    If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                    If go$ = "GOODBYE" Then Exit Sub
 
                 Case 3:
                     go$ =  LSacBunt$
                     If go$ = "LNextBatter0"           Then GoTo LNextBatter0
-                    If go$ = "LCheckForOptionsOrQuit" Then GoTo LCheckForOptionsOrQuit
+                    If go$ = "LCheckForOptionsOrQuit" Then
+                        go2$ = LCheckForOptionsOrQuit$
+                        If go2$ = "LNextBatter0" Then GoTo LNextBatter0
+                        If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                        If go2$ = "GOODBYE" Then Exit Sub
+                    End If
                     If go$ <> "CONTINUE" Then
                         If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result C from LSacBunt: "; go$
                         End
@@ -5427,7 +5553,12 @@ Sub SOURCE ()
                 If go2$ = "LNextBatter0"           Then Goto LNextBatter0
                 If go2$ = "LNextBatter1"           Then Goto LNextBatter1
                 If go2$ = "LSteal"                 Then Goto LSteal
-                If go2$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+                If go2$ = "LCheckForOptionsOrQuit" Then
+                    go3$ = LCheckForOptionsOrQuit$
+                    If go3$ = "LNextBatter0" Then GoTo LNextBatter0
+                    If go3$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                    If go2$ = "GOODBYE" Then Exit Sub
+                End If
                 If go2$ = "GOODBYE"                Then Exit Sub
             End If
 
@@ -5459,7 +5590,12 @@ Sub SOURCE ()
                 If go$ = "LNextBatter0"           Then Goto LNextBatter0
                 If go$ = "LNextBatter1"           Then Goto LNextBatter1
                 If go$ = "LSteal"                 Then Goto LSteal
-                If go$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+                If go$ = "LCheckForOptionsOrQuit" Then
+                    go2$ = LCheckForOptionsOrQuit$
+                    If go2$ = "LNextBatter0" Then GoTo LNextBatter0
+                    If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                    If go2$ = "GOODBYE" Then Exit Sub
+                End If
                 If go$ = "GOODBYE"                Then Exit Sub
             End If
 
@@ -5532,7 +5668,10 @@ Sub SOURCE ()
                 If errorOnPlay% = 1 Then
                     currLineupSlot(P) = currLineupSlot(P) - 1
                     Call WHOSON1ST(baseRunners)
-                    GoTo LCheckForOptionsOrQuit
+                    go$ = LCheckForOptionsOrQuit$
+                    If go$ = "LNextBatter0" Then GoTo LNextBatter0
+                    If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                    If go$ = "GOODBYE" Then Exit Sub
                 End If
 
             End If
@@ -5551,7 +5690,10 @@ Sub SOURCE ()
                 If errorOnPlay% = 1 Then
                     currLineupSlot(P) = currLineupSlot(P) - 1
                     Call WHOSON1ST(baseRunners)
-                    GoTo LCheckForOptionsOrQuit
+                    go$ = LCheckForOptionsOrQuit$
+                    If go$ = "LNextBatter0" Then GoTo LNextBatter0
+                    If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                    If go$ = "GOODBYE" Then Exit Sub
                 End If
 
             End If
@@ -5605,12 +5747,20 @@ Sub SOURCE ()
             Call INCBATOFF(P, TGBASE%, 9)
             currLineupSlot(P) = currLineupSlot(P) - 1
             Call STRIKEOUTCS(SO)
-            GoTo LCheckForOptionsOrQuit
+            go$ = LCheckForOptionsOrQuit$
+            If go$ = "LNextBatter0" Then GoTo LNextBatter0
+            If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+            If go$ = "GOODBYE" Then Exit Sub
         Else
             Call WHICHRUNNER(TGTBASE%, baseRunners, D5)
             stlChance = stlChance - ((batRating(D, fielder(D, 2), SS_B_Arm) - 5) * 25)
             go$ = LDoubleSteal2$(I9, AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%, pitchoutChance, I3)
-            If go$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+            If go$ = "LCheckForOptionsOrQuit" Then
+                go2$ = LCheckForOptionsOrQuit$
+                If go2$ = "LNextBatter0" Then GoTo LNextBatter0
+                If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                If go2$ = "GOODBYE" Then Exit Sub
+            End If
             If go$ = "LNextBatter1" Then Goto LNextBatter1
             If go$ = "LStealHome"  Then Goto LStealHome
 
@@ -5631,7 +5781,12 @@ Sub SOURCE ()
         player$(4) = pitchers$(D, currPitcher(D))
 
         go$ = LCaughtInRundown$(TGTBASE%, S2%, errorOnPlay%, I3, fbPitcherCoveringFirst%, AST%, INFPOS%)
-        If go$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+        If go$ = "LCheckForOptionsOrQuit" Then
+            go2$ = LCheckForOptionsOrQuit$
+            If go2$ = "LNextBatter0" Then GoTo LNextBatter0
+            If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
+            If go2$ = "GOODBYE" Then Exit Sub
+        End If
         If go$ = "LNextBatter1" Then Goto LNextBatter1
 
         If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result 0 from LCaughtInRundown: "; go$
@@ -5688,7 +5843,12 @@ Sub SOURCE ()
             If UCase$(I$) <> "Y" Then
                 pitchoutChance = 7
                 go$ = LRunnerSafe$(AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%, pitchoutChance, I3)
-                If go$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+                If go$ = "LCheckForOptionsOrQuit" Then
+                    go2$ = LCheckForOptionsOrQuit$
+                    If go2$ = "LNextBatter0" Then GoTo LNextBatter0
+                    If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                    If go2$ = "GOODBYE" Then Exit Sub
+                End If
                 If go$ = "LNextBatter1" Then Goto LNextBatter1
                 If go$ = "LStealHome"  Then Goto LStealHome
 
@@ -5709,7 +5869,10 @@ Sub SOURCE ()
             Call INCBATOFF(P, TGBASE%, 9)
             Call PITSWAP(TGTBASE%)
             currLineupSlot(P) = currLineupSlot(P) - 1
-            GoTo LCheckForOptionsOrQuit
+            go$ = LCheckForOptionsOrQuit$
+            If go$ = "LNextBatter0" Then GoTo LNextBatter0
+            If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+            If go$ = "GOODBYE" Then Exit Sub
 
         End If
 
@@ -5719,7 +5882,12 @@ Sub SOURCE ()
     End If
 
     go$ = LDoubleSteal2$(I9, AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%, pitchoutChance, I3)
-    If go$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+    If go$ = "LCheckForOptionsOrQuit" Then
+        go2$ = LCheckForOptionsOrQuit$
+        If go2$ = "LNextBatter0" Then GoTo LNextBatter0
+        If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
+        If go2$ = "GOODBYE" Then Exit Sub
+    End If
     If go$ = "LNextBatter1" Then Goto LNextBatter1
     If go$ = "LStealHome"  Then Goto LStealHome
 
@@ -5952,7 +6120,12 @@ Sub SOURCE ()
             If go2$ = "LNextBatter0"           Then Goto LNextBatter0
             If go2$ = "LNextBatter1"           Then Goto LNextBatter1
             If go2$ = "LSteal"                 Then Goto LSteal
-            If go2$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+            If go2$ = "LCheckForOptionsOrQuit" Then
+                go3$ = LCheckForOptionsOrQuit$
+                If go3$ = "LNextBatter0" Then GoTo LNextBatter0
+                If go3$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                If go3$ = "GOODBYE" Then Exit Sub
+            End If
         End If
 
         If go$ <> "CONTINUE" Then
@@ -6072,7 +6245,12 @@ Sub SOURCE ()
         If go2$ = "LNextBatter0"           Then Goto LNextBatter0
         If go2$ = "LNextBatter1"           Then Goto LNextBatter1
         If go2$ = "LSteal"                 Then Goto LSteal
-        If go2$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+        If go2$ = "LCheckForOptionsOrQuit" Then
+            go3$ = LCheckForOptionsOrQuit$
+            If go3$ = "LNextBatter0" Then GoTo LNextBatter0
+            If go3$ = "LNextHalfInning" Then GoTo LNextHalfInning
+            If go3$ = "GOODBYE" Then Exit Sub
+        End If
     End If
 
     If go$ <> "CONTINUE" Then
@@ -6221,7 +6399,12 @@ Sub SOURCE ()
             If go2$ = "LNextBatter0"           Then Goto LNextBatter0
             If go2$ = "LNextBatter1"           Then Goto LNextBatter1
             If go2$ = "LSteal"                 Then Goto LSteal
-            If go2$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+            If go2$ = "LCheckForOptionsOrQuit" Then
+                go3$ = LCheckForOptionsOrQuit$
+                If go3$ = "LNextBatter0" Then GoTo LNextBatter0
+                If go3$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                If go3$ = "GOODBYE" Then Exit Sub
+            End If
         End If
 
         If go$ <> "CONTINUE" Then
@@ -6246,7 +6429,12 @@ Sub SOURCE ()
         If go2$ = "LNextBatter0"           Then Goto LNextBatter0
         If go2$ = "LNextBatter1"           Then Goto LNextBatter1
         If go2$ = "LSteal"                 Then Goto LSteal
-        If go2$ = "LCheckForOptionsOrQuit" Then Goto LCheckForOptionsOrQuit
+        If go2$ = "LCheckForOptionsOrQuit" Then
+            go3$ = LCheckForOptionsOrQuit$
+            If go3$ = "LNextBatter0" Then GoTo LNextBatter0
+            If go3$ = "LNextHalfInning" Then GoTo LNextHalfInning
+            If go3$ = "GOODBYE" Then Exit Sub
+        End If
     End If
     If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result B from LPossibleHitAndRun: "; go$
     End
@@ -10398,6 +10586,49 @@ Function BaseHit$ (HW%)
     If go$ = "LCheckForOptionsOrQuit" Then BaseHit$ = "LCheckForOptionsOrQuit": Exit Function
 
     BaseHit$ = "CONTINUE"
+
+End Function
+
+
+'-----------------------------------------------------
+'--- THIS IS CRITICAL FOR PBP MOVING AUTOMATICALLY ---
+'-----------------------------------------------------
+' Play-by-Play box
+Function LCheckForOptionsOrQuit$
+    Shared DPC%, runnerHeld, INFPOS%, errorOnPlay%
+
+    If useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 144), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 144)
+
+    ' essentially it allows the user to press a key
+    ' during game play to activate certain functions
+    ' or special menus, etc.
+    I$ = InKey$
+
+    If UCase$(I$) = "Q" Then
+        Call EndOfGame
+        LCheckForOptionsOrQuit$ = "GOODBYE"
+        Exit Function
+    End If
+
+    If UCase$(I$) = "O" Then
+        Call OPTIONS
+    End If
+
+    'There was some question as to whether this is needed
+    'based on comparing to the original code, but the working
+    'version of my code had this in it still
+    If useVGA = 1 Then _PutImage (17 * FontColAdj, 128)-Step(46 * FontColAdj, 80), backupScreen&, imageScreen&, (17 * FontColAdj, 128)-Step(46 * FontColAdj, 80)
+
+    DPC% = 0
+    runnerHeld = 0
+    INFPOS% = INF_BACK
+    errorOnPlay% = 0
+
+    If nbrOuts(0) = 3 Then
+        LCheckForOptionsOrQuit$ = "LNextHalfInning"
+    Else
+        LCheckForOptionsOrQuit$ = "LNextBatter0"
+    End If
 
 End Function
 
