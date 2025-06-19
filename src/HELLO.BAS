@@ -4041,7 +4041,8 @@ Sub SOURCE ()
     If fielder(D, 1) = 99 Then
         If playerMode = 0 Or fielder(D, 1) = 99 And playerMode = 1 And compTeam = 1 - D Then
         '----- move stuff here -----
-        GoTo LPHStayInGame
+            Call LPHStayInGame
+            Goto LNextBatter1
         Else
             Call RELIEVERS(pinchHitterFlag, newPitcherFlag) 'Will choose a new pitcher because pitcher was pinch hit for
         End If
@@ -4103,9 +4104,9 @@ Sub SOURCE ()
 
                 A1 = gameScore(P, 0) - gameScore(D, 0)
 
-                If fldPos(P, currLineupSlot(P)) <> 1 Then
+                If fldPos(P, currLineupSlot(P)) <> 1 Then               'batter is a position player
 
-                    If teamMgrProfileVal(P, 847) = 999 Then
+                    If teamMgrProfileVal(P, 847) = 999 Then             'manager profile is active
 
                         If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a PINCH HITTING for POSITION PLAYER strategy !!"
 
@@ -4131,7 +4132,7 @@ Sub SOURCE ()
                             End If
                         Next
 
-                    Else
+                    Else                                                'no manager profile
 
                         If batRating(P, JM, SS_B_AB) <> 0 Then
                             GoTo LPhForPosition
@@ -4145,13 +4146,13 @@ Sub SOURCE ()
 
                     End If
 
-                Else    ' batter is the pitcher
+                Else                                                    'batter is the pitcher
 
                     For I = 0 To 21
 
                         If pitchRating(P, I, SS_P_Avail) = 0 Then
 
-                            If teamMgrProfileVal(P, 590) = 999 Then
+                            If teamMgrProfileVal(P, 590) = 999 Then     'manager profile is active
 
                                 If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a PINCH HITTER for PITCHER strategy !!"
 
@@ -4182,7 +4183,7 @@ Sub SOURCE ()
 
                                 Exit For
 
-                            Else
+                            Else                                        'no manager profile
 
                                 If INNING% > 4 And INNING% < 7 And A1 < -2 And gameScore(P, 0) > 0 Then Goto LPhForPitcher
                                 If INNING% > 4 And INNING% < 7 And A1 < -3 Then Goto LPhForPitcher
@@ -5901,76 +5902,8 @@ Sub SOURCE ()
     '-- be made into a subroutine?
     '----------------------------------------
 
-   LPHStayInGame:
-    Cls
+    Call LPHStayInGame
 
-    If useVGA = 0 Then Screen menu&
-
-    P9 = D
-    currLineupSlot(P) = currLineupSlot(P) + 1
-    nbrStrikes = 0
-
-    If currLineupSlot(P) = 10 Then currLineupSlot(P) = 1
-
-    Color 15
-    Print "DOES "; batters$(D, lineupPlayer(D, fielder(D, 0))); " STAY IN THE GAME? (Y/N)"
-    I$ = GetKeyPress$
-
-    If UCase$(I$) = "N" Then
-
-        I5 = 77
-
-    Else
-
-        I5 = 66
-
-        Locate 5, 1
-
-        For I = 1 To 9:
-
-            Color 3, 0
-            If BP(P9) = I Then Color 9
-            Locate I + 4, 5: Print Using "# "; I;
-
-            If fldPos(P9, I) = 1 Then
-                If I5 = 66 Then 'batter staying in game
-                    Print batters$(P9, lineupPlayer(P9, I));
-                Else            'batter coming out of game
-                    Print pitchers$(P9, lineupPlayer(P9, I));
-                End If
-            Else
-                Print batters$(P9, lineupPlayer(P9, I));
-            End If
-
-            Print " "; fieldPos$(fldPos(P9, I));
-            Color 3
-
-        Next I
-
-        I5 = 0
-
-        Do
-            Color 15
-            Locate 3, 1: Print "WHAT LINEUP SLOT WILL THE PITCHER BAT IN (1-9)"
-            I$ = GetKeyPress$
-            I2 = Val(I$)
-        Loop Until I2 >= 1 And I2 <= 9
-
-        If fldPos(D, I2) = 10 Then fldPos(D, I2) = 1
-
-        INFPOS% = INF_BACK
-        fldPos(D, fielder(D, 0)) = fldPos(D, I2)
-        fielder(D, fldPos(D, fielder(D, 0))) = lineupPlayer(D, fielder(D, 0))
-        fldPos(D, I2) = 1
-
-        Call REPLACEMENTS(D, fielder(D, 0), lineupPlayer(D, fielder(D, 0)))
-
-        I5 = 66
-
-    End If
-
-    Call LChangePitcher(I5)
-    Call LPersonnelMenu
     Goto LNextBatter1
 
 
@@ -6033,7 +5966,10 @@ Sub SOURCE ()
 
             If batRating(P, I, SS_B_Avail) <= 0 And batters$(P, I) <> "XXX" Then
 
-                If fldPos(P, currLineupSlot(P)) = batRating(P, I, SS_B_Pos1) Or fldPos(P, currLineupSlot(P)) = batRating(P, I, SS_B_Pos2) Or fldPos(P, currLineupSlot(P)) = batRating(P, I, SS_B_Pos3) Or fldPos(P, currLineupSlot(P)) = batRating(P, I, SS_B_Pos4) Then
+                If fldPos(P, currLineupSlot(P)) = batRating(P, I, SS_B_Pos1) Or _
+                   fldPos(P, currLineupSlot(P)) = batRating(P, I, SS_B_Pos2) Or _
+                   fldPos(P, currLineupSlot(P)) = batRating(P, I, SS_B_Pos3) Or _
+                   fldPos(P, currLineupSlot(P)) = batRating(P, I, SS_B_Pos4) Then
 
                     I1 = 6
                     If pitchRating(D, currPitcher(D), SS_P_Throws) < 0 Then I1 = 1
@@ -6060,6 +5996,7 @@ Sub SOURCE ()
                             End If
 
                             Call REPLACEMENTS(P, currLineupSlot(P), lineupPlayer(P, currLineupSlot(P)))
+                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "Calling LPinchHitter A"       'ToDo [bm] REMOVE
                             Call LPinchHitter
 
                             go$ = LDefenseOptions$(_False)
@@ -6144,16 +6081,21 @@ Sub SOURCE ()
                 battrBAvg = batRating(P, JM, SS_B_H) / batRating(P, JM, SS_B_AB) * 1000
                 abRand = Int(Rnd(1) * 500)  ' Randomize chance of PH entering game, based on his AB's in the season. This will limit players who hardly played.  (500 is arbitrary number)
 
-                iPitThrows = pitchRating(D, currPitcher(D), SS_P_Throws)   ' pitcher throws L/R
-                iBatHits   = batRating(P, I, SS_B_Bats)           ' batter hits L/Sw/R
+                iPitThrows = pitchRating(D, currPitcher(D), SS_P_Throws)    ' pitcher throws (L/R)
+                iBatHits   = batRating(P, I, SS_B_Bats)                     ' batter hits (L/Sw/R)
 
-                ' Pitcher and PH both righty
-                If iPitThrows =  1 And iBatHits > 0 And pinchBAvg > battrBAvg + 35 Then
+                If iPitThrows =  1 And iBatHits > 0 Then leftRightFactor% = 35                                          ' Pitcher and PH both righty
+                If iPitThrows = -1 And iBatHits < 0 Then leftRightFactor% = 45                                          ' Pitcher and PH both lefty
+                If (iPitThrows = -1 And iBatHits >= 0 Or iPitThrows = 1 And iBatHits <= 0) Then leftRightFactor% = 30   ' Pitcher and PH on opposite sides
+
+                If pinchBAvg > battrBAvg + leftRightFactor% Then
                     If abRand < batRating(P, I,  SS_B_AB) Then
                         Call LPhForPosPlayer(I)
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Calling LPinchHitter B"       'ToDo [bm] REMOVE
                         Call LPinchHitter
 
                         go$ = LDefenseOptions$(_False)
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LPinchHitter B called LDefenseOptions, got go$ = "; go$       'ToDo [bm] REMOVE
                         If go$ = "LNextBatter0"    Then GoTo LNextBatter0
                         If go$ = "LNextBatter1"    Then GoTo LNextBatter1
                         If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
@@ -6164,57 +6106,18 @@ Sub SOURCE ()
                             End
                         End If
                     End If
-
                 End If
-
-                ' Pitcher and PH both lefty
-                If iPitThrows = -1 And iBatHits < 0 And pinchBAvg > battrBAvg + 45 Then
-                    If abRand < batRating(P, I,  SS_B_AB) Then
-                        Call LPhForPosPlayer(I)
-                        Call LPinchHitter
-
-                        go$ = LDefenseOptions$(_False)
-                        If go$ = "LNextBatter0"    Then GoTo LNextBatter0
-                        If go$ = "LNextBatter1"    Then GoTo LNextBatter1
-                        If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-                        If go$ = "GOODBYE"         Then Exit Sub
-
-                        If go$ <> "CONTINUE" Then
-                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result O from LDefenseOptions: "; go$
-                            End
-                        End If
-                    End If
-                End If
-
-                ' Pitcher and PH on opposite sides
-                If (iPitThrows = -1 And iBatHits >= 0 Or iPitThrows = 1 And iBatHits <= 0) And pinchBAvg > battrBAvg + 30 Then
-                    If abRand < batRating(P, I,  SS_B_AB) Then
-                        Call LPhForPosPlayer(I)
-                        Call LPinchHitter
-
-                        go$ = LDefenseOptions$(_False)
-                        If go$ = "LNextBatter0"    Then GoTo LNextBatter0
-                        If go$ = "LNextBatter1"    Then GoTo LNextBatter1
-                        If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-                        If go$ = "GOODBYE"         Then Exit Sub
-
-                        If go$ <> "CONTINUE" Then
-                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result P from LDefenseOptions: "; go$
-                            End
-                        End If
-                    End If
-                End If
-
             End If
-
         End If
 
     Next I
 
     go$ = LNoPinchHitter$(MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "LPinchHitter B called LNoPinchHitter, got go$ = "; go$       'ToDo [bm] REMOVE
     If go$ = "LDefenseOptions" Then
 
         go2$ = LDefenseOptions$(_False)
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LPinchHitter B called LDefenseOptions 2, got go2$ = "; go2$       'ToDo [bm] REMOVE
         If go2$ = "LNextBatter0"    Then GoTo LNextBatter0
         If go2$ = "LNextBatter1"    Then GoTo LNextBatter1
         If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
@@ -6260,6 +6163,8 @@ Sub SOURCE ()
 
 
     '----- NOODLE -----
+
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! Fell thru from LPHForPosition to LPHForPitcher"       'ToDo [bm] REMOVE
 
    LPhForPitcher: 'GET A PINCH HITTER FOR THE PITCHER
 
@@ -6350,6 +6255,7 @@ Sub SOURCE ()
                 fldPos(P, currLineupSlot(P)) = 10
             End If
 
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "Calling LPinchHitter E"       'ToDo [bm] REMOVE
             Call LPinchHitter
 
             go$ = LDefenseOptions$(_False)
@@ -6604,6 +6510,8 @@ End Function
 
 
 Sub LResumePlay
+    Shared P9
+
     For I = 1 To 9
         If fldPos(P9, I) <> 1 Then
             batRating(P9, lineupPlayer(P9, I), SS_B_Avail) = 1
@@ -6620,7 +6528,9 @@ End Sub
 
 
 Sub LPinchHitter
-    ' P9 = P
+    Shared P9
+
+    P9 = P
     ' W5 = P9
     ' W6 = P9
     VV(P)  = currLineupSlot(P)
@@ -7633,6 +7543,8 @@ End Sub
     '-- make this into a subroutine?!?!
 
 Sub LPersonnelMenu
+    Shared P9
+
     Do
         If useVGA = 1 Then Screen menu&
         Cls
@@ -10082,7 +9994,7 @@ End Function
 
 
 Function LManageDefe$
-    Shared D2, S2%, INFPOS%
+    Shared D2, S2%, INFPOS%, P9
 
     Select Case D2
         Case 1  'Pitch
@@ -10108,7 +10020,7 @@ Function LManageDefe$
             infStatus$ = "INF:NORMAL    "
 
         Case 6
-            'P9 = D
+            P9 = D
             'W5 = -1
             'W6 = -1
             Call LPersonnelMenu
@@ -10304,7 +10216,7 @@ End Function
 
 
 Function LExecuteOffense$
-    Shared P2, D2, S2%, baseRunners
+    Shared P2, D2, S2%, baseRunners, P9
 
     Select Case P2
         Case 1, 4   'Hit away, Bunt
@@ -10631,6 +10543,88 @@ Function LCheckForOptionsOrQuit$
     End If
 
 End Function
+
+
+'----------------------------------------
+'-- this is a major area of code, but
+'-- it's also short. perhaps it could
+'-- be made into a subroutine?
+'----------------------------------------
+
+Sub LPHStayInGame
+    Shared INFPOS%, P9
+
+    Cls
+
+    If useVGA = 0 Then Screen menu&
+
+    P9 = D
+    currLineupSlot(P) = currLineupSlot(P) + 1
+    nbrStrikes = 0
+
+    If currLineupSlot(P) = 10 Then currLineupSlot(P) = 1
+
+    Color 15
+    Print "DOES "; batters$(D, lineupPlayer(D, fielder(D, 0))); " STAY IN THE GAME? (Y/N)"
+    I$ = GetKeyPress$
+
+    If UCase$(I$) = "N" Then
+
+        I5 = 77
+
+    Else
+
+        I5 = 66
+
+        Locate 5, 1
+
+        For I = 1 To 9:
+
+            Color 3, 0
+            If BP(P9) = I Then Color 9
+            Locate I + 4, 5: Print Using "# "; I;
+
+            If fldPos(P9, I) = 1 Then
+                If I5 = 66 Then 'batter staying in game
+                    Print batters$(P9, lineupPlayer(P9, I));
+                Else            'batter coming out of game
+                    Print pitchers$(P9, lineupPlayer(P9, I));
+                End If
+            Else
+                Print batters$(P9, lineupPlayer(P9, I));
+            End If
+
+            Print " "; fieldPos$(fldPos(P9, I));
+            Color 3
+
+        Next I
+
+        I5 = 0
+
+        Do
+            Color 15
+            Locate 3, 1: Print "WHAT LINEUP SLOT WILL THE PITCHER BAT IN (1-9)"
+            I$ = GetKeyPress$
+            I2 = Val(I$)
+        Loop Until I2 >= 1 And I2 <= 9
+
+        If fldPos(D, I2) = 10 Then fldPos(D, I2) = 1
+
+        INFPOS% = INF_BACK
+        fldPos(D, fielder(D, 0)) = fldPos(D, I2)
+        fielder(D, fldPos(D, fielder(D, 0))) = lineupPlayer(D, fielder(D, 0))
+        fldPos(D, I2) = 1
+
+        Call REPLACEMENTS(D, fielder(D, 0), lineupPlayer(D, fielder(D, 0)))
+
+        I5 = 66
+
+    End If
+
+    Call LChangePitcher(I5)
+    Call LPersonnelMenu
+
+End Sub
 
 
 '----------------------------------------
@@ -13637,6 +13631,7 @@ End Sub
 '----------------------------------------
 'NewPitcher
 Sub NEWPITCHER (pIdx, pinchHitterFlag, newPitcherFlag)
+    Shared P9
 
     V0 = pIdx
 
@@ -17340,6 +17335,7 @@ End Sub
 'it gets assigned a static value.
 ' Where is it used in the game?
 Sub RAREPLAYS (H6%, H7%, IP%)
+    Shared P9
 
     If H7% = 20 Then
         H7% = 0
