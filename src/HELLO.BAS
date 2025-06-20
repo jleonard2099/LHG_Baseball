@@ -3884,7 +3884,8 @@ Sub SOURCE ()
     If INNING% > 9 And D = 1 And gameScore(1, 0) <> gameScore(0, 0) Or INNING% = 28 Or INNING% >= 9 And P = 1 And gameScore(P, 0) - gameScore(D, 0) > 0 Then
         'After 9th inning, score not tied, etc..
         'End of game!
-        GoTo LGameOver
+        Call LGameOver
+        Exit Sub
     End If
 
     If rainDelay = 1 And INNING% >= rainStart And rainStart >= 6 And (gameScore(1, 0) > gameScore(0, 0) And P = 1 Or gameScore(0, 0) > gameScore(1, 0) And P = 0) Then
@@ -3900,7 +3901,8 @@ Sub SOURCE ()
         I$ = GetKeyPress$
 
         'End of game!
-        GoTo LGameOver
+        Call LGameOver
+        Exit Sub
 
     End If
 
@@ -4076,7 +4078,8 @@ Sub SOURCE ()
 
     ' Game over - there's a winner
     If INNING% >= 9 And P = 1 And gameScore(P, 0) - gameScore(D, 0) > 0 Then
-        GoTo LGameOver
+        Call LGameOver
+        Exit Sub
     End If
 
     go$ = LDefe$(_False)
@@ -4177,7 +4180,19 @@ Sub SOURCE ()
 
                                 For indx = 0 To 2
                                     If INNING% >= teamMgrProfileVal(P, 591 + indx * 6) And A1 <= teamMgrProfileVal(P, 592 + indx * 6) * -1 And nbrOuts(0) <= teamMgrProfileVal(P, 594 + indx * 6) And I7! <= teamMgrProfileVal(P, 595 + indx * 6) And RN <= teamMgrProfileVal(P, 596 + indx * 6) And MOB% >= teamMgrProfileVal(P, 593 + indx * 6) Then
-                                        GoTo LPhForPitcher
+                                        go$ = LPhForPitcher$(PH%())
+                                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "RETURNED A FROM LPhForPitcher, got go = "; go$       'ToDo [bm] REMOVE
+                                        If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                                        If go$ = "LNextBatter0"    Then GoTo LNextBatter0
+                                        If go$ = "LNextBatter1"    Then GoTo LNextBatter1
+                                        If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+                                        If go$ = "LBunt"           Then GoTo LBunt
+                                        If go$ = "LSteal"          Then GoTo LSteal
+                                        If go$ = "GOODBYE"         Then Exit Sub
+                                        If go$ <> "CONTINUE" Then
+                                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LPhForPitcher$: "; go$
+                                            End
+                                        End If
                                     End If
                                 Next
 
@@ -4185,11 +4200,31 @@ Sub SOURCE ()
 
                             Else                                        'no manager profile
 
-                                If INNING% > 4 And INNING% < 7 And A1 < -2 And gameScore(P, 0) > 0 Then Goto LPhForPitcher
-                                If INNING% > 4 And INNING% < 7 And A1 < -3 Then Goto LPhForPitcher
-                                If INNING% > 6 And A1 < 0 Or A1 = 0 And INNING% > 6 And INNING% < 9 And baseRunners > 1 Then Goto LPhForPitcher
-                                If A1 = 0 And INNING% >= 9 And baseRunners > 0 Or A1 = 0 And INNING% >= 9 And nbrOuts(0) = 0 Then Goto LPhForPitcher
-                                If pitchRating(P, currPitcher(P), SS_P_IP) / pitchRating(P, currPitcher(P), SS_P_G) <= 2 And gamePitStats(P, currPitcher(P), 0) >= 6 Then Goto LPhForPitcher
+                                needToCallLPhForPitcher% = _False
+
+                                If INNING% > 4 And INNING% < 7 And A1 < -2 And gameScore(P, 0) > 0                           Then needToCallLPhForPitcher% = _True
+                                If INNING% > 4 And INNING% < 7 And A1 < -3                                                   Then needToCallLPhForPitcher% = _True
+                                If INNING% > 6 And A1 < 0 Or A1 = 0 And INNING% > 6 And INNING% < 9 And baseRunners > 1      Then needToCallLPhForPitcher% = _True
+                                If A1 = 0 And INNING% >= 9 And baseRunners > 0 Or A1 = 0 And INNING% >= 9 And nbrOuts(0) = 0 Then needToCallLPhForPitcher% = _True
+                                If pitchRating(P, currPitcher(P), SS_P_IP) / pitchRating(P, currPitcher(P), SS_P_G) <= 2 And gamePitStats(P, currPitcher(P), 0) >= 6 Then needToCallLPhForPitcher% = _True
+
+                                If needToCallLPhForPitcher% Then
+                                    go$ = LPhForPitcher$(PH%())
+                                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "RETURNED B FROM LPhForPitcher, got go = "; go$       'ToDo [bm] REMOVE
+                                    If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                                    If go$ = "LNextBatter0"    Then GoTo LNextBatter0
+                                    If go$ = "LNextBatter1"    Then GoTo LNextBatter1
+                                    If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+                                    If go$ = "LBunt"           Then GoTo LBunt
+                                    If go$ = "LSteal"          Then GoTo LSteal
+                                    If go$ = "GOODBYE"         Then Exit Sub
+
+                                    If go$ <> "CONTINUE" Then
+                                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LPhForPitcher$: "; go$
+                                        End
+                                    End If
+                                End If
+
 
                                 Exit For
 
@@ -5914,35 +5949,6 @@ Sub SOURCE ()
     ' routines (scoreboard, stats, etc.)
     '----------------------------------------
 
-   LGameOver:
-
-    normalFinish = 1
-
-    'Print winning team and score
-    If gameScore(0, 0) > gameScore(1, 0) Then
-        Call PBP(gameTeams$(0) + " defeats " + gameTeams$(1) + Str$(gameScore(0, 0)) + " TO" + Str$(gameScore(1, 0)) + "!")
-    Else
-        Call PBP(gameTeams$(1) + " defeats " + gameTeams$(0) + Str$(gameScore(1, 0)) + " TO" + Str$(gameScore(0, 0)) + "!")
-    End If
-
-    If autoPlay <> 1 Or playerMode <> 2 Then
-        If pbpDelay! = 0 Then pbpDelay! = 0.1
-        'Delay of 0 will not present the text
-        'But we want to be sure the user sees it
-        Call PBP("PRESS ANY KEY TO CONTINUE")
-        I$ = GetKeyPress$
-    End If
-
-    Call EndOfGame
-    If Environ$("PBPLOG") = "TRUE" Then Close #11
-
-    Exit Sub
-
-
-    '----------------------------------------
-    '           END OF GAME!!!
-    '----------------------------------------
-
     '================================================================================
     ' Below are all the different GoTo branches for the gameplay
     ' These have not yet been worked out into a different flow
@@ -6166,184 +6172,20 @@ Sub SOURCE ()
 
     If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! Fell thru from LPHForPosition to LPHForPitcher"       'ToDo [bm] REMOVE
 
-   LPhForPitcher: 'GET A PINCH HITTER FOR THE PITCHER
+    go$ = LPhForPitcher$(PH%())
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "RETURNED FROM LPhForPitcher, got go = "; go$       'ToDo [bm] REMOVE
+    If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+    If go$ = "LNextBatter0"    Then GoTo LNextBatter0
+    If go$ = "LNextBatter1"    Then GoTo LNextBatter1
+    If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+    If go$ = "LBunt"           Then GoTo LBunt
+    If go$ = "LSteal"          Then GoTo LSteal
+    If go$ = "GOODBYE"         Then Exit Sub
 
-    callPinch = 0
-    skipLoop = 0
-
-    If teamMgrProfileVal(P, 540) <> 999 Then
-
-        J% = 0
-        GP% = 0
-
-        ' To avoid division by zero
-        '_IIF only in QB64PE v4.0
-        'pitAvg = _IIF( pitchRating(P, currPitcher(P), 1) > 0, CInt( pitchRating(P, currPitcher(P), 16) / pitchRating(P, currPitcher(P), 1) * 100 ), 0 )
-        If pitchRating(P, currPitcher(P), 1) > 0 Then
-            pitAvg = CInt(pitchRating(P, currPitcher(P), 16) / pitchRating(P, currPitcher(P), 1) * 100)
-        Else
-            pitAvg = 0
-        End If
-
-        If desigHit = 1 Or _
-            (pitchEraOpt > 1 And INNING% < 4) Or _
-            (pitchEraOpt > 2 And INNING% < 7) Or _
-            (pitchEraOpt > 3 And INNING% < 9) Or _
-            (pitchEraOpt >= 8) Or _
-            ( pitchEraOpt > 0 And INNING% > 7 And gameScore(P, 0) > gameScore(D, 0) And _
-            pitchRating(P, currPitcher(P), 1) > 0 And gamePitcher(P) = 1 And _
-            pitAvg <= 100 And RN0 <= pitAvg ) Or _
-            ( pitchEraOpt > 0 And INNING% > 7 And (gameScore(P, 0) >= gameScore(D, 0) Or _
-            gameScore(D, 0) - gameScore(P, 0) <= 2) And pitchRating(P, currPitcher(P), 1) > 0 And _
-            gamePitcher(P) = 1 And pitAvg >= 100 ) Then
-            skipLoop = 1
-        End If
-
-        If skipLoop = 0 Then
-
-            For Idx = 0 To 22
-
-                If Not (batters$(P, Idx) = "XXX" Or batRating(P, Idx, SS_B_Avail) > 0 Or batRating(P, Idx, SS_B_AB) = 0) Then
-
-                    If batRating(P, Idx, SS_B_Bats) > 0 And pitchRating(D, currPitcher(D), SS_P_Throws) = 1 Or batRating(P, Idx, SS_B_Bats) < 0 And pitchRating(D, currPitcher(D), SS_P_Throws) = -1 Then
-                        PH%(J%, 0) = CInt(batRating(P, Idx, SS_B_G) / 4)
-                    Else
-                        PH%(J%, 0) = batRating(P, Idx, SS_B_G)
-                    End If
-
-                    PH%(J%, 1) = Idx
-                    GP% = GP% + PH%(J%, 0)
-                    J% = J% + 1
-
-                End If
-
-            Next
-
-            If J% <> 0 Then
-
-                RN = Int(Rnd(1) * GP%) + 1
-
-                For I = 0 To J% - 1
-
-                    If RN <= PH%(I, 0) Then
-                        PH% = PH%(I, 1)
-                        callPinch = 1
-                        Exit For
-                    Else
-                        PH%(I + 1, 0) = PH%(I, 0) + PH%(I + 1, 0)
-                    End If
-
-                Next
-
-            End If
-
-        End If 'Done checking of we should skip the loop
-
-        If callPinch = 1 Then
-
-            pinchHitterFlag = 1
-            gameD0(P) = gameD0(P) + 1
-            X0%(P, 0, gameD0(P)) = PH%
-            X0%(P, 1, gameD0(P)) = 10   '10 = pinch hitter'
-            X0%(P, 2, gameD0(P)) = 81 + gameD0(P)
-            batRating(P, PH%, SS_B_Avail) = 1
-            lineupPlayer(P, currLineupSlot(P)) = PH%
-
-            If fldPos(P, currLineupSlot(P)) = 1 Or fldPos(P, currLineupSlot(P)) = 10 Then
-                fielder(P, 1) = 99
-                fielder(P, 0) = currLineupSlot(P)
-                fldPos(P, currLineupSlot(P)) = 10
-            End If
-
-            If Environ$("PBPLOG") = "TRUE" Then Print #11, "Calling LPinchHitter E"       'ToDo [bm] REMOVE
-            Call LPinchHitter
-
-            go$ = LDefenseOptions$(_False)
-            If go$ = "LNextBatter0"    Then GoTo LNextBatter0
-            If go$ = "LNextBatter1"    Then GoTo LNextBatter1
-            If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-            If go$ = "GOODBYE"         Then Exit Sub
-
-            If go$ <> "CONTINUE" Then
-                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result R from LDefenseOptions: "; go$
-                End
-            End If
-
-        End If
-
-        go$ = LNoPinchHitter$(MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
-        If go$ = "LDefenseOptions" Then
-
-            go2$ = LDefenseOptions$(_False)
-            If go2$ = "LNextBatter0"    Then GoTo LNextBatter0
-            If go2$ = "LNextBatter1"    Then GoTo LNextBatter1
-            If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-            If go2$ = "GOODBYE"         Then Exit Sub
-
-            If go2$ <> "CONTINUE" Then
-                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result S from LDefenseOptions: "; go$
-                End
-            End If
-
-            go$ = "CONTINUE"
-
-        End If
-
-        If go$ = "LBunt" Then Goto LBunt
-        If go$ =  "LSteal" Then Goto LSteal
-        If go$ = "LExecuteOffense" Then
-            go2$ = LExecuteOffense$
-            If go2$ = "LWeirdPlay" Then Goto LWeirdPlay
-            If go2$ = "LNextBatter0"  Then Goto LNextBatter0
-            If go2$ = "LNextBatter1"  Then Goto LNextBatter1
-            If go2$ =  "LSteal" Then Goto LSteal
-        End If
-
-        If go$ = "LHitAndRun"  Then
-            go2$ = LHitAndRun$
-            If go2$ = "LWeirdPlay"             Then Goto LWeirdPlay
-            If go2$ = "LNextBatter0"           Then Goto LNextBatter0
-            If go2$ = "LNextBatter1"           Then Goto LNextBatter1
-            If go2$ = "LSteal"                 Then Goto LSteal
-            If go2$ = "LCheckForOptionsOrQuit" Then
-                go3$ = LCheckForOptionsOrQuit$
-                If go3$ = "LNextBatter0" Then GoTo LNextBatter0
-                If go3$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                If go3$ = "GOODBYE" Then Exit Sub
-            End If
-        End If
-
-        If go$ <> "CONTINUE" Then
-            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result D from LNoPinchHitter: "; go$
-            End
-        End If
-
+    If go$ <> "CONTINUE" Then
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LPhForPitcher$: "; go$
+        End
     End If
-
-    go$ = LPossibleHitAndRun$
-    If go$ = "LExecuteOffense" Then
-        go2$ = LExecuteOffense$
-        If go2$ = "LWeirdPlay" Then Goto LWeirdPlay
-        If go2$ = "LNextBatter0"  Then Goto LNextBatter0
-        If go2$ = "LNextBatter1"  Then Goto LNextBatter1
-        If go2$ =  "LSteal" Then Goto LSteal
-    End If
-
-    If go$ = "LHitAndRun" Then
-        go2$ = LHitAndRun$
-        If go2$ = "LWeirdPlay"             Then Goto LWeirdPlay
-        If go2$ = "LNextBatter0"           Then Goto LNextBatter0
-        If go2$ = "LNextBatter1"           Then Goto LNextBatter1
-        If go2$ = "LSteal"                 Then Goto LSteal
-        If go2$ = "LCheckForOptionsOrQuit" Then
-            go3$ = LCheckForOptionsOrQuit$
-            If go3$ = "LNextBatter0" Then GoTo LNextBatter0
-            If go3$ = "LNextHalfInning" Then GoTo LNextHalfInning
-            If go3$ = "GOODBYE" Then Exit Sub
-        End If
-    End If
-    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result B from LPossibleHitAndRun: "; go$
-    End
 
 End Sub
 
@@ -10625,6 +10467,223 @@ Sub LPHStayInGame
     Call LPersonnelMenu
 
 End Sub
+
+
+Sub LGameOver
+
+    normalFinish = 1
+
+    'Print winning team and score
+    If gameScore(0, 0) > gameScore(1, 0) Then
+        Call PBP(gameTeams$(0) + " defeats " + gameTeams$(1) + Str$(gameScore(0, 0)) + " TO" + Str$(gameScore(1, 0)) + "!")
+    Else
+        Call PBP(gameTeams$(1) + " defeats " + gameTeams$(0) + Str$(gameScore(1, 0)) + " TO" + Str$(gameScore(0, 0)) + "!")
+    End If
+
+    If autoPlay <> 1 Or playerMode <> 2 Then
+        If pbpDelay! = 0 Then pbpDelay! = 0.1
+        'Delay of 0 will not present the text
+        'But we want to be sure the user sees it
+        Call PBP("PRESS ANY KEY TO CONTINUE")
+        I$ = GetKeyPress$
+    End If
+
+    Call EndOfGame
+    If Environ$("PBPLOG") = "TRUE" Then Close #11   'ToDo [bm] move this (eventually) to end of sub loop
+
+    '----------------------------------------
+    '           END OF GAME!!!
+    '----------------------------------------
+
+End Sub
+
+
+Function LPhForPitcher$ (PH%())
+    Shared P9
+
+    callPinch = 0
+    skipLoop = 0
+
+    If teamMgrProfileVal(P, 540) <> 999 Then
+
+        J% = 0
+        GP% = 0
+
+        ' To avoid division by zero
+        '_IIF only in QB64PE v4.0
+        'pitAvg = _IIF( pitchRating(P, currPitcher(P), 1) > 0, CInt( pitchRating(P, currPitcher(P), 16) / pitchRating(P, currPitcher(P), 1) * 100 ), 0 )
+        If pitchRating(P, currPitcher(P), 1) > 0 Then
+            pitAvg = CInt(pitchRating(P, currPitcher(P), 16) / pitchRating(P, currPitcher(P), 1) * 100)
+        Else
+            pitAvg = 0
+        End If
+
+        If desigHit = 1 Or _
+            (pitchEraOpt > 1 And INNING% < 4) Or _
+            (pitchEraOpt > 2 And INNING% < 7) Or _
+            (pitchEraOpt > 3 And INNING% < 9) Or _
+            (pitchEraOpt >= 8) Or _
+            ( pitchEraOpt > 0 And INNING% > 7 And gameScore(P, 0) > gameScore(D, 0) And _
+            pitchRating(P, currPitcher(P), 1) > 0 And gamePitcher(P) = 1 And _
+            pitAvg <= 100 And RN0 <= pitAvg ) Or _
+            ( pitchEraOpt > 0 And INNING% > 7 And (gameScore(P, 0) >= gameScore(D, 0) Or _
+            gameScore(D, 0) - gameScore(P, 0) <= 2) And pitchRating(P, currPitcher(P), 1) > 0 And _
+            gamePitcher(P) = 1 And pitAvg >= 100 ) Then
+            skipLoop = 1
+        End If
+
+        If skipLoop = 0 Then
+
+            For Idx = 0 To 22
+
+                If Not (batters$(P, Idx) = "XXX" Or batRating(P, Idx, SS_B_Avail) > 0 Or batRating(P, Idx, SS_B_AB) = 0) Then
+
+                    If batRating(P, Idx, SS_B_Bats) > 0 And pitchRating(D, currPitcher(D), SS_P_Throws) = 1 Or batRating(P, Idx, SS_B_Bats) < 0 And pitchRating(D, currPitcher(D), SS_P_Throws) = -1 Then
+                        PH%(J%, 0) = CInt(batRating(P, Idx, SS_B_G) / 4)
+                    Else
+                        PH%(J%, 0) = batRating(P, Idx, SS_B_G)
+                    End If
+
+                    PH%(J%, 1) = Idx
+                    GP% = GP% + PH%(J%, 0)
+                    J% = J% + 1
+
+                End If
+
+            Next
+
+            If J% <> 0 Then
+
+                RN = Int(Rnd(1) * GP%) + 1
+
+                For I = 0 To J% - 1
+
+                    If RN <= PH%(I, 0) Then
+                        PH% = PH%(I, 1)
+                        callPinch = 1
+                        Exit For
+                    Else
+                        PH%(I + 1, 0) = PH%(I, 0) + PH%(I + 1, 0)
+                    End If
+
+                Next
+
+            End If
+
+        End If 'Done checking of we should skip the loop
+
+        If callPinch = 1 Then
+
+            pinchHitterFlag = 1
+            gameD0(P) = gameD0(P) + 1
+            X0%(P, 0, gameD0(P)) = PH%
+            X0%(P, 1, gameD0(P)) = 10   '10 = pinch hitter'
+            X0%(P, 2, gameD0(P)) = 81 + gameD0(P)
+            batRating(P, PH%, SS_B_Avail) = 1
+            lineupPlayer(P, currLineupSlot(P)) = PH%
+
+            If fldPos(P, currLineupSlot(P)) = 1 Or fldPos(P, currLineupSlot(P)) = 10 Then
+                fielder(P, 1) = 99
+                fielder(P, 0) = currLineupSlot(P)
+                fldPos(P, currLineupSlot(P)) = 10
+            End If
+
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "Calling LPinchHitter E"       'ToDo [bm] REMOVE
+            Call LPinchHitter
+
+            go$ = LDefenseOptions$(_False)
+            'If go$ = "LNextBatter0"    Then GoTo LNextBatter0
+            'If go$ = "LNextBatter1"    Then GoTo LNextBatter1
+            'If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+            'If go$ = "GOODBYE"         Then Exit Sub
+
+            If go$ <> "CONTINUE" Then
+                LPhForPitcher$ = go$
+                Exit Function
+            End If
+
+        End If
+
+        go$ = LNoPinchHitter$(MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls, nbrStrikes, D, MO)
+        If go$ = "LDefenseOptions" Then
+
+            go2$ = LDefenseOptions$(_False)
+            'If go2$ = "LNextBatter0"    Then GoTo LNextBatter0
+            'If go2$ = "LNextBatter1"    Then GoTo LNextBatter1
+            'If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+            'If go2$ = "GOODBYE"         Then Exit Sub
+
+            If go2$ <> "CONTINUE" Then
+                LPhForPitcher$ = go2$
+                Exit Function
+            End If
+
+        End If
+
+        If go$ = "LExecuteOffense" Then
+            LPhForPitcher$ = LExecuteOffense$
+            Exit Function
+            'If go2$ = "LWeirdPlay" Then Goto LWeirdPlay
+            'If go2$ = "LNextBatter0"  Then Goto LNextBatter0
+            'If go2$ = "LNextBatter1"  Then Goto LNextBatter1
+            'If go2$ =  "LSteal" Then Goto LSteal
+        End If
+
+        If go$ = "LHitAndRun"  Then
+            go2$ = LHitAndRun$
+            If go2$ = "LCheckForOptionsOrQuit" Then
+                LPhForPitcher$ = LCheckForOptionsOrQuit$
+                Exit Function
+                'If go3$ = "LNextBatter0"    Then LPhForPitcher$ = "LNextBatter0": Exit Sub
+                'If go3$ = "LNextHalfInning" Then LPhForPitcher$ = "LNextHalfInning": Exit Sub
+                'If go3$ = "GOODBYE"         Then LPhForPitcher$ = "GOODBYE": Exit Sub
+            Else
+                LPhForPitcher$ = go2$
+                Exit Function
+            End If
+        End If
+
+        If go$ = "LBunt"   Then LPhForPitcher$ = "LBunt": Exit Function
+        If go$ =  "LSteal" Then LPhForPitcher$ = "LSteal": Exit Function
+
+        If go$ <> "CONTINUE" Then
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result D from LNoPinchHitter: "; go$
+            End
+        End If
+
+    End If
+
+    go$ = LPossibleHitAndRun$
+    If go$ = "LExecuteOffense" Then
+        LPhForPitcher$ = LExecuteOffense$
+        Exit Function
+        'If go2$ = "LWeirdPlay" Then Goto LWeirdPlay
+        'If go2$ = "LNextBatter0"  Then Goto LNextBatter0
+        'If go2$ = "LNextBatter1"  Then Goto LNextBatter1
+        'If go2$ =  "LSteal" Then Goto LSteal
+    End If
+
+    If go$ = "LHitAndRun" Then
+        go2$ = LHitAndRun$
+        If go2$ = "LCheckForOptionsOrQuit" Then
+            LPhForPitcher$ = LCheckForOptionsOrQuit$
+            Exit Function
+            'If go3$ = "LNextBatter0" Then GoTo LNextBatter0
+            'If go3$ = "LNextHalfInning" Then GoTo LNextHalfInning
+            'If go3$ = "GOODBYE" Then Exit Sub
+        Else
+            LPhForPitcher$ = go2$
+            Exit Function
+            'If go2$ = "LWeirdPlay"             Then Goto LWeirdPlay
+            'If go2$ = "LNextBatter0"           Then Goto LNextBatter0
+            'If go2$ = "LNextBatter1"           Then Goto LNextBatter1
+            'If go2$ = "LSteal"                 Then Goto LSteal
+        End If
+    End If
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result B from LPossibleHitAndRun: "; go$
+    End
+
+End Function
 
 
 '----------------------------------------
