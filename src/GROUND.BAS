@@ -2,7 +2,7 @@
 '            GROUND Subroutine
 '----------------------------------------
 'This subroutine provides a quick interface
-'for the user to modify ground ball and 
+'for the user to modify ground ball and
 'flyout calculations from the relevant params.
 Sub GROUND ()
 
@@ -15,7 +15,7 @@ Sub GROUND ()
 
     Shared Manager$, teamAbbrev$, Stadium$
 
-    Dim BA%(29), DP%(29), RH%(21)
+    Dim BA%(29), DPx%(29), RH%(21)
     Dim SP%(29), totBatRat(29)
 
     Dim BAP!, CH!, PD!
@@ -112,9 +112,9 @@ Sub GROUND ()
                     BA%(I) = BAP! * 1000
                 End If
 
-                DP%(I) = SP%(I) - BA%(I)
+                DPx%(I) = SP%(I) - BA%(I)
 
-                DI = DP%(I) - MD
+                DI = DPx%(I) - MD
                 CH! = Int(DI / 10)
                 batterRatings(I, 18) = 52 - CH!
 

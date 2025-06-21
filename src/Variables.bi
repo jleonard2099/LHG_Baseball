@@ -326,8 +326,8 @@ Dim Shared autoPlay, BV, compTeam, desigHit, D
 Dim Shared gameOver, endAllGames, FontColAdj
 Dim Shared gameLoc, gameTemp
 Dim Shared nbrStrikes, noLUFound, normalFinish
-Dim Shared P, pbpLine, PPH, pitchEraOpt, playerMode, playerOpt
-Dim Shared RE, RD, useInj, useRest, useVGA
+Dim Shared P, pbpLine, pinchHitterFlag, pitchEraOpt, playerMode, playerOpt
+Dim Shared RE, RD, useInj, useRest, useVGA, dayOrNight
 Dim Shared strikeoutRating
 
 Dim Shared pbpDelay!, WF!
@@ -341,7 +341,7 @@ Dim Shared schedGame(2), schedOptions(18), teamRat_GAME(1, 13), VV(1), VV1(1)
 Dim Shared nbrOuts(1)
 
 '-- Not really used??
-Dim SU(1, 1)
+Dim setupUsed(1), closerUsed(1)
 
 Dim Shared A5%(0 To 3), assigned(1 To 9)
 Dim Shared b1Runner(3), b1Pitcher(3), b2Base(3), b2Pitcher(3), b2Mystery(3)
@@ -350,7 +350,7 @@ Dim Shared fldPos(0 To 1, 0 To 9), fielder(1, 10), BT%(0 To 1, 1 To 9, 1 To 9)
 Dim Shared CF%(0 To 9, 0 To 2), CSS(1, 22, 6), D3%(1), DP%(1)
 Dim Shared currPitcher(0 To 1), pitcherOfRecord(1)
 Dim Shared gamePitcher(1)
-Dim Shared S1%(1), S8%(1, 1), SO%(0 To 5, 0 To 2)
+Dim Shared relieverOnRecordForSave(1), stamina%(1, 1), SO%(0 To 5, 0 To 2)
 Dim Shared T3%(22), X0%(1, 2, 23), YR%(1)
 
 Dim Shared gameB(1, 22), gameP(1, 21)
@@ -358,7 +358,7 @@ Dim Shared gameBatStats(0 To 1, 0 To 22, 0 To 21), leagBatStats(0 To 1, 0 To 22,
 Dim Shared gamePitStats(0 To 1, 0 To 21, 0 To 41), leagPitStats(1, 21, 41)
 Dim Shared gameM(0 To 9), gameSA(1, 24)
 
-Dim Shared gameScore(1, 2), GK%(1), H0%(1)
+Dim Shared gameScore(1, 2), newRelieverNeeded(1), H0%(1)
 Dim Shared injuryStatus(0 To 1, 0 To 22), L0%(1), LB%(9, 1)
 Dim Shared teamMgrProfileVal(0 To 1, 999), teamSplit(1, 11), teamYears(1)
 
