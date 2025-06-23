@@ -4114,7 +4114,7 @@ Sub SOURCE ()
         If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
         If go2$ = "LBunt"           Then GoTo LBunt
         If go2$ = "LSteal"          Then GoTo LSteal
-        If go2$ = "GOODBYE "        Then Exit Sub
+        If go2$ = "GOODBYE"         Then Exit Sub
 
         go$ = "CONTINUE"
     End if
@@ -4645,6 +4645,7 @@ Sub SOURCE ()
     If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
     If go$ = "GOODBYE" Then Exit Sub
 
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! Fell thru from ZNormal to LBunt"       'ToDo [bm] REMOVE
     '----- NOODLE -----
 
    LBunt: ' *** BUNT ROUTINE ***
@@ -5402,6 +5403,7 @@ Sub SOURCE ()
     '-- should have directed the code somewhere else
     '-- in essence, this is kind of the end of this code
 
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! Fell thru from LBunt to LSteal"       'ToDo [bm] REMOVE
 
     '--------------------
 
@@ -5525,7 +5527,13 @@ Sub SOURCE ()
                 If go2$ = "GOODBYE" Then Exit Sub
             End If
             If go$ = "LNextBatter1" Then Goto LNextBatter1
-            If go$ = "LStealHome"  Then Goto LStealHome
+            If go$ = "LStealHome"  Then
+                go2$ = LStealHome$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3)
+                If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
+                If go2$ = "LNextBatter0" Then GoTo LNextBatter0
+                If go2$ = "LNextBatter1" Then GoTo LNextBatter1
+                If go2$ = "GOODBYE" Then Exit Sub
+            End if
 
             If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LDoubleSteal2: "; go$
             End
@@ -5588,7 +5596,7 @@ Sub SOURCE ()
             If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
             If go2$ = "LBunt"           Then GoTo LBunt
             If go2$ = "LSteal"          Then GoTo LSteal
-            If go2$ = "GOODBYE "        Then Exit Sub
+            If go2$ = "GOODBYE"         Then Exit Sub
 
             go$ = "CONTINUE"
         End If
@@ -5601,96 +5609,13 @@ Sub SOURCE ()
 
     End If
 
-   LStealHome:
-    Call WINDEX
-    TGBASE% = lineupPlayer(P, b2Base(TGTBASE% - 1))
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! Fell thru from LSteal to LStealHome"       'ToDo [bm] REMOVE
 
-    Call GetPBPString(20, 3090, Y$, D)
-    Call PBP(Y$)
-
-    Call GetPBPString(13, 3110, Y$, D)
-    Call PBP(Y$)
-
-    Call PITCHOUT(baseRunners, TGTBASE%, stlChance)
-
-    'If baseRunners <> 5 Then Goto LDoubleSteal ' *** DOUBLE STEAL ***1st&3rd
-
-    I9 = Int(Rnd(1) * 1000) + 1
-
-    If baseRunners = 5 Then
-
-        If stealHome% <> 1 Then
-            If playerMode = 2 Or playerMode = 1 And P <> compTeam Then
-                I$ = "Y"
-            Else
-                Call PBP("Throw to 2B? (Y/N) ")
-                I$ = GetKeyPress$
-            End If
-
-            If UCase$(I$) <> "Y" Then
-                pitchoutChance = 7
-                go$ = LRunnerSafe$(AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%, pitchoutChance, I3)
-                If go$ = "LCheckForOptionsOrQuit" Then
-                    go2$ = LCheckForOptionsOrQuit$
-                    If go2$ = "LNextBatter0" Then GoTo LNextBatter0
-                    If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                    If go2$ = "GOODBYE" Then Exit Sub
-                End If
-                If go$ = "LNextBatter1" Then Goto LNextBatter1
-                If go$ = "LStealHome"  Then Goto LStealHome
-
-                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LRunnerSafe: "; go$
-                End
-            End If
-        End If
-    End If
-
-    If stealHome% <> 1 Or baseRunners <> 5 Then
-        currFielder = 2
-        player$(4) = batters$(D, fielder(D, 2))
-
-        Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-
-        If errorOnPlay% = 1 Then
-
-            Call INCBATOFF(P, TGBASE%, 9)
-            Call PITSWAP(TGTBASE%)
-            currLineupSlot(P) = currLineupSlot(P) - 1
-            go$ = LCheckForOptionsOrQuit$
-            If go$ = "LNextBatter0" Then GoTo LNextBatter0
-            If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
-            If go$ = "GOODBYE" Then Exit Sub
-
-        End If
-
-        Call WHICHRUNNER(TGTBASE%, baseRunners, D5)
-        stlChance = stlChance - ((batRating(D, fielder(D, 2), SS_B_Arm) - 5) * 25)
-
-    End If
-
-    go$ = LDoubleSteal2$(I9, AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%, pitchoutChance, I3)
-    If go$ = "LCheckForOptionsOrQuit" Then
-        go2$ = LCheckForOptionsOrQuit$
-        If go2$ = "LNextBatter0" Then GoTo LNextBatter0
-        If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
-        If go2$ = "GOODBYE" Then Exit Sub
-    End If
-    If go$ = "LNextBatter1" Then Goto LNextBatter1
-    If go$ = "LStealHome"  Then Goto LStealHome
-
-    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LDoubleSteal2: "; go$
-    End
-
-
-    '----------------------------------------
-    '-- this is a major area of code, but
-    '-- it's also short. perhaps it could
-    '-- be made into a subroutine?
-    '----------------------------------------
-
-    Call LPHStayInGame
-
-    Goto LNextBatter1
+    go$ = LStealHome$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3)
+    If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
+    If go$ = "LNextBatter0" Then GoTo LNextBatter0
+    If go$ = "LNextBatter1" Then GoTo LNextBatter1
+    If go$ = "GOODBYE" Then Exit Sub
 
 
     '----- NOODLE -----
@@ -5709,6 +5634,7 @@ Sub SOURCE ()
     '-- This can join the code above as there's only one branch to it
     'GoTo LManageDefense
 
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! Fell thru from LStealHome to LPhForPosition"       'ToDo [bm] REMOVE
 
     '----- NOODLE -----
 
@@ -5719,7 +5645,7 @@ Sub SOURCE ()
     If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
     If go$ = "LBunt"           Then GoTo LBunt
     If go$ = "LSteal"          Then GoTo LSteal
-    If go$ = "GOODBYE "        Then Exit Sub
+    If go$ = "GOODBYE"         Then Exit Sub
 
     '----- NOODLE -----
 
@@ -10700,6 +10626,121 @@ Function LOffenseOptions$ (PH%())
 
     If Environ$("PBPLOG") = "TRUE" Then Print #11, "RETURNING C from LOffenseOptions: "; go$    'ToDo [bm] REMOVE
     LOffenseOptions$ = go$
+
+End Function
+
+
+Function LStealHome$ (TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3)
+    Shared baseRunners
+
+    Do
+
+        Call WINDEX
+        TGBASE% = lineupPlayer(P, b2Base(TGTBASE% - 1))
+
+        Call GetPBPString(20, 3090, Y$, D)
+        Call PBP(Y$)
+
+        Call GetPBPString(13, 3110, Y$, D)
+        Call PBP(Y$)
+
+        Call PITCHOUT(baseRunners, TGTBASE%, stlChance)
+
+        'If baseRunners <> 5 Then Goto LDoubleSteal ' *** DOUBLE STEAL ***1st&3rd
+
+        I9 = Int(Rnd(1) * 1000) + 1
+
+        skip% = _False
+
+        If baseRunners = 5 Then
+
+            If stealHome% <> 1 Then
+                If playerMode = 2 Or playerMode = 1 And P <> compTeam Then
+                    I$ = "Y"
+                Else
+                    Call PBP("Throw to 2B? (Y/N) ")
+                    I$ = GetKeyPress$
+                End If
+
+                If UCase$(I$) <> "Y" Then
+                    pitchoutChance = 7
+                    go$ = LRunnerSafe$(AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%, pitchoutChance, I3)
+                    If go$ = "LCheckForOptionsOrQuit" Then
+                        go2$ = LCheckForOptionsOrQuit$
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "RETURNING 10744 from LCheckOptionsOrQuit: "; go2$
+                        LStealHome$ = go2$
+                        Exit Function
+                    End If
+                    If go$ = "LNextBatter1" Then LStealHome$ = "LNextBatter1": Exit Function
+
+                    If go$ = "LStealHome"  Then
+                        skip% = _True
+                    Else
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LRunnerSafe: "; go$
+                        End
+                    End If
+
+                End If
+            End If
+        End If
+
+        If Not skip% Then
+            skip2% = _False
+
+            If stealHome% <> 1 Or baseRunners <> 5 Then
+                currFielder = 2
+                player$(4) = batters$(D, fielder(D, 2))
+
+                Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+
+                If errorOnPlay% = 1 Then
+
+                    Call INCBATOFF(P, TGBASE%, 9)
+                    Call PITSWAP(TGTBASE%)
+                    currLineupSlot(P) = currLineupSlot(P) - 1
+                    go$ = LCheckForOptionsOrQuit$
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "RETURNING 10782 from LCheckOptionsOrQuit: "; go$
+                    LStealHome$ = go$
+                    Exit Function
+
+                End If
+
+                Call WHICHRUNNER(TGTBASE%, baseRunners, D5)
+                stlChance = stlChance - ((batRating(D, fielder(D, 2), SS_B_Arm) - 5) * 25)
+
+            End If
+
+            go$ = LDoubleSteal2$(I9, AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%, pitchoutChance, I3)
+            If go$ = "LCheckForOptionsOrQuit" Then
+                go2$ = LCheckForOptionsOrQuit$
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "RETURNING 10795 from LCheckOptionsOrQuit: "; go2$
+                LStealHome$ = go2$
+                Exit Function
+            End If
+            If go$ = "LNextBatter1" Then LStealHome$ = "LNextBatter1": Exit Function
+            If go$ = "LStealHome"  Then
+                skip2% = _True
+            Else
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LDoubleSteal2: "; go$
+                End
+            End If
+
+
+            '----------------------------------------
+            '-- this is a major area of code, but
+            '-- it's also short. perhaps it could
+            '-- be made into a subroutine?
+            '----------------------------------------
+
+            If Not skip2% Then
+                Call LPHStayInGame
+                LStealHome$ = "LNextBatter1"
+                Exit Function
+            End If
+
+        End If
+
+    Loop
 
 End Function
 
