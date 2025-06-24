@@ -4094,6 +4094,8 @@ Sub SOURCE ()
         End
     End If
 
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! Fell thru from LDefe to LOffenseOptions"       'ToDo [bm] REMOVE
+
     '----------------------------------------
     ' OFFENSE OPTIONS MENU
     '----------------------------------------
@@ -4104,7 +4106,16 @@ Sub SOURCE ()
     If go$ = "LNextBatter1"    Then Goto LNextBatter1
     If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
     If go$ = "LBunt"           Then GoTo LBunt
-    If go$ = "LSteal"          Then GoTo LSteal
+    If go$ = "LSteal"          Then
+        go2$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 4111, go2: "; go2$  'ToDo [bm] REMOVE
+        If go2$ = "LNextHalfInning" Then Goto LNextHalfInning
+        If go2$ = "LNextBatter0"    Then Goto LNextBatter0
+        If go2$ = "LNextBatter1"    Then Goto LNextBatter1
+        If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+        If go2$ = "LBunt"           Then GoTo LBunt
+        If go2$ = "GOODBYE"         Then Exit Sub
+    End If
     If go$ = "LPhForPosition"  Then
         go2$ = LPhForPosition$
         If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source B, go2: "; go2$  'ToDo [bm] REMOVE
@@ -4113,7 +4124,16 @@ Sub SOURCE ()
         If go2$ = "LNextBatter1"    Then Goto LNextBatter1
         If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
         If go2$ = "LBunt"           Then GoTo LBunt
-        If go2$ = "LSteal"          Then GoTo LSteal
+        If go2$ = "LSteal"          Then
+            go3$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 4129, go3: "; go3$  'ToDo [bm] REMOVE
+            If go3$ = "LNextHalfInning" Then Goto LNextHalfInning
+            If go3$ = "LNextBatter0"    Then Goto LNextBatter0
+            If go3$ = "LNextBatter1"    Then Goto LNextBatter1
+            If go3$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+            If go3$ = "LBunt"           Then GoTo LBunt
+            If go2$ = "GOODBYE"         Then Exit Sub
+        End If
         If go2$ = "GOODBYE"         Then Exit Sub
 
         go$ = "CONTINUE"
@@ -4135,6 +4155,7 @@ Sub SOURCE ()
 
     '----- NOODLE -----
 
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! Fell thru from LNextBatter1 to LRarePlays"       'ToDo [bm] REMOVE
 
    LRarePlays: ' BRANCH FOR RARE PLAYS
     Call RAREPLAYS(H6%, H7%, IP%)
@@ -4268,6 +4289,7 @@ Sub SOURCE ()
 
     '----- NOODLE -----
 
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! Fell thru from LRarePlays to LWeirdPlay"       'ToDo [bm] REMOVE
 
    LWeirdPlay:
     Call Rolld100(RN)
@@ -4573,6 +4595,8 @@ Sub SOURCE ()
         End If
     End If
 
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! Fell thru from LWeirdPlay to ZNormal"       'ToDo [bm] REMOVE
+
    ZNormal:
     If H6% > game_batRating(P, GM_BAvg, currLineupSlot(P)) + I4 Then    'not a base hit
 
@@ -4604,7 +4628,16 @@ Sub SOURCE ()
             If go$ = "LWeirdPlay"             Then Goto LWeirdPlay
             If go$ = "LNextBatter0"           Then Goto LNextBatter0
             If go$ = "LNextBatter1"           Then Goto LNextBatter1
-            If go$ = "LSteal"                 Then Goto LSteal
+            If go$ = "LSteal"          Then
+                go2$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 4633, go2: "; go2$  'ToDo [bm] REMOVE
+                If go2$ = "LNextHalfInning" Then Goto LNextHalfInning
+                If go2$ = "LNextBatter0"    Then Goto LNextBatter0
+                If go2$ = "LNextBatter1"    Then Goto LNextBatter1
+                If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+                If go2$ = "LBunt"           Then GoTo LBunt
+                If go2$ = "GOODBYE"         Then Exit Sub
+            End If
             If go$ = "GOODBYE"                Then Exit Sub
 
             go$ = LCheckForOptionsOrQuit$
@@ -4690,7 +4723,16 @@ Sub SOURCE ()
             If go2$ = "LWeirdPlay"             Then Goto LWeirdPlay
             If go2$ = "LNextBatter0"           Then Goto LNextBatter0
             If go2$ = "LNextBatter1"           Then Goto LNextBatter1
-            If go2$ = "LSteal"                 Then Goto LSteal
+            If go2$ = "LSteal"          Then
+                go3$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 4728, go3: "; go3$  'ToDo [bm] REMOVE
+                If go3$ = "LNextHalfInning" Then Goto LNextHalfInning
+                If go3$ = "LNextBatter0"    Then Goto LNextBatter0
+                If go3$ = "LNextBatter1"    Then Goto LNextBatter1
+                If go3$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+                If go3$ = "LBunt"           Then GoTo LBunt
+                If go2$ = "GOODBYE"         Then Exit Sub
+            End If
             If go2$ = "LCheckForOptionsOrQuit" Then
                 go3$ = LCheckForOptionsOrQuit$
                 If go3$ = "LNextBatter0" Then GoTo LNextBatter0
@@ -5145,7 +5187,16 @@ Sub SOURCE ()
                     If go$ = "LWeirdPlay"             Then Goto LWeirdPlay
                     If go$ = "LNextBatter0"           Then Goto LNextBatter0
                     If go$ = "LNextBatter1"           Then Goto LNextBatter1
-                    If go$ = "LSteal"                 Then Goto LSteal
+                    If go$ = "LSteal"                 Then
+                        go2$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 5192, go2: "; go2$  'ToDo [bm] REMOVE
+                        If go2$ = "LNextHalfInning" Then Goto LNextHalfInning
+                        If go2$ = "LNextBatter0"    Then Goto LNextBatter0
+                        If go2$ = "LNextBatter1"    Then Goto LNextBatter1
+                        If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+                        If go2$ = "LBunt"           Then GoTo LBunt
+                        If go2$ = "GOODBYE"         Then Exit Sub
+                    End If
                     If go$ = "LCheckForOptionsOrQuit" Then
                         go2$ = LCheckForOptionsOrQuit$
                         If go2$ = "LNextBatter0" Then GoTo LNextBatter0
@@ -5177,7 +5228,16 @@ Sub SOURCE ()
                         If go$ = "LWeirdPlay"             Then Goto LWeirdPlay
                         If go$ = "LNextBatter0"           Then Goto LNextBatter0
                         If go$ = "LNextBatter1"           Then Goto LNextBatter1
-                        If go$ = "LSteal"                 Then Goto LSteal
+                        If go$ = "LSteal"          Then
+                            go2$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
+                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 5233, go2: "; go2$  'ToDo [bm] REMOVE
+                            If go2$ = "LNextHalfInning" Then Goto LNextHalfInning
+                            If go2$ = "LNextBatter0"    Then Goto LNextBatter0
+                            If go2$ = "LNextBatter1"    Then Goto LNextBatter1
+                            If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+                            If go2$ = "LBunt"           Then GoTo LBunt
+                            If go2$ = "GOODBYE"         Then Exit Sub
+                        End If
                         If go$ = "LCheckForOptionsOrQuit" Then
                             go2$ = LCheckForOptionsOrQuit$
                             If go2$ = "LNextBatter0" Then GoTo LNextBatter0
@@ -5316,7 +5376,16 @@ Sub SOURCE ()
                 If go2$ = "LWeirdPlay"             Then Goto LWeirdPlay
                 If go2$ = "LNextBatter0"           Then Goto LNextBatter0
                 If go2$ = "LNextBatter1"           Then Goto LNextBatter1
-                If go2$ = "LSteal"                 Then Goto LSteal
+                If go2$ = "LSteal"          Then
+                    go3$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 5381, go3: "; go3$  'ToDo [bm] REMOVE
+                    If go3$ = "LNextHalfInning" Then Goto LNextHalfInning
+                    If go3$ = "LNextBatter0"    Then Goto LNextBatter0
+                    If go3$ = "LNextBatter1"    Then Goto LNextBatter1
+                    If go3$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+                    If go3$ = "LBunt"           Then GoTo LBunt
+                    If go2$ = "GOODBYE"         Then Exit Sub
+                End If
                 If go2$ = "LCheckForOptionsOrQuit" Then
                     go3$ = LCheckForOptionsOrQuit$
                     If go3$ = "LNextBatter0" Then GoTo LNextBatter0
@@ -5353,7 +5422,16 @@ Sub SOURCE ()
                 If go$ = "LWeirdPlay"             Then Goto LWeirdPlay
                 If go$ = "LNextBatter0"           Then Goto LNextBatter0
                 If go$ = "LNextBatter1"           Then Goto LNextBatter1
-                If go$ = "LSteal"                 Then Goto LSteal
+                If go$ = "LSteal"          Then
+                    go2$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 5427, go2: "; go2$  'ToDo [bm] REMOVE
+                    If go2$ = "LNextHalfInning" Then Goto LNextHalfInning
+                    If go2$ = "LNextBatter0"    Then Goto LNextBatter0
+                    If go2$ = "LNextBatter1"    Then Goto LNextBatter1
+                    If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+                    If go2$ = "LBunt"           Then GoTo LBunt
+                    If go2$ = "GOODBYE"         Then Exit Sub
+                End If
                 If go$ = "LCheckForOptionsOrQuit" Then
                     go2$ = LCheckForOptionsOrQuit$
                     If go2$ = "LNextBatter0" Then GoTo LNextBatter0
@@ -5407,207 +5485,14 @@ Sub SOURCE ()
 
     '--------------------
 
-
-   LSteal:
-    stealHome% = 0
-    S2% = EVENT_STEAL
-    currFielder = 1
-    player$(4) = pitchers$(D, currPitcher(D))
-
-    Select Case baseRunners
-        Case 0
-            GoTo LNextBatter1
-            'set a "skip" variable here
-
-        Case 1, 5
-
-            TGTBASE% = 2
-
-            If P2 <> OFF_HIT_N_RUN Then
-
-                Call WINDEX
-                stealing = 1
-                Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-                stealing = 0
-
-                If errorOnPlay% = 1 Then
-                    currLineupSlot(P) = currLineupSlot(P) - 1
-                    Call WHOSON1ST(baseRunners)
-                    go$ = LCheckForOptionsOrQuit$
-                    If go$ = "LNextBatter0" Then GoTo LNextBatter0
-                    If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                    If go$ = "GOODBYE" Then Exit Sub
-                End If
-
-            End If
-
-        Case 2, 4
-
-            TGTBASE% = 3
-
-            If P2 <> OFF_HIT_N_RUN Then
-
-                Call WINDEX
-                stealing = 1
-                Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-                stealing = 0
-
-                If errorOnPlay% = 1 Then
-                    currLineupSlot(P) = currLineupSlot(P) - 1
-                    Call WHOSON1ST(baseRunners)
-                    go$ = LCheckForOptionsOrQuit$
-                    If go$ = "LNextBatter0" Then GoTo LNextBatter0
-                    If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                    If go$ = "GOODBYE" Then Exit Sub
-                End If
-
-            End If
-
-        Case 3, Is >= 6
-            TGTBASE% = 4
-
-    End Select
-
-    I2 = lineupPlayer(P, b2Base(TGTBASE% - 1))
-    A5%(1) = 1
-    A5%(2) = 1
-    A5%(3) = 0
-
-    Call STEALCHANCE(AA, I2, TGTBASE%, CHANCE%)
-    If fldPos(P, b2Base(TGTBASE% - 1)) = 1 Then CHANCE% = 0
-
-    'Reduce chance for stealing home
-    If TGTBASE% = 4 Then CHANCE% = CHANCE% * .05
-
-    If batRating(P, I2, SS_B_CS) > 0 Then
-        stlChance = Int((batRating(P, I2, SS_B_SB) / (batRating(P, I2, SS_B_SB) + batRating(P, I2, SS_B_CS))) * 1000)
-    ElseIf batRating(P, I2, SS_B_SB) > 31 Then
-        stlChance = 700 + ((batRating(P, I2, SS_B_SB) - 30) *  2)
-    ElseIf batRating(P, I2, SS_B_SB) > 10 Then
-        stlChance = 600 + ((batRating(P, I2, SS_B_SB) - 10) * 10)
-    ElseIf batRating(P, I2, SS_B_SB) >  0 Then
-        stlChance = 400 + ((batRating(P, I2, SS_B_SB) * 20))
-    Else
-        stlChance = 100
-    End If
-
-    If fldPos(P, b2Base(TGTBASE% - 1)) = 1 Then stlChance = 100
-
-    Call STEAL3RD(TGTBASE%, AA, stlChance, runnerHeld, D) ' *** SUCCESS OF 3B STEAL ***
-
-    If pitchRating(D, currPitcher(D), SS_P_Throws) =  1 And TGTBASE% = 2 Then CHANCE% = CHANCE% + 25: stlChance = stlChance + 10
-    If pitchRating(D, currPitcher(D), SS_P_Throws) = -1 And TGTBASE% = 2 Then CHANCE% = CHANCE% - 50: stlChance = stlChance - 30
-    If P2 = OFF_HIT_N_RUN Then
-
-        CHANCE% = 100
-        stlChance = stlChance - 200
-        currFielder = 2
-        player$(4) = batters$(D, fielder(D, 2))
-        TGBASE% = lineupPlayer(P, b2Base(TGTBASE% - 1))
-        b2Mystery(TGTBASE% - 1) = 18
-
-        Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-
-        If errorOnPlay% = 1 Then
-            Call INCBATOFF(P, TGBASE%, 9)
-            currLineupSlot(P) = currLineupSlot(P) - 1
-            Call STRIKEOUTCS(SO)
-            go$ = LCheckForOptionsOrQuit$
-            If go$ = "LNextBatter0" Then GoTo LNextBatter0
-            If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
-            If go$ = "GOODBYE" Then Exit Sub
-        Else
-            Call WHICHRUNNER(TGTBASE%, baseRunners, D5)
-            stlChance = stlChance - ((batRating(D, fielder(D, 2), SS_B_Arm) - 5) * 25)
-            go$ = LDoubleSteal2$(I9, AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%, pitchoutChance, I3)
-            If go$ = "LCheckForOptionsOrQuit" Then
-                go2$ = LCheckForOptionsOrQuit$
-                If go2$ = "LNextBatter0" Then GoTo LNextBatter0
-                If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                If go2$ = "GOODBYE" Then Exit Sub
-            End If
-            If go$ = "LNextBatter1" Then Goto LNextBatter1
-            If go$ = "LStealHome"  Then
-                go2$ = LStealHome$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3)
-                If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                If go2$ = "LNextBatter0" Then GoTo LNextBatter0
-                If go2$ = "LNextBatter1" Then GoTo LNextBatter1
-                If go2$ = "GOODBYE" Then Exit Sub
-            End if
-
-            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LDoubleSteal2: "; go$
-            End
-        End If
-
-    End If
-
-    b2Mystery(TGTBASE% - 1) = b2Mystery(TGTBASE% - 1) + 1
-
-    Call Rolld100(I4)
-
-    If I4 <= b2Mystery(TGTBASE% - 1) Then
-
-        S2% = EVENT_RUNDOWN
-        currFielder = 1
-        player$(4) = pitchers$(D, currPitcher(D))
-
-        go$ = LCaughtInRundown$(TGTBASE%, S2%, errorOnPlay%, I3, fbPitcherCoveringFirst%, AST%, INFPOS%)
-        If go$ = "LCheckForOptionsOrQuit" Then
-            go2$ = LCheckForOptionsOrQuit$
-            If go2$ = "LNextBatter0" Then GoTo LNextBatter0
-            If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
-            If go2$ = "GOODBYE" Then Exit Sub
-        End If
-        If go$ = "LNextBatter1" Then Goto LNextBatter1
-
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result 0 from LCaughtInRundown: "; go$
-        End
-
-    End If
-
-    '----------------------------------------
-    '-- this is the start a new large area of code
-    '-- perhaps it could become a sub?
-    '----------------------------------------
-
-    'RUNNER HAS A CHANCE TO STEAL
-    b2Mystery(TGTBASE% - 1) = b2Mystery(TGTBASE% - 1) + 17
-    I9 = Int(Rnd(1) * 1000) + 1
-
-    If I9 > CHANCE% * 1.388 And D5 <> 3 Then
-
-        Call WINDEX
-        Call NOJUMP(D)
-
-        If useVGA = 1 Then _PutImage (17 * FontColAdj, 128)-Step(46 * FontColAdj, 80), backupScreen&, imageScreen&, (17 * FontColAdj, 128)-Step(46 * FontColAdj, 80)
-
-        go$ = LOffenseOptions$(PH%())
-        If go$ = "LNextHalfInning" Then Goto LNextHalfInning
-        If go$ = "LNextBatter0"    Then Goto LNextBatter0
-        If go$ = "LNextBatter1"    Then Goto LNextBatter1
-        If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-        If go$ = "LBunt"           Then GoTo LBunt
-        If go$ = "LSteal"          Then GoTo LSteal
-        If go$ = "LPhForPosition"  Then
-            go2$ = LPhForPosition$
-            If go2$ = "LNextHalfInning" Then Goto LNextHalfInning
-            If go2$ = "LNextBatter0"    Then Goto LNextBatter0
-            If go2$ = "LNextBatter1"    Then Goto LNextBatter1
-            If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-            If go2$ = "LBunt"           Then GoTo LBunt
-            If go2$ = "LSteal"          Then GoTo LSteal
-            If go2$ = "GOODBYE"         Then Exit Sub
-
-            go$ = "CONTINUE"
-        End If
-        If go$ = "GOODBYE"         Then Exit Sub
-
-        If go$ <> "CONTINUE" Then
-            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result C from LDefe: "; go$
-            End
-        End If
-
-    End If
+    go$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source 5492, go: "; go$  'ToDo [bm] REMOVE
+    If go$ = "LNextHalfInning" Then Goto LNextHalfInning
+    If go$ = "LNextBatter0"    Then Goto LNextBatter0
+    If go$ = "LNextBatter1"    Then Goto LNextBatter1
+    If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+    If go$ = "LBunt"           Then GoTo LBunt
+    If go$ = "GOODBYE"         Then Exit Sub
 
     If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! Fell thru from LSteal to LStealHome"       'ToDo [bm] REMOVE
 
@@ -5644,7 +5529,16 @@ Sub SOURCE ()
     If go$ = "LNextBatter1"    Then Goto LNextBatter1
     If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
     If go$ = "LBunt"           Then GoTo LBunt
-    If go$ = "LSteal"          Then GoTo LSteal
+    If go$ = "LSteal"          Then
+        go2$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 5534, go2: "; go2$  'ToDo [bm] REMOVE
+        If go2$ = "LNextHalfInning" Then Goto LNextHalfInning
+        If go2$ = "LNextBatter0"    Then Goto LNextBatter0
+        If go2$ = "LNextBatter1"    Then Goto LNextBatter1
+        If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+        If go2$ = "LBunt"           Then GoTo LBunt
+        If go2$ = "GOODBYE"         Then Exit Sub
+    End If
     If go$ = "GOODBYE"         Then Exit Sub
 
     '----- NOODLE -----
@@ -5658,7 +5552,16 @@ Sub SOURCE ()
     If go$ = "LNextBatter1"    Then GoTo LNextBatter1
     If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
     If go$ = "LBunt"           Then GoTo LBunt
-    If go$ = "LSteal"          Then GoTo LSteal
+    If go$ = "LSteal"          Then
+        go2$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 5557, go2: "; go2$  'ToDo [bm] REMOVE
+        If go2$ = "LNextHalfInning" Then Goto LNextHalfInning
+        If go2$ = "LNextBatter0"    Then Goto LNextBatter0
+        If go2$ = "LNextBatter1"    Then Goto LNextBatter1
+        If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+        If go2$ = "LBunt"           Then GoTo LBunt
+        If go2$ = "GOODBYE"         Then Exit Sub
+    End If
     If go$ = "GOODBYE"         Then Exit Sub
 
     If go$ <> "CONTINUE" Then
@@ -7543,6 +7446,7 @@ Function LNoPinchHitter$ (MS%, A1, baseRunners, I2, P, pinchRunnerFlag, nbrBalls
 
         If skipSteal = 1 Then
             go$ = LNoSteal$
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "7449 LSteal LNoPinchHitter, go$: "; go$    'ToDo [bm] REMOVE
             If go$ <> "CONTINUE" Then LNoPinchHitter$ = go$ Else LNoPinchHitter$ = LPossibleHitAndRun$
             Exit Function
         End If
@@ -9522,6 +9426,7 @@ Function LDefe$ (skipSetup%)
         If go$ = "LNextBatter0"    Then LDefe$ = "LNextBatter0": Exit Function
         If go$ = "LNextBatter1"    Then LDefe$ = "LNextBatter1": Exit Function
         If go$ = "LWeirdPlay"      Then LDefe$ = "LWeirdPlay":   Exit Function
+        If go$ = "CONTINUE"        Then Exit Do 'ToDo [bm] controversial!
 
         If go$ <> "CONTINUE" Then
             If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LManageDefe: "; go$
@@ -9531,7 +9436,7 @@ Function LDefe$ (skipSetup%)
         timesThruLoop% = timesThruLoop% + 1
     Loop While D2 >= 3 And D2 <= 5 And timesThruLoop% < 10
 
-    If timesThruLoop% >=10 And Environ$("PBPLOG") = "TRUE" Then Print #11, "WARNING!! timesThruLoop: "; timesThruLoop%
+    If timesThruLoop% >= 10 And Environ$("PBPLOG") = "TRUE" Then Print #11, "WARNING!! timesThruLoop: "; timesThruLoop%
 
     LDefe$ = "CONTINUE"
 
@@ -10054,7 +9959,7 @@ Function LPhForPosition$
             go$ = "CONTINUE"
         End If
 
-        If go$ = "LBunt" Then LPhForPosition$ = "LBunt": Exit Function
+        If go$ = "LBunt"   Then LPhForPosition$ = "LBunt" : Exit Function
         If go$ =  "LSteal" Then LPhForPosition$ = "LSteal": Exit Function
         If go$ = "LExecuteOffense" Then
             go2$ = LExecuteOffense$
@@ -10133,7 +10038,7 @@ Function LPhForPosition$
         go$ = "CONTINUE"
     End If
 
-    If go$ = "LBunt"           Then LPhForPosition$ = "LBunt": Exit Function
+    If go$ = "LBunt"           Then LPhForPosition$ = "LBunt" : Exit Function
     If go$ =  "LSteal"         Then LPhForPosition$ = "LSteal": Exit Function
     If go$ = "LExecuteOffense" Then
         go2$ = LExecuteOffense$
@@ -10302,7 +10207,7 @@ Function LPhForPitcher$ (PH%())
             End If
         End If
 
-        If go$ = "LBunt"   Then LPhForPitcher$ = "LBunt": Exit Function
+        If go$ = "LBunt"   Then LPhForPitcher$ = "LBunt" : Exit Function
         If go$ =  "LSteal" Then LPhForPitcher$ = "LSteal": Exit Function
 
         If go$ <> "CONTINUE" Then
@@ -10488,7 +10393,7 @@ Function LOffenseOptions$ (PH%())
 
             End If
 
-            If go$ = "LBunt"    Then LOffenseOptions$ = "LBunt": Exit Function
+            If go$ = "LBunt"    Then LOffenseOptions$ = "LBunt" : Exit Function
             If go$ =  "LSteal"  Then LOffenseOptions$ = "LSteal": Exit Function
             If go$ = "LExecuteOffense" Then
                 LOffenseOptions$ = LExecuteOffense$: Exit Function
@@ -10626,6 +10531,209 @@ Function LOffenseOptions$ (PH%())
 
     If Environ$("PBPLOG") = "TRUE" Then Print #11, "RETURNING C from LOffenseOptions: "; go$    'ToDo [bm] REMOVE
     LOffenseOptions$ = go$
+
+End Function
+
+
+Function LSteal$ (TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
+    Shared baseRunners, P2, stealing, runnerHeld, AST%, INFPOS%
+
+    Do
+
+    stealHome% = 0
+    S2% = EVENT_STEAL
+    currFielder = 1
+    player$(4) = pitchers$(D, currPitcher(D))
+
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Entering LSteal, baseRunners: "; baseRunners    'ToDo [bm] REMOVE
+
+    Select Case baseRunners
+        Case 0
+            LSteal$ = "LNextBatter1"
+            Exit Function
+
+        Case 1, 5
+
+            TGTBASE% = 2
+
+            If P2 <> OFF_HIT_N_RUN Then
+
+                Call WINDEX
+                stealing = 1
+                Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+                stealing = 0
+
+                If errorOnPlay% = 1 Then
+                    currLineupSlot(P) = currLineupSlot(P) - 1
+                    Call WHOSON1ST(baseRunners)
+                    go$ = LCheckForOptionsOrQuit$
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "10569 LSteal, baseRunners: "; baseRunners; " go$: "; go$    'ToDo [bm] REMOVE
+                    LSteal$ = go$
+                    Exit Function
+                End If
+
+            End If
+
+        Case 2, 4
+
+            TGTBASE% = 3
+
+            If P2 <> OFF_HIT_N_RUN Then
+
+                Call WINDEX
+                stealing = 1
+                Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+                stealing = 0
+
+                If errorOnPlay% = 1 Then
+                    currLineupSlot(P) = currLineupSlot(P) - 1
+                    Call WHOSON1ST(baseRunners)
+                    go$ = LCheckForOptionsOrQuit$
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "10591 LSteal, baseRunners: "; baseRunners; " go$: "; go$    'ToDo [bm] REMOVE
+                    LSteal$ = go$
+                    Exit Function
+                End If
+
+            End If
+
+        Case 3, Is >= 6
+            TGTBASE% = 4
+
+    End Select
+
+    I2 = lineupPlayer(P, b2Base(TGTBASE% - 1))
+    A5%(1) = 1
+    A5%(2) = 1
+    A5%(3) = 0
+
+    Call STEALCHANCE(AA, I2, TGTBASE%, CHANCE%)
+    If fldPos(P, b2Base(TGTBASE% - 1)) = 1 Then CHANCE% = 0
+
+    'Reduce chance for stealing home
+    If TGTBASE% = 4 Then CHANCE% = CHANCE% * .05
+
+    If batRating(P, I2, SS_B_CS) > 0 Then
+        stlChance = Int((batRating(P, I2, SS_B_SB) / (batRating(P, I2, SS_B_SB) + batRating(P, I2, SS_B_CS))) * 1000)
+    ElseIf batRating(P, I2, SS_B_SB) > 31 Then
+        stlChance = 700 + ((batRating(P, I2, SS_B_SB) - 30) *  2)
+    ElseIf batRating(P, I2, SS_B_SB) > 10 Then
+        stlChance = 600 + ((batRating(P, I2, SS_B_SB) - 10) * 10)
+    ElseIf batRating(P, I2, SS_B_SB) >  0 Then
+        stlChance = 400 + ((batRating(P, I2, SS_B_SB) * 20))
+    Else
+        stlChance = 100
+    End If
+
+    If fldPos(P, b2Base(TGTBASE% - 1)) = 1 Then stlChance = 100
+
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "10628 LSteal, stlChance: "; stlChance    'ToDo [bm] REMOVE
+
+    Call STEAL3RD(TGTBASE%, AA, stlChance, runnerHeld, D) ' *** SUCCESS OF 3B STEAL ***
+
+    If pitchRating(D, currPitcher(D), SS_P_Throws) =  1 And TGTBASE% = 2 Then CHANCE% = CHANCE% + 25: stlChance = stlChance + 10
+    If pitchRating(D, currPitcher(D), SS_P_Throws) = -1 And TGTBASE% = 2 Then CHANCE% = CHANCE% - 50: stlChance = stlChance - 30
+    If P2 = OFF_HIT_N_RUN Then
+
+        CHANCE% = 100
+        stlChance = stlChance - 200
+        currFielder = 2
+        player$(4) = batters$(D, fielder(D, 2))
+        TGBASE% = lineupPlayer(P, b2Base(TGTBASE% - 1))
+        b2Mystery(TGTBASE% - 1) = 18
+
+        Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+
+        If errorOnPlay% = 1 Then
+            Call INCBATOFF(P, TGBASE%, 9)
+            currLineupSlot(P) = currLineupSlot(P) - 1
+            Call STRIKEOUTCS(SO)
+            LSteal$ = LCheckForOptionsOrQuit$
+            Exit Function
+        Else
+            Call WHICHRUNNER(TGTBASE%, baseRunners, D5)
+            stlChance = stlChance - ((batRating(D, fielder(D, 2), SS_B_Arm) - 5) * 25)
+
+            go$ = LDoubleSteal2$(I9, AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%, pitchoutChance, I3)
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "10656 LSteal, go$: "; go$    'ToDo [bm] REMOVE
+            If go$ = "LCheckForOptionsOrQuit" Then
+                LSteal$ = LCheckForOptionsOrQuit$
+            ElseIf go$ = "LStealHome"  Then
+                LSteal$ = LStealHome$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3)
+            Else
+                LSteal$ = go$
+            End if
+            Exit Function
+
+        End If
+
+    End If
+
+    b2Mystery(TGTBASE% - 1) = b2Mystery(TGTBASE% - 1) + 1
+
+    Call Rolld100(I4)
+
+    If I4 <= b2Mystery(TGTBASE% - 1) Then
+
+        S2% = EVENT_RUNDOWN
+        currFielder = 1
+        player$(4) = pitchers$(D, currPitcher(D))
+
+        go$ = LCaughtInRundown$(TGTBASE%, S2%, errorOnPlay%, I3, fbPitcherCoveringFirst%, AST%, INFPOS%)
+        If go$ = "LCheckForOptionsOrQuit" Then
+            LSteal$ = LCheckForOptionsOrQuit$
+        Else
+            LSteal$ = go$
+        End If
+        Exit Function
+
+    End If
+
+    '----------------------------------------
+    '-- this is the start a new large area of code
+    '-- perhaps it could become a sub?
+    '----------------------------------------
+
+    'RUNNER HAS A CHANCE TO STEAL
+    b2Mystery(TGTBASE% - 1) = b2Mystery(TGTBASE% - 1) + 17
+    I9 = Int(Rnd(1) * 1000) + 1
+
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "10700 LSteal, CHANCE: "; CHANCE%; ", I9: "; I9    'ToDo [bm] REMOVE
+
+    If I9 > CHANCE% * 1.388 And D5 <> 3 Then
+
+        Call WINDEX
+        Call NOJUMP(D)
+
+        If useVGA = 1 Then _PutImage (17 * FontColAdj, 128)-Step(46 * FontColAdj, 80), backupScreen&, imageScreen&, (17 * FontColAdj, 128)-Step(46 * FontColAdj, 80)
+
+        go$ = LOffenseOptions$(PH%())
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "10710 LSteal, go: "; go$    'ToDo [bm] REMOVE
+        If go$ = "LSteal"          Then _Continue
+        If go$ = "LPhForPosition"  Then
+            go2$ = LPhForPosition$
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "10714 LSteal, go2: "; go2$    'ToDo [bm] REMOVE
+            If go2$ = "LSteal"          Then _Continue
+            'If go2$ <> "CONTINUE" Then
+                LSteal$ = go2$
+                Exit Function
+            'End If
+        End If
+        'If go$ <> "CONTINUE" Then
+            LSteal$ = go$
+            Exit Function
+        'End If
+
+    End If
+
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "10728 LSteal gonna break loop"    'ToDo [bm] REMOVE
+    go$ = LStealHome$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3)
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "10730 LSteal = "; go$    'ToDo [bm] REMOVE
+    LSteal$ = go$
+    Exit Do
+
+    Loop
+
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "10732 LSteal exiting function"    'ToDo [bm] REMOVE
 
 End Function
 
