@@ -8337,8 +8337,6 @@ Sub SOURCE ()
 
         End If
 
-        GoTo LManageDefense
-
     End If
 
     If Not (A1 <= 0 Or A1 = 0 And baseRunners <= 1 Or A1 = 0 And baseRunners = 4 Or baseRunners = 7 Or fldPos(P, currLineupSlot(P)) = 1) Then
