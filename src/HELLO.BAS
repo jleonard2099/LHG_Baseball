@@ -4672,7 +4672,7 @@ Sub SOURCE ()
    'LGroundBall:
 
     'Call LMoveRunners(baseRunners, INFPOS%)
-    'GoTo LCheckForOptionsOrQuit
+    'Go To LCheckForOptionsOrQuit
 
     go$ = LCheckForOptionsOrQuit$
     If go$ = "LNextBatter0" Then GoTo LNextBatter0
@@ -5464,7 +5464,7 @@ Sub SOURCE ()
     '================================================================================
 
     '-- This can join the code above as there's only one branch to it
-    'GoTo LManageDefense
+    'Go To LManageDefense
 
    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! Fell thru from LStealHome to LPhForPosition"       'ToDo [bm] REMOVE
 
@@ -6813,19 +6813,19 @@ Sub LPersonnelMenu
 
                 Case 1
                     Call LResumePlay
-                    Exit Sub    ' GoTo LNextBatter1
+                    Exit Sub    ' Go To LNextBatter1
 
                 Case 2
                     If P2 = OFF_PERSONNEL Then
-                        Call TIRING(P9)  ': GoTo LPersonnelMenu2
+                        Call TIRING(P9)  ': Go To LPersonnelMenu2
                     Else
                         Call LChangePitcher(I5)
-                        Exit Do 'Goto LPersonnelMenu
+                        Exit Do 'Go to LPersonnelMenu
                     End If
 
                 Case 3
                     Call LChangeBatterFielder
-                    Exit Do 'Goto LPersonnelMenu
+                    Exit Do 'Go to LPersonnelMenu
             End Select
         Loop
 
@@ -6833,7 +6833,7 @@ Sub LPersonnelMenu
         ' Call LReplacePlayer
 
         ' Call LChangeBatterFielder
-        ' Goto LPersonnelMenu
+        ' Go to LPersonnelMenu
     Loop
 
 End Sub
@@ -7009,13 +7009,12 @@ Sub LReliever1 (newPitcherFlag)
 
     If INFPOS% <= 0 Then
 
-        If teamMgrProfileVal(D, 690) = 999 Then
+        If teamMgrProfileVal(D, 690) = 999 Then                     ' PROFILE INFIELD IN WITH 3RD OCCUPIED
 
             If Not (baseRunners < 3 Or baseRunners = 4) Then
 
                 If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a INFIELD IN (3rd base occupied) strategy !!"
 
-                ' PROFILE INFIELD IN WITH 3RD OCCUPIED
                 Call Rolld100(RN)
 
                 If nbrOuts(0) = 0 And A1 >= teamMgrProfileVal(D, 691) * -1 And A1 <= teamMgrProfileVal(D, 692) * -1 And INNING% >= teamMgrProfileVal(D, 693) And RN <= teamMgrProfileVal(D, 694) Then INFPOS% = INF_IN: D2 = DEF_INFIELD_IN: Exit Sub
@@ -7027,13 +7026,12 @@ Sub LReliever1 (newPitcherFlag)
 
         End If
 
-        If teamMgrProfileVal(D, 707) = 999 Then
+        If teamMgrProfileVal(D, 707) = 999 Then                     ' PROFILE CORNERS IN AGAINST A BUNT HIT
 
             If baseRunners = 0 Then
 
                 If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a CORNERS IN against BUNT FOR HIT strategy !!"
 
-                ' PROFILE CORNERS IN AGAINST A BUNT HIT
                 Call Rolld100(RN)
 
                 If BR >= teamMgrProfileVal(D, 708) And RN <= teamMgrProfileVal(D, 709) Or BR >= teamMgrProfileVal(D, 710) And RN <= teamMgrProfileVal(D, 711) Or BR >= teamMgrProfileVal(D, 712) And RN <= teamMgrProfileVal(D, 713) Then
@@ -7046,7 +7044,7 @@ Sub LReliever1 (newPitcherFlag)
 
         End If
 
-        If teamMgrProfileVal(D, 714) = 999 And fldPos(P, currLineupSlot(P)) <> 1 Then
+        If teamMgrProfileVal(D, 714) = 999 And fldPos(P, currLineupSlot(P)) <> 1 Then   ' PROFILE CORNERS IN VS HITTER IN SAC BUNT SITUATION
 
             If nbrOuts(0) = 0 Then
 
@@ -7054,7 +7052,6 @@ Sub LReliever1 (newPitcherFlag)
 
                     If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a CORNERS IN against SAC BUNT strategy !!"
 
-                    ' PROFILE CORNERS IN VS HITTER IN SAC BUNT SITUATION
                     Call Rolld100(RN)
 
                     If A1 <= teamMgrProfileVal(D, 715) And A1 >= teamMgrProfileVal(D, 716) * -1 And baseRunners = 1 And BR >= teamMgrProfileVal(D, 717) And RN <= teamMgrProfileVal(D, 718) Then
@@ -7084,13 +7081,12 @@ Sub LReliever1 (newPitcherFlag)
 
         End If
 
-        If Not (teamMgrProfileVal(D, 731) <> 999 Or fldPos(P, currLineupSlot(P)) <> 1 Or nbrOuts(0) = 2) Then
+        If Not (teamMgrProfileVal(D, 731) <> 999 Or fldPos(P, currLineupSlot(P)) <> 1 Or nbrOuts(0) = 2) Then   ' PROFILE CORNERS IN VS A PITCHER IN SAC BUNT SITUATION
 
             If Not (baseRunners <> 1 And baseRunners <> 2 And baseRunners <> 4) Then
 
                 If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a CORNERS IN against PITCHER SAC BUNT strategy !!"
 
-                ' PROFILE CORNERS IN VS A PITCHER IN SAC BUNT SITUATION
                 Call Rolld100(RN)
 
                 If I7! <= teamMgrProfileVal(D, 732) And RN <= teamMgrProfileVal(D, 733) And baseRunners = 1 And nbrOuts(0) <= 1 Then
@@ -7121,13 +7117,12 @@ Sub LReliever1 (newPitcherFlag)
 
         End If
 
-        If teamMgrProfileVal(D, 740) = 999 Then
+        If teamMgrProfileVal(D, 740) = 999 Then                     ' PROFILE CORNERS IN FOR A SQUEEZE
 
             If Not (nbrOuts(0) = 2 Or baseRunners <> 3 And baseRunners < 5) Then
 
                 If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a CORNERS IN against SQUEEZE strategy !!"
 
-                ' PROFILE CORNERS IN FOR A SQUEEZE
                 Call Rolld100(RN)
                 If nbrOuts(0) = 0 And A1 <= teamMgrProfileVal(D, 741) And A1 >= teamMgrProfileVal(D, 742) And BR >= teamMgrProfileVal(D, 743) And RN <= teamMgrProfileVal(D, 744) Then
                     INFPOS% = INF_CORNERS_IN
@@ -7144,7 +7139,7 @@ Sub LReliever1 (newPitcherFlag)
 
         End If
 
-        If teamMgrProfileVal(D, 756) = 999 Then
+        If teamMgrProfileVal(D, 756) = 999 Then                     ' PROFILE PITCHING AROUND HITTER
 
             If Not (baseRunners = 1 Or baseRunners = 4 Or baseRunners = 5 Or baseRunners = 7) Then
 
@@ -7211,7 +7206,7 @@ Sub LReliever1 (newPitcherFlag)
 
         End If
 
-        Exit Sub
+        ' Exit Sub      'ToDo [bm] controversial
 
     End If
 
@@ -9221,7 +9216,7 @@ Function LDefenseOptions$ (skipSetup%)
         If go$ = "LNextBatter1"    Then LDefenseOptions$ = "LNextBatter1": Exit Function
         If go$ = "LWeirdPlay"      Then LDefenseOptions$ = "LWeirdPlay":   Exit Function
         If go$ = "GOODBYE"         Then LDefenseOptions$ = "GOODBYE":      Exit Function
-        'If go$ = "LDefenseOptions" Then Goto LDefenseOptions
+        'If go$ = "LDefenseOptions" Then Go to LDefenseOptions
 
         If go$ <> "CONTINUE" And go$ <> "GOODBYE" And go$ <> "LDefenseOptions" Then
             If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LDefOpts: "; go$
@@ -9299,9 +9294,9 @@ Function LManageDefe$
         End If
 
         'go$ = LDefenseOptions$(_False)
-        'If go$ = "LCheckIfRelieverNeeded" Then GoTo LCheckIfRelieverNeeded
-        'If go$ = "LNextBatter1"    Then GoTo LNextBatter1
-        'If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+        'If go$ = "LCheckIfRelieverNeeded" Then Go To LCheckIfRelieverNeeded
+        'If go$ = "LNextBatter1"    Then Go To LNextBatter1
+        'If go$ = "LWeirdPlay"      Then Go To LWeirdPlay
         'If go$ = "GOODBYE"         Then Exit Sub
 
         'If go$ <> "CONTINUE" Then
@@ -9428,7 +9423,7 @@ Function LDefe$ (skipSetup%)
         If Not skipSetup% Then
             go$ = LDefenseOptions$(_False)
             If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDefe A maybe RETURNING "; go$; ", D2 = "; D2    'ToDo [bm] REMOVE
-            'If go$ = "LManageDefense"  Then GoTo LManageDefense
+            'If go$ = "LManageDefense"  Then Go To LManageDefense
             If go$ = "LNextBatter1"    Then LDefe$ = "LNextBatter1": Exit Function
             If go$ = "LWeirdPlay"      Then LDefe$ = "LWeirdPlay":   Exit Function
             If go$ = "GOODBYE"         Then LDefe$ = "GOODBYE":      Exit Function
@@ -10774,7 +10769,7 @@ Function LStealHome$ (TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHA
 
         Call PITCHOUT(baseRunners, TGTBASE%, stlChance)
 
-        'If baseRunners <> 5 Then Goto LDoubleSteal ' *** DOUBLE STEAL ***1st&3rd
+        'If baseRunners <> 5 Then Go to LDoubleSteal ' *** DOUBLE STEAL ***1st&3rd
 
         I9 = Int(Rnd(1) * 1000) + 1
 
