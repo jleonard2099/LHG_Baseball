@@ -933,6 +933,21 @@ Sub LOADER
         Kill "DEFERA"
 
         Open "DEFAULT" For Output As #3
+        Print #3, playerOpt
+        Print #3, leagueOpt
+        Print #3, desigHit
+        Print #3, gameTypeOpt
+        Print #3, gameMonth
+        Print #3, dayOrNight
+        Print #3, useWeather
+        Print #3, useInj
+        Print #3, useLRSplit
+        Print #3, useRest
+        Print #3, useMgrProf
+        Print #3, pbpDelay!
+        Print #3, useVGA
+        Print #3, pitchEraOpt
+        Print #3, sndOpt
         Close #3
 
     Else
@@ -4106,7 +4121,19 @@ Sub SOURCE ()
     If go$ = "LNextBatter0"    Then Goto LNextBatter0
     If go$ = "LNextBatter1"    Then Goto LNextBatter1
     If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-    If go$ = "LBunt"           Then GoTo LBunt
+    If go$ = "LBunt"           Then
+        go2$ = LBunt$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, D5, PH%())
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LBunt 4127, go2: "; go2$  'ToDo [bm] REMOVE
+        If go2$ = "LNextHalfInning" Then Goto LNextHalfInning
+        If go2$ = "LNextBatter0"    Then Goto LNextBatter0
+        If go2$ = "LNextBatter1"    Then Goto LNextBatter1
+        If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+        If go2$ = "GOODBYE"         Then Exit Sub
+        If go2$ <> "CONTINUE" Then
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result 4134 from LBunt: "; go2$
+            End
+        End If
+    End If
     If go$ = "LSteal"          Then
         go2$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
         If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 4111, go2: "; go2$  'ToDo [bm] REMOVE
@@ -4114,7 +4141,19 @@ Sub SOURCE ()
         If go2$ = "LNextBatter0"    Then Goto LNextBatter0
         If go2$ = "LNextBatter1"    Then Goto LNextBatter1
         If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-        If go2$ = "LBunt"           Then GoTo LBunt
+        If go2$ = "LBunt"           Then
+            go3$ = LBunt$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, D5, PH%())
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LBunt 4148, go3: "; go3$  'ToDo [bm] REMOVE
+            If go3$ = "LNextHalfInning" Then Goto LNextHalfInning
+            If go3$ = "LNextBatter0"    Then Goto LNextBatter0
+            If go3$ = "LNextBatter1"    Then Goto LNextBatter1
+            If go3$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+            If go3$ = "GOODBYE"         Then Exit Sub
+            If go3$ <> "CONTINUE" Then
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result 4155 from LBunt: "; go3$
+                End
+            End If
+        End If
         If go2$ = "GOODBYE"         Then Exit Sub
     End If
     If go$ = "LPhForPosition"  Then
@@ -4124,7 +4163,19 @@ Sub SOURCE ()
         If go2$ = "LNextBatter0"    Then Goto LNextBatter0
         If go2$ = "LNextBatter1"    Then Goto LNextBatter1
         If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-        If go2$ = "LBunt"           Then GoTo LBunt
+        If go2$ = "LBunt"           Then
+            go3$ = LBunt$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, D5, PH%())
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LBunt 4168, go3: "; go3$  'ToDo [bm] REMOVE
+            If go3$ = "LNextHalfInning" Then Goto LNextHalfInning
+            If go3$ = "LNextBatter0"    Then Goto LNextBatter0
+            If go3$ = "LNextBatter1"    Then Goto LNextBatter1
+            If go3$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+            If go3$ = "GOODBYE"         Then Exit Sub
+            If go3$ <> "CONTINUE" Then
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result 4175 from LBunt: "; go3$
+                End
+            End If
+        End If
         If go2$ = "LSteal"          Then
             go3$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
             If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 4129, go3: "; go3$  'ToDo [bm] REMOVE
@@ -4132,7 +4183,19 @@ Sub SOURCE ()
             If go3$ = "LNextBatter0"    Then Goto LNextBatter0
             If go3$ = "LNextBatter1"    Then Goto LNextBatter1
             If go3$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-            If go3$ = "LBunt"           Then GoTo LBunt
+            If go3$ = "LBunt"           Then
+                go4$ = LBunt$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, D5, PH%())
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LBunt 4189, go4: "; go4$  'ToDo [bm] REMOVE
+                If go4$ = "LNextHalfInning" Then Goto LNextHalfInning
+                If go4$ = "LNextBatter0"    Then Goto LNextBatter0
+                If go4$ = "LNextBatter1"    Then Goto LNextBatter1
+                If go4$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+                If go4$ = "GOODBYE"         Then Exit Sub
+                If go4$ <> "CONTINUE" Then
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result 4196 from LBunt: "; go4$
+                    End
+                End If
+            End If
             If go2$ = "GOODBYE"         Then Exit Sub
         End If
         If go2$ = "GOODBYE"         Then Exit Sub
@@ -4549,7 +4612,19 @@ Sub SOURCE ()
         GoTo LNextBatter0
     End If
 
-    If P2 = OFF_BUNT Then Goto LBunt
+    If P2 = OFF_BUNT Then
+        go$ = LBunt$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, D5, PH%())
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LBunt 4618, go: "; go$  'ToDo [bm] REMOVE
+        If go$ = "LNextHalfInning" Then Goto LNextHalfInning
+        If go$ = "LNextBatter0"    Then Goto LNextBatter0
+        If go$ = "LNextBatter1"    Then Goto LNextBatter1
+        If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+        If go$ = "GOODBYE"         Then Exit Sub
+        If go$ <> "CONTINUE" Then
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result 4625 from LBunt: "; go$
+            End
+        End If
+    End If
 
     H6% = Int(Rnd(1) * 1000) + 1
     H7% = Int(Rnd(1) * 1000) + 1
@@ -4636,7 +4711,19 @@ Sub SOURCE ()
                 If go2$ = "LNextBatter0"    Then Goto LNextBatter0
                 If go2$ = "LNextBatter1"    Then Goto LNextBatter1
                 If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-                If go2$ = "LBunt"           Then GoTo LBunt
+                If go2$ = "LBunt"           Then
+                    go3$ = LBunt$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, D5, PH%())
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LBunt 4706, go3: "; go3$  'ToDo [bm] REMOVE
+                    If go3$ = "LNextHalfInning" Then Goto LNextHalfInning
+                    If go3$ = "LNextBatter0"    Then Goto LNextBatter0
+                    If go3$ = "LNextBatter1"    Then Goto LNextBatter1
+                    If go3$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+                    If go3$ = "GOODBYE"         Then Exit Sub
+                    If go3$ <> "CONTINUE" Then
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result 4713 from LBunt: "; go3$
+                        End
+                    End If
+                End If
                 If go2$ = "GOODBYE"         Then Exit Sub
             End If
             If go$ = "GOODBYE"                Then Exit Sub
@@ -4682,751 +4769,17 @@ Sub SOURCE ()
    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! Fell thru from ZNormal to LBunt"       'ToDo [bm] REMOVE
     '----- NOODLE -----
 
-   LBunt: ' *** BUNT ROUTINE ***
-    Call WINDEX
-
-    Erase A5%
-
-    SH = 2
-    S2% = EVENT_BUNT
-
-    If (baseRunners = 3 Or baseRunners > 4) And nbrOuts(0) < 2 Then Call SQUEEZECHOICE(SH)
-
-    Call Rolld100(RN)
-
-    If fldPos(P, currLineupSlot(P)) = 1 Then
-        BR = pitchRating(P, currPitcher(P), SS_P_Bunt)
-    Else
-        BR = batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_Bunt)
+    go$ = LBunt$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, D5, PH%())
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LBunt 4703, go: "; go$  'ToDo [bm] REMOVE
+    If go$ = "LNextHalfInning" Then Goto LNextHalfInning
+    If go$ = "LNextBatter0"    Then Goto LNextBatter0
+    If go$ = "LNextBatter1"    Then Goto LNextBatter1
+    If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+    If go$ = "GOODBYE"         Then Exit Sub
+    If go$ <> "CONTINUE" Then
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result 4710 from LBunt: "; go$
+        End
     End If
-
-    If INFPOS% > INF_BACK Then BR = BR - 2
-    If BR <= 1 Then BR = 1
-
-    For I = 1 To 9:
-        If RN <= BT%(teamRat_GAME(1, 10), BR, I) Then Exit For
-    Next
-
-    rand10% = Int(Rnd(1) * 10)
-    If rand10% <= 2 Then currFielder = 5
-    If rand10% > 2 And rand10% <= 4 Then currFielder = 1
-    If rand10% > 4 And rand10% <= 7 Then currFielder = 3
-    If rand10% > 7 Then currFielder = 2
-    Call GETFIELDNAME(currFielder, D)
-
-    Call Rolld100(RN)
-
-    If RN <= 52 Then
-        go$ = LStrike$(RN)
-        If go$  = "LNextBatter1" Then GoTo LNextBatter1
-        If go$  = "LStrikeout"   Then
-            go2$ = LStrikeout$
-            If go2$ = "LWeirdPlay"             Then Goto LWeirdPlay
-            If go2$ = "LNextBatter0"           Then Goto LNextBatter0
-            If go2$ = "LNextBatter1"           Then Goto LNextBatter1
-            If go2$ = "LSteal"          Then
-                go3$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
-                If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 4728, go3: "; go3$  'ToDo [bm] REMOVE
-                If go3$ = "LNextHalfInning" Then Goto LNextHalfInning
-                If go3$ = "LNextBatter0"    Then Goto LNextBatter0
-                If go3$ = "LNextBatter1"    Then Goto LNextBatter1
-                If go3$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-                If go3$ = "LBunt"           Then GoTo LBunt
-                If go2$ = "GOODBYE"         Then Exit Sub
-            End If
-            If go2$ = "LCheckForOptionsOrQuit" Then
-                go3$ = LCheckForOptionsOrQuit$
-                If go3$ = "LNextBatter0" Then GoTo LNextBatter0
-                If go3$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                If go3$ = "GOODBYE" Then Exit Sub
-            End If
-            If go2$ = "GOODBYE"                Then Exit Sub
-        End If
-
-        If go$ <> "CONTINUE" Then
-            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LStrike: "; go$
-            End
-        End If
-    End If
-
-    If I = 5 And SH = 1 Then I = 6
-
-    'This I and the ones in the case statement
-    'all have to do with the For-Next loop
-    Select Case I
-
-        Case 1
-            'PU
-            Call PBP(player$(0) + " bunts it in the air...")
-            Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-            Call PBP(player$(4) + " makes the catch")
-            Call ADDSTTS(P, D)
-
-            nbrOuts(0) = nbrOuts(0) + 1
-            nbrOuts(1) = nbrOuts(1) + 1
-            Call CREDITREGPO(currFielder, D)
-
-            If nbrOuts(0) <> 3 And SH <> 2 Then
-                '--- start of a new sub ???
-                '--- where does 4111 end ???
-                go$ = LPlayAtThird$
-                If go$  = "LNextBatter1" Then GoTo LNextBatter1
-                If go$ <> "CONTINUE" Then
-                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LPlayAtThird: "; go$
-                    End
-                End If
-
-            End If
-
-            go$ = LCheckForOptionsOrQuit$
-            If go$ = "LNextBatter0" Then GoTo LNextBatter0
-            If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
-            If go$ = "GOODBYE" Then Exit Sub
-
-        Case 2
-            'DP
-            If baseRunners = 1 Or baseRunners = 4 Or baseRunners = 5 Or baseRunners = 7 Then
-
-                Call PBP(player$(0) + " lays down a good bunt")
-
-                Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-                If errorOnPlay% = 1 Then
-                    go$ = LCheckForOptionsOrQuit$
-                    If go$ = "LNextBatter0" Then GoTo LNextBatter0
-                    If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                    If go$ = "GOODBYE" Then Exit Sub
-                End If
-
-                Call PBP(player$(4) + " fields it cleanly")
-
-                If SH = 1 And (baseRunners = 5 Or baseRunners = 7) Then
-
-                    If currFielder = 2 Then
-                        Call PBP("and catches " + player$(3) + " heading home!")
-                        Call CREDITREGPO(currFielder, D)
-                    Else
-                        'currFielder <> 2
-                        Call PBP("and throws home to nail " + player$(3) + "!")
-                        Call CREDITASSIST(currFielder, D)
-                        currFielder = 2
-                        Call CREDITREGPO(currFielder, D)
-                    End If
-
-                    A5%(3) = 11
-
-                    For I = 0 To 2: A5%(0) = 1: Next
-
-                    Call ADDSTTS(P, D)
-                    nbrOuts(0) = nbrOuts(0) + 1
-                    nbrOuts(1) = nbrOuts(1) + 1
-                    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-                    Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
-
-                    go$ = LCheckForOptionsOrQuit$
-                    If go$ = "LNextBatter0" Then GoTo LNextBatter0
-                    If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                    If go$ = "GOODBYE" Then Exit Sub
-
-                End If
-
-                If baseRunners = 7 And nbrOuts(0) < 2 Then
-
-                    A5%(3) = 11
-
-                    If currFielder = 2 Then
-                        Call PBP("He steps on home for one...")
-                        Call CREDITREGPO(currFielder, D)
-                        Call CREDITASSIST(currFielder, D)
-                    Else
-                        'currFielder <> 2
-                        Call PBP("He throws home for the force")
-                        Call CREDITASSIST(currFielder, D)
-                        currFielder = 2
-                        Call CREDITREGPO(currFielder, D)
-                        Call CREDITASSIST(currFielder, D)
-                    End If
-
-                    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-                    Call PBP("Back to first...")
-
-                    A5%(0) = 11
-
-                    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-                    Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
-                    Call PBP("DOUBLE PLAY!!")
-
-                    nbrOuts(0) = nbrOuts(0) + 2
-                    nbrOuts(1) = nbrOuts(1) + 2
-
-                    Call ADDSTTS(P, D)
-
-                    CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
-
-                    If nbrOuts(0) < 3 Then
-                        A5%(2) = 1
-                        A5%(1) = 1
-                        Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-                    End If
-
-                    go$ = LCheckForOptionsOrQuit$
-                    If go$ = "LNextBatter0" Then GoTo LNextBatter0
-                    If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                    If go$ = "GOODBYE" Then Exit Sub
-
-                End If
-
-                Call PBP("He throws to 2nd")
-                Call CREDITASSIST(currFielder, D)
-
-                A5%(1) = 11
-
-                Call ADDSTTS(P, D)
-
-                nbrOuts(0) = nbrOuts(0) + 1
-                nbrOuts(1) = nbrOuts(1) + 1
-                Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-                Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
-
-                If nbrOuts(0) < 3 Then
-
-                    A5%(0) = 11
-                    Call CREDITASSIST(currFielder, D)
-
-                    A5%(2) = 1
-                    Call PBP("over to first...")
-                    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-                    Call PBP("DOUBLE PLAY!!")
-                    Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
-
-                    nbrOuts(0) = nbrOuts(0) + 1
-                    nbrOuts(1) = nbrOuts(1) + 1
-                    CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
-                End If
-
-                go$ = LCheckForOptionsOrQuit$
-                If go$ = "LNextBatter0" Then GoTo LNextBatter0
-                If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                If go$ = "GOODBYE" Then Exit Sub
-
-            Else
-                Call PBP(player$(0) + " lays down the bunt...")
-                Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-                Call PBP(player$(4) + " makes a nice fielding play")
-                Call CREDITASSIST(currFielder, D): A5%(0) = 11
-                If SH = 1 And (baseRunners = 3 Or baseRunners = 6) Then A5%(3) = 11: For I = 0 To 2: A5%(I) = 1: Next
-
-                '14122
-                Call ADDSTTS(P, D)
-                nbrOuts(0) = nbrOuts(0) + 1
-                nbrOuts(1) = nbrOuts(1) + 1
-                Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-                Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
-
-                go$ = LCheckForOptionsOrQuit$
-                If go$ = "LNextBatter0" Then GoTo LNextBatter0
-                If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                If go$ = "GOODBYE" Then Exit Sub
-            End If
-
-        Case 3
-            Call LDRNRCTDN
-            go$ = LCheckForOptionsOrQuit$
-            If go$ = "LNextBatter0" Then GoTo LNextBatter0
-            If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
-            If go$ = "GOODBYE" Then Exit Sub
-
-        Case 4
-            go$ = LGoodBunt$
-            If go$ = "LNextBatter0"           Then GoTo LNextBatter0
-            If go$ = "LCheckForOptionsOrQuit" Then
-                go2$ = LCheckForOptionsOrQuit$
-                If go2$ = "LNextBatter0" Then GoTo LNextBatter0
-                If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                If go2$ = "GOODBYE" Then Exit Sub
-            End If
-            If go$ <> "CONTINUE" Then
-                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LGoodBunt: "; go$
-                End
-            End If
-
-            Call PBP(player$(0) + " lays down a good bunt...")
-            Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-            Call PBP(player$(4) + " makes a nice play")
-
-            If baseRunners = 0 Then
-
-                S2% = -EVENT_INF_SINGLE
-                Call PBP(player$(0) + " beats out an infield hit!")
-                go$ = LSingle$
-                If go$ = "LNextBatter0" Then GoTo LNextBatter0
-                If go$ = "LCheckForOptionsOrQuit" Then
-                    go2$ = LCheckForOptionsOrQuit$
-                    If go2$ = "LNextBatter0" Then GoTo LNextBatter0
-                    If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                    If go2$ = "GOODBYE" Then Exit Sub
-                End If
-                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LSINGLE: "; go$
-                End
-
-            Else
-                '-- turn this into a unique sub?
-                '-- or direct other code to this loop
-                '-- with a value of 4 and a 'skip' variable
-                go$ =  LSacBunt$
-                If go$ = "LNextBatter0"           Then GoTo LNextBatter0
-                If go$ = "LCheckForOptionsOrQuit" Then
-                    go2$ = LCheckForOptionsOrQuit$
-                    If go2$ = "LNextBatter0" Then GoTo LNextBatter0
-                    If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                    If go2$ = "GOODBYE" Then Exit Sub
-                End If
-                If go$ <> "CONTINUE" Then
-                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LSacBunt: "; go$
-                    End
-                End If
-
-            End If
-
-            go$ = LCheckForOptionsOrQuit$
-            If go$ = "LNextBatter0" Then GoTo LNextBatter0
-            If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
-            If go$ = "GOODBYE" Then Exit Sub
-
-        Case 5
-            go$ = LBunt5$ 'C@3
-            If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
-            If go$ = "LNextBatter0" Then GoTo LNextBatter0
-            If go$ = "LNextBatter1" Then GoTo LNextBatter1
-            If go$ = "GOODBYE" Then Exit Sub
-            If go$ = "LCheckForOptionsOrQuit" Then
-                go2$ = LCheckForOptionsOrQuit$
-                If go2$ = "LNextBatter0" Then GoTo LNextBatter0
-                If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                If go2$ = "GOODBYE" Then Exit Sub
-            End If
-            If go$ <> "CONTINUE" Then
-                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result 5007 from LBunt5: "; go$
-                End
-            End If
-
-        Case 6
-            'PLYLDBS
-            If fldPos(P, currLineupSlot(P)) = 1 Then RR = 2
-            If fldPos(P, currLineupSlot(P)) <> 1 Then RR = batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_Run)
-            If INFPOS% > INF_BACK Then RR = RR - 2
-            If RR <= 2 Then RR = 2
-
-            If baseRunners = 0 Then
-                go$ = LBunt5$ 'C@3
-                If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                If go$ = "LNextBatter0" Then GoTo LNextBatter0
-                If go$ = "LNextBatter1" Then GoTo LNextBatter1
-                If go$ = "GOODBYE" Then Exit Sub
-                If go$ = "LCheckForOptionsOrQuit" Then
-                    go2$ = LCheckForOptionsOrQuit$
-                    If go2$ = "LNextBatter0" Then GoTo LNextBatter0
-                    If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                    If go2$ = "GOODBYE" Then Exit Sub
-                End If
-                If go$ <> "CONTINUE" Then
-                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result 5031 from LBunt5: "; go$
-                    End
-                End If
-            End If
-            If baseRunners = 1 Then I3 = 1: J3$ = "2nd"
-            If baseRunners = 2 Or baseRunners = 4 Then I3 = 2: J3$ = "3rd"
-            If baseRunners = 3 Or baseRunners > 4 Then I3 = 3: J3$ = "home"
-
-            Call PBP(player$(0) + " gets the bunt down...")
-
-            Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-            If errorOnPlay% = 1 Then
-                go$ = LCheckForOptionsOrQuit$
-                If go$ = "LNextBatter0" Then GoTo LNextBatter0
-                If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                If go$ = "GOODBYE" Then Exit Sub
-            End If
-
-            Call PBP(player$(4) + " fields it quickly...")
-            Call PBP("Looks like a close play at " + J3$ + "!!")
-            Call PBP("1- Throw to " + J3$ + " 2- Throw to 1st")
-
-            If playerMode = 2 Or playerMode = 1 And P <> compTeam Then
-                I$ = "1"
-            Else
-                Do
-                    I$ = GetKeyPress$
-                    I5 = Val(I$)
-                Loop Until I5 >= 1 And I5 <= 2
-            End If
-
-            If I5 = 2 Then
-                go$ =  LSacBunt$
-                If go$ = "LNextBatter0"           Then GoTo LNextBatter0
-                If go$ = "LCheckForOptionsOrQuit" Then
-                    go2$ = LCheckForOptionsOrQuit$
-                    If go2$ = "LNextBatter0" Then GoTo LNextBatter0
-                    If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                    If go2$ = "GOODBYE" Then Exit Sub
-                End If
-                If go$ <> "CONTINUE" Then
-                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result B from LSacBunt: "; go$
-                    End
-                End If
-            End If
-
-            Call Rolld100(RN)
-
-            For I = 0 To 1
-                If RN <= LB%(RR, I) Then Exit For
-            Next
-
-            'This I has to do with the above For-Next
-            If I = 0 Then
-                PLB = 1
-                Call LDRNRCTDN
-            Else
-                Call PBP(player$(4) + " throws to " + J3$ + "... SAFE!!")
-                If fldPos(P, currLineupSlot(P)) <> 1 Then
-                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
-                Else
-                    Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
-                End If
-
-                For I = 0 To 3:
-                    A5%(I) = 1
-                Next
-
-                Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-            End If
-
-            go$ = LCheckForOptionsOrQuit$
-            If go$ = "LNextBatter0" Then GoTo LNextBatter0
-            If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
-            If go$ = "GOODBYE" Then Exit Sub
-
-        Case 7
-            'FLKSO
-            Call Rolld100(RN)
-
-            If pitchRating(D, currPitcher(D), 6) = 0 Then
-                BR = 0
-            Else
-                BR = pitchRating(D, currPitcher(D), 9) / pitchRating(D, currPitcher(D), 6)
-            End If
-
-            If BR <= 4 Then PR = 5
-            If BR > 4 And BR <= 5.4 Then PR = 4
-            If BR > 5.4 And BR <= 6.9 Then PR = 3
-            If BR > 6.9 And BR <= 8.4 Then PR = 2
-            If BR > 8.4 And BR <= 11.9 Then PR = 1
-            If BR > 11.9 Then PR = 0
-
-            For I = 0 To 2
-                If RN <= SO%(PR, I) Then Exit For
-            Next
-
-            'This I has to do with the above For-Next
-            Select Case I + 1
-
-                Case 1
-                    go$ = LStrikeout$
-                    If go$ = "LWeirdPlay"             Then Goto LWeirdPlay
-                    If go$ = "LNextBatter0"           Then Goto LNextBatter0
-                    If go$ = "LNextBatter1"           Then Goto LNextBatter1
-                    If go$ = "LSteal"                 Then
-                        go2$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
-                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 5192, go2: "; go2$  'ToDo [bm] REMOVE
-                        If go2$ = "LNextHalfInning" Then Goto LNextHalfInning
-                        If go2$ = "LNextBatter0"    Then Goto LNextBatter0
-                        If go2$ = "LNextBatter1"    Then Goto LNextBatter1
-                        If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-                        If go2$ = "LBunt"           Then GoTo LBunt
-                        If go2$ = "GOODBYE"         Then Exit Sub
-                    End If
-                    If go$ = "LCheckForOptionsOrQuit" Then
-                        go2$ = LCheckForOptionsOrQuit$
-                        If go2$ = "LNextBatter0" Then GoTo LNextBatter0
-                        If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                        If go2$ = "GOODBYE" Then Exit Sub
-                    End If
-                    If go$ = "GOODBYE"                Then Exit Sub
-
-                Case 2
-                    nbrStrikes = nbrStrikes + 1
-
-                    Call WINDEX
-
-                    Call Rolld100(RN)
-                    pbpString$ = player$(0) + " "
-                    If RN <= 13 Or SH = 1 And RN <= 42 Then pbpString$ = pbpString$ + "misses the pitch"
-                    If RN > 13 And RN <= 42 And SH <> 1 Then pbpString$ = pbpString$ + "takes a called strike"
-                    If RN > 42 Then pbpString$ = pbpString$ + "bunts it foul"
-                    Call PBP(pbpString$)
-
-                    If useVGA = 1 Then
-                        PrintOnGfx 63, 28, Str$(nbrStrikes), imageScreen&
-                    Else
-                        Locate 2, 58: Print nbrStrikes
-                    End If
-
-                    If nbrStrikes = 3 Then
-                        go$ = LStrikeout$
-                        If go$ = "LWeirdPlay"             Then Goto LWeirdPlay
-                        If go$ = "LNextBatter0"           Then Goto LNextBatter0
-                        If go$ = "LNextBatter1"           Then Goto LNextBatter1
-                        If go$ = "LSteal"          Then
-                            go2$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
-                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 5233, go2: "; go2$  'ToDo [bm] REMOVE
-                            If go2$ = "LNextHalfInning" Then Goto LNextHalfInning
-                            If go2$ = "LNextBatter0"    Then Goto LNextBatter0
-                            If go2$ = "LNextBatter1"    Then Goto LNextBatter1
-                            If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-                            If go2$ = "LBunt"           Then GoTo LBunt
-                            If go2$ = "GOODBYE"         Then Exit Sub
-                        End If
-                        If go$ = "LCheckForOptionsOrQuit" Then
-                            go2$ = LCheckForOptionsOrQuit$
-                            If go2$ = "LNextBatter0" Then GoTo LNextBatter0
-                            If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                            If go2$ = "GOODBYE" Then Exit Sub
-                        End If
-                        If go$ = "GOODBYE"                Then Exit Sub
-                    End If
-
-                    If SH = 1 And RN <= 42 Then
-                        currFielder = 2
-                        Call GETFIELDNAME(currFielder, D)
-
-                        go$ = LPlayAtThird$
-                        If go$  = "LNextBatter1" Then GoTo LNextBatter1
-                        If go$ <> "CONTINUE" Then
-                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LPlayAtThird: "; go$
-                            End
-                        End If
-                    End If
-
-                    If nbrStrikes = 1 Then
-                        Call PBP("He has" + Str$(nbrStrikes) + " strike")
-                    Else
-                        'nbrStrikes > 1
-                        Call PBP("He has" + Str$(nbrStrikes) + "strikes")
-                    End If
-                    Call PBP(pbpString$)
-
-                    If baseRunners = 4 Or baseRunners = 2 Then INFPOS% = INF_BACK
-
-                    If useVGA = 1 Then
-                        _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
-                    End If
-
-                    go$ = LDefenseOptions$(_True)
-                    If go$ = "LNextBatter0"    Then GoTo LNextBatter0
-                    If go$ = "LNextBatter1"    Then GoTo LNextBatter1
-                    If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-                    If go$ = "GOODBYE"         Then Exit Sub
-
-                    If go$ <> "CONTINUE" Then
-                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result J from LDefenseOptions: "; go$
-                        End
-                    End If
-
-                Case 3
-                    go$ = LGoodBunt$
-                    If go$ = "LNextBatter0"           Then GoTo LNextBatter0
-                    If go$ = "LCheckForOptionsOrQuit" Then
-                        go2$ = LCheckForOptionsOrQuit$
-                        If go2$ = "LNextBatter0" Then GoTo LNextBatter0
-                        If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                        If go2$ = "GOODBYE" Then Exit Sub
-                    End If
-                    If go$ <> "CONTINUE" Then
-                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LGoodBunt: "; go$
-                        End
-                    End If
-
-            End Select
-
-        Case 8
-            'TFPLY
-            Call PBP(player$(0) + " lays down the bunt...")
-            Call PBP(player$(4) + " has a tough play")
-
-            Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-            If errorOnPlay% = 1 Then
-                go$ = LCheckForOptionsOrQuit$
-                If go$ = "LNextBatter0" Then GoTo LNextBatter0
-                If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                If go$ = "GOODBYE" Then Exit Sub
-            End If
-
-            If currFielder = 1 Then RR = 3
-            If currFielder <> 1 Then RR = batRating(D, fielder(D, currFielder), SS_B_Range)
-            If INFPOS% > INF_BACK And baseRunners <> 0 Then RR = RR + 1 + teamRat_GAME(1, 10)
-            If INFPOS% > INF_BACK And baseRunners = 0  Then RR = RR + teamRat_GAME(1, 10)
-            If INFPOS% = INF_BACK And baseRunners = 0  Then RR = RR - 1
-
-            If RR > 11 Then RR = 11
-            If RR < 0 Then RR = 0
-
-            Call Rolld100(RN)
-
-            For I = 0 To 2
-                If RN <= triplePlayAdj(RR, I) Then Exit For
-            Next
-
-            'This I has to do with the above For-Next
-            Select Case I + 1
-                Case 1:
-                    S2% = EVENT_INF_SINGLE
-                    Call PBP("but too late...base hit!")
-                    go$ = LSingle$
-                    If go$ = "LNextBatter0" Then GoTo LNextBatter0
-                    If go$ = "LCheckForOptionsOrQuit" Then
-                        go2$ = LCheckForOptionsOrQuit$
-                        If go2$ = "LNextBatter0" Then GoTo LNextBatter0
-                        If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                        If go2$ = "GOODBYE" Then Exit Sub
-                    End If
-                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LSINGLE: "; go$
-                    End
-
-                Case 2:
-                    PLB = 1
-                    Call LDRNRCTDN
-                    go$ = LCheckForOptionsOrQuit$
-                    If go$ = "LNextBatter0" Then GoTo LNextBatter0
-                    If go$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                    If go$ = "GOODBYE" Then Exit Sub
-
-                Case 3:
-                    go$ =  LSacBunt$
-                    If go$ = "LNextBatter0"           Then GoTo LNextBatter0
-                    If go$ = "LCheckForOptionsOrQuit" Then
-                        go2$ = LCheckForOptionsOrQuit$
-                        If go2$ = "LNextBatter0" Then GoTo LNextBatter0
-                        If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                        If go2$ = "GOODBYE" Then Exit Sub
-                    End If
-                    If go$ <> "CONTINUE" Then
-                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result C from LSacBunt: "; go$
-                        End
-                    End If
-
-            End Select
-
-        Case 9
-            go$ = LStrike$(RN)
-            If go$  = "LNextBatter1" Then GoTo LNextBatter1
-            If go$  = "LStrikeout"   Then
-                go2$ = LStrikeout$
-                If go2$ = "LWeirdPlay"             Then Goto LWeirdPlay
-                If go2$ = "LNextBatter0"           Then Goto LNextBatter0
-                If go2$ = "LNextBatter1"           Then Goto LNextBatter1
-                If go2$ = "LSteal"          Then
-                    go3$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
-                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 5381, go3: "; go3$  'ToDo [bm] REMOVE
-                    If go3$ = "LNextHalfInning" Then Goto LNextHalfInning
-                    If go3$ = "LNextBatter0"    Then Goto LNextBatter0
-                    If go3$ = "LNextBatter1"    Then Goto LNextBatter1
-                    If go3$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-                    If go3$ = "LBunt"           Then GoTo LBunt
-                    If go2$ = "GOODBYE"         Then Exit Sub
-                End If
-                If go2$ = "LCheckForOptionsOrQuit" Then
-                    go3$ = LCheckForOptionsOrQuit$
-                    If go3$ = "LNextBatter0" Then GoTo LNextBatter0
-                    If go3$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                    If go2$ = "GOODBYE" Then Exit Sub
-                End If
-                If go2$ = "GOODBYE"                Then Exit Sub
-            End If
-
-            If go$ <> "CONTINUE" Then
-                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result B from LStrike: "; go$
-                End
-            End If
-
-            nbrStrikes = nbrStrikes + 1
-
-            Call WINDEX
-            Call Rolld100(RN)
-
-            pbpString$ = player$(0) + " "
-            If RN <= 13 Or SH = 1 And RN <= 42 Then pbpString$ = pbpString$ + "misses the pitch"
-            If RN > 13 And RN <= 42 And SH <> 1 Then pbpString$ = pbpString$ + "takes a called strike"
-            If RN > 42 Then pbpString$ = pbpString$ + "bunts it foul"
-            Call PBP(pbpString$)
-
-            If useVGA = 1 Then
-                PrintOnGfx 63, 28, Str$(nbrStrikes), imageScreen&
-            Else
-                Locate 2, 58: Print nbrStrikes
-            End If
-
-            If nbrStrikes = 3 Then
-                go$ = LStrikeout$
-                If go$ = "LWeirdPlay"             Then Goto LWeirdPlay
-                If go$ = "LNextBatter0"           Then Goto LNextBatter0
-                If go$ = "LNextBatter1"           Then Goto LNextBatter1
-                If go$ = "LSteal"          Then
-                    go2$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
-                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 5427, go2: "; go2$  'ToDo [bm] REMOVE
-                    If go2$ = "LNextHalfInning" Then Goto LNextHalfInning
-                    If go2$ = "LNextBatter0"    Then Goto LNextBatter0
-                    If go2$ = "LNextBatter1"    Then Goto LNextBatter1
-                    If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-                    If go2$ = "LBunt"           Then GoTo LBunt
-                    If go2$ = "GOODBYE"         Then Exit Sub
-                End If
-                If go$ = "LCheckForOptionsOrQuit" Then
-                    go2$ = LCheckForOptionsOrQuit$
-                    If go2$ = "LNextBatter0" Then GoTo LNextBatter0
-                    If go2$ = "LNextHalfInning" Then GoTo LNextHalfInning
-                    If go2$ = "GOODBYE" Then Exit Sub
-                End If
-                If go$ = "GOODBYE"                Then Exit Sub
-            End If
-
-            If SH = 1 And RN <= 42 Then
-                currFielder = 2
-                Call GETFIELDNAME(currFielder, D)
-
-                go$ = LPlayAtThird$
-                If go$  = "LNextBatter1" Then GoTo LNextBatter1
-                If go$ <> "CONTINUE" Then
-                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LPlayAtThird: "; go$
-                    End
-                End If
-            End If
-
-            If nbrStrikes = 1 Then
-                Call PBP("He has" + Str$(nbrStrikes) + " strike")
-            Else
-                'nbrStrikes > 1
-                Call PBP("He has" + Str$(nbrStrikes) + "strikes")
-            End If
-
-            If baseRunners = 4 Or baseRunners = 2 Then INFPOS% = INF_BACK
-
-            If useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
-
-            go$ = LDefenseOptions$(_True)
-            If go$ = "LNextBatter0"    Then GoTo LNextBatter0
-            If go$ = "LNextBatter1"    Then GoTo LNextBatter1
-            If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-            If go$ = "GOODBYE"         Then Exit Sub
-
-            If go$ <> "CONTINUE" Then
-                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result K from LDefenseOptions: "; go$
-                End
-            End If
-
-    End Select
-
-    '-- at this point, each selection in the Case statement
-    '-- should have directed the code somewhere else
-    '-- in essence, this is kind of the end of this code
 
    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! Fell thru from LBunt to LSteal"       'ToDo [bm] REMOVE
 
@@ -5438,7 +4791,19 @@ Sub SOURCE ()
     If go$ = "LNextBatter0"    Then Goto LNextBatter0
     If go$ = "LNextBatter1"    Then Goto LNextBatter1
     If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-    If go$ = "LBunt"           Then GoTo LBunt
+    If go$ = "LBunt"           Then
+        go2$ = LBunt$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, D5, PH%())
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LBunt 4786, go2: "; go2$  'ToDo [bm] REMOVE
+        If go2$ = "LNextHalfInning" Then Goto LNextHalfInning
+        If go2$ = "LNextBatter0"    Then Goto LNextBatter0
+        If go2$ = "LNextBatter1"    Then Goto LNextBatter1
+        If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+        If go2$ = "GOODBYE"         Then Exit Sub
+        If go2$ <> "CONTINUE" Then
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result 4793 from LBunt: "; go2$
+            End
+        End If
+    End If
     If go$ = "GOODBYE"         Then Exit Sub
 
    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! Fell thru from LSteal to LStealHome"       'ToDo [bm] REMOVE
@@ -5475,7 +4840,19 @@ Sub SOURCE ()
     If go$ = "LNextBatter0"    Then Goto LNextBatter0
     If go$ = "LNextBatter1"    Then Goto LNextBatter1
     If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-    If go$ = "LBunt"           Then GoTo LBunt
+    If go$ = "LBunt"           Then
+        go2$ = LBunt$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, D5, PH%())
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LBunt 4835, go2: "; go2$  'ToDo [bm] REMOVE
+        If go2$ = "LNextHalfInning" Then Goto LNextHalfInning
+        If go2$ = "LNextBatter0"    Then Goto LNextBatter0
+        If go2$ = "LNextBatter1"    Then Goto LNextBatter1
+        If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+        If go2$ = "GOODBYE"         Then Exit Sub
+        If go2$ <> "CONTINUE" Then
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result 4842 from LBunt: "; go2$
+            End
+        End If
+    End If
     If go$ = "LSteal"          Then
         go2$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
         If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 5534, go2: "; go2$  'ToDo [bm] REMOVE
@@ -5483,7 +4860,19 @@ Sub SOURCE ()
         If go2$ = "LNextBatter0"    Then Goto LNextBatter0
         If go2$ = "LNextBatter1"    Then Goto LNextBatter1
         If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-        If go2$ = "LBunt"           Then GoTo LBunt
+        If go2$ = "LBunt"           Then
+            go3$ = LBunt$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, D5, PH%())
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LBunt 4855, go3: "; go3$  'ToDo [bm] REMOVE
+            If go3$ = "LNextHalfInning" Then Goto LNextHalfInning
+            If go3$ = "LNextBatter0"    Then Goto LNextBatter0
+            If go3$ = "LNextBatter1"    Then Goto LNextBatter1
+            If go3$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+            If go3$ = "GOODBYE"         Then Exit Sub
+            If go3$ <> "CONTINUE" Then
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result 4862 from LBunt: "; go3$
+                End
+            End If
+        End If
         If go2$ = "GOODBYE"         Then Exit Sub
     End If
     If go$ = "GOODBYE"         Then Exit Sub
@@ -5498,7 +4887,19 @@ Sub SOURCE ()
     If go$ = "LNextBatter0"    Then GoTo LNextBatter0
     If go$ = "LNextBatter1"    Then GoTo LNextBatter1
     If go$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-    If go$ = "LBunt"           Then GoTo LBunt
+    If go$ = "LBunt"           Then
+        go2$ = LBunt$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, D5, PH%())
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LBunt 4882, go2: "; go2$  'ToDo [bm] REMOVE
+        If go2$ = "LNextHalfInning" Then Goto LNextHalfInning
+        If go2$ = "LNextBatter0"    Then Goto LNextBatter0
+        If go2$ = "LNextBatter1"    Then Goto LNextBatter1
+        If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+        If go2$ = "GOODBYE"         Then Exit Sub
+        If go2$ <> "CONTINUE" Then
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result 4889 from LBunt: "; go2$
+            End
+        End If
+    End If
     If go$ = "LSteal"          Then
         go2$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
         If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 5557, go2: "; go2$  'ToDo [bm] REMOVE
@@ -5506,7 +4907,19 @@ Sub SOURCE ()
         If go2$ = "LNextBatter0"    Then Goto LNextBatter0
         If go2$ = "LNextBatter1"    Then Goto LNextBatter1
         If go2$ = "LWeirdPlay"      Then GoTo LWeirdPlay
-        If go2$ = "LBunt"           Then GoTo LBunt
+        If go2$ = "LBunt"           Then
+            go3$ = LBunt$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, D5, PH%())
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LBunt 4902, go3: "; go3$  'ToDo [bm] REMOVE
+            If go3$ = "LNextHalfInning" Then Goto LNextHalfInning
+            If go3$ = "LNextBatter0"    Then Goto LNextBatter0
+            If go3$ = "LNextBatter1"    Then Goto LNextBatter1
+            If go3$ = "LWeirdPlay"      Then GoTo LWeirdPlay
+            If go3$ = "GOODBYE"         Then Exit Sub
+            If go3$ <> "CONTINUE" Then
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result 4909 from LBunt: "; go3$
+                End
+            End If
+        End If
         If go2$ = "GOODBYE"         Then Exit Sub
     End If
     If go$ = "GOODBYE"         Then Exit Sub
@@ -6144,7 +5557,7 @@ Function LStrike$(RN)
         Call PBP("He has" + Str$(nbrStrikes) + " strike")
     Else
         'nbrStrikes > 1
-        Call PBP("He has" + Str$(nbrStrikes) + "strikes")
+        Call PBP("He has" + Str$(nbrStrikes) + " strikes")
     End If
 
     If baseRunners = 4 Or baseRunners = 2 Then INFPOS% = INF_BACK
@@ -6297,6 +5710,730 @@ Function LBunt5$ 'C@3
 
     End Select
 
+End Function
+
+
+Function LBunt$ (TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, D5, PH%())
+    Shared INFPOS%, S2%, errorOnPlay%, I3
+    Shared I1, P2, stealing, runnerOn2nd, SAH%, baseNbr!, I9
+    Shared fbUnassisted%, fbPitcherCoveringFirst%, AST%, DPC%
+    Shared SH
+
+    Do
+
+        Call WINDEX
+
+        Erase A5%
+
+        SH = 2
+        S2% = EVENT_BUNT
+
+        If (baseRunners = 3 Or baseRunners > 4) And nbrOuts(0) < 2 Then Call SQUEEZECHOICE(SH)
+
+        Call Rolld100(RN)
+
+        If fldPos(P, currLineupSlot(P)) = 1 Then
+            BR = pitchRating(P, currPitcher(P), SS_P_Bunt)
+        Else
+            BR = batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_Bunt)
+        End If
+
+        If INFPOS% > INF_BACK Then BR = BR - 2
+        If BR <= 1 Then BR = 1
+
+        For I = 1 To 9:
+            If RN <= BT%(teamRat_GAME(1, 10), BR, I) Then Exit For
+        Next
+
+        rand10% = Int(Rnd(1) * 10)
+        If rand10% <= 2 Then currFielder = 5
+        If rand10% > 2 And rand10% <= 4 Then currFielder = 1
+        If rand10% > 4 And rand10% <= 7 Then currFielder = 3
+        If rand10% > 7 Then currFielder = 2
+        Call GETFIELDNAME(currFielder, D)
+
+        Call Rolld100(RN)
+
+        If RN <= 52 Then
+            go$ = LStrike$(RN)
+            If go$  = "LStrikeout"   Then
+                go2$ = LStrikeout$
+                If go2$ = "LSteal"          Then
+                    go3$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 6365, go3: "; go3$  'ToDo [bm] REMOVE
+                    If go3$ = "LBunt" Then _Continue
+                    LBunt$ = go3$
+                    Exit Function
+                End If
+                If go2$ = "LCheckForOptionsOrQuit" Then
+                    go3$ = LCheckForOptionsOrQuit$
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6371, go3: "; go3$  'ToDo [bm] REMOVE
+                    LBunt$ = go3$
+                    Exit Function
+                End If
+
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LStrikeout 6376, go2: "; go2$  'ToDo [bm] REMOVE
+                LBunt$ = go2$
+                Exit Function
+            End If
+
+            If go$  = "LNextBatter1" Then LBunt$ = "LNextBatter1": Exit Function
+            If go$ <> "CONTINUE" Then
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LStrike: "; go$
+                End
+            End If
+        End If
+
+        If I = 5 And SH = 1 Then I = 6
+
+        'This I and the ones in the case statement
+        'all have to do with the For-Next loop
+        Select Case I
+
+            Case 1
+                'PU
+                Call PBP(player$(0) + " bunts it in the air...")
+                Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+                Call PBP(player$(4) + " makes the catch")
+                Call ADDSTTS(P, D)
+
+                nbrOuts(0) = nbrOuts(0) + 1
+                nbrOuts(1) = nbrOuts(1) + 1
+                Call CREDITREGPO(currFielder, D)
+
+                If nbrOuts(0) <> 3 And SH <> 2 Then
+                    '--- start of a new sub ???
+                    '--- where does 4111 end ???
+                    go$ = LPlayAtThird$
+                    If go$  = "LNextBatter1" Then LBunt$ = "LNextBatter1": Exit Function
+                    If go$ <> "CONTINUE" Then
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LPlayAtThird: "; go$
+                        End
+                    End If
+
+                End If
+
+                go$ = LCheckForOptionsOrQuit$
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6418, go: "; go$  'ToDo [bm] REMOVE
+                LBunt$ = go$
+                Exit Function
+
+            Case 2
+                'DP
+                If baseRunners = 1 Or baseRunners = 4 Or baseRunners = 5 Or baseRunners = 7 Then
+
+                    Call PBP(player$(0) + " lays down a good bunt")
+
+                    Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+                    If errorOnPlay% = 1 Then
+                        go$ = LCheckForOptionsOrQuit$
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6432, go: "; go$  'ToDo [bm] REMOVE
+                        LBunt$ = go$
+                        Exit Function
+                    End If
+
+                    Call PBP(player$(4) + " fields it cleanly")
+
+                    If SH = 1 And (baseRunners = 5 Or baseRunners = 7) Then
+
+                        If currFielder = 2 Then
+                            Call PBP("and catches " + player$(3) + " heading home!")
+                            Call CREDITREGPO(currFielder, D)
+                        Else
+                            'currFielder <> 2
+                            Call PBP("and throws home to nail " + player$(3) + "!")
+                            Call CREDITASSIST(currFielder, D)
+                            currFielder = 2
+                            Call CREDITREGPO(currFielder, D)
+                        End If
+
+                        A5%(3) = 11
+
+                        For I = 0 To 2: A5%(0) = 1: Next
+
+                        Call ADDSTTS(P, D)
+                        nbrOuts(0) = nbrOuts(0) + 1
+                        nbrOuts(1) = nbrOuts(1) + 1
+                        Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+                        Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
+
+                        go$ = LCheckForOptionsOrQuit$
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6463, go: "; go$  'ToDo [bm] REMOVE
+                        LBunt$ = go$
+                        Exit Function
+                    End If
+
+                    If baseRunners = 7 And nbrOuts(0) < 2 Then
+
+                        A5%(3) = 11
+
+                        If currFielder = 2 Then
+                            Call PBP("He steps on home for one...")
+                            Call CREDITREGPO(currFielder, D)
+                            Call CREDITASSIST(currFielder, D)
+                        Else
+                            'currFielder <> 2
+                            Call PBP("He throws home for the force")
+                            Call CREDITASSIST(currFielder, D)
+                            currFielder = 2
+                            Call CREDITREGPO(currFielder, D)
+                            Call CREDITASSIST(currFielder, D)
+                        End If
+
+                        Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+                        Call PBP("Back to first...")
+
+                        A5%(0) = 11
+
+                        Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+                        Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
+                        Call PBP("DOUBLE PLAY!!")
+
+                        nbrOuts(0) = nbrOuts(0) + 2
+                        nbrOuts(1) = nbrOuts(1) + 2
+
+                        Call ADDSTTS(P, D)
+
+                        CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
+
+                        If nbrOuts(0) < 3 Then
+                            A5%(2) = 1
+                            A5%(1) = 1
+                            Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+                        End If
+
+                        go$ = LCheckForOptionsOrQuit$
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6508, go: "; go$  'ToDo [bm] REMOVE
+                        LBunt$ = go$
+                        Exit Function
+                    End If
+
+                    Call PBP("He throws to 2nd")
+                    Call CREDITASSIST(currFielder, D)
+
+                    A5%(1) = 11
+
+                    Call ADDSTTS(P, D)
+
+                    nbrOuts(0) = nbrOuts(0) + 1
+                    nbrOuts(1) = nbrOuts(1) + 1
+                    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+                    Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
+
+                    If nbrOuts(0) < 3 Then
+
+                        A5%(0) = 11
+                        Call CREDITASSIST(currFielder, D)
+
+                        A5%(2) = 1
+                        Call PBP("over to first...")
+                        Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+                        Call PBP("DOUBLE PLAY!!")
+                        Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
+
+                        nbrOuts(0) = nbrOuts(0) + 1
+                        nbrOuts(1) = nbrOuts(1) + 1
+                        CALL ADDPIT(D, currPitcher(D), LG_P_OUT)
+                    End If
+
+                    go$ = LCheckForOptionsOrQuit$
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6542, go: "; go$  'ToDo [bm] REMOVE
+                    LBunt$ = go$
+                    Exit Function
+                Else
+                    Call PBP(player$(0) + " lays down the bunt...")
+                    Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+                    Call PBP(player$(4) + " makes a nice fielding play")
+                    Call CREDITASSIST(currFielder, D): A5%(0) = 11
+                    If SH = 1 And (baseRunners = 3 Or baseRunners = 6) Then A5%(3) = 11: For I = 0 To 2: A5%(I) = 1: Next
+
+                    '14122
+                    Call ADDSTTS(P, D)
+                    nbrOuts(0) = nbrOuts(0) + 1
+                    nbrOuts(1) = nbrOuts(1) + 1
+                    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+                    Call CREDITPUTOUT(I3, fbPitcherCoveringFirst%, AST%, D)
+
+                    go$ = LCheckForOptionsOrQuit$
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6559, go: "; go$  'ToDo [bm] REMOVE
+                    LBunt$ = go$
+                    Exit Function
+                End If
+
+            Case 3
+                Call LDRNRCTDN
+                go$ = LCheckForOptionsOrQuit$
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6567, go: "; go$  'ToDo [bm] REMOVE
+                LBunt$ = go$
+                Exit Function
+
+            Case 4
+                go$ = LGoodBunt$
+                If go$ = "LCheckForOptionsOrQuit" Then
+                    go2$ = LCheckForOptionsOrQuit$
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6575, go2: "; go2$  'ToDo [bm] REMOVE
+                    LBunt$ = go2$
+                    Exit Function
+
+                End If
+                If go$ = "LNextBatter0"           Then LBunt$ = "LNextBatter0": Exit Function
+                If go$ <> "CONTINUE" Then
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LGoodBunt: "; go$
+                    End
+                End If
+
+                Call PBP(player$(0) + " lays down a good bunt...")
+                Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+                Call PBP(player$(4) + " makes a nice play")
+
+                If baseRunners = 0 Then
+
+                    S2% = -EVENT_INF_SINGLE
+                    Call PBP(player$(0) + " beats out an infield hit!")
+                    go$ = LSingle$
+                    If go$ = "LCheckForOptionsOrQuit" Then
+                        go2$ = LCheckForOptionsOrQuit$
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6598, go2: "; go2$  'ToDo [bm] REMOVE
+                        LBunt$ = go2$
+                        Exit Function
+                    End If
+                    If go$ = "LNextBatter0" Then LBunt$ = "LNextBatter0": Exit Function
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LSINGLE: "; go$
+                    End
+
+                Else
+                    '-- turn this into a unique sub?
+                    '-- or direct other code to this loop
+                    '-- with a value of 4 and a 'skip' variable
+                    go$ =  LSacBunt$
+                    If go$ = "LCheckForOptionsOrQuit" Then
+                        go2$ = LCheckForOptionsOrQuit$
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6613, go2: "; go2$  'ToDo [bm] REMOVE
+                        LBunt$ = go2$
+                        Exit Function
+                    End If
+                    If go$ = "LNextBatter0"           Then LBunt$ = "LNextBatter0": Exit Function
+                    If go$ <> "CONTINUE" Then
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LSacBunt: "; go$
+                        End
+                    End If
+
+                End If
+
+                go$ = LCheckForOptionsOrQuit$
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6626, go: "; go$  'ToDo [bm] REMOVE
+                LBunt$ = go$
+                Exit Function
+
+            Case 5
+                go$ = LBunt5$ 'C@3
+                If go$ = "LCheckForOptionsOrQuit" Then
+                    go2$ = LCheckForOptionsOrQuit$
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6635, go2: "; go2$  'ToDo [bm] REMOVE
+                    LBunt$ = go2$
+                    Exit Function
+                End If
+                LBunt$ = go$
+                Exit Function
+
+            Case 6
+                'PLYLDBS
+                If fldPos(P, currLineupSlot(P)) = 1 Then RR = 2
+                If fldPos(P, currLineupSlot(P)) <> 1 Then RR = batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_Run)
+                If INFPOS% > INF_BACK Then RR = RR - 2
+                If RR <= 2 Then RR = 2
+
+                If baseRunners = 0 Then
+                    go$ = LBunt5$ 'C@3
+                    If go$ = "LCheckForOptionsOrQuit" Then
+                        go2$ = LCheckForOptionsOrQuit$
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6653, go2: "; go2$  'ToDo [bm] REMOVE
+                        LBunt$ = go2$
+                        Exit Function
+                    End If
+                    If go$ = "LNextHalfInning" Or go$ = "LNextBatter0" Or go$ = "LNextBatter1" Or go$ = "GOODBYE" Then LBunt$ = go$: Exit Function
+                    If go$ <> "CONTINUE" Then
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result 5031 from LBunt5: "; go$
+                        End
+                    End If
+                End If
+                If baseRunners = 1 Then I3 = 1: J3$ = "2nd"
+                If baseRunners = 2 Or baseRunners = 4 Then I3 = 2: J3$ = "3rd"
+                If baseRunners = 3 Or baseRunners > 4 Then I3 = 3: J3$ = "home"
+
+                Call PBP(player$(0) + " gets the bunt down...")
+
+                Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+                If errorOnPlay% = 1 Then
+                    go$ = LCheckForOptionsOrQuit$
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6672, go: "; go$  'ToDo [bm] REMOVE
+                    LBunt$ = go$
+                    Exit Function
+                End If
+
+                Call PBP(player$(4) + " fields it quickly...")
+                Call PBP("Looks like a close play at " + J3$ + "!!")
+                Call PBP("1- Throw to " + J3$ + " 2- Throw to 1st")
+
+                If playerMode = 2 Or playerMode = 1 And P <> compTeam Then
+                    I$ = "1"
+                Else
+                    Do
+                        I$ = GetKeyPress$
+                        I5 = Val(I$)
+                    Loop Until I5 >= 1 And I5 <= 2
+                End If
+
+                If I5 = 2 Then
+                    go$ =  LSacBunt$
+                    If go$ = "LCheckForOptionsOrQuit" Then
+                        go2$ = LCheckForOptionsOrQuit$
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6693, go2: "; go2$  'ToDo [bm] REMOVE
+                        LBunt$ = go2$
+                        Exit Function
+                    End If
+                    If go$ = "LNextBatter0" Then LBunt$ = "LNextBatter0": Exit Function
+                    If go$ <> "CONTINUE" Then
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result B from LSacBunt: "; go$
+                        End
+                    End If
+                End If
+
+                Call Rolld100(RN)
+
+                For I = 0 To 1
+                    If RN <= LB%(RR, I) Then Exit For
+                Next
+
+                'This I has to do with the above For-Next
+                If I = 0 Then
+                    PLB = 1     'ToDo [bm] ???
+                    Call LDRNRCTDN
+                Else
+                    Call PBP(player$(4) + " throws to " + J3$ + "... SAFE!!")
+                    If fldPos(P, currLineupSlot(P)) <> 1 Then
+                        Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
+                    Else
+                        Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
+                    End If
+
+                    For I = 0 To 3:
+                        A5%(I) = 1
+                    Next
+
+                    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+                End If
+
+                go$ = LCheckForOptionsOrQuit$
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6731, go: "; go$  'ToDo [bm] REMOVE
+                LBunt$ = go$
+                Exit Function
+
+            Case 7
+                'FLKSO
+                Call Rolld100(RN)
+
+                If pitchRating(D, currPitcher(D), 6) = 0 Then
+                    BR = 0
+                Else
+                    BR = pitchRating(D, currPitcher(D), 9) / pitchRating(D, currPitcher(D), 6)
+                End If
+
+                If BR <= 4 Then PR = 5
+                If BR > 4 And BR <= 5.4 Then PR = 4
+                If BR > 5.4 And BR <= 6.9 Then PR = 3
+                If BR > 6.9 And BR <= 8.4 Then PR = 2
+                If BR > 8.4 And BR <= 11.9 Then PR = 1
+                If BR > 11.9 Then PR = 0
+
+                For I = 0 To 2
+                    If RN <= SO%(PR, I) Then Exit For
+                Next
+
+                'This I has to do with the above For-Next
+                Select Case I + 1
+
+                    Case 1
+                        go$ = LStrikeout$
+                        If go$ = "LSteal" Then
+                            go2$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
+                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 5192, go2: "; go2$  'ToDo [bm] REMOVE
+                            If go2$ = "LBunt" Then _Continue
+                            LBunt$ = go2$
+                            Exit Function
+                        End If
+                        If go$ = "LCheckForOptionsOrQuit" Then
+                            go2$ = LCheckForOptionsOrQuit$
+                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6770, go2: "; go2$  'ToDo [bm] REMOVE
+                            LBunt$ = go2$
+                            Exit Function
+                        End If
+                        LBunt$ = go$
+                        Exit Function
+
+                    Case 2
+                        nbrStrikes = nbrStrikes + 1
+
+                        Call WINDEX
+
+                        Call Rolld100(RN)
+                        pbpString$ = player$(0) + " "
+                        If RN <= 13 Or SH = 1 And RN <= 42 Then pbpString$ = pbpString$ + "misses the pitch"
+                        If RN > 13 And RN <= 42 And SH <> 1 Then pbpString$ = pbpString$ + "takes a called strike"
+                        If RN > 42 Then pbpString$ = pbpString$ + "bunts it foul"
+                        Call PBP(pbpString$)
+
+                        If useVGA = 1 Then
+                            PrintOnGfx 63, 28, Str$(nbrStrikes), imageScreen&
+                        Else
+                            Locate 2, 58: Print nbrStrikes
+                        End If
+
+                        If nbrStrikes = 3 Then
+                            go$ = LStrikeout$
+                            If go$ = "LSteal" Then
+                                go2$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
+                                If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 5233, go2: "; go2$  'ToDo [bm] REMOVE
+                                If go2$ = "LBunt"           Then _Continue
+                                LBunt$ = go2$
+                                Exit Function
+                            End If
+                            If go$ = "LCheckForOptionsOrQuit" Then
+                                go2$ = LCheckForOptionsOrQuit$
+                                If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6806, go2: "; go2$  'ToDo [bm] REMOVE
+                                LBunt$ = go2$
+                                Exit Function
+                            End If
+                            LBunt$ = go$
+                            Exit Function
+                        End If
+
+                        If SH = 1 And RN <= 42 Then
+                            currFielder = 2
+                            Call GETFIELDNAME(currFielder, D)
+
+                            go$ = LPlayAtThird$
+                            If go$  = "LNextBatter1" Then LBunt$ = "LNextBatter1": Exit Function
+                            If go$ <> "CONTINUE" Then
+                                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LPlayAtThird: "; go$
+                                End
+                            End If
+                        End If
+
+                        If nbrStrikes = 1 Then
+                            Call PBP("He has" + Str$(nbrStrikes) + " strike")
+                        Else
+                            'nbrStrikes > 1
+                            Call PBP("He has" + Str$(nbrStrikes) + " strikes")
+                        End If
+                        Call PBP(pbpString$)
+
+                        If baseRunners = 4 Or baseRunners = 2 Then INFPOS% = INF_BACK
+
+                        If useVGA = 1 Then
+                            _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
+                        End If
+
+                        go$ = LDefenseOptions$(_True)
+                        If go$ = "LNextBatter0" Or go$ = "LNextBatter1" Or go$ = "LWeirdPlay" Or go$ = "GOODBYE" Then LBunt$ = go$: Exit Function
+
+                        If go$ <> "CONTINUE" Then
+                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result J from LDefenseOptions: "; go$
+                            End
+                        End If
+
+                    Case 3
+                        go$ = LGoodBunt$
+                        If go$ = "LCheckForOptionsOrQuit" Then
+                            go2$ = LCheckForOptionsOrQuit$
+                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6852, go2: "; go2$  'ToDo [bm] REMOVE
+                            LBunt$ = go2$
+                            Exit Function
+                        End If
+                        If go$ = "LNextBatter0" Then LBunt$ = "LNextBatter0": Exit Function
+                        If go$ <> "CONTINUE" Then
+                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result A from LGoodBunt: "; go$
+                            End
+                        End If
+
+                End Select
+
+            Case 8
+                'TFPLY
+                Call PBP(player$(0) + " lays down the bunt...")
+                Call PBP(player$(4) + " has a tough play")
+
+                Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
+                If errorOnPlay% = 1 Then
+                    go$ = LCheckForOptionsOrQuit$
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6872, go: "; go$  'ToDo [bm] REMOVE
+                    LBunt$ = go$
+                    Exit Function
+                End If
+
+                If currFielder = 1 Then RR = 3
+                If currFielder <> 1 Then RR = batRating(D, fielder(D, currFielder), SS_B_Range)
+                If INFPOS% > INF_BACK And baseRunners <> 0 Then RR = RR + 1 + teamRat_GAME(1, 10)
+                If INFPOS% > INF_BACK And baseRunners = 0  Then RR = RR + teamRat_GAME(1, 10)
+                If INFPOS% = INF_BACK And baseRunners = 0  Then RR = RR - 1
+
+                If RR > 11 Then RR = 11
+                If RR < 0 Then RR = 0
+
+                Call Rolld100(RN)
+
+                For I = 0 To 2
+                    If RN <= triplePlayAdj(RR, I) Then Exit For
+                Next
+
+                'This I has to do with the above For-Next
+                Select Case I + 1
+                    Case 1:
+                        S2% = EVENT_INF_SINGLE
+                        Call PBP("but too late...base hit!")
+                        go$ = LSingle$
+                        If go$ = "LCheckForOptionsOrQuit" Then
+                            go2$ = LCheckForOptionsOrQuit$
+                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6900, go2: "; go2$  'ToDo [bm] REMOVE
+                            LBunt$ = go2$
+                            Exit Function
+                        End If
+                        LBunt$ = go$
+                        Exit Function
+
+                    Case 2:
+                        PLB = 1
+                        Call LDRNRCTDN
+                        go$ = LCheckForOptionsOrQuit$
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6911, go: "; go$  'ToDo [bm] REMOVE
+                        LBunt$ = go$
+                        Exit Function
+
+                    Case 3:
+                        go$ =  LSacBunt$
+                        If go$ = "LCheckForOptionsOrQuit" Then
+                            go2$ = LCheckForOptionsOrQuit$
+                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6918, go2: "; go2$  'ToDo [bm] REMOVE
+                            LBunt$ = go2$
+                            Exit Function
+                        End If
+                        If go$ = "LNextBatter0" Then LBunt$ = "LNextBatter0": Exit Function
+                        If go$ <> "CONTINUE" Then
+                            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result C from LSacBunt: "; go$
+                            End
+                        End If
+
+                End Select
+
+            Case 9
+                go$ = LStrike$(RN)
+                If go$  = "LStrikeout" Then
+                    go2$ = LStrikeout$
+                    If go2$ = "LSteal" Then
+                        go3$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 6936, go3: "; go3$  'ToDo [bm] REMOVE
+                        If go3$ = "LBunt" Then _Continue
+                        LBunt$ = go3$
+                        Exit Function
+                    End If
+                    If go2$ = "LCheckForOptionsOrQuit" Then
+                        go3$ = LCheckForOptionsOrQuit$
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6943, go3: "; go3$  'ToDo [bm] REMOVE
+                        LBunt$ = go3$
+                        Exit Function
+                    End If
+
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6948, go2: "; go2$  'ToDo [bm] REMOVE
+                    LBunt$ = go2$
+                    Exit Function
+                End If
+
+                If go$  = "LNextBatter1" Then LBunt$ = "LNextBatter1": Exit Function
+                If go$ <> "CONTINUE" Then
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result B from LStrike: "; go$
+                    End
+                End If
+
+                nbrStrikes = nbrStrikes + 1
+
+                Call WINDEX
+                Call Rolld100(RN)
+
+                pbpString$ = player$(0) + " "
+                If RN <= 13 Or SH = 1 And RN <= 42 Then pbpString$ = pbpString$ + "misses the pitch"
+                If RN > 13 And RN <= 42 And SH <> 1 Then pbpString$ = pbpString$ + "takes a called strike"
+                If RN > 42 Then pbpString$ = pbpString$ + "bunts it foul"
+                Call PBP(pbpString$)
+
+                If useVGA = 1 Then
+                    PrintOnGfx 63, 28, Str$(nbrStrikes), imageScreen&
+                Else
+                    Locate 2, 58: Print nbrStrikes
+                End If
+
+                If nbrStrikes = 3 Then
+                    go$ = LStrikeout$
+                    If go$ = "LSteal" Then
+                        go2$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 6980, go2: "; go2$  'ToDo [bm] REMOVE
+                        If go2$ = "LBunt" Then _Continue
+                        LBunt$ = go2$
+                        Exit Function
+                    End If
+                    If go$ = "LCheckForOptionsOrQuit" Then
+                        go2$ = LCheckForOptionsOrQuit$
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6988, go2: "; go2$  'ToDo [bm] REMOVE
+                        LBunt$ = go2$
+                        Exit Function
+                    End If
+
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LCheckForOptionsOrQuit 6992, go: "; go$  'ToDo [bm] REMOVE
+                    LBunt$ = go$
+                    Exit Function
+                End If
+
+                If SH = 1 And RN <= 42 Then
+                    currFielder = 2
+                    Call GETFIELDNAME(currFielder, D)
+
+                    go$ = LPlayAtThird$
+                    If go$  = "LNextBatter1" Then LBunt$ = "LNextBatter1": Exit Function
+                    If go$ <> "CONTINUE" Then
+                        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LPlayAtThird: "; go$
+                        End
+                    End If
+                End If
+
+                If nbrStrikes = 1 Then
+                    Call PBP("He has" + Str$(nbrStrikes) + " strike")
+                Else
+                    'nbrStrikes > 1
+                    Call PBP("He has" + Str$(nbrStrikes) + " strikes")
+                End If
+
+                If baseRunners = 4 Or baseRunners = 2 Then INFPOS% = INF_BACK
+
+                If useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
+
+                go$ = LDefenseOptions$(_True)
+
+                If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LDefenseOptions 7022, go: "; go$  'ToDo [bm] REMOVE
+                If go$ = "LNextBatter0" Or go$ = "LNextBatter1" Or go$ = "LWeirdPlay" Or go$ = "GOODBYE" Then LBunt$ = go2$:  Exit Function
+                If go$ <> "CONTINUE" Then
+                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result K from LDefenseOptions: "; go$
+                    End
+                End If
+
+        End Select
+
+        LBunt$ = "LNextBatter1" 'ToDo [bm] controversial
+        Exit Function       'ToDo [bm] controversial
+
+    Loop
+
+    '-- at this point, each selection in the Case statement
+    '-- should have directed the code somewhere else
+    '-- in essence, this is kind of the end of this code
 End Function
 
 
