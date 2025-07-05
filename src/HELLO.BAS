@@ -4427,13 +4427,8 @@ Sub SOURCE ()
                     If branchIdx > 0 Then _Continue
 
                     go$ = "CONTINUE"
-
-                ElseIf go$ = "LCheckForOptionsOrQuit" Then
-                    go2$ = LCheckForOptionsOrQuit$
-                    If go2$ = "GOODBYE" Then Exit Sub
-                    branchIdx = LabelToNum%(go2$, 4441)
-                    If branchIdx > 0 Then _Continue
                 Else
+                    If go$ = "GOODBYE" Then Exit Sub
                     branchIdx = LabelToNum%(go$, 4444)
                     If branchIdx > 0 Then _Continue
                 End If
@@ -4467,15 +4462,9 @@ Sub SOURCE ()
                 End If
 
                 go$ = LBallGetsPastCatcher$
-                If go$ = "LCheckForOptionsOrQuit" Then
-                    go2$ = LCheckForOptionsOrQuit$
-                    If go2$ = "GOODBYE" Then Exit Sub
-                    branchIdx = LabelToNum%(go2$, 4480)
-                    If branchIdx > 0 Then _Continue
-                Else
-                    branchIdx = LabelToNum%(go$, 4483)
-                    If branchIdx > 0 Then _Continue
-                End If
+                If go$ = "GOODBYE" Then Exit Sub
+                branchIdx = LabelToNum%(go$, 4483)
+                If branchIdx > 0 Then _Continue
             End If
 
             If H6% <= 19 Then
@@ -4492,15 +4481,9 @@ Sub SOURCE ()
                 Call WILDPITCH(S2%, D)
 
                 go$ = LBallGetsPastCatcher$
-                If go$ = "LCheckForOptionsOrQuit" Then
-                    go2$ = LCheckForOptionsOrQuit$
-                    If go2$ = "GOODBYE" Then Exit Sub
-                    branchIdx = LabelToNum%(go2$, 4505)
-                    If branchIdx > 0 Then _Continue
-                Else
-                    branchIdx = LabelToNum%(go$, 4507)
-                    If branchIdx > 0 Then _Continue
-                End If
+                If go$ = "GOODBYE" Then Exit Sub
+                branchIdx = LabelToNum%(go$, 4507)
+                If branchIdx > 0 Then _Continue
             End If
 
             If H7% = 27 Then
@@ -4587,15 +4570,9 @@ Sub SOURCE ()
                 Call PBP("It gets through the drawn-in infield!")
                 Call DELAY
                 go$ = LInfSingle$
-                If go$ = "LCheckForOptionsOrQuit" Then
-                    go2$ = LCheckForOptionsOrQuit$
-                    If go2$ = "GOODBYE" Then Exit Sub
-                    branchIdx = LabelToNum%(go2$, 4593)
-                    If branchIdx > 0 Then _Continue
-                Else
-                    branchIdx = LabelToNum%(go$, 4597)
-                    If branchIdx > 0 Then _Continue
-                End If
+                If go$ = "GOODBYE" Then Exit Sub
+                branchIdx = LabelToNum%(go$, 4597)
+                If branchIdx > 0 Then _Continue
             End If
 
             If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! Fell thru from LWeirdPlay to ZNormal"       'ToDo [bm] REMOVE
@@ -4640,11 +4617,6 @@ Sub SOURCE ()
                             branchIdx = LabelToNum%(go2$, 4640)
                             If branchIdx > 0 Then _Continue
                         End If
-                    ElseIf go$ = "LCheckForOptionsOrQuit" Then
-                        go2$ = LCheckForOptionsOrQuit$
-                        If go2$ = "GOODBYE" Then Exit Sub
-                        branchIdx = LabelToNum%(go2$, 4646)
-                        If branchIdx > 0 Then _Continue
                     Else
                         If go$ = "GOODBYE" Then Exit Sub
                         branchIdx = LabelToNum%(go$, 4650)
@@ -4660,15 +4632,9 @@ Sub SOURCE ()
             Else                                                                'base hit
 
                 go$ = BaseHit$(HW%)
-                If go$ = "LCheckForOptionsOrQuit" Then
-                    go2$ = LCheckForOptionsOrQuit$
-                    If go2$ = "GOODBYE" Then Exit Sub
-                    branchIdx = LabelToNum%(go2$, 4661)
-                    If branchIdx > 0 Then _Continue
-                Else
-                    branchIdx = LabelToNum%(go$, 4664)
-                    If branchIdx > 0 Then _Continue
-                End If
+                If go$ = "GOODBYE" Then Exit Sub
+                branchIdx = LabelToNum%(go$, 4664)
+                If branchIdx > 0 Then _Continue
 
             End If
 
@@ -4799,22 +4765,18 @@ End Sub
 
 
 Function LabelToNum%(label$, lineNo%)
-    If label$  = "CONTINUE" Then
-        LabelToNum% = 0
-    ElseIf label$  = "LNextHalfInning" Then
-        LabelToNum% = 10
-    ElseIf label$  = "LNextBatter0" Then
-        LabelToNum% = 20
-    ElseIf label$  = "LNextBatter1" Then
-        LabelToNum% = 30
-    ElseIf label$  = "LRarePlays" Then
-        LabelToNum% = 40
-    ElseIf label$  = "LWeirdPlay" Then
-        LabelToNum% = 50
-    Else
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown param in LabelToNum%: "; label$; " from lineNo: "; lineNo%
-        End
-    End If
+    Select Case label$
+        Case "GOODBYE"        : LabelToNum% = -99
+        Case "CONTINUE"       : LabelToNum% =   0
+        Case "LNextHalfInning": LabelToNum% =  10
+        Case "LNextBatter0"   : LabelToNum% =  20
+        Case "LNextBatter1"   : LabelToNum% =  30
+        Case "LRarePlays"     : LabelToNum% =  40
+        Case "LWeirdPlay"     : LabelToNum% =  50
+        Case Else
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown param in LabelToNum%: "; label$; " from lineNo: "; lineNo%
+            End
+    End Select
 End Function
 
 'Include: 'GameRoutines.bm'
@@ -4880,9 +4842,8 @@ Function LSingle$
         If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
 
         Call SCOREBOARD
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LSingle RETURNING LCheckForOptionsOrQuit"    'ToDo [bm] REMOVE
-        LSingle$ = "LCheckForOptionsOrQuit"
-
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LSingle RETURNING call to LCheckForOptionsOrQuit"    'ToDo [bm] REMOVE
+        LSingle$ = LCheckForOptionsOrQuit$
     End If
 End Function
 
@@ -4910,7 +4871,7 @@ Function LBallGetsPastCatcher$
         A5%(2) = 1
         A5%(3) = 1
         Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-        LBallGetsPastCatcher$ = "LCheckForOptionsOrQuit"
+        LBallGetsPastCatcher$ = LCheckForOptionsOrQuit$
     Else
         A5%(0) = 0
         A5%(1) = 1
@@ -5398,7 +5359,7 @@ Function LBuntSingle$
     Call PBP(player$(0) + " lays down a great bunt...")
 
     Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-    If errorOnPlay% = 1 Then LBuntSingle$ = "LCheckForOptionsOrQuit": Exit Function
+    If errorOnPlay% = 1 Then LBuntSingle$ = LCheckForOptionsOrQuit$: Exit Function
 
     Call PBP(player$(4) + " fields... but too late!")
     LBuntSingle$ = LSingle$
@@ -5548,7 +5509,6 @@ Function LBunt5$ 'C@3
 
             If baseRunners > 0 Then
                 go$ = LBuntSingle$
-                If go$ = "LCheckForOptionsOrQuit" Then LBunt5$ = LCheckForOptionsOrQuit$: Exit Function
                 If Environ$("PBPLOG") = "TRUE" Then Print #11, "LBunt5 RETURNING result 6254 from LBuntSingle: "; go$
                 LBunt5$ = go$: Exit Function
             End If
@@ -5580,14 +5540,12 @@ Function LBunt5$ 'C@3
 
         Case 2
             go$ = LBuntSingle$
-            If go$ = "LCheckForOptionsOrQuit" Then LBunt5$ = LCheckForOptionsOrQuit$: Exit Function
             LBunt5$ = go$
             If Environ$("PBPLOG") = "TRUE" Then Print #11, "LBunt5 RETURNING result 6287 from LBuntSingle: "; go$
             Exit Function
 
         Case 3
             go$ = LGoodBunt$
-            If go$ = "LCheckForOptionsOrQuit" Then LBunt5$ = LCheckForOptionsOrQuit$: Exit Function
             LBunt5$ = go$
             If Environ$("PBPLOG") = "TRUE" Then Print #11, "LBunt5 RETURNING result 6294 from LGoodBunt: "; go$
             Exit Function
@@ -7515,8 +7473,8 @@ Function LStealContinue$ (AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%)
     Shared SH, baseRunners
 
     If nbrOuts(0) >= 3 Or P2 = OFF_HIT_N_RUN And nbrStrikes = 3 Then
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LStealContinue RETURNING LCheckForOptionsOrQuit"    'ToDo [bm] REMOVE
-        LStealContinue$ = "LCheckForOptionsOrQuit": Exit Function
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LStealContinue RETURNING call to LCheckForOptionsOrQuit"    'ToDo [bm] REMOVE
+        LStealContinue$ = LCheckForOptionsOrQuit$: Exit Function
     End If
 
     If stealHome% = 1 Then
@@ -7691,8 +7649,8 @@ Function LDoubleSteal2$ (I9, AA, I2, TGTBASE%, CHANCE%, stlChance, stealHome%, p
     If nbrOuts(0) >= 3 Then
         currLineupSlot(P) = currLineupSlot(P) - 1
         Call STRIKEOUTCS(SO)
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDoubleSteal2 RETURNING LCheckForOptionsOrQuit"    'ToDo [bm] REMOVE
-        LDoubleSteal2$ = "LCheckForOptionsOrQuit"
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LDoubleSteal2 RETURNING call to LCheckForOptionsOrQuit"    'ToDo [bm] REMOVE
+        LDoubleSteal2$ = LCheckForOptionsOrQuit$
         Exit Function
     End If
 
@@ -7722,8 +7680,8 @@ Function LCaughtInRundown$ (TGTBASE%, S2%, errorOnPlay%, I3, fbPitcherCoveringFi
 
     If nbrOuts(0) >= 3 Then
         currLineupSlot(P) = currLineupSlot(P) - 1
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LCaughtInRundown RETURNING LCheckForOptionsOrQuit"    'ToDo [bm] REMOVE
-        LCaughtInRundown$ = "LCheckForOptionsOrQuit"
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "LCaughtInRundown RETURNING call to LCheckForOptionsOrQuit"    'ToDo [bm] REMOVE
+        LCaughtInRundown$ = LCheckForOptionsOrQuit$
         Exit Function
     End If
 
@@ -8502,8 +8460,8 @@ Function LInfSingle$
         Call GETINFIELDER(currFielder, P, I1, D, S2%, P2)
         Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
         If errorOnPlay% = 1 Then
-            If Environ$("PBPLOG") = "TRUE" Then Print #11, "LInfSingle RETURNING LCheckForOptionsOrQuit"    'ToDo [bm] REMOVE
-            LInfSingle$ = "LCheckForOptionsOrQuit"
+            If Environ$("PBPLOG") = "TRUE" Then Print #11, "LInfSingle RETURNING call to LCheckForOptionsOrQuit"    'ToDo [bm] REMOVE
+            LInfSingle$ = LCheckForOptionsOrQuit$
             Exit Function
         End If
 
@@ -9541,7 +9499,7 @@ Function LHitAndRun$
 
             currLineupSlot(P) = currLineupSlot(P) - 1
             PO = 0
-            LHitAndRun$ = "LCheckForOptionsOrQuit": Exit Function
+            LHitAndRun$ = LCheckForOptionsOrQuit$: Exit Function
 
         End If
 
@@ -9649,55 +9607,27 @@ Function LStrikeout$
                 Call FOULBALL
 
                 go$ = LDefenseOptions$(_False)
-                If go$ = "LNextBatter0"    Then LStrikeout$ = "LNextBatter0": Exit Function
-                If go$ = "LNextBatter1"    Then LStrikeout$ = "LNextBatter1": Exit Function
-                If go$ = "LWeirdPlay"      Then LStrikeout$ = "LWeirdPlay":   Exit Function
-                If go$ = "GOODBYE"         Then LStrikeout$ = "GOODBYE":      Exit Function
-
-                If go$ <> "CONTINUE" Then
-                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result H from LDefenseOptions: "; go$
-                    End
-                End If
-
+                If go$ <> "CONTINUE" Then LStrikeout$ = go$: Exit Function
             Else
                 Call WILDPITCH(S2%, D)
+
                 go$ = LBallGetsPastCatcher$
-                If go$ = "LNextBatter1"           Then LStrikeout$ = "LNextBatter1": Exit Function
-                If go$ = "LCheckForOptionsOrQuit" Then LStrikeout$ = "LCheckForOptionsOrQuit": Exit Function
-                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result from LBallGetsPastCatcher: "; go$
-                End
+                If go$ <> "CONTINUE" Then LStrikeout$ = go$: Exit Function
             End If
         Else
             go$ = LPassedBall$
-            If go$ = "LNextBatter1"               Then LStrikeout$ = "LNextBatter1": Exit Function
-            If go$ = "LDefenseOptions"            Then
-
+            If go$ = "LDefenseOptions" Then
                 go2$ = LDefenseOptions$(_False)
-                If go2$ = "LNextBatter0"    Then LStrikeout$ = "LNextBatter0": Exit Function
-                If go2$ = "LNextBatter1"    Then LStrikeout$ = "LNextBatter1": Exit Function
-                If go2$ = "LWeirdPlay"      Then LStrikeout$ = "LWeirdPlay": Exit Function
-                If go2$ = "GOODBYE"         Then LStrikeout$ = "GOODBYE": Exit Function
-
-                If go2$ <> "CONTINUE" Then
-                    If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result I from LDefenseOptions: "; go$
-                    End
-                End If
-
-                go$ = "CONTINUE"
-
-            End If
-
-            If go$ = "LCheckForOptionsOrQuit"     Then LStrikeout$ = "LCheckForOptionsOrQuit": Exit Function
-            If go$ <> "CONTINUE" Then
-                If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR!! Got unknown result B from LPassedBall: "; go$
-                End
+                If go2$ <> "CONTINUE" Then LStrikeout$ = go2$: Exit Function
+            Else
+                If go$ <> "CONTINUE" Then LStrikeout$ = go$: Exit Function
             End If
         End If
 
     End If
 
     '-- this should be an Else statement above?
-    LStrikeout$ = "LCheckForOptionsOrQuit": Exit Function
+    LStrikeout$ = LCheckForOptionsOrQuit$: Exit Function
 
 End Function
 
@@ -9711,7 +9641,7 @@ Function BaseHit$ (HW%)
         H6% <= game_batRating(P, GM_2B, currLineupSlot(P)) * .5 And P2  = OFF_HIT_N_RUN Then
 
         Call LDouble(HW%)
-        BaseHit$ = "LCheckForOptionsOrQuit"
+        BaseHit$ = LCheckForOptionsOrQuit$
         Exit Function
 
     End If
@@ -9720,7 +9650,7 @@ Function BaseHit$ (HW%)
         H6% <= game_batRating(P, GM_2B, currLineupSlot(P)) * .5 + game_batRating(P, GM_3B, currLineupSlot(P)) * .5 And P2  = OFF_HIT_N_RUN Then
 
         Call LTriple
-        BaseHit$ = "LCheckForOptionsOrQuit"
+        BaseHit$ = LCheckForOptionsOrQuit$
         Exit Function
 
     End If
@@ -9734,7 +9664,7 @@ Function BaseHit$ (HW%)
         currFielder = 8 And H6% <= E2% * .5 And P2  = OFF_HIT_N_RUN Then
         S2% = EVENT_HR
         Call LHomeRun
-        BaseHit$ = "LCheckForOptionsOrQuit"
+        BaseHit$ = LCheckForOptionsOrQuit$
         Exit Function
     End If
 
@@ -9743,7 +9673,7 @@ Function BaseHit$ (HW%)
         currFielder = 7 And H6% <= E2% * .5 And P2 =  OFF_HIT_N_RUN Then
         S2% = EVENT_HR
         Call LHomeRun
-        BaseHit$ = "LCheckForOptionsOrQuit"
+        BaseHit$ = LCheckForOptionsOrQuit$
         Exit Function
     End If
 
@@ -9752,15 +9682,15 @@ Function BaseHit$ (HW%)
         currFielder = 9 And H6% <= E2% * .5 And P2 = OFF_HIT_N_RUN Then
         S2% = EVENT_HR
         Call LHomeRun
-        BaseHit$ = "LCheckForOptionsOrQuit"
+        BaseHit$ = LCheckForOptionsOrQuit$
         Exit Function
     End If
 
-    go$ = LInfSingle$
-    If go$ = "LNextBatter0" Then BaseHit$ = "LNextBatter0": Exit Function
-    If go$ = "LCheckForOptionsOrQuit" Then BaseHit$ = "LCheckForOptionsOrQuit": Exit Function
+    BaseHit$ = LInfSingle$
+    'If go$ = "LNextBatter0" Then BaseHit$ = "LNextBatter0": Exit Function
+    'If go$ = "LCheckForOptionsOrQuit" Then BaseHit$ = "LCheckForOptionsOrQuit": Exit Function
 
-    BaseHit$ = "CONTINUE"
+    'BaseHit$ = "CONTINUE"
 
 End Function
 
