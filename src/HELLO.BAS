@@ -1195,9 +1195,9 @@ Sub LOADER
 
                     If I$ <> Chr$(27) Then Call LetterToNumber(I$, setting)
 
-                Loop Until setting >= 0 And setting <= 18 Or I$ = Chr$(27) Or UCase$(I$) = Chr$(17) Or UCase$(I$) = "Q"
+                Loop Until setting >= 0 And setting <= 18 Or I$ = Chr$(27) Or UCase$(I$) = "Q"
 
-                If I$ <> Chr$(27) And UCase$(I$) <> "Q" And UCase$(I$) <> Chr$(17) Then
+                If I$ <> Chr$(27) And UCase$(I$) <> "Q" Then
 
                     Select Case setting
 
@@ -1294,9 +1294,9 @@ Sub LOADER
 
                 End If
 
-            Loop Until (setting = 9 And gameTeams$(0) <> "" And gameTeams$(1) <> "") Or I$ = Chr$(27) Or I$ = Chr$(17) Or UCase$(I$) = "Q"
+            Loop Until (setting = 9 And gameTeams$(0) <> "" And gameTeams$(1) <> "") Or I$ = Chr$(27) Or UCase$(I$) = "Q"
 
-            If I$ <> Chr$(27) And UCase$(I$) <> Chr$(17) And UCase$(I$) <> "Q" Then
+            If I$ <> Chr$(27) And UCase$(I$) <> "Q" Then
                 'TICKER PROMPT
             Else
 
@@ -4103,9 +4103,8 @@ Sub SOURCE ()
             If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! Fell thru from LNextBatter1 to LDefe"       'ToDo [bm] REMOVE
 
             go$ = LDefe$(_False)
-            If go$ = "GOODBYE" Then Exit Sub
             branchIdx = LabelToNum%(go$, 4107)
-            If branchIdx > 0 Then _Continue
+            If branchIdx <> 0 Then _Continue
 
             If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! Fell thru from LDefe to LOffenseOptions"       'ToDo [bm] REMOVE
 
@@ -4118,9 +4117,8 @@ Sub SOURCE ()
                 go2$ = LBunt$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, D5, PH%())
                 If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LBunt 4127, go2: "; go2$  'ToDo [bm] REMOVE
 
-                If go2$ = "GOODBYE" Then Exit Sub
                 branchIdx = LabelToNum%(go2$, 4121)
-                If branchIdx > 0 Then _Continue
+                If branchIdx <> 0 Then _Continue
 
             End If
             If go$ = "LSteal" Then
@@ -4130,13 +4128,11 @@ Sub SOURCE ()
                     go3$ = LBunt$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, D5, PH%())
                     If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LBunt 4148, go3: "; go3$  'ToDo [bm] REMOVE
 
-                    If go3$ = "GOODBYE" Then Exit Sub
                     branchIdx = LabelToNum%(go3$, 4131)
-                    If branchIdx > 0 Then _Continue
+                    If branchIdx <> 0 Then _Continue
                 Else
-                    If go2$ = "GOODBYE" Then Exit Sub
                     branchIdx = LabelToNum%(go2$, 4128)
-                    If branchIdx > 0 Then _Continue
+                    If branchIdx <> 0 Then _Continue
                 End If
             End If
             If go$ = "LPhForPosition" Then
@@ -4146,9 +4142,8 @@ Sub SOURCE ()
                     go3$ = LBunt$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, D5, PH%())
                     If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LBunt 4168, go3: "; go3$  'ToDo [bm] REMOVE
 
-                    If go3$ = "GOODBYE" Then Exit Sub
                     branchIdx = LabelToNum%(go3$, 4152)
-                    If branchIdx > 0 Then _Continue
+                    If branchIdx <> 0 Then _Continue
 
                 End If
                 If go2$ = "LSteal" Then
@@ -4158,22 +4153,19 @@ Sub SOURCE ()
                         go4$ = LBunt$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, D5, PH%())
                         If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LBunt 4189, go4: "; go4$  'ToDo [bm] REMOVE
 
-                        If go4$ = "GOODBYE" Then Exit Sub
                         branchIdx = LabelToNum%(go4$, 4168)
-                        If branchIdx > 0 Then _Continue
+                        If branchIdx <> 0 Then _Continue
                     Else
                         branchIdx = LabelToNum%(go3$, 4169)
-                        If branchIdx > 0 Then _Continue
+                        If branchIdx <> 0 Then _Continue
                     End If
                 Else
-                    If go2$ = "GOODBYE" Then Exit Sub
                     branchIdx = LabelToNum%(go2$, 4180)
-                    If branchIdx > 0 Then _Continue
+                    If branchIdx <> 0 Then _Continue
                 End If
             Else
-                If go$ = "GOODBYE" Then Exit Sub
                 branchIdx = LabelToNum%(go$, 4199)
-                If branchIdx > 0 Then _Continue
+                If branchIdx <> 0 Then _Continue
             End if
 
             '--- end of a new sub
@@ -4186,8 +4178,9 @@ Sub SOURCE ()
 
             '----- NOODLE -----
 
-            If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! Fell thru from LOffenseOptions to LRarePlays"       'ToDo [bm] REMOVE
         End If
+
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! Fell thru from LOffenseOptions to LRarePlays"       'ToDo [bm] REMOVE
 
         If branchIdx <= 40 Then                                     'LRarePlays
 
@@ -4226,9 +4219,8 @@ Sub SOURCE ()
                 End If
 
                 go$ = LDefenseOptions$(_False)
-                If go$ = "GOODBYE" Then Exit Sub
                 branchIdx = LabelToNum%(go$, 4236)
-                If branchIdx > 0 Then _Continue
+                If branchIdx <> 0 Then _Continue
 
             End If
 
@@ -4248,9 +4240,8 @@ Sub SOURCE ()
 
                 go$ = LCheckForOptionsOrQuit$
 
-                If go$ = "GOODBYE" Then Exit Sub
                 branchIdx = LabelToNum%(go2$, 4257)
-                If branchIdx > 0 Then _Continue
+                If branchIdx <> 0 Then _Continue
 
             End If
 
@@ -4308,14 +4299,14 @@ Sub SOURCE ()
 
             go$ = LDefenseOptions$(_False)
 
-            If go$ = "GOODBYE" Then Exit Sub
             branchIdx = LabelToNum%(go$, 4317)
-            If branchIdx > 0 Then _Continue
+            If branchIdx <> 0 Then _Continue
 
             '----- NOODLE -----
 
-            If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! Fell thru from LRarePlays to LWeirdPlay"       'ToDo [bm] REMOVE
         End If
+
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! Fell thru from LRarePlays to LWeirdPlay"       'ToDo [bm] REMOVE
 
         If branchIdx <= 50 Then                                     'LWeirdPlay
             Call Rolld100(RN)
@@ -4343,9 +4334,8 @@ Sub SOURCE ()
                 Call TRIPLEPLAY(D)
                 go$ = LCheckForOptionsOrQuit$
 
-                If go$ = "GOODBYE" Then Exit Sub
                 branchIdx = LabelToNum%(go$, 4351)
-                If branchIdx > 0 Then _Continue
+                If branchIdx <> 0 Then _Continue
             End If
 
             H7% = Int(Rnd(1) * 7500) + 1
@@ -4368,9 +4358,8 @@ Sub SOURCE ()
                     Call FOULBALL
 
                     go$ = LDefenseOptions$(_False)
-                    If go$ = "GOODBYE" Then Exit Sub
                     branchIdx = LabelToNum%(go$, 4377)
-                    If branchIdx > 0 Then _Continue
+                    If branchIdx <> 0 Then _Continue
                 Else
                     S2% = EVENT_BALK
 
@@ -4398,9 +4387,8 @@ Sub SOURCE ()
                         A5%(3) = 1
                         Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
                         go$ = LCheckForOptionsOrQuit$
-                        If go$ = "GOODBYE" Then Exit Sub
                         branchIdx = LabelToNum%(go$, 4407)
-                        If branchIdx > 0 Then _Continue
+                        If branchIdx <> 0 Then _Continue
                     Else
                         A5%(1) = 1
                         A5%(2) = 1
@@ -4421,25 +4409,21 @@ Sub SOURCE ()
                 go$ = LPassedBall$
                 If go$ = "LDefenseOptions" Then
                     go2$ = LDefenseOptions$(_False)
-                    If go2$ = "GOODBYE" Then Exit Sub
-
                     branchIdx = LabelToNum%(go2$, 4431)
-                    If branchIdx > 0 Then _Continue
+                    If branchIdx <> 0 Then _Continue
 
                     go$ = "CONTINUE"
                 Else
-                    If go$ = "GOODBYE" Then Exit Sub
                     branchIdx = LabelToNum%(go$, 4444)
-                    If branchIdx > 0 Then _Continue
+                    If branchIdx <> 0 Then _Continue
                 End If
 
                 If baseRunners = 0 And SO <> 1 Then
                     Call FOULBALL
 
                     go$ = LDefenseOptions$(_False)
-                    If go$ = "GOODBYE" Then Exit Sub
                     branchIdx = LabelToNum%(go$, 4452)
-                    If branchIdx > 0 Then _Continue
+                    If branchIdx <> 0 Then _Continue
                 End If
 
                 S2% = EVENT_PB
@@ -4462,9 +4446,8 @@ Sub SOURCE ()
                 End If
 
                 go$ = LBallGetsPastCatcher$
-                If go$ = "GOODBYE" Then Exit Sub
                 branchIdx = LabelToNum%(go$, 4483)
-                If branchIdx > 0 Then _Continue
+                If branchIdx <> 0 Then _Continue
             End If
 
             If H6% <= 19 Then
@@ -4475,15 +4458,14 @@ Sub SOURCE ()
 
                     go$ = LDefenseOptions$(_False)
                     branchIdx = LabelToNum%(go$, 4494)
-                    If branchIdx > 0 Then _Continue
+                    If branchIdx <> 0 Then _Continue
                 End If
 
                 Call WILDPITCH(S2%, D)
 
                 go$ = LBallGetsPastCatcher$
-                If go$ = "GOODBYE" Then Exit Sub
                 branchIdx = LabelToNum%(go$, 4507)
-                If branchIdx > 0 Then _Continue
+                If branchIdx <> 0 Then _Continue
             End If
 
             If H7% = 27 Then
@@ -4518,7 +4500,7 @@ Sub SOURCE ()
 
                 go$ = LCheckForOptionsOrQuit$
                 branchIdx = LabelToNum%(go$, 4537)
-                If branchIdx > 0 Then _Continue
+                If branchIdx <> 0 Then _Continue
             End If
 
             If H6% <= game_batRating(P, GM_BB, currLineupSlot(P)) + 25 Then 'ToDo [bm] I have 28 as the constant in an older version
@@ -4533,9 +4515,8 @@ Sub SOURCE ()
             If P2 = OFF_BUNT Then
                 go$ = LBunt$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, D5, PH%())
                 If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LBunt 4618, go: "; go$  'ToDo [bm] REMOVE
-                If go$ = "GOODBYE" Then Exit Sub
                 branchIdx = LabelToNum%(go$, 4554)
-                If branchIdx > 0 Then _Continue
+                If branchIdx <> 0 Then _Continue
             End If
 
             H6% = Int(Rnd(1) * 1000) + 1
@@ -4570,9 +4551,8 @@ Sub SOURCE ()
                 Call PBP("It gets through the drawn-in infield!")
                 Call DELAY
                 go$ = LInfSingle$
-                If go$ = "GOODBYE" Then Exit Sub
                 branchIdx = LabelToNum%(go$, 4597)
-                If branchIdx > 0 Then _Continue
+                If branchIdx <> 0 Then _Continue
             End If
 
             If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! Fell thru from LWeirdPlay to ZNormal"       'ToDo [bm] REMOVE
@@ -4598,43 +4578,37 @@ Sub SOURCE ()
                     End If
 
                     go$ = LCheckForOptionsOrQuit$
-                    If go$ = "GOODBYE" Then Exit Sub
                     branchIdx = LabelToNum%(go$, 4625)
-                    If branchIdx > 0 Then _Continue
+                    If branchIdx <> 0 Then _Continue
                 Else                                                            'Strikeout
                     go$ = LStrikeout$
                     If go$ = "LSteal" Then
                         go2$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
                         If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 4633, go2: "; go2$  'ToDo [bm] REMOVE
-                        If go2$ = "LBunt"           Then
+                        If go2$ = "LBunt" Then
                             go3$ = LBunt$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, D5, PH%())
                             If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LBunt 4706, go3: "; go3$  'ToDo [bm] REMOVE
-                            If go3$ = "GOODBYE"         Then Exit Sub
                             branchIdx = LabelToNum%(go3$, 4636)
-                            If branchIdx > 0 Then _Continue
+                            If branchIdx <> 0 Then _Continue
                         Else
-                            If go2$ = "GOODBYE" Then Exit Sub
                             branchIdx = LabelToNum%(go2$, 4640)
-                            If branchIdx > 0 Then _Continue
+                            If branchIdx <> 0 Then _Continue
                         End If
                     Else
-                        If go$ = "GOODBYE" Then Exit Sub
                         branchIdx = LabelToNum%(go$, 4650)
-                        If branchIdx > 0 Then _Continue
+                        If branchIdx <> 0 Then _Continue
                     End If
 
                     go$ = LCheckForOptionsOrQuit$
-                    If go$ = "GOODBYE" Then Exit Sub
                     branchIdx = LabelToNum%(go$, 4656)
-                    If branchIdx > 0 Then _Continue
+                    If branchIdx <> 0 Then _Continue
                 End If
 
             Else                                                                'base hit
 
                 go$ = BaseHit$(HW%)
-                If go$ = "GOODBYE" Then Exit Sub
                 branchIdx = LabelToNum%(go$, 4664)
-                If branchIdx > 0 Then _Continue
+                If branchIdx <> 0 Then _Continue
 
             End If
 
@@ -4646,17 +4620,15 @@ Sub SOURCE ()
             'Go To LCheckForOptionsOrQuit
 
             go$ = LCheckForOptionsOrQuit$
-            If go$ = "GOODBYE" Then Exit Sub
             branchIdx = LabelToNum%(go$, 4681)
-            If branchIdx > 0 Then _Continue
+            If branchIdx <> 0 Then _Continue
 
             If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! Fell thru from ZNormal to LBunt"       'ToDo [bm] REMOVE
 
             go$ = LBunt$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, D5, PH%())
             If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LBunt 4703, go: "; go$  'ToDo [bm] REMOVE
-            If go$ = "GOODBYE"         Then Exit Sub
             branchIdx = LabelToNum%(go$, 4687)
-            If branchIdx > 0 Then _Continue
+            If branchIdx <> 0 Then _Continue
 
             If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! Fell thru from LBunt to LSteal"       'ToDo [bm] REMOVE
 
@@ -4665,21 +4637,18 @@ Sub SOURCE ()
             If go$ = "LBunt" Then
                 go2$ = LBunt$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, D5, PH%())
                 If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LBunt 4786, go2: "; go2$  'ToDo [bm] REMOVE
-                If go2$ = "GOODBYE" Then Exit Sub
                 branchIdx = LabelToNum%(go2$, 4698)
-                If branchIdx > 0 Then _Continue
+                If branchIdx <> 0 Then _Continue
             Else
-                If go$ = "GOODBYE" Then Exit Sub
                 branchIdx = LabelToNum%(go$, 4702)
-                If branchIdx > 0 Then _Continue
+                If branchIdx <> 0 Then _Continue
             End If
 
             If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! Fell thru from LSteal to LStealHome"       'ToDo [bm] REMOVE
 
             go$ = LStealHome$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3)
-            If go$ = "GOODBYE" Then Exit Sub
             branchIdx = LabelToNum%(go$, 4710)
-            If branchIdx > 0 Then _Continue
+            If branchIdx <> 0 Then _Continue
 
             '----------------------------------------
             ' Print final score and run post game
@@ -4703,27 +4672,23 @@ Sub SOURCE ()
             If go$ = "LBunt" Then
                 go2$ = LBunt$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, D5, PH%())
                 If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LBunt 4835, go2: "; go2$  'ToDo [bm] REMOVE
-                If go2$ = "GOODBYE" Then Exit Sub
                 branchIdx = LabelToNum%(go2$, 4736)
-                If branchIdx > 0 Then _Continue
+                If branchIdx <> 0 Then _Continue
             ElseIf go$ = "LSteal" Then
                 go2$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
                 If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 5534, go2: "; go2$  'ToDo [bm] REMOVE
                 If go2$ = "LBunt" Then
                     go3$ = LBunt$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, D5, PH%())
                     If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LBunt 4855, go3: "; go3$  'ToDo [bm] REMOVE
-                    If go3$ = "GOODBYE" Then Exit Sub
                     branchIdx = LabelToNum%(go3$, 4757)
-                    If branchIdx > 0 Then _Continue
+                    If branchIdx <> 0 Then _Continue
                 Else
-                    If go2$ = "GOODBYE" Then Exit Sub
                     branchIdx = LabelToNum%(go2$, 4767)
-                    If branchIdx > 0 Then _Continue
+                    If branchIdx <> 0 Then _Continue
                 End If
             Else
-                If go$ = "GOODBYE" Then Exit Sub
                 branchIdx = LabelToNum%(go$, 4772)
-                If branchIdx > 0 Then _Continue
+                If branchIdx <> 0 Then _Continue
             End If
 
             '----- NOODLE -----
@@ -4735,36 +4700,36 @@ Sub SOURCE ()
             If go$ = "LBunt" Then
                 go2$ = LBunt$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, D5, PH%())
                 If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LBunt 4882, go2: "; go2$  'ToDo [bm] REMOVE
-                If go2$ = "GOODBYE" Then Exit Sub
                 branchIdx = LabelToNum%(go2$, 4780)
-                If branchIdx > 0 Then _Continue
+                If branchIdx <> 0 Then _Continue
             ElseIf go$ = "LSteal" Then
                 go2$ = LSteal$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, S2%, errorOnPlay%, I3, D5, PH%())
                 If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LSteal 5557, go2: "; go2$  'ToDo [bm] REMOVE
                 If go2$ = "LBunt" Then
                     go3$ = LBunt$(TGTBASE%, TGBASE%, stealHome%, pitchoutChance, AA, I2, CHANCE%, stlChance, D5, PH%())
                     If Environ$("PBPLOG") = "TRUE" Then Print #11, "Source LBunt 4902, go3: "; go3$  'ToDo [bm] REMOVE
-                    If go3$ = "GOODBYE" Then Exit Sub
                     branchIdx = LabelToNum%(go3$, 4795)
-                    If branchIdx > 0 Then _Continue
+                    If branchIdx <> 0 Then _Continue
                 Else
-                    If go2$ = "GOODBYE" Then Exit Sub
                     branchIdx = LabelToNum%(go2$, 4809)
-                    If branchIdx > 0 Then _Continue
+                    If branchIdx <> 0 Then _Continue
                 End If
             Else
-                If go$ = "GOODBYE" Then Exit Sub
                 branchIdx = LabelToNum%(go$, 4811)
-                If branchIdx > 0 Then _Continue
+                If branchIdx <> 0 Then _Continue
             End If
 
         End If
-    Loop
+    Loop Until branchIdx < 0
+
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Leaving SOURCE subroutine"       'ToDo [bm] REMOVE
+    End
 
 End Sub
 
 
 Function LabelToNum%(label$, lineNo%)
+    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Warning!! bye bye label = "; label$; "  lineNo = "; lineNo%       'ToDo [bm] REMOVE
     Select Case label$
         Case "GOODBYE"        : LabelToNum% = -99
         Case "CONTINUE"       : LabelToNum% =   0
@@ -11436,7 +11401,8 @@ Sub PBP (pbpString$)
         Call OPTIONS
     End If
 
-    If UCase$(M$) = Chr$(17) Then
+    If UCase$(M$) = "Q" Then
+        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Q was pressed, quitting now..."    'ToDo [bm] REMOVE
         Cls
         End
     End If
