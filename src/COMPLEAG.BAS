@@ -313,13 +313,13 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
                         Next Z
                     Next Y
 
-                    GoTo 3318
+                    skipIF = _True: Exit For
 
                 End If
 
             Next Y
 
-            If leaderStatVal2!(X, 16) >= leaderVals!(20, 1) Then
+            If Not skipIF And leaderStatVal2!(X, 16) >= leaderVals!(20, 1) Then
 
                 leagLdrPlayer$(20) = leaderNames$(X)
                 leagLdrTeam$(20) = pitcherNames$(X)
@@ -340,7 +340,7 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
 
             End If
 
-            3318 '
+            '3318 '
             If (leaderStatVal2!(X, 8) + leaderStatVal2!(X, 1)) >= minAtBat Then
 
                 If leaderStatVal2!(X, 16) <> 0 And leaderStatVal2!(X, 16) <= leaderVals!(258, 1) Then
@@ -366,7 +366,8 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
 
             End If
 
-            3320 '
+            skipIF = _False
+
             'Slugging Pct
             For Y = 99 To 108
 
@@ -396,13 +397,13 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
 
                     Next Y
 
-                    GoTo 3325
+                    skipIF = _True: Exit For
 
                 End If
 
             Next Y
 
-            If leaderStatVal2!(X, 14) >= leaderVals!(108, 1) Then
+            If Not skipIF And leaderStatVal2!(X, 14) >= leaderVals!(108, 1) Then
 
                 leagLdrPlayer$(108) = leaderNames$(X)
                 leagLdrTeam$(108) = pitcherNames$(X)
@@ -433,7 +434,9 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
 
             End If
 
-            3325 '
+            skipIF = _False
+
+            '3325 '
             'On Base Pct
             For Y = 110 To 119
 
@@ -461,14 +464,13 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
                         Next Z
                     Next Y
 
-                    GoTo 3330
+                    skipIF = _True: Exit For
 
                 End If
 
             Next Y
 
-            3327 '
-            If leaderStatVal2!(X, 15) >= leaderVals!(119, 1) Then
+            If Not skipIF And leaderStatVal2!(X, 15) >= leaderVals!(119, 1) Then
 
                 leagLdrPlayer$(119) = leaderNames$(X)
                 leagLdrTeam$(119) = pitcherNames$(X)
@@ -499,21 +501,34 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
 
             End If
 
-            3330 '
+            skipIF = _False
+
+            '3330 '
             For Z = 21 To 31
                 If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 2)
-                    GoTo 3335
+
+                    For Z = 21 To 30        'ToDo [bm] Refactor duplicate code
+                        For Z1 = Z + 1 To 31
+                            If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                                Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                                Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                                Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                            End If
+                        Next Z1
+                    Next Z
+
+                    skipIF = _True: Exit For
                 End If
             Next Z
 
-            If leaderStatVal2!(X, 2) > leaderVals!(31, 1) Then
+            If Not skipIF And leaderStatVal2!(X, 2) > leaderVals!(31, 1) Then
 
                 leaderVals!(31, 1) = leaderStatVal2!(X, 2)
                 leagLdrPlayer$(31) = leaderNames$(X)
                 leagLdrTeam$(31) = statName$
 
-                3335 '
+                '3335 '
                 For Z = 21 To 30
                     For Z1 = Z + 1 To 31
                         If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
@@ -526,21 +541,36 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
 
             End If
 
+            skipIF = _False
+
             'Division 4
             For Z = 32 To 42
                 If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 5)
-                    GoTo 3347
+
+                    For Z = 32 To 41
+                        For Z1 = Z + 1 To 42
+
+                            If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                                Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                                Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                                Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                            End If
+
+                        Next Z1
+                    Next Z
+
+                    skipIF = _True: Exit For
                 End If
             Next Z
 
-            If leaderStatVal2!(X, 5) > leaderVals!(42, 1) Then
+            If Not skipIF And leaderStatVal2!(X, 5) > leaderVals!(42, 1) Then
 
                 leaderVals!(42, 1) = leaderStatVal2!(X, 5)
                 leagLdrPlayer$(42) = leaderNames$(X)
                 leagLdrTeam$(42) = statName$
 
-                3347 '
+                '3347 '
                 For Z = 32 To 41
                     For Z1 = Z + 1 To 42
 
@@ -555,21 +585,33 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
 
             End If
 
-            3354 '
+            skipIF = _False
+
             For Z = 43 To 53
                 If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 6)
-                    GoTo 3359
+
+                    For Z = 43 To 52
+                        For Z1 = Z + 1 To 53
+                            If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                                Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                                Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                                Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                            End If
+                        Next Z1
+                    Next Z
+
+                    skipIF = _True: Exit For
                 End If
             Next Z
 
-            If leaderStatVal2!(X, 6) > leaderVals!(53, 1) Then
+            If Not skipIF And leaderStatVal2!(X, 6) > leaderVals!(53, 1) Then
 
                 leaderVals!(53, 1) = leaderStatVal2!(X, 6)
                 leagLdrPlayer$(53) = leaderNames$(X)
                 leagLdrTeam$(53) = statName$
 
-                3359 '
+                '3359 '
                 For Z = 43 To 52
                     For Z1 = Z + 1 To 53
                         If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
@@ -582,20 +624,33 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
 
             End If
 
+            skipIF = _False
+
             For Z = 54 To 64
                 If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 7)
-                    GoTo 3371
+
+                    For Z = 54 To 63:
+                        For Z1 = Z + 1 To 64:
+                            If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                                Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                                Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                                Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                            End If
+                        Next Z1
+                    Next Z
+
+                    skipIF = _True: Exit For
                 End If
             Next Z
 
-            If leaderStatVal2!(X, 7) > leaderVals!(64, 1) Then
+            If Not skipIF And leaderStatVal2!(X, 7) > leaderVals!(64, 1) Then
 
                 leaderVals!(64, 1) = leaderStatVal2!(X, 7)
                 leagLdrPlayer$(64) = leaderNames$(X)
                 leagLdrTeam$(64) = statName$
 
-                3371 '
+                '3371 '
                 For Z = 54 To 63:
                     For Z1 = Z + 1 To 64:
                         If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
@@ -608,21 +663,33 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
 
             End If
 
-            3378 '
+            skipIF = _False
+
             For Z = 65 To 74
                 If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 3)
-                    GoTo 3383
+
+                    For Z = 65 To 73
+                        For Z1 = Z + 1 To 74
+                            If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                                Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                                Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                                Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                            End If
+                        Next Z1
+                    Next Z
+
+                    skipIF = _True: Exit For
                 End If
             Next Z
 
-            If leaderStatVal2!(X, 3) > leaderVals!(74, 1) Then
+            If Not skipIF And leaderStatVal2!(X, 3) > leaderVals!(74, 1) Then
 
                 leaderVals!(74, 1) = leaderStatVal2!(X, 3)
                 leagLdrPlayer$(74) = leaderNames$(X)
                 leagLdrTeam$(74) = statName$
 
-                3383 '
+                '3383 '
                 For Z = 65 To 73
                     For Z1 = Z + 1 To 74
                         If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
@@ -635,20 +702,34 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
 
             End If
 
+            skipIF = _False
+
             For Z = 76 To 85
                 If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 4)
-                    GoTo 3395
+
+                    For Z = 76 To 84
+                        For Z1 = Z + 1 To 85
+                            If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                                Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                                Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                                Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                            End If
+
+                        Next Z1
+                    Next Z
+
+                    skipIF = _True: Exit For
                 End If
             Next Z
 
-            If leaderStatVal2!(X, 4) > leaderVals!(85, 1) Then
+            If Not skipIF And leaderStatVal2!(X, 4) > leaderVals!(85, 1) Then
 
                 leaderVals!(85, 1) = leaderStatVal2!(X, 4)
                 leagLdrPlayer$(85) = leaderNames$(X)
                 leagLdrTeam$(85) = statName$
 
-                3395 '
+                '3395 '
                 For Z = 76 To 84
                     For Z1 = Z + 1 To 85
                         If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
@@ -662,20 +743,33 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
 
             End If
 
+            skipIF = _False
+
             For Z = 87 To 97
                 If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 10)
-                    GoTo 3407
+
+                    For Z = 87 To 96
+                        For Z1 = Z + 1 To 97
+                            If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                                Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                                Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                                Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                            End If
+                        Next Z1
+                    Next Z
+
+                    skipIF = _True: Exit For
                 End If
             Next Z
 
-            If leaderStatVal2!(X, 10) > leaderVals!(97, 1) Then
+            If Not skipIF And leaderStatVal2!(X, 10) > leaderVals!(97, 1) Then
 
                 leaderVals!(97, 1) = leaderStatVal2!(X, 10)
                 leagLdrPlayer$(97) = leaderNames$(X)
                 leagLdrTeam$(97) = statName$
 
-                3407 '
+                '3407 '
                 For Z = 87 To 96
                     For Z1 = Z + 1 To 97
                         If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
@@ -690,22 +784,34 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
 
         End If 'Done checking for XXX / terminating chars
 
-        3414 '
+        skipIF = _False
+
         'Base on Balls
         For Z = 217 To 227
             If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                 leaderVals!(Z, 1) = leaderStatVal2!(X, 8)
-                GoTo 3605
+
+                For Z = 217 To 226
+                    For Z1 = Z + 1 To 227
+                        If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                            Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                            Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                            Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                        End If
+                    Next Z1
+                Next Z
+
+                skipIF = _True: Exit For
             End If
         Next Z
 
-        If leaderStatVal2!(X, 8) > leaderVals!(227, 1) Then
+        If Not skipIF And leaderStatVal2!(X, 8) > leaderVals!(227, 1) Then
 
             leaderVals!(227, 1) = leaderStatVal2!(X, 8)
             leagLdrPlayer$(227) = leaderNames$(X)
             leagLdrTeam$(227) = statName$
 
-            3605 '
+            '3605 '
             For Z = 217 To 226
                 For Z1 = Z + 1 To 227
                     If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
@@ -717,21 +823,36 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
             Next Z
         End If
 
+        skipIF = _False
+
         'Hitting Streak
         For Z = 279 To 288
             If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                 leaderVals!(Z, 1) = leaderStatVal2!(X, 17)
-                GoTo 3615
+
+                For Z = 279 To 287
+                    For Z1 = Z + 1 To 288:
+
+                        If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                            Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                            Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                            Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                        End If
+
+                    Next Z1
+                Next Z
+
+                skipIF = _True: Exit For
             End If
         Next Z
 
-        If leaderStatVal2!(X, 17) > leaderVals!(288, 1) Then
+        If Not skipIF And leaderStatVal2!(X, 17) > leaderVals!(288, 1) Then
 
             leaderVals!(288, 1) = leaderStatVal2!(X, 17)
             leagLdrPlayer$(288) = leaderNames$(X)
             leagLdrTeam$(288) = statName$
 
-            3615 '
+            '3615 '
             For Z = 279 To 287
                 For Z1 = Z + 1 To 288:
 
@@ -746,23 +867,37 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
 
         End If
 
+        skipIF = _False
+
         'Longest Hitting Streak
         For Z = 289 To 298
-            3621 '
             If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                 leaderVals!(Z, 1) = leaderStatVal2!(X, 18)
-                GoTo 3625
+
+                For Z = 289 To 297
+                    For Z1 = Z + 1 To 298
+
+                        If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                            Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                            Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                            Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                        End If
+
+                    Next Z1
+                Next Z
+
+                skipIF = _True: Exit For
             End If
 
         Next Z
 
-        If leaderStatVal2!(X, 18) > leaderVals!(298, 1) Then
+        If Not skipIF And leaderStatVal2!(X, 18) > leaderVals!(298, 1) Then
 
             leaderVals!(298, 1) = leaderStatVal2!(X, 18)
             leagLdrPlayer$(298) = leaderNames$(X)
             leagLdrTeam$(298) = statName$
 
-            3625 '
+            '3625 '
             For Z = 289 To 297
                 For Z1 = Z + 1 To 298
 
@@ -853,7 +988,8 @@ Sub CalcStatTotals (statName$, totalGames)
 
             End If
 
-            3430 '
+            skipIF = _False
+
             For Y = 140 To 150
 
                 If leagLdrPlayer$(Y) = leaderNames$(X) And leagLdrTeam$(Y) = statName$ Then
@@ -882,13 +1018,13 @@ Sub CalcStatTotals (statName$, totalGames)
 
                     Next Z
 
-                    GoTo 3440
+                    skipIF = _True: Exit For
 
                 End If
 
             Next Y
 
-            If leaderStatVal2!(X, 7) - leaderStatVal2!(X, 8) >= leaderVals!(150, 1) - leaderVals!(150, 2) Then
+            If Not skipIF And leaderStatVal2!(X, 7) - leaderStatVal2!(X, 8) >= leaderVals!(150, 1) - leaderVals!(150, 2) Then
 
                 If Not (leaderStatVal2!(X, 7) - leaderStatVal2!(X, 8) = leaderVals!(150, 1) - leaderVals!(150, 2) And leaderStatVal2!(X, 7) >= leaderVals!(150, 1)) Then
 
@@ -921,7 +1057,9 @@ Sub CalcStatTotals (statName$, totalGames)
 
             End If
 
-            3440 '
+            skipIF = _False
+
+            '3440 '
             For Z = 151 To 161
 
                 If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
@@ -939,19 +1077,29 @@ Sub CalcStatTotals (statName$, totalGames)
                         Next Z1
                     Next Z
 
-                    GoTo 3445
+                    For Z = 151 To 160
+                        For Z1 = Z + 1 To 161
+                            If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                                Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                                Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                                Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                            End If
+                        Next Z1
+                    Next Z
+
+                    skipIF = _True: Exit For
 
                 End If
 
             Next Z
 
-            If leaderStatVal2!(X, 7) > leaderVals!(161, 1) Then
+            If Not skipIF And leaderStatVal2!(X, 7) > leaderVals!(161, 1) Then
 
                 leaderVals!(161, 1) = leaderStatVal2!(X, 7)
                 leagLdrPlayer$(161) = leaderNames$(X)
                 leagLdrTeam$(161) = statName$
 
-                3445 '
+                '3445 '
                 For Z = 151 To 160
 
                     For Z1 = Z + 1 To 161
@@ -968,23 +1116,35 @@ Sub CalcStatTotals (statName$, totalGames)
 
             End If
 
-            3452 '
+            skipIF = _False
+
             For Z = 162 To 172
 
                 If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 1) / 3
-                    GoTo 3457
+
+                    For Z = 162 To 171
+                        For Z1 = Z + 1 To 172
+                            If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                                Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                                Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                                Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                            End If
+                        Next Z1
+                    Next Z
+
+                    skipIF = _True: Exit For
                 End If
 
             Next Z
 
-            If leaderStatVal2!(X, 1) / 3 > leaderVals!(172, 1) Then
+            If Not skipIF And leaderStatVal2!(X, 1) / 3 > leaderVals!(172, 1) Then
 
                 leaderVals!(172, 1) = leaderStatVal2!(X, 1) / 3
                 leagLdrPlayer$(172) = leaderNames$(X)
                 leagLdrTeam$(172) = statName$
 
-                3457 '
+                '3457 '
                 For Z = 162 To 171
                     For Z1 = Z + 1 To 172
                         If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
@@ -997,21 +1157,34 @@ Sub CalcStatTotals (statName$, totalGames)
 
             End If
 
-            3464 '
+            skipIF = _False
+
             For Z = 173 To 183
                 If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 6)
-                    GoTo 3469
+
+                    For Z = 173 To 182:
+                        For Z1 = Z + 1 To 183:
+                            If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                                Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                                Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                                Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                            End If
+
+                        Next Z1
+                    Next Z
+
+                    skipIF = _True: Exit For
                 End If
             Next Z
 
-            If leaderStatVal2!(X, 6) > leaderVals!(183, 1) Then
+            If Not skipIF And leaderStatVal2!(X, 6) > leaderVals!(183, 1) Then
 
                 leaderVals!(183, 1) = leaderStatVal2!(X, 6)
                 leagLdrPlayer$(183) = leaderNames$(X)
                 leagLdrTeam$(183) = statName$
 
-                3469 '
+                '3469 '
                 For Z = 173 To 182:
                     For Z1 = Z + 1 To 183:
                         If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
@@ -1027,21 +1200,33 @@ Sub CalcStatTotals (statName$, totalGames)
                 '3475 NEXT Z
             End If
 
-            3476 '
+            skipIF = _False
+
             For Z = 184 To 194
                 If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 11)
-                    GoTo 3481
+
+                    For Z = 184 To 193
+                        For Z1 = Z + 1 To 194
+                            If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                                Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                                Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                                Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                            End If
+                        Next Z1
+                    Next Z
+
+                    skipIF = _True: Exit For
                 End If
             Next Z
 
-            If leaderStatVal2!(X, 11) >= leaderVals!(194, 1) Then
+            If Not skipIF And leaderStatVal2!(X, 11) >= leaderVals!(194, 1) Then
 
                 leaderVals!(194, 1) = leaderStatVal2!(X, 11)
                 leagLdrPlayer$(194) = leaderNames$(X)
                 leagLdrTeam$(194) = statName$
 
-                3481 '
+                '3481 '
                 For Z = 184 To 193
                     For Z1 = Z + 1 To 194
                         If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
@@ -1054,21 +1239,33 @@ Sub CalcStatTotals (statName$, totalGames)
 
             End If
 
-            3488 '
+            skipIF = _False
+
             For Z = 195 To 205
 
                 If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 12)
-                    GoTo 3493
+
+                    For Z = 195 To 204
+                        For Z1 = Z + 1 To 205
+                            If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                                Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                                Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                                Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                            End If
+                        Next Z1
+                    Next Z
+
+                    skipIF = _True: Exit For
                 End If
             Next Z
 
-            If leaderStatVal2!(X, 12) > leaderVals!(205, 1) Then
+            If Not skipIF And leaderStatVal2!(X, 12) > leaderVals!(205, 1) Then
                 leaderVals!(205, 1) = leaderStatVal2!(X, 12)
                 leagLdrPlayer$(205) = leaderNames$(X)
                 leagLdrTeam$(205) = statName$
 
-                3493 '
+                '3493 '
                 For Z = 195 To 204
                     For Z1 = Z + 1 To 205
                         If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
@@ -1081,22 +1278,34 @@ Sub CalcStatTotals (statName$, totalGames)
 
             End If
 
-            3500 '
+            skipIF = _False
+
             For Z = 206 To 216
 
                 If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 13)
-                    GoTo 3505
+
+                    For Z = 206 To 215
+                        For Z1 = Z + 1 To 216
+                            If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                                Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                                Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                                Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                            End If
+                        Next Z1
+                    Next Z
+
+                    skipIF = _True: Exit For
                 End If
             Next Z
 
-            If leaderStatVal2!(X, 13) > leaderVals!(216, 1) Then
+            If Not skipIF And leaderStatVal2!(X, 13) > leaderVals!(216, 1) Then
 
                 leaderVals!(216, 1) = leaderStatVal2!(X, 13)
                 leagLdrPlayer$(216) = leaderNames$(X)
                 leagLdrTeam$(216) = statName$
 
-                3505 '
+                '3505 '
                 For Z = 206 To 215
                     For Z1 = Z + 1 To 216
                         If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
@@ -1109,21 +1318,35 @@ Sub CalcStatTotals (statName$, totalGames)
 
             End If
 
+            skipIF = _False
+
             APP = APP + leaderStatVal2!(X, 9)
             For Z = 228 To 238
                 If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 9)
-                    GoTo 3518
+
+                    For Z = 228 To 237:
+                        For Z1 = Z + 1 To 238:
+                            If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                                Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                                Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                                Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                            End If
+
+                        Next Z1
+                    Next Z
+
+                    skipIF = _True: Exit For
                 End If
             Next Z
 
-            If leaderStatVal2!(X, 9) > leaderVals!(238, 1) Then
+            If Not skipIF And leaderStatVal2!(X, 9) > leaderVals!(238, 1) Then
 
                 leaderVals!(238, 1) = leaderStatVal2!(X, 9)
                 leagLdrPlayer$(238) = leaderNames$(X)
                 leagLdrTeam$(238) = statName$
 
-                3518 '
+                '3518 '
                 For Z = 228 To 237:
                     For Z1 = Z + 1 To 238:
                         If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
@@ -1141,7 +1364,9 @@ Sub CalcStatTotals (statName$, totalGames)
 
     Next X
 
-    3530 '
+
+    skipIF = _False
+
     For Z = 1 To TEAMS_PER_LEAGUE
 
         If ldrBatStat(3) = 0 Then ldrBatStat(3) = 1
@@ -1151,12 +1376,31 @@ Sub CalcStatTotals (statName$, totalGames)
             For M = 3 To 14:
                 OFT!(Z, M) = ldrBatStat(M)
             Next M
-            GoTo 3535
+
+            For Z = 1 To 39
+                For Z1 = Z + 1 To 40
+                    If OFT!(Z, 1) < OFT!(Z1, 1) Then
+                        Swap BA$(Z1), BA$(Z)
+
+                        For M = 1 To 14:
+                            Swap OFT!(Z1, M), OFT!(Z, M)
+                        Next M
+                    End If
+                Next Z1
+            Next Z
+
+            For Z = 1 To TEAMS_PER_LEAGUE
+                If OFT!(Z, 1) = OFT!(40, 1) Then
+                    BA$(Z) = "*"
+                End If
+            Next Z
+
+            skipIF = _True: Exit For
         End If
 
     Next Z
 
-    If ldrBatStat(4) / ldrBatStat(3) > OFT!(40, 1) Then
+    If Not skipIF And ldrBatStat(4) / ldrBatStat(3) > OFT!(40, 1) Then
 
         OFT!(40, 1) = ldrBatStat(4) / ldrBatStat(3)
 
@@ -1166,7 +1410,7 @@ Sub CalcStatTotals (statName$, totalGames)
 
         BA$(40) = statName$
 
-        3535 '
+        '3535 '
         For Z = 1 To 39
 
             For Z1 = Z + 1 To 40
@@ -1193,6 +1437,8 @@ Sub CalcStatTotals (statName$, totalGames)
 
     End If
 
+    skipIF = _False
+
     For Z = 1 To TEAMS_PER_LEAGUE
 
         If ldrPitStat(1) = 0 Then
@@ -1205,12 +1451,31 @@ Sub CalcStatTotals (statName$, totalGames)
             For M = 2 To 14:
                 DFT!(Z, M) = ldrPitStat(M - 1)
             Next M
-            GoTo 3555
+
+            For Z = 1 To 39
+                For Z1 = Z + 1 To 40
+                    If DFT!(Z, 1) > DFT!(Z1, 1) Then
+                        Swap ER$(Z1), ER$(Z)
+
+                        For M = 1 To 14:
+                            Swap DFT!(Z1, M), DFT!(Z, M)
+                        Next M
+                    End If
+                Next Z1
+            Next Z
+
+            For Z = 1 To TEAMS_PER_LEAGUE
+                If DFT!(Z, 1) = DFT!(40, 1) Then
+                    ER$(Z) = "*"
+                End If
+            Next Z
+
+            skipIF = _True: Exit For
         End If
 
     Next Z
 
-    If ldrPitStat(4) / ldrPitStat(1) * 27 < DFT!(40, 1) Then
+    If Not skipIF And ldrPitStat(4) / ldrPitStat(1) * 27 < DFT!(40, 1) Then
 
         DFT!(40, 1) = ldrPitStat(4) / ldrPitStat(1) * 27
         For M = 2 To 14:
@@ -1220,7 +1485,7 @@ Sub CalcStatTotals (statName$, totalGames)
         ER$(40) = statName$
         ER$(40) = statName$
 
-        3555 '
+        '3555 '
         For Z = 1 To 39
 
             For Z1 = Z + 1 To 40

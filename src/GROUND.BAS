@@ -41,48 +41,62 @@ Sub GROUND ()
     Locate 13, 1: QPrint "Total Earned Runs in League ", 14, 1, -1
     Locate , 29: QPrint FUsing$(Str$(ER), "######", 1), FG, BG, -1
 
-    GetDiv1:
-    Locate 7, 24 'location of beginning of field
-    CapsOn = 0: NumOnly = 0: Max = 6 'specify field parameters
-    Call TextIn(BP$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
-    BP = Val(BP$)
-    If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
-    If XCode = 2 GoTo Done 'all done entering data
+    branchIdx = 0
 
-    GetDiv2:
-    Locate 9, 28 'location of beginning of field
-    CapsOn = 0: NumOnly = 0: Max = 6 'specify field parameters
-    Call TextIn(SA$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
-    SA = Val(SA$)
-    If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
-    If XCode = 2 GoTo Done 'all done entering data
+    Do
+        If branchIdx <= 10 Then                             'League Batting Average
+            Locate 7, 24 'location of beginning of field
+            CapsOn = 0: NumOnly = 0: Max = 6 'specify field parameters
+            Call TextIn(BP$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+            BP = Val(BP$)
+            If XCode = 1 Then branchIdx = 10: _Continue    'GoTo GetDiv1: 'can't back up any more, stay here
+            If XCode = 2 Then branchIdx = 50: _Continue    'GoTo Done 'all done entering data
+            branchIdx = 20                                 'Fall through...
+        End If
 
-    GetDiv3:
-    Locate 11, 22 'location of beginning of field
-    CapsOn = 0: NumOnly = 0: Max = 6 'specify field parameters
-    Call TextIn(PH$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
-    PH = Val(PH$)
-    If XCode = 1 GoTo GetDiv2: 'can't back up any more, stay here
-    If XCode = 2 GoTo Done 'all done entering data
+        If branchIdx <= 20 Then                             'League Slugging Average
+            Locate 9, 28 'location of beginning of field
+            CapsOn = 0: NumOnly = 0: Max = 6 'specify field parameters
+            Call TextIn(SA$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+            SA = Val(SA$)
+            If XCode = 1 Then branchIdx = 10: _Continue    'GoTo GetDiv1: 'can't back up any more, stay here
+            If XCode = 2 Then branchIdx = 50: _Continue    'GoTo Done 'all done entering data
+            branchIdx = 30                                 'Fall through...
+        End If
 
-    GetDiv4:
-    Locate 13, 29 'location of beginning of field
-    CapsOn = 0: NumOnly = 0: Max = 6 'specify field parameters
-    Call TextIn(ER$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
-    ER = Val(ER$)
-    If XCode = 1 GoTo GetDiv3: 'can't back up any more, stay here
+        If branchIdx <= 30 Then                             'Total Hits in League
+            Locate 11, 22 'location of beginning of field
+            CapsOn = 0: NumOnly = 0: Max = 6 'specify field parameters
+            Call TextIn(PH$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+            PH = Val(PH$)
+            If XCode = 1 Then branchIdx = 20: _Continue   'GoTo GetDiv2: 'can't back up any more, stay here
+            If XCode = 2 Then branchIdx = 50: _Continue   'GoTo Done 'all done entering data
+            branchIdx = 40                                 'Fall through...
+        End If
 
-    Done:
-    Color 14, 1
-    Locate LAST_ROW - 2, 1
-    Print "Is this okay? (Yes/No) ";
-    X$ = ""
-    Call YesNoB(X$, XCode, FG, BG)
-    Locate , 1
-    ClearEOL 14, 1
-    If XCode = 1 GoTo GetDiv4
-    If X$ = "N" GoTo GetDiv1
-    If X$ <> "Y" GoTo Done 'insist on either Y or N or up-arrow
+        If branchIdx <= 40 Then                             'Total Earned Runs in League
+            Locate 13, 29 'location of beginning of field
+            CapsOn = 0: NumOnly = 0: Max = 6 'specify field parameters
+            Call TextIn(ER$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+            ER = Val(ER$)
+            If XCode = 1 Then branchIdx = 30: _Continue    'GoTo GetDiv3: 'can't back up any more, stay here
+            branchIdx = 50                                 'Fall through...
+        End If
+
+        If branchIdx <= 50 Then                             'Done?
+            Color 14, 1
+            Locate LAST_ROW - 2, 1
+            Print "Is this okay? (Yes/No) ";
+            X$ = ""
+            Call YesNoB(X$, XCode, FG, BG)
+            Locate , 1
+            ClearEOL 14, 1
+            If XCode = 1 Then branchIdx = 40: _Continue    'GoTo GetDiv4
+            If X$ = "N"  Then branchIdx = 10: _Continue    'GoTo GetDiv1
+            If X$ <> "Y" Then branchIdx = 50: _Continue    'GoTo Done 'insist on either Y or N or up-arrow
+            branchIdx = 60                                 'Fall through...
+        End If
+    Loop While branchIdx <= 50
 
     MD = SA - BP
 

@@ -122,7 +122,7 @@ Sub SCHEDULE ()
                     Call CreateSeasonSchedule
 
                 Case 7:
-                    Call BoxscoreMaintenance
+                    ' Call BoxscoreMaintenance
 
                 Case 8:
                     scheduleFile$ = _OpenFileDialog$("Select schedule file", diskPaths$(3), "*.SCD", "Schedule files [.SCD]")
@@ -351,7 +351,7 @@ Sub NewSchedule (scheduleFile$)
                 'boxName$ = diskPaths$(1) + "BOX" + Mid$(Str$(targetGame%), 2, Len(Str$(targetGame%)))
                 boxName$ = diskPaths$(1) + baseFile$ + "_GAME" + Mid$(Str$(targetGame%), 2, Len(Str$(targetGame%))) + ".BS"
 
-                Call EditBoxscore(boxName$)
+                ' Call EditBoxscore(boxName$)
                 Color 15, 0
 
             Case "D":
@@ -1799,7 +1799,7 @@ Sub EditBoxscore (boxName$)
 
     Else
 
-        Call QBWRITE(boxName$)
+        ' Call QBWRITE(boxName$)
 
     End If
 

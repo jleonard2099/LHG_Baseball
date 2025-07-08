@@ -140,44 +140,58 @@ Sub DefineLeague ()
     Locate 11, 1: QPrint "Name for Division 4 ", 14, 1, -1
     Locate , 21: QPrint PadRight$(div4Name$, 50), FG, BG, -1
 
-    GetDiv1:
-    Locate 5, 21 'location of beginning of field
-    CapsOn = 0: NumOnly = 0: Max = 50 'specify field parameters
-    Call TextIn(div1Name$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
-    If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
-    If XCode = 2 GoTo Done 'all done entering data
+    branchIdx = 0
 
-    GetDiv2:
-    Locate 7, 21 'location of beginning of field
-    CapsOn = 0: NumOnly = 0: Max = 50 'specify field parameters
-    Call TextIn(div2Name$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
-    If XCode = 1 GoTo GetDiv1: 'can't back up any more, stay here
-    If XCode = 2 GoTo Done 'all done entering data
+    Do
+        If branchIdx <= 10 Then
+            Locate 5, 21                                    'location of beginning of field
+            CapsOn = 0: NumOnly = 0: Max = 50               'specify field parameters
+            Call TextIn(div1Name$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+            If XCode = 1 Then branchIdx = 10: _Continue     'can't back up any more, stay here
+            If XCode = 2 Then branchIdx = 50: _Continue     'all done entering data
+            branchIdx = 20                                  'Fall through...
+        End If
 
-    GetDiv3:
-    Locate 9, 21 'location of beginning of field
-    CapsOn = 0: NumOnly = 0: Max = 50 'specify field parameters
-    Call TextIn(div3Name$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
-    If XCode = 1 GoTo GetDiv2: 'can't back up any more, stay here
-    If XCode = 2 GoTo Done 'all done entering data
+        If branchIdx <= 20 Then
+            Locate 7, 21                                    'location of beginning of field
+            CapsOn = 0: NumOnly = 0: Max = 50               'specify field parameters
+            Call TextIn(div2Name$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+            If XCode = 1 Then branchIdx = 10: _Continue     'can't back up any more, stay here
+            If XCode = 2 Then branchIdx = 50: _Continue     'all done entering data
+            branchIdx = 30                                  'Fall through...
+        End If
 
-    GetDiv4:
-    Locate 11, 21 'location of beginning of field
-    CapsOn = 0: NumOnly = 0: Max = 50 'specify field parameters
-    Call TextIn(div4Name$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
-    If XCode = 1 GoTo GetDiv3: 'can't back up any more, stay here
+        If branchIdx <= 30 Then
+            Locate 9, 21                                    'location of beginning of field
+            CapsOn = 0: NumOnly = 0: Max = 50               'specify field parameters
+            Call TextIn(div3Name$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+            If XCode = 1 Then branchIdx = 20: _Continue     'can't back up any more, stay here
+            If XCode = 2 Then branchIdx = 50: _Continue     'all done entering data
+            branchIdx = 40                                  'Fall through...
+        End If
 
-    Done:
-    Color 14, 1
-    Locate LAST_ROW - 2, 1
-    Print "Is this okay? (Yes/No) ";
-    X$ = ""
-    Call YesNoB(X$, XCode, FG, BG)
-    Locate , 1
-    ClearEOL 14, 1
-    If XCode = 1 GoTo GetDiv4
-    If X$ = "N" GoTo GetDiv1
-    If X$ <> "Y" GoTo Done 'insist on either Y or N or up-arrow
+        If branchIdx <= 40 Then
+            Locate 11, 21                                   'location of beginning of field
+            CapsOn = 0: NumOnly = 0: Max = 50               'specify field parameters
+            Call TextIn(div4Name$, Max, NumOnly, CapsOn, XCode, FG, BG) 'get input
+            If XCode = 1 Then branchIdx = 30: _Continue     'can't back up any more, stay here
+            branchIdx = 50                                  'Fall through...
+        End If
+
+        If branchIdx <= 50 Then
+            Color 14, 1
+            Locate LAST_ROW - 2, 1
+            Print "Is this okay? (Yes/No) ";
+            X$ = ""
+            Call YesNoB(X$, XCode, FG, BG)
+            Locate , 1
+            ClearEOL 14, 1
+            If XCode = 1 Then branchIdx = 40: _Continue
+            If X$ = "N"  Then branchIdx = 10: _Continue
+            If X$ <> "Y" Then branchIdx = 50: _Continue     'insist on either Y or N or up-arrow
+            branchIdx = 60                                  'Fall through...
+        End If
+    Loop While branchIdx <= 50
 
 End Sub
 

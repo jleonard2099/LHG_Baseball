@@ -25,7 +25,7 @@ DefInt A-Z
 '$Include: 'KeyInput.bi'
 '$Include: 'QPProEqu.bi'
 '$Include: 'StringManip.bi'
-'$Include: 'QBWRITE.bi'
+'no $Include: 'QBWRITE.bi'
 
 ' For Utils
 '$Include: 'BoxRoutines.bi'
@@ -491,7 +491,7 @@ Sub Main_Menu (menuSelection)
                     Call PROGMAN
 
                 Case 9:
-                    Call ConfigureDrives_Base
+                    ' Call ConfigureDrives_Base
 
             End Select
 
@@ -831,13 +831,13 @@ End Sub
 
 ' General purpose
 '$Include: 'KeyInput.bm'
-'$Include: 'QPProEqu.bm'
+'$Include: 'QPProEquHACK.bm'
 '$Include: 'StringManip.bm'
-'$Include: 'QBWRITE.bm'
+'no $Include: 'QBWRITE.bm'
 
 ' For Utils
 '$Include: 'BoxRoutines.bm'
-'$Include: 'ConfigureDrives.bm'
+'no $Include: 'ConfigureDrives.bm'
 '$Include: 'FileTeamSelection.bm'
 '$Include: 'TITLE.bm'
 '$Include: 'ACTIVATE.BAS'

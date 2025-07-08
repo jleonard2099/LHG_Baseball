@@ -1,0 +1,1324 @@
+'-----------------------------------
+' FCount Copycat Function
+'-----------------------------------
+Function FileCount% (dirSpec$)
+
+    'ListMAX is the max # of files the function
+    'can process. The value chosen was used for
+    'efficiency and speed.
+
+    '-- The max # of files in a folder for most OS = 1024 * 1024 = 4294967295
+
+    Const TmpFile$ = "DIRINF0", ListMAX~& = 8388608
+
+    Static emptyFile%, Ready%, Index%
+    Static DirList$()
+
+    emptyFile% = 0
+
+    'DIM array for first use
+    If Not Ready% Then
+        ReDim DirList$(ListMAX~&)
+        Ready% = -1
+    End If
+
+    'Get file names when a spec is given
+    If dirSpec$ > "" Then
+
+        osSpec$ = Left$(_OS$, InStr(2, _OS$, "[") - 1)
+
+        Select Case osSpec$
+            Case "[WINDOWS]":
+                Shell _Hide "dir /on /b " + Chr$(34) + dirSpec$ + Chr$(34) + " > " + TmpFile$
+            Case "[LINUX]", "[MAC]", "[MACOSX]":
+                Shell _Hide "ls -A1 " + dirSpec$ + " | awk -F/ '{print $NF}' | sort | tee " + TmpFile$
+        End Select
+
+        Index% = 0
+        DirList$(Index%) = ""
+        ff% = FreeFile
+
+        'Determine file size
+        Open TmpFile$ For Append As #ff%
+        size& = LOF(ff%)
+        Close #ff%
+
+        If size& = 0 Then
+            emptyFile% = 1
+        End If
+
+        If emptyFile% = 0 Then
+            'Count # of files in list
+            Open TmpFile$ For Input As #ff%
+            Do While Not EOF(ff%) And Index% < ListMAX%
+                Index% = Index% + 1
+                Line Input #ff%, DirList$(Index%)
+            Loop
+            Close #ff%
+        End If
+
+        Kill TmpFile$
+
+        ' Shared variable can return the file count
+        If emptyFile% = 0 Then FileCount% = Index%
+
+    End If
+
+End Function
+
+'-----------------------------------
+' FileSize Copycat Function
+'-----------------------------------
+Function FileSize& (sourceFile$)
+    Open sourceFile$ For Binary As #1
+    FileSize& = LOF(1)
+    Close #1
+End Function
+
+'-----------------------------------
+' FUsing Copycat Function
+'-----------------------------------
+Function FUsing$ (Number$, Image$, Typ%)
+    '# - digit position
+    '. - decimal point
+    '+ - sign indicator
+    '** - replace leading space with asterisk (*)
+    '$$ - adds dollar sign to left of number
+    '**$ - combines effect of the above 2
+    ', - add commas to the number
+
+    'Function:  Can return a PRINT USING formatted string for assignment to
+    '           any string variable. This is a multiple name function for
+    '           use of up to three arguments (Format$, Format2$, Format3$).
+    '
+    'Synopsis:  res$ = FUsing$  (Number$, Image$, Typ%)
+    '
+    'Result:    res$ --> the resulting formatted string
+    '
+    'Inputs:
+    '           Number$ --> the argument(s) to format into the Image$ string,
+    '                    use STR$(num) to pass in a number
+    '           Image$ --> the string with format options for PRINT USING
+    '           Typ% --> the type(s) of the respective argument(s),
+    '                     0 = argument is a real (alphanumeric) string
+    '                     1 = argument is a STR$() number string
+
+    'Notes:
+    '   This function is adapted and slightly altered from
+    '   an idea posted in the QB64 Forum by Fellippe Heitor
+
+    shan& = _Source
+    dhan& = _Dest
+    than& = _NewImage(256, 1, 0) 'if results may get longer, then raise the 256 value
+
+    _Source than&
+    _Dest than&
+
+    If Typ% Then
+        Print Using Image$; Val(Number$);
+    Else
+        Print Using Image$; Number$;
+    End If
+
+    For I% = 1 To Pos(0) - 1
+        res$ = res$ + Chr$(Screen(1, I%))
+    Next I%
+
+    _Source shan&
+    _Dest dhan&
+
+    _FreeImage than&
+
+    FUsing$ = res$
+
+End Function
+
+'-----------------------------------
+' MGetKey Copycat Function
+'-----------------------------------
+Function MGetKey (Row%, Col%)
+    'This function is currently not mouse-friendly
+    'However, it should return the Row/Col of
+    'the mouse cursor when it was clicked
+
+    'Also, it should return the mouse button
+    'instead of the keyboard key if mouse
+    'was clicked
+
+    'Clear keyboard buffer
+    'Sleep
+
+    Do
+        k$ = InKey$
+    Loop Until k$ <> ""
+
+    KeyCode% = CVI(k$ + Chr$(0))
+
+End Function
+
+'-----------------------------------
+' Monitor Copycat Function
+'-----------------------------------
+' This function's original purpose
+' was to use ASM to check memory
+' addresses to determine the gfx
+' adapter and monitor type.
+' Modern OS's do not expose this
+' and people do not have to worry
+' whether they have CGA/EGA/VGA.
+' Modern compilers "emulate" these
+' features to some degree but that
+' does not make this any more relevant.
+' So, we're essentially going to Return
+
+' 12 for VGA to the functions requesting.
+' Currently this is only used in some
+' logic to determine print colors and
+' will be removed completely in the future.
+Function Monitor% ()
+    'DEF SEG = 0
+
+    'SupportsColor = PEEK(1123) + 256 * PEEK(1124)
+    'Select Case Mono
+    '   Case 948: SupportsColor=0
+    '   Case 980: SupportsColor=1
+    'End Select
+
+    'AdapterType = PEEK...
+    'Select Case AdapterType
+    '
+    'End Select
+
+    'Results to Return
+
+    '1 = Mono
+    '2 = Hercules
+    '3 = CGA
+    '4 = EGA Adapter, Monochrome Monitor
+    '5 = EGA Adapter, Color Monitor
+    '6 = VGA Adapter, Monochrome Monitor
+    '7 = VGA Adapter, Color Monitor
+    '8 = MCGA Adapter, Monochrome Monitor
+    '9 = MCGA Adapter, Color Monitor
+    '10 = EGA Adapter, CGA Monitor
+    '11 = IBM 8514/A Adapter
+
+    Monitor% = 12
+End Function
+
+'-----------------------------------
+' OneColor Copycat Function
+'-----------------------------------
+Function OneColor% (FGColor%, BGColor%)
+    'The function below works too
+    'OneColor% = (BGColor% * (2 ^ 4)) + (FGColor% \ (2 ^ 4))
+
+    'But this is the doumented function from QPPro
+    OneColor% = (FGColor% And 16) * 8 + ((BGColor% And 7) * 16) + (FGColor% And 15)
+End Function
+
+
+'-----------------------------------
+' Reads DIR into file list
+'-----------------------------------
+Function READDIR$ (dirSpec$)
+
+    'ListMAX is the max # of files the function
+    'can process. The value chosen was used for
+    'efficiency and speed.
+
+    '-- The max # of files in a folder for most OS = 1024 * 1024 = 4294967295
+    Const TmpFile$ = "DIRINF0", ListMAX~& = 131072
+
+    Shared DirCount%
+
+    Static Ready%, Index%, DirList$()
+
+    If Not Ready% Then ReDim DirList$(ListMAX%): Ready% = -1 'DIM array first use
+
+    If dirSpec$ > "" Then 'get file names when a spec is given
+
+        osSpec$ = Left$(_OS$, InStr(2, _OS$, "[") - 1)
+
+        Select Case osSpec$
+            Case "[WINDOWS]":
+                Shell _Hide "dir /on /b " + Chr$(34) + dirSpec$ + Chr$(34) + " > " + TmpFile$
+            Case "[LINUX]", "[MAC]", "[MACOSX]":
+                Shell _Hide "ls -A1 " + dirSpec$ + " | awk -F/ '{print $NF}' | sort | tee " + TmpFile$
+        End Select
+
+        Index% = 0
+        ff% = FreeFile
+
+        Open TmpFile$ For Append As #ff%
+        size& = LOF(ff%)
+        Close #ff%
+
+        If size& = 0 Then Kill TmpFile$: Exit Function
+
+        Open TmpFile$ For Input As #ff%
+        Do While Not EOF(ff%) And Index% < ListMAX%
+            Index% = Index% + 1
+            Line Input #ff%, DirList$(Index%)
+        Loop
+
+        DirCount% = Index% ' Shared variable can return the file count
+
+        Close #ff%
+
+        Kill TmpFile$
+
+    Else
+
+        If Index% > 0 Then Index% = Index% - 1 'if there's no spec, we get the next file name
+
+    End If
+
+    READDIR$ = DirList$(Index%)
+
+End Function
+
+
+'-----------------------------------
+' AddInt Copycat Subroutine
+'-----------------------------------
+' NOT IMPLEMENTED
+Sub AddInt (AElement, Value, NumEls)
+
+End Sub
+
+' ------------------------------------------------------------
+' Subroutine to draw box in Screen Mode 0
+' ------------------------------------------------------------
+Sub box0 (ULRow%, ULCol%, LRRow%, LRCol%, Char%, FGColor%, BGColor%)
+
+    '1 = single line all around
+    '2 = double line all around
+    '3 = double line horizontally, single line vertically
+    '4 = single line horizontally, double line vertically
+    'If Char% is assigned to any other value, that ASCII character will be used for the entire box.
+
+    Select Case Char%
+        Case 1:
+            ulCorner$ = Chr$(218)
+            horizontal$ = Chr$(196)
+            urCorner$ = Chr$(191)
+            vertical$ = Chr$(179)
+            llCorner$ = Chr$(192)
+            lrCorner$ = Chr$(217)
+        Case 2:
+            ulCorner$ = Chr$(201)
+            horizontal$ = Chr$(205)
+            urCorner$ = Chr$(187)
+            vertical$ = Chr$(186)
+            llCorner$ = Chr$(200)
+            lrCorner$ = Chr$(188)
+        Case 3:
+            ulCorner$ = Chr$(213)
+            horizontal$ = Chr$(205)
+            urCorner$ = Chr$(184)
+            vertical$ = Chr$(179)
+            llCorner$ = Chr$(212)
+            lrCorner$ = Chr$(190)
+        Case 4:
+            ulCorner$ = Chr$(214)
+            horizontal$ = Chr$(196)
+            urCorner$ = Chr$(183)
+            vertical$ = Chr$(186)
+            llCorner$ = Chr$(211)
+            lrCorner$ = Chr$(189)
+        Case Else:
+            ulCorner$ = Chr$(Char%)
+            horizontal$ = Chr$(Char%)
+            urCorner$ = Chr$(Char%)
+            vertical$ = Chr$(Char%)
+            llCorner$ = Chr$(Char%)
+            lrCorner$ = Chr$(Char%)
+    End Select
+
+    'SplitColor Color%, FGColor%, BGColor% 'split color into FG and BG
+
+    Color FGColor%, BGColor%
+
+    ' Prints the top of the box
+    Locate ULRow%, ULCol%
+    Print ulCorner$ + String$(LRCol% - ULCol%, Asc(horizontal$)) + urCorner$
+
+    ' Print the sides of the box
+    For currentRow = (ULRow% + 1) To (LRRow% - 1) Step 1
+        Locate currentRow, ULCol%
+        Print vertical$ + Space$(LRCol% - ULCol%) + vertical$
+    Next
+
+    'Print the bottom line of the box
+    Locate LRRow%, ULCol%
+    Print llCorner$ + String$(LRCol% - ULCol%, Asc(horizontal$)) + lrCorner$
+
+    'Color Color%,
+
+End Sub
+
+'-----------------------------------
+' Print NumLock / CapsLock Status
+'-----------------------------------
+Sub CapNum ()
+
+    Const NUMLOCK& = 100300
+    Const CAPSLOCK& = 100301
+
+    CapStatus = _KeyDown(CAPSLOCK&) 'Get BIOS status of Caps Lock
+    NumStatus = _KeyDown(NUMLOCK&) 'Get BIOS status of Num Lock
+
+    H = Pos(0): V = CsrLin 'Save cursor position
+
+    If Cap <> CapStatus Then 'Go To QNumCheck 'No change since last check
+
+        Cap = CapStatus 'save CapsLock status
+        Locate LAST_ROW, 69 'Position to print status msg
+
+        _LogInfo "CapStatus = " + Str$(CapStatus)
+
+        If CapStatus Then
+            Print " CAP "; 'White on Black
+        Else
+            Print Space$(5) 'Print or erase message
+        End If
+    End If
+    If Num <> NumStatus Then 'Go To QCapNumExit 'No change since last check
+
+        Num = NumStatus 'Save NumLock status
+        Locate LAST_ROW, 75 'Position to print status msg
+
+        _LogInfo "NumStatus = " + Str$(NumStatus)
+
+        If NumStatus Then 'Print or erase message
+            Print " NUM ";
+        Else
+            Print Space$(5)
+        End If
+    End If
+
+    Locate V, H 'Restore cursor position
+
+End Sub
+
+'-----------------------------------
+' ClearEOL Copycat Subroutine
+'-----------------------------------
+Sub ClearEOL (FGColor&, BGColor&)
+    'Operate from cursor position,
+    '  without moving it
+    row% = CsrLin
+    column% = Pos(0)
+
+    'Start at the cursor position
+    'Locate row% - 1, column%
+    Locate row%, column%
+
+    'Print all spaces
+    '--If using OneColor:
+    '--Color (Color% And 15), ((Color% And 240) / 16)
+    Color FGColor&, BGColor&
+    Print Space$(80 - column%);
+
+End Sub
+
+'-----------------------------------
+' Get Command Line Subroutine
+'-----------------------------------
+Sub Comline (NumArgs%, Args$(), MaxArgs%)
+    Const TRUE = -1, FALSE = 0
+
+    NumArgs% = 0: IN = FALSE
+
+    ' Get the command line using the COMMAND$ function
+    Cl$ = Command$
+    L = Len(Cl$)
+    ' Go through the command line a character at a time
+
+    For I = 1 To L
+
+        C$ = Mid$(Cl$, I, 1)
+        ' Test for character being a blank or a tab
+        If (C$ <> " " And C$ <> Chr$(9)) Then
+            ' Neither blank nor tab; test if you're already inside
+            ' an argument
+            If Not IN Then
+                ' You've found the start of a new argument
+                ' Test for too many arguments
+                If NumArgs% = MaxArgs% Then Exit For
+                NumArgs% = NumArgs% + 1
+                IN = TRUE
+            End If
+            ' Add the character to the current argument
+            Args$(NumArgs%) = Args$(NumArgs%) + C$
+        Else
+            ' Found a blank or a tab.
+            ' Set "Not in an argument" flag to FALSE
+            IN = FALSE
+        End If
+
+    Next I
+
+End Sub
+
+'-----------------------------------
+' ClearScrn + MsgBox Subroutine
+'-----------------------------------
+Sub CSMsgBox (Message$, MsgWidth%, Pass)
+
+    If Len(Message$) Then
+
+        Row = CsrLin 'Get the Row Position
+
+        ReDim Temp$(23) 'Make temporary array to hold the parsed up lines
+
+        MesLen = Len(Message$) 'Get the total length of the help message
+
+        LN = 0 'Line number
+        Strt = 1 'Starting parse position
+
+        '*** Parse the message into lines
+        Do
+
+            While Mid$(Message$, Strt, 1) = " " 'Skip over blanks
+                Strt = Strt + 1
+            Wend
+
+            ND = Strt + MsgWidth% 'Guess at the end of line
+
+            'Loop backwards to find
+            While Mid$(Message$, ND, 1) <> " " And ND <= MesLen And ND > Strt
+                ND = ND - 1 '  blank space
+            Wend
+
+            LN = LN + 1 'Increment the Line number
+
+            'Pull out the new line
+            Temp$(LN) = Mid$(Message$, Strt, ND - Strt)
+            Strt = ND + 1 'Reset starting pos. for next line
+
+        Loop Until ND >= MesLen 'Get more unless @ end of mes
+
+        BotRow = Row + LN + 1 'Find the bottom row #
+
+        'Save current screen
+        oldmode& = _CopyImage(0)
+
+        BoxWidth% = MsgWidth% + 4 'Find the outer box width
+        ColPos = 40 - (BoxWidth% \ 2) 'Starting pos. for centered box
+        Locate Row, ColPos 'Print the top of box
+
+        MQPrint Chr$(214) + String$(MsgWidth% + 2, 196) + Chr$(183), 0, 7
+
+        Box$ = Chr$(186) + Space$(MsgWidth% + 2) + Chr$(186) 'Make the box sides
+
+        For N = 1 To LN 'Print message lines
+            Locate N + Row, ColPos
+            MQPrint Box$, 0, 7
+            Locate , ColPos + 2
+            MQPrint Temp$(N), 0, 7
+        Next
+
+        Locate N + Row, ColPos 'Print the bottom of box
+        MQPrint Chr$(211) + String$(MsgWidth% + 2, 196) + Chr$(189), 0, 7
+
+        'MPaintBox Row + 1, ColPos + BoxWidth%, N + Row, ColPos + BoxWidth% + 1, 8
+        'MPaintBox N + Row + 1, ColPos + 2, N + Row + 1, ColPos + BoxWidth% + 1, 8
+        Locate Row,
+
+        Pass = 1 'Set flag say we've been here
+
+        Erase Temp$ 'Don't need this anymore
+
+    Else
+
+        If Pass = 1 Then 'If we've been here before...
+            'Restore the original screen
+            Screen oldmode&
+
+            Pass = 0 'Reset flag for next call
+        End If
+
+    End If
+
+End Sub
+
+'-----------------------------------
+' FCopy Copycat Subroutine
+'-----------------------------------
+Sub FCopy (srcFile$, dstFile$, Buff$, copyErr%)
+
+    If _FileExists(srcFile$) Then
+
+        If _FileExists(dstFile$) Then
+            'issue with detination
+            copyErr% = 2
+            'KILL dstFile$
+        End If
+
+        ffSrc = FreeFile
+        Open srcFile$ For Binary As ffSrc
+        ffDst = FreeFile
+        Open dstFile$ For Binary As ffDst
+
+        size& = LOF(ffSrc)
+        BufferSize& = 1024
+        Buff$ = Space$(BufferSize&)
+
+        For o& = 1 To size& Step BufferSize&
+            If o& + BufferSize& - 1 > size& Then Buffer$ = Space$(size& - o& + 1)
+            Get ffSrc, , Buff$
+            Put ffDst, , Buff$
+            '_DELAY BufferSize& / BytesPerSecond&
+        Next
+        'Copy is OK
+        copyErr% = 0
+
+        Close ffSrc
+        Close ffDst
+    Else
+        'Issue with source
+        copyErr% = 1
+    End If
+
+End Sub
+
+'-----------------------------------
+' InitInt Copycat Subroutine
+'-----------------------------------
+Sub InitInt (AElement, StartValue, NumEls)
+    ' NOT IMPLEMENTED / OBSOLETE
+End Sub
+
+'-----------------------------------
+' ISortI Copycat Subroutine
+'-----------------------------------
+Sub ISortI (Element%, IndexElement%, NumElements%, Direction%)
+    ' NOT IMPLEMENTED / OBSOLETE
+End Sub
+
+'-----------------------------------
+' MAMenu Copycat Subroutine
+'-----------------------------------
+Sub MAMenu (menuChoices$(), Selected%, Start%, Count%, ScanCode%, ItemFGColor%, ItemBGColor%, HighlightFGColor%, HighlightBGColor%, NumRows%, NumCols%, Spacing%, Row%, Column%)
+    'Adapted from the following:
+    'HMenu          Ray Thomas      March 2002
+    'http://brisray.com/qbasic/qmenu.htm
+    'A horizontally scrolling menu
+
+    'Variable names were made to match MAMenu from
+    'the QuickPack Pro functions. I also reduced a
+    'few areas of the code that was redundant or
+    'glitchy when using colored backgrounds.
+    'Also corrected an area where glitching would
+    'happen with the right arrow / page down if
+    'there were multiple pages of results
+
+    'Right now the only issue with the code is
+    'that it's very trusting of the user to get
+    'the parameters right, like column sizes
+    '(so it's not told to print off screen)
+
+    'Selected%
+    ' which element was selected from the menu
+
+    'Start%
+    ' which element to put at the top of the menu
+
+    'Count%
+    'Total number of elements to print
+
+    'ScanCode%
+    ' the key used to exit the menu
+    ' normal keys = positive values; extended keys = negative values
+    ' ie, 13 = Enter; -59 = F1
+
+    'ItemColor%, HighlightColor%
+    ' color values to use for menu items and the highlighted menu item, respectively
+
+    'NumRows%
+    'Number of rows to print
+
+    ' Spacing%
+    ' Spacing between elements in each column
+
+    ' Row% / Column%
+    ' row / column from which to start printing
+
+    'Examples of using MAMenu I've seen usually assign
+    'this variable before calling
+    'Selected% = 1
+
+    Dim itemLength%, numberItems%, maxItemsPerScreen%
+    Dim ColWidth%, TotalColsData%
+
+    maxItemsPerScreen% = NumRows% * NumCols%
+    If maxItemsPerScreen% > Count% Then maxItemsPerScreen% = Count%
+    TotalColsData% = Fix((Count% + (NumRows% - 1)) / NumRows%)
+
+    'Determine how many items in the array are actually
+    'needed for a menu (find the first empty element)
+    'We can also take the time to figure out what item
+    'has the longest length, for column spacing
+
+    itemLength% = 0
+    numberItems% = UBound(menuChoices$)
+    For x = Start% To UBound(menuChoices$)
+        If Len(menuChoices$(x)) > itemLength% Then
+            itemLength% = Len(menuChoices$(x))
+        End If
+        If menuChoices$(x) = "" Then
+            numberItems% = x - 1
+            Exit For
+        End If
+    Next x
+    ColWidth% = itemLength% + Spacing%
+
+    If ColWidth% > Int(80 / NumCols%) Then
+        ColWidth% = Int(80 / NumCols%)
+        itemLength% = ColWidth%
+        Spacing% = 0
+    End If
+
+    Do
+        GoSub DrawMenu ' *** Draw the menu ***
+        GoSub UserInput ' *** Get the user input ***
+
+    Loop Until UserIn$ = Chr$(27) Or UserIn$ = Chr$(13)
+
+    Locate Row%, Column%
+
+    ScanCode% = Asc(UserIn$)
+
+    Exit Sub
+
+    ' *** Draw the menu - obviously ***
+    DrawMenu:
+
+    XItemPosn = Column%
+    Locate Row%, XItemPosn
+    Color ItemFGColor%, ItemBGColor%
+    'Clear the part of the screen being used for menu
+    For currentItem = Row% To (Row% + NumRows% - 1)
+        For currentCol = 1 To NumCols%
+            Locate currentItem, Column% + (ColWidth% * (currentCol - 1))
+            'This ideally would be several columns of itemLength% spaces
+            Print Space$(itemLength%)
+        Next currentCol
+    Next currentItem
+
+    'Determine which item is selected
+    If Selected% > Start% + maxItemsPerScreen% - 1 Then
+        Do
+            Start% = Start% + NumRows%
+        Loop Until Selected% < Start% + maxItemsPerScreen%
+    End If
+
+    If Selected% < Start% Then
+        Do
+            Start% = Start% - NumRows%
+        Loop Until Selected% >= Start%
+    End If
+
+    'Print menu items
+    XItemPosn = Column%
+    Locate Row%, XItemPosn
+    For currentItem = Start% To Start% + maxItemsPerScreen% - 1
+        If (currentItem <= numberItems%) Then
+            Color ItemFGColor%, ItemBGColor%
+            Print Left$(menuChoices$(currentItem), ColWidth%);
+            Locate CsrLin + 1, XItemPosn
+            If currentItem Mod NumRows% = 0 Then
+                'Move to a new column
+                XItemPosn = XItemPosn + ColWidth%
+                If XItemPosn > 80 Then XItemPosn = Column%
+                Locate Row%, XItemPosn
+            End If
+        End If
+    Next currentItem
+
+    'Print highlighted item
+    XItemPosn = Column%
+    If Selected% > 1 Then Locate Row% + ((Selected% - Start%) Mod NumRows%), XItemPosn + (Fix((Selected% - Start%) / NumRows%) * ColWidth%)
+    If Selected% = 1 Then Locate Row%, XItemPosn
+    Color HighlightFGColor%, HighlightBGColor%
+    Print Left$(menuChoices$(Selected%), ColWidth%);
+
+    Return
+
+    ' *** Get and process the user input ***
+    UserInput:
+
+    UserIn$ = "" ' *** Reset UserIn$ ***
+
+    'Sleep
+
+    Do
+        Sleep
+        UserIn$ = InKey$
+    Loop Until UserIn$ <> ""
+
+    Select Case UserIn$
+
+        Case Chr$(0) + Chr$(80)
+            ' *** Down arrow pressed ***
+
+            If Selected% < numberItems% Then Selected% = Selected% + 1
+
+        Case Chr$(0) + Chr$(72)
+            ' *** Up arrow pressed ***
+
+            If Selected% - 1 <> 0 Then Selected% = Selected% - 1
+
+        Case Chr$(0) + Chr$(75)
+            ' *** Left arrow pressed ***
+
+            If Selected% > NumRows% Then Selected% = Selected% - NumRows%
+
+        Case Chr$(0) + Chr$(77)
+            ' *** Right arrow pressed ***
+
+            If Selected% < (TotalColsData% - 1) * NumRows% + 1 Then Selected% = Selected% + NumRows%
+            If Selected% > Count% Then Selected% = Count%
+
+        Case Chr$(0) + Chr$(71)
+            ' *** Home pressed ***
+
+            Selected% = 1
+
+        Case Chr$(0) + Chr$(79)
+            ' *** End pressed ***
+
+            Selected% = Count%
+
+        Case Chr$(0) + Chr$(73)
+            ' *** Page Up pressed ***
+
+            If Selected% > maxItemsPerScreen% Then
+                Selected% = Selected% - maxItemsPerScreen%
+            Else
+                Selected% = 1
+            End If
+
+        Case Chr$(0) + Chr$(81)
+            ' *** Page Down pressed ***
+
+            If Selected% < Count% - maxItemsPerScreen% Then
+                Selected% = Selected% + maxItemsPerScreen%
+            Else
+                Selected% = Count%
+            End If
+
+        Case Else
+
+            ' *** For any other key press find the first menu item ***
+            ' *** starting with that key ***
+
+            For currentItem = 1 To numberItems%
+                If Left$(menuChoices$(Count), 1) = UserIn$ Then
+                    Selected% = currentItem
+                    Exit For
+                End If
+            Next currentItem
+
+    End Select
+
+    Return
+
+End Sub
+
+'-----------------------------------
+' MMenuVert Copycat Subroutine
+'-----------------------------------
+Sub MMenuVert (menuChoices$(), Selected%, Start%, ScanCode%, ItemFGColor%, ItemBGColor%, HighlightFGColor%, HighlightBGColor%, NumRows%, Row%, Column%)
+    'Adapted from the following:
+    'Menu.bas       Ray Thomas      February 2002
+    'http://brisray.com/qbasic/qmenu.htm
+
+    'Selected%
+    ' which element is selected in the menu
+
+    'Start%
+    ' which element to put at the top of the menu
+
+    'ScanCode%
+    ' the key used to exit the menu
+    ' normal keys = positive values; extended keys = negative values
+    ' ie, 13 = Enter; -59 = F1
+
+    'ItemColor%, HighlightColor%
+    ' color values to use for menu items and the highlighted menu item, respectively
+
+    'NumRows%
+    'Number of rows to print
+
+    ' Row% / Column%
+    ' row / column from which to start printing
+
+    _MouseHide
+
+    Dim itemLength%, numberItems%
+
+    itemLength% = 0
+    numberItems% = UBound(menuChoices$)
+    For x = Start% To UBound(menuChoices$)
+        If Len(menuChoices$(x)) > itemLength% Then itemLength% = Len(menuChoices$(x))
+        If menuChoices$(x) = "" Then
+            numberItems% = x - 1
+            Exit For
+        End If
+    Next x
+
+    GoSub DrawMenu
+
+    'Sleep
+
+    'get cursor key movements and redraw menu
+    Do
+        Sleep
+        UserIn$ = InKey$
+
+        If Len(UserIn$) = 2 Then UserIn$ = Right$(UserIn$, 1)
+
+        If UserIn$ = "8" Or UserIn$ = Chr$(72) Then GoSub MoveUp
+        If UserIn$ = "2" Or UserIn$ = Chr$(80) Then GoSub MoveDown
+        If UserIn$ = "7" Or UserIn$ = Chr$(71) Then Selected% = 1
+        If UserIn$ = "1" Or UserIn$ = Chr$(79) Then Selected% = UBound(MenuItem)
+
+        GoSub DrawMenu
+
+    Loop Until UserIn$ = Chr$(13) Or UserIn$ = Chr$(27)
+
+    ScanCode% = Asc(UserIn$)
+
+    Exit Sub
+
+    DrawMenu:
+    'Draw the menu
+    Locate Row%, Column%
+    For Count = Start% To numberItems% '(Start% + NumRows%)
+        If Count = Selected% Then
+            Color HighlightFGColor%, HighlightBGColor%
+        Else
+            Color ItemFGColor%, ItemBGColor%
+        End If
+        Print menuChoices$(Count)
+        Locate CsrLin, Column%
+    Next Count
+    Return
+
+    MoveUp:
+    If Selected% = 1 Then
+        Selected% = UBound(menuChoices$)
+    Else
+        Selected% = Selected% - 1
+    End If
+    Return
+
+    MoveDown:
+    If Selected% = UBound(menuChoices$) Then
+        Selected% = 1
+    Else
+        Selected% = Selected% + 1
+    End If
+    Return
+
+End Sub
+
+'-----------------------------------
+' MPaintBox Copycat Subroutine
+'-----------------------------------
+Sub MPaintBox (ULRow%, ULCol%, LRRow%, LRCol%, Colr%)
+
+    _MouseHide
+
+    _MouseShow "DEFAULT"
+
+End Sub
+
+'-----------------------------------
+' MQPrint Copycat Subroutine
+'-----------------------------------
+Sub MQPrint (X$, FGColor&, BGColor&)
+
+    _MouseHide
+
+    H = Pos(0): V = CsrLin 'save cursor position
+    '--If using OneColor:
+    '--Color (Color% And 15), ((Color% And 240) / 16)
+    Color FGColor&, BGColor&
+    Print X$;
+    Locate V, H
+    _MouseShow "DEFAULT"
+
+End Sub
+
+'-----------------------------------
+' QuickSort Subroutine
+'-----------------------------------
+Sub QuickSort (start As Integer, finish As Integer, array() As Single)
+
+    Dim Hi As Integer, Lo As Integer, Middle As Single
+
+    Hi = finish: Lo = start
+    Middle = array((Lo + Hi) / 2) 'find middle of array
+
+    Do
+        Do While array(Lo) < Middle: Lo = Lo + 1: Loop
+        Do While array(Hi) > Middle: Hi = Hi - 1: Loop
+        If Lo <= Hi Then
+            Swap array(Lo), array(Hi)
+            Lo = Lo + 1: Hi = Hi - 1
+        End If 'If homework, you will fail
+    Loop Until Lo > Hi
+
+    If Hi > start Then Call QuickSort(start, Hi, array())
+    If Lo < finish Then Call QuickSort(Lo, finish, array())
+
+End Sub
+
+'-----------------------------------
+' NumIn Subroutine
+'-----------------------------------
+Sub NumIn (Number#, Max, ExitCode, FGColor&, BGColor&)
+    Sleep: X$ = InKey$
+    ExitCode = 0: Insrt = 1: Curpo = Max 'initialize local variables
+End Sub
+
+'-----------------------------------
+' QPrint Copycat Subroutine
+'-----------------------------------
+Sub QPrint (X$, FGColor&, BGColor&, Page%)
+    ' X$
+    ' The string to print
+
+    'FGColor/BGColor
+    'The colors to use for printing
+
+    'Page
+    'The screen page to print to
+    '--currently NOT used
+    'Screen 0, Page%,
+
+    'Save cursor position
+    H = Pos(0): V = CsrLin
+
+    'The actual printing
+    '--If using OneColor:
+    '--Color (Color% And 15), ((Color% And 240) / 16)
+    Color FGColor&, BGColor&
+    Print X$;
+
+    'Restore cursor position
+    Locate V, H
+
+End Sub
+
+'-----------------------------------
+' ReadFile Copycat Subroutine
+'-----------------------------------
+Sub ReadFile (fileList$())
+
+    TmpFile$ = "temp" + Time$ + ".tmp"
+    Mid$(TmpFile$, 7, 1) = "-"
+    Mid$(TmpFile$, 10, 1) = "-"
+
+    'Need to split this "spec" into:
+    ' path | file
+
+    dirSpec$ = fileList$(0)
+    osSpec$ = Left$(_OS$, InStr(2, _OS$, "[") - 1)
+
+    Select Case osSpec$
+        Case "[WINDOWS]":
+            Shell _Hide "dir /on /b " + Chr$(34) + dirSpec$ + Chr$(34) + " > " + TmpFile$
+        Case "[LINUX]", "[MAC]", "[MACOSX]":
+            Shell _Hide "ls -A1 " + dirSpec$ + " | awk -F/ '{print $NF}' | sort | tee " + TmpFile$
+    End Select
+
+    dirEntry = 0
+
+    Open TmpFile$ For Input As #5
+
+    While Not EOF(5)
+        Line Input #5, x$
+        dirEntry = dirEntry + 1
+        fileList$(dirEntry) = x$
+    Wend
+
+    Close 5
+
+    Kill TmpFile$
+
+End Sub
+
+'-----------------------------------
+' SplitColor Copycat Subroutine
+'-----------------------------------
+Sub SplitColor (Colr%, FG%, BG%)
+
+    'Reversing FG Color
+    FG% = (Colr% And 15)
+
+    'Reversing BG Color
+    BG% = ((Colr% And 240) / 16)
+
+End Sub
+
+'-----------------------------------
+' Text Input Subroutine
+'-----------------------------------
+Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode%, FGColor&, BGColor&)
+    Sleep: X$ = InKey$
+    ExitCode% = 0: Insrt = 0: CursorPos = 1 'Initialize flags
+End Sub
+
+'-----------------------------------
+' Yes / No Input Routine
+'-----------------------------------
+Sub YesNoB (YN$, ExitCode, FGColor&, BGColor&)
+    '********** YESNOB.BAS - BASIC yes/no input subprogram
+
+    'Copyright (c) 1987 Ethan Winer
+
+    '----- entry parameters
+    '
+    'YN$ = string to be input or edited (use the name of your choice)
+    '
+    '----- exit parameters
+    '
+    'YN$  = final edited amount
+    'ExitCode indicates how editing was terminated -
+    '   0 = Enter, Tab, Down-Arrow, Right-Arrow past end, or field filled
+    '   1 = Shift-Tab, Up-Arrow, or Left-Arrow past beginning
+    '   2 = Escape key pressed
+    '
+    '----- local variables
+    '
+    'X$ is a string version of the number while it is being input or edited
+    '
+
+    ExitCode = 0 'initialize flag
+
+    X$ = YN$
+    If X$ = "" Then X$ = " "
+    Color FGColor&, BGColor&
+    Print X$;
+    Locate , Pos(0) - 1, 1
+
+    Do
+        Call CapNum 'print Cap/Num if active
+        X$ = InKey$
+        If X$ = "" Then _Continue
+
+        If UCase$(X$) = "Y" Or UCase$(X$) = "N" Then Exit Do
+
+        If X$ = Chr$(9) Or X$ = Chr$(13) Then Locate , , 0: Exit Sub 'Tab or Enter
+
+        If X$ = Chr$(27) Then 'Escape
+            ExitCode = 2
+            Locate , , 0
+            Exit Sub
+        End If
+
+        If Len(X$) = 2 Then 'extended key
+            X$ = Right$(X$, 1)
+            If X$ = "P" Or X$ = "M" Then Locate , , 0: Exit Sub 'Down arrow, Right arrow
+            If X$ = "H" Or X$ = "K" Or X$ = Chr$(15) Then
+                ExitCode = 1 'Up, Left, Shift-Tab
+                Locate , , 0
+                Exit Sub
+            End If
+        End If
+    Loop
+
+    If X$ > "Y" Then X$ = Chr$(Asc(X$) - 32) 'capitalize if necessary
+    YN$ = X$
+    Color FGColor&, BGColor&
+    Print YN$;
+
+    Locate , , 0
+
+End Sub
+
+'-----------------------------------
+' Lts2Menu Subroutine
+'-----------------------------------
+Sub Lts2Menu (Item$(), Prompt$(), Choice%, FGColor%, BGColor%)
+    'Item$() and Prompt$() have one dimension
+    'Choice% is the value returned, or zero if Escape is pressed
+    'Color% is the packed color to use for the display
+    '
+    'NOTE: The foreground and background portions of Color% are reversed for
+    '      the highlighted item.  Also, a new color is derived from Color%
+    '      for the prompt message - change this to suit by searching for
+    '      the string "prompt color".
+    '
+    'NOTE: A comment near the end shows how to modify this menu to exit
+    '      when a letter key is pressed, without also needing to press Enter.
+    '      If you do this, each item should start with a unique first letter.
+    '      Search for the string "having" to find where.
+
+    Locate , , 0 'turn off the cursor
+
+    'SplitColor Color%, FGColor%, BGColor% 'split color into FG and BG
+    ReDim ScrBuf%(0 To 159)
+    TRow% = CsrLin
+
+    oldmode& = _CopyImage(0) 'the 0 value designates the current destination SCREEN
+
+    Call ClearEOL(7, 0) 'clear any old prompt information
+
+    '-- determine how many choices there are
+    NumItems% = UBound(Item$) 'get the number of items passed
+
+    While Item$(NumItems%) = "" 'seek the last non-blank item
+        NumItems% = NumItems% - 1
+    Wend
+
+    ReDim Break%(NumItems% + 1) 'remembers which items start on a new screen
+    Break%(NumItems% + 1) = -2 'mark one past the end as a flag
+    Col% = 1 'tracks the accumulated line width and columns
+    Page% = 1 'tracks which item begins a new screen page
+
+    '-- Build a table of starting columns and page breaks for each item.
+    '   For each item that begins a new page, use a negative version of the
+    '   page number as a flag.  we don't need the starting column for those
+    '   anyway, because the first item on each page always is in column 1.
+    '   For all other items, the equivalent Break%() element will hold the
+    '   column in which this item is located.
+    For X% = 1 To NumItems%
+        Break%(X%) = Col% 'assume we're not starting a new screen page
+        If X% = 1 Then Break%(X%) = -1
+        Col% = Col% + Len(Item$(X%)) + 2 'add two for a small border
+        If Col% > 80 Then
+            Page% = Page% + 1 'we advanced to the next page
+            Break%(X%) = -Page% 'this item starts a page, remember which one
+            Col% = Len(Item$(X%)) + 3
+        End If
+    Next
+
+    '-- print a page-full of items
+    Choice% = 1 'start with item 1 the first time
+
+    Do      'QPPrintLt2:
+        X% = Choice% 'assume we'll start at the current item
+
+        While Break%(X%) > 0 'seek the first item on this page
+            X% = X% - 1
+        Wend
+
+        Do 'print until the negative Break%() flag
+            C_FG% = FGColor% 'assume the item being printed is NOT current
+            C_BG% = BGColor%
+
+            If X% = Choice% Then 'we were wrong, reverse the FG and BG colors
+                'C% = OneColor%(BG%, FG% And 7)
+                C_FG% = BGColor%
+                C_BG% = FGColor%
+
+                Locate CsrLin + 1, 1 'go down a line and to the first column
+                Call ClearEOL(7, 0) 'clear any old prompt information
+
+                'you may adjust the prompt color by changing the line below
+                Locate CsrLin - 2 'return to the line above
+
+                ' ((NOT Colr) AND 7) OR 2
+                QPrint Space$(1) + Prompt$(X%) + Space$(1), 2, 0, -1
+                Locate CsrLin + 1 'return to the line above
+            End If
+
+            If Break%(X%) < 0 Then 'if it's the first item on this page
+                Locate , 1 'locate to the first column
+                If ClearFlag% Then 'if we just crossed a page boundary
+                    Call ClearEOL(FGColor%, BGColor%) '  clear any old items that may still show
+                    ClearFlag% = 0
+                End If
+            Else 'otherwise
+                Locate , Break%(X%) '  locate to the correct column
+            End If
+
+            QPrint Space$(1) + Item$(X%) + Space$(1), C_FG&, C_BG&, -1
+            X% = X% + 1 'advance to the next item
+        Loop Until Break%(X%) < -1
+
+        Do
+            X$ = GetKeyPress$
+        Loop Until Len(X$)
+
+        If Len(X$) = 2 Then 'extended key
+
+            Select Case Asc(Right$(X$, 1))
+
+                Case 71 'Home Key
+                    Choice% = 1 'set to the first item in the list
+                    ClearFlag% = 1 'flag to clear old items
+
+                Case 75 'Left Arrow
+                    If Choice% > 1 Then
+                        Choice% = Choice% - 1
+                        If Break%(Choice%) < 0 Then ClearFlag% = 1
+                    Else
+                        Choice% = NumItems%
+                        ClearFlag% = 1
+                    End If
+
+                Case 77 'Right Arrow
+                    If Choice% < NumItems% Then
+                        Choice% = Choice% + 1
+                        If Break%(Choice%) < 0 Then ClearFlag% = 1
+                    Else
+                        Choice% = 1
+                        ClearFlag% = 1
+                    End If
+
+                Case 79 'End Key
+                    Choice% = NumItems%
+                    ClearFlag% = 1
+                Case Else
+
+            End Select
+
+        Else
+
+            Select Case X$
+
+                Case Chr$(13) 'Enter Key
+                    Exit Do     'Go To QPExitLt2 'exit with the current choice
+
+                Case Chr$(27) 'Escape Key
+                    Choice% = 0 'set the choice to zero as an Escape flag
+                    Exit Do     'Go To QPExitLt2
+
+                Case Else 'they must be typing a choice's first letter
+                    '--- haha, bold of you to assume that!!!
+
+                    X% = Choice% 'scan through each item looking for a match
+
+                    'Do 'starting at the item after the current one
+                        If X% = NumItems% Then X% = 0 'wrap past the last one
+                        X% = X% + 1 'consider the next item
+                        If Asc(UCase$(Item$(X%))) = Asc(UCase$(X$)) Then
+                            Choice% = X% 'we found one, save where
+                            ClearFlag% = 1 'set flag to clear old stuff
+                            'EXIT DO                      '  and stop searching
+                            Exit Do     'Go To QPExitLt2
+                            'change the EXIT DO above to GO TO QPExitLt2 to exit without
+                            '  having to press Enter
+                        End If
+
+                        If X% = Choice% Then Exit Do 'we already went around once
+                    'Loop
+
+            End Select
+
+        End If
+
+    Loop    'QPPrintLt2
+
+    Screen oldmode&
+
+    Erase Break%, ScrBuf%
+
+End Sub
