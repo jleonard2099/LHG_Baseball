@@ -1304,7 +1304,10 @@ Sub LOADER
     End If
 
     'If we've run into issues so far...
-    If earlyExit = 1 Then Exit Sub
+    If earlyExit = 1 Then 
+        'Close #11
+        Exit Sub
+    End If
 
     '----------------------------------------
     '    AUTO-DETERMINE OTHER OPTIONS
@@ -3797,8 +3800,6 @@ Sub PitchingStarter (tmIdx)
     If gamePitcher(tmIdx) > 1 Then pitchEff(tmIdx, 1) = 0
 
 End Sub
-
-
 
 'Include: 'SOURCE.bm'
 
@@ -8793,8 +8794,6 @@ Sub SOURCE ()
 
 End Sub
 
-
-
 'Include: 'GameRoutines.bm'
 
 
@@ -9088,8 +9087,6 @@ Sub AUTOSETUP (validTeam)
         End If
 
     Next tgtTeam
-
-
 
 End Sub
 
@@ -17158,8 +17155,6 @@ Sub OPTIONS ()
     End If
 
 End Sub
-
-
 
 '----------------------------------------
 '          LOADSTATS Subroutine
