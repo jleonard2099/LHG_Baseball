@@ -6326,9 +6326,11 @@ Sub SOURCE ()
         If fbun% = 0 Then Call CREDITASSIST(currFielder, D)
         fbun% = 0
 
-        If DPC% = 1 And A5%(0) = 1 Then DPC% = 2
+        batterSafeOnDP = 0
+        If DPC% = 1 And A5%(0) = 1 Then DPC% = 2: batterSafeOnDP = 1
 
         Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+        If batterSafeOnDP = 1 Then Call CREDITREGPO(currFielder, D)         'ToDo [bm] controversial
 
         If DPC% = 2 Then
             DPC% = 0
@@ -6337,7 +6339,7 @@ Sub SOURCE ()
 
         If I3 > 4 Then I3 = 1
 
-        Call CREDITPUTOUT(I3, FB2P%, AST%, D)
+        If batterSafeOnDP = 0 Then Call CREDITPUTOUT(I3, FB2P%, AST%, D)    'ToDo [bm] Controversial
 
         nbrOuts(0) = nbrOuts(0) + 1
         nbrOuts(1) = nbrOuts(1) + 1
@@ -7432,7 +7434,10 @@ Sub SOURCE ()
 
     Call CREDITASSIST(currFielder, D)
     Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-    Call CREDITPUTOUT(I3, FB2P%, AST%, D)
+
+    If TGTBASE% = 2 Then currFielder = _Iif(Rnd(1) < 0.5, 4, 6)           'BugFix: Set to one of the two middle infielders
+    If TGTBASE% = 3 Then currFielder = 5                                  'BugFix: Set to 3rd baseman
+    Call CREDITPUTOUT(currFielder, FB2P%, AST%, D)
 
     Call INCBATDF(D, fielder(D, 2), LG_BF_CS)
 
