@@ -1507,7 +1507,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 56)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 56) = Int(draftB#)
-            Locate 22, 27: Print Using "###"; batterRatings(I, 56)
+            Locate 21, 27: Print Using "###"; batterRatings(I, 56)
             If XCode = 1 GoTo bLA:
             If XCode = 2 GoTo bDone
 
@@ -1517,7 +1517,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 57)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 57) = Int(draftB#)
-            Locate 22, 32: Print Using "###"; batterRatings(I, 57)
+            Locate 21, 32: Print Using "###"; batterRatings(I, 57)
             If XCode = 1 GoTo bLLBA:
             If XCode = 2 GoTo bDone
 
@@ -1527,7 +1527,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 58)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 58) = Int(draftB#)
-            Locate 22, 37: Print Using "###"; batterRatings(I, 58)
+            Locate 21, 37: Print Using "###"; batterRatings(I, 58)
             If XCode = 1 GoTo bLL2B:
             If XCode = 2 GoTo bDone
 
@@ -1537,7 +1537,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 59)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 59) = Int(draftB#)
-            Locate 22, 42: Print Using "###"; batterRatings(I, 59)
+            Locate 21, 42: Print Using "###"; batterRatings(I, 59)
             If XCode = 1 GoTo bLL3B:
             If XCode = 2 GoTo bDone
 
@@ -1547,7 +1547,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 60)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 60) = Int(draftB#)
-            Locate 22, 47: Print Using "###"; batterRatings(I, 60)
+            Locate 21, 47: Print Using "###"; batterRatings(I, 60)
             If XCode = 1 GoTo bLLHR:
             If XCode = 2 GoTo bDone
 
@@ -1557,7 +1557,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 61)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 61) = Int(draftB#)
-            Locate 22, 52: Print Using "###"; batterRatings(I, 61)
+            Locate 21, 52: Print Using "###"; batterRatings(I, 61)
             If XCode = 1 GoTo bLLBB:
             If XCode = 2 GoTo bDone
 
@@ -1567,7 +1567,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 62)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 62) = Int(draftB#)
-            Locate 23, 27: Print Using "###"; batterRatings(I, 62)
+            Locate 22, 27: Print Using "###"; batterRatings(I, 62)
             If XCode = 1 GoTo bLLKO:
             If XCode = 2 GoTo bDone
 
@@ -1577,7 +1577,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 63)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 63) = Int(draftB#)
-            Locate 23, 32: Print Using "###"; batterRatings(I, 63)
+            Locate 22, 32: Print Using "###"; batterRatings(I, 63)
             If XCode = 1 GoTo bLRBA:
             If XCode = 2 GoTo bDone
 
@@ -1587,7 +1587,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 64)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 64) = Int(draftB#)
-            Locate 23, 37: Print Using "###"; batterRatings(I, 64)
+            Locate 22, 37: Print Using "###"; batterRatings(I, 64)
             If XCode = 1 GoTo bLR2B:
             If XCode = 2 GoTo bDone
 
@@ -1597,7 +1597,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 65)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 65) = Int(draftB#)
-            Locate 23, 42: Print Using "###"; batterRatings(I, 65)
+            Locate 22, 42: Print Using "###"; batterRatings(I, 65)
             If XCode = 1 GoTo bLR3B:
             If XCode = 2 GoTo bDone
 
@@ -1607,7 +1607,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 66)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 66) = Int(draftB#)
-            Locate 23, 47: Print Using "###"; batterRatings(I, 66)
+            Locate 22, 47: Print Using "###"; batterRatings(I, 66)
             If XCode = 1 GoTo bLRHR:
             If XCode = 2 GoTo bDone
 
@@ -1617,7 +1617,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 67)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 67) = Int(draftB#)
-            Locate 23, 52: Print Using "###"; batterRatings(I, 67)
+            Locate 22, 52: Print Using "###"; batterRatings(I, 67)
             If XCode = 1 GoTo bLRBB:
             If XCode = 2 GoTo bDone
 
@@ -1627,7 +1627,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 68)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 68) = Int(draftB#)
-            Locate 24, 27: Print Using "###"; batterRatings(I, 68);
+            Locate 23, 27: Print Using "###"; batterRatings(I, 68);
             If XCode = 1 GoTo bLRKO:
             If XCode = 2 GoTo bDone
 
@@ -1637,7 +1637,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 69)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 69) = Int(draftB#)
-            Locate 24, 32: Print Using "###"; batterRatings(I, 69);
+            Locate 23, 32: Print Using "###"; batterRatings(I, 69);
             If XCode = 1 GoTo bRLBA:
             If XCode = 2 GoTo bDone
 
@@ -1647,7 +1647,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 70)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 70) = Int(draftB#)
-            Locate 24, 37: Print Using "###"; batterRatings(I, 70);
+            Locate 23, 37: Print Using "###"; batterRatings(I, 70);
             If XCode = 1 GoTo bRL2B:
             If XCode = 2 GoTo bDone
 
@@ -1657,7 +1657,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 71)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 71) = Int(draftB#)
-            Locate 24, 42: Print Using "###"; batterRatings(I, 71);
+            Locate 23, 42: Print Using "###"; batterRatings(I, 71);
             If XCode = 1 GoTo bRL3B:
             If XCode = 2 GoTo bDone
 
@@ -1667,7 +1667,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 72)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 72) = Int(draftB#)
-            Locate 24, 47: Print Using "###"; batterRatings(I, 72);
+            Locate 23, 47: Print Using "###"; batterRatings(I, 72);
             If XCode = 1 GoTo bRLHR:
             If XCode = 2 GoTo bDone
 
@@ -1677,7 +1677,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 73)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 73) = Int(draftB#)
-            Locate 24, 52: Print Using "###"; batterRatings(I, 73);
+            Locate 23, 52: Print Using "###"; batterRatings(I, 73);
             If XCode = 1 GoTo bRLBB:
             If XCode = 2 GoTo bDone
 
@@ -1687,7 +1687,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 74)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 74) = Int(draftB#)
-            Locate 25, 27: Print Using "###"; batterRatings(I, 74);
+            Locate 24, 27: Print Using "###"; batterRatings(I, 74);
             If XCode = 1 GoTo bRLKO:
             If XCode = 2 GoTo bDone
 
@@ -1697,7 +1697,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 75)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 75) = Int(draftB#)
-            Locate 25, 32: Print Using "###"; batterRatings(I, 75);
+            Locate 24, 32: Print Using "###"; batterRatings(I, 75);
             If XCode = 1 GoTo bRRBA:
             If XCode = 2 GoTo bDone
 
@@ -1707,7 +1707,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 76)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 76) = Int(draftB#)
-            Locate 25, 37: Print Using "###"; batterRatings(I, 76);
+            Locate 24, 37: Print Using "###"; batterRatings(I, 76);
             If XCode = 1 GoTo bRR2B:
             If XCode = 2 GoTo bDone
 
@@ -1717,7 +1717,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 77)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 77) = Int(draftB#)
-            Locate 25, 42: Print Using "###"; batterRatings(I, 77);
+            Locate 24, 42: Print Using "###"; batterRatings(I, 77);
             If XCode = 1 GoTo bRR3B:
             If XCode = 2 GoTo bDone
 
@@ -1727,7 +1727,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 78)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 78) = Int(draftB#)
-            Locate 25, 47: Print Using "###"; batterRatings(I, 78);
+            Locate 24, 47: Print Using "###"; batterRatings(I, 78);
             If XCode = 1 GoTo bRRHR:
             If XCode = 2 GoTo bDone
 
@@ -1737,7 +1737,7 @@ Sub EditBatter ()
             draftB# = batterRatings(I, 79)
             Call NumIn(draftB#, Max, XCode, FG, BG)
             batterRatings(I, 79) = Int(draftB#)
-            Locate 25, 52: Print Using "###"; batterRatings(I, 79);
+            Locate 24, 52: Print Using "###"; batterRatings(I, 79);
             If XCode = 1 GoTo bRRBB:
 
             bDone:
@@ -1747,6 +1747,7 @@ Sub EditBatter ()
             X$ = ""
             Call YesNoB(X$, XCode, FG, BG)
             Locate , 1
+            ClearEOL 14, 1
             If XCode = 1 GoTo bRRKO
             If X$ = "N" GoTo BName
             If X$ <> "Y" GoTo bDone 'insist on either Y or N or up-arrow

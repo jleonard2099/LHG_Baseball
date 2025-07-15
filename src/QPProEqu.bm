@@ -754,7 +754,7 @@ Sub MAMenu (menuChoices$(), Selected%, Start%, Count%, ScanCode%, ItemFGColor%, 
     Do
         UserIn$ = InKey$
     Loop Until UserIn$ <> ""
-    
+
     Select Case UserIn$
 
         Case Chr$(0) + Chr$(80)
@@ -978,7 +978,7 @@ End Sub
 '-----------------------------------
 ' NumIn Subroutine
 '-----------------------------------
-Sub NumIn (Number#, Max, XCode, FGColor&, BGColor&)
+Sub NumIn (Number#, Max, ExitCode, FGColor&, BGColor&)
 
     NInitialize:
     If Max = 0 Then Max = 1 'leave room for minus sign
