@@ -5016,7 +5016,7 @@ Sub SOURCE ()
         SN = 20
     End If
 
-    If INNING% > 5 And stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2) Then
+    If INNING% > 5 And pitchEff(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And pitchEff(D, 1) <= gamePitStats(D, currPitcher(D), 2) Then
         I4 = I4 + 40
     End If
 
@@ -8369,7 +8369,7 @@ Sub SOURCE ()
     End If
 
     LReliever2:
-    If (stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2)) Or fielder(D, 1) = 99 Then
+    If (pitchEff(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And pitchEff(D, 1) <= gamePitStats(D, currPitcher(D), 2)) Or fielder(D, 1) = 99 Then
         Call RELIEVERS(pinchHitterFlag, newPitcherFlag)
         If useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
     End If
@@ -9007,7 +9007,7 @@ Sub InitVar ()
     Erase schedOptions, nbrInnings, nbrOuts
     Erase oppScore
     Erase currPitcher, pitcherOfRecord, statT1!, gamePitcher
-    Erase relieverOnRecordForSave, stamina%, startPitcher
+    Erase relieverOnRecordForSave, pitchEff, startPitcher
     Erase teamMgrProfileVal, teamScore, T3%, X0%
 
     Erase currLineupSlot, parkHRVals!, statT0!
@@ -12306,22 +12306,25 @@ End Sub
 ' ...explanation...
 Sub PITSTAM (P9)
 
+    'Hits + Walks
     If pitchRating(P9, currPitcher(P9), 4) = 0 Then
-        stamina%(P9, 0) = 3
+        pitchEff(P9, 0) = 3
     Else
-        stamina%(P9, 0) = CInt(((pitchRating(P9, currPitcher(P9), 8) + pitchRating(P9, currPitcher(P9), 7)) / pitchRating(P9, currPitcher(P9), 4)))
+        pitchEff(P9, 0) = CInt(((pitchRating(P9, currPitcher(P9), 8) + pitchRating(P9, currPitcher(P9), 7)) / pitchRating(P9, currPitcher(P9), 4)))
     End If
 
-    If stamina%(P9, 0) < 3 Then stamina%(P9, 0) = 3
-    stamina%(P9, 1) = 3
+    If pitchEff(P9, 0) < 3 Then pitchEff(P9, 0) = 3
 
-    If gamePitcher(P9) > 1 Then stamina%(P9, 1) = 0
+    If gamePitcher(P9) = 1 And pitchEraOpt > 0 Then pitchEff(P9, 0) = pitchEff(P9, 0) + 1
 
-    If pitchEraOpt > 0 Then
-        If gamePitcher(P9) > 1 Then
-            stamina%(P9, 1) = 1
+    'Runs
+    If gamePitcher(P9) = 1 Then                         'starting pitcher
+        If pitchEraOpt < 3 Then pitchEff(P9, 1) = 3     ' (was already set in LOADER when pitchEraOpt >= 3)
+    Else                                                'relief pitcher
+        If pitchEraOpt = 0 Then
+            pitchEff(P9, 1) = 0
         Else
-            stamina%(P9, 0) = stamina%(P9, 0) + 1
+            pitchEff(P9, 1) = 1
         End If
     End If
 
@@ -12435,13 +12438,13 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag)
                     If INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 1 And ourLead >= 0 And SN% = 584 Then GoTo LClosers
                     If INNING% >= 9 And ourLead >= 0 And SN% = 584 Then GoTo LClosers
 
-                    If stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 0 And ourLead > 0 And SN% = 585 Then GoTo LSetupMen
-                    If stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 1 And ourLead > 0 And SN% = 585 Then GoTo LClosers
-                    If stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% >= 9 And ourLead > 0 And SN% = 585 Then GoTo LClosers
+                    If pitchEff(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And pitchEff(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 0 And ourLead > 0 And SN% = 585 Then GoTo LSetupMen
+                    If pitchEff(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And pitchEff(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 1 And ourLead > 0 And SN% = 585 Then GoTo LClosers
+                    If pitchEff(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And pitchEff(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% >= 9 And ourLead > 0 And SN% = 585 Then GoTo LClosers
 
-                    If stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 0 And ourLead >= 0 And SN% = 586 Then GoTo LSetupMen
-                    If stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 1 And ourLead >= 0 And SN% = 586 Then GoTo LClosers
-                    If stamina%(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% >= 9 And ourLead >= 0 And SN% = 586 Then GoTo LClosers
+                    If pitchEff(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And pitchEff(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 0 And ourLead >= 0 And SN% = 586 Then GoTo LSetupMen
+                    If pitchEff(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And pitchEff(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And teamMgrProfileVal(D, 589) = 1 And ourLead >= 0 And SN% = 586 Then GoTo LClosers
+                    If pitchEff(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And pitchEff(D, 1) <= gamePitStats(D, currPitcher(D), 2) And INNING% >= 9 And ourLead >= 0 And SN% = 586 Then GoTo LClosers
 
                     Exit For
 
@@ -13284,7 +13287,7 @@ End Sub
 'active batter
 Sub DISPBAVG (D)
 
-    If INNING% > 5 And stamina%(D, 0) < gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And stamina%(D, 1) < gamePitStats(D, currPitcher(D), 2) Then
+    If INNING% > 5 And pitchEff(D, 0) < gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And pitchEff(D, 1) < gamePitStats(D, currPitcher(D), 2) Then
         Locate 10, 17
         Color 30, 0: Print "-T-"
         Color 15, 0
@@ -14085,7 +14088,7 @@ Sub BASEONBALLS (S2%, D2, D, P)
             Call PBP(player$(0) + " is given a purpose pass...")
         End If
 
-        stamina%(D, 0) = stamina%(D, 0) + 1
+        pitchEff(D, 0) = pitchEff(D, 0) + 1
 
     Else
 
@@ -15083,9 +15086,9 @@ End Sub
 'for Play-by-Play
 Sub TIRING (P9)
 
-    If stamina%(P9, 0) <= gamePitStats(P9, currPitcher(P9), 4) + gamePitStats(P9, currPitcher(P9), 1) And stamina%(P9, 1) <= gamePitStats(P9, currPitcher(P9), 2) Then
+    If pitchEff(P9, 0) <= gamePitStats(P9, currPitcher(P9), 4) + gamePitStats(P9, currPitcher(P9), 1) And pitchEff(P9, 1) <= gamePitStats(P9, currPitcher(P9), 2) Then
 
-        If stamina%(P9, 1) > 0 And INNING% < 6 Or stamina%(P9, 1) = 0 And gamePitStats(P9, currPitcher(P9), 4) + gamePitStats(P9, currPitcher(P9), 1) > 4 Then
+        If pitchEff(P9, 1) > 0 And INNING% < 6 Or pitchEff(P9, 1) = 0 And gamePitStats(P9, currPitcher(P9), 4) + gamePitStats(P9, currPitcher(P9), 1) > 4 Then
             If d100% <= 50 Then
                 Print pitchers$(P9, currPitcher(P9)); " just doesn't have it today";
             Else
@@ -15097,11 +15100,11 @@ Sub TIRING (P9)
 
     Else
 
-        If stamina%(P9, 1) > 0 And (stamina%(P9, 0) <= gamePitStats(P9, currPitcher(P9), 4) + gamePitStats(P9, currPitcher(P9), 1) Or stamina%(P9, 1) <= gamePitStats(P9, currPitcher(P9), 2)) Or (gamePitStats(P9, currPitcher(P9), 4) + gamePitStats(P9, currPitcher(P9), 1) > 2 And gamePitStats(P9, currPitcher(P9), 0) >= 5) Then
+        If pitchEff(P9, 1) > 0 And (pitchEff(P9, 0) <= gamePitStats(P9, currPitcher(P9), 4) + gamePitStats(P9, currPitcher(P9), 1) Or pitchEff(P9, 1) <= gamePitStats(P9, currPitcher(P9), 2)) Or (gamePitStats(P9, currPitcher(P9), 4) + gamePitStats(P9, currPitcher(P9), 1) > 2 And gamePitStats(P9, currPitcher(P9), 0) >= 5) Then
             Print pitchers$(P9, currPitcher(P9)); " is tiring!!";
         Else
 
-            If stamina%(P9, 1) > 0 Or (gamePitStats(P9, currPitcher(P9), 4) + gamePitStats(P9, currPitcher(P9), 1) < 3 And gamePitStats(P9, currPitcher(P9), 2) = 0) Then
+            If pitchEff(P9, 1) > 0 Or (gamePitStats(P9, currPitcher(P9), 4) + gamePitStats(P9, currPitcher(P9), 1) < 3 And gamePitStats(P9, currPitcher(P9), 2) = 0) Then
                 Print pitchers$(P9, currPitcher(P9)); " seems to be OK!!";
             End If
 
@@ -16101,7 +16104,7 @@ Sub RAREPLAYS (H6%, H7%, IP%)
                         Call PBP("Their arms have stiffened up")
                         Call DELAY
                         For idx = 0 To 1:
-                            stamina%(idx, 0) = stamina%(idx, 0) - 2
+                            pitchEff(idx, 0) = pitchEff(idx, 0) - 2
                         Next
                     End If
 

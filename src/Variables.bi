@@ -350,7 +350,7 @@ Dim Shared fldPos(0 To 1, 0 To 9), fielder(1, 10), BT%(0 To 1, 1 To 9, 1 To 9)
 Dim Shared CF%(0 To 9, 0 To 2), CSS(1, 22, 6), D3%(1), DP%(1)
 Dim Shared currPitcher(0 To 1), pitcherOfRecord(1)
 Dim Shared gamePitcher(1)
-Dim Shared relieverOnRecordForSave(1), stamina%(1, 1), SO%(0 To 5, 0 To 2)
+Dim Shared relieverOnRecordForSave(1), SO%(0 To 5, 0 To 2)
 Dim Shared T3%(22), X0%(1, 2, 23), YR%(1)
 
 Dim Shared gameB(1, 22), gameP(1, 21)
