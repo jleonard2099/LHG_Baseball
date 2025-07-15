@@ -278,8 +278,8 @@ Sub DisplayBallField_Gfx (BC%, p, nbrStrikes, D)
     inningStart% = 1
     inningEnd% = 9
 
-    If INNING% > 9 Then inningStart% = 18
-    If INNING% > 18 Then inningEnd% = 27
+    If INNING% >  9 Then inningStart% = 10: inningEnd% = 18
+    If INNING% > 18 Then inningStart% = 19: inningEnd% = 27
 
     'Print Batter / Pitcher box
     '----------------------------------------
@@ -354,7 +354,7 @@ Sub DisplayBallField_Gfx (BC%, p, nbrStrikes, D)
     _PutImage (61 * FontColAdj, 304)-Step(12 * FontColAdj, 32), backupScreen&, imageScreen&, (61 * FontColAdj, 304)-Step(12 * FontColAdj, 32)
 
     'Pitcher
-    _PutImage (35 * FontColAdj, 336)-Step(13 * FontColAdj, 32), backupScreen&, imageScreen&, (35 * FontColAdj, 336)-Step(13 * FontColAdj, 32)
+    _PutImage (35 * FontColAdj, 336)-Step(16 * FontColAdj, 32), backupScreen&, imageScreen&, (35 * FontColAdj, 336)-Step(16 * FontColAdj, 32)
 
     'Catcher
     _PutImage (35 * FontColAdj, 416)-Step(13 * FontColAdj, 32), backupScreen&, imageScreen&, (35 * FontColAdj, 416)-Step(13 * FontColAdj, 32)
@@ -502,7 +502,7 @@ Sub DisplayBallField_Gfx (BC%, p, nbrStrikes, D)
 
     'Pitcher Name
     player$ = "[" + handed$(pitchRating(D, currPitcher(D), 0) + 2) + "] " + Left$(pitchers$(D, currPitcher(D)), 10)
-    player$ = PadRight(player$, 10)
+    player$ = PadRight(player$, 14)
     PrintOnGfx 35, 21, player$, imageScreen&
 
     'Pitcher Stats
@@ -629,7 +629,7 @@ Sub LOADSCREEN ()
     _PutImage (61 * FontColAdj, 304)-Step(12 * FontColAdj, 32), imageScreen&, backupScreen&, (61 * FontColAdj, 304)-Step(12 * FontColAdj, 32)
 
     'Pitcher
-    _PutImage (35 * FontColAdj, 336)-Step(13 * FontColAdj, 32), imageScreen&, backupScreen&, (35 * FontColAdj, 336)-Step(13 * FontColAdj, 32)
+    _PutImage (35 * FontColAdj, 336)-Step(16 * FontColAdj, 32), imageScreen&, backupScreen&, (35 * FontColAdj, 336)-Step(16 * FontColAdj, 32)
 
     'Catcher
     _PutImage (35 * FontColAdj, 416)-Step(13 * FontColAdj, 16), imageScreen&, backupScreen&, (35 * FontColAdj, 416)-Step(13 * FontColAdj, 16)
