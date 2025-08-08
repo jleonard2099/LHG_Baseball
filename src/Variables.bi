@@ -330,13 +330,13 @@ Dim Shared P, pbpLine, pinchHitterFlag, pitchEraOpt, playerMode, playerOpt
 Dim Shared RE, RD, useInj, useRest, useVGA, dayOrNight
 Dim Shared strikeoutRating
 
-Dim Shared pbpDelay!, WF!
+Dim Shared pbpDelay!, windFactor!
 
 Dim Shared boxName$, fileString$, gameTime$, gameL$, gameW$
 Dim Shared PARK$, pbpString$, wind$, YY$
 
 Dim Shared batRating(0 To 1, 0 To 22, 80), CZ%(0 To 1), inningScore(1, 26)
-Dim Shared MON(5, 14), pitchEff(0 To 1, 0 To 1), pitchRating(0 To 1, 0 To 21, 0 To 89)
+'Dim Shared MON(5, 14), pitchEff(0 To 1, 0 To 1), pitchRating(0 To 1, 0 To 21, 0 To 89)
 Dim Shared schedGame(2), schedOptions(18), teamRat_GAME(1, 13), VV(1), VV1(1)
 Dim Shared nbrOuts(1)
 
@@ -361,6 +361,7 @@ Dim Shared gameM(0 To 9), gameSA(1, 24)
 Dim Shared gameScore(1, 2), newRelieverNeeded(1), H0%(1)
 Dim Shared injuryStatus(0 To 1, 0 To 22), L0%(1), LB%(9, 1)
 Dim Shared teamMgrProfileVal(0 To 1, 999), teamSplit(1, 11), teamYears(1)
+Dim Shared usedUmpires(50)
 
 Dim Shared currLineupSlot(9), parkHRVals!(1)
 
@@ -368,7 +369,7 @@ Dim Shared alpha$(12), baseName$(0 To 4), batters$(0 To 1, 0 To 22), handed$(4)
 Dim Shared diskIDs$(1), doublesPlayer$(0 To 22), ejections$(20), eventDesc$(0 To 22)
 Dim Shared fieldPos$(0 To 11)
 Dim Shared gameManagers$(1), gameStadiums$(1), gameTeams$(1), gameUmpire$(4)
-Dim Shared heldStatus$(1), homeRuns$(0 To 22), injPlayers$(20)
+Dim Shared genericNames$(4), heldStatus$(1), homeRuns$(0 To 22), injPlayers$(20)
 Dim Shared PARK$(99), pitchers$(1, 21), precip$(4), player$(23), pbpStrings$(10)
 Dim Shared skyCond$(4), stolenBases$(0 To 22)
 Dim Shared teamAbbreviatons$(0 To 1), triplesPlayer$(0 To 22)

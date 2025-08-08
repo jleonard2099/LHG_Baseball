@@ -133,7 +133,7 @@ Sub SCHEDULE ()
 
         End If
 
-    Loop Until SELECTION% = 8 Or ExitCode% = 27
+    Loop Until SELECTION% = 9 Or ExitCode% = 27
 
     'Free up memory for rest of program
     ReDim homeScores(1)
@@ -1804,4 +1804,3 @@ Sub EditBoxscore (boxName$)
     End If
 
 End Sub
-

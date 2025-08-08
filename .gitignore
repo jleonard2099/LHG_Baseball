@@ -25,3 +25,4 @@ src/schedule
 src/TICKER
 src/UMPIRES.*
 src/DEFAULT
+src/*.wav

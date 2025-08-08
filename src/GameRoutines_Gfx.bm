@@ -310,7 +310,7 @@ Sub DisplayBallField_Gfx (BC%, p, nbrStrikes, D)
         For I2 = inningStart% To inningEnd%
             If p = 0 And I = 0 And I2 > INNING% - 1 And inningScore(I, INNING%) = 0 Or p = 0 And I = 0 And I2 > INNING% And inningScore(I, INNING%) > 0 Or p = 1 And I2 > INNING% And I = 0 Then Exit For
             If p = 0 And I = 1 And I2 > INNING% - 1 Or p = 1 And I = 1 And inningScore(I, INNING%) = 0 And I2 > INNING% - 1 Or p = 1 And I = 1 And inningScore(I, INNING%) > 0 And I2 > INNING% Then Exit For
-            Call INNDISP_G(I2, I)
+            Call DisplayInning_G(I2, I)
         Next I2
 
         R% = gameScore(I, 0)
@@ -560,23 +560,36 @@ Sub HOLDSTATUS_G (runnerHeld)
 End Sub
 
 '----------------------------------------
-'          INNDISP_G Subroutine
+'          DisplayInning_G Subroutine
 '----------------------------------------
 ' ...explanation...
-Sub INNDISP_G (currInning, teamLine)
+Sub DisplayInning_G (currInning, teamLine)
 
-    If currInning < 4 Then L = 3 * currInning + 7
-    If currInning > 3 And currInning < 7 Then L = 3 * currInning + 8
-    If currInning > 6 And currInning < 10 Then L = 3 * currInning + 9
-    If currInning > 9 And currInning < 13 Then L = 3 * (currInning - 9) + 7
-    If currInning > 12 And currInning < 16 Then L = 3 * (currInning - 9) + 8
-    If currInning > 15 And currInning < 19 Then L = 3 * (currInning - 9) + 9
-    If currInning > 18 And currInning < 22 Then L = 3 * (currInning - 18) + 7
-    If currInning > 21 And currInning < 25 Then L = 3 * (currInning - 18) + 8
-    If currInning > 24 And currInning < 28 Then L = 3 * (currInning - 18) + 9
+    'If currInning < 4 Then col = 3 * currInning + 7
+    'If currInning > 3 And currInning < 7 Then col = 3 * currInning + 8
+    'If currInning > 6 And currInning < 10 Then col = 3 * currInning + 9
+    'If currInning > 9 And currInning < 13 Then col = 3 * (currInning - 9) + 7
+    'If currInning > 12 And currInning < 16 Then col = 3 * (currInning - 9) + 8
+    'If currInning > 15 And currInning < 19 Then col = 3 * (currInning - 9) + 9
+    'If currInning > 18 And currInning < 22 Then col = 3 * (currInning - 18) + 7
+    'If currInning > 21 And currInning < 25 Then col = 3 * (currInning - 18) + 8
+    'If currInning > 24 And currInning < 28 Then col = 3 * (currInning - 18) + 9
+
+    Dim setOf9, inningInSet, col
+
+    ' Each set of 9 innings repeats the same column pattern
+    setOf9 = (currInning - 1) \ 9 ' Which set: 0, 1, 2...
+    inningInSet = (currInning - 1) Mod 9 ' Position in set: 0-8
+
+    ' Base column calculation: 3 positions per inning + base offset
+    ' Extra offset every 3 innings within each set
+    col = 3 * (inningInSet + 1) + 6 + (inningInSet \ 3)
+
+    ' Shift right for subsequent sets (appears to be 30 columns per set)
+    If setOf9 > 0 Then col = col + setOf9 * 30
 
     FORMATTED$ = FUsing$(Str$(inningScore(teamLine, currInning)), "##", 1)
-    PrintOnGfx L + 13, teamLine + 28, FORMATTED$, imageScreen&
+    PrintOnGfx col + 13, teamLine + 28, FORMATTED$, imageScreen&
 
 End Sub
 

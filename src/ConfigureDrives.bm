@@ -283,7 +283,7 @@ Sub ConfigureDrives_Base ()
     browseImage& = _LoadImage("search.png", 32)
     saveImage& = _LoadImage("floppy-disk.png", 32)
 
-    Open "DEV.BAS" For Input As #2
+    Open "FOLDERS.CFG" For Input As #2
 
     For I = 0 To 4
         Input #2, diskPaths$(I)
@@ -452,7 +452,7 @@ Sub ConfigureDrives_Base ()
 
                 End If
 
-                If _MouseX >= 304 And _MouseX <= 336 And _MouseY >= 390 And _MouseY <= 422 Then
+                If _MouseX >= 304 And _MouseX <= 336 And _MouseY >= 430 And _MouseY <= 462 Then
                     'Mouse clicked inside button area
                     Do
                         I = _MouseInput
@@ -528,7 +528,7 @@ Sub ConfigureDrives_Base ()
 
     Done:
     Color Yellow, 1
-    Locate 24, 1
+    Locate 27, 1
     Print "Is this okay? (Y/N) ";
     X$ = ""
     Call YesNoB(X$, XCode, FG, BG)
@@ -539,7 +539,7 @@ Sub ConfigureDrives_Base ()
     If X$ <> "Y" GoTo Done 'insist on either Y or N or up-arrow
 
     Save:
-    Open "DEV.BAS" For Output As #1
+    Open "FOLDERS.CFG" For Output As #1
 
     For R = 0 To 4:
 
