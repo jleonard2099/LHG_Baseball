@@ -1,7 +1,7 @@
 $Debug
 $Color:32
 
-Const GAME_VERSION$ = "7.00"
+Const GAME_VERSION$ = "7.10"
 Const MAX_FILES = 10240
 Const MAX_CAREER_YEARS = 15
 'Const MAX_CONFERENCES = 40
@@ -18,6 +18,7 @@ Const SCHEDULE_SIZE_BYTES = 52
 Const LAST_COL = 80
 Const LAST_ROW = 30
 Const SCHED_ENTRIES_PER_SCREEN = 25
+Const MAX_UMPIRES = 100
 
 DefInt A-Z
 
@@ -31,7 +32,19 @@ DefInt A-Z
 '$Include: 'BoxRoutines.bi'
 '$Include: 'FileTeamSelection.bi'
 '$Include: 'Variables.bi'
-Dim Shared MON(5, 14), pitchEff(0 To 1, 0 To 1), pitchRating(0 To 1, 0 To 21, 0 To 89)
+
+'----------------------------------------
+' Used in UMPMGR routine
+'----------------------------------------
+Dim umpireLeague$
+Dim umpireYear
+Dim leagWalksPerG!, leagRunsPerG!, leagSOsPerG!
+
+Dim umpireName$(MAX_UMPIRES)
+
+Dim umpBBadj(1 To 4), umpSZadj(1 To 4), umpRunAdj(1 To 4)
+Dim umpireRating(MAX_UMPIRES, 0 To 2)
+
 '$Include: 'MainRoutines.bi'
 '$Include: 'TITLE.bi'
 
@@ -856,7 +869,1721 @@ End Sub
 '$Include: 'DRAFT.BAS'
 '$Include: 'GROUND.BAS'
 '$Include: 'HD2HDLEAG.BAS'
-'$Include: 'LOOKY.BAS'
+'Include: 'LOOKY.BAS'
+
+
+'----------------------------------------
+'            LOOKY Subroutine
+'----------------------------------------
+'This subroutine guides the user through
+'choosing a team file and then calls other
+'routines to load and view the stats
+Sub LOOKY ()
+
+    _Title "Full Count Baseball - View Stats"
+
+    ReDim menuChoices$(1 To 3)
+
+    menuExit = 0
+
+    Do
+
+        Color , 0
+        Cls
+
+        Call TITLE
+
+        menuChoices$(1) = "REVIEW COMPILED STATS FOR ONE TEAM     "
+        menuChoices$(2) = "PRINT REPORTS FOR ALL TEAMS IN A LEAGUE"
+        menuChoices$(3) = "RETURN TO MAIN MENU                    "
+        SELECTION% = 1
+        Count% = 3
+        Start% = 1
+        ExitCode% = 3
+        FileFGColor = 15: FileBGColor = 1
+        HiLiteFGColor% = 0: HiLiteBGColor% = 7
+        Spacing% = 1
+        Row% = 8
+        menuWidth% = Len(menuChoices$(1))
+        Column% = (80 - menuWidth% - 2) / 2
+
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor, FileBGColor)
+
+        _MouseShow "Default"
+        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        _MouseHide
+
+        Color , 0
+
+        If ExitCode% <> 27 Then
+
+            Select Case SELECTION%
+                Case 1: Call StatsOneTeam
+                Case 2: Call ReportsAllTeams
+                Case 3: Cls
+            End Select
+
+        End If
+
+    Loop Until SELECTION% = 3 Or ExitCode% = 27
+
+End Sub
+
+'----------------------------------------
+'       StatsOneTeam Subroutine
+'----------------------------------------
+'...explanation...
+Sub StatsOneTeam ()
+
+    Shared teamRatings()
+
+    teamNbr = 0
+    Call ChooseTeam(YN$, NTMS, teamNbr, team$)
+
+    If teamNbr <> 0 Then
+
+        Color 15, 0
+
+        statFile$ = nameStatFile$(team$)
+
+        If Not _FileExists(diskPaths$(1) + statFile$) Then
+
+            MsgText$ = "NO COMPILED STATS COULD BE FOUND FOR THIS TEAM. PRESS ANY KEY TO RETURN TO THE MAIN MENU"
+            BoxWidth = 24
+            BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+            Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+            Call CSMsgBox(MsgText$, BoxWidth, Pass)
+            I$ = GetKeyPress$
+            Call CSMsgBox("", 0, Pass)
+            
+        Else
+
+            Call LoadTeamStats(statFile$, nbrGames)
+            Call ViewAndPrintOptions(statFile$, team$, nbrGames, menuExit)
+
+        End If
+
+    End If
+
+End Sub
+
+'----------------------------------------
+'        LoadTeamStats Subroutine
+'----------------------------------------
+'This subroutine loads the selected team's
+'stats into arrays
+Sub LoadTeamStats (statFile$, nbrGames)
+
+    Shared statD0, statD1, statS0(), teamScore(), oppScore(), nbrInnings(), locIndicator$()
+
+    Shared extraInnWins, extraInnLosses
+    Shared homeWins, homeLosses
+    Shared lastTenLosses, lastTenWins, oneRunWins, oneRunLosses
+    Shared roadWins, roadLosses
+    Shared totalWins, totalLosses
+
+    Shared teamLosses, teamWins
+
+    totalWins = 0
+    totalLosses = 0
+    roadWins = 0
+    roadLosses = 0
+    oneRunWins = 0
+    oneRunLosses = 0
+    homeWins = 0
+    homeLosses = 0
+    extraInnWins = 0
+    extraInnLosses = 0
+    lastTenLosses = 0
+    lastTenWins = 0
+
+    Call ReadTeamStats(team$, statFile$)
+
+    If Not _FileExists(diskPaths$(1) + statFile$ + "R") Then
+
+        SS = 0
+
+    Else
+
+        SS = 1
+
+        Open diskPaths$(1) + statFile$ + "R" For Input As #1
+
+        For I = 0 To 22
+            For I1 = 0 To 6
+                Input #1, statS0(I, I1)
+            Next I1
+
+        Next I
+
+        Close #1
+
+    End If
+
+    Call ReadScheduleStats(statFile$, nbrGames)
+
+    For I = 1 To nbrGames
+
+        If Abs(teamScore(I) - oppScore(I)) = 1 And teamScore(I) > oppScore(I) Then
+            oneRunWins = oneRunWins + 1
+        End If
+        If Abs(teamScore(I) - oppScore(I)) = 1 And teamScore(I) < oppScore(I) Then
+            oneRunLosses = oneRunLosses + 1
+        End If
+
+        If teamScore(I) > oppScore(I) Then
+            totalWins = totalWins + 1
+        End If
+        If teamScore(I) > oppScore(I) And nbrInnings(I) > 9 Then
+            extraInnWins = extraInnWins + 1
+        End If
+        If teamScore(I) > oppScore(I) And locIndicator$(I) = "A" Then
+            roadWins = roadWins + 1
+        End If
+        If teamScore(I) > oppScore(I) And locIndicator$(I) = "H" Then
+            homeWins = homeWins + 1
+        End If
+
+        If oppScore(I) > teamScore(I) Then
+            totalLosses = totalLosses + 1
+        End If
+        If oppScore(I) > teamScore(I) And nbrInnings(I) > 9 Then
+            extraInnLosses = extraInnLosses + 1
+        End If
+        If oppScore(I) > teamScore(I) And locIndicator$(I) = "A" Then
+            roadLosses = roadLosses + 1
+        End If
+        If oppScore(I) > teamScore(I) And locIndicator$(I) = "H" Then
+            homeLosses = homeLosses + 1
+        End If
+
+    Next I
+
+    If nbrGames <= 10 Then
+
+        lastTenLosses = totalLosses
+        lastTenWins = totalWins
+
+    Else
+
+        M = nbrGames - 9
+
+        For J = M To nbrGames
+            If teamScore(J) > oppScore(J) Then
+                lastTenWins = lastTenWins + 1
+            End If
+            If oppScore(J) > teamScore(J) Then
+                lastTenLosses = lastTenLosses + 1
+            End If
+        Next J
+
+    End If
+
+End Sub
+
+'----------------------------------------
+'     ViewAndPrintOptions Subroutine
+'----------------------------------------
+'This subroutine gives the user available
+'options for what parts of the stat summary
+'to print / view
+Sub ViewAndPrintOptions (statFile$, teamName$, nbrGames, menuExit)
+
+    Shared teamScore(), nbrInnings(), teamRatings(), oppScore()
+
+    Shared oppName$(), losePitcher$(), locIndicator$(), winPitcher$()
+
+    ReDim menuChoices$(1 To 4)
+
+    Do
+
+        Color , 0
+        Cls
+
+        Call TITLE
+
+        menuChoices$(1) = "VIEW SCHEDULE AND STATS "
+        menuChoices$(2) = "VIEW STATS ONLY         "
+        menuChoices$(3) = "PRINT SCHEDULE AND STATS"
+        menuChoices$(4) = "PRINT STATS ONLY        "
+
+        SELECTION% = 1
+        Count% = 4
+        Start% = 1
+        ExitCode% = 3
+        FileFGColor = 15: FileBGColor = 1
+        HiLiteFGColor% = 0: HiLiteBGColor% = 7
+        Spacing% = 1
+        Row% = 8
+        menuWidth% = Len(menuChoices$(1))
+        Column% = (80 - menuWidth% - 2) / 2
+
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor, FileBGColor)
+
+        _MouseShow "Default"
+        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        _MouseHide
+
+        If ExitCode% <> 27 Then
+
+            Select Case SELECTION%
+
+                Case 1
+
+                    Color 12, 0
+                    Cls
+
+                    header$ = "SCHEDULE RESULTS FOR " + teamName$
+                    Xcoord = Len(header$)
+                    Xcoord = Int((80 - Xcoord) / 2)
+                    Locate 2, Xcoord
+                    Print "SCHEDULE RESULTS FOR ";
+                    Color teamRatings(11), teamRatings(12)
+                    Print teamName$
+
+                    Locate 4
+                    Color 14, 0: Print Tab(6); "OPPONENT"; Tab(33); "WINNING PITCHER"; Tab(50); "LOSING PITCHER"; Tab(66); "INNINGS"
+                    Color 15
+
+                    For I = 1 To nbrGames
+
+                        Print Str$(teamScore(I)); Tab(6); Left$(oppName$(I), 15); Tab(22); Str$(oppScore(I)); Tab(27); "("; locIndicator$(I); ")"; Tab(33); winPitcher$(I); Tab(50); losePitcher$(I); Tab(66); nbrInnings(I)
+
+                        If (I Mod (LAST_ROW - 7) = 0) Then
+
+                            Locate LAST_ROW - 1, 27: Print "PRESS ANY KEY TO CONTINUE";
+                            I$ = GetKeyPress$
+
+                            Color 12
+                            Cls
+
+                            Locate 2, Xcoord
+                            Print "SCHEDULE RESULTS FOR ";
+                            Color teamRatings(11), teamRatings(12)
+                            Print teamName$
+
+                            Locate 4
+                            Color 14, 0: Print Tab(6); "OPPONENT"; Tab(33); "WINNING PITCHER"; Tab(50); "LOSING PITCHER"; Tab(66); "INNINGS"
+                            Color 15
+
+                        End If
+
+                    Next
+
+                    Locate LAST_ROW - 1, 27: Print "PRESS ANY KEY TO CONTINUE";
+                    I$ = GetKeyPress$
+
+                Case 2:
+                    '
+
+                Case 3, 4
+                    userKey$ = GetPrintOptions$
+
+                    If userKey$ <> Chr$(27) Then
+
+                        Select Case userKey$
+
+                            Case "F"
+                                userFile$ = _SaveFileDialog$("Save Report File", _CWD$ + "\Report", "*.txt", "Text File")
+                                If userFile$ <> "" Then
+                                    Call NewPrintStats(0, userFile$, statFile$, teamName$, nbrGames, SELECTION%, splitStatChoice)
+                                End If
+
+                            Case "P"
+                                Call NewPrintStats(1, "REPORT", statFile$, teamName$, nbrGames, SELECTION%, splitStatChoice)
+
+                        End Select
+                        
+                    End If
+
+            End Select
+
+            If SELECTION% <> 3 And SELECTION% <> 4 Then
+
+                Color 15, 0
+                Cls
+
+                Call ViewScheduleStatSummary(statFile$, teamName$, splitStatChoice)
+
+                Color 15, 0
+
+                Cls
+
+                JJ = 1
+                Locate 6, 8
+
+                Call MenuBox(6, 8, 61, 1, teamRatings(11), teamRatings(12))
+
+                Do
+                    Locate 7
+                    U$ = "DISPLAY STATS AGAIN? (Y/N)"
+                    Locate , (80 - Len(U$)) / 2
+                    Print U$
+                    I$ = GetKeyPress$
+                Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+                Color 15, 0
+
+            End If
+
+        Else
+
+            menuExit% = 1
+
+        End If
+
+    Loop Until SELECTION% = 5 Or ExitCode% = 27
+
+    'Call ResetStatPrompt (statFile$, teamRatings())
+
+    Cls
+
+End Sub
+
+
+'----------------------------------------
+'   ViewScheduleStatSummary Subroutine
+'----------------------------------------
+'This subroutine formats and outputs the
+'selected team's record to the display,
+'then provides routines for output of
+'the other stat categories
+Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
+
+    Shared extraInnWins, extraInnLosses
+    Shared homeWins, homeLosses
+    Shared lastTenLosses, lastTenWins, oneRunWins, oneRunLosses
+    Shared roadWins, roadLosses
+    Shared totalWins, totalLosses
+
+    Shared teamLosses, teamWins
+
+    Shared teamRatings()
+
+    Shared batterNames$(), pitcherNames$(), statS0()
+    Shared statT0!(), statT1!()
+
+    Shared statB(), statB0()
+    Shared teamScore(), nbrInnings(), teamRatings(), oppScore()
+    Shared statP(), statP0()
+
+    Shared oppName$(), losePitcher$(), locIndicator$(), winPitcher$()
+
+    Xcoord = Len(teamName$)
+    Xcoord = Int((80 - Xcoord) / 2)
+    Locate 1, Xcoord
+
+    Color teamRatings(11), teamRatings(12)
+    Print teamName$
+    Print
+
+    Color 15, 0
+    Locate , 26
+    Color 14: Print "OVERALL RECORD ";
+    Color 15: Print "("; totalWins; "-"; totalLosses; ")"
+    Locate , 26
+    Color 14: Print "HOME RECORD    ";
+    Color 15: Print "("; homeWins; "-"; homeLosses; ")"
+    Locate , 26
+    Color 14: Print "ROAD RECORD    ";
+    Color 15: Print "("; roadWins; "-"; roadLosses; ")"
+    Locate , 26
+    Color 14: Print "LAST 10 GAMES  ";
+    Color 15: Print "("; lastTenWins; " -"; lastTenLosses; ")"
+    Locate , 26
+    Color 14: Print "EXTRA INNINGS  ";
+    Color 15: Print "("; extraInnWins; " -"; extraInnLosses; ")"
+    Locate , 26
+    Color 14: Print "ONE RUN GAMES  ";
+    Color 15: Print "("; oneRunWins; " -"; oneRunLosses; ")"
+
+    I$ = GetKeyPress$
+    Cls
+
+    'Call TITLE_STATS
+
+    'Locate 2, 1
+    'Print Tab(80); " ";
+
+    Xcoord = Len(teamName$)
+    Xcoord = Int((80 - Xcoord) / 2)
+    Locate 2, Xcoord
+    Color teamRatings(11), teamRatings(12)
+    Print teamName$
+
+    Locate 3, 31
+    Color 12, 0
+    Print "WON: "; teamWins; " LOST: "; teamLosses
+    Locate 5
+    Color 15, 1
+    Print "BATTERS    AB   R   H RBI  2B 3B  HR    BA   SLG   OBP  SO  BB  SB  CS %RAB    "
+    Color 15, 0
+
+    For I = 0 To 22
+
+        If batterNames$(I) <> "XXX" And batterNames$(I) <> "" Then
+
+            Locate I + 6, 1
+            Color 7
+
+            If (I Mod 2) = 0 Then Color 15
+
+            'Name
+            Print Left$(batterNames$(I), 10);
+
+            'AB
+            Locate , 11: Print Using "###"; statB0(I, 0);
+            'R
+            Locate , 15: Print Using "###"; statB0(I, 2);
+            'H
+            Locate , 19: Print Using "###"; statB0(I, 1);
+            'RBI
+            Locate , 23: Print Using "###"; statB0(I, 3);
+            '2B
+            Locate , 28: Print Using "##"; statB0(I, 4);
+            '3B
+            Locate , 31: Print Using "##"; statB0(I, 5);
+            'HR
+            Locate , 35: Print Using "##"; statB0(I, 6);
+
+            I2 = 0
+            I3 = 0
+            I4 = 0
+
+            Locate , 38
+
+            'BA
+            If statB0(I, 0) = 0 Then
+                Print " .--- ";
+            Else
+                If statB0(I, 0) = statB0(I, 1) Then
+                    Print "1.000 ";
+                Else
+                    If statB0(I, 1) = 0 Then
+                        Print " .000 ";
+                    Else
+                        statCalc! = statB0(I, 1) / statB0(I, 0)
+                        Print Using " .### "; statCalc!;
+                    End If
+                End If
+            End If
+
+            I3 = statB0(I, 1) + statB0(I, 4) + 2 * statB0(I, 5) + 3 * statB0(I, 6)
+
+            'SLG
+            If statB0(I, 0) = 0 Then
+                Print " .--- ";
+            Else
+                If I3 = 0 Then
+                    Print " .000 ";
+                Else
+                    If statB0(I, 0) = I3 Then
+                        Print "1.000 ";
+                    Else
+                        statCalc! = (I3 / statB0(I, 0))
+                        If statCalc! >= 1 Then
+                            Print Using "#.### "; statCalc!;
+                        Else
+                            Print Using " .### "; statCalc!;
+                        End If
+                    End If
+                End If
+            End If
+
+            I3 = statB0(I, 0) + statB0(I, 7)
+            I4 = statB0(I, 1) + statB0(I, 7)
+
+            'OBP
+            If I3 = 0 Then
+                Print " .---";
+            Else
+                If I4 = 0 Then
+                    Print " .000";
+                Else
+                    If I4 = I3 Then
+                        Print "1.000";
+                    Else
+                        statCalc! = (I4 / I3)
+                        Print Using " .###"; statCalc!;
+                    End If
+                End If
+            End If
+
+            'SO
+            Locate , 56: Print Using "###"; statB0(I, 8);
+            'BB
+            Locate , 60: Print Using "###"; statB0(I, 7);
+            'SB
+            Locate , 64: Print Using "###"; statB0(I, 9);
+            'CS
+            Locate , 69: Print Using "##"; statB0(I, 10);
+
+            '%RAB
+            If statB(I) > 0 Then
+                Locate , 73
+                MM = statB0(I, 0) / statB(I) * 100
+                MM = Int(MM)
+                Print Str$(MM);
+            Else
+                If statB(I) = 0 Then Locate , 73: Print "--";
+            End If
+
+            If statT0!(0) = 0 Then statT0!(0) = 1
+
+        End If 'Done checking for XXX / terminal chars
+
+    Next I
+
+    Locate 2, 1
+    I$ = GetKeyPress$
+
+    Cls
+
+    Locate 2, Xcoord
+    Color teamRatings(11), teamRatings(12)
+    Print teamName$
+
+    Locate 3, 31
+    Color 12, 0
+    Print "WON: "; teamWins; " LOST: "; teamLosses
+    Locate 5
+
+    Color 15, 1
+    Print "BATTERS      G  CHS LHS GIDP NEEDS PROJ AB  PO   A  E  FAVG  SBA CS %CS SH SF"
+
+    For I = 0 To 22
+
+        If batterNames$(I) <> "XXX" And batterNames$(I) <> "" Then
+
+            Locate I + 6, 1
+            Color 7, 0
+
+            If (I Mod 2) = 0 Then Color 15
+
+            'Name
+            Print Left$(batterNames$(I), 10);
+            'G
+            Locate , 12: Print Using "###"; statB0(I, 14);
+            'CHS
+            Locate , 18: Print Using "##"; statB0(I, 12);
+            'LHS
+            Locate , 22: Print Using "##"; statB0(I, 13);
+            'GIDP
+            Locate , 27: Print Using "##"; statB0(I, 15);
+
+            RQ = Val(Right$(statFile$, 2))
+            RT = 60
+            If RQ > RT Then
+                '# games afer 1960
+                QT = 162
+            Else
+                '# games before 1960
+                QT = 154
+            End If
+
+            'NEEDS
+            statCalc = (CInt((((statB(I) + 0) / QT) * (statT1!(9) + 1))) - (statB0(I, 0) + 0))
+
+            If (statB(I) > 0) And statCalc > 0 Then
+                Locate , 31: Print Using "####"; statCalc;
+            Else
+                If statB(I) = 0 Then
+                    Print "  ";
+                End If
+                If statB(I) > 0 Then
+                    Locate , 31: Print Using "####"; statCalc;
+                End If
+            End If
+
+            'PROJ AB
+            If statB(I) > 0 Then
+                Locate , 37
+                statCalc = CInt((((statB(I) + 0) / QT) * (statT1!(9) + 1)))
+                Print Using "####"; statCalc;
+                statT0!(13) = statT0!(13) + statCalc
+            End If
+
+            If statB(I) = 0 Then
+                Locate , 39: Print "0";
+            End If
+
+            Locate , 42
+
+            'PO, A, E
+            Print Using " #### ### ## "; statB0(I, 16); statB0(I, 17); statB0(I, 11);
+
+            'FAVG
+            If statB0(I, 16) + statB0(I, 17) + statB0(I, 11) <> 0 Then
+                If statB0(I, 11) <> 0 Then
+                    statCalc = (statB0(I, 16) + statB0(I, 17)) / (statB0(I, 16) + statB0(I, 17) + statB0(I, 11))
+                    Print Using " .###"; statCalc;
+                Else
+                    Print "1.000";
+                End If
+            End If
+
+            statCalc = statB0(I, 21) / (statB0(I, 20) + statB0(I, 21)) * 100
+
+            'SBA, CS, CS%
+            If statB0(I, 21) + statB0(I, 20) <> 0 Then
+                Print Using "  ### ## ###"; statB0(I, 20) + statB0(I, 21); statB0(I, 21); statCalc;
+            End If
+
+            'SH SF
+            Locate , 73: Print Using "## ##"; statB0(I, 18); statB0(I, 19);
+
+        End If
+
+    Next I
+
+    I$ = GetKeyPress$
+
+    Cls
+
+    Locate 2, Xcoord
+    Color teamRatings(11), teamRatings(12)
+    Print teamName$
+
+    Locate 3, 31
+    Color 12, 0
+    Print "WON: "; teamWins; " LOST: "; teamLosses
+    Locate 5
+
+    Color 15, 1
+    Print "PITCHERS   AB   R   H RBI  2B 3B  HR    BA   SLG   OBP  SO  BB  SB  CS"
+
+    For I = 0 To 21
+
+        If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
+
+            Locate I + 6, 1
+            Color 7, 0
+
+            If (I Mod 2) = 0 Then Color 15
+
+            'Name
+            Locate I + 6, 1: Print Left$(pitcherNames$(I), 10);
+            'AB
+            Locate , 11: Print Using "###"; statP0(I, 23);
+            'R
+            Locate , 15: Print Using "###"; statP0(I, 25);
+            'H
+            Locate , 19: Print Using "###"; statP0(I, 24);
+            'RBI
+            Locate , 23: Print Using "###"; statP0(I, 26);
+            '2B
+            Locate , 28: Print Using "##"; statP0(I, 27);
+            '3B
+            Locate , 31: Print Using "##"; statP0(I, 28);
+            'HR
+            Locate , 35: Print Using "##"; statP0(I, 29);
+
+            'B AVG
+            Locate , 38
+
+            If statP0(I, 23) = 0 Then
+                Print " .--- ";
+            Else
+                If statP0(I, 23) = statP0(I, 24) Then
+                    Print "1.000 ";
+                Else
+                    If statP0(I, 24) = 0 Then
+                        Print " .000 ";
+                    Else
+                        statCalc = statP0(I, 24) / statP0(I, 23)
+                        Print Using " .### "; statCalc;
+                    End If
+                End If
+            End If
+
+            'SLG
+            I3 = statP0(I, 24) + statP0(I, 27) + 2 * statP0(I, 28) + 3 * statP0(I, 29)
+
+            If statP0(I, 23) = 0 Then
+                Print " .--- ";
+            Else
+                If I3 = 0 Then
+                    Print " .000 ";
+                Else
+                    If statP0(I, 23) = I3 Then
+                        Print "1.000 ";
+                    Else
+                        statCalc = I3 / statP0(I, 23)
+                        If statCalc >= 1 Then
+                            Print Using "#.### "; statCalc;
+                        Else
+                            Print Using " .### "; statCalc;
+                        End If
+                    End If
+                End If
+            End If
+
+            'OBP
+            I3 = statP0(I, 30) + statP0(I, 23)
+            I4 = statP0(I, 24) + statP0(I, 30)
+            If I3 = 0 Then
+                Print " .---";
+            Else
+                If I4 = 0 Then
+                    Print " .000";
+                Else
+                    If I4 = I3 Then
+                        Print "1.000";
+                    Else
+                        statCalc = I4 / I3
+                        Print Using " .###"; statCalc;
+                    End If
+                End If
+            End If
+
+            'SO
+            Locate , 56: Print Using "###"; statP0(I, 31);
+            'BB
+            Locate , 60: Print Using "###"; statP0(I, 30);
+            'SB
+            Locate , 64: Print Using "###"; statP0(I, 32);
+            'CS
+            Locate , 69: Print Using "##"; statP0(I, 33);
+
+            If statT0!(0) = 0 Then
+                statT0!(0) = 1
+            End If
+
+        End If
+
+    Next I
+
+    Locate 2, 1
+    I$ = GetKeyPress$
+
+    Cls
+
+    Locate 2, Xcoord
+    Color teamRatings(11), teamRatings(12)
+    Print teamName$
+
+    Locate 3, 31
+    Color 12, 0
+    Print "WON: "; teamWins; " LOST: "; teamLosses
+    Locate 5
+
+    Color 15, 1
+    Print "PITCHERS     G  CHS LHS GIDP   PO   A  E  FAVG SH SF"
+    Color 15
+
+    For I = 0 To 21
+
+        If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
+
+            Locate I + 6, 1
+            Color 7, 0
+
+            If (I Mod 2) = 0 Then Color 15
+
+            'Name
+            Print Left$(pitcherNames$(I), 10);
+            'G
+            Locate , 12: Print Using "###"; statP0(I, 8);
+            'CHS
+            Locate , 18: Print Using "##"; statP0(I, 35);
+            'LHS
+            Locate , 22: Print Using "##"; statP0(I, 36);
+            'GIDO
+            Locate , 27: Print Using "##"; statP0(I, 37);: Locate , 29
+            'PO, A, E
+            Print Using " #### ### ## "; statP0(I, 38); statP0(I, 39); statP0(I, 34);
+
+            'FAVG
+            If statP0(I, 38) + statP0(I, 39) + statP0(I, 34) <> 0 Then
+                If statP0(I, 34) = 0 Then
+                    Print "1.000";
+                Else
+                    statCalc = (statP0(I, 38) + statP0(I, 39)) / (statP0(I, 38) + statP0(I, 39) + statP0(I, 34))
+                    Print Using " .###"; statCalc;
+                End If
+            End If
+
+            'SH, SF
+            Locate , 48: Print Using "## ##"; statP0(I, 40); statP0(I, 41);
+
+        End If
+    Next I
+
+    Locate 2, 1
+    I$ = GetKeyPress$
+
+    Cls
+
+    Locate 2, Xcoord
+    Color teamRatings(11), teamRatings(12)
+    Print teamName$
+
+    Locate 3, 31
+    Color 12, 0
+    Print "WON: "; teamWins; " LOST: "; teamLosses
+    Locate 5
+
+    Color 14, 0
+    Print "  TEAM BATTING TOTALS"
+    Color 15, 1
+    Print "  AB    R    H  RBI  2B  3B  HR    BA   SLG   OBP   SO   BB  SB  CS"
+
+    Color 14, 0
+    
+    'At Bats, Runs, Hits, RBI, Doubles, Tripls, HR
+    Print Using "#### #### #### #### ### ### ###"; statT0!(0); statT0!(2); statT0!(1); statT0!(3); statT0!(4); statT0!(5); statT0!(6);
+
+    'Bat Average
+    statCalc = Int((statT0!(1) / statT0!(0) + .0005) * 1000)
+    Locate , 34: Print ".";
+    Print Using "###"; statCalc;
+
+    'Slug %
+    statCalc = Int((((statT0!(1) + statT0!(4) + 2 * statT0!(5) + 3 * statT0!(6)) / statT0!(0)) + .0005) * 1000)
+    Locate , 40: Print ".";
+    Print Using "###"; statCalc;
+
+    'On-Base %
+    statCalc = Int(((statT0!(1) + statT0!(7)) / (statT0!(7) + statT0!(0)) + .0005) * 1000)
+    Locate , 46: Print ".";
+    Print Using "###"; statCalc;
+
+    'Strikeouts, Walks, Stolen Base, Caught Stealing
+    Locate , 51: Print Using "#### #### ### ###"; statT0!(8); statT0!(7); statT0!(9); statT0!(10)
+
+
+    '-- ??
+    Color 15, 1
+    Locate 8, 1: Print "GIDP   PO    A   E  FAVG  SH  SF  LOB"
+
+    Color 14, 0
+    
+    'GIDP, PO, A, E
+    Print Using "#### #### #### ###"; statT0!(15); statT0!(16); statT0!(17); statT0!(11);
+    Locate , 20: If statT0!(11) = 0 Then Print "1.000";
+
+    'FAVG
+    If statT0!(11) <> 0 Then
+        statCalc = (statT0!(16) + statT0!(17)) / (statT0!(16) + statT0!(17) + statT0!(11))
+        Print Using " .###"; statCalc;
+    End If
+    
+    'SH, SF, LOB
+    Print Using " ### ### ####"; statT0!(18); statT0!(19); statT0!(12)
+
+    I$ = GetKeyPress$
+
+    If splitStatChoice <> 0 Then
+
+        ' DISPLAY SPLIT STATS
+        Cls
+
+        Color teamRatings(11), teamRatings(12)
+        Print teamName$;
+
+        Locate 1, 15
+        Color 14, 0
+        Print "VS L  AB 2B 3B HR  BB   K   AVG  VS R  AB 2B 3B HR  BB   K   AVG"
+        Color 15, 0
+        Locate 2
+
+        For I = 0 To 22
+
+            If batterNames$(I) <> "XXX" And Left$(batterNames$(I), 1) <> " " And batterNames$(I) <> "" Then
+
+                Print batterNames$(I);
+
+                'At Bats, Doubles, Triples, HR, Walks, Strikeout
+                Locate , 20: Print Using "### ## ## ## ### ### "; statS0(I, 0); statS0(I, 2); statS0(I, 3); statS0(I, 4); statS0(I, 5); statS0(I, 6);
+
+                'Bat Avg
+                If statS0(I, 0) = 0 And statS0(I, 1) = 0 Then
+                    Print " .000";
+                Else
+                    If statS0(I, 0) = statS0(I, 1) Then
+                        Print "1.000";
+                    Else
+                        Print Using "#.###"; statS0(I, 1) / statS0(I, 0);
+                    End If
+                End If
+
+                'At Bats, Doubles, Triples, HR, Walks, Strikeout
+                Locate , 53: Print Using "### ## ## ## ### ### "; statB0(I, 0) - statS0(I, 0); statB0(I, 4) - statS0(I, 2); statB0(I, 5) - statS0(I, 3); statB0(I, 6) - statS0(I, 4); statB0(I, 7) - statS0(I, 5); statB0(I, 8) - statS0(I, 6);
+
+                'Bat Avg
+                If statB0(I, 0) - statS0(I, 0) = 0 Or statB0(I, 1) - statS0(I, 1) = 0 Then
+                    Print " .000";
+                Else
+                    If statB0(I, 0) - statS0(I, 0) = statB0(I, 1) - statS0(I, 1) Then
+                        Print "1.000";
+                    Else
+                        Print Using "#.###"; (statB0(I, 1) - statS0(I, 1)) / (statB0(I, 0) - statS0(I, 0));
+                    End If
+                End If
+                If I <> 22 Then Print
+
+            End If
+        Next I
+
+        I$ = GetKeyPress$
+
+    End If
+
+    Cls
+
+    Locate 2, Xcoord
+    Color teamRatings(11), teamRatings(12)
+    Print teamName$
+
+    Locate 3, 31
+    Color 12, 0
+    Print "WON: "; teamWins; " LOST: "; teamLosses
+    Locate 5
+
+    Color 15, 4
+    Print "PITCHERS    W  L SV    IP    H  BB   SO   ERA  G GS CG RUN  ER ShO HRA  DP %RIP"
+
+    Color 15
+
+    For I = 0 To 21
+        If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
+
+            Locate I + 6, 1
+            Color 7, 0
+
+            If (I Mod 2) = 0 Then Color 15
+            
+            Print Left$(pitcherNames$(I), 10);
+            
+            'Wins
+            Locate , 12: Print Using "##"; statP0(I, 6);
+            'Losses
+            Locate , 15: Print Using "##"; statP0(I, 7);
+            'Saves
+            Locate , 18: Print Using "##"; statP0(I, 12);
+            'Inn Pitched
+            Locate , 22: Print Using "###"; Int(statP0(I, 0) / 3);
+            Print ".";: Print Using "#"; statP0(I, 0) - Int(statP0(I, 0) / 3) * 3;
+            'Hits
+            Locate , 27: Print Using "####"; statP0(I, 1);
+            'Walks
+            Locate , 32: Print Using "###"; statP0(I, 4);
+            'Strikeout
+            Locate , 36: Print Using "####"; statP0(I, 5);
+            Locate , 41
+
+            'ERA
+            If statP0(I, 0) = 0 Then
+                Print " -.--";
+            Else
+                If statP0(I, 3) = 0 Then
+                    Print " 0.00";
+                Else
+                    Print Using "##.##"; (statP0(I, 3) * 9) / (statP0(I, 0) / 3);
+                End If
+            End If
+
+            'Games, Games Started, Complete Game, Runs, Earned Run, Shutout, HR Allowed, Double Player
+            Locate , 47: Print Using "## ## ## ### ### ## ### ###"; statP0(I, 8); statP0(I, 9); statP0(I, 10); statP0(I, 2); statP0(I, 3); statP0(I, 11); statP0(I, 14); statP0(I, 13);
+
+            '%RIP
+            If statP(I) > 0 Then
+                statCalc = CInt((((statP0(I, 0) / 3) * 100) / statP(I)))
+                Locate , 76: Print Using "###"; statCalc;
+            End If
+            If statP(I) = 0 Then Print "  ";
+
+        End If
+
+    Next I
+
+    I$ = GetKeyPress$
+
+    Cls
+
+    Locate 2, Xcoord
+    Color teamRatings(11), teamRatings(12)
+    Print teamName$
+
+    Locate 3, 31
+    Color 12, 0
+    Print "WON: "; teamWins; " LOST: "; teamLosses
+    Locate 5
+
+    Color 15, 4
+    Print "PITCHERS   BS HL  RI  RS   SUP GS QS  SH SF"
+
+    For I = 0 To 21
+
+        If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
+
+            Locate I + 6, 1
+            Color 7, 0
+
+            If (I Mod 2) = 0 Then Color 15
+            
+            Print Left$(pitcherNames$(I), 10);: Locate , 12
+
+            'Blown Save, Hold, RI, Runs Saved
+            Print Using "## ## ### ### "; statP0(I, 19); statP0(I, 22); statP0(I, 17); statP0(I, 18);
+
+            If statP0(I, 9) > 0 Then
+                'SUP, Games Started, Quality Start
+                statCalc = statP0(I, 20) / statP0(I, 9)
+                Print Using "##.## ## ##"; statCalc; statP0(I, 9); statP0(I, 21);
+            Else
+                Print " -.-- -- --";
+            End If
+
+            'Sacifice Bunt, Sacrifice Fly
+            Print Using "  ## ##"; statP0(I, 15); statP0(I, 16);
+
+        End If
+
+    Next I
+
+    Locate 2, 1
+
+    I$ = GetKeyPress$
+
+    Cls
+
+    Locate 2, Xcoord
+    Color teamRatings(11), teamRatings(12)
+    Print teamName$
+
+    Locate 3, 31
+    Color 12, 0
+    Print "WON: "; teamWins; " LOST: "; teamLosses
+    Locate 5
+
+    Color 14, 0
+    Print "  TEAM PITCHING TOTALS"
+    Color 15, 4
+    Print "  W   L  SV     IP    H   BB   SO   ERA   G  GS  CG  RUN   ER ShO HRA  DP"
+
+    Color 14, 0
+
+    'W, L, SV
+    Print Using "### ### ### "; teamWins; teamLosses; statT1!(12);
+
+    'IP
+    Print Using "####"; Int(statT1!(0) / 3);
+    Print ".";: Print Using "#"; statT1!(0) - Int(statT1!(0) / 3) * 3;
+
+    'H, BB, SO, ERA, G, GS, CG
+    statCalc = statT1!(3) * 9 / (statT1!(0) / 3)
+    Print Using " #### #### #### ##.## ### ### ### "; statT1!(1); statT1!(4); statT1!(5); statCalc; statT1!(9); statT1!(9); statT1!(10);
+
+    'RUN, ER, ShO, HRA, DP
+    Print Using "#### #### ### ### ###"; statT1!(2); statT1!(3); statT1!(11); statT1!(14); statT1!(13)
+
+    Locate 8, 1
+
+    'Blown Save, RI, Runs Saved, SUP, Quality Start, Sacrifice Bunt, Sacrifice Fly
+    Color 15, 4: Print " BS   RI   RS   SUP  QS  SH  SF"
+
+    Color 14, 0
+    statCalc = statT0!(2) / statT1!(9)
+    Print Using "### #### #### ##.## ### ### ###"; statT1!(19); statT1!(17); statT1!(18); statCalc; statT1!(21); statT1!(15); statT1!(16)
+
+    I$ = GetKeyPress$
+
+End Sub
+
+
+'----------------------------------------
+'       ReportsAllTeams Subroutine
+'----------------------------------------
+'This subroutine generates a stat report
+'for each team in the chosen league.
+Sub ReportsAllTeams ()
+
+    Shared statD0, statD1
+
+    Shared statT0!(), statT1!()
+
+    Shared statB(), statB0()
+    Shared statP(), statP0()
+
+    Shared batterNames$(), pitcherNames$()
+    Shared memberName$()
+
+    Shared teamLosses, teamWins
+
+    leagueFile$ = _OpenFileDialog$("Choose League Stats file", diskPaths$(2), "*.TMS", "League Stats files [.TMS]")
+
+    If leagueFile$ <> "" Then
+
+        Call ReadLeagueStats(leagueFile$)
+
+        For XW = 1 To TEAMS_PER_LEAGUE
+
+            If _FileExists(diskPaths$(1) + memberName$(XW)) Then
+
+                Call ReadTeamStats(teamName$, memberName$(XW))
+
+                userKey$ = GetPrintOptions$
+
+                If userKey$ <> Chr$(27) Then
+
+                    Select Case userKey$
+
+                        Case "F"
+                            userFile$ = _SaveFileDialog$("Save Report File", _CWD$ + "\Report", "*.txt", "Text File")
+                            If userFile$ <> "" Then
+                                Call NewPrintStats(0, userFile$, memberName$(XW), teamName$, nbrGames, 3, splitStatChoice)
+                            End If
+
+                        Case "P"
+                            Call NewPrintStats(1, "REPORT", memberName$(XW), teamName$, nbrGames, 3, splitStatChoice)
+
+                    End Select
+                    
+                End If
+
+            End If
+
+        Next
+
+    End If 'Done checking for ESC
+
+
+End Sub
+
+
+'----------------------------------------
+'       NewPrintStats Subroutine
+'----------------------------------------
+'This subroutine formats and outputs the
+'team's schedule results and stats to the
+'default printer
+Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printChoice, splitStatChoice)
+
+    Shared teamLosses, teamWins
+
+    Shared extraInnWins, extraInnLosses
+    Shared homeWins, homeLosses
+    Shared lastTenLosses, lastTenWins, oneRunWins, oneRunLosses
+    Shared roadWins, roadLosses
+    Shared totalWins, totalLosses
+
+    Shared batterNames$(), pitcherNames$()
+    Shared statT0!(), statT1!()
+    Shared statB(), statB0()
+    Shared statP(), statP0()
+
+    Shared oppName$(), losePitcher$()
+    Shared locIndicator$(), winPitcher$()
+    Shared teamScore(), nbrInnings()
+    Shared statS0(), oppScore()
+
+    RQ = Val(Right$(statFile$, 2))
+    RT = 60
+    If RQ > RT Then
+        '# games afer 1960
+        QT = 162
+    Else
+        '# games before 1960
+        QT = 154
+    End If
+
+
+    ' *** NEW PRINT ROUTINE 6-24-90 ***
+    If printChoice <> 3 Then
+        totalWins = 0
+        totalLosses = 0
+        oneRunWins = 0
+        oneRunLosses = 0
+        roadWins = 0
+        roadLosses = 0
+        homeWins = 0
+        homeLosses = 0
+        extraInnWins = 0
+        extraInnLosses = 0
+        lastTenLosses = 0
+        lastTenWins = 0
+
+        Cls
+        LPrint "        SCHEDULE RESULTS FOR "; teamName$
+        LPrint
+    Else
+        LPrint Tab(6); "OPPONENT"; Tab(33); "WINNING PITCHER"; Tab(50); "LOSING PITCHER"; Tab(66); "INNINGS"
+
+        For I = 1 To nbrGames
+            LPrint Str$(teamScore(I)); Tab(6); Left$(oppName$(I), 15); Tab(22); Str$(oppScore(I)); Tab(27); "("; locIndicator$(I); ")"; Tab(33); winPitcher$(I); Tab(50); losePitcher$(I); Tab(66); nbrInnings(I)
+        Next
+
+        LPrint
+        LPrint
+        LPrint Tab(20); "RECORD         ("; Str$(totalWins); " -"; Str$(totalLosses); " )"
+        LPrint Tab(20); "HOME RECORD    ("; Str$(homeWins); " -"; Str$(homeLosses); " )"
+        LPrint Tab(20); "ROAD RECORD    ("; Str$(roadWins); " -"; Str$(roadLosses); " )"
+        LPrint Tab(20); "LAST 10 GAMES  ("; Str$(lastTenWins); " -"; Str$(lastTenLosses); " )"
+        LPrint Tab(20); "EXTRA INNINGS  ("; Str$(extraInnWins); " -"; Str$(extraInnLosses); " )"
+        LPrint Tab(20); "ONE RUN GAMES  ("; Str$(oneRunWins); " -"; Str$(oneRunLosses); " )"
+        LPrint Chr$(12)
+
+    End If
+
+    LPrint teamName$; "    WON: "; teamWins; " LOST: "; teamLosses
+    LPrint "BATTERS      G  AB   R   H 2B 3B HR RBI  BB   K  SB CS CHS LHS GIDP  BAVG   SLG   OBP NEED PROJ.AB %RAB   PO   A  E  FAVG SH SF"
+
+    For I = 0 To 22
+
+        If batterNames$(I) <> "XXX" And batterNames$(I) <> "" Then
+            LPrint Left$(batterNames$(I), 10); Tab(12);: LPrint Using "###"; statB0(I, 14);
+            LPrint Tab(16); Using "### ### ### ##"; statB0(I, 0); statB0(I, 2); statB0(I, 1); statB0(I, 4);
+            LPrint Tab(31); Using "## ## ### ###"; statB0(I, 5); statB0(I, 6); statB0(I, 3); statB0(I, 7);
+            LPrint Tab(45); Using "### ### ##"; statB0(I, 8); statB0(I, 9); statB0(I, 10);
+            LPrint Tab(56);: LPrint Using "##"; statB0(I, 12);
+            LPrint Tab(60);: LPrint Using "##"; statB0(I, 13);
+            LPrint Tab(64);: LPrint Using "##"; statB0(I, 15);
+            LPrint Tab(69);
+
+            If statB0(I, 0) = 0 Then
+                LPrint "-.---";
+            Else
+                If statB0(I, 0) = statB0(I, 1) Then
+                    LPrint "1.000";
+                Else
+                    If statB0(I, 1) = 0 Then
+                        LPrint " .000";
+                    Else
+                        LPrint Using " .###"; (statB0(I, 1) / statB0(I, 0));
+                    End If
+                End If
+            End If
+
+            LPrint Tab(75);
+
+            If statB0(I, 0) = 0 Then
+                LPrint "-.---";
+            Else
+                J = statB0(I, 1) + statB0(I, 4) + statB0(I, 5) * 2 + statB0(I, 6) * 3
+                If J = statB0(I, 0) Then
+                    LPrint "1.000";
+                Else
+                    If J / statB0(I, 0) > 1 Then
+                        LPrint Using "#.###"; (J / statB0(I, 0));
+                    Else
+                        If statB0(I, 1) = 0 Then
+                            LPrint " .000";
+                        Else
+                            LPrint Using " .###"; (J / statB0(I, 0));
+                        End If
+                    End If
+                End If
+            End If
+
+            LPrint Tab(81);
+
+            If statB0(I, 0) = 0 Then
+                LPrint "-.---";
+            Else
+                J = statB0(I, 1) + statB0(I, 7)
+                If J = statB0(I, 0) Then
+                    LPrint "1.000";
+                Else
+                    If J / (statB0(I, 7) + statB0(I, 0)) > 1 Then
+                        LPrint Using "#.###"; (J / (statB0(I, 7) + statB0(I, 0)));
+                    Else
+                        If J = 0 Then
+                            LPrint " .000";
+                        Else
+                            statCalc = (J / (statB0(I, 7) + statB0(I, 0)))
+                            LPrint Using " .###"; statCalc;
+                        End If
+                    End If
+                End If
+            End If
+
+            LPrint Tab(87);
+
+            statCalc = (CInt((((statB(I) + 0) / QT) * (statT1!(9) + 1))) - (statB0(I, 0) + 0))
+            If statB(I) > 0 And statCalc > 0 Then
+                LPrint Using "###"; statCalc;
+            Else
+                If statB(I) > 0 Then
+                    statCalc = CInt(((statB(I) / QT) * (statT1!(9) + 1))) - (statB0(I, 0) + 0)
+                    LPrint Using "###"; statCalc;
+                End If
+            End If
+
+            LPrint Tab(95);
+            If statB(I) > 0 Then
+                statCalc = CInt((((statB(I) + 0) / QT) * (statT1!(9) + 1)))
+                LPrint Using "###"; statCalc;
+                statT0!(13) = statT0!(13) + statCalc
+            End If
+
+            LPrint Tab(100);
+            If statB(I) > 0 Then
+                statCalc = ((statB0(I, 0) / statB(I)) * 100)
+                LPrint Using "###"; statCalc;
+            End If
+
+            LPrint Tab(105);: LPrint Using "####"; statB0(I, 16);
+            LPrint Tab(110);: LPrint Using "###"; statB0(I, 17);
+            LPrint Tab(114);: LPrint Using "##"; statB0(I, 11);
+            LPrint Tab(117);
+
+            If statB0(I, 11) + statB0(I, 17) + statB0(I, 16) = 0 Then
+                LPrint " .---";
+            Else
+                If statB0(I, 11) = 0 Then
+                    LPrint "1.000";
+                Else
+                    statCalc = (statB0(I, 16) + statB0(I, 17)) / (statB0(I, 16) + statB0(I, 17) + statB0(I, 11))
+                    LPrint Using " .###"; statCalc;
+                End If
+            End If
+
+            LPrint Tab(123); Using "## ##"; statB0(I, 18); statB0(I, 19)
+
+        End If
+
+    Next
+
+    For I = 0 To 21
+
+        If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
+
+            LPrint Left$(pitcherNames$(I), 10); Tab(12);
+            LPrint Using "###"; statP0(I, 8);
+            LPrint Tab(16); Using "### ### ### ##"; statP0(I, 23); statP0(I, 25); statP0(I, 24); statP0(I, 27);
+            LPrint Tab(31); Using "## ## ### ###"; statP0(I, 28); statP0(I, 29); statP0(I, 26); statP0(I, 30);
+            LPrint Tab(45); Using "### ### ##"; statP0(I, 31); statP0(I, 32); statP0(I, 33);
+            LPrint Tab(56);: LPrint Using "##"; statP0(I, 35);
+            LPrint Tab(60);: LPrint Using "##"; statP0(I, 36);
+            LPrint Tab(64);: LPrint Using "##"; statP0(I, 37);
+
+            LPrint Tab(69);
+            If statP0(I, 23) = 0 Then
+                LPrint "-.---";
+            Else
+                If statP0(I, 23) = statP0(I, 24) Then
+                    LPrint "1.000";
+                Else
+                    If statP0(I, 24) = 0 Then
+                        LPrint " .000";
+                    Else
+                        statCalc = (statP0(I, 24) / statP0(I, 23))
+                        LPrint Using " .###"; statCalc;
+                    End If
+                End If
+            End If
+
+            LPrint Tab(75);
+            If statP0(I, 23) = 0 Then
+                LPrint "-.---";
+            Else
+                J = statP0(I, 24) + statP0(I, 27) + statP0(I, 28) * 2 + statP0(I, 29) * 3
+                If J = statP0(I, 23) Then
+                    LPrint "1.000";
+                Else
+                    statCalc = J / statP0(I, 23)
+                    If statCalc > 1 Then
+                        LPrint Using "#.###"; statCalc;
+                    Else
+                        If statP0(I, 24) = 0 Then
+                            LPrint " .000";
+                        Else
+                            LPrint Using " .###"; statCalc;
+                        End If
+                    End If
+                End If
+            End If
+
+            LPrint Tab(81);
+            If statP0(I, 23) = 0 Then
+                LPrint "-.---";
+            Else
+                J = statP0(I, 24) + statP0(I, 30)
+                If J = statP0(I, 23) Then
+                    LPrint "1.000";
+                Else
+                    statCalc = (J / (statP0(I, 30) + statP0(I, 23)))
+                    If statCalc > 1 Then
+                        LPrint Using "#.###"; statCalc;
+                    Else
+                        If J = 0 Then
+                            LPrint " .000";
+                        Else
+                            LPrint Using " .###"; statCalc;
+                        End If
+                    End If
+                End If
+            End If
+
+            LPrint Tab(105);: LPrint Using "####"; statP0(I, 38);
+            LPrint Tab(110);: LPrint Using "###"; statP0(I, 39);
+            LPrint Tab(114);: LPrint Using "##"; statP0(I, 34);
+            LPrint Tab(117);
+
+            If statP0(I, 34) + statP0(I, 38) + statP0(I, 39) = 0 Then
+                LPrint " .---";
+            Else
+                If statP0(I, 34) = 0 Then
+                    LPrint "1.000";
+                Else
+                    statCalc = (statP0(I, 38) + statP0(I, 39)) / (statP0(I, 38) + statP0(I, 39) + statP0(I, 34))
+                    LPrint Using " .###"; statCalc;
+                End If
+            End If
+
+            LPrint Tab(123); Using "## ##"; statP0(I, 40); statP0(I, 41)
+
+        End If
+
+    Next
+
+    LPrint " ": LPrint "TOTALS";
+    LPrint Tab(12);: LPrint Using "###"; nbrGames;
+    LPrint Tab(19);: LPrint Using "####"; statT0!(2);
+    LPrint Tab(27);: LPrint Using "###"; statT0!(4);
+    LPrint Tab(33);: LPrint Using "###"; statT0!(6);
+    LPrint Tab(40);: LPrint Using "####"; statT0!(7);
+    LPrint Tab(49);: LPrint Using "###"; statT0!(9);
+    statCalc = (statT0!(1) / statT0!(0))
+    LPrint Tab(69);: LPrint Using " .###"; statCalc;
+    statCalc = ((statT0!(1) + statT0!(4) + statT0!(5) * 2 + statT0!(6) * 3) / statT0!(0))
+    LPrint Tab(75);: LPrint Using " .###"; statCalc;
+    statCalc = ((statT0!(1) + statT0!(7)) / (statT0!(7) + statT0!(0)))
+    LPrint Tab(81);: LPrint Using " .###"; statCalc;
+    LPrint Tab(105);: LPrint Using "####"; statT0!(16);
+    LPrint Tab(113);: LPrint Using "###"; statT0!(11);
+    LPrint Tab(122); Using "###"; statT0!(18)
+    LPrint Tab(15);: LPrint Using "####"; statT0!(0);
+    LPrint Tab(23);: LPrint Using "####"; statT0!(1);
+    LPrint Tab(30);: LPrint Using "###"; statT0!(5);
+    LPrint Tab(36);: LPrint Using "####"; statT0!(3);
+    LPrint Tab(44);: LPrint Using "####"; statT0!(8);
+    LPrint Tab(52);: LPrint Using "####"; statT0!(10);
+    LPrint Tab(63); Using "###"; statT0!(15);
+    LPrint Tab(109);: LPrint Using "####"; statT0!(17);
+    LPrint Tab(117);
+
+    If statT0!(16) + statT0!(11) + statT0!(17) = 0 Then
+        LPrint " .---";
+    Else
+        If statT0!(11) = 0 Then
+            LPrint "1.000";
+        Else
+            statCalc = (statT0!(16) + statT0!(17)) / (statT0!(16) + statT0!(11) + statT0!(17))
+            LPrint Using " .###"; statCalc;
+        End If
+    End If
+
+    LPrint Tab(125); Using "###"; statT0!(19)
+    LPrint
+    LPrint
+    TT$ = Str$(statT0!(2) / (teamWins + teamLosses) + .05)
+    UU$ = Str$(statT1!(2) / (teamWins + teamLosses) + .05)
+    LPrint "RUNS PER GAME ";: LPrint Left$(TT$, 4);
+    LPrint " OPPONENTS";: LPrint Left$(UU$, 4)
+    LPrint
+    LPrint
+    LPrint Tab(20); "RECORD         ("; Str$(totalWins); " -"; Str$(totalLosses); " )"
+    LPrint Tab(20); "HOME RECORD    ("; Str$(homeWins); " -"; Str$(homeLosses); " )"
+    LPrint Tab(20); "ROAD RECORD    ("; Str$(roadWins); " -"; Str$(roadLosses); " )"
+    LPrint Tab(20); "LAST 10 GAMES  ("; Str$(lastTenWins); " -"; Str$(lastTenLosses); " )"
+    LPrint Tab(20); "EXTRA INNINGS  ("; Str$(extraInnWins); " -"; Str$(extraInnLosses); " )"
+    LPrint Tab(20); "ONE RUN GAMES  ("; Str$(oneRunWins); " -"; Str$(oneRunLosses); " )"
+    LPrint Chr$(12)
+    LPrint teamName$; "    WON: "; teamWins; " LOST: "; teamLosses
+    LPrint "PITCHERS    W  L SV  IP     H  BB  SO  ERA    G GS CG RUN  ER ShO HR DP %RIP SH SF  RI RIS BS   SUP QS"
+
+    For I = 0 To 21
+
+        If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
+            LPrint Left$(pitcherNames$(I), 10);
+            LPrint Tab(12);: LPrint Using "##"; statP0(I, 6);
+            LPrint Tab(15);: LPrint Using "##"; statP0(I, 7);
+            LPrint Tab(18);: LPrint Using "##"; statP0(I, 12);
+            statCalc = Int(statP0(I, 0) / 3)
+            LPrint Tab(21);: LPrint Using "###"; statCalc;
+
+            If statP0(I, 0) - (Int(statP0(I, 0) / 3) * 3) > 0 Then
+                LPrint ".";
+                statCalc = (Int(statP0(I, 0) / 3) * 3)
+                LPrint Using "#"; statP0(I, 0) - statCalc;
+            End If
+
+            LPrint Tab(27);: LPrint Using "###"; statP0(I, 1);
+            LPrint Tab(31);: LPrint Using "###"; statP0(I, 4);
+            LPrint Tab(35);: LPrint Using "###"; statP0(I, 5);
+            I2 = 0
+
+            If statP0(I, 0) > 0 Then
+                LPrint Tab(39);
+                statCalc = (statP0(I, 3) * 9 / (statP0(I, 0) / 3))
+                LPrint Using "##.##"; statCalc;
+            Else
+                '= 0
+                LPrint Tab(39); " -.--";
+            End If
+
+            LPrint Tab(45);: LPrint Using "###"; statP0(I, 8);
+            LPrint Tab(49);: LPrint Using "##"; statP0(I, 9);
+            LPrint Tab(52);: LPrint Using "##"; statP0(I, 10);
+            LPrint Tab(55);: LPrint Using "###"; statP0(I, 2);
+            LPrint Tab(59);: LPrint Using "###"; statP0(I, 3);
+            LPrint Tab(63);: LPrint Using "###"; statP0(I, 11);
+            LPrint Tab(67);: LPrint Using "##"; statP0(I, 14);
+            LPrint Tab(70);: LPrint Using "##"; statP0(I, 13);
+            LPrint Tab(74);
+
+            If statP(I) > 0 Then
+                statCalc = CInt((((statP0(I, 0) / 3) * 100) / statP(I)))
+                LPrint Using "###"; statCalc;
+            Else
+                '= 0
+                LPrint "  ";
+            End If
+
+            LPrint Tab(78); Using "## ## ### ### ## "; statP0(I, 15); statP0(I, 16); statP0(I, 17); statP0(I, 18); statP0(I, 19);
+
+            If statP0(I, 9) > 0 Then LPrint Using "##.## "; statP0(I, 20) / statP0(I, 9);
+
+            LPrint Tab(101); Using "##"; statP0(I, 21)
+
+        End If
+
+    Next
+
+    LPrint
+    LPrint "TOTALS";
+    LPrint Tab(18);: LPrint Using "##"; statT1!(12);
+    LPrint Tab(26);: LPrint Using "####"; statT1!(1);
+    LPrint Tab(34);: LPrint Using "####"; statT1!(5);
+    statCalc = statT1!(3) / (statT1!(0) / 3) * 9
+    LPrint Tab(39);: LPrint Using "##.##"; statCalc;
+    LPrint Tab(52);: LPrint Using "##"; statT1!(10);
+    LPrint Tab(58);: LPrint Using "####"; statT1!(3);
+    LPrint Tab(63);: LPrint Using "###"; statT1!(11);
+    LPrint Tab(69);: LPrint Using "###"; statT1!(13);
+    LPrint Tab(77); Using "###"; statT1!(15);
+    LPrint Tab(83); Using "####"; statT1!(17);
+    LPrint Tab(91); Using "###"; statT1!(19);
+    LPrint Tab(100); Using "###"; statT1!(21)
+    LPrint Tab(21);: LPrint Using "####"; statT1!(0) / 3;
+    LPrint Tab(30);: LPrint Using "####"; statT1!(4);
+    LPrint Tab(54);: LPrint Using "####"; statT1!(2);
+    LPrint Tab(66);: LPrint Using "###"; statT1!(14);
+    LPrint Tab(80); Using "###"; statT1!(16);
+    LPrint Tab(87); Using "####"; statT1!(18)
+    LPrint
+    LPrint
+    LPrint
+    LPrint "CATCHERS    SBA   CS   CS%"
+
+    For I = 0 To 22
+        If batterNames$(I) <> "XXX" And batterNames$(I) <> "" And statB0(I, 21) + statB0(I, 20) <> 0 Then
+            statCalc = statB0(I, 21) / (statB0(I, 20) + statB0(I, 21)) * 100
+            LPrint Left$(batterNames$(I), 10); Tab(12); Using "###   ##   ###"; statB0(I, 20) + statB0(I, 21); statB0(I, 21); statCalc
+        End If
+    Next
+
+    If splitStatChoice <> 0 Then
+        'DISPLAY SPLIT STATS
+        LPrint teamName$;
+        LPrint Tab(15); "VS L  AB 2B 3B HR  BB   K   AVG  VS R  AB 2B 3B HR  BB   K   AVG"
+
+        For I = 0 To 22
+
+            If batterNames$(I) <> "XXX" And Left$(batterNames$(I), 1) <> " " And batterNames$(I) <> "" Then
+
+                LPrint batterNames$(I);
+                LPrint Tab(20); Using "### ## ## ## ### ### "; statS0(I, 0); statS0(I, 2); statS0(I, 3); statS0(I, 4); statS0(I, 5); statS0(I, 6);
+
+                If statS0(I, 0) = 0 Or statS0(I, 1) = 0 Then
+                    LPrint " .000";
+                Else
+                    If statS0(I, 0) = statS0(I, 1) Then
+                        LPrint "1.000";
+                    Else
+                        statCalc = statS0(I, 1) / statS0(I, 0)
+                        LPrint Using " .###"; statCalc;
+                    End If
+                End If
+
+                LPrint Tab(53); Using "### ## ## ## ### ### "; statB0(I, 0) - statS0(I, 0); statB0(I, 4) - statS0(I, 2); statB0(I, 5) - statS0(I, 3); statB0(I, 6) - statS0(I, 4); statB0(I, 7) - statS0(I, 5); statB0(I, 8) - statS0(I, 6);
+
+                If statB0(I, 0) - statS0(I, 0) = 0 Or statB0(I, 1) - statS0(I, 1) = 0 Then
+                    LPrint " .000"
+                Else
+                    If statB0(I, 0) - statS0(I, 0) = statB0(I, 1) - statS0(I, 1) Then
+                        LPrint "1.000"
+                    Else
+                        statCalc = (statB0(I, 1) - statS0(I, 1)) / (statB0(I, 0) - statS0(I, 0))
+                        LPrint Using " .###"; statCalc
+                    End If
+                End If
+
+            End If
+
+        Next I
+
+    End If
+
+    LPrint Chr$(12)
+
+End Sub
+
+
+'----------------------------------------
+'       ResetStatPrompt Subroutine
+'----------------------------------------
+'This subroutine prompts the user with
+'a choice to reset stats. If they chose,
+'and confirm, it will then proceed to
+'delete the files.
+Sub ResetStatPrompt (statFile$, teamRatings())
+
+    Cls
+
+    Call MenuBox(6, 8, 61, 1, teamRatings(11), teamRatings(12))
+
+    Locate 7
+
+    Do
+        U$ = "RESET COMPILED STATS TO 0? (Y/N)"
+        Locate , (80 - Len(U$)) / 2
+        Print U$
+        I$ = GetKeyPress$
+    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+    Color 15, 0
+
+    If UCase$(I$) = "Y" Then
+
+        Call MenuBox(6, 8, 61, 1, teamRatings(11), teamRatings(12))
+
+        Locate 7
+
+        Do
+            U$ = "ARE YOU SURE? (Y/N)"
+            Locate , (80 - Len(U$)) / 2
+            Print U$
+            I$ = GetKeyPress$
+        Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+        Color 15, 0
+
+        If UCase$(I$) = "Y" Then
+            Kill diskPaths$(1) + statFile$
+            Kill diskPaths$(1) + statFile$ + "S"
+            If _FileExists(diskPaths$(1) + statFile$ + "R") Then Kill diskPaths$(1) + statFile$ + "R"
+        End If
+
+        'Loop Until UCase$(I$) = "N"
+
+    End If 'Done checking if reset stats
+
+End Sub
+
+
 '$Include: 'MERGE.BAS'
 '$Include: 'NEWLDR.BAS'
 '$Include: 'NEWLDRST.BAS'
@@ -874,7 +2601,6 @@ End Sub
 ' For Game
 'Include: 'LOADER.BAS'
 
-
 '----------------------------------------
 '            LOADER Subroutine
 '----------------------------------------
@@ -889,11 +2615,13 @@ Sub LOADER
     _Title "Full Count Baseball v" + GAME_VERSION$ + " - PLAY BALL!"
 
     Shared dayNight$(), desigHitOpt$(), gameType$()
-    Shared leagueType$(), month$()
+    Shared league_brief$(), leagueType$(), month$()
     Shared pitHand$(), pitcherEra$()
     Shared playMode$(), umpireName$()
     Shared teamIndicator$(), yesNoText$()
-    Shared gameMgrIdx(), umpireNumber()
+    Shared gameMgrIdx(), umpireRating()
+
+    Shared umpBBadj(), umpSZadj(), umpRunAdj()
 
     Shared scheduleFile$
 
@@ -1033,7 +2761,7 @@ Sub LOADER
         currGame = schedGame(0) + schedGame(2)
 
         'Open "pbplog" + Str$(currGame) For Append As #11
-        'Open "pbplog" For Append As #11
+        Open "pbplog" For Append As #11
 
         If Not _FileExists(scheduleFile$) Then
 
@@ -1080,11 +2808,13 @@ Sub LOADER
 
     Else
 
-        'Open "pbplog" For Output As #11
+        Open "pbplog" For Output As #11
 
     End If
 
-    If Environ$("PBPLOG") = "TRUE" Then Open "pbplog.txt" For Append As #11
+    If Environ$("PBPLOG") = "TRUE" Then
+        Open "pbplog.txt" For Append As #11
+    End If
 
     If autoPlay = 1 Then
 
@@ -1249,12 +2979,10 @@ Sub LOADER
                     Case 7:
                         gameMonth = gameMonth + 1
                         If gameMonth > 10 Then gameMonth = 4
-                        '-- wtf?? Locate 7, 4: Print BK$
 
                     Case 8:
                         dayOrNight = 1 - dayOrNight
                         Locate 8, 4
-                        '-- wtf?? Print BK$
 
                     Case 9:
                         '
@@ -1309,7 +3037,7 @@ Sub LOADER
 
     'If we've run into issues so far...
     If earlyExit = 1 Then
-        'Close #11
+        Close #11
         Exit Sub
     End If
 
@@ -1393,30 +3121,34 @@ Sub LOADER
     '-------------------------
     ' Determine umpires
     '-------------------------
-    If Not _FileExists(diskPaths$(0) + "UMPIRES." + umpireName$(leagueOpt)) Then
+    If leagueOpt > 1 Then
+        'Default to 'NL' if inter-league game
+        '--- what's a better way???
+        leagueOpt = 1
+    End If
 
-        'Assign generic umpire names if we don't have any
-        gameUmpire$(1) = genericNames$(1)
-        gameUmpire$(2) = genericNames$(2)
-        gameUmpire$(3) = genericNames$(3)
-        gameUmpire$(4) = genericNames$(4)
+    'Start with all generic umpires
+    For I1 = 1 To 4
+        gameUmpire$(I1) = genericNames$(I1)
+        umpBBadj(I1) = 0
+        umpSZadj(I1) = 0
+        umpRunAdj(I1) = 0
+    Next
 
-    Else
+
+    'Try to load any umpires we can and
+    'populate ratings from them
+    targetUmpires$ = diskPaths$(0) + "UMPIRES_" + league_brief$(leagueOpt) + "." + LTrim$(Str$(teamYears(1)))
+
+    If _FileExists(targetUmpires$) Then
+
+        Call ReadUmpireFile(targetUmpires$)
 
         nbrUmps = 0
 
-        Open diskPaths$(0) + "UMPIRES." + umpireName$(leagueOpt) For Input As #8
-
-        For I1 = 1 To 50
-            Input #8, umpireName$(I1)
-            Input #8, umpireNumber(I1)
-        Next
-
-        Close #8
-
         ' Count available umpires
-        For I1 = 1 To 50
-            If umpireName$(I1) <> "" Then
+        For I1 = 1 To MAX_UMPIRES
+            If umpireName$(I1) <> "" And umpireName$(I1) <> "XXX" Then
                 nbrUmps = nbrUmps + 1
             End If
         Next
@@ -1424,37 +3156,53 @@ Sub LOADER
         If nbrUmps < 4 Then
 
             currUmp = 1
-            For I1 = 1 To 50
-                If umpireName$(I1) <> "" And currUmp <= 4 Then
+
+            For I1 = 1 To MAX_UMPIRES
+
+                If umpireName$(I1) <> "" And umpireName$ <> "XXX" And currUmp <= 4 Then
+
                     gameUmpire$(currUmp) = umpireName$(I1)
+
+                    umpBBadj(currUmp) = (umpireRating(I1, 0) - 100) / 5
+                    umpSZadj(currUmp) = (100 - umpireRating(I1, 1)) / 5
+                    umpRunAdj(currUmp) = (umpireRating(I1, 2) - 100) / 3
+
                     usedUmpires(I1) = 1
                     currUmp = currUmp + 1
+
                 End If
+
             Next
-    
-            'If there aren't 4 umpires, assign generic names
-            For I1 = nbrUmps To 4
-                gameUmpire$(I1) = genericNames$(I1)
-            Next
-    
+
         Else
 
             'Randomly assign umpires
             currUmp = 1
 
-            Do
+            Do Until currUmp >= 5
 
-                rndUmp = Int(Rnd(1) * 50) + 1
+                rndUmp = Int(Rnd(1) * MAX_UMPIRES) + 1
 
-                While (umpireName$(rndUmp) = "" Or usedUmpires(rndUmp) = 1)
-                    rndUmp = Int(Rnd(1) * 50) + 1
+                attempts = 0
+                While (umpireName$(rndUmp) = "" Or usedUmpires(rndUmp) = 1) And attempts < MAX_UMPIRES
+                    rndUmp = Int(Rnd(1) * MAX_UMPIRES) + 1
+                    attempts = attempts + 1
                 Wend
- 
+
                 gameUmpire$(currUmp) = umpireName$(rndUmp)
+
+                umpBBadj(currUmp) = (umpireRating(rndUmp, 0) - 100) / 17
+                umpSZadj(currUmp) = (100 - umpireRating(rndUmp, 1)) / 20
+                umpRunAdj(currUmp) = (umpireRating(rndUmp, 2) - 100) / 12
+
+                'Print #11, "Strike Bias:"; umpSZadj(currUmp)
+                'Print #11, "Walk Bias:"; umpBBadj(currUmp)
+                'Print #11, "Run Bias:"; umpRunAdj(currUmp)
+
                 usedUmpires(rndUmp) = 1
                 currUmp = currUmp + 1
 
-            Loop Until currUmp >= 5
+            Loop
 
         End If
 
@@ -1505,7 +3253,9 @@ Sub LOADER
 
         'I'm not sure why we go back only
         'if ESC was pressed during pitcher select
-        If cancelPitchers% = 1 Then GoTo 170
+        If cancelPitchers% = 1 Then
+            GoTo 170
+        End If
 
     Next P9
 
@@ -1643,9 +3393,11 @@ Sub LOADER
 
     W5 = 0
     W6 = 1
+
     VV(0) = 1
-    VV1(0) = 9
     VV(1) = 1
+
+    VV1(0) = 9
     VV1(1) = 9
 
     Cls
@@ -1983,9 +3735,6 @@ Sub LineupPositions (teamIdx, posIdx)
                             End If
 
                         Next I0
-
-                        '-- this is taken care of outside the routine
-                        'If C1 = 1 Then Call ChangeLineup_Pregame
 
                     End If
 
@@ -3343,7 +5092,7 @@ End Sub
 
 
 '----------------------------------------
-'      DoSort Subroutine
+'           DoSort Subroutine
 '----------------------------------------
 'I literally have no clue what this sub-
 'routine does. It has very little context
@@ -3387,6 +5136,7 @@ Sub DoSort (B, calcMode, P9)
             J = batLUIdx(L)
 
             Select Case calcMode
+
                 Case USE_SLUG
 
                     slug! = (batRating(P9, J, SS_B_H) + batRating(P9, J, SS_B_2B) + batRating(P9, J, SS_B_3B) * 2 + batRating(P9, J, SS_B_HR) * 3) / batRating(P9, J, SS_B_AB)
@@ -3847,7 +5597,9 @@ End Sub
 'some point in the near future (obviously).
 Sub SOURCE ()
 
-    If Environ$("PBPLOG") = "TRUE" Then Print #11, "=== "; gameTeams$(0) + " vs. " + gameTeams$(1); " ==="
+    If Environ$("PBPLOG") = "TRUE" Then
+        Print #11, "=== "; gameTeams$(0) + " vs. " + gameTeams$(1); " ==="
+    End If
 
     'Declare all variables for the modules
     Dim F1$(10)
@@ -3856,17 +5608,22 @@ Sub SOURCE ()
     Shared grounderDir$()
 
     Shared triplePlayAdj(), setupUsed(), closerUsed()
+    Shared umpBBadj(), umpSZadj(), umpRunAdj()
 
-    VV(0) = 1: VV(1) = 1
-    VV1(1) = 9: VV1(1) = 9
+    VV(0) = 1
+    VV(1) = 1
+
+    VV1(0) = 9
+    VV1(1) = 9
+
     Call HITTINGLINES
 
-    Call PITSTAM(0): Call PITSTAM(1)
+    Call PITSTAM(0)
+    Call PITSTAM(1)
 
     If useVGA = 1 Then Call LOADSCREEN
 
     LNextHalfInning:
-
     If Environ$("PBPLOG") = "TRUE" Then
         Print #11,
         Print #11, "..... side is retired ....."
@@ -3883,7 +5640,7 @@ Sub SOURCE ()
     b9d2 = fielder(D, 2)
 
     Erase nbrOuts
-    Erase b2Base, b2Pitcher, b2Mystery, b1Runner, b1Pitcher
+    Erase b2Base, b2Pitcher, b2StealPhase, b1Runner, b1Pitcher
 
     errorOnPlay% = 0
     runnerHeld = 0
@@ -3963,12 +5720,14 @@ Sub SOURCE ()
             lineupPlayer(D, I2) = I1
             fielder(D, fldPos(D, I2)) = I1
             gameD0(D) = gameD0(D) + 1
+
             X0%(D, 0, gameD0(D)) = lineupPlayer(D, I2)
             X0%(D, 1, gameD0(D)) = fldPos(D, I2)
             X0%(D, 2, gameD0(D)) = (I2 * 10) + (gameD0(D) - 9)
 
             W5 = D
             W6 = D
+
             VV(D) = I2
             VV1(D) = I2
 
@@ -3983,15 +5742,7 @@ Sub SOURCE ()
 
             Next
 
-            Call HITTINGLINES
-
-            If useVGA = 1 Then
-                Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
-                Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
-            Else
-                Call DisplayBallField(nbrBalls, P, nbrStrikes, D)
-                Call MAINSCREEN(D, P, nbrBalls, nbrStrikes, MO)
-            End If
+            Call DisplayGameState(nbrBalls, P, nbrStrikes, D, MO)
 
             VV(D) = 1
             VV1(D) = 9
@@ -4004,7 +5755,9 @@ Sub SOURCE ()
 
     If Not (teamMgrProfileVal(D, 560) <> 999 Or INNING% < 8 Or playerMode = 0 Or playerMode = 1 And P = compTeam) Then
 
-        If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a DEFENSIVE strategy !!"
+        If Environ$("MGRLOG") = "TRUE" Then
+            Print #11, "!! Team is using a DEFENSIVE strategy !!"
+        End If
 
         For IJ0% = 1 To 4
 
@@ -4026,12 +5779,14 @@ Sub SOURCE ()
                     fielder(D, fldPos(D, I2)) = I1
 
                     gameD0(D) = gameD0(D) + 1
+
                     X0%(D, 0, gameD0(D)) = lineupPlayer(D, I2)
                     X0%(D, 1, gameD0(D)) = fldPos(D, I2)
                     X0%(D, 2, gameD0(D)) = (I2 * 10) + (gameD0(D) - 9)
 
                     W5 = D
                     W6 = D
+
                     VV(D) = I2
                     VV1(D) = I2
 
@@ -4044,15 +5799,7 @@ Sub SOURCE ()
                         End If
                     Next
 
-                    Call HITTINGLINES
-
-                    If useVGA = 1 Then
-                        Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
-                        Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
-                    Else
-                        Call DisplayBallField(nbrBalls, P, nbrStrikes, D)
-                        Call MAINSCREEN(D, P, nbrBalls, nbrStrikes, MO)
-                    End If
+                    Call DisplayGameState(nbrBalls, P, nbrStrikes, D, MO)
 
                     VV(D) = 1
                     VV1(D) = 9
@@ -4065,7 +5812,9 @@ Sub SOURCE ()
 
     End If
 
-    If Environ$("PBPLOG") = "TRUE" Then Print #11, "::: Status of pitcher taking the mound: "; fielder(D, 1)
+    If Environ$("PBPLOG") = "TRUE" Then
+        Print #11, "::: Status of pitcher taking the mound: "; fielder(D, 1)
+    End If
 
     If fielder(D, 1) = 99 Then
 
@@ -4155,19 +5904,23 @@ Sub SOURCE ()
     LNextBatter0:
     SH = 0
     errorOnPlay% = 0
-    SO = 0
+    wasStrikeout = 0
     currLineupSlot(P) = currLineupSlot(P) + 1
     INFPOS% = INF_BACK
     nbrStrikes = 0
 
-    If currLineupSlot(P) = 10 Then currLineupSlot(P) = 1
+    If currLineupSlot(P) = 10 Then
+        currLineupSlot(P) = 1
+    End If
 
     '--- Start of a new sub
     LNextBatter1:
     Call WHOSON1ST(baseRunners)
     Call PLAYERNAME(P)
 
-    If Environ$("PBPLOG") = "TRUE" Then Call DumpIt(baseRunners, P2, D2)
+    If Environ$("PBPLOG") = "TRUE" Then
+        Call DumpIt(baseRunners, P2, D2)
+    End If
 
     If useVGA = 1 Then
         Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
@@ -4298,7 +6051,9 @@ Sub SOURCE ()
         I$ = GetKeyPress$
 
         'Restore image where commands went
-        If useVGA = 1 Then _PutImage (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176), backupScreen&, imageScreen&, (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176)
+        If useVGA = 1 Then
+            _PutImage (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176), backupScreen&, imageScreen&, (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176)
+        End If
 
         If UCase$(I$) = "D" Then
             Call VIEWTEAM
@@ -4386,9 +6141,7 @@ Sub SOURCE ()
         If Val(I$) = 7 Then
             P2 = OFF_HIT_AWAY
             D2 = DEF_PITCH
-
             GoTo LWeirdPlay
-
         End If
 
         D2 = Val(I$)
@@ -4397,7 +6150,6 @@ Sub SOURCE ()
 
 
     LManageDefense:
-
     Select Case D2
         Case 1
             '
@@ -4405,7 +6157,7 @@ Sub SOURCE ()
         Case 2
             Call WINDEX
             Call BASEONBALLS(S2%, D2, D, P)
-            GoTo LHBP
+            GoTo LFreeBase
 
         Case 3
             INFPOS% = INF_IN
@@ -4458,6 +6210,7 @@ Sub SOURCE ()
     ' OFFENSE OPTIONS MENU
     '----------------------------------------
     LOffenseOptions:
+
     Do
 
         If (playerMode = 2 Or playerMode = 1 And P = compTeam) Then
@@ -4472,7 +6225,9 @@ Sub SOURCE ()
 
                     If teamMgrProfileVal(P, 847) = 999 Then
 
-                        If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a PINCH HITTING for POSITION PLAYER strategy !!"
+                        If Environ$("MGRLOG") = "TRUE" Then
+                            Print #11, "!! Team is using a PINCH HITTING for POSITION PLAYER strategy !!"
+                        End If
 
                         'PH FOR POS PLAYER CASES
                         Call Rolld100(RN0)
@@ -4518,7 +6273,9 @@ Sub SOURCE ()
 
                             If teamMgrProfileVal(P, 590) = 999 Then
 
-                                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a PINCH HITTER for PITCHER strategy !!"
+                                If Environ$("MGRLOG") = "TRUE" Then
+                                    Print #11, "!! Team is using a PINCH HITTER for PITCHER strategy !!"
+                                End If
 
                                 'PH FOR PITCHER WITH PROFILE
                                 Call Rolld100(RN0)
@@ -4547,11 +6304,22 @@ Sub SOURCE ()
 
                             Else
 
-                                If INNING% > 4 And INNING% < 7 And A1 < -2 And gameScore(P, 0) > 0 Then GoTo LPhForPitcher
-                                If INNING% > 4 And INNING% < 7 And A1 < -3 Then GoTo LPhForPitcher
-                                If INNING% > 6 And A1 < 0 Or A1 = 0 And INNING% > 6 And INNING% < 9 And baseRunners > 1 Then GoTo LPhForPitcher
-                                If A1 = 0 And INNING% >= 9 And baseRunners > 0 Or A1 = 0 And INNING% >= 9 And nbrOuts(0) = 0 Then GoTo LPhForPitcher
-                                If pitchRating(P, currPitcher(P), SS_P_IP) / pitchRating(P, currPitcher(P), SS_P_G) <= 2 And gamePitStats(P, currPitcher(P), 0) >= 6 Then GoTo LPhForPitcher
+                                If INNING% > 4 And INNING% < 7 And A1 < -2 And gameScore(P, 0) > 0 Then
+                                    GoTo LPhForPitcher
+                                End If
+
+                                If INNING% > 4 And INNING% < 7 And A1 < -3 Then
+                                    GoTo LPhForPitcher
+                                End If
+                                If INNING% > 6 And A1 < 0 Or A1 = 0 And INNING% > 6 And INNING% < 9 And baseRunners > 1 Then
+                                    GoTo LPhForPitcher
+                                End If
+                                If A1 = 0 And INNING% >= 9 And baseRunners > 0 Or A1 = 0 And INNING% >= 9 And nbrOuts(0) = 0 Then
+                                    GoTo LPhForPitcher
+                                End If
+                                If pitchRating(P, currPitcher(P), SS_P_IP) / pitchRating(P, currPitcher(P), SS_P_G) <= 2 And gamePitStats(P, currPitcher(P), 0) >= 6 Then
+                                    GoTo LPhForPitcher
+                                End If
 
                             End If
 
@@ -4661,19 +6429,28 @@ Sub SOURCE ()
 
         Case 1, 4 'Hit away, Bunt
 
-            If D2 <> 8 Then GoTo LWeirdPlay
+            If D2 <> DEF_PITCH_AROUND Then
 
-            Call WINDEX
-
-            If P2 = OFF_BUNT Or (P2 = OFF_HIT_AWAY And d100% <= 50) Then
                 GoTo LWeirdPlay
+
+            Else
+
+                Call WINDEX
+
+                If P2 = OFF_BUNT Or (P2 = OFF_HIT_AWAY And d100% <= 50) Then
+
+                    GoTo LWeirdPlay
+
+                Else
+
+                    Call BASEONBALLS(S2%, D2, D, P)
+                    GoTo LFreeBase
+
+                End If
+
             End If
 
-            Call BASEONBALLS(S2%, D2, D, P)
-
-            GoTo LHBP
-
-        Case 2 'Hit and run
+        Case 2 'Hit and Run
             If nbrOuts(0) = 2 Or (baseRunners <> 1 And baseRunners <> 4 And baseRunners <> 5) Then
                 GoTo LNextBatter1
             End If
@@ -4688,6 +6465,7 @@ Sub SOURCE ()
             GoTo LPersonnelMenu
 
     End Select
+
 
     LHitAndRun:
     If baseRunners = 4 Then
@@ -4704,8 +6482,9 @@ Sub SOURCE ()
 
         isPutout = 1
         A5%(pickedOffBase - 1) = 10
-        nbrOuts(0) = nbrOuts(0) + 1
-        nbrOuts(1) = nbrOuts(1) + 1
+
+        Call TrackOuts(1)
+
         currFielder = 1
 
         Call CREDITASSIST(currFielder, D)
@@ -4736,14 +6515,13 @@ Sub SOURCE ()
 
     If I3 > 350 Then
         Call PBP("Runner(s) going")
+        Call DELAY
     Else
         Call PBP("Count not favorable...hit away")
+        Call DELAY
         P2 = OFF_HIT_AWAY
+        GoTo LWeirdPlay
     End If
-
-    Call DELAY
-
-    If I3 <= 350 Then GoTo LWeirdPlay
 
     If I9 <= (game_batRating(P, GM_K, currLineupSlot(P)) * 2 * .33) Then
 
@@ -4788,131 +6566,97 @@ Sub SOURCE ()
 
     '----- NOODLE -----
 
-
     LRarePlays: ' BRANCH FOR RARE PLAYS
-    Call RAREPLAYS(H6%, H7%, IP%)
+    If delayGame = 1 Then
+
+        H6% = 21
+
+        Call WINDEX
+
+        haltTime = Int(Rnd(1) * 59) + 2
+
+        Color 0, 7
+        Call PBP("The game has been halted by rain")
+
+        For idx = 1 To 2:
+            Call DELAY
+        Next
+
+        Call PBP("Rain delay lasted" + Str$(haltTime) + " minutes")
+        Call DELAY
+
+        gameDelayed = 1
+
+        If haltTime > 28 Then
+            Call PBP("Pitchers have lost effectiveness during delay")
+            Call PBP("Their arms have stiffened up")
+            Call DELAY
+            For idx = 0 To 1:
+                pitchEff(idx, 0) = pitchEff(idx, 0) - 2
+            Next
+        End If
+
+        delayGame = 0
+    
+    Else
+    
+        Call RAREPLAYS(H6%, IP%)
+
+    End If
 
     If IP% = 1 Then
         IP% = 0
         Call RELIEVERS(pinchHitterFlag, newPitcherFlag)
     End If
 
-    '-- It appears the following lines get executed
-    '-- almost no matter what value H6% is.
+    Call DisplayGameState(nbrBalls, P, nbrStrikes, D, MO)
 
-    '   "Call HITTING LINES...
-    '   If useVGA = 1...
+    Select Case H6%
+        Case 1 To 4, 6 To 8, 10 To 24
+            GoTo LContinueBatter
+            
+        Case 5, 25 To 29
+            GoTo LCheckForOptionsOrQuit
+            
+        Case 9
+            Call BASEONBALLS(S2%, D2, D, P)
+            GoTo LFreeBase
+            
+        Case 45
+            'Why are we getting a free base here??
+            GoTo LFreeBase
 
-    '-- In original code this was a short sub
-    '-- I'm not sure why it can't be run outside
-    '-- of the If/Then statement.
-    '-- That would simply leave the If/Then code
-    '-- to determine where to GoTo
+        Case Else
+            ' Handles 30 to 44 and 46+ (anything not covered above)
+            GoTo LContinueBatter
 
-    '1 to 4
-    '6 to 8
-    '10 to 24
-    If H6% <= 4 Or H6% > 5 And H6% < 9 Or H6% >= 10 And H6% <= 24 Then
+    End Select
 
-        Call HITTINGLINES
-
-        If useVGA = 1 Then
-            Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
-            Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
-        Else
-            Call DisplayBallField(nbrBalls, P, nbrStrikes, D)
-            Call MAINSCREEN(D, P, nbrBalls, nbrStrikes, MO)
-        End If
-
-        GoTo LContinueBatter
-
-    End If
-
-    '5
-    '25 to 29
-    If H6% = 5 Or H6% >= 25 And H6% <= 29 Then
-
-        Call HITTINGLINES
-
-        If useVGA = 1 Then
-            Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
-            Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
-        Else
-            Call DisplayBallField(nbrBalls, P, nbrStrikes, D)
-            Call MAINSCREEN(D, P, nbrBalls, nbrStrikes, MO)
-        End If
-
-        GoTo LCheckForOptionsOrQuit
-
-    End If
-
-    '9
-    If H6% = 9 Then
-
-        Call HITTINGLINES
-
-        If useVGA = 1 Then
-            Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
-            Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
-        Else
-            Call DisplayBallField(nbrBalls, P, nbrStrikes, D)
-            Call MAINSCREEN(D, P, nbrBalls, nbrStrikes, MO)
-        End If
-
-        Call BASEONBALLS(S2%, D2, D, P)
-        GoTo LHBP
-
-    End If
-
-    '45
-    If H6% = 45 Then
-
-        Call HITTINGLINES
-
-        If useVGA = 1 Then
-            Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
-            Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
-        Else
-            Call DisplayBallField(nbrBalls, P, nbrStrikes, D)
-            Call MAINSCREEN(D, P, nbrBalls, nbrStrikes, MO)
-        End If
-
-        GoTo LHBP
-
-    End If
-
-    '30 to 44
-    '46+ ???
-    Call HITTINGLINES
-
-    If useVGA = 1 Then
-        Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
-        Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
-    Else
-        Call DisplayBallField(nbrBalls, P, nbrStrikes, D)
-        Call MAINSCREEN(D, P, nbrBalls, nbrStrikes, MO)
-    End If
-
-    GoTo LContinueBatter
 
     '----- NOODLE -----
 
     LWeirdPlay:
+    'Rare plays, wild pitches, interference, etc.
     Call Rolld100(weatherRoll)
 
-    If (((precipType = 1 Or precipType = 2 Or precipType = 3) And weatherRoll = 2) Or (rainDelay = 1 And weatherRoll <= 5)) And INNING% >= 2 And gameDelayed = 0 Then
-        H7% = 20
-        H6% = 21
+    '2% chance during rainy weather
+    ' -- OR _-
+    '5% chance after a rain delay was called
+    ' AND game is not delayed yet
+    If ((precipType < 4 And weatherRoll = 2) Or (rainDelay = 1 And weatherRoll <= 5)) And INNING% >= 2 And gameDelayed = 0 Then
+        delayGame = 1
         GoTo LRarePlays
     End If
 
     H6% = Int(Rnd(1) * 1000) + 1
-    If H6% <= 3 And useInj = 1 Then
+    If H6% <= 4 And useInj = 1 Then
         GoTo LRarePlays
     End If
 
-    SN = 0
+    drawnInfieldChance = 0
+
     H6% = Int(Rnd(1) * 1000) + 1
+
     If nbrOuts(0) = 0 And baseRunners = 4 And INFPOS% <  INF_IN And H6% = 768 Or _
        nbrOuts(0) = 0 And baseRunners = 4 And INFPOS% >= INF_IN And H6% = 123 Or _
        nbrOuts(0) = 0 And baseRunners = 7 And INFPOS% >= INF_IN And H6% = 245 Or _
@@ -4929,8 +6673,8 @@ Sub SOURCE ()
         ' *** hit by pitch ***
         Call HITBYPITCH(S2%, D)
 
-        LHBP:
-        A5%(0) = 1 'batter advances to 1st base
+        LFreeBase:
+        A5%(0) = 1 'Batter advances to 1st base
         A5%(1) = 0
         A5%(2) = 0
         A5%(3) = 0
@@ -4989,7 +6733,7 @@ Sub SOURCE ()
 
             Call PBP(pbpString$)
 
-            If (b2Base(1) = 0 Or nbrOuts(0) > 1) And balkRoll = 9 And SO = 1 Then
+            If (b2Base(1) = 0 Or nbrOuts(0) > 1) And balkRoll = 9 And wasStrikeout = 1 Then
                 A5%(0) = 1
                 A5%(1) = 1
                 A5%(2) = 1
@@ -5013,7 +6757,7 @@ Sub SOURCE ()
     If H6% <= 11 Or H6% <= 200 And batRating(D, fielder(D, 2), SS_B_Pos1) <> 2 And batRating(D, fielder(D, 2), SS_B_Pos2) <> 2 And batRating(D, fielder(D, 2), SS_B_Pos3) <> 2 And batRating(D, fielder(D, 2), SS_B_Pos4) <> 2 Then
 
         LPassedBall: ' *** passed ball ***
-        If baseRunners = 0 And SO <> 1 Then
+        If baseRunners = 0 And wasStrikeout <> 1 Then
             ' *** Fouled out of play ***
             Call FOULBALL
             GoTo LContinueBatter
@@ -5032,8 +6776,9 @@ Sub SOURCE ()
 
         Call PBP("It's ruled a passed ball")
 
-        If (b2Base(1) = 0 Or nbrOuts(0) > 1) And balkRoll = 9 And SO = 1 Then
-            nbrOuts(1) = nbrOuts(1) + 1 'nbrOuts(1) tracks how many outs there would be without errors (for recording unearned runs)
+        'nbrOuts(1) = number outs there would be without errors (for recording unearned runs)
+        If (b2Base(1) = 0 Or nbrOuts(0) > 1) And balkRoll = 9 And wasStrikeout = 1 Then
+            nbrOuts(1) = nbrOuts(1) + 1
         End If
 
         13222 '
@@ -5050,7 +6795,7 @@ Sub SOURCE ()
         End If
 
         13223 '
-        If (b2Base(1) = 0 Or nbrOuts(0) > 1) And balkRoll = 9 And SO = 1 Then
+        If (b2Base(1) = 0 Or nbrOuts(0) > 1) And balkRoll = 9 And wasStrikeout = 1 Then
             A5%(0) = 1
             A5%(1) = 1
             A5%(2) = 1
@@ -5071,7 +6816,7 @@ Sub SOURCE ()
     If H6% <= 19 Then
 
         ' *** WILD PITCH ***
-        If baseRunners = 0 And SO <> 1 Then
+        If baseRunners = 0 And wasStrikeout <> 1 Then
             ' *** Fouled out of play ***
             Call FOULBALL
             GoTo LContinueBatter
@@ -5089,7 +6834,7 @@ Sub SOURCE ()
         Call WINDEX
         Call PBP(batters$(D, fielder(D, 2)) + " is called for interference!!")
         Call PBP(player$(0) + " trots to first base")
-        GoTo LHBP
+        GoTo LFreeBase
 
     End If
 
@@ -5100,8 +6845,8 @@ Sub SOURCE ()
 
         currFielder = 2
         Call CREDITREGPO(currFielder, D)
-        nbrOuts(0) = nbrOuts(0) + 1
-        nbrOuts(1) = nbrOuts(1) + 1
+
+        Call TrackOuts(1)
 
         If fldPos(P, currLineupSlot(P)) <> 1 Then
             Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
@@ -5109,29 +6854,28 @@ Sub SOURCE ()
             Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
         End If
 
-
         Call ADDPIT(D, currPitcher(D), LG_P_OUT)
 
         GoTo LCheckForOptionsOrQuit
     End If
 
     'ToDo [bm] I have 28 as the constant in an older version
-    If H6% <= game_batRating(P, GM_BB, currLineupSlot(P)) + 25 Then
+    If H6% <= game_batRating(P, GM_BB, currLineupSlot(P)) + 25 + umpBBadj(4) Then
         S2% = EVENT_INTERFERENCE
         Call BASEONBALLS(S2%, D2, D, P)
-        GoTo LHBP
+        GoTo LFreeBase
     End If
 
     If P2 = OFF_BUNT Then GoTo LBunt
 
     H6% = Int(Rnd(1) * 1000) + 1
-    H7% = Int(Rnd(1) * 1000) + 1
+    drawnInfieldRoll = Int(Rnd(1) * 1000) + 1
     I4 = 0
 
     If P2 = OFF_HIT_N_RUN Then I4 = -5
 
     If INFPOS% = INF_IN Then
-        SN = 70
+        drawnInfieldChance = 70
         I4 = I4 + 15
     End If
 
@@ -5140,7 +6884,7 @@ Sub SOURCE ()
     End If
 
     If INFPOS% = INF_CORNERS_IN Then
-        SN = 20
+        drawnInfieldChance = 20
     End If
 
     If INNING% > 5 And pitchEff(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And pitchEff(D, 1) <= gamePitStats(D, currPitcher(D), 2) Then
@@ -5152,7 +6896,7 @@ Sub SOURCE ()
 
     Call WINDEX
 
-    If H7% <= SN Then
+    If drawnInfieldRoll <= drawnInfieldChance Then
         Call PBP("It gets through the drawn-in infield!")
         Call DELAY
         GoTo 13063
@@ -5170,7 +6914,7 @@ Sub SOURCE ()
         H6% = Int(Rnd(1) * 1000) + 1
         strikeoutRating = game_batRating(P, GM_K, currLineupSlot(P))
 
-        If H6% > strikeoutRating Then
+        If H6% > strikeoutRating + umpSZadj(4) Then
 
             ' *** ground ball for out ***
             Call Rolld100(H6%)
@@ -5249,12 +6993,13 @@ Sub SOURCE ()
                                     _SndPlay glove&
                                 End If
 
-                                nbrOuts(0) = nbrOuts(0) + 1
-                                nbrOuts(1) = nbrOuts(1) + 1
+                                Call TrackOuts(1)
 
                                 Call ADDPIT(D, currPitcher(D), LG_P_OUT)
 
-                                If nbrOuts(0) = 3 Then GoTo LCheckForOptionsOrQuit
+                                If nbrOuts(0) >= 3 Then
+                                    GoTo LCheckForOptionsOrQuit
+                                End If
 
                                 If b2Base(3) <> 0 Then
                                     A5%(3) = 1 'sac fly
@@ -5295,13 +7040,17 @@ Sub SOURCE ()
 
                                         If (currFielder = 9 And RN0 > 800) Or (currFielder = 8 And RN0 > 840) Then
                                             baseNbr! = 3
-                                            If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try for 3rd on regular fly to CF or RF..."
+                                            If Environ$("RUNLOG") = "TRUE" Then
+                                                Print #11, "-- might try for 3rd on regular fly to CF or RF..."
+                                            End If
                                             If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
                                         End If
 
                                         If currFielder = 7 And P2 <> OFF_HIT_N_RUN And baseRunners < 6 And RN0 > 880 Then
                                             baseNbr! = 3
-                                            If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try for 3rd on regular fly to LF..."
+                                            If Environ$("RUNLOG") = "TRUE" Then
+                                                Print #11, "-- might try for 3rd on regular fly to LF..."
+                                            End If
                                             If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
                                         End If
 
@@ -5318,7 +7067,9 @@ Sub SOURCE ()
 
                                     If S2% = EVENT_FLY_DEEP And P2 <> OFF_HIT_N_RUN And baseRunners = 1 And RN0 <= 100 + J5 Then
                                         baseNbr! = 2
-                                        If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try for 2nd on deep fly..."
+                                        If Environ$("RUNLOG") = "TRUE" Then
+                                            Print #11, "-- might try for 2nd on deep fly..."
+                                        End If
                                         If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
                                     End If
                                     ' I8! = 2
@@ -5363,20 +7114,24 @@ Sub SOURCE ()
                                     _SndPlay glove&
                                 End If
 
-                                nbrOuts(0) = nbrOuts(0) + 1
-                                nbrOuts(1) = nbrOuts(1) + 1
+                                Call TrackOuts(1)
 
                                 Call ADDPIT(D, currPitcher(D), LG_P_OUT)
-                                If nbrOuts(0) = 3 Then GoTo LCheckForOptionsOrQuit
+
+                                If nbrOuts(0) >= 3 Then
+                                    GoTo LCheckForOptionsOrQuit
+                                End If
 
                                 Call Rolld100(RN0)
 
+                                'Double Play
                                 If RN0 <= 33 And _
                                     (S2% = EVENT_FLY_SHALLOW And baseRunners = 1 And P2 = OFF_HIT_N_RUN Or _
-                                    S2% = EVENT_FLY_SHALLOW And baseRunners = 5) Then   'Double Play
+                                    S2% = EVENT_FLY_SHALLOW And baseRunners = 5) Then
+
                                     A5%(1) = 10
-                                    nbrOuts(0) = nbrOuts(0) + 1
-                                    nbrOuts(1) = nbrOuts(1) + 1
+
+                                    Call TrackOuts(1)
 
                                     Call ADDPIT(D, currPitcher(D), LG_P_OUT)
 
@@ -5392,7 +7147,9 @@ Sub SOURCE ()
 
                                 If b2Base(3) > 0 Then
                                     baseNbr! = 4
-                                    If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try to score..."
+                                    If Environ$("RUNLOG") = "TRUE" Then
+                                        Print #11, "-- might try to score..."
+                                    End If
                                     If errorOnPlay% = 0 Then
                                         Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
                                     End If
@@ -5498,8 +7255,7 @@ Sub SOURCE ()
                         Call PBP(player$(4) + " makes the catch")
                         Call CREDITREGPO(currFielder, D)
 
-                        nbrOuts(0) = nbrOuts(0) + 1
-                        nbrOuts(1) = nbrOuts(1) + 1
+                        Call TrackOuts(1)
 
                         Call ADDPIT(D, currPitcher(D), LG_P_OUT)
                         GoTo LCheckForOptionsOrQuit
@@ -5527,13 +7283,15 @@ Sub SOURCE ()
 
                         If errorOnPlay% = 1 Then GoTo LCheckForOptionsOrQuit
 
-                        nbrOuts(0) = nbrOuts(0) + 1
-                        nbrOuts(1) = nbrOuts(1) + 1
+                        Call TrackOuts(1)
 
                         Call CREDITREGPO(currFielder, D)
 
                         Call ADDPIT(D, currPitcher(D), LG_P_OUT)
-                        If nbrOuts(0) = 3 Then GoTo LCheckForOptionsOrQuit
+
+                        If nbrOuts(0) >= 3 Then
+                            GoTo LCheckForOptionsOrQuit
+                        End If
 
                         Call Rolld100(RN0)
 
@@ -5541,8 +7299,8 @@ Sub SOURCE ()
 
                             'runner doubled off of 1st
                             A5%(1) = 10
-                            nbrOuts(0) = nbrOuts(0) + 1
-                            nbrOuts(1) = nbrOuts(1) + 1
+
+                            Call TrackOuts(1)
 
                             Call ADDPIT(D, currPitcher(D), LG_P_OUT)
 
@@ -5565,15 +7323,14 @@ Sub SOURCE ()
                             Call PBP(" --- DOUBLE PLAY ---")
                             If currFielder <> 3 Then Call CREDITASSIST(currFielder, D)
 
-
                         Else
 
                             If (baseRunners = 4 Or baseRunners = 2) And RN0 >= 80 Or baseRunners = 4 And P2 = OFF_HIT_N_RUN Then 'Double Play
 
                                 'runner doubled off of 2nd
                                 A5%(2) = 10
-                                nbrOuts(0) = nbrOuts(0) + 1
-                                nbrOuts(1) = nbrOuts(1) + 1
+
+                                Call TrackOuts(1)
 
                                 Call ADDPIT(D, currPitcher(D), LG_P_OUT)
 
@@ -5744,20 +7501,28 @@ Sub SOURCE ()
         Else
 
             LStrikeout:
+            Print #11, "LStrikeout; "; nbrOuts(D)
+            Print #11, "Offense:"; gameTeams$(P)
+            Print #11, "Defense:"; gameTeams$(D)
             Call WINDEX
             Call STRIKEOUT(nbrStrikes, D)
 
             currFielder = 2
             Call CREDITREGPO(currFielder, D)
 
-            nbrOuts(0) = nbrOuts(0) + 1
-            nbrOuts(1) = nbrOuts(1) + 1
-            SO = 1
+            Call TrackOuts(1)
+
+            '-- Why do we not check for outs >= 3 here???
+            '-- there are some paths that take us to LCheckForOptionsOrQuit
+
+            wasStrikeout = 1
 
             If fldPos(P, currLineupSlot(P)) <> 1 Then
                 Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
                 Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_K)
-                If P2 = OFF_HIT_N_RUN Then nbrStrikes = 3
+                If P2 = OFF_HIT_N_RUN Then
+                    nbrStrikes = 3
+                End If
             End If
 
             Call ADDPIT(D, currPitcher(D), LG_P_OUT)
@@ -5766,20 +7531,25 @@ Sub SOURCE ()
             If fldPos(P, currLineupSlot(P)) = 1 Then
                 Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
                 Call INCPITOFF(P, currPitcher(P), LG_PB_K)
-                If P2 = OFF_HIT_N_RUN Then nbrStrikes = 3
+                If P2 = OFF_HIT_N_RUN Then
+                    nbrStrikes = 3
+                End If
             End If
 
             If P2 = OFF_HIT_N_RUN And nbrOuts(0) < 3 Then
-                SO = 7
+                wasStrikeout = 7
                 GoTo LSteal
             End If
+
             ' *** WILD PITCH | PASSED BALL ON STRIKEOUT
             RN0 = Int(Rnd(1) * 600) + 1
 
-            If ((b2Base(1) = 0 And SO = 1) Or nbrOuts(0) = 3) And RN0 = 9 Then
+            If ((b2Base(1) = 0 And wasStrikeout = 1) Or nbrOuts(0) = 3) And RN0 = 9 Then
 
+                'Remove outs from record
                 nbrOuts(0) = nbrOuts(0) - 1
                 nbrOuts(1) = nbrOuts(1) - 1
+
                 gamePitStats(D, currPitcher(D), 0) = gamePitStats(D, currPitcher(D), 0) - 1
                 leagPitStats(D, currPitcher(D), 0) = leagPitStats(D, currPitcher(D), 0) - 1
                 gameBatStats(D, fielder(D, 2), 16) = gameBatStats(D, fielder(D, 2), 16) - 1
@@ -5790,7 +7560,7 @@ Sub SOURCE ()
                 If I1 < 77 Then
 
                     ' *** WILD PITCH ***
-                    If baseRunners = 0 And SO <> 1 Then
+                    If baseRunners = 0 And wasStrikeout <> 1 Then
                         ' *** Fouled out of play ***
                         Call FOULBALL
                         GoTo LContinueBatter
@@ -5933,14 +7703,14 @@ Sub SOURCE ()
                             Case 1: I3 = 16 + BR% * 3
                             Case 2: I3 = 34 + BR% * 3
                         End Select
-                        
+
                     Case 8
                         Select Case nbrOuts(0)
                             Case 0: I3 = 37 + BR% * 3
                             Case 1: I3 = 44 + BR% * 3
                             Case 2: I3 = 65 + BR% * 3
                         End Select
-                        
+
                     Case 9
                         Select Case nbrOuts(0)
                             Case 0: I3 = 12 + BR% * 3
@@ -5959,7 +7729,9 @@ Sub SOURCE ()
 
             Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
             If errorOnPlay% = 0 Then
-                If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try to advance on Double --"
+                If Environ$("RUNLOG") = "TRUE" Then
+                    Print #11, "-- might try to advance on Double --"
+                End If
                 baseNbr! = 0
                 Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
             End If
@@ -6091,7 +7863,9 @@ Sub SOURCE ()
 
             errorOnPlay% = 0
             Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-            If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try to advance on Triple --"
+            If Environ$("RUNLOG") = "TRUE" Then
+                Print #11, "-- might try to advance on Triple --"
+            End If
             baseNbr! = 0
             If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
 
@@ -6144,7 +7918,9 @@ Sub SOURCE ()
 
                 errorOnPlay% = 0
                 Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
-                If Environ$("RUNLOG") = "TRUE" Then Print #11, "-- might try to advance on Single --"
+                If Environ$("RUNLOG") = "TRUE" Then
+                    Print #11, "-- might try to advance on Single --"
+                End If
                 baseNbr! = 0
                 If errorOnPlay% = 0 Then Call TRYFOREXTRABASE(S2%, P2, runnerOn2nd, D, currFielder, SAH%, stealing, baseNbr!, I9)
 
@@ -6165,9 +7941,11 @@ Sub SOURCE ()
     End If
 
 
+    GoTo LProcessOutAndDP2
+
+
     '----- NOODLE -----
 
-    GoTo LProcessOutAndDP2
 
     LHomeRun:
     ' *** HOME RUN ***
@@ -6377,8 +8155,8 @@ Sub SOURCE ()
     LProcessOutAndDP:
     Call ADDPIT(D, currPitcher(D), LG_P_OUT)
 
-    nbrOuts(0) = nbrOuts(0) + 1
-    nbrOuts(1) = nbrOuts(1) + 1
+    Call TrackOuts(1)
+
     player$(4) = batters$(D, fielder(D, currFielder))
 
     Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
@@ -6405,7 +8183,7 @@ Sub SOURCE ()
         If nbrOuts(0) < 2 Then A5%(2) = 1: A5%(3) = 1
     End If
 
-    nbrOuts(0) = nbrOuts(0) + 1
+    Call TrackOuts(0)
     nbrOuts(1) = 2
 
     Call DPRELAY
@@ -6462,7 +8240,6 @@ Sub SOURCE ()
                 A5%(2) = 0
                 A5%(3) = 0
                 '-- this may not be necessary since the next statement is looking for W = 4
-                GoTo LProcessOutAndDP2
 
             End If
 
@@ -6550,15 +8327,21 @@ Sub SOURCE ()
 
         End If
 
-        LProcessOutAndDP2: 'Call DELAY
-        If fbun% = 0 Then Call CREDITASSIST(currFielder, D)
+        LProcessOutAndDP2:
+        'Call DELAY
+        If fbun% = 0 Then
+            Call CREDITASSIST(currFielder, D)
+        End If
         fbun% = 0
 
         batterSafeOnDP = 0
         If DPC% = 1 And A5%(0) = 1 Then DPC% = 2: batterSafeOnDP = 1
 
         Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-        If batterSafeOnDP = 1 Then Call CREDITREGPO(currFielder, D) 'ToDo [bm] controversial
+        If batterSafeOnDP = 1 Then
+            'ToDo [bm] controversial
+            Call CREDITREGPO(currFielder, D)
+        End If
 
         If DPC% = 2 Then
             DPC% = 0
@@ -6567,10 +8350,13 @@ Sub SOURCE ()
 
         If I3 > 4 Then I3 = 1
 
-        If batterSafeOnDP = 0 Then Call CREDITPUTOUT(I3, FB2P%, AST%, D) 'ToDo [bm] Controversial
+        If batterSafeOnDP = 0 Then
+            'ToDo [bm] Controversial
+            Call CREDITPUTOUT(I3, FB2P%, AST%, D)
+        End If
 
-        nbrOuts(0) = nbrOuts(0) + 1
-        nbrOuts(1) = nbrOuts(1) + 1
+        Call TrackOuts(1)
+
         Call ADDPIT(D, currPitcher(D), LG_P_OUT)
 
         GoTo LCheckForOptionsOrQuit
@@ -6629,7 +8415,7 @@ Sub SOURCE ()
                         A5%(0) = 1
                         Call PBP("NO, he's going to third")
                     End If
-                    
+
                 Case 6
                     If RN1 <= 20 And INFPOS% < INF_IN Then A5%(2) = 1
                     If RN1 <= 92 And INFPOS% < INF_IN Then A5%(3) = 1
@@ -6638,23 +8424,23 @@ Sub SOURCE ()
                        RN1 < 6 And INFPOS% < INF_IN And baseRunners = 6 And gameScore(P, 0) - gameScore(D, 0) > -2 And A5%(3) = 1 Then
                         A5%(2) = 11: A5%(0) = 1: Call PBP("NO, he's going to third")
                     End If
-                    
+
                 Case 4
                     If RN1 <= 90 And INFPOS% < INF_IN Then A5%(2) = 1
                     If RN1 <= 90 And INFPOS% < INF_IN Then A5%(3) = 1
                     If RN1 <= 65 And INFPOS% = INF_IN Then A5%(2) = 1
                     If RN1 <= 5 And INFPOS% = INF_IN Then A5%(3) = 1
-                    
+
                 Case 3
                     If RN1 <= 95 Then A5%(2) = 1
                     If RN1 <= 88 And INFPOS% = INF_BACK Then A5%(3) = 1 ' WAS 60
                     If RN1 <= 15 And INFPOS% > INF_BACK Then A5%(3) = 1
-                    
+
                 Case 1
                     If RN1 <= 30 Then A5%(2) = 1
                     If RN1 <= 50 And INFPOS% = INF_BACK Then A5%(3) = 1
                     If RN1 <= 10 And INFPOS% > INF_BACK Then A5%(3) = 1
-                    
+
                 Case 2
                     If RN1 <= 45 Then A5%(2) = 1
 
@@ -6801,7 +8587,7 @@ Sub SOURCE ()
     errorOnPlay% = 0
     H0%(0) = 0
 
-    If nbrOuts(0) = 3 Then
+    If nbrOuts(0) >= 3 Then
         GoTo LNextHalfInning
     Else
         GoTo LNextBatter0
@@ -6834,7 +8620,8 @@ Sub SOURCE ()
     Call Rolld100(roll)
 
     idx = 1
-    Do While idx <= 9 And roll > BT%(teamRat_GAME(1, 10), BR, idx)
+    Do While idx <= 9
+        If roll <= BT%(teamRat_GAME(1, 10), BR, idx) Then Exit Do
         idx = idx + 1
     Loop
 
@@ -6843,13 +8630,13 @@ Sub SOURCE ()
 
         Case Is <= 2
             currFielder = 5
-            
+
         Case 3 To 4
             currFielder = 1
-        
+
         Case 5 To 7
             currFielder = 3
-        
+
         Case Is >= 8
             currFielder = 2
 
@@ -6872,8 +8659,8 @@ Sub SOURCE ()
             Call PBP(player$(4) + " makes the catch")
             Call ADDSTTS(P, D)
 
-            nbrOuts(0) = nbrOuts(0) + 1
-            nbrOuts(1) = nbrOuts(1) + 1
+            Call TrackOuts(1)
+
             Call CREDITREGPO(currFielder, D)
 
             If nbrOuts(0) <> 3 And SH <> 2 Then
@@ -6894,10 +8681,12 @@ Sub SOURCE ()
                 End If
 
                 Call PBP(player$(5) + " throws to " + player$(4) + " at 3rd")
+
                 A5%(3) = 10
+
                 Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-                nbrOuts(0) = nbrOuts(0) + 1
-                nbrOuts(1) = nbrOuts(1) + 1
+
+                Call TrackOuts(1)
 
                 Call ADDPIT(D, currPitcher(D), LG_P_OUT)
 
@@ -6905,7 +8694,6 @@ Sub SOURCE ()
                     If nbrOuts(0) < 3 Then
                         GoTo LNextBatter1
                     Else
-                        'nbrOuts(0) >= 3
                         currLineupSlot(P) = currLineupSlot(P) - 1
                     End If
                 End If
@@ -6945,8 +8733,9 @@ Sub SOURCE ()
                     Next
 
                     Call ADDSTTS(P, D)
-                    nbrOuts(0) = nbrOuts(0) + 1
-                    nbrOuts(1) = nbrOuts(1) + 1
+
+                    Call TrackOuts(1)
+
                     Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
                     Call CREDITPUTOUT(I3, FB2P%, AST%, D)
 
@@ -6980,8 +8769,8 @@ Sub SOURCE ()
                     Call CREDITPUTOUT(I3, FB2P%, AST%, D)
                     Call PBP("DOUBLE PLAY!!")
 
-                    nbrOuts(0) = nbrOuts(0) + 2
-                    nbrOuts(1) = nbrOuts(1) + 2
+                    Call TrackOuts(1)
+                    Call TrackOuts(1)
 
                     Call ADDSTTS(P, D)
 
@@ -7004,8 +8793,8 @@ Sub SOURCE ()
 
                 Call ADDSTTS(P, D)
 
-                nbrOuts(0) = nbrOuts(0) + 1
-                nbrOuts(1) = nbrOuts(1) + 1
+                Call TrackOuts(1)
+
                 Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
                 Call CREDITPUTOUT(I3, FB2P%, AST%, D)
 
@@ -7020,14 +8809,16 @@ Sub SOURCE ()
                     Call PBP("DOUBLE PLAY!!")
                     Call CREDITPUTOUT(I3, FB2P%, AST%, D)
 
-                    nbrOuts(0) = nbrOuts(0) + 1
-                    nbrOuts(1) = nbrOuts(1) + 1
+                    Call TrackOuts(1)
+
                     Call ADDPIT(D, currPitcher(D), LG_P_OUT)
+
                 End If
 
                 GoTo LCheckForOptionsOrQuit
 
             Else
+
                 Call PBP(player$(0) + " lays down the bunt...")
                 Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
                 Call PBP(player$(4) + " makes a nice fielding play")
@@ -7040,11 +8831,13 @@ Sub SOURCE ()
                 End If
 
                 Call ADDSTTS(P, D)
-                nbrOuts(0) = nbrOuts(0) + 1
-                nbrOuts(1) = nbrOuts(1) + 1
+
+                Call TrackOuts(1)
+
                 Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
                 Call CREDITPUTOUT(I3, FB2P%, AST%, D)
                 GoTo LCheckForOptionsOrQuit
+
             End If
 
         Case 3
@@ -7090,8 +8883,7 @@ Sub SOURCE ()
 
                 Call ADDPIT(D, currPitcher(D), LG_P_OUT)
 
-                nbrOuts(0) = nbrOuts(0) + 1
-                nbrOuts(1) = nbrOuts(1) + 1
+                Call TrackOuts(1)
 
                 Call CREDITASSIST(currFielder, D)
                 Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
@@ -7302,7 +9094,9 @@ Sub SOURCE ()
                         Locate 2, 58: Print nbrStrikes
                     End If
 
-                    If nbrStrikes = 3 Then GoTo LStrikeout
+                    If nbrStrikes = 3 Then
+                        GoTo LStrikeout
+                    End If
 
                     If SH = 1 And RN0 <= 42 Then
                         currFielder = 2
@@ -7398,7 +9192,10 @@ Sub SOURCE ()
                 GoTo LStrikeout
             End If
 
-            If SH = 1 And RN0 <= 42 Then currFielder = 2: Call GETFIELDNAME(currFielder, D): GoTo 14111
+            If SH = 1 And RN0 <= 42 Then
+                currFielder = 2: Call GETFIELDNAME(currFielder, D)
+                GoTo 14111
+            End If
 
             If nbrStrikes = 1 Then
                 Call PBP("He has" + Str$(nbrStrikes) + " strike")
@@ -7422,6 +9219,7 @@ Sub SOURCE ()
 
     '--------------------
 
+    ' *** STEALING BASES ***
 
     LSteal:
     stealHome% = 0
@@ -7430,12 +9228,11 @@ Sub SOURCE ()
     player$(4) = pitchers$(D, currPitcher(D))
 
     Select Case baseRunners
+
         Case 0
             GoTo LNextBatter1
-            'set a "skip" variable here
 
         Case 1, 5
-
             TGTBASE% = 2
 
             If P2 <> OFF_HIT_N_RUN Then
@@ -7482,11 +9279,16 @@ Sub SOURCE ()
     A5%(2) = 1
     A5%(3) = 0
 
+    'Change for stealing base
     Call STEALCHANCE(AA, I2, TGTBASE%, CHANCE%)
-    If fldPos(P, b2Base(TGTBASE% - 1)) = 1 Then CHANCE% = 0
+    If fldPos(P, b2Base(TGTBASE% - 1)) = 1 Then
+        CHANCE% = 0
+    End If
 
     'Reduce chance for stealing home
-    If TGTBASE% = 4 Then CHANCE% = CHANCE% * .05
+    If TGTBASE% = 4 Then
+        CHANCE% = CHANCE% * .05
+    End If
 
     If batRating(P, I2, SS_B_CS) > 0 Then
         stlChance = Int((batRating(P, I2, SS_B_SB) / (batRating(P, I2, SS_B_SB) + batRating(P, I2, SS_B_CS))) * 1000)
@@ -7500,12 +9302,25 @@ Sub SOURCE ()
         stlChance = 100
     End If
 
-    If fldPos(P, b2Base(TGTBASE% - 1)) = 1 Then stlChance = 100
+    If fldPos(P, b2Base(TGTBASE% - 1)) = 1 Then
+        stlChance = 100
+    End If
 
-    Call STEAL3RD(TGTBASE%, AA, stlChance, runnerHeld, D) ' *** SUCCESS OF 3B STEAL ***
+    ' *** CHANCE OF 3B STEAL ***
+    Call STEAL3RD(TGTBASE%, AA, stlChance, runnerHeld, D)
 
-    If pitchRating(D, currPitcher(D), SS_P_Throws) = 1 And TGTBASE% = 2 Then CHANCE% = CHANCE% + 25: stlChance = stlChance + 10
-    If pitchRating(D, currPitcher(D), SS_P_Throws) = -1 And TGTBASE% = 2 Then CHANCE% = CHANCE% - 50: stlChance = stlChance - 30
+    ' Adjust chance for 2nd Base
+    If TGTBASE% = 2 Then
+        If pitchRating(D, currPitcher(D), SS_P_Throws) = 1 Then
+            CHANCE% = CHANCE% + 25
+            stlChance = stlChance + 10
+        End If
+        If pitchRating(D, currPitcher(D), SS_P_Throws) = -1 Then
+            CHANCE% = CHANCE% - 50
+            stlChance = stlChance - 30
+        End If
+    End If
+
     If P2 = OFF_HIT_N_RUN Then
 
         CHANCE% = 100
@@ -7513,14 +9328,14 @@ Sub SOURCE ()
         currFielder = 2
         player$(4) = batters$(D, fielder(D, 2))
         TGBASE% = lineupPlayer(P, b2Base(TGTBASE% - 1))
-        b2Mystery(TGTBASE% - 1) = 18
+        b2StealPhase(TGTBASE% - 1) = 18
 
         Call FLDERR(errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
 
         If errorOnPlay% = 1 Then
             Call INCBATOFF(P, TGBASE%, 9)
             currLineupSlot(P) = currLineupSlot(P) - 1
-            Call STRIKEOUTCS(SO)
+            Call STRIKEOUTCS(wasStrikeout)
             GoTo LCheckForOptionsOrQuit
         Else
             GoTo LDoubleSteal2
@@ -7528,11 +9343,14 @@ Sub SOURCE ()
 
     End If
 
-    b2Mystery(TGTBASE% - 1) = b2Mystery(TGTBASE% - 1) + 1
+    'Slightly adjust odds of being caught in rundown
+    b2StealPhase(TGTBASE% - 1) = b2StealPhase(TGTBASE% - 1) + 1
 
     Call Rolld100(I4)
 
-    If I4 <= b2Mystery(TGTBASE% - 1) Then
+    ' b2StealPhase holds the threshold/phase for steal attempts
+    '   - Initial value = chance (1–100) of being caught in a rundown before the throw
+    If I4 <= b2StealPhase(TGTBASE% - 1) Then
 
         S2% = EVENT_RUNDOWN
         currFielder = 1
@@ -7547,8 +9365,8 @@ Sub SOURCE ()
         A5%(3) = 0
         A5%(TGTBASE% - 1) = 11
 
-        nbrOuts(0) = nbrOuts(0) + 1
-        nbrOuts(1) = nbrOuts(1) + 1
+        Call TrackOuts(1)
+
         Call PUTOUT(TGTBASE%, P)
         Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
         Call CREDITPUTOUT(I3, FB2P%, AST%, D)
@@ -7568,7 +9386,10 @@ Sub SOURCE ()
 
 
     'RUNNER HAS A CHANCE TO STEAL
-    b2Mystery(TGTBASE% - 1) = b2Mystery(TGTBASE% - 1) + 17
+
+    'Runner avoided a rundown, +17 is added to mark "steal in progress" phase
+    b2StealPhase(TGTBASE% - 1) = b2StealPhase(TGTBASE% - 1) + 17
+
     I9 = Int(Rnd(1) * 1000) + 1
 
     If I9 > CHANCE% * 1.388 And D5 <> 3 Then
@@ -7594,7 +9415,10 @@ Sub SOURCE ()
 
     Call PITCHOUT(baseRunners, TGTBASE%, stlChance)
 
-    If baseRunners <> 5 Then GoTo LDoubleSteal ' *** DOUBLE STEAL ***1st&3rd
+    If baseRunners <> 5 Then
+        ' *** DOUBLE STEAL ***1st&3rd
+        GoTo LDoubleSteal
+    End If
 
     If stealHome% = 1 Then
         I9 = Int(Rnd(1) * 1000) + 1
@@ -7606,7 +9430,10 @@ Sub SOURCE ()
             I$ = GetKeyPress$
         End If
 
-        If UCase$(I$) <> "Y" Then pitchoutChance = 7: GoTo LRunnerSafe
+        If UCase$(I$) <> "Y" Then
+            pitchoutChance = 7
+            GoTo LRunnerSafe
+        End If
 
         LDoubleSteal:
         currFielder = 2
@@ -7631,32 +9458,76 @@ Sub SOURCE ()
     End If
 
     RN0 = Int(Rnd(1) * 11) + 1
+
     If TGTBASE% <> 4 Then
-        If RN0 = 1 Then pbpString$ = batters$(D, fielder(D, 2)) + " rifles it to " + baseName$(TGTBASE%)
-        If RN0 = 2 Then pbpString$ = batters$(D, fielder(D, 2)) + " fires it to " + baseName$(TGTBASE%)
-        If RN0 = 3 Then pbpString$ = batters$(D, fielder(D, 2)) + " unloads it"
-        If RN0 = 4 Then pbpString$ = batters$(D, fielder(D, 2)) + " is up and firing"
-        If RN0 = 5 Then pbpString$ = batters$(D, fielder(D, 2)) + " comes up firing"
-        If RN0 = 6 Then pbpString$ = batters$(D, fielder(D, 2)) + " lets it fly"
-        If RN0 = 7 Then pbpString$ = batters$(D, fielder(D, 2)) + " throws down"
-        If RN0 = 8 Then pbpString$ = batters$(D, fielder(D, 2)) + " gets it off"
-        If RN0 = 9 Then pbpString$ = batters$(D, fielder(D, 2)) + " fires a missile"
-        If RN0 = 10 Then pbpString$ = batters$(D, fielder(D, 2)) + " throws quickly"
-        If RN0 = 11 Then pbpString$ = batters$(D, fielder(D, 2)) + " throws"
+
+        Select Case RN0
+
+            Case 1
+                pbpString$ = batters$(D, fielder(D, 2)) + " rifles it to " + baseName$(TGTBASE%)
+
+            Case 2
+                pbpString$ = batters$(D, fielder(D, 2)) + " fires it to " + baseName$(TGTBASE%)
+
+            Case 3
+                pbpString$ = batters$(D, fielder(D, 2)) + " unloads it"
+
+            Case 4
+                pbpString$ = batters$(D, fielder(D, 2)) + " is up and firing"
+
+            Case 5
+                pbpString$ = batters$(D, fielder(D, 2)) + " comes up firing"
+
+            Case 6
+                pbpString$ = batters$(D, fielder(D, 2)) + " lets it fly"
+
+            Case 7
+                pbpString$ = batters$(D, fielder(D, 2)) + " throws down"
+
+            Case 8
+                pbpString$ = batters$(D, fielder(D, 2)) + " gets it off"
+
+            Case 9
+                pbpString$ = batters$(D, fielder(D, 2)) + " fires a missile"
+
+            Case 10
+                pbpString$ = batters$(D, fielder(D, 2)) + " throws quickly"
+
+            Case 11
+                pbpString$ = batters$(D, fielder(D, 2)) + " throws"
+
+        End Select
+
         Call PBP(pbpString$)
+
     End If
 
-    If Not (b2Mystery(TGTBASE% - 1) = 18 And I9 > stlChance Or b2Mystery(TGTBASE% - 1) > 18 And I9 > stlChance - 200) Then
+    'Steal chance is impacted by run bias of base umpire
+    stlChance = stlChance + umpRunAdj(TGTBASE%)
 
+    ' Final safe/out decision compares random roll to stlChance (phase-dependent)
+    If (b2StealPhase(TGTBASE% - 1) <> 18 Or I9 <= stlChance) And _
+       (b2StealPhase(TGTBASE% - 1) <= 18 Or I9 <= stlChance - 200) Then
+   
         LRunnerSafe:
         Call Rolld100(pbpRoll)
 
         Select Case pbpRoll
-            Case 1 To 20: pbpString$ = "He beats the throw!"
-            Case 21 To 40: pbpString$ = "He's in there!"
-            Case 41 To 50: pbpString$ = "Throw is off-line..."
-            Case 51 To 60: pbpString$ = "Throw is high..."
-            Case 61 To 80: pbpString$ = "He slides under the tag!"
+            Case 1 To 20:
+                pbpString$ = "He beats the throw!"
+
+            Case 21 To 40:
+                pbpString$ = "He's in there!"
+
+            Case 41 To 50:
+                pbpString$ = "Throw is off-line..."
+
+            Case 51 To 60:
+                pbpString$ = "Throw is high..."
+
+            Case 61 To 80:
+                pbpString$ = "He slides under the tag!"
+
             Case 81 To 100:
                 If TGTBASE% <> 4 Then
                     pbpString$ = gameUmpire$(TGTBASE% + 1) + " with the call"
@@ -7668,7 +9539,7 @@ Sub SOURCE ()
         Call PBP(pbpString$)
         Call PBP("safe @ " + baseName$(TGTBASE%) + "!")
 
-        b2Mystery(TGTBASE% - 1) = 0
+        b2StealPhase(TGTBASE% - 1) = 0
         INFPOS% = INF_BACK
         Call PITSWAP(TGTBASE%)
         Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
@@ -7678,6 +9549,7 @@ Sub SOURCE ()
         If stealHome% <> 1 Then
 
             If Not (baseRunners <> 5 Or baseRunners = 5 And pitchoutChance = 7) Then
+
                 pitchoutChance = 0
                 TGTBASE% = 4
 
@@ -7729,8 +9601,8 @@ Sub SOURCE ()
 
     Call ADDPIT(D, currPitcher(D), LG_P_OUT)
 
-    nbrOuts(0) = nbrOuts(0) + 1
-    nbrOuts(1) = nbrOuts(1) + 1
+    Call TrackOuts(1)
+
     currFielder = 2
 
     Call CREDITASSIST(currFielder, D)
@@ -7744,7 +9616,7 @@ Sub SOURCE ()
 
     If nbrOuts(0) >= 3 Then
         currLineupSlot(P) = currLineupSlot(P) - 1
-        Call STRIKEOUTCS(SO)
+        Call STRIKEOUTCS(wasStrikeout)
         GoTo LCheckForOptionsOrQuit
     End If
 
@@ -7881,8 +9753,10 @@ Sub SOURCE ()
             P9 = 1 - P9
             W5 = P9
             W6 = W5
+
             VV(P9) = 1
             VV1(P9) = 9
+
             Call HITTINGLINES
 
             P9 = 1 - P9
@@ -7944,27 +9818,38 @@ Sub SOURCE ()
                     If UCase$(I$) = "Y" Then
 
                         gameD0(D) = gameD0(D) + 1
+
                         X0%(D, 0, gameD0(D)) = V3
                         X0%(D, 1, gameD0(D)) = fldPos(D, V2)
 
                         For V0 = 1 To 9
-                            If fldPos(D, V0) = 1 Then X0%(D, 2, gameD0(D)) = (V0 * 10) + (gameD0(D) - 9)
+                            If fldPos(D, V0) = 1 Then
+                                X0%(D, 2, gameD0(D)) = (V0 * 10) + (gameD0(D) - 9)
+                            End If
                         Next V0
 
                         For V0 = 1 To 9
+
                             If fldPos(D, V0) = 1 Then
+
                                 fldPos(D, V0) = fldPos(D, V2)
                                 lineupPlayer(D, V0) = V3
                                 fielder(D, fldPos(D, V0)) = V3
+
                                 P9 = D
                                 W5 = D
                                 W6 = D
+
                                 VV(D) = V0
                                 VV1(D) = V0
+
                                 Call HITTINGLINES
+
                             End If
+
                             VV(D) = 1
                             VV1(D) = 9
+
                         Next V0
 
                         batRating(D, V3, SS_B_Avail) = 1
@@ -7977,14 +9862,20 @@ Sub SOURCE ()
                         I5 = 0
 
                         For V0 = 1 To 9
+
                             If V0 = V2 Then
+
                                 fldPos(D, V2) = 1
                                 lineupPlayer(D, V2) = currPitcher(D)
                                 fielder(D, 1) = currPitcher(D)
+
                                 VV(D) = V0
                                 VV1(D) = V0
+
                                 Call HITTINGLINES
+
                             End If
+
                         Next V0
 
                         VV(D) = 1
@@ -8011,9 +9902,11 @@ Sub SOURCE ()
                     lineupPlayer(D, V0) = currPitcher(D)
                     fielder(D, 1) = currPitcher(D)
                     fldPos(D, V0) = 1
+
                     P9 = D
                     W5 = D
                     W6 = D
+
                     VV(D) = V0
                     VV1(D) = V0
 
@@ -8021,6 +9914,7 @@ Sub SOURCE ()
 
                     VV(D) = 1
                     VV1(D) = 9
+
                     GoTo LPersonnelMenu
 
                 End If
@@ -8166,13 +10060,17 @@ Sub SOURCE ()
             If fldPos(P9, I2) = 1 Or fldPos(P9, I2) = 10 Then fielder(P9, 1) = 99: fielder(P9, 0) = I2: fldPos(P9, I2) = 10
 
             gameD0(P9) = gameD0(P9) + 1
+
             X0%(P9, 0, gameD0(P9)) = lineupPlayer(P9, I2)
             X0%(P9, 1, gameD0(P9)) = fldPos(P9, I2)
             X0%(P9, 2, gameD0(P9)) = (I2 * 10) + (gameD0(P9) - 9)
+
             W5 = P9
             W6 = P9
+
             VV(P9) = I2
             VV1(P9) = I2
+
             I7% = P9
             I8% = I2
             I9% = I1
@@ -8197,7 +10095,6 @@ Sub SOURCE ()
     '----------------------------------------
 
     LGameOver:
-
     normalFinish = 1
 
     'Print winning team and score
@@ -8216,7 +10113,9 @@ Sub SOURCE ()
     End If
 
     Call EndOfGame
-    If Environ$("PBPLOG") = "TRUE" Then Close #11
+    If Environ$("PBPLOG") = "TRUE" Then
+        Close #11
+    End If
 
     Exit Sub
 
@@ -8276,7 +10175,10 @@ Sub SOURCE ()
     If closerUsed(D) <> -1 And teamMgrProfileVal(D, 589) = 0 And INNING% > teamMgrProfileVal(D, 588) Then Call PITSTRAT(pinchHitterFlag, newPitcherFlag)
     If closerUsed(D) <> -1 And teamMgrProfileVal(D, 589) <> 0 And INNING% >= teamMgrProfileVal(D, 588) Then Call PITSTRAT(pinchHitterFlag, newPitcherFlag)
 
-    If newPitcherFlag = 1 Then newPitcherFlag = 0: GoTo LManageDefense
+    If newPitcherFlag = 1 Then
+        newPitcherFlag = 0
+        GoTo LManageDefense
+    End If
 
     A1 = gameScore(D, 0) - gameScore(P, 0)
     Call Rolld100(RN0)
@@ -8373,7 +10275,9 @@ Sub SOURCE ()
 
             If Not (baseRunners < 3 Or baseRunners = 4) Then
 
-                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a INFIELD IN (3rd base occupied) strategy !!"
+                If Environ$("MGRLOG") = "TRUE" Then
+                    Print #11, "!! Team is using a INFIELD IN (3rd base occupied) strategy !!"
+                End If
 
                 ' PROFILE INFIELD IN WITH 3RD OCCUPIED
                 Call Rolld100(RN0)
@@ -8406,7 +10310,9 @@ Sub SOURCE ()
 
             If baseRunners = 0 Then
 
-                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a CORNERS IN against BUNT FOR HIT strategy !!"
+                If Environ$("MGRLOG") = "TRUE" Then
+                    Print #11, "!! Team is using a CORNERS IN against BUNT FOR HIT strategy !!"
+                End If
 
                 ' PROFILE CORNERS IN AGAINST A BUNT HIT
                 Call Rolld100(RN0)
@@ -8426,7 +10332,9 @@ Sub SOURCE ()
 
                 If Not (baseRunners <> 1 And baseRunners <> 4) Then
 
-                    If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a CORNERS IN against SAC BUNT strategy !!"
+                    If Environ$("MGRLOG") = "TRUE" Then
+                        Print #11, "!! Team is using a CORNERS IN against SAC BUNT strategy !!"
+                    End If
 
                     ' PROFILE CORNERS IN VS HITTER IN SAC BUNT SITUATION
                     Call Rolld100(RN0)
@@ -8461,7 +10369,9 @@ Sub SOURCE ()
 
             If Not (baseRunners <> 1 And baseRunners <> 2 And baseRunners <> 4) Then
 
-                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a CORNERS IN against PITCHER SAC BUNT strategy !!"
+                If Environ$("MGRLOG") = "TRUE" Then
+                    Print #11, "!! Team is using a CORNERS IN against PITCHER SAC BUNT strategy !!"
+                End If
 
                 ' PROFILE CORNERS IN VS A PITCHER IN SAC BUNT SITUATION
                 Call Rolld100(RN0)
@@ -8498,7 +10408,9 @@ Sub SOURCE ()
 
             If Not (nbrOuts(0) = 2 Or baseRunners <> 3 And baseRunners < 5) Then
 
-                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a CORNERS IN against SQUEEZE strategy !!"
+                If Environ$("MGRLOG") = "TRUE" Then
+                    Print #11, "!! Team is using a CORNERS IN against SQUEEZE strategy !!"
+                End If
 
                 ' PROFILE CORNERS IN FOR A SQUEEZE
                 Call Rolld100(RN0)
@@ -8522,7 +10434,9 @@ Sub SOURCE ()
 
             If Not (baseRunners = 1 Or baseRunners = 4 Or baseRunners = 5 Or baseRunners = 7) Then
 
-                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a PITCH AROUND HITTER strategy !!"
+                If Environ$("MGRLOG") = "TRUE" Then
+                    Print #11, "!! Team is using a PITCH AROUND HITTER strategy !!"
+                End If
 
                 MOB% = 0
 
@@ -8627,7 +10541,9 @@ Sub SOURCE ()
     LPhForPosition: 'GET A PINCH HITTER FOR A POSITION PLAYER
     If teamMgrProfileVal(P, 540) = 999 Then
 
-        If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a PINCH HITTING strategy !!"
+        If Environ$("MGRLOG") = "TRUE" Then
+            Print #11, "!! Team is using a PINCH HITTING strategy !!"
+        End If
 
         'SELECT PH FOR HITTER
         For I = 0 To 22
@@ -8648,9 +10564,11 @@ Sub SOURCE ()
 
                             pinchHitterFlag = 1
                             gameD0(P) = gameD0(P) + 1
+
                             X0%(P, 0, gameD0(P)) = teamMgrProfileVal
                             X0%(P, 1, gameD0(P)) = fldPos(P, currLineupSlot(P))
                             X0%(P, 2, gameD0(P)) = (currLineupSlot(P) * 10) + (gameD0(P) - 9)
+
                             batRating(P, I, SS_B_Avail) = 1
                             lineupPlayer(P, currLineupSlot(P)) = teamMgrProfileVal
                             fielder(P, fldPos(P, currLineupSlot(P))) = teamMgrProfileVal
@@ -8720,12 +10638,13 @@ Sub SOURCE ()
 
 
     LPhForPosPlayer:
-
     pinchHitterFlag = 1
     gameD0(P) = gameD0(P) + 1
+
     X0%(P, 0, gameD0(P)) = I
     X0%(P, 1, gameD0(P)) = fldPos(P, currLineupSlot(P))
     X0%(P, 2, gameD0(P)) = (currLineupSlot(P) * 10) + (gameD0(P) - 9)
+
     batRating(P, I, SS_B_Avail) = 1
     lineupPlayer(P, currLineupSlot(P)) = I
     fielder(P, fldPos(P, currLineupSlot(P))) = I
@@ -8747,7 +10666,6 @@ Sub SOURCE ()
     '----- NOODLE -----
 
     LPhForPitcher: 'GET A PINCH HITTER FOR THE PITCHER
-
     callPinch = 0
     skipLoop = 0
 
@@ -8838,17 +10756,11 @@ Sub SOURCE ()
             P9 = P
             W5 = P9
             W6 = P9
+
             VV(P9) = currLineupSlot(P)
             VV1(P9) = currLineupSlot(P)
-            Call HITTINGLINES
 
-            If useVGA = 1 Then
-                Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
-                Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
-            Else
-                Call DisplayBallField(nbrBalls, P, nbrStrikes, D)
-                Call MAINSCREEN(D, P, nbrBalls, nbrStrikes, MO)
-            End If
+            Call DisplayGameState(nbrBalls, P, nbrStrikes, D, MO)
 
             VV(P9) = 1
             VV1(P9) = 9
@@ -8893,7 +10805,9 @@ Sub SOURCE ()
         Call Rolld100(roll)
         If Not (baseRunners = 0 Or teamMgrProfileVal(P, 671) <> 999 Or fldPos(P, currLineupSlot(P)) = 1) Then
 
-            If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a HIT & RUN strategy !!"
+            If Environ$("MGRLOG") = "TRUE" Then
+                Print #11, "!! Team is using a HIT & RUN strategy !!"
+            End If
 
             If batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_AB) = 0 Then
                 I7! = 0
@@ -8938,7 +10852,9 @@ Sub SOURCE ()
 
             If Not (baseRunners <> 1 And baseRunners <> 2 And baseRunners <> 4) Then
 
-                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a PITCHER BUNTING strategy !!"
+                If Environ$("MGRLOG") = "TRUE" Then
+                    Print #11, "!! Team is using a PITCHER BUNTING strategy !!"
+                End If
 
                 Call Rolld100(roll)
 
@@ -8975,7 +10891,9 @@ Sub SOURCE ()
 
         If teamMgrProfileVal(P, 634) = 999 And fldPos(P, currLineupSlot(P)) <> 1 And nbrOuts(0) = 0 Or (baseRunners <> 1 And baseRunners <> 2 And baseRunners <> 4) Then
 
-            If Environ$("MGRLOG") = "TRUE" And teamMgrProfileVal(P, 634) = 999 Then Print #11, "!! Team is using a POSITION PLAYER BUNTING strategy !!"
+            If Environ$("MGRLOG") = "TRUE" And teamMgrProfileVal(P, 634) = 999 Then
+                Print #11, "!! Team is using a POSITION PLAYER BUNTING strategy !!"
+            End If
 
             If batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_AB) = 0 Then
                 I7! = 0
@@ -9019,7 +10937,7 @@ Sub SOURCE ()
 
         If baseRunners = 1 Or baseRunners = 5 Then
 
-            If A1 <= -1 And batRating(P, lineupPlayer(P, b2Base(1)), SS_B_SB) < 10 Or b2Mystery(1) > 1 Then
+            If A1 <= -1 And batRating(P, lineupPlayer(P, b2Base(1)), SS_B_SB) < 10 Or b2StealPhase(1) > 1 Then
                 GoTo LNoSteal 'CHANGED FROM <10
             End If
             If A1 >= -1 And baseRunners = 5 Then
@@ -9039,7 +10957,7 @@ Sub SOURCE ()
 
         If baseRunners = 2 Or baseRunners = 4 Then
             If Not (batRating(P, lineupPlayer(P, b2Base(2)), SS_B_SB) < 40 Or fldPos(P, currLineupSlot(P)) = 1 Or nbrOuts(0) = 2) Then
-                If b2Mystery(2) <= 1 Then
+                If b2StealPhase(2) <= 1 Then
                     P2 = OFF_STEAL
                     GoTo LSteal
                 End If
@@ -9077,7 +10995,6 @@ Sub SOURCE ()
     '----- NOODLE -----
 
     LPinchRunner1:
-
     If nbrOuts(0) >= 1 And INNING% >= 7 Then
         GoTo LPinchRunner0
     Else
@@ -9142,7 +11059,7 @@ Sub InitVar ()
     Shared statT0!(), statT1!()
 
     Shared dayNight$(), desigHitOpt$(), gameType$()
-    Shared leagueType$(), locIndicator$()
+    Shared league_brief$(), leagueType$(), locIndicator$()
     Shared month$(), oppName$(), pitcherEra$()
     Shared playMode$(), pitHand$(), umpireName$()
     Shared teamIndicator$()
@@ -9193,12 +11110,11 @@ Sub InitVar ()
     leagueType$(1) = "NL GAME         "
     leagueType$(2) = "INTERLEAGUE GAME"
 
+    league_brief$(0) = "AL"
+    league_brief$(1) = "NL"
+
     desigHitOpt$(0) = "NO DH "
     desigHitOpt$(1) = "USE DH"
-
-    umpireName$(0) = "AL"
-    umpireName$(1) = "NL"
-    umpireName$(2) = "NL"
 
     gameType$(0) = "LEAGUE GAME    "
     gameType$(1) = "EXHIBITION GAME"
@@ -9258,7 +11174,7 @@ Sub InitVar ()
     LYN% = 0
     noLUFound = 0
     pbpLine = 0
-    precipType = 0
+    precipType = 4
     rainDelay = 0
     rainStart = 0
     SB = 0
@@ -9297,7 +11213,7 @@ Sub InitVar ()
     Erase A5%
     Erase b1Runner, b1Pitcher, game_batRating, leagBatStats, gameBatStats, fielder
     Erase BT%, BB%, CSS, D3%, DP%
-    Erase gameB, b2Base, b2Pitcher, b2Mystery, gameP
+    Erase gameB, b2Base, b2Pitcher, b2StealPhase, gameP
     Erase gameD0, gameMgrIdx
     Erase gameM, gameScore, newRelieverNeeded
     Erase gamePitStats, H0%, inningScore
@@ -9632,7 +11548,9 @@ Sub PBP (pbpString$)
         End
     End If
 
-    If Environ$("PBPLOG") = "TRUE" Then Print #11, "======== "; pbpString$
+    If Environ$("PBPLOG") = "TRUE" Then
+        Print #11, "======== "; pbpString$
+    End If
 
     If pbpDelay! > 0 Then
 
@@ -9854,13 +11772,13 @@ Sub ADV1BASE (p_base)
 
     b2Base(p_base + 1) = b2Base(p_base)
     b2Pitcher(p_base + 1) = b2Pitcher(p_base)
-    b2Mystery(p_base + 1) = b2Mystery(p_base)
+    b2StealPhase(p_base + 1) = b2StealPhase(p_base)
 
-    b2Mystery(p_base + 1) = 0
+    b2StealPhase(p_base + 1) = 0
 
     b2Base(p_base) = 0
     b2Pitcher(p_base) = 0
-    b2Mystery(p_base) = 0
+    b2StealPhase(p_base) = 0
 
     player$(p_base + 1) = player$(p_base)
     player$(p_base) = ""
@@ -9892,13 +11810,13 @@ Sub ADV2BASES (p_base)
 
     b2Base(p_base + 2) = b2Base(p_base)
     b2Pitcher(p_base + 2) = b2Pitcher(p_base)
-    b2Mystery(p_base + 2) = b2Mystery(p_base)
+    b2StealPhase(p_base + 2) = b2StealPhase(p_base)
 
-    b2Mystery(p_base + 1) = 0
+    b2StealPhase(p_base + 1) = 0
 
     b2Base(p_base) = 0
     b2Pitcher(p_base) = 0
-    b2Mystery(p_base) = 0
+    b2StealPhase(p_base) = 0
 
     player$(p_base + 2) = player$(p_base)
     player$(p_base) = ""
@@ -9922,7 +11840,7 @@ Sub ADV3BASES (I3, P, D)
 
     b2Base(I3) = currLineupSlot(P)
     b2Pitcher(I3) = currPitcher(D)
-    b2Mystery(I3) = 0
+    b2StealPhase(I3) = 0
     b2Base(0) = 0
 
     player$(I3) = player$(0)
@@ -10409,7 +12327,9 @@ Sub CREDITASSIST (currFielder, D)
         Call ADDPIT(D, currPitcher(D), LG_PB_A)
     Else
         Call INCBATDF(D, fielder(D, currFielder), LG_B_A)
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Assist for: "; currFielder
+        If Environ$("PBPLOG") = "TRUE" Then
+            Print #11, "Assist for: "; currFielder
+        End If
     End If
 
 End Sub
@@ -10429,7 +12349,9 @@ Sub CREDITPUTOUT (currBase, FB2P%, AST%, D)
         po% = 2
         AST% = 0
         Call INCBATDF(D, fielder(D, po%), LG_B_PO)
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Infield? Putout1 for: "; po%
+        If Environ$("PBPLOG") = "TRUE" Then
+            Print #11, "Infield? Putout1 for: "; po%
+        End If
 
     Else
 
@@ -10462,12 +12384,16 @@ Sub CREDITPUTOUT (currBase, FB2P%, AST%, D)
         ElseIf po% > 1 And po% <= 10 Then
             fld% = fielder(D, po%)
         Else
-            If Environ$("PBPLOG") = "TRUE" Then Print #11, "WARNING!!  skipping call to INCBATDF in CREDITPUTOUT because po% = " + Str$(po%)
+            If Environ$("PBPLOG") = "TRUE" Then
+                Print #11, "WARNING!!  skipping call to INCBATDF in CREDITPUTOUT because po% = " + Str$(po%)
+            End If
             Exit Sub
         End If
 
         Call INCBATDF(D, fld%, LG_B_PO)
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "Infield? Putout2 for: "; po%
+        If Environ$("PBPLOG") = "TRUE" Then
+            Print #11, "Infield? Putout2 for: "; po%
+        End If
 
     End If
 
@@ -10479,7 +12405,9 @@ End Sub
 'Credit player with regular putout
 Sub CREDITREGPO (currFielder, D)
 
-    If Environ$("PBPLOG") = "TRUE" Then Print #11, "Reg Putout for: "; currFielder
+    If Environ$("PBPLOG") = "TRUE" Then
+        Print #11, "Reg Putout for: "; currFielder
+    End If
 
     If currFielder = 1 Then
         Call ADDPIT(D, currPitcher(D), LG_PB_PO)
@@ -10801,7 +12729,7 @@ End Sub
 '----------------------------------------
 'This subroutine increases the ejection
 'count for the target player/team.
-Sub EJECTINC (ejectCnt, X$)
+Sub EJECTINC (X$)
 
     ejectCnt = ejectCnt + 1
     ejections$(ejectCnt) = X$
@@ -10816,15 +12744,17 @@ End Sub
 'who has been ejected or injured. In add-
 'ition to calculations, it calls a routine
 'that prompts the user for replacements.
-Sub EJECTIONINJURY (playerMode, P, compTeam, D, po%, P9, W5, W6)
+Sub EJECTIONINJURY (playerMode, P, compTeam, D, posIdx, P9, W5, W6)
 
     If Not (playerMode = 2 Or playerMode = 1 And P <> compTeam) Then
-        pbpString$ = "You must replace " + batters$(D, fielder(D, po%))
+        pbpString$ = "You must replace " + batters$(D, fielder(D, posIdx))
         Call PBP(pbpString$)
     Else
 
         I2 = 1
-        Do While I2 <= 9 And fldPos(D, I2) <> po%
+
+        '---> ** this was leading to an infinite loop once in a while
+        Do While I2 <= 9 And fldPos(D, I2) <> posIdx
             I2 = I2 + 1
         Loop
 
@@ -10834,15 +12764,18 @@ Sub EJECTIONINJURY (playerMode, P, compTeam, D, po%, P9, W5, W6)
 
                 If fldPos(D, I2) = batRating(D, idx, SS_B_Pos1) Or fldPos(D, I2) = batRating(D, idx, SS_B_Pos2) Or fldPos(D, I2) = batRating(D, idx, SS_B_Pos3) Or fldPos(D, I2) = batRating(D, idx, SS_B_Pos4) Then
 
-                    pbpString$ = batters$(D, fielder(D, po%)) + " will be replaced by " + batters$(D, idx)
+                    pbpString$ = batters$(D, fielder(D, posIdx)) + " will be replaced by " + batters$(D, idx)
                     Call PBP(pbpString$)
 
                     gameD0(D) = gameD0(D) + 1
+
                     X0%(D, 0, gameD0(D)) = idx
                     X0%(D, 1, gameD0(D)) = fldPos(D, I2)
                     X0%(D, 2, gameD0(D)) = (I2 * 10) + (gameD0(D) - 9)
+
                     batRating(D, idx, SS_B_Avail) = 1
                     lineupPlayer(D, I2) = idx
+
                     I7% = D
                     I8% = I2
                     i9% = idx
@@ -10850,9 +12783,11 @@ Sub EJECTIONINJURY (playerMode, P, compTeam, D, po%, P9, W5, W6)
                     Call REPLACEMENTS(I7%, I8%, i9%)
 
                     fielder(D, fldPos(D, I2)) = idx
+
                     P9 = D
                     W5 = P9
                     W6 = P9
+
                     VV(P9) = 1
                     VV1(P9) = 9
 
@@ -11222,7 +13157,9 @@ Sub FLDERR (errorOnPlay%, currFielder, D, I3, stealing, S2%, P)
         rand = Int(Rnd(1) * 2) + 1
         errType = 2
 
-        If Environ$("PBPLOG") = "TRUE" Then Print #11, "ERROR on: "; currFielder
+        If Environ$("PBPLOG") = "TRUE" Then
+            Print #11, "ERROR on: "; currFielder
+        End If
 
         If currFielder = 1 Then
             Call ADDPIT(D, currPitcher(D), LG_PB_E)
@@ -11725,10 +13662,10 @@ End Sub
 'This subroutine handles the Play-by-Play
 'and replacement for a defensive pitcher
 'who has been ejected or injured.
-Sub INJPIT (P, D, IP%, pinchHitterFlag)
+Sub INJPIT (P, D, innPitch, pinchHitterFlag)
 
     If playerMode = 2 Or playerMode = 1 And P <> compTeam Then
-        IP% = 1
+        innPitch = 1
         Call RELIEVERS(pinchHitterFlag, newPitcherFlag)
     Else
         Call PBP("You must replace " + pitchers$(D, currPitcher(D)))
@@ -11744,14 +13681,14 @@ End Sub
 'It then calls the necessary routines to
 'Handle the associated variables / game'
 'mechanics.
-Sub INJURYLENGTH (injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
+Sub INJURYLENGTH (injCount, D, posIdx, playerMode, P, compTeam, P9, W5, W6)
 
     doneLength = 0
 
     injCount = injCount + 1
-    injPlayers$(injCount) = batters$(D, fielder(D, po%))
+    injPlayers$(injCount) = batters$(D, fielder(D, posIdx))
 
-    pbpString$ = batters$(D, fielder(D, po%)) + " is injured!"
+    pbpString$ = batters$(D, fielder(D, posIdx)) + " is injured!"
     Call PBP(pbpString$)
 
     pbpString$ = "He may be out for "
@@ -11759,7 +13696,7 @@ Sub INJURYLENGTH (injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
     ' *** Determine Injury Length ***
     injLen = 0
 
-    If batRating(D, fielder(D, po%), SS_B_G) = 162 Then
+    If batRating(D, fielder(D, posIdx), SS_B_G) = 162 Then
 
         pbpString$ = pbpString$ + " the rest of the game"
 
@@ -11770,7 +13707,7 @@ Sub INJURYLENGTH (injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
         For I = 0 To 22
 
             For I1 = 22 To 25
-                If batRating(D, I, I1) = po% And batRating(D, I, SS_B_Injured) = 0 And I <> fielder(D, po%) Then
+                If batRating(D, I, I1) = posIdx And batRating(D, I, SS_B_Injured) = 0 And I <> fielder(D, posIdx) Then
                     ct = ct + 1
                 End If
                 If ct > 3 Then
@@ -11788,11 +13725,11 @@ Sub INJURYLENGTH (injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
         Else
             If injLen <> 0 Then
 
-                If batRating(D, fielder(D, po%), SS_B_G) = 161 Then
+                If batRating(D, fielder(D, posIdx), SS_B_G) = 161 Then
                     pbpString$ = pbpString$ + " this game and next game"
                     injLen = 1
                 Else
-                    injLen = Int(Rnd(1) * (162 - batRating(D, fielder(D, po%), SS_B_G))) + 1
+                    injLen = Int(Rnd(1) * (162 - batRating(D, fielder(D, posIdx), SS_B_G))) + 1
                     pbpString$ = pbpString$ + Str$(injLen) + " games"
                 End If
 
@@ -11803,11 +13740,12 @@ Sub INJURYLENGTH (injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
     End If
 
     Call PBP(pbpString$)
-    batRating(D, fielder(D, po%), SS_B_Injured) = batRating(D, fielder(D, po%), SS_B_Injured) + injLen
+    batRating(D, fielder(D, posIdx), SS_B_Injured) = batRating(D, fielder(D, posIdx), SS_B_Injured) + injLen
 
     Call DELAY
     Call DELAY
-    Call EJECTIONINJURY(playerMode, P, compTeam, D, po%, P9, W5, W6)
+
+    Call EJECTIONINJURY(playerMode, P, compTeam, D, posIdx, P9, W5, W6)
 
 End Sub
 
@@ -12085,7 +14023,9 @@ Sub MAINSCREEN (D, P, nbrBalls, nbrStrikes, MO)
 
     Call DisplayRun(I2, P, X)
 
-    If nbrOuts(0) <> 3 Then MO = 0
+    If nbrOuts(0) <> 3 Then
+        MO = 0
+    End If
 
     For WK = 1 To 3
         If b2Base(WK) > 0 Then
@@ -12224,27 +14164,34 @@ Sub NEWPITCHER (pIdx, pinchHitterFlag, newPitcherFlag)
     For V0 = 1 To 9
 
         If fldPos(D, V0) = 1 Or fldPos(D, V0) = 10 Then
+
             lineupPlayer(D, V0) = currPitcher(D)
             fldPos(D, V0) = 1
             fielder(D, 1) = currPitcher(D)
+
             P9 = D
             W5 = P9
             W6 = P9
+
             VV(P9) = V0
             VV1(P9) = V0
+
             Call HITTINGLINES
+
         End If
 
     Next V0
 
     VV(P9) = 1
     VV1(P9) = 9
+
     fielder(D, 1) = currPitcher(D)
 
     Call CHECKSAVE(D, P, baseRunners)
 
     W5 = 1 - P9
     W6 = 1 - P9
+
     VV(1 - P9) = 1
     VV1(1 - P9) = 9
 
@@ -12256,15 +14203,8 @@ Sub NEWPITCHER (pIdx, pinchHitterFlag, newPitcherFlag)
 
     Call PBP(gameManagers$(D) + " is making a pitching change")
     Call DELAY
-    Call HITTINGLINES
 
-    If useVGA = 1 Then
-        Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
-        Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
-    Else
-        Call DisplayBallField(nbrBalls, P, nbrStrikes, D)
-        Call MAINSCREEN(D, P, nbrBalls, nbrStrikes, MO)
-    End If
+    Call DisplayGameState(nbrBalls, P, nbrStrikes, D, MO)
 
     pinchHitterFlag = 0
 
@@ -12490,7 +14430,9 @@ Sub PINCHRUNNER (MS%, A1, baseRunners, I2, P, PR%, nbrBalls, nbrStrikes, D, MO)
 
             If teamMgrProfileVal(P, 771) = 999 Then
 
-                If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a PINCH RUNNING strategy !!"
+                If Environ$("MGRLOG") = "TRUE" Then
+                    Print #11, "!! Team is using a PINCH RUNNING strategy !!"
+                End If
 
                 For I1 = 772 To 777
                     If teamMgrProfileVal(P, I1) <> -1 Then
@@ -12502,7 +14444,9 @@ Sub PINCHRUNNER (MS%, A1, baseRunners, I2, P, PR%, nbrBalls, nbrStrikes, D, MO)
                                 'PINCH RUNNING FOR THE PITCHER
                                 If teamMgrProfileVal(P, 803) = 999 Then
 
-                                    If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a PINCH RUNNING for PITCHER strategy !!"
+                                    If Environ$("MGRLOG") = "TRUE" Then
+                                        Print #11, "!! Team is using a PINCH RUNNING for PITCHER strategy !!"
+                                    End If
 
                                     Call Rolld100(RN0)
                                     If pitchRating(P, currPitcher(P), SS_P_Run) <= teamMgrProfileVal(P, 804) And INNING% >= teamMgrProfileVal(P, 805) And RN0 <= teamMgrProfileVal(P, 806) Then
@@ -12523,7 +14467,9 @@ Sub PINCHRUNNER (MS%, A1, baseRunners, I2, P, PR%, nbrBalls, nbrStrikes, D, MO)
 
                                 If teamMgrProfileVal(P, I * 4 + 779) = lineupPlayer(P, J) Then
                                     'FOUND A MATCH FOR THE RUNNER ON BASE
-                                    If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a DEFENSE SUBSTITUTION strategy !!"
+                                    If Environ$("MGRLOG") = "TRUE" Then
+                                        Print #11, "!! Team is using a DEFENSE SUBSTITUTION strategy !!"
+                                    End If
 
                                     Call Rolld100(RN0)
                                     If INNING% >= teamMgrProfileVal(P, I * 4 + 780) And batRating(P, teamMgrProfileVal(P, I * 4 + 781), SS_B_Avail) = 0 And RN0 <= teamMgrProfileVal(P, I * 4 + 782) Then batRating(P, teamMgrProfileVal(P, I * 4 + 781), SS_B_Avail) = 40 + J: GoTo 8993
@@ -12594,12 +14540,14 @@ Sub PINCHRUNNER (MS%, A1, baseRunners, I2, P, PR%, nbrBalls, nbrStrikes, D, MO)
             End If
 
             gameD0(P) = gameD0(P) + 1
+
             X0%(P, 0, gameD0(P)) = lineupPlayer(P, I2)
             X0%(P, 1, gameD0(P)) = 11 '11 = Pinch Runner
             X0%(P, 2, gameD0(P)) = (I2 * 10) + (gameD0(P) - 9)
 
             W5 = P
             W6 = P
+
             VV(P) = I2
             VV1(P) = I2
 
@@ -12618,18 +14566,11 @@ Sub PINCHRUNNER (MS%, A1, baseRunners, I2, P, PR%, nbrBalls, nbrStrikes, D, MO)
             PR% = 1
 
             Call DELAY
-            Call HITTINGLINES
 
-            If useVGA = 1 Then
-                Call DisplayBallField_Gfx(nbrBalls, P, nbrStrikes, D)
-                Call MAINSCREEN_G(D, P, nbrBalls, nbrStrikes, MO)
-                MS% = 1
-            Else
-                Call DisplayBallField(nbrBalls, P, nbrStrikes, D)
-                Call MAINSCREEN(D, P, nbrBalls, nbrStrikes, MO)
-                MS% = 1
-            End If
+            Call DisplayGameState(nbrBalls, P, nbrStrikes, D, MO)
 
+            MS% = 1
+            
             VV(P) = 1
             VV1(P) = 9
 
@@ -12793,7 +14734,9 @@ Sub PITSTAM (P9)
 
     'Runs
     If gamePitcher(P9) = 1 Then 'starting pitcher
-        If pitchEraOpt < 3 Then pitchEff(P9, 1) = 3 ' (was already set in LOADER when pitchEraOpt >= 3)
+        If pitchEraOpt < 3 Then
+            pitchEff(P9, 1) = 3 ' (was already set in LOADER when pitchEraOpt >= 3)
+        End If
     Else 'relief pitcher
         If pitchEraOpt = 0 Then
             pitchEff(P9, 1) = 0
@@ -12826,15 +14769,19 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag)
     ' and it's less than the 7th inning, then go back
     ' and find one the old fashioned way (which is?)
 
-    If Environ$("MGRLOG") = "TRUE" Then Print #11, Using "Team is using 60 is ####  90 is #####  520 is ####  581 is ####"; _
+    If Environ$("MGRLOG") = "TRUE" Then
+        Print #11, Using "Team is using 60 is ####  90 is #####  520 is ####  581 is ####"; _
         teamMgrProfileVal(D, 60), teamMgrProfileVal(D, 90), teamMgrProfileVal(D, 520), teamMgrProfileVal(D, 581)
+    End If
 
     If teamMgrProfileVal(D, 60) = 999 Or INNING% > 7 Then
 
         'if no closers set up or no closing strategy defined, skip out
         If Not (INNING% >= 8 And teamMgrProfileVal(D, 520) <> 999 And teamMgrProfileVal(D, 90) <> 999 Or teamMgrProfileVal(D, 581) <> 999) Then
 
-            If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a PITCHING strategy !!"
+            If Environ$("MGRLOG") = "TRUE" Then
+                Print #11, "!! Team is using a PITCHING strategy !!"
+            End If
 
             'if still needing middle relief
             If INNING% <= 7 Then
@@ -12991,7 +14938,9 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag)
             pIdx = V0
             Call NEWPITCHER(pIdx, pinchHitterFlag, newPitcherFlag)
             setupUsed(D) = -1
-            If Environ$("MGRLOG") = "TRUE" Then Print #11, "Found SETUP MAN: "; pIdx
+            If Environ$("MGRLOG") = "TRUE" Then
+                Print #11, "Found SETUP MAN: "; pIdx
+            End If
             Exit Sub
         End If
     Next
@@ -13027,7 +14976,9 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag)
             pIdx = V0
             Call NEWPITCHER(pIdx, pinchHitterFlag, newPitcherFlag)
             closerUsed(D) = -1
-            If Environ$("MGRLOG") = "TRUE" Then Print #11, "Found CLOSER: "; pIdx
+            If Environ$("MGRLOG") = "TRUE" Then
+                Print #11, "Found CLOSER: "; pIdx
+            End If
             Exit Sub
         End If
     Next
@@ -13035,7 +14986,9 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag)
     'NO CLOSER FOUND
     setupUsed(D) = -1
     closerUsed(D) = -1
-    If Environ$("MGRLOG") = "TRUE" Then Print #11, "Couldn't find SETUP MAN or CLOSER"
+    If Environ$("MGRLOG") = "TRUE" Then
+        Print #11, "Couldn't find SETUP MAN or CLOSER"
+    End If
 
     LMiddleRelievers:
     I2 = 0
@@ -13232,8 +15185,10 @@ Sub PinchHitter (P, P9, W5, W6, idx)
     P9 = P
     W5 = P9
     W6 = P9
+
     VV(P9) = currLineupSlot(P)
     VV1(P9) = currLineupSlot(P)
+
     Call HITTINGLINES
 
     VV(P9) = 1
@@ -13674,8 +15629,26 @@ Sub RecordOut (i, baseNbr)
 
     b2Base(i) = 0
     b2Pitcher(i) = 0
-    b2Mystery(i) = 0
+    b2StealPhase(i) = 0
     player$(i) = ""
+
+End Sub
+
+
+'----------------------------------------
+'          TrackOuts Subroutine
+'----------------------------------------
+'Record outs for a player
+'nbrOuts(0) = number of outs for current team at bat
+'nbrOuts(1) = number of outs that would hae been recorded without errors (tracking earned runs)
+Sub TrackOuts (earnedRunOut)
+
+    nbrOuts(0) = nbrOuts(0) + 1
+
+    If earnedRunOut = 1 Then
+        ' Increment the "earned run outs" counter.
+        nbrOuts(1) = nbrOuts(1) + 1
+    End If
 
 End Sub
 
@@ -13764,7 +15737,7 @@ Sub RecordRun (sah%, i, D, errorOnPlay%, PQ, S2%, currFielder, INFPOS%)
 
     b2Base(i) = 0
     b2Pitcher(i) = 0
-    b2Mystery(i) = 0
+    b2StealPhase(i) = 0
     player$(i) = ""
 
     If inningScore(P, INNING%) = 4 And d100% <= 25 Then
@@ -13879,45 +15852,45 @@ Sub HITTINGLINES
     'PRINT
     'PRINT "Calculating Pitcher/Batter Park Effects..."
 
-    For I = 0 To 1
+    For team = 0 To 1
 
-        I1 = 1 - I
+        opp = 1 - team
 
         'CALCULATE BASE ON BALLS PERCENTAGES
-        For I3 = VV(I) To VV1(I)
+        For I3 = VV(team) To VV1(team)
 
-            I6! = teamRat_GAME(I1, 3) / 1000
+            I6! = teamRat_GAME(opp, 3) / 1000
 
-            If pitchRating(I1, currPitcher(I1), 6) * 3 * .94 + pitchRating(I1, currPitcher(I1), 7) + pitchRating(I1, currPitcher(I1), 8) = 0 Then
+            If pitchRating(opp, currPitcher(opp), 6) * 3 * .94 + pitchRating(opp, currPitcher(opp), 7) + pitchRating(opp, currPitcher(opp), 8) = 0 Then
                 I2! = 0
             Else
-                I2! = pitchRating(I1, currPitcher(I1), 8) / (pitchRating(I1, currPitcher(I1), 6) * 3 * .94 + pitchRating(I1, currPitcher(I1), 7) + pitchRating(I1, currPitcher(I1), 8))
-                'I2! = pitchRating(I1, currPitcher(I1), 8) / (((pitchRating(I1, currPitcher(I1), 6) * 3) * .94) + pitchRating(I1, currPitcher(I1), 7) + pitchRating(I1, currPitcher(I1), 8))
+                I2! = pitchRating(opp, currPitcher(opp), 8) / (pitchRating(opp, currPitcher(opp), 6) * 3 * .94 + pitchRating(opp, currPitcher(opp), 7) + pitchRating(opp, currPitcher(opp), 8))
+                'I2! = pitchRating(opp, currPitcher(opp), 8) / (((pitchRating(opp, currPitcher(opp), 6) * 3) * .94) + pitchRating(opp, currPitcher(opp), 7) + pitchRating(opp, currPitcher(opp), 8))
             End If
 
-            Call GetHLRatings(I, I1, I3, I4, TY%, PY%, BY%)
+            Call GetHLRatings(team, opp, I3, I4, TY%, PY%, BY%)
 
-            If teamSplit(I1, 0) = 999 And pitchRating(I1, currPitcher(I1), 89) <> 0 Then
-                I6! = gameSA(I1, TY% * 6 + 3) / 1000
-                I2! = pitchRating(I1, currPitcher(I1), 56 + PY% * 7) * .9 / (pitchRating(I1, currPitcher(I1), 51 + PY% * 7) + pitchRating(I1, currPitcher(I1), 56 + PY% * 7) * .9)
+            If teamSplit(opp, 0) = 999 And pitchRating(opp, currPitcher(opp), 89) <> 0 Then
+                I6! = gameSA(opp, TY% * 6 + 3) / 1000
+                I2! = pitchRating(opp, currPitcher(opp), 56 + PY% * 7) * .9 / (pitchRating(opp, currPitcher(opp), 51 + PY% * 7) + pitchRating(opp, currPitcher(opp), 56 + PY% * 7) * .9)
             End If
 
-            If fldPos(I, I3) = 1 Then
+            If fldPos(team, I3) = 1 Then
 
-                If pitchRating(I, currPitcher(I), SS_P_BAvg) <> 999 Then
+                If pitchRating(team, currPitcher(team), SS_P_BAvg) <> 999 Then
                     I7! = .037
                 Else
-                    If (pitchRating(I, currPitcher(I), SS_P_H_BB) + pitchRating(I, currPitcher(I), SS_P_H_AB) = 0) Then
+                    If (pitchRating(team, currPitcher(team), SS_P_H_BB) + pitchRating(team, currPitcher(team), SS_P_H_AB) = 0) Then
                         I7! = 0
                     Else
-                        If teamSplit(I, 0) = 999 Then
-                            If pitchRating(I, currPitcher(I), 37 + BY% * 7) + pitchRating(I, currPitcher(I), 42 + BY% * 7) = 0 Then
+                        If teamSplit(team, 0) = 999 Then
+                            If pitchRating(team, currPitcher(team), 37 + BY% * 7) + pitchRating(team, currPitcher(team), 42 + BY% * 7) = 0 Then
                                 I7! = 0
                             Else
-                                I7! = pitchRating(I, currPitcher(I), 42 + BY% * 7) * .9 / (pitchRating(I, currPitcher(I), 42 + BY% * 7) * .9 + pitchRating(I, currPitcher(I), 37 + BY% * 7))
+                                I7! = pitchRating(team, currPitcher(team), 42 + BY% * 7) * .9 / (pitchRating(team, currPitcher(team), 42 + BY% * 7) * .9 + pitchRating(team, currPitcher(team), 37 + BY% * 7))
                             End If
                         Else
-                            I7! = pitchRating(I, currPitcher(I), SS_P_H_BB) / (pitchRating(I, currPitcher(I), SS_P_H_BB) + pitchRating(I, currPitcher(I), SS_P_H_AB))
+                            I7! = pitchRating(team, currPitcher(team), SS_P_H_BB) / (pitchRating(team, currPitcher(team), SS_P_H_BB) + pitchRating(team, currPitcher(team), SS_P_H_AB))
                         End If
                     End If
 
@@ -13925,20 +15898,20 @@ Sub HITTINGLINES
 
             Else
 
-                If batRating(I, lineupPlayer(I, I3), SS_B_AB) + batRating(I, lineupPlayer(I, I3), SS_B_W) = 0 Then
+                If batRating(team, lineupPlayer(team, I3), SS_B_AB) + batRating(team, lineupPlayer(team, I3), SS_B_W) = 0 Then
                     I7! = 0
                 Else
 
-                    If teamSplit(I, 0) = 999 Then
-                        If batRating(I, lineupPlayer(I, I3), 47 + BY% * 7) + batRating(I, lineupPlayer(I, I3), 42 + BY% * 7) = 0 Then
+                    If teamSplit(team, 0) = 999 Then
+                        If batRating(team, lineupPlayer(team, I3), 47 + BY% * 7) + batRating(team, lineupPlayer(team, I3), 42 + BY% * 7) = 0 Then
                             I7! = 0
                         Else
-                            If batRating(I, lineupPlayer(I, I3), 80) <> 0 Then
-                                I7! = batRating(I, lineupPlayer(I, I3), 47 + BY% * 7) * .9 / (batRating(I, lineupPlayer(I, I3), 42 + BY% * 7) + batRating(I, lineupPlayer(I, I3), 47 + BY% * 7) * .9)
+                            If batRating(team, lineupPlayer(team, I3), 80) <> 0 Then
+                                I7! = batRating(team, lineupPlayer(team, I3), 47 + BY% * 7) * .9 / (batRating(team, lineupPlayer(team, I3), 42 + BY% * 7) + batRating(team, lineupPlayer(team, I3), 47 + BY% * 7) * .9)
                             End If
                         End If
                     Else
-                        I7! = batRating(I, lineupPlayer(I, I3), SS_B_W) / (batRating(I, lineupPlayer(I, I3), SS_B_AB) + batRating(I, lineupPlayer(I, I3), SS_B_W))
+                        I7! = batRating(team, lineupPlayer(team, I3), SS_B_W) / (batRating(team, lineupPlayer(team, I3), SS_B_AB) + batRating(team, lineupPlayer(team, I3), SS_B_W))
                     End If
 
                 End If
@@ -13946,53 +15919,55 @@ Sub HITTINGLINES
             End If
 
             Call NORMALIZE(I7!, I2!, I6!, K8!)
-            game_batRating(I, GM_BB, I3) = K8!
+            game_batRating(team, GM_BB, I3) = K8!
+
+            'Print #11, "WALK:"; game_batRating(team, GM_BB, I3)
 
         Next I3
 
         ' CALCULATE STRIKEOUT PERCENTAGES
-        For I3 = VV(I) To VV1(I)
+        For I3 = VV(team) To VV1(team)
 
-            If pitchRating(I1, currPitcher(I1), 6) = 0 Then
+            If pitchRating(opp, currPitcher(opp), 6) = 0 Then
                 I2! = 0
             Else
-                I2! = pitchRating(I1, currPitcher(I1), 9) / ((pitchRating(I1, currPitcher(I1), 6) * 3) * .94)
+                I2! = pitchRating(opp, currPitcher(opp), 9) / ((pitchRating(opp, currPitcher(opp), 6) * 3) * .94)
             End If
 
-            I6! = teamRat_GAME(I1, 2) / 1000
+            I6! = teamRat_GAME(opp, 2) / 1000
 
-            Call GetHLRatings(I, I1, I3, I4, TY%, PY%, BY%)
+            Call GetHLRatings(team, opp, I3, I4, TY%, PY%, BY%)
 
-            If teamSplit(I1, 0) = 999 And pitchRating(I1, currPitcher(I1), 89) <> 0 Then
+            If teamSplit(opp, 0) = 999 And pitchRating(opp, currPitcher(opp), 89) <> 0 Then
 
-                If pitchRating(I1, currPitcher(I1), 51 + PY% * 7) - pitchRating(I1, currPitcher(I1), 52 + PY% * 7) = 0 Then
+                If pitchRating(opp, currPitcher(opp), 51 + PY% * 7) - pitchRating(opp, currPitcher(opp), 52 + PY% * 7) = 0 Then
                     I2! = 0
                 Else
-                    I2! = pitchRating(I1, currPitcher(I1), 57 + PY% * 7) / (pitchRating(I1, currPitcher(I1), 51 + PY% * 7) - pitchRating(I1, currPitcher(I1), 52 + PY% * 7))
-                    I6! = gameSA(I1, TY% * 6 + 2) / 1000
+                    I2! = pitchRating(opp, currPitcher(opp), 57 + PY% * 7) / (pitchRating(opp, currPitcher(opp), 51 + PY% * 7) - pitchRating(opp, currPitcher(opp), 52 + PY% * 7))
+                    I6! = gameSA(opp, TY% * 6 + 2) / 1000
                 End If
 
             End If
 
-            If fldPos(I, I3) = 1 Then
+            If fldPos(team, I3) = 1 Then
 
-                If pitchRating(I, currPitcher(I), SS_P_BAvg) <> 999 Then
+                If pitchRating(team, currPitcher(team), SS_P_BAvg) <> 999 Then
                     I7! = .42
                 Else
 
-                    If pitchRating(I, currPitcher(I), SS_P_H_AB) - pitchRating(I, currPitcher(I), SS_P_H_H) = 0 Then
+                    If pitchRating(team, currPitcher(team), SS_P_H_AB) - pitchRating(team, currPitcher(team), SS_P_H_H) = 0 Then
                         I7! = 0
                     Else
 
-                        If teamSplit(I, 0) = 999 Then
-                            If pitchRating(I, currPitcher(I), 37 + BY% * 7) - pitchRating(I, currPitcher(I), 38 + BY% * 7) = 0 Then
+                        If teamSplit(team, 0) = 999 Then
+                            If pitchRating(team, currPitcher(team), 37 + BY% * 7) - pitchRating(team, currPitcher(team), 38 + BY% * 7) = 0 Then
                                 I7! = 0
                             Else
-                                I7! = pitchRating(I, currPitcher(I), 43 + BY% * 7) / (pitchRating(I, currPitcher(I), 37 + BY% * 7) - pitchRating(I, currPitcher(I), 38 + BY% * 7))
+                                I7! = pitchRating(team, currPitcher(team), 43 + BY% * 7) / (pitchRating(team, currPitcher(team), 37 + BY% * 7) - pitchRating(team, currPitcher(team), 38 + BY% * 7))
                             End If
                         Else
-                            If fldPos(I, I3) = 1 Then
-                                I7! = pitchRating(I, currPitcher(I), SS_P_H_SO) / (pitchRating(I, currPitcher(I), SS_P_H_AB) - pitchRating(I, currPitcher(I), SS_P_H_H))
+                            If fldPos(team, I3) = 1 Then
+                                I7! = pitchRating(team, currPitcher(team), SS_P_H_SO) / (pitchRating(team, currPitcher(team), SS_P_H_AB) - pitchRating(team, currPitcher(team), SS_P_H_H))
                             End If
                         End If
 
@@ -14002,21 +15977,21 @@ Sub HITTINGLINES
 
             Else
 
-                If batRating(I, lineupPlayer(I, I3), SS_B_AB) = 0 Or batRating(I, lineupPlayer(I, I3), SS_B_AB) - batRating(I, lineupPlayer(I, I3), SS_B_H) = 0 Then
+                If batRating(team, lineupPlayer(team, I3), SS_B_AB) = 0 Or batRating(team, lineupPlayer(team, I3), SS_B_AB) - batRating(team, lineupPlayer(team, I3), SS_B_H) = 0 Then
                     I7! = 0
                 Else
 
-                    If teamSplit(I, 0) = 999 Then
+                    If teamSplit(team, 0) = 999 Then
 
-                        If batRating(I, lineupPlayer(I, I3), 80) <> 0 Then
-                            If batRating(I, lineupPlayer(I, I3), 42 + BY% * 7) - batRating(I, lineupPlayer(I, I3), 43 + BY% * 7) = 0 Then
+                        If batRating(team, lineupPlayer(team, I3), 80) <> 0 Then
+                            If batRating(team, lineupPlayer(team, I3), 42 + BY% * 7) - batRating(team, lineupPlayer(team, I3), 43 + BY% * 7) = 0 Then
                                 I7! = 0
                             Else
-                                I7! = batRating(I, lineupPlayer(I, I3), 48 + BY% * 7) / (batRating(I, lineupPlayer(I, I3), 42 + BY% * 7) - batRating(I, lineupPlayer(I, I3), 43 + BY% * 7))
+                                I7! = batRating(team, lineupPlayer(team, I3), 48 + BY% * 7) / (batRating(team, lineupPlayer(team, I3), 42 + BY% * 7) - batRating(team, lineupPlayer(team, I3), 43 + BY% * 7))
                             End If
                         End If
                     Else
-                        I7! = batRating(I, lineupPlayer(I, I3), SS_B_K) / (batRating(I, lineupPlayer(I, I3), SS_B_AB) - batRating(I, lineupPlayer(I, I3), SS_B_H))
+                        I7! = batRating(team, lineupPlayer(team, I3), SS_B_K) / (batRating(team, lineupPlayer(team, I3), SS_B_AB) - batRating(team, lineupPlayer(team, I3), SS_B_H))
                     End If
 
                 End If
@@ -14024,96 +15999,98 @@ Sub HITTINGLINES
             End If
 
             Call NORMALIZE(I7!, I2!, I6!, K8!)
-            game_batRating(I, GM_K, I3) = K8!
+            game_batRating(team, GM_K, I3) = K8!
+
+            'Print #11, "STRIKEOUT:"; game_batRating(team, GM_K, I3)
 
         Next I3
 
         ' CALCULATE THE BATTING AVERAGE
-        For I3 = VV(I) To VV1(I)
+        For I3 = VV(team) To VV1(team)
 
-            I2! = teamRat_GAME(I1, 1) / 1000
-            I6! = pitchRating(I1, currPitcher(I1), 14) / 1000
+            I2! = teamRat_GAME(opp, 1) / 1000
+            I6! = pitchRating(opp, currPitcher(opp), 14) / 1000
 
-            If pitchRating(I1, currPitcher(I1), 6) + pitchRating(I1, currPitcher(I1), 7) = 0 Then
+            If pitchRating(opp, currPitcher(opp), 6) + pitchRating(opp, currPitcher(opp), 7) = 0 Then
                 I7! = 0
             Else
-                I7! = pitchRating(I1, currPitcher(I1), 7) / (((pitchRating(I1, currPitcher(I1), 6) * 3) * .94) + pitchRating(I1, currPitcher(I1), 7))
+                I7! = pitchRating(opp, currPitcher(opp), 7) / (((pitchRating(opp, currPitcher(opp), 6) * 3) * .94) + pitchRating(opp, currPitcher(opp), 7))
             End If
 
             Call NORMALIZE(I7!, I2!, I6!, K8!)
             i9! = K8! / 1000
             
-            Call GetHLRatings(I, I1, I3, I4, TY%, PY%, BY%)
+            Call GetHLRatings(team, opp, I3, I4, TY%, PY%, BY%)
 
-            If teamSplit(I1, 0) = 999 And pitchRating(I1, currPitcher(I1), 89) <> 0 Then
+            If teamSplit(opp, 0) = 999 And pitchRating(opp, currPitcher(opp), 89) <> 0 Then
 
-                I6! = pitchRating(I1, currPitcher(I1), TY% * 6 + 65) / 1000
+                I6! = pitchRating(opp, currPitcher(opp), TY% * 6 + 65) / 1000
 
-                If pitchRating(I1, currPitcher(I1), 51 + PY% * 7) = 0 Then
+                If pitchRating(opp, currPitcher(opp), 51 + PY% * 7) = 0 Then
                     I7! = 0
                 Else
-                    I7! = pitchRating(I1, currPitcher(I1), 52 + PY% * 7) / pitchRating(I1, currPitcher(I1), 51 + PY% * 7)
+                    I7! = pitchRating(opp, currPitcher(opp), 52 + PY% * 7) / pitchRating(opp, currPitcher(opp), 51 + PY% * 7)
                 End If
 
             End If
 
-            If teamSplit(I1, 0) = 999 And pitchRating(I1, currPitcher(I1), 89) <> 0 Then
-                I2! = gameSA(I1, TY% * 6 + 1) / 1000
+            If teamSplit(opp, 0) = 999 And pitchRating(opp, currPitcher(opp), 89) <> 0 Then
+                I2! = gameSA(opp, TY% * 6 + 1) / 1000
                 Call NORMALIZE(I7!, I2!, I6!, K8!)
                 i9! = K8! / 1000
             End If
 
-            If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_BAvg) <> 999 Then
+            If fldPos(team, I3) = 1 And pitchRating(team, currPitcher(team), SS_P_BAvg) <> 999 Then
 
-                I7! = pitchRating(I, currPitcher(I), SS_P_BAvg) / 1000: I6! = pitchRating(I, currPitcher(I), 14) / 1000
+                I7! = pitchRating(team, currPitcher(team), SS_P_BAvg) / 1000: I6! = pitchRating(team, currPitcher(team), 14) / 1000
 
             Else
 
-                If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_H_AB) = 0 Then
+                If fldPos(team, I3) = 1 And pitchRating(team, currPitcher(team), SS_P_H_AB) = 0 Then
                     I7! = 0
                 Else
 
-                    If fldPos(I, I3) = 1 And teamSplit(I, 0) = 999 Then
-                        If pitchRating(I, currPitcher(I), 37 + BY% * 7) = 0 Then
+                    If fldPos(team, I3) = 1 And teamSplit(team, 0) = 999 Then
+                        If pitchRating(team, currPitcher(team), 37 + BY% * 7) = 0 Then
                             I7! = 0
                         Else
-                            I7! = pitchRating(I, currPitcher(I), 38 + BY% * 7) / pitchRating(I, currPitcher(I), 37 + BY% * 7)
+                            I7! = pitchRating(team, currPitcher(team), 38 + BY% * 7) / pitchRating(team, currPitcher(team), 37 + BY% * 7)
                         End If
                     Else
-                        If fldPos(I, I3) = 1 Then
-                            I7! = pitchRating(I, currPitcher(I), SS_P_H_H) / pitchRating(I, currPitcher(I), SS_P_H_AB)
+                        If fldPos(team, I3) = 1 Then
+                            I7! = pitchRating(team, currPitcher(team), SS_P_H_H) / pitchRating(team, currPitcher(team), SS_P_H_AB)
                         End If
                     End If
 
                 End If
 
-                If fldPos(I, I3) = 1 And teamSplit(I, 0) = 999 Then
+                If fldPos(team, I3) = 1 And teamSplit(team, 0) = 999 Then
 
-                    I6! = pitchRating(I, currPitcher(I), TY% * 6 + 65) / 1000
+                    I6! = pitchRating(team, currPitcher(team), TY% * 6 + 65) / 1000
                 Else
 
-                    If fldPos(I, I3) = 1 Then
-                        I6! = pitchRating(I, currPitcher(I), 14) / 1000
+                    If fldPos(team, I3) = 1 Then
+                        I6! = pitchRating(team, currPitcher(team), 14) / 1000
                     Else
-                        If batRating(I, lineupPlayer(I, I3), SS_B_AB) = 0 Then
+                        If batRating(team, lineupPlayer(team, I3), SS_B_AB) = 0 Then
                             I7! = 0
                         Else
 
-                            If teamSplit(I, 0) = 999 And batRating(I, lineupPlayer(I, I3), 80) <> 0 Then
-                                If batRating(I, lineupPlayer(I, I3), 42 + BY% * 7) = 0 Then
+                            If teamSplit(team, 0) = 999 And batRating(team, lineupPlayer(team, I3), 80) <> 0 Then
+                                If batRating(team, lineupPlayer(team, I3), 42 + BY% * 7) = 0 Then
                                     I7! = 0
                                 Else
-                                    I7! = batRating(I, lineupPlayer(I, I3), 43 + BY% * 7) / batRating(I, lineupPlayer(I, I3), 42 + BY% * 7)
+                                    I7! = batRating(team, lineupPlayer(team, I3), 43 + BY% * 7) / batRating(team, lineupPlayer(team, I3), 42 + BY% * 7)
                                 End If
                             Else
-                                I7! = batRating(I, lineupPlayer(I, I3), SS_B_H) / batRating(I, lineupPlayer(I, I3), SS_B_AB)
+                                I7! = batRating(team, lineupPlayer(team, I3), SS_B_H) / batRating(team, lineupPlayer(team, I3), SS_B_AB)
                             End If
 
                         End If
 
-                        I6! = batRating(I, lineupPlayer(I, I3), SS_B_LgBAvg) / 1000
-                        If teamSplit(I, 0) = 999 And batRating(I, lineupPlayer(I, I3), 80) <> 0 Then
-                            I6! = batRating(I, lineupPlayer(I, I3), 56 + TY% * 6) / 1000
+                        I6! = batRating(team, lineupPlayer(team, I3), SS_B_LgBAvg) / 1000
+                        If teamSplit(team, 0) = 999 And batRating(team, lineupPlayer(team, I3), 80) <> 0 Then
+                            I6! = batRating(team, lineupPlayer(team, I3), 56 + TY% * 6) / 1000
                         End If
 
                     End If
@@ -14122,146 +16099,151 @@ Sub HITTINGLINES
 
             End If
 
-            I2! = teamRat_GAME(I, 1) / 1000
-            If teamSplit(I, 0) = 999 And batRating(I, lineupPlayer(I, I3), 80) <> 0 Then
-                I2! = gameSA(I, TY% * 6 + 1) / 1000
+            I2! = teamRat_GAME(team, 1) / 1000
+            If teamSplit(team, 0) = 999 And batRating(team, lineupPlayer(team, I3), 80) <> 0 Then
+                I2! = gameSA(team, TY% * 6 + 1) / 1000
             End If
+
             Call NORMALIZE(I7!, I2!, I6!, K8!)
 
             I7! = K8! / 1000
-            I6! = teamRat_GAME(I, 1) / 1000
+            I6! = teamRat_GAME(team, 1) / 1000
 
-            If teamSplit(I, 0) = 999 And batRating(I, lineupPlayer(I, I3), 80) <> 0 Then
-                I6! = gameSA(I, TY% * 6 + 1) / 1000
+            If teamSplit(team, 0) = 999 And batRating(team, lineupPlayer(team, I3), 80) <> 0 Then
+                I6! = gameSA(team, TY% * 6 + 1) / 1000
             End If
 
             I2! = i9!
+
             Call NORMALIZE(I7!, I2!, I6!, K8!)
-            game_batRating(I, GM_BAvg, I3) = K8!
+            game_batRating(team, GM_BAvg, I3) = K8!
+
+            'Print #11, "BAVG:"; game_batRating(team, GM_BAvg, I3)
 
         Next I3
 
         ' CALCULATE THE EXTRA BASE HITS RATIOS
-        For I3 = VV(I) To VV1(I)
+        For I3 = VV(team) To VV1(team)
 
-            Call GetHLRatings(I, I1, I3, I4, TY%, PY%, BY%)
+            Call GetHLRatings(team, opp, I3, I4, TY%, PY%, BY%)
 
-            If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_BAvg) <> 999 Then
-                game_batRating(I, GM_2B, I3) = (130 * (i9! * 1000)) / teamRat_GAME(I1, 1)
-                game_batRating(I, GM_3B, I3) = (19 * (i9! * 1000)) / teamRat_GAME(I1, 1)
-                game_batRating(I, GM_HR, I3) = 37
+            If fldPos(team, I3) = 1 And pitchRating(team, currPitcher(team), SS_P_BAvg) <> 999 Then
+                game_batRating(team, GM_2B, I3) = (130 * (i9! * 1000)) / teamRat_GAME(opp, 1)
+                game_batRating(team, GM_3B, I3) = (19 * (i9! * 1000)) / teamRat_GAME(opp, 1)
+                game_batRating(team, GM_HR, I3) = 37
             Else
 
-                E2! = (i9! * 1000) / teamRat_GAME(I1, 1)
+                E2! = (i9! * 1000) / teamRat_GAME(opp, 1)
 
-                If teamSplit(I1, 0) = 999 Then
-                    E2! = (i9! * 1000) / gameSA(I1, TY% * 6 + 1)
+                If teamSplit(opp, 0) = 999 Then
+                    E2! = (i9! * 1000) / gameSA(opp, TY% * 6 + 1)
                 End If
 
-                If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_H_H) = 0 Then
-                    game_batRating(I, GM_2B, I3) = 0
-                    game_batRating(I, GM_3B, I3) = 0
-                    game_batRating(I, GM_HR, I3) = 0
+                If fldPos(team, I3) = 1 And pitchRating(team, currPitcher(team), SS_P_H_H) = 0 Then
+                    game_batRating(team, GM_2B, I3) = 0
+                    game_batRating(team, GM_3B, I3) = 0
+                    game_batRating(team, GM_HR, I3) = 0
                     GoTo 235
                 End If
 
-                If fldPos(I, I3) <> 1 And batRating(I, lineupPlayer(I, I3), SS_B_H) = 0 Then
-                    game_batRating(I, GM_2B, I3) = 0
-                    game_batRating(I, GM_3B, I3) = 0
-                    game_batRating(I, GM_HR, I3) = 0
+                If fldPos(team, I3) <> 1 And batRating(team, lineupPlayer(team, I3), SS_B_H) = 0 Then
+                    game_batRating(team, GM_2B, I3) = 0
+                    game_batRating(team, GM_3B, I3) = 0
+                    game_batRating(team, GM_HR, I3) = 0
                     GoTo 235
                 End If
 
-                If fldPos(I, I3) = 1 And teamSplit(I, 0) = 999 And pitchRating(I, currPitcher(I), 38 + BY% * 7) = 0 Then
-                    game_batRating(I, GM_2B, I3) = 0
-                    game_batRating(I, GM_3B, I3) = 0
-                    game_batRating(I, GM_HR, I3) = 0
+                If fldPos(team, I3) = 1 And teamSplit(team, 0) = 999 And pitchRating(team, currPitcher(team), 38 + BY% * 7) = 0 Then
+                    game_batRating(team, GM_2B, I3) = 0
+                    game_batRating(team, GM_3B, I3) = 0
+                    game_batRating(team, GM_HR, I3) = 0
                     GoTo 235
                 End If
 
-                If fldPos(I, I3) = 1 And teamSplit(I, 0) = 999 Then
-                    game_batRating(I, GM_2B, I3) = Int((pitchRating(I, currPitcher(I), 39 + BY% * 7) / pitchRating(I, currPitcher(I), 38 + BY% * 7)) * 1000) * E2! ' doubles times  * .95
-                    game_batRating(I, GM_3B, I3) = Int((pitchRating(I, currPitcher(I), 40 + BY% * 7) / pitchRating(I, currPitcher(I), 38 + BY% * 7)) * 1000) * E2!
-                    game_batRating(I, GM_HR, I3) = Int((pitchRating(I, currPitcher(I), 41 + BY% * 7) / pitchRating(I, currPitcher(I), 38 + BY% * 7)) * 1000)
+                If fldPos(team, I3) = 1 And teamSplit(team, 0) = 999 Then
+                    game_batRating(team, GM_2B, I3) = Int((pitchRating(team, currPitcher(team), 39 + BY% * 7) / pitchRating(team, currPitcher(team), 38 + BY% * 7)) * 1000) * E2! ' doubles times  * .95
+                    game_batRating(team, GM_3B, I3) = Int((pitchRating(team, currPitcher(team), 40 + BY% * 7) / pitchRating(team, currPitcher(team), 38 + BY% * 7)) * 1000) * E2!
+                    game_batRating(team, GM_HR, I3) = Int((pitchRating(team, currPitcher(team), 41 + BY% * 7) / pitchRating(team, currPitcher(team), 38 + BY% * 7)) * 1000)
                     GoTo 235
                 End If
 
-                If fldPos(I, I3) = 1 Then
-                    game_batRating(I, GM_2B, I3) = Int((pitchRating(I, currPitcher(I), SS_P_H_2B) / pitchRating(I, currPitcher(I), SS_P_H_H)) * 1000) * E2! ' doubles times  * .95
-                    game_batRating(I, GM_3B, I3) = Int((pitchRating(I, currPitcher(I), SS_P_H_3B) / pitchRating(I, currPitcher(I), SS_P_H_H)) * 1000) * E2!
-                    game_batRating(I, GM_HR, I3) = Int((pitchRating(I, currPitcher(I), SS_P_H_HR) / pitchRating(I, currPitcher(I), SS_P_H_H)) * 1000)
+                If fldPos(team, I3) = 1 Then
+                    game_batRating(team, GM_2B, I3) = Int((pitchRating(team, currPitcher(team), SS_P_H_2B) / pitchRating(team, currPitcher(team), SS_P_H_H)) * 1000) * E2! ' doubles times  * .95
+                    game_batRating(team, GM_3B, I3) = Int((pitchRating(team, currPitcher(team), SS_P_H_3B) / pitchRating(team, currPitcher(team), SS_P_H_H)) * 1000) * E2!
+                    game_batRating(team, GM_HR, I3) = Int((pitchRating(team, currPitcher(team), SS_P_H_HR) / pitchRating(team, currPitcher(team), SS_P_H_H)) * 1000)
                     GoTo 235
                 End If
 
-                If batRating(I, lineupPlayer(I, I3), SS_B_H) = 0 Then
-                    game_batRating(I, GM_2B, I3) = 0
-                    game_batRating(I, GM_3B, I3) = 0
-                    game_batRating(I, GM_HR, I3) = 0
+                If batRating(team, lineupPlayer(team, I3), SS_B_H) = 0 Then
+                    game_batRating(team, GM_2B, I3) = 0
+                    game_batRating(team, GM_3B, I3) = 0
+                    game_batRating(team, GM_HR, I3) = 0
                     GoTo 235
                 End If
 
-                If teamSplit(I, 0) = 999 And batRating(I, lineupPlayer(I, I3), 80) <> 0 Then
+                If teamSplit(team, 0) = 999 And batRating(team, lineupPlayer(team, I3), 80) <> 0 Then
 
-                    If batRating(I, lineupPlayer(I, I3), 43 + BY% * 7) = 0 Then
-                        game_batRating(I, GM_2B, I3) = 0
-                        game_batRating(I, GM_3B, I3) = 0
-                        game_batRating(I, GM_HR, I3) = 0
+                    If batRating(team, lineupPlayer(team, I3), 43 + BY% * 7) = 0 Then
+                        game_batRating(team, GM_2B, I3) = 0
+                        game_batRating(team, GM_3B, I3) = 0
+                        game_batRating(team, GM_HR, I3) = 0
                     Else
-                        game_batRating(I, GM_2B, I3) = Int((batRating(I, lineupPlayer(I, I3), 44 + BY% * 7) / batRating(I, lineupPlayer(I, I3), 43 + BY% * 7)) * 1000) * E2! 'see note on pitchers * .95
-                        game_batRating(I, GM_3B, I3) = Int((batRating(I, lineupPlayer(I, I3), 45 + BY% * 7) / batRating(I, lineupPlayer(I, I3), 43 + BY% * 7)) * 1000) * E2!
-                        game_batRating(I, GM_HR, I3) = Int((batRating(I, lineupPlayer(I, I3), 46 + BY% * 7) / batRating(I, lineupPlayer(I, I3), 43 + BY% * 7)) * 1000)
+                        game_batRating(team, GM_2B, I3) = Int((batRating(team, lineupPlayer(team, I3), 44 + BY% * 7) / batRating(team, lineupPlayer(team, I3), 43 + BY% * 7)) * 1000) * E2! 'see note on pitchers * .95
+                        game_batRating(team, GM_3B, I3) = Int((batRating(team, lineupPlayer(team, I3), 45 + BY% * 7) / batRating(team, lineupPlayer(team, I3), 43 + BY% * 7)) * 1000) * E2!
+                        game_batRating(team, GM_HR, I3) = Int((batRating(team, lineupPlayer(team, I3), 46 + BY% * 7) / batRating(team, lineupPlayer(team, I3), 43 + BY% * 7)) * 1000)
                     End If
 
                     GoTo 235
 
                 End If
 
-                game_batRating(I, GM_2B, I3) = Int((batRating(I, lineupPlayer(I, I3), SS_B_2B) / batRating(I, lineupPlayer(I, I3), SS_B_H)) * 1000) * E2! 'see note on pitchers * .95
-                game_batRating(I, GM_3B, I3) = Int((batRating(I, lineupPlayer(I, I3), SS_B_3B) / batRating(I, lineupPlayer(I, I3), SS_B_H)) * 1000) * E2!
-                game_batRating(I, GM_HR, I3) = Int((batRating(I, lineupPlayer(I, I3), SS_B_HR) / batRating(I, lineupPlayer(I, I3), SS_B_H)) * 1000)
+                game_batRating(team, GM_2B, I3) = Int((batRating(team, lineupPlayer(team, I3), SS_B_2B) / batRating(team, lineupPlayer(team, I3), SS_B_H)) * 1000) * E2! 'see note on pitchers * .95
+                game_batRating(team, GM_3B, I3) = Int((batRating(team, lineupPlayer(team, I3), SS_B_3B) / batRating(team, lineupPlayer(team, I3), SS_B_H)) * 1000) * E2!
+                game_batRating(team, GM_HR, I3) = Int((batRating(team, lineupPlayer(team, I3), SS_B_HR) / batRating(team, lineupPlayer(team, I3), SS_B_H)) * 1000)
 
             End If
 
             235 '
-            I6! = teamRat_GAME(I1, 4) / 1000
-            I7! = game_batRating(I, GM_HR, I3) / 1000
+            I6! = teamRat_GAME(opp, 4) / 1000
+            I7! = game_batRating(team, GM_HR, I3) / 1000
             I2! = 0
 
-            If pitchRating(I1, currPitcher(I1), 7) <> 0 Then
-                I2! = pitchRating(I1, currPitcher(I1), 13) / pitchRating(I1, currPitcher(I1), 7)
+            If pitchRating(opp, currPitcher(opp), 7) <> 0 Then
+                I2! = pitchRating(opp, currPitcher(opp), 13) / pitchRating(opp, currPitcher(opp), 7)
             End If
 
-            If teamSplit(I1, 0) = 999 And pitchRating(I1, currPitcher(I1), 89) <> 0 Then
-                I6! = gameSA(I1, TY% * 6 + 4) / 1000
+            If teamSplit(opp, 0) = 999 And pitchRating(opp, currPitcher(opp), 89) <> 0 Then
+                I6! = gameSA(opp, TY% * 6 + 4) / 1000
 
-                If pitchRating(I1, currPitcher(I1), 52 + PY% * 7) <> 0 Then
-                    I2! = pitchRating(I1, currPitcher(I1), 55 + PY% * 7) / pitchRating(I1, currPitcher(I1), 52 + PY% * 7)
+                If pitchRating(opp, currPitcher(opp), 52 + PY% * 7) <> 0 Then
+                    I2! = pitchRating(opp, currPitcher(opp), 55 + PY% * 7) / pitchRating(opp, currPitcher(opp), 52 + PY% * 7)
                 End If
 
             End If
 
             Call NORMALIZE(I7!, I2!, I6!, K8!)
+            game_batRating(team, GM_BAvg, I3) = K8!
 
-            game_batRating(I, GM_HR, I3) = K8!
+            'Print #11, "HR:"; game_batRating(team, GM_BAvg, I3)
 
         Next I3
 
         ' ADJUST LEFTY/RIGHTY THE OLD WAY
-        I4 = pitchRating(I1, currPitcher(I1), SS_P_Throws)
+        I4 = pitchRating(opp, currPitcher(opp), SS_P_Throws)
 
-        For I3 = VV(I) To VV1(I)
+        For I3 = VV(team) To VV1(team)
 
-            If teamSplit(I, 0) = 999 And batRating(I, lineupPlayer(I, I3), 80) = 0 Then
+            If teamSplit(team, 0) = 999 And batRating(team, lineupPlayer(team, I3), 80) = 0 Then
 
-                I2 = batRating(I, lineupPlayer(I, I3), SS_B_Bats)
+                I2 = batRating(team, lineupPlayer(team, I3), SS_B_Bats)
 
-                If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_Throws) = -1 Then
+                If fldPos(team, I3) = 1 And pitchRating(team, currPitcher(team), SS_P_Throws) = -1 Then
 
-                    If pitchRating(I1, currPitcher(I1), SS_P_Throws) = 1 Then
+                    If pitchRating(opp, currPitcher(opp), SS_P_Throws) = 1 Then
                         A = 1.04
                         A1 = .88
                     End If
-                    If pitchRating(I1, currPitcher(I1), SS_P_Throws) = -1 Then
+                    If pitchRating(opp, currPitcher(opp), SS_P_Throws) = -1 Then
                         A = .93
                         A1 = 1.16
                     End If
@@ -14270,13 +16252,13 @@ Sub HITTINGLINES
 
                 End If
 
-                If fldPos(I, I3) = 1 And pitchRating(I, currPitcher(I), SS_P_Throws) = 1 Then
-                    
-                    If pitchRating(I1, currPitcher(I1), SS_P_Throws) = -1 Then
+                If fldPos(team, I3) = 1 And pitchRating(team, currPitcher(team), SS_P_Throws) = 1 Then
+
+                    If pitchRating(opp, currPitcher(opp), SS_P_Throws) = -1 Then
                         A = 1.02
                         A1 = .98
                     End If
-                    If pitchRating(I1, currPitcher(I1), SS_P_Throws) = 1 Then
+                    If pitchRating(opp, currPitcher(opp), SS_P_Throws) = 1 Then
                         A = .97
                         A1 = 1.1
                     End If
@@ -14285,7 +16267,7 @@ Sub HITTINGLINES
 
                 End If
 
-                If fldPos(I, I3) <> 1 And I2 = -2 Then
+                If fldPos(team, I3) <> 1 And I2 = -2 Then
 
                     If I4 = 1 Then
                         A = 1.04
@@ -14300,7 +16282,7 @@ Sub HITTINGLINES
 
                 End If
 
-                If fldPos(I, I3) <> 1 And I2 = 2 Then
+                If fldPos(team, I3) <> 1 And I2 = 2 Then
 
                     If I4 = 1 Then
                         A = .78
@@ -14315,7 +16297,7 @@ Sub HITTINGLINES
 
                 End If
 
-                If fldPos(I, I3) <> 1 And I2 = -1 Then
+                If fldPos(team, I3) <> 1 And I2 = -1 Then
 
                     If I4 = 1 Then
                         A = 1.04
@@ -14330,7 +16312,7 @@ Sub HITTINGLINES
 
                 End If
 
-                If fldPos(I, I3) <> 1 And I2 = 1 Then
+                If fldPos(team, I3) <> 1 And I2 = 1 Then
 
                     If I4 = 1 Then
                         A = .97
@@ -14347,7 +16329,7 @@ Sub HITTINGLINES
 
 
 
-                If fldPos(I, I3) <> 1 And I2 = 0 Then
+                If fldPos(team, I3) <> 1 And I2 = 0 Then
 
                     If I4 = 1 Then
                         A = .99
@@ -14364,65 +16346,75 @@ Sub HITTINGLINES
 
             End If
 
-            game_batRating(I, GM_L_HR, I3) = game_batRating(I, GM_HR, I3)
-            game_batRating(I, GM_R_HR, I3) = game_batRating(I, GM_HR, I3)
+            game_batRating(team, GM_L_HR, I3) = game_batRating(team, GM_HR, I3)
+            'Print #11, "LEFT:"; game_batRating(team, GM_L_HR, I3)
+            game_batRating(team, GM_R_HR, I3) = game_batRating(team, GM_HR, I3)
+            'Print #11, "RIGHT:"; game_batRating(team, GM_R_HR, I3)
 
         Next I3
 
         ' ADJUST AVERAGES FOR THE HOME TEAM
-        For I3 = VV(I) To VV1(I)
-            If I = 1 Then
-                game_batRating(I, GM_BAvg, I3) = game_batRating(I, GM_BAvg, I3) + 5
+        For I3 = VV(team) To VV1(team)
+            If team = 1 Then
+                game_batRating(team, GM_BAvg, I3) = game_batRating(team, GM_BAvg, I3) + 5
             Else
-                game_batRating(I, GM_BAvg, I3) = game_batRating(I, GM_BAvg, I3) - 5
+                game_batRating(team, GM_BAvg, I3) = game_batRating(team, GM_BAvg, I3) - 5
             End If
+
+            'Print #11, "HOME AVG:"; game_batRating(team, GM_BAvg, I3)
+
         Next I3
+
 
         ' CALCULATE THE HOME PARK FACTORS
         If gameLoc <> 2 Then
 
-            For I2 = VV(I) To VV1(I)
-                If I = 1 Then
-                    game_batRating(I, GM_2B, I2) = CInt(game_batRating(I, GM_2B, I2) * (teamRat_GAME(I, 6) / 100))
-                    game_batRating(I, GM_3B, I2) = CInt(game_batRating(I, GM_3B, I2) * (teamRat_GAME(I, 7) / 100))
+            For I2 = VV(team) To VV1(team)
+                If team = 1 Then
+                    game_batRating(team, GM_2B, I2) = CInt(game_batRating(team, GM_2B, I2) * (teamRat_GAME(team, 6) / 100))
+                    game_batRating(team, GM_3B, I2) = CInt(game_batRating(team, GM_3B, I2) * (teamRat_GAME(team, 7) / 100))
                 Else
-                    'I <> 1
-                    game_batRating(I, GM_2B, I2) = CInt(game_batRating(I, GM_2B, I2) * (teamRat_GAME(I1, 6) / 100) * ((200 - teamRat_GAME(I, 6)) / 100))
-                    game_batRating(I, GM_3B, I2) = CInt(game_batRating(I, GM_3B, I2) * (teamRat_GAME(I1, 7) / 100) * ((200 - teamRat_GAME(I, 7)) / 100))
+                    'team <> 1
+                    game_batRating(team, GM_2B, I2) = CInt(game_batRating(team, GM_2B, I2) * (teamRat_GAME(opp, 6) / 100) * ((200 - teamRat_GAME(team, 6)) / 100))
+                    game_batRating(team, GM_3B, I2) = CInt(game_batRating(team, GM_3B, I2) * (teamRat_GAME(opp, 7) / 100) * ((200 - teamRat_GAME(team, 7)) / 100))
                 End If
 
-                If parkHRVals!(I) > 1000 Then
+                If parkHRVals!(team) > 1000 Then
                     I3! = 100
-                    I6! = Int(parkHRVals!(I) / 1000) * windFactor!
-                    I7! = (parkHRVals!(I) - Int((parkHRVals!(I) / 1000)) * 1000) * windFactor!
+                    I6! = Int(parkHRVals!(team) / 1000) * windFactor!
+                    I7! = (parkHRVals!(team) - Int((parkHRVals!(team) / 1000)) * 1000) * windFactor!
                 End If
-                If parkHRVals!(I1) > 1000 Then
+                If parkHRVals!(opp) > 1000 Then
                     I4! = 100
-                    K8! = Int(parkHRVals!(I1) / 1000) * windFactor!
-                    i9! = (parkHRVals!(I1) - Int((parkHRVals!(I1) / 1000)) * 1000) * windFactor!
+                    K8! = Int(parkHRVals!(opp) / 1000) * windFactor!
+                    i9! = (parkHRVals!(opp) - Int((parkHRVals!(opp) / 1000)) * 1000) * windFactor!
                 End If
 
-                If parkHRVals!(I) < 1000 Then
-                    I3! = parkHRVals!(I) * windFactor!
+                If parkHRVals!(team) < 1000 Then
+                    I3! = parkHRVals!(team) * windFactor!
                     I6! = I3!
                     I7! = I3!
                 End If
-                If parkHRVals!(I1) < 1000 Then
-                    I4! = parkHRVals!(I1) * windFactor!
+                If parkHRVals!(opp) < 1000 Then
+                    I4! = parkHRVals!(opp) * windFactor!
                     K8! = I4!
                     i9! = I4!
                 End If
 
-                If I = 1 Then
-                    game_batRating(I, GM_HR, I2) = CInt((game_batRating(I, GM_HR, I2) * (I3! / 100)))
-                    game_batRating(I, GM_L_HR, I2) = CInt((game_batRating(I, GM_L_HR, I2) * (I6! / 100)))
-                    game_batRating(I, GM_R_HR, I2) = CInt((game_batRating(I, GM_R_HR, I2) * (I7! / 100)))
+                If team = 1 Then
+                    game_batRating(team, GM_HR, I2) = CInt((game_batRating(team, GM_HR, I2) * (I3! / 100)))
+                    game_batRating(team, GM_L_HR, I2) = CInt((game_batRating(team, GM_L_HR, I2) * (I6! / 100)))
+                    game_batRating(team, GM_R_HR, I2) = CInt((game_batRating(team, GM_R_HR, I2) * (I7! / 100)))
                 Else
-                    'I <> 1
-                    game_batRating(I, GM_HR, I2) = CInt((game_batRating(I, GM_HR, I2) * (I4! / 100) * ((200 - I3!) / 100)))
-                    game_batRating(I, GM_L_HR, I2) = CInt((game_batRating(I, GM_L_HR, I2) * (K8! / 100) * ((200 - I6!) / 100)))
-                    game_batRating(I, GM_R_HR, I2) = CInt((game_batRating(I, GM_R_HR, I2) * (i9! / 100) * ((200 - I7!) / 100)))
+                    'team <> 1
+                    game_batRating(team, GM_HR, I2) = CInt((game_batRating(team, GM_HR, I2) * (I4! / 100) * ((200 - I3!) / 100)))
+                    game_batRating(team, GM_L_HR, I2) = CInt((game_batRating(team, GM_L_HR, I2) * (K8! / 100) * ((200 - I6!) / 100)))
+                    game_batRating(team, GM_R_HR, I2) = CInt((game_batRating(team, GM_R_HR, I2) * (i9! / 100) * ((200 - I7!) / 100)))
                 End If
+
+                'Print #11, "PARK HR:"; game_batRating(team, GM_HR, I2)
+                'Print #11, "PARK LEFT:"; game_batRating(team, GM_L_HR, I2)
+                'Print #11, "PARK RIGHT:"; game_batRating(team, GM_R_HR, I2)
 
             Next I2
 
@@ -14430,7 +16422,7 @@ Sub HITTINGLINES
             Exit For
         End If
 
-    Next I
+    Next team
 
 End Sub
 
@@ -14579,16 +16571,12 @@ Sub BASEONBALLS (S2%, D2, D, P)
 
     End If
 
-    '-- Where does s4 get a value???
-    ' [bm] I think this should be baseRunners
     If baseRunners = 7 And d100% <= 30 Then
         Call PBP("that forces a run in")
     End If
 
     RN0 = Int(Rnd(1) * 4) + 1
 
-    '-- here, if s4 is between 4 and 6, bases are loaded
-    '-- in context, this is obviously AFTER the walk
     If baseRunners > 3 And baseRunners < 7 Then
 
         Select Case RN0
@@ -15135,9 +17123,6 @@ Sub SINGLEROUTINE (currFielder, P, I1, D, S2%, P2)
         Call INCPITOFF(P, currPitcher(P), LG_PB_H)
     End If
 
-    '-- Original code is as follows:
-    'If H7% > sn Then Call SINGLEPBP(S2%, D, currFielder)
-    '-- But there is no clue what sn is supposed to be
     Call SINGLEPBP(S2%, D, currFielder)
 
     For I = 0 To 3
@@ -15408,7 +17393,8 @@ End Sub
 '----------------------------------------
 '          STRIKEOUT Subroutine
 '----------------------------------------
-' ...explanation...
+'This routine handles the PBP for at-bats
+'that result in a strikeout
 Sub STRIKEOUT (nbrStrikes, D)
 
     ' *** strikeout pbp ***
@@ -15487,9 +17473,11 @@ End Sub
 '         STRIKEOUTCS Subroutine
 '----------------------------------------
 ' ...explanation...
-Sub STRIKEOUTCS (SO)
+Sub STRIKEOUTCS (strikeoutIndicator)
 
-    If SO = 7 Then currLineupSlot(P) = currLineupSlot(P) + 1
+    If strikeoutIndicator = 7 Then
+        currLineupSlot(P) = currLineupSlot(P) + 1
+    End If
 
 End Sub
 
@@ -15644,7 +17632,9 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
 
     If baseNbr! <> 0 Then
         'This happens very rarely
-        If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE already have baseNbr = "; baseNbr!
+        If Environ$("RUNLOG") = "TRUE" Then
+            Print #11, "TRYFOREXTRABASE already have baseNbr = "; baseNbr!
+        End If
 
     Else
 
@@ -15661,19 +17651,27 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
 
         'Determine which base we're stealing
         If S2% = EVENT_2B And b2Base(2) > 0 And H6% < 6 And b2Base(3) = 0 And batRating(P, lineupPlayer(P, b2Base(2)), SS_B_3B) > 0 Then
-            If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE stretching a Double to a Triple..."
+            If Environ$("RUNLOG") = "TRUE" Then
+                Print #11, "TRYFOREXTRABASE stretching a Double to a Triple..."
+            End If
             baseNbr! = 3
         End If
         If S2% = EVENT_3B And b2Base(3) > 0 And H6% <= 2 And batRating(P, lineupPlayer(P, b2Base(3)), SS_B_HR) > 0 Then
-            If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE stretching a Triple to an Inside-The-Park HR..."
+            If Environ$("RUNLOG") = "TRUE" Then
+                Print #11, "TRYFOREXTRABASE stretching a Triple to an Inside-The-Park HR..."
+            End If
             baseNbr! = 4
         End If
         If S2% = EVENT_1B And b2Base(3) > 0 And P2 = OFF_HIT_N_RUN And H6% >= 6 And H6% <= batRating(P, lineupPlayer(P, b2Base(3)), SS_B_Run) Then
-            If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE trying to score from 3rd on a Hit & Run Single..."
+            If Environ$("RUNLOG") = "TRUE" Then
+                Print #11, "TRYFOREXTRABASE trying to score from 3rd on a Hit & Run Single..."
+            End If
             baseNbr! = 4
         End If
         If S2% = EVENT_1B And b2Base(3) > 0 And runnerOn2nd = b2Base(3) And P2 <> OFF_HIT_N_RUN And H6% <= batRating(P, lineupPlayer(P, b2Base(3)), SS_B_Run) * 12 Then
-            If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE trying to score from 3rd on a Single..."
+            If Environ$("RUNLOG") = "TRUE" Then
+                Print #11, "TRYFOREXTRABASE trying to score from 3rd on a Single..."
+            End If
             baseNbr! = 4
         End If
 
@@ -15683,11 +17681,15 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
             runRating = runRating + batRating(P, lineupPlayer(P, b2Base(2)), SS_B_Run)
         End If
         If S2% = EVENT_1B And b2Base(2) > 0 And P2 <> OFF_HIT_N_RUN And H6% <= runRating And b2Base(3) = 0 And baseNbr! = 0 Then
-            If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE trying to advance to 3rd on a Single..."
+            If Environ$("RUNLOG") = "TRUE" Then
+                Print #11, "TRYFOREXTRABASE trying to advance to 3rd on a Single..."
+            End If
             baseNbr! = 3
         End If
         If S2% = EVENT_1B And b2Base(1) > 0 And b2Base(2) = 0 And baseNbr! = 0 And H6% <= batRating(P, lineupPlayer(P, b2Base(1)), SS_B_Run) And batRating(P, lineupPlayer(P, b2Base(1)), SS_B_2B) > 0 Then
-            If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE stretching a Single to a Double..."
+            If Environ$("RUNLOG") = "TRUE" Then
+                Print #11, "TRYFOREXTRABASE stretching a Single to a Double..."
+            End If
             baseNbr! = 2
         End If
 
@@ -15712,7 +17714,9 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
         If (playerMode = 2 Or playerMode = 1 And P = compTeam) Then
             If A1 > -2 And A1 < 2 And S2% <> EVENT_FLY_SHALLOW Then
                 I$ = "Y"
-                If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE Green light! -- game margin is within 1 run and event is: "; S2%
+                If Environ$("RUNLOG") = "TRUE" Then
+                    Print #11, "TRYFOREXTRABASE Green light! -- game margin is within 1 run and event is: "; S2%
+                End If
             Else
                 If A1 < 0 And (INNING% >= 7 Or S2% = EVENT_FLY_SHALLOW) Then
                     I$ = "N"
@@ -15721,7 +17725,9 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
 
             If S2% = EVENT_2B And nbrOuts(0) = 2 And baseNbr! = 3 Then
                 I$ = "N"
-                If Environ$("RUNLOG") = "TRUE" Then Print #11, "TRYFOREXTRABASE not going to try advancing to 3rd with 2 outs..."
+                If Environ$("RUNLOG") = "TRUE" Then
+                    Print #11, "TRYFOREXTRABASE not going to try advancing to 3rd with 2 outs..."
+                End If
             End If
         End If
 
@@ -15735,7 +17741,9 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
         Else
             pbpString$ = player$(baseNbr! - 1) + " is "
 
-            If Environ$("PBPLOG") = "TRUE" Then Print #11, ";;;;; Runner going for base: "; baseNbr!; " on event: "; S2%
+            If Environ$("PBPLOG") = "TRUE" Then
+                Print #11, ";;;;; Runner going for base: "; baseNbr!; " on event: "; S2%
+            End If
 
             If S2% < EVENT_HR Then
                 Call PBP(pbpString$ + "going for " + baseName$(baseNbr!))
@@ -15755,7 +17763,9 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
                 If (playerMode = 2 Or playerMode = 1 And D = compTeam) Then
                     If teamMgrProfileVal(D, 766) = 999 And baseNbr! = 4 Then
 
-                        If Environ$("MGRLOG") = "TRUE" Then Print #11, "!! Team is using a THROWING HOME strategy !!"
+                        If Environ$("MGRLOG") = "TRUE" Then
+                            Print #11, "!! Team is using a THROWING HOME strategy !!"
+                        End If
 
                         If INNING% >= teamMgrProfileVal(D, 767) And teamMgrProfileVal(D, 767) <> 0 And teamMgrProfileVal(D, 768) <= gameScore(D, 0) - gameScore(P, 0) Then
                             I$ = "N"
@@ -15815,8 +17825,9 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
                     If I4 > I3 Then ' outcome = OUT!
 
                         A5%(baseNbr! - 1) = 11
-                        nbrOuts(0) = nbrOuts(0) + 1
-                        nbrOuts(1) = nbrOuts(1) + 1
+
+                        Call TrackOuts(1)
+
                         Call ADDPIT(D, currPitcher(D), LG_P_OUT)
 
                         Call Rolld100(outPBP)
@@ -15866,26 +17877,32 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, D, currFielder, sah%, stealing, baseN
 
                             ' *** RUNNER ON 2ND GUNNED AT 3RD ON THROW HOME ***
                             If baseNbr! - 1 > 2 And I5 <= 15 And b2Base(2) > 0 Then
+
                                 Call CREDITASSIST(currFielder, D)
                                 Call PBP("runner is trying for 3rd...")
                                 A5%(2) = 11
-                                nbrOuts(0) = nbrOuts(0) + 1
-                                nbrOuts(1) = nbrOuts(1) + 1
+
+                                Call TrackOuts(1)
+
                                 currFielder = 5
                                 Call CREDITREGPO(currFielder, D)
                                 Call ADDPIT(D, currPitcher(D), LG_P_OUT)
+
                             End If
 
                             ' *** RUNNER ON 1ST GUNNED AT 2ND ON THROW TO HOME OR 3RD ***
                             If baseNbr! - 1 > 1 And d100% <= 15 And b2Base(1) > 0 And A5%(2) <> 11 Then
+
                                 Call CREDITASSIST(currFielder, D)
                                 currFielder = 6
                                 Call CREDITREGPO(currFielder, D)
                                 Call PBP("runner is trying for 2nd...")
                                 A5%(1) = 11
-                                nbrOuts(0) = nbrOuts(0) + 1
-                                nbrOuts(1) = nbrOuts(1) + 1
+
+                                Call TrackOuts(1)
+
                                 Call ADDPIT(D, currPitcher(D), LG_P_OUT)
+
                             End If
 
                             If b2Base(2) > 0 And baseNbr! - 1 > 2 And A5%(2) <> 11 And d100% > (80 - batRating(P, lineupPlayer(P, b2Base(2)), SS_B_Run) * 2) And noThrow = 0 Then
@@ -16375,755 +18392,547 @@ End Sub
 'at the end of most of these branches,
 'it gets assigned a static value.
 ' Where is it used in the game?
-Sub RAREPLAYS (H6%, H7%, IP%)
+Sub RAREPLAYS (H6%, innPitch)
 
-    If H7% = 20 Then
-        H7% = 0
-    Else
+    Dim playerEjectMax As Integer
+    Dim coachMgrEjectMax As Integer
 
-        Call WINDEX
-        Call Rolld100(H6%)
+    Select Case teamYears(1)
 
-        Select Case H6%
+        Case 1899 To 1919
+            playerEjectMax = 8
+            coachMgrEjectMax = 2
+        
+        Case 1920 To 1945
+            playerEjectMax = 5
+            coachMgrEjectMax = 2
 
-            Case 1
+        Case 1946 To 2003
+            playerEjectMax = 5
+            coachMgrEjectMax = 4
 
-                Call PBP(batters$(D, fielder(D, 2)) + " is arguing ball and strike calls")
-                Call PBP(gameUmpire$(1) + " has heard enough")
-                Call PBP(batters$(D, fielder(D, 2)) + " has been ejected!!")
+        Case 2004 To 2013
+            playerEjectMax = 4
+            coachMgrEjectMax = 5
 
-                X$ = batters$(D, fielder(D, 2))
+        Case Is >= 2014
+            playerEjectMax = 3
+            coachMgrEjectMax = 5
 
-                Call EJECTINC(ejectCnt, X$)
-                Call DELAY
+    End Select
 
-                po% = 2
+    totalEject = playerEjectMax + coachMgrEjectMax
+    ejectRatio! = 14 / totalEject
+    playerEjectScaled = CInt(playerEjectMax * ejectRatio!)
+    coachMgrEjectScaled = CInt(coachMgrEjectMax * ejectRatio!)
 
-                Call EJECTIONINJURY(playerMode, P, compTeam, D, po%, P9, W5, W6)
+    Call WINDEX
 
-            Case 2 To 3
+    Call Rolld100(rareResult)
+    
+    Select Case rareResult
 
-                Call PBP(pitchers$(D, currPitcher(D)) + " steps off the mound")
-                Call PBP("after that last call")
-                Call PBP("He is shouting at " + gameUmpire$(1))
-                Call PBP(gameUmpire$(1) + " does not appreciate what he hears...")
-                Call PBP(pitchers$(D, currPitcher(D)) + " has been ejected!!")
+        Case Is <= playerEjectScaled
+            Call PlayerEjections
+        
+        Case playerEjectScaled + 1 To playerEjectScaled + coachMgrEjectScaled
+            Call CoachMgrEjections(innPitch)
 
-                X$ = pitchers$(D, currPitcher(D))
+        Case 15
+            Call PBP("Here's the 3-2 pitch...")
+            Call PBP("Time called...")
+            Call PBP(gameUmpire$(1) + " is calling it ball 4")
+            Call PBP("He says " + pitchers$(D, currPitcher(D)) + " went to his mouth")
 
-                Call EJECTINC(ejectCnt, X$)
-                Call DELAY
-                Call INJPIT(P, D, IP%, pinchHitterFlag)
+        Case 16 To 21
+            H6% = 21
 
-            Case 4
-                If fldPos(P, currLineupSlot(P)) <> 1 Then
-                    Call PBP(player$(0) + " is unhappy with that last call")
-                    Call PBP("He is venting his opinion to " + gameUmpire$(1))
-                    Print "Thats it!! "; gameUmpire$(1); " has ejected "; player$(0); "!!"
-                    X$ = player$(0)
-                    Call EJECTINC(ejectCnt, X$)
-                    Call DELAY
-                    Call PLYRHRT(P, P9, W5, W6, nbrBalls, nbrStrikes, D, MO)
-                Else
-                    Call PBP(player$(0) + " did not like that")
-                    Call PBP("last call at all!!")
-                End If
+            Call WINDEX
+            Call PBP(player$(0) + " fouls the pitch out of play")
 
-            Case 5
+        Case 22 To 24
+            Select Case baseRunners
+                Case 0
+                    If teamRat_GAME(1, 13) = 14 Then
+                        Call PBP(player$(0) + " steps out of the box as a jet passes over")
+                    Else
+                        Call PBP(gameUmpire$(1) + " calls time to get some new baseballs")
+                    End If
+                    pickedOffBase = 0
 
-                Call PBP(player$(0) + " hits a slow roller to first")
-                Call PBP(batters$(D, fielder(D, 3)) + " fields it cleanly")
-                Call PBP("He flips it to " + pitchers$(D, currPitcher(D)) + " covering just in time!")
-                Call PBP("Wait... " + gameUmpire$(2) + " rules safe!!")
+                Case 1
+                    Call PBP(batters$(D, fielder(D, 2)) + " rifles the ball to ")
+                    Call PBP("1st...")
+                    pickedOffBase = 2
 
-                If fldPos(P, currLineupSlot(P)) <> 1 Then
-                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
-                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_H)
-                End If
+                Case 2, 4
+                    Call PBP(batters$(D, fielder(D, 2)) + " rifles the ball to ")
+                    Call PBP("2nd base...")
+                    pickedOffBase = 3
 
-                Call ADDPIT(D, currPitcher(D), LG_P_H)
+                Case 3, 5, 6, 7
+                    Call PBP(batters$(D, fielder(D, 2)) + " rifles the ball to ")
+                    Call PBP("3rd base...")
+                    pickedOffBase = 4
 
-                If fldPos(P, currLineupSlot(P)) = 1 Then
-                    Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
-                    Call INCPITOFF(P, currPitcher(P), LG_PB_H)
-                End If
+            End Select
 
-                For idx = 0 To 3:
-                    A5%(idx) = 1
-                Next idx
+            If pickedOffBase > 0 Then
 
+                Call PBP(player$(pickedOffBase - 1) + " is picked off base!")
+
+                A5%(pickedOffBase - 1) = 10
+
+                Call TrackOuts(1)
+
+                currFielder = 2
+
+                Call CREDITASSIST(currFielder, D)
                 Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-                Call SCOREBOARD
-                Call WINDEX
-
-                Call PBP(gameManagers$(D) + " charges from the dugout")
-                Call PBP(gameManagers$(D) + ", " + pitchers$(D, currPitcher(D)) + ",")
-                Call PBP(batters$(D, fielder(D, 2)) + ", and " + batters$(D, fielder(D, 3)))
-                Call PBP("are going at it with " + gameUmpire$(2))
-                Call DELAY
-                Call DELAY
-
-                Call PBP(gameUmpire$(3) + " and " + gameUmpire$(1) + " come in to help out")
-                Call PBP("This argument is out of control now!!")
-                Call PBP("What is this?!")
-                Call PBP("All of them have been ejected!!!")
-
-                X$ = pitchers$(D, currPitcher(D))
-
-                Call EJECTINC(ejectCnt, X$)
-
-                X$ = batters$(D, fielder(D, 2))
-
-                Call EJECTINC(ejectCnt, X$)
-
-                X$ = batters$(D, fielder(D, 3))
-
-                Call EJECTINC(ejectCnt, X$)
-
-                X$ = gameManagers$(D)
-
-                Call EJECTINC(ejectCnt, X$)
-                Call DELAY
-
-                po% = 2
-
-                Call EJECTIONINJURY(playerMode, P, compTeam, D, po%, P9, W5, W6)
-
-                po% = 3
-
-                Call EJECTIONINJURY(playerMode, P, compTeam, D, po%, P9, W5, W6)
-                Call INJPIT(P, D, IP%, pinchHitterFlag)
-
-            Case 6 To 7
-
-                Call PBP(player$(0) + " sends a long one")
-                Call PBP("down the left field line")
-                Call PBP("It may go...")
-                Call PBP("HOME RUN!!!")
-                Call PBP("Wait!!! ")
-                Call PBP(gameUmpire$(4) + " is calling it foul!!")
-
-                Call WINDEX
-
-                Call PBP(player$(0) + " is arguing vehemently")
-                Call PBP("with " + gameUmpire$(1) + " and " + gameUmpire$(4))
-                Call PBP(gameManagers$(P) + " charges from the dugout")
-                Call PBP("He and " + player$(0) + " are really going")
-                Call PBP("at it with the umpires!!")
-                Call DELAY
-                Call PBP(" has just been tossed!!"): X$ = player$(0): Call EJECTINC(ejectCnt, X$)
-                Call PLYRHRT(P, P9, W5, W6, nbrBalls, nbrStrikes, D, MO)
-
-            Case 8
-
-                Call PBP(gameUmpire$(1) + " has just ejected " + pitchers$(D, currPitcher(D)))
-                Call PBP("for wetting the ball!!")
-                Call EJECTINC(ejectCnt, X$)
-
-                ejections$(ejectCnt) = pitchers$(D, currPitcher(D))
-
-                Call DELAY
-                Call INJPIT(P, D, IP%, pinchHitterFlag)
-
-            Case 9
-
-                Call PBP("Here's the 3-2 pitch...")
-                Call PBP("Time called...")
-                Call PBP(gameUmpire$(1) + " is calling it ball 4")
-                Call PBP("He says " + pitchers$(D, currPitcher(D)) + " went to his mouth")
-
-            Case 10 To 15
-
-                Call PBP(player$(0) + " hits the deck on a high")
-                Call PBP("and tight pitch from " + pitchers$(D, currPitcher(D)))
-                Call PBP(player$(0) + " charges the mound!")
-                Call PBP("Both dugouts have emptied...")
-                Call PBP("It's a bench-clearing brawl!")
-                Call WINDEX
-                Call PBP("It will take a few minutes to clean this up")
-
-                RN0 = Int(Rnd(1) * 3) + 1
-
-                Select Case RN0
-
-                    Case 1:
-                        Call PBP(pitchers$(D, currPitcher(D)) + " has been ejected")
-                        X$ = pitchers$(D, currPitcher(D))
-                        Call EJECTINC(ejectCnt, X$)
-                        Call INJPIT(P, D, IP%, pinchHitterFlag)
-
-                    Case 2:
-                        Call PBP(player$(0) + " has been ejected")
-                        X$ = player$(0)
-                        Call EJECTINC(ejectCnt, X$)
-                        Call PLYRHRT(P, P9, W5, W6, nbrBalls, nbrStrikes, D, MO)
-
-                    Case 3:
-                        Call PBP(player$(0) + " and " + pitchers$(D, currPitcher(D)) + " have been ejected")
-                        X$ = player$(0)
-                        Call EJECTINC(ejectCnt, X$)
-                        X$ = pitchers$(D, currPitcher(D))
-                        Call EJECTINC(ejectCnt, X$)
-                        Call INJPIT(P, D, IP%, pinchHitterFlag)
-                        Call PLYRHRT(P, P9, W5, W6, nbrBalls, nbrStrikes, D, MO)
-
-                End Select
-
-            Case 16 To 21
-
-                H6% = 21
-
-                Call WINDEX
-
-                If rainDelay = 0 And (precipType = 0 Or precipType = 4) Then
-                    Call PBP(player$(0) + " fouls the pitch out of play")
-                Else
-                    tm = Int(Rnd(1) * 59) + 2
-
-                    Color 0, 7
-                    Call PBP("The game has been halted by rain")
-
-                    For idx = 1 To 2: Call DELAY: Next
-
-                    Call PBP("Rain delay lasted" + Str$(tm) + " minutes")
-                    Call DELAY
-
-                    gameDelayed = 1
-
-                    If tm > 28 Then
-                        Call PBP("Pitchers have lost effectiveness during delay")
-                        Call PBP("Their arms have stiffened up")
-                        Call DELAY
-                        For idx = 0 To 1:
-                            pitchEff(idx, 0) = pitchEff(idx, 0) - 2
-                        Next
-                    End If
-
-                End If
-
-            Case 22 To 24
-
-                Select Case baseRunners
-                    Case 0
-                        If teamRat_GAME(1, 13) = 14 Then
-                            Call PBP(player$(0) + " steps out of the box as a jet passes over")
-                        Else
-                            Call PBP(gameUmpire$(1) + " calls time to get some new baseballs")
-                        End If
-                        pickedOffBase = 0
-
-                    Case 1
-                        Call PBP(batters$(D, fielder(D, 2)) + " rifles the ball to ")
-                        Call PBP("1st...")
-                        pickedOffBase = 2
-
-                    Case 2, 4
-                        Call PBP(batters$(D, fielder(D, 2)) + " rifles the ball to ")
-                        Call PBP("2nd base...")
-                        pickedOffBase = 3
-
-                    Case 3, 5, 6, 7
-                        Call PBP(batters$(D, fielder(D, 2)) + " rifles the ball to ")
-                        Call PBP("3rd base...")
-                        pickedOffBase = 4
-
-                End Select
-
-                If pickedOffBase > 0 Then
-
-                    Call PBP(player$(pickedOffBase - 1) + " is picked off base!")
-
-                    A5%(pickedOffBase - 1) = 10
-                    nbrOuts(0) = nbrOuts(0) + 1
-                    nbrOuts(1) = nbrOuts(1) + 1
-                    currFielder = 2
-
-                    Call CREDITASSIST(currFielder, D)
-                    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-                    Call CREDITPUTOUT(I3, FB2P%, AST%, D)
-
-                    Call ADDPIT(D, currPitcher(D), LG_P_OUT)
-
-                    If nbrOuts(0) >= 3 Then
-                        currLineupSlot(P) = currLineupSlot(P) - 1
-                        H6% = 5
-                    End If
-
-                End If
-
-            Case 25 To 29
-
-                Call PBP(player$(0) + " pops it up near the 3rd base stands")
-                Call PBP("A fan interferes...")
-                Call PBP(batters$(D, fielder(D, 6)) + " makes a great catch!!")
-
-                currFielder = 6
-                Call CREDITREGPO(currFielder, D)
-
-                nbrOuts(0) = nbrOuts(0) + 1
-                nbrOuts(1) = nbrOuts(1) + 1
-                Call DELAY
-
-                If fldPos(P, currLineupSlot(P)) <> 1 Then
-                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
-                End If
+                Call CREDITPUTOUT(I3, FB2P%, AST%, D)
 
                 Call ADDPIT(D, currPitcher(D), LG_P_OUT)
 
-                If fldPos(P, currLineupSlot(P)) = 1 Then
-                    Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
-                End If
-
-                Call DELAY
-
-            Case 30
-
-                Call PBP(player$(0) + " pops it up foul near the stands")
-                Call PBP(batters$(D, fielder(D, 2)) + " runs into the stands!!")
-
-                po% = 2
-
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
-
-                H6% = 1
-
-            Case 30 To 31
-
-                Call PBP(player$(0) + " pops it up foul near the stands")
-                Call PBP(batters$(D, fielder(D, 3)) + " gives chase")
-                Call PBP("he runs into the stands!!")
-
-                po% = 3
-
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
-
-                H6% = 1
-
-            Case 32
-
-                Call PBP(player$(0) + " pops it up foul down the rf line")
-                Call PBP(batters$(D, fielder(D, 4)) + " crashes into the wall")
-
-                po% = 4
-
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
-
-                H6% = 1
-
-            Case 33
-
-                Call PBP(player$(0) + " pops it up foul by")
-                Call PBP("the 3rd base dugout")
-                Call PBP(batters$(D, fielder(D, 5)) + " falls in trying to make the catch!!")
-
-                po% = 5
-
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
-
-                H6% = 1
-
-            Case 34
-
-                Call PBP(player$(0) + " pops it up foul")
-                Call PBP("down the lf line")
-                Call PBP(batters$(D, fielder(D, 6)) + " tumbles over the railing")
-                Call PBP("trying to make the catch!")
-                Call DELAY
-
-                po% = 6
-
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
-
-                H6% = 1
-
-            Case 35 To 37
-
-                Call PBP(player$(0) + " lines one to deep left field")
-                Call PBP(batters$(D, fielder(D, 7)) + " races back...")
-                Call PBP("He slams into the wall and is down!!")
-
-                op% = 7
-
-                Call PBP(batters$(D, fielder(D, 8)) + " comes over and gets the ball in")
-
-                Call ADDPIT(D, currPitcher(D), LG_P_H)
-
-                If fldPos(P, currLineupSlot(P)) <> 1 Then
-                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
-                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_H)
-                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_Dbl)
-                Else
-                    Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
-                    Call INCPITOFF(P, currPitcher(P), LG_PB_H)
-                    Call INCPITOFF(P, currPitcher(P), LG_PB_Dbl)
-                End If
-
-                For idx = 0 To 3:
-                    A5%(idx) = 2
-                Next idx
-
-                A5%(3) = 1
-                A5%(1) = 3
-
-                Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-                Call SCOREBOARD
-                Call WINDEX
-
-                po% = op%
-
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
-
-                H6% = 5
-
-            Case 38 To 40
-
-                Call PBP(player$(0) + " drives a sinking liner")
-                Call PBP("into deep center")
-                Call PBP(batters$(D, fielder(D, 8)) + " gets a good jump on it")
-                Call PBP("He crashes into the wall and")
-                Call PBP("the ball bounces away!!")
-                Call PBP("The runners are circling the bases")
-                Call PBP(batters$(D, fielder(D, 9)) + " retrieves the ball")
-
-                Call ADDPIT(D, currPitcher(D), LG_P_H)
-                Call ADDPIT(D, currPitcher(D), LG_P_HR)
-
-                currFielder = 8
-
-                If fldPos(P, currLineupSlot(P)) <> 1 Then
-                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
-                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_H)
-                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_HR)
-                End If
-
-                If fldPos(P, currLineupSlot(P)) = 1 Then
-                    Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
-                    Call INCPITOFF(P, currPitcher(P), LG_PB_H)
-                    Call INCPITOFF(P, currPitcher(P), LG_PB_HR)
-                End If
-
-                A5%(0) = 4
-                A5%(1) = 3
-                A5%(2) = 2
-                A5%(3) = 1
-
-                Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-                Call PBP("It's an inside the park HOME RUN!!!")
-                Call DELAY
-                Call SCOREBOARD
-                Call WINDEX
-
-                po% = 8
-
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
-
-                H6% = 5
-
-            Case 41 To 43
-
-                Call PBP(player$(0) + " lifts a deep drive into right")
-                Call PBP(batters$(D, fielder(D, 9)) + " races back...")
-                Call PBP("He slams into the wall and is down!!")
-
-                Call ADDPIT(D, currPitcher(D), LG_P_H)
-
-                currFielder = 9
-
-                Call PBP(batters$(D, fielder(D, 8)) + " comes over to get the ball back in")
-
-                If fldPos(P, currLineupSlot(P)) <> 1 Then
-                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
-                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_H)
-                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_Trp)
-                Else
-                    Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
-                    Call INCPITOFF(P, currPitcher(P), LG_PB_H)
-                    Call INCPITOFF(P, currPitcher(P), LG_PB_Trp)
-                End If
-
-                A5%(0) = 3
-                A5%(1) = 3
-                A5%(2) = 2
-                A5%(3) = 1
-
-                Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-                Call PBP("Triple!!")
-                Call DELAY
-                Call SCOREBOARD
-                Call WINDEX
-
-                po% = 9
-
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
-
-                H6% = 5
-
-            Case 44
-
-                Call ADDPIT(D, currPitcher(D), LG_P_H)
-
-                currFielder = Int(Rnd(1) * 3) + 7
-
-                Call PBP(player$(0) + " hits a sinking liner into " + fieldPos$(currFielder))
-                Call PBP(batters$(D, fielder(D, currFielder)) + " dives for the catch...")
-                Call PBP("the ball rolls free!")
-                Call PBP(batters$(D, fielder(D, currFielder - 1)) + " gets the loose ball in")
-
-                op% = currFielder
-
-                Call ADDPIT(D, currPitcher(D), LG_P_H)
-
-                If fldPos(P, currLineupSlot(P)) <> 1 Then
-                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
-                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_H)
-                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_Dbl)
-                Else
-                    Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
-                    Call INCPITOFF(P, currPitcher(P), LG_PB_H)
-                    Call INCPITOFF(P, currPitcher(P), LG_PB_Dbl)
-                End If
-
-                For idx = 0 To 3:
-                    A5%(idx) = 2
-                Next idx
-
-                A5%(3) = 1
-                A5%(1) = 3
-
-                Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-                Call SCOREBOARD
-                Call WINDEX
-
-                po% = op%
-
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
-
-                H6% = 5
-
-            Case 45
-
-                Call PBP(player$(0) + " is hit by a pitch and injured")
-                Call PLYRHRT(P, P9, W5, W6, nbrBalls, nbrStrikes, D, MO)
-
-            Case 46 To 49
-
-                Call PBP(batters$(D, fielder(D, 2)) + " is injured by a foul tip!")
-
-                po% = 2
-
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
-
-                H6% = 1
-
-            Case 50 To 58
-
-                i = Int(Rnd(1) * 3) + 7
-
-                If i = 9 Then
-                    hi1 = 3
-                    hi2 = 9
-                    hi3 = 8
-                End If
-                If i = 8 Then
-                    hi1 = 4
-                    hi2 = 8
-                    hi3 = 7
-                End If
-                If i = 7 Then
-                    hi1 = 6
-                    hi2 = 7
-                    hi3 = 8
-                End If
-
-                Call PBP(player$(0) + " hits a weak fly into short " + fieldPos$(i))
-                Call PBP(batters$(D, fielder(D, hi1)) + " goes out")
-                Call PBP(batters$(D, fielder(D, hi2)) + " is charging in")
-                Call PBP("They collide and the ball rolls free!!")
-                Call PBP(batters$(D, fielder(D, hi3)) + " gets it back in")
-
-                Call ADDPIT(D, currPitcher(D), LG_P_H)
-
-                If fldPos(P, currLineupSlot(P)) <> 1 Then
-                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
-                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_H)
-                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_Dbl)
-                Else
-                    Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
-                    Call INCPITOFF(P, currPitcher(P), LG_PB_H)
-                    Call INCPITOFF(P, currPitcher(P), LG_PB_Dbl)
-                End If
-
-                For idx = 0 To 3:
-                    A5%(idx) = 2
-                Next idx
-
-                A5%(3) = 1
-                A5%(1) = 3
-
-                Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-                Call SCOREBOARD
-                Call WINDEX
-
-                po% = hi1
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
-
-                po% = hi2
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
-
-                H6% = 5
-
-            Case 59 To 61
-                Call PBP(player$(0) + " fouls the pitch off his foot")
-                Call PBP("He is injured")
-                Call PLYRHRT(P, P9, W5, W6, nbrBalls, nbrStrikes, D, MO)
-
-                H6% = 1
-
-                '62 to 64
-            Case 62 To 64
-
-                Call PBP(player$(0) + " pops it up in foul along the 3b line")
-                Call PBP("It drifts into foul territory")
-                Call PBP(batters$(D, fielder(D, 5)) + " and " + pitchers$(D, currPitcher(D)) + " chase after it and collide!!")
-                Call PBP(batters$(D, fielder(D, 5)) + " is down and injured")
-
-                po% = 5
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
-
-                H6% = 1
-
-            Case 65 To 70
-
-                Call ADDPIT(D, currPitcher(D), LG_P_H)
-
-                currFielder = 8
-
-                Call LONGFLY(D, currFielder)
-                Call PBP(batters$(D, fielder(D, 7)) + " collides with " + batters$(D, fielder(D, 8)) + "!!")
-                Call PBP("both fielders are down... ")
-                Call PBP(batters$(D, fielder(D, 6)) + " gets the ball back in")
-
-                If fldPos(P, currLineupSlot(P)) <> 1 Then
-                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
-                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_H)
-                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_Dbl)
-                Else
-                    Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
-                    Call INCPITOFF(P, currPitcher(P), LG_PB_H)
-                    Call INCPITOFF(P, currPitcher(P), LG_PB_Dbl)
-                End If
-
-                A5%(0) = 2
-                A5%(1) = 3
-                A5%(2) = 2
-                A5%(3) = 1
-
-                Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-                Call PBP("Double!!")
-                Call SCOREBOARD
-                Call WINDEX
-
-                po% = 7
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
-
-                po% = 8
-                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6)
-                H6% = 5
-
-            Case 71 To 85
-
-                pbpString$ = player$(0) + " lines it off "
-
-                i = Int(Rnd(1) * 5) + 1
-
-                If i = 1 Then
-                    pbpString$ = pbpString$ + "the leg of " + pitchers$(D, currPitcher(D))
-                    Call PBP(pbpString$)
-
-                    If fldPos(P, currLineupSlot(P)) <> 1 Then
-                        Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
-                        Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_H)
-                    Else
-                        Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
-                        Call INCPITOFF(P, currPitcher(P), LG_PB_H)
-                    End If
-
-                    Call ADDPIT(D, currPitcher(D), LG_P_H)
-
-                    For idx = 0 To 3:
-                        A5%(idx) = 1
-                    Next
-
-                    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-                    Call SCOREBOARD
-                    Call WINDEX
-                    Call PBP("He reaches on a single")
-                    Call PBP(pitchers$(D, currPitcher(D)) + " is down and in pain!")
-                    Call INJPIT(P, D, IP%, pinchHitterFlag)
+                If nbrOuts(0) >= 3 Then
+                    currLineupSlot(P) = currLineupSlot(P) - 1
                     H6% = 5
-                Else
-                    'i = 2 to 5
-                    po% = i + 1
-                    pbpString$ = pbpString$ + "of " + batters$(D, fielder(D, po%)) + " for a single"
-
-                    Call PBP(pbpString$)
-                    Call DELAY
-
-                    If fldPos(P, currLineupSlot(P)) <> 1 Then
-                        Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
-                        Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_H)
-                    Else
-                        Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
-                        Call INCPITOFF(P, currPitcher(P), LG_PB_H)
-                    End If
-
-                    Call ADDPIT(D, currPitcher(D), LG_P_H)
-
-                    For idx = 0 To 3:
-                        A5%(idx) = 1
-                    Next
-
-                    Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
-                    Call SCOREBOARD
-                    Call WINDEX
-                    Call PBP(batters$(D, fielder(D, po%)) + " is down and injured")
-                    Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6): H6% = 5
-
                 End If
 
-            Case 86 To 89
+            End If
 
-                Call PBP(pitchers$(D, currPitcher(D)) + " is motioning for " + gameManagers$(D) + " to come out")
-                Call PBP("It appears he has a blister")
-                Call PBP("He will have to leave the game")
-                Call INJPIT(P, D, IP%, pinchHitterFlag)
+        Case 25 To 29
+            Call PBP(player$(0) + " pops it up near the 3rd base stands")
+            Call PBP("A fan interferes...")
+            Call PBP(batters$(D, fielder(D, 6)) + " makes a great catch!!")
 
-                H6% = 1
+            currFielder = 6
+            Call CREDITREGPO(currFielder, D)
 
-            Case 90
+            Call TrackOuts(1)
 
-                Call PBP(player$(0) + " takes a mighty swing!")
-                Call PBP("It looks like he injured himself")
-                Call PLYRHRT(P, P9, W5, W6, nbrBalls, nbrStrikes, D, MO)
+            Call DELAY
 
-                H6% = 1
+            If fldPos(P, currLineupSlot(P)) <> 1 Then
+                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
+            End If
 
-            Case 91
+            Call ADDPIT(D, currPitcher(D), LG_P_OUT)
 
-                Call PBP("Time is called")
-                Call PBP("Morganna strikes again!!")
+            If fldPos(P, currLineupSlot(P)) = 1 Then
+                Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
+            End If
 
-                H6% = 1
+            Call DELAY
 
-            Case 92 To 100
+        Case 30
+            Call PBP(player$(0) + " pops it up foul near the stands")
+            Call PBP(batters$(D, fielder(D, 2)) + " runs into the stands!!")
 
-                Call PBP(gameUmpire$(1) + " calls time to dust off the plate")
+            Call INJURYLENGTH(injCount, D, 2, playerMode, P, compTeam, P9, W5, W6)
 
-                H6% = 1
+            H6% = 1
 
-        End Select
+        Case 30 To 31
+            Call PBP(player$(0) + " pops it up foul near the stands")
+            Call PBP(batters$(D, fielder(D, 3)) + " gives chase")
+            Call PBP("he runs into the stands!!")
 
-    End If
+            Call INJURYLENGTH(injCount, D, 3, playerMode, P, compTeam, P9, W5, W6)
+
+            H6% = 1
+
+        Case 32
+            Call PBP(player$(0) + " pops it up foul down the rf line")
+            Call PBP(batters$(D, fielder(D, 4)) + " crashes into the wall")
+
+            Call INJURYLENGTH(injCount, D, 4, playerMode, P, compTeam, P9, W5, W6)
+
+            H6% = 1
+
+        Case 33
+            Call PBP(player$(0) + " pops it up foul by")
+            Call PBP("the 3rd base dugout")
+            Call PBP(batters$(D, fielder(D, 5)) + " falls in trying to make the catch!!")
+
+            Call INJURYLENGTH(injCount, D, 5, playerMode, P, compTeam, P9, W5, W6)
+            H6% = 1
+
+        Case 34
+            Call PBP(player$(0) + " pops it up foul")
+            Call PBP("down the lf line")
+            Call PBP(batters$(D, fielder(D, 6)) + " tumbles over the railing")
+            Call PBP("trying to make the catch!")
+            Call DELAY
+
+            Call INJURYLENGTH(injCount, D, 6, playerMode, P, compTeam, P9, W5, W6)
+            H6% = 1
+
+        Case 35 To 37
+
+            Call PBP(player$(0) + " lines one to deep left field")
+            Call PBP(batters$(D, fielder(D, 7)) + " races back...")
+            Call PBP("He slams into the wall and is down!!")
+            Call PBP(batters$(D, fielder(D, 8)) + " comes over and gets the ball in")
+
+            Call ADDPIT(D, currPitcher(D), LG_P_H)
+
+            If fldPos(P, currLineupSlot(P)) <> 1 Then
+                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
+                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_H)
+                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_Dbl)
+            Else
+                Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
+                Call INCPITOFF(P, currPitcher(P), LG_PB_H)
+                Call INCPITOFF(P, currPitcher(P), LG_PB_Dbl)
+            End If
+
+            For idx = 0 To 3:
+                A5%(idx) = 2
+            Next idx
+
+            A5%(3) = 1
+            A5%(1) = 3
+
+            Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+            Call SCOREBOARD
+            Call WINDEX
+
+            Call INJURYLENGTH(injCount, D, 7, playerMode, P, compTeam, P9, W5, W6)
+
+            H6% = 5
+
+        Case 38 To 40
+
+            Call PBP(player$(0) + " drives a sinking liner")
+            Call PBP("into deep center")
+            Call PBP(batters$(D, fielder(D, 8)) + " gets a good jump on it")
+            Call PBP("He crashes into the wall and")
+            Call PBP("the ball bounces away!!")
+            Call PBP("The runners are circling the bases")
+            Call PBP(batters$(D, fielder(D, 9)) + " retrieves the ball")
+
+            Call ADDPIT(D, currPitcher(D), LG_P_H)
+            Call ADDPIT(D, currPitcher(D), LG_P_HR)
+
+            currFielder = 8
+
+            If fldPos(P, currLineupSlot(P)) <> 1 Then
+                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
+                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_H)
+                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_HR)
+            End If
+
+            If fldPos(P, currLineupSlot(P)) = 1 Then
+                Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
+                Call INCPITOFF(P, currPitcher(P), LG_PB_H)
+                Call INCPITOFF(P, currPitcher(P), LG_PB_HR)
+            End If
+
+            A5%(0) = 4
+            A5%(1) = 3
+            A5%(2) = 2
+            A5%(3) = 1
+
+            Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+            Call PBP("It's an inside the park HOME RUN!!!")
+            Call DELAY
+            Call SCOREBOARD
+            Call WINDEX
+
+            Call INJURYLENGTH(injCount, D, 8, playerMode, P, compTeam, P9, W5, W6)
+
+            H6% = 5
+
+        Case 41 To 43
+
+            Call PBP(player$(0) + " lifts a deep drive into right")
+            Call PBP(batters$(D, fielder(D, 9)) + " races back...")
+            Call PBP("He slams into the wall and is down!!")
+
+            Call ADDPIT(D, currPitcher(D), LG_P_H)
+
+            currFielder = 9
+
+            Call PBP(batters$(D, fielder(D, 8)) + " comes over to get the ball back in")
+
+            If fldPos(P, currLineupSlot(P)) <> 1 Then
+                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
+                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_H)
+                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_Trp)
+            Else
+                Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
+                Call INCPITOFF(P, currPitcher(P), LG_PB_H)
+                Call INCPITOFF(P, currPitcher(P), LG_PB_Trp)
+            End If
+
+            A5%(0) = 3
+            A5%(1) = 3
+            A5%(2) = 2
+            A5%(3) = 1
+
+            Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+            Call PBP("Triple!!")
+            Call DELAY
+            Call SCOREBOARD
+            Call WINDEX
+
+            Call INJURYLENGTH(injCount, D, 9, playerMode, P, compTeam, P9, W5, W6)
+
+            H6% = 5
+
+        Case 44
+
+            Call ADDPIT(D, currPitcher(D), LG_P_H)
+
+            currFielder = Int(Rnd(1) * 3) + 7
+
+            Call PBP(player$(0) + " hits a sinking liner into " + fieldPos$(currFielder))
+            Call PBP(batters$(D, fielder(D, currFielder)) + " dives for the catch...")
+            Call PBP("the ball rolls free!")
+            Call PBP(batters$(D, fielder(D, currFielder - 1)) + " gets the loose ball in")
+
+            Call ADDPIT(D, currPitcher(D), LG_P_H)
+
+            If fldPos(P, currLineupSlot(P)) <> 1 Then
+                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
+                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_H)
+                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_Dbl)
+            Else
+                Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
+                Call INCPITOFF(P, currPitcher(P), LG_PB_H)
+                Call INCPITOFF(P, currPitcher(P), LG_PB_Dbl)
+            End If
+
+            For idx = 0 To 3:
+                A5%(idx) = 2
+            Next idx
+
+            A5%(3) = 1
+            A5%(1) = 3
+
+            Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+            Call SCOREBOARD
+            Call WINDEX
+
+            Call INJURYLENGTH(injCount, D, currFielder, playerMode, P, compTeam, P9, W5, W6)
+
+            H6% = 5
+
+        Case 45
+
+            Call PBP(player$(0) + " is hit by a pitch and injured")
+            Call PLYRHRT(P, P9, W5, W6, nbrBalls, nbrStrikes, D, MO)
+
+        Case 46 To 49
+
+            Call PBP(batters$(D, fielder(D, 2)) + " is injured by a foul tip!")
+
+            Call INJURYLENGTH(injCount, D, 2, playerMode, P, compTeam, P9, W5, W6)
+
+            H6% = 1
+
+        Case 50 To 58
+
+            i = Int(Rnd(1) * 3) + 7
+
+            If i = 9 Then
+                hi1 = 3
+                hi2 = 9
+                hi3 = 8
+            End If
+            If i = 8 Then
+                hi1 = 4
+                hi2 = 8
+                hi3 = 7
+            End If
+            If i = 7 Then
+                hi1 = 6
+                hi2 = 7
+                hi3 = 8
+            End If
+
+            Call PBP(player$(0) + " hits a weak fly into short " + fieldPos$(i))
+            Call PBP(batters$(D, fielder(D, hi1)) + " goes out")
+            Call PBP(batters$(D, fielder(D, hi2)) + " is charging in")
+            Call PBP("They collide and the ball rolls free!!")
+            Call PBP(batters$(D, fielder(D, hi3)) + " gets it back in")
+
+            Call ADDPIT(D, currPitcher(D), LG_P_H)
+
+            If fldPos(P, currLineupSlot(P)) <> 1 Then
+                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
+                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_H)
+                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_Dbl)
+            Else
+                Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
+                Call INCPITOFF(P, currPitcher(P), LG_PB_H)
+                Call INCPITOFF(P, currPitcher(P), LG_PB_Dbl)
+            End If
+
+            For idx = 0 To 3:
+                A5%(idx) = 2
+            Next idx
+
+            A5%(3) = 1
+            A5%(1) = 3
+
+            Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+            Call SCOREBOARD
+            Call WINDEX
+
+            Call INJURYLENGTH(injCount, D, hi1, playerMode, P, compTeam, P9, W5, W6)
+            Call INJURYLENGTH(injCount, D, hi2, playerMode, P, compTeam, P9, W5, W6)
+
+            H6% = 5
+
+        Case 59 To 61
+            Call PBP(player$(0) + " fouls the pitch off his foot")
+            Call PBP("He is injured")
+            Call PLYRHRT(P, P9, W5, W6, nbrBalls, nbrStrikes, D, MO)
+
+            H6% = 1
+
+            '62 to 64
+        Case 62 To 64
+
+            Call PBP(player$(0) + " pops it up in foul along the 3b line")
+            Call PBP("It drifts into foul territory")
+            Call PBP(batters$(D, fielder(D, 5)) + " and " + pitchers$(D, currPitcher(D)) + " chase after it and collide!!")
+            Call PBP(batters$(D, fielder(D, 5)) + " is down and injured")
+
+            Call INJURYLENGTH(injCount, D, 5, playerMode, P, compTeam, P9, W5, W6)
+
+            H6% = 1
+
+        Case 65 To 70
+
+            Call ADDPIT(D, currPitcher(D), LG_P_H)
+
+            currFielder = 8
+
+            Call LONGFLY(D, currFielder)
+            Call PBP(batters$(D, fielder(D, 7)) + " collides with " + batters$(D, fielder(D, 8)) + "!!")
+            Call PBP("both fielders are down... ")
+            Call PBP(batters$(D, fielder(D, 6)) + " gets the ball back in")
+
+            If fldPos(P, currLineupSlot(P)) <> 1 Then
+                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
+                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_H)
+                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_Dbl)
+            Else
+                Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
+                Call INCPITOFF(P, currPitcher(P), LG_PB_H)
+                Call INCPITOFF(P, currPitcher(P), LG_PB_Dbl)
+            End If
+
+            A5%(0) = 2
+            A5%(1) = 3
+            A5%(2) = 2
+            A5%(3) = 1
+
+            Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+            Call PBP("Double!!")
+            Call SCOREBOARD
+            Call WINDEX
+
+            Call INJURYLENGTH(injCount, D, 7, playerMode, P, compTeam, P9, W5, W6)
+            Call INJURYLENGTH(injCount, D, 8, playerMode, P, compTeam, P9, W5, W6)
+            H6% = 5
+
+        Case 71 To 85
+
+            pbpString$ = player$(0) + " lines it off "
+
+            i = Int(Rnd(1) * 5) + 1
+
+            If i = 1 Then
+                
+                pbpString$ = pbpString$ + "the leg of " + pitchers$(D, currPitcher(D))
+                Call PBP(pbpString$)
+
+                If fldPos(P, currLineupSlot(P)) <> 1 Then
+                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
+                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_H)
+                Else
+                    Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
+                    Call INCPITOFF(P, currPitcher(P), LG_PB_H)
+                End If
+
+                Call ADDPIT(D, currPitcher(D), LG_P_H)
+
+                For idx = 0 To 3:
+                    A5%(idx) = 1
+                Next
+
+                Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+                Call SCOREBOARD
+                Call WINDEX
+                Call PBP("He reaches on a single")
+                Call PBP(pitchers$(D, currPitcher(D)) + " is down and in pain!")
+                Call INJPIT(P, D, innPitch, pinchHitterFlag)
+                H6% = 5
+
+            Else
+                'i = 2 to 5
+                po% = i + 1
+                pbpString$ = pbpString$ + "of " + batters$(D, fielder(D, po%)) + " for a single"
+
+                Call PBP(pbpString$)
+                Call DELAY
+
+                If fldPos(P, currLineupSlot(P)) <> 1 Then
+                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
+                    Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_H)
+                Else
+                    Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
+                    Call INCPITOFF(P, currPitcher(P), LG_PB_H)
+                End If
+
+                Call ADDPIT(D, currPitcher(D), LG_P_H)
+
+                For idx = 0 To 3:
+                    A5%(idx) = 1
+                Next
+
+                Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+                Call SCOREBOARD
+                Call WINDEX
+                Call PBP(batters$(D, fielder(D, po%)) + " is down and injured")
+                Call INJURYLENGTH(injCount, D, po%, playerMode, P, compTeam, P9, W5, W6): H6% = 5
+
+            End If
+
+        Case 86 To 89
+
+            Call PBP(pitchers$(D, currPitcher(D)) + " is motioning for " + gameManagers$(D) + " to come out")
+            Call PBP("It appears he has a blister")
+            Call PBP("He will have to leave the game")
+            Call INJPIT(P, D, innPitch, pinchHitterFlag)
+
+            H6% = 1
+
+        Case 90
+
+            Call PBP(player$(0) + " takes a mighty swing!")
+            Call PBP("It looks like he injured himself")
+            Call PLYRHRT(P, P9, W5, W6, nbrBalls, nbrStrikes, D, MO)
+
+            H6% = 1
+
+        Case 91
+
+            Call PBP("Time is called")
+            Call PBP("There's a fan on the field!!!")
+
+            H6% = 1
+
+        Case 92 To 100
+
+            Call PBP(gameUmpire$(1) + " calls time to dust off the plate")
+
+            H6% = 1
+
+    End Select
 
 End Sub
 
@@ -17168,12 +18977,293 @@ End Sub
 
 
 '----------------------------------------
+'       PlayerEjections Subroutine
+'----------------------------------------
+' ...explanation...
+Sub PlayerEjections
+
+    scaledRoll = Int(Rnd(1) * 14) + 1
+
+    Select Case scaledRoll
+
+        Case 1 To 3
+            ' *** Batter argues balls/strikes ***
+            Call PBP(batters$(D, fielder(D, 2)) + " is arguing ball and strike calls")
+            Call PBP(gameUmpire$(1) + " has heard enough")
+            Call PBP(batters$(D, fielder(D, 2)) + " has been ejected!!")
+
+            X$ = batters$(D, fielder(D, 2))
+            Call EJECTINC(X$)
+
+            Call DELAY
+
+            Call EJECTIONINJURY(playerMode, P, compTeam, D, 2, P9, W5, W6)
+
+        Case 4 To 6
+            ' *** Pitcher argues balls/strikes ***
+            Call PBP(pitchers$(D, currPitcher(D)) + " steps off the mound")
+            Call PBP("after that last call")
+            Call PBP("He is shouting at " + gameUmpire$(1))
+            Call PBP(gameUmpire$(1) + " does not appreciate what he hears...")
+            Call PBP(pitchers$(D, currPitcher(D)) + " has been ejected!!")
+
+            X$ = pitchers$(D, currPitcher(D))
+            Call EJECTINC(X$)
+
+            Call DELAY
+
+            Call INJPIT(P, D, innPitch, pinchHitterFlag)
+
+        Case 7 To 9
+            If fldPos(P, currLineupSlot(P)) <> 1 Then
+                Call PBP(player$(0) + " is unhappy with that last call")
+                Call PBP("He is venting his opinion to " + gameUmpire$(1))
+                Print "Thats it!! "; gameUmpire$(1); " has ejected "; player$(0); "!!"
+
+                X$ = player$(0)
+                Call EJECTINC(X$)
+
+                Call DELAY
+                Call PLYRHRT(P, P9, W5, W6, nbrBalls, nbrStrikes, D, MO)
+
+            Else
+
+                Call PBP(player$(0) + " did not like that")
+                Call PBP("last call at all!!")
+
+            End If
+
+        Case 10 To 12
+            ' *** Bench player yelling from dugout ***
+            Call PBP(player$(0) + " sends a long one")
+            Call PBP("down the left field line")
+            Call PBP("It may go...")
+            Call PBP("HOME RUN!!!")
+            Call PBP("Wait!!! ")
+            Call PBP(gameUmpire$(4) + " is calling it foul!!")
+
+            Call WINDEX
+
+            Call PBP(player$(0) + " is arguing vehemently")
+            Call PBP("with " + gameUmpire$(1) + " and " + gameUmpire$(4))
+            Call PBP(gameManagers$(P) + " charges from the dugout")
+            Call PBP("He and " + player$(0) + " are really going")
+            Call PBP("at it with the umpires!!")
+            Call DELAY
+            Call PBP(" has just been tossed!!")
+            
+            X$ = player$(0)
+            Call EJECTINC(X$)
+
+            Call PLYRHRT(P, P9, W5, W6, nbrBalls, nbrStrikes, D, MO)
+
+        Case 13
+            ' *** Batter charges mound ***
+            Call PBP(gameUmpire$(1) + " has just ejected " + pitchers$(D, currPitcher(D)))
+            Call PBP("for wetting the ball!!")
+
+            Call EJECTINC(X$)
+            ejections$(ejectCnt) = pitchers$(D, currPitcher(D))
+
+            Call DELAY
+            Call INJPIT(P, D, innPitch, pinchHitterFlag)
+
+        Case 14
+            ' *** Bench-clearing brawl ***
+            Call PBP(player$(0) + " hits the deck on a high")
+            Call PBP("and tight pitch from " + pitchers$(D, currPitcher(D)))
+            Call PBP(player$(0) + " charges the mound!")
+            Call PBP("Both dugouts have emptied...")
+            Call PBP("It's a bench-clearing brawl!")
+            Call WINDEX
+            Call PBP("It will take a few minutes to clean this up")
+
+            RN0 = Int(Rnd(1) * 3) + 1
+
+            Print #11, "Player Ejection"
+
+            Select Case RN0
+
+                Case 1:
+                    Call PBP(pitchers$(D, currPitcher(D)) + " has been ejected")
+
+                    X$ = pitchers$(D, currPitcher(D))
+                    Call EJECTINC(X$)
+
+                    Call INJPIT(P, D, innPitch, pinchHitterFlag)
+
+                Case 2:
+                    Call PBP(player$(0) + " has been ejected")
+
+                    X$ = player$(0)
+                    Call EJECTINC(X$)
+
+                    Call PLYRHRT(P, P9, W5, W6, nbrBalls, nbrStrikes, D, MO)
+
+                Case 3:
+                    Call PBP(player$(0) + " and " + pitchers$(D, currPitcher(D)) + " have been ejected")
+
+                    X$ = player$(0)
+                    Call EJECTINC(X$)
+
+                    X$ = pitchers$(D, currPitcher(D))
+                    Call EJECTINC(X$)
+
+                    Call INJPIT(P, D, innPitch, pinchHitterFlag)
+                    Call PLYRHRT(P, P9, W5, W6, nbrBalls, nbrStrikes, D, MO)
+
+            End Select
+
+    End Select
+
+
+End Sub
+
+
+'----------------------------------------
+'      CoachMgrEjections Subroutine
+'----------------------------------------
+' ...explanation...
+Sub CoachMgrEjections (innPitch)
+
+    Dim coachMgrEjectMax As Integer
+
+    Select Case teamYears(1)
+
+        Case 1899 To 1919
+            mgrEjectMax = 21
+            coachEjectMax = 1
+
+        Case 1920 To 1945
+            mgrEjectMax = 16
+            coachEjectMax = 6
+
+        Case 1946 To 1979
+            mgrEjectMax = 29
+            coachEjectMax = 9
+
+        Case 1980 To 2003
+            mgrEjectMax = 32
+            coachEjectMax = 10
+
+        Case 2004 To 2013
+            mgrEjectMax = 38
+            coachEjectMax = 6
+
+        Case Is >= 2014
+            mgrEjectMax = 37
+            coachEjectMax = 9
+
+    End Select
+
+
+    outcomeChance = coachEjectMax + mgrEjectMax
+
+    outcome = Int(Rnd(1) * outcomeChance) + 1
+
+    Select Case outcome
+    
+        Case 1 To coachEjectMax
+            ' Coach arguing balls and strikes
+            Call PBP("The coach is visibly upset with the umpire's strike zone.")
+            Call PBP("He is waving his arms and yelling from the dugout.")
+            Call PBP(gameUmpire$(1) + " is not hearing it.")
+            Call PBP("The coach has been ejected from the game!")
+
+            X$ = gameManagers$(D)
+            Call EJECTINC(X$)
+
+            Call DELAY
+       
+        Case coachEjectMax + 1 To mgrEjectMax
+        
+            Call PBP(player$(0) + " hits a slow roller to first")
+            Call PBP(batters$(D, fielder(D, 3)) + " fields it cleanly")
+            Call PBP("He flips it to " + pitchers$(D, currPitcher(D)) + " covering just in time!")
+            Call PBP("Wait... " + gameUmpire$(2) + " rules safe!!")
+
+            If fldPos(P, currLineupSlot(P)) <> 1 Then
+                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)
+                Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_H)
+            End If
+
+            Call ADDPIT(D, currPitcher(D), LG_P_H)
+
+            If fldPos(P, currLineupSlot(P)) = 1 Then
+                Call INCPITOFF(P, currPitcher(P), LG_PB_AB)
+                Call INCPITOFF(P, currPitcher(P), LG_PB_H)
+            End If
+
+            For idx = 0 To 3:
+                A5%(idx) = 1
+            Next idx
+
+            Call ADVANCEMENT(P, D, S2%, errorOnPlay%, I3)
+            '-- Nothing is done with I3 here???
+            Call SCOREBOARD
+            Call WINDEX
+
+            Call PBP(gameManagers$(D) + " charges from the dugout")
+            Call PBP(gameManagers$(D) + ", " + pitchers$(D, currPitcher(D)) + ",")
+            Call PBP(batters$(D, fielder(D, 2)) + ", and " + batters$(D, fielder(D, 3)))
+            Call PBP("are going at it with " + gameUmpire$(2))
+            Call DELAY
+            Call DELAY
+
+            Call PBP(gameUmpire$(3) + " and " + gameUmpire$(1) + " come in to help out")
+            Call PBP("This argument is out of control now!!")
+            Call PBP("What is this?!")
+            Call PBP("All of them have been ejected!!!")
+
+            X$ = pitchers$(D, currPitcher(D))
+            Call EJECTINC(X$)
+
+            X$ = batters$(D, fielder(D, 2))
+            Call EJECTINC(X$)
+
+            X$ = batters$(D, fielder(D, 3))
+            Call EJECTINC(X$)
+
+            X$ = gameManagers$(D)
+            Call EJECTINC(X$)
+
+            Call DELAY
+
+            Call EJECTIONINJURY(playerMode, P, compTeam, D, 2, P9, W5, W6)
+            Call EJECTIONINJURY(playerMode, P, compTeam, D, 3, P9, W5, W6)
+            Call INJPIT(P, D, innPitch, pinchHitterFlag)
+
+    End Select
+
+End Sub
+
+
+'----------------------------------------
 '           COLCHK Subroutine
 '----------------------------------------
 ' ...explanation...
 Sub COLCHK (P9, I)
 
     If batRating(P9, I, SS_B_Avail) >= 98 Then Color 0, 7
+
+End Sub
+
+'----------------------------------------
+'       DisplayGameState Subroutine
+'----------------------------------------
+'This is a quick subroutine that will
+'simply update the screen
+Sub DisplayGameState (ballCount, P, strikeCount, D, MO)
+
+    Call HITTINGLINES
+
+    If useVGA = 1 Then
+        Call DisplayBallField_Gfx(ballCount, P, strikeCount, D)
+        Call MAINSCREEN_G(D, P, ballCount, strikeCount, MO)
+    Else
+        Call DisplayBallField(ballCount, P, strikeCount, D)
+        Call MAINSCREEN(D, P, ballCount, strikeCount, MO)
+    End If
 
 End Sub
 
@@ -17888,6 +19978,10 @@ Sub CheckRecords ()
     Shared doublesPlayer$(), eventDesc$(), homeRuns$()
     Shared stolenBases$(), triplesPlayer$()
 
+    Cls
+    Locate LAST_ROW / 2, 33
+    Print "CHECKING RECORDS..."
+
     For I = 0 To 1:
         For I1 = 0 To 21:
             If gamePitStats(I, I1, 1) < 0 Then
@@ -18025,7 +20119,6 @@ Sub CheckRecords ()
                     triplesPlayer$(TR) = pitchers$(I, I1) + Str$(gamePitStats(I, I1, 28))
                 End If
 
-                'Error #9 = index ???
                 triplesPlayer$(TR) = triplesPlayer$(TR) + " (" + Right$(Str$(leagPitStats(I, I1, 28)), (Len(Str$(leagPitStats(I, I1, 28))) - 1)) + ")"
                 TR = TR + 1
 
@@ -18093,8 +20186,6 @@ Sub CheckRecords ()
 
     Next I
 
-    Cls
-    Print "PLEASE WAIT..."
 
     For I = 0 To 1
 
@@ -18117,12 +20208,14 @@ Sub CheckRecords ()
                     H1 = X0%(I, 2, I6)
                     H2 = X0%(I, 1, I6)
                     H3 = X0%(I, 0, I6)
+
                     X0%(I, 0, I6) = X0%(I, 0, I6 + 1)
                     X0%(I, 1, I6) = X0%(I, 1, I6 + 1)
                     X0%(I, 2, I6) = X0%(I, 2, I6 + 1)
-                    X0%(I, 2, I6 + 1) = H1
-                    X0%(I, 1, I6 + 1) = H2
+
                     X0%(I, 0, I6 + 1) = H3
+                    X0%(I, 1, I6 + 1) = H2
+                    X0%(I, 2, I6 + 1) = H1
                     I7 = I6
 
                 End If
@@ -18130,10 +20223,14 @@ Sub CheckRecords ()
                 I6 = I6 + 1
 
             Loop While I6 <= L
-
-            If I7 <> 0 Then
+            
+            If I7 <> 0 And I7 > 0 Then ' Ensure I7 is positive
                 L = I7 - 1
+            Else
+                I7 = 0 ' Force exit if no valid swaps
             End If
+            
+            'If I7 <> 0 Then Print #11, "I7 = "; I7
 
         Loop While I7 <> 0
 
@@ -18227,8 +20324,8 @@ Sub LeadRunnerCountdown ()
     End If
 
     PLB = 0
-    nbrOuts(0) = nbrOuts(0) + 1
-    nbrOuts(1) = nbrOuts(1) + 1
+
+    Call TrackOuts(1)
 
     Call ADDSTTS(P, D)
     Call CREDITASSIST(currFielder, D)
@@ -19844,7 +21941,8 @@ Sub STATS2SCREEN
         Print gameTeams$(I);
 
         Color 14, 0: Locate , 23
-        Print "       IP   H  R  ER BB SO    ERA   W  L  S  SO": Color 15, 0
+        Print "       IP   H  R  ER BB SO    ERA   W  L  S  SO"
+        Color 15, 0
 
         For I1 = 1 To gamePitcher(I)
 
@@ -20218,8 +22316,8 @@ Sub EndOfGame ()
 
     If normalFinish = 1 Then
 
-        'Close #11
         Call POSTGAME
+        Close #11
 
         Cls
 
@@ -20243,6 +22341,7 @@ Sub EndOfGame ()
 
         If UCase$(I$) = "Y" Or (autoPlay = 1 And endAllGames <> 1) Then
             Cls
+            Locate LAST_ROW / 2, 33
             Print "PLEASE WAIT ..."
         End If
 
@@ -20287,9 +22386,6 @@ End Function
 Sub pbpLog (lineNumber)
 
     Print #11, "Executing code from: "; lineNumber
-    Print #11, gameTeams$(0); " vs "; gameTeams$(1)
-    Print #11, "Rating  - "; strikeoutRating
-    Print #11, "Strikes - "; nbrStrikes
     Print #11,
 
 End Sub
@@ -20839,6 +22935,10 @@ Sub ReadGameExtraData (teamYear$, teamIdx, gameIdx)
 
 End Sub
 
+
+'----------------------------------------
+'        DumpRunners Subroutine
+'----------------------------------------
 Sub DumpRunners (myText$)
     Print #11, "--- "; myText$; " ---"
     For bm1 = 0 To 3
@@ -20856,6 +22956,10 @@ Sub DumpRunners (myText$)
     Print #11,
 End Sub
 
+
+'----------------------------------------
+'          DumpIt Subroutine
+'----------------------------------------
 Sub DumpIt (baseRunners, P2, D2)
 
     Print #11, "---"
@@ -20907,7 +23011,7 @@ Sub DumpIt (baseRunners, P2, D2)
     Print #11,
 
     For bm1 = 0 To 3
-        Print #11, "b2Mystery:"; b2Mystery(bm1); " -- ";
+        Print #11, "b2StealPhase:"; b2StealPhase(bm1); " -- ";
     Next bm1
 
     Print #11, "---"
@@ -21049,7 +23153,7 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO)
                     PrintOnGfx 65, 24, ".000  0   0   0", imageScreen&
                 Else
                     pStats$ = FUsing$(Str$(pAvg! * 1000), ".###", 1)
-                    '                                 HR                                                BB                                         K
+                    '                          HR                                                BB              K
                     pStats$ = pStats$ + " " + FUsing$(Str$(pitchRating(p, currPitcher(p), 25)), "##", 1) + " " + FUsing$(Str$(pitchRating(p, currPitcher(p), 27)), "###", 1) + " " + FUsing$(Str$(pitchRating(p, currPitcher(p), 28)), "###", 1)
                     PrintOnGfx 65, 24, pStats$, imageScreen&
 
@@ -21588,3 +23692,4 @@ Sub PrintOnGfx (Col%, Row%, Text$, tgtScrn&)
     _PrintString (PrintCol%, PrintRow%), Text$, tgtScrn&
 
 End Sub
+

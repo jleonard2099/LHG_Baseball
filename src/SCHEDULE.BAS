@@ -1415,8 +1415,7 @@ Sub ChangeGlobalSettings ()
                 desigHit = 1 - desigHit
 
             Case 3:
-                Locate 4, 32: Input displayPause!
-                'Input "DISPLAY VARIABLE "; displayPause!
+                Locate 5, 32: Input displayPause!
 
             Case 4:
                 useInj = 1 - useInj
