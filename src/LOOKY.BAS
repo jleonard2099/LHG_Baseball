@@ -96,7 +96,7 @@ End Sub
 '----------------------------------------
 '        LoadTeamStats Subroutine
 '----------------------------------------
-'This subroutine loads the selected team's 
+'This subroutine loads the selected team's
 'stats into arrays
 Sub LoadTeamStats (statFile$, nbrGames)
 
@@ -123,7 +123,7 @@ Sub LoadTeamStats (statFile$, nbrGames)
     lastTenLosses = 0
     lastTenWins = 0
 
-    Call ReadTeamStats (team$, statFile$)
+    Call ReadTeamStats(team$, statFile$)
 
     If Not _FileExists(diskPaths$(1) + statFile$ + "R") Then
 
@@ -146,40 +146,40 @@ Sub LoadTeamStats (statFile$, nbrGames)
 
     End If
 
-    Call ReadScheduleStats (statFile$, nbrGames)
+    Call ReadScheduleStats(statFile$, nbrGames)
 
     For I = 1 To nbrGames
 
-        If Abs(teamScore(I) - oppScore(I)) = 1 And teamScore(I) > oppScore(I) Then 
+        If Abs(teamScore(I) - oppScore(I)) = 1 And teamScore(I) > oppScore(I) Then
             oneRunWins = oneRunWins + 1
         End If
-        If Abs(teamScore(I) - oppScore(I)) = 1 And teamScore(I) < oppScore(I) Then 
+        If Abs(teamScore(I) - oppScore(I)) = 1 And teamScore(I) < oppScore(I) Then
             oneRunLosses = oneRunLosses + 1
         End If
 
-        If teamScore(I) > oppScore(I) Then 
+        If teamScore(I) > oppScore(I) Then
             totalWins = totalWins + 1
         End If
-        If teamScore(I) > oppScore(I) And nbrInnings(I) > 9 Then 
+        If teamScore(I) > oppScore(I) And nbrInnings(I) > 9 Then
             extraInnWins = extraInnWins + 1
         End If
-        If teamScore(I) > oppScore(I) And locIndicator$(I) = "A" Then 
+        If teamScore(I) > oppScore(I) And locIndicator$(I) = "A" Then
             roadWins = roadWins + 1
         End If
-        If teamScore(I) > oppScore(I) And locIndicator$(I) = "H" Then 
+        If teamScore(I) > oppScore(I) And locIndicator$(I) = "H" Then
             homeWins = homeWins + 1
         End If
 
-        If oppScore(I) > teamScore(I) Then 
+        If oppScore(I) > teamScore(I) Then
             totalLosses = totalLosses + 1
         End If
-        If oppScore(I) > teamScore(I) And nbrInnings(I) > 9 Then 
+        If oppScore(I) > teamScore(I) And nbrInnings(I) > 9 Then
             extraInnLosses = extraInnLosses + 1
         End If
-        If oppScore(I) > teamScore(I) And locIndicator$(I) = "A" Then 
+        If oppScore(I) > teamScore(I) And locIndicator$(I) = "A" Then
             roadLosses = roadLosses + 1
         End If
-        If oppScore(I) > teamScore(I) And locIndicator$(I) = "H" Then 
+        If oppScore(I) > teamScore(I) And locIndicator$(I) = "H" Then
             homeLosses = homeLosses + 1
         End If
 
@@ -195,10 +195,10 @@ Sub LoadTeamStats (statFile$, nbrGames)
         M = nbrGames - 9
 
         For J = M To nbrGames
-            If teamScore(J) > oppScore(J) Then 
+            If teamScore(J) > oppScore(J) Then
                 lastTenWins = lastTenWins + 1
             End If
-            If oppScore(J) > teamScore(J) Then 
+            If oppScore(J) > teamScore(J) Then
                 lastTenLosses = lastTenLosses + 1
             End If
         Next J
@@ -310,7 +310,7 @@ Sub ViewAndPrintOptions (statFile$, teamName$, nbrGames, menuExit)
                         Select Case userKey$
 
                             Case "F"
-                                userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                                userFile$ = _SaveFileDialog$("Save Report File", _CWD$ + "\Report", "*.txt", "Text File")
                                 If userFile$ <> "" Then
                                     Call NewPrintStats(0, userFile$, statFile$, teamName$, nbrGames, SELECTION%, splitStatChoice)
                                 End If
@@ -338,7 +338,7 @@ Sub ViewAndPrintOptions (statFile$, teamName$, nbrGames, menuExit)
                 JJ = 1
                 Locate 6, 8
 
-                Call MenuBox (6, 8, 61, 1, teamRatings(11), teamRatings(12))
+                Call MenuBox(6, 8, 61, 1, teamRatings(11), teamRatings(12))
 
                 Do
                     Locate 7
@@ -370,7 +370,7 @@ End Sub
 '----------------------------------------
 '   ViewScheduleStatSummary Subroutine
 '----------------------------------------
-'This subroutine formats and outputs the 
+'This subroutine formats and outputs the
 'selected team's record to the display,
 'then provides routines for output of
 'the other stat categories
@@ -488,8 +488,8 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
                     If statB0(I, 1) = 0 Then
                         Print " .000 ";
                     Else
-                        statCalc = statB0(I, 1) / statB0(I, 0)
-                        Print Using " .### "; statCalc;
+                        statCalc! = statB0(I, 1) / statB0(I, 0)
+                        Print Using " .### "; statCalc!;
                     End If
                 End If
             End If
@@ -506,11 +506,11 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
                     If statB0(I, 0) = I3 Then
                         Print "1.000 ";
                     Else
-                        statCalc = I3 / statB0(I, 0)
-                        If statCalc >= 1 Then
-                            Print Using "#.### "; statCalc;
+                        statCalc! = (I3 / statB0(I, 0))
+                        If statCalc! >= 1 Then
+                            Print Using "#.### "; statCalc!;
                         Else
-                            Print Using " .### "; statCalc;
+                            Print Using " .### "; statCalc!;
                         End If
                     End If
                 End If
@@ -529,8 +529,8 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
                     If I4 = I3 Then
                         Print "1.000";
                     Else
-                        statCalc = I4 / I3
-                        Print Using " .###"; statCalc;
+                        statCalc! = (I4 / I3)
+                        Print Using " .###"; statCalc!;
                     End If
                 End If
             End If
@@ -616,20 +616,20 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
                 If statB(I) = 0 Then
                     Print "  ";
                 End If
-                If statB(I) > 0 Then 
+                If statB(I) > 0 Then
                     Locate , 31: Print Using "####"; statCalc;
                 End If
             End If
 
             'PROJ AB
-            If statB(I) > 0 Then 
+            If statB(I) > 0 Then
                 Locate , 37
                 statCalc = CInt((((statB(I) + 0) / QT) * (statT1!(9) + 1)))
                 Print Using "####"; statCalc;
                 statT0!(13) = statT0!(13) + statCalc
             End If
 
-            If statB(I) = 0 Then 
+            If statB(I) = 0 Then
                 Locate , 39: Print "0";
             End If
 
@@ -771,7 +771,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
             'CS
             Locate , 69: Print Using "##"; statP0(I, 33);
 
-            If statT0!(0) = 0 Then 
+            If statT0!(0) = 0 Then
                 statT0!(0) = 1
             End If
 
@@ -889,7 +889,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Locate , 20: If statT0!(11) = 0 Then Print "1.000";
 
     'FAVG
-    If statT0!(11) <> 0 Then 
+    If statT0!(11) <> 0 Then
         statCalc = (statT0!(16) + statT0!(17)) / (statT0!(16) + statT0!(17) + statT0!(11))
         Print Using " .###"; statCalc;
     End If
@@ -1013,7 +1013,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
             Locate , 47: Print Using "## ## ## ### ### ## ### ###"; statP0(I, 8); statP0(I, 9); statP0(I, 10); statP0(I, 2); statP0(I, 3); statP0(I, 11); statP0(I, 14); statP0(I, 13);
 
             '%RIP
-            If statP(I) > 0 Then 
+            If statP(I) > 0 Then
                 statCalc = CInt((((statP0(I, 0) / 3) * 100) / statP(I)))
                 Locate , 76: Print Using "###"; statCalc;
             End If
@@ -1141,13 +1141,13 @@ Sub ReportsAllTeams ()
 
     If leagueFile$ <> "" Then
 
-        Call ReadLeagueStats (leagueFile$)
+        Call ReadLeagueStats(leagueFile$)
 
         For XW = 1 To TEAMS_PER_LEAGUE
 
             If _FileExists(diskPaths$(1) + memberName$(XW)) Then
 
-                Call ReadTeamStats (teamName$, memberName$(XW))
+                Call ReadTeamStats(teamName$, memberName$(XW))
 
                 userKey$ = GetPrintOptions$
 
@@ -1156,7 +1156,7 @@ Sub ReportsAllTeams ()
                     Select Case userKey$
 
                         Case "F"
-                            userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                            userFile$ = _SaveFileDialog$("Save Report File", _CWD$ + "\Report", "*.txt", "Text File")
                             If userFile$ <> "" Then
                                 Call NewPrintStats(0, userFile$, memberName$(XW), teamName$, nbrGames, 3, splitStatChoice)
                             End If
@@ -1181,8 +1181,8 @@ End Sub
 '----------------------------------------
 '       NewPrintStats Subroutine
 '----------------------------------------
-'This subroutine formats and outputs the 
-'team's schedule results and stats to the 
+'This subroutine formats and outputs the
+'team's schedule results and stats to the
 'default printer
 Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printChoice, splitStatChoice)
 
@@ -1337,14 +1337,14 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
             End If
 
             LPrint Tab(95);
-            If statB(I) > 0 Then 
+            If statB(I) > 0 Then
                 statCalc = CInt((((statB(I) + 0) / QT) * (statT1!(9) + 1)))
                 LPrint Using "###"; statCalc;
                 statT0!(13) = statT0!(13) + statCalc
             End If
 
             LPrint Tab(100);
-            If statB(I) > 0 Then 
+            If statB(I) > 0 Then
                 statCalc = ((statB0(I, 0) / statB(I)) * 100)
                 LPrint Using "###"; statCalc;
             End If
@@ -1530,7 +1530,7 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
             statCalc = Int(statP0(I, 0) / 3)
             LPrint Tab(21);: LPrint Using "###"; statCalc;
 
-            If statP0(I, 0) - (Int(statP0(I, 0) / 3) * 3) > 0 Then 
+            If statP0(I, 0) - (Int(statP0(I, 0) / 3) * 3) > 0 Then
                 LPrint ".";
                 statCalc = (Int(statP0(I, 0) / 3) * 3)
                 LPrint Using "#"; statP0(I, 0) - statCalc;
@@ -1661,15 +1661,15 @@ End Sub
 '----------------------------------------
 '       ResetStatPrompt Subroutine
 '----------------------------------------
-'This subroutine prompts the user with 
-'a choice to reset stats. If they chose, 
-'and confirm, it will then proceed to 
+'This subroutine prompts the user with
+'a choice to reset stats. If they chose,
+'and confirm, it will then proceed to
 'delete the files.
 Sub ResetStatPrompt (statFile$, teamRatings())
 
     Cls
 
-    Call MenuBox (6, 8, 61, 1, teamRatings(11), teamRatings(12))
+    Call MenuBox(6, 8, 61, 1, teamRatings(11), teamRatings(12))
 
     Locate 7
 
@@ -1684,7 +1684,7 @@ Sub ResetStatPrompt (statFile$, teamRatings())
 
     If UCase$(I$) = "Y" Then
 
-        Call MenuBox (6, 8, 61, 1, teamRatings(11), teamRatings(12))
+        Call MenuBox(6, 8, 61, 1, teamRatings(11), teamRatings(12))
 
         Locate 7
 
