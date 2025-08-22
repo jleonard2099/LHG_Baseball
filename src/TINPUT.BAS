@@ -146,6 +146,7 @@ Sub SaveTeamFile (newID, yearNumber$, targetTeam$, targetFile$, teamIdx)
 
     SCK = 0
 
+    'Sum all Lefty/Righty values
     For I = 1 To 24
         SCK = SCK + teamSA(I)
     Next
@@ -237,6 +238,7 @@ Sub SaveTeamFile (newID, yearNumber$, targetTeam$, targetFile$, teamIdx)
         Next
 
         Put #1, teamIdx
+
         Close 1
 
     End If
@@ -1880,7 +1882,6 @@ Sub EditTeamInfo (YN$, team$, teamIdx)
         Locate 10, 70: Print Using "###"; teamSA(17)
         Locate 10, 75: Print Using "###"; teamSA(18)
         Color 15, 1
-
 
         Locate 11, 38: Print "RHB vs RHP"
         Color 0, 7
