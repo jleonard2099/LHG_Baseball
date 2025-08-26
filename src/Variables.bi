@@ -305,11 +305,11 @@ Dim eventNbr
 
 Dim BP(0 To 9), batLUIdx(0 To 9)
 Dim BB%(0 To 9)
+Dim buntTriple(0 To 11, 0 To 2)
 Dim gameMgrIdx(0 To 1)
 Dim gameDaysRest(0 To 1, 0 To 21)
 Dim mgrFile(1)
 Dim startPitcher(1), SX%(0 To 1)
-Dim triplePlayAdj(0 To 11, 0 To 2)
 
 Dim E!
 
@@ -338,10 +338,10 @@ Dim Shared pbpDelay!, windFactor!
 Dim Shared boxName$, fileString$, gameTime$, gameL$, gameW$
 Dim Shared PARK$, pbpString$, wind$, YY$
 
-Dim Shared batRating(0 To 1, 0 To 22, 80), CZ%(0 To 1), inningScore(0 to 1, 30)
-Dim Shared MON(5, 14), pitchEff(0 To 1, 0 To 1), pitchRating(0 To 1, 0 To 21, 0 To 89)
+Dim Shared batRating(0 To 1, 0 To 22, 80), CZ%(0 To 1)
+Dim Shared inningScore(0 to 1, 30), MON(5, 14), nbrOuts(1)
+Dim Shared pitchEff(0 To 1, 0 To 1), pitchRating(0 To 1, 0 To 21, 0 To 89)
 Dim Shared schedGame(2), schedOptions(18), teamRat_GAME(1, 13), VV(1), VV1(1)
-Dim Shared nbrOuts(1)
 
 '-- Not really used??
 Dim setupUsed(1), closerUsed(1)
@@ -350,25 +350,27 @@ Dim Shared A5%(0 To 3), assigned(1 To 9)
 
 'b2StealPhase acts as both a % threshold and a coded state flag.
 Dim Shared b1Runner(3), b1Pitcher(3), b2Base(3), b2Pitcher(3), b2StealPhase(3)
-Dim Shared lineupPlayer(0 To 1, 0 To 9), game_batRating(1, 7, 9)
-Dim Shared fldPos(0 To 1, 0 To 9), fielder(1, 10), BT%(0 To 1, 1 To 9, 1 To 9)
-Dim Shared CF%(0 To 9, 0 To 2), CSS(1, 22, 6), D3%(1), DP%(1)
-Dim Shared currPitcher(0 To 1), pitcherOfRecord(1)
-Dim Shared gamePitcher(1)
-Dim Shared relieverOnRecordForSave(1), SO%(0 To 5, 0 To 2)
-Dim Shared T3%(22), X0%(1, 2, 23), YR%(1)
+Dim Shared buntBaseHit(0 To 9, 0 To 2), buntLeadRun(9, 1)
+Dim Shared buntQuality(0 To 1, 1 To 9, 1 To 9), buntStrike(0 To 5, 0 To 2)
+Dim Shared currLineupSlot(9), currPitcher(0 To 1), CSS(1, 22, 6)
+Dim Shared D3%(1), DP%(1)
+Dim Shared fldPos(0 To 1, 0 To 9), fielder(1, 10)
+Dim Shared game_batRating(1, 7, 9), gamePitcher(1)
+Dim Shared gameScore(1, 2), H0%(1)
+Dim Shared injuryStatus(0 To 1, 0 To 22), L0%(1)
+Dim Shared lineupPlayer(0 To 1, 0 To 9), newRelieverNeeded(1)
+Dim Shared pitcherOfRecord(1), relieverOnRecordForSave(1)
+Dim Shared T3%(22)
+Dim Shared teamMgrProfileVal(0 To 1, 999), teamSplit(1, 11), teamYears(1)
+Dim Shared usedUmpires(MAX_UMPIRES)
+Dim Shared X0%(1, 2, 23), YR%(1)
 
 Dim Shared gameB(1, 22), gameP(1, 21)
 Dim Shared gameBatStats(0 To 1, 0 To 22, 0 To 21), leagBatStats(0 To 1, 0 To 22, 0 To 21)
 Dim Shared gamePitStats(0 To 1, 0 To 21, 0 To 41), leagPitStats(1, 21, 41)
 Dim Shared gameM(0 To 9), gameSA(1, 24)
 
-Dim Shared gameScore(1, 2), newRelieverNeeded(1), H0%(1)
-Dim Shared injuryStatus(0 To 1, 0 To 22), L0%(1), LB%(9, 1)
-Dim Shared teamMgrProfileVal(0 To 1, 999), teamSplit(1, 11), teamYears(1)
-Dim Shared usedUmpires(MAX_UMPIRES)
-
-Dim Shared currLineupSlot(9), parkHRVals!(1)
+Dim Shared parkHRVals!(1)
 
 Dim Shared alpha$(12), baseName$(0 To 4), batters$(0 To 1, 0 To 22), handed$(4)
 Dim Shared diskIDs$(1), doublesPlayer$(0 To 22), ejections$(20), eventDesc$(0 To 22)
