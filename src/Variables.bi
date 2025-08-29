@@ -319,7 +319,7 @@ Dim grounderDir$(10), pitHand$(1)
 ' Shared / Global
 Dim Shared earlyExit
 Dim Shared badString%, EJ%, currFielder, H6%
-Dim Shared IJL%, INNING%, Inotloop%, LYN%
+Dim Shared IJL%, INNING%, LYN%
 Dim Shared PB%, PC%, SC%, WS%
 
 Dim Shared P9, W5, W6
@@ -330,7 +330,7 @@ Dim Shared gameLoc, gameOver, gameTemp
 Dim Shared nbrStrikes, noLUFound, normalFinish
 Dim Shared P, pbpLine, pinchHitterFlag, pitchEraOpt, playerMode, playerOpt
 Dim Shared RE, RD, strikeoutRating
-Dim Shared useInj, useRest, useVGA
+Dim Shared useInj, userDone, useRest, useVGA
 Dim Shared umpBBadj, umpSZadj
 
 Dim Shared pbpDelay!, windFactor!

@@ -1523,10 +1523,6 @@ Sub LOADER
         Call SelectPitchers(P9, cancelPitchers%, computerRotations%)
         Call PitchingStarter(P9)
 
-        If Inotloop% <= 5 And gameScore(P9, 0) - gameScore(1 - P9, 0) > 0 Then
-            pitcherOfRecord(P9) = currPitcher(P9)
-        End If
-
         pitchEff(P9, 0) = pitcherMaxEff%(P9, currPitcher(P9))
 
         If gamePitcher(P9) > 1 Then
@@ -1599,9 +1595,10 @@ Sub LOADER
                 Case "0":
                     'Lineup - no profile
 
-                    Call SelectBatters(batterFlag%, P9)
+                    Call SelectBatters(validBatters, P9)
 
-                    If batterFlag% = 1 Then
+                    If validBatters = 1 Then
+
                         For I = 10 To 22
                             Locate I, 59: Print Space$(21);
                         Next
@@ -1612,6 +1609,7 @@ Sub LOADER
                         If noLineups = 1 Then
                             noLineups = 0
                         End If
+
                     End If
 
                 Case "1", "3":
@@ -1630,7 +1628,7 @@ Sub LOADER
                     End If
 
                 Case "2"
-                    Call ComputerLineups(batterFlag%, P9, noLineups, reselect)
+                    Call ComputerLineups(validBatters, P9, noLineups, reselect)
 
                     If noLineups = 1 Then
                         noLineups = 0
@@ -1640,7 +1638,7 @@ Sub LOADER
             End Select
 
             If I$ <> Chr$(27) Then
-                'We didn't ESC so we have to move foneRunWinsard
+                'We didn't ESC so we have to move forward
 
                 If skipLineChange% <> 1 Then
                     Color 15, 0
@@ -2150,7 +2148,7 @@ Sub ChangeLineup_PreGame (P9, reselect)
                 Select Case UCase$(I$)
                     Case "0"
                         'Here we still could have selected R
-                        If Inotloop% = 0 Then
+                        If userDone = 0 Then
                             Call SaveLineup(P9)
                         End If
 
@@ -2498,7 +2496,7 @@ Sub LineupSummary (P9, reselect, LU%)
 
     If LU% = 1 Then
         LU% = 0
-        Call SelectBatters(batterFlag%, P9)
+        Call SelectBatters(validBatters, P9)
     End If
 
     For I = 10 To 22
@@ -2538,9 +2536,9 @@ End Sub
 'for the game. It interfaces with various
 'other routines to show you different types
 'of batter stats to help you with your choices.
-Sub SelectBatters (batterFlag%, P9)
+Sub SelectBatters (validBatters, P9)
 
-    Inotloop% = 99
+    userDone = 99
 
     Call SHOWBATTERS(P9)
 
@@ -2560,7 +2558,7 @@ Sub SelectBatters (batterFlag%, P9)
         If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = P9) Then
             'Autoplay = auto-select
             I$ = "Z"
-            batterFlag% = 1
+            validBatters = 1
         Else
             I$ = GetKeyPress$
 
@@ -2588,7 +2586,7 @@ Sub SelectBatters (batterFlag%, P9)
                     End If
                 Next
 
-                batterFlag% = 0
+                validBatters = 0
 
                 Exit Sub
 
@@ -2654,8 +2652,8 @@ Sub SelectBatters (batterFlag%, P9)
             Color 15, 0
             Locate 5, 59: Print "OPPOSING PITCHER"
             Locate 6, 59: Print pitchers$(1 - P9, currPitcher(1 - P9)); " "; handed$(pitchRating(1 - P9, currPitcher(1 - P9), SS_P_Throws) + 2)
-            Inotloop% = 0
-            batterFlag% = 1
+            userDone = 0
+            validBatters = 1
 
         End If 'Done checking for ESC
 
@@ -2963,7 +2961,7 @@ Sub PitchingRotations (computerRotations%, P9)
 
     teamMgrProfileVal(P9, 0) = 999
 
-    Inotloop% = 99
+    userDone = 99
 
     Call PrintPitcherInfo(P9)
 
@@ -3087,7 +3085,7 @@ End Sub
 'to automatically select batters, before
 'presenting the user a final summary of the
 'results.
-Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
+Sub ComputerLineups (validBatters, P9, noLineups, reselect)
 
     Shared BP(), batLUIdx()
     Shared BB%()
@@ -3102,9 +3100,9 @@ Sub ComputerLineups (batterFlag%, P9, noLineups, reselect)
         End If
     Next
 
-    Call SelectBatters(batterFlag%, P9)
+    Call SelectBatters(validBatters, P9)
 
-    If batterFlag% <> 0 Then
+    If validBatters = 1 Then
 
         For I = 10 To 22
             Locate I, 59: Print Space$(21);
@@ -3534,7 +3532,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
     Shared gameMgrIdx(), mgrFile(), startPitcher()
 
     ' *** PITCHING ROTATIONS ***
-    Inotloop% = 99
+    userDone = 99
     skipDisablePitchers% = 0
 
     Call PrintPitcherInfo(idx%)
@@ -3698,7 +3696,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
 
         Do
 
-            Inotloop% = 99
+            userDone = 99
 
             Call PrintPitcherInfo(idx%)
 
@@ -3760,7 +3758,7 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
     If I$ <> Chr$(27) Then
         'We pressed Z
         'Reset the value
-        Inotloop% = 0
+        userDone = 0
 
     Else
         'We cancelled
@@ -3812,10 +3810,9 @@ Sub PrintPitcherInfo (idx%)
 
     Next I
 
-    If Inotloop% <= 0 Then
+    If userDone <= 0 Then
 
         Call PitchingStarter(idx%)
-        'If Inotloop% <= 5 And gameScore(P9, 0) - gameScore(1 - P9, 0) > 0 Then P2%(P9) = P1(P9)
 
     End If
 
@@ -5216,19 +5213,19 @@ Sub SOURCE ()
     Select Case teamYears(1)
 
         Case Is <= 1919
-            bbEraAdj = 10
+            bbEraAdj = 18
 
         Case 1920 To 1969
-            bbEraAdj = 15
+            bbEraAdj = 25
 
         Case 1970 To 1979
-            bbEraAdj = 25
+            bbEraAdj = 39
 
         Case 1980 To 2000
-            bbEraAdj = 25
+            bbEraAdj = 39
 
         Case Is >= 2001
-            bbEraAdj = 25
+            bbEraAdj = 26
 
     End Select
 
@@ -5243,42 +5240,47 @@ Sub SOURCE ()
     End If
 
     'Determine HIT
-    'I4 = chance of hit
     H6% = Int(Rnd(1) * 1000) + 1
 
     drawnInfieldRoll = Int(Rnd(1) * 1000) + 1
 
-    I4 = 0
+    hitChanceAdj = 0
 
+    'Hit and Run
     If P2 = OFF_HIT_N_RUN Then
-        I4 = -10
+        hitChanceAdj = -5
     End If
 
+    'Drawn infield
     If INFPOS% = INF_IN Then
         drawnInfieldChance = 70
-        I4 = I4 + 20
+        hitChanceAdj = hitChanceAdj + 10
     End If
 
+    'Batter has 2 strikes
     If nbrStrikes = 2 Then
-        I4 = I4 - 10
+        hitChanceAdj = hitChanceAdj - 15
     End If
 
     If INFPOS% = INF_CORNERS_IN Then
         drawnInfieldChance = 20
     End If
 
-    If INNING% > 5 And pitchEff(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And pitchEff(D, 1) <= gamePitStats(D, currPitcher(D), 2) Then
-        I4 = I4 + 40
+    If INNING% > 5 And _ 
+        pitchEff(D, 0) <= gamePitStats(D, currPitcher(D), 4) + gamePitStats(D, currPitcher(D), 1) And _
+        pitchEff(D, 1) <= gamePitStats(D, currPitcher(D), 2) Then
+        'Tiring pitcher
+        hitChanceAdj = hitChanceAdj + 20
     End If
 
     Select Case P
 
         Case 0
-            I4 = I4 - 2
+            hitChanceAdj = hitChanceAdj - 2
 
         Case 1
             'Home field advantage
-            I4 = I4 + 2
+            hitChanceAdj = hitChanceAdj + 2
 
     End Select
 
@@ -5296,24 +5298,19 @@ Sub SOURCE ()
     Select Case teamYears(1)
 
         Case Is <= 1919
-            hitEraAdj = 250
-            soEraAdj = 0
+            soEraAdj = 13
 
         Case 1920 To 1969
-            hitEraAdj = 250
             soEraAdj = 0
 
         Case 1970 To 1979
-            hitEraAdj = 225
-            soEraAdj = 0
+            soEraAdj = 17
 
         Case 1980 To 2000
-            hitEraAdj = 175
-            soEraAdj = 0
+            soEraAdj = 10
 
         Case Is >= 2001
-            hitEraAdj = 150
-            soEraAdj = 0
+            soEraAdj = 11
 
     End Select
 
@@ -5321,23 +5318,16 @@ Sub SOURCE ()
     ' *********************
     ' *   AT BAT RESULT   *
     ' *********************
-    hitChanceAdj = I4 '+ hitEraAdj
     batterAvg = game_batRating(P, GM_BAvg, currLineupSlot(P))
-
-    'Print #11, "-- "; player$(0); " --"
-    Print #11, player$(0); ": BAVG = "; batterAvg
-    'Print #11, "Roll: "; H6%
 
     If H6% > batterAvg + hitChanceAdj Then
         ' *** NOT a base hit ***
 
-        'Print #11, "MISS!!!"
-
         ' *** check for strikeout ***
         H6% = Int(Rnd(1) * 1000) + 1
-        strikeoutRating = game_batRating(P, GM_K, currLineupSlot(P))
+        strikeoutRating = Int(game_batRating(P, GM_K, currLineupSlot(P)) * 1.1)
 
-        If H6% <= strikeoutRating + umpSZadj(4) - soEraAdj Then
+        If H6% <= strikeoutRating + umpSZadj(4) + soEraAdj Then
 
             LStrikeout:
             Call WINDEX
@@ -5347,9 +5337,6 @@ Sub SOURCE ()
             Call CREDITREGPO(currFielder, D)
 
             Call TrackOuts(1)
-
-            '-- Why do we not check for outs >= 3 here???
-            '-- there are some paths that take us to LCheckForOptionsOrQuit
 
             wasStrikeout = 1
 
@@ -6010,8 +5997,6 @@ Sub SOURCE ()
     Else
 
         ' *** Base hit ***
-        'Print #11, "HIT!!!"
-
         H6% = Int(Rnd(1) * 1000) + 1
 
         'Check for DOUBLE
@@ -7848,11 +7833,11 @@ Sub SOURCE ()
     'Slightly adjust odds of being caught in rundown
     b2StealPhase(TGTBASE% - 1) = b2StealPhase(TGTBASE% - 1) + 1
 
-    Call Rolld100(I4)
+    Call Rolld100(rundownRoll)
 
     ' b2StealPhase holds the threshold/phase for steal attempts
     '   - Initial value = chance (1–100) of being caught in a rundown before the throw
-    If I4 <= b2StealPhase(TGTBASE% - 1) Then
+    If rundownRoll <= b2StealPhase(TGTBASE% - 1) Then
 
         S2% = EVENT_RUNDOWN
         currFielder = 1
@@ -8957,7 +8942,7 @@ Sub SOURCE ()
 
             If (scoreDiff > 0 Or nbrOuts(0) > 0 Or baseRunners <= 2 Or baseRunners = 4 Or (baseRunners = 5 And nbrOuts(0) = 1) Or (INNING% <= 5 And scoreDiff < -2) Or (INNING% > 5 And scoreDiff < -4)) _
                And ((baseRunners = 1 Or baseRunners = 4) And nbrOuts(0) <> 2 And (currLineupSlot(P) < 3 Or currLineupSlot(P) > 6) And (INNING% > 6 Or (Abs(scoreDiff) < 3))) _
-               And (INNING% <= 7 Or (scoreDiff < 1 And scoreDiff > -1)) Then
+               And (INNING% <= 7 Or scoreDiff = 0) Then
                 'Defense - Corners In
                 INFPOS% = INF_CORNERS_IN
                 D2 = DEF_CORNERS_IN
@@ -8973,7 +8958,7 @@ Sub SOURCE ()
 
     If scoreDiff > 0 And baseRunners > 1 And baseRunners <> 4 And baseRunners <> 7 And fldPos(P, currLineupSlot(P)) <> 1 Then
 
-        If INNING% >= 9 And P = 1 And nbrOuts(0) < 2 And scoreDiff = 0 And baseRunners >= 2 And baseRunners <= 3 Or INNING% >= 9 And P = 1 And nbrOuts(0) = 2 And scoreDiff = 0 And baseRunners >= 5 And baseRunners <= 6 Then
+        If INNING% >= 9 And P = 1 And scoreDiff = 0 And ((nbrOuts(0) < 2 And baseRunners >= 2 And baseRunners <= 3) Or (nbrOuts(0) = 2 And baseRunners >= 5 And baseRunners <= 6)) Then
             D2 = DEF_INTNTL_BB
             GoTo LManageDefense
         End If
@@ -9400,7 +9385,7 @@ Sub SOURCE ()
 
         End If
 
-        'Bunt not hosen - "Hit away" strategy
+        'Bunt not chosen - "Hit away" strategy
         P2 = OFF_HIT_AWAY
         
         If ((baseRunners = 1 Or baseRunners = 5) And (scoreDiff > -1 Or batRating(P, lineupPlayer(P, b2Base(1)), SS_B_SB) >= 10) And b2StealPhase(1) <= 1 And (scoreDiff < -1 Or baseRunners <> 5) And scoreDiff >= -5 And _ 
@@ -9439,9 +9424,46 @@ Sub SOURCE ()
     pinchHitterFlag = 0
     PR% = 0
 
+    ' Set hit & run threshold based on era
+    'Higher threshold = fewer 2B/3B/HR
+    Select Case gameYear
+
+        Case Is <= 1919:
+            hitRunThreshold = 50 '45
+
+        Case 1920 to 1945:
+            hitRunThreshold = 35 '30
+
+        Case 1946 to 1975:
+            hitRunThreshold = 25
+
+        Case 1976 to 1993:
+            hitRunThreshold = 20
+
+        Case 1994 to 2005:
+            hitRunThreshold = 20 '15
+
+        Case Is >= 2006
+            hitRunThreshold = 15 '12
+
+    End Select
+
+
+    'Decide whether it's safe to Hit/Run
+    '  At this point, the PC has:
+    '   1) Checked if a bunt makes sense
+    '   2) Defaulted to "Hit Away"
+    '   3) Checked for a steal
+
     If scoreDiff < -3 Or game_batRating(P, GM_K, currLineupSlot(P)) > 100 Or _
         (baseRunners = 0 Or baseRunners = 2 Or baseRunners = 3 Or baseRunners = 6 Or baseRunners = 7) Or _
-        nbrOuts(0) = 2 Or d100% > 20 Then
+        nbrOuts(0) = 2 Or d100% > hitRunThreshold Then
+        'Not a good candidate for hit/run
+        ' *- Team is way behind
+        ' *- Batter has high strikeout rating
+        ' *- Several base situations
+        ' *- Already have 2 OUTS
+        ' *- Limited % chance even in optimal conditions
         GoTo LExecuteOffense
     Else
         P2 = OFF_HIT_N_RUN
@@ -9626,7 +9648,6 @@ Sub InitVar ()
     HR = 0
     injCount = 0
     INNING% = 0
-    Inotloop% = 0
     LYN% = 0
     noLUFound = 0
     pbpLine = 0
@@ -9637,6 +9658,7 @@ Sub InitVar ()
     skyType = 0
     statSpecial = 0
     TR = 0
+    userDone = 0
     windSpeed = 0
 
     E! = 0
@@ -13287,7 +13309,7 @@ End Sub
 '----------------------------------------
 '           PITSTAM Subroutine
 '----------------------------------------
-'This subroutine deermines the current
+'This subroutine determines the current
 'pitcher's stamina
 Sub PITSTAM (P9)
 
@@ -14492,7 +14514,7 @@ Sub CalcWalkPercentages (team, opp)
             I2! = pitchRating(opp, currPitcher(opp), 8) / (pitchRating(opp, currPitcher(opp), 6) * 3 * .94 + pitchRating(opp, currPitcher(opp), 7) + pitchRating(opp, currPitcher(opp), 8))
         End If
 
-        Call GetMatchupType(team, opp, I3, I4, TY%, PY%, BY%)
+        Call GetMatchupType(team, opp, I3, TY%, PY%, BY%)
 
         ' Handle special team stats case
         If teamSplit(opp, 0) = 999 And pitchRating(opp, currPitcher(opp), 89) <> 0 Then
@@ -14569,7 +14591,7 @@ Sub CalcStrikeoutPercentages (team, opp)
             I2! = pitchRating(opp, currPitcher(opp), 9) / ((pitchRating(opp, currPitcher(opp), 6) * 3) * .94)
         End If
 
-        Call GetMatchupType(team, opp, I3, I4, TY%, PY%, BY%)
+        Call GetMatchupType(team, opp, I3, TY%, PY%, BY%)
 
         ' Handle special team stats case
         If teamSplit(opp, 0) = 999 And pitchRating(opp, currPitcher(opp), 89) <> 0 Then
@@ -14667,16 +14689,13 @@ Sub CalcBattingAverage (team, opp, i9!)
             I7! = pitchRating(opp, currPitcher(opp), 7) / (((pitchRating(opp, currPitcher(opp), 6) * 3) * .94) + pitchRating(opp, currPitcher(opp), 7))
         End If
 
-        'Print #11, pitchers$(opp, currPitcher(opp))
-        'Print #11, "H/BF Before: "; I7!
         'Normalize Hits/Batters to opponent batting average
         Call NORMALIZE(I7!, I2!, I6!, K8!)
-        'Print #11, "H/BF After: "; K8!
 
         'Opposing pitcher's effectiveness
         i9! = K8! / 1000
 
-        Call GetMatchupType(team, opp, I3, I4, TY%, PY%, BY%)
+        Call GetMatchupType(team, opp, I3, TY%, PY%, BY%)
 
         ' Handle special team stats case
         If teamSplit(opp, 0) = 999 And pitchRating(opp, currPitcher(opp), 89) <> 0 Then
@@ -14696,10 +14715,7 @@ Sub CalcBattingAverage (team, opp, i9!)
             I2! = gameSA(opp, TY% * 6 + 1) / 1000
 
             'Normalize league BAVG to opponent
-            'Print #11, pitchers$(opp, currPitcher(opp))
-            'Print #11, "L/R Before: "; I7!
             Call NORMALIZE(I7!, I2!, I6!, K8!)
-            'Print #11, "L/R After: "; K8!
             i9! = K8! / 1000
 
         End If
@@ -14777,9 +14793,7 @@ Sub CalcBattingAverage (team, opp, i9!)
         End If
 
         'Normalize raw batting average to team batting average
-        'Print #11, "BAVG Before: "; batAvg!
         Call NORMALIZE(batAvg!, I2!, oppAvg!, K8!)
-        'Print #11, "BAVG After: "; K8!
         batAvg! = K8! / 1000
 
         If teamSplit(team, 0) = 999 And batRating(team, lineupPlayer(team, I3), 80) <> 0 Then
@@ -14791,10 +14805,8 @@ Sub CalcBattingAverage (team, opp, i9!)
         I2! = i9!
 
         'Normalize batting average to opposing pitcher's effectiveness
-        'Print #11, "Final BAVG Before: "; batAvg!
         Call NORMALIZE(batAvg!, I2!, oppAvg!, K8!)
         game_batRating(team, GM_BAvg, I3) = K8!
-        'Print #11, "Final BAVG After: "; game_batRating(team, GM_BAvg, I3)
 
     Next I3
 
@@ -14808,7 +14820,7 @@ Sub CalcExtraBaseHits (team, opp, i9!)
 
     For I3 = VV(team) To VV1(team)
 
-        Call GetMatchupType(team, opp, I3, I4, TY%, PY%, BY%)
+        Call GetMatchupType(team, opp, I3, TY%, PY%, BY%)
 
         ' Handle special pitcher case
         If fldPos(team, I3) = 1 And pitchRating(team, currPitcher(team), SS_P_BAvg) <> 999 Then
@@ -15019,7 +15031,7 @@ Sub AdjustLeftyRighty (team, opp)
 
             End If
 
-            Call LRADJ(A!, A1!)
+            Call LRADJ(I3, A!, A1!)
             
         End If
 
@@ -15103,16 +15115,16 @@ End Sub
 '   3 = RR
 'pitcherHand: pitcher left-handed (0) or right-handed (1)
 'batterHand: batter left-handed (0) or right-handed (1)
-Sub GetMatchupType (I, I1, I3, I4, matchupType, pitcherHand, batterHand)
+Sub GetMatchupType (I, I1, playerIdx, matchupType, pitcherHand, batterHand)
 
     'batter side
-    I0 = batRating(I, lineupPlayer(I, I3), SS_B_Bats)
+    I0 = batRating(I, lineupPlayer(I, playerIdx), SS_B_Bats)
 
     'pitcher side
     I4 = pitchRating(I1, currPitcher(I1), SS_P_Throws)
 
     'Determine / adjust matchupType
-    If fldPos(I, I3) = 1 Then
+    If fldPos(I, playerIdx) = 1 Then
 
         If pitchRating(I, currPitcher(I), SS_P_Throws) = -1 Then
 
@@ -15196,14 +15208,14 @@ End Sub
 '            LRADJ Subroutine
 '----------------------------------------
 'Adjust L/R ratings based on assigned weights
-Sub LRADJ (A!, A1!)
+Sub LRADJ (playerIdx, A!, A1!)
 
     For I6 = 0 To 3
-        game_batRating(I, I6, I3) = game_batRating(I, I6, I3) * A!
+        game_batRating(I, I6, playerIdx) = game_batRating(I, I6, playerIdx) * A!
     Next I6
 
-    game_batRating(I, GM_BB, I3) = game_batRating(I, GM_BB, I3) * A!
-    game_batRating(I, GM_K, I3) = game_batRating(I, GM_K, I3) * A1!
+    game_batRating(I, GM_BB, playerIdx) = game_batRating(I, GM_BB, playerIdx) * A!
+    game_batRating(I, GM_K, playerIdx) = game_batRating(I, GM_K, playerIdx) * A1!
 
 End Sub
 
@@ -15306,8 +15318,6 @@ End Sub
 'This subroutine handles the Play-by-Play
 'text for a player hit by a pitch.
 Sub HITBYPITCH (S2%, baseStatus)
-
-    'Print #11, "Hit by pitch!!"
 
     S2% = EVENT_HBP
 
@@ -16532,7 +16542,7 @@ Sub TRYFOREXTRABASE (S2%, P2, runnerOn2nd, currFielder, sah%, stealing, baseNbr!
         scoreDiff = gameScore(P, 0) - gameScore(D, 0)
 
         If (playerMode = 2 Or playerMode = 1 And P = compTeam) Then
-            If scoreDiff > -2 And scoreDiff < 2 And S2% <> EVENT_FLY_SHALLOW Then
+            If Abs(scoreDiff) < 2 And S2% <> EVENT_FLY_SHALLOW Then
                 I$ = "Y"
                 If Environ$("RUNLOG") = "TRUE" Then
                     Print #11, "TRYFOREXTRABASE Green light! -- game margin is within 1 run and event is: "; S2%
@@ -21188,100 +21198,100 @@ Function buntDecision% (baseStatus)
         If baseStatus = 1 Then
             'If b2Base(1) > 0 And b2Base(2) = 0 And b2Base(3) = 0 Then
             ' Runner on first only - classic sacrifice
-            If nbrOuts(0) = 0 Then buntChance = 35
-            If nbrOuts(0) = 1 Then buntChance = 15
+            If nbrOuts(0) = 0 Then buntChance = 3
+            If nbrOuts(0) = 1 Then buntChance = 1
         End If
 
         If baseStatus = 2 Then
             'If b2Base(1) = 0 And b2Base(2) > 0 And b2Base(3) = 0 Then
             ' Runner on second only - move to third
-            If nbrOuts(0) = 0 Then buntChance = 25
-            If nbrOuts(0) = 1 Then buntChance = 10
+            If nbrOuts(0) = 0 Then buntChance = 2
+            If nbrOuts(0) = 1 Then buntChance = 1
         End If
         
         If baseStatus = 3 Then
             'If b2Base(1) > 0 And b2Base(2) > 0 Then
             ' Runners on 1st and 2nd
-            If nbrOuts(0) = 0 Then buntChance = 30
-            If nbrOuts(0) = 1 Then buntChance = 12
+            If nbrOuts(0) = 0 Then buntChance = 2
+            If nbrOuts(0) = 1 Then buntChance = 1
         End If
         
         If baseStatus >= 4 Then
-            'If b2Base(3) > 0 Then
             ' Reduce chance If runner already on 3rd
-            buntChance = buntChance / 2
+            buntChance = 0
         End If
-        
+
+        ' Game situation adjustments
+        ' Close games increase bunting
+        scoreDiff = gameScore(P, 0) - gameScore(D, 0)
+
+        If Abs(scoreDiff) <= 2 Then
+            buntChance = buntChance + 2
+        End If
+
+        ' Late innings increase bunting in close games
+        If INNING% >= 7 And Abs(scoreDiff) <= 1 Then
+            buntChance = buntChance + 3
+        End If
+
+        ' Trailing by 1 in bottom of 9th inning (or extras)
+        If INNING% >= 9 And P = 1 And scoreDiff = -1 Then
+            buntChance = buntChance + 5
+        End If
+
+        ' Big leads / deficits reduce bunting
+        If scoreDiff >= 4 Then
+            buntChance = buntChance / 3
+        End If
+
+        'Pitchers are more likely to bunt
+        If fldPos(P, currLineupSlot(P)) = 1 Then
+            buntChance = buntChance + 8
+        End If
+
+
         ' Era adjustments based on year
         Select Case teamYears(P)
 
             'Dead ball era
             Case Is <= 1919
-                buntEraAdj = 66
+                '-- needs increased if SF's can't increase
+                buntEraAdj! = 5.2
 
                 'Live ball era
             Case 1920 To 1945
-                buntEraAdj = 53
+                buntEraAdj! = 2.3
 
                 'Integration era
             Case 1946 To 1960
-                buntEraAdj = 46
+                buntEraAdj! = 1.0
 
                 'Expansion era
             Case 1961 To 1975
-                buntEraAdj = 40
+                buntEraAdj! = 1.5
 
                 'Free agent era
             Case 1976 To 1993
-                buntEraAdj = 33
+                buntEraAdj! = 1.6
 
                 'Steroid era
             Case 1994 To 2005
-                buntEraAdj = 23
+                buntEraAdj! = 2.0
 
                 'Modern era
             Case 2006 To 2015
-                buntEraAdj = 26
+                buntEraAdj! = 1.4
 
                 'Analytics era
             Case Is >= 2016
-                buntEraAdj = 13
+                buntEraAdj! = 0.7
 
         End Select
-
-        buntChance = buntChance * buntEraAdj / 100
+        buntChance = buntChance * buntEraAdj!
         
-        ' Game situation adjustments
-        ' Close games increase bunting
-        scoreDiff = gameScore(P, 0) - gameScore(D, 0)
-        If Abs(scoreDiff) <= 2 Then
-            buntChance = buntChance + 10
-        End If
-        
-        ' Late innings increase bunting in close games
-        If INNING% >= 7 And Abs(scoreDiff) <= 1 Then
-            buntChance = buntChance + 15
-        End If
-        
-        ' Trailing by 1 in bottom of 9th inning (or extras)
-        If INNING% >= 9 And P = 1 And scoreDiff = -1 Then
-            buntChance = buntChance + 25
-        End If
-        
-        ' Big deficits reduce bunting (need big innings)
-        If scoreDiff <= -4 Then
-            buntChance = buntChance - 15
-        End If
-        
-        ' Big leads reduce bunting
-        If scoreDiff >= 4 Then
-            buntChance = buntChance - 10
-        End If
-        
-        'Pitchers are more likely to bunt
-        If fldPos(P, currLineupSlot(P)) = 1 Then
-            buntChance = buntChance + 40
-        End If
+        ' Ensure we don't go negative
+        If buntChance > 100 Then buntChance = 100
+        If buntChance < 0 Then buntChance = 0
         
         ' Make final decision
         Call Rolld100(buntRoll)
