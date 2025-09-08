@@ -100,7 +100,7 @@ End Sub
 'stats into arrays
 Sub LoadTeamStats (statFile$, nbrGames)
 
-    Shared statD0, statD1, statS0(), teamScore(), oppScore(), nbrInnings(), locIndicator$()
+    Shared statS0(), teamScore(), oppScore(), nbrInnings(), locIndicator$()
 
     Shared extraInnWins, extraInnLosses
     Shared homeWins, homeLosses
@@ -1014,7 +1014,10 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
                 If statP0(I, 3) = 0 Then
                     Print " 0.00";
                 Else
-                    Print Using "##.##"; (statP0(I, 3) * 9) / (statP0(I, 0) / 3);
+                    test1! = (statP0(I, 3) * 9)
+                    test2! = (statP0(I, 0) / 3)
+                    statCalc! = (statP0(I, 3) * 9) / (statP0(I, 0) / 3)
+                    Print Using "##.##"; statCalc!;
                 End If
             End If
 
@@ -1074,13 +1077,14 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
 
             If (I Mod 2) = 0 Then Color 15
 
-            Print Left$(pitcherNames$(I), 10);: Locate , 12
+            Print Left$(pitcherNames$(I), 10);
 
-            'Blown Save, Hold, Runs Inherited, Run Support
+            'Blown Save, Hold, Runs Inherited, Runs Scored
+            Locate , 12
             Print Using "## ## ### ### "; statP0(I, 19); statP0(I, 22); statP0(I, 17); statP0(I, 18);
 
             If statP0(I, 9) > 0 Then
-                'Support, Games Started, Quality Start
+                'Run Support, Games Started, Quality Start
                 statCalc = statP0(I, 20) / statP0(I, 9)
                 Print Using "##.##  ##  ##"; statCalc; statP0(I, 9); statP0(I, 21);
             Else
@@ -1123,8 +1127,8 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Print ".";: Print Using "#"; statT1!(0) - Int(statT1!(0) / 3) * 3;
 
     'Hits, Walks, Strikeouts, ERA, Games, Games Started, Completed Games
-    statCalc = statT1!(3) * 9 / (statT1!(0) / 3)
-    Print Using " #### #### #### ##.## ### ### ### "; statT1!(1); statT1!(4); statT1!(5); statCalc; statT1!(9); statT1!(9); statT1!(10);
+    statCalc! = statT1!(3) * 9 / (statT1!(0) / 3)
+    Print Using " #### #### #### ##.## ### ### ### "; statT1!(1); statT1!(4); statT1!(5); statCalc!; statT1!(9); statT1!(9); statT1!(10);
 
     'Runs, Earned Runs, Shutouts, HR Allowed, DP
     Print Using "#### #### ### ### ###"; statT1!(2); statT1!(3); statT1!(11); statT1!(14); statT1!(13)
@@ -1153,14 +1157,6 @@ End Sub
 'for each team in the chosen league.
 Sub ReportsAllTeams ()
 
-    Shared statD0, statD1
-
-    Shared statT0!(), statT1!()
-
-    Shared statB(), statB0()
-    Shared statP(), statP0()
-
-    Shared batterNames$(), pitcherNames$()
     Shared memberName$()
 
     Shared teamLosses, teamWins
@@ -1784,7 +1780,8 @@ Sub PrintScheduleStatSummary (printDest, destFile$, statFile$, teamName$, nbrGam
                 If statP0(I, 3) = 0 Then
                     Print #1, " 0.00";
                 Else
-                    Print #1, Using "##.##"; (statP0(I, 3) * 9) / (statP0(I, 0) / 3);
+                    statCalc! = (statP0(I, 3) * 9) / (statP0(I, 0) / 3)
+                    Print #1, Using "##.##"; statCalc!;
                 End If
             End If
 

@@ -143,8 +143,13 @@ Const LG_P_CG   = 10
 Const LG_P_Sv   = 12
 Const LG_P_GIDP = 13
 Const LG_P_HR   = 14
+Const LG_P_Sac	= 15	
+Const LG_P_SF	= 16
 Const LG_P_RInh = 17
+Const LG_P_RS 	= 18
 Const LG_P_BSv  = 19
+Const LG_P_Unk 	= 20
+Const LG_P_QS 	= 21
 Const LG_P_Hold = 22
 
 Const LG_PB_AB  = 23

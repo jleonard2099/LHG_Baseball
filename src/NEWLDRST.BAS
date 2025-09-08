@@ -8,7 +8,7 @@
 'corresponding .STD file.
 Sub UpdateExpandedStandings (league$)
 
-    Shared cLoseStreak(), cWinStreak()
+    Shared currLoseStreak(), currWinStreak()
     Shared lastLoseStreak(), lastWinStreak()
     Shared teamLoseStreak(), teamWinStreak(), teamTotWins()
     Shared teamTotLosses(), lastTenWins(), lastTenLosses()
@@ -55,8 +55,8 @@ Sub UpdateExpandedStandings (league$)
                         teamTotWins(currRecord) = teamTotWins(currRecord) + 1
                         lastWinStreak(currRecord) = lastWinStreak(currRecord) + 1
                         lastLoseStreak(currRecord) = 0
-                        cWinStreak(currRecord) = cWinStreak(currRecord) + 1
-                        cLoseStreak(currRecord) = 0
+                        currWinStreak(currRecord) = currWinStreak(currRecord) + 1
+                        currLoseStreak(currRecord) = 0
 
                         If nbrInnings(I) > 9 Then 
                             totExtInnWins(currRecord) = totExtInnWins(currRecord) + 1
@@ -75,8 +75,8 @@ Sub UpdateExpandedStandings (league$)
                         teamTotLosses(currRecord) = teamTotLosses(currRecord) + 1
                         lastLoseStreak(currRecord) = lastLoseStreak(currRecord) + 1
                         lastWinStreak(currRecord) = 0
-                        cLoseStreak(currRecord) = cLoseStreak(currRecord) + 1
-                        cWinStreak(currRecord) = 0
+                        currLoseStreak(currRecord) = currLoseStreak(currRecord) + 1
+                        currWinStreak(currRecord) = 0
 
                         If nbrInnings(I) > 9 Then 
                             totExtInnLosses(currRecord) = totExtInnLosses(currRecord) + 1
@@ -98,8 +98,8 @@ Sub UpdateExpandedStandings (league$)
                     End If
 
                     If teamScore(I) = oppScore(I) Then
-                        cWinStreak(currRecord) = cWinStreak(currRecord) + 1
-                        cLoseStreak(currRecord) = 0
+                        currWinStreak(currRecord) = currWinStreak(currRecord) + 1
+                        currLoseStreak(currRecord) = 0
                     End If
 
                 Next I
@@ -131,7 +131,7 @@ Sub UpdateExpandedStandings (league$)
     Write #1, league$, div1Name$, div2Name$, div3Name$, div4Name$
 
     For I = 1 To TEAMS_PER_LEAGUE
-        Write #1, expStdLeagName$(I), teamTotWins(I), totHomeWinss!(I), totRoadWins(I), totExtInnWins(I), lastTenWins(I), teamTotLosses(I), totHomeLosses!(I), totRoadLosses(I), totExtInnLosses(I), lastTenLosses(I), teamWinStreak(I), teamLoseStreak(I), cWinStreak(I), cLoseStreak(I)
+        Write #1, expStdLeagName$(I), teamTotWins(I), totHomeWinss!(I), totRoadWins(I), totExtInnWins(I), lastTenWins(I), teamTotLosses(I), totHomeLosses!(I), totRoadLosses(I), totExtInnLosses(I), lastTenLosses(I), teamWinStreak(I), teamLoseStreak(I), currWinStreak(I), currLoseStreak(I)
     Next
 
     Close #1
@@ -147,7 +147,7 @@ End Sub
 'display in a formatted view
 Sub NewStandings_Screen (league$)
 
-    Shared cLoseStreak(), cWinStreak()
+    Shared currLoseStreak(), currWinStreak()
     Shared lastLoseStreak(), lastTenLosses(), lastTenWins(), lastWinStreak()
     Shared teamLoseStreak(), teamWinStreak(), teamTotLosses(), teamTotWins()
     Shared totExtInnLosses(), totExtInnWins(), totHomeLosses!(), totHomeWinss!()
@@ -231,7 +231,7 @@ Sub NewStandings_Screen (league$)
                         Print Tab(32); Using "##.#"; calcGB!;
                     End If
 
-                    Print Tab(43); Using "##"; teamWinStreak(I); Tab(46); teamLoseStreak(I); Tab(50); cWinStreak(I); Tab(53); cLoseStreak(I);
+                    Print Tab(43); Using "##"; teamWinStreak(I); Tab(46); teamLoseStreak(I); Tab(50); currWinStreak(I); Tab(53); currLoseStreak(I);
                     Print Tab(57); Using "##"; totHomeWinss!(I);: Print Tab(60); Using "##"; totHomeLosses!(I);
                     Print Tab(63); Using "##"; totRoadWins(I);: Print Tab(66); Using "##"; totRoadLosses(I);
                     Print Tab(69); Using "##"; totExtInnWins(I);: Print Tab(72); Using "##"; totExtInnLosses(I);
@@ -267,7 +267,7 @@ End Sub
 'printer in a formatted view
 Sub NewStandings_Report (printDest, destFile$, league$)
 
-    Shared cLoseStreak(), cWinStreak()
+    Shared currLoseStreak(), currWinStreak()
     Shared lastLoseStreak(), lastTenLosses(), lastTenWins(), lastWinStreak()
     Shared totExtInnLosses(), totExtInnWins(), totHomeLosses!(), totHomeWinss!()
     Shared teamLoseStreak(), teamWinStreak(), teamTotLosses(), teamTotWins()
@@ -356,7 +356,7 @@ Sub NewStandings_Report (printDest, destFile$, league$)
                         Print #1, Tab(38); Using "###"; MJ
                     End If
 
-                    Print #1, Tab(44); Using "##"; teamWinStreak(I); Tab(47); teamLoseStreak(I); Tab(51); cWinStreak(I); Tab(54); cLoseStreak(I);
+                    Print #1, Tab(44); Using "##"; teamWinStreak(I); Tab(47); teamLoseStreak(I); Tab(51); currWinStreak(I); Tab(54); currLoseStreak(I);
                     Print #1, Tab(57); Using "##"; totHomeWinss!(I);: Print #1, Tab(60); Using "##"; totHomeLosses!(I);
                     Print #1, Tab(63); Using "##"; totRoadWins(I);: Print #1, Tab(66); Using "##"; totRoadLosses(I);
                     Print #1, Tab(69); Using "##"; totExtInnWins(I);: Print #1, Tab(72); Using "##"; totExtInnLosses(I);
@@ -404,7 +404,7 @@ End Sub
 'are permanent to the underlying files.
 Sub SortStandings (AA, ZZ)
 
-    Shared cLoseStreak(), cWinStreak()
+    Shared currLoseStreak(), currWinStreak()
     Shared lastLoseStreak(), lastTenLosses(), lastTenWins(), lastWinStreak()
     Shared totExtInnLosses(), totExtInnWins(), totHomeLosses!(), totHomeWinss!()
     Shared totRoadLosses(), totRoadWins()
@@ -428,8 +428,8 @@ Sub SortStandings (AA, ZZ)
                         Swap expStdLeagName$(X), expStdLeagName$(Y)
                         Swap teamWinStreak(X), teamWinStreak(Y)
                         Swap teamLoseStreak(X), teamLoseStreak(Y)
-                        Swap cWinStreak(X), cWinStreak(Y)
-                        Swap cLoseStreak(X), cLoseStreak(Y)
+                        Swap currWinStreak(X), currWinStreak(Y)
+                        Swap currLoseStreak(X), currLoseStreak(Y)
                         Swap teamTotWins(X), teamTotWins(Y)
                         Swap teamTotLosses(X), teamTotLosses(Y)
                         Swap totExtInnWins(X), totExtInnWins(Y)

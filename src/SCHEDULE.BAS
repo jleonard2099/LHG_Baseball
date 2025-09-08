@@ -346,6 +346,7 @@ Sub NewSchedule (scheduleFile$)
                     Locate LAST_ROW - 3, 1: Print "ENTER GAME # TO GO TO        "
                     Locate LAST_ROW - 3, 1: Input "ENTER GAME # TO GO TO "; targetGame%
                 Loop Until targetGame% >= 1 And targetGame% <= scheduleAP%(0)
+
                 NS% = Int((targetGame% - 1) / SCHED_ENTRIES_PER_SCREEN)
 
                 'boxName$ = diskPaths$(1) + "BOX" + Mid$(Str$(targetGame%), 2, Len(Str$(targetGame%)))
@@ -407,7 +408,9 @@ Sub NewSchedule (scheduleFile$)
 
                     Locate 8, 12: Print "TOTAL GAMES ="; scheduleAP%(0)
                     Locate 9, 12: Print "SELECT GAME # TO START AND END WITH": Print
-                    Locate 10, 12: Input "ENTER START GAME #: "; SG%: Print
+                    Locate 10, 33: Print Space$(10)
+                    Locate 10, 12: Input "ENTER START GAME #:"; SG%: Print
+                    Locate 11, 31: Print Space$(10)
                     Locate 11, 12: Input "ENTER END GAME #:"; EG%: Print
 
                     Do
@@ -710,7 +713,7 @@ Sub NewGame (visitor$, home$, YN$, DT$, TM$, NTMS, gameIndex%)
         Color 15: Print "USE WEATHER EFFECTS: "; yesNoText$(scheduleNG%(gameIndex%, 5))
         Locate 14, 2: Color 14
         Print "(D) ";
-        Color 15: Print "USE VGA SCREENS, IF ABLE: "; yesNoText$(scheduleNG%(gameIndex%, 11))
+        Color 15: Print "USE BALLPARK GRAPHICS, IF ABLE: "; yesNoText$(scheduleNG%(gameIndex%, 11))
         Locate 15, 2: Color 14
         Print "(E) ";
         Color 15: Print "PITCHER ERA: "; pitcherEra$(scheduleNG%(gameIndex%, 14))
@@ -1325,6 +1328,11 @@ Sub ChangeGlobalSettings ()
     Shared playMode$(), pitcherEra$()
     Shared yesNoText$()
 
+    Dim yesNoNC$(0 To 2)
+    yesNoNC$(0) = "YES      "
+    yesNoNC$(1) = "NO       "
+    yesNoNC$(2) = "NO CHANGE"
+
     Dim displayPause!
 
     ' GLOBAL SETTINGS FOR A SCHEDULE
@@ -1368,7 +1376,7 @@ Sub ChangeGlobalSettings ()
         Color 15: Print "GAME PLAY: "; playMode$(playerOpt)
         Locate 4, 2: Color 14
         Print "(2) ";
-        Color 15: Print "DESIGNATED HITTER: "; yesNoText$(desigHit)
+        Color 15: Print "DESIGNATED HITTER: "; yesNoNC$(desigHit)
         Locate 5, 2: Color 14
         Print "(3) ";
         Color 15: Print Using "PLAY-BY-PLAY DELAY (SECS): ##.#  "; displayPause! ' / 10
@@ -1389,7 +1397,7 @@ Sub ChangeGlobalSettings ()
         Color 15: Print "USE WEATHER EFFECTS: "; yesNoText$(useWeather)
         Locate 11, 2: Color 14
         Print "(9) ";
-        Color 15: Print "USE VGA SCREENS, IF ABLE: "; yesNoText$(useVGA)
+        Color 15: Print "USE BALLPARK GRAPHICS, IF ABLE: "; yesNoText$(useVGA)
         Locate 12, 2: Color 14
         Print "(A) ";
         Color 15: Print "PITCHER ERA: "; pitcherEra$(pitchEraOpt)
@@ -1412,7 +1420,8 @@ Sub ChangeGlobalSettings ()
                 If playerOpt > 3 Then playerOpt = 0
 
             Case 2:
-                desigHit = 1 - desigHit
+                desigHit = desigHit + 1
+                If desigHit > 2 Then desigHit = 0
 
             Case 3:
                 Locate 5, 32: Input displayPause!
@@ -1446,7 +1455,11 @@ Sub ChangeGlobalSettings ()
     Loop Until iVal = 0
 
     For I = 1 To scheduleAP%(0)
-        scheduleNG%(I, 3) = desigHit
+
+        If desigHit < 2 Then
+            scheduleNG%(I, 3) = desigHit
+        End If
+
         scheduleNG%(I, 4) = displayPause! * 10
         scheduleNG%(I, 5) = useWeather
         scheduleNG%(I, 6) = useInj
@@ -1456,6 +1469,7 @@ Sub ChangeGlobalSettings ()
         scheduleNG%(I, 10) = useMgrProf
         scheduleNG%(I, 11) = useVGA
         scheduleNG%(I, 14) = pitchEraOpt
+
     Next
 
 End Sub
@@ -1569,11 +1583,23 @@ Sub LoadScheduleInfo (targetFile$)
         visitorScores(I) = CVI(Q$(22))
         homeScores(I) = CVI(Q$(23))
 
-        If scheduleNG%(I, 6) > 1 Then scheduleNG%(I, 6) = 1
-        If scheduleNG%(I, 7) > 1 Then scheduleNG%(I, 7) = 1
-        If scheduleNG%(I, 9) > 1 Then scheduleNG%(I, 9) = 1
-        If scheduleNG%(I, 10) > 1 Then scheduleNG%(I, 10) = 1
-        If scheduleNG%(I, 11) > 1 Then scheduleNG%(I, 11) = 1
+        'Make sure "Yes"/"No" options
+        'have valid values
+        If scheduleNG%(I, 6) > 1 Then
+            scheduleNG%(I, 6) = 1
+        End If
+        If scheduleNG%(I, 7) > 1 Then
+            scheduleNG%(I, 7) = 1
+        End If
+        If scheduleNG%(I, 9) > 1 Then
+            scheduleNG%(I, 9) = 1
+        End If
+        If scheduleNG%(I, 10) > 1 Then
+            scheduleNG%(I, 10) = 1
+        End If
+        If scheduleNG%(I, 11) > 1 Then
+            scheduleNG%(I, 11) = 1
+        End If
 
     Next
 
@@ -1620,26 +1646,35 @@ Sub CreateSeasonSchedule ()
 
     Do
         I$ = GetKeyPress$
-        choice% = Val(I$) + 1
-        If I$ = Chr$(27) Then choice% = 5
-    Loop Until choice% >= 1 And choice% <= 5
+        schedSizeOpt = Val(I$)
+        If I$ = Chr$(27) Then schedSizeOpt = 5
+    Loop Until schedSizeOpt >= 1 And schedSizeOpt <= 5
 
-    If choice% <> 4 Then
+    If schedSizeOpt <> 4 Then
 
-        leagueFile$ = ChooseFile$(diskPaths$(2) + "*.TMI", "LEAGUE", ExitCode%)
+        leagueFile$ = _OpenFileDialog$("Choose League Definition file", diskPaths$(2), "*.TMI", "League Definition files [.TMI]")
 
-        If ExitCode% <> 27 And ExitCode% <> 0 Then
+        If leagueFile$ <> "" Then
 
             Call ReadLeagueIndex(leagueFile$)
 
-            Select Case choice%
-                Case 0: scxFile$ = "154TEMP.SCX"
-                Case 1: scxFile$ = "162TENTM.SCX"
-                Case 2: scxFile$ = "16212TM.SCX"
-                Case 3: scxFile$ = "16214TM.SCX"
+            Select Case schedSizeOpt
+
+                Case 0:
+                    templateFile$ = "1548TM.SCX"
+
+                Case 1:
+                    templateFile$ = "16210TM.SCX"
+
+                Case 2:
+                    templateFile$ = "16212TM.SCX"
+
+                Case 3:
+                    templateFile$ = "16214TM.SCX"
+
             End Select
 
-            Open scxFile$ For Random As #1 Len = SCHEDULE_SIZE_BYTES
+            Open templateFile$ For Random As #1 Len = SCHEDULE_SIZE_BYTES
 
             fileLength& = LOF(1)
 
@@ -1667,12 +1702,24 @@ Sub CreateSeasonSchedule ()
                 visitorScores(I) = CVI(Q$(22))
                 homeScores(I) = CVI(Q$(23))
 
-                If scheduleNG%(I, 14) > 8 Then scheduleNG%(I, 14) = 0
-                If scheduleNG%(I, 6) > 1 Then scheduleNG%(I, 6) = 1
-                If scheduleNG%(I, 7) > 1 Then scheduleNG%(I, 7) = 1
-                If scheduleNG%(I, 9) > 1 Then scheduleNG%(I, 9) = 1
-                If scheduleNG%(I, 10) > 1 Then scheduleNG%(I, 10) = 1
-                If scheduleNG%(I, 11) > 1 Then scheduleNG%(I, 11) = 1
+                If scheduleNG%(I, 14) > 8 Then
+                    scheduleNG%(I, 14) = 0
+                End If
+                If scheduleNG%(I, 6) > 1 Then
+                    scheduleNG%(I, 6) = 1
+                End If
+                If scheduleNG%(I, 7) > 1 Then
+                    scheduleNG%(I, 7) = 1
+                End If
+                If scheduleNG%(I, 9) > 1 Then
+                    scheduleNG%(I, 9) = 1
+                End If
+                If scheduleNG%(I, 10) > 1 Then
+                    scheduleNG%(I, 10) = 1
+                End If
+                If scheduleNG%(I, 11) > 1 Then
+                    scheduleNG%(I, 11) = 1
+                End If
 
             Next
 
@@ -1687,81 +1734,127 @@ Sub CreateSeasonSchedule ()
 
             If seasonSchedFile$ <> "" Then
 
-                For I = 1 To 20
-                    Print memberIdx(I), memberYear$(I)
-                Next
+                invalidFile = 0
 
                 For I = 1 To scheduleAP%(0)
 
-                    Print "GAME"; I
+                    Print "TEMPLATE GAME"; I
                     Print scheduleNG%(I, 0), scheduleYN$(I, 0)
                     Print scheduleNG%(I, 1), scheduleYN$(I, 1)
 
-                    Select Case choice%
+                    'Replace template values with those from global change
+                    Select Case schedSizeOpt
 
                         Case 0 To 1:
                             X = scheduleNG%(I, 0)
-                            scheduleNG%(I, 0) = memberIdx(X)
-                            scheduleYN$(I, 0) = memberYear$(X)
-                            X = scheduleNG%(I, 1)
-                            scheduleNG%(I, 1) = memberIdx(X)
-                            scheduleYN$(I, 1) = memberYear$(X)
+                            If memberIdx(X) > 0 Then
+
+                                scheduleNG%(I, 0) = memberIdx(X)
+                                scheduleYN$(I, 0) = memberYear$(X)
+
+                                X = scheduleNG%(I, 1)
+                                If X > 0 Then
+                                    scheduleNG%(I, 1) = memberIdx(X)
+                                    scheduleYN$(I, 1) = memberYear$(X)
+                                Else
+                                    invalidFile = 1
+                                End If
+                            Else
+                                invalidFile = 1
+                            End If
 
                         Case 2:
                             If scheduleNG%(I, 0) <= 6 Then
                                 X = scheduleNG%(I, 0)
-                                Print X
-                                scheduleNG%(I, 0) = memberIdx(X)
-                                scheduleYN$(I, 0) = memberYear$(X)
+
+                                If memberIdx(X) > 0 Then
+                                    scheduleNG%(I, 0) = memberIdx(X)
+                                    scheduleYN$(I, 0) = memberYear$(X)
+                                Else
+                                    invalidFile = 1
+                                End If
                             Else
                                 X = scheduleNG%(I, 0)
-                                Print X
-                                scheduleNG%(I, 0) = memberIdx(X + 4)
-                                scheduleYN$(I, 0) = memberYear$(X + 4)
+                                If memberIdx(X + 4) > 0 Then
+                                    scheduleNG%(I, 0) = memberIdx(X + 4)
+                                    scheduleYN$(I, 0) = memberYear$(X + 4)
+                                Else
+                                    invalidFile = 1
+                                End If
                             End If
 
                             If scheduleNG%(I, 1) <= 6 Then
-                                X = scheduleNG%(I, 1)
-                                Print X
-                                scheduleNG%(I, 1) = memberIdx(X)
-                                scheduleYN$(I, 1) = memberYear$(X)
+                                memberIdx(X) = scheduleNG%(I, 1)
+                                If memberIdx(X) > 0 Then
+                                    scheduleNG%(I, 1) = memberIdx(X)
+                                    scheduleYN$(I, 1) = memberYear$(X)
+                                Else
+                                    invalidFile = 1
+                                End If
                             Else
                                 X = scheduleNG%(I, 1)
-                                Print X
-                                scheduleNG%(I, 1) = memberIdx(X + 4)
-                                scheduleYN$(I, 1) = memberYear$(X + 4)
+                                If memberIdx(X + 4) > 0 Then
+                                    scheduleNG%(I, 1) = memberIdx(X + 4)
+                                    scheduleYN$(I, 1) = memberYear$(X + 4)
+                                Else
+                                    invalidFile = 1
+                                End If
                             End If
 
                         Case 3:
                             If scheduleNG%(I, 0) <= 7 Then
                                 X = scheduleNG%(I, 0)
-                                scheduleNG%(I, 0) = memberIdx(X)
-                                scheduleYN$(I, 0) = memberYear$(X)
+                                If memberIdx(X) > 0 Then
+                                    scheduleNG%(I, 0) = memberIdx(X)
+                                    scheduleYN$(I, 0) = memberYear$(X)
+                                Else
+                                    invalidFile = 1
+                                End If
                             Else
                                 X = scheduleNG%(I, 0)
-                                scheduleNG%(I, 0) = memberIdx(X + 3)
-                                scheduleYN$(I, 0) = memberYear$(X + 3)
+                                If memberIdx(X + 3) > 0 Then
+                                    scheduleNG%(I, 0) = memberIdx(X + 3)
+                                    scheduleYN$(I, 0) = memberYear$(X + 3)
+                                Else
+                                    invalidFile = 1
+                                End If
                             End If
 
                             If scheduleNG%(I, 1) <= 7 Then
                                 X = scheduleNG%(I, 1)
-                                scheduleNG%(I, 1) = memberIdx(X)
-                                scheduleYN$(I, 1) = memberYear$(X)
+                                If memberIdx(X) > 0 Then
+                                    scheduleNG%(I, 1) = memberIdx(X)
+                                    scheduleYN$(I, 1) = memberYear$(X)
+                                Else
+                                    invalidFile = 1
+                                End If
                             Else
                                 X = scheduleNG%(I, 1)
-                                scheduleNG%(I, 1) = memberIdx(X + 3)
-                                scheduleYN$(I, 1) = memberYear$(X + 3)
+                                If memberIdx(X + 3) > 0 Then
+                                    scheduleNG%(I, 1) = memberIdx(X + 3)
+                                    scheduleYN$(I, 1) = memberYear$(X + 3)
+                                Else
+                                    invalidFile = 1
+                                End If
                             End If
 
                     End Select
 
-                    Print "GAME"; I
-                    Print scheduleNG%(I, 0), scheduleYN$(I, 0)
-                    Print scheduleNG%(I, 1), scheduleYN$(I, 1)
+                    If invalidFile = 1 Then
+                        Locate 9,
+                        Call CSMsgBox("ONE OR MORE TEAMS WERE INVALID. CANNOT CREATE A SCHEDULE... PRESS ANY KEY AND TRY SELECTING ANOTHER LEAGUE", 32, PASS)
+                        K$ = GetKeyPress$
+                        Call CSMsgBox("", 0, PASS)
+                        Exit Sub
+                    Else
+                        Print "SCHEDULE GAME"; I
+                        Print scheduleNG%(I, 0), scheduleYN$(I, 0)
+                        Print scheduleNG%(I, 1), scheduleYN$(I, 1)
+                    End If
 
                 Next 'done looping through games
 
-                Call SaveScheduleFile(seasonSchedFile$)
+                Call SaveScheduleFile(diskPaths$(3) + seasonSchedFile$ + ".SCD")
 
             End If
 
