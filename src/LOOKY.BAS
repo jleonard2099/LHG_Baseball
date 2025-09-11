@@ -388,11 +388,15 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Shared batterNames$(), pitcherNames$(), statS0()
     Shared statT0!(), statT1!()
 
+    Shared calcProperties()
+    Shared teamScore(), nbrInnings(), oppScore()
     Shared statB(), statB0()
-    Shared teamScore(), nbrInnings(), teamRatings(), oppScore()
     Shared statP(), statP0()
+    Shared teamRatings()
 
     Shared oppName$(), losePitcher$(), locIndicator$(), winPitcher$()
+
+    Shared batCategoryBatterAbbr$(), batCategoryPitcherAbbr$(), pitCategoryAbbr$()
 
     Xcoord = Len(teamName$)
     Xcoord = Int((80 - Xcoord) / 2)
@@ -441,7 +445,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Print "WON: "; teamWins; " LOST: "; teamLosses
     Locate 5
     Color 15, 1
-    Print "BATTERS      G   AB  R   H  2B 3B HR RBI  SB  BB  SO   BA    OBP   SLG CS %RAB "
+    Print "BATTERS      G   AB  R   H  2B 3B HR RBI  SB  BB  SO   BA    SLG   OBP CS %RAB "
 
     Color 15, 0
 
@@ -684,7 +688,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Locate 5
 
     Color 15, 1
-    Print "PITCHERS     G   AB   R   H 2B 3B HR RBI  SB  BB  SO   BA    OBP   SLG CS"
+    Print "PITCHERS     G   AB   R   H 2B 3B HR RBI  SB  BB  SO   BA    SLG   OBP CS"
 
     For I = 0 To 21
 
@@ -766,7 +770,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
             Locate , 66
 
             I3 = statP0(I, 30) + statP0(I, 23)
-            I4 = statP0(I, 24) + statP0(I, 30)
+            I4 = statP0(I, 30) + statP0(I, 24)
 
             If I3 = 0 Then
                 Print " .---";
@@ -1066,7 +1070,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Locate 5
 
     Color 15, 4
-    Print "PITCHERS   BS HL  RI  RS   SUP  GS  QS  SH SF"
+    Print "PITCHERS   BS HL  IR IR-A  RPS  GS  QS  SH SF"
 
     For I = 0 To 21
 
@@ -1079,12 +1083,12 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
 
             Print Left$(pitcherNames$(I), 10);
 
-            'Blown Save, Hold, Runs Inherited, Runs Scored
+            'Blown Save, Hold, Inherited Runners, IR Allowed
             Locate , 12
             Print Using "## ## ### ### "; statP0(I, 19); statP0(I, 22); statP0(I, 17); statP0(I, 18);
 
             If statP0(I, 9) > 0 Then
-                'Run Support, Games Started, Quality Start
+                'Runs / Start, Games Started, Quality Start
                 statCalc = statP0(I, 20) / statP0(I, 9)
                 Print Using "##.##  ##  ##"; statCalc; statP0(I, 9); statP0(I, 21);
             Else
@@ -1136,13 +1140,13 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
     Color 15, 4
     Locate 10, 1
 
-    'Blown Save, RI, Runs Saved, SUP, Quality Start, Sacrifice Bunt, Sacrifice Fly
-    Print " BS   RI   RS  SUP    QS  SH  SF"
+    'Blown Save, Inherited Runners, IR Allowed, Runs / Start, Quality Start, Sacrifice Bunt, Sacrifice Fly
+    Print " BS   IR IR-A  RPS    QS  SH  SF"
 
     Color 14, 0
 
     statCalc = statT0!(2) / statT1!(9)
-    'BS, RI, RS, SUP, QS, SH, SF
+    'BS, IR, IR-A, Runs / Start, QS, SH, SF
     Print Using "### #### #### ##.##  ### ### ###"; statT1!(19); statT1!(17); statT1!(18); statCalc; statT1!(21); statT1!(15); statT1!(16)
 
     I$ = GetKeyPress$
@@ -1823,7 +1827,7 @@ Sub PrintScheduleStatSummary (printDest, destFile$, statFile$, teamName$, nbrGam
     Print #1, Tab(Xcoord); teamName$
     Print #1,
     Print #1,
-    Print #1, "PITCHERS   BS HL  RI  RS   SUP  GS  QS  SH SF"
+    Print #1, "PITCHERS   BS HL  RI  RS   RPS  GS  QS  SH SF"
 
     For I = 0 To 21
 
@@ -1875,7 +1879,7 @@ Sub PrintScheduleStatSummary (printDest, destFile$, statFile$, teamName$, nbrGam
     Print #1, Using "#### #### ### ### ###"; statT1!(2); statT1!(3); statT1!(11); statT1!(14); statT1!(13)
 
     'Blown Save, RI, Runs Saved, SUP, Quality Start, Sacrifice Bunt, Sacrifice Fly
-    Print #1, " BS   RI   RS  SUP    QS  SH  SF"
+    Print #1, " BS   RI   RS  RPS    QS  SH  SF"
 
     statCalc = statT0!(2) / statT1!(9)
     'BS, RI, RS, SUP, QS, SH, SF
@@ -2289,7 +2293,7 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
     LPrint Chr$(12)
 
     LPrint teamName$; "    WON: "; teamWins; " LOST: "; teamLosses
-    LPrint "PITCHERS    W  L SV  IP     H  BB  SO  ERA    G GS CG RUN  ER SHO HR DP %RIP SH SF  RI RIS BS   SUP QS"
+    LPrint "PITCHERS    W  L SV  IP     H  BB  SO  ERA    G GS CG RUN  ER SHO HR DP %RIP SH SF  IR IRA BS   RPS QS"
 
     For I = 0 To 21
 
@@ -2342,7 +2346,9 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
 
             LPrint Tab(78); Using "## ## ### ### ## "; statP0(I, 15); statP0(I, 16); statP0(I, 17); statP0(I, 18); statP0(I, 19);
 
-            If statP0(I, 9) > 0 Then LPrint Using "##.## "; statP0(I, 20) / statP0(I, 9);
+            If statP0(I, 9) > 0 Then 
+                LPrint Using "##.## "; statP0(I, 20) / statP0(I, 9);
+            End If
 
             LPrint Tab(101); Using "##"; statP0(I, 21)
 
@@ -2478,5 +2484,236 @@ Sub ResetStatPrompt (statFile$, teamRatings())
         'Loop Until UCase$(I$) = "N"
 
     End If 'Done checking if reset stats
+
+End Sub
+
+
+'----------------------------------------
+'       SortBatterStats Subroutine
+'----------------------------------------
+'This subroutine sorts the associate stats
+'based on the chosen category
+'playerType
+' 0 = BATTER (non-pitcher)
+' 1 = BATTER (pitcher)
+' 2 = PITCHER
+Sub SortBatterStats (playerType, categoryPick)
+
+    Shared batterNames$(), pitcherNames$()
+    Shared calcProperties()
+
+    Shared statB(), statB0()
+    Shared statP(), statP0()
+    
+    Shared statT0!(), statT1!()
+
+    'SORT BASED ON CATEGORY
+    'Map category choices from menu
+    'to index #'s in arrays
+    
+    ' ** NEED TO TAKE OUT "CALCULATED" CATEGORIES
+    ' then re-index everything from there as well
+    ' role of statT1!()
+    Select Case playerType
+
+        Case 0
+
+            'Batting / Fielding - Batters
+            Select Case categoryPick
+
+                Case 1: statGroup = 14
+                Case 2: statGroup = 0
+                Case 3: statGroup = 2
+                Case 4: statGroup = 1
+                Case 5: statGroup = 4
+                Case 6: statGroup = 5
+                Case 7: statGroup = 6
+                Case 8: statGroup = 3
+                Case 9: statGroup = 9
+                Case 10: statGroup = 7
+                Case 11: statGroup = 8
+                Case 12: statGroup = -1 'BAVG
+                Case 13: statGroup = -1 'SLG
+                Case 14: statGroup = -1 'OBP
+                Case 15: statGroup = 10
+                Case 16: statGroup = -1 'Runs / At Bat
+                Case 17: statGroup = 12
+                Case 18: statGroup = 13
+                Case 19: statGroup = 14
+                Case 20: statGroup = -1 'Needs
+                Case 21: statGroup = -1 'Proj AB
+                Case 22: statGroup = 16
+                Case 23: statGroup = 17
+                Case 24: statGroup = 11
+                Case 25: statGroup = -1 'FAVG
+                Case 26: statGroup = -1 'SBA
+                Case 27: statGroup = 21 
+                Case 28: statGroup = -1 'CS %
+                Case 29: statGroup = 18
+                Case 30: statGroup = 19
+
+            End Select
+            
+            maxPlayers = 22
+
+        Case 1
+
+            'Batting / Fielding - Pitchers
+            Select Case categoryPick
+
+                Case 1: statGroup = 8
+                Case 2: statGroup = 23
+                Case 3: statGroup = 25
+                Case 4: statGroup = 24
+                Case 5: statGroup = 27
+                Case 6: statGroup = 28
+                Case 7: statGroup = 29
+                Case 8: statGroup = 26
+                Case 9: statGroup = 32
+                Case 10: statGroup = 30
+                Case 11: statGroup = 31
+                Case 12: statGroup = -1 'BAVG
+                Case 13: statGroup = -1 'SLG
+                Case 14: statGroup = -1 'OBP
+                Case 15: statGroup = 33
+                Case 16: statGroup = 35
+                Case 17: statGroup = 36
+                Case 18: statGroup = 37
+                Case 19: statGroup = 38
+                Case 20: statGroup = 39
+                Case 21: statGroup = 34
+                Case 22: statGroup = -1 'FAVG
+                Case 23: statGroup = 40 
+                Case 24: statGroup = 41
+
+            End Select
+
+            maxPlayers = 21
+
+        Case 2
+
+            'Pitcher Categories
+            Select Case categoryPick
+            
+                Case 1: statGroup = 6
+                Case 2: statGroup = 7
+                Case 3: statGroup = -1 'ERA
+                Case 4: statGroup = 8
+                Case 5: statGroup = 9
+                Case 6: statGroup = 10
+                Case 7: statGroup = 11
+                Case 8: statGroup = 12
+                Case 9: statGroup = 0
+                Case 10: statGroup = 1
+                Case 11: statGroup = 2
+                Case 12: statGroup = 3
+                Case 13: statGroup = 14
+                Case 14: statGroup = 4
+                Case 15: statGroup = 5
+                Case 16: statGroup = 13
+                Case 17: statGroup = -1 '%IP
+                Case 18: statGroup = 19
+                Case 19: statGroup = 22
+                Case 20: statGroup = 17
+                Case 21: statGroup = 18
+                Case 22: statGroup = -1 'RS
+                Case 23: statGroup = 9
+                Case 24: statGroup = 21
+                Case 25: statGroup = 15
+                Case 26: statGroup = 16
+
+            End Select
+
+            maxPlayers = 21
+
+    End Select
+
+
+    Select Case categoryPick
+    
+        Case 0
+            'Batter / Pitcher Name
+            For Z = 0 To maxPlayers - 1
+
+                For Z1 = Z + 1 To maxPlayers
+
+                    If playerType = 0 Then
+                        sourceName$ = batterNames$(Z)
+                        targetName$ = batterNames$(Z1)
+                    Else
+                        sourceName$ = pitcherNames$(Z)
+                        targetName$ = pitcherNames$(Z1)
+                    End If
+                
+                    If _StriCmp(sourceName$,targetName$) = 1 Then
+
+                        If playerType = 0 Then
+                            Swap batterNames$(Z), batterNames$(Z1)
+                            Swap statB(Z), statB(Z1)
+                            For I = 0 To 30:
+                                Swap statB0(Z, I), statB0(Z1, I)
+                            Next
+                        Else
+                            Swap pitcherNames$(Z), pitcherNames$(Z1)
+                            Swap statP(Z), statP(Z1)
+                            For I = 0 To 41:
+                                Swap statP0(Z, I), statP0(Z1, I)
+                            Next
+
+                        End If
+
+                    
+                    End If
+
+                Next Z1
+
+            Next Z
+    
+        Case Else
+
+            'Batter / Pitcher Stats
+            For Z = 0 To maxPlayers - 1
+
+                For Z1 = Z + 1 To maxPlayers
+
+                    If playerType = 0 Then
+                        sourceStat = statB0(Z, statGroup)
+                        targetStat = statB0(Z1, statGroup)
+                    Else
+                        sourceStat = statP0(Z, statGroup)
+                        targetStat = statP0(Z1, statGroup)
+                    End If
+
+                    If sourceStat < targetStat Then
+
+                        Select Case playerType 
+
+                            Case 0
+                                Swap batterNames$(Z), batterNames$(Z1)
+                                Swap statB(Z), statB(Z1)
+
+                                'Sort ALL batter values
+                                For I = 0 To 30:
+                                    Swap statB0(Z, I), statB0(Z1, I)
+                                Next
+
+                            Case Else
+                                Swap pitcherNames$(Z), pitcherNames$(Z1)
+                                Swap statP(Z), statP(Z1)
+
+                                'Sort ALL pitcher values
+                                For I = 0 To 41:
+                                    Swap statP0(Z, I), statP0(Z1, I)
+                                Next
+
+                        End Select
+
+                    End If
+
+                Next Z1
+
+            Next Z
+
+    End Select
 
 End Sub

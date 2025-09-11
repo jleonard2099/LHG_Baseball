@@ -314,6 +314,9 @@ Sub UpdateExpandedLeaders (JB, JP, plyrTotalStats, teamTotalStats)
 
                         For I1 = 0 To 22
                             PK1 = PK1 + 1
+                            If I > 2 And I1 > 15 Then
+                                test = 1
+                            End If
                             expLdrP0(PK, PK1) = careerP0(I, I1)
                         Next I1
 
@@ -628,7 +631,7 @@ Sub ExpandedLeaders_Menu (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
         Color , 0
 
         If ExitCode% <> 27 Then
-        
+
             baseFile$ = GetFileBaseName$(leaderFile$)
 
             Select Case SELECTION%
@@ -1218,7 +1221,6 @@ Sub ViewPitchingLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
                                 expLdrTeam$(PPP) = expPitLdrTeam$(I)
                                 TYP2(PPP) = expLdrP0(I, X0)
                             End If
-
                         Next I
 
                         For I = 2 To PPP:
@@ -1227,7 +1229,6 @@ Sub ViewPitchingLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
                             Locate 5, 5: Print "sorting player "; stpl
 
                             For J = PPP To I Step -1
-
                                 If sortType = 1 Then
                                     If TYP2(J - 1) < TYP2(J) Then
                                         Swap expLdrPlyrName$(J - 1), expLdrPlyrName$(J)
@@ -1252,9 +1253,8 @@ Sub ViewPitchingLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
 
                         TVN = 1
 
-                    Case 1 To 16, 19, 20, 26, 27:
+                    Case 1 To 17, 19, 20, 26, 27:
                         For I = 1 To JP
-
                             If expLdrP0(I, X0) <> 0 Then
                                 PPP = PPP + 1
                                 Locate 1, 5: Print "CHANGING PLAYER "; PPP
@@ -1273,14 +1273,14 @@ Sub ViewPitchingLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
                                 PPP = PPP + 1
                                 Locate 1, 5: Print "CHANGING PLAYER "; PPP
 
-                                If expLdrP0(I, X1) <> 0 Then
+                                If expLdrP0(I, X1) = 0 Then
                                     expLdrPlyrName$(PPP) = expPitLdrName$(I)
                                     expLdrTeam$(PPP) = expPitLdrTeam$(I)
                                     expLdrVal!(PPP) = 0
                                 Else
                                     expLdrPlyrName$(PPP) = expPitLdrName$(I)
                                     expLdrTeam$(PPP) = expPitLdrTeam$(I)
-                                    expLdrVal!(PPP) = expLdrP0(I, X1) / expLdrP0(I, X0)
+                                    expLdrVal!(PPP) = (expLdrP0(I, X1) / expLdrP0(I, X0)) * 100
                                 End If
                             End If
                         Next
@@ -1407,7 +1407,7 @@ Sub DisplayPitchingLeaders (TVN, maxRecords, categoryId)
                 If W > 1 Then
 
                     Color 14
-                    Locate LAST_ROW - 2: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
+                    Locate LAST_ROW - 1, 15: Print "HIT ENTER TO CONTINUE (ESC TO RETURN TO MAIN MENU)"
                     Color 15
 
                     I$ = GetKeyPress$
@@ -1449,7 +1449,7 @@ Sub DisplayPitchingLeaders (TVN, maxRecords, categoryId)
                         Print Tab(58); Using "###.##"; expLdrVal!(W)
 
                     Case 4:
-                        Print Tab(58); Using ".##"; expLdrVal!(W);: Print "%"
+                        Print Tab(58); Using "###"; expLdrVal!(W);: Print "%"
 
                 End Select
 
@@ -1939,7 +1939,7 @@ Sub DisplayTeamView (categoryID, screenType, printOrView, TVN, maxRecords)
 
                 Print #1, "     TEAM                     "; expPitCategory$(categoryID)
                 Print #1, "     ------                   ";
-                Print #1, String$(Len(expPitCategory$(categoryID)),45)
+                Print #1, String$(Len(expPitCategory$(categoryID)), 45)
 
                 Print #1, Using "### "; W;
                 Print #1, expLdrTeam$(W);:
@@ -2383,7 +2383,7 @@ Sub NewLeaders_Report (printDest, destFile$, TVN, maxRecords, categoryID)
             Print #1, Chr$(12)
             Print #1, "     PLAYER                  TEAM                     "; expBatCategory$(categoryID)
             Print #1, "     ------                  ----                     ";
-            Print #1, String$(Len(expBatCategory$(categoryID)),45)
+            Print #1, String$(Len(expBatCategory$(categoryID)), 45)
         End If
 
         Print #1, Using "### "; W;

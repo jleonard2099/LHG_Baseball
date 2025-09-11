@@ -97,8 +97,9 @@ Sub CompileLeague ()
                     If sameTeam = 0 And _FileExists(diskPaths$(1) + memberName$(XW)) Then
 
                         Call ReadStatsLeague(memberName$(XW), TN$, totalGames)
-                        Call CheckStatsLeague(memberName$(XW), statName$, totalGames)
-                        Call CalcStatTotals(statName$, totalGames)
+                        'Call CalcRecordsPro(totalGames, TM$, statName$, finalUpdate$)
+                        Call CalcStatLeaders(memberName$(XW), statName$, totalGames)
+                        Call CalcStatLeadersPitch(statName$, totalGames)
 
                     End If 'Done checking if we need to skip
 
@@ -119,7 +120,9 @@ End Sub
 '----------------------------------------
 '         FindStatsLeague Function
 '----------------------------------------
-'...explanation...
+'Looks for schedule stats for a specified
+'team in the league and loads them if
+'found, notifying the user
 Function FindStatsLeague% (statFile$, teamName$, fullWins, fullLosses)
 
     If Not _FileExists(diskPaths$(1) + statFile$) Then
@@ -248,11 +251,11 @@ End Sub
 
 
 '----------------------------------------
-'      CheckStatsLeague Subroutine
+'      CalcStatLeaders Subroutine
 '----------------------------------------
 'This subroutine compares pre-loaded stats
 'to existing leaders and updates as needed
-Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
+Sub CalcStatLeaders (targetTeam$, statName$, totalGames)
 
     Dim pitcherNames$(TEAMS_PER_LEAGUE)
 
@@ -273,6 +276,7 @@ Sub CheckStatsLeague (targetTeam$, statName$, totalGames)
     '-- When viewing leaders, header says Min 3.1
     minAtBat = totalGames * 3.1
 
+    'All Batters
     For X = 1 To 23
 
         If leaderNames$(X) <> "XXX" Then
@@ -783,12 +787,12 @@ End Sub
 
 
 '----------------------------------------
-'      CalcStatTotals Subroutine
+'      CalcStatLeadersPitch Subroutine
 '----------------------------------------
 'This subroutine compares all pre-loaded
 'stats to each of the record categories to
 'see if any should be updated
-Sub CalcStatTotals (statName$, totalGames)
+Sub CalcStatLeadersPitch (statName$, totalGames)
 
     Shared ldrBatStat(), ldrPitStat()
     Shared leagLdrPlayer$(), leagLdrTeam$()
@@ -1247,6 +1251,557 @@ Sub CalcStatTotals (statName$, totalGames)
 
     End If
 
+End Sub
+
+
+'----------------------------------------
+'      CalcRecordsPro Subroutine
+'----------------------------------------
+'Read in all league stats and calculate
+'records so that an output file can be
+'made containing all records.
+Sub CalcRecordsPro (leagueFile$)
+'(totalGames, teamName$, statName$, finalUpdate$)
+
+    Shared expLdrB0(), expLdrP0()
+
+    Shared batRecTmVal!(), batRecTmYr!()
+    Shared batRecVal!(), batRecYr!()
+    Shared pitRecTmVal!(), pitRecTmYr!()
+    Shared pitRecVal!(), pitRecYr!()
+
+    Shared batTotGames!()
+    Shared plyLdrVal!(), teamLdrVal!()
+    Shared divWins(), divLosses()
+
+    Shared pitTotGames!()
+
+    Shared batRecPlyr$(), batRecTeam$(), batRecTmDesc$()    
+    Shared pitRecTmDesc$(), pitRecPlyr$(), pitRecTeam$()
+    Shared expBatLdrName$(), expPitLdrName$()
+    Shared expBatLdrTeam$(), expPitLdrTeam$()
+
+    Dim TT$(40, 22), TT1$(40, 23)
+
+    AAG = 920
+    AAS = 880
+    AAT = 80
+    TMR = 2360
+
+    JB = 0
+    JP = 0
+    TS = 0
+
+	Call ReadSeasonRecords ("RECORDS.MLB")
+
+	Cls
+	Input "ENTER SEASON YEAR (1991,1992)"; seasonYear
+
+	Do
+		Locate 2
+		Input "WOULD YOU LIKE TO POST SEASON RECORDS? (Y/N)"; finalUpdate$
+	Loop Until UCase$(finalUpdate$) = "Y" Or UCase$(finalUpdate$) = "N"
+
+	Print
+	Print "ANY CHANGE? (Y/N)"
+
+	Do
+		I$ = GetKeyPress$
+	Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+	If Not _FileExists(diskPaths$(2) + "RECORDS.MLB") Then
+
+		pitRecVal!(23) = 100
+		pitRecVal!(25) = 100
+		batRecVal!(24) = 999
+		batRecVal!(25) = 999
+		batRecVal!(26) = 999
+		batRecVal!(27) = 999
+		batRecVal!(28) = 999
+		pitRecVal!(27) = 100
+		pitRecTmVal!(24) = 100
+
+	Else
+
+		Print "READING IN CURRENT RECORDS"
+
+		Call ReadSeasonRecords ("RECORDS.MLB")
+
+	End If
+
+	TMR = 3680
+
+	Open diskPaths$(2) + leagueFile$ + ".BAT" For Input As #1
+
+	Input #1, JB, JP, div1$, div2$, div3$, div4$, LGF$, TS, TTS
+
+	For I = 1 To 920:
+		Input #1, expBatLdrName$(I), expBatLdrTeam$(I), batTotGames!(I)
+		Color 14
+		Locate 18, 38
+		TMR = TMR - 1
+		Print Using "#####"; TMR
+	Next I
+
+	For I = 1 To 920:
+		For I1 = 1 To 22
+			Input #1, expLdrB0(I, I1)
+		Next I1
+		Color 14
+		Locate 18, 38
+		TMR = TMR - 1
+		Print Using "#####"; TMR
+	Next I
+
+	Close 1
+
+	Open diskPaths$(2) + leagueFile$ + ".PIT" For Input As #1
+
+	Input #1, JB, JP, div1$, div2$, div3$, div4$, LGF$, TS, TTS
+
+	For I = 1 To 880:
+		Input #1, expPitLdrName$(I), expPitLdrTeam$(I), pitTotGames!(I)
+		Color 14
+		Locate 18, 38
+		TMR = TMR - 1
+		Print Using "#####"; TMR
+	Next I
+
+	For I = 1 To 880:
+
+		For I1 = 1 To 23:
+			Input #1, expLdrP0(I, I1)
+		Next I1
+
+		Color 14
+		Locate 18, 38
+		TMR = TMR - 1
+		Print Using "#####"; TMR
+
+	Next I
+
+	Close 1
+
+	Open diskPaths$(2) + leagueFile$ + ".TOT" For Input As #1
+
+	Input #1, JB, JP, div1$, div2$, div3$, div4$, LGF$, TS, TTS
+
+	For I = 1 To TEAMS_PER_LEAGUE
+		Input #1, divWins(I), divLosses(I)
+	Next
+
+	For I = 1 To TEAMS_PER_LEAGUE
+
+		For I1 = 0 To 21:
+			Input #1, plyLdrVal!(I, I1), TT$(I, I1)
+		Next
+
+		Color 14
+		Locate 18, 38
+		TMR = TMR - 1
+		Print Using "#####"; TMR
+
+	Next
+
+	For I = 1 To TEAMS_PER_LEAGUE
+
+		For I1 = 0 To 22:
+			Input #1, teamLdrVal!(I, I1), TT1$(I, I1)
+		Next
+
+		Color 14
+		Locate 18, 45
+		TMR = TMR - 1
+		Print Using "#####"; TMR
+
+	Next
+
+	Close #1
+
+	Locate 7: Print "CALCULATING BATTER RECORDS . . . ."
+
+	For I = 1 To 920
+
+		For I1 = 1 To 20
+
+			If expLdrB0(I, I1) >= batRecVal!(I1) Then
+				batRecVal!(I1) = expLdrB0(I, I1)
+				batRecPlyr$(I1) = expBatLdrName$(I)
+				batRecTeam$(I1) = expBatLdrTeam$(I)
+				batRecYr!(I1) = seasonYear
+			End If
+
+		Next I1
+
+		AAG = AAG - 1
+		Locate 7, 40: Print Using "###"; AAG
+
+	Next I
+
+	If finalUpdate$ = "Y" Then
+
+		For I = 1 To 920
+
+			If expLdrB0(I, 1) + expLdrB0(I, 8) >= batTotGames!(I) * 3.1 And expLdrB0(I, 1) <> 0 Then
+				If expLdrB0(I, 2) / expLdrB0(I, 1) >= batRecVal!(21) Then
+					batRecVal!(21) = expLdrB0(I, 2) / expLdrB0(I, 1)
+					batRecPlyr$(21) = expBatLdrName$(I)
+					batRecTeam$(21) = expBatLdrTeam$(I)
+					batRecYr!(21) = seasonYear
+				End If
+			End If
+
+		Next I
+
+		For I = 1 To 920
+
+			If expLdrB0(I, 1) + expLdrB0(I, 8) >= batTotGames!(I) * 3.1 And expLdrB0(I, 2) <> 0 Then
+				If (expLdrB0(I, 2) + expLdrB0(I, 5) + expLdrB0(I, 6) * 2 + expLdrB0(I, 7) * 3) / expLdrB0(I, 1) >= batRecVal!(22) Then
+					batRecVal!(22) = (expLdrB0(I, 2) + expLdrB0(I, 5) + expLdrB0(I, 6) * 2 + expLdrB0(I, 7) * 3) / expLdrB0(I, 1)
+					batRecPlyr$(22) = expBatLdrName$(I)
+					batRecTeam$(22) = expBatLdrTeam$(I)
+					batRecYr!(22) = seasonYear
+				End If
+			End If
+
+		Next I
+
+		For I = 1 To 920
+
+			If expLdrB0(I, 1) + expLdrB0(I, 8) >= batTotGames!(I) * 3.1 And expLdrB0(I, 2) <> 0 Then
+				If (expLdrB0(I, 2) + expLdrB0(I, 8)) / (expLdrB0(I, 1) + expLdrB0(I, 8)) >= batRecVal!(23) Then
+					batRecVal!(23) = (expLdrB0(I, 2) + expLdrB0(I, 8)) / (expLdrB0(I, 1) + expLdrB0(I, 8))
+					batRecPlyr$(23) = expBatLdrName$(I)
+					batRecTeam$(23) = expBatLdrTeam$(I)
+					batRecYr!(23) = seasonYear
+				End If
+			End If
+
+		Next I
+
+		For I = 1 To 920
+
+			If expLdrB0(I, 1) + expLdrB0(I, 8) >= batTotGames!(I) * 3.1 And expLdrB0(I, 7) <> 0 Then
+				If expLdrB0(I, 1) / expLdrB0(I, 7) <= batRecVal!(24) Then
+					batRecVal!(24) = expLdrB0(I, 1) / expLdrB0(I, 7)
+					batRecPlyr$(24) = expBatLdrName$(I)
+					batRecTeam$(24) = expBatLdrTeam$(I)
+					batRecYr!(24) = seasonYear
+				End If
+			End If
+
+		Next I
+
+		For I = 1 To 920
+
+			If expLdrB0(I, 1) + expLdrB0(I, 8) >= batTotGames!(I) * 3.1 And expLdrB0(I, 9) <> 0 Then
+				If expLdrB0(I, 1) / expLdrB0(I, 9) <= batRecVal!(25) Then
+					batRecVal!(25) = expLdrB0(I, 1) / expLdrB0(I, 9)
+					batRecPlyr$(25) = expBatLdrName$(I)
+					batRecTeam$(25) = expBatLdrTeam$(I)
+					batRecYr!(25) = seasonYear
+				End If
+			End If
+
+		Next I
+
+		For I = 1 To 920
+
+			If expLdrB0(I, 1) + expLdrB0(I, 8) >= batTotGames!(I) * 3.1 And expLdrB0(I, 8) <> 0 Then
+				If expLdrB0(I, 1) / expLdrB0(I, 8) > batRecVal!(26) Then
+					batRecVal!(26) = expLdrB0(I, 1) / expLdrB0(I, 8)
+					batRecPlyr$(26) = expBatLdrName$(I)
+					batRecTeam$(26) = expBatLdrTeam$(I)
+					batRecYr!(26) = seasonYear
+				End If
+			End If
+
+		Next I
+
+		For I = 1 To 920
+
+			If expLdrB0(I, 1) + expLdrB0(I, 8) >= batTotGames!(I) * 3.1 And expLdrB0(I, 4) <> 0 Then
+				If expLdrB0(I, 1) / expLdrB0(I, 4) <= batRecVal!(27) Then
+					batRecVal!(27) = expLdrB0(I, 1) / expLdrB0(I, 4)
+					batRecPlyr$(27) = expBatLdrName$(I)
+					batRecTeam$(27) = expBatLdrTeam$(I)
+					batRecYr!(27) = seasonYear
+				End If
+			End If
+
+		Next I
+
+		For I = 1 To 920
+
+			If expLdrB0(I, 1) + expLdrB0(I, 8) >= batTotGames!(I) * 3.1 And expLdrB0(I, 3) <> 0 Then
+				If expLdrB0(I, 1) / expLdrB0(I, 3) <= batRecVal!(28) Then
+					batRecVal!(28) = expLdrB0(I, 1) / expLdrB0(I, 3)
+					batRecPlyr$(28) = expBatLdrName$(I)
+					batRecTeam$(28) = expBatLdrTeam$(I)
+					batRecYr!(28) = seasonYear
+				End If
+			End If
+
+		Next I
+
+		For I = 1 To 920
+
+			If expLdrB0(I, 1) + expLdrB0(I, 8) >= batTotGames!(I) * 3.1 And expLdrB0(I, 16) <> 0 Then
+				If expLdrB0(I, 1) / expLdrB0(I, 16) >= batRecVal!(29) Then
+					batRecVal!(29) = expLdrB0(I, 1) / expLdrB0(I, 16)
+					batRecPlyr$(29) = expBatLdrName$(I)
+					batRecTeam$(29) = expBatLdrTeam$(I)
+					batRecYr!(29) = seasonYear
+				End If
+			End If
+
+		Next I
+
+		For I = 1 To 920
+
+			If expLdrB0(I, 21) + expLdrB0(I, 22) >= batRecVal!(30) Then
+				batRecVal!(30) = expLdrB0(I, 21) + expLdrB0(I, 22)
+				batRecPlyr$(30) = expBatLdrName$(I)
+				batRecTeam$(30) = expBatLdrTeam$(I)
+				batRecYr!(30) = seasonYear
+			End If
+
+		Next I
+
+		For I = 1 To 920
+
+			If expLdrB0(I, 22) >= batRecVal!(31) Then
+				batRecVal!(31) = expLdrB0(I, 22)
+				batRecPlyr$(31) = expBatLdrName$(I)
+				batRecTeam$(31) = expBatLdrTeam$(I)
+				batRecYr!(31) = seasonYear
+			End If
+
+		Next I
+
+		For I = 1 To 920
+
+			If expLdrB0(I, 21) + expLdrB0(I, 22) <> 0 And expLdrB0(I, 1) + expLdrB0(I, 8) >= batTotGames!(I) * 2.1 Then
+				If expLdrB0(I, 22) / (expLdrB0(I, 21) + expLdrB0(I, 22)) >= batRecVal!(32) Then
+					batRecVal!(32) = expLdrB0(I, 22) / (expLdrB0(I, 21) + expLdrB0(I, 22))
+					batRecPlyr$(32) = expBatLdrName$(I)
+					batRecTeam$(32) = expBatLdrTeam$(I)
+					batRecYr!(32) = seasonYear
+				End If
+			End If
+
+		Next I
+
+	End If
+
+	Locate 8: Print "CALCULATING PITCHER RECORDS . . . ."
+
+	For I = 1 To 880
+		For I1 = 1 To 23
+			If expLdrP0(I, I1) >= pitRecVal!(I1) Then
+				pitRecVal!(I1) = expLdrP0(I, I1)
+				pitRecPlyr$(I1) = expPitLdrName$(I)
+				pitRecTeam$(I1) = expPitLdrTeam$(I)
+				pitRecYr!(I1) = seasonYear
+			End If
+		Next I1
+
+		AAS = AAS - 1
+		Locate 8, 40: Print Using "###"; AAS
+	Next I
+
+	If finalUpdate$ = "Y" Then
+
+		For I = 1 To 880
+			If expLdrP0(I, 18) <> 0 And expLdrP0(I, 9) >= 25 Then
+				If expLdrP0(I, 19) / expLdrP0(I, 18) <= pitRecVal!(24) Then
+					pitRecVal!(24) = expLdrP0(I, 19) / expLdrP0(I, 18)
+					pitRecPlyr$(24) = expPitLdrName$(I)
+					pitRecTeam$(24) = expPitLdrTeam$(I)
+					pitRecYr!(24) = seasonYear
+				End If
+			End If
+		Next I
+
+		For I = 1 To 880
+			If expLdrP0(I, 1) / 3 >= pitTotGames!(I) And expLdrP0(I, 21) <> 0 Then
+				If expLdrP0(I, 21) / expLdrP0(I, 9) < pitRecVal!(25) Then
+					pitRecVal!(25) = expLdrP0(I, 21) / expLdrP0(I, 9)
+					pitRecPlyr$(25) = expPitLdrName$(I)
+					pitRecTeam$(25) = expPitLdrTeam$(I)
+					pitRecYr!(25) = seasonYear
+				End If
+			End If
+		Next I
+
+		'IF TXX = 1 THEN 2785
+		For I = 1 To 880
+			If expLdrP0(I, 1) / 3 >= pitTotGames!(I) And expLdrP0(I, 1) <> 0 Then
+				If (expLdrP0(I, 4) * 9) / (expLdrP0(I, 1) / 3) > pitRecVal!(23) Then
+					pitRecVal!(23) = (expLdrP0(I, 4) * 9) / (expLdrP0(I, 1) / 3)
+					pitRecPlyr$(23) = expPitLdrName$(I)
+					pitRecTeam$(23) = expPitLdrTeam$(I)
+					pitRecYr!(23) = seasonYear
+				End If
+			End If
+		Next I
+
+		For I = 1 To 880
+			If expLdrP0(I, 1) / 3 >= pitTotGames!(I) And expLdrP0(I, 1) <> 0 Then
+				If (expLdrP0(I, 5) * 9) / (expLdrP0(I, 1) / 3) > pitRecVal!(25) Then
+					pitRecVal!(25) = (expLdrP0(I, 5) * 9) / (expLdrP0(I, 1) / 3)
+					pitRecPlyr$(25) = expPitLdrName$(I)
+					pitRecTeam$(25) = expPitLdrTeam$(I)
+					pitRecYr!(25) = seasonYear
+				End If
+			End If
+		Next I
+
+		For I = 1 To 880
+			If expLdrP0(I, 1) / 3 >= pitTotGames!(I) And expLdrP0(I, 1) <> 0 Then
+				If (expLdrP0(I, 6) * 9) / (expLdrP0(I, 1) / 3) < pitRecVal!(26) Then
+					pitRecVal!(26) = (expLdrP0(I, 6) * 9) / (expLdrP0(I, 1) / 3)
+					pitRecPlyr$(26) = expPitLdrName$(I)
+					pitRecTeam$(26) = expPitLdrTeam$(I)
+					pitRecYr!(26) = seasonYear
+				End If
+			End If
+		Next I
+
+		For I = 1 To 880
+			If expLdrP0(I, 1) / 3 >= pitTotGames!(I) And expLdrP0(I, 1) <> 0 Then
+				If (expLdrP0(I, 2) * 9) / (expLdrP0(I, 1) / 3) > pitRecVal!(27) Then
+					pitRecVal!(27) = (expLdrP0(I, 2) * 9) / (expLdrP0(I, 1) / 3)
+					pitRecPlyr$(27) = expPitLdrName$(I)
+					pitRecTeam$(27) = expPitLdrTeam$(I)
+					pitRecYr!(27) = seasonYear
+				End If
+			End If
+		Next I
+
+		For I = 1 To 880
+			If expLdrP0(I, 1) / 3 >= pitTotGames!(I) And expLdrP0(I, 1) <> 0 Then
+				If (expLdrP0(I, 14) * 9) / (expLdrP0(I, 1) / 3) < pitRecVal!(28) Then
+					pitRecVal!(28) = (expLdrP0(I, 14) * 9) / (expLdrP0(I, 1) / 3)
+					pitRecPlyr$(28) = expPitLdrName$(I)
+					pitRecTeam$(28) = expPitLdrTeam$(I)
+					pitRecYr!(28) = seasonYear
+				End If
+			End If
+		Next I
+
+	End If
+
+	Locate 9: Print "CALCULATING TEAM RECORDS . . . ."
+
+	For I = 1 To TEAMS_PER_LEAGUE
+		For I1 = 0 To 21
+			If plyLdrVal!(I, I1) > batRecTmVal!(I1) Then
+				batRecTmVal!(I1) = plyLdrVal!(I, I1)
+				batRecTmDesc$(I1) = TT$(I, I1)
+				batRecTmYr!(I1) = seasonYear
+			End If
+		Next I1
+
+		AAT = AAT - 1
+		Locate 9, 40: Print Using "###"; AAT
+	Next I
+
+	If finalUpdate$ = "Y" Then
+		For I = 1 To TEAMS_PER_LEAGUE
+			If plyLdrVal!(I, 0) <> 0 Then
+				If plyLdrVal!(I, 1) / plyLdrVal!(I, 0) > batRecTmVal!(22) Then
+					batRecTmVal!(22) = plyLdrVal!(I, 1) / plyLdrVal!(I, 0)
+					batRecTmDesc$(22) = TT$(I, 1)
+					batRecTmYr!(22) = seasonYear
+				End If
+			End If
+		Next I
+
+		For I = 1 To TEAMS_PER_LEAGUE
+			If plyLdrVal!(I, 0) <> 0 Then
+				If (plyLdrVal!(I, 1) + plyLdrVal!(I, 4) + (plyLdrVal!(I, 5) * 2) + (plyLdrVal!(I, 6) * 3)) / plyLdrVal!(I, 0) > batRecTmVal!(23) Then
+					batRecTmVal!(23) = (plyLdrVal!(I, 1) + plyLdrVal!(I, 4) + (plyLdrVal!(I, 5) * 2) + (plyLdrVal!(I, 6) * 3)) / plyLdrVal!(I, 0)
+					batRecTmDesc$(23) = TT$(I, 1)
+					batRecTmYr!(23) = seasonYear
+				End If
+			End If
+		Next I
+
+		For I = 1 To TEAMS_PER_LEAGUE
+			If plyLdrVal!(I, 0) <> 0 Then
+				If (plyLdrVal!(I, 1) + plyLdrVal!(I, 7)) / (plyLdrVal!(I, 0) + plyLdrVal!(I, 7)) > batRecTmVal!(24) Then
+					batRecTmVal!(24) = (plyLdrVal!(I, 1) + plyLdrVal!(I, 7)) / (plyLdrVal!(I, 0) + plyLdrVal!(I, 7))
+					batRecTmDesc$(24) = TT$(I, 1)
+					batRecTmYr!(24) = seasonYear
+				End If
+			End If
+		Next I
+
+	Else
+
+		For I = 1 To TEAMS_PER_LEAGUE
+			For I1 = 0 To 22
+				If teamLdrVal!(I, I1) > pitRecTmVal!(I1) Then
+					pitRecTmVal!(I1) = teamLdrVal!(I, I1)
+					pitRecTmDesc$(I1) = TT1$(I, I1)
+					pitRecTmYr!(I1) = seasonYear
+				End If
+			Next I1
+
+			AAT = AAT - 1
+			Locate 9, 40: Print Using "###"; AAT
+		Next I
+
+		If finalUpdate$ = "Y" Then
+
+			For I = 1 To TEAMS_PER_LEAGUE
+				If teamLdrVal!(I, 17) <> 0 Then
+					If teamLdrVal!(I, 18) / teamLdrVal!(I, 17) > pitRecTmVal!(23) Then
+						pitRecTmVal!(23) = teamLdrVal!(I, 18) / teamLdrVal!(I, 17)
+						pitRecTmDesc$(23) = TT1$(I, 0)
+						pitRecTmYr!(23) = seasonYear
+					End If
+				End If
+			Next I
+
+			'IF TXX = 1 THEN
+			For I = 1 To TEAMS_PER_LEAGUE
+				If teamLdrVal!(I, 0) <> 0 Then
+					If (teamLdrVal!(I, 3) * 9) / (teamLdrVal!(I, 0) / 3) < pitRecTmVal!(24) Then
+						pitRecTmVal!(24) = (teamLdrVal!(I, 3) * 9) / (teamLdrVal!(I, 0) / 3)
+						pitRecTmDesc$(24) = TT1$(I, 0)
+						pitRecTmYr!(24) = seasonYear
+					End If
+				End If
+			Next I
+
+		Else
+
+			Open diskPaths$(2) + "RECORDS.MLB" For Output As #1
+
+			For I = 1 To 32:
+				Write #1, batRecVal!(I), batRecPlyr$(I), batRecTeam$(I), batRecYr!(I)
+			Next
+
+			For I = 1 To 28:
+				Write #1, pitRecVal!(I), pitRecPlyr$(I), pitRecTeam$(I), pitRecYr!(I)
+			Next
+
+			For I = 0 To 24:
+				Write #1, batRecTmVal!(I), batRecTmDesc$(I), batRecTmYr!(I)
+			Next
+
+			For I = 0 To 24:
+				Write #1, pitRecTmVal!(I), pitRecTmDesc$(I), pitRecTmYr!(I)
+			Next
+
+			Close #1
+
+		End If
+
+	End If 'Done checking for final update
+        
 End Sub
 
 

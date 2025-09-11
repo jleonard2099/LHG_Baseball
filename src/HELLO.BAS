@@ -33,6 +33,13 @@ DefInt A-Z
 '$Include: 'BoxRoutines.bi'
 '$Include: 'FileTeamSelection.bi'
 '$Include: 'Variables.bi'
+
+Dim careerB0(100, 23), careerB1(100)
+Dim careerP0(80, 42), careerP1(80)
+
+Dim expLdrB0(1 To 920, 22), expLdrP0(1 To 880, 23)
+Dim expLdrVal!(1 To 920), expLdrTYP1!(1 To 920)
+
 '$Include: 'MainRoutines.bi'
 '$Include: 'TITLE.bi'
 
@@ -71,10 +78,10 @@ Next
 Data INNINGS PITCHED,HITS,RUNS,EARNED RUNS,WALKS
 Data STRIKE OUTS,WON,LOST,GAMES,GAMES STARTED
 Data COMPLETE GAMES,SHUTOUTS,SAVES,DOUBLE PLAYS,HOME RUNS ALLOWED
-Data LEADS HELD,RUNNERS INHERITED,RUNNNERS INH. SCORED,% INH. RUNNERS SCORING
+Data LEADS HELD,INHERITED RUNNERS,INHERITED RUNS SCORED,INHERITED RUNS ALLOWED %
 Data BLOWN SAVES,QUALITY STARTS,EARNED RUN AVERAGE
 Data WALKS PER 9 IP,STRIKEOUTS PER 9 IP,HITS ALLOWED PER 9 IP,DOUBLE PLAYS PER 9 IP
-Data SACRIFICE HITS,SACRIFICE FLIES,RUN SUPPORT,RETURN TO MAIN MENU
+Data SACRIFICE HITS,SACRIFICE FLIES,RUN SUPPORT (RPS),RETURN TO MAIN MENU
 For I = 0 To 29
     Read expPitCategory$(I)
 Next
@@ -95,8 +102,8 @@ Data INNINGS PITCHED,HITS,RUNS,EARNED RUNS,WALKS
 Data STRIKEOUTS,WON,LOST,GAMES,GAMES STARTED
 Data COMPLETE GAMES,SHUTOUTS,SAVES,DOUBLE PLAYS,HOME RUNS ALLOWED
 Data SACRIFICE FLIES,SACRIFICE HITS
-Data RUNNERS INHERITED,RUNNNERS INH. SCORED,% INH. RUNNERS SCORING
-Data BLOWN SAVES,RUN SUPPORT,QUALITY STARTS,EARNED RUN AVERAGE
+Data INHERITED RUNNERS,INHERITED RUNS SCORED,INHERITED RUNS ALLOWED %
+Data BLOWN SAVES,RUN SUPPORT (RPS),QUALITY STARTS,EARNED RUN AVERAGE
 Data WALKS PER 9 IP,STRIKEOUTS PER 9 IP,HITS ALLOWED PER 9 IP,DOUBLE PLAYS PER 9 IP
 For I = 1 To 28:
     Read pitIndCategory$(I)
@@ -106,7 +113,7 @@ Data AT BATS,HITS,RUNS,RUNS BATTED IN,DOUBLES,TRIPLES,HOME RUNS,TIMES WALKED,TIM
 Data STOLEN BASES,CAUGHT STEALING,ERRORS,SACRIFICE HITS,SACRIFICE FLIES
 Data BATTING AVERAGE,SLUGGING PCT.,ON-BASE PCT.,RUNNERS LEFT ON BASE,DOUBLE PLAYS GROUNDED INTO
 Data FIELDING AVERAGE,INNINGS PITCHED,HITS,RUNS,EARNED RUNS,WALKS,STRIKE OUTS,COMPLETE GAMES,SHUTOUTS
-Data SAVES,DOUBLE PLAYS,HOME RUNS ALLOWED,RUNNERS INHERITED,RUNNNERS INH. SCORED,% INH. RUNNERS SCORING
+Data SAVES,DOUBLE PLAYS,HOME RUNS ALLOWED,INHERITED RUNNERS,INHERITED RUNS SCORED,INHERITED RUNS ALLOWED %
 Data BLOWN SAVES,QUALITY STARTS,EARNED RUN AVERAGE,SACRIFICE HITS,SACRIFICE FLIES,RETURN TO MAIN MENU
 For I = 0 To 39:
     Read expTeamCategory$(I)
@@ -121,10 +128,30 @@ For I = 0 To 20:
 Next
 
 Data INNINGS PITCHED,HITS ALLOWED,RUNS ALLOWED,EARNED RUNS,WALKS,STRIKEOUTS,COMPLETE GAMES,SHUTOUTS
-Data SAVES,DOUBLEPLAYS TURNED,HOME RUNS ALLOWED,SACRIFICE HITS,SACRIFICE FLIES,RUNERS INHERITED
-Data RUNNERS INHERITED SCORED,BLOWN SAVES,QUALITY STARTS,PER CENT OF RI SCORED,EARNED RUN AVERAGE
+Data SAVES,DOUBLEPLAYS TURNED,HOME RUNS ALLOWED,SACRIFICE HITS,SACRIFICE FLIES,INHERITED RUNNERS
+Data INHERITED RUNS SCORED,BLOWN SAVES,QUALITY STARTS,PER CENT OF RI SCORED,EARNED RUN AVERAGE
 For I = 0 To 18:
     Read pitTeamCategory$(I)
+Next
+
+Data NAME,G,AB,R,H,2B,3B,HR,RBI,SB,BB,SO,BA,SLG,OBP,CS,%RAB
+Data CHS,LHS,GIDP,NEEDS,PROJ AB,PO,A,E,FAVG,SBA,%CS,SH,SF
+
+For I = 0 To 29:
+    Read batCategoryBatterAbbr$(I)
+Next
+
+Data NAME,G,AB,R,H,2B,3B,HR,RBI,SB,BB,SO,BA,SLG,OBP,CS
+Data CHS,LHS,GIDP,PO,A,E,FAVG,SH,SF
+
+For I = 0 To 24:
+    Read batCategoryPitcherAbbr$(I)
+Next
+
+Data NAME,W,L,ERA,G,GS,CG,SHO,SV,IP,H,R,ER,HRA,BB,SO,DP,%IP,BS,HL,RI,RS,SUP,GS,QS,SH,SF
+
+For I = 0 To 26:
+    Read pitCategoryAbbr$(I)
 Next
 
 Data A,B,C,D,E,F,G,H,I,J,K,L,M
@@ -1516,6 +1543,7 @@ Sub LOADER
         If gamePitcher(P9) > 1 Then
             pitchEff(P9, 1) = 0
         Else
+            'Starting pitcher has more efficiency?
             pitchEff(P9, 1) = 3
         End If
 
@@ -7813,7 +7841,9 @@ Sub SOURCE ()
             pinchHitterFlag = 0
             PR% = 0
 
-            If relieverOnRecordForSave(P9) <> -1 And gamePitcher(P9) > 1 Then Call OFFPIT(P9, currPitcher(P9), 22)
+            If relieverOnRecordForSave(P9) <> -1 And gamePitcher(P9) > 1 Then
+                Call OFFPIT(P9, currPitcher(P9), LG_P_Hold)
+            End If
 
             currPitcher(P9) = I1
             gamePitcher(P9) = gamePitcher(P9) + 1
@@ -10570,7 +10600,7 @@ End Sub
 '          CHECKSAVE Subroutine
 '----------------------------------------
 'This subroutine checks if the current
-'relievers qualifies for a save
+'reliever qualifies for a save
 Sub CHECKSAVE (D, P, baseStatus)
 
     scoreDiff = gameScore(D, 0) - gameScore(P, 0)
@@ -10606,8 +10636,8 @@ Sub CHECKSAVE (D, P, baseStatus)
         
         End Select
 
-        oppPitStats(D, currPitcher(D), 17) = oppPitStats(D, currPitcher(D), 17) + RI
-        teamPitStats(D, currPitcher(D), 17) = teamPitStats(D, currPitcher(D), 17) + RI
+        oppPitStats(D, currPitcher(D), LG_P_RInh) = oppPitStats(D, currPitcher(D), LG_P_RInh) + RI
+        teamPitStats(D, currPitcher(D), LG_P_RInh) = teamPitStats(D, currPitcher(D), LG_P_RInh) + RI
 
     End If
 
@@ -14077,6 +14107,7 @@ Sub RecordRun (homeSafe, i, D, PQ, S2%, currFielder, INFPOS%, wasError)
     End If
     homeSafe = 0
 
+    'Increase pitcher's runs
     Call INCPITDEF(D, b2Pitcher(i), LG_P_R)
 
     If currPitcher(D) <> b2Pitcher(i) Then
@@ -14084,9 +14115,11 @@ Sub RecordRun (homeSafe, i, D, PQ, S2%, currFielder, INFPOS%, wasError)
     End If
 
     If gamePitcher(P) = 1 Then
-        teamPitStats(P, currPitcher(P), 20) = teamPitStats(P, currPitcher(P), 20) + 1
+        'Runs by starting pitcher
+        teamPitStats(P, currPitcher(P), LG_P_R_Start) = teamPitStats(P, currPitcher(P), LG_P_R_Start) + 1
     End If
 
+    'Increase runner's "Runs"
     If fldPos(P, runnerOnBase(i)) = 1 Then
         Call INCPITOFF(P, currPitcher(P), LG_PB_R)
     Else
@@ -14136,6 +14169,7 @@ Sub RecordRun (homeSafe, i, D, PQ, S2%, currFielder, INFPOS%, wasError)
 
     End If
 
+    'Increase inning score and total sccore
     inningScore(P, INNING%) = inningScore(P, INNING%) + 1
     gameScore(P, 0) = gameScore(P, 0) + 1
 

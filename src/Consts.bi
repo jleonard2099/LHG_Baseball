@@ -148,7 +148,7 @@ Const LG_P_SF	= 16
 Const LG_P_RInh = 17
 Const LG_P_RS 	= 18
 Const LG_P_BSv  = 19
-Const LG_P_Unk 	= 20
+Const LG_P_R_Start 	= 20
 Const LG_P_QS 	= 21
 Const LG_P_Hold = 22
 

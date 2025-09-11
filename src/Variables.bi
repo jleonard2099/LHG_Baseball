@@ -23,8 +23,13 @@ Dim nbrInnings(MAX_SCHED_STATS)
 Dim gameSite$(MAX_SCHED_STATS), locIndicator$(MAX_SCHED_STATS), oppName$(MAX_SCHED_STATS)
 Dim losePitcher$(MAX_SCHED_STATS), winPitcher$(MAX_SCHED_STATS)
 
+Dim batCategoryBatterAbbr$(0 To 30)
+Dim batCategoryPitcherAbbr$(0 To 24)
+Dim pitCategoryAbbr$(0 To 26)
+
 Dim statB(0 To 22), statB0(0 To 22, 0 To 41)
 Dim statP(0 To 21), statP0(0 To 21, 0 To 41)
+Dim calcProperties(0 To 12)
 Dim Shared gameD0(1), gameD1(1)
 
 Dim statS0(0 To 22, 0 To 6)
@@ -125,8 +130,8 @@ Dim careerBatters$(0 To 99), careerPitchers$(0 To 79)
 Dim carLdrBatName$(18, 20), carLdrPitName$(16, 20)
 Dim carLdrBatVal!(18, 20), carLdrPitVal!(16, 21)
 
-Dim careerB0(100, 23), careerB1(100)
-Dim careerP0(80, 42), careerP1(80)
+'Dim careerB0(100, 23), careerB1(100)
+'Dim careerP0(80, 42), careerP1(80)
 
 Dim carRecBatName$(15), carRecPitName$(15)
 
@@ -147,8 +152,8 @@ Dim expBatLdrName$(1 To 920), expPitLdrName$(1 To 880)
 Dim expBatLdrTeam$(1 To 920), expPitLdrTeam$(1 To 880)
 Dim expLdrTeam$(1 To 920), expLdrPlyrName$(1 To 920)
 
-Dim expLdrB0(1 To 920, 22), expLdrP0(1 To 880, 23)
-Dim expLdrVal!(1 To 920), expLdrTYP1!(1 To 920)
+'Dim expLdrB0(1 To 920, 22), expLdrP0(1 To 880, 23)
+'Dim expLdrVal!(1 To 920), expLdrTYP1!(1 To 920)
 
 'Expanded Standings
 Dim expStdLeagName$(TEAMS_PER_LEAGUE)

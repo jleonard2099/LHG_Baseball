@@ -15,7 +15,7 @@ Sub SeasonRecords ()
     Shared pitRecTmVal!(), pitRecTmYr!()
     Shared pitRecVal!(), pitRecYr!()
 
-    Shared batRecPlyr$(), batRecTeam$(), batRecTmDesc$()    
+    Shared batRecPlyr$(), batRecTeam$(), batRecTmDesc$()
     Shared pitRecTmDesc$(), pitRecPlyr$(), pitRecTeam$()
 
     'If Not _FileExists(diskPaths$(1) + "RECORDS.MLB") Then
@@ -70,8 +70,8 @@ Sub SeasonRecords ()
                     'ChooseFile$(diskPaths$(2) + "*.BAT", "LEAGUE", FileExit%)
 
                     If leagueFile$ <> "" Then
-                        Call UpdateRecords(GetFileBaseName$(leagueFile$))
-                    End if
+                        Call UpdateRecords(GetFileBaseName$(leagueFile$), SELECTION%)
+                    End If
 
                 Case 2:
                     leagueFile$ = _OpenFileDialog$("Choose League Record file", diskPaths$(2), "*.BAT", "League Record files [.BAT]")
@@ -94,7 +94,7 @@ Sub SeasonRecords ()
                             Select Case userKey$
 
                                 Case "F"
-                                    userFile$ = _SAVEFILEDIALOG$("Save Records Report",_CWD$ + "\Records","*.txt","Text File")           
+                                    userFile$ = _SaveFileDialog$("Save Records Report", _CWD$ + "\Records", "*.txt", "Text File")
                                     If userFile$ <> "" Then
                                         Call PrintSeasonRecords(0, userFile$, GetFileBaseName$(leagueFile$))
                                     End If
@@ -103,13 +103,13 @@ Sub SeasonRecords ()
                                     Call PrintSeasonRecords(1, "RECORDS", GetFileBaseName$(leagueFile$))
 
                             End Select
-                            
+
                         End If
-                        
+
                     End If
 
                 Case 4
-                    If _FileExists(diskPaths$(1) + "RECORDS.MLB") Then 
+                    If _FileExists(diskPaths$(1) + "RECORDS.MLB") Then
                         Kill diskPaths$(1) + "RECORDS.MLB"
                     End If
 
@@ -129,7 +129,7 @@ End Sub
 'Read in all league stats and calculate
 'records so that an output file can be
 'made containing all records.
-Sub UpdateRecords (leagueFile$)
+Sub UpdateRecords (leagueFile$, userOpt)
 
     Shared expLdrB0(), expLdrP0()
 
@@ -144,7 +144,7 @@ Sub UpdateRecords (leagueFile$)
 
     Shared pitTotGames!()
 
-    Shared batRecPlyr$(), batRecTeam$(), batRecTmDesc$()    
+    Shared batRecPlyr$(), batRecTeam$(), batRecTmDesc$()
     Shared pitRecTmDesc$(), pitRecPlyr$(), pitRecTeam$()
     Shared expBatLdrName$(), expPitLdrName$()
     Shared expBatLdrTeam$(), expPitLdrTeam$()
@@ -160,8 +160,8 @@ Sub UpdateRecords (leagueFile$)
     JP = 0
     TS = 0
 
-    If Not _FileExists(diskPaths$(2) + "RECORDS.MLB") And SELECTION% < 4 Then
-    
+    If Not _FileExists(diskPaths$(2) + "RECORDS.MLB") And userOpt >= 2 And userOpt <= 4 Then
+
         MsgText$ = "UNABLE TO LOCATE RECORDS PRESS ANY KEY TO RETURN TO MAIN MENU"
         BoxWidth = 24
         BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
@@ -169,10 +169,10 @@ Sub UpdateRecords (leagueFile$)
         Call CSMsgBox(MsgText$, BoxWidth, Pass)
         I$ = GetKeyPress$
         Call CSMsgBox("", 0, Pass)
-        
+
     Else
 
-        Call ReadSeasonRecords ("RECORDS.MLB")
+        Call ReadSeasonRecords("RECORDS.MLB")
 
         Cls
         Input "ENTER SEASON YEAR (1991,1992)"; seasonYear
@@ -205,7 +205,7 @@ Sub UpdateRecords (leagueFile$)
 
             Print "READING IN CURRENT RECORDS"
 
-            Call ReadSeasonRecords ("RECORDS.MLB")
+            Call ReadSeasonRecords("RECORDS.MLB")
 
         End If
 
@@ -588,6 +588,7 @@ Sub UpdateRecords (leagueFile$)
         Next I
 
         If finalUpdate$ = "Y" Then
+
             For I = 1 To TEAMS_PER_LEAGUE
                 If plyLdrVal!(I, 0) <> 0 Then
                     If plyLdrVal!(I, 1) / plyLdrVal!(I, 0) > batRecTmVal!(22) Then
@@ -656,32 +657,30 @@ Sub UpdateRecords (leagueFile$)
                     End If
                 Next I
 
-            Else
-
-                Open diskPaths$(2) + "RECORDS.MLB" For Output As #1
-
-                For I = 1 To 32:
-                    Write #1, batRecVal!(I), batRecPlyr$(I), batRecTeam$(I), batRecYr!(I)
-                Next
-
-                For I = 1 To 28:
-                    Write #1, pitRecVal!(I), pitRecPlyr$(I), pitRecTeam$(I), pitRecYr!(I)
-                Next
-
-                For I = 0 To 24:
-                    Write #1, batRecTmVal!(I), batRecTmDesc$(I), batRecTmYr!(I)
-                Next
-
-                For I = 0 To 24:
-                    Write #1, pitRecTmVal!(I), pitRecTmDesc$(I), pitRecTmYr!(I)
-                Next
-
-                Close #1
-
             End If
 
         End If 'Done checking for final update
-        
+
+        Open diskPaths$(2) + "RECORDS.MLB" For Output As #1
+
+        For I = 1 To 32:
+            Write #1, batRecVal!(I), batRecPlyr$(I), batRecTeam$(I), batRecYr!(I)
+        Next
+
+        For I = 1 To 28:
+            Write #1, pitRecVal!(I), pitRecPlyr$(I), pitRecTeam$(I), pitRecYr!(I)
+        Next
+
+        For I = 0 To 24:
+            Write #1, batRecTmVal!(I), batRecTmDesc$(I), batRecTmYr!(I)
+        Next
+
+        For I = 0 To 24:
+            Write #1, pitRecTmVal!(I), pitRecTmDesc$(I), pitRecTmYr!(I)
+        Next
+
+        Close #1
+
     End If 'Done checking for records file
 
 End Sub
@@ -699,13 +698,13 @@ Sub ViewSeasonRecords (leagueFile$)
     Shared pitRecTmVal!(), pitRecTmYr!()
     Shared pitRecVal!(), pitRecYr!()
 
-    Shared batRecPlyr$(), batRecTeam$(), batRecTmDesc$()    
+    Shared batRecPlyr$(), batRecTeam$(), batRecTmDesc$()
     Shared pitRecTmDesc$(), pitRecPlyr$(), pitRecTeam$()
 
     Shared batIndCategory$(), pitIndCategory$(), batTeamCategory$(), pitTeamCategory$()
 
-    If Not _FileExists(diskPaths$(2) + "RECORDS.MLB") And SELECTION% < 4 Then
-    
+    If Not _FileExists(diskPaths$(2) + "RECORDS.MLB") Then
+
         MsgText$ = "UNABLE TO LOCATE RECORDS PRESS ANY KEY TO RETURN TO MAIN MENU"
         BoxWidth = 24
         BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
@@ -713,10 +712,10 @@ Sub ViewSeasonRecords (leagueFile$)
         Call CSMsgBox(MsgText$, BoxWidth, Pass)
         I$ = GetKeyPress$
         Call CSMsgBox("", 0, Pass)
-        
+
     Else
 
-        Call ReadSeasonRecords ("RECORDS.MLB")
+        Call ReadSeasonRecords("RECORDS.MLB")
 
         Color 0, 0
 
@@ -804,9 +803,9 @@ Sub ViewSeasonRecords (leagueFile$)
 
         Locate , 4
         Print pitIndCategory$(1); Tab(28); pitRecPlyr$(1); Tab(43); pitRecTeam$(1); Tab(61); Using "###"; Int(pitRecVal!(1) / 3);
-        If pitRecVal!(1) - Int(pitRecVal!(1) / 3) * 3 > 0 Then 
-            Print ".";: Print Using "#"; pitRecVal!(1) - (Int(pitRecVal!(1) / 3) * 3); 
-        Else 
+        If pitRecVal!(1) - Int(pitRecVal!(1) / 3) * 3 > 0 Then
+            Print ".";: Print Using "#"; pitRecVal!(1) - (Int(pitRecVal!(1) / 3) * 3);
+        Else
             Print ".0";
         End If
         Print Tab(70); Using "####"; pitRecYr!(1)
@@ -976,7 +975,7 @@ Sub ViewSeasonRecords (leagueFile$)
         Color 15
         Locate 22, 30: Print "HIT ANY KEY TO CONTINUE"
         I$ = GetKeyPress$
-    
+
     End If 'Done checking for records file
 
 End Sub
@@ -995,13 +994,13 @@ Sub PrintSeasonRecords (printDest, destFile$, leagueName$)
     Shared pitRecTmVal!(), pitRecTmYr!()
     Shared pitRecVal!(), pitRecYr!()
 
-    Shared batRecPlyr$(), batRecTeam$(), batRecTmDesc$()    
+    Shared batRecPlyr$(), batRecTeam$(), batRecTmDesc$()
     Shared pitRecTmDesc$(), pitRecPlyr$(), pitRecTeam$()
 
     Shared batIndCategory$(), pitIndCategory$(), batTeamCategory$(), pitTeamCategory$()
 
-    If Not _FileExists(diskPaths$(2) + "RECORDS.MLB") And SELECTION% < 4 Then
-    
+    If Not _FileExists(diskPaths$(2) + "RECORDS.MLB") Then
+
         MsgText$ = "UNABLE TO LOCATE RECORDS PRESS ANY KEY TO RETURN TO MAIN MENU"
         BoxWidth = 24
         BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
@@ -1009,120 +1008,120 @@ Sub PrintSeasonRecords (printDest, destFile$, leagueName$)
         Call CSMsgBox(MsgText$, BoxWidth, Pass)
         I$ = GetKeyPress$
         Call CSMsgBox("", 0, Pass)
-        
+
     Else
-    
-        Call ReadSeasonRecords ("RECORDS.MLB")
+
+        Call ReadSeasonRecords("RECORDS.MLB")
 
         Color 15, 0
         Cls
 
         Open destFile$ For Output As #1
 
-        Print #1,  leagueName$; "  BATTING RECORDS"
-        Print #1, 
-        Print #1,  "CATEGORY                   PLAYER         TEAM             RECORD      YEAR"
+        Print #1, leagueName$; "  BATTING RECORDS"
+        Print #1,
+        Print #1, "CATEGORY                   PLAYER         TEAM             RECORD      YEAR"
 
-        Print #1,  String$(75, 61)
+        Print #1, String$(75, 61)
 
         For I = 1 To 20
-            Print #1,  batIndCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(62); Using "####"; batRecVal!(I); Tab(66); batRecYr!(I)
+            Print #1, batIndCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(62); Using "####"; batRecVal!(I); Tab(66); batRecYr!(I)
         Next
 
         For I = 21 To 23
-            Print #1,  batIndCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(62); Using ".###"; batRecVal!(I);: Print #1,  Tab(66); Using "####"; batRecYr!(I)
+            Print #1, batIndCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(62); Using ".###"; batRecVal!(I);: Print #1, Tab(66); Using "####"; batRecYr!(I)
         Next
 
         For I = 24 To 29
-            Print #1,  batIndCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(60); Using "###.#"; batRecVal!(I);: Print #1,  Tab(66); Using "####"; batRecYr!(I)
+            Print #1, batIndCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(60); Using "###.#"; batRecVal!(I);: Print #1, Tab(66); Using "####"; batRecYr!(I)
         Next
 
         For I = 30 To 31
-            Print #1,  batIndCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(62); Using "###"; batRecVal!(I);: Print #1,  Tab(66); Using "####"; batRecYr!(I)
+            Print #1, batIndCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(62); Using "###"; batRecVal!(I);: Print #1, Tab(66); Using "####"; batRecYr!(I)
         Next
 
-        Print #1,  batIndCategory$(32); Tab(28); batRecPlyr$(32); Tab(43); batRecTeam$(32); Tab(62); Using ".###"; batRecVal!(32);: Print #1,  Tab(66); Using "####"; batRecYr!(32)
-        Print #1,  Chr$(12)
+        Print #1, batIndCategory$(32); Tab(28); batRecPlyr$(32); Tab(43); batRecTeam$(32); Tab(62); Using ".###"; batRecVal!(32);: Print #1, Tab(66); Using "####"; batRecYr!(32)
+        Print #1, Chr$(12)
 
-        Print #1,  leagueFile$; "  PITCHING RECORDS"
-        Print #1, 
-        Print #1,  "CATEGORY                   PLAYER         TEAM             RECORD      YEAR"
+        Print #1, leagueFile$; "  PITCHING RECORDS"
+        Print #1,
+        Print #1, "CATEGORY                   PLAYER         TEAM             RECORD      YEAR"
 
-        Print #1,  String$(75, 61)
-        Print #1,  pitIndCategory$(1); Tab(28); pitRecPlyr$(1); Tab(43); pitRecTeam$(1); Tab(61); Using "###"; Int(pitRecVal!(1) / 3);
+        Print #1, String$(75, 61)
+        Print #1, pitIndCategory$(1); Tab(28); pitRecPlyr$(1); Tab(43); pitRecTeam$(1); Tab(61); Using "###"; Int(pitRecVal!(1) / 3);
 
-        If pitRecVal!(1) - Int(pitRecVal!(1) / 3) * 3 > 0 Then 
-            Print #1,  ".";
-            Print #1,  Using "#"; pitRecVal!(1) - (Int(pitRecVal!(1) / 3) * 3); 
-        Else 
-            Print #1,  ".0";
+        If pitRecVal!(1) - Int(pitRecVal!(1) / 3) * 3 > 0 Then
+            Print #1, ".";
+            Print #1, Using "#"; pitRecVal!(1) - (Int(pitRecVal!(1) / 3) * 3);
+        Else
+            Print #1, ".0";
         End If
 
-        Print #1,  Tab(72); Using "####"; pitRecYr!(1)
+        Print #1, Tab(72); Using "####"; pitRecYr!(1)
 
         For I = 2 To 19
-            Print #1,  pitIndCategory$(I); Tab(28); pitRecPlyr$(I); Tab(43); pitRecTeam$(I); Tab(62); Using "####"; pitRecVal!(I); Tab(72); pitRecYr!(I)
+            Print #1, pitIndCategory$(I); Tab(28); pitRecPlyr$(I); Tab(43); pitRecTeam$(I); Tab(62); Using "####"; pitRecVal!(I); Tab(72); pitRecYr!(I)
         Next
 
-        Print #1,  pitIndCategory$(20); Tab(28); pitRecPlyr$(24); Tab(43); pitRecTeam$(24); Tab(62); Using ".###"; pitRecVal!(24) * 100;: Print #1,  Tab(72); Using "####"; pitRecYr!(24)
-        Print #1,  pitIndCategory$(21); Tab(28); pitRecPlyr$(20); Tab(43); pitRecTeam$(20); Tab(62); Using "####"; pitRecVal!(20); Tab(72); pitRecYr!(20)
-        Print #1,  pitIndCategory$(22); Tab(28); pitRecPlyr$(25); Tab(43); pitRecTeam$(25); Tab(61); Using "##.##"; pitRecVal!(25);: Print #1,  Tab(72); Using "####"; pitRecYr!(25)
-        Print #1,  pitIndCategory$(23); Tab(28); pitRecPlyr$(22); Tab(43); pitRecTeam$(22); Tab(62); Using "####"; pitRecVal!(22); Tab(72); pitRecYr!(22)
-        Print #1,  pitIndCategory$(24); Tab(28); pitRecPlyr$(23); Tab(43); pitRecTeam$(23); Tab(60); Using "###.##"; pitRecVal!(23); Tab(72);
+        Print #1, pitIndCategory$(20); Tab(28); pitRecPlyr$(24); Tab(43); pitRecTeam$(24); Tab(62); Using ".###"; pitRecVal!(24) * 100;: Print #1, Tab(72); Using "####"; pitRecYr!(24)
+        Print #1, pitIndCategory$(21); Tab(28); pitRecPlyr$(20); Tab(43); pitRecTeam$(20); Tab(62); Using "####"; pitRecVal!(20); Tab(72); pitRecYr!(20)
+        Print #1, pitIndCategory$(22); Tab(28); pitRecPlyr$(25); Tab(43); pitRecTeam$(25); Tab(61); Using "##.##"; pitRecVal!(25);: Print #1, Tab(72); Using "####"; pitRecYr!(25)
+        Print #1, pitIndCategory$(23); Tab(28); pitRecPlyr$(22); Tab(43); pitRecTeam$(22); Tab(62); Using "####"; pitRecVal!(22); Tab(72); pitRecYr!(22)
+        Print #1, pitIndCategory$(24); Tab(28); pitRecPlyr$(23); Tab(43); pitRecTeam$(23); Tab(60); Using "###.##"; pitRecVal!(23); Tab(72);
 
         Print #1, Using "####"; pitRecYr!(23)
 
         For I = 25 To 28
-            Print #1,  pitIndCategory$(I); Tab(28); pitRecPlyr$(I); Tab(43); pitRecTeam$(I); Tab(61); Using "##.##"; pitRecVal!(I);: Print #1,  Tab(72); Using "####"; pitRecYr!(I)
+            Print #1, pitIndCategory$(I); Tab(28); pitRecPlyr$(I); Tab(43); pitRecTeam$(I); Tab(61); Using "##.##"; pitRecVal!(I);: Print #1, Tab(72); Using "####"; pitRecYr!(I)
         Next
 
-        Print #1,  Chr$(12)
+        Print #1, Chr$(12)
 
-        Print #1,  leagueFile$; "  TEAM RECORDS"
-        Print #1, 
-        Print #1,  "CATEGORY                        TEAM                        RECORD     YEAR"
-        Print #1,  String$(75, 61)
+        Print #1, leagueFile$; "  TEAM RECORDS"
+        Print #1,
+        Print #1, "CATEGORY                        TEAM                        RECORD     YEAR"
+        Print #1, String$(75, 61)
 
         For I = 0 To 12
-            Print #1,  batTeamCategory$(I); Tab(28); batRecTmDesc$(I); Tab(62); Using "####"; batRecTmVal!(I); Tab(72); batRecTmYr!(I)
+            Print #1, batTeamCategory$(I); Tab(28); batRecTmDesc$(I); Tab(62); Using "####"; batRecTmVal!(I); Tab(72); batRecTmYr!(I)
         Next
 
         For I = 15 To 19
-            Print #1,  batTeamCategory$(I - 2); Tab(28); batRecTmDesc$(I); Tab(62); Using "####"; batRecTmVal!(I); Tab(72); batRecTmYr!(I)
+            Print #1, batTeamCategory$(I - 2); Tab(28); batRecTmDesc$(I); Tab(62); Using "####"; batRecTmVal!(I); Tab(72); batRecTmYr!(I)
         Next
 
         For I = 22 To 24
-            Print #1,  batTeamCategory$(I - 4); Tab(28); batRecTmDesc$(I); Tab(62); Using ".###"; batRecTmVal!(I);
-            Print #1,  Tab(72); Using "####"; batRecTmYr!(I)
+            Print #1, batTeamCategory$(I - 4); Tab(28); batRecTmDesc$(I); Tab(62); Using ".###"; batRecTmVal!(I);
+            Print #1, Tab(72); Using "####"; batRecTmYr!(I)
         Next
 
-        Print #1,  pitTeamCategory$(0); Tab(28); pitRecTmDesc$(0); Tab(60); Using "####"; Int(pitRecTmVal!(0) / 3);
+        Print #1, pitTeamCategory$(0); Tab(28); pitRecTmDesc$(0); Tab(60); Using "####"; Int(pitRecTmVal!(0) / 3);
 
-        If pitRecTmVal!(0) - Int(pitRecTmVal!(0) / 3) * 3 > 0 Then 
-            Print #1,  ".";
-            Print #1,  Using "#"; pitRecTmVal!(0) - (Int(pitRecTmVal!(0) / 3) * 3); 
-        Else 
-            Print #1,  ".0";
+        If pitRecTmVal!(0) - Int(pitRecTmVal!(0) / 3) * 3 > 0 Then
+            Print #1, ".";
+            Print #1, Using "#"; pitRecTmVal!(0) - (Int(pitRecTmVal!(0) / 3) * 3);
+        Else
+            Print #1, ".0";
         End If
 
-        Print #1,  Tab(72); Using "####"; pitRecTmYr!(0)
+        Print #1, Tab(72); Using "####"; pitRecTmYr!(0)
 
         For I = 1 To 5
-            Print #1,  pitTeamCategory$(I); Tab(28); pitRecTmDesc$(I); Tab(62); Using "####"; pitRecTmVal!(I);
-            Print #1,  Tab(72); Using "####"; pitRecTmYr!(I)
+            Print #1, pitTeamCategory$(I); Tab(28); pitRecTmDesc$(I); Tab(62); Using "####"; pitRecTmVal!(I);
+            Print #1, Tab(72); Using "####"; pitRecTmYr!(I)
         Next
 
         For I = 10 To 19
-            Print #1,  pitTeamCategory$(I - 4); Tab(28); pitRecTmDesc$(I); Tab(62); Using "####"; pitRecTmVal!(I);
-            Print #1,  Tab(72); Using "####"; pitRecTmYr!(I)
+            Print #1, pitTeamCategory$(I - 4); Tab(28); pitRecTmDesc$(I); Tab(62); Using "####"; pitRecTmVal!(I);
+            Print #1, Tab(72); Using "####"; pitRecTmYr!(I)
         Next
 
-        Print #1,  pitTeamCategory$(16); Tab(28); pitRecTmDesc$(21); Tab(62); Using "####"; pitRecTmVal!(21);: Print #1,  Tab(72); Using "####"; pitRecTmYr!(21)
-        Print #1,  pitTeamCategory$(17); Tab(28); pitRecTmDesc$(23); Tab(62); Using ".###"; pitRecTmVal!(23);: Print #1,  Tab(72); Using "####"; pitRecTmYr!(23)
+        Print #1, pitTeamCategory$(16); Tab(28); pitRecTmDesc$(21); Tab(62); Using "####"; pitRecTmVal!(21);: Print #1, Tab(72); Using "####"; pitRecTmYr!(21)
+        Print #1, pitTeamCategory$(17); Tab(28); pitRecTmDesc$(23); Tab(62); Using ".###"; pitRecTmVal!(23);: Print #1, Tab(72); Using "####"; pitRecTmYr!(23)
 
-        Print #1,  pitTeamCategory$(18); Tab(28); pitRecTmDesc$(24); Tab(61); Using "##.##"; pitRecTmVal!(24);: Print #1,  Tab(72); Using "####"; pitRecTmYr!(24)
+        Print #1, pitTeamCategory$(18); Tab(28); pitRecTmDesc$(24); Tab(61); Using "##.##"; pitRecTmVal!(24);: Print #1, Tab(72); Using "####"; pitRecTmYr!(24)
 
-        Print #1,  Chr$(12)
+        Print #1, Chr$(12)
 
         Close #1
 
@@ -1138,12 +1137,11 @@ Sub PrintSeasonRecords (printDest, destFile$, leagueName$)
             Close #2
 
             LPrint Chr$(12)
-            
+
             Kill destFile$
 
         End If
-        
+
     End If 'Done checking for records file
 
 End Sub
-
