@@ -269,13 +269,13 @@ End Sub
 'correct routine to actually swap the info.
 Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
 
-    Shared statD0, statD1
+    Shared statTeamDP, statOppDP
 
     Shared batterNames$(), batterNames$(), pitcherNames$(), pitcherNames$()
 
-    Shared statB()
-    Shared statB0(), statP0(), statS0()
-    Shared statT0!(), statT1!()
+    Shared statAtBats()
+    Shared statBatter(), statPitcher(), statSplit()
+    Shared statTeamBat!(), statTeamPit!()
 
     Dim SS, TS
 
@@ -355,35 +355,35 @@ Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
 
                     For I = 0 To 22:
                         Print #1, batterNames$(I)
-                        Print #1, statB(I)
+                        Print #1, statAtBats(I)
                     Next I
 
                     For I = 0 To 21:
                         Print #1, pitcherNames$(I)
-                        Print #1, statP(I)
+                        Print #1, statInnPitch(I)
                     Next I
 
                     For I = 0 To 22:
                         For I1 = 0 To 21:
-                            Print #1, statB0(I, I1)
+                            Print #1, statBatter(I, I1)
                         Next I1
                     Next I
 
                     For I = 0 To 21:
                         For I1 = 0 To 41:
-                            Print #1, statP0(I, I1)
+                            Print #1, statPitcher(I, I1)
                         Next I1
                     Next I
 
-                    Print #1, statD0
-                    Print #1, statD1
+                    Print #1, statTeamDP
+                    Print #1, statOppDP
 
                     For I = 0 To 21:
-                        Print #1, statT0!(I)
+                        Print #1, statTeamBat!(I)
                     Next I
 
                     For I = 0 To 22:
-                        Print #1, statT1!(I)
+                        Print #1, statTeamPit!(I)
                     Next I
 
                     Close 1
@@ -394,7 +394,7 @@ Sub SwapSpots (yearNumber$, targetTeam$, teamIdx)
 
                         For I = 0 To 22
                             For I1 = 0 To 6
-                                Print #1, statS0(I, I1)
+                                Print #1, statSplit(I, I1)
                             Next I1
                         Next I
 
@@ -421,14 +421,14 @@ End Sub
 'team.
 Sub LoadTeam (targetTeam$, SS, statFile$)
 
-    Shared statD0, statD1
+    Shared statTeamDP, statOppDP
 
-    Shared statB(), statP(), statS0()
-    Shared statB0(), statP0()
+    Shared statAtBats(), statInnPitch(), statSplit()
+    Shared statBatter(), statPitcher()
 
     Shared batterNames$(), pitcherNames$()
 
-    Shared statT0!(), statT1!()
+    Shared statTeamBat!(), statTeamPit!()
 
     statFile$ = nameStatFile$(targetTeam$)
 
@@ -458,7 +458,7 @@ Sub LoadTeam (targetTeam$, SS, statFile$)
 
             For I = 0 To 22
                 For I1 = 0 To 6
-                    Input #1, statS0(I, I1)
+                    Input #1, statSplit(I, I1)
                 Next I1
             Next I
 
@@ -480,7 +480,7 @@ End Sub
 Sub SwitchBatters ()
 
     Shared batterNames$(), batterNames$()
-    Shared statB(), batterRatings(), statB0(), statS0()
+    Shared statAtBats(), batterRatings(), statBatter(), statSplit()
 
     Do
         For I = 16 To 19:
@@ -519,14 +519,14 @@ Sub SwitchBatters ()
     Next
 
     For I = 0 To 21:
-        Swap statB0(I1 - 1, I), statB0(I2 - 1, I)
+        Swap statBatter(I1 - 1, I), statBatter(I2 - 1, I)
     Next
 
     For I = 0 To 6:
-        Swap statS0(I1 - 1, I), statS0(I2 - 1, I)
+        Swap statSplit(I1 - 1, I), statSplit(I2 - 1, I)
     Next
 
-    Swap statB(I1 - 1), statB(I2 - 1)
+    Swap statAtBats(I1 - 1), statAtBats(I2 - 1)
 
 End Sub
 
@@ -539,7 +539,7 @@ End Sub
 'full team roster
 Sub SwitchPitchers ()
 
-    Shared pitcherRatings(), statP0(), statP()
+    Shared pitcherRatings(), statPitcher(), statInnPitch()
     Shared pitcherNames$(), pitcherNames$()
 
     Do
@@ -574,10 +574,10 @@ Sub SwitchPitchers ()
     Next
 
     For I = 0 To 41:
-        Swap statP0(I1 - 1, I), statP0(I2 - 1, I)
+        Swap statPitcher(I1 - 1, I), statPitcher(I2 - 1, I)
     Next
 
-    Swap statP(I1 - 1), statP(I2 - 1)
+    Swap statInnPitch(I1 - 1), statInnPitch(I2 - 1)
 
 End Sub
 
@@ -3706,8 +3706,8 @@ Sub ViewPitcherHittingFielding ()
         Print Tab(55); Using "##"; pitcherRatings(I, 30);
 
         If pitcherRatings(I, 11) <> 999 Then
-            statPCT! = pitcherRatings(I, 11) / 1000
-            Print Tab(58); Using "#.###"; statPCT!;
+            statInnPitchCT! = pitcherRatings(I, 11) / 1000
+            Print Tab(58); Using "#.###"; statInnPitchCT!;
         Else
             batAvg! = 0
 

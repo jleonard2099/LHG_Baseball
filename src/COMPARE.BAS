@@ -10,10 +10,10 @@ Sub COMPARE ()
 
     Shared earnedRuns!
 
-    Shared statB(), statP()
-    Shared statB0(), statP0()
+    Shared statAtBats(), statInnPitch()
+    Shared statBatter(), statPitcher()
     Shared batterRatings(), teamRatings(), pitcherRatings(), totBatRat()
-    Shared statT0!(), statT1!()
+    Shared statTeamBat!(), statTeamPit!()
 
     Shared totPitRat&()
 
@@ -114,7 +114,7 @@ Sub Comparisons_Report (printDest, destFile$, teamName$)
 
     Shared batterNames$(), pitcherNames$()
     Shared batterRatings(), pitcherRatings()
-    Shared statB0(), statP0()
+    Shared statBatter(), statPitcher()
 
     Color 15, 0
     Cls
@@ -213,30 +213,30 @@ Sub Comparisons_Report (printDest, destFile$, teamName$)
 
             Print #1, Tab(99); Using ".###"; batterRatings(I, 26)
             Print #1, Tab(16); "LGE.";
-            Print #1, Tab(21); Using "###"; statB0(I, 14);
-            Print #1, Tab(26); Using "###"; statB0(I, 0);
-            Print #1, Tab(31); Using "###"; statB0(I, 2);
-            Print #1, Tab(36); Using "###"; statB0(I, 1);
-            Print #1, Tab(42); Using "##"; statB0(I, 4);
-            Print #1, Tab(46); Using "##"; statB0(I, 5);
-            Print #1, Tab(50); Using "##"; statB0(I, 6);
-            Print #1, Tab(54); Using "###"; statB0(I, 3);
-            Print #1, Tab(59); Using "###"; statB0(I, 7);
-            Print #1, Tab(64); Using "###"; statB0(I, 8);
-            Print #1, Tab(69); Using "###"; statB0(I, 9);
-            Print #1, Tab(74); Using "###"; statB0(I, 10);
+            Print #1, Tab(21); Using "###"; statBatter(I, 14);
+            Print #1, Tab(26); Using "###"; statBatter(I, 0);
+            Print #1, Tab(31); Using "###"; statBatter(I, 2);
+            Print #1, Tab(36); Using "###"; statBatter(I, 1);
+            Print #1, Tab(42); Using "##"; statBatter(I, 4);
+            Print #1, Tab(46); Using "##"; statBatter(I, 5);
+            Print #1, Tab(50); Using "##"; statBatter(I, 6);
+            Print #1, Tab(54); Using "###"; statBatter(I, 3);
+            Print #1, Tab(59); Using "###"; statBatter(I, 7);
+            Print #1, Tab(64); Using "###"; statBatter(I, 8);
+            Print #1, Tab(69); Using "###"; statBatter(I, 9);
+            Print #1, Tab(74); Using "###"; statBatter(I, 10);
 
             I2 = 0
             I3 = 0
             I4 = 0
 
-            If statB0(I, 0) > 0 Then 
-                I2 = Int((statB0(I, 1) / statB0(I, 0) + .0005) * 1000)
-                I3 = Int(((statB0(I, 1) + statB0(I, 4) + 2 * statB0(I, 5) + 3 * statB0(I, 6)) / statB0(I, 0) + .0005) * 1000)
-                I4 = Int(((statB0(I, 1) + statB0(I, 7)) / (statB0(I, 7) + statB0(I, 0)) + .0005) * 1000)
+            If statBatter(I, 0) > 0 Then 
+                I2 = Int((statBatter(I, 1) / statBatter(I, 0) + .0005) * 1000)
+                I3 = Int(((statBatter(I, 1) + statBatter(I, 4) + 2 * statBatter(I, 5) + 3 * statBatter(I, 6)) / statBatter(I, 0) + .0005) * 1000)
+                I4 = Int(((statBatter(I, 1) + statBatter(I, 7)) / (statBatter(I, 7) + statBatter(I, 0)) + .0005) * 1000)
             End If
 
-            If statB0(I, 0) = 0 Or I2 = 0 Then 
+            If statBatter(I, 0) = 0 Or I2 = 0 Then 
                 Print #1, Tab(79); ".000";
             End If
 
@@ -248,7 +248,7 @@ Sub Comparisons_Report (printDest, destFile$, teamName$)
                 Print #1, Tab(79); Using ".###"; I2;
             End If
 
-            If statB0(I, 0) = 0 Or I3 = 0 Then 
+            If statBatter(I, 0) = 0 Or I3 = 0 Then 
                 Print #1, Tab(84); ".000";
             End If
 
@@ -261,7 +261,7 @@ Sub Comparisons_Report (printDest, destFile$, teamName$)
                 Print #1, Tab(84); Using ".###"; I3;
             End If
 
-            If statB0(I, 0) = 0 Or I4 = 0 Then 
+            If statBatter(I, 0) = 0 Or I4 = 0 Then 
                 Print #1, Tab(90); ".000";
             End If
 
@@ -273,10 +273,10 @@ Sub Comparisons_Report (printDest, destFile$, teamName$)
                 Print #1, Tab(90); Using ".###"; I4;
             End If
 
-            If statB0(I, 16) = 0 And statB0(I, 17) = 0 Then 
+            If statBatter(I, 16) = 0 And statBatter(I, 17) = 0 Then 
                 I5 = 0 
             Else 
-                I5 = ((statB0(I, 16) + statB0(I, 17)) / (statB0(I, 16) + statB0(I, 17) + statB0(I, 11))) * 1000
+                I5 = ((statBatter(I, 16) + statBatter(I, 17)) / (statBatter(I, 16) + statBatter(I, 17) + statBatter(I, 11))) * 1000
             End If
 
             If I5 = 0 Then 
@@ -358,23 +358,23 @@ Sub Comparisons_Report (printDest, destFile$, teamName$)
 
             Print #1, Tab(109); Using "##"; pitcherRatings(I, 13)
             Print #1, Tab(18); "LGE.";
-            Print #1, Tab(25); Using "###"; statP0(I, 8);
-            Print #1, Tab(31); Using "##"; statP0(I, 6);
-            Print #1, Tab(36); Using "##"; statP0(I, 7);
-            Print #1, Tab(41); Using "##"; statP0(I, 12);
-            Print #1, Tab(45); Using "###"; Int(statP0(I, 0) / 3);
+            Print #1, Tab(25); Using "###"; statPitcher(I, 8);
+            Print #1, Tab(31); Using "##"; statPitcher(I, 6);
+            Print #1, Tab(36); Using "##"; statPitcher(I, 7);
+            Print #1, Tab(41); Using "##"; statPitcher(I, 12);
+            Print #1, Tab(45); Using "###"; Int(statPitcher(I, 0) / 3);
 
-            If statP0(I, 0) - (Int(statP0(I, 0) / 3) * 3) > 0 Then 
+            If statPitcher(I, 0) - (Int(statPitcher(I, 0) / 3) * 3) > 0 Then 
                 Print #1, ".";
-                Print #1, Using "#"; statP0(I, 0) - (Int(statP0(I, 0) / 3) * 3);
+                Print #1, Using "#"; statPitcher(I, 0) - (Int(statPitcher(I, 0) / 3) * 3);
             End If
 
-            Print #1, Tab(52); Using "###"; statP0(I, 1);
-            Print #1, Tab(56); Using "###"; statP0(I, 4);
-            Print #1, Tab(61); Using "###"; statP0(I, 5);
+            Print #1, Tab(52); Using "###"; statPitcher(I, 1);
+            Print #1, Tab(56); Using "###"; statPitcher(I, 4);
+            Print #1, Tab(61); Using "###"; statPitcher(I, 5);
 
-            If statP0(I, 0) > 0 Then 
-                I2 = Int((((statP0(I, 3) * 9) / (statP0(I, 0) / 3)) + .0005) * 100)
+            If statPitcher(I, 0) > 0 Then 
+                I2 = Int((((statPitcher(I, 3) * 9) / (statPitcher(I, 0) / 3)) + .0005) * 100)
             Else
                 I2 = 0
             End If
@@ -382,33 +382,33 @@ Sub Comparisons_Report (printDest, destFile$, teamName$)
             I3 = Int(I2 / 100)
             I4 = I2 - (I3 * 100)
 
-            If statP0(I, 0) = 0 Or I2 = 0 Then 
+            If statPitcher(I, 0) = 0 Or I2 = 0 Then 
                 Print #1, Tab(66); " 0.00";
             End If
-            If statP0(I, 0) > 0 And I2 > 0 And I2 <= 999 Then 
+            If statPitcher(I, 0) > 0 And I2 > 0 And I2 <= 999 Then 
                 Print #1, Tab(66); Using "##"; I3;
                 Print #1, ".";
             End If
-            If statP0(I, 0) > 0 And I2 >= 1000 Then 
+            If statPitcher(I, 0) > 0 And I2 >= 1000 Then 
                 Print #1, Tab(66); Using "##"; I3;
                 Print #1, ".";
             End If
-            If statP0(I, 0) > 0 And I4 = 0 And I2 > 0 Then 
+            If statPitcher(I, 0) > 0 And I4 = 0 And I2 > 0 Then 
                 Print #1, "00";
             End If
-            If statP0(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then 
+            If statPitcher(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then 
                 Print #1, "0";
                 Print #1, Using "#"; I4;
             End If
-            If statP0(I, 0) > 0 And I4 >= 10 And I2 > 0 Then 
+            If statPitcher(I, 0) > 0 And I4 >= 10 And I2 > 0 Then 
                 Print #1, Using "##"; I4;
             End If
 
-            Print #1, Tab(73); Using "##"; statP0(I, 9);
-            Print #1, Tab(79); Using "##"; statP0(I, 10);
+            Print #1, Tab(73); Using "##"; statPitcher(I, 9);
+            Print #1, Tab(79); Using "##"; statPitcher(I, 10);
 
-            If statP0(I, 0) > 0 Then 
-                I2 = Int((((statP0(I, 1) * 9) / (statP0(I, 0) / 3)) + .0005) * 100)
+            If statPitcher(I, 0) > 0 Then 
+                I2 = Int((((statPitcher(I, 1) * 9) / (statPitcher(I, 0) / 3)) + .0005) * 100)
             Else
                 I2 = 0
             End If
@@ -416,57 +416,57 @@ Sub Comparisons_Report (printDest, destFile$, teamName$)
             I3 = Int(I2 / 100)
             I4 = I2 - (I3 * 100)
 
-            If statP0(I, 0) = 0 Or I2 = 0 Then 
+            If statPitcher(I, 0) = 0 Or I2 = 0 Then 
                 Print #1, Tab(85); " 0.00";
             End If
-            If statP0(I, 0) > 0 And I2 > 0 And I2 <= 999 Then 
+            If statPitcher(I, 0) > 0 And I2 > 0 And I2 <= 999 Then 
                 Print #1, Tab(85); Using "##"; I3;
                 Print #1, ".";
             End If
-            If statP0(I, 0) > 0 And I2 >= 1000 Then 
+            If statPitcher(I, 0) > 0 And I2 >= 1000 Then 
                 Print #1, Tab(85); Using "##"; I3;
                 Print #1, ".";
             End If
-            If statP0(I, 0) > 0 And I4 = 0 And I2 > 0 Then 
+            If statPitcher(I, 0) > 0 And I4 = 0 And I2 > 0 Then 
                 Print #1, "00";
             End If
-            If statP0(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then 
+            If statPitcher(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then 
                 Print #1, "0";
                 Print #1, Using "#"; I4;
             End If
-            If statP0(I, 0) > 0 And I4 >= 10 And I2 > 0 Then 
+            If statPitcher(I, 0) > 0 And I4 >= 10 And I2 > 0 Then 
                 Print #1, Using "##"; I4;
             End If
 
             I2 = 0
-            If statP0(I, 0) > 0 Then I2 = Int((((statP0(I, 5) * 9) / (statP0(I, 0) / 3)) + .0005) * 100)
+            If statPitcher(I, 0) > 0 Then I2 = Int((((statPitcher(I, 5) * 9) / (statPitcher(I, 0) / 3)) + .0005) * 100)
             I3 = Int(I2 / 100)
             I4 = I2 - (I3 * 100)
 
-            If statP0(I, 0) = 0 Or I2 = 0 Then 
+            If statPitcher(I, 0) = 0 Or I2 = 0 Then 
                 Print #1, Tab(93); " 0.00";
             End If
-            If statP0(I, 0) > 0 And I2 > 0 And I2 <= 999 Then 
+            If statPitcher(I, 0) > 0 And I2 > 0 And I2 <= 999 Then 
                 Print #1, Tab(93); Using "##"; I3;
                 Print #1, ".";
             End If
-            If statP0(I, 0) > 0 And I2 >= 1000 Then 
+            If statPitcher(I, 0) > 0 And I2 >= 1000 Then 
                 Print #1, Tab(93); Using "##"; I3;
                 Print #1, ".";
             End If
-            If statP0(I, 0) > 0 And I4 = 0 And I2 > 0 Then 
+            If statPitcher(I, 0) > 0 And I4 = 0 And I2 > 0 Then 
                 Print #1, "00";
             End If
-            If statP0(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then 
+            If statPitcher(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then 
                 Print #1, "0";
                 Print #1, Using "#"; I4;
             End If
-            If statP0(I, 0) > 0 And I4 >= 10 And I2 > 0 Then 
+            If statPitcher(I, 0) > 0 And I4 >= 10 And I2 > 0 Then 
                 Print #1, Using "##"; I4;
             End If
 
-            If statP0(I, 0) > 0 Then 
-                I2 = Int((((statP0(I, 4) * 9) / (statP0(I, 0) / 3)) + .0005) * 100)
+            If statPitcher(I, 0) > 0 Then 
+                I2 = Int((((statPitcher(I, 4) * 9) / (statPitcher(I, 0) / 3)) + .0005) * 100)
             Else
                 I2 = 0
             End If
@@ -474,26 +474,26 @@ Sub Comparisons_Report (printDest, destFile$, teamName$)
             I3 = Int(I2 / 100)
             I4 = I2 - (I3 * 100)
 
-            If statP0(I, 0) = 0 Or I2 = 0 Then 
+            If statPitcher(I, 0) = 0 Or I2 = 0 Then 
                 Print #1, Tab(100); " 0.00";
             End If
-            If statP0(I, 0) > 0 And I2 > 0 And I2 <= 999 Then
+            If statPitcher(I, 0) > 0 And I2 > 0 And I2 <= 999 Then
                 Print #1, Tab(100); Using "##"; I3;: Print #1, ".";
             End If
-            If statP0(I, 0) > 0 And I2 >= 1000 Then
+            If statPitcher(I, 0) > 0 And I2 >= 1000 Then
                 Print #1, Tab(100); Using "##"; I3;: Print #1, ".";
             End If
-            If statP0(I, 0) > 0 And I4 = 0 And I2 > 0 Then 
+            If statPitcher(I, 0) > 0 And I4 = 0 And I2 > 0 Then 
                 Print #1, "00";
             End If
-            If statP0(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then 
+            If statPitcher(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then 
                 Print #1, "0";: Print #1, Using "#"; I4;
             End If
-            If statP0(I, 0) > 0 And I4 >= 10 And I2 > 0 Then 
+            If statPitcher(I, 0) > 0 And I4 >= 10 And I2 > 0 Then 
                 Print #1, Using "##"; I4;
             End If
 
-            Print #1, Tab(109); Using "##"; statP0(I, 14)
+            Print #1, Tab(109); Using "##"; statPitcher(I, 14)
             Print #1, 
 
         End If
@@ -532,8 +532,8 @@ End Sub
 Sub Comparisons_Screen (teamName$, backToMenu)
 
     Shared batterNames$(), pitcherNames$()
-    Shared batterRatings(), statB0()
-    Shared statP0(), pitcherRatings()
+    Shared batterRatings(), statBatter()
+    Shared statPitcher(), pitcherRatings()
 
     Call TeamComparison_Screen(teamName$)
 
@@ -917,115 +917,115 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                     Locate 18, 4: Print String$(8, 177)
 
                     Color 4, 11
-                    Locate 6, 13: Print Using "###"; statB0(I, 14);
+                    Locate 6, 13: Print Using "###"; statBatter(I, 14);
 
-                    If statB0(I, 0) = 0 Or statB0(I, 2) = 0 Then 
+                    If statBatter(I, 0) = 0 Or statBatter(I, 2) = 0 Then 
                         Locate 12, 13: Print "---.--"
                     End If
-                    If statB0(I, 0) > 0 And statB0(I, 2) > 0 Then 
-                        Locate 12, 13: Print Using "###.##"; statB0(I, 0) / statB0(I, 2)
+                    If statBatter(I, 0) > 0 And statBatter(I, 2) > 0 Then 
+                        Locate 12, 13: Print Using "###.##"; statBatter(I, 0) / statBatter(I, 2)
                     End If
 
-                    Locate 6, 16: Print Using "#####"; statB0(I, 0)
+                    Locate 6, 16: Print Using "#####"; statBatter(I, 0)
 
-                    If statB0(I, 0) = 0 Or statB0(I, 1) = 0 Then 
+                    If statBatter(I, 0) = 0 Or statBatter(I, 1) = 0 Then 
                         Locate 12, 19: Print " ---.--"
                     End If
-                    If statB0(I, 0) > 0 And statB0(I, 1) > 0 Then 
-                        Locate 12, 19: Print Using "####.##"; statB0(I, 0) / statB0(I, 1)
+                    If statBatter(I, 0) > 0 And statBatter(I, 1) > 0 Then 
+                        Locate 12, 19: Print Using "####.##"; statBatter(I, 0) / statBatter(I, 1)
                     End If
 
-                    Locate 6, 21: Print Using "####"; statB0(I, 2)
+                    Locate 6, 21: Print Using "####"; statBatter(I, 2)
 
-                    If statB0(I, 0) = 0 Or statB0(I, 4) = 0 Then 
+                    If statBatter(I, 0) = 0 Or statBatter(I, 4) = 0 Then 
                         Locate 12, 26: Print " ---.--"
                     End If
-                    If statB0(I, 0) > 0 And statB0(I, 4) > 0 Then 
-                        Locate 12, 26: Print Using "####.##"; statB0(I, 0) / statB0(I, 4)
+                    If statBatter(I, 0) > 0 And statBatter(I, 4) > 0 Then 
+                        Locate 12, 26: Print Using "####.##"; statBatter(I, 0) / statBatter(I, 4)
                     End If
 
-                    Locate 6, 25: Print Using "####"; statB0(I, 1)
+                    Locate 6, 25: Print Using "####"; statBatter(I, 1)
 
-                    If statB0(I, 0) = 0 Or statB0(I, 5) = 0 Then 
+                    If statBatter(I, 0) = 0 Or statBatter(I, 5) = 0 Then 
                         Locate 12, 33: Print " ---.--"
                     End If
-                    If statB0(I, 0) > 0 And statB0(I, 5) > 0 Then 
-                        Locate 12, 33: Print Using "####.##"; statB0(I, 0) / statB0(I, 5)
+                    If statBatter(I, 0) > 0 And statBatter(I, 5) > 0 Then 
+                        Locate 12, 33: Print Using "####.##"; statBatter(I, 0) / statBatter(I, 5)
                     End If
 
-                    Locate 6, 29: Print Using "####"; statB0(I, 4)
+                    Locate 6, 29: Print Using "####"; statBatter(I, 4)
 
-                    If statB0(I, 0) = 0 Or statB0(I, 6) = 0 Then 
+                    If statBatter(I, 0) = 0 Or statBatter(I, 6) = 0 Then 
                         Locate 12, 40: Print " ---.--"
                     End If
-                    If statB0(I, 0) > 0 And statB0(I, 6) > 0 Then 
-                        Locate 12, 40: Print Using "####.##"; statB0(I, 0) / statB0(I, 6)
+                    If statBatter(I, 0) > 0 And statBatter(I, 6) > 0 Then 
+                        Locate 12, 40: Print Using "####.##"; statBatter(I, 0) / statBatter(I, 6)
                     End If
 
-                    Locate 6, 33: Print Using "####"; statB0(I, 5)
+                    Locate 6, 33: Print Using "####"; statBatter(I, 5)
 
-                    If statB0(I, 0) = 0 Or statB0(I, 3) = 0 Then 
+                    If statBatter(I, 0) = 0 Or statBatter(I, 3) = 0 Then 
                         Locate 12, 47: Print " ---.--"
                     End If
-                    If statB0(I, 0) > 0 And statB0(I, 3) > 0 Then 
-                        Locate 12, 47: Print Using "####.##"; statB0(I, 0) / statB0(I, 3)
+                    If statBatter(I, 0) > 0 And statBatter(I, 3) > 0 Then 
+                        Locate 12, 47: Print Using "####.##"; statBatter(I, 0) / statBatter(I, 3)
                     End If
 
-                    Locate 6, 37: Print Using "####"; statB0(I, 6)
+                    Locate 6, 37: Print Using "####"; statBatter(I, 6)
 
-                    If statB0(I, 0) = 0 Or statB0(I, 7) = 0 Then 
+                    If statBatter(I, 0) = 0 Or statBatter(I, 7) = 0 Then 
                         Locate 12, 54: Print " ---.--"
                     End If
-                    If statB0(I, 0) > 0 And statB0(I, 7) > 0 Then 
-                        Locate 12, 54: Print Using "####.##"; statB0(I, 0) / statB0(I, 7)
+                    If statBatter(I, 0) > 0 And statBatter(I, 7) > 0 Then 
+                        Locate 12, 54: Print Using "####.##"; statBatter(I, 0) / statBatter(I, 7)
                     End If
 
-                    Locate 6, 41: Print Using "#####"; statB0(I, 3)
+                    Locate 6, 41: Print Using "#####"; statBatter(I, 3)
 
-                    If statB0(I, 0) = 0 Or statB0(I, 8) = 0 Then 
+                    If statBatter(I, 0) = 0 Or statBatter(I, 8) = 0 Then 
                         Locate 12, 61: Print " ---.--"
                     End If
-                    If statB0(I, 0) > 0 And statB0(I, 8) > 0 Then 
-                        Locate 12, 61: Print Using "####.##"; statB0(I, 0) / statB0(I, 8)
+                    If statBatter(I, 0) > 0 And statBatter(I, 8) > 0 Then 
+                        Locate 12, 61: Print Using "####.##"; statBatter(I, 0) / statBatter(I, 8)
                     End If
 
-                    Locate 6, 46: Print Using "####"; statB0(I, 7)
-                    Locate 6, 50: Print Using "####"; statB0(I, 8)
+                    Locate 6, 46: Print Using "####"; statBatter(I, 7)
+                    Locate 6, 50: Print Using "####"; statBatter(I, 8)
 
-                    If statB0(I, 9) + statB0(I, 10) = 0 Or statB0(I, 9) = 0 Then 
+                    If statBatter(I, 9) + statBatter(I, 10) = 0 Or statBatter(I, 9) = 0 Then 
                         Locate 12, 68: Print "    00% ";
                         Color 7, 0: Print String$(2, 177)
                     End If
 
                     Color 4, 11
-                    If statB0(I, 9) > 0 And statB0(I, 10) = 0 Then 
+                    If statBatter(I, 9) > 0 And statBatter(I, 10) = 0 Then 
                         Locate 12, 68: Print "   100% ";
                         Color 7, 0: Print String$(2, 177)
                     End If
                     
                     Color 4, 11
-                    If statB0(I, 9) > 0 And statB0(I, 10) > 0 Then 
-                        Locate 12, 68: Print "   ";: Print Using "###"; (statB0(I, 9) / (statB0(I, 10) + statB0(I, 9))) * 100;: Print "% ";
+                    If statBatter(I, 9) > 0 And statBatter(I, 10) > 0 Then 
+                        Locate 12, 68: Print "   ";: Print Using "###"; (statBatter(I, 9) / (statBatter(I, 10) + statBatter(I, 9))) * 100;: Print "% ";
                         Color 7, 0: Print String$(2, 177)
                     End If
                     
                     Color 4, 11
                     Locate 6, 54
-                    Print Using "####"; statB0(I, 9)
+                    Print Using "####"; statBatter(I, 9)
                     Locate 6, 58
-                    Print Using "###"; statB0(I, 10);: Print " "
+                    Print Using "###"; statBatter(I, 10);: Print " "
 
                     I2 = 0
                     I3 = 0
                     I4 = 0
 
-                    If statB0(I, 0) > 0 Then 
-                        I2 = Int((statB0(I, 1) / statB0(I, 0) + .0005) * 1000)
-                        I3 = Int(((statB0(I, 1) + statB0(I, 4) + 2 * statB0(I, 5) + 3 * statB0(I, 6)) / statB0(I, 0) + .0005) * 1000)
-                        I4 = Int(((statB0(I, 1) + statB0(I, 7)) / (statB0(I, 7) + statB0(I, 0)) + .0005) * 1000)
+                    If statBatter(I, 0) > 0 Then 
+                        I2 = Int((statBatter(I, 1) / statBatter(I, 0) + .0005) * 1000)
+                        I3 = Int(((statBatter(I, 1) + statBatter(I, 4) + 2 * statBatter(I, 5) + 3 * statBatter(I, 6)) / statBatter(I, 0) + .0005) * 1000)
+                        I4 = Int(((statBatter(I, 1) + statBatter(I, 7)) / (statBatter(I, 7) + statBatter(I, 0)) + .0005) * 1000)
                     End If
 
-                    If statB0(I, 0) = 0 Or I2 = 0 Then 
+                    If statBatter(I, 0) = 0 Or I2 = 0 Then 
                         Locate 6, 62: Print ".000";: Print " "
                     End If
 
@@ -1036,7 +1036,7 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                         Locate 6, 62: Print ".";: Print Using "###"; I2;: Print " "
                     End If
 
-                    If statB0(I, 0) = 0 Or I3 = 0 Then 
+                    If statBatter(I, 0) = 0 Or I3 = 0 Then 
                         Locate 6, 67: Print ".000";: Print " "
                     End If
 
@@ -1047,7 +1047,7 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                         Locate 6, 67: Print ".";: Print Using "###"; I3;: Print " "
                     End If
 
-                    If statB0(I, 0) = 0 Or I4 = 0 Then 
+                    If statBatter(I, 0) = 0 Or I4 = 0 Then 
                         Locate 6, 72: Print ".000";: Color 7, 0: Print String$(2, 177)
                     End If
 
@@ -1068,10 +1068,10 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                     Color 7, 0
                     Locate 13, 15: Print String$(63, 177)
 
-                    If statB0(I, 16) = 0 And statB0(I, 17) = 0 Then 
+                    If statBatter(I, 16) = 0 And statBatter(I, 17) = 0 Then 
                         I5 = 0 
                     Else 
-                        I5 = ((statB0(I, 16) + statB0(I, 17)) / (statB0(I, 16) + statB0(I, 17) + statB0(I, 11))) * 1000
+                        I5 = ((statBatter(I, 16) + statBatter(I, 17)) / (statBatter(I, 16) + statBatter(I, 17) + statBatter(I, 11))) * 1000
                     End If
 
                     Color 4, 11
@@ -1242,25 +1242,25 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                         Print Using "########"; pitcherRatings(I, 13);: Color 7, 0: Print String$(2, 177)
 
                         Color 15, 12
-                        Locate 6, 14: Print Using "###"; statP0(I, 8);:
-                        Locate , 17: Print Using "#####"; statP0(I, 6);:
-                        Locate , 22: Print Using "#####"; statP0(I, 7);:
-                        Locate , 27: Print Using "######"; statP0(I, 12);:
-                        Locate , 33: Print Using "#####"; Int(statP0(I, 0) / 3);
+                        Locate 6, 14: Print Using "###"; statPitcher(I, 8);:
+                        Locate , 17: Print Using "#####"; statPitcher(I, 6);:
+                        Locate , 22: Print Using "#####"; statPitcher(I, 7);:
+                        Locate , 27: Print Using "######"; statPitcher(I, 12);:
+                        Locate , 33: Print Using "#####"; Int(statPitcher(I, 0) / 3);
 
-                        If statP0(I, 0) - (Int(statP0(I, 0) / 3) * 3) = 0 Then
+                        If statPitcher(I, 0) - (Int(statPitcher(I, 0) / 3) * 3) = 0 Then
                             Print ".0";
                         End If
-                        If statP0(I, 0) - (Int(statP0(I, 0) / 3) * 3) > 0 Then
-                            Print ".";: Print Using "#"; statP0(I, 0) - (Int(statP0(I, 0) / 3) * 3);
+                        If statPitcher(I, 0) - (Int(statPitcher(I, 0) / 3) * 3) > 0 Then
+                            Print ".";: Print Using "#"; statPitcher(I, 0) - (Int(statPitcher(I, 0) / 3) * 3);
                         End If
 
-                        Locate , 40: Print Using "#####"; statP0(I, 1);:
-                        Locate , 45: Print Using "######"; statP0(I, 4);:
-                        Locate , 51: Print Using "#####"; statP0(I, 5);:
+                        Locate , 40: Print Using "#####"; statPitcher(I, 1);:
+                        Locate , 45: Print Using "######"; statPitcher(I, 4);:
+                        Locate , 51: Print Using "#####"; statPitcher(I, 5);:
 
-                        If statP0(I, 0) > 0 Then 
-                            I2 = Int((((statP0(I, 3) * 9) / (statP0(I, 0) / 3)) + .0005) * 100)
+                        If statPitcher(I, 0) > 0 Then 
+                            I2 = Int((((statPitcher(I, 3) * 9) / (statPitcher(I, 0) / 3)) + .0005) * 100)
                         Else
                             I2 = 0
                         End If
@@ -1268,113 +1268,113 @@ Sub Comparisons_Screen (teamName$, backToMenu)
                         I3 = Int(I2 / 100)
                         I4 = I2 - (I3 * 100)
 
-                        If statP0(I, 0) = 0 Or I2 = 0 Then 
+                        If statPitcher(I, 0) = 0 Or I2 = 0 Then 
                             Locate 6, 56: Print "  0.00";
                         End If
-                        If statP0(I, 0) > 0 And I2 > 0 And I2 <= 999 Then 
+                        If statPitcher(I, 0) > 0 And I2 > 0 And I2 <= 999 Then 
                             Locate 6, 56: Print Using "###"; I3;: Print ".";
                         End If
-                        If statP0(I, 0) > 0 And I2 >= 1000 Then 
+                        If statPitcher(I, 0) > 0 And I2 >= 1000 Then 
                             Locate 6, 56: Print Using "###"; I3;: Print ".";
                         End If
                         
-                        If statP0(I, 0) > 0 And I4 = 0 And I2 > 0 Then
+                        If statPitcher(I, 0) > 0 And I4 = 0 And I2 > 0 Then
                             Print "00";
                         End If
-                        If statP0(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then
+                        If statPitcher(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then
                             Print "0";: Print Using "#"; I4;
                         End If
-                        If statP0(I, 0) > 0 And I4 >= 10 And I2 > 0 Then
+                        If statPitcher(I, 0) > 0 And I4 >= 10 And I2 > 0 Then
                             Print Using "##"; I4;
                         End If
 
                         Locate 6, 62
-                        Print Using "####"; statP0(I, 9);
+                        Print Using "####"; statPitcher(I, 9);
                         Locate , 66
-                        Print Using "###"; statP0(I, 10);: Color 7, 0: Print String$(2, 177)
+                        Print Using "###"; statPitcher(I, 10);: Color 7, 0: Print String$(2, 177)
                         
                         Locate 7, 16: Print String$(55, 177)
                         
                         Color 15, 12
 
                         I2 = 0
-                        If statP0(I, 0) > 0 Then I2 = Int((((statP0(I, 1) * 9) / (statP0(I, 0) / 3)) + .0005) * 100)
+                        If statPitcher(I, 0) > 0 Then I2 = Int((((statPitcher(I, 1) * 9) / (statPitcher(I, 0) / 3)) + .0005) * 100)
                         I3 = Int(I2 / 100)
                         I4 = I2 - (I3 * 100)
 
-                        If statP0(I, 0) = 0 Or I2 = 0 Then 
+                        If statPitcher(I, 0) = 0 Or I2 = 0 Then 
                             Locate 11, 14: Print "  0.00";
                         End If
-                        If statP0(I, 0) > 0 And I2 > 0 And I2 <= 999 Then 
+                        If statPitcher(I, 0) > 0 And I2 > 0 And I2 <= 999 Then 
                             Locate 11, 14: Print Using "###"; I3;: Print ".";
                         End If
-                        If statP0(I, 0) > 0 And I2 >= 1000 Then 
+                        If statPitcher(I, 0) > 0 And I2 >= 1000 Then 
                             Locate 11, 14: Print Using "###"; I3;: Print ".";
                         End If
-                        If statP0(I, 0) > 0 And I4 = 0 And I2 > 0 Then
+                        If statPitcher(I, 0) > 0 And I4 = 0 And I2 > 0 Then
                             Print "00";
                         End If
-                        If statP0(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then
+                        If statPitcher(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then
                             Print "0";: Print Using "#"; I4;
                         End If
-                        If statP0(I, 0) > 0 And I4 >= 10 And I2 > 0 Then
+                        If statPitcher(I, 0) > 0 And I4 >= 10 And I2 > 0 Then
                             Print Using "##"; I4;
                         End If
 
                         I2 = 0
-                        If statP0(I, 0) > 0 Then I2 = Int((((statP0(I, 5) * 9) / (statP0(I, 0) / 3)) + .0005) * 100)
+                        If statPitcher(I, 0) > 0 Then I2 = Int((((statPitcher(I, 5) * 9) / (statPitcher(I, 0) / 3)) + .0005) * 100)
                         I3 = Int(I2 / 100)
                         I4 = I2 - (I3 * 100)
 
-                        If statP0(I, 0) = 0 Or I2 = 0 Then 
+                        If statPitcher(I, 0) = 0 Or I2 = 0 Then 
                             Locate 11, 20: Print "    0.00";
                         End If
-                        If statP0(I, 0) > 0 And I2 > 0 And I2 <= 999 Then 
+                        If statPitcher(I, 0) > 0 And I2 > 0 And I2 <= 999 Then 
                             Locate 11, 20: Print Using "#####"; I3;: Print ".";
                         End If
-                        If statP0(I, 0) > 0 And I2 >= 1000 Then 
+                        If statPitcher(I, 0) > 0 And I2 >= 1000 Then 
                             Locate 11, 20: Print Using "#####"; I3;: Print ".";
                         End If
-                        If statP0(I, 0) > 0 And I4 = 0 And I2 > 0 Then
+                        If statPitcher(I, 0) > 0 And I4 = 0 And I2 > 0 Then
                             Print "00";
                         End If
-                        If statP0(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then
+                        If statPitcher(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then
                             Print "0";: Print Using "#"; I4;
                         End If
-                        If statP0(I, 0) > 0 And I4 >= 10 And I2 > 0 Then
+                        If statPitcher(I, 0) > 0 And I4 >= 10 And I2 > 0 Then
                             Print Using "##"; I4;
                         End If
 
-                        If statP0(I, 0) > 0 Then
-                            I2 = Int((((statP0(I, 4) * 9) / (statP0(I, 0) / 3)) + .0005) * 100)
+                        If statPitcher(I, 0) > 0 Then
+                            I2 = Int((((statPitcher(I, 4) * 9) / (statPitcher(I, 0) / 3)) + .0005) * 100)
                         Else
                             I2 = 0
                         End If
                         I3 = Int(I2 / 100)
                         I4 = I2 - (I3 * 100)
 
-                        If statP0(I, 0) = 0 Or I2 = 0 Then 
+                        If statPitcher(I, 0) = 0 Or I2 = 0 Then 
                             Locate 11, 28: Print "    0.00";
                         End If
-                        If statP0(I, 0) > 0 And I2 > 0 And I2 <= 999 Then 
+                        If statPitcher(I, 0) > 0 And I2 > 0 And I2 <= 999 Then 
                             Locate 11, 28: Print Using "#####"; I3;: Print ".";
                         End If
 
-                        If statP0(I, 0) > 0 And I2 >= 1000 Then 
+                        If statPitcher(I, 0) > 0 And I2 >= 1000 Then 
                             Locate 11, 28: Print Using "#####"; I3;: Print ".";
                         End If
-                        If statP0(I, 0) > 0 And I4 = 0 And I2 > 0 Then
+                        If statPitcher(I, 0) > 0 And I4 = 0 And I2 > 0 Then
                             Print "00";
                         End If
-                        If statP0(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then
+                        If statPitcher(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then
                             Print "0";: Print Using "#"; I4;
                         End If
-                        If statP0(I, 0) > 0 And I4 >= 10 And I2 > 0 Then
+                        If statPitcher(I, 0) > 0 And I4 >= 10 And I2 > 0 Then
                             Print Using "##"; I4;
                         End If
 
                         Locate 11, 36
-                        Print Using "########"; statP0(I, 14);
+                        Print Using "########"; statPitcher(I, 14);
                         
                         Color 7, 0: Print String$(2, 177)
                         Locate 12, 16: Print String$(30, 177)
@@ -1419,7 +1419,7 @@ End Sub
 Sub TeamComparison_Report (teamName$)
 
     Shared batterNames$()
-    Shared batterRatings(), statB0()
+    Shared batterRatings(), statBatter()
 
     Print #1, Chr$(12)
     Print #1, "STAT COMPARISONS FOR "; teamName$
@@ -1513,71 +1513,71 @@ Sub TeamComparison_Report (teamName$)
 
             Print #1, Tab(16); "LGE.";
 
-            If statB0(I, 0) = 0 Or statB0(I, 2) = 0 Then
+            If statBatter(I, 0) = 0 Or statBatter(I, 2) = 0 Then
                 Print #1, Tab(21); "---.--";
             End If
-            If statB0(I, 0) > 0 And statB0(I, 2) > 0 Then 
-                Print #1, Tab(21); Using "###.##"; statB0(I, 0) / statB0(I, 2);
+            If statBatter(I, 0) > 0 And statBatter(I, 2) > 0 Then 
+                Print #1, Tab(21); Using "###.##"; statBatter(I, 0) / statBatter(I, 2);
             End If
 
-            If statB0(I, 0) = 0 Or statB0(I, 1) = 0 Then 
+            If statBatter(I, 0) = 0 Or statBatter(I, 1) = 0 Then 
                 Print #1, Tab(28); "---.--";
             End If
-            If statB0(I, 0) > 0 And statB0(I, 1) > 0 Then 
-                Print #1, Tab(28); Using "###.##"; statB0(I, 0) / statB0(I, 1);
+            If statBatter(I, 0) > 0 And statBatter(I, 1) > 0 Then 
+                Print #1, Tab(28); Using "###.##"; statBatter(I, 0) / statBatter(I, 1);
             End If
 
-            If statB0(I, 0) = 0 Or statB0(I, 4) = 0 Then 
+            If statBatter(I, 0) = 0 Or statBatter(I, 4) = 0 Then 
                 Print #1, Tab(36); "---.--";
             End If
-            If statB0(I, 0) > 0 And statB0(I, 4) > 0 Then 
-                Print #1, Tab(36); Using "###.##"; statB0(I, 0) / statB0(I, 4);
+            If statBatter(I, 0) > 0 And statBatter(I, 4) > 0 Then 
+                Print #1, Tab(36); Using "###.##"; statBatter(I, 0) / statBatter(I, 4);
             End If
 
-            If statB0(I, 0) = 0 Or statB0(I, 5) = 0 Then 
+            If statBatter(I, 0) = 0 Or statBatter(I, 5) = 0 Then 
                 Print #1, Tab(43); "---.--";
             End If
-            If statB0(I, 0) > 0 And statB0(I, 5) > 0 Then
-                Print #1, Tab(43); Using "###.##"; statB0(I, 0) / statB0(I, 5);
+            If statBatter(I, 0) > 0 And statBatter(I, 5) > 0 Then
+                Print #1, Tab(43); Using "###.##"; statBatter(I, 0) / statBatter(I, 5);
             End If
 
-            If statB0(I, 0) = 0 Or statB0(I, 6) = 0 Then 
+            If statBatter(I, 0) = 0 Or statBatter(I, 6) = 0 Then 
                 Print #1, Tab(50); "---.--";
             End If
-            If statB0(I, 0) > 0 And statB0(I, 6) > 0 Then 
-                Print #1, Tab(50); Using "###.##"; statB0(I, 0) / statB0(I, 6);
+            If statBatter(I, 0) > 0 And statBatter(I, 6) > 0 Then 
+                Print #1, Tab(50); Using "###.##"; statBatter(I, 0) / statBatter(I, 6);
             End If
 
-            If statB0(I, 0) = 0 Or statB0(I, 3) = 0 Then 
+            If statBatter(I, 0) = 0 Or statBatter(I, 3) = 0 Then 
                 Print #1, Tab(58); "---.--";
             End If
-            If statB0(I, 0) > 0 And statB0(I, 3) > 0 Then
-                Print #1, Tab(58); Using "###.##"; statB0(I, 0) / statB0(I, 3);
+            If statBatter(I, 0) > 0 And statBatter(I, 3) > 0 Then
+                Print #1, Tab(58); Using "###.##"; statBatter(I, 0) / statBatter(I, 3);
             End If
 
-            If statB0(I, 0) = 0 Or statB0(I, 7) = 0 Then 
+            If statBatter(I, 0) = 0 Or statBatter(I, 7) = 0 Then 
                 Print #1, Tab(64); "---.--";
             End If
-            If statB0(I, 0) > 0 And statB0(I, 7) > 0 Then 
-                Print #1, Tab(64); Using "###.##"; statB0(I, 0) / statB0(I, 7);
+            If statBatter(I, 0) > 0 And statBatter(I, 7) > 0 Then 
+                Print #1, Tab(64); Using "###.##"; statBatter(I, 0) / statBatter(I, 7);
             End If
 
-            If statB0(I, 0) = 0 Or statB0(I, 8) = 0 Then 
+            If statBatter(I, 0) = 0 Or statBatter(I, 8) = 0 Then 
                 Print #1, Tab(71); "---.--";
             End If
-            If statB0(I, 0) > 0 And statB0(I, 8) > 0 Then 
-                Print #1, Tab(71); Using "###.##"; statB0(I, 0) / statB0(I, 8);
+            If statBatter(I, 0) > 0 And statBatter(I, 8) > 0 Then 
+                Print #1, Tab(71); Using "###.##"; statBatter(I, 0) / statBatter(I, 8);
             End If
 
-            If statB0(I, 9) + statB0(I, 10) = 0 Or statB0(I, 9) = 0 Then 
+            If statBatter(I, 9) + statBatter(I, 10) = 0 Or statBatter(I, 9) = 0 Then 
                 Print #1, Tab(83); " 00%"
             End If
 
-            If statB0(I, 9) > 0 And statB0(I, 10) = 0 Then 
+            If statBatter(I, 9) > 0 And statBatter(I, 10) = 0 Then 
                 Print #1, Tab(83); "100%"
             End If
-            If statB0(I, 9) > 0 And statB0(I, 10) > 0 Then 
-                Print #1, Tab(83); Using "###"; (statB0(I, 9) / (statB0(I, 10) + statB0(I, 9))) * 100;
+            If statBatter(I, 9) > 0 And statBatter(I, 10) > 0 Then 
+                Print #1, Tab(83); Using "###"; (statBatter(I, 9) / (statBatter(I, 10) + statBatter(I, 9))) * 100;
                 Print #1, Tab(86); "%"
             End If
 
@@ -1597,7 +1597,7 @@ End Sub
 Sub TeamComparison_Screen (teamName$)
 
     Shared teamRatings(), totBatRat()
-    Shared statT0!(), statT1!()
+    Shared statTeamBat!(), statTeamPit!()
     Shared totPitRat&()
 
     Shared earnedRuns!
@@ -1684,40 +1684,40 @@ Sub TeamComparison_Screen (teamName$)
     Locate , 52: Print Using "####"; totBatRat(10);
     Locate , 56: Print Using "####"; totBatRat(11);: Print " ";
 
-    statPCT! = totBatRat(3) / totBatRat(1)
-    Locate , 61: Print Using ".###"; statPCT!;: Print " ";
+    statInnPitchCT! = totBatRat(3) / totBatRat(1)
+    Locate , 61: Print Using ".###"; statInnPitchCT!;: Print " ";
 
-    statPCT! = (totBatRat(3) + totBatRat(4) + totBatRat(5) * 2 + totBatRat(6) * 3) / totBatRat(1)
-    Locate , 66: Print Using ".###"; statPCT!;: Print " ";
+    statInnPitchCT! = (totBatRat(3) + totBatRat(4) + totBatRat(5) * 2 + totBatRat(6) * 3) / totBatRat(1)
+    Locate , 66: Print Using ".###"; statInnPitchCT!;: Print " ";
 
-    statPCT! = (totBatRat(3) + totBatRat(8)) / (totBatRat(1) + totBatRat(8))
-    Locate , 71: Print Using ".###"; statPCT!;
+    statInnPitchCT! = (totBatRat(3) + totBatRat(8)) / (totBatRat(1) + totBatRat(8))
+    Locate , 71: Print Using ".###"; statInnPitchCT!;
 
     Color 7, 0
     Print String$(2, 177)
 
     Color 4, 11
-    Locate 5, 13: Print Using "####"; statT0!(0);
-    Locate , 17: Print Using "####"; statT0!(2);
-    Locate , 21: Print Using "#####"; statT0!(1);
-    Locate , 26: Print Using "####"; statT0!(4);
-    Locate , 30: Print Using "####"; statT0!(5);
-    Locate , 34: Print Using "####"; statT0!(6);
-    Locate , 38: Print Using "#####"; statT0!(3);
-    Locate , 43: Print Using "####"; statT0!(7);
-    Locate , 47: Print Using "#####"; statT0!(8);
-    Locate , 52: Print Using "####"; statT0!(9);
-    Locate , 56: Print Using "####"; statT0!(10);
+    Locate 5, 13: Print Using "####"; statTeamBat!(0);
+    Locate , 17: Print Using "####"; statTeamBat!(2);
+    Locate , 21: Print Using "#####"; statTeamBat!(1);
+    Locate , 26: Print Using "####"; statTeamBat!(4);
+    Locate , 30: Print Using "####"; statTeamBat!(5);
+    Locate , 34: Print Using "####"; statTeamBat!(6);
+    Locate , 38: Print Using "#####"; statTeamBat!(3);
+    Locate , 43: Print Using "####"; statTeamBat!(7);
+    Locate , 47: Print Using "#####"; statTeamBat!(8);
+    Locate , 52: Print Using "####"; statTeamBat!(9);
+    Locate , 56: Print Using "####"; statTeamBat!(10);
     Print " ";
 
-    statPCT! = statT0!(1) / statT0!(0)
-    Locate , 61: Print Using ".###"; statPCT!;: Print " ";
+    statInnPitchCT! = statTeamBat!(1) / statTeamBat!(0)
+    Locate , 61: Print Using ".###"; statInnPitchCT!;: Print " ";
 
-    statPCT! = (statT0!(1) + statT0!(4) + statT0!(5) * 2 + statT0!(6) * 3) / statT0!(0)
-    Locate , 66: Print Using ".###"; statPCT!;: Print " ";
+    statInnPitchCT! = (statTeamBat!(1) + statTeamBat!(4) + statTeamBat!(5) * 2 + statTeamBat!(6) * 3) / statTeamBat!(0)
+    Locate , 66: Print Using ".###"; statInnPitchCT!;: Print " ";
 
-    statPCT! = (statT0!(1) + statT0!(7)) / (statT0!(0) + statT0!(7))
-    Locate , 71: Print Using ".###"; statPCT!;
+    statInnPitchCT! = (statTeamBat!(1) + statTeamBat!(7)) / (statTeamBat!(0) + statTeamBat!(7))
+    Locate , 71: Print Using ".###"; statInnPitchCT!;
 
     Color 7, 0
     Print String$(2, 177)
@@ -1806,75 +1806,75 @@ Sub TeamComparison_Screen (teamName$)
     Color 4, 11
 
     Locate 11, 13
-    If statT0!(2) = 0 Then
+    If statTeamBat!(2) = 0 Then
         Print " ---.--";
     End If
-    If statT0!(2) > 0 Then
-        Print Using "###.##"; statT0!(0) / statT0!(2);
+    If statTeamBat!(2) > 0 Then
+        Print Using "###.##"; statTeamBat!(0) / statTeamBat!(2);
     End If
     
     Locate , 18
-    If statT0!(1) = 0 Then
+    If statTeamBat!(1) = 0 Then
         Print " ---.--";
     End If
-    If statT0!(1) > 0 Then
-        Print Using "#####.##"; statT0!(0) / statT0!(1);
+    If statTeamBat!(1) > 0 Then
+        Print Using "#####.##"; statTeamBat!(0) / statTeamBat!(1);
     End If
 
     Locate , 26
-    If statT0!(4) = 0 Then
+    If statTeamBat!(4) = 0 Then
         Print " ---.--";
     End If
-    If statT0!(4) > 0 Then
-        Print Using "####.##"; statT0!(0) / statT0!(4);
+    If statTeamBat!(4) > 0 Then
+        Print Using "####.##"; statTeamBat!(0) / statTeamBat!(4);
     End If
 
     Locate , 33
-    If statT0!(5) = 0 Then
+    If statTeamBat!(5) = 0 Then
         Print " ---.--";
     End If
-    If statT0!(5) > 0 Then
-        Print Using "####.##"; statT0!(0) / statT0!(5);
+    If statTeamBat!(5) > 0 Then
+        Print Using "####.##"; statTeamBat!(0) / statTeamBat!(5);
     End If
 
     Locate , 40
-    If statT0!(6) = 0 Then
+    If statTeamBat!(6) = 0 Then
         Print " ---.--";
     End If
-    If statT0!(6) > 0 Then
-        Print Using "####.##"; statT0!(0) / statT0!(6);
+    If statTeamBat!(6) > 0 Then
+        Print Using "####.##"; statTeamBat!(0) / statTeamBat!(6);
     End If
 
     Locate , 47
-    If statT0!(3) = 0 Then
+    If statTeamBat!(3) = 0 Then
         Print " ---.--";
     End If
-    If statT0!(3) > 0 Then
-        Print Using "####.##"; statT0!(0) / statT0!(3);
+    If statTeamBat!(3) > 0 Then
+        Print Using "####.##"; statTeamBat!(0) / statTeamBat!(3);
     End If
 
     Locate , 54
-    If statT0!(7) = 0 Then
+    If statTeamBat!(7) = 0 Then
         Print " ---.--";
     End If
-    If statT0!(7) > 0 Then
-        Print Using "####.##"; statT0!(0) / statT0!(7);
+    If statTeamBat!(7) > 0 Then
+        Print Using "####.##"; statTeamBat!(0) / statTeamBat!(7);
     End If
 
     Locate , 61
-    If statT0!(8) = 0 Then
+    If statTeamBat!(8) = 0 Then
         Print " ---.--";
     End If
-    If statT0!(8) > 0 Then
-        Print Using "####.##"; statT0!(0) / statT0!(8);
+    If statTeamBat!(8) > 0 Then
+        Print Using "####.##"; statTeamBat!(0) / statTeamBat!(8);
     End If
 
     Locate , 68
-    If statT0!(9) = 0 Then
+    If statTeamBat!(9) = 0 Then
         Print " ---.--";
     End If
-    If statT0!(9) > 0 Then
-        Print Using "####.## "; statT0!(9) / (statT0!(9) + statT0!(10));
+    If statTeamBat!(9) > 0 Then
+        Print Using "####.## "; statTeamBat!(9) / (statTeamBat!(9) + statTeamBat!(10));
     End If
 
     Color 7, 0
@@ -1953,14 +1953,14 @@ Sub TeamComparison_Screen (teamName$)
     Print String$(2, 177)
 
     Color 14, 12
-    Locate 16, 14: Print Using "####"; statT1!(12);
-    Locate , 18: Print Using "#####"; statT1!(0) / 3;
-    Locate , 23: Print Using "#####"; statT1!(1);
-    Locate , 28: Print Using "######"; statT1!(4);
-    Locate , 34: Print Using "#######"; statT1!(5);
-    Locate , 41: Print Using "######"; statT1!(14);
-    Locate , 47: Print Using "#####"; statT1!(10);
-    Locate , 52: Print Using "###.##"; (statT1!(3) * 9) / (statT1!(0) / 3);
+    Locate 16, 14: Print Using "####"; statTeamPit!(12);
+    Locate , 18: Print Using "#####"; statTeamPit!(0) / 3;
+    Locate , 23: Print Using "#####"; statTeamPit!(1);
+    Locate , 28: Print Using "######"; statTeamPit!(4);
+    Locate , 34: Print Using "#######"; statTeamPit!(5);
+    Locate , 41: Print Using "######"; statTeamPit!(14);
+    Locate , 47: Print Using "#####"; statTeamPit!(10);
+    Locate , 52: Print Using "###.##"; (statTeamPit!(3) * 9) / (statTeamPit!(0) / 3);
 
     Color 7, 0: Print String$(2, 177)
 
@@ -1969,9 +1969,9 @@ Sub TeamComparison_Screen (teamName$)
     Color 7, 0: Print String$(44, 177)
 
     Color 14, 12
-    Locate 21, 14: Print Using "###.##"; statT1!(1) * 9 / (statT1!(0) / 3);
-    Locate , 20: Print Using "#####.##"; statT1!(5) * 9 / (statT1!(0) / 3);
-    Locate , 28: Print Using "#####.##"; statT1!(4) * 9 / (statT1!(0) / 3);
+    Locate 21, 14: Print Using "###.##"; statTeamPit!(1) * 9 / (statTeamPit!(0) / 3);
+    Locate , 20: Print Using "#####.##"; statTeamPit!(5) * 9 / (statTeamPit!(0) / 3);
+    Locate , 28: Print Using "#####.##"; statTeamPit!(4) * 9 / (statTeamPit!(0) / 3);
 
     Color 7, 0
     Print String$(2, 177)

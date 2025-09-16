@@ -164,9 +164,9 @@ Sub UpdateExpandedLeaders (JB, JP, plyrTotalStats, teamTotalStats)
     Shared batTotGames!()
     Shared pitTotGames!()
 
-    Shared expLdrB0(), careerB0(), statB()
-    Shared careerP0(), statP(), expLdrP0()
-    Shared statT0!(), statT1!()
+    Shared expLdrB0(), careerB0(), statAtBats()
+    Shared careerP0(), statInnPitch(), expLdrP0()
+    Shared statTeamBat!(), statTeamPit!()
 
     Shared plyLdrVal!(), teamLdrVal!()
     Shared divWins(), divLosses()
@@ -180,9 +180,9 @@ Sub UpdateExpandedLeaders (JB, JP, plyrTotalStats, teamTotalStats)
     Erase batTotGames!
     Erase pitTotGames!
 
-    Erase expLdrB0, careerB0, statB
-    Erase careerP0, statP, expLdrP0
-    Erase statT0!, statT1!
+    Erase expLdrB0, careerB0, statAtBats
+    Erase careerP0, statInnPitch, expLdrP0
+    Erase statTeamBat!, statTeamPit!
 
     Erase plyLdrVal!, teamLdrVal!
     Erase divWins, divLosses
@@ -215,12 +215,12 @@ Sub UpdateExpandedLeaders (JB, JP, plyrTotalStats, teamTotalStats)
 
                 For I = 0 To 22
                     Input #1, batterNames$(I)
-                    Input #1, statB(I)
+                    Input #1, statAtBats(I)
                 Next I
 
                 For I = 0 To 21:
                     Input #1, pitcherNames$(I)
-                    Input #1, statP(I)
+                    Input #1, statInnPitch(I)
                 Next I
 
                 For I = 0 To 22
@@ -239,11 +239,11 @@ Sub UpdateExpandedLeaders (JB, JP, plyrTotalStats, teamTotalStats)
                 Input #1, D1
 
                 For I = 0 To 21:
-                    Input #1, statT0!(I)
+                    Input #1, statTeamBat!(I)
                 Next I
 
                 For I = 0 To 22:
-                    Input #1, statT1!(I)
+                    Input #1, statTeamPit!(I)
                 Next I
 
                 Close #1
@@ -254,14 +254,14 @@ Sub UpdateExpandedLeaders (JB, JP, plyrTotalStats, teamTotalStats)
                 plyrTotalStats = plyrTotalStats + 1
 
                 For I = 0 To 21
-                    plyLdrVal!(plyrTotalStats, I) = statT0!(I)
+                    plyLdrVal!(plyrTotalStats, I) = statTeamBat!(I)
                     plyLeaderTeams$(plyrTotalStats, I) = teamName$
                 Next
 
                 teamTotalStats = teamTotalStats + 1
 
                 For I = 0 To 22
-                    teamLdrVal!(teamTotalStats, I) = statT1!(I)
+                    teamLdrVal!(teamTotalStats, I) = statTeamPit!(I)
                     tmLeaderTeams$(teamTotalStats, I) = teamName$
                 Next
 
@@ -314,9 +314,6 @@ Sub UpdateExpandedLeaders (JB, JP, plyrTotalStats, teamTotalStats)
 
                         For I1 = 0 To 22
                             PK1 = PK1 + 1
-                            If I > 2 And I1 > 15 Then
-                                test = 1
-                            End If
                             expLdrP0(PK, PK1) = careerP0(I, I1)
                         Next I1
 

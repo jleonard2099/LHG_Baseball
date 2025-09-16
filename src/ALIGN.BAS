@@ -11,8 +11,8 @@ Sub ALIGN ()
 
     _Title "Full Count Baseball - Align Stats"
 
-    Shared statD0, statD1
-    Shared statD0_Road, statD1_Road
+    Shared statTeamDP, statOppDP
+    Shared statTeamDP_Road, statOppDP_Road
 
     Shared teamLosses_Road, teamWins_Road
     Shared teamName_Align$
@@ -27,9 +27,9 @@ Sub ALIGN ()
     Shared alignS0_Road()
 
     Shared alignS()
-    Shared statB0(), statB()
-    Shared statP(), statP0()
-    Shared statT0!(), statT1!()
+    Shared statBatter(), statAtBats()
+    Shared statInnPitch(), statPitcher()
+    Shared statTeamBat!(), statTeamPit!()
 
     Do
 
@@ -86,8 +86,8 @@ Sub ALIGN ()
                     Next I1
                 Next I
 
-                Input #1, statD0_Road
-                Input #1, statD1_Road
+                Input #1, statTeamDP_Road
+                Input #1, statOppDP_Road
 
                 For I = 0 To 21:
                     Input #1, alignTR(I)
@@ -123,35 +123,35 @@ Sub ALIGN ()
 
                     For I = 0 To 22:
                         Input #1, batterNames$(I)
-                        Input #1, statB(I)
+                        Input #1, statAtBats(I)
                     Next I
 
                     For I = 0 To 21:
                         Input #1, pitcherNames$(I)
-                        Input #1, statP(I)
+                        Input #1, statInnPitch(I)
                     Next I
 
                     For I = 0 To 22:
                         For I1 = 0 To 21:
-                            Input #1, statB0(I, I1)
+                            Input #1, statBatter(I, I1)
                         Next I1
                     Next I
 
                     For I = 0 To 21:
                         For I1 = 0 To 41:
-                            Input #1, statP0(I, I1)
+                            Input #1, statPitcher(I, I1)
                         Next I1
                     Next I
 
-                    Input #1, statD0
-                    Input #1, statD1
+                    Input #1, statTeamDP
+                    Input #1, statOppDP
 
                     For I = 0 To 21:
-                        Input #1, statT0!(I)
+                        Input #1, statTeamBat!(I)
                     Next I
 
                     For I = 0 To 22:
-                        Input #1, statT1!(I)
+                        Input #1, statTeamPit!(I)
                     Next I
 
                     Close #1
@@ -350,7 +350,7 @@ End Sub
 'user a chance to actually save the results
 Sub ReviewAndSaveAlignment (pathRoadStats$, statFile$)
 
-    Shared statD0_Road, statD1_Road
+    Shared statTeamDP_Road, statOppDP_Road
     Shared teamLosses_Road, teamWins_Road
 
     Shared teamNameRoad$
@@ -427,8 +427,8 @@ Sub ReviewAndSaveAlignment (pathRoadStats$, statFile$)
         Next I1
     Next I
 
-    Write #1, statD0_Road
-    Write #1, statD1_Road
+    Write #1, statTeamDP_Road
+    Write #1, statOppDP_Road
 
     For I = 0 To 21:
         Write #1, alignTR(I)

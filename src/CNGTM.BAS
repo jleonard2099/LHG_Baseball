@@ -352,8 +352,8 @@ Sub PrintTeamStats (printDest, destFile$, targetTeam$)
         Print #1, Tab(55); Using "##"; pitcherRatings(I, 30);
 
         If pitcherRatings(I, 11) <> 999 Then
-            statPCT! = pitcherRatings(I, 11) / 1000
-            Print #1, Tab(58); Using "#.###"; statPCT!;
+            statInnPitchCT! = pitcherRatings(I, 11) / 1000
+            Print #1, Tab(58); Using "#.###"; statInnPitchCT!;
         Else
             batAvg! = 0
 

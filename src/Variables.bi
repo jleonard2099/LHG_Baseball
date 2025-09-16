@@ -27,14 +27,14 @@ Dim batCategoryBatterAbbr$(0 To 30)
 Dim batCategoryPitcherAbbr$(0 To 24)
 Dim pitCategoryAbbr$(0 To 26)
 
-Dim statB(0 To 22), statB0(0 To 22, 0 To 41)
-Dim statP(0 To 21), statP0(0 To 21, 0 To 41)
 Dim calcProperties(0 To 12)
-Dim Shared gameD0(1), gameD1(1)
 
-Dim statS0(0 To 22, 0 To 6)
+Dim statAtBats(0 To 22), statBatter(0 To 22, 0 To 41)
+Dim statInnPitch(0 To 21), statPitcher(0 To 21, 0 To 41)
+Dim statSplit(0 To 22, 0 To 6)
 
-Dim statT0!(0 To 21), statT1!(0 To 22)
+'Team Stats
+Dim statTeamBat!(0 To 21), statTeamPit!(0 To 22)
 
 'Record / Standings
 Dim homeWins, homeLosses
@@ -130,8 +130,8 @@ Dim careerBatters$(0 To 99), careerPitchers$(0 To 79)
 Dim carLdrBatName$(18, 20), carLdrPitName$(16, 20)
 Dim carLdrBatVal!(18, 20), carLdrPitVal!(16, 21)
 
-'Dim careerB0(100, 23), careerB1(100)
-'Dim careerP0(80, 42), careerP1(80)
+Dim careerB0(100, 23), careerB1(100)
+Dim careerP0(80, 42), careerP1(80)
 
 Dim carRecBatName$(15), carRecPitName$(15)
 
@@ -152,8 +152,8 @@ Dim expBatLdrName$(1 To 920), expPitLdrName$(1 To 880)
 Dim expBatLdrTeam$(1 To 920), expPitLdrTeam$(1 To 880)
 Dim expLdrTeam$(1 To 920), expLdrPlyrName$(1 To 920)
 
-'Dim expLdrB0(1 To 920, 22), expLdrP0(1 To 880, 23)
-'Dim expLdrVal!(1 To 920), expLdrTYP1!(1 To 920)
+Dim expLdrB0(1 To 920, 22), expLdrP0(1 To 880, 23)
+Dim expLdrVal!(1 To 920), expLdrTYP1!(1 To 920)
 
 'Expanded Standings
 Dim expStdLeagName$(TEAMS_PER_LEAGUE)
@@ -264,8 +264,11 @@ Dim batRecTmDesc$(24), pitRecTmDesc$(25)
 Dim batAvg!, earnedRuns!
 
 Dim parkHR
-Dim statD0, statD0_Road
-Dim statD1, statD1_Road
+
+'Team / Opp Double-Plays
+Dim statTeamDP, statTeamDP_Road
+Dim statOppDP, statOppDP_Road
+
 Dim teamLosses, teamWins
 
 Dim daysRest(21), daysInjure(22)
@@ -321,15 +324,13 @@ Dim actualAttendance&, avgAttendance&
 Dim DB, HR, TR, SB
 Dim eventNbr
 
-Dim BP(0 To 9), batLUIdx(0 To 9)
-Dim BB%(0 To 9)
+Dim bestBatterIdx(0 To 9)
+Dim bestBatterFPos(0 To 9), bLineupIdx(0 To 9)
 Dim buntTriple(0 To 11, 0 To 2)
 Dim gameMgrIdx(0 To 1)
 Dim gameDaysRest(0 To 1, 0 To 21)
 Dim mgrFile(1)
 Dim startPitcher(1), SX%(0 To 1)
-
-Dim E!
 
 Dim grounderDir$(10), pitHand$(1)
 
@@ -365,27 +366,26 @@ Dim Shared batRating(0 To 1, 0 To 22, 80)
 Dim Shared bRunner(3), b1Pitcher(3), b2Pitcher(3)
 Dim Shared buntBaseHit(0 To 9, 0 To 2), buntLeadRun(9, 1)
 Dim Shared buntQuality(0 To 1, 1 To 9, 1 To 9), buntStrike(0 To 5, 0 To 2)
-Dim Shared closerZone(0 To 1)
-Dim Shared currLineupSlot(9), currPitcher(0 To 1), CSS(1, 22, 6)
+Dim Shared closerZone(0 To 1), CSS(1, 22, 6)
+Dim Shared currLineupSlot(9), currPitcher(0 To 1)
 Dim Shared fldPos(0 To 1, 0 To 9), fielder(1, 10)
 Dim Shared game_batRating(1, 7, 9), gamePitcher(1)
 Dim Shared gameScore(1, 2), injuryStatus(0 To 1, 0 To 22)
 Dim Shared inningScore(0 To 1, 30)
-Dim Shared leftOnBase(1), lineupPlayer(0 To 1, 0 To 9)
+'Dim Shared leftOnBase(1), lineupAssigned(0 To 9), lineupPlayer(0 To 1, 0 To 9)
 Dim Shared MON(5, 14), nbrOuts(1), newRelieverNeeded(1)
 Dim Shared oppBatStats(0 To 1, 0 To 22, 0 To 21), oppPitStats(0 To 1, 0 To 21, 0 To 41)
 Dim Shared pitchEff(0 To 1, 0 To 1), pitchRating(0 To 1, 0 To 21, 0 To 89)
-Dim Shared pitcherOfRecord(1), relieverOnRecordForSave(1)
-Dim Shared runnerOnBase(3), stealPhase(3)
+Dim Shared pitcherOfRecord(1), playersUsed(1)
+Dim Shared relieverOnRecordForSave(1), runnerOnBase(3), stealPhase(3)
 Dim Shared schedGame(2), schedOptions(18), teamRat_GAME(1, 13)
 Dim Shared teamBatStats(0 To 1, 0 To 22, 0 To 21), teamPitStats(0 To 1, 0 To 21, 0 To 41)
 Dim Shared teamDPs(1), teamMgrProfileVal(0 To 1, 999), teamSplit(1, 11), teamYears(1)
 Dim Shared totalDPs(1), totalStats(22)
 Dim Shared usedUmpires(MAX_UMPIRES), VV(1), VV1(1)
-Dim Shared X0%(1, 2, 23)
+Dim Shared gameRoster(1, 2, 23)
 
-Dim Shared gameB(1, 22), gameP(1, 21)
-Dim Shared gameM(0 To 9), gameSA(1, 24)
+Dim Shared gameAtBats(1, 22), gameInnPit(1, 21), gameSA(1, 24)
 
 Dim Shared parkHRVals!(1)
 

@@ -131,7 +131,7 @@ Sub MergeFirstYear ()
     Shared careerB0(), careerB1(), carRecBatStats()
     Shared careerP0(), careerP1(), carRecPitStats()
 
-    Shared statT0!(), statT1!()
+    Shared statTeamBat!(), statTeamPit!()
 
     Dim TMR
 
@@ -233,11 +233,11 @@ Sub MergeFirstYear ()
                     Input #1, D0, D1
 
                     For I = 0 To 21:
-                        Input #1, statT0!(I)
+                        Input #1, statTeamBat!(I)
                     Next I
 
                     For I = 0 To 22:
-                        Input #1, statT1!(I)
+                        Input #1, statTeamPit!(I)
                     Next I
 
                     Close #1
@@ -843,7 +843,7 @@ Sub AddCareerYear (targetYear, doPostLeaders, careerFile$, statFile$)
     Shared careerB0(), careerB1(), carRecBatStats()
     Shared careerP0(), careerP1(), carRecPitStats()
 
-    Shared statT0!(), statT1!()
+    Shared statTeamBat!(), statTeamPit!()
 
     NB = -1
 
@@ -906,11 +906,11 @@ Sub AddCareerYear (targetYear, doPostLeaders, careerFile$, statFile$)
     Input #1, D0, D1
 
     For I = 0 To 21:
-        Input #1, statT0!(I)
+        Input #1, statTeamBat!(I)
     Next I
 
     For I = 0 To 22:
-        Input #1, statT1!(I)
+        Input #1, statTeamPit!(I)
     Next I
 
     Close #1
