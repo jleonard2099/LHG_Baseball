@@ -1480,7 +1480,7 @@ Sub LOADER
                 rndUmp = Int(Rnd(1) * MAX_UMPIRES) + 1
 
                 attempts = 0
-                While (umpireName$(rndUmp) = "" Or usedUmpires(rndUmp) = 1) And attempts < MAX_UMPIRES
+                While (umpireName$(rndUmp) = "" Or umpireName$(rndUmp) = "XXX" Or usedUmpires(rndUmp) = 1) And attempts < MAX_UMPIRES
                     rndUmp = Int(Rnd(1) * MAX_UMPIRES) + 1
                     attempts = attempts + 1
                 Wend

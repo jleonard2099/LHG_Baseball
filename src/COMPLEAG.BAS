@@ -1879,6 +1879,11 @@ End Sub
 'records to the records file
 Sub PostRecordsPro
 
+    Shared batRecVal!(), batRecPlyr$(), batRecTeam$()
+    Shared pitRecVal!(), pitRecPlyr$(), pitRecTeam$()
+    Shared batRecTmVal!(), batRecTmDesc$()
+    Shared pitRecTmVal!(), pitRecTmDesc$()
+
     Open diskPaths$(2) + "RECORDS.MLB" For Output As #1
 
     For I = 1 To 32:
