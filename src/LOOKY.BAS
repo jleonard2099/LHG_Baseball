@@ -738,8 +738,8 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
                     If statPitcher(I, 24) = 0 Then
                         Print " .000 ";
                     Else
-                        statCalc = statPitcher(I, 24) / statPitcher(I, 23)
-                        Print Using " .### "; statCalc;
+                        statCalc! = statPitcher(I, 24) / statPitcher(I, 23)
+                        Print Using " .### "; statCalc!;
                     End If
                 End If
             End If
@@ -758,11 +758,11 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
                     If statPitcher(I, 23) = I3 Then
                         Print "1.000 ";
                     Else
-                        statCalc = I3 / statPitcher(I, 23)
-                        If statCalc >= 1 Then
-                            Print Using "#.### "; statCalc;
+                        statCalc! = I3 / statPitcher(I, 23)
+                        If statCalc! >= 1 Then
+                            Print Using "#.### "; statCalc!;
                         Else
-                            Print Using " .### "; statCalc;
+                            Print Using " .### "; statCalc!;
                         End If
                     End If
                 End If
@@ -783,8 +783,8 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
                     If I4 = I3 Then
                         Print "1.000";
                     Else
-                        statCalc = I4 / I3
-                        Print Using " .###"; statCalc;
+                        statCalc! = I4 / I3
+                        Print Using " .###"; statCalc!;
                     End If
                 End If
             End If

@@ -65,46 +65,33 @@ Sub SeasonRecords ()
             Select Case SELECTION%
 
                 Case 1:
-                    leagueFile$ = _OpenFileDialog$("Choose League Record file", diskPaths$(2), "*.BAT", "League Record files [.BAT]")
-
-                    'ChooseFile$(diskPaths$(2) + "*.BAT", "LEAGUE", FileExit%)
+                    'leagueFile$ = _OpenFileDialog$("Choose League file", diskPaths$(2), "*.TMI", "League Definition files [.TMI]")
+                    leagueFile$ = _OpenFileDialog$("Choose Leader file", diskPaths$(2), "*.BAT", "Expanded Leader files [.BAT]")
 
                     If leagueFile$ <> "" Then
                         Call UpdateRecords(GetFileBaseName$(leagueFile$), SELECTION%)
                     End If
 
                 Case 2:
-                    leagueFile$ = _OpenFileDialog$("Choose League Record file", diskPaths$(2), "*.BAT", "League Record files [.BAT]")
-                    'ChooseFile$(diskPaths$(2) + "*.BAT", "LEAGUE", FileExit%)
-
-                    If leagueFile$ <> "" Then
-                        Call ViewSeasonRecords(GetFileBaseName$(leagueFile$))
-                    End If
+                    Call ViewSeasonRecords(GetFileBaseName$(leagueFile$))
 
                 Case 3:
-                    leagueFile$ = _OpenFileDialog$("Choose League Record file", diskPaths$(2), "*.BAT", "League Record files [.BAT]")
-                    'ChooseFile$(diskPaths$(2) + "*.BAT", "LEAGUE", FileExit%)
+                    userKey$ = GetPrintOptions$
 
-                    If leagueFile$ <> "" Then
+                    If userKey$ <> Chr$(27) Then
 
-                        userKey$ = GetPrintOptions$
+                        Select Case userKey$
 
-                        If userKey$ <> Chr$(27) Then
+                            Case "F"
+                                userFile$ = _SaveFileDialog$("Save Records Report", _CWD$ + "\Records", "*.txt", "Text File")
+                                If userFile$ <> "" Then
+                                    Call PrintSeasonRecords(0, userFile$, GetFileBaseName$(leagueFile$))
+                                End If
 
-                            Select Case userKey$
+                            Case "P"
+                                Call PrintSeasonRecords(1, "RECORDS", GetFileBaseName$(leagueFile$))
 
-                                Case "F"
-                                    userFile$ = _SaveFileDialog$("Save Records Report", _CWD$ + "\Records", "*.txt", "Text File")
-                                    If userFile$ <> "" Then
-                                        Call PrintSeasonRecords(0, userFile$, GetFileBaseName$(leagueFile$))
-                                    End If
-
-                                Case "P"
-                                    Call PrintSeasonRecords(1, "RECORDS", GetFileBaseName$(leagueFile$))
-
-                            End Select
-
-                        End If
+                        End Select
 
                     End If
 
@@ -837,21 +824,21 @@ Sub ViewSeasonRecords (leagueFile$)
         Print "******* TEAM RECORDS *******"
         Print
         Locate , 4
-        Print "CATEGORY                   PLAYER         TEAM           RECORD"
+        Print "CATEGORY                   TEAM           RECORD"
 
         Color 7
 
         For I = 0 To 12
             Locate , 4
-            Print batTeamCategory$(I); Tab(28); batRecTmDesc$(I); 
-            Print Tab(62); Using "####"; batRecTmVal!(I);
+            Print batTeamCategory$(I); Tab(29); batRecTmDesc$(I); 
+            Print Tab(48); Using "####"; batRecTmVal!(I);
             'Print Tab(70); Using "####"; batRecTmYr!(I)
         Next
 
         For I = 15 To 16
             Locate , 4
-            Print batTeamCategory$(I - 2); Tab(28); batRecTmDesc$(I); 
-            Print Tab(62); Using "####"; batRecTmVal!(I);
+            Print batTeamCategory$(I - 2); Tab(29); batRecTmDesc$(I); 
+            Print Tab(48); Using "####"; batRecTmVal!(I);
             'Print Tab(70); Using "####"; batRecTmYr!(I)
         Next
 
@@ -875,27 +862,27 @@ Sub ViewSeasonRecords (leagueFile$)
         Print "******* TEAM RECORDS *******"
         Print
         Locate , 4
-        Print "CATEGORY                   PLAYER         TEAM           RECORD"
+        Print "CATEGORY                   TEAM           RECORD"
 
         Color 7
 
         For I = 17 To 19
             Locate , 4
-            Print batTeamCategory$(I - 2); Tab(28); batRecTmDesc$(I); 
-            Print Tab(62); Using "####"; batRecTmVal!(I);
+            Print batTeamCategory$(I - 2); Tab(29); batRecTmDesc$(I); 
+            Print Tab(48); Using "####"; batRecTmVal!(I);
             'Print Tab(70); Using "####"; batRecTmYr!(I)
         Next
 
         For I = 22 To 24
             Locate , 4
-            Print batTeamCategory$(I - 4); Tab(28); batRecTmDesc$(I); 
-            Print Tab(62); Using ".###"; batRecTmVal!(I);
+            Print batTeamCategory$(I - 4); Tab(29); batRecTmDesc$(I); 
+            Print Tab(48); Using ".###"; batRecTmVal!(I);
             'Print Tab(70); Using "####"; batRecTmYr!(I)
         Next
 
         'Pitcher Records
         Locate , 4
-        Print pitTeamCategory$(0); Tab(28); pitRecTmDesc$(0); Tab(60); Using "####"; Int(pitRecTmVal!(0) / 3);
+        Print pitTeamCategory$(0); Tab(29); pitRecTmDesc$(0); Tab(46); Using "####"; Int(pitRecTmVal!(0) / 3);
         If pitRecTmVal!(0) - Int(pitRecTmVal!(0) / 3) * 3 > 0 Then
             Print ".";
             Print Using "#"; pitRecTmVal!(0) - (Int(pitRecTmVal!(0) / 3) * 3)
@@ -906,15 +893,15 @@ Sub ViewSeasonRecords (leagueFile$)
 
         For I = 1 To 5
             Locate , 4
-            Print pitTeamCategory$(I); Tab(28); pitRecTmDesc$(I); 
-            Print Tab(62); Using "####"; pitRecTmVal!(I);
+            Print pitTeamCategory$(I); Tab(29); pitRecTmDesc$(I); 
+            Print Tab(48); Using "####"; pitRecTmVal!(I);
             'Print Tab(70); Using "####"; pitRecTmYr!(I)
         Next
 
         For I = 10 To 12
             Locate , 4
-            Print pitTeamCategory$(I - 4); Tab(28); pitRecTmDesc$(I); 
-            Print Tab(62); Using "####"; pitRecTmVal!(I);
+            Print pitTeamCategory$(I - 4); Tab(29); pitRecTmDesc$(I); 
+            Print Tab(48); Using "####"; pitRecTmVal!(I);
             'Print Tab(70); Using "####"; pitRecTmYr!(I)
         Next
 
@@ -935,30 +922,30 @@ Sub ViewSeasonRecords (leagueFile$)
         Print "******* TEAM RECORDS *******"
         Print
         Locate , 4
-        Print "CATEGORY                   PLAYER         TEAM           RECORD"
+        Print "CATEGORY                   TEAM           RECORD"
 
         Color 7
 
         For I = 13 To 19
             Locate , 4
-            Print pitTeamCategory$(I - 4); Tab(28); pitRecTmDesc$(I);
-            Print Tab(62); Using "####"; pitRecTmVal!(I);
+            Print pitTeamCategory$(I - 4); Tab(29); pitRecTmDesc$(I);
+            Print Tab(48); Using "####"; pitRecTmVal!(I);
             'Print Tab(70); Using "####"; pitRecTmYr!(I)
         Next
 
         Locate , 4
-        Print pitTeamCategory$(16); Tab(28); pitRecTmDesc$(21); 
-        Print Tab(62); Using "####"; pitRecTmVal!(21);
+        Print pitTeamCategory$(16); Tab(29); pitRecTmDesc$(21); 
+        Print Tab(48); Using "####"; pitRecTmVal!(21);
         'Print Tab(70); Using "####"; pitRecTmYr!(21)
 
         Locate , 4
-        Print pitTeamCategory$(17); Tab(28); pitRecTmDesc$(23); 
-        Print Tab(62); Using ".###"; pitRecTmVal!(23);
+        Print pitTeamCategory$(17); Tab(29); pitRecTmDesc$(23); 
+        Print Tab(48); Using ".###"; pitRecTmVal!(23);
         'Print Tab(70); Using "####"; pitRecTmYr!(23)
 
         Locate , 4
-        Print pitTeamCategory$(18); Tab(28); pitRecTmDesc$(24); 
-        Print Tab(61); Using "##.##"; pitRecTmVal!(24);
+        Print pitTeamCategory$(18); Tab(29); pitRecTmDesc$(24); 
+        Print Tab(47); Using "##.##"; pitRecTmVal!(24);
         'Print Tab(70); Using "####"; pitRecTmYr!(24)
 
         Color 15

@@ -348,6 +348,7 @@ Sub NewSchedule (scheduleFile$)
                 Loop Until targetGame% >= 1 And targetGame% <= scheduleAP%(0)
 
                 NS% = Int((targetGame% - 1) / SCHED_ENTRIES_PER_SCREEN)
+                If NS% > BS% Then NS% = BS%
 
                 'boxName$ = diskPaths$(1) + "BOX" + Mid$(Str$(targetGame%), 2, Len(Str$(targetGame%)))
                 boxName$ = diskPaths$(1) + baseFile$ + "_GAME" + Mid$(Str$(targetGame%), 2, Len(Str$(targetGame%))) + ".BS"
@@ -376,7 +377,6 @@ Sub NewSchedule (scheduleFile$)
 
                 scheduleAP%(0) = scheduleAP%(0) - 1
                 BS% = Int((scheduleAP%(0) - 1) / SCHED_ENTRIES_PER_SCREEN)
-                If NS% > BS% Then NS% = BS%
 
             Case "G":
                 'GOTO A SPECIFIC PAGE

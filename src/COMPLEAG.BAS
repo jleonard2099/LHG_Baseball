@@ -306,9 +306,7 @@ End Sub
 'to existing leaders and updates as needed
 Sub CalcStatLeadersBat (targetTeam$, statName$, totalGames)
 
-    Dim pitcherNames$(TEAMS_PER_LEAGUE)
-
-    Shared leaderNames$()
+    Shared leaderNames$(), leaderTeams$()
     Shared leagLdrPlayer$(), leagLdrTeam$()
     Shared leaderVals!(), leaderStatVal2!()
 
@@ -335,7 +333,7 @@ Sub CalcStatLeadersBat (targetTeam$, statName$, totalGames)
             Color 15
             Print leaderNames$(X)
 
-            pitcherNames$(X) = statName$
+            leaderTeams$(X) = statName$
 
             For Y = 1 To 20
 
@@ -374,7 +372,7 @@ Sub CalcStatLeadersBat (targetTeam$, statName$, totalGames)
             If leaderStatVal2!(X, 16) >= leaderVals!(20, 1) Then
 
                 leagLdrPlayer$(20) = leaderNames$(X)
-                leagLdrTeam$(20) = pitcherNames$(X)
+                leagLdrTeam$(20) = leaderTeams$(X)
                 leaderVals!(20, 1) = leaderStatVal2!(X, 16)
                 leaderVals!(20, 2) = leaderStatVal2!(X, 1)
 
@@ -398,7 +396,7 @@ Sub CalcStatLeadersBat (targetTeam$, statName$, totalGames)
                 If leaderStatVal2!(X, 16) <> 0 And leaderStatVal2!(X, 16) <= leaderVals!(258, 1) Then
 
                     leagLdrPlayer$(258) = leaderNames$(X)
-                    leagLdrTeam$(258) = pitcherNames$(X)
+                    leagLdrTeam$(258) = leaderTeams$(X)
                     leaderVals!(258, 1) = leaderStatVal2!(X, 16)
                     leaderVals!(258, 2) = leaderStatVal2!(X, 1)
 
@@ -457,7 +455,7 @@ Sub CalcStatLeadersBat (targetTeam$, statName$, totalGames)
             If leaderStatVal2!(X, 14) >= leaderVals!(108, 1) Then
 
                 leagLdrPlayer$(108) = leaderNames$(X)
-                leagLdrTeam$(108) = pitcherNames$(X)
+                leagLdrTeam$(108) = leaderTeams$(X)
                 leaderVals!(108, 1) = leaderStatVal2!(X, 14)
                 leaderVals!(108, 2) = leaderStatVal2!(X, 1)
 
@@ -523,7 +521,7 @@ Sub CalcStatLeadersBat (targetTeam$, statName$, totalGames)
             If leaderStatVal2!(X, 15) >= leaderVals!(119, 1) Then
 
                 leagLdrPlayer$(119) = leaderNames$(X)
-                leagLdrTeam$(119) = pitcherNames$(X)
+                leagLdrTeam$(119) = leaderTeams$(X)
                 leaderVals!(119, 1) = leaderStatVal2!(X, 15)
                 leaderVals!(119, 2) = leaderStatVal2!(X, 1)
 
@@ -864,11 +862,13 @@ Sub CalcStatLeadersPitch (statName$, totalGames, nbrAppearances)
             Color 15
             Print leaderNames$(X)
 
+            leaderTeams$(X) = statName$
+
             ' ** ERA **
             If leaderStatVal2!(X, 14) <= leaderVals!(139, 1) Then
 
                 leagLdrPlayer$(139) = leaderNames$(X)
-                leagLdrTeam$(139) = statName$
+                leagLdrTeam$(139) = leaderTeams$(X)
                 leaderVals!(139, 1) = leaderStatVal2!(X, 14)
                 leaderVals!(139, 2) = leaderStatVal2!(X, 1) / 3
 
@@ -891,7 +891,7 @@ Sub CalcStatLeadersPitch (statName$, totalGames, nbrAppearances)
                 If leaderStatVal2!(X, 14) < 99.9 And leaderStatVal2!(X, 14) >= leaderVals!(278, 1) Then
 
                     leagLdrPlayer$(278) = leaderNames$(X)
-                    leagLdrTeam$(278) = statName$
+                    leagLdrTeam$(278) = leaderTeams$(X)
                     leaderVals!(278, 1) = leaderStatVal2!(X, 14)
                     leaderVals!(278, 2) = leaderStatVal2!(X, 1) / 3
 
@@ -915,7 +915,7 @@ Sub CalcStatLeadersPitch (statName$, totalGames, nbrAppearances)
             ' ** Wins / Losses **
             For Y = 140 To 150
 
-                If leagLdrPlayer$(Y) = leaderNames$(X) And leagLdrTeam$(Y) = statName$ Then
+                If leagLdrPlayer$(Y) = leaderNames$(X) And leagLdrTeam$(Y) = leaderTeams$(X) Then
 
                     leaderVals!(Y, 1) = leaderStatVal2!(X, 7)
                     leaderVals!(Y, 2) = leaderStatVal2!(X, 8)
@@ -952,7 +952,7 @@ Sub CalcStatLeadersPitch (statName$, totalGames, nbrAppearances)
                 If Not (leaderStatVal2!(X, 7) - leaderStatVal2!(X, 8) = leaderVals!(150, 1) - leaderVals!(150, 2) And leaderStatVal2!(X, 7) >= leaderVals!(150, 1)) Then
 
                     leagLdrPlayer$(150) = leaderNames$(X)
-                    leagLdrTeam$(150) = statName$
+                    leagLdrTeam$(150) = leaderTeams$(X)
                     leaderVals!(150, 1) = leaderStatVal2!(X, 7)
                     leaderVals!(150, 2) = leaderStatVal2!(X, 8)
 
@@ -984,7 +984,7 @@ Sub CalcStatLeadersPitch (statName$, totalGames, nbrAppearances)
             ' ** Wins **
             For Z = 151 To 161
 
-                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = leaderTeams$(X) Then
 
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 7)
                     '3445
@@ -1009,7 +1009,7 @@ Sub CalcStatLeadersPitch (statName$, totalGames, nbrAppearances)
 
                 leaderVals!(161, 1) = leaderStatVal2!(X, 7)
                 leagLdrPlayer$(161) = leaderNames$(X)
-                leagLdrTeam$(161) = statName$
+                leagLdrTeam$(161) = leaderTeams$(X)
 
                 3445 '
                 For Z = 151 To 160
@@ -1032,7 +1032,7 @@ Sub CalcStatLeadersPitch (statName$, totalGames, nbrAppearances)
             ' ** Outs / Game (IP / 3) **
             For Z = 162 To 172
 
-                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = leaderTeams$(X) Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 1) / 3
                     GoTo 3457
                 End If
@@ -1043,7 +1043,7 @@ Sub CalcStatLeadersPitch (statName$, totalGames, nbrAppearances)
 
                 leaderVals!(172, 1) = leaderStatVal2!(X, 1) / 3
                 leagLdrPlayer$(172) = leaderNames$(X)
-                leagLdrTeam$(172) = statName$
+                leagLdrTeam$(172) = leaderTeams$(X)
 
                 3457 '
                 For Z = 162 To 171
@@ -1061,7 +1061,7 @@ Sub CalcStatLeadersPitch (statName$, totalGames, nbrAppearances)
             3464 '
             ' ** Strikeouts **
             For Z = 173 To 183
-                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = leaderTeams$(X) Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 6)
                     GoTo 3469
                 End If
@@ -1071,7 +1071,7 @@ Sub CalcStatLeadersPitch (statName$, totalGames, nbrAppearances)
 
                 leaderVals!(183, 1) = leaderStatVal2!(X, 6)
                 leagLdrPlayer$(183) = leaderNames$(X)
-                leagLdrTeam$(183) = statName$
+                leagLdrTeam$(183) = leaderTeams$(X)
 
                 3469 '
                 For Z = 173 To 182:
@@ -1092,7 +1092,7 @@ Sub CalcStatLeadersPitch (statName$, totalGames, nbrAppearances)
             3476 '
             ' ** Games Completed **
             For Z = 184 To 194
-                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = leaderTeams$(X) Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 11)
                     GoTo 3481
                 End If
@@ -1102,7 +1102,7 @@ Sub CalcStatLeadersPitch (statName$, totalGames, nbrAppearances)
 
                 leaderVals!(194, 1) = leaderStatVal2!(X, 11)
                 leagLdrPlayer$(194) = leaderNames$(X)
-                leagLdrTeam$(194) = statName$
+                leagLdrTeam$(194) = leaderTeams$(X)
 
                 3481 '
                 For Z = 184 To 193
@@ -1121,7 +1121,7 @@ Sub CalcStatLeadersPitch (statName$, totalGames, nbrAppearances)
             ' ** Shutouts **
             For Z = 195 To 205
 
-                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = leaderTeams$(X) Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 12)
                     GoTo 3493
                 End If
@@ -1130,7 +1130,7 @@ Sub CalcStatLeadersPitch (statName$, totalGames, nbrAppearances)
             If leaderStatVal2!(X, 12) > leaderVals!(205, 1) Then
                 leaderVals!(205, 1) = leaderStatVal2!(X, 12)
                 leagLdrPlayer$(205) = leaderNames$(X)
-                leagLdrTeam$(205) = statName$
+                leagLdrTeam$(205) = leaderTeams$(X)
 
                 3493 '
                 For Z = 195 To 204
@@ -1149,7 +1149,7 @@ Sub CalcStatLeadersPitch (statName$, totalGames, nbrAppearances)
             ' ** Saves **
             For Z = 206 To 216
 
-                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = leaderTeams$(X) Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 13)
                     GoTo 3505
                 End If
@@ -1159,7 +1159,7 @@ Sub CalcStatLeadersPitch (statName$, totalGames, nbrAppearances)
 
                 leaderVals!(216, 1) = leaderStatVal2!(X, 13)
                 leagLdrPlayer$(216) = leaderNames$(X)
-                leagLdrTeam$(216) = statName$
+                leagLdrTeam$(216) = leaderTeams$(X)
 
                 3505 '
                 For Z = 206 To 215
@@ -1178,7 +1178,7 @@ Sub CalcStatLeadersPitch (statName$, totalGames, nbrAppearances)
 
             ' ** Games **
             For Z = 228 To 238
-                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = leaderTeams$(X) Then
                     leaderVals!(Z, 1) = leaderStatVal2!(X, 9)
                     GoTo 3518
                 End If
@@ -1188,7 +1188,7 @@ Sub CalcStatLeadersPitch (statName$, totalGames, nbrAppearances)
 
                 leaderVals!(238, 1) = leaderStatVal2!(X, 9)
                 leagLdrPlayer$(238) = leaderNames$(X)
-                leagLdrTeam$(238) = statName$
+                leagLdrTeam$(238) = leaderTeams$(X)
 
                 3518 '
                 For Z = 228 To 237:
@@ -1404,14 +1404,14 @@ Sub CalcRecordsPro (totalGames, teamName$, statName$, finalUpdate$)
     'Process stats that require calculations
     If UCase$(finalUpdate$) = "Y" Then
 
-        If statBatter(I, 0) + statBatter(I, 7) >= batTotGames!(I) * 3.1 Then
-            minimumPA = 1
-        Else
-            minimumPA = 0
-        End If
-
         ' ** Batting AVG **
         For I = 0 To 22
+
+            If statBatter(I, 0) + statBatter(I, 7) >= batTotGames!(I) * 3.1 Then
+                minimumPA = 1
+            Else
+                minimumPA = 0
+            End If
 
             If minimumPA = 1 And statBatter(I, 0) <> 0 Then
 
@@ -1878,6 +1878,12 @@ End Sub
 'This subroutine writes the calculated
 'records to the records file
 Sub PostRecordsPro
+
+    Shared batRecVal!(), batRecTmVal!()
+    Shared pitRecVal!(), pitRecTmVal!()
+
+    Shared batRecPlyr$(), batRecTeam$(), batRecTmDesc$()
+    Shared pitRecPlyr$(), pitRecTeam$(), pitRecTmDesc$()
 
     Open diskPaths$(2) + "RECORDS.MLB" For Output As #1
 

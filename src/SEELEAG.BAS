@@ -1495,7 +1495,7 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         End If
 
     Next
-   
+
     Close #1
 
     If printDest = 1 Then
@@ -1893,7 +1893,7 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
 
     Next P
 
-    Locate 2, 1
+    Locate 14, 1
     Color 14
     Print "      DOUBLES"
     Color 15
@@ -2024,7 +2024,6 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
 
     Next P
 
-    Print
     Locate 14, 1
     Color 14
     Print "      RUNS BATTED IN"
@@ -2580,7 +2579,7 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
     Color 14
 
     Locate 4, 1
-    Print "CLUB         AVG   AB    R    H  2B   3B  HR   RBI   BB   SO  SB  CS     E"
+    Print "CLUB         AVG   AB    R    H   2B  3B   HR  RBI   BB   SO  SB  CS   E"
     Color 15
     H! = 0
     AB = 0
@@ -2598,8 +2597,8 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
 
         If BA$(X) <> "" And BA$(X) <> "*" Then
             Print Left$(BA$(X), 11); Tab(13);
-            '            AVG   AB    R    H  2B   3B  HR   RBI   BB   SO  SB  CS     E"
-            Print Using ".### ####  ### #### ###  ### ###  ####  ### #### ### ###  ###"; OFT!(X, 1); OFT!(X, 3); OFT!(X, 5); OFT!(X, 4); OFT!(X, 7); OFT!(X, 8); OFT!(X, 9); OFT!(X, 6); OFT!(X, 10); OFT!(X, 11); OFT!(X, 12); OFT!(X, 13); OFT!(X, 14)
+            '             AVG   AB    R    H  2B  3B   HR   RBI   BB   SO  SB  CS     E"
+            Print Using ".###  ####  ### #### ### ###  ### ####  ### #### ### ###  ###"; OFT!(X, 1); OFT!(X, 3); OFT!(X, 5); OFT!(X, 4); OFT!(X, 7); OFT!(X, 8); OFT!(X, 9); OFT!(X, 6); OFT!(X, 10); OFT!(X, 11); OFT!(X, 12); OFT!(X, 13); OFT!(X, 14)
             ATBATS! = ATBATS! + OFT!(X, 3)
             H! = H! + OFT!(X, 4)
             R = R + OFT!(X, 5)
@@ -2624,11 +2623,10 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
     Print
     Print "LG TOTALS";
     'AVG
-    Print Tab(13); Using "#.###"; statCalc!;
+    Print Tab(13); Using ".###"; statCalc!;
 
-    '                     AB    R    H  2B   3B  HR   RBI   BB   SO  SB  CS     E"
-    Print Tab(18); Using "     ###      ###      ###        ###      ###      ###"; R; B2; HR; BB; SB; E
-    Print Tab(18); Using "####     ####      ###      ####      ####     ###     "; ATBATS!; H!; B3; RBI; SO; CS
+    Print Tab(24); Using "####     ####     ####      ####     ####     ####"; R; B2; HR; BB; SB; E
+    Print Tab(18); Using "#####     #####    ####      ####     #####    ####"; ATBATS!; H!; B3; RBI; SO; CS
 
     '-----
     Color 12

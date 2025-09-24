@@ -550,13 +550,17 @@ Sub ReadTeamStats (teamName$, statFile$)
         Input #1, statInnPitch(I)
     Next I
     
+    '1 to 23
     For I = 0 To 22: 
+        '1 to 22
         For I1 = 0 To 21: 
             Input #1, statBatter(I, I1)
         Next I1
     Next I
-    
+
+    '25 to 46
     For I = 0 To 21: 
+        '1 to 42
         For I1 = 0 To 41: 
             Input #1, statPitcher(I, I1)
         Next I1
@@ -698,19 +702,23 @@ Sub ReadSeasonRecords (recordFile$)
     Open diskPaths$(2) + recordFile$ For Input As #1
 
     For I = 1 To 32: 
-        Input #1, batRecVal!(I), batRecPlyr$(I), batRecTeam$(I), batRecYr!(I)
+        Input #1, batRecVal!(I), batRecPlyr$(I), batRecTeam$(I)
+        ', batRecYr!(I)
     Next
     
     For I = 1 To 28: 
-        Input #1, pitRecVal!(I), pitRecPlyr$(I), pitRecTeam$(I), pitRecYr!(I)
+        Input #1, pitRecVal!(I), pitRecPlyr$(I), pitRecTeam$(I)
+        ', pitRecYr!(I)
     Next
     
     For I = 0 To 24: 
-        Input #1, batRecTmVal!(I), batRecTmDesc$(I), batRecTmYr!(I)
+        Input #1, batRecTmVal!(I), batRecTmDesc$(I)
+        ', batRecTmYr!(I)
     Next
     
     For I = 0 To 24: 
-        Input #1, pitRecTmVal!(I), pitRecTmDesc$(I), pitRecTmYr!(I)
+        Input #1, pitRecTmVal!(I), pitRecTmDesc$(I)
+        ', pitRecTmYr!(I)
     Next
 
     Close #1

@@ -1,7 +1,7 @@
 $Debug
 $Color:32
 
-Const GAME_VERSION$ = "7.05"
+Const GAME_VERSION$ = "7.1"
 Const MAX_FILES = 10240
 Const MAX_CAREER_YEARS = 15
 'Const MAX_CONFERENCES = 40
@@ -33,7 +33,8 @@ DefInt A-Z
 '$Include: 'BoxRoutines.bi'
 '$Include: 'FileTeamSelection.bi'
 '$Include: 'Variables.bi'
-Dim Shared leftOnBase(1), lineupAssigned(0 To 9), lineupPlayer(0 To 1, 0 To 9)
+Dim batRecPlyr$(32), batRecTeam$(32), pitRecPlyr$(29), pitRecTeam$(29)
+Dim Shared relieverBatterCount(0 To 1), relieverOnRecordForSave(1), runnerOnBase(3), stealPhase(3)
 '$Include: 'MainRoutines.bi'
 '$Include: 'TITLE.bi'
 
@@ -90,7 +91,7 @@ Next
 
 Data INNINGS PITCHED,HITS ALLOWED,RUNS ALLOWED,EARNED RUNS,WALKS,STRIKEOUTS,COMPLETE GAMES,SHUTOUTS
 Data SAVES,DOUBLEPLAYS TURNED,HOME RUNS ALLOWED,SACRIFICE HITS,SACRIFICE FLIES,INHERITED RUNNERS
-Data INHERITED RUNS SCORED,BLOWN SAVES,QUALITY STARTS,PER CENT OF RI SCORED,EARNED RUN AVERAGE
+Data INHERITED RUNS SCORED,BLOWN SAVES,QUALITY STARTS,PERCENT OF RI SCORED,EARNED RUN AVERAGE
 For I = 0 To 18:
     Read pitTeamCategory$(I)
 Next
@@ -413,6 +414,7 @@ System
 
 Errhandler:
 Open "errlog" For Append As #10
+Print #10, "An error occurred. Please contact support with the following information:"
 Print #10, "Error #"; Err; "on program file line"; _ErrorLine; "-- "; _ErrorMessage$
 
 If _InclErrorLine Then
@@ -420,9 +422,8 @@ If _InclErrorLine Then
 End If
 
 If _FileExists("GAME82") Then
-    Print #10, "Schedule game # "; Using "###"; schedGame(0) + schedGame(2)
+    Print #10, "Schedule game # "; Using "####"; schedGame(0) + schedGame(2)
     Print #10, gameTeams$(0) + " vs. " + gameTeams$(1)
-    'Print #10, "Lineup index: "; lineupPlayer(P9, I)
 End If
 Print #10,
 Close #10
@@ -874,7 +875,1939 @@ End Sub
 '$Include: 'CARLDR.BAS'
 '$Include: 'CNGTM.BAS'
 '$Include: 'COMPARE.BAS'
-'$Include: 'COMPLEAG.BAS'
+'Include: 'COMPLEAG.BAS'
+
+'----------------------------------------
+'        CompileLeague SubRoutine
+'----------------------------------------
+'This subroutine reads in existing records,
+'looks for stats matching each team in the
+'league, and then relies on subroutines to
+'read stats and compare to any existing
+'leaders and records
+Sub CompileLeague ()
+
+    _Title "Full Count Baseball - Update League Stats"
+
+    Shared ldrBatStat(), ldrPitStat()
+    Shared divWins(), divLosses()
+    Shared statBatter(), statPitcher()
+
+    Shared leaderVals!(), DFT!(), leaderStatVal2!(), OFT!()
+
+    Shared BA$(), memberName$(), leagLdrPlayer$(), leagLdrTeam$()
+    Shared ER$(), leaderNames$()
+
+    Shared batRecVal!(), batRecTmVal!()
+    Shared pitRecVal!(), pitRecTmVal!()
+    Shared batRecTmDesc$(), pitRecTmDesc$()
+
+    Shared leagueName$
+
+    If _FileExists(diskPaths$(1) + "RECORDS.MLB") Then
+
+        Call ReadSeasonRecords("RECORDS.MLB")
+
+    Else
+
+        Erase batRecVal!, pitRecVal!
+        Erase batRecTmVal!, pitRecTmVal!
+        Erase batRecTmDesc$, pitRecTmDesc$
+
+    End If
+
+    'Initialize values first
+    'These are defensive record values, so they should be really high
+    'To determine if a "record" was broken, the stat values will be
+    'compared to see if they are lower than this.
+    'If we initialized to 0, the "record" would always be 0
+    pitRecVal!(23) = 100
+    pitRecVal!(25) = 100
+    batRecVal!(24) = 999
+    batRecVal!(25) = 999
+    batRecVal!(26) = 999
+    batRecVal!(27) = 999
+    batRecVal!(28) = 999
+    pitRecVal!(27) = 100
+    pitRecTmVal!(24) = 100
+
+    'Initialize values first
+    APP = 0
+
+    Erase BA$, ER$
+    Erase leagLdrPlayer$, leagLdrTeam$
+    Erase leaderVals!
+    Erase DFT!, OFT!
+
+    For Z = 1 To TEAMS_PER_LEAGUE
+        DFT!(Z, 1) = 99.99
+    Next
+
+    For X = 120 To 139
+        leagLdrPlayer$(X) = "*"
+        leagLdrTeam$(X) = "*"
+        leaderVals!(X, 1) = 99.99
+        leaderVals!(X, 2) = 0
+    Next X
+
+    For X = 239 To 258
+        leagLdrPlayer$(X) = "*"
+        leagLdrTeam$(X) = "*"
+        leaderVals!(X, 1) = 99.99
+        leaderVals!(X, 2) = 99.99
+    Next X
+
+    C$ = ","
+
+    leagueFile$ = _OpenFileDialog$("Choose League Stats file", diskPaths$(2), "*.TMS", "League Stats files [.TMS]")
+    'ChooseFile$(diskPaths$(2) + "*.TMS", "LEAGUE", ExitCode%)
+
+    If leagueFile$ <> "" Then
+
+        Do
+            Color 15, 0
+            Cls
+            Print "WOULD YOU LIKE TO POST SEASON RECORDS? (Y/N)";
+            I$ = GetKeyPress$
+            finalUpdate$ = UCase$(I$)
+        Loop Until finalUpdate$ = "Y" Or finalUpdate$ = "N"
+
+        Call ReadLeagueStats(leagueFile$)
+
+        Erase divWins, divLosses
+
+        For XW = 1 To TEAMS_PER_LEAGUE
+
+            'Look for * as terminating char
+            If memberName$(XW) <> Chr$(42) Then
+
+                haveStats = FindStatsLeague%(memberName$(XW), TN$, fullWins, fullLosses)
+
+                If (haveStats) Then
+
+                    statName$ = memberName$(XW)
+                    sameTeam = 0
+
+                    For X = 1 To TEAMS_PER_LEAGUE:
+
+                        If memberName$(X) = statName$ Then
+
+                            If divWins(X) = fullWins And divLosses(X) = fullLosses Then
+
+                                sameTeam = 1
+
+                            Else
+
+                                divWins(X) = fullWins
+                                divLosses(X) = fullLosses
+
+                            End If
+
+                        End If
+
+                        If (sameTeam) Then Exit For
+
+                    Next X
+                    'alternatively, use a Do / Until loop; sameTeam = 1 or EC = 30
+
+                    If sameTeam = 0 And _FileExists(diskPaths$(1) + memberName$(XW)) Then
+
+                        Call ReadStatsLeague(memberName$(XW), TN$, totalGames)
+
+                        Call CalcRecordsPro(totalGames, TN$, memberName$(XW), finalUpdate$)
+
+                        Call CalcStatLeadersBat(memberName$(XW), statName$, totalGames)
+                        Call CalcStatLeadersPitch(statName$, totalGames, APP)
+                        Call CalcStatLeadersTeam(statName$, totalGames)
+
+                    End If 'Done checking if we need to skip
+
+                End If
+
+            End If
+
+        Next XW
+
+        Call SortStandingsLeague
+        Call PostLeaders(GetFileBaseName$(leagueFile$), APP)
+        Call PostRecordsPro
+
+    End If
+
+End Sub
+
+
+'----------------------------------------
+'         FindStatsLeague Function
+'----------------------------------------
+'Looks for schedule stats for a specified
+'team in the league and loads them if
+'found, notifying the user
+Function FindStatsLeague% (statFile$, teamName$, fullWins, fullLosses)
+
+    If Not _FileExists(diskPaths$(1) + statFile$) Then
+
+        Print "NO STATS FOUND FOR "; statFile$
+        FindStatsLeague% = 0
+
+    Else
+
+        Open diskPaths$(1) + statFile$ For Input As #1
+        Input #1, teamName$, fullWins, fullLosses
+        Close #1
+
+        Color 15, 0
+        Cls
+
+        Locate 4, 5
+
+        Color 15
+        Print "FINDING ";
+        Color 14
+        Print statFile$;
+        Color 15
+        Print " STATS            "
+
+        FindStatsLeague% = 1
+
+    End If
+
+End Function
+
+
+'----------------------------------------
+'       ReadStatsLeague Subroutine
+'----------------------------------------
+'This subroutine reads stats in for a
+'single team in the league
+Sub ReadStatsLeague (statFile$, teamName$, totalGames)
+
+    Dim leaderStatVal1(46)
+
+    Shared ldrBatStat(), ldrPitStat()
+
+    Shared leaderStatVal2!()
+
+    Shared leaderNames$()
+
+    Erase leaderNames$
+    Erase leaderStatVal2!
+    Erase ldrBatStat, ldrPitStat
+
+    'Read Team stats
+    'Assing dedicated arrays to those values
+
+    Open (diskPaths$(1) + statFile$) For Input As #1
+
+    Input #1, teamName$, fullWins, fullLosses
+
+    For K = 1 To 23
+        Input #1, leaderNames$(K), leaderStatVal1(K)
+    Next
+
+    For K = 25 To 46
+        Input #1, leaderNames$(K), leaderStatVal1(K)
+    Next
+
+    leaderNames$(24) = "PITCHERS"
+
+    '0 to 22
+    For J = 1 To 23
+        '0 to 21
+        For K = 1 To 22
+            Input #1, leaderStatVal2!(J, K)
+        Next K
+    Next J
+
+    '0 to 21
+    For J = 25 To 46
+        '0 to 41
+        For K = 1 To 42
+            Input #1, leaderStatVal2!(J, K)
+        Next K
+    Next J
+
+    For K = 1 To 24
+        Input #1, ldrBatStat(K)
+    Next K
+
+    For K = 1 To 23
+        Input #1, ldrPitStat(K)
+    Next K
+
+    Close #1
+
+    totalGames = fullWins + fullLosses
+
+End Sub
+
+
+'----------------------------------------
+'      CalcStatLeadersBat Subroutine
+'----------------------------------------
+'This subroutine compares pre-loaded stats
+'to existing leaders and updates as needed
+Sub CalcStatLeadersBat (targetTeam$, statName$, totalGames)
+
+    Shared leaderNames$(), leaderTeams$()
+    Shared leagLdrPlayer$(), leagLdrTeam$()
+    Shared leaderVals!(), leaderStatVal2!()
+
+    'Extra calculations for batters
+    For J = 1 To 23
+
+        If leaderStatVal2!(J, 1) = 0 Then
+            leaderStatVal2!(J, 1) = 1
+        End If
+
+        leaderStatVal2!(J, 17) = leaderStatVal2!(J, 13)
+        leaderStatVal2!(J, 18) = leaderStatVal2!(J, 14)
+
+        ' Must have 3.1 Min At-Bat's / Game
+        If (leaderStatVal2!(J, 8) + leaderStatVal2!(J, 1)) < totalGames * 3.1 Then
+            'Minimum not met - use 0 value
+            leaderStatVal2!(J, 14) = 0
+            leaderStatVal2!(J, 15) = 0
+            leaderStatVal2!(J, 16) = 0
+        Else
+            'Slugging %
+            leaderStatVal2!(J, 14) = (leaderStatVal2!(J, 2) + leaderStatVal2!(J, 5) + 2 * leaderStatVal2!(J, 6) + 3 * leaderStatVal2!(J, 7)) / leaderStatVal2!(J, 1)
+            'OBP%
+            leaderStatVal2!(J, 15) = (leaderStatVal2!(J, 2) + leaderStatVal2!(J, 8)) / (leaderStatVal2!(J, 1) + leaderStatVal2!(J, 8))
+            'Batting Avg%
+            leaderStatVal2!(J, 16) = leaderStatVal2!(J, 2) / leaderStatVal2!(J, 1)
+        End If
+
+    Next
+
+    Color 15, 0
+    Cls
+
+    'Color 12
+    Print "CHECKING "; targetTeam$; " STATS"
+
+    Color 15
+
+    ' Must have 3.1 Min At-Bats / Game
+    '-- Previously compared to 2.5
+    '-- When viewing leaders, header says Min 3.1
+    minAtBat = totalGames * 3.1
+
+    'All Batters
+    For X = 1 To 23
+
+        If leaderNames$(X) <> "XXX" Then
+
+            'Color 14
+            Print "CHECKING STATS OF ";
+            Color 15
+            Print leaderNames$(X)
+
+            leaderTeams$(X) = statName$
+
+            For Y = 1 To 20
+
+                If leagLdrPlayer$(Y) = leaderNames$(X) And leagLdrTeam$(Y) = statName$ Then
+
+                    'Long Hit Streak
+                    leaderVals!(Y, 1) = leaderStatVal2!(X, 13)
+                    leaderVals!(Y, 2) = leaderStatVal2!(X, 1)
+
+                    If leaderVals!(Y, 2) < minAtBat Then
+                        leagLdrPlayer$(Y) = "*"
+                        leagLdrTeam$(Y) = "*"
+                        leaderVals!(Y, 1) = 0
+                        leaderVals!(Y, 2) = 0
+                    End If
+
+                    For Y = 1 To 19
+                        For Z = Y + 1 To 20
+                            If leaderVals!(Y, 1) < leaderVals!(Z, 1) Then
+                                Swap leagLdrTeam$(Y), leagLdrTeam$(Z)
+                                Swap leagLdrPlayer$(Y), leagLdrPlayer$(Z)
+                                For Z1 = 1 To 2:
+                                    Swap leaderVals!(Y, Z1), leaderVals!(Z, Z1)
+                                Next Z1
+                            End If
+                        Next Z
+                    Next Y
+
+                    GoTo 3318
+
+                End If
+
+            Next Y
+
+            ' ** Batting Avg **
+            If leaderStatVal2!(X, 16) >= leaderVals!(20, 1) Then
+
+                leagLdrPlayer$(20) = leaderNames$(X)
+                leagLdrTeam$(20) = leaderTeams$(X)
+                leaderVals!(20, 1) = leaderStatVal2!(X, 16)
+                leaderVals!(20, 2) = leaderStatVal2!(X, 1)
+
+                For Y = 1 To 19
+                    For Z = Y + 1 To 20
+                        If leaderVals!(Y, 1) < leaderVals!(Z, 1) Then
+                            Swap leagLdrPlayer$(Y), leagLdrPlayer$(Z)
+                            Swap leagLdrTeam$(Y), leagLdrTeam$(Z)
+                            For Z1 = 1 To 2:
+                                Swap leaderVals!(Y, Z1), leaderVals!(Z, Z1)
+                            Next Z1
+                        End If
+                    Next Z
+                Next Y
+
+            End If
+
+            3318 '
+            If (leaderStatVal2!(X, 8) + leaderStatVal2!(X, 1)) >= minAtBat Then
+
+                If leaderStatVal2!(X, 16) <> 0 And leaderStatVal2!(X, 16) <= leaderVals!(258, 1) Then
+
+                    leagLdrPlayer$(258) = leaderNames$(X)
+                    leagLdrTeam$(258) = leaderTeams$(X)
+                    leaderVals!(258, 1) = leaderStatVal2!(X, 16)
+                    leaderVals!(258, 2) = leaderStatVal2!(X, 1)
+
+                    For Y = 239 To 257
+                        For Z = Y + 1 To 258
+                            If leaderVals!(Y, 1) > leaderVals!(Z, 1) Then
+                                Swap leagLdrPlayer$(Y), leagLdrPlayer$(Z)
+                                Swap leagLdrTeam$(Y), leagLdrTeam$(Z)
+                                For Z1 = 1 To 2:
+                                    Swap leaderVals!(Y, Z1), leaderVals!(Z, Z1)
+                                Next Z1
+                            End If
+                        Next Z
+                    Next Y
+
+                End If
+
+            End If
+
+            3320 '
+            ' ** Slugging Pct **
+            For Y = 99 To 108
+
+                If leagLdrPlayer$(Y) = leaderNames$(X) And leagLdrTeam$(Y) = statName$ Then
+
+                    leaderVals!(Y, 1) = leaderStatVal2!(X, 14)
+                    leaderVals!(Y, 2) = leaderStatVal2!(X, 1)
+
+                    If leaderVals!(Y, 2) < minAtBat Then
+                        leagLdrPlayer$(Y) = "*"
+                        leagLdrTeam$(Y) = "*"
+                        leaderVals!(Y, 1) = 0
+                        leaderVals!(Y, 2) = 0
+                    End If
+
+                    For Y = 99 To 107
+
+                        For Z = Y + 1 To 108
+                            If leaderVals!(Y, 1) < leaderVals!(Z, 1) Then
+                                Swap leagLdrPlayer$(Y), leagLdrPlayer$(Z)
+                                Swap leagLdrTeam$(Y), leagLdrTeam$(Z)
+                                For Z1 = 1 To 2:
+                                    Swap leaderVals!(Y, Z1), leaderVals!(Z, Z1)
+                                Next Z1
+                            End If
+                        Next Z
+
+                    Next Y
+
+                    GoTo 3325
+
+                End If
+
+            Next Y
+
+            If leaderStatVal2!(X, 14) >= leaderVals!(108, 1) Then
+
+                leagLdrPlayer$(108) = leaderNames$(X)
+                leagLdrTeam$(108) = leaderTeams$(X)
+                leaderVals!(108, 1) = leaderStatVal2!(X, 14)
+                leaderVals!(108, 2) = leaderStatVal2!(X, 1)
+
+                leaderVals!(Y, 1) = leaderStatVal2!(X, 14)
+                leaderVals!(Y, 2) = leaderStatVal2!(X, 1)
+
+                If leaderVals!(Y, 2) < minAtBat Then
+                    leagLdrPlayer$(Y) = "*"
+                    leagLdrTeam$(Y) = "*"
+                    leaderVals!(Y, 1) = 0
+                    leaderVals!(Y, 2) = 0
+                End If
+
+                For Y = 99 To 107
+                    For Z = Y + 1 To 108
+                        If leaderVals!(Y, 1) < leaderVals!(Z, 1) Then
+                            Swap leagLdrPlayer$(Y), leagLdrPlayer$(Z)
+                            Swap leagLdrTeam$(Y), leagLdrTeam$(Z)
+                            For Z1 = 1 To 2:
+                                Swap leaderVals!(Y, Z1), leaderVals!(Z, Z1)
+                            Next Z1
+                        End If
+                    Next Z
+                Next Y
+
+            End If
+
+            3325 '
+            ' ** On Base Pct **
+            For Y = 110 To 119
+
+                If leagLdrPlayer$(Y) = leaderNames$(X) And leagLdrTeam$(Y) = statName$ Then
+
+                    leaderVals!(Y, 1) = leaderStatVal2!(X, 15)
+                    leaderVals!(Y, 2) = leaderStatVal2!(X, 1)
+
+                    If leaderVals!(Y, 2) < minAtBat Then
+                        leagLdrPlayer$(Y) = "*"
+                        leagLdrTeam$(Y) = "*"
+                        leaderVals!(Y, 1) = 0
+                        leaderVals!(Y, 2) = 0
+                    End If
+
+                    For Y = 110 To 118
+                        For Z = Y + 1 To 119
+                            If leaderVals!(Y, 1) < leaderVals!(Z, 1) Then
+                                Swap leagLdrPlayer$(Y), leagLdrPlayer$(Z)
+                                Swap leagLdrTeam$(Y), leagLdrTeam$(Z)
+                                For Z1 = 1 To 2:
+                                    Swap leaderVals!(Y, Z1), leaderVals!(Z, Z1)
+                                Next Z1
+                            End If
+                        Next Z
+                    Next Y
+
+                    GoTo 3330
+
+                End If
+
+            Next Y
+
+            3327 '
+            If leaderStatVal2!(X, 15) >= leaderVals!(119, 1) Then
+
+                leagLdrPlayer$(119) = leaderNames$(X)
+                leagLdrTeam$(119) = leaderTeams$(X)
+                leaderVals!(119, 1) = leaderStatVal2!(X, 15)
+                leaderVals!(119, 2) = leaderStatVal2!(X, 1)
+
+                leaderVals!(Y, 1) = leaderStatVal2!(X, 15)
+                leaderVals!(Y, 2) = leaderStatVal2!(X, 1)
+
+                If leaderVals!(Y, 2) < minAtBat Then
+                    leagLdrPlayer$(Y) = "*"
+                    leagLdrTeam$(Y) = "*"
+                    leaderVals!(Y, 1) = 0
+                    leaderVals!(Y, 2) = 0
+                End If
+
+                For Y = 110 To 118
+                    For Z = Y + 1 To 119
+                        If leaderVals!(Y, 1) < leaderVals!(Z, 1) Then
+                            Swap leagLdrPlayer$(Y), leagLdrPlayer$(Z)
+                            Swap leagLdrTeam$(Y), leagLdrTeam$(Z)
+                            For Z1 = 1 To 2
+                                Swap leaderVals!(Y, Z1), leaderVals!(Z, Z1)
+                            Next Z1
+                        End If
+                    Next Z
+                Next Y
+
+            End If
+
+            3330 '
+            ' ** Hits **
+            For Z = 21 To 31
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
+                    leaderVals!(Z, 1) = leaderStatVal2!(X, 2)
+                    GoTo 3335
+                End If
+            Next Z
+
+            If leaderStatVal2!(X, 2) > leaderVals!(31, 1) Then
+
+                leaderVals!(31, 1) = leaderStatVal2!(X, 2)
+                leagLdrPlayer$(31) = leaderNames$(X)
+                leagLdrTeam$(31) = statName$
+
+                3335 '
+                For Z = 21 To 30
+                    For Z1 = Z + 1 To 31
+                        If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                            Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                            Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                            Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                        End If
+                    Next Z1
+                Next Z
+
+            End If
+
+            ' ** 2B **
+            For Z = 32 To 42
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
+                    leaderVals!(Z, 1) = leaderStatVal2!(X, 5)
+                    GoTo 3347
+                End If
+            Next Z
+
+            If leaderStatVal2!(X, 5) > leaderVals!(42, 1) Then
+
+                leaderVals!(42, 1) = leaderStatVal2!(X, 5)
+                leagLdrPlayer$(42) = leaderNames$(X)
+                leagLdrTeam$(42) = statName$
+
+                3347 '
+                For Z = 32 To 41
+                    For Z1 = Z + 1 To 42
+
+                        If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                            Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                            Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                            Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                        End If
+
+                    Next Z1
+                Next Z
+
+            End If
+
+            3354 '
+            ' ** 3B **
+            For Z = 43 To 53
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
+                    leaderVals!(Z, 1) = leaderStatVal2!(X, 6)
+                    GoTo 3359
+                End If
+            Next Z
+
+            If leaderStatVal2!(X, 6) > leaderVals!(53, 1) Then
+
+                leaderVals!(53, 1) = leaderStatVal2!(X, 6)
+                leagLdrPlayer$(53) = leaderNames$(X)
+                leagLdrTeam$(53) = statName$
+
+                3359 '
+                For Z = 43 To 52
+                    For Z1 = Z + 1 To 53
+                        If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                            Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                            Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                            Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                        End If
+                    Next Z1
+                Next Z
+
+            End If
+
+            ' ** HR **
+            For Z = 54 To 64
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
+                    leaderVals!(Z, 1) = leaderStatVal2!(X, 7)
+                    GoTo 3371
+                End If
+            Next Z
+
+            If leaderStatVal2!(X, 7) > leaderVals!(64, 1) Then
+
+                leaderVals!(64, 1) = leaderStatVal2!(X, 7)
+                leagLdrPlayer$(64) = leaderNames$(X)
+                leagLdrTeam$(64) = statName$
+
+                3371 '
+                For Z = 54 To 63:
+                    For Z1 = Z + 1 To 64:
+                        If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                            Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                            Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                            Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                        End If
+                    Next Z1
+                Next Z
+
+            End If
+
+            3378 '
+            ' ** Runs **
+            For Z = 65 To 74
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
+                    leaderVals!(Z, 1) = leaderStatVal2!(X, 3)
+                    GoTo 3383
+                End If
+            Next Z
+
+            ' ** Runs **
+            If leaderStatVal2!(X, 3) > leaderVals!(74, 1) Then
+
+                leaderVals!(74, 1) = leaderStatVal2!(X, 3)
+                leagLdrPlayer$(74) = leaderNames$(X)
+                leagLdrTeam$(74) = statName$
+
+                3383 '
+                For Z = 65 To 73
+                    For Z1 = Z + 1 To 74
+                        If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                            Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                            Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                            Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                        End If
+                    Next Z1
+                Next Z
+
+            End If
+
+            ' ** RBI **
+            For Z = 76 To 85
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
+                    leaderVals!(Z, 1) = leaderStatVal2!(X, 4)
+                    GoTo 3395
+                End If
+            Next Z
+
+            If leaderStatVal2!(X, 4) > leaderVals!(85, 1) Then
+
+                leaderVals!(85, 1) = leaderStatVal2!(X, 4)
+                leagLdrPlayer$(85) = leaderNames$(X)
+                leagLdrTeam$(85) = statName$
+
+                3395 '
+                For Z = 76 To 84
+                    For Z1 = Z + 1 To 85
+                        If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                            Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                            Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                            Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                        End If
+
+                    Next Z1
+                Next Z
+
+            End If
+
+            ' ** Stolen Bases **
+            For Z = 87 To 97
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
+                    leaderVals!(Z, 1) = leaderStatVal2!(X, 10)
+                    GoTo 3407
+                End If
+            Next Z
+
+            If leaderStatVal2!(X, 10) > leaderVals!(97, 1) Then
+
+                leaderVals!(97, 1) = leaderStatVal2!(X, 10)
+                leagLdrPlayer$(97) = leaderNames$(X)
+                leagLdrTeam$(97) = statName$
+
+                3407 '
+                For Z = 87 To 96
+                    For Z1 = Z + 1 To 97
+                        If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                            Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                            Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                            Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                        End If
+                    Next Z1
+                Next Z
+
+            End If
+
+        End If
+
+        3414 '
+        'Base on Balls
+        For Z = 217 To 227
+            If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
+                leaderVals!(Z, 1) = leaderStatVal2!(X, 8)
+                GoTo 3605
+            End If
+        Next Z
+
+        If leaderStatVal2!(X, 8) > leaderVals!(227, 1) Then
+
+            leaderVals!(227, 1) = leaderStatVal2!(X, 8)
+            leagLdrPlayer$(227) = leaderNames$(X)
+            leagLdrTeam$(227) = statName$
+
+            3605 '
+            For Z = 217 To 226
+                For Z1 = Z + 1 To 227
+                    If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                        Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                        Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                        Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                    End If
+                Next Z1
+            Next Z
+        End If
+
+        'Hitting Streak
+        For Z = 279 To 288
+            If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
+                leaderVals!(Z, 1) = leaderStatVal2!(X, 17)
+                GoTo 3615
+            End If
+        Next Z
+
+        If leaderStatVal2!(X, 17) > leaderVals!(288, 1) Then
+
+            leaderVals!(288, 1) = leaderStatVal2!(X, 17)
+            leagLdrPlayer$(288) = leaderNames$(X)
+            leagLdrTeam$(288) = statName$
+
+            3615 '
+            For Z = 279 To 287
+                For Z1 = Z + 1 To 288:
+
+                    If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                        Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                        Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                        Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                    End If
+
+                Next Z1
+            Next Z
+
+        End If
+
+        'Games
+        For Z = 289 To 298
+            3621 '
+            If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = statName$ Then
+                leaderVals!(Z, 1) = leaderStatVal2!(X, 18)
+                GoTo 3625
+            End If
+
+        Next Z
+
+        If leaderStatVal2!(X, 18) > leaderVals!(298, 1) Then
+
+            leaderVals!(298, 1) = leaderStatVal2!(X, 18)
+            leagLdrPlayer$(298) = leaderNames$(X)
+            leagLdrTeam$(298) = statName$
+
+            3625 '
+            For Z = 289 To 297
+                For Z1 = Z + 1 To 298
+
+                    If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                        Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                        Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                        Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                    End If
+
+                Next Z1
+            Next Z
+
+        End If
+
+    Next X
+
+End Sub
+
+
+'----------------------------------------
+'     CalcStatLeadersPitch Subroutine
+'----------------------------------------
+'This subroutine compares all pre-loaded
+'stats to each of the record categories to
+'see if any should be updated
+Sub CalcStatLeadersPitch (statName$, totalGames, nbrAppearances)
+
+    Shared leagLdrPlayer$(), leagLdrTeam$()
+    Shared leaderNames$(), leaderTeams$()
+    Shared leaderVals!(), leaderStatVal2!()
+
+    'Pitchers - ERA Calculation
+    For J = 25 To 46
+
+        'IP = 0 or pitcher's games < totalGames (< 1 IP / game)
+        If leaderStatVal2!(J, 1) = 0 Or (leaderStatVal2!(J, 1) / 3) < totalGames Then
+            'Junk value for unqualified pitchers
+            leaderStatVal2!(J, 14) = 99.99
+        Else
+            leaderStatVal2!(J, 14) = leaderStatVal2!(J, 4) / leaderStatVal2!(J, 1) * 27
+        End If
+
+    Next
+
+    3415 '
+    'All Pitchers
+    For X = 25 To 46
+
+        If leaderNames$(X) <> "XXX" Then
+
+            'Color 14
+            Print "CHECKING STATS OF ";
+            Color 15
+            Print leaderNames$(X)
+
+            leaderTeams$(X) = statName$
+
+            ' ** ERA **
+            If leaderStatVal2!(X, 14) <= leaderVals!(139, 1) Then
+
+                leagLdrPlayer$(139) = leaderNames$(X)
+                leagLdrTeam$(139) = leaderTeams$(X)
+                leaderVals!(139, 1) = leaderStatVal2!(X, 14)
+                leaderVals!(139, 2) = leaderStatVal2!(X, 1) / 3
+
+                For Y = 121 To 138
+                    For Z = Y + 1 To 139
+                        If leaderVals!(Y, 1) > leaderVals!(Z, 1) Then
+                            Swap leagLdrPlayer$(Y), leagLdrPlayer$(Z)
+                            Swap leagLdrTeam$(Y), leagLdrTeam$(Z)
+                            For Z1 = 1 To 2
+                                Swap leaderVals!(Y, Z1), leaderVals!(Z, Z1)
+                            Next Z1
+                        End If
+                    Next Z
+                Next Y
+
+            End If
+
+            If (leaderStatVal2!(X, 1) / 3) >= totalGames And leaderStatVal2!(X, 1) <> 0 Then
+
+                If leaderStatVal2!(X, 14) < 99.9 And leaderStatVal2!(X, 14) >= leaderVals!(278, 1) Then
+
+                    leagLdrPlayer$(278) = leaderNames$(X)
+                    leagLdrTeam$(278) = leaderTeams$(X)
+                    leaderVals!(278, 1) = leaderStatVal2!(X, 14)
+                    leaderVals!(278, 2) = leaderStatVal2!(X, 1) / 3
+
+                    For Y = 259 To 277
+                        For Z = Y + 1 To 278
+                            If leaderVals!(Y, 1) < leaderVals!(Z, 1) Then
+                                Swap leagLdrPlayer$(Y), leagLdrPlayer$(Z)
+                                Swap leagLdrTeam$(Y), leagLdrTeam$(Z)
+                                For Z1 = 1 To 2
+                                    Swap leaderVals!(Y, Z1), leaderVals!(Z, Z1)
+                                Next Z1
+                            End If
+                        Next Z
+                    Next Y
+
+                End If
+
+            End If
+
+            3430 '
+            ' ** Wins / Losses **
+            For Y = 140 To 150
+
+                If leagLdrPlayer$(Y) = leaderNames$(X) And leagLdrTeam$(Y) = leaderTeams$(X) Then
+
+                    leaderVals!(Y, 1) = leaderStatVal2!(X, 7)
+                    leaderVals!(Y, 2) = leaderStatVal2!(X, 8)
+
+                    '4860 '
+                    For Z = 140 To 149:
+
+                        For Y1 = Z + 1 To 150
+
+                            If leaderVals!(Z, 1) - leaderVals!(Z, 2) <= leaderVals!(Y1, 1) - leaderVals!(Y1, 2) Then
+
+                                If leaderVals!(Z, 1) - leaderVals!(Z, 2) <> leaderVals!(Y1, 1) - leaderVals!(Y1, 2) Or leaderVals!(Z, 1) > leaderVals!(Y1, 1) Then
+                                    Swap leagLdrPlayer$(Y1), leagLdrPlayer$(Z)
+                                    Swap leagLdrTeam$(Y1), leagLdrTeam$(Z)
+                                    For Z1 = 1 To 2:
+                                        Swap leaderVals!(Y1, Z1), leaderVals!(Z, Z1)
+                                    Next Z1
+                                End If
+
+                            End If
+
+                        Next Y1
+
+                    Next Z
+
+                    GoTo 3440
+
+                End If
+
+            Next Y
+
+            If leaderStatVal2!(X, 7) - leaderStatVal2!(X, 8) >= leaderVals!(150, 1) - leaderVals!(150, 2) Then
+
+                If Not (leaderStatVal2!(X, 7) - leaderStatVal2!(X, 8) = leaderVals!(150, 1) - leaderVals!(150, 2) And leaderStatVal2!(X, 7) >= leaderVals!(150, 1)) Then
+
+                    leagLdrPlayer$(150) = leaderNames$(X)
+                    leagLdrTeam$(150) = leaderTeams$(X)
+                    leaderVals!(150, 1) = leaderStatVal2!(X, 7)
+                    leaderVals!(150, 2) = leaderStatVal2!(X, 8)
+
+                    '4860 '
+                    For Z = 140 To 149:
+                        For Y1 = Z + 1 To 150
+
+                            If leaderVals!(Z, 1) - leaderVals!(Z, 2) <= leaderVals!(Y1, 1) - leaderVals!(Y1, 2) Then
+
+                                If leaderVals!(Z, 1) - leaderVals!(Z, 2) <> leaderVals!(Y1, 1) - leaderVals!(Y1, 2) Or leaderVals!(Z, 1) > leaderVals!(Y1, 1) Then
+                                    Swap leagLdrPlayer$(Y1), leagLdrPlayer$(Z)
+                                    Swap leagLdrTeam$(Y1), leagLdrTeam$(Z)
+                                    For Z1 = 1 To 2:
+                                        Swap leaderVals!(Y1, Z1), leaderVals!(Z, Z1)
+                                    Next Z1
+                                End If
+
+                            End If
+
+                        Next Y1
+                    Next Z
+                    'Return
+
+                End If
+
+            End If
+
+            3440 '
+            ' ** Wins **
+            For Z = 151 To 161
+
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = leaderTeams$(X) Then
+
+                    leaderVals!(Z, 1) = leaderStatVal2!(X, 7)
+                    '3445
+
+                    For Z = 151 To 160
+                        For Z1 = Z + 1 To 161
+                            If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                                Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                                Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                                Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                            End If
+                        Next Z1
+                    Next Z
+
+                    GoTo 3445
+
+                End If
+
+            Next Z
+
+            If leaderStatVal2!(X, 7) > leaderVals!(161, 1) Then
+
+                leaderVals!(161, 1) = leaderStatVal2!(X, 7)
+                leagLdrPlayer$(161) = leaderNames$(X)
+                leagLdrTeam$(161) = leaderTeams$(X)
+
+                3445 '
+                For Z = 151 To 160
+
+                    For Z1 = Z + 1 To 161
+
+                        If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                            Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                            Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                            Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                        End If
+
+                    Next Z1
+
+                Next Z
+
+            End If
+
+            3452 '
+            ' ** Outs / Game (IP / 3) **
+            For Z = 162 To 172
+
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = leaderTeams$(X) Then
+                    leaderVals!(Z, 1) = leaderStatVal2!(X, 1) / 3
+                    GoTo 3457
+                End If
+
+            Next Z
+
+            If leaderStatVal2!(X, 1) / 3 > leaderVals!(172, 1) Then
+
+                leaderVals!(172, 1) = leaderStatVal2!(X, 1) / 3
+                leagLdrPlayer$(172) = leaderNames$(X)
+                leagLdrTeam$(172) = leaderTeams$(X)
+
+                3457 '
+                For Z = 162 To 171
+                    For Z1 = Z + 1 To 172
+                        If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                            Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                            Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                            Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                        End If
+                    Next Z1
+                Next Z
+
+            End If
+
+            3464 '
+            ' ** Strikeouts **
+            For Z = 173 To 183
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = leaderTeams$(X) Then
+                    leaderVals!(Z, 1) = leaderStatVal2!(X, 6)
+                    GoTo 3469
+                End If
+            Next Z
+
+            If leaderStatVal2!(X, 6) > leaderVals!(183, 1) Then
+
+                leaderVals!(183, 1) = leaderStatVal2!(X, 6)
+                leagLdrPlayer$(183) = leaderNames$(X)
+                leagLdrTeam$(183) = leaderTeams$(X)
+
+                3469 '
+                For Z = 173 To 182:
+                    For Z1 = Z + 1 To 183:
+                        If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                            Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                            Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                            Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                        End If
+
+                    Next Z1
+                Next Z
+
+                '3474 FOR Z = 173 TO 183
+                '3475 NEXT Z
+            End If
+
+            3476 '
+            ' ** Games Completed **
+            For Z = 184 To 194
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = leaderTeams$(X) Then
+                    leaderVals!(Z, 1) = leaderStatVal2!(X, 11)
+                    GoTo 3481
+                End If
+            Next Z
+
+            If leaderStatVal2!(X, 11) >= leaderVals!(194, 1) Then
+
+                leaderVals!(194, 1) = leaderStatVal2!(X, 11)
+                leagLdrPlayer$(194) = leaderNames$(X)
+                leagLdrTeam$(194) = leaderTeams$(X)
+
+                3481 '
+                For Z = 184 To 193
+                    For Z1 = Z + 1 To 194
+                        If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                            Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                            Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                            Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                        End If
+                    Next Z1
+                Next Z
+
+            End If
+
+            3488 '
+            ' ** Shutouts **
+            For Z = 195 To 205
+
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = leaderTeams$(X) Then
+                    leaderVals!(Z, 1) = leaderStatVal2!(X, 12)
+                    GoTo 3493
+                End If
+            Next Z
+
+            If leaderStatVal2!(X, 12) > leaderVals!(205, 1) Then
+                leaderVals!(205, 1) = leaderStatVal2!(X, 12)
+                leagLdrPlayer$(205) = leaderNames$(X)
+                leagLdrTeam$(205) = leaderTeams$(X)
+
+                3493 '
+                For Z = 195 To 204
+                    For Z1 = Z + 1 To 205
+                        If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                            Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                            Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                            Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                        End If
+                    Next Z1
+                Next Z
+
+            End If
+
+            3500 '
+            ' ** Saves **
+            For Z = 206 To 216
+
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = leaderTeams$(X) Then
+                    leaderVals!(Z, 1) = leaderStatVal2!(X, 13)
+                    GoTo 3505
+                End If
+            Next Z
+
+            If leaderStatVal2!(X, 13) > leaderVals!(216, 1) Then
+
+                leaderVals!(216, 1) = leaderStatVal2!(X, 13)
+                leagLdrPlayer$(216) = leaderNames$(X)
+                leagLdrTeam$(216) = leaderTeams$(X)
+
+                3505 '
+                For Z = 206 To 215
+                    For Z1 = Z + 1 To 216
+                        If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                            Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                            Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                            Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                        End If
+                    Next Z1
+                Next Z
+
+            End If
+
+            nbrAppearances = nbrAppearances + leaderStatVal2!(X, 9)
+
+            ' ** Games **
+            For Z = 228 To 238
+                If leagLdrPlayer$(Z) = leaderNames$(X) And leagLdrTeam$(Z) = leaderTeams$(X) Then
+                    leaderVals!(Z, 1) = leaderStatVal2!(X, 9)
+                    GoTo 3518
+                End If
+            Next Z
+
+            If leaderStatVal2!(X, 9) > leaderVals!(238, 1) Then
+
+                leaderVals!(238, 1) = leaderStatVal2!(X, 9)
+                leagLdrPlayer$(238) = leaderNames$(X)
+                leagLdrTeam$(238) = leaderTeams$(X)
+
+                3518 '
+                For Z = 228 To 237:
+                    For Z1 = Z + 1 To 238:
+                        If leaderVals!(Z, 1) < leaderVals!(Z1, 1) Then
+                            Swap leagLdrPlayer$(Z1), leagLdrPlayer$(Z)
+                            Swap leagLdrTeam$(Z1), leagLdrTeam$(Z)
+                            Swap leaderVals!(Z1, 1), leaderVals!(Z, 1)
+                        End If
+
+                    Next Z1
+                Next Z
+
+            End If
+
+        End If
+
+    Next X
+
+End Sub
+
+
+'----------------------------------------
+'     CalcStatLeadersPitch Subroutine
+'----------------------------------------
+'This subroutine compares all pre-loaded
+'stats to each of the record categories to
+'see if any should be updated
+Sub CalcStatLeadersTeam (statName$, totalGames)
+
+    Shared ldrBatStat(), ldrPitStat()
+    Shared BA$(), ER$()
+    Shared DFT!(), OFT!()
+
+    For Z = 1 To TEAMS_PER_LEAGUE
+
+        If ldrBatStat(3) = 0 Then
+            ldrBatStat(3) = 1
+        End If
+
+        If BA$(Z) = statName$ Then
+            OFT!(Z, 1) = ldrBatStat(4) / ldrBatStat(3)
+            For M = 3 To 14:
+                OFT!(Z, M) = ldrBatStat(M)
+            Next M
+            GoTo 3535
+        End If
+
+    Next Z
+
+    If ldrBatStat(4) / ldrBatStat(3) > OFT!(40, 1) Then
+
+        OFT!(40, 1) = ldrBatStat(4) / ldrBatStat(3)
+
+        For M = 3 To 14:
+            OFT!(40, M) = ldrBatStat(M)
+        Next M
+
+        BA$(40) = statName$
+
+        3535 '
+        For Z = 1 To 39
+
+            For Z1 = Z + 1 To 40
+
+                If OFT!(Z, 1) < OFT!(Z1, 1) Then
+
+                    Swap BA$(Z1), BA$(Z)
+
+                    For M = 1 To 14:
+                        Swap OFT!(Z1, M), OFT!(Z, M)
+                    Next M
+
+                End If
+
+            Next Z1
+
+        Next Z
+
+        For Z = 1 To TEAMS_PER_LEAGUE
+            If OFT!(Z, 1) = OFT!(40, 1) Then
+                BA$(Z) = "*"
+            End If
+        Next Z
+
+    End If
+
+    For Z = 1 To TEAMS_PER_LEAGUE
+
+        If ldrPitStat(1) = 0 Then
+            ldrPitStat(1) = 1
+            ldrPitStat(4) = 3
+        End If
+
+        If ER$(Z) = statName$ Then
+            DFT!(Z, 1) = ldrPitStat(4) / ldrPitStat(1) * 27
+            For M = 2 To 14:
+                DFT!(Z, M) = ldrPitStat(M - 1)
+            Next M
+            GoTo 3555
+        End If
+
+    Next Z
+
+    If ldrPitStat(4) / ldrPitStat(1) * 27 < DFT!(40, 1) Then
+
+        DFT!(40, 1) = ldrPitStat(4) / ldrPitStat(1) * 27
+        For M = 2 To 14:
+            DFT!(40, M) = ldrPitStat(M - 1)
+        Next M
+
+        ER$(40) = statName$
+        ER$(40) = statName$
+
+        3555 '
+        For Z = 1 To 39
+
+            For Z1 = Z + 1 To 40
+
+                If DFT!(Z, 1) > DFT!(Z1, 1) Then
+
+                    Swap ER$(Z1), ER$(Z)
+
+                    For M = 1 To 14:
+                        Swap DFT!(Z1, M), DFT!(Z, M)
+                    Next M
+
+                End If
+
+            Next Z1
+
+        Next Z
+
+        For Z = 1 To TEAMS_PER_LEAGUE
+            If DFT!(Z, 1) = DFT!(40, 1) Then
+                ER$(Z) = "*"
+            End If
+        Next Z
+
+    End If
+
+End Sub
+
+
+'----------------------------------------
+'      CalcRecordsPro Subroutine
+'----------------------------------------
+'Read in all league stats and calculate
+'records so that an output file can be
+'made containing all records.
+' ** in order to do this like Football
+' ** and Basketball, we have to use
+' ** the team name and not the year
+Sub CalcRecordsPro (totalGames, teamName$, statName$, finalUpdate$)
+
+    '--- These will go away
+    Shared statBatter(), statPitcher()
+    Shared statTeamBat!(), statTeamPit!()
+    Shared batterNames$(), pitcherNames$()
+
+    '--- These will stay
+    Shared leaderStatVal2!()
+    Shared ldrBatStat(), ldrPitStat()
+    Shared leaderNames$()
+
+    Shared batRecTmVal!(), batRecTmYr!()
+    Shared batRecVal!(), batRecYr!()
+    Shared batTotGames!()
+
+    Shared pitRecTmVal!(), pitRecTmYr!()
+    Shared pitRecVal!(), pitRecYr!()
+    Shared pitTotGames!()
+
+    Shared batRecPlyr$(), batRecTeam$(), batRecTmDesc$()
+    Shared pitRecPlyr$(), pitRecTeam$(), pitRecTmDesc$()
+
+    Dim TT$(40, 22), TT1$(40, 23)
+
+    AAG = (23 * 20)
+    AAS = (22 * 20)
+    AAT = 2
+
+    'Erase batRecVal!, batRecTmVal!, pitRecTmVal!
+    'Erase batTotGames!, pitTotGames!
+
+    'Erase batterNames$, pitcherNames$
+    'Erase batRecPlyr$, batRecTeam$, batRecTmDesc$
+    'Erase pitRecPlyr$, pitRecTeam$, pitRecTmDesc$
+
+    'Call ReadTeamStats(teamName$, statName$)
+
+    ' Calculate records for current team
+    Locate 7: Print "CALCULATING BATTER RECORDS . . . ."
+
+    ' ** Recorded Stats **
+    For I = 0 To 22
+
+        I2 = I + 1
+
+        For I1 = 1 To 20
+
+            'I2 = I1 - 1
+
+            If leaderStatVal2!(I2, I1) >= batRecVal!(I1) Then
+                batRecVal!(I1) = leaderStatVal2!(I2, I1)
+                batRecPlyr$(I1) = leaderNames$(I2)
+                batRecTeam$(I1) = teamName$
+                'batRecYr!(I1) = seasonYear
+            End If
+
+        Next I1
+
+        AAG = AAG - 1
+        Locate 7, 40: Print Using "###"; AAG
+
+    Next I
+
+    'Process stats that require calculations
+    If UCase$(finalUpdate$) = "Y" Then
+
+        ' ** Batting AVG **
+        For I = 0 To 22
+
+            I2 = I + 1
+
+            If leaderStatVal2!(I2, 1) + leaderStatVal2!(I2, 8) >= batTotGames!(I) * 3.1 Then
+                minimumPA = 1
+            Else
+                minimumPA = 0
+            End If
+
+            If minimumPA = 1 And leaderStatVal2!(I2, 1) <> 0 Then
+
+                If leaderStatVal2!(I2, 2) / leaderStatVal2!(I2, 1) >= batRecVal!(21) Then
+                    batRecVal!(21) = leaderStatVal2!(I2, 2) / leaderStatVal2!(I2, 1)
+                    batRecPlyr$(21) = leaderNames$(I2)
+                    batRecTeam$(21) = teamName$
+                    'batRecYr!(21) = seasonYear
+                End If
+
+            End If
+
+            ' ** Slugging % **
+            If minimumPA = 1 And leaderStatVal2!(I2, 2) <> 0 Then
+
+                If (leaderStatVal2!(I2, 2) + leaderStatVal2!(I2, 5) + leaderStatVal2!(I2, 6) * 2 + leaderStatVal2!(I2, 7) * 3) / leaderStatVal2!(I2, 1) >= batRecVal!(22) Then
+                    batRecVal!(22) = (leaderStatVal2!(I2, 2) + leaderStatVal2!(I2, 5) + leaderStatVal2!(I2, 6) * 2 + leaderStatVal2!(I2, 7) * 3) / leaderStatVal2!(I2, 1)
+                    batRecPlyr$(22) = leaderNames$(I2)
+                    batRecTeam$(22) = teamName$
+                    'batRecYr!(22) = seasonYear
+                End If
+
+            End If
+
+            ' ** OB% **
+            If minimumPA = 1 And leaderStatVal2!(I2, 2) <> 0 Then
+
+                If (leaderStatVal2!(I2, 2) + leaderStatVal2!(I2, 8)) / (leaderStatVal2!(I2, 1) + leaderStatVal2!(I2, 8)) >= batRecVal!(23) Then
+                    batRecVal!(23) = (leaderStatVal2!(I2, 2) + leaderStatVal2!(I2, 8)) / (leaderStatVal2!(I2, 1) + leaderStatVal2!(I2, 8))
+                    batRecPlyr$(23) = leaderNames$(I2)
+                    batRecTeam$(23) = teamName$
+                    'batRecYr!(23) = seasonYear
+                End If
+
+            End If
+
+            ' ** Triples **
+            If minimumPA = 1 And leaderStatVal2!(I2, 7) <> 0 Then
+
+                If leaderStatVal2!(I2, 1) / leaderStatVal2!(I2, 7) <= batRecVal!(24) Then
+                    batRecVal!(24) = leaderStatVal2!(I2, 1) / leaderStatVal2!(I2, 7)
+                    batRecPlyr$(24) = leaderNames$(I2)
+                    batRecTeam$(24) = teamName$
+                    'batRecYr!(24) = seasonYear
+                End If
+
+            End If
+
+            ' ** Strikeout Rate **
+            If minimumPA = 1 And leaderStatVal2!(I2, 9) <> 0 Then
+
+                If leaderStatVal2!(I2, 1) / leaderStatVal2!(I2, 9) <= batRecVal!(25) Then
+                    batRecVal!(25) = leaderStatVal2!(I2, 1) / leaderStatVal2!(I2, 9)
+                    batRecPlyr$(25) = leaderNames$(I2)
+                    batRecTeam$(25) = teamName$
+                    'batRecYr!(25) = seasonYear
+                End If
+
+            End If
+
+            ' ** Walk Rate **
+            If minimumPA = 1 And leaderStatVal2!(I2, 8) <> 0 Then
+
+                If leaderStatVal2!(I2, 1) / leaderStatVal2!(I2, 8) > batRecVal!(26) Then
+                    batRecVal!(26) = leaderStatVal2!(I2, 1) / leaderStatVal2!(I2, 8)
+                    batRecPlyr$(26) = leaderNames$(I2)
+                    batRecTeam$(26) = teamName$
+                    'batRecYr!(26) = seasonYear
+                End If
+
+            End If
+
+            ' ** RBI Rate **
+            If minimumPA = 1 And leaderStatVal2!(I2, 4) <> 0 Then
+
+                If leaderStatVal2!(I2, 1) / leaderStatVal2!(I2, 4) <= batRecVal!(27) Then
+                    batRecVal!(27) = leaderStatVal2!(I2, 1) / leaderStatVal2!(I2, 4)
+                    batRecPlyr$(27) = leaderNames$(I2)
+                    batRecTeam$(27) = teamName$
+                    'batRecYr!(27) = seasonYear
+                End If
+
+            End If
+
+            ' ** Hit Rate **
+            If minimumPA = 1 And leaderStatVal2!(I2, 3) <> 0 Then
+
+                If leaderStatVal2!(I2, 1) / leaderStatVal2!(I2, 3) <= batRecVal!(28) Then
+                    batRecVal!(28) = leaderStatVal2!(I2, 1) / leaderStatVal2!(I2, 3)
+                    batRecPlyr$(28) = leaderNames$(I2)
+                    batRecTeam$(28) = teamName$
+                    'batRecYr!(28) = seasonYear
+                End If
+
+            End If
+
+            ' ** Error Rate **
+            If minimumPA = 1 And leaderStatVal2!(I2, 16) <> 0 Then
+
+                If leaderStatVal2!(I2, 1) / leaderStatVal2!(I2, 16) >= batRecVal!(29) Then
+                    batRecVal!(29) = leaderStatVal2!(I2, 1) / leaderStatVal2!(I2, 16)
+                    batRecPlyr$(29) = leaderNames$(I2)
+                    batRecTeam$(29) = teamName$
+                    'batRecYr!(29) = seasonYear
+                End If
+
+            End If
+
+            ' ** Stolen Base Attempts **
+            If leaderStatVal2!(I2, 21) + leaderStatVal2!(I2, 22) >= batRecVal!(30) Then
+                batRecVal!(30) = leaderStatVal2!(I2, 21) + leaderStatVal2!(I2, 22)
+                batRecPlyr$(30) = leaderNames$(I2)
+                batRecTeam$(30) = teamName$
+                'batRecYr!(30) = seasonYear
+            End If
+
+            ' ** Caught Stealing **
+            If leaderStatVal2!(I2, 22) >= batRecVal!(31) Then
+                batRecVal!(31) = leaderStatVal2!(I2, 22)
+                batRecPlyr$(31) = leaderNames$(I2)
+                batRecTeam$(31) = teamName$
+                'batRecYr!(31) = seasonYear
+            End If
+
+            ' ** Caught Stealing % **
+            If leaderStatVal2!(I2, 1) + leaderStatVal2!(I2, 8) >= batTotGames!(I) * 2.1 Then
+                min21PA = 1
+            Else
+                min21PA = 0
+            End If
+
+            If min21PA = 1 And leaderStatVal2!(I2, 21) + leaderStatVal2!(I2, 22) <> 0 Then
+
+                If leaderStatVal2!(I2, 22) / (leaderStatVal2!(I2, 21) + leaderStatVal2!(I2, 22)) >= batRecVal!(32) Then
+                    batRecVal!(32) = leaderStatVal2!(I2, 22) / (leaderStatVal2!(I2, 21) + leaderStatVal2!(I2, 22))
+                    batRecPlyr$(32) = leaderNames$(I2)
+                    batRecTeam$(32) = teamName$
+                    'batRecYr!(32) = seasonYear
+                End If
+
+            End If
+
+        Next I
+
+    End If
+
+    Locate 8: Print "CALCULATING PITCHER RECORDS . . . ."
+
+    ' ** Recorded Stats **
+    For I = 0 To 21
+
+        I2 = I + 25
+
+        For I1 = 1 To 23
+
+            'I2 = I1 - 1
+
+            If leaderStatVal2!(I2, I1) >= pitRecVal!(I1) Then
+                pitRecVal!(I1) = leaderStatVal2!(I2, I1)
+                pitRecPlyr$(I1) = leaderNames$(I2)
+                pitRecTeam$(I1) = teamName$
+                'pitRecYr!(I1) = seasonYear
+            End If
+
+        Next I1
+
+        AAS = AAS - 1
+        Locate 8, 40: Print Using "###"; AAS
+
+    Next I
+
+    'Process stats that require calculations
+    If UCase$(finalUpdate$) = "Y" Then
+
+        For I = 0 To 21
+
+            I2 = I + 25
+
+            ' ** IRA % **
+            If leaderStatVal2!(I2, 18) <> 0 And leaderStatVal2!(I2, 9) >= 25 Then
+
+                If leaderStatVal2!(I2, 19) / leaderStatVal2!(I2, 18) <= pitRecVal!(24) Then
+                    pitRecVal!(24) = leaderStatVal2!(I2, 19) / leaderStatVal2!(I2, 18)
+                    pitRecPlyr$(24) = leaderNames$(I2)
+                    pitRecTeam$(24) = teamName$
+                    'pitRecYr!(24) = seasonYear
+                End If
+
+            End If
+
+            ' ** Runs / Game **
+            If leaderStatVal2!(I2, 1) / 3 >= pitTotGames!(I) And leaderStatVal2!(I2, 21) <> 0 Then
+
+                If leaderStatVal2!(I2, 21) / leaderStatVal2!(I2, 9) < pitRecVal!(25) Then
+                    pitRecVal!(25) = leaderStatVal2!(I2, 21) / leaderStatVal2!(I2, 9)
+                    pitRecPlyr$(25) = leaderNames$(I2)
+                    pitRecTeam$(25) = teamName$
+                    'pitRecYr!(25) = seasonYear
+                End If
+
+            End If
+
+            ' ** ERA **
+            If leaderStatVal2!(I2, 1) / 3 >= pitTotGames!(I) And leaderStatVal2!(I2, 1) <> 0 Then
+
+                If (leaderStatVal2!(I2, 4) * 9) / (leaderStatVal2!(I2, 1) / 3) > pitRecVal!(23) Then
+                    pitRecVal!(23) = (leaderStatVal2!(I2, 4) * 9) / (leaderStatVal2!(I2, 1) / 3)
+                    pitRecPlyr$(23) = leaderNames$(I2)
+                    pitRecTeam$(23) = teamName$
+                    'pitRecYr!(23) = seasonYear
+                End If
+
+            End If
+
+            ' ** Walks / 9 Innings **
+            If leaderStatVal2!(I2, 1) / 3 >= pitTotGames!(I) And leaderStatVal2!(I2, 1) <> 0 Then
+
+                If (leaderStatVal2!(I2, 5) * 9) / (leaderStatVal2!(I2, 1) / 3) > pitRecVal!(25) Then
+                    pitRecVal!(25) = (leaderStatVal2!(I2, 5) * 9) / (leaderStatVal2!(I2, 1) / 3)
+                    pitRecPlyr$(25) = leaderNames$(I2)
+                    pitRecTeam$(25) = teamName$
+                    'pitRecYr!(25) = seasonYear
+                End If
+
+            End If
+
+            ' ** Strikeouts / 9 Innings **
+            If leaderStatVal2!(I2, 1) / 3 >= pitTotGames!(I) And leaderStatVal2!(I2, 1) <> 0 Then
+
+                If (leaderStatVal2!(I2, 6) * 9) / (leaderStatVal2!(I2, 1) / 3) < pitRecVal!(26) Then
+                    pitRecVal!(26) = (leaderStatVal2!(I2, 6) * 9) / (leaderStatVal2!(I2, 1) / 3)
+                    pitRecPlyr$(26) = leaderNames$(I2)
+                    pitRecTeam$(26) = teamName$
+                    'pitRecYr!(26) = seasonYear
+                End If
+
+            End If
+
+            ' ** Hits / 9 Innings **
+            If leaderStatVal2!(I2, 1) / 3 >= pitTotGames!(I) And leaderStatVal2!(I2, 1) <> 0 Then
+
+                If (leaderStatVal2!(I2, 2) * 9) / (leaderStatVal2!(I2, 1) / 3) > pitRecVal!(27) Then
+                    pitRecVal!(27) = (leaderStatVal2!(I2, 2) * 9) / (leaderStatVal2!(I2, 1) / 3)
+                    pitRecPlyr$(27) = leaderNames$(I2)
+                    pitRecTeam$(27) = teamName$
+                    'pitRecYr!(27) = seasonYear
+                End If
+
+            End If
+
+            ' ** Double-Plays / 9 Innings **
+            If leaderStatVal2!(I2, 1) / 3 >= pitTotGames!(I) And leaderStatVal2!(I2, 1) <> 0 Then
+
+                If (leaderStatVal2!(I2, 23) * 9) / (leaderStatVal2!(I2, 1) / 3) < pitRecVal!(28) Then
+                    pitRecVal!(28) = (leaderStatVal2!(I2, 23) * 9) / (leaderStatVal2!(I2, 1) / 3)
+                    pitRecPlyr$(28) = leaderNames$(I2)
+                    pitRecTeam$(28) = teamName$
+                    'pitRecYr!(28) = seasonYear
+                End If
+
+            End If
+
+        Next I
+
+    End If
+
+
+    Locate 9: Print "CALCULATING TEAM RECORDS . . . ."
+
+    ' ** Recorded Stats **
+    For I1 = 0 To 21
+
+        I2 = I1 + 1
+
+        If ldrBatStat(I2) > batRecTmVal!(I1) Then
+            batRecTmVal!(I1) = ldrBatStat(I2)
+            batRecTmDesc$(I1) = teamName$ 'TT$(I, I1)
+            'batRecTmYr!(I1) = seasonYear
+        End If
+
+    Next I1
+
+    AAT = AAT - 1
+    Locate 9, 40: Print Using "###"; AAT
+
+    'Process stats that require calculations
+    If UCase$(finalUpdate$) = "Y" Then
+
+        If ldrBatStat(0) <> 0 Then
+
+            'Hit Rate
+            If ldrBatStat(1) / ldrBatStat(0) > batRecTmVal!(22) Then
+                batRecTmVal!(22) = ldrBatStat(1) / ldrBatStat(0)
+                batRecTmDesc$(22) = teamName$
+                'batRecTmYr!(22) = seasonYear
+            End If
+
+            'Slugging Rate
+            If (ldrBatStat(1) + ldrBatStat(4) + (ldrBatStat(5) * 2) + (ldrBatStat(6) * 3)) / ldrBatStat(0) > batRecTmVal!(23) Then
+                batRecTmVal!(23) = (ldrBatStat(1) + ldrBatStat(4) + (ldrBatStat(5) * 2) + (ldrBatStat(6) * 3)) / ldrBatStat(0)
+                batRecTmDesc$(23) = teamName$
+                'batRecTmYr!(23) = seasonYear
+            End If
+
+            'OB %
+            If (ldrBatStat(1) + ldrBatStat(7)) / (ldrBatStat(0) + ldrBatStat(7)) > batRecTmVal!(24) Then
+                batRecTmVal!(24) = (ldrBatStat(1) + ldrBatStat(7)) / (ldrBatStat(0) + ldrBatStat(7))
+                batRecTmDesc$(24) = teamName$
+                'batRecTmYr!(24) = seasonYear
+
+            End If
+
+        End If
+
+    End If
+
+    ' ** Recorded Stats **
+    For I1 = 0 To 22
+
+        I2 = I1 + 1
+
+        If ldrPitStat(I2) > pitRecTmVal!(I1) Then
+            pitRecTmVal!(I1) = ldrPitStat(I2)
+            pitRecTmDesc$(I1) = teamName$ 'TT1$(I, I1)
+            'pitRecTmYr!(I1) = seasonYear
+        End If
+
+    Next I1
+
+    AAT = AAT - 1
+    Locate 9, 40: Print Using "###"; AAT
+
+    'Process stats that require calculations
+    If UCase$(finalUpdate$) = "Y" Then
+
+        For I = 1 To TEAMS_PER_LEAGUE
+
+            'IRA %
+            If ldrPitStat(17) <> 0 Then
+
+                If ldrPitStat(18) / ldrPitStat(17) > pitRecTmVal!(23) Then
+                    pitRecTmVal!(23) = ldrPitStat(18) / ldrPitStat(17)
+                    pitRecTmDesc$(23) = teamName$
+                    'pitRecTmYr!(23) = seasonYear
+                End If
+
+            End If
+
+            'ER / 9 Innings
+            If ldrPitStat(0) <> 0 Then
+
+                If (ldrPitStat(3) * 9) / (ldrPitStat(0) / 3) < pitRecTmVal!(24) Then
+                    pitRecTmVal!(24) = (ldrPitStat(3) * 9) / (ldrPitStat(0) / 3)
+                    pitRecTmDesc$(24) = teamName$
+                    'pitRecTmYr!(24) = seasonYear
+                End If
+
+            End If
+
+        Next I
+
+    End If 'Done checking for final update
+
+End Sub
+
+
+'----------------------------------------
+'     SortStandingsLeague Subroutine
+'----------------------------------------
+'This subroutine sorts the leaders in the
+'target league. Currently setup using a
+'bubble sort algorithm.
+Sub SortStandingsLeague
+
+    Shared divWins(), divLosses()
+    Shared memberName$()
+
+    'Sort record by games won
+    For Z = 0 To 3
+
+        AA = (Z * 10) + 1
+        ZZ = (Z * 10) + 10
+
+        For X = AA To ZZ - 1
+
+            For Y = X + 1 To ZZ:
+
+                diffX = divWins(X) - divLosses(X)
+                diffY = divWins(Y) - divLosses(Y)
+
+                If diffX <= diffY Then
+
+                    If diffX <> diffY Then
+
+                        If Not (divWins(X) <= divWins(Y) And divWins(X) > divLosses(X)) Or Not (divWins(X) >= divWins(Y) And divWins(X) < divLosses(X)) Then
+
+                            Swap memberName$(X), memberName$(Y)
+                            Swap divWins(X), divWins(Y)
+                            Swap divLosses(X), divLosses(Y)
+
+                        End If
+
+                    End If
+
+                End If
+
+            Next Y
+
+        Next X
+
+    Next Z
+
+End Sub
+
+
+'----------------------------------------
+'       PostLeaders Subroutine
+'----------------------------------------
+'This subroutine opens the existing leader
+'and record files for the league, and
+'writes the updated stats to the file
+Sub PostLeaders (leaderFile$, nbrAppearances)
+
+    Shared divWins(), divLosses()
+
+    Shared leaderVals!(), DFT!(), OFT!()
+
+    Shared BA$(), leagLdrPlayer$(), leagLdrTeam$()
+    Shared ER$(), memberName$()
+
+    Color 15, 0
+    Cls
+
+    Print "POSTING "; leaderFile; " LEADERS"
+
+    Open diskPaths$(2) + leaderFile$ + ".LDR" For Output As #2
+
+    For X = 1 To TEAMS_PER_LEAGUE
+        Write #2, memberName$(X), divWins(X), divLosses(X)
+    Next
+
+    For X = 1 To 298
+        Write #2, leagLdrPlayer$(X), leagLdrTeam$(X), leaderVals!(X, 1), leaderVals!(X, 2)
+    Next
+
+    For X = 1 To TEAMS_PER_LEAGUE
+        Write #2, BA$(X)
+        For M = 1 To 14:
+            Write #2, OFT!(X, M)
+        Next
+    Next
+
+    For X = 1 To TEAMS_PER_LEAGUE
+        Write #2, ER$(X)
+        For M = 1 To 14:
+            Write #2, DFT!(X, M)
+        Next
+    Next
+
+    Write #2, nbrAppearances
+
+    Close 2
+
+End Sub
+
+
+'----------------------------------------
+'        PostRecordsPro Subroutine
+'----------------------------------------
+'This subroutine writes the calculated
+'records to the records file
+Sub PostRecordsPro
+
+    Shared batRecVal!(), batRecTmVal!()
+    Shared pitRecVal!(), pitRecTmVal!()
+
+    Shared batRecPlyr$(), batRecTeam$(), batRecTmDesc$()
+    Shared pitRecPlyr$(), pitRecTeam$(), pitRecTmDesc$()
+
+    Open diskPaths$(2) + "RECORDS.MLB" For Output As #1
+
+    For I = 1 To 32:
+        Write #1, batRecVal!(I), batRecPlyr$(I), batRecTeam$(I)
+        'batRecYr!(I)
+    Next
+
+    For I = 1 To 28:
+        Write #1, pitRecVal!(I), pitRecPlyr$(I), pitRecTeam$(I)
+        'pitRecYr!(I)
+    Next
+
+    For I = 0 To 24:
+        Write #1, batRecTmVal!(I), batRecTmDesc$(I)
+        'batRecTmYr!(I)
+    Next
+
+    For I = 0 To 24:
+        Write #1, pitRecTmVal!(I), pitRecTmDesc$(I)
+        'pitRecTmYr!(I)
+    Next
+
+    Close #1
+
+End Sub
+
+
 '$Include: 'CONVERT.BAS'
 '$Include: 'CREATLEAG.BAS'
 '$Include: 'DRAFT.BAS'
@@ -887,7 +2820,1161 @@ End Sub
 '$Include: 'POSSRT.BAS'
 '$Include: 'POSCR.BAS'
 '$Include: 'PROGMAN.BAS'
-'$Include: 'REC.BAS'
+'Include: 'REC.BAS'
+
+
+'----------------------------------------
+'        SeasonRecords Subroutine
+'----------------------------------------
+'This subroutine gives the user a number of
+'menu selections for viewing, updating and
+'printing records
+Sub SeasonRecords ()
+
+    _Title "Full Count Baseball - Season Records"
+
+    ReDim menuChoices$(1 To 5)
+
+    Shared batRecTmVal!(), batRecTmYr!()
+    Shared batRecVal!(), batRecYr!()
+    Shared pitRecTmVal!(), pitRecTmYr!()
+    Shared pitRecVal!(), pitRecYr!()
+
+    Shared batRecPlyr$(), batRecTeam$(), batRecTmDesc$()
+    Shared pitRecTmDesc$(), pitRecPlyr$(), pitRecTeam$()
+
+    'If Not _FileExists(diskPaths$(1) + "RECORDS.MLB") Then
+    '
+    '   MsgText$ = "UNABLE TO LOCATE RECORDS PRESS ANY KEY TO RETURN TO MAIN MENU"
+    '    BoxWidth = 24
+    '   BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+    '   Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+    '   Call CSMsgBox(MsgText$, BoxWidth, Pass)
+    '   I$ = GetKeyPress$
+    '   Call CSMsgBox("", 0, Pass)
+    '
+    'Else
+
+    Do
+
+        Cls
+
+        Call TITLE
+
+        menuChoices$(1) = "UPDATE SEASON RECORDS"
+        menuChoices$(2) = "VIEW SEASON RECORDS  "
+        menuChoices$(3) = "PRINT SEASON RECORDS "
+        menuChoices$(4) = "DELETE SEASON RECORDS"
+        menuChoices$(5) = "RETURN TO MAIN MENU  "
+        SELECTION% = 1
+        Count% = 5
+        Start% = 1
+        ExitCode% = 3
+        FileFGColor = 15: FileBGColor = 1
+        HiLiteFGColor% = 0: HiLiteBGColor% = 7
+        Spacing% = 1
+        Row% = 8
+        menuWidth% = Len(menuChoices$(1))
+        Column% = (80 - menuWidth% - 2) / 2
+
+        Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor, FileBGColor)
+
+        _MouseShow "DEFAULT"
+        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        _MouseHide
+
+        Color , 0
+
+        If ExitCode% <> 27 Then
+
+            Select Case SELECTION%
+
+                Case 1:
+                    'leagueFile$ = _OpenFileDialog$("Choose League file", diskPaths$(2), "*.TMI", "League Definition files [.TMI]")
+                    leagueFile$ = _OpenFileDialog$("Choose Leader file", diskPaths$(2), "*.BAT", "Expanded Leader files [.BAT]")
+
+                    If leagueFile$ <> "" Then
+                        Call UpdateRecords(GetFileBaseName$(leagueFile$), SELECTION%)
+                    End If
+
+                Case 2:
+                    'Call ViewSeasonRecords(GetFileBaseName$(leagueFile$))
+                    Call ViewSeasonRecords
+
+                Case 3:
+                    userKey$ = GetPrintOptions$
+
+                    If userKey$ <> Chr$(27) Then
+
+                        Select Case userKey$
+
+                            Case "F"
+                                userFile$ = _SaveFileDialog$("Save Records Report", _CWD$ + "\Records", "*.txt", "Text File")
+                                If userFile$ <> "" Then
+                                    Call PrintSeasonRecords(0, userFile$, GetFileBaseName$(leagueFile$))
+                                End If
+
+                            Case "P"
+                                Call PrintSeasonRecords(1, "RECORDS", GetFileBaseName$(leagueFile$))
+
+                        End Select
+
+                    End If
+
+                Case 4
+                    If _FileExists(diskPaths$(1) + "RECORDS.MLB") Then
+                        Kill diskPaths$(1) + "RECORDS.MLB"
+                    End If
+
+            End Select
+
+
+        End If 'Done checking for user ESC
+
+    Loop Until SELECTION% = 5 Or ExitCode% = 27
+
+End Sub
+
+
+'----------------------------------------
+'       UpdateRecords Subroutine
+'----------------------------------------
+'Read in all league stats and calculate
+'records so that an output file can be
+'made containing all records.
+Sub UpdateRecords (leagueFile$, userOpt)
+
+    Shared expLdrB0(), expLdrP0()
+
+    Shared batRecTmVal!(), batRecTmYr!()
+    Shared batRecVal!(), batRecYr!()
+    Shared pitRecTmVal!(), pitRecTmYr!()
+    Shared pitRecVal!(), pitRecYr!()
+
+    Shared batTotGames!()
+    Shared plyLdrVal!(), teamLdrVal!()
+    Shared divWins(), divLosses()
+
+    Shared pitTotGames!()
+
+    Shared batRecPlyr$(), batRecTeam$(), batRecTmDesc$()
+    Shared pitRecTmDesc$(), pitRecPlyr$(), pitRecTeam$()
+    Shared expBatLdrName$(), expPitLdrName$()
+    Shared expBatLdrTeam$(), expPitLdrTeam$()
+
+    Dim batTeamTot$(TEAMS_PER_LEAGUE, 22), pitTeamTot$(TEAMS_PER_LEAGUE, 23)
+
+    AAG = (23 * TEAMS_PER_LEAGUE)
+    AAS = (22 * TEAMS_PER_LEAGUE)
+    AAT = (2 * TEAMS_PER_LEAGUE)
+    TMR = 2360
+
+    JB = 0
+    JP = 0
+    TS = 0
+
+    If Not _FileExists(diskPaths$(2) + "RECORDS.MLB") And userOpt >= 2 And userOpt <= 4 Then
+
+        MsgText$ = "UNABLE TO LOCATE RECORDS PRESS ANY KEY TO RETURN TO MAIN MENU"
+        BoxWidth = 24
+        BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+        Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+        Call CSMsgBox(MsgText$, BoxWidth, Pass)
+        I$ = GetKeyPress$
+        Call CSMsgBox("", 0, Pass)
+
+    Else
+
+        Call ReadSeasonRecords("RECORDS.MLB")
+
+        Cls
+        'Input "ENTER SEASON YEAR (1991,1992)"; seasonYear
+
+        Do
+            Locate 2
+            Input "WOULD YOU LIKE TO POST SEASON RECORDS? (Y/N)"; finalUpdate$
+        Loop Until UCase$(finalUpdate$) = "Y" Or UCase$(finalUpdate$) = "N"
+
+        Print
+        Print "ANY CHANGE? (Y/N)"
+
+        Do
+            I$ = GetKeyPress$
+        Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+        If Not _FileExists(diskPaths$(2) + "RECORDS.MLB") Then
+
+            pitRecVal!(23) = 100
+            pitRecVal!(25) = 100
+            batRecVal!(24) = 999
+            batRecVal!(25) = 999
+            batRecVal!(26) = 999
+            batRecVal!(27) = 999
+            batRecVal!(28) = 999
+            pitRecVal!(27) = 100
+            pitRecTmVal!(24) = 100
+
+        Else
+
+            Print "READING IN CURRENT RECORDS"
+
+            Call ReadSeasonRecords("RECORDS.MLB")
+
+        End If
+
+        TMR = 3680
+
+        Open diskPaths$(2) + leagueFile$ + ".BAT" For Input As #1
+
+        Input #1, JB, JP, div1$, div2$, div3$, div4$, LGF$, TS, TTS
+
+        For I = 1 To 920:
+            Input #1, expBatLdrName$(I), expBatLdrTeam$(I), batTotGames!(I)
+            Color 14
+            Locate 18, 38
+            TMR = TMR - 1
+            Print Using "#####"; TMR
+        Next I
+
+        For I = 1 To 920:
+            For I1 = 1 To 22
+                Input #1, expLdrB0(I, I1)
+            Next I1
+            Color 14
+            Locate 18, 38
+            TMR = TMR - 1
+            Print Using "#####"; TMR
+        Next I
+
+        Close 1
+
+        Open diskPaths$(2) + leagueFile$ + ".PIT" For Input As #1
+
+        Input #1, JB, JP, div1$, div2$, div3$, div4$, LGF$, TS, TTS
+
+        For I = 1 To 880:
+            Input #1, expPitLdrName$(I), expPitLdrTeam$(I), pitTotGames!(I)
+            Color 14
+            Locate 18, 38
+            TMR = TMR - 1
+            Print Using "#####"; TMR
+        Next I
+
+        For I = 1 To 880:
+
+            For I1 = 1 To 23:
+                Input #1, expLdrP0(I, I1)
+            Next I1
+
+            Color 14
+            Locate 18, 38
+            TMR = TMR - 1
+            Print Using "#####"; TMR
+
+        Next I
+
+        Close 1
+
+        Open diskPaths$(2) + leagueFile$ + ".TOT" For Input As #1
+
+        Input #1, JB, JP, div1$, div2$, div3$, div4$, LGF$, TS, TTS
+
+        For I = 1 To TEAMS_PER_LEAGUE
+            Input #1, divWins(I), divLosses(I)
+        Next
+
+        For I = 1 To TEAMS_PER_LEAGUE
+
+            For I1 = 0 To 21:
+                Input #1, plyLdrVal!(I, I1), batTeamTot$(I, I1)
+            Next
+
+            Color 14
+            Locate 18, 38
+            TMR = TMR - 1
+            Print Using "#####"; TMR
+
+        Next
+
+        For I = 1 To TEAMS_PER_LEAGUE
+
+            For I1 = 0 To 22:
+                Input #1, teamLdrVal!(I, I1), pitTeamTot$(I, I1)
+            Next
+
+            Color 14
+            Locate 18, 45
+            TMR = TMR - 1
+            Print Using "#####"; TMR
+
+        Next
+
+        Close #1
+
+        Locate 7: Print "CALCULATING BATTER RECORDS . . . ."
+
+        ' ** Recorded Stats **
+        For I = 1 To (23 * TEAMS_PER_LEAGUE)
+
+            For I1 = 1 To 20
+
+                If expLdrB0(I, I1) >= batRecVal!(I1) Then
+                    batRecVal!(I1) = expLdrB0(I, I1)
+                    batRecPlyr$(I1) = expBatLdrName$(I)
+                    batRecTeam$(I1) = expBatLdrTeam$(I)
+                    batRecYr!(I1) = seasonYear
+                End If
+
+            Next I1
+
+            AAG = AAG - 1
+            Locate 7, 40: Print Using "###"; AAG
+
+        Next I
+
+        'Process stats that require calculations
+        If finalUpdate$ = "Y" Then
+
+            For I = 1 To 920
+
+                If expLdrB0(I, 1) + expLdrB0(I, 8) >= batTotGames!(I) * 3.1 And expLdrB0(I, 1) <> 0 Then
+                    If expLdrB0(I, 2) / expLdrB0(I, 1) >= batRecVal!(21) Then
+                        batRecVal!(21) = expLdrB0(I, 2) / expLdrB0(I, 1)
+                        batRecPlyr$(21) = expBatLdrName$(I)
+                        batRecTeam$(21) = expBatLdrTeam$(I)
+                        batRecYr!(21) = seasonYear
+                    End If
+                End If
+
+                If expLdrB0(I, 1) + expLdrB0(I, 8) >= batTotGames!(I) * 3.1 And expLdrB0(I, 2) <> 0 Then
+                    If (expLdrB0(I, 2) + expLdrB0(I, 5) + expLdrB0(I, 6) * 2 + expLdrB0(I, 7) * 3) / expLdrB0(I, 1) >= batRecVal!(22) Then
+                        batRecVal!(22) = (expLdrB0(I, 2) + expLdrB0(I, 5) + expLdrB0(I, 6) * 2 + expLdrB0(I, 7) * 3) / expLdrB0(I, 1)
+                        batRecPlyr$(22) = expBatLdrName$(I)
+                        batRecTeam$(22) = expBatLdrTeam$(I)
+                        batRecYr!(22) = seasonYear
+                    End If
+                End If
+
+                If expLdrB0(I, 1) + expLdrB0(I, 8) >= batTotGames!(I) * 3.1 And expLdrB0(I, 2) <> 0 Then
+                    If (expLdrB0(I, 2) + expLdrB0(I, 8)) / (expLdrB0(I, 1) + expLdrB0(I, 8)) >= batRecVal!(23) Then
+                        batRecVal!(23) = (expLdrB0(I, 2) + expLdrB0(I, 8)) / (expLdrB0(I, 1) + expLdrB0(I, 8))
+                        batRecPlyr$(23) = expBatLdrName$(I)
+                        batRecTeam$(23) = expBatLdrTeam$(I)
+                        batRecYr!(23) = seasonYear
+                    End If
+                End If
+
+                If expLdrB0(I, 1) + expLdrB0(I, 8) >= batTotGames!(I) * 3.1 And expLdrB0(I, 7) <> 0 Then
+                    If expLdrB0(I, 1) / expLdrB0(I, 7) <= batRecVal!(24) Then
+                        batRecVal!(24) = expLdrB0(I, 1) / expLdrB0(I, 7)
+                        batRecPlyr$(24) = expBatLdrName$(I)
+                        batRecTeam$(24) = expBatLdrTeam$(I)
+                        batRecYr!(24) = seasonYear
+                    End If
+                End If
+
+                If expLdrB0(I, 1) + expLdrB0(I, 8) >= batTotGames!(I) * 3.1 And expLdrB0(I, 9) <> 0 Then
+                    If expLdrB0(I, 1) / expLdrB0(I, 9) <= batRecVal!(25) Then
+                        batRecVal!(25) = expLdrB0(I, 1) / expLdrB0(I, 9)
+                        batRecPlyr$(25) = expBatLdrName$(I)
+                        batRecTeam$(25) = expBatLdrTeam$(I)
+                        batRecYr!(25) = seasonYear
+                    End If
+                End If
+
+                If expLdrB0(I, 1) + expLdrB0(I, 8) >= batTotGames!(I) * 3.1 And expLdrB0(I, 8) <> 0 Then
+                    If expLdrB0(I, 1) / expLdrB0(I, 8) > batRecVal!(26) Then
+                        batRecVal!(26) = expLdrB0(I, 1) / expLdrB0(I, 8)
+                        batRecPlyr$(26) = expBatLdrName$(I)
+                        batRecTeam$(26) = expBatLdrTeam$(I)
+                        batRecYr!(26) = seasonYear
+                    End If
+                End If
+
+                If expLdrB0(I, 1) + expLdrB0(I, 8) >= batTotGames!(I) * 3.1 And expLdrB0(I, 4) <> 0 Then
+                    If expLdrB0(I, 1) / expLdrB0(I, 4) <= batRecVal!(27) Then
+                        batRecVal!(27) = expLdrB0(I, 1) / expLdrB0(I, 4)
+                        batRecPlyr$(27) = expBatLdrName$(I)
+                        batRecTeam$(27) = expBatLdrTeam$(I)
+                        batRecYr!(27) = seasonYear
+                    End If
+                End If
+
+                If expLdrB0(I, 1) + expLdrB0(I, 8) >= batTotGames!(I) * 3.1 And expLdrB0(I, 3) <> 0 Then
+                    If expLdrB0(I, 1) / expLdrB0(I, 3) <= batRecVal!(28) Then
+                        batRecVal!(28) = expLdrB0(I, 1) / expLdrB0(I, 3)
+                        batRecPlyr$(28) = expBatLdrName$(I)
+                        batRecTeam$(28) = expBatLdrTeam$(I)
+                        batRecYr!(28) = seasonYear
+                    End If
+                End If
+
+                If expLdrB0(I, 1) + expLdrB0(I, 8) >= batTotGames!(I) * 3.1 And expLdrB0(I, 16) <> 0 Then
+                    If expLdrB0(I, 1) / expLdrB0(I, 16) >= batRecVal!(29) Then
+                        batRecVal!(29) = expLdrB0(I, 1) / expLdrB0(I, 16)
+                        batRecPlyr$(29) = expBatLdrName$(I)
+                        batRecTeam$(29) = expBatLdrTeam$(I)
+                        batRecYr!(29) = seasonYear
+                    End If
+                End If
+
+                If expLdrB0(I, 21) + expLdrB0(I, 22) >= batRecVal!(30) Then
+                    batRecVal!(30) = expLdrB0(I, 21) + expLdrB0(I, 22)
+                    batRecPlyr$(30) = expBatLdrName$(I)
+                    batRecTeam$(30) = expBatLdrTeam$(I)
+                    batRecYr!(30) = seasonYear
+                End If
+
+                If expLdrB0(I, 22) >= batRecVal!(31) Then
+                    batRecVal!(31) = expLdrB0(I, 22)
+                    batRecPlyr$(31) = expBatLdrName$(I)
+                    batRecTeam$(31) = expBatLdrTeam$(I)
+                    batRecYr!(31) = seasonYear
+                End If
+
+                If expLdrB0(I, 21) + expLdrB0(I, 22) <> 0 And expLdrB0(I, 1) + expLdrB0(I, 8) >= batTotGames!(I) * 2.1 Then
+                    If expLdrB0(I, 22) / (expLdrB0(I, 21) + expLdrB0(I, 22)) >= batRecVal!(32) Then
+                        batRecVal!(32) = expLdrB0(I, 22) / (expLdrB0(I, 21) + expLdrB0(I, 22))
+                        batRecPlyr$(32) = expBatLdrName$(I)
+                        batRecTeam$(32) = expBatLdrTeam$(I)
+                        batRecYr!(32) = seasonYear
+                    End If
+                End If
+
+            Next I
+
+        End If
+
+        Locate 8: Print "CALCULATING PITCHER RECORDS . . . ."
+
+        ' ** Recorded Stats **
+        For I = 1 To (22 * TEAMS_PER_LEAGUE)
+
+            For I1 = 1 To 23
+                If expLdrP0(I, I1) >= pitRecVal!(I1) Then
+                    pitRecVal!(I1) = expLdrP0(I, I1)
+                    pitRecPlyr$(I1) = expPitLdrName$(I)
+                    pitRecTeam$(I1) = expPitLdrTeam$(I)
+                    pitRecYr!(I1) = seasonYear
+                End If
+            Next I1
+
+            AAS = AAS - 1
+            Locate 8, 40: Print Using "###"; AAS
+        Next I
+
+        'Process stats that require calculations
+        If finalUpdate$ = "Y" Then
+
+            For I = 1 To 880
+
+                If expLdrP0(I, 18) <> 0 And expLdrP0(I, 9) >= 25 Then
+                    If expLdrP0(I, 19) / expLdrP0(I, 18) <= pitRecVal!(24) Then
+                        pitRecVal!(24) = expLdrP0(I, 19) / expLdrP0(I, 18)
+                        pitRecPlyr$(24) = expPitLdrName$(I)
+                        pitRecTeam$(24) = expPitLdrTeam$(I)
+                        pitRecYr!(24) = seasonYear
+                    End If
+                End If
+
+                If expLdrP0(I, 1) / 3 >= pitTotGames!(I) And expLdrP0(I, 21) <> 0 Then
+                    If expLdrP0(I, 21) / expLdrP0(I, 9) < pitRecVal!(25) Then
+                        pitRecVal!(25) = expLdrP0(I, 21) / expLdrP0(I, 9)
+                        pitRecPlyr$(25) = expPitLdrName$(I)
+                        pitRecTeam$(25) = expPitLdrTeam$(I)
+                        pitRecYr!(25) = seasonYear
+                    End If
+                End If
+
+
+                If expLdrP0(I, 1) / 3 >= pitTotGames!(I) And expLdrP0(I, 1) <> 0 Then
+                    If (expLdrP0(I, 4) * 9) / (expLdrP0(I, 1) / 3) > pitRecVal!(23) Then
+                        pitRecVal!(23) = (expLdrP0(I, 4) * 9) / (expLdrP0(I, 1) / 3)
+                        pitRecPlyr$(23) = expPitLdrName$(I)
+                        pitRecTeam$(23) = expPitLdrTeam$(I)
+                        pitRecYr!(23) = seasonYear
+                    End If
+                End If
+
+                If expLdrP0(I, 1) / 3 >= pitTotGames!(I) And expLdrP0(I, 1) <> 0 Then
+                    If (expLdrP0(I, 5) * 9) / (expLdrP0(I, 1) / 3) > pitRecVal!(25) Then
+                        pitRecVal!(25) = (expLdrP0(I, 5) * 9) / (expLdrP0(I, 1) / 3)
+                        pitRecPlyr$(25) = expPitLdrName$(I)
+                        pitRecTeam$(25) = expPitLdrTeam$(I)
+                        pitRecYr!(25) = seasonYear
+                    End If
+                End If
+
+                If expLdrP0(I, 1) / 3 >= pitTotGames!(I) And expLdrP0(I, 1) <> 0 Then
+                    If (expLdrP0(I, 6) * 9) / (expLdrP0(I, 1) / 3) < pitRecVal!(26) Then
+                        pitRecVal!(26) = (expLdrP0(I, 6) * 9) / (expLdrP0(I, 1) / 3)
+                        pitRecPlyr$(26) = expPitLdrName$(I)
+                        pitRecTeam$(26) = expPitLdrTeam$(I)
+                        pitRecYr!(26) = seasonYear
+                    End If
+                End If
+
+                If expLdrP0(I, 1) / 3 >= pitTotGames!(I) And expLdrP0(I, 1) <> 0 Then
+                    If (expLdrP0(I, 2) * 9) / (expLdrP0(I, 1) / 3) > pitRecVal!(27) Then
+                        pitRecVal!(27) = (expLdrP0(I, 2) * 9) / (expLdrP0(I, 1) / 3)
+                        pitRecPlyr$(27) = expPitLdrName$(I)
+                        pitRecTeam$(27) = expPitLdrTeam$(I)
+                        pitRecYr!(27) = seasonYear
+                    End If
+                End If
+
+                If expLdrP0(I, 1) / 3 >= pitTotGames!(I) And expLdrP0(I, 1) <> 0 Then
+                    If (expLdrP0(I, 14) * 9) / (expLdrP0(I, 1) / 3) < pitRecVal!(28) Then
+                        pitRecVal!(28) = (expLdrP0(I, 14) * 9) / (expLdrP0(I, 1) / 3)
+                        pitRecPlyr$(28) = expPitLdrName$(I)
+                        pitRecTeam$(28) = expPitLdrTeam$(I)
+                        pitRecYr!(28) = seasonYear
+                    End If
+                End If
+
+            Next I
+
+        End If
+
+        Locate 9: Print "CALCULATING TEAM RECORDS . . . ."
+
+        ' ** Recorded Stats **
+        For I = 1 To TEAMS_PER_LEAGUE
+            For I1 = 0 To 21
+                If plyLdrVal!(I, I1) > batRecTmVal!(I1) Then
+                    batRecTmVal!(I1) = plyLdrVal!(I, I1)
+                    batRecTmDesc$(I1) = batTeamTot$(I, I1)
+                    batRecTmYr!(I1) = seasonYear
+                End If
+            Next I1
+
+            AAT = AAT - 1
+            Locate 9, 40: Print Using "###"; AAT
+        Next I
+
+        'Process stats that require calculations
+        If finalUpdate$ = "Y" Then
+
+            For I = 1 To TEAMS_PER_LEAGUE
+                If plyLdrVal!(I, 0) <> 0 Then
+                    If plyLdrVal!(I, 1) / plyLdrVal!(I, 0) > batRecTmVal!(22) Then
+                        batRecTmVal!(22) = plyLdrVal!(I, 1) / plyLdrVal!(I, 0)
+                        batRecTmDesc$(22) = batTeamTot$(I, 1)
+                        batRecTmYr!(22) = seasonYear
+                    End If
+                End If
+            Next I
+
+            For I = 1 To TEAMS_PER_LEAGUE
+                If plyLdrVal!(I, 0) <> 0 Then
+                    If (plyLdrVal!(I, 1) + plyLdrVal!(I, 4) + (plyLdrVal!(I, 5) * 2) + (plyLdrVal!(I, 6) * 3)) / plyLdrVal!(I, 0) > batRecTmVal!(23) Then
+                        batRecTmVal!(23) = (plyLdrVal!(I, 1) + plyLdrVal!(I, 4) + (plyLdrVal!(I, 5) * 2) + (plyLdrVal!(I, 6) * 3)) / plyLdrVal!(I, 0)
+                        batRecTmDesc$(23) = batTeamTot$(I, 1)
+                        batRecTmYr!(23) = seasonYear
+                    End If
+                End If
+            Next I
+
+            For I = 1 To TEAMS_PER_LEAGUE
+                If plyLdrVal!(I, 0) <> 0 Then
+                    If (plyLdrVal!(I, 1) + plyLdrVal!(I, 7)) / (plyLdrVal!(I, 0) + plyLdrVal!(I, 7)) > batRecTmVal!(24) Then
+                        batRecTmVal!(24) = (plyLdrVal!(I, 1) + plyLdrVal!(I, 7)) / (plyLdrVal!(I, 0) + plyLdrVal!(I, 7))
+                        batRecTmDesc$(24) = batTeamTot$(I, 1)
+                        batRecTmYr!(24) = seasonYear
+                    End If
+                End If
+            Next I
+
+        End If
+
+        ' ** Recorded Stats **
+        For I = 1 To TEAMS_PER_LEAGUE
+            For I1 = 0 To 22
+                If teamLdrVal!(I, I1) > pitRecTmVal!(I1) Then
+                    pitRecTmVal!(I1) = teamLdrVal!(I, I1)
+                    pitRecTmDesc$(I1) = pitTeamTot$(I, I1)
+                    pitRecTmYr!(I1) = seasonYear
+                End If
+            Next I1
+
+            AAT = AAT - 1
+            Locate 9, 40: Print Using "###"; AAT
+        Next I
+
+        'Process stats that require calculations
+        If finalUpdate$ = "Y" Then
+
+            For I = 1 To TEAMS_PER_LEAGUE
+
+                If teamLdrVal!(I, 17) <> 0 Then
+                    If teamLdrVal!(I, 18) / teamLdrVal!(I, 17) > pitRecTmVal!(23) Then
+                        pitRecTmVal!(23) = teamLdrVal!(I, 18) / teamLdrVal!(I, 17)
+                        pitRecTmDesc$(23) = pitTeamTot$(I, 0)
+                        pitRecTmYr!(23) = seasonYear
+                    End If
+                End If
+
+                If teamLdrVal!(I, 0) <> 0 Then
+                    If (teamLdrVal!(I, 3) * 9) / (teamLdrVal!(I, 0) / 3) < pitRecTmVal!(24) Then
+                        pitRecTmVal!(24) = (teamLdrVal!(I, 3) * 9) / (teamLdrVal!(I, 0) / 3)
+                        pitRecTmDesc$(24) = pitTeamTot$(I, 0)
+                        pitRecTmYr!(24) = seasonYear
+                    End If
+                End If
+
+            Next I
+
+        End If
+
+        Call PostRecordsPro
+
+    End If 'Done checking for records file
+
+End Sub
+
+
+'----------------------------------------
+'      ViewSeasonRecords Subroutine
+'----------------------------------------
+'This subroutine assists the user with
+'viewing full season records.
+Sub ViewSeasonRecords ()
+
+    Shared batRecTmVal!(), batRecTmYr!()
+    Shared batRecVal!(), batRecYr!()
+    Shared pitRecTmVal!(), pitRecTmYr!()
+    Shared pitRecVal!(), pitRecYr!()
+
+    Shared batRecPlyr$(), batRecTeam$(), batRecTmDesc$()
+    Shared pitRecTmDesc$(), pitRecPlyr$(), pitRecTeam$()
+
+    Shared batIndCategory$(), pitIndCategory$(), batTeamCategory$(), pitTeamCategory$()
+
+    If Not _FileExists(diskPaths$(2) + "RECORDS.MLB") Then
+
+        MsgText$ = "UNABLE TO LOCATE RECORDS PRESS ANY KEY TO RETURN TO MAIN MENU"
+        BoxWidth = 24
+        BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+        Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+        Call CSMsgBox(MsgText$, BoxWidth, Pass)
+        I$ = GetKeyPress$
+        Call CSMsgBox("", 0, Pass)
+
+    Else
+
+        Call ReadSeasonRecords("RECORDS.MLB")
+
+        Color 0, 0
+
+        Cls
+
+        Call ShadowBox(1, 1, 73, 20, 15, 4)
+
+        Locate 1
+        Print leagueFile$
+        Locate 2, 24
+        Print "******* BATTING RECORDS *******"
+        Print
+        Locate , 4
+        Print "CATEGORY                   PLAYER         TEAM           RECORD"
+
+        Color 7
+
+        For I = 1 To 15
+            Locate , 4
+            Print batIndCategory$(I); Tab(28); batRecPlyr$(I);
+            Print Tab(43); batRecTeam$(I); Tab(62); Using "####"; batRecVal!(I)
+            'Print Tab(70); Using "####"; batRecYr!(I)
+        Next
+
+        Color 15
+        Locate 22, 30: Print "HIT ANY KEY TO CONTINUE"
+        I$ = GetKeyPress$
+
+        'Clear existing categories, leaving border
+        For I = 4 To 21:
+            Locate I, 4
+            Print Space$(72)
+        Next
+
+        Color 15
+        'Locate 1
+        'Print leagueFile$
+        Locate 2, 24
+        Print "******* BATTING RECORDS *******"
+        Print
+        Locate , 4
+        Print "CATEGORY                   PLAYER         TEAM           RECORD"
+
+        Color 7
+
+        For I = 16 To 20
+            Locate , 4
+            Print batIndCategory$(I); Tab(28); batRecPlyr$(I);
+            Print Tab(43); batRecTeam$(I); Tab(62); Using "####"; batRecVal!(I)
+            'Print Tab(70); Using "####"; batRecYr!(I)
+        Next
+
+        For I = 21 To 23
+            Locate , 4
+            Print batIndCategory$(I); Tab(28); batRecPlyr$(I);
+            Print Tab(43); batRecTeam$(I); Tab(62); Using ".###"; batRecVal!(I)
+            'Print Tab(70); Using "####"; batRecYr!(I)
+        Next
+
+        For I = 24 To 29
+            Locate , 4
+            Print batIndCategory$(I); Tab(28); batRecPlyr$(I);
+            Print Tab(43); batRecTeam$(I); Tab(60); Using "###.#"; batRecVal!(I)
+            'Print Tab(70); Using "####"; batRecYr!(I)
+        Next
+
+        For I = 30 To 31
+            Locate , 4
+            Print batIndCategory$(I); Tab(28); batRecPlyr$(I);
+            Print Tab(43); batRecTeam$(I); Tab(62); Using "###"; batRecVal!(I);
+            'Print Tab(70); Using "####"; batRecYr!(I)
+        Next
+
+        Locate , 4
+        Print batIndCategory$(32); Tab(28); batRecPlyr$(32);
+        Print Tab(43); batRecTeam$(32); Tab(62); Using ".###"; batRecVal!(32);
+        'Print Tab(70); Using "####"; batRecYr!(32)
+
+        Color 15
+        Locate 22, 30: Print "HIT ANY KEY TO CONTINUE"
+        I$ = GetKeyPress$
+
+        Color 0, 0
+        Cls
+
+        Call ShadowBox(1, 1, 73, 20, 15, 1)
+
+        'Locate 1
+        'Print leagueFile$
+        Locate 2, 24
+        Print "******* PITCHING RECORDS *******"
+        Print
+        Locate , 4
+        Print "CATEGORY                   PLAYER         TEAM           RECORD"
+
+        Color 7
+
+        Locate , 4
+        Print pitIndCategory$(1); Tab(28); pitRecPlyr$(1);
+        Print Tab(43); pitRecTeam$(1); Tab(61); Using "###"; Int(pitRecVal!(1) / 3);
+        If pitRecVal!(1) - Int(pitRecVal!(1) / 3) * 3 > 0 Then
+            Print ".";
+            Print Using "#"; pitRecVal!(1) - (Int(pitRecVal!(1) / 3) * 3)
+        Else
+            Print ".0"
+        End If
+        'Print Tab(70); Using "####"; pitRecYr!(1)
+
+        For I = 2 To 15
+            Locate , 4
+            Print pitIndCategory$(I); Tab(28); pitRecPlyr$(I);
+            Print Tab(43); pitRecTeam$(I); Tab(62); Using "####"; pitRecVal!(I)
+            'Print Tab(70); pitRecYr!(I)
+        Next
+
+        Color 15
+        Locate 22, 30: Print "HIT ANY KEY TO CONTINUE"
+        I$ = GetKeyPress$
+
+        'Clear existing categories, leaving border
+        For I = 4 To 21:
+            Locate I, 4
+            Print Space$(72)
+        Next
+
+        Locate 2, 24
+        Print "******* PITCHING RECORDS *******"
+        Print
+        Locate , 4
+        Print "CATEGORY                   PLAYER         TEAM           RECORD"
+
+        Color 7
+
+        For I = 16 To 19
+            Locate , 4
+            Print pitIndCategory$(I); Tab(28); pitRecPlyr$(I);
+            Print Tab(43); pitRecTeam$(I); Tab(62); Using "####"; pitRecVal!(I)
+            'Print Tab(70); Using "####"; pitRecYr!(I)
+        Next
+
+        Locate , 4
+        Print pitIndCategory$(20); Tab(28); pitRecPlyr$(24);
+        Print Tab(43); pitRecTeam$(24); Tab(62); Using ".###"; pitRecVal!(24) * 100
+        'Print Tab(70); Using "####"; pitRecYr!(24)
+
+        Locate , 4
+        Print pitIndCategory$(21); Tab(28); pitRecPlyr$(20);
+        Print Tab(43); pitRecTeam$(20); Tab(62); Using "####"; pitRecVal!(20)
+        'Print Tab(70); Using "####"; pitRecYr!(20)
+
+        Locate , 4
+        Print pitIndCategory$(22); Tab(28); pitRecPlyr$(25);
+        Print Tab(43); pitRecTeam$(25); Tab(61); Using "##.##"; pitRecVal!(25)
+        'Print Tab(70); Using "####"; pitRecYr!(25)
+
+        Locate , 4
+        Print pitIndCategory$(23); Tab(28); pitRecPlyr$(22);
+        Print Tab(43); pitRecTeam$(22); Tab(62); Using "####"; pitRecVal!(22)
+        'Print Tab(70); Using "####"; pitRecYr!(22)
+
+        Locate , 4
+        Print pitIndCategory$(24); Tab(28); pitRecPlyr$(23);
+        Print Tab(43); pitRecTeam$(23); Tab(60); Using "###.##"; pitRecVal!(23)
+        'Print Tab(70); Using "####"; pitRecYr!(23)
+
+        For I = 25 To 28
+            Locate , 4
+            Print pitIndCategory$(I); Tab(28); pitRecPlyr$(I);
+            Print Tab(43); pitRecTeam$(I); Tab(61); Using "##.##"; pitRecVal!(I)
+            'Print Tab(70); Using "####"; pitRecYr!(I)
+        Next
+
+        Color 15
+        Locate 22, 30: Print "HIT ANY KEY TO CONTINUE"
+        I$ = GetKeyPress$
+
+        Color 0, 0
+        Cls
+
+        Call ShadowBox(1, 1, 73, 20, 14, 0)
+
+        Locate 1
+        Print leagueFile$
+        Locate 2, 26
+        Print "******* TEAM RECORDS *******"
+        Print
+        Locate , 4
+        Print "CATEGORY                   TEAM           RECORD"
+
+        Color 7
+
+        For I = 0 To 12
+            Locate , 4
+            Print batTeamCategory$(I); Tab(29); batRecTmDesc$(I);
+            Print Tab(48); Using "####"; batRecTmVal!(I)
+            'Print Tab(70); Using "####"; batRecTmYr!(I)
+        Next
+
+        For I = 15 To 16
+            Locate , 4
+            Print batTeamCategory$(I - 2); Tab(29); batRecTmDesc$(I);
+            Print Tab(48); Using "####"; batRecTmVal!(I)
+            'Print Tab(70); Using "####"; batRecTmYr!(I)
+        Next
+
+        Color 15
+        Locate 22, 30: Print "HIT ANY KEY TO CONTINUE"
+        I$ = GetKeyPress$
+
+        'Clear existing categories, leaving border
+        For I = 4 To 21:
+            Locate I, 4
+            Print Space$(72)
+        Next
+
+        Color 7
+        Locate 4
+
+        Color 14
+        'Locate 1
+        'Print leagueFile$
+        Locate 2, 26
+        Print "******* TEAM RECORDS *******"
+        Print
+        Locate , 4
+        Print "CATEGORY                   TEAM           RECORD"
+
+        Color 7
+
+        For I = 17 To 19
+            Locate , 4
+            Print batTeamCategory$(I - 2); Tab(29); batRecTmDesc$(I);
+            Print Tab(48); Using "####"; batRecTmVal!(I)
+            'Print Tab(70); Using "####"; batRecTmYr!(I)
+        Next
+
+        For I = 22 To 24
+            Locate , 4
+            Print batTeamCategory$(I - 4); Tab(29); batRecTmDesc$(I);
+            Print Tab(48); Using ".###"; batRecTmVal!(I)
+            'Print Tab(70); Using "####"; batRecTmYr!(I)
+        Next
+
+        'Pitcher Records
+        Locate , 4
+        Print pitTeamCategory$(0); Tab(29); pitRecTmDesc$(0); Tab(46); Using "####"; Int(pitRecTmVal!(0) / 3);
+        If pitRecTmVal!(0) - Int(pitRecTmVal!(0) / 3) * 3 > 0 Then
+            Print ".";
+            Print Using "#"; pitRecTmVal!(0) - (Int(pitRecTmVal!(0) / 3) * 3)
+        Else
+            Print ".0"
+        End If
+        'Print Tab(70); Using "####"; pitRecTmYr!(0)
+
+        For I = 1 To 5
+            Locate , 4
+            Print pitTeamCategory$(I); Tab(29); pitRecTmDesc$(I);
+            Print Tab(48); Using "####"; pitRecTmVal!(I)
+            'Print Tab(70); Using "####"; pitRecTmYr!(I)
+        Next
+
+        For I = 10 To 12
+            Locate , 4
+            Print pitTeamCategory$(I - 4); Tab(29); pitRecTmDesc$(I);
+            Print Tab(48); Using "####"; pitRecTmVal!(I)
+            'Print Tab(70); Using "####"; pitRecTmYr!(I)
+        Next
+
+        Color 15
+        Locate 22, 30: Print "HIT ANY KEY TO CONTINUE"
+        I$ = GetKeyPress$
+
+        'Clear existing categories, leaving border
+        For I = 4 To 21:
+            Locate I, 4
+            Print Space$(72)
+        Next
+
+        Color 14
+        'Locate 1
+        'Print leagueFile$
+        Locate 2, 26
+        Print "******* TEAM RECORDS *******"
+        Print
+        Locate , 4
+        Print "CATEGORY                   TEAM           RECORD"
+
+        Color 7
+
+        For I = 13 To 18
+            Locate , 4
+            Print pitTeamCategory$(I - 4); Tab(29); pitRecTmDesc$(I);
+            Print Tab(48); Using "####"; pitRecTmVal!(I)
+            'Print Tab(70); Using "####"; pitRecTmYr!(I)
+        Next
+
+        'Blown Saves
+        Locate , 4
+        Print pitTeamCategory$(15); Tab(29); pitRecTmDesc$(19);
+        If pitRecTmVal!(19) = 0 Then
+            Print Tab(48); " ---"
+        Else
+            Print Tab(48); Using "####"; pitRecTmVal!(19)
+        End If
+        'Print Tab(70); Using "####"; pitRecTmYr!(19)
+
+        Locate , 4
+        Print pitTeamCategory$(16); Tab(29); pitRecTmDesc$(21);
+        Print Tab(48); Using "####"; pitRecTmVal!(21)
+        'Print Tab(70); Using "####"; pitRecTmYr!(21)
+
+        Locate , 4
+        Print pitTeamCategory$(17); Tab(29); pitRecTmDesc$(23);
+        Print Tab(48); Using ".###"; pitRecTmVal!(23)
+        'Print Tab(70); Using "####"; pitRecTmYr!(23)
+
+        Locate , 4
+        Print pitTeamCategory$(18); Tab(29); pitRecTmDesc$(24);
+        Print Tab(47); Using "##.##"; pitRecTmVal!(24)
+        'Print Tab(70); Using "####"; pitRecTmYr!(24)
+
+        Color 15
+        Locate 22, 30: Print "HIT ANY KEY TO CONTINUE"
+        I$ = GetKeyPress$
+
+    End If 'Done checking for records file
+
+End Sub
+
+
+'----------------------------------------
+'       PrintSeasonRecords Subroutine
+'----------------------------------------
+'This subroutine facilitates formatting
+'of the record data to a file, that is
+'subsequently either saved, or printed.
+Sub PrintSeasonRecords (printDest, destFile$, leagueName$)
+
+    Shared batRecTmVal!(), batRecTmYr!()
+    Shared batRecVal!(), batRecYr!()
+    Shared pitRecTmVal!(), pitRecTmYr!()
+    Shared pitRecVal!(), pitRecYr!()
+
+    Shared batRecPlyr$(), batRecTeam$(), batRecTmDesc$()
+    Shared pitRecTmDesc$(), pitRecPlyr$(), pitRecTeam$()
+
+    Shared batIndCategory$(), pitIndCategory$(), batTeamCategory$(), pitTeamCategory$()
+
+    If Not _FileExists(diskPaths$(2) + "RECORDS.MLB") Then
+
+        MsgText$ = "UNABLE TO LOCATE RECORDS PRESS ANY KEY TO RETURN TO MAIN MENU"
+        BoxWidth = 24
+        BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+        Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+        Call CSMsgBox(MsgText$, BoxWidth, Pass)
+        I$ = GetKeyPress$
+        Call CSMsgBox("", 0, Pass)
+
+    Else
+
+        Call ReadSeasonRecords("RECORDS.MLB")
+
+        Color 15, 0
+        Cls
+
+        Open destFile$ For Output As #1
+
+        Print #1, leagueName$; "  BATTING RECORDS"
+        Print #1,
+        Print #1, "CATEGORY                   PLAYER         TEAM             RECORD      YEAR"
+
+        Print #1, String$(75, 61)
+
+        For I = 1 To 20
+            Print #1, batIndCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(62); Using "####"; batRecVal!(I)
+            '; Tab(66); batRecYr!(I)
+        Next
+
+        For I = 21 To 23
+            Print #1, batIndCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(62); Using ".###"; batRecVal!(I)
+            '; Print #1, Tab(66); Using "####"; batRecYr!(I)
+        Next
+
+        For I = 24 To 29
+            Print #1, batIndCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(60); Using "###.#"; batRecVal!(I)
+            '; Print #1, Tab(66); Using "####"; batRecYr!(I)
+        Next
+
+        For I = 30 To 31
+            Print #1, batIndCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(62); Using "###"; batRecVal!(I)
+            '; Print #1, Tab(66); Using "####"; batRecYr!(I)
+        Next
+
+        Print #1, batIndCategory$(32); Tab(28); batRecPlyr$(32); Tab(43); batRecTeam$(32); Tab(62); Using ".###"; batRecVal!(32)
+        '; Print #1, Tab(66); Using "####"; batRecYr!(32)
+        Print #1, Chr$(12)
+
+        Print #1, leagueFile$; "  PITCHING RECORDS"
+        Print #1,
+        Print #1, "CATEGORY                   PLAYER         TEAM             RECORD      YEAR"
+
+        Print #1, String$(75, 61)
+        Print #1, pitIndCategory$(1); Tab(28); pitRecPlyr$(1); Tab(43); pitRecTeam$(1); Tab(61); Using "###"; Int(pitRecVal!(1) / 3);
+
+        If pitRecVal!(1) - Int(pitRecVal!(1) / 3) * 3 > 0 Then
+            Print #1, ".";
+            Print #1, Using "#"; pitRecVal!(1) - (Int(pitRecVal!(1) / 3) * 3);
+        Else
+            Print #1, ".0";
+        End If
+
+        Print #1, Tab(72); Using "####"; pitRecYr!(1)
+
+        For I = 2 To 19
+            Print #1, pitIndCategory$(I); Tab(28); pitRecPlyr$(I); Tab(43); pitRecTeam$(I); Tab(62); Using "####"; pitRecVal!(I)
+            '; Tab(72); pitRecYr!(I)
+        Next
+
+        Print #1, pitIndCategory$(20); Tab(28); pitRecPlyr$(24); Tab(43); pitRecTeam$(24); Tab(62); Using ".###"; pitRecVal!(24) * 100
+        '; Print #1, Tab(72); Using "####"; pitRecYr!(24)
+        Print #1, pitIndCategory$(21); Tab(28); pitRecPlyr$(20); Tab(43); pitRecTeam$(20); Tab(62); Using "####"; pitRecVal!(20)
+        '; Print #1, Tab(72); Using "####"; pitRecYr!(20)
+        Print #1, pitIndCategory$(22); Tab(28); pitRecPlyr$(25); Tab(43); pitRecTeam$(25); Tab(61); Using "##.##"; pitRecVal!(25)
+        '; Print #1, Tab(72); Using "####"; pitRecYr!(25)
+        Print #1, pitIndCategory$(23); Tab(28); pitRecPlyr$(22); Tab(43); pitRecTeam$(22); Tab(62); Using "####"; pitRecVal!(22)
+        '; Print #1, Tab(72); Using "####"; pitRecYr!(22)
+        Print #1, pitIndCategory$(24); Tab(28); pitRecPlyr$(23); Tab(43); pitRecTeam$(23); Tab(60); Using "###.##"; pitRecVal!(23)
+        '; Print #1, Tab(72); Using "####"; pitRecYr!(23)
+
+        For I = 25 To 28
+            Print #1, pitIndCategory$(I); Tab(28); pitRecPlyr$(I); Tab(43); pitRecTeam$(I); Tab(61); Using "##.##"; pitRecVal!(I)
+            '; Print #1, Tab(72); Using "####"; pitRecYr!(I)
+        Next
+
+        Print #1, Chr$(12)
+
+        Print #1, leagueFile$; "  TEAM RECORDS"
+        Print #1,
+        Print #1, "CATEGORY                        TEAM                        RECORD     YEAR"
+        Print #1, String$(75, 61)
+
+        For I = 0 To 12
+            Print #1, batTeamCategory$(I); Tab(28); batRecTmDesc$(I); Tab(62); Using "####"; batRecTmVal!(I)
+            '; Tab(72); batRecTmYr!(I)
+        Next
+
+        For I = 15 To 19
+            Print #1, batTeamCategory$(I - 2); Tab(28); batRecTmDesc$(I); Tab(62); Using "####"; batRecTmVal!(I)
+            '; Tab(72); batRecTmYr!(I)
+        Next
+
+        For I = 22 To 24
+            Print #1, batTeamCategory$(I - 4); Tab(28); batRecTmDesc$(I); Tab(62); Using ".###"; batRecTmVal!(I)
+            'Print #1, Tab(72); Using "####"; batRecTmYr!(I)
+        Next
+
+        Print #1, pitTeamCategory$(0); Tab(28); pitRecTmDesc$(0); Tab(60); Using "####"; Int(pitRecTmVal!(0) / 3);
+
+        If pitRecTmVal!(0) - Int(pitRecTmVal!(0) / 3) * 3 > 0 Then
+            Print #1, ".";
+            Print #1, Using "#"; pitRecTmVal!(0) - (Int(pitRecTmVal!(0) / 3) * 3)
+        Else
+            Print #1, ".0"
+        End If
+
+        'Print #1, Tab(72); Using "####"; pitRecTmYr!(0)
+
+        For I = 1 To 5
+            Print #1, pitTeamCategory$(I); Tab(28); pitRecTmDesc$(I); Tab(62); Using "####"; pitRecTmVal!(I)
+            'Print #1, Tab(72); Using "####"; pitRecTmYr!(I)
+        Next
+
+        For I = 10 To 19
+            Print #1, pitTeamCategory$(I - 4); Tab(28); pitRecTmDesc$(I); Tab(62); Using "####"; pitRecTmVal!(I)
+            'Print #1, Tab(72); Using "####"; pitRecTmYr!(I)
+        Next
+
+        Print #1, pitTeamCategory$(16); Tab(28); pitRecTmDesc$(21); Tab(62); Using "####"; pitRecTmVal!(21)
+        '; Print #1, Tab(72); Using "####"; pitRecTmYr!(21)
+
+        Print #1, pitTeamCategory$(17); Tab(28); pitRecTmDesc$(23); Tab(62); Using ".###"; pitRecTmVal!(23)
+        '; Print #1, Tab(72); Using "####"; pitRecTmYr!(23)
+
+        Print #1, pitTeamCategory$(18); Tab(28); pitRecTmDesc$(24); Tab(61); Using "##.##"; pitRecTmVal!(24)
+        '; Print #1, Tab(72); Using "####"; pitRecTmYr!(24)
+
+        Print #1, Chr$(12)
+
+        Close #1
+
+        If printDest = 1 Then
+
+            Open destFile$ For Input As #2
+
+            Do While Not EOF(2)
+                Line Input #2, X$
+                LPrint X$
+            Loop
+
+            Close #2
+
+            LPrint Chr$(12)
+
+            Kill destFile$
+
+        End If
+
+    End If 'Done checking for records file
+
+End Sub
+
+
 '$Include: 'SCHEDULE.BAS'
 '$Include: 'SEELEAG.BAS'
 '$Include: 'SINPUT.BAS'
@@ -1532,13 +4619,13 @@ Sub LOADER
         Call SelectPitchers(P9, cancelPitchers%, computerRotations%)
         Call PitchingStarter(P9)
 
-        pitchEff(P9, 0) = pitcherMaxEff%(P9, currPitcher(P9))
+        pitcherStam(P9, 0) = pitcherMaxStam%(P9, currPitcher(P9))
 
         If gamePitcher(P9) > 1 Then
-            pitchEff(P9, 1) = 0
+            pitcherStam(P9, 1) = 0
         Else
             'Starting pitcher has more efficiency?
-            pitchEff(P9, 1) = 3
+            pitcherStam(P9, 1) = 3
         End If
 
         'I'm not sure why we go back only
@@ -1799,30 +4886,30 @@ Sub LOADER
     End If
 
     '1955 - Present
-    'pitchEff(0, 1) = calculated from Walks + Hits / Game
-    'pitchEff(1, 1) = 3
+    'pitcherStam(0, 1) = calculated from Walks + Hits / Game
+    'pitcherStam(1, 1) = 3
 
     Select Case pitchEraOpt
 
         Case 3
             '1946-1954
-            pitchEff(0, 1) = 4
-            pitchEff(1, 1) = 4
+            pitcherStam(0, 1) = 4
+            pitcherStam(1, 1) = 4
 
         Case 4 To 6
             '1909 to 1945
-            pitchEff(0, 1) = 5
-            pitchEff(1, 1) = 5
+            pitcherStam(0, 1) = 5
+            pitcherStam(1, 1) = 5
 
         Case 7
             '1894 to 1908
-            pitchEff(0, 1) = 7
-            pitchEff(1, 1) = 7
+            pitcherStam(0, 1) = 7
+            pitcherStam(1, 1) = 7
 
         Case Is >= 8
             '1876-1893
-            pitchEff(0, 1) = 99
-            pitchEff(1, 1) = 99
+            pitcherStam(0, 1) = 99
+            pitcherStam(1, 1) = 99
 
     End Select
 
@@ -2841,7 +5928,7 @@ Sub SelectStadium (useVGA)
         'position if no graphics exist at all!
 
         'So instead, let's switch to regular mode
-        If Not _FileExists("." + dirSeparator$ + "parks" + dirSeparator$ + chosenPark$) Then 
+        If Not _FileExists("." + dirSeparator$ + "parks" + dirSeparator$ + chosenPark$) Then
             useVGA = 0
         End If
 
@@ -2887,22 +5974,24 @@ Sub PitchingRotations (computerRotations%, P9)
 
         Locate , 25
         If pitchers$(P9, I + 7) <> "XXX" Then
-            Print pitchers$(P9, I + 7); Tab(43); pitchRating(P9, I + 7, 5);
+            Print pitchers$(P9, I + 7); Tab(43); pitchRating(P9, I + 7, SS_P_GS);
         End If
 
         Locate , 50
         If pitchers$(P9, I + 14) <> "XXX" Then
-            Print pitchers$(P9, I + 14); Tab(68); pitchRating(P9, I + 14, 5)
+            Print pitchers$(P9, I + 14); Tab(68); pitchRating(P9, I + 14, SS_P_GS)
         End If
 
     Next
 
     If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = P9) Then
-        '   4685
+
         gamesStarted = 0
 
         For I = 0 To 21
-            If pitchRating(P9, I, SS_P_GS) > gamesStarted Then gamesStarted = pitchRating(P9, I, SS_P_GS)
+            If pitchRating(P9, I, SS_P_GS) > gamesStarted Then
+                gamesStarted = pitchRating(P9, I, SS_P_GS)
+            End If
         Next
 
         'Auto-determine # of men in rotation
@@ -3041,20 +6130,20 @@ Sub PitchingRotations (computerRotations%, P9)
         If teamMgrProfileVal(P9, 1) = 5 Then gamesStarted% = 32
 
         For I = 1 To teamMgrProfileVal(P9, 1)
-            teamMgrProfileVal(P9, I + 12) = CInt(pitchRating(P9, teamMgrProfileVal(P9, I + 2), 5) * 100 / gamesStarted%)
+            teamMgrProfileVal(P9, I + 12) = CInt(pitchRating(P9, teamMgrProfileVal(P9, I + 2), SS_P_GS) * 100 / gamesStarted%)
         Next
 
         SS = 0
 
         For I = 21 To 36
             If teamMgrProfileVal(P9, I) >= 0 And teamMgrProfileVal(P9, I) <= 21 Then
-                SS = SS + pitchRating(P9, teamMgrProfileVal(P9, I), 5)
+                SS = SS + pitchRating(P9, teamMgrProfileVal(P9, I), SS_P_GS)
             End If
         Next
 
         For I = 21 To 36
             If teamMgrProfileVal(P9, I) >= 0 And teamMgrProfileVal(P9, I) <= 21 Then
-                teamMgrProfileVal(P9, I + 20) = CInt(pitchRating(P9, teamMgrProfileVal(P9, I), 5) * 100 / SS)
+                teamMgrProfileVal(P9, I + 20) = CInt(pitchRating(P9, teamMgrProfileVal(P9, I), SS_P_GS) * 100 / SS)
             End If
         Next
 
@@ -3164,11 +6253,13 @@ Sub ComputerLineups (validBatters, P9, noLineups, reselect)
             Else
 
                 'I <> 1
-                ' For each fielding position I (1-9), for each active player who plays that position, and store his
-                ' "normalized" at-bats in position(currPos, 0) and the field position # in position(currPos, 1)
+                ' For each fielding position I (1-9), look for active players at that position.
+                ' Store his "normalized" at-bats in position(currPos, 0) and field position #
+                'in position(currPos, 1)
 
                 'Most positions
                 For batterIdx = 0 To 22:
+
                     If batRating(P9, batterIdx, SS_B_Avail) <= 0 And batters$(P9, batterIdx) <> "XXX" Then
 
                         If batRating(P9, batterIdx, SS_B_Pos1) = I Then
@@ -3296,8 +6387,8 @@ Sub AssignHitters (P9)
     USE_OPS = 2
     USE_OBA_SB = 3
 
-    ' Note: At least for now, I am not using the original "USE_LH" algorithm,
-    ' until I understand it better  :)
+    ' Note: At least for now, the original "USE_LH" algorithm
+    ' is not being used but is savaialble
 
     ' Put the 3 hitters with the highest SLG Pct in the 3-5 holes in the lineup card
     Call OptimizeLineupSlot(3, USE_SLUG, P9)
@@ -3317,12 +6408,11 @@ Sub AssignHitters (P9)
         Call OptimizeLineupSlot(9, USE_OPS, P9)
     End If
 
-    'I have not found a cause, but sometimes
-    'spot 8 doesn't get populated. The loop
-    'in OptimizeLineupSlot exits too early.
+    'Sometimes spot 8 doesn't get populated.
+    'The loop in OptimizeLineupSlot exits too early.
     'My fix here is to find an available position
     'and assign that to the slot.
-    'We start at slot 3 b/c the first few slots
+    'Start at slot 3 b/c the first few slots
     'are often main pitchers and rarely get
     'picked by the OptimizeLineupSlot routine
     If bestBatterIdx(8) < 0 Then
@@ -3394,16 +6484,16 @@ Sub OptimizeLineupSlot (B, calcMode, P9)
     'L = lineup position
     For L = 0 To 9
 
-        If desigHit = 0 And L = 0 Then
-            L = 2
-        End If
-        If desigHit = 1 And L = 1 Then
+        ' Skip positions based on designated hitter rules
+        If (desigHit = 0 And L = 0) Or (desigHit = 1 And L = 1) Then
             L = 2
         End If
 
-        'Assign J based on lineup position
+        ' Bounds check after modifications
+        If L > 9 Then Exit For
+
+        'Check if this batter is already assigned
         found = 0
-
         Z = 1
 
         Do While Z <= 9 And found = 0
@@ -3434,7 +6524,6 @@ Sub OptimizeLineupSlot (B, calcMode, P9)
                 Case USE_LH
                     ' original Lance Haffner algorithm
                     ' this is weighted by speed / steal ratings both
-
                     JJ = J
 
                     'Hits - Triples - HR's + Walks * 0.7
@@ -3461,35 +6550,46 @@ Sub OptimizeLineupSlot (B, calcMode, P9)
                     If R! > 9 Then R! = 9
                     If R! < 0 Then R! = 1
 
-                    batAvg% = 100 * batRating(P9, J, SS_B_H) / batRating(P9, J, SS_B_AB) - 27
-                    If batAvg% < 0 Then batAvg% = 3 * batAvg%
+                    ' Prevent division by zero
+                    If batRating(P9, J, SS_B_AB) > 0 Then
+                        batAvg% = 100 * batRating(P9, J, SS_B_H) / batRating(P9, J, SS_B_AB) - 27
+                        If batAvg% < 0 Then batAvg% = 3 * batAvg%
 
-                    JJ! = 3 * R! + batAvg%
+                        JJ! = 3 * R! + batAvg%
 
-                    If JJ! > theMax! Then
-                        theMax! = JJ!
-                        TPlayNo = J
-                        UFldNo = L
+                        If JJ! > theMax! Then
+                            theMax! = JJ!
+                            TPlayNo = J
+                            UFldNo = L
+                            validPositionFound = 1
+                        End If
                     End If
 
                 Case USE_OPS
-                    slug! = (batRating(P9, J, SS_B_H) + batRating(P9, J, SS_B_2B) + batRating(P9, J, SS_B_3B) * 2 + batRating(P9, J, SS_B_HR) * 3) / batRating(P9, J, SS_B_AB)
-                    oba! = (batRating(P9, J, SS_B_H) + batRating(P9, J, SS_B_W)) / (batRating(P9, J, SS_B_AB) + batRating(P9, J, SS_B_W))
-                    ops! = slug! + oba!
+                    If batRating(P9, J, SS_B_AB) > 0 And (batRating(P9, J, SS_B_AB) + batRating(P9, J, SS_B_W)) > 0 Then
+                        slug! = (batRating(P9, J, SS_B_H) + batRating(P9, J, SS_B_2B) + batRating(P9, J, SS_B_3B) * 2 + batRating(P9, J, SS_B_HR) * 3) / batRating(P9, J, SS_B_AB)
+                        oba! = (batRating(P9, J, SS_B_H) + batRating(P9, J, SS_B_W)) / (batRating(P9, J, SS_B_AB) + batRating(P9, J, SS_B_W))
+                        ops! = slug! + oba!
 
-                    If ops! >= theMax! Then
-                        theMax! = ops!
-                        TPlayNo = J
-                        UFldNo = L
+                        If ops! >= theMax! Then
+                            theMax! = ops!
+                            TPlayNo = J
+                            UFldNo = L
+                            validPositionFound = 1
+                        End If
                     End If
 
                 Case USE_OBA_SB
-                    oba! = (batRating(P9, J, SS_B_H) + batRating(P9, J, SS_B_W) + batRating(P9, J, SS_B_SB)) / (batRating(P9, J, SS_B_AB) + batRating(P9, J, SS_B_W + batRating(P9, J, SS_B_CS)))
+                    denominator! = batRating(P9, J, SS_B_AB) + batRating(P9, J, SS_B_W) + batRating(P9, J, SS_B_CS)
+                    If denominator! > 0 Then
+                        oba! = (batRating(P9, J, SS_B_H) + batRating(P9, J, SS_B_W) + batRating(P9, J, SS_B_SB)) / (batRating(P9, J, SS_B_AB) + batRating(P9, J, SS_B_W + batRating(P9, J, SS_B_CS)))
 
-                    If oba! >= theMax! Then
-                        theMax! = oba!
-                        TPlayNo = J
-                        UFldNo = L
+                        If oba! >= theMax! Then
+                            theMax! = oba!
+                            TPlayNo = J
+                            UFldNo = L
+                            validPositionFound = 1
+                        End If
                     End If
 
             End Select
@@ -3497,6 +6597,32 @@ Sub OptimizeLineupSlot (B, calcMode, P9)
         End If 'Done checking found
 
     Next L
+
+    '...Implement fallback logic...
+    ' ERROR HANDLING: Ensure we always return valid values
+    'If validPositionFound = 0 Then
+    If UFldNo < 0 Or UFldNo > 9 Or TPlayNo < 0 Or TPlayNo > 9 Then
+
+        Print "FALLBACK B=" + Str$(B) + " P9=" + Str$(P9) + " DH=" + Str$(desigHit) + " Mode=" + Str$(calcMode)
+
+        ' Show what bLineupIdx contains for positions we checked
+        Print "  bLineupIdx: ";
+        For debugL = 0 To 9
+            Print Str$(bLineupIdx(debugL)) + " ";
+        Next debugL
+        Print ' End line
+
+        ' Show what's already been assigned
+        Print "  Already assigned: ";
+        For debugB = 1 To B - 1
+            Print "B" + Str$(debugB) + "=P" + Str$(bestBatterIdx(debugB)) + "@" + Str$(bestBatterFPos(debugB)) + " ";
+        Next debugB
+        Print ' End line
+
+        ' Show final assignment
+        Print "  -> Assigned P" + Str$(TPlayNo) + " to pos " + Str$(UFldNo)
+
+    End If
 
     bestBatterIdx(B) = TPlayNo
     bestBatterFPos(B) = UFldNo
@@ -3705,23 +6831,36 @@ Sub SelectPitchers (idx%, cancelPitchers%, computerRotations%)
                             ':GRANT DAY OFF
                             If useRest = 1 Then
                                 For I1 = 0 To 21
-                                    If pitchRating(idx%, I1, SS_P_Rest) > 0 Then pitchRating(idx%, I1, SS_P_Rest) = pitchRating(idx%, I1, SS_P_Rest) - 1
+                                    If pitchRating(idx%, I1, SS_P_Rest) > 0 Then
+                                        pitchRating(idx%, I1, SS_P_Rest) = pitchRating(idx%, I1, SS_P_Rest) - 1
+                                    End If
                                 Next
                             End If
 
                         Case "X":
                             'Activate all pitchers
                             For I3 = 0 To 21
-                                If pitchRating(idx%, I3, SS_P_Avail) = 99 And pitchRating(idx%, I3, SS_P_Active) = 0 Then pitchRating(idx%, I3, SS_P_Avail) = 0: Locate I3 + 2, 3: Print pitchers$(idx%, I3)
+                                If pitchRating(idx%, I3, SS_P_Avail) = 99 And pitchRating(idx%, I3, SS_P_Active) = 0 Then
+                                    pitchRating(idx%, I3, SS_P_Avail) = 0
+                                    Locate I3 + 2, 3
+                                    Print pitchers$(idx%, I3)
+                                End If
                             Next I3
 
                         Case Else:
                             If I1 <= 21 Then
                                 'If a pitcher was selected, disable them
                                 If pitchRating(idx%, I1, SS_P_Avail) = 0 Then
-                                    pitchRating(idx%, I1, SS_P_Avail) = 99: Locate I1 + 2, 3: Color 0, 7: Print pitchers$(idx%, I1): Color 15, 0
+                                    pitchRating(idx%, I1, SS_P_Avail) = 99
+                                    Locate I1 + 2, 3
+                                    Color 0, 7: Print pitchers$(idx%, I1)
+                                    Color 15, 0
                                 Else
-                                    If pitchRating(idx%, I1, SS_P_Avail) <> 0 Then pitchRating(idx%, I1, SS_P_Avail) = 0: Locate I1 + 2, 3: Color 15, 0: Print pitchers$(idx%, I1): Color 15, 0
+                                    If pitchRating(idx%, I1, SS_P_Avail) <> 0 Then
+                                        pitchRating(idx%, I1, SS_P_Avail) = 0
+                                        Locate I1 + 2, 3
+                                        Color 15, 0: Print pitchers$(idx%, I1)
+                                    End If
                                 End If
                             End If
 
@@ -3786,9 +6925,9 @@ Sub PrintPitcherInfo (idx%)
 
             Locate , 16: Print handed$(pitchRating(idx%, I, SS_P_Throws) + 2);
             '                          IP  H   G   GS DR BB  SO
-            Locate , 17: Print Using " ### ### ### ## ## ### ###"; pitchRating(idx%, I, 6); pitchRating(idx%, I, 7); pitchRating(idx%, I, 4); pitchRating(idx%, I, 5); pitchRating(idx%, I, SS_P_Rest); pitchRating(idx%, I, 8); pitchRating(idx%, I, 9);
+            Locate , 17: Print Using " ### ### ### ## ## ### ###"; pitchRating(idx%, I, SS_P_IP); pitchRating(idx%, I, SS_P_H); pitchRating(idx%, I, SS_P_G); pitchRating(idx%, I, SS_P_GS); pitchRating(idx%, I, SS_P_Rest); pitchRating(idx%, I, SS_P_BB); pitchRating(idx%, I, SS_P_K);
             '                           W                                                       L  ERA
-            Locate , 43: Print Using "  ##"; pitchRating(idx%, I, 1);: Print "-";: Print Using "## ##.##"; pitchRating(idx%, I, 2); pitchRating(idx%, I, SS_P_ERA100) / 100
+            Locate , 43: Print Using "  ##"; pitchRating(idx%, I, 1);: Print "-";: Print Using "## ##.##"; pitchRating(idx%, I, SS_P_L); pitchRating(idx%, I, SS_P_ERA100) / 100
         End If
 
     Next I
@@ -3861,11 +7000,11 @@ Sub PitchingStarter (tmIdx)
     gamePitcher(tmIdx) = 1
     pitchRating(tmIdx, pitchIdx, SS_P_Avail) = gamePitcher(tmIdx)
 
-    pitchEff(tmIdx, 0) = pitcherMaxEff%(tmIdx, currPitcher(tmIdx))
-    pitchEff(tmIdx, 1) = 3
+    pitcherStam(tmIdx, 0) = pitcherMaxStam%(tmIdx, currPitcher(tmIdx))
+    pitcherStam(tmIdx, 1) = 3
 
     If gamePitcher(tmIdx) > 1 Then
-        pitchEff(tmIdx, 1) = 0
+        pitcherStam(tmIdx, 1) = 0
     End If
 
 End Sub
@@ -4514,14 +7653,14 @@ Sub SOURCE ()
 
         If useVGA = 1 Then
             'Restore image where options go
-            _PutImage (52 * FontColAdj, 416)-Step(14 * FontColAdj, 16), backupScreen&, imageScreen&, (52 * FontColAdj, 416)-Step(14 * FontColAdj, 16)
+            _PutImage (51 * FontColAdj, 416)-Step(14 * FontColAdj, 16), backupScreen&, imageScreen&, (51 * FontColAdj, 416)-Step(14 * FontColAdj, 16)
 
             'Printing black on background
             _PrintMode _KeepBackground , imageScreen&
             Color &HF0000000
 
             'Print infield status
-            PrintOnGfx 52, 26, infStatus$, imageScreen&
+            PrintOnGfx 51, 26, infStatus$, imageScreen&
 
             'Printing white on black
             Color &HFFFFFFFF
@@ -4945,19 +8084,19 @@ Sub SOURCE ()
         End If
 
         For idx = 0 To 1:
-            pitchEff(idx, 0) = pitchEff(idx, 0) - stiffArmAdj
+            pitcherStam(idx, 0) = pitcherStam(idx, 0) - stiffArmAdj
         Next
 
         delayGame = 0
 
     Else
 
-        Call RAREPLAYS(INFPOS%, errorOnPlay%, H6%, IP%, baseRunners)
+        Call RAREPLAYS(INFPOS%, errorOnPlay%, H6%, injPit, baseRunners)
 
     End If
 
-    If IP% = 1 Then
-        IP% = 0
+    If injPit = 1 Then
+        injPit = 0
         Call RELIEVERS(pinchHitterFlag, newPitcherFlag, baseRunners)
     End If
 
@@ -5268,8 +8407,8 @@ Sub SOURCE ()
     End If
 
     If INNING% > 5 And _ 
-        pitchEff(D, 0) <= teamPitStats(D, currPitcher(D), 4) + teamPitStats(D, currPitcher(D), 1) And _
-        pitchEff(D, 1) <= teamPitStats(D, currPitcher(D), 2) Then
+        pitcherStam(D, 0) <= teamPitStats(D, currPitcher(D), 4) + teamPitStats(D, currPitcher(D), 1) And _
+        pitcherStam(D, 1) <= teamPitStats(D, currPitcher(D), 2) Then
         'Tiring pitcher
         hitChanceAdj = hitChanceAdj + 20
     End If
@@ -5299,19 +8438,19 @@ Sub SOURCE ()
     Select Case teamYears(1)
 
         Case Is <= 1919
-            soEraAdj = 10
+            soEraAdj = 9
 
         Case 1920 To 1969
-            soEraAdj = -10
+            soEraAdj = -11
 
         Case 1970 To 1979
-            soEraAdj = 10
+            soEraAdj = 9
 
         Case 1980 To 2000
-            soEraAdj = 8
+            soEraAdj = 7
 
         Case Is >= 2001
-            soEraAdj = 8
+            soEraAdj = 7
 
     End Select
 
@@ -5319,6 +8458,11 @@ Sub SOURCE ()
     ' *********************
     ' *   AT BAT RESULT   *
     ' *********************
+    'Track # of batters this team has faced
+    '(this gets reset when a new reliever comes in)
+    'This is used to help enforce the 3-batter rule in 2020+
+    relieverBatterCount(D) = relieverBatterCount(D) + 1
+
     batterAvg = game_batRating(P, GM_BAvg, currLineupSlot(P))
 
     If H6% > batterAvg + hitChanceAdj - 65 Then
@@ -5326,7 +8470,7 @@ Sub SOURCE ()
 
         ' *** check for strikeout ***
         H6% = Int(Rnd(1) * 1000) + 1
-        strikeoutRating = Int(game_batRating(P, GM_K, currLineupSlot(P)) * 1.1)
+        strikeoutRating = Int(game_batRating(P, GM_K, currLineupSlot(P)) * 1.0)
 
         If H6% <= strikeoutRating + umpSZadj(4) + soEraAdj Then
 
@@ -7067,11 +10211,10 @@ Sub SOURCE ()
 
         Case 7
             'Foul Strikeout
-
-            If pitchRating(D, currPitcher(D), 6) = 0 Then
+            If pitchRating(D, currPitcher(D), SS_P_IP) = 0 Then
                 BR! = 0
             Else
-                BR! = pitchRating(D, currPitcher(D), 9) / pitchRating(D, currPitcher(D), 6)
+                BR! = pitchRating(D, currPitcher(D), SS_P_K) / pitchRating(D, currPitcher(D), SS_P_IP)
             End If
 
             Select Case BR!
@@ -7393,12 +10536,14 @@ Sub SOURCE ()
         stlChance = stlChance - 200
         currFielder = 2
         player$(4) = batters$(D, fielder(D, 2))
-        TGBASE% = lineupPlayer(P, runnerOnBase(TGTBASE% - 1))
+
+        'Stealing TGTBASE% will be by runner on previous base
+        stealRunIdx = lineupPlayer(P, runnerOnBase(TGTBASE% - 1))
         stealPhase(TGTBASE% - 1) = 18
 
         Call FLDERR(P, D, S2%, I3, stealing, currFielder, INFPOS%, errorOnPlay%, SAH%)
         If errorOnPlay% = 1 Then
-            Call INCBATOFF(P, TGBASE%, 9)
+            Call INCBATOFF(P, stealRunIdx, 9)
             currLineupSlot(P) = currLineupSlot(P) - 1
             Call STRIKEOUTCS(wasStrikeout)
             GoTo LCheckForOptionsOrQuit
@@ -7462,7 +10607,9 @@ Sub SOURCE ()
         Call WINDEX
         Call NOJUMP(D)
 
-        If useVGA = 1 Then _PutImage (17 * FontColAdj, 128)-Step(46 * FontColAdj, 80), backupScreen&, imageScreen&, (17 * FontColAdj, 128)-Step(46 * FontColAdj, 80)
+        If useVGA = 1 Then
+            _PutImage (17 * FontColAdj, 128)-Step(46 * FontColAdj, 80), backupScreen&, imageScreen&, (17 * FontColAdj, 128)-Step(46 * FontColAdj, 80)
+        End If
 
         GoTo LOffenseOptions
 
@@ -7470,7 +10617,8 @@ Sub SOURCE ()
 
     LStealHome:
     Call WINDEX
-    TGBASE% = lineupPlayer(P, runnerOnBase(TGTBASE% - 1))
+    'Presumably here TGTBASE% = 4
+    stealRunIdx = lineupPlayer(P, runnerOnBase(TGTBASE% - 1))
 
     Call GetPBPString(20, 3090, Y$, D)
     Call PBP(Y$)
@@ -7507,8 +10655,10 @@ Sub SOURCE ()
 
         Call FLDERR(P, D, S2%, I3, stealing, currFielder, INFPOS%, errorOnPlay%, SAH%)
         If errorOnPlay% = 1 Then
-            Call INCBATOFF(P, TGBASE%, 9)
-            Call PITSWAP(errorOnPlay%, TGTBASE%)
+            'Credit 3rd base runner
+            Call INCBATOFF(P, stealRunIdx, LG_B_SB)
+            'Credit any other base runners with a steal
+            Call PITSWAP(TGTBASE%, errorOnPlay%)
             currLineupSlot(P) = currLineupSlot(P) - 1
             GoTo LCheckForOptionsOrQuit
         End If
@@ -7604,7 +10754,7 @@ Sub SOURCE ()
 
         stealPhase(TGTBASE% - 1) = 0
         INFPOS% = INF_BACK
-        Call PITSWAP(errorOnPlay%, TGTBASE%)
+        Call PITSWAP(TGTBASE%, errorOnPlay%)
         Call ADVANCEMENT(P, D, S2%, INFPOS%, I3, errorOnPlay%, SAH%)
 
         Call INCBATDEF(D, fielder(D, 2), LG_BF_SB)
@@ -7706,12 +10856,13 @@ Sub SOURCE ()
         I$ = GetKeyPress$
     End If
 
-    If UCase$(I$) = "Y" Then
+    If UCase$(I$) = "N" Then
 
         GoTo LNextBatter1
 
     Else
 
+        'Give it a shot
         sacPlayType = 1
         TGTBASE% = 4
         baseMove(1) = 0
@@ -7748,12 +10899,11 @@ Sub SOURCE ()
     15501 '
     Do
         I$ = GetKeyPress$
-        I = Val(I$)
+        menuChoice = Val(I$)
         I5 = 0
-    Loop Until I >= 0 And I <= 2
+    Loop Until menuChoice >= 0 And menuChoice <= 2
 
-    'This I has to do with the above key loop
-    Select Case I + 1
+    Select Case menuChoice + 1
 
         Case 1
             15580 '
@@ -7774,263 +10924,277 @@ Sub SOURCE ()
 
         Case 2
             LChangePitcher:
-            If offChoice = OFF_PERSONNEL Then Call TIRING(P9): GoTo 15501
+            If (teamYears(P9) >= 2020 And relieverBatterCount(D) < 3) Then
+            
+                'Print error for human user reminding them
+                'of the rule in effect
+                Locate 10
+                Color 12
+                Print "CURRENT PITCHER HAS NOT FACED 3 BATTERS"
+                Print "CANNOT USE RELIEF PITCHER AT THIS TIME."
 
-            Do
+            Else
 
-                Call PITDISP(P9)
-                Locate LAST_ROW, 1: Print "SELECT RELIEVER (Z = NO CHANGE)   ";
-                If fielder(P9, 1) <> 99 Then Call TIRING(P9)
-                Print
+                If offChoice = OFF_PERSONNEL Then
+                    Call TIRING(P9)
+                    GoTo 15501
+                End If
 
                 Do
 
-                    I$ = GetKeyPress$
-                    If UCase$(I$) = "Z" Then
-                        GoTo LPersonnelMenu
-                    Else
-                        Call LetterToNumber(I$, I1)
-                    End If
-
-                Loop Until I1 <= 21 And pitchRating(P9, I1, SS_P_Avail) <= 0
-
-                Locate 23, 1: Print String$(78, 32)
-                Locate 23, 1: Print "YOU CHOSE "; pitchers$(P9, I1); " "; handed$(pitchRating(P9, I1, SS_P_Throws) + 2); " - ";
-
-                Print "ARE YOU SURE? (Y/N)";
-                I$ = GetKeyPress$
-
-            Loop Until UCase$(I$) = "Y"
-
-            pinchHitterFlag = 0
-            PR% = 0
-
-            If relieverOnRecordForSave(P9) <> -1 And gamePitcher(P9) > 1 Then
-                Call OFFPIT(P9, currPitcher(P9), LG_P_Hold)
-            End If
-
-            currPitcher(P9) = I1
-            gamePitcher(P9) = gamePitcher(P9) + 1
-            pitchRating(P9, I1, SS_P_Avail) = gamePitcher(P9)
-            Call PITSTAM(P9)
-            Call CHECKSAVE(D, P, baseRunners)
-
-            15518 '
-            P9 = 1 - P9
-            W5 = P9
-            W6 = W5
-
-            VV(P9) = 1
-            VV1(P9) = 9
-
-            Call HITTINGLINES
-
-            P9 = 1 - P9
-
-            If Not (desigHit = 1 Or I5 = 66 Or I5 = 77) Then
-
-                'No Designated Hitter
-                Do
-
-                    Cls
-
-                    Locate , 14
-                    Color 14: Print "DO YOU WISH TO MAKE A DOUBLE SWITCH? (Y/N)";
-                    Color 15
-
-                    I$ = GetKeyPress$
-
-                Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
-                If UCase$(I$) = "Y" Then
-
-                    Cls
-                    Call DisplayBatter_Lineup(PG, P9)
-
-                    Call CHANGELINEUP(P9, P)
+                    Call PITDISP(P9)
+                    Locate LAST_ROW, 1: Print "SELECT RELIEVER (Z = NO CHANGE)   ";
+                    If fielder(P9, 1) <> 99 Then Call TIRING(P9)
+                    Print
 
                     Do
 
-                        Locate 12, 30: Print "LINEUP SLOT FOR PITCHER TO BAT IN (1-9)"
-
                         I$ = GetKeyPress$
-
-                        If Asc(I$) = 32 And PG = 0 Then
-                            PG = 1
-                            Cls
-                            Call DisplayBatter_Lineup(PG, P9)
-                            Call CHANGELINEUP(P9, P)
+                        If UCase$(I$) = "Z" Then
+                            GoTo LPersonnelMenu
+                        Else
+                            Call LetterToNumber(I$, I1)
                         End If
 
-                        If Asc(I$) = 32 And PG = 1 Then
-                            PG = 0
-                            Cls
-                            Call DisplayBatter_Lineup(PG, P9)
-                            Call CHANGELINEUP(P9, P)
-                        End If
+                    Loop Until I1 <= 21 And pitchRating(P9, I1, SS_P_Avail) <= 0
 
-                        If Asc(I$) = 9 And TG = 0 Then
-                            Call DisplayFielding_Lineup(PG, P9, TG)
-                            Call CHANGELINEUP(P9, P)
-                        End If
+                    Locate 23, 1: Print String$(78, 32)
+                    Locate 23, 1: Print "YOU CHOSE "; pitchers$(P9, I1); " "; handed$(pitchRating(P9, I1, SS_P_Throws) + 2); " - ";
 
-                        If Asc(I$) = 9 And TG = 1 Then
-                            TG = 0
-                            Call DisplayBatter_Lineup(PG, P9)
-                            Call CHANGELINEUP(P9, P)
-                        End If
+                    Print "ARE YOU SURE? (Y/N)";
+                    I$ = GetKeyPress$
 
-                        batterSlot = Val(I$)
+                Loop Until UCase$(I$) = "Y"
 
-                    Loop Until batterSlot >= 1 And batterSlot <= 9
+                pinchHitterFlag = 0
+                PR% = 0
 
+                If relieverOnRecordForSave(P9) <> -1 And gamePitcher(P9) > 1 Then
+                    Call INCPITOFF(P9, currPitcher(P9), LG_P_Hold)
+                End If
 
+                currPitcher(P9) = I1
+                gamePitcher(P9) = gamePitcher(P9) + 1
+                pitchRating(P9, I1, SS_P_Avail) = gamePitcher(P9)
+                Call PITSTAM(P9)
+                Call CHECKSAVE(D, P, baseRunners)
+
+                15518 '
+                P9 = 1 - P9
+                W5 = P9
+                W6 = W5
+
+                VV(P9) = 1
+                VV1(P9) = 9
+
+                Call HITTINGLINES
+
+                P9 = 1 - P9
+
+                If Not (desigHit = 1 Or I5 = 66 Or I5 = 77) Then
+
+                    'No Designated Hitter
                     Do
 
-                        Locate 13, 30
-                        Print "WHO WILL REPLACE "; batters$(D, lineupPlayer(D, batterSlot)); " @ "; fieldPos$(fldPos(D, batterSlot));
+                        Cls
+
+                        Locate , 14
+                        Color 14: Print "DO YOU WISH TO MAKE A DOUBLE SWITCH? (Y/N)";
+                        Color 15
 
                         I$ = GetKeyPress$
-                        If Asc(I$) = 32 And PG = 0 Then
-                            PG = 1
-                            Call DisplayBatter_Lineup(PG, P9)
-                        End If
-                        If Asc(I$) = 32 And PG = 1 Then
-                            PG = 0
-                            Call DisplayBatter_Lineup(PG, P9)
-                        End If
 
-                        If Asc(I$) = 9 And TG = 0 Then
-                            Call DisplayFielding_Lineup(PG, P9, TG)
-                        End If
-                        If Asc(I$) = 9 And TG = 1 Then
-                            TG = 0
-                            Call DisplayBatter_Lineup(PG, P9)
-                        End If
-
-                        Call LetterToNumber(I$, fieldSlot)
-
-                        Do
-                            Locate 16, 29: Print batters$(D, fieldSlot)
-                            Locate 17, 29: Print "ARE YOU SURE? (Y/N)";
-                            I$ = GetKeyPress$
-                        Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
-
-                    Loop Until fieldSlot <= 22
+                    Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
 
                     If UCase$(I$) = "Y" Then
 
-                        'Track game roster with substitution
-                        playersUsed(D) = playersUsed(D) + 1
-                        gameRoster(D, 0, playersUsed(D)) = fieldSlot
-                        gameRoster(D, 1, playersUsed(D)) = fldPos(D, batterSlot)
+                        Cls
+                        Call DisplayBatter_Lineup(PG, P9)
 
-                        For V0 = 1 To 9
-                            If fldPos(D, V0) = 1 Then
-                                gameRoster(D, 2, playersUsed(D)) = (V0 * 10) + (playersUsed(D) - 9)
+                        Call CHANGELINEUP(P9, P)
+
+                        Do
+
+                            Locate 12, 30: Print "LINEUP SLOT FOR PITCHER TO BAT IN (1-9)"
+
+                            I$ = GetKeyPress$
+
+                            If Asc(I$) = 32 And PG = 0 Then
+                                PG = 1
+                                Cls
+                                Call DisplayBatter_Lineup(PG, P9)
+                                Call CHANGELINEUP(P9, P)
                             End If
-                        Next V0
 
-                        For V0 = 1 To 9
-
-                            If fldPos(D, V0) = 1 Then
-
-                                fldPos(D, V0) = fldPos(D, batterSlot)
-                                lineupPlayer(D, V0) = fieldSlot
-                                fielder(D, fldPos(D, V0)) = fieldSlot
-
-                                P9 = D
-                                W5 = D
-                                W6 = D
-
-                                VV(D) = V0
-                                VV1(D) = V0
-
-                                Call HITTINGLINES
-
+                            If Asc(I$) = 32 And PG = 1 Then
+                                PG = 0
+                                Cls
+                                Call DisplayBatter_Lineup(PG, P9)
+                                Call CHANGELINEUP(P9, P)
                             End If
+
+                            If Asc(I$) = 9 And TG = 0 Then
+                                Call DisplayFielding_Lineup(PG, P9, TG)
+                                Call CHANGELINEUP(P9, P)
+                            End If
+
+                            If Asc(I$) = 9 And TG = 1 Then
+                                TG = 0
+                                Call DisplayBatter_Lineup(PG, P9)
+                                Call CHANGELINEUP(P9, P)
+                            End If
+
+                            batterSlot = Val(I$)
+
+                        Loop Until batterSlot >= 1 And batterSlot <= 9
+
+
+                        Do
+
+                            Locate 13, 30
+                            Print "WHO WILL REPLACE "; batters$(D, lineupPlayer(D, batterSlot)); " @ "; fieldPos$(fldPos(D, batterSlot));
+
+                            I$ = GetKeyPress$
+                            If Asc(I$) = 32 And PG = 0 Then
+                                PG = 1
+                                Call DisplayBatter_Lineup(PG, P9)
+                            End If
+                            If Asc(I$) = 32 And PG = 1 Then
+                                PG = 0
+                                Call DisplayBatter_Lineup(PG, P9)
+                            End If
+
+                            If Asc(I$) = 9 And TG = 0 Then
+                                Call DisplayFielding_Lineup(PG, P9, TG)
+                            End If
+                            If Asc(I$) = 9 And TG = 1 Then
+                                TG = 0
+                                Call DisplayBatter_Lineup(PG, P9)
+                            End If
+
+                            Call LetterToNumber(I$, fieldSlot)
+
+                            Do
+                                Locate 16, 29: Print batters$(D, fieldSlot)
+                                Locate 17, 29: Print "ARE YOU SURE? (Y/N)";
+                                I$ = GetKeyPress$
+                            Loop Until UCase$(I$) = "Y" Or UCase$(I$) = "N"
+
+                        Loop Until fieldSlot <= 22
+
+                        If UCase$(I$) = "Y" Then
+
+                            'Track game roster with substitution
+                            playersUsed(D) = playersUsed(D) + 1
+                            gameRoster(D, 0, playersUsed(D)) = fieldSlot
+                            gameRoster(D, 1, playersUsed(D)) = fldPos(D, batterSlot)
+
+                            For V0 = 1 To 9
+                                If fldPos(D, V0) = 1 Then
+                                    gameRoster(D, 2, playersUsed(D)) = (V0 * 10) + (playersUsed(D) - 9)
+                                End If
+                            Next V0
+
+                            For V0 = 1 To 9
+
+                                If fldPos(D, V0) = 1 Then
+
+                                    fldPos(D, V0) = fldPos(D, batterSlot)
+                                    lineupPlayer(D, V0) = fieldSlot
+                                    fielder(D, fldPos(D, V0)) = fieldSlot
+
+                                    P9 = D
+                                    W5 = D
+                                    W6 = D
+
+                                    VV(D) = V0
+                                    VV1(D) = V0
+
+                                    Call HITTINGLINES
+
+                                End If
+
+                                VV(D) = 1
+                                VV1(D) = 9
+
+                            Next V0
+
+                            batRating(D, fieldSlot, SS_B_Avail) = 1
+                            I7% = D
+                            I8% = batterSlot
+                            I9% = fieldSlot
+
+                            Call REPLACEMENTS(I7%, I8%, I9%)
+
+                            I5 = 0
+
+                            For V0 = 1 To 9
+
+                                If V0 = batterSlot Then
+
+                                    fldPos(D, batterSlot) = 1
+                                    lineupPlayer(D, batterSlot) = currPitcher(D)
+                                    fielder(D, 1) = currPitcher(D)
+
+                                    VV(D) = V0
+                                    VV1(D) = V0
+
+                                    Call HITTINGLINES
+
+                                End If
+
+                            Next V0
 
                             VV(D) = 1
                             VV1(D) = 9
 
-                        Next V0
+                            GoTo LPersonnelMenu 'Back to personnel menu
 
-                        batRating(D, fieldSlot, SS_B_Avail) = 1
-                        I7% = D
-                        I8% = batterSlot
-                        I9% = fieldSlot
+                        Else
 
-                        Call REPLACEMENTS(I7%, I8%, I9%)
+                            GoTo 15518
 
-                        I5 = 0
-
-                        For V0 = 1 To 9
-
-                            If V0 = batterSlot Then
-
-                                fldPos(D, batterSlot) = 1
-                                lineupPlayer(D, batterSlot) = currPitcher(D)
-                                fielder(D, 1) = currPitcher(D)
-
-                                VV(D) = V0
-                                VV1(D) = V0
-
-                                Call HITTINGLINES
-
-                            End If
-
-                        Next V0
-
-                        VV(D) = 1
-                        VV1(D) = 9
-
-                        GoTo LPersonnelMenu 'Back to personnel menu
-
-                    Else
-
-                        GoTo 15518
+                        End If
 
                     End If
 
                 End If
 
+                I5 = 0
+
+                For V0 = 1 To 9
+
+                    If fldPos(D, V0) = 1 Or fldPos(D, V0) = 10 Then
+
+                        lineupPlayer(D, V0) = currPitcher(D)
+                        fielder(D, 1) = currPitcher(D)
+                        fldPos(D, V0) = 1
+
+                        P9 = D
+                        W5 = D
+                        W6 = D
+
+                        VV(D) = V0
+                        VV1(D) = V0
+
+                        Call HITTINGLINES
+
+                        VV(D) = 1
+                        VV1(D) = 9
+
+                        GoTo LPersonnelMenu
+
+                    End If
+
+                Next V0
+
+                GoTo LChangeBatterFielder
+
             End If
-
-            I5 = 0
-
-            For V0 = 1 To 9
-
-                If fldPos(D, V0) = 1 Or fldPos(D, V0) = 10 Then
-
-                    lineupPlayer(D, V0) = currPitcher(D)
-                    fielder(D, 1) = currPitcher(D)
-                    fldPos(D, V0) = 1
-
-                    P9 = D
-                    W5 = D
-                    W6 = D
-
-                    VV(D) = V0
-                    VV1(D) = V0
-
-                    Call HITTINGLINES
-
-                    VV(D) = 1
-                    VV1(D) = 9
-
-                    GoTo LPersonnelMenu
-
-                End If
-
-            Next V0
-
-            GoTo LChangeBatterFielder
 
         Case 3
 
-            '--- START OF A SHORT SUB
-            '-- ChangeBatterFielder
-
+            '--- START OF A SHORT SUB ???
             LChangeBatterFielder:
             Cls
             Call DisplayBatter_Lineup(PG, P9)
@@ -8094,35 +11258,35 @@ Sub SOURCE ()
                 Do
                     Locate 20, 29: Print "B.O. #1 (1-9)"
                     I$ = GetKeyPress$
-                    I1 = Val(I$)
-                Loop Until I1 >= 1 And I1 <= 9 Or fldPos(P9, I1) <> 1
+                    bo1Nbr = Val(I$)
+                Loop Until bo1Nbr >= 1 And bo1Nbr <= 9 Or fldPos(P9, bo1Nbr) <> 1
 
                 Do
                     Locate 21, 29: Print "B.O. #2 (1-9)"
                     I$ = GetKeyPress$
-                    I2 = Val(I$)
-                Loop Until I1 >= 1 And I1 <= 9 Or fldPos(P9, I2) <> 1
+                    bo2Nbr = Val(I$)
+                Loop Until bo2Nbr >= 1 And bo2Nbr <= 9 Or fldPos(P9, bo2Nbr) <> 1
 
-                I3 = fldPos(P9, I2)
-                fldPos(P9, I2) = fldPos(P9, I1)
-                fldPos(P9, I1) = I3
-                fielder(P9, fldPos(P9, I1)) = lineupPlayer(P9, I1)
-                fielder(P9, fldPos(P9, I2)) = lineupPlayer(P9, I2)
+                I3 = fldPos(P9, bo2Nbr)
+                fldPos(P9, bo2Nbr) = fldPos(P9, bo1Nbr)
+                fldPos(P9, bo1Nbr) = I3
+                fielder(P9, fldPos(P9, bo1Nbr)) = lineupPlayer(P9, bo1Nbr)
+                fielder(P9, fldPos(P9, bo2Nbr)) = lineupPlayer(P9, bo2Nbr)
 
                 I7% = P9
-                I8% = I2
-                I9% = lineupPlayer(P9, I2)
+                I8% = bo2Nbr
+                I9% = lineupPlayer(P9, bo2Nbr)
                 Call REPLACEMENTS(I7%, I8%, I9%)
 
                 I7% = P9
-                I8% = I1
-                I9% = lineupPlayer(P9, I1)
+                I8% = bo1Nbr
+                I9% = lineupPlayer(P9, bo1Nbr)
                 Call REPLACEMENTS(I7%, I8%, I9%)
 
                 GoTo LChangeBatterFielder
 
             End If
-
+            
             If I1 = 3 Or D2 = DEF_PERSONNEL Then
                 GoTo 15550
             Else
@@ -8350,44 +11514,51 @@ Sub SOURCE ()
 
             If gamePitcher(D) <> 1 Then
 
-                If d100% <= 80 And pitchRating(D, currPitcher(D), 3) < 15 Then
+                If d100% <= 80 And pitchRating(D, currPitcher(D), SS_P_Sv) < 15 Then
                     newRelieverNeeded(D) = 1
                 End If
 
             Else
 
                 ' To avoid division by zero
-                '-- Only in QB64PE version 4.0
                 'pitAvg1 = _IIF(pitchRating(D, currPitcher(D), 1) > 0, CInt(pitchRating(D, currPitcher(D), 16) / pitchRating(D, currPitcher(D), 1) * 100), 0)
                 'pitAvg5 = _IIF(pitchRating(D, currPitcher(D), 5) > 0, CInt(pitchRating(D, currPitcher(D), 16) / pitchRating(D, currPitcher(D), 5) * 100), 0)
-                If pitchRating(D, currPitcher(D), 1) > 0 Then
-                    pitAvg1 = CInt(pitchRating(D, currPitcher(D), 16) / pitchRating(D, currPitcher(D), 1) * 100)
+                If pitchRating(D, currPitcher(D), SS_P_W) > 0 Then
+                    pitAvg1 = CInt(pitchRating(D, currPitcher(D), SS_P_CG) / pitchRating(D, currPitcher(D), SS_P_W) * 100)
                 Else
                     pitAvg1 = 0
                 End If
 
-                If pitchRating(D, currPitcher(D), 5) > 0 Then
-                    pitAvg5 = CInt(pitchRating(D, currPitcher(D), 16) / pitchRating(D, currPitcher(D), 5) * 100)
+                If pitchRating(D, currPitcher(D), SS_P_GS) > 0 Then
+                    pitAvg5 = CInt(pitchRating(D, currPitcher(D), SS_P_CG) / pitchRating(D, currPitcher(D), SS_P_GS) * 100)
                 Else
                     pitAvg5 = 0
                 End If
 
-                If (gameScore(P, 0) = 0 And pitchRating(D, currPitcher(D), 5) > 0 And RN0 <= pitAvg5 + 10) _
-                   Or (pitchRating(D, currPitcher(D), 5) > 0 And RN0 <= pitAvg5) _
+                If (gameScore(P, 0) = 0 And pitchRating(D, currPitcher(D), SS_P_GS) > 0 And RN0 <= pitAvg5 + 10) _
+                   Or (pitchRating(D, currPitcher(D), SS_P_GS) > 0 And RN0 <= pitAvg5) _
                    Or (pitchEraOpt > 0 And INNING% > 7 And gameScore(D, 0) > gameScore(P, 0) _
-                       And pitchRating(D, currPitcher(D), 1) > 0 And gamePitcher(D) = 1 _
+                       And pitchRating(D, currPitcher(D), SS_P_W) > 0 And gamePitcher(D) = 1 _
                        And pitAvg1 <= 100 And RN0 <= pitAvg1) _
                    Or (pitchEraOpt > 0 And INNING% > 7 And (gameScore(D, 0) >= gameScore(P, 0) _
                        Or gameScore(P, 0) - gameScore(D, 0) <= 2) _
-                       And pitchRating(D, currPitcher(D), 1) > 0 And gamePitcher(D) = 1 _
+                       And pitchRating(D, currPitcher(D), SS_P_W) > 0 And gamePitcher(D) = 1 _
                        And pitAvg1 >= 100) _
                    Or (pitchEraOpt >= 8) Then
    
                     'Reliever
-                    GoTo LReliever1
-                End If
+                    'GoTo LReliever1
 
-                newRelieverNeeded(D) = 1 'new reliever'
+                Else
+
+                    'New reliever'
+                    If (teamYears(D) >= 2020 And relieverBatterCount(D) >= 3) Or gamePitcher(D) = 1 Then
+                        ' Only allow reliever change for starters, or in 2020+ once 3+ batters are faced
+                        newRelieverNeeded(D) = 1
+                    End If
+                    'newRelieverNeeded(D) = 1
+
+                End If
 
             End If
 
@@ -8654,8 +11825,8 @@ Sub SOURCE ()
     End If
 
     LReliever2:
-    If (pitchEff(D, 0) <= teamPitStats(D, currPitcher(D), 4) + teamPitStats(D, currPitcher(D), 1) And _ 
-        pitchEff(D, 1) <= teamPitStats(D, currPitcher(D), 2)) Or _ 
+    If (pitcherStam(D, 0) <= teamPitStats(D, currPitcher(D), 4) + teamPitStats(D, currPitcher(D), 1) And _ 
+        pitcherStam(D, 1) <= teamPitStats(D, currPitcher(D), 2)) Or _ 
         fielder(D, 1) = 99 Then
         Call RELIEVERS(pinchHitterFlag, newPitcherFlag, baseRunners)
         If useVGA = 1 Then
@@ -8681,8 +11852,11 @@ Sub SOURCE ()
             If batRating(P, I, SS_B_Avail) <= 0 And batters$(P, I) <> "XXX" And _ 
                 (fldPos(P, currLineupSlot(P)) = batRating(P, I, SS_B_Pos1) Or fldPos(P, currLineupSlot(P)) = batRating(P, I, SS_B_Pos2) Or fldPos(P, currLineupSlot(P)) = batRating(P, I, SS_B_Pos3) Or fldPos(P, currLineupSlot(P)) = batRating(P, I, SS_B_Pos4)) Then
 
-                I1 = 6
-                If pitchRating(D, currPitcher(D), SS_P_Throws) < 0 Then I1 = 1
+                If pitchRating(D, currPitcher(D), SS_P_Throws) < 0 Then
+                    I1 = 1
+                Else
+                    I1 = 6
+                End If
 
                 For I = I1 To I1 + 4
 
@@ -8811,9 +11985,8 @@ Sub SOURCE ()
 
         ' To avoid division by zero
         '_IIF only in QB64PE v4.0
-        'pitAvg = _IIF( pitchRating(P, currPitcher(P), 1) > 0, CInt( pitchRating(P, currPitcher(P), 16) / pitchRating(P, currPitcher(P), 1) * 100 ), 0 )
-        If pitchRating(P, currPitcher(P), 1) > 0 Then
-            pitAvg = CInt(pitchRating(P, currPitcher(P), 16) / pitchRating(P, currPitcher(P), 1) * 100)
+        If pitchRating(P, currPitcher(P), SS_P_W) > 0 Then
+            pitAvg = CInt(pitchRating(P, currPitcher(P), SS_P_CG) / pitchRating(P, currPitcher(P), SS_P_W) * 100)
         Else
             pitAvg = 0
         End If
@@ -8824,10 +11997,10 @@ Sub SOURCE ()
             (pitchEraOpt > 3 And INNING% < 9) Or _
             (pitchEraOpt >= 8) Or _
             ( pitchEraOpt > 0 And INNING% > 7 And gameScore(P, 0) > gameScore(D, 0) And _
-            pitchRating(P, currPitcher(P), 1) > 0 And gamePitcher(P) = 1 And _
+            pitchRating(P, currPitcher(P), SS_P_W) > 0 And gamePitcher(P) = 1 And _
             pitAvg <= 100 And RN0 <= pitAvg ) Or _
             ( pitchEraOpt > 0 And INNING% > 7 And (gameScore(P, 0) >= gameScore(D, 0) Or _
-            gameScore(D, 0) - gameScore(P, 0) <= 2) And pitchRating(P, currPitcher(P), 1) > 0 And _
+            gameScore(D, 0) - gameScore(P, 0) <= 2) And pitchRating(P, currPitcher(P), SS_P_W) > 0 And _
             gamePitcher(P) = 1 And pitAvg >= 100 ) Then
             skipLoop = 1
         End If
@@ -9372,7 +12545,7 @@ Sub InitVar ()
     Erase leftOnBase, lineupAssigned, mgrFile
     Erase nbrInnings, nbrOuts, newRelieverNeeded
     Erase oppBatStats, oppPitStats, oppScore
-    Erase pitchEff, playersUsed, pitcherOfRecord
+    Erase pitcherStam, playersUsed, pitcherOfRecord
     Erase relieverOnRecordForSave, runnerOnBase
     Erase schedOptions, startPitcher, stealPhase
     Erase teamBatStats, teamPitStats, teamDPs, totalDPs
@@ -9389,7 +12562,9 @@ Sub InitVar ()
 
     For P9 = 0 To 1
         For I3 = 0 To 21
-            If pitchRating(P9, I3, SS_P_Avail) <> 99 Then pitchRating(P9, I3, SS_P_Avail) = 0
+            If pitchRating(P9, I3, SS_P_Avail) <> 99 Then
+                pitchRating(P9, I3, SS_P_Avail) = 0
+            End If
         Next
     Next
 
@@ -9402,7 +12577,9 @@ Sub InitVar ()
 
     For I = 0 To 1
         For I1 = 0 To 22
-            If batRating(I, I1, SS_B_Avail) <> 99 Then batRating(I, I1, SS_B_Avail) = 0
+            If batRating(I, I1, SS_B_Avail) <> 99 Then
+                batRating(I, I1, SS_B_Avail) = 0
+            End If
         Next
     Next
 
@@ -12111,15 +15288,15 @@ End Sub
 
 
 '----------------------------------------
-'          INJPIT Subroutine
+'          InjuredPitcher Subroutine
 '----------------------------------------
 'This subroutine handles the Play-by-Play
 'and replacement for a pitcher who has
 'been ejected or injured.
-Sub INJPIT (innPitch, pinchHitterFlag, baseStatus)
+Sub InjuredPitcher (injuryStats, pinchHitterFlag, baseStatus)
 
     If playerMode = 2 Or playerMode = 1 And P <> compTeam Then
-        innPitch = 1
+        injuryStats = 1
         Call RELIEVERS(pinchHitterFlag, newPitcherFlag, baseStatus)
     Else
         Call PBP("You must replace " + pitchers$(D, currPitcher(D)))
@@ -12357,9 +15534,9 @@ Sub MAINSCREEN (D, P, nbrBalls, nbrStrikes, MO)
     Color 15, 0
 
     'Wins - losses
-    Print Using "##"; pitchRating(D, currPitcher(D), 1);
+    Print Using "##"; pitchRating(D, currPitcher(D), SS_P_W);
     Print "-";
-    Print Using "##"; pitchRating(D, currPitcher(D), 2);
+    Print Using "##"; pitchRating(D, currPitcher(D), SS_P_L);
 
     'ERA
     Print " ";: Print Using "##.##"; pitchRating(D, currPitcher(D), SS_P_ERA100) / 100
@@ -12689,17 +15866,6 @@ Sub NOJUMP (D)
     Call GetPBPString(20, 1050, fileString$, D)
     Call PBP(fileString$)
     Call DELAY
-
-End Sub
-
-'----------------------------------------
-'        OFFPIT Subroutine
-'----------------------------------------
-'OffPit
-Sub OFFPIT (P9, I5, I6)
-
-    oppPitStats(P9, I5, I6) = oppPitStats(P9, I5, I6) + 1
-    teamPitStats(P9, I5, I6) = teamPitStats(P9, I5, I6) + 1
 
 End Sub
 
@@ -13101,9 +16267,9 @@ Sub PITDISP (P9)
             Locate , 3: Print pitchers$(P9, pIdx);
             Locate , 18: Print handed$(pitchRating(P9, pIdx, SS_P_Throws) + 2);
 
-            Print Using " ### ### ### ## ## ## ## ### ### ##"; pitchRating(P9, pIdx, 6); pitchRating(P9, pIdx, 7); pitchRating(P9, pIdx, 4); pitchRating(P9, pIdx, 5); pitchRating(P9, pIdx, 16); pitchRating(P9, pIdx, 3); pitchRating(P9, pIdx, 13); pitchRating(P9, pIdx, 8); pitchRating(P9, pIdx, 9); pitchRating(P9, pIdx, 1);
+            Print Using " ### ### ### ## ## ## ## ### ### ##"; pitchRating(P9, pIdx, SS_P_IP); pitchRating(P9, pIdx, SS_P_H); pitchRating(P9, pIdx, 4); pitchRating(P9, pIdx, 5); pitchRating(P9, pIdx, 16); pitchRating(P9, pIdx, 3); pitchRating(P9, pIdx, 13); pitchRating(P9, pIdx, SS_P_BB); pitchRating(P9, pIdx, SS_P_K); pitchRating(P9, pIdx, SS_P_W);
             Print "-";
-            Print Using "##"; pitchRating(P9, pIdx, 2);
+            Print Using "##"; pitchRating(P9, pIdx, SS_P_L);
 
             Locate , 59: Print Using "##.## # ##"; pitchRating(P9, pIdx, SS_P_ERA100) / 100; pitchRating(P9, pIdx, SS_P_HoldRunner); pitchRating(P9, pIdx, SS_P_GndPct)
 
@@ -13177,19 +16343,19 @@ End Sub
 Sub PITSTAM (P9)
 
     'Hits + Walks
-    If pitchRating(P9, currPitcher(P9), 4) = 0 Then
-        pitchEff(P9, 0) = 3
+    If pitchRating(P9, currPitcher(P9), SS_P_G) = 0 Then
+        pitcherStam(P9, 0) = 3
     Else
-        pitchEff(P9, 0) = pitcherMaxEff%(P9, currPitcher(P9))
+        pitcherStam(P9, 0) = pitcherMaxStam%(P9, currPitcher(P9))
     End If
 
     'Minimum value of 3
-    If pitchEff(P9, 0) < 3 Then
-        pitchEff(P9, 0) = 3
+    If pitcherStam(P9, 0) < 3 Then
+        pitcherStam(P9, 0) = 3
     End If
 
     If gamePitcher(P9) = 1 And pitchEraOpt > 0 Then
-        pitchEff(P9, 0) = pitchEff(P9, 0) + 1
+        pitcherStam(P9, 0) = pitcherStam(P9, 0) + 1
     End If
 
     'Runs
@@ -13197,14 +16363,14 @@ Sub PITSTAM (P9)
         'starting pitcher
         If pitchEraOpt < 3 Then
             'already set in LOADER when pitchEraOpt >= 3)
-            pitchEff(P9, 1) = 3
+            pitcherStam(P9, 1) = 3
         End If
     Else
         'relief pitcher
         If pitchEraOpt = 0 Then
-            pitchEff(P9, 1) = 0
+            pitcherStam(P9, 1) = 0
         Else
-            pitchEff(P9, 1) = 1
+            pitcherStam(P9, 1) = 1
         End If
     End If
 
@@ -13228,18 +16394,16 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag, baseStatus)
 
     newPitcherFlag = 0
 
-    ' if there are no middle relievers in the profile,
-    ' and it's less than the 7th inning, then go back
-    ' and find one the old fashioned way (which is?)
-
     If Environ$("MGRLOG") = "TRUE" Then
         Print #11, Using "Team is using 60 is ####  90 is #####  520 is ####  581 is ####"; _
         teamMgrProfileVal(D, 60), teamMgrProfileVal(D, 90), teamMgrProfileVal(D, 520), teamMgrProfileVal(D, 581)
     End If
 
+    'Check if we need a middle reliever, as well
+    'as whether we have one to use
     If teamMgrProfileVal(D, 60) = 999 Or INNING% > 7 Then
 
-        'if no closers set up or no closing strategy defined, skip out
+        'If no closers set up or no closing strategy defined, skip out
         If teamMgrProfileVal(D, 581) = 999 And (INNING% < 8 Or teamMgrProfileVal(D, 520) = 999 Or teamMgrProfileVal(D, 90) = 999) Then
 
             If Environ$("MGRLOG") = "TRUE" Then
@@ -13251,24 +16415,30 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag, baseStatus)
                 GoTo LMiddleRelievers
             End If
 
-            ' we have defined a closing/setup possibility
-            ' identify the stratgey
-            I2 = 0
+            'We have defined a closing/setup possibility
+            strategyWeight = 0
+
             For pIdx = 582 To 587
-                I2 = I2 + teamMgrProfileVal(D, pIdx)
+                strategyWeight = strategyWeight + teamMgrProfileVal(D, pIdx)
             Next
 
-            I3 = Int(Rnd(1) * I2) + 1
-            I2 = 0
+            'Random selection of strategy
+            randStrategy = Int(Rnd(1) * strategyWeight) + 1
+
+            strategyWeight = 0
 
             For pIdx = 582 To 587
 
-                I2 = I2 + teamMgrProfileVal(D, pIdx)
-                If I3 <= I2 Then
-                    SN% = pIdx
+                strategyWeight = strategyWeight + teamMgrProfileVal(D, pIdx)
 
+                If randStrategy <= strategyWeight Then
+
+                    strategyNbr = pIdx
+
+                    'Determine if we need a Save
                     saveSituation = 0
 
+                    'Can't Save if winning
                     If ourLead < 1 Then Exit Sub
 
                     If (ourLead > 0 And ourLead <= 2) Or _
@@ -13280,41 +16450,45 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag, baseStatus)
                         saveSituation = 1
                     End If
 
-                    'I3 will determine which way the next 3 hitters bat (L/R) on average
+                    'Analyze next 3 hitters handedness to decide on specialized relievers
                     If currLineupSlot(P) <= 7 Then
                         For pIdx = 0 To 2:
-                            I3 = I3 + batRating(P, lineupPlayer(P, currLineupSlot(P) + pIdx), SS_B_Bats)
+                            randStrategy = randStrategy + batRating(P, lineupPlayer(P, currLineupSlot(P) + pIdx), SS_B_Bats)
                         Next
                     End If
 
+                    'If we've reached slot 8, we have to wrap to 1 after 9
                     If currLineupSlot(P) = 8 Then
                         For pIdx = 0 To 1:
-                            I3 = I3 + batRating(P, lineupPlayer(P, currLineupSlot(P) + pIdx), SS_B_Bats)
+                            randStrategy = randStrategy + batRating(P, lineupPlayer(P, currLineupSlot(P) + pIdx), SS_B_Bats)
                         Next
-                        I3 = I3 + batRating(P, lineupPlayer(P, 1), SS_B_Bats)
+                        randStrategy = randStrategy + batRating(P, lineupPlayer(P, 1), SS_B_Bats)
                     End If
 
+                    'If we've reached slot 9, we have to wrap to 1 and 2
                     If currLineupSlot(P) = 9 Then
                         For pIdx = 1 To 2:
-                            I3 = I3 + batRating(P, lineupPlayer(P, pIdx), SS_B_Bats)
+                            randStrategy = randStrategy + batRating(P, lineupPlayer(P, pIdx), SS_B_Bats)
                         Next
-                        I3 = I3 + batRating(P, lineupPlayer(P, 9), SS_B_Bats)
+                        randStrategy = randStrategy + batRating(P, lineupPlayer(P, 9), SS_B_Bats)
                     End If
 
-                    If I3 = 0 Then
+                    'Fallback in case we haven't found anything
+                    If randStrategy = 0 Then
                         Do
-                            I3 = Int(Rnd(1) * 3) - 1
-                        Loop Until I3 > 0
-                        'Why not just do a random # from 1 to 2???
+                            randStrategy = Int(Rnd(1) * 2) + 1
+                        Loop Until randStrategy > 0
                     End If
 
+                    'Late game - determine if we need Setup or Closer
+                    '  8th Inning
                     If INNING% = 8 And teamMgrProfileVal(D, 588) = 8 And _ 
-                        ((saveSituation = 1 And (SN% = 582 Or SN% = 587)) Or _ 
-                        (ourLead > 0 And SN% = 583) Or _ 
-                        (ourLead >= 0 And SN% = 584) Or _ 
-                            ( pitchEff(D, 0) <= teamPitStats(D, currPitcher(D), 4) + teamPitStats(D, currPitcher(D), 1) And _ 
-                                pitchEff(D, 1) <= teamPitStats(D, currPitcher(D), 2) And _ 
-                                ((ourLead > 0 And SN% = 585) Or (ourLead >= 0 And SN% = 586)) ) ) Then
+                        ((saveSituation = 1 And (strategyNbr = 582 Or strategyNbr = 587)) Or _ 
+                        (ourLead > 0 And strategyNbr = 583) Or _ 
+                        (ourLead >= 0 And strategyNbr = 584) Or _ 
+                            ( pitcherStam(D, 0) <= teamPitStats(D, currPitcher(D), 4) + teamPitStats(D, currPitcher(D), 1) And _ 
+                                pitcherStam(D, 1) <= teamPitStats(D, currPitcher(D), 2) And _ 
+                                ((ourLead > 0 And strategyNbr = 585) Or (ourLead >= 0 And strategyNbr = 586)) ) ) Then
 
                         If teamMgrProfileVal(D, 589) = 0 Then
                             GoTo LSetupMen
@@ -13324,12 +16498,13 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag, baseStatus)
 
                     End If
 
+                    '  9th Inning
                     If INNING% >= 9 And _ 
-                        ( (saveSituation = 1 And (SN% = 582 Or SN% = 587)) Or _ 
-                            (ourLead > 0 And SN% = 583) Or (ourLead >= 0 And SN% = 584) Or _ 
-                            (pitchEff(D, 0) <= teamPitStats(D, currPitcher(D), 4) + teamPitStats(D, currPitcher(D), 1) And _ 
-                                pitchEff(D, 1) <= teamPitStats(D, currPitcher(D), 2) And _ 
-                                ((ourLead > 0 And SN% = 585) Or (ourLead >= 0 And SN% = 586)) ) ) Then
+                        ( (saveSituation = 1 And (strategyNbr = 582 Or strategyNbr = 587)) Or _ 
+                            (ourLead > 0 And strategyNbr = 583) Or (ourLead >= 0 And strategyNbr = 584) Or _ 
+                            (pitcherStam(D, 0) <= teamPitStats(D, currPitcher(D), 4) + teamPitStats(D, currPitcher(D), 1) And _ 
+                                pitcherStam(D, 1) <= teamPitStats(D, currPitcher(D), 2) And _ 
+                                ((ourLead > 0 And strategyNbr = 585) Or (ourLead >= 0 And strategyNbr = 586)) ) ) Then
                         GoTo LClosers
 
                     End If
@@ -13347,81 +16522,86 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag, baseStatus)
     Exit Sub
 
 
-    'strategy identified, now
-
+    'Strategy identified, now:
     LSetupMen:
-    I2 = 0
-    If I3 < 0 Then I1 = 81
-    If I3 > 0 Then I1 = 84
+    strategyWeight = 0
+    If randStrategy < 0 Then I1 = 81
+    If randStrategy > 0 Then I1 = 84
+
+    'Sections below break logic into separate IF's, because QB64 does not short-circuit
 
     For pIdx = I1 To I1 + 2
 
         'if not already used
         If teamMgrProfileVal(D, pIdx) >= 0 Then
-            'need to break into separate IF's, because QB64 does not short-circuit
             If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then
-                I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
+                strategyWeight = strategyWeight + teamMgrProfileVal(D, pIdx + 10)
             End If
         End If
 
     Next
 
-    I2 = 0
-    I3 = Int(Rnd(1) * I2) + 1
+    strategyWeight = 0
+    randStrategy = Int(Rnd(1) * strategyWeight) + 1
 
     For pIdx = I1 To I1 + 2
 
-        If teamMgrProfileVal(D, pIdx) >= 0 Then 'if not already used
-            'need to break into separate IF's, because QB64 does not short-circuit
+        'if not already used
+        If teamMgrProfileVal(D, pIdx) >= 0 Then
             If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then
-                I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
+                strategyWeight = strategyWeight + teamMgrProfileVal(D, pIdx + 10)
             End If
         End If
 
-        If I3 <= I2 Then
+        If randStrategy <= strategyWeight Then
+
             V0 = teamMgrProfileVal(D, pIdx)
             teamMgrProfileVal(D, pIdx) = -1
             pIdx = V0
+
             Call NEWPITCHER(pIdx, pinchHitterFlag, newPitcherFlag, baseStatus, INFPOS%)
             setupUsed(D) = -1
+
             If Environ$("MGRLOG") = "TRUE" Then
                 Print #11, "Found SETUP MAN: "; pIdx
             End If
+
             Exit Sub
+
         End If
 
     Next
     'NO SETUP MAN FOUND
 
     LClosers:
-    I2 = 0
-    If I3 < 0 Then I1 = 521
-    If I3 > 0 Then I1 = 524
+    strategyWeight = 0
+    If randStrategy < 0 Then I1 = 521
+    If randStrategy > 0 Then I1 = 524
 
     For pIdx = I1 To I1 + 2
 
-        If teamMgrProfileVal(D, pIdx) >= 0 Then 'if not already used
-            'need to break into separate IF's, because QB64 does not short-circuit
+        'if not already used
+        If teamMgrProfileVal(D, pIdx) >= 0 Then
             If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then
-                I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
+                strategyWeight = strategyWeight + teamMgrProfileVal(D, pIdx + 10)
             End If
         End If
 
     Next
 
-    I3 = Int(Rnd(1) * I2) + 1
-    I2 = 0
+    randStrategy = Int(Rnd(1) * strategyWeight) + 1
+    strategyWeight = 0
 
     For pIdx = I1 To I1 + 2
 
-        If teamMgrProfileVal(D, pIdx) >= 0 Then 'if not already used
-            'need to break into separate IF's, because QB64 does not short-circuit
+        'if not already used
+        If teamMgrProfileVal(D, pIdx) >= 0 Then
             If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then
-                I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
+                strategyWeight = strategyWeight + teamMgrProfileVal(D, pIdx + 10)
             End If
         End If
 
-        If I3 <= I2 Then
+        If randStrategy <= strategyWeight Then
             V0 = teamMgrProfileVal(D, pIdx)
             teamMgrProfileVal(D, pIdx) = -1
             pIdx = V0
@@ -13443,37 +16623,41 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag, baseStatus)
     End If
 
     LMiddleRelievers:
-    I2 = 0
+    strategyWeight = 0
 
     For pIdx = 61 To 70
 
-        If teamMgrProfileVal(D, pIdx) >= 0 Then 'if not already used
-            'need to break into separate IF's, because QB64 does not short-circuit
+        'if not already used
+        If teamMgrProfileVal(D, pIdx) >= 0 Then
             If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then
-                I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
+                strategyWeight = strategyWeight + teamMgrProfileVal(D, pIdx + 10)
             End If
         End If
 
     Next
 
-    I3 = Int(Rnd(1) * I2) + 1
-    I2 = 0
+    randStrategy = Int(Rnd(1) * strategyWeight) + 1
+    strategyWeight = 0
 
     For pIdx = 61 To 70
 
-        If teamMgrProfileVal(D, pIdx) >= 0 Then 'if not already used
-            'need to break into separate IF's, because QB64 does not short-circuit
+        'if not already used
+        If teamMgrProfileVal(D, pIdx) >= 0 Then
             If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then
-                I2 = I2 + teamMgrProfileVal(D, pIdx + 10)
+                strategyWeight = strategyWeight + teamMgrProfileVal(D, pIdx + 10)
             End If
         End If
 
-        If I3 <= I2 Then
+        If randStrategy <= strategyWeight Then
+
             V0 = teamMgrProfileVal(D, pIdx)
             teamMgrProfileVal(D, pIdx) = -1
             pIdx = V0
+
             Call NEWPITCHER(pIdx, pinchHitterFlag, newPitcherFlag, baseStatus, INFPOS%)
+
             Exit Sub
+
         End If
 
     Next
@@ -13486,8 +16670,9 @@ End Sub
 '----------------------------------------
 '           PITSWAP Subroutine
 '----------------------------------------
-' ...explanation...
-Sub PITSWAP (wasError, baseNbr)
+'This routine records a stolen base for
+'each of the runners.
+Sub PITSWAP (baseNbr, wasError)
 
     Select Case baseNbr
 
@@ -13508,7 +16693,9 @@ End Sub
 '----------------------------------------
 '         PLAYERNAME Subroutine
 '----------------------------------------
-' ...explanation...
+'Assign names to current active "players"
+'(batter / runner). Use generic array to
+'make coding easier
 Sub PLAYERNAME (P)
 
     If fldPos(P, currLineupSlot(P)) = 1 Then
@@ -14240,7 +17427,7 @@ End Sub
 'active batter
 Sub DISPBAVG (D)
 
-    If INNING% > 5 And pitchEff(D, 0) < teamPitStats(D, currPitcher(D), 4) + teamPitStats(D, currPitcher(D), 1) And pitchEff(D, 1) < teamPitStats(D, currPitcher(D), 2) Then
+    If INNING% > 5 And pitcherStam(D, 0) < teamPitStats(D, currPitcher(D), 4) + teamPitStats(D, currPitcher(D), 1) And pitcherStam(D, 1) < teamPitStats(D, currPitcher(D), 2) Then
         Locate 10, 17
         Color 30, 0: Print "-T-"
         Color 15, 0
@@ -14463,7 +17650,7 @@ Sub CalcStrikeoutPercentages (team, opp)
         If pitchRating(opp, currPitcher(opp), 6) = 0 Then
             I2! = 0
         Else
-            I2! = pitchRating(opp, currPitcher(opp), 9) / ((pitchRating(opp, currPitcher(opp), 6) * 3) * .94)
+            I2! = pitchRating(opp, currPitcher(opp), SS_P_K) / ((pitchRating(opp, currPitcher(opp), SS_P_IP) * 3) * .94)
         End If
 
         Call GetMatchupType(team, opp, I3, TY%, PY%, BY%)
@@ -14552,16 +17739,16 @@ Sub CalcBattingAverage (team, opp, i9!)
         I2! = teamRat_GAME(opp, 1) / 1000
 
         'league batting average (opp pitcher)
-        I6! = pitchRating(opp, currPitcher(opp), 14) / 1000
+        I6! = pitchRating(opp, currPitcher(opp), SS_P_LgBAvg) / 1000
 
         ' Calculate pitcher batting average against
-        If pitchRating(opp, currPitcher(opp), 6) + pitchRating(opp, currPitcher(opp), 7) = 0 Then
+        If pitchRating(opp, currPitcher(opp), SS_P_IP) + pitchRating(opp, currPitcher(opp), SS_P_H) = 0 Then
             I7! = 0
         Else
             'Hits per Batters Faced (BAVG Against)
             'H / ((IP * 3 * 0.94) + H)
             'The 0.94 is a factor that may need more assessment
-            I7! = pitchRating(opp, currPitcher(opp), 7) / (((pitchRating(opp, currPitcher(opp), 6) * 3) * .94) + pitchRating(opp, currPitcher(opp), 7))
+            I7! = pitchRating(opp, currPitcher(opp), SS_P_H) / (((pitchRating(opp, currPitcher(opp), SS_P_IP) * 3) * .94) + pitchRating(opp, currPitcher(opp), SS_P_H))
         End If
 
         'Normalize Hits/Batters to opponent batting average
@@ -14643,7 +17830,7 @@ Sub CalcBattingAverage (team, opp, i9!)
             If teamSplit(team, 0) = 999 Then
                 oppAvg! = pitchRating(team, currPitcher(team), TY% * 6 + 65) / 1000
             Else
-                oppAvg! = pitchRating(team, currPitcher(team), 14) / 1000
+                oppAvg! = pitchRating(team, currPitcher(team), SS_P_LgBAvg) / 1000
             End If
 
         Else
@@ -14775,8 +17962,8 @@ Sub CalcExtraBaseHits (team, opp, i9!)
         hrRate! = game_batRating(team, GM_HR, I3) / 1000
         I2! = 0
 
-        If pitchRating(opp, currPitcher(opp), 7) <> 0 Then
-            I2! = pitchRating(opp, currPitcher(opp), 13) / pitchRating(opp, currPitcher(opp), 7)
+        If pitchRating(opp, currPitcher(opp), SS_P_H) <> 0 Then
+            I2! = pitchRating(opp, currPitcher(opp), SS_P_HR) / pitchRating(opp, currPitcher(opp), SS_P_H)
         End If
 
         If teamSplit(opp, 0) = 999 And pitchRating(opp, currPitcher(opp), 89) <> 0 Then
@@ -15130,7 +18317,7 @@ Sub BASEONBALLS (S2%, D2, baseStatus)
             Call PBP(player$(0) + " is given a purpose pass...")
         End If
 
-        pitchEff(D, 0) = pitchEff(D, 0) + 1
+        pitcherStam(D, 0) = pitcherStam(D, 0) + 1
 
     Else
 
@@ -15279,33 +18466,50 @@ End Sub
 '----------------------------------------
 '          RELIEVERS Subroutine
 '----------------------------------------
-' ...explanation...
+'This routine determines if the pitching
+'team needs a reliever, and handles the
+'substitution if so. This is only for
+'the computer team.
 Sub RELIEVERS (pinchHitterFlag, newPitcherFlag, baseStatus)
 
     Call PITSTRAT(pinchHitterFlag, newPitcherFlag, baseStatus)
 
+    'Reset count of batters a reliever needs to face
+    relieverBatterCount(D) = 0
+
     If newPitcherFlag = 1 Then
+
         newPitcherFlag = 0
+
     Else
-        I2 = 0
+
+        pitchWeight = 0
         scoreDiff = gameScore(D, 0) - gameScore(P, 0)
 
+        'Build selection pool
         For rIdx = 0 To 21
 
-            A2 = pitchRating(D, rIdx, 4) - pitchRating(D, rIdx, 5) - pitchRating(D, rIdx, 3) * 1.3
+            'Calculate effective rating based on expected games
+            pitcherVal = pitchRating(D, rIdx, SS_P_G) - pitchRating(D, rIdx, SS_P_GS) - pitchRating(D, rIdx, SS_P_Sv) * 1.3
 
-            If Not (pitchRating(D, rIdx, SS_P_Avail) > 0 Or pitchers$(D, rIdx) = "XXX" Or A2 = 0) Then
+            'Only use pitchers who are available / valid
+            If pitchRating(D, rIdx, SS_P_Avail) <= 0 And pitchers$(D, rIdx) <> "XXX" And pitcherVal <> 0 Then
 
-                If INNING% <= 7 And A2 > 0 Then
-                    I2 = I2 + A2
+                'Early / Mid-Game Decision (innings 1-7)
+                If INNING% <= 7 And pitcherVal > 0 Then
+                    'middle relief usage
+                    pitchWeight = pitchWeight + pitcherVal
                 End If
 
+                ' Late Game Decision (innings 8+)
                 If INNING% > 7 Then
-                    If scoreDiff < 0 And A2 > 0 Then
-                        I2 = I2 + A2
+                    If scoreDiff < 0 And pitcherVal > 0 Then
+                        'If we're losing, use setup men
+                        pitchWeight = pitchWeight + pitcherVal
                     End If
                     If scoreDiff >= 0 Then
-                        I2 = I2 + pitchRating(D, rIdx, 3)
+                        'If we're winning / tied, use closers
+                        pitchWeight = pitchWeight + pitchRating(D, rIdx, SS_P_Sv)
                     End If
                 End If
 
@@ -15313,46 +18517,50 @@ Sub RELIEVERS (pinchHitterFlag, newPitcherFlag, baseStatus)
 
         Next rIdx
 
-        I3 = Int(Rnd(1) * I2) + 1
-        I2 = 0
+        'Random # within weighted pool
+        randPitcher = Int(Rnd(1) * pitchWeight) + 1
+
+        pitchWeight = 0
 
         For rIdx = 0 To 21
 
-            A2 = pitchRating(D, rIdx, 4) - pitchRating(D, rIdx, 5) - pitchRating(D, rIdx, 3) * 1.3
+            pitcherVal = pitchRating(D, rIdx, 4) - pitchRating(D, rIdx, 5) - pitchRating(D, rIdx, 3) * 1.3
 
-            If Not (pitchRating(D, rIdx, SS_P_Avail) > 0 Or pitchers$(D, rIdx) = "XXX" Or A2 = 0) Then
+            'Only use pitchers who are available / valid
+            If pitchRating(D, rIdx, SS_P_Avail) <= 0 And pitchers$(D, rIdx) <> "XXX" And pitcherVal <> 0 Then
 
+                'Early / Mid-Game Decision (innings 1-7)
                 If INNING% <= 7 Then
 
-                    If A2 > 0 Then
-                        If I3 <= I2 + A2 Then
-                            ' middle relief
+                    If pitcherVal > 0 Then
+                        If randPitcher <= pitchWeight + pitcherVal Then
+                            ' Bring in middle relief
                             Call NEWPITCHER(rIdx, pinchHitterFlag, newPitcherFlag, baseStatus, INFPOS%)
                             Exit Sub
                         Else
-                            I2 = I2 + A2
+                            pitchWeight = pitchWeight + pitcherVal
                         End If
                     End If
 
                 Else
 
-                    'INNING% > 7
-                    If scoreDiff < 0 And A2 > 0 Then
-                        If I3 <= I2 + A2 Then
-                            ' setup
+                    ' Late Game Decision (innings 8+)
+                    If scoreDiff < 0 And pitcherVal > 0 Then
+                        If randPitcher <= pitchWeight + pitcherVal Then
+                            'Bring in setup man
                             Call NEWPITCHER(rIdx, pinchHitterFlag, newPitcherFlag, baseStatus, INFPOS%)
                             Exit Sub
                         Else
-                            I2 = I2 + A2
+                            pitchWeight = pitchWeight + pitcherVal
                         End If
                     Else
-                        If scoreDiff >= 0 And I3 > I2 Then
-                            If I3 <= I2 + pitchRating(D, rIdx, 3) Then
-                                ' closer
+                        If scoreDiff >= 0 And randPitcher > pitchWeight Then
+                            If randPitcher <= pitchWeight + pitchRating(D, rIdx, 3) Then
+                                'Bring in closer
                                 Call NEWPITCHER(rIdx, pinchHitterFlag, newPitcherFlag, baseStatus, INFPOS%)
                                 Exit Sub
                             Else
-                                I2 = I2 + pitchRating(D, rIdx, 3)
+                                pitchWeight = pitchWeight + pitchRating(D, rIdx, 3)
                             End If
                         End If
                     End If
@@ -15363,9 +18571,10 @@ Sub RELIEVERS (pinchHitterFlag, newPitcherFlag, baseStatus)
 
         Next rIdx
 
+        ' FALLBACK: If no pitcher was selected through weighted system
         For rIdx = 0 To 21
+            ' Find any pitcher who is available
             If pitchRating(D, rIdx, SS_P_Avail) = 0 And pitchers$(D, rIdx) <> "XXX" Then
-                ' anyone with a healthy arm
                 Call NEWPITCHER(rIdx, pinchHitterFlag, newPitcherFlag, baseStatus, INFPOS%)
                 Exit For
             End If
@@ -15393,7 +18602,8 @@ Sub REPLACEMENTS (p_D, p_origPlayer, p_newPlayer)
 
     Next
 
-    Select Case fldPos(p_D, p_origPlayer) 'New player can't play the position -- assign default (poor) values
+    'New player can't play the position -- assign default (poor) values
+    Select Case fldPos(p_D, p_origPlayer)
 
         Case 2
             jArm = 1
@@ -16400,14 +19610,14 @@ End Sub
 '----------------------------------------
 'Increases stats for stolen bases as LONG
 'as there was no fielding error.
-Sub Add_StolenBase (V, P, wasError)
+Sub Add_StolenBase (baseNbr, P, wasError)
 
-    If runnerOnBase(V) > 0 And wasError = 0 Then
+    If runnerOnBase(baseNbr) > 0 And wasError = 0 Then
 
-        If fldPos(P, runnerOnBase(V)) = 1 Then
+        If fldPos(P, runnerOnBase(baseNbr)) = 1 Then
             Call INCPITOFF(P, currPitcher(P), LG_PB_SB)
         Else
-            Call INCBATOFF(P, lineupPlayer(P, runnerOnBase(V)), LG_B_SB)
+            Call INCBATOFF(P, lineupPlayer(P, runnerOnBase(baseNbr)), LG_B_SB)
         End If
 
     End If
@@ -16832,9 +20042,9 @@ End Sub
 'for Play-by-Play
 Sub TIRING (P9)
 
-    If pitchEff(P9, 0) <= teamPitStats(P9, currPitcher(P9), 4) + teamPitStats(P9, currPitcher(P9), 1) And pitchEff(P9, 1) <= teamPitStats(P9, currPitcher(P9), 2) Then
+    If pitcherStam(P9, 0) <= teamPitStats(P9, currPitcher(P9), 4) + teamPitStats(P9, currPitcher(P9), 1) And pitcherStam(P9, 1) <= teamPitStats(P9, currPitcher(P9), 2) Then
 
-        If pitchEff(P9, 1) > 0 And INNING% < 6 Or pitchEff(P9, 1) = 0 And teamPitStats(P9, currPitcher(P9), 4) + teamPitStats(P9, currPitcher(P9), 1) > 4 Then
+        If pitcherStam(P9, 1) > 0 And INNING% < 6 Or pitcherStam(P9, 1) = 0 And teamPitStats(P9, currPitcher(P9), 4) + teamPitStats(P9, currPitcher(P9), 1) > 4 Then
             If d100% <= 50 Then
                 Print pitchers$(P9, currPitcher(P9)); " just doesn't have it today";
             Else
@@ -16846,11 +20056,11 @@ Sub TIRING (P9)
 
     Else
 
-        If pitchEff(P9, 1) > 0 And (pitchEff(P9, 0) <= teamPitStats(P9, currPitcher(P9), 4) + teamPitStats(P9, currPitcher(P9), 1) Or pitchEff(P9, 1) <= teamPitStats(P9, currPitcher(P9), 2)) Or (teamPitStats(P9, currPitcher(P9), 4) + teamPitStats(P9, currPitcher(P9), 1) > 2 And teamPitStats(P9, currPitcher(P9), 0) >= 5) Then
+        If pitcherStam(P9, 1) > 0 And (pitcherStam(P9, 0) <= teamPitStats(P9, currPitcher(P9), 4) + teamPitStats(P9, currPitcher(P9), 1) Or pitcherStam(P9, 1) <= teamPitStats(P9, currPitcher(P9), 2)) Or (teamPitStats(P9, currPitcher(P9), 4) + teamPitStats(P9, currPitcher(P9), 1) > 2 And teamPitStats(P9, currPitcher(P9), 0) >= 5) Then
             Print pitchers$(P9, currPitcher(P9)); " is tiring!!";
         Else
 
-            If pitchEff(P9, 1) > 0 Or (teamPitStats(P9, currPitcher(P9), 4) + teamPitStats(P9, currPitcher(P9), 1) < 3 And teamPitStats(P9, currPitcher(P9), 2) = 0) Then
+            If pitcherStam(P9, 1) > 0 Or (teamPitStats(P9, currPitcher(P9), 4) + teamPitStats(P9, currPitcher(P9), 1) < 3 And teamPitStats(P9, currPitcher(P9), 2) = 0) Then
                 Print pitchers$(P9, currPitcher(P9)); " seems to be OK!!";
             End If
 
@@ -17672,7 +20882,7 @@ End Sub
 'at the end of most of these branches,
 'it gets assigned a static value.
 ' Where is it used in the game?
-Sub RAREPLAYS (INFPOS%, wasError, H6%, innPitch, baseStatus)
+Sub RAREPLAYS (INFPOS%, wasError, H6%, injuryStats, baseStatus)
 
     Dim playerEjectMax As Integer
     Dim coachMgrEjectMax As Integer
@@ -17716,7 +20926,7 @@ Sub RAREPLAYS (INFPOS%, wasError, H6%, innPitch, baseStatus)
             Call PlayerEjections(baseStatus)
         
         Case playerEjectScaled + 1 To playerEjectScaled + coachMgrEjectScaled
-            Call CoachMgrEjections(INFPOS%, wasError, innPitch, baseStatus)
+            Call CoachMgrEjections(INFPOS%, wasError, injuryStats, baseStatus)
 
         Case 15
             Call PBP("Here's the 3-2 pitch...")
@@ -18151,7 +21361,7 @@ Sub RAREPLAYS (INFPOS%, wasError, H6%, innPitch, baseStatus)
                 Call WINDEX
                 Call PBP("He reaches on a single")
                 Call PBP(pitchers$(D, currPitcher(D)) + " is down and in pain!")
-                Call INJPIT(innPitch, pinchHitterFlag, baseStatus)
+                Call InjuredPitcher(injuryStats, pinchHitterFlag, baseStatus)
                 H6% = 5
 
             Else
@@ -18189,7 +21399,7 @@ Sub RAREPLAYS (INFPOS%, wasError, H6%, innPitch, baseStatus)
             Call PBP(pitchers$(D, currPitcher(D)) + " is motioning for " + gameManagers$(D) + " to come out")
             Call PBP("It appears he has a blister")
             Call PBP("He will have to leave the game")
-            Call INJPIT(innPitch, pinchHitterFlag, baseStatus)
+            Call InjuredPitcher(injuryStats, pinchHitterFlag, baseStatus)
 
             H6% = 1
 
@@ -18295,7 +21505,7 @@ Sub PlayerEjections (baseStatus)
 
             Call DELAY
 
-            Call INJPIT(innPitch, pinchHitterFlag, baseStatus)
+            Call InjuredPitcher(injuryStats, pinchHitterFlag, baseStatus)
 
         Case 7 To 9
             If fldPos(P, currLineupSlot(P)) <> 1 Then
@@ -18349,7 +21559,7 @@ Sub PlayerEjections (baseStatus)
             ejections$(ejectCnt) = pitchers$(D, currPitcher(D))
 
             Call DELAY
-            Call INJPIT(innPitch, pinchHitterFlag, baseStatus)
+            Call InjuredPitcher(injuryStats, pinchHitterFlag, baseStatus)
 
         Case 14
             ' *** Bench-clearing brawl ***
@@ -18373,7 +21583,7 @@ Sub PlayerEjections (baseStatus)
                     X$ = pitchers$(D, currPitcher(D))
                     Call EJECTINC(X$)
 
-                    Call INJPIT(innPitch, pinchHitterFlag, baseStatus)
+                    Call InjuredPitcher(injuryStats, pinchHitterFlag, baseStatus)
 
                 Case 2:
                     Call PBP(player$(0) + " has been ejected")
@@ -18392,7 +21602,7 @@ Sub PlayerEjections (baseStatus)
                     X$ = pitchers$(D, currPitcher(D))
                     Call EJECTINC(X$)
 
-                    Call INJPIT(innPitch, pinchHitterFlag, baseStatus)
+                    Call InjuredPitcher(injuryStats, pinchHitterFlag, baseStatus)
                     Call PLYRHRT(P, P9, W5, W6, nbrBalls, nbrStrikes, D, MO)
 
             End Select
@@ -18409,7 +21619,7 @@ End Sub
 'This routine handles the chances of
 'either a coach or manager being ejected
 'from a game and the PBP associated.
-Sub CoachMgrEjections (INFPOS%, wasError, innPitch, baseStatus)
+Sub CoachMgrEjections (INFPOS%, wasError, injuryStats, baseStatus)
 
     Dim coachMgrEjectMax As Integer
 
@@ -18515,7 +21725,7 @@ Sub CoachMgrEjections (INFPOS%, wasError, innPitch, baseStatus)
 
             Call EJECTIONINJURY(2, P9, W5, W6)
             Call EJECTIONINJURY(3, P9, W5, W6)
-            Call INJPIT(innPitch, pinchHitterFlag, baseStatus)
+            Call InjuredPitcher(injuryStats, pinchHitterFlag, baseStatus)
 
     End Select
 
@@ -20588,6 +23798,7 @@ Sub BOX2FILE (printChoice, boxName$)
         Next
 
         For I1 = 1 To gamePitcher(I)
+
             For I2 = 0 To 21
 
                 If pitchRating(I, I2, SS_P_Avail) = I1 Then
@@ -20610,6 +23821,7 @@ Sub BOX2FILE (printChoice, boxName$)
                     Print #2, Using "##  ###"; oppPitStats(I, I2, 29); oppPitStats(I, I2, 26)
                 End If
             Next
+
         Next
 
         Print #2, "TOTALS"; Tab(17); totalStats(0); Tab(22); totalStats(1); Tab(27); totalStats(4);
@@ -20726,7 +23938,7 @@ Sub BOX2FILE (printChoice, boxName$)
 
     Next I
 
-    Print #2,: Print #2, " E-";
+    Print #2,: Print #2, " E - ";
 
     If eventNbr = 0 Then
         Print #2, "NONE"
@@ -20744,7 +23956,7 @@ Sub BOX2FILE (printChoice, boxName$)
         Print #2,
     End If
 
-    Print #2, "3B-";
+    Print #2, "3B - ";
     If TR = 0 Then
         Print #2, "NONE"
     Else
@@ -20752,7 +23964,7 @@ Sub BOX2FILE (printChoice, boxName$)
         Print #2,
     End If
 
-    Print #2, "HR-";
+    Print #2, "HR - ";
 
     If HR = 0 Then
         Print #2, "NONE"
@@ -20761,7 +23973,7 @@ Sub BOX2FILE (printChoice, boxName$)
         Print #2,
     End If
 
-    Print #2, "SB-";
+    Print #2, "SB - ";
 
     If SB = 0 Then
         Print #2, "NONE"
@@ -20772,24 +23984,13 @@ Sub BOX2FILE (printChoice, boxName$)
         Print #2,
     End If
 
-    Print #2, "LOB-"; gameTeams$(0); Str$(leftOnBase(0)); ","; gameTeams$(1); Str$(leftOnBase(1))
-    Print #2, "DP-"; gameTeams$(0); Str$(totalDPs(0)); ","; gameTeams$(1); Str$(totalDPs(1))
-    Print #2, "UMPIRES: HP-"; gameUmpire$(1); "; 1B-"; gameUmpire$(2); "; 2B-"; gameUmpire$(3); "; 3B-"; gameUmpire$(4)
-    Print #2, "TIME: "; gameTime$
-    Print #2, "ATTENDANCE: ";: Print Using "###,###"; actualAttendance&
+    Print #2, "LOB - "; gameTeams$(0); Str$(leftOnBase(0)); ","; gameTeams$(1); Str$(leftOnBase(1))
+    Print #2, "DP - "; gameTeams$(0); Str$(totalDPs(0)); ","; gameTeams$(1); Str$(totalDPs(1))
+
     Print #2,
-    Print #2, "INJURIES-";
 
-    If injCount = 0 Then
-        Print #2, "none"
-    Else
-        For X1 = 1 To injCount
-            Print #2, injPlayers$(X1); ",";
-        Next
-        Print #2,
-    End If
+    Print #2, "UMPIRES: HP-"; gameUmpire$(1); "; 1B-"; gameUmpire$(2); "; 2B-"; gameUmpire$(3); "; 3B-"; gameUmpire$(4)
 
-    peject:
     Print #2, "EJECTIONS-";
     If ejectCnt = 0 Then
         Print #2, "none"
@@ -20800,7 +24001,23 @@ Sub BOX2FILE (printChoice, boxName$)
         Print #2,
     End If
 
-    pweath:
+    Print #2,
+
+    Print #2, "INJURIES - ";
+
+    If injCount = 0 Then
+        Print #2, "none"
+    Else
+        For X1 = 1 To injCount
+            Print #2, injPlayers$(X1); ",";
+        Next
+        Print #2,
+    End If
+
+    Print #2,
+
+    Print #2, "TIME: "; gameTime$
+    Print #2, "ATTENDANCE: ";: Print Using "###,###"; actualAttendance&
     Print #2, "TEMPERATURE:"; gameTemp
     Print #2, "WIND: "; wind$
     Print #2, "SKY: "; skyCond$(skyType)
@@ -21125,13 +24342,28 @@ Sub STATS2SCREEN
     Dim BK$
     BK$ = "## # # ## # #  # # #  #  # # ## ##"
 
+    Color 14, 0: Print "TIME: ";
+    Color 15: Print gameTime$
+    Color 14: Print "ATTENDANCE: ";
+    Color 15: Print Using "###,###"; actualAttendance&
+    Color 14: Print "TEMPERATURE:";
+    Color 15: Print gameTemp
+    Color 14: Print "WIND: ";
+    Color 15: Print wind$
+    Color 14: Print "SKY: ";
+    Color 15: Print skyCond$(skyType)
+    Color 14: Print "PRECIPITATION: ";
+    Color 15: Print precip$(precipType)
+
+    Print
+
     For I = 0 To 1
 
         Color teamRat_GAME(I, 11), teamRat_GAME(I, 12)
         Print gameTeams$(I);
         Color 14, 0
         Locate , 18: Print "AB R H BI 2 3 HR K W SB CS E PO  A      BA   HR  RBI"
-        Color 15, 0
+        Color 15
 
         For I3 = 0 To 22
 
@@ -21210,7 +24442,7 @@ Sub STATS2SCREEN
         Next
 
         Color 14, 0: Print "TOTALS";
-        Color 15, 0
+        Color 15
         Locate , 17: Print totalStats(0);
         Locate , 22: Print totalStats(1);
         Locate , 27: Print totalStats(4);
@@ -21248,9 +24480,9 @@ Sub STATS2SCREEN
         Color teamRat_GAME(I, 11), teamRat_GAME(I, 12)
         Print gameTeams$(I);
 
-        Color 14, 0: Locate , 23
+        Color 14: Locate , 23
         Print "       IP   H  R  ER BB SO    ERA   W  L  S  SO"
-        Color 15, 0
+        Color 15
 
         For I1 = 1 To gamePitcher(I)
 
@@ -21347,9 +24579,9 @@ Sub STATS2SCREEN
 
         Next I1
 
-        Color 14, 0
+        Color 14
         Print "TOTALS";
-        Color 15, 0
+        Color 15
 
         Locate , 30
 
@@ -21385,10 +24617,8 @@ Sub STATS2SCREEN
 
     Cls
 
-    '--- THIS NEEDS TO LOOK NICER
-
-    Color 14, 0: Print " E-";
-    Color 15, 0
+    Color 14: Print " E - ";
+    Color 15
 
     If E = 0 Then
         Print "none"
@@ -21399,8 +24629,8 @@ Sub STATS2SCREEN
         Print
     End If
 
-    Color 14, 0: Print "2B-";
-    Color 15, 0
+    Color 14: Print "2B - ";
+    Color 15
 
     If DB = 0 Then
         Print "none"
@@ -21411,8 +24641,8 @@ Sub STATS2SCREEN
         Print
     End If
 
-    Color 14, 0: Print "3B-";
-    Color 15, 0
+    Color 14: Print "3B - ";
+    Color 15
 
     If TR = 0 Then
         Print "none"
@@ -21423,8 +24653,8 @@ Sub STATS2SCREEN
         Print
     End If
 
-    Color 14, 0: Print "HR-";
-    Color 15, 0
+    Color 14: Print "HR - ";
+    Color 15
 
     If HR = 0 Then
         Print "none"
@@ -21435,8 +24665,8 @@ Sub STATS2SCREEN
         Print
     End If
 
-    Color 14, 0: Print "SB-";
-    Color 15, 0
+    Color 14: Print "SB - ";
+    Color 15
     If SB = 0 Then
         Print "none"
     Else
@@ -21446,26 +24676,18 @@ Sub STATS2SCREEN
         Print
     End If
 
-    Color 14, 0: Print "LOB-";
-    Color 15, 0: Print gameTeams$(0); Str$(leftOnBase(0)); ","; gameTeams$(1); Str$(leftOnBase(1))
-    Color 14, 0: Print "DP-";
-    Color 15, 0: Print gameTeams$(0); Str$(totalDPs(0)); ","; gameTeams$(1); Str$(totalDPs(1))
+    Color 14: Print "LOB - ";
+    Color 15: Print gameTeams$(0); Str$(leftOnBase(0)); ","; gameTeams$(1); Str$(leftOnBase(1))
+    Color 14: Print "DP - ";
+    Color 15: Print gameTeams$(0); Str$(totalDPs(0)); ","; gameTeams$(1); Str$(totalDPs(1))
 
-    Color 14, 0: Print "INJURIES-";
-    Color 15, 0
+    Print
 
-    If injCount = 0 Then
-        Print "none"
-    Else
-        For X = 1 To injCount:
-            Print injPlayers$(X); ",";
-        Next
-        Print
-    End If
+    Color 14: Print "UMPIRES: ";
+    Color 15: Print "HP-"; gameUmpire$(1); "; 1B-"; gameUmpire$(2); "; 2B-"; gameUmpire$(3); "; 3B-"; gameUmpire$(4)
 
-    eject:
-    Color 14, 0: Print "EJECTIONS-";
-    Color 15, 0
+    Color 14: Print "EJECTIONS: ";
+    Color 15
 
     If ejectCnt = 0 Then
         Print "none"
@@ -21476,22 +24698,19 @@ Sub STATS2SCREEN
         Print
     End If
 
-    Color 14, 0: Print "UMPIRES: ";
-    Color 15, 0: Print "HP-"; gameUmpire$(1); "; 1B-"; gameUmpire$(2); "; 2B-"; gameUmpire$(3); "; 3B-"; gameUmpire$(4)
+    Print
 
-    '-- THIS COULD GO ON THE Score Summary
-    Color 14, 0: Print "TIME: ";
-    Color 15, 0: Print gameTime$
-    Color 14, 0: Print "ATTENDANCE: ";
-    Color 15, 0: Print Using "###,###"; actualAttendance&
-    Color 14, 0: Print "TEMPERATURE:";
-    Color 15, 0: Print gameTemp
-    Color 14, 0: Print "WIND: ";
-    Color 15, 0: Print wind$
-    Color 14, 0: Print "SKY: ";
-    Color 15, 0: Print skyCond$(skyType)
-    Color 14, 0: Print "PRECIPITATION: ";
-    Color 15, 0: Print precip$(precipType)
+    Color 14: Print "INJURIES: ";
+    Color 15
+
+    If injCount = 0 Then
+        Print "none"
+    Else
+        For X = 1 To injCount:
+            Print injPlayers$(X); ",";
+        Next
+        Print
+    End If
 
     If autoPlay <> 1 Or playerMode <> 2 Then
         Locate LAST_ROW, 1: Print "HIT ANY KEY TO CONTINUE";
@@ -21880,14 +25099,14 @@ End Function
 
 
 '----------------------------------------
-'         pitcherMaxEff% Function
+'         pitcherMaxStam% Function
 '----------------------------------------
 'This subroutine assigns max efficiency
 'for a pitcher in the more modern eras
-Function pitcherMaxEff% (teamIdx, pitcherIdx)
+Function pitcherMaxStam% (teamIdx, pitcherIdx)
 
     'Max Efficiency = ((BB + Hits) / Games)
-    pitcherMaxEff% = CInt(((pitchRating(teamIdx, pitcherIdx, SS_P_BB) + pitchRating(teamIdx, pitcherIdx, SS_P_H)) / pitchRating(teamIdx, pitcherIdx, SS_P_G)))
+    pitcherMaxStam% = CInt(((pitchRating(teamIdx, pitcherIdx, SS_P_BB) + pitchRating(teamIdx, pitcherIdx, SS_P_H)) / pitchRating(teamIdx, pitcherIdx, SS_P_G)))
 
 End Function
 
@@ -22593,7 +25812,7 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO, INFPOS%)
     End If
 
     'H / BB / K
-    pStats$ = pStats$ + " " + FUsing$(Str$(teamPitStats(D, currPitcher(D), 1)), "##", 1) + " " + FUsing$(Str$(teamPitStats(D, currPitcher(D), 4)), "###", 1) + " " + FUsing$(Str$(teamPitStats(D, currPitcher(D), 5)), "###", 1)
+    pStats$ = pStats$ + " " + FUsing$(Str$(teamPitStats(D, currPitcher(D), 1)), "##", 1) + " " + FUsing$(Str$(teamPitStats(D, currPitcher(D), 4)), "##", 1) + " " + FUsing$(Str$(teamPitStats(D, currPitcher(D), 5)), "##", 1)
 
     PrintOnGfx 65, 29, pStats$, imageScreen&
 
@@ -22712,7 +25931,7 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO, INFPOS%)
     PrintOnGfx 63, 28, Str$(nbrStrikes), imageScreen&
 
     'Infield
-    _PutImage (52 * FontColAdj, 416)-Step(13 * FontColAdj, 16), backupScreen&, imageScreen&, (52 * FontColAdj, 416)-Step(13 * FontColAdj, 16)
+    _PutImage (51 * FontColAdj, 416)-Step(13 * FontColAdj, 16), backupScreen&, imageScreen&, (51 * FontColAdj, 416)-Step(13 * FontColAdj, 16)
 
     infStatus$ = "INF:"
     Select Case INFPOS%
@@ -22724,7 +25943,7 @@ Sub MAINSCREEN_G (D, p, BC%, nbrStrikes, MO, INFPOS%)
     'Printing black on background
     _PrintMode _KeepBackground , imageScreen&
     Color &HF0000000
-    PrintOnGfx 52, 26, infStatus$, imageScreen&
+    PrintOnGfx 51, 26, infStatus$, imageScreen&
 
     'Printing white on black
     Color &HFFFFFFFF
@@ -22759,7 +25978,7 @@ End Sub
 '----------------------------------------
 'This subroutine displays the player
 'that is currently on the target base
-Sub DisplayRun_G (baseNbr, p, X)
+Sub DisplayRun_G (baseNbr, p, Xcoord)
 
     Select Case baseNbr
         '1st Base Runner
@@ -22777,39 +25996,46 @@ Sub DisplayRun_G (baseNbr, p, X)
 
     End Select
 
-    J = runnerOnBase(I2)
+    J = runnerOnBase(baseNbr)
 
     If J <> 0 Then
 
-        Y = 22
-        If I2 = 2 Then Y = 20
+        If baseNbr = 2 Then
+            Ycoord = 20
+        Else
+            Ycoord = 22
+        End If
 
         'Printing white on background
         _PrintMode _KeepBackground , imageScreen&
         Color &HFFFFFFFF
 
         If fldPos(p, J) = 1 Then
+
             If pitchRating(p, currPitcher(p), 11) <> 999 Then
                 runner$ = pitchers$(p, currPitcher(p))
                 runner$ = PadRight(runner$, 11)
-                PrintOnGfx X, Y - 1, runner$, imageScreen&
-                PrintOnGfx X, Y, "1/  0", imageScreen&
+                PrintOnGfx Xcoord, Ycoord - 1, runner$, imageScreen&
+                PrintOnGfx Xcoord, Ycoord, "1/  0", imageScreen&
             Else
                 runner$ = pitchers$(p, currPitcher(p))
                 runner$ = PadRight(runner$, 11)
-                PrintOnGfx X, Y - 1, runner$, imageScreen&
+                PrintOnGfx Xcoord, Ycoord - 1, runner$, imageScreen&
                 runStats$ = FUsing$(Str$(pitchRating(p, currPitcher(p), 31)), "#", 1) + "/" + FUsing$(Str$(pitchRating(p, currPitcher(p), 29)), "###", 1)
-                PrintOnGfx X, Y, runStats$, imageScreen&
+                PrintOnGfx Xcoord, Ycoord, runStats$, imageScreen&
             End If
+
         Else
+
             runner$ = batters$(p, lineupPlayer(p, J))
             runner$ = PadRight(runner$, 11)
-            PrintOnGfx X, Y - 1, runner$, imageScreen&
+            PrintOnGfx Xcoord, Ycoord - 1, runner$, imageScreen&
             runStats$ = FUsing$(Str$(batRating(p, lineupPlayer(p, J), SS_B_Run)), "#", 1) + "/" + FUsing$(Str$(batRating(p, lineupPlayer(p, J), SS_B_SB)), "###", 1)
-            PrintOnGfx X, Y, runStats$, imageScreen&
+            PrintOnGfx Xcoord, Ycoord, runStats$, imageScreen&
 
             'Printing white on black
             _PrintMode _FillBackground , imageScreen&
+
         End If
 
     End If
@@ -22827,8 +26053,14 @@ Sub DisplayBallField_Gfx (BC%, p, nbrStrikes, D)
     inningStart% = 1
     inningEnd% = 9
 
-    If INNING% > 9 Then inningStart% = 10: inningEnd% = 18
-    If INNING% > 18 Then inningStart% = 19: inningEnd% = 27
+    If INNING% > 9 Then
+        inningStart% = 10
+        inningEnd% = 18
+    End If
+    If INNING% > 18 Then
+        inningStart% = 19
+        inningEnd% = 27
+    End If
 
     'Print Batter / Pitcher box
     '----------------------------------------
@@ -23081,13 +26313,16 @@ Sub DisplayBallField_Gfx (BC%, p, nbrStrikes, D)
 
 End Sub
 
+
 '----------------------------------------
 '        HOLDSTATUS_G Subroutine
 '----------------------------------------
-' ...explanation...
+'This routine displays the runner status
+'(whether runners are HELD 'or not) in
+'the game's VGA mode
 Sub HOLDSTATUS_G (runnerHeld)
 
-    _PutImage (53 * FontColAdj, 400)-Step(12 * FontColAdj, 16), backupScreen&, imageScreen&, (53 * FontColAdj, 400)-Step(12 * FontColAdj, 16)
+    _PutImage (52 * FontColAdj, 400)-Step(12 * FontColAdj, 16), backupScreen&, imageScreen&, (52 * FontColAdj, 400)-Step(12 * FontColAdj, 16)
 
     rhStatus$ = "RUNNERS:"
 
@@ -23100,7 +26335,7 @@ Sub HOLDSTATUS_G (runnerHeld)
     'Printing black on background
     _PrintMode _KeepBackground , imageScreen&
     Color &HF0000000
-    PrintOnGfx 53, 25, rhStatus$, imageScreen&
+    PrintOnGfx 52, 25, rhStatus$, imageScreen&
 
     'Printing white on black
     Color &HFFFFFFFF
@@ -23134,10 +26369,14 @@ Sub DisplayInningScore_G (currInning, teamLine)
 
 End Sub
 
+
 '----------------------------------------
-'   LOADSCREEN Subroutine
+'         LOADSCREEN Subroutine
 '----------------------------------------
-' ...explanation...
+'This routine loads the inital park image
+'graphic, and then backs up key areas of
+'the graphic so that we can write text
+'and/or restore the graphic later.
 Sub LOADSCREEN ()
 
     parkImage& = _LoadImage("." + dirSeparator$ + "parks" + dirSeparator$ + chosenPark$, 32)
@@ -23156,10 +26395,10 @@ Sub LOADSCREEN ()
     _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 144), imageScreen&, backupScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 144)
 
     'Runners Hold section
-    _PutImage (53 * FontColAdj, 400)-Step(12 * FontColAdj, 16), imageScreen&, backupScreen&, (53 * FontColAdj, 400)-Step(12 * FontColAdj, 16)
+    _PutImage (52 * FontColAdj, 400)-Step(12 * FontColAdj, 16), imageScreen&, backupScreen&, (52 * FontColAdj, 400)-Step(12 * FontColAdj, 16)
 
     'Infield
-    _PutImage (52 * FontColAdj, 416)-Step(14 * FontColAdj, 16), imageScreen&, backupScreen&, (52 * FontColAdj, 416)-Step(14 * FontColAdj, 16)
+    _PutImage (51 * FontColAdj, 416)-Step(14 * FontColAdj, 16), imageScreen&, backupScreen&, (51 * FontColAdj, 416)-Step(14 * FontColAdj, 16)
 
     'Center Field
     _PutImage (36 * FontColAdj, 224)-Step(13 * FontColAdj, 32), imageScreen&, backupScreen&, (36 * FontColAdj, 224)-Step(13 * FontColAdj, 32)
@@ -23196,6 +26435,7 @@ Sub LOADSCREEN ()
 
     '1st Base Runner Name
     _PutImage (54 * FontColAdj, 336)-Step(14 * FontColAdj, 16), imageScreen&, backupScreen&, (54 * FontColAdj, 336)-Step(14 * FontColAdj, 16)
+
     '1st Base Runner Stats
     _PutImage (54 * FontColAdj, 352)-Step(11 * FontColAdj, 16), imageScreen&, backupScreen&, (54 * FontColAdj, 352)-Step(11 * FontColAdj, 16)
 
@@ -23211,7 +26451,12 @@ End Sub
 '----------------------------------------
 '         PrintOnGfx Subroutine
 '----------------------------------------
-' ...explanation...
+'This subroutine simply prints text at
+'in graphics mode at the Row/Column that
+'is specified for the target sreen handle.
+'This will auto convert these logical row
+'and column values to their pixel versions,
+'based on the screen width / height.
 Sub PrintOnGfx (Col%, Row%, Text$, tgtScrn&)
 
     PrintCol% = (Col% * _PrintWidth("W"))
