@@ -1,3 +1,8 @@
+Const USE_SLUG = 0
+Const USE_LH = 1
+Const USE_OPS = 2
+Const USE_OBA_SB = 3
+
 Const SS_B_Bats = 0 '-1=Left, 0=Switch, 1=Right'
 
 Const SS_B_G = 3

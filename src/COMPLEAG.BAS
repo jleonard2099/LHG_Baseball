@@ -10,8 +10,9 @@ Sub CompileLeague ()
 
     _Title "Full Count Baseball - Update League Stats"
 
-    Shared ldrBatStat(), ldrPitStat()
+    Shared ldrBatStat!(), ldrPitStat!()
     Shared divWins(), divLosses()
+    Shared statBatter(), statPitcher()
 
     Shared leaderVals!(), DFT!(), leaderStatVal2!(), OFT!()
 
@@ -43,12 +44,14 @@ Sub CompileLeague ()
     'If we initialized to 0, the "record" would always be 0
     pitRecVal!(23) = 100
     pitRecVal!(25) = 100
+
     batRecVal!(24) = 999
     batRecVal!(25) = 999
     batRecVal!(26) = 999
     batRecVal!(27) = 999
     batRecVal!(28) = 999
     pitRecVal!(27) = 100
+
     pitRecTmVal!(24) = 100
 
     'Initialize values first
@@ -133,7 +136,9 @@ Sub CompileLeague ()
                     If sameTeam = 0 And _FileExists(diskPaths$(1) + memberName$(XW)) Then
 
                         Call ReadStatsLeague(memberName$(XW), TN$, totalGames)
+
                         Call CalcRecordsPro(totalGames, TN$, memberName$(XW), finalUpdate$)
+
                         Call CalcStatLeadersBat(memberName$(XW), statName$, totalGames)
                         Call CalcStatLeadersPitch(statName$, totalGames, APP)
                         Call CalcStatLeadersTeam(statName$, totalGames)
@@ -148,6 +153,7 @@ Sub CompileLeague ()
 
         Call SortStandingsLeague
         Call PostLeaders(GetFileBaseName$(leagueFile$), APP)
+        Call PostRecordsPro
 
     End If
 
@@ -201,7 +207,7 @@ Sub ReadStatsLeague (statFile$, teamName$, totalGames)
 
     Dim leaderStatVal1(46)
 
-    Shared ldrBatStat(), ldrPitStat()
+    Shared ldrBatStat!(), ldrPitStat!()
 
     Shared leaderStatVal2!()
 
@@ -209,7 +215,7 @@ Sub ReadStatsLeague (statFile$, teamName$, totalGames)
 
     Erase leaderNames$
     Erase leaderStatVal2!
-    Erase ldrBatStat, ldrPitStat
+    Erase ldrBatStat!, ldrPitStat!
 
     'Read Team stats
     'Assing dedicated arrays to those values
@@ -245,21 +251,35 @@ Sub ReadStatsLeague (statFile$, teamName$, totalGames)
     Next J
 
     For K = 1 To 24
-        Input #1, ldrBatStat(K)
+        Input #1, ldrBatStat!(K)
     Next K
 
     For K = 1 To 23
-        Input #1, ldrPitStat(K)
+        Input #1, ldrPitStat!(K)
     Next K
 
     Close #1
 
     totalGames = fullWins + fullLosses
 
+End Sub
+
+
+'----------------------------------------
+'      CalcStatLeadersBat Subroutine
+'----------------------------------------
+'This subroutine compares pre-loaded stats
+'to existing leaders and updates as needed
+Sub CalcStatLeadersBat (targetTeam$, statName$, totalGames)
+
+    Shared leaderNames$(), leaderTeams$()
+    Shared leagLdrPlayer$(), leagLdrTeam$()
+    Shared leaderVals!(), leaderStatVal2!()
+
     'Extra calculations for batters
     For J = 1 To 23
 
-        If leaderStatVal2!(J, 1) = 0 Then 
+        If leaderStatVal2!(J, 1) = 0 Then
             leaderStatVal2!(J, 1) = 1
         End If
 
@@ -282,33 +302,6 @@ Sub ReadStatsLeague (statFile$, teamName$, totalGames)
         End If
 
     Next
-
-    'Pitchers - ERA Calculation
-    For J = 25 To 46
-
-        'IP = 0 or pitcher's games < totalGames (< 1 IP / game)
-        If leaderStatVal2!(J, 1) = 0 Or (leaderStatVal2!(J, 1) / 3) < totalGames Then
-            'Junk value for unqualified pitchers
-            leaderStatVal2!(J, 14) = 99.99
-        Else
-            leaderStatVal2!(J, 14) = leaderStatVal2!(J, 4) / leaderStatVal2!(J, 1) * 27
-        End If
-
-    Next
-
-End Sub
-
-
-'----------------------------------------
-'      CalcStatLeadersBat Subroutine
-'----------------------------------------
-'This subroutine compares pre-loaded stats
-'to existing leaders and updates as needed
-Sub CalcStatLeadersBat (targetTeam$, statName$, totalGames)
-
-    Shared leaderNames$(), leaderTeams$()
-    Shared leagLdrPlayer$(), leagLdrTeam$()
-    Shared leaderVals!(), leaderStatVal2!()
 
     Color 15, 0
     Cls
@@ -848,8 +841,21 @@ End Sub
 Sub CalcStatLeadersPitch (statName$, totalGames, nbrAppearances)
 
     Shared leagLdrPlayer$(), leagLdrTeam$()
-    Shared leaderNames$()
+    Shared leaderNames$(), leaderTeams$()
     Shared leaderVals!(), leaderStatVal2!()
+
+    'Pitchers - ERA Calculation
+    For J = 25 To 46
+
+        'IP = 0 or pitcher's games < totalGames (< 1 IP / game)
+        If leaderStatVal2!(J, 1) = 0 Or (leaderStatVal2!(J, 1) / 3) < totalGames Then
+            'Junk value for unqualified pitchers
+            leaderStatVal2!(J, 14) = 99.99
+        Else
+            leaderStatVal2!(J, 14) = leaderStatVal2!(J, 4) / leaderStatVal2!(J, 1) * 27
+        End If
+
+    Next
 
     3415 '
     'All Pitchers
@@ -1219,32 +1225,32 @@ End Sub
 'see if any should be updated
 Sub CalcStatLeadersTeam (statName$, totalGames)
 
-    Shared ldrBatStat(), ldrPitStat()
+    Shared ldrBatStat!(), ldrPitStat!()
     Shared BA$(), ER$()
     Shared DFT!(), OFT!()
 
     For Z = 1 To TEAMS_PER_LEAGUE
 
-        If ldrBatStat(3) = 0 Then 
-            ldrBatStat(3) = 1
+        If ldrBatStat!(3) = 0 Then
+            ldrBatStat!(3) = 1
         End If
 
         If BA$(Z) = statName$ Then
-            OFT!(Z, 1) = ldrBatStat(4) / ldrBatStat(3)
+            OFT!(Z, 1) = ldrBatStat!(4) / ldrBatStat!(3)
             For M = 3 To 14:
-                OFT!(Z, M) = ldrBatStat(M)
+                OFT!(Z, M) = ldrBatStat!(M)
             Next M
             GoTo 3535
         End If
 
     Next Z
 
-    If ldrBatStat(4) / ldrBatStat(3) > OFT!(40, 1) Then
+    If ldrBatStat!(4) / ldrBatStat!(3) > OFT!(40, 1) Then
 
-        OFT!(40, 1) = ldrBatStat(4) / ldrBatStat(3)
+        OFT!(40, 1) = ldrBatStat!(4) / ldrBatStat!(3)
 
         For M = 3 To 14:
-            OFT!(40, M) = ldrBatStat(M)
+            OFT!(40, M) = ldrBatStat!(M)
         Next M
 
         BA$(40) = statName$
@@ -1278,26 +1284,26 @@ Sub CalcStatLeadersTeam (statName$, totalGames)
 
     For Z = 1 To TEAMS_PER_LEAGUE
 
-        If ldrPitStat(1) = 0 Then
-            ldrPitStat(1) = 1
-            ldrPitStat(4) = 3
+        If ldrPitStat!(1) = 0 Then
+            ldrPitStat!(1) = 1
+            ldrPitStat!(4) = 3
         End If
 
         If ER$(Z) = statName$ Then
-            DFT!(Z, 1) = ldrPitStat(4) / ldrPitStat(1) * 27
+            DFT!(Z, 1) = ldrPitStat!(4) / ldrPitStat!(1) * 27
             For M = 2 To 14:
-                DFT!(Z, M) = ldrPitStat(M - 1)
+                DFT!(Z, M) = ldrPitStat!(M - 1)
             Next M
             GoTo 3555
         End If
 
     Next Z
 
-    If ldrPitStat(4) / ldrPitStat(1) * 27 < DFT!(40, 1) Then
+    If ldrPitStat!(4) / ldrPitStat!(1) * 27 < DFT!(40, 1) Then
 
-        DFT!(40, 1) = ldrPitStat(4) / ldrPitStat(1) * 27
+        DFT!(40, 1) = ldrPitStat!(4) / ldrPitStat!(1) * 27
         For M = 2 To 14:
-            DFT!(40, M) = ldrPitStat(M - 1)
+            DFT!(40, M) = ldrPitStat!(M - 1)
         Next M
 
         ER$(40) = statName$
@@ -1344,8 +1350,15 @@ End Sub
 ' ** the team name and not the year
 Sub CalcRecordsPro (totalGames, teamName$, statName$, finalUpdate$)
 
-    Shared statAtBats(), statBatter()
-    Shared statInnPitch(), statPitcher()
+    '--- These will go away
+    Shared statBatter(), statPitcher()
+    Shared statTeamBat!(), statTeamPit!()
+    Shared batterNames$(), pitcherNames$()
+
+    '--- These will stay
+    Shared leaderStatVal2!()
+    Shared ldrBatStat!(), ldrPitStat!()
+    Shared leaderNames$()
 
     Shared batRecTmVal!(), batRecTmYr!()
     Shared batRecVal!(), batRecYr!()
@@ -1355,11 +1368,8 @@ Sub CalcRecordsPro (totalGames, teamName$, statName$, finalUpdate$)
     Shared pitRecVal!(), pitRecYr!()
     Shared pitTotGames!()
 
-    Shared statTeamBat!(), statTeamPit!()
-
     Shared batRecPlyr$(), batRecTeam$(), batRecTmDesc$()
     Shared pitRecPlyr$(), pitRecTeam$(), pitRecTmDesc$()
-    Shared batterNames$(), pitcherNames$()
 
     Dim TT$(40, 22), TT1$(40, 23)
 
@@ -1367,29 +1377,30 @@ Sub CalcRecordsPro (totalGames, teamName$, statName$, finalUpdate$)
     AAS = (22 * 20)
     AAT = 2
 
-    Erase batRecVal!, batRecTmVal!, pitRecTmVal!
-    Erase batTotGames!, pitTotGames!
+    'Erase batRecVal!, batRecTmVal!, pitRecTmVal!
+    'Erase batTotGames!, pitTotGames!
 
-    Erase batRecPlyr$, batRecTeam$, batRecTmDesc$
-    Erase batterNames$
-    Erase pitRecPlyr$, pitRecTeam$, pitRecTmDesc$
-    Erase pitcherNames$
+    'Erase batterNames$, pitcherNames$
+    'Erase batRecPlyr$, batRecTeam$, batRecTmDesc$
+    'Erase pitRecPlyr$, pitRecTeam$, pitRecTmDesc$
 
-    Call ReadTeamStats (teamName$, statName$)
-    
+    'Call ReadTeamStats(teamName$, statName$)
+
     ' Calculate records for current team
     Locate 7: Print "CALCULATING BATTER RECORDS . . . ."
 
     ' ** Recorded Stats **
     For I = 0 To 22
 
+        I2 = I + 1
+
         For I1 = 1 To 20
 
-            I2 = I1 - 1
+            'I2 = I1 - 1
 
-            If statBatter(I, I2) >= batRecVal!(I1) Then
-                batRecVal!(I1) = statBatter(I, I2)
-                batRecPlyr$(I1) = batterNames$(I)
+            If leaderStatVal2!(I2, I1) >= batRecVal!(I1) Then
+                batRecVal!(I1) = leaderStatVal2!(I2, I1)
+                batRecPlyr$(I1) = leaderNames$(I2)
                 batRecTeam$(I1) = teamName$
                 'batRecYr!(I1) = seasonYear
             End If
@@ -1407,41 +1418,39 @@ Sub CalcRecordsPro (totalGames, teamName$, statName$, finalUpdate$)
         ' ** Batting AVG **
         For I = 0 To 22
 
-            If statBatter(I, 0) + statBatter(I, 7) >= batTotGames!(I) * 3.1 Then
+            I2 = I + 1
+
+            If leaderStatVal2!(I2, 1) + leaderStatVal2!(I2, 8) >= batTotGames!(I) * 3.1 Then
                 minimumPA = 1
             Else
                 minimumPA = 0
             End If
 
-            If minimumPA = 1 And statBatter(I, 0) <> 0 Then
+            If minimumPA = 1 And leaderStatVal2!(I2, 1) <> 0 Then
 
-                If statBatter(I, 1) / statBatter(I, 0) >= batRecVal!(21) Then
-                    batRecVal!(21) = statBatter(I, 1) / statBatter(I, 0)
-                    batRecPlyr$(21) = batterNames$(I)
+                ' ** Batting Avg. **
+                If leaderStatVal2!(I2, 2) / leaderStatVal2!(I2, 1) >= batRecVal!(21) Then
+                    batRecVal!(21) = leaderStatVal2!(I2, 2) / leaderStatVal2!(I2, 1)
+                    batRecPlyr$(21) = leaderNames$(I2)
                     batRecTeam$(21) = teamName$
                     'batRecYr!(21) = seasonYear
                 End If
 
-            End If
-
-            ' ** Slugging % **
-            If minimumPA = 1 And statBatter(I, 1) <> 0 Then
-
-                If (statBatter(I, 1) + statBatter(I, 4) + statBatter(I, 5) * 2 + statBatter(I, 6) * 3) / statBatter(I, 0) >= batRecVal!(22) Then
-                    batRecVal!(22) = (statBatter(I, 1) + statBatter(I, 4) + statBatter(I, 5) * 2 + statBatter(I, 6) * 3) / statBatter(I, 0)
-                    batRecPlyr$(22) = batterNames$(I)
+                ' ** Slugging % **
+                slugPCT! = (leaderStatVal2!(I2, 2) + leaderStatVal2!(I2, 5) + 2 * leaderStatVal2!(I2, 6) + 3 * leaderStatVal2!(I2, 7)) / leaderStatVal2!(I2, 1)
+                If slugPCT! >= batRecVal!(22) Then
+                    Print #11, leaderNames$(I2); slugPCT!
+                    batRecVal!(22) = slugPCT!
+                    batRecPlyr$(22) = leaderNames$(I2)
                     batRecTeam$(22) = teamName$
                     'batRecYr!(22) = seasonYear
                 End If
 
-            End If
-
-            ' ** OB% **
-            If minimumPA = 1 And statBatter(I, 1) <> 0 Then
-
-                If (statBatter(I, 1) + statBatter(I, 7)) / (statBatter(I, 0) + statBatter(I, 7)) >= batRecVal!(23) Then
-                    batRecVal!(23) = (statBatter(I, 1) + statBatter(I, 7)) / (statBatter(I, 0) + statBatter(I, 7))
-                    batRecPlyr$(23) = batterNames$(I)
+                ' ** OB% **
+                obPCT! = (leaderStatVal2!(I2, 2) + leaderStatVal2!(I2, 8)) / (leaderStatVal2!(I2, 1) + leaderStatVal2!(I2, 8))
+                If obPCT! >= batRecVal!(23) Then
+                    batRecVal!(23) = obPCT!
+                    batRecPlyr$(23) = leaderNames$(I2)
                     batRecTeam$(23) = teamName$
                     'batRecYr!(23) = seasonYear
                 End If
@@ -1449,11 +1458,11 @@ Sub CalcRecordsPro (totalGames, teamName$, statName$, finalUpdate$)
             End If
 
             ' ** Triples **
-            If minimumPA = 1 And statBatter(I, 6) <> 0 Then
+            If minimumPA = 1 And leaderStatVal2!(I2, 7) <> 0 Then
 
-                If statBatter(I, 0) / statBatter(I, 6) <= batRecVal!(24) Then
-                    batRecVal!(24) = statBatter(I, 0) / statBatter(I, 6)
-                    batRecPlyr$(24) = batterNames$(I)
+                If leaderStatVal2!(I2, 1) / leaderStatVal2!(I2, 7) <= batRecVal!(24) Then
+                    batRecVal!(24) = leaderStatVal2!(I2, 1) / leaderStatVal2!(I2, 7)
+                    batRecPlyr$(24) = leaderNames$(I2)
                     batRecTeam$(24) = teamName$
                     'batRecYr!(24) = seasonYear
                 End If
@@ -1461,11 +1470,11 @@ Sub CalcRecordsPro (totalGames, teamName$, statName$, finalUpdate$)
             End If
 
             ' ** Strikeout Rate **
-            If minimumPA = 1 And statBatter(I, 8) <> 0 Then
+            If minimumPA = 1 And leaderStatVal2!(I2, 9) <> 0 Then
 
-                If statBatter(I, 0) / statBatter(I, 8) <= batRecVal!(25) Then
-                    batRecVal!(25) = statBatter(I, 0) / statBatter(I, 8)
-                    batRecPlyr$(25) = batterNames$(I)
+                If leaderStatVal2!(I2, 1) / leaderStatVal2!(I2, 9) <= batRecVal!(25) Then
+                    batRecVal!(25) = leaderStatVal2!(I2, 1) / leaderStatVal2!(I2, 9)
+                    batRecPlyr$(25) = leaderNames$(I2)
                     batRecTeam$(25) = teamName$
                     'batRecYr!(25) = seasonYear
                 End If
@@ -1473,11 +1482,11 @@ Sub CalcRecordsPro (totalGames, teamName$, statName$, finalUpdate$)
             End If
 
             ' ** Walk Rate **
-            If minimumPA = 1 And statBatter(I, 7) <> 0 Then
+            If minimumPA = 1 And leaderStatVal2!(I2, 8) <> 0 Then
 
-                If statBatter(I, 0) / statBatter(I, 7) > batRecVal!(26) Then
-                    batRecVal!(26) = statBatter(I, 0) / statBatter(I, 7)
-                    batRecPlyr$(26) = batterNames$(I)
+                If leaderStatVal2!(I2, 1) / leaderStatVal2!(I2, 8) > batRecVal!(26) Then
+                    batRecVal!(26) = leaderStatVal2!(I2, 1) / leaderStatVal2!(I2, 8)
+                    batRecPlyr$(26) = leaderNames$(I2)
                     batRecTeam$(26) = teamName$
                     'batRecYr!(26) = seasonYear
                 End If
@@ -1485,11 +1494,11 @@ Sub CalcRecordsPro (totalGames, teamName$, statName$, finalUpdate$)
             End If
 
             ' ** RBI Rate **
-            If minimumPA = 1 And statBatter(I, 3) <> 0 Then
+            If minimumPA = 1 And leaderStatVal2!(I2, 4) <> 0 Then
 
-                If statBatter(I, 0) / statBatter(I, 3) <= batRecVal!(27) Then
-                    batRecVal!(27) = statBatter(I, 0) / statBatter(I, 3)
-                    batRecPlyr$(27) = batterNames$(I)
+                If leaderStatVal2!(I2, 1) / leaderStatVal2!(I2, 4) <= batRecVal!(27) Then
+                    batRecVal!(27) = leaderStatVal2!(I2, 1) / leaderStatVal2!(I2, 4)
+                    batRecPlyr$(27) = leaderNames$(I2)
                     batRecTeam$(27) = teamName$
                     'batRecYr!(27) = seasonYear
                 End If
@@ -1497,11 +1506,11 @@ Sub CalcRecordsPro (totalGames, teamName$, statName$, finalUpdate$)
             End If
 
             ' ** Hit Rate **
-            If minimumPA = 1 And statBatter(I, 2) <> 0 Then
+            If minimumPA = 1 And leaderStatVal2!(I2, 3) <> 0 Then
 
-                If statBatter(I, 0) / statBatter(I, 2) <= batRecVal!(28) Then
-                    batRecVal!(28) = statBatter(I, 0) / statBatter(I, 2)
-                    batRecPlyr$(28) = batterNames$(I)
+                If leaderStatVal2!(I2, 1) / leaderStatVal2!(I2, 3) <= batRecVal!(28) Then
+                    batRecVal!(28) = leaderStatVal2!(I2, 1) / leaderStatVal2!(I2, 3)
+                    batRecPlyr$(28) = leaderNames$(I2)
                     batRecTeam$(28) = teamName$
                     'batRecYr!(28) = seasonYear
                 End If
@@ -1509,11 +1518,11 @@ Sub CalcRecordsPro (totalGames, teamName$, statName$, finalUpdate$)
             End If
 
             ' ** Error Rate **
-            If minimumPA = 1 And statBatter(I, 15) <> 0 Then
+            If minimumPA = 1 And leaderStatVal2!(I2, 16) <> 0 Then
 
-                If statBatter(I, 0) / statBatter(I, 15) >= batRecVal!(29) Then
-                    batRecVal!(29) = statBatter(I, 0) / statBatter(I, 15)
-                    batRecPlyr$(29) = batterNames$(I)
+                If leaderStatVal2!(I2, 1) / leaderStatVal2!(I2, 16) >= batRecVal!(29) Then
+                    batRecVal!(29) = leaderStatVal2!(I2, 1) / leaderStatVal2!(I2, 16)
+                    batRecPlyr$(29) = leaderNames$(I2)
                     batRecTeam$(29) = teamName$
                     'batRecYr!(29) = seasonYear
                 End If
@@ -1521,33 +1530,33 @@ Sub CalcRecordsPro (totalGames, teamName$, statName$, finalUpdate$)
             End If
 
             ' ** Stolen Base Attempts **
-            If statBatter(I, 20) + statBatter(I, 21) >= batRecVal!(30) Then
-                batRecVal!(30) = statBatter(I, 20) + statBatter(I, 21)
-                batRecPlyr$(30) = batterNames$(I)
+            If leaderStatVal2!(I2, 21) + leaderStatVal2!(I2, 22) >= batRecVal!(30) Then
+                batRecVal!(30) = leaderStatVal2!(I2, 21) + leaderStatVal2!(I2, 22)
+                batRecPlyr$(30) = leaderNames$(I2)
                 batRecTeam$(30) = teamName$
                 'batRecYr!(30) = seasonYear
             End If
 
             ' ** Caught Stealing **
-            If statBatter(I, 21) >= batRecVal!(31) Then
-                batRecVal!(31) = statBatter(I, 21)
-                batRecPlyr$(31) = batterNames$(I)
+            If leaderStatVal2!(I2, 22) >= batRecVal!(31) Then
+                batRecVal!(31) = leaderStatVal2!(I2, 22)
+                batRecPlyr$(31) = leaderNames$(I2)
                 batRecTeam$(31) = teamName$
                 'batRecYr!(31) = seasonYear
             End If
 
             ' ** Caught Stealing % **
-            If statBatter(I, 0) + statBatter(I, 7) >= batTotGames!(I) * 2.1 Then 
+            If leaderStatVal2!(I2, 1) + leaderStatVal2!(I2, 8) >= batTotGames!(I) * 2.1 Then
                 min21PA = 1
             Else
                 min21PA = 0
             End If
 
-            If min21PA = 1 And statBatter(I, 20) + statBatter(I, 21) <> 0 Then
+            If min21PA = 1 And leaderStatVal2!(I2, 21) + leaderStatVal2!(I2, 22) <> 0 Then
 
-                If statBatter(I, 21) / (statBatter(I, 20) + statBatter(I, 21)) >= batRecVal!(32) Then
-                    batRecVal!(32) = statBatter(I, 21) / (statBatter(I, 20) + statBatter(I, 21))
-                    batRecPlyr$(32) = batterNames$(I)
+                If leaderStatVal2!(I2, 22) / (leaderStatVal2!(I2, 21) + leaderStatVal2!(I2, 22)) >= batRecVal!(32) Then
+                    batRecVal!(32) = leaderStatVal2!(I2, 22) / (leaderStatVal2!(I2, 21) + leaderStatVal2!(I2, 22))
+                    batRecPlyr$(32) = leaderNames$(I2)
                     batRecTeam$(32) = teamName$
                     'batRecYr!(32) = seasonYear
                 End If
@@ -1563,13 +1572,15 @@ Sub CalcRecordsPro (totalGames, teamName$, statName$, finalUpdate$)
     ' ** Recorded Stats **
     For I = 0 To 21
 
+        I2 = I + 25
+
         For I1 = 1 To 23
 
-            I2 = I1 - 1
+            'I2 = I1 - 1
 
-            If statPitcher(I, I2) >= pitRecVal!(I1) Then
-                pitRecVal!(I1) = statPitcher(I, I2)
-                pitRecPlyr$(I1) = pitcherNames$(I)
+            If leaderStatVal2!(I2, I1) >= pitRecVal!(I1) Then
+                pitRecVal!(I1) = leaderStatVal2!(I2, I1)
+                pitRecPlyr$(I1) = leaderNames$(I2)
                 pitRecTeam$(I1) = teamName$
                 'pitRecYr!(I1) = seasonYear
             End If
@@ -1586,12 +1597,14 @@ Sub CalcRecordsPro (totalGames, teamName$, statName$, finalUpdate$)
 
         For I = 0 To 21
 
-            ' ** IRA % **
-            If statPitcher(I, 17) <> 0 And statPitcher(I, 8) >= 25 Then
+            I2 = I + 25
 
-                If statPitcher(I, 18) / statPitcher(I, 17) <= pitRecVal!(24) Then
-                    pitRecVal!(24) = statPitcher(I, 18) / statPitcher(I, 17)
-                    pitRecPlyr$(24) = pitcherNames$(I)
+            ' ** IRA % **
+            If leaderStatVal2!(I2, 18) <> 0 And leaderStatVal2!(I2, 9) >= 25 Then
+
+                If leaderStatVal2!(I2, 19) / leaderStatVal2!(I2, 18) <= pitRecVal!(24) Then
+                    pitRecVal!(24) = leaderStatVal2!(I2, 19) / leaderStatVal2!(I2, 18)
+                    pitRecPlyr$(24) = leaderNames$(I2)
                     pitRecTeam$(24) = teamName$
                     'pitRecYr!(24) = seasonYear
                 End If
@@ -1599,71 +1612,55 @@ Sub CalcRecordsPro (totalGames, teamName$, statName$, finalUpdate$)
             End If
 
             ' ** Runs / Game **
-            If statPitcher(I, 0) / 3 >= pitTotGames!(I) And statPitcher(I, 20) <> 0 Then
+            If leaderStatVal2!(I2, 1) / 3 >= pitTotGames!(I) And leaderStatVal2!(I2, 21) <> 0 Then
 
-                If statPitcher(I, 20) / statPitcher(I, 8) < pitRecVal!(25) Then
-                    pitRecVal!(25) = statPitcher(I, 20) / statPitcher(I, 8)
-                    pitRecPlyr$(25) = pitcherNames$(I)
+                If leaderStatVal2!(I2, 21) / leaderStatVal2!(I2, 9) < pitRecVal!(25) Then
+                    pitRecVal!(25) = leaderStatVal2!(I2, 21) / leaderStatVal2!(I2, 9)
+                    pitRecPlyr$(25) = leaderNames$(I2)
                     pitRecTeam$(25) = teamName$
                     'pitRecYr!(25) = seasonYear
                 End If
 
             End If
 
-            ' ** ERA **
-            If statPitcher(I, 0) / 3 >= pitTotGames!(I) And statPitcher(I, 0) <> 0 Then
+            If leaderStatVal2!(I2, 1) / 3 >= pitTotGames!(I) And leaderStatVal2!(I2, 1) <> 0 Then
 
-                If (statPitcher(I, 3) * 9) / (statPitcher(I, 0) / 3) > pitRecVal!(23) Then
-                    pitRecVal!(23) = (statPitcher(I, 3) * 9) / (statPitcher(I, 0) / 3)
-                    pitRecPlyr$(23) = pitcherNames$(I)
+                ' ** ERA **
+                If (leaderStatVal2!(I2, 4) * 9) / (leaderStatVal2!(I2, 1) / 3) < pitRecVal!(23) Then
+                    pitRecVal!(23) = (leaderStatVal2!(I2, 4) * 9) / (leaderStatVal2!(I2, 1) / 3)
+                    pitRecPlyr$(23) = leaderNames$(I2)
                     pitRecTeam$(23) = teamName$
                     'pitRecYr!(23) = seasonYear
                 End If
 
-            End If
-
-            ' ** Walks / 9 Innings **
-            If statPitcher(I, 0) / 3 >= pitTotGames!(I) And statPitcher(I, 0) <> 0 Then
-
-                If (statPitcher(I, 4) * 9) / (statPitcher(I, 0) / 3) > pitRecVal!(25) Then
-                    pitRecVal!(25) = (statPitcher(I, 4) * 9) / (statPitcher(I, 0) / 3)
-                    pitRecPlyr$(25) = pitcherNames$(I)
+                ' ** Walks / 9 Innings **
+                If (leaderStatVal2!(I2, 5) * 9) / (leaderStatVal2!(I2, 1) / 3) < pitRecVal!(25) Then
+                    pitRecVal!(25) = (leaderStatVal2!(I2, 5) * 9) / (leaderStatVal2!(I2, 1) / 3)
+                    pitRecPlyr$(25) = leaderNames$(I2)
                     pitRecTeam$(25) = teamName$
                     'pitRecYr!(25) = seasonYear
                 End If
 
-            End If
-
-            ' ** Strikeouts / 9 Innings **
-            If statPitcher(I, 0) / 3 >= pitTotGames!(I) And statPitcher(I, 0) <> 0 Then
-
-                If (statPitcher(I, 5) * 9) / (statPitcher(I, 0) / 3) < pitRecVal!(26) Then
-                    pitRecVal!(26) = (statPitcher(I, 5) * 9) / (statPitcher(I, 0) / 3)
-                    pitRecPlyr$(26) = pitcherNames$(I)
+                ' ** Strikeouts / 9 Innings **
+                If (leaderStatVal2!(I2, 6) * 9) / (leaderStatVal2!(I2, 1) / 3) > pitRecVal!(26) Then
+                    pitRecVal!(26) = (leaderStatVal2!(I2, 6) * 9) / (leaderStatVal2!(I2, 1) / 3)
+                    pitRecPlyr$(26) = leaderNames$(I2)
                     pitRecTeam$(26) = teamName$
                     'pitRecYr!(26) = seasonYear
                 End If
 
-            End If
-
-            ' ** Hits / 9 Innings **
-            If statPitcher(I, 0) / 3 >= pitTotGames!(I) And statPitcher(I, 0) <> 0 Then
-
-                If (statPitcher(I, 1) * 9) / (statPitcher(I, 0) / 3) > pitRecVal!(27) Then
-                    pitRecVal!(27) = (statPitcher(I, 1) * 9) / (statPitcher(I, 0) / 3)
-                    pitRecPlyr$(27) = pitcherNames$(I)
+                ' ** Hits / 9 Innings **
+                If (leaderStatVal2!(I2, 2) * 9) / (leaderStatVal2!(I2, 1) / 3) < pitRecVal!(27) Then
+                    pitRecVal!(27) = (leaderStatVal2!(I2, 2) * 9) / (leaderStatVal2!(I2, 1) / 3)
+                    pitRecPlyr$(27) = leaderNames$(I2)
                     pitRecTeam$(27) = teamName$
                     'pitRecYr!(27) = seasonYear
                 End If
 
-            End If
-
-            ' ** Double-Plays / 9 Innings **
-            If statPitcher(I, 0) / 3 >= pitTotGames!(I) And statPitcher(I, 0) <> 0 Then
-
-                If (statPitcher(I, 13) * 9) / (statPitcher(I, 0) / 3) < pitRecVal!(28) Then
-                    pitRecVal!(28) = (statPitcher(I, 13) * 9) / (statPitcher(I, 0) / 3)
-                    pitRecPlyr$(28) = pitcherNames$(I)
+                ' ** Double-Plays / 9 Innings **
+                If (leaderStatVal2!(I2, 23) * 9) / (leaderStatVal2!(I2, 1) / 3) > pitRecVal!(28) Then
+                    pitRecVal!(28) = (leaderStatVal2!(I2, 23) * 9) / (leaderStatVal2!(I2, 1) / 3)
+                    pitRecPlyr$(28) = leaderNames$(I2)
                     pitRecTeam$(28) = teamName$
                     'pitRecYr!(28) = seasonYear
                 End If
@@ -1680,8 +1677,10 @@ Sub CalcRecordsPro (totalGames, teamName$, statName$, finalUpdate$)
     ' ** Recorded Stats **
     For I1 = 0 To 21
 
-        If statTeamBat!(I1) > batRecTmVal!(I1) Then
-            batRecTmVal!(I1) = statTeamBat!(I1)
+        I2 = I1 + 3
+
+        If ldrBatStat!(I2) > batRecTmVal!(I1) Then
+            batRecTmVal!(I1) = ldrBatStat!(I2)
             batRecTmDesc$(I1) = teamName$ 'TT$(I, I1)
             'batRecTmYr!(I1) = seasonYear
         End If
@@ -1694,28 +1693,30 @@ Sub CalcRecordsPro (totalGames, teamName$, statName$, finalUpdate$)
     'Process stats that require calculations
     If UCase$(finalUpdate$) = "Y" Then
 
-        If statTeamBat!(0) <> 0 Then
+        If ldrBatStat!(1) <> 0 Then
 
-            'Hit Rate
-            If statTeamBat!(1) / statTeamBat!(0) > batRecTmVal!(22) Then
-                batRecTmVal!(22) = statTeamBat!(1) / statTeamBat!(0)
+            'Batting AVG
+            If ldrBatStat!(4) / ldrBatStat!(3) > batRecTmVal!(22) Then
+                batRecTmVal!(22) = ldrBatStat!(4) / ldrBatStat!(3)
                 batRecTmDesc$(22) = teamName$
                 'batRecTmYr!(22) = seasonYear
             End If
 
-            'Slugging Rate
-            If (statTeamBat!(1) + statTeamBat!(4) + (statTeamBat!(5) * 2) + (statTeamBat!(6) * 3)) / statTeamBat!(0) > batRecTmVal!(23) Then
-                batRecTmVal!(23) = (statTeamBat!(1) + statTeamBat!(4) + (statTeamBat!(5) * 2) + (statTeamBat!(6) * 3)) / statTeamBat!(0)
+            'Slugging %
+            slugPCT! = (ldrBatStat!(4) + ldrBatStat!(7) + (ldrBatStat!(8) * 2) + (ldrBatStat!(9) * 3)) / ldrBatStat!(3)
+            If slugPCT! > batRecTmVal!(23) Then
+                batRecTmVal!(23) = slugPCT!
                 batRecTmDesc$(23) = teamName$
                 'batRecTmYr!(23) = seasonYear
             End If
 
             'OB %
-            If (statTeamBat!(1) + statTeamBat!(7)) / (statTeamBat!(0) + statTeamBat!(7)) > batRecTmVal!(24) Then
-                batRecTmVal!(24) = (statTeamBat!(1) + statTeamBat!(7)) / (statTeamBat!(0) + statTeamBat!(7))
+            obPCT! = (ldrBatStat!(4) + ldrBatStat!(10)) / (ldrBatStat!(3) + ldrBatStat!(10))
+            'Why don't we use HBP / SF here? do we even sum those for a team?
+            If obPCT! > batRecTmVal!(24) Then
+                batRecTmVal!(24) = obPCT!
                 batRecTmDesc$(24) = teamName$
                 'batRecTmYr!(24) = seasonYear
-
             End If
 
         End If
@@ -1725,8 +1726,10 @@ Sub CalcRecordsPro (totalGames, teamName$, statName$, finalUpdate$)
     ' ** Recorded Stats **
     For I1 = 0 To 22
 
-        If statTeamPit!(I1) > pitRecTmVal!(I1) Then
-            pitRecTmVal!(I1) = statTeamPit!(I1)
+        I2 = I1 + 1
+
+        If ldrPitStat!(I2) > pitRecTmVal!(I1) Then
+            pitRecTmVal!(I1) = ldrPitStat!(I2)
             pitRecTmDesc$(I1) = teamName$ 'TT1$(I, I1)
             'pitRecTmYr!(I1) = seasonYear
         End If
@@ -1742,10 +1745,10 @@ Sub CalcRecordsPro (totalGames, teamName$, statName$, finalUpdate$)
         For I = 1 To TEAMS_PER_LEAGUE
 
             'IRA %
-            If statTeamPit!(17) <> 0 Then
+            If ldrPitStat!(17) <> 0 Then
 
-                If statTeamPit!(18) / statTeamPit!(17) > pitRecTmVal!(23) Then
-                    pitRecTmVal!(23) = statTeamPit!(18) / statTeamPit!(17)
+                If ldrPitStat!(18) / ldrPitStat!(17) > pitRecTmVal!(23) Then
+                    pitRecTmVal!(23) = ldrPitStat!(18) / ldrPitStat!(17)
                     pitRecTmDesc$(23) = teamName$
                     'pitRecTmYr!(23) = seasonYear
                 End If
@@ -1753,10 +1756,10 @@ Sub CalcRecordsPro (totalGames, teamName$, statName$, finalUpdate$)
             End If
 
             'ER / 9 Innings
-            If statTeamPit!(0) <> 0 Then
+            If ldrPitStat!(1) <> 0 Then
 
-                If (statTeamPit!(3) * 9) / (statTeamPit!(0) / 3) < pitRecTmVal!(24) Then
-                    pitRecTmVal!(24) = (statTeamPit!(3) * 9) / (statTeamPit!(0) / 3)
+                If (ldrPitStat!(3) * 9) / (ldrPitStat!(1) / 3) < pitRecTmVal!(24) Then
+                    pitRecTmVal!(24) = (ldrPitStat!(3) * 9) / (ldrPitStat!(1) / 3)
                     pitRecTmDesc$(24) = teamName$
                     'pitRecTmYr!(24) = seasonYear
                 End If
@@ -1766,8 +1769,6 @@ Sub CalcRecordsPro (totalGames, teamName$, statName$, finalUpdate$)
         Next I
 
     End If 'Done checking for final update
-
-    Call PostRecordsPro
 
 End Sub
 

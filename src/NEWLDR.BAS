@@ -1035,9 +1035,16 @@ Sub DisplayBattingLeaders (TVN, maxRecords, categoryId)
                 Print Tab(25); expLdrTeam$(W);
 
                 Select Case TVN
-                    Case 1: Print Tab(58); Using "#####"; expLdrVal!(W)
-                    Case 2: Print Tab(58); Using ".###"; expLdrVal!(W)
-                    Case 3: Print Tab(58); Using "###.##"; expLdrVal!(W)
+                    
+                    Case 1: 
+                        Print Tab(54); Using "#####"; expLdrVal!(W)
+                    
+                    Case 2: 
+                        Print Tab(54); Using ".###"; expLdrVal!(W)
+                    
+                    Case 3: 
+                        Print Tab(54); Using "###.##"; expLdrVal!(W)
+                
                 End Select
 
             Else
@@ -1435,18 +1442,19 @@ Sub DisplayPitchingLeaders (TVN, maxRecords, categoryId)
                 Select Case TVN
 
                     Case 1:
-                        Print Tab(58); Using "###"; expLdrVal!(W);
+                        Print Tab(54); Using "###"; expLdrVal!(W);
                         Print ".";
                         Print Using "#"; expLdrTYP1!(W)
 
                     Case 2:
-                        Print Tab(58); Using "#####"; expLdrVal!(W)
+                        Print Tab(54); Using "#####"; expLdrVal!(W)
 
                     Case 3:
-                        Print Tab(58); Using "###.##"; expLdrVal!(W)
+                        Print Tab(54); Using "###.##"; expLdrVal!(W)
 
                     Case 4:
-                        Print Tab(58); Using "###"; expLdrVal!(W);: Print "%"
+                        Print Tab(54); Using "###"; expLdrVal!(W);
+                        Print "%"
 
                 End Select
 
@@ -2390,13 +2398,13 @@ Sub NewLeaders_Report (printDest, destFile$, TVN, maxRecords, categoryID)
         Select Case TVN
 
             Case 1:
-                Print #1, Tab(58); Using "#####"; expLdrVal!(W)
+                Print #1, Tab(54); Using "#####"; expLdrVal!(W)
 
             Case 2:
-                Print #1, Tab(58); Using ".###"; expLdrVal!(W)
+                Print #1, Tab(54); Using ".###"; expLdrVal!(W)
 
             Case 3:
-                Print #1, Tab(58); Using "###.##"; expLdrVal!(W)
+                Print #1, Tab(54); Using "###.##"; expLdrVal!(W)
 
         End Select
 

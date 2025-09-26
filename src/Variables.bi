@@ -183,7 +183,7 @@ Dim leaderVals!(298, 2)
 Dim leagLdrPlayer$(298), leagLdrTeam$(298)
 Dim leagLdrVal1!(298), leagLdrVal2!(298)
 
-Dim ldrBatStat(24), ldrPitStat(23)
+Dim ldrBatStat!(24), ldrPitStat!(23)
 
 Dim BA$(40), ER$(40)
 Dim LF$(70), RT$(70)
@@ -253,7 +253,7 @@ Dim totHomeScoreTeam!(4), totHomeScoreOpp!(4)
 Dim batRecVal!(32), batRecYr!(32), pitRecVal!(29), pitRecYr!(29)
 Dim batRecTmVal!(24), pitRecTmVal!(25), batRecTmYr!(24), pitRecTmYr!(25)
 
-'Dim batRecPlyr$(32), batRecTeam$(32), pitRecPlyr$(29), pitRecTeam$(29)
+Dim batRecPlyr$(32), batRecTeam$(32), pitRecPlyr$(29), pitRecTeam$(29)
 Dim batIndCategory$(1 To 32), pitIndCategory$(1 To 28)
 Dim batTeamCategory$(0 To 20), pitTeamCategory$(0 To 18)
 Dim batRecTmDesc$(24), pitRecTmDesc$(25)
@@ -341,13 +341,14 @@ Dim Shared H6%, INNING%
 
 Dim Shared P9, W5, W6
 
-Dim Shared autoPlay, BV, compTeam, currFielder
+Dim Shared autoPlay, batterMinimumOpt, BV, compTeam, currFielder
 Dim Shared desigHit, D, dayOrNight
 Dim Shared earlyExit, endAllGames, ejectCnt, FontColAdj
-Dim Shared gameLoc, gameOver, gameTemp, inningsPitched
+Dim Shared gameLoc, gameOver, gameTemp, ghostRunOpt
+Dim Shared inningsPitched
 Dim Shared nbrLines, nbrStrikes, noLUFound, normalFinish
 Dim Shared P, pbpLine, pinchHitterFlag, pitchEraOpt, playerMode, playerOpt
-Dim Shared strikeoutRating
+Dim Shared sndOpt, strikeoutRating
 Dim Shared useInj, userDone, useRest, useVGA
 Dim Shared umpBBadj, umpSZadj
 
@@ -378,7 +379,7 @@ Dim Shared MON(5, 14), nbrOuts(1), newRelieverNeeded(1)
 Dim Shared oppBatStats(0 To 1, 0 To 22, 0 To 21), oppPitStats(0 To 1, 0 To 21, 0 To 41)
 Dim Shared pitcherStam(0 To 1, 0 To 1), pitchRating(0 To 1, 0 To 21, 0 To 89)
 Dim Shared pitcherOfRecord(1), playersUsed(1)
-'Dim Shared relieverBatterCount(0 To 1), relieverOnRecordForSave(1), runnerOnBase(3), stealPhase(3)
+Dim Shared relieverBatterCount(0 To 1), relieverOnRecordForSave(1), runnerOnBase(3), stealPhase(3)
 Dim Shared schedGame(2), schedOptions(18), teamRat_GAME(1, 13)
 Dim Shared teamBatStats(0 To 1, 0 To 22, 0 To 21), teamPitStats(0 To 1, 0 To 21, 0 To 41)
 Dim Shared teamDPs(1), teamMgrProfileVal(0 To 1, 999), teamSplit(1, 11), teamYears(1)
