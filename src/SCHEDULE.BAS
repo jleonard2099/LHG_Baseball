@@ -1351,8 +1351,8 @@ Sub ChangeGlobalSettings ()
     Shared yesNoText$()
 
     Dim yesNoNC$(0 To 2)
-    yesNoNC$(0) = "YES      "
-    yesNoNC$(1) = "NO       "
+    yesNoNC$(0) = "NO       "
+    yesNoNC$(1) = "YES      "
     yesNoNC$(2) = "NO CHANGE"
 
     Dim displayPause!
