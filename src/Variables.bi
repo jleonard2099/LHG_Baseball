@@ -70,7 +70,7 @@ Dim losePitcher_Road$(MAX_SCHED_STATS), winPitcher_Road$(MAX_SCHED_STATS)
 ' -------------------------
 Dim BS%, NS%
 
-ReDim scheduleAP%(MAX_SCHEDULE_GAMES), scheduleNG%(MAX_SCHEDULE_GAMES, 18)
+ReDim scheduleAP%(MAX_SCHEDULE_GAMES), scheduleNG%(MAX_SCHEDULE_GAMES, 20)
 ReDim homeScores(MAX_SCHEDULE_GAMES), visitorScores(MAX_SCHEDULE_GAMES)
 
 ReDim scheduleH$(MAX_SCHEDULE_GAMES), scheduleV$(MAX_SCHEDULE_GAMES)
@@ -339,15 +339,15 @@ Dim grounderDir$(10), pitHand$(1)
 ' Shared / Global
 Dim Shared H6%, INNING%
 
-Dim Shared P9, W5, W6
+'Dim Shared P9, W5, W6
 
 Dim Shared autoPlay, batterMinimumOpt, BV, compTeam, currFielder
-Dim Shared desigHit, D, dayOrNight
+'Dim Shared desigHit, D, dayOrNight
 Dim Shared earlyExit, endAllGames, ejectCnt, FontColAdj
 Dim Shared gameLoc, gameOver, gameTemp, ghostRunOpt
 Dim Shared inningsPitched
 Dim Shared nbrLines, nbrStrikes, noLUFound, normalFinish
-Dim Shared P, pbpLine, pinchHitterFlag, pitchEraOpt, playerMode, playerOpt
+'Dim Shared P, pbpLine, pinchHitterFlag, pitchEraOpt, playerMode, playerOpt
 Dim Shared sndOpt, strikeoutRating
 Dim Shared useInj, userDone, useRest, useVGA
 Dim Shared umpBBadj, umpSZadj
@@ -363,9 +363,8 @@ Dim setupUsed(1), closerUsed(1)
 ' 10 = retreat 1 base, but safe
 ' 11 = retreat 1 base, tagged out
 Dim Shared assigned(1 To 9), baseMove(0 To 3)
-Dim Shared batRating(0 To 1, 0 To 22, 80)
-'b2StealPhase is both a % threshold and a coded state flag.
 Dim Shared bRunner(3), b1Pitcher(3), b2Pitcher(3)
+Dim Shared batRating(0 To 1, 0 To 22, 80), battersFaced(0 To 1, 0 to 21)
 Dim Shared buntBaseHit(0 To 9, 0 To 2), buntLeadRun(9, 1)
 Dim Shared buntQuality(0 To 1, 1 To 9, 1 To 9), buntStrike(0 To 5, 0 To 2)
 Dim Shared closerZone(0 To 1), CSS(1, 22, 6)
@@ -379,7 +378,8 @@ Dim Shared MON(5, 14), nbrOuts(1), newRelieverNeeded(1)
 Dim Shared oppBatStats(0 To 1, 0 To 22, 0 To 21), oppPitStats(0 To 1, 0 To 21, 0 To 41)
 Dim Shared pitcherStam(0 To 1, 0 To 1), pitchRating(0 To 1, 0 To 21, 0 To 89)
 Dim Shared pitcherOfRecord(1), playersUsed(1)
-Dim Shared relieverBatterCount(0 To 1), relieverOnRecordForSave(1), runnerOnBase(3), stealPhase(3)
+'stealPhase is both a % threshold and a coded state flag.
+Dim Shared relieverOnRecordForSave(1), runnerOnBase(3), stealPhase(3)
 Dim Shared schedGame(2), schedOptions(18), teamRat_GAME(1, 13)
 Dim Shared teamBatStats(0 To 1, 0 To 22, 0 To 21), teamPitStats(0 To 1, 0 To 21, 0 To 41)
 Dim Shared teamDPs(1), teamMgrProfileVal(0 To 1, 999), teamSplit(1, 11), teamYears(1)
@@ -400,3 +400,4 @@ Dim Shared parkNames$(99), pitchers$(1, 21), precip$(4), player$(23), pbpText$(1
 Dim Shared skyCond$(4), stolenBases$(0 To 22)
 Dim Shared teamAbbreviatons$(0 To 1), triplesPlayer$(0 To 22)
 Dim Shared windDirection$(10)
+

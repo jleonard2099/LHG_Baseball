@@ -22,7 +22,7 @@ Sub ReadSchedOld (targetFile$)
         Field #1, X * 2 As X$, 2 As Q$(X + 1), (SCHEDULE_SIZE_BYTES - 4) - 2 - 2 * X As X$
     Next
 
-    Field #1, 38 As X$, 2 As Q$(22), 2 As Q$(23), 3 As Q$(20), 3 As Q$(21)
+    Field #1, 38 As X$, 2 As Q$(22), 2 As Q$(23), 5 As Q$(20), 5 As Q$(21)
 
     For I = 1 To scheduleAP%(0)
 
@@ -32,22 +32,12 @@ Sub ReadSchedOld (targetFile$)
             scheduleNG%(I, X) = CVI(Q$(X + 1))
         Next
 
-        If scheduleNG%(I, 14) > 8 Then
-            scheduleNG%(I, 14) = 0
-        End If
-
         For X = 0 To 1
             scheduleYN$(I, X) = RTrim$(Q$(20 + X))
         Next
 
         visitorScores(I) = CVI(Q$(22))
         homeScores(I) = CVI(Q$(23))
-
-        If scheduleNG%(I, 6) > 1 Then scheduleNG%(I, 6) = 1
-        If scheduleNG%(I, 7) > 1 Then scheduleNG%(I, 7) = 1
-        If scheduleNG%(I, 9) > 1 Then scheduleNG%(I, 9) = 1
-        If scheduleNG%(I, 10) > 1 Then scheduleNG%(I, 10) = 1
-        If scheduleNG%(I, 11) > 1 Then scheduleNG%(I, 11) = 1
 
     Next
 
@@ -118,24 +108,24 @@ Sub SaveSchedFileConverted (saveFile$, numberGames)
 
     Open saveFile$ For Random As #1 Len = SCHEDULE_SIZE_BYTES
 
-    For X = 0 To 18
+    For X = 0 To 20
         Field #1, X * 2 As X$, 2 As Q$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
     Next
 
-    Field #1, 38 As X$, 2 As Q$(22), 2 As Q$(23), 5 As Q$(20), 5 As Q$(21)
+    Field #1, 38 As X$, 2 As Q$(24), 2 As Q$(25), 5 As Q$(22), 5 As Q$(23)
 
     For I = 1 To scheduleAP%(0)
 
-        For X = 0 To 18:
+        For X = 0 To 20:
             LSet Q$(X + 1) = MKI$(scheduleNG%(I, X))
         Next
 
         For X = 0 To 1:
-            LSet Q$(20 + X) = RTrim$(scheduleYN$(I, X))
+            LSet Q$(22 + X) = RTrim$(scheduleYN$(I, X))
         Next
 
-        LSet Q$(22) = MKI$(visitorScores(I))
-        LSet Q$(23) = MKI$(homeScores(I))
+        LSet Q$(24) = MKI$(visitorScores(I))
+        LSet Q$(25) = MKI$(homeScores(I))
 
         Put #1, I
 
@@ -169,6 +159,12 @@ Sub ConvertSched6to7 (targetFile$, silent)
         numberGames = fileLength& / (SCHEDULE_SIZE_BYTES - 4)
 
         Call ReadSchedOld(targetFile$)
+
+        For currGame = 1 To numberGames
+            'Assign defaults
+            scheduleNG%(currGame, 19) = 0
+            scheduleNG%(currGame, 20) = 0
+        Next currGame
 
         'Call SaveSchedFileConverted(newFile$, numberGames)
 

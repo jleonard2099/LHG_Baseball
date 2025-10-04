@@ -36,7 +36,7 @@ Sub SCHEDULE ()
         menuChoices$(5) = "MAKE GLOBAL CHANGES TO A SCHEDULE "
         menuChoices$(6) = "GENERATE A SEASON SCHEDULE        "
         menuChoices$(7) = "BOXSCORE MAINTENANCE / PARAMETERS "
-        menuChoices$(8) = "CONVERT SCHEDULE FILE FROM 6.0    "
+        menuChoices$(8) = "CONVERT SCHEDULE FILE FROM 6.9    "
         menuChoices$(9) = "RETURN TO FULL COUNT BB MENU      "
         SELECTION% = 1
         Count% = 9
@@ -73,6 +73,8 @@ Sub SCHEDULE ()
             scheduleNG%(0, 10) = 1
             scheduleNG%(0, 11) = 1
             scheduleNG%(0, 14) = 0
+            scheduleNG%(0, 19) = 1
+            scheduleNG%(0, 20) = 1
 
             Select Case SELECTION%
 
@@ -326,7 +328,7 @@ Sub NewSchedule (scheduleFile$)
                 BS% = Int((targetGame% - 1) / SCHED_ENTRIES_PER_SCREEN)
                 If NS% < BS% Then NS% = BS%
 
-                For X = 0 To 18
+                For X = 0 To 20
                     If X <> 13 Then
                         scheduleNG%(targetGame%, X) = scheduleNG%(targetGame% - 1, X)
                     End If
@@ -363,7 +365,7 @@ Sub NewSchedule (scheduleFile$)
                 Loop Until targetGame% >= 1 And targetGame% <= scheduleAP%(0)
 
                 For X = targetGame% To scheduleAP%(0) - 1
-                    For X1 = 0 To 18
+                    For X1 = 0 To 20
                         scheduleNG%(X, X1) = scheduleNG%(X + 1, X1)
                     Next
 
@@ -460,7 +462,7 @@ Sub NewSchedule (scheduleFile$)
                 Close #2
 
                 'Free up used memory so games can load faster
-                ReDim scheduleNG%(1, 18)
+                ReDim scheduleNG%(1, 20)
                 ReDim scheduleYN$(1, 1)
                 ReDim homeScores(1)
                 ReDim visitorScores(1)
@@ -472,7 +474,7 @@ Sub NewSchedule (scheduleFile$)
                 Loop Until schedGame(0) + schedGame(2) > schedGame(1)
 
                 'Restore memory so we can populate again
-                ReDim scheduleNG%(MAX_SCHEDULE_GAMES, 18)
+                ReDim scheduleNG%(MAX_SCHEDULE_GAMES, 20)
                 ReDim scheduleYN$(MAX_SCHEDULE_GAMES, 1)
                 ReDim homeScores(MAX_SCHEDULE_GAMES)
                 ReDim visitorScores(MAX_SCHEDULE_GAMES)
@@ -670,54 +672,58 @@ Sub NewGame (visitor$, home$, YN$, DT$, TM$, NTMS, gameIndex%)
         Color 15, 0
         Cls
 
+        Locate 2
         Color 2
         Print Tab(29); "SELECT OPENING OPTIONS"
 
-        Locate 2, 2: Color 14
+        Locate 4, 2: Color 14
         Print "(1) ";
         Color 15: Print playMode$(scheduleNG%(gameIndex%, 8))
-        Locate 3, 2: Color 14
+        Locate 5, 2: Color 14
         Print "(2) ";
         Color 15: Print "VISITING TEAM: "; visitor$
-        Locate 4, 2: Color 14
+        Locate 6, 2: Color 14
         Print "(3) ";
         Color 15: Print "HOME TEAM: "; home$
         'Nothing is done for "League Type" (AL vs. NL) ??
-        Locate 5, 2: Color 14
+        Locate 7, 2: Color 14
         Print "(4) ";
         Color 15: Print "GAME DATE (XX-XX-XX)  "; DT$
         'Nothing is done for "Game Type"; it's assumed to be regular season?
-        Locate 6, 2: Color 14
+        Locate 8, 2: Color 14
         Print "(5) ";
         Color 15: Print "GAME TIME (XX:XXP)    "; TM$
-        Locate 7, 2: Color 14
+        Locate 9, 2: Color 14
         Print "(6) ";
         Color 15: Print Using "PLAY-BY-PLAY DELAY (SECS): ##.#"; scheduleNG%(gameIndex%, 4) / 10
-        Locate 8, 2: Color 14
-        Print "(7) ";
-        Color 15: Print "DESIGNATED HITTER: "; yesNoText$(scheduleNG%(gameIndex%, 3))
-        Locate 9, 2: Color 14
-        Print "(8) ";
-        Color 15: Print "USE INJURIES: "; yesNoText$(scheduleNG%(gameIndex%, 6))
         Locate 10, 2: Color 14
-        Print "(9) ";
-        Color 15: Print "USE LEFT/RIGHT SPLIT STATS: "; yesNoText$(scheduleNG%(gameIndex%, 7))
-        Locate 11, 2: Color 14
-        Print "(A) ";
-        Color 15: Print "USE DAYS REST DATA FOR PITCHERS: "; yesNoText$(scheduleNG%(gameIndex%, 9))
-        Locate 12, 2: Color 14
-        Print "(B) ";
-        Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE: "; yesNoText$(scheduleNG%(gameIndex%, 10))
-        Locate 13, 2: Color 14
-        Print "(C) ";
-        Color 15: Print "USE WEATHER EFFECTS: "; yesNoText$(scheduleNG%(gameIndex%, 5))
-        Locate 14, 2: Color 14
-        Print "(D) ";
-        Color 15: Print "USE BALLPARK GRAPHICS, IF ABLE: "; yesNoText$(scheduleNG%(gameIndex%, 11))
-        Locate 15, 2: Color 14
-        Print "(E) ";
+        Print "(7) ";
         Color 15: Print "PITCHER ERA: "; pitcherEra$(scheduleNG%(gameIndex%, 14))
+        Locate 11, 2: Color 14
+        Print "(8) ";
+        Color 15: Print "3-BATTER MIN FOR RELIEF PITCHER: "; yesNoText$(scheduleNG%(gameIndex%, 19))
+        Locate 12, 2: Color 14
+        Print "(9) ";
+        Color 15: Print "AUTOMATIC RUNNER IN EXTRA INNINGS: "; yesNoText$(scheduleNG%(gameIndex%, 20))
+        Locate 13, 2: Color 14
+        Print "(A) ";
+        Color 15: Print "USE INJURIES: "; yesNoText$(scheduleNG%(gameIndex%, 6))
+        Locate 14, 2: Color 14
+        Print "(B) ";
+        Color 15: Print "USE LEFT/RIGHT SPLIT STATS: "; yesNoText$(scheduleNG%(gameIndex%, 7))
+        Locate 15, 2: Color 14
+        Print "(C) ";
+        Color 15: Print "USE DAYS REST DATA FOR PITCHERS: "; yesNoText$(scheduleNG%(gameIndex%, 9))
+        Locate 16, 2: Color 14
+        Print "(D) ";
+        Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE: "; yesNoText$(scheduleNG%(gameIndex%, 10))
         Locate 17, 2: Color 14
+        Print "(E) ";
+        Color 15: Print "USE WEATHER EFFECTS: "; yesNoText$(scheduleNG%(gameIndex%, 5))
+        Locate 18, 2: Color 14
+        Print "(F) ";
+        Color 15: Print "USE BALLPARK GRAPHICS, IF ABLE: "; yesNoText$(scheduleNG%(gameIndex%, 11))
+        Locate 20, 2: Color 14
         Print "(0) ";
         Color 15: Print "ACCEPT SETTINGS"
 
@@ -764,37 +770,40 @@ Sub NewGame (visitor$, home$, YN$, DT$, TM$, NTMS, gameIndex%)
                     Locate 6, 26: Input TM$
 
                 Case 6:
-                    Locate 7, 32: Input displayPause!
+                    Locate 9, 32: Input displayPause!
                     scheduleNG%(gameIndex%, 4) = displayPause! * 10
 
                 Case 7:
-                    scheduleNG%(gameIndex%, 3) = 1 - scheduleNG%(gameIndex%, 3)
-
-                Case 8:
-                    scheduleNG%(gameIndex%, 6) = 1 - scheduleNG%(gameIndex%, 6)
-
-                Case 9:
-                    scheduleNG%(gameIndex%, 7) = 1 - scheduleNG%(gameIndex%, 7)
-
-                Case 10:
-                    scheduleNG%(gameIndex%, 9) = 1 - scheduleNG%(gameIndex%, 9)
-
-                Case 11:
-                    scheduleNG%(gameIndex%, 10) = 1 - scheduleNG%(gameIndex%, 10)
-
-                Case 12:
-                    scheduleNG%(gameIndex%, 5) = 1 - scheduleNG%(gameIndex%, 5)
-
-                Case 13:
-                    scheduleNG%(gameIndex%, 11) = 1 - scheduleNG%(gameIndex%, 11)
-
-                Case 14:
                     scheduleNG%(gameIndex%, 14) = scheduleNG%(gameIndex%, 14) + 1
                     If scheduleNG%(gameIndex%, 14) > 8 Then scheduleNG%(gameIndex%, 14) = 0
 
+                Case 8:
+                    scheduleNG%(gameIndex%, 19) = 1 - scheduleNG%(gameIndex%, 19)
+
+                Case 9:
+                    scheduleNG%(gameIndex%, 20) = 1 - scheduleNG%(gameIndex%, 20)
+
+                Case 10:
+                    scheduleNG%(gameIndex%, 6) = 1 - scheduleNG%(gameIndex%, 6)
+
+                Case 11:
+                    scheduleNG%(gameIndex%, 7) = 1 - scheduleNG%(gameIndex%, 7)
+
+                Case 12:
+                    scheduleNG%(gameIndex%, 9) = 1 - scheduleNG%(gameIndex%, 9)
+
+                Case 13:
+                    scheduleNG%(gameIndex%, 10) = 1 - scheduleNG%(gameIndex%, 10)
+
+                Case 14:
+                    scheduleNG%(gameIndex%, 5) = 1 - scheduleNG%(gameIndex%, 5)
+
+                Case 15:
+                    scheduleNG%(gameIndex%, 11) = 1 - scheduleNG%(gameIndex%, 11)
+
             End Select
 
-        Loop Until (setting >= 0 And setting <= 14)
+        Loop Until (setting >= 0 And setting <= 15)
 
         If visitor$ <> "" And home$ <> "" And TM$ <> "" And DT$ <> "" Then
 
@@ -938,22 +947,22 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
                             'Write matching games
                             Locate 1, 1: Print totalGames + 1; " MATCHES"
 
-                            For X = 0 To 18
+                            For X = 0 To 20
                                 Field #1, X * 2 As X$, 2 As Q$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
                             Next
 
-                            Field #1, 38 As X$, 2 As Q$(22), 2 As Q$(23), 5 As Q$(20), 5 As Q$(21)
+                            Field #1, 38 As X$, 2 As Q$(24), 2 As Q$(25), 5 As Q$(22), 5 As Q$(23)
 
-                            For X = 0 To 18:
+                            For X = 0 To 20:
                                 LSet Q$(X + 1) = MKI$(scheduleNG%(I, X))
                             Next
 
                             For X = 0 To 1:
-                                LSet Q$(20 + X) = scheduleYN$(I, X)
+                                LSet Q$(22 + X) = scheduleYN$(I, X)
                             Next
 
-                            LSet Q$(22) = MKI$(visitorScores(I))
-                            LSet Q$(23) = MKI$(homeScores(I))
+                            LSet Q$(24) = MKI$(visitorScores(I))
+                            LSet Q$(25) = MKI$(homeScores(I))
 
                             Put #1, totalGames + 1
 
@@ -1204,24 +1213,24 @@ Sub SaveScheduleFile (saveFile$)
 
     Open saveFile$ For Random As #1 Len = SCHEDULE_SIZE_BYTES
 
-    For X = 0 To 18
+    For X = 0 To 20
         Field #1, X * 2 As X$, 2 As Q$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
     Next
 
-    Field #1, 38 As X$, 2 As Q$(22), 2 As Q$(23), 5 As Q$(20), 5 As Q$(21)
+    Field #1, 38 As X$, 2 As Q$(24), 2 As Q$(25), 5 As Q$(22), 5 As Q$(23)
 
     For I = 1 To scheduleAP%(0)
 
-        For X = 0 To 18:
+        For X = 0 To 20:
             LSet Q$(X + 1) = MKI$(scheduleNG%(I, X))
         Next
 
         For X = 0 To 1:
-            LSet Q$(20 + X) = RTrim$(scheduleYN$(I, X))
+            LSet Q$(22 + X) = RTrim$(scheduleYN$(I, X))
         Next
 
-        LSet Q$(22) = MKI$(visitorScores(I))
-        LSet Q$(23) = MKI$(homeScores(I))
+        LSet Q$(24) = MKI$(visitorScores(I))
+        LSet Q$(25) = MKI$(homeScores(I))
 
         Put #1, I
 
@@ -1290,7 +1299,7 @@ Sub SortSchedule ()
 
             If scheduleNG%(Z, 12) > scheduleNG%(Z1, 12) Then
 
-                For I = 0 To 18:
+                For I = 0 To 20:
                     Swap scheduleNG%(Z, I), scheduleNG%(Z1, I)
                 Next
 
@@ -1314,7 +1323,7 @@ Sub SortSchedule ()
 
             If schedDates&(Z) > schedDates&(Z1) Then
 
-                For I = 0 To 18:
+                For I = 0 To 20:
                     Swap scheduleNG%(Z, I), scheduleNG%(Z1, I)
                 Next
 
@@ -1368,6 +1377,8 @@ Sub ChangeGlobalSettings ()
     'useMgrProf = 1
     'useVGA = 1
     'pitchEraOpt = 0
+    'batterMinimumOpt = 1
+    'ghostRunOpt = 1
 
     'This code will assign defaults based on the first game in the schedule.
     'Usually when I want to change global settings, I want to keep most
@@ -1382,6 +1393,8 @@ Sub ChangeGlobalSettings ()
     useWeather = scheduleNG%(1, 5)
     useVGA = scheduleNG%(1, 11)
     pitchEraOpt = scheduleNG%(1, 14)
+    batterMinimumOpt = scheduleNG%(gameIndex%, 19)
+    ghostRunOpt = scheduleNG%(gameIndex%, 20)
 
     DT$ = "03-18-24"
     TM$ = "03:00P"
@@ -1391,39 +1404,47 @@ Sub ChangeGlobalSettings ()
         Color 15, 0
         Cls
 
+        Locate 2
         Print Tab(30); "GLOBAL SETTINGS FOR SCHEDULE"
 
-        Locate 3, 2: Color 14
+        Locate 4, 2: Color 14
         Print "(1) ";
         Color 15: Print "GAME PLAY: "; playMode$(playerOpt)
-        Locate 4, 2: Color 14
+        Locate 5, 2: Color 14
         Print "(2) ";
         Color 15: Print "DESIGNATED HITTER: "; yesNoNC$(desigHit)
-        Locate 5, 2: Color 14
+        Locate 6, 2: Color 14
         Print "(3) ";
         Color 15: Print Using "PLAY-BY-PLAY DELAY (SECS): ##.#  "; displayPause! ' / 10
-        Locate 6, 2: Color 14
-        Print "(4) ";
-        Color 15: Print "USE INJURIES: "; yesNoText$(useInj)
         Locate 7, 2: Color 14
-        Print "(5) ";
-        Color 15: Print "USE DAYS REST DATA FOR PITCHERS: "; yesNoText$(useRest)
-        Locate 8, 2: Color 14
-        Print "(6) ";
-        Color 15: Print "USE LEFT/RIGHT SPLIT STATS: "; yesNoText$(useLRSplit)
-        Locate 9, 2: Color 14
-        Print "(7) ";
-        Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE: "; yesNoText$(useMgrProf)
-        Locate 10, 2: Color 14
-        Print "(8) ";
-        Color 15: Print "USE WEATHER EFFECTS: "; yesNoText$(useWeather)
-        Locate 11, 2: Color 14
-        Print "(9) ";
-        Color 15: Print "USE BALLPARK GRAPHICS, IF ABLE: "; yesNoText$(useVGA)
-        Locate 12, 2: Color 14
-        Print "(A) ";
+        Print "(4) ";
         Color 15: Print "PITCHER ERA: "; pitcherEra$(pitchEraOpt)
+        Locate 8, 2: Color 14
+        Print "(5) ";
+        Color 15: Print "3-BATTER MIN FOR RELIEF PITCHER: "; yesNoText$(batterMinimumOpt)
+        Locate 9, 2: Color 14
+        Print "(6) ";
+        Color 15: Print "AUTOMATIC RUNNER IN EXTRA INNINGS: "; yesNoText$(ghostRunOpt)
+        Locate 10, 2: Color 14
+        Print "(7) ";
+        Color 15: Print "USE INJURIES: "; yesNoText$(useInj)
+        Locate 11, 2: Color 14
+        Print "(8) ";
+        Color 15: Print "USE DAYS REST DATA FOR PITCHERS: "; yesNoText$(useRest)
+        Locate 12, 2: Color 14
+        Print "(9) ";
+        Color 15: Print "USE LEFT/RIGHT SPLIT STATS: "; yesNoText$(useLRSplit)
+        Locate 13, 2: Color 14
+        Print "(A) ";
+        Color 15: Print "USE MANAGER PROFILE, IF AVAILABLE: "; yesNoText$(useMgrProf)
         Locate 14, 2: Color 14
+        Print "(B) ";
+        Color 15: Print "USE WEATHER EFFECTS: "; yesNoText$(useWeather)
+        Locate 15, 2: Color 14
+        Print "(C) ";
+        Color 15: Print "USE BALLPARK GRAPHICS, IF ABLE: "; yesNoText$(useVGA)
+
+        Locate 17, 2: Color 14
         Print "(0) ";
         Color 15: Print "ACCEPT GLOBAL SETTINGS"
 
@@ -1433,7 +1454,7 @@ Sub ChangeGlobalSettings ()
 
             Call LetterToNumber(I$, iVal)
 
-        Loop Until iVal >= 0 And iVal <= 10
+        Loop Until iVal >= 0 And iVal <= 12
 
         Select Case iVal
 
@@ -1446,31 +1467,37 @@ Sub ChangeGlobalSettings ()
                 If desigHit > 2 Then desigHit = 0
 
             Case 3:
-                Locate 5, 32: Input displayPause!
+                Locate 6, 32: Input displayPause!
 
             Case 4:
-                useInj = 1 - useInj
-
-            Case 5:
-                useRest = 1 - useRest
-
-            Case 6:
-                useLRSplit = 1 - useLRSplit
-
-            Case 7:
-                useMgrProf = 1 - useMgrProf
-
-            Case 8:
-                useWeather = 1 - useWeather
-
-            Case 9:
-                useVGA = 1 - useVGA
-
-            Case 10:
                 pitchEraOpt = pitchEraOpt + 1
                 If pitchEraOpt > 8 Then pitchEraOpt = 0
 
+            Case 5:
+                batterMinimumOpt = 1 - batterMinimumOpt
+
+            Case 6:
+               ghostRunOpt = 1 - ghostRunOpt
+
+            Case 7:
+                useInj = 1 - useInj
+
+            Case 8:
+                useRest = 1 - useRest
+
+            Case 9:
+                useLRSplit = 1 - useLRSplit
+
             Case 0: '
+
+            Case 10:
+                useMgrProf = 1 - useMgrProf
+
+            Case 11
+                useWeather = 1 - useWeather
+
+            Case 12
+                useVGA = 1 - useVGA
 
         End Select
 
@@ -1491,6 +1518,8 @@ Sub ChangeGlobalSettings ()
         scheduleNG%(I, 10) = useMgrProf
         scheduleNG%(I, 11) = useVGA
         scheduleNG%(I, 14) = pitchEraOpt
+        scheduleNG%(I, 19) = batterMinimumOpt
+        scheduleNG%(I, 20) = ghostRunOpt
 
     Next
 
@@ -1580,30 +1609,32 @@ Sub LoadScheduleInfo (targetFile$)
     scheduleAP%(0) = fileLength& / SCHEDULE_SIZE_BYTES
     BS% = Int((scheduleAP%(0) - 1) / SCHED_ENTRIES_PER_SCREEN)
 
-    For X = 0 To 18
+    For X = 0 To 20
         Field #1, X * 2 As X$, 2 As Q$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
     Next
 
-    Field #1, 38 As X$, 2 As Q$(22), 2 As Q$(23), 5 As Q$(20), 5 As Q$(21)
+    Field #1, 38 As X$, 2 As Q$(24), 2 As Q$(25), 5 As Q$(22), 5 As Q$(23)
 
     For I = 1 To scheduleAP%(0)
 
         Get #1, I
 
-        For X = 0 To 18
+        For X = 0 To 20
             scheduleNG%(I, X) = CVI(Q$(X + 1))
         Next
 
+        For X = 0 To 1
+            scheduleYN$(I, X) = RTrim$(Q$(22 + X))
+        Next
+
+        visitorScores(I) = CVI(Q$(24))
+        homeScores(I) = CVI(Q$(25))
+
+        'Make sure pitch era has a
+        'valid value
         If scheduleNG%(I, 14) > 8 Then
             scheduleNG%(I, 14) = 0
         End If
-
-        For X = 0 To 1
-            scheduleYN$(I, X) = RTrim$(Q$(20 + X))
-        Next
-
-        visitorScores(I) = CVI(Q$(22))
-        homeScores(I) = CVI(Q$(23))
 
         'Make sure "Yes"/"No" options
         'have valid values
@@ -1620,6 +1651,12 @@ Sub LoadScheduleInfo (targetFile$)
             scheduleNG%(I, 10) = 1
         End If
         If scheduleNG%(I, 11) > 1 Then
+            scheduleNG%(I, 11) = 1
+        End If
+        If scheduleNG%(I, 19) > 1 Then
+            scheduleNG%(I, 11) = 1
+        End If
+        If scheduleNG%(I, 20) > 1 Then
             scheduleNG%(I, 11) = 1
         End If
 
@@ -1703,26 +1740,26 @@ Sub CreateSeasonSchedule ()
             scheduleAP%(0) = fileLength& / SCHEDULE_SIZE_BYTES
             BS% = Int((scheduleAP%(0) - 1) / SCHED_ENTRIES_PER_SCREEN)
 
-            For X = 0 To 18
+            For X = 0 To 20
                 Field #1, X * 2 As X$, 2 As Q$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
             Next
 
-            Field #1, 38 As X$, 2 As Q$(22), 2 As Q$(23), 5 As Q$(20), 5 As Q$(21)
+            Field #1, 38 As X$, 2 As Q$(24), 2 As Q$(25), 5 As Q$(22), 5 As Q$(23)
 
             For I = 1 To scheduleAP%(0)
 
                 Get #1, I
 
-                For X = 0 To 18:
+                For X = 0 To 20:
                     scheduleNG%(I, X) = CVI(Q$(X + 1))
                 Next
 
                 For X = 0 To 1:
-                    scheduleYN$(I, X) = RTrim$(Q$(20 + X))
+                    scheduleYN$(I, X) = RTrim$(Q$(22 + X))
                 Next
 
-                visitorScores(I) = CVI(Q$(22))
-                homeScores(I) = CVI(Q$(23))
+                visitorScores(I) = CVI(Q$(24))
+                homeScores(I) = CVI(Q$(25))
 
                 If scheduleNG%(I, 14) > 8 Then
                     scheduleNG%(I, 14) = 0
@@ -1914,6 +1951,7 @@ Sub EditBoxscore (boxName$)
     Else
 
         Call QBWRITE(boxName$)
+        Screen menu&
 
     End If
 

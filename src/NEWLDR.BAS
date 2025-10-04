@@ -95,6 +95,7 @@ Sub NEWLDR ()
                         Color 15, 0
                         Cls
 
+                        'Erase memberName$
                         For X = 1 To TEAMS_PER_LEAGUE
                             memberName$(X) = "XXX"
                         Next
@@ -1035,16 +1036,16 @@ Sub DisplayBattingLeaders (TVN, maxRecords, categoryId)
                 Print Tab(25); expLdrTeam$(W);
 
                 Select Case TVN
-                    
-                    Case 1: 
+
+                    Case 1:
                         Print Tab(54); Using "#####"; expLdrVal!(W)
-                    
-                    Case 2: 
+
+                    Case 2:
                         Print Tab(54); Using ".###"; expLdrVal!(W)
-                    
-                    Case 3: 
+
+                    Case 3:
                         Print Tab(54); Using "###.##"; expLdrVal!(W)
-                
+
                 End Select
 
             Else

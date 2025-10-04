@@ -16,13 +16,25 @@ Sub UpdateExpandedStandings (league$)
     Shared totHomeLosses!(), totHomeWinss!()
     Shared totRoadLosses(), totRoadWins()
 
-    Shared expStdLeagName$(), memberName$()
-
-    'These are just read in and written back
     Shared teamScore(), nbrInnings(), oppScore()
-    Shared oppName$(), losePitcher$(), locIndicator$(), winPitcher$()
+
+    Shared expStdLeagName$(), memberName$()
+    Shared losePitcher$(), locIndicator$(), oppName$(), winPitcher$()
 
     Shared div1Name$, div2Name$, div3Name$, div4Name$
+
+    Erase currLoseStreak, currWinStreak
+    Erase lastLoseStreak, lastWinStreak
+    Erase teamLoseStreak, teamWinStreak, teamTotWins
+    Erase teamTotLosses, lastTenWins, lastTenLosses
+    Erase totExtInnLosses, totExtInnWins
+    Erase totHomeLosses!, totHomeWinss!
+    Erase totRoadLosses, totRoadWins
+
+    Erase expStdLeagName$
+    Erase locIndicator$, oppName$
+
+    Erase nbrInnings, teamScore, oppScore
 
     TMR = TEAMS_PER_LEAGUE
 
@@ -186,7 +198,7 @@ Sub NewStandings_Screen (league$)
 
 
         If targetDiv$ <> "" Or (targetDiv$ = "" And expStdLeagName$(AA) <> "") Then
-        'If targetDiv$ <> "" Then
+            'If targetDiv$ <> "" Then
 
             Color 11
             Locate 2, 35: Print league$
@@ -313,7 +325,7 @@ Sub NewStandings_Report (printDest, destFile$, league$)
         End Select
 
         If targetDiv$ <> "" Or (targetDiv$ = "" And expStdLeagName$(AA) <> "") Then
-        'If targetDiv$ <> "" Then
+            'If targetDiv$ <> "" Then
 
             Print #1, Tab(35); league$
             Print #1, Tab(16); "                      MAG.  L  L   C  C   HOME  ROAD  X-IN  L-10"
