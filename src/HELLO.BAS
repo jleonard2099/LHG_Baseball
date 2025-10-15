@@ -1,7 +1,7 @@
 $Debug
 $Color:32
 
-Const GAME_VERSION$ = "7.1"
+Const GAME_VERSION$ = "7.15"
 Const MAX_FILES = 10240
 Const MAX_CAREER_YEARS = 15
 'Const MAX_CONFERENCES = 40
@@ -32,12 +32,10 @@ DefInt A-Z
 ' For Utils
 '$Include: 'BoxRoutines.bi'
 '$Include: 'FileTeamSelection.bi'
+Dim batterNames$(0 To 23), pitcherNames$(0 To 21)
 '$Include: 'Variables.bi'
-
-Dim Shared P9, W5, W6
-Dim Shared desigHit, D, dayOrNight
-Dim Shared P, pbpLine, pinchHitterFlag, pitchEraOpt, playerMode, playerOpt
-
+Dim expBatLdrName$(1 To 920), expPitLdrName$(1 To 880)
+Dim expLdrTeam$(1 To 920), expLdrPlyrName$(1 To 920)
 '$Include: 'MainRoutines.bi'
 '$Include: 'TITLE.bi'
 
@@ -930,10 +928,6 @@ Sub LOADER
     '----------------------------------------
     '         DETERMINE GAME OPTIONS
     '----------------------------------------
-    '-- We should udpate this to read in DEFERA
-    '-- Then delete it
-    '-- And finally write as DEFAULT
-    '-- Use same logic as for DEV.BAS
     If _FileExists("DEFERA") Then
 
         Open "DEFERA" For Input As #2
@@ -1479,7 +1473,7 @@ Sub LOADER
 
             For I1 = 1 To MAX_UMPIRES
 
-                If umpireName$(I1) <> "" And umpireName$ <> "XXX" And currUmp <= 4 Then
+                If umpireName$(I1) <> "" And umpireName$(I1) <> "XXX" And currUmp <= 4 Then
 
                     gameUmpire$(currUmp) = umpireName$(I1)
 
@@ -1504,19 +1498,26 @@ Sub LOADER
                 rndUmp = Int(Rnd(1) * MAX_UMPIRES) + 1
 
                 attempts = 0
-                While (umpireName$(rndUmp) = "" Or umpireName$(rndUmp) = "XXX" Or usedUmpires(rndUmp) = 1) And attempts < MAX_UMPIRES
+
+                Do
                     rndUmp = Int(Rnd(1) * MAX_UMPIRES) + 1
                     attempts = attempts + 1
-                Wend
+                Loop Until (umpireName$(rndUmp) <> "" And umpireName$(rndUmp) <> "XXX" And usedUmpires(rndUmp) <> 1) Or attempts > MAX_UMPIRES
 
-                gameUmpire$(currUmp) = umpireName$(rndUmp)
+                If umpireName$(rndUmp) <> "" And umpireName$(rndUmp) <> "XXX" And usedUmpires(rndUmp) <> 1 Then
 
-                umpBBadj(currUmp) = (umpireRating(rndUmp, 0) - 100) / 17
-                umpSZadj(currUmp) = (100 - umpireRating(rndUmp, 1)) / 20
-                umpRunAdj(currUmp) = (umpireRating(rndUmp, 2) - 100) / 12
+                    gameUmpire$(currUmp) = umpireName$(rndUmp)
 
-                usedUmpires(rndUmp) = 1
-                currUmp = currUmp + 1
+                    umpBBadj(currUmp) = (umpireRating(rndUmp, 0) - 100) / 17
+                    umpSZadj(currUmp) = (100 - umpireRating(rndUmp, 1)) / 20
+                    umpRunAdj(currUmp) = (umpireRating(rndUmp, 2) - 100) / 12
+
+                    usedUmpires(rndUmp) = 1
+                    currUmp = currUmp + 1
+                Else
+                    ' Couldn't find valid umpire, exit
+                    Exit Do
+                End If
 
             Loop
 
@@ -1605,7 +1606,7 @@ Sub LOADER
 
                 Else
 
-                    If (playerMode = 2 Or playerMode = 1 And compTeam = currTeam) Then
+                    If (playerMode = 1 And compTeam = currTeam) Or playerMode = 2 Then
                         If useMgrProf = 1 Then
                             I$ = "1"
                         Else
@@ -1771,7 +1772,7 @@ Sub LOADER
 
     Call SelectStadium(useVGA)
 
-    Call GETWEATHER(windDir, windSpeed, gameMonth, windFactor!, skyType, gameTemp, rainDelay)
+    Call GETWEATHER(windDir, windSpeed, gameMonth, windImpact!, skyType, gameTemp, rainDelay)
 
     Cls
 
@@ -1779,12 +1780,12 @@ Sub LOADER
 
     Locate , 11: Print "CONDITIONS AT "; gameStadiums$(1)
 
+    Locate , 11: Print "TEMPERATURE: "; gameTemp
+
     If teamRat_GAME(1, 9) = 1 Then
-        Locate , 11: Print "TEMPERATURE: 70"
         Locate , 11: Print "WEATHER: DOME"
         Locate , 11: Print "WIND: NONE"
     Else
-        Locate , 11: Print "TEMPERATURE: "; gameTemp
         Locate , 11: Print "SKY CONDITIONS: "; skyCond$(skyType)
         Locate , 11: Print "WIND: "; windDirection$(windDir);
         Print Using " ## MPH"; windSpeed
@@ -2136,7 +2137,7 @@ Sub ModifyPreGameLineup (luTeamIdx, reselect)
         Color 14: Print "(1-9) CHANGE 0-NONE (R)ESELECT LINEUP (P)OSITION SWAP (L)INEUP SWAP";
         Color 15, 0
 
-        If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = luTeamIdx) Then
+        If autoPlay = 1 And ((playerMode = 1 And compTeam = luTeamIdx) Or playerMode = 2) Then
             I$ = "0"
         Else
             I$ = GetKeyPress$
@@ -2223,7 +2224,7 @@ Sub SaveLineup (luTeamIdx)
 
     Shared mgrFile(), gameMgrIdx()
 
-    If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = luTeamIdx) Then
+    If autoPlay = 1 And ((playerMode = 1 And compTeam = luTeamIdx) Or playerMode = 2) Then
         I$ = "N"
     Else
         Do
@@ -2420,7 +2421,9 @@ Sub LineupFromProfile (lineupFound%, luTeamIdx, skipLineChange%, useMgrProf, I$,
 
     Else
 
-        If autoPlay = 1 And useMgrProf = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = luTeamIdx) Or I$ = "3" Then
+        If autoPlay = 1 And useMgrProf = 1 And _ 
+            ((playerMode = 1 And compTeam = luTeamIdx) Or playerMode = 2) Or _
+            I$ = "3" Then
 
             'Create automated lineup
             RN0 = Int(Rnd(1) * PCT%) + 1
@@ -2566,7 +2569,7 @@ Sub SelectBatters (validBatters, luTeamIdx)
         Locate , 59: Print "X-REACTIVATE ALL"
         Locate , 59: Print "<TAB>-BAT/FIELD/SPLIT"
 
-        If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = luTeamIdx) Then
+        If autoPlay = 1 And ((playerMode = 1 And compTeam = luTeamIdx) Or playerMode = 2) Then
             'Autoplay = auto-select
             I$ = "Z"
             validBatters = 1
@@ -2676,92 +2679,29 @@ End Sub
 'for the stadiums.
 Sub SelectStadium (useVGA)
 
+    'SELECT A DIFFERENT STADIUM
+
+    'Read-in park names from stadium
+    Open PARK_FILE_NAME$ For Random As #1 Len = PARK_SIZE_BYTES
+
+    fileLength& = LOF(1)
+
+    numberParks = fileLength& / PARK_SIZE_BYTES
+
+    Field #1, 40 As Q$(0)
+
+    For parkIdx = 1 To numberParks
+        Get #1, parkIdx
+        park$ = RTrim$(Q$(0))
+
+        If park$ <> "Not Used" Then
+            parkNames$(parkIdx) = PadRight(park$, 38)
+        End If
+    Next parkIdx
+
+    Close #1
+
     Do
-        'SELECT A DIFFERENT STADIUM
-        parkNames$(1) = "ANAHEIM STADIUM             "
-        parkNames$(2) = "THE ASTRODOME               "
-        parkNames$(3) = "OAKLAND-ALAMEADA COLISEUM   "
-        parkNames$(4) = "SKYDOME                     "
-        parkNames$(5) = "ATLANTA-FULTON COUNTY STAD. "
-        parkNames$(6) = "MILWAUKEE COUNTY STADIUM    "
-        parkNames$(7) = "BUSCH MEMORIAL STADIUM      "
-        parkNames$(8) = "WRIGLEY FIELD               "
-        parkNames$(9) = "DODGER STADIUM              "
-        parkNames$(10) = "OLYMPIC STADIUM             "
-        parkNames$(11) = "CANDLESTICK PARK            "
-        parkNames$(13) = "SEATTLE KINGDOME            "
-        parkNames$(12) = "CLEVELAND MUNICIPAL STADIUM "
-        parkNames$(14) = "SHEA STADIUM                "
-        parkNames$(15) = "BALTIMORE MEMORIAL STADIUM  "
-        parkNames$(16) = "JACK MURPHY STADIUM         "
-        parkNames$(17) = "VETERAN'S STADIUM           "
-        parkNames$(18) = "THREE RIVERS STADIUM        "
-        parkNames$(19) = "ARLINGTON STADIUM           "
-        parkNames$(20) = "RIVERFRONT STADIUM          "
-        parkNames$(21) = "FENWAY PARK                 "
-        parkNames$(22) = "ROYALS/KAUFMANN STADIUM     "
-        parkNames$(23) = "TIGER/BRIGGS/NAVIN STADIUM  "
-        parkNames$(24) = "H.H.H. METRODOME            "
-        parkNames$(25) = "OLD COMISKEY PARK           "
-        parkNames$(26) = "OLD YANKEE STADIUM          "
-        parkNames$(27) = "LOS ANGELES COLISEUM        "
-        parkNames$(28) = "COLT STADIUM                "
-        parkNames$(29) = "CONNIE MACK/SHIBE STADIUM   "
-        parkNames$(30) = "EXHIBITION FIELD (TOR)      "
-        parkNames$(31) = "PILOT FIELD                 "
-        parkNames$(32) = "COUNTY STADIUM (MIL)        "
-        parkNames$(33) = "SPORTSMAN'S PARK            "
-        parkNames$(34) = "EBBETTS FIELD               "
-        parkNames$(35) = "JARRY PARK                  "
-        parkNames$(36) = "POLO GROUNDS                "
-        parkNames$(37) = "CROSLEY FIELD               "
-        parkNames$(38) = "RFK STADIUM                 "
-        parkNames$(39) = "METROPOLITAN STADIUM        "
-        parkNames$(40) = "FORBES FIELD                "
-        parkNames$(41) = "GRIFFITH STADIUM            "
-        parkNames$(42) = "SAN DIEGO STADIUM           "
-        parkNames$(43) = "KAN CITY MUNICIPAL STADIUM  "
-        parkNames$(44) = "SICKS STADIUM               "
-        parkNames$(45) = "LOS ANGELES WRIGLEY FIELD   "
-        parkNames$(46) = "SEALS STADIUM               "
-        parkNames$(47) = "*AMERICAN LEAGUE            "
-        parkNames$(48) = "*AMERICAN LEAGUE II         "
-        parkNames$(49) = "HILLTOP PARK                "
-        parkNames$(50) = "POLO GROUNDS (1913-1922)    "
-        parkNames$(51) = "BRAVES FIELD (1915-1952)    "
-        parkNames$(52) = "BRAVES FIELD (1915-1916)    "
-        parkNames$(53) = "SOUTHSIDE PARK              "
-        parkNames$(54) = "BAKER BOWL                  "
-        parkNames$(55) = "CAMDEN YARDS                "
-        parkNames$(56) = "COLUMBIA PARK               "
-        parkNames$(57) = "EXPOSITION PARK             "
-        parkNames$(58) = "LEAGUE PARK/PALACE OF FANS  "
-        parkNames$(59) = "WEST SIDE PARK              "
-        parkNames$(60) = "SOUTH END GROUNDS           "
-        parkNames$(61) = "HUNTINGTON AVENUE GROUNDS   "
-        parkNames$(62) = "LEAGUE PARK                 "
-        parkNames$(63) = "BENNETT PARK                "
-        parkNames$(64) = "WASHINGTON PARK             "
-        parkNames$(65) = "MILE HIGH STADIUM           "
-        parkNames$(66) = "JOE ROBBIE STADIUM          "
-        parkNames$(67) = "JACOBS FIELD                "
-        parkNames$(68) = "BALLPARK AT ARLINGTON       "
-        parkNames$(69) = "COORS STADIUM               "
-        parkNames$(70) = "NEW YANKEE STADIUM          "
-        parkNames$(71) = "NEW COMISKEY PARK           "
-        parkNames$(72) = "BUSCH STADIUM - GRASS       "
-        parkNames$(73) = "TURNER FIELD                "
-        parkNames$(74) = "BANK ONE BALLPARK           "
-        parkNames$(75) = "TROPICANA FIELD             "
-        parkNames$(76) = "SAFECO FIELD (SEA)          "
-        parkNames$(77) = "ENRON PARK (HOU)            "
-        parkNames$(78) = "PACIFIC BELL PARK (SF)      "
-        parkNames$(79) = "COMERICA PARK (DET)         "
-        parkNames$(80) = "                            "
-        parkNames$(81) = "PNC PARK                    "
-        parkNames$(82) = "MILLER PARK-MILWAUKEE       "
-        parkNames$(83) = "UNKNOWN                     "
-        parkNames$(99) = "GENERIC                     "
 
         Call TEAMBOX(5, 1)
 
@@ -2778,11 +2718,13 @@ Sub SelectStadium (useVGA)
 
         'Display detected park
         Locate 7, 11: Print "CURRENT PARK IS:"
-        Locate , 11: Print parkNames$(teamRat_GAME(1, 13))
+        Locate , 11: Print gameStadiums$(1)
 
         Locate , 11
 
-        If _FileExists("." + dirSeparator$ + "parks" + dirSeparator$ + chosenPark$) Then
+        parkFile$ = "." + dirSeparator$ + "parks" + dirSeparator$ + chosenPark$
+
+        If _FileExists(parkFile$) Then
             Print "GRAPHIC EXISTS"
         Else
             '99 is the Generic Park
@@ -2806,7 +2748,7 @@ Sub SelectStadium (useVGA)
             If UCase$(I$) = "Y" Then
 
                 Cls
-                Locate 23, 10: Print "* - STADIUM GRAPHIC FILE NOT AVAILABLE"
+                Locate 23, 21: Print "* - STADIUM GRAPHIC FILE NOT AVAILABLE"
                 Start% = 1
 
                 Do
@@ -2817,7 +2759,7 @@ Sub SelectStadium (useVGA)
                     HiLiteFGColor = 0: HiLiteBGColor = 7
                     Spacing% = 1
                     Row% = 5
-                    menuWidth% = 38 'Inserting arbitrary value... menuChoices$() not available here!   Len(menuChoices$(1))
+                    menuWidth% = 38
                     Column% = (80 - menuWidth% - 2) / 2
 
                     Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor, FileBGColor)
@@ -2928,7 +2870,7 @@ Sub PitchingRotations (compRotation, luTeamIdx)
 
     Next
 
-    If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = luTeamIdx) Then
+    If autoPlay = 1 And ((playerMode = 1 And compTeam = luTeamIdx) Or playerMode = 2) Then
 
         gamesStarted = 0
 
@@ -3566,7 +3508,7 @@ Sub SelectPitchers (luTeamIdx, cancelPitchers%, compRotation)
     Locate 16, 57: Print "1-USE PRE-SET ROTATION"
     Locate 17, 57: Print "2-ENTER A NEW ROTATION"
 
-    If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = luTeamIdx) Then
+    If autoPlay = 1 And ((playerMode = 1 And compTeam = luTeamIdx) Or playerMode = 2) Then
         'For automated games, use preset rotation
         'This will end up being computer-generated
         choice = 1
@@ -3597,7 +3539,7 @@ Sub SelectPitchers (luTeamIdx, cancelPitchers%, compRotation)
                 ' Check if manager file doesn't exist OR rotation isn't set up properly
                 If mgrFile(luTeamIdx) = -1 Or teamMgrProfileVal(luTeamIdx, 99) <> 999 Then
 
-                    If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = luTeamIdx) Then
+                    If autoPlay = 1 And ((playerMode = 1 And compTeam = luTeamIdx) Or playerMode = 2) Then
                         'Computer team - let it manage rotation
                         compRotation = 1
                     Else
@@ -3745,7 +3687,7 @@ Sub SelectPitchers (luTeamIdx, cancelPitchers%, compRotation)
             Locate , 58: Print "Z-CONTINUE"
             Locate , 58: Print "X-ACTIVATE ALL PITCHERS"
 
-            If autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = luTeamIdx) Then
+            If autoPlay = 1 And ((playerMode = 1 And compTeam = luTeamIdx) Or playerMode = 2) Then
                 I$ = "Z"
             End If
 
@@ -3906,7 +3848,11 @@ Sub PitchingStarter (luTeamIdx)
 
         Print
 
-        If Not (autoPlay = 1 And (playerMode = 2 Or playerMode = 1 And compTeam = luTeamIdx)) Then
+        If (autoPlay = 1 And ((playerMode = 1 And compTeam = luTeamIdx) Or playerMode = 2)) Then
+
+            I$ = "N"
+
+        Else
 
             Do
                 Locate 21, 58: Print "ANY CHANGE? (Y/N)"
@@ -3918,10 +3864,6 @@ Sub PitchingStarter (luTeamIdx)
                 Print Space$(16)
                 startPitcher(luTeamIdx) = -1
             End If
-
-        Else
-
-            I$ = "N"
 
         End If
 
@@ -4239,7 +4181,7 @@ Sub SOURCE ()
     'Inured pitcher
     If fielder(D, 1) = 99 Then
 
-        If playerMode = 0 Or (playerMode = 1 And compTeam = 1 - D) Then
+        If playerMode = 0 Or (playerMode = 1 And D <> compTeam) Then
 
             Cls
 
@@ -4407,7 +4349,7 @@ Sub SOURCE ()
         errorOnPlay% = 0
 
         LContinueBatter2:
-        If (playerMode = 2 Or playerMode = 1 And P <> compTeam) Then
+        If (playerMode = 1 And D = compTeam) Or playerMode = 2 Then
             GoTo LEndOfGame
         End If
 
@@ -4637,7 +4579,7 @@ Sub SOURCE ()
 
     Do
 
-        If (playerMode = 2 Or playerMode = 1 And P = compTeam) Then
+        If ((playerMode = 1 And P = compTeam) Or playerMode = 2) Then
 
             JM = lineupPlayer(P, currLineupSlot(P))
 
@@ -5053,16 +4995,13 @@ Sub SOURCE ()
     End If
 
 
-    '-- REMOVE THIS
-    pitchRating(D, currPitcher(D), SS_P_Avail) = 99
-    injPlayer = 1
-
     If injPlayer = 1 Then
 
         injPlayer = 0
 
-        'If pitcher has not been substituted
-        If pitchRating(D, currPitcher(D), SS_P_Avail) = 99 Then
+        'If human player and pitcher has not been substituted
+        If (playerMode = 0 Or (playerMode = 1 And D <> compTeam)) And _
+            pitchRating(D, currPitcher(D), SS_P_Avail) = 99 Then
             'Force a substitution
             GoTo LPersonnelMenu
         End If
@@ -5898,7 +5837,9 @@ Sub SOURCE ()
                             I3 = 1
                             Call CreditInfieldPutout(I3, FB2P%, AST%)
                             Call PBP(" --- DOUBLE PLAY ---")
-                            If currFielder <> 3 Then Call CreditAssist(currFielder)
+                            If currFielder <> 3 Then
+                                Call CreditAssist(currFielder)
+                            End If
 
                         Else
 
@@ -7151,7 +7092,7 @@ Sub SOURCE ()
             Call PBP("Looks like a close play at " + J3$ + "!!")
             Call PBP("1- Throw to " + J3$ + " 2- Throw to 1st")
 
-            If playerMode = 2 Or playerMode = 1 And P <> compTeam Then
+            If (playerMode = 1 And D = compTeam) Or playerMode = 2 Then
                 I$ = "1"
             Else
                 Do
@@ -7617,7 +7558,7 @@ Sub SOURCE ()
     If stealHome% = 1 Then
         I9 = Int(Rnd(1) * 1000) + 1
     Else
-        If playerMode = 2 Or playerMode = 1 And P <> compTeam Then
+        If (playerMode = 1 And D = compTeam) Or playerMode = 2 Then
             I$ = "Y"
         Else
             Call PBP("Throw to 2B? (Y/N) ")
@@ -7829,7 +7770,7 @@ Sub SOURCE ()
 
     Call WINDEX
 
-    If playerMode = 2 Or playerMode = 1 And P = compTeam Then
+    If (playerMode = 1 And P = compTeam) Or playerMode = 2 Then
         I$ = "N"
     Else
         Call PBP("TRY TO STEAL HOME? (Y/N)")
@@ -9422,7 +9363,7 @@ Sub InitVar ()
 
     Shared bestBatterFPos(), bLineupIdx()
     Shared bestBatterIdx(), gameMgrIdx(), mgrFile()
-    Shared nbrInnings(), oppScore()
+    Shared monthlyRatings(), nbrInnings(), oppScore()
     Shared startPitcher()
     Shared setupUsed(), closerUsed(), teamScore()
 
@@ -9512,7 +9453,8 @@ Sub InitVar ()
     P = 1
 
     For I = 0 To 1:
-        currPitcher(I) = -1: gamePitcher(I) = -1
+        currPitcher(I) = -1
+        gamePitcher(I) = -1
     Next
 
     startPitcher(0) = -1
@@ -9553,7 +9495,7 @@ Sub InitVar ()
     userDone = 0
     windSpeed = 0
 
-    windFactor! = 0
+    windImpact! = 0
 
     actualAttendance& = 0
     avgAttendance& = 0
@@ -9576,16 +9518,14 @@ Sub InitVar ()
     'Erase gameManagers$, gameStadiums$
     'Erase pitchers$, teamAbbreviatons$
 
-    Erase bestBatterFPos, bLineupIdx, MON
-    Erase VV, VV1
-
+    Erase bestBatterFPos, bLineupIdx
     Erase bRunner, b1Pitcher, b2Pitcher
     Erase baseMove, battersFaced, bestBatterIdx
     Erase CSS, currLineupSlot, currPitcher, fielder
     Erase gameAtBats, game_batRating, gameInnPit
     Erase gameMgrIdx, gamePitcher, gameRoster, gameScore
-    Erase inningScore
-    Erase leftOnBase, lineupAssigned, mgrFile
+    Erase inningScore, leftOnBase, lineupAssigned
+    Erase mgrFile, monthlyRatings
     Erase nbrInnings, nbrOuts, newRelieverNeeded
     Erase oppBatStats, oppPitStats, oppScore
     Erase pitcherStam, playersUsed, pitcherOfRecord
@@ -9593,6 +9533,9 @@ Sub InitVar ()
     Erase schedOptions, startPitcher, stealPhase
     Erase teamBatStats, teamPitStats, teamDPs, totalDPs
     Erase teamMgrProfileVal, teamScore, totalStats
+    Erase usedUmpires
+
+    Erase VV, VV1
 
     Erase parkHRVals!, statTeamBat!, statTeamPit!
 
@@ -10043,7 +9986,7 @@ End Sub
 'This routine handles crediting all base
 'runner movements after a play.
 'When clearing bases, we also update I3
-'I do not know that I3 is used)
+'(I do not know that I3 is used)
 Sub CreditRunnerResults (S2%)
 
     For idx = 1 To 3
@@ -11329,7 +11272,7 @@ End Sub
 'that prompts the user for replacements.
 Sub EJECTIONINJURY (posIdx, W5, W6)
 
-    If (playerMode = 2 Or playerMode = 1 And P <> compTeam) Then
+    If (playerMode = 1 And D = compTeam) Or playerMode = 2 Then
 
         I2 = 1
 
@@ -12343,7 +12286,7 @@ Sub InjuredPitcher (playerInjured, pinchHitterFlag, baseStatus)
     playerInjured = 1
     pitchRating(D, currPitcher(D), SS_P_Avail) = 99
 
-    If playerMode = 2 Or playerMode = 1 And P <> compTeam Then
+    If (playerMode = 1 And D = compTeam) Or playerMode = 2 Then
         Print #11, "DEBUG: Calling RELIEVERS. (InjuredPitcher) Pitcher="; currPitcher(D); "  Outs="; nbrOuts(0)
         Call RELIEVERS(pinchHitterFlag, newPitcherFlag, baseStatus)
     Else
@@ -13792,7 +13735,7 @@ End Sub
 ' Offensive Player Ejected/Injured
 Sub PLYRHRT (W5, W6, nbrBalls, nbrStrikes, MO)
 
-    If (playerMode = 2 Or playerMode = 1 And P = compTeam) Then
+    If ((playerMode = 1 And P = compTeam) Or playerMode = 2) Then
 
         For pIdx = 0 To 22
 
@@ -13865,7 +13808,8 @@ End Sub
 '----------------------------------------
 Sub PinchHitter (W5, W6, idx)
 
-    Call PBP(player$(0) + " will be replaced by " + batters$(P, idx))
+    pbpString$ = player$(0) + " will be replaced by " + batters$(P, idx)
+    Call PBP(pbpString$)
 
     'Make player available and insert into lineup / field
     batRating(P, idx, SS_B_Avail) = 1
@@ -14388,10 +14332,11 @@ Sub RecordRun (homeSafe, playerIdx, PQ, S2%, currFielder, INFPOS%, wasError)
     End If
 
     'Increase runner's "Runs"
-    If fldPos(P, runnerOnBase(i)) = 1 Then
+    If fldPos(P, runnerOnBase(playerIdx)) = 1 Then
         Call INCPITOFF(P, currPitcher(P), LG_PB_R)
     Else
-        Call INCBATOFF(P, lineupPlayer(P, runnerOnBase(i)), LG_B_R)
+        ' -- figure out here if we're creding the right person)
+        Call INCBATOFF(P, lineupPlayer(P, runnerOnBase(playerIdx)), LG_B_R)
     End If
 
     If wasError = 1 Then
@@ -15190,24 +15135,24 @@ Sub CalcParkFactors (team, opp)
         ' Calculate wind factors
         If parkHRVals!(team) > 1000 Then
             I3! = 100
-            I6! = Int(parkHRVals!(team) / 1000) * windFactor!
-            I7! = (parkHRVals!(team) - Int((parkHRVals!(team) / 1000)) * 1000) * windFactor!
+            I6! = Int(parkHRVals!(team) / 1000) * windImpact!
+            I7! = (parkHRVals!(team) - Int((parkHRVals!(team) / 1000)) * 1000) * windImpact!
         End If
 
         If parkHRVals!(team) < 1000 Then
-            I3! = parkHRVals!(team) * windFactor!
+            I3! = parkHRVals!(team) * windImpact!
             I6! = I3!
             I7! = I3!
         End If
 
         If parkHRVals!(opp) > 1000 Then
             I4! = 100
-            K8! = Int(parkHRVals!(opp) / 1000) * windFactor!
-            i9! = (parkHRVals!(opp) - Int((parkHRVals!(opp) / 1000)) * 1000) * windFactor!
+            K8! = Int(parkHRVals!(opp) / 1000) * windImpact!
+            i9! = (parkHRVals!(opp) - Int((parkHRVals!(opp) / 1000)) * 1000) * windImpact!
         End If
 
         If parkHRVals!(opp) < 1000 Then
-            I4! = parkHRVals!(opp) * windFactor!
+            I4! = parkHRVals!(opp) * windImpact!
             K8! = I4!
             i9! = I4!
         End If
@@ -15549,7 +15494,7 @@ Sub RELIEVERS (pinchHitterFlag, newPitcherFlag, baseStatus)
 
     'Reset count of batters a reliever needs to face
     If pinchHitterFlag = 1 Then
-        Print #11, "PINCH HIT CALLED"
+        'Print #11, "PINCH HIT CALLED"
     End If
 
     battersFaced(D, currPitcher(D)) = 0
@@ -16711,7 +16656,7 @@ End Sub
 'for a squeeze / bunt.
 Sub SQUEEZECHOICE (squeezeOrSH, baseStatus)
 
-    If playerMode = 2 Or playerMode = 1 And P = compTeam Then
+    If (playerMode = 1 And P = compTeam) Or playerMode = 2 Then
         'Computer decision
 
         'Default to bunt
@@ -17260,7 +17205,7 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, noThrow, baseStatus, run
     If baseNbr <> 0 Then
         'We shouldn't still have a 0 value!
 
-        If Not (playerMode = 2 Or playerMode = 1 And P = compTeam) Then
+        If Not ((playerMode = 1 And P = compTeam) Or playerMode = 2) Then
             If S2% < EVENT_HR Then
                 Call PBP(player$(baseNbr - 1) + " try for " + baseName$(baseNbr) + "? (Y/N) ")
             End If
@@ -17273,7 +17218,7 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, noThrow, baseStatus, run
         I$ = "N"
         scoreDiff = gameScore(P, 0) - gameScore(D, 0)
 
-        If (playerMode = 2 Or playerMode = 1 And P = compTeam) Then
+        If ((playerMode = 1 And P = compTeam) Or playerMode = 2) Then
             If Abs(scoreDiff) < 2 And S2% <> EVENT_FLY_SHALLOW Then
                 I$ = "Y"
                 If Environ$("RUNLOG") = "TRUE" Then
@@ -17294,7 +17239,7 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, noThrow, baseStatus, run
         End If
 
         skipThrow% = 0
-        If Not (playerMode = 2 Or playerMode = 1 And P = compTeam) Then
+        If Not ((playerMode = 1 And P = compTeam) Or playerMode = 2) Then
             I$ = GetKeyPress$
         End If
 
@@ -17316,13 +17261,13 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, noThrow, baseStatus, run
 
             If (S2% <> EVENT_1B Or baseNbr = 2) And (S2% <= EVENT_HR Or baseStatus <> 3) Then
 
-                If Not (playerMode = 2 Or playerMode = 1 And D = compTeam) Then
+                If Not ((playerMode = 1 And D = compTeam) Or playerMode = 2) Then
                     Call PBP(player$(4) + " throw to " + baseName$(baseNbr) + "? (Y/N) ")
                 End If
 
                 Call Rolld100(RN0)
 
-                If (playerMode = 2 Or playerMode = 1 And D = compTeam) Then
+                If ((playerMode = 1 And D = compTeam) Or playerMode = 2) Then
                     If teamMgrProfileVal(D, 766) = 999 And baseNbr = 4 Then
 
                         If Environ$("MGRLOG") = "TRUE" Then
@@ -17850,7 +17795,7 @@ Sub WHICHRUNNER (i, baseStatus, D5)
             Call PBP("2 - " + pitchers$(P, currPitcher(P)))
         End If
 
-        If playerMode = 2 Or playerMode = 1 And P <> compTeam Then
+        If (playerMode = 1 And D = compTeam) Or playerMode = 2 Then
             D5 = Int(Rnd(1) * 2) + 1
             i$ = Str$(D5)
         Else
@@ -18843,43 +18788,47 @@ End Sub
 'This subroutine opens the PARKS.DB file
 'to read in attendance data, wind factor,
 'weather and other ballpark calculations.
-Sub GETWEATHER (windDir, windSpeed, gameMonth, WF!, skyType, gameTemp, rainDelay)
+Sub GETWEATHER (windDir, windSpeed, gameMonth, windFactor!, skyType, gameTemp, rainDelay)
+
+    Shared monthlyRatings()
 
     Shared avgAttendance&
 
-    Dim CF, DOME
-    Dim LF, LCF
-    Dim RF, RCF
-    Dim TG, windRate
+    Shared fenceDistCF
+    Shared fenceDistLF, fenceDistLCF
+    Shared fenceDistRF, fenceDistRCF
+    Shared DOME, turfType, windRating
 
+    'Force weather from a valid stadium
     If teamRat_GAME(1, 13) > 82 Then
-        ID = Int(Rnd(1) * 79) + 1
+        parkID = Int(Rnd(1) * 79) + 1
     Else
-        ID = teamRat_GAME(1, 13)
+        parkID = teamRat_GAME(1, 13)
     End If
 
     'The layout of the PARKS.DB file is as follows:
     'Park Name (40 chars)
     'Attendance
-    'Park Ratings - LF, LCF, CF, RCF, RF, GRASS, DOME, windRate
+    'Park Ratings - LF, LCF, CF, RCF, RF, Turf(Y/N), Dome(Y/N), Wind Impact
+    'Where wind impact is based on stadium location / design.
     '6 Months Data, 15 weather factors
     '   0 = Base Temp
     '   1 = Delta Temp
-    '   2 = RL
-    '   3 = LR
-    '   4 = INL (infield, L)
-    '   5 = INC (infield, C)
-    '   6 = INR (infield, R)
-    '   7 = OUTL (outfield, L)
-    '   8 = OUTC (outfield, C)
-    '   9 = OUTR (outfield, R)
+    '   2 = Wind R->L
+    '   3 = Wind L->R
+    '   4 = Wind from INL (infield, L)
+    '   5 = Wind from INC (infield, C)
+    '   6 = Wind from INR (infield, R)
+    '   7 = Wind to OUTL (outfield, L)
+    '   8 = Wind to OUTC (outfield, C)
+    '   9 = Wind to OUTR (outfield, R)
     '   10 = WS09 (windspeed 0-9)
     '   11 = WS1014 (windspeed 10-14)
     '   12 = WS1519 (windspeed 15-19)
     '   13 = WS20   (windseed 20+)
     '   14 = PRECIP
 
-    Open "PARKS.DB" For Random As #1 Len = 240
+    Open PARK_FILE_NAME$ For Random As #1 Len = PARK_SIZE_BYTES
 
     Field #1, 40 As Q3$(0), 4 As Q3$(1), 2 As Q3$(2), 2 As Q3$(3), 2 As Q3$(4), 2 As Q3$(5), 2 As Q3$(6), 2 As Q3$(7), 2 As Q3$(8), 2 As Q3$(9)
 
@@ -18889,67 +18838,73 @@ Sub GETWEATHER (windDir, windSpeed, gameMonth, WF!, skyType, gameTemp, rainDelay
         Next
     Next
 
-    Get #1, ID
+    Get #1, parkID
 
     avgAttendance& = CVL(Q3$(1))
-    LF = CVI(Q3$(2))
-    LCF = CVI(Q3$(3))
-    CF = CVI(Q3$(4))
-    RCF = CVI(Q3$(5))
-    RF = CVI(Q3$(6))
-    TG = CVI(Q3$(7))
+    fenceDistLF = CVI(Q3$(2))
+    fenceDistLCF = CVI(Q3$(3))
+    fenceDistCF = CVI(Q3$(4))
+    fenceDistRCF = CVI(Q3$(5))
+    fenceDistRF = CVI(Q3$(6))
+    turfType = CVI(Q3$(7))
     DOME = CVI(Q3$(8))
-    windRate = CVI(Q3$(9))
+    windRating = CVI(Q3$(9))
 
+    'April(0) - September(5)
     For I = 0 To 5
         For I1 = 0 To 14
-            MON(I, I1) = CVI(Q3$(10 + I1 + I * 15))
+            monthlyRatings(I, I1) = CVI(Q3$(10 + I1 + I * 15))
         Next
     Next
-    Close 1
+
+    Close #1
 
     If gameMonth < 4 Then gameMonth = 4
     If gameMonth > 9 Then gameMonth = 9
 
     'Ratings stored only for April+
     'Data stored using actual month #
-    SM% = gameMonth - 4
+    targetMonth = gameMonth - 4
 
     'Random temperature based on delta
-    If d100% <= 50 Then
-        gameTemp = MON(SM%, 0) + Int(Rnd(1) * MON(SM%, 1) + 1)
+    If teamRat_GAME(1, 9) = 1 Then
+        gameTemp = 70
     Else
-        gameTemp = MON(SM%, 0) - Int(Rnd(1) * MON(SM%, 1) + 1)
+        If d100% <= 50 Then
+            gameTemp = monthlyRatings(targetMonth, 0) + Int(Rnd(1) * monthlyRatings(targetMonth, 1) + 1)
+        Else
+            gameTemp = monthlyRatings(targetMonth, 0) - Int(Rnd(1) * monthlyRatings(targetMonth, 1) + 1)
+        End If
     End If
 
-    'SUM all fielder ratings
+    'SUM all wind direction ratings
     'Ratings stored represent a % of games
-    'impacted by that position
-    rateSUM = 0
+    'impacted by winds that direction
+    winDirSUM = 0
 
     For I = 2 To 9
-        rateSUM = rateSUM + MON(SM%, I)
+        winDirSUM = winDirSUM + monthlyRatings(targetMonth, I)
     Next
 
-    'Determine which rating to use
-    'based on random #
-    RN0 = Int(Rnd(1) * rateSUM) + 1
+    'Determine which rating to use based on weighted probability
+    RN0 = Int(Rnd(1) * winDirSUM) + 1
 
-    rateSUM = 0
-    I = 2
-    Do While I <= 9 And RN0 > rateSUM
-        rateSUM = rateSUM + MON(SM%, I)
-        I = I + 1
+    'Field ratings
+    winDirSUM = 0
+    interval = 2
+    Do While interval <= 9 And RN0 > winDirSUM
+        winDirSUM = winDirSUM + monthlyRatings(targetMonth, interval)
+        interval = interval + 1
     Loop
 
-    windDir = I
+    windDir = interval
 
     'SUM all wind speed ratings
     'Ratings stored represent a % of wind games
     'that are of each speed interval
     windSUM = 0
     For I = 10 To 13
-        windSUM = windSUM + MON(SM%, I)
+        windSUM = windSUM + monthlyRatings(targetMonth, I)
     Next
 
     'Determine which wind speed to use
@@ -18957,27 +18912,48 @@ Sub GETWEATHER (windDir, windSpeed, gameMonth, WF!, skyType, gameTemp, rainDelay
     RN0 = Int(Rnd(1) * windSUM) + 1
 
     windSUM = 0
-    I = 10
-    Do While I <= 13 And RN0 > windSUM
-        windSUM = SUM + MON(SM%, I)
-        I = I + 1
+    interval = 10
+    Do While interval <= 13 And RN0 > windSUM
+        windSUM = SUM + monthlyRatings(targetMonth, interval)
+        interval = interval + 1
     Loop
 
     'Calculate wind impact based on speed,
     'direction and other factors
-    If I = 10 Then windSpeed = Int(Rnd(1) * 10)
-    If I = 11 Then windSpeed = Int(Rnd(1) * 5) + 10
-    If I = 12 Then windSpeed = Int(Rnd(1) * 5) + 15
-    If I = 13 Then windSpeed = Int(Rnd(1) * 10) + 20
+    Select Case interval
 
-    WF! = 1
+        Case 10
+            '0-9 mph
+            windSpeed = Int(Rnd(1) * 10)
+    
+        Case 11
+            '10-14 mph
+            windSpeed = Int(Rnd(1) * 5) + 10
+    
+        Case 12
+            '15-19 mph
+            windSpeed = Int(Rnd(1) * 5) + 15
+    
+        Case 13
+            '20-30 mph
+            windSpeed = Int(Rnd(1) * 10) + 20
 
-    If windDir > 3 And windDir < 7 And windSpeed >= 15 Then
-        WF! = 1 - windRate / 100
-    End If
+    End Select
 
-    If windDir > 6 And windDir < 10 And windSpeed >= 15 Then
-        WF! = 1 + windRate / 100
+    windFactor! = 1
+
+    If windSpeed >= 15 Then
+
+        If windDir > 3 And windDir < 7 Then
+            'From infield - harder to hit
+            windFactor! = 1 - windRating / 100
+        End If
+
+        If windDir > 6 And windDir < 10 Then
+            'To outfield - improves hits
+            windFactor! = 1 + windRating / 100
+        End If
+
     End If
 
     precipType = 4
@@ -18985,7 +18961,7 @@ Sub GETWEATHER (windDir, windSpeed, gameMonth, WF!, skyType, gameTemp, rainDelay
 
     'Compare # 1-100 against precip value
     'This is the % of time there is precip
-    If d100% <= MON(SM%, 14) Then
+    If d100% <= monthlyRatings(targetMonth, 14) Then
 
         precipType = Int(Rnd(1) * 3) + 1
         skyType = 3
@@ -19739,6 +19715,8 @@ Sub CheckRecords ()
         Next I1
     Next I
 
+    'This is the length of the game
+    'Ends up being anywhere between 2 and 3 hours
     gameTime$ = "2:"
 
     MIN = Int(Rnd(1) * 60)
@@ -19823,11 +19801,11 @@ End Sub
 
 
 '----------------------------------------
-'         InningPrintBox routine
+'         InningColumn_Box routine
 '----------------------------------------
 'Locates cursor in the console output
 'for displaying the current inning
-Sub InningPrintBox (currInning)
+Sub InningColumn_Box (currInning)
 
     Dim setOf9, posInSet, col
 
@@ -19850,11 +19828,11 @@ End Sub
 
 
 '----------------------------------------
-'        InningPrintFile routine
+'        InningColumn_File routine
 '----------------------------------------
 'Locates cursor in printer / file output
 'for displaying the current inning
-Sub InningPrintFile (currInning)
+Sub InningColumn_File (currInning)
 
     Dim setOf9, posInSet, fileCol
 
@@ -19869,7 +19847,7 @@ Sub InningPrintFile (currInning)
         fileCol = 3 * currInning + 7 + setOf9
     End If
 
-    Print #2, Tab(fileCol);
+    Print #2, Tab(fileCol + 1);
 
 End Sub
 
@@ -19963,7 +19941,7 @@ Sub POSTGAME ()
         Color 14: Print "(2) ";
         Color 15: Print "STATS TO TEXT FILE"
 
-        If autoPlay = 1 And playerMode = 2 Then
+        If (autoPlay = 1 And playerMode = 2) Then
             X = 2
         Else
             Do
@@ -20667,6 +20645,25 @@ Sub BOX2FILE (printChoice, boxName$)
 
     Open diskPaths$(1) + boxName$ For Append As #2
 
+    park$ = RTrim$(gameStadiums$(1))
+    XCoord = (80 - Len(park$)) / 2
+
+    Print #2, Tab(XCoord); park$
+    Print #2, Tab(35); "TIME: "; gameTime$
+    Print #2, Tab(30); "ATTENDANCE: ";: Print #2, Using "###,###"; actualAttendance&
+    Print #2, Tab(32); "TEMPERATURE:"; gameTemp
+    Print #2,
+    If teamRat_GAME(1, 9) = 1 Then
+        Print #2, "WIND: NONE"
+        Print #2, "WEATHER: DOME"
+    Else
+        Print #2, "WIND: "; wind$
+        Print #2, "SKY: "; skyCond$(skyType)
+        Print #2, "PRECIPITATION: "; precip$(precipType)
+    End If
+
+    Print #2,
+
     Print #2, Tab(17);
 
     For IG = 1 To INNING%
@@ -20690,7 +20687,7 @@ Sub BOX2FILE (printChoice, boxName$)
             Print #2, gameTeams$(I);
 
             For I2 = 1 To INNING%
-                Call InningPrintFile(I2)
+                Call InningColumn_File(I2)
                 If I = 0 Then
                     Print #2, Using "##"; inningScore(I, I2);
                 End If
@@ -20721,7 +20718,7 @@ Sub BOX2FILE (printChoice, boxName$)
             Print #2, gameTeams$(I);
 
             For I2 = 1 To 9
-                Call InningPrintFile(I2)
+                Call InningColumn_File(I2)
                 If I = 0 Then
                     Print #2, Using "##"; inningScore(I, I2);
                 End If
@@ -20757,7 +20754,7 @@ Sub BOX2FILE (printChoice, boxName$)
 
             'Print innings 1 - 9
             For I2 = 1 To 9
-                Call InningPrintFile(I2)
+                Call InningColumn_File(I2)
                 Print #2, Using "##"; inningScore(I, I2);
             Next I2
 
@@ -20765,7 +20762,7 @@ Sub BOX2FILE (printChoice, boxName$)
 
             'Prints innings 10 to 19
             For I2 = 10 To INNING%
-                Call InningPrintFile(I2)
+                Call InningColumn_File(I2)
                 Print #2, Using "##"; inningScore(I, I2);
             Next I2
 
@@ -20789,14 +20786,14 @@ Sub BOX2FILE (printChoice, boxName$)
             Print #2, gameTeams$(I);
 
             For I2 = 1 To 9
-                Call InningPrintFile(I2)
+                Call InningColumn_File(I2)
                 Print #2, Using "##"; inningScore(I, I2);
             Next I2
 
             'If INNING% = 28 Or INNING% < 28 And P = 0 Then INNING% = INNING% - 1
 
             For I2 = 10 To 18
-                Call InningPrintFile(I2)
+                Call InningColumn_File(I2)
                 Print #2, Using "##"; inningScore(I, I2);
             Next I2
 
@@ -20809,7 +20806,7 @@ Sub BOX2FILE (printChoice, boxName$)
             Print #2, gameTeams$(I);
 
             For I2 = 19 To INNING%
-                Call InningPrintFile(I2)
+                Call InningColumn_File(I2)
                 Print #2, Using "##"; inningScore(I, I2);
             Next I2
 
@@ -20997,11 +20994,12 @@ Sub BOX2FILE (printChoice, boxName$)
 
         Next I1
 
-        Print #2, "TOTALS"; Tab(28);
+        Print #2, "TOTALS"; Tab(29);
         Print #2, Using "##"; Int(totalStats(0) / 3);
 
         If totalStats(0) - (Int(totalStats(0) / 3) * 3) > 0 Then
-            Print #2, ".";: Print #2, Using "#"; totalStats(0) - (Int(totalStats(0) / 3) * 3);
+            Print #2, ".";
+            Print #2, Using "#"; totalStats(0) - (Int(totalStats(0) / 3) * 3);
         End If
 
         Print #2, Tab(34);
@@ -21015,30 +21013,37 @@ Sub BOX2FILE (printChoice, boxName$)
 
     Next I
 
-    Print #2,: Print #2, " E - ";
+    Print #2,
+    Print #2, " E - ";
 
     If eventNbr = 0 Then
         Print #2, "NONE"
     Else
-        For X1 = 0 To (eventNbr - 1): Print #2, eventDesc$(X1); ",";: Next
-        Print #2,
+        For X1 = 0 To (eventNbr - 1):
+            Print #2, eventDesc$(X1); ",";
+        Next
+        Print #2, eventDesc$(eventNbr)
     End If
 
-    Print #2, "2B-";
+    Print #2, "2B - ";
 
     If DB = 0 Then
         Print #2, "NONE"
     Else
-        For X1 = 0 To (DB - 1): Print #2, doublesPlayer$(X1); ",";: Next
-        Print #2,
+        For X1 = 0 To (DB - 1):
+            Print #2, doublesPlayer$(X1); ",";
+        Next
+        Print #2, doublesPlayer$(DB)
     End If
 
     Print #2, "3B - ";
     If TR = 0 Then
         Print #2, "NONE"
     Else
-        For X1 = 0 To (TR - 1): Print #2, triplesPlayer$(X1); ",";: Next
-        Print #2,
+        For X1 = 0 To (TR - 1):
+            Print #2, triplesPlayer$(X1); ",";
+        Next
+        Print #2, triplesPlayer$(TR)
     End If
 
     Print #2, "HR - ";
@@ -21046,8 +21051,10 @@ Sub BOX2FILE (printChoice, boxName$)
     If HR = 0 Then
         Print #2, "NONE"
     Else
-        For X1 = 0 To (HR - 1): Print #2, homeRuns$(X1); ",";: Next
-        Print #2,
+        For X1 = 0 To (HR - 1)
+            Print #2, homeRuns$(X1); ",";
+        Next
+        Print #2, homeRuns$(HR)
     End If
 
     Print #2, "SB - ";
@@ -21058,47 +21065,47 @@ Sub BOX2FILE (printChoice, boxName$)
         For X1 = 0 To (SB - 1):
             Print #2, stolenBases$(X1); ",";
         Next
-        Print #2,
+        Print #2, stolenBases$(SB)
     End If
 
-    Print #2, "LOB - "; gameTeams$(0); Str$(leftOnBase(0)); ","; gameTeams$(1); Str$(leftOnBase(1))
-    Print #2, "DP - "; gameTeams$(0); Str$(totalDPs(0)); ","; gameTeams$(1); Str$(totalDPs(1))
+    LOBText$ = gameTeams$(0) + " (" + Str$(leftOnBase(0)) + "), " + gameTeams$(1) + " (" + Str$(leftOnBase(1)) + ")"
+    DPText$ = gameTeams$(0) + " (" + Str$(totalDPs(0)) + "), " + gameTeams$(1) + " (" + Str$(totalDPs(1)) + ")"
+    Print #2, "LOB - "; LOBText$
+    Print #2, "DP - "; DPText$
 
     Print #2,
 
-    Print #2, "UMPIRES: HP-"; gameUmpire$(1); "; 1B-"; gameUmpire$(2); "; 2B-"; gameUmpire$(3); "; 3B-"; gameUmpire$(4)
+    Print #2, "UMPIRES:"
+    Print #2, "HP-"; gameUmpire$(1); "; 1B-"; gameUmpire$(2); "; 2B-"; gameUmpire$(3); "; 3B-"; gameUmpire$(4)
 
-    Print #2, "EJECTIONS-";
+    Print #2,
+
+    Print #2, "EJECTIONS:"
+
     If ejectCnt = 0 Then
         Print #2, "none"
     Else
-        For X1 = 1 To ejectCnt:
+        For X1 = 1 To (ejectCnt - 1):
             Print #2, ejections$(X1); ",";
         Next
-        Print #2,
+        Print #2, ejections$(ejectCnt)
     End If
 
     Print #2,
 
-    Print #2, "INJURIES - ";
+    Print #2, "INJURIES: "
 
     If injCount = 0 Then
         Print #2, "none"
     Else
-        For X1 = 1 To injCount
+        For X1 = 1 To (injCount - 1)
             Print #2, injPlayers$(X1); ",";
         Next
+        Print #2, injPlayers$(injCount)
         Print #2,
     End If
 
     Print #2,
-
-    Print #2, "TIME: "; gameTime$
-    Print #2, "ATTENDANCE: ";: Print Using "###,###"; actualAttendance&
-    Print #2, "TEMPERATURE:"; gameTemp
-    Print #2, "WIND: "; wind$
-    Print #2, "SKY: "; skyCond$(skyType)
-    Print #2, "PRECIPITATION: "; precip$(precipType)
 
     If printChoice = 1 Then Print #2, Chr$(12)
 
@@ -21133,23 +21140,6 @@ Sub BOX2SCREEN
 
     Cls
 
-    'Color 14
-    'If gameLoc = 2 Then
-    '    Print "SITE: ";
-    '    Color 15
-    '    Print "NEUTRAL"
-    'Else
-    '    Print "SITE: ";
-    '    Color 15
-    '    Print gameStadium$(gameLoc)
-    'End If
-
-    'Color 14
-    'Print "ATTENDANCE: ";
-    'Color 15
-    'Print Using "###,###"; actualAttendance&
-    'Print
-
     Call ScoreSummary
 
     If autoPlay <> 1 Or playerMode <> 2 Then
@@ -21158,6 +21148,36 @@ Sub BOX2SCREEN
     End If
 
     Cls
+
+    park$ = RTrim$(gameStadiums$(1))
+    XCoord = (80 - Len(park$)) / 2
+
+    Locate , XCoord: Print park$
+
+    Color 14, 0
+    Locate , 35: Print "TIME: ";
+    Color 15: Print gameTime$
+    Color 14
+    Locate , 30: Print "ATTENDANCE: ";
+    Color 15: Print Using "###,###"; actualAttendance&
+    Color 14
+    Locate , 32: Print "TEMPERATURE:";
+    Color 15: Print gameTemp
+    Print
+
+    If teamRat_GAME(1, 9) = 1 Then
+        Print "WIND: NONE"
+        Print "WEATHER: DOME"
+    Else
+        Color 14: Print "WIND: ";
+        Color 15: Print wind$
+        Color 14: Print "SKY: ";
+        Color 15: Print skyCond$(skyType)
+        Color 14: Print "PRECIPITATION: ";
+        Color 15: Print precip$(precipType)
+    End If
+
+    Print
 
     Call STATS2SCREEN
 
@@ -21176,7 +21196,7 @@ Sub ScoreSummary
     If INNING% < 9 Then
 
         For IG = 1 To INNING%
-            Call InningPrintBox(IG)
+            Call InningColumn_Box(IG)
             Print IG;
         Next IG
 
@@ -21190,7 +21210,7 @@ Sub ScoreSummary
 
             For I2 = 1 To INNING%
 
-                Call InningPrintBox(I2)
+                Call InningColumn_Box(I2)
 
                 If I = 0 Then
                     Print Using "##"; inningScore(I, I2);
@@ -21221,7 +21241,7 @@ Sub ScoreSummary
 
         Color 14, 0
         For IG = 1 To 9
-            Call InningPrintBox(IG)
+            Call InningColumn_Box(IG)
             Print IG;
         Next IG
 
@@ -21238,7 +21258,7 @@ Sub ScoreSummary
             Color 15, 0
 
             For I2 = 1 To 9
-                Call InningPrintBox(I2)
+                Call InningColumn_Box(I2)
                 Print Using "##"; inningScore(I, I2);
             Next I2
 
@@ -21261,7 +21281,7 @@ Sub ScoreSummary
 
         Color 14, 0
         For IG = 1 To 9
-            Call InningPrintBox(IG)
+            Call InningColumn_Box(IG)
             Print IG;
         Next IG
 
@@ -21274,7 +21294,7 @@ Sub ScoreSummary
             Color 15, 0
 
             For I2 = 1 To 9
-                Call InningPrintBox(I2)
+                Call InningColumn_Box(I2)
                 Print Using "##"; inningScore(I, I2);
             Next I2
 
@@ -21292,7 +21312,7 @@ Sub ScoreSummary
         Locate 5,
         Color 14, 0
         For IG = 10 To INNING%
-            Call InningPrintBox(IG)
+            Call InningColumn_Box(IG)
             Print IG;
         Next IG
         Print "  H  R E"
@@ -21304,7 +21324,7 @@ Sub ScoreSummary
             Color 15, 0
 
             For I2 = 10 To INNING%
-                Call InningPrintBox(I2)
+                Call InningColumn_Box(I2)
                 Print Using "##"; inningScore(I, I2);
             Next I2
 
@@ -21322,7 +21342,7 @@ Sub ScoreSummary
 
         Color 14, 0
         For IG = 1 To 9
-            Call InningPrintBox(IG)
+            Call InningColumn_Box(IG)
             Print IG;
         Next IG
 
@@ -21336,7 +21356,7 @@ Sub ScoreSummary
             Color 15, 0
 
             For I2 = 1 To 9
-                Call InningPrintBox(I2)
+                Call InningColumn_Box(I2)
                 Print Using "##"; inningScore(I, I2);
             Next I2
 
@@ -21350,7 +21370,7 @@ Sub ScoreSummary
         Locate 5,
         Color 14, 0
         For IG = 10 To 18
-            Call InningPrintBox(IG)
+            Call InningColumn_Box(IG)
             Print IG;
         Next IG
 
@@ -21363,7 +21383,7 @@ Sub ScoreSummary
             Color 15, 0
 
             For I2 = 10 To 18
-                Call InningPrintBox(I2)
+                Call InningColumn_Box(I2)
                 Print Using "##"; inningScore(I, I2);
             Next I2
 
@@ -21375,7 +21395,7 @@ Sub ScoreSummary
         Locate 8,
         Color 14, 0
         For IG = 19 To INNING%
-            Call InningPrintBox(IG)
+            Call InningColumn_Box(IG)
             Print IG;
         Next IG
 
@@ -21388,7 +21408,7 @@ Sub ScoreSummary
             Color 15, 0
 
             For I2 = 19 To INNING%
-                Call InningPrintBox(I2)
+                Call InningColumn_Box(I2)
                 Print Using "##"; inningScore(I, I2);
             Next I2
 
@@ -21418,21 +21438,6 @@ Sub STATS2SCREEN
 
     Dim BK$
     BK$ = "## # # ## # #  # # #  #  # # ## ##"
-
-    Color 14, 0: Print "TIME: ";
-    Color 15: Print gameTime$
-    Color 14: Print "ATTENDANCE: ";
-    Color 15: Print Using "###,###"; actualAttendance&
-    Color 14: Print "TEMPERATURE:";
-    Color 15: Print gameTemp
-    Color 14: Print "WIND: ";
-    Color 15: Print wind$
-    Color 14: Print "SKY: ";
-    Color 15: Print skyCond$(skyType)
-    Color 14: Print "PRECIPITATION: ";
-    Color 15: Print precip$(precipType)
-
-    Print
 
     For I = 0 To 1
 
@@ -21548,8 +21553,7 @@ Sub STATS2SCREEN
 
     Next I
 
-    'GoTo 7313
-
+ 
     For I = 0 To 1
 
         Cls
@@ -21557,8 +21561,8 @@ Sub STATS2SCREEN
         Color teamRat_GAME(I, 11), teamRat_GAME(I, 12)
         Print gameTeams$(I);
 
-        Color 14: Locate , 23
-        Print "       IP   H  R  ER BB SO    ERA   W  L  S  SO"
+        Color 14: Locate , 30
+        Print "IP   H  R  ER BB SO    ERA   W  L  S  SO"
         Color 15
 
         For I1 = 1 To gamePitcher(I)
@@ -21703,7 +21707,7 @@ Sub STATS2SCREEN
         For X = 0 To (E - 1):
             Print eventDesc$(X); ",";
         Next
-        Print
+        Print eventDesc$(E)
     End If
 
     Color 14: Print "2B - ";
@@ -21715,7 +21719,7 @@ Sub STATS2SCREEN
         For X = 0 To (DB - 1):
             Print doublesPlayer$(X); ",";
         Next
-        Print
+        Print doublesPlayer$(DB)
     End If
 
     Color 14: Print "3B - ";
@@ -21727,7 +21731,7 @@ Sub STATS2SCREEN
         For X = 0 To (TR - 1):
             Print triplesPlayer$(X); ",";
         Next
-        Print
+        Print triplesPlayer$(TR)
     End If
 
     Color 14: Print "HR - ";
@@ -21739,7 +21743,7 @@ Sub STATS2SCREEN
         For X = 0 To (HR - 1):
             Print homeRuns$(X); ",";
         Next
-        Print
+        Print homeRuns$(HR)
     End If
 
     Color 14: Print "SB - ";
@@ -21750,43 +21754,47 @@ Sub STATS2SCREEN
         For X = 0 To (SB - 1):
             Print stolenBases$(X); ",";
         Next
-        Print
+        Print stolenBases$(SB)
     End If
 
     Color 14: Print "LOB - ";
-    Color 15: Print gameTeams$(0); Str$(leftOnBase(0)); ","; gameTeams$(1); Str$(leftOnBase(1))
+    LOBText$ = gameTeams$(0) + " (" + Str$(leftOnBase(0)) + "), " + gameTeams$(1) + "(" + Str$(leftOnBase(1)) + ")"
+    Color 15: Print LOBText$
     Color 14: Print "DP - ";
-    Color 15: Print gameTeams$(0); Str$(totalDPs(0)); ","; gameTeams$(1); Str$(totalDPs(1))
+    DPText$ = gameTeams$(0) + "(" + Str$(totalDPs(0)) + "), " + gameTeams$(1) + "(" + Str$(totalDPs(1)) + ")"
+    Color 15: Print DPText$
 
     Print
 
-    Color 14: Print "UMPIRES: ";
+    Color 14: Print "UMPIRES:"
     Color 15: Print "HP-"; gameUmpire$(1); "; 1B-"; gameUmpire$(2); "; 2B-"; gameUmpire$(3); "; 3B-"; gameUmpire$(4)
 
-    Color 14: Print "EJECTIONS: ";
+    Print
+
+    Color 14: Print "EJECTIONS: "
     Color 15
 
     If ejectCnt = 0 Then
         Print "none"
     Else
-        For X = 1 To ejectCnt:
+        For X = 1 To (ejectCnt - 1):
             Print ejections$(X); ",";
         Next
-        Print
+        Print ejections$(ejectCnt)
     End If
 
     Print
 
-    Color 14: Print "INJURIES: ";
+    Color 14: Print "INJURIES: "
     Color 15
 
     If injCount = 0 Then
         Print "none"
     Else
-        For X = 1 To injCount:
+        For X = 1 To (injCount - 1):
             Print injPlayers$(X); ",";
         Next
-        Print
+        Print injPlayers$(injCount)
     End If
 
     If autoPlay <> 1 Or playerMode <> 2 Then

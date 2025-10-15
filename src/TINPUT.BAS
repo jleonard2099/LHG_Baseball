@@ -1818,7 +1818,7 @@ Sub EditTeamInfo (YN$, team$, teamIdx)
         Locate 16, 1: Print "TRIPLES RATING  :";
         Locate 17, 1: Print "HOME RUN RATING :";
         Locate 18, 1: Print "FOUL BALL RATING:";
-        Locate 20, 1: Print "OUTDOOR(0)/INDOOR(1):";
+        Locate 20, 1: Print "OPEN(0)/CLOSED(1):";
         Locate 21, 1: Print "GRASS(0)/TURF(1)    :";
         Locate 23, 1: Print "MANAGER :";
 

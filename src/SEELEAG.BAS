@@ -1644,7 +1644,7 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
 
     For P = 1 To 10
 
-        If leaderPlayer$(P) = "" Then
+        If leaderPlayer$(P) = "" Then   
             RT = RT + 1
         Else
             Locate (P + 5 - RT), 1: Print "    "; leaderPlayer$(P)
@@ -1824,10 +1824,11 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
     Color 15
 
     For P = 1 To 19
-        Print leagLdrPlayer$(P) + ", " + leagLdrTeam$(P); Tab(28); Using "#.###  ###"; leagLdrVal1!(P); leagLdrVal2!(P);
+        Print leagLdrPlayer$(P) + ", " + leagLdrTeam$(P); Tab(28); 
+        Print Using ".###  ###"; leagLdrVal1!(P); leagLdrVal2!(P);
 
         Print Tab(41); leagLdrPlayer$(P + 238) + ", " + leagLdrTeam$(P + 238); Tab(69);
-        Print Using "#.###  ###"; leagLdrVal1!(P + 238); leagLdrVal2!(P + 238)
+        Print Using ".###  ###"; leagLdrVal1!(P + 238); leagLdrVal2!(P + 238)
     Next
 
     Print

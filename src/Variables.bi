@@ -148,9 +148,9 @@ Dim plyLeaderTeams$(TEAMS_PER_LEAGUE, 22), tmLeaderTeams$(TEAMS_PER_LEAGUE, 23)
 Dim batTotGames!(920), pitTotGames!(880)
 
 Dim expBatCategory$(0 To 31), expPitCategory$(0 To 29), expTeamCategory$(0 To 39)
-Dim expBatLdrName$(1 To 920), expPitLdrName$(1 To 880)
+'Dim expBatLdrName$(1 To 920), expPitLdrName$(1 To 880)
 Dim expBatLdrTeam$(1 To 920), expPitLdrTeam$(1 To 880)
-Dim expLdrTeam$(1 To 920), expLdrPlyrName$(1 To 920)
+'Dim expLdrTeam$(1 To 920), expLdrPlyrName$(1 To 920)
 
 Dim expLdrB0(1 To 920, 22), expLdrP0(1 To 880, 23)
 Dim expLdrVal!(1 To 920), expLdrTYP1!(1 To 920)
@@ -162,7 +162,7 @@ Dim teamTotLosses(TEAMS_PER_LEAGUE), teamTotWins(TEAMS_PER_LEAGUE)
 Dim lastTenWins(TEAMS_PER_LEAGUE), lastTenLosses(TEAMS_PER_LEAGUE)
 
 Dim currLoseStreak(TEAMS_PER_LEAGUE), currWinStreak(TEAMS_PER_LEAGUE), totExtInnLosses(TEAMS_PER_LEAGUE), totExtInnWins(TEAMS_PER_LEAGUE)
-Dim totHomeLosses!(TEAMS_PER_LEAGUE), totHomeWinss!(TEAMS_PER_LEAGUE), lastLoseStreak(TEAMS_PER_LEAGUE), lastWinStreak(TEAMS_PER_LEAGUE)
+Dim totHomeLosses!(TEAMS_PER_LEAGUE), totHomeWins!(TEAMS_PER_LEAGUE), lastLoseStreak(TEAMS_PER_LEAGUE), lastWinStreak(TEAMS_PER_LEAGUE)
 Dim totRoadLosses(TEAMS_PER_LEAGUE), totRoadWins(TEAMS_PER_LEAGUE)
 Dim teamLoseStreak(TEAMS_PER_LEAGUE), teamWinStreak(TEAMS_PER_LEAGUE)
 
@@ -241,8 +241,8 @@ Dim awayScoreTeam!(200), awayScoreOpp!(200)
 Dim homeWins(50), awayWins(50)
 Dim homeLosses(50), awayLosses(50)
 Dim homeScoreTeam!(200), homeScoreOpp!(200)
-Dim totHomeWins(4), totAwayWins(4)
-Dim totHomeLosses(4), totAwayLosses(4)
+Dim divTotHomeWins(4), totAwayWins(4)
+Dim divTotHomeLosses(4), totAwayLosses(4)
 Dim totAwayScoreTeam!(4), totAwayScoreOpp!(4)
 Dim totHomeScoreTeam!(4), totHomeScoreOpp!(4)
 
@@ -339,32 +339,41 @@ Dim grounderDir$(10), pitHand$(1)
 ' Shared / Global
 Dim Shared H6%, INNING%
 
-'Dim Shared P9, W5, W6
+Dim Shared P9, W5, W6
 
 Dim Shared autoPlay, batterMinimumOpt, BV, compTeam, currFielder
-'Dim Shared desigHit, D, dayOrNight
+Dim Shared desigHit, D, dayOrNight
 Dim Shared earlyExit, endAllGames, ejectCnt, FontColAdj
 Dim Shared gameLoc, gameOver, gameTemp, ghostRunOpt
 Dim Shared inningsPitched
 Dim Shared nbrLines, nbrStrikes, noLUFound, normalFinish
-'Dim Shared P, pbpLine, pinchHitterFlag, pitchEraOpt, playerMode, playerOpt
-Dim Shared sndOpt, strikeoutRating
+Dim Shared P, pbpLine, pinchHitterFlag, pitchEraOpt
+Dim Shared playerMode, playerOpt, precipType
+Dim Shared skyType, sndOpt, strikeoutRating
 Dim Shared useInj, userDone, useRest, useVGA
-Dim Shared umpBBadj, umpSZadj
+Dim Shared umpBBadj, umpSZadj, windDir, windSpeed
 
-Dim Shared pbpDelay!, windFactor!
+Dim Shared pbpDelay!, windImpact!
 
 Dim Shared boxName$, chosenPark$, fileString$, gameTime$, gameL$, gameW$
 Dim Shared pbpString$, wind$, YY$
 
 Dim setupUsed(1), closerUsed(1)
 
+'Park ratings
+Dim monthlyRatings(5, 14)
+Dim fenceDistCF
+Dim fenceDistLF, fenceDistLCF
+Dim fenceDistRF, fenceDistRCF
+Dim DOME, turfType, windRating
+
+
 'baseMove represents how many bases a runner will advance
 ' 10 = retreat 1 base, but safe
 ' 11 = retreat 1 base, tagged out
 Dim Shared assigned(1 To 9), baseMove(0 To 3)
 Dim Shared bRunner(3), b1Pitcher(3), b2Pitcher(3)
-Dim Shared batRating(0 To 1, 0 To 22, 80), battersFaced(0 To 1, 0 to 21)
+Dim Shared batRating(0 To 1, 0 To 22, 80), battersFaced(0 To 1, 0 To 21)
 Dim Shared buntBaseHit(0 To 9, 0 To 2), buntLeadRun(9, 1)
 Dim Shared buntQuality(0 To 1, 1 To 9, 1 To 9), buntStrike(0 To 5, 0 To 2)
 Dim Shared closerZone(0 To 1), CSS(1, 22, 6)
@@ -374,7 +383,7 @@ Dim Shared game_batRating(1, 7, 9), gamePitcher(1)
 Dim Shared gameScore(1, 2), injuryStatus(0 To 1, 0 To 22)
 Dim Shared inningScore(0 To 1, 30)
 Dim Shared leftOnBase(1), lineupAssigned(0 To 9), lineupPlayer(0 To 1, 0 To 9)
-Dim Shared MON(5, 14), nbrOuts(1), newRelieverNeeded(1)
+Dim Shared nbrOuts(1), newRelieverNeeded(1)
 Dim Shared oppBatStats(0 To 1, 0 To 22, 0 To 21), oppPitStats(0 To 1, 0 To 21, 0 To 41)
 Dim Shared pitcherStam(0 To 1, 0 To 1), pitchRating(0 To 1, 0 To 21, 0 To 89)
 Dim Shared pitcherOfRecord(1), playersUsed(1)
@@ -396,7 +405,7 @@ Dim Shared diskIDs$(1), doublesPlayer$(0 To 22), ejections$(20), eventDesc$(0 To
 Dim Shared fieldPos$(0 To 11)
 Dim Shared gameManagers$(1), gameStadiums$(1), gameTeams$(1), gameUmpire$(1 To 4)
 Dim Shared genericNames$(4), heldStatus$(1), homeRuns$(0 To 22), injPlayers$(20)
-Dim Shared parkNames$(99), pitchers$(1, 21), precip$(4), player$(23), pbpText$(1 To MAX_PBP_LINES)
+Dim Shared parkNames$(1 To 99), pitchers$(1, 21), precip$(4), player$(23), pbpText$(1 To MAX_PBP_LINES)
 Dim Shared skyCond$(4), stolenBases$(0 To 22)
 Dim Shared teamAbbreviatons$(0 To 1), triplesPlayer$(0 To 22)
 Dim Shared windDirection$(10)

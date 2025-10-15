@@ -17,9 +17,11 @@ Declare Function ChooseFile$(fileSpec$, fileDesc$)
 Const TEAM_SIZE_BYTES = 4342
 Const DATA_SIZE_BYTES = 4108
 Const MGR_SIZE_BYTES = 2000
+Const PARK_SIZE_BYTES = 240
 Const TEAM_FILE_NAME$ = "FCTEAMS"
 Const DATA_FILE_NAME$ = "LR"
 Const MGR_FILE_NAME$ = "MGR"
+Const PARK_FILE_NAME$ = "PARKS.DB"
 
 Dim previousYear$
 
@@ -39,4 +41,4 @@ Dim teamRatings(1 To 13)
 ' it will perform those calculations the "old way"
 Dim teamSA(24), teamTS(11)
 
-Dim batterNames$(0 To 23), pitcherNames$(0 To 21)
+'Dim batterNames$(0 To 23), pitcherNames$(0 To 21)

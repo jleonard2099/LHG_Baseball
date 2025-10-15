@@ -13,7 +13,7 @@ Sub UpdateExpandedStandings (league$)
     Shared teamLoseStreak(), teamWinStreak(), teamTotWins()
     Shared teamTotLosses(), lastTenWins(), lastTenLosses()
     Shared totExtInnLosses(), totExtInnWins()
-    Shared totHomeLosses!(), totHomeWinss!()
+    Shared totHomeLosses!(), totHomeWins!()
     Shared totRoadLosses(), totRoadWins()
 
     Shared teamScore(), nbrInnings(), oppScore()
@@ -28,7 +28,7 @@ Sub UpdateExpandedStandings (league$)
     Erase teamLoseStreak, teamWinStreak, teamTotWins
     Erase teamTotLosses, lastTenWins, lastTenLosses
     Erase totExtInnLosses, totExtInnWins
-    Erase totHomeLosses!, totHomeWinss!
+    Erase totHomeLosses!, totHomeWins!
     Erase totRoadLosses, totRoadWins
 
     Erase expStdLeagName$
@@ -73,11 +73,11 @@ Sub UpdateExpandedStandings (league$)
                         If nbrInnings(I) > 9 Then
                             totExtInnWins(currRecord) = totExtInnWins(currRecord) + 1
                         End If
-                        If locIndicator$(I) = "A" Then
+                        If (Left$(locIndicator$(I), 1) = "V" Or Left$(locIndicator$(I), 1) = "A") Then
                             totRoadWins(currRecord) = totRoadWins(currRecord) + 1
                         End If
                         If locIndicator$(I) = "H" Then
-                            totHomeWinss!(currRecord) = totHomeWinss!(currRecord) + 1
+                            totHomeWins!(currRecord) = totHomeWins!(currRecord) + 1
                         End If
 
                     End If
@@ -93,7 +93,7 @@ Sub UpdateExpandedStandings (league$)
                         If nbrInnings(I) > 9 Then
                             totExtInnLosses(currRecord) = totExtInnLosses(currRecord) + 1
                         End If
-                        If locIndicator$(I) = "A" Then
+                        If (Left$(locIndicator$(I), 1) = "V" Or Left$(locIndicator$(I), 1) = "A") Then
                             totRoadLosses(currRecord) = totRoadLosses(currRecord) + 1
                         End If
                         If locIndicator$(I) = "H" Then
@@ -143,7 +143,7 @@ Sub UpdateExpandedStandings (league$)
     Write #1, league$, div1Name$, div2Name$, div3Name$, div4Name$
 
     For I = 1 To TEAMS_PER_LEAGUE
-        Write #1, expStdLeagName$(I), teamTotWins(I), totHomeWinss!(I), totRoadWins(I), totExtInnWins(I), lastTenWins(I), teamTotLosses(I), totHomeLosses!(I), totRoadLosses(I), totExtInnLosses(I), lastTenLosses(I), teamWinStreak(I), teamLoseStreak(I), currWinStreak(I), currLoseStreak(I)
+        Write #1, expStdLeagName$(I), teamTotWins(I), totHomeWins!(I), totRoadWins(I), totExtInnWins(I), lastTenWins(I), teamTotLosses(I), totHomeLosses!(I), totRoadLosses(I), totExtInnLosses(I), lastTenLosses(I), teamWinStreak(I), teamLoseStreak(I), currWinStreak(I), currLoseStreak(I)
     Next
 
     Close #1
@@ -162,7 +162,7 @@ Sub NewStandings_Screen (league$)
     Shared currLoseStreak(), currWinStreak()
     Shared lastLoseStreak(), lastTenLosses(), lastTenWins(), lastWinStreak()
     Shared teamLoseStreak(), teamWinStreak(), teamTotLosses(), teamTotWins()
-    Shared totExtInnLosses(), totExtInnWins(), totHomeLosses!(), totHomeWinss!()
+    Shared totExtInnLosses(), totExtInnWins(), totHomeLosses!(), totHomeWins!()
     Shared totRoadLosses(), totRoadWins()
 
     Shared expStdLeagName$()
@@ -247,7 +247,7 @@ Sub NewStandings_Screen (league$)
                     End If
 
                     Print Tab(43); Using "##"; teamWinStreak(I); Tab(46); teamLoseStreak(I); Tab(50); currWinStreak(I); Tab(53); currLoseStreak(I);
-                    Print Tab(57); Using "##"; totHomeWinss!(I);: Print Tab(60); Using "##"; totHomeLosses!(I);
+                    Print Tab(57); Using "##"; totHomeWins!(I);: Print Tab(60); Using "##"; totHomeLosses!(I);
                     Print Tab(63); Using "##"; totRoadWins(I);: Print Tab(66); Using "##"; totRoadLosses(I);
                     Print Tab(69); Using "##"; totExtInnWins(I);: Print Tab(72); Using "##"; totExtInnLosses(I);
                     Print Tab(75); Using "##"; lastTenWins(I);: Print Tab(78); Using "##"; lastTenLosses(I)
@@ -284,7 +284,7 @@ Sub NewStandings_Report (printDest, destFile$, league$)
 
     Shared currLoseStreak(), currWinStreak()
     Shared lastLoseStreak(), lastTenLosses(), lastTenWins(), lastWinStreak()
-    Shared totExtInnLosses(), totExtInnWins(), totHomeLosses!(), totHomeWinss!()
+    Shared totExtInnLosses(), totExtInnWins(), totHomeLosses!(), totHomeWins!()
     Shared teamLoseStreak(), teamWinStreak(), teamTotLosses(), teamTotWins()
     Shared totRoadLosses(), totRoadWins()
 
@@ -373,7 +373,7 @@ Sub NewStandings_Report (printDest, destFile$, league$)
                     End If
 
                     Print #1, Tab(44); Using "##"; teamWinStreak(I); Tab(47); teamLoseStreak(I); Tab(51); currWinStreak(I); Tab(54); currLoseStreak(I);
-                    Print #1, Tab(57); Using "##"; totHomeWinss!(I);: Print #1, Tab(60); Using "##"; totHomeLosses!(I);
+                    Print #1, Tab(57); Using "##"; totHomeWins!(I);: Print #1, Tab(60); Using "##"; totHomeLosses!(I);
                     Print #1, Tab(63); Using "##"; totRoadWins(I);: Print #1, Tab(66); Using "##"; totRoadLosses(I);
                     Print #1, Tab(69); Using "##"; totExtInnWins(I);: Print #1, Tab(72); Using "##"; totExtInnLosses(I);
                     Print #1, Tab(75); Using "##"; lastTenWins(I);: Print #1, Tab(78); Using "##"; lastTenLosses(I)
@@ -422,7 +422,7 @@ Sub SortStandings (AA, ZZ)
 
     Shared currLoseStreak(), currWinStreak()
     Shared lastLoseStreak(), lastTenLosses(), lastTenWins(), lastWinStreak()
-    Shared totExtInnLosses(), totExtInnWins(), totHomeLosses!(), totHomeWinss!()
+    Shared totExtInnLosses(), totExtInnWins(), totHomeLosses!(), totHomeWins!()
     Shared totRoadLosses(), totRoadWins()
     Shared teamLoseStreak(), teamWinStreak(), teamTotLosses(), teamTotWins()
 
@@ -452,7 +452,7 @@ Sub SortStandings (AA, ZZ)
                         Swap totExtInnLosses(X), totExtInnLosses(Y)
                         Swap totHomeLosses!(X), totHomeLosses!(Y)
                         Swap totRoadLosses(X), totRoadLosses(Y)
-                        Swap totHomeWinss!(X), totHomeWinss!(Y)
+                        Swap totHomeWins!(X), totHomeWins!(Y)
                         Swap totRoadWins(X), totRoadWins(Y)
                         Swap lastTenLosses(X), lastTenLosses(Y)
                         Swap lastTenWins(X), lastTenWins(Y)

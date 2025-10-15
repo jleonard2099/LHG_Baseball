@@ -11,7 +11,7 @@ Sub NEWLDR ()
     ReDim menuChoices$(1 To 5)
 
     Shared currLoseStreak(), currWinStreak()
-    Shared totExtInnLosses(), totExtInnWins(), totHomeLosses!(), totHomeWinss!()
+    Shared totExtInnLosses(), totExtInnWins(), totHomeLosses!(), totHomeWins!()
     Shared teamTotLosses(), lastLoseStreak(), lastTenLosses(), lastTenWins(), lastWinStreak()
     Shared totRoadLosses(), totRoadWins(), teamLoseStreak(), teamWinStreak(), teamTotWins()
 
@@ -116,7 +116,7 @@ Sub NEWLDR ()
                         Input #2, league$, div1Name$, div2Name$, div3Name$, div4Name$
 
                         For I = 1 To TEAMS_PER_LEAGUE
-                            Input #2, expStdLeagName$(I), teamTotWins(I), totHomeWinss!(I), totRoadWins(I), totExtInnWins(I), lastTenWins(I), teamTotLosses(I), totHomeLosses!(I), totRoadLosses(I), totExtInnLosses(I), lastTenLosses(I), teamWinStreak(I), teamLoseStreak(I), currWinStreak(I), currLoseStreak(I)
+                            Input #2, expStdLeagName$(I), teamTotWins(I), totHomeWins!(I), totRoadWins(I), totExtInnWins(I), lastTenWins(I), teamTotLosses(I), totHomeLosses!(I), totRoadLosses(I), totExtInnLosses(I), lastTenLosses(I), teamWinStreak(I), teamLoseStreak(I), currWinStreak(I), currLoseStreak(I)
                         Next
 
                         Close #2
@@ -197,6 +197,7 @@ Sub UpdateExpandedLeaders (JB, JP, plyrTotalStats, teamTotalStats)
     Cls
 
     JB = 0
+    JP = 0
 
     For KK = 1 To TEAMS_PER_LEAGUE
 
@@ -347,7 +348,8 @@ Sub SaveExpandedLeaders (leaderFile$, league$, JB, JP, plyrTotalStats, teamTotal
     Shared divWins(), divLosses()
 
     Shared expBatLdrName$(), expPitLdrName$()
-    Shared plyLeaderTeams$(), expBatLdrTeam$(), expPitLdrTeam$(), tmLeaderTeams$()
+    Shared expBatLdrTeam$(), expPitLdrTeam$()
+    Shared plyLeaderTeams$(), tmLeaderTeams$()
 
     Shared div1Name$, div2Name$, div3Name$, div4Name$
 
@@ -664,12 +666,15 @@ End Sub
 Sub ViewBattingLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
 
     Shared expLdrB0()
-    Shared expBatLdrName$(), expBatLdrTeam$(), expLdrTeam$()
-    Shared expBatCategory$(), expLdrPlyrName$()
+    Shared expBatLdrName$(), expBatLdrTeam$(), expBatCategory$()
+    Shared expLdrPlyrName$(), expLdrTeam$()
     Shared expLdrVal!()
     Shared batTotGames!()
 
     Shared div1Name$, div2Name$, div3Name$, div4Name$
+
+    Erase expBatLdrName$, expBatLdrTeam$
+    Erase expLdrPlyrName$, expLdrTeam$
 
     If Not _FileExists(diskPaths$(2) + leaderFile$ + ".BAT") Then
 
@@ -989,7 +994,8 @@ End Sub
 Sub DisplayBattingLeaders (TVN, maxRecords, categoryId)
 
     Shared expLdrVal!()
-    Shared expLdrTeam$(), expBatCategory$(), expLdrPlyrName$()
+    Shared expBatCategory$()
+    Shared expLdrTeam$(), expLdrPlyrName$()
 
     userExit% = 0
 
@@ -1096,8 +1102,9 @@ End Sub
 'display the calculated stats.
 Sub ViewPitchingLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
 
-    Shared expPitLdrName$()
-    Shared expLdrTeam$(), expPitLdrTeam$(), expPitCategory$(), expLdrPlyrName$()
+    Shared expPitLdrName$(), expPitLdrTeam$()
+    Shared expLdrPlyrName$(), expLdrTeam$()
+    Shared expPitCategory$()
     Shared expLdrVal!(), expLdrTYP1!()
     Shared expLdrP0()
 
@@ -1105,6 +1112,9 @@ Sub ViewPitchingLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
 
     ReDim pitTotGames!(880)
     Dim TYP2(920)
+
+    Erase expPitLdrName$, expPitLdrTeam$
+    Erase expLdrPlyrName$, expLdrTeam$
 
     If Not _FileExists(diskPaths$(2) + leaderFile$ + ".PIT") Then
 
@@ -1394,7 +1404,8 @@ End Sub
 'stat categories on the end user display
 Sub DisplayPitchingLeaders (TVN, maxRecords, categoryId)
 
-    Shared expLdrTeam$(), expPitCategory$(), expLdrPlyrName$()
+    Shared expLdrTeam$(), expLdrPlyrName$()
+    Shared expPitCategory$()
     Shared expLdrVal!(), expLdrTYP1!()
 
     userExit% = 0
@@ -1507,10 +1518,13 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
     Shared plyLdrVal!(), teamLdrVal!()
     Shared expLdrVal!(), expLdrTYP1!()
 
-    Shared plyLeaderTeams$(), expLdrTeam$()
-    Shared expBatCategory$(), expTeamCategory$(), tmLeaderTeams$()
+    Shared expLdrTeam$(), expTeamCategory$()
+    Shared plyLeaderTeams$(), tmLeaderTeams$()
 
     Shared div1Name$, div2Name$, div3Name$, div4Name$
+
+    Erase expLdrTeam$
+    Erase plyLeaderTeams$, tmLeaderTeams$
 
     If Not _FileExists(diskPaths$(2) + leaderFile$ + ".TOT") Then
 
@@ -2464,3 +2478,4 @@ Sub GetListLength (printOrView, listLength, maxItems)
     End If
 
 End Sub
+
