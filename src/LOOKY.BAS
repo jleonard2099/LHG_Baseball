@@ -1171,7 +1171,7 @@ Sub ReportsAllTeams ()
 
     If leagueFile$ <> "" Then
 
-        Call ReadLeagueStats(leagueFile$)
+        Call ReadLeagueMembers(leagueFile$)
 
         For XW = 1 To TEAMS_PER_LEAGUE
 

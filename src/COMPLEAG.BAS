@@ -95,7 +95,7 @@ Sub CompileLeague ()
             finalUpdate$ = UCase$(I$)
         Loop Until finalUpdate$ = "Y" Or finalUpdate$ = "N"
 
-        Call ReadLeagueStats(leagueFile$)
+        Call ReadLeagueMembers(leagueFile$)
 
         Erase divWins, divLosses
 

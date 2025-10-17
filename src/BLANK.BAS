@@ -25,7 +25,7 @@ Sub BLANK ()
 
         If UCase$(A$) = "Y" Then
 
-            Call ReadLeagueStats (leagueFile$)
+            Call ReadLeagueMembers (leagueFile$)
 
             For XW = 1 To TEAMS_PER_LEAGUE
 

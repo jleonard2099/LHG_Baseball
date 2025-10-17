@@ -8,7 +8,7 @@ Declare Sub ReadTeamStats (teamName$, statFile$)
 Declare Sub ReadScheduleStats (statFile$, numberGames)
 Declare Sub ReadSeasonRecords (recordFile$)
 Declare Sub ReadLeagueIndex (indexFile$)
-Declare Sub ReadLeagueStats (statFile$)
+Declare Sub ReadLeagueMembers (statFile$)
 
 Declare Function nameStatFile$ (teamName$)
 Declare Function CheckString% (targetString$)
@@ -41,4 +41,4 @@ Dim teamRatings(1 To 13)
 ' it will perform those calculations the "old way"
 Dim teamSA(24), teamTS(11)
 
-'Dim batterNames$(0 To 23), pitcherNames$(0 To 21)
+Dim batterNames$(0 To 23), pitcherNames$(0 To 21)

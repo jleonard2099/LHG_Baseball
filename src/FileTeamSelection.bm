@@ -760,12 +760,12 @@ End Sub
 
 
 '----------------------------------------
-'     ReadLeagueStats Subroutine
+'     ReadLeagueMembers Subroutine
 '----------------------------------------
 'This subroutine reads in the stat file
 'names from the .TMS file and assigns them
 'to variables for use later.
-Sub ReadLeagueStats (statFile$)
+Sub ReadLeagueMembers (statFile$)
 
     Shared memberName$()
 

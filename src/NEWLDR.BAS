@@ -70,7 +70,7 @@ Sub NEWLDR ()
                             memberName$(X) = "XXX"
                         Next
 
-                        Call ReadLeagueStats(leagStatFile$)
+                        Call ReadLeagueMembers(leagStatFile$)
                         Call UpdateExpandedLeaders(JB, JP, TS, TTS)
                         Call SaveExpandedLeaders(GetFileBaseName$(leagStatFile$), league$, JB, JP, TS, TTS)
 
@@ -100,7 +100,7 @@ Sub NEWLDR ()
                             memberName$(X) = "XXX"
                         Next
 
-                        Call ReadLeagueStats(leagStatFile$)
+                        Call ReadLeagueMembers(leagStatFile$)
                         Call UpdateExpandedStandings(GetFileBaseName$(leagStatFile$))
 
                     End If
@@ -1523,6 +1523,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
 
     Shared div1Name$, div2Name$, div3Name$, div4Name$
 
+    Erase expLdrVal!, plyLdrVal!, teamLdrVal!
     Erase expLdrTeam$
     Erase plyLeaderTeams$, tmLeaderTeams$
 
@@ -1684,7 +1685,9 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
                     Case 15
                         For I = 1 To plyrTotalStats
                             expLdrTeam$(I) = plyLeaderTeams$(I, X0)
-                            expLdrVal!(I) = (plyLdrVal!(I, X1) + plyLdrVal!(I, X2) + (plyLdrVal!(I, X3) * 2) + (plyLdrVal!(I, X4) * 3)) / plyLdrVal!(I, X0)
+                            If plyLdrVal!(I, X0) > 0 Then
+                                expLdrVal!(I) = (plyLdrVal!(I, X1) + plyLdrVal!(I, X2) + (plyLdrVal!(I, X3) * 2) + (plyLdrVal!(I, X4) * 3)) / plyLdrVal!(I, X0)
+                            End If
                         Next
 
                         Call SortTeam(plyrTotalStats, stpl, sortType)
@@ -1694,7 +1697,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
                         screenType = 0
 
                     Case 16
-                        For I = 1 To maxRecords
+                        For I = 1 To plyrTotalStats 'maxRecords
                             expLdrTeam$(I) = plyLeaderTeams$(I, X0)
                             expLdrVal!(I) = (plyLdrVal!(I, X1) + plyLdrVal!(I, X2)) / (plyLdrVal!(I, X0) + plyLdrVal!(I, X2))
                         Next
@@ -1706,7 +1709,7 @@ Sub ViewTeamLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
                         screenType = 0
 
                     Case 19
-                        For I = 1 To maxRecords
+                        For I = 1 To plyrTotalStats 'maxRecords
                             expLdrTeam$(I) = plyLeaderTeams$(I, X0)
                             expLdrVal!(I) = (plyLdrVal!(I, X0) + plyLdrVal!(I, X1)) / (plyLdrVal!(I, X0) + plyLdrVal!(I, X1) + plyLdrVal!(I, X2))
                         Next

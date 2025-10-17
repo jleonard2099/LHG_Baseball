@@ -32,10 +32,7 @@ DefInt A-Z
 ' For Utils
 '$Include: 'BoxRoutines.bi'
 '$Include: 'FileTeamSelection.bi'
-Dim batterNames$(0 To 23), pitcherNames$(0 To 21)
 '$Include: 'Variables.bi'
-Dim expBatLdrName$(1 To 920), expPitLdrName$(1 To 880)
-Dim expLdrTeam$(1 To 920), expLdrPlyrName$(1 To 920)
 '$Include: 'MainRoutines.bi'
 '$Include: 'TITLE.bi'
 

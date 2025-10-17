@@ -148,9 +148,9 @@ Dim plyLeaderTeams$(TEAMS_PER_LEAGUE, 22), tmLeaderTeams$(TEAMS_PER_LEAGUE, 23)
 Dim batTotGames!(920), pitTotGames!(880)
 
 Dim expBatCategory$(0 To 31), expPitCategory$(0 To 29), expTeamCategory$(0 To 39)
-'Dim expBatLdrName$(1 To 920), expPitLdrName$(1 To 880)
+Dim expBatLdrName$(1 To 920), expPitLdrName$(1 To 880)
 Dim expBatLdrTeam$(1 To 920), expPitLdrTeam$(1 To 880)
-'Dim expLdrTeam$(1 To 920), expLdrPlyrName$(1 To 920)
+Dim expLdrTeam$(1 To 920), expLdrPlyrName$(1 To 920)
 
 Dim expLdrB0(1 To 920, 22), expLdrP0(1 To 880, 23)
 Dim expLdrVal!(1 To 920), expLdrTYP1!(1 To 920)
