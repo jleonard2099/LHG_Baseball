@@ -1422,7 +1422,9 @@ Sub LOADER
 
         End Select
     Else
-        actualAttendance& = avgAttendance& * (0.85 + Rnd * 0.3)
+        'Average attendance +/ 12%
+        margin = Int(avgAttendance& * .12)
+        actualAttendance& = avgAttendance& + Int(Rnd(1) * margin * 2) - margin
     End If
 
     YV = 1
