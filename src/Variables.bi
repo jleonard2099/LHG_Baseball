@@ -321,6 +321,10 @@ Dim umpireRating(MAX_UMPIRES, 0 To 2)
 Dim scheduleFile$
 Dim actualAttendance&, avgAttendance&
 
+Dim parkAttKey$(1 To 3000)
+Dim parkAvgAtt&(1 To 3000)
+Dim totalParks
+
 'Used by POSTGAME
 Dim DB, HR, TR, SB
 Dim eventNbr
@@ -337,7 +341,7 @@ Dim grounderDir$(10), pitHand$(1)
 
 
 ' Shared / Global
-Dim Shared H6%, INNING%
+Dim Shared INNING%
 
 Dim Shared P9, W5, W6
 

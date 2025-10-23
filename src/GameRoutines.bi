@@ -9,6 +9,7 @@ Declare Sub LineupFromProfile (lineupFound%, luTeamIdx, skipLineChange%, useMgrP
 Declare Sub LineupSummary (luTeamIdx, reselect, LU%)
 Declare Sub SelectBatters (validBatters, luTeamIdx)
 Declare Sub SelectStadium (useVGA)
+Declare Sub LoadParkAttData
 Declare Sub PitchingRotations (computerRotations%, luTeamIdx)
 Declare Sub ComputerLineups (validBatters, luTeamIdx, noLineups, reselect)
 Declare Sub AssignHitters (luTeamIdx)
@@ -187,7 +188,9 @@ Declare Sub ReadGameExtraData (teamYear$, teamIdx, gameIdx)
 
 Declare Function d100% ()
 Declare Function buntDecision% (baseStatus)
+Declare Function GetParkAttendance& (searchParkID$, gameYear)
 Declare Function getRainDelayMinutes% ():
+Declare Function GetRunStrategy%()
 Declare Function GetTeamYear% (yearFromName$)
 Declare Function OUTFLDLOCATION$ (currFielder)
 Declare Function pitcherMaxStam% (teamIdx, pitcherIdx)

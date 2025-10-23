@@ -3,7 +3,7 @@ Dim Shared parkDesc$
 
 Open "parkdata.csv" For Append As #11
 
-Print #11, "Park Name,LF,LCF,CF,RCF,RF,Turf,Dome,Wind,";
+Print #11, "Park Name,Attendance,LF,LCF,CF,RCF,RF,Turf,Dome,Wind,";
 Print #11, "AprBaseTemp,AprDeltaTemp,AprWindRL,AprWindLR,AprWindFromINL,AprWindFromINC,AprWindFromINR,AprWindToOUTL,AprWindToOUTC,AprWindToOUTR,AprWS0-9,AprWS10-14,AprWS15-19,AprWS20+,AprPrecip,";
 Print #11, "MayBaseTemp,MayDeltaTemp,MayWindRL,MayWindLR,MayWindFromINL,MayWindFromINC,MayWindFromINR,MayWindToOUTL,MayWindToOUTC,MayWindToOUTR,MayWS0-9,MayWS10-14,MayWS15-19,MayWS20+,MayPrecip,";
 Print #11, "JuneBaseTemp,JuneDeltaTemp,JuneWindRL,JuneWindLR,JuneWindFromINL,JuneWindFromINC,JuneWindFromINR,JuneWindToOUTL,JuneWindToOUTC,JuneWindToOUTR,JuneWS0-9,JuneWS10-14,JuneWS15-19,JuneWS20+,JunePrecip,";
@@ -14,7 +14,7 @@ Print #11, "SeptBaseTemp,SeptDeltaTemp,SeptWindRL,SeptWindLR,SeptWindFromINL,Sep
 For X = 1 To 100
 
     GetStadiumWeather (X)
-    Print #11, parkDesc$; ",";
+    Print #11, parkDesc$; ","; avgAttendance&; ",";
     Print #11, parkLF; ","; parkLCF; ",";
     Print #11, parkCF; ","; parkRCF; ",";
     Print #11, parkRF; ","; turfType; ",";
