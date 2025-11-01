@@ -17,7 +17,7 @@ Sub ConfigureDrives ()
     browseImage& = _LoadImage("search.png", 32)
     saveImage& = _LoadImage("floppy-disk.png", 32)
 
-    Open "FOLDERS.CFG" For Input As #2
+    Open cfgPath$ + "FOLDERS.CFG" For Input As #2
 
     For I = 0 To 3
         Input #2, diskPaths$(I)
@@ -74,7 +74,6 @@ Sub ConfigureDrives ()
     Color Yellow, Blue
     Locate 28, 37: Print "S A V E";
     _PutImage (304, 390)-(336, 422), saveImage&, confDriveScreen&
-
 
     Do
 
@@ -240,7 +239,7 @@ Sub ConfigureDrives ()
     If X$ <> "Y" GoTo Done 'insist on either Y or N or up-arrow
 
     Save:
-    Open "FOLDERS.CFG" For Output As #1
+    Open cfgPath$ + "FOLDERS.CFG" For Output As #1
 
     For R = 0 To 3:
 
@@ -283,7 +282,7 @@ Sub ConfigureDrives_Base ()
     browseImage& = _LoadImage("search.png", 32)
     saveImage& = _LoadImage("floppy-disk.png", 32)
 
-    Open "FOLDERS.CFG" For Input As #2
+    Open cfgPath$ + "FOLDERS.CFG" For Input As #2
 
     For I = 0 To 4
         Input #2, diskPaths$(I)
@@ -539,7 +538,7 @@ Sub ConfigureDrives_Base ()
     If X$ <> "Y" GoTo Done 'insist on either Y or N or up-arrow
 
     Save:
-    Open "FOLDERS.CFG" For Output As #1
+    Open cfgPath$ + "FOLDERS.CFG" For Output As #1
 
     For R = 0 To 4:
 
@@ -635,7 +634,7 @@ Sub ConfigureDrivesLegacy_BB ()
     If X$ = "N" GoTo GetDiv1
     If X$ <> "Y" GoTo Done 'insist on either Y or N or up-arrow
 
-    Open "DEV.BAS" For Output As #1
+    Open cfgPath$ + "DEV.BAS" For Output As #1
 
     For R = 0 To 1:
 
@@ -738,7 +737,7 @@ Sub ConfigureDrivesLegacy_Foot ()
     If X$ = "N" GoTo GetDiv1
     If X$ <> "Y" GoTo Done 'insist on either Y or N or up-arrow
 
-    Open "DEV.BAS" For Output As #1
+    Open cfgPath$ + "DEV.BAS" For Output As #1
 
     For R = 0 To 2:
 
@@ -851,7 +850,7 @@ Sub ConfigureDrivesLegacy_Baseball ()
     If X$ = "N" GoTo GetDiv1
     If X$ <> "Y" GoTo Done 'insist on either Y or N or up-arrow
 
-    Open "DEV.BAS" For Output As #1
+    Open cfgPath$ + "DEV.BAS" For Output As #1
 
     For R = 0 To 3:
 

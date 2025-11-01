@@ -327,10 +327,6 @@ $ExeIcon:'./lhg_fcbase.ico'
 _Icon
 _AllowFullScreen
 
-If _FileExists("errlog") Then
-    Kill "errlog"
-End If
-
 opSysType$ = Left$(_OS$, InStr(2, _OS$, "[") - 1)
 
 Select Case opSysType$
@@ -342,15 +338,32 @@ End Select
 
 'Default new folders to current path
 For I = 0 To 4
-
     diskPaths$(I) = _CWD$ + dirSeparator$
-
 Next
 
-'Read-in existing DEV.BAS
-If _FileExists("DEV.BAS") Then
+' Test if we can write locally
+CanWriteLocally = 0 ' Assume FALSE
+On Error GoTo WriteTestFailed
+Open "WRITETEST.TMP" For Output As #1
+Close #1
+Kill "WRITETEST.TMP"
+CanWriteLocally = 1 ' SUCCESS - TRUE
+WriteTestFailed:
+On Error GoTo 0
 
-    Open "DEV.BAS" For Input As #1
+' Determine base path for config files
+If (CanWriteLocally = 1) Or dirSeparator$ = "/" Then
+    ' Can write locally - use local folders (portable/Mac/Linux scenario)
+    cfgPath$ = _CWD$
+Else
+    ' Can't write locally - use AppData (Windows restricted scenario)
+    cfgPath$ = Environ$("LOCALAPPDATA") + "\LH Games\Full Count\"
+End If
+
+'Read-in existing DEV.BAS
+If _FileExists(cfgPath$ + "DEV.BAS") Then
+
+    Open cfgPath$ + "DEV.BAS" For Input As #1
 
     'DEV.BAS will not have the "Schedule" folder configured
     For I = 0 To 3
@@ -359,17 +372,17 @@ If _FileExists("DEV.BAS") Then
 
     Close #1
 
-    Kill "DEV.BAS"
+    Kill cfgPath$ + "DEV.BAS"
 
 End If
 
-'Write FOLDERS.CFG
-If Not _FileExists("FOLDERS.CFG") Then
+If Not _FileExists(cfgPath$ + "FOLDERS.CFG") Then
 
-    Open "FOLDERS.CFG" For Output As #2
+    ' Create FOLDERS.CFG file
+    Open cfgPath$ + "FOLDERS.CFG" For Output As #2
 
     For I = 0 To 4
-        Print #2, diskPaths$(I)
+        Print #2, Left$(diskPaths$(I), Len(diskPaths$(I)) - 1)
     Next
 
     Close #2
@@ -377,7 +390,7 @@ If Not _FileExists("FOLDERS.CFG") Then
 End If
 
 'Read in path values
-Open "FOLDERS.CFG" For Input As #3
+Open cfgPath$ + "FOLDERS.CFG" For Input As #3
 
 For I = 0 To 4
     Input #3, diskPaths$(I)
@@ -385,11 +398,16 @@ Next
 
 Close #3
 
+'If _FileExists(cfgPath$ + "errlog") Then
+'    Kill cfgPath$ + "errlog"
+'End If
+
+
 'Rename records file to new format
-If _FileExists("BASEBALL.REC") Then
+If _FileExists(cfgPath$ + "BASEBALL.REC") Then
 
     result$ = CopyFile$("RECORDS.MLB", "BASEBALL.REC")
-    Kill "BASEBALL.REC"
+    Kill cfgPath$ + "BASEBALL.REC"
 
 End If
 
@@ -411,7 +429,7 @@ System
 '----------------------------------------
 
 Errhandler:
-Open "errlog" For Append As #10
+Open cfgPath$ + "errlog" For Append As #10
 Print #10, "An error occurred. Please contact support with the following information:"
 Print #10, "Error #"; Err; "on program file line"; _ErrorLine; "-- "; _ErrorMessage$
 
@@ -419,7 +437,7 @@ If _InclErrorLine Then
     Print #10, "    in module "; _InclErrorFile$; " line "; _InclErrorLine
 End If
 
-If _FileExists("GAME82") Then
+If _FileExists(cfgPath$ + "GAME82") Then
     Print #10, "Schedule game # "; Using "####"; schedGame(0) + schedGame(2)
     Print #10, gameTeams$(0) + " vs. " + gameTeams$(1)
 End If
@@ -925,9 +943,9 @@ Sub LOADER
     '----------------------------------------
     '         DETERMINE GAME OPTIONS
     '----------------------------------------
-    If _FileExists("DEFERA") Then
+    If _FileExists(cfgPath$ + "DEFERA") Then
 
-        Open "DEFERA" For Input As #2
+        Open cfgPath$ + "DEFERA" For Input As #2
         Input #2, playerOpt
         Input #2, leagueOpt
         Input #2, desigHit
@@ -945,9 +963,9 @@ Sub LOADER
 
         Close #2
 
-        Kill "DEFERA"
+        Kill cfgPath$ + "DEFERA"
 
-        Open "DEFAULT" For Output As #3
+        Open cfgPath$ + "DEFAULT" For Output As #3
         Print #3, playerOpt
         Print #3, leagueOpt
         Print #3, desigHit
@@ -967,9 +985,9 @@ Sub LOADER
 
     Else
 
-        If Not _FileExists("DEFAULT") Then
+        If Not _FileExists(cfgPath$ + "DEFAULT") Then
 
-            Open "DEFAULT" For Output As #3
+            Open cfgPath$ + "DEFAULT" For Output As #3
 
             'Player option
             Print #3, 3
@@ -1017,7 +1035,7 @@ Sub LOADER
 
     End If
 
-    Open "DEFAULT" For Input As #4
+    Open cfgPath$ + "DEFAULT" For Input As #4
     Input #4, playerOpt
     Input #4, leagueOpt
     Input #4, desigHit
@@ -1040,9 +1058,9 @@ Sub LOADER
     Close #4
 
     'Load game in-progress, if there is one
-    If _FileExists("GAME82") Then
+    If _FileExists(cfgPath$ + "GAME82") Then
 
-        Open "GAME82" For Input As #5
+        Open cfgPath$ + "GAME82" For Input As #5
 
         Input #5, scheduleFile$
 
@@ -1054,8 +1072,8 @@ Sub LOADER
 
         currGame = schedGame(0) + schedGame(2)
 
-        'Open "pbplog" + Str$(currGame) For Append As #11
-        'Open "pbplog" For Append As #11
+        'Open cfgPath$ + "pbplog" + Str$(currGame) For Append As #11
+        'Open cfgPath$ + "pbplog" For Append As #11
 
         If Not _FileExists(scheduleFile$) Then
 
@@ -1102,12 +1120,12 @@ Sub LOADER
 
     Else
 
-        'Open "pbplog" For Output As #11
+        'Open cfgPath$ + "pbplog" For Output As #11
 
     End If
 
     If Environ$("PBPLOG") = "TRUE" Then
-        Open "pbplog.txt" For Append As #11
+        Open cfgPath$ + "pbplog.txt" For Append As #11
     End If
 
     If autoPlay = 1 Then
@@ -1234,7 +1252,7 @@ Sub LOADER
                 Select Case setting
 
                     Case 0:
-                        Open "DEFERA" For Output As #7
+                        Open cfgPath$ + "DEFERA" For Output As #7
                         Print #7, playerOpt
                         Print #7, leagueOpt
                         Print #7, desigHit
@@ -1854,7 +1872,7 @@ Sub LOADER
     W6 = 1
 
     '--- we need to check for Revised.pbp
-    If _FileExists("revised.pbp") Then
+    If _FileExists(cfgPath$ + "revised.pbp") Then
 
         Call SOURCE
 
@@ -2843,7 +2861,7 @@ Sub LoadParkAttData
     Shared parkAvgAtt&()
     Shared totalParks
 
-    Open "parkattendance.csv" For Input As #1
+    Open cfgPath$ + "parkattendance.csv" For Input As #1
 
     ' Skip header line
     Line Input #1, dummy$
@@ -9453,11 +9471,11 @@ End Sub
 ' in from file or assigned elsewhere
 Sub InitVar ()
 
+    Shared DB, HR, TR, SB
+
     Shared scheduleFile$
     Shared actualAttendance&, avgAttendance&
     Shared teamIndicator$()
-
-    Shared DB, HR, TR, SB
 
     Shared bestBatterFPos(), bLineupIdx()
     Shared bestBatterIdx(), gameMgrIdx(), mgrFile()
@@ -9638,7 +9656,7 @@ Sub InitVar ()
     Erase parkHRVals!, statTeamBat!, statTeamPit!
 
     Erase diskIDs$, doublesPlayer$
-    Erase eventDesc$, ejections$
+    Erase errorsPlayer$, ejections$
     Erase gameTeams$
     Erase homeRuns$, injPlayers$, locIndicator$, oppName$
     Erase parkNames$, player$, pbpText$
@@ -9875,7 +9893,7 @@ Sub GetPBPString (range%, minIdx%, fileString$)
         'Get a new PBP string to use
         pbpIdx% = Int(Rnd(1) * range%) + minIdx%
 
-        Open "REVISED.PBP" For Random As #1 Len = 44
+        Open cfgPath$ + "REVISED.PBP" For Random As #1 Len = 44
         Field #1, 44 As YY$
         Get #1, pbpIdx%
         fileString$ = _Trim$(YY$)
@@ -12434,7 +12452,7 @@ Sub InjuredPitcher (playerInjured, pinchHitterFlag, baseStatus)
     pitchRating(D, currPitcher(D), SS_P_Avail) = 99
 
     If (playerMode = 1 And D = compTeam) Or playerMode = 2 Then
-        Print #11, "DEBUG: Calling RELIEVERS. (InjuredPitcher) Pitcher="; currPitcher(D); "  Outs="; nbrOuts(0)
+        'Print #11, "DEBUG: Calling RELIEVERS. (InjuredPitcher) Pitcher="; currPitcher(D); "  Outs="; nbrOuts(0)
         Call RELIEVERS(pinchHitterFlag, newPitcherFlag, baseStatus)
     Else
         Call PBP("You must replace " + pitchers$(D, currPitcher(D)))
@@ -19659,9 +19677,9 @@ Sub EVENTS (specialCount, specialStat)
 
     Shared eventSettings()
 
-    If _FileExists("EVENTS.BOX") Then
+    If _FileExists(cfgPath$ + "EVENTS.BOX") Then
 
-        Open "EVENTS.BOX" For Input As #1
+        Open cfgPath$ + "EVENTS.BOX" For Input As #1
         For X = 1 To 13
             Input #1, eventSettings(X)
         Next
@@ -19780,9 +19798,8 @@ End Sub
 Sub CheckRecords ()
 
     Shared DB, HR, TR, SB
-    Shared eventNbr
-    Shared allEvents
-    Shared doublesPlayer$(), eventDesc$(), homeRuns$()
+    Shared allEvents, errorNbr
+    Shared doublesPlayer$(), errorsPlayer$(), homeRuns$()
     Shared stolenBases$(), triplesPlayer$()
 
     Cls
@@ -19809,7 +19826,7 @@ Sub CheckRecords ()
 
     Next I
 
-    eventNbr = 0
+    errorNbr = 0
 
     For I = 0 To 1:
 
@@ -19819,14 +19836,14 @@ Sub CheckRecords ()
 
                 ' ***CHECKING ERRORS***
                 If teamBatStats(I, I1, 11) = 1 Then
-                    eventDesc$(eventNbr) = batters$(I, I1)
+                    errorsPlayer$(errorNbr) = batters$(I, I1)
                 Else
-                    eventDesc$(eventNbr) = batters$(I, I1) + Str$(teamBatStats(I, I1, 11))
+                    errorsPlayer$(errorNbr) = batters$(I, I1) + Str$(teamBatStats(I, I1, 11))
                 End If
 
-                eventDesc$(eventNbr) = eventDesc$(eventNbr) + " (" + Right$(Str$(oppBatStats(I, I1, 11)), (Len(Str$(oppBatStats(I, I1, 11))) - 1)) + ")"
+                errorsPlayer$(errorNbr) = errorsPlayer$(errorNbr) + " (" + Right$(Str$(oppBatStats(I, I1, 11)), (Len(Str$(oppBatStats(I, I1, 11))) - 1)) + ")"
 
-                eventNbr = eventNbr + 1
+                errorNbr = errorNbr + 1
 
             End If
 
@@ -19892,13 +19909,13 @@ Sub CheckRecords ()
             If teamPitStats(I, I1, 34) <> 0 Then
 
                 If teamPitStats(I, I1, 34) = 1 Then
-                    eventDesc$(eventNbr) = pitchers$(I, I1)
+                    errorsPlayer$(errorNbr) = pitchers$(I, I1)
                 Else
-                    eventDesc$(eventNbr) = pitchers$(I, I1) + Str$(teamPitStats(I, I1, 34))
+                    errorsPlayer$(errorNbr) = pitchers$(I, I1) + Str$(teamPitStats(I, I1, 34))
                 End If
 
-                eventDesc$(eventNbr) = eventDesc$(eventNbr) + " (" + Right$(Str$(oppPitStats(I, I1, 34)), (Len(Str$(oppPitStats(I, I1, 34))) - 1)) + ")"
-                eventNbr = eventNbr + 1
+                errorsPlayer$(errorNbr) = errorsPlayer$(errorNbr) + " (" + Right$(Str$(oppPitStats(I, I1, 34)), (Len(Str$(oppPitStats(I, I1, 34))) - 1)) + ")"
+                errorNbr = errorNbr + 1
 
             End If
 
@@ -20091,7 +20108,7 @@ Sub InningColumn_File (currInning)
         fileCol = 3 * currInning + 7 + setOf9
     End If
 
-    Print #2, Tab(fileCol + 1);
+    Print Tab(fileCol + 1);
 
 End Sub
 
@@ -20173,6 +20190,8 @@ Sub POSTGAME ()
 
         Color 15, 0
         Cls
+
+        Locate 2
 
         Color 14: Print "(0) ";
         Color 15: Print "STATS TO SCREEN"
@@ -20309,16 +20328,16 @@ Sub SAVESTATS ()
             Next I
         Next PX
 
-        If _FileExists("GAME82") Then
+        If _FileExists(cfgPath$ + "GAME82") Then
 
             Call UpdateSchedule
 
             If schedGame(1) < schedGame(0) + schedGame(2) Then
-                Kill "GAME82"
+                Kill cfgPath$ + "GAME82"
                 endAllGames = 1
             Else
 
-                Open "GAME82" For Output As #2
+                Open cfgPath$ + "GAME82" For Output As #2
 
                 Print #2, scheduleFile$
 
@@ -20840,14 +20859,16 @@ Sub BOXOPTIONS (outputChoice)
             Else
                 'File = prompt | auto-create
                 If autoPlay <> 1 Then
-                    Cls
-                    Print "ENTER FILENAME FOR BOXSCORE (NO SPACES OR PERIODS)";
-                    Input boxName$
-                    boxName$ = boxName$ + ".BSS"
+                    boxName$ = _SaveFileDialog$("Save Boxscore File", diskPaths$(1) + "\Boxscore", "*.BSS", "Special Boxscore File")
+
+                    'Cls
+                    'Print "ENTER FILENAME FOR BOXSCORE (NO SPACES OR PERIODS)";
+                    'Input boxName$
+                    'boxName$ = boxName$ + ".BSS"
                 Else
                     'ScheduleName_GameXXX.BS
-                    baseFile$ = GetFileBaseName$(scheduleFile$)
-                    boxName$ = baseFile$ + "_GAME" + Mid$(Str$(schedGame(0) + schedGame(2)), 2, Len(Str$(schedGame(0) + schedGame(2)))) + ".BS"
+                    'baseFile$ = GetFileBaseName$(scheduleFile$)
+                    boxName$ = scheduleFile$ + "_GAME" + Mid$(Str$(schedGame(0) + schedGame(2)), 2, Len(Str$(schedGame(0) + schedGame(2)))) + ".BS"
                 End If
 
             End If
@@ -20875,19 +20896,19 @@ End Sub
 Sub BOX2FILE (printChoice, boxName$)
 
     Shared DB, HR, TR, SB
-    Shared eventNbr
+    Shared errorNbr
 
     Shared actualAttendance&
 
     Shared eventSettings()
 
-    Shared doublesPlayer$(), eventDesc$(), homeRuns$()
+    Shared doublesPlayer$(), errorsPlayer$(), homeRuns$()
     Shared stolenBases$(), triplesPlayer$()
 
     Dim BK$
     BK$ = "## # # ## # #  # # #  #  # # ## ##"
 
-    Open diskPaths$(1) + boxName$ For Append As #2
+    Open boxName$ For Append As #2
 
     park$ = RTrim$(gameStadiums$(1))
     XCoord = (80 - Len(park$)) / 2
@@ -20910,161 +20931,8 @@ Sub BOX2FILE (printChoice, boxName$)
 
     Print #2, Tab(17);
 
-    For IG = 1 To INNING%
-
-        If IG < 10 Then
-            Print #2, Using " #"; IG;
-        Else
-            Print #2, Using " ##"; IG;
-        End If
-
-        If (IG Mod 3 = 0) Then Print #2, " ";
-
-    Next IG
-
-    Print #2, "   R  H E"
-
-    If INNING% < 9 Then
-
-        For I = 0 To 1
-
-            Print #2, gameTeams$(I);
-
-            For I2 = 1 To INNING%
-                Call InningColumn_File(I2)
-                If I = 0 Then
-                    Print #2, Using "##"; inningScore(I, I2);
-                End If
-                If I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = INNING% And inningScore(1, INNING%) = 0 Then
-                    Print #2, " X";
-                End If
-                If I = 1 And gameScore(1, 0) < gameScore(0, 0) And I2 = INNING% Or I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = INNING% And inningScore(1, INNING%) > 0 Then
-                    Print #2, Using "##"; inningScore(I, I2);
-                End If
-                If I = 1 And I2 < INNING% Then
-                    Print #2, Using "##"; inningScore(I, I2);
-                End If
-            Next I2
-
-            Print #2, " -";
-            Print #2, Using " ##"; gameScore(I, 0);
-            Print #2, Using " ##"; gameScore(I, 1);
-            Print #2, Using " #"; gameScore(I, 2)
-
-        Next I
-
-    End If
-
-    If INNING% = 10 And P = 0 Or INNING% = 9 Then
-
-        For I = 0 To 1
-
-            Print #2, gameTeams$(I);
-
-            For I2 = 1 To 9
-                Call InningColumn_File(I2)
-                If I = 0 Then
-                    Print #2, Using "##"; inningScore(I, I2);
-                End If
-                If I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = 9 And inningScore(1, 9) = 0 Then
-                    Print #2, " X";
-                End If
-                If I = 1 And gameScore(1, 0) < gameScore(0, 0) And I2 = 9 Or I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = 9 And inningScore(1, 9) > 0 Then
-                    Print #2, Using "##"; inningScore(I, I2);
-                End If
-                If I = 1 And I2 < 9 Then
-                    Print #2, Using "##"; inningScore(I, I2);
-                End If
-            Next I2
-
-            If INNING% = 10 Then
-                Print #2, "   ";
-            End If
-
-            Print #2, " -";
-            Print #2, Using " ##"; gameScore(I, 0);
-            Print #2, Using " ##"; gameScore(I, 1);
-            Print #2, Using " #"; gameScore(I, 2)
-
-        Next I
-
-    End If
-
-    If INNING% = 10 And P = 1 Or INNING% > 10 And INNING% < 19 Or INNING% = 19 And P = 0 Then
-
-        For I = 0 To 1
-
-            Print #2, gameTeams$(I);
-
-            'Print innings 1 - 9
-            For I2 = 1 To 9
-                Call InningColumn_File(I2)
-                Print #2, Using "##"; inningScore(I, I2);
-            Next I2
-
-            'If P = 0 And INNING% < 19 Or INNING% = 19 Then INNING% = INNING% - 1
-
-            'Prints innings 10 to 19
-            For I2 = 10 To INNING%
-                Call InningColumn_File(I2)
-                Print #2, Using "##"; inningScore(I, I2);
-            Next I2
-
-            If (INNING% Mod 3 = 0) Then
-                Print #2, " "
-            End If
-
-            Print #2, " -";
-            Print #2, Using " ##"; gameScore(I, 0);
-            Print #2, Using " ##"; gameScore(I, 1);
-            Print #2, Using " #"; gameScore(I, 2)
-
-        Next I
-
-    End If
-
-    If INNING% = 19 And P = 1 Or INNING% > 19 And INNING% <= 28 Then
-
-        For I = 0 To 1
-
-            Print #2, gameTeams$(I);
-
-            For I2 = 1 To 9
-                Call InningColumn_File(I2)
-                Print #2, Using "##"; inningScore(I, I2);
-            Next I2
-
-            'If INNING% = 28 Or INNING% < 28 And P = 0 Then INNING% = INNING% - 1
-
-            For I2 = 10 To 18
-                Call InningColumn_File(I2)
-                Print #2, Using "##"; inningScore(I, I2);
-            Next I2
-
-            Print #2,
-
-        Next I
-
-        For I = 0 To 1
-
-            Print #2, gameTeams$(I);
-
-            For I2 = 19 To INNING%
-                Call InningColumn_File(I2)
-                Print #2, Using "##"; inningScore(I, I2);
-            Next I2
-
-            Print #2, " -";
-            Print #2, Using " ##"; gameScore(I, 0);
-            Print #2, Using " ##"; gameScore(I, 1);
-            Print #2, Using " #"; gameScore(I, 2)
-
-        Next I
-
-        Print #2,
-
-    End If
-
+    Call ScoreSummary_File
+    
     Print #2,
 
     For I = 0 To 1
@@ -21154,9 +21022,11 @@ Sub BOX2FILE (printChoice, boxName$)
 
     Next I
 
+    Print #2,
+
     For I = 0 To 1
 
-        Print #2,: Print #2, gameTeams$(I); Tab(23); "       IP   H  R  ER BB SO    ERA   W  L  S  SO"
+        Print #2, gameTeams$(I); Tab(30); "IP   H  R  ER BB SO    ERA   W  L  S  SO"
 
         For I1 = 1 To gamePitcher(I)
 
@@ -21238,7 +21108,8 @@ Sub BOX2FILE (printChoice, boxName$)
 
         Next I1
 
-        Print #2, "TOTALS"; Tab(29);
+        Print #2,
+        Print #2, "TOTALS"; Tab(30);
         Print #2, Using "##"; Int(totalStats(0) / 3);
 
         If totalStats(0) - (Int(totalStats(0) / 3) * 3) > 0 Then
@@ -21258,15 +21129,18 @@ Sub BOX2FILE (printChoice, boxName$)
     Next I
 
     Print #2,
+    Print #2,
+    Print #2, Tab(34); "EVENT SUMMARY"
+    Print #2,
     Print #2, " E - ";
 
-    If eventNbr = 0 Then
+    If errorNbr = 0 Then
         Print #2, "NONE"
     Else
-        For X1 = 0 To (eventNbr - 1):
-            Print #2, eventDesc$(X1); ",";
+        For X1 = 0 To (errorNbr - 2):
+            Print #2, errorsPlayer$(X1); ", ";
         Next
-        Print #2, eventDesc$(eventNbr)
+        Print #2, errorsPlayer$(errorNbr - 1)
     End If
 
     Print #2, "2B - ";
@@ -21274,20 +21148,24 @@ Sub BOX2FILE (printChoice, boxName$)
     If DB = 0 Then
         Print #2, "NONE"
     Else
-        For X1 = 0 To (DB - 1):
-            Print #2, doublesPlayer$(X1); ",";
-        Next
-        Print #2, doublesPlayer$(DB)
+        If DB > 1 Then
+            For X1 = 0 To (DB - 2):
+                Print #2, doublesPlayer$(X1); ", ";
+            Next
+        End If
+        Print #2, doublesPlayer$(DB - 1)
     End If
 
     Print #2, "3B - ";
     If TR = 0 Then
         Print #2, "NONE"
     Else
-        For X1 = 0 To (TR - 1):
-            Print #2, triplesPlayer$(X1); ",";
-        Next
-        Print #2, triplesPlayer$(TR)
+        If TR > 1 Then
+            For X1 = 0 To (TR - 2):
+                Print #2, triplesPlayer$(X1); ", ";
+            Next
+        End If
+        Print #2, triplesPlayer$(TR - 1)
     End If
 
     Print #2, "HR - ";
@@ -21295,10 +21173,12 @@ Sub BOX2FILE (printChoice, boxName$)
     If HR = 0 Then
         Print #2, "NONE"
     Else
-        For X1 = 0 To (HR - 1)
-            Print #2, homeRuns$(X1); ",";
-        Next
-        Print #2, homeRuns$(HR)
+        If HR > 1 Then
+            For X1 = 0 To (HR - 2)
+                Print #2, homeRuns$(X1); ", ";
+            Next
+        End If
+        Print #2, homeRuns$(HR - 1)
     End If
 
     Print #2, "SB - ";
@@ -21306,15 +21186,17 @@ Sub BOX2FILE (printChoice, boxName$)
     If SB = 0 Then
         Print #2, "NONE"
     Else
-        For X1 = 0 To (SB - 1):
-            Print #2, stolenBases$(X1); ",";
-        Next
-        Print #2, stolenBases$(SB)
+        If SB > 1 Then
+            For X1 = 0 To (SB - 2):
+                Print #2, stolenBases$(X1); ", ";
+            Next
+        End If
+        Print #2, stolenBases$(SB - 1)
     End If
 
-    LOBText$ = gameTeams$(0) + " (" + Str$(leftOnBase(0)) + "), " + gameTeams$(1) + " (" + Str$(leftOnBase(1)) + ")"
-    DPText$ = gameTeams$(0) + " (" + Str$(totalDPs(0)) + "), " + gameTeams$(1) + " (" + Str$(totalDPs(1)) + ")"
+    LOBText$ = gameTeams$(0) + " (" + LTrim$(Str$(leftOnBase(0))) + "), " + gameTeams$(1) + " (" + LTrim$(Str$(leftOnBase(1))) + ")"
     Print #2, "LOB - "; LOBText$
+    DPText$ = gameTeams$(0) + " (" + LTrim$(Str$(totalDPs(0))) + "), " + gameTeams$(1) + " (" + LTrim$(Str$(totalDPs(1))) + ")"
     Print #2, "DP - "; DPText$
 
     Print #2,
@@ -21357,14 +21239,14 @@ Sub BOX2FILE (printChoice, boxName$)
 
     If printChoice = 1 Then
 
-        Open diskPaths$(1) + boxName$ For Input As #2
+        Open boxName$ For Input As #2
 
         Do
             Line Input #2, X$
             LPrint X$
         Loop While Left$(X$, 1) <> Chr$(12)
 
-        Kill "TEMPBOX"
+        Kill boxName$
 
     End If
 
@@ -21378,18 +21260,12 @@ End Sub
 'output to the end user display.
 Sub BOX2SCREEN
 
+    Shared actualAttendance&
     Shared DB, HR, TR, SB
-    Shared doublesPlayer$(), eventDesc$(), homeRuns$()
+    Shared errorNbr
+
+    Shared doublesPlayer$(), errorsPlayer$(), homeRuns$()
     Shared stolenBases$(), triplesPlayer$()
-
-    Cls
-
-    Call ScoreSummary
-
-    If autoPlay <> 1 Or playerMode <> 2 Then
-        Locate LAST_ROW, 1: Print "HIT ANY KEY TO CONTINUE";
-        I$ = GetKeyPress$
-    End If
 
     Cls
 
@@ -21423,6 +21299,13 @@ Sub BOX2SCREEN
 
     Print
 
+    Call ScoreSummary
+
+    If autoPlay <> 1 Or playerMode <> 2 Then
+        Locate LAST_ROW, 1: Print "HIT ANY KEY TO CONTINUE";
+        I$ = GetKeyPress$
+    End If
+
     Call STATS2SCREEN
 
 End Sub
@@ -21435,6 +21318,8 @@ End Sub
 Sub ScoreSummary
 
     Color 14, 0
+
+    'Locate 2
 
     'Fewer than 9 innings
     If INNING% < 9 Then
@@ -21669,21 +21554,234 @@ End Sub
 
 
 '----------------------------------------
+'      ScoreSummary_File Subroutine
+'----------------------------------------
+Sub ScoreSummary_File
+
+    If INNING% < 9 Then
+
+        For I2 = 1 To INNING%
+            Call InningColumn_File(I2)
+            Print #2, Using "##"; I2;
+        Next I2
+
+        Print #2, "   R  H E"
+
+        For I = 0 To 1
+
+            Print #2, PadRight$(gameTeams$(I), 16);
+
+            For I2 = 1 To INNING%
+
+                Call InningColumn_File(I2)
+
+                If I = 0 Then
+                    Print #2, Using "##"; inningScore(I, I2);
+                End If
+                If I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = INNING% And inningScore(1, INNING%) = 0 Then
+                    Print #2, " X";
+                End If
+                If I = 1 And gameScore(1, 0) < gameScore(0, 0) And I2 = INNING% Or I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = INNING% And inningScore(1, INNING%) > 0 Then
+                    Print #2, Using "##"; inningScore(I, I2);
+                End If
+                If I = 1 And I2 < INNING% Then
+                    Print #2, Using "##"; inningScore(I, I2);
+                End If
+
+            Next I2
+
+            Print #2, " -";
+            Print #2, Using " ##"; gameScore(I, 0);
+            Print #2, Using " ##"; gameScore(I, 1);
+            Print #2, Using " #"; gameScore(I, 2)
+
+        Next I
+
+    End If
+
+    If INNING% = 10 And P = 0 Or INNING% <= 9 Then
+
+        For I2 = 1 To 9
+            Call InningColumn_File(I2)
+            Print #2, Using "##"; I2;
+        Next I2
+
+        If INNING% = 9 Then
+            Print #2, "    H  R E"
+        Else
+            Print #2, "      H  R E"
+        End If
+
+        For I = 0 To 1
+
+            Print #2, PadRight$(gameTeams$(I), 16);
+
+            For I2 = 1 To 9
+
+                Call InningColumn_File(I2)
+                If I = 0 Then
+                    Print #2, Using "##"; inningScore(I, I2);
+                End If
+                If I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = 9 And inningScore(1, 9) = 0 Then
+                    Print #2, " X";
+                End If
+                If I = 1 And gameScore(1, 0) < gameScore(0, 0) And I2 = 9 Or I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = 9 And inningScore(1, 9) > 0 Then
+                    Print #2, Using "##"; inningScore(I, I2);
+                End If
+                If I = 1 And I2 < 9 Then
+                    Print #2, Using "##"; inningScore(I, I2);
+                End If
+
+            Next I2
+
+            If INNING% = 10 Then
+                Print #2, "   -";
+            Else
+                Print #2, " -";
+            End If
+
+            Print #2, Using " ##"; gameScore(I, 0);
+            Print #2, Using " ##"; gameScore(I, 1);
+            Print #2, Using " #"; gameScore(I, 2)
+
+        Next I
+
+    End If
+
+    If INNING% = 10 And P = 1 Or INNING% > 10 And INNING% < 19 Or INNING% = 19 And P = 0 Then
+
+        For I2 = 1 To 9
+            Call InningColumn_File(I2)
+            Print #2, Using "##"; I2;
+        Next I2
+        
+        Print #2,
+
+        For I = 0 To 1
+
+            Print #2, PadRight$(gameTeams$(I), 16);
+
+            'Print innings 1 - 9
+            For I2 = 1 To 9
+                Call InningColumn_File(I2)
+                Print #2, Using "##"; inningScore(I, I2);
+            Next I2
+
+            Print #2,
+
+            'Prints innings 10 to 19
+            For I2 = 10 To INNING%
+                Call InningColumn_File(I2)
+                Print #2, Using "##"; inningScore(I, I2);
+            Next I2
+
+            If (INNING% Mod 3 = 0) Then
+                Print #2, " "
+            End If
+
+            Print #2, " -";
+            Print #2, Using " ##"; gameScore(I, 0);
+            Print #2, Using " ##"; gameScore(I, 1);
+            Print #2, Using " #"; gameScore(I, 2)
+
+        Next I
+
+    End If
+
+    If INNING% = 19 And P = 1 Or INNING% > 19 And INNING% <= 28 Then
+
+        For I2 = 1 To 9
+            Call InningColumn_File(I2)
+            Print #2, Using "##"; I2;
+        Next I2
+
+        For I = 0 To 1
+
+            Print #2, PadRight$(gameTeams$(I), 16);
+
+            For I2 = 1 To 9
+                Call InningColumn_File(I2)
+                Print #2, Using "##"; inningScore(I, I2);
+            Next I2
+
+        Next I
+
+        Print #2,
+
+        For I2 = 10 To 18
+            Call InningColumn_File(I2)
+            Print #2, I2;
+        Next I2
+
+        Print #2,
+
+        For I = 0 To 1
+
+            Print #2, gameTeams$(I);
+
+            For I2 = 10 To 18
+                Call InningColumn_File(I2)
+                Print #2, Using "##"; inningScore(I, I2);
+            Next I2
+
+            Print #2,
+
+        Next I
+
+        Print #2,
+
+        For I2 = 19 To INNING%
+            Call InningColumn_File(I2)
+            Print #2, Using "##"; I2;
+        Next I2
+
+        Print #2, "  H  R E"
+
+        For I = 0 To 1
+
+            Print #2, PadRight$(gameTeams$(I), 16);
+
+            For I2 = 19 To INNING%
+                Call InningColumn_File(I2)
+                Print #2, Using "##"; inningScore(I, I2);
+            Next I2
+
+            Print #2, " -";
+            Print #2, Using " ##"; gameScore(I, 0);
+            Print #2, Using " ##"; gameScore(I, 1);
+            Print #2, Using " #"; gameScore(I, 2)
+
+        Next I
+
+    End If
+
+End Sub
+
+
+'----------------------------------------
 '        STATS2SCREEN Subroutine
 '----------------------------------------
 'This subroutine formats the game stats
 'for output to the end user display
 Sub STATS2SCREEN
 
+    Shared DB, HR, TR, SB
+
     Shared actualAttendance&
 
-    Shared doublesPlayer$(), eventDesc$(), homeRuns$()
+    Shared doublesPlayer$(), errorsPlayer$(), homeRuns$()
     Shared stolenBases$(), triplesPlayer$()
+
+    Color 14, 0
 
     Dim BK$
     BK$ = "## # # ## # #  # # #  #  # # ## ##"
 
     For I = 0 To 1
+
+        Cls
+
+        Locate 2
 
         Color teamRat_GAME(I, 11), teamRat_GAME(I, 12)
         Print gameTeams$(I);
@@ -21733,7 +21831,7 @@ Sub STATS2SCREEN
             For I2 = 14 To 17
                 totalStats(I2) = totalStats(I2) + teamPitStats(I, I1, I2 + 22)
             Next
-        Next
+        Next I1
 
         For I1 = 1 To gamePitcher(I)
 
@@ -21763,10 +21861,11 @@ Sub STATS2SCREEN
                     End If
                 End If
 
-            Next
+            Next I2
 
-        Next
+        Next I1
 
+        Print
         Color 14, 0: Print "TOTALS";
         Color 15
         Locate , 17: Print totalStats(0);
@@ -21784,8 +21883,6 @@ Sub STATS2SCREEN
         Locate , 39: Print totalStats(9);
         Locate , 44: Print totalStats(11)
 
-        Print
-
         If autoPlay <> 1 Or playerMode <> 2 Then
             Locate LAST_ROW, 1: Print "HIT ANY KEY TO CONTINUE";
             I$ = GetKeyPress$
@@ -21793,19 +21890,20 @@ Sub STATS2SCREEN
 
         Erase totalStats
 
-        Cls
-
     Next I
 
- 
+    Cls
+
+    Locate 2
+
     For I = 0 To 1
 
-        Cls
+        Color 14, 0
 
         Color teamRat_GAME(I, 11), teamRat_GAME(I, 12)
         Print gameTeams$(I);
 
-        Color 14: Locate , 30
+        Color 14, 0: Locate , 30
         Print "IP   H  R  ER BB SO    ERA   W  L  S  SO"
         Color 15
 
@@ -21905,6 +22003,7 @@ Sub STATS2SCREEN
         Next I1
 
         Color 14
+        Print
         Print "TOTALS";
         Color 15
 
@@ -21925,33 +22024,39 @@ Sub STATS2SCREEN
         Print Using "## ##  ## ## ##"; totalStats(1); totalStats(2); totalStats(3); totalStats(4); totalStats(5)
         Print
 
-        If autoPlay <> 1 Or playerMode <> 2 Then
-            Locate LAST_ROW, 1: Print "HIT ANY KEY TO CONTINUE";
-            I$ = GetKeyPress$
-        End If
-
-        Cls
-
         inningsPitched = CInt(totalStats(0) / 3)
 
         For I1 = 0 To 5:
             totalStats(I1) = 0
         Next I1
 
+        Print
+
     Next I
+
+    If autoPlay <> 1 Or playerMode <> 2 Then
+        Locate LAST_ROW, 1: Print "HIT ANY KEY TO CONTINUE";
+        I$ = GetKeyPress$
+    End If
 
     Cls
 
+    Locate 2, 34
+    Color 12
+    Print "EVENT SUMMARY"
+    Locate 4
     Color 14: Print " E - ";
     Color 15
 
-    If E = 0 Then
+    If errorNbr = 0 Then
         Print "none"
     Else
-        For X = 0 To (E - 1):
-            Print eventDesc$(X); ",";
-        Next
-        Print eventDesc$(E)
+        If errorNbr > 1 Then
+            For X = 0 To (errorNbr - 2):
+                Print errorsPlayer$(X); ", ";
+            Next
+        End If
+        Print errorsPlayer$(errorNbr - 1)
     End If
 
     Color 14: Print "2B - ";
@@ -21960,10 +22065,12 @@ Sub STATS2SCREEN
     If DB = 0 Then
         Print "none"
     Else
-        For X = 0 To (DB - 1):
-            Print doublesPlayer$(X); ",";
-        Next
-        Print doublesPlayer$(DB)
+        If DB > 1 Then
+            For X = 0 To (DB - 2):
+                Print doublesPlayer$(X); ", ";
+            Next
+        End If
+        Print doublesPlayer$(DB - 1)
     End If
 
     Color 14: Print "3B - ";
@@ -21972,10 +22079,12 @@ Sub STATS2SCREEN
     If TR = 0 Then
         Print "none"
     Else
-        For X = 0 To (TR - 1):
-            Print triplesPlayer$(X); ",";
-        Next
-        Print triplesPlayer$(TR)
+        If TR > 1 Then
+            For X = 0 To (TR - 2):
+                Print triplesPlayer$(X); ", ";
+            Next
+        End If
+        Print triplesPlayer$(TR - 1)
     End If
 
     Color 14: Print "HR - ";
@@ -21984,10 +22093,12 @@ Sub STATS2SCREEN
     If HR = 0 Then
         Print "none"
     Else
-        For X = 0 To (HR - 1):
-            Print homeRuns$(X); ",";
-        Next
-        Print homeRuns$(HR)
+        If HR > 1 Then
+            For X = 0 To (HR - 2):
+                Print homeRuns$(X); ", ";
+            Next
+        End If
+        Print homeRuns$(HR - 1)
     End If
 
     Color 14: Print "SB - ";
@@ -21995,17 +22106,20 @@ Sub STATS2SCREEN
     If SB = 0 Then
         Print "none"
     Else
-        For X = 0 To (SB - 1):
-            Print stolenBases$(X); ",";
-        Next
-        Print stolenBases$(SB)
+        If SB > 1 Then
+            For X = 0 To (SB - 2):
+                Print stolenBases$(X); ", ";
+            Next
+        End If
+        Print stolenBases$(SB - 1)
     End If
 
     Color 14: Print "LOB - ";
-    LOBText$ = gameTeams$(0) + " (" + Str$(leftOnBase(0)) + "), " + gameTeams$(1) + "(" + Str$(leftOnBase(1)) + ")"
+    LOBText$ = gameTeams$(0) + " (" + LTrim$(Str$(leftOnBase(0))) + "), " + gameTeams$(1) + " (" + LTrim$(Str$(leftOnBase(1))) + ")"
     Color 15: Print LOBText$
+
     Color 14: Print "DP - ";
-    DPText$ = gameTeams$(0) + "(" + Str$(totalDPs(0)) + "), " + gameTeams$(1) + "(" + Str$(totalDPs(1)) + ")"
+    DPText$ = gameTeams$(0) + " (" + LTrim$(Str$(totalDPs(0))) + "), " + gameTeams$(1) + " (" + LTrim$(Str$(totalDPs(1))) + ")"
     Color 15: Print DPText$
 
     Print

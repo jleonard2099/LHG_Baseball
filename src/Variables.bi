@@ -3,7 +3,7 @@
 '----------------------------------------
 Dim Shared menu&
 Dim opSysType$
-Dim Shared dirSeparator$
+Dim Shared dirSeparator$, cfgPath$
 
 Dim Shared diskPaths$(0 To 4), Q$(0 To 2056), Q2$(0 To 2056), Q3$(100)
 Dim Shared teamNames$(MAX_TEAMS)
@@ -327,7 +327,7 @@ Dim totalParks
 
 'Used by POSTGAME
 Dim DB, HR, TR, SB
-Dim eventNbr
+Dim errorNbr
 
 Dim bestBatterIdx(0 To 9)
 Dim bestBatterFPos(0 To 9), bLineupIdx(0 To 9)
@@ -405,7 +405,7 @@ Dim Shared gameAtBats(1, 22), gameInnPit(1, 21), gameSA(1, 24)
 Dim Shared parkHRVals!(1)
 
 Dim Shared alpha$(12), baseName$(0 To 4), batters$(0 To 1, 0 To 22), handed$(4)
-Dim Shared diskIDs$(1), doublesPlayer$(0 To 22), ejections$(20), eventDesc$(0 To 22)
+Dim Shared diskIDs$(1), doublesPlayer$(0 To 22), ejections$(20), errorsPlayer$(0 To 22)
 Dim Shared fieldPos$(0 To 11)
 Dim Shared gameManagers$(1), gameStadiums$(1), gameTeams$(1), gameUmpire$(1 To 4)
 Dim Shared genericNames$(4), heldStatus$(1), homeRuns$(0 To 22), injPlayers$(20)

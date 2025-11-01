@@ -217,4 +217,5 @@ Declare Sub ViewSearchResults (posnType, posnDesc$, positionFile$)
 Declare Sub ViewSeasonRecords (leagueFile$)
 Declare Sub ViewTeamLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
 
+Declare Function CanWriteLocally%
 Declare Function FindStatsLeague% (statFile$, teamName$, fullWins, fullLosses)

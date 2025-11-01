@@ -425,7 +425,7 @@ Sub NewSchedule (scheduleFile$)
                 If SG% <= 0 Then SG% = 1
                 If EG% > scheduleAP%(0) Then EG% = scheduleAP%(0)
 
-                Open "GAME82" For Output As #1
+                Open cfgPath$ + "GAME82" For Output As #1
                 Print #1, scheduleFile$
                 Print #1, SG% 'Start Game
                 Print #1, EG% 'End Game
@@ -439,7 +439,7 @@ Sub NewSchedule (scheduleFile$)
                     scheduleNG%(I, 12) = Int(TM% / 30) - 18
                 Next
 
-                Open "TICKER" For Output As #2
+                Open cfgPath$ + "TICKER" For Output As #2
 
                 For I = 1 To 32:
                     For I1 = 0 To 1:
@@ -491,7 +491,7 @@ Sub NewSchedule (scheduleFile$)
 
             Case "Z"
                 'Export to text file
-                Open "schedule" For Append As #15
+                Open cfgPath$ + "schedule" For Append As #15
 
                 For X = 1 To scheduleAP%(0)
 
@@ -993,7 +993,7 @@ Sub EditParameters ()
     'Read in existing parameters if there are any
     If _FileExists("EVENTS.BOX") Then
 
-        Open "EVENTS.BOX" For Input As #1
+        Open cfgPath$ + "EVENTS.BOX" For Input As #1
 
         For X = 1 To 13
             Input #1, eventSettings(X)
@@ -1102,7 +1102,7 @@ Sub EditParameters ()
     Loop Until B9 = 0 'ENTER also counts as 0
 
     'Save all changes
-    Open "EVENTS.BOX" For Output As #2
+    Open cfgPath$ + "EVENTS.BOX" For Output As #2
 
     For X = 1 To 13
         Print #2, eventSettings(X)
