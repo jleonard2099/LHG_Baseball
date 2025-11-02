@@ -20867,8 +20867,8 @@ Sub BOXOPTIONS (outputChoice)
                     'boxName$ = boxName$ + ".BSS"
                 Else
                     'ScheduleName_GameXXX.BS
-                    'baseFile$ = GetFileBaseName$(scheduleFile$)
-                    boxName$ = scheduleFile$ + "_GAME" + Mid$(Str$(schedGame(0) + schedGame(2)), 2, Len(Str$(schedGame(0) + schedGame(2)))) + ".BS"
+                    baseFile$ = GetFileBaseName$(scheduleFile$)
+                    boxName$ = diskPaths$(1) + baseFile$ + "_GAME" + Mid$(Str$(schedGame(0) + schedGame(2)), 2, Len(Str$(schedGame(0) + schedGame(2)))) + ".BS"
                 End If
 
             End If
