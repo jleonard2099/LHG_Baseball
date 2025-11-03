@@ -3988,10 +3988,6 @@ Sub SOURCE ()
 
     Dim lastBatIdx(0 To 1)
 
-    If Environ$("PBPLOG") = "TRUE" Then
-        Print #11, "=== "; gameTeams$(0) + " vs. " + gameTeams$(1); " ==="
-    End If
-
     'Declare all variables for the modules
     Dim F1$(10)
     Dim PH%(0 To 22, 0 To 1)
@@ -4015,11 +4011,6 @@ Sub SOURCE ()
     If useVGA = 1 Then Call LOADSCREEN
 
     LNextHalfInning:
-    If Environ$("PBPLOG") = "TRUE" Then
-        Print #11,
-        Print #11, "..... side is retired ....."
-        Print #11,
-    End If
 
     '-- An error comes up every so many games
     '-- when fielder(D, 1) gets a negative value
@@ -4176,10 +4167,7 @@ Sub SOURCE ()
     scoreDiff = gameScore(D, 0) - gameScore(P, 0)
 
     If Not (teamMgrProfileVal(D, 560) <> 999 Or INNING% < 8 Or playerMode = 0 Or playerMode = 1 And P = compTeam) Then
-
-        If Environ$("MGRLOG") = "TRUE" Then
-            Print #11, "!! Team is using a DEFENSIVE strategy !!"
-        End If
+        'Team is using a DEFENSIVE strategy
 
         For IJ0% = 1 To 4
 
@@ -4237,9 +4225,7 @@ Sub SOURCE ()
 
     End If
 
-    If Environ$("PBPLOG") = "TRUE" Then
-        Print #11, "::: Status of pitcher taking the mound: "; fielder(D, 1)
-    End If
+    'Status of pitcher taking the mound = fielder(D, 1)
 
     'Inured pitcher
     If fielder(D, 1) = 99 Then
@@ -4654,11 +4640,7 @@ Sub SOURCE ()
 
                     If teamMgrProfileVal(P, 847) = 999 Then
 
-                        If Environ$("MGRLOG") = "TRUE" Then
-                            Print #11, "!! Team is using a PINCH HITTING for POSITION PLAYER strategy !!"
-                        End If
-
-                        'PH FOR POS PLAYER CASES
+                        'Team is using a PINCH HITTING for POSITION PLAYER strategy
                         MOB% = 0
 
                         For I = 1 To 3
@@ -4709,11 +4691,7 @@ Sub SOURCE ()
 
                             If teamMgrProfileVal(P, 590) = 999 Then
 
-                                If Environ$("MGRLOG") = "TRUE" Then
-                                    Print #11, "!! Team is using a PINCH HITTER for PITCHER strategy !!"
-                                End If
-
-                                'PH FOR PITCHER WITH PROFILE
+                                'Team is using a PINCH HITTER for PITCHER strategy
                                 MOB% = 0
 
                                 For indx = 1 To 3
@@ -5703,7 +5681,6 @@ Sub SOURCE ()
 
                                     Call INCPITDEF(D, currPitcher(D), LG_P_OUT)
 
-                                    'Print #11, "Double play"
                                     teamDPs(D) = teamDPs(D) + 1
                                     totalDPs(D) = totalDPs(D) + 1
 
@@ -5717,9 +5694,6 @@ Sub SOURCE ()
                                 '3rd base runner attempt to score
                                 If runnerOnBase(3) > 0 Then
                                     baseNbr = 4
-                                    If Environ$("RUNLOG") = "TRUE" Then
-                                        Print #11, "-- might try to score..."
-                                    End If
                                     If errorOnPlay% = 0 Then
                                         Call TRYFOREXTRABASE(S2%, offChoice, stealing, baseNbr, I9, baseRunners, runnerOnBase(2), currFielder, INFPOS%, errorOnPlay%, SAH%)
                                     End If
@@ -5843,7 +5817,6 @@ Sub SOURCE ()
 
                     Case 90 To 100
 
-                        'Print #11, "Runner doubled"
                         S2% = EVENT_RUNNER_DBLD
 
                         Call GETINFIELDER(currFielder, I1, S2%, offChoice)
@@ -5890,7 +5863,6 @@ Sub SOURCE ()
 
                             Call INCPITDEF(D, currPitcher(D), LG_P_OUT)
 
-                            'Print #11, "Double play"
                             teamDPs(D) = teamDPs(D) + 1
                             totalDPs(D) = totalDPs(D) + 1
 
@@ -5924,7 +5896,6 @@ Sub SOURCE ()
 
                                 Call INCPITDEF(D, currPitcher(D), LG_P_OUT)
 
-                                'Print #11, "Double play"
                                 teamDPs(D) = teamDPs(D) + 1
                                 totalDPs(D) = totalDPs(D) + 1
                                 I3 = 2
@@ -5978,7 +5949,6 @@ Sub SOURCE ()
             If errorOnPlay% = 1 Then
                 ' ROE is currently not evaluated HERE; no thought
                 ' is given to whether this would have been an out
-                'Print #11, "Grounder base advance:"; baseMove(0)
                 GoTo LCheckForOptionsOrQuit
             End If
 
@@ -6115,9 +6085,7 @@ Sub SOURCE ()
 
             Call FLDERR(S2%, I3, stealing, currFielder, INFPOS%, errorOnPlay%, SAH%)
             If errorOnPlay% = 0 Then
-                If Environ$("RUNLOG") = "TRUE" Then
-                    Print #11, "-- might try to advance on Double --"
-                End If
+                'Runne might try to advance on Double
                 baseNbr = 0
                 Call TRYFOREXTRABASE(S2%, offChoice, stealing, baseNbr, I9, baseRunners, runnerOnBase(2), currFielder, INFPOS%, errorOnPlay%, SAH%)
             End If
@@ -6139,10 +6107,8 @@ Sub SOURCE ()
             errorOnPlay% = 0
 
             Call FLDERR(S2%, I3, stealing, currFielder, INFPOS%, errorOnPlay%, SAH%)
-            If Environ$("RUNLOG") = "TRUE" Then
-                Print #11, "-- might try to advance on Triple --"
-            End If
 
+            'Runner might try to advance on Triple
             baseNbr = 0
 
             If errorOnPlay% = 0 Then
@@ -6217,9 +6183,8 @@ Sub SOURCE ()
                     errorOnPlay% = 0
 
                     Call FLDERR(S2%, I3, stealing, currFielder, INFPOS%, errorOnPlay%, SAH%)
-                    If Environ$("RUNLOG") = "TRUE" Then
-                        Print #11, "-- might try to advance on Single --"
-                    End If
+
+                    'Runner might try to advance on Single
                     baseNbr = 0
                     If errorOnPlay% = 0 Then
                         Call TRYFOREXTRABASE(S2%, offChoice, stealing, baseNbr, I9, baseRunners, runnerOnBase(2), currFielder, INFPOS%, errorOnPlay%, SAH%)
@@ -6309,7 +6274,6 @@ Sub SOURCE ()
 
     Call PBP(pbpString$)
 
-    'Print #11, "Double play"
     teamDPs(D) = teamDPs(D) + 1
     totalDPs(D) = totalDPs(D) + 1
 
@@ -8692,11 +8656,7 @@ Sub SOURCE ()
 
             If Not (baseRunners < 3 Or baseRunners = 4) Then
 
-                If Environ$("MGRLOG") = "TRUE" Then
-                    Print #11, "!! Team is using a INFIELD IN (3rd base occupied) strategy !!"
-                End If
-
-                ' PROFILE INFIELD IN WITH 3RD OCCUPIED
+                'Team is using a INFIELD IN (3rd base occupied) strategy
                 Call Rolld100(RN0)
 
                 If (nbrOuts(0) = 0 And _
@@ -8724,11 +8684,7 @@ Sub SOURCE ()
 
             If baseRunners = 0 Then
 
-                If Environ$("MGRLOG") = "TRUE" Then
-                    Print #11, "!! Team is using a CORNERS IN against BUNT FOR HIT strategy !!"
-                End If
-
-                ' PROFILE CORNERS IN AGAINST A BUNT HIT
+                'Team is using a CORNERS IN against BUNT FOR HIT strategy
                 Call Rolld100(RN0)
 
                 If BR! >= teamMgrProfileVal(D, 708) And RN0 <= teamMgrProfileVal(D, 709) Or _ 
@@ -8748,11 +8704,7 @@ Sub SOURCE ()
             (baseRunners = 1 And baseRunners = 4) And _ 
             nbrOuts(0) = 0 Then
 
-            If Environ$("MGRLOG") = "TRUE" Then
-                Print #11, "!! Team is using a CORNERS IN against SAC BUNT strategy !!"
-            End If
-
-            ' PROFILE CORNERS IN VS HITTER IN SAC BUNT SITUATION
+            'Team is using a CORNERS IN against SAC BUNT strategy
             Call Rolld100(RN0)
 
             If ((baseRunners = 1 And _
@@ -8780,11 +8732,7 @@ Sub SOURCE ()
             (baseRunners = 1 Or baseRunners = 2 Or baseRunners = 4) And _
             nbrOuts(0) <> 2 Then
 
-            If Environ$("MGRLOG") = "TRUE" Then
-                Print #11, "!! Team is using a CORNERS IN against PITCHER SAC BUNT strategy !!"
-            End If
-
-            ' PROFILE CORNERS IN VS A PITCHER IN SAC BUNT SITUATION
+            'Team is using a CORNERS IN against PITCHER SAC BUNT strategy
             Call Rolld100(RN0)
 
             If ((I7! <= teamMgrProfileVal(D, 732) And RN0 <= teamMgrProfileVal(D, 733) And baseRunners = 1 And nbrOuts(0) <= 1) Or _
@@ -8802,11 +8750,7 @@ Sub SOURCE ()
         If teamMgrProfileVal(D, 740) = 999 And nbrOuts(0) <> 2 And _ 
             (baseRunners = 3 Or baseRunners >= 5) Then
 
-            If Environ$("MGRLOG") = "TRUE" Then
-                Print #11, "!! Team is using a CORNERS IN against SQUEEZE strategy !!"
-            End If
-
-            ' PROFILE CORNERS IN FOR A SQUEEZE
+            'Team is using a CORNERS IN against SQUEEZE strategy
             Call Rolld100(RN0)
             If nbrOuts(0) = 0 And scoreDiff <= teamMgrProfileVal(D, 741) And scoreDiff >= teamMgrProfileVal(D, 742) And BR! >= teamMgrProfileVal(D, 743) And RN0 <= teamMgrProfileVal(D, 744) Then
                 INFPOS% = INF_CORNERS_IN
@@ -8824,10 +8768,7 @@ Sub SOURCE ()
         If teamMgrProfileVal(D, 756) = 999 And _ 
             (baseRunners = 0 Or baseRunners = 2 Or baseRunners = 3 Or baseRunners = 6) Then
 
-            If Environ$("MGRLOG") = "TRUE" Then
-                Print #11, "!! Team is using a PITCH AROUND HITTER strategy !!"
-            End If
-
+            'Team is using a PITCH AROUND HITTER strategy
             MOB% = 0
 
             For I = 1 To 3
@@ -8933,15 +8874,11 @@ Sub SOURCE ()
 
     '----- NOODLE -----
 
-    'GET A PINCH HITTER FOR A POSITION PLAYER
+    'Get Pinch Hitter for position player
     LPhForPosition:
     If teamMgrProfileVal(P, 540) = 999 Then
 
-        If Environ$("MGRLOG") = "TRUE" Then
-            Print #11, "!! Team is using a PINCH HITTING strategy !!"
-        End If
-
-        'SELECT PH FOR HITTER
+        'Team is using a PINCH HITTING strategy
         For I = 0 To 22
 
             If batRating(P, I, SS_B_Avail) <= 0 And batters$(P, I) <> "XXX" And _ 
@@ -9217,10 +9154,7 @@ Sub SOURCE ()
 
         If baseRunners <> 0 And teamMgrProfileVal(P, 671) = 999 And fldPos(P, currLineupSlot(P)) <> 1 Then
 
-            If Environ$("MGRLOG") = "TRUE" Then
-                Print #11, "!! Team is using a HIT & RUN strategy !!"
-            End If
-
+            'Team is using a HIT & RUN strategy
             If batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_AB) = 0 Then
                 I7! = 0
             Else
@@ -9257,10 +9191,7 @@ Sub SOURCE ()
                 ' Use manager's pitcher bunting preferences
                 If (baseRunners = 1 Or baseRunners = 2 Or baseRunners = 4) Then
 
-                    If Environ$("MGRLOG") = "TRUE" Then
-                        Print #11, "!! Team is using a PITCHER BUNTING strategy !!"
-                    End If
-
+                    'Team is using a PITCHER BUNTING strategy
                     Call Rolld100(roll)
 
                     If ((scoreDiff <= teamMgrProfileVal(P, 611) And scoreDiff >= teamMgrProfileVal(P, 612) * -1 And baseRunners = 1 And INNING% <= 7 And teamMgrProfileVal(P, 610) >= nbrOuts(0) And roll <= teamMgrProfileVal(P, 613)) Or _
@@ -9294,10 +9225,7 @@ Sub SOURCE ()
 
                 ' Use manager's position player bunting preferences
                 If nbrOuts(0) = 0 Or (baseRunners <> 1 And baseRunners <> 2 And baseRunners <> 4) Then
-
-                    If Environ$("MGRLOG") = "TRUE" Then
-                        Print #11, "!! Team is using a POSITION PLAYER BUNTING strategy !!"
-                    End If
+                    'Team is using a POSITION PLAYER BUNTING strategy
 
                     ' Calculate batter stats
                     If batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_AB) = 0 Then
@@ -10030,11 +9958,6 @@ Sub PBP (pbpString$)
         Cls
         End
     End If
-
-    If Environ$("PBPLOG") = "TRUE" Then
-        Print #11, "======== "; pbpString$
-    End If
-
     If pbpDelay! > 0 Then
 
         'Clean up / restrict to 44 char's
@@ -10265,14 +10188,6 @@ End Sub
 'Advance player 1 base
 Sub ADV1BASE (p_base)
 
-    If Environ$("RUNLOG") = "TRUE" Then
-        Print #11,
-        Print #11, "ADV1BASE before: p_base: "; p_base
-        For bm1 = 0 To 3
-            Print #11, "runnerOnBase:   "; runnerOnBase(bm1); " -- ";
-        Next bm1
-    End If
-
     runnerOnBase(p_base + 1) = runnerOnBase(p_base)
     b2Pitcher(p_base + 1) = b2Pitcher(p_base)
     stealPhase(p_base + 1) = stealPhase(p_base)
@@ -10286,15 +10201,6 @@ Sub ADV1BASE (p_base)
     player$(p_base + 1) = player$(p_base)
     player$(p_base) = ""
 
-    If Environ$("RUNLOG") = "TRUE" Then
-        Print #11,
-        Print #11, "ADV1BASE after: p_base: "; p_base
-        For bm1 = 0 To 3
-            Print #11, "runnerOnBase:   "; runnerOnBase(bm1); " -- ";
-        Next bm1
-        Print #11,
-    End If
-
 End Sub
 
 '----------------------------------------
@@ -10302,14 +10208,6 @@ End Sub
 '----------------------------------------
 'Advance player 2 bases
 Sub ADV2BASES (p_base)
-
-    If Environ$("RUNLOG") = "TRUE" Then
-        Print #11,
-        Print #11, "ADV2BASES before: p_base: "; p_base
-        For bm1 = 0 To 3
-            Print #11, "runnerOnBase:   "; runnerOnBase(bm1); " -- ";
-        Next bm1
-    End If
 
     runnerOnBase(p_base + 2) = runnerOnBase(p_base)
     b2Pitcher(p_base + 2) = b2Pitcher(p_base)
@@ -10323,15 +10221,6 @@ Sub ADV2BASES (p_base)
 
     player$(p_base + 2) = player$(p_base)
     player$(p_base) = ""
-
-    If Environ$("RUNLOG") = "TRUE" Then
-        Print #11,
-        Print #11, "ADV2BASES after: p_base: "; p_base
-        For bm1 = 0 To 3
-            Print #11, "runnerOnBase:   "; runnerOnBase(bm1); " -- ";
-        Next bm1
-        Print #11,
-    End If
 
 End Sub
 
@@ -10355,17 +10244,6 @@ End Sub
 '----------------------------------------
 'Advance runners at each position / base
 Sub ADVANCEMENT (S2%, INFPOS%, tgtFielder, currFielder, wasError, homeSafe)
-
-    If Environ$("RUNLOG") = "TRUE" Then
-
-        Print #11,
-        Print #11, "--- ADVANCEMENT ---"
-        For bm1 = 0 To 3
-            Print #11, "baseMove:"; baseMove(bm1); " -- ";
-        Next bm1
-        Print #11,
-
-    End If
 
     'Advance 3rd base runner
     If runnerOnBase(3) <> 0 And baseMove(3) <> 0 Then
@@ -10484,7 +10362,6 @@ Sub ADVANCEMENT (S2%, INFPOS%, tgtFielder, currFielder, wasError, homeSafe)
 
             If tgtFielder = 1 And wasError = 1 Then
                 roeCount = roeCount + 1
-                'Print #11, "ROE #" + Str$(roeCount) + ": Type=ExtraBase Inn=" + Str$(INNING%) + " Event=" + Str$(S2%) + " Fielder=" + Str$(currFielder)
             End If
 
             Call ADV3BASES(tgtFielder)
@@ -10658,10 +10535,7 @@ Sub FlyBall_Base1Runner (wasError, S2%, offChoice, runnerOn2nd, currFielder, INF
 
             tgtBase = 2
 
-            If Environ$("RUNLOG") = "TRUE" Then
-                Print #11, "-- might try for 2nd on deep fly..."
-            End If
-
+            'Runner might try for 2nd on deep fly..."
             If wasError = 0 Then
                 Call TRYFOREXTRABASE(S2%, offChoice, stealing, tgtBase, I9, baseStatus, runnerOn2nd, currFielder, INFPOS%, wasError, homeSafe)
             End If
@@ -11000,9 +10874,6 @@ Sub CreditAssist (currFielder)
         Call INCPITDEF(D, currPitcher(D), LG_PB_A)
     Else
         Call INCBATDEF(D, fielder(D, currFielder), LG_B_A)
-        If Environ$("PBPLOG") = "TRUE" Then
-            Print #11, "Assist for: "; currFielder
-        End If
     End If
 
 End Sub
@@ -11024,9 +10895,6 @@ Sub CreditInfieldPutout (currBase, FB2P%, AST%)
         po% = 2
         AST% = 0
         Call INCBATDEF(D, fielder(D, po%), LG_B_PO)
-        If Environ$("PBPLOG") = "TRUE" Then
-            Print #11, "Infield? Putout1 for: "; po%
-        End If
 
     Else
 
@@ -11059,30 +10927,22 @@ Sub CreditInfieldPutout (currBase, FB2P%, AST%)
         ElseIf po% > 1 And po% <= 10 Then
             fld% = fielder(D, po%)
         Else
-            If Environ$("PBPLOG") = "TRUE" Then
-                Print #11, "WARNING!!  skipping call to INCBATDEF in CreditInfieldPutout because po% = " + Str$(po%)
-            End If
+            'WARNING!!  skipping call to INCBATDEF in CreditInfieldPutout 
+            'this is because of the value of po%
             Exit Sub
         End If
 
         Call INCBATDEF(D, fld%, LG_B_PO)
-        If Environ$("PBPLOG") = "TRUE" Then
-            Print #11, "Infield? Putout2 for: "; po%
-        End If
 
     End If
 
 End Sub
 
 '----------------------------------------
-'         CreditRegularPutout Subroutine
+'     CreditRegularPutout Subroutine
 '----------------------------------------
 'Credit player with regular putout
 Sub CreditRegularPutout (currFielder)
-
-    If Environ$("PBPLOG") = "TRUE" Then
-        Print #11, "Reg Putout for: "; currFielder
-    End If
 
     If currFielder = 1 Then
         Call INCPITDEF(D, currPitcher(D), LG_PB_PO)
@@ -11876,14 +11736,9 @@ Sub FLDERR (S2%, fldPct, stealing, currFielder, INFPOS%, wasError, homeSafe)
     If chanceRoll <= errChance Then
 
         'Error in single
-
         wasError = 1
         rand = Int(Rnd(1) * 2) + 1
         errType = 2
-
-        If Environ$("PBPLOG") = "TRUE" Then
-            Print #11, "ERROR on: "; currFielder
-        End If
 
         If currFielder = 1 Then
             Call INCPITDEF(D, currPitcher(D), LG_PB_E)
@@ -11934,7 +11789,7 @@ Sub FLDERR (S2%, fldPct, stealing, currFielder, INFPOS%, wasError, homeSafe)
         Select Case errType
 
             Case 1 ' Throwing errors
-                'Print #11, "Throwing error"
+
                 Select Case RN0
 
                     Case 1 To 50
@@ -11949,7 +11804,7 @@ Sub FLDERR (S2%, fldPct, stealing, currFielder, INFPOS%, wasError, homeSafe)
                 End Select
 
             Case 2 ' Fielding errors
-                'Print #11, "Fielding error"
+
                 Select Case RN0
 
                     Case 1 To 30
@@ -11970,7 +11825,7 @@ Sub FLDERR (S2%, fldPct, stealing, currFielder, INFPOS%, wasError, homeSafe)
                 End Select
 
             Case 3 ' Catching errors
-                'Print #11, "Catching error"
+
                 Select Case RN0
 
                     Case 1 To 33
@@ -12452,7 +12307,6 @@ Sub InjuredPitcher (playerInjured, pinchHitterFlag, baseStatus)
     pitchRating(D, currPitcher(D), SS_P_Avail) = 99
 
     If (playerMode = 1 And D = compTeam) Or playerMode = 2 Then
-        'Print #11, "DEBUG: Calling RELIEVERS. (InjuredPitcher) Pitcher="; currPitcher(D); "  Outs="; nbrOuts(0)
         Call RELIEVERS(pinchHitterFlag, newPitcherFlag, baseStatus)
     Else
         Call PBP("You must replace " + pitchers$(D, currPitcher(D)))
@@ -13119,7 +12973,6 @@ End Sub
 'off by the pitcher or catcher.
 Sub PICKEDOFF (pickedOffBase)
 
-    'Print #11, "Picked Off"
     Call WINDEX
     Call DELIVERY
 
@@ -13199,9 +13052,7 @@ Sub PINCHRUNNER (scoreDiff, baseStatus, tgtBase, nbrBalls, nbrStrikes, MO, INFPO
             'Check for manager strategy first
             If teamMgrProfileVal(P, 771) = 999 Then
 
-                If Environ$("MGRLOG") = "TRUE" Then
-                    Print #11, "!! Team is using a PINCH RUNNING strategy !!"
-                End If
+                'Team is using a PINCH RUNNING strategy !!"
 
                 'Loop through designated PR's
                 For I1 = 772 To 777
@@ -13216,10 +13067,7 @@ Sub PINCHRUNNER (scoreDiff, baseStatus, tgtBase, nbrBalls, nbrStrikes, MO, INFPO
                             'Check if there is a defined pinch runner for pitchers
                             If fldPos(P, J) = 1 And teamMgrProfileVal(P, 803) = 999 Then
 
-                                If Environ$("MGRLOG") = "TRUE" Then
-                                    Print #11, "!! Team is using a PINCH RUNNING for PITCHER strategy !!"
-                                End If
-
+                                'Team is using a PINCH RUNNING for PITCHER strategy
                                 Call Rolld100(RN0)
 
                                 'Check pitcher run rating, inning and probability
@@ -13240,12 +13088,7 @@ Sub PINCHRUNNER (scoreDiff, baseStatus, tgtBase, nbrBalls, nbrStrikes, MO, INFPO
                             For I = 0 To 5
 
                                 If teamMgrProfileVal(P, I * 4 + 779) = lineupPlayer(P, J) Then
-
-                                    'FOUND A MATCH FOR THE RUNNER ON BASE
-                                    If Environ$("MGRLOG") = "TRUE" Then
-                                        Print #11, "!! Team is using a DEFENSE SUBSTITUTION strategy !!"
-                                    End If
-
+                                    'Team is using a DEFENSE SUBSTITUTION strategy
                                     Call Rolld100(RN0)
                                     If INNING% >= teamMgrProfileVal(P, I * 4 + 780) And batRating(P, teamMgrProfileVal(P, I * 4 + 781), SS_B_Avail) = 0 And RN0 <= teamMgrProfileVal(P, I * 4 + 782) Then
                                         batRating(P, teamMgrProfileVal(P, I * 4 + 781), SS_B_Avail) = 40 + J
@@ -13569,11 +13412,6 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag, baseStatus)
 
     newPitcherFlag = 0
 
-    If Environ$("MGRLOG") = "TRUE" Then
-        Print #11, Using "Team is using 60 is ####  90 is #####  520 is ####  581 is ####"; _
-        teamMgrProfileVal(D, 60), teamMgrProfileVal(D, 90), teamMgrProfileVal(D, 520), teamMgrProfileVal(D, 581)
-    End If
-
     'Check if we need a middle reliever, as well
     'as whether we have one to use
     If teamMgrProfileVal(D, 60) = 999 Or INNING% > 7 Then
@@ -13581,11 +13419,9 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag, baseStatus)
         'If no closers set up or no closing strategy defined, skip out
         If teamMgrProfileVal(D, 581) = 999 And (INNING% < 8 Or teamMgrProfileVal(D, 520) = 999 Or teamMgrProfileVal(D, 90) = 999) Then
 
-            If Environ$("MGRLOG") = "TRUE" Then
-                Print #11, "!! Team is using a PITCHING strategy !!"
-            End If
+            'Team is using a PITCHING strategy
 
-            'if still needing middle relief
+            'If still needing middle relief
             If INNING% <= 7 Then
                 GoTo LMiddleRelievers
             End If
@@ -13730,6 +13566,7 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag, baseStatus)
 
         If rndStrategy <= strategyWeight Then
 
+            'Found SETUP MAN
             V0 = teamMgrProfileVal(D, pIdx)
             teamMgrProfileVal(D, pIdx) = -1
             pIdx = V0
@@ -13737,15 +13574,12 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag, baseStatus)
             Call NEWPITCHER(pIdx, pinchHitterFlag, newPitcherFlag, baseStatus, INFPOS%)
             setupUsed(D) = -1
 
-            If Environ$("MGRLOG") = "TRUE" Then
-                Print #11, "Found SETUP MAN: "; pIdx
-            End If
-
             Exit Sub
 
         End If
 
     Next
+
     'NO SETUP MAN FOUND
 
     LClosers:
@@ -13777,15 +13611,16 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag, baseStatus)
         End If
 
         If rndStrategy <= strategyWeight Then
+            'Found CLOSER
             V0 = teamMgrProfileVal(D, pIdx)
             teamMgrProfileVal(D, pIdx) = -1
             pIdx = V0
+
             Call NEWPITCHER(pIdx, pinchHitterFlag, newPitcherFlag, baseStatus, INFPOS%)
             closerUsed(D) = -1
-            If Environ$("MGRLOG") = "TRUE" Then
-                Print #11, "Found CLOSER: "; pIdx
-            End If
+
             Exit Sub
+
         End If
 
     Next
@@ -13793,9 +13628,6 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag, baseStatus)
     'NO CLOSER FOUND
     setupUsed(D) = -1
     closerUsed(D) = -1
-    If Environ$("MGRLOG") = "TRUE" Then
-        Print #11, "Couldn't find SETUP MAN or CLOSER"
-    End If
 
     LMiddleRelievers:
     strategyWeight = 0
@@ -17376,9 +17208,6 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, noThrow, baseStatus, run
 
     If baseNbr <> 0 Then
         'This happens very rarely
-        If Environ$("RUNLOG") = "TRUE" Then
-            Print #11, "TRYFOREXTRABASE already have baseNbr = "; baseNbr
-        End If
 
     Else
 
@@ -17408,39 +17237,23 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, noThrow, baseStatus, run
 
         Call Rolld100(chanceRoll)
 
-        If Environ$("RUNLOG") = "TRUE" Then
-            Print #11, "TRYFOREXTRABASE starting at baseNbr = 0, chanceRoll = "; chanceRoll; ", S2Event = "; S2%
-            For bm1 = 1 To 3
-                If runnerOnBase(bm1) > 0 Then Print #11, "  base:"; bm1; " runnerRating:"; batRating(P, lineupPlayer(P, runnerOnBase(bm1)), SS_B_Run);
-            Next bm1
-            Print #11,
-        End If
-
         'Determine which base we're stealing
         If S2% = EVENT_2B And runnerOnBase(2) > 0 And (chanceRoll < 6 + runStratBonus) And runnerOnBase(3) = 0 And batRating(P, lineupPlayer(P, runnerOnBase(2)), SS_B_3B) > 0 Then
-            If Environ$("RUNLOG") = "TRUE" Then
-                Print #11, "TRYFOREXTRABASE stretching a Double to a Triple..."
-            End If
+            'Stretching a Double to a Triple...
             baseNbr = 3
         End If
         If S2% = EVENT_3B And runnerOnBase(3) > 0 And (chanceRoll <= 2 + runStratBonus) And batRating(P, lineupPlayer(P, runnerOnBase(3)), SS_B_HR) > 0 Then
-            If Environ$("RUNLOG") = "TRUE" Then
-                Print #11, "TRYFOREXTRABASE stretching a Triple to an Inside-The-Park HR..."
-            End If
+            'Stretching a Triple to an Inside-The-Park HR...
             baseNbr = 4
         End If
         If S2% = EVENT_1B And runnerOnBase(3) > 0 And offChoice = OFF_HIT_N_RUN And _ 
             (chanceRoll >= 6 + runStratBonus) And (chanceRoll <= batRating(P, lineupPlayer(P, runnerOnBase(3)), SS_B_Run)) Then
-            If Environ$("RUNLOG") = "TRUE" Then
-                Print #11, "TRYFOREXTRABASE trying to score from 3rd on a Hit & Run Single..."
-            End If
+            'Trying to score from 3rd on a Hit & Run Single...
             baseNbr = 4
         End If
         If S2% = EVENT_1B And runnerOnBase(3) > 0 And runnerOn2nd = runnerOnBase(3) And offChoice <> OFF_HIT_N_RUN And _
             chanceRoll <= (batRating(P, lineupPlayer(P, runnerOnBase(3)), SS_B_Run) * 12) + runStratBonus Then
-            If Environ$("RUNLOG") = "TRUE" Then
-                Print #11, "TRYFOREXTRABASE trying to score from 3rd on a Single..."
-            End If
+            'Trying to score from 3rd on a Single...
             baseNbr = 4
         End If
 
@@ -17450,15 +17263,11 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, noThrow, baseStatus, run
             runRating = runRating + batRating(P, lineupPlayer(P, runnerOnBase(2)), SS_B_Run)
         End If
         If S2% = EVENT_1B And runnerOnBase(2) > 0 And offChoice <> OFF_HIT_N_RUN And chanceRoll <= runRating And runnerOnBase(3) = 0 And baseNbr = 0 Then
-            If Environ$("RUNLOG") = "TRUE" Then
-                Print #11, "TRYFOREXTRABASE trying to advance to 3rd on a Single..."
-            End If
+            'Trying to advance to 3rd on a Single...
             baseNbr = 3
         End If
         If S2% = EVENT_1B And runnerOnBase(1) > 0 And runnerOnBase(2) = 0 And baseNbr = 0 And chanceRoll <= batRating(P, lineupPlayer(P, runnerOnBase(1)), SS_B_Run) And batRating(P, lineupPlayer(P, runnerOnBase(1)), SS_B_2B) > 0 Then
-            If Environ$("RUNLOG") = "TRUE" Then
-                Print #11, "TRYFOREXTRABASE stretching a Single to a Double..."
-            End If
+            'Stretching a Single to a Double...
             baseNbr = 2
         End If
 
@@ -17483,9 +17292,7 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, noThrow, baseStatus, run
         If ((playerMode = 1 And P = compTeam) Or playerMode = 2) Then
             If Abs(scoreDiff) < 2 And S2% <> EVENT_FLY_SHALLOW Then
                 I$ = "Y"
-                If Environ$("RUNLOG") = "TRUE" Then
-                    Print #11, "TRYFOREXTRABASE Green light! -- game margin is within 1 run and event is: "; S2%
-                End If
+                'Green light! -- game margin is within 1 run and event is S2%
             Else
                 If scoreDiff < 0 And (INNING% >= 7 Or S2% = EVENT_FLY_SHALLOW) Then
                     I$ = "N"
@@ -17494,9 +17301,7 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, noThrow, baseStatus, run
 
             If S2% = EVENT_2B And nbrOuts(0) = 2 And baseNbr = 3 Then
                 I$ = "N"
-                If Environ$("RUNLOG") = "TRUE" Then
-                    Print #11, "TRYFOREXTRABASE not going to try advancing to 3rd with 2 outs..."
-                End If
+                'Not going to try advancing to 3rd with 2 outs...
             End If
         End If
 
@@ -17508,11 +17313,8 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, noThrow, baseStatus, run
         If UCase$(I$) <> "Y" Then
             noThrow = 1
         Else
+            'Runner going for baseNbr on event S2%
             pbpString$ = player$(baseNbr - 1) + " is "
-
-            If Environ$("PBPLOG") = "TRUE" Then
-                Print #11, ";;;;; Runner going for base: "; baseNbr; " on event: "; S2%
-            End If
 
             If S2% < EVENT_HR Then
                 Call PBP(pbpString$ + "going for " + baseName$(baseNbr))
@@ -17531,11 +17333,7 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, noThrow, baseStatus, run
 
                 If ((playerMode = 1 And D = compTeam) Or playerMode = 2) Then
                     If teamMgrProfileVal(D, 766) = 999 And baseNbr = 4 Then
-
-                        If Environ$("MGRLOG") = "TRUE" Then
-                            Print #11, "!! Team is using a THROWING HOME strategy !!"
-                        End If
-
+                        'Team is using a THROWING HOME strategy !!
                         If INNING% >= teamMgrProfileVal(D, 767) And teamMgrProfileVal(D, 767) <> 0 And teamMgrProfileVal(D, 768) <= gameScore(D, 0) - gameScore(P, 0) Then
                             I$ = "N"
                         End If
@@ -18850,8 +18648,6 @@ Sub PlayerEjections (baseStatus)
             Call PBP("It will take a few minutes to clean this up")
 
             RN0 = Int(Rnd(1) * 3) + 1
-
-            'Print #11, "Player Ejection"
 
             Select Case RN0
 

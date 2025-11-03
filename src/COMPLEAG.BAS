@@ -1439,7 +1439,6 @@ Sub CalcRecordsPro (totalGames, teamName$, statName$, finalUpdate$)
                 ' ** Slugging % **
                 slugPCT! = (leaderStatVal2!(I2, 2) + leaderStatVal2!(I2, 5) + 2 * leaderStatVal2!(I2, 6) + 3 * leaderStatVal2!(I2, 7)) / leaderStatVal2!(I2, 1)
                 If slugPCT! >= batRecVal!(22) Then
-                    Print #11, leaderNames$(I2); slugPCT!
                     batRecVal!(22) = slugPCT!
                     batRecPlyr$(22) = leaderNames$(I2)
                     batRecTeam$(22) = teamName$
