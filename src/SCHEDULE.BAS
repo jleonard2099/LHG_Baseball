@@ -1384,7 +1384,10 @@ Sub ChangeGlobalSettings ()
     'Usually when I want to change global settings, I want to keep most
     'settings in the schedule the same.
     playerOpt = scheduleNG%(1, 8)
-    desigHit = scheduleNG%(1, 3)
+
+    desigHit = 2 'Default to no change for each game's DH 
+    'This would otherwise be stored in scheduleNG%(1, 3)
+
     displayPause! = scheduleNG%(1, 4) / 10
     useInj = scheduleNG%(1, 6)
     useRest = scheduleNG%(1, 9)
