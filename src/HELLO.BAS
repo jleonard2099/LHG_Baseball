@@ -1868,7 +1868,7 @@ Sub LOADER
     W6 = 1
 
     '--- we need to check for Revised.pbp
-    If _FileExists(cfgPath$ + "revised.pbp") Then
+    If _FileExists("revised.pbp") Then
 
         Call SOURCE
 
@@ -9813,7 +9813,7 @@ Sub GetPBPString (range%, minIdx%, fileString$)
         'Get a new PBP string to use
         pbpIdx% = Int(Rnd(1) * range%) + minIdx%
 
-        Open cfgPath$ + "REVISED.PBP" For Random As #1 Len = 44
+        Open "REVISED.PBP" For Random As #1 Len = 44
         Field #1, 44 As YY$
         Get #1, pbpIdx%
         fileString$ = _Trim$(YY$)
