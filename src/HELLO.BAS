@@ -1,7 +1,7 @@
 $Debug
 $Color:32
 
-Const GAME_VERSION$ = "7.15"
+Const GAME_VERSION$ = "7.18"
 Const MAX_FILES = 10240
 Const MAX_CAREER_YEARS = 15
 'Const MAX_CONFERENCES = 40
@@ -349,7 +349,7 @@ Close #1
 Kill "WRITETEST.TMP"
 CanWriteLocally = 1 ' SUCCESS - TRUE
 WriteTestFailed:
-On Error GoTo 0
+On Error GoTo Errhandler
 
 ' Determine base path for config files
 If (CanWriteLocally = 1) Or dirSeparator$ = "/" Then
@@ -1124,10 +1124,6 @@ Sub LOADER
 
     End If
 
-    If Environ$("PBPLOG") = "TRUE" Then
-        Open cfgPath$ + "pbplog.txt" For Append As #11
-    End If
-
     If autoPlay = 1 Then
 
         Call AUTOSETUP(goodTeam)
@@ -1341,10 +1337,10 @@ Sub LOADER
 
                     Case 18
                         useWeather = 1 - useWeather
-                        
+
                     Case 19
                         useVGA = 1 - useVGA
-                        
+
                     Case 20
                         sndOpt = 1 - sndOpt
 
@@ -1366,7 +1362,7 @@ Sub LOADER
 
     'If we've run into issues so far...
     If earlyExit = 1 Then
-        Close #11
+        'Close #11
         Exit Sub
     End If
 
@@ -2861,7 +2857,7 @@ Sub LoadParkAttData
     Shared parkAvgAtt&()
     Shared totalParks
 
-    Open cfgPath$ + "parkattendance.csv" For Input As #1
+    Open "parkattendance.csv" For Input As #1
 
     ' Skip header line
     Line Input #1, dummy$
@@ -4334,10 +4330,6 @@ Sub SOURCE ()
     Call WHOSON1ST(baseRunners)
     Call PLAYERNAME
 
-    If Environ$("PBPLOG") = "TRUE" Then
-        Call DumpIt(baseRunners, offChoice, D2)
-    End If
-
     If useVGA = 1 Then
         Call MAINSCREEN_G(nbrBalls, nbrStrikes, MO, INFPOS%)
     Else
@@ -5101,8 +5093,6 @@ Sub SOURCE ()
         GoTo LRarePlays
     End If
 
-    drawnInfieldChance = 0
-
     chanceRoll = Int(Rnd(1) * 1000) + 1
 
     If nbrOuts(0) = 0 And baseRunners = 4 And INFPOS% <  INF_IN And chanceRoll = 768 Or _
@@ -5311,6 +5301,7 @@ Sub SOURCE ()
         Call INCPITDEF(D, currPitcher(D), LG_P_OUT)
 
         GoTo LCheckForOptionsOrQuit
+
     End If
 
     Select Case teamYears(1)
@@ -5345,6 +5336,7 @@ Sub SOURCE ()
     'Determine HIT
     chanceRoll = Int(Rnd(1) * 1000) + 1
 
+    drawnInfieldChance = 0
     drawnInfieldRoll = Int(Rnd(1) * 1000) + 1
 
     hitChanceAdj = 0
@@ -5354,7 +5346,7 @@ Sub SOURCE ()
         hitChanceAdj = -5
     End If
 
-    'Drawn infield
+    'Infield in
     If INFPOS% = INF_IN Then
         drawnInfieldChance = 70
         hitChanceAdj = hitChanceAdj + 10
@@ -5388,12 +5380,6 @@ Sub SOURCE ()
     End Select
 
     Call WINDEX
-
-    If drawnInfieldRoll <= drawnInfieldChance Then
-        Call PBP("It gets through the drawn-in infield!")
-        Call DELAY
-        GoTo 13063
-    End If
 
     'Assign a fixed "boost" that is
     'needed for simulating accurate
@@ -5510,6 +5496,14 @@ Sub SOURCE ()
         Else
 
             ' *** ground ball for out ***
+
+            ' Check if it's a ground ball out that could get through drawn-in infield
+            If drawnInfieldRoll <= drawnInfieldChance Then
+                'Convert this out to a single
+                S2% = EVENT_DRAWN_INF_SINGLE
+                GoTo 13063
+            End If
+
             Call Rolld100(chanceRoll)
 
             playerGndPct = batRating(P, lineupPlayer(P, currLineupSlot(P)), SS_B_GndPct) + pitchRating(D, currPitcher(D), SS_P_GndPct) - 52
@@ -5560,7 +5554,7 @@ Sub SOURCE ()
                                         If currFielder = 7 Then X$ = "lcf"
                                         If currFielder = 9 Then X$ = "rcf"
                                     End If
-                                    3
+
                                     Call DELIVERY
 
                                     Call GetPBPString(60, 1170, Y$)
@@ -6164,7 +6158,9 @@ Sub SOURCE ()
             13063 '
             'Single
             Call Rolld100(chanceRoll)
-            S2% = EVENT_1B
+            If S2% <> EVENT_DRAWN_INF_SINGLE Then
+                S2% = EVENT_1B
+            End If
 
             If chanceRoll <= game_batRating(P, GM_BAvg, currLineupSlot(P)) And offChoice <> OFF_HIT_N_RUN And _ 
                 fldPos(P, currLineupSlot(P)) <> 1 Then
@@ -6201,7 +6197,6 @@ Sub SOURCE ()
             If chanceRoll <= (batRating(P, lineupPlayer(P, currLineupSlot(1)), SS_B_Run) * 2.5) Then
 
                 S2% = EVENT_INF_SINGLE
-
                 Call GETINFIELDER(currFielder, I1, S2%, offChoice)
 
                 Call FLDERR(S2%, I3, stealing, currFielder, INFPOS%, errorOnPlay%, SAH%)
@@ -6295,7 +6290,7 @@ Sub SOURCE ()
         If currFielder = 5 Then
 
             Call PITCHERNAME(currFielder)
-            
+
             If RN0 <= 5 And (baseRunners = 4 Or baseRunners = 7) Then
                 Call PBP(player$(4) + " gloves it and heads for 3rd")
                 baseMove(0) = 0
@@ -8481,9 +8476,6 @@ Sub SOURCE ()
     End If
 
     Call EndOfGame
-    If Environ$("PBPLOG") = "TRUE" Then
-        Close #11
-    End If
 
     Exit Sub
 
@@ -10927,7 +10919,7 @@ Sub CreditInfieldPutout (currBase, FB2P%, AST%)
         ElseIf po% > 1 And po% <= 10 Then
             fld% = fielder(D, po%)
         Else
-            'WARNING!!  skipping call to INCBATDEF in CreditInfieldPutout 
+            'WARNING!!  skipping call to INCBATDEF in CreditInfieldPutout
             'this is because of the value of po%
             Exit Sub
         End If
@@ -15886,21 +15878,29 @@ Sub SINGLEPBP (S2%, currFielder)
             Call PBP(player$(0) + " beats out an infield single")
         Else
 
-            If d100% <= 50 Then
-                Call GetPBPString(50, 1610, fileString$)
-                Call PBP(fileString$ + " " + fieldPos$(currFielder))
+            If S2% = EVENT_DRAWN_INF_SINGLE Then
+                Call PBP("Grounder up the middle...")
+                Call PBP("It gets through the drawn-in infield!")
+                Call DELAY
             Else
-                If currFielder = 7 Then
-                    range = 70: min = 1660
+
+                If d100% <= 50 Then
+                    Call GetPBPString(50, 1610, fileString$)
+                    Call PBP(fileString$ + " " + fieldPos$(currFielder))
+                Else
+                    If currFielder = 7 Then
+                        range = 70: min = 1660
+                    End If
+                    If currFielder = 9 Then
+                        range = 70: min = 1730
+                    End If
+                    If currFielder = 8 Then
+                        range = 90: min = 1800
+                    End If
+                    Call GetPBPString(range, min, fileString$)
+                    Call PBP(fileString$)
                 End If
-                If currFielder = 9 Then
-                    range = 70: min = 1730
-                End If
-                If currFielder = 8 Then
-                    range = 90: min = 1800
-                End If
-                Call GetPBPString(range, min, fileString$)
-                Call PBP(fileString$)
+
             End If
 
         End If 'Done checking for S2%
@@ -17228,7 +17228,7 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, noThrow, baseStatus, run
             Case 1
                 'Normal strategy
                 runStratBonus = 0
-                            
+
             Case 2
                 'Aggressive = more likely to run
                 runStratBonus = 10
