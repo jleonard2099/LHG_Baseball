@@ -33,6 +33,7 @@ DefInt A-Z
 '$Include: 'BoxRoutines.bi'
 '$Include: 'FileTeamSelection.bi'
 '$Include: 'Variables.bi'
+
 '$Include: 'MainRoutines.bi'
 '$Include: 'TITLE.bi'
 
@@ -454,6 +455,7 @@ Sub Main_Menu (menuSelection)
     Do
 
         Cls
+
         Color 15, 0
 
         Call TITLE
@@ -567,7 +569,8 @@ Sub TeamMgt_Menu ()
         menuChoices$(7) = "TOGGLE PLAYER STATUS       "
         menuChoices$(8) = "SWAP SPOTS ON A TEAM ROSTER"
         menuChoices$(9) = "RETURN TO MAIN MENU        "
-        SELECTION% = 1
+
+        menuSelection = 1
         Count% = 9
         Start% = 1
         ExitCode% = 9
@@ -581,14 +584,14 @@ Sub TeamMgt_Menu ()
         Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor, FileBGColor)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), menuSelection, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
 
         If ExitCode% <> 27 Then
 
-            Select Case SELECTION%
+            Select Case menuSelection
 
                 Case 1:
                     Call InputEditTeam(1, YN$, team$, teamNbr)
@@ -655,7 +658,8 @@ Sub Replay_Menu ()
         menuChoices$(5) = "TEAM CAREER OPTIONS             "
         menuChoices$(6) = "SORT PLAYERS BY POSITION        "
         menuChoices$(7) = "RETURN TO MAIN MENU             "
-        SELECTION% = 1
+
+        menuSelection = 1
         Count% = 7
         Start% = 1
         ExitCode% = 7
@@ -669,14 +673,14 @@ Sub Replay_Menu ()
         Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor, FileBGColor)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), menuSelection, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
 
         If ExitCode% <> 27 Then
 
-            Select Case SELECTION%
+            Select Case menuSelection
 
                 Case 1:
                     Call LOOKY
@@ -703,7 +707,7 @@ Sub Replay_Menu ()
 
         End If
 
-    Loop Until SELECTION% = 7 Or ExitCode% = 27
+    Loop Until menuSelection = 7 Or ExitCode% = 27
 
 End Sub
 
@@ -734,7 +738,8 @@ Sub Leaders_Menu ()
         menuChoices$(6) = "EXPANDED LEADERS / STANDINGS   "
         menuChoices$(7) = "DELETE ALL STATS FOR A LEAGUE  "
         menuChoices$(8) = "RETURN TO MAIN MENU            "
-        SELECTION% = 1
+
+        menuSelection = 1
         Count% = 8
         Start% = 1
         ExitCode% = 8
@@ -748,14 +753,14 @@ Sub Leaders_Menu ()
         Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor, FileBGColor)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), menuSelection, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
 
         If ExitCode% <> 27 Then
 
-            Select Case SELECTION%
+            Select Case menuSelection
 
                 Case 1:
                     Call CREATLEAG
@@ -783,7 +788,7 @@ Sub Leaders_Menu ()
 
         End If
 
-    Loop Until SELECTION% = 8 Or ExitCode% = 27
+    Loop Until menuSelection = 8 Or ExitCode% = 27
 
 End Sub
 
@@ -810,7 +815,8 @@ Sub Calculations_Menu ()
         menuChoices$(2) = "CALCULATE BUNT RATINGS   "
         menuChoices$(3) = "CALCULATE RUN RATINGS    "
         menuChoices$(4) = "RETURN TO MAIN MENU      "
-        SELECTION% = 1
+
+        menuSelection = 1
         Count% = 4
         Start% = 1
         ExitCode% = 4
@@ -824,14 +830,14 @@ Sub Calculations_Menu ()
         Call box0(Row% - 1, Column% - 1, Row% + Count%, Column% + menuWidth%, 2, FileFGColor, FileBGColor)
 
         _MouseShow "DEFAULT"
-        MMenuVert menuChoices$(), SELECTION%, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
+        MMenuVert menuChoices$(), menuSelection, Start%, ExitCode%, FileFGColor, FileBGColor, HiLiteFGColor%, HiLiteBGColor%, Count%, Row%, Column%
         _MouseHide
 
         Color , 0
 
         If ExitCode% <> 27 Then
 
-            Select Case SELECTION%
+            Select Case menuSelection
 
                 Case 1:
                     Call GROUND
@@ -895,12 +901,6 @@ End Sub
 '$Include: 'MERGE.BAS'
 '$Include: 'NEWLDR.BAS'
 '$Include: 'NEWLDRST.BAS'
-'$Include: 'POSSRT.BAS'
-'$Include: 'POSCR.BAS'
-'$Include: 'PROGMAN.BAS'
-'$Include: 'REC.BAS'
-'$Include: 'SCHEDULE.BAS'
-'$Include: 'SEELEAG.BAS'
 '$Include: 'SINPUT.BAS'
 '$Include: 'TINPUT.BAS'
 '$Include: 'TRADE.BAS'
@@ -2768,6 +2768,7 @@ Sub SelectStadium (useVGA)
                 Start% = 1
 
                 Do
+
                     SELECTION% = 1
                     Count% = 15
                     ExitCode% = 99
@@ -13841,6 +13842,8 @@ Sub PopUp_Lineup ()
 
     If useVGA = 1 Then Screen menu&
 
+    Cls
+    
     Call FRAMEOPTION(11, 1)
 
     Print gameTeams$(0); Tab(40); gameTeams$(1)

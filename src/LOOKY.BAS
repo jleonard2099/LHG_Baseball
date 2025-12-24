@@ -44,9 +44,15 @@ Sub LOOKY ()
         If ExitCode% <> 27 Then
 
             Select Case SELECTION%
-                Case 1: Call StatsOneTeam
-                Case 2: Call ReportsAllTeams
-                Case 3: Cls
+
+                Case 1:
+                    Call StatsOneTeam
+
+                Case 2:
+                    Call ReportsAllTeams
+
+                Case 3: 'Cls
+
             End Select
 
         End If
@@ -58,7 +64,8 @@ End Sub
 '----------------------------------------
 '       StatsOneTeam Subroutine
 '----------------------------------------
-'...explanation...
+'Handles loading stats for a team and
+'presents user options for reports
 Sub StatsOneTeam ()
 
     Shared teamRatings()
@@ -84,7 +91,7 @@ Sub StatsOneTeam ()
 
         Else
 
-            Call LoadTeamStats(statFile$, nbrGames)
+            Call LoadTeamStats(statFile$, team$, nbrGames)
             Call ViewAndPrintOptions(statFile$, team$, nbrGames, menuExit)
 
         End If
@@ -98,7 +105,7 @@ End Sub
 '----------------------------------------
 'This subroutine loads the selected team's
 'stats into arrays
-Sub LoadTeamStats (statFile$, nbrGames)
+Sub LoadTeamStats (statFile$, teamName$, nbrGames)
 
     Shared statSplit(), teamScore(), oppScore(), nbrInnings(), locIndicator$()
 
@@ -123,7 +130,7 @@ Sub LoadTeamStats (statFile$, nbrGames)
     lastTenLosses = 0
     lastTenWins = 0
 
-    Call ReadTeamStats(team$, statFile$)
+    Call ReadTeamStats(teamName$, statFile$)
 
     If Not _FileExists(diskPaths$(1) + statFile$ + "R") Then
 
@@ -133,16 +140,18 @@ Sub LoadTeamStats (statFile$, nbrGames)
 
         SS = 1
 
-        Open diskPaths$(1) + statFile$ + "R" For Input As #1
+        of% = FreeFile
+
+        Open diskPaths$(1) + statFile$ + "R" For Input As #of%
 
         For I = 0 To 22
             For I1 = 0 To 6
-                Input #1, statSplit(I, I1)
+                Input #of%, statSplit(I, I1)
             Next I1
 
         Next I
 
-        Close #1
+        Close #of%
 
     End If
 
@@ -359,7 +368,7 @@ Sub ViewAndPrintOptions (statFile$, teamName$, nbrGames, menuExit)
 
     Loop Until SELECTION% = 5 Or ExitCode% = 27
 
-    'Call ResetstatInnPitchrompt (statFile$, teamRatings())
+    'Call ResetStatsPrompt (statFile$, teamRatings())
 
     Cls
 
@@ -563,7 +572,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
                 If statAtBats(I) = 0 Then Locate , 73: Print "--";
             End If
 
-            If statTeamBat!(0) = 0 Then 
+            If statTeamBat!(0) = 0 Then
                 statTeamBat!(0) = 1
             End If
 
@@ -1163,44 +1172,58 @@ End Sub
 'for each team in the chosen league.
 Sub ReportsAllTeams ()
 
-    Shared memberName$()
+    Shared memberIdx()
+    Shared memberName$(), memberYear$()
+    Dim memberTeam$(TEAMS_PER_LEAGUE)
 
     Shared teamLosses, teamWins
 
-    leagueFile$ = _OpenFileDialog$("Choose League Stats file", diskPaths$(2), "*.TMS", "League Stats files [.TMS]")
+    leagueFile$ = _OpenFileDialog$("Choose League Index file", diskPaths$(2), "*.TMI", "League Index files [.TMI]")
 
     If leagueFile$ <> "" Then
 
-        Call ReadLeagueMembers(leagueFile$)
+        Call ReadLeagueIndex(leagueFile$)
 
-        For XW = 1 To TEAMS_PER_LEAGUE
+        userKey$ = GetPrintOptions$
 
-            If _FileExists(diskPaths$(1) + memberName$(XW)) Then
+        If userKey$ <> Chr$(27) Then
 
-                Call ReadTeamStats(teamName$, memberName$(XW))
+            If userKey$ = "F" Then
+                userFile$ = _SaveFileDialog$("Save Report File", _CWD$ + "\Report", "*.txt", "Text File")
+            End If
 
-                userKey$ = GetPrintOptions$
+            If (userKey$ = "P") Or (userKey$ = "F" And userFile$ <> "") Then
 
-                If userKey$ <> Chr$(27) Then
+                For Z = 1 To TEAMS_PER_LEAGUE
+                    memberTeam$(Z) = memberName$(Z)
+                Next Z
 
-                    Select Case userKey$
+                'Replace "team names" in memberName$() with stat file names
+                Call ReadLeagueMembers(diskPaths$(2) + GetFileBaseName$(leagueFile$) + ".TMS")
 
-                        Case "F"
-                            userFile$ = _SaveFileDialog$("Save Report File", _CWD$ + "\Report", "*.txt", "Text File")
-                            If userFile$ <> "" Then
-                                Call NewPrintStats(0, userFile$, memberName$(XW), teamName$, nbrGames, 3, splitStatChoice)
-                            End If
+                For XW = 1 To TEAMS_PER_LEAGUE
 
-                        Case "P"
-                            Call NewPrintStats(1, "REPORT", memberName$(XW), teamName$, nbrGames, 3, splitStatChoice)
+                    If _FileExists(diskPaths$(1) + memberName$(XW)) Then
 
-                    End Select
+                        Call LoadTeamStats(memberName$(XW), memberTeam$(XW), nbrGames)
 
-                End If
+                        Select Case userKey$
+
+                            Case "F"
+                                Call NewPrintStats(0, userFile$, memberName$(XW), memberTeam$(XW), nbrGames, 3, splitStatChoice)
+
+                            Case "P"
+                                Call NewPrintStats(1, "REPORT", memberName$(XW), memberTeam$(XW), nbrGames, 3, splitStatChoice)
+
+                        End Select
+
+                    End If
+
+                Next
 
             End If
 
-        Next
+        End If
 
     End If 'Done checking for ESC
 
@@ -1242,8 +1265,8 @@ Sub PrintScheduleStatSummary (printDest, destFile$, statFile$, teamName$, nbrGam
     header$ = "SCHEDULE RESULTS FOR " + teamName$
     Xcoord = Len(header$)
     Xcoord = Int((80 - Xcoord) / 2)
-    Print
-    Print #1, Tab(Xcoord); "SCHEDULE RESULTS FOR "; teamName$
+    Print #1,
+    Print #1, Tab(Xcoord); header$
 
     Print #1,
     Print #1, Tab(6); "OPPONENT"; Tab(33); "WINNING PITCHER"; Tab(50); "LOSING PITCHER"; Tab(66); "INNINGS"
@@ -1938,16 +1961,9 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
     Shared teamScore(), nbrInnings()
     Shared statSplit(), oppScore()
 
-    RQ = Val(Right$(statFile$, 2))
-    RT = 60
+    of% = FreeFile
 
-    If RQ > RT Then
-        '# games afer 1960
-        QT = 162
-    Else
-        '# games before 1960
-        QT = 154
-    End If
+    Open destFile$ For Append As #of%
 
     ' *** NEW PRINT ROUTINE 6-24-90 ***
     If printChoice <> 3 Then
@@ -1965,166 +1981,188 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
         lastTenLosses = 0
         lastTenWins = 0
 
-        Cls
-        LPrint "        SCHEDULE RESULTS FOR "; teamName$
-        LPrint
+        header$ = "SCHEDULE RESULTS FOR " + teamName$
+        Xcoord = Len(header$)
+        Xcoord = Int((80 - Xcoord) / 2)
+        Print #of%,
+        Print #of%, Tab(Xcoord); header$
 
     Else
 
-        LPrint Tab(6); "OPPONENT"; Tab(33); "WINNING PITCHER"; Tab(50); "LOSING PITCHER"; Tab(66); "INNINGS"
+        header$ = "SCHEDULE RESULTS FOR " + teamName$
+        Xcoord = Len(header$)
+        Xcoord = Int((80 - Xcoord) / 2)
+        Print #of%,
+        Print #of%, Tab(Xcoord); header$
+
+        Print #of%,
+        Print #of%, Tab(6); "OPPONENT"; Tab(33); "WINNING PITCHER"; Tab(50); "LOSING PITCHER"; Tab(66); "INNINGS"
 
         For I = 1 To nbrGames
-            LPrint Str$(teamScore(I)); Tab(6); Left$(oppName$(I), 15); Tab(22); Str$(oppScore(I)); Tab(27); "("; locIndicator$(I); ")"; Tab(33); winPitcher$(I); Tab(50); losePitcher$(I); Tab(66); nbrInnings(I)
+            Print #of%, Str$(teamScore(I)); Tab(6); Left$(oppName$(I), 15); Tab(22); Str$(oppScore(I)); Tab(27); "("; locIndicator$(I); ")"; Tab(33); winPitcher$(I); Tab(50); losePitcher$(I); Tab(66); nbrInnings(I)
         Next
 
-        LPrint
-        LPrint
-        LPrint Tab(20); "OVERALL RECORD ("; Str$(totalWins); " -"; Str$(totalLosses); " )"
-        LPrint Tab(20); "HOME RECORD    ("; Str$(homeWins); " -"; Str$(homeLosses); " )"
-        LPrint Tab(20); "ROAD RECORD    ("; Str$(roadWins); " -"; Str$(roadLosses); " )"
-        LPrint Tab(20); "LAST 10 GAMES  ("; Str$(lastTenWins); " -"; Str$(lastTenLosses); " )"
-        LPrint Tab(20); "EXTRA INNINGS  ("; Str$(extraInnWins); " -"; Str$(extraInnLosses); " )"
-        LPrint Tab(20); "ONE RUN GAMES  ("; Str$(oneRunWins); " -"; Str$(oneRunLosses); " )"
-        LPrint Chr$(12)
+        Print #of%,
+        Print #of%,
+        Print #of%, Tab(20); "OVERALL RECORD ("; Str$(totalWins); " -"; Str$(totalLosses); " )"
+        Print #of%, Tab(20); "HOME RECORD    ("; Str$(homeWins); " -"; Str$(homeLosses); " )"
+        Print #of%, Tab(20); "ROAD RECORD    ("; Str$(roadWins); " -"; Str$(roadLosses); " )"
+        Print #of%, Tab(20); "LAST 10 GAMES  ("; Str$(lastTenWins); " -"; Str$(lastTenLosses); " )"
+        Print #of%, Tab(20); "EXTRA INNINGS  ("; Str$(extraInnWins); " -"; Str$(extraInnLosses); " )"
+        Print #of%, Tab(20); "ONE RUN GAMES  ("; Str$(oneRunWins); " -"; Str$(oneRunLosses); " )"
+        Print #of%, Chr$(12)
 
     End If
 
-    LPrint teamName$; "    WON: "; teamWins; " LOST: "; teamLosses
-    LPrint "BATTERS      G  AB   R   H 2B 3B HR RBI  BB   K  SB CS CHS LHS GIDP  BAVG   SLG   OBP NEED PROJ.AB %RAB   PO   A  E  FAVG SH SF"
+    Print #of%, "BATTERS      G  AB   R   H 2B 3B HR RBI  BB   K  SB CS CHS LHS GIDP  BAVG   SLG   OBP NEED PROJ.AB %RAB   PO   A  E  FAVG SH SF"
 
     For I = 0 To 22
 
         If batterNames$(I) <> "XXX" And batterNames$(I) <> "" Then
 
-            LPrint Left$(batterNames$(I), 10); Tab(12);
+            'Name
+            Print #of%, Left$(batterNames$(I), 10); Tab(12);
             'Games
-            LPrint Using "###"; statBatter(I, 14);
+            Print #of%, Using "###"; statBatter(I, 14);
             'At Bats, Runs, Hits, 2B
-            LPrint Tab(16); Using "### ### ### ##"; statBatter(I, 0); statBatter(I, 2); statBatter(I, 1); statBatter(I, 4);
+            Print #of%, Tab(16); Using "### ### ### ##"; statBatter(I, 0); statBatter(I, 2); statBatter(I, 1); statBatter(I, 4);
             '3B, HR, RBI, BB
-            LPrint Tab(31); Using "## ## ### ###"; statBatter(I, 5); statBatter(I, 6); statBatter(I, 3); statBatter(I, 7);
+            Print #of%, Tab(31); Using "## ## ### ###"; statBatter(I, 5); statBatter(I, 6); statBatter(I, 3); statBatter(I, 7);
             'L, SB, CS
-            LPrint Tab(45); Using "### ### ##"; statBatter(I, 8); statBatter(I, 9); statBatter(I, 10);
+            Print #of%, Tab(45); Using "### ### ##"; statBatter(I, 8); statBatter(I, 9); statBatter(I, 10);
             'CHS
-            LPrint Tab(56);: LPrint Using "##"; statBatter(I, 12);
+            Print #of%, Tab(56);: Print #of%, Using "##"; statBatter(I, 12);
             'LHS
-            LPrint Tab(60);: LPrint Using "##"; statBatter(I, 13);
+            Print #of%, Tab(60);: Print #of%, Using "##"; statBatter(I, 13);
             'GIDP
-            LPrint Tab(64);: LPrint Using "##"; statBatter(I, 15);
+            Print #of%, Tab(64);: Print #of%, Using "##"; statBatter(I, 15);
 
             'BAVG
-            LPrint Tab(69);
+            Print #of%, Tab(69);
 
             If statBatter(I, 0) = 0 Then
-                LPrint "-.---";
+                Print #of%, "-.---";
             Else
                 If statBatter(I, 0) = statBatter(I, 1) Then
-                    LPrint "1.000";
+                    Print #of%, "1.000";
                 Else
                     If statBatter(I, 1) = 0 Then
-                        LPrint " .000";
+                        Print #of%, " .000";
                     Else
-                        LPrint Using " .###"; (statBatter(I, 1) / statBatter(I, 0));
+                        Print #of%, Using " .###"; (statBatter(I, 1) / statBatter(I, 0));
                     End If
                 End If
             End If
 
             'SLG
-            LPrint Tab(75);
+            Print #of%, Tab(75);
 
             If statBatter(I, 0) = 0 Then
-                LPrint "-.---";
+                Print #of%, "-.---";
             Else
                 J = statBatter(I, 1) + statBatter(I, 4) + statBatter(I, 5) * 2 + statBatter(I, 6) * 3
                 If J = statBatter(I, 0) Then
-                    LPrint "1.000";
+                    Print #of%, "1.000";
                 Else
                     If J / statBatter(I, 0) > 1 Then
-                        LPrint Using "#.###"; (J / statBatter(I, 0));
+                        Print #of%, Using "#.###"; (J / statBatter(I, 0));
                     Else
                         If statBatter(I, 1) = 0 Then
-                            LPrint " .000";
+                            Print #of%, " .000";
                         Else
-                            LPrint Using " .###"; (J / statBatter(I, 0));
+                            Print #of%, Using " .###"; (J / statBatter(I, 0));
                         End If
                     End If
                 End If
             End If
 
             'OBP
-            LPrint Tab(81);
+            Print #of%, Tab(81);
 
             If statBatter(I, 0) = 0 Then
-                LPrint "-.---";
+                Print #of%, "-.---";
             Else
                 J = statBatter(I, 1) + statBatter(I, 7)
                 If J = statBatter(I, 0) Then
-                    LPrint "1.000";
+                    Print #of%, "1.000";
                 Else
                     If J / (statBatter(I, 7) + statBatter(I, 0)) > 1 Then
-                        LPrint Using "#.###"; (J / (statBatter(I, 7) + statBatter(I, 0)));
+                        Print #of%, Using "#.###"; (J / (statBatter(I, 7) + statBatter(I, 0)));
                     Else
                         If J = 0 Then
-                            LPrint " .000";
+                            Print #of%, " .000";
                         Else
                             statCalc = (J / (statBatter(I, 7) + statBatter(I, 0)))
-                            LPrint Using " .###"; statCalc;
+                            Print #of%, Using " .###"; statCalc;
                         End If
                     End If
                 End If
             End If
 
             'Need
-            LPrint Tab(87);
+            Print #of%, Tab(87);
+
+            RQ = Val(Right$(statFile$, 2))
+            RT = 60
+
+            If RQ > RT Then
+                '# games afer 1960
+                QT = 162
+            Else
+                '# games before 1960
+                QT = 154
+            End If
 
             statCalc = (CInt((((statAtBats(I) + 0) / QT) * (statTeamPit!(9) + 1))) - (statBatter(I, 0) + 0))
+
             If statAtBats(I) > 0 And statCalc > 0 Then
-                LPrint Using "###"; statCalc;
+                Print #of%, Using "###"; statCalc;
             Else
                 If statAtBats(I) > 0 Then
                     statCalc = CInt(((statAtBats(I) / QT) * (statTeamPit!(9) + 1))) - (statBatter(I, 0) + 0)
-                    LPrint Using "###"; statCalc;
+                    Print #of%, Using "###"; statCalc;
                 End If
             End If
 
             'Proj AB
-            LPrint Tab(95);
+            Print #of%, Tab(95);
+
             If statAtBats(I) > 0 Then
                 statCalc = CInt((((statAtBats(I) + 0) / QT) * (statTeamPit!(9) + 1)))
-                LPrint Using "###"; statCalc;
+                Print #of%, Using "###"; statCalc;
                 statTeamBat!(13) = statTeamBat!(13) + statCalc
             End If
 
             '% RAB
-            LPrint Tab(100);
+            Print #of%, Tab(100);
             If statAtBats(I) > 0 Then
                 statCalc = ((statBatter(I, 0) / statAtBats(I)) * 100)
-                LPrint Using "###"; statCalc;
+                Print #of%, Using "###"; statCalc;
             End If
 
             'Putouts
-            LPrint Tab(105);: LPrint Using "####"; statBatter(I, 16);
+            Print #of%, Tab(105);: Print #of%, Using "####"; statBatter(I, 16);
             'Assists
-            LPrint Tab(110);: LPrint Using "###"; statBatter(I, 17);
+            Print #of%, Tab(110);: Print #of%, Using "###"; statBatter(I, 17);
             'Errors
-            LPrint Tab(114);: LPrint Using "##"; statBatter(I, 11);
+            Print #of%, Tab(114);: Print #of%, Using "##"; statBatter(I, 11);
 
             'Fielding AVG
-            LPrint Tab(117);
+            Print #of%, Tab(117);
 
             If statBatter(I, 11) + statBatter(I, 17) + statBatter(I, 16) = 0 Then
-                LPrint " .---";
+                Print #of%, " .---";
             Else
                 If statBatter(I, 11) = 0 Then
-                    LPrint "1.000";
+                    Print #of%, "1.000";
                 Else
                     statCalc = (statBatter(I, 16) + statBatter(I, 17)) / (statBatter(I, 16) + statBatter(I, 17) + statBatter(I, 11))
-                    LPrint Using " .###"; statCalc;
+                    Print #of%, Using " .###"; statCalc;
                 End If
             End If
 
             'Sac. Hits, Sac. Flies
-            LPrint Tab(123); Using "## ##"; statBatter(I, 18); statBatter(I, 19)
+            Print #of%, Tab(123); Using "## ##"; statBatter(I, 18); statBatter(I, 19)
 
         End If
 
@@ -2134,296 +2172,317 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
 
         If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
 
-            LPrint Left$(pitcherNames$(I), 10); Tab(12);
+            Print #of%, Left$(pitcherNames$(I), 10); Tab(12);
             'Games
-            LPrint Using "###"; statPitcher(I, 8);
+            Print #of%, Using "###"; statPitcher(I, 8);
             'At Bats, Runs, Hits, 2B
-            LPrint Tab(16); Using "### ### ### ##"; statPitcher(I, 23); statPitcher(I, 25); statPitcher(I, 24); statPitcher(I, 27);
+            Print #of%, Tab(16); Using "### ### ### ##"; statPitcher(I, 23); statPitcher(I, 25); statPitcher(I, 24); statPitcher(I, 27);
             '3B, HR, RBI, BB
-            LPrint Tab(31); Using "## ## ### ###"; statPitcher(I, 28); statPitcher(I, 29); statPitcher(I, 26); statPitcher(I, 30);
+            Print #of%, Tab(31); Using "## ## ### ###"; statPitcher(I, 28); statPitcher(I, 29); statPitcher(I, 26); statPitcher(I, 30);
             'L, SB, CS
-            LPrint Tab(45); Using "### ### ##"; statPitcher(I, 31); statPitcher(I, 32); statPitcher(I, 33);
-            'CHS
-            LPrint Tab(56);: LPrint Using "##"; statPitcher(I, 35);
-            'LHS
-            LPrint Tab(60);: LPrint Using "##"; statPitcher(I, 36);
-            'GIDP
-            LPrint Tab(64);: LPrint Using "##"; statPitcher(I, 37);
+            Print #of%, Tab(45); Using "### ### ##"; statPitcher(I, 31); statPitcher(I, 32); statPitcher(I, 33);
+            'Chances
+            Print #of%, Tab(56);: Print #of%, Using "##"; statPitcher(I, 35);
+            'Left-Hand
+            Print #of%, Tab(60);: Print #of%, Using "##"; statPitcher(I, 36);
+            'Ground-into-DP
+            Print #of%, Tab(64);: Print #of%, Using "##"; statPitcher(I, 37);
 
             'BAVG
-            LPrint Tab(69);
+            Print #of%, Tab(69);
             If statPitcher(I, 23) = 0 Then
-                LPrint "-.---";
+                Print #of%, "-.---";
             Else
                 If statPitcher(I, 23) = statPitcher(I, 24) Then
-                    LPrint "1.000";
+                    Print #of%, "1.000";
                 Else
                     If statPitcher(I, 24) = 0 Then
-                        LPrint " .000";
+                        Print #of%, " .000";
                     Else
                         statCalc = (statPitcher(I, 24) / statPitcher(I, 23))
-                        LPrint Using " .###"; statCalc;
+                        Print #of%, Using " .###"; statCalc;
                     End If
                 End If
             End If
 
             'SLG
-            LPrint Tab(75);
+            Print #of%, Tab(75);
             If statPitcher(I, 23) = 0 Then
-                LPrint "-.---";
+                Print #of%, "-.---";
             Else
                 J = statPitcher(I, 24) + statPitcher(I, 27) + statPitcher(I, 28) * 2 + statPitcher(I, 29) * 3
                 If J = statPitcher(I, 23) Then
-                    LPrint "1.000";
+                    Print #of%, "1.000";
                 Else
                     statCalc = J / statPitcher(I, 23)
                     If statCalc > 1 Then
-                        LPrint Using "#.###"; statCalc;
+                        Print #of%, Using "#.###"; statCalc;
                     Else
                         If statPitcher(I, 24) = 0 Then
-                            LPrint " .000";
+                            Print #of%, " .000";
                         Else
-                            LPrint Using " .###"; statCalc;
+                            Print #of%, Using " .###"; statCalc;
                         End If
                     End If
                 End If
             End If
 
             'OBP
-            LPrint Tab(81);
+            Print #of%, Tab(81);
             If statPitcher(I, 23) = 0 Then
-                LPrint "-.---";
+                Print #of%, "-.---";
             Else
                 J = statPitcher(I, 24) + statPitcher(I, 30)
                 If J = statPitcher(I, 23) Then
-                    LPrint "1.000";
+                    Print #of%, "1.000";
                 Else
                     statCalc = (J / (statPitcher(I, 30) + statPitcher(I, 23)))
                     If statCalc > 1 Then
-                        LPrint Using "#.###"; statCalc;
+                        Print #of%, Using "#.###"; statCalc;
                     Else
                         If J = 0 Then
-                            LPrint " .000";
+                            Print #of%, " .000";
                         Else
-                            LPrint Using " .###"; statCalc;
+                            Print #of%, Using " .###"; statCalc;
                         End If
                     End If
                 End If
             End If
 
             'Put Outs
-            LPrint Tab(105);: LPrint Using "####"; statPitcher(I, 38);
+            Print #of%, Tab(105);: Print #of%, Using "####"; statPitcher(I, 38);
             'Assists
-            LPrint Tab(110);: LPrint Using "###"; statPitcher(I, 39);
+            Print #of%, Tab(110);: Print #of%, Using "###"; statPitcher(I, 39);
             'Errors
-            LPrint Tab(114);: LPrint Using "##"; statPitcher(I, 34);
+            Print #of%, Tab(114);: Print #of%, Using "##"; statPitcher(I, 34);
 
             'Fielding AVG
-            LPrint Tab(117);
+            Print #of%, Tab(117);
 
             If statPitcher(I, 34) + statPitcher(I, 38) + statPitcher(I, 39) = 0 Then
-                LPrint " .---";
+                Print #of%, " .---";
             Else
                 If statPitcher(I, 34) = 0 Then
-                    LPrint "1.000";
+                    Print #of%, "1.000";
                 Else
                     statCalc = (statPitcher(I, 38) + statPitcher(I, 39)) / (statPitcher(I, 38) + statPitcher(I, 39) + statPitcher(I, 34))
-                    LPrint Using " .###"; statCalc;
+                    Print #of%, Using " .###"; statCalc;
                 End If
             End If
 
-            LPrint Tab(123); Using "## ##"; statPitcher(I, 40); statPitcher(I, 41)
+            Print #of%, Tab(123); Using "## ##"; statPitcher(I, 40); statPitcher(I, 41)
 
         End If
 
     Next
 
-    LPrint " "
-    LPrint "TOTALS";
-    LPrint Tab(12);: LPrint Using "###"; nbrGames;
-    LPrint Tab(19);: LPrint Using "####"; statTeamBat!(2);
-    LPrint Tab(27);: LPrint Using "###"; statTeamBat!(4);
-    LPrint Tab(33);: LPrint Using "###"; statTeamBat!(6);
-    LPrint Tab(40);: LPrint Using "####"; statTeamBat!(7);
-    LPrint Tab(49);: LPrint Using "###"; statTeamBat!(9);
+    Print #of%, " "
+    Print #of%, "TOTALS";
+    Print #of%, Tab(12);: Print #of%, Using "###"; nbrGames;
+    Print #of%, Tab(19);: Print #of%, Using "####"; statTeamBat!(2);
+    Print #of%, Tab(27);: Print #of%, Using "###"; statTeamBat!(4);
+    Print #of%, Tab(33);: Print #of%, Using "###"; statTeamBat!(6);
+    Print #of%, Tab(40);: Print #of%, Using "####"; statTeamBat!(7);
+    Print #of%, Tab(49);: Print #of%, Using "###"; statTeamBat!(9);
     statCalc! = (statTeamBat!(1) / statTeamBat!(0))
-    LPrint Tab(69);: LPrint Using " .###"; statCalc!;
+    Print #of%, Tab(69);: Print #of%, Using " .###"; statCalc!;
     statCalc! = ((statTeamBat!(1) + statTeamBat!(4) + statTeamBat!(5) * 2 + statTeamBat!(6) * 3) / statTeamBat!(0))
-    LPrint Tab(75);: LPrint Using " .###"; statCalc!;
+    Print #of%, Tab(75);: Print #of%, Using " .###"; statCalc!;
     statCalc! = ((statTeamBat!(1) + statTeamBat!(7)) / (statTeamBat!(7) + statTeamBat!(0)))
-    LPrint Tab(81);: LPrint Using " .###"; statCalc!;
-    LPrint Tab(105);: LPrint Using "####"; statTeamBat!(16);
-    LPrint Tab(113);: LPrint Using "###"; statTeamBat!(11);
-    LPrint Tab(122); Using "###"; statTeamBat!(18)
-    LPrint Tab(15);: LPrint Using "####"; statTeamBat!(0);
-    LPrint Tab(23);: LPrint Using "####"; statTeamBat!(1);
-    LPrint Tab(30);: LPrint Using "###"; statTeamBat!(5);
-    LPrint Tab(36);: LPrint Using "####"; statTeamBat!(3);
-    LPrint Tab(44);: LPrint Using "####"; statTeamBat!(8);
-    LPrint Tab(52);: LPrint Using "####"; statTeamBat!(10);
-    LPrint Tab(63); Using "###"; statTeamBat!(15);
-    LPrint Tab(109);: LPrint Using "####"; statTeamBat!(17);
-    LPrint Tab(117);
+    Print #of%, Tab(81);: Print #of%, Using " .###"; statCalc!;
+    Print #of%, Tab(105);: Print #of%, Using "####"; statTeamBat!(16);
+    Print #of%, Tab(113);: Print #of%, Using "###"; statTeamBat!(11);
+    Print #of%, Tab(122); Using "###"; statTeamBat!(18)
+    Print #of%, Tab(15);: Print #of%, Using "####"; statTeamBat!(0);
+    Print #of%, Tab(23);: Print #of%, Using "####"; statTeamBat!(1);
+    Print #of%, Tab(30);: Print #of%, Using "###"; statTeamBat!(5);
+    Print #of%, Tab(36);: Print #of%, Using "####"; statTeamBat!(3);
+    Print #of%, Tab(44);: Print #of%, Using "####"; statTeamBat!(8);
+    Print #of%, Tab(52);: Print #of%, Using "####"; statTeamBat!(10);
+    Print #of%, Tab(63); Using "###"; statTeamBat!(15);
+    Print #of%, Tab(109);: Print #of%, Using "####"; statTeamBat!(17);
+    Print #of%, Tab(117);
 
     If statTeamBat!(16) + statTeamBat!(11) + statTeamBat!(17) = 0 Then
-        LPrint " .---";
+        Print #of%, " .---";
     Else
         If statTeamBat!(11) = 0 Then
-            LPrint "1.000";
+            Print #of%, "1.000";
         Else
             statCalc! = (statTeamBat!(16) + statTeamBat!(17)) / (statTeamBat!(16) + statTeamBat!(11) + statTeamBat!(17))
-            LPrint Using " .###"; statCalc!;
+            Print #of%, Using " .###"; statCalc!;
         End If
     End If
 
-    LPrint Tab(125); Using "###"; statTeamBat!(19)
-    LPrint
-    LPrint
+    Print #of%, Tab(125); Using "###"; statTeamBat!(19)
+    Print #of%,
+    Print #of%,
 
     TT$ = Str$(statTeamBat!(2) / (teamWins + teamLosses) + .05)
     UU$ = Str$(statTeamPit!(2) / (teamWins + teamLosses) + .05)
-    LPrint "RUNS PER GAME ";: LPrint Left$(TT$, 4);
-    LPrint " OPPONENTS";: LPrint Left$(UU$, 4)
-    LPrint
-    LPrint
-    LPrint Tab(20); "OVERALL RECORD ("; Str$(totalWins); " -"; Str$(totalLosses); " )"
-    LPrint Tab(20); "HOME RECORD    ("; Str$(homeWins); " -"; Str$(homeLosses); " )"
-    LPrint Tab(20); "ROAD RECORD    ("; Str$(roadWins); " -"; Str$(roadLosses); " )"
-    LPrint Tab(20); "LAST 10 GAMES  ("; Str$(lastTenWins); " -"; Str$(lastTenLosses); " )"
-    LPrint Tab(20); "EXTRA INNINGS  ("; Str$(extraInnWins); " -"; Str$(extraInnLosses); " )"
-    LPrint Tab(20); "ONE RUN GAMES  ("; Str$(oneRunWins); " -"; Str$(oneRunLosses); " )"
-    LPrint Chr$(12)
+    Print #of%, "RUNS PER GAME ";: Print #of%, Left$(TT$, 4);
+    Print #of%, " OPPONENTS";: Print #of%, Left$(UU$, 4)
+    Print #of%,
+    Print #of%,
+    Print #of%, Tab(20); "OVERALL RECORD ("; Str$(totalWins); " -"; Str$(totalLosses); " )"
+    Print #of%, Tab(20); "HOME RECORD    ("; Str$(homeWins); " -"; Str$(homeLosses); " )"
+    Print #of%, Tab(20); "ROAD RECORD    ("; Str$(roadWins); " -"; Str$(roadLosses); " )"
+    Print #of%, Tab(20); "LAST 10 GAMES  ("; Str$(lastTenWins); " -"; Str$(lastTenLosses); " )"
+    Print #of%, Tab(20); "EXTRA INNINGS  ("; Str$(extraInnWins); " -"; Str$(extraInnLosses); " )"
+    Print #of%, Tab(20); "ONE RUN GAMES  ("; Str$(oneRunWins); " -"; Str$(oneRunLosses); " )"
+    Print #of%, Chr$(12)
 
-    LPrint teamName$; "    WON: "; teamWins; " LOST: "; teamLosses
-    LPrint "PITCHERS    W  L SV  IP     H  BB  SO  ERA    G GS CG RUN  ER SHO HR DP %RIP SH SF  IR IRA BS   RPS QS"
+    Print #of%, "PITCHERS    W  L SV  IP     H  BB  SO  ERA    G GS CG RUN  ER SHO HR DP %RIP SH SF  IR IRA BS   RPS QS"
 
     For I = 0 To 21
 
         If pitcherNames$(I) <> "XXX" And pitcherNames$(I) <> "" Then
 
-            LPrint Left$(pitcherNames$(I), 10);
-            LPrint Tab(12);: LPrint Using "##"; statPitcher(I, 6);
-            LPrint Tab(15);: LPrint Using "##"; statPitcher(I, 7);
-            LPrint Tab(18);: LPrint Using "##"; statPitcher(I, 12);
+            'Name
+            Print #of%, Left$(pitcherNames$(I), 10);
+            'Wins
+            Print #of%, Tab(12);: Print #of%, Using "##"; statPitcher(I, 6);
+            'Losses
+            Print #of%, Tab(15);: Print #of%, Using "##"; statPitcher(I, 7);
+            'Saves
+            Print #of%, Tab(18);: Print #of%, Using "##"; statPitcher(I, 12);
+            'IP
             statCalc = Int(statPitcher(I, 0) / 3)
-            LPrint Tab(21);: LPrint Using "###"; statCalc;
+            Print #of%, Tab(21);: Print #of%, Using "###"; statCalc;
 
             If statPitcher(I, 0) - (Int(statPitcher(I, 0) / 3) * 3) > 0 Then
-                LPrint ".";
+                Print #of%, ".";
                 statCalc = (Int(statPitcher(I, 0) / 3) * 3)
-                LPrint Using "#"; statPitcher(I, 0) - statCalc;
+                Print #of%, Using "#"; statPitcher(I, 0) - statCalc;
             End If
 
-            LPrint Tab(27);: LPrint Using "###"; statPitcher(I, 1);
-            LPrint Tab(31);: LPrint Using "###"; statPitcher(I, 4);
-            LPrint Tab(35);: LPrint Using "###"; statPitcher(I, 5);
+            'Hits
+            Print #of%, Tab(27);: Print #of%, Using "###"; statPitcher(I, 1);
+            'Walks
+            Print #of%, Tab(31);: Print #of%, Using "###"; statPitcher(I, 4);
+            'Strikeouts
+            Print #of%, Tab(35);: Print #of%, Using "###"; statPitcher(I, 5);
+
+            'ERA
             I2 = 0
 
             If statPitcher(I, 0) > 0 Then
-                LPrint Tab(39);
+                Print #of%, Tab(39);
                 statCalc! = (statPitcher(I, 3) * 9 / (statPitcher(I, 0) / 3))
-                LPrint Using "##.##"; statCalc!;
+                Print #of%, Using "##.##"; statCalc!;
             Else
                 '= 0
-                LPrint Tab(39); " -.--";
+                Print #of%, Tab(39); " -.--";
             End If
+            'G
+            Print #of%, Tab(45);: Print #of%, Using "###"; statPitcher(I, 8);
+            'GS
+            Print #of%, Tab(49);: Print #of%, Using "##"; statPitcher(I, 9);
+            'CG
+            Print #of%, Tab(52);: Print #of%, Using "##"; statPitcher(I, 10);
+            'Run
+            Print #of%, Tab(55);: Print #of%, Using "###"; statPitcher(I, 2);
+            'ER
+            Print #of%, Tab(59);: Print #of%, Using "###"; statPitcher(I, 3);
+            'SHO
+            Print #of%, Tab(63);: Print #of%, Using "###"; statPitcher(I, 11);
+            'HR
+            Print #of%, Tab(67);: Print #of%, Using "##"; statPitcher(I, 14);
+            'DP
+            Print #of%, Tab(70);: Print #of%, Using "##"; statPitcher(I, 13);
+            Print #of%, Tab(74);
 
-            LPrint Tab(45);: LPrint Using "###"; statPitcher(I, 8);
-            LPrint Tab(49);: LPrint Using "##"; statPitcher(I, 9);
-            LPrint Tab(52);: LPrint Using "##"; statPitcher(I, 10);
-            LPrint Tab(55);: LPrint Using "###"; statPitcher(I, 2);
-            LPrint Tab(59);: LPrint Using "###"; statPitcher(I, 3);
-            LPrint Tab(63);: LPrint Using "###"; statPitcher(I, 11);
-            LPrint Tab(67);: LPrint Using "##"; statPitcher(I, 14);
-            LPrint Tab(70);: LPrint Using "##"; statPitcher(I, 13);
-            LPrint Tab(74);
-
+            '%RIP
             If statInnPitch(I) > 0 Then
                 statCalc = CInt((((statPitcher(I, 0) / 3) * 100) / statInnPitch(I)))
-                LPrint Using "###"; statCalc;
+                Print #of%, Using "###"; statCalc;
             Else
-                '= 0
-                LPrint "  ";
+                Print #of%, "  ";
             End If
 
-            LPrint Tab(78); Using "## ## ### ### ## "; statPitcher(I, 15); statPitcher(I, 16); statPitcher(I, 17); statPitcher(I, 18); statPitcher(I, 19);
+            'Sac Hits, Sac Flies, IR, IRA, Blown Saves
+            Print #of%, Tab(78); Using "## ## ### ### ## "; statPitcher(I, 15); statPitcher(I, 16); statPitcher(I, 17); statPitcher(I, 18); statPitcher(I, 19);
 
-            If statPitcher(I, 9) > 0 Then 
-                LPrint Using "##.## "; statPitcher(I, 20) / statPitcher(I, 9);
+            'RPS
+            If statPitcher(I, 9) > 0 Then
+                Print #of%, Using "##.## "; statPitcher(I, 20) / statPitcher(I, 9);
             End If
 
-            LPrint Tab(101); Using "##"; statPitcher(I, 21)
+            'QS
+            Print #of%, Tab(101); Using "##"; statPitcher(I, 21)
 
         End If
 
     Next
 
-    LPrint
-    LPrint "TOTALS";
-    LPrint Tab(18);: LPrint Using "##"; statTeamPit!(12);
-    LPrint Tab(26);: LPrint Using "####"; statTeamPit!(1);
-    LPrint Tab(34);: LPrint Using "####"; statTeamPit!(5);
+    Print #of%,
+    Print #of%, "TOTALS";
+    Print #of%, Tab(18);: Print #of%, Using "##"; statTeamPit!(12);
+    Print #of%, Tab(26);: Print #of%, Using "####"; statTeamPit!(1);
+    Print #of%, Tab(34);: Print #of%, Using "####"; statTeamPit!(5);
     statCalc! = statTeamPit!(3) / (statTeamPit!(0) / 3) * 9
-    LPrint Tab(39);: LPrint Using "##.##"; statCalc!;
-    LPrint Tab(52);: LPrint Using "##"; statTeamPit!(10);
-    LPrint Tab(58);: LPrint Using "####"; statTeamPit!(3);
-    LPrint Tab(63);: LPrint Using "###"; statTeamPit!(11);
-    LPrint Tab(69);: LPrint Using "###"; statTeamPit!(13);
-    LPrint Tab(77); Using "###"; statTeamPit!(15);
-    LPrint Tab(83); Using "####"; statTeamPit!(17);
-    LPrint Tab(91); Using "###"; statTeamPit!(19);
-    LPrint Tab(100); Using "###"; statTeamPit!(21)
-    LPrint Tab(21);: LPrint Using "####"; statTeamPit!(0) / 3;
-    LPrint Tab(30);: LPrint Using "####"; statTeamPit!(4);
-    LPrint Tab(54);: LPrint Using "####"; statTeamPit!(2);
-    LPrint Tab(66);: LPrint Using "###"; statTeamPit!(14);
-    LPrint Tab(80); Using "###"; statTeamPit!(16);
-    LPrint Tab(87); Using "####"; statTeamPit!(18)
-    LPrint
-    LPrint
-    LPrint
-    LPrint "CATCHERS    SBA   CS   CS%"
+    Print #of%, Tab(39);: Print #of%, Using "##.##"; statCalc!;
+    Print #of%, Tab(52);: Print #of%, Using "##"; statTeamPit!(10);
+    Print #of%, Tab(58);: Print #of%, Using "####"; statTeamPit!(3);
+    Print #of%, Tab(63);: Print #of%, Using "###"; statTeamPit!(11);
+    Print #of%, Tab(69);: Print #of%, Using "###"; statTeamPit!(13);
+    Print #of%, Tab(77); Using "###"; statTeamPit!(15);
+    Print #of%, Tab(83); Using "####"; statTeamPit!(17);
+    Print #of%, Tab(91); Using "###"; statTeamPit!(19);
+    Print #of%, Tab(100); Using "###"; statTeamPit!(21)
+    Print #of%, Tab(21);: Print #of%, Using "####"; statTeamPit!(0) / 3;
+    Print #of%, Tab(30);: Print #of%, Using "####"; statTeamPit!(4);
+    Print #of%, Tab(54);: Print #of%, Using "####"; statTeamPit!(2);
+    Print #of%, Tab(66);: Print #of%, Using "###"; statTeamPit!(14);
+    Print #of%, Tab(80); Using "###"; statTeamPit!(16);
+    Print #of%, Tab(87); Using "####"; statTeamPit!(18)
+    Print #of%,
+
+
+    Print #of%,
+    Print #of%,
+    Print #of%, "CATCHERS    SBA   CS   CS%"
 
     For I = 0 To 22
         If batterNames$(I) <> "XXX" And batterNames$(I) <> "" And statBatter(I, 21) + statBatter(I, 20) <> 0 Then
             statCalc! = statBatter(I, 21) / (statBatter(I, 20) + statBatter(I, 21)) * 100
-            LPrint Left$(batterNames$(I), 10); Tab(12); Using "###   ##   ###"; statBatter(I, 20) + statBatter(I, 21); statBatter(I, 21); statCalc!
+            Print #of%, Left$(batterNames$(I), 10); Tab(12); Using "###   ##   ###"; statBatter(I, 20) + statBatter(I, 21); statBatter(I, 21); statCalc!
         End If
     Next
 
     If splitStatChoice <> 0 Then
         'DISPLAY SPLIT STATS
-        LPrint teamName$;
-        LPrint Tab(15); "VS L  AB 2B 3B HR  BB   K   AVG  VS R  AB 2B 3B HR  BB   K   AVG"
+        Print #of%, teamName$;
+        Print #of%, Tab(15); "VS L  AB 2B 3B HR  BB   K   AVG  VS R  AB 2B 3B HR  BB   K   AVG"
 
         For I = 0 To 22
 
             If batterNames$(I) <> "XXX" And Left$(batterNames$(I), 1) <> " " And batterNames$(I) <> "" Then
 
-                LPrint batterNames$(I);
-                LPrint Tab(20); Using "### ## ## ## ### ### "; statSplit(I, 0); statSplit(I, 2); statSplit(I, 3); statSplit(I, 4); statSplit(I, 5); statSplit(I, 6);
+                Print #of%, batterNames$(I);
+                Print #of%, Tab(20); Using "### ## ## ## ### ### "; statSplit(I, 0); statSplit(I, 2); statSplit(I, 3); statSplit(I, 4); statSplit(I, 5); statSplit(I, 6);
 
                 If statSplit(I, 0) = 0 Or statSplit(I, 1) = 0 Then
-                    LPrint " .000";
+                    Print #of%, " .000";
                 Else
                     If statSplit(I, 0) = statSplit(I, 1) Then
-                        LPrint "1.000";
+                        Print #of%, "1.000";
                     Else
                         statCalc! = statSplit(I, 1) / statSplit(I, 0)
-                        LPrint Using " .###"; statCalc!;
+                        Print #of%, Using " .###"; statCalc!;
                     End If
                 End If
 
-                LPrint Tab(53); Using "### ## ## ## ### ### "; statBatter(I, 0) - statSplit(I, 0); statBatter(I, 4) - statSplit(I, 2); statBatter(I, 5) - statSplit(I, 3); statBatter(I, 6) - statSplit(I, 4); statBatter(I, 7) - statSplit(I, 5); statBatter(I, 8) - statSplit(I, 6);
+                Print #of%, Tab(53); Using "### ## ## ## ### ### "; statBatter(I, 0) - statSplit(I, 0); statBatter(I, 4) - statSplit(I, 2); statBatter(I, 5) - statSplit(I, 3); statBatter(I, 6) - statSplit(I, 4); statBatter(I, 7) - statSplit(I, 5); statBatter(I, 8) - statSplit(I, 6);
 
                 If statBatter(I, 0) - statSplit(I, 0) = 0 Or statBatter(I, 1) - statSplit(I, 1) = 0 Then
-                    LPrint " .000"
+                    Print #of%, " .000"
                 Else
                     If statBatter(I, 0) - statSplit(I, 0) = statBatter(I, 1) - statSplit(I, 1) Then
-                        LPrint "1.000"
+                        Print #of%, "1.000"
                     Else
                         statCalc! = (statBatter(I, 1) - statSplit(I, 1)) / (statBatter(I, 0) - statSplit(I, 0))
-                        LPrint Using " .###"; statCalc!
+                        Print #of%, Using " .###"; statCalc!
                     End If
                 End If
 
@@ -2433,19 +2492,42 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
 
     End If
 
-    LPrint Chr$(12)
+    Print #of%,
+    Print #of%,
+
+    Print #of%, Chr$(12)
+
+    Close #of%
+
+
+    If printDest = 1 Then
+
+        Open destFile$ For Input As #2
+
+        Do While Not EOF(2)
+            Line Input #2, X$
+            LPrint X$
+        Loop
+
+        Close #2
+
+        LPrint Chr$(12)
+
+        Kill destFile$
+
+    End If
 
 End Sub
 
 
 '----------------------------------------
-'       ResetstatInnPitchrompt Subroutine
+'       ResetStatsPrompt Subroutine
 '----------------------------------------
 'This subroutine prompts the user with
 'a choice to reset stats. If they chose,
 'and confirm, it will then proceed to
 'delete the files.
-Sub ResetstatInnPitchrompt (statFile$, teamRatings())
+Sub ResetStatsPrompt (statFile$, teamRatings())
 
     Cls
 
@@ -2506,13 +2588,13 @@ Sub SortBatterStats (playerType, categoryPick)
 
     Shared statAtBats(), statBatter()
     Shared statInnPitch(), statPitcher()
-    
+
     Shared statTeamBat!(), statTeamPit!()
 
     'SORT BASED ON CATEGORY
     'Map category choices from menu
     'to index #'s in arrays
-    
+
     ' ** NEED TO TAKE OUT "CALCULATED" CATEGORIES
     ' then re-index everything from there as well
     ' role of statTeamPit!()
@@ -2549,13 +2631,13 @@ Sub SortBatterStats (playerType, categoryPick)
                 Case 24: statGroup = 11
                 Case 25: statGroup = -1 'FAVG
                 Case 26: statGroup = -1 'SBA
-                Case 27: statGroup = 21 
+                Case 27: statGroup = 21
                 Case 28: statGroup = -1 'CS %
                 Case 29: statGroup = 18
                 Case 30: statGroup = 19
 
             End Select
-            
+
             maxPlayers = 22
 
         Case 1
@@ -2585,7 +2667,7 @@ Sub SortBatterStats (playerType, categoryPick)
                 Case 20: statGroup = 39
                 Case 21: statGroup = 34
                 Case 22: statGroup = -1 'FAVG
-                Case 23: statGroup = 40 
+                Case 23: statGroup = 40
                 Case 24: statGroup = 41
 
             End Select
@@ -2596,7 +2678,7 @@ Sub SortBatterStats (playerType, categoryPick)
 
             'Pitcher Categories
             Select Case categoryPick
-            
+
                 Case 1: statGroup = 6
                 Case 2: statGroup = 7
                 Case 3: statGroup = -1 'ERA
@@ -2632,7 +2714,7 @@ Sub SortBatterStats (playerType, categoryPick)
 
 
     Select Case categoryPick
-    
+
         Case 0
             'Batter / Pitcher Name
             For Z = 0 To maxPlayers - 1
@@ -2646,8 +2728,8 @@ Sub SortBatterStats (playerType, categoryPick)
                         sourceName$ = pitcherNames$(Z)
                         targetName$ = pitcherNames$(Z1)
                     End If
-                
-                    If _StriCmp(sourceName$,targetName$) = 1 Then
+
+                    If _StriCmp(sourceName$, targetName$) = 1 Then
 
                         If playerType = 0 Then
                             Swap batterNames$(Z), batterNames$(Z1)
@@ -2664,13 +2746,13 @@ Sub SortBatterStats (playerType, categoryPick)
 
                         End If
 
-                    
+
                     End If
 
                 Next Z1
 
             Next Z
-    
+
         Case Else
 
             'Batter / Pitcher Stats
@@ -2688,7 +2770,7 @@ Sub SortBatterStats (playerType, categoryPick)
 
                     If sourceStat < targetStat Then
 
-                        Select Case playerType 
+                        Select Case playerType
 
                             Case 0
                                 Swap batterNames$(Z), batterNames$(Z1)

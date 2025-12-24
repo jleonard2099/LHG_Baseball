@@ -159,6 +159,8 @@ End Sub
 'send to the default printer
 Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
+    Shared divWins(), divLosses()
+
     Shared DFT!(), OFT!()
     Shared leagLdrVal1!(), leagLdrVal2!()
 
@@ -170,263 +172,85 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Open destFile$ For Output As #1
 
-    For P = 1 To 10:
+    For div = 1 To 4
 
-        If memberName$(P) = "*" Then
-            leaderPlayer$(P) = ""
-        Else
+        first = ((div - 1) * 10) + 1
+        last = div * 10
 
-            leaderPlayer$(P) = memberName$(P)
+        D1 = divWins(first) - divLosses(first)
 
-            While Len(leaderPlayer$(P)) < 12
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
+        For P = first To last
 
-            A$ = "     " + Str$(divWins(P))
-            A$ = Right$(A$, 3)
-            leaderPlayer$(P) = leaderPlayer$(P) + A$
+            If memberName$(P) = "*" Then
+                leaderPlayer$(P) = ""
+            Else
 
-            While Len(leaderPlayer$(P)) < 16
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
+                leaderPlayer$(P) = memberName$(P)
 
-            A$ = "     " + Str$(divLosses(P))
-            A$ = Right$(A$, W)
-            leaderPlayer$(P) = leaderPlayer$(P) + A$
+                While Len(leaderPlayer$(P)) < 12
+                    leaderPlayer$(P) = leaderPlayer$(P) + " "
+                Wend
 
-            While Len(leaderPlayer$(P)) < 21
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
+                A$ = "     " + Str$(divWins(P))
+                A$ = Right$(A$, 3)
+                leaderPlayer$(P) = leaderPlayer$(P) + A$
 
-            J! = 0
-            If divWins(P) + divLosses(P) > 0 Then
-                J! = divWins(P) / (divWins(P) + divLosses(P))
+                While Len(leaderPlayer$(P)) < 16
+                    leaderPlayer$(P) = leaderPlayer$(P) + " "
+                Wend
+
+                A$ = "     " + Str$(divLosses(P))
+                A$ = Right$(A$, W)
+                leaderPlayer$(P) = leaderPlayer$(P) + A$
+
+                While Len(leaderPlayer$(P)) < 21
+                    leaderPlayer$(P) = leaderPlayer$(P) + " "
+                Wend
+
+                J! = 0
+                If divWins(P) + divLosses(P) > 0 Then
+                    J! = divWins(P) / (divWins(P) + divLosses(P))
+                End If
+
+                J! = CInt(1000 * J!)
+                If J! = 1000 Then
+                    leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
+                End If
+
+                While Len(leaderPlayer$(P)) < 28
+                    leaderPlayer$(P) = leaderPlayer$(P) + " "
+                Wend
+
+                'Games Behind
+                D = divWins(P) - divLosses(P)
+                D = D1 - D
+                BK$ = Str$(Int(D / 2))
+                If D = 0 Then BK$ = "---"
+                If D = 1 Then BK$ = "  "
+                If D > 19 Then
+                    L = Len(BK$)
+                    BK$ = Right$(BK$, L - 1)
+                End If
+
+                If D / 2 <> Int(D / 2) Then BK$ = BK$ + " 1/2"
+
+                leaderPlayer$(P) = leaderPlayer$(P) + BK$
+
             End If
 
-            J! = CInt(1000 * J!)
-            If J! = 1000 Then
-                leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
-            End If
+        Next P
 
-            While Len(leaderPlayer$(P)) < 28
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
+    Next div
 
-            D = divWins(P) - divLosses(P)
-            D = D1 - D
-            BK$ = Str$(Int(D / 2))
 
-            If D = 0 Then BK$ = "---"
-            If D = 1 Then BK$ = "  "
-            If D > 19 Then
-                L = Len(BK$)
-                BK$ = Right$(BK$, L - 1)
-            End If
-
-            If D / 2 <> Int(D / 2) Then BK$ = BK$ + " 1/2"
-
-            leaderPlayer$(P) = leaderPlayer$(P) + BK$
-
-        End If
-
-    Next P
-
-    '-----
-
-    D1 = divWins(11) - divLosses(11)
-
-    For P = 11 To 20:
-
-        If memberName$(P) = "*" Then
-            leaderPlayer$(P) = ""
-        Else
-
-            leaderPlayer$(P) = memberName$(P)
-
-            While Len(leaderPlayer$(P)) < 12
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
-
-            A$ = "     " + Str$(divWins(P))
-            A$ = Right$(A$, 3)
-            leaderPlayer$(P) = leaderPlayer$(P) + A$
-
-            While Len(leaderPlayer$(P)) < 16
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
-
-            J! = divLosses(P)
-            A$ = "     " + Str$(J!)
-            A$ = Right$(A$, 3)
-            leaderPlayer$(P) = leaderPlayer$(P) + A$
-
-            While Len(leaderPlayer$(P)) < 21
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
-
-            J! = 0
-            If divWins(P) + divLosses(P) > 0 Then
-                J! = divWins(P) / (divWins(P) + divLosses(P))
-            End If
-
-            J! = CInt(1000 * J!)
-            If J! = 1000 Then
-                leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
-            End If
-
-            While Len(leaderPlayer$(P)) < 28
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
-
-            D = divWins(P) - divLosses(P)
-            D = D1 - D
-            BK$ = Str$(Int(D / 2))
-
-            If D = 0 Then BK$ = "---"
-            If D = 1 Then BK$ = "  "
-            If D > 19 Then
-                L = Len(BK$)
-                BK$ = Right$(BK$, L - 1)
-            End If
-            If D / 2 <> Int(D / 2) Then BK$ = BK$ + " 1/2"
-
-            leaderPlayer$(P) = leaderPlayer$(P) + BK$
-
-        End If
-
-    Next P
-
-    '-----
-
-    D1 = divWins(21) - divLosses(21)
-
-    For P = 21 To 30
-
-        If memberName$(P) = "*" Then
-            leaderPlayer$(P) = ""
-        Else
-            leaderPlayer$(P) = memberName$(P)
-
-            While Len(leaderPlayer$(P)) < 12
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
-
-            A$ = "     " + Str$(divWins(P))
-            A$ = Right$(A$, 3)
-            leaderPlayer$(P) = leaderPlayer$(P) + A$
-
-            While Len(leaderPlayer$(P)) < 16
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
-
-            A$ = "     " + Str$(divLosses(P))
-            A$ = Right$(A$, 3)
-            leaderPlayer$(P) = leaderPlayer$(P) + A$
-
-            While Len(leaderPlayer$(P)) < 21
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
-
-            J! = 0
-            If divWins(P) + divLosses(P) > 0 Then
-                J! = divWins(P) / (divWins(P) + divLosses(P))
-            End If
-
-            J! = CInt(1000 * J!)
-            If J! = 1000 Then
-                leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
-            End If
-
-            While Len(leaderPlayer$(P)) < 28
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
-
-            D = divWins(P) - divLosses(P)
-            D = D1 - D
-
-            BK$ = Str$(Int(D / 2))
-            If D = 0 Then BK$ = "---"
-            If D = 1 Then BK$ = "  "
-            If D > 19 Then
-                L = Len(BK$)
-                BK$ = Right$(BK$, L - 1)
-            End If
-            If D / 2 <> Int(D / 2) Then BK$ = BK$ + " 1/2"
-
-            leaderPlayer$(P) = leaderPlayer$(P) + BK$
-
-        End If
-
-    Next P
-
-    '-----
-
-    D1 = divWins(31) - divLosses(31)
-
-    For P = 31 To 40
-
-        If memberName$(P) = "*" Then
-            leaderPlayer$(P) = ""
-        Else
-            leaderPlayer$(P) = memberName$(P)
-
-            While Len(leaderPlayer$(P)) < 12
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
-
-            A$ = "     " + Str$(divWins(P))
-            A$ = Right$(A$, 3)
-            leaderPlayer$(P) = leaderPlayer$(P) + A$
-
-            While Len(leaderPlayer$(P)) < 16
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
-
-            A$ = "     " + Str$(divLosses(P))
-            A$ = Right$(A$, 3)
-            leaderPlayer$(P) = leaderPlayer$(P) + A$
-
-            While Len(leaderPlayer$(P)) < 21
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
-
-            J! = 0
-            If divWins(P) + divLosses(P) > 0 Then
-                J! = divWins(P) / (divWins(P) + divLosses(P))
-            End If
-
-            J! = CInt(1000 * J!)
-            If J! = 1000 Then leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
-
-            While Len(leaderPlayer$(P)) < 28
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
-
-            D = divWins(P) - divLosses(P)
-            D = D1 - D
-            BK$ = Str$(Int(D / 2))
-
-            If D = 0 Then BK$ = "---"
-            If D = 1 Then BK$ = "  "
-            If D > 19 Then
-                L = Len(BK$)
-                BK$ = Right$(BK$, L - 1)
-            End If
-            If D / 2 <> Int(D / 2) Then BK$ = BK$ + " 1/2"
-
-            leaderPlayer$(P) = leaderPlayer$(P) + BK$
-
-        End If
-
-    Next P
-
-    Cls
-
-    '-----
-
+    '--- TEST THIS OUT !!!!!
+    '--- COMAPRE TO SCREEN OUTPUT !!!!
     LF$(1) = "    " + league$ + " LEAGUE STANDINGS AS OF " + Date$
     LF$(3) = "    " + div1$ + "      W   L   PCT  GB"
 
+    '------------------------------
+    ' Division 1 Standings
+    '------------------------------
     For P = 1 To 10:
 
         If leaderPlayer$(P) = "" Then
@@ -439,48 +263,70 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     RT = 0
 
-    LF$(15) = "    " + div3$ + "      W   L   PCT  GB"
+    '------------------------------
+    ' Division 2 Standings
+    '------------------------------
+    If RTrim$(div2$) <> "" Then
 
-    For P = 21 To 30:
+        LF$(15) = "    " + div3$ + "      W   L   PCT  GB"
 
-        If leaderPlayer$(P) = "" Then
-            RT = RT + 1
-        Else
-            LF$(P - 5 - RT) = "    " + leaderPlayer$(P)
-        End If
+        For P = 11 To 20:
 
-    Next P
+            If leaderPlayer$(P) = "" Then
+                RT = RT + 1
+            Else
+                LF$(P - 5 - RT) = "    " + leaderPlayer$(P)
+            End If
 
-    RT = 0
+        Next P
 
-    RT$(3) = "    " + div2$ + "      W   L   PCT  GB"
+        RT = 0
 
-    For P = 11 To 20
+    End If
 
-        If leaderPlayer$(P) = "" Then
-            RT = RT + 1
-        Else
-            RT$(P - 7 - RT) = "    " + leaderPlayer$(P)
-        End If
+    '------------------------------
+    ' Division 3 Standings
+    '------------------------------
+    If RTrim$(div3$) <> "" Then
 
-    Next P
+        RT$(3) = "    " + div2$ + "      W   L   PCT  GB"
 
-    RT = 0
+        For P = 21 To 30
 
-    RT$(15) = "    " + div4Name$ + "      W   L   PCT   GB"
+            If leaderPlayer$(P) = "" Then
+                RT = RT + 1
+            Else
+                RT$(P - 7 - RT) = "    " + leaderPlayer$(P)
+            End If
 
-    For P = 31 To 40
+        Next P
 
-        If leaderPlayer$(P) = "" Then
-            RT = RT + 1
-        Else
-            RT$(P - 15 - RT) = "    " + leaderPlayer$(P)
-        End If
+        RT = 0
 
-    Next P
+    End If
 
-    '-----
 
+    '------------------------------
+    ' Division 4 Standings
+    '------------------------------
+    If RTrim$(div4$) <> "" Then
+
+        RT$(15) = "    " + div4Name$ + "      W   L   PCT   GB"
+
+        For P = 31 To 40
+
+            If leaderPlayer$(P) = "" Then
+                RT = RT + 1
+            Else
+                RT$(P - 15 - RT) = "    " + leaderPlayer$(P)
+            End If
+
+        Next P
+
+    End If
+
+    'Print Division Standings
+    ' -- Why 2 to 26 only???
     For P = 2 To 26
 
         If Len(LF$(P)) < 38 Then
@@ -497,8 +343,10 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         Print #1, LF$(X); RT$(X)
     Next
 
-    '-----
 
+    '------------------------------
+    ' String Constants
+    '------------------------------
     AB = Int(AB)
     AB$ = Str$(AB)
     TD = IP - 3 * IG
@@ -510,7 +358,10 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
     IG$ = Right$(IG$, Len(IG$) - 1)
     IP$ = IG$
 
-    '-----
+
+    '------------------------------
+    '        BATTING LEADERS
+    '------------------------------
 
     For P = 1 To 20
 
@@ -537,7 +388,6 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Next P
 
-    Cls
 
     LF$(27) = "   BATTING LEADERS  (MIN 3.1 PA/G)"
 
@@ -547,7 +397,6 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     LF$(47) = " "
 
-    '-----
 
     For P = 239 To 258
 
@@ -577,8 +426,6 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Next P
 
-    Cls
-
     RT$(27) = "       BATTING TRAILERS  (MIN 3.1 PA/G)"
 
     For P = 239 To 258:
@@ -605,7 +452,10 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         Print #1, LF$(X); RT$(X)
     Next
 
-    '-----
+
+    '------------------------------
+    '             HITS
+    '------------------------------
 
     For P = 21 To 30
 
@@ -635,7 +485,10 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         LF$(P + 29) = "   " + leaderPlayer$(P)
     Next P
 
-    '-----
+
+    '------------------------------
+    '           DOUBLES
+    '------------------------------
 
     For P = 32 To 41
 
@@ -665,8 +518,9 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         RT$(P + 18) = "       " + leaderPlayer$(P)
     Next P
 
-    '-----
-
+    '------------------------------
+    '           TRIPLES
+    '------------------------------
     For P = 49 To 59
 
         While Len(LF$(P)) < 35
@@ -718,7 +572,10 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     LF$(12) = " "
 
-    '-----
+
+    '------------------------------
+    '           HOME RUNS
+    '------------------------------
 
     For P = 54 To 63:
 
@@ -768,7 +625,9 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         Print #1, LF$(X); RT$(X)
     Next
 
-    '-----
+    '------------------------------
+    '             RUNS
+    '------------------------------
 
     For P = 65 To 73
 
@@ -799,7 +658,9 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
     Next P
     LF$(23) = " "
 
-    '-----
+    '------------------------------
+    '             RBIs
+    '------------------------------
 
     For P = 76 To 84
 
@@ -848,7 +709,10 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         Print #1, LF$(X); RT$(X)
     Next
 
-    '-----
+
+    '------------------------------
+    '         STOLEN BASES
+    '------------------------------
 
     For P = 87 To 96
 
@@ -879,7 +743,10 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
     Next P
     LF$(35) = " "
 
-    '-----
+
+    '------------------------------
+    '         SLUGGING PCT
+    '------------------------------
 
     For P = 99 To 108
 
@@ -929,7 +796,10 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         Print #1, LF$(X); RT$(X)
     Next
 
-    '-----
+
+    '------------------------------
+    '         ON BASE PCT
+    '------------------------------
 
     For P = 110 To 119
 
@@ -961,7 +831,10 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
     Next P
     LF$(47) = " "
 
-    '-----
+
+    '------------------------------
+    '     BASE ON BALLS (WALK)
+    '------------------------------
 
     For P = 217 To 226
 
@@ -1089,7 +962,9 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Print #1, Chr$(12)
 
-    '-----
+    '------------------------------
+    '         ERA LEADERS
+    '------------------------------
 
     For P = 121 To 139
 
@@ -1130,7 +1005,10 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         RT$(P - 93) = "    " + leaderPlayer$(P)
     Next
 
-    '-----
+
+    '------------------------------
+    '       PITCHING RECORD
+    '------------------------------
 
     For P = 140 To 149
 
@@ -1167,9 +1045,13 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
     Next
     LF$(59) = " "
 
-    '-----
 
-    For P = 151 To 160: leaderPlayer$(P) = ""
+    '------------------------------
+    '           VICTORIES
+    '------------------------------
+
+    For P = 151 To 160:
+        leaderPlayer$(P) = ""
 
         If leagLdrPlayer$(P) <> "*" Then
 
@@ -1216,7 +1098,10 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Print #1, Chr$(12)
 
-    '-----
+
+    '------------------------------
+    '       INNINGS PITCHED
+    '------------------------------
 
     For P = 162 To 171
 
@@ -1248,7 +1133,10 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
     Next P
     LF$(12) = " "
 
-    '-----
+
+    '------------------------------
+    '          STRIKEOUTS
+    '------------------------------
 
     For P = 173 To 182:
 
@@ -1297,7 +1185,10 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         Print #1, LF$(X); RT$(X)
     Next
 
-    '-----
+
+    '------------------------------
+    '          FULL GAMES
+    '------------------------------
 
     For P = 184 To 193
 
@@ -1328,7 +1219,10 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
     Next P
     LF$(24) = " "
 
-    '-----
+
+    '------------------------------
+    '           SHUTOUTS
+    '------------------------------
 
     For P = 195 To 204: leaderPlayer$(P) = ""
 
@@ -1375,7 +1269,10 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         Print #1, LF$(X); RT$(X)
     Next
 
-    '-----
+
+    '------------------------------
+    '            SAVES
+    '------------------------------
 
     For P = 206 To 215
 
@@ -1409,7 +1306,10 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
     LF$(36) = " "
     RT$(25) = "     APPEARANCES"
 
-    '-----
+
+    '------------------------------
+    '         APPEARANCES
+    '------------------------------
 
     For P = 228 To 237
 
@@ -1611,10 +1511,12 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
                 BK$ = Str$(Int(D / 2))
                 If D = 0 Then BK$ = "---"
                 If D = 1 Then BK$ = "  "
-                If D > 19 Then L = Len(BK$): BK$ = Right$(BK$, L - 1)
-                If D / 2 <> Int(D / 2) Then BK$ = BK$ + " 1/2"
+                If D > 19 Then
+                    L = Len(BK$)
+                    BK$ = Right$(BK$, L - 1)
+                End If
 
-                leaderPlayer$(P) = leaderPlayer$(P) + BK$
+                If D / 2 <> Int(D / 2) Then BK$ = BK$ + " 1/2"
 
             End If
 
