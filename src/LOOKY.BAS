@@ -493,12 +493,11 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
             'SO
             Locate , 50: Print Using "###"; statBatter(I, 8);
 
-            I2 = 0
+            'Bat Avg
+            Locate , 54
+
             I3 = 0
             I4 = 0
-
-            'BA
-            Locate , 54
 
             If statBatter(I, 0) = 0 Then
                 Print " .--- ";
@@ -515,10 +514,10 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
                 End If
             End If
 
-            I3 = statBatter(I, 1) + statBatter(I, 4) + 2 * statBatter(I, 5) + 3 * statBatter(I, 6)
-
             'SLG
             Locate , 60
+
+            I3 = statBatter(I, 1) + statBatter(I, 4) + 2 * statBatter(I, 5) + 3 * statBatter(I, 6)
 
             If statBatter(I, 0) = 0 Then
                 Print " .--- ";
@@ -539,7 +538,9 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
                 End If
             End If
 
+            'At Bats + Walks
             I3 = statBatter(I, 0) + statBatter(I, 7)
+            'Hits + Walks
             I4 = statBatter(I, 1) + statBatter(I, 7)
 
             'OBP
@@ -660,20 +661,23 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
             Print Using " #### ### ##"; statBatter(I, 16); statBatter(I, 17); statBatter(I, 11);
 
             'Fielding AVG
+            '>> Denominator = Putouts + Assists + Errors
             If statBatter(I, 16) + statBatter(I, 17) + statBatter(I, 11) <> 0 Then
                 If statBatter(I, 11) <> 0 Then
-                    'Putouts + Assists / (Putouts + Assists + Errors)
                     statCalc! = (statBatter(I, 16) + statBatter(I, 17)) / (statBatter(I, 16) + statBatter(I, 17) + statBatter(I, 11))
                     Print Using "  .###"; statCalc!;
                 Else
                     'No errors
                     Print " 1.000";
                 End If
+            Else
+                'No fielding stats
+                Print " .---";
             End If
 
+            'Stolen Bases, Caught Steal, Caught Steal %
             statCalc = statBatter(I, 21) / (statBatter(I, 20) + statBatter(I, 21)) * 100
 
-            'Stolen Bases, Caught Steal, Caught Steal %
             If statBatter(I, 21) + statBatter(I, 20) <> 0 Then
                 Print Using " ### ## ###"; statBatter(I, 20) + statBatter(I, 21); statBatter(I, 21); statCalc;
             End If
@@ -780,7 +784,9 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
             'OBP
             Locate , 66
 
+            'At Bats + Walks
             I3 = statPitcher(I, 30) + statPitcher(I, 23)
+            'Hits + Walks
             I4 = statPitcher(I, 30) + statPitcher(I, 24)
 
             If I3 = 0 Then
@@ -851,13 +857,18 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
             Print Using " #### ### ## "; statPitcher(I, 38); statPitcher(I, 39); statPitcher(I, 34);
 
             'Fielding AVG
+            '>> Denominator = Putouts + Assists + Errors
             If statPitcher(I, 38) + statPitcher(I, 39) + statPitcher(I, 34) <> 0 Then
-                If statPitcher(I, 34) = 0 Then
-                    Print " 1.000";
-                Else
+                If statPitcher(I, 34) <> 0 Then
                     statCalc! = (statPitcher(I, 38) + statPitcher(I, 39)) / (statPitcher(I, 38) + statPitcher(I, 39) + statPitcher(I, 34))
                     Print Using "  .###"; statCalc!;
+                Else
+                    'No errors
+                    Print " 1.000";
                 End If
+            Else
+                'No fielding stats
+                Print " .---";
             End If
 
             'SH, SF
@@ -1348,12 +1359,11 @@ Sub PrintScheduleStatSummary (printDest, destFile$, statFile$, teamName$, nbrGam
             'SO
             Print #1, Tab(50);: Print #1, Using "###"; statBatter(I, 8);
 
-            I2 = 0
+            'Bat Avg
+            Print #1, Tab(54);
+
             I3 = 0
             I4 = 0
-
-            'BA
-            Print #1, Tab(54);
 
             If statBatter(I, 0) = 0 Then
                 Print #1, " .--- ";
@@ -1370,10 +1380,10 @@ Sub PrintScheduleStatSummary (printDest, destFile$, statFile$, teamName$, nbrGam
                 End If
             End If
 
-            I3 = statBatter(I, 1) + statBatter(I, 4) + 2 * statBatter(I, 5) + 3 * statBatter(I, 6)
-
             'SLG
             Print #1, Tab(60);
+
+            I3 = statBatter(I, 1) + statBatter(I, 4) + 2 * statBatter(I, 5) + 3 * statBatter(I, 6)
 
             If statBatter(I, 0) = 0 Then
                 Print #1, " .--- ";
@@ -1394,11 +1404,14 @@ Sub PrintScheduleStatSummary (printDest, destFile$, statFile$, teamName$, nbrGam
                 End If
             End If
 
-            I3 = statBatter(I, 0) + statBatter(I, 7)
-            I4 = statBatter(I, 1) + statBatter(I, 7)
-
             'OBP
             Print #1, Tab(66);
+
+            'At Bats + Walks
+            I3 = statBatter(I, 0) + statBatter(I, 7)
+            'Hits + Walks
+            I4 = statBatter(I, 1) + statBatter(I, 7)
+
             If I3 = 0 Then
                 Print #1, " .---";
             Else
@@ -1500,15 +1513,18 @@ Sub PrintScheduleStatSummary (printDest, destFile$, statFile$, teamName$, nbrGam
             Print #1, Using " #### ### ##"; statBatter(I, 16); statBatter(I, 17); statBatter(I, 11);
 
             'Fielding AVG
+            '>> Denominator = Putouts + Assists + Errors
             If statBatter(I, 16) + statBatter(I, 17) + statBatter(I, 11) <> 0 Then
                 If statBatter(I, 11) <> 0 Then
-                    'Putouts + Assists / (Putouts + Assists + Errors)
                     statCalc! = (statBatter(I, 16) + statBatter(I, 17)) / (statBatter(I, 16) + statBatter(I, 17) + statBatter(I, 11))
                     Print #1, Using "  .###"; statCalc!;
                 Else
                     'No errors
                     Print #1, " 1.000";
                 End If
+            Else
+                'No fielding stats
+                Print #1, " .---";
             End If
 
             statCalc = statBatter(I, 21) / (statBatter(I, 20) + statBatter(I, 21)) * 100
@@ -1665,13 +1681,18 @@ Sub PrintScheduleStatSummary (printDest, destFile$, statFile$, teamName$, nbrGam
             Print #1, Using " #### ### ## "; statPitcher(I, 38); statPitcher(I, 39); statPitcher(I, 34);
 
             'Fielding AVG
+            '>> Denominator = Putouts + Assists + Errors
             If statPitcher(I, 38) + statPitcher(I, 39) + statPitcher(I, 34) <> 0 Then
-                If statPitcher(I, 34) = 0 Then
-                    Print #1, " 1.000";
-                Else
+                If statPitcher(I, 34) <> 0 Then
                     statCalc! = (statPitcher(I, 38) + statPitcher(I, 39)) / (statPitcher(I, 38) + statPitcher(I, 39) + statPitcher(I, 34))
                     Print #1, Using "  .###"; statCalc!;
+                Else
+                    'No errors
+                    Print #1, " 1.000";
                 End If
+            Else
+                'No fielding stats
+                Print #1, " .---";
             End If
 
             'SH, SF
@@ -2037,11 +2058,11 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
             'GIDP
             Print #of%, Tab(64);: Print #of%, Using "##"; statBatter(I, 15);
 
-            'BAVG
+            'Bat AVG
             Print #of%, Tab(69);
 
             If statBatter(I, 0) = 0 Then
-                Print #of%, "-.---";
+                Print #of%, " .---";
             Else
                 If statBatter(I, 0) = statBatter(I, 1) Then
                     Print #of%, "1.000";
@@ -2049,7 +2070,8 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
                     If statBatter(I, 1) = 0 Then
                         Print #of%, " .000";
                     Else
-                        Print #of%, Using " .###"; (statBatter(I, 1) / statBatter(I, 0));
+                        statCalc! = statBatter(I, 1) / statBatter(I, 0)
+                        Print #of%, Using " .###"; statCalc!;
                     End If
                 End If
             End If
@@ -2057,20 +2079,22 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
             'SLG
             Print #of%, Tab(75);
 
+            J = statBatter(I, 1) + statBatter(I, 4) + statBatter(I, 5) * 2 + statBatter(I, 6) * 3
+
             If statBatter(I, 0) = 0 Then
-                Print #of%, "-.---";
+                Print #of%, " .---";
             Else
-                J = statBatter(I, 1) + statBatter(I, 4) + statBatter(I, 5) * 2 + statBatter(I, 6) * 3
-                If J = statBatter(I, 0) Then
-                    Print #of%, "1.000";
+               If J = 0 Then
+                    Print #1, " .000 ";
                 Else
-                    If J / statBatter(I, 0) > 1 Then
-                        Print #of%, Using "#.###"; (J / statBatter(I, 0));
+                    If statBatter(I, 1) = J Then
+                        Print #of%, "1.000";
                     Else
-                        If statBatter(I, 1) = 0 Then
-                            Print #of%, " .000";
+                        statCalc! = (J / statBatter(I, 0))
+                        If statCalc! >= 1 Then
+                            Print #of%, Using "#.###"; statCalc!;
                         Else
-                            Print #of%, Using " .###"; (J / statBatter(I, 0));
+                            Print #of%, Using " .###"; statCalc!;
                         End If
                     End If
                 End If
@@ -2079,22 +2103,20 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
             'OBP
             Print #of%, Tab(81);
 
+            K = statBatter(I, 0) + statBatter(I, 7)
+            J = statBatter(I, 1) + statBatter(I, 7)
+
             If statBatter(I, 0) = 0 Then
-                Print #of%, "-.---";
+                Print #of%, " .---";
             Else
-                J = statBatter(I, 1) + statBatter(I, 7)
                 If J = statBatter(I, 0) Then
-                    Print #of%, "1.000";
+                    Print #of%, " .000";
                 Else
-                    If J / (statBatter(I, 7) + statBatter(I, 0)) > 1 Then
-                        Print #of%, Using "#.###"; (J / (statBatter(I, 7) + statBatter(I, 0)));
+                    If J = K Then
+                        Print #of%, "1.000";
                     Else
-                        If J = 0 Then
-                            Print #of%, " .000";
-                        Else
-                            statCalc = (J / (statBatter(I, 7) + statBatter(I, 0)))
-                            Print #of%, Using " .###"; statCalc;
-                        End If
+                        statCalc! = (J / K)
+                        Print #of%, Using " .###"; statCalc!;
                     End If
                 End If
             End If
@@ -2150,15 +2172,18 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
             'Fielding AVG
             Print #of%, Tab(117);
 
-            If statBatter(I, 11) + statBatter(I, 17) + statBatter(I, 16) = 0 Then
-                Print #of%, " .---";
-            Else
-                If statBatter(I, 11) = 0 Then
-                    Print #of%, "1.000";
-                Else
+             '>> Denominator = Putouts + Assists + Errors
+           If statBatter(I, 11) + statBatter(I, 17) + statBatter(I, 16) <> 0 Then
+                If statBatter(I, 11) <> 0 Then
                     statCalc = (statBatter(I, 16) + statBatter(I, 17)) / (statBatter(I, 16) + statBatter(I, 17) + statBatter(I, 11))
                     Print #of%, Using " .###"; statCalc;
+                Else
+                    'No errors
+                    Print #of%, "1.000";
                 End If
+            Else
+                'No fielding stats
+                Print #of%, " .---";
             End If
 
             'Sac. Hits, Sac. Flies
@@ -2166,7 +2191,7 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
 
         End If
 
-    Next
+    Next I
 
     For I = 0 To 21
 
@@ -2188,10 +2213,11 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
             'Ground-into-DP
             Print #of%, Tab(64);: Print #of%, Using "##"; statPitcher(I, 37);
 
-            'BAVG
+            'Bat AVG
             Print #of%, Tab(69);
+
             If statPitcher(I, 23) = 0 Then
-                Print #of%, "-.---";
+                Print #of%, " .---";
             Else
                 If statPitcher(I, 23) = statPitcher(I, 24) Then
                     Print #of%, "1.000";
@@ -2199,29 +2225,35 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
                     If statPitcher(I, 24) = 0 Then
                         Print #of%, " .000";
                     Else
-                        statCalc = (statPitcher(I, 24) / statPitcher(I, 23))
-                        Print #of%, Using " .###"; statCalc;
+                        statCalc! = (statPitcher(I, 24) / statPitcher(I, 23))
+                        Print #of%, Using " .###"; statCalc!;
                     End If
                 End If
             End If
 
             'SLG
             Print #of%, Tab(75);
+
+            J = statPitcher(I, 24) + statPitcher(I, 27) + statPitcher(I, 28) * 2 + statPitcher(I, 29) * 3
+
             If statPitcher(I, 23) = 0 Then
-                Print #of%, "-.---";
+                Print #of%, " .---";
             Else
-                J = statPitcher(I, 24) + statPitcher(I, 27) + statPitcher(I, 28) * 2 + statPitcher(I, 29) * 3
-                If J = statPitcher(I, 23) Then
-                    Print #of%, "1.000";
-                Else
-                    statCalc = J / statPitcher(I, 23)
-                    If statCalc > 1 Then
-                        Print #of%, Using "#.###"; statCalc;
+               If J = 0 Then
+                    Print #1, " .000 ";
+                Else                
+                    If statPitcher(I, 23) = J Then
+                        Print #of%, "1.000";
                     Else
-                        If statPitcher(I, 24) = 0 Then
-                            Print #of%, " .000";
+                        statCalc! = J / statPitcher(I, 23)
+                        If statCalc! >= 1 Then
+                            Print #of%, Using "#.###"; statCalc!;
                         Else
-                            Print #of%, Using " .###"; statCalc;
+                            If statPitcher(I, 24) = 0 Then
+                                Print #of%, " .000";
+                            Else
+                                Print #of%, Using " .###"; statCalc;
+                            End If
                         End If
                     End If
                 End If
@@ -2229,22 +2261,21 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
 
             'OBP
             Print #of%, Tab(81);
+
+            J = statPitcher(I, 24) + statPitcher(I, 30)
+            K = statPitcher(I, 30) + statPitcher(I, 23)
+
             If statPitcher(I, 23) = 0 Then
-                Print #of%, "-.---";
+                Print #of%, " .---";
             Else
-                J = statPitcher(I, 24) + statPitcher(I, 30)
-                If J = statPitcher(I, 23) Then
+                If statPitcher(I, 23) = J Then
                     Print #of%, "1.000";
                 Else
-                    statCalc = (J / (statPitcher(I, 30) + statPitcher(I, 23)))
-                    If statCalc > 1 Then
-                        Print #of%, Using "#.###"; statCalc;
+                    If J = K Then
+                        Print #of%, "1.000";
                     Else
-                        If J = 0 Then
-                            Print #of%, " .000";
-                        Else
-                            Print #of%, Using " .###"; statCalc;
-                        End If
+                        statCalc! = (J / K)
+                        Print #of%, Using " .###"; statCalc!;
                     End If
                 End If
             End If
@@ -2259,22 +2290,25 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
             'Fielding AVG
             Print #of%, Tab(117);
 
-            If statPitcher(I, 34) + statPitcher(I, 38) + statPitcher(I, 39) = 0 Then
-                Print #of%, " .---";
-            Else
-                If statPitcher(I, 34) = 0 Then
-                    Print #of%, "1.000";
+            '>> Denominator = Putouts + Assists + Errors
+            If statPitcher(I, 34) + statPitcher(I, 38) + statPitcher(I, 39) <> 0 Then
+                If statPitcher(I, 34) <> 0 Then
+                    statCalc! = (statPitcher(I, 38) + statPitcher(I, 39)) / (statPitcher(I, 38) + statPitcher(I, 39) + statPitcher(I, 34))
+                    Print #of%, Using " .###"; statCalc!;
                 Else
-                    statCalc = (statPitcher(I, 38) + statPitcher(I, 39)) / (statPitcher(I, 38) + statPitcher(I, 39) + statPitcher(I, 34))
-                    Print #of%, Using " .###"; statCalc;
+                    'No errors
+                    Print #of%, "1.000";
                 End If
+            Else
+                'No fielding stats
+                Print #of%, " .---";
             End If
 
             Print #of%, Tab(123); Using "## ##"; statPitcher(I, 40); statPitcher(I, 41)
 
         End If
 
-    Next
+    Next I
 
     Print #of%, " "
     Print #of%, "TOTALS";
@@ -2364,8 +2398,6 @@ Sub NewPrintStats (printDest, destFile$, statFile$, teamName$, nbrGames, printCh
             Print #of%, Tab(35);: Print #of%, Using "###"; statPitcher(I, 5);
 
             'ERA
-            I2 = 0
-
             If statPitcher(I, 0) > 0 Then
                 Print #of%, Tab(39);
                 statCalc! = (statPitcher(I, 3) * 9 / (statPitcher(I, 0) / 3))
@@ -2616,7 +2648,7 @@ Sub SortBatterStats (playerType, categoryPick)
                 Case 9: statGroup = 9
                 Case 10: statGroup = 7
                 Case 11: statGroup = 8
-                Case 12: statGroup = -1 'BAVG
+                Case 12: statGroup = -1 'Bat AVG
                 Case 13: statGroup = -1 'SLG
                 Case 14: statGroup = -1 'OBP
                 Case 15: statGroup = 10
@@ -2629,7 +2661,7 @@ Sub SortBatterStats (playerType, categoryPick)
                 Case 22: statGroup = 16
                 Case 23: statGroup = 17
                 Case 24: statGroup = 11
-                Case 25: statGroup = -1 'FAVG
+                Case 25: statGroup = -1 'Fielding AVG
                 Case 26: statGroup = -1 'SBA
                 Case 27: statGroup = 21
                 Case 28: statGroup = -1 'CS %
@@ -2656,7 +2688,7 @@ Sub SortBatterStats (playerType, categoryPick)
                 Case 9: statGroup = 32
                 Case 10: statGroup = 30
                 Case 11: statGroup = 31
-                Case 12: statGroup = -1 'BAVG
+                Case 12: statGroup = -1 'Bat AVG
                 Case 13: statGroup = -1 'SLG
                 Case 14: statGroup = -1 'OBP
                 Case 15: statGroup = 33
@@ -2666,7 +2698,7 @@ Sub SortBatterStats (playerType, categoryPick)
                 Case 19: statGroup = 38
                 Case 20: statGroup = 39
                 Case 21: statGroup = 34
-                Case 22: statGroup = -1 'FAVG
+                Case 22: statGroup = -1 'Fielding AVG
                 Case 23: statGroup = 40
                 Case 24: statGroup = 41
 

@@ -104,14 +104,14 @@ Sub StatOptions (league$, div1$, div2$, div3$, div4$)
                 Case "F":
                     userFile$ = _SaveFileDialog$("Save League Report", _CWD$ + "\Report", "*.txt", "Text File")
                     If userFile$ <> "" Then
-                        Call LeaderStats_Report(league$, div1$, div2$, div3$, 0, userFile$)
+                        Call LeaderStats_Report(league$, div1$, div2$, div3$, div4$, 0, userFile$)
                     End If
 
                 Case "P":
-                    Call LeaderStats_Report(league$, div1$, div2$, div3$, 1, "REPORT")
+                    Call LeaderStats_Report(league$, div1$, div2$, div3$, div4$, 1, "REPORT")
 
                 Case "S":
-                    Call LeaderStats_Screen(league$, div1$, div2$, div3$)
+                    Call LeaderStats_Screen(league$, div1$, div2$, div3$, div4$)
 
             End Select
 
@@ -157,7 +157,7 @@ End Sub
 'loaded stats and outputs them to a file.
 'This file can then be looped through to
 'send to the default printer
-Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
+Sub LeaderStats_Report (league$, div1$, div2$, div3$, div4$, printDest, destFile$)
 
     Shared divWins(), divLosses()
 
@@ -168,9 +168,12 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
     Shared LF$(), leaderPlayer$(), RT$(), memberName$()
 
     Color 15, 0
+
     Cls
 
     Open destFile$ For Output As #1
+
+    RT = 0
 
     For div = 1 To 4
 
@@ -187,26 +190,13 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
                 leaderPlayer$(P) = memberName$(P)
 
-                While Len(leaderPlayer$(P)) < 12
-                    leaderPlayer$(P) = leaderPlayer$(P) + " "
-                Wend
+                leaderPlayer$(P) = leaderPlayer$(P) + Right$("     " + Str$(divWins(P)), 3)
+                leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 16)
 
-                A$ = "     " + Str$(divWins(P))
-                A$ = Right$(A$, 3)
-                leaderPlayer$(P) = leaderPlayer$(P) + A$
+                leaderPlayer$(P) = leaderPlayer$(P) + Right$("     " + Str$(divLosses(P)), 3)
+                leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 21)
 
-                While Len(leaderPlayer$(P)) < 16
-                    leaderPlayer$(P) = leaderPlayer$(P) + " "
-                Wend
-
-                A$ = "     " + Str$(divLosses(P))
-                A$ = Right$(A$, W)
-                leaderPlayer$(P) = leaderPlayer$(P) + A$
-
-                While Len(leaderPlayer$(P)) < 21
-                    leaderPlayer$(P) = leaderPlayer$(P) + " "
-                Wend
-
+                'Win %
                 J! = 0
                 If divWins(P) + divLosses(P) > 0 Then
                     J! = divWins(P) / (divWins(P) + divLosses(P))
@@ -217,22 +207,22 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                     leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
                 End If
 
-                While Len(leaderPlayer$(P)) < 28
-                    leaderPlayer$(P) = leaderPlayer$(P) + " "
-                Wend
+                leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 28)
 
                 'Games Behind
                 D = divWins(P) - divLosses(P)
                 D = D1 - D
+
                 BK$ = Str$(Int(D / 2))
+
                 If D = 0 Then BK$ = "---"
                 If D = 1 Then BK$ = "  "
                 If D > 19 Then
-                    L = Len(BK$)
-                    BK$ = Right$(BK$, L - 1)
+                    BK$ = Right$(BK$, Len(BK$) - 1)
                 End If
-
-                If D / 2 <> Int(D / 2) Then BK$ = BK$ + " 1/2"
+                If D / 2 <> Int(D / 2) Then
+                    BK$ = BK$ + " 1/2"
+                End If
 
                 leaderPlayer$(P) = leaderPlayer$(P) + BK$
 
@@ -242,9 +232,6 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Next div
 
-
-    '--- TEST THIS OUT !!!!!
-    '--- COMAPRE TO SCREEN OUTPUT !!!!
     LF$(1) = "    " + league$ + " LEAGUE STANDINGS AS OF " + Date$
     LF$(3) = "    " + div1$ + "      W   L   PCT  GB"
 
@@ -256,7 +243,7 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         If leaderPlayer$(P) = "" Then
             RT = RT + 1
         Else
-            LF$(P + 3 - RT) = "    " + leaderPlayer$(P)
+            LF$(P + 3 - RT) = "   " + leaderPlayer$(P)
         End If
 
     Next P
@@ -268,14 +255,14 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
     '------------------------------
     If RTrim$(div2$) <> "" Then
 
-        LF$(15) = "    " + div3$ + "      W   L   PCT  GB"
+        LF$(15) = "    " + div2$ + "      W   L   PCT  GB"
 
         For P = 11 To 20:
 
             If leaderPlayer$(P) = "" Then
                 RT = RT + 1
             Else
-                LF$(P - 5 - RT) = "    " + leaderPlayer$(P)
+                LF$(P + 5 - RT) = "   " + leaderPlayer$(P)
             End If
 
         Next P
@@ -289,14 +276,14 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
     '------------------------------
     If RTrim$(div3$) <> "" Then
 
-        RT$(3) = "    " + div2$ + "      W   L   PCT  GB"
+        RT$(3) = "    " + div3$ + "      W   L   PCT  GB"
 
         For P = 21 To 30
 
             If leaderPlayer$(P) = "" Then
                 RT = RT + 1
             Else
-                RT$(P - 7 - RT) = "    " + leaderPlayer$(P)
+                RT$(P - 17 - RT) = "   " + leaderPlayer$(P)
             End If
 
         Next P
@@ -311,14 +298,14 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
     '------------------------------
     If RTrim$(div4$) <> "" Then
 
-        RT$(15) = "    " + div4Name$ + "      W   L   PCT   GB"
+        RT$(15) = "    " + div4$ + "      W   L   PCT   GB"
 
         For P = 31 To 40
 
             If leaderPlayer$(P) = "" Then
                 RT = RT + 1
             Else
-                RT$(P - 15 - RT) = "    " + leaderPlayer$(P)
+                RT$(P - 15 - RT) = "   " + leaderPlayer$(P)
             End If
 
         Next P
@@ -326,17 +313,10 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
     End If
 
     'Print Division Standings
-    ' -- Why 2 to 26 only???
+    'P = 1 is the header string
     For P = 2 To 26
-
-        If Len(LF$(P)) < 38 Then
-            LF$(P) = LF$(P) + " "
-        Else
-            If Len(RT$(P)) < 38 Then
-                RT$(P) = RT$(P) + " "
-            End If
-        End If
-
+        LF$(P) = PadRight$(LF$(P), 38)
+        RT$(P) = PadRight$(RT$(P), 38)
     Next P
 
     For X = 1 To 26
@@ -347,22 +327,21 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
     '------------------------------
     ' String Constants
     '------------------------------
-    AB = Int(AB)
-    AB$ = Str$(AB)
+    AB$ = Str$(Int(AB))
+    AB$ = Right$(AB$, Len(AB$) - 1)
     TD = IP - 3 * IG
 
-    AB$ = Right$(AB$, Len(AB$) - 1)
-    If TD > 0 Then TD$ = " 1/3"
-    IG$ = Str$(IP)
+    If TD > 0 Then
+        TD$ = " 1/3"
+    End If
 
-    IG$ = Right$(IG$, Len(IG$) - 1)
-    IP$ = IG$
+    IG$ = Str$(IP)
+    IP$ = Right$(IG$, Len(IG$) - 1)
 
 
     '------------------------------
     '        BATTING LEADERS
     '------------------------------
-
     For P = 1 To 20
 
         leaderPlayer$(P) = ""
@@ -379,7 +358,9 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
             Wend
 
             J! = CInt(1000 * leagLdrVal1!(P))
-            If J! = 1000 Then leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
+            If J! = 1000 Then
+                leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
+            End If
 
             J! = leagLdrVal2!(P)
             leaderPlayer$(P) = leaderPlayer$(P) + " " + Str$(J!)
@@ -397,7 +378,6 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     LF$(47) = " "
 
-
     For P = 239 To 258
 
         leaderPlayer$(P) = ""
@@ -409,9 +389,7 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
-            While Len(leaderPlayer$(P)) < 27
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 27)
 
             J! = CInt(1000 * leagLdrVal1!(P))
 
@@ -432,31 +410,22 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
         RT$(P - 211) = "   " + leaderPlayer$(P)
     Next
 
-    '-----
-
+    'Print Batting Leaders / Trailers
     RT$(47) = " "
 
     For P = 27 To 47
-
-        While Len(LF$(P)) < 35
-            LF$(P) = LF$(P) + " "
-        Wend
-
-        While Len(RT$(P)) < 38
-            RT$(P) = RT$(P) + " "
-        Wend
-
+        LF$(P) = PadRight$(LF$(P), 35)
+        RT$(P) = PadRight$(RT$(P), 38)
     Next P
+
 
     For X = 27 To 47:
         Print #1, LF$(X); RT$(X)
     Next
 
-
     '------------------------------
     '             HITS
     '------------------------------
-
     For P = 21 To 30
 
         leaderPlayer$(P) = ""
@@ -468,9 +437,7 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
-            While Len(leaderPlayer$(P)) < 28
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 28)
 
             A$ = "     " + Str$(leagLdrVal1!(P))
             A$ = Right$(A$, 3)
@@ -480,16 +447,16 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Next P
 
+    'Print Hits
     LF$(49) = "   HITS"
+
     For P = 21 To 30:
         LF$(P + 29) = "   " + leaderPlayer$(P)
     Next P
 
-
     '------------------------------
     '           DOUBLES
     '------------------------------
-
     For P = 32 To 41
 
         leaderPlayer$(P) = ""
@@ -501,9 +468,7 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
-            While Len(leaderPlayer$(P)) < 28
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 28)
 
             A$ = "     " + Str$(leagLdrVal1!(P))
             A$ = Right$(A$, 3)
@@ -513,24 +478,16 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Next P
 
+    'Print Doubles
     RT$(49) = "       DOUBLES"
+
     For P = 32 To 41:
         RT$(P + 18) = "       " + leaderPlayer$(P)
     Next P
 
-    '------------------------------
-    '           TRIPLES
-    '------------------------------
     For P = 49 To 59
-
-        While Len(LF$(P)) < 35
-            LF$(P) = LF$(P) + " "
-        Wend
-
-        While Len(RT$(P)) < 38
-            RT$(P) = RT$(P) + " "
-        Wend
-
+        LF$(P) = PadRight$(LF$(P), 35)
+        RT$(P) = PadRight$(RT$(P), 38)
     Next P
 
     For X = 49 To 59:
@@ -539,8 +496,9 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Print #1, Chr$(12)
 
-    '-----
-
+    '------------------------------
+    '           TRIPLES
+    '------------------------------
     For P = 43 To 52
 
         leaderPlayer$(P) = ""
@@ -552,9 +510,7 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
-            While Len(leaderPlayer$(P)) < 28
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 28)
 
             A$ = "     " + Str$(leagLdrVal1!(P))
             A$ = Right$(A$, 3)
@@ -564,18 +520,17 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Next P
 
+    'Print Triples
     LF$(1) = "   TRIPLES"
 
     For P = 43 To 52:
         LF$(P - 41) = "   " + leaderPlayer$(P)
     Next P
 
-    LF$(12) = " "
-
-
     '------------------------------
     '           HOME RUNS
     '------------------------------
+    LF$(12) = " "
 
     For P = 54 To 63:
 
@@ -588,9 +543,7 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
-            While Len(leaderPlayer$(P)) < 28
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 28)
 
             A$ = "     " + Str$(leagLdrVal1!(P))
             A$ = Right$(A$, 3)
@@ -600,27 +553,21 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Next P
 
+    'Print Home Runs
     RT$(1) = "     HOME RUNS"
+
     For P = 54 To 63:
         RT$(P - 52) = "     " + leaderPlayer$(P)
     Next P
 
     RT$(12) = " "
 
-    '-----
-
     For P = 1 To 12
-
-        While Len(LF$(P)) < 35
-            LF$(P) = LF$(P) + " "
-        Wend
-
-        While Len(RT$(P)) < 38
-            RT$(P) = RT$(P) + " "
-        Wend
-
+        LF$(P) = PadRight$(LF$(P), 35)
+        RT$(P) = PadRight$(RT$(P), 38)
     Next P
 
+    'Print Home Runs
     For X = 1 To 12:
         Print #1, LF$(X); RT$(X)
     Next
@@ -628,7 +575,6 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
     '------------------------------
     '             RUNS
     '------------------------------
-
     For P = 65 To 73
 
         leaderPlayer$(P) = ""
@@ -640,9 +586,7 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
-            While Len(leaderPlayer$(P)) < 28
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 28)
 
             A$ = "     " + Str$(leagLdrVal1!(P))
             A$ = Right$(A$, 3)
@@ -652,15 +596,17 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Next P
 
+    'Print Runs
     LF$(13) = "   RUNS"
+
     For P = 65 To 73:
         LF$(P - 51) = "   " + leaderPlayer$(P)
     Next P
-    LF$(23) = " "
 
     '------------------------------
     '             RBIs
     '------------------------------
+    LF$(23) = " "
 
     For P = 76 To 84
 
@@ -673,9 +619,7 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
-            While Len(leaderPlayer$(P)) < 28
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 28)
 
             A$ = "     " + Str$(leagLdrVal1!(P))
             A$ = Right$(A$, 3)
@@ -685,35 +629,27 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Next P
 
+    'Print RBIs
     RT$(13) = "     RUNS BATTED IN"
+
     For P = 76 To 84:
         RT$(P - 62) = "     " + leaderPlayer$(P)
     Next P
+
     RT$(23) = " "
 
-    '-----
-
     For P = 13 To 23
-
-        While Len(LF$(P)) < 35
-            LF$(P) = LF$(P) + " "
-        Wend
-
-        While Len(RT$(P)) < 38
-            RT$(P) = RT$(P) + " "
-        Wend
-
+        LF$(P) = PadRight$(LF$(P), 35)
+        RT$(P) = PadRight$(RT$(P), 38)
     Next P
 
     For X = 13 To 23:
         Print #1, LF$(X); RT$(X)
     Next
 
-
     '------------------------------
     '         STOLEN BASES
     '------------------------------
-
     For P = 87 To 96
 
         leaderPlayer$(P) = ""
@@ -725,9 +661,7 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
-            While Len(leaderPlayer$(P)) < 28
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 28)
 
             A$ = "     " + Str$(leagLdrVal1!(P))
             A$ = Right$(A$, 3)
@@ -737,16 +671,17 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Next P
 
+    'Print Stolen Bases
     LF$(24) = "   STOLEN BASES"
+
     For P = 87 To 96:
         LF$(P - 62) = "   " + leaderPlayer$(P)
     Next P
-    LF$(35) = " "
-
 
     '------------------------------
     '         SLUGGING PCT
     '------------------------------
+    LF$(35) = " "
 
     For P = 99 To 108
 
@@ -759,9 +694,7 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
-            While Len(leaderPlayer$(P)) < 28
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 28)
 
             J! = CInt(1000 * leagLdrVal1!(P))
             If J! = 1000 Then
@@ -772,35 +705,27 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Next P
 
+    'Print Slugging %
     RT$(24) = "     SLUGGING PCT LEADERS"
+
     For P = 99 To 108:
         RT$(P - 74) = "     " + leaderPlayer$(P)
     Next P
+
     RT$(35) = " "
 
-    '-----
-
     For P = 24 To 35
-
-        While Len(LF$(P)) < 35
-            LF$(P) = LF$(P) + " "
-        Wend
-
-        While Len(RT$(P)) < 38
-            RT$(P) = RT$(P) + " "
-        Wend
-
+        LF$(P) = PadRight$(LF$(P), 35)
+        RT$(P) = PadRight$(RT$(P), 38)
     Next P
 
     For X = 24 To 35:
         Print #1, LF$(X); RT$(X)
     Next
 
-
     '------------------------------
     '         ON BASE PCT
     '------------------------------
-
     For P = 110 To 119
 
         leaderPlayer$(P) = ""
@@ -812,9 +737,7 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
-            While Len(leaderPlayer$(P)) < 28
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 28)
 
             J! = CInt(1000 * leagLdrVal1!(P))
             If J! = 1000 Then
@@ -825,17 +748,18 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Next P
 
+    'Print On Base %
     LF$(36) = "   ON BASE PCT LEADERS"
+
     For P = 110 To 119
         LF$(P - 73) = "   " + leaderPlayer$(P)
     Next P
-    LF$(47) = " "
 
+    LF$(47) = " "
 
     '------------------------------
     '     BASE ON BALLS (WALK)
     '------------------------------
-
     For P = 217 To 226
 
         leaderPlayer$(P) = ""
@@ -847,9 +771,7 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
-            While Len(leaderPlayer$(P)) < 28
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 28)
 
             A$ = "     " + Str$(leagLdrVal1!(P))
             A$ = Right$(A$, 3)
@@ -859,32 +781,27 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Next P
 
+    'Print BoB
     RT$(36) = "     BASE ON BALLS"
+
     For P = 217 To 226
         RT$(P - 180) = "    " + leaderPlayer$(P)
     Next P
+
     RT$(47) = " "
 
-    '-----
-
     For P = 36 To 47
-
-        While Len(LF$(P)) < 35
-            LF$(P) = LF$(P) + " "
-        Wend
-
-        While Len(RT$(P)) < 38
-            RT$(P) = RT$(P) + " "
-        Wend
-
+        LF$(P) = PadRight$(LF$(P), 35)
+        RT$(P) = PadRight$(RT$(P), 38)
     Next P
 
     For X = 36 To 47
         Print #1, LF$(X); RT$(X)
     Next
 
-    '-----
-
+    '------------------------------
+    '      CURRENT HIT STREAK
+    '------------------------------
     For P = 279 To 288
 
         leaderPlayer$(P) = ""
@@ -896,9 +813,7 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
-            While Len(leaderPlayer$(P)) < 28
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 28)
 
             A$ = "     " + Str$(leagLdrVal1!(P))
             A$ = Right$(A$, 3)
@@ -908,12 +823,16 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Next P
 
+    'Print Hit Streak
     LF$(48) = "   CURRENT HITTING STREAK"
 
-    For P = 279 To 288: LF$(P - 230) = "   " + leaderPlayer$(P): Next P
+    For P = 279 To 288:
+        LF$(P - 230) = "   " + leaderPlayer$(P)
+    Next P
 
-    '-----
-
+    '------------------------------
+    '      LONGEST HIT STREAK
+    '------------------------------
     For P = 289 To 298:
 
         leaderPlayer$(P) = ""
@@ -925,9 +844,7 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
-            While Len(leaderPlayer$(P)) < 28
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 28)
 
             A$ = "     " + Str$(leagLdrVal1!(P))
             A$ = Right$(A$, 3)
@@ -937,23 +854,16 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Next P
 
+    'Print Hit Streak
     RT$(48) = "       LONGEST HITTING STREAK"
+
     For P = 289 To 298:
         RT$(P - 240) = "       " + leaderPlayer$(P)
     Next P
 
-    '-----
-
     For P = 48 To 58
-
-        While Len(LF$(P)) < 35
-            LF$(P) = LF$(P) + " "
-        Wend
-
-        While Len(RT$(P)) < 38
-            RT$(P) = RT$(P) + " "
-        Wend
-
+        LF$(P) = PadRight$(LF$(P), 35)
+        RT$(P) = PadRight$(RT$(P), 38)
     Next P
 
     For X = 48 To 58:
@@ -965,7 +875,6 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
     '------------------------------
     '         ERA LEADERS
     '------------------------------
-
     For P = 121 To 139
 
         leaderPlayer$(P) = ""
@@ -977,9 +886,7 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
-            While Len(leaderPlayer$(P)) < 24
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 24)
 
             J! = CInt(100 * leagLdrVal1!(P))
             A$ = Str$(J!)
@@ -999,17 +906,16 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Next P
 
+    'Print ERA
     RT$(27) = "     ERA LEADERS (MIN 1 IP/G)"
 
     For P = 121 To 139
         RT$(P - 93) = "    " + leaderPlayer$(P)
     Next
 
-
     '------------------------------
     '       PITCHING RECORD
     '------------------------------
-
     For P = 140 To 149
 
         leaderPlayer$(P) = ""
@@ -1021,9 +927,7 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
-            While Len(leaderPlayer$(P)) < 23
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 23)
 
             A$ = "     " + Str$(leagLdrVal1!(P))
             A$ = Right$(A$, 2)
@@ -1039,16 +943,17 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Next P
 
+    'Print Pitching Record
     LF$(48) = "   PITCHING RECORD"
+
     For P = 140 To 149
         LF$(P - 91) = "   " + leaderPlayer$(P)
     Next
-    LF$(59) = " "
-
 
     '------------------------------
     '           VICTORIES
     '------------------------------
+    LF$(59) = " "
 
     For P = 151 To 160:
         leaderPlayer$(P) = ""
@@ -1060,9 +965,7 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
-            While Len(leaderPlayer$(P)) < 24
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 24)
 
             A$ = "     " + Str$(leagLdrVal1!(P))
             A$ = Right$(A$, 3)
@@ -1072,24 +975,18 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Next P
 
+    'Print Wins
     RT$(48) = "     VICTORIES"
+
     For P = 151 To 160
         RT$(P - 102) = "     " + leaderPlayer$(P)
     Next P
+
     RT$(59) = " "
 
-    '-----
-
     For P = 48 To 59
-
-        While Len(LF$(P)) < 35
-            LF$(P) = LF$(P) + " "
-        Wend
-
-        While Len(RT$(P)) < 38
-            RT$(P) = RT$(P) + " "
-        Wend
-
+        LF$(P) = PadRight$(LF$(P), 35)
+        RT$(P) = PadRight$(RT$(P), 38)
     Next P
 
     For X = 48 To 59:
@@ -1098,11 +995,9 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Print #1, Chr$(12)
 
-
     '------------------------------
     '       INNINGS PITCHED
     '------------------------------
-
     For P = 162 To 171
 
         leaderPlayer$(P) = ""
@@ -1114,9 +1009,7 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
-            While Len(leaderPlayer$(P)) < 24
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 24)
 
             J! = Int(leagLdrVal1!(P))
             A$ = "     " + Str$(J!)
@@ -1127,16 +1020,17 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Next P
 
+    'Print IP
     LF$(1) = "   INNINGS PITCHED"
+
     For P = 162 To 171:
         LF$(P - 160) = "   " + leaderPlayer$(P)
     Next P
-    LF$(12) = " "
-
 
     '------------------------------
     '          STRIKEOUTS
     '------------------------------
+    LF$(12) = " "
 
     For P = 173 To 182:
 
@@ -1149,9 +1043,7 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
-            While Len(leaderPlayer$(P)) < 24
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 24)
 
             A$ = "     " + Str$(leagLdrVal1!(P))
             A$ = Right$(A$, 3)
@@ -1161,35 +1053,27 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Next P
 
-    '-----
-
+    'Print Strikeouts
     RT$(1) = "     STRIKEOUTS"
+
     For P = 173 To 182:
         RT$(P - 171) = "     " + leaderPlayer$(P)
     Next P
+
     RT$(12) = " "
 
     For P = 1 To 12
-
-        While Len(LF$(P)) < 35
-            LF$(P) = LF$(P) + " "
-        Wend
-
-        While Len(RT$(P)) < 38
-            RT$(P) = RT$(P) + " "
-        Wend
-
+        LF$(P) = PadRight$(LF$(P), 35)
+        RT$(P) = PadRight$(RT$(P), 38)
     Next P
 
     For X = 1 To 12:
         Print #1, LF$(X); RT$(X)
     Next
 
-
     '------------------------------
     '          FULL GAMES
     '------------------------------
-
     For P = 184 To 193
 
         leaderPlayer$(P) = ""
@@ -1201,9 +1085,7 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
-            While Len(leaderPlayer$(P)) < 24
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 24)
 
             A$ = "     " + Str$(leagLdrVal1!(P))
             A$ = Right$(A$, 3)
@@ -1213,16 +1095,18 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Next P
 
+    'Print Complete Games
     LF$(13) = "   COMPLETE GAMES"
+
     For P = 184 To 193:
         LF$(P - 170) = "   " + leaderPlayer$(P)
     Next P
-    LF$(24) = " "
 
 
     '------------------------------
     '           SHUTOUTS
     '------------------------------
+    LF$(24) = " "
 
     For P = 195 To 204: leaderPlayer$(P) = ""
 
@@ -1233,9 +1117,7 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
-            While Len(leaderPlayer$(P)) < 24
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 24)
 
             A$ = "     " + Str$(leagLdrVal1!(P))
             A$ = Right$(A$, 3)
@@ -1245,35 +1127,27 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Next P
 
+    'Print Shutouts
     RT$(13) = "     SHUTOUTS"
+
     For P = 195 To 204:
         RT$(P - 181) = "     " + leaderPlayer$(P)
     Next P
+
     RT$(24) = " "
 
-    '-----
-
     For P = 13 To 24
-
-        While Len(LF$(P)) < 35
-            LF$(P) = LF$(P) + " "
-        Wend
-
-        While Len(RT$(P)) < 38
-            RT$(P) = RT$(P) + " "
-        Wend
-
+        LF$(P) = PadRight$(LF$(P), 35)
+        RT$(P) = PadRight$(RT$(P), 38)
     Next P
 
     For X = 13 To 24:
         Print #1, LF$(X); RT$(X)
     Next
 
-
     '------------------------------
     '            SAVES
     '------------------------------
-
     For P = 206 To 215
 
         leaderPlayer$(P) = ""
@@ -1285,9 +1159,7 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
-            While Len(leaderPlayer$(P)) < 24
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 24)
 
             A$ = "     " + Str$(leagLdrVal1!(P))
             A$ = Right$(A$, 3)
@@ -1297,19 +1169,18 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Next P
 
+    'Print Saves
     LF$(25) = "   SAVES"
 
     For P = 206 To 215:
         LF$(P - 180) = "   " + leaderPlayer$(P)
     Next P
 
-    LF$(36) = " "
-    RT$(25) = "     APPEARANCES"
-
-
     '------------------------------
     '         APPEARANCES
     '------------------------------
+    LF$(36) = " "
+    RT$(25) = "     APPEARANCES"
 
     For P = 228 To 237
 
@@ -1322,9 +1193,7 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
                 leaderPlayer$(P) = leaderPlayer$(P) + ", " + leagLdrTeam$(P)
             End If
 
-            While Len(leaderPlayer$(P)) < 24
-                leaderPlayer$(P) = leaderPlayer$(P) + " "
-            Wend
+            leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 24)
 
             A$ = "     " + Str$(leagLdrVal1!(P))
             A$ = Right$(A$, 3)
@@ -1334,31 +1203,25 @@ Sub LeaderStats_Report (league$, div1$, div2$, div3$, printDest, destFile$)
 
     Next P
 
+    'Print Appearances
     For P = 228 To 237
         RT$(P - 202) = "     " + leaderPlayer$(P)
     Next P
+
     RT$(36) = " "
 
-    '-----
-
     For P = 25 To 36
-
-        While Len(LF$(P)) < 35
-            LF$(P) = LF$(P) + " "
-        Wend
-
-        While Len(RT$(P)) < 38
-            RT$(P) = RT$(P) + " "
-        Wend
-
+        LF$(P) = PadRight$(LF$(P), 35)
+        RT$(P) = PadRight$(RT$(P), 38)
     Next P
 
     For X = 25 To 36:
         Print #1, LF$(X); RT$(X)
     Next
 
-    '-----
-
+    '------------------------------
+    '            TOTALS
+    '------------------------------
     Print #1, Chr$(12)
     Print #1, "                 CLUB BATTING   "
     Print #1,
@@ -1424,7 +1287,7 @@ End Sub
 'This subroutine formats the previously
 'loaded stats and outputs them to the end
 'user display.
-Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
+Sub LeaderStats_Screen (league$, div1$, div2$, div3$, div4$)
 
     Shared divWins(), divLosses()
 
@@ -1475,7 +1338,9 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
 
                 'PCT
                 J! = 0
-                If divWins(P) + divLosses(P) > 0 Then J! = divWins(P) / (divWins(P) + divLosses(P))
+                If divWins(P) + divLosses(P) > 0 Then
+                    J! = divWins(P) / (divWins(P) + divLosses(P))
+                End If
 
                 J! = CInt(1000 * J!)
 
@@ -1508,15 +1373,18 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
                 'Games Behind
                 D = divWins(P) - divLosses(P)
                 D = D1 - D
+
                 BK$ = Str$(Int(D / 2))
+
                 If D = 0 Then BK$ = "---"
                 If D = 1 Then BK$ = "  "
                 If D > 19 Then
-                    L = Len(BK$)
-                    BK$ = Right$(BK$, L - 1)
+                    BK$ = Right$(BK$, Len(BK$) - 1)
                 End If
 
                 If D / 2 <> Int(D / 2) Then BK$ = BK$ + " 1/2"
+
+                leaderPlayer$(P) = leaderPlayer$(P) + BK$
 
             End If
 
@@ -1546,7 +1414,7 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
 
     For P = 1 To 10
 
-        If leaderPlayer$(P) = "" Then   
+        If leaderPlayer$(P) = "" Then
             RT = RT + 1
         Else
             Locate (P + 5 - RT), 1: Print "    "; leaderPlayer$(P)
@@ -1666,7 +1534,6 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
     '------------------------------
     '        BATTING LEADERS
     '------------------------------
-
     For P = 1 To 19
 
         leaderPlayer$(P) = ""
@@ -1726,7 +1593,7 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
     Color 15
 
     For P = 1 To 19
-        Print leagLdrPlayer$(P) + ", " + leagLdrTeam$(P); Tab(28); 
+        Print leagLdrPlayer$(P) + ", " + leagLdrTeam$(P); Tab(28);
         Print Using ".###  ###"; leagLdrVal1!(P); leagLdrVal2!(P);
 
         Print Tab(41); leagLdrPlayer$(P + 238) + ", " + leagLdrTeam$(P + 238); Tab(69);
@@ -1738,7 +1605,6 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
     '------------------------------
     '             HITS
     '------------------------------
-
     For P = 21 To 30
 
         leaderPlayer$(P) = ""
@@ -1774,11 +1640,9 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
     Next P
     Print
 
-
     '------------------------------
     '           DOUBLES
     '------------------------------
-
     For P = 32 To 41
 
         leaderPlayer$(P) = ""
@@ -1805,11 +1669,9 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
         Print "      "; leaderPlayer$(P)
     Next P
 
-
     '------------------------------
     '           TRIPLES
     '------------------------------
-
     For P = 43 To 52
 
         leaderPlayer$(P) = ""
@@ -1837,11 +1699,9 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
         Print "      "; leaderPlayer$(P)
     Next P
 
-
     '------------------------------
     '           HOME RUNS
     '------------------------------
-
     For P = 54 To 63
         leaderPlayer$(P) = ""
 
@@ -1878,7 +1738,6 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
     '------------------------------
     '             RUNS
     '------------------------------
-
     For P = 65 To 73
 
         leaderPlayer$(P) = ""
@@ -1936,11 +1795,9 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
         Print "      "; leaderPlayer$(P)
     Next P
 
-
     '------------------------------
     '         STOLEN BASES
     '------------------------------
-
     For P = 87 To 96
 
         leaderPlayer$(P) = ""
@@ -1968,11 +1825,9 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
         Print "      "; leaderPlayer$(P)
     Next P
 
-
     '------------------------------
     '         SLUGGING PCT
     '------------------------------
-
     For P = 98 To 107:
 
         leaderPlayer$(P) = ""
@@ -2037,7 +1892,6 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
     '------------------------------
     '         ON BASE PCT
     '------------------------------
-
     For P = 110 To 119
 
         leaderPlayer$(P) = ""
@@ -2098,7 +1952,6 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
     '------------------------------
     '     BASE ON BALLS (WALK)
     '------------------------------
-
     For P = 217 To 226
 
         leaderPlayer$(P) = ""
@@ -2127,7 +1980,8 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
     Next P
 
     '------------------------------
-
+    '        HITTING STREAKS
+    '------------------------------
     Locate 14, 1
     Color 14
     Print "      CURRENT HITTING STREAK"
@@ -2158,7 +2012,6 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
     '------------------------------
     '         ERA LEADERS
     '------------------------------
-
     For P = 120 To 138
 
         leaderPlayer$(P) = ""
@@ -2213,7 +2066,6 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
     '------------------------------
     '       PITCHING RECORD
     '------------------------------
-
     For P = 140 To 149
 
         leaderPlayer$(P) = ""
@@ -2249,7 +2101,6 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
     '------------------------------
     '           VICTORIES
     '------------------------------
-
     For P = 151 To 160
         leaderPlayer$(P) = ""
 
@@ -2308,7 +2159,6 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
     '------------------------------
     '          STRIKEOUTS
     '------------------------------
-
     For P = 173 To 182
 
         leaderPlayer$(P) = ""
@@ -2347,7 +2197,6 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
     '------------------------------
     '          FULL GAMES
     '------------------------------
-
     For P = 184 To 193
 
         leaderPlayer$(P) = ""
@@ -2379,7 +2228,6 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
     '------------------------------
     '           SHUTOUTS
     '------------------------------
-
     For P = 195 To 204
 
         leaderPlayer$(P) = ""
@@ -2439,7 +2287,6 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
     '------------------------------
     '         APPEARANCES
     '------------------------------
-
     Locate 14, 40
     Color 14
     Print "      APPEARANCES    "
@@ -2474,6 +2321,10 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
     QK$ = GetKeyPress$
     '-----
 
+
+    '------------------------------
+    '         TEAM BATTING
+    '------------------------------
     Cls
 
     Locate 2, 1
@@ -2499,9 +2350,11 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
     For X = 1 To TEAMS_PER_LEAGUE
 
         If BA$(X) <> "" And BA$(X) <> "*" Then
+
             Print Left$(BA$(X), 11); Tab(13);
             '             AVG   AB    R    H  2B  3B   HR   RBI   BB   SO  SB  CS     E"
             Print Using ".###  ####  ### #### ### ###  ### ####  ### #### ### ###  ###"; OFT!(X, 1); OFT!(X, 3); OFT!(X, 5); OFT!(X, 4); OFT!(X, 7); OFT!(X, 8); OFT!(X, 9); OFT!(X, 6); OFT!(X, 10); OFT!(X, 11); OFT!(X, 12); OFT!(X, 13); OFT!(X, 14)
+
             ATBATS! = ATBATS! + OFT!(X, 3)
             H! = H! + OFT!(X, 4)
             R = R + OFT!(X, 5)
@@ -2515,6 +2368,7 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
             CS = CS + OFT!(X, 13)
             E = E + OFT!(X, 14)
         End If
+
     Next
 
     If ATBATS! <> 0 Then
@@ -2525,6 +2379,7 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
 
     Print
     Print "LG TOTALS";
+
     'AVG
     Print Tab(13); Using ".###"; statCalc!;
 
@@ -2538,6 +2393,9 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
     QK$ = GetKeyPress$
     '-----
 
+    '------------------------------
+    '         TEAM PITCHING
+    '------------------------------
     Cls
 
     Locate 2, 1
@@ -2581,6 +2439,7 @@ Sub LeaderStats_Screen (league$, div1$, div2$, div3$)
 
     Print
     Print Tab(13); Using "##.##"; statCalc!
+
     'PRINT "COMPLETE GAMES: "; G
     'PRINT "APPEARANCES: "; APP
 

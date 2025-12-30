@@ -1707,10 +1707,15 @@ Sub CreateSeasonSchedule ()
     Color 14: Print "RETURN TO FULL COUNT MAIN MENU"
 
     Do
+
         I$ = GetKeyPress$
         schedSizeOpt = Val(I$)
-        If I$ = Chr$(27) Then schedSizeOpt = 5
-    Loop Until schedSizeOpt >= 1 And schedSizeOpt <= 5
+
+        If I$ = Chr$(27) Then 
+            schedSizeOpt = 5
+        End If
+
+    Loop Until schedSizeOpt >= 0 And schedSizeOpt <= 5
 
     If schedSizeOpt <> 4 Then
 
