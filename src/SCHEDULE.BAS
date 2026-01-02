@@ -1385,7 +1385,7 @@ Sub ChangeGlobalSettings ()
     'settings in the schedule the same.
     playerOpt = scheduleNG%(1, 8)
 
-    desigHit = 2 'Default to no change for each game's DH 
+    desigHit = 2 'Default to no change for each game's DH
     'This would otherwise be stored in scheduleNG%(1, 3)
 
     displayPause! = scheduleNG%(1, 4) / 10
@@ -1480,7 +1480,7 @@ Sub ChangeGlobalSettings ()
                 batterMinimumOpt = 1 - batterMinimumOpt
 
             Case 6:
-               ghostRunOpt = 1 - ghostRunOpt
+                ghostRunOpt = 1 - ghostRunOpt
 
             Case 7:
                 useInj = 1 - useInj
@@ -1711,7 +1711,7 @@ Sub CreateSeasonSchedule ()
         I$ = GetKeyPress$
         schedSizeOpt = Val(I$)
 
-        If I$ = Chr$(27) Then 
+        If I$ = Chr$(27) Then
             schedSizeOpt = 5
         End If
 
@@ -1744,7 +1744,6 @@ Sub CreateSeasonSchedule ()
             Open templateFile$ For Random As #1 Len = SCHEDULE_SIZE_BYTES
 
             fileLength& = LOF(1)
-
             scheduleAP%(0) = fileLength& / SCHEDULE_SIZE_BYTES
             BS% = Int((scheduleAP%(0) - 1) / SCHED_ENTRIES_PER_SCREEN)
 

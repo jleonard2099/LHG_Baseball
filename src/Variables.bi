@@ -52,9 +52,9 @@ Dim oneRunWins, oneRunLosses
 
 
 ' Conferences / Orgs
-'Dim memberIdx(TEAMS_PER_LEAGUE)
-'Dim memberName$(TEAMS_PER_LEAGUE)
-'Dim memberYear$(TEAMS_PER_LEAGUE)
+Dim memberIdx(TEAMS_PER_LEAGUE)
+Dim memberName$(TEAMS_PER_LEAGUE)
+Dim memberYear$(TEAMS_PER_LEAGUE)
 
 '-- For Road Data
 Dim gameAtt_Road&(MAX_SCHED_STATS)
@@ -70,7 +70,7 @@ Dim losePitcher_Road$(MAX_SCHED_STATS), winPitcher_Road$(MAX_SCHED_STATS)
 ' -------------------------
 Dim BS%, NS%
 
-'ReDim scheduleAP%(MAX_SCHEDULE_GAMES), scheduleNG%(MAX_SCHEDULE_GAMES, 20)
+ReDim scheduleAP%(MAX_SCHEDULE_GAMES), scheduleNG%(MAX_SCHEDULE_GAMES, 20)
 ReDim homeScores(MAX_SCHEDULE_GAMES), visitorScores(MAX_SCHEDULE_GAMES)
 
 ReDim scheduleH$(MAX_SCHEDULE_GAMES), scheduleV$(MAX_SCHEDULE_GAMES)
