@@ -321,10 +321,12 @@ Sub ViewSearchResults (posnType, posnDesc$, positionFile$)
                         End If
 
                         If I2 > 0 And I2 < 100 Then 
-                            Print Tab(66); ".0";: Print Using "##"; I2;
+                            Print Tab(66); ".0";
+                            Print Using "##"; I2;
                         End If
                         If I2 >= 100 Then 
-                            Print Tab(66); ".";: Print Using "###"; I2;
+                            Print Tab(66); ".";
+                            Print Using "###"; I2;
                         End If
 
                         If batterRatings(I, 4) = 0 Or I3 = 0 Then 
@@ -332,10 +334,12 @@ Sub ViewSearchResults (posnType, posnDesc$, positionFile$)
                         End If
 
                         If I3 > 0 And I3 < 100 Then 
-                            Print Tab(71); ".0";: Print Using "##"; I3;
+                            Print Tab(71); ".0";
+                            Print Using "##"; I3;
                         End If
                         If I3 >= 100 Then 
-                            Print Tab(71); ".";: Print Using "###"; I3;
+                            Print Tab(71); ".";
+                            Print Using "###"; I3;
                         End If
 
                         If batterRatings(I, 4) = 0 Or I4 = 0 Then 
@@ -343,10 +347,12 @@ Sub ViewSearchResults (posnType, posnDesc$, positionFile$)
                         End If
 
                         If I4 > 0 And I4 < 100 Then 
-                            Print Tab(76); ".0";: Print Using "##"; I4;
+                            Print Tab(76); ".0";
+                            Print Using "##"; I4;
                         End If
                         If I4 >= 100 Then 
-                            Print Tab(76); ".";: Print Using "###"; I4
+                            Print Tab(76); ".";
+                            Print Using "###"; I4
 
                         End If
 
@@ -388,9 +394,9 @@ Sub SearchResults_Report (printDest, destFile$, posnType, posnDesc$, positionFil
 
     Open destFile$ For Output As #1
 
-    Print #1,  Tab(55); posnDesc$
+    Print #1, Tab(55); posnDesc$
     Print #1, 
-    Print #1,  "PLAYER            TEAM           B      G    AB   HITS   2B   3B   HR   RBI   RUNS   SO    BB   SB   CS    AVG    OBP    SLG"
+    Print #1, "PLAYER            TEAM           B      G    AB   HITS   2B   3B   HR   RBI   RUNS   SO    BB   SB   CS    AVG    OBP    SLG"
 
     For J = 1 To TEAMS_PER_LEAGUE
 
@@ -407,19 +413,19 @@ Sub SearchResults_Report (printDest, destFile$, posnType, posnDesc$, positionFil
                         currPosition = currPosition + 1
 
                         If (currPosition Mod 50 = 1) Then
-                            Print #1,  Chr$(12)
-                            Print #1,  Tab(50); posnDesc$
+                            Print #1, Chr$(12)
+                            Print #1, Tab(50); posnDesc$
                             Print #1, 
-                            Print #1,  "PLAYER               TEAM         T     G    W    L    SV    GS     IP    H    BB    SO    ERA    HR"
+                            Print #1, "PLAYER               TEAM         T     G    W    L    SV    GS     IP    H    BB    SO    ERA    HR"
                         End If
 
                         If batterRatings(I, 22) = posnType Then
-                            Print #1,  batterNames$(I);
+                            Print #1, batterNames$(I);
                         Else
-                            Print #1,  Tab(3); batterNames$(I);
+                            Print #1, Tab(3); batterNames$(I);
                         End If
 
-                        Print #1,  Tab(16); Left$(T$, 2); NN$;
+                        Print #1, Tab(16); Left$(T$, 2); NN$;
 
                         If batterRatings(I, 0) = -1 Then 
                             BB$(I) = "L"
@@ -431,19 +437,19 @@ Sub SearchResults_Report (printDest, destFile$, posnType, posnDesc$, positionFil
                             BB$(I) = "S"
                         End If
 
-                        Print #1,  Tab(34); BB$(I);
-                        Print #1,  Tab(39); Using "###"; batterRatings(I, 3);
-                        Print #1,  Tab(45); Using "###"; batterRatings(I, 4);
-                        Print #1,  Tab(52); Using "###"; batterRatings(I, 6);
-                        Print #1,  Tab(58); Using "##"; batterRatings(I, 7);
-                        Print #1,  Tab(63); Using "##"; batterRatings(I, 8);
-                        Print #1,  Tab(68); Using "##"; batterRatings(I, 9);
-                        Print #1,  Tab(73); Using "###"; batterRatings(I, 10);
-                        Print #1,  Tab(80); Using "###"; batterRatings(I, 5);
-                        Print #1,  Tab(85); Using "###"; batterRatings(I, 11);
-                        Print #1,  Tab(91); Using "###"; batterRatings(I, 12);
-                        Print #1,  Tab(96); Using "###"; batterRatings(I, 13);
-                        Print #1,  Tab(102); Using "##"; batterRatings(I, 14);
+                        Print #1, Tab(34); BB$(I);
+                        Print #1, Tab(39); Using "###"; batterRatings(I, 3);
+                        Print #1, Tab(45); Using "###"; batterRatings(I, 4);
+                        Print #1, Tab(52); Using "###"; batterRatings(I, 6);
+                        Print #1, Tab(58); Using "##"; batterRatings(I, 7);
+                        Print #1, Tab(63); Using "##"; batterRatings(I, 8);
+                        Print #1, Tab(68); Using "##"; batterRatings(I, 9);
+                        Print #1, Tab(73); Using "###"; batterRatings(I, 10);
+                        Print #1, Tab(80); Using "###"; batterRatings(I, 5);
+                        Print #1, Tab(85); Using "###"; batterRatings(I, 11);
+                        Print #1, Tab(91); Using "###"; batterRatings(I, 12);
+                        Print #1, Tab(96); Using "###"; batterRatings(I, 13);
+                        Print #1, Tab(102); Using "##"; batterRatings(I, 14);
 
                         I2 = 0
                         I3 = 0
@@ -455,35 +461,41 @@ Sub SearchResults_Report (printDest, destFile$, posnType, posnDesc$, positionFil
                             I4 = Int(((batterRatings(I, 6) + batterRatings(I, 11)) / (batterRatings(I, 11) + batterRatings(I, 4)) + .0005) * 1000)
                         End If
 
-                        If batterRatings(I, 4) = 0 Or I2 = 0 Then Print #1,  Tab(107); ".000";
+                        If batterRatings(I, 4) = 0 Or I2 = 0 Then Print #1, Tab(107); ".000";
 
                         If I2 > 0 And I2 < 100 Then 
-                            Print #1,  Tab(107); ".0";: Print #1,  Using "##"; I2;
+                            Print #1, Tab(107); ".0";
+                            Print #1, Using "##"; I2;
                         End If
                         If I2 >= 100 Then 
-                            Print #1,  Tab(107); ".";: Print #1,  Using "###"; I2;
+                            Print #1, Tab(107); ".";
+                            Print #1, Using "###"; I2;
                         End If
 
                         If batterRatings(I, 4) = 0 Or I3 = 0 Then 
-                            Print #1,  Tab(114); ".000";
+                            Print #1, Tab(114); ".000";
                         End If
 
                         If I3 > 0 And I3 < 100 Then 
-                            Print #1,  Tab(114); ".0";: Print #1,  Using "##"; I3;
+                            Print #1, Tab(114); ".0";
+                            Print #1, Using "##"; I3;
                         End If
                         If I3 >= 100 Then 
-                            Print #1,  Tab(114); ".";: Print #1,  Using "###"; I3;
+                            Print #1, Tab(114); ".";
+                            Print #1, Using "###"; I3;
                         End If
 
                         If batterRatings(I, 4) = 0 Or I4 = 0 Then 
-                            Print #1,  Tab(121); ".000";
+                            Print #1, Tab(121); ".000";
                         End If
 
                         If I4 > 0 And I4 < 100 Then 
-                            Print #1,  Tab(121); ".0";: Print #1,  Using "##"; I4;
+                            Print #1, Tab(121); ".0";
+                            Print #1, Using "##"; I4;
                         End If
                         If I4 >= 100 Then 
-                            Print #1,  Tab(121); ".";: Print #1,  Using "###"; I4
+                            Print #1, Tab(121); ".";
+                            Print #1, Using "###"; I4
                         End If
 
                     End If
@@ -822,9 +834,9 @@ Sub PitchersHanded_Print (printDest, destFile$, pitchPosnDesc$)
 
     Open destFile$ For Output As #1
 
-    Print #1,  Tab(50); pitchPosnDesc$
+    Print #1, Tab(50); pitchPosnDesc$
     Print #1, 
-    Print #1,  "PLAYER               TEAM         T     G    W    L    SV    GS     IP    H    BB    SO    ERA    HR"
+    Print #1, "PLAYER               TEAM         T     G    W    L    SV    GS     IP    H    BB    SO    ERA    HR"
 
     For J = 1 To TEAMS_PER_LEAGUE
 
@@ -840,14 +852,14 @@ Sub PitchersHanded_Print (printDest, destFile$, pitchPosnDesc$)
                         currPosition = currPosition + 1
 
                         If (currPosition Mod 50 = 1) Then
-                            Print #1,  Chr$(12)
-                            Print #1,  Tab(50); pitchPosnDesc$
+                            Print #1, Chr$(12)
+                            Print #1, Tab(50); pitchPosnDesc$
                             Print #1, 
-                            Print #1,  "PLAYER               TEAM         T     G    W    L    SV    GS     IP    H    BB    SO    ERA    HR"
+                            Print #1, "PLAYER               TEAM         T     G    W    L    SV    GS     IP    H    BB    SO    ERA    HR"
                         End If
 
-                        Print #1,  pitcherNames$(I);
-                        Print #1,  Tab(19); Left$(T$, 2); NN$;
+                        Print #1, pitcherNames$(I);
+                        Print #1, Tab(19); Left$(T$, 2); NN$;
 
                         If pitcherRatings(I, 0) = 1 Then 
                             pitchHand$(I) = "R"
@@ -857,18 +869,18 @@ Sub PitchersHanded_Print (printDest, destFile$, pitchPosnDesc$)
                             pitchHand$(I) = "L"
                         End If
 
-                        Print #1,  Tab(35); pitchHand$(I);
-                        Print #1,  Tab(39); Using "###"; pitcherRatings(I, 4);
-                        Print #1,  Tab(45); Using "##"; pitcherRatings(I, 1);
-                        Print #1,  Tab(50); Using "##"; pitcherRatings(I, 2);
-                        Print #1,  Tab(56); Using "##"; pitcherRatings(I, 3);
-                        Print #1,  Tab(62); Using "##"; pitcherRatings(I, 5);
-                        Print #1,  Tab(68); Using "###"; pitcherRatings(I, 6);
-                        Print #1,  Tab(73); Using "###"; pitcherRatings(I, 7);
-                        Print #1,  Tab(79); Using "###"; pitcherRatings(I, 8);
-                        Print #1,  Tab(85); Using "###"; pitcherRatings(I, 9);
-                        Print #1,  Tab(90); Using "##.##"; pitcherRatings(I, 10) / 100;
-                        Print #1,  Tab(99); Using "##"; pitcherRatings(I, 13)
+                        Print #1, Tab(35); pitchHand$(I);
+                        Print #1, Tab(39); Using "###"; pitcherRatings(I, 4);
+                        Print #1, Tab(45); Using "##"; pitcherRatings(I, 1);
+                        Print #1, Tab(50); Using "##"; pitcherRatings(I, 2);
+                        Print #1, Tab(56); Using "##"; pitcherRatings(I, 3);
+                        Print #1, Tab(62); Using "##"; pitcherRatings(I, 5);
+                        Print #1, Tab(68); Using "###"; pitcherRatings(I, 6);
+                        Print #1, Tab(73); Using "###"; pitcherRatings(I, 7);
+                        Print #1, Tab(79); Using "###"; pitcherRatings(I, 8);
+                        Print #1, Tab(85); Using "###"; pitcherRatings(I, 9);
+                        Print #1, Tab(90); Using "##.##"; pitcherRatings(I, 10) / 100;
+                        Print #1, Tab(99); Using "##"; pitcherRatings(I, 13)
 
                     End If
 
@@ -923,9 +935,9 @@ Sub Pitchers10_Print (printDest, destFile$, PC, pitchPosnDesc$, positionFile$)
 
     Open destFile$ For Output As #1
     
-    Print #1,  Tab(50); pitchPosnDesc$
+    Print #1, Tab(50); pitchPosnDesc$
     Print #1, 
-    Print #1,  "PLAYER               TEAM         T     G    W    L    SV    GS     IP    H    BB    SO    ERA    HR"
+    Print #1, "PLAYER               TEAM         T     G    W    L    SV    GS     IP    H    BB    SO    ERA    HR"
 
     For J = 1 To TEAMS_PER_LEAGUE
 
@@ -942,14 +954,14 @@ Sub Pitchers10_Print (printDest, destFile$, PC, pitchPosnDesc$, positionFile$)
                         currPosition = currPosition + 1
 
                         If (currPosition Mod 50 = 1) Then
-                            Print #1,  Chr$(12)
-                            Print #1,  Tab(50); pitchPosnDesc$
+                            Print #1, Chr$(12)
+                            Print #1, Tab(50); pitchPosnDesc$
                             Print #1, 
-                            Print #1,  "PLAYER               TEAM         T     G    W    L    SV    GS     IP    H    BB    SO    ERA    HR"
+                            Print #1, "PLAYER               TEAM         T     G    W    L    SV    GS     IP    H    BB    SO    ERA    HR"
                         End If
 
-                        Print #1,  pitcherNames$(I);
-                        Print #1,  Tab(19); Left$(T$, 2); NN$;
+                        Print #1, pitcherNames$(I);
+                        Print #1, Tab(19); Left$(T$, 2); NN$;
 
                         If pitcherRatings(I, 0) = 1 Then 
                             pitchHand$(I) = "R"
@@ -958,18 +970,18 @@ Sub Pitchers10_Print (printDest, destFile$, PC, pitchPosnDesc$, positionFile$)
                             pitchHand$(I) = "L"
                         End If
 
-                        Print #1,  Tab(35); pitchHand$(I);
-                        Print #1,  Tab(39); Using "###"; pitcherRatings(I, 4);
-                        Print #1,  Tab(45); Using "##"; pitcherRatings(I, 1);
-                        Print #1,  Tab(50); Using "##"; pitcherRatings(I, 2);
-                        Print #1,  Tab(56); Using "##"; pitcherRatings(I, 3);
-                        Print #1,  Tab(62); Using "##"; pitcherRatings(I, 5);
-                        Print #1,  Tab(68); Using "###"; pitcherRatings(I, 6);
-                        Print #1,  Tab(73); Using "###"; pitcherRatings(I, 7);
-                        Print #1,  Tab(79); Using "###"; pitcherRatings(I, 8);
-                        Print #1,  Tab(85); Using "###"; pitcherRatings(I, 9);
-                        Print #1,  Tab(90); Using "##.##"; pitcherRatings(I, 10) / 100;
-                        Print #1,  Tab(99); Using "##"; pitcherRatings(I, 13)
+                        Print #1, Tab(35); pitchHand$(I);
+                        Print #1, Tab(39); Using "###"; pitcherRatings(I, 4);
+                        Print #1, Tab(45); Using "##"; pitcherRatings(I, 1);
+                        Print #1, Tab(50); Using "##"; pitcherRatings(I, 2);
+                        Print #1, Tab(56); Using "##"; pitcherRatings(I, 3);
+                        Print #1, Tab(62); Using "##"; pitcherRatings(I, 5);
+                        Print #1, Tab(68); Using "###"; pitcherRatings(I, 6);
+                        Print #1, Tab(73); Using "###"; pitcherRatings(I, 7);
+                        Print #1, Tab(79); Using "###"; pitcherRatings(I, 8);
+                        Print #1, Tab(85); Using "###"; pitcherRatings(I, 9);
+                        Print #1, Tab(90); Using "##.##"; pitcherRatings(I, 10) / 100;
+                        Print #1, Tab(99); Using "##"; pitcherRatings(I, 13)
                     End If
 
                 End If

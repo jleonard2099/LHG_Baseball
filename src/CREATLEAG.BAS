@@ -260,7 +260,7 @@ Sub ReviewEditLeague (leagueFile$)
 
             If choice = 1 Then
                 'Add team
-                teamNbr = 0
+                'teamNbr = 0
                 Call ChooseTeam(memberYear$(teamIndex), NTMS, memberIdx(teamIndex), memberName$(teamIndex))
             Else
                 'Remove team

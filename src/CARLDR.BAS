@@ -422,10 +422,22 @@ Sub CareerLeaders_Report (careerName$, printDest, destFile$)
     Print #1, Tab(5); "AT BATS"; Tab(29); "HITS"; Tab(54); "RUNS SCORED"; Tab(79); "RBI'S"
 
     For I = 0 To 19
-        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(0, I), 13);: Print #1, Tab(18); Using "####"; carLdrBatVal!(0, I);
-        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(1, I), 13);: Print #1, Tab(43); Using "####"; carLdrBatVal!(1, I);
-        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(2, I), 13);: Print #1, Tab(68); Using "####"; carLdrBatVal!(2, I);
-        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(3, I), 13);: Print #1, Tab(93); Using "####"; carLdrBatVal!(3, I)
+        Print #1, Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrBatName$(0, I), 13);
+		Print #1, Tab(18); Using "####"; carLdrBatVal!(0, I);
+        Print #1, Tab(25); Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrBatName$(1, I), 13);
+		Print #1, Tab(43); Using "####"; carLdrBatVal!(1, I);
+        Print #1, Tab(50); Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrBatName$(2, I), 13);
+		Print #1, Tab(68); Using "####"; carLdrBatVal!(2, I);
+        Print #1, Tab(75); Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrBatName$(3, I), 13);
+		Print #1, Tab(93); Using "####"; carLdrBatVal!(3, I)
     Next
 
     Print #1,
@@ -434,24 +446,48 @@ Sub CareerLeaders_Report (careerName$, printDest, destFile$)
     Print #1, Tab(5); "DOUBLES"; Tab(29); "TRIPLES"; Tab(54); "HOME RUNS"; Tab(79); "WALKS"
 
     For I = 0 To 19
-        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(4, I), 13);: Print #1, Tab(18); Using "####"; carLdrBatVal!(4, I);
-        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(5, I), 13);: Print #1, Tab(43); Using "####"; carLdrBatVal!(5, I);
-        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(6, I), 13);: Print #1, Tab(68); Using "####"; carLdrBatVal!(6, I);
-        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(7, I), 13);: Print #1, Tab(93); Using "####"; carLdrBatVal!(7, I)
+        Print #1, Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrBatName$(4, I), 13);
+		Print #1, Tab(18); Using "####"; carLdrBatVal!(4, I);
+        Print #1, Tab(25); Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrBatName$(5, I), 13);
+		Print #1, Tab(43); Using "####"; carLdrBatVal!(5, I);
+        Print #1, Tab(50); Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrBatName$(6, I), 13);
+		Print #1, Tab(68); Using "####"; carLdrBatVal!(6, I);
+        Print #1, Tab(75); Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrBatName$(7, I), 13);
+		Print #1, Tab(93); Using "####"; carLdrBatVal!(7, I)
     Next
 
-    Print #1, Chr$(12)
-
+    Print #1,
+    If printDest = 1 Then Print #1, Chr$(12)
     Print #1,
     Print #1,
 
     Print #1, Tab(5); "STRIKE OUTS"; Tab(29); "STOLEN BASES"; Tab(54); "CAUGHT STEALING"; Tab(79); "ERRORS"
 
     For I = 0 To 19
-        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(10, I), 13);: Print #1, Tab(18); Using "####"; carLdrBatVal!(10, I);
-        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(11, I), 13);: Print #1, Tab(43); Using "####"; carLdrBatVal!(11, I);
-        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(12, I), 13);: Print #1, Tab(68); Using "####"; carLdrBatVal!(12, I);
-        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(13, I), 13);: Print #1, Tab(93); Using "####"; carLdrBatVal!(13, I)
+        Print #1, Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrBatName$(10, I), 13);
+		Print #1, Tab(18); Using "####"; carLdrBatVal!(10, I);
+        Print #1, Tab(25); Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrBatName$(11, I), 13);
+		Print #1, Tab(43); Using "####"; carLdrBatVal!(11, I);
+        Print #1, Tab(50); Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrBatName$(12, I), 13);
+		Print #1, Tab(68); Using "####"; carLdrBatVal!(12, I);
+        Print #1, Tab(75); Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrBatName$(13, I), 13);
+		Print #1, Tab(93); Using "####"; carLdrBatVal!(13, I)
     Next
 
     Print #1,
@@ -460,14 +496,26 @@ Sub CareerLeaders_Report (careerName$, printDest, destFile$)
     Print #1, Tab(5); "ON-BASE PCT."; Tab(29); "GAMES PLAYED"; Tab(54); "BATTING AVERAGE"; Tab(79); "SLUGGING PCT."
 
     For I = 0 To 19
-        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(17, I), 13);: Print #1, Tab(18); Using "#.###"; carLdrBatVal!(17, I);
-        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(14, I), 13);: Print #1, Tab(43); Using "####"; carLdrBatVal!(14, I);
-        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(15, I), 13);: Print #1, Tab(68); Using "#.###"; carLdrBatVal!(15, I);
-        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrBatName$(16, I), 13);: Print #1, Tab(93); Using "#.###"; carLdrBatVal!(16, I)
+        Print #1, Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrBatName$(17, I), 13);
+		Print #1, Tab(18); Using "#.###"; carLdrBatVal!(17, I);
+        Print #1, Tab(25); Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrBatName$(14, I), 13);
+		Print #1, Tab(43); Using "####"; carLdrBatVal!(14, I);
+        Print #1, Tab(50); Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrBatName$(15, I), 13);
+		Print #1, Tab(68); Using "#.###"; carLdrBatVal!(15, I);
+        Print #1, Tab(75); Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrBatName$(16, I), 13);
+		Print #1, Tab(93); Using "#.###"; carLdrBatVal!(16, I)
     Next
 
-    Print #1, Chr$(12)
-
+    Print #1,
+    If printDest = 1 Then Print #1, Chr$(12)
     Print #1,
     Print #1,
 
@@ -477,14 +525,27 @@ Sub CareerLeaders_Report (careerName$, printDest, destFile$)
 
     For I = 0 To 19
 
-        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(0, I), 13);: Print #1, Tab(18); Using "###"; Int(carLdrPitVal!(0, I) / 3);
+        Print #1, Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrPitName$(0, I), 13);
+		Print #1, Tab(18); Using "###"; Int(carLdrPitVal!(0, I) / 3);
         If carLdrPitVal!(0, I) - (Int(carLdrPitVal!(0, I) / 3) * 3) > 0 Then
-            Print #1, ".";: Print #1, Using "#"; carLdrPitVal!(0, I) - (Int(carLdrPitVal!(0, I) / 3) * 3);
+            Print #1, ".";
+            Print #1, Using "#"; carLdrPitVal!(0, I) - (Int(carLdrPitVal!(0, I) / 3) * 3);
         End If
 
-        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(1, I), 13);: Print #1, Tab(43); Using "####"; carLdrPitVal!(1, I);
-        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(2, I), 13);: Print #1, Tab(68); Using "####"; carLdrPitVal!(2, I);
-        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(3, I), 13);: Print #1, Tab(93); Using "####"; carLdrPitVal!(3, I)
+        Print #1, Tab(25); Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrPitName$(1, I), 13);
+		Print #1, Tab(43); Using "####"; carLdrPitVal!(1, I);
+        Print #1, Tab(50); Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrPitName$(2, I), 13);
+		Print #1, Tab(68); Using "####"; carLdrPitVal!(2, I);
+        Print #1, Tab(75); Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrPitName$(3, I), 13);
+		Print #1, Tab(93); Using "####"; carLdrPitVal!(3, I)
 
     Next
 
@@ -494,24 +555,48 @@ Sub CareerLeaders_Report (careerName$, printDest, destFile$)
     Print #1, Tab(5); "WALKS"; Tab(29); "STRIKEOUTS"; Tab(54); "WINS"; Tab(79); "LOSSES"
 
     For I = 0 To 19
-        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(4, I), 13);: Print #1, Tab(18); Using "####"; carLdrPitVal!(4, I);
-        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(5, I), 13);: Print #1, Tab(43); Using "####"; carLdrPitVal!(5, I);
-        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(6, I), 13);: Print #1, Tab(68); Using "####"; carLdrPitVal!(6, I);
-        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(7, I), 13);: Print #1, Tab(93); Using "####"; carLdrPitVal!(7, I)
+        Print #1, Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrPitName$(4, I), 13);
+		Print #1, Tab(18); Using "####"; carLdrPitVal!(4, I);
+        Print #1, Tab(25); Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrPitName$(5, I), 13);
+		Print #1, Tab(43); Using "####"; carLdrPitVal!(5, I);
+        Print #1, Tab(50); Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrPitName$(6, I), 13);
+		Print #1, Tab(68); Using "####"; carLdrPitVal!(6, I);
+        Print #1, Tab(75); Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrPitName$(7, I), 13);
+		Print #1, Tab(93); Using "####"; carLdrPitVal!(7, I)
     Next
 
-    Print #1, Chr$(12)
-
+    Print #1,
+    If printDest = 1 Then Print #1, Chr$(12)
     Print #1,
     Print #1,
 
     Print #1, Tab(5); "GAMES"; Tab(29); "GAMES STARTED"; Tab(54); "COMPLETE GAMES"; Tab(79); "SHUTOUTS"
 
     For I = 0 To 19
-        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(8, I), 13);: Print #1, Tab(18); Using "####"; carLdrPitVal!(8, I);
-        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(9, I), 13);: Print #1, Tab(43); Using "####"; carLdrPitVal!(9, I);
-        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(10, I), 13);: Print #1, Tab(68); Using "####"; carLdrPitVal!(10, I);
-        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(11, I), 13);: Print #1, Tab(93); Using "####"; carLdrPitVal!(11, I)
+        Print #1, Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrPitName$(8, I), 13);
+		Print #1, Tab(18); Using "####"; carLdrPitVal!(8, I);
+        Print #1, Tab(25); Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrPitName$(9, I), 13);
+		Print #1, Tab(43); Using "####"; carLdrPitVal!(9, I);
+        Print #1, Tab(50); Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrPitName$(10, I), 13);
+		Print #1, Tab(68); Using "####"; carLdrPitVal!(10, I);
+        Print #1, Tab(75); Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrPitName$(11, I), 13);
+		Print #1, Tab(93); Using "####"; carLdrPitVal!(11, I)
     Next
 
     Print #1,
@@ -521,20 +606,31 @@ Sub CareerLeaders_Report (careerName$, printDest, destFile$)
 
     For I = 0 To 19
 
-        Print #1, Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(12, I), 13);: Print #1, Tab(18); Using "####"; carLdrPitVal!(12, I);
-        Print #1, Tab(25); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(13, I), 13);: Print #1, Tab(43); Using "####"; carLdrPitVal!(13, I);
-        Print #1, Tab(50); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(14, I), 13);: Print #1, Tab(68); Using "####"; carLdrPitVal!(14, I);
+        Print #1, Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrPitName$(12, I), 13);
+		Print #1, Tab(18); Using "####"; carLdrPitVal!(12, I);
+        Print #1, Tab(25); Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrPitName$(13, I), 13);
+		Print #1, Tab(43); Using "####"; carLdrPitVal!(13, I);
+        Print #1, Tab(50); Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrPitName$(14, I), 13);
+		Print #1, Tab(68); Using "####"; carLdrPitVal!(14, I);
 
-        Print #1, Tab(75); Using "##"; I + 1;: Print #1, ". ";: Print #1, Left$(carLdrPitName$(15, I), 13);
+        Print #1, Tab(75); Using "##"; I + 1;
+		Print #1, ". ";
+		Print #1, Left$(carLdrPitName$(15, I), 13);
+
+        Print #1, Tab(93); 
         If carLdrPitVal!(15, I) = 1000 Then
-            Print #1, Tab(93); Using "###.##"; 0.0
+            Print #1, Using "###.##"; 0.0
         Else
-            Print #1, Tab(93); Using "###.##"; carLdrPitVal!(15, I)
+            Print #1, Using "###.##"; carLdrPitVal!(15, I)
         End If
 
     Next
-
-    Print #1, Chr$(12)
 
     If printDest = 1 Then
 

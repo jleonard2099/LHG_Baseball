@@ -847,11 +847,15 @@ Sub EditBatter ()
 
         For I = 0 To 10
             Locate I + 5, 5
-            Print Using "##"; I + 1;: Print " "; batterNames$(I); Tab(40);
-            Print Using "##"; I + 13;: Print " "; batterNames$(I + 12)
+            Print Using "##"; I + 1;
+            Print " "; batterNames$(I); Tab(40);
+            Print Using "##"; I + 13;
+            Print " "; batterNames$(I + 12)
         Next
 
-        Locate , 5: Print Using "##"; 12;: Print " "; batterNames$(11)
+        Locate , 5
+        Print Using "##"; 12;
+        Print " "; batterNames$(11)
 
         Print
 
@@ -3533,10 +3537,12 @@ Sub ViewHitters (teamName$)
                     Print Tab(68); ".000"
                 End If
                 If batAvg! > 0 And batAvg! < 100 Then
-                    Print Tab(68); ".0";: Print Tab(70); Using "##"; batAvg!
+                    Print Tab(68); ".0";
+                    Print Tab(70); Using "##"; batAvg!
                 End If
                 If batAvg! > 100 Then
-                    Print Tab(68); ".";: Print Tab(69); Using "###"; batAvg!
+                    Print Tab(68); ".";
+                    Print Tab(69); Using "###"; batAvg!
                 End If
 
             End If
@@ -3721,10 +3727,12 @@ Sub ViewPitcherHittingFielding ()
             End If
 
             If batAvg! > 0 And batAvg! < 100 Then
-                Print Tab(58); ".0";: Print Tab(61); Using "##"; batAvg!;
+                Print Tab(58); ".0";
+                Print Tab(61); Using "##"; batAvg!;
             End If
             If batAvg! > 100 And batAvg! < 1000 Then
-                Print Tab(58); ".";: Print Tab(60); Using "###"; batAvg!;
+                Print Tab(58); ".";
+                Print Tab(60); Using "###"; batAvg!;
             End If
             If batAvg! >= 1000 Then
                 Print Tab(58); " ---";

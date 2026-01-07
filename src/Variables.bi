@@ -176,7 +176,7 @@ Dim divWins(1 To 40), divLosses(1 To 40)
 
 Dim leaderNames$(46)
 Dim leaderTeams$(46)
-Dim leaderPlayer$(298)
+'Dim leaderPlayer$(298)
 Dim leaderStatVal2!(46, 42)
 Dim leaderVals!(298, 2)
 
@@ -186,7 +186,6 @@ Dim leagLdrVal1!(298), leagLdrVal2!(298)
 Dim ldrBatStat!(24), ldrPitStat!(23)
 
 Dim BA$(40), ER$(40)
-Dim LF$(70), RT$(70)
 
 Dim DFT!(40, 20), OFT!(40, 20)
 

@@ -1004,7 +1004,7 @@ Sub PrintSeasonRecords (printDest, destFile$, leagueName$)
 
         For I = 1 To 20
             Print #1, batIndCategory$(I); Tab(28); batRecPlyr$(I); Tab(43); batRecTeam$(I); Tab(62); Using "####"; batRecVal!(I)
-            '; Tab(66); batRecYr!(I)
+            '; Print #1, Tab(66); Using "####"; batRecYr!(I)
         Next
 
         For I = 21 To 23
@@ -1024,7 +1024,10 @@ Sub PrintSeasonRecords (printDest, destFile$, leagueName$)
 
         Print #1, batIndCategory$(32); Tab(28); batRecPlyr$(32); Tab(43); batRecTeam$(32); Tab(62); Using ".###"; batRecVal!(32)
         '; Print #1, Tab(66); Using "####"; batRecYr!(32)
-        Print #1, Chr$(12)
+
+        Print #1, 
+        If printDest = 1 Then Print #1, Chr$(12)
+        Print #1, 
 
         Print #1, leagueFile$; "  PITCHING RECORDS"
         Print #1,
@@ -1063,7 +1066,9 @@ Sub PrintSeasonRecords (printDest, destFile$, leagueName$)
             '; Print #1, Tab(72); Using "####"; pitRecYr!(I)
         Next
 
-        Print #1, Chr$(12)
+        Print #1, 
+        If printDest = 1 Then Print #1, Chr$(12)
+        Print #1, 
 
         Print #1, leagueFile$; "  TEAM RECORDS"
         Print #1,
@@ -1114,8 +1119,6 @@ Sub PrintSeasonRecords (printDest, destFile$, leagueName$)
 
         Print #1, pitTeamCategory$(18); Tab(28); pitRecTmDesc$(24); Tab(61); Using "##.##"; pitRecTmVal!(24)
         '; Print #1, Tab(72); Using "####"; pitRecTmYr!(24)
-
-        Print #1, Chr$(12)
 
         Close #1
 

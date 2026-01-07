@@ -229,7 +229,8 @@ Sub EditPitchers (careerName$)
 
         For I = 0 To 19
             Color 11: Locate I + 2, 1
-            Print Using "##"; I;: Print " ";: 
+            Print Using "##"; I;
+            Print " ";
             Color 7: Print Left$(careerPitchers$(I), 15)
         Next
 
@@ -409,10 +410,12 @@ Sub PrintBatterStats (printDest, destFile$, careerName$, playerIdx)
         End If
 
         If I2! > 0 And I2! < 100 Then 
-            Print #1, Tab(107); ".0";: Print #1, Using "##"; I2!;
+            Print #1, Tab(107); ".0";
+            Print #1, Using "##"; I2!;
         End If
         If I2! >= 100 Then 
-            Print #1, Tab(107); ".";: Print #1, Using "###"; I2!;
+            Print #1, Tab(107); ".";
+            Print #1, Using "###"; I2!;
         End If
 
         If carRecBatStats(V, playerIdx, 0) = 0 Or I3! = 0 Then 
@@ -420,10 +423,12 @@ Sub PrintBatterStats (printDest, destFile$, careerName$, playerIdx)
         End If
 
         If I3! > 0 And I3! < 100 Then 
-            Print #1, Tab(115); ".0";: Print #1, Using "##"; I3!;
+            Print #1, Tab(115); ".0";
+            Print #1, Using "##"; I3!;
         End If
         If I3! >= 100 Then 
-            Print #1, Tab(115); ".";: Print #1, Using "###"; I3!;
+            Print #1, Tab(115); ".";
+            Print #1, Using "###"; I3!;
         End If
 
         If carRecBatStats(V, playerIdx, 0) = 0 Or I4! = 0 Then 
@@ -431,10 +436,12 @@ Sub PrintBatterStats (printDest, destFile$, careerName$, playerIdx)
         End If
 
         If I4! > 0 And I4! < 100 Then 
-            Print #1, Tab(123); ".";: Print #1, Using "###"; I4!
+            Print #1, Tab(123); ".";
+			Print #1, Using "###"; I4!
         End If
         If I4! >= 100 Then 
-            Print #1, Tab(123); ".";: Print #1, Using "###"; I4!
+            Print #1, Tab(123); ".";
+			Print #1, Using "###"; I4!
         End If
 
     Next V
@@ -482,10 +489,12 @@ Sub PrintBatterStats (printDest, destFile$, careerName$, playerIdx)
         Print #1, Tab(107); ".000";
     End If
     If I2! > 0 And I2! < 100 Then 
-        Print #1, Tab(107); ".0";: Print #1, Using "##"; I2!;
+        Print #1, Tab(107); ".0";
+        Print #1, Using "##"; I2!;
     End If
     If I2! >= 100 Then 
-        Print #1, Tab(107); ".";: Print #1, Using "###"; I2!;
+        Print #1, Tab(107); ".";
+		Print #1, Using "###"; I2!;
     End If
 
     I3! = 0
@@ -495,10 +504,12 @@ Sub PrintBatterStats (printDest, destFile$, careerName$, playerIdx)
         Print #1, Tab(115); ".000";
     End If
     If I3! > 0 And I3! < 100 Then 
-        Print #1, Tab(115); ".0";: Print #1, Using "##"; I3!;
+        Print #1, Tab(115); ".0";
+		Print #1, Using "##"; I3!;
     End If
     If I3! >= 100 Then 
-        Print #1, Tab(115); ".";: Print #1, Using "###"; I3!;
+        Print #1, Tab(115); ".";
+		Print #1, Using "###"; I3!;
     End If
 
     I4! = 0
@@ -510,10 +521,12 @@ Sub PrintBatterStats (printDest, destFile$, careerName$, playerIdx)
         Print #1, Tab(123); ".000"
     End If
     If I4! > 0 And I4! < 100 Then 
-        Print #1, Tab(123); ".";: Print #1, Using "###"; I4!
+        Print #1, Tab(123); ".";
+		Print #1, Using "###"; I4!
     End If
     If I4! >= 100 Then 
-        Print #1, Tab(123); ".";: Print #1, Using "###"; I4!
+        Print #1, Tab(123); ".";
+		Print #1, Using "###"; I4!
     End If
 
     'Why is this important?
@@ -590,10 +603,12 @@ Sub PrintPitcherStats (printDest, destFile$, careerName$, playerIdx)
         Print #1, Tab(20); Using "##"; carRecPitStats(V, playerIdx, 6);
         Print #1, Tab(26); Using "##"; carRecPitStats(V, playerIdx, 7);
         Print #1, Tab(32); Using "##"; carRecPitStats(V, playerIdx, 12);
-        Print #1, Tab(39);: Print #1, Using "###"; Int(carRecPitStats(V, playerIdx, 0) / 3);
+        Print #1, Tab(39);
+		Print #1, Using "###"; Int(carRecPitStats(V, playerIdx, 0) / 3);
 
         If carRecPitStats(V, playerIdx, 0) - (Int(carRecPitStats(V, playerIdx, 0) / 3) * 3) > 0 Then 
-            Print #1, ".";: Print #1, Using "#"; carRecPitStats(V, playerIdx, 0) - (Int(carRecPitStats(V, playerIdx, 0) / 3) * 3);
+            Print #1, ".";
+		Print #1, Using "#"; carRecPitStats(V, playerIdx, 0) - (Int(carRecPitStats(V, playerIdx, 0) / 3) * 3);
         End If
 
         Print #1, Tab(48); Using "###"; carRecPitStats(V, playerIdx, 1);
@@ -612,16 +627,19 @@ Sub PrintPitcherStats (printDest, destFile$, careerName$, playerIdx)
             Print #1, Tab(68); " 0.00";
         End If
         If carRecPitStats(V, playerIdx, 0) > 0 And I2! > 0 And I2! <= 999 Then 
-            Print #1, Tab(68); Using "##"; I3!;: Print #1, ".";
+            Print #1, Tab(68); Using "##"; I3!;
+            Print #1, ".";
         End If
         If carRecPitStats(V, playerIdx, 0) > 0 And I2! >= 1000 Then 
-            Print #1, Tab(68); Using "##"; I3!;: Print #1, ".";
+            Print #1, Tab(68); Using "##"; I3!;
+            Print #1, ".";
         End If
         If carRecPitStats(V, playerIdx, 0) > 0 And I4! = 0 And I2! > 0 Then 
             Print #1, "00";
         End If
         If carRecPitStats(V, playerIdx, 0) > 0 And I4! > 0 And I4! < 10 And I2! > 0 Then 
-            Print #1, "0";: Print #1, Using "#"; I4!;
+            Print #1, "0";
+            Print #1, Using "#"; I4!;
         End If
         If carRecPitStats(V, playerIdx, 0) > 0 And I4! >= 10 And I2! > 0 Then 
             Print #1, Using "##"; I4!;
@@ -688,7 +706,8 @@ Sub PrintPitcherStats (printDest, destFile$, careerName$, playerIdx)
     Print #1, Tab(39); Using "###"; Int(TT16 / 3);
 
     If TT16 - (Int(TT16 / 3) * 3) > 0 Then 
-        Print #1, ".";: Print #1, Using "#"; TT16 - (Int(TT16 / 3) * 3);
+        Print #1, ".";
+        Print #1, Using "#"; TT16 - (Int(TT16 / 3) * 3);
     End If
 
     Print #1, Tab(47); Using "####"; TT17;
@@ -705,16 +724,19 @@ Sub PrintPitcherStats (printDest, destFile$, careerName$, playerIdx)
         Print #1, Tab(68); " 0.00";
     End If
     If TT16 > 0 And I2! > 0 And I2! <= 999 Then 
-        Print #1, Tab(68); Using "##"; I3!;: Print #1, ".";
+        Print #1, Tab(68); Using "##"; I3!;
+        Print #1, ".";
     End If
     If TT16 > 0 And I2! >= 1000 Then 
-        Print #1, Tab(68); Using "##"; I3!;: Print #1, ".";
+        Print #1, Tab(68); Using "##"; I3!;
+        Print #1, ".";
     End If
     If TT16 > 0 And I4! = 0 And I2! > 0 Then 
         Print #1, "00";
     End If
     If TT16 > 0 And I4! > 0 And I4! < 10 And I2! > 0 Then 
-        Print #1, "0";: Print #1, Using "#"; I4!;
+        Print #1, "0";
+        Print #1, Using "#"; I4!;
     End If
     If TT16 > 0 And I4! >= 10 And I2! > 0 Then 
         Print #1, Using "##"; I4!;

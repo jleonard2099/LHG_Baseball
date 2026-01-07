@@ -266,7 +266,8 @@ Sub Comparisons_Report (printDest, destFile$, teamName$)
             End If
 
             If I4 > 0 And I4 < 100 Then
-                Print #1, Tab(90); ".0";: Print #1, Using "##"; I4;
+                Print #1, Tab(90); ".0";
+                Print #1, Using "##"; I4;
             End If
 
             If I4 >= 100 Then
@@ -296,9 +297,16 @@ Sub Comparisons_Report (printDest, destFile$, teamName$)
 
     Next I
 
+    Print #1,
+    If printDest = 1 Then Print #1, Chr$(12)
+    Print #1,
+
     Call TeamComparison_Report(teamName$)
 
-    Print #1, Chr$(12)
+    Print #1,
+    If printDest = 1 Then Print #1, Chr$(12)
+    Print #1,
+
     Print #1, "STAT COMPARISONS FOR "; teamName$
     Print #1,
     Print #1,
@@ -478,16 +486,19 @@ Sub Comparisons_Report (printDest, destFile$, teamName$)
                 Print #1, Tab(100); " 0.00";
             End If
             If statPitcher(I, 0) > 0 And I2 > 0 And I2 <= 999 Then
-                Print #1, Tab(100); Using "##"; I3;: Print #1, ".";
+                Print #1, Tab(100); Using "##"; I3;
+                Print #1, ".";
             End If
             If statPitcher(I, 0) > 0 And I2 >= 1000 Then
-                Print #1, Tab(100); Using "##"; I3;: Print #1, ".";
+                Print #1, Tab(100); Using "##"; I3;
+                Print #1, ".";
             End If
             If statPitcher(I, 0) > 0 And I4 = 0 And I2 > 0 Then
                 Print #1, "00";
             End If
             If statPitcher(I, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then
-                Print #1, "0";: Print #1, Using "#"; I4;
+                Print #1, "0";
+                Print #1, Using "#"; I4;
             End If
             If statPitcher(I, 0) > 0 And I4 >= 10 And I2 > 0 Then
                 Print #1, Using "##"; I4;
@@ -773,7 +784,8 @@ Sub BatterComparisons_Screen (playerIdx, teamName$)
     Color 15, 0
     Locate 2, 30: Print String$(14, 177)
     Color 10
-    Locate 2, 30: Print Left$(batterNames$(playerIdx), 14);: Print " - ";: Print PST$
+    Locate 2, 30: Print Left$(batterNames$(playerIdx), 14);
+    Print " - ";: Print PST$
 
     Color 12
     Locate 5, 2: Print "ACTUAL "
@@ -911,13 +923,16 @@ Sub BatterComparisons_Screen (playerIdx, teamName$)
 
     Color 1, 11
     If batterRatings(playerIdx, 13) > 0 And batterRatings(playerIdx, 14) > 0 Then
-        Locate 11, 68: Print "   ";: Print Using "###"; (batterRatings(playerIdx, 13) / (batterRatings(playerIdx, 13) + batterRatings(playerIdx, 14))) * 100;: Print "% ";
+        Locate 11, 68: Print "   ";
+        Print Using "###"; (batterRatings(playerIdx, 13) / (batterRatings(playerIdx, 13) + batterRatings(playerIdx, 14))) * 100;
+        Print "% ";
         Color 7, 0: Print String$(2, 177)
     End If
 
     Color 1, 11
     Locate 5, 54: Print Using "####"; batterRatings(playerIdx, 13)
-    Locate 5, 58: Print Using "###"; batterRatings(playerIdx, 14);: Print " "
+    Locate 5, 58: Print Using "###"; batterRatings(playerIdx, 14);
+    Print " "
 
     I2 = 0
     I3 = 0
@@ -930,30 +945,39 @@ Sub BatterComparisons_Screen (playerIdx, teamName$)
     End If
     If batterRatings(playerIdx, 4) = 0 Or I2 = 0 Then
         Locate 5, 62
-        Print ".000";: Print " "
+        Print ".000";
+        Print " "
     End If
 
     If I2 > 0 And I2 < 100 Then
         Locate 5, 62
-        Print ".0";: Print Using "##"; I2;: Print " "
+        Print ".0";
+        Print Using "##"; I2;
+        Print " "
     End If
     If I2 >= 100 Then
         Locate 5, 62
-        Print ".";: Print Using "###"; I2;: Print " "
+        Print ".";
+        Print Using "###"; I2;
+        Print " "
     End If
 
     If batterRatings(playerIdx, 4) = 0 Or I3 = 0 Then
         Locate 5, 67
-        Print ".000";: Print " "
+        Print ".000 ";
     End If
 
     If I3 > 0 And I3 < 100 Then
         Locate 5, 67
-        Print ".0";: Print Using "##"; I3;: Print " "
+        Print ".0";
+        Print Using "##"; I3;
+        Print " "
     End If
     If I3 >= 100 Then
         Locate 5, 67
-        Print ".";: Print Using "###"; I3;: Print " "
+        Print ".";
+        Print Using "###"; I3;
+        Print " "
     End If
 
     If batterRatings(playerIdx, 4) = 0 Or I4 = 0 Then
@@ -1089,7 +1113,9 @@ Sub BatterComparisons_Screen (playerIdx, teamName$)
 
     Color 4, 11
     If statBatter(playerIdx, 9) > 0 And statBatter(playerIdx, 10) > 0 Then
-        Locate 12, 68: Print "   ";: Print Using "###"; (statBatter(playerIdx, 9) / (statBatter(playerIdx, 10) + statBatter(playerIdx, 9))) * 100;: Print "% ";
+        Locate 12, 68: Print "   ";
+        Print Using "###"; (statBatter(playerIdx, 9) / (statBatter(playerIdx, 10) + statBatter(playerIdx, 9))) * 100;
+        Print "% ";
         Color 7, 0: Print String$(2, 177)
     End If
 
@@ -1097,7 +1123,8 @@ Sub BatterComparisons_Screen (playerIdx, teamName$)
     Locate 6, 54
     Print Using "####"; statBatter(playerIdx, 9)
     Locate 6, 58
-    Print Using "###"; statBatter(playerIdx, 10);: Print " "
+    Print Using "###"; statBatter(playerIdx, 10);
+    Print " "
 
     I2 = 0
     I3 = 0
@@ -1110,25 +1137,35 @@ Sub BatterComparisons_Screen (playerIdx, teamName$)
     End If
 
     If statBatter(playerIdx, 0) = 0 Or I2 = 0 Then
-        Locate 6, 62: Print ".000";: Print " "
+        Locate 6, 62: Print ".000";
+        Print " "
     End If
 
     If I2 > 0 And I2 < 100 Then
-        Locate 6, 62: Print ".0";: Print Using "##"; I2;: Print " "
+        Locate 6, 62: Print ".0";
+        Print Using "##"; I2;
+        Print " "
     End If
     If I2 >= 100 Then
-        Locate 6, 62: Print ".";: Print Using "###"; I2;: Print " "
+        Locate 6, 62: Print ".";
+        Print Using "###"; I2;
+        Print " "
     End If
 
     If statBatter(playerIdx, 0) = 0 Or I3 = 0 Then
-        Locate 6, 67: Print ".000";: Print " "
+        Locate 6, 67: Print ".000";
+        Print " "
     End If
 
     If I3 > 0 And I3 < 100 Then
-        Locate 6, 67: Print ".0";: Print Using "##"; I3;: Print " "
+        Locate 6, 67: Print ".0";
+        Print Using "##"; I3;
+        Print " "
     End If
     If I3 >= 100 Then
-        Locate 6, 67: Print ".";: Print Using "###"; I3;: Print " "
+        Locate 6, 67: Print ".";
+        Print Using "###"; I3;
+        Print " "
     End If
 
     If statBatter(playerIdx, 0) = 0 Or I4 = 0 Then
@@ -1138,14 +1175,16 @@ Sub BatterComparisons_Screen (playerIdx, teamName$)
     Color 4, 11
     If I4 > 0 And I4 < 100 Then
         Locate 6, 72
-        Print ".0";: Print Using "##"; I4;
+        Print ".0";
+        Print Using "##"; I4;
         Color 7, 0: Print String$(2, 177)
     End If
 
     Color 4, 11
     If I4 >= 100 Then
         Locate 6, 72
-        Print ".";: Print Using "###"; I4;
+        Print ".";
+        Print Using "###"; I4;
         Color 7, 0: Print String$(2, 177)
     End If
 
@@ -1176,7 +1215,8 @@ Sub BatterComparisons_Screen (playerIdx, teamName$)
     Color 4, 11
     If I5 = 1000 Then
         Locate 17, 13
-        Print Using "##"; I5 / 1000;: Print ".000  ";
+        Print Using "##"; I5 / 1000;
+        Print ".000  ";
         Color 7, 0: Print String$(2, 177)
     End If
 
@@ -1297,7 +1337,8 @@ Sub PitcherComparisons_Screen (playerIdx, teamName$)
         Print ".0";
     End If
     If statPitcher(playerIdx, 0) - (Int(statPitcher(playerIdx, 0) / 3) * 3) > 0 Then
-        Print ".";: Print Using "#"; statPitcher(playerIdx, 0) - (Int(statPitcher(playerIdx, 0) / 3) * 3);
+        Print ".";
+        Print Using "#"; statPitcher(playerIdx, 0) - (Int(statPitcher(playerIdx, 0) / 3) * 3);
     End If
 
     Locate , 40: Print Using "#####"; statPitcher(playerIdx, 1);:
@@ -1317,17 +1358,20 @@ Sub PitcherComparisons_Screen (playerIdx, teamName$)
         Locate 6, 56: Print "  0.00";
     End If
     If statPitcher(playerIdx, 0) > 0 And I2 > 0 And I2 <= 999 Then
-        Locate 6, 56: Print Using "###"; I3;: Print ".";
+        Locate 6, 56: Print Using "###"; I3;
+        Print ".";
     End If
     If statPitcher(playerIdx, 0) > 0 And I2 >= 1000 Then
-        Locate 6, 56: Print Using "###"; I3;: Print ".";
+        Locate 6, 56: Print Using "###"; I3;
+        Print ".";
     End If
 
     If statPitcher(playerIdx, 0) > 0 And I4 = 0 And I2 > 0 Then
         Print "00";
     End If
     If statPitcher(playerIdx, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then
-        Print "0";: Print Using "#"; I4;
+        Print "0";
+		Print Using "#"; I4;
     End If
     If statPitcher(playerIdx, 0) > 0 And I4 >= 10 And I2 > 0 Then
         Print Using "##"; I4;
@@ -1351,16 +1395,19 @@ Sub PitcherComparisons_Screen (playerIdx, teamName$)
         Locate 11, 14: Print "  0.00";
     End If
     If statPitcher(playerIdx, 0) > 0 And I2 > 0 And I2 <= 999 Then
-        Locate 11, 14: Print Using "###"; I3;: Print ".";
+        Locate 11, 14: Print Using "###"; I3;
+		Print ".";
     End If
     If statPitcher(playerIdx, 0) > 0 And I2 >= 1000 Then
-        Locate 11, 14: Print Using "###"; I3;: Print ".";
+        Locate 11, 14: Print Using "###"; I3;
+		Print ".";
     End If
     If statPitcher(playerIdx, 0) > 0 And I4 = 0 And I2 > 0 Then
         Print "00";
     End If
     If statPitcher(playerIdx, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then
-        Print "0";: Print Using "#"; I4;
+        Print "0";
+		Print Using "#"; I4;
     End If
     If statPitcher(playerIdx, 0) > 0 And I4 >= 10 And I2 > 0 Then
         Print Using "##"; I4;
@@ -1375,16 +1422,19 @@ Sub PitcherComparisons_Screen (playerIdx, teamName$)
         Locate 11, 20: Print "    0.00";
     End If
     If statPitcher(playerIdx, 0) > 0 And I2 > 0 And I2 <= 999 Then
-        Locate 11, 20: Print Using "#####"; I3;: Print ".";
+        Locate 11, 20: Print Using "#####"; I3;
+		Print ".";
     End If
     If statPitcher(playerIdx, 0) > 0 And I2 >= 1000 Then
-        Locate 11, 20: Print Using "#####"; I3;: Print ".";
+        Locate 11, 20: Print Using "#####"; I3;
+		Print ".";
     End If
     If statPitcher(playerIdx, 0) > 0 And I4 = 0 And I2 > 0 Then
         Print "00";
     End If
     If statPitcher(playerIdx, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then
-        Print "0";: Print Using "#"; I4;
+        Print "0";
+		Print Using "#"; I4;
     End If
     If statPitcher(playerIdx, 0) > 0 And I4 >= 10 And I2 > 0 Then
         Print Using "##"; I4;
@@ -1402,17 +1452,20 @@ Sub PitcherComparisons_Screen (playerIdx, teamName$)
         Locate 11, 28: Print "    0.00";
     End If
     If statPitcher(playerIdx, 0) > 0 And I2 > 0 And I2 <= 999 Then
-        Locate 11, 28: Print Using "#####"; I3;: Print ".";
+        Locate 11, 28: Print Using "#####"; I3;
+		Print ".";
     End If
 
     If statPitcher(playerIdx, 0) > 0 And I2 >= 1000 Then
-        Locate 11, 28: Print Using "#####"; I3;: Print ".";
+        Locate 11, 28: Print Using "#####"; I3;
+		Print ".";
     End If
     If statPitcher(playerIdx, 0) > 0 And I4 = 0 And I2 > 0 Then
         Print "00";
     End If
     If statPitcher(playerIdx, 0) > 0 And I4 > 0 And I4 < 10 And I2 > 0 Then
-        Print "0";: Print Using "#"; I4;
+        Print "0";
+		Print Using "#"; I4;
     End If
     If statPitcher(playerIdx, 0) > 0 And I4 >= 10 And I2 > 0 Then
         Print Using "##"; I4;
@@ -1438,7 +1491,6 @@ Sub TeamComparison_Report (teamName$)
     Shared batterNames$()
     Shared batterRatings(), statBatter()
 
-    Print #1, Chr$(12)
     Print #1, "STAT COMPARISONS FOR "; teamName$
     Print #1,
     Print #1,
@@ -1699,13 +1751,16 @@ Sub TeamComparison_Screen (teamName$)
     Locate , 43: Print Using "####"; totBatRat(8);
     Locate , 47: Print Using "#####"; totBatRat(9);
     Locate , 52: Print Using "####"; totBatRat(10);
-    Locate , 56: Print Using "####"; totBatRat(11);: Print " ";
+    Locate , 56: Print Using "####"; totBatRat(11);
+    Print " ";
 
     statInnPitchCT! = totBatRat(3) / totBatRat(1)
-    Locate , 61: Print Using ".###"; statInnPitchCT!;: Print " ";
+    Locate , 61: Print Using ".###"; statInnPitchCT!;
+	Print " ";
 
     statInnPitchCT! = (totBatRat(3) + totBatRat(4) + totBatRat(5) * 2 + totBatRat(6) * 3) / totBatRat(1)
-    Locate , 66: Print Using ".###"; statInnPitchCT!;: Print " ";
+    Locate , 66: Print Using ".###"; statInnPitchCT!;
+	Print " ";
 
     statInnPitchCT! = (totBatRat(3) + totBatRat(8)) / (totBatRat(1) + totBatRat(8))
     Locate , 71: Print Using ".###"; statInnPitchCT!;
@@ -1728,10 +1783,12 @@ Sub TeamComparison_Screen (teamName$)
     Print " ";
 
     statInnPitchCT! = statTeamBat!(1) / statTeamBat!(0)
-    Locate , 61: Print Using ".###"; statInnPitchCT!;: Print " ";
+    Locate , 61: Print Using ".###"; statInnPitchCT!;
+	Print " ";
 
     statInnPitchCT! = (statTeamBat!(1) + statTeamBat!(4) + statTeamBat!(5) * 2 + statTeamBat!(6) * 3) / statTeamBat!(0)
-    Locate , 66: Print Using ".###"; statInnPitchCT!;: Print " ";
+    Locate , 66: Print Using ".###"; statInnPitchCT!;
+	Print " ";
 
     statInnPitchCT! = (statTeamBat!(1) + statTeamBat!(7)) / (statTeamBat!(0) + statTeamBat!(7))
     Locate , 71: Print Using ".###"; statInnPitchCT!;

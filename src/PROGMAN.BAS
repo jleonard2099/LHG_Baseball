@@ -1569,7 +1569,7 @@ Sub PrintManagerProfile (printDest, destFile$, targetTeam$)
 
     Open destFile$ For Output As #1
 
-    Print #1,  "MANAGERIAL PROFILE FOR "; targetTeam$
+    Print #1, "MANAGERIAL PROFILE FOR "; targetTeam$
     Print #1,
 
     '0 = right hand
@@ -1584,7 +1584,7 @@ Sub PrintManagerProfile (printDest, destFile$, targetTeam$)
     Next
 
     If LF% = 0 Then
-        Print #1,  "NO LINEUPS VS RHP "
+        Print #1, "NO LINEUPS VS RHP "
     Else
         Call GetLineup(handRL%)
         _PrintImage 0
@@ -1600,7 +1600,7 @@ Sub PrintManagerProfile (printDest, destFile$, targetTeam$)
     Next
 
     If LF% = 0 Then
-        Print #1,  "NO LINEUPS VS LHP "
+        Print #1, "NO LINEUPS VS LHP "
     Else
         Call GetLineup(handRL%)
         _PrintImage 0
@@ -1608,151 +1608,151 @@ Sub PrintManagerProfile (printDest, destFile$, targetTeam$)
 
     Print #1,
     If mgrProfileVal(99) <> 999 Then
-        Print #1,  "NO STARTING PITCHING ROTATION DEFINED"
+        Print #1, "NO STARTING PITCHING ROTATION DEFINED"
     End If
 
-    Print #1,  "SIZE OF ROTATION IS "; mgrProfileVal(1); " MAN"
-    Print #1,  "    STARTING ROTATION     % STARTS"
+    Print #1, "SIZE OF ROTATION IS "; mgrProfileVal(1); " MAN"
+    Print #1, "    STARTING ROTATION     % STARTS"
 
     For I = 1 To mgrProfileVal(1)
-        Print #1,  Using "(#) "; I;
+        Print #1, Using "(#) "; I;
         If mgrProfileVal(I + 2) < 0 Then
             Print #1,
         Else
-            Print #1,  pitcherNames$(mgrProfileVal(I + 2)); Tab(30); mgrProfileVal(I + 12)
+            Print #1, pitcherNames$(mgrProfileVal(I + 2)); Tab(30); mgrProfileVal(I + 12)
         End If
     Next
 
     Print #1,
-    Print #1,  "     SPOT STARTERS         % USED"
+    Print #1, "     SPOT STARTERS         % USED"
 
     For I = 21 To 36
-        Print #1,  Using "(##) "; I - 20;
+        Print #1, Using "(##) "; I - 20;
         If mgrProfileVal(I) < 0 Then
             Print #1,
         Else
-            Print #1,  pitcherNames$(mgrProfileVal(I)); Tab(30); mgrProfileVal(I + 20)
+            Print #1, pitcherNames$(mgrProfileVal(I)); Tab(30); mgrProfileVal(I + 20)
         End If
     Next
 
     Print #1,
-    Print #1,  "  MIDDLE RELIEVERS      % APPEAR"
+    Print #1, "  MIDDLE RELIEVERS      % APPEAR"
 
     For I = 1 To 10
 
-        Print #1,  Using "(##) "; I;
+        Print #1, Using "(##) "; I;
 
         If mgrProfileVal(I + 60) < 0 Then
             Print #1,
         Else
-            Print #1,  pitcherNames$(mgrProfileVal(I + 60)); Tab(35); mgrProfileVal(I + 70)
+            Print #1, pitcherNames$(mgrProfileVal(I + 60)); Tab(35); mgrProfileVal(I + 70)
         End If
 
     Next
 
     Print #1,
-    Print #1,  "  SET-UP RELIEVERS      % APPEAR"
-    Print #1,  "   -----  VS LEFT  -------      "
+    Print #1, "  SET-UP RELIEVERS      % APPEAR"
+    Print #1, "   -----  VS LEFT  -------      "
 
     For I = 1 To 3
-        Print #1,  Using "(##) "; I;
+        Print #1, Using "(##) "; I;
 
         If mgrProfileVal(I + 80) < 0 Then
             Print #1,
         Else
-            Print #1,  pitcherNames$(mgrProfileVal(I + 80)); Tab(35); mgrProfileVal(I + 90)
+            Print #1, pitcherNames$(mgrProfileVal(I + 80)); Tab(35); mgrProfileVal(I + 90)
         End If
 
     Next
 
-    Print #1,  "   -----  VS RIGHT  -------      "
+    Print #1, "   -----  VS RIGHT  -------      "
 
     For I = 4 To 6
 
-        Print #1,  Using "(##) "; I;
+        Print #1, Using "(##) "; I;
 
         If mgrProfileVal(I + 80) < 0 Then
             Print #1,
         Else
-            Print #1,  pitcherNames$(mgrProfileVal(I + 80)); Tab(35); mgrProfileVal(I + 90)
+            Print #1, pitcherNames$(mgrProfileVal(I + 80)); Tab(35); mgrProfileVal(I + 90)
         End If
 
     Next
 
     Print #1,
-    Print #1,  "          CLOSERS       % APPEAR"
-    Print #1,  "   -----  VS LEFT  -------      "
+    Print #1, "          CLOSERS       % APPEAR"
+    Print #1, "   -----  VS LEFT  -------      "
 
     For I = 1 To 3
 
-        Print #1,  Using "(##) "; I;
+        Print #1, Using "(##) "; I;
 
         If mgrProfileVal(I + 520) < 0 Then
             Print #1,
         Else
-            Print #1,  pitcherNames$(mgrProfileVal(I + 520)); Tab(35); mgrProfileVal(I + 530)
+            Print #1, pitcherNames$(mgrProfileVal(I + 520)); Tab(35); mgrProfileVal(I + 530)
         End If
 
     Next
 
-    Print #1,  "   -----  VS RIGHT  -------      "
+    Print #1, "   -----  VS RIGHT  -------      "
 
     For I = 4 To 6
 
-        Print #1,  Using "(##) "; I;
+        Print #1, Using "(##) "; I;
 
         If mgrProfileVal(I + 520) < 0 Then
             Print #1,
         Else
-            Print #1,  pitcherNames$(mgrProfileVal(I + 520)); Tab(35); mgrProfileVal(I + 530)
+            Print #1, pitcherNames$(mgrProfileVal(I + 520)); Tab(35); mgrProfileVal(I + 530)
         End If
 
     Next
 
     Print #1,
-    Print #1,  "  PINCH HITTERS        "
-    Print #1,  "  ---- VS LHP  ----"
+    Print #1, "  PINCH HITTERS        "
+    Print #1, "  ---- VS LHP  ----"
 
     For I = 1 To 5
 
-        Print #1,  Using "(##) "; I;
+        Print #1, Using "(##) "; I;
 
         If mgrProfileVal(I + 540) < 0 Then
             Print #1,
         Else
-            Print #1,  batterNames$(mgrProfileVal(I + 540))
+            Print #1, batterNames$(mgrProfileVal(I + 540))
         End If
 
     Next
 
-    Print #1,  "  ---- VS RHP  ----"
+    Print #1, "  ---- VS RHP  ----"
 
     For I = 6 To 10
 
-        Print #1,  Using "(##) "; I;
+        Print #1, Using "(##) "; I;
 
         If mgrProfileVal(I + 540) < 0 Then
             Print #1,
         Else
-            Print #1,  batterNames$(mgrProfileVal(I + 540))
+            Print #1, batterNames$(mgrProfileVal(I + 540))
         End If
 
     Next
 
     Print #1,
-    Print #1,  "DEFENSIVE REPLACEMENTS"
-    Print #1,  "# PLAYER     P SUBSTITUTE  %  RA"
+    Print #1, "DEFENSIVE REPLACEMENTS"
+    Print #1, "# PLAYER     P SUBSTITUTE  %  RA"
 
     For I = 1 To 4
 
-        Print #1,  Using "# "; I;
+        Print #1, Using "# "; I;
 
         If mgrProfileVal(I + 560) < 0 Then
             Print #1,
         Else
-            Print #1,  Left$(batterNames$(mgrProfileVal(I + 560)), 10); Tab(19);
-            Print #1,  Using "# "; mgrProfileVal(I + 576);
-            Print #1,  Left$(batterNames$(mgrProfileVal(I + 564)), 10); Tab(32); Using "### #"; mgrProfileVal(I + 568); mgrProfileVal(I + 572)
+            Print #1, Left$(batterNames$(mgrProfileVal(I + 560)), 10); Tab(19);
+            Print #1, Using "# "; mgrProfileVal(I + 576);
+            Print #1, Left$(batterNames$(mgrProfileVal(I + 564)), 10); Tab(32); Using "### #"; mgrProfileVal(I + 568); mgrProfileVal(I + 572)
         End If
 
     Next
@@ -1760,39 +1760,45 @@ Sub PrintManagerProfile (printDest, destFile$, targetTeam$)
     Print #1,
 
     If mgrProfileVal(581) <> 999 Then
-        Print #1,  "NO CLOSING STRATEGY HAS BEEN DEFINED": Print #1, :
+        Print #1, "NO CLOSING STRATEGY HAS BEEN DEFINED": Print #1, :
     Else
-        Print #1,  Tab(31); "CLOSING STRATEGY"
+        Print #1, Tab(31); "CLOSING STRATEGY"
         Print #1,
-        Print #1,  "STRATEGY                                        % OF TIME"
-        Print #1,  "(1) INNING TO BEGIN CLOSING STRATEGY (8TH OR 9TH ON) "; mgrProfileVal(588)
-        Print #1,  "(2) USE BOTH SETUP RELIEVER AND CLOSER "; yesNo$(mgrProfileVal(589)): Print #1,
-        Print #1,  "SITUATIONS TO BRING IN CLOSER AND/OR SETUP MAN"
-        Print #1,  "(3) ";: Print #1,  Using "START INNING IF SAVE OPPORTUNITY               ###"; mgrProfileVal(582)
-        Print #1,  "(4) ";: Print #1,  Using "START INNING IF AHEAD                          ###"; mgrProfileVal(583)
-        Print #1,  "(5) ";: Print #1,  Using "START INNING IF TIED OR AHEAD                  ###"; mgrProfileVal(584)
-        Print #1,  "(6) ";: Print #1,  Using "IF CURRENT PITCHER TIRED AND AHEAD             ###"; mgrProfileVal(585)
-        Print #1,  "(7) ";: Print #1,  Using "IF CURRENT PITCHER TIRED AND TIED OR AHEAD     ###"; mgrProfileVal(586)
-        Print #1,  "(8) ";: Print #1,  Using "WHEN SAVE OPPORTUNITY OCCURS                   ###"; mgrProfileVal(587)
+        Print #1, "STRATEGY                                        % OF TIME"
+        Print #1, "(1) INNING TO BEGIN CLOSING STRATEGY (8TH OR 9TH ON) "; mgrProfileVal(588)
+        Print #1, "(2) USE BOTH SETUP RELIEVER AND CLOSER "; yesNo$(mgrProfileVal(589)): Print #1,
+        Print #1, "SITUATIONS TO BRING IN CLOSER AND/OR SETUP MAN"
+        Print #1, "(3) ";
+		Print #1, Using "START INNING IF SAVE OPPORTUNITY               ###"; mgrProfileVal(582)
+        Print #1, "(4) ";
+		Print #1, Using "START INNING IF AHEAD                          ###"; mgrProfileVal(583)
+        Print #1, "(5) ";
+		Print #1, Using "START INNING IF TIED OR AHEAD                  ###"; mgrProfileVal(584)
+        Print #1, "(6) ";
+		Print #1, Using "IF CURRENT PITCHER TIRED AND AHEAD             ###"; mgrProfileVal(585)
+        Print #1, "(7) ";
+		Print #1, Using "IF CURRENT PITCHER TIRED AND TIED OR AHEAD     ###"; mgrProfileVal(586)
+        Print #1, "(8) ";
+		Print #1, Using "WHEN SAVE OPPORTUNITY OCCURS                   ###"; mgrProfileVal(587)
     End If
 
     Print #1,
 
     If mgrProfileVal(590) <> 999 Then
-        Print #1,  "NO PINCH HITTING FOR THE PITCHER STRATEGY DEFINED"
+        Print #1, "NO PINCH HITTING FOR THE PITCHER STRATEGY DEFINED"
     Else
-        Print #1,  Tab(26); "PINCH HITTING FOR THE PITCHER"
+        Print #1, Tab(26); "PINCH HITTING FOR THE PITCHER"
         Print #1,
-        Print #1,  "PINCH HIT FOR THE PITCHER FROM 'A' INNING ON"
-        Print #1,  "IF DOWN BY 'B' OR MORE RUNS AND"
-        Print #1,  "'C' OR MORE RUNNERS ON BASE AND"
-        Print #1,  "'D' OUTS OR LESS AND PITCHERS BATTING AVERAGE IS LESS THAN 'E'"
-        Print #1,  "'F' % OF THE TIME"
-        Print #1,  Tab(32); "TABLE OF VALUES"
-        Print #1,  "SCENARIO        A      B      C      D     E     F"
+        Print #1, "PINCH HIT FOR THE PITCHER FROM 'A' INNING ON"
+        Print #1, "IF DOWN BY 'B' OR MORE RUNS AND"
+        Print #1, "'C' OR MORE RUNNERS ON BASE AND"
+        Print #1, "'D' OUTS OR LESS AND PITCHERS BATTING AVERAGE IS LESS THAN 'E'"
+        Print #1, "'F' % OF THE TIME"
+        Print #1, Tab(32); "TABLE OF VALUES"
+        Print #1, "SCENARIO        A      B      C      D     E     F"
 
         For I = 0 To 2
-            Print #1,  Using "   #           ##     ##      #      #    ###   ###"; I + 1; mgrProfileVal(I * 6 + 591); mgrProfileVal(I * 6 + 592); mgrProfileVal(I * 6 + 593); mgrProfileVal(I * 6 + 594); mgrProfileVal(I * 6 + 595); mgrProfileVal(I * 6 + 596)
+            Print #1, Using "   #           ##     ##      #      #    ###   ###"; I + 1; mgrProfileVal(I * 6 + 591); mgrProfileVal(I * 6 + 592); mgrProfileVal(I * 6 + 593); mgrProfileVal(I * 6 + 594); mgrProfileVal(I * 6 + 595); mgrProfileVal(I * 6 + 596)
         Next
 
     End If
@@ -1800,95 +1806,95 @@ Sub PrintManagerProfile (printDest, destFile$, targetTeam$)
     Print #1,
 
     If mgrProfileVal(609) <> 999 Then
-        Print #1,  "NO BUNTING STRATEGY DEFINED FOR THE PITCHER"
+        Print #1, "NO BUNTING STRATEGY DEFINED FOR THE PITCHER"
     Else
-        Print #1,  "SACRIFICE BUNTING FOR THE PITCHER": Print #1,
-        Print #1,  "'A' OUTS OR LESS"
-        Print #1,  "IF 'B' OR LESS RUNS AHEAD AND"
-        Print #1,  "'C' OR LESS RUNS BEHIND"
-        Print #1,  "'D' % OF THE TIME"
-        Print #1,  Tab(32); "TABLE OF VALUES"
-        Print #1,  "SCENARIO                       A      B     C      D"
-        Print #1,  "1 - 7TH INNING OR LESS         "; Using "#     ##    ##     ###"; mgrProfileVal(610); mgrProfileVal(611); mgrProfileVal(612); mgrProfileVal(613)
-        Print #1,  "    RUNNER ON 1ST           "
-        Print #1,  "2 - 8TH INNING ON              "; Using "#     ##    ##     ###"; mgrProfileVal(614); mgrProfileVal(615); mgrProfileVal(616); mgrProfileVal(617)
-        Print #1,  "    RUNNER ON 1ST           "
-        Print #1,  "3 - 7TH INNING OR LESS         "; Using "#     ##    ##     ###"; mgrProfileVal(618); mgrProfileVal(619); mgrProfileVal(620); mgrProfileVal(621)
-        Print #1,  "    RUNNER ON 2ND           "
-        Print #1,  "4 - 8TH INNING ON              "; Using "#     ##    ##     ###"; mgrProfileVal(622); mgrProfileVal(623); mgrProfileVal(624); mgrProfileVal(625)
-        Print #1,  "    RUNNER ON 2ND           "
-        Print #1,  "5 - 7TH INNING OR LESS         "; Using "#     ##    ##     ###"; mgrProfileVal(626); mgrProfileVal(627); mgrProfileVal(628); mgrProfileVal(629)
-        Print #1,  "    RUNNERS ON 1ST AND 2ND  "
-        Print #1,  "6 - 8TH INNING ON              "; Using "#     ##    ##     ###"; mgrProfileVal(630); mgrProfileVal(631); mgrProfileVal(632); mgrProfileVal(633)
-        Print #1,  "    RUNNERS ON 1ST AND 2ND  "
+        Print #1, "SACRIFICE BUNTING FOR THE PITCHER": Print #1,
+        Print #1, "'A' OUTS OR LESS"
+        Print #1, "IF 'B' OR LESS RUNS AHEAD AND"
+        Print #1, "'C' OR LESS RUNS BEHIND"
+        Print #1, "'D' % OF THE TIME"
+        Print #1, Tab(32); "TABLE OF VALUES"
+        Print #1, "SCENARIO                       A      B     C      D"
+        Print #1, "1 - 7TH INNING OR LESS         "; Using "#     ##    ##     ###"; mgrProfileVal(610); mgrProfileVal(611); mgrProfileVal(612); mgrProfileVal(613)
+        Print #1, "    RUNNER ON 1ST           "
+        Print #1, "2 - 8TH INNING ON              "; Using "#     ##    ##     ###"; mgrProfileVal(614); mgrProfileVal(615); mgrProfileVal(616); mgrProfileVal(617)
+        Print #1, "    RUNNER ON 1ST           "
+        Print #1, "3 - 7TH INNING OR LESS         "; Using "#     ##    ##     ###"; mgrProfileVal(618); mgrProfileVal(619); mgrProfileVal(620); mgrProfileVal(621)
+        Print #1, "    RUNNER ON 2ND           "
+        Print #1, "4 - 8TH INNING ON              "; Using "#     ##    ##     ###"; mgrProfileVal(622); mgrProfileVal(623); mgrProfileVal(624); mgrProfileVal(625)
+        Print #1, "    RUNNER ON 2ND           "
+        Print #1, "5 - 7TH INNING OR LESS         "; Using "#     ##    ##     ###"; mgrProfileVal(626); mgrProfileVal(627); mgrProfileVal(628); mgrProfileVal(629)
+        Print #1, "    RUNNERS ON 1ST AND 2ND  "
+        Print #1, "6 - 8TH INNING ON              "; Using "#     ##    ##     ###"; mgrProfileVal(630); mgrProfileVal(631); mgrProfileVal(632); mgrProfileVal(633)
+        Print #1, "    RUNNERS ON 1ST AND 2ND  "
     End If
 
     Print #1,
 
     If mgrProfileVal(634) <> 999 Then
-        Print #1,  "NO BUNTING STRATEGY DEFINED FOR POSITION PLAYERS"
+        Print #1, "NO BUNTING STRATEGY DEFINED FOR POSITION PLAYERS"
     Else
-        Print #1,  "SACRIFICE BUNTING FOR THE POSITION PLAYERS": Print #1,
-        Print #1,  "IF 'A' OR LESS RUNS AHEAD AND"
-        Print #1,  "'B' OR LESS RUNS BEHIND"
-        Print #1,  "BATTING AVERAGE IS LESS THAN 'C' AND SLUGGING PCT IS LESS THAN 'D'"
-        Print #1,  "PITCHERS ERA LESS THAN 'E' , 'F' % OF THE TIME"
-        Print #1,  Tab(32); "TABLE OF VALUES"
-        Print #1,  "SCENARIO                        A     B      C      D      E     F"
-        Print #1,  "1 - 7TH INNING OR LESS         "; Using "##    ##    ###    ###    ###   ###"; mgrProfileVal(635); mgrProfileVal(636); mgrProfileVal(637); mgrProfileVal(638); mgrProfileVal(639); mgrProfileVal(640)
-        Print #1,  "    0 OUTS, RUNNER ON 1ST"
-        Print #1,  "2 - 7TH INNING OR LESS         "; Using "##    ##    ###    ###    ###   ###"; mgrProfileVal(641); mgrProfileVal(642); mgrProfileVal(643); mgrProfileVal(644); mgrProfileVal(645); mgrProfileVal(646)
-        Print #1,  "    0 OUTS, RUNNER ON 2ND"
-        Print #1,  "3 - 7TH INNING OR LESS         "; Using "##    ##    ###    ###    ###   ###"; mgrProfileVal(647); mgrProfileVal(648); mgrProfileVal(649); mgrProfileVal(650); mgrProfileVal(651); mgrProfileVal(652)
-        Print #1,  "    0 OUTS, RUNNERS 1ST AND 2ND"
-        Print #1,  "4 - 8TH INNING ON              "; Using "##    ##    ###    ###    ###   ###"; mgrProfileVal(653); mgrProfileVal(654); mgrProfileVal(655); mgrProfileVal(656); mgrProfileVal(657); mgrProfileVal(658)
-        Print #1,  "    0 OUTS, RUNNER ON 1ST"
-        Print #1,  "5 - 8TH INNING ON              "; Using "##    ##    ###    ###    ###   ###"; mgrProfileVal(659); mgrProfileVal(660); mgrProfileVal(661); mgrProfileVal(662); mgrProfileVal(663); mgrProfileVal(664)
-        Print #1,  "    0 OUTS, RUNNER ON 2ND"
-        Print #1,  "6 - 8TH INNING ON              "; Using "##    ##    ###    ###    ###   ###"; mgrProfileVal(665); mgrProfileVal(666); mgrProfileVal(667); mgrProfileVal(668); mgrProfileVal(669); mgrProfileVal(670)
-        Print #1,  "    0 OUTS, RUNNERS ON 1ST AND 2ND"
+        Print #1, "SACRIFICE BUNTING FOR THE POSITION PLAYERS": Print #1,
+        Print #1, "IF 'A' OR LESS RUNS AHEAD AND"
+        Print #1, "'B' OR LESS RUNS BEHIND"
+        Print #1, "BATTING AVERAGE IS LESS THAN 'C' AND SLUGGING PCT IS LESS THAN 'D'"
+        Print #1, "PITCHERS ERA LESS THAN 'E' , 'F' % OF THE TIME"
+        Print #1, Tab(32); "TABLE OF VALUES"
+        Print #1, "SCENARIO                        A     B      C      D      E     F"
+        Print #1, "1 - 7TH INNING OR LESS         "; Using "##    ##    ###    ###    ###   ###"; mgrProfileVal(635); mgrProfileVal(636); mgrProfileVal(637); mgrProfileVal(638); mgrProfileVal(639); mgrProfileVal(640)
+        Print #1, "    0 OUTS, RUNNER ON 1ST"
+        Print #1, "2 - 7TH INNING OR LESS         "; Using "##    ##    ###    ###    ###   ###"; mgrProfileVal(641); mgrProfileVal(642); mgrProfileVal(643); mgrProfileVal(644); mgrProfileVal(645); mgrProfileVal(646)
+        Print #1, "    0 OUTS, RUNNER ON 2ND"
+        Print #1, "3 - 7TH INNING OR LESS         "; Using "##    ##    ###    ###    ###   ###"; mgrProfileVal(647); mgrProfileVal(648); mgrProfileVal(649); mgrProfileVal(650); mgrProfileVal(651); mgrProfileVal(652)
+        Print #1, "    0 OUTS, RUNNERS 1ST AND 2ND"
+        Print #1, "4 - 8TH INNING ON              "; Using "##    ##    ###    ###    ###   ###"; mgrProfileVal(653); mgrProfileVal(654); mgrProfileVal(655); mgrProfileVal(656); mgrProfileVal(657); mgrProfileVal(658)
+        Print #1, "    0 OUTS, RUNNER ON 1ST"
+        Print #1, "5 - 8TH INNING ON              "; Using "##    ##    ###    ###    ###   ###"; mgrProfileVal(659); mgrProfileVal(660); mgrProfileVal(661); mgrProfileVal(662); mgrProfileVal(663); mgrProfileVal(664)
+        Print #1, "    0 OUTS, RUNNER ON 2ND"
+        Print #1, "6 - 8TH INNING ON              "; Using "##    ##    ###    ###    ###   ###"; mgrProfileVal(665); mgrProfileVal(666); mgrProfileVal(667); mgrProfileVal(668); mgrProfileVal(669); mgrProfileVal(670)
+        Print #1, "    0 OUTS, RUNNERS ON 1ST AND 2ND"
     End If
 
     Print #1,
 
     If mgrProfileVal(671) <> 999 Then
-        Print #1,  "NO HIT AND RUN STRATEGY DEFINED"
+        Print #1, "NO HIT AND RUN STRATEGY DEFINED"
     Else
-        Print #1,  "HIT AND RUN STRATEGY": Print #1,
-        Print #1,  "IF 'A' OR LESS RUNS AHEAD AND"
-        Print #1,  "'B' OR LESS RUNS BEHIND"
-        Print #1,  "'C' % OF THE TIME"
-        Print #1,  "'D' AB PER STRIKEOUT"
-        Print #1,  " SLUGGING PCT LESS THAN OR EQUAL TO 'E'"
-        Print #1,  Tab(32); "TABLE OF VALUES"
-        Print #1,  "    SCENARIO                          A     B      C   D    E"
-        Print #1,  "1 - 0 OUTS, RUNNER ON 1ST            "; Using "##    ##    ###  ##  ###"; mgrProfileVal(672); mgrProfileVal(673); mgrProfileVal(674); mgrProfileVal(866); mgrProfileVal(872)
-        Print #1,  "2 - 1 OUT, RUNNER ON 1ST             "; Using "##    ##    ###  ##  ###"; mgrProfileVal(675); mgrProfileVal(676); mgrProfileVal(677); mgrProfileVal(867); mgrProfileVal(873)
-        Print #1,  "3 - 0 OUTS, RUNNERS ON 1ST AND 3RD   "; Using "##    ##    ###  ##  ###"; mgrProfileVal(678); mgrProfileVal(679); mgrProfileVal(680); mgrProfileVal(868); mgrProfileVal(874)
-        Print #1,  "4 - 1 OUT, RUNNERS ON 1ST AND 3RD    "; Using "##    ##    ###  ##  ###"; mgrProfileVal(681); mgrProfileVal(682); mgrProfileVal(683); mgrProfileVal(869); mgrProfileVal(875)
-        Print #1,  "5 - 0 OUTS, RUNNERS ON 1ST AND 2ND   "; Using "##    ##    ###  ##  ###"; mgrProfileVal(684); mgrProfileVal(685); mgrProfileVal(686); mgrProfileVal(870); mgrProfileVal(876)
-        Print #1,  "6 - 1 OUT, RUNNERS ON 1ST AND 2ND    "; Using "##    ##    ###  ##  ###"; mgrProfileVal(687); mgrProfileVal(688); mgrProfileVal(689); mgrProfileVal(871); mgrProfileVal(877)
+        Print #1, "HIT AND RUN STRATEGY": Print #1,
+        Print #1, "IF 'A' OR LESS RUNS AHEAD AND"
+        Print #1, "'B' OR LESS RUNS BEHIND"
+        Print #1, "'C' % OF THE TIME"
+        Print #1, "'D' AB PER STRIKEOUT"
+        Print #1, " SLUGGING PCT LESS THAN OR EQUAL TO 'E'"
+        Print #1, Tab(32); "TABLE OF VALUES"
+        Print #1, "    SCENARIO                          A     B      C   D    E"
+        Print #1, "1 - 0 OUTS, RUNNER ON 1ST            "; Using "##    ##    ###  ##  ###"; mgrProfileVal(672); mgrProfileVal(673); mgrProfileVal(674); mgrProfileVal(866); mgrProfileVal(872)
+        Print #1, "2 - 1 OUT, RUNNER ON 1ST             "; Using "##    ##    ###  ##  ###"; mgrProfileVal(675); mgrProfileVal(676); mgrProfileVal(677); mgrProfileVal(867); mgrProfileVal(873)
+        Print #1, "3 - 0 OUTS, RUNNERS ON 1ST AND 3RD   "; Using "##    ##    ###  ##  ###"; mgrProfileVal(678); mgrProfileVal(679); mgrProfileVal(680); mgrProfileVal(868); mgrProfileVal(874)
+        Print #1, "4 - 1 OUT, RUNNERS ON 1ST AND 3RD    "; Using "##    ##    ###  ##  ###"; mgrProfileVal(681); mgrProfileVal(682); mgrProfileVal(683); mgrProfileVal(869); mgrProfileVal(875)
+        Print #1, "5 - 0 OUTS, RUNNERS ON 1ST AND 2ND   "; Using "##    ##    ###  ##  ###"; mgrProfileVal(684); mgrProfileVal(685); mgrProfileVal(686); mgrProfileVal(870); mgrProfileVal(876)
+        Print #1, "6 - 1 OUT, RUNNERS ON 1ST AND 2ND    "; Using "##    ##    ###  ##  ###"; mgrProfileVal(687); mgrProfileVal(688); mgrProfileVal(689); mgrProfileVal(871); mgrProfileVal(877)
     End If
 
     Print #1,
 
     If mgrProfileVal(847) <> 999 Then
-        Print #1,  "NO CRITERIA DEFINED FOR PINCH HITTING FOR THE BATTER"
+        Print #1, "NO CRITERIA DEFINED FOR PINCH HITTING FOR THE BATTER"
     Else
-        Print #1,  "PINCH HITTING FOR THE BATTER"
+        Print #1, "PINCH HITTING FOR THE BATTER"
         Print #1,
-        Print #1,  "PINCH HIT FOR THE BATTER FROM 'A' INNING ON"
-        Print #1,  "IF DOWN BY 'B' OR MORE RUNS AND"
-        Print #1,  "'C' RUNNERS ON BASE AND"
-        Print #1,  "SLUGGING PCT IS LESS THAN 'D'"
-        Print #1,  "AND BATTING AVERAGE IS LESS THAN 'E'"
-        Print #1,  "'F' % OF THE TIME"
+        Print #1, "PINCH HIT FOR THE BATTER FROM 'A' INNING ON"
+        Print #1, "IF DOWN BY 'B' OR MORE RUNS AND"
+        Print #1, "'C' RUNNERS ON BASE AND"
+        Print #1, "SLUGGING PCT IS LESS THAN 'D'"
+        Print #1, "AND BATTING AVERAGE IS LESS THAN 'E'"
+        Print #1, "'F' % OF THE TIME"
         Print #1,
-        Print #1,  Tab(32); "TABLE OF VALUES"
-        Print #1,  "SCENARIO        A      B      C      D       E     F"
+        Print #1, Tab(32); "TABLE OF VALUES"
+        Print #1, "SCENARIO        A      B      C      D       E     F"
 
         For I = 0 To 2
-            Print #1,  Using "   #           ##     ##      #     ###    ###   ###"; I + 1; mgrProfileVal(I * 6 + 848); mgrProfileVal(I * 6 + 849); mgrProfileVal(I * 6 + 850); mgrProfileVal(I * 6 + 851); mgrProfileVal(I * 6 + 852); mgrProfileVal(I * 6 + 853)
+            Print #1, Using "   #           ##     ##      #     ###    ###   ###"; I + 1; mgrProfileVal(I * 6 + 848); mgrProfileVal(I * 6 + 849); mgrProfileVal(I * 6 + 850); mgrProfileVal(I * 6 + 851); mgrProfileVal(I * 6 + 852); mgrProfileVal(I * 6 + 853)
         Next
 
     End If
@@ -1896,19 +1902,19 @@ Sub PrintManagerProfile (printDest, destFile$, targetTeam$)
     Print #1,
 
     If mgrProfileVal(690) <> 999 Then
-        Print #1,  "NO STRATEGY DEFINED FOR INFIELD IN WITH 3RD BASE OCCUPIED"
+        Print #1, "NO STRATEGY DEFINED FOR INFIELD IN WITH 3RD BASE OCCUPIED"
     Else
-        Print #1,  "INFIELD IN WITH 3RD BASE OCCUPIED": Print #1,
-        Print #1,  "IF DOWN BY 'A' RUNS"
-        Print #1,  "AND NOT MORE THAN 'B' RUNS"
-        Print #1,  "FROM 'C' INNING ON"
-        Print #1,  "'D' % OF THE TIME"
-        Print #1,  Tab(32); "TABLE OF VALUES"
-        Print #1,  "SCENARIO                              A     B   C     D"
-        Print #1,  "1 - 0 OUTS                           "; Using "##    ##   #   ###"; mgrProfileVal(691); mgrProfileVal(692); mgrProfileVal(693); mgrProfileVal(694)
-        Print #1,  "2 - 0 OUTS                           "; Using "##    ##   #   ###"; mgrProfileVal(695); mgrProfileVal(696); mgrProfileVal(697); mgrProfileVal(698)
-        Print #1,  "3 - <2 OUTS, RUNNER ON 1ST           "; Using "##    ##   #   ###"; mgrProfileVal(699); mgrProfileVal(700); mgrProfileVal(701); mgrProfileVal(702)
-        Print #1,  "4 - <2 OUTS, RUNNER ON 1ST           "; Using "##    ##   #   ###"; mgrProfileVal(703); mgrProfileVal(704); mgrProfileVal(705); mgrProfileVal(706)
+        Print #1, "INFIELD IN WITH 3RD BASE OCCUPIED": Print #1,
+        Print #1, "IF DOWN BY 'A' RUNS"
+        Print #1, "AND NOT MORE THAN 'B' RUNS"
+        Print #1, "FROM 'C' INNING ON"
+        Print #1, "'D' % OF THE TIME"
+        Print #1, Tab(32); "TABLE OF VALUES"
+        Print #1, "SCENARIO                              A     B   C     D"
+        Print #1, "1 - 0 OUTS                           "; Using "##    ##   #   ###"; mgrProfileVal(691); mgrProfileVal(692); mgrProfileVal(693); mgrProfileVal(694)
+        Print #1, "2 - 0 OUTS                           "; Using "##    ##   #   ###"; mgrProfileVal(695); mgrProfileVal(696); mgrProfileVal(697); mgrProfileVal(698)
+        Print #1, "3 - <2 OUTS, RUNNER ON 1ST           "; Using "##    ##   #   ###"; mgrProfileVal(699); mgrProfileVal(700); mgrProfileVal(701); mgrProfileVal(702)
+        Print #1, "4 - <2 OUTS, RUNNER ON 1ST           "; Using "##    ##   #   ###"; mgrProfileVal(703); mgrProfileVal(704); mgrProfileVal(705); mgrProfileVal(706)
     End If
 
     Print #1,
@@ -1916,141 +1922,141 @@ Sub PrintManagerProfile (printDest, destFile$, targetTeam$)
     Cls
 
     If mgrProfileVal(707) <> 999 Then
-        Print #1,  "NO STRATEGY DEFINED FOR CORNERS IN VS HITTER WHO MIGHT BUNT FOR A HIT"
+        Print #1, "NO STRATEGY DEFINED FOR CORNERS IN VS HITTER WHO MIGHT BUNT FOR A HIT"
     Else
-        Print #1,  "CORNERS IN VS HITTER WHO MIGHT BUNT FOR A HIT": Print #1,
-        Print #1,  "IF BUNT RATING IS >= 'A'"
-        Print #1,  "'B' % OF THE TIME"
-        Print #1,  Tab(32); "TABLE OF VALUES"
-        Print #1,  "      A      B"
-        Print #1,  Using "(1)  ##    ###"; mgrProfileVal(708); mgrProfileVal(709)
-        Print #1,  Using "(2)  ##    ###"; mgrProfileVal(710); mgrProfileVal(711)
-        Print #1,  Using "(3)  ##    ###"; mgrProfileVal(712); mgrProfileVal(713)
+        Print #1, "CORNERS IN VS HITTER WHO MIGHT BUNT FOR A HIT": Print #1,
+        Print #1, "IF BUNT RATING IS >= 'A'"
+        Print #1, "'B' % OF THE TIME"
+        Print #1, Tab(32); "TABLE OF VALUES"
+        Print #1, "      A      B"
+        Print #1, Using "(1)  ##    ###"; mgrProfileVal(708); mgrProfileVal(709)
+        Print #1, Using "(2)  ##    ###"; mgrProfileVal(710); mgrProfileVal(711)
+        Print #1, Using "(3)  ##    ###"; mgrProfileVal(712); mgrProfileVal(713)
     End If
 
     Print #1,
 
     If mgrProfileVal(714) <> 999 Then
-        Print #1,  "NO STRATEGY DEFINED FOR CORNERS IN VS HITTER IN SAC HIT SITUATION"
+        Print #1, "NO STRATEGY DEFINED FOR CORNERS IN VS HITTER IN SAC HIT SITUATION"
     Else
-        Print #1,  "CORNERS IN VS HITTER IN SAC HIT SITUATION": Print #1,
-        Print #1,  "IF AHEAD BY  'A' RUNS OR LESS"
-        Print #1,  "OR BEHIND BY NOT MORE THAN 'B' RUNS"
-        Print #1,  "BUNT RATING >= 'C'"
-        Print #1,  "'D' % OF THE TIME"
-        Print #1,  Tab(32); "TABLE OF VALUES"
-        Print #1,  "SCENARIO                              A     B   C     D"
-        Print #1,  "1 - 0 OUTS, RUNNER ON 1ST            "; Using "##    ##   #   ###"; mgrProfileVal(715); mgrProfileVal(716); mgrProfileVal(717); mgrProfileVal(718)
-        Print #1,  "2 - 0 OUTS, RUNNER ON 1ST            "; Using "##    ##   #   ###"; mgrProfileVal(719); mgrProfileVal(720); mgrProfileVal(721); mgrProfileVal(722)
-        Print #1,  "3 - 0 OUTS, RUNNER ON 1ST AND 2ND    "; Using "##    ##   #   ###"; mgrProfileVal(723); mgrProfileVal(724); mgrProfileVal(725); mgrProfileVal(726)
-        Print #1,  "4 - 0 OUTS, RUNNER ON 1ST AND 2ND    "; Using "##    ##   #   ###"; mgrProfileVal(727); mgrProfileVal(728); mgrProfileVal(729); mgrProfileVal(730)
+        Print #1, "CORNERS IN VS HITTER IN SAC HIT SITUATION": Print #1,
+        Print #1, "IF AHEAD BY  'A' RUNS OR LESS"
+        Print #1, "OR BEHIND BY NOT MORE THAN 'B' RUNS"
+        Print #1, "BUNT RATING >= 'C'"
+        Print #1, "'D' % OF THE TIME"
+        Print #1, Tab(32); "TABLE OF VALUES"
+        Print #1, "SCENARIO                              A     B   C     D"
+        Print #1, "1 - 0 OUTS, RUNNER ON 1ST            "; Using "##    ##   #   ###"; mgrProfileVal(715); mgrProfileVal(716); mgrProfileVal(717); mgrProfileVal(718)
+        Print #1, "2 - 0 OUTS, RUNNER ON 1ST            "; Using "##    ##   #   ###"; mgrProfileVal(719); mgrProfileVal(720); mgrProfileVal(721); mgrProfileVal(722)
+        Print #1, "3 - 0 OUTS, RUNNER ON 1ST AND 2ND    "; Using "##    ##   #   ###"; mgrProfileVal(723); mgrProfileVal(724); mgrProfileVal(725); mgrProfileVal(726)
+        Print #1, "4 - 0 OUTS, RUNNER ON 1ST AND 2ND    "; Using "##    ##   #   ###"; mgrProfileVal(727); mgrProfileVal(728); mgrProfileVal(729); mgrProfileVal(730)
     End If
 
     Print #1,
 
     If mgrProfileVal(731) <> 999 Then
-        Print #1,  "NO STRATEGY DEFINED FOR CORNERS IN VS PITCHER IN SAC HIT SITUATION"
+        Print #1, "NO STRATEGY DEFINED FOR CORNERS IN VS PITCHER IN SAC HIT SITUATION"
     Else
-        Print #1,  "CORNERS IN VS PITCHER IN SAC HIT SITUATION": Print #1,
-        Print #1,  "PITCHER'S BATTING AVERAGE LESS THAN OR EQUAL TO 'A'"
-        Print #1,  "'B' % OF THE TIME"
-        Print #1,  Tab(32); "TABLE OF VALUES"
-        Print #1,  "SCENARIO                                  A      B"
-        Print #1,  "1 - <= 1 OUT, RUNNER ON 1ST              "; Using "###   ###"; mgrProfileVal(732); mgrProfileVal(733)
-        Print #1,  "2 - <= 1 OUT, RUNNER ON 1ST              "; Using "###   ###"; mgrProfileVal(734); mgrProfileVal(735)
-        Print #1,  "3 - 0 OUTS, RUNNER ON 1ST AND 2ND OR 2ND "; Using "###   ###"; mgrProfileVal(736); mgrProfileVal(737)
-        Print #1,  "4 - 0 OUTS, RUNNER ON 1ST AND 2ND OR 2ND "; Using "###   ###"; mgrProfileVal(738); mgrProfileVal(739)
+        Print #1, "CORNERS IN VS PITCHER IN SAC HIT SITUATION": Print #1,
+        Print #1, "PITCHER'S BATTING AVERAGE LESS THAN OR EQUAL TO 'A'"
+        Print #1, "'B' % OF THE TIME"
+        Print #1, Tab(32); "TABLE OF VALUES"
+        Print #1, "SCENARIO                                  A      B"
+        Print #1, "1 - <= 1 OUT, RUNNER ON 1ST              "; Using "###   ###"; mgrProfileVal(732); mgrProfileVal(733)
+        Print #1, "2 - <= 1 OUT, RUNNER ON 1ST              "; Using "###   ###"; mgrProfileVal(734); mgrProfileVal(735)
+        Print #1, "3 - 0 OUTS, RUNNER ON 1ST AND 2ND OR 2ND "; Using "###   ###"; mgrProfileVal(736); mgrProfileVal(737)
+        Print #1, "4 - 0 OUTS, RUNNER ON 1ST AND 2ND OR 2ND "; Using "###   ###"; mgrProfileVal(738); mgrProfileVal(739)
     End If
 
     Print #1,
 
     If mgrProfileVal(740) <> 999 Then
-        Print #1,  "NO STRATEGY DEFINED FOR CORNERS IN VS HITTER IN SQUEEZE SITUATION"
+        Print #1, "NO STRATEGY DEFINED FOR CORNERS IN VS HITTER IN SQUEEZE SITUATION"
     Else
-        Print #1,  "CORNERS IN VS HITTER IN SQUEEZE SITUATION": Print #1,
-        Print #1,  "IF AHEAD BY  'A' RUNS OR LESS"
-        Print #1,  "OR BEHIND BY NOT MORE THAN 'B' RUNS"
-        Print #1,  "BUNT RATING >= 'C'"
-        Print #1,  "'D' % OF THE TIME"
-        Print #1,  Tab(32); "TABLE OF VALUES"
-        Print #1,  "SCENARIO                              A     B   C     D"
-        Print #1,  "1 - 0 OUT, RUNNER ON 3RD             "; Using "##    ##   #   ###"; mgrProfileVal(741); mgrProfileVal(742); mgrProfileVal(743); mgrProfileVal(744)
-        Print #1,  "2 - 1 OUT, RUNNER ON 3RD             "; Using "##    ##   #   ###"; mgrProfileVal(745); mgrProfileVal(746); mgrProfileVal(747); mgrProfileVal(748)
+        Print #1, "CORNERS IN VS HITTER IN SQUEEZE SITUATION": Print #1,
+        Print #1, "IF AHEAD BY  'A' RUNS OR LESS"
+        Print #1, "OR BEHIND BY NOT MORE THAN 'B' RUNS"
+        Print #1, "BUNT RATING >= 'C'"
+        Print #1, "'D' % OF THE TIME"
+        Print #1, Tab(32); "TABLE OF VALUES"
+        Print #1, "SCENARIO                              A     B   C     D"
+        Print #1, "1 - 0 OUT, RUNNER ON 3RD             "; Using "##    ##   #   ###"; mgrProfileVal(741); mgrProfileVal(742); mgrProfileVal(743); mgrProfileVal(744)
+        Print #1, "2 - 1 OUT, RUNNER ON 3RD             "; Using "##    ##   #   ###"; mgrProfileVal(745); mgrProfileVal(746); mgrProfileVal(747); mgrProfileVal(748)
     End If
 
     Print #1,
 
     If mgrProfileVal(749) <> 999 Then
-        Print #1,  "NO STRATEGY DEFINED FOR GUARDING THE LINES"
+        Print #1, "NO STRATEGY DEFINED FOR GUARDING THE LINES"
     Else
-        Print #1,  "GUARD LINES STRATEGY": Print #1,
-        Print #1,  "IF 'A' RUNS AHEAD"
-        Print #1,  "'B' INNING ON"
-        Print #1,  "'C' % OF THE TIME"
-        Print #1,  Tab(32); "TABLE OF VALUES"
-        Print #1,  "     A     B      C"
-        Print #1,  "1 - "; Using "##    ##    ###"; mgrProfileVal(750); mgrProfileVal(751); mgrProfileVal(752)
-        Print #1,  "2 - "; Using "##    ##    ###"; mgrProfileVal(753); mgrProfileVal(754); mgrProfileVal(755)
+        Print #1, "GUARD LINES STRATEGY": Print #1,
+        Print #1, "IF 'A' RUNS AHEAD"
+        Print #1, "'B' INNING ON"
+        Print #1, "'C' % OF THE TIME"
+        Print #1, Tab(32); "TABLE OF VALUES"
+        Print #1, "     A     B      C"
+        Print #1, "1 - "; Using "##    ##    ###"; mgrProfileVal(750); mgrProfileVal(751); mgrProfileVal(752)
+        Print #1, "2 - "; Using "##    ##    ###"; mgrProfileVal(753); mgrProfileVal(754); mgrProfileVal(755)
     End If
 
     Print #1,
 
     If mgrProfileVal(756) <> 999 Then
-        Print #1,  "NO STRATEGY DEFINED FOR PITCHING AROUND HITTERS"
+        Print #1, "NO STRATEGY DEFINED FOR PITCHING AROUND HITTERS"
     Else
-        Print #1,  "PITCH AROUND STRATEGY": Print #1,
-        Print #1,  "SLUGGING PCT >= 'A'"
-        Print #1,  "'B' INNING ON"
-        Print #1,  "'C' % OF THE TIME"
-        Print #1,  Tab(32); "TABLE OF VALUES"
-        Print #1,  "SCENARIO                                               A     B      C"
-        Print #1,  "1 - 1ST BASE OPEN, BATTER NOT TYING OR WINNING RUN   "; Using "###    ##    ###"; mgrProfileVal(757); mgrProfileVal(758); mgrProfileVal(759)
-        Print #1,  "2 - 1ST BASE OPEN, BATTER NOT TYING OR WINNING RUN   "; Using "###    ##    ###"; mgrProfileVal(760); mgrProfileVal(761); mgrProfileVal(762)
-        Print #1,  "3 - 1ST BASE OPEN, BATTER NOT TYING OR WINNING RUN   "; Using "###    ##    ###"; mgrProfileVal(763); mgrProfileVal(764); mgrProfileVal(765)
+        Print #1, "PITCH AROUND STRATEGY": Print #1,
+        Print #1, "SLUGGING PCT >= 'A'"
+        Print #1, "'B' INNING ON"
+        Print #1, "'C' % OF THE TIME"
+        Print #1, Tab(32); "TABLE OF VALUES"
+        Print #1, "SCENARIO                                               A     B      C"
+        Print #1, "1 - 1ST BASE OPEN, BATTER NOT TYING OR WINNING RUN   "; Using "###    ##    ###"; mgrProfileVal(757); mgrProfileVal(758); mgrProfileVal(759)
+        Print #1, "2 - 1ST BASE OPEN, BATTER NOT TYING OR WINNING RUN   "; Using "###    ##    ###"; mgrProfileVal(760); mgrProfileVal(761); mgrProfileVal(762)
+        Print #1, "3 - 1ST BASE OPEN, BATTER NOT TYING OR WINNING RUN   "; Using "###    ##    ###"; mgrProfileVal(763); mgrProfileVal(764); mgrProfileVal(765)
     End If
 
     Print #1,
 
     If mgrProfileVal(766) <> 999 Then
-        Print #1,  "NO STRATEGY DEFINED FOR THROWING TO THE PLATE"
+        Print #1, "NO STRATEGY DEFINED FOR THROWING TO THE PLATE"
     Else
-        Print #1,  "DON'T THROW HOME WITH RUNNER TRYING TO SCORE": Print #1,
-        Print #1,  "FROM 'A' INNING ON"
-        Print #1,  "'B' OR MORE RUNS AHEAD"
-        Print #1,  Tab(32); "TABLE OF VALUES"
-        Print #1,  "      A      B"
-        Print #1,  Using "(1)  ##    ###"; mgrProfileVal(767); mgrProfileVal(768)
-        Print #1,  Using "(2)  ##    ###"; mgrProfileVal(769); mgrProfileVal(770)
+        Print #1, "DON'T THROW HOME WITH RUNNER TRYING TO SCORE": Print #1,
+        Print #1, "FROM 'A' INNING ON"
+        Print #1, "'B' OR MORE RUNS AHEAD"
+        Print #1, Tab(32); "TABLE OF VALUES"
+        Print #1, "      A      B"
+        Print #1, Using "(1)  ##    ###"; mgrProfileVal(767); mgrProfileVal(768)
+        Print #1, Using "(2)  ##    ###"; mgrProfileVal(769); mgrProfileVal(770)
     End If
 
     Print #1,
-    Print #1,  "# PINCH RUNNER"
+    Print #1, "# PINCH RUNNER"
 
     For I = 1 To 6
-        Print #1,  Using "# "; I;
+        Print #1, Using "# "; I;
         If mgrProfileVal(I + 771) < 0 Then
             Print #1,
         Else
-            Print #1,  batterNames$(mgrProfileVal(I + 771))
+            Print #1, batterNames$(mgrProfileVal(I + 771))
         End If
     Next
 
     Print #1,
-    Print #1,  "DEFENSIVE SUBS FOR PINCH RUNNERS"
-    Print #1,  "SCORE TIED OR DOWN BY ONE RUN"
+    Print #1, "DEFENSIVE SUBS FOR PINCH RUNNERS"
+    Print #1, "SCORE TIED OR DOWN BY ONE RUN"
 
     If mgrProfileVal(778) <> 999 Then
-        Print #1,  "NO SUBS DEFINED"
+        Print #1, "NO SUBS DEFINED"
     Else
-        Print #1,  "# PLAYER     I  SUBSTITUTE  %"
+        Print #1, "# PLAYER     I  SUBSTITUTE  %"
         For I = 0 To 5
-            Print #1,  Using "# "; I + 1;
+            Print #1, Using "# "; I + 1;
             If mgrProfileVal(I * 4 + 779) < 0 Then
                 Print #1,
             Else
-                Print #1,  Left$(batterNames$(mgrProfileVal(I * 4 + 779)), 10); Tab(19);
-                Print #1,  Using "## "; mgrProfileVal(I * 4 + 780);
-                Print #1,  Left$(batterNames$(mgrProfileVal(I * 4 + 781)), 10); Tab(33); Using "###"; mgrProfileVal(I * 4 + 782)
+                Print #1, Left$(batterNames$(mgrProfileVal(I * 4 + 779)), 10); Tab(19);
+                Print #1, Using "## "; mgrProfileVal(I * 4 + 780);
+                Print #1, Left$(batterNames$(mgrProfileVal(I * 4 + 781)), 10); Tab(33); Using "###"; mgrProfileVal(I * 4 + 782)
             End If
         Next
     End If
@@ -2058,39 +2064,39 @@ Sub PrintManagerProfile (printDest, destFile$, targetTeam$)
     Print #1,
 
     If mgrProfileVal(803) <> 999 Then
-        Print #1,  "NO STRATEGY DEFINED TO PINCH RUN FOR PITCHER"
+        Print #1, "NO STRATEGY DEFINED TO PINCH RUN FOR PITCHER"
     Else
-        Print #1,  "PINCH RUN FOR PITCHER": Print #1,
-        Print #1,  "RUN RATING <= 'A'"
-        Print #1,  "'B' INNING ON"
-        Print #1,  "'C' % OF THE TIME"
-        Print #1,  Tab(32); "TABLE OF VALUES"
-        Print #1,  "SCENARIO                A     B      C"
-        Print #1,  "1 - TIED OR DOWN BY 1 "; Using "###    ##    ###"; mgrProfileVal(804); mgrProfileVal(805); mgrProfileVal(806)
-        Print #1,  "2 - TIED OR DOWN BY 1 "; Using "###    ##    ###"; mgrProfileVal(807); mgrProfileVal(808); mgrProfileVal(809)
+        Print #1, "PINCH RUN FOR PITCHER": Print #1,
+        Print #1, "RUN RATING <= 'A'"
+        Print #1, "'B' INNING ON"
+        Print #1, "'C' % OF THE TIME"
+        Print #1, Tab(32); "TABLE OF VALUES"
+        Print #1, "SCENARIO                A     B      C"
+        Print #1, "1 - TIED OR DOWN BY 1 "; Using "###    ##    ###"; mgrProfileVal(804); mgrProfileVal(805); mgrProfileVal(806)
+        Print #1, "2 - TIED OR DOWN BY 1 "; Using "###    ##    ###"; mgrProfileVal(807); mgrProfileVal(808); mgrProfileVal(809)
     End If
 
     Print #1,
 
     If mgrProfileVal(810) <> 999 Then
-        Print #1,  "NO BASE RUNNING STRATEGY DEFINED"
+        Print #1, "NO BASE RUNNING STRATEGY DEFINED"
     Else
-        Print #1,  "BASE RUNNING STRATEGY": Print #1,
-        Print #1,  Tab(32); "TABLE OF VALUES"
-        Print #1,  "SCENARIO                            %       %          %          %"
-        Print #1,  "                                  SAFE    NORMAL   AGGRESSIVE   TOTALS"
-        Print #1,  " 1 - INNING 1-3, WHEN AHEAD       "; Using "###     ###        ###          ###"; mgrProfileVal(811); mgrProfileVal(812); mgrProfileVal(813); mgrProfileVal(811) + mgrProfileVal(812) + mgrProfileVal(813)
-        Print #1,  " 2 - INNING 1-3, WHEN TIED        "; Using "###     ###        ###          ###"; mgrProfileVal(814); mgrProfileVal(815); mgrProfileVal(816); mgrProfileVal(816) + mgrProfileVal(815) + mgrProfileVal(814)
-        Print #1,  " 3 - INNING 1-3, WHEN BEHIND      "; Using "###     ###        ###          ###"; mgrProfileVal(817); mgrProfileVal(818); mgrProfileVal(819); mgrProfileVal(819) + mgrProfileVal(818) + mgrProfileVal(817)
-        Print #1,  " 4 - INNING 4-6, WHEN AHEAD       "; Using "###     ###        ###          ###"; mgrProfileVal(820); mgrProfileVal(821); mgrProfileVal(822); mgrProfileVal(820) + mgrProfileVal(821) + mgrProfileVal(822)
-        Print #1,  " 5 - INNING 4-6, WHEN TIED        "; Using "###     ###        ###          ###"; mgrProfileVal(823); mgrProfileVal(824); mgrProfileVal(825); mgrProfileVal(823) + mgrProfileVal(824) + mgrProfileVal(825)
-        Print #1,  " 6 - INNING 4-6, WHEN BEHIND      "; Using "###     ###        ###          ###"; mgrProfileVal(826); mgrProfileVal(827); mgrProfileVal(828); mgrProfileVal(826) + mgrProfileVal(827) + mgrProfileVal(828)
-        Print #1,  " 7 - INNING 7-9, WHEN AHEAD       "; Using "###     ###        ###          ###"; mgrProfileVal(829); mgrProfileVal(830); mgrProfileVal(831); mgrProfileVal(829) + mgrProfileVal(830) + mgrProfileVal(831)
-        Print #1,  " 8 - INNING 7-9, WHEN TIED        "; Using "###     ###        ###          ###"; mgrProfileVal(832); mgrProfileVal(833); mgrProfileVal(834); mgrProfileVal(832) + mgrProfileVal(833) + mgrProfileVal(834)
-        Print #1,  " 9 - INNING 7-9, WHEN BEHIND      "; Using "###     ###        ###          ###"; mgrProfileVal(835); mgrProfileVal(836); mgrProfileVal(837); mgrProfileVal(835) + mgrProfileVal(836) + mgrProfileVal(837)
-        Print #1,  "10 - INNING 9- , WHEN AHEAD       "; Using "###     ###        ###          ###"; mgrProfileVal(838); mgrProfileVal(839); mgrProfileVal(840); mgrProfileVal(838) + mgrProfileVal(839) + mgrProfileVal(840)
-        Print #1,  "11 - INNING 9- , WHEN TIED        "; Using "###     ###        ###          ###"; mgrProfileVal(841); mgrProfileVal(842); mgrProfileVal(843); mgrProfileVal(841) + mgrProfileVal(842) + mgrProfileVal(843)
-        Print #1,  "12 - INNING 9- , WHEN BEHIND      "; Using "###     ###        ###          ###"; mgrProfileVal(844); mgrProfileVal(845); mgrProfileVal(846); mgrProfileVal(844) + mgrProfileVal(845) + mgrProfileVal(846)
+        Print #1, "BASE RUNNING STRATEGY": Print #1,
+        Print #1, Tab(32); "TABLE OF VALUES"
+        Print #1, "SCENARIO                            %       %          %          %"
+        Print #1, "                                  SAFE    NORMAL   AGGRESSIVE   TOTALS"
+        Print #1, " 1 - INNING 1-3, WHEN AHEAD       "; Using "###     ###        ###          ###"; mgrProfileVal(811); mgrProfileVal(812); mgrProfileVal(813); mgrProfileVal(811) + mgrProfileVal(812) + mgrProfileVal(813)
+        Print #1, " 2 - INNING 1-3, WHEN TIED        "; Using "###     ###        ###          ###"; mgrProfileVal(814); mgrProfileVal(815); mgrProfileVal(816); mgrProfileVal(816) + mgrProfileVal(815) + mgrProfileVal(814)
+        Print #1, " 3 - INNING 1-3, WHEN BEHIND      "; Using "###     ###        ###          ###"; mgrProfileVal(817); mgrProfileVal(818); mgrProfileVal(819); mgrProfileVal(819) + mgrProfileVal(818) + mgrProfileVal(817)
+        Print #1, " 4 - INNING 4-6, WHEN AHEAD       "; Using "###     ###        ###          ###"; mgrProfileVal(820); mgrProfileVal(821); mgrProfileVal(822); mgrProfileVal(820) + mgrProfileVal(821) + mgrProfileVal(822)
+        Print #1, " 5 - INNING 4-6, WHEN TIED        "; Using "###     ###        ###          ###"; mgrProfileVal(823); mgrProfileVal(824); mgrProfileVal(825); mgrProfileVal(823) + mgrProfileVal(824) + mgrProfileVal(825)
+        Print #1, " 6 - INNING 4-6, WHEN BEHIND      "; Using "###     ###        ###          ###"; mgrProfileVal(826); mgrProfileVal(827); mgrProfileVal(828); mgrProfileVal(826) + mgrProfileVal(827) + mgrProfileVal(828)
+        Print #1, " 7 - INNING 7-9, WHEN AHEAD       "; Using "###     ###        ###          ###"; mgrProfileVal(829); mgrProfileVal(830); mgrProfileVal(831); mgrProfileVal(829) + mgrProfileVal(830) + mgrProfileVal(831)
+        Print #1, " 8 - INNING 7-9, WHEN TIED        "; Using "###     ###        ###          ###"; mgrProfileVal(832); mgrProfileVal(833); mgrProfileVal(834); mgrProfileVal(832) + mgrProfileVal(833) + mgrProfileVal(834)
+        Print #1, " 9 - INNING 7-9, WHEN BEHIND      "; Using "###     ###        ###          ###"; mgrProfileVal(835); mgrProfileVal(836); mgrProfileVal(837); mgrProfileVal(835) + mgrProfileVal(836) + mgrProfileVal(837)
+        Print #1, "10 - INNING 9- , WHEN AHEAD       "; Using "###     ###        ###          ###"; mgrProfileVal(838); mgrProfileVal(839); mgrProfileVal(840); mgrProfileVal(838) + mgrProfileVal(839) + mgrProfileVal(840)
+        Print #1, "11 - INNING 9- , WHEN TIED        "; Using "###     ###        ###          ###"; mgrProfileVal(841); mgrProfileVal(842); mgrProfileVal(843); mgrProfileVal(841) + mgrProfileVal(842) + mgrProfileVal(843)
+        Print #1, "12 - INNING 9- , WHEN BEHIND      "; Using "###     ###        ###          ###"; mgrProfileVal(844); mgrProfileVal(845); mgrProfileVal(846); mgrProfileVal(844) + mgrProfileVal(845) + mgrProfileVal(846)
     End If
 
     Close #1

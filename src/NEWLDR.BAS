@@ -1973,7 +1973,8 @@ Sub DisplayTeamView (categoryID, screenType, printOrView, TVN, maxRecords)
 
                         Case 1:
                             Print #1, Tab(32); Using "#####"; expLdrVal!(W);
-                            Print #1, ".";: Print #1, Using "#"; expLdrTYP1!(W)
+                            Print #1, ".";
+                            Print #1, Using "#"; expLdrTYP1!(W)
 
                         Case 2:
                             Print #1, Tab(32); Using "#####"; expLdrVal!(W)
@@ -2403,7 +2404,9 @@ Sub NewLeaders_Report (printDest, destFile$, TVN, maxRecords, categoryID)
     For W = 1 To maxRecords
 
         If (W - 1) Mod 55 = 0 Then
-            Print #1, Chr$(12)
+            Print #1, 
+            If printDest = 1 Then Print #1, Chr$(12)
+            Print #1, 
             Print #1, "     PLAYER                  TEAM                     "; expBatCategory$(categoryID)
             Print #1, "     ------                  ----                     ";
             Print #1, String$(Len(expBatCategory$(categoryID)), 45)
@@ -2439,7 +2442,7 @@ Sub NewLeaders_Report (printDest, destFile$, TVN, maxRecords, categoryID)
 
         Close #2
 
-        Print #1, Chr$(12)
+        If printDest = 1 Then Print #1, Chr$(12)
 
         Kill destFile$
 

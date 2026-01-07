@@ -35,7 +35,8 @@ Sub ACTIVATE ()
                 Print batterNames$(I);
 
                 Color 15, 0
-                Print Tab(40);: Print Using "## "; I + 13;
+                Print Tab(40);
+                Print Using "## "; I + 13;
 
                 If batterRatings(I + 12, 31) <> 0 Then Color teamRatings(11), teamRatings(12)
                 Print batterNames$(I + 12): Color 15, 0
@@ -72,7 +73,8 @@ Sub ACTIVATE ()
                 If pitcherRatings(I, 34) <> 0 Then Color teamRatings(11), teamRatings(12)
                 Print pitcherNames$(I);: Color 15, 0
 
-                Print Tab(40);: Print Using "## "; I + 12;
+                Print Tab(40);
+                Print Using "## "; I + 12;
 
                 If pitcherRatings(I + 11, 34) <> 0 Then Color teamRatings(11), teamRatings(12)
                 Print pitcherNames$(I + 11): Color 15, 0

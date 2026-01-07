@@ -208,10 +208,12 @@ Sub PrintTeamStats (printDest, destFile$, targetTeam$)
                 Print #1, Tab(68); ".000"
             End If
             If batAvg! > 0 And batAvg! < 100 Then
-                Print #1, Tab(68); ".0";: Print #1, Tab(70); Using "##"; batAvg!
+                Print #1, Tab(68); ".0";
+                Print #1, Tab(70); Using "##"; batAvg!
             End If
             If batAvg! > 100 Then
-                Print #1, Tab(68); ".";: Print #1, Tab(69); Using "###"; batAvg!
+                Print #1, Tab(68); ".";
+                Print #1, Tab(69); Using "###"; batAvg!
             End If
 
         End If
@@ -367,10 +369,12 @@ Sub PrintTeamStats (printDest, destFile$, targetTeam$)
             End If
 
             If batAvg! > 0 And batAvg! < 100 Then
-                Print #1, Tab(58); ".0";: Print #1, Tab(61); Using "##"; batAvg!;
+                Print #1, Tab(58); ".0";
+                Print #1, Tab(61); Using "##"; batAvg!;
             End If
             If batAvg! > 100 And batAvg! < 1000 Then
-                Print #1, Tab(58); ".";: Print #1, Tab(60); Using "###"; batAvg!;
+                Print #1, Tab(58); ".";
+                Print #1, Tab(60); Using "###"; batAvg!;
             End If
             If batAvg! >= 1000 Then
                 Print #1, Tab(58); " ---";

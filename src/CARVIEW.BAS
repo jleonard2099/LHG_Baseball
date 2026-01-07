@@ -74,7 +74,9 @@ Sub CareerStats_Report (printDest, destFile$, careerName$)
             Next Z
 
             If 55 - PTN < VV Then
-                Print #1, Chr$(12)
+                Print #1,
+                If printDest = 1 Then Print #1, Chr$(12)
+                Print #1,
                 Print #1, careerName$
                 Print #1, "BATTER     YEAR      G      AB      R      H    2B    3B    HR    RBI     BB     SO     SB    CS     E     AVG     SLG      OB"
                 PTN = 0
@@ -131,10 +133,12 @@ Sub CareerStats_Report (printDest, destFile$, careerName$)
                 End If
 
                 If I2! > 0 And I2! < 100 Then
-                    Print #1, Tab(107); ".0";: Print #1, Using "##"; I2!;
+                    Print #1, Tab(107); ".0";
+					Print #1, Using "##"; I2!;
                 End If
                 If I2! >= 100 Then
-                    Print #1, Tab(107); ".";: Print #1, Using "###"; I2!;
+                    Print #1, Tab(107); ".";
+					Print #1, Using "###"; I2!;
                 End If
 
                 'SLG
@@ -143,10 +147,12 @@ Sub CareerStats_Report (printDest, destFile$, careerName$)
                 End If
 
                 If I3! > 0 And I3! < 100 Then
-                    Print #1, Tab(115); ".0";: Print #1, Using "##"; I3!;
+                    Print #1, Tab(115); ".0";
+					Print #1, Using "##"; I3!;
                 End If
                 If I3! >= 100 Then
-                    Print #1, Tab(115); ".";: Print #1, Using "###"; I3!;
+                    Print #1, Tab(115); ".";
+					Print #1, Using "###"; I3!;
                 End If
 
                 'OB
@@ -155,10 +161,12 @@ Sub CareerStats_Report (printDest, destFile$, careerName$)
                 End If
 
                 If I4! > 0 And I4! < 100 Then
-                    Print #1, Tab(123); ".0";: Print #1, Using "##"; I4!
+                    Print #1, Tab(123); ".0";
+					Print #1, Using "##"; I4!
                 End If
                 If I4! >= 100 Then
-                    Print #1, Tab(123); ".";: Print #1, Using "###"; I4!
+                    Print #1, Tab(123); ".";
+					Print #1, Using "###"; I4!
                 End If
 
             Next V
@@ -212,10 +220,12 @@ Sub CareerStats_Report (printDest, destFile$, careerName$)
                 Print #1, Tab(107); ".000";
             End If
             If I2! > 0 And I2! < 100 Then
-                Print #1, Tab(107); ".0";: Print #1, Using "##"; I2!;
+                Print #1, Tab(107); ".0";
+                Print #1, Using "##"; I2!;
             End If
             If I2! >= 100 Then
-                Print #1, Tab(107); ".";: Print #1, Using "###"; I2!;
+                Print #1, Tab(107); ".";
+				Print #1, Using "###"; I2!;
             End If
 
             I3! = 0
@@ -225,10 +235,12 @@ Sub CareerStats_Report (printDest, destFile$, careerName$)
                 Print #1, Tab(115); ".000";
             End If
             If I3! > 0 And I3! < 100 Then
-                Print #1, Tab(115); ".0";: Print #1, Using "##"; I3!;
+                Print #1, Tab(115); ".0";
+				Print #1, Using "##"; I3!;
             End If
             If I3! >= 100 Then
-                Print #1, Tab(115); ".";: Print #1, Using "###"; I3!;
+                Print #1, Tab(115); ".";
+				Print #1, Using "###"; I3!;
             End If
 
             I4! = 0
@@ -240,10 +252,12 @@ Sub CareerStats_Report (printDest, destFile$, careerName$)
                 Print #1, Tab(123); ".000"
             End If
             If I4! > 0 And I4! < 100 Then
-                Print #1, Tab(123); ".0";: Print #1, Using "##"; I4!
+                Print #1, Tab(123); ".0";
+				Print #1, Using "##"; I4!
             End If
             If I4! >= 100 Then
-                Print #1, Tab(123); ".";: Print #1, Using "###"; I4!
+                Print #1, Tab(123); ".";
+				Print #1, Using "###"; I4!
             End If
 
             TT1 = 0
@@ -266,7 +280,9 @@ Sub CareerStats_Report (printDest, destFile$, careerName$)
 
     Next I
 
-    Print #1, Chr$(12)
+    Print #1,
+    If printDest = 1 Then Print #1, Chr$(12)
+    Print #1,
 
     PTN = 0
     Print #1, careerName$
@@ -283,7 +299,9 @@ Sub CareerStats_Report (printDest, destFile$, careerName$)
             Next Z
 
             If 55 - PTN < VV Then
-                Print #1, Chr$(12)
+                Print #1,
+                If printDest = 1 Then Print #1, Chr$(12)
+                Print #1,
                 Print #1, careerName$
                 Print #1, "PITCHER    YEAR     W     L     S      IP        H     BB     SO     ERA     G    GS    CG    RUN     ER    SHO    HR    DP"
                 PTN = 0
@@ -305,10 +323,12 @@ Sub CareerStats_Report (printDest, destFile$, careerName$)
                 Print #1, Tab(32); Using "##"; carRecPitStats(V, I, 12);
 
                 'Innings Pitched
-                Print #1, Tab(39);: Print #1, Using "###"; Int(carRecPitStats(V, I, 0) / 3);
+                Print #1, Tab(39);
+				Print #1, Using "###"; Int(carRecPitStats(V, I, 0) / 3);
 
                 If carRecPitStats(V, I, 0) - (Int(carRecPitStats(V, I, 0) / 3) * 3) > 0 Then
-                    Print #1, ".";: Print #1, Using "#"; carRecPitStats(V, I, 0) - (Int(carRecPitStats(V, I, 0) / 3) * 3);
+                    Print #1, ".";
+				Print #1, Using "#"; carRecPitStats(V, I, 0) - (Int(carRecPitStats(V, I, 0) / 3) * 3);
                 End If
 
                 'H
@@ -331,16 +351,19 @@ Sub CareerStats_Report (printDest, destFile$, careerName$)
                     Print #1, Tab(68); " 0.00";
                 End If
                 If carRecPitStats(V, I, 0) > 0 And I2! > 0 And I2! <= 999 Then
-                    Print #1, Tab(68); Using "##"; I3!;: Print #1, ".";
+                    Print #1, Tab(68); Using "##"; I3!;
+                    Print #1, ".";
                 End If
                 If carRecPitStats(V, I, 0) > 0 And I2! >= 1000 Then
-                    Print #1, Tab(68); Using "##"; I3!;: Print #1, ".";
+                    Print #1, Tab(68); Using "##"; I3!;
+					Print #1, ".";
                 End If
                 If carRecPitStats(V, I, 0) > 0 And I4! = 0 And I2! > 0 Then
                     Print #1, "00";
                 End If
                 If carRecPitStats(V, I, 0) > 0 And I4! > 0 And I4! < 10 And I2! > 0 Then
-                    Print #1, "0";: Print #1, Using "#"; I4!;
+                    Print #1, "0";
+					Print #1, Using "#"; I4!;
                 End If
                 If carRecPitStats(V, I, 0) > 0 And I4! >= 10 And I2! > 0 Then
                     Print #1, Using "##"; I4!;
@@ -401,7 +424,8 @@ Sub CareerStats_Report (printDest, destFile$, careerName$)
         Print #1, Tab(39); Using "###"; Int(TT16 / 3);
 
         If TT16 - (Int(TT16 / 3) * 3) > 0 Then
-            Print #1, ".";: Print #1, Using "#"; TT16 - (Int(TT16 / 3) * 3);
+            Print #1, ".";
+            Print #1, Using "#"; TT16 - (Int(TT16 / 3) * 3);
         End If
 
         Print #1, Tab(47); Using "####"; TT17;
@@ -421,16 +445,19 @@ Sub CareerStats_Report (printDest, destFile$, careerName$)
             Print #1, Tab(68); " 0.00";
         End If
         If TT16 > 0 And I2! > 0 And I2! <= 999 Then
-            Print #1, Tab(68); Using "##"; I3!;: Print #1, ".";
+            Print #1, Tab(68); Using "##"; I3!;
+            Print #1, ".";
         End If
         If TT16 > 0 And I2! >= 1000 Then
-            Print #1, Tab(68); Using "##"; I3!;: Print #1, ".";
+            Print #1, Tab(68); Using "##"; I3!;
+			Print #1, ".";
         End If
         If TT16 > 0 And I4! = 0 And I2! > 0 Then
             Print #1, "00";
         End If
         If TT16 > 0 And I4! > 0 And I4! < 10 And I2! > 0 Then
-            Print #1, "0";: Print #1, Using "#"; I4!;
+            Print #1, "0";
+			Print #1, Using "#"; I4!;
         End If
         If TT16 > 0 And I4! >= 10 And I2! > 0 Then
             Print #1, Using "##"; I4!;
@@ -832,10 +859,12 @@ Sub OneBatter_Screen (careerName$, index, nbrYears)
         End If
 
         If I2! > 0 And I2! < 100 Then
-            Locate , 66: Print ".0";: Print Using "##"; I2!;
+            Locate , 66: Print ".0";
+			Print Using "##"; I2!;
         End If
         If I2! >= 100 Then
-            Locate , 66: Print ".";: Print Using "###"; I2!;
+            Locate , 66: Print ".";
+			Print Using "###"; I2!;
         End If
 
         'SLG
@@ -844,10 +873,12 @@ Sub OneBatter_Screen (careerName$, index, nbrYears)
         End If
 
         If I3! > 0 And I3! < 100 Then
-            Locate , 71: Print ".0";: Print Using "##"; I3!;
+            Locate , 71: Print ".0";
+			Print Using "##"; I3!;
         End If
         If I3! >= 100 Then
-            Locate , 71: Print ".";: Print Using "###"; I3!;
+            Locate , 71: Print ".";
+			Print Using "###"; I3!;
         End If
 
         'OB
@@ -856,10 +887,12 @@ Sub OneBatter_Screen (careerName$, index, nbrYears)
         End If
 
         If I4! > 0 And I4! < 100 Then
-            Locate , 76: Print ".";: Print Using "###"; I4!
+            Locate , 76: Print ".";
+			Print Using "###"; I4!
         End If
         If I4! >= 100 Then
-            Locate , 76: Print ".";: Print Using "###"; I4!
+            Locate , 76: Print ".";
+			Print Using "###"; I4!
         End If
 
     Next V
@@ -915,7 +948,8 @@ Sub OnePitcher_Screen (careerName$, index, nbrYears)
         Locate , 28: Print Using "###"; Int(carRecPitStats(V, index, 0) / 3);
 
         If carRecPitStats(V, index, 0) - (Int(carRecPitStats(V, index, 0) / 3) * 3) > 0 Then
-            Print ".";: Print Using "#"; carRecPitStats(V, index, 0) - (Int(carRecPitStats(V, index, 0) / 3) * 3);
+            Print ".";
+			Print Using "#"; carRecPitStats(V, index, 0) - (Int(carRecPitStats(V, index, 0) / 3) * 3);
         End If
 
         'H
@@ -938,17 +972,20 @@ Sub OnePitcher_Screen (careerName$, index, nbrYears)
             Locate , 44: Print " 0.00";
         End If
         If carRecPitStats(V, index, 0) > 0 And I2! > 0 And I2! <= 999 Then
-            Locate , 44: Print Using "##"; I3!;: Print ".";
+            Locate , 44: Print Using "##"; I3!;
+			Print ".";
         End If
         If carRecPitStats(V, index, 0) > 0 And I2! >= 1000 Then
-            Locate , 44: Print Using "##"; I3!;: Print ".";
+            Locate , 44: Print Using "##"; I3!;
+			Print ".";
         End If
 
         If carRecPitStats(V, index, 0) > 0 And I4! = 0 And I2! > 0 Then
             Print "00";
         End If
         If carRecPitStats(V, index, 0) > 0 And I4! > 0 And I4! < 10 And I2! > 0 Then
-            Print "0";: Print Using "#"; I4!;
+            Print "0";
+			Print Using "#"; I4!;
         End If
         If carRecPitStats(V, index, 0) > 0 And I4! >= 10 And I2! > 0 Then
             Print Using "##"; I4!;
@@ -1041,10 +1078,12 @@ Sub BatterTotals (index, nbrYears)
         Locate , 70: Print ".000"
     End If
     If I3! > 0 And I3! < 100 Then
-        Locate , 70: Print ".0";: Print Using "##"; I3!
+        Locate , 70: Print ".0";
+        Print Using "##"; I3!
     End If
     If I3! >= 100 Then
-        Locate , 70: Print ".";: Print Using "###"; I3!
+        Locate , 70: Print ".";
+        Print Using "###"; I3!
     End If
 
     Print "TOTALS";
@@ -1067,10 +1106,12 @@ Sub BatterTotals (index, nbrYears)
     End If
 
     If I2 > 0 And I2 < 100 Then
-        Locate , 65: Print ".0";: Print Using "##"; I2;
+        Locate , 65: Print ".0";
+        Print Using "##"; I2;
     End If
     If I2 >= 100 Then
-        Locate , 65: Print ".";: Print Using "###"; I2;
+        Locate , 65: Print ".";
+        Print Using "###"; I2;
     End If
 
     I4! = 0
@@ -1084,7 +1125,8 @@ Sub BatterTotals (index, nbrYears)
     End If
 
     If I4! > 0 And I4! < 100 Then
-        Locate , 75: Print ".0";: Print Using "##"; I4!
+        Locate , 75: Print ".0";
+        Print Using "##"; I4!
     End If
     If I4! >= 100 Then
         Locate , 75: Print ".";
@@ -1159,7 +1201,8 @@ Sub PitcherTotals (index, nbrYears)
     Print Tab(27); Using "###"; Int(TT16 / 3);
 
     If TT16 - (Int(TT16 / 3) * 3) > 0 Then
-        Print ".";: Print Using "#"; TT16 - (Int(TT16 / 3) * 3);
+        Print ".";
+        Print Using "#"; TT16 - (Int(TT16 / 3) * 3);
     End If
 
     Print Tab(37); Using "###"; TT18;
@@ -1176,16 +1219,19 @@ Sub PitcherTotals (index, nbrYears)
         Locate , 44: Print " 0.00";
     End If
     If TT16 > 0 And I2! > 0 And I2! <= 999 Then
-        Locate , 44: Print Using "##"; I3!;: Print ".";
+        Locate , 44: Print Using "##"; I3!;
+        Print ".";
     End If
     If TT16 > 0 And I2! >= 1000 Then
-        Locate , 44: Print Using "##"; I3!;: Print ".";
+        Locate , 44: Print Using "##"; I3!;
+        Print ".";
     End If
     If TT16 > 0 And I4! = 0 And I2! > 0 Then
         Print "00";
     End If
     If TT16 > 0 And I4! > 0 And I4! < 10 And I2! > 0 Then
-        Print "0";: Print Using "#"; I4!;
+        Print "0";
+        Print Using "#"; I4!;
     End If
     If TT16 > 0 And I4! >= 10 And I2! > 0 Then
         Print Using "##"; I4!;

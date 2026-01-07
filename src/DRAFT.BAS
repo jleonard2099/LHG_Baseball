@@ -298,18 +298,22 @@ Sub DraftChoices (draftNew, doneDrafting, teamName$, draftTeamYear$, teamIdx)
 
         For I = 0 To 10
             Locate I + 5, 1
-            Print Using "##"; I;: Print " "; batterNames$(I); Tab(20);
-            Print Using "##"; I + 12;: Print " "; batterNames$(I + 12)
+            Print Using "##"; I;
+            Print " "; batterNames$(I); Tab(20);
+            Print Using "##"; I + 12;
+            Print " "; batterNames$(I + 12)
         Next
 
-        Locate , 1: Print Using "##"; 11;: Print " "; batterNames$(11)
+        Locate , 1: Print Using "##"; 11;
+        Print " "; batterNames$(11)
         Print
 
         For I = 0 To 10
             Locate I + 5, 40
             Print Using "##"; I;
             Print " "; pitcherNames$(I); Tab(60);
-            Print Using "##"; I + 11;: Print " "; pitcherNames$(I + 11)
+            Print Using "##"; I + 11;
+            Print " "; pitcherNames$(I + 11)
         Next
 
         Locate 18, 1

@@ -246,10 +246,14 @@ Sub NewStandings_Screen (league$)
                     End If
 
                     Print Tab(43); Using "##"; teamWinStreak(I); Tab(46); teamLoseStreak(I); Tab(50); currWinStreak(I); Tab(53); currLoseStreak(I);
-                    Print Tab(57); Using "##"; totHomeWins!(I);: Print Tab(60); Using "##"; totHomeLosses!(I);
-                    Print Tab(63); Using "##"; totRoadWins(I);: Print Tab(66); Using "##"; totRoadLosses(I);
-                    Print Tab(69); Using "##"; totExtInnWins(I);: Print Tab(72); Using "##"; totExtInnLosses(I);
-                    Print Tab(75); Using "##"; lastTenWins(I);: Print Tab(78); Using "##"; lastTenLosses(I)
+                    Print Tab(57); Using "##"; totHomeWins!(I);
+                    Print Tab(60); Using "##"; totHomeLosses!(I);
+                    Print Tab(63); Using "##"; totRoadWins(I);
+                    Print Tab(66); Using "##"; totRoadLosses(I);
+                    Print Tab(69); Using "##"; totExtInnWins(I);
+                    Print Tab(72); Using "##"; totExtInnLosses(I);
+                    Print Tab(75); Using "##"; lastTenWins(I);
+                    Print Tab(78); Using "##"; lastTenLosses(I)
 
                 End If
 
@@ -370,10 +374,14 @@ Sub NewStandings_Report (printDest, destFile$, league$)
                     End If
 
                     Print #1, Tab(44); Using "##"; teamWinStreak(I); Tab(47); teamLoseStreak(I); Tab(51); currWinStreak(I); Tab(54); currLoseStreak(I);
-                    Print #1, Tab(57); Using "##"; totHomeWins!(I);: Print #1, Tab(60); Using "##"; totHomeLosses!(I);
-                    Print #1, Tab(63); Using "##"; totRoadWins(I);: Print #1, Tab(66); Using "##"; totRoadLosses(I);
-                    Print #1, Tab(69); Using "##"; totExtInnWins(I);: Print #1, Tab(72); Using "##"; totExtInnLosses(I);
-                    Print #1, Tab(75); Using "##"; lastTenWins(I);: Print #1, Tab(78); Using "##"; lastTenLosses(I)
+                    Print #1, Tab(57); Using "##"; totHomeWins!(I);
+                    Print #1, Tab(60); Using "##"; totHomeLosses!(I);
+                    Print #1, Tab(63); Using "##"; totRoadWins(I);
+                    Print #1, Tab(66); Using "##"; totRoadLosses(I);
+                    Print #1, Tab(69); Using "##"; totExtInnWins(I);
+                    Print #1, Tab(72); Using "##"; totExtInnLosses(I);
+                    Print #1, Tab(75); Using "##"; lastTenWins(I);
+                    Print #1, Tab(78); Using "##"; lastTenLosses(I)
 
                 End If
 

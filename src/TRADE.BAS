@@ -446,21 +446,25 @@ Sub TradeBatters ()
 
     For I = 0 To 16
         Color 15, 0
-        Print Using "##"; I;: Print " ";
+        Print Using "##"; I;
+		Print " ";
         Color teamRat_TRADE(0, 11), teamRat_TRADE(0, 12): Print batNam_TRADE$(0, I);
         Color 15, 0
         Locate , 40
-        Print Using "##"; I;: Print " ";
+        Print Using "##"; I;
+		Print " ";
         Color teamRat_TRADE(1, 11), teamRat_TRADE(1, 12): Print batNam_TRADE$(1, I)
     Next I
 
     For I = 17 To 22
         Color 15, 0
-        Locate I - 15, 20: Print Using "##"; I;: Print " ";
+        Locate I - 15, 20: Print Using "##"; I;
+		Print " ";
         Color teamRat_TRADE(0, 11), teamRat_TRADE(0, 12): Print batNam_TRADE$(0, I);
         Color 15, 0
         Locate , 60
-        Print Using "##"; I;: Print " ";
+        Print Using "##"; I;
+		Print " ";
         Color teamRat_TRADE(1, 11), teamRat_TRADE(1, 12): Print batNam_TRADE$(1, I)
     Next I
 
@@ -605,22 +609,26 @@ Sub TradePitchers ()
 
     For I = 0 To 11
         Color 15, 0
-        Print Using "##"; I;: Print " ";
+        Print Using "##"; I;
+		Print " ";
         Color teamRat_TRADE(0, 11), teamRat_TRADE(0, 12): Print batNam_TRADE$(0, I);
         Locate , 40
         Color 15, 0
-        Print Using "##"; I;: Print " ";
+        Print Using "##"; I;
+		Print " ";
         Color teamRat_TRADE(1, 11), teamRat_TRADE(1, 12): Print batNam_TRADE$(1, I)
     Next I
 
     For I = 12 To 21
         Color 15, 0
-        Locate I - 10, 20: Print Using "##"; I;: Print "  ";
+        Locate I - 10, 20: Print Using "##"; I;
+		Print "  ";
         Color teamRat_TRADE(0, 11), teamRat_TRADE(0, 12): Print batNam_TRADE$(0, I);
         Locate I - 10, 40
         Locate , 60
         Color 15, 0
-        Print Using "##"; I;: Print "  ";
+        Print Using "##"; I;
+		Print "  ";
         Color teamRat_TRADE(1, 11), teamRat_TRADE(1, 12): Print batNam_TRADE$(1, I)
     Next I
 

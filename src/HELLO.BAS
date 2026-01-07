@@ -33,6 +33,8 @@ DefInt A-Z
 '$Include: 'BoxRoutines.bi'
 '$Include: 'FileTeamSelection.bi'
 '$Include: 'Variables.bi'
+Dim leaderPlayer$(298)
+
 '$Include: 'MainRoutines.bi'
 '$Include: 'TITLE.bi'
 
@@ -2904,7 +2906,10 @@ Sub PitchingRotations (compRotation, luTeamIdx)
     Locate 2, 1
 
     For I = 1 To 5
-        Color 14: Print "(";: Print Using "#"; I;: Print ") ";: Color 15: Print "MAN ROTATION"
+        Color 14: Print "(";
+        Print Using "#"; I;
+        Print ") ";
+        Color 15: Print "MAN ROTATION"
     Next
 
     Print "YOU MAY CONSIDER THE FOLLOWING GUIDELINES:"
@@ -3865,7 +3870,9 @@ Sub PrintPitcherInfo (idx%)
             '                          IP  H   G   GS DR BB  SO
             Locate , 17: Print Using " ### ### ### ## ## ### ###"; pitchRating(idx%, I, SS_P_IP); pitchRating(idx%, I, SS_P_H); pitchRating(idx%, I, SS_P_G); pitchRating(idx%, I, SS_P_GS); pitchRating(idx%, I, SS_P_Rest); pitchRating(idx%, I, SS_P_BB); pitchRating(idx%, I, SS_P_K);
             '                           W                                                       L  ERA
-            Locate , 43: Print Using "  ##"; pitchRating(idx%, I, 1);: Print "-";: Print Using "## ##.##"; pitchRating(idx%, I, SS_P_L); pitchRating(idx%, I, SS_P_ERA100) / 100
+            Locate , 43: Print Using "  ##"; pitchRating(idx%, I, 1);
+            Print "-";
+            Print Using "## ##.##"; pitchRating(idx%, I, SS_P_L); pitchRating(idx%, I, SS_P_ERA100) / 100
         End If
 
     Next I
@@ -11069,12 +11076,14 @@ Sub DisplayRun (baseNbr, X)
                 Print Left$(pitchers$(P, currPitcher(P)), 10)
                 Locate , X
                 Color 15, 2: Print Using "#"; pitchRating(P, currPitcher(P), SS_P_Run);
-                Print "/";: Print Using "###"; pitchRating(P, currPitcher(P), SS_P_H_SB)
+                Print "/";
+                Print Using "###"; pitchRating(P, currPitcher(P), SS_P_H_SB)
             Else
                 Print Left$(batters$(P, lineupPlayer(P, J)), 10)
                 Locate , X
                 Color 15, 2: Print Using "#"; batRating(P, lineupPlayer(P, J), SS_B_Run);
-                Print "/";: Print Using "###"; batRating(P, lineupPlayer(P, J), SS_B_SB)
+                Print "/";
+                Print Using "###"; batRating(P, lineupPlayer(P, J), SS_B_SB)
             End If
 
         End If
@@ -12552,7 +12561,8 @@ Sub MAINSCREEN (nbrBalls, nbrStrikes, MO)
     Print Using "##"; pitchRating(D, currPitcher(D), SS_P_L);
 
     'ERA
-    Print " ";: Print Using "##.##"; pitchRating(D, currPitcher(D), SS_P_ERA100) / 100
+    Print " ";
+    Print Using "##.##"; pitchRating(D, currPitcher(D), SS_P_ERA100) / 100
 
     Color 2, 0
 
@@ -14065,7 +14075,8 @@ Sub PopUp_Pitcher (WK, M)
         Print "  0.0";
     Else
         Print Using "###"; Int(oppPitStats(WK, M, 0) / 3);
-        Print ".";: Print Using "#"; oppPitStats(WK, M, 0) - (Int(oppPitStats(WK, M, 0) / 3) * 3);
+        Print ".";
+        Print Using "#"; oppPitStats(WK, M, 0) - (Int(oppPitStats(WK, M, 0) / 3) * 3);
     End If
 
     Print Using " ### ### ### ### ### ##"; oppPitStats(WK, M, 1); oppPitStats(WK, M, 4); oppPitStats(WK, M, 5); oppPitStats(WK, M, 2); oppPitStats(WK, M, 3); oppPitStats(WK, M, 14)
@@ -14085,7 +14096,8 @@ Sub PopUp_Pitcher (WK, M)
         Print "  0.0";
     Else
         Print Using "###"; Int(teamPitStats(WK, M, 0) / 3);
-        Print ".";: Print Using "#"; teamPitStats(WK, M, 0) - (Int(teamPitStats(WK, M, 0) / 3) * 3);
+        Print ".";
+        Print Using "#"; teamPitStats(WK, M, 0) - (Int(teamPitStats(WK, M, 0) / 3) * 3);
     End If
 
     Print Using " ### ### ### ### ### ##"; teamPitStats(WK, M, 1); teamPitStats(WK, M, 4); teamPitStats(WK, M, 5); teamPitStats(WK, M, 2); teamPitStats(WK, M, 3); teamPitStats(WK, M, 14)
@@ -17676,7 +17688,8 @@ Sub VIEWTEAM ()
 
                         If batRating(WK, 11, SS_B_Avail) = 0 Then Color 11
 
-                        Locate , 5: Print Using "##"; 11;: Print " "; batters$(WK, 11)
+                        Locate , 5: Print Using "##"; 11;
+                        Print " "; batters$(WK, 11)
 
                         Color 3
 
@@ -20717,36 +20730,37 @@ Sub BOX2FILE (printChoice, boxName$)
     Dim BK$
     BK$ = "## # # ## # #  # # #  #  # # ## ##"
 
-    Open boxName$ For Append As #2
+    Open boxName$ For Append As #1
 
     park$ = RTrim$(gameStadiums$(1))
     XCoord = (80 - Len(park$)) / 2
 
-    Print #2, Tab(XCoord); park$
-    Print #2, Tab(35); "TIME: "; gameTime$
-    Print #2, Tab(30); "ATTENDANCE: ";: Print #2, Using "###,###"; actualAttendance&
-    Print #2, Tab(32); "TEMPERATURE:"; gameTemp
-    Print #2,
+    Print #1, Tab(XCoord); park$
+    Print #1, Tab(35); "TIME: "; gameTime$
+    Print #1, Tab(30); "ATTENDANCE: ";
+    Print #1, Using "###,###"; actualAttendance&
+    Print #1, Tab(32); "TEMPERATURE:"; gameTemp
+    Print #1,
     If teamRat_GAME(1, 9) = 1 Then
-        Print #2, "WIND: NONE"
-        Print #2, "WEATHER: DOME"
+        Print #1, "WIND: NONE"
+        Print #1, "WEATHER: DOME"
     Else
-        Print #2, "WIND: "; wind$
-        Print #2, "SKY: "; skyCond$(skyType)
-        Print #2, "PRECIPITATION: "; precip$(precipType)
+        Print #1, "WIND: "; wind$
+        Print #1, "SKY: "; skyCond$(skyType)
+        Print #1, "PRECIPITATION: "; precip$(precipType)
     End If
 
-    Print #2,
+    Print #1,
 
-    Print #2, Tab(17);
+    Print #1, Tab(17);
 
     Call ScoreSummary_File
     
-    Print #2,
+    Print #1,
 
     For I = 0 To 1
 
-        Print #2, gameTeams$(I); Tab(18); "AB R H BI 2 3 HR K W SB CS E PO  A      BA   HR  RBI"
+        Print #1, gameTeams$(I); Tab(18); "AB R H BI 2 3 HR K W SB CS E PO  A      BA   HR  RBI"
 
         For I3 = 0 To 22
 
@@ -20754,25 +20768,25 @@ Sub BOX2FILE (printChoice, boxName$)
 
                 I1 = gameRoster(I, 0, I3)
 
-                Print #2, batters$(I, I1); ", "; fieldPos$(gameRoster(I, 1, I3)); Tab(18);
+                Print #1, batters$(I, I1); ", "; fieldPos$(gameRoster(I, 1, I3)); Tab(18);
                 '                    AB             R              H              BI             2              3              HR             K              W              SB             CS              E               PO              A
-                Print #2, Using BK$; teamBatStats(I, I1, 0); teamBatStats(I, I1, 2); teamBatStats(I, I1, 1); teamBatStats(I, I1, 3); teamBatStats(I, I1, 4); teamBatStats(I, I1, 5); teamBatStats(I, I1, 6); teamBatStats(I, I1, 8); teamBatStats(I, I1, 7); teamBatStats(I, I1, 9); teamBatStats(I, I1, 10); teamBatStats(I, I1, 11); teamBatStats(I, I1, 16); teamBatStats(I, I1, 17);
+                Print #1, Using BK$; teamBatStats(I, I1, 0); teamBatStats(I, I1, 2); teamBatStats(I, I1, 1); teamBatStats(I, I1, 3); teamBatStats(I, I1, 4); teamBatStats(I, I1, 5); teamBatStats(I, I1, 6); teamBatStats(I, I1, 8); teamBatStats(I, I1, 7); teamBatStats(I, I1, 9); teamBatStats(I, I1, 10); teamBatStats(I, I1, 11); teamBatStats(I, I1, 16); teamBatStats(I, I1, 17);
 
-                Print #2, "   ";
+                Print #1, "   ";
 
                 'BA
                 If oppBatStats(I, I1, 0) = 0 Or oppBatStats(I, I1, 1) = 0 Then
-                    Print #2, " .000   ";
+                    Print #1, " .000   ";
                 Else
                     If oppBatStats(I, I1, 0) = oppBatStats(I, I1, 1) Then
-                        Print #2, "1.000   ";
+                        Print #1, "1.000   ";
                     Else
-                        Print #2, " ."; Using "###   "; (oppBatStats(I, I1, 1) / oppBatStats(I, I1, 0) * 1000);
+                        Print #1, " ."; Using "###   "; (oppBatStats(I, I1, 1) / oppBatStats(I, I1, 0) * 1000);
                     End If
                 End If
 
                 'HR / RBI
-                Print #2, Using "##  ###"; oppBatStats(I, I1, 6); oppBatStats(I, I1, 3)
+                Print #1, Using "##  ###"; oppBatStats(I, I1, 6); oppBatStats(I, I1, 3)
 
                 For I2 = 0 To 17
                     totalStats(I2) = totalStats(I2) + teamBatStats(I, I1, I2)
@@ -20798,44 +20812,45 @@ Sub BOX2FILE (printChoice, boxName$)
 
                 If pitchRating(I, I2, SS_P_Avail) = I1 Then
 
-                    Print #2, pitchers$(I, I2); ", P";
-                    Print #2, Tab(18);
-                    Print #2, Using BK$; teamPitStats(I, I2, 23); teamPitStats(I, I2, 25); teamPitStats(I, I2, 24); teamPitStats(I, I2, 26); teamPitStats(I, I2, 27); teamPitStats(I, I2, 28); teamPitStats(I, I2, 29); teamPitStats(I, I2, 31); teamPitStats(I, I2, 30); teamPitStats(I, I2, 32); teamPitStats(I, I2, 33); teamPitStats(I, I2, 34); teamPitStats(I, I2, 38); teamPitStats(I, I2, 39);
-                    Print #2, "   ";
+                    Print #1, pitchers$(I, I2); ", P";
+                    Print #1, Tab(18);
+                    Print #1, Using BK$; teamPitStats(I, I2, 23); teamPitStats(I, I2, 25); teamPitStats(I, I2, 24); teamPitStats(I, I2, 26); teamPitStats(I, I2, 27); teamPitStats(I, I2, 28); teamPitStats(I, I2, 29); teamPitStats(I, I2, 31); teamPitStats(I, I2, 30); teamPitStats(I, I2, 32); teamPitStats(I, I2, 33); teamPitStats(I, I2, 34); teamPitStats(I, I2, 38); teamPitStats(I, I2, 39);
+                    Print #1, "   ";
 
                     If oppPitStats(I, I2, 24) = 0 Or oppPitStats(I, I2, 23) = 0 Then
-                        Print #2, " .000   ";
+                        Print #1, " .000   ";
                     Else
                         If oppPitStats(I, I2, 24) = oppPitStats(I, I2, 23) Then
-                            Print #2, "1.000   ";
+                            Print #1, "1.000   ";
                         Else
-                            Print #2, Using " .###   "; oppPitStats(I, I2, 24) / oppPitStats(I, I2, 23);
+                            Print #1, Using " .###   "; oppPitStats(I, I2, 24) / oppPitStats(I, I2, 23);
                         End If
                     End If
 
-                    Print #2, Using "##  ###"; oppPitStats(I, I2, 29); oppPitStats(I, I2, 26)
+                    Print #1, Using "##  ###"; oppPitStats(I, I2, 29); oppPitStats(I, I2, 26)
                 End If
             Next
 
         Next
 
-        Print #2, "TOTALS"; Tab(17); totalStats(0); Tab(22); totalStats(1); Tab(27); totalStats(4);
-        Print #2, Tab(32); totalStats(6); Tab(36); totalStats(7); Tab(42);
-        Print #2, totalStats(10); Tab(46); totalStats(16); Tab(50); totalStats(17)
-        Print #2, Tab(20); totalStats(2); Tab(24); totalStats(3); Tab(29);
-        Print #2, totalStats(5); Tab(34); totalStats(8); Tab(39); totalStats(9);
-        Print #2, Tab(44); totalStats(11)
-        Print #2,
+        Print #1, "TOTALS"; Tab(17); totalStats(0); Tab(22); totalStats(1); Tab(27); totalStats(4);
+        Print #1, Tab(32); totalStats(6); Tab(36); totalStats(7); Tab(42);
+
+        Print #1, totalStats(10); Tab(46); totalStats(16); Tab(50); totalStats(17)
+        Print #1, Tab(20); totalStats(2); Tab(24); totalStats(3); Tab(29);
+        Print #1, totalStats(5); Tab(34); totalStats(8); Tab(39); totalStats(9);
+        Print #1, Tab(44); totalStats(11)
+        Print #1,
 
         Erase totalStats
 
     Next I
 
-    Print #2,
+    Print #1,
 
     For I = 0 To 1
 
-        Print #2, gameTeams$(I); Tab(30); "IP   H  R  ER BB SO    ERA   W  L  S  SO"
+        Print #1, gameTeams$(I); Tab(30); "IP   H  R  ER BB SO    ERA   W  L  S  SO"
 
         For I1 = 1 To gamePitcher(I)
 
@@ -20843,70 +20858,76 @@ Sub BOX2FILE (printChoice, boxName$)
 
                 If pitchRating(I, I2, SS_P_Avail) = I1 Then
 
-                    I4 = 1 - I: Print #2, pitchers$(I, I2); " ";
+                    I4 = 1 - I: Print #1, pitchers$(I, I2); " ";
 
                     If pitcherOfRecord(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then
-                        Print #2, "(W,"; Right$(Str$(oppPitStats(I, I2, 6) + 1), (Len(Str$(oppPitStats(I, I2, 6) + 1)) - 1)); "-"; Right$(Str$(oppPitStats(I, I2, 7)), (Len(Str$(oppPitStats(I, I2, 7))) - 1)); ")";
+                        Print #1, "(W,"; Right$(Str$(oppPitStats(I, I2, 6) + 1), (Len(Str$(oppPitStats(I, I2, 6) + 1)) - 1)); "-"; Right$(Str$(oppPitStats(I, I2, 7)), (Len(Str$(oppPitStats(I, I2, 7))) - 1)); ")";
                         gameW$ = pitchers$(I, I2)
                     End If
 
                     If relieverOnRecordForSave(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then
-                        Print #2, "(S,"; Right$(Str$(oppPitStats(I, I2, 12) + 1), (Len(Str$(oppPitStats(I, I2, 12) + 1)) - 1)); ")";
+                        Print #1, "(S,"; Right$(Str$(oppPitStats(I, I2, 12) + 1), (Len(Str$(oppPitStats(I, I2, 12) + 1)) - 1)); ")";
                     End If
 
                     If pitcherOfRecord(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) < 0 Then
-                        Print #2, "(L,"; Right$(Str$(oppPitStats(I, I2, 6) + 0), (Len(Str$(oppPitStats(I, I2, 6) + 0)) - 1)); "-"; Right$(Str$(oppPitStats(I, I2, 7) + 1), (Len(Str$(oppPitStats(I, I2, 7) + 1)) - 1)); ")";
+                        Print #1, "(L,"; Right$(Str$(oppPitStats(I, I2, 6) + 0), (Len(Str$(oppPitStats(I, I2, 6) + 0)) - 1)); "-"; Right$(Str$(oppPitStats(I, I2, 7) + 1), (Len(Str$(oppPitStats(I, I2, 7) + 1)) - 1)); ")";
                         gameL$ = pitchers$(I, I2)
                     End If
 
                     If teamPitStats(I, I2, 19) > 0 Then
-                        Print #2, "(BS,";: Print #2, Using "##"; oppPitStats(I, I2, 19);: Print #2, ")";
+                        Print #1, "(BS,";
+                        Print #1, Using "##"; oppPitStats(I, I2, 19);
+                        Print #1, ")";
                     End If
                     If teamPitStats(I, I2, 22) > 0 Then
-                        Print #2, "(H,";: Print #2, Using "##"; oppPitStats(I, I2, 22);: Print #2, ")";
+                        Print #1, "(H,";
+                        Print #1, Using "##"; oppPitStats(I, I2, 22);
+                        Print #1, ")";
                     End If
 
-                    Print #2, Tab(29);: Print #2, Using "##"; Int(teamPitStats(I, I2, 0) / 3);
+                    Print #1, Tab(29);
+                    Print #1, Using "##"; Int(teamPitStats(I, I2, 0) / 3);
 
                     If teamPitStats(I, I2, 0) - (Int(teamPitStats(I, I2, 0) / 3) * 3) > 0 Then
-                        Print #2, ".";: Print #2, Using "#"; teamPitStats(I, I2, 0) - (Int(teamPitStats(I, I2, 0) / 3) * 3);
+                        Print #1, ".";
+                        Print #1, Using "#"; teamPitStats(I, I2, 0) - (Int(teamPitStats(I, I2, 0) / 3) * 3);
                     End If
 
-                    Print #2, Tab(34);
-                    Print #2, Using "## ##  ## ## ##"; teamPitStats(I, I2, 1); teamPitStats(I, I2, 2); teamPitStats(I, I2, 3); teamPitStats(I, I2, 4); teamPitStats(I, I2, 5);
-                    Print #2, "   ";
+                    Print #1, Tab(34);
+                    Print #1, Using "## ##  ## ## ##"; teamPitStats(I, I2, 1); teamPitStats(I, I2, 2); teamPitStats(I, I2, 3); teamPitStats(I, I2, 4); teamPitStats(I, I2, 5);
+                    Print #1, "   ";
 
                     If oppPitStats(I, I2, 3) > 0 And oppPitStats(I, I2, 0) = 0 Then
-                        Print #2, "99.99 ";
+                        Print #1, "99.99 ";
                     Else
                         If oppPitStats(I, I2, 0) = 0 Then
-                            Print #2, "--.-- ";
+                            Print #1, "--.-- ";
                         Else
                             If oppPitStats(I, I2, 3) = 0 Then
-                                Print #2, " 0.00 ";
+                                Print #1, " 0.00 ";
                             Else
-                                Print #2, Using "##.## "; oppPitStats(I, I2, 3) / (oppPitStats(I, I2, 0) / 3) * 9;
+                                Print #1, Using "##.## "; oppPitStats(I, I2, 3) / (oppPitStats(I, I2, 0) / 3) * 9;
                             End If
                         End If
                     End If
 
                     If pitcherOfRecord(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then
-                        Print #2, Using "## "; oppPitStats(I, I2, 6) + 1;
+                        Print #1, Using "## "; oppPitStats(I, I2, 6) + 1;
                     Else
-                        Print #2, Using "## "; oppPitStats(I, I2, 6);
+                        Print #1, Using "## "; oppPitStats(I, I2, 6);
                     End If
                     If pitcherOfRecord(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) < 0 Then
-                        Print #2, Using "## "; oppPitStats(I, I2, 7) + 1;
+                        Print #1, Using "## "; oppPitStats(I, I2, 7) + 1;
                     Else
-                        Print #2, Using "## "; oppPitStats(I, I2, 7);
+                        Print #1, Using "## "; oppPitStats(I, I2, 7);
                     End If
                     If relieverOnRecordForSave(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then
-                        Print #2, Using "## "; oppPitStats(I, I2, 12) + 1;
+                        Print #1, Using "## "; oppPitStats(I, I2, 12) + 1;
                     Else
-                        Print #2, Using "## "; oppPitStats(I, I2, 12);
+                        Print #1, Using "## "; oppPitStats(I, I2, 12);
                     End If
 
-                    Print #2, Using "###"; oppPitStats(I, I2, 5)
+                    Print #1, Using "###"; oppPitStats(I, I2, 5)
 
                     For I4 = 0 To 5
                         totalStats(I4) = totalStats(I4) + teamPitStats(I, I2, I4)
@@ -20917,17 +20938,17 @@ Sub BOX2FILE (printChoice, boxName$)
 
         Next I1
 
-        Print #2,
-        Print #2, "TOTALS"; Tab(30);
-        Print #2, Using "##"; Int(totalStats(0) / 3);
+        Print #1,
+        Print #1, "TOTALS"; Tab(30);
+        Print #1, Using "##"; Int(totalStats(0) / 3);
 
         If totalStats(0) - (Int(totalStats(0) / 3) * 3) > 0 Then
-            Print #2, ".";
-            Print #2, Using "#"; totalStats(0) - (Int(totalStats(0) / 3) * 3);
+            Print #1, ".";
+            Print #1, Using "#"; totalStats(0) - (Int(totalStats(0) / 3) * 3);
         End If
 
-        Print #2, Tab(34);
-        Print #2, Using "## ##  ## ## ##"; totalStats(1); totalStats(2); totalStats(3); totalStats(4); totalStats(5)
+        Print #1, Tab(34);
+        Print #1, Using "## ##  ## ## ##"; totalStats(1); totalStats(2); totalStats(3); totalStats(4); totalStats(5)
 
         inningsPitched = CInt(totalStats(0) / 3)
 
@@ -20937,123 +20958,125 @@ Sub BOX2FILE (printChoice, boxName$)
 
     Next I
 
-    Print #2,
-    Print #2,
-    Print #2, Tab(34); "EVENT SUMMARY"
-    Print #2,
-    Print #2, " E - ";
+    Print #1,
+    Print #1,
+    Print #1, Tab(34); "EVENT SUMMARY"
+    Print #1,
+    Print #1, " E - ";
 
     If errorNbr = 0 Then
-        Print #2, "NONE"
+        Print #1, "NONE"
     Else
         For X1 = 0 To (errorNbr - 2):
-            Print #2, errorsPlayer$(X1); ", ";
+            Print #1, errorsPlayer$(X1); ", ";
         Next
-        Print #2, errorsPlayer$(errorNbr - 1)
+        Print #1, errorsPlayer$(errorNbr - 1)
     End If
 
-    Print #2, "2B - ";
+    Print #1, "2B - ";
 
     If DB = 0 Then
-        Print #2, "NONE"
+        Print #1, "NONE"
     Else
         If DB > 1 Then
             For X1 = 0 To (DB - 2):
-                Print #2, doublesPlayer$(X1); ", ";
+                Print #1, doublesPlayer$(X1); ", ";
             Next
         End If
-        Print #2, doublesPlayer$(DB - 1)
+        Print #1, doublesPlayer$(DB - 1)
     End If
 
-    Print #2, "3B - ";
+    Print #1, "3B - ";
     If TR = 0 Then
-        Print #2, "NONE"
+        Print #1, "NONE"
     Else
         If TR > 1 Then
             For X1 = 0 To (TR - 2):
-                Print #2, triplesPlayer$(X1); ", ";
+                Print #1, triplesPlayer$(X1); ", ";
             Next
         End If
-        Print #2, triplesPlayer$(TR - 1)
+        Print #1, triplesPlayer$(TR - 1)
     End If
 
-    Print #2, "HR - ";
+    Print #1, "HR - ";
 
     If HR = 0 Then
-        Print #2, "NONE"
+        Print #1, "NONE"
     Else
         If HR > 1 Then
             For X1 = 0 To (HR - 2)
-                Print #2, homeRuns$(X1); ", ";
+                Print #1, homeRuns$(X1); ", ";
             Next
         End If
-        Print #2, homeRuns$(HR - 1)
+        Print #1, homeRuns$(HR - 1)
     End If
 
-    Print #2, "SB - ";
+    Print #1, "SB - ";
 
     If SB = 0 Then
-        Print #2, "NONE"
+        Print #1, "NONE"
     Else
         If SB > 1 Then
             For X1 = 0 To (SB - 2):
-                Print #2, stolenBases$(X1); ", ";
+                Print #1, stolenBases$(X1); ", ";
             Next
         End If
-        Print #2, stolenBases$(SB - 1)
+        Print #1, stolenBases$(SB - 1)
     End If
 
     LOBText$ = gameTeams$(0) + " (" + LTrim$(Str$(leftOnBase(0))) + "), " + gameTeams$(1) + " (" + LTrim$(Str$(leftOnBase(1))) + ")"
-    Print #2, "LOB - "; LOBText$
+    Print #1, "LOB - "; LOBText$
     DPText$ = gameTeams$(0) + " (" + LTrim$(Str$(totalDPs(0))) + "), " + gameTeams$(1) + " (" + LTrim$(Str$(totalDPs(1))) + ")"
-    Print #2, "DP - "; DPText$
+    Print #1, "DP - "; DPText$
 
-    Print #2,
+    Print #1,
 
-    Print #2, "UMPIRES:"
-    Print #2, "HP-"; gameUmpire$(1); "; 1B-"; gameUmpire$(2); "; 2B-"; gameUmpire$(3); "; 3B-"; gameUmpire$(4)
+    Print #1, "UMPIRES:"
+    Print #1, "HP-"; gameUmpire$(1); "; 1B-"; gameUmpire$(2); "; 2B-"; gameUmpire$(3); "; 3B-"; gameUmpire$(4)
 
-    Print #2,
+    Print #1,
 
-    Print #2, "EJECTIONS:"
+    Print #1, "EJECTIONS:"
 
     If ejectCnt = 0 Then
-        Print #2, "none"
+        Print #1, "none"
     Else
         For X1 = 1 To (ejectCnt - 1):
-            Print #2, ejections$(X1); ",";
+            Print #1, ejections$(X1); ",";
         Next
-        Print #2, ejections$(ejectCnt)
+        Print #1, ejections$(ejectCnt)
     End If
 
-    Print #2,
+    Print #1,
 
-    Print #2, "INJURIES: "
+    Print #1, "INJURIES: "
 
     If injCount = 0 Then
-        Print #2, "none"
+        Print #1, "none"
     Else
         For X1 = 1 To (injCount - 1)
-            Print #2, injPlayers$(X1); ",";
+            Print #1, injPlayers$(X1); ",";
         Next
-        Print #2, injPlayers$(injCount)
-        Print #2,
+        Print #1, injPlayers$(injCount)
+        Print #1,
     End If
 
-    Print #2,
+    Print #1,
 
-    If printChoice = 1 Then Print #2, Chr$(12)
-
-    Close 2
+    Close #1
 
     If printChoice = 1 Then
 
         Open boxName$ For Input As #2
 
-        Do
+        Do While Not EOF(2)
             Line Input #2, X$
             LPrint X$
-        Loop While Left$(X$, 1) <> Chr$(12)
+        Loop
+        
+        Close #2
+
+        LPrint Chr$(12)
 
         Kill boxName$
 
@@ -21741,17 +21764,22 @@ Sub STATS2SCREEN
                     End If
 
                     If teamPitStats(I, I2, 19) > 0 Then
-                        Print "(BS,";: Print Using "##"; oppPitStats(I, I2, 19);: Print ")";
+                        Print "(BS,";
+                        Print Using "##"; oppPitStats(I, I2, 19);
+                        Print ")";
                     End If
                     If teamPitStats(I, I2, 22) > 0 Then
-                        Print "(H,";: Print Using "##"; oppPitStats(I, I2, 22);: Print ")";
+                        Print "(H,";
+                        Print Using "##"; oppPitStats(I, I2, 22);
+                        Print ")";
                     End If
 
                     'IP
                     Locate , 30: Print Using "##"; Int(teamPitStats(I, I2, 0) / 3);
 
                     If teamPitStats(I, I2, 0) - (Int(teamPitStats(I, I2, 0) / 3) * 3) > 0 Then
-                        Print ".";: Print Using "#"; teamPitStats(I, I2, 0) - (Int(teamPitStats(I, I2, 0) / 3) * 3);
+                        Print ".";
+                        Print Using "#"; teamPitStats(I, I2, 0) - (Int(teamPitStats(I, I2, 0) / 3) * 3);
                     End If
 
                     Locate , 34
@@ -21825,7 +21853,8 @@ Sub STATS2SCREEN
         Print Int(totalStats(0) / 3);
 
         If totalStats(0) - (Int(totalStats(0) / 3) * 3) > 0 Then
-            Print ".";: Print Using "#"; totalStats(0) - (Int(totalStats(0) / 3) * 3);
+            Print ".";
+            Print Using "#"; totalStats(0) - (Int(totalStats(0) / 3) * 3);
         End If
 
         Locate , 34

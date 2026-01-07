@@ -378,7 +378,8 @@ Sub ReviewAndSaveAlignment (pathRoadStats$, statFile$)
         Locate I + 4, 1: Print Using "##"; I;
         Print " ";
         Color 15: Print Left$(batterNames$(I), 10);
-        Color 12: Print Tab(17); Using "##"; I;: Print " ";
+        Color 12: Print Tab(17); Using "##"; I;
+        Print " ";
         Color 7: Print Left$(batNames_Align$(I), 10);
     Next
 
