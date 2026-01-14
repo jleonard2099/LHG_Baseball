@@ -102,7 +102,7 @@ Sub StatOptions (league$, div1Name$, div2Name$, div3Name$, div4Name$)
             Select Case userKey$
 
                 Case "F":
-                    userFile$ = _SaveFileDialog$("Save League Report", _CWD$ + "\Report", "*.txt", "Text File")
+                    userFile$ = _SaveFileDialog$("Save League Report", _CWD$ + "\League Leader Report", "*.txt", "Text File")
                     If userFile$ <> "" Then
                         Call LeaderStats_Report(league$, div1Name$, div2Name$, div3Name$, div4Name$, 0, userFile$)
                     End If
@@ -617,10 +617,7 @@ Sub LeaderStats_Report (league$, div1Name$, div2Name$, div3Name$, div4Name$, pri
 
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 29)
 
-            A$ = "     " + Str$(leagLdrVal1!(P))
-            A$ = Right$(A$, 3)
-            A$ = Right$(Space$(3) + LTrim$(Str$(J!)), 3)
-
+            A$ = Right$(Space$(3) + LTrim$(Str$(leagLdrVal1!(P))), 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
         End If
@@ -650,8 +647,7 @@ Sub LeaderStats_Report (league$, div1Name$, div2Name$, div3Name$, div4Name$, pri
 
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 29)
 
-            A$ = "     " + Str$(leagLdrVal1!(P))
-            A$ = Right$(A$, 3)
+            A$ = Right$(Space$(3) + LTrim$(Str$(leagLdrVal1!(P))), 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
         End If
@@ -694,8 +690,7 @@ Sub LeaderStats_Report (league$, div1Name$, div2Name$, div3Name$, div4Name$, pri
 
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 29)
 
-            A$ = "     " + Str$(leagLdrVal1!(P))
-            A$ = Right$(A$, 3)
+            A$ = Right$(Space$(3) + LTrim$(Str$(leagLdrVal1!(P))), 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
         End If
@@ -727,8 +722,7 @@ Sub LeaderStats_Report (league$, div1Name$, div2Name$, div3Name$, div4Name$, pri
 
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 29)
 
-            A$ = "     " + Str$(leagLdrVal1!(P))
-            A$ = Right$(A$, 3)
+            A$ = Right$(Space$(3) + LTrim$(Str$(leagLdrVal1!(P))), 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
         End If
@@ -770,8 +764,7 @@ Sub LeaderStats_Report (league$, div1Name$, div2Name$, div3Name$, div4Name$, pri
 
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 29)
 
-            A$ = "     " + Str$(leagLdrVal1!(P))
-            A$ = Right$(A$, 3)
+            A$ = Right$(Space$(3) + LTrim$(Str$(leagLdrVal1!(P))), 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
         End If
@@ -803,8 +796,7 @@ Sub LeaderStats_Report (league$, div1Name$, div2Name$, div3Name$, div4Name$, pri
 
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 29)
 
-            A$ = "     " + Str$(leagLdrVal1!(P))
-            A$ = Right$(A$, 3)
+            A$ = Right$(Space$(3) + LTrim$(Str$(leagLdrVal1!(P))), 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
         End If
@@ -845,8 +837,7 @@ Sub LeaderStats_Report (league$, div1Name$, div2Name$, div3Name$, div4Name$, pri
 
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 28)
 
-            A$ = "     " + Str$(leagLdrVal1!(P))
-            A$ = Right$(A$, 3)
+            A$ = Right$(Space$(3) + LTrim$(Str$(leagLdrVal1!(P))), 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
         End If
@@ -884,8 +875,7 @@ Sub LeaderStats_Report (league$, div1Name$, div2Name$, div3Name$, div4Name$, pri
                 leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
             End If
 
-            A$ = "     " + Str$(leagLdrVal1!(P))
-            A$ = Right$(A$, 3)
+            A$ = Right$(Space$(3) + LTrim$(Str$(leagLdrVal1!(P))), 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
         End If
@@ -932,8 +922,7 @@ Sub LeaderStats_Report (league$, div1Name$, div2Name$, div3Name$, div4Name$, pri
                 leaderPlayer$(P) = leaderPlayer$(P) + "1.000 "
             End If
 
-            A$ = "     " + Str$(leagLdrVal1!(P))
-            A$ = Right$(A$, 3)
+            A$ = Right$(Space$(3) + LTrim$(Str$(leagLdrVal1!(P))), 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
         End If
@@ -965,8 +954,7 @@ Sub LeaderStats_Report (league$, div1Name$, div2Name$, div3Name$, div4Name$, pri
 
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 29)
 
-            A$ = "     " + Str$(leagLdrVal1!(P))
-            A$ = Right$(A$, 3)
+            A$ = Right$(Space$(3) + LTrim$(Str$(leagLdrVal1!(P))), 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
         End If
@@ -1007,8 +995,7 @@ Sub LeaderStats_Report (league$, div1Name$, div2Name$, div3Name$, div4Name$, pri
 
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 29)
 
-            A$ = "     " + Str$(leagLdrVal1!(P))
-            A$ = Right$(A$, 3)
+            A$ = Right$(Space$(3) + LTrim$(Str$(leagLdrVal1!(P))), 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
         End If
@@ -1038,8 +1025,7 @@ Sub LeaderStats_Report (league$, div1Name$, div2Name$, div3Name$, div4Name$, pri
 
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 29)
 
-            A$ = "     " + Str$(leagLdrVal1!(P))
-            A$ = Right$(A$, 3)
+            A$ = Right$(Space$(3) + LTrim$(Str$(leagLdrVal1!(P))), 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
         End If
@@ -1087,11 +1073,15 @@ Sub LeaderStats_Report (league$, div1Name$, div2Name$, div3Name$, div4Name$, pri
             leaderPlayer$(P) = leaderPlayer$(P) + A$
             leaderPlayer$(P) = leaderPlayer$(P) + "-"
 
-            J! = leagLdrVal2!(P)
             A$ = "     " + Str$(leagLdrVal1!(P))
             A$ = Right$(A$, 2)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
+            '--> What is this used for?
+            J! = CInt(leagLdrVal2!(P))
+            test$ = leaderPlayer$(P)
+            leaderPlayer$(P) = leaderPlayer$(P) + " " + Str$(J!)
+            
         End If
 
     Next P
@@ -1121,8 +1111,7 @@ Sub LeaderStats_Report (league$, div1Name$, div2Name$, div3Name$, div4Name$, pri
 
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 29)
 
-            A$ = "     " + Str$(leagLdrVal1!(P))
-            A$ = Right$(A$, 3)
+            A$ = Right$(Space$(3) + LTrim$(Str$(leagLdrVal1!(P))), 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
         End If
@@ -1261,8 +1250,7 @@ Sub LeaderStats_Report (league$, div1Name$, div2Name$, div3Name$, div4Name$, pri
 
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 29)
 
-            A$ = "     " + Str$(leagLdrVal1!(P))
-            A$ = Right$(A$, 3)
+            A$ = Right$(Space$(3) + LTrim$(Str$(leagLdrVal1!(P))), 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
         End If
@@ -1303,8 +1291,7 @@ Sub LeaderStats_Report (league$, div1Name$, div2Name$, div3Name$, div4Name$, pri
 
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 29)
 
-            A$ = "     " + Str$(leagLdrVal1!(P))
-            A$ = Right$(A$, 3)
+            A$ = Right$(Space$(3) + LTrim$(Str$(leagLdrVal1!(P))), 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
         End If
@@ -1335,8 +1322,7 @@ Sub LeaderStats_Report (league$, div1Name$, div2Name$, div3Name$, div4Name$, pri
 
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 29)
 
-            A$ = "     " + Str$(leagLdrVal1!(P))
-            A$ = Right$(A$, 3)
+            A$ = Right$(Space$(3) + LTrim$(Str$(leagLdrVal1!(P))), 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
         End If
@@ -1377,8 +1363,7 @@ Sub LeaderStats_Report (league$, div1Name$, div2Name$, div3Name$, div4Name$, pri
 
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 29)
 
-            A$ = "     " + Str$(leagLdrVal1!(P))
-            A$ = Right$(A$, 3)
+            A$ = Right$(Space$(3) + LTrim$(Str$(leagLdrVal1!(P))), 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
         End If
@@ -1411,8 +1396,7 @@ Sub LeaderStats_Report (league$, div1Name$, div2Name$, div3Name$, div4Name$, pri
 
             leaderPlayer$(P) = PadRight$(leaderPlayer$(P), 29)
 
-            A$ = "     " + Str$(leagLdrVal1!(P))
-            A$ = Right$(A$, 3)
+            A$ = Right$(Space$(3) + LTrim$(Str$(leagLdrVal1!(P))), 3)
             leaderPlayer$(P) = leaderPlayer$(P) + A$
 
         End If

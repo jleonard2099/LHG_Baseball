@@ -149,7 +149,7 @@ Sub EditBatters (careerName$)
                                 Select Case userKey$
 
                                     Case "F"
-                                        userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                                        userFile$ = _SaveFileDialog$("Save Career Stats Report",_CWD$ + "\Career Stats Report","*.txt","Text File")
                                         If userFile$ <> "" Then
                                             Call PrintBatterStats (0, userFile$, careerName$, B9)
                                         End If
@@ -291,7 +291,7 @@ Sub EditPitchers (careerName$)
                                 Select Case userKey$
 
                                     Case "F"
-                                        userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                                        userFile$ = _SaveFileDialog$("Save Career Stats Report",_CWD$ + "\Career Stats Report","*.txt","Text File")
                                         If userFile$ <> "" Then
                                             Call PrintPitcherStats(0, userFile$, careerName$, B9)
                                         End If

@@ -138,7 +138,7 @@ Sub PROGMAN ()
                                 Select Case userKey$
 
                                     Case "F":
-                                        userFile$ = _SAVEFILEDIALOG$("Save Profile Reprort",_CWD$ + "\Manager Profile","*.txt","Text File")
+                                        userFile$ = _SaveFileDialog$("Save Profile Reprort",_CWD$ + "\Manager Profile","*.txt","Text File")
                                         If userFile$ <> "" Then
                                             Call PrintManagerProfile(0, userFile$, T$)
                                         End If
@@ -4036,7 +4036,7 @@ Sub ExportManagerProfile (mgrNbr)
                 Select Case userKey$
 
                     Case "F"
-                        userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                        userFile$ = _SaveFileDialog$("Save Report File",_CWD$ + "\Manager Profile","*.txt","Text File")
                         If userFile$ <> "" Then
                             Call PrintManagerProfile(0, userFile$, T$)
                         End If

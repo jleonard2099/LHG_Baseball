@@ -318,7 +318,7 @@ Sub ViewAndPrintOptions (statFile$, teamName$, nbrGames, menuExit)
                         Select Case userKey$
 
                             Case "F"
-                                userFile$ = _SaveFileDialog$("Save Report File", _CWD$ + "\Report", "*.txt", "Text File")
+                                userFile$ = _SaveFileDialog$("Save Team Summary Report", _CWD$ + "\Team Summary Report", "*.txt", "Text File")
                                 If userFile$ <> "" Then
                                     Call PrintScheduleStatSummary(0, userFile$, statFile$, teamName$, nbrGames, SELECTION%, splitStatChoice)
                                 End If
@@ -1202,7 +1202,7 @@ Sub ReportsAllTeams ()
         If userKey$ <> Chr$(27) Then
 
             If userKey$ = "F" Then
-                userFile$ = _SaveFileDialog$("Save Report File", _CWD$ + "\Report", "*.txt", "Text File")
+                userFile$ = _SaveFileDialog$("Save League Teams Report", _CWD$ + "\League Teams Report", "*.txt", "Text File")
             End If
 
             If (userKey$ = "P") Or (userKey$ = "F" And userFile$ <> "") Then

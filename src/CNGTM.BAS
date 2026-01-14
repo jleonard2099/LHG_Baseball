@@ -67,7 +67,7 @@ Sub CNGTM (userChoice)
                             Select Case userKey$
 
                                 Case "F"
-                                    userFile$ = _SaveFileDialog$("Save Report File", _CWD$ + "\Report", "*.txt", "Text File")
+                                    userFile$ = _SaveFileDialog$("Save Team Roster Report", _CWD$ + "\Team Roster Report", "*.txt", "Text File")
                                     If userFile$ <> "" Then
                                         Call PrintTeamStats(0, userFile$, team$)
                                     End If

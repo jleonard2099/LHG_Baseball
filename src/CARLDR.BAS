@@ -379,7 +379,7 @@ Sub CareerLeaderOptions ()
             Select Case userKey$
 
                 Case "F"
-                    userFile$ = _SaveFileDialog$("Save Report File", _CWD$ + "\Report", "*.txt", "Text File")
+                    userFile$ = _SaveFileDialog$("Save Career Leaders Report", _CWD$ + "\Team Career Leaders Report", "*.txt", "Text File")
                     If userFile$ <> "" Then
                         Call CareerLeaders_Report(GetFileBaseName$(userFile$), 0, userFile$)
                     End If

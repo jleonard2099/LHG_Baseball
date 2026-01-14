@@ -22,7 +22,7 @@ Sub CARVIEW ()
             Select Case userKey$
 
                 Case "F"
-                    userFile$ = _SaveFileDialog$("Save Report File", _CWD$ + "\Report", "*.txt", "Text File")
+                    userFile$ = _SaveFileDialog$("Save Career Report", _CWD$ + "\Team Career Report", "*.txt", "Text File")
                     If userFile$ <> "" Then
                         Call CareerStats_Report(0, userFile$, GetFileBaseName$(careerFile$))
                     End If

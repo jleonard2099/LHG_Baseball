@@ -128,7 +128,7 @@ Sub NEWLDR ()
                             Select Case userKey$
 
                                 Case "F"
-                                    userFile$ = _SaveFileDialog$("Save Report File", _CWD$ + "\Report", "*.txt", "Text File")
+                                    userFile$ = _SaveFileDialog$("Save Expanded Standings Report", _CWD$ + "\Expanded Standings Report", "*.txt", "Text File")
                                     If userFile$ <> "" Then
                                         Call NewStandings_Report(0, userFile$, league$)
                                     End If
@@ -963,7 +963,7 @@ Sub ViewBattingLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
                             Select Case userKey$
 
                                 Case "F"
-                                    userFile$ = _SaveFileDialog$("Save Report File", _CWD$ + "\Report", "*.txt", "Text File")
+                                    userFile$ = _SaveFileDialog$("Save Batting Leaders Report", _CWD$ + "\Batting Leaders Report", "*.txt", "Text File")
                                     If userFile$ <> "" Then
                                         Call NewLeaders_Report(0, userFile$, TVN, LG, B9)
                                     End If
@@ -1376,7 +1376,7 @@ Sub ViewPitchingLeaders (leaderFile$, JB, JP, plyrTotalStats, teamTotalStats)
                         Select Case UCase$(I$)
 
                             Case "F"
-                                userFile$ = _SaveFileDialog$("Save Report File", _CWD$ + "\Report", "*.txt", "Text File")
+                                userFile$ = _SaveFileDialog$("Save Pitching Leaders Report", _CWD$ + "\Pitching Leaders Report", "*.txt", "Text File")
                                 If userFile$ <> "" Then
                                     Call NewLeaders_Report(0, userFile$, TVN, LG, B9)
                                 End If
@@ -1855,7 +1855,7 @@ Sub DisplayTeamView (categoryID, screenType, printOrView, TVN, maxRecords)
                 Select Case UCase$(I$)
 
                     Case "F"
-                        userFile$ = _SaveFileDialog$("Save Report File", _CWD$ + "\Report", "*.txt", "Text File")
+                        userFile$ = _SaveFileDialog$("Save Expanded Team Leaders Report", _CWD$ + "\Expanded Team Leaders Report", "*.txt", "Text File")
                         If userFile$ <> "" Then
                             printDest = 0
                         End If
@@ -1944,7 +1944,7 @@ Sub DisplayTeamView (categoryID, screenType, printOrView, TVN, maxRecords)
                 Select Case UCase$(I$)
 
                     Case "F"
-                        userFile$ = _SaveFileDialog$("Save Report File", _CWD$ + "\Report", "*.txt", "Text File")
+                        userFile$ = _SaveFileDialog$("Save Expanded Team Leaders Report", _CWD$ + "\Expanded Team Leaders Report", "*.txt", "Text File")
                         If userFile$ <> "" Then
                             printDest = 0
                         End If

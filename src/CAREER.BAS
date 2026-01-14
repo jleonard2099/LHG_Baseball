@@ -146,149 +146,153 @@ Sub MergeFirstYear ()
         'careerFile$ = _InputBox$("Career File", "Enter name for Career stats file")
         careerFile$ = _SaveFileDialog$("Save Career File", diskPaths$(1), "*.CAR", "Career files [.CAR]")
 
-        teamNbr = 0
-        Call ChooseTeam(YN$, NTMS, teamNbr, team$)
+        If careerFile$ <> "" Then
 
-        If teamNbr <> 0 Then
+            teamNbr = 0
+            Call ChooseTeam(YN$, NTMS, teamNbr, team$)
 
-            statFile$ = nameStatFile$(team$)
+            If teamNbr <> 0 Then
 
-            Color 15, 0
-            Cls
+                statFile$ = nameStatFile$(team$)
 
-            statYear = Val(YN$)
-            Locate 8, 53: Print targetYear
+                Color 15, 0
+                Cls
 
-            Do
-
-                Locate 8, 22: Input "ENTER YEAR TO ADD (EX. - 1961)"; statYear
-                Locate 9, 22: Print "ANY CHANGE? (Y/N)"
-
-                J$ = GetKeyPress$
-
-            Loop Until UCase$(J$) = "Y" Or UCase$(J$) = "N" Or J$ = Chr$(27)
-
-            If UCase$(J$) = "N" Then
+                statYear = Val(YN$)
+                Locate 8, 53: Print targetYear
 
                 Do
-                    Locate 11, 18
-                    Print "WOULD YOU LIKE TO POST CAREER RECORDS? (Y/N)"
-                    K$ = GetKeyPress$
-                Loop Until UCase$(K$) = "Y" Or UCase$(K$) = "N" Or K$ = Chr$(27)
 
-                If UCase$(K$) = "Y" Then
-                    doPostLeaders = 1
-                Else
-                    doPostLeaders = 0
-                End If
+                    Locate 8, 22: Input "ENTER YEAR TO ADD (EX. - 1961)"; statYear
+                    Locate 9, 22: Print "ANY CHANGE? (Y/N)"
 
-                If Not _FileExists(diskPaths$(1) + statFile$) Then
+                    J$ = GetKeyPress$
 
-                    MsgText$ = "NO COMPILED STATS COULD BE FOUND FOR THIS TEAM. PRESS ANY KEY TO RETURN TO THE MAIN MENU"
-                    BoxWidth = 24
-                    BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-                    Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
-                    Call CSMsgBox(MsgText$, BoxWidth, Pass)
-                    I$ = GetKeyPress$
-                    Call CSMsgBox("", 0, Pass)
+                Loop Until UCase$(J$) = "Y" Or UCase$(J$) = "N" Or J$ = Chr$(27)
 
-                Else
+                If UCase$(J$) = "N" Then
 
-                    Locate 20, 13
-                    Color 15
-                    Print "MERGING AND UPDATING CAREER STATS . . . . PLEASE WAIT"
+                    Do
+                        Locate 11, 18
+                        Print "WOULD YOU LIKE TO POST CAREER RECORDS? (Y/N)"
+                        K$ = GetKeyPress$
+                    Loop Until UCase$(K$) = "Y" Or UCase$(K$) = "N" Or K$ = Chr$(27)
 
-                    Open diskPaths$(1) + statFile$ For Input As #1
-
-                    Input #1, team$
-                    Input #1, teamWins
-                    Input #1, teamLosses
-
-                    For I = 0 To 22:
-                        Input #1, careerBatters$(I)
-                        Input #1, careerB1(I)
-                    Next I
-
-                    For I = 0 To 21:
-                        Input #1, careerPitchers$(I)
-                        Input #1, careerP1(I)
-                    Next I
-
-                    For I = 0 To 22:
-
-                        For I1 = 0 To 21:
-                            Input #1, careerB0(I, I1)
-                        Next I1
-
-                    Next I
-
-                    For I = 0 To 21:
-
-                        For I1 = 0 To 41:
-                            Input #1, careerP0(I, I1)
-                        Next I1
-
-                    Next I
-
-                    Input #1, D0, D1
-
-                    For I = 0 To 21:
-                        Input #1, statTeamBat!(I)
-                    Next I
-
-                    For I = 0 To 22:
-                        Input #1, statTeamPit!(I)
-                    Next I
-
-                    Close #1
-
-                    For I = 0 To 99
-
-                        N = 1
-
-                        If careerBatters$(I) = "END" Or careerBatters$(I) = "XXX" Or careerBatters$(I) = "" Then
-                            careerBatters$(I) = ""
-                        Else
-                            NB = NB + 1
-                        End If
-
-                        For J = 0 To 15:
-                            carRecBatStats(N, I, J) = careerB0(I, J)
-                        Next J
-
-                        carRecBatStats(N, I, 16) = 1
-                        carRecBatStats(N, I, 17) = statYear
-
-                    Next I
-
-                    For I = 0 To 79
-
-                        If careerPitchers$(I) = "END" Or careerPitchers$(I) = "XXX" Or careerPitchers$(I) = "" Then
-                            careerPitchers$(I) = ""
-                        Else
-                            NP = NP + 1
-                        End If
-
-                        For J = 0 To 14
-                            carRecPitStats(N, I, J) = careerP0(I, J)
-                        Next J
-
-                        carRecPitStats(N, I, 15) = 1
-                        carRecPitStats(N, I, 16) = statYear
-
-                    Next I
-
-                    If doPostLeaders = 1 Then
-                        Call UpdateCareerRecords(diskPaths$(2) + GetFileBaseName$(careerFile$) + ".CLD")
+                    If UCase$(K$) = "Y" Then
+                        doPostLeaders = 1
+                    Else
+                        doPostLeaders = 0
                     End If
 
-                    Call SaveCareerFile(careerFile$)
+                    If Not _FileExists(diskPaths$(1) + statFile$) Then
 
-                End If 'Done checking for stat file
+                        MsgText$ = "NO COMPILED STATS COULD BE FOUND FOR THIS TEAM. PRESS ANY KEY TO RETURN TO THE MAIN MENU"
+                        BoxWidth = 24
+                        BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+                        Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+                        Call CSMsgBox(MsgText$, BoxWidth, Pass)
+                        I$ = GetKeyPress$
+                        Call CSMsgBox("", 0, Pass)
 
-            End If 'Done checking for changes
+                    Else
 
-        End If 'Done checking if team was chosen
+                        Locate 20, 13
+                        Color 15
+                        Print "MERGING AND UPDATING CAREER STATS . . . . PLEASE WAIT"
+
+                        Open diskPaths$(1) + statFile$ For Input As #1
+
+                        Input #1, team$
+                        Input #1, teamWins
+                        Input #1, teamLosses
+
+                        For I = 0 To 22:
+                            Input #1, careerBatters$(I)
+                            Input #1, careerB1(I)
+                        Next I
+
+                        For I = 0 To 21:
+                            Input #1, careerPitchers$(I)
+                            Input #1, careerP1(I)
+                        Next I
+
+                        For I = 0 To 22:
+
+                            For I1 = 0 To 21:
+                                Input #1, careerB0(I, I1)
+                            Next I1
+
+                        Next I
+
+                        For I = 0 To 21:
+
+                            For I1 = 0 To 41:
+                                Input #1, careerP0(I, I1)
+                            Next I1
+
+                        Next I
+
+                        Input #1, D0, D1
+
+                        For I = 0 To 21:
+                            Input #1, statTeamBat!(I)
+                        Next I
+
+                        For I = 0 To 22:
+                            Input #1, statTeamPit!(I)
+                        Next I
+
+                        Close #1
+
+                        For I = 0 To 99
+
+                            N = 1
+
+                            If careerBatters$(I) = "END" Or careerBatters$(I) = "XXX" Or careerBatters$(I) = "" Then
+                                careerBatters$(I) = ""
+                            Else
+                                NB = NB + 1
+                            End If
+
+                            For J = 0 To 15:
+                                carRecBatStats(N, I, J) = careerB0(I, J)
+                            Next J
+
+                            carRecBatStats(N, I, 16) = 1
+                            carRecBatStats(N, I, 17) = statYear
+
+                        Next I
+
+                        For I = 0 To 79
+
+                            If careerPitchers$(I) = "END" Or careerPitchers$(I) = "XXX" Or careerPitchers$(I) = "" Then
+                                careerPitchers$(I) = ""
+                            Else
+                                NP = NP + 1
+                            End If
+
+                            For J = 0 To 14
+                                carRecPitStats(N, I, J) = careerP0(I, J)
+                            Next J
+
+                            carRecPitStats(N, I, 15) = 1
+                            carRecPitStats(N, I, 16) = statYear
+
+                        Next I
+
+                        If doPostLeaders = 1 Then
+                            Call UpdateCareerRecords(diskPaths$(2) + GetFileBaseName$(careerFile$) + ".CLD")
+                        End If
+
+                        Call SaveCareerFile(careerFile$)
+
+                    End If 'Done checking for stat file
+
+                End If 'Done checking for changes
+
+            End If 'Done checking if team was chosen
+
+        End If
 
     Loop Until UCase$(I$) = "N" Or UCase$(J$) = "N"
 
@@ -321,7 +325,7 @@ Sub ReviewCareerRecords ()
             Select Case userKey$
 
                 Case "F"
-                    userFile$ = _SaveFileDialog$("Save Report File", _CWD$ + "\Career", "*.txt", "Text File")
+                    userFile$ = _SaveFileDialog$("Save Career Records Report", _CWD$ + "\Career Records Report", "*.txt", "Text File")
                     If userFile$ <> "" Then
                         Call CareerRecords_Report(0, userFile$)
                     End If

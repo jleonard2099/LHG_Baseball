@@ -173,7 +173,7 @@ Sub SearchPlayers ()
                         Select Case userKey$
                         
                             Case "F"
-                                userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                                userFile$ = _SaveFileDialog$("Save Report File",_CWD$ + "\Search Results","*.txt","Text File")
                                 If userFile$ <> "" Then
                                     Call SearchResults_Report(0, userFile$, PS, pitcherNames$, positionFile$)
                                 End If
@@ -611,7 +611,7 @@ Sub Pitchers10_Games (PC, pitchPosnDesc$, positionFile$)
         Select Case userKey$
 
             Case "F"
-                userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                userFile$ = _SaveFileDialog$("Save Report File",_CWD$ + "\Pitchers Report","*.txt","Text File")
                 If userFile$ <> "" Then
                     Call Pitchers10_Print(0, userFile$, PC, pitchPosnDesc$, positionFile$)
                 End If
@@ -799,7 +799,7 @@ Sub PitchersHanded (THR, pitchPosnDesc$, positionFile$)
                 I$ = GetKeyPress$
 
             Case "F"
-                userFile$ = _SAVEFILEDIALOG$("Save Report File",_CWD$ + "\Report","*.txt","Text File")
+                userFile$ = _SaveFileDialog$("Save Report File",_CWD$ + "\Pitchers Report","*.txt","Text File")
                 If userFile$ <> "" Then
                     Call PitchersHanded_Print (0, userFile$, pitchPosnDesc$)
                 End If
