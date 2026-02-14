@@ -56,8 +56,6 @@ Sub NEWLDR ()
 
         If ExitCode% <> 27 Then
 
-            printOrView = 0
-
             Select Case SELECTION%
 
                 Case 1:

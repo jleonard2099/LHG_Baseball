@@ -133,8 +133,6 @@ Sub MergeFirstYear ()
 
     Shared statTeamBat!(), statTeamPit!()
 
-    Dim TMR
-
     NB = -1
     NP = -1
 
@@ -882,6 +880,8 @@ Sub AddCareerYear (targetYear, doPostLeaders, careerFile$, statFile$)
 
     Shared statTeamBat!(), statTeamPit!()
 
+    Dim TMR1
+
     NB = -1
 
     Call LoadCareerFile(careerFile$)
@@ -889,7 +889,7 @@ Sub AddCareerYear (targetYear, doPostLeaders, careerFile$, statFile$)
     Locate 20, 21
     Print "LOADING STATS FILE . . . . PLEASE WAIT"
 
-    TMR1% = 3 + (23 * 2) + (22 * 2) + (23 * 22) + (22 * 42)
+    TMR1 = 3 + (23 * 2) + (22 * 2) + (23 * 22) + (22 * 42)
 
     'Call ReadTeamStats(temp$, statFile$)
 
@@ -905,8 +905,8 @@ Sub AddCareerYear (targetYear, doPostLeaders, careerFile$, statFile$)
 
         Color 9
         Locate 21, 35
-        TMR1% = TMR1% - 1
-        Print Using "####"; TMR1%
+        TMR1 = TMR1 - 1
+        Print Using "####"; TMR1
     Next I
 
     For I = 0 To 21:
@@ -915,8 +915,8 @@ Sub AddCareerYear (targetYear, doPostLeaders, careerFile$, statFile$)
 
         Color 9
         Locate 21, 35
-        TMR1% = TMR1% - 1
-        Print Using "####"; TMR1%
+        TMR1 = TMR1 - 1
+        Print Using "####"; TMR1
     Next I
 
     For I = 0 To 22:
@@ -925,7 +925,7 @@ Sub AddCareerYear (targetYear, doPostLeaders, careerFile$, statFile$)
 
             Color 9
             Locate 21, 35
-            TMR1% = TMR1% - 1: Print Using "####"; TMR1%
+            TMR1 = TMR1 - 1: Print Using "####"; TMR1
         Next I1
     Next I
 
@@ -935,8 +935,8 @@ Sub AddCareerYear (targetYear, doPostLeaders, careerFile$, statFile$)
 
             Color 9
             Locate 21, 35
-            TMR1% = TMR1% - 1
-            Print Using "####"; TMR1%
+            TMR1 = TMR1 - 1
+            Print Using "####"; TMR1
         Next I1
     Next I
 

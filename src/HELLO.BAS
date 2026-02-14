@@ -33,7 +33,8 @@ DefInt A-Z
 '$Include: 'BoxRoutines.bi'
 '$Include: 'FileTeamSelection.bi'
 '$Include: 'Variables.bi'
-Dim leaderPlayer$(298)
+Dim Shared autoPlay, batterMinimumOpt, BV, compTeam, currFielder
+Dim Shared nbrLines, nbrStrikes, noLUFound, normalFinish
 
 '$Include: 'MainRoutines.bi'
 '$Include: 'TITLE.bi'
@@ -1615,7 +1616,7 @@ Sub LOADER
 
             reselect = 0
 
-            If autoPlay = 1 Then
+            If autoPlay = 1 and playerMode = 2 Then
 
                 'noLUFound = no lineup found?
                 If noLUFound = 1 Then
@@ -3568,6 +3569,9 @@ Sub SelectPitchers (luTeamIdx, cancelPitchers%, compRotation)
 
     Shared gameMgrIdx(), mgrFile(), startPitcher()
 
+    Color 15, 0
+    Cls
+
     ' *** PITCHING ROTATIONS ***
     userDone = 99
     useRotationLogic = 0
@@ -3586,10 +3590,13 @@ Sub SelectPitchers (luTeamIdx, cancelPitchers%, compRotation)
     Else
 
         Do
+
             I$ = GetKeyPress$
+
             If I$ <> Chr$(27) Then
                 choice = Val(I$)
             End If
+
         Loop Until choice >= 0 And choice <= 2 Or I$ = Chr$(27)
 
     End If
@@ -8811,25 +8818,31 @@ Sub SOURCE ()
 
         scoreDiff = gameScore(D, 0) - gameScore(P, 0)
 
-        If scoreDiff >= -1 And scoreDiff <= 1 And INNING% >= 8 And _ 
-            (baseRunners = 3 Or baseRunners >= 5) And _ 
-            nbrOuts(0) < 2 Then
-            'Defense - Infeidl in
+        'Runner on 3rd, less than 2 outs, close game in late innings
+        If (baseRunners >= 4) And _ 
+            nbrOuts(0) < 2 And _
+            INNING% >= 7 And _
+            (scoreDiff >= -2 And scoreDiff <= 1) Then
+            ' INFIELD IN: Prevent run from scoring from 3rd base
             INFPOS% = INF_IN
             D2 = DEF_INFIELD_IN
 
         Else
 
-            If (scoreDiff > 0 Or nbrOuts(0) > 0 Or baseRunners <= 2 Or baseRunners = 4 Or (baseRunners = 5 And nbrOuts(0) = 1) Or (INNING% <= 5 And scoreDiff < -2) Or (INNING% > 5 And scoreDiff < -4)) _
-               And ((baseRunners = 1 Or baseRunners = 4) And nbrOuts(0) <> 2 And (currLineupSlot(P) < 3 Or currLineupSlot(P) > 6) And (INNING% > 6 Or (Abs(scoreDiff) < 3))) _
-               And (INNING% <= 7 Or scoreDiff = 0) Then
-                'Defense - Corners In
+            'Runners on corners (1st and 3rd), less than 2 outs
+            ' Avoid power hitters (3-6 in lineup) for double play depth
+            If baseRunners = 5 And _
+                nbrOuts(0) < 2 And _
+                (currLineupSlot(P) < 3 Or currLineupSlot(P) > 6) And _
+                INNING% >= 6 And _
+                scoreDiff >= -3 And scoreDiff <= 2 Then
                 INFPOS% = INF_CORNERS_IN
                 D2 = DEF_CORNERS_IN
             Else
-                'Defense - Infield in
-                INFPOS% = INF_IN
-                D2 = DEF_INFIELD_IN
+                ' INFIELD BACK: Default/normal positioning
+                ' Used for: Everything else - double play depth, 2 outs, big lead/deficit, etc.
+                INFPOS% = INF_BACK
+                D2 = DEF_INFIELD_BACK
             End If
 
         End If

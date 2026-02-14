@@ -176,7 +176,7 @@ Dim divWins(1 To 40), divLosses(1 To 40)
 
 Dim leaderNames$(46)
 Dim leaderTeams$(46)
-'Dim leaderPlayer$(298)
+Dim leaderPlayer$(298)
 Dim leaderStatVal2!(46, 42)
 Dim leaderVals!(298, 2)
 
@@ -344,12 +344,12 @@ Dim Shared INNING%
 
 Dim Shared P9, W5, W6
 
-Dim Shared autoPlay, batterMinimumOpt, BV, compTeam, currFielder
+'Dim Shared autoPlay, batterMinimumOpt, BV, compTeam, currFielder
 Dim Shared desigHit, D, dayOrNight
 Dim Shared earlyExit, endAllGames, ejectCnt, FontColAdj
 Dim Shared gameLoc, gameOver, gameTemp, ghostRunOpt
 Dim Shared inningsPitched
-Dim Shared nbrLines, nbrStrikes, noLUFound, normalFinish
+'Dim Shared nbrLines, nbrStrikes, noLUFound, normalFinish
 Dim Shared P, pbpLine, pinchHitterFlag, pitchEraOpt
 Dim Shared playerMode, playerOpt, precipType
 Dim Shared skyType, sndOpt, strikeoutRating
