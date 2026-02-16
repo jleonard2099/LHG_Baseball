@@ -1,7 +1,7 @@
 $Debug
 $Color:32
 
-Const GAME_VERSION$ = "7.20"
+Const GAME_VERSION$ = "7.21"
 Const MAX_FILES = 10240
 Const MAX_CAREER_YEARS = 15
 'Const MAX_CONFERENCES = 40
@@ -1370,7 +1370,7 @@ Sub LOADER
 
     'If we've run into issues so far...
     If earlyExit = 1 Then
-        Close #11
+        'Close #11
         Exit Sub
     End If
 
@@ -1616,7 +1616,7 @@ Sub LOADER
 
             reselect = 0
 
-            If autoPlay = 1 and playerMode = 2 Then
+            If autoPlay = 1 And playerMode = 2 Then
 
                 'noLUFound = no lineup found?
                 If noLUFound = 1 Then
@@ -4347,6 +4347,7 @@ Sub SOURCE ()
 
     '--- Start of a new sub
     LNextBatter1:
+    Print #11, "DEBUG: Processing LNextBatter1"
     Call WHOSON1ST(baseRunners)
     Call PLAYERNAME
 
@@ -4365,6 +4366,7 @@ Sub SOURCE ()
     End If
 
     LContinueBatter:
+    Print #11, "DEBUG: Processing LContinueBatter"
 
     Do
 
@@ -4410,6 +4412,7 @@ Sub SOURCE ()
         errorOnPlay% = 0
 
         LContinueBatter2:
+        Print #11, "DEBUG: Processing LContinueBatter2"
         If (playerMode = 1 And D = compTeam) Or playerMode = 2 Then
             GoTo LEndOfGame
         End If
@@ -4427,6 +4430,7 @@ Sub SOURCE ()
         ' DEFENSE OPTIONS MENU
         '----------------------------------------
         LDefenseOptions:
+        Print #11, "DEBUG: Processing LDefenseOptions"
         pbpString$ = PadRight$(Left$(gameTeams$(D), 3) + teamAbbreviatons$(D), 8)
 
         'Call WINDEX
@@ -4577,6 +4581,7 @@ Sub SOURCE ()
 
 
     LManageDefense:
+    Print #11, "DEBUG: Processing LManageDefense"
     Select Case D2
         Case 1
             '
@@ -4629,7 +4634,8 @@ Sub SOURCE ()
             'Locate 29, 46: Print infStatus$
         End If
 
-        GoTo LContinueBatter
+        '-- REMOVE ME?
+        'GoTo LContinueBatter
 
     End If
 
@@ -4637,6 +4643,7 @@ Sub SOURCE ()
     ' OFFENSE OPTIONS MENU
     '----------------------------------------
     LOffenseOptions:
+    Print #11, "DEBUG: Processing LOffenseOptions"
 
     Do
 
@@ -4848,6 +4855,7 @@ Sub SOURCE ()
     Loop Until offChoice >= OFF_HIT_AWAY And offChoice <= OFF_PERSONNEL
 
     LExecuteOffense:
+    Print #11, "DEBUG: Processing LExecuteOffense"
     Select Case offChoice
 
         Case 1, 4 'Hit away, Bunt
@@ -4891,6 +4899,7 @@ Sub SOURCE ()
 
 
     LHitAndRun:
+    Print #11, "DEBUG: Processing LHitAndRun"
     If baseRunners = 4 Then
         pickedOffBase = 3
     Else
@@ -4990,6 +4999,7 @@ Sub SOURCE ()
     '----- NOODLE -----
 
     LRarePlays: ' BRANCH FOR RARE PLAYS
+    Print #11, "DEBUG: Processing LRarePlays"
     If delayGame = 1 Then
 
         'Default value for RAREPLAYS
@@ -5096,6 +5106,7 @@ Sub SOURCE ()
     '----- NOODLE -----
 
     LWeirdPlay:
+    Print #11, "DEBUG: Processing LWeirdPlay"
     'Rare plays, wild pitches, interference, etc.
     Call Rolld100(weatherRoll)
 
@@ -5133,6 +5144,7 @@ Sub SOURCE ()
         Call HITBYPITCH(S2%, baseRunners)
 
         LFreeBase:
+        Print #11, "DEBUG: Processing LFreeBase"
         'Batter advances to 1st base
         baseMove(0) = 1
         baseMove(1) = 0
@@ -5430,6 +5442,7 @@ Sub SOURCE ()
     'Track # of batters this team has faced
     '(this gets reset when a new reliever comes in)
     'This is used to help enforce the 3-batter rule in 2020+
+    Print #11, "DEBUG: Processing At-Bat Result"
     battersFaced(D, currPitcher(D)) = battersFaced(D, currPitcher(D)) + 1
 
     batterAvg = game_batRating(P, GM_BAvg, currLineupSlot(P))
@@ -5444,6 +5457,7 @@ Sub SOURCE ()
         If chanceRoll <= strikeoutRating + umpSZadj(4) + soEraAdj Then
 
             LStrikeout:
+            Print #11, "DEBUG: Processing LStrikeout"
             Call WINDEX
             Call STRIKEOUT(nbrStrikes)
 
@@ -6236,6 +6250,7 @@ Sub SOURCE ()
     '----- NOODLE -----
 
     LProcessOutAndDP:
+    Print #11, "DEBUG: Processing LProcessOutAndDP"
     Call INCPITDEF(D, currPitcher(D), LG_P_OUT)
 
     Call TrackOuts(1)
@@ -6301,6 +6316,7 @@ Sub SOURCE ()
     '----- NOODLE -----
 
     LGrounderToPitcher:
+    Print #11, "DEBUG: Processing LGrounderToPitcher"
     If nbrOuts(0) >= 2 Then
 
         RN0 = Int(Rnd(1) * 10) + 1
@@ -6709,6 +6725,7 @@ Sub SOURCE ()
     '-----------------------------------------------------
     ' Play-by-Play box
     LCheckForOptionsOrQuit:
+    Print #11, "DEBUG: Processing LCheckForOptionsOrQuit"
     If useVGA = 1 Then
         _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 144), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 144)
     End If
@@ -6751,6 +6768,7 @@ Sub SOURCE ()
 
     ' *** BUNT ROUTINE ***
     LBunt:
+    Print #11, "DEBUG: Processing LBunt"
     Call WINDEX
 
     Erase baseMove
@@ -7449,6 +7467,7 @@ Sub SOURCE ()
     ' *** STEALING BASES ***
 
     LSteal:
+    Print #11, "DEBUG: Processing LSteal"
     stealHome% = 0
     S2% = EVENT_STEAL
     currFielder = 1
@@ -7634,6 +7653,7 @@ Sub SOURCE ()
     End If
 
     LStealHome:
+    Print #11, "DEBUG: Processing LStealHome"
     Call WINDEX
     'Presumably here TGTBASE% = 4
     stealRunIdx = lineupPlayer(P, runnerOnBase(TGTBASE% - 1))
@@ -7853,6 +7873,7 @@ Sub SOURCE ()
     End If
 
     LStealContinue:
+    Print #11, "DEBUG: Processing LStealContinue"
     If nbrOuts(0) >= 3 Or offChoice = OFF_HIT_N_RUN And nbrStrikes = 3 Then
         GoTo LCheckForOptionsOrQuit
     End If
@@ -7903,6 +7924,7 @@ Sub SOURCE ()
     '-- make this into a subroutine?!?!
 
     LPersonnelMenu:
+    Print #11, "DEBUG: Processing LPersonnelMenu"
 
     Cls
 
@@ -8635,6 +8657,7 @@ Sub SOURCE ()
     End If
 
     LReliever1:
+    Print #11, "DEBUG: Processing LReliever 1"
     If newRelieverNeeded(D) = 1 Then
 
         'Always call reliever if pinch hitting; otherwise check if batter count
@@ -8665,6 +8688,8 @@ Sub SOURCE ()
         End If
     End If
 
+
+    Print #11, "DEBUG: Processing DEFENSE"
     D2 = DEF_PITCH
 
     If INFPOS% <= 0 Then
@@ -8879,6 +8904,7 @@ Sub SOURCE ()
     End If
 
     LReliever2:
+    Print #11, "DEBUG: Processing LReliever2"
     If (pitcherStam(D, 0) <= teamPitStats(D, currPitcher(D), 4) + teamPitStats(D, currPitcher(D), 1) And _ 
         pitcherStam(D, 1) <= teamPitStats(D, currPitcher(D), 2)) Or _ 
         fielder(D, 1) = 99 Then
@@ -8899,6 +8925,7 @@ Sub SOURCE ()
 
     'Get Pinch Hitter for position player
     LPhForPosition:
+    Print #11, "DEBUG: Processing LPhForPosition"
     If teamMgrProfileVal(P, 540) = 999 Then
 
         'Team is using a PINCH HITTING strategy
@@ -9003,6 +9030,7 @@ Sub SOURCE ()
 
 
     LPhForPosPlayer:
+    Print #11, "DEBUG: Processing LPhForPosPlayer"
     pinchHitterFlag = 1
 
     'Make player available and insert into lineup / field
@@ -9033,6 +9061,7 @@ Sub SOURCE ()
     '----- NOODLE -----
 
     LPhForPitcher: 'GET A PINCH HITTER FOR THE PITCHER
+    Print #11, "DEBUG: Processing LPhForPitcher"
     callPinch = 0
     skipLoop = 0
 
@@ -9321,6 +9350,7 @@ Sub SOURCE ()
     End If
 
     LPinchRunner0:
+    Print #11, "DEBUG: Processing LPinchRunner0"
     pinchHitterFlag = 0
     runnerUsed = 0
 
@@ -9374,6 +9404,7 @@ Sub SOURCE ()
     '----- NOODLE -----
 
     LPinchRunner1:
+    Print #11, "DEBUG: Processing LPinchRunner1"
     If nbrOuts(0) >= 1 And INNING% >= 7 Then
         GoTo LPinchRunner0
     Else
@@ -21409,38 +21440,38 @@ Sub ScoreSummary_File
 
         For I2 = 1 To INNING%
             Call InningColumn_File(I2)
-            Print #2, Using "##"; I2;
+            Print #1, Using "##"; I2;
         Next I2
 
-        Print #2, "   R  H E"
+        Print #1, "   R  H E"
 
         For I = 0 To 1
 
-            Print #2, PadRight$(gameTeams$(I), 16);
+            Print #1, PadRight$(gameTeams$(I), 16);
 
             For I2 = 1 To INNING%
 
                 Call InningColumn_File(I2)
 
                 If I = 0 Then
-                    Print #2, Using "##"; inningScore(I, I2);
+                    Print #1, Using "##"; inningScore(I, I2);
                 End If
                 If I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = INNING% And inningScore(1, INNING%) = 0 Then
-                    Print #2, " X";
+                    Print #1, " X";
                 End If
                 If I = 1 And gameScore(1, 0) < gameScore(0, 0) And I2 = INNING% Or I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = INNING% And inningScore(1, INNING%) > 0 Then
-                    Print #2, Using "##"; inningScore(I, I2);
+                    Print #1, Using "##"; inningScore(I, I2);
                 End If
                 If I = 1 And I2 < INNING% Then
-                    Print #2, Using "##"; inningScore(I, I2);
+                    Print #1, Using "##"; inningScore(I, I2);
                 End If
 
             Next I2
 
-            Print #2, " -";
-            Print #2, Using " ##"; gameScore(I, 0);
-            Print #2, Using " ##"; gameScore(I, 1);
-            Print #2, Using " #"; gameScore(I, 2)
+            Print #1, " -";
+            Print #1, Using " ##"; gameScore(I, 0);
+            Print #1, Using " ##"; gameScore(I, 1);
+            Print #1, Using " #"; gameScore(I, 2)
 
         Next I
 
@@ -21450,46 +21481,46 @@ Sub ScoreSummary_File
 
         For I2 = 1 To 9
             Call InningColumn_File(I2)
-            Print #2, Using "##"; I2;
+            Print #1, Using "##"; I2;
         Next I2
 
         If INNING% = 9 Then
-            Print #2, "    H  R E"
+            Print #1, "    H  R E"
         Else
-            Print #2, "      H  R E"
+            Print #1, "      H  R E"
         End If
 
         For I = 0 To 1
 
-            Print #2, PadRight$(gameTeams$(I), 16);
+            Print #1, PadRight$(gameTeams$(I), 16);
 
             For I2 = 1 To 9
 
                 Call InningColumn_File(I2)
                 If I = 0 Then
-                    Print #2, Using "##"; inningScore(I, I2);
+                    Print #1, Using "##"; inningScore(I, I2);
                 End If
                 If I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = 9 And inningScore(1, 9) = 0 Then
-                    Print #2, " X";
+                    Print #1, " X";
                 End If
                 If I = 1 And gameScore(1, 0) < gameScore(0, 0) And I2 = 9 Or I = 1 And gameScore(1, 0) > gameScore(0, 0) And I2 = 9 And inningScore(1, 9) > 0 Then
-                    Print #2, Using "##"; inningScore(I, I2);
+                    Print #1, Using "##"; inningScore(I, I2);
                 End If
                 If I = 1 And I2 < 9 Then
-                    Print #2, Using "##"; inningScore(I, I2);
+                    Print #1, Using "##"; inningScore(I, I2);
                 End If
 
             Next I2
 
             If INNING% = 10 Then
-                Print #2, "   -";
+                Print #1, "   -";
             Else
-                Print #2, " -";
+                Print #1, " -";
             End If
 
-            Print #2, Using " ##"; gameScore(I, 0);
-            Print #2, Using " ##"; gameScore(I, 1);
-            Print #2, Using " #"; gameScore(I, 2)
+            Print #1, Using " ##"; gameScore(I, 0);
+            Print #1, Using " ##"; gameScore(I, 1);
+            Print #1, Using " #"; gameScore(I, 2)
 
         Next I
 
@@ -21499,37 +21530,37 @@ Sub ScoreSummary_File
 
         For I2 = 1 To 9
             Call InningColumn_File(I2)
-            Print #2, Using "##"; I2;
+            Print #1, Using "##"; I2;
         Next I2
         
-        Print #2,
+        Print #1,
 
         For I = 0 To 1
 
-            Print #2, PadRight$(gameTeams$(I), 16);
+            Print #1, PadRight$(gameTeams$(I), 16);
 
             'Print innings 1 - 9
             For I2 = 1 To 9
                 Call InningColumn_File(I2)
-                Print #2, Using "##"; inningScore(I, I2);
+                Print #1, Using "##"; inningScore(I, I2);
             Next I2
 
-            Print #2,
+            Print #1,
 
             'Prints innings 10 to 19
             For I2 = 10 To INNING%
                 Call InningColumn_File(I2)
-                Print #2, Using "##"; inningScore(I, I2);
+                Print #1, Using "##"; inningScore(I, I2);
             Next I2
 
             If (INNING% Mod 3 = 0) Then
-                Print #2, " "
+                Print #1, " "
             End If
 
-            Print #2, " -";
-            Print #2, Using " ##"; gameScore(I, 0);
-            Print #2, Using " ##"; gameScore(I, 1);
-            Print #2, Using " #"; gameScore(I, 2)
+            Print #1, " -";
+            Print #1, Using " ##"; gameScore(I, 0);
+            Print #1, Using " ##"; gameScore(I, 1);
+            Print #1, Using " #"; gameScore(I, 2)
 
         Next I
 
@@ -21539,64 +21570,64 @@ Sub ScoreSummary_File
 
         For I2 = 1 To 9
             Call InningColumn_File(I2)
-            Print #2, Using "##"; I2;
+            Print #1, Using "##"; I2;
         Next I2
 
         For I = 0 To 1
 
-            Print #2, PadRight$(gameTeams$(I), 16);
+            Print #1, PadRight$(gameTeams$(I), 16);
 
             For I2 = 1 To 9
                 Call InningColumn_File(I2)
-                Print #2, Using "##"; inningScore(I, I2);
+                Print #1, Using "##"; inningScore(I, I2);
             Next I2
 
         Next I
 
-        Print #2,
+        Print #1,
 
         For I2 = 10 To 18
             Call InningColumn_File(I2)
-            Print #2, I2;
+            Print #1, I2;
         Next I2
 
-        Print #2,
+        Print #1,
 
         For I = 0 To 1
 
-            Print #2, gameTeams$(I);
+            Print #1, gameTeams$(I);
 
             For I2 = 10 To 18
                 Call InningColumn_File(I2)
-                Print #2, Using "##"; inningScore(I, I2);
+                Print #1, Using "##"; inningScore(I, I2);
             Next I2
 
-            Print #2,
+            Print #1,
 
         Next I
 
-        Print #2,
+        Print #1,
 
         For I2 = 19 To INNING%
             Call InningColumn_File(I2)
-            Print #2, Using "##"; I2;
+            Print #1, Using "##"; I2;
         Next I2
 
-        Print #2, "  H  R E"
+        Print #1, "  H  R E"
 
         For I = 0 To 1
 
-            Print #2, PadRight$(gameTeams$(I), 16);
+            Print #1, PadRight$(gameTeams$(I), 16);
 
             For I2 = 19 To INNING%
                 Call InningColumn_File(I2)
-                Print #2, Using "##"; inningScore(I, I2);
+                Print #1, Using "##"; inningScore(I, I2);
             Next I2
 
-            Print #2, " -";
-            Print #2, Using " ##"; gameScore(I, 0);
-            Print #2, Using " ##"; gameScore(I, 1);
-            Print #2, Using " #"; gameScore(I, 2)
+            Print #1, " -";
+            Print #1, Using " ##"; gameScore(I, 0);
+            Print #1, Using " ##"; gameScore(I, 1);
+            Print #1, Using " #"; gameScore(I, 2)
 
         Next I
 
@@ -22155,7 +22186,7 @@ Sub EndOfGame ()
     If normalFinish = 1 Then
 
         Call POSTGAME
-        Close #11
+        'Close #11
 
         Cls
 
