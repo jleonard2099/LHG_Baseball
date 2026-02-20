@@ -161,8 +161,10 @@ Sub PrintTeamStats (printDest, destFile$, targetTeam$)
 
         If batterNames$(I) <> "XXX" Then
 
+            'Name
             Print #1, Left$(batterNames$(I), 10);
 
+            'Bats
             Select Case batterRatings(I, 0)
 
                 Case -2: Print #1, Tab(12); "LP";
@@ -185,20 +187,34 @@ Sub PrintTeamStats (printDest, destFile$, targetTeam$)
                 End If
             End If
 
+            'Games
             Print #1, Tab(20); Using "###"; batterRatings(I, 3);
+            'At Bats
             Print #1, Tab(24); Using "###"; batterRatings(I, 4);
+            'R
             Print #1, Tab(28); Using "###"; batterRatings(I, 5);
+            'H
             Print #1, Tab(32); Using "###"; batterRatings(I, 6);
+            'DB
             Print #1, Tab(36); Using "##"; batterRatings(I, 7);
+            'TR
             Print #1, Tab(39); Using "##"; batterRatings(I, 8);
+            'HR
             Print #1, Tab(42); Using "##"; batterRatings(I, 9);
+            'RBI 
             Print #1, Tab(45); Using "###"; batterRatings(I, 10);
+            'BB
             Print #1, Tab(49); Using "###"; batterRatings(I, 11);
+            'SO 
             Print #1, Tab(53); Using "###"; batterRatings(I, 12);
+            'SB
             Print #1, Tab(57); Using "###"; batterRatings(I, 13);
+            'CS
             Print #1, Tab(61); Using "##"; batterRatings(I, 14);
+            'GA
             Print #1, Tab(64); Using "##"; batterRatings(I, 18);
 
+            '3
             batAvg! = 0
 
             If batterRatings(I, 4) > 0 Then
@@ -467,8 +483,9 @@ Sub ViewRoster (targetTeam$)
 
     Locate 3, 10:
     Color teamRatings(11), teamRatings(12): Print targetTeam$
-    Color 15
-    Locate , 10
+
+    Color 15, 0
+    Locate 5, 10
     Color 14
     Print "MANAGER: ";
     Color 15: Print Manager$

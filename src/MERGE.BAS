@@ -560,8 +560,6 @@ Sub DoTheMerge (pathCurrentStats$, statFile$, teamNameStats$, nbrGamesCurr, nbrG
 
     Close #1
 
-    Y = 0
-
     MsgText$ = "SUCCESSFULLY MERGED ALL STAT FILES!! PRESS ANY KEY TO RETURN TO MENU"
     BoxWidth = 20
     BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra

@@ -1,7 +1,7 @@
 $Debug
 $Color:32
 
-Const GAME_VERSION$ = "7.21"
+Const GAME_VERSION$ = "7.22"
 Const MAX_FILES = 10240
 Const MAX_CAREER_YEARS = 15
 'Const MAX_CONFERENCES = 40
@@ -849,9 +849,34 @@ Sub Calculations_Menu ()
                     Call ChooseTeam(YN$, NTMS, teamNbr, team$)
 
                     If teamNbr <> 0 Then
+
                         statFile$ = nameStatFile$(team$)
-                        Call CalculateBuntRating
-                        Call SaveTeamFile(0, YN$, team$, statFile$, teamNbr)
+                        Call BuntRatingNew
+
+                        Cls
+
+                        MsgText$ = "DO YOU WISH TO SAVE THESE CALCULATIONS TO THE TEAM? EXISTING RATINGS WILL BE COMPLETELY OVERWRITTEN. PRESS 'Y' TO SAVE CHANGES; ANY OTHER KEY TO CONTINUE."
+                        BoxWidth = 26
+                        BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+                        Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+
+                        Call CSMsgBox(MsgText$, BoxWidth, Pass)
+                        I$ = UCase$(GetKeyPress$)
+                        Call CSMsgBox("", 0, Pass)
+
+                        If I$ = "Y" Then
+
+                            MsgText$ = "SUCCESSFULLY UPDATED THE TEAM RATING FILES!! PRESS A KEY TO CONTINUE"
+                            BoxWidth = 24
+                            BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+                            Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+                            Call CSMsgBox(MsgText$, BoxWidth, Pass)
+                            I$ = GetKeyPress$
+                            Call CSMsgBox("", 0, Pass)
+
+                            Call SaveTeamFile(0, YN$, team$, statFile$, teamNbr)
+                        End If
+
                     End If
 
                 Case 3:
@@ -859,9 +884,35 @@ Sub Calculations_Menu ()
                     Call ChooseTeam(YN$, NTMS, teamNbr, team$)
 
                     If teamNbr <> 0 Then
+
                         statFile$ = nameStatFile$(team$)
-                        Call CalculateRunRating
-                        Call SaveTeamFile(0, YN$, team$, statFile$, teamNbr)
+                        Call RunRatingNew
+
+                        Cls
+
+                        MsgText$ = "DO YOU WISH TO SAVE THESE CALCULATIONS TO THE TEAM? EXISTING RATINGS WILL BE COMPLETELY OVERWRITTEN. PRESS 'Y' TO SAVE CHANGES; ANY OTHER KEY TO CONTINUE."
+                        BoxWidth = 26
+                        BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+                        Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+
+                        Call CSMsgBox(MsgText$, BoxWidth, Pass)
+                        I$ = UCase$(GetKeyPress$)
+                        Call CSMsgBox("", 0, Pass)
+
+                        If I$ = "Y" Then
+
+                            MsgText$ = "SUCCESSFULLY UPDATED THE TEAM RATING FILES!! PRESS A KEY TO CONTINUE"
+                            BoxWidth = 24
+                            BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
+                            Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+                            Call CSMsgBox(MsgText$, BoxWidth, Pass)
+                            I$ = GetKeyPress$
+                            Call CSMsgBox("", 0, Pass)
+
+                            Call SaveTeamFile(0, YN$, team$, statFile$, teamNbr)
+
+                        End If
+
                     End If
 
             End Select
@@ -2242,7 +2293,7 @@ Sub SaveLineup (luTeamIdx)
 
     Shared mgrFile(), gameMgrIdx()
 
-    If autoPlay = 1 And ((playerMode = 1 And compTeam = luTeamIdx) Or playerMode = 2) Then
+    If (autoPlay = 1 And ((playerMode = 1 And compTeam = luTeamIdx) Or playerMode = 2)) Or gameTypeOpt = 1 Then
         I$ = "N"
     Else
         Do
@@ -17449,10 +17500,10 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, noThrow, baseStatus, run
 
                     armRating = (batRating(D, fielder(D, currFielder), SS_B_Arm) - 5) * 25
                     If S2% = EVENT_FLY_DEEP Then
-                        I3 = 1000 + runRating - armRating ' WAS 800
+                        I3 = 1000 + runRating - armRating
                     End If
                     If S2% = EVENT_FLY_REGULAR Then
-                        I3 = 800 + runRating - armRating ' WAS 650
+                        I3 = 800 + runRating - armRating
                     End If
                     If S2% = EVENT_FLY_SHALLOW Or S2% < EVENT_HR Then
                         I3 = 500 + runRating - armRating
@@ -20116,7 +20167,9 @@ Sub POSTGAME ()
 
     End If
 
-    Call SAVESTATS
+    If gameTypeOpt <> 1 Then
+        Call SAVESTATS
+    End If
 
     gameOver = 0
     specialStat = 0

@@ -538,7 +538,7 @@ Sub ViewScheduleStatSummary (statFile$, teamName$, splitStatChoice)
                 End If
             End If
 
-            'At Bats + Walks
+            'PA = At Bats + Walks
             I3 = statBatter(I, 0) + statBatter(I, 7)
             'Hits + Walks
             I4 = statBatter(I, 1) + statBatter(I, 7)
