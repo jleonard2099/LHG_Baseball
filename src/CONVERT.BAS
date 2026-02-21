@@ -188,6 +188,83 @@ End Sub
 
 
 '----------------------------------------
+'       ConvertTeam4to5 Subroutine
+'----------------------------------------
+' Reads in existing team data, one team
+' at-a-time. For each team, it tries
+' to calculate what actual stats it can.
+' From there, the updated data is saved.
+Sub ConvertTeamBuntRun (targetFile$, silent)
+
+    Shared batterNames$(), pitcherNames$()
+    Shared batterRatings(), pitcherRatings()
+
+    Dim buhYear
+    
+    buhYear = 2002
+    
+    diskID$ = GetFileExtension$(targetFile$)
+    newFile$ = targetFile$ + ".NEW"
+
+    If targetFile$ <> "" Then
+
+        Open targetFile$ For Random As #1
+        fileLength& = LOF(1)
+        Close #1
+
+        numberTeams = fileLength& / DATA_SIZE_BYTES
+
+        For currTeam = 1 To numberTeams
+
+            Call ReadTeam(diskID$, teamName$, currTeam, validData)
+            statFile$ = nameStatFile$(teamName$)
+
+            'Make updates here
+            For I = 0 To 22
+
+                If batterNames$(I) <> "" And batterNames$(I) <> "XXX" Then
+                    If Val(diskID$) < buhYear Then
+                        'Don't update teams where BUH is available
+                        batterRatings(I, 30) = PlayerBuntRating%(I, 0)
+                    End If
+                    batterRatings(I, 16) = PlayerRunRating%(I, 0)
+                End If
+
+            Next
+
+            For I = 0 To 21
+
+                If pitcherNames$(I) <> "" And pitcherNames$(I) <> "XXX" Then
+                    If Val(diskID$) < buhYear Then
+                        'Don't update teams where BUH is available
+                        pitcherRatings(I, 32) = PlayerBuntRating%(I, 1)
+                    End If
+                    pitcherRatings(I, 31) = PlayerRunRating%(I, 1)
+                End If
+
+            Next
+
+            'Save chanes
+            Call SaveTeamFile(0, diskID$, teamName$, statFile$, currTeam)
+
+        Next currTeam
+
+        Kill targetFile$
+
+        result$ = CopyFile$(newFile$, targetFile$)
+
+        Kill newFile$
+
+        If silent = 0 Then
+            result& = _MessageBox("Success!", "The team file has been converted for use", "ok", "info", 1)
+        End If
+
+    End If
+
+End Sub
+
+
+'----------------------------------------
 '       ConvertAllSched Subroutine
 '----------------------------------------
 ' Quick and dirty script to convert all
@@ -205,6 +282,29 @@ Sub ConvertAllSched ()
         target$ = diskPaths$(3) + foundFiles$(X)
         Print "Converting "; target$
         Call ConvertSched6to7(target$, 1)
+    Next X
+
+End Sub
+
+
+'----------------------------------------
+'       ConvertAllTeam Subroutine
+'----------------------------------------
+' Quick and dirty script to convert all
+' team files in the "Schedule" folder
+Sub ConvertAllTeam ()
+
+    fileSpec$ = diskPaths$(0) + "FCTEAMS.*"
+
+    Count% = FileCount%(fileSpec$)
+    ReDim foundFiles$(0 To Count%)
+    foundFiles$(0) = fileSpec$
+    Call ReadFile(foundFiles$())
+
+    For X = 1 To Count%
+        target$ = diskPaths$(0) + foundFiles$(X)
+        Print "Converting "; target$
+        Call ConvertTeamBuntRun(target$, 1)
     Next X
 
 End Sub

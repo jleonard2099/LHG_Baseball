@@ -67,6 +67,10 @@ End Sub
 'This subroutine saves the modifed team
 'data (from corresponding arrays) to an
 'appropriate spot in the select team file
+
+'newID - designates whether this is a new
+'  team altogether being added with brand
+'  new disk ID. 0 = no, 1 = yes
 Sub SaveTeamFile (newID, yearNumber$, targetTeam$, targetFile$, teamIdx)
 
     Shared CK, parkHR
@@ -583,6 +587,83 @@ End Sub
 
 
 '----------------------------------------
+'        BuntRatingNew Subroutine
+'----------------------------------------
+'This subroutine gives the user a quick
+'overview of bunt ratings and a means by
+'which to review them
+Sub BuntRatingNew ()
+
+    Shared batterRatings(), pitcherRatings()
+    Shared batterNames$(), pitcherNames$()
+
+    Color 15, 0
+    Cls
+
+    Locate 2, 2
+    Color 4
+    Print "BUNT RATINGS - BATTERS"
+    Locate 4
+    Color 14
+    Print "NAME"; Tab(20); "RATING"
+
+    Color 15
+    For I = 0 To 22
+
+        If batterNames$(I) <> "" And batterNames$(I) <> "XXX" Then
+
+            batterRatings(I, 30) = PlayerBuntRating%(I, 0)
+
+            If I < 22 Then
+                Print batterNames$(I); Tab(20); batterRatings(I, 30)
+            Else
+                Print batterNames$(I); Tab(20); batterRatings(I, 30);
+            End If
+
+        End If
+
+    Next
+
+    Color 14
+    Locate LAST_ROW - 1: Print "PRESS ANY KEY TO CONTINUE";
+    I$ = GetKeyPress$
+
+    Cls
+
+    Locate 2, 1
+    Color 4
+    Print "BUNT RATINGS - PITCHERS"
+    Locate 4
+    Color 14
+    Print "NAME"; Tab(20); "RATING"
+
+    Color 15
+    For I = 0 To 21
+
+        If pitcherNames$(I) <> "" And pitcherNames$(I) <> "XXX" Then
+
+            ' If pitcher has no batting data
+            If pitcherRatings(playerIdx, 20) + pitcherRatings(playerIdx, 27) = 0 Then
+                'Assign default rating
+                pitcherRatings(I, 32) = 4
+            Else
+                pitcherRatings(I, 32) = PlayerBuntRating%(I, 1)
+            End If
+
+            Print pitcherNames$(I); Tab(20); pitcherRatings(I, 32)
+
+        End If
+
+    Next
+
+    Color 14
+    Locate LAST_ROW - 1: Print "PRESS ANY KEY TO CONTINUE";
+    I$ = GetKeyPress$
+
+End Sub
+
+
+'----------------------------------------
 '        RunRatingNew Subroutine
 '----------------------------------------
 'This subroutine gives the user a quick
@@ -645,442 +726,6 @@ Sub RunRatingNew ()
     I$ = GetKeyPress$
 
 End Sub
-
-
-'----------------------------------------
-'        BuntRatingNew Subroutine
-'----------------------------------------
-'This subroutine gives the user a quick
-'overview of bunt ratings and a means by
-'which to review them
-Sub BuntRatingNew ()
-
-    Shared batterRatings(), pitcherRatings()
-    Shared batterNames$(), pitcherNames$()
-
-    Color 15, 0
-    Cls
-
-    Locate 2, 2
-    Color 4
-    Print "BUNT RATINGS - BATTERS"
-    Locate 4
-    Color 14
-    Print "NAME"; Tab(20); "RATING"
-
-    Color 15
-    For I = 0 To 22
-
-        If batterNames$(I) <> "" And batterNames$(I) <> "XXX" Then
-
-            'batterRatings(I, 30) = CInt(PlayerBuntRating_Legacy%(I, 0))
-            batterRatings(I, 30) = CInt(PlayerBuntRating%(I, 0))
-
-            If I < 22 Then
-                Print batterNames$(I); Tab(20); batterRatings(I, 30)
-            Else
-                Print batterNames$(I); Tab(20); batterRatings(I, 30);
-            End If
-
-        End If
-
-    Next
-
-    Color 14
-    Locate LAST_ROW - 1: Print "PRESS ANY KEY TO CONTINUE";
-    I$ = GetKeyPress$
-
-    Cls
-
-    Locate 2, 1
-    Color 4
-    Print "BUNT RATINGS - PITCHERS"
-    Locate 4
-    Color 14
-    Print "NAME"; Tab(20); "RATING"
-
-    Color 15
-    For I = 0 To 21
-
-        If pitcherNames$(I) <> "" And pitcherNames$(I) <> "XXX" Then
-
-            ' If pitcher has no batting data
-            If pitcherRatings(playerIdx, 20) + pitcherRatings(playerIdx, 27) = 0 Then
-                'Assign default rating
-                'pitcherRatings(I, 32) = CInt(PlayerBuntRating_Legacy%(I, 1))
-                pitcherRatings(I, 32) = 4
-            Else
-                'pitcherRatings(I, 32) = CInt(PlayerBuntRating_Legacy%(I, 1))
-                pitcherRatings(I, 32) = CInt(PlayerBuntRating%(I, 1))
-            End If
-
-            Print pitcherNames$(I); Tab(20); pitcherRatings(I, 32)
-
-        End If
-
-    Next
-
-    Color 14
-    Locate LAST_ROW - 1: Print "PRESS ANY KEY TO CONTINUE";
-    I$ = GetKeyPress$
-
-End Sub
-
-
-'----------------------------------------
-'       PlayerRunRating% Functon
-'----------------------------------------
-'This function calculates the run rating
-'for the current player. Their index in
-'the array is required, as is whether
-'we are evaluating them from the batters
-'list or pitchers list.
-Function PlayerRunRating% (playerIdx, isPitcher)
-
-    Shared batterNames$()
-    Shared batterRatings(), pitcherRatings()
-
-    If isPitcher = 1 Then
-        ' 3B and SB
-        test1 = pitcherRatings(playerIdx, 24)
-        test2 = pitcherRatings(playerIdx, 29)
-        SPD = 200 * pitcherRatings(playerIdx, 24) + pitcherRatings(playerIdx, 29) * 100
-        ' H - 2B - 3B - HR
-        Singles = pitcherRatings(playerIdx, 22) - pitcherRatings(playerIdx, 23) - pitcherRatings(playerIdx, 24) - pitcherRatings(playerIdx, 25)
-        firstBaseRuns = Singles + pitcherRatings(playerIdx, 27)
-    Else
-        ' 3B and SB
-        SPD = 200 * batterRatings(playerIdx, 8) + batterRatings(playerIdx, 13) * 100
-        ' H - 2B - 3B - HR
-        Singles = batterRatings(playerIdx, 6) - batterRatings(playerIdx, 7) - batterRatings(playerIdx, 8) - batterRatings(playerIdx, 9)
-        firstBaseRuns = Singles + batterRatings(playerIdx, 11)
-    End If
-
-    If firstBaseRuns = 0 Then
-        'Assign value for where there is no data
-        'RR = Int(Rnd(1) * 15) + 1
-        newRR = 2
-    Else
-        RR = CInt(SPD / firstBaseRuns)
-        RR = RR * 1.4
-
-        If isPitcher = 1 Then
-
-            Select Case RR
-
-                Case Is <= 3:
-                    newRR = 1
-
-                Case 4, 5:
-                    newRR = 2
-
-                Case 6 To 10:
-                    newRR = 3
-
-                Case 11 To 20:
-                    newRR = 4
-
-                Case Else:
-                    newRR = 5
-
-            End Select
-
-        Else
-
-            Select Case RR
-
-                Case Is <= 3
-                    newRR = 1
-
-                Case 4, 5
-                    newRR = 2
-
-                Case 6 To 10
-                    newRR = 3
-
-                Case 11 To 15
-                    newRR = 4
-
-                Case 16 To 20
-                    newRR = 5
-
-                Case 21 To 25
-                    newRR = 6
-
-                Case 26 To 30
-                    newRR = 7
-
-                Case 31 To 40
-                    newRR = 8
-
-                Case Else
-                    newRR = 9
-
-            End Select
-
-        End If
-
-    End If
-
-    PlayerRunRating% = newRR
-
-End Function
-
-
-'----------------------------------------
-'       PlayerBuntRating% Functon
-'----------------------------------------
-'This function calculates the bunt rating
-'for the current player. Their index in
-'the array is required, as is whether
-'we are evaluating them from the batters
-'list or pitchers list.
-'DISCLAIMER - this is all the work of
-'Claude AI after discussing the current
-'system with it and the known potential
-'deficiencies it had.
-Function PlayerBuntRating% (playerIdx, isPitcher)
-
-    Dim B1!, BUNT!
-    Dim OB!
-    Dim R1!, R2!
-    Dim SLG!, SLG2!
-
-    Shared batterRatings(), pitcherRatings()
-
-    ' Set PA based on player type
-    If isPitcher = 1 Then
-        PA = pitcherRatings(playerIdx, 20) + pitcherRatings(playerIdx, 27)
-    Else
-        PA = batterRatings(playerIdx, 4) + batterRatings(playerIdx, 11)
-    End If
-    If PA = 0 Then PA = 1
-
-    If isPitcher = 1 And PA < 10 Then
-        'Pitchers with few PA's - generic value
-        BUNT! = 2
-    Else
-
-        If isPitcher = 1 Then
-            ' On-Base (simplified - Hits based)
-            OB! = (pitcherRatings(playerIdx, 22) * 100 + PA / 2) / PA
-            ' Slugging (Total Bases * 100)
-            SLG! = (pitcherRatings(playerIdx, 22) + pitcherRatings(playerIdx, 23) + pitcherRatings(playerIdx, 24) * 2 + pitcherRatings(playerIdx, 25) * 3) * 100
-        Else
-            ' On-Base (simplified - Hits based)
-            OB! = (batterRatings(playerIdx, 6) * 100 + PA / 2) / PA
-            ' Slugging (Total Bases * 100)
-            SLG! = (batterRatings(playerIdx, 6) + batterRatings(playerIdx, 7) + batterRatings(playerIdx, 8) * 2 + batterRatings(playerIdx, 9) * 3) * 100
-        End If
-
-        ' Adjusted SLG per PA
-        SLG2! = (SLG! + PA / 2) / PA
-
-        ' R1! - Strikeout/Contact component (exponential curve)
-        If isPitcher = 1 Then
-            R1! = (pitcherRatings(playerIdx, 28) * 100 + PA / 2) / PA
-        Else
-            R1! = (batterRatings(playerIdx, 12) * 100 + PA / 2) / PA
-        End If
-
-        R1! = 11 - R1! ^ 1.5 / 15
-
-        ' Cap R1! for pitchers
-        If isPitcher = 1 Then
-            If R1! < 1 Then R1! = 1
-            If R1! > 10 Then R1! = 10
-        End If
-
-        ' R2! - Power/ISO component
-        R2! = 11 - (SLG2! - OB!) / 1.5
-
-        ' Cap R2! for pitchers
-        If isPitcher = 1 Then
-            If R2! < 1 Then R2! = 1
-            If R2! > 10 Then R2! = 10
-        End If
-
-        ' R3! - Speed component (Triples primary, SB secondary)
-        If isPitcher = 1 Then
-            T3! = (pitcherRatings(playerIdx, 24) * 100 + PA / 2) / PA
-            SB! = (pitcherRatings(playerIdx, 29) * 100 + PA / 2) / PA
-        Else
-            T3! = (batterRatings(playerIdx, 8) * 100 + PA / 2) / PA
-            SB! = (batterRatings(playerIdx, 13) * 100 + PA / 2) / PA
-        End If
-
-        R3! = 11 - (T3! * 0.4 + SB! * 0.6) ^ 2 / 25
-
-        ' Position modifier
-        If isPitcher = 1 Then
-            posMod! = 0.0
-        Else
-            Select Case batterRatings(playerIdx, 22)
-                Case 1: posMod! = 2.0 ' Pitcher (batting)
-                Case 2: posMod! = 0.0 ' Catcher
-                Case 3: posMod! = -1.5 ' First Base
-                Case 4: posMod! = 1.0 ' Second Base
-                Case 5: posMod! = 0.0 ' Third Base
-                Case 6: posMod! = 1.0 ' Shortstop
-                Case 7: posMod! = 0.5 ' Left Field
-                Case 8: posMod! = 1.0 ' Center Field
-                Case 9: posMod! = -1.0 ' Right Field
-                Case Else: posMod! = 0.0
-            End Select
-        End If
-
-        ' Core BUNT! calculation
-        ' R1! weighted 2x - contact is most important factor
-        BUNT! = (R1! + R1! + R2! + R3!) / 4
-
-        ' Apply position modifier
-        BUNT! = BUNT! + posMod!
-
-        ' BR - upward only bonus when sac bunt data exists
-        If isPitcher = 1 Then
-            SacHits = pitcherRatings(playerIdx, 36)
-        Else
-            SacHits = batterRatings(playerIdx, 15)
-        End If
-
-        If SacHits > 0 Then
-
-            B1! = SacHits * 1000 / PA
-
-            Select Case B1!
-                Case 1: BR! = 0.25
-                Case 2 To 3: BR! = 0.5
-                Case 4 To 6: BR! = 0.75
-                Case 7 To 10: BR! = 1.0
-                Case 11 To 15: BR! = 1.25
-                Case Is >= 16: BR! = 1.5
-            End Select
-
-            BUNT! = BUNT! + BR!
-
-        End If
-
-    End If
-
-    ' Clamp to 1-9 scale
-    If BUNT! < 1 Then BUNT! = 1
-    If BUNT! > 9 Then BUNT! = 9
-
-    PlayerBuntRating% = BUNT!
-
-End Function
-
-
-'----------------------------------------
-'    PlayerBuntRating_Legacy% Functon
-'----------------------------------------
-'This function calculates the bunt rating
-'for the current player. Their index in
-'the array is required, as is whether
-'we are evaluating them from the batters
-'list or pitchers list.
-'This is Haffner's original calculation
-'methods and considerations
-Function PlayerBuntRating_Legacy% (playerIdx, isPitcher)
-
-    Dim B1!, BUNT!
-    Dim OB!
-    Dim R1!, R2!
-    Dim SLG!, SLG2!
-
-    Shared batterRatings(), pitcherRatings()
-
-    'PA = At-Bats + Walks
-    If isPitcher = 1 Then
-        PA = pitcherRatings(playerIdx, 20) + pitcherRatings(playerIdx, 27)
-    Else
-        PA = batterRatings(playerIdx, 11) + batterRatings(playerIdx, 4)
-    End If
-
-    If PA = 0 Then PA = 1
-
-    If isPitcher = 1 Then
-        OB! = (pitcherRatings(playerIdx, 22) * 100 + PA / 2) / PA
-        SLG! = (pitcherRatings(playerIdx, 22) + pitcherRatings(playerIdx, 23) + pitcherRatings(playerIdx, 24) * 2 + pitcherRatings(playerIdx, 25) * 3) * 100
-    Else
-        OB! = (batterRatings(playerIdx, 6) * 100 + PA / 2) / PA
-        SLG! = (batterRatings(playerIdx, 6) + batterRatings(playerIdx, 7) + batterRatings(playerIdx, 8) * 2 + batterRatings(playerIdx, 9) * 3) * 100
-    End If
-
-    'Adjusted SLG (per PA)
-    SLG2! = (SLG! + PA / 2) / PA
-
-    'Strikeout %
-    If isPitcher = 1 Then
-        R1! = (pitcherRatings(playerIdx, 28) * 100 + PA / 2) / PA
-    Else
-        R1! = (batterRatings(playerIdx, 12) * 100 + PA / 2) / PA
-    End If
-
-    'Adjust on a curve - exponential impact on strikeouts
-    R1! = 11 - R1! ^ 2 / 25
-
-    If isPitcher = 1 Then
-        If R1! < 1 Then
-            R1! = 1
-        End If
-        If R1! > 10 Then
-            R1! = 10
-        End If
-    End If
-
-    'Isolated Power (extra bases / PA)
-    'Higher power - less bunt chance
-    R2! = 11 - (SLG2! - OB!) / 25
-
-    If isPitcher = 1 Then
-        If R2! < 1 Then
-            R2! = 1
-        End If
-        If R2! > 10 Then
-            R2! = 10
-        End If
-    End If
-
-    'BUNT Rating = theoretical
-    'Average of power + strikeout
-    'Strikeout is rated 2x for weight
-    BUNT! = (R1! + R1! + R2!) / 3
-
-    'Sacrifice bunts / 1000 PA
-    If isPitcher = 1 Then
-        B1! = pitcherRatings(playerIdx, 36) * 1000 / PA
-    Else
-        B1! = (batterRatings(playerIdx, 15) / PA) * 1000
-    End If
-
-    Select Case B1!
-        Case Is <= 0: BR = 1
-        Case 1: BR = 2
-        Case 2 To 3: BR = 3
-        Case 4 To 6: BR = 4
-        Case 7 To 10: BR = 5
-        Case 11 To 15: BR = 6
-        Case 16 To 20: BR = 7
-        Case 21 To 25: BR = 8
-        Case 26 To 30: BR = 9
-        Case 31 To 35: BR = 10
-        Case Is >= 36: BR = 10
-    End Select
-
-    'Average theoretical and actual rating
-    BUNT! = (BUNT! + BR) / 2
-
-    If BUNT! < 1 Then
-        BUNT! = 1
-    End If
-    If BUNT! > 9 Then
-        BUNT! = 9
-    End If
-
-    PlayerBuntRating_Legacy% = BUNT!
-
-End Function
 
 
 '----------------------------------------
@@ -4059,3 +3704,359 @@ Sub ViewFieldingStats (teamName$)
     Next I
 
 End Sub
+
+
+'----------------------------------------
+'       PlayerBuntRating% Functon
+'----------------------------------------
+'This function calculates the bunt rating
+'for the current player. Their index in
+'the array is required, as is whether
+'we are evaluating them from the batters
+'list or pitchers list.
+'DISCLAIMER - this is all the work of
+'Claude AI after discussing the current
+'system with it and the known potential
+'deficiencies it had.
+Function PlayerBuntRating% (playerIdx, isPitcher)
+
+    Dim B1!, BUNT!
+    Dim OB!
+    Dim R1!, R2!
+    Dim SLG!, SLG2!
+
+    Shared batterRatings(), pitcherRatings()
+
+    ' Set PA based on player type
+    If isPitcher = 1 Then
+        PA = pitcherRatings(playerIdx, 20) + pitcherRatings(playerIdx, 27)
+    Else
+        PA = batterRatings(playerIdx, 4) + batterRatings(playerIdx, 11)
+    End If
+    If PA = 0 Then PA = 1
+
+    If isPitcher = 1 And PA < 10 Then
+        'Pitchers with few PA's - generic value
+        BUNT! = 2
+    Else
+
+        If isPitcher = 1 Then
+            ' On-Base (simplified - Hits based)
+            OB! = (pitcherRatings(playerIdx, 22) * 100 + PA / 2) / PA
+            ' Slugging (Total Bases * 100)
+            SLG! = (pitcherRatings(playerIdx, 22) + pitcherRatings(playerIdx, 23) + pitcherRatings(playerIdx, 24) * 2 + pitcherRatings(playerIdx, 25) * 3) * 100
+        Else
+            ' On-Base (simplified - Hits based)
+            OB! = (batterRatings(playerIdx, 6) * 100 + PA / 2) / PA
+            ' Slugging (Total Bases * 100)
+            SLG! = (batterRatings(playerIdx, 6) + batterRatings(playerIdx, 7) + batterRatings(playerIdx, 8) * 2 + batterRatings(playerIdx, 9) * 3) * 100
+        End If
+
+        ' Adjusted SLG per PA
+        SLG2! = (SLG! + PA / 2) / PA
+
+        ' R1! - Strikeout/Contact component (exponential curve)
+        If isPitcher = 1 Then
+            R1! = (pitcherRatings(playerIdx, 28) * 100 + PA / 2) / PA
+        Else
+            R1! = (batterRatings(playerIdx, 12) * 100 + PA / 2) / PA
+        End If
+
+        R1! = 11 - R1! ^ 1.5 / 15
+
+        ' Cap R1! for pitchers
+        If isPitcher = 1 Then
+            If R1! < 1 Then R1! = 1
+            If R1! > 10 Then R1! = 10
+        End If
+
+        ' R2! - Power/ISO component
+        R2! = 11 - (SLG2! - OB!) / 1.5
+
+        ' Cap R2! for pitchers
+        If isPitcher = 1 Then
+            If R2! < 1 Then R2! = 1
+            If R2! > 10 Then R2! = 10
+        End If
+
+        ' R3! - Speed component (Triples primary, SB secondary)
+        If isPitcher = 1 Then
+            T3! = (pitcherRatings(playerIdx, 24) * 100 + PA / 2) / PA
+            SB! = (pitcherRatings(playerIdx, 29) * 100 + PA / 2) / PA
+        Else
+            T3! = (batterRatings(playerIdx, 8) * 100 + PA / 2) / PA
+            SB! = (batterRatings(playerIdx, 13) * 100 + PA / 2) / PA
+        End If
+
+        R3! = 11 - (T3! * 0.4 + SB! * 0.6) ^ 2 / 25
+
+        ' Position modifier
+        If isPitcher = 1 Then
+            posMod! = 0.0
+        Else
+            Select Case batterRatings(playerIdx, 22)
+                Case 1: posMod! = 2.0 ' Pitcher (batting)
+                Case 2: posMod! = 0.0 ' Catcher
+                Case 3: posMod! = -1.5 ' First Base
+                Case 4: posMod! = 1.0 ' Second Base
+                Case 5: posMod! = 0.0 ' Third Base
+                Case 6: posMod! = 1.0 ' Shortstop
+                Case 7: posMod! = 0.5 ' Left Field
+                Case 8: posMod! = 1.0 ' Center Field
+                Case 9: posMod! = -1.0 ' Right Field
+                Case Else: posMod! = 0.0
+            End Select
+        End If
+
+        ' Core BUNT! calculation
+        ' R1! weighted 2x - contact is most important factor
+        BUNT! = (R1! + R1! + R2! + R3!) / 4
+
+        ' Apply position modifier
+        BUNT! = BUNT! + posMod!
+
+        ' BR - upward only bonus when sac bunt data exists
+        If isPitcher = 1 Then
+            SacHits = pitcherRatings(playerIdx, 36)
+        Else
+            SacHits = batterRatings(playerIdx, 15)
+        End If
+
+        If SacHits > 0 Then
+
+            B1! = SacHits * 1000 / PA
+
+            Select Case B1!
+                Case 1: BR! = 0.25
+                Case 2 To 3: BR! = 0.5
+                Case 4 To 6: BR! = 0.75
+                Case 7 To 10: BR! = 1.0
+                Case 11 To 15: BR! = 1.25
+                Case Is >= 16: BR! = 1.5
+            End Select
+
+            BUNT! = BUNT! + BR!
+
+        End If
+
+    End If
+
+    ' Clamp to 1-9 scale
+    If BUNT! < 1 Then BUNT! = 1
+    If BUNT! > 9 Then BUNT! = 9
+
+    PlayerBuntRating% = BUNT!
+
+End Function
+
+
+'----------------------------------------
+'    PlayerBuntRating_Legacy% Functon
+'----------------------------------------
+'This function calculates the bunt rating
+'for the current player. Their index in
+'the array is required, as is whether
+'we are evaluating them from the batters
+'list or pitchers list.
+'This is Haffner's original calculation
+'methods and considerations
+Function PlayerBuntRating_Legacy% (playerIdx, isPitcher)
+
+    Dim B1!, BUNT!
+    Dim OB!
+    Dim R1!, R2!
+    Dim SLG!, SLG2!
+
+    Shared batterRatings(), pitcherRatings()
+
+    'PA = At-Bats + Walks
+    If isPitcher = 1 Then
+        PA = pitcherRatings(playerIdx, 20) + pitcherRatings(playerIdx, 27)
+    Else
+        PA = batterRatings(playerIdx, 11) + batterRatings(playerIdx, 4)
+    End If
+
+    If PA = 0 Then PA = 1
+
+    If isPitcher = 1 Then
+        OB! = (pitcherRatings(playerIdx, 22) * 100 + PA / 2) / PA
+        SLG! = (pitcherRatings(playerIdx, 22) + pitcherRatings(playerIdx, 23) + pitcherRatings(playerIdx, 24) * 2 + pitcherRatings(playerIdx, 25) * 3) * 100
+    Else
+        OB! = (batterRatings(playerIdx, 6) * 100 + PA / 2) / PA
+        SLG! = (batterRatings(playerIdx, 6) + batterRatings(playerIdx, 7) + batterRatings(playerIdx, 8) * 2 + batterRatings(playerIdx, 9) * 3) * 100
+    End If
+
+    'Adjusted SLG (per PA)
+    SLG2! = (SLG! + PA / 2) / PA
+
+    'Strikeout %
+    If isPitcher = 1 Then
+        R1! = (pitcherRatings(playerIdx, 28) * 100 + PA / 2) / PA
+    Else
+        R1! = (batterRatings(playerIdx, 12) * 100 + PA / 2) / PA
+    End If
+
+    'Adjust on a curve - exponential impact on strikeouts
+    R1! = 11 - R1! ^ 2 / 25
+
+    If isPitcher = 1 Then
+        If R1! < 1 Then
+            R1! = 1
+        End If
+        If R1! > 10 Then
+            R1! = 10
+        End If
+    End If
+
+    'Isolated Power (extra bases / PA)
+    'Higher power - less bunt chance
+    R2! = 11 - (SLG2! - OB!) / 25
+
+    If isPitcher = 1 Then
+        If R2! < 1 Then
+            R2! = 1
+        End If
+        If R2! > 10 Then
+            R2! = 10
+        End If
+    End If
+
+    'BUNT Rating = theoretical
+    'Average of power + strikeout
+    'Strikeout is rated 2x for weight
+    BUNT! = (R1! + R1! + R2!) / 3
+
+    'Sacrifice bunts / 1000 PA
+    If isPitcher = 1 Then
+        B1! = pitcherRatings(playerIdx, 36) * 1000 / PA
+    Else
+        B1! = (batterRatings(playerIdx, 15) / PA) * 1000
+    End If
+
+    Select Case B1!
+        Case Is <= 0: BR = 1
+        Case 1: BR = 2
+        Case 2 To 3: BR = 3
+        Case 4 To 6: BR = 4
+        Case 7 To 10: BR = 5
+        Case 11 To 15: BR = 6
+        Case 16 To 20: BR = 7
+        Case 21 To 25: BR = 8
+        Case 26 To 30: BR = 9
+        Case 31 To 35: BR = 10
+        Case Is >= 36: BR = 10
+    End Select
+
+    'Average theoretical and actual rating
+    BUNT! = (BUNT! + BR) / 2
+
+    If BUNT! < 1 Then
+        BUNT! = 1
+    End If
+    If BUNT! > 9 Then
+        BUNT! = 9
+    End If
+
+    PlayerBuntRating_Legacy% = BUNT!
+
+End Function
+
+
+'----------------------------------------
+'       PlayerRunRating% Functon
+'----------------------------------------
+'This function calculates the run rating
+'for the current player. Their index in
+'the array is required, as is whether
+'we are evaluating them from the batters
+'list or pitchers list.
+Function PlayerRunRating% (playerIdx, isPitcher)
+
+    Shared batterNames$()
+    Shared batterRatings(), pitcherRatings()
+
+    If isPitcher = 1 Then
+        ' 3B and SB
+        test1 = pitcherRatings(playerIdx, 24)
+        test2 = pitcherRatings(playerIdx, 29)
+        SPD = 200 * pitcherRatings(playerIdx, 24) + pitcherRatings(playerIdx, 29) * 100
+        ' H - 2B - 3B - HR
+        Singles = pitcherRatings(playerIdx, 22) - pitcherRatings(playerIdx, 23) - pitcherRatings(playerIdx, 24) - pitcherRatings(playerIdx, 25)
+        firstBaseRuns = Singles + pitcherRatings(playerIdx, 27)
+    Else
+        ' 3B and SB
+        SPD = 200 * batterRatings(playerIdx, 8) + batterRatings(playerIdx, 13) * 100
+        ' H - 2B - 3B - HR
+        Singles = batterRatings(playerIdx, 6) - batterRatings(playerIdx, 7) - batterRatings(playerIdx, 8) - batterRatings(playerIdx, 9)
+        firstBaseRuns = Singles + batterRatings(playerIdx, 11)
+    End If
+
+    If firstBaseRuns = 0 Then
+        'Assign value for where there is no data
+        'RR = Int(Rnd(1) * 15) + 1
+        newRR = 2
+    Else
+        RR = CInt(SPD / firstBaseRuns)
+        RR = RR * 1.4
+
+        If isPitcher = 1 Then
+
+            Select Case RR
+
+                Case Is <= 3:
+                    newRR = 1
+
+                Case 4, 5:
+                    newRR = 2
+
+                Case 6 To 10:
+                    newRR = 3
+
+                Case 11 To 20:
+                    newRR = 4
+
+                Case Else:
+                    newRR = 5
+
+            End Select
+
+        Else
+
+            Select Case RR
+
+                Case Is <= 3
+                    newRR = 1
+
+                Case 4, 5
+                    newRR = 2
+
+                Case 6 To 10
+                    newRR = 3
+
+                Case 11 To 15
+                    newRR = 4
+
+                Case 16 To 20
+                    newRR = 5
+
+                Case 21 To 25
+                    newRR = 6
+
+                Case 26 To 30
+                    newRR = 7
+
+                Case 31 To 40
+                    newRR = 8
+
+                Case Else
+                    newRR = 9
+
+            End Select
+
+        End If
+
+    End If
+
+    PlayerRunRating% = newRR
+
+End Function
