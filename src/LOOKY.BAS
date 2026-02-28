@@ -1187,7 +1187,7 @@ Sub ReportsAllTeams ()
 
     Shared memberIdx()
     Shared memberName$(), memberYear$()
-    Dim memberTeam$(TEAMS_PER_LEAGUE)
+    Shared memberTeam$()
 
     Shared teamLosses, teamWins
 

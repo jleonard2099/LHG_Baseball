@@ -54,6 +54,7 @@ Dim oneRunWins, oneRunLosses
 ' Conferences / Orgs
 Dim memberIdx(TEAMS_PER_LEAGUE)
 Dim memberName$(TEAMS_PER_LEAGUE)
+Dim memberTeam$(TEAMS_PER_LEAGUE)
 Dim memberYear$(TEAMS_PER_LEAGUE)
 
 '-- For Road Data
@@ -403,7 +404,7 @@ Dim Shared gameAtBats(1, 22), gameInnPit(1, 21), gameSA(1, 24)
 
 Dim Shared parkHRVals!(1)
 
-Dim Shared alpha$(12), baseName$(0 To 4), batters$(0 To 1, 0 To 22), handed$(4)
+Dim Shared baseName$(0 To 4), batters$(0 To 1, 0 To 22), handed$(4)
 Dim Shared diskIDs$(1), doublesPlayer$(0 To 22), ejections$(20), errorsPlayer$(0 To 22)
 Dim Shared fieldPos$(0 To 11)
 Dim Shared gameManagers$(1), gameStadiums$(1), gameTeams$(1), gameUmpire$(1 To 4)

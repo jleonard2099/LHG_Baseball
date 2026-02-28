@@ -151,11 +151,6 @@ For I = 0 To 26:
     Read pitCategoryAbbr$(I)
 Next
 
-Data A,B,C,D,E,F,G,H,I,J,K,L,M
-For I = 0 To 12:
-    Read alpha$(I)
-Next
-
 'this is used for both batter and pitcher
 'designation of handedness / position
 'in game play, this is always manipulated
@@ -3910,16 +3905,21 @@ Sub PrintPitcherInfo (idx%)
         If pitchers$(idx%, I) = "XXX" Or Left$(pitchers$(idx%, I), 1) = " " Or pitchers$(idx%, I) = "" Then pitchRating(idx%, I, SS_P_Avail) = 98
 
         If pitchRating(idx%, I, SS_P_Avail) <> 1 And pitchers$(idx%, I) <> "XXX" Then
+
             Color 2, 0
 
+            'Print alphanum char corresponding to index
             If I <= 9 Then
-                Print Using "#"; I;: Color 15, 0
+                Print Chr$(48 + I);
             Else
-                'I > 9
-                Print alpha$(I - 10);: Color 15, 0
+                Print Chr$(55 + I);
             End If
 
-            If pitchRating(idx%, I, SS_P_Avail) >= 98 Then Color 0, 7
+            If pitchRating(idx%, I, SS_P_Avail) >= 98 Then 
+                Color 0, 7
+            Else
+                Color 15, 0
+            End If
 
             Locate , 3: Print pitchers$(idx%, I);
             Color 15, 0
@@ -4233,7 +4233,9 @@ Sub SOURCE ()
 
     scoreDiff = gameScore(D, 0) - gameScore(P, 0)
 
-    If Not (teamMgrProfileVal(D, 560) <> 999 Or INNING% < 8 Or playerMode = 0 Or playerMode = 1 And P = compTeam) Then
+    'Human player pitching 
+    If teamMgrProfileVal(D, 560) = 999 And INNING% >= 8 And Not (playerMode = 1 And P = compTeam Or playerMode = 2) Then
+
         'Team is using a DEFENSIVE strategy
 
         For IJ0% = 1 To 4
@@ -8413,7 +8415,7 @@ Sub SOURCE ()
 
                 End If
 
-                If Not (I1 = 3 Or D2 = DEF_PERSONNEL) Then
+                If (I1 <> 3 And D2 <> DEF_PERSONNEL) Then
                     I2 = currLineupSlot(P)
                     GoTo 15555
                 End If
@@ -9381,7 +9383,6 @@ Sub SOURCE ()
         End If
 
         LNoSteal:
-        'If Not (baseRunners = 0 Or nbrOuts(0) > 0 Or baseRunners = 7 Or baseRunners = 6 Or baseRunners = 3 Or baseRunners = 5 Or nbrStrikes = 2 Or P = 0 And INNING% > 7) Then
         If (baseRunners = 1 Or baseRunners = 2 Or baseRunners = 4) And nbrOuts(0) = 0 And nbrStrikes <> 2 And (P <> 0 Or INNING% <= 7) Then
 
             If fldPos(P, currLineupSlot(P)) = 1 And baseRunners = 1 And nbrOuts(0) < 2 Or fldPos(P, currLineupSlot(P)) = 1 And baseRunners = 2 And nbrOuts(0) = 0 Or fldPos(P, currLineupSlot(P)) = 1 And baseRunners = 4 And nbrOuts(0) = 0 Then
@@ -10690,8 +10691,12 @@ Sub DisplayBatter_Lineup (page)
 
             Color 2, 0
 
-            If idx < 10 Then Print Using "#"; idx;
-            If idx > 9 Then Print alpha$(idx - 10);
+            'Print alphanum char corresponding to index
+            If idx <= 9 Then
+                Print Chr$(48 + idx);
+            Else
+                Print Chr$(55 + idx);
+            End If
 
             Color 15, 0
 
@@ -11110,8 +11115,12 @@ Sub DisplayFielding_Lineup (page, TG)
 
             Color 2
 
-            If luIdx < 10 Then Print Using "#"; luIdx;
-            If luIdx > 9 Then Print alpha$(luIdx - 10);
+            'Print alphanum char corresponding to index
+            If luIdx <= 9 Then
+                Print Chr$(48 + luIdx);
+            Else
+                Print Chr$(55 + luIdx);
+            End If
 
             Color 15, 0
             Print Tab(3); batters$(P9, luIdx);
@@ -13380,12 +13389,14 @@ Sub PITDISP ()
     For pIdx = 0 To 21:
 
         If pitchRating(P9, pIdx, SS_P_Avail) <= 0 Then
+
             Color 2, 0
 
+            'Print alphanum char corresponding to index
             If pIdx <= 9 Then
-                Print Using "#"; pIdx;
+                Print Chr$(48 + pIdx);
             Else
-                Print alpha$(pIdx - 10);
+                Print Chr$(55 + pIdx);
             End If
 
             Color 15, 0
@@ -19298,12 +19309,19 @@ Sub SHOWBATTERS (teamIdx)
         Locate , 1
 
         If batters$(teamIdx, I) = "XXX" Or Left$(batters$(teamIdx, I), 1) = " " Or batters$(teamIdx, I) = "" Then
+
             batRating(teamIdx, I, SS_B_Avail) = 98
+
         Else
+
             Color 2, 0
 
-            If I < 10 Then Print Using "#"; I;
-            If I > 9 Then Print alpha$(I - 10);
+            'Print alphanum char corresponding to index
+            If I <= 9 Then
+                Print Chr$(48 + I);
+            Else
+                Print Chr$(55 + I);
+            End If
 
             Color 15, 0
             Call ColorCheck(teamIdx, I)

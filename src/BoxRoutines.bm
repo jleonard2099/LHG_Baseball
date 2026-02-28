@@ -60,7 +60,7 @@ Sub ShadowBox (StartRow%, StartCol%, boxWidth%, boxHeight%, FGColor%, BGColor%)
     Color 7, FGColor%
     Print String$(2, 177)
     Locate , StartCol% + 2
-    Print String$(boxWidth% + 4, 177)
+    Print String$(boxWidth% + 4, 177);
 
     Color FGColor%, BGColor%
 
@@ -114,17 +114,16 @@ Sub FRAMESTATS (J)
     Locate 1, 1
     Color 0, 7
 
-    Print Chr$(214); String$(77, 196); Chr$(183);
+    Print Chr$(214); String$(78, 196); Chr$(183);
 
     For II = 1 To J
         Locate 1 + II, 1
-        Print Chr$(186); String$(77, 32); Chr$(186);
+        Print Chr$(186); String$(78, 32); Chr$(186);
     Next
 
     Locate 2 + J, 1
-    Print Chr$(211); String$(77, 196); Chr$(189);
+    Print Chr$(211); String$(78, 196); Chr$(189);
 
     Locate 2, 32
 
 End Sub
-

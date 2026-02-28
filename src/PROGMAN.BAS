@@ -374,22 +374,23 @@ Sub AnalyzePlayerUsage (targetTeam$)
         Locate , 1
 
         If batterNames$(I) = "XXX" Or Left$(batterNames$(I), 1) = " " Or batterNames$(I) = "" Then
+
             I1 = I1 + 1
+
         Else
+
             Color 2, 0
             Locate I + 2 - I1, 1
 
-            If I < 10 Then
-                Print Using "#"; I;
-                Color 15, 0
-                If batterRatings(I, 21) >= 98 Then Color 0, 7
+            'Print alphanum char corresponding to index
+            If I <= 9 Then
+                Print Chr$(48 + I);
+            Else
+                Print Chr$(55 + I);
             End If
 
-            If I > 9 Then
-                Print alpha$(I - 10);
-                Color 15, 0
-                If batterRatings(I, 21) >= 98 Then Color 0, 7
-            End If
+            Color 15, 0
+            If batterRatings(I, 21) >= 98 Then Color 0, 7
 
             Locate , 3: Print batterNames$(I);
             Color 15, 0: Locate , 18: Print handed$(batterRatings(I, 0) + 2);
@@ -451,10 +452,11 @@ Sub SelectPinchHitters (yearNumber$, targetTeam$, mgrNbr)
                 Locate I + 2 - I2, 1
                 Color 2, 0
 
+                'Print alphanum char corresponding to index
                 If I <= 9 Then
-                    Print Using "#"; I;
+                    Print Chr$(48 + I);
                 Else
-                    Print alpha$(I - 10);
+                    Print Chr$(55 + I);
                 End If
 
                 Color 15, 0
@@ -604,15 +606,14 @@ Sub DefenseLateInning (yearNumber$, T$, mgrNbr)
                 Locate I + 2 - I1, 1
                 Color 2, 0
 
-                If I < 10 Then
-                    Print Using "#"; I;
-                    Color 15, 0: If batterRatings(I, 21) >= 98 Then Color 0, 7
+                'Print alphanum char corresponding to index
+                If I <= 9 Then
+                    Print Chr$(48 + I);
+                Else
+                    Print Chr$(55 + I);
                 End If
 
-                If I > 9 Then
-                    Print alpha$(I - 10);
-                    Color 15, 0: If batterRatings(I, 21) >= 98 Then Color 0, 7
-                End If
+                Color 15, 0: If batterRatings(I, 21) >= 98 Then Color 0, 7
 
                 Locate , 3: Print batterNames$(I);: Color 15, 0
                 Locate , 17
@@ -898,14 +899,14 @@ Sub ViewLineup (targetTeam$)
 
             Color 2, 0
 
-            If I < 10 Then
-                Print Using "#"; I;
-                Color 15, 0: If batterRatings(I, 21) >= 98 Then Color 0, 7
+            'Print alphanum char corresponding to index
+            If I <= 9 Then
+                Print Chr$(48 + I);
+            Else
+                Print Chr$(55 + I);
             End If
-            If I > 9 Then
-                Print alpha$(I - 10);
-                Color 15, 0: If batterRatings(I, 21) >= 98 Then Color 0, 7
-            End If
+
+            Color 15, 0: If batterRatings(I, 21) >= 98 Then Color 0, 7
 
             Locate , 3: Print batterNames$(I);
             Color 15, 0
@@ -2146,10 +2147,11 @@ Sub ShowPitcherInfo (targetTeam$)
 
             Color 2, 0
 
+            'Print alphanum char corresponding to index
             If I <= 9 Then
-                Print Using "#"; I;
+                Print Chr$(48 + I);
             Else
-                Print alpha$(I - 10);
+                Print Chr$(55 + I);
             End If
 
             Color 15, 0
@@ -2662,11 +2664,14 @@ Sub SetupMiddleRelievers (targetTeam$, yearNumber$, mgrNbr)
             If pitcherNames$(I) <> "XXX" And Left$(pitcherNames$(I), 1) <> " " And pitcherNames$(I) <> "" Then
 
                 Color 2, 0
+
+                'Print alphanum char corresponding to index
                 If I <= 9 Then
-                    Print Using "#"; I;
+                    Print Chr$(48 + I);
                 Else
-                    Print alpha$(I - 10);
+                    Print Chr$(55 + I);
                 End If
+
                 Color 15, 0
 
                 For I1 = 1 To 10
@@ -2781,10 +2786,11 @@ Sub SetupRelievers (targetTeam$, yearNumber$, mgrNbr)
 
                 Color 2, 0
 
+                'Print alphanum char corresponding to index
                 If I <= 9 Then
-                    Print Using "#"; I;
+                    Print Chr$(48 + I);
                 Else
-                    Print alpha$(I - 10);
+                    Print Chr$(55 + I);
                 End If
 
                 Color 15, 0
@@ -2914,10 +2920,11 @@ Sub SetupClosers (targetTeam$, yearNumber$, mgrNbr)
 
                 Color 2, 0
 
+                'Print alphanum char corresponding to index
                 If I <= 9 Then
-                    Print Using "#"; I;
+                    Print Chr$(48 + I);
                 Else
-                    Print alpha$(I - 10);
+                    Print Chr$(55 + I);
                 End If
 
                 Color 15, 0
@@ -3786,17 +3793,14 @@ Sub PinchRunnerOptions (yearNumber$, targetTeam$, mgrNbr)
                 Locate I + 2 - I1, 1
                 Color 2, 0
 
-                If I < 10 Then
-                    Print Using "#"; I;
-                    Color 15, 0
-                    If batterRatings(I, 21) >= 98 Then Color 0, 7
+                'Print alphanum char corresponding to index
+                If I <= 9 Then
+                    Print Chr$(48 + I);
+                Else
+                    Print Chr$(55 + I);
                 End If
 
-                If I > 9 Then
-                    Print alpha$(I - 10);
-                    Color 15, 0
-                    If batterRatings(I, 21) >= 98 Then Color 0, 7
-                End If
+                If batterRatings(I, 21) >= 98 Then Color 0, 7
 
                 Locate , 3: Print batterNames$(I);: Color 15, 0
                 Locate , 17: Print Using "   #     ###  ###"; batterRatings(I, 16); batterRatings(I, 13); batterRatings(I, 14);
@@ -3888,16 +3892,15 @@ Sub DefenseSubPinchRun (yearNumber$, targetTeam$, mgrNbr)
                 Locate I + 2 - I1, 1
                 Color 2, 0
 
-                If I < 10 Then
-                    Print Using "#"; I;
-                    Color 15, 0
-                    If batterRatings(I, 21) >= 98 Then Color 0, 7
+                'Print alphanum char corresponding to index
+                If I <= 9 Then
+                    Print Chr$(48 + I);
+                Else
+                    Print Chr$(55 + I);
                 End If
-                If I > 9 Then
-                    Print alpha$(I - 10);
-                    Color 15, 0
-                    If batterRatings(I, 21) >= 98 Then Color 0, 7
-                End If
+
+                Color 15, 0
+                If batterRatings(I, 21) >= 98 Then Color 0, 7
 
                 Locate , 3
                 Print batterNames$(I);: Color 15, 0
