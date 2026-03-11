@@ -1302,7 +1302,7 @@ Sub LOADER
                 Select Case setting
 
                     Case 0:
-                        Open cfgPath$ + "DEFERA" For Output As #7
+                        Open cfgPath$ + "DEFAULT" For Output As #7
                         Print #7, playerOpt
                         Print #7, leagueOpt
                         Print #7, desigHit
@@ -3915,7 +3915,7 @@ Sub PrintPitcherInfo (idx%)
                 Print Chr$(55 + I);
             End If
 
-            If pitchRating(idx%, I, SS_P_Avail) >= 98 Then 
+            If pitchRating(idx%, I, SS_P_Avail) >= 98 Then
                 Color 0, 7
             Else
                 Color 15, 0
@@ -4233,7 +4233,7 @@ Sub SOURCE ()
 
     scoreDiff = gameScore(D, 0) - gameScore(P, 0)
 
-    'Human player pitching 
+    'Human player pitching
     If teamMgrProfileVal(D, 560) = 999 And INNING% >= 8 And Not (playerMode = 1 And P = compTeam Or playerMode = 2) Then
 
         'Team is using a DEFENSIVE strategy
@@ -4400,7 +4400,7 @@ Sub SOURCE ()
 
     '--- Start of a new sub
     LNextBatter1:
-    Print #11, "DEBUG: Processing LNextBatter1"
+    'Print #11, "DEBUG: Processing LNextBatter1"
     Call WHOSON1ST(baseRunners)
     Call PLAYERNAME
 
@@ -4419,7 +4419,7 @@ Sub SOURCE ()
     End If
 
     LContinueBatter:
-    Print #11, "DEBUG: Processing LContinueBatter"
+    'Print #11, "DEBUG: Processing LContinueBatter"
 
     Do
 
@@ -4465,7 +4465,7 @@ Sub SOURCE ()
         errorOnPlay% = 0
 
         LContinueBatter2:
-        Print #11, "DEBUG: Processing LContinueBatter2"
+        'Print #11, "DEBUG: Processing LContinueBatter2"
         If (playerMode = 1 And D = compTeam) Or playerMode = 2 Then
             GoTo LEndOfGame
         End If
@@ -4483,16 +4483,19 @@ Sub SOURCE ()
         ' DEFENSE OPTIONS MENU
         '----------------------------------------
         LDefenseOptions:
-        Print #11, "DEBUG: Processing LDefenseOptions"
+        'Print #11, "DEBUG: Processing LDefenseOptions"
         pbpString$ = PadRight$(Left$(gameTeams$(D), 3) + teamAbbreviatons$(D), 8)
 
         'Call WINDEX
 
         If useVGA = 1 Then
 
-            'Printing black on background
+            'Black shadow on Background
+            ShadowTextOnGfx 1, 19, pbpString$, &HF0000000, imageScreen&
+
+            'White on Background
+            Color &HFFFFFFFF
             _PrintMode _KeepBackground , imageScreen&
-            Color &HF0000000
 
             PrintOnGfx 1, 19, pbpString$, imageScreen&
 
@@ -4512,8 +4515,17 @@ Sub SOURCE ()
             '-- Batter / Pitcher stats
             F1$(10) = "S/D/B/P STATS "
 
-            For I = 21 To 30
-                PrintOnGfx 1, I - 1, F1$(I - 20), imageScreen&
+            For prntRow = 21 To 30
+
+                'Black shadow on Background
+                ShadowTextOnGfx 1, prntRow - 1, F1$(prntRow - 20), &HF0000000, imageScreen&
+
+                'White on Background
+                Color &HFFFFFFFF
+                _PrintMode _KeepBackground , imageScreen&
+
+                PrintOnGfx 1, prntRow - 1, F1$(prntRow - 20), imageScreen&
+
             Next
 
         Else
@@ -4552,7 +4564,10 @@ Sub SOURCE ()
                 pbpString$ = "INF:GUARD LINE"
                 _PutImage (52 * FontColAdj, 416)-Step(14 * FontColAdj, 16), backupScreen&, imageScreen&, (52 * FontColAdj, 416)-Step(14 * FontColAdj, 16)
 
-                'Printing black on background
+                'Light grey shadow on background
+                ShadowTextOnGfx 52, 26, pbpString$, _RGB32(224, 224, 224), imageScreen&
+
+                'Black on background
                 _PrintMode _KeepBackground , imageScreen&
                 Color &HF0000000
 
@@ -4561,9 +4576,12 @@ Sub SOURCE ()
                 'Printing white on black
                 Color &HFFFFFFFF
                 _PrintMode _FillBackground , imageScreen&
+
             Else
+
                 Color 15, 2
                 Locate 23, 46: Print "GUARD LINE"
+
             End If
 
             GoTo LContinueBatter
@@ -4634,8 +4652,9 @@ Sub SOURCE ()
 
 
     LManageDefense:
-    Print #11, "DEBUG: Processing LManageDefense"
+    'Print #11, "DEBUG: Processing LManageDefense"
     Select Case D2
+
         Case 1
             '
 
@@ -4672,7 +4691,10 @@ Sub SOURCE ()
             'Restore image where options go
             _PutImage (51 * FontColAdj, 416)-Step(14 * FontColAdj, 16), backupScreen&, imageScreen&, (51 * FontColAdj, 416)-Step(14 * FontColAdj, 16)
 
-            'Printing black on background
+            'Light grey shadow on background
+            ShadowTextOnGfx 51, 26, infStatus$, _RGB32(224, 224, 224), imageScreen&
+
+            'Black on background
             _PrintMode _KeepBackground , imageScreen&
             Color &HF0000000
 
@@ -4683,8 +4705,8 @@ Sub SOURCE ()
             Color &HFFFFFFFF
             _PrintMode _FillBackground , imageScreen&
         Else
-            'Color 15, 2
-            'Locate 29, 46: Print infStatus$
+            Color 15, 2
+            Locate 29, 46: Print infStatus$
         End If
 
         '-- REMOVE ME?
@@ -4696,7 +4718,7 @@ Sub SOURCE ()
     ' OFFENSE OPTIONS MENU
     '----------------------------------------
     LOffenseOptions:
-    Print #11, "DEBUG: Processing LOffenseOptions"
+    'Print #11, "DEBUG: Processing LOffenseOptions"
 
     Do
 
@@ -4827,7 +4849,11 @@ Sub SOURCE ()
             pbpString$ = PadRight$(Left$(gameTeams$(P), 3) + teamAbbreviatons$(P), 8)
 
             If useVGA = 1 Then
-                'Printing black on background
+
+                'Light grey shadow on background
+                ShadowTextOnGfx 1, 19, pbpString$, _RGB32(224, 224, 224), imageScreen&
+
+                'Black on background
                 _PrintMode _KeepBackground , imageScreen&
                 Color &HF0000000
 
@@ -4844,8 +4870,17 @@ Sub SOURCE ()
                 F1$(9) = "L-SHOW LINEUPS"
                 F1$(10) = "Q-QUIT GAME   "
 
-                For I = 21 To 30
-                    PrintOnGfx 1, I - 1, F1$(I - 20), imageScreen&
+                For prntRow = 21 To 30
+
+                    'Light grey shadow on background
+                    ShadowTextOnGfx 1, prntRow - 1, F1$(prntRow - 20), _RGB32(224, 224, 224), imageScreen&
+
+                    'Black on background
+                    _PrintMode _KeepBackground , imageScreen&
+                    Color &HF0000000
+
+                    PrintOnGfx 1, prntRow - 1, F1$(prntRow - 20), imageScreen&
+
                 Next
 
                 'Printing white on black
@@ -4908,7 +4943,7 @@ Sub SOURCE ()
     Loop Until offChoice >= OFF_HIT_AWAY And offChoice <= OFF_PERSONNEL
 
     LExecuteOffense:
-    Print #11, "DEBUG: Processing LExecuteOffense"
+    'Print #11, "DEBUG: Processing LExecuteOffense"
     Select Case offChoice
 
         Case 1, 4 'Hit away, Bunt
@@ -4952,7 +4987,7 @@ Sub SOURCE ()
 
 
     LHitAndRun:
-    Print #11, "DEBUG: Processing LHitAndRun"
+    'Print #11, "DEBUG: Processing LHitAndRun"
     If baseRunners = 4 Then
         pickedOffBase = 3
     Else
@@ -5052,7 +5087,7 @@ Sub SOURCE ()
     '----- NOODLE -----
 
     LRarePlays: ' BRANCH FOR RARE PLAYS
-    Print #11, "DEBUG: Processing LRarePlays"
+    'Print #11, "DEBUG: Processing LRarePlays"
     If delayGame = 1 Then
 
         'Default value for RAREPLAYS
@@ -5159,7 +5194,7 @@ Sub SOURCE ()
     '----- NOODLE -----
 
     LWeirdPlay:
-    Print #11, "DEBUG: Processing LWeirdPlay"
+    'Print #11, "DEBUG: Processing LWeirdPlay"
     'Rare plays, wild pitches, interference, etc.
     Call Rolld100(weatherRoll)
 
@@ -5197,7 +5232,7 @@ Sub SOURCE ()
         Call HITBYPITCH(S2%, baseRunners)
 
         LFreeBase:
-        Print #11, "DEBUG: Processing LFreeBase"
+        'Print #11, "DEBUG: Processing LFreeBase"
         'Batter advances to 1st base
         baseMove(0) = 1
         baseMove(1) = 0
@@ -5495,7 +5530,7 @@ Sub SOURCE ()
     'Track # of batters this team has faced
     '(this gets reset when a new reliever comes in)
     'This is used to help enforce the 3-batter rule in 2020+
-    Print #11, "DEBUG: Processing At-Bat Result"
+    'Print #11, "DEBUG: Processing At-Bat Result"
     battersFaced(D, currPitcher(D)) = battersFaced(D, currPitcher(D)) + 1
 
     batterAvg = game_batRating(P, GM_BAvg, currLineupSlot(P))
@@ -5510,7 +5545,7 @@ Sub SOURCE ()
         If chanceRoll <= strikeoutRating + umpSZadj(4) + soEraAdj Then
 
             LStrikeout:
-            Print #11, "DEBUG: Processing LStrikeout"
+            'Print #11, "DEBUG: Processing LStrikeout"
             Call WINDEX
             Call STRIKEOUT(nbrStrikes)
 
@@ -6303,7 +6338,7 @@ Sub SOURCE ()
     '----- NOODLE -----
 
     LProcessOutAndDP:
-    Print #11, "DEBUG: Processing LProcessOutAndDP"
+    'Print #11, "DEBUG: Processing LProcessOutAndDP"
     Call INCPITDEF(D, currPitcher(D), LG_P_OUT)
 
     Call TrackOuts(1)
@@ -6369,7 +6404,7 @@ Sub SOURCE ()
     '----- NOODLE -----
 
     LGrounderToPitcher:
-    Print #11, "DEBUG: Processing LGrounderToPitcher"
+    'Print #11, "DEBUG: Processing LGrounderToPitcher"
     If nbrOuts(0) >= 2 Then
 
         RN0 = Int(Rnd(1) * 10) + 1
@@ -6778,7 +6813,7 @@ Sub SOURCE ()
     '-----------------------------------------------------
     ' Play-by-Play box
     LCheckForOptionsOrQuit:
-    Print #11, "DEBUG: Processing LCheckForOptionsOrQuit"
+    'Print #11, "DEBUG: Processing LCheckForOptionsOrQuit"
     If useVGA = 1 Then
         _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 144), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 144)
     End If
@@ -6821,7 +6856,7 @@ Sub SOURCE ()
 
     ' *** BUNT ROUTINE ***
     LBunt:
-    Print #11, "DEBUG: Processing LBunt"
+    'Print #11, "DEBUG: Processing LBunt"
     Call WINDEX
 
     Erase baseMove
@@ -7520,7 +7555,7 @@ Sub SOURCE ()
     ' *** STEALING BASES ***
 
     LSteal:
-    Print #11, "DEBUG: Processing LSteal"
+    'Print #11, "DEBUG: Processing LSteal"
     stealHome% = 0
     S2% = EVENT_STEAL
     currFielder = 1
@@ -7706,7 +7741,7 @@ Sub SOURCE ()
     End If
 
     LStealHome:
-    Print #11, "DEBUG: Processing LStealHome"
+    'Print #11, "DEBUG: Processing LStealHome"
     Call WINDEX
     'Presumably here TGTBASE% = 4
     stealRunIdx = lineupPlayer(P, runnerOnBase(TGTBASE% - 1))
@@ -7926,7 +7961,7 @@ Sub SOURCE ()
     End If
 
     LStealContinue:
-    Print #11, "DEBUG: Processing LStealContinue"
+    'Print #11, "DEBUG: Processing LStealContinue"
     If nbrOuts(0) >= 3 Or offChoice = OFF_HIT_N_RUN And nbrStrikes = 3 Then
         GoTo LCheckForOptionsOrQuit
     End If
@@ -7977,13 +8012,13 @@ Sub SOURCE ()
     '-- make this into a subroutine?!?!
 
     LPersonnelMenu:
-    Print #11, "DEBUG: Processing LPersonnelMenu"
+    'Print #11, "DEBUG: Processing LPersonnelMenu"
 
     Cls
 
     If useVGA = 1 Then
         Screen menu&
-        'Cls
+        Cls
     End If
 
     TG = 0
@@ -7992,13 +8027,13 @@ Sub SOURCE ()
 
     Locate 2, 33
     Color 12: Print "PERSONNEL MENU"
-    Locate 16
+    Locate 4, 25
     Color 14: Print "(0) ";
     Color 15: Print "RESUME PLAY"
-    Locate 18
+    Locate 5, 25
     Color 14: Print "(1) ";
     Color 15: Print "RELIEF PITCHER"
-    Locate 20
+    Locate 6, 25
     Color 14: Print "(2) ";
     Color 15: Print "CHANGE BATTER/FIELDER"
 
@@ -8343,10 +8378,11 @@ Sub SOURCE ()
                 Color 15: Print "SUBSTITUTE PLAYER IN LINEUP"
                 Locate , 30
                 Color 14: Print " (Z) ";
-                Color 15: Print "RESUME PLAY"
+                Color 15: Print "RETURN TO PERSONNEL MENU"
                 Locate , 30
-                Color 14: Print "<SPACE> ";
-                Color 15: Print "TOGGLE ROSTER";
+                Color 14: Print " <SPACE> ";
+                Color 15: Print "TOGGLE ROSTER"
+                Locate , 30
                 Color 14: Print " <TAB> ";
                 Color 15: Print "TOGGLE FIELDING/BATTING"
 
@@ -8373,7 +8409,10 @@ Sub SOURCE ()
                         End If
                     End If
 
-                Loop Until (Asc(I$) <> 32 And PG = 1) And Asc(I$) <> 9
+                    choice = Val(I$)
+
+                Loop Until (choice >= 1 And choice <= 3) Or UCase$(I$) = "Z"
+                'Loop Until (Asc(I$) <> 32 And PG = 1) And Asc(I$) <> 9
 
                 If UCase$(I$) <> "Z" Then
                     I1 = Val(I$)
@@ -8384,16 +8423,26 @@ Sub SOURCE ()
                 If I1 = 2 Then
 
                     Do
-                        Locate 20, 29: Print "B.O. #1 (1-9)"
+                        Color 11
+                        Locate 26, 28
+                        Print "Swap Position # (1-9)";
                         I$ = GetKeyPress$
                         bo1Nbr = Val(I$)
                     Loop Until bo1Nbr >= 1 And bo1Nbr <= 9 Or fldPos(P9, bo1Nbr) <> 1
 
+                    Color 15
+                    Print Str$(bo1Nbr)
+
                     Do
-                        Locate 21, 29: Print "B.O. #2 (1-9)"
+                        Color 11
+                        Locate 27, 28
+                        Print "With Postion # (1-9)";
                         I$ = GetKeyPress$
                         bo2Nbr = Val(I$)
                     Loop Until bo2Nbr >= 1 And bo2Nbr <= 9 Or fldPos(P9, bo2Nbr) <> 1
+
+                    Color 15
+                    Print Str$(bo2Nbr)
 
                     I3 = fldPos(P9, bo2Nbr)
                     fldPos(P9, bo2Nbr) = fldPos(P9, bo1Nbr)
@@ -8415,18 +8464,12 @@ Sub SOURCE ()
 
                 End If
 
+                '--- END OF A SHORT SUB
+
                 If (I1 <> 3 And D2 <> DEF_PERSONNEL) Then
                     I2 = currLineupSlot(P)
                     GoTo 15555
                 End If
-
-                'For I5 = 20 To 23: Locate I5, 28
-                '    Print Space$(52)
-                'Next I5
-
-                'Return
-
-                '--- END OF A SHORT SUB
 
         End Select
 
@@ -8435,8 +8478,8 @@ Sub SOURCE ()
 
     Do
 
-        Color 14
-        Locate 15, 19: Print "LINEUP SLOT TO REPLACE (1-9) (Z)=NO CHANGE"
+        Color 11
+        Locate 26, 19: Print "LINEUP SLOT TO REPLACE (1-9) (Z)=NO CHANGE"
 
         I$ = GetKeyPress$
 
@@ -8467,16 +8510,23 @@ Sub SOURCE ()
 
     Loop Until I2 >= 1 And I2 <= 9 And Not (P9 = D And fldPos(P9, I2) = 1) Or UCase$(I$) = "Z"
 
-
     If UCase$(I$) <> "Z" Then
 
-        Locate , 30
-        If fldPos(P9, I2) = 1 Then Print pitchers$(P9, currPitcher(P9));
-        If fldPos(P9, I2) <> 1 Then Print batters$(P9, lineupPlayer(P9, I2));
+        Locate 22, 30
+        Color 14
+        Print "REPLACING: ";
+        Color 15
+        If fldPos(P9, I2) = 1 Then
+            Print pitchers$(P9, currPitcher(P9));
+        Else
+            Print batters$(P9, lineupPlayer(P9, I2));
+        End If
 
         15555 '
         Do
-            Locate 22, 30: Print "# OF SUB"
+
+            Color 11
+            Locate 27, 33: Print "ENTER # OF SUB"
 
             I$ = GetKeyPress$
 
@@ -8504,10 +8554,16 @@ Sub SOURCE ()
 
         Do
             Locate 23, 30
-            Print batters$(P9, I1); "... ARE YOU SURE? (Y/N)"
+            Color 14
+            Print "WITH: ";
+            Color 15
+            Print batters$(P9, I1)
+            Color 11
+            Locate 29, 30
+            Print "ARE YOU SURE? (Y/N)";
+            Color 14
             I$ = GetKeyPress$
         Loop Until UCase$(I$) = "N" Or UCase$(I$) = "Y"
-
 
         If UCase$(I$) = "Y" Then
 
@@ -8710,7 +8766,7 @@ Sub SOURCE ()
     End If
 
     LReliever1:
-    Print #11, "DEBUG: Processing LReliever 1"
+    'Print #11, "DEBUG: Processing LReliever 1"
     If newRelieverNeeded(D) = 1 Then
 
         'Always call reliever if pinch hitting; otherwise check if batter count
@@ -8742,7 +8798,7 @@ Sub SOURCE ()
     End If
 
 
-    Print #11, "DEBUG: Processing DEFENSE"
+    'Print #11, "DEBUG: Processing DEFENSE"
     D2 = DEF_PITCH
 
     If INFPOS% <= 0 Then
@@ -8957,7 +9013,7 @@ Sub SOURCE ()
     End If
 
     LReliever2:
-    Print #11, "DEBUG: Processing LReliever2"
+    'Print #11, "DEBUG: Processing LReliever2"
     If (pitcherStam(D, 0) <= teamPitStats(D, currPitcher(D), 4) + teamPitStats(D, currPitcher(D), 1) And _ 
         pitcherStam(D, 1) <= teamPitStats(D, currPitcher(D), 2)) Or _ 
         fielder(D, 1) = 99 Then
@@ -8978,7 +9034,7 @@ Sub SOURCE ()
 
     'Get Pinch Hitter for position player
     LPhForPosition:
-    Print #11, "DEBUG: Processing LPhForPosition"
+    'Print #11, "DEBUG: Processing LPhForPosition"
     If teamMgrProfileVal(P, 540) = 999 Then
 
         'Team is using a PINCH HITTING strategy
@@ -9083,7 +9139,7 @@ Sub SOURCE ()
 
 
     LPhForPosPlayer:
-    Print #11, "DEBUG: Processing LPhForPosPlayer"
+    'Print #11, "DEBUG: Processing LPhForPosPlayer"
     pinchHitterFlag = 1
 
     'Make player available and insert into lineup / field
@@ -9114,7 +9170,7 @@ Sub SOURCE ()
     '----- NOODLE -----
 
     LPhForPitcher: 'GET A PINCH HITTER FOR THE PITCHER
-    Print #11, "DEBUG: Processing LPhForPitcher"
+    'Print #11, "DEBUG: Processing LPhForPitcher"
     callPinch = 0
     skipLoop = 0
 
@@ -9402,7 +9458,7 @@ Sub SOURCE ()
     End If
 
     LPinchRunner0:
-    Print #11, "DEBUG: Processing LPinchRunner0"
+    'Print #11, "DEBUG: Processing LPinchRunner0"
     pinchHitterFlag = 0
     runnerUsed = 0
 
@@ -9456,7 +9512,7 @@ Sub SOURCE ()
     '----- NOODLE -----
 
     LPinchRunner1:
-    Print #11, "DEBUG: Processing LPinchRunner1"
+    'Print #11, "DEBUG: Processing LPinchRunner1"
     If nbrOuts(0) >= 1 And INNING% >= 7 Then
         GoTo LPinchRunner0
     Else
@@ -10666,7 +10722,7 @@ Sub DisplayBatter_Lineup (page)
 
     Color 14, 0
 
-    Locate , 16: Print "B   POS    G  AB 2B 3B HR RBI  BB  SO SRAB  SB CS G%  BA"
+    Locate , 16: Print " B  POS    G  AB 2B 3B HR RBI  BB  SO SRAB  SB CS G%  BA"
 
     For luIdx = 2 To 13:
         Locate luIdx, 1: Print String$(78, 32)
@@ -13438,29 +13494,48 @@ End Sub
 'that place.
 Sub PITPLACEMENT (X$)
 
-    If useVGA = 1 Then
-        'Printing white on background
-        _PrintMode _KeepBackground , imageScreen&
-        Color &HFFFFFFFF
-
-    End If
-
     If pitchRating(P, currPitcher(P), SS_P_Throws) < 0 Then
+
         If useVGA = 1 Then
+
+            'Black shadow on Background
+            ShadowTextOnGfx 42, 25, X$, &HF0000000, imageScreen&
+
+            'White on background
+            Color &HFFFFFFFF
+            _PrintMode _KeepBackground , imageScreen&
+
             PrintOnGfx 42, 25, X$, imageScreen&
+
         Else
+
             Locate 23, 64
             Print X$
+
         End If
+
     End If
 
     If pitchRating(P, currPitcher(P), SS_P_Throws) > 0 Then
+
         If useVGA = 1 Then
+
+            'Black shadow on Background
+            ShadowTextOnGfx 32, 25, X$, &HF0000000, imageScreen&
+
+            'White on background
+            Color &HFFFFFFFF
+            _PrintMode _KeepBackground , imageScreen&
+
             PrintOnGfx 30, 25, X$, imageScreen&
+
         Else
+
             Locate 23, 51
             Print X$
+
         End If
+
     End If
 
     If useVGA = 1 Then
@@ -16225,7 +16300,7 @@ Sub Hit_Single (wasError, currFielder, I3, INFPOS%, I1, S2%, P2)
             Case 0
                 'Safe = less likely to run
                 runStratBonus = -10
-                
+
             Case 1
                 'Normal strategy
                 runStratBonus = 0
@@ -23321,7 +23396,8 @@ End Sub
 '----------------------------------------
 '          MAINSCREEN_G routine
 '----------------------------------------
-' ...explanation...
+'This prints the scoreboard / stats on
+'a ballpark image
 Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
 
     _PutImage (29 * FontColAdj, 400)-Step(24 * FontColAdj, 16), backupScreen&, imageScreen&, (29 * FontColAdj, 400)-Step(24 * FontColAdj, 16)
@@ -23371,31 +23447,48 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
     J = lineupPlayer(P, currLineupSlot(P))
 
     If fldPos(P, currLineupSlot(P)) = 1 Then
+
         X$ = pitchers$(P, currPitcher(P))
         'We're going to use this in just a bit
         'We'll be printing it with more space
         player$ = X$
         X$ = PadRight$(X$, 11)
         Call PITPLACEMENT(X$)
+
     Else
+
         X$ = batters$(P, J)
         'We're going to use this in just a bit
         'We'll be printing it with more space
         player$ = X$
         X$ = PadRight$(X$, 11)
 
-        'Printing white on background
-        _PrintMode _KeepBackground , imageScreen&
-        Color &HFFFFFFFF
-
         If batRating(P, J, 0) < 0 Or batRating(P, J, 0) = 0 And pitchRating(D, currPitcher(D), 0) > 0 Then
+
+            'Black shadow on Background
+            ShadowTextOnGfx 41, 25, Left$(X$, 11), &HF0000000, imageScreen&
+
+            'White on background
+            _PrintMode _KeepBackground , imageScreen&
+            Color &HFFFFFFFF
+
             'Batter Name - Right of Plate
             PrintOnGfx 41, 25, Left$(X$, 11), imageScreen&
+
         End If
 
         If batRating(P, J, 0) > 0 Or batRating(P, J, 0) = 0 And pitchRating(D, currPitcher(D), 0) < 0 Then
+
+            'Black shadow on Background
+            ShadowTextOnGfx 30, 25, Left$(X$, 11), &HF0000000, imageScreen&
+
+            'White on background
+            _PrintMode _KeepBackground , imageScreen&
+            Color &HFFFFFFFF
+
             'Batter Name - Left of Plate
             PrintOnGfx 30, 25, Left$(X$, 11), imageScreen&
+
         End If
 
         'Printing white on black
@@ -23412,6 +23505,7 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
     PrintOnGfx 65, 23, " AVG HR  BB  K ", imageScreen&
 
     If fldPos(P, currLineupSlot(P)) <> 1 Then
+
         'Batter Stats - Hitter
         If batRating(P, J, 4) = 0 Then
             PrintOnGfx 65, 24, ".000  0  0   0", imageScreen&
@@ -23492,14 +23586,19 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
         Case 2: infStatus$ = infStatus$ + "INFIELD IN"
     End Select
 
-    'Printing black on background
+    'Light grey shadow on background
+    ShadowTextOnGfx 51, 26, infStatus$, _RGB32(224, 224, 224), imageScreen&
+
+    'Black on background
     _PrintMode _KeepBackground , imageScreen&
     Color &HF0000000
+
     PrintOnGfx 51, 26, infStatus$, imageScreen&
 
-    'Printing white on black
+    'White on black
     Color &HFFFFFFFF
     _PrintMode _FillBackground , imageScreen&
+
     Call HOLDSTATUS_G(runnerHeld)
 
     'RUNNER AT SECOND
@@ -23552,31 +23651,43 @@ Sub DisplayRun_G (baseNbr, Xcoord)
             Ycoord = 22
         End If
 
-        'Printing white on background
-        _PrintMode _KeepBackground , imageScreen&
-        Color &HFFFFFFFF
-
         If fldPos(P, J) = 1 Then
 
             If pitchRating(P, currPitcher(P), 11) <> 999 Then
-                runner$ = pitchers$(P, currPitcher(P))
-                runner$ = PadRight(runner$, 11)
-                PrintOnGfx Xcoord, Ycoord - 1, runner$, imageScreen&
-                PrintOnGfx Xcoord, Ycoord, "1/  0", imageScreen&
+                runStats$ = "1/  0"
             Else
-                runner$ = pitchers$(P, currPitcher(P))
-                runner$ = PadRight(runner$, 11)
-                PrintOnGfx Xcoord, Ycoord - 1, runner$, imageScreen&
                 runStats$ = FUsing$(Str$(pitchRating(P, currPitcher(P), 31)), "#", 1) + "/" + FUsing$(Str$(pitchRating(P, currPitcher(P), 29)), "###", 1)
-                PrintOnGfx Xcoord, Ycoord, runStats$, imageScreen&
             End If
+
+            runner$ = pitchers$(P, currPitcher(P))
+            runner$ = PadRight(runner$, 11)
+
+            'Black shadow on Background
+            ShadowTextOnGfx Xcoord, Ycoord - 1, runner$, &HF0000000, imageScreen&
+            ShadowTextOnGfx Xcoord, Ycoord, runStats$, &HF0000000, imageScreen&
+
+            'White on background
+            _PrintMode _KeepBackground , imageScreen&
+            Color &HFFFFFFFF
+
+            PrintOnGfx Xcoord, Ycoord - 1, runner$, imageScreen&
+            PrintOnGfx Xcoord, Ycoord, runStats$, imageScreen&
 
         Else
 
             runner$ = batters$(P, lineupPlayer(P, J))
             runner$ = PadRight(runner$, 11)
-            PrintOnGfx Xcoord, Ycoord - 1, runner$, imageScreen&
             runStats$ = FUsing$(Str$(batRating(P, lineupPlayer(P, J), SS_B_Run)), "#", 1) + "/" + FUsing$(Str$(batRating(P, lineupPlayer(P, J), SS_B_SB)), "###", 1)
+
+            'Black shadow on Background
+            ShadowTextOnGfx Xcoord, Ycoord - 1, runner$, &HF0000000, imageScreen&
+            ShadowTextOnGfx Xcoord, Ycoord, runStats$, &HF0000000, imageScreen&
+
+            'White on background
+            _PrintMode _KeepBackground , imageScreen&
+            Color &HFFFFFFFF
+
+            PrintOnGfx Xcoord, Ycoord - 1, runner$, imageScreen&
             PrintOnGfx Xcoord, Ycoord, runStats$, imageScreen&
 
             'Printing white on black
@@ -23587,6 +23698,7 @@ Sub DisplayRun_G (baseNbr, Xcoord)
     End If
 
 End Sub
+
 
 '----------------------------------------
 '    DisplayBallField_Gfx Subroutine
@@ -23691,7 +23803,10 @@ Sub DisplayBallField_Gfx (nbrBalls, nbrStrikes)
 
     'Print all positions around the diamond
     '----------------------------------------
-    'Printing black on background
+    'Light grey shadow on background
+    ShadowTextOnGfx 36, 14, player$, _RGB32(224, 224, 224), imageScreen&
+
+    'Black on background
     _PrintMode _KeepBackground , imageScreen&
     Color &HF0000000
 
@@ -23710,11 +23825,27 @@ Sub DisplayBallField_Gfx (nbrBalls, nbrStrikes)
     End If
 
     player$ = "A" + FUsing$(Str$(batRating(D, fielder(D, 8), 15)), "#", 1) + " R" + FUsing$(Str$(batRating(D, fielder(D, 8), 17)), "#", 1) + " F" + fldPct$
+
+    'Light grey shadow on background
+    ShadowTextOnGfx 36, 15, player$, _RGB32(224, 224, 224), imageScreen&
+
+    'Black on background
+    _PrintMode _KeepBackground , imageScreen&
+    Color &HF0000000
+
     PrintOnGfx 36, 15, player$, imageScreen&
 
     'Left Field Name
     player$ = Left$(batters$(D, fielder(D, 7)), 10)
     player$ = PadRight(player$, 10)
+
+    'Light grey shadow on background
+    ShadowTextOnGfx 7, 16, player$, _RGB32(224, 224, 224), imageScreen&
+
+    'Black on background
+    _PrintMode _KeepBackground , imageScreen&
+    Color &HF0000000
+
     PrintOnGfx 7, 16, player$, imageScreen&
 
     'Left Field Stats
@@ -23729,11 +23860,27 @@ Sub DisplayBallField_Gfx (nbrBalls, nbrStrikes)
     End If
 
     player$ = "A" + FUsing$(Str$(batRating(D, fielder(D, 7), 15)), "#", 1) + " R" + FUsing$(Str$(batRating(D, fielder(D, 7), 17)), "#", 1) + " F" + fldPct$
+
+    'Light grey shadow on background
+    ShadowTextOnGfx 7, 17, player$, _RGB32(224, 224, 224), imageScreen&
+
+    'Black on background
+    _PrintMode _KeepBackground , imageScreen&
+    Color &HF0000000
+
     PrintOnGfx 7, 17, player$, imageScreen&
 
     'Right Field Name
     player$ = Left$(batters$(D, fielder(D, 9)), 10)
     player$ = PadRight(player$, 10)
+
+    'Light grey shadow on background
+    ShadowTextOnGfx 64, 16, player$, _RGB32(224, 224, 224), imageScreen&
+
+    'Black on background
+    _PrintMode _KeepBackground , imageScreen&
+    Color &HF0000000
+
     PrintOnGfx 64, 16, player$, imageScreen&
 
     'Right Field Stats
@@ -23748,11 +23895,27 @@ Sub DisplayBallField_Gfx (nbrBalls, nbrStrikes)
     End If
 
     player$ = "A" + FUsing$(Str$(batRating(D, fielder(D, 9), 15)), "#", 1) + " R" + FUsing$(Str$(batRating(D, fielder(D, 9), 17)), "#", 1) + " F" + fldPct$
+
+    'Light grey shadow on background
+    ShadowTextOnGfx 64, 17, player$, _RGB32(224, 224, 224), imageScreen&
+
+    'Black on background
+    _PrintMode _KeepBackground , imageScreen&
+    Color &HF0000000
+
     PrintOnGfx 64, 17, player$, imageScreen&
 
     'Short Stop Name
     player$ = Left$(batters$(D, fielder(D, 6)), 10)
     player$ = PadRight(player$, 10)
+
+    'Light grey shadow on background
+    ShadowTextOnGfx 28, 17, player$, _RGB32(224, 224, 224), imageScreen&
+
+    'Black on background
+    _PrintMode _KeepBackground , imageScreen&
+    Color &HF0000000
+
     PrintOnGfx 28, 17, player$, imageScreen&
 
     'Short Stop Stats
@@ -23767,11 +23930,27 @@ Sub DisplayBallField_Gfx (nbrBalls, nbrStrikes)
     End If
 
     player$ = "R" + FUsing$(Str$(batRating(D, fielder(D, 6), 17)), "#", 1) + " F" + fldPct$
+
+    'Light grey shadow on background
+    ShadowTextOnGfx 28, 18, player$, _RGB32(224, 224, 224), imageScreen&
+
+    'Black on background
+    _PrintMode _KeepBackground , imageScreen&
+    Color &HF0000000
+
     PrintOnGfx 28, 18, player$, imageScreen&
 
     '2nd Base Name
     player$ = Left$(batters$(D, fielder(D, 4)), 10)
     player$ = PadRight(player$, 10)
+
+    'Light grey shadow on background
+    ShadowTextOnGfx 46, 17, player$, _RGB32(224, 224, 224), imageScreen&
+
+    'Black on background
+    _PrintMode _KeepBackground , imageScreen&
+    Color &HF0000000
+
     PrintOnGfx 46, 17, player$, imageScreen&
 
     '2nd Base Stats
@@ -23786,11 +23965,27 @@ Sub DisplayBallField_Gfx (nbrBalls, nbrStrikes)
     End If
 
     player$ = "R" + FUsing$(Str$(batRating(D, fielder(D, 4), 17)), "#", 1) + " F" + fldPct$
+
+    'Light grey shadow on background
+    ShadowTextOnGfx 46, 18, player$, _RGB32(224, 224, 224), imageScreen&
+
+    'Black on background
+    _PrintMode _KeepBackground , imageScreen&
+    Color &HF0000000
+
     PrintOnGfx 46, 18, player$, imageScreen&
 
     '3rd Base Name
     player$ = Left$(batters$(D, fielder(D, 5)), 10)
     player$ = PadRight(player$, 10)
+
+    'Light grey shadow on background
+    ShadowTextOnGfx 13, 19, player$, _RGB32(224, 224, 224), imageScreen&
+
+    'Black on background
+    _PrintMode _KeepBackground , imageScreen&
+    Color &HF0000000
+
     PrintOnGfx 13, 19, player$, imageScreen&
 
     '3rd Base Stats
@@ -23806,11 +24001,27 @@ Sub DisplayBallField_Gfx (nbrBalls, nbrStrikes)
     End If
 
     player$ = "R" + FUsing$(Str$(batRating(D, fielder(D, 5), 17)), "#", 1) + " F" + fldPct$
+
+    'Light grey shadow on background
+    ShadowTextOnGfx 13, 20, player$, _RGB32(224, 224, 224), imageScreen&
+
+    'Black on background
+    _PrintMode _KeepBackground , imageScreen&
+    Color &HF0000000
+
     PrintOnGfx 13, 20, player$, imageScreen&
 
     '1st Base Name
     player$ = Left$(batters$(D, fielder(D, 3)), 10)
     player$ = PadRight(player$, 10)
+
+    'Light grey shadow on background
+    ShadowTextOnGfx 61, 19, player$, _RGB32(224, 224, 224), imageScreen&
+
+    'Black on background
+    _PrintMode _KeepBackground , imageScreen&
+    Color &HF0000000
+
     PrintOnGfx 61, 19, player$, imageScreen&
 
     '1st Base Stats
@@ -23825,11 +24036,27 @@ Sub DisplayBallField_Gfx (nbrBalls, nbrStrikes)
     End If
 
     player$ = "R" + FUsing$(Str$(batRating(D, fielder(D, 3), 17)), "#", 1) + " F" + fldPct$
+
+    'Light grey shadow on background
+    ShadowTextOnGfx 61, 20, player$, _RGB32(224, 224, 224), imageScreen&
+
+    'Black on background
+    _PrintMode _KeepBackground , imageScreen&
+    Color &HF0000000
+
     PrintOnGfx 61, 20, player$, imageScreen&
 
     'Pitcher Name
     player$ = "[" + handed$(pitchRating(D, currPitcher(D), 0) + 2) + "] " + Left$(pitchers$(D, currPitcher(D)), 10)
     player$ = PadRight(player$, 14)
+
+    'Light grey shadow on background
+    ShadowTextOnGfx 35, 21, player$, _RGB32(224, 224, 224), imageScreen&
+
+    'Black on background
+    _PrintMode _KeepBackground , imageScreen&
+    Color &HF0000000
+
     PrintOnGfx 35, 21, player$, imageScreen&
 
     'Pitcher Stats
@@ -23844,13 +24071,28 @@ Sub DisplayBallField_Gfx (nbrBalls, nbrStrikes)
     End If
 
     player$ = "H" + FUsing$(Str$(pitchRating(D, currPitcher(D), 18)), "#", 1) + " F" + fldPct$
-    'was column 39 previously
+
+    'Light grey shadow on background
+    ShadowTextOnGfx 35, 22, player$, _RGB32(224, 224, 224), imageScreen&
+
+    'Black on background
+    _PrintMode _KeepBackground , imageScreen&
+    Color &HF0000000
+
     PrintOnGfx 35, 22, player$, imageScreen&
 
     'Catcher Name
     player$ = Left$(batters$(D, fielder(D, 2)), 10)
     player$ = PadRight(player$, 10)
     player$ = player$ + "A" + FUsing$(Str$(batRating(D, fielder(D, 2), 15)), "#", 1)
+
+    'Light grey shadow on background
+    ShadowTextOnGfx 35, 26, player$, _RGB32(224, 224, 224), imageScreen&
+
+    'Black on background
+    _PrintMode _KeepBackground , imageScreen&
+    Color &HF0000000
+
     PrintOnGfx 35, 26, player$, imageScreen&
 
     'Printing white on black
@@ -23878,9 +24120,14 @@ Sub HOLDSTATUS_G (runnerHeld)
         rhStatus$ = rhStatus$ + "HELD"
     End If
 
-    'Printing black on background
+
+    'Light grey shadow on background
+    ShadowTextOnGfx 52, 25, rhStatus$, _RGB32(224, 224, 224), imageScreen&
+
+    'Black on background
     _PrintMode _KeepBackground , imageScreen&
     Color &HF0000000
+
     PrintOnGfx 52, 25, rhStatus$, imageScreen&
 
     'Printing white on black
@@ -23911,6 +24158,7 @@ Sub DisplayInningScore_G (currInning, teamLine)
     If setOf9 > 0 Then col = col + setOf9 * 30
 
     FORMATTED$ = FUsing$(Str$(inningScore(teamLine, currInning)), "##", 1)
+
     PrintOnGfx col + 13, teamLine + 28, FORMATTED$, imageScreen&
 
 End Sub
@@ -24005,9 +24253,27 @@ End Sub
 'based on the screen width / height.
 Sub PrintOnGfx (Col%, Row%, Text$, tgtScrn&)
 
+    'Color txtColor&
+    '_PrintMode _KeepBackground , imageScreen&
+
     PrintCol% = (Col% * _PrintWidth("W"))
     PrintRow% = (Row% * _FontHeight)
     _PrintString (PrintCol%, PrintRow%), Text$, tgtScrn&
+
+End Sub
+
+
+'----------------------------------------
+'        ShadowTextOnGfx Subroutine
+'----------------------------------------
+Sub ShadowTextOnGfx (Col%, Row%, Text$, txtColor&, tgtScrn&)
+
+    Color txtColor&
+    _PrintMode _KeepBackground , tgtScrn&
+
+    shadowCol = (Col% * _PrintWidth("W")) + 2
+    shadowRow = (Row% * _FontHeight) + 2
+    _PrintString (shadowCol, shadowRow), Text$, tgtScrn&
 
 End Sub
 
