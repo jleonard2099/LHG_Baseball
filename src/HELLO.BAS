@@ -1518,7 +1518,14 @@ Sub LOADER
 
     'Try to load any umpires we can and
     'populate ratings from them
-    targetUmpires$ = diskPaths$(0) + "UMPIRES_" + league_brief$(leagueOpt) + "." + LTrim$(Str$(teamYears(1)))
+    If leagueOpt = 2 Then
+        'We don't know the league of each team playing since it's not in the structure
+        'We could do a lookup, but that would be more work than usually went into these
+        'games historically. So we're flipping a coin on which league to choose
+        targetUmpires$ = diskPaths$(0) + "UMPIRES_" + league_brief$(CInt(Rnd(1))) + "." + LTrim$(Str$(teamYears(1)))
+    Else
+        targetUmpires$ = diskPaths$(0) + "UMPIRES_" + league_brief$(leagueOpt) + "." + LTrim$(Str$(teamYears(1)))
+    End If
 
     If _FileExists(targetUmpires$) Then
 
@@ -5536,7 +5543,7 @@ Sub SOURCE ()
     batterAvg = game_batRating(P, GM_BAvg, currLineupSlot(P))
 
     ' *** NOT a base hit ***
-    If chanceRoll > batterAvg + hitChanceAdj - 65 Then
+    If chanceRoll > batterAvg + hitChanceAdj Then '- 65 Then
 
         ' *** check for strikeout ***
         chanceRoll = Int(Rnd(1) * 1000) + 1
@@ -20256,7 +20263,7 @@ Sub POSTGAME ()
         'Append special events
         Call BOX2SPC(boxName$)
 
-        Call BOX2FILE(2, boxName$)
+        Call BOX2FILE(2, diskPaths$(1) + boxName$)
 
     End If
 

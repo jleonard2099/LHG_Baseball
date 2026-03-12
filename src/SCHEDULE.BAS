@@ -1005,10 +1005,11 @@ Sub EditParameters ()
 
     Cls
     Color 14
+    Locate 2
     Print "PARAMETERS FOR SAVING SPECIAL EVENTS BOXSCORES"
 
     Color 15
-
+    Locate 4
     Print " 1. IF INNINGS ARE OVER "; eventSettings(1)
     Print " 2. A TEAM'S RUNS LESS THAN "; eventSettings(2)
     Print " 3. A TEAM'S RUNS MORE THAN "; eventSettings(3)
@@ -1027,75 +1028,76 @@ Sub EditParameters ()
 
     Do
 
+        Locate LAST_ROW - 2, 40: Print Space$(10);
         Locate LAST_ROW - 2, 1: Print "SELECT # TO CHANGE 1-13 (0 TO CONTINUE) ";
         Input B9
 
         Select Case B9
 
             Case 1:
-                Locate 2, 24: Print Space$(10)
-                Locate 2, 1: Input " 1. IF INNINGS ARE OVER"; eventSettings(1)
-                Locate 2, 24: Print " "
+                Locate 4, 24: Print Space$(10)
+                Locate 4, 1: Input " 1. IF INNINGS ARE OVER"; eventSettings(1)
+                Locate 4, 24: Print " "
 
             Case 2:
-                Locate 3, 28: Print Space$(10)
-                Locate 3, 1: Input " 2. A TEAM'S RUNS LESS THAN"; eventSettings(2)
-                Locate 3, 28: Print " "
-
-            Case 3:
-                Locate 4, 28: Print Space$(10)
-                Locate 4, 1: Input " 3. A TEAM'S RUNS MORE THAN"; eventSettings(3)
-                Locate 4, 28: Print " "
-
-            Case 4:
                 Locate 5, 28: Print Space$(10)
-                Locate 5, 1: Input " 4. A TEAM'S HITS LESS THAN"; eventSettings(4)
+                Locate 5, 1: Input " 2. A TEAM'S RUNS LESS THAN"; eventSettings(2)
                 Locate 5, 28: Print " "
 
-            Case 5:
+            Case 3:
                 Locate 6, 28: Print Space$(10)
-                Locate 6, 1: Input " 5. A TEAM'S HITS MORE THAN"; eventSettings(5)
+                Locate 6, 1: Input " 3. A TEAM'S RUNS MORE THAN"; eventSettings(3)
                 Locate 6, 28: Print " "
 
-            Case 6:
+            Case 4:
                 Locate 7, 28: Print Space$(10)
-                Locate 7, 1: Input " 6. BATTER'S HITS MORE THAN"; eventSettings(6)
+                Locate 7, 1: Input " 4. A TEAM'S HITS LESS THAN"; eventSettings(4)
                 Locate 7, 28: Print " "
 
-            Case 7:
+            Case 5:
                 Locate 8, 28: Print Space$(10)
-                Locate 8, 1: Input " 7. BATTER'S RUNS MORE THAN"; eventSettings(7)
+                Locate 8, 1: Input " 5. A TEAM'S HITS MORE THAN"; eventSettings(5)
                 Locate 8, 28: Print " "
 
-            Case 8:
-                Locate 9, 29: Print Space$(10)
-                Locate 9, 1: Input " 8. BATTER'S RBI'S MORE THAN"; eventSettings(8)
-                Locate 9, 29: Print " "
+            Case 6:
+                Locate 9, 28: Print Space$(10)
+                Locate 9, 1: Input " 6. BATTER'S HITS MORE THAN"; eventSettings(6)
+                Locate 9, 28: Print " "
 
-            Case 9:
+            Case 7:
                 Locate 10, 28: Print Space$(10)
-                Locate 10, 1: Input " 9. BATTER'S 2B'S MORE THAN"; eventSettings(9)
+                Locate 10, 1: Input " 7. BATTER'S RUNS MORE THAN"; eventSettings(7)
                 Locate 10, 28: Print " "
 
-            Case 10:
-                Locate 11, 28: Print Space$(10)
-                Locate 11, 1: Input "10. BATTER'S 3B'S MORE THAN"; eventSettings(10)
-                Locate 11, 28: Print " "
+            Case 8:
+                Locate 11, 29: Print Space$(10)
+                Locate 11, 1: Input " 8. BATTER'S RBI'S MORE THAN"; eventSettings(8)
+                Locate 11, 29: Print " "
 
-            Case 11:
+            Case 9:
                 Locate 12, 28: Print Space$(10)
-                Locate 12, 1: Input "11. BATTER'S HR'S MORE THAN"; eventSettings(11)
+                Locate 12, 1: Input " 9. BATTER'S 2B'S MORE THAN"; eventSettings(9)
                 Locate 12, 28: Print " "
 
-            Case 12:
+            Case 10:
                 Locate 13, 28: Print Space$(10)
-                Locate 13, 1: Input "12. BATTER'S SB'S MORE THAN"; eventSettings(12)
+                Locate 13, 1: Input "10. BATTER'S 3B'S MORE THAN"; eventSettings(10)
                 Locate 13, 28: Print " "
 
-            Case 13:
+            Case 11:
                 Locate 14, 28: Print Space$(10)
-                Locate 14, 1: Input "13. PITCHER'S K'S MORE THAN"; eventSettings(13)
+                Locate 14, 1: Input "11. BATTER'S HR'S MORE THAN"; eventSettings(11)
                 Locate 14, 28: Print " "
+
+            Case 12:
+                Locate 15, 28: Print Space$(10)
+                Locate 15, 1: Input "12. BATTER'S SB'S MORE THAN"; eventSettings(12)
+                Locate 15, 28: Print " "
+
+            Case 13:
+                Locate 16, 28: Print Space$(10)
+                Locate 16, 1: Input "13. PITCHER'S K'S MORE THAN"; eventSettings(13)
+                Locate 16, 28: Print " "
 
         End Select
 
