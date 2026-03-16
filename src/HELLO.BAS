@@ -929,6 +929,7 @@ End Sub
 '$Include: 'BoxRoutines.bm'
 '$Include: 'ConfigureDrives.bm'
 '$Include: 'FileTeamSelection.bm'
+
 '$Include: 'TITLE.bm'
 '$Include: 'ACTIVATE.BAS'
 '$Include: 'ALIGN.BAS'
@@ -959,6 +960,7 @@ End Sub
 '$Include: 'TINPUT.BAS'
 '$Include: 'TRADE.BAS'
 '$Include: 'UMPMGR.BAS'
+
 
 ' For Game
 'Include: 'LOADER.BAS'
@@ -21685,7 +21687,7 @@ Sub ScoreSummary_File
             Call InningColumn_File(I2)
             Print #1, Using "##"; I2;
         Next I2
-        
+
         Print #1,
 
         For I = 0 To 1
@@ -22871,6 +22873,7 @@ Sub ChooseGameTeam (yearNumber$, numberTeams, chosenIdx, teamName$, gameIdx)
 
             'Locate 2, 33
             'Color 31: Print "LOADING..."
+            chosenIdx = 1
 
             Do
 
@@ -22919,7 +22922,7 @@ Sub SelectGameTeam (numberTeams, yearNumber$, selectedIdx, teamName$, ExitCode%,
 
     If numberTeams > 0 And CheckString%(teamNames$(numberTeams)) = 0 Then
 
-        SELECTION% = 1
+        SELECTION% = selectedIdx
         Count% = numberTeams
         Start% = 1
         FileFGColor = 15: FileBGColor = 4

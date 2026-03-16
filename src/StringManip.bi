@@ -1,4 +1,6 @@
-Declare Function PadRight$ (X$, Length)
 Declare Function GetFileBaseName$ (fullPath$)
-Declare Function GetFileName$ (fullPath$)
 Declare Function GetFileExtension$ (fullPath$)
+Declare Function GetFileName$ (fullPath$)
+Declare Function PadRight$ (X$, Length)
+Declare Function String.Find& (Content As String, Search As String, CountTo As Long)
+Declare Function String.Replace$ (content$, from$, to$)

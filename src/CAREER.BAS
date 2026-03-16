@@ -279,7 +279,8 @@ Sub MergeFirstYear ()
                         Next I
 
                         If doPostLeaders = 1 Then
-                            Call UpdateCareerRecords(diskPaths$(2) + GetFileBaseName$(careerFile$) + ".CLD")
+                            carLdFile$ = String.Replace$(careerFile$, ".CAR", ".CLD")
+                            Call UpdateCareerRecords(carLdFile$)
                         End If
 
                         Call SaveCareerFile(careerFile$)

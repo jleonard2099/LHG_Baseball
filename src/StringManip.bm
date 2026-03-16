@@ -1,47 +1,3 @@
-'----------------------------------------
-'           PadRight Function
-'----------------------------------------
-' Pads string to the right with spaces
-Function PadRight$ (X$, Length)
-    PadRight$ = X$ + Space$(Length - Len(X$)) 'for display only
-End Function
-
-
-'----------------------------------------
-'         GetFileName$ Function
-'----------------------------------------
-' Returns the file name, including the
-' full extension, from a full path
-Function GetFileName$ (fullPath$)
-
-    Dim i As Integer
-    Dim fileName$, separator$
-
-    opSysType$ = Left$(_OS$, InStr(2, _OS$, "[") - 1)
-
-    Select Case opSysType$
-        Case "[WINDOWS]":
-            separator$ = "\"
-        Case "[MAC]", "[MACOSX]", "[LINUX]":
-            separator$ = "/"
-    End Select
-
-    ' Start from the end of the string and work backwards
-    i = Len(fullPath$)
-    Do While i > 0
-        If Mid$(fullPath$, i, 1) = separator$ Then
-            fileName$ = Mid$(fullPath$, i + 1)
-            i = 0 ' End loop
-        Else
-            i = i - 1
-        End If
-    Loop
-
-    ' If no backslash was found, assume it's just a filename already
-    GetFileName$ = fileName$
-
-End Function
-
 
 '----------------------------------------
 '       GetFileBaseName$ Function
@@ -98,3 +54,107 @@ Function GetFileExtension$ (fullPath$)
 
 End Function
 
+
+'----------------------------------------
+'         GetFileName$ Function
+'----------------------------------------
+' Returns the file name, including the
+' full extension, from a full path
+Function GetFileName$ (fullPath$)
+
+    Dim i As Integer
+    Dim fileName$, separator$
+
+    opSysType$ = Left$(_OS$, InStr(2, _OS$, "[") - 1)
+
+    Select Case opSysType$
+        Case "[WINDOWS]":
+            separator$ = "\"
+        Case "[MAC]", "[MACOSX]", "[LINUX]":
+            separator$ = "/"
+    End Select
+
+    ' Start from the end of the string and work backwards
+    i = Len(fullPath$)
+    Do While i > 0
+        If Mid$(fullPath$, i, 1) = separator$ Then
+            fileName$ = Mid$(fullPath$, i + 1)
+            i = 0 ' End loop
+        Else
+            i = i - 1
+        End If
+    Loop
+
+    ' If no backslash was found, assume it's just a filename already
+    GetFileName$ = fileName$
+
+End Function
+
+
+'----------------------------------------
+'           PadRight Function
+'----------------------------------------
+' Pads string to the right with spaces
+Function PadRight$ (X$, Length)
+    PadRight$ = X$ + Space$(Length - Len(X$)) 'for display only
+End Function
+
+
+'----------------------------------------
+'          String.Find& Function
+'----------------------------------------
+'This function is courtesy of the amazing
+'Steve McNeil at QB64PE forums.
+'https://qb64phoenix.com/forum/showthread.php?tid=3629&pid=34028
+'This function will either tell you how 
+' many times something appears inside of
+' a string (Good for quick counting), or 
+' it'll give the position of the Xth item 
+' inside that string.
+Function String.Find& (Content As String, Search As String, CountTo As Long)
+    'If CountTo is 0, this routine will count the number of instances of the search term inside the content string
+    'If CountTo is >0, this routine will find the position of that instance, if it exists, inside the search string.
+    'For example, CountTo = 2, it'll find the location of the 2nd instance of the search term, skipping the first.
+    If CountTo < 0 Then Exit Function 'Can't find a negative position.
+    Dim As Long p, l
+    If Search$ = "" Then Exit Function
+    p = InStr(Content$, Search$)
+    l = Len(Search$)
+    Do While p& > 0
+        Count = Count + 1
+        If CountTo = Count Then String.Find = p: Exit Function
+        p = InStr(p + l, Content$, Search$)
+    Loop
+    If CountTo = 0 Then String.Find = Count
+End Function
+
+
+'----------------------------------------
+'        String.Replace& Function
+'----------------------------------------
+'This function is courtesy of the amazing
+'Steve McNeil at QB64PE forums.
+'https://qb64phoenix.com/forum/showthread.php?tid=3629&pid=34028
+'It simply replaces any occurence of from$
+'to to$ in the source string, content$
+Function String.Replace$ (content$, from$, to$)
+    'Inspired by the forum post here: https://qb64phoenix.com/forum/showthread...9#pid33559
+    'Original credit goes to mdijkens as I just tweaked it a little to make it a bit more library friendly
+    $Checking:Off
+    Dim As Long mp, pp, found
+    Dim m As _MEM
+    found = String.Find(content$, from$, 0)
+    flen& = Len(from$): tlen& = Len(to$)
+
+    m = _MemNew(Len(content$) + (tlen& - flen&) * found): mp = 0: pp = 1
+    p& = InStr(content$, from$)
+    Do While p& > 0
+        _MemPut m, m.OFFSET + mp, Mid$(content$, pp, p& - pp): mp = mp + p& - pp
+        _MemPut m, m.OFFSET + mp, to$: mp = mp + tlen&: pp = p& + flen&
+        p& = InStr(p& + flen&, content$, from$)
+    Loop
+    _MemPut m, m.OFFSET + mp, Mid$(content$, pp): mp = mp + Len(Mid$(content$, pp))
+    content2$ = Space$(mp): _MemGet m, m.OFFSET, content2$: _MemFree m
+    String.Replace$ = content2$
+    $Checking:On
+End Function

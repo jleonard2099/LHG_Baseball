@@ -313,7 +313,8 @@ Sub UpdateCareerLeaders ()
         Next K
 
         'Save leaders
-        Open diskPaths$(2) + GetFileBaseName$(careerFile$) + ".TCL" For Output As #1
+        tclFile$ = String.Replace$(careerFile$, ".CAR", ".TCL")
+        Open tclFile$ For Output As #1
 
         For I = 0 To 17:
             For I1 = 0 To 19:
