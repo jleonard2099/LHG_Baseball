@@ -142,7 +142,7 @@ Sub EnterUmpireFile ()
     Locate 6: Input "3. RUNS "; leagRuns
     Locate 6, 9: Print " "
 
-    Locate 7: Input "4. GAMES "; leagRuns
+    Locate 7: Input "4. GAMES "; leagGames
     Locate 7, 9: Print " "
 
     Do
@@ -263,9 +263,9 @@ Sub EnterUmpireFile ()
 
         Loop Until B9 = 0
 
-        umpireRating(X, 0) = (umpWalksPerG! / leagWalksPerG!) * 100
-        umpireRating(X, 1) = (umpSOsPerG! / leagSOsPerG!) * 100
-        umpireRating(X, 2) = (umpRunsPerG! / leagRunsPerG!) * 100
+        umpireRating(X, UMP_BB)   = (umpWalksPerG! / leagWalksPerG!) * 100
+        umpireRating(X, UMP_SO)   = (umpSOsPerG!   / leagSOsPerG!) * 100
+        umpireRating(X, UMP_Runs) = (umpRunsPerG!  / leagRunsPerG!) * 100
 
     Next
 
@@ -420,9 +420,9 @@ Sub EditUmpireFile ()
                 If umpIdx <> 0 Then
 
                     'Reverse engineer umpire's original ratings
-                    umpWalksPerG! = (umpireRating(umpIdx, 0) * leagRunsPerG!) / 100
-                    umpSOsPerG! = (umpRating(umpIdx, 1) * leagSOsPerG!) / 100
-                    umpRunsPerG! = (umpireRating(umpIdx, 2) * leagWalksPerG!) / 100
+                    umpWalksPerG! = (umpireRating(umpIdx, UMP_BB)   * leagWalksPerG!) / 100
+                    umpSOsPerG!   = (umpireRating(umpIdx, UMP_SO)   * leagSOsPerG!  ) / 100
+                    umpRunsPerG!  = (umpireRating(umpIdx, UMP_Runs) * leagRunsPerG!)  / 100
 
                     'Round to 2 decimal places
                     umpWalksPerG! = CInt(umpWalksPerG! * 10) / 10
@@ -483,9 +483,9 @@ Sub EditUmpireFile ()
 
                     Loop Until B9 = 0
 
-                    umpireRating(umpIdx, 0) = (umpWalksPerG! / leagWalksPerG!) * 100
-                    umpireRating(umpIdx, 1) = (umpSOsPerG! / leagSOsPerG!) * 100
-                    umpireRating(umpIdx, 2) = (umpRunsPerG! / leagRunsPerG!) * 100
+                    umpireRating(umpIdx, UMP_BB)   = (umpWalksPerG! / leagWalksPerG!) * 100
+                    umpireRating(umpIdx, UMP_SO)   = (umpSOsPerG! / leagSOsPerG!) * 100
+                    umpireRating(umpIdx, UMP_Runs) = (umpRunsPerG! / leagRunsPerG!) * 100
 
                 End If
 
@@ -493,13 +493,21 @@ Sub EditUmpireFile ()
 
         Next page
 
+        Locate 20, 5
+        Color 11
+        Print "Save Changes (Y/N)?"
+        shouldSave$ = GetKeyPress$   
+        If UCase$(shouldSave$) = "Y" Then
+            Call SaveUmpireFile(umpireFile$)
+        End If
+
     End If
 
 End Sub
 
 
 '----------------------------------------
-'       SaveUmpireFile Subroutine
+'       ReadUmpireFile Subroutine
 '----------------------------------------
 'This subroutine loads all of the umpires
 'from a previously created file.

@@ -279,3 +279,7 @@ Const EVENT_DRAWN_IN_SINGLE = 24
 Const PLAY_MODE_HUMAN = 0
 Const PLAY_MODE_COMPUTER = 1
 Const PLAY_MODE_PCvsPC = 2
+
+Const UMP_BB = 0
+Const UMP_SO = 1
+Const UMP_Runs = 2

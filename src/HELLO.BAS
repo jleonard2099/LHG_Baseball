@@ -1552,9 +1552,9 @@ Sub LOADER
 
                     gameUmpire$(currUmp) = umpireName$(I1)
 
-                    umpBBadj(currUmp) = (umpireRating(I1, 0) - 100) / 5
-                    umpSZadj(currUmp) = (100 - umpireRating(I1, 1)) / 5
-                    umpRunAdj(currUmp) = (umpireRating(I1, 2) - 100) / 3
+                    umpBBadj(currUmp)  = (umpireRating(I1, UMP_BB) - 100) / 5
+                    umpSZadj(currUmp)  = (100 - umpireRating(I1, UMP_SO)) / 5
+                    umpRunAdj(currUmp) = (umpireRating(I1, UMP_Runs) - 100) / 3
 
                     usedUmpires(I1) = 1
                     currUmp = currUmp + 1
@@ -1583,9 +1583,9 @@ Sub LOADER
 
                     gameUmpire$(currUmp) = umpireName$(rndUmp)
 
-                    umpBBadj(currUmp) = (umpireRating(rndUmp, 0) - 100) / 17
-                    umpSZadj(currUmp) = (100 - umpireRating(rndUmp, 1)) / 20
-                    umpRunAdj(currUmp) = (umpireRating(rndUmp, 2) - 100) / 12
+                    umpBBadj(currUmp)  = (umpireRating(rndUmp, UMP_BB) - 100) / 17
+                    umpSZadj(currUmp)  = (100 - umpireRating(rndUmp, UMP_SO)) / 20
+                    umpRunAdj(currUmp) = (umpireRating(rndUmp, UMP_Runs) - 100) / 12
 
                     usedUmpires(rndUmp) = 1
                     currUmp = currUmp + 1
