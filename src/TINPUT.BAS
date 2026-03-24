@@ -44,17 +44,15 @@ Sub InputEditTeam (inputAction%, yearNumber$, targetTeam$, teamIdx)
         teamAbbrev$ = ""
         CK = 0
 
-    Else
-
-        Stadium$ = RTrim$(Q$(1840))
-        Manager$ = RTrim$(Q$(1841))
-        teamAbbrev$ = RTrim$(Q$(1842))
-
     End If
+
+    SCREEN 0
 
     Call EditTeamInfo(yearNumber$, targetTeam$, teamIdx)
     Call EditBatter
     Call EditPitcher
+
+    SCREEN menu&
 
     Locate 10, 8
 
@@ -2239,7 +2237,7 @@ Sub EditTeamInfo (YN$, team$, teamIdx)
         Done:
         'Do
         Color 14, 1
-        Locate LAST_ROW - 1, 1
+        Locate 25, 1
         'Print "Is this okay? (Y)es/(N)o/(A)bort ";
         Print "Is this okay? (Y)es/(N)o";
         X$ = ""

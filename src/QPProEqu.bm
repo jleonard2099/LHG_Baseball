@@ -374,7 +374,7 @@ Sub CapNum ()
     If Cap = CapStatus Then GoTo QNumCheck 'No change since last check
 
     Cap = CapStatus 'save CapsLock status
-    Locate LAST_ROW, 69 'Position to print status msg
+    Locate 25, 69 'Position to print status msg
 
     If CapStatus Then
         Print " CAP "; 'White on Black
@@ -386,7 +386,7 @@ Sub CapNum ()
     If Num = NumStatus Then GoTo QCapNumExit 'No change since last check
 
     Num = NumStatus 'Save NumLock status
-    Locate LAST_ROW, 75 'Position to print status msg
+    Locate 25, 75 'Position to print status msg
 
     If NumStatus Then 'Print or erase message
         Print " NUM ";
@@ -1246,7 +1246,7 @@ Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode%, FGColor&, BGColor&)
 
     X$ = X$ + Space$(Max% - Length) 'Pad with trailing spaces
 
-    'Locate , , 1 'Toggle the cursor
+    Locate , , 1, 6, 8 'Toggle the cursor
     Call QPrint(X$, FGColor&, BGColor&, -1)
     'Locate , , 0  'Toggle the cursor
 
@@ -1315,11 +1315,11 @@ Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode%, FGColor&, BGColor&)
     If Length = Max% GoTo TGetKey 'also ignore if field is full
 
     Insrt = 1 'set the insert flag
-    If Clr Then 'set cursor size according to display
-        Locate , , , 0, 7
-    Else
-        Locate , , , 0, 13
-    End If
+    'If Clr Then 'set cursor size according to display
+    ''    Locate , , , 0, 7
+    'Else
+    ''    Locate , , , 0, 13
+    'End If
 
     GoTo TGetKey
 
@@ -1454,7 +1454,7 @@ Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode%, FGColor&, BGColor&)
     X$ = Left$(X$, Length) 'retain only the current length
 
     T$ = X$ 'assign the string
-    Locate , , 0 'turn off the cursor
+    'Locate , , 0 'turn off the cursor
     Exit Sub
 
     TEscape:
@@ -1465,11 +1465,11 @@ Sub TextIn (T$, Max%, NumOnly%, CapsOn%, ExitCode%, FGColor&, BGColor&)
     'clear Insert mode and restore cursor, depending on monitor type
 
     Insrt = 0
-    If Clr Then
-        Locate , , , 6, 7
-    Else
-        Locate , , , 12, 13
-    End If
+    'If Clr Then
+    ''    Locate , , , 6, 7
+    'Else
+    ''    Locate , , , 12, 13
+    'End If
 
     Return
 
