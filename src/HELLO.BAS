@@ -22789,7 +22789,13 @@ Sub ChooseGameTeam (yearNumber$, numberTeams, chosenIdx, teamName$, gameIdx)
         Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
         Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
         Print
-        Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID"
+        Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID:"
+
+        If numberTeams > 0 Then 
+            yearToShow$ = _IIF(previousYear$ <> "", previousYear$, yearNumber$)
+            Locate 13, 44: Color 14, 4: Print yearToShow$: Color 15, 4
+        End If
+        
         Locate 8,
 
         I$ = GetKeyPress$
@@ -22838,6 +22844,7 @@ Sub ChooseGameTeam (yearNumber$, numberTeams, chosenIdx, teamName$, gameIdx)
                         Call CSMsgBox(MsgText$, BoxWidth, Pass)
                         I$ = GetKeyPress$
                         Call CSMsgBox("", 0, Pass)
+                        chosenIdx = 0
                         Exit Sub
 
                     Else
@@ -22875,6 +22882,7 @@ Sub ChooseGameTeam (yearNumber$, numberTeams, chosenIdx, teamName$, gameIdx)
             'Color 31: Print "LOADING..."
             chosenIdx = 1
 
+          If numberTeams > 0 Then
             Do
 
                 Call SelectGameTeam(numberTeams, yearNumber$, chosenIdx, teamName$, ExitCode%, gameIdx)
@@ -22899,6 +22907,7 @@ Sub ChooseGameTeam (yearNumber$, numberTeams, chosenIdx, teamName$, gameIdx)
 
                 'chosenIdx = -1 means there was invalid data
             Loop Until ExitCode% = 27 Or J$ = Chr$(27) Or UCase$(J$) = "N" Or chosenIdx = -1
+          End If
 
         End If 'Done checking for ESC
 
