@@ -470,7 +470,6 @@ Sub Main_Menu (menuSelection)
         menuChoices$(9) = "CONFIGURE GAME FOLDERS    "
         menuChoices$(10) = "EXIT PROGRAM             "
 
-        menuSelection = 1
         Count% = 10
         Start% = 1
         ExitCode% = 10
@@ -549,6 +548,8 @@ Sub TeamMgt_Menu ()
 
     _Title "Full Count Baseball - Team Input"
 
+    menuSelection = 1
+
     Do
 
         Cls
@@ -567,7 +568,6 @@ Sub TeamMgt_Menu ()
         menuChoices$(8) = "SWAP SPOTS ON A TEAM ROSTER"
         menuChoices$(9) = "RETURN TO MAIN MENU        "
 
-        menuSelection = 1
         Count% = 9
         Start% = 1
         ExitCode% = 9
@@ -639,6 +639,8 @@ End Sub
 'team careers
 Sub Replay_Menu ()
 
+    menuSelection = 1
+    
     Do
         Cls
 
@@ -656,7 +658,6 @@ Sub Replay_Menu ()
         menuChoices$(6) = "SORT PLAYERS BY POSITION        "
         menuChoices$(7) = "RETURN TO MAIN MENU             "
 
-        menuSelection = 1
         Count% = 7
         Start% = 1
         ExitCode% = 7
@@ -717,6 +718,8 @@ End Sub
 'leaders, stats and standings
 Sub Leaders_Menu ()
 
+    menuSelection = 1
+    
     Do
 
         Cls
@@ -736,7 +739,6 @@ Sub Leaders_Menu ()
         menuChoices$(7) = "DELETE ALL STATS FOR A LEAGUE  "
         menuChoices$(8) = "RETURN TO MAIN MENU            "
 
-        menuSelection = 1
         Count% = 8
         Start% = 1
         ExitCode% = 8

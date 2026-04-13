@@ -9,6 +9,8 @@ Sub CNGTM (userChoice)
 
     ReDim menuChoices$(1 To 4)
 
+    SELECTION% = 1
+
     Do
 
         Cls
@@ -20,7 +22,6 @@ Sub CNGTM (userChoice)
         menuChoices$(2) = "PRINT A TEAM ROSTER  "
         menuChoices$(3) = "VIEW A TEAM ROSTER   "
         menuChoices$(4) = "EXIT TO MAIN MENU    "
-        SELECTION% = 1
         Count% = 4
         Start% = 1
         ExitCode% = 4

@@ -9,6 +9,8 @@ Sub EditStats ()
 
     ReDim menuChoices$(1 To 3)
 
+    SELECTION% = 1
+
     Do
 
         Cls
@@ -19,7 +21,6 @@ Sub EditStats ()
         menuChoices$(1) = "EDIT / CHANGE REPLAY STATS    "
         menuChoices$(2) = "EDIT / CHANGE SCHEDULE RESULTS"
         menuChoices$(3) = "RETURN TO MAIN MENU           "
-        SELECTION% = 1
         Count% = 3
         Start% = 1
         ExitCode% = 3

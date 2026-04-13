@@ -11,6 +11,8 @@ Sub HD2HDLEAG ()
 
     ReDim menuChoices$(1 To 4)
 
+    SELECTION% = 1
+
     Do
 
         Color 15, 0
@@ -22,7 +24,6 @@ Sub HD2HDLEAG ()
         menuChoices$(2) = "ANALYZE ANOTHER TEAM IN THE SAME LEAGUE"
         menuChoices$(3) = "SELECT A NEW TEAM AND LEAGUE           "
         menuChoices$(4) = "RETURN TO MAIN MENU                    "
-        SELECTION% = 1
         Count% = 4
         Start% = 1
         ExitCode% = 4

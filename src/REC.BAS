@@ -30,6 +30,8 @@ Sub SeasonRecords ()
     '
     'Else
 
+    SELECTION% = 1
+
     Do
 
         Cls
@@ -41,7 +43,6 @@ Sub SeasonRecords ()
         menuChoices$(3) = "PRINT SEASON RECORDS "
         menuChoices$(4) = "DELETE SEASON RECORDS"
         menuChoices$(5) = "RETURN TO MAIN MENU  "
-        SELECTION% = 1
         Count% = 5
         Start% = 1
         ExitCode% = 3

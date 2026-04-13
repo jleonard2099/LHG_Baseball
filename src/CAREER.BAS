@@ -10,6 +10,8 @@ Sub CAREER ()
 
     ReDim menuChoices$(1 To 7)
 
+    SELECTION% = 1
+
     Do
 
         Color 15, 0
@@ -24,7 +26,6 @@ Sub CAREER ()
         menuChoices$(5) = "REVIEW CAREER RECORDS           "
         menuChoices$(6) = "MANAGE TEAM CAREER LEADERS      "
         menuChoices$(7) = "RETURN TO MAIN MENU             "
-        SELECTION% = 1
         Count% = 7
         Start% = 1
         ExitCode% = 7

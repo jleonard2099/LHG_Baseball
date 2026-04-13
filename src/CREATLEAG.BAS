@@ -17,6 +17,8 @@ Sub CREATLEAG ()
 
     ReDim menuChoices$(1 To 3)
 
+    SELECTION% = 1
+
     Do
 
         Color 15, 0
@@ -26,7 +28,6 @@ Sub CREATLEAG ()
         menuChoices$(1) = "CREATE A LEAGUE       "
         menuChoices$(2) = "MODIFY LEAGUE MEMBERS "
         menuChoices$(3) = "RETURN TO LEADERS MENU"
-        SELECTION% = 1
         Count% = 3
         Start% = 1
         ExitCode% = 3
@@ -97,20 +98,23 @@ Sub DefineLeague ()
 
     Do
 
+        'boxText$ = "The name should have no periods or special characters" + Chr$(13) + Chr$(10) + "Sample names are NL 2020, AL 2020, AA Eastern 2020"
+        'leagueName$ = _InputBox$("Enter Name for League", boxText$)
+
         Color 15, 0
         Cls
 
-        Call MenuBox(6, 8, 61, 7, 15, 1)
+        Call MenuBox(6, 8, 61, 8, 15, 1)
 
         Do
 
-            Locate 7,
+            Locate 8,
 
             Locate , 12: Print "ENTER NAME FOR LEAGUE: "
             Print
             Locate , 12: Print "THE NAME SHOULD HAVE NO PERIODS OR SPECIAL CHARACTERS"
-            Locate , 12: Print "SAMPLE NAMES ARE NL1990 AL56 1956AL NATIONAL"
-            Locate 7, 33: Input leagueName$
+            Locate , 12: Print "SAMPLE NAMES ARE NL 2020, AL 2020, AA Eastern 2020"
+            Locate 8, 33: Input leagueName$
 
             If leagueName$ <> "" Then
 
@@ -216,7 +220,7 @@ Sub ReviewEditLeague (targetFile$)
 
         For I = 1 To TEAMS_PER_DIV
 
-            Color 2: Print Using "## "; I;
+            Color 2: Print Using "  ## "; I;
             Color 15: Print Left$(memberName$(I), 17);
 
             Locate , 21
@@ -235,13 +239,13 @@ Sub ReviewEditLeague (targetFile$)
 
         Do
 
-            Locate 21, 1
+            Locate 22, 1
 
-            Color 14: Print "(1) ";
+            Color 14: Print "  (1) ";
             Color 15: Print "ADD A TEAM"
-            Color 14: Print "(2) ";
+            Color 14: Print "  (2) ";
             Color 15: Print "REMOVE A TEAM"
-            Color 14: Print "(3) ";
+            Color 14: Print "  (3) ";
             Color 15: Print "END AND SAVE LEAGUE"
 
             I$ = GetKeyPress$

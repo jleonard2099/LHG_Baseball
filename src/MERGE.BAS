@@ -9,6 +9,8 @@ Sub MERGE ()
 
     ReDim menuChoices$(1 To 3)
 
+    SELECTION% = 1
+
     Do
 
         Color , 0
@@ -19,7 +21,6 @@ Sub MERGE ()
         menuChoices$(1) = "MERGE STATISTICAL FILES"
         menuChoices$(2) = "ALIGN STATISTICAL FILES"
         menuChoices$(3) = "EXIT TO MAIN MENU      "
-        SELECTION% = 1
         Count% = 3
         Start% = 1
         ExitCode% = 3

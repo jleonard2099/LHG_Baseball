@@ -8,6 +8,8 @@ Sub CARLDR ()
 
     _Title "Full Count Baseball - Career Leaders"
 
+    SELECTION% = 1
+
     Do
 
         Color 15, 0
@@ -19,7 +21,6 @@ Sub CARLDR ()
         menuChoices$(1) = "UPDATE CAREER LEADERS   "
         menuChoices$(2) = "REVIEW CAREER LEADERS   "
         menuChoices$(3) = "RETURN TO UTILITIES MENU"
-        SELECTION% = 1
         Count% = 3
         Start% = 1
         ExitCode% = 3

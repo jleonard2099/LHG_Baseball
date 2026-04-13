@@ -16,6 +16,8 @@ Sub SCHEDULE ()
 
     _Title "Full Count Baseball - Scheduler"
 
+    SELECTION% = 1
+
     Do
 
         Color 7, 0
@@ -38,7 +40,6 @@ Sub SCHEDULE ()
         menuChoices$(7) = "BOXSCORE MAINTENANCE / PARAMETERS "
         menuChoices$(8) = "CONVERT SCHEDULE FILE FROM 6.9    "
         menuChoices$(9) = "RETURN TO FULL COUNT BB MENU      "
-        SELECTION% = 1
         Count% = 9
         Start% = 1
         ExitCode% = 9
@@ -344,6 +345,7 @@ Sub NewSchedule (scheduleFile$)
                 Call EditGame(DT$, TM$)
 
             Case "B":
+                Color 15, 2
                 Do
                     Locate LAST_ROW - 3, 1: Print "ENTER GAME # TO GO TO        "
                     Locate LAST_ROW - 3, 1: Input "ENTER GAME # TO GO TO "; targetGame%
@@ -360,6 +362,7 @@ Sub NewSchedule (scheduleFile$)
 
             Case "D":
                 ' *** DELETE A GAME FROM THE SCHEDULE ***
+                Color 15, 4
                 Do
                     Locate LAST_ROW - 3, 1: Input "ENTER GAME # TO DELETE "; targetGame%
                 Loop Until targetGame% >= 1 And targetGame% <= scheduleAP%(0)
@@ -382,6 +385,7 @@ Sub NewSchedule (scheduleFile$)
 
             Case "G":
                 'GOTO A SPECIFIC PAGE
+                Color 15, 2
                 Do
                     Locate LAST_ROW - 3, 1: Print "ENTER GAME # TO GO TO        "
                     Locate LAST_ROW - 3, 1: Input "ENTER GAME # TO GO TO "; targetGame%
@@ -588,6 +592,7 @@ Sub EditGame (DT$, TM$)
     Shared NS%
 
     ' *** EDIT A GAME ***
+    Color 15, 6
     Do
         Locate LAST_ROW - 3, 1: Print "ENTER GAME # TO EDIT        "
         Locate LAST_ROW - 3, 1: Input "ENTER GAME # TO EDIT "; targetGame%
@@ -940,12 +945,16 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
                         'Extract only
                         If Not (scheduleAction% = 4) Then
 
+                            Print
+                            Print "FOUND A MATCH - ADDING GAME # ";
+
                             Open diskPaths$(3) + subSchedFile$ + ".SCD" For Random As #1 Len = SCHEDULE_SIZE_BYTES
+
                             fileLength& = LOF(1)
-                            totalGames = fileLength& / SCHEDULE_SIZE_BYTES
+                            numberGames = fileLength& / SCHEDULE_SIZE_BYTES
 
                             'Write matching games
-                            Locate 1, 1: Print totalGames + 1; " MATCHES"
+                            Print numberGames + 1
 
                             For X = 0 To 20
                                 Field #1, X * 2 As X$, 2 As Q$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
@@ -964,7 +973,7 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
                             LSet Q$(24) = MKI$(visitorScores(I))
                             LSet Q$(25) = MKI$(homeScores(I))
 
-                            Put #1, totalGames + 1
+                            Put #1, numberGames + 1
 
                             Close 1
 
@@ -1694,16 +1703,16 @@ Sub CreateSeasonSchedule ()
     Call TITLE_SCHEDULER
 
     Color 15: Print "(0) ";
-    Color 14: Print "8 TEAM, 154 GAME SCHEDULE"
+    Color 14: Print "8 TEAMS, 1 LEAGUE, 154 GAMES (1903-1960)"
     Print
     Color 15: Print "(1) ";
-    Color 14: Print "10 TEAM, 162 GAME SCHEDULE"
+    Color 14: Print "10 TEAMS, 1 LEAGUE, 162 GAMES (1962-1968)"
     Print
     Color 15: Print "(2) ";
-    Color 14: Print "12 TEAM, 2 DIVISION, 162 GAME SCHEDULE"
+    Color 14: Print "12 TEAMS / 2 DIVISIONS, 1 LEAGUE, 162 GAMES (1969-1976)"
     Print
     Color 15: Print "(3) ";
-    Color 14: Print "14 TEAM, 2 DIVISION, 162 GAME SCHEDULE"
+    Color 14: Print "14 TEAMS / 2 DIVISIONS, 1 LEAGUE, 162 GAMES (1993-1997)"
     Print
     Color 15: Print "(4) ";
     Color 14: Print "RETURN TO FULL COUNT MAIN MENU"
