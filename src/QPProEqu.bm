@@ -879,7 +879,7 @@ Sub MMenuVert (menuChoices$(), Selected%, Start%, ScanCode%, ItemFGColor%, ItemB
         If UserIn$ = "8" Or UserIn$ = Chr$(72) Then GoSub MoveUp
         If UserIn$ = "2" Or UserIn$ = Chr$(80) Then GoSub MoveDown
         If UserIn$ = "7" Or UserIn$ = Chr$(71) Then Selected% = 1
-        If UserIn$ = "1" Or UserIn$ = Chr$(79) Then Selected% = UBound(MenuItem)
+        If UserIn$ = "1" Or UserIn$ = Chr$(79) Then Selected% = UBound(menuChoices$)
 
         GoSub DrawMenu
 

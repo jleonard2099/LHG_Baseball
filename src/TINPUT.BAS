@@ -1927,7 +1927,7 @@ Sub EditTeamInfo (YN$, team$, teamIdx)
         Max = 3
         L# = parkHR
         Call NumIn(L#, Max, XCode, FG, BG)
-        pakHR = Int(L#)
+        parkHR = Int(L#)
         Locate 17, 19: Print Using "###"; parkHR
         If XCode = 1 GoTo TripleRating:
         If XCode = 2 GoTo Done
