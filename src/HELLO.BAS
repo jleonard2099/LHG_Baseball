@@ -21038,8 +21038,8 @@ Sub BOX2FILE (printChoice, boxName$)
 
         Print #1, "TOTALS"; Tab(17); totalStats(0); Tab(22); totalStats(1); Tab(27); totalStats(4);
         Print #1, Tab(32); totalStats(6); Tab(36); totalStats(7); Tab(42);
-
         Print #1, totalStats(10); Tab(46); totalStats(16); Tab(50); totalStats(17)
+
         Print #1, Tab(20); totalStats(2); Tab(24); totalStats(3); Tab(29);
         Print #1, totalStats(5); Tab(34); totalStats(8); Tab(39); totalStats(9);
         Print #1, Tab(44); totalStats(11)
@@ -21141,8 +21141,7 @@ Sub BOX2FILE (printChoice, boxName$)
 
         Next I1
 
-        Print #1,
-        Print #1, "TOTALS"; Tab(30);
+        Print #1, "TOTALS"; Tab(29);
         Print #1, Using "##"; Int(totalStats(0) / 3);
 
         If totalStats(0) - (Int(totalStats(0) / 3) * 3) > 0 Then
@@ -21152,6 +21151,7 @@ Sub BOX2FILE (printChoice, boxName$)
 
         Print #1, Tab(34);
         Print #1, Using "## ##  ## ## ##"; totalStats(1); totalStats(2); totalStats(3); totalStats(4); totalStats(5)
+        Print #1,
 
         inningsPitched = CInt(totalStats(0) / 3)
 

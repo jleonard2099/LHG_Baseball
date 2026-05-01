@@ -3630,11 +3630,11 @@ Sub ViewPitcherHittingFielding ()
 
             If batAvg! > 0 And batAvg! < 100 Then
                 Print Tab(58); ".0";
-                Print Tab(61); Using "##"; batAvg!;
+                Print Tab(60); Using "##"; batAvg!;
             End If
             If batAvg! > 100 And batAvg! < 1000 Then
                 Print Tab(58); ".";
-                Print Tab(60); Using "###"; batAvg!;
+                Print Tab(59); Using "###"; batAvg!;
             End If
             If batAvg! >= 1000 Then
                 Print Tab(58); " ---";
