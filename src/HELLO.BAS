@@ -4447,9 +4447,17 @@ Sub SOURCE ()
         'Move cursor to current inning if score > 0
         If inningScore(P, INNING%) > 0 Then
             If useVGA = 1 Then
-                Call DisplayInningScore_G(I2, I0)
+                Color White, DarkBlue
+                Call DisplayInningScore_G(I2, I0, _True)
+                Color White, Black
             Else
                 Call DisplayInningScore(I2, I0)
+            End If
+        Else
+            If useVGA = 1 Then
+                Color White, DarkBlue
+                Call DisplayInningScore_G(I2, I0, _False)   'Show a blank space with blue background for the current half-inning
+                Color White, Black
             End If
         End If
 
@@ -5066,7 +5074,9 @@ Sub SOURCE ()
         End If
 
         If useVGA = 1 Then
-            PrintOnGfx 63, 28, Str$(nbrStrikes), imageScreen&
+            Color Orange, DarkBlue
+            PrintOnGfx 64, 28, LTrim$(Str$(nbrStrikes)), imageScreen&
+            Color White, Black
         Else
             Locate 2, 58: Print nbrStrikes
         End If
@@ -7407,7 +7417,9 @@ Sub SOURCE ()
                     End If
 
                     If useVGA = 1 Then
-                        PrintOnGfx 63, 28, Str$(nbrStrikes), imageScreen&
+                        Color Orange, DarkBlue
+                        PrintOnGfx 64, 28, LTrim$(Str$(nbrStrikes)), imageScreen&
+                        Color White, Black
                     Else
                         Locate 2, 58: Print nbrStrikes
                     End If
@@ -7524,7 +7536,9 @@ Sub SOURCE ()
             End If
 
             If useVGA = 1 Then
-                PrintOnGfx 63, 28, Str$(nbrStrikes), imageScreen&
+                Color Orange, DarkBlue
+                PrintOnGfx 64, 28, LTrim$(Str$(nbrStrikes)), imageScreen&
+                Color White, Black
             Else
                 Locate 2, 58: Print nbrStrikes
             End If
@@ -13451,7 +13465,7 @@ Sub PITDISP ()
     Print "#";
     Color teamRat_GAME(P9, 11), teamRat_GAME(P9, 12): Print gameTeams$(P9);
     Color 14, 0
-    Print " T  IP   H   G GS CG SV HR  BB  SO  W- L   ERA  H G%"
+    Locate , 18: Print "T  IP   H   G GS CG SV HR  BB  SO  W- L   ERA  H G%"
 
     For pIdx = 0 To 21:
 
@@ -14098,7 +14112,7 @@ Sub PopUp_Lineup ()
                     If batRating(J, lineupPlayer(J, X), SS_B_H) = batRating(J, lineupPlayer(J, X), SS_B_AB) Then
                         Print "1.000"
                     Else
-                        Print Using " .###"; batRating(J, lineupPlayer(J, X), SS_B_H) / batRating(J, lineupPlayer(J, X), SS_B_AB)
+                        Print "."; Using "###"; 1000 * batRating(J, lineupPlayer(J, X), SS_B_H) / batRating(J, lineupPlayer(J, X), SS_B_AB)
                     End If
                 End If
 
@@ -17842,9 +17856,9 @@ Sub VIEWTEAM ()
         If WK < 2 Then
 
             Cls
-            Color 14: Print "(1) ";: Color 15: Print "VIEW PITCHERS"
+            Color 14: Print "(1) ";: Color 15: Print "VIEW HITTERS"
             Print
-            Color 14: Print "(2) ";: Color 15: Print "VIEW HITTERS"
+            Color 14: Print "(2) ";: Color 15: Print "VIEW PITCHERS"
             Print
             Color 14: Print "(3) ";: Color 15: Print "RETURN TO PLAY"
 
@@ -18171,6 +18185,16 @@ Sub FOULBALL ()
 
         Call GetPBPString(10, 3160, fileString$)
         Call PBP(fileString$)
+    End If
+
+    nbrStrikes = _Min(nbrStrikes + 1, 2)
+
+    If useVGA = 1 Then
+        Color Orange, DarkBlue
+        PrintOnGfx 64, 28, LTrim$(Str$(nbrStrikes)), imageScreen&
+        Color White, Black
+    Else
+        Locate 2, 58: Print nbrStrikes
     End If
 End Sub
 
@@ -23589,13 +23613,18 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
     PrintOnGfx 66, 25, today$, imageScreen&
 
     'Balls
-    PrintOnGfx 63, 27, Str$(nbrBalls), imageScreen&
+    Color Lime, DarkBlue
+    PrintOnGfx 64, 27, LTrim$(Str$(nbrBalls)), imageScreen&
 
     'Outs
-    PrintOnGfx 63, 29, Str$(nbrOuts(0)), imageScreen&
+    Color Yellow, DarkBlue
+    PrintOnGfx 64, 29, LTrim$(Str$(nbrOuts(0))), imageScreen&
 
     'Strikes
-    PrintOnGfx 63, 28, Str$(nbrStrikes), imageScreen&
+    Color Orange, DarkBlue
+    PrintOnGfx 64, 28, LTrim$(Str$(nbrStrikes)), imageScreen&
+
+    Color White, Black
 
     'Infield
     _PutImage (51 * FontColAdj, 416)-Step(13 * FontColAdj, 16), backupScreen&, imageScreen&, (51 * FontColAdj, 416)-Step(13 * FontColAdj, 16)
@@ -23759,8 +23788,16 @@ Sub DisplayBallField_Gfx (nbrBalls, nbrStrikes)
     Next
 
     'Print innings, headers for runs / hits / errors, along with balls
-    FORMATTED$ = FORMATTED$(0) + FORMATTED$(1) + FORMATTED$(2) + " R  H  E B" + Str$(nbrBalls)
+    FORMATTED$ = FORMATTED$(0) + FORMATTED$(1) + FORMATTED$(2) + " R  H  E "
     PrintOnGfx 23, 27, FORMATTED$, imageScreen&
+
+    Color Lime, Black
+    PrintOnGfx 23 + Len(FORMATTED$), 27, "B", imageScreen&
+
+    Color Lime, DarkBlue
+    PrintOnGfx 25 + Len(FORMATTED$), 27, LTrim$(Str$(nbrBalls)), imageScreen&
+
+    Color White, Black
 
     For I = 0 To 1
 
@@ -23770,7 +23807,7 @@ Sub DisplayBallField_Gfx (nbrBalls, nbrStrikes)
         For I2 = inningStart% To inningEnd%
             If P = 0 And I = 0 And I2 > INNING% - 1 And inningScore(I, INNING%) = 0 Or P = 0 And I = 0 And I2 > INNING% And inningScore(I, INNING%) > 0 Or P = 1 And I2 > INNING% And I = 0 Then Exit For
             If P = 0 And I = 1 And I2 > INNING% - 1 Or P = 1 And I = 1 And inningScore(I, INNING%) = 0 And I2 > INNING% - 1 Or P = 1 And I = 1 And inningScore(I, INNING%) > 0 And I2 > INNING% Then Exit For
-            Call DisplayInningScore_G(I2, I)
+            Call DisplayInningScore_G(I2, I, _True)
         Next I2
 
         R% = gameScore(I, 0)
@@ -23780,15 +23817,25 @@ Sub DisplayBallField_Gfx (nbrBalls, nbrStrikes)
         '                         R                                         H                                                      E
         FORMATTED$ = FUsing$(Str$(gameScore(I, 0)), "##", 1) + " " + FUsing$(Str$(gameScore(I, 1)), "##", 1) + " " + FUsing$(Str$(gameScore(I, 2)), "##", 1) + " "
 
+        PrintOnGfx 53, I + 28, FORMATTED$, imageScreen&
+
         If I = 0 Then
             'Strikes
-            FORMATTED$ = FORMATTED$ + "S" + Str$(nbrStrikes)
+            ' FORMATTED$ = FORMATTED$ + "S" + Str$(nbrStrikes)
+            Color Orange, Black
+            PrintOnGfx 53 + Len(FORMATTED$), I + 28, "S", imageScreen&
+            Color Orange, DarkBlue
+            PrintOnGfx 55 + Len(FORMATTED$), I + 28, LTrim$(Str$(nbrStrikes)), imageScreen&
         Else
             'Outs
-            FORMATTED$ = FORMATTED$ + "O" + Str$(nbrOuts(0))
+            ' FORMATTED$ = FORMATTED$ + "O" + Str$(nbrOuts(0))
+            Color Yellow, Black
+            PrintOnGfx 53 + Len(FORMATTED$), I + 28, "O", imageScreen&
+            Color Yellow, DarkBlue
+            PrintOnGfx 55 + Len(FORMATTED$), I + 28, LTrim$(Str$(nbrOuts(0))), imageScreen&
         End If
 
-        PrintOnGfx 53, I + 28, FORMATTED$, imageScreen&
+        Color White, Black
 
     Next I
 
@@ -24163,7 +24210,13 @@ End Sub
 'This routine calculates where to locate
 'the cursor to print the score for the
 'current inning in the game's gfx mode.
-Sub DisplayInningScore_G (currInning, teamLine)
+'
+'When showRuns = TRUE, the # of runs in the
+'current half-inning will be shown.
+'When showRunes = FALSE, a blank space will
+'be shown (with blue background) for the
+'current half-inning.
+Sub DisplayInningScore_G (currInning, teamLine, showRuns)
 
     Dim setOf9, inningInSet, col
 
@@ -24178,9 +24231,9 @@ Sub DisplayInningScore_G (currInning, teamLine)
     ' Shift right for subsequent sets (appears to be 30 columns per set)
     If setOf9 > 0 Then col = col + setOf9 * 30
 
-    FORMATTED$ = FUsing$(Str$(inningScore(teamLine, currInning)), "##", 1)
+    FORMATTED$ = _IIF(showRuns, LTrim$(Str$(inningScore(teamLine, currInning))), " ")
 
-    PrintOnGfx col + 13, teamLine + 28, FORMATTED$, imageScreen&
+    PrintOnGfx col + 15 - Len(FORMATTED$), teamLine + 28, FORMATTED$, imageScreen&
 
 End Sub
 
