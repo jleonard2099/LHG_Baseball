@@ -21402,7 +21402,7 @@ Sub ScoreSummary
             Print IG;
         Next IG
 
-        Print "  H  R E"
+        Print "  R  H E"
 
         For I = 0 To 1
 
@@ -21448,9 +21448,9 @@ Sub ScoreSummary
         Next IG
 
         If INNING% = 9 Then
-            Print "  H  R E"
+            Print "  R  H E"
         Else
-            Print "    H  R E"
+            Print "    R  H E"
         End If
 
         For I = 0 To 1
@@ -21517,7 +21517,7 @@ Sub ScoreSummary
             Call InningColumn_Box(IG)
             Print IG;
         Next IG
-        Print "  H  R E"
+        Print "  R  H E"
 
         For I = 0 To 1
 
@@ -21601,7 +21601,7 @@ Sub ScoreSummary
             Print IG;
         Next IG
 
-        Print "  H  R E"
+        Print "  R  H E"
 
         For I = 0 To 1
 
@@ -21680,9 +21680,9 @@ Sub ScoreSummary_File
         Next I2
 
         If INNING% = 9 Then
-            Print #1, "    H  R E"
+            Print #1, "    R  H E"
         Else
-            Print #1, "      H  R E"
+            Print #1, "      R  H E"
         End If
 
         For I = 0 To 1
@@ -21808,7 +21808,7 @@ Sub ScoreSummary_File
             Print #1, Using "##"; I2;
         Next I2
 
-        Print #1, "  H  R E"
+        Print #1, "  R  H E"
 
         For I = 0 To 1
 
@@ -21839,6 +21839,7 @@ End Sub
 Sub STATS2SCREEN
 
     Shared DB, HR, TR, SB
+    Shared errorNbr
 
     Shared actualAttendance&
 
