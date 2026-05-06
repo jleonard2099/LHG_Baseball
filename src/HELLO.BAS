@@ -4521,7 +4521,7 @@ Sub SOURCE ()
         If useVGA = 1 Then
 
             'Black shadow on Background
-            ShadowTextOnGfx 1, 19, pbpString$, &HF0000000, imageScreen&
+            ShadowTextOnGfx 1, 19, pbpString$, &HFF000000, imageScreen&
 
             'White on Background
             Color &HFFFFFFFF
@@ -4548,7 +4548,7 @@ Sub SOURCE ()
             For prntRow = 21 To 30
 
                 'Black shadow on Background
-                ShadowTextOnGfx 1, prntRow - 1, F1$(prntRow - 20), &HF0000000, imageScreen&
+                ShadowTextOnGfx 1, prntRow - 1, F1$(prntRow - 20), &HFF000000, imageScreen&
 
                 'White on Background
                 Color &HFFFFFFFF
@@ -4600,7 +4600,7 @@ Sub SOURCE ()
 
                 'Black on background
                 _PrintMode _KeepBackground , imageScreen&
-                Color &HF0000000
+                Color &HFF000000
 
                 PrintOnGfx 52, 26, pbpString$, imageScreen&
 
@@ -4727,7 +4727,7 @@ Sub SOURCE ()
 
             'Black on background
             _PrintMode _KeepBackground , imageScreen&
-            Color &HF0000000
+            Color &HFF000000
 
             'Print infield status
             PrintOnGfx 51, 26, infStatus$, imageScreen&
@@ -4886,7 +4886,7 @@ Sub SOURCE ()
 
                 'Black on background
                 _PrintMode _KeepBackground , imageScreen&
-                Color &HF0000000
+                Color &HFF000000
 
                 PrintOnGfx 1, 19, pbpString$, imageScreen&
 
@@ -4908,7 +4908,7 @@ Sub SOURCE ()
 
                     'Black on background
                     _PrintMode _KeepBackground , imageScreen&
-                    Color &HF0000000
+                    Color &HFF000000
 
                     PrintOnGfx 1, prntRow - 1, F1$(prntRow - 20), imageScreen&
 
@@ -5478,7 +5478,7 @@ Sub SOURCE ()
     End Select
 
     If chanceRoll <= game_batRating(P, GM_BB, currLineupSlot(P)) + bbEraAdj + umpBBadj(4) Then
-        S2% = EVENT_INTERFERENCE
+        S2% = EVENT_BASE_ON_BALLS
         Call BASEONBALLS(S2%, D2, baseRunners)
         GoTo LFreeBase
     End If
@@ -7503,8 +7503,8 @@ Sub SOURCE ()
             Call Rolld100(roll)
 
             idx = 0
-            Do While idx <= 2 And RN0 > buntTriple(RR, idx)
-                idx = idx + 1
+            Do While idx <= 2
+                If RN0 > buntTriple(RR, idx) Then idx = idx + 1     'QB64 does not short-circuit compound conditionals
             Loop
 
             Select Case idx + 1
@@ -10184,7 +10184,7 @@ Sub PBP (pbpString$)
         For I = 1 To outputLines
 
             If useVGA = 1 Then
-                Color &HFFFFFFFF, &HF0000000
+                Color &HFFFFFFFF, &HFF000000
                 _PrintMode _FillBackground , imageScreen&
                 PrintOnGfx 20, I + 3, pbpText$(I), imageScreen&
             Else
@@ -12929,7 +12929,7 @@ Sub WINDEX ()
 
         If useVGA = 1 Then
 
-            Color &HFFFFFFFF
+            Color &HFFFFFFFF, &HFF000000
             _PrintMode _FillBackground , imageScreen&
 
             For I5 = 4 To 11
@@ -13537,7 +13537,7 @@ Sub PITPLACEMENT (X$)
         If useVGA = 1 Then
 
             'Black shadow on Background
-            ShadowTextOnGfx 42, 25, X$, &HF0000000, imageScreen&
+            ShadowTextOnGfx 42, 25, X$, &HFF000000, imageScreen&
 
             'White on background
             Color &HFFFFFFFF
@@ -13559,7 +13559,7 @@ Sub PITPLACEMENT (X$)
         If useVGA = 1 Then
 
             'Black shadow on Background
-            ShadowTextOnGfx 32, 25, X$, &HF0000000, imageScreen&
+            ShadowTextOnGfx 32, 25, X$, &HFF000000, imageScreen&
 
             'White on background
             Color &HFFFFFFFF
@@ -15549,7 +15549,8 @@ End Sub
 'Play-by-Play for a Base-on-Balls
 Sub BASEONBALLS (S2%, D2, baseStatus)
 
-    S2% = EVENT_INTERFERENCE
+    S2% = EVENT_BASE_ON_BALLS
+    battersFaced(D, currPitcher(D)) = battersFaced(D, currPitcher(D)) + 1
 
     Call WINDEX
 
@@ -23524,7 +23525,7 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
         If batRating(P, J, 0) < 0 Or batRating(P, J, 0) = 0 And pitchRating(D, currPitcher(D), 0) > 0 Then
 
             'Black shadow on Background
-            ShadowTextOnGfx 41, 25, Left$(X$, 11), &HF0000000, imageScreen&
+            ShadowTextOnGfx 41, 25, Left$(X$, 11), &HFF000000, imageScreen&
 
             'White on background
             _PrintMode _KeepBackground , imageScreen&
@@ -23538,7 +23539,7 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
         If batRating(P, J, 0) > 0 Or batRating(P, J, 0) = 0 And pitchRating(D, currPitcher(D), 0) < 0 Then
 
             'Black shadow on Background
-            ShadowTextOnGfx 30, 25, Left$(X$, 11), &HF0000000, imageScreen&
+            ShadowTextOnGfx 30, 25, Left$(X$, 11), &HFF000000, imageScreen&
 
             'White on background
             _PrintMode _KeepBackground , imageScreen&
@@ -23654,7 +23655,7 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
 
     'Black on background
     _PrintMode _KeepBackground , imageScreen&
-    Color &HF0000000
+    Color &HFF000000
 
     PrintOnGfx 51, 26, infStatus$, imageScreen&
 
@@ -23726,8 +23727,8 @@ Sub DisplayRun_G (baseNbr, Xcoord)
             runner$ = PadRight(runner$, 11)
 
             'Black shadow on Background
-            ShadowTextOnGfx Xcoord, Ycoord - 1, runner$, &HF0000000, imageScreen&
-            ShadowTextOnGfx Xcoord, Ycoord, runStats$, &HF0000000, imageScreen&
+            ShadowTextOnGfx Xcoord, Ycoord - 1, runner$, &HFF000000, imageScreen&
+            ShadowTextOnGfx Xcoord, Ycoord, runStats$, &HFF000000, imageScreen&
 
             'White on background
             _PrintMode _KeepBackground , imageScreen&
@@ -23743,8 +23744,8 @@ Sub DisplayRun_G (baseNbr, Xcoord)
             runStats$ = FUsing$(Str$(batRating(P, lineupPlayer(P, J), SS_B_Run)), "#", 1) + "/" + FUsing$(Str$(batRating(P, lineupPlayer(P, J), SS_B_SB)), "###", 1)
 
             'Black shadow on Background
-            ShadowTextOnGfx Xcoord, Ycoord - 1, runner$, &HF0000000, imageScreen&
-            ShadowTextOnGfx Xcoord, Ycoord, runStats$, &HF0000000, imageScreen&
+            ShadowTextOnGfx Xcoord, Ycoord - 1, runner$, &HFF000000, imageScreen&
+            ShadowTextOnGfx Xcoord, Ycoord, runStats$, &HFF000000, imageScreen&
 
             'White on background
             _PrintMode _KeepBackground , imageScreen&
@@ -24450,9 +24451,9 @@ End Sub
 '----------------------------------------
 '        ShadowTextOnGfx Subroutine
 '----------------------------------------
-Sub ShadowTextOnGfx (Col%, Row%, Text$, txtColor&, tgtScrn&)
+Sub ShadowTextOnGfx (Col%, Row%, Text$, txtColor~&, tgtScrn&)
 
-    Color txtColor&
+    Color txtColor~&
     _PrintMode _KeepBackground , tgtScrn&
 
     shadowCol = (Col% * _PrintWidth("W")) + 2
