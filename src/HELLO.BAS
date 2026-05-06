@@ -286,6 +286,14 @@ For I = 11 To 0 Step -1
     Next
 Next
 
+' Screen x,y coordinates for defensive positions 1 to 9 (Catcher to Right Fielder)
+Data 35,21, 35,26, 61,19, 46,17, 13,19, 28,17, 7,16, 36,14, 64,16
+For I = 1 To 9
+    For I1 = 0 To 1
+        Read screenLocation(I, I1)
+    Next
+Next
+
 ' Game options
 modeAbbrev$(0) = "HH"
 modeAbbrev$(1) = "CV"
@@ -4074,6 +4082,7 @@ Sub SOURCE ()
 
     Shared buntTriple(), setupUsed(), closerUsed()
     Shared umpBBadj(), umpSZadj(), umpRunAdj()
+    Shared screenLocation()
 
     VV(0) = 1
     VV(1) = 1
@@ -4432,6 +4441,8 @@ Sub SOURCE ()
     LContinueBatter:
     'Print #11, "DEBUG: Processing LContinueBatter"
 
+    DisplayFielder_Gfx 1    'refresh pitcher display (with new color?), in case he's now tiring or tired
+
     Do
 
         If useVGA = 1 Then
@@ -4568,6 +4579,7 @@ Sub SOURCE ()
         'Restore image where commands went
         If useVGA = 1 Then
             _PutImage (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176), backupScreen&, imageScreen&, (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176)
+            DisplayFielder_Gfx 5    'redisplay the 3rd baseman that may have been overwritten
         End If
 
         If UCase$(I$) = "D" Then
@@ -4924,6 +4936,7 @@ Sub SOURCE ()
 
         If useVGA = 1 Then
             _PutImage (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176), backupScreen&, imageScreen&, (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176)
+            DisplayFielder_Gfx 5    'redisplay the 3rd baseman that may have been overwritten
         End If
 
         If UCase$(I$) = "D" Then
@@ -23750,6 +23763,93 @@ Sub DisplayRun_G (baseNbr, Xcoord)
 End Sub
 
 
+Function GetTirednessColor~& ()
+
+    stamHits = pitcherStam(D, 0) - teamPitStats(D, currPitcher(D), LG_P_BB) - teamPitStats(D, currPitcher(D), LG_P_H)
+    stamRuns = pitcherStam(D, 1) - teamPitStats(D, currPitcher(D), LG_P_R)
+
+    If stamHits <= 0 And stamRuns <= 0 Then
+        GetTirednessColor~& = OrangeRed
+    ElseIf stamHits <= 1 And stamRuns <= 0 Or stamHits <= 0 And stamRuns <= 1 Then
+        GetTirednessColor~& = Yellow
+    Else
+        GetTirednessColor~& = Black
+    End If
+
+End Function
+
+
+Function FieldPct$ (fp)
+
+    If fp = 1000 Then
+        FieldPct$ = "1.000"
+    Else
+        If fp = 0 Then
+            FieldPct$ = " .000"
+        Else
+            FieldPct$ = "." + FUsing$(Str$(fp), "###", 1)
+        End If
+    End If
+
+End Function
+
+
+Sub DisplayFielder_Gfx (iPos)
+    Shared screenLocation()
+
+    xx = screenLocation(iPos, 0)
+    yy = screenLocation(iPos, 1)
+
+   _PutImage (xx * FontColAdj, yy * 16)-Step(16 * FontColAdj, 2 * 16), backupScreen&, imageScreen&, (xx * FontColAdj, yy * 16)-Step(16 * FontColAdj, 2 * 16)
+
+    player$ = PadRight(Left$( batters$(D, fielder(D, iPos)), 12), 12)
+
+    foreColor~& = Black
+
+    If iPos = 1 Then
+        foreColor~& = GetTirednessColor~&
+        player$ = "[" + handed$(pitchRating(D, currPitcher(D), 0) + 2) + "] " + Left$(pitchers$(D, currPitcher(D)), 10)
+    ElseIf iPos = 2 Then
+        player$ = player$ + "A" + FUsing$(Str$(batRating(D, fielder(D, iPos), 15)), "#", 1)
+    Else
+        player$ = RTrim$(player$)   'PadRight(player$, 10)
+    End If
+
+    'Light grey shadow on background
+    'ShadowTextOnGfx xx, yy, player$, _RGB32(224, 224, 224), imageScreen&
+
+    'Black on background
+    '_PrintMode _KeepBackground , imageScreen&
+    'Color Black
+    _PrintMode _FillBackground , imageScreen&
+    Color foreColor~&, _IIf(foreColor~& = Black, &H2FFFFFFF, &H2F000000)
+
+    PrintOnGfx xx, yy, player$, imageScreen&
+
+    If iPos = 2 Then Exit Sub
+
+    If iPos = 1 Then
+        fldPct$ = FieldPct$(pitchRating(D, currPitcher(D), 17))
+        player$ = "H" + FUsing$(Str$(pitchRating(D, currPitcher(D), 18)), "#", 1) + " F" + fldPct$
+    Else
+        fldPct$ = FieldPct$(batRating(D, fielder(D, iPos), 19))
+        player$ = "A" + FUsing$(Str$(batRating(D, fielder(D, iPos), 15)), "#", 1) + " R" + FUsing$(Str$(batRating(D, fielder(D, iPos), 17)), "#", 1) + " F" + fldPct$
+    End If
+
+
+    'Light grey shadow on background
+    'ShadowTextOnGfx xx, yy+1, player$, _RGB32(224, 224, 224), imageScreen&
+
+    'Black on background
+''    _PrintMode _KeepBackground , imageScreen&
+''    Color Black
+    _PrintMode _FillBackground , imageScreen&
+    Color Black, &H2FFFFFFF
+
+    PrintOnGfx xx, yy+1, player$, imageScreen&
+End Sub
+
+
 '----------------------------------------
 '    DisplayBallField_Gfx Subroutine
 '----------------------------------------
@@ -23839,6 +23939,16 @@ Sub DisplayBallField_Gfx (nbrBalls, nbrStrikes)
 
     Next I
 
+    ' --------------------
+    ' Print the 9 fielders  TODO: Remove everything after "Exit Sub"
+    For ii = 1 To 9
+        DisplayFielder_Gfx ii
+    Next
+    Color White, Black
+
+    Exit Sub
+    ' --------------------
+    
     'Center Field
     _PutImage (36 * FontColAdj, 224)-Step(13 * FontColAdj, 32), backupScreen&, imageScreen&, (36 * FontColAdj, 224)-Step(13 * FontColAdj, 32)
 
