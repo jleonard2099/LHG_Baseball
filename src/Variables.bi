@@ -332,6 +332,7 @@ Dim errorNbr
 Dim bestBatterIdx(0 To 9)
 Dim bestBatterFPos(0 To 9), bLineupIdx(0 To 9)
 Dim buntTriple(0 To 11, 0 To 2)
+Dim screenLocation(1 To 9, 0 To 1)
 Dim gameMgrIdx(0 To 1)
 Dim gameDaysRest(0 To 1, 0 To 21)
 Dim mgrFile(1)

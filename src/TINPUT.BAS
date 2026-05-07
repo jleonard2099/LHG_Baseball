@@ -439,7 +439,7 @@ Sub LoadTeam (targetTeam$, SS, statFile$)
         MsgText$ = "NO COMPILED STATS COULD BE FOUND FOR THIS TEAM. PRESS ANY KEY TO RETURN TO THE MAIN MENU"
         BoxWidth = 24
         BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-        Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+        Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
         Call CSMsgBox(MsgText$, BoxWidth, Pass)
         I$ = GetKeyPress$
         Call CSMsgBox("", 0, Pass)
@@ -623,7 +623,7 @@ Sub BuntRatingNew ()
     Next
 
     Color 14
-    Locate LAST_ROW - 1: Print "PRESS ANY KEY TO CONTINUE";
+    Locate 25 - 1: Print "PRESS ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
     Cls
@@ -655,7 +655,7 @@ Sub BuntRatingNew ()
     Next
 
     Color 14
-    Locate LAST_ROW - 1: Print "PRESS ANY KEY TO CONTINUE";
+    Locate 25 - 1: Print "PRESS ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
 End Sub
@@ -695,7 +695,7 @@ Sub RunRatingNew ()
     Next
 
     Color 14
-    Locate LAST_ROW - 1: Print "PRESS ANY KEY TO CONTINUE!";
+    Locate 25 - 1: Print "PRESS ANY KEY TO CONTINUE!";
     I$ = GetKeyPress$
 
     Cls
@@ -720,7 +720,7 @@ Sub RunRatingNew ()
     Next
 
     Color 14
-    Locate LAST_ROW - 1: Print "PRESS ANY KEY TO CONTINUE!";
+    Locate 25 - 1: Print "PRESS ANY KEY TO CONTINUE!";
     I$ = GetKeyPress$
 
 End Sub
@@ -1649,7 +1649,7 @@ Sub EditBatter ()
 
             bDone:
             Color 14, 1
-            Locate LAST_ROW - 1, 1
+            Locate 25 - 1, 1
             Print "Is this okay? (Yes/No) ";
             X$ = ""
             Call YesNoB(X$, XCode, FG, BG)
@@ -2257,7 +2257,7 @@ Sub EditTeamInfo (YN$, team$, teamIdx)
             MsgText$ = "TEAM INDEX OR TEAM NAME NOT COMPLETED. PRESS ANY KEY TO RETURN TO DATA ENTRY"
             BoxWidth = 26
             BoxHeight = (Len(MsgText$) / BoxWidth) + 3 'top and box lines + 1 extra
-            Locate ((LAST_ROW - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
+            Locate ((25 - BoxHeight) / 2), (80 - ((BoxWidth + 2) / 2))
             Call CSMsgBox(MsgText$, BoxWidth, Pass)
             I$ = GetKeyPress$
             Call CSMsgBox("", 0, Pass)
@@ -3235,7 +3235,7 @@ Sub EditPitcher ()
             If XCode = 1 GoTo PRRBB:
 
             PDone:
-            Locate LAST_ROW - 1, 1
+            Locate 25 - 1, 1
             Print "Is this okay? (Yes/No) ";
             X$ = ""
             Call YesNoB(X$, XCode, FG, BG)
@@ -3569,7 +3569,7 @@ Sub ViewPitchers (teamName$)
     Print "TOTAL APPEARANCES: "; numberAppearances
 
     Color 14
-    Locate LAST_ROW - 1, 28: Print "HIT ANY KEY TO CONTINUE";
+    Locate 25 - 1, 28: Print "HIT ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
 End Sub
@@ -3652,7 +3652,7 @@ Sub ViewPitcherHittingFielding ()
     Next
 
     Color 14
-    Locate LAST_ROW - 2, 28: Print "HIT ANY KEY TO CONTINUE";
+    Locate 25 - 2, 28: Print "HIT ANY KEY TO CONTINUE";
     I$ = GetKeyPress$
 
 End Sub
