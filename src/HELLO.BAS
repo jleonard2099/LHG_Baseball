@@ -3987,7 +3987,12 @@ Sub PitchingStarter (luTeamIdx)
             Do
                 I$ = GetKeyPress$
                 Call LetterToNumber(I$, pitchIdx)
-            Loop Until pitchIdx <= 21 And pitchRating(luTeamIdx, pitchIdx, SS_P_Avail) <= 0
+                If pitchIdx <= 21 Then  'QB64 does not short-circuit compound conditionals
+                    If pitchRating(luTeamIdx, pitchIdx, SS_P_Avail) <= 0 Then 
+                        Exit Do
+                    End If
+                End If
+            Loop
 
         End If
 
@@ -8120,7 +8125,7 @@ Sub SOURCE ()
                 'Warn if not an injured pitcher who has not faced 3 batters
 
                 'If pitchRating(D, currPitcher(D), SS_P_Avail) <> 99 And (batterMinimumOpt = 1 And battersFaced(D, currPitcher(D)) < 3) Then
-                If (batterMinimumOpt = 1 And battersFaced(D, currPitcher(D)) < 3) Then
+                If Not PitcherCanBeRelieved Then
 
                     'Print error for human user reminding them
                     'of the rules in effect for batters
@@ -8185,6 +8190,7 @@ Sub SOURCE ()
                         currPitcher(P9) = I1
                         gamePitcher(P9) = gamePitcher(P9) + 1
                         pitchRating(P9, I1, SS_P_Avail) = gamePitcher(P9)
+                        inningEntered(P9, currPitcher(P9)) = INNING%
 
                         Call PITSTAM(P9)
                         Call CHECKSAVE(baseRunners)
@@ -8808,7 +8814,7 @@ Sub SOURCE ()
     If newRelieverNeeded(D) = 1 Then
 
         'Always call reliever if pinch hitting; otherwise check if batter count
-        If pinchHitterFlag = 1 Or (batterMinimumOpt = 0 Or (batterMinimumOpt = 1 And battersFaced(D, currPitcher(D)) >= 3)) Then
+        If pinchHitterFlag = 1 Or PitcherCanBeRelieved Then
             newRelieverNeeded(D) = 0
             Call RELIEVERS(pinchHitterFlag, newPitcherFlag, baseRunners)
         End If
@@ -9057,7 +9063,7 @@ Sub SOURCE ()
         fielder(D, 1) = 99 Then
 
         'Always call reliever if pinch hitting; otherwise check if batter count
-        If pinchHitterFlag = 1 Or (batterMinimumOpt = 0 Or (batterMinimumOpt = 1 And battersFaced(D, currPitcher(D)) >= 3)) Then
+        If pinchHitterFlag = 1 Or PitcherCanBeRelieved Then
             Call RELIEVERS(pinchHitterFlag, newPitcherFlag, baseRunners)
         End If
         If useVGA = 1 Then
@@ -9795,6 +9801,8 @@ Sub InitVar ()
             If pitchRating(team, I3, SS_P_Avail) <> 99 Then
                 pitchRating(team, I3, SS_P_Avail) = 0
             End If
+
+            inningEntered(team, I3) = 1
         Next
     Next
 
@@ -13014,6 +13022,7 @@ Sub NEWPITCHER (pIdx, pinchHitterFlag, newPitcherFlag, baseStatus, INFPOS%)
 
     If gamePitcher(D) > 1 Then
         battersFaced(D, currPitcher(D)) = 0
+        inningEntered(D, currPitcher(D)) = INNING%
     End If
 
     Call PITSTAM(P9)
@@ -15732,6 +15741,7 @@ Sub RELIEVERS (pinchHitterFlag, newPitcherFlag, baseStatus)
     End If
 
     battersFaced(D, currPitcher(D)) = 0
+    inningEntered(D, currPitcher(D)) = INNING%
 
     If newPitcherFlag = 1 Then
 
@@ -22797,6 +22807,21 @@ End Function
 
 
 '----------------------------------------
+'         PitcherCanBeRelieved Function
+'----------------------------------------
+'If the 3-batter-minimum feature is turned ON,
+'a relief pitcher has to face at least 3 batters,
+'unless he has finished an inning.
+Function PitcherCanBeRelieved ()
+
+    PitcherCanBeRelieved = batterMinimumOpt = 0 Or _
+      (batterMinimumOpt = 1 And _
+      (battersFaced(D, currPitcher(D)) >= 3 OR inningEntered(D, currPitcher(D)) < INNING%))
+
+End Function
+
+
+'----------------------------------------
 '            pbplog Routine
 '----------------------------------------
 'This subroutine is designed to help me
@@ -23510,7 +23535,9 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
     End If
 
     'H / BB / K
-    pStats$ = pStats$ + " " + FUsing$(Str$(teamPitStats(D, currPitcher(D), LG_P_H)), "##", 1) + " " + FUsing$(Str$(teamPitStats(D, currPitcher(D), 4)), "##", 1) + " " + FUsing$(Str$(teamPitStats(D, currPitcher(D), LG_P_K)), "##", 1)
+    pStats$ = pStats$ + " " + FUsing$(Str$(teamPitStats(D, currPitcher(D), LG_P_H )), "##", 1) _
+                      + " " + FUsing$(Str$(teamPitStats(D, currPitcher(D), LG_P_BB)), "##", 1) _
+                      + " " + FUsing$(Str$(teamPitStats(D, currPitcher(D), LG_P_K )), "##", 1)
 
     PrintOnGfx 65, 29, pStats$, imageScreen&
 
@@ -23824,7 +23851,7 @@ Sub DisplayFielder_Gfx (iPos)
     ElseIf iPos = 2 Then
         player$ = player$ + "A" + FUsing$(Str$(batRating(D, fielder(D, iPos), 15)), "#", 1)
     Else
-        player$ = RTrim$(player$)   'PadRight(player$, 10)
+        player$ = RTrim$(player$)
     End If
 
     'Light grey shadow on background
@@ -24335,7 +24362,7 @@ End Sub
 '
 'When showRuns = TRUE, the # of runs in the
 'current half-inning will be shown.
-'When showRunes = FALSE, a blank space will
+'When showRuns = FALSE, a blank space will
 'be shown (with blue background) for the
 'current half-inning.
 Sub DisplayInningScore_G (currInning, teamLine, showRuns)

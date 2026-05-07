@@ -378,7 +378,7 @@ Dim DOME, turfType, windRating
 ' 11 = retreat 1 base, tagged out
 Dim Shared assigned(1 To 9), baseMove(0 To 3)
 Dim Shared bRunner(3), b1Pitcher(3), b2Pitcher(3)
-Dim Shared batRating(0 To 1, 0 To 22, 80), battersFaced(0 To 1, 0 To 21)
+Dim Shared batRating(0 To 1, 0 To 22, 80), battersFaced(0 To 1, 0 To 21), inningEntered(0 To 1, 0 To 21)
 Dim Shared buntBaseHit(0 To 9, 0 To 2), buntLeadRun(9, 1)
 Dim Shared buntQuality(0 To 1, 1 To 9, 1 To 9), buntStrike(0 To 5, 0 To 2)
 Dim Shared closerZone(0 To 1), CSS(1, 22, 6)
