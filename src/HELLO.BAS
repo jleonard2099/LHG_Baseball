@@ -7508,8 +7508,11 @@ Sub SOURCE ()
             Call Rolld100(roll)
 
             idx = 0
-            Do While idx <= 2
-                If RN0 > buntTriple(RR, idx) Then idx = idx + 1     'QB64 does not short-circuit compound conditionals
+            Do While idx <= 2 
+                If RN0 <= buntTriple(RR, idx) Then       'QB64 does not short-circuit compound conditionals
+                    Exit Do
+                End If
+                idx = idx + 1
             Loop
 
             Select Case idx + 1
@@ -23861,7 +23864,8 @@ Sub DisplayFielder_Gfx (iPos)
     '_PrintMode _KeepBackground , imageScreen&
     'Color Black
     _PrintMode _FillBackground , imageScreen&
-    Color foreColor~&, _IIf(foreColor~& = Black, &H2FFFFFFF, &H2F000000)
+    alphaChannel~& = &H40000000
+    Color foreColor~&, _IIf(foreColor~& = Black, (alphaChannel~& OR &HFFFFFF), alphaChannel~&)
 
     PrintOnGfx xx, yy, player$, imageScreen&
 
@@ -23883,7 +23887,7 @@ Sub DisplayFielder_Gfx (iPos)
 ''    _PrintMode _KeepBackground , imageScreen&
 ''    Color Black
     _PrintMode _FillBackground , imageScreen&
-    Color Black, &H2FFFFFFF
+    Color Black, alphaChannel~& OR &HFFFFFF
 
     PrintOnGfx xx, yy+1, player$, imageScreen&
 End Sub
