@@ -23844,16 +23844,16 @@ Sub DisplayFielder_Gfx (iPos)
 
    _PutImage (xx * FontColAdj, yy * 16)-Step(16 * FontColAdj, 2 * 16), backupScreen&, imageScreen&, (xx * FontColAdj, yy * 16)-Step(16 * FontColAdj, 2 * 16)
 
-    player$ = PadRight(Left$( batters$(D, fielder(D, iPos)), 12), 12)
-
     foreColor~& = Black
 
     If iPos = 1 Then
         foreColor~& = GetTirednessColor~&
         player$ = "[" + handed$(pitchRating(D, currPitcher(D), 0) + 2) + "] " + Left$(pitchers$(D, currPitcher(D)), 10)
     ElseIf iPos = 2 Then
+        player$ = PadRight(Left$( batters$(D, fielder(D, iPos)), 12), 12)
         player$ = player$ + "A" + FUsing$(Str$(batRating(D, fielder(D, iPos), 15)), "#", 1)
     Else
+        player$ = PadRight(Left$( batters$(D, fielder(D, iPos)), 12), 12)
         player$ = RTrim$(player$)
     End If
 
@@ -23864,7 +23864,7 @@ Sub DisplayFielder_Gfx (iPos)
     '_PrintMode _KeepBackground , imageScreen&
     'Color Black
     _PrintMode _FillBackground , imageScreen&
-    alphaChannel~& = &H40000000
+    alphaChannel~& = &H30000000
     Color foreColor~&, _IIf(foreColor~& = Black, (alphaChannel~& OR &HFFFFFF), alphaChannel~&)
 
     PrintOnGfx xx, yy, player$, imageScreen&
