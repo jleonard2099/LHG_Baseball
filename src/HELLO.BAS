@@ -4463,17 +4463,13 @@ Sub SOURCE ()
         'Move cursor to current inning if score > 0
         If inningScore(P, INNING%) > 0 Then
             If useVGA = 1 Then
-                Color White, DarkBlue
-                Call DisplayInningScore_G(I2, I0, _True)
-                Color White, Black
+                Call DisplayInningScore_G(I2, I0)
             Else
                 Call DisplayInningScore(I2, I0)
             End If
         Else
             If useVGA = 1 Then
-                Color White, DarkBlue
-                Call DisplayInningScore_G(I2, I0, _False)   'Show a blank space with blue background for the current half-inning
-                Color White, Black
+                Call DisplayInningScore_G(I2, I0)   'Will show a blank space instead of zero for the current half-inning
             End If
         End If
 
@@ -23950,7 +23946,7 @@ Sub DisplayBallField_Gfx (nbrBalls, nbrStrikes)
         For I2 = inningStart% To inningEnd%
             If P = 0 And I = 0 And I2 > INNING% - 1 And inningScore(I, INNING%) = 0 Or P = 0 And I = 0 And I2 > INNING% And inningScore(I, INNING%) > 0 Or P = 1 And I2 > INNING% And I = 0 Then Exit For
             If P = 0 And I = 1 And I2 > INNING% - 1 Or P = 1 And I = 1 And inningScore(I, INNING%) = 0 And I2 > INNING% - 1 Or P = 1 And I = 1 And inningScore(I, INNING%) > 0 And I2 > INNING% Then Exit For
-            Call DisplayInningScore_G(I2, I, _True)
+            Call DisplayInningScore_G(I2, I)
         Next I2
 
         R% = gameScore(I, 0)
@@ -24369,7 +24365,7 @@ End Sub
 'When showRuns = FALSE, a blank space will
 'be shown (with blue background) for the
 'current half-inning.
-Sub DisplayInningScore_G (currInning, teamLine, showRuns)
+Sub DisplayInningScore_G (currInning, teamLine)
 
     Dim setOf9, inningInSet, col
 
@@ -24384,9 +24380,16 @@ Sub DisplayInningScore_G (currInning, teamLine, showRuns)
     ' Shift right for subsequent sets (appears to be 30 columns per set)
     If setOf9 > 0 Then col = col + setOf9 * 30
 
-    FORMATTED$ = _IIF(showRuns, LTrim$(Str$(inningScore(teamLine, currInning))), " ")
+    inningRuns = inningScore(teamLine, currInning)
+    FORMATTED$ = LTrim$(Str$(inningRuns))
+
+    If currInning = INNING% And teamLine = P Then
+        Color White, DarkBlue
+        If inningRuns = 0 Then FORMATTED$ = " "
+    End If
 
     PrintOnGfx col + 15 - Len(FORMATTED$), teamLine + 28, FORMATTED$, imageScreen&
+    Color White, Black
 
 End Sub
 
