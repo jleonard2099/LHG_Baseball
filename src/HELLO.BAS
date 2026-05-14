@@ -4460,17 +4460,11 @@ Sub SOURCE ()
 
         I0 = P
 
-        'Move cursor to current inning if score > 0
-        If inningScore(P, INNING%) > 0 Then
-            If useVGA = 1 Then
-                Call DisplayInningScore_G(I2, I0)
-            Else
-                Call DisplayInningScore(I2, I0)
-            End If
+        If useVGA = 1 Then
+            Call DisplayInningScore_G(I2, I0)
         Else
-            If useVGA = 1 Then
-                Call DisplayInningScore_G(I2, I0)   'Will show a blank space instead of zero for the current half-inning
-            End If
+            'Move cursor to current inning if score > 0
+            If inningScore(P, INNING%) > 0 Then Call DisplayInningScore(I2, I0)
         End If
 
         'Print total score
@@ -8434,12 +8428,8 @@ Sub SOURCE ()
                     I$ = GetKeyPress$
 
                     If Asc(I$) = 32 Then
-                        If PG = 0 Then
-                            PG = 1
-                        Else
-                            PG = 0
-                            Call DisplayBatter_Lineup(PG)
-                        End If
+                        PG = 1 - PG
+                        Call DisplayBatter_Lineup(PG)
                     End If
 
                     If Asc(I$) = 9 Then
@@ -10821,7 +10811,7 @@ Sub DisplayBatter_Lineup (page)
             'BA
             If batRating(P9, idx, SS_B_AB) <> 0 Then
                 bAvg! = batRating(P9, idx, SS_B_H) / batRating(P9, idx, SS_B_AB)
-                Print Using "###"; Int(((bAvg!) + .0005) * 1000);
+                Print Using "###"; Int(((bAvg!) + .0005) * 1000)
             Else
                 Print
             End If
@@ -11252,7 +11242,7 @@ Sub DisplayFielding_Lineup (page, TG)
 
     Next luIdx
 
-    TG = TG + 1
+    TG = 1 - TG
 
 End Sub
 
@@ -23909,6 +23899,8 @@ Sub DisplayBallField_Gfx (nbrBalls, nbrStrikes)
         inningEnd% = 27
     End If
 
+    Color White, Black
+
     'Print Batter / Pitcher box
     '----------------------------------------
     For I = 23 To 30
@@ -23944,9 +23936,7 @@ Sub DisplayBallField_Gfx (nbrBalls, nbrStrikes)
         PrintOnGfx 15, I + 28, Left$(gameTeams$(I), 3) + teamAbbreviatons$(I), imageScreen&
 
         For I2 = inningStart% To inningEnd%
-            If P = 0 And I = 0 And I2 > INNING% - 1 And inningScore(I, INNING%) = 0 Or P = 0 And I = 0 And I2 > INNING% And inningScore(I, INNING%) > 0 Or P = 1 And I2 > INNING% And I = 0 Then Exit For
-            If P = 0 And I = 1 And I2 > INNING% - 1 Or P = 1 And I = 1 And inningScore(I, INNING%) = 0 And I2 > INNING% - 1 Or P = 1 And I = 1 And inningScore(I, INNING%) > 0 And I2 > INNING% Then Exit For
-            Call DisplayInningScore_G(I2, I)
+            If I = 0 And I2 <= INNING% Or I = 1 And I2 < INNING% Then Call DisplayInningScore_G(I2, I)
         Next I2
 
         R% = gameScore(I, 0)
@@ -24359,12 +24349,6 @@ End Sub
 'This routine calculates where to locate
 'the cursor to print the score for the
 'current inning in the game's gfx mode.
-'
-'When showRuns = TRUE, the # of runs in the
-'current half-inning will be shown.
-'When showRuns = FALSE, a blank space will
-'be shown (with blue background) for the
-'current half-inning.
 Sub DisplayInningScore_G (currInning, teamLine)
 
     Dim setOf9, inningInSet, col

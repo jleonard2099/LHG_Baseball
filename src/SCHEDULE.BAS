@@ -956,7 +956,7 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
                             'Write matching games
                             Print numberGames + 1
 
-                            For X = 0 To 20
+                            For X = 0 To 18
                                 Field #1, X * 2 As X$, 2 As Q$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
                             Next
 
@@ -1224,7 +1224,7 @@ Sub SaveScheduleFile (saveFile$)
 
     Open saveFile$ For Random As #1 Len = SCHEDULE_SIZE_BYTES
 
-    For X = 0 To 20
+    For X = 0 To 18
         Field #1, X * 2 As X$, 2 As Q$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
     Next
 
@@ -1623,7 +1623,7 @@ Sub LoadScheduleInfo (targetFile$)
     scheduleAP%(0) = fileLength& / SCHEDULE_SIZE_BYTES
     BS% = Int((scheduleAP%(0) - 1) / SCHED_ENTRIES_PER_SCREEN)
 
-    For X = 0 To 20
+    For X = 0 To 18
         Field #1, X * 2 As X$, 2 As Q$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
     Next
 
@@ -1758,7 +1758,7 @@ Sub CreateSeasonSchedule ()
             scheduleAP%(0) = fileLength& / SCHEDULE_SIZE_BYTES
             BS% = Int((scheduleAP%(0) - 1) / SCHED_ENTRIES_PER_SCREEN)
 
-            For X = 0 To 20
+            For X = 0 To 18
                 Field #1, X * 2 As X$, 2 As Q$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
             Next
 
