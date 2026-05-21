@@ -4636,14 +4636,16 @@ Sub SOURCE ()
         End If
 
         If UCase$(I$) = "B" Then
-            If useVGA = 1 Then Screen menu&
+            If useVGA = 1 Then Screen menu&: Cls
             Call PopUp_Batter(D, currPitcher(D))
+            I$ = GetKeyPress$
             GoTo 15580
         End If
 
         If UCase$(I$) = "P" Then
-            If useVGA = 1 Then Screen menu&
+            If useVGA = 1 Then Screen menu&: Cls
             Call PopUp_Pitcher(P, currPitcher(P))
+            I$ = GetKeyPress$
             GoTo 15580
         End If
 
@@ -14330,7 +14332,7 @@ End Sub
 'batters and pitchers.
 Sub POPUPSTATS ()
 
-    If useVGA = 1 Then Screen menu&
+    If useVGA = 1 Then Screen menu&: Cls
 
     J = lineupPlayer(P, currLineupSlot(P))
 
@@ -18776,8 +18778,8 @@ End Sub
 Sub WEATHER ()
 
     If useVGA = 1 Then
-        Cls
         Screen menu&
+        Cls
     End If
 
     Call FRAMEOPTION(5, 1)
@@ -23517,8 +23519,10 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
     PrintOnGfx 66, 28, "IP   H BB  K", imageScreen&
 
     'IP
-    If teamPitStats(D, currPitcher(D), LG_P_OUT) <> 0 Then
-        pStats$ = FUsing$(Str$(Int(teamPitStats(D, currPitcher(D), LG_P_OUT) / 3)), "##.#", 1)
+    pitOuts = teamPitStats(D, currPitcher(D), LG_P_OUT)
+    If pitOuts <> 0 Then
+        pitInn! = pitOuts \ 3 + (pitOuts Mod 3) / 10
+        pStats$ = FUsing$(Str$(pitInn!), "##.#", 1)
     Else
         pStats$ = " 0.0"
     End If
@@ -23850,8 +23854,9 @@ Sub DisplayFielder_Gfx (iPos)
     '_PrintMode _KeepBackground , imageScreen&
     'Color Black
     _PrintMode _FillBackground , imageScreen&
-    alphaChannel~& = &H30000000
-    Color foreColor~&, _IIf(foreColor~& = Black, (alphaChannel~& OR &HFFFFFF), alphaChannel~&)
+    backColor~& = &H30000000                                'black background with alpha transparency value of &H30 (0 is 100% transparent, &HFF (default) is 100% opaque)
+    If foreColor~& = Black Then backColor~& = &H30FFFFFF    'if foreground text is black, blend with white background instead of black
+    Color foreColor~&, backColor~&
 
     PrintOnGfx xx, yy, player$, imageScreen&
 

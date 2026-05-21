@@ -17,6 +17,7 @@ Const SS_B_W = 11
 Const SS_B_K = 12
 Const SS_B_SB = 13
 Const SS_B_CS = 14
+Const SS_B_SH = 15      ' currently unreferenced -- added here as documentation for reading team files
 Const SS_B_Arm = 15
 Const SS_B_Run = 16
 Const SS_B_Range = 17
