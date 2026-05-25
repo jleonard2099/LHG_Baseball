@@ -23634,7 +23634,7 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
                 If pAvg! = 0 Then
                     PrintOnGfx 65, 24, ".000  0   0   0", imageScreen&
                 Else
-                    pStats$ = FUsing$(Str$(pAvg! * 1000), ".###", 1)
+                    pStats$ = "." + FUsing$(Str$(pAvg! * 1000), "###", 1)
                     '                          HR                                                BB              K
                     pStats$ = pStats$ + " " + FUsing$(Str$(pitchRating(P, currPitcher(P), 25)), "##", 1) + " " + FUsing$(Str$(pitchRating(P, currPitcher(P), 27)), "###", 1) + " " + FUsing$(Str$(pitchRating(P, currPitcher(P), 28)), "###", 1)
                     PrintOnGfx 65, 24, pStats$, imageScreen&
@@ -23878,7 +23878,6 @@ Sub DisplayFielder_Gfx (iPos)
 ''    _PrintMode _KeepBackground , imageScreen&
 ''    Color Black
     _PrintMode _FillBackground , imageScreen&
-    Color Black, alphaChannel~& OR &HFFFFFF
 
     PrintOnGfx xx, yy+1, player$, imageScreen&
 End Sub
