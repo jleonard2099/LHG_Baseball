@@ -290,7 +290,7 @@ Next
 Data 35,21, 35,26, 61,19, 46,17, 13,19, 28,17, 7,16, 36,14, 64,16
 For I = 1 To 9
     For I1 = 0 To 1
-        Read screenLocation(I, I1)
+        Read fldrScreenLoc(I, I1)
     Next
 Next
 
@@ -1163,13 +1163,16 @@ Sub LOADER
                 Field #6, X * 2 As X$, 2 As Q2$(X + 1), SCHEDULE_SIZE_BYTES - 2 - 2 * X As X$
             Next
 
-            Field #6, 38 As X$, 2 As Q2$(22), 2 As Q2$(23), 5 As Q2$(20), 5 As Q2$(21), 2 As Q$(20), 2 As Q$(21)
+            Field #6, 38 As X$, 2 As Q2$(22), 2 As Q2$(23), 5 As Q2$(20), 5 As Q2$(21), 2 As SBatOptMin$, 2 As SGhostRun$
 
             Get #6, schedGame(0) + schedGame(2)
 
             For X = 0 To 18
                 schedOptions(X) = CVI(Q2$(X + 1))
             Next
+
+            schedOptions(19) = CVI(SBatOptMin$)
+            schedOptions(20) = CVI(SGhostRun$)
 
             For X = 0 To 1
                 diskIDs$(X) = _Trim$(Q2$(20 + X))
@@ -4087,7 +4090,7 @@ Sub SOURCE ()
 
     Shared buntTriple(), setupUsed(), closerUsed()
     Shared umpBBadj(), umpSZadj(), umpRunAdj()
-    Shared screenLocation()
+    Shared fldrScreenLoc()
 
     VV(0) = 1
     VV(1) = 1
@@ -4328,7 +4331,7 @@ Sub SOURCE ()
 
             Cls
 
-            If useVGA = 0 Then Screen menu&
+            If useVGA = 1 Then Screen menu&: Cls
 
             P9 = D
             nbrStrikes = 0
@@ -4355,7 +4358,12 @@ Sub SOURCE ()
                 For I = 1 To 9:
 
                     Color 3, 0
-                    If bestBatterFPos(P9) = I Then Color 9
+                    ' Commenting out the line below because it's causing an invalid subscript error.
+                    ' Presumably the intention was to color someone in the lineup differently, but I don't
+                    ' know why or how.
+
+                    'If bestBatterFPos(P9) = I Then Color 9
+
                     Locate I + 4, 5: Print Using "# "; I;
 
                     If fldPos(P9, I) = 1 Then
@@ -4446,7 +4454,7 @@ Sub SOURCE ()
     LContinueBatter:
     'Print #11, "DEBUG: Processing LContinueBatter"
 
-    DisplayFielder_Gfx 1    'refresh pitcher display (with new color?), in case he's now tiring or tired
+    If useVGA = 1 Then DisplayFielder_Gfx 1    'refresh pitcher display (with new color?), in case he's now tiring or tired
 
     Do
 
@@ -9837,6 +9845,8 @@ Sub AUTOSETUP (validTeam)
     useVGA = schedOptions(11)
     pitchEraOpt = schedOptions(14)
     gameMonth = schedOptions(17)
+    batterMinimumOpt = schedOptions(19)
+    ghostRunOpt= schedOptions(20)
 
     If schedOptions(15) < 1600 Then
         dayOrNight = 0
@@ -13537,13 +13547,13 @@ Sub PITPLACEMENT (X$)
         If useVGA = 1 Then
 
             'Black shadow on Background
-            ShadowTextOnGfx 42, 25, X$, &HFF000000, imageScreen&
+            ShadowTextOnGfx 41, 25, X$, &HFF000000, imageScreen&
 
             'White on background
             Color &HFFFFFFFF
             _PrintMode _KeepBackground , imageScreen&
 
-            PrintOnGfx 42, 25, X$, imageScreen&
+            PrintOnGfx 41, 25, X$, imageScreen&
 
         Else
 
@@ -13559,7 +13569,7 @@ Sub PITPLACEMENT (X$)
         If useVGA = 1 Then
 
             'Black shadow on Background
-            ShadowTextOnGfx 32, 25, X$, &HFF000000, imageScreen&
+            ShadowTextOnGfx 30, 25, X$, &HFF000000, imageScreen&
 
             'White on background
             Color &HFFFFFFFF
@@ -14109,7 +14119,7 @@ Sub PopUp_Lineup ()
                         If pitchRating(J, currPitcher(J), SS_P_H_AB) = pitchRating(J, currPitcher(J), SS_P_H_H) Then
                             Print "1.000"
                         Else
-                            Print " ."; Using "###"; pitchRating(J, currPitcher(J), SS_P_H_H) / pitchRating(J, currPitcher(J), SS_P_H_AB)
+                            Print "."; Using "###"; 1000 * pitchRating(J, currPitcher(J), SS_P_H_H) / pitchRating(J, currPitcher(J), SS_P_H_AB)
                         End If
                     End If
 
@@ -14223,7 +14233,8 @@ Sub PopUp_Batter (WK, M)
         If teamBatStats(WK, M, 1) + teamBatStats(WK, M, 7) = teamBatStats(WK, M, 0) + teamBatStats(WK, M, 7) Then
             Locate , 20: Print "1.000";
         Else
-            Locate , 21: Print Using ".###"; (teamBatStats(WK, M, 1) + teamBatStats(WK, M, 7)) / (teamBatStats(WK, M, 0) + teamBatStats(WK, M, 7));
+            statInnPitchCT! = (teamBatStats(WK, M, 1) + teamBatStats(WK, M, 7)) / (teamBatStats(WK, M, 0) + teamBatStats(WK, M, 7))
+            Locate , 21: Print Using ".###"; statInnPitchCT!;
         End If
     End If
 
@@ -14410,8 +14421,22 @@ Sub POPUPSTATS ()
             If pitchRating(P, currPitcher(P), SS_P_H_AB) = 0 Then
                 Print ".---  .---"
             Else
-                Print Using ".###  .### ### ### ### ### ## "; pitchRating(P, currPitcher(P), SS_P_H_H) / pitchRating(P, currPitcher(P), SS_P_H_AB); (pitchRating(P, currPitcher(P), SS_P_H_H) + pitchRating(P, currPitcher(P), SS_P_H_BB)) / (pitchRating(P, currPitcher(P), SS_P_H_BB) + pitchRating(P, currPitcher(P), SS_P_H_AB)); pitchRating(P, currPitcher(P), 19); pitchRating(P, currPitcher(P), SS_P_H_AB); pitchRating(P, currPitcher(P), 21); pitchRating(P, currPitcher(P), SS_P_H_H); pitchRating(P, currPitcher(P), SS_P_H_2B);
-                Print Using "## ## ### ### ### ### ##"; pitchRating(P, currPitcher(P), SS_P_H_3B); pitchRating(P, currPitcher(P), SS_P_H_HR); pitchRating(P, currPitcher(P), SS_P_H_RBI); pitchRating(P, currPitcher(P), SS_P_H_BB); pitchRating(P, currPitcher(P), SS_P_H_SO); pitchRating(P, currPitcher(P), SS_P_H_SB); pitchRating(P, currPitcher(P), SS_P_H_CS)
+                statInnPitchCT!  = pitchRating(P, currPitcher(P), SS_P_H_H) / pitchRating(P, currPitcher(P), SS_P_H_AB)
+                statInnPitchCT2! = (pitchRating(P, currPitcher(P), SS_P_H_H) + pitchRating(P, currPitcher(P), SS_P_H_BB)) / (pitchRating(P, currPitcher(P), SS_P_H_BB) + pitchRating(P, currPitcher(P), SS_P_H_AB))
+                Print Using ".###  .### ### ### ### ### ## "; statInnPitchCT!; statInnPitchCT2!; _
+                    pitchRating(P, currPitcher(P), SS_P_H_G); _
+                    pitchRating(P, currPitcher(P), SS_P_H_AB); _
+                    pitchRating(P, currPitcher(P), SS_P_H_R); _
+                    pitchRating(P, currPitcher(P), SS_P_H_H); _
+                    pitchRating(P, currPitcher(P), SS_P_H_2B);
+                Print Using "## ## ### ### ### ### ##"; _
+                    pitchRating(P, currPitcher(P), SS_P_H_3B); _
+                    pitchRating(P, currPitcher(P), SS_P_H_HR); _
+                    pitchRating(P, currPitcher(P), SS_P_H_RBI); _
+                    pitchRating(P, currPitcher(P), SS_P_H_BB); _
+                    pitchRating(P, currPitcher(P), SS_P_H_SO); _
+                    pitchRating(P, currPitcher(P), SS_P_H_SB); _
+                    pitchRating(P, currPitcher(P), SS_P_H_CS)
             End If
 
         End If
@@ -23532,7 +23557,9 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
                       + " " + FUsing$(Str$(teamPitStats(D, currPitcher(D), LG_P_BB)), "##", 1) _
                       + " " + FUsing$(Str$(teamPitStats(D, currPitcher(D), LG_P_K )), "##", 1)
 
+    Color Yellow, Black
     PrintOnGfx 65, 29, pStats$, imageScreen&
+    Color White, Black
 
     J = lineupPlayer(P, currLineupSlot(P))
 
@@ -23645,6 +23672,8 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
         End If
 
     End If
+
+    Color Yellow, Black
 
     ' # - # TODAY
     If fldPos(P, currLineupSlot(P)) <> 1 Then
@@ -23827,10 +23856,10 @@ End Function
 
 
 Sub DisplayFielder_Gfx (iPos)
-    Shared screenLocation()
+    Shared fldrScreenLoc()
 
-    xx = screenLocation(iPos, 0)
-    yy = screenLocation(iPos, 1)
+    xx = fldrScreenLoc(iPos, 0)
+    yy = fldrScreenLoc(iPos, 1)
 
    _PutImage (xx * FontColAdj, yy * 16)-Step(16 * FontColAdj, 2 * 16), backupScreen&, imageScreen&, (xx * FontColAdj, yy * 16)-Step(16 * FontColAdj, 2 * 16)
 
@@ -23973,342 +24002,11 @@ Sub DisplayBallField_Gfx (nbrBalls, nbrStrikes)
     Next I
 
     ' --------------------
-    ' Print the 9 fielders  TODO: Remove everything after "Exit Sub"
+    ' Print the 9 fielders
     For ii = 1 To 9
         DisplayFielder_Gfx ii
     Next
     Color White, Black
-
-    Exit Sub
-    ' --------------------
-    
-    'Center Field
-    _PutImage (36 * FontColAdj, 224)-Step(13 * FontColAdj, 32), backupScreen&, imageScreen&, (36 * FontColAdj, 224)-Step(13 * FontColAdj, 32)
-
-    'Left Field
-    _PutImage (7 * FontColAdj, 256)-Step(16 * FontColAdj, 32), backupScreen&, imageScreen&, (7 * FontColAdj, 256)-Step(16 * FontColAdj, 32)
-
-    'Right Field
-    _PutImage (64 * FontColAdj, 256)-Step(16 * FontColAdj, 32), backupScreen&, imageScreen&, (64 * FontColAdj, 256)-Step(16 * FontColAdj, 32)
-
-    'Short Stop
-    _PutImage (28 * FontColAdj, 272)-Step(12 * FontColAdj, 32), backupScreen&, imageScreen&, (28 * FontColAdj, 272)-Step(12 * FontColAdj, 32)
-
-    '2nd Base
-    _PutImage (46 * FontColAdj, 272)-Step(13 * FontColAdj, 32), backupScreen&, imageScreen&, (46 * FontColAdj, 272)-Step(13 * FontColAdj, 32)
-
-    '3rd Base
-    _PutImage (13 * FontColAdj, 304)-Step(12 * FontColAdj, 32), backupScreen&, imageScreen&, (13 * FontColAdj, 304)-Step(12 * FontColAdj, 32)
-
-    '1st Base
-    _PutImage (61 * FontColAdj, 304)-Step(12 * FontColAdj, 32), backupScreen&, imageScreen&, (61 * FontColAdj, 304)-Step(12 * FontColAdj, 32)
-
-    'Pitcher
-    _PutImage (35 * FontColAdj, 336)-Step(16 * FontColAdj, 32), backupScreen&, imageScreen&, (35 * FontColAdj, 336)-Step(16 * FontColAdj, 32)
-
-    'Catcher
-    _PutImage (35 * FontColAdj, 416)-Step(13 * FontColAdj, 32), backupScreen&, imageScreen&, (35 * FontColAdj, 416)-Step(13 * FontColAdj, 32)
-
-    player$ = Left$(batters$(D, fielder(D, 8)), 11)
-    player$ = PadRight(player$, 11)
-
-    'Print all positions around the diamond
-    '----------------------------------------
-    'Light grey shadow on background
-    ShadowTextOnGfx 36, 14, player$, _RGB32(224, 224, 224), imageScreen&
-
-    'Black on background
-    _PrintMode _KeepBackground , imageScreen&
-    Color &HF0000000
-
-    'Center Field Name
-    PrintOnGfx 36, 14, player$, imageScreen&
-
-    'Center Field Stats
-    If batRating(D, fielder(D, 8), 19) = 1000 Then
-        fldPct$ = "1.000"
-    Else
-        If batRating(D, fielder(D, 8), 19) = 0 Then
-            fldPct$ = " .000"
-        Else
-            fldPct$ = "." + FUsing$(Str$(batRating(D, fielder(D, 8), 19)), "###", 1)
-        End If
-    End If
-
-    player$ = "A" + FUsing$(Str$(batRating(D, fielder(D, 8), 15)), "#", 1) + " R" + FUsing$(Str$(batRating(D, fielder(D, 8), 17)), "#", 1) + " F" + fldPct$
-
-    'Light grey shadow on background
-    ShadowTextOnGfx 36, 15, player$, _RGB32(224, 224, 224), imageScreen&
-
-    'Black on background
-    _PrintMode _KeepBackground , imageScreen&
-    Color &HF0000000
-
-    PrintOnGfx 36, 15, player$, imageScreen&
-
-    'Left Field Name
-    player$ = Left$(batters$(D, fielder(D, 7)), 10)
-    player$ = PadRight(player$, 10)
-
-    'Light grey shadow on background
-    ShadowTextOnGfx 7, 16, player$, _RGB32(224, 224, 224), imageScreen&
-
-    'Black on background
-    _PrintMode _KeepBackground , imageScreen&
-    Color &HF0000000
-
-    PrintOnGfx 7, 16, player$, imageScreen&
-
-    'Left Field Stats
-    If batRating(D, fielder(D, 7), 19) = 1000 Then
-        fldPct$ = "1.000"
-    Else
-        If batRating(D, fielder(D, 7), 19) = 0 Then
-            fldPct$ = " .000"
-        Else
-            fldPct$ = "." + FUsing$(Str$(batRating(D, fielder(D, 7), 19)), "###", 1)
-        End If
-    End If
-
-    player$ = "A" + FUsing$(Str$(batRating(D, fielder(D, 7), 15)), "#", 1) + " R" + FUsing$(Str$(batRating(D, fielder(D, 7), 17)), "#", 1) + " F" + fldPct$
-
-    'Light grey shadow on background
-    ShadowTextOnGfx 7, 17, player$, _RGB32(224, 224, 224), imageScreen&
-
-    'Black on background
-    _PrintMode _KeepBackground , imageScreen&
-    Color &HF0000000
-
-    PrintOnGfx 7, 17, player$, imageScreen&
-
-    'Right Field Name
-    player$ = Left$(batters$(D, fielder(D, 9)), 10)
-    player$ = PadRight(player$, 10)
-
-    'Light grey shadow on background
-    ShadowTextOnGfx 64, 16, player$, _RGB32(224, 224, 224), imageScreen&
-
-    'Black on background
-    _PrintMode _KeepBackground , imageScreen&
-    Color &HF0000000
-
-    PrintOnGfx 64, 16, player$, imageScreen&
-
-    'Right Field Stats
-    If batRating(D, fielder(D, 9), 19) = 1000 Then
-        fldPct$ = "1.000"
-    Else
-        If batRating(D, fielder(D, 9), 19) = 0 Then
-            fldPct$ = " .000"
-        Else
-            fldPct$ = "." + FUsing$(Str$(batRating(D, fielder(D, 9), 19)), "###", 1)
-        End If
-    End If
-
-    player$ = "A" + FUsing$(Str$(batRating(D, fielder(D, 9), 15)), "#", 1) + " R" + FUsing$(Str$(batRating(D, fielder(D, 9), 17)), "#", 1) + " F" + fldPct$
-
-    'Light grey shadow on background
-    ShadowTextOnGfx 64, 17, player$, _RGB32(224, 224, 224), imageScreen&
-
-    'Black on background
-    _PrintMode _KeepBackground , imageScreen&
-    Color &HF0000000
-
-    PrintOnGfx 64, 17, player$, imageScreen&
-
-    'Short Stop Name
-    player$ = Left$(batters$(D, fielder(D, 6)), 10)
-    player$ = PadRight(player$, 10)
-
-    'Light grey shadow on background
-    ShadowTextOnGfx 28, 17, player$, _RGB32(224, 224, 224), imageScreen&
-
-    'Black on background
-    _PrintMode _KeepBackground , imageScreen&
-    Color &HF0000000
-
-    PrintOnGfx 28, 17, player$, imageScreen&
-
-    'Short Stop Stats
-    If batRating(D, fielder(D, 6), 19) = 1000 Then
-        fldPct$ = "1.000"
-    Else
-        If batRating(D, fielder(D, 6), 19) = 0 Then
-            fldPct$ = " .000"
-        Else
-            fldPct$ = "." + FUsing$(Str$(batRating(D, fielder(D, 6), 19)), "###", 1)
-        End If
-    End If
-
-    player$ = "R" + FUsing$(Str$(batRating(D, fielder(D, 6), 17)), "#", 1) + " F" + fldPct$
-
-    'Light grey shadow on background
-    ShadowTextOnGfx 28, 18, player$, _RGB32(224, 224, 224), imageScreen&
-
-    'Black on background
-    _PrintMode _KeepBackground , imageScreen&
-    Color &HF0000000
-
-    PrintOnGfx 28, 18, player$, imageScreen&
-
-    '2nd Base Name
-    player$ = Left$(batters$(D, fielder(D, 4)), 10)
-    player$ = PadRight(player$, 10)
-
-    'Light grey shadow on background
-    ShadowTextOnGfx 46, 17, player$, _RGB32(224, 224, 224), imageScreen&
-
-    'Black on background
-    _PrintMode _KeepBackground , imageScreen&
-    Color &HF0000000
-
-    PrintOnGfx 46, 17, player$, imageScreen&
-
-    '2nd Base Stats
-    If batRating(D, fielder(D, 4), 19) = 1000 Then
-        fldPct$ = "1.000"
-    Else
-        If batRating(D, fielder(D, 4), 19) = 0 Then
-            fldPct$ = " .000"
-        Else
-            fldPct$ = "." + FUsing$(Str$(batRating(D, fielder(D, 4), 19)), "###", 1)
-        End If
-    End If
-
-    player$ = "R" + FUsing$(Str$(batRating(D, fielder(D, 4), 17)), "#", 1) + " F" + fldPct$
-
-    'Light grey shadow on background
-    ShadowTextOnGfx 46, 18, player$, _RGB32(224, 224, 224), imageScreen&
-
-    'Black on background
-    _PrintMode _KeepBackground , imageScreen&
-    Color &HF0000000
-
-    PrintOnGfx 46, 18, player$, imageScreen&
-
-    '3rd Base Name
-    player$ = Left$(batters$(D, fielder(D, 5)), 10)
-    player$ = PadRight(player$, 10)
-
-    'Light grey shadow on background
-    ShadowTextOnGfx 13, 19, player$, _RGB32(224, 224, 224), imageScreen&
-
-    'Black on background
-    _PrintMode _KeepBackground , imageScreen&
-    Color &HF0000000
-
-    PrintOnGfx 13, 19, player$, imageScreen&
-
-    '3rd Base Stats
-    If batRating(D, fielder(D, 5), 19) = 1000 Then
-        fldPct$ = "1.000"
-    Else
-        If batRating(D, fielder(D, 5), 19) = 0 Then
-            fldPct$ = " .000"
-        Else
-
-            fldPct$ = "." + FUsing$(Str$(batRating(D, fielder(D, 5), 19)), "###", 1)
-        End If
-    End If
-
-    player$ = "R" + FUsing$(Str$(batRating(D, fielder(D, 5), 17)), "#", 1) + " F" + fldPct$
-
-    'Light grey shadow on background
-    ShadowTextOnGfx 13, 20, player$, _RGB32(224, 224, 224), imageScreen&
-
-    'Black on background
-    _PrintMode _KeepBackground , imageScreen&
-    Color &HF0000000
-
-    PrintOnGfx 13, 20, player$, imageScreen&
-
-    '1st Base Name
-    player$ = Left$(batters$(D, fielder(D, 3)), 10)
-    player$ = PadRight(player$, 10)
-
-    'Light grey shadow on background
-    ShadowTextOnGfx 61, 19, player$, _RGB32(224, 224, 224), imageScreen&
-
-    'Black on background
-    _PrintMode _KeepBackground , imageScreen&
-    Color &HF0000000
-
-    PrintOnGfx 61, 19, player$, imageScreen&
-
-    '1st Base Stats
-    If batRating(D, fielder(D, 3), 19) = 1000 Then
-        fldPct$ = "1.000"
-    Else
-        If batRating(D, fielder(D, 3), 19) = 0 Then
-            fldPct$ = " .000"
-        Else
-            fldPct$ = "." + FUsing$(Str$(batRating(D, fielder(D, 3), 19)), "###", 1)
-        End If
-    End If
-
-    player$ = "R" + FUsing$(Str$(batRating(D, fielder(D, 3), 17)), "#", 1) + " F" + fldPct$
-
-    'Light grey shadow on background
-    ShadowTextOnGfx 61, 20, player$, _RGB32(224, 224, 224), imageScreen&
-
-    'Black on background
-    _PrintMode _KeepBackground , imageScreen&
-    Color &HF0000000
-
-    PrintOnGfx 61, 20, player$, imageScreen&
-
-    'Pitcher Name
-    player$ = "[" + handed$(pitchRating(D, currPitcher(D), 0) + 2) + "] " + Left$(pitchers$(D, currPitcher(D)), 10)
-    player$ = PadRight(player$, 14)
-
-    'Light grey shadow on background
-    ShadowTextOnGfx 35, 21, player$, _RGB32(224, 224, 224), imageScreen&
-
-    'Black on background
-    _PrintMode _KeepBackground , imageScreen&
-    Color &HF0000000
-
-    PrintOnGfx 35, 21, player$, imageScreen&
-
-    'Pitcher Stats
-    If pitchRating(D, currPitcher(D), 17) = 1000 Then
-        fldPct$ = "1.000"
-    Else
-        If pitchRating(D, currPitcher(D), 17) = 0 Then
-            fldPct$ = " .000"
-        Else
-            fldPct$ = "." + FUsing$(Str$(pitchRating(D, currPitcher(D), 17)), "###", 1)
-        End If
-    End If
-
-    player$ = "H" + FUsing$(Str$(pitchRating(D, currPitcher(D), 18)), "#", 1) + " F" + fldPct$
-
-    'Light grey shadow on background
-    ShadowTextOnGfx 35, 22, player$, _RGB32(224, 224, 224), imageScreen&
-
-    'Black on background
-    _PrintMode _KeepBackground , imageScreen&
-    Color &HF0000000
-
-    PrintOnGfx 35, 22, player$, imageScreen&
-
-    'Catcher Name
-    player$ = Left$(batters$(D, fielder(D, 2)), 10)
-    player$ = PadRight(player$, 10)
-    player$ = player$ + "A" + FUsing$(Str$(batRating(D, fielder(D, 2), 15)), "#", 1)
-
-    'Light grey shadow on background
-    ShadowTextOnGfx 35, 26, player$, _RGB32(224, 224, 224), imageScreen&
-
-    'Black on background
-    _PrintMode _KeepBackground , imageScreen&
-    Color &HF0000000
-
-    PrintOnGfx 35, 26, player$, imageScreen&
-
-    'Printing white on black
-    Color &HFFFFFFFF
-    _PrintMode _FillBackground , imageScreen&
 
 End Sub
 
