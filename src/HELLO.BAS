@@ -4324,7 +4324,7 @@ Sub SOURCE ()
 
     'Status of pitcher taking the mound = fielder(D, 1)
 
-    'Inured pitcher
+    'Pitcher was Injured or pinch hit for
     If fielder(D, 1) = 99 Then
 
         If playerMode = 0 Or (playerMode = 1 And D <> compTeam) Then
@@ -4355,14 +4355,17 @@ Sub SOURCE ()
 
                 Locate 5, 1
 
+                ' Positions the pinch hitter can play
+                phPos1 = batRating(D, lineupPlayer(D, fielder(D, 0)), SS_B_Pos1)
+                phPos2 = batRating(D, lineupPlayer(D, fielder(D, 0)), SS_B_Pos2)
+                phPos3 = batRating(D, lineupPlayer(D, fielder(D, 0)), SS_B_Pos3)
+                phPos4 = batRating(D, lineupPlayer(D, fielder(D, 0)), SS_B_Pos4)
+
                 For I = 1 To 9:
 
                     Color 3, 0
-                    ' Commenting out the line below because it's causing an invalid subscript error.
-                    ' Presumably the intention was to color someone in the lineup differently, but I don't
-                    ' know why or how.
-
-                    'If bestBatterFPos(P9) = I Then Color 9
+                    If fldPos(D, I) = phPos1 Then Color 11
+                    If fldPos(D, I) = phPos2 OR fldPos(D, I) = phPos3 OR fldPos(D, I) = phPos4 Then Color 9
 
                     Locate I + 4, 5: Print Using "# "; I;
 
@@ -23514,7 +23517,7 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
     _PutImage (29 * FontColAdj, 400)-Step(24 * FontColAdj, 16), backupScreen&, imageScreen&, (29 * FontColAdj, 400)-Step(24 * FontColAdj, 16)
 
     'Printing white on black
-    Color &HFFFFFFFF
+    Color White, Black
     _PrintMode _FillBackground , imageScreen&
 
     '-----

@@ -96,7 +96,7 @@ Sub ACTIVATE ()
 
         Cls
 
-        Open diskPaths$(0) + TEAM_FILE_NAME$ + "." + yearNumber$ For Random As #1 Len = TEAM_SIZE_BYTES
+        Open diskPaths$(0) + TEAM_FILE_NAME$ + "." + YN$ For Random As #1 Len = TEAM_SIZE_BYTES
 
         Field #1, 15 As Q$(0), 2 As Q$(1), 2 As Q$(2), 2 As Q$(3), 2 As Q$(4), 2 As Q$(5), 2 As Q$(6), 2 As Q$(7), 2 As Q$(8), 2 As Q$(9), 2 As Q$(10), 2 As Q$(11), 2 As Q$(12), 2 As Q$(13), 4 As Q$(14), 4297 As X$
 
