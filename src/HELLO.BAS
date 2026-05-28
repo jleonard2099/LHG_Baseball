@@ -2733,10 +2733,14 @@ Sub SelectBatters (validBatters, luTeamIdx)
 
                 Case Else:
                     If I1 >= 0 And I1 <= 22 Then
-                        batRating(luTeamIdx, I1, SS_B_Avail) = 99
-                        Color 0, 7
-                        Locate I1 + 2, 3: Print batters$(luTeamIdx, I1);
-                        Color 15, 0
+                        Locate I1 + 2, 3
+                        If batRating(luTeamIdx, I1, SS_B_Avail) = 0 Then
+                            batRating(luTeamIdx, I1, SS_B_Avail) = 99
+                            Color 0, 7: Print batters$(luTeamIdx, I1): Color 15, 0
+                        Else
+                            batRating(luTeamIdx, I1, SS_B_Avail) = 0
+                            Color 15, 0: Print batters$(luTeamIdx, I1)
+                        End If
                     End If
 
             End Select
@@ -24114,7 +24118,7 @@ Sub LOADSCREEN ()
     _PutImage (51 * FontColAdj, 416)-Step(14 * FontColAdj, 16), imageScreen&, backupScreen&, (51 * FontColAdj, 416)-Step(14 * FontColAdj, 16)
 
     'Center Field
-    _PutImage (36 * FontColAdj, 224)-Step(13 * FontColAdj, 32), imageScreen&, backupScreen&, (36 * FontColAdj, 224)-Step(13 * FontColAdj, 32)
+    _PutImage (36 * FontColAdj, 224)-Step(16 * FontColAdj, 32), imageScreen&, backupScreen&, (36 * FontColAdj, 224)-Step(16 * FontColAdj, 32)
 
     'Left Field
     _PutImage (7 * FontColAdj, 256)-Step(16 * FontColAdj, 32), imageScreen&, backupScreen&, (7 * FontColAdj, 256)-Step(16 * FontColAdj, 32)
@@ -24123,22 +24127,22 @@ Sub LOADSCREEN ()
     _PutImage (64 * FontColAdj, 256)-Step(16 * FontColAdj, 32), imageScreen&, backupScreen&, (64 * FontColAdj, 256)-Step(16 * FontColAdj, 32)
 
     'Short Stop
-    _PutImage (28 * FontColAdj, 272)-Step(12 * FontColAdj, 32), imageScreen&, backupScreen&, (28 * FontColAdj, 272)-Step(12 * FontColAdj, 32)
+    _PutImage (28 * FontColAdj, 272)-Step(16 * FontColAdj, 32), imageScreen&, backupScreen&, (28 * FontColAdj, 272)-Step(16 * FontColAdj, 32)
 
     '2nd Base
-    _PutImage (46 * FontColAdj, 272)-Step(13 * FontColAdj, 32), imageScreen&, backupScreen&, (46 * FontColAdj, 272)-Step(13 * FontColAdj, 32)
+    _PutImage (46 * FontColAdj, 272)-Step(16 * FontColAdj, 32), imageScreen&, backupScreen&, (46 * FontColAdj, 272)-Step(16 * FontColAdj, 32)
 
     '3rd Base
-    _PutImage (13 * FontColAdj, 304)-Step(12 * FontColAdj, 32), imageScreen&, backupScreen&, (13 * FontColAdj, 304)-Step(12 * FontColAdj, 32)
+    _PutImage (13 * FontColAdj, 304)-Step(16 * FontColAdj, 32), imageScreen&, backupScreen&, (13 * FontColAdj, 304)-Step(16 * FontColAdj, 32)
 
     '1st Base
-    _PutImage (61 * FontColAdj, 304)-Step(12 * FontColAdj, 32), imageScreen&, backupScreen&, (61 * FontColAdj, 304)-Step(12 * FontColAdj, 32)
+    _PutImage (61 * FontColAdj, 304)-Step(16 * FontColAdj, 32), imageScreen&, backupScreen&, (61 * FontColAdj, 304)-Step(16 * FontColAdj, 32)
 
     'Pitcher
     _PutImage (35 * FontColAdj, 336)-Step(16 * FontColAdj, 32), imageScreen&, backupScreen&, (35 * FontColAdj, 336)-Step(16 * FontColAdj, 32)
 
     'Catcher
-    _PutImage (35 * FontColAdj, 416)-Step(13 * FontColAdj, 16), imageScreen&, backupScreen&, (35 * FontColAdj, 416)-Step(13 * FontColAdj, 16)
+    _PutImage (35 * FontColAdj, 416)-Step(16 * FontColAdj, 16), imageScreen&, backupScreen&, (35 * FontColAdj, 416)-Step(16 * FontColAdj, 16)
 
     '2nd Base Runner
     _PutImage (37 * FontColAdj, 304)-Step(14 * FontColAdj, 32), imageScreen&, backupScreen&, (37 * FontColAdj, 304)-Step(14 * FontColAdj, 32)
