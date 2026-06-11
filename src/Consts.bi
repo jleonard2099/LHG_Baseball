@@ -285,3 +285,5 @@ Const PLAY_MODE_PCvsPC = 2
 Const UMP_BB = 0
 Const UMP_SO = 1
 Const UMP_Runs = 2
+
+Const COLOR_LIGHTER_YELLOW = &HFFFFFFA0

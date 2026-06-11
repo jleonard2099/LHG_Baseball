@@ -10776,7 +10776,7 @@ Sub DisplayBatter_Lineup (page)
 
     Color 14, 0
 
-    Locate , 16: Print " B  POS    G  AB 2B 3B HR RBI  BB  SO SRAB  SB CS G%  BA"
+    Locate , 16: Print " B  POS    G  AB 2B 3B HR RBI  BB  SO R B  SB CS G%    BA   OPS"
 
     For luIdx = 2 To 13:
         Locate luIdx, 1: Print String$(78, 32)
@@ -10820,17 +10820,23 @@ Sub DisplayBatter_Lineup (page)
             Next
 
             Print Tab(24);
-            Print Using " ### ### ## ## ## ### ### ### #"; batRating(P9, idx, SS_B_G); batRating(P9, idx, SS_B_AB); batRating(P9, idx, SS_B_2B); batRating(P9, idx, SS_B_3B); batRating(P9, idx, SS_B_HR); batRating(P9, idx, SS_B_RBI); batRating(P9, idx, SS_B_W); batRating(P9, idx, SS_B_K); batRating(P9, idx, SS_B_Run);
-            Print Using "#"; batRating(P9, idx, SS_B_Range);
-            Print Using "#"; batRating(P9, idx, SS_B_Arm);
-            Print Using "# "; batRating(P9, idx, SS_B_Bunt);
-            Print Using "### ## ## "; batRating(P9, idx, SS_B_SB); batRating(P9, idx, SS_B_CS); batRating(P9, idx, SS_B_GndPct);
-            Print Tab(69); ".";
+            Print Using " ### ### ## ## ## ### ### ###"; batRating(P9, idx, SS_B_G); batRating(P9, idx, SS_B_AB); batRating(P9, idx, SS_B_2B); batRating(P9, idx, SS_B_3B); batRating(P9, idx, SS_B_HR); batRating(P9, idx, SS_B_RBI); batRating(P9, idx, SS_B_W); batRating(P9, idx, SS_B_K); 
+            Print Using " #"; batRating(P9, idx, SS_B_Run);
+            ' ALWAYS ZERO  Print Using "#"; batRating(P9, idx, SS_B_Range);
+            ' ALWAYS ZERP  Print Using "#"; batRating(P9, idx, SS_B_Arm);
+            Print Using " #"; batRating(P9, idx, SS_B_Bunt);
+            Print Using " ### ## ## "; batRating(P9, idx, SS_B_SB); batRating(P9, idx, SS_B_CS); batRating(P9, idx, SS_B_GndPct);
 
-            'BA
             If batRating(P9, idx, SS_B_AB) <> 0 Then
+                'BA
                 bAvg! = batRating(P9, idx, SS_B_H) / batRating(P9, idx, SS_B_AB)
-                Print Using "###"; Int(((bAvg!) + .0005) * 1000)
+                Print FmtPct$(bAvg!);
+
+                'OPS
+                slug! = (batRating(P9, idx, SS_B_H) + batRating(P9, idx, SS_B_2B) + batRating(P9, idx, SS_B_3B) * 2 + batRating(P9, idx, SS_B_HR) * 3) / batRating(P9, idx, SS_B_AB)
+                oba!  = (batRating(P9, idx, SS_B_H) + batRating(P9, idx, SS_B_W)) / (batRating(P9, idx, SS_B_AB) + batRating(P9, idx, SS_B_W))
+                ops! = slug! + oba!
+                Print " " + FmtPct$(ops!)
             Else
                 Print
             End If
@@ -12829,8 +12835,8 @@ Sub MAINSCREEN (nbrBalls, nbrStrikes, MO)
         If batRating(P, J, SS_B_AB) = 0 Then
             Print ".000  0   0   0";
         Else
-            bAvg! = batRating(P, J, SS_B_H) / batRating(P, J, SS_B_AB) * 1000
-            Print "."; Using "###"; bAvg!
+            bAvg! = batRating(P, J, SS_B_H) / batRating(P, J, SS_B_AB)
+            Print FmtPct$(bAvg!)
             Print Using " ## ### ###"; batRating(P, J, SS_B_HR); batRating(P, J, SS_B_W); batRating(P, J, SS_B_K)
         End If
 
@@ -12848,8 +12854,8 @@ Sub MAINSCREEN (nbrBalls, nbrStrikes, MO)
             If pitchRating(P, currPitcher(P), SS_P_H_AB) = 0 Then
                 Print ".000 0";
             Else
-                pAvg! = pitchRating(P, currPitcher(P), SS_P_H_H) / pitchRating(P, currPitcher(P), SS_P_H_AB) * 1000
-                Print "."; Using "###"; pAvg!
+                pAvg! = pitchRating(P, currPitcher(P), SS_P_H_H) / pitchRating(P, currPitcher(P), SS_P_H_AB)
+                Print FmtPct$(pAvg!)
                 Print Using " ## ### ###"; pitchRating(P, currPitcher(P), SS_P_H_HR); pitchRating(P, currPitcher(P), SS_P_H_BB); pitchRating(P, currPitcher(P), SS_P_H_SO)
             End If
         End If
@@ -14123,11 +14129,7 @@ Sub PopUp_Lineup ()
                     If pitchRating(J, currPitcher(J), SS_P_H_AB) = 0 Then
                         Print " .000"
                     Else
-                        If pitchRating(J, currPitcher(J), SS_P_H_AB) = pitchRating(J, currPitcher(J), SS_P_H_H) Then
-                            Print "1.000"
-                        Else
-                            Print "."; Using "###"; 1000 * pitchRating(J, currPitcher(J), SS_P_H_H) / pitchRating(J, currPitcher(J), SS_P_H_AB)
-                        End If
+                        Print FmtPct$(pitchRating(J, currPitcher(J), SS_P_H_H) / pitchRating(J, currPitcher(J), SS_P_H_AB))
                     End If
 
                 End If
@@ -14139,11 +14141,7 @@ Sub PopUp_Lineup ()
                 If batRating(J, lineupPlayer(J, X), SS_B_AB) = 0 Then
                     Print " .000"
                 Else
-                    If batRating(J, lineupPlayer(J, X), SS_B_H) = batRating(J, lineupPlayer(J, X), SS_B_AB) Then
-                        Print "1.000"
-                    Else
-                        Print "."; Using "###"; 1000 * batRating(J, lineupPlayer(J, X), SS_B_H) / batRating(J, lineupPlayer(J, X), SS_B_AB)
-                    End If
+                    Print FmtPct$(batRating(J, lineupPlayer(J, X), SS_B_H) / batRating(J, lineupPlayer(J, X), SS_B_AB))
                 End If
 
             End If
@@ -14171,13 +14169,13 @@ Sub PopUp_Batter (WK, M)
         Locate 4, 56: Print "VS LHP  .000";
         If batRating(WK, M, SS_B_LHP_AB) <> 0 Then
             statInnPitchCT! = batRating(WK, M, SS_B_LHP_H) / batRating(WK, M, SS_B_LHP_AB)
-            Locate 4, 64: Print Using ".###"; statInnPitchCT!
+            Locate 4, 64: Print FmtPct$(statInnPitchCT!)
         End If
 
         Locate 5, 56: Print "VS RHP  .000";
         If batRating(WK, M, SS_B_RHP_AB) <> 0 Then
             statInnPitchCT! = batRating(WK, M, SS_B_RHP_H) / batRating(WK, M, SS_B_RHP_AB)
-            Locate 5, 64: Print Using ".###"; statInnPitchCT!
+            Locate 5, 64: Print FmtPct$(statInnPitchCT!)
         End If
 
     End If
@@ -14199,23 +14197,15 @@ Sub PopUp_Batter (WK, M)
     If oppBatStats(WK, M, 0) = 0 Or oppBatStats(WK, M, 1) = 0 Then
         Locate , 15: Print ".000";
     Else
-        If oppBatStats(WK, M, 0) = oppBatStats(WK, M, 1) Then
-            Locate , 14: Print "1.000";
-        Else
-            statInnPitchCT! = oppBatStats(WK, M, 1) / oppBatStats(WK, M, 0)
-            Locate , 15: Print Using ".###"; statInnPitchCT!;
-        End If
+        statInnPitchCT! = oppBatStats(WK, M, 1) / oppBatStats(WK, M, 0)
+        Locate , 14: Print FmtPct$(statInnPitchCT!);
     End If
 
     If oppBatStats(WK, M, 0) + oppBatStats(WK, M, 7) = 0 Then
         Locate , 21: Print ".000";
     Else
-        If oppBatStats(WK, M, 1) + oppBatStats(WK, M, 7) = oppBatStats(WK, M, 0) + oppBatStats(WK, M, 7) Then
-            Locate , 20: Print "1.000";
-        Else
-            statInnPitchCT! = (oppBatStats(WK, M, 1) + oppBatStats(WK, M, 7)) / (oppBatStats(WK, M, 0) + oppBatStats(WK, M, 7))
-            Locate , 21: Print Using ".###"; statInnPitchCT!;
-        End If
+        statInnPitchCT! = (oppBatStats(WK, M, 1) + oppBatStats(WK, M, 7)) / (oppBatStats(WK, M, 0) + oppBatStats(WK, M, 7))
+        Locate , 20: Print FmtPct$(statInnPitchCT!);
     End If
 
     Locate , 26
@@ -14226,23 +14216,15 @@ Sub PopUp_Batter (WK, M)
     If teamBatStats(WK, M, 0) = 0 Or teamBatStats(WK, M, 1) = 0 Then
         Locate , 15: Print ".000";
     Else
-        If teamBatStats(WK, M, 0) = teamBatStats(WK, M, 1) Then
-            Locate , 14: Print "1.000";
-        Else
-            statInnPitchCT! = teamBatStats(WK, M, 1) / teamBatStats(WK, M, 0)
-            Locate , 15: Print Using ".###"; statInnPitchCT!;
-        End If
+        statInnPitchCT! = teamBatStats(WK, M, 1) / teamBatStats(WK, M, 0)
+        Locate , 14: Print FmtPct$(statInnPitchCT!);
     End If
 
     If teamBatStats(WK, M, 0) + teamBatStats(WK, M, 7) = 0 Then
         Locate , 21: Print ".000";
     Else
-        If teamBatStats(WK, M, 1) + teamBatStats(WK, M, 7) = teamBatStats(WK, M, 0) + teamBatStats(WK, M, 7) Then
-            Locate , 20: Print "1.000";
-        Else
-            statInnPitchCT! = (teamBatStats(WK, M, 1) + teamBatStats(WK, M, 7)) / (teamBatStats(WK, M, 0) + teamBatStats(WK, M, 7))
-            Locate , 21: Print Using ".###"; statInnPitchCT!;
-        End If
+        statInnPitchCT! = (teamBatStats(WK, M, 1) + teamBatStats(WK, M, 7)) / (teamBatStats(WK, M, 0) + teamBatStats(WK, M, 7))
+        Locate , 20: Print FmtPct$(statInnPitchCT!);
     End If
 
     Locate , 26
@@ -14274,13 +14256,13 @@ Sub PopUp_Pitcher (WK, M)
         Locate 15, 56: Print "VS LHB  .000";
         If pitchRating(WK, M, SS_P_LHP_AB) <> 0 Then
             statInnPitchCT! = pitchRating(WK, M, SS_P_LHP_H) / pitchRating(WK, M, SS_P_LHP_AB)
-            Locate 15, 64: Print Using ".###"; statInnPitchCT!
+            Locate 15, 64: Print FmtPct$(statInnPitchCT!)
         End If
 
         Locate 16, 56: Print "VS RHB  .000";
         If pitchRating(WK, M, SS_P_RHP_AB) <> 0 Then
             statInnPitchCT! = pitchRating(WK, M, SS_P_RHP_H) / pitchRating(WK, M, SS_P_RHP_AB)
-            Locate 16, 64: Print Using ".###"; statInnPitchCT!
+            Locate 16, 64: Print FmtPct$(statInnPitchCT!)
         End If
 
     End If
@@ -14388,13 +14370,13 @@ Sub POPUPSTATS ()
         Locate 4, 56: Print "VS LHP  .000";
         If pitchRating(P, currPitcher(P), 37) <> 0 Then
             statInnPitchCT! = pitchRating(P, currPitcher(P), 38) / pitchRating(P, currPitcher(P), 37)
-            Locate 4, 64: Print Using ".###"; statInnPitchCT!
+            Locate 4, 64: Print FmtPct$(statInnPitchCT!)
         End If
 
         Locate 5, 56: Print "VS RHP  .000";
         If pitchRating(P, currPitcher(P), 44) <> 0 Then
             statInnPitchCT! = pitchRating(P, currPitcher(P), 45) / pitchRating(P, currPitcher(P), 44)
-            Locate 5, 64: Print Using ".###"; statInnPitchCT!
+            Locate 5, 64: Print FmtPct$(statInnPitchCT!)
         End If
 
     End If
@@ -14426,11 +14408,12 @@ Sub POPUPSTATS ()
             Locate , 6: Print "SEASON";: Locate , 15
 
             If pitchRating(P, currPitcher(P), SS_P_H_AB) = 0 Then
-                Print ".---  .---"
+                Print " .---  .---"
             Else
                 statInnPitchCT!  = pitchRating(P, currPitcher(P), SS_P_H_H) / pitchRating(P, currPitcher(P), SS_P_H_AB)
                 statInnPitchCT2! = (pitchRating(P, currPitcher(P), SS_P_H_H) + pitchRating(P, currPitcher(P), SS_P_H_BB)) / (pitchRating(P, currPitcher(P), SS_P_H_BB) + pitchRating(P, currPitcher(P), SS_P_H_AB))
-                Print Using ".###  .### ### ### ### ### ## "; statInnPitchCT!; statInnPitchCT2!; _
+                Print FmtPct$(statInnPitchCT!);: Print FmtPct$(statInnPitchCT2!);
+                Print Using "### ### ### ### ## "; _
                     pitchRating(P, currPitcher(P), SS_P_H_G); _
                     pitchRating(P, currPitcher(P), SS_P_H_AB); _
                     pitchRating(P, currPitcher(P), SS_P_H_R); _
@@ -14459,23 +14442,15 @@ Sub POPUPSTATS ()
         If oppPitStats(P, J, 23) = 0 Or oppPitStats(P, J, 24) = 0 Then
             Locate , 15: Print ".000";
         Else
-            If oppPitStats(P, J, 23) = oppPitStats(P, J, 24) Then
-                Locate , 14: Print "1.000";
-            Else
-                statInnPitchCT! = oppPitStats(P, J, 24) / oppPitStats(P, J, 23)
-                Locate , 15: Print Using ".###"; statInnPitchCT!;
-            End If
+            statInnPitchCT! = oppPitStats(P, J, 24) / oppPitStats(P, J, 23)
+            Locate , 14: Print FmtPct$(statInnPitchCT!);
         End If
 
         If oppPitStats(P, J, 23) + oppPitStats(P, J, 30) = 0 Then
             Locate , 21: Print ".000";
         Else
-            If oppPitStats(P, J, 24) + oppPitStats(P, J, 30) = oppPitStats(P, J, 23) + oppPitStats(P, J, 30) Then
-                Locate , 20: Print "1.000";
-            Else
-                statInnPitchCT! = (oppPitStats(P, J, 24) + oppPitStats(P, J, 30)) / (oppPitStats(P, J, 23) + oppPitStats(P, J, 30))
-                Locate , 21: Print Using ".###"; statInnPitchCT!;
-            End If
+            statInnPitchCT! = (oppPitStats(P, J, 24) + oppPitStats(P, J, 30)) / (oppPitStats(P, J, 23) + oppPitStats(P, J, 30))
+            Locate , 20: Print FmtPct$(statInnPitchCT!);
         End If
 
         Locate , 26: Print Using "### ### ### ### ## ## ## ### ### ### ### ## ## ##"; oppPitStats(P, J, 8); oppPitStats(P, J, 23); oppPitStats(P, J, 25); oppPitStats(P, J, 24); oppPitStats(P, J, 27); oppPitStats(P, J, 28); oppPitStats(P, J, 29); oppPitStats(P, J, 26); oppPitStats(P, J, 30); oppPitStats(P, J, 31); oppPitStats(P, J, 32); oppPitStats(P, J, 33); oppPitStats(P, J, 35); oppPitStats(P, J, 36)
@@ -14484,23 +14459,15 @@ Sub POPUPSTATS ()
         If teamPitStats(P, J, 23) = 0 Or teamPitStats(P, J, 24) = 0 Then
             Locate , 15: Print ".000";
         Else
-            If teamPitStats(P, J, 23) = teamPitStats(P, J, 24) Then
-                Locate , 14: Print "1.000";
-            Else
-                statInnPitchCT! = teamPitStats(P, J, 24) / teamPitStats(P, J, 23)
-                Locate , 15: Print Using ".###"; statInnPitchCT!;
-            End If
+            statInnPitchCT! = teamPitStats(P, J, 24) / teamPitStats(P, J, 23)
+            Locate , 14: Print FmtPct$(statInnPitchCT!);
         End If
 
         If teamPitStats(P, J, 23) + teamPitStats(P, J, 30) = 0 Then
             Locate , 21: Print ".000";
         Else
-            If teamPitStats(P, J, 24) + teamPitStats(P, J, 30) = teamPitStats(P, J, 23) + teamPitStats(P, J, 30) Then
-                Locate , 20: Print "1.000";
-            Else
-                statInnPitchCT! = (teamPitStats(P, J, 24) + teamPitStats(P, J, 30)) / (teamPitStats(P, J, 23) + teamPitStats(P, J, 30))
-                Locate , 21: Print Using ".###"; statInnPitchCT!;
-            End If
+            statInnPitchCT! = (teamPitStats(P, J, 24) + teamPitStats(P, J, 30)) / (teamPitStats(P, J, 23) + teamPitStats(P, J, 30))
+            Locate , 20: Print FmtPct$(statInnPitchCT!);
         End If
 
         Locate , 26
@@ -14737,12 +14704,8 @@ Sub DISPBAVG ()
                 If pitchRating(P, currPitcher(P), SS_P_H_AB) = 0 Then
                     Print " .000"
                 Else
-                    If pitchRating(P, currPitcher(P), SS_P_H_AB) = pitchRating(P, currPitcher(P), SS_P_H_H) Then
-                        Print "1.000"
-                    Else
-                        pAvg! = (pitchRating(P, currPitcher(P), SS_P_H_H) / pitchRating(P, currPitcher(P), SS_P_H_AB)) * 1000
-                        Print " ."; Using "###"; pAvg!
-                    End If
+                    pAvg! = (pitchRating(P, currPitcher(P), SS_P_H_H) / pitchRating(P, currPitcher(P), SS_P_H_AB))
+                    Print FmtPct$(pAvg!)
 
                 End If
 
@@ -14755,12 +14718,8 @@ Sub DISPBAVG ()
             If batRating(P, lineupPlayer(P, X), SS_B_AB) = 0 Then
                 Print " .000"
             Else
-                If batRating(P, lineupPlayer(P, X), SS_B_H) = batRating(P, lineupPlayer(P, X), SS_B_AB) Then
-                    Print "1.000"
-                Else
-                    bAvg! = (batRating(P, lineupPlayer(P, X), SS_B_H) / batRating(P, lineupPlayer(P, X), SS_B_AB)) * 1000
-                    Print " ."; Using "###"; bAvg!
-                End If
+                bAvg! = (batRating(P, lineupPlayer(P, X), SS_B_H) / batRating(P, lineupPlayer(P, X), SS_B_AB)) * 1000
+                Print FmtPct$(bAvg!)
             End If
 
         End If
@@ -19521,11 +19480,7 @@ Sub SHOWBATTERS (teamIdx)
                     Print " .---";
                 Else
                     bAvg! = batRating(teamIdx, I, SS_B_H) / batRating(teamIdx, I, SS_B_AB)
-                    If bAvg! = 0 Then
-                        Print " .000";
-                    Else
-                        Print " ."; Using "###"; bAvg! * 1000;
-                    End If
+                    Print FmtPct$(bAvg!);
                 End If
             End If
 
@@ -19613,11 +19568,7 @@ Sub ShowSplit (teamIdx)
             If batRating(teamIdx, I, SS_B_LHP_AB) = 0 Or batRating(teamIdx, I, SS_B_LHP_H) = 0 Then
                 Print " .000";
             Else
-                If batRating(teamIdx, I, SS_B_LHP_AB) = batRating(teamIdx, I, SS_B_LHP_H) Then
-                    Print "1.000";
-                Else
-                    Print Using " .###"; batRating(teamIdx, I, SS_B_LHP_H) / batRating(teamIdx, I, SS_B_LHP_AB);
-                End If
+                Print FmtPct$(batRating(teamIdx, I, SS_B_LHP_H) / batRating(teamIdx, I, SS_B_LHP_AB));
             End If
 
             Locate , 53: Print Using "### ## ## ## ### ### "; batRating(teamIdx, I, SS_B_RHP_AB); batRating(teamIdx, I, 51); batRating(teamIdx, I, 52); batRating(teamIdx, I, 53); batRating(teamIdx, I, 54); batRating(teamIdx, I, 55);
@@ -19626,11 +19577,7 @@ Sub ShowSplit (teamIdx)
             If batRating(teamIdx, I, SS_B_RHP_H) = 0 Or batRating(teamIdx, I, SS_B_RHP_H) = 0 Then
                 Print " .000";
             Else
-                If batRating(teamIdx, I, SS_B_RHP_AB) = batRating(teamIdx, I, SS_B_RHP_H) Then
-                    Print "1.000";
-                Else
-                    Print " ."; Using "###"; batRating(teamIdx, I, SS_B_RHP_H) / batRating(teamIdx, I, SS_B_RHP_AB);
-                End If
+                Print FmtPct$(batRating(teamIdx, I, SS_B_RHP_H) / batRating(teamIdx, I, SS_B_RHP_AB));
             End If
 
             If I <> 22 Then Print
@@ -21062,11 +21009,7 @@ Sub BOX2FILE (printChoice, boxName$)
                 If oppBatStats(I, I1, 0) = 0 Or oppBatStats(I, I1, 1) = 0 Then
                     Print #1, " .000   ";
                 Else
-                    If oppBatStats(I, I1, 0) = oppBatStats(I, I1, 1) Then
-                        Print #1, "1.000   ";
-                    Else
-                        Print #1, " ."; Using "###   "; (oppBatStats(I, I1, 1) / oppBatStats(I, I1, 0) * 1000);
-                    End If
+                    Print #1, FmtPct$(oppBatStats(I, I1, 1) / oppBatStats(I, I1, 0));: Print #1, "   ";
                 End If
 
                 'HR / RBI
@@ -21104,11 +21047,7 @@ Sub BOX2FILE (printChoice, boxName$)
                     If oppPitStats(I, I2, 24) = 0 Or oppPitStats(I, I2, 23) = 0 Then
                         Print #1, " .000   ";
                     Else
-                        If oppPitStats(I, I2, 24) = oppPitStats(I, I2, 23) Then
-                            Print #1, "1.000   ";
-                        Else
-                            Print #1, Using " .###   "; oppPitStats(I, I2, 24) / oppPitStats(I, I2, 23);
-                        End If
+                        Print #1, FmtPct$(oppPitStats(I, I2, 24) / oppPitStats(I, I2, 23));: Print #1, "   ";
                     End If
 
                     Print #1, Using "##  ###"; oppPitStats(I, I2, 29); oppPitStats(I, I2, 26)
@@ -21922,11 +21861,7 @@ Sub STATS2SCREEN
                 If oppBatStats(I, I1, 0) = 0 Or oppBatStats(I, I1, 1) = 0 Then
                     Print " .000   ";
                 Else
-                    If oppBatStats(I, I1, 0) = oppBatStats(I, I1, 1) Then
-                        Print "1.000   ";
-                    Else
-                        Print " ."; Using "###   "; (oppBatStats(I, I1, 1) / oppBatStats(I, I1, 0) * 1000);
-                    End If
+                    Print FmtPct$(oppBatStats(I, I1, 1) / oppBatStats(I, I1, 0));: Print "   ";
                 End If
 
                 '           HR   RBI
@@ -21966,12 +21901,7 @@ Sub STATS2SCREEN
                     If oppPitStats(I, I2, 24) = 0 Or oppPitStats(I, I2, 23) = 0 Then
                         Print " .000   "
                     Else
-                        If oppPitStats(I, I2, 24) = oppPitStats(I, I2, 23) Then
-                            Print "1.000   ";
-                        Else
-                            Print Using "#.###   "; oppPitStats(I, I2, 24) / oppPitStats(I, I2, 23);
-                        End If
-
+                        Print FmtPct$(oppPitStats(I, I2, 24) / oppPitStats(I, I2, 23));: Print "   ";
                         '           HR   RBI
                         Print Using "##  ###"; oppPitStats(I, I2, 29); oppPitStats(I, I2, 26)
 
@@ -23564,7 +23494,7 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
                       + " " + FUsing$(Str$(teamPitStats(D, currPitcher(D), LG_P_BB)), "##", 1) _
                       + " " + FUsing$(Str$(teamPitStats(D, currPitcher(D), LG_P_K )), "##", 1)
 
-    Color Yellow, Black
+    Color COLOR_LIGHTER_YELLOW, Black
     PrintOnGfx 65, 29, pStats$, imageScreen&
     Color White, Black
 
@@ -23639,7 +23569,7 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
             If bAvg! = 0 Then
                 PrintOnGfx 65, 24, ".000  0  0   0", imageScreen&
             Else
-                pStats$ = "." + FUsing$(Str$(bAvg! * 1000), "###", 1)
+                pStats$ = FmtPct$(bAvg!)
                 '                                 HR                                         BB                                            K
                 pStats$ = pStats$ + " " + FUsing$(Str$(batRating(P, J, 9)), "##", 1) + " " + FUsing$(Str$(batRating(P, J, 11)), "###", 1) + " " + FUsing$(Str$(batRating(P, J, 12)), "###", 1)
                 PrintOnGfx 65, 24, pStats$, imageScreen&
@@ -23668,7 +23598,7 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
                 If pAvg! = 0 Then
                     PrintOnGfx 65, 24, ".000  0   0   0", imageScreen&
                 Else
-                    pStats$ = "." + FUsing$(Str$(pAvg! * 1000), "###", 1)
+                    pStats$ = FmtPct$(pAvg!)
                     '                          HR                                                BB              K
                     pStats$ = pStats$ + " " + FUsing$(Str$(pitchRating(P, currPitcher(P), 25)), "##", 1) + " " + FUsing$(Str$(pitchRating(P, currPitcher(P), 27)), "###", 1) + " " + FUsing$(Str$(pitchRating(P, currPitcher(P), 28)), "###", 1)
                     PrintOnGfx 65, 24, pStats$, imageScreen&
@@ -23680,7 +23610,7 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
 
     End If
 
-    Color Yellow, Black
+    Color COLOR_LIGHTER_YELLOW, Black
 
     ' # - # TODAY
     If fldPos(P, currLineupSlot(P)) <> 1 Then
@@ -23831,6 +23761,14 @@ Sub DisplayRun_G (baseNbr, Xcoord)
 End Sub
 
 
+'--------------------------------------------
+'        GetTirednessColor Function
+'--------------------------------------------
+'This function returns the foreground color
+'to display the pitcher with, based on his
+'"tiredness".  Normally Black, it will return
+'Yellow if he is either 1 run or 1 walk/hit
+'away from being TIRED (OrangeRed)
 Function GetTirednessColor~& ()
 
     stamHits = pitcherStam(D, 0) - teamPitStats(D, currPitcher(D), LG_P_BB) - teamPitStats(D, currPitcher(D), LG_P_H)
@@ -23847,6 +23785,13 @@ Function GetTirednessColor~& ()
 End Function
 
 
+'----------------------------------------
+'        FieldPct Function
+'----------------------------------------
+'This function formats a pct that is
+'already multiplied by 1000, which is what
+'fielding percentages are when they are read
+'from team files.
 Function FieldPct$ (fp)
 
     If fp = 1000 Then
@@ -23862,6 +23807,31 @@ Function FieldPct$ (fp)
 End Function
 
 
+'--------------------------------------------
+'        Fmtpct Function
+'--------------------------------------------
+'This function returns a formatted percentage
+'string for a given percentage value,
+'replacing any zero before the decimal point
+'with a blank instead.
+Function Fmtpct$ (pct!)
+
+    preDecimal$ = _Iif(pct! >= 1, LTrim$(Str$(Int(pct!))), " ")
+    'If preDecimal$ = "0" Then preDecimal$ = " "
+
+    postDecimal$ = LTrim$(Str$((pct! * 1000) Mod 1000))
+    postDecimal$ = Right$("00" + postDecimal$, 3)
+
+    Fmtpct$ = preDecimal$ + "." + postDecimal$
+
+End Function
+
+
+'----------------------------------------
+'        DisplayFielder_Gfx Subroutine
+'----------------------------------------
+'This subroutine displays the fielder
+'specified by the iPos parameter (1-9)
 Sub DisplayFielder_Gfx (iPos)
     Shared fldrScreenLoc()
 
@@ -23872,16 +23842,17 @@ Sub DisplayFielder_Gfx (iPos)
 
     foreColor~& = Black
 
-    If iPos = 1 Then
-        foreColor~& = GetTirednessColor~&
-        player$ = "[" + handed$(pitchRating(D, currPitcher(D), 0) + 2) + "] " + Left$(pitchers$(D, currPitcher(D)), 10)
-    ElseIf iPos = 2 Then
-        player$ = PadRight(Left$( batters$(D, fielder(D, iPos)), 12), 12)
-        player$ = player$ + "A" + FUsing$(Str$(batRating(D, fielder(D, iPos), 15)), "#", 1)
-    Else
-        player$ = PadRight(Left$( batters$(D, fielder(D, iPos)), 12), 12)
-        player$ = RTrim$(player$)
-    End If
+    Select Case iPos
+        Case 1
+            foreColor~& = GetTirednessColor~&
+            player$ = "[" + handed$(pitchRating(D, currPitcher(D), SS_P_Throws) + 2) + "] " + Left$(pitchers$(D, currPitcher(D)), 10)
+        Case 2
+            player$ = PadRight(Left$(batters$(D, fielder(D, iPos)), 12), 12)
+            player$ = player$ + "A" + FUsing$(Str$(batRating(D, fielder(D, iPos), SS_B_Arm)), "#", 1)
+        Case Else
+            player$ = PadRight(Left$(batters$(D, fielder(D, iPos)), 12), 12)
+            player$ = RTrim$(player$)
+    End Select
 
     'Light grey shadow on background
     'ShadowTextOnGfx xx, yy, player$, _RGB32(224, 224, 224), imageScreen&
@@ -23899,11 +23870,11 @@ Sub DisplayFielder_Gfx (iPos)
     If iPos = 2 Then Exit Sub
 
     If iPos = 1 Then
-        fldPct$ = FieldPct$(pitchRating(D, currPitcher(D), 17))
-        player$ = "H" + FUsing$(Str$(pitchRating(D, currPitcher(D), 18)), "#", 1) + " F" + fldPct$
+        fldPct$ = FieldPct$(pitchRating(D, currPitcher(D), SS_P_FldPct))
+        player$ = "H" + FUsing$(Str$(pitchRating(D, currPitcher(D), SS_P_HoldRunner)), "#", 1) + " F" + fldPct$
     Else
-        fldPct$ = FieldPct$(batRating(D, fielder(D, iPos), 19))
-        player$ = "A" + FUsing$(Str$(batRating(D, fielder(D, iPos), 15)), "#", 1) + " R" + FUsing$(Str$(batRating(D, fielder(D, iPos), 17)), "#", 1) + " F" + fldPct$
+        fldPct$ = FieldPct$(batRating(D, fielder(D, iPos), SS_B_FldPct))
+        player$ = "A" + FUsing$(Str$(batRating(D, fielder(D, iPos), SS_B_Arm)), "#", 1) + " R" + FUsing$(Str$(batRating(D, fielder(D, iPos), SS_B_Range)), "#", 1) + " F" + fldPct$
     End If
 
 
