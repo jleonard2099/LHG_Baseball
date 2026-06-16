@@ -23808,13 +23808,13 @@ End Function
 
 
 '--------------------------------------------
-'        Fmtpct Function
+'        FmtPct Function
 '--------------------------------------------
 'This function returns a formatted percentage
 'string for a given percentage value,
 'replacing any zero before the decimal point
 'with a blank instead.
-Function Fmtpct$ (pct!)
+Function FmtPct$ (pct!)
 
     preDecimal$ = _Iif(pct! >= 1, LTrim$(Str$(Int(pct!))), " ")
     'If preDecimal$ = "0" Then preDecimal$ = " "
@@ -23822,7 +23822,7 @@ Function Fmtpct$ (pct!)
     postDecimal$ = LTrim$(Str$((pct! * 1000) Mod 1000))
     postDecimal$ = Right$("00" + postDecimal$, 3)
 
-    Fmtpct$ = preDecimal$ + "." + postDecimal$
+    FmtPct$ = preDecimal$ + "." + postDecimal$
 
 End Function
 

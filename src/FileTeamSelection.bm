@@ -238,7 +238,7 @@ Sub ReadTeam (teamYear$, targetTeam$, teamIdx, dataOK)
     Shared batterRatings(), pitcherRatings()
     Shared teamRatings()
 
-    Shared CK, parkHR
+    Shared CK, parkHR!
 
     Shared batterNames$(), pitcherNames$()
 
@@ -274,7 +274,7 @@ Sub ReadTeam (teamYear$, targetTeam$, teamIdx, dataOK)
         teamRatings(I) = CVI(Q$(I))
     Next
 
-    parkHR = CVS(Q$(14))
+    parkHR! = CVS(Q$(14))
 
     For I = 0 To 22:
 

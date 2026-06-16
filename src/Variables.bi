@@ -264,7 +264,7 @@ Dim batRecTmDesc$(24), pitRecTmDesc$(25)
 '----------------------------------------
 Dim batAvg!, earnedRuns!
 
-Dim parkHR
+Dim parkHR!
 
 'Team / Opp Double-Plays
 Dim statTeamDP, statTeamDP_Road

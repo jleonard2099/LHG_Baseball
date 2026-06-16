@@ -18,7 +18,7 @@ Sub InputEditTeam (inputAction%, yearNumber$, targetTeam$, teamIdx)
 
     Shared batterNames$(), pitcherNames$()
 
-    Shared CK, parkHR
+    Shared CK, parkHR!
     Shared Manager$, teamAbbrev$, Stadium$
 
     ' New team only
@@ -32,7 +32,7 @@ Sub InputEditTeam (inputAction%, yearNumber$, targetTeam$, teamIdx)
             teamRatings(X) = 0
         Next
 
-        parkHR = 0
+        parkHR! = 0
 
         Erase batterRatings, pitcherRatings
         Erase teamSA, teamTS
@@ -71,7 +71,7 @@ End Sub
 '  new disk ID. 0 = no, 1 = yes
 Sub SaveTeamFile (newID, yearNumber$, targetTeam$, targetFile$, teamIdx)
 
-    Shared CK, parkHR
+    Shared CK, parkHR!
 
     Shared Manager$, teamAbbrev$, Stadium$
 
@@ -121,7 +121,7 @@ Sub SaveTeamFile (newID, yearNumber$, targetTeam$, targetFile$, teamIdx)
         LSet Q$(I) = MKI$(teamRatings(I))
     Next
 
-    LSet Q$(14) = MKS$(parkHR)
+    LSet Q$(14) = MKS$(parkHR!)
 
     For I = 0 To 22:
         LSet Q$(I * 43 + 15) = batterNames$(I)
@@ -1695,7 +1695,7 @@ End Sub
 'specifically for modifying team ratings
 Sub EditTeamInfo (YN$, team$, teamIdx)
 
-    Shared CK, parkHR
+    Shared CK, parkHR!
 
     Shared Manager$, teamAbbrev$, Stadium$
 
@@ -1745,7 +1745,7 @@ Sub EditTeamInfo (YN$, team$, teamIdx)
         Locate 14, 12: Print Using "###"; teamRatings(13)
         Locate 15, 19: Print Using "###"; teamRatings(6)
         Locate 16, 19: Print Using "###"; teamRatings(7)
-        Locate 17, 19: Print Using "###"; parkHR
+        Locate 17, 19: Print Using "######"; parkHR!
         Locate 18, 19: Print Using "###"; teamRatings(8)
         Locate 20, 23: Print Using "#"; teamRatings(9)
         Locate 21, 23: Print Using "#"; teamRatings(10)
@@ -1924,11 +1924,11 @@ Sub EditTeamInfo (YN$, team$, teamIdx)
 
         Homer:
         Locate 17, 19
-        Max = 3
-        L# = parkHR
+        Max = 6
+        L# = parkHR!
         Call NumIn(L#, Max, XCode, FG, BG)
-        parkHR = Int(L#)
-        Locate 17, 19: Print Using "###"; parkHR
+        parkHR! = Int(L#)
+        Locate 17, 19: Print Using "######"; parkHR!
         If XCode = 1 GoTo TripleRating:
         If XCode = 2 GoTo Done
 

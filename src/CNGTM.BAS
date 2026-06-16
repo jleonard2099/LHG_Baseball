@@ -112,7 +112,7 @@ Sub PrintTeamStats (printDest, destFile$, targetTeam$)
     Shared totBatRat(), totPitchRat()
     Shared batterRatings(), pitcherRatings(), teamRatings()
 
-    Shared CK, parkHR
+    Shared CK, parkHR!
 
     Shared earnedRuns!
 
@@ -148,7 +148,7 @@ Sub PrintTeamStats (printDest, destFile$, targetTeam$)
     Print #1, Tab(10); "PARK TRIPLE ADJ.";
     Print #1, Tab(38); Using "#####"; teamRatings(7)
     Print #1, Tab(10); "PARK HOME RUN ADJ.";
-    Print #1, Tab(37); Using "######"; parkHR
+    Print #1, Tab(37); Using "######"; parkHR!
     Print #1, Tab(10); "PARK FOUL GROUND ADJ.";
     Print #1, Tab(37); Using "######"; teamRatings(8)
     Print #1, Tab(10); "PARK INFORMATION";
@@ -441,7 +441,7 @@ Sub ViewRoster (targetTeam$)
 
     Shared batterNames$(), parkType$(), pitcherNames$()
 
-    Shared CK, parkHR
+    Shared CK, parkHR!
 
     Shared Manager$, teamAbbrev$, Stadium$
 
@@ -532,7 +532,7 @@ Sub ViewRoster (targetTeam$)
     Color 3
     Locate , 10: Print "PARK HOME RUN ADJ.";
     Color 15
-    Locate , 37: Print Using "######"; parkHR
+    Locate , 37: Print Using "######"; parkHR!
     Color 3
     Locate , 10: Print "PARK FOUL GROUND ADJ.";
     Color 15
