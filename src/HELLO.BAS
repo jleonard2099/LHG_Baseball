@@ -23569,7 +23569,7 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
             If bAvg! = 0 Then
                 PrintOnGfx 65, 24, ".000  0  0   0", imageScreen&
             Else
-                pStats$ = FmtPct$(bAvg!)
+                pStats$ = LTrim$(FmtPct$(bAvg!))    'Known issue: Will be out of alignment by 1 char when bAvg! is 1.000
                 '                                 HR                                         BB                                            K
                 pStats$ = pStats$ + " " + FUsing$(Str$(batRating(P, J, 9)), "##", 1) + " " + FUsing$(Str$(batRating(P, J, 11)), "###", 1) + " " + FUsing$(Str$(batRating(P, J, 12)), "###", 1)
                 PrintOnGfx 65, 24, pStats$, imageScreen&
@@ -23817,7 +23817,6 @@ End Function
 Function FmtPct$ (pct!)
 
     preDecimal$ = _Iif(pct! >= 1, LTrim$(Str$(Int(pct!))), " ")
-    'If preDecimal$ = "0" Then preDecimal$ = " "
 
     postDecimal$ = LTrim$(Str$((pct! * 1000) Mod 1000))
     postDecimal$ = Right$("00" + postDecimal$, 3)
