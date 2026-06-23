@@ -294,6 +294,14 @@ For I = 1 To 9
     Next
 Next
 
+' Screen x,y coordinates for baserunners at 1st, 2nd and 3rd
+Data 54,21, 37,19, 15,21
+For I = 1 To 3
+    For I1 = 0 To 1
+        Read runnerScreenLoc(I, I1)
+    Next
+Next
+
 ' Game options
 modeAbbrev$(0) = "HH"
 modeAbbrev$(1) = "CV"
@@ -2788,7 +2796,7 @@ Sub SelectStadium (useVGA)
         park$ = RTrim$(Q$(0))
 
         If park$ <> "Not Used" Then
-            parkNames$(parkIdx) = PadRight(park$, 38)
+            parkNames$(parkIdx) = PadRight$(park$, 38)
         End If
 
     Next parkIdx
@@ -4094,7 +4102,7 @@ Sub SOURCE ()
 
     Shared buntTriple(), setupUsed(), closerUsed()
     Shared umpBBadj(), umpSZadj(), umpRunAdj()
-    Shared fldrScreenLoc()
+    Shared fldrScreenLoc(), runnerScreenLoc()
 
     VV(0) = 1
     VV(1) = 1
@@ -4466,7 +4474,7 @@ Sub SOURCE ()
     Do
 
         If useVGA = 1 Then
-            _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
+            RestoreScrn 20,3, 44,9      'Play-by-Play box
         Else
             Color 14, 0
         End If
@@ -4588,7 +4596,7 @@ Sub SOURCE ()
 
         'Restore image where commands went
         If useVGA = 1 Then
-            _PutImage (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176), backupScreen&, imageScreen&, (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176)
+            RestoreScrn 1,19, 14,11     'Commands for Human Play
             DisplayFielder_Gfx 5    'redisplay the 3rd baseman that may have been overwritten
         End If
 
@@ -4603,7 +4611,7 @@ Sub SOURCE ()
 
             If useVGA = 1 Then
                 pbpString$ = "INF:GUARD LINE"
-                _PutImage (52 * FontColAdj, 416)-Step(14 * FontColAdj, 16), backupScreen&, imageScreen&, (52 * FontColAdj, 416)-Step(14 * FontColAdj, 16)
+                RestoreScrn 52,26, 14,1     'Infield
 
                 'Light grey shadow on background
                 ShadowTextOnGfx 52, 26, pbpString$, _RGB32(224, 224, 224), imageScreen&
@@ -4732,7 +4740,7 @@ Sub SOURCE ()
 
         If useVGA = 1 Then
             'Restore image where options go
-            _PutImage (51 * FontColAdj, 416)-Step(14 * FontColAdj, 16), backupScreen&, imageScreen&, (51 * FontColAdj, 416)-Step(14 * FontColAdj, 16)
+            RestoreScrn 51,26, 14,1     'Infield
 
             'Light grey shadow on background
             ShadowTextOnGfx 51, 26, infStatus$, _RGB32(224, 224, 224), imageScreen&
@@ -4887,7 +4895,7 @@ Sub SOURCE ()
 
             Call WINDEX
 
-            _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 144), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 144)
+            RestoreScrn 20,3, 44,9      'Play-by-Play box
 
             pbpString$ = PadRight$(Left$(gameTeams$(P), 3) + teamAbbreviatons$(P), 8)
 
@@ -4947,7 +4955,7 @@ Sub SOURCE ()
         I$ = GetKeyPress$
 
         If useVGA = 1 Then
-            _PutImage (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176), backupScreen&, imageScreen&, (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176)
+            RestoreScrn 1,19, 14,11     'Commands for Human Play
             DisplayFielder_Gfx 5    'redisplay the 3rd baseman that may have been overwritten
         End If
 
@@ -5668,7 +5676,7 @@ Sub SOURCE ()
             ' Check if it's a ground ball out that could get through drawn-in infield
             If drawnInfieldRoll <= drawnInfieldChance Then
                 'Convert this out to a single
-                S2% = EVENT_DRAWN_INF_SINGLE
+                S2% = EVENT_DRAWN_IN_SINGLE
                 GoTo 13063
             End If
 
@@ -6326,7 +6334,7 @@ Sub SOURCE ()
             13063 '
             'Single
             Call Rolld100(chanceRoll)
-            If S2% <> EVENT_DRAWN_INF_SINGLE Then
+            If S2% <> EVENT_DRAWN_IN_SINGLE Then
                 S2% = EVENT_1B
             End If
 
@@ -6861,7 +6869,7 @@ Sub SOURCE ()
     LCheckForOptionsOrQuit:
     'Print #11, "DEBUG: Processing LCheckForOptionsOrQuit"
     If useVGA = 1 Then
-        _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 144), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 144)
+        RestoreScrn 20,3, 44,9          'Play-by-Play box
     End If
 
     ' essentially it allows the user to press a key
@@ -6882,7 +6890,7 @@ Sub SOURCE ()
     'based on comparing to the original code, but the working
     'version of my code had this in it still
     If useVGA = 1 Then
-        _PutImage (17 * FontColAdj, 128)-Step(46 * FontColAdj, 80), backupScreen&, imageScreen&, (17 * FontColAdj, 128)-Step(46 * FontColAdj, 80)
+        RestoreScrn 17,8, 46,5
     End If
 
     doublePlayChoice = 0
@@ -7473,7 +7481,7 @@ Sub SOURCE ()
                     End If
 
                     If useVGA = 1 Then
-                        _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
+                        RestoreScrn 20,3, 44,9      'Play-by-Play box
                     End If
 
                     GoTo LContinueBatter2
@@ -7592,7 +7600,9 @@ Sub SOURCE ()
                 INFPOS% = INF_BACK
             End If
 
-            If useVGA = 1 Then _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
+            If useVGA = 1 Then 
+                RestoreScrn 20,3, 44,9      'Play-by-Play box
+            End If
 
             GoTo LContinueBatter2
 
@@ -7786,7 +7796,7 @@ Sub SOURCE ()
         Call NOJUMP
 
         If useVGA = 1 Then
-            _PutImage (17 * FontColAdj, 128)-Step(46 * FontColAdj, 80), backupScreen&, imageScreen&, (17 * FontColAdj, 128)-Step(46 * FontColAdj, 80)
+            RestoreScrn 17,8, 46,5
         End If
 
         GoTo LOffenseOptions
@@ -8825,7 +8835,7 @@ Sub SOURCE ()
             Call RELIEVERS(pinchHitterFlag, newPitcherFlag, baseRunners)
         End If
         If useVGA = 1 Then
-            _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
+            RestoreScrn 20,3, 44,9      'Play-by-Play box
         End If
         GoTo LManageDefense
 
@@ -9073,7 +9083,7 @@ Sub SOURCE ()
             Call RELIEVERS(pinchHitterFlag, newPitcherFlag, baseRunners)
         End If
         If useVGA = 1 Then
-            _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128), backupScreen&, imageScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 128)
+            RestoreScrn 20,3, 44,9      'Play-by-Play box
         End If
     End If
 
@@ -10178,7 +10188,7 @@ Sub PBP (pbpString$)
 
         'Clean up / restrict to 44 char's
         'this is the width of the PBP window
-        pbpString$ = PadRight(pbpString$, 44)
+        pbpString$ = PadRight$(pbpString$, 44)
         pbpString$ = Left$(pbpString$, 44)
         'Print #11, pbpString$
 
@@ -16116,7 +16126,7 @@ Sub SINGLEPBP (S2%, currFielder)
             Call PBP(player$(0) + " beats out an infield single")
         Else
 
-            If S2% = EVENT_DRAWN_INF_SINGLE Then
+            If S2% = EVENT_DRAWN_IN_SINGLE Then
                 Call PBP("Grounder up the middle...")
                 Call PBP("It gets through the drawn-in infield!")
                 Call DELAY
@@ -23448,7 +23458,7 @@ End Sub
 'a ballpark image
 Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
 
-    _PutImage (29 * FontColAdj, 400)-Step(24 * FontColAdj, 16), backupScreen&, imageScreen&, (29 * FontColAdj, 400)-Step(24 * FontColAdj, 16)
+    RestoreScrn 29,25, 24,1
 
     'Printing white on black
     Color White, Black
@@ -23638,7 +23648,7 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
     Color White, Black
 
     'Infield
-    _PutImage (51 * FontColAdj, 416)-Step(13 * FontColAdj, 16), backupScreen&, imageScreen&, (51 * FontColAdj, 416)-Step(13 * FontColAdj, 16)
+    RestoreScrn 51,26, 13,1     'Infield
 
     infStatus$ = "INF:"
     Select Case infield
@@ -23663,7 +23673,7 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
     Call HOLDSTATUS_G(runnerHeld)
 
     'RUNNER AT SECOND
-    Call DisplayRun_G(2, 37)
+    Call DisplayRun_G(2)
 
     If nbrOuts(0) <> 3 Then MO = 0
 
@@ -23672,10 +23682,10 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
     Next
 
     'RUNNER AT THIRD
-    Call DisplayRun_G(3, 15)
+    Call DisplayRun_G(3)
 
     'RUNNER AT FIRST
-    Call DisplayRun_G(1, 56)
+    Call DisplayRun_G(1)
 
 End Sub
 
@@ -23684,33 +23694,31 @@ End Sub
 '----------------------------------------
 'This subroutine displays the player
 'that is currently on the target base
-Sub DisplayRun_G (baseNbr, Xcoord)
+Sub DisplayRun_G (baseNbr)
+    Shared runnerScreenLoc()
+
+    XCoord = runnerScreenLoc(baseNbr, 0)
+    YCoord = runnerScreenLoc(baseNbr, 1)
+
+    RestoreScrn XCoord,YCoord, 11,2
 
     Select Case baseNbr
-        '1st Base Runner
-        Case 1:
-            _PutImage (54 * FontColAdj, 336)-Step(14 * FontColAdj, 16), backupScreen&, imageScreen&, (54 * FontColAdj, 336)-Step(14 * FontColAdj, 16)
-            _PutImage (54 * FontColAdj, 352)-Step(11 * FontColAdj, 16), backupScreen&, imageScreen&, (54 * FontColAdj, 352)-Step(11 * FontColAdj, 16)
+        
+        Case 1: '1st Base Runner
+            RestoreScrn XCoord,YCoord,   14,1
+            RestoreScrn XCoord,YCoord+1, 11,1
 
-            '2nd Base Runner
-        Case 2:
-            _PutImage (35 * FontColAdj, 304)-Step(14 * FontColAdj, 32), backupScreen&, imageScreen&, (35 * FontColAdj, 304)-Step(14 * FontColAdj, 32)
+        Case 2: '2nd Base Runner
+            RestoreScrn XCoord,YCoord, 14,2
 
-            '3rd Base Runner
-        Case 3:
-            _PutImage (15 * FontColAdj, 336)-Step(14 * FontColAdj, 32), backupScreen&, imageScreen&, (15 * FontColAdj, 336)-Step(14 * FontColAdj, 32)
+        Case 3: '3rd Base Runner
+            RestoreScrn XCoord,YCoord, 14,2
 
     End Select
 
     J = runnerOnBase(baseNbr)
 
     If J <> 0 Then
-
-        If baseNbr = 2 Then
-            Ycoord = 20
-        Else
-            Ycoord = 22
-        End If
 
         If fldPos(P, J) = 1 Then
 
@@ -23721,40 +23729,29 @@ Sub DisplayRun_G (baseNbr, Xcoord)
             End If
 
             runner$ = pitchers$(P, currPitcher(P))
-            runner$ = PadRight(runner$, 11)
-
-            'Black shadow on Background
-            ShadowTextOnGfx Xcoord, Ycoord - 1, runner$, &HFF000000, imageScreen&
-            ShadowTextOnGfx Xcoord, Ycoord, runStats$, &HFF000000, imageScreen&
-
-            'White on background
-            _PrintMode _KeepBackground , imageScreen&
-            Color &HFFFFFFFF
-
-            PrintOnGfx Xcoord, Ycoord - 1, runner$, imageScreen&
-            PrintOnGfx Xcoord, Ycoord, runStats$, imageScreen&
 
         Else
 
-            runner$ = batters$(P, lineupPlayer(P, J))
-            runner$ = PadRight(runner$, 11)
             runStats$ = FUsing$(Str$(batRating(P, lineupPlayer(P, J), SS_B_Run)), "#", 1) + "/" + FUsing$(Str$(batRating(P, lineupPlayer(P, J), SS_B_SB)), "###", 1)
-
-            'Black shadow on Background
-            ShadowTextOnGfx Xcoord, Ycoord - 1, runner$, &HFF000000, imageScreen&
-            ShadowTextOnGfx Xcoord, Ycoord, runStats$, &HFF000000, imageScreen&
-
-            'White on background
-            _PrintMode _KeepBackground , imageScreen&
-            Color &HFFFFFFFF
-
-            PrintOnGfx Xcoord, Ycoord - 1, runner$, imageScreen&
-            PrintOnGfx Xcoord, Ycoord, runStats$, imageScreen&
-
-            'Printing white on black
-            _PrintMode _FillBackground , imageScreen&
+            runner$ = batters$(P, lineupPlayer(P, J))
 
         End If
+
+        runner$ = PadRight$(runner$, 11)
+
+        'Black shadow on Background
+        ShadowTextOnGfx Xcoord, Ycoord,   runner$, &HFF000000, imageScreen&
+        ShadowTextOnGfx Xcoord, Ycoord+1, runStats$, &HFF000000, imageScreen&
+
+        'White on background
+        _PrintMode _KeepBackground , imageScreen&
+        Color &HFFFFFFFF
+
+        PrintOnGfx Xcoord, Ycoord,   runner$, imageScreen&
+        PrintOnGfx Xcoord, Ycoord+1, runStats$, imageScreen&
+
+        'Printing white on black
+        _PrintMode _FillBackground , imageScreen&
 
     End If
 
@@ -23837,7 +23834,7 @@ Sub DisplayFielder_Gfx (iPos)
     xx = fldrScreenLoc(iPos, 0)
     yy = fldrScreenLoc(iPos, 1)
 
-   _PutImage (xx * FontColAdj, yy * 16)-Step(16 * FontColAdj, 2 * 16), backupScreen&, imageScreen&, (xx * FontColAdj, yy * 16)-Step(16 * FontColAdj, 2 * 16)
+    RestoreScrn xx,yy, 16,2
 
     foreColor~& = Black
 
@@ -23846,10 +23843,10 @@ Sub DisplayFielder_Gfx (iPos)
             foreColor~& = GetTirednessColor~&
             player$ = "[" + handed$(pitchRating(D, currPitcher(D), SS_P_Throws) + 2) + "] " + Left$(pitchers$(D, currPitcher(D)), 10)
         Case 2
-            player$ = PadRight(Left$(batters$(D, fielder(D, iPos)), 12), 12)
+            player$ = PadRight$(Left$(batters$(D, fielder(D, iPos)), 12), 12)
             player$ = player$ + "A" + FUsing$(Str$(batRating(D, fielder(D, iPos), SS_B_Arm)), "#", 1)
         Case Else
-            player$ = PadRight(Left$(batters$(D, fielder(D, iPos)), 12), 12)
+            player$ = PadRight$(Left$(batters$(D, fielder(D, iPos)), 12), 12)
             player$ = RTrim$(player$)
     End Select
 
@@ -23996,7 +23993,7 @@ End Sub
 'the game's VGA mode
 Sub HOLDSTATUS_G (runnerHeld)
 
-    _PutImage (52 * FontColAdj, 400)-Step(12 * FontColAdj, 16), backupScreen&, imageScreen&, (52 * FontColAdj, 400)-Step(12 * FontColAdj, 16)
+    RestoreScrn 52,25, 12,1     'Runners Hold section
 
     rhStatus$ = "RUNNERS:"
 
@@ -24041,7 +24038,7 @@ Sub DisplayInningScore_G (currInning, teamLine)
     col = 3 * (inningInSet + 1) + 7 + (inningInSet \ 3)
 
     ' Shift right for subsequent sets (appears to be 30 columns per set)
-    If setOf9 > 0 Then col = col + setOf9 * 30
+    'If setOf9 > 0 Then col = col + setOf9 * 30
 
     inningRuns = inningScore(teamLine, currInning)
     FORMATTED$ = LTrim$(Str$(inningRuns))
@@ -24071,6 +24068,7 @@ Sub LOADSCREEN ()
     imageHeight% = _Height(parkImage&)
     imageScreen& = _NewImage(imageWidth%, imageHeight%, 32)
     backupScreen& = _NewImage(imageWidth%, imageHeight%, 32)
+    Shared fldrScreenLoc(), runnerScreenLoc()
 
     Screen imageScreen&
     Cls
@@ -24078,60 +24076,41 @@ Sub LOADSCREEN ()
 
     'Backup several areas of image where player text will go
 
-    'Play-by-Play box
-    _PutImage (20 * FontColAdj, 48)-Step(44 * FontColAdj, 144), imageScreen&, backupScreen&, (20 * FontColAdj, 48)-Step(44 * FontColAdj, 144)
+    SaveScrn 20,3, 44,9     'Play-by-Play box
 
-    'Runners Hold section
-    _PutImage (52 * FontColAdj, 400)-Step(12 * FontColAdj, 16), imageScreen&, backupScreen&, (52 * FontColAdj, 400)-Step(12 * FontColAdj, 16)
+    SaveScrn 52,25, 12,1    'Runners Hold section
 
-    'Infield
-    _PutImage (51 * FontColAdj, 416)-Step(14 * FontColAdj, 16), imageScreen&, backupScreen&, (51 * FontColAdj, 416)-Step(14 * FontColAdj, 16)
+    SaveScrn 51,26, 14,1    'Infield
 
-    'Center Field
-    _PutImage (36 * FontColAdj, 224)-Step(16 * FontColAdj, 32), imageScreen&, backupScreen&, (36 * FontColAdj, 224)-Step(16 * FontColAdj, 32)
+    For I = 1 To 9
+        SaveScrn fldrScreenLoc(I, 0), fldrScreenLoc(I, 1), 16, _Iif(I = 2, 1, 2)   'Fielders
+    Next
 
-    'Left Field
-    _PutImage (7 * FontColAdj, 256)-Step(16 * FontColAdj, 32), imageScreen&, backupScreen&, (7 * FontColAdj, 256)-Step(16 * FontColAdj, 32)
+    SaveScrn runnerScreenLoc(2, 0), runnerScreenLoc(2, 1), 14,2    '2nd Base Runner
 
-    'Right Field
-    _PutImage (64 * FontColAdj, 256)-Step(16 * FontColAdj, 32), imageScreen&, backupScreen&, (64 * FontColAdj, 256)-Step(16 * FontColAdj, 32)
+    SaveScrn runnerScreenLoc(3, 0), runnerScreenLoc(3, 1), 14,2    '3rd Base Runner
 
-    'Short Stop
-    _PutImage (28 * FontColAdj, 272)-Step(16 * FontColAdj, 32), imageScreen&, backupScreen&, (28 * FontColAdj, 272)-Step(16 * FontColAdj, 32)
+    SaveScrn runnerScreenLoc(1, 0), runnerScreenLoc(1, 1), 14,1    '1st Base Runner Name
 
-    '2nd Base
-    _PutImage (46 * FontColAdj, 272)-Step(16 * FontColAdj, 32), imageScreen&, backupScreen&, (46 * FontColAdj, 272)-Step(16 * FontColAdj, 32)
-
-    '3rd Base
-    _PutImage (13 * FontColAdj, 304)-Step(16 * FontColAdj, 32), imageScreen&, backupScreen&, (13 * FontColAdj, 304)-Step(16 * FontColAdj, 32)
-
-    '1st Base
-    _PutImage (61 * FontColAdj, 304)-Step(16 * FontColAdj, 32), imageScreen&, backupScreen&, (61 * FontColAdj, 304)-Step(16 * FontColAdj, 32)
-
-    'Pitcher
-    _PutImage (35 * FontColAdj, 336)-Step(16 * FontColAdj, 32), imageScreen&, backupScreen&, (35 * FontColAdj, 336)-Step(16 * FontColAdj, 32)
-
-    'Catcher
-    _PutImage (35 * FontColAdj, 416)-Step(16 * FontColAdj, 16), imageScreen&, backupScreen&, (35 * FontColAdj, 416)-Step(16 * FontColAdj, 16)
-
-    '2nd Base Runner
-    _PutImage (37 * FontColAdj, 304)-Step(14 * FontColAdj, 32), imageScreen&, backupScreen&, (37 * FontColAdj, 304)-Step(14 * FontColAdj, 32)
-
-    '3rd Base Runner
-    _PutImage (15 * FontColAdj, 336)-Step(14 * FontColAdj, 32), imageScreen&, backupScreen&, (15 * FontColAdj, 336)-Step(14 * FontColAdj, 32)
-
-    '1st Base Runner Name
-    _PutImage (54 * FontColAdj, 336)-Step(14 * FontColAdj, 16), imageScreen&, backupScreen&, (54 * FontColAdj, 336)-Step(14 * FontColAdj, 16)
-
-    '1st Base Runner Stats
-    _PutImage (54 * FontColAdj, 352)-Step(11 * FontColAdj, 16), imageScreen&, backupScreen&, (54 * FontColAdj, 352)-Step(11 * FontColAdj, 16)
+    SaveScrn runnerScreenLoc(1, 0), runnerScreenLoc(1, 1)+1, 11,1    '1st Base Runner Stats
 
     'Batter - Right
-    _PutImage (30 * FontColAdj, 400)-Step(23 * FontColAdj, 16), imageScreen&, backupScreen&, (30 * FontColAdj, 400)-Step(23 * FontColAdj, 16)
+    SaveScrn 30,25, 23,1    'Batter - Right
 
     'Commands for Human Play
-    _PutImage (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176), imageScreen&, backupScreen&, (1 * FontColAdj, 304)-Step(14 * FontColAdj, 176)
+    SaveScrn 1,19, 14,11    'Commands for Human Play
 
+End Sub
+
+
+Sub SaveScrn (xPos, yPos, xWidth, yHeight)
+    _PutImage (xPos * FontColAdj, yPos * 16)-Step(xWidth * FontColAdj, yHeight * 16), imageScreen&, backupScreen&, _
+              (xPos * FontColAdj, yPos * 16)-Step(xWidth * FontColAdj, yHeight * 16)
+End Sub
+
+Sub RestoreScrn (xPos, yPos, xWidth, yHeight)
+    _PutImage (xPos * FontColAdj, yPos * 16)-Step(xWidth * FontColAdj, yHeight * 16), backupScreen&, imageScreen&, _
+              (xPos * FontColAdj, yPos * 16)-Step(xWidth * FontColAdj, yHeight * 16)
 End Sub
 
 
