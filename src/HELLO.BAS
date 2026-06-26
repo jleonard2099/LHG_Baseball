@@ -34,7 +34,7 @@ DefInt A-Z
 '$Include: 'FileTeamSelection.bi'
 '$Include: 'Variables.bi'
 Dim Shared autoPlay, batterMinimumOpt, BV, compTeam, currFielder
-Dim Shared nbrLines, nbrStrikes, noLUFound, normalFinish
+Dim Shared nbrStrikes, noLUFound, normalFinish
 
 '$Include: 'MainRoutines.bi'
 '$Include: 'TITLE.bi'
@@ -4274,7 +4274,7 @@ Sub SOURCE ()
     scoreDiff = gameScore(D, 0) - gameScore(P, 0)
 
     'Human player pitching
-    If teamMgrProfileVal(D, 560) = 999 And INNING% >= 8 And Not (playerMode = 1 And P = compTeam Or playerMode = 2) Then
+    If teamMgrProfileVal(D, 560) = 999 And INNING% >= 8 And IsDefensePC Then
 
         'Team is using a DEFENSIVE strategy
 
@@ -4339,7 +4339,7 @@ Sub SOURCE ()
     'Pitcher was Injured or pinch hit for
     If fielder(D, 1) = 99 Then
 
-        If playerMode = 0 Or (playerMode = 1 And D <> compTeam) Then
+        If IsDefenseHuman Then
 
             Cls
 
@@ -4514,7 +4514,7 @@ Sub SOURCE ()
 
         LContinueBatter2:
         'Print #11, "DEBUG: Processing LContinueBatter2"
-        If (playerMode = 1 And D = compTeam) Or playerMode = 2 Then
+        If IsDefensePC Then
             GoTo LEndOfGame
         End If
 
@@ -4773,7 +4773,7 @@ Sub SOURCE ()
 
     Do
 
-        If ((playerMode = 1 And P = compTeam) Or playerMode = 2) Then
+        If IsOffensePC Then
 
             JM = lineupPlayer(P, currLineupSlot(P))
 
@@ -5206,7 +5206,7 @@ Sub SOURCE ()
         injPlayer = 0
 
         'If human player and pitcher has not been substituted
-        If (playerMode = 0 Or (playerMode = 1 And D <> compTeam)) And _
+        If IsDefenseHuman And _
             pitchRating(D, currPitcher(D), SS_P_Avail) = 99 Then
             'Force a substitution
             GoTo LPersonnelMenu
@@ -7345,7 +7345,7 @@ Sub SOURCE ()
             Call PBP("Looks like a close play at " + J3$ + "!!")
             Call PBP("1- Throw to " + J3$ + " 2- Throw to 1st")
 
-            If (playerMode = 1 And D = compTeam) Or playerMode = 2 Then
+            If IsDefensePC Then
                 I$ = "1"
             Else
                 Do
@@ -7826,7 +7826,7 @@ Sub SOURCE ()
     If stealHome% = 1 Then
         I9 = Int(Rnd(1) * 1000) + 1
     Else
-        If (playerMode = 1 And D = compTeam) Or playerMode = 2 Then
+        If IsDefensePC Then
             I$ = "Y"
         Else
             Call PBP("Throw to 2B? (Y/N) ")
@@ -8040,7 +8040,7 @@ Sub SOURCE ()
 
     Call WINDEX
 
-    If (playerMode = 1 And P = compTeam) Or playerMode = 2 Then
+    If IsOffensePC Then
         I$ = "N"
     Else
         Call PBP("TRY TO STEAL HOME? (Y/N)")
@@ -10204,15 +10204,13 @@ Sub PBP (pbpString$)
             pbpText$(outputLines) = pbpString$
         End If
 
-        nbrLines = nbrLines + 1
-
         ' Display all stored lines
         For I = 1 To outputLines
 
             If useVGA = 1 Then
                 Color &HFFFFFFFF, &HFF000000
                 _PrintMode _FillBackground , imageScreen&
-                PrintOnGfx 20, I + 3, pbpText$(I), imageScreen&
+                PrintOnGfx 20, I + 2, pbpText$(I), imageScreen&
             Else
                 Locate 14 + I, 1
                 Print Left$(pbpText$(I), 44)
@@ -11537,7 +11535,7 @@ End Sub
 'that prompts the user for replacements.
 Sub EJECTIONINJURY (posIdx, W5, W6)
 
-    If (playerMode = 1 And D = compTeam) Or playerMode = 2 Then
+    If IsDefensePC Then
 
         I2 = 1
 
@@ -12548,7 +12546,7 @@ Sub InjuredPitcher (playerInjured, pinchHitterFlag, baseStatus)
     playerInjured = 1
     pitchRating(D, currPitcher(D), SS_P_Avail) = 99
 
-    If (playerMode = 1 And D = compTeam) Or playerMode = 2 Then
+    If IsDefensePC Then
         Call RELIEVERS(pinchHitterFlag, newPitcherFlag, baseStatus)
     Else
         Call PBP("You must replace " + pitchers$(D, currPitcher(D)))
@@ -13997,7 +13995,7 @@ End Sub
 ' Offensive Player Ejected/Injured
 Sub PLYRHRT (W5, W6, nbrBalls, nbrStrikes, MO)
 
-    If ((playerMode = 1 And P = compTeam) Or playerMode = 2) Then
+    If IsOffensePC Then
 
         For pIdx = 0 To 22
 
@@ -16972,7 +16970,7 @@ End Sub
 'for a squeeze / bunt.
 Sub SQUEEZECHOICE (squeezeOrSH, baseStatus)
 
-    If (playerMode = 1 And P = compTeam) Or playerMode = 2 Then
+    If IsOffensePC Then
         'Computer decision
 
         'Default to bunt
@@ -17457,7 +17455,7 @@ End Sub
 'Play-by-Play (relying on other rouintes)
 'for an attempt to get an extra base when
 'an error has been committed.
-Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, noThrow, baseStatus, runnerOn2nd, currFielder, INFPOS%, wasError, homeSafe)
+Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, tryingToAdvance, baseStatus, runnerOn2nd, currFielder, INFPOS%, wasError, homeSafe)
 
     homeSafe = 0
 
@@ -17531,20 +17529,28 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, noThrow, baseStatus, run
     If baseNbr <> 0 Then
         'We shouldn't still have a 0 value!
 
-        If Not ((playerMode = 1 And P = compTeam) Or playerMode = 2) Then
+            If S2% < EVENT_HR Then
+                RestoreScrn 30,25, 23,1    'Batter - Right & Left
+                For iii = 1 To 3
+                    Call DisplayRun_G(iii)
+                Next
+            End If
+
+        If IsOffenseHuman Then
             If S2% < EVENT_HR Then
                 Call PBP(player$(baseNbr - 1) + " try for " + baseName$(baseNbr) + "? (Y/N) ")
             End If
             If S2% > EVENT_HR Then
                 Call PBP(player$(baseNbr - 1) + " tag up? (Y/N) ")
             End If
+
             Call PBP("against " + player$(4))
         End If
 
         I$ = "N"
         scoreDiff = gameScore(P, 0) - gameScore(D, 0)
 
-        If ((playerMode = 1 And P = compTeam) Or playerMode = 2) Then
+        If IsOffensePC Then
             If Abs(scoreDiff) < 2 And S2% <> EVENT_FLY_SHALLOW Then
                 I$ = "Y"
                 'Green light! -- game margin is within 1 run and event is S2%
@@ -17560,13 +17566,13 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, noThrow, baseStatus, run
             End If
         End If
 
-        skipThrow% = 0
-        If Not ((playerMode = 1 And P = compTeam) Or playerMode = 2) Then
+        skipThrow% = _False
+        If IsOffenseHuman Then
             I$ = GetKeyPress$
         End If
 
         If UCase$(I$) <> "Y" Then
-            noThrow = 1
+            tryingToAdvance = _False
         Else
             'Runner going for baseNbr on event S2%
             pbpString$ = player$(baseNbr - 1) + " is "
@@ -17578,15 +17584,15 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, noThrow, baseStatus, run
                 Call PBP(pbpString$ + "tagging")
             End If
 
-            If (S2% <> EVENT_1B Or baseNbr = 2) And (S2% <= EVENT_HR Or baseStatus <> 3) Then
+            If ShouldAskToThrow(S2%) Then
 
-                If Not ((playerMode = 1 And D = compTeam) Or playerMode = 2) Then
+                If IsDefenseHuman Then
                     Call PBP(player$(4) + " throw to " + baseName$(baseNbr) + "? (Y/N) ")
                 End If
 
                 Call Rolld100(RN0)
 
-                If ((playerMode = 1 And D = compTeam) Or playerMode = 2) Then
+                If IsDefensePC Then
                     If teamMgrProfileVal(D, 766) = 999 And baseNbr = 4 Then
                         'Team is using a THROWING HOME strategy !!
                         If INNING% >= teamMgrProfileVal(D, 767) And teamMgrProfileVal(D, 767) <> 0 And teamMgrProfileVal(D, 768) <= gameScore(D, 0) - gameScore(P, 0) Then
@@ -17602,17 +17608,16 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, noThrow, baseStatus, run
                     I$ = GetKeyPress$
                 End If
 
-                noThrow = 0
+                tryingToAdvance = _True
 
                 If UCase$(I$) <> "Y" Then
-                    noThrow = 1
                     Call PBP("No throw is made")
-                    skipThrow% = 1
+                    skipThrow% = _True
                 End If
 
             End If
 
-            If skipThrow% = 0 Then
+            If Not skipThrow% Then
 
                 Call WINDEX
                 Call PBP("Here comes the throw by " + player$(4))
@@ -17623,28 +17628,23 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, noThrow, baseStatus, run
 
                 If wasError = 0 Then
 
-                    I4 = Int(Rnd(1) * 1000) + 1
-
-                    runRating = batRating(P, lineupPlayer(P, runnerOnBase(baseNbr - 1)), SS_B_Run)
-
                     If fldPos(P, runnerOnBase((baseNbr - 1))) = 1 Then
                         runRating = pitchRating(P, currPitcher(P), SS_P_Run)
+                    Else
+                        runRating = batRating(P, lineupPlayer(P, runnerOnBase(baseNbr - 1)), SS_B_Run)
                     End If
 
                     runRating = (runRating - 5) * 50
 
                     armRating = (batRating(D, fielder(D, currFielder), SS_B_Arm) - 5) * 25
-                    If S2% = EVENT_FLY_DEEP Then
-                        I3 = 1000 + runRating - armRating
-                    End If
-                    If S2% = EVENT_FLY_REGULAR Then
-                        I3 = 800 + runRating - armRating
-                    End If
-                    If S2% = EVENT_FLY_SHALLOW Or S2% < EVENT_HR Then
-                        I3 = 500 + runRating - armRating
-                    End If
+                    
+                    If S2% = EVENT_FLY_DEEP                      Then flyballFactor = 1000
+                    If S2% = EVENT_FLY_REGULAR                   Then flyballFactor =  800
+                    If S2% = EVENT_FLY_SHALLOW Or S2% < EVENT_HR Then flyballFactor =  500
 
-                    If I4 > I3 Then
+                    successChance = runRating - armRating + flyballFactor
+
+                    If Int(Rnd(1) * 1000) + 1 > successChance Then
                         ' outcome = OUT!
 
                         baseMove(baseNbr - 1) = 11
@@ -17728,7 +17728,7 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, noThrow, baseStatus, run
 
                             End If
 
-                            If runnerOnBase(2) > 0 And baseNbr - 1 > 2 And baseMove(2) <> 11 And d100% > (80 - batRating(P, lineupPlayer(P, runnerOnBase(2)), SS_B_Run) * 2) And noThrow = 0 Then
+                            If runnerOnBase(2) > 0 And baseNbr - 1 > 2 And baseMove(2) <> 11 And d100% > (80 - batRating(P, lineupPlayer(P, runnerOnBase(2)), SS_B_Run) * 2) And tryingToAdvance Then
                                 baseMove(2) = 1
                                 Call PBP("runner is trying for 3rd...")
                                 Call PBP("He's safe!")
@@ -17736,13 +17736,13 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, noThrow, baseStatus, run
 
                             I5 = Int(Rnd(1) * 10) + 1
 
-                            If runnerOnBase(1) > 0 And baseMove(1) <> 11 And (baseStatus = 4 Or baseStatus = 7 And baseNbr - 1 > 1 And I5 > (10 - batRating(P, lineupPlayer(P, runnerOnBase(1)), SS_B_Run)) And noThrow = 0) Then
+                            If runnerOnBase(1) > 0 And baseMove(1) <> 11 And (baseStatus = 4 Or baseStatus = 7 And baseNbr - 1 > 1 And I5 > (10 - batRating(P, lineupPlayer(P, runnerOnBase(1)), SS_B_Run)) And tryingToAdvance) Then
                                 baseMove(1) = 1
                                 Call PBP("runner is trying for 2nd...")
                                 Call PBP("He's in there!")
                             Else
 
-                                If runnerOnBase(1) > 0 And baseNbr - 1 > 1 And d100% > (80 - batRating(P, lineupPlayer(P, runnerOnBase(1)), SS_B_Run) * 2) And noThrow = 0 And baseMove(1) <> 11 Then
+                                If runnerOnBase(1) > 0 And baseNbr - 1 > 1 And d100% > (80 - batRating(P, lineupPlayer(P, runnerOnBase(1)), SS_B_Run) * 2) And tryingToAdvance And baseMove(1) <> 11 Then
                                     baseMove(1) = 1
                                     Call PBP("runner safe at 2nd on the throw")
                                 End If
@@ -17752,7 +17752,7 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, noThrow, baseStatus, run
                         End If
 
                         Call ADVANCEMENT(S2%, INFPOS%, I3, currFielder, wasError, SAH%)
-                        noThrow = 0
+                        tryingToAdvance = _True
 
                         Exit Sub
 
@@ -17762,7 +17762,7 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, noThrow, baseStatus, run
 
                 baseMove(baseNbr - 1) = 1 ' outcome = SAFE!
 
-                If noThrow <> 1 Then
+                If tryingToAdvance Then
 
                     Call Rolld100(safePBP)
 
@@ -17817,15 +17817,15 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, noThrow, baseStatus, run
 
                     If fldPos(P, currLineupSlot(P)) = 1 Then
 
-                        teamPitStats(P, currPitcher(P), 23) = teamPitStats(P, currPitcher(P), 23) - 1
-                        oppPitStats(P, currPitcher(P), 23) = oppPitStats(P, currPitcher(P), 23) - 1
+                        teamPitStats(P, currPitcher(P), LG_PB_AB) = teamPitStats(P, currPitcher(P), LG_PB_AB) - 1
+                        oppPitStats(P, currPitcher(P), LG_PB_AB) = oppPitStats(P, currPitcher(P), LG_PB_AB) - 1
                         Call INCPITOFF(P, currPitcher(P), LG_PB_SF)
                         Call INCPITDEF(D, currPitcher(D), LG_P_SF)
 
                     Else
 
-                        teamBatStats(P, lineupPlayer(P, currLineupSlot(P)), 0) = teamBatStats(P, lineupPlayer(P, currLineupSlot(P)), 0) - 1
-                        oppBatStats(P, lineupPlayer(P, currLineupSlot(P)), 0) = oppBatStats(P, lineupPlayer(P, currLineupSlot(P)), 0) - 1
+                        teamBatStats(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB) = teamBatStats(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB) - 1
+                        oppBatStats(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB) = oppBatStats(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB) - 1
 
                         If pitchRating(D, currPitcher(D), SS_P_Throws) <> 1 Then
                             CSS(P, lineupPlayer(P, currLineupSlot(P)), 0) = CSS(P, lineupPlayer(P, currLineupSlot(P)), 0) - 1
@@ -17842,7 +17842,18 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, noThrow, baseStatus, run
 
                 'Loop Until S2% >= 10 And fldPos(P, currLineupSlot(P)) = 1
 
-            End If 'Done checking for fielding error
+            Else
+
+                baseMove(baseNbr - 1) = 1 ' outcome = SAFE! (no throw)
+
+                Call PBP(player$(baseNbr - 1) + " is safe @ " + baseName$(baseNbr) + " (no throw)")
+
+                If baseNbr = 4 Then homeSafe = 1
+
+                Call TAGADVANCE(S2%, baseNbr)
+                Call ADVANCEMENT(S2%, INFPOS%, I3, currFielder, wasError, SAH%)
+
+            End If 'Done checking if we're skipping the throw
 
         End If 'Done checking if we're going to try for base
 
@@ -18113,7 +18124,7 @@ Sub WHICHRUNNER (i, baseStatus, D5)
             Call PBP("2 - " + pitchers$(P, currPitcher(P)))
         End If
 
-        If (playerMode = 1 And D = compTeam) Or playerMode = 2 Then
+        If IsDefensePC Then
             D5 = Int(Rnd(1) * 2) + 1
             i$ = Str$(D5)
         Else
@@ -22015,16 +22026,16 @@ Sub STATS2SCREEN
                     Print "   ";
 
                     'ERA
-                    If teamPitStats(I, I2, LG_P_ER) > 0 And teamPitStats(I, I2, LG_P_OUT) = 0 Then
+                    If oppPitStats(I, I2, LG_P_ER) > 0 And oppPitStats(I, I2, LG_P_OUT) = 0 Then
                         Print "99.99 ";
                     Else
-                        If teamPitStats(I, I2, LG_P_OUT) = 0 Then
+                        If oppPitStats(I, I2, LG_P_OUT) = 0 Then
                             Print "--.-- ";
                         Else
-                            If teamPitStats(I, I2, LG_P_ER) = 0 Then
+                            If oppPitStats(I, I2, LG_P_ER) = 0 Then
                                 Print " 0.00 ";
                             Else
-                                statCalc! = teamPitStats(I, I2, LG_P_ER) / (teamPitStats(I, I2, LG_P_OUT) / 3) * 9
+                                statCalc! = oppPitStats(I, I2, LG_P_ER) / (oppPitStats(I, I2, LG_P_OUT) / 3) * 9
                                 Print Using "##.## "; statCalc!;
                             End If
                         End If
@@ -23449,6 +23460,74 @@ Sub DumpIt (baseStatus, P2, D2)
 End Sub
 
 
+'--------------------------------------------
+'        IsOffensePC Function
+'--------------------------------------------
+'This function returns TRUE if the computer
+'is on offense, i.e., is batting.
+Function IsOffensePC
+    IsOffensePC = playerMode = 1 And P = compTeam Or playerMode = 2
+End Function
+
+
+'--------------------------------------------
+'        IsDefensePC Function
+'--------------------------------------------
+'This function returns TRUE if the computer
+'is on defense, i.e., is pitching.
+Function IsDefensePC
+    IsDefensePC = playerMode = 1 And D = compTeam Or playerMode = 2
+End Function
+
+
+'--------------------------------------------
+'        IsOffenseHuman Function
+'--------------------------------------------
+'This function returns TRUE if a human player
+'is on offense, i.e., is batting.
+Function IsOffenseHuman
+    IsOffenseHuman = Not IsOffensePC
+End Function
+
+
+'--------------------------------------------
+'        IsDefenseHuman Function
+'--------------------------------------------
+'This function returns TRUE if a human player
+'is on defense, i.e., is pitching.
+Function IsDefenseHuman
+    IsDefenseHuman = Not IsDefensePC
+End Function
+
+
+'--------------------------------------------
+'        ShouldAskToThrow Function
+'--------------------------------------------
+'This function returns TRUE if a human player
+'should be presented with a choice as to whether
+'to attempt to throw out an advancing runner.
+'
+'Currently, this will return TRUE when a batter
+'is attempting to stretch a SINGLE to a DOUBLE
+'while a runner at 2nd has advanced to 3rd.
+'
+'This will also happen when there are multiple
+'baserunners and the lead runner is attempting
+'to tag up when a flyball is caught.
+Function ShouldAskToThrow (S2%)
+
+    If S2% < EVENT_HR Then                                          'stretching a base hit
+        ShouldAskToThrow = S2% = EVENT_1B And runnerOnBase(3) > 0   'only ask if the batter is attempting to stretch a single with a runner on 3rd base
+    Else                                                            'tagging up from flyball
+        'bRunners  = _Iif(runnerOnBase(1) > 0, 1, 0) + _Iif(runnerOnBase(2) > 0, 2, 0) + _Iif(runnerOnBase(3) > 0, 4, 0)
+        numRunners = _Iif(runnerOnBase(1) > 0, 1, 0) + _Iif(runnerOnBase(2) > 0, 1, 0) + _Iif(runnerOnBase(3) > 0, 1, 0)
+
+        ShouldAskToThrow = numRunners > 1                           'ask if more than 1 baserunner
+    End If
+
+End Function
+
+
 'Include: 'GameRoutines_Gfx.bm'
 
 '----------------------------------------
@@ -23458,7 +23537,7 @@ End Sub
 'a ballpark image
 Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
 
-    RestoreScrn 29,25, 24,1
+    RestoreScrn 30,25, 23,1     'Batter - right & left
 
     'Printing white on black
     Color White, Black
@@ -24087,15 +24166,13 @@ Sub LOADSCREEN ()
     Next
 
     SaveScrn runnerScreenLoc(2, 0), runnerScreenLoc(2, 1), 14,2    '2nd Base Runner
-
     SaveScrn runnerScreenLoc(3, 0), runnerScreenLoc(3, 1), 14,2    '3rd Base Runner
 
     SaveScrn runnerScreenLoc(1, 0), runnerScreenLoc(1, 1), 14,1    '1st Base Runner Name
-
-    SaveScrn runnerScreenLoc(1, 0), runnerScreenLoc(1, 1)+1, 11,1    '1st Base Runner Stats
+    SaveScrn runnerScreenLoc(1, 0), runnerScreenLoc(1, 1)+1, 11,1  '1st Base Runner Stats
 
     'Batter - Right
-    SaveScrn 30,25, 23,1    'Batter - Right
+    SaveScrn 30,25, 23,1    'Batter - Right & Left
 
     'Commands for Human Play
     SaveScrn 1,19, 14,11    'Commands for Human Play
@@ -24103,11 +24180,22 @@ Sub LOADSCREEN ()
 End Sub
 
 
+'--------------------------------------------
+'        SaveScrn Subroutine
+'--------------------------------------------
+'This subroutine saves the specified image
+'rectangle to the backupScreen.
 Sub SaveScrn (xPos, yPos, xWidth, yHeight)
     _PutImage (xPos * FontColAdj, yPos * 16)-Step(xWidth * FontColAdj, yHeight * 16), imageScreen&, backupScreen&, _
               (xPos * FontColAdj, yPos * 16)-Step(xWidth * FontColAdj, yHeight * 16)
 End Sub
 
+
+'--------------------------------------------
+'        RestoreScrn Subroutine
+'--------------------------------------------
+'This subroutine restores the specified image
+'rectangle from the backupScreen.
 Sub RestoreScrn (xPos, yPos, xWidth, yHeight)
     _PutImage (xPos * FontColAdj, yPos * 16)-Step(xWidth * FontColAdj, yHeight * 16), backupScreen&, imageScreen&, _
               (xPos * FontColAdj, yPos * 16)-Step(xWidth * FontColAdj, yHeight * 16)
