@@ -7731,7 +7731,7 @@ Sub SOURCE ()
 
         Call FLDERR(S2%, I3, stealing, currFielder, INFPOS%, errorOnPlay%, SAH%)
         If errorOnPlay% = 1 Then
-            Call INCBATOFF(P, stealRunIdx, 9)
+            Call INCBATOFF(P, stealRunIdx, LG_B_SB)
             currLineupSlot(P) = currLineupSlot(P) - 1
             Call STRIKEOUTCS(wasStrikeout)
             GoTo LCheckForOptionsOrQuit
@@ -7845,7 +7845,7 @@ Sub SOURCE ()
         Call FLDERR(S2%, I3, stealing, currFielder, INFPOS%, errorOnPlay%, SAH%)
         If errorOnPlay% = 1 Then
             'Credit 3rd base runner
-            Call INCBATOFF(P, stealRunIdx, LG_B_SB)
+            'Call INCBATOFF(P, stealRunIdx, LG_B_SB)    'CoPilot says this is double-counting SBs
             'Credit any other base runners with a steal
             Call PITSWAP(TGTBASE%, errorOnPlay%)
             currLineupSlot(P) = currLineupSlot(P) - 1
@@ -9492,8 +9492,8 @@ Sub SOURCE ()
             (scoreDiff >= 0 Or INNING% < 7)) Or _
             ((baseRunners = 2 Or baseRunners = 4) And batRating(P, lineupPlayer(P, runnerOnBase(2)), SS_B_SB) >= 40 And fldPos(P, currLineupSlot(P)) <> 1 And nbrOuts(0) <> 2 And stealPhase(2) <= 1) Then                    
             'Offense Steal
-            offChoice = OFF_STEAL
-            GoTo LSteal
+            If baseRunners = 1 Or baseRunners = 5 Then stlPercent! = 0.9 Else stlPercent! = 0.45
+            If Rnd(1) < stlPercent! Then offChoice = OFF_STEAL: GoTo LSteal     'Decrease SB attempts (especially 3rd base), because there are just too many!
         Else
             GoTo LNoSteal
         End If
@@ -10416,7 +10416,7 @@ Sub ADV1BASE (p_base)
     b2Pitcher(p_base + 1) = b2Pitcher(p_base)
     stealPhase(p_base + 1) = stealPhase(p_base)
 
-    stealPhase(p_base + 1) = 0
+    'stealPhase(p_base + 1) = 0
 
     runnerOnBase(p_base) = 0
     b2Pitcher(p_base) = 0
@@ -11539,13 +11539,9 @@ Sub EJECTIONINJURY (posIdx, W5, W6)
 
         I2 = 1
 
-        loopCounter = 0
-
-        Do While I2 <= 9 And fldPos(D, I2) <> posIdx
-
+        Do While I2 <= 9    'unroll compound booleans in DO because QB64PE does not short-circuit their evaluation, causing array subscript errors
+            If fldPos(D, I2) = posIdx Then Exit Do
             I2 = I2 + 1
-            loopCounter = loopCounter + 1
-
         Loop
 
         For idx = 0 To 22
@@ -14288,28 +14284,28 @@ Sub PopUp_Pitcher (WK, M)
     Print Using "### ###         ##"; pitchRating(WK, M, SS_P_BB); pitchRating(WK, M, SS_P_K); pitchRating(WK, M, SS_P_HR)
 
     Locate , 6: Print "LEAGUE   ";
-    Print Using "## ## ## "; oppPitStats(WK, M, 6); oppPitStats(WK, M, 7); oppPitStats(WK, M, 12);
+    Print Using "## ## ## "; oppPitStats(WK, M, LG_P_W); oppPitStats(WK, M, LG_P_L); oppPitStats(WK, M, LG_P_Sv);
 
-    If oppPitStats(WK, M, 3) = 0 Or oppPitStats(WK, M, 0) = 0 Then
+    If oppPitStats(WK, M, LG_P_ER) = 0 Or oppPitStats(WK, M, LG_P_OUT) = 0 Then
         Print " 0.00";
     Else
-        Print Using "##.##"; oppPitStats(WK, M, 3) / (oppPitStats(WK, M, 0) / 3) * 9;
+        Print Using "##.##"; oppPitStats(WK, M, LG_P_ER) / (oppPitStats(WK, M, LG_P_OUT) / 3) * 9;
     End If
 
-    Print Using " ## ## ## "; oppPitStats(WK, M, 8); oppPitStats(WK, M, 9); oppPitStats(WK, M, 10);
+    Print Using " ## ## ## "; oppPitStats(WK, M, LG_P_G); oppPitStats(WK, M, LG_P_GS); oppPitStats(WK, M, LG_P_CG);
 
-    If oppPitStats(WK, M, 0) = 0 Then
+    If oppPitStats(WK, M, LG_P_OUT) = 0 Then
         Print "  0.0";
     Else
-        Print Using "###"; Int(oppPitStats(WK, M, 0) / 3);
+        Print Using "###"; Int(oppPitStats(WK, M, LG_P_OUT) / 3);
         Print ".";
-        Print Using "#"; oppPitStats(WK, M, 0) - (Int(oppPitStats(WK, M, 0) / 3) * 3);
+        Print Using "#"; oppPitStats(WK, M, LG_P_OUT) - (Int(oppPitStats(WK, M, LG_P_OUT) / 3) * 3);
     End If
 
-    Print Using " ### ### ### ### ### ##"; oppPitStats(WK, M, 1); oppPitStats(WK, M, 4); oppPitStats(WK, M, 5); oppPitStats(WK, M, 2); oppPitStats(WK, M, 3); oppPitStats(WK, M, 14)
+    Print Using " ### ### ### ### ### ##"; oppPitStats(WK, M, LG_P_H); oppPitStats(WK, M, LG_P_BB); oppPitStats(WK, M, LG_P_K); oppPitStats(WK, M, LG_P_R); oppPitStats(WK, M, LG_P_ER); oppPitStats(WK, M, LG_P_HR)
 
     Locate , 6: Print "GAME     ";
-    Print Using "## ## ## "; teamPitStats(WK, M, 6); teamPitStats(WK, M, 7); teamPitStats(WK, M, 12);
+    Print Using "## ## ## "; teamPitStats(WK, M, LG_P_W); teamPitStats(WK, M, LG_P_L); teamPitStats(WK, M, LG_P_Sv);
 
     If teamPitStats(WK, M, LG_P_ER) = 0 Or teamPitStats(WK, M, LG_P_OUT) = 0 Then
         Print " 0.00";
@@ -14317,7 +14313,7 @@ Sub PopUp_Pitcher (WK, M)
         Print Using "##.##"; teamPitStats(WK, M, LG_P_ER) / (teamPitStats(WK, M, LG_P_OUT) / 3) * 9;
     End If
 
-    Print Using " ## ## ## "; teamPitStats(WK, M, 8); teamPitStats(WK, M, 9); teamPitStats(WK, M, 10);
+    Print Using " ## ## ## "; teamPitStats(WK, M, LG_P_G); teamPitStats(WK, M, LG_P_GS); teamPitStats(WK, M, LG_P_CG);
 
     If teamPitStats(WK, M, LG_P_OUT) = 0 Then
         Print "  0.0";
@@ -14327,7 +14323,7 @@ Sub PopUp_Pitcher (WK, M)
         Print Using "#"; teamPitStats(WK, M, LG_P_OUT) - (Int(teamPitStats(WK, M, LG_P_OUT) / 3) * 3);
     End If
 
-    Print Using " ### ### ### ### ### ##"; teamPitStats(WK, M, LG_P_H); teamPitStats(WK, M, LG_P_BB); teamPitStats(WK, M, LG_P_K); teamPitStats(WK, M, LG_P_R); teamPitStats(WK, M, LG_P_ER); teamPitStats(WK, M, 14)
+    Print Using " ### ### ### ### ### ##"; teamPitStats(WK, M, LG_P_H); teamPitStats(WK, M, LG_P_BB); teamPitStats(WK, M, LG_P_K); teamPitStats(WK, M, LG_P_R); teamPitStats(WK, M, LG_P_ER); teamPitStats(WK, M, LG_P_HR)
 
 End Sub
 
@@ -17106,6 +17102,8 @@ Sub SQUEEZECHOICE (squeezeOrSH, baseStatus)
             squeezeOrSH = Val(I$)
         Loop Until squeezeOrSH >= 1 And squeezeOrSH <= 2
 
+        RestoreScrn 0,14, 26,2     'Squeeze play
+
     End If
 
 End Sub
@@ -17144,65 +17142,66 @@ End Sub
 ' ...explanation...
 Sub STEALCHANCE (AA, I2, TGTBASE%, CHANCE%)
 
-    Dim DD As Single
-    Dim TT As Single
-    Dim RR As Single
-    Dim SS As Single
-    Dim GG As Single
-    Dim I1 As Single
+    Dim steal3rdPct      As Single
+    Dim steal3rdAttempts As Single
+    'Dim RR As Single
+    'Dim SS As Single
+    'Dim GG As Single
+    Dim stlAttemptChance As Single
 
-    AA = batRating(P, I2, SS_B_SB)
-    BB = batRating(P, I2, SS_B_SB) + batRating(P, I2, SS_B_CS)
-    CC = batRating(P, I2, SS_B_2B) ' *** CHANCE TO STEAL 2B & 3B ***
+    stlBases = batRating(P, I2, SS_B_SB)
+    stlBaseAttempts = batRating(P, I2, SS_B_SB) + batRating(P, I2, SS_B_CS)
+    stlDoubles = batRating(P, I2, SS_B_2B) ' *** CHANCE TO STEAL 2B & 3B ***
 
-    Select Case AA
-        Case Is <= 43: DD = .16
-        Case 44 To 60: DD = .21
-        Case Else: DD = .3
+    Select Case stlBases
+        Case Is <= 43: steal3rdPct = .16
+        Case 44 To 60: steal3rdPct = .21
+        Case Else: steal3rdPct = .3
     End Select
 
-    TT = CC + BB - (BB * DD) ' *** TOTAL CHANCES TO STEAL 3RD
-    RR = (TT * .19) * 1.4 ' *** "      "      "   "     "  1 OUT
-    SS = (TT * .56) * 1.4 ' ***                            0 OUT
-    GG = RR + SS ' ***                           (0,1 OUT)
+    steal3rdAttempts = stlDoubles + stlBaseAttempts * (1 - steal3rdPct) ' *** TOTAL CHANCES TO STEAL 3RD
+    'RR = (steal3rdAttempts * .19) * 1.4 ' *** "      "      "   "     "  1 OUT
+    'SS = (steal3rdAttempts * .56) * 1.4 ' ***                            0 OUT
+    'GG = RR + SS                        ' ***                           (0,1 OUT)  Why are these here if they are unused?
 
     If TGTBASE% <> 3 Then
 
-        FF = batRating(P, I2, SS_B_H) + batRating(P, I2, SS_B_W) - batRating(P, I2, SS_B_HR)
+        timesOnBase = batRating(P, I2, SS_B_H) + batRating(P, I2, SS_B_W) - batRating(P, I2, SS_B_HR)
 
-        If FF = 0 Then
-            I1 = 0
+        If timesOnBase = 0 Then
+            stlAttemptChance = 0
         Else
-            If AA >= 12 Then
-                I1 = Int(((BB - BB * DD) / FF) * 1500)
+            If stlBases >= 12 Then
+                stlAttemptChance = Int(((stlBaseAttempts * (1 - steal3rdPct)) / timesOnBase) * 1500)
             Else
-                I1 = Int((BB / FF) * 1500)
+                stlAttemptChance = Int((stlBaseAttempts / timesOnBase) * 1500)
             End If
-
-            If I1 < 0 Then I1 = 0
         End If
 
     Else
-        If BB < 10 And nbrOuts(0) = 0 Then
-            I1 = 0
-        End If
-        If BB < 10 And nbrOuts(0) = 1 Then
-            I1 = 10
-        End If
-        If nbrOuts(0) = 2 Or TT = 0 Then
-            I1 = 0
-        End If
-        If BB >= 10 And nbrOuts(0) = 1 Then
-            I1 = BB * DD / TT * 1000
-        End If
-        If BB >= 10 And nbrOuts(0) = 0 Then
-            I1 = BB * DD / TT * 1000
+
+        If steal3rdAttempts <> 0 Then
+            If stlBases >= 12 Then
+                Select Case nbrOuts(0)
+                    Case 0, 1: stlAttemptChance = stlBaseAttempts * steal3rdPct / steal3rdAttempts * 1000
+                    Case 2   : stlAttemptChance = 0
+                End Select
+            Else
+                Select Case nbrOuts(0)
+                    Case 0: stlAttemptChance = 0
+                    Case 1: stlAttemptChance = 10
+                    Case 2: stlAttemptChance = 0
+                End Select
+            End If
+        Else
+            stlAttemptChance = 0
         End If
 
-        If I1 < 0 Then I1 = 0
     End If
 
-    CHANCE% = I1
+    If stlAttemptChance < 0 Then stlAttemptChance = 0
+
+    CHANCE% = stlAttemptChance
 
 End Sub
 
@@ -17391,7 +17390,7 @@ Sub TIRING ()
             If d100% <= 50 Then
                 Print pitchers$(P9, currPitcher(P9)); " just doesn't have it today";
             Else
-                Print pitchers$(P9, currPitcher(P9)); " ain't got nuthin' on his fastball folks!";
+                Print pitchers$(P9, currPitcher(P9)); " ain't got nuthin' on his fastball";
             End If
         Else
             Print pitchers$(P9, currPitcher(P9)); " is tired!!";
@@ -18106,9 +18105,9 @@ End Sub
 'This subroutine lets the user choose which
 'runner to target when there is an attempt
 'to steal a base
-Sub WHICHRUNNER (i, baseStatus, D5)
+Sub WHICHRUNNER (TGTBASE%, baseStatus, D5)
 
-    If i = 4 Then
+    If TGTBASE% = 4 Then
         baseMove(3) = 1
     End If
 
@@ -18126,19 +18125,19 @@ Sub WHICHRUNNER (i, baseStatus, D5)
 
         If IsDefensePC Then
             D5 = Int(Rnd(1) * 2) + 1
-            i$ = Str$(D5)
+            ii$ = Str$(D5)
         Else
-            i$ = GetKeyPress$
+            ii$ = GetKeyPress$
         End If
 
-        D5 = Val(i$)
+        D5 = Val(ii$)
 
         If D5 = 2 Then
-            i = 2
+            TGTBASE% = 2
             D5 = 3
             I2 = lineupPlayer(P, runnerOnBase(1))
             If fldPos(P, runnerOnBase(1)) = 1 Then
-                player$(i - 1) = pitchers$(P, currPitcher(P))
+                player$(TGTBASE% - 1) = pitchers$(P, currPitcher(P))
             End If
         End If
 
@@ -23659,8 +23658,8 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
                 PrintOnGfx 65, 24, ".000  0  0   0", imageScreen&
             Else
                 pStats$ = LTrim$(FmtPct$(bAvg!))    'Known issue: Will be out of alignment by 1 char when bAvg! is 1.000
-                '                                 HR                                         BB                                            K
-                pStats$ = pStats$ + " " + FUsing$(Str$(batRating(P, J, 9)), "##", 1) + " " + FUsing$(Str$(batRating(P, J, 11)), "###", 1) + " " + FUsing$(Str$(batRating(P, J, 12)), "###", 1)
+                '                                 HR                                                        BB                                                      K
+                pStats$ = pStats$ + " " + FUsing$(Str$(batRating(P, J, SS_B_HR)), "##", 1) + " " + FUsing$(Str$(batRating(P, J, SS_B_W)), "###", 1) + " " + FUsing$(Str$(batRating(P, J, SS_B_K)), "###", 1)
                 PrintOnGfx 65, 24, pStats$, imageScreen&
             End If
 
@@ -23688,8 +23687,8 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
                     PrintOnGfx 65, 24, ".000  0   0   0", imageScreen&
                 Else
                     pStats$ = FmtPct$(pAvg!)
-                    '                          HR                                                BB              K
-                    pStats$ = pStats$ + " " + FUsing$(Str$(pitchRating(P, currPitcher(P), 25)), "##", 1) + " " + FUsing$(Str$(pitchRating(P, currPitcher(P), 27)), "###", 1) + " " + FUsing$(Str$(pitchRating(P, currPitcher(P), 28)), "###", 1)
+                    '                                 HR                                                                        BB                                                      K
+                    pStats$ = pStats$ + " " + FUsing$(Str$(pitchRating(P, currPitcher(P), SS_P_H_HR)), "##", 1) + " " + FUsing$(Str$(pitchRating(P, currPitcher(P), SS_P_H_BB)), "###", 1) + " " + FUsing$(Str$(pitchRating(P, currPitcher(P), SS_P_H_SO)), "###", 1)
                     PrintOnGfx 65, 24, pStats$, imageScreen&
 
                 End If
@@ -24176,6 +24175,8 @@ Sub LOADSCREEN ()
 
     'Commands for Human Play
     SaveScrn 1,19, 14,11    'Commands for Human Play
+
+    SaveScrn 0,14, 26,2     'Squeeze play
 
 End Sub
 
