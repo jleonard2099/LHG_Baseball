@@ -5643,10 +5643,10 @@ Sub SOURCE ()
                 nbrOuts(0) = nbrOuts(0) - 1
                 nbrOuts(1) = nbrOuts(1) - 1
 
-                teamPitStats(D, currPitcher(D), 0) = teamPitStats(D, currPitcher(D), 0) - 1
-                oppPitStats(D, currPitcher(D), 0) = oppPitStats(D, currPitcher(D), 0) - 1
-                teamBatStats(D, fielder(D, 2), 16) = teamBatStats(D, fielder(D, 2), 16) - 1
-                oppBatStats(D, fielder(D, 2), 16) = oppBatStats(D, fielder(D, 2), 16) - 1
+                teamPitStats(D, currPitcher(D), LG_P_OUT) = teamPitStats(D, currPitcher(D), LG_P_OUT) - 1
+                oppPitStats(D, currPitcher(D), LG_P_OUT) = oppPitStats(D, currPitcher(D), LG_P_OUT) - 1
+                teamBatStats(D, fielder(D, 2), LG_B_PO) = teamBatStats(D, fielder(D, 2), LG_B_PO) - 1
+                oppBatStats(D, fielder(D, 2), LG_B_PO) = oppBatStats(D, fielder(D, 2), LG_B_PO) - 1
 
                 Call Rolld100(I1)
 
@@ -8861,7 +8861,7 @@ Sub SOURCE ()
     'Print #11, "DEBUG: Processing DEFENSE"
     D2 = DEF_PITCH
 
-    If INFPOS% <= 0 Then
+    If INFPOS% <= INF_BACK Then
 
         If teamMgrProfileVal(D, 690) = 999 Then
 
@@ -12870,9 +12870,9 @@ Sub MAINSCREEN (nbrBalls, nbrStrikes, MO)
 
     ' # - # TODAY
     If fldPos(P, currLineupSlot(P)) <> 1 Then
-        Print teamBatStats(P, lineupPlayer(P, currLineupSlot(P)), 1); "-"; teamBatStats(P, lineupPlayer(P, currLineupSlot(P)), 0);
+        Print teamBatStats(P, lineupPlayer(P, currLineupSlot(P)), LG_B_H); "-"; teamBatStats(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB);
     Else
-        Print teamPitStats(P, currPitcher(P), 24); "-"; teamPitStats(P, currPitcher(P), 23);
+        Print teamPitStats(P, currPitcher(P), LG_PB_H); "-"; teamPitStats(P, currPitcher(P), LG_PB_AB);
     End If
 
     Print " TODAY"
@@ -14198,41 +14198,47 @@ Sub PopUp_Batter (WK, M)
 
     Locate , 6: Print "LEAGUE";
 
-    If oppBatStats(WK, M, 0) = 0 Or oppBatStats(WK, M, 1) = 0 Then
+    If oppBatStats(WK, M, LG_B_AB) = 0 Or oppBatStats(WK, M, LG_B_H) = 0 Then
         Locate , 15: Print ".000";
     Else
-        statInnPitchCT! = oppBatStats(WK, M, 1) / oppBatStats(WK, M, 0)
+        statInnPitchCT! = oppBatStats(WK, M, LG_B_H) / oppBatStats(WK, M, LG_B_AB)
         Locate , 14: Print FmtPct$(statInnPitchCT!);
     End If
 
-    If oppBatStats(WK, M, 0) + oppBatStats(WK, M, 7) = 0 Then
+    If oppBatStats(WK, M, LG_B_AB) + oppBatStats(WK, M, LG_B_W) = 0 Then
         Locate , 21: Print ".000";
     Else
-        statInnPitchCT! = (oppBatStats(WK, M, 1) + oppBatStats(WK, M, 7)) / (oppBatStats(WK, M, 0) + oppBatStats(WK, M, 7))
+        statInnPitchCT! = (oppBatStats(WK, M, LG_B_H) + oppBatStats(WK, M, LG_B_W)) / (oppBatStats(WK, M, LG_B_AB) + oppBatStats(WK, M, LG_B_W))
         Locate , 20: Print FmtPct$(statInnPitchCT!);
     End If
 
     Locate , 26
-    Print Using "### ### ### ### ## ## ## ### ### ### ### ## ## ##"; oppBatStats(WK, M, 14); oppBatStats(WK, M, 0); oppBatStats(WK, M, 2); oppBatStats(WK, M, 1); oppBatStats(WK, M, 4); oppBatStats(WK, M, 5); oppBatStats(WK, M, 6); oppBatStats(WK, M, 3); oppBatStats(WK, M, 7); oppBatStats(WK, M, 8); oppBatStats(WK, M, 9); oppBatStats(WK, M, 10); oppBatStats(WK, M, 12); oppBatStats(WK, M, 13)
+    Print Using "### ### ### ### ## ## ## ### ### ### ### ## ## ##"; _
+        oppBatStats(WK, M, LG_B_G);   oppBatStats(WK, M, LG_B_AB); oppBatStats(WK, M, LG_B_R);   oppBatStats(WK, M, LG_B_H); oppBatStats(WK, M, LG_B_Dbl); _
+        oppBatStats(WK, M, LG_B_Trp); oppBatStats(WK, M, LG_B_HR); oppBatStats(WK, M, LG_B_RBI); oppBatStats(WK, M, LG_B_W); oppBatStats(WK, M, LG_B_K); _
+        oppBatStats(WK, M, LG_B_SB);  oppBatStats(WK, M, LG_B_CS); oppBatStats(WK, M, LG_B_HS); oppBatStats(WK, M, LG_B_LS)
 
     Locate , 6: Print "GAME";
 
-    If teamBatStats(WK, M, 0) = 0 Or teamBatStats(WK, M, 1) = 0 Then
+    If teamBatStats(WK, M, LG_B_AB) = 0 Or teamBatStats(WK, M, LG_B_H) = 0 Then
         Locate , 15: Print ".000";
     Else
-        statInnPitchCT! = teamBatStats(WK, M, 1) / teamBatStats(WK, M, 0)
+        statInnPitchCT! = teamBatStats(WK, M, LG_B_H) / teamBatStats(WK, M, LG_B_AB)
         Locate , 14: Print FmtPct$(statInnPitchCT!);
     End If
 
-    If teamBatStats(WK, M, 0) + teamBatStats(WK, M, 7) = 0 Then
+    If teamBatStats(WK, M, LG_B_AB) + teamBatStats(WK, M, LG_B_W) = 0 Then
         Locate , 21: Print ".000";
     Else
-        statInnPitchCT! = (teamBatStats(WK, M, 1) + teamBatStats(WK, M, 7)) / (teamBatStats(WK, M, 0) + teamBatStats(WK, M, 7))
+        statInnPitchCT! = (teamBatStats(WK, M, LG_B_H) + teamBatStats(WK, M, LG_B_W)) / (teamBatStats(WK, M, LG_B_AB) + teamBatStats(WK, M, LG_B_W))
         Locate , 20: Print FmtPct$(statInnPitchCT!);
     End If
 
     Locate , 26
-    Print Using "### ### ### ### ## ## ## ### ### ### ### ## ## ##"; teamBatStats(WK, M, 14); teamBatStats(WK, M, 0); teamBatStats(WK, M, 2); teamBatStats(WK, M, 1); teamBatStats(WK, M, 4); teamBatStats(WK, M, 5); teamBatStats(WK, M, 6); teamBatStats(WK, M, 3); teamBatStats(WK, M, 7); teamBatStats(WK, M, 8); teamBatStats(WK, M, 9); teamBatStats(WK, M, 10); teamBatStats(WK, M, 12); teamBatStats(WK, M, 13)
+    Print Using "### ### ### ### ## ## ## ### ### ### ### ## ## ##"; _
+        teamBatStats(WK, M, LG_B_G);   teamBatStats(WK, M, LG_B_AB); teamBatStats(WK, M, LG_B_R);   teamBatStats(WK, M, LG_B_H); teamBatStats(WK, M, LG_B_Dbl); _
+        teamBatStats(WK, M, LG_B_Trp); teamBatStats(WK, M, LG_B_HR); teamBatStats(WK, M, LG_B_RBI); teamBatStats(WK, M, LG_B_W); teamBatStats(WK, M, LG_B_K); _
+        teamBatStats(WK, M, LG_B_SB);  teamBatStats(WK, M, LG_B_CS); teamBatStats(WK, M, LG_B_HS);  teamBatStats(WK, M, LG_B_LS)
 
 End Sub
 
@@ -14409,15 +14415,15 @@ Sub POPUPSTATS ()
 
         Else
 
-            Locate , 6: Print "SEASON";: Locate , 15
+            Locate , 6: Print "SEASON";: Locate , 14
 
             If pitchRating(P, currPitcher(P), SS_P_H_AB) = 0 Then
                 Print " .---  .---"
             Else
                 statInnPitchCT!  = pitchRating(P, currPitcher(P), SS_P_H_H) / pitchRating(P, currPitcher(P), SS_P_H_AB)
                 statInnPitchCT2! = (pitchRating(P, currPitcher(P), SS_P_H_H) + pitchRating(P, currPitcher(P), SS_P_H_BB)) / (pitchRating(P, currPitcher(P), SS_P_H_BB) + pitchRating(P, currPitcher(P), SS_P_H_AB))
-                Print FmtPct$(statInnPitchCT!);: Print FmtPct$(statInnPitchCT2!);
-                Print Using "### ### ### ### ## "; _
+                Print FmtPct$(statInnPitchCT!);: Print " ";: Print FmtPct$(statInnPitchCT2!);
+                Print Using " ### ### ### ### ## "; _
                     pitchRating(P, currPitcher(P), SS_P_H_G); _
                     pitchRating(P, currPitcher(P), SS_P_H_AB); _
                     pitchRating(P, currPitcher(P), SS_P_H_R); _
@@ -14443,39 +14449,45 @@ Sub POPUPSTATS ()
 
         J = currPitcher(P)
 
-        If oppPitStats(P, J, 23) = 0 Or oppPitStats(P, J, 24) = 0 Then
+        If oppPitStats(P, J, LG_PB_AB) = 0 Or oppPitStats(P, J, LG_PB_H) = 0 Then
             Locate , 15: Print ".000";
         Else
-            statInnPitchCT! = oppPitStats(P, J, 24) / oppPitStats(P, J, 23)
+            statInnPitchCT! = oppPitStats(P, J, LG_PB_H) / oppPitStats(P, J, LG_PB_AB)
             Locate , 14: Print FmtPct$(statInnPitchCT!);
         End If
 
-        If oppPitStats(P, J, 23) + oppPitStats(P, J, 30) = 0 Then
+        If oppPitStats(P, J, LG_PB_AB) + oppPitStats(P, J, LG_PB_W) = 0 Then
             Locate , 21: Print ".000";
         Else
-            statInnPitchCT! = (oppPitStats(P, J, 24) + oppPitStats(P, J, 30)) / (oppPitStats(P, J, 23) + oppPitStats(P, J, 30))
+            statInnPitchCT! = (oppPitStats(P, J, LG_PB_H) + oppPitStats(P, J, LG_PB_W)) / (oppPitStats(P, J, LG_PB_AB) + oppPitStats(P, J, LG_PB_W))
             Locate , 20: Print FmtPct$(statInnPitchCT!);
         End If
 
-        Locate , 26: Print Using "### ### ### ### ## ## ## ### ### ### ### ## ## ##"; oppPitStats(P, J, 8); oppPitStats(P, J, 23); oppPitStats(P, J, 25); oppPitStats(P, J, 24); oppPitStats(P, J, 27); oppPitStats(P, J, 28); oppPitStats(P, J, 29); oppPitStats(P, J, 26); oppPitStats(P, J, 30); oppPitStats(P, J, 31); oppPitStats(P, J, 32); oppPitStats(P, J, 33); oppPitStats(P, J, 35); oppPitStats(P, J, 36)
+        Locate , 26: Print Using "### ### ### ### ## ## ## ### ### ### ### ## ## ##"; _
+            oppPitStats(P, J, LG_P_G);    oppPitStats(P, J, LG_PB_AB); oppPitStats(P, J, LG_PB_R);   oppPitStats(P, J, LG_PB_H); oppPitStats(P, J, LG_PB_Dbl); _
+            oppPitStats(P, J, LG_PB_Trp); oppPitStats(P, J, LG_PB_HR); oppPitStats(P, J, LG_PB_RBI); oppPitStats(P, J, LG_PB_W); oppPitStats(P, J, LG_PB_K); _
+            oppPitStats(P, J, LG_PB_SB);  oppPitStats(P, J, LG_PB_CS); oppPitStats(P, J, LG_PB_HS);  oppPitStats(P, J, LG_PB_LS)
         Locate , 6: Print "GAME";
 
-        If teamPitStats(P, J, 23) = 0 Or teamPitStats(P, J, 24) = 0 Then
+        If teamPitStats(P, J, LG_PB_AB) = 0 Or teamPitStats(P, J, LG_PB_H) = 0 Then
             Locate , 15: Print ".000";
         Else
-            statInnPitchCT! = teamPitStats(P, J, 24) / teamPitStats(P, J, 23)
+            statInnPitchCT! = teamPitStats(P, J, LG_PB_H) / teamPitStats(P, J, LG_PB_AB)
             Locate , 14: Print FmtPct$(statInnPitchCT!);
         End If
 
-        If teamPitStats(P, J, 23) + teamPitStats(P, J, 30) = 0 Then
+        If teamPitStats(P, J, LG_PB_AB) + teamPitStats(P, J, LG_PB_W) = 0 Then
             Locate , 21: Print ".000";
         Else
-            statInnPitchCT! = (teamPitStats(P, J, 24) + teamPitStats(P, J, 30)) / (teamPitStats(P, J, 23) + teamPitStats(P, J, 30))
+            statInnPitchCT! = (teamPitStats(P, J, LG_PB_H) + teamPitStats(P, J, LG_PB_W)) / (teamPitStats(P, J, LG_PB_AB) + teamPitStats(P, J, LG_PB_W))
             Locate , 20: Print FmtPct$(statInnPitchCT!);
         End If
 
         Locate , 26
-        Print Using "### ### ### ### ## ## ## ### ### ### ### ## ## ##"; teamPitStats(P, J, 8); teamPitStats(P, J, 23); teamPitStats(P, J, 25); teamPitStats(P, J, 24); teamPitStats(P, J, 27); teamPitStats(P, J, 28); teamPitStats(P, J, 29); teamPitStats(P, J, 26); teamPitStats(P, J, 30); teamPitStats(P, J, 31); teamPitStats(P, J, 32); teamPitStats(P, J, 33); teamPitStats(P, J, 35); teamPitStats(P, J, 36)
+        Print Using "### ### ### ### ## ## ## ### ### ### ### ## ## ##"; _
+            teamPitStats(P, J, LG_P_G);    teamPitStats(P, J, LG_PB_AB); teamPitStats(P, J, LG_PB_R);   teamPitStats(P, J, LG_PB_H); teamPitStats(P, J, LG_PB_Dbl); _
+            teamPitStats(P, J, LG_PB_Trp); teamPitStats(P, J, LG_PB_HR); teamPitStats(P, J, LG_PB_RBI); teamPitStats(P, J, LG_PB_W); teamPitStats(P, J, LG_PB_K); _
+            teamPitStats(P, J, LG_PB_SB);  teamPitStats(P, J, LG_PB_CS); teamPitStats(P, J, LG_PB_HS);  teamPitStats(P, J, LG_PB_LS)
 
     End If
 
@@ -17301,15 +17313,14 @@ End Sub
 
 
 '----------------------------------------
-'         TAGADVANCE Subroutine
+'  MaybeBatterStretchedBaseHit Subroutine
 '----------------------------------------
 ' ...explanation...
-Sub TAGADVANCE (S2%, baseNbr)
+Sub MaybeBatterStretchedBaseHit (S2%, baseNbr)
 
     If S2% = EVENT_1B And baseNbr = 2 Then
 
         If fldPos(P, currLineupSlot(P)) = 1 Then
-            I5 = currPitcher(P)
             Call INCPITOFF(P, currPitcher(P), LG_PB_Dbl)
         Else
             Call INCBATOFF(P, lineupPlayer(P, currLineupSlot(P)), LG_B_Dbl)
@@ -17326,29 +17337,29 @@ Sub TAGADVANCE (S2%, baseNbr)
             teamPitStats(P, currPitcher(P), LG_PB_Dbl) = teamPitStats(P, currPitcher(P), LG_PB_Dbl) - 1
             Exit Sub
         Else
-            I3 = 4
-            I4 = 5
+            oldResult = LG_B_Dbl
+            newResult = LG_B_Trp
             I5 = lineupPlayer(P, currLineupSlot(P))
         End If
 
     End If
 
     If S2% = EVENT_3B And baseNbr = 4 Then
-        I3 = 5
-        I4 = 6
+        oldResult = LG_B_Trp
+        newResult = LG_B_HR
         I5 = lineupPlayer(P, currLineupSlot(P))
     End If
 
     If S2% = EVENT_2B And baseNbr = 3 Or S2% = EVENT_3B And baseNbr = 4 Then
 
         If pitchRating(D, currPitcher(D), SS_P_Throws) <> 1 Then
-            CSS(P, I5, I3 - 2) = CSS(P, I5, I3 - 2) - 1
-            CSS(P, I5, I4 - 2) = CSS(P, I5, I4 - 2) + 1
+            CSS(P, I5, oldResult - 2) = CSS(P, I5, oldResult - 2) - 1
+            CSS(P, I5, newResult - 2) = CSS(P, I5, newResult - 2) + 1
         Else
-            teamBatStats(P, I5, I3) = teamBatStats(P, I5, I3) - 1
-            oppBatStats(P, I5, I3) = oppBatStats(P, I5, I3) - 1
-            teamBatStats(P, I5, I4) = teamBatStats(P, I5, I4) + 1
-            oppBatStats(P, I5, I4) = oppBatStats(P, I5, I4) + 1
+            teamBatStats(P, I5, oldResult) = teamBatStats(P, I5, oldResult) - 1
+            oppBatStats(P, I5, oldResult) = oppBatStats(P, I5, oldResult) - 1
+            teamBatStats(P, I5, newResult) = teamBatStats(P, I5, newResult) + 1
+            oppBatStats(P, I5, newResult) = oppBatStats(P, I5, newResult) + 1
         End If
 
     End If
@@ -17691,14 +17702,13 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, tryingToAdvance, baseSta
                         If nbrOuts(0) = 3 Or S2% > EVENT_HR Then Exit Sub
 
                         LRunnerGoing:
-                        Call Rolld100(I5)
 
                         scoreDiff = gameScore(P, 0) - gameScore(D, 0)
 
-                        If Not (scoreDiff < -2 Or scoreDiff < 0 And INNING% > 8) Then
+                        If (scoreDiff >= -2 And (scoreDiff >= 0 Or INNING% <= 8)) Then
 
                             ' *** RUNNER ON 2ND GUNNED AT 3RD ON THROW HOME ***
-                            If baseNbr - 1 > 2 And I5 <= 15 And runnerOnBase(2) > 0 Then
+                            If baseNbr - 1 > 2 And runnerOnBase(2) > 0 And d100% <= 15 Then
 
                                 Call CreditAssist(currFielder)
                                 Call PBP("runner is trying for 3rd...")
@@ -17713,7 +17723,7 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, tryingToAdvance, baseSta
                             End If
 
                             ' *** RUNNER ON 1ST GUNNED AT 2ND ON THROW TO HOME OR 3RD ***
-                            If baseNbr - 1 > 1 And d100% <= 15 And runnerOnBase(1) > 0 And baseMove(2) <> 11 Then
+                            If baseNbr - 1 > 1 And runnerOnBase(1) > 0 And baseMove(2) <> 11 And d100% <= 15 Then
 
                                 Call CreditAssist(currFielder)
                                 currFielder = 6
@@ -17727,21 +17737,25 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, tryingToAdvance, baseSta
 
                             End If
 
-                            If runnerOnBase(2) > 0 And baseNbr - 1 > 2 And baseMove(2) <> 11 And d100% > (80 - batRating(P, lineupPlayer(P, runnerOnBase(2)), SS_B_Run) * 2) And tryingToAdvance Then
+                            r1RunRating = batRating(P, lineupPlayer(P, runnerOnBase(1)), SS_B_Run)  'ToDo: Could one of these baserunners be a pitcher?
+                            r2RunRating = batRating(P, lineupPlayer(P, runnerOnBase(2)), SS_B_Run)
+
+                            If baseNbr - 1 > 2 And runnerOnBase(2) > 0 And baseMove(2) <> 11 And tryingToAdvance Then
+                                If d100% > (80 - r2RunRating * 2) Then
                                 baseMove(2) = 1
                                 Call PBP("runner is trying for 3rd...")
                                 Call PBP("He's safe!")
+                                    End If
                             End If
 
-                            I5 = Int(Rnd(1) * 10) + 1
+                            If baseNbr - 1 > 1 And runnerOnBase(1) > 0 And baseMove(1) <> 11 And tryingToAdvance Then
 
-                            If runnerOnBase(1) > 0 And baseMove(1) <> 11 And (baseStatus = 4 Or baseStatus = 7 And baseNbr - 1 > 1 And I5 > (10 - batRating(P, lineupPlayer(P, runnerOnBase(1)), SS_B_Run)) And tryingToAdvance) Then
+                                If (baseStatus = 4 Or baseStatus = 7) And d100% > (10 - r1RunRating) Then
                                 baseMove(1) = 1
                                 Call PBP("runner is trying for 2nd...")
                                 Call PBP("He's in there!")
-                            Else
 
-                                If runnerOnBase(1) > 0 And baseNbr - 1 > 1 And d100% > (80 - batRating(P, lineupPlayer(P, runnerOnBase(1)), SS_B_Run) * 2) And tryingToAdvance And baseMove(1) <> 11 Then
+                                ElseIf d100% > (80 - r1RunRating * 2) Then
                                     baseMove(1) = 1
                                     Call PBP("runner safe at 2nd on the throw")
                                 End If
@@ -17802,17 +17816,15 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, tryingToAdvance, baseSta
 
                 Call PBP(player$(baseNbr - 1) + " is safe @ " + baseName$(baseNbr))
 
-                If baseNbr = 4 Then
-                    homeSafe = 1
-                End If
+                If baseNbr = 4 Then homeSafe = 1
 
-                Call TAGADVANCE(S2%, baseNbr)
+                Call MaybeBatterStretchedBaseHit(S2%, baseNbr)
 
                 If S2% < EVENT_HR Then
-                    GoTo LRunnerGoing
+                    GoTo LRunnerGoing       'Base hit (not a sacrifice fly)
                 End If
 
-                If S2% > EVENT_HR Then
+                If S2% > EVENT_HR Then      'Sacrifice Fly
 
                     If fldPos(P, currLineupSlot(P)) = 1 Then
 
@@ -17849,7 +17861,7 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, tryingToAdvance, baseSta
 
                 If baseNbr = 4 Then homeSafe = 1
 
-                Call TAGADVANCE(S2%, baseNbr)
+                Call MaybeBatterStretchedBaseHit(S2%, baseNbr)
                 Call ADVANCEMENT(S2%, INFPOS%, I3, currFielder, wasError, SAH%)
 
             End If 'Done checking if we're skipping the throw
@@ -19780,13 +19792,13 @@ Sub EVENTS (specialCount, specialStat)
                 Do While I1 <= 22 And checkSpecial% = 0
 
                     'Batter stat conditions for special box score
-                    If teamBatStats(I, I1, 1) > eventSettings(6) Or _
-                        teamBatStats(I, I1, 2) > eventSettings(7) Or _
-                        teamBatStats(I, I1, 3) > eventSettings(8) Or _
-                        teamBatStats(I, I1, 4) > eventSettings(9) Or _
-                        teamBatStats(I, I1, 5) > eventSettings(10) Or _
-                        teamBatStats(I, I1, 6) > eventSettings(11) Or _
-                        teamBatStats(I, I1, 9) > eventSettings(12) Then
+                    If teamBatStats(I, I1, LG_B_H) > eventSettings(6) Or _
+                        teamBatStats(I, I1, LG_B_R) > eventSettings(7) Or _
+                        teamBatStats(I, I1, LG_B_RBI) > eventSettings(8) Or _
+                        teamBatStats(I, I1, LG_B_Dbl) > eventSettings(9) Or _
+                        teamBatStats(I, I1, LG_B_Trp) > eventSettings(10) Or _
+                        teamBatStats(I, I1, LG_B_HR) > eventSettings(11) Or _
+                        teamBatStats(I, I1, LG_B_SB) > eventSettings(12) Then
                         checkSpecial% = 1
                     End If
 
@@ -19899,67 +19911,67 @@ Sub CheckRecords ()
 
         For I1 = 0 To 22
 
-            If teamBatStats(I, I1, 11) <> 0 Then
+            If teamBatStats(I, I1, LG_B_E) <> 0 Then
 
                 ' ***CHECKING ERRORS***
-                If teamBatStats(I, I1, 11) = 1 Then
+                If teamBatStats(I, I1, LG_B_E) = 1 Then
                     errorsPlayer$(errorNbr) = batters$(I, I1)
                 Else
-                    errorsPlayer$(errorNbr) = batters$(I, I1) + Str$(teamBatStats(I, I1, 11))
+                    errorsPlayer$(errorNbr) = batters$(I, I1) + Str$(teamBatStats(I, I1, LG_B_E))
                 End If
 
-                errorsPlayer$(errorNbr) = errorsPlayer$(errorNbr) + " (" + Right$(Str$(oppBatStats(I, I1, 11)), (Len(Str$(oppBatStats(I, I1, 11))) - 1)) + ")"
+                errorsPlayer$(errorNbr) = errorsPlayer$(errorNbr) + " (" + Right$(Str$(oppBatStats(I, I1, LG_B_E)), (Len(Str$(oppBatStats(I, I1, LG_B_E))) - 1)) + ")"
 
                 errorNbr = errorNbr + 1
 
             End If
 
             ' ***CHECKING DOUBLES***
-            If teamBatStats(I, I1, 4) <> 0 Then
-                If teamBatStats(I, I1, 4) = 1 Then
+            If teamBatStats(I, I1, LG_B_Dbl) <> 0 Then
+                If teamBatStats(I, I1, LG_B_Dbl) = 1 Then
                     doublesPlayer$(DB) = batters$(I, I1)
                 Else
-                    doublesPlayer$(DB) = batters$(I, I1) + Str$(teamBatStats(I, I1, 4))
+                    doublesPlayer$(DB) = batters$(I, I1) + Str$(teamBatStats(I, I1, LG_B_Dbl))
                 End If
 
-                doublesPlayer$(DB) = doublesPlayer$(DB) + " (" + Right$(Str$(oppBatStats(I, I1, 4)), (Len(Str$(oppBatStats(I, I1, 4))) - 1)) + ")"
+                doublesPlayer$(DB) = doublesPlayer$(DB) + " (" + Right$(Str$(oppBatStats(I, I1, LG_B_Dbl)), (Len(Str$(oppBatStats(I, I1, LG_B_Dbl))) - 1)) + ")"
                 DB = DB + 1
 
             End If
 
             ' ***CHECKING TRIPLES***
-            If teamBatStats(I, I1, 5) <> 0 Then
-                If teamBatStats(I, I1, 5) = 1 Then
+            If teamBatStats(I, I1, LG_B_Trp) <> 0 Then
+                If teamBatStats(I, I1, LG_B_Trp) = 1 Then
                     triplesPlayer$(TR) = batters$(I, I1)
                 Else
-                    triplesPlayer$(TR) = batters$(I, I1) + Str$(teamBatStats(I, I1, 5))
+                    triplesPlayer$(TR) = batters$(I, I1) + Str$(teamBatStats(I, I1, LG_B_Trp))
                 End If
 
-                triplesPlayer$(TR) = triplesPlayer$(TR) + " (" + Right$(Str$(oppBatStats(I, I1, 5)), (Len(Str$(oppBatStats(I, I1, 5))) - 1)) + ")"
+                triplesPlayer$(TR) = triplesPlayer$(TR) + " (" + Right$(Str$(oppBatStats(I, I1, LG_B_Trp)), (Len(Str$(oppBatStats(I, I1, LG_B_Trp))) - 1)) + ")"
                 TR = TR + 1
 
             End If
 
             ' ***CHECKING HOME RUNS***
-            If teamBatStats(I, I1, 6) <> 0 Then
-                If teamBatStats(I, I1, 6) = 1 Then
+            If teamBatStats(I, I1, LG_B_HR) <> 0 Then
+                If teamBatStats(I, I1, LG_B_HR) = 1 Then
                     homeRuns$(HR) = batters$(I, I1)
                 Else
-                    homeRuns$(HR) = batters$(I, I1) + Str$(teamBatStats(I, I1, 6))
+                    homeRuns$(HR) = batters$(I, I1) + Str$(teamBatStats(I, I1, LG_B_HR))
                 End If
 
-                homeRuns$(HR) = homeRuns$(HR) + " (" + Right$(Str$(oppBatStats(I, I1, 6)), (Len(Str$(oppBatStats(I, I1, 6))) - 1)) + ")"
+                homeRuns$(HR) = homeRuns$(HR) + " (" + Right$(Str$(oppBatStats(I, I1, LG_B_HR)), (Len(Str$(oppBatStats(I, I1, LG_B_HR))) - 1)) + ")"
                 HR = HR + 1
 
             End If
 
             ' ***CHECKING STOLEN BASES ***
-            If teamBatStats(I, I1, 9) <> 0 Then
+            If teamBatStats(I, I1, LG_B_SB) <> 0 Then
 
-                If teamBatStats(I, I1, 9) = 1 Then
-                    stolenBases$(SB) = batters$(I, I1) + " (" + Right$(Str$(oppBatStats(I, I1, 9)), (Len(Str$(oppBatStats(I, I1, 9))) - 1)) + ")"
+                If teamBatStats(I, I1, LG_B_SB) = 1 Then
+                    stolenBases$(SB) = batters$(I, I1) + " (" + Right$(Str$(oppBatStats(I, I1, LG_B_SB)), (Len(Str$(oppBatStats(I, I1, LG_B_SB))) - 1)) + ")"
                 Else
-                    stolenBases$(SB) = batters$(I, I1) + Str$(teamBatStats(I, I1, 9)) + " (" + Right$(Str$(oppBatStats(I, I1, 9)), (Len(Str$(oppBatStats(I, I1, 9))) - 1)) + ")"
+                    stolenBases$(SB) = batters$(I, I1) + Str$(teamBatStats(I, I1, LG_B_SB)) + " (" + Right$(Str$(oppBatStats(I, I1, LG_B_SB)), (Len(Str$(oppBatStats(I, I1, LG_B_SB))) - 1)) + ")"
                 End If
                 SB = SB + 1
 
@@ -19973,68 +19985,68 @@ Sub CheckRecords ()
 
         For I1 = 0 To 21
 
-            If teamPitStats(I, I1, 34) <> 0 Then
+            If teamPitStats(I, I1, LG_PB_E) <> 0 Then
 
-                If teamPitStats(I, I1, 34) = 1 Then
+                If teamPitStats(I, I1, LG_PB_E) = 1 Then
                     errorsPlayer$(errorNbr) = pitchers$(I, I1)
                 Else
-                    errorsPlayer$(errorNbr) = pitchers$(I, I1) + Str$(teamPitStats(I, I1, 34))
+                    errorsPlayer$(errorNbr) = pitchers$(I, I1) + Str$(teamPitStats(I, I1, LG_PB_E))
                 End If
 
-                errorsPlayer$(errorNbr) = errorsPlayer$(errorNbr) + " (" + Right$(Str$(oppPitStats(I, I1, 34)), (Len(Str$(oppPitStats(I, I1, 34))) - 1)) + ")"
+                errorsPlayer$(errorNbr) = errorsPlayer$(errorNbr) + " (" + Right$(Str$(oppPitStats(I, I1, LG_PB_E)), (Len(Str$(oppPitStats(I, I1, LG_PB_E))) - 1)) + ")"
                 errorNbr = errorNbr + 1
 
             End If
 
             ' ***CHECKING DOUBLES***
-            If teamPitStats(I, I1, 27) <> 0 Then
+            If teamPitStats(I, I1, LG_PB_Dbl) <> 0 Then
 
-                If teamPitStats(I, I1, 27) = 1 Then
+                If teamPitStats(I, I1, LG_PB_Dbl) = 1 Then
                     doublesPlayer$(DB) = pitchers$(I, I1)
                 Else
-                    doublesPlayer$(DB) = pitchers$(I, I1) + Str$(teamPitStats(I, I1, 27))
+                    doublesPlayer$(DB) = pitchers$(I, I1) + Str$(teamPitStats(I, I1, LG_PB_Dbl))
                 End If
 
-                doublesPlayer$(DB) = doublesPlayer$(DB) + " (" + Right$(Str$(oppPitStats(I, I1, 27)), (Len(Str$(oppPitStats(I, I1, 27))) - 1)) + ")"
+                doublesPlayer$(DB) = doublesPlayer$(DB) + " (" + Right$(Str$(oppPitStats(I, I1, LG_PB_Dbl)), (Len(Str$(oppPitStats(I, I1, LG_PB_Dbl))) - 1)) + ")"
                 DB = DB + 1
 
             End If
 
             ' ***CHECKING TRIPLES***
-            If teamPitStats(I, I1, 28) <> 0 Then
+            If teamPitStats(I, I1, LG_PB_Trp) <> 0 Then
 
-                If teamPitStats(I, I1, 28) = 1 Then
+                If teamPitStats(I, I1, LG_PB_Trp) = 1 Then
                     triplesPlayer$(TR) = pitchers$(I, I1)
                 Else
-                    triplesPlayer$(TR) = pitchers$(I, I1) + Str$(teamPitStats(I, I1, 28))
+                    triplesPlayer$(TR) = pitchers$(I, I1) + Str$(teamPitStats(I, I1, LG_PB_Trp))
                 End If
 
-                triplesPlayer$(TR) = triplesPlayer$(TR) + " (" + Right$(Str$(oppPitStats(I, I1, 28)), (Len(Str$(oppPitStats(I, I1, 28))) - 1)) + ")"
+                triplesPlayer$(TR) = triplesPlayer$(TR) + " (" + Right$(Str$(oppPitStats(I, I1, LG_PB_Trp)), (Len(Str$(oppPitStats(I, I1, LG_PB_Trp))) - 1)) + ")"
                 TR = TR + 1
 
             End If
 
             ' ***CHECKING HOME RUNS***
-            If teamPitStats(I, I1, 29) <> 0 Then
+            If teamPitStats(I, I1, LG_PB_HR) <> 0 Then
 
-                If teamPitStats(I, I1, 29) = 1 Then
+                If teamPitStats(I, I1, LG_PB_HR) = 1 Then
                     homeRuns$(HR) = pitchers$(I, I1)
                 Else
-                    homeRuns$(HR) = pitchers$(I, I1) + Str$(teamPitStats(I, I1, 29))
+                    homeRuns$(HR) = pitchers$(I, I1) + Str$(teamPitStats(I, I1, LG_PB_HR))
                 End If
 
-                homeRuns$(HR) = homeRuns$(HR) + " (" + Right$(Str$(oppPitStats(I, I1, 29)), (Len(Str$(oppPitStats(I, I1, 29))) - 1)) + ")"
+                homeRuns$(HR) = homeRuns$(HR) + " (" + Right$(Str$(oppPitStats(I, I1, LG_PB_HR)), (Len(Str$(oppPitStats(I, I1, LG_PB_HR))) - 1)) + ")"
                 HR = HR + 1
 
             End If
 
             ' ***CHECKING STOLEN BASES ***
-            If teamPitStats(I, I1, 32) <> 0 Then
+            If teamPitStats(I, I1, LG_PB_SB) <> 0 Then
 
-                If teamPitStats(I, I1, 32) = 1 Then
-                    stolenBases$(SB) = pitchers$(I, I1) + " (" + Right$(Str$(oppPitStats(I, I1, 32)), (Len(Str$(oppPitStats(I, I1, 32))) - 1)) + ")"
+                If teamPitStats(I, I1, LG_PB_SB) = 1 Then
+                    stolenBases$(SB) = pitchers$(I, I1) + " (" + Right$(Str$(oppPitStats(I, I1, LG_PB_SB)), (Len(Str$(oppPitStats(I, I1, LG_PB_SB))) - 1)) + ")"
                 Else
-                    stolenBases$(SB) = pitchers$(I, I1) + Str$(teamPitStats(I, I1, 32)) + " (" + Right$(Str$(oppPitStats(I, I1, 32)), (Len(Str$(oppPitStats(I, I1, 32))) - 1)) + ")"
+                    stolenBases$(SB) = pitchers$(I, I1) + Str$(teamPitStats(I, I1, LG_PB_SB)) + " (" + Right$(Str$(oppPitStats(I, I1, LG_PB_SB)), (Len(Str$(oppPitStats(I, I1, LG_PB_SB))) - 1)) + ")"
                 End If
                 SB = SB + 1
 
@@ -20071,7 +20083,7 @@ Sub CheckRecords ()
                 batRating(I, I1, SS_B_Avail) = 0
             End If
             If batRating(I, I1, SS_B_Avail) <> 0 Then
-                teamBatStats(I, I1, 14) = 1
+                teamBatStats(I, I1, LG_B_G) = 1
             End If
         Next I1
 
@@ -20644,9 +20656,9 @@ Sub COMPILESTATFILES (teamIdx)
         Next I1
 
         'Curr Hit Streak
-        If teamBatStats(teamIdx, I, 0) > 0 Then
+        If teamBatStats(teamIdx, I, LG_B_AB) > 0 Then
 
-            If teamBatStats(teamIdx, I, 1) = 0 Then
+            If teamBatStats(teamIdx, I, LG_B_H) = 0 Then
                 statBatter(I, 12) = 0
             Else
                 statBatter(I, 12) = statBatter(I, 12) + 1
@@ -20655,7 +20667,7 @@ Sub COMPILESTATFILES (teamIdx)
         End If
 
         'Games
-        If teamBatStats(teamIdx, I, 14) > 0 Then
+        If teamBatStats(teamIdx, I, LG_B_G) > 0 Then
             statBatter(I, 14) = statBatter(I, 14) + 1
         End If
 
@@ -20678,8 +20690,8 @@ Sub COMPILESTATFILES (teamIdx)
             statTeamBat!(I1 - 23) = statTeamBat!(I1 - 23) + teamPitStats(teamIdx, I, I1)
         Next I1
 
-        If teamPitStats(teamIdx, I, 23) > 0 Then
-            If teamPitStats(teamIdx, I, 24) = 0 Then
+        If teamPitStats(teamIdx, I, LG_PB_AB) > 0 Then
+            If teamPitStats(teamIdx, I, LG_PB_H) = 0 Then
                 statPitcher(I, 35) = 0
             Else
                 statPitcher(I, 35) = statPitcher(I, 35) + 1
@@ -21020,20 +21032,24 @@ Sub BOX2FILE (printChoice, boxName$)
                 I1 = gameRoster(I, 0, I3)
 
                 Print #1, batters$(I, I1); ", "; fieldPos$(gameRoster(I, 1, I3)); Tab(18);
-                '                    AB             R              H              BI             2              3              HR             K              W              SB             CS              E               PO              A
-                Print #1, Using BK$; teamBatStats(I, I1, 0); teamBatStats(I, I1, 2); teamBatStats(I, I1, 1); teamBatStats(I, I1, 3); teamBatStats(I, I1, 4); teamBatStats(I, I1, 5); teamBatStats(I, I1, 6); teamBatStats(I, I1, 8); teamBatStats(I, I1, 7); teamBatStats(I, I1, 9); teamBatStats(I, I1, 10); teamBatStats(I, I1, 11); teamBatStats(I, I1, 16); teamBatStats(I, I1, 17);
+
+                Print #1, Using BK$; _
+                    teamBatStats(I, I1, LG_B_AB);  teamBatStats(I, I1, LG_B_R);   teamBatStats(I, I1, LG_B_H);  teamBatStats(I, I1, LG_B_RBI); _
+                    teamBatStats(I, I1, LG_B_Dbl); teamBatStats(I, I1, LG_B_Trp); teamBatStats(I, I1, LG_B_HR); teamBatStats(I, I1, LG_B_K); _
+                    teamBatStats(I, I1, LG_B_W);   teamBatStats(I, I1, LG_B_SB);  teamBatStats(I, I1, LG_B_CS); teamBatStats(I, I1, LG_B_E); _
+                    teamBatStats(I, I1, LG_B_PO);  teamBatStats(I, I1, LG_B_A);
 
                 Print #1, "   ";
 
                 'BA
-                If oppBatStats(I, I1, 0) = 0 Or oppBatStats(I, I1, 1) = 0 Then
+                If oppBatStats(I, I1, LG_B_AB) = 0 Or oppBatStats(I, I1, LG_B_H) = 0 Then
                     Print #1, " .000   ";
                 Else
-                    Print #1, FmtPct$(oppBatStats(I, I1, 1) / oppBatStats(I, I1, 0));: Print #1, "   ";
+                    Print #1, FmtPct$(oppBatStats(I, I1, LG_B_H) / oppBatStats(I, I1, LG_B_AB));: Print #1, "   ";
                 End If
 
                 'HR / RBI
-                Print #1, Using "##  ###"; oppBatStats(I, I1, 6); oppBatStats(I, I1, 3)
+                Print #1, Using "##  ###"; oppBatStats(I, I1, LG_B_HR); oppBatStats(I, I1, LG_B_RBI)
 
                 For I2 = 0 To 17
                     totalStats(I2) = totalStats(I2) + teamBatStats(I, I1, I2)
@@ -21061,16 +21077,20 @@ Sub BOX2FILE (printChoice, boxName$)
 
                     Print #1, pitchers$(I, I2); ", P";
                     Print #1, Tab(18);
-                    Print #1, Using BK$; teamPitStats(I, I2, 23); teamPitStats(I, I2, 25); teamPitStats(I, I2, 24); teamPitStats(I, I2, 26); teamPitStats(I, I2, 27); teamPitStats(I, I2, 28); teamPitStats(I, I2, 29); teamPitStats(I, I2, 31); teamPitStats(I, I2, 30); teamPitStats(I, I2, 32); teamPitStats(I, I2, 33); teamPitStats(I, I2, 34); teamPitStats(I, I2, 38); teamPitStats(I, I2, 39);
+                    Print #1, Using BK$; _
+                        teamPitStats(I, I2, LG_PB_AB);  teamPitStats(I, I2, LG_PB_R);   teamPitStats(I, I2, LG_PB_H);  teamPitStats(I, I2, LG_PB_RBI); _
+                        teamPitStats(I, I2, LG_PB_Dbl); teamPitStats(I, I2, LG_PB_Trp); teamPitStats(I, I2, LG_PB_HR); teamPitStats(I, I2, LG_PB_K); _
+                        teamPitStats(I, I2, LG_PB_W);   teamPitStats(I, I2, LG_PB_SB);  teamPitStats(I, I2, LG_PB_CS); teamPitStats(I, I2, LG_PB_E); _
+                        teamPitStats(I, I2, LG_PB_PO);  teamPitStats(I, I2, LG_PB_A);
                     Print #1, "   ";
 
-                    If oppPitStats(I, I2, 24) = 0 Or oppPitStats(I, I2, 23) = 0 Then
+                    If oppPitStats(I, I2, LG_PB_H) = 0 Or oppPitStats(I, I2, LG_PB_AB) = 0 Then
                         Print #1, " .000   ";
                     Else
-                        Print #1, FmtPct$(oppPitStats(I, I2, 24) / oppPitStats(I, I2, 23));: Print #1, "   ";
+                        Print #1, FmtPct$(oppPitStats(I, I2, LG_PB_H) / oppPitStats(I, I2, LG_PB_AB));: Print #1, "   ";
                     End If
 
-                    Print #1, Using "##  ###"; oppPitStats(I, I2, 29); oppPitStats(I, I2, 26)
+                    Print #1, Using "##  ###"; oppPitStats(I, I2, LG_PB_HR); oppPitStats(I, I2, LG_PB_RBI)
                 End If
             Next
 
@@ -21104,27 +21124,27 @@ Sub BOX2FILE (printChoice, boxName$)
                     I4 = 1 - I: Print #1, pitchers$(I, I2); " ";
 
                     If pitcherOfRecord(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then
-                        Print #1, "(W,"; Right$(Str$(oppPitStats(I, I2, 6) + 1), (Len(Str$(oppPitStats(I, I2, 6) + 1)) - 1)); "-"; Right$(Str$(oppPitStats(I, I2, 7)), (Len(Str$(oppPitStats(I, I2, 7))) - 1)); ")";
+                        Print #1, "(W,"; Right$(Str$(oppPitStats(I, I2, LG_P_W) + 1), (Len(Str$(oppPitStats(I, I2, LG_P_W) + 1)) - 1)); "-"; Right$(Str$(oppPitStats(I, I2, LG_P_L)), (Len(Str$(oppPitStats(I, I2, LG_P_L))) - 1)); ")";
                         gameW$ = pitchers$(I, I2)
                     End If
 
                     If relieverOnRecordForSave(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then
-                        Print #1, "(S,"; Right$(Str$(oppPitStats(I, I2, 12) + 1), (Len(Str$(oppPitStats(I, I2, 12) + 1)) - 1)); ")";
+                        Print #1, "(S,"; Right$(Str$(oppPitStats(I, I2, LG_P_Sv) + 1), (Len(Str$(oppPitStats(I, I2, LG_P_Sv) + 1)) - 1)); ")";
                     End If
 
                     If pitcherOfRecord(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) < 0 Then
-                        Print #1, "(L,"; Right$(Str$(oppPitStats(I, I2, 6) + 0), (Len(Str$(oppPitStats(I, I2, 6) + 0)) - 1)); "-"; Right$(Str$(oppPitStats(I, I2, 7) + 1), (Len(Str$(oppPitStats(I, I2, 7) + 1)) - 1)); ")";
+                        Print #1, "(L,"; Right$(Str$(oppPitStats(I, I2, LG_P_W) + 0), (Len(Str$(oppPitStats(I, I2, LG_P_W) + 0)) - 1)); "-"; Right$(Str$(oppPitStats(I, I2, LG_P_L) + 1), (Len(Str$(oppPitStats(I, I2, LG_P_L) + 1)) - 1)); ")";
                         gameL$ = pitchers$(I, I2)
                     End If
 
-                    If teamPitStats(I, I2, 19) > 0 Then
+                    If teamPitStats(I, I2, LG_P_BSv) > 0 Then
                         Print #1, "(BS,";
-                        Print #1, Using "##"; oppPitStats(I, I2, 19);
+                        Print #1, Using "##"; oppPitStats(I, I2, LG_P_BSv);
                         Print #1, ")";
                     End If
-                    If teamPitStats(I, I2, 22) > 0 Then
+                    If teamPitStats(I, I2, LG_P_Hold) > 0 Then
                         Print #1, "(H,";
-                        Print #1, Using "##"; oppPitStats(I, I2, 22);
+                        Print #1, Using "##"; oppPitStats(I, I2, LG_P_Hold);
                         Print #1, ")";
                     End If
 
@@ -21140,37 +21160,37 @@ Sub BOX2FILE (printChoice, boxName$)
                     Print #1, Using "## ##  ## ## ##"; teamPitStats(I, I2, LG_P_H); teamPitStats(I, I2, LG_P_R); teamPitStats(I, I2, LG_P_ER); teamPitStats(I, I2, LG_P_BB); teamPitStats(I, I2, LG_P_K);
                     Print #1, "   ";
 
-                    If oppPitStats(I, I2, 3) > 0 And oppPitStats(I, I2, 0) = 0 Then
+                    If oppPitStats(I, I2, LG_P_ER) > 0 And oppPitStats(I, I2, LG_P_OUT) = 0 Then
                         Print #1, "99.99 ";
                     Else
-                        If oppPitStats(I, I2, 0) = 0 Then
+                        If oppPitStats(I, I2, LG_P_OUT) = 0 Then
                             Print #1, "--.-- ";
                         Else
-                            If oppPitStats(I, I2, 3) = 0 Then
+                            If oppPitStats(I, I2, LG_P_ER) = 0 Then
                                 Print #1, " 0.00 ";
                             Else
-                                Print #1, Using "##.## "; oppPitStats(I, I2, 3) / (oppPitStats(I, I2, 0) / 3) * 9;
+                                Print #1, Using "##.## "; oppPitStats(I, I2, LG_P_ER) / (oppPitStats(I, I2, LG_P_OUT) / 3) * 9;
                             End If
                         End If
                     End If
 
                     If pitcherOfRecord(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then
-                        Print #1, Using "## "; oppPitStats(I, I2, 6) + 1;
+                        Print #1, Using "## "; oppPitStats(I, I2, LG_P_W) + 1;
                     Else
-                        Print #1, Using "## "; oppPitStats(I, I2, 6);
+                        Print #1, Using "## "; oppPitStats(I, I2, LG_P_W);
                     End If
                     If pitcherOfRecord(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) < 0 Then
-                        Print #1, Using "## "; oppPitStats(I, I2, 7) + 1;
+                        Print #1, Using "## "; oppPitStats(I, I2, LG_P_L) + 1;
                     Else
-                        Print #1, Using "## "; oppPitStats(I, I2, 7);
+                        Print #1, Using "## "; oppPitStats(I, I2, LG_P_L);
                     End If
                     If relieverOnRecordForSave(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then
-                        Print #1, Using "## "; oppPitStats(I, I2, 12) + 1;
+                        Print #1, Using "## "; oppPitStats(I, I2, LG_P_Sv) + 1;
                     Else
-                        Print #1, Using "## "; oppPitStats(I, I2, 12);
+                        Print #1, Using "## "; oppPitStats(I, I2, LG_P_Sv);
                     End If
 
-                    Print #1, Using "###"; oppPitStats(I, I2, 5)
+                    Print #1, Using "###"; oppPitStats(I, I2, LG_P_K)
 
                     For I4 = 0 To 5
                         totalStats(I4) = totalStats(I4) + teamPitStats(I, I2, I4)
@@ -21873,19 +21893,22 @@ Sub STATS2SCREEN
 
                 Print batters$(I, I1); ", "; fieldPos$(gameRoster(I, 1, I3));
                 Locate , 18
-                '                AB             R              H              BI             2              3              HR             K              W              SB             CS              E               PO              A
-                Print Using BK$; teamBatStats(I, I1, 0); teamBatStats(I, I1, 2); teamBatStats(I, I1, 1); teamBatStats(I, I1, 3); teamBatStats(I, I1, 4); teamBatStats(I, I1, 5); teamBatStats(I, I1, 6); teamBatStats(I, I1, 8); teamBatStats(I, I1, 7); teamBatStats(I, I1, 9); teamBatStats(I, I1, 10); teamBatStats(I, I1, 11); teamBatStats(I, I1, 16); teamBatStats(I, I1, 17);
+
+                Print Using BK$; _
+                    teamBatStats(I, I1, LG_B_AB);  teamBatStats(I, I1, LG_B_R);   teamBatStats(I, I1, LG_B_H);  teamBatStats(I, I1, LG_B_RBI); _
+                    teamBatStats(I, I1, LG_B_Dbl); teamBatStats(I, I1, LG_B_Trp); teamBatStats(I, I1, LG_B_HR); teamBatStats(I, I1, LG_B_K); _
+                    teamBatStats(I, I1, LG_B_W);   teamBatStats(I, I1, LG_B_SB);  teamBatStats(I, I1, LG_B_CS); teamBatStats(I, I1, LG_B_E); _
+                    teamBatStats(I, I1, LG_B_PO);  teamBatStats(I, I1, LG_B_A);
                 Print "   ";
 
                 'BAVG
-                If oppBatStats(I, I1, 0) = 0 Or oppBatStats(I, I1, 1) = 0 Then
+                If oppBatStats(I, I1, LG_B_AB) = 0 Or oppBatStats(I, I1, LG_B_H) = 0 Then
                     Print " .000   ";
                 Else
-                    Print FmtPct$(oppBatStats(I, I1, 1) / oppBatStats(I, I1, 0));: Print "   ";
+                    Print FmtPct$(oppBatStats(I, I1, LG_B_H) / oppBatStats(I, I1, LG_B_AB));: Print "   ";
                 End If
 
-                '           HR   RBI
-                Print Using "##  ###"; oppBatStats(I, I1, 6); oppBatStats(I, I1, 3)
+                Print Using "##  ###"; oppBatStats(I, I1, LG_B_HR); oppBatStats(I, I1, LG_B_RBI)
 
                 For I2 = 0 To 17
                     totalStats(I2) = totalStats(I2) + teamBatStats(I, I1, I2)
@@ -21913,17 +21936,20 @@ Sub STATS2SCREEN
 
                     Print pitchers$(I, I2); ", P";
                     Locate , 18
-                    '                AB              R               H               BI              2               3               HR              K               W               SB              CS              E               PO              A
-                    Print Using BK$; teamPitStats(I, I2, 23); teamPitStats(I, I2, 25); teamPitStats(I, I2, 24); teamPitStats(I, I2, 26); teamPitStats(I, I2, 27); teamPitStats(I, I2, 28); teamPitStats(I, I2, 29); teamPitStats(I, I2, 31); teamPitStats(I, I2, 30); teamPitStats(I, I2, 32); teamPitStats(I, I2, 33); teamPitStats(I, I2, 34); teamPitStats(I, I2, 38); teamPitStats(I, I2, 39);
+
+                    Print Using BK$; _
+                        teamPitStats(I, I2, LG_PB_AB);  teamPitStats(I, I2, LG_PB_R);   teamPitStats(I, I2, LG_PB_H);  teamPitStats(I, I2, LG_PB_RBI); _
+                        teamPitStats(I, I2, LG_PB_Dbl); teamPitStats(I, I2, LG_PB_Trp); teamPitStats(I, I2, LG_PB_HR); teamPitStats(I, I2, LG_PB_K); _
+                        teamPitStats(I, I2, LG_PB_W);   teamPitStats(I, I2, LG_PB_SB);  teamPitStats(I, I2, LG_PB_CS); teamPitStats(I, I2, LG_PB_E); _
+                        teamPitStats(I, I2, LG_PB_PO);  teamPitStats(I, I2, LG_PB_A);
                     Print "   ";
 
                     'BAVG
-                    If oppPitStats(I, I2, 24) = 0 Or oppPitStats(I, I2, 23) = 0 Then
+                    If oppPitStats(I, I2, LG_PB_H) = 0 Or oppPitStats(I, I2, LG_PB_AB) = 0 Then
                         Print " .000   "
                     Else
-                        Print FmtPct$(oppPitStats(I, I2, 24) / oppPitStats(I, I2, 23));: Print "   ";
-                        '           HR   RBI
-                        Print Using "##  ###"; oppPitStats(I, I2, 29); oppPitStats(I, I2, 26)
+                        Print FmtPct$(oppPitStats(I, I2, LG_PB_H) / oppPitStats(I, I2, LG_PB_AB));: Print "   ";
+                        Print Using "##  ###"; oppPitStats(I, I2, LG_PB_HR); oppPitStats(I, I2, LG_PB_RBI)
 
                     End If
                 End If
@@ -21985,27 +22011,27 @@ Sub STATS2SCREEN
 
                     'Record
                     If pitcherOfRecord(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then
-                        Print "(W,"; Right$(Str$(oppPitStats(I, I2, 6) + 1), (Len(Str$(oppPitStats(I, I2, 6) + 1)) - 1)); "-"; Right$(Str$(oppPitStats(I, I2, 7)), (Len(Str$(oppPitStats(I, I2, 7))) - 1)); ")";
+                        Print "(W,"; Right$(Str$(oppPitStats(I, I2, LG_P_W) + 1), (Len(Str$(oppPitStats(I, I2, LG_P_W) + 1)) - 1)); "-"; Right$(Str$(oppPitStats(I, I2, LG_P_L)), (Len(Str$(oppPitStats(I, I2, LG_P_L))) - 1)); ")";
                         gameW$ = pitchers$(I, I2)
                     End If
 
                     If relieverOnRecordForSave(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then
-                        Print "(S,"; Right$(Str$(oppPitStats(I, I2, 12) + 1), (Len(Str$(oppPitStats(I, I2, 12) + 1)) - 1)); ")";
+                        Print "(S,"; Right$(Str$(oppPitStats(I, I2, LG_P_Sv) + 1), (Len(Str$(oppPitStats(I, I2, LG_P_Sv) + 1)) - 1)); ")";
                     End If
 
                     If pitcherOfRecord(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) < 0 Then
-                        Print "(L,"; Right$(Str$(oppPitStats(I, I2, 6) + 0), (Len(Str$(oppPitStats(I, I2, 6) + 0)) - 1)); "-"; Right$(Str$(oppPitStats(I, I2, 7) + 1), (Len(Str$(oppPitStats(I, I2, 7) + 1)) - 1)); ")";
+                        Print "(L,"; Right$(Str$(oppPitStats(I, I2, LG_P_W) + 0), (Len(Str$(oppPitStats(I, I2, LG_P_W) + 0)) - 1)); "-"; Right$(Str$(oppPitStats(I, I2, LG_P_L) + 1), (Len(Str$(oppPitStats(I, I2, LG_P_L) + 1)) - 1)); ")";
                         gameL$ = pitchers$(I, I2)
                     End If
 
-                    If teamPitStats(I, I2, 19) > 0 Then
+                    If teamPitStats(I, I2, LG_P_BSv) > 0 Then
                         Print "(BS,";
-                        Print Using "##"; oppPitStats(I, I2, 19);
+                        Print Using "##"; oppPitStats(I, I2, LG_P_BSv);
                         Print ")";
                     End If
-                    If teamPitStats(I, I2, 22) > 0 Then
+                    If teamPitStats(I, I2, LG_P_Hold) > 0 Then
                         Print "(H,";
-                        Print Using "##"; oppPitStats(I, I2, 22);
+                        Print Using "##"; oppPitStats(I, I2, LG_P_Hold);
                         Print ")";
                     End If
 
@@ -22019,8 +22045,8 @@ Sub STATS2SCREEN
 
                     Locate , 34
 
-                    'H R ER BB SO
-                    Print Using "## ##  ## ## ##"; teamPitStats(I, I2, LG_P_H); teamPitStats(I, I2, LG_P_R); teamPitStats(I, I2, LG_P_ER); teamPitStats(I, I2, LG_P_BB); teamPitStats(I, I2, LG_P_K);
+                    Print Using "## ##  ## ## ##"; _
+                        teamPitStats(I, I2, LG_P_H); teamPitStats(I, I2, LG_P_R); teamPitStats(I, I2, LG_P_ER); teamPitStats(I, I2, LG_P_BB); teamPitStats(I, I2, LG_P_K);
 
                     Print "   ";
 
@@ -22042,27 +22068,27 @@ Sub STATS2SCREEN
 
                     'Wins
                     If pitcherOfRecord(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then
-                        Print Using "## "; oppPitStats(I, I2, 6) + 1;
+                        Print Using "## "; oppPitStats(I, I2, LG_P_W) + 1;
                     Else
-                        Print Using "## "; oppPitStats(I, I2, 6);
+                        Print Using "## "; oppPitStats(I, I2, LG_P_W);
                     End If
 
                     'Losses
                     If pitcherOfRecord(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) < 0 Then
-                        Print Using "## "; oppPitStats(I, I2, 7) + 1;
+                        Print Using "## "; oppPitStats(I, I2, LG_P_L) + 1;
                     Else
-                        Print Using "## "; oppPitStats(I, I2, 7);
+                        Print Using "## "; oppPitStats(I, I2, LG_P_L);
                     End If
 
                     'Saves
                     If relieverOnRecordForSave(I) = I2 And gameScore(I, 0) - gameScore(I4, 0) > 0 Then
-                        Print Using "## "; oppPitStats(I, I2, 12) + 1;
+                        Print Using "## "; oppPitStats(I, I2, LG_P_Sv) + 1;
                     Else
-                        Print Using "## "; oppPitStats(I, I2, 12);
+                        Print Using "## "; oppPitStats(I, I2, LG_P_Sv);
                     End If
 
                     'Strikeouts
-                    Print Using "###"; oppPitStats(I, I2, 5)
+                    Print Using "###"; oppPitStats(I, I2, LG_P_K)
 
                     For I4 = 0 To 5
                         totalStats(I4) = totalStats(I4) + teamPitStats(I, I2, I4)
@@ -22297,39 +22323,39 @@ Sub BOX2SPC (boxName$)
 
         For I1 = 0 To 22
 
-            If teamBatStats(I, I1, 1) > eventSettings(6) Then
+            If teamBatStats(I, I1, LG_B_H) > eventSettings(6) Then
                 Print #2, batters$(I, I1);
-                Print #2, Using " HAD MORE THAN ## HIT(S): ##"; eventSettings(6), teamBatStats(I, I1, 1)
+                Print #2, Using " HAD MORE THAN ## HIT(S): ##"; eventSettings(6), teamBatStats(I, I1, LG_B_H)
             End If
 
-            If teamBatStats(I, I1, 2) > eventSettings(7) Then
+            If teamBatStats(I, I1, LG_B_R) > eventSettings(7) Then
                 Print #2, batters$(I, I1);
-                Print #2, Using " SCORED MORE THAN ## RUN(S): ##"; eventSettings(7), teamBatStats(I, I1, 2)
+                Print #2, Using " SCORED MORE THAN ## RUN(S): ##"; eventSettings(7), teamBatStats(I, I1, LG_B_R)
             End If
 
-            If teamBatStats(I, I1, 3) > eventSettings(8) Then
+            If teamBatStats(I, I1, LG_B_RBI) > eventSettings(8) Then
                 Print #2, batters$(I, I1);
-                Print #2, Using " HAD MORE THAN ## RBI(S): ##"; eventSettings(8), teamBatStats(I, I1, 3)
+                Print #2, Using " HAD MORE THAN ## RBI(S): ##"; eventSettings(8), teamBatStats(I, I1, LG_B_RBI)
             End If
 
-            If teamBatStats(I, I1, 4) > eventSettings(9) Then
+            If teamBatStats(I, I1, LG_B_Dbl) > eventSettings(9) Then
                 Print #2, batters$(I, I1);
-                Print #2, Using " HIT MORE THAN ## DOUBLES(S): ##"; eventSettings(9), teamBatStats(I, I1, 4)
+                Print #2, Using " HIT MORE THAN ## DOUBLES(S): ##"; eventSettings(9), teamBatStats(I, I1, LG_B_Dbl)
             End If
 
-            If teamBatStats(I, I1, 5) > eventSettings(10) Then
+            If teamBatStats(I, I1, LG_B_Trp) > eventSettings(10) Then
                 Print #2, batters$(I, I1);
-                Print #2, Using " HIT MORE THAN ## TRIPLE(S): ##"; eventSettings(10), teamBatStats(I, I1, 5)
+                Print #2, Using " HIT MORE THAN ## TRIPLE(S): ##"; eventSettings(10), teamBatStats(I, I1, LG_B_Trp)
             End If
 
-            If teamBatStats(I, I1, 6) > eventSettings(11) Then
+            If teamBatStats(I, I1, LG_B_HR) > eventSettings(11) Then
                 Print #2, batters$(I, I1);
-                Print #2, Using " HOMERED MORE THAN ## TIME(S): ##"; eventSettings(11), teamBatStats(I, I1, 6)
+                Print #2, Using " HOMERED MORE THAN ## TIME(S): ##"; eventSettings(11), teamBatStats(I, I1, LG_B_HR)
             End If
 
-            If teamBatStats(I, I1, 9) > eventSettings(12) Then
+            If teamBatStats(I, I1, LG_B_SB) > eventSettings(12) Then
                 Print #2, batters$(I, I1);
-                Print #2, Using " STOLE MORE THAN ## BASE(S): ##"; eventSettings(12), teamBatStats(I, I1, 9)
+                Print #2, Using " STOLE MORE THAN ## BASE(S): ##"; eventSettings(12), teamBatStats(I, I1, LG_B_SB)
             End If
 
         Next
@@ -23702,9 +23728,9 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
 
     ' # - # TODAY
     If fldPos(P, currLineupSlot(P)) <> 1 Then
-        today$ = FUsing$(Str$(teamBatStats(P, lineupPlayer(P, currLineupSlot(P)), 1)), "##", 1) + "-" + FUsing$(Str$(teamBatStats(P, lineupPlayer(P, currLineupSlot(P)), 0)), "##", 1)
+        today$ = FUsing$(Str$(teamBatStats(P, lineupPlayer(P, currLineupSlot(P)), LG_B_H)), "##", 1) + "-" + FUsing$(Str$(teamBatStats(P, lineupPlayer(P, currLineupSlot(P)), LG_B_AB)), "##", 1)
     Else
-        today$ = FUsing$(Str$(teamPitStats(P, currPitcher(P), 24)), "##", 1) + "-" + FUsing$(Str$(teamPitStats(P, currPitcher(P), 23)), "##", 1)
+        today$ = FUsing$(Str$(teamPitStats(P, currPitcher(P), LG_PB_H)), "##", 1) + "-" + FUsing$(Str$(teamPitStats(P, currPitcher(P), LG_PB_AB)), "##", 1)
     End If
 
     today$ = today$ + " TODAY"
