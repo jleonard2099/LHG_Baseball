@@ -17742,18 +17742,18 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, tryingToAdvance, baseSta
 
                             If baseNbr - 1 > 2 And runnerOnBase(2) > 0 And baseMove(2) <> 11 And tryingToAdvance Then
                                 If d100% > (80 - r2RunRating * 2) Then
-                                baseMove(2) = 1
-                                Call PBP("runner is trying for 3rd...")
-                                Call PBP("He's safe!")
+                                    baseMove(2) = 1
+                                    Call PBP("runner is trying for 3rd...")
+                                    Call PBP("He's safe!")
                                     End If
                             End If
 
                             If baseNbr - 1 > 1 And runnerOnBase(1) > 0 And baseMove(1) <> 11 And tryingToAdvance Then
 
                                 If (baseStatus = 4 Or baseStatus = 7) And d100% > (10 - r1RunRating) Then
-                                baseMove(1) = 1
-                                Call PBP("runner is trying for 2nd...")
-                                Call PBP("He's in there!")
+                                    baseMove(1) = 1
+                                    Call PBP("runner is trying for 2nd...")
+                                    Call PBP("He's in there!")
 
                                 ElseIf d100% > (80 - r1RunRating * 2) Then
                                     baseMove(1) = 1
