@@ -25,11 +25,16 @@ Sub ChooseTeam (yearNumber$, numberTeams, chosenIdx, teamName$)
 
         Locate , 12: Print "ENTER DISK ID: "
         Print
-        Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
-        Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
+        Locate , 12: Print "THE DISK ID IS USUALLY THE 4-DIGIT YEAR FOR THE"
+        Locate , 12: Print "SEASON YOU WANT TO PLAY (IE. 1967, 1989, 2010)."
         Print
         Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID:"
-        If numberTeams > 0 Then Locate 12, 44: Color 14, 4: Print yearNumber$: Color 15, 4
+ 
+       If numberTeams > 0 Then 
+            Locate 12, 44
+            Color 14, 4: Print yearNumber$
+            Color 15
+        End If
 
         I$ = GetKeyPress$
 
@@ -111,36 +116,36 @@ Sub ChooseTeam (yearNumber$, numberTeams, chosenIdx, teamName$)
 
             End If 'Done checking for ENTER key
 
-            'Locate 2, 33
-            'Color 31: Print "LOADING..."
             chosenIdx = 1
 
-          If numberTeams > 0 Then
-            Do
+            If numberTeams > 0 Then
 
-                Call SelectTeam(numberTeams, yearNumber$, chosenIdx, teamName$, ExitCode%)
-                'teamGender$(gameIdx) = GetTeamGender$(yearNumber$)
+                Do
 
-                If ExitCode% <> 27 And numberTeams <> 0 And chosenIdx > 0 Then
+                    Call SelectTeam(numberTeams, yearNumber$, chosenIdx, teamName$, ExitCode%)
+                    'teamGender$(gameIdx) = GetTeamGender$(yearNumber$)
 
-                    Do
+                    If ExitCode% <> 27 And numberTeams <> 0 And chosenIdx > 0 Then
 
-                        YCoord = Int((80 - Len(teamName$)) / 2)
-                        Locate 2, YCoord
-                        Color teamRatings(11), teamRatings(12): Print teamName$
+                        Do
 
-                        Color 15, 4
-                        Locate 3, 32: Print "ANY CHANGE? (Y/N)";
+                            YCoord = Int((80 - Len(teamName$)) / 2)
+                            Locate 2, YCoord
+                            Color teamRatings(11), teamRatings(12): Print teamName$
 
-                        J$ = GetKeyPress$
+                            Color 15, 4
+                            Locate 3, 32: Print "ANY CHANGE? (Y/N)";
 
-                    Loop Until J$ = Chr$(27) Or UCase$(J$) = "Y" Or UCase$(J$) = "N"
+                            J$ = GetKeyPress$
 
-                End If
+                        Loop Until J$ = Chr$(27) Or UCase$(J$) = "Y" Or UCase$(J$) = "N"
 
-                'chosenIdx = -1 means there was invalid data
-            Loop Until ExitCode% = 27 Or J$ = Chr$(27) Or UCase$(J$) = "N" Or chosenIdx = -1
-          End If
+                    End If
+
+                    'chosenIdx = -1 means there was invalid data
+                Loop Until ExitCode% = 27 Or J$ = Chr$(27) Or UCase$(J$) = "N" Or chosenIdx = -1
+
+            End If
 
         End If 'Done checking for ESC
 
