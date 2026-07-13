@@ -1,7 +1,7 @@
 $Debug
 $Color:32
 
-Const GAME_VERSION$ = "7.22"
+Const GAME_VERSION$ = "7.25"
 Const MAX_FILES = 10240
 Const MAX_CAREER_YEARS = 15
 'Const MAX_CONFERENCES = 40
@@ -4002,7 +4002,8 @@ Sub PitchingStarter (luTeamIdx)
             Do
                 I$ = GetKeyPress$
                 Call LetterToNumber(I$, pitchIdx)
-                If pitchIdx <= 21 Then  'QB64 does not short-circuit compound conditionals
+                If pitchIdx <= 21 Then  
+                'QB64 does not short-circuit compound conditionals
                     If pitchRating(luTeamIdx, pitchIdx, SS_P_Avail) <= 0 Then 
                         Exit Do
                     End If
@@ -4291,8 +4292,14 @@ Sub SOURCE ()
                     I1 = teamMgrProfileVal(D, 564 + IJ0%)
 
                     I2 = 1
-                    Do While I2 <= 9 And fldPos(D, I2) <> teamMgrProfileVal(D, 576 + IJ0%)
-                        I2 = I2 + 1
+                    found = 0
+
+                    Do While I2 <= 9 And found = 0
+                        If fldPos(D, I2) = teamMgrProfileVal(D, 576 + IJ0%) Then
+                            found = 1
+                        Else
+                            I2 = I2 + 1
+                        End If
                     Loop
 
                     'Make player available and insert into lineup / field
@@ -7524,7 +7531,8 @@ Sub SOURCE ()
 
             idx = 0
             Do While idx <= 2 
-                If RN0 <= buntTriple(RR, idx) Then       'QB64 does not short-circuit compound conditionals
+                'QB64 does not short-circuit compound conditionals
+                If RN0 <= buntTriple(RR, idx) Then
                     Exit Do
                 End If
                 idx = idx + 1
@@ -8184,13 +8192,20 @@ Sub SOURCE ()
                             Do
 
                                 I$ = GetKeyPress$
+
                                 If UCase$(I$) = "Z" Then
                                     GoTo LPersonnelMenu
                                 Else
                                     Call LetterToNumber(I$, I1)
                                 End If
 
-                            Loop Until I1 <= 21 And pitchRating(P9, I1, SS_P_Avail) <= 0
+                                stopLoop = 0
+
+                                If I1 <= 21 Then
+                                    If pitchRating(P9, I1, SS_P_Avail) <= 0 Then stopLoop = 1
+                                End If
+
+                            Loop Until stopLoop = 1
 
                             Locate 23, 1: Print String$(78, 32)
                             Locate 23, 1: Print "YOU CHOSE "; pitchers$(P9, I1); " "; handed$(pitchRating(P9, I1, SS_P_Throws) + 2); " - ";
@@ -8472,8 +8487,7 @@ Sub SOURCE ()
                     choice = Val(I$)
 
                 Loop Until (choice >= 1 And choice <= 3) Or UCase$(I$) = "Z"
-                'Loop Until (Asc(I$) <> 32 And PG = 1) And Asc(I$) <> 9
-
+y
                 If UCase$(I$) <> "Z" Then
                     I1 = Val(I$)
                 Else
@@ -11539,7 +11553,8 @@ Sub EJECTIONINJURY (posIdx, W5, W6)
 
         I2 = 1
 
-        Do While I2 <= 9    'unroll compound booleans in DO because QB64PE does not short-circuit their evaluation, causing array subscript errors
+        Do While I2 <= 9    
+        'QB64 does not short-circuit compound conditionals
             If fldPos(D, I2) = posIdx Then Exit Do
             I2 = I2 + 1
         Loop
@@ -13799,10 +13814,9 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag, baseStatus)
     If rndStrategy > 0 Then I1 = 84
 
     'Sections below break logic into separate IF's, because QB64 does not short-circuit
-
     For pIdx = I1 To I1 + 2
 
-        'if not already used
+        'If not already used
         If teamMgrProfileVal(D, pIdx) >= 0 Then
             If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then
                 strategyWeight = strategyWeight + teamMgrProfileVal(D, pIdx + 10)
@@ -13816,7 +13830,7 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag, baseStatus)
 
     For pIdx = I1 To I1 + 2
 
-        'if not already used
+        'If not already used
         If teamMgrProfileVal(D, pIdx) >= 0 Then
             If pitchRating(D, teamMgrProfileVal(D, pIdx), SS_P_Avail) = 0 Then
                 strategyWeight = strategyWeight + teamMgrProfileVal(D, pIdx + 10)
@@ -17538,13 +17552,12 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, tryingToAdvance, baseSta
 
     If baseNbr <> 0 Then
         'We shouldn't still have a 0 value!
-
-            If S2% < EVENT_HR Then
-                RestoreScrn 30,25, 23,1    'Batter - Right & Left
-                For iii = 1 To 3
-                    Call DisplayRun_G(iii)
-                Next
-            End If
+        If S2% < EVENT_HR Then
+            RestoreScrn 30,25, 23,1    'Batter - Right & Left
+            For iii = 1 To 3
+                Call DisplayRun_G(iii)
+            Next
+        End If
 
         If IsOffenseHuman Then
             If S2% < EVENT_HR Then
@@ -22772,6 +22785,54 @@ Function GetTeamYear% (yearFromName$)
 End Function
 
 
+'--------------------------------------------
+'        IsOffensePC Function
+'--------------------------------------------
+'This function returns TRUE if the computer
+'is on offense, i.e., is batting.
+Function IsOffensePC
+    
+    IsOffensePC = (playerMode = 1 And P = compTeam) Or playerMode = 2
+
+End Function
+
+
+'--------------------------------------------
+'        IsDefensePC Function
+'--------------------------------------------
+'This function returns TRUE if the computer
+'is on defense, i.e., is pitching.
+Function IsDefensePC
+
+    IsDefensePC = (playerMode = 1 And D = compTeam) Or playerMode = 2
+
+End Function
+
+
+'--------------------------------------------
+'        IsOffenseHuman Function
+'--------------------------------------------
+'This function returns TRUE if a human player
+'is on offense, i.e., is batting.
+Function IsOffenseHuman
+
+    IsOffenseHuman = Not IsOffensePC
+
+End Function
+
+
+'--------------------------------------------
+'        IsDefenseHuman Function
+'--------------------------------------------
+'This function returns TRUE if a human player
+'is on defense, i.e., is pitching.
+Function IsDefenseHuman
+
+    IsDefenseHuman = Not IsDefensePC
+
+End Function
+
+
 '----------------------------------------
 '       OUTFLDLOCATION Subroutine
 '----------------------------------------
@@ -22861,14 +22922,16 @@ Sub ChooseGameTeam (yearNumber$, numberTeams, chosenIdx, teamName$, gameIdx)
         Locate , 12: Print teamIndicator$(gameIdx)
         Locate , 12: Print "ENTER DISK ID: "
         Print
-        Locate , 12: Print "THE DISK ID IS USUALLY THE LAST TWO DIGITS OF THE"
-        Locate , 12: Print "SEASON DISK YOU ARE PLAYING FROM (IE. 89, 76, 67)."
+        Locate , 12: Print "THE DISK ID IS USUALLY THE 4-DIGIT YEAR FOR THE"
+        Locate , 12: Print "SEASON YOU WANT TO PLAY (IE. 1967, 1989, 2010)."
         Print
         Locate , 12: Print "HIT <ENTER> TO USE PREVIOUS ID:"
 
         If numberTeams > 0 Then 
             yearToShow$ = _IIF(previousYear$ <> "", previousYear$, yearNumber$)
-            Locate 13, 44: Color 14, 4: Print yearToShow$: Color 15, 4
+            Locate 13, 44
+            Color 14, 4: Print yearToShow$
+            Color 15, 4
         End If
         
         Locate 8,
@@ -22953,36 +23016,36 @@ Sub ChooseGameTeam (yearNumber$, numberTeams, chosenIdx, teamName$, gameIdx)
 
             End If 'Done checking for ENTER key
 
-            'Locate 2, 33
-            'Color 31: Print "LOADING..."
             chosenIdx = 1
 
-          If numberTeams > 0 Then
-            Do
+            If numberTeams > 0 Then
 
-                Call SelectGameTeam(numberTeams, yearNumber$, chosenIdx, teamName$, ExitCode%, gameIdx)
-                'teamGender$(gameIdx) = GetTeamGender$(yearNumber$)
+                Do
 
-                If ExitCode% <> 27 And numberTeams <> 0 And chosenIdx > 0 Then
+                    Call SelectGameTeam(numberTeams, yearNumber$, chosenIdx, teamName$, ExitCode%, gameIdx)
+                    'teamGender$(gameIdx) = GetTeamGender$(yearNumber$)
 
-                    Do
+                    If ExitCode% <> 27 And numberTeams <> 0 And chosenIdx > 0 Then
 
-                        YCoord = Int((80 - Len(teamName$)) / 2)
-                        Locate 2, YCoord
-                        Color teamRat_GAME(gameIdx, 11), teamRat_GAME(gameIdx, 12): Print teamName$
+                        Do
 
-                        Color 15, 4
-                        Locate 3, 32: Print "ANY CHANGE? (Y/N)";
+                            YCoord = Int((80 - Len(teamName$)) / 2)
+                            Locate 2, YCoord
+                            Color teamRat_GAME(gameIdx, 11), teamRat_GAME(gameIdx, 12): Print teamName$
 
-                        J$ = GetKeyPress$
+                            Color 15, 4
+                            Locate 3, 32: Print "ANY CHANGE? (Y/N)";
 
-                    Loop Until J$ = Chr$(27) Or UCase$(J$) = "Y" Or UCase$(J$) = "N"
+                            J$ = GetKeyPress$
 
-                End If
+                        Loop Until J$ = Chr$(27) Or UCase$(J$) = "Y" Or UCase$(J$) = "N"
 
-                'chosenIdx = -1 means there was invalid data
-            Loop Until ExitCode% = 27 Or J$ = Chr$(27) Or UCase$(J$) = "N" Or chosenIdx = -1
-          End If
+                    End If
+
+                    'chosenIdx = -1 means there was invalid data
+                Loop Until ExitCode% = 27 Or J$ = Chr$(27) Or UCase$(J$) = "N" Or chosenIdx = -1
+
+            End If
 
         End If 'Done checking for ESC
 
@@ -23486,46 +23549,6 @@ End Sub
 
 
 '--------------------------------------------
-'        IsOffensePC Function
-'--------------------------------------------
-'This function returns TRUE if the computer
-'is on offense, i.e., is batting.
-Function IsOffensePC
-    IsOffensePC = playerMode = 1 And P = compTeam Or playerMode = 2
-End Function
-
-
-'--------------------------------------------
-'        IsDefensePC Function
-'--------------------------------------------
-'This function returns TRUE if the computer
-'is on defense, i.e., is pitching.
-Function IsDefensePC
-    IsDefensePC = playerMode = 1 And D = compTeam Or playerMode = 2
-End Function
-
-
-'--------------------------------------------
-'        IsOffenseHuman Function
-'--------------------------------------------
-'This function returns TRUE if a human player
-'is on offense, i.e., is batting.
-Function IsOffenseHuman
-    IsOffenseHuman = Not IsOffensePC
-End Function
-
-
-'--------------------------------------------
-'        IsDefenseHuman Function
-'--------------------------------------------
-'This function returns TRUE if a human player
-'is on defense, i.e., is pitching.
-Function IsDefenseHuman
-    IsDefenseHuman = Not IsDefensePC
-End Function
-
-
-'--------------------------------------------
 '        ShouldAskToThrow Function
 '--------------------------------------------
 'This function returns TRUE if a human player
@@ -23541,13 +23564,18 @@ End Function
 'to tag up when a flyball is caught.
 Function ShouldAskToThrow (S2%)
 
-    If S2% < EVENT_HR Then                                          'stretching a base hit
-        ShouldAskToThrow = S2% = EVENT_1B And runnerOnBase(3) > 0   'only ask if the batter is attempting to stretch a single with a runner on 3rd base
-    Else                                                            'tagging up from flyball
+    'stretching a base hit
+    If S2% < EVENT_HR Then                                          
+        'only ask if the batter is attempting to stretch a single with a runner on 3rd base
+        ShouldAskToThrow = S2% = EVENT_1B And runnerOnBase(3) > 0   
+    Else                                                            
+        'Tagging up from flyball
         'bRunners  = _Iif(runnerOnBase(1) > 0, 1, 0) + _Iif(runnerOnBase(2) > 0, 2, 0) + _Iif(runnerOnBase(3) > 0, 4, 0)
         numRunners = _Iif(runnerOnBase(1) > 0, 1, 0) + _Iif(runnerOnBase(2) > 0, 1, 0) + _Iif(runnerOnBase(3) > 0, 1, 0)
 
-        ShouldAskToThrow = numRunners > 1                           'ask if more than 1 baserunner
+        'Ask if more than 1 baserunner
+        ShouldAskToThrow = numRunners > 1                           
+
     End If
 
 End Function

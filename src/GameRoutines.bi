@@ -189,8 +189,12 @@ Declare Sub ReadGameExtraData (teamYear$, teamIdx, gameIdx)
 Declare Function d100% ()
 Declare Function buntDecision% (baseStatus)
 Declare Function GetParkAttendance& (searchParkID$, gameYear)
-Declare Function getRainDelayMinutes% ():
+Declare Function getRainDelayMinutes% ()
 Declare Function GetRunStrategy%()
 Declare Function GetTeamYear% (yearFromName$)
+Declare Function IsDefensePC
+Declare Function IsOffensePC
+Declare Function IsOffenseHuman
+Declare Function IsDefenseHuman
 Declare Function OUTFLDLOCATION$ (currFielder)
 Declare Function pitcherMaxStam% (teamIdx, pitcherIdx)
