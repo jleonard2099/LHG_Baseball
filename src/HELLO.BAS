@@ -20672,16 +20672,16 @@ Sub COMPILESTATFILES (teamIdx)
         If teamBatStats(teamIdx, I, LG_B_AB) > 0 Then
 
             If teamBatStats(teamIdx, I, LG_B_H) = 0 Then
-                statBatter(I, 12) = 0
+                statBatter(I, LG_B_HS) = 0
             Else
-                statBatter(I, 12) = statBatter(I, 12) + 1
+                statBatter(I, LG_B_HS) = statBatter(I, LG_B_HS) + 1
             End If
 
         End If
 
         'Games
         If teamBatStats(teamIdx, I, LG_B_G) > 0 Then
-            statBatter(I, 14) = statBatter(I, 14) + 1
+            statBatter(I, LG_B_G) = statBatter(I, LG_B_G) + 1
         End If
 
         For I1 = 15 To 21
@@ -20690,8 +20690,8 @@ Sub COMPILESTATFILES (teamIdx)
         Next I1
 
         'Curr Hit Streak vs Long Hit Streak.
-        If statBatter(I, 12) >= statBatter(I, 13) Then
-            statBatter(I, 13) = statBatter(I, 12)
+        If statBatter(I, LG_B_HS) >= statBatter(I, LG_B_LS) Then
+            statBatter(I, LG_B_LS) = statBatter(I, LG_B_HS)
         End If
 
     Next I
@@ -20743,41 +20743,41 @@ Sub COMPILESTATFILES (teamIdx)
 
     If gameScore(teamIdx, 0) - gameScore(1 - teamIdx, 0) > 0 Then
         'Team Win
-        statPitcher(pitcherOfRecord(teamIdx), 6) = statPitcher(pitcherOfRecord(teamIdx), 6) + 1
+        statPitcher(pitcherOfRecord(teamIdx), LG_P_W) = statPitcher(pitcherOfRecord(teamIdx), LG_P_W) + 1
     End If
 
     If gameScore(teamIdx, 0) - gameScore(1 - teamIdx, 0) < 0 Then
         'Team Loss
-        statPitcher(pitcherOfRecord(teamIdx), 7) = statPitcher(pitcherOfRecord(teamIdx), 7) + 1
+        statPitcher(pitcherOfRecord(teamIdx), LG_P_L) = statPitcher(pitcherOfRecord(teamIdx), LG_P_L) + 1
     End If
 
     If gameScore(teamIdx, 0) - gameScore(1 - teamIdx, 0) > 0 And relieverOnRecordForSave(teamIdx) >= 0 Then
         'Team Win + relieverOnRecordForSave ??
-        statPitcher(relieverOnRecordForSave(teamIdx), 12) = statPitcher(relieverOnRecordForSave(teamIdx), 12) + 1
-        statTeamPit!(12) = statTeamPit!(12) + 1
+        statPitcher(relieverOnRecordForSave(teamIdx), LG_P_Sv) = statPitcher(relieverOnRecordForSave(teamIdx), LG_P_Sv) + 1
+        statTeamPit!(LG_P_Sv) = statTeamPit!(LG_P_Sv) + 1
     End If
 
     For I = 0 To 21
 
         If pitchRating(teamIdx, I, SS_P_Avail) <> 0 Then
-            statPitcher(I, 8) = statPitcher(I, 8) + 1
-            statTeamPit!(8) = statTeamPit!(8) + 1
+            statPitcher(I, LG_P_G) = statPitcher(I, LG_P_G) + 1
+            statTeamPit!(LG_P_G) = statTeamPit!(LG_P_G) + 1
         End If
 
         If INNING% = teamPitStats(teamIdx, I, LG_P_OUT) Then
-            statPitcher(I, 10) = statPitcher(I, 10) + 1
-            statTeamPit!(10) = statTeamPit!(10) + 1
+            statPitcher(I, LG_P_CG) = statPitcher(I, LG_P_CG) + 1
+            statTeamPit!(LG_P_CG) = statTeamPit!(LG_P_CG) + 1
         End If
 
         If INNING% = teamPitStats(teamIdx, I, LG_P_OUT) And gameScore(1 - teamIdx, 0) = 0 Then
-            statPitcher(I, 11) = statPitcher(I, 11) + 1
-            statTeamPit!(11) = statTeamPit!(11) + 1
+            statPitcher(I, LG_P_Sho) = statPitcher(I, LG_P_Sho) + 1
+            statTeamPit!(LG_P_Sho) = statTeamPit!(LG_P_Sho) + 1
         End If
 
     Next I
 
-    statPitcher(SX%(teamIdx), 9) = statPitcher(SX%(teamIdx), 9) + 1
-    statTeamPit!(9) = statTeamPit!(9) + 1
+    statPitcher(SX%(teamIdx), LG_P_GS) = statPitcher(SX%(teamIdx), LG_P_GS) + 1
+    statTeamPit!(LG_P_GS) = statTeamPit!(LG_P_GS) + 1
 
     statTeamDP = statTeamDP + teamDPs(teamIdx)
     statOppDP = statOppDP + teamDPs(1 - teamIdx)
