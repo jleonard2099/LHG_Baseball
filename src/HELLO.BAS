@@ -23679,7 +23679,7 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
         player$ = X$
         X$ = PadRight$(X$, 11)
 
-        If batRating(P, J, 0) < 0 Or batRating(P, J, 0) = 0 And pitchRating(D, currPitcher(D), 0) > 0 Then
+        If batRating(P, J, SS_B_Bats) < 0 Or batRating(P, J, SS_B_Bats) = 0 And pitchRating(D, currPitcher(D), SS_P_Throws) > 0 Then
 
             'Black shadow on Background
             ShadowTextOnGfx 41, 25, Left$(X$, 11), &HFF000000, imageScreen&
@@ -23693,7 +23693,7 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
 
         End If
 
-        If batRating(P, J, 0) > 0 Or batRating(P, J, 0) = 0 And pitchRating(D, currPitcher(D), 0) < 0 Then
+        If batRating(P, J, SS_B_Bats) > 0 Or batRating(P, J, SS_B_Bats) = 0 And pitchRating(D, currPitcher(D), SS_P_Throws) < 0 Then
 
             'Black shadow on Background
             ShadowTextOnGfx 30, 25, Left$(X$, 11), &HFF000000, imageScreen&
