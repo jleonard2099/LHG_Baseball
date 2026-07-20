@@ -14115,6 +14115,18 @@ End Sub
 
 
 '----------------------------------------
+'         PrintInverted Subroutine
+'----------------------------------------
+Sub PrintInverted (txt$)
+    forGrnd = _DefaultColor
+    bckGrnd = _BackgroundColor
+    Color bckGrnd, forGrnd
+    Print txt$;
+    Color forGrnd, bckGrnd
+End Sub
+
+
+'----------------------------------------
 '        PopUp_Lineup Subroutine
 '----------------------------------------
 'This subroutine displays a quick window
@@ -14134,7 +14146,14 @@ Sub PopUp_Lineup ()
         For X = 1 To 9:
 
             Locate X + 9, 10 + J * 26
-            If currLineupSlot(J) = X Then Print "->";
+            If J = P Then
+                'This team and batter is batting NOW, so invert the pointer
+                If currLineupSlot(J) = X   Then PrintInverted "->"
+            Else
+                'On the other team, we Need to move the pointer down to the NEXT batter because it currently points to the LAST batter
+                currSlot = (currLineupSlot(J) Mod 9) + 1
+                If currSlot = X Then Print "->";
+            End If
 
             Locate , 12 + J * 26
             If fldPos(J, X) = 1 Then
