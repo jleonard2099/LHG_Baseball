@@ -1222,7 +1222,7 @@ Sub LOADER
 
     Else
 
-        170 '
+        LManualPlay:
         Call INFO
 
         If gameLoc = 0 Then gameLoc = 1
@@ -1665,7 +1665,7 @@ Sub LOADER
         'I'm not sure why we go back only
         'if ESC was pressed during pitcher select
         If cancelPitchers% = 1 Then
-            GoTo 170
+            GoTo LManualPlay
         End If
 
     Next currTeam
@@ -1781,7 +1781,7 @@ Sub LOADER
             Else
                 'ESC means we go back to earlier menus
                 noLineups = 1
-                GoTo 170
+                GoTo LManualPlay
 
             End If
 
@@ -4609,7 +4609,7 @@ Sub SOURCE ()
 
         If UCase$(I$) = "D" Then
             Call VIEWTEAM
-            GoTo 15580
+            Goto LResumePlay
         End If
 
         If UCase$(I$) = "G" Then
@@ -4646,12 +4646,12 @@ Sub SOURCE ()
 
         If UCase$(I$) = "L" Then
             Call PopUp_Lineup
-            GoTo 15580
+            Goto LResumePlay
         End If
 
         If UCase$(I$) = "O" Then
             Call OPTIONS
-            GoTo 15580
+            Goto LResumePlay
         End If
 
         If UCase$(I$) = Chr$(17) Then
@@ -4662,26 +4662,26 @@ Sub SOURCE ()
 
         If UCase$(I$) = "S" Then
             Call POPUPSTATS
-            GoTo 15580
+            Goto LResumePlay
         End If
 
         If UCase$(I$) = "B" Then
             If useVGA = 1 Then Screen menu&: Cls
             Call PopUp_Batter(D, currPitcher(D))
             I$ = GetKeyPress$
-            GoTo 15580
+            Goto LResumePlay
         End If
 
         If UCase$(I$) = "P" Then
             If useVGA = 1 Then Screen menu&: Cls
             Call PopUp_Pitcher(P, currPitcher(P))
             I$ = GetKeyPress$
-            GoTo 15580
+            Goto LResumePlay
         End If
 
         If UCase$(I$) = "W" Then
             Call WEATHER
-            GoTo 15580
+            Goto LResumePlay
         End If
 
         If UCase$(I$) = "H" Then
@@ -4968,17 +4968,17 @@ Sub SOURCE ()
 
         If UCase$(I$) = "D" Then
             Call VIEWTEAM
-            GoTo 15580
+            Goto LResumePlay
         End If
 
         If UCase$(I$) = "L" Then
             Call PopUp_Lineup
-            GoTo 15580
+            Goto LResumePlay
         End If
 
         If UCase$(I$) = "O" Then
             Call OPTIONS
-            GoTo 15580
+            Goto LResumePlay
         End If
 
         If UCase$(I$) = Chr$(17) Then
@@ -4989,12 +4989,12 @@ Sub SOURCE ()
 
         If UCase$(I$) = "S" Then
             Call POPUPSTATS
-            GoTo 15580
+            Goto LResumePlay
         End If
 
         If UCase$(I$) = "W" Then
             Call WEATHER
-            GoTo 15580
+            Goto LResumePlay
         End If
 
         offChoice = Val(I$)
@@ -5402,7 +5402,7 @@ Sub SOURCE ()
             nbrOuts(1) = nbrOuts(1) + 1
         End If
 
-        13222 '
+        LWildPitch:
         'Wild Pitch / Passed Ball Outcome
         'This is a failure of defense so no
         'base running adjustments are applied
@@ -5449,7 +5449,7 @@ Sub SOURCE ()
 
         Call WILDPITCH(S2%)
 
-        GoTo 13222
+        GoTo LWildPitch
 
     End If
 
@@ -5666,7 +5666,7 @@ Sub SOURCE ()
                         GoTo LContinueBatter
                     Else
                         Call WILDPITCH(S2%)
-                        GoTo 13222
+                        GoTo LWildPitch
                     End If
                 Else
                     GoTo LPassedBall
@@ -5684,7 +5684,7 @@ Sub SOURCE ()
             If drawnInfieldRoll <= drawnInfieldChance Then
                 'Convert this out to a single
                 S2% = EVENT_DRAWN_IN_SINGLE
-                GoTo 13063
+                GoTo LSingle
             End If
 
             Call Rolld100(chanceRoll)
@@ -5748,7 +5748,7 @@ Sub SOURCE ()
                                         GoTo LCheckForOptionsOrQuit
                                     End If
 
-                                    GoTo 14025
+                                    GoTo LFlyout
 
                                 End If
 
@@ -5830,7 +5830,7 @@ Sub SOURCE ()
                                     GoTo LCheckForOptionsOrQuit
                                 End If
 
-                                14025 '
+                                LFlyout:
                                 Call CreditRegularPutout(currFielder)
                                 Call CAUGHTFLY(null, S2%)
 
@@ -6338,7 +6338,7 @@ Sub SOURCE ()
 
         Else
 
-            13063 '
+            LSingle:
             'Single
             Call Rolld100(chanceRoll)
             If S2% <> EVENT_DRAWN_IN_SINGLE Then
@@ -6348,7 +6348,7 @@ Sub SOURCE ()
             If chanceRoll <= game_batRating(P, GM_BAvg, currLineupSlot(P)) And offChoice <> OFF_HIT_N_RUN And _ 
                 fldPos(P, currLineupSlot(P)) <> 1 Then
 
-                13065
+                LSingle2:
                 ' *** SINGLE ***
                 Call Hit_Single(errorOnPlay%, currFielder, I3, INFPOS%, I1, S2%, offChoice)
 
@@ -6997,7 +6997,7 @@ Sub SOURCE ()
 
             If nbrOuts(0) <> 3 And sacPlayType <> 2 Then
 
-                14111 '
+                LSacPopup:
                 If currFielder <> 5 Then
                     Call CreditAssist(currFielder)
                     currFielder = 5
@@ -7182,7 +7182,7 @@ Sub SOURCE ()
 
         Case 4
             'Sacrifice hit good
-            14140 '
+            LSacGood:
             Call PBP(player$(0) + " lays down a good bunt...")
             Call FLDERR(S2%, I3, stealing, currFielder, INFPOS%, errorOnPlay%, SAH%)
             Call PBP(player$(4) + " makes a nice play")
@@ -7191,11 +7191,11 @@ Sub SOURCE ()
 
                 S2% = -EVENT_INF_SINGLE
                 Call PBP(player$(0) + " beats out an infield hit!")
-                GoTo 13065
+                GoTo LSingle2
 
             Else
 
-                14141 '
+                LSacrifice:
                 Call INCPITDEF(D, currPitcher(D), LG_P_Sac)
 
                 'Increase Sac Hits
@@ -7210,7 +7210,7 @@ Sub SOURCE ()
                 If baseRunners = 5 And sacPlayType = 2 And RN0 > 98 Or RN0 > 97 Then
                     S2% = -EVENT_INF_SINGLE
                     Call PBP(player$(0) + " beats it out!")
-                    GoTo 13065
+                    GoTo LSingle2
                 End If
 
                 baseMove(0) = 11
@@ -7264,7 +7264,7 @@ Sub SOURCE ()
             Select Case idx + 1
                 Case 1
 
-                    If baseRunners > 0 Then 14157
+                    If baseRunners > 0 Then Goto LSacSingle
                     Call PBP(player$(0) + " drops it right down the line")
                     Call PBP(player$(4) + " lets it roll...")
                     Call PBP(player$(0) + " is trying for 2nd!!")
@@ -7290,7 +7290,7 @@ Sub SOURCE ()
                     GoTo LCheckForOptionsOrQuit
 
                 Case 2
-                    14157 '
+                    LSacSingle:
                     S2% = EVENT_INF_SINGLE
                     Call PBP(player$(0) + " lays down a great bunt...")
 
@@ -7301,10 +7301,10 @@ Sub SOURCE ()
 
                     Call PBP(player$(4) + " fields... but too late!")
                     S2% = -EVENT_INF_SINGLE
-                    GoTo 13065
+                    GoTo LSingle2
 
                 Case 3
-                    GoTo 14140
+                    GoTo LSacGood
 
             End Select
 
@@ -7361,7 +7361,7 @@ Sub SOURCE ()
                 Loop Until I5 >= 1 And I5 <= 2
             End If
 
-            If I5 = 2 Then 14141
+            If I5 = 2 Then GoTo LSacrifice
 
             Call Rolld100(RN0)
 
@@ -7471,7 +7471,7 @@ Sub SOURCE ()
                     If sacPlayType = 1 And d100% <= 42 Then
                         currFielder = 2
                         Call GETFIELDNAME(currFielder)
-                        GoTo 14111
+                        GoTo LSacPopup
                     End If
 
                     If nbrStrikes = 1 Then
@@ -7494,7 +7494,7 @@ Sub SOURCE ()
                     GoTo LContinueBatter2
 
                 Case 3
-                    GoTo 14140
+                    GoTo LSacGood
 
             End Select
 
@@ -7542,7 +7542,7 @@ Sub SOURCE ()
                 Case 1:
                     S2% = EVENT_INF_SINGLE
                     Call PBP("but too late...base hit!")
-                    GoTo 13065
+                    GoTo LSingle2
 
                 Case 2:
                     PLB = 1
@@ -7550,7 +7550,7 @@ Sub SOURCE ()
                     GoTo LCheckForOptionsOrQuit
 
                 Case 3:
-                    GoTo 14141
+                    GoTo LSacrifice
 
             End Select
 
@@ -7594,7 +7594,7 @@ Sub SOURCE ()
             If sacPlayType = 1 And RN0 <= 42 Then
                 currFielder = 2
                 Call GETFIELDNAME(currFielder)
-                GoTo 14111
+                GoTo LSacPopup
             End If
 
             If nbrStrikes = 1 Then
@@ -8122,7 +8122,7 @@ Sub SOURCE ()
         Select Case menuChoice
 
             Case 0
-                15580 '
+                LResumePlay:
                 If pitchRating(D, currPitcher(D), SS_P_Avail) = 99 Then
 
                     'If pitcher isn't still injured...
@@ -8230,7 +8230,7 @@ Sub SOURCE ()
                         Call PITSTAM(P9)
                         Call CHECKSAVE(baseRunners)
 
-                        15518 '
+                        LNewReliever:
                         P9 = 1 - P9
                         W5 = P9
                         W6 = W5
@@ -8395,7 +8395,7 @@ Sub SOURCE ()
 
                                 Else
 
-                                    GoTo 15518
+                                    GoTo LNewReliever
 
                                 End If
 
@@ -8487,7 +8487,7 @@ Sub SOURCE ()
                     choice = Val(I$)
 
                 Loop Until (choice >= 1 And choice <= 3) Or UCase$(I$) = "Z"
-y
+
                 If UCase$(I$) <> "Z" Then
                     I1 = Val(I$)
                 Else
@@ -8542,7 +8542,7 @@ y
 
                 If (I1 <> 3 And D2 <> DEF_PERSONNEL) Then
                     I2 = currLineupSlot(P)
-                    GoTo 15555
+                    GoTo LSub
                 End If
 
         End Select
@@ -8596,7 +8596,7 @@ y
             Print batters$(P9, lineupPlayer(P9, I2));
         End If
 
-        15555 '
+        LSub:
         Do
 
             Color 11
@@ -13325,11 +13325,11 @@ Sub PINCHRUNNER (scoreDiff, baseStatus, tgtBase, nbrBalls, nbrStrikes, MO, INFPO
 
                                 'Check pitcher run rating, inning and probability
                                 If pitchRating(P, currPitcher(P), SS_P_Run) <= teamMgrProfileVal(P, 804) And INNING% >= teamMgrProfileVal(P, 805) And RN0 <= teamMgrProfileVal(P, 806) Then
-                                    GoTo 8993
+                                    GoTo LSubstitution
                                 End If
 
                                 If pitchRating(P, currPitcher(P), SS_P_Run) <= teamMgrProfileVal(P, 807) And INNING% >= teamMgrProfileVal(P, 808) And RN0 <= teamMgrProfileVal(P, 809) Then
-                                    GoTo 8993
+                                    GoTo LSubstitution
                                 End If
 
                                 'Conditions not met; don't pinch run
@@ -13345,7 +13345,7 @@ Sub PINCHRUNNER (scoreDiff, baseStatus, tgtBase, nbrBalls, nbrStrikes, MO, INFPO
                                     Call Rolld100(RN0)
                                     If INNING% >= teamMgrProfileVal(P, I * 4 + 780) And batRating(P, teamMgrProfileVal(P, I * 4 + 781), SS_B_Avail) = 0 And RN0 <= teamMgrProfileVal(P, I * 4 + 782) Then
                                         batRating(P, teamMgrProfileVal(P, I * 4 + 781), SS_B_Avail) = 40 + J
-                                        GoTo 8993
+                                        GoTo LSubstitution
                                     End If
 
                                     Exit Sub
@@ -13413,7 +13413,7 @@ Sub PINCHRUNNER (scoreDiff, baseStatus, tgtBase, nbrBalls, nbrStrikes, MO, INFPO
             I1 = availableRunners(RN0)
 
             'Execute substitution
-            8993 '
+            LSubstitution:
             I2 = J
             player$(J1) = batters$(P, I1)
 
