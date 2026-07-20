@@ -6490,6 +6490,7 @@ Sub SOURCE ()
                 baseMove(1) = 0
                 baseMove(2) = 0
                 baseMove(3) = 0
+                GoTo LProcessOutAndDP2
             End If
 
         End If
