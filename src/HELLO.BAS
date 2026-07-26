@@ -1896,7 +1896,7 @@ Sub LOADER
             windDirection$(10) = "->none"
         End If
 
-        wind$ = windDirection$(windDir) + Str$(windSpeed) + " MPH (" + LTrim(Str$(_Iif(windImpact! = 1, 0, windRating))) + "% IMPACT)"
+        wind$ = windDirection$(windDir) + Str$(windSpeed) + " MPH (" + LTrim$(Str$(_Iif(windImpact! = 1, 0, windRating))) + "% IMPACT)"
         Locate , 11: Print "PRECIPITATION: "; precip$(precipType)
 
     End If
@@ -24084,7 +24084,10 @@ Sub DisplayBallField_Gfx (nbrBalls, nbrStrikes)
         PrintOnGfx 15, I + 28, Left$(gameTeams$(I), 3) + teamAbbreviatons$(I), imageScreen&
 
         For I2 = inningStart% To inningEnd%
-            If I = 0 And I2 <= INNING% Or I = 1 And I2 < INNING% Then Call DisplayInningScore_G(I2, I)
+            'Display a;; previous innings, display top of this innning, display bottom of this inning if home team is batting
+            If I2 < INNING% Or I2 = INNING% And (I = 0 Or P = 1) Then
+                Call DisplayInningScore_G(I2, I)
+            End If
         Next I2
 
         R% = gameScore(I, 0)
