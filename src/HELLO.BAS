@@ -993,6 +993,7 @@ End Sub
 Sub LOADER
 
     Shared actualAttendance&, avgAttendance&
+    Shared windRating
 
     _Title "Full Count Baseball v" + GAME_VERSION$ + " - PLAY BALL!"
 
@@ -24084,7 +24085,7 @@ Sub DisplayBallField_Gfx (nbrBalls, nbrStrikes)
         PrintOnGfx 15, I + 28, Left$(gameTeams$(I), 3) + teamAbbreviatons$(I), imageScreen&
 
         For I2 = inningStart% To inningEnd%
-            'Display a;; previous innings, display top of this innning, display bottom of this inning if home team is batting
+            'Display all previous innings, display top of this innning, display bottom of this inning if home team is batting
             If I2 < INNING% Or I2 = INNING% And (I = 0 Or P = 1) Then
                 Call DisplayInningScore_G(I2, I)
             End If
