@@ -1893,6 +1893,7 @@ Sub LOADER
             windDirection$(7) = "->LF"
             windDirection$(8) = "->CF"
             windDirection$(9) = "->RF"
+            windDirection$(10) = "->none"
         End If
 
         wind$ = windDirection$(windDir) + Str$(windSpeed) + " MPH"
@@ -9687,6 +9688,7 @@ Sub InitVar ()
     windDirection$(7) = "BLOWING OUT TO LEFT AT"
     windDirection$(8) = "BLOWING OUT TO CENTER AT"
     windDirection$(9) = "BLOWING OUT TO RIGHT AT"
+    windDirection$(10) = "BLOWING NOWHERE"
 
     skyCond$(1) = "CLEAR"
     skyCond$(2) = "PARTLY CLOUDY"
@@ -12716,14 +12718,14 @@ Sub LONGFLY (currFielder)
     Call GetPBPString(60, 1310, fileString$)
     Call PBP(fileString$ + " " + fieldPos$(currFielder))
 
-    If WF < 1 And Rnd(1) > WF Then
+    If windImpact! < 1 And Rnd(1) > windImpact! Then
 
         Call PBP("The wind is bringing it back..."):
 
     Else
 
         'Adjust for the wind factor
-        If WF > 1 And Rnd(1) <= 1 - WF Then
+        If windImpact! > 1 And Rnd(1) <= 1 - windImpact! Then
             Call PBP("It's carrying well in the breeze...")
         End If
 
@@ -14150,7 +14152,7 @@ Sub PopUp_Lineup ()
                 'This team and batter is batting NOW, so invert the pointer
                 If currLineupSlot(J) = X   Then PrintInverted "->"
             Else
-                'On the other team, we Need to move the pointer down to the NEXT batter because it currently points to the LAST batter
+                'On the other team, we need to move the pointer down to the NEXT batter because it currently points to the LAST batter
                 currSlot = (currLineupSlot(J) Mod 9) + 1
                 If currSlot = X Then Print "->";
             End If
@@ -18847,7 +18849,7 @@ Sub WEATHER ()
     Else
         Locate , 11: Print "TEMPERATURE: "; gameTemp
         Locate , 11: Print "SKY CONDITIONS: "; skyCond$(skyType)
-        windSpeed = Int(Rnd(1) * 15) + 7
+        'I don't think this belongs here:  windSpeed = Int(Rnd(1) * 15) + 7
         Locate , 11: Print "WIND: "; wind$
         Locate , 11: Print "PRECIPITATION: "; precip$(precipType)
     End If
@@ -19270,11 +19272,11 @@ Sub GETWEATHER (windDir, windSpeed, gameMonth, windFactor!, skyType, gameTemp, r
 
     'Field ratings
     winDirSUM = 0
-    interval = 2
-    Do While interval <= 9 And RN0 > winDirSUM
-        winDirSUM = winDirSUM + monthlyRatings(targetMonth, interval)
+    interval = 1
+    Do
         interval = interval + 1
-    Loop
+        winDirSUM = winDirSUM + monthlyRatings(targetMonth, interval)
+    Loop While interval <= 9 And RN0 > winDirSUM
 
     windDir = interval
 
@@ -19291,11 +19293,11 @@ Sub GETWEATHER (windDir, windSpeed, gameMonth, windFactor!, skyType, gameTemp, r
     RN0 = Int(Rnd(1) * windSUM) + 1
 
     windSUM = 0
-    interval = 10
-    Do While interval <= 13 And RN0 > windSUM
-        windSUM = SUM + monthlyRatings(targetMonth, interval)
+    interval = 9
+    Do
         interval = interval + 1
-    Loop
+        windSUM = windSUM + monthlyRatings(targetMonth, interval)
+    Loop While interval <= 13 And RN0 > windSUM
 
     'Calculate wind impact based on speed,
     'direction and other factors
