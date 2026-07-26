@@ -1896,7 +1896,7 @@ Sub LOADER
             windDirection$(10) = "->none"
         End If
 
-        wind$ = windDirection$(windDir) + Str$(windSpeed) + " MPH"
+        wind$ = windDirection$(windDir) + Str$(windSpeed) + " MPH (" + LTrim(Str$(_Iif(windImpact! = 1, 0, windRating))) + "% IMPACT)"
         Locate , 11: Print "PRECIPITATION: "; precip$(precipType)
 
     End If
@@ -3090,7 +3090,12 @@ Sub PitchingRotations (compRotation, luTeamIdx)
                 Do
                     I$ = GetKeyPress$
                     Call LetterToNumber(I$, I1)
-                Loop Until I1 <= 21 And teamMgrProfileVal(luTeamIdx, 3) <> I1 And teamMgrProfileVal(luTeamIdx, 4) <> I1 And teamMgrProfileVal(luTeamIdx, 5) <> I1 And teamMgrProfileVal(luTeamIdx, 6) <> I1 And teamMgrProfileVal(luTeamIdx, 7) <> I1
+                Loop Until I1 <= 21 _
+                    _AndAlso teamMgrProfileVal(luTeamIdx, 3) <> I1 _
+                    _AndAlso teamMgrProfileVal(luTeamIdx, 4) <> I1 _
+                    _AndAlso teamMgrProfileVal(luTeamIdx, 5) <> I1 _
+                    _AndAlso teamMgrProfileVal(luTeamIdx, 6) <> I1 _
+                    _AndAlso teamMgrProfileVal(luTeamIdx, 7) <> I1
 
                 Locate 16, 59: Print pitchers$(luTeamIdx, I1)
 
@@ -4003,14 +4008,7 @@ Sub PitchingStarter (luTeamIdx)
             Do
                 I$ = GetKeyPress$
                 Call LetterToNumber(I$, pitchIdx)
-                If pitchIdx <= 21 Then  
-                'QB64 does not short-circuit compound conditionals
-                    If pitchRating(luTeamIdx, pitchIdx, SS_P_Avail) <= 0 Then 
-                        Exit Do
-                    End If
-                End If
-            Loop
-
+            Loop Until pitchIdx <= 21 _AndAlso pitchRating(luTeamIdx, pitchIdx, SS_P_Avail) <= 0
         End If
 
         Locate 20, 58
@@ -4293,14 +4291,8 @@ Sub SOURCE ()
                     I1 = teamMgrProfileVal(D, 564 + IJ0%)
 
                     I2 = 1
-                    found = 0
-
-                    Do While I2 <= 9 And found = 0
-                        If fldPos(D, I2) = teamMgrProfileVal(D, 576 + IJ0%) Then
-                            found = 1
-                        Else
-                            I2 = I2 + 1
-                        End If
+                    Do While I2 <= 9 _AndAlso fldPos(D, I2) <> teamMgrProfileVal(D, 576 + IJ0%)
+                        I2 = I2 + 1
                     Loop
 
                     'Make player available and insert into lineup / field
@@ -6475,7 +6467,7 @@ Sub SOURCE ()
 
         If currFielder = 5 Then
 
-            Call PITCHERNAME(currFielder)
+            Call FielderName(currFielder)
 
             If RN0 <= 5 And (baseRunners = 4 Or baseRunners = 7) Then
                 Call PBP(player$(4) + " gloves it and heads for 3rd")
@@ -6498,7 +6490,7 @@ Sub SOURCE ()
 
         If currFielder = 6 Then
 
-            Call PITCHERNAME(currFielder)
+            Call FielderName(currFielder)
             Call GROUNDERS(currFielder)
 
             If RN0 <= 8 And (baseRunners = 1 Or baseRunners = 4 Or baseRunners = 5 Or baseRunners = 7) Then
@@ -6520,7 +6512,7 @@ Sub SOURCE ()
 
         If currFielder = 4 And RN0 <= 5 And (baseRunners = 1 Or baseRunners = 4 Or baseRunners = 5 Or baseRunners = 7) Then
 
-            Call PITCHERNAME(currFielder)
+            Call FielderName(currFielder)
             Call GROUNDERS(currFielder)
             Call DPPIVOT(currFielder)
             AST% = 4
@@ -6533,7 +6525,7 @@ Sub SOURCE ()
 
             If currFielder = 3 Then
 
-                Call PITCHERNAME(currFielder)
+                Call FielderName(currFielder)
                 Call GROUNDERS(currFielder)
 
                 If d100% <= 94 Then
@@ -6541,7 +6533,7 @@ Sub SOURCE ()
                     fldrUnassist = 1
                 Else
                     currFielder = 1
-                    Call PITCHERNAME(currFielder)
+                    Call FielderName(currFielder)
                     Call PBP("He flips it to " + player$(4) + " covering")
                     FB2P% = 1
                     currFielder = 3
@@ -6553,7 +6545,7 @@ Sub SOURCE ()
 
             End If
 
-            Call PITCHERNAME(currFielder)
+            Call FielderName(currFielder)
             Call GROUNDERS(currFielder)
             Call SECOND2FIRST
 
@@ -7532,11 +7524,7 @@ Sub SOURCE ()
             Call Rolld100(roll)
 
             idx = 0
-            Do While idx <= 2 
-                'QB64 does not short-circuit compound conditionals
-                If RN0 <= buntTriple(RR, idx) Then
-                    Exit Do
-                End If
+            Do While idx <= 2 _AndAlso RN0 > buntTriple(RR, idx)
                 idx = idx + 1
             Loop
 
@@ -8319,6 +8307,7 @@ Sub SOURCE ()
 
                                     Call LetterToNumber(I$, fieldSlot)
 
+                                    If fieldSlot > 22 Then _Continue
                                     Do
                                         Locate 16, 29: Print batters$(D, fieldSlot)
                                         Locate 17, 29: Print "ARE YOU SURE? (Y/N)";
@@ -8626,7 +8615,7 @@ Sub SOURCE ()
 
             Call LetterToNumber(I$, I1)
 
-        Loop Until I1 <= 22 Or batRating(P9, I1, SS_B_Avail) <= 0
+        Loop Until I1 <= 22 _AndAlso batRating(P9, I1, SS_B_Avail) <= 0
 
         Do
             Locate 23, 30
@@ -11556,9 +11545,7 @@ Sub EJECTIONINJURY (posIdx, W5, W6)
 
         I2 = 1
 
-        Do While I2 <= 9    
-        'QB64 does not short-circuit compound conditionals
-            If fldPos(D, I2) = posIdx Then Exit Do
+        Do While I2 <= 9 _AndAlso fldPos(D, I2) <> posIdx
             I2 = I2 + 1
         Loop
 
@@ -13135,7 +13122,7 @@ End Sub
 'Play-by-Play for an out at first base.
 Sub OUTATFIRST (currFielder, fldrUnassist, FB2P%)
 
-    Call PITCHERNAME(currFielder)
+    Call FielderName(currFielder)
     Call GROUNDERS(currFielder)
 
     If currFielder = 3 And d100% <= 94 Then
@@ -13144,7 +13131,7 @@ Sub OUTATFIRST (currFielder, fldrUnassist, FB2P%)
     Else
         If currFielder = 3 Then
             currFielder = 1
-            Call PITCHERNAME(currFielder)
+            Call FielderName(currFielder)
             Call PBP("He flips it to " + player$(4) + " covering")
             FB2P% = 1
             currFielder = 3
@@ -13476,11 +13463,11 @@ Sub PINCHRUNNER (scoreDiff, baseStatus, tgtBase, nbrBalls, nbrStrikes, MO, INFPO
 End Sub
 
 '----------------------------------------
-'         PITCHERNAME Subroutine
+'         FielderName Subroutine
 '----------------------------------------
 'This subroutine returns the name of the
-'associated pitcher.
-Sub PITCHERNAME (currFielder)
+'associated fielder.
+Sub FielderName (currFielder)
 
     If currFielder = 1 Then
         player$(4) = pitchers$(D, currPitcher(D))
