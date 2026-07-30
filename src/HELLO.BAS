@@ -1717,8 +1717,7 @@ Sub LOADER
 
                 Do
                     I$ = GetKeyPress$
-                    I1 = Val(I$)
-                Loop Until I1 >= 0 And I1 <= 3 And I$ <> Chr$(27)
+                Loop Until InStr("0123", I$) > 0 And I$ <> Chr$(27)
 
             End If
 
@@ -1897,7 +1896,7 @@ Sub LOADER
             windDirection$(10) = "->none"
         End If
 
-        wind$ = windDirection$(windDir) + Str$(windSpeed) + " MPH (" + LTrim$(Str$(_Iif(windImpact! = 1, 0, windRating))) + "% IMPACT)"
+        wind$ = windDirection$(windDir) + Str$(windSpeed) + " MPH (" + LTrim$(Str$(_Iif(windImpact! = 1, 0, windRating))) + "% HR IMPACT)"
         Locate , 11: Print "PRECIPITATION: "; precip$(precipType)
 
     End If
@@ -2066,7 +2065,7 @@ Sub AssignFieldingPositions (teamIdx, posIdx)
 
                 Erase lineupAssigned
 
-            Else
+            ElseIf I1 <= 22 Then
 
                 validInput = 1
 
@@ -4436,6 +4435,7 @@ Sub SOURCE ()
 
 
     LNextBatter0:
+    'Print #11, "DEBUG: Processing LNextBatter0"
     sacHit = 0
     errorOnPlay% = 0
     wasStrikeout = 0
@@ -5413,7 +5413,6 @@ Sub SOURCE ()
             GoTo LNextBatter1
         End If
 
-        13223 '
         baseMove(1) = 1
         baseMove(2) = 1
         baseMove(3) = 1
@@ -5789,9 +5788,8 @@ Sub SOURCE ()
                                     GoTo LCheckForOptionsOrQuit
                                 End If
 
-                                14066 '
-                                Call FlyBall_Base2Runner(errorOnPlay%, S2%, offChoice, runnerOnBase(2), currFielder, INFPOS%, stealing, baseNbr, I9, baseStatus)
-                                Call FlyBall_Base1Runner(errorOnPlay%, S2%, offChoice, runnerOnBase(2), currFielder, INFPOS%, stealing, baseNbr, I9, baseStatus)
+                                Call FlyBall_Base2Runner(errorOnPlay%, S2%, offChoice, runnerOnBase(2), currFielder, INFPOS%, stealing, baseNbr, I9, baseRunners)
+                                Call FlyBall_Base1Runner(errorOnPlay%, S2%, offChoice, runnerOnBase(2), currFielder, INFPOS%, stealing, baseNbr, I9, baseRunners)
 
                                 Call ADVANCEMENT(S2%, INFPOS%, I3, currFielder, errorOnPlay%, SAH%)
                                 GoTo LCheckForOptionsOrQuit
@@ -5876,8 +5874,8 @@ Sub SOURCE ()
                                     I9 = 0
                                 Else
                                     'Yes - determine if worth advancing
-                                    Call FlyBall_Base2Runner(errorOnPlay%, S2%, offChoice, runnerOnBase(2), currFielder, INFPOS%, stealing, baseNbr, I9, baseStatus)
-                                    Call FlyBall_Base1Runner(errorOnPlay%, S2%, offChoice, runnerOnBase(2), currFielder, INFPOS%, stealing, baseNbr, I9, baseStatus)
+                                    Call FlyBall_Base2Runner(errorOnPlay%, S2%, offChoice, runnerOnBase(2), currFielder, INFPOS%, stealing, baseNbr, I9, baseRunners)
+                                    Call FlyBall_Base1Runner(errorOnPlay%, S2%, offChoice, runnerOnBase(2), currFielder, INFPOS%, stealing, baseNbr, I9, baseRunners)
                                 End If
 
                                 Call ADVANCEMENT(S2%, INFPOS%, I3, currFielder, errorOnPlay%, SAH%)
@@ -7172,7 +7170,7 @@ Sub SOURCE ()
             End If
 
         Case 3
-            Call LeadRunnerCountdown(INFPOS%, currFielder, errorOnPlay%, baseStatus)
+            Call LeadRunnerCountdown(INFPOS%, currFielder, errorOnPlay%, baseRunners)
             GoTo LCheckForOptionsOrQuit
 
         Case 4
@@ -7367,7 +7365,7 @@ Sub SOURCE ()
 
             If I = 0 Then
                 PLB = 1
-                Call LeadRunnerCountdown(INFPOS%, currFielder, errorOnPlay%, baseStatus)
+                Call LeadRunnerCountdown(INFPOS%, currFielder, errorOnPlay%, baseRunners)
             Else
                 Call PBP(player$(4) + " throws to " + J3$ + "... SAFE!!")
                 If fldPos(P, currLineupSlot(P)) <> 1 Then
@@ -7537,7 +7535,7 @@ Sub SOURCE ()
 
                 Case 2:
                     PLB = 1
-                    Call LeadRunnerCountdown(INFPOS%, currFielder, errorOnPlay%, baseStatus)
+                    Call LeadRunnerCountdown(INFPOS%, currFielder, errorOnPlay%, baseRunners)
                     GoTo LCheckForOptionsOrQuit
 
                 Case 3:
@@ -10639,7 +10637,7 @@ End Sub
 '----------------------------------------
 'Handle decision making and chances for a
 '2nd base runner to advance on a fly ball
-Sub FlyBall_Base2Runner (wasError, S2%, offChoice, runnerOn2nd, currFielder, INFPOS%, stealing, tgtBase, I9, baseStatus)
+Sub FlyBall_Base2Runner (wasError, S2%, offChoice, runnerOn2nd, currFielder, INFPOS%, stealing, tgtBase, I9, baseRunners)
 
     If runnerOnBase(2) <> 0 Then
 
@@ -10707,12 +10705,12 @@ Sub FlyBall_Base2Runner (wasError, S2%, offChoice, runnerOn2nd, currFielder, INF
 
         ' -- update these based on strategy?
         'Chances to try for 3rd on regular fly to LF/CF/RF
-        If baseMove(2) <> 1 And S2% = EVENT_FLY_REGULAR And offChoice <> OFF_HIT_N_RUN And baseStatus < 6 Then
+        If baseMove(2) <> 1 And S2% = EVENT_FLY_REGULAR And offChoice <> OFF_HIT_N_RUN And baseRunners < 6 Then
 
             If (currFielder = 7) Or (currFielder = 8 And RN0 > 840) Or (currFielder = 9 And RN0 > 800) Then
                 tgtBase = 3
                 If wasError = 0 Then
-                    Call TRYFOREXTRABASE(S2%, offChoice, stealing, tgtBase, I9, baseStatus, runnerOn2nd, currFielder, INFPOS%, wasError, homeSafe)
+                    Call TRYFOREXTRABASE(S2%, offChoice, stealing, tgtBase, I9, baseRunners, runnerOn2nd, currFielder, INFPOS%, wasError, homeSafe)
                 End If
             End If
 
@@ -10728,7 +10726,7 @@ End Sub
 '----------------------------------------
 'Handle decision making and chances for a
 '1st base runner to advance on a fly ball
-Sub FlyBall_Base1Runner (wasError, S2%, offChoice, runnerOn2nd, currFielder, INFPOS%, stealing, tgtBase, I9, baseStatus)
+Sub FlyBall_Base1Runner (wasError, S2%, offChoice, runnerOn2nd, currFielder, INFPOS%, stealing, tgtBase, I9, baseRunners)
 
     If runnerOnBase(1) <> 0 Then
 
@@ -10761,14 +10759,14 @@ Sub FlyBall_Base1Runner (wasError, S2%, offChoice, runnerOn2nd, currFielder, INF
 
         End Select
 
-        If S2% = EVENT_FLY_DEEP And offChoice <> OFF_HIT_N_RUN And baseStatus = 1 And _
+        If S2% = EVENT_FLY_DEEP And offChoice <> OFF_HIT_N_RUN And baseRunners = 1 And _
             RN0 <= 100 + tryFor2ndChance + runStratBonus Then
 
             tgtBase = 2
 
             'Runner might try for 2nd on deep fly..."
             If wasError = 0 Then
-                Call TRYFOREXTRABASE(S2%, offChoice, stealing, tgtBase, I9, baseStatus, runnerOn2nd, currFielder, INFPOS%, wasError, homeSafe)
+                Call TRYFOREXTRABASE(S2%, offChoice, stealing, tgtBase, I9, baseRunners, runnerOn2nd, currFielder, INFPOS%, wasError, homeSafe)
             End If
 
         End If
@@ -11048,18 +11046,18 @@ End Sub
 '----------------------------------------
 'This subroutine checks if the current
 'reliever qualifies for a save
-Sub CHECKSAVE (baseStatus)
+Sub CHECKSAVE (baseRunners)
 
     scoreDiff = gameScore(D, 0) - gameScore(P, 0)
     relieverOnRecordForSave(D) = -1
 
     If scoreDiff >= 1 Then
 
-        If (baseStatus = 0 And scoreDiff <= 2) Or _
-            (baseStatus > 0 And baseStatus < 4 And scoreDiff <= 3) Or _ 
-            (baseStatus > 3 And baseStatus < 7 And scoreDiff <= 4) Or _ 
-            (baseStatus = 7 And scoreDiff <= 5) Or _
-            (baseStatus = 0 And nbrOuts(0) = 0 And scoreDiff <= 3) Or _ 
+        If (baseRunners = 0 And scoreDiff <= 2) Or _
+            (baseRunners > 0 And baseRunners < 4 And scoreDiff <= 3) Or _ 
+            (baseRunners > 3 And baseRunners < 7 And scoreDiff <= 4) Or _ 
+            (baseRunners = 7 And scoreDiff <= 5) Or _
+            (baseRunners = 0 And nbrOuts(0) = 0 And scoreDiff <= 3) Or _ 
             (INNING% > 5 And INNING% < 8 And scoreDiff > 0)  Then
             relieverOnRecordForSave(D) = currPitcher(D)
         End If
@@ -11068,9 +11066,9 @@ Sub CHECKSAVE (baseStatus)
 
     RI = 0
 
-    If baseStatus <> 0 Then
+    If baseRunners <> 0 Then
 
-        Select Case baseStatus
+        Select Case baseRunners
 
             Case 1 To 3
                 RI = 1
@@ -12542,14 +12540,14 @@ End Sub
 'This subroutine handles the Play-by-Play
 'and replacement for a pitcher who has
 'been ejected or injured.
-Sub InjuredPitcher (playerInjured, pinchHitterFlag, baseStatus)
+Sub InjuredPitcher (playerInjured, pinchHitterFlag, baseRunners)
 
     'Mark that injury has occurred and disable pitcher
     playerInjured = 1
     pitchRating(D, currPitcher(D), SS_P_Avail) = 99
 
     If IsDefensePC Then
-        Call RELIEVERS(pinchHitterFlag, newPitcherFlag, baseStatus)
+        Call RELIEVERS(pinchHitterFlag, newPitcherFlag, baseRunners)
     Else
         Call PBP("You must replace " + pitchers$(D, currPitcher(D)))
     End If
@@ -13033,7 +13031,7 @@ End Sub
 '        NEWPITCHER Subroutine
 '----------------------------------------
 'NewPitcher
-Sub NEWPITCHER (pIdx, pinchHitterFlag, newPitcherFlag, baseStatus, INFPOS%)
+Sub NEWPITCHER (pIdx, pinchHitterFlag, newPitcherFlag, baseRunners, INFPOS%)
 
     If relieverOnRecordForSave(D) <> -1 And gamePitcher(D) > 1 Then
         Call INCPITDEF(D, currPitcher(D), LG_P_Hold)
@@ -13077,7 +13075,7 @@ Sub NEWPITCHER (pIdx, pinchHitterFlag, newPitcherFlag, baseStatus, INFPOS%)
 
     fielder(D, 1) = currPitcher(D)
 
-    Call CHECKSAVE(baseStatus)
+    Call CHECKSAVE(baseRunners)
 
     W5 = 1 - P9
     W6 = 1 - P9
@@ -13267,7 +13265,7 @@ End Sub
 'This subroutine determines if the PC or
 'manager profile should use a pinch runner.
 'If so, it substitutes them into the lineup.
-Sub PINCHRUNNER (scoreDiff, baseStatus, tgtBase, nbrBalls, nbrStrikes, MO, INFPOS%, runnerFound, runnerSubstituted)
+Sub PINCHRUNNER (scoreDiff, baseRunners, tgtBase, nbrBalls, nbrStrikes, MO, INFPOS%, runnerFound, runnerSubstituted)
 
     Dim availableRunners(24)
 
@@ -13279,11 +13277,11 @@ Sub PINCHRUNNER (scoreDiff, baseStatus, tgtBase, nbrBalls, nbrStrikes, MO, INFPO
 
         tgtBase = 1
 
-        If baseStatus = 1 Or baseStatus = 5 Then
+        If baseRunners = 1 Or baseRunners = 5 Then
             tgtBase = 1
         End If
 
-        If baseStatus = 2 Or baseStatus = 4 Or baseStatus = 6 Then
+        If baseRunners = 2 Or baseRunners = 4 Or baseRunners = 6 Then
             tgtBase = 2
         End If
 
@@ -13484,9 +13482,9 @@ End Sub
 '----------------------------------------
 'This subroutine handles the stats and
 'Play-by-Play for a pitchout.
-Sub PITCHOUT (baseStatus, TGTBASE%, stlChance)
+Sub PITCHOUT (baseRunners, TGTBASE%, stlChance)
 
-    If baseStatus <> 5 And TGTBASE% = 2 Then
+    If baseRunners <> 5 And TGTBASE% = 2 Then
 
         If d100% <= 8 Then
             Call PBP("...PITCH OUT!!!")
@@ -13669,7 +13667,7 @@ End Sub
 '----------------------------------------
 'This subroutine loads a pitcher strategy
 'from a manager profile.
-Sub PITSTRAT (pinchHitterFlag, newPitcherFlag, baseStatus)
+Sub PITSTRAT (pinchHitterFlag, newPitcherFlag, baseRunners)
 
     Shared setupUsed(), closerUsed()
 
@@ -13718,11 +13716,11 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag, baseStatus)
                     If ourLead < 1 Then Exit Sub
 
                     If (ourLead > 0 And ourLead <= 2) Or _
-                        (baseStatus = 0 And ourLead <= 2) Or _
-                        (baseStatus > 0 And baseStatus < 4 And ourLead <= 3) Or _
-                        (baseStatus > 3 And baseStatus < 7 And ourLead <= 4) Or _
-                        (baseStatus = 7 And ourLead <= 5) Or _
-                        (baseStatus = 0 And nbrOuts(0) = 0 And ourLead <= 3 ) Then
+                        (baseRunners = 0 And ourLead <= 2) Or _
+                        (baseRunners > 0 And baseRunners < 4 And ourLead <= 3) Or _
+                        (baseRunners > 3 And baseRunners < 7 And ourLead <= 4) Or _
+                        (baseRunners = 7 And ourLead <= 5) Or _
+                        (baseRunners = 0 And nbrOuts(0) = 0 And ourLead <= 3 ) Then
                         saveSituation = 1
                     End If
 
@@ -13835,7 +13833,7 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag, baseStatus)
             teamMgrProfileVal(D, pIdx) = -1
             pIdx = V0
 
-            Call NEWPITCHER(pIdx, pinchHitterFlag, newPitcherFlag, baseStatus, INFPOS%)
+            Call NEWPITCHER(pIdx, pinchHitterFlag, newPitcherFlag, baseRunners, INFPOS%)
             setupUsed(D) = -1
 
             Exit Sub
@@ -13880,7 +13878,7 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag, baseStatus)
             teamMgrProfileVal(D, pIdx) = -1
             pIdx = V0
 
-            Call NEWPITCHER(pIdx, pinchHitterFlag, newPitcherFlag, baseStatus, INFPOS%)
+            Call NEWPITCHER(pIdx, pinchHitterFlag, newPitcherFlag, baseRunners, INFPOS%)
             closerUsed(D) = -1
 
             Exit Sub
@@ -13925,7 +13923,7 @@ Sub PITSTRAT (pinchHitterFlag, newPitcherFlag, baseStatus)
             teamMgrProfileVal(D, pIdx) = -1
             pIdx = V0
 
-            Call NEWPITCHER(pIdx, pinchHitterFlag, newPitcherFlag, baseStatus, INFPOS%)
+            Call NEWPITCHER(pIdx, pinchHitterFlag, newPitcherFlag, baseRunners, INFPOS%)
 
             Exit Sub
 
@@ -15579,7 +15577,7 @@ End Sub
 '----------------------------------------
 'This subroutine manages the stats and the
 'Play-by-Play for a Base-on-Balls
-Sub BASEONBALLS (S2%, D2, baseStatus)
+Sub BASEONBALLS (S2%, D2, baseRunners)
 
     S2% = EVENT_BASE_ON_BALLS
     battersFaced(D, currPitcher(D)) = battersFaced(D, currPitcher(D)) + 1
@@ -15610,13 +15608,13 @@ Sub BASEONBALLS (S2%, D2, baseStatus)
 
     End If
 
-    If baseStatus = 7 And d100% <= 30 Then
+    If baseRunners = 7 And d100% <= 30 Then
         Call PBP("that forces a run in")
     End If
 
     RN0 = Int(Rnd(1) * 4) + 1
 
-    If baseStatus > 3 And baseStatus < 7 Then
+    If baseRunners > 3 And baseRunners < 7 Then
 
         Select Case RN0
 
@@ -15652,7 +15650,7 @@ End Sub
 '----------------------------------------
 'This subroutine handles the Play-by-Play
 'text for a player hit by a pitch.
-Sub HITBYPITCH (S2%, baseStatus)
+Sub HITBYPITCH (S2%, baseRunners)
 
     S2% = EVENT_HBP
 
@@ -15668,7 +15666,7 @@ Sub HITBYPITCH (S2%, baseStatus)
     Call GetPBPString(20, 760, fileString$)
     Call PBP(fileString$)
 
-    If d100% <= 50 And baseStatus = 7 Then
+    If d100% <= 50 And baseRunners = 7 Then
         Call PBP("tough way to get an RBI")
     End If
 
@@ -15747,9 +15745,9 @@ End Sub
 'team needs a reliever, and handles the
 'substitution if so. This is only for
 'the computer team.
-Sub RELIEVERS (pinchHitterFlag, newPitcherFlag, baseStatus)
+Sub RELIEVERS (pinchHitterFlag, newPitcherFlag, baseRunners)
 
-    Call PITSTRAT(pinchHitterFlag, newPitcherFlag, baseStatus)
+    Call PITSTRAT(pinchHitterFlag, newPitcherFlag, baseRunners)
 
     'If using newer substitution rules...
     If batterMinimumOpt = 1 Then
@@ -15823,7 +15821,7 @@ Sub RELIEVERS (pinchHitterFlag, newPitcherFlag, baseStatus)
                     If pitcherVal > 0 Then
                         If randPitcher <= pitchWeight + pitcherVal Then
                             ' Bring in middle relief
-                            Call NEWPITCHER(rIdx, pinchHitterFlag, newPitcherFlag, baseStatus, INFPOS%)
+                            Call NEWPITCHER(rIdx, pinchHitterFlag, newPitcherFlag, baseRunners, INFPOS%)
                             Exit Sub
                         Else
                             pitchWeight = pitchWeight + pitcherVal
@@ -15836,7 +15834,7 @@ Sub RELIEVERS (pinchHitterFlag, newPitcherFlag, baseStatus)
                     If scoreDiff < 0 And pitcherVal > 0 Then
                         If randPitcher <= pitchWeight + pitcherVal Then
                             'Bring in setup man
-                            Call NEWPITCHER(rIdx, pinchHitterFlag, newPitcherFlag, baseStatus, INFPOS%)
+                            Call NEWPITCHER(rIdx, pinchHitterFlag, newPitcherFlag, baseRunners, INFPOS%)
                             Exit Sub
                         Else
                             pitchWeight = pitchWeight + pitcherVal
@@ -15845,7 +15843,7 @@ Sub RELIEVERS (pinchHitterFlag, newPitcherFlag, baseStatus)
                         If scoreDiff >= 0 And randPitcher > pitchWeight Then
                             If randPitcher <= pitchWeight + pitchRating(D, rIdx, 3) Then
                                 'Bring in closer
-                                Call NEWPITCHER(rIdx, pinchHitterFlag, newPitcherFlag, baseStatus, INFPOS%)
+                                Call NEWPITCHER(rIdx, pinchHitterFlag, newPitcherFlag, baseRunners, INFPOS%)
                                 Exit Sub
                             Else
                                 pitchWeight = pitchWeight + pitchRating(D, rIdx, 3)
@@ -15863,7 +15861,7 @@ Sub RELIEVERS (pinchHitterFlag, newPitcherFlag, baseStatus)
         For rIdx = 0 To 21
             ' Find any pitcher who is available
             If pitchRating(D, rIdx, SS_P_Avail) = 0 And pitchers$(D, rIdx) <> "XXX" Then
-                Call NEWPITCHER(rIdx, pinchHitterFlag, newPitcherFlag, baseStatus, INFPOS%)
+                Call NEWPITCHER(rIdx, pinchHitterFlag, newPitcherFlag, baseRunners, INFPOS%)
                 Exit For
             End If
         Next rIdx
@@ -17000,7 +16998,7 @@ End Sub
 '----------------------------------------
 'This subroutine gives the user a choice
 'for a squeeze / bunt.
-Sub SQUEEZECHOICE (squeezeOrSH, baseStatus)
+Sub SQUEEZECHOICE (squeezeOrSH, baseRunners)
 
     If IsOffensePC Then
         'Computer decision
@@ -17010,7 +17008,7 @@ Sub SQUEEZECHOICE (squeezeOrSH, baseStatus)
         squeezeChance = 0
 
         ' Basic squeeze situations
-        If baseStatus = 3 Then
+        If baseRunners = 3 Then
             ' Runner on 3rd only - classic squeeze setup
             If nbrOuts(0) = 0 Then
                 squeezeChance = 25
@@ -17021,7 +17019,7 @@ Sub SQUEEZECHOICE (squeezeOrSH, baseStatus)
             End If
         End If
 
-        If baseStatus = 7 Then
+        If baseRunners = 7 Then
             ' Runners on 1st and 3rd
             If nbrOuts(0) = 0 Then
                 squeezeChance = 20
@@ -17031,7 +17029,7 @@ Sub SQUEEZECHOICE (squeezeOrSH, baseStatus)
             End If
         End If
 
-        If baseStatus = 5 Or baseStatus = 6 Then
+        If baseRunners = 5 Or baseRunners = 6 Then
             ' Runners on 2nd and 3rd, or 1st/2nd/3rd
             If nbrOuts(0) = 0 Then
                 ' Less urgent with runner on 2nd
@@ -18140,13 +18138,13 @@ End Sub
 'This subroutine lets the user choose which
 'runner to target when there is an attempt
 'to steal a base
-Sub WHICHRUNNER (TGTBASE%, baseStatus, D5)
+Sub WHICHRUNNER (TGTBASE%, baseRunners, D5)
 
     If TGTBASE% = 4 Then
         baseMove(3) = 1
     End If
 
-    If baseStatus = 4 Then
+    If baseRunners = 4 Then
 
         Call PBP("WHICH RUNNER DO YOU WANT TO GO AFTER")
 
@@ -18187,9 +18185,9 @@ End Sub
 '          WHOSON1ST Subroutine
 '----------------------------------------
 ' ...explanation...
-Sub WHOSON1ST (baseStatus)
+Sub WHOSON1ST (baseRunners)
 
-    baseStatus = 0
+    baseRunners = 0
     I1 = runnerOnBase(1)
     I2 = runnerOnBase(2)
     I3 = runnerOnBase(3)
@@ -18197,20 +18195,20 @@ Sub WHOSON1ST (baseStatus)
     If I1 > 0 Then
         If I2 = 0 Then
             If I3 = 0 Then
-                baseStatus = 1
+                baseRunners = 1
             Else
                 ' *** 1ST AND 3RD ***
-                baseStatus = 5
+                baseRunners = 5
             End If
         Else
             'I2 > 0
             If I3 = 0 Then
                 ' *** 1ST AND 2ND ***
-                baseStatus = 4
+                baseRunners = 4
             Else
                 'I3 > 0
                 ' *** BASES LOADED ***
-                baseStatus = 7
+                baseRunners = 7
             End If
         End If
     Else
@@ -18218,18 +18216,18 @@ Sub WHOSON1ST (baseStatus)
         If I2 = 0 Then
             If I3 > 0 Then
                 ' *** RUNNER ON 3RD ***
-                baseStatus = 3
+                baseRunners = 3
             End If
 
         Else
             'I2 > 0
             If I3 = 0 Then
                 ' *** RUNNER ON 2ND ***
-                baseStatus = 2
+                baseRunners = 2
             Else
                 'I3 > 0
                 ' *** 2ND AND 3RD ***
-                baseStatus = 6
+                baseRunners = 6
             End If
         End If
     End If
@@ -18278,7 +18276,7 @@ End Sub
 'H6% gets randomly assigned first. Then
 'at the end of most of these branches,
 'it gets assigned a static value.
-Sub RAREPLAYS (INFPOS%, currFielder, wasError, H6%, playerInjured, baseStatus)
+Sub RAREPLAYS (INFPOS%, currFielder, wasError, H6%, playerInjured, baseRunners)
 
     Dim playerEjectMax As Integer
     Dim coachMgrEjectMax As Integer
@@ -18319,10 +18317,10 @@ Sub RAREPLAYS (INFPOS%, currFielder, wasError, H6%, playerInjured, baseStatus)
     Select Case rareResult
 
         Case Is <= playerEjectScaled
-            Call PlayerEjections(baseStatus)
+            Call PlayerEjections(baseRunners)
 
         Case playerEjectScaled + 1 To playerEjectScaled + coachMgrEjectScaled
-            Call CoachMgrEjections(INFPOS%, currFielder, wasError, playerInjured, baseStatus)
+            Call CoachMgrEjections(INFPOS%, currFielder, wasError, playerInjured, baseRunners)
 
         Case 15
             Call PBP("Here's the 3-2 pitch...")
@@ -18338,7 +18336,7 @@ Sub RAREPLAYS (INFPOS%, currFielder, wasError, H6%, playerInjured, baseStatus)
 
         Case 22 To 24
 
-            Select Case baseStatus
+            Select Case baseRunners
 
                 Case 0
                     If teamRat_GAME(1, 13) = 14 Then
@@ -18747,7 +18745,7 @@ Sub RAREPLAYS (INFPOS%, currFielder, wasError, H6%, playerInjured, baseStatus)
                 Call WINDEX
                 Call PBP("He reaches on a single")
                 Call PBP(pitchers$(D, currPitcher(D)) + " is down and in pain!")
-                Call InjuredPitcher(playerInjured, pinchHitterFlag, baseStatus)
+                Call InjuredPitcher(playerInjured, pinchHitterFlag, baseRunners)
                 H6% = 5
 
             Else
@@ -18786,7 +18784,7 @@ Sub RAREPLAYS (INFPOS%, currFielder, wasError, H6%, playerInjured, baseStatus)
             Call PBP(pitchers$(D, currPitcher(D)) + " is motioning for " + gameManagers$(D) + " to come out")
             Call PBP("It appears he has a blister")
             Call PBP("He will have to leave the game")
-            Call InjuredPitcher(playerInjured, pinchHitterFlag, baseStatus)
+            Call InjuredPitcher(playerInjured, pinchHitterFlag, baseRunners)
 
             H6% = 1
 
@@ -18860,7 +18858,7 @@ End Sub
 '----------------------------------------
 'This routine handles the PBP and aftermath
 'for a player ejection.
-Sub PlayerEjections (baseStatus)
+Sub PlayerEjections (baseRunners)
 
     scaledRoll = Int(Rnd(1) * 14) + 1
 
@@ -18892,7 +18890,7 @@ Sub PlayerEjections (baseStatus)
 
             Call DELAY
 
-            Call InjuredPitcher(playerInjured, pinchHitterFlag, baseStatus)
+            Call InjuredPitcher(playerInjured, pinchHitterFlag, baseRunners)
 
         Case 7 To 9
             If fldPos(P, currLineupSlot(P)) <> 1 Then
@@ -18946,7 +18944,7 @@ Sub PlayerEjections (baseStatus)
             ejections$(ejectCnt) = pitchers$(D, currPitcher(D))
 
             Call DELAY
-            Call InjuredPitcher(playerInjured, pinchHitterFlag, baseStatus)
+            Call InjuredPitcher(playerInjured, pinchHitterFlag, baseRunners)
 
         Case 14
             ' *** Bench-clearing brawl ***
@@ -18968,7 +18966,7 @@ Sub PlayerEjections (baseStatus)
                     X$ = pitchers$(D, currPitcher(D))
                     Call AddEjection(X$)
 
-                    Call InjuredPitcher(playerInjured, pinchHitterFlag, baseStatus)
+                    Call InjuredPitcher(playerInjured, pinchHitterFlag, baseRunners)
 
                 Case 2:
                     Call PBP(player$(0) + " has been ejected")
@@ -18987,7 +18985,7 @@ Sub PlayerEjections (baseStatus)
                     X$ = pitchers$(D, currPitcher(D))
                     Call AddEjection(X$)
 
-                    Call InjuredPitcher(playerInjured, pinchHitterFlag, baseStatus)
+                    Call InjuredPitcher(playerInjured, pinchHitterFlag, baseRunners)
                     Call PLYRHRT(W5, W6, nbrBalls, nbrStrikes, MO)
 
             End Select
@@ -19004,7 +19002,7 @@ End Sub
 'This routine handles the chances of
 'either a coach or manager being ejected
 'from a game and the PBP associated.
-Sub CoachMgrEjections (INFPOS%, currFielder, wasError, playerInjured, baseStatus)
+Sub CoachMgrEjections (INFPOS%, currFielder, wasError, playerInjured, baseRunners)
 
     Dim coachMgrEjectMax As Integer
 
@@ -19110,7 +19108,7 @@ Sub CoachMgrEjections (INFPOS%, currFielder, wasError, playerInjured, baseStatus
             Call EJECTIONINJURY(2, W5, W6)
             Call EJECTIONINJURY(3, W5, W6)
 
-            Call InjuredPitcher(playerInjured, pinchHitterFlag, baseStatus)
+            Call InjuredPitcher(playerInjured, pinchHitterFlag, baseRunners)
 
     End Select
 
@@ -20218,9 +20216,9 @@ End Sub
 '----------------------------------------
 '     LeadRunnerCountdown Subroutine
 '----------------------------------------
-Sub LeadRunnerCountdown (INFPOS%, currFielder, wasError, baseStatus)
+Sub LeadRunnerCountdown (INFPOS%, currFielder, wasError, baseRunners)
 
-    If baseStatus = 7 Or baseStatus = 6 Or baseStatus = 5 Or baseStatus = 3 Then
+    If baseRunners = 7 Or baseRunners = 6 Or baseRunners = 5 Or baseRunners = 3 Then
 
         baseMove(3) = 11
 
@@ -20230,18 +20228,18 @@ Sub LeadRunnerCountdown (INFPOS%, currFielder, wasError, baseStatus)
 
     End If
 
-    If baseStatus = 2 Or baseStatus = 4 Then
+    If baseRunners = 2 Or baseRunners = 4 Then
         baseMove(0) = 1
         baseMove(1) = 1
         baseMove(2) = 11
     End If
 
-    If baseStatus = 1 Then
+    If baseRunners = 1 Then
         baseMove(0) = 1
         baseMove(1) = 11
     End If
 
-    If baseStatus = 0 Then
+    If baseRunners = 0 Then
         baseMove(0) = 11
     End If
 
@@ -22466,34 +22464,34 @@ End Sub
 'based on baseball era as well as several
 'situations to adopt to multiple coaching
 'styles and changes
-Function buntDecision% (baseStatus)
+Function buntDecision% (baseRunners)
 
     buntChance = 0
 
     If nbrOuts(P) < 2 Then
 
-        If baseStatus = 1 Then
+        If baseRunners = 1 Then
             'If runnerOnBase(1) > 0 And runnerOnBase(2) = 0 And runnerOnBase(3) = 0 Then
             ' Runner on first only - classic sacrifice
             If nbrOuts(0) = 0 Then buntChance = 3
             If nbrOuts(0) = 1 Then buntChance = 1
         End If
 
-        If baseStatus = 2 Then
+        If baseRunners = 2 Then
             'If runnerOnBase(1) = 0 And runnerOnBase(2) > 0 And runnerOnBase(3) = 0 Then
             ' Runner on second only - move to third
             If nbrOuts(0) = 0 Then buntChance = 2
             If nbrOuts(0) = 1 Then buntChance = 1
         End If
 
-        If baseStatus = 3 Then
+        If baseRunners = 3 Then
             'If runnerOnBase(1) > 0 And runnerOnBase(2) > 0 Then
             ' Runners on 1st and 2nd
             If nbrOuts(0) = 0 Then buntChance = 2
             If nbrOuts(0) = 1 Then buntChance = 1
         End If
 
-        If baseStatus >= 4 Then
+        If baseRunners >= 4 Then
             ' Reduce chance If runner already on 3rd
             buntChance = 0
         End If
@@ -23498,7 +23496,7 @@ End Sub
 '----------------------------------------
 '          DumpIt Subroutine
 '----------------------------------------
-Sub DumpIt (baseStatus, P2, D2)
+Sub DumpIt (baseRunners, P2, D2)
 
     Print #11, "---"
     Print #11, "Inning is:"; INNING%;
@@ -23510,7 +23508,7 @@ Sub DumpIt (baseStatus, P2, D2)
     End If
     Print #11, " team batting"
 
-    Print #11, "baserunners = "; baseStatus; " outs: "; nbrOuts(0); " expected outs: "; nbrOuts(1)
+    Print #11, "baserunners = "; baseRunners; " outs: "; nbrOuts(0); " expected outs: "; nbrOuts(1)
     Print #11, "Score is: "; gameScore(0, 0); " to "; gameScore(1, 0)
 
     lp% = lineupPlayer(P, currLineupSlot(P))
