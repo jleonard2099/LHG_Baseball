@@ -6464,96 +6464,79 @@ Sub SOURCE ()
 
         S2% = EVENT_GROUNDER
 
-        If currFielder = 5 Then
+        Call FielderName(currFielder)
+        Select Case currFielder
+            Case 5
+                If RN0 <= 5 And (baseRunners = 4 Or baseRunners = 7) Then
+                    Call PBP(player$(4) + " gloves it and heads for 3rd")
+                    baseMove(0) = 0
+                    baseMove(1) = 0
+                    baseMove(2) = 11
+                    baseMove(3) = 0
+                Else
+                    Call GROUNDERS(currFielder)
+                    Call THROW2FIRST
+                    baseMove(0) = 11
+                    baseMove(1) = 0
+                    baseMove(2) = 0
+                    baseMove(3) = 0
+                End If
 
-            Call FielderName(currFielder)
-
-            If RN0 <= 5 And (baseRunners = 4 Or baseRunners = 7) Then
-                Call PBP(player$(4) + " gloves it and heads for 3rd")
-                baseMove(0) = 0
-                baseMove(1) = 0
-                baseMove(2) = 11
-                baseMove(3) = 0
-                GoTo LProcessOutAndDP2
-            Else
+            Case 6
                 Call GROUNDERS(currFielder)
-                Call THROW2FIRST
-                baseMove(0) = 11
-                baseMove(1) = 0
+
+                If RN0 <= 8 And (baseRunners = 1 Or baseRunners = 4 Or baseRunners = 5 Or baseRunners = 7) Then
+                    Call DPPIVOT(currFielder)
+                    AST% = 6
+                    baseMove(0) = 0
+                    baseMove(1) = 11
+                Else
+                    Call THROW2FIRST
+                    baseMove(0) = 11
+                    baseMove(1) = 0
+                End If
+
                 baseMove(2) = 0
                 baseMove(3) = 0
-                GoTo LProcessOutAndDP2
-            End If
 
-        End If
+            Case 4
+                Call GROUNDERS(currFielder)
 
-        If currFielder = 6 Then
+                If RN0 <= 5 And (baseRunners = 1 Or baseRunners = 4 Or baseRunners = 5 Or baseRunners = 7) Then
+                    Call DPPIVOT(currFielder)
+                    AST% = 4
+                    baseMove(0) = 0
+                    baseMove(1) = 11
+                    baseMove(2) = 0
+                    baseMove(3) = 0
+                Else
+                    Call SECOND2FIRST
 
-            Call FielderName(currFielder)
-            Call GROUNDERS(currFielder)
+                    baseMove(0) = 11
+                    baseMove(1) = 0
+                    baseMove(2) = 0
+                    baseMove(3) = 0
+                End If
 
-            If RN0 <= 8 And (baseRunners = 1 Or baseRunners = 4 Or baseRunners = 5 Or baseRunners = 7) Then
-                Call DPPIVOT(currFielder)
-                AST% = 6
-                baseMove(0) = 0
-                baseMove(1) = 11
-            Else
-                Call THROW2FIRST
-                baseMove(0) = 11
-                baseMove(1) = 0
-            End If
-
-            baseMove(2) = 0
-            baseMove(3) = 0
-            GoTo LProcessOutAndDP2
-
-        End If
-
-        If currFielder = 4 And RN0 <= 5 And (baseRunners = 1 Or baseRunners = 4 Or baseRunners = 5 Or baseRunners = 7) Then
-
-            Call FielderName(currFielder)
-            Call GROUNDERS(currFielder)
-            Call DPPIVOT(currFielder)
-            AST% = 4
-            baseMove(0) = 0
-            baseMove(1) = 11
-            baseMove(2) = 0
-            baseMove(3) = 0
-
-        Else
-
-            If currFielder = 3 Then
-
-                Call FielderName(currFielder)
+            Case 3
                 Call GROUNDERS(currFielder)
 
                 If d100% <= 94 Then
                     Call PBP("He takes it to the bag unassisted")
                     fldrUnassist = 1
                 Else
-                    currFielder = 1
-                    Call FielderName(currFielder)
                     Call PBP("He flips it to " + player$(4) + " covering")
                     FB2P% = 1
-                    currFielder = 3
                 End If
 
-            Else
+            Case Else
+                Call GROUNDERS(currFielder)
 
-                Call SECOND2FIRST
-
-            End If
-
-            Call FielderName(currFielder)
-            Call GROUNDERS(currFielder)
-            Call SECOND2FIRST
-
-            baseMove(0) = 11
-            baseMove(1) = 0
-            baseMove(2) = 0
-            baseMove(3) = 0
-
-        End If
+                baseMove(0) = 11
+                baseMove(1) = 0
+                baseMove(2) = 0
+                baseMove(3) = 0
+        End Select
 
         LProcessOutAndDP2:
         'Call DELAY
@@ -6599,12 +6582,12 @@ Sub SOURCE ()
 
         If (resultRoll <= 90 And offChoice <> OFF_HIT_N_RUN Or baseRunners = 0) Or (resultRoll <= 10 And offChoice = OFF_HIT_N_RUN) Then
 
-            S2% = 14
+            S2% = EVENT_14
 
             If baseRunners = 0 Or baseRunners = 2 Or baseRunners = 3 Or baseRunners = 6 Then
                 baseMove(0) = 11
                 Call OUTATFIRST(currFielder, fldrUnassist, FB2P%)
-                GoTo 13693
+                GoTo LFirstBaseEmpty
             End If
 
             baseMove(0) = 1
@@ -6617,7 +6600,7 @@ Sub SOURCE ()
             End If
 
             If baseRunners = 5 Or baseRunners = 7 Or baseRunners = 4 Then
-                GoTo 13725
+                GoTo LFirstBaseOccupied
             End If
 
             baseMove(1) = 11
@@ -6634,7 +6617,8 @@ Sub SOURCE ()
 
         If (baseRunners = 2 Or baseRunners = 3 Or baseRunners = 6) Then
 
-            13693 '
+          LFirstBaseEmpty:
+
             Call Rolld100(RN1)
             baseMove(1) = 0
             baseMove(2) = 0
@@ -6739,7 +6723,7 @@ Sub SOURCE ()
 
     End If
 
-    13725 '
+    LFirstBaseOccupied:
     If baseRunners <> 4 And baseRunners <> 7 Then
 
         If gameScore(P, 0) - gameScore(D, 0) >= 0 And INNING% > 6 And nbrOuts(0) = 0 And INFPOS% > INF_BACK And (currFielder = 5 Or currFielder = 3) Then
@@ -7673,8 +7657,8 @@ Sub SOURCE ()
     baseMove(2) = 1
     baseMove(3) = 0
 
-    'Change for stealing base
-    Call STEALCHANCE(AA, I2, TGTBASE%, CHANCE%)
+    'CHANCE% = Chance the runner attempts to steal
+    Call STEALCHANCE(I2, TGTBASE%, CHANCE%)
     If fldPos(P, runnerOnBase(TGTBASE% - 1)) = 1 Then
         CHANCE% = 0
     End If
@@ -7684,14 +7668,23 @@ Sub SOURCE ()
         CHANCE% = CHANCE% * .05
     End If
 
-    If batRating(P, I2, SS_B_CS) > 0 Then
-        stlChance = Int((batRating(P, I2, SS_B_SB) / (batRating(P, I2, SS_B_SB) + batRating(P, I2, SS_B_CS))) * 1000)
-    ElseIf batRating(P, I2, SS_B_SB) > 31 Then
-        stlChance = 700 + ((batRating(P, I2, SS_B_SB) - 30) * 2)
-    ElseIf batRating(P, I2, SS_B_SB) > 10 Then
-        stlChance = 600 + ((batRating(P, I2, SS_B_SB) - 10) * 10)
-    ElseIf batRating(P, I2, SS_B_SB) > 0 Then
-        stlChance = 400 + ((batRating(P, I2, SS_B_SB) * 20))
+    If fldPos(P, runnerOnBase(TGTBASE% - 1)) = 1 Then
+        runSBs = 0
+        runCSs = 0
+    Else
+        runSBs = batRating(P, I2, SS_B_SB)
+        runCSs = batRating(P, I2, SS_B_CS)
+    End If
+
+    'stlChance = Chance the attempted steal is successful
+    If runCSs > 0 Then
+        stlChance = Int((runSBs / (runSBs + runCSs)) * 1000)
+    ElseIf runSBs > 31 Then
+        stlChance = 700 + (runSBs - 30) * 2
+    ElseIf runSBs > 10 Then
+        stlChance = 600 + (runSBs - 10) * 10
+    ElseIf runSBs > 0 Then
+        stlChance = 400 + runSBs * 20
     Else
         stlChance = 100
     End If
@@ -7701,7 +7694,7 @@ Sub SOURCE ()
     End If
 
     ' *** CHANCE OF 3B STEAL ***
-    Call STEAL3RD(TGTBASE%, AA, stlChance, runnerHeld)
+    Call STEAL3RD(TGTBASE%, runSBs, stlChance, runnerHeld)
 
     ' Adjust chance for 2nd Base
     If TGTBASE% = 2 Then
@@ -7724,7 +7717,7 @@ Sub SOURCE ()
 
         'Stealing TGTBASE% will be by runner on previous base
         stealRunIdx = lineupPlayer(P, runnerOnBase(TGTBASE% - 1))
-        stealPhase(TGTBASE% - 1) = 18
+        stealPhase(TGTBASE% - 1) = PHASE_HIT_N_RUN
 
         Call FLDERR(S2%, I3, stealing, currFielder, INFPOS%, errorOnPlay%, SAH%)
         If errorOnPlay% = 1 Then
@@ -7783,7 +7776,7 @@ Sub SOURCE ()
     'RUNNER HAS A CHANCE TO STEAL
 
     'Runner avoided a rundown, +17 is added to mark "steal in progress" phase
-    stealPhase(TGTBASE% - 1) = stealPhase(TGTBASE% - 1) + 17
+    stealPhase(TGTBASE% - 1) = stealPhase(TGTBASE% - 1) + PHASE_HIT_N_RUN - 1
 
     I9 = Int(Rnd(1) * 1000) + 1
 
@@ -7820,9 +7813,7 @@ Sub SOURCE ()
         GoTo LDoubleSteal
     End If
 
-    If stealHome% = 1 Then
-        I9 = Int(Rnd(1) * 1000) + 1
-    Else
+    If stealHome% <> 1 Then
         If IsDefensePC Then
             I$ = "Y"
         Else
@@ -7851,15 +7842,13 @@ Sub SOURCE ()
 
         LDoubleSteal2:
         Call WHICHRUNNER(TGTBASE%, baseRunners, D5)
-        I9 = Int(Rnd(1) * 1000) + 1
         stlChance = stlChance - ((batRating(D, fielder(D, 2), SS_B_Arm) - 5) * 25)
 
     End If
 
-    RN0 = Int(Rnd(1) * 11) + 1
-
     If TGTBASE% <> 4 Then
 
+        RN0 = Int(Rnd(1) * 11) + 1
         Select Case RN0
 
             Case 1
@@ -7904,10 +7893,12 @@ Sub SOURCE ()
     'Steal chance is impacted by run bias of base umpire
     stlChance = stlChance + umpRunAdj(TGTBASE%)
 
+    I9 = Int(Rnd(1) * 1000) + 1
+
     ' Final safe/out decision compares random roll to stlChance (phase-dependent)
-    If (stealPhase(TGTBASE% - 1) <> 18 Or I9 <= stlChance) And _
-       (stealPhase(TGTBASE% - 1) <= 18 Or I9 <= stlChance - 200) Then
-   
+    If  stealPhase(TGTBASE% - 1) <= PHASE_HIT_N_RUN And I9 < stlChance Or _
+        stealPhase(TGTBASE% - 1) >  PHASE_HIT_N_RUN And I9 < stlChance - 200 Then
+
         LRunnerSafe:
         Call Rolld100(pbpRoll)
 
@@ -12016,7 +12007,7 @@ Sub FLDERR (S2%, fldPct, stealing, currFielder, INFPOS%, wasError, homeSafe)
             errType = 1
         End If
 
-        If S2% >= EVENT_INF_SINGLE And S2% <= 14 And rand = 1 Or S2% = EVENT_DP Then
+        If S2% >= EVENT_INF_SINGLE And S2% < EVENT_DP And rand = 1 Or S2% = EVENT_DP Then
             errType = 1
         End If
 
@@ -17147,11 +17138,11 @@ End Sub
 '----------------------------------------
 'This subroutine handles the attempt of
 'a runner to steal 3rd base.
-Sub STEAL3RD (TGTBASE%, AA, stlChance, runnerHeld)
+Sub STEAL3RD (TGTBASE%, runSBs, stlChance, runnerHeld)
 
     If TGTBASE% = 3 Then
         ' *** SUCCESS OF 3B STEAL ***
-        If AA >= 24 Then
+        If runSBs >= 24 Then
             stlChance = 830
         Else
             stlChance = 700
@@ -17174,7 +17165,7 @@ End Sub
 '         STEALCHANCE Subroutine
 '----------------------------------------
 ' ...explanation...
-Sub STEALCHANCE (AA, I2, TGTBASE%, CHANCE%)
+Sub STEALCHANCE (I2, TGTBASE%, CHANCE%)
 
     Dim steal3rdPct      As Single
     Dim steal3rdAttempts As Single
