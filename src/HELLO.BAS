@@ -17471,6 +17471,28 @@ Sub TRIPLEPLAY ()
 End Sub
 
 
+Function AdvancePct (baseNbr, currFielder, S2%)
+    If fldPos(P, runnerOnBase((baseNbr - 1))) = 1 Then
+        runRating = pitchRating(P, currPitcher(P), SS_P_Run)
+    Else
+        runRating = batRating(P, lineupPlayer(P, runnerOnBase(baseNbr - 1)), SS_B_Run)
+    End If
+
+    runRating = (runRating - 5) * 50
+
+    armRating = (batRating(D, fielder(D, currFielder), SS_B_Arm) - 5) * 25
+    
+    If S2% = EVENT_FLY_DEEP                      Then flyballFactor = 1000
+    If S2% = EVENT_FLY_REGULAR                   Then flyballFactor =  800
+    If S2% = EVENT_FLY_SHALLOW Or S2% < EVENT_HR Then flyballFactor =  500
+
+    _LogInfo Str$(flyballFactor) + Str$(runRating) + Str$(armRating)
+
+    AdvancePct = runRating - armRating + flyballFactor
+End Function
+
+
+
 '----------------------------------------
 '       TRYFOREXTRABASE Subroutine
 '----------------------------------------
@@ -17478,7 +17500,7 @@ End Sub
 'Play-by-Play (relying on other rouintes)
 'for an attempt to get an extra base when
 'an error has been committed.
-Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, tryingToAdvance, baseStatus, runnerOn2nd, currFielder, INFPOS%, wasError, homeSafe)
+Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, tryingToAdvance, baseRunners, runnerOn2nd, currFielder, INFPOS%, wasError, homeSafe)
 
     homeSafe = 0
 
@@ -17566,7 +17588,8 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, tryingToAdvance, baseSta
                 Call PBP(player$(baseNbr - 1) + " tag up? (Y/N) ")
             End If
 
-            Call PBP("against " + player$(4))
+            safeChance! = AdvancePct(baseNbr, currFielder, S2%) / 10
+            Call PBP("against " + player$(4) + " (" + LTrim$(Str$(safeChance!)) + "% safe chance)")
         End If
 
         I$ = "N"
@@ -17609,7 +17632,8 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, tryingToAdvance, baseSta
             If ShouldAskToThrow(S2%) Then
 
                 If IsDefenseHuman Then
-                    Call PBP(player$(4) + " throw to " + baseName$(baseNbr) + "? (Y/N) ")
+                    outChance! = (1000 - AdvancePct(baseNbr, currFielder, S2%)) / 10
+                    Call PBP(player$(4) + " throw to " + baseName$(baseNbr) + "? (Y/N) (" + LTrim$(Str$(outChance!)) + "% out chance)")
                 End If
 
                 Call Rolld100(RN0)
@@ -17650,23 +17674,7 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, tryingToAdvance, baseSta
 
                 If wasError = 0 Then
 
-                    If fldPos(P, runnerOnBase((baseNbr - 1))) = 1 Then
-                        runRating = pitchRating(P, currPitcher(P), SS_P_Run)
-                    Else
-                        runRating = batRating(P, lineupPlayer(P, runnerOnBase(baseNbr - 1)), SS_B_Run)
-                    End If
-
-                    runRating = (runRating - 5) * 50
-
-                    armRating = (batRating(D, fielder(D, currFielder), SS_B_Arm) - 5) * 25
-                    
-                    If S2% = EVENT_FLY_DEEP                      Then flyballFactor = 1000
-                    If S2% = EVENT_FLY_REGULAR                   Then flyballFactor =  800
-                    If S2% = EVENT_FLY_SHALLOW Or S2% < EVENT_HR Then flyballFactor =  500
-
-                    successChance = runRating - armRating + flyballFactor
-
-                    If Int(Rnd(1) * 1000) + 1 > successChance Then
+                    If Int(Rnd(1) * 1000) + 1 > AdvancePct(baseNbr, currFielder, S2%) Then
                         ' outcome = OUT!
 
                         baseMove(baseNbr - 1) = 11
@@ -17720,32 +17728,36 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, tryingToAdvance, baseSta
                         If (scoreDiff >= -2 And (scoreDiff >= 0 Or INNING% <= 8)) Then
 
                             ' *** RUNNER ON 2ND GUNNED AT 3RD ON THROW HOME ***
-                            If baseNbr - 1 > 2 And runnerOnBase(2) > 0 And d100% <= 15 Then
+                            If baseNbr - 1 > 2 And runnerOnBase(2) > 0 Then 
+                                ' Ruuner going 2nd to 3rd is OUT 15% of the time
+                                If d100% <= 15 Then
+                                    Call CreditAssist(currFielder)
+                                    Call PBP("runner is trying for 3rd...")
+                                    baseMove(2) = 11
 
-                                Call CreditAssist(currFielder)
-                                Call PBP("runner is trying for 3rd...")
-                                baseMove(2) = 11
+                                    Call TrackOuts(1)
 
-                                Call TrackOuts(1)
-
-                                currFielder = 5
-                                Call CreditRegularPutout(currFielder)
-                                Call INCPITDEF(D, currPitcher(D), LG_P_OUT)
+                                    currFielder = 5
+                                    Call CreditRegularPutout(currFielder)
+                                    Call INCPITDEF(D, currPitcher(D), LG_P_OUT)
+                                End If
 
                             End If
 
                             ' *** RUNNER ON 1ST GUNNED AT 2ND ON THROW TO HOME OR 3RD ***
-                            If baseNbr - 1 > 1 And runnerOnBase(1) > 0 And baseMove(2) <> 11 And d100% <= 15 Then
+                            If baseNbr - 1 > 1 And runnerOnBase(1) > 0 And baseMove(2) <> 11 Then
+                                ' Ruuner going 1st to 2nd is OUT 15% of the time
+                                If d100% <= 15 Then
+                                    Call CreditAssist(currFielder)
+                                    currFielder = 6
+                                    Call CreditRegularPutout(currFielder)
+                                    Call PBP("runner is trying for 2nd...")
+                                    baseMove(1) = 11
 
-                                Call CreditAssist(currFielder)
-                                currFielder = 6
-                                Call CreditRegularPutout(currFielder)
-                                Call PBP("runner is trying for 2nd...")
-                                baseMove(1) = 11
+                                    Call TrackOuts(1)
 
-                                Call TrackOuts(1)
-
-                                Call INCPITDEF(D, currPitcher(D), LG_P_OUT)
+                                    Call INCPITDEF(D, currPitcher(D), LG_P_OUT)
+                                End If
 
                             End If
 
@@ -17753,23 +17765,31 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, tryingToAdvance, baseSta
                             r2RunRating = batRating(P, lineupPlayer(P, runnerOnBase(2)), SS_B_Run)
 
                             If baseNbr - 1 > 2 And runnerOnBase(2) > 0 And baseMove(2) <> 11 And tryingToAdvance Then
+                                ' Ruuner going 2nd to 3rd is SAFE 20-40% of the time
                                 If d100% > (80 - r2RunRating * 2) Then
                                     baseMove(2) = 1
                                     Call PBP("runner is trying for 3rd...")
                                     Call PBP("He's safe!")
-                                    End If
+                                End If
                             End If
+
 
                             If baseNbr - 1 > 1 And runnerOnBase(1) > 0 And baseMove(1) <> 11 And tryingToAdvance Then
 
-                                If (baseStatus = 4 Or baseStatus = 7) And d100% > (10 - r1RunRating) Then
-                                    baseMove(1) = 1
-                                    Call PBP("runner is trying for 2nd...")
-                                    Call PBP("He's in there!")
+                                If (baseRunners = 4 Or baseRunners = 7) Then 
+                                    ' Ruuner going 1st to 2nd is SAFE 90-100% of the time
+                                    If d100% > (10 - r1RunRating) Then
+                                        baseMove(1) = 1
+                                        Call PBP("runner is trying for 2nd...")
+                                        Call PBP("He's in there!")
+                                    End If
 
-                                ElseIf d100% > (80 - r1RunRating * 2) Then
-                                    baseMove(1) = 1
-                                    Call PBP("runner safe at 2nd on the throw")
+                                Else
+                                    ' Ruuner going 1st to 2nd is SAFE 20-40% of the time
+                                    If d100% > (80 - r1RunRating * 2) Then
+                                        baseMove(1) = 1
+                                        Call PBP("runner safe at 2nd on the throw")
+                                    End If
                                 End If
 
                             End If
