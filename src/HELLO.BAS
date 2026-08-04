@@ -13554,18 +13554,24 @@ End Sub
 'that place.
 Sub PITPLACEMENT (X$)
 
+    slotAndPos$ = LTrim$(Str$(currLineupSlot(P))) + "-" + LTrim$(fieldPos$(1)) _
+        + " B" + LTrim$(Str$(pitchRating(P, currPitcher(P), SS_P_Bunt))) _
+        + " R" + LTrim$(Str$(pitchRating(P, currPitcher(P), SS_P_Run)))
+
     If pitchRating(P, currPitcher(P), SS_P_Throws) < 0 Then
 
         If useVGA = 1 Then
 
             'Black shadow on Background
-            ShadowTextOnGfx 41, 25, X$, &HFF000000, imageScreen&
+            ShadowTextOnGfx 41, 24, X$, &HFF000000, imageScreen&
+            ShadowTextOnGfx 41, 25, slotAndPos$, &HFF000000, imageScreen&
 
             'White on background
             Color &HFFFFFFFF
             _PrintMode _KeepBackground , imageScreen&
 
-            PrintOnGfx 41, 25, X$, imageScreen&
+            PrintOnGfx 41, 24, X$, imageScreen&
+            PrintOnGfx 41, 25, slotAndPos$, imageScreen&
 
         Else
 
@@ -13581,13 +13587,15 @@ Sub PITPLACEMENT (X$)
         If useVGA = 1 Then
 
             'Black shadow on Background
-            ShadowTextOnGfx 30, 25, X$, &HFF000000, imageScreen&
+            ShadowTextOnGfx 30, 24, X$, &HFF000000, imageScreen&
+            ShadowTextOnGfx 30, 25, slotAndPos$, &HFF000000, imageScreen&
 
             'White on background
             Color &HFFFFFFFF
             _PrintMode _KeepBackground , imageScreen&
 
-            PrintOnGfx 30, 25, X$, imageScreen&
+            PrintOnGfx 30, 24, X$, imageScreen&
+            PrintOnGfx 30, 25, slotAndPos$, imageScreen&
 
         Else
 
@@ -13599,7 +13607,7 @@ Sub PITPLACEMENT (X$)
     End If
 
     If useVGA = 1 Then
-        'Printing white on black
+        'Restore printing white on black
         Color &HFFFFFFFF
         _PrintMode _FillBackground , imageScreen&
     End If
@@ -23609,7 +23617,7 @@ End Function
 'a ballpark image
 Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
 
-    RestoreScrn 30,25, 23,1     'Batter - right & left
+    RestoreScrn 30,24, 23,2     'Batter - right & left
 
     'Printing white on black
     Color White, Black
@@ -23678,31 +23686,39 @@ Sub MAINSCREEN_G (nbrBalls, nbrStrikes, MO, infield)
         player$ = X$
         X$ = PadRight$(X$, 11)
 
+        slotAndPos$ = LTrim$(Str$(currLineupSlot(P))) + "-" + LTrim$(fieldPos$(fldPos(P, currLineupSlot(P)))) _
+            + " B" + LTrim$(Str$(batRating(P, J, SS_B_Bunt))) _
+            + " R" + LTrim$(Str$(batRating(P, J, SS_B_Run)))
+
         If batRating(P, J, SS_B_Bats) < 0 Or batRating(P, J, SS_B_Bats) = 0 And pitchRating(D, currPitcher(D), SS_P_Throws) > 0 Then
 
             'Black shadow on Background
-            ShadowTextOnGfx 41, 25, Left$(X$, 11), &HFF000000, imageScreen&
+            ShadowTextOnGfx 41, 24, Left$(X$, 11), &HFF000000, imageScreen&
+            ShadowTextOnGfx 41, 25, slotAndPos$, &HFF000000, imageScreen&
 
             'White on background
             _PrintMode _KeepBackground , imageScreen&
             Color &HFFFFFFFF
 
             'Batter Name - Right of Plate
-            PrintOnGfx 41, 25, Left$(X$, 11), imageScreen&
+            PrintOnGfx 41, 24, Left$(X$, 11), imageScreen&
+            PrintOnGfx 41, 25, slotAndPos$, imageScreen&
 
         End If
 
         If batRating(P, J, SS_B_Bats) > 0 Or batRating(P, J, SS_B_Bats) = 0 And pitchRating(D, currPitcher(D), SS_P_Throws) < 0 Then
 
             'Black shadow on Background
-            ShadowTextOnGfx 30, 25, Left$(X$, 11), &HFF000000, imageScreen&
+            ShadowTextOnGfx 30, 24, Left$(X$, 11), &HFF000000, imageScreen&
+            ShadowTextOnGfx 30, 25, slotAndPos$, &HFF000000, imageScreen&
 
             'White on background
             _PrintMode _KeepBackground , imageScreen&
             Color &HFFFFFFFF
 
             'Batter Name - Left of Plate
-            PrintOnGfx 30, 25, Left$(X$, 11), imageScreen&
+            PrintOnGfx 30, 24, Left$(X$, 11), imageScreen&
+            PrintOnGfx 30, 25, slotAndPos$, imageScreen&
 
         End If
 
@@ -24247,7 +24263,7 @@ Sub LOADSCREEN ()
     SaveScrn runnerScreenLoc(1, 0), runnerScreenLoc(1, 1)+1, 11,1  '1st Base Runner Stats
 
     'Batter - Right
-    SaveScrn 30,25, 23,1    'Batter - Right & Left
+    SaveScrn 30,24, 23,2    'Batter - Right & Left
 
     'Commands for Human Play
     SaveScrn 1,19, 14,11    'Commands for Human Play
