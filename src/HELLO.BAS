@@ -1969,12 +1969,6 @@ Sub LOADER
 
     End If
 
-    If (autoPlay <> 1 Or playerMode <> 2) And sndOpt = 1 Then
-        hit& = _SndOpen("hit.wav")
-        miss& = _SndOpen("miss.wav")
-        glove& = _SndOpen("glove.wav")
-    End If
-
     'Close #7
     'End
     'System
@@ -4110,6 +4104,12 @@ Sub SOURCE ()
     VV1(0) = 9
     VV1(1) = 9
 
+    If (autoPlay <> 1 Or playerMode <> 2) And sndOpt = 1 Then
+        hit& = _SndOpen("hit.wav")
+        miss& = _SndOpen("miss.wav")
+        glove& = _SndOpen("glove.wav")
+    End If
+
     Call HITTINGLINES
 
     Call PITSTAM(0)
@@ -4957,7 +4957,7 @@ Sub SOURCE ()
 
         If useVGA = 1 Then
             RestoreScrn 1,19, 14,11     'Commands for Human Play
-            DisplayFielder_Gfx 5    'redisplay the 3rd baseman that may have been overwritten
+            DisplayFielder_Gfx 5        'redisplay the 3rd baseman that may have been overwritten
         End If
 
         If UCase$(I$) = "D" Then
@@ -6617,7 +6617,7 @@ Sub SOURCE ()
 
         If (baseRunners = 2 Or baseRunners = 3 Or baseRunners = 6) Then
 
-          LFirstBaseEmpty:
+            LFirstBaseEmpty:
 
             Call Rolld100(RN1)
             baseMove(1) = 0
@@ -8022,7 +8022,7 @@ Sub SOURCE ()
         GoTo LNextBatter1
     End If
 
-    If AA < 20 Or baseRunners <> 5 Or fldPos(P, runnerOnBase(3)) = 1 Then
+    If runSBs < 20 Or baseRunners <> 5 Or fldPos(P, runnerOnBase(3)) = 1 Then
         GoTo LNextBatter1
     End If
 
@@ -17479,6 +17479,13 @@ Sub TRIPLEPLAY ()
 End Sub
 
 
+'--------------------------------------------
+'        AdvancePct Function
+'--------------------------------------------
+'This function returns the calculated chance
+'(1000 = 100%) that the specified baserunner
+'will advance against the specified fielder
+'for the specified event.
 Function AdvancePct (baseNbr, currFielder, S2%)
     If fldPos(P, runnerOnBase((baseNbr - 1))) = 1 Then
         runRating = pitchRating(P, currPitcher(P), SS_P_Run)
@@ -24025,21 +24032,24 @@ Sub DisplayFielder_Gfx (iPos)
     'Color Black
     _PrintMode _FillBackground , imageScreen&
     backColor~& = &H30000000                                'black background with alpha transparency value of &H30 (0 is 100% transparent, &HFF (default) is 100% opaque)
-    If foreColor~& = Black Then backColor~& = &H30FFFFFF    'if foreground text is black, blend with white background instead of black
+    If foreColor~& = Black Then backColor~& = &H40FFFFFF    'if foreground text is black, blend with white background instead of black
     Color foreColor~&, backColor~&
 
     PrintOnGfx xx, yy, player$, imageScreen&
 
-    If iPos = 2 Then Exit Sub
-
-    If iPos = 1 Then
-        fldPct$ = FieldPct$(pitchRating(D, currPitcher(D), SS_P_FldPct))
-        player$ = "H" + FUsing$(Str$(pitchRating(D, currPitcher(D), SS_P_HoldRunner)), "#", 1) + " F" + fldPct$
-    Else
-        fldPct$ = FieldPct$(batRating(D, fielder(D, iPos), SS_B_FldPct))
-        player$ = "A" + FUsing$(Str$(batRating(D, fielder(D, iPos), SS_B_Arm)), "#", 1) + " R" + FUsing$(Str$(batRating(D, fielder(D, iPos), SS_B_Range)), "#", 1) + " F" + fldPct$
-    End If
-
+    Select Case iPos
+        Case 1
+            fldPct$ = FieldPct$(pitchRating(D, currPitcher(D), SS_P_FldPct))
+            player$ = "H" + FUsing$(Str$(pitchRating(D, currPitcher(D), SS_P_HoldRunner)), "#", 1) + " F" + fldPct$
+        Case 2
+            Exit Sub
+        Case 3 To 6
+            fldPct$ = FieldPct$(batRating(D, fielder(D, iPos), SS_B_FldPct))
+            player$ = "R" + FUsing$(Str$(batRating(D, fielder(D, iPos), SS_B_Range)), "#", 1) + " F" + fldPct$
+        Case Else
+            fldPct$ = FieldPct$(batRating(D, fielder(D, iPos), SS_B_FldPct))
+            player$ = "A" + FUsing$(Str$(batRating(D, fielder(D, iPos), SS_B_Arm)), "#", 1) + " R" + FUsing$(Str$(batRating(D, fielder(D, iPos), SS_B_Range)), "#", 1) + " F" + fldPct$
+    End Select
 
     'Light grey shadow on background
     'ShadowTextOnGfx xx, yy+1, player$, _RGB32(224, 224, 224), imageScreen&
