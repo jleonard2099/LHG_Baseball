@@ -9151,37 +9151,42 @@ Sub SOURCE ()
     'Only pinch hit for position in innings 6+
     If INNING% >= 6 Then
 
-        For I = 0 To 22:
+        For I = 0 To 22
 
             If batRating(P, I, SS_B_Avail) <= 0 And batters$(P, I) <> "XXX" And _
                 batRating(P, I, SS_B_AB) > 0 And _
-                (fldPos(P, currLineupSlot(P)) = batRating(P, I, SS_B_Pos1) Or fldPos(P, currLineupSlot(P)) = batRating(P, I, SS_B_Pos2) Or fldPos(P, currLineupSlot(P)) = batRating(P, I, SS_B_Pos3) Or fldPos(P, currLineupSlot(P)) = batRating(P, I, SS_B_Pos4)) Then
+               (fldPos(P, currLineupSlot(P)) = batRating(P, I, SS_B_Pos1) Or _
+                fldPos(P, currLineupSlot(P)) = batRating(P, I, SS_B_Pos2) Or _
+                fldPos(P, currLineupSlot(P)) = batRating(P, I, SS_B_Pos3) Or _
+                fldPos(P, currLineupSlot(P)) = batRating(P, I, SS_B_Pos4)) Then
 
-                pinchBAvg = batRating(P, I, SS_B_H) / batRating(P, I, SS_B_AB) * 1000
-                battrBAvg = batRating(P, JM, SS_B_H) / batRating(P, JM, SS_B_AB) * 1000
+                pinchOps = CalcOps!(P,  I) * 1000
+                battrOps = CalcOps!(P, JM) * 1000
 
                 ' Randomize chance of PH entering game, based on his AB's in the season.
                 'This will limit players who hardly played.  (500 is arbitrary number)
                 abRand = Int(Rnd(1) * 500)
+                iPinchABs = batRating(P, I, SS_B_AB)
 
-                iPitThrows = pitchRating(D, currPitcher(D), SS_P_Throws) ' pitcher throws L/R
-                iBatHits = batRating(P, I, SS_B_Bats) ' batter hits L/Sw/R
+                iPitThrows = pitchRating(D, currPitcher(D), SS_P_Throws)    ' pitcher throws L/R
+                iPinchHits = batRating(P, I, SS_B_Bats)                     ' PH hits L/Sw/R
+                iBatHits   = batRating(P,JM, SS_B_Bats)                     ' batter hits L/Sw/R
 
-                ' Pitcher and PH both righty
-                If iPitThrows = 1 And iBatHits > 0 And pinchBAvg > battrBAvg + 35 Then
-                    If abRand < batRating(P, I, SS_B_AB) Then GoTo LPhForPosPlayer
+                ' "opsOffset" indicates how much higher the PH's OPS has to be than the current
+                ' batter, in order for the substitution to be made.  It factors in how the
+                ' pitcher throws (L/R), how the current batter hits (L/Switch/R), and how the
+                ' the PH being considered hits (L/Switch/R).  For example, "opsOffset" will
+                ' increase if the potential PH hits on the same side as the pitcher, but will
+                ' decrease if the current batter hits on the same side as the pitcher. 
+                If iPitThrows < 0 Then      ' Lefty pitcher
+                    opsOffset = _Iif(iPinchHits < 0, 90, 60) + _Iif(iBatHits < 0, -30, 30)
+                Else                        ' Righty pitcher
+                    opsOffset = _Iif(iPinchHits > 0, 70, 60) + _Iif(iBatHits > 0, -30, 30)
                 End If
 
-                ' Pitcher and PH both lefty
-                If iPitThrows = -1 And iBatHits < 0 And pinchBAvg > battrBAvg + 45 Then
-                    If abRand < batRating(P, I, SS_B_AB) Then GoTo LPhForPosPlayer
+                If pinchOps > battrOps + opsOffset Then
+                    If abRand < iPinchABs Then GoTo LPhForPosPlayer
                 End If
-
-                ' Pitcher and PH on opposite sides
-                If (iPitThrows = -1 And iBatHits >= 0 Or iPitThrows = 1 And iBatHits <= 0) And pinchBAvg > battrBAvg + 30 Then
-                    If abRand < batRating(P, I, SS_B_AB) Then GoTo LPhForPosPlayer
-                End If
-
             End If
 
         Next I
@@ -15541,6 +15546,7 @@ End Sub
 'Adjust L/R ratings based on assigned weights
 Sub LRADJ (playerIdx, A!, A1!)
 
+    ' GM_BAvg, GM_2B, GM_3B, GM_HR
     For I6 = 0 To 3
         game_batRating(I, I6, playerIdx) = game_batRating(I, I6, playerIdx) * A!
     Next I6
@@ -17589,7 +17595,7 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, tryingToAdvance, baseRun
     If baseNbr <> 0 Then
         'We shouldn't still have a 0 value!
         If S2% < EVENT_HR Then
-            RestoreScrn 30,25, 23,1    'Batter - Right & Left
+            RestoreScrn 30,24, 23,2    'Batter - Right & Left
             For iii = 1 To 3
                 Call DisplayRun_G(iii)
             Next
@@ -17734,7 +17740,8 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, tryingToAdvance, baseRun
                         Call CreditInfieldPutout(2, FB2P%, AST%)
                         currFielder = 2
 
-                        If nbrOuts(0) = 3 Or S2% > EVENT_HR Then Exit Sub
+                        ' If nbrOuts(0) = 3 Or S2% > EVENT_HR Then Exit Sub
+                        If nbrOuts(0) = 3 Then Exit Sub
 
                         LRunnerGoing:
 
@@ -17776,8 +17783,9 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, tryingToAdvance, baseRun
 
                             End If
 
-                            r1RunRating = batRating(P, lineupPlayer(P, runnerOnBase(1)), SS_B_Run)  'ToDo: Could one of these baserunners be a pitcher?
-                            r2RunRating = batRating(P, lineupPlayer(P, runnerOnBase(2)), SS_B_Run)
+                            ' Assume run rating of 2 if baserunner is pitcher
+                            r1RunRating = _Iif( fldPos(P, runnerOnBase(1)) = 1, 2, batRating(P, lineupPlayer(P, runnerOnBase(1)), SS_B_Run) )
+                            r2RunRating = _Iif( fldPos(P, runnerOnBase(2)) = 1, 2, batRating(P, lineupPlayer(P, runnerOnBase(2)), SS_B_Run) )
 
                             If baseNbr - 1 > 2 And runnerOnBase(2) > 0 And baseMove(2) <> 11 And tryingToAdvance Then
                                 ' Ruuner going 2nd to 3rd is SAFE 20-40% of the time
@@ -17787,7 +17795,6 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, tryingToAdvance, baseRun
                                     Call PBP("He's safe!")
                                 End If
                             End If
-
 
                             If baseNbr - 1 > 1 And runnerOnBase(1) > 0 And baseMove(1) <> 11 And tryingToAdvance Then
 
@@ -23996,6 +24003,20 @@ Function FmtPct$ (pct!)
 
 End Function
 
+'--------------------------------------------
+'        CalcOps Function
+'--------------------------------------------
+'This function returns the Onbase-Plus-Slugging
+'(OPS) for the specified player on the specified
+'side.
+Function CalcOps! (pSide, playerNum)
+
+    slug! = (batRating(pSide, playerNum, SS_B_H) + batRating(pSide, playerNum, SS_B_2B) + batRating(pSide, playerNum, SS_B_3B) * 2 + batRating(pSide, playerNum, SS_B_HR) * 3) / batRating(pSide, playerNum, SS_B_AB)
+    oba!  = (batRating(pSide, playerNum, SS_B_H) + batRating(pSide, playerNum, SS_B_W)) / (batRating(pSide, playerNum, SS_B_AB) + batRating(pSide, playerNum, SS_B_W))
+
+    CalcOps! = slug! + oba!
+
+End Function
 
 '----------------------------------------
 '        DisplayFielder_Gfx Subroutine
