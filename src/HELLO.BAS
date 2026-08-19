@@ -7600,7 +7600,6 @@ Sub SOURCE ()
 
     LSteal:
     'Print #11, "DEBUG: Processing LSteal"
-    stealHome% = 0
     S2% = EVENT_STEAL
     currFielder = 1
     player$(4) = pitchers$(D, currPitcher(D))
@@ -7813,38 +7812,35 @@ Sub SOURCE ()
         GoTo LDoubleSteal
     End If
 
-    If stealHome% <> 1 Then
-        If IsDefensePC Then
-            I$ = "Y"
-        Else
-            Call PBP("Throw to 2B? (Y/N) ")
-            I$ = GetKeyPress$
-        End If
-
-        If UCase$(I$) <> "Y" Then
-            pitchoutChance = 7
-            GoTo LRunnerSafe
-        End If
-
-        LDoubleSteal:
-        currFielder = 2
-        player$(4) = batters$(D, fielder(D, 2))
-
-        Call FLDERR(S2%, I3, stealing, currFielder, INFPOS%, errorOnPlay%, SAH%)
-        If errorOnPlay% = 1 Then
-            'Credit 3rd base runner
-            'Call INCBATOFF(P, stealRunIdx, LG_B_SB)    'CoPilot says this is double-counting SBs
-            'Credit any other base runners with a steal
-            Call PITSWAP(TGTBASE%, errorOnPlay%)
-            currLineupSlot(P) = currLineupSlot(P) - 1
-            GoTo LCheckForOptionsOrQuit
-        End If
-
-        LDoubleSteal2:
-        Call WHICHRUNNER(TGTBASE%, baseRunners, D5)
-        stlChance = stlChance - ((batRating(D, fielder(D, 2), SS_B_Arm) - 5) * 25)
-
+    If IsDefensePC Then
+        I$ = "Y"
+    Else
+        Call PBP("Throw to 2B? (Y/N) ")
+        I$ = GetKeyPress$
     End If
+
+    If UCase$(I$) <> "Y" Then
+        pitchoutChance = 7
+        GoTo LRunnerSafe
+    End If
+
+    LDoubleSteal:
+    currFielder = 2
+    player$(4) = batters$(D, fielder(D, 2))
+
+    Call FLDERR(S2%, I3, stealing, currFielder, INFPOS%, errorOnPlay%, SAH%)
+    If errorOnPlay% = 1 Then
+        'Credit 3rd base runner
+        'Call INCBATOFF(P, stealRunIdx, LG_B_SB)    'CoPilot says this is double-counting SBs
+        'Credit any other base runners with a steal
+        Call PITSWAP(TGTBASE%, errorOnPlay%)
+        currLineupSlot(P) = currLineupSlot(P) - 1
+        GoTo LCheckForOptionsOrQuit
+    End If
+
+    LDoubleSteal2:
+    Call WHICHRUNNER(TGTBASE%, baseRunners, D5)
+    stlChance = stlChance - ((batRating(D, fielder(D, 2), SS_B_Arm) - 5) * 25)
 
     If TGTBASE% <> 4 Then
 
@@ -7937,24 +7933,18 @@ Sub SOURCE ()
 
         Call INCBATDEF(D, fielder(D, 2), LG_BF_SB)
 
-        If stealHome% <> 1 Then
+        If Not (baseRunners <> 5 Or baseRunners = 5 And pitchoutChance = 7) Then
 
-            If Not (baseRunners <> 5 Or baseRunners = 5 And pitchoutChance = 7) Then
+            pitchoutChance = 0
+            TGTBASE% = 4
 
-                pitchoutChance = 0
-                TGTBASE% = 4
-
-                If Int(Rnd(1) * 20) + 1 = 6 Then
-                    GoTo LCaughtInRundown
-                Else
-                    GoTo LStealContinue
-                End If
+            If Int(Rnd(1) * 20) + 1 = 6 Then
+                GoTo LCaughtInRundown
             Else
                 GoTo LStealContinue
             End If
         Else
-            stealHome% = 0
-            GoTo LNextBatter1
+            GoTo LStealContinue
         End If
 
     End If
@@ -8015,11 +8005,6 @@ Sub SOURCE ()
     'Print #11, "DEBUG: Processing LStealContinue"
     If nbrOuts(0) >= 3 Or offChoice = OFF_HIT_N_RUN And nbrStrikes = 3 Then
         GoTo LCheckForOptionsOrQuit
-    End If
-
-    If stealHome% = 1 Then
-        stealHome% = 0
-        GoTo LNextBatter1
     End If
 
     If runSBs < 20 Or baseRunners <> 5 Or fldPos(P, runnerOnBase(3)) = 1 Then
@@ -17507,9 +17492,8 @@ Function AdvancePct (baseNbr, currFielder, S2%)
     If S2% = EVENT_FLY_REGULAR                   Then flyballFactor =  800
     If S2% = EVENT_FLY_SHALLOW Or S2% < EVENT_HR Then flyballFactor =  500
 
-    _LogInfo Str$(flyballFactor) + Str$(runRating) + Str$(armRating)
-
-    AdvancePct = runRating - armRating + flyballFactor
+    aPct = runRating - armRating + flyballFactor
+    AdvancePct = _Clamp(aPct, 50, 950)      ' Ensure it is always at least 5%, and at most 95%
 End Function
 
 
