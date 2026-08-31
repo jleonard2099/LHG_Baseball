@@ -9956,19 +9956,56 @@ Sub FRAMEOPTION (boxHeight, teamIdx)
     Color teamRat_GAME(teamIdx, 11), teamRat_GAME(teamIdx, 12)
 
     'Print box top
-    Print " " + Chr$(214); String$(61, 196); Chr$(183) + " ";
+    Print " " + Chr$(214); String$(62, 196); Chr$(183) + " ";
 
     'Print box sides
     For II = 1 To boxHeight
         Locate 8 + II, 8
-        Print " " + Chr$(186); String$(61, 32); Chr$(186) + " ";
+        Print " " + Chr$(186); String$(62, 32); Chr$(186) + " ";
     Next
 
     'Print box bottom
     Locate 9 + boxHeight, 8
-    Print " " + Chr$(211); String$(61, 196); Chr$(189) + " ";
+    Print " " + Chr$(211); String$(62, 196); Chr$(189) + " ";
 
     Locate 9, 12
+
+End Sub
+
+
+'----------------------------------------
+'         FRAMEOPTIONEX Subroutine
+'----------------------------------------
+'This subroutine draws an ASCII box using
+'team colors. The box starts at row 8 and
+'its width is specified by the 'boxWidth'
+'parameter. When done, the cursor is set
+'at the first printable row and column
+'inside the box.
+Sub FRAMEOPTIONEX (boxHeight, boxWidth, teamIdx)
+
+    PCopy 0, 1
+    Screen , , 1, 1
+
+    boxLeft = (80 - boxWidth) / 2 + 1
+
+    Locate 8, boxLeft
+    Color teamRat_GAME(teamIdx, 11), teamRat_GAME(teamIdx, 12)
+
+    'Print box top
+    Print " " + Chr$(214); String$(boxWidth - 4, 196); Chr$(183) + " ";
+
+    'Print box sides
+    For II = 1 To boxHeight
+        Locate 8 + II, boxLeft
+        Print " " + Chr$(186); Space$(boxWidth - 4); Chr$(186) + " ";
+    Next
+
+    'Print box bottom
+    Locate 9 + boxHeight, boxLeft
+    Print " " + Chr$(211); String$(boxWidth - 4, 196); Chr$(189) + " ";
+
+    Locate 9, boxLeft + 4
 
 End Sub
 
@@ -11532,7 +11569,10 @@ Sub EJECTIONINJURY (posIdx, W5, W6)
         For idx = 0 To 22
 
             If batRating(D, idx, SS_B_Avail) <= 0 And batters$(D, idx) <> "XXX" And _ 
-                (fldPos(D, I2) = batRating(D, idx, SS_B_Pos1) Or fldPos(D, I2) = batRating(D, idx, SS_B_Pos2) Or fldPos(D, I2) = batRating(D, idx, SS_B_Pos3) Or fldPos(D, I2) = batRating(D, idx, SS_B_Pos4)) Then
+               (fldPos(D, I2) = batRating(D, idx, SS_B_Pos1) Or _
+                fldPos(D, I2) = batRating(D, idx, SS_B_Pos2) Or _
+                fldPos(D, I2) = batRating(D, idx, SS_B_Pos3) Or _
+                fldPos(D, I2) = batRating(D, idx, SS_B_Pos4)) Then
 
                 pbpString$ = batters$(D, fielder(D, posIdx)) + " will be replaced by " + batters$(D, idx)
                 Call PBP(pbpString$)
@@ -14098,7 +14138,9 @@ Sub PrintInverted (txt$)
     forGrnd = _DefaultColor
     bckGrnd = _BackgroundColor
     Color bckGrnd, forGrnd
+
     Print txt$;
+
     Color forGrnd, bckGrnd
 End Sub
 
@@ -14113,61 +14155,88 @@ Sub PopUp_Lineup ()
     If useVGA = 1 Then Screen menu&
 
     Cls
-    
-    Call FRAMEOPTION(11, 1)
 
-    Print gameTeams$(0); Tab(40); gameTeams$(1)
+    boxWidth = 74
+    leftMargin = (80 - boxWidth) / 2 + 3
+    rightOffset = 35
 
-    For J = 0 To 1
+    isSlashLine = _False
 
-        For X = 1 To 9:
+    Do
 
-            Locate X + 9, 10 + J * 26
-            If J = P Then
-                'This team and batter is batting NOW, so invert the pointer
-                If currLineupSlot(J) = X   Then PrintInverted "->"
-            Else
-                'On the other team, we need to move the pointer down to the NEXT batter because it currently points to the LAST batter
-                currSlot = (currLineupSlot(J) Mod 9) + 1
-                If currSlot = X Then Print "->";
-            End If
+        Call FRAMEOPTIONEX(11, boxWidth, 1)
 
-            Locate , 12 + J * 26
-            If fldPos(J, X) = 1 Then
+        header$ = _Iif(isSlashLine, "Avg  Oba  Slg", "Avg HR RBI")
 
-                Print handed$(pitchRating(J, currPitcher(J), SS_P_Throws) + 2); Tab(14 + J * 26); Left$(pitchers$(J, currPitcher(J)), 10); " P"; Tab(28 + J * 26);
+        Print gameTeams$(0); Tab(leftMargin + 20); header$; Tab(leftMargin + 2 + rightOffset); gameTeams$(1); Tab(leftMargin + 20 + rightOffset); header$
 
-                If pitchRating(J, currPitcher(J), SS_P_BAvg) <> 999 Then
-                    Print " ."; Using "###"; pitchRating(J, currPitcher(J), SS_P_BAvg) '/ 1000
+        For J = 0 To 1
+            For X = 1 To 9:
+
+                Locate X + 9, leftMargin + J * rightOffset
+                If J = P Then
+                    'This team and batter is batting NOW, so invert the pointer
+                    If currLineupSlot(J) = X   Then PrintInverted "->"
+                Else
+                    'On the other team, we need to move the pointer down to the NEXT batter because it currently points to the LAST batter
+                    currSlot = (currLineupSlot(J) Mod 9) + 1
+                    If currSlot = X Then Print "->";
+                End If
+
+                Locate , leftMargin + 2 + J * rightOffset
+                If fldPos(J, X) = 1 Then
+
+                    Print handed$(pitchRating(J, currPitcher(J), SS_P_Throws) + 2); Tab(leftMargin + 4 + J * rightOffset); _
+                        Left$(pitchers$(J, currPitcher(J)), 10); " P"; Tab(leftMargin + 18 + J * rightOffset);
+
+                    If pitchRating(J, currPitcher(J), SS_P_BAvg) <> 999 Then
+                        Print " ."; Using "###"; pitchRating(J, currPitcher(J), SS_P_BAvg); '/ 1000
+                    Else
+
+                        If pitchRating(J, currPitcher(J), SS_P_H_AB) = 0 Then
+                            Print " .---";
+                        Else
+                            Print FmtPct$(pitchRating(J, currPitcher(J), SS_P_H_H) / pitchRating(J, currPitcher(J), SS_P_H_AB));
+                            If isSlashLine Then
+                                Print FmtPct$((pitchRating(J, currPitcher(J), SS_P_H_H) + pitchRating(J, currPitcher(J), SS_P_H_BB)) / (pitchRating(J, currPitcher(J), SS_P_H_AB) + pitchRating(J, currPitcher(J), SS_P_H_BB)));
+                                Print FmtPct$((pitchRating(J, currPitcher(J), SS_P_H_H) + pitchRating(J, currPitcher(J), SS_P_H_2B) + pitchRating(J, currPitcher(J), SS_P_H_3B) * 2 + pitchRating(J, currPitcher(J), SS_P_H_HR) * 3) / pitchRating(J, currPitcher(J), SS_P_H_AB))
+                            Else 
+                                'theHR$ = " " + Str$(pitchRating(J, currPitcher(J), SS_P_H_HR))
+                                Print " " + Right$(" "  + Str$(pitchRating(J, currPitcher(J), SS_P_H_HR)), 2);
+                                Print " " + Right$("  " + Str$(pitchRating(J, currPitcher(J), SS_P_H_RBI)), 3)
+                            End If
+                        End If
+
+                    End If
+
                 Else
 
-                    If pitchRating(J, currPitcher(J), SS_P_H_AB) = 0 Then
-                        Print " .000"
+                    Print handed$(batRating(J, lineupPlayer(J, X), SS_B_Bats) + 2); Tab(leftMargin + 4 + J * rightOffset); _
+                        Left$(batters$(J, lineupPlayer(J, X)), 10); " "; fieldPos$(fldPos(J, X)); Tab(leftMargin + 18 + J * rightOffset);
+
+                    If batRating(J, lineupPlayer(J, X), SS_B_AB) = 0 Then
+                        Print " .---";
                     Else
-                        Print FmtPct$(pitchRating(J, currPitcher(J), SS_P_H_H) / pitchRating(J, currPitcher(J), SS_P_H_AB))
+                        Print FmtPct$(batRating(J, lineupPlayer(J, X), SS_B_H) / batRating(J, lineupPlayer(J, X), SS_B_AB));
+                        If isSlashLine Then
+                            Print FmtPct$((batRating(J, lineupPlayer(J, X), SS_B_H) + batRating(J, lineupPlayer(J, X), SS_B_W)) / (batRating(J, lineupPlayer(J, X), SS_B_AB) + batRating(J, lineupPlayer(J, X), SS_B_W)));
+                            Print FmtPct$((batRating(J, lineupPlayer(J, X), SS_B_H) + batRating(J, lineupPlayer(J, X), SS_B_2B) + batRating(J, lineupPlayer(J, X), SS_B_3B) * 2 + batRating(J, lineupPlayer(J, X), SS_B_HR) * 3) / batRating(J, lineupPlayer(J, X), SS_B_AB))
+                        Else
+                            Print " " + Right$(" "  + Str$(batRating(J, lineupPlayer(J, X), SS_B_HR)), 2);
+                            Print " " + Right$("  " + Str$(batRating(J, lineupPlayer(J, X), SS_B_RBI)), 3)
+                        End If
                     End If
 
                 End If
 
-            Else
-
-                Print handed$(batRating(J, lineupPlayer(J, X), SS_B_Bats) + 2); Tab(14 + J * 26); Left$(batters$(J, lineupPlayer(J, X)), 10); " "; fieldPos$(fldPos(J, X)); Tab(28 + J * 26);
-
-                If batRating(J, lineupPlayer(J, X), SS_B_AB) = 0 Then
-                    Print " .000"
-                Else
-                    Print FmtPct$(batRating(J, lineupPlayer(J, X), SS_B_H) / batRating(J, lineupPlayer(J, X), SS_B_AB))
-                End If
-
-            End If
-
+            Next
         Next
 
-    Next
-
-    Color 15, 0
-    Locate LAST_ROW, 1: Print "HIT ANY KEY TO CONTINUE";
-    I$ = GetKeyPress$
+        Color 15, 0
+        Locate LAST_ROW, 1: Print "<TAB> TO TOGGLE SLASH LINE, HIT ANY OTHER KEY TO CONTINUE";
+        I$ = GetKeyPress$
+        isSlashLine = NOT isSlashLine
+    Loop While I$ = CHR$(9)
 
 End Sub
 
