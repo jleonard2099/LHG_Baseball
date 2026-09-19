@@ -22486,6 +22486,21 @@ End Sub
 
 
 '----------------------------------------
+'      GetKeyWhenNoDelay Subroutine
+'----------------------------------------
+'Allows user to silently press a key
+'(no prompt) when the game is not autoplay
+Sub GetKeyWhenNoDelay ()
+
+    'If we're not in autoplay
+    If Not (autoPlay = 1 And playerMode = 2) Then
+        I$ = GetKeyPress$
+    End If
+
+End Sub
+
+
+'----------------------------------------
 '          EndOfGame Subroutine
 '----------------------------------------
 'This subroutine serves as the final portion
@@ -22880,34 +22895,34 @@ End Function
 
 
 '--------------------------------------------
-'        IsOffensePC Function
+'          IsOffensePC Function
 '--------------------------------------------
 'This function returns TRUE if the computer
-'is on offense, i.e., is batting.
+'is on offense
 Function IsOffensePC
     
-    IsOffensePC = (playerMode = 1 And P = compTeam) Or playerMode = 2
+    IsOffensePC = (playerMode = 1 And compTeam = P9) Or playerMode = 2
 
 End Function
 
 
 '--------------------------------------------
-'        IsDefensePC Function
+'          IsDefensePC Function
 '--------------------------------------------
 'This function returns TRUE if the computer
-'is on defense, i.e., is pitching.
+'is on defense
 Function IsDefensePC
 
-    IsDefensePC = (playerMode = 1 And D = compTeam) Or playerMode = 2
+    IsDefensePC = (playerMode = 1 And compTeam = D) Or playerMode = 2
 
 End Function
 
 
 '--------------------------------------------
-'        IsOffenseHuman Function
+'          IsOffenseHuman Function
 '--------------------------------------------
 'This function returns TRUE if a human player
-'is on offense, i.e., is batting.
+'is on offense
 Function IsOffenseHuman
 
     IsOffenseHuman = Not IsOffensePC
@@ -22916,10 +22931,10 @@ End Function
 
 
 '--------------------------------------------
-'        IsDefenseHuman Function
+'          IsDefenseHuman Function
 '--------------------------------------------
 'This function returns TRUE if a human player
-'is on defense, i.e., is pitching.
+'is on defense
 Function IsDefenseHuman
 
     IsDefenseHuman = Not IsDefensePC
