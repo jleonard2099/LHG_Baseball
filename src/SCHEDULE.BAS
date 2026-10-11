@@ -879,11 +879,8 @@ Sub ExtractSchedule (scheduleAction%, scheduleFile$)
                 subSchedFile$ = _InputBox$("Schedule File Name", "Enter name for schedule file")
             End If
 
-            If scheduleAction% = 4 And subSchedFile$ = "" Then
-                'If user cancelled from name entry
-                teamNbr = 0
-            Else
-                teamNbr = 0
+            teamNbr = 0
+            If scheduleAction% = 4 Or subSchedFile$ <> "" Then
                 Call ChooseTeam(YN$, numberTeams, teamNbr, teamName$)
             End If
 
