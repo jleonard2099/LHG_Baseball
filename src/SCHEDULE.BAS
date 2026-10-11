@@ -66,16 +66,16 @@ Sub SCHEDULE ()
             ReDim scheduleH$(MAX_SCHEDULE_GAMES)
             ReDim scheduleV$(MAX_SCHEDULE_GAMES)
 
-            scheduleNG%(0, 5) = 1
-            scheduleNG%(0, 6) = 1
-            scheduleNG%(0, 7) = 1
-            scheduleNG%(0, 8) = 3
-            scheduleNG%(0, 9) = 1
-            scheduleNG%(0, 10) = 1
-            scheduleNG%(0, 11) = 1
-            scheduleNG%(0, 14) = 0
-            scheduleNG%(0, 19) = 1
-            scheduleNG%(0, 20) = 1
+            scheduleNG%(0, 5) = 1 'Weather: Yes
+            scheduleNG%(0, 6) = 1 'Injuries: Yes
+            scheduleNG%(0, 7) = 1 'L/R Splits: Yes
+            scheduleNG%(0, 8) = 3 'Team Control: PC vs PC
+            scheduleNG%(0, 9) = 1 'Pitcher Rest: Yes
+            scheduleNG%(0, 10) = 1 'Manager Profile: Yes
+            scheduleNG%(0, 11) = 1 'Use Graphics: Yes
+            scheduleNG%(0, 14) = 0 'Pitcher era: Modern
+            scheduleNG%(0, 19) = 1 '3-Batter Min for Relief: Yes
+            scheduleNG%(0, 20) = 1 'Auto-Runner Extra Innings: Yes
 
             Select Case SELECTION%
 
@@ -166,9 +166,6 @@ Sub NewSchedule (scheduleFile$)
     Shared scheduleYN$()
 
     Shared modeAbbrev$(), yesNo$()
-
-    DT$ = "03-18-25"
-    TM$ = "03:00P"
 
     baseFile$ = GetFileBaseName$(scheduleFile$)
 
@@ -339,6 +336,8 @@ Sub NewSchedule (scheduleFile$)
                     scheduleYN$(targetGame%, X) = scheduleYN$(targetGame% - 1, X)
                 Next
 
+                DT$ = "03-18-25"
+                TM$ = "03:00P"
                 Call NewGame(V$, H$, YN$, DT$, TM$, NTMS, targetGame%)
 
             Case "E"
@@ -1378,19 +1377,6 @@ Sub ChangeGlobalSettings ()
     Dim displayPause!
 
     ' GLOBAL SETTINGS FOR A SCHEDULE
-    ' The code below would use default values based on the most recent rules
-    'playerOpt = 3
-    'desigHit = 0
-    'useWeather = 1
-    'useInj = 1
-    'useLRSplit = 1
-    'useRest = 1
-    'useMgrProf = 1
-    'useVGA = 1
-    'pitchEraOpt = 0
-    'batterMinimumOpt = 1
-    'ghostRunOpt = 1
-
     'This code will assign defaults based on the first game in the schedule.
     'Usually when I want to change global settings, I want to keep most
     'settings in the schedule the same.
@@ -1410,7 +1396,7 @@ Sub ChangeGlobalSettings ()
     batterMinimumOpt = scheduleNG%(1, 19)
     ghostRunOpt = scheduleNG%(1, 20)
 
-    DT$ = "03-18-24"
+    DT$ = "03-25-26"
     TM$ = "03:00P"
 
     Do
