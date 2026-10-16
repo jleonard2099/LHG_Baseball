@@ -1701,6 +1701,11 @@ Sub EditTeamInfo (YN$, team$, teamIdx)
 
     Shared teamRatings(), teamSA()
 
+    'If parkHR! > 999 Or parkHR! < 0 Then 
+    ''    _LogInfo "parkHR!: " + Str$(parkHR!)
+    ''    parkHR! = 100
+    'End If
+
     Do
 
         Color 15, 1
@@ -3358,6 +3363,27 @@ Sub PITCHINIT (i, FG, BG)
 
 End Sub
 
+
+Sub SetColor(foreground, background)
+
+    multBack    = &H80
+    multFore    = _IIF(foreground > 7, &HFF, multBack)
+
+    foreBlue&   = _IIF(foreground And 1, multFore, 0)
+    foreGreen&  = _IIF(foreground And 2, multFore, 0)
+    foreRed&    = _IIF(foreground And 4, multFore, 0)
+
+    'Darken the background
+    backBlue&   = _IIF(background And 1, multBack, 0)
+    backGreen&  = _IIF(background And 2, multBack, 0)
+    backRed&    = _IIF(background And 4, multBack, 0)
+
+    _LogInfo Str$(foreRed&) + " : " + Str$(foreGreen&) + " : " + Str$(foreBlue&) + " : " + Str$(backRed&) + " : " + Str$(backGreen&) + " : " + Str$(backBlue&) 
+
+    Color _RGB(foreRed&, foreGreen&, foreBlue&), _RGB(backRed&, backGreen&, backBlue&)
+
+End Sub
+
 '----------------------------------------
 '       ViewHitters subroutine
 '----------------------------------------
@@ -3377,7 +3403,7 @@ Sub ViewHitters (teamName$)
         Cls
 
         Locate 2, 1
-        Color teamRatings(11), teamRatings(12): Print teamName$
+        SetColor teamRatings(11), teamRatings(12): Print teamName$
 
         Color 14
         Locate 4, 1
@@ -3493,7 +3519,7 @@ Sub ViewPitchers (teamName$)
     Cls
 
     Locate 2, 1
-    Color teamRatings(11), teamRatings(12): Print teamName$
+    SetColor teamRatings(11), teamRatings(12): Print teamName$
     Color 14
     Print "PITCHER      T  W  L SV  G GS  IP   H  BB  SO  ERA  GA HR CG WP HLDR"
 
@@ -3585,11 +3611,13 @@ Sub ViewPitcherHittingFielding ()
 
     Shared pitcherRatings()
     Shared pitcherNames$()
+    Shared teamRatings()
 
     Cls
 
     Locate 2, 1
-    Color 15: Print teamName$
+    ' Color 15: Print teamName$
+    SetColor teamRatings(11), teamRatings(12): Print teamName$
     Color 14
     Print "PITCHER        G  AB   R   H DB TR HR RBI  BB  SO  SB CS BAVG  R B FAVG"
 
@@ -3672,7 +3700,7 @@ Sub ViewFieldingStats (teamName$)
     Cls
 
     Locate 2, 1
-    Color teamRatings(11), teamRatings(12): Print teamName$
+    SetColor teamRatings(11), teamRatings(12): Print teamName$
 
     Color 14
     Print "             POSITION 1    POSITION 2  POSITION 3   POSITION 4"

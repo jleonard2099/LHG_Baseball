@@ -2,8 +2,12 @@
 Function GetKeyPress$ Static
 
     Do
+		_LogInfo "Sleeping..."
+		Sleep
         k$ = InKey$
     Loop Until k$ <> ""
+
+	_KeyClear
 
     GetKeyPress$ = k$
 
