@@ -44,6 +44,8 @@ Dim Shared nbrStrikes, noLUFound, normalFinish
 '$Include: 'GameRoutines_Gfx.bi'
 '$Include: 'SOURCE.bi'
 '$Include: 'Consts.bi'
+'$INCLUDE: 'QB64Library\QB-StdLibs\qbstdarg.bi'
+'$INCLUDE: 'QB64Library\QB-StdLibs\qbstdio.bi'
 
 
 On Error GoTo Errhandler
@@ -17566,6 +17568,17 @@ Function AdvancePct (baseNbr, currFielder, S2%)
 End Function
 
 
+Function FormatArrayInt$ (label$, fmt$, intArr())
+    formatted$ = label$ + ":"
+    InitArgs args$
+    For ii = LBound(intArr) To UBound(intArr)
+        IntArg args$, intArr(ii)
+        formatted$ = formatted$ + " " + Str$(ii) + ":" + fmt$
+    Next
+    FormatArrayInt$ = VSPrintF$ (formatted$, args$)
+    FreeArgs arg$
+End Function
+
 
 '----------------------------------------
 '       TRYFOREXTRABASE Subroutine
@@ -17646,6 +17659,8 @@ Sub TRYFOREXTRABASE (S2%, offChoice, stealing, baseNbr, tryingToAdvance, baseRun
     End If
 
     If baseNbr <> 0 Then
+        _LogInfo FormatArrayInt$ ("runnerOnBase", "%2d", runnerOnBase())
+
         'We shouldn't still have a 0 value!
         If S2% < EVENT_HR Then
             RestoreScrn 30,24, 23,2    'Batter - Right & Left
@@ -24429,3 +24444,5 @@ Sub ShadowTextOnGfx (Col%, Row%, Text$, txtColor~&, tgtScrn&)
 
 End Sub
 
+'$INCLUDE: 'QB64Library\QB-StdLibs\qbstdarg.bm'
+'$INCLUDE: 'QB64Library\QB-StdLibs\qbstdio.bm'
