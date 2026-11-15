@@ -90,6 +90,11 @@ Affero GNU GPL v3
 Contact me directly if interested in contributing. Only considering people who share my vision for these games and are able to honor Lance's work and legacy.
 
 ### Authors / Acknowledgment ###
+
+Made better by:
+
+<img src="claude-logo.png">
+
 - Manual images created by [Cool Clips](http://search.coolclips.com/)
 - Game icons created by [Joseph Gan (Icon-Icons)](https://icon-icons.com/users/XHgnBHIfJk0ZlajSy0A0x/icon-sets/)
 - Save icons created by [Those Icons - Flaticon](https://www.flaticon.com/free-icons/save)
