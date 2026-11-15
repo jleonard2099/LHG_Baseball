@@ -93,7 +93,7 @@ Contact me directly if interested in contributing. Only considering people who s
 
 Made better by:
 
-<img src="claude-logo.png">
+<img src="claude-logo.png" width=350 height=75>
 
 - Manual images created by [Cool Clips](http://search.coolclips.com/)
 - Game icons created by [Joseph Gan (Icon-Icons)](https://icon-icons.com/users/XHgnBHIfJk0ZlajSy0A0x/icon-sets/)
